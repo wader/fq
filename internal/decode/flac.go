@@ -1,6 +1,8 @@
 package decode
 
-import "math/bits"
+import (
+	"math/bits"
+)
 
 type FLAC struct {
 	Common
@@ -36,10 +38,25 @@ var blockingStrategyNames = map[uint]string{
 	blockingStrategyVariable: "Variable",
 }
 
+const (
+	subframeTypeConstant = 0
+	subframeTypeVerbatim = 1
+	subframeTypeFixed    = 2
+	subframeTypeLPC      = 3
+)
+
+var subframeTypeNames = map[uint]string{
+	subframeTypeConstant: "Constant",
+	subframeTypeVerbatim: "Verbatim",
+	subframeTypeFixed:    "Fixed",
+	subframeTypeLPC:      "LPC",
+}
+
 // TODO: generic enough?
 func (f *FLAC) UTF8Uint() uint64 {
 	n := f.U8()
-	c := bits.LeadingZeros8(uint8(n))
+	// leading ones, bit negate and count zeroes
+	c := bits.LeadingZeros8(^uint8(n))
 	switch c {
 	case 0:
 		// nop
@@ -51,12 +68,20 @@ func (f *FLAC) UTF8Uint() uint64 {
 			n = n<<6 | f.U8()&0x3f
 		}
 	}
+	return n
+}
 
+// TODO: generic enough?
+func (f *FLAC) UnaryZero() uint64 {
+	var n uint64
+	for f.U1() == 0 {
+		n++
+	}
 	return n
 }
 
 func (f *FLAC) Unmarshl() {
-	f.FieldUTF8(4, "Magic")
+	f.FieldUTF8(4, "magic")
 
 	// is used in frame
 	var streamInfoSamepleRate uint64
@@ -92,9 +117,9 @@ func (f *FLAC) Unmarshl() {
 				})
 				streamInfoBitPerSample = streamInfoBitPerSampleValue.Uint
 				f.FieldU(36, "total_samples_in_steam")
-				f.FieldBytes(16, "MD5")
+				f.FieldBytes(16, "md5")
 			default:
-				f.FieldBytes(uint(length), "Data")
+				f.FieldBytes(uint(length), "data")
 			}
 
 			return Value{}, typ.Str
@@ -236,7 +261,7 @@ func (f *FLAC) Unmarshl() {
 			// # 1001 : right/side stereo: channel 0 is the side(difference) channel, channel 1 is the right channel
 			// # 1010 : mid/side stereo: channel 0 is the mid(average) channel, channel 1 is the side(difference) channel
 			// # 1011-1111 : reserved
-			var sideChannelIndex uint
+			sideChannelIndex := -1
 			channels, _ := f.Field("channel_assignment", func() (Value, string) {
 				switch f.U4() {
 				case 0:
@@ -280,7 +305,7 @@ func (f *FLAC) Unmarshl() {
 			// # 110 : 24 bits per sample
 			// # 111 : reserved
 			sampleSize, _ := f.Field("sample_size", func() (Value, string) {
-				switch f.U4() {
+				switch f.U3() {
 				case 0:
 					return Value{Type: TypeUint, Uint: streamInfoBitPerSample}, "streaminfo"
 				case 1:
@@ -368,6 +393,93 @@ func (f *FLAC) Unmarshl() {
 			_ = blockSize
 			_ = sampleSize
 			_ = channels
+
+			for channelIndex := 0; channelIndex < int(channels.Uint); channelIndex++ {
+				f.Field("subframe", func() (Value, string) {
+
+					// # <1> Zero bit padding, to prevent sync-fooling string of 1s
+					f.Field("zerobit", func() (Value, string) {
+						n := f.U1()
+						s := "correct"
+						if n != 0 {
+							s = "incorrect"
+						}
+						return Value{Type: TypeUint, Uint: n}, s
+					})
+
+					// # <6> Subframe type:
+					// # 000000 : SUBFRAME_CONSTANT
+					// # 000001 : SUBFRAME_VERBATIM
+					// # 00001x : reserved
+					// # 0001xx : reserved
+					// # 001xxx : if(xxx <= 4) SUBFRAME_FIXED, xxx=order ; else reserved
+					// # 01xxxx : reserved
+					// # 1xxxxx : SUBFRAME_LPC, xxxxx=order-1
+					var lpcOrder uint
+					subframeType, _ := f.Field("subframe_type", func() (Value, string) {
+						bits := f.U6()
+						switch bits {
+						case 0:
+							return Value{Type: TypeUint, Uint: subframeTypeConstant}, subframeTypeNames[subframeTypeConstant]
+						case 1:
+							return Value{Type: TypeUint, Uint: subframeTypeVerbatim}, subframeTypeNames[subframeTypeVerbatim]
+						case 8:
+						case 9:
+						case 10:
+						case 11:
+						case 12:
+							lpcOrder = uint(bits & 0x7)
+							return Value{Type: TypeUint, Uint: subframeTypeFixed}, subframeTypeNames[subframeTypeFixed]
+						default:
+							if bits&0x20 > 0 {
+								lpcOrder = uint((bits & 0x1f) + 1)
+							} else {
+								return Value{}, "reserved"
+							}
+							return Value{Type: TypeUint, Uint: subframeTypeLPC}, subframeTypeNames[subframeTypeLPC]
+
+						}
+						panic("unreachable")
+					})
+
+					// # 'Wasted bits-per-sample' flag:
+					// # 0 : no wasted bits-per-sample in source subblock, k=0
+					// # 1 : k wasted bits-per-sample in source subblock, k-1 follows, unary coded; e.g. k=3 => 001 follows, k=7 => 0000001 follows.
+					wastedBitsFlag := f.FieldU1("wasted_bits_flag")
+					var wastedBitsK Value
+					if wastedBitsFlag != 0 {
+						wastedBitsK, _ = f.Field("wasted_bits_k", func() (Value, string) {
+							return Value{Type: TypeUint, Uint: f.UnaryZero() + 1}, ""
+						})
+					}
+					subframeSampleSize := sampleSize.Uint - wastedBitsK.Uint
+
+					// TODO: nicer api, type as "synthenic"
+					f.Field("subframe_sample_size", func() (Value, string) {
+						return Value{Type: TypeUint, Uint: subframeSampleSize}, ""
+					})
+
+					// if channel is side, add en extra sample bit
+					// https://github.com/xiph/flac/blob/37e675b777d4e0de53ac9ff69e2aea10d92e729c/src/libFLAC/stream_decoder.c#L2040
+					if channelIndex == sideChannelIndex {
+						subframeSampleSize++
+					}
+
+					switch subframeType.Uint {
+					case subframeTypeConstant:
+						// <n> Unencoded constant value of the subblock, n = frame's bits-per-sample.
+						f.FieldU(uint(subframeSampleSize), "value")
+					case subframeTypeVerbatim:
+						// <n> Unencoded warm-up samples (n = frame's bits-per-sample * predictor order).
+						f.FieldBytes(uint(subframeSampleSize*blockSize.Uint), "samples")
+					case subframeTypeFixed:
+					case subframeTypeLPC:
+
+					}
+
+					return Value{}, ""
+				})
+			}
 
 			// # CRC-8 (polynomial = x^8 + x^2 + x^1 + x^0, initialized with 0) of everything before the crc, including the sync code
 			// log::entry $l "CRC" {

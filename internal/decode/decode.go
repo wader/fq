@@ -1,7 +1,6 @@
 package decode
 
 import (
-	"encoding/hex"
 	"fmt"
 	"strconv"
 	"strings"
@@ -43,7 +42,9 @@ func (v Value) String() string {
 	case TypeStr:
 		return v.Str
 	case TypeBytes:
-		return hex.EncodeToString(v.Bytes)
+		return fmt.Sprintf("%d bytes", len(v.Bytes))
+		// TODO:
+		//return hex.EncodeToString(v.Bytes)
 	default:
 		panic("unreachable")
 	}
@@ -152,9 +153,9 @@ func (c *Common) Field(name string, fn func() (Value, string)) (Value, string) {
 	c.Current = f
 	prev.Children = append(prev.Children, f)
 	start := c.BitPos
+	f.Range.Start = start
 	v, d := fn()
-	stop := c.BitPos
-	f.Range = Range{Start: start, Stop: stop}
+	f.Range.Stop = c.BitPos
 	f.Value = v
 	f.Display = d
 
