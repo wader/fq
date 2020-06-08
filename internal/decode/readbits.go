@@ -5,6 +5,8 @@ import (
 	"fmt"
 )
 
+// ReadBits read a bits large unsigned interger from buf starting from bitPos.
+// Integer is read most significant bit first.
 func ReadBits(buf []byte, bitPos uint64, bits uint) uint64 {
 	var n uint64
 	left := bits
@@ -58,24 +60,14 @@ func ReadBits(buf []byte, bitPos uint64, bits uint) uint64 {
 			default:
 				panic("unreachable")
 			}
-			bitPos += uint64(left)
-			left = 0
+			// done
+			break
 		} else {
-			byteBitsLeft := uint((8 - byteBitPos) % 8)
+			byteBitsLeft := uint((8 - byteBitPos) & 0x7)
 			// log.Printf("byteBitsLeft: %#+v\n", byteBitsLeft)
 			// log.Printf("buf[bytePos]: %#+v\n", buf[bytePos])
 
-			if byteBitPos > 0 {
-				if left >= byteBitsLeft {
-					n = n<<byteBitsLeft | (uint64(buf[bytePos]) & ((1 << byteBitsLeft) - 1))
-					bitPos += uint64(byteBitsLeft)
-					left -= byteBitsLeft
-				} else {
-					n = n<<left | (uint64(buf[bytePos])&((1<<byteBitsLeft)-1))>>(byteBitsLeft-left)
-					bitPos += uint64(left)
-					left = 0
-				}
-			} else {
+			if byteBitsLeft == 0 {
 				if left >= 8 {
 					// TODO: more cases left >= 16 etc
 					n = n<<8 | uint64(buf[bytePos])
@@ -85,6 +77,17 @@ func ReadBits(buf []byte, bitPos uint64, bits uint) uint64 {
 					n = n<<left | (uint64(buf[bytePos]) >> (8 - left))
 					bitPos += uint64(left)
 					left = 0
+				}
+			} else {
+				if left >= byteBitsLeft {
+					n = n<<byteBitsLeft | (uint64(buf[bytePos]) & ((1 << byteBitsLeft) - 1))
+					bitPos += uint64(byteBitsLeft)
+					left -= byteBitsLeft
+				} else {
+					n = n<<left | (uint64(buf[bytePos])&((1<<byteBitsLeft)-1))>>(byteBitsLeft-left)
+					bitPos += uint64(left)
+					// done
+					break
 				}
 			}
 		}
