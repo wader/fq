@@ -1,0 +1,35 @@
+linters:
+  enable:
+    - goimports
+    - nilerr
+    - forcetypeassert
+    - asciicheck
+    - bodyclose
+    - durationcheck
+    - errorlint
+    - noctx
+    - misspell
+    - exportloopref
+    - unconvert
+    - unparam
+    - wastedassign
+    - makezero
+    - exhaustive
+    - gosec
+    - nolintlint
+    - nakedret
+    - predeclared
+    - tagliatelle
+
+linters-settings:
+  misspell:
+    ignore-words:
+      # elf RELA
+      - rela
+      - equalisation
+      - synchronisation
+  gosec:
+    excludes:
+      # allow md5
+      - G401
+      - G501

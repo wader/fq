@@ -1,0 +1,15 @@
+> fq -n '"a b c"'
+"a b c"
+> fq -rn '"a b c"'
+a b c
+> fq -n 1,2,3
+1
+2
+3
+# TODO: somehow support encoded expected output with no newline?
+#> fq -nj 1,2,3
+#> fq -n0 1,2,3
+#> fq -nj0 1,2,3
+#> fq -nj "a","b","c"
+#> fq -n0 "a","b","c"
+#> fq -nj0 "a","b","c"

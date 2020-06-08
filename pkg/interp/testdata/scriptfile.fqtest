@@ -1,0 +1,11 @@
+/test.jq:
+123
+/test2.jq:
+.headers[0].magic._value
+/test.mp3:
+> fq -n -f /test.jq
+123
+/test.jq:
+123
+> fq -f /test2.jq /test.mp3
+"ID3"

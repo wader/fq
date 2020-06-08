@@ -1,0 +1,40 @@
+{
+    "try": [
+        {
+            "name": "",
+            "value": false
+        },
+        {
+            "name": "Try",
+            "value": true
+        }
+    ],
+    "how": [
+        {
+            "name": "",
+            "value": false
+        },
+        {
+            "name": "Limited",
+            "value": true
+        },
+        {
+            "name": "Fixed",
+            "value": false
+        }
+    ],
+    "where": [
+        {
+            "name": "Len",
+            "value": true
+        },
+        {
+            "name": "Range",
+            "value": false
+        },
+        {
+            "name": "BitBuf",
+            "value": true
+        }
+    ]
+}

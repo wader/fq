@@ -1,0 +1,82 @@
+# ffmpeg -f lavfi -i sine -t 10ms test.mp3
+> fq -d mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing' /test.mp3
+exitcode: 2
+stderr:
+error: /test.mp3: file not found
+> fq -d mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing | ._value' /test.mp3
+exitcode: 2
+stderr:
+error: /test.mp3: file not found
+> fq -d mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing | tovalue' /test.mp3
+exitcode: 2
+stderr:
+error: /test.mp3: file not found
+> fq -d mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing | type' /test.mp3
+exitcode: 2
+stderr:
+error: /test.mp3: file not found
+> fq -d mp3 '.headers | length, type' /test.mp3
+exitcode: 2
+stderr:
+error: /test.mp3: file not found
+> fq -d mp3 '.headers | tostring' /test.mp3
+exitcode: 2
+stderr:
+error: /test.mp3: file not found
+> fq -d mp3 '.headers | tonumber' /test.mp3
+exitcode: 2
+stderr:
+error: /test.mp3: file not found
+> fq -d mp3 '.headers[0] | tostring' /test.mp3
+exitcode: 2
+stderr:
+error: /test.mp3: file not found
+> fq -d mp3 '.headers[0] | tonumber' /test.mp3
+exitcode: 2
+stderr:
+error: /test.mp3: file not found
+> fq -d mp3 '.headers[0].version | tonumber' /test.mp3
+exitcode: 2
+stderr:
+error: /test.mp3: file not found
+> fq -d mp3 '.headers[0].version | tostring' /test.mp3
+exitcode: 2
+stderr:
+error: /test.mp3: file not found
+> fq -d mp3 '.headers[0].magic | tonumber' /test.mp3
+exitcode: 2
+stderr:
+error: /test.mp3: file not found
+> fq -d mp3 '.headers[0].magic | ._value, length, tostring, type' /test.mp3
+exitcode: 2
+stderr:
+error: /test.mp3: file not found
+> fq -d mp3 '.headers[0].magic[4]' /test.mp3
+exitcode: 2
+stderr:
+error: /test.mp3: file not found
+> fq -d mp3 '.headers[0].magic[4:10]' /test.mp3
+exitcode: 2
+stderr:
+error: /test.mp3: file not found
+> fq -d mp3 '.headers[10]' /test.mp3
+exitcode: 2
+stderr:
+error: /test.mp3: file not found
+> fq -d mp3 '.headers[10:20]' /test.mp3
+exitcode: 2
+stderr:
+error: /test.mp3: file not found
+> fq -d mp3 '.headers[0].padding | ._value, length, tostring, type' /test.mp3
+exitcode: 2
+stderr:
+error: /test.mp3: file not found
+> fq -d mp3 '.headers[0].flags.unsynchronisation | ._value, tostring, type' /test.mp3
+exitcode: 2
+stderr:
+error: /test.mp3: file not found
+# regresison null value (padding)
+> fq -d mp3 '.headers[0] | tovalue' /test.mp3
+exitcode: 2
+stderr:
+error: /test.mp3: file not found

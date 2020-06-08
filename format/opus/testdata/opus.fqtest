@@ -1,0 +1,51 @@
+# ffmpeg -y -f lavfi -i sine -t 10ms -ac 2 -metadata artist=bla -c:a libopus opus.ogg
+# fq opus.ogg '.stream[0].packet[1] | bits' > opus-tags
+/opus-audio:
+> fq -d opus_packet verbose /opus-audio
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /opus-audio (opus_packet) 0x0-0x1b5.7 (438)
+     |                                               |                |  type: "audio" 0x0-NA (0)
+     |                                               |                |  toc: {} 0x0-0x1b5.7 (438)
+     |                                               |                |    config: {} 0x0-0x0.4 (0.5)
+0x000|fc                                             |.               |      config: 31 0x0-0x0.4 (0.5)
+     |                                               |                |      mode: "CELT-only" 0x0.5-NA (0)
+     |                                               |                |      bandwidth: "FB" 0x0.5-NA (0)
+     |                                               |                |      frame_size: 20 0x0.5-NA (0)
+0x000|fc                                             |.               |    stereo: true 0x0.5-0x0.5 (0.1)
+     |                                               |                |    frames_per_packet: {} 0x0.6-0x0.7 (0.2)
+0x000|fc                                             |.               |      config: 0 0x0.6-0x0.7 (0.2)
+     |                                               |                |      frames: 1 0x1-NA (0)
+     |                                               |                |      mode: "1 frame" 0x1-NA (0)
+0x000|   70 5b f3 71 54 45 4a c7 79 14 ea d1 59 61 85| p[.qTEJ.y...Ya.|    data: 705bf37154454ac77914ead1596185c8... 0x1-0x1b5.7 (437)
+0x010|c8 c2 56 2c a6 b7 6e 98 00 9b 34 cb 23 1d 98 b7|..V,..n...4.#...|
+*    |until 0x1b5.7 (end) (437)                      |                |
+/opus-head:
+> fq -d opus_packet verbose /opus-head
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /opus-head (opus_packet) 0x0-0x12.7 (19)
+    |                                               |                |  type: "head" 0x0-NA (0)
+0x00|4f 70 75 73 48 65 61 64                        |OpusHead        |  prefix: "OpusHead" 0x0-0x7.7 (8)
+0x00|                        01                     |        .       |  version: 1 0x8-0x8.7 (1)
+0x00|                           02                  |         .      |  channel_count: 2 0x9-0x9.7 (1)
+0x00|                              38 01            |          8.    |  pre_skip: 14337 0xa-0xb.7 (2)
+0x00|                                    80 bb 00 00|            ....|  sample_rate: 48000 0xc-0xf.7 (4)
+0x10|00 00                                          |..              |  output_gain: 0 0x10-0x11.7 (2)
+0x10|      00|                                      |  .|            |  map_family: 0 0x12-0x12.7 (1)
+/opus-tags:
+> fq -d opus_packet verbose /opus-tags
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /opus-tags (opus_packet) 0x0-0x4b.7 (76)
+    |                                               |                |  type: "tags" 0x0-NA (0)
+0x00|4f 70 75 73 54 61 67 73                        |OpusTags        |  prefix: "OpusTags" 0x0-0x7.7 (8)
+    |                                               |                |  comment: {} (vorbis_comment) 0x8-0x4b.7 (68)
+0x00|                        0d 00 00 00            |        ....    |    vendor_length: 13 0x8-0xb.7 (4)
+0x00|                                    4c 61 76 66|            Lavf|    vendor: "Lavf58.45.100" 0xc-0x18.7 (13)
+0x10|35 38 2e 34 35 2e 31 30 30                     |58.45.100       |
+0x10|                           02 00 00 00         |         ....   |    user_comment_list_length: 2 0x19-0x1c.7 (4)
+    |                                               |                |    user_comments: [2] 0x1d-0x4b.7 (47)
+    |                                               |                |      [0]: user_comment {} 0x1d-0x3d.7 (33)
+0x10|                                       1d 00 00|             ...|        length: 29 0x1d-0x20.7 (4)
+0x20|00                                             |.               |
+0x20|   65 6e 63 6f 64 65 72 3d 4c 61 76 63 35 38 2e| encoder=Lavc58.|        vendor: "encoder=Lavc58.91.100 libopus" 0x21-0x3d.7 (29)
+0x30|39 31 2e 31 30 30 20 6c 69 62 6f 70 75 73      |91.100 libopus  |
+    |                                               |                |      [1]: user_comment {} 0x3e-0x4b.7 (14)
+0x30|                                          0a 00|              ..|        length: 10 0x3e-0x41.7 (4)
+0x40|00 00                                          |..              |
+0x40|      61 72 74 69 73 74 3d 62 6c 61|           |  artist=bla|   |        vendor: "artist=bla" 0x42-0x4b.7 (10)
