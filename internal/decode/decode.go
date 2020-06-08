@@ -251,7 +251,11 @@ func (c *Common) FieldUTF8(length uint, name string) Value {
 }
 
 func (c *Common) EOF() bool {
-	return c.BitPos/8 >= uint64(len(c.Buf))
+	return c.BitPos>>3 >= uint64(len(c.Buf))
+}
+
+func (c *Common) ByteAlignBits() uint {
+	return uint((8 - (c.BitPos & 0x7)) & 0x7)
 }
 
 // --------------

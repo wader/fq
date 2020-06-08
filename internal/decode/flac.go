@@ -174,10 +174,7 @@ func (f *FLAC) Unmarshl() {
 					return Value{Type: TypeUint, Uint: 0}, "reserved"
 				case 1:
 					return Value{Type: TypeUint, Uint: 192}, ""
-				case 2:
-				case 3:
-				case 4:
-				case 5:
+				case 2, 3, 4, 5:
 					return Value{Type: TypeUint, Uint: 576 * (1 << (blockSizeBits - 2))}, ""
 				case 6:
 					return Value{Type: TypeUint, Uint: 0}, "end of header 8 but"
@@ -186,7 +183,6 @@ func (f *FLAC) Unmarshl() {
 				default:
 					return Value{Type: TypeUint, Uint: 256 * (1 << (blockSizeBits - 8))}, ""
 				}
-				panic("unreachable")
 			})
 
 			// set sample_rate_pos [bitreader::bytepos $br]
@@ -208,7 +204,7 @@ func (f *FLAC) Unmarshl() {
 			// # 1110 : get 16 bit sample rate (in tens of Hz) from end of header
 			// # 1111 : invalid, to prevent sync-fooling string of 1s
 			var sampleRateBits uint64
-			sampleRate, _ := f.Field("sample_rate", func() (Value, string) {
+			f.Field("sample_rate", func() (Value, string) {
 				sampleRateBits = f.U4()
 				switch sampleRateBits {
 				case 0:
@@ -244,7 +240,6 @@ func (f *FLAC) Unmarshl() {
 				default:
 					return Value{}, "invalid"
 				}
-				panic("unreachable")
 			})
 
 			// # <4> Channel assignment
@@ -292,8 +287,12 @@ func (f *FLAC) Unmarshl() {
 				default:
 					return Value{}, "reserved"
 				}
-				panic("unreachable")
 			})
+			if sideChannelIndex != -1 {
+				f.Field("side_channel_index", func() (Value, string) {
+					return Value{Type: TypeUint, Uint: uint64(sideChannelIndex)}, ""
+				})
+			}
 
 			// # <3> Sample size in bits:
 			// # 000 : get from STREAMINFO metadata block
@@ -359,11 +358,11 @@ func (f *FLAC) Unmarshl() {
 				// 	#    8/16 bit (blocksize-1)
 				switch blockSizeBits {
 				case 6:
-					f.Field("block_size", func() (Value, string) {
+					blockSize, _ = f.Field("block_size", func() (Value, string) {
 						return Value{Type: TypeUint, Uint: f.U8() + 1}, ""
 					})
 				case 7:
-					f.Field("block_size", func() (Value, string) {
+					blockSize, _ = f.Field("block_size", func() (Value, string) {
 						return Value{Type: TypeUint, Uint: f.U16() + 1}, ""
 					})
 				}
@@ -372,15 +371,15 @@ func (f *FLAC) Unmarshl() {
 				// 	#    8/16 bit sample rate
 				switch sampleRateBits {
 				case 12:
-					sampleRate, _ = f.Field("sample_rate", func() (Value, string) {
+					f.Field("sample_rate", func() (Value, string) {
 						return Value{Type: TypeUint, Uint: f.U8() * 1000}, ""
 					})
 				case 13:
-					sampleRate, _ = f.Field("sample_rate", func() (Value, string) {
+					f.Field("sample_rate", func() (Value, string) {
 						return Value{Type: TypeUint, Uint: f.U16()}, ""
 					})
 				case 14:
-					sampleRate, _ = f.Field("sample_rate", func() (Value, string) {
+					f.Field("sample_rate", func() (Value, string) {
 						return Value{Type: TypeUint, Uint: f.U16() * 10}, ""
 					})
 				}
@@ -388,17 +387,13 @@ func (f *FLAC) Unmarshl() {
 				return Value{}, ""
 			})
 
+			// CRC-8 (polynomial = x^8 + x^2 + x^1 + x^0, initialized with 0) of everything before the crc, including the sync code
 			f.FieldU8("crc")
-
-			_ = blockSize
-			_ = sampleSize
-			_ = channels
 
 			for channelIndex := 0; channelIndex < int(channels.Uint); channelIndex++ {
 				f.Field("subframe", func() (Value, string) {
-
 					// # <1> Zero bit padding, to prevent sync-fooling string of 1s
-					f.Field("zerobit", func() (Value, string) {
+					f.Field("zero_bit", func() (Value, string) {
 						n := f.U1()
 						s := "correct"
 						if n != 0 {
@@ -423,11 +418,7 @@ func (f *FLAC) Unmarshl() {
 							return Value{Type: TypeUint, Uint: subframeTypeConstant}, subframeTypeNames[subframeTypeConstant]
 						case 1:
 							return Value{Type: TypeUint, Uint: subframeTypeVerbatim}, subframeTypeNames[subframeTypeVerbatim]
-						case 8:
-						case 9:
-						case 10:
-						case 11:
-						case 12:
+						case 8, 9, 10, 11, 12:
 							lpcOrder = uint(bits & 0x7)
 							return Value{Type: TypeUint, Uint: subframeTypeFixed}, subframeTypeNames[subframeTypeFixed]
 						default:
@@ -437,9 +428,12 @@ func (f *FLAC) Unmarshl() {
 								return Value{}, "reserved"
 							}
 							return Value{Type: TypeUint, Uint: subframeTypeLPC}, subframeTypeNames[subframeTypeLPC]
-
 						}
-						panic("unreachable")
+					})
+
+					// TODO: nicer api, type as "synthetic"
+					f.Field("lpc_order", func() (Value, string) {
+						return Value{Type: TypeUint, Uint: uint64(lpcOrder)}, ""
 					})
 
 					// # 'Wasted bits-per-sample' flag:
@@ -454,7 +448,7 @@ func (f *FLAC) Unmarshl() {
 					}
 					subframeSampleSize := sampleSize.Uint - wastedBitsK.Uint
 
-					// TODO: nicer api, type as "synthenic"
+					// TODO: nicer api, type as "synthetic"
 					f.Field("subframe_sample_size", func() (Value, string) {
 						return Value{Type: TypeUint, Uint: subframeSampleSize}, ""
 					})
@@ -465,37 +459,133 @@ func (f *FLAC) Unmarshl() {
 						subframeSampleSize++
 					}
 
+					decodeWarmupSamples := func(n uint, sampleSize uint) {
+						f.Field("warmup_samples", func() (Value, string) {
+							for i := uint(0); i < n; i++ {
+								f.FieldS(uint(sampleSize), "value")
+							}
+							return Value{}, ""
+						})
+					}
+
+					decodeResiduals := func() {
+						// # <2> Residual coding method:
+						// # 00 : partitioned Rice coding with 4-bit Rice parameter; RESIDUAL_CODING_METHOD_PARTITIONED_RICE follows
+						// # 01 : partitioned Rice coding with 5-bit Rice parameter; RESIDUAL_CODING_METHOD_PARTITIONED_RICE2 follows
+						// # 10-11 : reserved
+						var riceBits uint
+						var riceEscape uint
+						f.Field("residual_coding_method", func() (Value, string) {
+							switch f.U2() {
+							case 0:
+								riceBits = 4
+								riceEscape = 15
+								return Value{Type: TypeUint, Uint: 0}, "rice"
+							case 1:
+								riceBits = 5
+								riceEscape = 31
+								return Value{Type: TypeUint, Uint: 1}, "rice2"
+							default:
+								return Value{}, "reserved"
+							}
+						})
+
+						// <4> Partition order.
+						partitionOrder := f.FieldU4("partition_order")
+						// There will be 2^order partitions.
+						ricePartitions := uint(1 << partitionOrder)
+						// TODO: nicer api, type as "synthetic"
+						f.Field("rice_partitions", func() (Value, string) {
+							return Value{Type: TypeUint, Uint: uint64(ricePartitions)}, ""
+						})
+
+						for i := uint(0); i < ricePartitions; i++ {
+							f.Field("partition", func() (Value, string) {
+								// Encoding parameter:
+								// <4(+5)> Encoding parameter:
+								// 0000-1110 : Rice parameter.
+								// 1111 : Escape code, meaning the partition is in unencoded binary form using n bits per sample; n follows as a 5-bit number.
+								// Or:
+								// <5(+5)> Encoding parameter:
+								// 00000-11110 : Rice parameter.
+								// 11111 : Escape code, meaning the partition is in unencoded binary form using n bits per sample; n follows as a 5-bit number.
+								// Encoded residual. The number of samples (n) in the partition is determined as follows:
+								// if the partition order is zero, n = frame's blocksize - predictor order
+								// else if this is not the first partition of the subframe, n = (frame's blocksize / (2^partition order))
+								// else n = (frame's blocksize / (2^partition order)) - predictor order
+								var count uint
+								if partitionOrder == 0 {
+									count = uint(blockSize.Uint) - lpcOrder
+								} else if i != 0 {
+									count = uint(blockSize.Uint) / ricePartitions
+								} else {
+									count = (uint(blockSize.Uint) / ricePartitions) - lpcOrder
+								}
+
+								riceParameter := uint(f.FieldU(riceBits, "rice_parameter"))
+								if riceParameter == riceEscape {
+									escapeSampleSize := uint(f.FieldU5("escape_sample_size"))
+									f.FieldBytes(uint(count*escapeSampleSize), "samples")
+								} else {
+									f.Field("samples", func() (Value, string) {
+										for j := uint(0); j < count; j++ {
+											high := f.UnaryZero()
+											_ = high
+											low := f.U(riceParameter)
+											_ = low
+											// r = zigzag(high<<riceParameter | $low)
+										}
+										return Value{}, ""
+									})
+								}
+
+								return Value{}, ""
+							})
+						}
+					}
+
 					switch subframeType.Uint {
 					case subframeTypeConstant:
 						// <n> Unencoded constant value of the subblock, n = frame's bits-per-sample.
-						f.FieldU(uint(subframeSampleSize), "value")
+						f.FieldS(uint(subframeSampleSize), "value")
 					case subframeTypeVerbatim:
 						// <n> Unencoded warm-up samples (n = frame's bits-per-sample * predictor order).
-						f.FieldBytes(uint(subframeSampleSize*blockSize.Uint), "samples")
+						f.FieldBytes(uint(blockSize.Uint*subframeSampleSize), "samples")
 					case subframeTypeFixed:
+						// <n> Unencoded warm-up samples (n = frame's bits-per-sample * predictor order).
+						decodeWarmupSamples(lpcOrder, uint(subframeSampleSize))
+						// Encoded residual
+						decodeResiduals()
 					case subframeTypeLPC:
-
+						// <n> Unencoded warm-up samples (n = frame's bits-per-sample * lpc order).
+						decodeWarmupSamples(lpcOrder, uint(subframeSampleSize))
+						// <4> (Quantized linear predictor coefficients' precision in bits)-1 (1111 = invalid).
+						precision, _ := f.Field("precision", func() (Value, string) {
+							return Value{Type: TypeUint, Uint: f.U4() + 1}, ""
+						})
+						// <5> Quantized linear predictor coefficient shift needed in bits (NOTE: this number is signed two's-complement).
+						f.FieldS5("shift")
+						// <n> Unencoded predictor coefficients (n = qlp coeff precision * lpc order) (NOTE: the coefficients are signed two's-complement).
+						f.Field("coefficients", func() (Value, string) {
+							for i := uint(0); i < lpcOrder; i++ {
+								f.FieldS(uint(precision.Uint), "value")
+							}
+							return Value{}, ""
+						})
+						// Encoded residual
+						decodeResiduals()
 					}
 
 					return Value{}, ""
 				})
 			}
 
-			// # CRC-8 (polynomial = x^8 + x^2 + x^1 + x^0, initialized with 0) of everything before the crc, including the sync code
-			// log::entry $l "CRC" {
-			// 	set frame_end [expr [bitreader::bytepos $br]-1]
-			// 	set ccrc [crc8 [bitreader::byterange $br $frame_start $frame_end]]
-			// 	set crc [bitreader::uint $br 8]
-			// 	set crc_correct "(correct)"
-			// 	if {$crc != $ccrc} {
-			// 		set crc_correct [format "(incorrect %.2x)" $ccrc]
-			// 	}
-			// 	list [format "%.2x %s" $crc $crc_correct]
-			// }
+			// <?>	Zero-padding to byte alignment.
+			f.FieldU(f.ByteAlignBits(), "byte_align")
+			// <16> CRC-16 (polynomial = x^16 + x^15 + x^2 + x^0, initialized with 0) of everything before the crc, back to and including the frame header sync code
+			f.FieldU16("footer_crc")
 
 			return Value{}, ""
 		})
-
-		break
 	}
 }

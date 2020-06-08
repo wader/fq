@@ -75,6 +75,8 @@ func TestReadBits(t *testing.T) {
 		{buf: []byte{0xf0, 0xf0, 0xf0, 0xf0}, bitPos: 0, bits: 13, expected: 0b1111000011110},
 
 		{buf: []byte{0xf8}, bitPos: 6, bits: 1, expected: 0},
+
+		{buf: []byte{0x40}, bitPos: 1, bits: 6, expected: 0b100000},
 	}
 	for _, tC := range testCases {
 		t.Run(fmt.Sprintf("%s %d %d", hex.EncodeToString(tC.buf), tC.bitPos, tC.bits), func(t *testing.T) {

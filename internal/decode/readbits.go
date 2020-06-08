@@ -63,6 +63,7 @@ func ReadBits(buf []byte, bitPos uint64, bits uint) uint64 {
 		} else {
 			byteBitsLeft := uint((8 - byteBitPos) % 8)
 			// log.Printf("byteBitsLeft: %#+v\n", byteBitsLeft)
+			// log.Printf("buf[bytePos]: %#+v\n", buf[bytePos])
 
 			if byteBitPos > 0 {
 				if left >= byteBitsLeft {
@@ -70,7 +71,7 @@ func ReadBits(buf []byte, bitPos uint64, bits uint) uint64 {
 					bitPos += uint64(byteBitsLeft)
 					left -= byteBitsLeft
 				} else {
-					n = n<<left | (uint64(buf[bytePos])&((1<<byteBitsLeft)-1))>>(left-byteBitsLeft)
+					n = n<<left | (uint64(buf[bytePos])&((1<<byteBitsLeft)-1))>>(byteBitsLeft-left)
 					bitPos += uint64(left)
 					left = 0
 				}

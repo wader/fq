@@ -56,8 +56,8 @@ func main() {
 	p := decode.FLAC{Common: decode.Common{Current: f, Buf: buf}}
 	func() {
 		defer func() {
-			e := recover()
-			log.Printf("e: %#+v\n", e)
+			// e := recover()
+			// log.Printf("e: %#+v\n", e)
 
 		}()
 		p.Unmarshl()
