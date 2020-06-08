@@ -1,0 +1,27 @@
+
+
+(defmac section [name & body]
+ ^(begin
+    (print "before")
+    (def r ~@body)
+    (print "after")
+    r
+    )
+ )
+
+(section "some section" (print "in section"))
+
+(def names 
+    (hash
+     %1 "a" 
+     %2 "b"))
+
+(printf "%s\n"
+    (hget names 1))
+
+(defn bla [a] 
+    (print 
+        (concat a a)))
+(print 
+    (bla "tjo\n"))
+

@@ -1,0 +1,18 @@
+auto probe sub data? mime not really needed?
+
+bit pos
+
+jpeg display and decode?
+
+demuxing somehow?
+
+
+web inteface?
+
+
+parser args? have "lisp" parser taking script path as arg?
+
+
+field without size?
+
+FieldValue function?

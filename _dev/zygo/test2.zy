@@ -1,0 +1,59 @@
+(def depth 0)
+(defn repeat [s n]
+    (def r "")
+    (for [(def i 0) (< i n) (+= i 1)]
+        (set r (append r s))
+    )
+    r
+)
+
+(defn uint [name]
+    (def indent (repeat "  " depth))
+    //(printf "%s%s 123\n" indent name)
+    123
+)
+
+(defmac entry [name & body]
+    ^(begin
+        (def indent (repeat "  " depth))
+        (def r (begin ~@body))
+        (def v
+            (cond
+                (and (list? r) (> (len list 0))) (first r)
+                r
+            )
+        )
+        //(printf "%s%s %v\n" indent ~name v)
+        r
+    )
+)
+
+(defmac section [name & body]
+    ^(begin
+        (def indent (repeat "  " depth))
+        // (printf "%ssection %s {\n" indent ~name)
+        (+= depth 1)
+        (def r (let [] (begin ~@body)))
+        // (printf "%s}\n" indent)
+        (-= depth 1)
+        r
+    )
+)
+
+(defmac while [cond & body]
+ ^(for [false ~cond false] ~@body))
+
+
+(section "header"
+    (uint "qsad")
+    (uint "asdasd")
+    (entry "tjo" 123)
+    (def r (u8 "bbbbb"))
+    // (printf "%d" r)
+)
+
+(while (not (eof))
+    (section "frame"
+        (u8 "asdasd")
+    )
+)
