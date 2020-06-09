@@ -1,6 +1,7 @@
 package flac
 
 // TODO: more metablocks
+// TODO: crc, md5
 
 import (
 	"fq/internal/decode"
@@ -104,7 +105,9 @@ func (f *FLAC) Decode() {
 				f.FieldU24("minimum_frame_size")
 				f.FieldU24("maximum_frame_size")
 				streamInfoSamepleRate = f.FieldU(20, "sample_rate")
+				// <3> (number of channels)-1. FLAC supports from 1 to 8 channels
 				f.FieldUFn("channels", func() (uint64, decode.Format, string) { return f.U3() + 1, decode.FormatDecimal, "" })
+				// <5> (bits per sample)-1. FLAC supports from 4 to 32 bits per sample. Currently the reference encoder and decoders only support up to 24 bits per sample.
 				streamInfoBitPerSample = f.FieldUFn("bits_per_sample", func() (uint64, decode.Format, string) {
 					return f.U5() + 1, decode.FormatDecimal, ""
 				})
@@ -119,26 +122,12 @@ func (f *FLAC) Decode() {
 	for !f.EOF() {
 		f.FieldNoneFn("frame", func() {
 			// <14> 11111111111110
-			f.FieldUFn("sync", func() (uint64, decode.Format, string) {
-				n := f.U14()
-				s := "correct"
-				if n != 0b11111111111110 {
-					s = "incorrect"
-				}
-				return n, decode.FormatHex, s
-			})
+			f.FieldVerifyFn("sync", 0b11111111111110, f.U14)
 
 			// <1> Reserved
 			// 0 : mandatory value
 			// 1 : reserved for future use
-			f.FieldUFn("reserved0", func() (uint64, decode.Format, string) {
-				n := f.U1()
-				s := "correct"
-				if n != 0 {
-					s = "incorrect"
-				}
-				return n, decode.FormatHex, s
-			})
+			f.FieldVerifyFn("reserved0", 0, f.U1)
 
 			// <1> Blocking strategy:
 			// 0 : fixed-blocksize stream; frame header encodes the frame number
@@ -290,15 +279,15 @@ func (f *FLAC) Decode() {
 				return u, fmt, d
 			})
 
-			// # <3> Sample size in bits:
-			// # 000 : get from STREAMINFO metadata block
-			// # 001 : 8 bits per sample
-			// # 010 : 12 bits per sample
-			// # 011 : reserved
-			// # 100 : 16 bits per sample
-			// # 101 : 20 bits per sample
-			// # 110 : 24 bits per sample
-			// # 111 : reserved
+			// <3> Sample size in bits:
+			// 000 : get from STREAMINFO metadata block
+			// 001 : 8 bits per sample
+			// 010 : 12 bits per sample
+			// 011 : reserved
+			// 100 : 16 bits per sample
+			// 101 : 20 bits per sample
+			// 110 : 24 bits per sample
+			// 111 : reserved
 			sampleSize := f.FieldUFn("sample_size", func() (uint64, decode.Format, string) {
 				switch f.U3() {
 				case 0:
@@ -324,14 +313,7 @@ func (f *FLAC) Decode() {
 			// <1> Reserved:
 			// 0 : mandatory value
 			// 1 : reserved for future use
-			f.FieldUFn("reserved1", func() (uint64, decode.Format, string) {
-				n := f.U1()
-				s := "correct"
-				if n != 0 {
-					s = "incorrect"
-				}
-				return n, decode.FormatDecimal, s
-			})
+			f.FieldVerifyFn("reserved1", 0, f.U1)
 
 			f.FieldNoneFn("end_of_header", func() {
 				// if(variable blocksize)
@@ -385,15 +367,8 @@ func (f *FLAC) Decode() {
 
 			for channelIndex := 0; channelIndex < int(channels); channelIndex++ {
 				f.FieldNoneFn("subframe", func() {
-					// # <1> Zero bit padding, to prevent sync-fooling string of 1s
-					f.FieldUFn("zero_bit", func() (uint64, decode.Format, string) {
-						n := f.U1()
-						s := "correct"
-						if n != 0 {
-							s = "incorrect"
-						}
-						return n, decode.FormatDecimal, s
-					})
+					// <1> Zero bit padding, to prevent sync-fooling string of 1s
+					f.FieldVerifyFn("zero_bit", 0, f.U1)
 
 					// <6> Subframe type:
 					// 000000 : SUBFRAME_CONSTANT
@@ -460,10 +435,10 @@ func (f *FLAC) Decode() {
 					}
 
 					decodeResiduals := func() {
-						// # <2> Residual coding method:
-						// # 00 : partitioned Rice coding with 4-bit Rice parameter; RESIDUAL_CODING_METHOD_PARTITIONED_RICE follows
-						// # 01 : partitioned Rice coding with 5-bit Rice parameter; RESIDUAL_CODING_METHOD_PARTITIONED_RICE2 follows
-						// # 10-11 : reserved
+						// <2> Residual coding method:
+						// 00 : partitioned Rice coding with 4-bit Rice parameter; RESIDUAL_CODING_METHOD_PARTITIONED_RICE follows
+						// 01 : partitioned Rice coding with 5-bit Rice parameter; RESIDUAL_CODING_METHOD_PARTITIONED_RICE2 follows
+						// 10-11 : reserved
 						var riceEscape uint
 						riceBits := f.FieldUFn("residual_coding_method", func() (uint64, decode.Format, string) {
 							switch f.U2() {
@@ -561,8 +536,8 @@ func (f *FLAC) Decode() {
 				})
 			}
 
-			// <?>	Zero-padding to byte alignment.
-			f.FieldU(f.ByteAlignBits(), "byte_align")
+			// <?> Zero-padding to byte alignment.
+			f.FieldVerifyFn("byte_align", 0, func() uint64 { return f.U(f.ByteAlignBits()) })
 			// <16> CRC-16 (polynomial = x^16 + x^15 + x^2 + x^0, initialized with 0) of everything before the crc, back to and including the frame header sync code
 			f.FieldU16("footer_crc")
 		})

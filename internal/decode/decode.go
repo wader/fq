@@ -53,22 +53,27 @@ type Value struct {
 }
 
 func (v Value) String() string {
+	f := ""
 	switch v.Type {
 	case TypeNone:
-		return "None"
+		f = ""
 	case TypeSInt:
-		return strconv.FormatInt(v.SInt, 10)
+		f = strconv.FormatInt(v.SInt, 10)
 	case TypeUInt:
-		return strconv.FormatUint(v.UInt, 10)
+		f = strconv.FormatUint(v.UInt, 10)
 	case TypeStr:
-		return v.Str
+		f = v.Str
 	case TypeBytes:
-		return fmt.Sprintf("%d bytes", len(v.Bytes))
+		f = fmt.Sprintf("%d bytes", len(v.Bytes))
 		// TODO:
 		//return hex.EncodeToString(v.Bytes)
 	default:
 		panic("unreachable")
 	}
+	if v.Display != "" {
+		return fmt.Sprintf("%s (%s)", v.Display, f)
+	}
+	return f
 }
 
 type Range struct {
@@ -409,6 +414,29 @@ func (c *Common) FieldSFn(name string, fn func() (int64, Format, string)) int64 
 		s, fmt, d := fn()
 		return Value{Type: TypeSInt, SInt: s, Format: fmt, Display: d}
 	}).SInt
+}
+
+func (c *Common) FieldStringMapFn(name string, sm map[uint64]string, def string, fn func() uint64) uint64 {
+	return c.FieldUFn(name, func() (uint64, Format, string) {
+		n := fn()
+		var d string
+		d, ok := sm[n]
+		if !ok {
+			d = def
+		}
+		return n, FormatDecimal, d
+	})
+}
+
+func (c *Common) FieldVerifyFn(name string, v uint64, fn func() uint64) uint64 {
+	return c.FieldUFn(name, func() (uint64, Format, string) {
+		n := fn()
+		s := "Correct"
+		if n != v {
+			s = "Incorrect"
+		}
+		return n, FormatHex, s
+	})
 }
 
 func (c *Common) EOF() bool {

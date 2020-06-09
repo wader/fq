@@ -31,3 +31,9 @@ zigzag
 FieldUCompare?
 
 
+Verify func set error?
+Value, error field?
+
+FieldVerifyFn -> FieldVerifyUFn ??
+
+
