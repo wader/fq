@@ -6,16 +6,24 @@ import (
 	"strings"
 )
 
+type Endian int
+
+const (
+	BigEndian Endian = iota
+	LittleEndian
+)
+
 type Common struct {
 	Current *Field
 	BitPos  uint64
 	Buf     []byte
+	Endian  Endian
 }
 
 type Type int
 
 const (
-	TypeNone = iota
+	TypeNone Type = iota
 	TypeInt
 	TypeUint
 	TypeStr
@@ -67,63 +75,155 @@ type Field struct {
 	Children []*Field
 }
 
-func (c *Common) U(bits uint) uint64 {
-	n := ReadBits(c.Buf, c.BitPos, bits)
-	c.BitPos += uint64(bits)
+func (c *Common) u(nBits uint, endian Endian) uint64 {
+	n := ReadBits(c.Buf, c.BitPos, nBits)
+	if endian == LittleEndian {
+		n = ReverseBytes(nBits, n)
+	}
+	c.BitPos += uint64(nBits)
 	return n
 }
 
-func (c *Common) U1() uint64  { return c.U(1) }
-func (c *Common) U2() uint64  { return c.U(2) }
-func (c *Common) U3() uint64  { return c.U(3) }
-func (c *Common) U4() uint64  { return c.U(4) }
-func (c *Common) U5() uint64  { return c.U(5) }
-func (c *Common) U6() uint64  { return c.U(6) }
-func (c *Common) U7() uint64  { return c.U(7) }
-func (c *Common) U8() uint64  { return c.U(8) }
-func (c *Common) U9() uint64  { return c.U(9) }
-func (c *Common) U10() uint64 { return c.U(10) }
-func (c *Common) U11() uint64 { return c.U(11) }
-func (c *Common) U12() uint64 { return c.U(12) }
-func (c *Common) U13() uint64 { return c.U(13) }
-func (c *Common) U14() uint64 { return c.U(14) }
-func (c *Common) U15() uint64 { return c.U(15) }
-func (c *Common) U16() uint64 { return c.U(16) }
-func (c *Common) U24() uint64 { return c.U(24) }
-func (c *Common) U32() uint64 { return c.U(32) }
-func (c *Common) U64() uint64 { return c.U(64) }
+func (c *Common) U(bits uint) uint64 { return c.u(bits, c.Endian) }
+func (c *Common) U1() uint64         { return c.u(1, c.Endian) }
+func (c *Common) U2() uint64         { return c.u(2, c.Endian) }
+func (c *Common) U3() uint64         { return c.u(3, c.Endian) }
+func (c *Common) U4() uint64         { return c.u(4, c.Endian) }
+func (c *Common) U5() uint64         { return c.u(5, c.Endian) }
+func (c *Common) U6() uint64         { return c.u(6, c.Endian) }
+func (c *Common) U7() uint64         { return c.u(7, c.Endian) }
+func (c *Common) U8() uint64         { return c.u(8, c.Endian) }
+func (c *Common) U9() uint64         { return c.u(9, c.Endian) }
+func (c *Common) U10() uint64        { return c.u(10, c.Endian) }
+func (c *Common) U11() uint64        { return c.u(11, c.Endian) }
+func (c *Common) U12() uint64        { return c.u(12, c.Endian) }
+func (c *Common) U13() uint64        { return c.u(13, c.Endian) }
+func (c *Common) U14() uint64        { return c.u(14, c.Endian) }
+func (c *Common) U15() uint64        { return c.u(15, c.Endian) }
+func (c *Common) U16() uint64        { return c.u(16, c.Endian) }
+func (c *Common) U24() uint64        { return c.u(24, c.Endian) }
+func (c *Common) U32() uint64        { return c.u(32, c.Endian) }
+func (c *Common) U64() uint64        { return c.u(64, c.Endian) }
 
-func (c *Common) S(bits uint) int64 {
-	n := ReadBits(c.Buf, c.BitPos, bits)
+func (c *Common) ULE(bits uint) uint64 { return c.u(bits, LittleEndian) }
+func (c *Common) U1LE() uint64         { return c.u(1, LittleEndian) }
+func (c *Common) U2LE() uint64         { return c.u(2, LittleEndian) }
+func (c *Common) U3LE() uint64         { return c.u(3, LittleEndian) }
+func (c *Common) U4LE() uint64         { return c.u(4, LittleEndian) }
+func (c *Common) U5LE() uint64         { return c.u(5, LittleEndian) }
+func (c *Common) U6LE() uint64         { return c.u(6, LittleEndian) }
+func (c *Common) U7LE() uint64         { return c.u(7, LittleEndian) }
+func (c *Common) U8LE() uint64         { return c.u(8, LittleEndian) }
+func (c *Common) U9LE() uint64         { return c.u(9, LittleEndian) }
+func (c *Common) U10LE() uint64        { return c.u(10, LittleEndian) }
+func (c *Common) U11LE() uint64        { return c.u(11, LittleEndian) }
+func (c *Common) U12LE() uint64        { return c.u(12, LittleEndian) }
+func (c *Common) U13LE() uint64        { return c.u(13, LittleEndian) }
+func (c *Common) U14LE() uint64        { return c.u(14, LittleEndian) }
+func (c *Common) U15LE() uint64        { return c.u(15, LittleEndian) }
+func (c *Common) U16LE() uint64        { return c.u(16, LittleEndian) }
+func (c *Common) U24LE() uint64        { return c.u(24, LittleEndian) }
+func (c *Common) U32LE() uint64        { return c.u(32, LittleEndian) }
+func (c *Common) U64LE() uint64        { return c.u(64, LittleEndian) }
+
+func (c *Common) UBE(bits uint) uint64 { return c.u(bits, BigEndian) }
+func (c *Common) U1BE() uint64         { return c.u(1, BigEndian) }
+func (c *Common) U2BE() uint64         { return c.u(2, BigEndian) }
+func (c *Common) U3BE() uint64         { return c.u(3, BigEndian) }
+func (c *Common) U4BE() uint64         { return c.u(4, BigEndian) }
+func (c *Common) U5BE() uint64         { return c.u(5, BigEndian) }
+func (c *Common) U6BE() uint64         { return c.u(6, BigEndian) }
+func (c *Common) U7BE() uint64         { return c.u(7, BigEndian) }
+func (c *Common) U8BE() uint64         { return c.u(8, BigEndian) }
+func (c *Common) U9BE() uint64         { return c.u(9, BigEndian) }
+func (c *Common) U10BE() uint64        { return c.u(10, BigEndian) }
+func (c *Common) U11BE() uint64        { return c.u(11, BigEndian) }
+func (c *Common) U12BE() uint64        { return c.u(12, BigEndian) }
+func (c *Common) U13BE() uint64        { return c.u(13, BigEndian) }
+func (c *Common) U14BE() uint64        { return c.u(14, BigEndian) }
+func (c *Common) U15BE() uint64        { return c.u(15, BigEndian) }
+func (c *Common) U16BE() uint64        { return c.u(16, BigEndian) }
+func (c *Common) U24BE() uint64        { return c.u(24, BigEndian) }
+func (c *Common) U32BE() uint64        { return c.u(32, BigEndian) }
+func (c *Common) U64BE() uint64        { return c.u(64, BigEndian) }
+
+func (c *Common) s(nBits uint, endian Endian) int64 {
+	n := ReadBits(c.Buf, c.BitPos, nBits)
+	if endian == LittleEndian {
+		n = ReverseBytes(nBits, n)
+	}
 	var s int64
-	if n&(1<<(bits-1)) > 0 {
-		s = -int64((^n & ((1 << bits) - 1)) + 1)
+	if n&(1<<(nBits-1)) > 0 {
+		s = -int64((^n & ((1 << nBits) - 1)) + 1)
 	} else {
 		s = int64(n)
 	}
-	c.BitPos += uint64(bits)
+	c.BitPos += uint64(nBits)
 	return s
 }
 
-func (c *Common) S1() int64  { return c.S(1) }
-func (c *Common) S2() int64  { return c.S(2) }
-func (c *Common) S3() int64  { return c.S(3) }
-func (c *Common) S4() int64  { return c.S(4) }
-func (c *Common) S5() int64  { return c.S(5) }
-func (c *Common) S6() int64  { return c.S(6) }
-func (c *Common) S7() int64  { return c.S(7) }
-func (c *Common) S8() int64  { return c.S(8) }
-func (c *Common) S9() int64  { return c.S(9) }
-func (c *Common) S10() int64 { return c.S(10) }
-func (c *Common) S11() int64 { return c.S(11) }
-func (c *Common) S12() int64 { return c.S(12) }
-func (c *Common) S13() int64 { return c.S(13) }
-func (c *Common) S14() int64 { return c.S(14) }
-func (c *Common) S15() int64 { return c.S(15) }
-func (c *Common) S16() int64 { return c.S(16) }
-func (c *Common) S24() int64 { return c.S(24) }
-func (c *Common) S32() int64 { return c.S(32) }
-func (c *Common) S64() int64 { return c.S(64) }
+func (c *Common) S(nBits uint) int64 { return c.s(nBits, c.Endian) }
+func (c *Common) S1() int64          { return c.s(1, c.Endian) }
+func (c *Common) S2() int64          { return c.s(2, c.Endian) }
+func (c *Common) S3() int64          { return c.s(3, c.Endian) }
+func (c *Common) S4() int64          { return c.s(4, c.Endian) }
+func (c *Common) S5() int64          { return c.s(5, c.Endian) }
+func (c *Common) S6() int64          { return c.s(6, c.Endian) }
+func (c *Common) S7() int64          { return c.s(7, c.Endian) }
+func (c *Common) S8() int64          { return c.s(8, c.Endian) }
+func (c *Common) S9() int64          { return c.s(9, c.Endian) }
+func (c *Common) S10() int64         { return c.s(10, c.Endian) }
+func (c *Common) S11() int64         { return c.s(11, c.Endian) }
+func (c *Common) S12() int64         { return c.s(12, c.Endian) }
+func (c *Common) S13() int64         { return c.s(13, c.Endian) }
+func (c *Common) S14() int64         { return c.s(14, c.Endian) }
+func (c *Common) S15() int64         { return c.s(15, c.Endian) }
+func (c *Common) S16() int64         { return c.s(16, c.Endian) }
+func (c *Common) S24() int64         { return c.s(24, c.Endian) }
+func (c *Common) S32() int64         { return c.s(32, c.Endian) }
+func (c *Common) S64() int64         { return c.s(64, c.Endian) }
+
+func (c *Common) SLE(nBits uint) int64 { return c.s(nBits, LittleEndian) }
+func (c *Common) S1LE() int64          { return c.s(1, LittleEndian) }
+func (c *Common) S2LE() int64          { return c.s(2, LittleEndian) }
+func (c *Common) S3LE() int64          { return c.s(3, LittleEndian) }
+func (c *Common) S4LE() int64          { return c.s(4, LittleEndian) }
+func (c *Common) S5LE() int64          { return c.s(5, LittleEndian) }
+func (c *Common) S6LE() int64          { return c.s(6, LittleEndian) }
+func (c *Common) S7LE() int64          { return c.s(7, LittleEndian) }
+func (c *Common) S8LE() int64          { return c.s(8, LittleEndian) }
+func (c *Common) S9LE() int64          { return c.s(9, LittleEndian) }
+func (c *Common) S10LE() int64         { return c.s(10, LittleEndian) }
+func (c *Common) S11LE() int64         { return c.s(11, LittleEndian) }
+func (c *Common) S12LE() int64         { return c.s(12, LittleEndian) }
+func (c *Common) S13LE() int64         { return c.s(13, LittleEndian) }
+func (c *Common) S14LE() int64         { return c.s(14, LittleEndian) }
+func (c *Common) S15LE() int64         { return c.s(15, LittleEndian) }
+func (c *Common) S16LE() int64         { return c.s(16, LittleEndian) }
+func (c *Common) S24LE() int64         { return c.s(24, LittleEndian) }
+func (c *Common) S32LE() int64         { return c.s(32, LittleEndian) }
+func (c *Common) S64LE() int64         { return c.s(64, LittleEndian) }
+
+func (c *Common) SBE(nBits uint) int64 { return c.s(nBits, BigEndian) }
+func (c *Common) S1BE() int64          { return c.s(1, BigEndian) }
+func (c *Common) S2BE() int64          { return c.s(2, BigEndian) }
+func (c *Common) S3BE() int64          { return c.s(3, BigEndian) }
+func (c *Common) S4BE() int64          { return c.s(4, BigEndian) }
+func (c *Common) S5BE() int64          { return c.s(5, BigEndian) }
+func (c *Common) S6BE() int64          { return c.s(6, BigEndian) }
+func (c *Common) S7BE() int64          { return c.s(7, BigEndian) }
+func (c *Common) S8BE() int64          { return c.s(8, BigEndian) }
+func (c *Common) S9BE() int64          { return c.s(9, BigEndian) }
+func (c *Common) S10BE() int64         { return c.s(10, BigEndian) }
+func (c *Common) S11BE() int64         { return c.s(11, BigEndian) }
+func (c *Common) S12BE() int64         { return c.s(12, BigEndian) }
+func (c *Common) S13BE() int64         { return c.s(13, BigEndian) }
+func (c *Common) S14BE() int64         { return c.s(14, BigEndian) }
+func (c *Common) S15BE() int64         { return c.s(15, BigEndian) }
+func (c *Common) S16BE() int64         { return c.s(16, BigEndian) }
+func (c *Common) S24BE() int64         { return c.s(24, BigEndian) }
+func (c *Common) S32BE() int64         { return c.s(32, BigEndian) }
+func (c *Common) S64BE() int64         { return c.s(64, BigEndian) }
 
 func (c *Common) Bytes(length uint) Value {
 	if c.BitPos%8 == 0 {
