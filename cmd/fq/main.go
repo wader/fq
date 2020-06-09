@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fq/internal/decode"
+	"fq/internal/format/flac"
 	"io/ioutil"
 	"log"
 	"os"
@@ -53,14 +54,14 @@ func main() {
 	}
 
 	f := &decode.Field{Name: "root"}
-	p := decode.FLAC{Common: decode.Common{Current: f, Buf: buf}}
+	p := flac.FLAC{Common: decode.Common{Current: f, Buf: buf}}
 	func() {
 		defer func() {
 			// e := recover()
 			// log.Printf("e: %#+v\n", e)
 
 		}()
-		p.Unmarshl()
+		p.Decode()
 	}()
 
 	decode.Dump(f, 0)

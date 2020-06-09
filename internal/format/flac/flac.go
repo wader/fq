@@ -1,55 +1,59 @@
-package decode
+package flac
+
+// TODO: more metablocks
 
 import (
+	"fq/internal/decode"
 	"math/bits"
 )
 
+// FLAC decoder
 type FLAC struct {
-	Common
+	decode.Common
 }
 
 const (
-	metadataBlockTypeStreaminfo    = 0
-	metadataBlockTypePadding       = 1
-	metadataBlockTypeApplication   = 2
-	metadataBlockTypeSeektable     = 3
-	metadataBlockTypeVorbisComment = 4
-	metadataBlockTypeCuesheet      = 5
-	metadataBlockTypePicture       = 6
+	MetadataBlockStreaminfo    = 0
+	MetadataBlockPadding       = 1
+	MetadataBlockApplication   = 2
+	MetadataBlockSeektable     = 3
+	MetadataBlockVorbisComment = 4
+	MetadataBlockCuesheet      = 5
+	MetadataBlockPicture       = 6
 )
 
 var metadataBlockNames = map[uint]string{
-	metadataBlockTypeStreaminfo:    "Streaminfo",
-	metadataBlockTypePadding:       "Padding",
-	metadataBlockTypeApplication:   "Application",
-	metadataBlockTypeSeektable:     "Seektable",
-	metadataBlockTypeVorbisComment: "Vorbis comment",
-	metadataBlockTypeCuesheet:      "Cuesheet",
-	metadataBlockTypePicture:       "Picture",
+	MetadataBlockStreaminfo:    "Streaminfo",
+	MetadataBlockPadding:       "Padding",
+	MetadataBlockApplication:   "Application",
+	MetadataBlockSeektable:     "Seektable",
+	MetadataBlockVorbisComment: "Vorbis comment",
+	MetadataBlockCuesheet:      "Cuesheet",
+	MetadataBlockPicture:       "Picture",
 }
 
 const (
-	blockingStrategyFixed    = 0
-	blockingStrategyVariable = 1
+	BlockingStrategyFixed = iota
+	BlockingStrategyVariable
 )
 
-var blockingStrategyNames = map[uint]string{
-	blockingStrategyFixed:    "Fixed",
-	blockingStrategyVariable: "Variable",
+var BlockingStrategyNames = map[uint]string{
+	BlockingStrategyFixed:    "Fixed",
+	BlockingStrategyVariable: "Variable",
 }
 
 const (
-	subframeTypeConstant = 0
-	subframeTypeVerbatim = 1
-	subframeTypeFixed    = 2
-	subframeTypeLPC      = 3
+	SubframeConstant = iota
+	SubframeVerbatim
+	SubframeFixed
+	SubframeLPC
 )
 
-var subframeTypeNames = map[uint]string{
-	subframeTypeConstant: "Constant",
-	subframeTypeVerbatim: "Verbatim",
-	subframeTypeFixed:    "Fixed",
-	subframeTypeLPC:      "LPC",
+var SubframeTypeNames = map[uint]string{
+	SubframeConstant: "Constant",
+	SubframeVerbatim: "Verbatim",
+	SubframeFixed:    "Fixed",
+	SubframeLPC:      "LPC",
 }
 
 // TODO: generic enough?
@@ -71,16 +75,8 @@ func (f *FLAC) UTF8Uint() uint64 {
 	return n
 }
 
-// TODO: generic enough?
-func (f *FLAC) UnaryZero() uint64 {
-	var n uint64
-	for f.U1() == 0 {
-		n++
-	}
-	return n
-}
-
-func (f *FLAC) Unmarshl() {
+// Decode FLAC
+func (f *FLAC) Decode() {
 	f.FieldUTF8(4, "magic")
 
 	// is used in frame
@@ -91,26 +87,26 @@ func (f *FLAC) Unmarshl() {
 	for !lastBlock {
 		f.FieldNoneFn("metadatablock", func() {
 			lastBlock = f.FieldU1("last_block") == 1
-			typ := f.FieldUFn("type", func() (uint64, Format, string) {
+			typ := f.FieldUFn("type", func() (uint64, decode.Format, string) {
 				t := f.U7()
 				name := "Unknown"
 				if s, ok := metadataBlockNames[uint(t)]; ok {
 					name = s
 				}
-				return t, FormatDecimal, name
+				return t, decode.FormatDecimal, name
 			})
 			length := f.FieldU24("length")
 
 			switch typ {
-			case metadataBlockTypeStreaminfo:
+			case MetadataBlockStreaminfo:
 				f.FieldU16("minimum_block_size")
 				f.FieldU16("maximum_block_size")
 				f.FieldU24("minimum_frame_size")
 				f.FieldU24("maximum_frame_size")
 				streamInfoSamepleRate = f.FieldU(20, "sample_rate")
-				f.FieldUFn("channels", func() (uint64, Format, string) { return f.U3() + 1, FormatDecimal, "" })
-				streamInfoBitPerSample = f.FieldUFn("bits_per_sample", func() (uint64, Format, string) {
-					return f.U5() + 1, FormatDecimal, ""
+				f.FieldUFn("channels", func() (uint64, decode.Format, string) { return f.U3() + 1, decode.FormatDecimal, "" })
+				streamInfoBitPerSample = f.FieldUFn("bits_per_sample", func() (uint64, decode.Format, string) {
+					return f.U5() + 1, decode.FormatDecimal, ""
 				})
 				f.FieldU(36, "total_samples_in_steam")
 				f.FieldBytes(16, "md5")
@@ -123,33 +119,37 @@ func (f *FLAC) Unmarshl() {
 	for !f.EOF() {
 		f.FieldNoneFn("frame", func() {
 			// <14> 11111111111110
-			f.FieldUFn("sync", func() (uint64, Format, string) {
+			f.FieldUFn("sync", func() (uint64, decode.Format, string) {
 				n := f.U14()
 				s := "correct"
 				if n != 0b11111111111110 {
 					s = "incorrect"
 				}
-				return n, FormatHex, s
+				return n, decode.FormatHex, s
 			})
 
 			// <1> Reserved
 			// 0 : mandatory value
 			// 1 : reserved for future use
-			f.FieldUFn("reserved0", func() (uint64, Format, string) {
+			f.FieldUFn("reserved0", func() (uint64, decode.Format, string) {
 				n := f.U1()
 				s := "correct"
 				if n != 0 {
 					s = "incorrect"
 				}
-				return n, FormatHex, s
+				return n, decode.FormatHex, s
 			})
 
 			// <1> Blocking strategy:
 			// 0 : fixed-blocksize stream; frame header encodes the frame number
 			// 1 : variable-blocksize stream; frame header encodes the sample number
-			blockingStrategy := f.FieldUFn("blocking_strategy", func() (uint64, Format, string) {
-				n := f.U1()
-				return n, FormatDecimal, blockingStrategyNames[uint(n)]
+			blockingStrategy := f.FieldUFn("blocking_strategy", func() (uint64, decode.Format, string) {
+				switch f.U1() {
+				case 0:
+					return BlockingStrategyFixed, decode.FormatDecimal, BlockingStrategyNames[BlockingStrategyFixed]
+				default:
+					return BlockingStrategyVariable, decode.FormatDecimal, BlockingStrategyNames[BlockingStrategyVariable]
+				}
 			})
 
 			// <4> Block size in inter-channel samples:
@@ -160,21 +160,21 @@ func (f *FLAC) Unmarshl() {
 			// 0111 : get 16 bit (blocksize-1) from end of header
 			// 1000-1111 : 256 * (2^(n-8)) samples, i.e. 256/512/1024/2048/4096/8192/16384/32768
 			var blockSizeBits uint64
-			blockSize := f.FieldUFn("block_size", func() (uint64, Format, string) {
+			blockSize := f.FieldUFn("block_size", func() (uint64, decode.Format, string) {
 				blockSizeBits = f.U4()
 				switch blockSizeBits {
 				case 0:
-					return 0, FormatDecimal, "reserved"
+					return 0, decode.FormatDecimal, "reserved"
 				case 1:
-					return 192, FormatDecimal, ""
+					return 192, decode.FormatDecimal, ""
 				case 2, 3, 4, 5:
-					return 576 * (1 << (blockSizeBits - 2)), FormatDecimal, ""
+					return 576 * (1 << (blockSizeBits - 2)), decode.FormatDecimal, ""
 				case 6:
-					return 0, FormatDecimal, "end of header (8 bit)"
+					return 0, decode.FormatDecimal, "end of header (8 bit)"
 				case 7:
-					return 0, FormatDecimal, "end of header (16 bit)"
+					return 0, decode.FormatDecimal, "end of header (16 bit)"
 				default:
-					return 256 * (1 << (blockSizeBits - 8)), FormatDecimal, ""
+					return 256 * (1 << (blockSizeBits - 8)), decode.FormatDecimal, ""
 				}
 			})
 
@@ -196,41 +196,41 @@ func (f *FLAC) Unmarshl() {
 			// 1110 : get 16 bit sample rate (in tens of Hz) from end of header
 			// 1111 : invalid, to prevent sync-fooling string of 1s
 			var sampleRateBits uint64
-			f.FieldUFn("sample_rate", func() (uint64, Format, string) {
+			f.FieldUFn("sample_rate", func() (uint64, decode.Format, string) {
 				sampleRateBits = f.U4()
 				switch sampleRateBits {
 				case 0:
-					return streamInfoSamepleRate, FormatDecimal, "streaminfo"
+					return streamInfoSamepleRate, decode.FormatDecimal, "streaminfo"
 				case 1:
-					return 88200, FormatDecimal, ""
+					return 88200, decode.FormatDecimal, ""
 				case 2:
-					return 176000, FormatDecimal, ""
+					return 176000, decode.FormatDecimal, ""
 				case 3:
-					return 19200, FormatDecimal, ""
+					return 19200, decode.FormatDecimal, ""
 				case 4:
-					return 800, FormatDecimal, ""
+					return 800, decode.FormatDecimal, ""
 				case 5:
-					return 1600, FormatDecimal, ""
+					return 1600, decode.FormatDecimal, ""
 				case 6:
-					return 22050, FormatDecimal, ""
+					return 22050, decode.FormatDecimal, ""
 				case 7:
-					return 44100, FormatDecimal, ""
+					return 44100, decode.FormatDecimal, ""
 				case 8:
-					return 32000, FormatDecimal, ""
+					return 32000, decode.FormatDecimal, ""
 				case 9:
-					return 44100, FormatDecimal, ""
+					return 44100, decode.FormatDecimal, ""
 				case 10:
-					return 48000, FormatDecimal, ""
+					return 48000, decode.FormatDecimal, ""
 				case 11:
-					return 96000, FormatDecimal, ""
+					return 96000, decode.FormatDecimal, ""
 				case 12:
-					return 0, FormatDecimal, "end of header (8 bit*1000)"
+					return 0, decode.FormatDecimal, "end of header (8 bit*1000)"
 				case 13:
-					return 0, FormatDecimal, "end of header (16 bit)"
+					return 0, decode.FormatDecimal, "end of header (16 bit)"
 				case 14:
-					return 0, FormatDecimal, "end of header (16 bit*10)"
+					return 0, decode.FormatDecimal, "end of header (16 bit*10)"
 				default:
-					return 0, FormatDecimal, "invalid"
+					return 0, decode.FormatDecimal, "invalid"
 				}
 			})
 
@@ -249,42 +249,42 @@ func (f *FLAC) Unmarshl() {
 			// 1010 : mid/side stereo: channel 0 is the mid(average) channel, channel 1 is the side(difference) channel
 			// 1011-1111 : reserved
 			sideChannelIndex := -1
-			channels := f.FieldUFn("channel_assignment", func() (uint64, Format, string) {
-				si, u, fmt, d := func() (int, uint64, Format, string) {
+			channels := f.FieldUFn("channel_assignment", func() (uint64, decode.Format, string) {
+				si, u, fmt, d := func() (int, uint64, decode.Format, string) {
 					switch f.U4() {
 					case 0:
-						return -1, 1, FormatDecimal, "mono"
+						return -1, 1, decode.FormatDecimal, "mono"
 					case 1:
-						return -1, 2, FormatDecimal, "left, right"
+						return -1, 2, decode.FormatDecimal, "left, right"
 					case 2:
-						return -1, 3, FormatDecimal, "left, right, center"
+						return -1, 3, decode.FormatDecimal, "left, right, center"
 					case 3:
-						return -1, 4, FormatDecimal, "front left, front right, back left, back right"
+						return -1, 4, decode.FormatDecimal, "front left, front right, back left, back right"
 					case 4:
-						return -1, 5, FormatDecimal, "front left, front right, front center, back/surround left, back/surround right"
+						return -1, 5, decode.FormatDecimal, "front left, front right, front center, back/surround left, back/surround right"
 					case 5:
-						return -1, 6, FormatDecimal, "front left, front right, front center, LFE, back/surround left, back/surround right"
+						return -1, 6, decode.FormatDecimal, "front left, front right, front center, LFE, back/surround left, back/surround right"
 					case 6:
-						return -1, 7, FormatDecimal, "front left, front right, front center, LFE, back center, side left, side right"
+						return -1, 7, decode.FormatDecimal, "front left, front right, front center, LFE, back center, side left, side right"
 					case 7:
-						return -1, 8, FormatDecimal, "front left, front right, front center, LFE, back left, back right, side left, side right"
+						return -1, 8, decode.FormatDecimal, "front left, front right, front center, LFE, back left, back right, side left, side right"
 					case 8:
 						sideChannelIndex = 1
-						return -1, 2, FormatDecimal, "left/side"
+						return -1, 2, decode.FormatDecimal, "left/side"
 					case 9:
 						sideChannelIndex = 0
-						return -1, 2, FormatDecimal, "side/right"
+						return -1, 2, decode.FormatDecimal, "side/right"
 					case 10:
 						sideChannelIndex = 1
-						return -1, 2, FormatDecimal, "mid/side"
+						return -1, 2, decode.FormatDecimal, "mid/side"
 					default:
-						return -1, 0, FormatDecimal, "reserved"
+						return -1, 0, decode.FormatDecimal, "reserved"
 					}
 				}()
 				if si != -1 {
 					sideChannelIndex = si
-					f.FieldUFn("side_channel_index", func() (uint64, Format, string) {
-						return uint64(sideChannelIndex), FormatDecimal, ""
+					f.FieldUFn("side_channel_index", func() (uint64, decode.Format, string) {
+						return uint64(sideChannelIndex), decode.FormatDecimal, ""
 					})
 				}
 				return u, fmt, d
@@ -299,24 +299,24 @@ func (f *FLAC) Unmarshl() {
 			// # 101 : 20 bits per sample
 			// # 110 : 24 bits per sample
 			// # 111 : reserved
-			sampleSize := f.FieldUFn("sample_size", func() (uint64, Format, string) {
+			sampleSize := f.FieldUFn("sample_size", func() (uint64, decode.Format, string) {
 				switch f.U3() {
 				case 0:
-					return streamInfoBitPerSample, FormatDecimal, "streaminfo"
+					return streamInfoBitPerSample, decode.FormatDecimal, "streaminfo"
 				case 1:
-					return 8, FormatDecimal, ""
+					return 8, decode.FormatDecimal, ""
 				case 2:
-					return 12, FormatDecimal, ""
+					return 12, decode.FormatDecimal, ""
 				case 3:
-					return 0, FormatDecimal, "reserved"
+					return 0, decode.FormatDecimal, "reserved"
 				case 4:
-					return 16, FormatDecimal, ""
+					return 16, decode.FormatDecimal, ""
 				case 5:
-					return 20, FormatDecimal, ""
+					return 20, decode.FormatDecimal, ""
 				case 6:
-					return 24, FormatDecimal, ""
+					return 24, decode.FormatDecimal, ""
 				case 7:
-					return 0, FormatDecimal, "reserved"
+					return 0, decode.FormatDecimal, "reserved"
 				}
 				panic("unreachable")
 			})
@@ -324,13 +324,13 @@ func (f *FLAC) Unmarshl() {
 			// <1> Reserved:
 			// 0 : mandatory value
 			// 1 : reserved for future use
-			f.FieldUFn("reserved1", func() (uint64, Format, string) {
+			f.FieldUFn("reserved1", func() (uint64, decode.Format, string) {
 				n := f.U1()
 				s := "correct"
 				if n != 0 {
 					s = "incorrect"
 				}
-				return n, FormatDecimal, s
+				return n, decode.FormatDecimal, s
 			})
 
 			f.FieldNoneFn("end_of_header", func() {
@@ -339,13 +339,13 @@ func (f *FLAC) Unmarshl() {
 				// else
 				//   <8-48>:"UTF-8" coded frame number (decoded number is 31 bits) [4]
 				switch blockingStrategy {
-				case blockingStrategyVariable:
-					f.FieldUFn("sample_number", func() (uint64, Format, string) {
-						return f.UTF8Uint(), FormatDecimal, ""
+				case BlockingStrategyVariable:
+					f.FieldUFn("sample_number", func() (uint64, decode.Format, string) {
+						return f.UTF8Uint(), decode.FormatDecimal, ""
 					})
-				case blockingStrategyFixed:
-					f.FieldUFn("frame_number", func() (uint64, Format, string) {
-						return f.UTF8Uint(), FormatDecimal, ""
+				case BlockingStrategyFixed:
+					f.FieldUFn("frame_number", func() (uint64, decode.Format, string) {
+						return f.UTF8Uint(), decode.FormatDecimal, ""
 					})
 				}
 
@@ -353,12 +353,12 @@ func (f *FLAC) Unmarshl() {
 				//   8/16 bit (blocksize-1)
 				switch blockSizeBits {
 				case 6:
-					blockSize = f.FieldUFn("block_size", func() (uint64, Format, string) {
-						return f.U8() + 1, FormatDecimal, ""
+					blockSize = f.FieldUFn("block_size", func() (uint64, decode.Format, string) {
+						return f.U8() + 1, decode.FormatDecimal, ""
 					})
 				case 7:
-					blockSize = f.FieldUFn("block_size", func() (uint64, Format, string) {
-						return f.U16() + 1, FormatDecimal, ""
+					blockSize = f.FieldUFn("block_size", func() (uint64, decode.Format, string) {
+						return f.U16() + 1, decode.FormatDecimal, ""
 					})
 				}
 
@@ -366,16 +366,16 @@ func (f *FLAC) Unmarshl() {
 				//   8/16 bit sample rate
 				switch sampleRateBits {
 				case 12:
-					f.FieldUFn("sample_rate", func() (uint64, Format, string) {
-						return f.U8() * 1000, FormatDecimal, ""
+					f.FieldUFn("sample_rate", func() (uint64, decode.Format, string) {
+						return f.U8() * 1000, decode.FormatDecimal, ""
 					})
 				case 13:
-					f.FieldUFn("sample_rate", func() (uint64, Format, string) {
-						return f.U16(), FormatDecimal, ""
+					f.FieldUFn("sample_rate", func() (uint64, decode.Format, string) {
+						return f.U16(), decode.FormatDecimal, ""
 					})
 				case 14:
-					f.FieldUFn("sample_rate", func() (uint64, Format, string) {
-						return f.U16() * 10, FormatDecimal, ""
+					f.FieldUFn("sample_rate", func() (uint64, decode.Format, string) {
+						return f.U16() * 10, decode.FormatDecimal, ""
 					})
 				}
 			})
@@ -386,13 +386,13 @@ func (f *FLAC) Unmarshl() {
 			for channelIndex := 0; channelIndex < int(channels); channelIndex++ {
 				f.FieldNoneFn("subframe", func() {
 					// # <1> Zero bit padding, to prevent sync-fooling string of 1s
-					f.FieldUFn("zero_bit", func() (uint64, Format, string) {
+					f.FieldUFn("zero_bit", func() (uint64, decode.Format, string) {
 						n := f.U1()
 						s := "correct"
 						if n != 0 {
 							s = "incorrect"
 						}
-						return n, FormatDecimal, s
+						return n, decode.FormatDecimal, s
 					})
 
 					// <6> Subframe type:
@@ -404,28 +404,28 @@ func (f *FLAC) Unmarshl() {
 					// 01xxxx : reserved
 					// 1xxxxx : SUBFRAME_LPC, xxxxx=order-1
 					var lpcOrder uint
-					subframeType := f.FieldUFn("subframe_type", func() (uint64, Format, string) {
-						u, fmt, d := func() (uint64, Format, string) {
+					subframeType := f.FieldUFn("subframe_type", func() (uint64, decode.Format, string) {
+						u, fmt, d := func() (uint64, decode.Format, string) {
 							bits := f.U6()
 							switch bits {
 							case 0:
-								return subframeTypeConstant, FormatDecimal, subframeTypeNames[subframeTypeConstant]
+								return SubframeConstant, decode.FormatDecimal, SubframeTypeNames[SubframeConstant]
 							case 1:
-								return subframeTypeVerbatim, FormatDecimal, subframeTypeNames[subframeTypeVerbatim]
+								return SubframeVerbatim, decode.FormatDecimal, SubframeTypeNames[SubframeVerbatim]
 							case 8, 9, 10, 11, 12:
 								lpcOrder = uint(bits & 0x7)
-								return subframeTypeFixed, FormatDecimal, subframeTypeNames[subframeTypeFixed]
+								return SubframeFixed, decode.FormatDecimal, SubframeTypeNames[SubframeFixed]
 							default:
 								if bits&0x20 > 0 {
 									lpcOrder = uint((bits & 0x1f) + 1)
 								} else {
-									return 0, FormatDecimal, "reserved"
+									return 0, decode.FormatDecimal, "reserved"
 								}
-								return subframeTypeLPC, FormatDecimal, subframeTypeNames[subframeTypeLPC]
+								return SubframeLPC, decode.FormatDecimal, SubframeTypeNames[SubframeLPC]
 							}
 						}()
-						f.FieldUFn("lpc_order", func() (uint64, Format, string) {
-							return uint64(lpcOrder), FormatDecimal, ""
+						f.FieldUFn("lpc_order", func() (uint64, decode.Format, string) {
+							return uint64(lpcOrder), decode.FormatDecimal, ""
 						})
 						return u, fmt, d
 					})
@@ -436,8 +436,8 @@ func (f *FLAC) Unmarshl() {
 					wastedBitsFlag := f.FieldU1("wasted_bits_flag")
 					var wastedBitsK uint64
 					if wastedBitsFlag != 0 {
-						wastedBitsK = f.FieldUFn("wasted_bits_k", func() (uint64, Format, string) {
-							return f.UnaryZero() + 1, FormatDecimal, ""
+						wastedBitsK = f.FieldUFn("wasted_bits_k", func() (uint64, decode.Format, string) {
+							return uint64(f.Unary(0)) + 1, decode.FormatDecimal, ""
 						})
 					}
 
@@ -447,8 +447,8 @@ func (f *FLAC) Unmarshl() {
 					if channelIndex == sideChannelIndex {
 						subframeSampleSize++
 					}
-					f.FieldUFn("subframe_sample_size", func() (uint64, Format, string) {
-						return subframeSampleSize, FormatDecimal, ""
+					f.FieldUFn("subframe_sample_size", func() (uint64, decode.Format, string) {
+						return subframeSampleSize, decode.FormatDecimal, ""
 					})
 
 					decodeWarmupSamples := func(n uint, sampleSize uint) {
@@ -465,16 +465,16 @@ func (f *FLAC) Unmarshl() {
 						// # 01 : partitioned Rice coding with 5-bit Rice parameter; RESIDUAL_CODING_METHOD_PARTITIONED_RICE2 follows
 						// # 10-11 : reserved
 						var riceEscape uint
-						riceBits := f.FieldUFn("residual_coding_method", func() (uint64, Format, string) {
+						riceBits := f.FieldUFn("residual_coding_method", func() (uint64, decode.Format, string) {
 							switch f.U2() {
 							case 0:
 								riceEscape = 15
-								return 4, FormatDecimal, "rice"
+								return 4, decode.FormatDecimal, "rice"
 							case 1:
 								riceEscape = 31
-								return 5, FormatDecimal, "rice2"
+								return 5, decode.FormatDecimal, "rice2"
 							default:
-								return 0, FormatDecimal, "reserved"
+								return 0, decode.FormatDecimal, "reserved"
 							}
 						})
 
@@ -482,8 +482,8 @@ func (f *FLAC) Unmarshl() {
 						partitionOrder := f.FieldU4("partition_order")
 						// There will be 2^order partitions.
 						ricePartitions := uint(1 << partitionOrder)
-						f.FieldUFn("rice_partitions", func() (uint64, Format, string) {
-							return uint64(ricePartitions), FormatDecimal, ""
+						f.FieldUFn("rice_partitions", func() (uint64, decode.Format, string) {
+							return uint64(ricePartitions), decode.FormatDecimal, ""
 						})
 
 						for i := uint(0); i < ricePartitions; i++ {
@@ -516,7 +516,7 @@ func (f *FLAC) Unmarshl() {
 								} else {
 									f.FieldNoneFn("samples", func() {
 										for j := uint(0); j < count; j++ {
-											high := f.UnaryZero()
+											high := f.Unary(0)
 											_ = high
 											low := f.U(riceParameter)
 											_ = low
@@ -529,23 +529,23 @@ func (f *FLAC) Unmarshl() {
 					}
 
 					switch subframeType {
-					case subframeTypeConstant:
+					case SubframeConstant:
 						// <n> Unencoded constant value of the subblock, n = frame's bits-per-sample.
 						f.FieldS(uint(subframeSampleSize), "value")
-					case subframeTypeVerbatim:
+					case SubframeVerbatim:
 						// <n> Unencoded warm-up samples (n = frame's bits-per-sample * predictor order).
 						f.FieldBytes(uint(blockSize*subframeSampleSize), "samples")
-					case subframeTypeFixed:
+					case SubframeFixed:
 						// <n> Unencoded warm-up samples (n = frame's bits-per-sample * predictor order).
 						decodeWarmupSamples(lpcOrder, uint(subframeSampleSize))
 						// Encoded residual
 						decodeResiduals()
-					case subframeTypeLPC:
+					case SubframeLPC:
 						// <n> Unencoded warm-up samples (n = frame's bits-per-sample * lpc order).
 						decodeWarmupSamples(lpcOrder, uint(subframeSampleSize))
 						// <4> (Quantized linear predictor coefficients' precision in bits)-1 (1111 = invalid).
-						precision := f.FieldUFn("precision", func() (uint64, Format, string) {
-							return f.U4() + 1, FormatDecimal, ""
+						precision := f.FieldUFn("precision", func() (uint64, decode.Format, string) {
+							return f.U4() + 1, decode.FormatDecimal, ""
 						})
 						// <5> Quantized linear predictor coefficient shift needed in bits (NOTE: this number is signed two's-complement).
 						f.FieldS5("shift")

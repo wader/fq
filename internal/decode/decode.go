@@ -365,6 +365,14 @@ func (c *Common) FieldUTF8(length uint, name string) string {
 	return s
 }
 
+func (c *Common) Unary(s uint) uint {
+	var n uint
+	for uint(c.U1()) == s {
+		n++
+	}
+	return n
+}
+
 func (c *Common) FieldFn(name string, fn func() Value) Value {
 	prev := c.Current
 
