@@ -6,6 +6,14 @@ import (
 	"strings"
 )
 
+type Options struct {
+	Probe bool
+}
+
+type Decoder interface {
+	Decode(Options) bool
+}
+
 type Endian int
 
 const (
@@ -101,6 +109,8 @@ func (c *Common) u(nBits uint, endian Endian) uint64 {
 	return n
 }
 
+func (c *Common) Bool() bool { return c.u(1, c.Endian) == 1 }
+
 func (c *Common) U(nBits uint) uint64 { return c.u(nBits, c.Endian) }
 func (c *Common) U1() uint64          { return c.u(1, c.Endian) }
 func (c *Common) U2() uint64          { return c.u(2, c.Endian) }
@@ -158,6 +168,8 @@ func (c *Common) fieldU(bits uint, name string, endian Endian) uint64 {
 	})
 	return n
 }
+
+func (c *Common) FieldBool(name string) bool { return c.fieldU(1, name, c.Endian) == 1 }
 
 func (c *Common) FieldU(nBits uint, name string) uint64 { return c.fieldU(nBits, name, c.Endian) }
 func (c *Common) FieldU1(name string) uint64            { return c.fieldU(1, name, c.Endian) }

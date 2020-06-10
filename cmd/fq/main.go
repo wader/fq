@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fq/internal/decode"
-	"fq/internal/format/flac"
+	"fq/internal/format/mp3"
 	"io/ioutil"
 	"log"
 	"os"
@@ -54,14 +54,17 @@ func main() {
 	}
 
 	f := &decode.Field{Name: "root"}
-	p := flac.FLAC{Common: decode.Common{Current: f, Buf: buf}}
+	// p := flac.Decoder{Common: decode.Common{Current: f, Buf: buf}}
+	p := mp3.Decoder{Common: decode.Common{Current: f, Buf: buf}}
+	// p := id3v2.Decoder{Common: decode.Common{Current: f, Buf: buf}}
+
 	func() {
 		defer func() {
-			// e := recover()
-			// log.Printf("e: %#+v\n", e)
+			e := recover()
+			log.Printf("e: %#+v\n", e)
 
 		}()
-		p.Decode()
+		p.Decode(decode.Options{})
 	}()
 
 	decode.Dump(f, 0)
