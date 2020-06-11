@@ -60,9 +60,9 @@ func main() {
 
 	func() {
 		defer func() {
-			e := recover()
-			log.Printf("e: %#+v\n", e)
-
+			if e := recover(); e != nil {
+				log.Printf("e: %#+v\n", e)
+			}
 		}()
 		p.Decode(decode.Options{})
 	}()

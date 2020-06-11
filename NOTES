@@ -37,3 +37,10 @@ Value, error field?
 FieldVerifyFn -> FieldVerifyUFn ??
 
 
+sub decode
+
+demux stream?
+
+
+BitBuf
+BitBuf.BitBuf(213)

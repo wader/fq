@@ -4,7 +4,7 @@ import (
 	"fq/internal/decode"
 )
 
-// Decoder is mp3 decoder
+// Decoder is id3v2 decoder
 type Decoder struct {
 	decode.Common
 }
@@ -21,7 +21,7 @@ func (d *Decoder) SyncSafeU32() uint64 {
 		((u & 0x0000007f) >> 0))
 }
 
-// Decode MP3
+// Decode id3v2
 func (d *Decoder) Decode(opts decode.Options) bool {
 	d.FieldUTF8(3, "magic")
 	version := d.FieldU8("version")
