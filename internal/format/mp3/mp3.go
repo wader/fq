@@ -25,7 +25,7 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 
 	d.Common = p.Common
 
-	for !d.EOF() {
+	for !d.End() {
 		d.FieldNoneFn("frame", func() {
 			d.FieldVerifyFn("sync", 0b11111111111, d.U11)
 			// v = 3 means version 2.5
@@ -131,8 +131,8 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 			}, "", d.U2)
 
 			const headerLen = 4
-			dataLen := uint((144*bitRate/sampleRate)+padding) - headerLen
-			d.FieldBytes(dataLen, "samples")
+			dataLen := (144 * bitRate / sampleRate) + padding - headerLen
+			d.FieldBytes("samples", dataLen)
 		})
 	}
 

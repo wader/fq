@@ -80,7 +80,7 @@ func (d *Decoder) UTF8Uint() uint64 {
 
 // Decode FLAC
 func (d *Decoder) Decode(opts decode.Options) bool {
-	magic := d.FieldUTF8(4, "magic")
+	magic := d.FieldUTF8("magic", 4)
 	if opts.Probe && magic == "fLaC" {
 		return true
 	}
@@ -109,22 +109,22 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 				d.FieldU16("maximum_block_size")
 				d.FieldU24("minimum_frame_size")
 				d.FieldU24("maximum_frame_size")
-				streamInfoSamepleRate = d.FieldU(20, "sample_rate")
+				streamInfoSamepleRate = d.FieldU("sample_rate", 20)
 				// <3> (number of channels)-1. FLAC supports from 1 to 8 channels
 				d.FieldUFn("channels", func() (uint64, decode.Format, string) { return d.U3() + 1, decode.FormatDecimal, "" })
 				// <5> (bits per sample)-1. FLAC supports from 4 to 32 bits per sample. Currently the reference encoder and decoders only support up to 24 bits per sample.
 				streamInfoBitPerSample = d.FieldUFn("bits_per_sample", func() (uint64, decode.Format, string) {
 					return d.U5() + 1, decode.FormatDecimal, ""
 				})
-				d.FieldU(36, "total_samples_in_steam")
-				d.FieldBytes(16, "md5")
+				d.FieldU("total_samples_in_steam", 36)
+				d.FieldBytes("md5", 16)
 			default:
-				d.FieldBytes(uint(length), "data")
+				d.FieldBytes("data", length)
 			}
 		})
 	}
 
-	for !d.EOF() {
+	for !d.End() {
 		d.FieldNoneFn("frame", func() {
 			// <14> 11111111111110
 			d.FieldVerifyFn("sync", 0b11111111111110, d.U14)
@@ -383,7 +383,7 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 					// 001xxx : if(xxx <= 4) SUBFRAME_FIXED, xxx=order ; else reserved
 					// 01xxxx : reserved
 					// 1xxxxx : SUBFRAME_LPC, xxxxx=order-1
-					var lpcOrder uint
+					var lpcOrder uint64
 					subframeType := d.FieldUFn("subframe_type", func() (uint64, decode.Format, string) {
 						u, fmt, disp := func() (uint64, decode.Format, string) {
 							bits := d.U6()
@@ -393,11 +393,11 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 							case 1:
 								return SubframeVerbatim, decode.FormatDecimal, SubframeTypeNames[SubframeVerbatim]
 							case 8, 9, 10, 11, 12:
-								lpcOrder = uint(bits & 0x7)
+								lpcOrder = bits & 0x7
 								return SubframeFixed, decode.FormatDecimal, SubframeTypeNames[SubframeFixed]
 							default:
 								if bits&0x20 > 0 {
-									lpcOrder = uint((bits & 0x1f) + 1)
+									lpcOrder = (bits & 0x1f) + 1
 								} else {
 									return 0, decode.FormatDecimal, "reserved"
 								}
@@ -431,10 +431,10 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 						return subframeSampleSize, decode.FormatDecimal, ""
 					})
 
-					decodeWarmupSamples := func(n uint, sampleSize uint) {
+					decodeWarmupSamples := func(n uint64, sampleSize uint64) {
 						d.FieldNoneFn("warmup_samples", func() {
-							for i := uint(0); i < n; i++ {
-								d.FieldS(uint(sampleSize), "value")
+							for i := uint64(0); i < n; i++ {
+								d.FieldS("value", sampleSize)
 							}
 						})
 					}
@@ -444,7 +444,7 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 						// 00 : partitioned Rice coding with 4-bit Rice parameter; RESIDUAL_CODING_METHOD_PARTITIONED_RICE follows
 						// 01 : partitioned Rice coding with 5-bit Rice parameter; RESIDUAL_CODING_METHOD_PARTITIONED_RICE2 follows
 						// 10-11 : reserved
-						var riceEscape uint
+						var riceEscape uint64
 						riceBits := d.FieldUFn("residual_coding_method", func() (uint64, decode.Format, string) {
 							switch d.U2() {
 							case 0:
@@ -461,12 +461,12 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 						// <4> Partition order.
 						partitionOrder := d.FieldU4("partition_order")
 						// There will be 2^order partitions.
-						ricePartitions := uint(1 << partitionOrder)
+						ricePartitions := uint64(1 << partitionOrder)
 						d.FieldUFn("rice_partitions", func() (uint64, decode.Format, string) {
-							return uint64(ricePartitions), decode.FormatDecimal, ""
+							return ricePartitions, decode.FormatDecimal, ""
 						})
 
-						for i := uint(0); i < ricePartitions; i++ {
+						for i := uint64(0); i < ricePartitions; i++ {
 							d.FieldNoneFn("partition", func() {
 								// Encoding parameter:
 								// <4(+5)> Encoding parameter:
@@ -480,22 +480,22 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 								// if the partition order is zero, n = frame's blocksize - predictor order
 								// else if this is not the first partition of the subframe, n = (frame's blocksize / (2^partition order))
 								// else n = (frame's blocksize / (2^partition order)) - predictor order
-								var count uint
+								var count uint64
 								if partitionOrder == 0 {
-									count = uint(blockSize) - lpcOrder
+									count = blockSize - lpcOrder
 								} else if i != 0 {
-									count = uint(blockSize) / ricePartitions
+									count = blockSize / ricePartitions
 								} else {
-									count = (uint(blockSize) / ricePartitions) - lpcOrder
+									count = (blockSize / ricePartitions) - lpcOrder
 								}
 
-								riceParameter := uint(d.FieldU(uint(riceBits), "rice_parameter"))
+								riceParameter := d.FieldU("rice_parameter", riceBits)
 								if riceParameter == riceEscape {
-									escapeSampleSize := uint(d.FieldU5("escape_sample_size"))
-									d.FieldBytes(uint(count*escapeSampleSize), "samples")
+									escapeSampleSize := d.FieldU5("escape_sample_size")
+									d.FieldBytes("samples", count*escapeSampleSize)
 								} else {
 									d.FieldNoneFn("samples", func() {
-										for j := uint(0); j < count; j++ {
+										for j := uint64(0); j < count; j++ {
 											high := d.Unary(0)
 											_ = high
 											low := d.U(riceParameter)
@@ -511,18 +511,18 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 					switch subframeType {
 					case SubframeConstant:
 						// <n> Unencoded constant value of the subblock, n = frame's bits-per-sample.
-						d.FieldS(uint(subframeSampleSize), "value")
+						d.FieldS("value", subframeSampleSize)
 					case SubframeVerbatim:
 						// <n> Unencoded warm-up samples (n = frame's bits-per-sample * predictor order).
-						d.FieldBytes(uint(blockSize*subframeSampleSize), "samples")
+						d.FieldBytes("samples", blockSize*subframeSampleSize)
 					case SubframeFixed:
 						// <n> Unencoded warm-up samples (n = frame's bits-per-sample * predictor order).
-						decodeWarmupSamples(lpcOrder, uint(subframeSampleSize))
+						decodeWarmupSamples(lpcOrder, subframeSampleSize)
 						// Encoded residual
 						decodeResiduals()
 					case SubframeLPC:
 						// <n> Unencoded warm-up samples (n = frame's bits-per-sample * lpc order).
-						decodeWarmupSamples(lpcOrder, uint(subframeSampleSize))
+						decodeWarmupSamples(lpcOrder, subframeSampleSize)
 						// <4> (Quantized linear predictor coefficients' precision in bits)-1 (1111 = invalid).
 						precision := d.FieldUFn("precision", func() (uint64, decode.Format, string) {
 							return d.U4() + 1, decode.FormatDecimal, ""
@@ -531,8 +531,8 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 						d.FieldS5("shift")
 						// <n> Unencoded predictor coefficients (n = qlp coeff precision * lpc order) (NOTE: the coefficients are signed two's-complement).
 						d.FieldNoneFn("coefficients", func() {
-							for i := uint(0); i < lpcOrder; i++ {
-								d.FieldS(uint(precision), "value")
+							for i := uint64(0); i < lpcOrder; i++ {
+								d.FieldS("value", precision)
 							}
 						})
 						// Encoded residual
