@@ -5,6 +5,13 @@ import (
 	"strings"
 )
 
+type Endian int
+
+const (
+	BigEndian Endian = iota
+	LittleEndian
+)
+
 type Buffer struct {
 	Buf         []byte
 	BufFirstBit uint64
@@ -145,3 +152,61 @@ func (b *Buffer) BitString() string {
 
 	return strings.Join(ss, "")
 }
+
+func (b *Buffer) U(nBits uint, endian Endian) uint64 {
+	n := ReadBits(b.Buf, b.BitPos, nBits)
+	if endian == LittleEndian {
+		n = ReverseBytes(nBits, n)
+	}
+	b.BitPos += uint64(nBits)
+	return n
+}
+
+func (b *Buffer) Bool() bool { return b.u(1, b.Endian) == 1 }
+
+func (b *Buffer) U(nBits uint) uint64 { return b.u(nBits, BigEndian) }
+func (b *Buffer) U1() uint64          { return b.u(1, BigEndian) }
+func (b *Buffer) U2() uint64          { return b.u(2, BigEndian) }
+func (b *Buffer) U3() uint64          { return b.u(3, BigEndian) }
+func (b *Buffer) U4() uint64          { return b.u(4, BigEndian) }
+func (b *Buffer) U5() uint64          { return b.u(5, BigEndian) }
+func (b *Buffer) U6() uint64          { return b.u(6, BigEndian) }
+func (b *Buffer) U7() uint64          { return b.u(7, BigEndian) }
+func (b *Buffer) U8() uint64          { return b.u(8, BigEndian) }
+func (b *Buffer) U9() uint64          { return b.u(9, BigEndian) }
+func (b *Buffer) U10() uint64         { return b.u(10, BigEndian) }
+func (b *Buffer) U11() uint64         { return b.u(11, BigEndian) }
+func (b *Buffer) U12() uint64         { return b.u(12, BigEndian) }
+func (b *Buffer) U13() uint64         { return b.u(13, BigEndian) }
+func (b *Buffer) U14() uint64         { return b.u(14, BigEndian) }
+func (b *Buffer) U15() uint64         { return b.u(15, BigEndian) }
+func (b *Buffer) U16() uint64         { return b.u(16, BigEndian) }
+func (b *Buffer) U24() uint64         { return b.u(24, BigEndian) }
+func (b *Buffer) U32() uint64         { return b.u(32, BigEndian) }
+func (b *Buffer) U64() uint64         { return b.u(64, BigEndian) }
+
+func (b *Buffer) UBE(nBits uint) uint64 { return b.u(nBits, BigEndian) }
+func (b *Buffer) U9BE() uint64          { return b.u(9, BigEndian) }
+func (b *Buffer) U10BE() uint64         { return b.u(10, BigEndian) }
+func (b *Buffer) U11BE() uint64         { return b.u(11, BigEndian) }
+func (b *Buffer) U12BE() uint64         { return b.u(12, BigEndian) }
+func (b *Buffer) U13BE() uint64         { return b.u(13, BigEndian) }
+func (b *Buffer) U14BE() uint64         { return b.u(14, BigEndian) }
+func (b *Buffer) U15BE() uint64         { return b.u(15, BigEndian) }
+func (b *Buffer) U16BE() uint64         { return b.u(16, BigEndian) }
+func (b *Buffer) U24BE() uint64         { return b.u(24, BigEndian) }
+func (b *Buffer) U32BE() uint64         { return b.u(32, BigEndian) }
+func (b *Buffer) U64BE() uint64         { return b.u(64, BigEndian) }
+
+func (b *Buffer) ULE(nBits uint) uint64 { return b.u(nBits, LittleEndian) }
+func (b *Buffer) U9LE() uint64          { return b.u(9, LittleEndian) }
+func (b *Buffer) U10LE() uint64         { return b.u(10, LittleEndian) }
+func (b *Buffer) U11LE() uint64         { return b.u(11, LittleEndian) }
+func (b *Buffer) U12LE() uint64         { return b.u(12, LittleEndian) }
+func (b *Buffer) U13LE() uint64         { return b.u(13, LittleEndian) }
+func (b *Buffer) U14LE() uint64         { return b.u(14, LittleEndian) }
+func (b *Buffer) U15LE() uint64         { return b.u(15, LittleEndian) }
+func (b *Buffer) U16LE() uint64         { return b.u(16, LittleEndian) }
+func (b *Buffer) U24LE() uint64         { return b.u(24, LittleEndian) }
+func (b *Buffer) U32LE() uint64         { return b.u(32, LittleEndian) }
+func (b *Buffer) U64LE() uint64         { return b.u(64, LittleEndian) }
