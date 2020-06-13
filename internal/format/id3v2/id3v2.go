@@ -4,7 +4,7 @@ import (
 	"fq/internal/decode"
 )
 
-// Decoder is id3v2 decoder
+// Decoder is ID3v2 decoder
 type Decoder struct {
 	decode.Common
 }
@@ -21,7 +21,7 @@ func (d *Decoder) SyncSafeU32() uint64 {
 		((u & 0x0000007f) >> 0))
 }
 
-// Decode id3v2
+// Decode ID3v2
 func (d *Decoder) Decode(opts decode.Options) bool {
 	d.FieldUTF8(3, "magic")
 	version := d.FieldU8("version")
@@ -47,7 +47,7 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 			extHeaderSize = d.FieldUFn("size,", func() (uint64, decode.Format, string) {
 				return d.SyncSafeU32(), decode.FormatDecimal, ""
 			})
-			// in v24 synchsafe integer includes itself
+			// in v4 synchsafe integer includes itself
 			d.FieldBytes(uint(extHeaderSize)-4, "data")
 		}
 	}

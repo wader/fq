@@ -43,7 +43,7 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 					panic("unreachable")
 				}
 			})
-			l := d.FieldUFn("mpeg_version", func() (uint64, decode.Format, string) {
+			l := d.FieldUFn("layer", func() (uint64, decode.Format, string) {
 				switch d.U2() {
 				case 0b00:
 					return 0, decode.FormatDecimal, "reserved"
@@ -132,8 +132,7 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 
 			const headerLen = 4
 			dataLen := uint((144*bitRate/sampleRate)+padding) - headerLen
-
-			d.FieldBytes(dataLen, "data")
+			d.FieldBytes(dataLen, "samples")
 		})
 	}
 

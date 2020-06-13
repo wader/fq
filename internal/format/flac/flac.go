@@ -2,6 +2,7 @@ package flac
 
 // TODO: more metablocks
 // TODO: crc, md5
+// TODO: 24 picture truncate
 
 import (
 	"fq/internal/decode"
@@ -67,6 +68,7 @@ func (d *Decoder) UTF8Uint() uint64 {
 		// nop
 	case 1:
 		// TODO: error
+		panic("invalid UTF8Uint")
 	default:
 		n = n & ((1 << (8 - c - 1)) - 1)
 		for i := 1; i < c; i++ {
