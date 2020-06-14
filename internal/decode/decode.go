@@ -115,8 +115,6 @@ func probe(bb *bitbuf.Buffer, registers []*Register, decoderNames []string) (*Re
 			}
 		}
 
-		log.Printf("probeing r: %#+v\n", r)
-
 		// TODO: how to pass regsiters? do later? current field?
 		c := Common{
 			Current:   &Field{Name: r.Name},
@@ -162,10 +160,12 @@ func (c *Common) FieldDecode(name string, nBits uint64, decoderNames []string) b
 	r, fieldC := New(c, bb, c.Registers, decoderNames)
 
 	if r == nil {
+		log.Printf("FieldDecode nope %#+v\n", decoderNames)
 		return false
 	}
+	log.Printf("FieldDecode r: %#+v\n", r)
 
-	// TODO: tralsate positions?
+	// TODO: translate positions?
 	// TODO: what out muxed stream?
 
 	c.Current.Children = append(c.Current.Children, fieldC.Current)
@@ -184,18 +184,21 @@ func (c *Common) FieldDecodeRange(name string, start uint64, nBits uint64, decod
 	bb, _ := c.Buffer.BitBufRange(start, nBits)
 
 	r, fieldC := New(c, bb, c.Registers, decoderNames)
-	log.Printf("decoed r: %#+v\n", r)
+
+	log.Printf("bb: %#+v\n", bb)
 
 	if r == nil {
+		log.Printf("FieldDecodeRange nope %#+v\n", decoderNames)
 		return false
 	}
+	log.Printf("FieldDecodeRange r: %#+v\n", r)
 
-	// TODO: tralsate positions?
+	// TODO: translate positions?
 	// TODO: what out muxed stream?
 
 	c.Current.Children = append(c.Current.Children, fieldC.Current)
 
-	c.SeekRel(int64(fieldC.Pos))
+	//c.SeekRel(int64(fieldC.Pos))
 
 	// TODO: what to return?
 	return true

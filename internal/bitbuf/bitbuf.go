@@ -2,7 +2,6 @@ package bitbuf
 
 import (
 	"fmt"
-	"log"
 	"math"
 	"strings"
 )
@@ -87,9 +86,20 @@ func (b *Buffer) Bits(nBits uint64) (uint64, uint64) {
 	if p > b.Len {
 		return 0, uint64(p) - b.Len
 	}
-
 	n := ReadBits(b.Buf, b.BufFirstBit+b.Pos, nBits)
 	b.Pos += nBits
+
+	return n, nBits
+}
+
+// PeekBits peek nBits bits from buffer
+// TODO: share code?
+func (b *Buffer) PeekBits(nBits uint64) (uint64, uint64) {
+	p := uint64(b.Pos) + uint64(nBits)
+	if p > b.Len {
+		return 0, uint64(p) - b.Len
+	}
+	n := ReadBits(b.Buf, b.BufFirstBit+b.Pos, nBits)
 
 	return n, nBits
 }
@@ -129,7 +139,7 @@ func (b *Buffer) BytesRange(firstBit uint64, nBytes uint64) ([]byte, uint64) {
 
 	bufFirstBit := b.BufFirstBit + firstBit
 	if bufFirstBit%8 == 0 {
-		bufFirstBytePos := bufFirstBit & 0x7
+		bufFirstBytePos := bufFirstBit >> 3
 		nb := b.Buf[bufFirstBytePos : bufFirstBytePos+nBytes]
 		return nb, nBytes * 8
 	}
@@ -173,8 +183,6 @@ func (b *Buffer) BytePos() uint64 {
 // TODO: better name?
 func (b *Buffer) SeekRel(delta int64) uint64 {
 	// TODO: panic? bitbuf should never panic? return error, set error flag ignore rest?
-	log.Printf("b.Pos: %#+v\n", b.Pos)
-	log.Printf("delta: %#+v\n", delta)
 	b.Pos = uint64(int64(b.Pos) + delta)
 	return b.Pos
 }

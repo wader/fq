@@ -2,6 +2,7 @@ package id3v1
 
 import (
 	"fq/internal/decode"
+	"log"
 )
 
 // TODO: trim strings?
@@ -20,11 +21,13 @@ type Decoder struct {
 
 // Decode ID3v1
 func (d *Decoder) Decode(opts decode.Options) bool {
+	log.Println("BLA")
 	if d.BitsLeft() < 128*8 {
 		return false
 	}
 	magicValid := d.FieldVerifyStringFn("magic", "TAG", func() string {
 		str, _ := d.UTF8(3)
+		log.Printf("str: %#+v\n", str)
 		return str
 	})
 	if !magicValid {

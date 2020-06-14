@@ -56,3 +56,11 @@ BitBuf.BitBuf(213)
 options, probe, force parse?
 
 probe tool... unify media info fields? sample_rate blabla...
+
+mp3frame -> mp3_frame?
+
+tar.gz nested.. 
+
+
+field have a decoder value?
+

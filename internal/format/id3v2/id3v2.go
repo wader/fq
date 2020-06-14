@@ -68,6 +68,22 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 		}
 	}
 
+	// TODO: unknownv version?
+
+	// TODO: d.FieldBitBuf
+
+	// d.FieldNoneFn("frames", func() {
+	// 	sizeLeft := size
+
+	// 	for sizeLeft > 0 {
+	// 		// if d.PeekBits(8) == 0 {
+
+	// 		// }
+
+	// 	}
+
+	// })
+
 	d.FieldBytes("tags", size-extHeaderSize)
 
 	return true
