@@ -4,10 +4,13 @@ import (
 	"fq/internal/decode"
 )
 
+// TODO: trim strings?
+// TODO: comment 28 long, zero byte, track number
+
 var Register = &decode.Register{
 	Name: "id3v1",
 	MIME: "",
-	New:  func() decode.Decoder { return &Decoder{} },
+	New:  func(common decode.Common) decode.Decoder { return &Decoder{Common: common} },
 }
 
 // Decoder is ID3v1 decoder
@@ -17,7 +20,17 @@ type Decoder struct {
 
 // Decode ID3v1
 func (d *Decoder) Decode(opts decode.Options) bool {
-	d.FieldUTF8("magic", 3)
+	if d.BitsLeft() < 128*8 {
+		return false
+	}
+	magicValid := d.FieldVerifyStringFn("magic", "TAG", func() string {
+		str, _ := d.UTF8(3)
+		return str
+	})
+	if !magicValid {
+		return false
+	}
+
 	d.FieldUTF8("song_name", 30)
 	d.FieldUTF8("artist", 30)
 	d.FieldUTF8("album_name", 30)

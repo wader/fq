@@ -51,3 +51,8 @@ demux stream?
 
 BitBuf
 BitBuf.BitBuf(213)
+
+
+options, probe, force parse?
+
+probe tool... unify media info fields? sample_rate blabla...

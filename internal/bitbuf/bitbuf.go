@@ -2,6 +2,7 @@ package bitbuf
 
 import (
 	"fmt"
+	"log"
 	"math"
 	"strings"
 )
@@ -17,6 +18,7 @@ const (
 )
 
 // Buffer is a bitbuf buffer
+// TODO: make Buf/BufFirstBit private?
 type Buffer struct {
 	Buf         []byte
 	BufFirstBit uint64
@@ -26,7 +28,7 @@ type Buffer struct {
 
 // New bitbuf.Buffer from byte buffer buf, start at firstBit with bit length lenBits
 // buf is not copied.
-func New(firstBit uint64, buf []byte, lenBits uint64) *Buffer {
+func New(buf []byte, firstBit uint64, lenBits uint64) *Buffer {
 	return &Buffer{
 		Buf:         buf,
 		BufFirstBit: firstBit,
@@ -37,7 +39,13 @@ func New(firstBit uint64, buf []byte, lenBits uint64) *Buffer {
 
 // NewFromBytes bitbuf.Buffer from bytes
 func NewFromBytes(buf []byte) *Buffer {
-	return New(0, buf, uint64(len(buf)*8))
+	return New(buf, 0, uint64(len(buf)*8))
+}
+
+// NewFromBitBuf bitbuf.Buffer from other bitbuf.Buffer
+// Will be a shallow copy with position reset to zero.
+func NewFromBitBuf(b *Buffer) *Buffer {
+	return New(b.Buf, b.BufFirstBit, b.Len)
 }
 
 // NewFromBitString bitbuf.Buffer from bit string, ex: "0101"
@@ -64,7 +72,13 @@ func NewFromBitString(s string) *Buffer {
 		}
 	}
 
-	return New(0, buf, uint64(len(s)))
+	return New(buf, 0, uint64(len(s)))
+}
+
+// Copy bitbuf
+// TODO: rename? remove?
+func (b *Buffer) Copy() *Buffer {
+	return NewFromBitBuf(b)
 }
 
 // Bits reads nBits bits from buffer
@@ -115,7 +129,8 @@ func (b *Buffer) BytesRange(firstBit uint64, nBytes uint64) ([]byte, uint64) {
 
 	bufFirstBit := b.BufFirstBit + firstBit
 	if bufFirstBit%8 == 0 {
-		nb := b.Buf[bufFirstBit : bufFirstBit+nBytes]
+		bufFirstBytePos := bufFirstBit & 0x7
+		nb := b.Buf[bufFirstBytePos : bufFirstBytePos+nBytes]
 		return nb, nBytes * 8
 	}
 
@@ -144,7 +159,7 @@ func (b *Buffer) BitsLeft() uint64 {
 	return b.Len - b.Pos
 }
 
-// ByteAlignBits bits to next byte align
+// ByteAlignBits number of bits to next byte align
 func (b *Buffer) ByteAlignBits() uint64 {
 	return (8 - (b.Pos & 0x7)) & 0x7
 }
@@ -152,6 +167,23 @@ func (b *Buffer) ByteAlignBits() uint64 {
 // BytePos byte position of current bit position
 func (b *Buffer) BytePos() uint64 {
 	return b.Pos & 0x7
+}
+
+// SeekRel relative to current bit position
+// TODO: better name?
+func (b *Buffer) SeekRel(delta int64) uint64 {
+	// TODO: panic? bitbuf should never panic? return error, set error flag ignore rest?
+	log.Printf("b.Pos: %#+v\n", b.Pos)
+	log.Printf("delta: %#+v\n", delta)
+	b.Pos = uint64(int64(b.Pos) + delta)
+	return b.Pos
+}
+
+// SeekAbs to absolute position
+func (b *Buffer) SeekAbs(pos uint64) uint64 {
+	// TODO: panic? bitbuf should never panic?
+	b.Pos = pos
+	return b.Pos
 }
 
 func (b *Buffer) String() string {

@@ -11,7 +11,7 @@ import (
 
 func TestNew(t *testing.T) {
 
-	bb := bitbuf.New(0, []byte{0xf5}, 8)
+	bb := bitbuf.New([]byte{0xf5}, 0, 8)
 
 	e4, e4n := bb.Bits(3)
 

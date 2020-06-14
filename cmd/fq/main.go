@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fq/internal/bitbuf"
 	"fq/internal/decode"
-	"fq/internal/format/flac"
+	"fq/internal/format"
 	"io/ioutil"
 	"log"
 	"os"
@@ -54,21 +54,23 @@ func main() {
 		panic(err)
 	}
 
-	f := &decode.Field{Name: "root"}
-	c := decode.Common{Current: f, Buffer: bitbuf.NewFromBytes(buf)}
-	d := flac.Decoder{Common: c}
+	// f := &decode.Field{Name: "root"}
+	// c := decode.Common{Current: f, Buffer: bitbuf.NewFromBytes(buf)}
+	// d := flac.Decoder{Common: c}
 	//d := mp3.Decoder{Common: c}
 	//d := id3v2.Decoder{Common: c}
 
 	func() {
 		defer func() {
-			if e := recover(); e != nil {
-				log.Printf("e: %#+v\n", e)
-			}
+			// if e := recover(); e != nil {
+			// 	log.Printf("e: %#+v\n", e)
+			// }
 		}()
-		d.Decode(decode.Options{})
-	}()
+		r, d := decode.New(nil, bitbuf.NewFromBytes(buf), format.All, nil)
+		log.Printf("r: %#+v\n", r)
 
-	decode.Dump(f, 0)
+		decode.Dump(d.Current, 0)
+
+	}()
 
 }

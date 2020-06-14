@@ -7,7 +7,7 @@ import (
 var Register = &decode.Register{
 	Name: "id3v2",
 	MIME: "",
-	New:  func() decode.Decoder { return &Decoder{} },
+	New:  func(common decode.Common) decode.Decoder { return &Decoder{Common: common} },
 }
 
 // Decoder is ID3v2 decoder
@@ -29,6 +29,11 @@ func (d *Decoder) SyncSafeU32() uint64 {
 
 // Decode ID3v2
 func (d *Decoder) Decode(opts decode.Options) bool {
+	// TODO: relay on panics instead? ignore reads and have HasErrors?
+	if d.BitsLeft() < 4*8 {
+		return false
+	}
+
 	magicValid := d.FieldVerifyStringFn("magic", "ID3", func() string { str, _ := d.UTF8(3); return str })
 	version := d.FieldU8("version")
 	versionValid := version == 2 || version == 3 || version == 4

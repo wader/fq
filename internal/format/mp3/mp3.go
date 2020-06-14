@@ -9,13 +9,12 @@ package mp3
 
 import (
 	"fq/internal/decode"
-	"fq/internal/format/id3v2"
 )
 
 var Register = &decode.Register{
 	Name: "mp3",
 	MIME: "",
-	New:  func() decode.Decoder { return &Decoder{} },
+	New:  func(common decode.Common) decode.Decoder { return &Decoder{Common: common} },
 }
 
 // Decoder is a mp3 decoder
@@ -25,24 +24,27 @@ type Decoder struct {
 
 // Decode MP3
 func (d *Decoder) Decode(opts decode.Options) bool {
-	p := id3v2.Decoder{Common: d.Common}
-	p.Decode(opts)
+	// TODO: recuseive.. stackverflow.. pass list of decoders?
+	// mp3FramesLen := d.BitsLeft()
+	// id3v1Len := uint64(128 * 8)
 
-	d.Common = p.Common
+	d.FieldDecode("header", d.BitsLeft(), []string{"id3v2"})
 
-	mp3FramesLen := d.BitsLeft()
-	if mp3FramesLen >= 128*8 {
-		if d.Decode("x-fq/id3v1", d.BitBufRange(d.Len-(128*8), 128*8)) {
-			// - return value?
-			mp3FramesLen -= 128 * 8
+	// if mp3FramesLen >= id3v1Len {
+	// 	// TODO: added before? sort when presenting? probe? add later?
+	// 	if d.FieldDecodeRange("footer", mp3FramesLen-id3v1Len, id3v1Len, []string{"id3v1", "id3v11"}) {
+	// 		mp3FramesLen -= id3v1Len
+	// 	}
+	// }
+
+	// TODO: sub m3p frames thiny?
+	//mp3frameBitBuf, _ := d.BitBufLen(mp3FramesLen)
+	// d.Len = mp3FramesLen
+
+	for !d.End() {
+		if !d.FieldDecode("frame", d.BitsLeft(), []string{"mp3frame"}) {
+			break
 		}
-	}
-
-	mp3frameBitBuf := d.BitBufLen(mp3FramesLen)
-
-	for !mp3frameBitBuf.End() {
-		d.FieldNoneFn("frame", func() {
-		})
 	}
 
 	return true

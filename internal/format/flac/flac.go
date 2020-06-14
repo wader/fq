@@ -12,13 +12,11 @@ import (
 var Register = &decode.Register{
 	Name: "flac",
 	MIME: "",
-	New:  func() decode.Decoder { return &Decoder{} },
+	New:  func(common decode.Common) decode.Decoder { return &Decoder{Common: common} },
 }
 
 // Decoder is a FLAC decoder
-type Decoder struct {
-	decode.Common
-}
+type Decoder struct{ decode.Common }
 
 const (
 	MetadataBlockStreaminfo    = 0
@@ -86,12 +84,15 @@ func (d *Decoder) UTF8Uint() uint64 {
 
 // Decode FLAC
 func (d *Decoder) Decode(opts decode.Options) bool {
-	magic := d.FieldUTF8("magic", 4)
-	if opts.Probe && magic == "fLaC" {
-		return true
+	magicValid := d.FieldVerifyStringFn("magic", "fLaC", func() string {
+		str, _ := d.UTF8(4)
+		return str
+	})
+	if !magicValid {
+		return false
 	}
 
-	// is used in frame
+	// is used in frame decoding later
 	var streamInfoSamepleRate uint64
 	var streamInfoBitPerSample uint64
 

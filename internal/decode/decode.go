@@ -3,6 +3,7 @@ package decode
 import (
 	"fmt"
 	"fq/internal/bitbuf"
+	"log"
 	"strconv"
 	"strings"
 )
@@ -14,16 +15,11 @@ type Options struct {
 type Register struct {
 	Name string
 	MIME string
-	New  func() Decoder
+	New  func(common Common) Decoder
 }
 
 type Decoder interface {
 	Decode(Options) bool
-}
-
-type Common struct {
-	*bitbuf.Buffer
-	Current *Field
 }
 
 type Type int
@@ -98,6 +94,53 @@ type Field struct {
 	Children []*Field
 }
 
+type Common struct {
+	*bitbuf.Buffer
+	Current   *Field // TODO: need root field also?
+	Parent    *Common
+	Registers []*Register
+}
+
+func probe(bb *bitbuf.Buffer, registers []*Register, decoderNames []string) (*Register, Common, bool) {
+	// TODO: order..
+	var namesMap = map[string]bool{}
+	for _, s := range decoderNames {
+		namesMap[s] = true
+	}
+
+	for _, r := range registers {
+		if decoderNames != nil {
+			if _, ok := namesMap[r.Name]; !ok {
+				continue
+			}
+		}
+
+		log.Printf("probeing r: %#+v\n", r)
+
+		// TODO: how to pass regsiters? do later? current field?
+		c := Common{
+			Current:   &Field{Name: r.Name},
+			Buffer:    bb.Copy(),
+			Registers: registers,
+		}
+		d := r.New(c)
+		if d.Decode(Options{}) {
+			return r, c, true
+		}
+	}
+	return nil, Common{}, false
+}
+
+func New(parent *Common, bb *bitbuf.Buffer, registers []*Register, decoderNames []string) (*Register, Common) {
+	// TODO: add common,register to Decoder interface? rename register?
+	r, c, ok := probe(bb, registers, decoderNames)
+	if !ok {
+		return nil, Common{}
+	}
+
+	return r, c
+}
+
 func (c *Common) fieldU(nBits uint64, name string, endian bitbuf.Endian) uint64 {
 	start := c.Pos
 	n := c.UE(nBits, endian)
@@ -107,6 +150,55 @@ func (c *Common) fieldU(nBits uint64, name string, endian bitbuf.Endian) uint64 
 		Value: Value{Type: TypeUInt, UInt: n},
 	})
 	return n
+}
+
+// TODO: return decooder?
+func (c *Common) FieldDecode(name string, nBits uint64, decoderNames []string) bool {
+
+	//start := c.Pos
+
+	bb, _ := c.Buffer.BitBufRange(c.Pos, nBits)
+
+	r, fieldC := New(c, bb, c.Registers, decoderNames)
+
+	if r == nil {
+		return false
+	}
+
+	// TODO: tralsate positions?
+	// TODO: what out muxed stream?
+
+	c.Current.Children = append(c.Current.Children, fieldC.Current)
+
+	c.SeekRel(int64(fieldC.Pos))
+
+	// TODO: what to return?
+	return true
+}
+
+// TODO: return decooder?
+func (c *Common) FieldDecodeRange(name string, start uint64, nBits uint64, decoderNames []string) bool {
+
+	//start := c.Pos
+
+	bb, _ := c.Buffer.BitBufRange(start, nBits)
+
+	r, fieldC := New(c, bb, c.Registers, decoderNames)
+	log.Printf("decoed r: %#+v\n", r)
+
+	if r == nil {
+		return false
+	}
+
+	// TODO: tralsate positions?
+	// TODO: what out muxed stream?
+
+	c.Current.Children = append(c.Current.Children, fieldC.Current)
+
+	c.SeekRel(int64(fieldC.Pos))
+
+	// TODO: what to return?
+	return true
 }
 
 func (c *Common) FieldBool(name string) bool { return c.Bool() }
