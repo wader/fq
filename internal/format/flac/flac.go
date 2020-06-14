@@ -9,6 +9,12 @@ import (
 	"math/bits"
 )
 
+var Register = &decode.Register{
+	Name: "flac",
+	MIME: "",
+	New:  func() decode.Decoder { return &Decoder{} },
+}
+
 // Decoder is a FLAC decoder
 type Decoder struct {
 	decode.Common
@@ -127,12 +133,12 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 	for !d.End() {
 		d.FieldNoneFn("frame", func() {
 			// <14> 11111111111110
-			d.FieldVerifyFn("sync", 0b11111111111110, d.U14)
+			d.FieldVerifyUFn("sync", 0b11111111111110, d.U14)
 
 			// <1> Reserved
 			// 0 : mandatory value
 			// 1 : reserved for future use
-			d.FieldVerifyFn("reserved0", 0, d.U1)
+			d.FieldVerifyUFn("reserved0", 0, d.U1)
 
 			// <1> Blocking strategy:
 			// 0 : fixed-blocksize stream; frame header encodes the frame number
@@ -318,7 +324,7 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 			// <1> Reserved:
 			// 0 : mandatory value
 			// 1 : reserved for future use
-			d.FieldVerifyFn("reserved1", 0, d.U1)
+			d.FieldVerifyUFn("reserved1", 0, d.U1)
 
 			d.FieldNoneFn("end_of_header", func() {
 				// if(variable blocksize)
@@ -373,7 +379,7 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 			for channelIndex := 0; channelIndex < int(channels); channelIndex++ {
 				d.FieldNoneFn("subframe", func() {
 					// <1> Zero bit padding, to prevent sync-fooling string of 1s
-					d.FieldVerifyFn("zero_bit", 0, d.U1)
+					d.FieldVerifyUFn("zero_bit", 0, d.U1)
 
 					// <6> Subframe type:
 					// 000000 : SUBFRAME_CONSTANT
@@ -542,7 +548,7 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 			}
 
 			// <?> Zero-padding to byte alignment.
-			d.FieldVerifyFn("byte_align", 0, func() uint64 { return d.U(d.ByteAlignBits()) })
+			d.FieldVerifyUFn("byte_align", 0, func() uint64 { return d.U(d.ByteAlignBits()) })
 			// <16> CRC-16 (polynomial = x^16 + x^15 + x^2 + x^0, initialized with 0) of everything before the crc, back to and including the frame header sync code
 			d.FieldU16("footer_crc")
 		})

@@ -4,6 +4,12 @@ import (
 	"fq/internal/decode"
 )
 
+var Register = &decode.Register{
+	Name: "id3v2",
+	MIME: "",
+	New:  func() decode.Decoder { return &Decoder{} },
+}
+
 // Decoder is ID3v2 decoder
 type Decoder struct {
 	decode.Common
@@ -23,8 +29,13 @@ func (d *Decoder) SyncSafeU32() uint64 {
 
 // Decode ID3v2
 func (d *Decoder) Decode(opts decode.Options) bool {
-	d.FieldUTF8(3, "magic")
+	magicValid := d.FieldVerifyStringFn("magic", "ID3", func() string { str, _ := d.UTF8(3); return str })
 	version := d.FieldU8("version")
+	versionValid := version == 2 || version == 3 || version == 4
+	if !magicValid || !versionValid {
+		return false
+	}
+
 	d.FieldU8("revision")
 	var extendedHeader bool
 	d.FieldNoneFn("flags", func() {
@@ -42,17 +53,17 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 		switch version {
 		case 3:
 			extHeaderSize = d.FieldU32("size")
-			d.FieldBytes(extHeaderSize, "data")
+			d.FieldBytes("data", extHeaderSize)
 		case 4:
 			extHeaderSize = d.FieldUFn("size,", func() (uint64, decode.Format, string) {
 				return d.SyncSafeU32(), decode.FormatDecimal, ""
 			})
 			// in v4 synchsafe integer includes itself
-			d.FieldBytes(extHeaderSize-4, "data")
+			d.FieldBytes("data", extHeaderSize-4)
 		}
 	}
 
-	d.FieldBytes(size-extHeaderSize, "tags")
+	d.FieldBytes("tags", size-extHeaderSize)
 
 	return true
 }

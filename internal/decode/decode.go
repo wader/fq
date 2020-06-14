@@ -11,6 +11,12 @@ type Options struct {
 	Probe bool
 }
 
+type Register struct {
+	Name string
+	MIME string
+	New  func() Decoder
+}
+
 type Decoder interface {
 	Decode(Options) bool
 }
@@ -222,32 +228,6 @@ func (c *Common) FieldS24LE(name string) int64 { return c.fieldS(name, 24, bitbu
 func (c *Common) FieldS32LE(name string) int64 { return c.fieldS(name, 32, bitbuf.LittleEndian) }
 func (c *Common) FieldS64LE(name string) int64 { return c.fieldS(name, 64, bitbuf.LittleEndian) }
 
-// TODO: FieldBytesRange or?
-func (c *Common) FieldBytes(name string, nBytes uint64) []byte {
-	start := c.Pos
-	// TODO: panic?
-	bs, _ := c.BytesLen(nBytes)
-	stop := c.Pos
-	c.Current.Children = append(c.Current.Children, &Field{
-		Name:  name,
-		Range: Range{Start: start, Stop: stop},
-		Value: Value{Type: TypeBytes, Bytes: bs},
-	})
-	return bs
-}
-
-func (c *Common) FieldUTF8(name string, nBytes uint64) string {
-	start := c.Pos
-	s := c.UTF8(nBytes)
-	stop := c.Pos
-	c.Current.Children = append(c.Current.Children, &Field{
-		Name:  name,
-		Range: Range{Start: start, Stop: stop},
-		Value: Value{Type: TypeStr, Str: s},
-	})
-	return s
-}
-
 func (c *Common) FieldFn(name string, fn func() Value) Value {
 	prev := c.Current
 
@@ -286,6 +266,20 @@ func (c *Common) FieldSFn(name string, fn func() (int64, Format, string)) int64 
 	}).SInt
 }
 
+func (c *Common) FieldStrFn(name string, fn func() (string, string)) string {
+	return c.FieldFn(name, func() Value {
+		str, disp := fn()
+		return Value{Type: TypeStr, Str: str, Display: disp}
+	}).Str
+}
+
+func (c *Common) FieldBytesFn(name string, fn func() ([]byte, string)) []byte {
+	return c.FieldFn(name, func() Value {
+		bs, disp := fn()
+		return Value{Type: TypeBytes, Bytes: bs, Display: disp}
+	}).Bytes
+}
+
 func (c *Common) FieldStringMapFn(name string, sm map[uint64]string, def string, fn func() uint64) uint64 {
 	return c.FieldUFn(name, func() (uint64, Format, string) {
 		n := fn()
@@ -298,8 +292,8 @@ func (c *Common) FieldStringMapFn(name string, sm map[uint64]string, def string,
 	})
 }
 
-func (c *Common) FieldVerifyFn(name string, v uint64, fn func() uint64) uint64 {
-	return c.FieldUFn(name, func() (uint64, Format, string) {
+func (c *Common) FieldVerifyUFn(name string, v uint64, fn func() uint64) bool {
+	n := c.FieldUFn(name, func() (uint64, Format, string) {
 		n := fn()
 		s := "Correct"
 		if n != v {
@@ -307,6 +301,33 @@ func (c *Common) FieldVerifyFn(name string, v uint64, fn func() uint64) uint64 {
 		}
 		return n, FormatHex, s
 	})
+	return n == v
+}
+
+// TODO: FieldBytesRange or?
+func (c *Common) FieldBytes(name string, nBytes uint64) []byte {
+	return c.FieldBytesFn(name, func() ([]byte, string) {
+		bs, _ := c.BytesLen(nBytes)
+		return bs, ""
+	})
+}
+
+func (c *Common) FieldUTF8(name string, nBytes uint64) string {
+	return c.FieldStrFn(name, func() (string, string) {
+		str, _ := c.UTF8(nBytes)
+		return str, ""
+	})
+}
+
+func (c *Common) FieldVerifyStringFn(name string, v string, fn func() string) bool {
+	return c.FieldStrFn(name, func() (string, string) {
+		str := fn()
+		s := "Correct"
+		if str != v {
+			s = "Incorrect"
+		}
+		return str, s
+	}) == v
 }
 
 // --------------

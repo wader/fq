@@ -2,16 +2,21 @@ package bitbuf
 
 import (
 	"fmt"
+	"math"
 	"strings"
 )
 
+// Endian byte order
 type Endian int
 
 const (
+	// BigEndian byte order
 	BigEndian Endian = iota
+	// LittleEndian byte order
 	LittleEndian
 )
 
+// Buffer is a bitbuf buffer
 type Buffer struct {
 	Buf         []byte
 	BufFirstBit uint64
@@ -19,6 +24,8 @@ type Buffer struct {
 	Pos         uint64
 }
 
+// New bitbuf.Buffer from byte buffer buf, start at firstBit with bit length lenBits
+// buf is not copied.
 func New(firstBit uint64, buf []byte, lenBits uint64) *Buffer {
 	return &Buffer{
 		Buf:         buf,
@@ -28,10 +35,12 @@ func New(firstBit uint64, buf []byte, lenBits uint64) *Buffer {
 	}
 }
 
+// NewFromBytes bitbuf.Buffer from bytes
 func NewFromBytes(buf []byte) *Buffer {
 	return New(0, buf, uint64(len(buf)*8))
 }
 
+// NewFromBitString bitbuf.Buffer from bit string, ex: "0101"
 func NewFromBitString(s string) *Buffer {
 	var buf []byte
 	i := 0
@@ -58,6 +67,7 @@ func NewFromBitString(s string) *Buffer {
 	return New(0, buf, uint64(len(s)))
 }
 
+// Bits reads nBits bits from buffer
 func (b *Buffer) Bits(nBits uint64) (uint64, uint64) {
 	p := uint64(b.Pos) + uint64(nBits)
 	if p > b.Len {
@@ -70,6 +80,8 @@ func (b *Buffer) Bits(nBits uint64) (uint64, uint64) {
 	return n, nBits
 }
 
+// BitBufRange reads nBits bits starting from start
+// Does not update current position.
 func (b *Buffer) BitBufRange(start uint64, nBits uint64) (*Buffer, uint64) {
 	endPos := uint64(start) + uint64(nBits)
 	if endPos > b.Len {
@@ -82,15 +94,19 @@ func (b *Buffer) BitBufRange(start uint64, nBits uint64) (*Buffer, uint64) {
 		Len:         nBits,
 		Pos:         0,
 	}
-	b.Pos += nBits
 
 	return nb, nBits
 }
 
+// BitBufLen reads nBits
 func (b *Buffer) BitBufLen(nBits uint64) (*Buffer, uint64) {
-	return b.BitBufRange(b.Pos, nBits)
+	bb, rBits := b.BitBufRange(b.Pos, nBits)
+	b.Pos += rBits
+	return bb, rBits
 }
 
+// BytesRange reads nBytes bytes starting bit position start
+// Does not update current position.
 func (b *Buffer) BytesRange(firstBit uint64, nBytes uint64) ([]byte, uint64) {
 	endPos := firstBit + nBytes*8
 	if endPos > b.Len {
@@ -100,8 +116,6 @@ func (b *Buffer) BytesRange(firstBit uint64, nBytes uint64) ([]byte, uint64) {
 	bufFirstBit := b.BufFirstBit + firstBit
 	if bufFirstBit%8 == 0 {
 		nb := b.Buf[bufFirstBit : bufFirstBit+nBytes]
-		b.Pos += nBytes * 8
-
 		return nb, nBytes * 8
 	}
 
@@ -109,23 +123,33 @@ func (b *Buffer) BytesRange(firstBit uint64, nBytes uint64) ([]byte, uint64) {
 	for i := uint64(0); i < nBytes; i++ {
 		buf = append(buf, byte(ReadBits(b.Buf, bufFirstBit+i, 8)))
 	}
-	b.Pos += nBytes * 8
 
 	return buf, nBytes * 8
 }
 
+// BytesLen reads nBytes bytes
 func (b *Buffer) BytesLen(nBytes uint64) ([]byte, uint64) {
-	return b.BytesRange(b.Pos, nBytes)
+	bb, rBits := b.BytesRange(b.Pos, nBytes)
+	b.Pos += rBits
+	return bb, rBits
 }
 
+// End is true if current position if at the end
 func (b *Buffer) End() bool {
 	return b.Pos >= b.Len
 }
 
+// BitsLeft number of bits left until end
+func (b *Buffer) BitsLeft() uint64 {
+	return b.Len - b.Pos
+}
+
+// ByteAlignBits bits to next byte align
 func (b *Buffer) ByteAlignBits() uint64 {
 	return (8 - (b.Pos & 0x7)) & 0x7
 }
 
+// BytePos byte position of current bit position
 func (b *Buffer) BytePos() uint64 {
 	return b.Pos & 0x7
 }
@@ -140,6 +164,7 @@ func (b *Buffer) String() string {
 	return fmt.Sprintf("0b%s%s /* %d bits */", truncBB.BitString(), truncS, b.Len)
 }
 
+// BitString return bit string representation
 func (b *Buffer) BitString() string {
 	var ss []string
 	for !b.End() {
@@ -153,6 +178,7 @@ func (b *Buffer) BitString() string {
 	return strings.Join(ss, "")
 }
 
+// UE reads nBits unsigned integer with byte order endian
 func (b *Buffer) UE(nBits uint64, endian Endian) uint64 {
 	n, _ := b.Bits(nBits)
 	if endian == LittleEndian {
@@ -162,6 +188,7 @@ func (b *Buffer) UE(nBits uint64, endian Endian) uint64 {
 	return n
 }
 
+// Bool reads one bit as a boolean
 func (b *Buffer) Bool() bool { return b.UE(1, BigEndian) == 1 }
 
 func (b *Buffer) U(nBits uint64) uint64 { return b.UE(nBits, BigEndian) }
@@ -274,10 +301,18 @@ func (b *Buffer) S24LE() int64           { return b.SE(24, LittleEndian) }
 func (b *Buffer) S32LE() int64           { return b.SE(32, LittleEndian) }
 func (b *Buffer) S64LE() int64           { return b.SE(64, LittleEndian) }
 
-func (b *Buffer) UTF8(nBytes uint64) string {
+func (b *Buffer) Float32(s uint) float32   { return math.Float32frombits(uint32(b.U32())) }
+func (b *Buffer) Float32BE(s uint) float32 { return math.Float32frombits(uint32(b.U32BE())) }
+func (b *Buffer) Float32LE(s uint) float32 { return math.Float32frombits(uint32(b.U32LE())) }
+
+func (b *Buffer) Float64(s uint) float64   { return math.Float64frombits(uint64(b.U64())) }
+func (b *Buffer) Float64BE(s uint) float64 { return math.Float64frombits(uint64(b.U64BE())) }
+func (b *Buffer) Float64LE(s uint) float64 { return math.Float64frombits(uint64(b.U64LE())) }
+
+func (b *Buffer) UTF8(nBytes uint64) (string, uint64) {
 	// TODO: panic?
-	s, _ := b.BytesLen(nBytes)
-	return string(s)
+	s, rBits := b.BytesLen(nBytes)
+	return string(s), rBits
 }
 
 func (b *Buffer) Unary(s uint) uint {
