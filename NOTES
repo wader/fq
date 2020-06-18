@@ -1,3 +1,11 @@
+
+bitreader
+    return error
+field dsl
+    bitreader err => panic(err)? recover?
+    valid check err => painc(err) if not force?
+    recover?
+
 json
 sql
 api?

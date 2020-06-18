@@ -185,7 +185,7 @@ func (c *Common) FieldDecodeRange(name string, start uint64, nBits uint64, decod
 
 	r, fieldC := New(c, bb, c.Registers, decoderNames)
 
-	log.Printf("bb: %#+v\n", bb)
+	// log.Printf("bb: %#+v\n", bb)
 
 	if r == nil {
 		log.Printf("FieldDecodeRange nope %#+v\n", decoderNames)
@@ -417,6 +417,17 @@ func (c *Common) FieldUTF8(name string, nBytes uint64) string {
 func (c *Common) FieldVerifyStringFn(name string, v string, fn func() string) bool {
 	return c.FieldStrFn(name, func() (string, string) {
 		str := fn()
+		s := "Correct"
+		if str != v {
+			s = "Incorrect"
+		}
+		return str, s
+	}) == v
+}
+
+func (c *Common) FieldVerifyString(name string, nBytes uint64, v string) bool {
+	return c.FieldStrFn(name, func() (string, string) {
+		str, _ := c.UTF8(nBytes)
 		s := "Correct"
 		if str != v {
 			s = "Incorrect"

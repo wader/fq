@@ -2,6 +2,7 @@ package format
 
 import (
 	"fq/internal/decode"
+	"fq/internal/format/elf"
 	"fq/internal/format/flac"
 	"fq/internal/format/id3v1"
 	"fq/internal/format/id3v11"
@@ -17,4 +18,5 @@ var All = []*decode.Register{
 	id3v11.Register, // before id3v1 (TAG/TAG+ magic)
 	id3v1.Register,
 	id3v2.Register,
+	elf.Register,
 }

@@ -19,8 +19,8 @@ const (
 // Buffer is a bitbuf buffer
 // TODO: make Buf/BufFirstBit private?
 type Buffer struct {
-	Buf         []byte
-	BufFirstBit uint64
+	buf         []byte
+	bufFirstBit uint64
 	Len         uint64
 	Pos         uint64
 }
@@ -29,8 +29,8 @@ type Buffer struct {
 // buf is not copied.
 func New(buf []byte, firstBit uint64, lenBits uint64) *Buffer {
 	return &Buffer{
-		Buf:         buf,
-		BufFirstBit: firstBit,
+		buf:         buf,
+		bufFirstBit: firstBit,
 		Len:         lenBits,
 		Pos:         0,
 	}
@@ -44,7 +44,7 @@ func NewFromBytes(buf []byte) *Buffer {
 // NewFromBitBuf bitbuf.Buffer from other bitbuf.Buffer
 // Will be a shallow copy with position reset to zero.
 func NewFromBitBuf(b *Buffer) *Buffer {
-	return New(b.Buf, b.BufFirstBit, b.Len)
+	return New(b.buf, b.bufFirstBit, b.Len)
 }
 
 // NewFromBitString bitbuf.Buffer from bit string, ex: "0101"
@@ -86,7 +86,7 @@ func (b *Buffer) Bits(nBits uint64) (uint64, uint64) {
 	if p > b.Len {
 		return 0, uint64(p) - b.Len
 	}
-	n := ReadBits(b.Buf, b.BufFirstBit+b.Pos, nBits)
+	n := ReadBits(b.buf, b.bufFirstBit+b.Pos, nBits)
 	b.Pos += nBits
 
 	return n, nBits
@@ -99,7 +99,7 @@ func (b *Buffer) PeekBits(nBits uint64) (uint64, uint64) {
 	if p > b.Len {
 		return 0, uint64(p) - b.Len
 	}
-	n := ReadBits(b.Buf, b.BufFirstBit+b.Pos, nBits)
+	n := ReadBits(b.buf, b.bufFirstBit+b.Pos, nBits)
 
 	return n, nBits
 }
@@ -113,8 +113,8 @@ func (b *Buffer) BitBufRange(start uint64, nBits uint64) (*Buffer, uint64) {
 	}
 
 	nb := &Buffer{
-		Buf:         b.Buf,
-		BufFirstBit: b.BufFirstBit + start,
+		buf:         b.buf,
+		bufFirstBit: b.bufFirstBit + start,
 		Len:         nBits,
 		Pos:         0,
 	}
@@ -137,16 +137,16 @@ func (b *Buffer) BytesRange(firstBit uint64, nBytes uint64) ([]byte, uint64) {
 		return nil, endPos - b.Len
 	}
 
-	bufFirstBit := b.BufFirstBit + firstBit
+	bufFirstBit := b.bufFirstBit + firstBit
 	if bufFirstBit%8 == 0 {
 		bufFirstBytePos := bufFirstBit >> 3
-		nb := b.Buf[bufFirstBytePos : bufFirstBytePos+nBytes]
+		nb := b.buf[bufFirstBytePos : bufFirstBytePos+nBytes]
 		return nb, nBytes * 8
 	}
 
 	var buf []byte
 	for i := uint64(0); i < nBytes; i++ {
-		buf = append(buf, byte(ReadBits(b.Buf, bufFirstBit+i, 8)))
+		buf = append(buf, byte(ReadBits(b.buf, bufFirstBit+i, 8)))
 	}
 
 	return buf, nBytes * 8
