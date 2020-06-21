@@ -1,6 +1,7 @@
 package id3v2
 
 import (
+	"fmt"
 	"fq/internal/decode"
 )
 
@@ -28,17 +29,13 @@ func (d *Decoder) SyncSafeU32() uint64 {
 }
 
 // Decode ID3v2
-func (d *Decoder) Decode(opts decode.Options) bool {
-	// TODO: relay on panics instead? ignore reads and have HasErrors?
-	if d.BitsLeft() < 4*8 {
-		return false
-	}
-
-	magicValid := d.FieldVerifyStringFn("magic", "ID3", func() string { return d.UTF8(3) })
+func (d *Decoder) Decode(opts decode.Options) {
+	d.ValidateAtLeastBitsLeft(4 * 8)
+	d.FieldValidateString("magic", "ID3")
 	version := d.FieldU8("version")
 	versionValid := version == 2 || version == 3 || version == 4
-	if !magicValid || !versionValid {
-		return false
+	if !versionValid {
+		d.Invalid(fmt.Sprintf("unsupported version %d", version))
 	}
 
 	d.FieldU8("revision")
@@ -85,6 +82,4 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 	// })
 
 	d.FieldBytes("tags", size-extHeaderSize)
-
-	return true
 }

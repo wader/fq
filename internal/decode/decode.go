@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-type Error struct {
+type BitBufError struct {
 	Err   error
 	Op    string
 	Size  uint64
@@ -17,10 +17,19 @@ type Error struct {
 	Pos   uint64
 }
 
-func (e Error) Error() string {
+func (e BitBufError) Error() string {
 	return fmt.Sprintf("%s: failed at bit position %d (size %d, delta %d): %s", e.Op, e.Pos, e.Size, e.Delta, e.Err)
 }
-func (e Error) Unwrap() error { return e.Err }
+func (e BitBufError) Unwrap() error { return e.Err }
+
+type ValidateError struct {
+	Reason string
+	Pos    uint64
+}
+
+func (e ValidateError) Error() string {
+	return fmt.Sprintf("failed to validate at position %d: %s", e.Pos, e.Reason)
+}
 
 type Options struct {
 	Probe bool
@@ -33,7 +42,7 @@ type Register struct {
 }
 
 type Decoder interface {
-	Decode(Options) bool
+	Decode(Options)
 }
 
 type Type int
@@ -144,9 +153,33 @@ func probe(bb *bitbuf.Buffer, registers []*Register, decoderNames []string) (*Re
 			Registers: registers,
 		}
 		d := r.New(c)
-		if d.Decode(Options{}) {
-			return r, c, true
+
+		err := func() (err error) {
+			defer func() {
+				if rerr := recover(); rerr != nil {
+					switch terr := rerr.(type) {
+					case BitBufError:
+						err = terr
+					case ValidateError:
+						err = terr
+					default:
+						// TODO:
+						panic(terr)
+					}
+				}
+			}()
+
+			d.Decode(Options{})
+			return nil
+		}()
+
+		log.Printf("err: %#+v\n", err)
+
+		if err != nil {
+			continue
 		}
+
+		return r, c, true
 	}
 	return nil, Common{}, false
 }
@@ -164,7 +197,7 @@ func New(parent *Common, bb *bitbuf.Buffer, registers []*Register, decoderNames 
 func (c *Common) PeekBits(nBits uint64) uint64 {
 	n, err := c.bitBuf.PeekBits(nBits)
 	if err != nil {
-		panic(Error{Err: err, Op: "PeekBits", Size: nBits, Pos: c.bitBuf.Pos})
+		panic(BitBufError{Err: err, Op: "PeekBits", Size: nBits, Pos: c.bitBuf.Pos})
 	}
 	return n
 }
@@ -172,7 +205,7 @@ func (c *Common) PeekBits(nBits uint64) uint64 {
 func (c *Common) BytesRange(firstBit uint64, nBytes uint64) []byte {
 	bs, err := c.bitBuf.BytesRange(firstBit, nBytes)
 	if err != nil {
-		panic(Error{Err: err, Op: "BytesRange", Size: nBytes * 8, Pos: c.bitBuf.Pos})
+		panic(BitBufError{Err: err, Op: "BytesRange", Size: nBytes * 8, Pos: c.bitBuf.Pos})
 	}
 	return bs
 }
@@ -180,7 +213,7 @@ func (c *Common) BytesRange(firstBit uint64, nBytes uint64) []byte {
 func (c *Common) BytesLen(nBytes uint64) []byte {
 	bs, err := c.bitBuf.BytesLen(nBytes)
 	if err != nil {
-		panic(Error{Err: err, Op: "BytesLen", Size: nBytes * 8, Pos: c.bitBuf.Pos})
+		panic(BitBufError{Err: err, Op: "BytesLen", Size: nBytes * 8, Pos: c.bitBuf.Pos})
 	}
 	return bs
 }
@@ -195,7 +228,7 @@ func (c *Common) BytePos() uint64       { return c.bitBuf.BytePos() }
 func (c *Common) SeekRel(delta int64) uint64 {
 	pos, err := c.bitBuf.SeekRel(delta)
 	if err != nil {
-		panic(Error{Err: err, Op: "SeekRel", Delta: delta, Pos: c.bitBuf.Pos})
+		panic(BitBufError{Err: err, Op: "SeekRel", Delta: delta, Pos: c.bitBuf.Pos})
 	}
 	return pos
 }
@@ -203,7 +236,7 @@ func (c *Common) SeekRel(delta int64) uint64 {
 func (c *Common) SeekAbs(pos uint64) uint64 {
 	pos, err := c.bitBuf.SeekAbs(pos)
 	if err != nil {
-		panic(Error{Err: err, Op: "SeekAbs", Size: pos, Pos: c.bitBuf.Pos})
+		panic(BitBufError{Err: err, Op: "SeekAbs", Size: pos, Pos: c.bitBuf.Pos})
 	}
 	return pos
 }
@@ -211,7 +244,7 @@ func (c *Common) SeekAbs(pos uint64) uint64 {
 func (c *Common) UE(nBits uint64, endian bitbuf.Endian) uint64 {
 	n, err := c.bitBuf.UE(nBits, endian)
 	if err != nil {
-		panic(Error{Err: err, Op: "UE", Size: nBits, Pos: c.bitBuf.Pos})
+		panic(BitBufError{Err: err, Op: "UE", Size: nBits, Pos: c.bitBuf.Pos})
 	}
 	return n
 }
@@ -219,7 +252,7 @@ func (c *Common) UE(nBits uint64, endian bitbuf.Endian) uint64 {
 func (c *Common) Bool() bool {
 	b, err := c.bitBuf.Bool()
 	if err != nil {
-		panic(Error{Err: err, Op: "Bool", Size: 1, Pos: c.bitBuf.Pos})
+		panic(BitBufError{Err: err, Op: "Bool", Size: 1, Pos: c.bitBuf.Pos})
 	}
 	return b
 }
@@ -228,7 +261,7 @@ func (c *Common) FieldBool(name string) bool {
 	return c.FieldBoolFn(name, func() (bool, string) {
 		b, err := c.bitBuf.Bool()
 		if err != nil {
-			panic(Error{Err: err, Op: "FieldBool", Size: 1, Pos: c.bitBuf.Pos})
+			panic(BitBufError{Err: err, Op: "FieldBool", Size: 1, Pos: c.bitBuf.Pos})
 		}
 		return b, ""
 	})
@@ -285,7 +318,7 @@ func (c *Common) fieldU(name string, nBits uint64, endian bitbuf.Endian) uint64 
 	return c.FieldUFn(name, func() (uint64, Format, string) {
 		n, err := c.bitBuf.UE(nBits, endian)
 		if err != nil {
-			panic(Error{Err: err, Op: "FieldS" + (strconv.Itoa(int(nBits))), Size: nBits, Pos: c.bitBuf.Pos})
+			panic(BitBufError{Err: err, Op: "FieldS" + (strconv.Itoa(int(nBits))), Size: nBits, Pos: c.bitBuf.Pos})
 		}
 		return n, FormatDecimal, ""
 	})
@@ -347,7 +380,7 @@ func (c *Common) FieldU64LE(name string) uint64 { return c.fieldU(name, 64, bitb
 func (c *Common) SE(nBits uint64, endian bitbuf.Endian) int64 {
 	n, err := c.bitBuf.SE(nBits, endian)
 	if err != nil {
-		panic(Error{Err: err, Op: "SE", Size: nBits, Pos: c.bitBuf.Pos})
+		panic(BitBufError{Err: err, Op: "SE", Size: nBits, Pos: c.bitBuf.Pos})
 	}
 	return n
 }
@@ -402,7 +435,7 @@ func (c *Common) fieldS(name string, nBits uint64, endian bitbuf.Endian) int64 {
 	return c.FieldSFn(name, func() (int64, Format, string) {
 		n, err := c.bitBuf.SE(nBits, endian)
 		if err != nil {
-			panic(Error{Err: err, Op: "FieldS" + (strconv.Itoa(int(nBits))), Size: nBits, Pos: c.bitBuf.Pos})
+			panic(BitBufError{Err: err, Op: "FieldS" + (strconv.Itoa(int(nBits))), Size: nBits, Pos: c.bitBuf.Pos})
 		}
 		return n, FormatDecimal, ""
 	})
@@ -463,7 +496,7 @@ func (c *Common) FieldS64LE(name string) int64 { return c.fieldS(name, 64, bitbu
 func (c *Common) float32(fn func() (uint64, error)) float32 {
 	n, err := fn()
 	if err != nil {
-		panic(Error{Err: err, Op: "Float32", Size: 32 * 8, Pos: c.bitBuf.Pos})
+		panic(BitBufError{Err: err, Op: "Float32", Size: 32 * 8, Pos: c.bitBuf.Pos})
 	}
 	return math.Float32frombits(uint32(n))
 }
@@ -475,7 +508,7 @@ func (c *Common) Float32LE(s uint) float32 { return c.float32(c.bitBuf.U32LE) }
 func (c *Common) float64(fn func() (uint64, error)) float64 {
 	n, err := fn()
 	if err != nil {
-		panic(Error{Err: err, Op: "Float64", Size: 64 * 8, Pos: c.bitBuf.Pos})
+		panic(BitBufError{Err: err, Op: "Float64", Size: 64 * 8, Pos: c.bitBuf.Pos})
 	}
 	return math.Float64frombits(uint64(n))
 }
@@ -486,7 +519,7 @@ func (c *Common) Float64LE(s uint) float64 { return c.float64(c.bitBuf.U64LE) }
 func (c *Common) UTF8(nBytes uint64) string {
 	s, err := c.bitBuf.BytesLen(nBytes)
 	if err != nil {
-		panic(Error{Err: err, Op: "UTF8", Size: nBytes * 8, Pos: c.bitBuf.Pos})
+		panic(BitBufError{Err: err, Op: "UTF8", Size: nBytes * 8, Pos: c.bitBuf.Pos})
 	}
 	return string(s)
 }
@@ -494,7 +527,7 @@ func (c *Common) UTF8(nBytes uint64) string {
 func (c *Common) Unary(s uint64) uint64 {
 	n, err := c.bitBuf.Unary(s)
 	if err != nil {
-		panic(Error{Err: err, Op: "Unary", Size: 1, Pos: c.bitBuf.Pos})
+		panic(BitBufError{Err: err, Op: "Unary", Size: 1, Pos: c.bitBuf.Pos})
 	}
 	return n
 }
@@ -570,7 +603,8 @@ func (c *Common) FieldStringMapFn(name string, sm map[uint64]string, def string,
 	})
 }
 
-func (c *Common) FieldVerifyUFn(name string, v uint64, fn func() uint64) bool {
+func (c *Common) FieldValidateUFn(name string, v uint64, fn func() uint64) {
+	pos := c.bitBuf.Pos
 	n := c.FieldUFn(name, func() (uint64, Format, string) {
 		n := fn()
 		s := "Correct"
@@ -579,7 +613,9 @@ func (c *Common) FieldVerifyUFn(name string, v uint64, fn func() uint64) bool {
 		}
 		return n, FormatHex, s
 	})
-	return n == v
+	if n != v {
+		panic(ValidateError{Reason: fmt.Sprintf("expected %d found %d", v, n), Pos: pos})
+	}
 }
 
 // TODO: FieldBytesRange or?
@@ -597,26 +633,46 @@ func (c *Common) FieldUTF8(name string, nBytes uint64) string {
 	})
 }
 
-func (c *Common) FieldVerifyStringFn(name string, v string, fn func() string) bool {
-	return c.FieldStrFn(name, func() (string, string) {
+func (c *Common) FieldValidateStringFn(name string, v string, fn func() string) {
+	pos := c.bitBuf.Pos
+	s := c.FieldStrFn(name, func() (string, string) {
 		str := fn()
 		s := "Correct"
 		if str != v {
 			s = "Incorrect"
 		}
 		return str, s
-	}) == v
+	})
+	if s != v {
+		panic(ValidateError{Pos: pos})
+	}
 }
 
-func (c *Common) FieldVerifyString(name string, nBytes uint64, v string) bool {
-	return c.FieldStrFn(name, func() (string, string) {
-		str, _ := c.bitBuf.UTF8(nBytes)
+func (c *Common) FieldValidateString(name string, v string) {
+	pos := c.bitBuf.Pos
+	s := c.FieldStrFn(name, func() (string, string) {
+		str, _ := c.bitBuf.UTF8(uint64(len(v)))
 		s := "Correct"
 		if str != v {
 			s = "Incorrect"
 		}
 		return str, s
-	}) == v
+	})
+	if s != v {
+		panic(ValidateError{Reason: fmt.Sprintf("expected %s found %s", v, s), Pos: pos})
+	}
+}
+
+func (c *Common) ValidateAtLeastBitsLeft(nBits uint64) {
+	bl := c.bitBuf.BitsLeft()
+	if bl < nBits {
+		// TODO:
+		panic(ValidateError{Reason: "not enough bits left", Pos: c.bitBuf.Pos})
+	}
+}
+
+func (c *Common) Invalid(reason string) {
+	panic(ValidateError{Reason: reason, Pos: c.bitBuf.Pos})
 }
 
 // TODO: return decooder?
@@ -625,7 +681,7 @@ func (c *Common) FieldDecode(name string, nBits uint64, decoderNames []string) b
 	//start := c.Pos
 	bb, err := c.bitBuf.BitBufRange(c.bitBuf.Pos, nBits)
 	if err != nil {
-		panic(Error{Err: err, Op: "FieldDecode", Size: nBits, Pos: c.bitBuf.Pos})
+		panic(BitBufError{Err: err, Op: "FieldDecode", Size: nBits, Pos: c.bitBuf.Pos})
 	}
 
 	r, fieldC := New(c, bb, c.Registers, decoderNames)
@@ -654,7 +710,7 @@ func (c *Common) FieldDecodeRange(name string, start uint64, nBits uint64, decod
 
 	bb, err := c.bitBuf.BitBufRange(start, nBits)
 	if err != nil {
-		panic(Error{Err: err, Op: "FieldDecodeRange", Size: nBits, Pos: c.bitBuf.Pos})
+		panic(BitBufError{Err: err, Op: "FieldDecodeRange", Size: nBits, Pos: c.bitBuf.Pos})
 	}
 
 	r, fieldC := New(c, bb, c.Registers, decoderNames)

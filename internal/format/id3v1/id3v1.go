@@ -2,7 +2,6 @@ package id3v1
 
 import (
 	"fq/internal/decode"
-	"log"
 )
 
 // TODO: trim strings?
@@ -20,20 +19,9 @@ type Decoder struct {
 }
 
 // Decode ID3v1
-func (d *Decoder) Decode(opts decode.Options) bool {
-	log.Println("BLA")
-	if d.BitsLeft() < 128*8 {
-		return false
-	}
-	magicValid := d.FieldVerifyStringFn("magic", "TAG", func() string {
-		str := d.UTF8(3)
-		log.Printf("str: %#+v\n", str)
-		return str
-	})
-	if !magicValid {
-		return false
-	}
-
+func (d *Decoder) Decode(opts decode.Options) {
+	d.ValidateAtLeastBitsLeft(128 * 8)
+	d.FieldValidateString("magic", "TAG")
 	d.FieldUTF8("song_name", 30)
 	d.FieldUTF8("artist", 30)
 	d.FieldUTF8("album_name", 30)
@@ -234,6 +222,4 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 		190: "Garage Rock",
 		191: "Psybient",
 	}, "Unknown", d.U8)
-
-	return true
 }

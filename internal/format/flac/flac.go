@@ -83,14 +83,8 @@ func (d *Decoder) UTF8Uint() uint64 {
 }
 
 // Decode FLAC
-func (d *Decoder) Decode(opts decode.Options) bool {
-	magicValid := d.FieldVerifyStringFn("magic", "fLaC", func() string {
-		str := d.UTF8(4)
-		return str
-	})
-	if !magicValid {
-		return false
-	}
+func (d *Decoder) Decode(opts decode.Options) {
+	d.FieldValidateString("magic", "fLaC")
 
 	// is used in frame decoding later
 	var streamInfoSamepleRate uint64
@@ -137,12 +131,12 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 	for !d.End() {
 		d.FieldNoneFn("frame", func() {
 			// <14> 11111111111110
-			d.FieldVerifyUFn("sync", 0b11111111111110, d.U14)
+			d.FieldValidateUFn("sync", 0b11111111111110, d.U14)
 
 			// <1> Reserved
 			// 0 : mandatory value
 			// 1 : reserved for future use
-			d.FieldVerifyUFn("reserved0", 0, d.U1)
+			d.FieldValidateUFn("reserved0", 0, d.U1)
 
 			// <1> Blocking strategy:
 			// 0 : fixed-blocksize stream; frame header encodes the frame number
@@ -328,7 +322,7 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 			// <1> Reserved:
 			// 0 : mandatory value
 			// 1 : reserved for future use
-			d.FieldVerifyUFn("reserved1", 0, d.U1)
+			d.FieldValidateUFn("reserved1", 0, d.U1)
 
 			d.FieldNoneFn("end_of_header", func() {
 				// if(variable blocksize)
@@ -383,7 +377,7 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 			for channelIndex := 0; channelIndex < int(channels); channelIndex++ {
 				d.FieldNoneFn("subframe", func() {
 					// <1> Zero bit padding, to prevent sync-fooling string of 1s
-					d.FieldVerifyUFn("zero_bit", 0, d.U1)
+					d.FieldValidateUFn("zero_bit", 0, d.U1)
 
 					// <6> Subframe type:
 					// 000000 : SUBFRAME_CONSTANT
@@ -552,11 +546,9 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 			}
 
 			// <?> Zero-padding to byte alignment.
-			d.FieldVerifyUFn("byte_align", 0, func() uint64 { return d.U(d.ByteAlignBits()) })
+			d.FieldValidateUFn("byte_align", 0, func() uint64 { return d.U(d.ByteAlignBits()) })
 			// <16> CRC-16 (polynomial = x^16 + x^15 + x^2 + x^0, initialized with 0) of everything before the crc, back to and including the frame header sync code
 			d.FieldU16("footer_crc")
 		})
 	}
-
-	return true
 }

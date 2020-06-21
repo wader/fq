@@ -23,12 +23,8 @@ type Decoder struct {
 }
 
 // Decode MP3 frame
-func (d *Decoder) Decode(opts decode.Options) bool {
-	syncValid := d.FieldVerifyUFn("sync", 0b11111111111, d.U11)
-	// TODO: better probe
-	if !syncValid {
-		return false
-	}
+func (d *Decoder) Decode(opts decode.Options) {
+	d.FieldValidateUFn("sync", 0b11111111111, d.U11)
 
 	// v = 3 means version 2.5
 	v := d.FieldUFn("mpeg_version", func() (uint64, decode.Format, string) {
@@ -135,6 +131,4 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 	const headerLen = 4
 	dataLen := (144 * bitRate / sampleRate) + padding - headerLen
 	d.FieldBytes("samples", dataLen)
-
-	return true
 }

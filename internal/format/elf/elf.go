@@ -44,14 +44,11 @@ var Register = &decode.Register{
 type Decoder struct{ decode.Common }
 
 // Decode ID3v1
-func (d *Decoder) Decode(opts decode.Options) bool {
-	if d.BitsLeft() < 128*8 {
-		return false
-	}
+func (d *Decoder) Decode(opts decode.Options) {
+	d.ValidateAtLeastBitsLeft(128 * 8)
 
-	validMagic := false
 	d.FieldNoneFn("ident", func() {
-		validMagic = d.FieldVerifyString("magic", 4, "\x7fELF")
+		d.FieldValidateString("magic", "\x7fELF")
 
 		archBits := d.FieldUFn("class", func() (uint64, decode.Format, string) {
 			switch d.U8() {
@@ -100,9 +97,4 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 		d.FieldU8("abi_version")
 
 	})
-	if !validMagic {
-		return false
-	}
-
-	return true
 }

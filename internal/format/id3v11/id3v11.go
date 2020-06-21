@@ -14,17 +14,9 @@ var Register = &decode.Register{
 type Decoder struct{ decode.Common }
 
 // Decode ID3v1
-func (d *Decoder) Decode(opts decode.Options) bool {
-	if d.BitsLeft() < 128*8 {
-		return false
-	}
-	magicValid := d.FieldVerifyStringFn("magic", "TAG+", func() string {
-		return d.UTF8(4)
-	})
-	if !magicValid {
-		return false
-	}
-
+func (d *Decoder) Decode(opts decode.Options) {
+	d.ValidateAtLeastBitsLeft(128 * 8)
+	d.FieldValidateString("magic", "TAG+")
 	d.FieldUTF8("title", 60)
 	d.FieldUTF8("artist", 60)
 	d.FieldUTF8("album", 60)
@@ -38,6 +30,4 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 	d.FieldUTF8("genre", 30)
 	d.FieldUTF8("start", 6)
 	d.FieldUTF8("stop", 6)
-
-	return true
 }
