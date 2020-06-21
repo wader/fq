@@ -1,4 +1,7 @@
 
+
+decode dont embedd? reimplement api with panics
+
 bitreader
     return error
 field dsl

@@ -19,8 +19,7 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 		return false
 	}
 	magicValid := d.FieldVerifyStringFn("magic", "TAG+", func() string {
-		str, _ := d.UTF8(4)
-		return str
+		return d.UTF8(4)
 	})
 	if !magicValid {
 		return false

@@ -34,7 +34,7 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 		return false
 	}
 
-	magicValid := d.FieldVerifyStringFn("magic", "ID3", func() string { str, _ := d.UTF8(3); return str })
+	magicValid := d.FieldVerifyStringFn("magic", "ID3", func() string { return d.UTF8(3) })
 	version := d.FieldU8("version")
 	versionValid := version == 2 || version == 3 || version == 4
 	if !magicValid || !versionValid {

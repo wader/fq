@@ -85,7 +85,7 @@ func (d *Decoder) UTF8Uint() uint64 {
 // Decode FLAC
 func (d *Decoder) Decode(opts decode.Options) bool {
 	magicValid := d.FieldVerifyStringFn("magic", "fLaC", func() string {
-		str, _ := d.UTF8(4)
+		str := d.UTF8(4)
 		return str
 	})
 	if !magicValid {
