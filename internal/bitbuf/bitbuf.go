@@ -376,27 +376,33 @@ func (b *Buffer) S24LE() (int64, error)           { return b.SE(24, LittleEndian
 func (b *Buffer) S32LE() (int64, error)           { return b.SE(32, LittleEndian) }
 func (b *Buffer) S64LE() (int64, error)           { return b.SE(64, LittleEndian) }
 
-func (b *Buffer) float32(fn func() (uint64, error)) (float32, error) {
-	n, err := fn()
+func (b *Buffer) F32E(endian Endian) (float32, error) {
+	n, err := b.Bits(32)
 	if err != nil {
 		return 0, err
+	}
+	if endian == LittleEndian {
+		n = ReverseBytes(32, n)
 	}
 	return math.Float32frombits(uint32(n)), nil
 }
-func (b *Buffer) Float32(s uint) (float32, error)   { return b.float32(b.U32BE) }
-func (b *Buffer) Float32BE(s uint) (float32, error) { return b.float32(b.U32BE) }
-func (b *Buffer) Float32LE(s uint) (float32, error) { return b.float32(b.U32LE) }
+func (b *Buffer) F32(s uint) (float32, error)   { return b.F32E(BigEndian) }
+func (b *Buffer) F32BE(s uint) (float32, error) { return b.F32E(BigEndian) }
+func (b *Buffer) F32LE(s uint) (float32, error) { return b.F32E(LittleEndian) }
 
-func (b *Buffer) float64(fn func() (uint64, error)) (float64, error) {
-	n, err := fn()
+func (b *Buffer) F64E(endian Endian) (float64, error) {
+	n, err := b.Bits(64)
 	if err != nil {
 		return 0, err
 	}
-	return math.Float64frombits(uint64(n)), nil
+	if endian == LittleEndian {
+		n = ReverseBytes(64, n)
+	}
+	return math.Float64frombits(n), nil
 }
-func (b *Buffer) Float64(s uint) (float64, error)   { return b.float64(b.U64BE) }
-func (b *Buffer) Float64BE(s uint) (float64, error) { return b.float64(b.U64BE) }
-func (b *Buffer) Float64LE(s uint) (float64, error) { return b.float64(b.U64LE) }
+func (b *Buffer) F64(s uint) (float64, error)   { return b.F64E(BigEndian) }
+func (b *Buffer) F64BE(s uint) (float64, error) { return b.F64E(BigEndian) }
+func (b *Buffer) F64LE(s uint) (float64, error) { return b.F64E(LittleEndian) }
 
 func (b *Buffer) UTF8(nBytes uint64) (string, error) {
 	s, err := b.BytesLen(nBytes)
