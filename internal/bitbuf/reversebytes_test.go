@@ -2,13 +2,13 @@ package bitbuf_test
 
 import (
 	"fmt"
-	"fq/internal/decode"
+	"fq/internal/bitbuf"
 	"testing"
 )
 
 func TestReverseBytes(t *testing.T) {
 	testCases := []struct {
-		nBits    uint
+		nBits    uint64
 		n        uint64
 		expected uint64
 	}{
@@ -24,7 +24,7 @@ func TestReverseBytes(t *testing.T) {
 	}
 	for _, tC := range testCases {
 		t.Run(fmt.Sprintf("%d %x %x", tC.nBits, tC.n, tC.expected), func(t *testing.T) {
-			actual := decode.ReverseBytes(tC.nBits, tC.n)
+			actual := bitbuf.ReverseBytes(tC.nBits, tC.n)
 			if tC.expected != actual {
 				t.Errorf("expected %x, got %x", tC.expected, actual)
 			}

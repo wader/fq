@@ -25,8 +25,6 @@ type Decoder struct {
 
 // Decode MP3
 func (d *Decoder) Decode(opts decode.Options) bool {
-	return false
-
 	d.FieldDecode("header", d.BitsLeft(), []string{"id3v2"})
 
 	// TODO: recuseive.. stackverflow.. pass list of decoders?

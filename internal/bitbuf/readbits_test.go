@@ -3,7 +3,7 @@ package bitbuf_test
 import (
 	"encoding/hex"
 	"fmt"
-	"fq/internal/decode"
+	"fq/internal/bitbuf"
 	"testing"
 )
 
@@ -11,7 +11,7 @@ func TestReadBits(t *testing.T) {
 	testCases := []struct {
 		buf      []byte
 		bitPos   uint64
-		bits     uint
+		bits     uint64
 		expected uint64
 	}{
 		{buf: []byte{0xff}, bitPos: 0, bits: 8, expected: 0b11111111},
@@ -80,7 +80,7 @@ func TestReadBits(t *testing.T) {
 	}
 	for _, tC := range testCases {
 		t.Run(fmt.Sprintf("%s %d %d", hex.EncodeToString(tC.buf), tC.bitPos, tC.bits), func(t *testing.T) {
-			actual := decode.ReadBits(tC.buf, tC.bitPos, tC.bits)
+			actual := bitbuf.ReadBits(tC.buf, tC.bitPos, tC.bits)
 			if tC.expected != actual {
 				t.Errorf("expected %x, got %x", tC.expected, actual)
 			}
@@ -91,6 +91,6 @@ func TestReadBits(t *testing.T) {
 func TestReadBitsPanic(t *testing.T) {
 	// TODO: check panic string
 	defer func() { recover() }()
-	decode.ReadBits([]byte{}, 0, 65)
+	bitbuf.ReadBits([]byte{}, 0, 65)
 	t.Error("should panic")
 }
