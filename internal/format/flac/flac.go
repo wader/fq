@@ -96,10 +96,10 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 	var streamInfoSamepleRate uint64
 	var streamInfoBitPerSample uint64
 
-	lastBlock := false
-	for !lastBlock {
+	for {
+		lastBlock := false
 		d.FieldNoneFn("metadatablock", func() {
-			lastBlock = d.FieldU1("last_block") == 1
+			lastBlock = d.FieldBool("last_block")
 			typ := d.FieldUFn("type", func() (uint64, decode.Format, string) {
 				t := d.U7()
 				name := "Unknown"
@@ -129,6 +129,9 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 				d.FieldBytes("data", length)
 			}
 		})
+		if lastBlock {
+			break
+		}
 	}
 
 	for !d.End() {

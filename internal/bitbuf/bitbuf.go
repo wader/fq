@@ -406,8 +406,8 @@ func (b *Buffer) UTF8(nBytes uint64) (string, error) {
 	return string(s), nil
 }
 
-func (b *Buffer) Unary(s uint64) (uint, error) {
-	var n uint
+func (b *Buffer) Unary(s uint64) (uint64, error) {
+	var n uint64
 	for {
 		b, err := b.U1()
 		if err != nil {
