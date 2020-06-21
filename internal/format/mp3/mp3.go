@@ -25,6 +25,7 @@ type Decoder struct {
 
 // Decode MP3
 func (d *Decoder) Decode(opts decode.Options) {
+
 	d.FieldDecode("header", d.BitsLeft(), []string{"id3v2"})
 
 	// TODO: recuseive.. stackverflow.. pass list of decoders?
@@ -49,9 +50,15 @@ func (d *Decoder) Decode(opts decode.Options) {
 	//mp3frameBitBuf, _ := d.BitBufLen(mp3FramesLen)
 	//d.Len = mp3FramesLen
 
+	validFrames := 0
 	for !d.End() {
 		if !d.FieldDecode("frame", d.BitsLeft(), []string{"mp3frame"}) {
 			break
 		}
+		validFrames++
+	}
+
+	if validFrames == 0 {
+		d.Invalid("no frames found")
 	}
 }

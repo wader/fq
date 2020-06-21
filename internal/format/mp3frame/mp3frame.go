@@ -130,5 +130,5 @@ func (d *Decoder) Decode(opts decode.Options) {
 
 	const headerLen = 4
 	dataLen := (144 * bitRate / sampleRate) + padding - headerLen
-	d.FieldBytes("samples", dataLen)
+	d.FieldBytesLen("samples", dataLen)
 }

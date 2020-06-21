@@ -55,13 +55,13 @@ func (d *Decoder) Decode(opts decode.Options) {
 		switch version {
 		case 3:
 			extHeaderSize = d.FieldU32("size")
-			d.FieldBytes("data", extHeaderSize)
+			d.FieldBytesLen("data", extHeaderSize)
 		case 4:
 			extHeaderSize = d.FieldUFn("size,", func() (uint64, decode.Format, string) {
 				return d.SyncSafeU32(), decode.FormatDecimal, ""
 			})
 			// in v4 synchsafe integer includes itself
-			d.FieldBytes("data", extHeaderSize-4)
+			d.FieldBytesLen("data", extHeaderSize-4)
 		}
 	}
 
@@ -81,5 +81,5 @@ func (d *Decoder) Decode(opts decode.Options) {
 
 	// })
 
-	d.FieldBytes("tags", size-extHeaderSize)
+	d.FieldBytesLen("tags", size-extHeaderSize)
 }

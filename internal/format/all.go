@@ -9,6 +9,8 @@ import (
 	"fq/internal/format/id3v2"
 	"fq/internal/format/mp3"
 	"fq/internal/format/mp3frame"
+	"fq/internal/format/ogg"
+	"fq/internal/format/vorbis"
 )
 
 var All = []*decode.Register{
@@ -19,4 +21,6 @@ var All = []*decode.Register{
 	id3v1.Register,
 	id3v2.Register,
 	elf.Register,
+	ogg.Register,
+	vorbis.Register,
 }

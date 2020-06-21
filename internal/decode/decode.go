@@ -17,7 +17,7 @@ type BitBufError struct {
 }
 
 func (e BitBufError) Error() string {
-	return fmt.Sprintf("%s: failed at bit position %d (size %d, delta %d): %s", e.Op, e.Pos, e.Size, e.Delta, e.Err)
+	return fmt.Sprintf("%s: failed at bit position %d (%d+%d) (size %d, delta %d): %s", e.Op, e.Pos, e.Pos>>3, e.Pos&0x7, e.Size, e.Delta, e.Err)
 }
 func (e BitBufError) Unwrap() error { return e.Err }
 
@@ -54,6 +54,7 @@ const (
 	TypeFloat
 	TypeStr
 	TypeBytes
+	TypePadding
 )
 
 type Format int
@@ -84,7 +85,7 @@ func (v Value) String() string {
 	f := ""
 	switch v.Type {
 	case TypeNone:
-		f = ""
+		f = "none"
 	case TypeBool:
 		f = "false"
 		if v.Bool {
@@ -100,6 +101,8 @@ func (v Value) String() string {
 		f = v.Str
 	case TypeBytes:
 		f = fmt.Sprintf("%d bytes", len(v.Bytes))
+	case TypePadding:
+		f = "padding"
 		// TODO:
 		//return hex.EncodeToString(v.Bytes)
 	default:
@@ -176,7 +179,7 @@ func probe(bb *bitbuf.Buffer, registers []*Register, decoderNames []string) (*Re
 			return nil
 		}()
 
-		log.Printf("err: %#+v\n", err)
+		log.Printf("err: %s\n", err)
 
 		if err != nil {
 			continue
@@ -321,7 +324,7 @@ func (c *Common) FieldUE(name string, nBits uint64, endian bitbuf.Endian) uint64
 	return c.FieldUFn(name, func() (uint64, Format, string) {
 		n, err := c.bitBuf.UE(nBits, endian)
 		if err != nil {
-			panic(BitBufError{Err: err, Op: "FieldS" + (strconv.Itoa(int(nBits))), Size: nBits, Pos: c.bitBuf.Pos})
+			panic(BitBufError{Err: err, Op: "FieldU" + (strconv.Itoa(int(nBits))), Size: nBits, Pos: c.bitBuf.Pos})
 		}
 		return n, FormatDecimal, ""
 	})
@@ -564,6 +567,28 @@ func (c *Common) Unary(s uint64) uint64 {
 	return n
 }
 
+func (c *Common) ZeroPadding(nBits uint64) bool {
+	isZero := true
+	left := nBits
+	for {
+		// TODO: smart skip?
+		rbits := left
+		if rbits == 0 {
+			break
+		}
+		if rbits > 64 {
+			rbits = 64
+		}
+		n, err := c.bitBuf.Bits(rbits)
+		if err != nil {
+			panic(BitBufError{Err: err, Op: "ZeroPadding", Size: rbits, Pos: c.bitBuf.Pos})
+		}
+		isZero = isZero && n == 0
+		left -= rbits
+	}
+	return isZero
+}
+
 func (c *Common) FieldFn(name string, fn func() Value) Value {
 	prev := c.Current
 
@@ -591,7 +616,7 @@ func (c *Common) FieldNoneFn(name string, fn func()) {
 func (c *Common) FieldBoolFn(name string, fn func() (bool, string)) bool {
 	return c.FieldFn(name, func() Value {
 		b, d := fn()
-		return Value{Type: TypeUInt, Bool: b, Display: d}
+		return Value{Type: TypeBool, Bool: b, Display: d}
 	}).Bool
 }
 
@@ -658,7 +683,7 @@ func (c *Common) FieldValidateUFn(name string, v uint64, fn func() uint64) {
 }
 
 // TODO: FieldBytesRange or?
-func (c *Common) FieldBytes(name string, nBytes uint64) []byte {
+func (c *Common) FieldBytesLen(name string, nBytes uint64) []byte {
 	return c.FieldBytesFn(name, func() ([]byte, string) {
 		bs, err := c.bitBuf.BytesLen(nBytes)
 		if err != nil {
@@ -712,6 +737,22 @@ func (c *Common) FieldValidateString(name string, v string) {
 	}
 }
 
+func (c *Common) FieldValidateZeroPadding(name string, nBits uint64) {
+	pos := c.bitBuf.Pos
+	var isZero bool
+	c.FieldFn(name, func() Value {
+		isZero = c.ZeroPadding(nBits)
+		s := "Correct"
+		if !isZero {
+			s = "Incorrect"
+		}
+		return Value{Type: TypePadding, Display: s}
+	})
+	if !isZero {
+		panic(ValidateError{Reason: fmt.Sprintf("expected zero padding"), Pos: pos})
+	}
+}
+
 func (c *Common) ValidateAtLeastBitsLeft(nBits uint64) {
 	bl := c.bitBuf.BitsLeft()
 	if bl < nBits {
@@ -761,6 +802,30 @@ func (c *Common) FieldDecodeRange(name string, start uint64, nBits uint64, decod
 	if err != nil {
 		panic(BitBufError{Err: err, Op: "FieldDecodeRange", Size: nBits, Pos: c.bitBuf.Pos})
 	}
+
+	r, fieldC := New(c, bb, c.Registers, decoderNames)
+
+	// log.Printf("bb: %#+v\n", bb)
+
+	if r == nil {
+		log.Printf("FieldDecodeRange nope %#+v\n", decoderNames)
+		return false
+	}
+	log.Printf("FieldDecodeRange r: %#+v\n", r)
+
+	// TODO: translate positions?
+	// TODO: what out muxed stream?
+
+	c.Current.Children = append(c.Current.Children, fieldC.Current)
+
+	// TODO: what to return?
+	return true
+}
+
+// TODO: list of ranges?
+func (c *Common) FieldDecodeBitBuf(name string, start uint64, nBits uint64, bb *bitbuf.Buffer, decoderNames []string) bool {
+
+	//start := c.Pos
 
 	r, fieldC := New(c, bb, c.Registers, decoderNames)
 

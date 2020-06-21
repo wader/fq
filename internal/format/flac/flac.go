@@ -118,9 +118,9 @@ func (d *Decoder) Decode(opts decode.Options) {
 					return d.U5() + 1, decode.FormatDecimal, ""
 				})
 				d.FieldU("total_samples_in_steam", 36)
-				d.FieldBytes("md5", 16)
+				d.FieldBytesLen("md5", 16)
 			default:
-				d.FieldBytes("data", length)
+				d.FieldBytesLen("data", length)
 			}
 		})
 		if lastBlock {
@@ -496,7 +496,7 @@ func (d *Decoder) Decode(opts decode.Options) {
 								riceParameter := d.FieldU("rice_parameter", riceBits)
 								if riceParameter == riceEscape {
 									escapeSampleSize := d.FieldU5("escape_sample_size")
-									d.FieldBytes("samples", count*escapeSampleSize)
+									d.FieldBytesLen("samples", count*escapeSampleSize)
 								} else {
 									d.FieldNoneFn("samples", func() {
 										for j := uint64(0); j < count; j++ {
@@ -518,7 +518,7 @@ func (d *Decoder) Decode(opts decode.Options) {
 						d.FieldS("value", subframeSampleSize)
 					case SubframeVerbatim:
 						// <n> Unencoded warm-up samples (n = frame's bits-per-sample * predictor order).
-						d.FieldBytes("samples", blockSize*subframeSampleSize)
+						d.FieldBytesLen("samples", blockSize*subframeSampleSize)
 					case SubframeFixed:
 						// <n> Unencoded warm-up samples (n = frame's bits-per-sample * predictor order).
 						decodeWarmupSamples(lpcOrder, subframeSampleSize)
