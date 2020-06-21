@@ -80,9 +80,9 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 		})
 		_ = isBigEndian
 		d.FieldU8("version")
-		d.FieldStringMapFn("OSABI", map[uint64]string{
+		d.FieldStringMapFn("os_abi", map[uint64]string{
 			0:   "Sysv",
-			1:   "Hpux",
+			1:   "HPUX",
 			2:   "NetBSD",
 			3:   "Linux",
 			4:   "Hurd",
@@ -97,6 +97,7 @@ func (d *Decoder) Decode(opts decode.Options) bool {
 			97:  "Arm",
 			255: "Standalone",
 		}, "Unknown", d.U8)
+		d.FieldU8("abi_version")
 
 	})
 	if !validMagic {
