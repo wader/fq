@@ -2,6 +2,7 @@ ffmpeg -y -f lavfi -i sine -t 20ms -ac 2 -ar 44100 -metadata artist=bla test.ogg
 ffmpeg -y -f lavfi -i sine -f lavfi -i testsrc -t 100ms -ac 2 -ar 44100 -metadata artist=bla test2.ogg
 
 ogg -> oggpage, vorbisframe?
+buffer... list of ranges maps?
 
 init register in All? ok? sort to be stable?
 
