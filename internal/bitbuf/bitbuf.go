@@ -19,10 +19,13 @@ const (
 // Buffer is a bitbuf buffer
 // TODO: make Buf/BufFirstBit private?
 type Buffer struct {
+	// Len is bit length of buffer
+	Len uint64
+	// Pos is current bit position in buffer
+	Pos uint64
+
 	buf         []byte
 	bufFirstBit uint64
-	Len         uint64
-	Pos         uint64
 }
 
 // New bitbuf.Buffer from byte buffer buf, start at firstBit with bit length lenBits
@@ -74,6 +77,31 @@ func NewFromBitString(s string) *Buffer {
 	return New(buf, 0, uint64(len(s)))
 }
 
+// BitBufRange reads nBits bits starting from start
+// Does not update current position.
+func (b *Buffer) BitBufRange(start uint64, nBits uint64) (*Buffer, uint64) {
+	endPos := uint64(start) + uint64(nBits)
+	if endPos > b.Len {
+		return nil, endPos - b.Len
+	}
+
+	nb := &Buffer{
+		buf:         b.buf,
+		bufFirstBit: b.bufFirstBit + start,
+		Len:         nBits,
+		Pos:         0,
+	}
+
+	return nb, nBits
+}
+
+// BitBufLen reads nBits
+func (b *Buffer) BitBufLen(nBits uint64) (*Buffer, uint64) {
+	bb, rBits := b.BitBufRange(b.Pos, nBits)
+	b.Pos += rBits
+	return bb, rBits
+}
+
 // Copy bitbuf
 // TODO: rename? remove?
 func (b *Buffer) Copy() *Buffer {
@@ -102,31 +130,6 @@ func (b *Buffer) PeekBits(nBits uint64) (uint64, uint64) {
 	n := ReadBits(b.buf, b.bufFirstBit+b.Pos, nBits)
 
 	return n, nBits
-}
-
-// BitBufRange reads nBits bits starting from start
-// Does not update current position.
-func (b *Buffer) BitBufRange(start uint64, nBits uint64) (*Buffer, uint64) {
-	endPos := uint64(start) + uint64(nBits)
-	if endPos > b.Len {
-		return nil, endPos - b.Len
-	}
-
-	nb := &Buffer{
-		buf:         b.buf,
-		bufFirstBit: b.bufFirstBit + start,
-		Len:         nBits,
-		Pos:         0,
-	}
-
-	return nb, nBits
-}
-
-// BitBufLen reads nBits
-func (b *Buffer) BitBufLen(nBits uint64) (*Buffer, uint64) {
-	bb, rBits := b.BitBufRange(b.Pos, nBits)
-	b.Pos += rBits
-	return bb, rBits
 }
 
 // BytesRange reads nBytes bytes starting bit position start
