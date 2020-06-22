@@ -63,7 +63,7 @@ func main() {
 	//d := id3v2.Decoder{Common: c}
 
 	var decodernames []string
-	if forceDecoder != nil {
+	if *forceDecoder != "" {
 		decodernames = append(decodernames, *forceDecoder)
 	}
 

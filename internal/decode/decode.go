@@ -1,6 +1,7 @@
 package decode
 
 import (
+	"encoding/hex"
 	"fmt"
 	"fq/internal/bitbuf"
 	"log"
@@ -100,8 +101,14 @@ func (v Value) String() string {
 		f = strconv.FormatFloat(v.Float, 'f', -1, 64)
 	case TypeStr:
 		f = v.Str
+		if len(f) > 100 {
+			f = f[0:100] + fmt.Sprintf("... (%d bytes)", len(f))
+		}
 	case TypeBytes:
-		f = fmt.Sprintf("%d bytes", len(v.Bytes))
+		f = hex.EncodeToString(v.Bytes)
+		if len(f) > 100 {
+			f = f[0:100] + fmt.Sprintf("... (%d bytes)", len(f))
+		}
 	case TypePadding:
 		f = "padding"
 		// TODO:
@@ -188,9 +195,9 @@ func probe(bb *bitbuf.Buffer, registers []*Register, decoderNames []string) (*Re
 
 		log.Printf("err: %s\n", err)
 
-		// if err != nil {
-		// 	continue
-		// }
+		if err != nil {
+			continue
+		}
 
 		return r, c, true
 	}

@@ -3,8 +3,8 @@ package jpeg
 // https://www.w3.org/Graphics/JPEG/itu-t81.pdf
 
 import (
+	"fmt"
 	"fq/internal/decode"
-	"log"
 )
 
 var Register = &decode.Register{
@@ -20,7 +20,6 @@ var Register = &decode.Register{
 type marker struct {
 	symbol      string
 	description string
-	standlone   bool
 }
 
 const (
@@ -91,70 +90,70 @@ const (
 )
 
 var markers = map[uint]marker{
-	SOF0:  {"SOF0", "Baseline DCT", false},
-	SOF1:  {"SOF1", "Extended sequential DCT", false},
-	SOF2:  {"SOF2", "Progressive DCT", false},
-	SOF3:  {"SOF3", "Lossless (sequential)", false},
-	SOF5:  {"SOF5", "Differential sequential DCT", false},
-	SOF6:  {"SOF6", "Differential progressive DCT", false},
-	SOF7:  {"SOF7", "Differential lossless (sequential)", false},
-	JPG:   {"JPG", "Reserved for JPEG extensions", false},
-	SOF9:  {"SOF9", "Extended sequential DCT", false},
-	SOF10: {"SOF10", "Progressive DCT", false},
-	SOF11: {"SOF11", "Lossless (sequential)", false},
-	SOF13: {"SOF13", "Differential sequential DCT", false},
-	SOF14: {"SOF14", "Differential progressive DCT", false},
-	SOF15: {"SOF15", "Differential lossless (sequential)", false},
-	DHT:   {"DHT", "Define Huffman table(s)", false},
-	DAC:   {"DAC", "Define arithmetic coding conditioning(s)", false},
-	RST0:  {"RST0", "Restart with modulo 8 count 0", true},
-	RST1:  {"RST1", "Restart with modulo 8 count 1", true},
-	RST2:  {"RST2", "Restart with modulo 8 count 2", true},
-	RST3:  {"RST3", "Restart with modulo 8 count 3", true},
-	RST4:  {"RST4", "Restart with modulo 8 count 4", true},
-	RST5:  {"RST5", "Restart with modulo 8 count 5", true},
-	RST6:  {"RST6", "Restart with modulo 8 count 6", true},
-	RST7:  {"RST7", "Restart with modulo 8 count 7", true},
-	SOI:   {"SOI", "Start of image ", true},
-	EOI:   {"EOI", "End of image true", true},
-	SOS:   {"SOS", "Start of scan", false},
-	DQT:   {"DQT", "Define quantization table(s)", false},
-	DNL:   {"DNL", "Define number of lines", false},
-	DRI:   {"DRI", "Define restart interval", false},
-	DHP:   {"DHP", "Define hierarchical progression", false},
-	EXP:   {"EXP", "Expand reference component(s)", false},
-	APP0:  {"APP0", "Reserved for application segments", false},
-	APP1:  {"APP1", "Reserved for application segments", false},
-	APP2:  {"APP2", "Reserved for application segments", false},
-	APP3:  {"APP3", "Reserved for application segments", false},
-	APP4:  {"APP4", "Reserved for application segments", false},
-	APP5:  {"APP5", "Reserved for application segments", false},
-	APP6:  {"APP6", "Reserved for application segments", false},
-	APP7:  {"APP7", "Reserved for application segments", false},
-	APP8:  {"APP8", "Reserved for application segments", false},
-	APP9:  {"APP9", "Reserved for application segments", false},
-	APP10: {"APP10", "Reserved for application segments", false},
-	APP11: {"APP11", "Reserved for application segments", false},
-	APP12: {"APP12", "Reserved for application segments", false},
-	APP13: {"APP13", "Reserved for application segments", false},
-	APP14: {"APP14", "Reserved for application segments", false},
-	APP15: {"APP15", "Reserved for application segments", false},
-	JPG0:  {"JPG0", "Reserved for JPEG extensions", false},
-	JPG1:  {"JPG1", "Reserved for JPEG extensions", false},
-	JPG2:  {"JPG2", "Reserved for JPEG extensions", false},
-	JPG3:  {"JPG3", "Reserved for JPEG extensions", false},
-	JPG4:  {"JPG4", "Reserved for JPEG extensions", false},
-	JPG5:  {"JPG5", "Reserved for JPEG extensions", false},
-	JPG6:  {"JPG6", "Reserved for JPEG extensions", false},
-	JPG7:  {"JPG7", "Reserved for JPEG extensions", false},
-	JPG8:  {"JPG8", "Reserved for JPEG extensions", false},
-	JPG9:  {"JPG9", "Reserved for JPEG extensions", false},
-	JPG10: {"JPG10", "Reserved for JPEG extensions", false},
-	JPG11: {"JPG11", "Reserved for JPEG extensions", false},
-	JPG12: {"JPG12", "Reserved for JPEG extensions", false},
-	JPG13: {"JPG13", "Reserved for JPEG extensions", false},
-	COM:   {"COM", "Comment", false},
-	TEM:   {"TEM", "For temporary private use in arithmetic coding", true},
+	SOF0:  {"SOF0", "Baseline DCT"},
+	SOF1:  {"SOF1", "Extended sequential DCT"},
+	SOF2:  {"SOF2", "Progressive DCT"},
+	SOF3:  {"SOF3", "Lossless (sequential)"},
+	SOF5:  {"SOF5", "Differential sequential DCT"},
+	SOF6:  {"SOF6", "Differential progressive DCT"},
+	SOF7:  {"SOF7", "Differential lossless (sequential)"},
+	JPG:   {"JPG", "Reserved for JPEG extensions"},
+	SOF9:  {"SOF9", "Extended sequential DCT"},
+	SOF10: {"SOF10", "Progressive DCT"},
+	SOF11: {"SOF11", "Lossless (sequential)"},
+	SOF13: {"SOF13", "Differential sequential DCT"},
+	SOF14: {"SOF14", "Differential progressive DCT"},
+	SOF15: {"SOF15", "Differential lossless (sequential)"},
+	DHT:   {"DHT", "Define Huffman table(s)"},
+	DAC:   {"DAC", "Define arithmetic coding conditioning(s)"},
+	RST0:  {"RST0", "Restart with modulo 8 count 0"},
+	RST1:  {"RST1", "Restart with modulo 8 count 1"},
+	RST2:  {"RST2", "Restart with modulo 8 count 2"},
+	RST3:  {"RST3", "Restart with modulo 8 count 3"},
+	RST4:  {"RST4", "Restart with modulo 8 count 4"},
+	RST5:  {"RST5", "Restart with modulo 8 count 5"},
+	RST6:  {"RST6", "Restart with modulo 8 count 6"},
+	RST7:  {"RST7", "Restart with modulo 8 count 7"},
+	SOI:   {"SOI", "Start of image "},
+	EOI:   {"EOI", "End of image true"},
+	SOS:   {"SOS", "Start of scan"},
+	DQT:   {"DQT", "Define quantization table(s)"},
+	DNL:   {"DNL", "Define number of lines"},
+	DRI:   {"DRI", "Define restart interval"},
+	DHP:   {"DHP", "Define hierarchical progression"},
+	EXP:   {"EXP", "Expand reference component(s)"},
+	APP0:  {"APP0", "Reserved for application segments"},
+	APP1:  {"APP1", "Reserved for application segments"},
+	APP2:  {"APP2", "Reserved for application segments"},
+	APP3:  {"APP3", "Reserved for application segments"},
+	APP4:  {"APP4", "Reserved for application segments"},
+	APP5:  {"APP5", "Reserved for application segments"},
+	APP6:  {"APP6", "Reserved for application segments"},
+	APP7:  {"APP7", "Reserved for application segments"},
+	APP8:  {"APP8", "Reserved for application segments"},
+	APP9:  {"APP9", "Reserved for application segments"},
+	APP10: {"APP10", "Reserved for application segments"},
+	APP11: {"APP11", "Reserved for application segments"},
+	APP12: {"APP12", "Reserved for application segments"},
+	APP13: {"APP13", "Reserved for application segments"},
+	APP14: {"APP14", "Reserved for application segments"},
+	APP15: {"APP15", "Reserved for application segments"},
+	JPG0:  {"JPG0", "Reserved for JPEG extensions"},
+	JPG1:  {"JPG1", "Reserved for JPEG extensions"},
+	JPG2:  {"JPG2", "Reserved for JPEG extensions"},
+	JPG3:  {"JPG3", "Reserved for JPEG extensions"},
+	JPG4:  {"JPG4", "Reserved for JPEG extensions"},
+	JPG5:  {"JPG5", "Reserved for JPEG extensions"},
+	JPG6:  {"JPG6", "Reserved for JPEG extensions"},
+	JPG7:  {"JPG7", "Reserved for JPEG extensions"},
+	JPG8:  {"JPG8", "Reserved for JPEG extensions"},
+	JPG9:  {"JPG9", "Reserved for JPEG extensions"},
+	JPG10: {"JPG10", "Reserved for JPEG extensions"},
+	JPG11: {"JPG11", "Reserved for JPEG extensions"},
+	JPG12: {"JPG12", "Reserved for JPEG extensions"},
+	JPG13: {"JPG13", "Reserved for JPEG extensions"},
+	COM:   {"COM", "Comment"},
+	TEM:   {"TEM", "For temporary private use in arithmetic coding"},
 }
 
 // 0x02-BF RES Reserved"},
@@ -166,66 +165,82 @@ type Decoder struct {
 
 // Decode jpeg
 func (d *Decoder) Decode(opts decode.Options) {
+	inECD := false
 	for !d.End() {
-		d.FieldNoneFn("marker", func() {
-			d.FieldNoneFn("prefix", func() {
-				for d.PeekBits(8) == 0xff {
-					d.SeekRel(8)
+		if inECD {
+			ecdLen := int64(0)
+			for {
+				if d.PeekBits(8) == 0xff && d.PeekBits(16) != 0xff00 {
+					break
+				}
+				d.SeekRel(8)
+				ecdLen++
+			}
+			d.SeekRel(-ecdLen * 8)
+			d.FieldBytesLen("entropy_coded_data", uint64(ecdLen))
+			inECD = false
+		} else {
+			d.FieldNoneFn("marker", func() {
+				d.FieldNoneFn("prefix", func() {
+					for d.PeekBits(8) == 0xff {
+						d.SeekRel(8)
+					}
+				})
+				markerFound := false
+				markerCode := d.FieldUFn("code", func() (uint64, decode.Format, string) {
+					n := uint(d.U8())
+					if m, ok := markers[n]; ok {
+						markerFound = true
+						return uint64(n), decode.FormatDecimal, m.symbol
+					}
+					return uint64(n), decode.FormatDecimal, "RES"
+				})
+
+				// TODO: warning on 0x00?
+				switch markerCode {
+				case SOI:
+				case SOF0, SOF1, SOF2, SOF3, SOF5, SOF6, SOF7, SOF9, SOF10, SOF11:
+					d.FieldU16("Lf")
+					d.FieldU8("P")
+					d.FieldU16("Y")
+					d.FieldU16("X")
+					nf := d.FieldU8("Nf")
+					for i := uint64(0); i < nf; i++ {
+						d.FieldNoneFn("frame_component", func() {
+							d.FieldU8("C")
+							d.FieldU4("H")
+							d.FieldU4("V")
+							d.FieldU8("Tq")
+						})
+					}
+				case SOS:
+					d.FieldU16("Ls")
+					ns := d.FieldU8("Ns")
+					for i := uint64(0); i < ns; i++ {
+						d.FieldNoneFn("scan_component", func() {
+							d.FieldU8("Cs")
+							d.FieldU4("Td")
+							d.FieldU4("Ta")
+						})
+					}
+					d.FieldU8("Ss")
+					d.FieldU8("Se")
+					d.FieldU4("Ah")
+					d.FieldU4("Al")
+					inECD = true
+				case RST0, RST1, RST2, RST3, RST4, RST5, RST6, RST7:
+					inECD = true
+				case TEM:
+				case EOI:
+				default:
+					if markerFound {
+						markerLen := d.FieldU16("length")
+						d.FieldBytesLen("data", markerLen-2)
+					} else {
+						d.Invalid(fmt.Sprintf("unknown marker %x", markerCode))
+					}
 				}
 			})
-			var markerCode uint
-			var cm *marker
-			d.FieldUFn("code", func() (uint64, decode.Format, string) {
-				markerCode = uint(d.U8())
-				if m, ok := markers[markerCode]; ok {
-					cm = &m
-					return uint64(markerCode), decode.FormatDecimal, m.symbol
-				}
-				return uint64(markerCode), decode.FormatDecimal, "RES"
-			})
-
-			log.Printf("markerCode: %#+v\n", markerCode)
-			if cm.standlone {
-				return
-			}
-
-			markerLen := d.FieldU16("length")
-
-			log.Printf("markerLen: %#+v\n", markerLen)
-
-			switch markerCode {
-			case SOF0, SOF1, SOF2, SOF3, SOF5, SOF6, SOF7, SOF9, SOF10, SOF11:
-				d.FieldU8("P")
-				d.FieldU16("Y")
-				d.FieldU16("X")
-				nf := d.FieldU8("Nf")
-				for i := uint64(0); i < nf; i++ {
-					d.FieldNoneFn("frame_component", func() {
-						d.FieldU8("C")
-						d.FieldU4("H")
-						d.FieldU4("V")
-						d.FieldU8("Tq")
-					})
-				}
-			case SOS:
-				ns := d.FieldU8("Ns")
-				for i := uint64(0); i < ns; i++ {
-					d.FieldNoneFn("scan_component", func() {
-						d.FieldU8("Cs")
-						d.FieldU4("Td")
-						d.FieldU4("Ta")
-					})
-				}
-				d.FieldU8("Ss")
-				d.FieldU8("Se")
-				d.FieldU4("Ah")
-				d.FieldU4("Al")
-			default:
-				d.FieldBytesLen("data", markerLen-2)
-			}
-
-		})
-
+		}
 	}
-
 }

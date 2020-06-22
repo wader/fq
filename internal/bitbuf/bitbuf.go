@@ -201,6 +201,7 @@ func (b *Buffer) SeekRel(delta int64) (uint64, error) {
 		return b.Pos, ErrUnexpectedEOF
 	}
 	b.Pos = endPos
+
 	return b.Pos, nil
 }
 
