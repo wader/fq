@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"fq/internal/bitbuf"
 	"log"
+	"runtime"
 	"strconv"
 	"strings"
 )
@@ -146,7 +147,7 @@ func probe(bb *bitbuf.Buffer, registers []*Register, decoderNames []string) (*Re
 	}
 
 	for _, r := range registers {
-		if decoderNames != nil {
+		if len(namesMap) > 0 {
 			if _, ok := namesMap[r.Name]; !ok {
 				continue
 			}
@@ -163,6 +164,12 @@ func probe(bb *bitbuf.Buffer, registers []*Register, decoderNames []string) (*Re
 		err := func() (err error) {
 			defer func() {
 				if rerr := recover(); rerr != nil {
+					// https://github.com/golang/go/blob/master/src/net/http/server.go#L1770
+					const size = 64 << 10
+					buf := make([]byte, size)
+					buf = buf[:runtime.Stack(buf, false)]
+					log.Printf("%s\n", buf)
+
 					switch terr := rerr.(type) {
 					case BitBufError:
 						err = terr
@@ -832,10 +839,10 @@ func (c *Common) FieldDecodeBitBuf(name string, start uint64, nBits uint64, bb *
 	// log.Printf("bb: %#+v\n", bb)
 
 	if r == nil {
-		log.Printf("FieldDecodeRange nope %#+v\n", decoderNames)
+		//log.Printf("FieldDecodeRange nope %#+v\n", decoderNames)
 		return false
 	}
-	log.Printf("FieldDecodeRange r: %#+v\n", r)
+	//log.Printf("FieldDecodeRange r: %#+v\n", r)
 
 	// TODO: translate positions?
 	// TODO: what out muxed stream?
@@ -851,12 +858,12 @@ func (c *Common) FieldDecodeBitBuf(name string, start uint64, nBits uint64, bb *
 func Dump(f *Field, depth int) {
 	indent := strings.Repeat("  ", depth)
 	if (len(f.Children)) != 0 {
-		fmt.Printf("%s%s: %s %s {\n", indent, f.Name, f.Range, f.Value)
+		fmt.Printf("%s%s: %s %s {\n", indent, f.Name, f.Value, f.Range)
 		for _, c := range f.Children {
 			Dump(c, depth+1)
 		}
 		fmt.Printf("%s}\n", indent)
 	} else {
-		fmt.Printf("%s%s: %s %s\n", indent, f.Name, f.Range, f.Value)
+		fmt.Printf("%s%s: %s %s\n", indent, f.Name, f.Value, f.Range)
 	}
 }

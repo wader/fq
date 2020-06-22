@@ -15,6 +15,8 @@ import (
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to `file`")
 var memprofile = flag.String("memprofile", "", "write memory profile to `file`")
 
+var forceDecoder = flag.String("f", "", "")
+
 func main() {
 	flag.Parse()
 
@@ -60,13 +62,18 @@ func main() {
 	//d := mp3.Decoder{Common: c}
 	//d := id3v2.Decoder{Common: c}
 
+	var decodernames []string
+	if forceDecoder != nil {
+		decodernames = append(decodernames, *forceDecoder)
+	}
+
 	func() {
 		defer func() {
 			// if e := recover(); e != nil {
 			// 	log.Printf("e: %#+v\n", e)
 			// }
 		}()
-		r, d := decode.New(nil, bitbuf.NewFromBytes(buf), format.All, nil)
+		r, d := decode.New(nil, bitbuf.NewFromBytes(buf), format.All, decodernames)
 		log.Printf("r: %#+v\n", r)
 
 		decode.Dump(d.Current, 0)

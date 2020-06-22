@@ -4,9 +4,11 @@ import (
 	"fq/internal/decode"
 	"fq/internal/format/elf"
 	"fq/internal/format/flac"
+	"fq/internal/format/flacpicture"
 	"fq/internal/format/id3v1"
 	"fq/internal/format/id3v11"
 	"fq/internal/format/id3v2"
+	"fq/internal/format/jpeg"
 	"fq/internal/format/mp3"
 	"fq/internal/format/mp3frame"
 	"fq/internal/format/ogg"
@@ -23,4 +25,6 @@ var All = []*decode.Register{
 	elf.Register,
 	ogg.Register,
 	vorbis.Register,
+	flacpicture.Register,
+	jpeg.Register,
 }

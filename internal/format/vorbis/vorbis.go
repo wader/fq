@@ -4,7 +4,11 @@ package vorbis
 // TODO: setup? more audio?
 
 import (
+	"encoding/base64"
+	"fq/internal/bitbuf"
 	"fq/internal/decode"
+	"log"
+	"strings"
 )
 
 var Register = &decode.Register{
@@ -90,21 +94,41 @@ func (d *Decoder) Decode(opts decode.Options) {
 		// 8   8) [blocksize_1] = 2 exponent (read 4 bits as unsigned integer)
 		// 9   9) [framing_flag] = read one bit
 
-	case packetTypeComment:
-		nameLen := func(name string) {
-			len := d.FieldU32LE(name + "_length")
-			d.FieldUTF8(name, len)
+		if d.BitsLeft() > 0 {
+			d.FieldValidateZeroPadding("padding", d.BitsLeft())
 		}
-		nameLen("vendor")
+
+	case packetTypeComment:
+		lenStr := func(name string) string {
+			len := d.FieldU32LE(name + "_length")
+			return d.FieldUTF8(name, len)
+		}
+		lenStr("vendor")
 		userCommentListLength := d.FieldU32LE("user_comment_list_length")
 		for i := uint64(0); i < userCommentListLength; i++ {
-			nameLen("user_comment")
+			pair := lenStr("user_comment")
+			pairParts := strings.SplitN(pair, "=", 2)
+			if len(pairParts) == 2 {
+				// METADATA_BLOCK_PICTURE=<base64>
+				k, v := strings.ToUpper(pairParts[0]), pairParts[1]
+				log.Printf("k: %#+v\n", k)
+				log.Printf("v: %#+v\n", v)
+				if k == "METADATA_BLOCK_PICTURE" {
+					bs, err := base64.StdEncoding.DecodeString(v)
+					if err == nil {
+						d.FieldDecodeBitBuf("picture", 0, 0, bitbuf.NewFromBytes(bs), []string{"flacpicture"})
+					} else {
+						// TODO: warning?
+					}
+				}
+			}
 		}
 		d.FieldValidateZeroPadding("padding", 7)
 		d.FieldValidateUFn("frame_bit", 1, d.U1)
+
+		if d.BitsLeft() > 0 {
+			d.FieldValidateZeroPadding("padding", d.BitsLeft())
+		}
 	}
 
-	if d.BitsLeft() > 0 {
-		d.FieldValidateZeroPadding("padding", d.BitsLeft())
-	}
 }
