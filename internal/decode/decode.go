@@ -177,7 +177,7 @@ func probe(bb *bitbuf.Buffer, registers []*Register, decoderNames []string) (*Re
 						err = terr
 					default:
 						// TODO:
-						panic(terr)
+						//panic(terr)
 					}
 				}
 			}()
@@ -188,9 +188,9 @@ func probe(bb *bitbuf.Buffer, registers []*Register, decoderNames []string) (*Re
 
 		log.Printf("err: %s\n", err)
 
-		if err != nil {
-			continue
-		}
+		// if err != nil {
+		// 	continue
+		// }
 
 		return r, c, true
 	}
