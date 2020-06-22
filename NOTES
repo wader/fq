@@ -3,6 +3,8 @@ ffmpeg -y -f lavfi -i sine -f lavfi -i testsrc -t 100ms -ac 2 -ar 44100 -metadat
 
 FieldBytesFn that uses start-stop pos to get bytes? maybe just a ui thing?
 
+probe skip some? if not force?
+
 ogg -> oggpage, vorbisframe?
 buffer... list of ranges maps?
 

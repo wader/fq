@@ -1,6 +1,7 @@
 package jpeg
 
 // https://www.w3.org/Graphics/JPEG/itu-t81.pdf
+// TODO: exif https://www.exif.org/Exif2-2.PDF
 
 import (
 	"fmt"
@@ -156,8 +157,6 @@ var markers = map[uint]marker{
 	TEM:   {"TEM", "For temporary private use in arithmetic coding"},
 }
 
-// 0x02-BF RES Reserved"},
-
 // Decoder is a jpeg decoder
 type Decoder struct {
 	decode.Common
@@ -213,6 +212,9 @@ func (d *Decoder) Decode(opts decode.Options) {
 							d.FieldU8("Tq")
 						})
 					}
+				case COM:
+					comLen := d.FieldU16("Lc")
+					d.FieldUTF8("Cm", comLen-2)
 				case SOS:
 					d.FieldU16("Ls")
 					ns := d.FieldU8("Ns")
