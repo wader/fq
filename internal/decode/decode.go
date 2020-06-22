@@ -779,6 +779,22 @@ func (c *Common) Invalid(reason string) {
 	panic(ValidateError{Reason: reason, Pos: c.bitBuf.Pos})
 }
 
+func (c *Common) SubLen(nBits uint64, fn func()) {
+	prevBb := c.bitBuf
+
+	bb, err := c.bitBuf.BitBufLen(nBits)
+	if err != nil {
+		panic(BitBufError{Err: err, Op: "SubLen", Size: nBits, Pos: c.bitBuf.Pos})
+
+	}
+	c.bitBuf = bb
+
+	fn()
+
+	prevBb.Pos = c.bitBuf.Pos
+	c.bitBuf = prevBb
+}
+
 // TODO: return decooder?
 func (c *Common) FieldDecode(name string, nBits uint64, decoderNames []string) bool {
 
