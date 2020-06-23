@@ -140,6 +140,15 @@ func (b *Buffer) PeekBits(nBits uint64) (uint64, error) {
 	return n, nil
 }
 
+// PeekBytes peek nBytes bytes from buffer
+func (b *Buffer) PeekBytes(nBytes uint64) ([]byte, error) {
+	bs, err := b.BytesRange(b.Pos, nBytes)
+	if err != nil {
+		return bs, nil
+	}
+	return bs, nil
+}
+
 // BytesRange reads nBytes bytes starting bit position start
 // Does not update current position.
 func (b *Buffer) BytesRange(firstBit uint64, nBytes uint64) ([]byte, error) {

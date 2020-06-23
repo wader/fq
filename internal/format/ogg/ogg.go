@@ -73,7 +73,7 @@ func (d *Decoder) Decode(opts decode.Options) {
 				bs := d.FieldBytesLen("segment", uint64(ss))
 				s.packetBuf = append(s.packetBuf, bs...)
 				if len(bs) < 255 {
-					d.FieldDecodeBitBuf("packet", 0, 0, bitbuf.NewFromBytes(s.packetBuf), []string{"vorbis"})
+					d.FieldDecodeBitBuf("packet", bitbuf.NewFromBytes(s.packetBuf), []string{"vorbis"})
 					s.packetBuf = nil
 				}
 			}

@@ -19,7 +19,8 @@ type BitBufError struct {
 }
 
 func (e BitBufError) Error() string {
-	return fmt.Sprintf("%s: failed at bit position %d (%d+%d) (size %d, delta %d): %s", e.Op, e.Pos, e.Pos>>3, e.Pos&0x7, e.Size, e.Delta, e.Err)
+	return fmt.Sprintf("%s: failed at bit position %d (%d+%d) (size %d (%d+%d), delta %d (%d+%d)): %s",
+		e.Op, e.Pos, e.Pos>>3, e.Pos&0x7, e.Size, e.Size>>3, e.Size&0x7, e.Delta, e.Delta>>3, e.Delta&0x7, e.Err)
 }
 func (e BitBufError) Unwrap() error { return e.Err }
 
@@ -29,7 +30,7 @@ type ValidateError struct {
 }
 
 func (e ValidateError) Error() string {
-	return fmt.Sprintf("failed to validate at position %d: %s", e.Pos, e.Reason)
+	return fmt.Sprintf("failed to validate at position %d (%d+%d): %s", e.Pos, e.Pos>>3, e.Pos&0x7, e.Reason)
 }
 
 type Options struct {
@@ -37,9 +38,10 @@ type Options struct {
 }
 
 type Register struct {
-	Name string
-	MIME string
-	New  func(common Common) Decoder
+	Name      string
+	MIME      string
+	New       func(common Common) Decoder
+	SkipProbe bool
 }
 
 type Decoder interface {
@@ -57,6 +59,7 @@ const (
 	TypeStr
 	TypeBytes
 	TypePadding
+	TypeDecoder
 )
 
 type Format int
@@ -107,12 +110,14 @@ func (v Value) String() string {
 	case TypeBytes:
 		f = hex.EncodeToString(v.Bytes)
 		if len(f) > 100 {
-			f = f[0:100] + fmt.Sprintf("... (%d bytes)", len(f))
+			f = f[0:100] + fmt.Sprintf("... (%d bytes)", len(v.Bytes))
 		}
 	case TypePadding:
 		f = "padding"
 		// TODO:
 		//return hex.EncodeToString(v.Bytes)
+	case TypeDecoder:
+		f = "decoder"
 	default:
 		panic("unreachable")
 	}
@@ -154,6 +159,9 @@ func probe(bb *bitbuf.Buffer, registers []*Register, decoderNames []string) (*Re
 	}
 
 	for _, r := range registers {
+		if len(namesMap) == 0 && r.SkipProbe {
+			continue
+		}
 		if len(namesMap) > 0 {
 			if _, ok := namesMap[r.Name]; !ok {
 				continue
@@ -184,7 +192,7 @@ func probe(bb *bitbuf.Buffer, registers []*Register, decoderNames []string) (*Re
 						err = terr
 					default:
 						// TODO:
-						//panic(terr)
+						panic(terr)
 					}
 				}
 			}()
@@ -193,9 +201,8 @@ func probe(bb *bitbuf.Buffer, registers []*Register, decoderNames []string) (*Re
 			return nil
 		}()
 
-		log.Printf("err: %s\n", err)
-
 		if err != nil {
+			log.Printf("err: %s\n", err)
 			continue
 		}
 
@@ -222,6 +229,13 @@ func (c *Common) PeekBits(nBits uint64) uint64 {
 	return n
 }
 
+func (c *Common) PeekBytes(nBytes uint64) []byte {
+	bs, err := c.bitBuf.PeekBytes(nBytes)
+	if err != nil {
+		panic(BitBufError{Err: err, Op: "PeekBytes", Size: nBytes * 8, Pos: c.bitBuf.Pos})
+	}
+	return bs
+}
 func (c *Common) BytesRange(firstBit uint64, nBytes uint64) []byte {
 	bs, err := c.bitBuf.BytesRange(firstBit, nBytes)
 	if err != nil {
@@ -853,7 +867,7 @@ func (c *Common) FieldDecodeRange(name string, start uint64, nBits uint64, decod
 }
 
 // TODO: list of ranges?
-func (c *Common) FieldDecodeBitBuf(name string, start uint64, nBits uint64, bb *bitbuf.Buffer, decoderNames []string) bool {
+func (c *Common) FieldDecodeBitBuf(name string, bb *bitbuf.Buffer, decoderNames []string) bool {
 
 	//start := c.Pos
 

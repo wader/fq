@@ -12,6 +12,7 @@ import (
 	"fq/internal/format/mp3"
 	"fq/internal/format/mp3frame"
 	"fq/internal/format/ogg"
+	"fq/internal/format/tar"
 	"fq/internal/format/vorbis"
 )
 
@@ -27,4 +28,5 @@ var All = []*decode.Register{
 	vorbis.Register,
 	flacpicture.Register,
 	jpeg.Register,
+	tar.Register,
 }

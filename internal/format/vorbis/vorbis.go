@@ -5,6 +5,7 @@ package vorbis
 
 import (
 	"encoding/base64"
+	"fmt"
 	"fq/internal/bitbuf"
 	"fq/internal/decode"
 	"log"
@@ -19,6 +20,7 @@ var Register = &decode.Register{
 			Common: common,
 		}
 	},
+	SkipProbe: true,
 }
 
 const (
@@ -43,20 +45,17 @@ type Decoder struct {
 // Decode vorbis
 func (d *Decoder) Decode(opts decode.Options) {
 	packetType := d.FieldUFn("packet_type", func() (uint64, decode.Format, string) {
-		var packetType uint64
 		packetTypeName := "unknown"
 		t := d.U8()
 		// 4.2.1. Common header decode
 		// "these types are all odd as a packet with a leading single bit of ’0’ is an audio packet"
 		if t&1 == 0 {
-			packetType = 0
-		} else {
-			packetType = t
+			t = packetTypeAudio
 		}
-		if n, ok := packetTypeNames[uint(packetType)]; ok {
+		if n, ok := packetTypeNames[uint(t)]; ok {
 			packetTypeName = n
 		}
-		return packetType, decode.FormatDecimal, packetTypeName
+		return t, decode.FormatDecimal, packetTypeName
 	})
 
 	switch packetType {
@@ -65,6 +64,7 @@ func (d *Decoder) Decode(opts decode.Options) {
 	}
 
 	switch packetType {
+	case packetTypeAudio:
 	case packetTypeIdentification:
 		d.FieldValidateUFn("vorbis_version", 0, d.U32LE)
 		d.FieldU8("audio_channels")
@@ -116,7 +116,7 @@ func (d *Decoder) Decode(opts decode.Options) {
 				if k == "METADATA_BLOCK_PICTURE" {
 					bs, err := base64.StdEncoding.DecodeString(v)
 					if err == nil {
-						d.FieldDecodeBitBuf("picture", 0, 0, bitbuf.NewFromBytes(bs), []string{"flacpicture"})
+						d.FieldDecodeBitBuf("picture", bitbuf.NewFromBytes(bs), []string{"flacpicture"})
 					} else {
 						// TODO: warning?
 					}
@@ -129,6 +129,8 @@ func (d *Decoder) Decode(opts decode.Options) {
 		if d.BitsLeft() > 0 {
 			d.FieldValidateZeroPadding("padding", d.BitsLeft())
 		}
+	default:
+		d.Invalid(fmt.Sprintf("unknown packet type %d", packetType))
 	}
 
 }

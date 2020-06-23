@@ -15,6 +15,7 @@ var Register = &decode.Register{
 			Common: common,
 		}
 	},
+	SkipProbe: true,
 }
 
 // Decoder is a flacpicture decoder
@@ -37,7 +38,7 @@ func (d *Decoder) Decode(opts decode.Options) {
 	d.FieldU32("number_of_index_colors")
 	pictureLen := d.FieldU32("picture_length")
 	pictureBs := d.FieldBytesLen("picture_data", uint64(pictureLen))
-	d.FieldDecodeBitBuf("picture", 0, 0, bitbuf.NewFromBytes(pictureBs), []string{"jpeg"})
+	d.FieldDecodeBitBuf("picture", bitbuf.NewFromBytes(pictureBs), []string{"jpeg"})
 
 	// uint32 "The picture type"
 	// set mime_length [uint32 "MIME length"]
