@@ -3,6 +3,7 @@ package flac
 // TODO: more metablocks
 // TODO: crc, md5
 // TODO: 24 picture truncate
+// TODO: flacpicture
 
 import (
 	"fq/internal/decode"

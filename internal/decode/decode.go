@@ -104,13 +104,15 @@ func (v Value) String() string {
 		f = strconv.FormatFloat(v.Float, 'f', -1, 64)
 	case TypeStr:
 		f = v.Str
-		if len(f) > 100 {
-			f = f[0:100] + fmt.Sprintf("... (%d bytes)", len(f))
+		if len(f) > 50 {
+			f = f[0:50] + fmt.Sprintf("... (%d bytes)", len(f))
 		}
 	case TypeBytes:
-		f = hex.EncodeToString(v.Bytes)
-		if len(f) > 100 {
-			f = f[0:100] + fmt.Sprintf("... (%d bytes)", len(v.Bytes))
+		if len(v.Bytes) > 50 {
+			f = hex.EncodeToString(v.Bytes[0:25]) + fmt.Sprintf("... (%d bytes)", len(v.Bytes))
+
+		} else {
+			f = hex.EncodeToString(v.Bytes) + fmt.Sprintf(" (%d bytes)", len(v.Bytes))
 		}
 	case TypePadding:
 		f = "padding"
