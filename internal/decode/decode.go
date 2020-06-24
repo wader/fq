@@ -715,7 +715,7 @@ func (c *Common) FieldBytesLen(name string, nBytes uint64) []byte {
 	return c.FieldBytesFn(name, func() ([]byte, string) {
 		bs, err := c.bitBuf.BytesLen(nBytes)
 		if err != nil {
-			panic(BitBufError{Err: err, Op: "FieldBytes", Size: nBytes * 8, Pos: c.bitBuf.Pos})
+			panic(BitBufError{Err: err, Op: "FieldBytesLen", Size: nBytes * 8, Pos: c.bitBuf.Pos})
 		}
 		return bs, ""
 	})
