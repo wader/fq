@@ -203,7 +203,7 @@ func probe(bb *bitbuf.Buffer, registers []*Register, decoderNames []string) (*Re
 
 		if err != nil {
 			log.Printf("err: %s\n", err)
-			continue
+			// continue
 		}
 
 		return r, c, true
