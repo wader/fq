@@ -64,6 +64,25 @@ func (d *Decoder) decodeAtom() uint64 {
 			})
 		},
 		"tref": d.decodeAtoms,
+		"tkhd": func(dataSize uint64) {
+			d.FieldU8("version")
+			// TODO: values
+			d.FieldU24("flags")
+			d.FieldU32("creation_time")
+			d.FieldU32("modification_time")
+			d.FieldU32("track_id")
+			d.FieldU32("reserved")
+			d.FieldU32("duration")
+			d.FieldBytesLen("reserved", 8)
+			d.FieldU16("layer")
+			// TODO: values
+			d.FieldU16("alternate_group")
+			d.FieldFP16("volume")
+			d.FieldU16("reserved")
+			d.FieldBytesLen("matrix_structure", 36)
+			d.FieldFP32("track_width")
+			d.FieldFP32("track_height")
+		},
 	}
 
 	size := d.U32()
