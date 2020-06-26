@@ -63,6 +63,7 @@ func (d *Decoder) decodeAtom() uint64 {
 				}
 			})
 		},
+		"tref": d.decodeAtoms,
 	}
 
 	size := d.U32()
