@@ -589,6 +589,32 @@ func (c *Common) UTF8(nBytes uint64) string {
 	return string(s)
 }
 
+func (c *Common) FP32() float64 {
+	n := c.U32()
+	// TODO: correct?
+	f := float64(n>>16) + float64(n&0xffff)/0x10000
+	return f
+}
+
+func (c *Common) FieldFP32(name string) float64 {
+	return c.FieldFloatFn(name, func() (float64, string) {
+		return c.FP32(), ""
+	})
+}
+
+func (c *Common) FP16() float64 {
+	n := c.U16()
+	// TODO: correct?
+	f := float64(n>>8) + float64(n&0xff)/0x100
+	return f
+}
+
+func (c *Common) FieldFP16(name string) float64 {
+	return c.FieldFloatFn(name, func() (float64, string) {
+		return c.FP16(), ""
+	})
+}
+
 func (c *Common) Unary(s uint64) uint64 {
 	n, err := c.bitBuf.Unary(s)
 	if err != nil {
@@ -667,7 +693,7 @@ func (c *Common) FieldSFn(name string, fn func() (int64, Format, string)) int64 
 func (c *Common) FieldFloatFn(name string, fn func() (float64, string)) float64 {
 	return c.FieldFn(name, func() Value {
 		f, d := fn()
-		return Value{Type: TypeSInt, Float: f, Display: d}
+		return Value{Type: TypeFloat, Float: f, Display: d}
 	}).Float
 }
 

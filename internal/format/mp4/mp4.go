@@ -37,12 +37,8 @@ func (d *Decoder) decodeAtom() uint64 {
 			d.FieldU32("modification_time")
 			d.FieldU32("time_scale")
 			d.FieldU32("duration")
-
-			d.FieldU32("preferred_rate")
-			d.FieldU16("preferred_volume")
-			//fixedpoint32 "Preferred rate"
-			//fixedpoint16 "Preferred volume"
-
+			d.FieldFP32("preferred_rate")
+			d.FieldFP16("preferred_volume")
 			d.FieldUTF8("reserved", 10)
 			d.FieldUTF8("matrix_structure", 36)
 			d.FieldU32("preview_time")
@@ -52,6 +48,20 @@ func (d *Decoder) decodeAtom() uint64 {
 			d.FieldU32("selection_duration")
 			d.FieldU32("current_time")
 			d.FieldU32("next_track_id")
+		},
+		"trak": d.decodeAtoms,
+		"edts": d.decodeAtoms,
+		"elst": func(dataSize uint64) {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+			numEntries := d.FieldU32("num_entries")
+			d.FieldNoneFn("table", func() {
+				for i := uint64(0); i < numEntries; i++ {
+					d.FieldU32("track_duration")
+					d.FieldU32("media_item")
+					d.FieldFP32("media_rate")
+				}
+			})
 		},
 	}
 
