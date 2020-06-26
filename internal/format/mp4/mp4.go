@@ -84,6 +84,32 @@ func (d *Decoder) decodeAtom() uint64 {
 			d.FieldFP32("track_height")
 		},
 		"mdia": d.decodeAtoms,
+		"mdhd": func(dataSize uint64) {
+			d.FieldU8("version")
+			// TODO: values
+			d.FieldU24("flags")
+			// TODO: timestamps
+			d.FieldU32("creation_time")
+			d.FieldU32("modification_time")
+			d.FieldU32("time_scale")
+			d.FieldU32("duration")
+			d.FieldU16("language")
+			d.FieldU16("quality")
+		},
+
+		"hdlr": func(dataSize uint64) {
+			d.FieldU8("version")
+			// TODO: values
+			d.FieldU24("flags")
+			d.FieldUTF8("component_type", 4)
+			d.FieldUTF8("component_subtype", 4)
+			d.FieldUTF8("component_manufacturer", 4)
+			d.FieldU32("component_flags")
+			d.FieldU32("component_flags_mask")
+			d.FieldUTF8("component_name", dataSize-24)
+		},
+
+		"minf": d.decodeAtoms,
 	}
 
 	size := d.U32()
