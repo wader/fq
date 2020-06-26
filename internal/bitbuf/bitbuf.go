@@ -56,7 +56,7 @@ func NewFromBitBuf(b *Buffer) *Buffer {
 }
 
 // NewFromBitString bitbuf.Buffer from bit string, ex: "0101"
-func NewFromBitString(s string) *Buffer {
+func NewFromBitString(s string) (*Buffer, error) {
 	var buf []byte
 	i := 0
 	var n byte
@@ -68,7 +68,7 @@ func NewFromBitString(s string) *Buffer {
 		} else if c == '1' {
 			b = 1
 		} else {
-			panic(fmt.Sprintf("invalid bit string %q at index %d %q", s, i, c))
+			return nil, fmt.Errorf("invalid bit string %q at index %d %q", s, i, c)
 		}
 
 		p := 8 - (i % 8) - 1
@@ -79,7 +79,7 @@ func NewFromBitString(s string) *Buffer {
 		}
 	}
 
-	return New(buf, 0, uint64(len(s)))
+	return New(buf, 0, uint64(len(s))), nil
 }
 
 // BitBufRange reads nBits bits starting from start

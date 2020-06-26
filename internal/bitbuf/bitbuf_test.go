@@ -43,7 +43,10 @@ func TestBitString(t *testing.T) {
 	}
 	for _, tC := range testCases {
 		t.Run(tC, func(t *testing.T) {
-			bb := bitbuf.NewFromBitString(tC)
+			bb, err := bitbuf.NewFromBitString(tC)
+			if err != nil {
+				t.Fatal(err)
+			}
 			actual := bb.BitString()
 			if tC != actual {
 				t.Errorf("expected %s, got %s", tC, actual)
@@ -84,7 +87,10 @@ func TestBitStringRandom(t *testing.T) {
 			}
 		}
 		expected := strings.Join(ss, "")
-		bb := bitbuf.NewFromBitString(expected)
+		bb, err := bitbuf.NewFromBitString(expected)
+		if err != nil {
+			t.Error(err)
+		}
 		actual := bb.BitString()
 		if expected != actual {
 			t.Errorf("expected %s, got %s", expected, actual)
