@@ -83,6 +83,7 @@ func (d *Decoder) decodeAtom() uint64 {
 			d.FieldFP32("track_width")
 			d.FieldFP32("track_height")
 		},
+		"mdia": d.decodeAtoms,
 	}
 
 	size := d.U32()
