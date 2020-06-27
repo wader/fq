@@ -110,6 +110,8 @@ func (d *Decoder) decodeAtom() uint64 {
 		},
 
 		"minf": d.decodeAtoms,
+		"dinf": d.decodeAtoms,
+		"stbl": d.decodeAtoms,
 	}
 
 	size := d.U32()

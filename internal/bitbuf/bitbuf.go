@@ -3,6 +3,7 @@ package bitbuf
 // TODO:
 // inline for speed?
 // F -> FLT?
+// UTF16/UTF32
 
 import (
 	"errors"
