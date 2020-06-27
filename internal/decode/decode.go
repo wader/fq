@@ -589,10 +589,25 @@ func (c *Common) UTF8(nBytes uint64) string {
 	return string(s)
 }
 
+func (c *Common) FP64() float64 {
+	f, err := c.bitBuf.FP64()
+	if err != nil {
+		panic(BitBufError{Err: err, Op: "FP64", Size: 8, Pos: c.bitBuf.Pos})
+	}
+	return f
+}
+
+func (c *Common) FieldFP64(name string) float64 {
+	return c.FieldFloatFn(name, func() (float64, string) {
+		return c.FP64(), ""
+	})
+}
+
 func (c *Common) FP32() float64 {
-	n := c.U32()
-	// TODO: correct?
-	f := float64(n>>16) + float64(n&0xffff)/0x10000
+	f, err := c.bitBuf.FP32()
+	if err != nil {
+		panic(BitBufError{Err: err, Op: "FP32", Size: 4, Pos: c.bitBuf.Pos})
+	}
 	return f
 }
 
@@ -603,9 +618,10 @@ func (c *Common) FieldFP32(name string) float64 {
 }
 
 func (c *Common) FP16() float64 {
-	n := c.U16()
-	// TODO: correct?
-	f := float64(n>>8) + float64(n&0xff)/0x100
+	f, err := c.bitBuf.FP16()
+	if err != nil {
+		panic(BitBufError{Err: err, Op: "FP16", Size: 2, Pos: c.bitBuf.Pos})
+	}
 	return f
 }
 

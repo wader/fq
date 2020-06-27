@@ -2,6 +2,7 @@ package bitbuf
 
 // TODO:
 // inline for speed?
+// F -> FLT?
 
 import (
 	"errors"
@@ -413,6 +414,35 @@ func (b *Buffer) F64E(endian Endian) (float64, error) {
 func (b *Buffer) F64(s uint) (float64, error)   { return b.F64E(BigEndian) }
 func (b *Buffer) F64BE(s uint) (float64, error) { return b.F64E(BigEndian) }
 func (b *Buffer) F64LE(s uint) (float64, error) { return b.F64E(LittleEndian) }
+
+// TODO: FP64,unsigned/BE/LE? rename SFP32?
+
+// FP64 signed fixed point 1:31:32
+func (b *Buffer) FP64() (float64, error) {
+	n, err := b.S64()
+	if err != nil {
+		return 0, err
+	}
+	return float64(float64(n) / (1 << 32)), nil
+}
+
+// FP32 signed fixed point 1:15:16
+func (b *Buffer) FP32() (float64, error) {
+	n, err := b.S32()
+	if err != nil {
+		return 0, err
+	}
+	return float64(float64(n) / (1 << 16)), nil
+}
+
+// FP16 signed fixed point 1:7:8
+func (b *Buffer) FP16() (float64, error) {
+	n, err := b.S16()
+	if err != nil {
+		return 0, err
+	}
+	return float64(float64(n) / (1 << 8)), nil
+}
 
 func (b *Buffer) UTF8(nBytes uint64) (string, error) {
 	s, err := b.BytesLen(nBytes)
