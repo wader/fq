@@ -1,6 +1,10 @@
 package mp4
 
-import "fq/internal/decode"
+// TODO: validate structure better? trak/stco etc
+
+import (
+	"fq/internal/decode"
+)
 
 var Register = &decode.Register{
 	Name: "mp4",
@@ -8,13 +12,30 @@ var Register = &decode.Register{
 	New: func(common decode.Common) decode.Decoder {
 		return &Decoder{
 			Common: common,
+			tracks: map[uint32]*track{},
 		}
 	},
+}
+
+type stsc struct {
+	firstChunk      uint32
+	samplesPerChunk uint32
+}
+
+type track struct {
+	id         uint32
+	dataFormat string
+	stco       []uint64 //
+	stsc       []stsc
+	stsz       []uint32
 }
 
 // Decoder is a mp4 decoder
 type Decoder struct {
 	decode.Common
+
+	tracks       map[uint32]*track
+	currentTrack *track
 }
 
 func (d *Decoder) decodeAtom() uint64 {
@@ -70,7 +91,7 @@ func (d *Decoder) decodeAtom() uint64 {
 			d.FieldU24("flags")
 			d.FieldU32("creation_time")
 			d.FieldU32("modification_time")
-			d.FieldU32("track_id")
+			trackID := uint32(d.FieldU32("track_id"))
 			d.FieldU32("reserved")
 			d.FieldU32("duration")
 			d.FieldBytesLen("reserved", 8)
@@ -82,6 +103,14 @@ func (d *Decoder) decodeAtom() uint64 {
 			d.FieldBytesLen("matrix_structure", 36)
 			d.FieldFP32("track_width")
 			d.FieldFP32("track_height")
+
+			if _, ok := d.tracks[trackID]; !ok {
+				t := &track{}
+				d.tracks[trackID] = t
+				d.currentTrack = t
+			} else {
+				// TODO: dup track id?
+			}
 		},
 		"mdia": d.decodeAtoms,
 		"mdhd": func(dataSize uint64) {
@@ -111,7 +140,124 @@ func (d *Decoder) decodeAtom() uint64 {
 
 		"minf": d.decodeAtoms,
 		"dinf": d.decodeAtoms,
+		"dref": func(dataSize uint64) {
+			d.FieldU8("version")
+			// TODO: values
+			d.FieldU24("flags")
+			numEntries := d.FieldU32("num_entries")
+			d.FieldNoneFn("references", func() {
+				for i := uint64(0); i < numEntries; i++ {
+					size := d.FieldU32("size")
+					d.FieldUTF8("type", 4)
+					d.FieldU8("version")
+					d.FieldU24("flags")
+					dataSize := size - 12
+					d.FieldBytesLen("data", dataSize)
+				}
+			})
+		},
 		"stbl": d.decodeAtoms,
+		"stsd": func(dataSize uint64) {
+			d.FieldU8("version")
+			// TODO: values
+			d.FieldU24("flags")
+			numEntries := d.FieldU32("num_entries")
+			d.FieldNoneFn("table", func() {
+				for i := uint64(0); i < numEntries; i++ {
+					size := d.FieldU32("size")
+					dataFormat := d.FieldUTF8("data_format", 4)
+					d.FieldBytesLen("reserved", 6)
+					d.FieldU16("data_reference_index")
+					dataSize := size - 16
+					d.FieldBytesLen("data", dataSize)
+
+					if d.currentTrack != nil {
+						d.currentTrack.dataFormat = dataFormat
+					}
+				}
+			})
+		},
+		"stts": func(dataSize uint64) {
+			d.FieldU8("version")
+			// TODO: values
+			d.FieldU24("flags")
+			numEntries := d.FieldU32("num_entries")
+			d.FieldNoneFn("table", func() {
+				for i := uint64(0); i < numEntries; i++ {
+					d.FieldU32("count")
+					d.FieldU32("duration")
+				}
+			})
+		},
+		"stsc": func(dataSize uint64) {
+			d.FieldU8("version")
+			// TODO: values
+			d.FieldU24("flags")
+			numEntries := d.FieldU32("num_entries")
+			d.FieldNoneFn("table", func() {
+				for i := uint64(0); i < numEntries; i++ {
+					firstChunk := uint32(d.FieldU32("first_chunk"))
+					samplesPerChunk := uint32(d.FieldU32("samples_per_chunk"))
+					d.FieldU32("sample_description_id")
+
+					if d.currentTrack != nil {
+						d.currentTrack.stsc = append(d.currentTrack.stsc, stsc{
+							firstChunk:      firstChunk,
+							samplesPerChunk: samplesPerChunk,
+						})
+					}
+				}
+			})
+		},
+		"stsz": func(dataSize uint64) {
+			d.FieldU8("version")
+			// TODO: values
+			d.FieldU24("flags")
+			sampleSize := d.FieldU32("sample_size")
+			numEntries := d.FieldU32("num_entries")
+			if sampleSize == 0 {
+				d.FieldNoneFn("table", func() {
+					for i := uint64(0); i < numEntries; i++ {
+						size := uint32(d.FieldU32("size"))
+
+						if d.currentTrack != nil {
+							d.currentTrack.stsz = append(d.currentTrack.stsz, size)
+						}
+					}
+				})
+			}
+		},
+		"stco": func(dataSize uint64) {
+			d.FieldU8("version")
+			// TODO: values
+			d.FieldU24("flags")
+			numEntries := d.FieldU32("num_entries")
+			d.FieldNoneFn("table", func() {
+				for i := uint64(0); i < numEntries; i++ {
+					offset := d.FieldU32("offset")
+
+					if d.currentTrack != nil {
+						d.currentTrack.stco = append(d.currentTrack.stco, offset)
+					}
+				}
+			})
+		},
+		// TODO: refactor: merge with stsco?
+		"co64": func(dataSize uint64) {
+			d.FieldU8("version")
+			// TODO: values
+			d.FieldU24("flags")
+			numEntries := d.FieldU32("num_entries")
+			d.FieldNoneFn("table", func() {
+				for i := uint64(0); i < numEntries; i++ {
+					offset := d.FieldU64("offset")
+
+					if d.currentTrack != nil {
+						d.currentTrack.stco = append(d.currentTrack.stco, offset)
+					}
+				}
+			})
+		},
 	}
 
 	size := d.U32()
@@ -167,4 +313,36 @@ func (d *Decoder) Decode(opts decode.Options) {
 	d.SeekRel(-8 * 8)
 
 	d.decodeAtoms(d.BitsLeft() / 8)
+
+	for _, t := range d.tracks {
+		d.FieldNoneFn("track", func() {
+
+			d.FieldStrFn("data_format", func() (string, string) { return t.dataFormat, "" })
+
+			sampleCount := uint64(0)
+
+			for _, c := range t.stsc {
+
+				cso := t.stco[c.firstChunk-1]
+
+				for csi := uint32(0); csi < c.samplesPerChunk; csi++ {
+
+					stz := uint64(t.stsz[sampleCount])
+
+					if t.dataFormat == "mp4a" {
+						d.FieldDecodeRange("sample", cso*8, stz*8, []string{"aac"})
+
+					} else {
+						d.FieldBytesRange("sample", cso*8, stz)
+
+					}
+
+					cso += stz
+
+					sampleCount++
+				}
+			}
+		})
+	}
+
 }

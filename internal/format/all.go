@@ -2,6 +2,7 @@ package format
 
 import (
 	"fq/internal/decode"
+	"fq/internal/format/aac"
 	"fq/internal/format/elf"
 	"fq/internal/format/flac"
 	"fq/internal/format/flacpicture"
@@ -31,4 +32,5 @@ var All = []*decode.Register{
 	jpeg.Register,
 	tar.Register,
 	mp4.Register,
+	aac.Register,
 }

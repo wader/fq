@@ -241,7 +241,7 @@ func (c *Common) PeekBytes(nBytes uint64) []byte {
 func (c *Common) BytesRange(firstBit uint64, nBytes uint64) []byte {
 	bs, err := c.bitBuf.BytesRange(firstBit, nBytes)
 	if err != nil {
-		panic(BitBufError{Err: err, Op: "BytesRange", Size: nBytes * 8, Pos: c.bitBuf.Pos})
+		panic(BitBufError{Err: err, Op: "BytesRange", Size: nBytes * 8, Pos: firstBit})
 	}
 	return bs
 }
@@ -765,6 +765,16 @@ func (c *Common) FieldBytesLen(name string, nBytes uint64) []byte {
 	})
 }
 
+func (c *Common) FieldBytesRange(name string, firstBit uint64, nBytes uint64) []byte {
+	return c.FieldBytesFn(name, func() ([]byte, string) {
+		bs, err := c.bitBuf.BytesRange(firstBit, nBytes)
+		if err != nil {
+			panic(BitBufError{Err: err, Op: "FieldBytesRange", Size: nBytes * 8, Pos: firstBit})
+		}
+		return bs, ""
+	})
+}
+
 func (c *Common) FieldUTF8(name string, nBytes uint64) string {
 	return c.FieldStrFn(name, func() (string, string) {
 		str, err := c.bitBuf.UTF8(nBytes)
@@ -882,11 +892,11 @@ func (c *Common) FieldDecode(name string, nBits uint64, decoderNames []string) b
 }
 
 // TODO: return decooder?
-func (c *Common) FieldDecodeRange(name string, start uint64, nBits uint64, decoderNames []string) bool {
+func (c *Common) FieldDecodeRange(name string, firsBit uint64, nBits uint64, decoderNames []string) bool {
 
 	//start := c.Pos
 
-	bb, err := c.bitBuf.BitBufRange(start, nBits)
+	bb, err := c.bitBuf.BitBufRange(firsBit, nBits)
 	if err != nil {
 		panic(BitBufError{Err: err, Op: "FieldDecodeRange", Size: nBits, Pos: c.bitBuf.Pos})
 	}
