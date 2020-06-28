@@ -22,6 +22,8 @@ type Decoder struct {
 
 // Decode aac
 func (d *Decoder) Decode(opts decode.Options) {
+	d.FieldU5("object_type")
+
 	d.FieldStringMapFn("channels", map[uint64]string{
 		0b000: "SCE",
 		0b001: "CPE",
@@ -32,4 +34,7 @@ func (d *Decoder) Decode(opts decode.Options) {
 		0b110: "FIL",
 		0b111: "TERM",
 	}, "", d.U3)
+
+	d.FieldU4("instance_tag")
+
 }
