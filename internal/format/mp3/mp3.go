@@ -24,7 +24,7 @@ type Decoder struct {
 
 // Decode MP3
 func (d *Decoder) Decode(opts decode.Options) {
-	d.FieldDecode("header", d.BitsLeft(), []string{"id3v2"})
+	d.FieldDecode("header", []string{"id3v2"})
 
 	footerLen := uint64(0)
 	id3v1Len := uint64(128 * 8)
@@ -38,7 +38,7 @@ func (d *Decoder) Decode(opts decode.Options) {
 	validFrames := 0
 	d.SubLen(d.BitsLeft()-footerLen, func() {
 		for !d.End() {
-			if !d.FieldDecode("frame", d.BitsLeft(), []string{"mp3frame"}) {
+			if !d.FieldDecode("frame", []string{"mp3frame"}) {
 				break
 			}
 			validFrames++

@@ -86,15 +86,15 @@ func NewFromBitString(s string) (*Buffer, error) {
 
 // BitBufRange reads nBits bits starting from start
 // Does not update current position.
-func (b *Buffer) BitBufRange(start uint64, nBits uint64) (*Buffer, error) {
-	endPos := uint64(start) + uint64(nBits)
+func (b *Buffer) BitBufRange(firstBit uint64, nBits uint64) (*Buffer, error) {
+	endPos := uint64(firstBit) + uint64(nBits)
 	if endPos > b.Len {
 		return nil, ErrUnexpectedEOF
 	}
 
 	nb := &Buffer{
 		buf:         b.buf,
-		bufFirstBit: b.bufFirstBit + start,
+		bufFirstBit: b.bufFirstBit + firstBit,
 		Len:         nBits,
 		Pos:         0,
 	}

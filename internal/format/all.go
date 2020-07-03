@@ -32,5 +32,7 @@ var All = []*decode.Register{
 	jpeg.Register,
 	tar.Register,
 	mp4.Register,
-	aac.Register,
+	aac.Frame,
+	aac.ADTS,
+	aac.Stream,
 }

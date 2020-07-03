@@ -80,10 +80,7 @@ func (d *Decoder) Decode(opts decode.Options) {
 			blockPaddingFn()
 			if size > 0 {
 				log.Println("BLA")
-				if !d.FieldDecode("data", size*8, nil) {
-					log.Println("failed")
-					d.FieldBytesLen("data", size)
-				}
+				d.FieldDecodeLen("data", size*8, nil)
 				log.Println("BLA2")
 			}
 			blockPaddingFn()

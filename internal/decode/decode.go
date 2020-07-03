@@ -205,7 +205,7 @@ func probe(bb *bitbuf.Buffer, registers []*Register, decoderNames []string) (*Re
 
 		if err != nil {
 			log.Printf("err: %s\n", err)
-			// continue
+			continue
 		}
 
 		return r, c, true
@@ -864,12 +864,13 @@ func (c *Common) SubLen(nBits uint64, fn func()) {
 }
 
 // TODO: return decooder?
-func (c *Common) FieldDecode(name string, nBits uint64, decoderNames []string) bool {
+func (c *Common) FieldDecode(name string, decoderNames []string) bool {
 
+	log.Printf("FieldDecode BLA %v\n", decoderNames)
 	//start := c.Pos
-	bb, err := c.bitBuf.BitBufRange(c.bitBuf.Pos, nBits)
+	bb, err := c.bitBuf.BitBufRange(c.bitBuf.Pos, c.BitsLeft())
 	if err != nil {
-		panic(BitBufError{Err: err, Op: "FieldDecode", Size: nBits, Pos: c.bitBuf.Pos})
+		panic(BitBufError{Err: err, Op: "FieldDecode", Size: c.BitsLeft(), Pos: c.bitBuf.Pos})
 	}
 
 	r, fieldC := New(c, bb, c.Registers, decoderNames)
@@ -889,6 +890,25 @@ func (c *Common) FieldDecode(name string, nBits uint64, decoderNames []string) b
 
 	// TODO: what to return?
 	return true
+}
+
+func (c *Common) FieldDecodeLen(name string, nBits uint64, decoderNames []string) bool {
+
+	log.Printf("FieldDecodeLen BLA %d %v\n", nBits, decoderNames)
+
+	//start := c.Pos
+	bb, err := c.bitBuf.BitBufRange(c.bitBuf.Pos, nBits)
+	if err != nil {
+		panic(BitBufError{Err: err, Op: "FieldDecodeLen", Size: nBits, Pos: c.bitBuf.Pos})
+	}
+
+	r, fieldC := New(c, bb, c.Registers, decoderNames)
+	if r != nil {
+		c.Current.Children = append(c.Current.Children, fieldC.Current)
+	}
+	c.bitBuf.SeekRel(int64(nBits))
+
+	return r != nil
 }
 
 // TODO: return decooder?

@@ -4,6 +4,7 @@ package mp4
 
 import (
 	"fq/internal/decode"
+	"log"
 )
 
 var Register = &decode.Register{
@@ -164,16 +165,22 @@ func (d *Decoder) decodeAtom() uint64 {
 			numEntries := d.FieldU32("num_entries")
 			d.FieldNoneFn("table", func() {
 				for i := uint64(0); i < numEntries; i++ {
-					size := d.FieldU32("size")
-					dataFormat := d.FieldUTF8("data_format", 4)
-					d.FieldBytesLen("reserved", 6)
-					d.FieldU16("data_reference_index")
-					dataSize := size - 16
-					d.FieldBytesLen("data", dataSize)
+					//size := d.FieldU32("size")
+					//dataFormat := d.FieldUTF8("data_format", 4)
+					// d.FieldBytesLen("reserved", 6)
+					// d.FieldU16("data_reference_index")
+					// d.FieldU16("hint_track_version")
+					// d.FieldU16("last_compatible_hint_track_version")
+					// d.FieldU32("max_packet_size")
+					//dataSize := size - 4 - 4
+					//d.FieldBytesLen("data", dataSize)
 
-					if d.currentTrack != nil {
-						d.currentTrack.dataFormat = dataFormat
-					}
+					//d.decodeAtoms(dataSize)
+					d.decodeAtom()
+
+					// if d.currentTrack != nil {
+					// 	d.currentTrack.dataFormat = dataFormat
+					// }
 				}
 			})
 		},
@@ -329,13 +336,16 @@ func (d *Decoder) Decode(opts decode.Options) {
 
 					stz := uint64(t.stsz[sampleCount])
 
-					if t.dataFormat == "mp4a" {
-						d.FieldDecodeRange("sample", cso*8, stz*8, []string{"aac"})
+					log.Printf("cso*8: %d %#+v\n", cso, cso*8)
+					log.Printf("stz*8: %d %#+v\n", stz, stz*8)
 
-					} else {
-						d.FieldBytesRange("sample", cso*8, stz)
+					// if t.dataFormat == "mp4a" {
+					d.FieldDecodeRange("sample", cso*8, stz*8, []string{"aac"})
 
-					}
+					//} else {
+					d.FieldBytesRange("sample", cso*8, stz)
+
+					//}
 
 					cso += stz
 
