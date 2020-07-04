@@ -7,12 +7,11 @@ import (
 	"log"
 )
 
-var Register = &decode.Register{
+var File = &decode.Register{
 	Name: "mp4",
 	MIME: "",
-	New: func(common decode.Common) decode.Decoder {
-		return &Decoder{
-			Common: common,
+	New: func() decode.Decoder {
+		return &FileDecoder{
 			tracks: map[uint32]*track{},
 		}
 	},
@@ -32,14 +31,14 @@ type track struct {
 }
 
 // Decoder is a mp4 decoder
-type Decoder struct {
+type FileDecoder struct {
 	decode.Common
 
 	tracks       map[uint32]*track
 	currentTrack *track
 }
 
-func (d *Decoder) decodeAtom() uint64 {
+func (d *FileDecoder) decodeAtom() uint64 {
 	boxes := map[string]func(dataSize uint64){
 		"ftyp": func(dataSize uint64) {
 			d.FieldUTF8("major_brand", 4)
@@ -299,14 +298,14 @@ func (d *Decoder) decodeAtom() uint64 {
 	return size
 }
 
-func (d *Decoder) decodeAtoms(bytesLeft uint64) {
+func (d *FileDecoder) decodeAtoms(bytesLeft uint64) {
 	for bytesLeft > 0 {
 		bytesLeft -= d.decodeAtom()
 	}
 }
 
 // Decode mp4, mov, qt etc
-func (d *Decoder) Decode(opts decode.Options) {
+func (d *FileDecoder) Decode() {
 	// TODO: nicer, validate functions without field?
 	d.ValidateAtLeastBitsLeft(8 * 16)
 	size := d.U32()

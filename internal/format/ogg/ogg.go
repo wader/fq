@@ -8,12 +8,11 @@ import (
 	"log"
 )
 
-var Register = &decode.Register{
+var File = &decode.Register{
 	Name: "ogg",
 	MIME: "",
-	New: func(common decode.Common) decode.Decoder {
-		return &Decoder{
-			Common:  common,
+	New: func() decode.Decoder {
+		return &FileDecoder{
 			streams: map[uint32]*stream{},
 		}
 	},
@@ -25,14 +24,14 @@ type stream struct {
 }
 
 // Decoder is a ogg decoder
-type Decoder struct {
+type FileDecoder struct {
 	decode.Common
 
 	streams map[uint32]*stream
 }
 
 // Decode ogg
-func (d *Decoder) Decode(opts decode.Options) {
+func (d *FileDecoder) Decode() {
 	for !d.End() {
 		d.FieldNoneFn("page", func() {
 			// TODO: validate bits left

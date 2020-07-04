@@ -34,17 +34,17 @@ typedef struct {
 
 */
 
-var Register = &decode.Register{
+var File = &decode.Register{
 	Name: "elf",
 	MIME: "",
-	New:  func(common decode.Common) decode.Decoder { return &Decoder{Common: common} },
+	New:  func() decode.Decoder { return &FileDecoder{} },
 }
 
-// Decoder is ELF decoder
-type Decoder struct{ decode.Common }
+// FileDecoder is ELF file decoder
+type FileDecoder struct{ decode.Common }
 
-// Decode ID3v1
-func (d *Decoder) Decode(opts decode.Options) {
+// Decode a ELF file
+func (d *FileDecoder) Decode() {
 	d.ValidateAtLeastBitsLeft(128 * 8)
 
 	d.FieldNoneFn("ident", func() {

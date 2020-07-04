@@ -9,23 +9,19 @@ import (
 	"strings"
 )
 
-var Register = &decode.Register{
+var File = &decode.Register{
 	Name: "tar",
 	MIME: "",
-	New: func(common decode.Common) decode.Decoder {
-		return &Decoder{
-			Common: common,
-		}
-	},
+	New:  func() decode.Decoder { return &FileDecoder{} },
 }
 
 // Decoder is a tar decoder
-type Decoder struct {
+type FileDecoder struct {
 	decode.Common
 }
 
 // Decode tar
-func (d *Decoder) Decode(opts decode.Options) {
+func (d *FileDecoder) Decode() {
 	strFn := func(name string, nBytes uint64) string {
 		return d.FieldStrFn(name, func() (string, string) {
 			s := d.UTF8(nBytes)

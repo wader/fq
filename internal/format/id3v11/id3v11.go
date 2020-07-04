@@ -4,17 +4,17 @@ import (
 	"fq/internal/decode"
 )
 
-var Register = &decode.Register{
+var Tag = &decode.Register{
 	Name: "id3v11",
 	MIME: "",
-	New:  func(common decode.Common) decode.Decoder { return &Decoder{Common: common} },
+	New:  func() decode.Decoder { return &TagDecoder{} },
 }
 
-// Decoder is ID3v1 decoder
-type Decoder struct{ decode.Common }
+// TagDecoder is ID3v11 tag decoder
+type TagDecoder struct{ decode.Common }
 
 // Decode ID3v1
-func (d *Decoder) Decode(opts decode.Options) {
+func (d *TagDecoder) Decode() {
 	d.ValidateAtLeastBitsLeft(128 * 8)
 	d.FieldValidateString("magic", "TAG+")
 	d.FieldUTF8("title", 60)

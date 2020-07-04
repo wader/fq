@@ -8,14 +8,10 @@ import (
 	"fq/internal/decode"
 )
 
-var Register = &decode.Register{
+var File = &decode.Register{
 	Name: "jpeg",
 	MIME: "",
-	New: func(common decode.Common) decode.Decoder {
-		return &Decoder{
-			Common: common,
-		}
-	},
+	New:  func() decode.Decoder { return &FileDecoder{} },
 }
 
 type marker struct {
@@ -157,13 +153,13 @@ var markers = map[uint]marker{
 	TEM:   {"TEM", "For temporary private use in arithmetic coding"},
 }
 
-// Decoder is a jpeg decoder
-type Decoder struct {
+// FileDecoder is a JPEG decoder
+type FileDecoder struct {
 	decode.Common
 }
 
-// Decode jpeg
-func (d *Decoder) Decode(opts decode.Options) {
+// Decode JPEG file
+func (d *FileDecoder) Decode() {
 	inECD := false
 	for !d.End() {
 		if inECD {

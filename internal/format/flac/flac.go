@@ -10,14 +10,13 @@ import (
 	"math/bits"
 )
 
-var Register = &decode.Register{
+var Stream = &decode.Register{
 	Name: "flac",
-	MIME: "",
-	New:  func(common decode.Common) decode.Decoder { return &Decoder{Common: common} },
+	New:  func() decode.Decoder { return &StreamDecoder{} },
 }
 
-// Decoder is a FLAC decoder
-type Decoder struct{ decode.Common }
+// StreamDecoder is a FLAC steam decoder
+type StreamDecoder struct{ decode.Common }
 
 const (
 	MetadataBlockStreaminfo    = 0
@@ -64,7 +63,7 @@ var SubframeTypeNames = map[uint]string{
 }
 
 // TODO: generic enough?
-func (d *Decoder) UTF8Uint() uint64 {
+func (d *StreamDecoder) UTF8Uint() uint64 {
 	n := d.U8()
 	// leading ones, bit negate and count zeroes
 	c := bits.LeadingZeros8(^uint8(n))
@@ -83,8 +82,8 @@ func (d *Decoder) UTF8Uint() uint64 {
 	return n
 }
 
-// Decode FLAC
-func (d *Decoder) Decode(opts decode.Options) {
+// Decode decodes a FLAC stream
+func (d *StreamDecoder) Decode() {
 	d.FieldValidateString("magic", "fLaC")
 
 	// is used in frame decoding later

@@ -11,19 +11,19 @@ import (
 	"fq/internal/decode"
 )
 
-var Register = &decode.Register{
+var File = &decode.Register{
 	Name: "mp3",
 	MIME: "",
-	New:  func(common decode.Common) decode.Decoder { return &Decoder{Common: common} },
+	New:  func() decode.Decoder { return &FileDecoder{} },
 }
 
-// Decoder is a mp3 decoder
-type Decoder struct {
+// FileDecoder is a MP3 decoder
+type FileDecoder struct {
 	decode.Common
 }
 
-// Decode MP3
-func (d *Decoder) Decode(opts decode.Options) {
+// Decode decodes a MP3 stream
+func (d *FileDecoder) Decode() {
 	d.FieldDecode("header", []string{"id3v2"})
 
 	footerLen := uint64(0)

@@ -12,14 +12,10 @@ import (
 	"strings"
 )
 
-var Register = &decode.Register{
-	Name: "vorbis",
-	MIME: "",
-	New: func(common decode.Common) decode.Decoder {
-		return &Decoder{
-			Common: common,
-		}
-	},
+var Packet = &decode.Register{
+	Name:      "vorbis",
+	MIME:      "",
+	New:       func() decode.Decoder { return &PacketDecoder{} },
 	SkipProbe: true,
 }
 
@@ -37,13 +33,13 @@ var packetTypeNames = map[uint]string{
 	packetTypeSetup:          "Setup",
 }
 
-// Decoder is a vorbis decoder
-type Decoder struct {
+// PacketDecoder is a vorbis packet decoder
+type PacketDecoder struct {
 	decode.Common
 }
 
-// Decode vorbis
-func (d *Decoder) Decode(opts decode.Options) {
+// Decode vorbis packet
+func (d *PacketDecoder) Decode() {
 	packetType := d.FieldUFn("packet_type", func() (uint64, decode.Format, string) {
 		packetTypeName := "unknown"
 		t := d.U8()

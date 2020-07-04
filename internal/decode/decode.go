@@ -40,12 +40,15 @@ type Options struct {
 type Register struct {
 	Name      string
 	MIME      string
-	New       func(common Common) Decoder
+	New       func() Decoder
 	SkipProbe bool
 }
 
 type Decoder interface {
-	Decode(Options)
+	Decode()
+
+	Prepare(nc Common)
+	GetCommon() *Common
 }
 
 type Type int
@@ -146,14 +149,15 @@ type Field struct {
 }
 
 type Common struct {
-	Current   *Field // TODO: need root field also?
-	Parent    *Common
-	Registers []*Register
+	Current  *Field // TODO: need root field also?
+	Parent   *Common
+	Register *Register
 
-	bitBuf *bitbuf.Buffer
+	registers []*Register
+	bitBuf    *bitbuf.Buffer
 }
 
-func probe(bb *bitbuf.Buffer, registers []*Register, decoderNames []string) (*Register, Common, bool) {
+func probe(bb *bitbuf.Buffer, registers []*Register, decoderNames []string) (*Register, *Common, bool) {
 	// TODO: order..
 	var namesMap = map[string]bool{}
 	for _, s := range decoderNames {
@@ -171,13 +175,13 @@ func probe(bb *bitbuf.Buffer, registers []*Register, decoderNames []string) (*Re
 		}
 
 		// TODO: how to pass regsiters? do later? current field?
-		c := Common{
+		d := r.New()
+		d.Prepare(Common{
+			Register:  r,
 			Current:   &Field{Name: r.Name},
 			bitBuf:    bb.Copy(),
-			Registers: registers,
-		}
-		d := r.New(c)
-
+			registers: registers,
+		})
 		err := func() (err error) {
 			defer func() {
 				if rerr := recover(); rerr != nil {
@@ -199,7 +203,7 @@ func probe(bb *bitbuf.Buffer, registers []*Register, decoderNames []string) (*Re
 				}
 			}()
 
-			d.Decode(Options{})
+			d.Decode()
 			return nil
 		}()
 
@@ -208,19 +212,27 @@ func probe(bb *bitbuf.Buffer, registers []*Register, decoderNames []string) (*Re
 			continue
 		}
 
-		return r, c, true
+		return r, d.GetCommon(), true
 	}
-	return nil, Common{}, false
+	return nil, nil, false
 }
 
-func New(parent *Common, bb *bitbuf.Buffer, registers []*Register, decoderNames []string) (*Register, Common) {
+func New(parent *Common, bb *bitbuf.Buffer, registers []*Register, decoderNames []string) (*Register, *Common) {
 	// TODO: add common,register to Decoder interface? rename register?
 	r, c, ok := probe(bb, registers, decoderNames)
 	if !ok {
-		return nil, Common{}
+		return nil, nil
 	}
 
 	return r, c
+}
+
+func (c *Common) Prepare(nc Common) {
+	*c = nc
+}
+
+func (c *Common) GetCommon() *Common {
+	return c
 }
 
 func (c *Common) PeekBits(nBits uint64) uint64 {
@@ -873,7 +885,7 @@ func (c *Common) FieldDecode(name string, decoderNames []string) bool {
 		panic(BitBufError{Err: err, Op: "FieldDecode", Size: c.BitsLeft(), Pos: c.bitBuf.Pos})
 	}
 
-	r, fieldC := New(c, bb, c.Registers, decoderNames)
+	r, fieldC := New(c, bb, c.registers, decoderNames)
 
 	if r == nil {
 		log.Printf("FieldDecode nope %#+v\n", decoderNames)
@@ -902,7 +914,7 @@ func (c *Common) FieldDecodeLen(name string, nBits uint64, decoderNames []string
 		panic(BitBufError{Err: err, Op: "FieldDecodeLen", Size: nBits, Pos: c.bitBuf.Pos})
 	}
 
-	r, fieldC := New(c, bb, c.Registers, decoderNames)
+	r, fieldC := New(c, bb, c.registers, decoderNames)
 	if r != nil {
 		c.Current.Children = append(c.Current.Children, fieldC.Current)
 	}
@@ -921,7 +933,7 @@ func (c *Common) FieldDecodeRange(name string, firsBit uint64, nBits uint64, dec
 		panic(BitBufError{Err: err, Op: "FieldDecodeRange", Size: nBits, Pos: c.bitBuf.Pos})
 	}
 
-	r, fieldC := New(c, bb, c.Registers, decoderNames)
+	r, fieldC := New(c, bb, c.registers, decoderNames)
 
 	// log.Printf("bb: %#+v\n", bb)
 
@@ -945,7 +957,7 @@ func (c *Common) FieldDecodeBitBuf(name string, bb *bitbuf.Buffer, decoderNames 
 
 	//start := c.Pos
 
-	r, fieldC := New(c, bb, c.Registers, decoderNames)
+	r, fieldC := New(c, bb, c.registers, decoderNames)
 
 	// log.Printf("bb: %#+v\n", bb)
 

@@ -5,18 +5,17 @@ import (
 	"fq/internal/decode"
 )
 
-var Register = &decode.Register{
+var Tag = &decode.Register{
 	Name: "id3v2",
-	MIME: "",
-	New:  func(common decode.Common) decode.Decoder { return &Decoder{Common: common} },
+	New:  func() decode.Decoder { return &TagDecoder{} },
 }
 
-// Decoder is ID3v2 decoder
-type Decoder struct {
+// Decoder is ID3v2 tag decoder
+type TagDecoder struct {
 	decode.Common
 }
 
-func (d *Decoder) SyncSafeU32() uint64 {
+func (d *TagDecoder) SyncSafeU32() uint64 {
 	u := d.U32()
 	// syncsafe integer is a number encoded
 	// with 8th bit in each byte set to zero
@@ -29,7 +28,7 @@ func (d *Decoder) SyncSafeU32() uint64 {
 }
 
 // Decode ID3v2
-func (d *Decoder) Decode(opts decode.Options) {
+func (d *TagDecoder) Decode() {
 	d.ValidateAtLeastBitsLeft(4 * 8)
 	d.FieldValidateString("magic", "ID3")
 	version := d.FieldU8("version")
