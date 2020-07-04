@@ -340,7 +340,7 @@ func (d *Decoder) Decode(opts decode.Options) {
 					log.Printf("stz*8: %d %#+v\n", stz, stz*8)
 
 					// if t.dataFormat == "mp4a" {
-					d.FieldDecodeRange("sample", cso*8, stz*8, []string{"aac"})
+					d.FieldDecodeRange("sample", cso*8, stz*8, []string{"aac_frame"})
 
 					//} else {
 					d.FieldBytesRange("sample", cso*8, stz)
