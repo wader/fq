@@ -11,7 +11,7 @@ import (
 	"fq/internal/decode"
 )
 
-var Frame = &decode.Register{
+var Frame = &decode.Format{
 	Name: "mp3_frame",
 	MIME: "",
 	New:  func() decode.Decoder { return &FrameDecoder{} },
@@ -27,30 +27,30 @@ func (d *FrameDecoder) Decode() {
 	d.FieldValidateUFn("sync", 0b11111111111, d.U11)
 
 	// v = 3 means version 2.5
-	v := d.FieldUFn("mpeg_version", func() (uint64, decode.Format, string) {
+	v := d.FieldUFn("mpeg_version", func() (uint64, decode.NumberFormat, string) {
 		switch d.U2() {
 		case 0b00:
-			return 3, decode.FormatDecimal, "MPEG Version 2.5"
+			return 3, decode.NumberDecimal, "MPEG Version 2.5"
 		case 0b01:
-			return 0, decode.FormatDecimal, "reserved"
+			return 0, decode.NumberDecimal, "reserved"
 		case 0b10:
-			return 2, decode.FormatDecimal, "MPEG Version 2"
+			return 2, decode.NumberDecimal, "MPEG Version 2"
 		case 0b11:
-			return 1, decode.FormatDecimal, "MPEG Version 1"
+			return 1, decode.NumberDecimal, "MPEG Version 1"
 		default:
 			panic("unreachable")
 		}
 	})
-	l := d.FieldUFn("layer", func() (uint64, decode.Format, string) {
+	l := d.FieldUFn("layer", func() (uint64, decode.NumberFormat, string) {
 		switch d.U2() {
 		case 0b00:
-			return 0, decode.FormatDecimal, "reserved"
+			return 0, decode.NumberDecimal, "reserved"
 		case 0b01:
-			return 3, decode.FormatDecimal, "Layer III"
+			return 3, decode.NumberDecimal, "Layer III"
 		case 0b10:
-			return 2, decode.FormatDecimal, "Layer II"
+			return 2, decode.NumberDecimal, "Layer II"
 		case 0b11:
-			return 1, decode.FormatDecimal, "Layer I"
+			return 1, decode.NumberDecimal, "Layer I"
 		default:
 			panic("unreachable")
 		}
@@ -76,15 +76,15 @@ func (d *FrameDecoder) Decode() {
 		0b1101: [...]uint{416, 320, 256, 224, 144, 144, 224, 144, 144},
 		0b1110: [...]uint{448, 384, 320, 256, 160, 160, 256, 160, 160},
 	}
-	bitRate := d.FieldUFn("bitrate", func() (uint64, decode.Format, string) {
+	bitRate := d.FieldUFn("bitrate", func() (uint64, decode.NumberFormat, string) {
 		u := d.U4()
 		switch u {
 		case 0b0000:
-			return 0, decode.FormatDecimal, "free"
+			return 0, decode.NumberDecimal, "free"
 		case 0b1111:
-			return 0, decode.FormatDecimal, "bad"
+			return 0, decode.NumberDecimal, "bad"
 		default:
-			return uint64(bitRateIndex[uint(u)][(v-1)*3+(l-1)]) * 1000, decode.FormatDecimal, ""
+			return uint64(bitRateIndex[uint(u)][(v-1)*3+(l-1)]) * 1000, decode.NumberDecimal, ""
 		}
 	})
 	// MPEG1 MPEG2 MPEG2.5
@@ -93,13 +93,13 @@ func (d *FrameDecoder) Decode() {
 		0b01: [...]uint{48000, 24000, 12000},
 		0b10: [...]uint{32000, 16000, 8000},
 	}
-	sampleRate := d.FieldUFn("sample_rate", func() (uint64, decode.Format, string) {
+	sampleRate := d.FieldUFn("sample_rate", func() (uint64, decode.NumberFormat, string) {
 		u := d.U2()
 		switch u {
 		case 0b11:
-			return 0, decode.FormatDecimal, "reserved"
+			return 0, decode.NumberDecimal, "reserved"
 		default:
-			return uint64(sampleRateIndex[uint(u)][v-1]), decode.FormatDecimal, ""
+			return uint64(sampleRateIndex[uint(u)][v-1]), decode.NumberDecimal, ""
 		}
 	})
 	padding := d.FieldStringMapFn("padding", map[uint64]string{

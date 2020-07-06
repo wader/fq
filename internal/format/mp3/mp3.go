@@ -9,9 +9,12 @@ package mp3
 
 import (
 	"fq/internal/decode"
+	"fq/internal/format/id3v1"
+	"fq/internal/format/id3v11"
+	"fq/internal/format/id3v2"
 )
 
-var File = &decode.Register{
+var File = &decode.Format{
 	Name: "mp3",
 	MIME: "",
 	New:  func() decode.Decoder { return &FileDecoder{} },
@@ -24,13 +27,13 @@ type FileDecoder struct {
 
 // Decode decodes a MP3 stream
 func (d *FileDecoder) Decode() {
-	d.FieldDecode("header", []string{"id3v2"})
+	d.FieldDecode("header", id3v2.Tag)
 
 	footerLen := uint64(0)
 	id3v1Len := uint64(128 * 8)
 	if d.BitsLeft() >= id3v1Len {
 		// TODO: added before? sort when presenting? probe? add later?
-		if d.FieldDecodeRange("footer", d.Pos()+d.BitsLeft()-id3v1Len, id3v1Len, []string{"id3v1", "id3v11"}) {
+		if d.FieldDecodeRange("footer", d.Pos()+d.BitsLeft()-id3v1Len, id3v1Len, id3v1.Tag, id3v11.Tag) {
 			footerLen = id3v1Len
 		}
 	}
@@ -38,7 +41,7 @@ func (d *FileDecoder) Decode() {
 	validFrames := 0
 	d.SubLen(d.BitsLeft()-footerLen, func() {
 		for !d.End() {
-			if !d.FieldDecode("frame", []string{"mp3_frame"}) {
+			if !d.FieldDecode("frame", Frame) {
 				break
 			}
 			validFrames++

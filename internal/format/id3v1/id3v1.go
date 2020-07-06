@@ -7,7 +7,7 @@ import (
 // TODO: trim strings?
 // TODO: comment 28 long, zero byte, track number
 
-var Tag = &decode.Register{
+var Tag = &decode.Format{
 	Name: "id3v1",
 	MIME: "",
 	New:  func() decode.Decoder { return &TagDecoder{} },

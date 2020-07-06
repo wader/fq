@@ -4,7 +4,7 @@ import (
 	"fq/internal/decode"
 )
 
-var Tag = &decode.Register{
+var Tag = &decode.Format{
 	Name: "id3v11",
 	MIME: "",
 	New:  func() decode.Decoder { return &TagDecoder{} },

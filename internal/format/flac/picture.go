@@ -5,7 +5,7 @@ import (
 	"fq/internal/decode"
 )
 
-var Picture = &decode.Register{
+var Picture = &decode.Format{
 	Name:      "flac_picture",
 	New:       func() decode.Decoder { return &PictureDecoder{} },
 	SkipProbe: true,
@@ -31,7 +31,7 @@ func (d *PictureDecoder) Decode() {
 	d.FieldU32("number_of_index_colors")
 	pictureLen := d.FieldU32("picture_length")
 	pictureBs := d.FieldBytesLen("picture_data", uint64(pictureLen))
-	d.FieldDecodeBitBuf("picture", bitbuf.NewFromBytes(pictureBs), []string{"jpeg"})
+	d.FieldDecodeBitBuf("picture", bitbuf.NewFromBytes(pictureBs), Picture)
 
 	// uint32 "The picture type"
 	// set mime_length [uint32 "MIME length"]

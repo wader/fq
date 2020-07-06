@@ -4,10 +4,11 @@ package mp4
 
 import (
 	"fq/internal/decode"
+	"fq/internal/format/aac"
 	"log"
 )
 
-var File = &decode.Register{
+var File = &decode.Format{
 	Name: "mp4",
 	MIME: "",
 	New: func() decode.Decoder {
@@ -274,12 +275,12 @@ func (d *FileDecoder) decodeAtom() uint64 {
 		case 0:
 			// reset of file
 			// TODO: FieldU32 with display?
-			d.FieldUFn("size", func() (uint64, decode.Format, string) { return d.U32(), decode.FormatDecimal, "Rest of file" })
+			d.FieldUFn("size", func() (uint64, decode.NumberFormat, string) { return d.U32(), decode.NumberDecimal, "Rest of file" })
 			d.FieldUTF8("type", 4)
 			size = d.Len() - d.Pos() - (8 * 8)
 		case 1:
 			// 64 bit length
-			d.FieldUFn("size", func() (uint64, decode.Format, string) { return d.U32(), decode.FormatDecimal, "Use 64 bit size" })
+			d.FieldUFn("size", func() (uint64, decode.NumberFormat, string) { return d.U32(), decode.NumberDecimal, "Use 64 bit size" })
 			d.FieldUTF8("type", 4)
 			d.FieldU64("size64")
 		default:
@@ -339,7 +340,7 @@ func (d *FileDecoder) Decode() {
 					log.Printf("stz*8: %d %#+v\n", stz, stz*8)
 
 					// if t.dataFormat == "mp4a" {
-					d.FieldDecodeRange("sample", cso*8, stz*8, []string{"aac_frame"})
+					d.FieldDecodeRange("sample", cso*8, stz*8, aac.Frame)
 
 					//} else {
 					d.FieldBytesRange("sample", cso*8, stz)

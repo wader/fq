@@ -4,7 +4,7 @@ import (
 	"fq/internal/decode"
 )
 
-var Frame = &decode.Register{
+var Frame = &decode.Format{
 	Name: "aac_frame",
 	New:  func() decode.Decoder { return &FrameDecoder{} },
 }

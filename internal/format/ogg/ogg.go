@@ -5,10 +5,11 @@ package ogg
 import (
 	"fq/internal/bitbuf"
 	"fq/internal/decode"
+	"fq/internal/format/vorbis"
 	"log"
 )
 
-var File = &decode.Register{
+var File = &decode.Format{
 	Name: "ogg",
 	MIME: "",
 	New: func() decode.Decoder {
@@ -72,7 +73,7 @@ func (d *FileDecoder) Decode() {
 				bs := d.FieldBytesLen("segment", uint64(ss))
 				s.packetBuf = append(s.packetBuf, bs...)
 				if len(bs) < 255 {
-					d.FieldDecodeBitBuf("packet", bitbuf.NewFromBytes(s.packetBuf), []string{"vorbis"})
+					d.FieldDecodeBitBuf("packet", bitbuf.NewFromBytes(s.packetBuf), vorbis.Packet)
 					s.packetBuf = nil
 				}
 			}

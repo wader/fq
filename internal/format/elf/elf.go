@@ -34,7 +34,7 @@ typedef struct {
 
 */
 
-var File = &decode.Register{
+var File = &decode.Format{
 	Name: "elf",
 	MIME: "",
 	New:  func() decode.Decoder { return &FileDecoder{} },
@@ -50,12 +50,12 @@ func (d *FileDecoder) Decode() {
 	d.FieldNoneFn("ident", func() {
 		d.FieldValidateString("magic", "\x7fELF")
 
-		archBits := d.FieldUFn("class", func() (uint64, decode.Format, string) {
+		archBits := d.FieldUFn("class", func() (uint64, decode.NumberFormat, string) {
 			switch d.U8() {
 			case 1:
-				return 32, decode.FormatDecimal, ""
+				return 32, decode.NumberDecimal, ""
 			case 2:
-				return 64, decode.FormatDecimal, ""
+				return 64, decode.NumberDecimal, ""
 			default:
 				//d.Invalid()
 			}
@@ -63,13 +63,13 @@ func (d *FileDecoder) Decode() {
 		})
 		_ = archBits
 		isBigEndian := true
-		d.FieldUFn("data", func() (uint64, decode.Format, string) {
+		d.FieldUFn("data", func() (uint64, decode.NumberFormat, string) {
 			switch d.U8() {
 			case 1:
 				isBigEndian = false
-				return 1, decode.FormatDecimal, "Little-endian"
+				return 1, decode.NumberDecimal, "Little-endian"
 			case 2:
-				return 2, decode.FormatDecimal, "Big-endian"
+				return 2, decode.NumberDecimal, "Big-endian"
 			default:
 				//d.Invalid()
 			}

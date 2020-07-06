@@ -1,5 +1,8 @@
 package tar
 
+// https://www.gnu.org/software/tar/manual/html_node/Standard.html
+// TODO: extensions?
+
 import (
 	"bytes"
 	"fmt"
@@ -9,7 +12,7 @@ import (
 	"strings"
 )
 
-var File = &decode.Register{
+var File = &decode.Format{
 	Name: "tar",
 	MIME: "",
 	New:  func() decode.Decoder { return &FileDecoder{} },
@@ -30,17 +33,17 @@ func (d *FileDecoder) Decode() {
 		})
 	}
 	numStrFn := func(name string, nBytes uint64) uint64 {
-		return d.FieldUFn(name, func() (uint64, decode.Format, string) {
+		return d.FieldUFn(name, func() (uint64, decode.NumberFormat, string) {
 			s := d.UTF8(nBytes)
 			ts := strings.Trim(s, "0 \x00")
 			if ts == "" {
-				return 0, decode.FormatDecimal, s
+				return 0, decode.NumberDecimal, s
 			}
 			n, err := strconv.ParseUint(ts, 8, 64)
 			if err != nil {
 				d.Invalid(fmt.Sprintf("failed to parse %s number %s: %s", name, ts, err))
 			}
-			return n, decode.FormatDecimal, s
+			return n, decode.NumberDecimal, s
 		})
 	}
 	blockPaddingFn := func() {

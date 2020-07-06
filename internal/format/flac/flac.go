@@ -10,13 +10,13 @@ import (
 	"math/bits"
 )
 
-var Stream = &decode.Register{
+var File = &decode.Format{
 	Name: "flac",
-	New:  func() decode.Decoder { return &StreamDecoder{} },
+	New:  func() decode.Decoder { return &FileDecoder{} },
 }
 
-// StreamDecoder is a FLAC steam decoder
-type StreamDecoder struct{ decode.Common }
+// FileDecoder is a FLAC file decoder
+type FileDecoder struct{ decode.Common }
 
 const (
 	MetadataBlockStreaminfo    = 0
@@ -63,7 +63,7 @@ var SubframeTypeNames = map[uint]string{
 }
 
 // TODO: generic enough?
-func (d *StreamDecoder) UTF8Uint() uint64 {
+func (d *FileDecoder) UTF8Uint() uint64 {
 	n := d.U8()
 	// leading ones, bit negate and count zeroes
 	c := bits.LeadingZeros8(^uint8(n))
@@ -83,7 +83,7 @@ func (d *StreamDecoder) UTF8Uint() uint64 {
 }
 
 // Decode decodes a FLAC stream
-func (d *StreamDecoder) Decode() {
+func (d *FileDecoder) Decode() {
 	d.FieldValidateString("magic", "fLaC")
 
 	// is used in frame decoding later
@@ -94,13 +94,13 @@ func (d *StreamDecoder) Decode() {
 		lastBlock := false
 		d.FieldNoneFn("metadatablock", func() {
 			lastBlock = d.FieldBool("last_block")
-			typ := d.FieldUFn("type", func() (uint64, decode.Format, string) {
+			typ := d.FieldUFn("type", func() (uint64, decode.NumberFormat, string) {
 				t := d.U7()
 				name := "Unknown"
 				if s, ok := metadataBlockNames[uint(t)]; ok {
 					name = s
 				}
-				return t, decode.FormatDecimal, name
+				return t, decode.NumberDecimal, name
 			})
 			length := d.FieldU24("length")
 
@@ -112,10 +112,10 @@ func (d *StreamDecoder) Decode() {
 				d.FieldU24("maximum_frame_size")
 				streamInfoSamepleRate = d.FieldU("sample_rate", 20)
 				// <3> (number of channels)-1. FLAC supports from 1 to 8 channels
-				d.FieldUFn("channels", func() (uint64, decode.Format, string) { return d.U3() + 1, decode.FormatDecimal, "" })
+				d.FieldUFn("channels", func() (uint64, decode.NumberFormat, string) { return d.U3() + 1, decode.NumberDecimal, "" })
 				// <5> (bits per sample)-1. FLAC supports from 4 to 32 bits per sample. Currently the reference encoder and decoders only support up to 24 bits per sample.
-				streamInfoBitPerSample = d.FieldUFn("bits_per_sample", func() (uint64, decode.Format, string) {
-					return d.U5() + 1, decode.FormatDecimal, ""
+				streamInfoBitPerSample = d.FieldUFn("bits_per_sample", func() (uint64, decode.NumberFormat, string) {
+					return d.U5() + 1, decode.NumberDecimal, ""
 				})
 				d.FieldU("total_samples_in_steam", 36)
 				d.FieldBytesLen("md5", 16)
@@ -141,12 +141,12 @@ func (d *StreamDecoder) Decode() {
 			// <1> Blocking strategy:
 			// 0 : fixed-blocksize stream; frame header encodes the frame number
 			// 1 : variable-blocksize stream; frame header encodes the sample number
-			blockingStrategy := d.FieldUFn("blocking_strategy", func() (uint64, decode.Format, string) {
+			blockingStrategy := d.FieldUFn("blocking_strategy", func() (uint64, decode.NumberFormat, string) {
 				switch d.U1() {
 				case 0:
-					return BlockingStrategyFixed, decode.FormatDecimal, BlockingStrategyNames[BlockingStrategyFixed]
+					return BlockingStrategyFixed, decode.NumberDecimal, BlockingStrategyNames[BlockingStrategyFixed]
 				default:
-					return BlockingStrategyVariable, decode.FormatDecimal, BlockingStrategyNames[BlockingStrategyVariable]
+					return BlockingStrategyVariable, decode.NumberDecimal, BlockingStrategyNames[BlockingStrategyVariable]
 				}
 			})
 
@@ -158,21 +158,21 @@ func (d *StreamDecoder) Decode() {
 			// 0111 : get 16 bit (blocksize-1) from end of header
 			// 1000-1111 : 256 * (2^(n-8)) samples, i.e. 256/512/1024/2048/4096/8192/16384/32768
 			var blockSizeBits uint64
-			blockSize := d.FieldUFn("block_size", func() (uint64, decode.Format, string) {
+			blockSize := d.FieldUFn("block_size", func() (uint64, decode.NumberFormat, string) {
 				blockSizeBits = d.U4()
 				switch blockSizeBits {
 				case 0:
-					return 0, decode.FormatDecimal, "reserved"
+					return 0, decode.NumberDecimal, "reserved"
 				case 1:
-					return 192, decode.FormatDecimal, ""
+					return 192, decode.NumberDecimal, ""
 				case 2, 3, 4, 5:
-					return 576 * (1 << (blockSizeBits - 2)), decode.FormatDecimal, ""
+					return 576 * (1 << (blockSizeBits - 2)), decode.NumberDecimal, ""
 				case 6:
-					return 0, decode.FormatDecimal, "end of header (8 bit)"
+					return 0, decode.NumberDecimal, "end of header (8 bit)"
 				case 7:
-					return 0, decode.FormatDecimal, "end of header (16 bit)"
+					return 0, decode.NumberDecimal, "end of header (16 bit)"
 				default:
-					return 256 * (1 << (blockSizeBits - 8)), decode.FormatDecimal, ""
+					return 256 * (1 << (blockSizeBits - 8)), decode.NumberDecimal, ""
 				}
 			})
 
@@ -194,41 +194,41 @@ func (d *StreamDecoder) Decode() {
 			// 1110 : get 16 bit sample rate (in tens of Hz) from end of header
 			// 1111 : invalid, to prevent sync-fooling string of 1s
 			var sampleRateBits uint64
-			d.FieldUFn("sample_rate", func() (uint64, decode.Format, string) {
+			d.FieldUFn("sample_rate", func() (uint64, decode.NumberFormat, string) {
 				sampleRateBits = d.U4()
 				switch sampleRateBits {
 				case 0:
-					return streamInfoSamepleRate, decode.FormatDecimal, "streaminfo"
+					return streamInfoSamepleRate, decode.NumberDecimal, "streaminfo"
 				case 1:
-					return 88200, decode.FormatDecimal, ""
+					return 88200, decode.NumberDecimal, ""
 				case 2:
-					return 176000, decode.FormatDecimal, ""
+					return 176000, decode.NumberDecimal, ""
 				case 3:
-					return 19200, decode.FormatDecimal, ""
+					return 19200, decode.NumberDecimal, ""
 				case 4:
-					return 800, decode.FormatDecimal, ""
+					return 800, decode.NumberDecimal, ""
 				case 5:
-					return 1600, decode.FormatDecimal, ""
+					return 1600, decode.NumberDecimal, ""
 				case 6:
-					return 22050, decode.FormatDecimal, ""
+					return 22050, decode.NumberDecimal, ""
 				case 7:
-					return 44100, decode.FormatDecimal, ""
+					return 44100, decode.NumberDecimal, ""
 				case 8:
-					return 32000, decode.FormatDecimal, ""
+					return 32000, decode.NumberDecimal, ""
 				case 9:
-					return 44100, decode.FormatDecimal, ""
+					return 44100, decode.NumberDecimal, ""
 				case 10:
-					return 48000, decode.FormatDecimal, ""
+					return 48000, decode.NumberDecimal, ""
 				case 11:
-					return 96000, decode.FormatDecimal, ""
+					return 96000, decode.NumberDecimal, ""
 				case 12:
-					return 0, decode.FormatDecimal, "end of header (8 bit*1000)"
+					return 0, decode.NumberDecimal, "end of header (8 bit*1000)"
 				case 13:
-					return 0, decode.FormatDecimal, "end of header (16 bit)"
+					return 0, decode.NumberDecimal, "end of header (16 bit)"
 				case 14:
-					return 0, decode.FormatDecimal, "end of header (16 bit*10)"
+					return 0, decode.NumberDecimal, "end of header (16 bit*10)"
 				default:
-					return 0, decode.FormatDecimal, "invalid"
+					return 0, decode.NumberDecimal, "invalid"
 				}
 			})
 
@@ -247,42 +247,42 @@ func (d *StreamDecoder) Decode() {
 			// 1010 : mid/side stereo: channel 0 is the mid(average) channel, channel 1 is the side(difference) channel
 			// 1011-1111 : reserved
 			sideChannelIndex := -1
-			channels := d.FieldUFn("channel_assignment", func() (uint64, decode.Format, string) {
-				si, u, fmt, disp := func() (int, uint64, decode.Format, string) {
+			channels := d.FieldUFn("channel_assignment", func() (uint64, decode.NumberFormat, string) {
+				si, u, fmt, disp := func() (int, uint64, decode.NumberFormat, string) {
 					switch d.U4() {
 					case 0:
-						return -1, 1, decode.FormatDecimal, "mono"
+						return -1, 1, decode.NumberDecimal, "mono"
 					case 1:
-						return -1, 2, decode.FormatDecimal, "left, right"
+						return -1, 2, decode.NumberDecimal, "left, right"
 					case 2:
-						return -1, 3, decode.FormatDecimal, "left, right, center"
+						return -1, 3, decode.NumberDecimal, "left, right, center"
 					case 3:
-						return -1, 4, decode.FormatDecimal, "front left, front right, back left, back right"
+						return -1, 4, decode.NumberDecimal, "front left, front right, back left, back right"
 					case 4:
-						return -1, 5, decode.FormatDecimal, "front left, front right, front center, back/surround left, back/surround right"
+						return -1, 5, decode.NumberDecimal, "front left, front right, front center, back/surround left, back/surround right"
 					case 5:
-						return -1, 6, decode.FormatDecimal, "front left, front right, front center, LFE, back/surround left, back/surround right"
+						return -1, 6, decode.NumberDecimal, "front left, front right, front center, LFE, back/surround left, back/surround right"
 					case 6:
-						return -1, 7, decode.FormatDecimal, "front left, front right, front center, LFE, back center, side left, side right"
+						return -1, 7, decode.NumberDecimal, "front left, front right, front center, LFE, back center, side left, side right"
 					case 7:
-						return -1, 8, decode.FormatDecimal, "front left, front right, front center, LFE, back left, back right, side left, side right"
+						return -1, 8, decode.NumberDecimal, "front left, front right, front center, LFE, back left, back right, side left, side right"
 					case 8:
 						sideChannelIndex = 1
-						return -1, 2, decode.FormatDecimal, "left/side"
+						return -1, 2, decode.NumberDecimal, "left/side"
 					case 9:
 						sideChannelIndex = 0
-						return -1, 2, decode.FormatDecimal, "side/right"
+						return -1, 2, decode.NumberDecimal, "side/right"
 					case 10:
 						sideChannelIndex = 1
-						return -1, 2, decode.FormatDecimal, "mid/side"
+						return -1, 2, decode.NumberDecimal, "mid/side"
 					default:
-						return -1, 0, decode.FormatDecimal, "reserved"
+						return -1, 0, decode.NumberDecimal, "reserved"
 					}
 				}()
 				if si != -1 {
 					sideChannelIndex = si
-					d.FieldUFn("side_channel_index", func() (uint64, decode.Format, string) {
-						return uint64(sideChannelIndex), decode.FormatDecimal, ""
+					d.FieldUFn("side_channel_index", func() (uint64, decode.NumberFormat, string) {
+						return uint64(sideChannelIndex), decode.NumberDecimal, ""
 					})
 				}
 				return u, fmt, disp
@@ -297,24 +297,24 @@ func (d *StreamDecoder) Decode() {
 			// 101 : 20 bits per sample
 			// 110 : 24 bits per sample
 			// 111 : reserved
-			sampleSize := d.FieldUFn("sample_size", func() (uint64, decode.Format, string) {
+			sampleSize := d.FieldUFn("sample_size", func() (uint64, decode.NumberFormat, string) {
 				switch d.U3() {
 				case 0:
-					return streamInfoBitPerSample, decode.FormatDecimal, "streaminfo"
+					return streamInfoBitPerSample, decode.NumberDecimal, "streaminfo"
 				case 1:
-					return 8, decode.FormatDecimal, ""
+					return 8, decode.NumberDecimal, ""
 				case 2:
-					return 12, decode.FormatDecimal, ""
+					return 12, decode.NumberDecimal, ""
 				case 3:
-					return 0, decode.FormatDecimal, "reserved"
+					return 0, decode.NumberDecimal, "reserved"
 				case 4:
-					return 16, decode.FormatDecimal, ""
+					return 16, decode.NumberDecimal, ""
 				case 5:
-					return 20, decode.FormatDecimal, ""
+					return 20, decode.NumberDecimal, ""
 				case 6:
-					return 24, decode.FormatDecimal, ""
+					return 24, decode.NumberDecimal, ""
 				case 7:
-					return 0, decode.FormatDecimal, "reserved"
+					return 0, decode.NumberDecimal, "reserved"
 				}
 				panic("unreachable")
 			})
@@ -331,12 +331,12 @@ func (d *StreamDecoder) Decode() {
 				//   <8-48>:"UTF-8" coded frame number (decoded number is 31 bits) [4]
 				switch blockingStrategy {
 				case BlockingStrategyVariable:
-					d.FieldUFn("sample_number", func() (uint64, decode.Format, string) {
-						return d.UTF8Uint(), decode.FormatDecimal, ""
+					d.FieldUFn("sample_number", func() (uint64, decode.NumberFormat, string) {
+						return d.UTF8Uint(), decode.NumberDecimal, ""
 					})
 				case BlockingStrategyFixed:
-					d.FieldUFn("frame_number", func() (uint64, decode.Format, string) {
-						return d.UTF8Uint(), decode.FormatDecimal, ""
+					d.FieldUFn("frame_number", func() (uint64, decode.NumberFormat, string) {
+						return d.UTF8Uint(), decode.NumberDecimal, ""
 					})
 				}
 
@@ -344,12 +344,12 @@ func (d *StreamDecoder) Decode() {
 				//   8/16 bit (blocksize-1)
 				switch blockSizeBits {
 				case 6:
-					blockSize = d.FieldUFn("block_size", func() (uint64, decode.Format, string) {
-						return d.U8() + 1, decode.FormatDecimal, ""
+					blockSize = d.FieldUFn("block_size", func() (uint64, decode.NumberFormat, string) {
+						return d.U8() + 1, decode.NumberDecimal, ""
 					})
 				case 7:
-					blockSize = d.FieldUFn("block_size", func() (uint64, decode.Format, string) {
-						return d.U16() + 1, decode.FormatDecimal, ""
+					blockSize = d.FieldUFn("block_size", func() (uint64, decode.NumberFormat, string) {
+						return d.U16() + 1, decode.NumberDecimal, ""
 					})
 				}
 
@@ -357,16 +357,16 @@ func (d *StreamDecoder) Decode() {
 				//   8/16 bit sample rate
 				switch sampleRateBits {
 				case 12:
-					d.FieldUFn("sample_rate", func() (uint64, decode.Format, string) {
-						return d.U8() * 1000, decode.FormatDecimal, ""
+					d.FieldUFn("sample_rate", func() (uint64, decode.NumberFormat, string) {
+						return d.U8() * 1000, decode.NumberDecimal, ""
 					})
 				case 13:
-					d.FieldUFn("sample_rate", func() (uint64, decode.Format, string) {
-						return d.U16(), decode.FormatDecimal, ""
+					d.FieldUFn("sample_rate", func() (uint64, decode.NumberFormat, string) {
+						return d.U16(), decode.NumberDecimal, ""
 					})
 				case 14:
-					d.FieldUFn("sample_rate", func() (uint64, decode.Format, string) {
-						return d.U16() * 10, decode.FormatDecimal, ""
+					d.FieldUFn("sample_rate", func() (uint64, decode.NumberFormat, string) {
+						return d.U16() * 10, decode.NumberDecimal, ""
 					})
 				}
 			})
@@ -388,28 +388,28 @@ func (d *StreamDecoder) Decode() {
 					// 01xxxx : reserved
 					// 1xxxxx : SUBFRAME_LPC, xxxxx=order-1
 					var lpcOrder uint64
-					subframeType := d.FieldUFn("subframe_type", func() (uint64, decode.Format, string) {
-						u, fmt, disp := func() (uint64, decode.Format, string) {
+					subframeType := d.FieldUFn("subframe_type", func() (uint64, decode.NumberFormat, string) {
+						u, fmt, disp := func() (uint64, decode.NumberFormat, string) {
 							bits := d.U6()
 							switch bits {
 							case 0:
-								return SubframeConstant, decode.FormatDecimal, SubframeTypeNames[SubframeConstant]
+								return SubframeConstant, decode.NumberDecimal, SubframeTypeNames[SubframeConstant]
 							case 1:
-								return SubframeVerbatim, decode.FormatDecimal, SubframeTypeNames[SubframeVerbatim]
+								return SubframeVerbatim, decode.NumberDecimal, SubframeTypeNames[SubframeVerbatim]
 							case 8, 9, 10, 11, 12:
 								lpcOrder = bits & 0x7
-								return SubframeFixed, decode.FormatDecimal, SubframeTypeNames[SubframeFixed]
+								return SubframeFixed, decode.NumberDecimal, SubframeTypeNames[SubframeFixed]
 							default:
 								if bits&0x20 > 0 {
 									lpcOrder = (bits & 0x1f) + 1
 								} else {
-									return 0, decode.FormatDecimal, "reserved"
+									return 0, decode.NumberDecimal, "reserved"
 								}
-								return SubframeLPC, decode.FormatDecimal, SubframeTypeNames[SubframeLPC]
+								return SubframeLPC, decode.NumberDecimal, SubframeTypeNames[SubframeLPC]
 							}
 						}()
-						d.FieldUFn("lpc_order", func() (uint64, decode.Format, string) {
-							return uint64(lpcOrder), decode.FormatDecimal, ""
+						d.FieldUFn("lpc_order", func() (uint64, decode.NumberFormat, string) {
+							return uint64(lpcOrder), decode.NumberDecimal, ""
 						})
 						return u, fmt, disp
 					})
@@ -420,8 +420,8 @@ func (d *StreamDecoder) Decode() {
 					wastedBitsFlag := d.FieldU1("wasted_bits_flag")
 					var wastedBitsK uint64
 					if wastedBitsFlag != 0 {
-						wastedBitsK = d.FieldUFn("wasted_bits_k", func() (uint64, decode.Format, string) {
-							return uint64(d.Unary(0)) + 1, decode.FormatDecimal, ""
+						wastedBitsK = d.FieldUFn("wasted_bits_k", func() (uint64, decode.NumberFormat, string) {
+							return uint64(d.Unary(0)) + 1, decode.NumberDecimal, ""
 						})
 					}
 
@@ -431,8 +431,8 @@ func (d *StreamDecoder) Decode() {
 					if channelIndex == sideChannelIndex {
 						subframeSampleSize++
 					}
-					d.FieldUFn("subframe_sample_size", func() (uint64, decode.Format, string) {
-						return subframeSampleSize, decode.FormatDecimal, ""
+					d.FieldUFn("subframe_sample_size", func() (uint64, decode.NumberFormat, string) {
+						return subframeSampleSize, decode.NumberDecimal, ""
 					})
 
 					decodeWarmupSamples := func(n uint64, sampleSize uint64) {
@@ -449,16 +449,16 @@ func (d *StreamDecoder) Decode() {
 						// 01 : partitioned Rice coding with 5-bit Rice parameter; RESIDUAL_CODING_METHOD_PARTITIONED_RICE2 follows
 						// 10-11 : reserved
 						var riceEscape uint64
-						riceBits := d.FieldUFn("residual_coding_method", func() (uint64, decode.Format, string) {
+						riceBits := d.FieldUFn("residual_coding_method", func() (uint64, decode.NumberFormat, string) {
 							switch d.U2() {
 							case 0:
 								riceEscape = 15
-								return 4, decode.FormatDecimal, "rice"
+								return 4, decode.NumberDecimal, "rice"
 							case 1:
 								riceEscape = 31
-								return 5, decode.FormatDecimal, "rice2"
+								return 5, decode.NumberDecimal, "rice2"
 							default:
-								return 0, decode.FormatDecimal, "reserved"
+								return 0, decode.NumberDecimal, "reserved"
 							}
 						})
 
@@ -466,8 +466,8 @@ func (d *StreamDecoder) Decode() {
 						partitionOrder := d.FieldU4("partition_order")
 						// There will be 2^order partitions.
 						ricePartitions := uint64(1 << partitionOrder)
-						d.FieldUFn("rice_partitions", func() (uint64, decode.Format, string) {
-							return ricePartitions, decode.FormatDecimal, ""
+						d.FieldUFn("rice_partitions", func() (uint64, decode.NumberFormat, string) {
+							return ricePartitions, decode.NumberDecimal, ""
 						})
 
 						for i := uint64(0); i < ricePartitions; i++ {
@@ -528,8 +528,8 @@ func (d *StreamDecoder) Decode() {
 						// <n> Unencoded warm-up samples (n = frame's bits-per-sample * lpc order).
 						decodeWarmupSamples(lpcOrder, subframeSampleSize)
 						// <4> (Quantized linear predictor coefficients' precision in bits)-1 (1111 = invalid).
-						precision := d.FieldUFn("precision", func() (uint64, decode.Format, string) {
-							return d.U4() + 1, decode.FormatDecimal, ""
+						precision := d.FieldUFn("precision", func() (uint64, decode.NumberFormat, string) {
+							return d.U4() + 1, decode.NumberDecimal, ""
 						})
 						// <5> Quantized linear predictor coefficient shift needed in bits (NOTE: this number is signed two's-complement).
 						d.FieldS5("shift")

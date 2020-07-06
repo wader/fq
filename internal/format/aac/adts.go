@@ -6,7 +6,7 @@ import (
 
 // Audio Data Transport Stream (ADTS)
 
-var ADTS = &decode.Register{
+var ADTS = &decode.Format{
 	Name: "adts",
 	New:  func() decode.Decoder { return &ADTSDecoder{} },
 }
@@ -54,10 +54,10 @@ func (d *ADTSDecoder) Decode() {
 		dataLength -= 2
 	}
 	d.FieldU11("buffer_fullness")
-	d.FieldUFn("number_of_frames", func() (uint64, decode.Format, string) { return d.U2() + 1, decode.FormatDecimal, "" })
+	d.FieldUFn("number_of_frames", func() (uint64, decode.NumberFormat, string) { return d.U2() + 1, decode.NumberDecimal, "" })
 	if hasCRC {
 		d.FieldU16("crc")
 	}
-	d.FieldDecodeLen("frame", dataLength*8, []string{"aac_frame"})
+	d.FieldDecodeLen("frame", dataLength*8, Frame)
 	// d.FieldBytesLen("frame", dataLength)
 }

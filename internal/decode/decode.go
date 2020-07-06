@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"fq/internal/bitbuf"
 	"log"
-	"runtime"
 	"strconv"
 	"strings"
 )
@@ -33,11 +32,7 @@ func (e ValidateError) Error() string {
 	return fmt.Sprintf("failed to validate at position %d (%d+%d): %s", e.Pos, e.Pos>>3, e.Pos&0x7, e.Reason)
 }
 
-type Options struct {
-	Probe bool
-}
-
-type Register struct {
+type Format struct {
 	Name      string
 	MIME      string
 	New       func() Decoder
@@ -47,8 +42,17 @@ type Register struct {
 type Decoder interface {
 	Decode()
 
-	Prepare(nc Common)
+	Prepare(common Common)
 	GetCommon() *Common
+}
+
+type Common struct {
+	Parent  Decoder
+	Current *Field // TODO: need root field also?
+	Format  *Format
+
+	Registry *Registry
+	bitBuf   *bitbuf.Buffer
 }
 
 type Type int
@@ -65,13 +69,14 @@ const (
 	TypeDecoder
 )
 
-type Format int
+// TODO: base instead?
+type NumberFormat int
 
 const (
-	FormatDecimal Format = iota
-	FormatBinary
-	FormatOctal
-	FormatHex
+	NumberDecimal NumberFormat = iota
+	NumberBinary
+	NumberOctal
+	NumberHex
 )
 
 type Value struct {
@@ -84,7 +89,7 @@ type Value struct {
 	Str   string
 	Bytes []byte
 
-	Format  Format
+	Format  NumberFormat
 	Display string
 	Mime    string
 }
@@ -148,82 +153,20 @@ type Field struct {
 	Children []*Field
 }
 
-type Common struct {
-	Current  *Field // TODO: need root field also?
-	Parent   *Common
-	Register *Register
+// func New(parent *Common, bb *bitbuf.Buffer, registers []*Format, forceFormats... []*Format) (*Format, *Common) {
+// 	// TODO: add common,register to Decoder interface? rename register?
+// 	r, c, ok := probe(bb, registers, decoderNames)
+// 	if !ok {
+// 		return nil, nil
+// 	}
 
-	registers []*Register
-	bitBuf    *bitbuf.Buffer
-}
+// 	return r, c
+// }
 
-func probe(bb *bitbuf.Buffer, registers []*Register) (*Register, *Common, bool) {
-	// TODO: order..
-	for _, r := range registers {
-		if len(namesMap) == 0 && r.SkipProbe {
-			continue
-		}
-		if len(namesMap) > 0 {
-			if _, ok := namesMap[r.Name]; !ok {
-				continue
-			}
-		}
+func (c *Common) Decode() {}
 
-		// TODO: how to pass regsiters? do later? current field?
-		d := r.New()
-		d.Prepare(Common{
-			Register:  r,
-			Current:   &Field{Name: r.Name},
-			bitBuf:    bb.Copy(),
-			registers: registers,
-		})
-		err := func() (err error) {
-			defer func() {
-				if rerr := recover(); rerr != nil {
-					// https://github.com/golang/go/blob/master/src/net/http/server.go#L1770
-					const size = 64 << 10
-					buf := make([]byte, size)
-					buf = buf[:runtime.Stack(buf, false)]
-					log.Printf("%s\n", buf)
-
-					switch terr := rerr.(type) {
-					case BitBufError:
-						err = terr
-					case ValidateError:
-						err = terr
-					default:
-						// TODO:
-						panic(terr)
-					}
-				}
-			}()
-
-			d.Decode()
-			return nil
-		}()
-
-		if err != nil {
-			log.Printf("err: %s\n", err)
-			continue
-		}
-
-		return r, d.GetCommon(), true
-	}
-	return nil, nil, false
-}
-
-func New(parent *Common, bb *bitbuf.Buffer, registers []*Register, decoderNames []string) (*Register, *Common) {
-	// TODO: add common,register to Decoder interface? rename register?
-	r, c, ok := probe(bb, registers, decoderNames)
-	if !ok {
-		return nil, nil
-	}
-
-	return r, c
-}
-
-func (c *Common) Prepare(nc Common) {
-	*c = nc
+func (c *Common) Prepare(common Common) {
+	*c = common
 }
 
 func (c *Common) GetCommon() *Common {
@@ -358,12 +301,12 @@ func (c *Common) U32LE() uint64           { return c.UE(32, bitbuf.LittleEndian)
 func (c *Common) U64LE() uint64           { return c.UE(64, bitbuf.LittleEndian) }
 
 func (c *Common) FieldUE(name string, nBits uint64, endian bitbuf.Endian) uint64 {
-	return c.FieldUFn(name, func() (uint64, Format, string) {
+	return c.FieldUFn(name, func() (uint64, NumberFormat, string) {
 		n, err := c.bitBuf.UE(nBits, endian)
 		if err != nil {
 			panic(BitBufError{Err: err, Op: "FieldU" + (strconv.Itoa(int(nBits))), Size: nBits, Pos: c.bitBuf.Pos})
 		}
-		return n, FormatDecimal, ""
+		return n, NumberDecimal, ""
 	})
 }
 
@@ -475,12 +418,12 @@ func (c *Common) S32LE() int64           { return c.SE(32, bitbuf.LittleEndian) 
 func (c *Common) S64LE() int64           { return c.SE(64, bitbuf.LittleEndian) }
 
 func (c *Common) FieldSE(name string, nBits uint64, endian bitbuf.Endian) int64 {
-	return c.FieldSFn(name, func() (int64, Format, string) {
+	return c.FieldSFn(name, func() (int64, NumberFormat, string) {
 		n, err := c.bitBuf.SE(nBits, endian)
 		if err != nil {
 			panic(BitBufError{Err: err, Op: "FieldS" + (strconv.Itoa(int(nBits))), Size: nBits, Pos: c.bitBuf.Pos})
 		}
-		return n, FormatDecimal, ""
+		return n, NumberDecimal, ""
 	})
 }
 func (c *Common) FieldS(name string, nBits uint64) int64 {
@@ -699,14 +642,14 @@ func (c *Common) FieldBoolFn(name string, fn func() (bool, string)) bool {
 	}).Bool
 }
 
-func (c *Common) FieldUFn(name string, fn func() (uint64, Format, string)) uint64 {
+func (c *Common) FieldUFn(name string, fn func() (uint64, NumberFormat, string)) uint64 {
 	return c.FieldFn(name, func() Value {
 		u, fmt, d := fn()
 		return Value{Type: TypeUInt, UInt: u, Format: fmt, Display: d}
 	}).UInt
 }
 
-func (c *Common) FieldSFn(name string, fn func() (int64, Format, string)) int64 {
+func (c *Common) FieldSFn(name string, fn func() (int64, NumberFormat, string)) int64 {
 	return c.FieldFn(name, func() Value {
 		s, fmt, d := fn()
 		return Value{Type: TypeSInt, SInt: s, Format: fmt, Display: d}
@@ -735,26 +678,26 @@ func (c *Common) FieldBytesFn(name string, fn func() ([]byte, string)) []byte {
 }
 
 func (c *Common) FieldStringMapFn(name string, sm map[uint64]string, def string, fn func() uint64) uint64 {
-	return c.FieldUFn(name, func() (uint64, Format, string) {
+	return c.FieldUFn(name, func() (uint64, NumberFormat, string) {
 		n := fn()
 		var d string
 		d, ok := sm[n]
 		if !ok {
 			d = def
 		}
-		return n, FormatDecimal, d
+		return n, NumberDecimal, d
 	})
 }
 
 func (c *Common) FieldValidateUFn(name string, v uint64, fn func() uint64) {
 	pos := c.bitBuf.Pos
-	n := c.FieldUFn(name, func() (uint64, Format, string) {
+	n := c.FieldUFn(name, func() (uint64, NumberFormat, string) {
 		n := fn()
 		s := "Correct"
 		if n != v {
 			s = "Incorrect"
 		}
-		return n, FormatHex, s
+		return n, NumberHex, s
 	})
 	if n != v {
 		panic(ValidateError{Reason: fmt.Sprintf("expected %d found %d", v, n), Pos: pos})
@@ -871,38 +814,37 @@ func (c *Common) SubLen(nBits uint64, fn func()) {
 }
 
 // TODO: return decooder?
-func (c *Common) FieldDecode(name string, decoderNames []string) bool {
+func (c *Common) FieldDecode(name string, forceFormats ...*Format) bool {
 
-	log.Printf("FieldDecode BLA %v\n", decoderNames)
+	log.Printf("FieldDecode BLA %v\n", forceFormats)
 	//start := c.Pos
 	bb, err := c.bitBuf.BitBufRange(c.bitBuf.Pos, c.BitsLeft())
 	if err != nil {
 		panic(BitBufError{Err: err, Op: "FieldDecode", Size: c.BitsLeft(), Pos: c.bitBuf.Pos})
 	}
 
-	r, fieldC := New(c, bb, c.registers, decoderNames)
-
-	if r == nil {
-		log.Printf("FieldDecode nope %#+v\n", decoderNames)
+	d, _ := c.Registry.Probe(c, bb, forceFormats)
+	if d == nil {
+		log.Printf("FieldDecode nope %#+v\n", forceFormats)
 		return false
 	}
-	log.Printf("FieldDecode r: %#+v\n", r)
-	log.Printf("fieldC.bitBuf.Pos: %#+v\n", fieldC.bitBuf.Pos)
+	log.Printf("FieldDecode decoder: %#+v\n", d)
+	log.Printf("fieldC.bitBuf.Pos: %#+v\n", d.GetCommon().bitBuf.Pos)
 
 	// TODO: translate positions?
 	// TODO: what out muxed stream?
 
-	c.Current.Children = append(c.Current.Children, fieldC.Current)
+	c.Current.Children = append(c.Current.Children, d.GetCommon().Current)
 
-	c.bitBuf.SeekRel(int64(fieldC.bitBuf.Pos))
+	c.bitBuf.SeekRel(int64(d.GetCommon().bitBuf.Pos))
 
 	// TODO: what to return?
 	return true
 }
 
-func (c *Common) FieldDecodeLen(name string, nBits uint64, decoderNames []string) bool {
+func (c *Common) FieldDecodeLen(name string, nBits uint64, forceFormats ...*Format) bool {
 
-	log.Printf("FieldDecodeLen BLA %d %v\n", nBits, decoderNames)
+	log.Printf("FieldDecodeLen BLA %d %v\n", nBits, forceFormats)
 
 	//start := c.Pos
 	bb, err := c.bitBuf.BitBufRange(c.bitBuf.Pos, nBits)
@@ -910,17 +852,17 @@ func (c *Common) FieldDecodeLen(name string, nBits uint64, decoderNames []string
 		panic(BitBufError{Err: err, Op: "FieldDecodeLen", Size: nBits, Pos: c.bitBuf.Pos})
 	}
 
-	r, fieldC := New(c, bb, c.registers, decoderNames)
-	if r != nil {
-		c.Current.Children = append(c.Current.Children, fieldC.Current)
+	d, _ := c.Registry.Probe(c, bb, forceFormats)
+	if d != nil {
+		c.Current.Children = append(c.Current.Children, d.GetCommon().Current)
 	}
 	c.bitBuf.SeekRel(int64(nBits))
 
-	return r != nil
+	return d != nil
 }
 
 // TODO: return decooder?
-func (c *Common) FieldDecodeRange(name string, firsBit uint64, nBits uint64, decoderNames []string) bool {
+func (c *Common) FieldDecodeRange(name string, firsBit uint64, nBits uint64, forceFormats ...*Format) bool {
 
 	//start := c.Pos
 
@@ -929,36 +871,36 @@ func (c *Common) FieldDecodeRange(name string, firsBit uint64, nBits uint64, dec
 		panic(BitBufError{Err: err, Op: "FieldDecodeRange", Size: nBits, Pos: c.bitBuf.Pos})
 	}
 
-	r, fieldC := New(c, bb, c.registers, decoderNames)
+	d, _ := c.Registry.Probe(c, bb, forceFormats)
 
 	// log.Printf("bb: %#+v\n", bb)
 
-	if r == nil {
-		log.Printf("FieldDecodeRange nope %#+v\n", decoderNames)
+	if d == nil {
+		log.Printf("FieldDecodeRange nope %#+v\n", forceFormats)
 		return false
 	}
-	log.Printf("FieldDecodeRange r: %#+v\n", r)
+	log.Printf("FieldDecodeRange d: %#+v\n", d)
 
 	// TODO: translate positions?
 	// TODO: what out muxed stream?
 
-	c.Current.Children = append(c.Current.Children, fieldC.Current)
+	c.Current.Children = append(c.Current.Children, d.GetCommon().Current)
 
 	// TODO: what to return?
 	return true
 }
 
 // TODO: list of ranges?
-func (c *Common) FieldDecodeBitBuf(name string, bb *bitbuf.Buffer, decoderNames []string) bool {
+func (c *Common) FieldDecodeBitBuf(name string, bb *bitbuf.Buffer, forceFormats ...*Format) bool {
 
 	//start := c.Pos
 
-	r, fieldC := New(c, bb, c.registers, decoderNames)
+	d, _ := c.Registry.Probe(c, bb, forceFormats)
 
 	// log.Printf("bb: %#+v\n", bb)
 
-	if r == nil {
-		//log.Printf("FieldDecodeRange nope %#+v\n", decoderNames)
+	if d == nil {
+		log.Printf("FieldDecodeRange nope %#+v\n", d)
 		return false
 	}
 	//log.Printf("FieldDecodeRange r: %#+v\n", r)
@@ -966,7 +908,7 @@ func (c *Common) FieldDecodeBitBuf(name string, bb *bitbuf.Buffer, decoderNames 
 	// TODO: translate positions?
 	// TODO: what out muxed stream?
 
-	c.Current.Children = append(c.Current.Children, fieldC.Current)
+	c.Current.Children = append(c.Current.Children, d.GetCommon().Current)
 
 	// TODO: what to return?
 	return true

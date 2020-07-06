@@ -8,11 +8,11 @@ import (
 	"fmt"
 	"fq/internal/bitbuf"
 	"fq/internal/decode"
-	"log"
+	"fq/internal/format/flac"
 	"strings"
 )
 
-var Packet = &decode.Register{
+var Packet = &decode.Format{
 	Name:      "vorbis",
 	MIME:      "",
 	New:       func() decode.Decoder { return &PacketDecoder{} },
@@ -40,7 +40,7 @@ type PacketDecoder struct {
 
 // Decode vorbis packet
 func (d *PacketDecoder) Decode() {
-	packetType := d.FieldUFn("packet_type", func() (uint64, decode.Format, string) {
+	packetType := d.FieldUFn("packet_type", func() (uint64, decode.NumberFormat, string) {
 		packetTypeName := "unknown"
 		t := d.U8()
 		// 4.2.1. Common header decode
@@ -51,7 +51,7 @@ func (d *PacketDecoder) Decode() {
 		if n, ok := packetTypeNames[uint(t)]; ok {
 			packetTypeName = n
 		}
-		return t, decode.FormatDecimal, packetTypeName
+		return t, decode.NumberDecimal, packetTypeName
 	})
 
 	switch packetType {
@@ -69,11 +69,11 @@ func (d *PacketDecoder) Decode() {
 		d.FieldU32LE("bitrate_nominal")
 		d.FieldU32LE("bitrate_minimum")
 		// TODO: code/comment about 2.1.4. coding bits into byte sequences
-		d.FieldUFn("blocksize_1", func() (uint64, decode.Format, string) {
-			return 1 << d.U4(), decode.FormatDecimal, ""
+		d.FieldUFn("blocksize_1", func() (uint64, decode.NumberFormat, string) {
+			return 1 << d.U4(), decode.NumberDecimal, ""
 		})
-		d.FieldUFn("blocksize_0", func() (uint64, decode.Format, string) {
-			return 1 << d.U4(), decode.FormatDecimal, ""
+		d.FieldUFn("blocksize_0", func() (uint64, decode.NumberFormat, string) {
+			return 1 << d.U4(), decode.NumberDecimal, ""
 		})
 		// TODO: warning if blocksize0 > blocksize1
 		// TODO: warning if not 64-8192
@@ -107,12 +107,10 @@ func (d *PacketDecoder) Decode() {
 			if len(pairParts) == 2 {
 				// METADATA_BLOCK_PICTURE=<base64>
 				k, v := strings.ToUpper(pairParts[0]), pairParts[1]
-				log.Printf("k: %#+v\n", k)
-				log.Printf("v: %#+v\n", v)
 				if k == "METADATA_BLOCK_PICTURE" {
 					bs, err := base64.StdEncoding.DecodeString(v)
 					if err == nil {
-						d.FieldDecodeBitBuf("picture", bitbuf.NewFromBytes(bs), []string{"flac_picture"})
+						d.FieldDecodeBitBuf("picture", bitbuf.NewFromBytes(bs), flac.Picture)
 					} else {
 						// TODO: warning?
 					}

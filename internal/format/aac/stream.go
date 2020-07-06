@@ -4,7 +4,7 @@ import (
 	"fq/internal/decode"
 )
 
-var Stream = &decode.Register{
+var Stream = &decode.Format{
 	Name: "aac_stream",
 	New:  func() decode.Decoder { return &StreamDecoder{} },
 }
@@ -17,7 +17,7 @@ type StreamDecoder struct {
 // Decode adts
 func (d *StreamDecoder) Decode() {
 	for !d.End() {
-		if !d.FieldDecode("frame", []string{"adts"}) {
+		if !d.FieldDecode("frame", ADTS) {
 			break
 		}
 	}

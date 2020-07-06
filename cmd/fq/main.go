@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"fq/internal/bitbuf"
 	"fq/internal/decode"
 	"fq/internal/format"
@@ -15,7 +16,7 @@ import (
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to `file`")
 var memprofile = flag.String("memprofile", "", "write memory profile to `file`")
 
-var forceDecoder = flag.String("f", "", "")
+var forceFormatName = flag.String("f", "", "")
 
 func main() {
 	flag.Parse()
@@ -46,47 +47,25 @@ func main() {
 		}
 	}
 
-	// s, err := ioutil.ReadFile(flag.Arg(0))
-	// if err != nil {
-	// 	panic(err)
-	// }
-
 	buf, err := ioutil.ReadFile(flag.Arg(0))
 	if err != nil {
 		panic(err)
 	}
 
-	// f := &decode.Field{Name: "root"}
-	// c := decode.Common{Current: f, Buffer: bitbuf.NewFromBytes(buf)}
-	// d := flac.Decoder{Common: c}
-	//d := mp3.Decoder{Common: c}
-	//d := id3v2.Decoder{Common: c}
-
-	var registers []*decode.Register
-	if *forceDecoder != "" {
-		for _, r := range format.All {
-			if r.Name == *forceDecoder {
-				registers = append(registers, r)
-			}
+	registry := decode.NewRegistryWithFormats(format.All)
+	var forceFormats []*decode.Format
+	if *forceFormatName != "" {
+		forceFormat := registry.FindFormat(*forceFormatName)
+		if forceFormat == nil {
+			panic("found not find format " + *forceFormatName)
 		}
-		if len(registers) == 0 {
-			panic("could not find format")
-		}
-	} else {
-		registers = format.All
+		forceFormats = append(forceFormats, forceFormat)
 	}
-
-	func() {
-		defer func() {
-			// if e := recover(); e != nil {
-			// 	log.Printf("e: %#+v\n", e)
-			// }
-		}()
-		r, d := decode.New(nil, bitbuf.NewFromBytes(buf), registers)
-		log.Printf("r: %#+v\n", r)
-
-		decode.Dump(d.Current, 0)
-
-	}()
-
+	d, errs := registry.Probe(nil, bitbuf.NewFromBytes(buf), forceFormats)
+	for _, err := range errs {
+		fmt.Printf("%s\n", err)
+	}
+	if d != nil {
+		decode.Dump(d.GetCommon().Current, 0)
+	}
 }

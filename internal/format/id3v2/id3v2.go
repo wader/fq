@@ -5,7 +5,7 @@ import (
 	"fq/internal/decode"
 )
 
-var Tag = &decode.Register{
+var Tag = &decode.Format{
 	Name: "id3v2",
 	New:  func() decode.Decoder { return &TagDecoder{} },
 }
@@ -45,8 +45,8 @@ func (d *TagDecoder) Decode() {
 		d.FieldU1("experimental_indicator")
 		d.FieldU5("unused")
 	})
-	size := d.FieldUFn("size,", func() (uint64, decode.Format, string) {
-		return d.SyncSafeU32(), decode.FormatDecimal, ""
+	size := d.FieldUFn("size,", func() (uint64, decode.NumberFormat, string) {
+		return d.SyncSafeU32(), decode.NumberDecimal, ""
 	})
 
 	var extHeaderSize uint64
@@ -56,8 +56,8 @@ func (d *TagDecoder) Decode() {
 			extHeaderSize = d.FieldU32("size")
 			d.FieldBytesLen("data", extHeaderSize)
 		case 4:
-			extHeaderSize = d.FieldUFn("size,", func() (uint64, decode.Format, string) {
-				return d.SyncSafeU32(), decode.FormatDecimal, ""
+			extHeaderSize = d.FieldUFn("size,", func() (uint64, decode.NumberFormat, string) {
+				return d.SyncSafeU32(), decode.NumberDecimal, ""
 			})
 			// in v4 synchsafe integer includes itself
 			d.FieldBytesLen("data", extHeaderSize-4)

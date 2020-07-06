@@ -8,7 +8,7 @@ import (
 	"fq/internal/decode"
 )
 
-var File = &decode.Register{
+var File = &decode.Format{
 	Name: "jpeg",
 	MIME: "",
 	New:  func() decode.Decoder { return &FileDecoder{} },
@@ -182,13 +182,13 @@ func (d *FileDecoder) Decode() {
 					}
 				})
 				markerFound := false
-				markerCode := d.FieldUFn("code", func() (uint64, decode.Format, string) {
+				markerCode := d.FieldUFn("code", func() (uint64, decode.NumberFormat, string) {
 					n := uint(d.U8())
 					if m, ok := markers[n]; ok {
 						markerFound = true
-						return uint64(n), decode.FormatDecimal, m.symbol
+						return uint64(n), decode.NumberDecimal, m.symbol
 					}
-					return uint64(n), decode.FormatDecimal, "RES"
+					return uint64(n), decode.NumberDecimal, "RES"
 				})
 
 				// TODO: warning on 0x00?

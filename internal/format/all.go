@@ -16,8 +16,8 @@ import (
 	"fq/internal/format/vorbis"
 )
 
-var All = []*decode.Register{
-	flac.Stream,
+var All = []*decode.Format{
+	flac.File,
 	flac.Picture,
 	mp3.File,
 	mp3.Frame,
