@@ -38,7 +38,7 @@ func (d *FileDecoder) Decode() {
 	validFrames := 0
 	d.SubLen(d.BitsLeft()-footerLen, func() {
 		for !d.End() {
-			if !d.FieldDecode("frame", []string{"mp3frame"}) {
+			if !d.FieldDecode("frame", []string{"mp3_frame"}) {
 				break
 			}
 			validFrames++

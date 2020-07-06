@@ -1,4 +1,9 @@
 
+DecoderRegister {
+    All:
+    Allowed
+}
+
 d.End ...also d.HasBifsLeft etc?
 
 vistuluze decode relations? import paths?

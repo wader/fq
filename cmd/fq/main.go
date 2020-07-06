@@ -62,9 +62,18 @@ func main() {
 	//d := mp3.Decoder{Common: c}
 	//d := id3v2.Decoder{Common: c}
 
-	var decodernames []string
+	var registers []*decode.Register
 	if *forceDecoder != "" {
-		decodernames = append(decodernames, *forceDecoder)
+		for _, r := range format.All {
+			if r.Name == *forceDecoder {
+				registers = append(registers, r)
+			}
+		}
+		if len(registers) == 0 {
+			panic("could not find format")
+		}
+	} else {
+		registers = format.All
 	}
 
 	func() {
@@ -73,7 +82,7 @@ func main() {
 			// 	log.Printf("e: %#+v\n", e)
 			// }
 		}()
-		r, d := decode.New(nil, bitbuf.NewFromBytes(buf), format.All, decodernames)
+		r, d := decode.New(nil, bitbuf.NewFromBytes(buf), registers)
 		log.Printf("r: %#+v\n", r)
 
 		decode.Dump(d.Current, 0)

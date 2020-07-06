@@ -112,7 +112,7 @@ func (d *PacketDecoder) Decode() {
 				if k == "METADATA_BLOCK_PICTURE" {
 					bs, err := base64.StdEncoding.DecodeString(v)
 					if err == nil {
-						d.FieldDecodeBitBuf("picture", bitbuf.NewFromBytes(bs), []string{"flacpicture"})
+						d.FieldDecodeBitBuf("picture", bitbuf.NewFromBytes(bs), []string{"flac_picture"})
 					} else {
 						// TODO: warning?
 					}

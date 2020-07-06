@@ -157,13 +157,8 @@ type Common struct {
 	bitBuf    *bitbuf.Buffer
 }
 
-func probe(bb *bitbuf.Buffer, registers []*Register, decoderNames []string) (*Register, *Common, bool) {
+func probe(bb *bitbuf.Buffer, registers []*Register) (*Register, *Common, bool) {
 	// TODO: order..
-	var namesMap = map[string]bool{}
-	for _, s := range decoderNames {
-		namesMap[s] = true
-	}
-
 	for _, r := range registers {
 		if len(namesMap) == 0 && r.SkipProbe {
 			continue
@@ -892,6 +887,7 @@ func (c *Common) FieldDecode(name string, decoderNames []string) bool {
 		return false
 	}
 	log.Printf("FieldDecode r: %#+v\n", r)
+	log.Printf("fieldC.bitBuf.Pos: %#+v\n", fieldC.bitBuf.Pos)
 
 	// TODO: translate positions?
 	// TODO: what out muxed stream?
