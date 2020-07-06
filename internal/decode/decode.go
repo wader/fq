@@ -842,7 +842,7 @@ func (c *Common) FieldDecode(name string, forceFormats ...*Format) bool {
 	return true
 }
 
-func (c *Common) FieldDecodeLen(name string, nBits uint64, forceFormats ...*Format) bool {
+func (c *Common) FieldDecodeLen(name string, nBits uint64, forceFormats ...*Format) (Decoder, []error) {
 
 	log.Printf("FieldDecodeLen BLA %d %v\n", nBits, forceFormats)
 
@@ -852,13 +852,13 @@ func (c *Common) FieldDecodeLen(name string, nBits uint64, forceFormats ...*Form
 		panic(BitBufError{Err: err, Op: "FieldDecodeLen", Size: nBits, Pos: c.bitBuf.Pos})
 	}
 
-	d, _ := c.Registry.Probe(c, bb, forceFormats)
+	d, errs := c.Registry.Probe(c, bb, forceFormats)
 	if d != nil {
 		c.Current.Children = append(c.Current.Children, d.GetCommon().Current)
 	}
 	c.bitBuf.SeekRel(int64(nBits))
 
-	return d != nil
+	return d, errs
 }
 
 // TODO: return decooder?

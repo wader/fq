@@ -78,9 +78,11 @@ func (d *FileDecoder) Decode() {
 			strFn("prefix", 155)
 			blockPaddingFn()
 			if size > 0 {
-				log.Println("BLA")
-				d.FieldDecodeLen("data", size*8, nil)
-				log.Println("BLA2")
+				log.Println("tar BLA")
+				d, errs := d.FieldDecodeLen("data", size*8)
+				log.Printf("d: %#+v\n", d)
+				log.Printf("errs: %#+v\n", errs)
+				log.Println("tar BLA2")
 			}
 			blockPaddingFn()
 		})
@@ -89,6 +91,5 @@ func (d *FileDecoder) Decode() {
 			d.FieldBytesLen("end_marker", 512*2)
 			break
 		}
-		break
 	}
 }

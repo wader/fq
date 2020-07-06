@@ -25,8 +25,8 @@ type ProbeError struct {
 	PanicStack    string
 }
 
-func (pe ProbeError) Error() string { return fmt.Sprintf("%s probe: %s", pe.Format.Name, pe.Err) }
-func (pe ProbeError) Unwrap() error { return pe.Err }
+func (pe *ProbeError) Error() string { return fmt.Sprintf("%s probe: %s", pe.Format.Name, pe.Err) }
+func (pe *ProbeError) Unwrap() error { return pe.Err }
 
 // Probe probes all probeable formats and turns first found Decoder and all other decoder errors
 func (r *Registry) Probe(parent Decoder, bb *bitbuf.Buffer, forceFormats []*Format) (Decoder, []error) {
@@ -63,7 +63,7 @@ func (r *Registry) Probe(parent Decoder, bb *bitbuf.Buffer, forceFormats []*Form
 					buf := make([]byte, size)
 					buf = buf[:runtime.Stack(buf, false)]
 
-					pe := ProbeError{
+					pe := &ProbeError{
 						Format:     f,
 						PanicStack: string(buf),
 					}
