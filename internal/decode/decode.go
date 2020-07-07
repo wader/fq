@@ -887,6 +887,7 @@ func (c *Common) FieldDecodeLen(name string, nBits uint64, forceFormats ...*Form
 	if d != nil {
 		c.Current.Children = append(c.Current.Children, d.GetCommon().Current)
 	}
+
 	c.bitBuf.SeekRel(int64(nBits))
 
 	return d, errs

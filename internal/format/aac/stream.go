@@ -16,9 +16,15 @@ type StreamDecoder struct {
 
 // Decode adts
 func (d *StreamDecoder) Decode() {
+	validFrames := 0
 	for !d.End() {
 		if !d.FieldDecode("frame", ADTS) {
 			break
 		}
+		validFrames++
+	}
+
+	if validFrames == 0 {
+		d.Invalid("no frames found")
 	}
 }

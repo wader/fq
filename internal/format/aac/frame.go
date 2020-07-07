@@ -5,8 +5,9 @@ import (
 )
 
 var Frame = &decode.Format{
-	Name: "aac_frame",
-	New:  func() decode.Decoder { return &FrameDecoder{} },
+	Name:      "aac_frame",
+	New:       func() decode.Decoder { return &FrameDecoder{} },
+	SkipProbe: true,
 }
 
 const (

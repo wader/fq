@@ -101,7 +101,8 @@ func (d *FileDecoder) Decode() {
 					}))
 				}
 			case "eXIf":
-				d.FieldDecodeLen("exit", chunkLength*8, tiff.File)
+				// TODO: decode fail?
+				d.FieldDecodeLen("exif", chunkLength*8, tiff.File)
 			default:
 				d.FieldBytesLen("data", chunkLength)
 			}
