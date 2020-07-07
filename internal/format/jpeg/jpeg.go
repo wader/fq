@@ -4,8 +4,10 @@ package jpeg
 // TODO: exif https://www.exif.org/Exif2-2.PDF
 
 import (
+	"bytes"
 	"fmt"
 	"fq/internal/decode"
+	"fq/internal/format/tiff"
 )
 
 var File = &decode.Format{
@@ -191,6 +193,9 @@ func (d *FileDecoder) Decode() {
 					return uint64(n), decode.NumberDecimal, "RES"
 				})
 
+				// RST*, SOI, EOI, TEM does not have a length field. All others have a
+				// 2 byte length read as "Lf", "Ls" etc or in the default case as "length".
+
 				// TODO: warning on 0x00?
 				switch markerCode {
 				case SOI:
@@ -233,7 +238,21 @@ func (d *FileDecoder) Decode() {
 				default:
 					if markerFound {
 						markerLen := d.FieldU16("length")
-						d.FieldBytesLen("data", markerLen-2)
+						var dataPrefix []byte
+						if d.BitsLeft() > 6*8 {
+							dataPrefix = d.PeekBytes(6)
+						}
+
+						app1ExifPrefix := []byte("Exif\x00\x00")
+
+						switch {
+						case markerCode == APP1 && bytes.HasPrefix(dataPrefix, app1ExifPrefix):
+							d.FieldUTF8("exif_prefix", 6)
+							d.FieldDecodeLen("exit", (markerLen-2-6)*8, tiff.File)
+						default:
+							d.FieldBytesLen("data", markerLen-2)
+						}
+
 					} else {
 						d.Invalid(fmt.Sprintf("unknown marker %x", markerCode))
 					}

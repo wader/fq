@@ -12,7 +12,9 @@ import (
 	"fq/internal/format/mp3"
 	"fq/internal/format/mp4"
 	"fq/internal/format/ogg"
+	"fq/internal/format/png"
 	"fq/internal/format/tar"
+	"fq/internal/format/tiff"
 	"fq/internal/format/vorbis"
 )
 
@@ -33,4 +35,6 @@ var All = []*decode.Format{
 	aac.Frame,
 	aac.ADTS,
 	aac.Stream,
+	png.File,
+	tiff.File,
 }

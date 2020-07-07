@@ -1,9 +1,12 @@
 package decode
 
 import (
+	"bytes"
+	"compress/zlib"
 	"encoding/hex"
 	"fmt"
 	"fq/internal/bitbuf"
+	"io/ioutil"
 	"log"
 	"strconv"
 	"strings"
@@ -46,8 +49,24 @@ type Decoder interface {
 	GetCommon() *Common
 }
 
+func FormatFn(d func(c *Common)) *Format {
+	return &Format{
+		New: func() Decoder { return &DecoderFn{decode: d} },
+	}
+}
+
+type DecoderFn struct {
+	Common
+	decode func(c *Common)
+}
+
+func (d *DecoderFn) Decode() {
+	d.decode(d.GetCommon())
+}
+
 type Common struct {
 	Parent  Decoder
+	Root    *Field
 	Current *Field // TODO: need root field also?
 	Format  *Format
 
@@ -113,7 +132,9 @@ func (v Value) String() string {
 	case TypeStr:
 		f = v.Str
 		if len(f) > 50 {
-			f = f[0:50] + fmt.Sprintf("... (%d bytes)", len(f))
+			f = fmt.Sprintf("%q (%d bytes)", f[0:50]+"...", len(f))
+		} else {
+			f = fmt.Sprintf("%q", v.Str)
 		}
 	case TypeBytes:
 		if len(v.Bytes) > 50 {
@@ -188,6 +209,16 @@ func (c *Common) PeekBytes(nBytes uint64) []byte {
 	}
 	return bs
 }
+
+func (c *Common) PeekFindByte(n uint8, maxLen int64) uint64 {
+	count, err := c.bitBuf.PeekFindByte(n, maxLen)
+	if err != nil {
+		panic(BitBufError{Err: err, Op: "PeekFindByte", Size: 0, Pos: c.bitBuf.Pos})
+
+	}
+	return count
+}
+
 func (c *Common) BytesRange(firstBit uint64, nBytes uint64) []byte {
 	bs, err := c.bitBuf.BytesRange(firstBit, nBytes)
 	if err != nil {
@@ -903,15 +934,32 @@ func (c *Common) FieldDecodeBitBuf(name string, bb *bitbuf.Buffer, forceFormats 
 		log.Printf("FieldDecodeRange nope %#+v\n", d)
 		return false
 	}
-	//log.Printf("FieldDecodeRange r: %#+v\n", r)
 
 	// TODO: translate positions?
 	// TODO: what out muxed stream?
 
-	c.Current.Children = append(c.Current.Children, d.GetCommon().Current)
+	c.Current.Children = append(c.Current.Children,
+		&Field{
+			Name:     name,
+			Children: d.GetCommon().Root.Children,
+		},
+	)
 
 	// TODO: what to return?
 	return true
+}
+
+// TODO: range?
+func (c *Common) FieldDecodeZlib(name string, b []byte, forceFormats ...*Format) {
+	zr, err := zlib.NewReader(bytes.NewReader(b))
+	if err != nil {
+		panic(err)
+	}
+	zd, err := ioutil.ReadAll(zr)
+	if err != nil {
+		panic(err)
+	}
+	c.FieldDecodeBitBuf(name, bitbuf.NewFromBytes(zd), forceFormats...)
 }
 
 // --------------

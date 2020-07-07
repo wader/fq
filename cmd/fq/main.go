@@ -65,7 +65,7 @@ func main() {
 	for _, err := range errs {
 		fmt.Printf("%s\n", err)
 		if pe := err.(*decode.ProbeError); pe != nil {
-			if !pe.PanicHandeled {
+			if pe.PanicHandeled {
 				fmt.Printf("%s", pe.PanicStack)
 			}
 		}
