@@ -31,6 +31,7 @@ func (pe *ProbeError) Unwrap() error { return pe.Err }
 // Probe probes all probeable formats and turns first found Decoder and all other decoder errors
 func (r *Registry) Probe(parent Decoder, bb *bitbuf.Buffer, forceFormats []*Format) (Decoder, []error) {
 	var probeable []*Format
+	var forceOne = len(forceFormats) == 1
 	if forceFormats != nil {
 		probeable = forceFormats
 	} else {
@@ -92,7 +93,9 @@ func (r *Registry) Probe(parent Decoder, bb *bitbuf.Buffer, forceFormats []*Form
 
 		if err != nil {
 			errs = append(errs, err)
-			continue
+			if !forceOne {
+				continue
+			}
 		}
 
 		return d, errs

@@ -71,6 +71,6 @@ func main() {
 		}
 	}
 	if d != nil {
-		decode.Dump(d.GetCommon().Current, 0)
+		decode.Dump(d.GetCommon().Root, 0)
 	}
 }
