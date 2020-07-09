@@ -18,12 +18,13 @@ import (
 	"fq/internal/format/vorbis"
 )
 
+// All formats
 var All = []*decode.Format{
 	flac.File,
 	flac.Picture,
 	mp3.File,
 	mp3.Frame,
-	id3v11.Tag, // before id3v1 (TAG/TAG+ magic)
+	id3v11.Tag,
 	id3v1.Tag,
 	id3v2.Tag,
 	elf.File,

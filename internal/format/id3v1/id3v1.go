@@ -22,6 +22,9 @@ type TagDecoder struct {
 func (d *TagDecoder) Decode() {
 	d.ValidateAtLeastBitsLeft(128 * 8)
 	d.FieldValidateString("magic", "TAG")
+	if d.PeekBits(8) == uint64('+') {
+		d.Invalid("looks like id3v11")
+	}
 	d.FieldUTF8("song_name", 30)
 	d.FieldUTF8("artist", 30)
 	d.FieldUTF8("album_name", 30)

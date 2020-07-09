@@ -52,11 +52,12 @@ func (r *Registry) Probe(parent Decoder, bb *bitbuf.Buffer, forceFormats []*Form
 		rootField := &Field{Name: f.Name}
 		d.Prepare(Common{
 			Parent:   parent,
-			Root:     rootField,
-			Current:  rootField,
 			Format:   f,
 			Registry: r,
-			bitBuf:   bb.Copy(),
+			BitBuf:   bb.Copy(),
+
+			Root:    rootField,
+			Current: rootField,
 		})
 		err := func() (err error) {
 			defer func() {
