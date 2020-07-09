@@ -107,10 +107,16 @@ func (d *PacketDecoder) Decode() {
 			if len(pairParts) == 2 {
 				// METADATA_BLOCK_PICTURE=<base64>
 				k, v := strings.ToUpper(pairParts[0]), pairParts[1]
-				if k == "METADATA_BLOCK_PICTURE" {
+				var metadataBlockPicture = "METADATA_BLOCK_PICTURE"
+				if k == metadataBlockPicture {
 					bs, err := base64.StdEncoding.DecodeString(v)
 					if err == nil {
-						d.FieldDecodeBitBuf("picture", bitbuf.NewFromBytes(bs), flac.Picture)
+						d.FieldDecodeBitBuf("picture",
+							d.BitBuf.Pos-uint64(len(v)*8),
+							uint64(len(v)*8),
+							bitbuf.NewFromBytes(bs),
+							flac.Picture,
+						)
 					} else {
 						// TODO: warning?
 					}

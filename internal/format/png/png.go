@@ -77,13 +77,13 @@ func (d *FileDecoder) Decode() {
 				compressionMethod := d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8)
 				_ = compressionMethod
 
-				cb := d.FieldBytesLen("compressed", chunkLength-keywordLen-1)
-
 				switch compressionMethod {
 				case compressionDeflate:
-					d.FieldDecodeZlib("uncompressed", cb, decode.FormatFn(func(c *decode.Common) {
+					d.FieldDecodeZlibLen("uncompressed", chunkLength-keywordLen-1, decode.FormatFn(func(c *decode.Common) {
 						c.FieldUTF8("text", c.BitsLeft()/8)
 					}))
+				default:
+					d.FieldBytesLen("compressed", chunkLength-keywordLen-1)
 				}
 			case "iCCP":
 				profileNameLen := d.PeekFindByte(0, 80)
@@ -92,13 +92,13 @@ func (d *FileDecoder) Decode() {
 				compressionMethod := d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8)
 				_ = compressionMethod
 
-				cb := d.FieldBytesLen("compressed", chunkLength-profileNameLen-1)
-
 				switch compressionMethod {
 				case compressionDeflate:
-					d.FieldDecodeZlib("uncompressed", cb, decode.FormatFn(func(c *decode.Common) {
+					d.FieldDecodeZlibLen("uncompressed", chunkLength-profileNameLen-1, decode.FormatFn(func(c *decode.Common) {
 						c.FieldUTF8("text", c.BitsLeft()/8)
 					}))
+				default:
+					d.FieldBytesLen("compressed", chunkLength-profileNameLen-1)
 				}
 			case "eXIf":
 				// TODO: decode fail?

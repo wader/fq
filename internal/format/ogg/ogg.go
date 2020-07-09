@@ -20,6 +20,7 @@ var File = &decode.Format{
 }
 
 type stream struct {
+	firstBit   uint64
 	sequenceNo uint32
 	packetBuf  []byte
 }
@@ -72,8 +73,8 @@ func (d *FileDecoder) Decode() {
 			for _, ss := range segmentTable {
 				bs := d.FieldBytesLen("segment", uint64(ss))
 				s.packetBuf = append(s.packetBuf, bs...)
-				if len(bs) < 255 {
-					d.FieldDecodeBitBuf("packet", bitbuf.NewFromBytes(s.packetBuf), vorbis.Packet)
+				if len(bs) < 255 { // TODO: list range maps of demuxed packets?
+					d.FieldDecodeBitBuf("packet", s.firstBit, d.BitBuf.Pos-s.firstBit, bitbuf.NewFromBytes(s.packetBuf), vorbis.Packet)
 					s.packetBuf = nil
 				}
 			}

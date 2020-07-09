@@ -18,7 +18,7 @@ type StreamDecoder struct {
 func (d *StreamDecoder) Decode() {
 	validFrames := 0
 	for !d.End() {
-		if !d.FieldDecode("frame", ADTS) {
+		if _, errs := d.FieldDecode("frame", ADTS); errs != nil {
 			break
 		}
 		validFrames++

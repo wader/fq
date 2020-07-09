@@ -4,6 +4,8 @@ DecoderRegister {
     Allowed
 }
 
+range map to/from aprents? demuxers etc?
+
 d.End ...also d.HasBifsLeft etc?
 
 vistuluze decode relations? import paths?

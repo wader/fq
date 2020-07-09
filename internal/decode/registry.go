@@ -3,6 +3,7 @@ package decode
 import (
 	"fmt"
 	"fq/internal/bitbuf"
+	"log"
 	"runtime"
 )
 
@@ -98,6 +99,7 @@ func (r *Registry) Probe(parent Decoder, bb *bitbuf.Buffer, forceFormats []*Form
 				continue
 			}
 		}
+		log.Printf("d: %#+v\n", d)
 
 		return d, errs
 	}

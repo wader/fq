@@ -12,6 +12,7 @@ import (
 	"fq/internal/format/id3v1"
 	"fq/internal/format/id3v11"
 	"fq/internal/format/id3v2"
+	"log"
 )
 
 var File = &decode.Format{
@@ -33,7 +34,7 @@ func (d *FileDecoder) Decode() {
 	id3v1Len := uint64(128 * 8)
 	if d.BitsLeft() >= id3v1Len {
 		// TODO: added before? sort when presenting? probe? add later?
-		if d.FieldDecodeRange("footer", d.Pos()+d.BitsLeft()-id3v1Len, id3v1Len, id3v1.Tag, id3v11.Tag) {
+		if fd, _ := d.FieldDecodeRange("footer", d.Pos()+d.BitsLeft()-id3v1Len, id3v1Len, id3v1.Tag, id3v11.Tag); fd != nil {
 			footerLen = id3v1Len
 		}
 	}
@@ -41,9 +42,11 @@ func (d *FileDecoder) Decode() {
 	validFrames := 0
 	d.SubLen(d.BitsLeft()-footerLen, func() {
 		for !d.End() {
-			if !d.FieldDecode("frame", Frame) {
+			if _, errs := d.FieldDecode("frame", Frame); errs != nil {
 				break
 			}
+			log.Println("BLA")
+
 			validFrames++
 		}
 	})

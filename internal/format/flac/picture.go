@@ -1,8 +1,8 @@
 package flac
 
 import (
-	"fq/internal/bitbuf"
 	"fq/internal/decode"
+	"fq/internal/format/group"
 )
 
 var Picture = &decode.Format{
@@ -30,18 +30,5 @@ func (d *PictureDecoder) Decode() {
 	d.FieldU32("color_depth")
 	d.FieldU32("number_of_index_colors")
 	pictureLen := d.FieldU32("picture_length")
-	pictureBs := d.FieldBytesLen("picture_data", uint64(pictureLen))
-	d.FieldDecodeBitBuf("picture", bitbuf.NewFromBytes(pictureBs), Picture)
-
-	// uint32 "The picture type"
-	// set mime_length [uint32 "MIME length"]
-	// ascii_maybe_empty $mime_length "MIME type"
-	// set desc_len [uint32 "Description length"]
-	// ascii_maybe_empty $desc_len "Description"
-	// uint32 "Width"
-	// uint32 "Height"
-	// uint32 "Color depth"
-	// uint32 "Number of indexed colors"
-	// set picture_len [uint32 "Picture length"]
-	// bytes $picture_len "Picture data"
+	d.FieldDecodeLen("picture_data", pictureLen*8, group.Images...)
 }
