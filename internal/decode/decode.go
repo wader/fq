@@ -860,11 +860,10 @@ func (c *Common) FieldDecode(name string, forceFormats ...*Format) (Decoder, []e
 		return d, errs
 	}
 
-	c.Current.Children = append(c.Current.Children, &Field{
-		Name:  name,
-		Range: Range{Start: c.BitBuf.Pos, Stop: c.BitBuf.Pos + bb.Pos},
-		Value: Value{Type: TypeDecoder, Decoder: d},
-	})
+	f := d.GetCommon().Root
+	f.Name = name
+	f.Range = Range{Start: c.BitBuf.Pos, Stop: c.BitBuf.Pos + bb.Pos}
+	c.Current.Children = append(c.Current.Children, f)
 
 	c.BitBuf.SeekRel(int64(d.GetCommon().BitBuf.Pos))
 
@@ -879,11 +878,10 @@ func (c *Common) FieldDecodeLen(name string, nBits uint64, forceFormats ...*Form
 
 	d, errs := c.Registry.Probe(c, bb, forceFormats)
 	if d != nil {
-		c.Current.Children = append(c.Current.Children, &Field{
-			Name:  name,
-			Range: Range{Start: c.BitBuf.Pos, Stop: c.BitBuf.Pos + nBits},
-			Value: Value{Type: TypeDecoder, Decoder: d},
-		})
+		f := d.GetCommon().Root
+		f.Name = name
+		f.Range = Range{Start: c.BitBuf.Pos, Stop: c.BitBuf.Pos + nBits}
+		c.Current.Children = append(c.Current.Children, f)
 	}
 
 	c.BitBuf.SeekRel(int64(nBits))
@@ -903,11 +901,10 @@ func (c *Common) FieldDecodeRange(name string, firsBit uint64, nBits uint64, for
 		return d, errs
 	}
 
-	c.Current.Children = append(c.Current.Children, &Field{
-		Name:  name,
-		Range: Range{Start: firsBit, Stop: nBits},
-		Value: Value{Type: TypeDecoder, Decoder: d},
-	})
+	f := d.GetCommon().Root
+	f.Name = name
+	f.Range = Range{Start: firsBit, Stop: nBits}
+	c.Current.Children = append(c.Current.Children, f)
 
 	return d, errs
 }
@@ -919,13 +916,11 @@ func (c *Common) FieldDecodeBitBuf(name string, firsBit uint64, nBits uint64, bb
 		return d, errs
 	}
 
-	c.Current.Children = append(c.Current.Children, &Field{
-		Name:  name,
-		Range: Range{Start: firsBit, Stop: nBits},
-		Value: Value{Type: TypeDecoder, Decoder: d},
-	})
+	f := d.GetCommon().Root
+	f.Name = name
+	f.Range = Range{Start: firsBit, Stop: nBits}
+	c.Current.Children = append(c.Current.Children, f)
 
-	// TODO: what to return?
 	return d, errs
 }
 

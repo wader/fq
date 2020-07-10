@@ -51,8 +51,7 @@ func (r *Registry) Probe(parent Decoder, bb *bitbuf.Buffer, forceFormats []*Form
 		// TODO: how to pass regsiters? do later? current field?
 		d := f.New()
 		rootField := &Field{
-			Name:  f.Name,
-			Value: Value{Type: TypeDecoder},
+			Value: Value{Type: TypeDecoder, Decoder: d},
 		}
 		d.Prepare(Common{
 			Parent:   parent,
