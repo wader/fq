@@ -877,6 +877,7 @@ func (c *Common) FieldDecode(name string, forceFormats ...*Format) (Decoder, []e
 	return d, errs
 }
 
+// TODO: FieldTryDecode? just TryDecode?
 func (c *Common) FieldDecodeLen(name string, nBits uint64, forceFormats ...*Format) (Decoder, []error) {
 	bb, err := c.BitBuf.BitBufRange(c.BitBuf.Pos, nBits)
 	if err != nil {
