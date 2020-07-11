@@ -30,7 +30,7 @@ func (pe *ProbeError) Error() string { return fmt.Sprintf("%s probe: %s", pe.For
 func (pe *ProbeError) Unwrap() error { return pe.Err }
 
 // Probe probes all probeable formats and turns first found Decoder and all other decoder errors
-func (r *Registry) Probe(parent Decoder, rootFieldName string, bb *bitbuf.Buffer, forceFormats []*Format) (Decoder, []error) {
+func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range, bb *bitbuf.Buffer, forceFormats []*Format) (Decoder, []error) {
 	var probeable []*Format
 	var forceOne = len(forceFormats) == 1
 	if forceFormats != nil {
@@ -52,6 +52,7 @@ func (r *Registry) Probe(parent Decoder, rootFieldName string, bb *bitbuf.Buffer
 		d := f.New()
 		rootField := &Field{
 			Name:  rootFieldName,
+			Range: parentRange,
 			Value: Value{Type: TypeDecoder, Decoder: d},
 		}
 		d.Prepare(Common{

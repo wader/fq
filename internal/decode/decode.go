@@ -863,13 +863,13 @@ func (c *Common) FieldDecode(name string, forceFormats ...*Format) (Decoder, []e
 		panic(BitBufError{Err: err, Op: "FieldDecode", Size: c.BitsLeft(), Pos: c.BitBuf.Pos})
 	}
 
-	d, errs := c.Registry.Probe(c, name, bb, forceFormats)
+	d, errs := c.Registry.Probe(c, name, Range{Start: c.BitBuf.Pos, Stop: c.BitBuf.Pos}, bb, forceFormats)
 	if d == nil {
 		return d, errs
 	}
 
 	f := d.GetCommon().Root
-	f.Range = Range{Start: c.BitBuf.Pos, Stop: c.BitBuf.Pos + bb.Pos}
+	f.Range.Stop += bb.Pos
 	c.Current.Children = append(c.Current.Children, f)
 
 	c.BitBuf.SeekRel(int64(d.GetCommon().BitBuf.Pos))
@@ -883,10 +883,9 @@ func (c *Common) FieldDecodeLen(name string, nBits uint64, forceFormats ...*Form
 		panic(BitBufError{Err: err, Op: "FieldDecodeLen", Size: nBits, Pos: c.BitBuf.Pos})
 	}
 
-	d, errs := c.Registry.Probe(c, name, bb, forceFormats)
+	d, errs := c.Registry.Probe(c, name, Range{Start: c.BitBuf.Pos, Stop: c.BitBuf.Pos + nBits}, bb, forceFormats)
 	if d != nil {
 		f := d.GetCommon().Root
-		f.Range = Range{Start: c.BitBuf.Pos, Stop: c.BitBuf.Pos + nBits}
 		c.Current.Children = append(c.Current.Children, f)
 	}
 
@@ -902,13 +901,12 @@ func (c *Common) FieldDecodeRange(name string, firsBit uint64, nBits uint64, for
 		panic(BitBufError{Err: err, Op: "FieldDecodeRange", Size: nBits, Pos: c.BitBuf.Pos})
 	}
 
-	d, errs := c.Registry.Probe(c, name, bb, forceFormats)
+	d, errs := c.Registry.Probe(c, name, Range{Start: firsBit, Stop: nBits}, bb, forceFormats)
 	if d == nil {
 		return d, errs
 	}
 
 	f := d.GetCommon().Root
-	f.Range = Range{Start: firsBit, Stop: nBits}
 	c.Current.Children = append(c.Current.Children, f)
 
 	return d, errs
@@ -916,13 +914,12 @@ func (c *Common) FieldDecodeRange(name string, firsBit uint64, nBits uint64, for
 
 // TODO: list of ranges?
 func (c *Common) FieldDecodeBitBuf(name string, firsBit uint64, nBits uint64, bb *bitbuf.Buffer, forceFormats ...*Format) (Decoder, []error) {
-	d, errs := c.Registry.Probe(c, name, bb, forceFormats)
+	d, errs := c.Registry.Probe(c, name, Range{Start: firsBit, Stop: nBits}, bb, forceFormats)
 	if d == nil {
 		return d, errs
 	}
 
 	f := d.GetCommon().Root
-	f.Range = Range{Start: firsBit, Stop: nBits}
 	c.Current.Children = append(c.Current.Children, f)
 
 	return d, errs

@@ -61,8 +61,8 @@ func main() {
 		}
 		forceFormats = append(forceFormats, forceFormat)
 	}
-	d, errs := registry.Probe(nil, bitbuf.NewFromBytes(buf), forceFormats)
-	d.GetCommon().Root.Name = flag.Arg(0)
+	bb := bitbuf.NewFromBytes(buf)
+	d, errs := registry.Probe(nil, flag.Arg(0), decode.Range{Start: 0, Stop: bb.Len}, bitbuf.NewFromBytes(buf), forceFormats)
 	for _, err := range errs {
 		fmt.Printf("%s\n", err)
 		if pe := err.(*decode.ProbeError); pe != nil {
