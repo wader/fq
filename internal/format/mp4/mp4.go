@@ -308,7 +308,7 @@ func (d *FileDecoder) decodeAtoms(bytesLeft uint64) {
 // Decode mp4, mov, qt etc
 func (d *FileDecoder) Decode() {
 	// TODO: nicer, validate functions without field?
-	d.ValidateAtLeastBitsLeft(8 * 16)
+	d.ValidateAtLeastBytesLeft(16)
 	size := d.U32()
 	if size < 16 {
 		d.Invalid("first box size too small < 16")

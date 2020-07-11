@@ -826,6 +826,14 @@ func (c *Common) ValidateAtLeastBitsLeft(nBits uint64) {
 	}
 }
 
+func (c *Common) ValidateAtLeastBytesLeft(nBytes uint64) {
+	bl := c.BitBuf.BitsLeft()
+	if bl < nBytes*8 {
+		// TODO:
+		panic(ValidateError{Reason: "not enough bytes left", Pos: c.BitBuf.Pos})
+	}
+}
+
 // Invalid stops decode with a reason
 func (c *Common) Invalid(reason string) {
 	panic(ValidateError{Reason: reason, Pos: c.BitBuf.Pos})
@@ -957,13 +965,7 @@ func (c *Common) FieldDecodeZlibLen(name string, nBytes uint64, forceFormats ...
 func Dump(f *Field, depth int) {
 	indent := strings.Repeat("  ", depth)
 
-	if f.Value.Type == TypeDecoder {
-		fmt.Printf("%s%s: %s %s {\n", indent, f.Name, f.Value, f.Range)
-		for _, c := range f.Value.Decoder.GetCommon().Root.Children {
-			Dump(c, depth+1)
-		}
-		fmt.Printf("%s}\n", indent)
-	} else if (len(f.Children)) != 0 {
+	if (len(f.Children)) != 0 {
 		fmt.Printf("%s%s: %s %s {\n", indent, f.Name, f.Value, f.Range)
 		for _, c := range f.Children {
 			Dump(c, depth+1)

@@ -7,7 +7,6 @@ import (
 	"bytes"
 	"fmt"
 	"fq/internal/decode"
-	"log"
 	"strconv"
 	"strings"
 )
@@ -28,7 +27,7 @@ func (d *FileDecoder) Decode() {
 	strFn := func(name string, nBytes uint64) string {
 		return d.FieldStrFn(name, func() (string, string) {
 			s := d.UTF8(nBytes)
-			ts := strings.Trim(s, "0 \x00")
+			ts := strings.Trim(s, "\x00")
 			return ts, ""
 		})
 	}
@@ -78,11 +77,10 @@ func (d *FileDecoder) Decode() {
 			strFn("prefix", 155)
 			blockPaddingFn()
 			if size > 0 {
-				log.Println("tar BLA")
-				d, errs := d.FieldDecodeLen("data", size*8)
-				log.Printf("d: %#+v\n", d)
-				log.Printf("errs: %#+v\n", errs)
-				log.Println("tar BLA2")
+				if fd, _ := d.FieldDecodeLen("data", size*8); fd == nil {
+					// TODO:
+					//d.FieldBytesLen("data", size)
+				}
 			}
 			blockPaddingFn()
 		})
