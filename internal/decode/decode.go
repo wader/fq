@@ -885,8 +885,7 @@ func (c *Common) FieldDecodeLen(name string, nBits uint64, forceFormats ...*Form
 
 	d, errs := c.Registry.Probe(c, name, Range{Start: c.BitBuf.Pos, Stop: c.BitBuf.Pos + nBits}, bb, forceFormats)
 	if d != nil {
-		f := d.GetCommon().Root
-		c.Current.Children = append(c.Current.Children, f)
+		c.Current.Children = append(c.Current.Children, d.GetCommon().Root)
 	}
 
 	c.BitBuf.SeekRel(int64(nBits))
@@ -906,8 +905,7 @@ func (c *Common) FieldDecodeRange(name string, firsBit uint64, nBits uint64, for
 		return d, errs
 	}
 
-	f := d.GetCommon().Root
-	c.Current.Children = append(c.Current.Children, f)
+	c.Current.Children = append(c.Current.Children, d.GetCommon().Root)
 
 	return d, errs
 }
@@ -919,8 +917,7 @@ func (c *Common) FieldDecodeBitBuf(name string, firsBit uint64, nBits uint64, bb
 		return d, errs
 	}
 
-	f := d.GetCommon().Root
-	c.Current.Children = append(c.Current.Children, f)
+	c.Current.Children = append(c.Current.Children, d.GetCommon().Root)
 
 	return d, errs
 }
