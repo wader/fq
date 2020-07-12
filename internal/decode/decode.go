@@ -12,13 +12,22 @@ import (
 	"strings"
 )
 
+type Bitpos uint64
+
+func (b Bitpos) String() string {
+	if b&0x7 != 0 {
+		return strconv.FormatUint(uint64(b)>>3, 10) + "+" + strconv.FormatUint(uint64(b)&0x7, 10)
+	}
+	return strconv.FormatUint(uint64(b>>3), 10)
+}
+
 type Range struct {
 	Start uint64
 	Stop  uint64
 }
 
 func (r Range) String() string {
-	return fmt.Sprintf("%d-%d", r.Start, r.Stop)
+	return fmt.Sprintf("%d-%d", Bitpos(r.Start), Bitpos(r.Stop))
 }
 
 type Type int
