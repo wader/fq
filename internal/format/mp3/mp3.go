@@ -12,7 +12,6 @@ import (
 	"fq/internal/format/id3v1"
 	"fq/internal/format/id3v11"
 	"fq/internal/format/id3v2"
-	"log"
 )
 
 var File = &decode.Format{
@@ -45,7 +44,6 @@ func (d *FileDecoder) Decode() {
 			if _, errs := d.FieldDecode("frame", Frame); errs != nil {
 				break
 			}
-			log.Println("BLA")
 
 			validFrames++
 		}

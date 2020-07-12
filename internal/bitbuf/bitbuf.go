@@ -39,10 +39,10 @@ type Buffer struct {
 // buf is not copied.
 func New(buf []byte, firstBit uint64, lenBits uint64) *Buffer {
 	return &Buffer{
-		buf:         buf,
-		bufFirstBit: firstBit,
 		Len:         lenBits,
 		Pos:         0,
+		buf:         buf,
+		bufFirstBit: firstBit,
 	}
 }
 
@@ -265,6 +265,18 @@ func (b *Buffer) BitString() string {
 	}
 
 	return strings.Join(ss, "")
+}
+
+// TruncateRel length of buffer to current position plus n
+func (b *Buffer) TruncateRel(nBits uint64) error {
+	endPos := b.Pos + nBits
+	if endPos > b.Len {
+		return ErrUnexpectedEOF
+	}
+
+	b.Len = endPos
+
+	return nil
 }
 
 // UE reads a nBits bits unsigned integer with byte order endian

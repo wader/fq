@@ -93,6 +93,7 @@ func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range
 			}()
 
 			d.Decode()
+			rootField.Sort()
 
 			return nil
 		}()

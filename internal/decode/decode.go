@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"fq/internal/bitbuf"
 	"io/ioutil"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -111,6 +112,24 @@ type Field struct {
 	Range    Range
 	Value    Value
 	Children []*Field
+}
+
+func (f *Field) Sort() {
+	if len(f.Children) == 0 {
+		return
+	}
+
+	sort.Slice(f.Children, func(i, j int) bool {
+		return f.Children[i].Range.Start < f.Children[j].Range.Start
+	})
+
+	for _, fc := range f.Children {
+		if fc.Value.Type == TypeDecoder {
+			// already sorted
+			continue
+		}
+		fc.Sort()
+	}
 }
 
 type BitBufError struct {
@@ -842,7 +861,8 @@ func (c *Common) Invalid(reason string) {
 func (c *Common) SubLen(nBits uint64, fn func()) {
 	prevBb := c.BitBuf
 
-	bb, err := c.BitBuf.BitBufLen(nBits)
+	bb, err := c.BitBuf.BitBufRange(0, c.BitBuf.Pos+nBits)
+	bb.SeekAbs(c.BitBuf.Pos)
 	if err != nil {
 		panic(BitBufError{Err: err, Op: "SubLen", Size: nBits, Pos: c.BitBuf.Pos})
 
@@ -865,12 +885,16 @@ func (c *Common) FieldDecode(name string, forceFormats ...*Format) (Decoder, []e
 
 	d, errs := c.Registry.Probe(c, name, Range{Start: c.BitBuf.Pos, Stop: c.BitBuf.Pos}, bb, forceFormats)
 	if d == nil {
-		return d, errs
+		return nil, errs
 	}
 
-	f := d.GetCommon().Root
-	f.Range.Stop += bb.Pos
-	c.Current.Children = append(c.Current.Children, f)
+	// TODO: bitbuf len shorten!
+
+	dc := d.GetCommon()
+	dc.BitBuf.TruncateRel(0)
+	df := dc.Root
+	df.Range.Stop += dc.BitBuf.Pos
+	c.Current.Children = append(c.Current.Children, df)
 
 	c.BitBuf.SeekRel(int64(d.GetCommon().BitBuf.Pos))
 
@@ -895,15 +919,15 @@ func (c *Common) FieldDecodeLen(name string, nBits uint64, forceFormats ...*Form
 }
 
 // TODO: return decooder?
-func (c *Common) FieldDecodeRange(name string, firsBit uint64, nBits uint64, forceFormats ...*Format) (Decoder, []error) {
-	bb, err := c.BitBuf.BitBufRange(firsBit, nBits)
+func (c *Common) FieldDecodeRange(name string, firstBit uint64, nBits uint64, forceFormats ...*Format) (Decoder, []error) {
+	bb, err := c.BitBuf.BitBufRange(firstBit, nBits)
 	if err != nil {
 		panic(BitBufError{Err: err, Op: "FieldDecodeRange", Size: nBits, Pos: c.BitBuf.Pos})
 	}
 
-	d, errs := c.Registry.Probe(c, name, Range{Start: firsBit, Stop: nBits}, bb, forceFormats)
+	d, errs := c.Registry.Probe(c, name, Range{Start: firstBit, Stop: firstBit + nBits}, bb, forceFormats)
 	if d == nil {
-		return d, errs
+		return nil, errs
 	}
 
 	c.Current.Children = append(c.Current.Children, d.GetCommon().Root)
@@ -915,7 +939,7 @@ func (c *Common) FieldDecodeRange(name string, firsBit uint64, nBits uint64, for
 func (c *Common) FieldDecodeBitBuf(name string, firsBit uint64, nBits uint64, bb *bitbuf.Buffer, forceFormats ...*Format) (Decoder, []error) {
 	d, errs := c.Registry.Probe(c, name, Range{Start: firsBit, Stop: nBits}, bb, forceFormats)
 	if d == nil {
-		return d, errs
+		return nil, errs
 	}
 
 	c.Current.Children = append(c.Current.Children, d.GetCommon().Root)
@@ -949,6 +973,25 @@ func (c *Common) FieldDecodeZlibLen(name string, nBytes uint64, forceFormats ...
 	}
 
 	return c.FieldDecodeBitBuf(name, firstBit, firstBit+nBytes*8, bitbuf.NewFromBytes(zd), forceFormats...)
+}
+
+func (c *Common) Sort() {
+	children := c.Root.Children
+	if len(children) == 0 {
+		return
+	}
+
+	sort.Slice(children, func(i, j int) bool {
+		return children[i].Range.Start < children[j].Range.Start
+	})
+
+	for _, cc := range children {
+		if len(cc.Children) == 0 {
+			continue
+		}
+
+		cc.Sort()
+	}
 }
 
 // --------------

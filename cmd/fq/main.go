@@ -72,6 +72,10 @@ func main() {
 		}
 	}
 	if d != nil {
+
+		//j := json.New(os.Stdout)
+		//j.Output(d.GetCommon().Root)
+
 		decode.Dump(d.GetCommon().Root, 0)
 	}
 }
