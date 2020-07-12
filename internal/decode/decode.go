@@ -12,9 +12,9 @@ import (
 	"strings"
 )
 
-type Bitpos uint64
+type Bits uint64
 
-func (b Bitpos) String() string {
+func (b Bits) String() string {
 	if b&0x7 != 0 {
 		return strconv.FormatUint(uint64(b)>>3, 10) + "+" + strconv.FormatUint(uint64(b)&0x7, 10)
 	}
@@ -27,7 +27,11 @@ type Range struct {
 }
 
 func (r Range) String() string {
-	return fmt.Sprintf("%d-%d", Bitpos(r.Start), Bitpos(r.Stop))
+	return fmt.Sprintf("%s-%s", Bits(r.Start), Bits(r.Stop))
+}
+
+func (r Range) Length() uint64 {
+	return r.Stop - r.Start
 }
 
 type Type int
@@ -89,16 +93,16 @@ func (v Value) String() string {
 	case TypeStr:
 		f = v.Str
 		if len(f) > 50 {
-			f = fmt.Sprintf("%q (%d bytes)", f[0:50]+"...", len(f))
+			f = fmt.Sprintf("%q", f[0:50]) + "..."
 		} else {
 			f = fmt.Sprintf("%q", v.Str)
 		}
 	case TypeBytes:
 		if len(v.Bytes) > 50 {
-			f = hex.EncodeToString(v.Bytes[0:25]) + fmt.Sprintf("... (%d bytes)", len(v.Bytes))
+			f = hex.EncodeToString(v.Bytes[0:25]) + "..."
 
 		} else {
-			f = hex.EncodeToString(v.Bytes) + fmt.Sprintf(" (%d bytes)", len(v.Bytes))
+			f = hex.EncodeToString(v.Bytes)
 		}
 	case TypePadding:
 		f = "padding"
@@ -106,7 +110,7 @@ func (v Value) String() string {
 		//return hex.EncodeToString(v.Bytes)
 	case TypeDecoder:
 		c := v.Decoder.GetCommon()
-		f = fmt.Sprintf("%s (decoder) %d bits", c.Format.Name, c.BitBuf.Len)
+		f = fmt.Sprintf("%s (decoder) %s", c.Format.Name, Bits(c.BitBuf.Len))
 	default:
 		panic("unreachable")
 	}
@@ -1009,12 +1013,12 @@ func Dump(f *Field, depth int) {
 	indent := strings.Repeat("  ", depth)
 
 	if (len(f.Children)) != 0 {
-		fmt.Printf("%s%s: %s %s {\n", indent, f.Name, f.Value, f.Range)
+		fmt.Printf("%s%s: %s %s (%s) {\n", indent, f.Name, f.Value, f.Range, Bits(f.Range.Length()))
 		for _, c := range f.Children {
 			Dump(c, depth+1)
 		}
 		fmt.Printf("%s}\n", indent)
 	} else {
-		fmt.Printf("%s%s: %s %s\n", indent, f.Name, f.Value, f.Range)
+		fmt.Printf("%s%s: %s %s (%s)\n", indent, f.Name, f.Value, f.Range, Bits(f.Range.Length()))
 	}
 }
