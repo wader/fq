@@ -79,7 +79,7 @@ func (d *FileDecoder) Decode() {
 
 				switch compressionMethod {
 				case compressionDeflate:
-					d.FieldDecodeZlibLen("uncompressed", chunkLength-keywordLen-1, decode.FormatFn(func(c *decode.Common) {
+					d.FieldZlibLen("uncompressed", chunkLength-keywordLen-1, decode.FormatFn(func(c *decode.Common) {
 						c.FieldUTF8("text", c.BitsLeft()/8)
 					}))
 				default:
@@ -94,7 +94,7 @@ func (d *FileDecoder) Decode() {
 
 				switch compressionMethod {
 				case compressionDeflate:
-					d.FieldDecodeZlibLen("uncompressed", chunkLength-profileNameLen-1, decode.FormatFn(func(c *decode.Common) {
+					d.FieldZlibLen("uncompressed", chunkLength-profileNameLen-1, decode.FormatFn(func(c *decode.Common) {
 						c.FieldUTF8("text", c.BitsLeft()/8)
 					}))
 				default:

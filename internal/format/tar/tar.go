@@ -77,10 +77,7 @@ func (d *FileDecoder) Decode() {
 			strFn("prefix", 155)
 			blockPaddingFn()
 			if size > 0 {
-				if fd, _ := d.FieldDecodeLen("data", size*8); fd == nil {
-					// TODO:
-					//d.FieldBytesLen("data", size)
-				}
+				d.FieldDecodeLen("data", size*8)
 			}
 			blockPaddingFn()
 		})

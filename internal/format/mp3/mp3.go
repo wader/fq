@@ -27,13 +27,13 @@ type FileDecoder struct {
 
 // Decode decodes a MP3 stream
 func (d *FileDecoder) Decode() {
-	d.FieldDecode("header", id3v2.Tag)
+	d.FieldTryDecode("header", id3v2.Tag)
 
 	footerLen := uint64(0)
 	id3v1Len := uint64(128 * 8)
 	if d.BitsLeft() >= id3v1Len {
 		// TODO: added before? sort when presenting? probe? add later?
-		if fd, _ := d.FieldDecodeRange("footer", d.Pos()+d.BitsLeft()-id3v1Len, id3v1Len, id3v1.Tag, id3v11.Tag); fd != nil {
+		if fd, _ := d.FieldTryDecodeRange("footer", d.Pos()+d.BitsLeft()-id3v1Len, id3v1Len, id3v1.Tag, id3v11.Tag); fd != nil {
 			footerLen = id3v1Len
 		}
 	}
@@ -41,7 +41,7 @@ func (d *FileDecoder) Decode() {
 	validFrames := 0
 	d.SubLen(d.BitsLeft()-footerLen, func() {
 		for !d.End() {
-			if _, errs := d.FieldDecode("frame", Frame); errs != nil {
+			if _, errs := d.FieldTryDecode("frame", Frame); errs != nil {
 				break
 			}
 

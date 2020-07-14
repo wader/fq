@@ -151,10 +151,10 @@ func (b *Buffer) PeekBytes(nBytes uint64) ([]byte, error) {
 	return bs, nil
 }
 
-func (b *Buffer) PeekFindByte(v uint8, maxLen int64) (uint64, error) {
+func (b *Buffer) PeekFind(bits uint64, v uint8, maxLen int64) (uint64, error) {
 	var count int64
 	for {
-		bv, err := b.U8()
+		bv, err := b.U(bits)
 		if err != nil {
 			return 0, err
 		}
@@ -163,9 +163,9 @@ func (b *Buffer) PeekFindByte(v uint8, maxLen int64) (uint64, error) {
 			break
 		}
 	}
-	b.SeekRel(-count * 8)
+	b.SeekRel(-count * int64(bits))
 
-	return uint64(count), nil
+	return uint64(count) * uint64(bits), nil
 }
 
 // BytesRange reads nBytes bytes starting bit position start
