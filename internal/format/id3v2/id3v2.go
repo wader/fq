@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"fq/internal/decode"
 	"fq/internal/format/group"
-	"log"
 )
 
 var Tag = &decode.Format{
@@ -106,29 +105,43 @@ func (d *TagDecoder) SyncSafeU32() uint64 {
 		((u & 0x0000007f) >> 0))
 }
 
+func (d *TagDecoder) Text(encoding int, nBytes uint64) string {
+	encodingFn := encodingToUTF8[encodingUTF8]
+	if fn, ok := encodingToUTF8[encoding]; ok {
+		encodingFn = fn
+	}
+	return encodingFn(d.BytesLen(nBytes))
+}
+
+func (d *TagDecoder) TextNull(encoding int) string {
+	nullLen := encodingLen[encodingUTF8]
+	if n, ok := encodingLen[uint64(encoding)]; ok {
+		nullLen = n
+	}
+
+	textLen := d.PeekFind(uint64(nullLen*8), 0, -1)/8 - uint64(nullLen)
+	text := d.Text(encoding, textLen)
+	// TODO: field?
+	d.SeekRel(int64(nullLen) * 8)
+
+	return text
+}
+
 func (d *TagDecoder) FieldSyncSafeU32(name string) uint64 {
 	return d.FieldUFn(name, func() (uint64, decode.NumberFormat, string) {
 		return d.SyncSafeU32(), decode.NumberDecimal, ""
 	})
 }
 
-func (d *TagDecoder) TextNull(encoding int, name string) string {
+func (d *TagDecoder) FieldTextNull(name string, encoding int) string {
 	return d.FieldStrFn(name, func() (string, string) {
-		nullLen := encodingLen[encodingUTF8]
-		if n, ok := encodingLen[uint64(encoding)]; ok {
-			nullLen = n
-		}
-		encodingFn := encodingToUTF8[encodingUTF8]
-		if fn, ok := encodingToUTF8[encoding]; ok {
-			encodingFn = fn
-		}
+		return d.TextNull(encoding), ""
+	})
+}
 
-		textLen := d.PeekFind(uint64(nullLen*8), 0, -1)/8 - uint64(nullLen)
-		log.Printf("textLen: %#+v\n", textLen)
-		textBs := d.BytesLen(textLen)
-		d.SeekRel(int64(nullLen) * 8)
-
-		return encodingFn(textBs), ""
+func (d *TagDecoder) FieldText(name string, encoding int, nBytes uint64) string {
+	return d.FieldStrFn(name, func() (string, string) {
+		return d.Text(encoding, nBytes), ""
 	})
 }
 
@@ -190,29 +203,60 @@ func (d *TagDecoder) DecodeFrame(version int) uint64 {
 			size = dataSize + headerLen
 		}
 
-		frames := map[string]func(size uint64){
+		frames := map[string]func(){
 			// <Header for 'Attached picture', ID: "APIC">
 			// Text encoding      $xx
 			// MIME type          <text string> $00
 			// Picture type       $xx
 			// Description        <text string according to encoding> $00 (00)
 			// Picture data       <binary data>
-			"APIC": func(size uint64) {
-				d.SubLen(size*8, func() {
-					encoding := int(d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8))
-					d.TextNull(encodingUTF8, "mime_type")
-					d.FieldU8("picture_type") // TODO: table
-					d.TextNull(encoding, "description")
-					_, errs := d.FieldDecodeLen("picture", d.BitsLeft(), group.Images...)
-					for _, err := range errs {
-						log.Printf("err: %#+v\n", err)
-					}
-				})
+			"APIC": func() {
+				encoding := int(d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8))
+				d.FieldTextNull("mime_type", encodingUTF8)
+				d.FieldU8("picture_type") // TODO: table
+				d.FieldTextNull("description", encoding)
+				d.FieldDecodeLen("picture", d.BitsLeft(), group.Images...)
+			},
+			// Text information identifier  "T00" - "TZZ" , excluding "TXX",
+			//                             described in 4.2.2.
+			// Frame size                   $xx xx xx
+			// Text encoding                $xx
+			// Information                  <textstring>
+			//
+			// <Header for 'Text information frame', ID: "T000" - "TZZZ",
+			// excluding "TXXX" described in 4.2.6.>
+			// Text encoding                $xx
+			// Information                  <text string(s) according to encoding>
+			"T000": func() {
+				encoding := int(d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8))
+				d.FieldTextNull("text", encoding)
+			},
+			// User defined...   "TXX"
+			// Frame size        $xx xx xx
+			// Text encoding     $xx
+			// Description       <textstring> $00 (00)
+			// Value             <textstring>
+			//
+			// <Header for 'User defined text information frame', ID: "TXXX">
+			// Text encoding     $xx
+			// Description       <text string according to encoding> $00 (00)
+			// Value             <text string according to encoding>
+			"TXXX": func() {
+				encoding := int(d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8))
+				d.FieldTextNull("description", encoding)
+				d.FieldText("value", encoding, d.BitsLeft()/8)
 			},
 		}
 
+		switch {
+		case id == "TXX", id == "TXXX":
+			id = "TXXX"
+		case id[0] == 'T':
+			id = "T000"
+		}
+
 		if fn, ok := frames[id]; ok {
-			fn(dataSize)
+			d.SubLen(dataSize*8, fn)
 		} else {
 			d.FieldBytesLen("data", dataSize)
 		}
