@@ -34,7 +34,9 @@ func (d *FileDecoder) Decode() {
 	id3v1Len := uint64(128 * 8)
 	if d.BitsLeft() >= id3v1Len {
 		// TODO: added before? sort when presenting? probe? add later?
-		if fd, _ := d.FieldTryDecodeRange("footer", d.Pos()+d.BitsLeft()-id3v1Len, id3v1Len, id3v1.Tag, id3v11.Tag); fd != nil {
+		if fd, _ := d.FieldTryDecodeRange(
+			"footer", d.Pos()+d.BitsLeft()-id3v1Len, id3v1Len,
+			id3v1.Tag, id3v11.Tag); fd != nil {
 			footerLen = id3v1Len
 		}
 	}

@@ -92,10 +92,11 @@ func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range
 			}()
 
 			d.Decode()
-			rootField.Sort()
 
 			return nil
 		}()
+
+		rootField.Sort()
 
 		if err != nil {
 			errs = append(errs, err)

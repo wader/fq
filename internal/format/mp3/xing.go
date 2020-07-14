@@ -21,9 +21,11 @@ type XingHeaderDecoder struct {
 // Decode decodes a xing header
 func (d *XingHeaderDecoder) Decode() {
 	// TODO: info has lame extension?
-	headerId := d.UTF8(4)
-	switch headerId {
-	case "Xing", "Info":
+	hasLameExtension := false
+	switch string(d.PeekBytes(4)) {
+	case "Xing":
+	case "Info":
+		hasLameExtension = true
 	default:
 		d.Invalid("no xing header found")
 	}
@@ -53,7 +55,7 @@ func (d *XingHeaderDecoder) Decode() {
 		d.FieldU32("quality")
 	}
 
-	if headerId == "Info" {
+	if hasLameExtension {
 		d.FieldNoneFn("lame_extension", func() {
 			d.FieldUTF8("encoder", 9)
 			d.FieldU4("tag_revision")
