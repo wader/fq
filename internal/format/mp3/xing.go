@@ -35,6 +35,7 @@ func (d *XingHeaderDecoder) Decode() {
 	bytesPresent := false
 	framesPresent := false
 	d.FieldNoneFn("present_flags", func() {
+		d.FieldU("unused", 28)
 		qualityPresent = d.FieldBool("quality")
 		tocPresent = d.FieldBool("toc")
 		bytesPresent = d.FieldBool("bytes")
