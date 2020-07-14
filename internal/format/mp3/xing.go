@@ -4,7 +4,6 @@ package mp3
 
 import (
 	"fq/internal/decode"
-	"log"
 )
 
 var XingHeader = &decode.Format{
@@ -23,7 +22,6 @@ type XingHeaderDecoder struct {
 func (d *XingHeaderDecoder) Decode() {
 	// TODO: info has lame extension?
 	headerId := d.UTF8(4)
-	log.Printf("headerId: %#+v\n", headerId)
 	switch headerId {
 	case "Xing", "Info":
 	default:

@@ -893,6 +893,9 @@ func (c *Common) SubLenFn(nBits uint64, fn func()) {
 
 	fn()
 
+	bitsLeft := nBits - (c.BitBuf.Pos - prevBb.Pos)
+	c.SeekRel(int64(bitsLeft))
+
 	prevBb.Pos = c.BitBuf.Pos
 	c.BitBuf = prevBb
 }
