@@ -6,6 +6,7 @@ package mp3
 
 // TODO: crc
 // TODO: same sample decode?
+// TODO: vbri
 
 import (
 	"fq/internal/decode"
@@ -39,7 +40,7 @@ func (d *FileDecoder) Decode() {
 	}
 
 	validFrames := 0
-	d.SubLen(d.BitsLeft()-footerLen, func() {
+	d.SubLenFn(d.BitsLeft()-footerLen, func() {
 		for !d.End() {
 			if _, errs := d.FieldTryDecode("frame", Frame); errs != nil {
 				break

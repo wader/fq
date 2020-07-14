@@ -203,6 +203,8 @@ func (d *TagDecoder) DecodeFrame(version int) uint64 {
 			size = dataSize + headerLen
 		}
 
+		// note frame function run inside a SubLenFn so they can use BitLefts and
+		// can't accidentally read too far
 		frames := map[string]func(){
 			// <Header for 'Attached picture', ID: "APIC">
 			// Text encoding      $xx
@@ -256,7 +258,7 @@ func (d *TagDecoder) DecodeFrame(version int) uint64 {
 		}
 
 		if fn, ok := frames[id]; ok {
-			d.SubLen(dataSize*8, fn)
+			d.SubLenFn(dataSize*8, fn)
 		} else {
 			d.FieldBytesLen("data", dataSize)
 		}

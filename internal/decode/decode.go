@@ -879,7 +879,8 @@ func (c *Common) Invalid(reason string) {
 	panic(ValidateError{Reason: reason, Pos: c.BitBuf.Pos})
 }
 
-func (c *Common) SubLen(nBits uint64, fn func()) {
+// TODO: rename?
+func (c *Common) SubLenFn(nBits uint64, fn func()) {
 	prevBb := c.BitBuf
 
 	bb, err := c.BitBuf.BitBufRange(0, c.BitBuf.Pos+nBits)

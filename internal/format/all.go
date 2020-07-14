@@ -24,6 +24,7 @@ var All = []*decode.Format{
 	flac.Picture,
 	mp3.File,
 	mp3.Frame,
+	mp3.XingHeader,
 	id3v11.Tag,
 	id3v1.Tag,
 	id3v2.Tag,

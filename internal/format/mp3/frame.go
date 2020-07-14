@@ -12,9 +12,10 @@ import (
 )
 
 var Frame = &decode.Format{
-	Name: "mp3_frame",
-	MIME: "",
-	New:  func() decode.Decoder { return &FrameDecoder{} },
+	Name:      "mp3_frame",
+	MIME:      "",
+	New:       func() decode.Decoder { return &FrameDecoder{} },
+	SkipProbe: true,
 }
 
 // FrameDecoder is a mp3 frame decoder
@@ -107,12 +108,13 @@ func (d *FrameDecoder) Decode() {
 		1: "Padded",
 	}, "", d.U1)
 	d.FieldU1("private")
-	d.FieldStringMapFn("channels", map[uint64]string{
+	channelsIndex := d.FieldStringMapFn("channels", map[uint64]string{
 		0b00: "Stereo",
 		0b01: "Joint Stereo",
 		0b10: "Dual",
 		0b11: "Mono",
 	}, "", d.U2)
+	isStereo := channelsIndex != 0b11
 	d.FieldStringMapFn("channel_mode", map[uint64]string{
 		0b00: "",
 		0b01: "Intensity Stereo",
@@ -130,5 +132,28 @@ func (d *FrameDecoder) Decode() {
 
 	const headerLen = 4
 	dataLen := (144 * bitRate / sampleRate) + padding - headerLen
-	d.FieldBytesLen("samples", dataLen)
+
+	d.SubLenFn(dataLen*8, func() {
+		var sideInfoLen uint64
+		// [mono/stereo][mpeg version]
+		sideInfoIndex := map[bool][4]uint64{
+			false: {0, 17, 9, 9},   // mono
+			true:  {0, 32, 17, 17}, // stereo
+		}
+		if l == 3 {
+			sideInfoLen = sideInfoIndex[isStereo][int(v)]
+		}
+
+		if sideInfoLen != 0 {
+			d.FieldNoneFn("side_info", func() {
+				d.SeekRel(int64(sideInfoLen * 8))
+			})
+		}
+
+		d.FieldTryDecode("xing", XingHeader)
+
+		// TODO: padding slot, 4 bit layer1, 8 bit others?
+
+		d.FieldNoneFn("samples", func() { d.SeekRel(int64(d.BitsLeft())) })
+	})
 }
