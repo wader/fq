@@ -30,6 +30,7 @@ func (d *XingHeaderDecoder) Decode() {
 		d.Invalid("no xing header found")
 	}
 
+	d.FieldUTF8("header", 4)
 	qualityPresent := false
 	tocPresent := false
 	bytesPresent := false

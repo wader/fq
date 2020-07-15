@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"fq/internal/decode"
 	"fq/internal/format/group"
+	"strings"
 )
 
 var Tag = &decode.Format{
@@ -218,10 +219,11 @@ var encodingToUTF8 = map[int]func(b []byte) string{
 		var rs []rune
 		switch {
 		case bytes.HasPrefix(b, leBOM):
+			// strip BOM
 			b = b[2:]
 			rs = make([]rune, len(b)/2)
 			for i := 0; i < len(b)/2; i++ {
-				rs[i] = rune(b[i*2] | b[i*2+1]<<8)
+				rs[i] = rune(uint(b[i*2]) | uint(b[i*2+1])<<8)
 			}
 		case bytes.HasPrefix(b, beBOM):
 			b = b[2:]
@@ -229,7 +231,7 @@ var encodingToUTF8 = map[int]func(b []byte) string{
 		default:
 			rs = make([]rune, len(b)/2)
 			for i := 0; i < len(b)/2; i++ {
-				rs[i] = rune(b[i*2]<<8 | b[i*2+1])
+				rs[i] = rune(uint(b[i*2])<<8 | uint(b[i*2+1]))
 			}
 		}
 		return string(rs)
@@ -237,7 +239,7 @@ var encodingToUTF8 = map[int]func(b []byte) string{
 	encodingUTF16BE: func(b []byte) string {
 		rs := make([]rune, len(b)/2)
 		for i := 0; i < len(b)/2; i++ {
-			rs[i] = rune(b[i*2]<<8 + b[i*2+1])
+			rs[i] = rune(uint(b[i*2])<<8 + uint(b[i*2+1]))
 		}
 		return string(rs)
 	},
@@ -268,7 +270,7 @@ func (d *TagDecoder) Text(encoding int, nBytes uint64) string {
 	if fn, ok := encodingToUTF8[encoding]; ok {
 		encodingFn = fn
 	}
-	return encodingFn(d.BytesLen(nBytes))
+	return strings.TrimRight(encodingFn(d.BytesLen(nBytes)), "\x00")
 }
 
 func (d *TagDecoder) TextNull(encoding int) string {
