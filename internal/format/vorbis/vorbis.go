@@ -112,7 +112,7 @@ func (d *PacketDecoder) Decode() {
 					bs, err := base64.StdEncoding.DecodeString(v)
 					if err == nil {
 						d.FieldDecodeBitBuf("picture",
-							d.BitBuf.Pos-uint64(len(v)*8),
+							d.Pos()-uint64(len(v)*8),
 							uint64(len(v)*8),
 							bitbuf.NewFromBytes(bs),
 							flac.Picture,

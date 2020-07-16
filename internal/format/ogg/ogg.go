@@ -72,12 +72,12 @@ func (d *FileDecoder) Decode() {
 
 			for _, ss := range segmentTable {
 				if s.packetBuf == nil {
-					s.firstBit = d.BitBuf.Pos
+					s.firstBit = d.Pos()
 				}
 				bs := d.FieldBytesLen("segment", uint64(ss))
 				s.packetBuf = append(s.packetBuf, bs...)
 				if len(bs) < 255 { // TODO: list range maps of demuxed packets?
-					d.FieldDecodeBitBuf("packet", s.firstBit, d.BitBuf.Pos, bitbuf.NewFromBytes(s.packetBuf), vorbis.Packet)
+					d.FieldDecodeBitBuf("packet", s.firstBit, d.Pos(), bitbuf.NewFromBytes(s.packetBuf), vorbis.Packet)
 					s.packetBuf = nil
 				}
 			}

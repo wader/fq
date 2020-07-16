@@ -76,6 +76,6 @@ func main() {
 		//j := json.New(os.Stdout)
 		//j.Output(d.GetCommon().Root)
 
-		decode.Dump(d.GetCommon().Root, 0)
+		decode.Dump(d.Root(), 0)
 	}
 }

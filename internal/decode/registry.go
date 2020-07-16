@@ -56,12 +56,11 @@ func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range
 		}
 		d.Prepare(Common{
 			Parent:   parent,
-			Format:   f,
-			Registry: r,
-			BitBuf:   bb.Copy(),
-
-			Root:    rootField,
-			Current: rootField,
+			format:   f,
+			registry: r,
+			bitBuf:   bb.Copy(),
+			root:     rootField,
+			current:  rootField,
 		})
 		err := func() (err error) {
 			defer func() {
@@ -96,7 +95,7 @@ func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range
 			return nil
 		}()
 
-		rootField.Sort()
+		d.Finish(err)
 
 		if err != nil {
 			errs = append(errs, err)
