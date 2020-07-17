@@ -30,6 +30,8 @@ type FileDecoder struct {
 func (d *FileDecoder) Decode() {
 	d.FieldTryDecode("header", id3v2.Tag)
 
+	//log.Printf("dh.Error(): %#+v\n", dh.Error())
+
 	footerLen := uint64(0)
 	id3v1Len := uint64(128 * 8)
 	if d.BitsLeft() >= id3v1Len {
@@ -45,6 +47,10 @@ func (d *FileDecoder) Decode() {
 	d.SubLenFn(d.BitsLeft()-footerLen, func() {
 		for !d.End() {
 			if _, errs := d.FieldTryDecode("frame", Frame); errs != nil {
+				// TODO: truncated last frame?
+				if d.BitsLeft() >= 0 {
+					d.FieldNoneFn("unknown", func() { d.SeekRel(int64(d.BitsLeft())) })
+				}
 				break
 			}
 

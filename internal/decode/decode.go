@@ -785,7 +785,7 @@ func (c *Common) FieldTryDecode(name string, forceFormats ...*Format) (Decoder, 
 	}
 
 	d, errs := c.registry.Probe(c, name, Range{Start: c.bitBuf.Pos, Stop: c.bitBuf.Pos}, bb, forceFormats)
-	if d == nil {
+	if d == nil || d.Error() != nil {
 		return nil, errs
 	}
 
