@@ -1,4 +1,16 @@
 
+
+path exp
+child[0]
+child[field=...]
+[0]
+[field=ad]
+child[-1]
+field~=a.*
+field=\x00...
+
+
+
 FieldDecoder -> FieldDecoder
 
 

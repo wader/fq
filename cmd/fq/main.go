@@ -16,7 +16,8 @@ import (
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to `file`")
 var memprofile = flag.String("memprofile", "", "write memory profile to `file`")
 
-var forceFormatName = flag.String("f", "", "")
+var forceFormatNameFlag = flag.String("f", "", "")
+var verboseFlag = flag.Bool("v", false, "")
 
 func main() {
 	flag.Parse()
@@ -54,28 +55,31 @@ func main() {
 
 	registry := decode.NewRegistryWithFormats(format.All)
 	var forceFormats []*decode.Format
-	if *forceFormatName != "" {
-		forceFormat := registry.FindFormat(*forceFormatName)
+	if *forceFormatNameFlag != "" {
+		forceFormat := registry.FindFormat(*forceFormatNameFlag)
 		if forceFormat == nil {
-			panic("found not find format " + *forceFormatName)
+			panic("found not find format " + *forceFormatNameFlag)
 		}
 		forceFormats = append(forceFormats, forceFormat)
 	}
 	bb := bitbuf.NewFromBytes(buf)
 	d, errs := registry.Probe(nil, flag.Arg(0), decode.Range{Start: 0, Stop: bb.Len}, bitbuf.NewFromBytes(buf), forceFormats)
-	for _, err := range errs {
-		fmt.Printf("%s\n", err)
-		if pe := err.(*decode.ProbeError); pe != nil {
-			// if pe.PanicHandeled {
-			fmt.Printf("%s", pe.PanicStack)
-			// }
+	if d == nil || *verboseFlag {
+		for _, err := range errs {
+			fmt.Printf("%s\n", err)
+			if pe := err.(*decode.ProbeError); pe != nil {
+				// if pe.PanicHandeled {
+				fmt.Printf("%s", pe.PanicStack)
+				// }
+			}
 		}
 	}
+
 	if d != nil {
-
-		//j := json.New(os.Stdout)
-		//j.Output(d.GetCommon().Root)
-
-		decode.Dump(d.Root(), 0)
+		f := d.Root()
+		exp := flag.Arg(1)
+		if _, err := f.Eval(os.Stdout, exp); err != nil {
+			panic(err)
+		}
 	}
 }

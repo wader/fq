@@ -7,7 +7,6 @@ import (
 	"fq/internal/bitbuf"
 	"io/ioutil"
 	"strconv"
-	"strings"
 )
 
 type Decoder interface {
@@ -892,20 +891,4 @@ func (c *Common) FieldZlibLen(name string, nBytes uint64, forceFormats ...*Forma
 	}
 
 	return c.FieldDecodeBitBuf(name, firstBit, firstBit+nBytes*8, bitbuf.NewFromBytes(zd), forceFormats...)
-}
-
-// --------------
-
-func Dump(f *Field, depth int) {
-	indent := strings.Repeat("  ", depth)
-
-	if (len(f.Children)) != 0 {
-		fmt.Printf("%s%s: %s %s (%s) {\n", indent, f.Name, f.Value, f.Range, Bits(f.Range.Length()))
-		for _, c := range f.Children {
-			Dump(c, depth+1)
-		}
-		fmt.Printf("%s}\n", indent)
-	} else {
-		fmt.Printf("%s%s: %s %s (%s)\n", indent, f.Name, f.Value, f.Range, Bits(f.Range.Length()))
-	}
 }
