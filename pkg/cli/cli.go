@@ -7,7 +7,6 @@ import (
 	"fq/pkg/decode"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"sort"
 	"strings"
@@ -21,6 +20,7 @@ type Main struct {
 	FormatsList [][]*decode.Format
 }
 
+// Run cli main
 func (m Main) Run() error {
 	err := m.run()
 	if err != nil {
@@ -41,7 +41,7 @@ func (m Main) run() error {
 	fs := flag.NewFlagSet("", flag.ContinueOnError)
 	fs.SetOutput(m.Stderr)
 	forceFormatNameFlag := fs.String("f", "", "Force format")
-	verboseFlag := fs.Bool("v", false, "")
+	verboseFlag := fs.Bool("v", false, "Verbose output")
 	fs.Usage = func() {
 		maxNameLen := 0
 		for _, f := range registry.Formats {
@@ -57,8 +57,7 @@ func (m Main) run() error {
 		})
 
 		pad := func(n int, s string) string { return strings.Repeat(" ", n-len(s)) }
-
-		fmt.Fprintf(fs.Output(), "Usage: %s FILE [EXP]\n", m.Args[0])
+		fmt.Fprintf(fs.Output(), "Usage: %s [FLAGS] FILE [EXP]\n", m.Args[0])
 		fs.PrintDefaults()
 		fmt.Fprintf(fs.Output(), "\n")
 		fmt.Fprintf(fs.Output(), "Name:%s    MIME:\n", pad(maxNameLen, "Name:"))
@@ -66,22 +65,19 @@ func (m Main) run() error {
 			fmt.Fprintf(fs.Output(), "%s%s    %s\n", f.Name, pad(maxNameLen, f.Name), strings.Join(f.MIMEs, ", "))
 		}
 	}
-	if err := fs.Parse(m.Args); err != nil {
+	if err := fs.Parse(m.Args[1:]); err != nil {
 		return err
 	}
 
-	log.Printf("fs.Arg(1): %#+v\n", fs.Arg(1))
-
 	r := m.Stdin
-	if fs.Arg(1) != "" {
-		f, err := os.Open(fs.Arg(1))
+	if fs.Arg(0) != "" {
+		f, err := os.Open(fs.Arg(0))
 		if err != nil {
 			return err
 		}
 		defer f.Close()
 		r = f
 	}
-
 	buf, err := ioutil.ReadAll(r)
 	if err != nil {
 		return err
@@ -96,7 +92,7 @@ func (m Main) run() error {
 		forceFormats = append(forceFormats, forceFormat)
 	}
 	bb := bitbuf.NewFromBytes(buf)
-	d, errs := registry.Probe(nil, fs.Arg(1), decode.Range{Start: 0, Stop: bb.Len}, bitbuf.NewFromBytes(buf), forceFormats)
+	d, errs := registry.Probe(nil, fs.Arg(0), decode.Range{Start: 0, Stop: bb.Len}, bitbuf.NewFromBytes(buf), forceFormats)
 	if d == nil || *verboseFlag {
 		for _, err := range errs {
 			fmt.Fprintf(m.Stderr, "%s\n", err)
@@ -110,7 +106,7 @@ func (m Main) run() error {
 
 	if d != nil {
 		f := d.Root()
-		exp := fs.Arg(2)
+		exp := fs.Arg(1)
 		if _, err := f.Eval(os.Stdout, exp); err != nil {
 			return err
 		}
