@@ -1,5 +1,8 @@
 
 
+move cli thigns to package
+move deocde to not internal to have own decoders
+
 path exp
 child[0]
 child[field=...]

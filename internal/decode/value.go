@@ -108,7 +108,7 @@ func (v Value) String() string {
 		//return hex.EncodeToString(v.Bytes)
 	case TypeDecoder:
 		c := v.Decoder
-		f = fmt.Sprintf("%s (decoder) %s", c.Format().Name, Bits(c.BitBuf().Len))
+		f = fmt.Sprintf("%s (%s) %s", c.Format().Name, c.MIME(), Bits(c.BitBuf().Len))
 	default:
 		panic("unreachable")
 	}
