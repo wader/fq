@@ -44,7 +44,7 @@ func StandardMain(formatsList ...[]*decode.Format) {
 func (m Main) Run() error {
 	err := m.run()
 	if err != nil && err != flag.ErrHelp {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
+		fmt.Fprintf(m.OS.Stderr(), "%s\n", err)
 	}
 	return err
 }
@@ -113,7 +113,7 @@ func (m Main) run() error {
 	}
 	bb := bitbuf.NewFromBytes(buf)
 	d, errs := registry.Probe(nil, fs.Arg(0), decode.Range{Start: 0, Stop: bb.Len}, bitbuf.NewFromBytes(buf), forceFormats)
-	if d == nil || *verboseFlag {
+	if *verboseFlag {
 		for _, err := range errs {
 			fmt.Fprintf(m.OS.Stderr(), "%s\n", err)
 			if pe := err.(*decode.ProbeError); pe != nil {
@@ -130,6 +130,8 @@ func (m Main) run() error {
 		if _, err := f.Eval(os.Stdout, exp); err != nil {
 			return err
 		}
+	} else {
+		return fmt.Errorf("unable to probe format")
 	}
 
 	return nil
