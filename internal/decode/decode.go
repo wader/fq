@@ -30,8 +30,8 @@ type BitBufError struct {
 }
 
 func (e BitBufError) Error() string {
-	return fmt.Sprintf("%s: failed at bit position %d (%d+%d) (size %d (%d+%d), delta %d (%d+%d)): %s",
-		e.Op, e.Pos, e.Pos>>3, e.Pos&0x7, e.Size, e.Size>>3, e.Size&0x7, e.Delta, e.Delta>>3, e.Delta&0x7, e.Err)
+	return fmt.Sprintf("%s: failed at bit position %s (size %s delta %s): %s",
+		e.Op, Bits(e.Pos), Bits(e.Size), Bits(e.Delta), e.Err)
 }
 func (e BitBufError) Unwrap() error { return e.Err }
 
@@ -41,7 +41,7 @@ type ValidateError struct {
 }
 
 func (e ValidateError) Error() string {
-	return fmt.Sprintf("failed to validate at position %d (%d+%d): %s", e.Pos, e.Pos>>3, e.Pos&0x7, e.Reason)
+	return fmt.Sprintf("failed to validate at position %s: %s", Bits(e.Pos), e.Reason)
 }
 
 type Format struct {

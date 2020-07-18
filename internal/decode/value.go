@@ -157,7 +157,7 @@ type Field struct {
 	Children []*Field
 }
 
-var lookupRe = regexp.MustCompile(`^([\w_]+)(?:\[(\d+)\])?$`)
+var lookupRe = regexp.MustCompile(`^([\w_]*)(?:\[(\d+)\])?$`)
 
 func (f *Field) Eval(w io.Writer, exp string) (*Field, error) {
 	const (
@@ -215,7 +215,7 @@ func (f *Field) Lookup(path string) *Field {
 
 	var indexC = 0
 	for _, c := range f.Children {
-		if c.Name != name {
+		if name != "" && c.Name != name {
 			continue
 		}
 
