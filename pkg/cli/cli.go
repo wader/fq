@@ -7,13 +7,16 @@ import (
 	"fq/pkg/decode"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"sort"
 	"strings"
 )
 
 type Main struct {
+	Stdin       io.Reader
 	Stdout      io.Writer
+	Stderr      io.Writer
 	Args        []string
 	FormatsList [][]*decode.Format
 }
@@ -21,7 +24,7 @@ type Main struct {
 func (m Main) Run() error {
 	err := m.run()
 	if err != nil {
-		fmt.Fprintf(os.Stdout, "%s\n", err)
+		fmt.Fprintf(os.Stderr, "%s\n", err)
 	}
 	return err
 }
@@ -35,8 +38,8 @@ func (m Main) run() error {
 	}
 	registry := decode.NewRegistryWithFormats(merged)
 
-	fs := flag.NewFlagSet("", flag.ExitOnError)
-	fs.SetOutput(m.Stdout)
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+	fs.SetOutput(m.Stderr)
 	forceFormatNameFlag := fs.String("f", "", "Force format")
 	verboseFlag := fs.Bool("v", false, "")
 	fs.Usage = func() {
@@ -55,24 +58,31 @@ func (m Main) run() error {
 
 		pad := func(n int, s string) string { return strings.Repeat(" ", n-len(s)) }
 
-		fmt.Fprintf(m.Stdout, "Usage: %s FILE [EXP]\n", m.Args[0])
+		fmt.Fprintf(fs.Output(), "Usage: %s FILE [EXP]\n", m.Args[0])
 		fs.PrintDefaults()
-		fmt.Fprintf(m.Stdout, "\n")
-		fmt.Fprintf(m.Stdout, "Name:%s    MIME:\n", pad(maxNameLen, "Name:"))
+		fmt.Fprintf(fs.Output(), "\n")
+		fmt.Fprintf(fs.Output(), "Name:%s    MIME:\n", pad(maxNameLen, "Name:"))
 		for _, f := range formatsSorted {
-			fmt.Fprintf(m.Stdout, "%s%s    %s\n", f.Name, pad(maxNameLen, f.Name), strings.Join(f.MIMEs, ", "))
+			fmt.Fprintf(fs.Output(), "%s%s    %s\n", f.Name, pad(maxNameLen, f.Name), strings.Join(f.MIMEs, ", "))
 		}
 	}
 	if err := fs.Parse(m.Args); err != nil {
 		return err
 	}
 
-	if fs.Arg(1) == "" {
-		fs.Usage()
-		os.Exit(1)
+	log.Printf("fs.Arg(1): %#+v\n", fs.Arg(1))
+
+	r := m.Stdin
+	if fs.Arg(1) != "" {
+		f, err := os.Open(fs.Arg(1))
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+		r = f
 	}
 
-	buf, err := ioutil.ReadFile(fs.Arg(1))
+	buf, err := ioutil.ReadAll(r)
 	if err != nil {
 		return err
 	}
@@ -89,10 +99,10 @@ func (m Main) run() error {
 	d, errs := registry.Probe(nil, fs.Arg(1), decode.Range{Start: 0, Stop: bb.Len}, bitbuf.NewFromBytes(buf), forceFormats)
 	if d == nil || *verboseFlag {
 		for _, err := range errs {
-			fmt.Fprintf(m.Stdout, "%s\n", err)
+			fmt.Fprintf(m.Stderr, "%s\n", err)
 			if pe := err.(*decode.ProbeError); pe != nil {
 				// if pe.PanicHandeled {
-				fmt.Fprintf(m.Stdout, "%s", pe.PanicStack)
+				fmt.Fprintf(m.Stderr, "%s", pe.PanicStack)
 				// }
 			}
 		}

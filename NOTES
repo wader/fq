@@ -1,7 +1,11 @@
 
+standrize names mapping?
 
-move cli thigns to package
-move deocde to not internal to have own decoders
+simplifixed, essential info?
+
+
+DONE move cli thigns to package
+DONE move deocde to not internal to have own decoders
 
 path exp
 child[0]
