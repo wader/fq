@@ -31,6 +31,15 @@ func (StandardOS) Stdout() io.Writer { return os.Stdout }
 func (StandardOS) Stderr() io.Writer { return os.Stderr }
 func (StandardOS) Args() []string    { return os.Args }
 
+func StandardMain(formatsList ...[]*decode.Format) {
+	if err := (Main{
+		OS:          StandardOS{},
+		FormatsList: formatsList,
+	}).Run(); err != nil {
+		os.Exit(1)
+	}
+}
+
 // Run cli main
 func (m Main) Run() error {
 	err := m.run()
