@@ -9,13 +9,8 @@ import (
 
 func main() {
 	if err := (cli.Main{
-		Stdin:  os.Stdin,
-		Stdout: os.Stdout,
-		Stderr: os.Stderr,
-		Args:   os.Args,
-		FormatsList: [][]*decode.Format{
-			format.All,
-		},
+		OS:          cli.StandardOS{},
+		FormatsList: [][]*decode.Format{format.All},
 	}).Run(); err != nil {
 		os.Exit(1)
 	}
