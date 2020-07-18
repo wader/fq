@@ -13,7 +13,6 @@ import (
 
 var Frame = &decode.Format{
 	Name:      "mp3_frame",
-	MIME:      "",
 	New:       func() decode.Decoder { return &FrameDecoder{} },
 	SkipProbe: true,
 }

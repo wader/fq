@@ -16,26 +16,21 @@ import (
 )
 
 var File = &decode.Format{
-	Name: "mp3",
-	MIME: "",
-	New:  func() decode.Decoder { return &FileDecoder{} },
+	Name:  "mp3",
+	MIMEs: []string{"audio/mpeg"},
+	New:   func() decode.Decoder { return &FileDecoder{} },
 }
 
 // FileDecoder is a MP3 decoder
-type FileDecoder struct {
-	decode.Common
-}
+type FileDecoder struct{ decode.Common }
 
 // Decode decodes a MP3 stream
 func (d *FileDecoder) Decode() {
 	d.FieldTryDecode("header", id3v2.Tag)
 
-	//log.Printf("dh.Error(): %#+v\n", dh.Error())
-
 	footerLen := uint64(0)
 	id3v1Len := uint64(128 * 8)
 	if d.BitsLeft() >= id3v1Len {
-		// TODO: added before? sort when presenting? probe? add later?
 		if fd, _ := d.FieldTryDecodeRange(
 			"footer", d.Pos()+d.BitsLeft()-id3v1Len, id3v1Len,
 			id3v1.Tag, id3v11.Tag); fd != nil {

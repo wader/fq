@@ -10,7 +10,8 @@ import (
 
 var File = &decode.Format{
 	Name: "mp4",
-	MIME: "",
+	// TODO: implment MIME()
+	MIMEs: []string{"audio/mp4", "video/mp4"},
 	New: func() decode.Decoder {
 		return &FileDecoder{
 			tracks: map[uint32]*track{},

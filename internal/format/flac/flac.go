@@ -11,8 +11,9 @@ import (
 )
 
 var File = &decode.Format{
-	Name: "flac",
-	New:  func() decode.Decoder { return &FileDecoder{} },
+	Name:  "flac",
+	MIMEs: []string{"audio/x-flac"},
+	New:   func() decode.Decoder { return &FileDecoder{} },
 }
 
 // FileDecoder is a FLAC file decoder

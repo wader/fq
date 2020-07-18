@@ -15,9 +15,11 @@ type Decoder interface {
 	Prepare(common Common)
 	Finish(err error)
 
-	Root() *Field
-	BitBuf() *bitbuf.Buffer
 	Format() *Format
+	BitBuf() *bitbuf.Buffer
+
+	MIME() string
+	Root() *Field
 	Error() error
 }
 
@@ -46,7 +48,7 @@ func (e ValidateError) Error() string {
 
 type Format struct {
 	Name      string
-	MIME      string
+	MIMEs     []string
 	New       func() Decoder
 	SkipProbe bool
 }
@@ -67,13 +69,16 @@ func (d *DecoderFn) Decode() {
 }
 
 type Common struct {
-	Parent   Decoder
-	format   *Format
+	Parent Decoder
+
+	format  *Format
+	bitBuf  *bitbuf.Buffer
+	root    *Field
+	current *Field // TODO: need root field also?
+	mime    string
+	err     error
+
 	registry *Registry
-	bitBuf   *bitbuf.Buffer
-	root     *Field
-	current  *Field // TODO: need root field also?
-	err      error
 }
 
 func (c *Common) Decode() {}
@@ -87,10 +92,19 @@ func (c *Common) Finish(err error) {
 	c.root.Sort()
 }
 
-func (c *Common) Root() *Field           { return c.root }
-func (c *Common) BitBuf() *bitbuf.Buffer { return c.bitBuf }
 func (c *Common) Format() *Format        { return c.format }
-func (c *Common) Error() error           { return c.err }
+func (c *Common) BitBuf() *bitbuf.Buffer { return c.bitBuf }
+func (c *Common) Root() *Field           { return c.root }
+
+func (c *Common) MIME() string {
+	mimes := c.format.MIMEs
+	if len(mimes) == 1 {
+		return mimes[0]
+	}
+	return "application/x-binary"
+}
+
+func (c *Common) Error() error { return c.err }
 
 func (c *Common) PeekBits(nBits uint64) uint64 {
 	n, err := c.bitBuf.PeekBits(nBits)

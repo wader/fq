@@ -12,9 +12,9 @@ import (
 )
 
 var File = &decode.Format{
-	Name: "tar",
-	MIME: "",
-	New:  func() decode.Decoder { return &FileDecoder{} },
+	Name:  "tar",
+	MIMEs: []string{"application/x-tar"},
+	New:   func() decode.Decoder { return &FileDecoder{} },
 }
 
 // Decoder is a tar decoder

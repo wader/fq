@@ -5,8 +5,9 @@ import (
 )
 
 var Stream = &decode.Format{
-	Name: "aac_stream",
-	New:  func() decode.Decoder { return &StreamDecoder{} },
+	Name:  "aac_stream",
+	MIMEs: []string{"audio/aac"},
+	New:   func() decode.Decoder { return &StreamDecoder{} },
 }
 
 // StreamDecoder is a adts  decoder

@@ -14,7 +14,6 @@ import (
 
 var Packet = &decode.Format{
 	Name:      "vorbis",
-	MIME:      "",
 	New:       func() decode.Decoder { return &PacketDecoder{} },
 	SkipProbe: true,
 }

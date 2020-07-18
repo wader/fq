@@ -36,7 +36,6 @@ typedef struct {
 
 var File = &decode.Format{
 	Name: "elf",
-	MIME: "",
 	New:  func() decode.Decoder { return &FileDecoder{} },
 }
 

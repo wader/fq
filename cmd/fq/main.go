@@ -11,6 +11,7 @@ import (
 	"os"
 	"runtime"
 	"runtime/pprof"
+	"strings"
 )
 
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to `file`")
@@ -48,12 +49,27 @@ func main() {
 		}
 	}
 
+	registry := decode.NewRegistryWithFormats(format.All)
+
+	if flag.Arg(0) == "" {
+		maxNameLen := 0
+		for _, f := range registry.Formats {
+			if len(f.Name) > maxNameLen {
+				maxNameLen = len(f.Name)
+			}
+		}
+
+		for _, f := range registry.Formats {
+			fmt.Printf("%s%s    %s\n", f.Name, strings.Repeat(" ", maxNameLen-len(f.Name)), strings.Join(f.MIMEs, ", "))
+		}
+		os.Exit(1)
+	}
+
 	buf, err := ioutil.ReadFile(flag.Arg(0))
 	if err != nil {
 		panic(err)
 	}
 
-	registry := decode.NewRegistryWithFormats(format.All)
 	var forceFormats []*decode.Format
 	if *forceFormatNameFlag != "" {
 		forceFormat := registry.FindFormat(*forceFormatNameFlag)

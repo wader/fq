@@ -11,9 +11,9 @@ import (
 )
 
 var File = &decode.Format{
-	Name: "jpeg",
-	MIME: "",
-	New:  func() decode.Decoder { return &FileDecoder{} },
+	Name:  "jpeg",
+	MIMEs: []string{"image/jpeg"},
+	New:   func() decode.Decoder { return &FileDecoder{} },
 }
 
 type marker struct {

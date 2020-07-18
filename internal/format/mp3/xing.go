@@ -8,7 +8,6 @@ import (
 
 var XingHeader = &decode.Format{
 	Name:      "xing_header",
-	MIME:      "",
 	New:       func() decode.Decoder { return &XingHeaderDecoder{} },
 	SkipProbe: true,
 }

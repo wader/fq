@@ -10,8 +10,8 @@ import (
 )
 
 var File = &decode.Format{
-	Name: "ogg",
-	MIME: "",
+	Name:  "ogg",
+	MIMEs: []string{"audio/ogg"},
 	New: func() decode.Decoder {
 		return &FileDecoder{
 			streams: map[uint32]*stream{},

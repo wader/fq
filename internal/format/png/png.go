@@ -9,9 +9,9 @@ import (
 )
 
 var File = &decode.Format{
-	Name: "png",
-	MIME: "",
-	New:  func() decode.Decoder { return &FileDecoder{} },
+	Name:  "png",
+	MIMEs: []string{"image/png"},
+	New:   func() decode.Decoder { return &FileDecoder{} },
 }
 
 // FileDecoder is a PNG decoder

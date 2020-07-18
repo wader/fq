@@ -10,9 +10,9 @@ import (
 )
 
 var File = &decode.Format{
-	Name: "tiff",
-	MIME: "",
-	New:  func() decode.Decoder { return &FileDecoder{} },
+	Name:  "tiff",
+	MIMEs: []string{"image/tiff"},
+	New:   func() decode.Decoder { return &FileDecoder{} },
 }
 
 const littleEndian = 0x49492a00
