@@ -3,11 +3,7 @@ package decode
 import (
 	"encoding/hex"
 	"fmt"
-	"io"
-	"regexp"
-	"sort"
 	"strconv"
-	"strings"
 )
 
 type Bits uint64
@@ -148,116 +144,4 @@ func (v Value) RawString() string {
 		panic("unreachable")
 	}
 	return f
-}
-
-type Field struct {
-	Name     string
-	Range    Range
-	Value    Value
-	Children []*Field
-}
-
-var lookupRe = regexp.MustCompile(`^([\w_]*)(?:\[(\d+)\])?$`)
-
-func (f *Field) Eval(w io.Writer, exp string) (*Field, error) {
-	const (
-		treeExp = iota
-		valueExp
-		rangeExp
-	)
-	var expType = treeExp
-
-	switch {
-	case strings.HasPrefix(exp, "@"):
-		expType = valueExp
-		exp = exp[1:]
-	case strings.HasPrefix(exp, "#"):
-		expType = rangeExp
-		exp = exp[1:]
-	}
-
-	lf := f.Lookup(exp)
-	if lf == nil {
-		return lf, fmt.Errorf("not found")
-	}
-
-	switch expType {
-	case treeExp:
-		lf.Dump(w, 0)
-	case valueExp:
-		fmt.Fprintf(w, "%s", lf.Value.RawString())
-	case rangeExp:
-		fmt.Fprintf(w, "%s\n", lf.Range)
-	}
-
-	return nil, nil
-}
-
-func (f *Field) Lookup(path string) *Field {
-	if path == "" {
-		return f
-	}
-
-	parts := strings.SplitN(path, ".", 2)
-	first := parts[0]
-	rest := ""
-	if len(parts) > 1 {
-		rest = parts[1]
-	}
-
-	index := 0
-	firstSM := lookupRe.FindStringSubmatch(first)
-	name := firstSM[1]
-	indexStr := firstSM[2]
-	if indexStr != "" {
-		index, _ = strconv.Atoi(indexStr)
-	}
-
-	var indexC = 0
-	for _, c := range f.Children {
-		if name != "" && c.Name != name {
-			continue
-		}
-
-		if indexC != index {
-			indexC++
-			continue
-		}
-
-		return c.Lookup(rest)
-	}
-
-	return nil
-}
-
-func (f *Field) Sort() {
-	if len(f.Children) == 0 {
-		return
-	}
-
-	sort.Slice(f.Children, func(i, j int) bool {
-		return f.Children[i].Range.Start < f.Children[j].Range.Start
-	})
-
-	for _, fc := range f.Children {
-		if fc.Value.Type == TypeDecoder {
-			// already sorted
-			continue
-		}
-		fc.Sort()
-	}
-}
-
-func (f *Field) Dump(w io.Writer, depth int) {
-	indent := strings.Repeat("  ", depth)
-
-	if (len(f.Children)) != 0 {
-		fmt.Printf("%s%s: %s %s (%s) {\n", indent, f.Name, f.Value, f.Range, Bits(f.Range.Length()))
-		for _, c := range f.Children {
-			c.Dump(w, depth+1)
-		}
-		fmt.Printf("%s}\n", indent)
-	} else {
-		fmt.Printf("%s%s: %s %s (%s)\n", indent, f.Name, f.Value, f.Range, Bits(f.Range.Length()))
-	}
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"fq/pkg/bitbuf"
 	"fq/pkg/decode"
+	"fq/pkg/output"
 	"io/ioutil"
 	"sort"
 	"strings"
@@ -37,6 +38,7 @@ func (m Main) run() error {
 	fs.SetOutput(m.OS.Stderr())
 	forceFormatNameFlag := fs.String("f", "", "Force format")
 	verboseFlag := fs.Bool("v", false, "Verbose output")
+	outputFormatFlag := fs.String("o", "text", "Output format")
 	fs.Usage = func() {
 		maxNameLen := 0
 		for _, f := range registry.Formats {
@@ -102,9 +104,31 @@ func (m Main) run() error {
 	if d != nil {
 		f := d.Root()
 		exp := fs.Arg(1)
-		if _, err := f.Eval(m.OS.Stdout(), exp); err != nil {
+		expField, expType, err := f.Eval(m.OS.Stdout(), exp)
+		if err != nil {
 			return err
 		}
+
+		var ow decode.FieldWriter
+		for _, of := range output.All {
+			if of.Name != *outputFormatFlag {
+				continue
+			}
+			ow = of.New(expField)
+		}
+		if ow == nil {
+			return fmt.Errorf("unable to find output format")
+		}
+
+		switch expType {
+		case decode.FieldExpTree:
+			ow.Write(m.OS.Stdout())
+		case decode.FieldExpValue:
+			fmt.Fprintf(m.OS.Stdout(), "%s", expField.Value.RawString())
+		case decode.FieldExpRange:
+			fmt.Fprintf(m.OS.Stdout(), "%s\n", expField.Range)
+		}
+
 	} else {
 		return fmt.Errorf("unable to probe format")
 	}
