@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"fq/pkg/bitbuf"
 	"fq/pkg/decode"
-	"io"
 	"io/ioutil"
-	"os"
 	"sort"
 	"strings"
 )
@@ -15,29 +13,6 @@ import (
 type Main struct {
 	OS          OS
 	FormatsList [][]*decode.Format
-}
-
-type OS interface {
-	Stdin() io.Reader
-	Stdout() io.Writer
-	Stderr() io.Writer
-	Args() []string
-}
-
-type StandardOS struct{}
-
-func (StandardOS) Stdin() io.Reader  { return os.Stdin }
-func (StandardOS) Stdout() io.Writer { return os.Stdout }
-func (StandardOS) Stderr() io.Writer { return os.Stderr }
-func (StandardOS) Args() []string    { return os.Args }
-
-func StandardMain(formatsList ...[]*decode.Format) {
-	if err := (Main{
-		OS:          StandardOS{},
-		FormatsList: formatsList,
-	}).Run(); err != nil {
-		os.Exit(1)
-	}
 }
 
 // Run cli main
@@ -91,7 +66,7 @@ func (m Main) run() error {
 
 	r := m.OS.Stdin()
 	if fs.Arg(0) != "" && fs.Arg(0) != "-" {
-		f, err := os.Open(fs.Arg(0))
+		f, err := m.OS.Open(fs.Arg(0))
 		if err != nil {
 			return err
 		}
@@ -127,7 +102,7 @@ func (m Main) run() error {
 	if d != nil {
 		f := d.Root()
 		exp := fs.Arg(1)
-		if _, err := f.Eval(os.Stdout, exp); err != nil {
+		if _, err := f.Eval(m.OS.Stdout(), exp); err != nil {
 			return err
 		}
 	} else {

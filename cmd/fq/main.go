@@ -6,5 +6,5 @@ import (
 )
 
 func main() {
-	cli.StandardMain(format.All)
+	cli.StandardOSMain(format.All)
 }
