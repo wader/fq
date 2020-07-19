@@ -84,7 +84,7 @@ func (m Main) run() error {
 	if *forceFormatNameFlag != "" {
 		forceFormat := registry.FindFormat(*forceFormatNameFlag)
 		if forceFormat == nil {
-			return fmt.Errorf("%s: found not find format", *forceFormatNameFlag)
+			return fmt.Errorf("%s: could not find format", *forceFormatNameFlag)
 		}
 		forceFormats = append(forceFormats, forceFormat)
 	}
@@ -106,7 +106,7 @@ func (m Main) run() error {
 		exp := fs.Arg(1)
 		expField, expType, err := f.Eval(m.OS.Stdout(), exp)
 		if err != nil {
-			return err
+			return fmt.Errorf("%s: %s", exp, err)
 		}
 
 		var ow decode.FieldWriter
@@ -117,7 +117,7 @@ func (m Main) run() error {
 			ow = of.New(expField)
 		}
 		if ow == nil {
-			return fmt.Errorf("unable to find output format")
+			return fmt.Errorf("%s: unable to find output format", *outputFormatFlag)
 		}
 
 		switch expType {
