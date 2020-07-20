@@ -17,6 +17,16 @@ field~=a.*
 field=\x00...
 
 
+all outputs:
+raw:
+value:
+json:
+text:
+
+tree()
+@value 
+
+
 
 FieldDecoder -> FieldDecoder
 
