@@ -46,6 +46,12 @@ type FileDecoder struct{ decode.Common }
 func (d *FileDecoder) Decode() {
 	d.ValidateAtLeastBitsLeft(128 * 8)
 
+	var field16 func(name string) uint64
+	var field32 func(name string) uint64
+	var fieldN func(name string) uint64
+	var fieldNX func(name string) uint64
+	var dN func() uint64
+
 	d.FieldNoneFn("ident", func() {
 		d.FieldValidateString("magic", "\x7fELF")
 
@@ -66,14 +72,39 @@ func (d *FileDecoder) Decode() {
 			switch d.U8() {
 			case 1:
 				isBigEndian = false
+				field16 = d.FieldU16LE
+				field32 = d.FieldU32LE
+				switch archBits {
+				case 32:
+					fieldN = d.FieldU32LE
+					dN = d.U32LE
+				case 64:
+					fieldN = d.FieldU64LE
+					dN = d.U64LE
+				}
 				return 1, decode.NumberDecimal, "Little-endian"
 			case 2:
+				field16 = d.FieldU16BE
+				field32 = d.FieldU32BE
+				switch archBits {
+				case 32:
+					fieldN = d.FieldU32BE
+					dN = d.U32BE
+				case 64:
+					fieldN = d.FieldU64BE
+					dN = d.U64BE
+				}
 				return 2, decode.NumberDecimal, "Big-endian"
 			default:
 				//d.Invalid()
 			}
 			panic("unreachable")
 		})
+		fieldNX = func(name string) uint64 {
+			return d.FieldUFn(name, func() (uint64, decode.NumberFormat, string) {
+				return dN(), decode.NumberHex, ""
+			})
+		}
 		_ = isBigEndian
 		d.FieldU8("version")
 		d.FieldStringMapFn("os_abi", map[uint64]string{
@@ -94,6 +125,22 @@ func (d *FileDecoder) Decode() {
 			255: "Standalone",
 		}, "Unknown", d.U8)
 		d.FieldU8("abi_version")
-
+		d.FieldValidateZeroPadding("pad", 7*8)
 	})
+
+	field16("type")
+	field16("machine")
+	field32("version")
+	fieldNX("entry")
+	fieldNX("phoff")
+	fieldNX("shoff")
+	field32("flags")
+	ehsize := field16("ehsize")
+	phentsize := field16("phentsize")
+	phnum := field16("phnum")
+	shentsize := field16("shentsize")
+	shnum := field16("shnum")
+	field16("shstrndx")
+
+	for i := 0 < 
 }

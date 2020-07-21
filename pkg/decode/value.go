@@ -46,10 +46,10 @@ const (
 type NumberFormat int
 
 const (
-	NumberDecimal NumberFormat = iota
-	NumberBinary
-	NumberOctal
-	NumberHex
+	NumberDecimal = 10
+	NumberBinary  = 2
+	NumberOctal   = 8
+	NumberHex     = 16
 )
 
 type Value struct {
@@ -79,9 +79,9 @@ func (v Value) String() string {
 			f = "true"
 		}
 	case TypeSInt:
-		f = strconv.FormatInt(v.SInt, 10)
+		f = strconv.FormatInt(v.SInt, int(v.Format))
 	case TypeUInt:
-		f = strconv.FormatUint(v.UInt, 10)
+		f = strconv.FormatUint(v.UInt, int(v.Format))
 	case TypeFloat:
 		f = strconv.FormatFloat(v.Float, 'f', -1, 64)
 	case TypeStr:
