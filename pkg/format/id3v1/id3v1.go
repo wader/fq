@@ -8,8 +8,9 @@ import (
 // TODO: comment 28 long, zero byte, track number
 
 var Tag = &decode.Format{
-	Name: "id3v1",
-	New:  func() decode.Decoder { return &TagDecoder{} },
+	Name:      "id3v1",
+	New:       func() decode.Decoder { return &TagDecoder{} },
+	SkipProbe: true,
 }
 
 // TagDecoder is ID3v1 tag decoder

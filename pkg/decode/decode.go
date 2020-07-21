@@ -108,6 +108,7 @@ func (c *Common) PeekFind(bits uint64, v uint8, maxLen int64) uint64 {
 	return peekBits
 }
 
+// PeekFindByte number of bytes to next v
 func (c *Common) PeekFindByte(v uint8, maxLen int64) uint64 {
 	peekBits, err := c.bitBuf.PeekFind(8, v, maxLen)
 	if err != nil {

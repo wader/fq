@@ -3,6 +3,7 @@ package format
 import (
 	"fq/pkg/decode"
 	"fq/pkg/format/aac"
+	"fq/pkg/format/ape"
 	"fq/pkg/format/elf"
 	"fq/pkg/format/flac"
 	"fq/pkg/format/id3v1"
@@ -39,4 +40,5 @@ var All = []*decode.Format{
 	aac.Stream,
 	png.File,
 	tiff.File,
+	ape.TagV2,
 }

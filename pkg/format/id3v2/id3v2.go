@@ -13,8 +13,9 @@ import (
 )
 
 var Tag = &decode.Format{
-	Name: "id3v2",
-	New:  func() decode.Decoder { return &TagDecoder{} },
+	Name:      "id3v2",
+	New:       func() decode.Decoder { return &TagDecoder{} },
+	SkipProbe: true,
 }
 
 var idDesriptions = map[string]string{

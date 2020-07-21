@@ -5,8 +5,9 @@ import (
 )
 
 var Tag = &decode.Format{
-	Name: "id3v11",
-	New:  func() decode.Decoder { return &TagDecoder{} },
+	Name:      "id3v11",
+	New:       func() decode.Decoder { return &TagDecoder{} },
+	SkipProbe: true,
 }
 
 // TagDecoder is ID3v11 tag decoder
