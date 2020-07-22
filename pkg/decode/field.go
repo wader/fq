@@ -41,6 +41,9 @@ func (f *Field) Lookup(path string) *Field {
 
 	index := 0
 	firstSM := lookupRe.FindStringSubmatch(first)
+	if firstSM == nil {
+		return nil
+	}
 	name := firstSM[1]
 	indexStr := firstSM[2]
 	if indexStr != "" {
