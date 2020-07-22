@@ -50,9 +50,10 @@ func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range
 		// TODO: how to pass regsiters? do later? current field?
 		d := f.New()
 		rootField := &Field{
-			Name:  rootFieldName,
-			Range: parentRange,
-			Value: Value{Type: TypeDecoder, Decoder: d},
+			Name:    rootFieldName,
+			Range:   parentRange,
+			Value:   Value{Type: TypeDecoder, Decoder: d},
+			Decoder: d,
 		}
 		d.Prepare(Common{
 			Parent:   parent,

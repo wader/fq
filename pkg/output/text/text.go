@@ -35,7 +35,7 @@ func jsonField(k string, v interface{}) string {
 	return fmt.Sprintf("%s: %s", jsonEscape(k), jsonEscape(v))
 }
 
-func (o *FieldWriter) output(w io.Writer, f *decode.Field, depth int) {
+func (o *FieldWriter) output(w io.Writer, f *decode.Field, depth int) error {
 	indent := strings.Repeat("  ", depth)
 
 	if (len(f.Children)) != 0 {
@@ -47,8 +47,10 @@ func (o *FieldWriter) output(w io.Writer, f *decode.Field, depth int) {
 	} else {
 		fmt.Printf("%s%s: %s %s (%s)\n", indent, f.Name, f.Value, f.Range, decode.Bits(f.Range.Length()))
 	}
+
+	return nil
 }
 
-func (o *FieldWriter) Write(w io.Writer) {
-	o.output(w, o.f, 0)
+func (o *FieldWriter) Write(w io.Writer) error {
+	return o.output(w, o.f, 0)
 }

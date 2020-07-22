@@ -2,7 +2,6 @@ package decode
 
 import (
 	"fmt"
-	"io"
 	"regexp"
 	"sort"
 	"strconv"
@@ -13,36 +12,19 @@ type Field struct {
 	Name     string
 	Range    Range
 	Value    Value
+	Decoder  Decoder
 	Children []*Field
 }
 
 var lookupRe = regexp.MustCompile(`^([\w_]*)(?:\[(\d+)\])?$`)
 
-type FieldExpType int
-
-const (
-	FieldExpTree FieldExpType = iota
-	FieldExpValue
-	FieldExpRange
-)
-
-func (f *Field) Eval(w io.Writer, exp string) (*Field, FieldExpType, error) {
-	var expType = FieldExpTree
-	switch {
-	case strings.HasPrefix(exp, "@"):
-		expType = FieldExpValue
-		exp = exp[1:]
-	case strings.HasPrefix(exp, "#"):
-		expType = FieldExpRange
-		exp = exp[1:]
-	}
-
+func (f *Field) Eval(exp string) (*Field, error) {
 	lf := f.Lookup(exp)
 	if lf == nil {
-		return lf, expType, fmt.Errorf("not found")
+		return lf, fmt.Errorf("not found")
 	}
 
-	return lf, expType, nil
+	return lf, nil
 }
 
 func (f *Field) Lookup(path string) *Field {

@@ -3,10 +3,16 @@ package output
 import (
 	"fq/pkg/decode"
 	"fq/pkg/output/json"
+	"fq/pkg/output/rangex"
+	"fq/pkg/output/raw"
 	"fq/pkg/output/text"
+	"fq/pkg/output/value"
 )
 
 var All = map[string]*decode.FieldOutput{
-	json.FieldOutput.Name: json.FieldOutput,
-	text.FieldOutput.Name: text.FieldOutput,
+	value.FieldOutput.Name:  value.FieldOutput,
+	text.FieldOutput.Name:   text.FieldOutput,
+	json.FieldOutput.Name:   json.FieldOutput,
+	raw.FieldOutput.Name:    raw.FieldOutput,
+	rangex.FieldOutput.Name: rangex.FieldOutput,
 }

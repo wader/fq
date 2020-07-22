@@ -104,7 +104,7 @@ func (m Main) run() error {
 	if d != nil {
 		f := d.Root()
 		exp := fs.Arg(1)
-		expField, expType, err := f.Eval(m.OS.Stdout(), exp)
+		expField, err := f.Eval(exp)
 		if err != nil {
 			return fmt.Errorf("%s: %s", exp, err)
 		}
@@ -120,14 +120,18 @@ func (m Main) run() error {
 			return fmt.Errorf("%s: unable to find output format", *outputFormatFlag)
 		}
 
-		switch expType {
-		case decode.FieldExpTree:
-			ow.Write(m.OS.Stdout())
-		case decode.FieldExpValue:
-			fmt.Fprintf(m.OS.Stdout(), "%s", expField.Value.RawString())
-		case decode.FieldExpRange:
-			fmt.Fprintf(m.OS.Stdout(), "%s\n", expField.Range)
+		if err := ow.Write(m.OS.Stdout()); err != nil {
+			return err
 		}
+
+		// switch expType {
+		// case decode.FieldExpTree:
+		// 	ow.Write(m.OS.Stdout())
+		// case decode.FieldExpValue:
+		// 	fmt.Fprintf(m.OS.Stdout(), "%s", expField.Value.RawString())
+		// case decode.FieldExpRange:
+		// 	fmt.Fprintf(m.OS.Stdout(), "%s\n", expField.Range)
+		// }
 
 	} else {
 		return fmt.Errorf("unable to probe format")

@@ -17,9 +17,10 @@ type Decoder interface {
 
 	Format() *Format
 	BitBuf() *bitbuf.Buffer
+	Root() *Field
+	AbsPos(pos uint64) uint64
 
 	MIME() string
-	Root() *Field
 	Error() error
 }
 
@@ -73,6 +74,12 @@ func (c *Common) Finish(err error) {
 func (c *Common) Format() *Format        { return c.format }
 func (c *Common) BitBuf() *bitbuf.Buffer { return c.bitBuf }
 func (c *Common) Root() *Field           { return c.root }
+func (c *Common) AbsPos(pos uint64) uint64 {
+	if c.Parent != nil {
+		return c.Parent.AbsPos(0) + pos
+	}
+	return 0
+}
 
 func (c *Common) MIME() string {
 	mimes := c.format.MIMEs
@@ -541,12 +548,17 @@ func (c *Common) ZeroPadding(nBits uint64) bool {
 	return isZero
 }
 
+func (c *Common) AddChild(f *Field) {
+	f.Decoder = c
+	c.current.Children = append(c.current.Children, f)
+}
+
 func (c *Common) FieldRangeFn(name string, firstBit uint64, nBits uint64, fn func() Value) Value {
 	f := &Field{
 		Name:  name,
 		Range: Range{Start: firstBit, Stop: firstBit + nBits},
 	}
-	c.current.Children = append(c.current.Children, f)
+	c.AddChild(f)
 	f.Value = fn()
 
 	return f.Value
@@ -556,8 +568,8 @@ func (c *Common) FieldFn(name string, fn func() Value) Value {
 	prev := c.current
 
 	f := &Field{Name: name}
+	c.AddChild(f)
 	c.current = f
-	prev.Children = append(prev.Children, f)
 	start := c.bitBuf.Pos
 	f.Range.Start = start
 	v := fn()
@@ -787,7 +799,7 @@ func (c *Common) FieldTryDecode(name string, forceFormats ...*Format) (Decoder, 
 	dbb.TruncateRel(0)
 	df := d.Root()
 	df.Range.Stop += dbb.Pos
-	c.current.Children = append(c.current.Children, df)
+	c.AddChild(df)
 
 	c.bitBuf.SeekRel(int64(d.BitBuf().Pos))
 
@@ -803,7 +815,7 @@ func (c *Common) FieldDecodeLen(name string, nBits uint64, forceFormats ...*Form
 
 	d, errs := c.registry.Probe(c, name, Range{Start: c.bitBuf.Pos, Stop: c.bitBuf.Pos + nBits}, bb, forceFormats)
 	if d != nil {
-		c.current.Children = append(c.current.Children, d.Root())
+		c.AddChild(d.Root())
 	} else {
 		// TODO: decoder unknown
 		c.FieldRangeFn(name, c.bitBuf.Pos, nBits, func() Value { return Value{} })
@@ -823,7 +835,7 @@ func (c *Common) FieldTryDecodeRange(name string, firstBit uint64, nBits uint64,
 
 	d, errs := c.registry.Probe(c, name, Range{Start: firstBit, Stop: firstBit + nBits}, bb, forceFormats)
 	if d != nil {
-		c.current.Children = append(c.current.Children, d.Root())
+		c.AddChild(d.Root())
 	}
 
 	return d, errs
@@ -838,7 +850,7 @@ func (c *Common) FieldDecodeRange(name string, firstBit uint64, nBits uint64, fo
 
 	d, errs := c.registry.Probe(c, name, Range{Start: firstBit, Stop: firstBit + nBits}, bb, forceFormats)
 	if d != nil {
-		c.current.Children = append(c.current.Children, d.Root())
+		c.AddChild(d.Root())
 	} else {
 		c.FieldRangeFn(name, firstBit, nBits, func() Value { return Value{} })
 	}
@@ -850,7 +862,7 @@ func (c *Common) FieldDecodeRange(name string, firstBit uint64, nBits uint64, fo
 func (c *Common) FieldDecodeBitBuf(name string, firstBit uint64, nBits uint64, bb *bitbuf.Buffer, forceFormats ...*Format) (Decoder, []error) {
 	d, errs := c.registry.Probe(c, name, Range{Start: firstBit, Stop: nBits}, bb, forceFormats)
 	if d != nil {
-		c.current.Children = append(c.current.Children, d.Root())
+		c.AddChild(d.Root())
 	} else {
 		c.FieldRangeFn(name, firstBit, nBits, func() Value { return Value{} })
 	}
