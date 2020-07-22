@@ -78,7 +78,7 @@ func (c *Common) AbsPos(pos uint64) uint64 {
 	if c.Parent != nil {
 		return c.Parent.AbsPos(0) + pos
 	}
-	return 0
+	return pos
 }
 
 func (c *Common) MIME() string {
