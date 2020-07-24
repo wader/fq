@@ -6,7 +6,6 @@ package tiff
 
 import (
 	"fq/pkg/decode"
-	"log"
 )
 
 var File = &decode.Format{
@@ -140,6 +139,7 @@ func (d *FileDecoder) Decode() {
 		endian := d.U32()
 		d.SeekRel(-4 * 8)
 		d.FieldUTF8("order", 2)
+		// TODO: validate?
 		d.FieldU16("integer_42")
 		switch endian {
 		case littleEndian:
@@ -158,11 +158,8 @@ func (d *FileDecoder) Decode() {
 
 	ifdOffset := fu32("ifd_offset")
 
-	_ = ifdOffset
-
 	// TODO: inf loop?
 	for ifdOffset != 0 {
-		log.Printf("ifdOffset: %#+v\n", ifdOffset)
 		d.SeekAbs(ifdOffset * 8)
 
 		d.FieldNoneFn("ifd", func() {
