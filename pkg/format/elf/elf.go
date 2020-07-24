@@ -50,7 +50,6 @@ func (d *FileDecoder) Decode() {
 	var field16 func(name string) uint64
 	var field32 func(name string) uint64
 	var field64 func(name string) uint64
-	var fieldN func(name string) uint64
 	var fieldNX func(name string) uint64
 	var dN func() uint64
 
@@ -78,10 +77,8 @@ func (d *FileDecoder) Decode() {
 				field64 = d.FieldU64LE
 				switch archBits {
 				case 32:
-					fieldN = d.FieldU32LE
 					dN = d.U32LE
 				case 64:
-					fieldN = d.FieldU64LE
 					dN = d.U64LE
 				}
 				return 1, decode.NumberDecimal, "Little-endian"
@@ -91,10 +88,8 @@ func (d *FileDecoder) Decode() {
 				field64 = d.FieldU64BE
 				switch archBits {
 				case 32:
-					fieldN = d.FieldU32BE
 					dN = d.U32BE
 				case 64:
-					fieldN = d.FieldU64BE
 					dN = d.U64BE
 				}
 				return 2, decode.NumberDecimal, "Big-endian"
