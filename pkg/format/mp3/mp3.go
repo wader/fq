@@ -7,6 +7,7 @@ package mp3
 // TODO: crc
 // TODO: same sample decode?
 // TODO: vbri
+// TOFO: resync on garbage?
 
 import (
 	"fq/pkg/decode"
