@@ -2,6 +2,7 @@ package decode
 
 import (
 	"fmt"
+	"fq/pkg/bitbuf"
 	"regexp"
 	"sort"
 	"strconv"
@@ -82,5 +83,18 @@ func (f *Field) Sort() {
 			continue
 		}
 		fc.Sort()
+	}
+}
+
+func (f *Field) BitBuf() *bitbuf.Buffer {
+	switch f.Value.Type {
+	case TypeDecoder:
+		return f.Value.Decoder.BitBuf()
+	default:
+		bb, err := f.Decoder.BitBuf().BitBufRange(f.Range.Start, f.Range.Length())
+		if err != nil {
+			panic(err)
+		}
+		return bb
 	}
 }

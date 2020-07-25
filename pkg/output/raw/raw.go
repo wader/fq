@@ -17,25 +17,12 @@ type FieldWriter struct {
 func (o *FieldWriter) Write(w io.Writer) error {
 	// TODO: not byte aligned? pad with zeros
 	// TODO: BytesRange version with padding?
-
-	switch o.f.Value.Type {
-	case decode.TypeDecoder:
-		bb := o.f.Value.Decoder.BitBuf()
-		b, err := bb.BytesRange(0, bb.Len/8)
-		if err != nil {
-			return err
-		}
-
-		w.Write(b)
-	default:
-
-		b, err := o.f.Decoder.BitBuf().BytesRange(o.f.Range.Start, o.f.Range.Length()/8)
-		if err != nil {
-			return err
-		}
-
-		w.Write(b)
+	b, err := o.f.BitBuf().BytesRange(0, o.f.Range.Length()/8)
+	if err != nil {
+		return err
 	}
+
+	w.Write(b)
 
 	return nil
 }

@@ -168,16 +168,17 @@ func (b *Buffer) PeekFind(bits uint64, v uint8, maxLen int64) (uint64, error) {
 	return uint64(count) * uint64(bits), nil
 }
 
-// BytesRange reads nBytes bytes starting bit position start
-// Does not update current position.
-func (b *Buffer) BytesRange(firstBit uint64, nBytes uint64) ([]byte, error) {
-	endPos := firstBit + nBytes*8
+func (b *Buffer) BytesBitRange(firstBit uint64, nBits uint64, pad uint8) ([]byte, error) {
+	endPos := firstBit + nBits
 	if endPos > b.Len {
 		return nil, ErrUnexpectedEOF
 	}
 
+	nBytes := nBits >> 3
+	restBits := nBits & 0x7
 	bufFirstBit := b.bufFirstBit + firstBit
-	if bufFirstBit%8 == 0 {
+
+	if bufFirstBit%8 == 0 && restBits == 0 {
 		bufFirstBytePos := bufFirstBit >> 3
 		nb := b.buf[bufFirstBytePos : bufFirstBytePos+nBytes]
 		return nb, nil
@@ -187,8 +188,21 @@ func (b *Buffer) BytesRange(firstBit uint64, nBytes uint64) ([]byte, error) {
 	for i := uint64(0); i < nBytes; i++ {
 		buf = append(buf, byte(ReadBits(b.buf, bufFirstBit+i, 8)))
 	}
+	if restBits != 0 {
+		v, err := b.Bits(restBits)
+		if err != nil {
+			return nil, err
+		}
+		buf = append(buf, pad|uint8(v))
+	}
 
 	return buf, nil
+}
+
+// BytesRange reads nBytes bytes starting bit position start
+// Does not update current position.
+func (b *Buffer) BytesRange(firstBit uint64, nBytes uint64) ([]byte, error) {
+	return b.BytesBitRange(firstBit, nBytes*8, 0)
 }
 
 // BytesLen reads nBytes bytes
@@ -235,7 +249,6 @@ func (b *Buffer) SeekRel(delta int64) (uint64, error) {
 
 // SeekAbs seeks to absolute position
 func (b *Buffer) SeekAbs(pos uint64) (uint64, error) {
-	// TODO: panic? bitbuf should never panic?
 	if pos > b.Len {
 		return b.Pos, ErrUnexpectedEOF
 	}

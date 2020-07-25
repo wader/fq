@@ -1,8 +1,9 @@
 package text
 
 import (
-	"encoding/json"
+	"encoding/hex"
 	"fmt"
+	"fq/internal/columnwriter"
 	"fq/pkg/decode"
 	"io"
 	"strings"
@@ -26,31 +27,40 @@ type FieldWriter struct {
 	f *decode.Field
 }
 
-func jsonEscape(v interface{}) string {
-	e, _ := json.Marshal(v)
-	return string(e)
-}
-
-func jsonField(k string, v interface{}) string {
-	return fmt.Sprintf("%s: %s", jsonEscape(k), jsonEscape(v))
-}
-
-func (o *FieldWriter) output(w io.Writer, f *decode.Field, depth int) error {
+func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int) error {
 	indent := strings.Repeat("  ", depth)
 
 	if (len(f.Children)) != 0 {
 		fmt.Printf("%s%s: %s %s (%s) {\n", indent, f.Name, f.Value, f.Range, decode.Bits(f.Range.Length()))
 		for _, c := range f.Children {
-			o.output(w, c, depth+1)
+			o.output(cw, c, depth+1)
 		}
-		fmt.Printf("%s}\n", indent)
+		cw.Next()
+
+		fmt.Fprintf(cw, "%s}\n", indent)
+		cw.Next()
+
 	} else {
-		fmt.Printf("%s%s: %s %s (%s)\n", indent, f.Name, f.Value, f.Range, decode.Bits(f.Range.Length()))
+		b, err := f.BitBuf().BytesBitRange(0, f.Range.Length(), 0)
+		if err != nil {
+			return err
+		}
+		h := hex.Dumper(cw)
+		h.Write(b)
+		h.Close()
+
+		cw.Next()
+
+		fmt.Fprintf(cw, "%s%s: %s %s (%s)\n", indent, f.Name, f.Value, f.Range, decode.Bits(f.Range.Length()))
+		cw.Next()
+
 	}
 
 	return nil
 }
 
 func (o *FieldWriter) Write(w io.Writer) error {
-	return o.output(w, o.f, 0)
+	cw := columnwriter.New(w, []int{80, -1})
+
+	return o.output(cw, o.f, 0)
 }
