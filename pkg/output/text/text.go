@@ -31,14 +31,11 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 	indent := strings.Repeat("  ", depth)
 
 	if (len(f.Children)) != 0 {
-		fmt.Printf("%s%s: %s %s (%s) {\n", indent, f.Name, f.Value, f.Range, decode.Bits(f.Range.Length()))
+		fmt.Fprintf(cw, "%s%s: %s %s (%s) {\n", indent, f.Name, f.Value, f.Range, decode.Bits(f.Range.Length()))
 		for _, c := range f.Children {
 			o.output(cw, c, depth+1)
 		}
-		cw.Next()
-
 		fmt.Fprintf(cw, "%s}\n", indent)
-		cw.Next()
 
 	} else {
 		b, err := f.BitBuf().BytesBitRange(0, f.Range.Length(), 0)
