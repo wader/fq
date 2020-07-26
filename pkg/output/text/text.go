@@ -21,7 +21,7 @@ type FieldWriter struct {
 func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int) error {
 	indent := strings.Repeat("  ", depth)
 
-	if depth > 0 {
+	if f.Value.Type != decode.TypeDecoder {
 		b, err := f.BitBuf().BytesBitRange(0, f.Range.Length(), 0)
 		if err != nil {
 			return err
