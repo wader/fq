@@ -54,7 +54,6 @@ type Common struct {
 	bitBuf  *bitbuf.Buffer
 	root    *Field
 	current *Field // TODO: need root field also?
-	mime    string
 	err     error
 
 	registry *Registry
@@ -75,10 +74,10 @@ func (c *Common) Format() *Format        { return c.format }
 func (c *Common) BitBuf() *bitbuf.Buffer { return c.bitBuf }
 func (c *Common) Root() *Field           { return c.root }
 func (c *Common) AbsPos(pos uint64) uint64 {
-	if c.Parent != nil {
-		return c.Parent.AbsPos(0) + pos
+	if c.Parent == nil {
+		return c.Root().Range.Start + pos
 	}
-	return pos
+	return c.Parent.AbsPos(0) + c.Root().Range.Start + pos
 }
 
 func (c *Common) MIME() string {
@@ -734,7 +733,7 @@ func (c *Common) FieldValidateZeroPadding(name string, nBits uint64) {
 		return Value{Type: TypePadding, Display: s}
 	})
 	if !isZero {
-		panic(ValidateError{Reason: fmt.Sprintf("expected zero padding"), Pos: pos})
+		panic(ValidateError{Reason: "expected zero padding", Pos: pos})
 	}
 }
 
@@ -764,10 +763,12 @@ func (c *Common) SubLenFn(nBits uint64, fn func()) {
 	prevBb := c.bitBuf
 
 	bb, err := c.bitBuf.BitBufRange(0, c.bitBuf.Pos+nBits)
-	bb.SeekAbs(c.bitBuf.Pos)
 	if err != nil {
 		panic(BitBufError{Err: err, Op: "SubLen", Size: nBits, Pos: c.bitBuf.Pos})
-
+	}
+	_, err = bb.SeekAbs(c.bitBuf.Pos)
+	if err != nil {
+		panic(err)
 	}
 	c.bitBuf = bb
 
@@ -796,12 +797,18 @@ func (c *Common) FieldTryDecode(name string, forceFormats ...*Format) (Decoder, 
 	// TODO: bitbuf len shorten!
 
 	dbb := d.BitBuf()
-	dbb.TruncateRel(0)
+	err = dbb.TruncateRel(0)
+	if err != nil {
+		panic(err)
+	}
 	df := d.Root()
 	df.Range.Stop += dbb.Pos
 	c.AddChild(df)
 
-	c.bitBuf.SeekRel(int64(d.BitBuf().Pos))
+	_, err = c.bitBuf.SeekRel(int64(d.BitBuf().Pos))
+	if err != nil {
+		panic(err)
+	}
 
 	return d, errs
 }
@@ -821,7 +828,10 @@ func (c *Common) FieldDecodeLen(name string, nBits uint64, forceFormats ...*Form
 		c.FieldRangeFn(name, c.bitBuf.Pos, nBits, func() Value { return Value{} })
 	}
 
-	c.bitBuf.SeekRel(int64(nBits))
+	_, err = c.bitBuf.SeekRel(int64(nBits))
+	if err != nil {
+		panic(err)
+	}
 
 	return d, errs
 }

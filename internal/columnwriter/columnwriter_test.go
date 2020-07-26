@@ -10,16 +10,23 @@ import (
 func TestColumnWriter(t *testing.T) {
 	cw := columnwriter.New(os.Stdout, []int{3, 4})
 
-	fmt.Fprintln(cw, "aaaaa")
-	fmt.Fprintln(cw, "bbb")
-	fmt.Fprint(cw, "cc")
+	fmt.Fprintln(cw.Column(0), "aaaaa")
+	fmt.Fprintln(cw.Column(0), "bb")
+	fmt.Fprint(cw.Column(0), "cc")
 
-	cw.Next()
+	fmt.Fprintln(cw.Column(1), "11111")
+	fmt.Fprintln(cw.Column(1), "22")
+	fmt.Fprintln(cw.Column(1), "33")
 
-	fmt.Fprintln(cw, "11111")
-	fmt.Fprintln(cw, "22")
-	fmt.Fprintln(cw, "33")
+	cw.Flush()
 
-	cw.Next()
+	fmt.Fprintln(cw.Column(1), "aaaaa")
+	fmt.Fprintln(cw.Column(1), "bb")
+	fmt.Fprint(cw.Column(1), "cc")
 
+	fmt.Fprintln(cw.Column(0), "11111")
+	fmt.Fprintln(cw.Column(0), "22")
+	fmt.Fprintln(cw.Column(0), "33")
+
+	cw.Flush()
 }

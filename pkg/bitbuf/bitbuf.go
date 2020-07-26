@@ -163,7 +163,11 @@ func (b *Buffer) PeekFind(bits uint64, v uint8, maxLen int64) (uint64, error) {
 			break
 		}
 	}
-	b.SeekRel(-count * int64(bits))
+	_, err := b.SeekRel(-count * int64(bits))
+	if err != nil {
+		// TODO: should be panic?
+		return 0, err
+	}
 
 	return uint64(count) * uint64(bits), nil
 }

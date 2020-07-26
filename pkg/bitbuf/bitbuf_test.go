@@ -110,5 +110,5 @@ func TestTestStringInvalid(t *testing.T) {
 			t.Errorf("expected %q, got %q", expectedS, actualS)
 		}
 	}()
-	bitbuf.NewFromBitString("01invalid")
+	_, _ = bitbuf.NewFromBitString("01invalid")
 }

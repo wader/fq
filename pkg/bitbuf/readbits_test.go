@@ -90,7 +90,7 @@ func TestReadBits(t *testing.T) {
 
 func TestReadBitsPanic(t *testing.T) {
 	// TODO: check panic string
-	defer func() { recover() }()
+	defer func() { _ = recover() }()
 	bitbuf.ReadBits([]byte{}, 0, 65)
 	t.Error("should panic")
 }

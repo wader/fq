@@ -12,10 +12,33 @@ type column struct {
 	buf   bytes.Buffer
 }
 
+func (c *column) Write(p []byte) (int, error) {
+	bb := &c.buf
+
+	bb.Write(p)
+
+	b := bb.Bytes()
+	pos := 0
+
+	for {
+		i := indexByteSet(b[pos:], []byte{'\n'})
+		if i < 0 {
+			break
+		}
+
+		c.lines = append(c.lines, string([]rune(string(b[pos:pos+i]))))
+		pos += i + 1
+	}
+	bb.Reset()
+	bb.Write(b[pos:])
+
+	return len(p), nil
+}
+
 type Writer struct {
 	columns []column
-	current int
-	w       io.Writer
+	//current int
+	w io.Writer
 }
 
 func indexByteSet(s []byte, cs []byte) int {
@@ -39,11 +62,12 @@ func New(w io.Writer, widths []int) *Writer {
 
 	return &Writer{
 		columns: columns,
-		current: 0,
-		w:       w,
+		// current: 0,
+		w: w,
 	}
 }
 
+/*
 func (w *Writer) Write(p []byte) (int, error) {
 	c := &w.columns[w.current]
 	bb := &c.buf
@@ -67,7 +91,13 @@ func (w *Writer) Write(p []byte) (int, error) {
 
 	return len(p), nil
 }
+*/
 
+func (w *Writer) Column(i int) io.Writer {
+	return &w.columns[i]
+}
+
+/*
 func (w *Writer) Next() {
 	c := &w.columns[w.current]
 	if c.buf.Len() > 0 {
@@ -81,8 +111,9 @@ func (w *Writer) Next() {
 		w.current = 0
 	}
 }
+*/
 
-func (w *Writer) Row() {
+func (w *Writer) Flush() error {
 	maxLines := 0
 	for _, c := range w.columns {
 		if len(c.lines) > maxLines {
@@ -105,13 +136,20 @@ func (w *Writer) Row() {
 				}
 			}
 
-			w.w.Write([]byte(s))
+			if _, err := w.w.Write([]byte(s)); err != nil {
+				return err
+			}
 		}
-		w.w.Write([]byte{'\n'})
+		if _, err := w.w.Write([]byte{'\n'}); err != nil {
+			return err
+		}
 	}
 
-	for _, c := range w.columns {
+	for i := range w.columns {
+		c := &w.columns[i]
 		c.lines = nil
 		c.buf.Reset()
 	}
+
+	return nil
 }

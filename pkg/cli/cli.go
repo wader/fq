@@ -28,9 +28,7 @@ func (m Main) Run() error {
 func (m Main) run() error {
 	var merged []*decode.Format
 	for _, fs := range m.FormatsList {
-		for _, f := range fs {
-			merged = append(merged, f)
-		}
+		merged = append(merged, fs...)
 	}
 	registry := decode.NewRegistryWithFormats(merged)
 
