@@ -7,7 +7,6 @@ import (
 	"bytes"
 	"fmt"
 	"fq/pkg/decode"
-	"log"
 	"strconv"
 	"strings"
 )
@@ -41,7 +40,6 @@ func (d *FileDecoder) Decode() {
 			if ts == "" {
 				return 0, decode.NumberDecimal, ts
 			}
-			log.Printf("ts: %#+v\n", ts)
 			n, err := strconv.ParseUint(ts, 8, 64)
 			if err != nil {
 				d.Invalid(fmt.Sprintf("failed to parse %s number %s: %s", name, ts, err))
