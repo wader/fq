@@ -21,14 +21,16 @@ type FieldWriter struct {
 func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int) error {
 	indent := strings.Repeat("  ", depth)
 
-	if f.Value.Type != decode.TypeDecoder {
+	if len(f.Children) == 0 {
 		b, err := f.BitBuf().BytesBitRange(0, f.Range.Length(), 0)
 		if err != nil {
 			return err
 		}
 		start := f.Decoder.AbsPos(f.Range.Start)
 		h := hexdump.Dumper(start/8, cw.Column(0))
-		h.Write(b)
+		if _, err := h.Write(b); err != nil {
+			return err
+		}
 		h.Close()
 	}
 
@@ -41,7 +43,9 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 	cw.Flush()
 
 	for _, c := range f.Children {
-		o.output(cw, c, depth+1)
+		if err := o.output(cw, c, depth+1); err != nil {
+			return err
+		}
 	}
 
 	// if f.Children != nil {

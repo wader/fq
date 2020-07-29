@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"fmt"
 	"fq/pkg/decode"
+	"log"
 	"strconv"
 	"strings"
 )
@@ -24,28 +25,31 @@ type FileDecoder struct {
 
 // Decode tar
 func (d *FileDecoder) Decode() {
-	strFn := func(name string, nBytes uint64) string {
+	str := func(nBytes uint64) string {
+		s := d.UTF8(nBytes)
+		ts := strings.Trim(s, "\x00")
+		return ts
+	}
+	fieldStr := func(name string, nBytes uint64) string {
 		return d.FieldStrFn(name, func() (string, string) {
-			s := d.UTF8(nBytes)
-			ts := strings.Trim(s, "\x00")
-			return ts, ""
+			return str(nBytes), ""
 		})
 	}
-	numStrFn := func(name string, nBytes uint64) uint64 {
+	fieldNumStr := func(name string, nBytes uint64) uint64 {
 		return d.FieldUFn(name, func() (uint64, decode.NumberFormat, string) {
-			s := d.UTF8(nBytes)
-			ts := strings.Trim(s, "0 \x00")
+			ts := strings.Trim(str(nBytes), "0 \x00")
 			if ts == "" {
-				return 0, decode.NumberDecimal, s
+				return 0, decode.NumberDecimal, ts
 			}
+			log.Printf("ts: %#+v\n", ts)
 			n, err := strconv.ParseUint(ts, 8, 64)
 			if err != nil {
 				d.Invalid(fmt.Sprintf("failed to parse %s number %s: %s", name, ts, err))
 			}
-			return n, decode.NumberDecimal, s
+			return n, decode.NumberDecimal, ts
 		})
 	}
-	blockPaddingFn := func() {
+	fieldBlockPadding := func() {
 		const blockBits = 512 * 8
 		blockPadding := (blockBits - (d.Pos() % blockBits)) % blockBits
 		if blockPadding > 0 {
@@ -56,33 +60,33 @@ func (d *FileDecoder) Decode() {
 	// 512*2 zero bytes
 	endMarker := [512 * 2]byte{}
 	for !d.End() {
-		name := d.UTF8(100)
+		name := str(100)
 		d.SeekRel(-100 * 8)
 		d.FieldNoneFn(name, func() {
-			strFn("name", 100)
-			numStrFn("mode", 8)
-			numStrFn("uid", 8)
-			numStrFn("gid", 8)
-			size := numStrFn("size", 12)
-			numStrFn("mtime", 12)
-			numStrFn("chksum", 8)
-			strFn("typeflag", 1)
-			strFn("linkname", 100)
-			strFn("magic", 6)
-			numStrFn("version", 2)
-			strFn("uname", 32)
-			strFn("gname", 32)
-			numStrFn("devmajor", 8)
-			numStrFn("devminor", 8)
-			strFn("prefix", 155)
-			blockPaddingFn()
+			fieldStr("name", 100)
+			fieldNumStr("mode", 8)
+			fieldNumStr("uid", 8)
+			fieldNumStr("gid", 8)
+			size := fieldNumStr("size", 12)
+			fieldNumStr("mtime", 12)
+			fieldNumStr("chksum", 8)
+			fieldStr("typeflag", 1)
+			fieldStr("linkname", 100)
+			fieldStr("magic", 6)
+			fieldNumStr("version", 2)
+			fieldStr("uname", 32)
+			fieldStr("gname", 32)
+			fieldNumStr("devmajor", 8)
+			fieldNumStr("devminor", 8)
+			fieldStr("prefix", 155)
+			fieldBlockPadding()
 			if size > 0 {
 				d.FieldDecodeLen("data", size*8)
 			}
-			blockPaddingFn()
+			fieldBlockPadding()
 		})
 		bs := d.PeekBytes(512 * 2)
-		if bytes.Compare(bs, endMarker[:]) == 0 {
+		if bytes.Equal(bs, endMarker[:]) {
 			d.FieldBytesLen("end_marker", 512*2)
 			break
 		}
