@@ -6,8 +6,10 @@ package bitbuf
 // UTF16/UTF32
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"math"
 	"strings"
 )
@@ -31,72 +33,82 @@ type Buffer struct {
 	// Pos is current bit position in buffer
 	Pos uint64
 
-	buf         []byte
-	bufFirstBit uint64
+	rs             io.ReadSeeker
+	firstBitOffset uint64
 }
 
-// New bitbuf.Buffer from byte buffer buf, start at firstBit with bit length lenBits
+// NewFromReadSeeker bitbuf.Buffer from io.ReadSeeker, start at firstBit with bit length lenBits
 // buf is not copied.
-func New(buf []byte, firstBit uint64, lenBits uint64) *Buffer {
-	return &Buffer{
-		Len:         lenBits,
-		Pos:         0,
-		buf:         buf,
-		bufFirstBit: firstBit,
+func NewFromReadSeeker(rs io.ReadSeeker, firstBitOffset uint64) (*Buffer, error) {
+	len, err := rs.Seek(0, io.SeekEnd)
+	if err != nil {
+		return nil, err
 	}
+	if _, err := rs.Seek(0, io.SeekStart); err != nil {
+		return nil, err
+	}
+
+	return &Buffer{
+		Len:            uint64(len)*8 - firstBitOffset,
+		Pos:            0,
+		rs:             rs,
+		firstBitOffset: firstBitOffset,
+	}, nil
 }
 
 // NewFromBytes bitbuf.Buffer from bytes
-func NewFromBytes(buf []byte) *Buffer {
-	return New(buf, 0, uint64(len(buf)*8))
+func NewFromBytes(buf []byte, firstBitOffset uint64) (*Buffer, error) {
+	return NewFromReadSeeker(bytes.NewReader(buf), firstBitOffset)
 }
 
 // NewFromBitBuf bitbuf.Buffer from other bitbuf.Buffer
 // Will be a shallow copy with position reset to zero.
-func NewFromBitBuf(b *Buffer) *Buffer {
-	return New(b.buf, b.bufFirstBit, b.Len)
+func NewFromBitBuf(b *Buffer, firstBitOffset uint64) (*Buffer, error) {
+	return NewFromReadSeeker(b.rs, b.firstBitOffset)
 }
 
 // NewFromBitString bitbuf.Buffer from bit string, ex: "0101"
 func NewFromBitString(s string) (*Buffer, error) {
-	var buf []byte
-	i := 0
-	var n byte
-	for ; i < len(s); i++ {
-		c := s[i]
+	r := len(s) % 8
+	bufLen := len(s) / 8
+	if r > 0 {
+		bufLen++
+	}
+	firstBifOffset := (8 - r) % 8
+	buf := make([]byte, bufLen)
+
+	for i := 0; i < len(s); i++ {
 		b := 0
-		if c == '0' {
+		switch s[i] {
+		case '0':
 			b = 0
-		} else if c == '1' {
+		case '1':
 			b = 1
-		} else {
-			return nil, fmt.Errorf("invalid bit string %q at index %d %q", s, i, c)
+		default:
+			return nil, fmt.Errorf("invalid bit string %q at index %d %q", s, i, s[i])
 		}
 
-		p := 8 - (i % 8) - 1
-		n |= byte(b) << p
-		if (i > 0 && p == 0) || i == len(s)-1 {
-			buf = append(buf, n)
-			n = 0
-		}
+		bufBitOffset := firstBifOffset + i
+		bufByteOffset := bufBitOffset / 8
+		buf[bufByteOffset] |= byte(b << (7 - bufBitOffset%8))
 	}
 
-	return New(buf, 0, uint64(len(s))), nil
+	return NewFromBytes(buf, uint64(firstBifOffset))
 }
 
 // BitBufRange reads nBits bits starting from start
 // Does not update current position.
-func (b *Buffer) BitBufRange(firstBit uint64, nBits uint64) (*Buffer, error) {
-	endPos := uint64(firstBit) + uint64(nBits)
+func (b *Buffer) BitBufRange(firstBitOffset uint64, nBits uint64) (*Buffer, error) {
+	endPos := uint64(firstBitOffset) + uint64(nBits)
 	if endPos > b.Len {
 		return nil, ErrUnexpectedEOF
 	}
 
 	nb := &Buffer{
-		buf:         b.buf,
-		bufFirstBit: b.bufFirstBit + firstBit,
-		Len:         nBits,
-		Pos:         0,
+		Len:            nBits,
+		Pos:            0,
+		rs:             b.rs,
+		firstBitOffset: b.firstBitOffset + firstBitOffset,
 	}
 
 	return nb, nil
@@ -114,32 +126,83 @@ func (b *Buffer) BitBufLen(nBits uint64) (*Buffer, error) {
 
 // Copy bitbuf
 // TODO: rename? remove?
-func (b *Buffer) Copy() *Buffer {
-	return NewFromBitBuf(b)
+// TODO: no error?
+func (b *Buffer) Copy() (*Buffer, error) {
+	return NewFromBitBuf(b, 0)
+}
+
+func (b *Buffer) read(pos uint64, nBits uint64) ([]byte, uint64, error) {
+	// log.Printf("pos: %#+v\n", pos)
+	// log.Printf("nBits: %#+v\n", nBits)
+	// log.Printf("b.firstBitOffset: %#+v\n", b.firstBitOffset)
+	// log.Printf("b.Len: %#+v\n", b.Len)
+
+	endBitPos := uint64(b.Pos) + uint64(nBits)
+	if endBitPos > b.firstBitOffset+b.Len {
+		// log.Println("EOF")
+		return nil, 0, ErrUnexpectedEOF
+	}
+
+	readBitPos := b.firstBitOffset + pos
+
+	// log.Printf("bufBitPos: %#+v\n", readBitPos)
+
+	readBytePos := int64(readBitPos / 8)
+	readSkipBits := readBitPos % 8
+
+	// log.Printf("readBytePos: %#+v\n", readBytePos)
+	// log.Printf("readSkipBits: %#+v\n", readSkipBits)
+
+	if _, err := b.rs.Seek(readBytePos, io.SeekStart); err != nil {
+		return nil, 0, err
+	}
+
+	readBits := readSkipBits + nBits
+	// log.Printf("readBits: %#+v\n", readBits)
+	bufLen := readBits / 8
+	if readBits%8 > 0 {
+		bufLen++
+	}
+
+	// log.Printf("bufLen: %#+v\n", bufLen)
+
+	buf := make([]byte, bufLen)
+	if _, err := io.ReadFull(b.rs, buf); err != nil {
+		return nil, 0, nil
+	}
+
+	return buf, readSkipBits, nil
+}
+
+// Bits reads nBits bits from buffer
+func (b *Buffer) bits(nBits uint64) (uint64, error) {
+	buf, bufBitOffset, err := b.read(b.Pos, nBits)
+	if err != nil {
+		return 0, err
+	}
+
+	// log.Printf("buf: %#+v\n", buf)
+	// log.Printf("bufBitOffset: %#+v\n", bufBitOffset)
+	// log.Printf("nBits: %#+v\n", nBits)
+	n := ReadBits(buf, bufBitOffset, nBits)
+
+	return n, nil
 }
 
 // Bits reads nBits bits from buffer
 func (b *Buffer) Bits(nBits uint64) (uint64, error) {
-	p := uint64(b.Pos) + uint64(nBits)
-	if p > b.Len {
-		return 0, ErrUnexpectedEOF
+	n, err := b.bits(nBits)
+	if err != nil {
+		return 0, err
 	}
-	n := ReadBits(b.buf, b.bufFirstBit+b.Pos, nBits)
 	b.Pos += nBits
-
 	return n, nil
 }
 
 // PeekBits peek nBits bits from buffer
 // TODO: share code?
 func (b *Buffer) PeekBits(nBits uint64) (uint64, error) {
-	p := uint64(b.Pos) + uint64(nBits)
-	if p > b.Len {
-		return 0, ErrUnexpectedEOF
-	}
-	n := ReadBits(b.buf, b.bufFirstBit+b.Pos, nBits)
-
-	return n, nil
+	return b.bits(nBits)
 }
 
 // PeekBytes peek nBytes bytes from buffer
@@ -165,42 +228,35 @@ func (b *Buffer) PeekFind(bits uint64, v uint8, maxLen int64) (uint64, error) {
 	}
 	_, err := b.SeekRel(-count * int64(bits))
 	if err != nil {
-		// TODO: should be panic?
 		return 0, err
 	}
 
 	return uint64(count) * uint64(bits), nil
 }
 
-func (b *Buffer) BytesBitRange(firstBit uint64, nBits uint64, pad uint8) ([]byte, error) {
-	endPos := firstBit + nBits
-	if endPos > b.Len {
-		return nil, ErrUnexpectedEOF
+func (b *Buffer) BytesBitRange(firstBitOffset uint64, nBits uint64, pad uint8) ([]byte, error) {
+	buf, bufBitOffset, err := b.read(firstBitOffset, nBits)
+	if err != nil {
+		return nil, err
 	}
 
-	nBytes := nBits >> 3
-	restBits := nBits & 0x7
-	bufFirstBit := b.bufFirstBit + firstBit
-
-	if bufFirstBit%8 == 0 && restBits == 0 {
-		bufFirstBytePos := bufFirstBit >> 3
-		nb := b.buf[bufFirstBytePos : bufFirstBytePos+nBytes]
-		return nb, nil
+	if bufBitOffset == 0 && nBits%8 == 0 {
+		return buf, nil
 	}
 
-	var buf []byte
+	nBytes := nBits / 8
+	restBits := nBits % 8
+
+	var rb []byte
 	for i := uint64(0); i < nBytes; i++ {
-		buf = append(buf, byte(ReadBits(b.buf, bufFirstBit+i, 8)))
+		rb = append(rb, byte(ReadBits(buf, bufBitOffset+i*8, 8)))
 	}
 	if restBits != 0 {
-		v, err := b.Bits(restBits)
-		if err != nil {
-			return nil, err
-		}
-		buf = append(buf, pad|uint8(v))
+		v := byte(ReadBits(buf, bufBitOffset+nBytes*8, restBits)) << (8 - restBits)
+		rb = append(rb, pad|v)
 	}
 
-	return buf, nil
+	return rb, nil
 }
 
 // BytesRange reads nBytes bytes starting bit position start

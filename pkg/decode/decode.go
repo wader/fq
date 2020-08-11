@@ -571,6 +571,7 @@ func (c *Common) FieldFn(name string, fn func() Value) Value {
 	c.current = f
 	start := c.bitBuf.Pos
 	f.Range.Start = start
+	f.Range.Stop = start
 	v := fn()
 	f.Range.Stop = c.bitBuf.Pos
 	f.Value = v
@@ -890,7 +891,12 @@ func (c *Common) FieldZlib(name string, firsBit uint64, nBits uint64, b []byte, 
 		panic(err)
 	}
 
-	return c.FieldDecodeBitBuf(name, firsBit, nBits, bitbuf.NewFromBytes(zd), forceFormats...)
+	zbb, err := bitbuf.NewFromBytes(zd, 0)
+	if err != nil {
+		return nil, []error{err}
+	}
+
+	return c.FieldDecodeBitBuf(name, firsBit, nBits, zbb, forceFormats...)
 }
 
 // TODO: range?
@@ -905,5 +911,10 @@ func (c *Common) FieldZlibLen(name string, nBytes uint64, forceFormats ...*Forma
 		panic(err)
 	}
 
-	return c.FieldDecodeBitBuf(name, firstBit, firstBit+nBytes*8, bitbuf.NewFromBytes(zd), forceFormats...)
+	zbb, err := bitbuf.NewFromBytes(zd, 0)
+	if err != nil {
+		return nil, []error{err}
+	}
+
+	return c.FieldDecodeBitBuf(name, firstBit, firstBit+nBytes*8, zbb, forceFormats...)
 }

@@ -1,11 +1,13 @@
 package cli
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"fq/pkg/bitbuf"
 	"fq/pkg/decode"
 	"fq/pkg/output"
+	"io"
 	"io/ioutil"
 	"sort"
 	"strings"
@@ -73,9 +75,13 @@ func (m Main) run() error {
 		defer f.Close()
 		r = f
 	}
-	buf, err := ioutil.ReadAll(r)
-	if err != nil {
-		return err
+	var rs io.ReadSeeker
+	if rs = r.(io.ReadSeeker); rs == nil {
+		buf, err := ioutil.ReadAll(r)
+		if err != nil {
+			return err
+		}
+		rs = bytes.NewReader(buf)
 	}
 
 	var forceFormats []*decode.Format
@@ -86,8 +92,11 @@ func (m Main) run() error {
 		}
 		forceFormats = append(forceFormats, forceFormat)
 	}
-	bb := bitbuf.NewFromBytes(buf)
-	d, errs := registry.Probe(nil, fs.Arg(0), decode.Range{Start: 0, Stop: bb.Len}, bitbuf.NewFromBytes(buf), forceFormats)
+	bb, err := bitbuf.NewFromReadSeeker(rs, 0)
+	if err != nil {
+		panic(err)
+	}
+	d, errs := registry.Probe(nil, fs.Arg(0), decode.Range{Start: 0, Stop: bb.Len}, bb, forceFormats)
 	if *verboseFlag {
 		for _, err := range errs {
 			fmt.Fprintf(m.OS.Stderr(), "%s\n", err)

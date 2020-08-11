@@ -10,8 +10,10 @@ import (
 )
 
 func TestNew(t *testing.T) {
-
-	bb := bitbuf.New([]byte{0xf5}, 0, 8)
+	bb, err := bitbuf.NewFromBytes([]byte{0xf5}, 0)
+	if err != nil {
+		panic(err)
+	}
 
 	e4, e4n := bb.Bits(3)
 
@@ -98,17 +100,10 @@ func TestBitStringRandom(t *testing.T) {
 	}
 }
 
-func TestTestStringInvalid(t *testing.T) {
-	defer func() {
-		e := recover()
-		if e == nil {
-			t.Error("expected panic")
-		}
-		expectedS := `invalid bit string "01invalid" at index 2 'i'`
-		actualS := e.(string)
-		if expectedS != actualS {
-			t.Errorf("expected %q, got %q", expectedS, actualS)
-		}
-	}()
-	_, _ = bitbuf.NewFromBitString("01invalid")
+func TestInvalidBitString(t *testing.T) {
+	_, err := bitbuf.NewFromBitString("01invalid")
+	if err == nil || err.Error() != `invalid bit string "01invalid" at index 2 'i'` {
+		t.Errorf("expected err, got err %v", err)
+
+	}
 }

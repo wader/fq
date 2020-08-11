@@ -110,10 +110,15 @@ func (d *PacketDecoder) Decode() {
 				if k == metadataBlockPicture {
 					bs, err := base64.StdEncoding.DecodeString(v)
 					if err == nil {
+						bb, err := bitbuf.NewFromBytes(bs, 0)
+						if err != nil {
+							panic(err) // TODO: fixme
+						}
+
 						d.FieldDecodeBitBuf("picture",
 							d.Pos()-uint64(len(v)*8),
 							uint64(len(v)*8),
-							bitbuf.NewFromBytes(bs),
+							bb,
 							flac.Picture,
 						)
 					} else {

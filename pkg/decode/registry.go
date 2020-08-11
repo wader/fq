@@ -55,15 +55,19 @@ func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range
 			Value:   Value{Type: TypeDecoder, Decoder: d},
 			Decoder: d,
 		}
+		cbb, err := bb.Copy()
+		if err != nil {
+			panic(err)
+		}
 		d.Prepare(Common{
 			Parent:   parent,
 			format:   f,
 			registry: r,
-			bitBuf:   bb.Copy(),
+			bitBuf:   cbb,
 			root:     rootField,
 			current:  rootField,
 		})
-		err := func() (err error) {
+		err = func() (err error) {
 			defer func() {
 				if recoverErr := recover(); recoverErr != nil {
 					// https://github.com/golang/go/blob/master/src/net/http/server.go#L1770

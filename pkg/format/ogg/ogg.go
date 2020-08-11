@@ -77,7 +77,11 @@ func (d *FileDecoder) Decode() {
 				bs := d.FieldBytesLen("segment", uint64(ss))
 				s.packetBuf = append(s.packetBuf, bs...)
 				if len(bs) < 255 { // TODO: list range maps of demuxed packets?
-					d.FieldDecodeBitBuf("packet", s.firstBit, d.Pos(), bitbuf.NewFromBytes(s.packetBuf), vorbis.Packet)
+					bb, err := bitbuf.NewFromBytes(s.packetBuf, 0)
+					if err != nil {
+						panic(err) // TODO: fixme
+					}
+					d.FieldDecodeBitBuf("packet", s.firstBit, d.Pos(), bb, vorbis.Packet)
 					s.packetBuf = nil
 				}
 			}
