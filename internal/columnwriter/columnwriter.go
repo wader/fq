@@ -6,14 +6,26 @@ import (
 	"strings"
 )
 
-type column struct {
-	width int
-	lines []string
-	buf   bytes.Buffer
+type Column struct {
+	Width int
+	Lines []string
+	Buf   bytes.Buffer
+	Wrap  bool
 }
 
-func (c *column) Write(p []byte) (int, error) {
-	bb := &c.buf
+func divideString(s string, l int) []string {
+	var ss []string
+	parts := len(s) / l
+	for i := 0; i < parts; i++ {
+		ss = append(ss, s[i*l:(i+1)*l])
+	}
+	ss = append(ss, s[parts*l:])
+
+	return ss
+}
+
+func (c *Column) Write(p []byte) (int, error) {
+	bb := &c.Buf
 
 	bb.Write(p)
 
@@ -26,7 +38,13 @@ func (c *column) Write(p []byte) (int, error) {
 			break
 		}
 
-		c.lines = append(c.lines, string([]rune(string(b[pos:pos+i]))))
+		line := string([]rune(string(b[pos : pos+i])))
+		if c.Wrap && len(line) > c.Width {
+			c.Lines = append(c.Lines, divideString(line, c.Width)...)
+		} else {
+			c.Lines = append(c.Lines, line)
+		}
+
 		pos += i + 1
 	}
 	bb.Reset()
@@ -35,10 +53,15 @@ func (c *column) Write(p []byte) (int, error) {
 	return len(p), nil
 }
 
+func (c *Column) Flush() {
+	if c.Buf.Len() > 0 {
+		_, _ = c.Write([]byte{'\n'})
+	}
+}
+
 type Writer struct {
-	columns []column
-	//current int
-	w io.Writer
+	Columns []*Column
+	w       io.Writer
 }
 
 func indexByteSet(s []byte, cs []byte) int {
@@ -55,15 +78,14 @@ func indexByteSet(s []byte, cs []byte) int {
 }
 
 func New(w io.Writer, widths []int) *Writer {
-	var columns []column
+	var columns []*Column
 	for _, w := range widths {
-		columns = append(columns, column{width: w})
+		columns = append(columns, &Column{Width: w})
 	}
 
 	return &Writer{
-		columns: columns,
-		// current: 0,
-		w: w,
+		Columns: columns,
+		w:       w,
 	}
 }
 
@@ -93,10 +115,6 @@ func (w *Writer) Write(p []byte) (int, error) {
 }
 */
 
-func (w *Writer) Column(i int) io.Writer {
-	return &w.columns[i]
-}
-
 /*
 func (w *Writer) Next() {
 	c := &w.columns[w.current]
@@ -114,25 +132,42 @@ func (w *Writer) Next() {
 */
 
 func (w *Writer) Flush() error {
+	for _, c := range w.Columns {
+		c.Flush()
+	}
+
 	maxLines := 0
-	for _, c := range w.columns {
-		if len(c.lines) > maxLines {
-			maxLines = len(c.lines)
+	for _, c := range w.Columns {
+		lenLines := len(c.Lines)
+		// if c.Wrap {
+		// 	lenLines = 0
+		// 	for _, l := range c.Lines {
+		// 		lenLine := len(l)
+		// 		wrappedLines := lenLines / c.Width
+		// 		if lenLine%c.Width != 0 {
+		// 			wrappedLines++
+		// 		}
+		// 		lenLines += wrappedLines
+		// 	}
+		// }
+
+		if lenLines > maxLines {
+			maxLines = len(c.Lines)
 		}
 	}
 
 	for i := 0; i < maxLines; i++ {
-		for _, c := range w.columns {
+		for _, c := range w.Columns {
 			var s string
-			if i < len(c.lines) {
-				s = c.lines[i]
+			if i < len(c.Lines) {
+				s = c.Lines[i]
 			}
 
-			if c.width != -1 {
-				if len(s) > c.width {
-					s = s[0:c.width]
-				} else if len(s) < c.width {
-					s += strings.Repeat(" ", c.width-len(s))
+			if c.Width != -1 {
+				if len(s) > c.Width {
+					s = s[0:c.Width]
+				} else if len(s) < c.Width {
+					s += strings.Repeat(" ", c.Width-len(s))
 				}
 			}
 
@@ -145,10 +180,9 @@ func (w *Writer) Flush() error {
 		}
 	}
 
-	for i := range w.columns {
-		c := &w.columns[i]
-		c.lines = nil
-		c.buf.Reset()
+	for _, c := range w.Columns {
+		c.Lines = nil
+		c.Buf.Reset()
 	}
 
 	return nil

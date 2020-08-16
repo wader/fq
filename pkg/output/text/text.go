@@ -19,22 +19,46 @@ type FieldWriter struct {
 }
 
 func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int) error {
-	indent := strings.Repeat("  ", depth)
+
+	startBit := f.Decoder.AbsPos(f.Range.Start)
+	stopBit := f.Decoder.AbsPos(f.Range.Stop)
+
+	startByte := startBit / 8
+	stopByte := stopBit / 8
+	if startBit%8 != 0 {
+		stopByte++
+	}
+
+	lineAddrByte := int((startByte >> 4) << 4)
+	lineAddrByteOffset := int(startByte & 0xf)
+
+	addrLines := 1
 
 	if len(f.Children) == 0 {
 		b, err := f.BitBuf().BytesBitRange(0, f.Range.Length(), 0)
 		if err != nil {
 			return err
 		}
-		start := f.Decoder.AbsPos(f.Range.Start)
-		h := hexdump.Dumper(start/8, cw.Column(0))
-		if _, err := h.Write(b); err != nil {
-			return err
+
+		addrStopBytes := lineAddrByteOffset + int(stopByte) - int(startByte)
+		addrLines = addrStopBytes / 16
+		if addrStopBytes%16 != 0 {
+			addrLines++
 		}
-		h.Close()
+
+		fmt.Fprintf(cw.Columns[2], "%s", hexdump.Hexpairs(lineAddrByteOffset, b))
+		fmt.Fprintf(cw.Columns[4], "%s", hexdump.Printable(lineAddrByteOffset, b))
 	}
 
-	fmt.Fprintf(cw.Column(1), "%s%s: %s %s (%s)\n", indent, f.Name, f.Value, f.Range, decode.Bits(f.Range.Length()))
+	for i := 0; i < addrLines; i++ {
+		fmt.Fprintf(cw.Columns[0], "%.8x\n", int(lineAddrByte)+i*16)
+		fmt.Fprintf(cw.Columns[1], "|\n")
+		fmt.Fprintf(cw.Columns[3], "|\n")
+		fmt.Fprintf(cw.Columns[5], "|\n")
+	}
+
+	indent := strings.Repeat("  ", depth)
+	fmt.Fprintf(cw.Columns[6], "%s%s: %s %s (%s)\n", indent, f.Name, f.Value, f.Range, decode.Bits(f.Range.Length()))
 	// if f.Children != nil {
 	// 	fmt.Fprint(cw.Column(1), " {")
 	// }
@@ -58,7 +82,10 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 }
 
 func (o *FieldWriter) Write(w io.Writer) error {
-	cw := columnwriter.New(w, []int{78, -1})
+	cw := columnwriter.New(w, []int{8, 1, 47, 1, 16, 1, -1})
+	cw.Columns[1].Wrap = true
+	cw.Columns[2].Wrap = true
+	cw.Columns[4].Wrap = true
 
 	return o.output(cw, o.f, 0)
 }
