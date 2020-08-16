@@ -35,6 +35,8 @@ type Buffer struct {
 
 	rs             io.ReadSeeker
 	firstBitOffset uint64
+	lastPos        uint64
+	readAhead      []byte
 }
 
 // NewFromReadSeeker bitbuf.Buffer from io.ReadSeeker, start at firstBit with bit length lenBits
@@ -46,6 +48,9 @@ func NewFromReadSeeker(rs io.ReadSeeker, firstBitOffset uint64) (*Buffer, error)
 	}
 	if _, err := rs.Seek(0, io.SeekStart); err != nil {
 		return nil, err
+	}
+	if firstBitOffset > uint64(len*8) {
+		return nil, ErrUnexpectedEOF
 	}
 
 	return &Buffer{
@@ -64,7 +69,16 @@ func NewFromBytes(buf []byte, firstBitOffset uint64) (*Buffer, error) {
 // NewFromBitBuf bitbuf.Buffer from other bitbuf.Buffer
 // Will be a shallow copy with position reset to zero.
 func NewFromBitBuf(b *Buffer, firstBitOffset uint64) (*Buffer, error) {
-	return NewFromReadSeeker(b.rs, b.firstBitOffset)
+	if firstBitOffset > b.Len {
+		return nil, ErrUnexpectedEOF
+	}
+
+	return &Buffer{
+		Len:            b.Len - firstBitOffset,
+		Pos:            0,
+		rs:             b.rs,
+		firstBitOffset: b.firstBitOffset + firstBitOffset,
+	}, nil
 }
 
 // NewFromBitString bitbuf.Buffer from bit string, ex: "0101"
@@ -142,6 +156,8 @@ func (b *Buffer) read(pos uint64, nBits uint64) ([]byte, uint64, error) {
 		// log.Println("EOF")
 		return nil, 0, ErrUnexpectedEOF
 	}
+
+	// TOOD: cache
 
 	readBitPos := b.firstBitOffset + pos
 

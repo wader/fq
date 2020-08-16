@@ -790,7 +790,7 @@ func (c *Common) FieldTryDecode(name string, forceFormats ...*Format) (Decoder, 
 		panic(BitBufError{Err: err, Op: "FieldDecode", Size: c.BitsLeft(), Pos: c.bitBuf.Pos})
 	}
 
-	d, errs := c.registry.Probe(c, name, Range{Start: c.bitBuf.Pos, Stop: c.bitBuf.Pos}, bb, forceFormats)
+	d, errs := c.registry.Probe(c, name, Range{Start: c.bitBuf.Pos, Stop: c.bitBuf.Pos}, bb, forceFormats[0:1])
 	if d == nil || d.Error() != nil {
 		return nil, errs
 	}
