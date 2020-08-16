@@ -19,7 +19,9 @@ func divideString(s string, l int) []string {
 	for i := 0; i < parts; i++ {
 		ss = append(ss, s[i*l:(i+1)*l])
 	}
-	ss = append(ss, s[parts*l:])
+	if len(s)%l != 0 {
+		ss = append(ss, s[parts*l:])
+	}
 
 	return ss
 }

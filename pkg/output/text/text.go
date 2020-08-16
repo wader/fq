@@ -46,13 +46,13 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 			addrLines++
 		}
 
-		fmt.Fprintf(cw.Columns[2], "%s", hexdump.Hexpairs(lineAddrByteOffset, b))
-		fmt.Fprintf(cw.Columns[4], "%s", hexdump.Printable(lineAddrByteOffset, b))
+		fmt.Fprintf(cw.Columns[2], "%s", hexdump.Hexpairs(b, 16, lineAddrByteOffset))
+		fmt.Fprintf(cw.Columns[4], "%s", hexdump.Printable(b, lineAddrByteOffset))
 	}
 
 	for i := 0; i < addrLines; i++ {
 		fmt.Fprintf(cw.Columns[0], "%.8x\n", int(lineAddrByte)+i*16)
-		fmt.Fprintf(cw.Columns[1], "|\n")
+		fmt.Fprintf(cw.Columns[1], "\n")
 		fmt.Fprintf(cw.Columns[3], "|\n")
 		fmt.Fprintf(cw.Columns[5], "|\n")
 	}

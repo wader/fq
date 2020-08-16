@@ -3,7 +3,7 @@ package hexdump
 
 const hextable = "0123456789abcdef"
 
-func Hexpairs(offset int, b []byte) string {
+func Hexpairs(b []byte, width int, offset int) string {
 	if len(b) == 0 {
 		return ""
 	}
@@ -20,14 +20,18 @@ func Hexpairs(offset int, b []byte) string {
 			s[i*3+1] = hextable[v&0xf]
 		}
 		if i != t-1 {
-			s[i*3+2] = ' '
+			if i > 0 && i%width == width-1 {
+				s[i*3+2] = '\n'
+			} else {
+				s[i*3+2] = ' '
+			}
 		}
 	}
 
 	return string(s[0 : t*3-1])
 }
 
-func Printable(offset int, b []byte) string {
+func Printable(b []byte, offset int) string {
 	t := offset + len(b)
 	s := make([]byte, t)
 
