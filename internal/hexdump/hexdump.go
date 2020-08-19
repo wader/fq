@@ -1,4 +1,3 @@
-// Package hexump implements hexadecimal dumper.
 package hexdump
 
 const hextable = "0123456789abcdef"
