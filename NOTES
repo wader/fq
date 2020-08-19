@@ -1,7 +1,6 @@
 
 uint64 -> int .. is 64bit anyway?
 
-
 automcatically add gaps/unknown?
 
 replace hexdumo with addresview, hexview, asciiview, treeview etc?
