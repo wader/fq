@@ -3,13 +3,62 @@ package text
 import (
 	"fmt"
 	"fq/internal/columnwriter"
-	"fq/internal/hexdump"
 	"fq/pkg/decode"
 	"io"
 	"strings"
 )
 
 const lineBytes = 16
+
+const hextable = "0123456789abcdef"
+
+func hexpairs(b []byte, width int, offset int) string {
+	if len(b) == 0 {
+		return ""
+	}
+	t := offset + len(b)
+	s := make([]byte, t*3-1)
+
+	for i := 0; i < t; i++ {
+		if i < offset {
+			s[i*3+0] = ' '
+			s[i*3+1] = ' '
+		} else {
+			v := b[i-offset]
+			s[i*3+0] = hextable[v>>4]
+			s[i*3+1] = hextable[v&0xf]
+		}
+		if i != t-1 {
+			if i > 0 && i%width == width-1 {
+				s[i*3+2] = '\n'
+			} else {
+				s[i*3+2] = ' '
+			}
+		}
+	}
+
+	return string(s[0 : t*3-1])
+}
+
+func printable(b []byte, offset int) string {
+	t := offset + len(b)
+	s := make([]byte, t)
+
+	for i := 0; i < t; i++ {
+		if i < offset {
+			s[i] = ' '
+		} else {
+			v := b[i-offset]
+			if v < 32 || v > 126 {
+				s[i] = '.'
+			} else {
+				s[i] = v
+			}
+		}
+	}
+
+	return string(s)
+}
 
 var FieldOutput = &decode.FieldOutput{
 	Name: "text",
@@ -55,8 +104,8 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 		}
 		addrLines = ((stopLineByte - startLineByte) / lineBytes) + 1
 
-		fmt.Fprintf(cw.Columns[2], "%s", hexdump.Hexpairs(b, lineBytes, startLineByteOffset))
-		fmt.Fprintf(cw.Columns[4], "%s", hexdump.Printable(b, startLineByteOffset))
+		fmt.Fprintf(cw.Columns[2], "%s", hexpairs(b, lineBytes, startLineByteOffset))
+		fmt.Fprintf(cw.Columns[4], "%s", printable(b, startLineByteOffset))
 	}
 
 	for i := 0; i < addrLines; i++ {
