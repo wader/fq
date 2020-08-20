@@ -17,6 +17,7 @@ import (
 	"fq/pkg/format/tar"
 	"fq/pkg/format/tiff"
 	"fq/pkg/format/vorbis"
+	"fq/pkg/format/wav"
 )
 
 // All formats
@@ -41,4 +42,5 @@ var All = []*decode.Format{
 	png.File,
 	tiff.File,
 	ape.TagV2,
+	wav.File,
 }

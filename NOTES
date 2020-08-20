@@ -1,4 +1,7 @@
 
+
+"script" api one .go for custom decoder?
+
 uint64 -> int .. is 64bit anyway?
 
 automcatically add gaps/unknown?
