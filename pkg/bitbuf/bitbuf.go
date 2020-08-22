@@ -187,22 +187,25 @@ func (b *Buffer) read(buf []byte, pos int64, nBits int64) (int64, int64, error) 
 
 	// log.Printf("bufLen: %#+v\n", bufLen)
 
-	for {
-		readAheadStart := readBytePos - b.readAheadPos
-		if readAheadStart >= 0 && readBytePos+readBytes <= b.readAheadPos+b.readAheadLen {
-			copy(buf[:readBytePos], b.readAhead[readAheadStart:readAheadStart+readBytes])
-			return readBytes, readSkipBits, nil
-		}
+	// for {
+	// readAheadStart := readBytePos - b.readAheadPos
+	// if readAheadStart >= 0 && readBytePos+readBytes <= b.readAheadPos+b.readAheadLen {
+	// 	copy(buf[:readBytePos], b.readAhead[readAheadStart:readAheadStart+readBytes])
+	// 	return readBytes, readSkipBits, nil
+	// }
 
-		if _, err := b.rs.Seek(readBytePos, io.SeekStart); err != nil {
-			return 0, 0, err
-		}
-
-		if _, err := io.ReadFull(b.rs, b.readAhead); err != nil {
-			return 0, 0, nil
-		}
-
+	if _, err := b.rs.Seek(readBytePos, io.SeekStart); err != nil {
+		return 0, 0, err
 	}
+
+	if _, err := io.ReadFull(b.rs, buf[:readBytes]); err != nil {
+		return 0, 0, nil
+	}
+
+	// }
+
+	return readBytes, readSkipBits, nil
+
 }
 
 // Bits reads nBits bits from buffer
