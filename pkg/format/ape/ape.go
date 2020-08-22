@@ -41,7 +41,7 @@ func (d *TagV2Decoder) Decode() {
 			keyLen := d.PeekFindByte(0, -1) - 1
 			d.FieldUTF8("key", keyLen)
 			d.FieldU8("key_terminator")
-			d.FieldUTF8("value", itemSize)
+			d.FieldUTF8("value", int64(itemSize))
 		})
 	}
 

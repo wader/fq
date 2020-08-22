@@ -266,7 +266,7 @@ func (d *TagDecoder) SyncSafeU32() uint64 {
 		((u & 0x0000007f) >> 0))
 }
 
-func (d *TagDecoder) Text(encoding int, nBytes uint64) string {
+func (d *TagDecoder) Text(encoding int, nBytes int64) string {
 	encodingFn := encodingToUTF8[encodingUTF8]
 	if fn, ok := encodingToUTF8[encoding]; ok {
 		encodingFn = fn
@@ -280,7 +280,7 @@ func (d *TagDecoder) TextNull(encoding int) string {
 		nullLen = n
 	}
 
-	textLen := d.PeekFind(uint64(nullLen*8), 0, -1)/8 - uint64(nullLen)
+	textLen := d.PeekFind(int64(nullLen*8), 0, -1)/8 - int64(nullLen)
 	text := d.Text(encoding, textLen)
 	// TODO: field?
 	d.SeekRel(int64(nullLen) * 8)
@@ -300,7 +300,7 @@ func (d *TagDecoder) FieldTextNull(name string, encoding int) string {
 	})
 }
 
-func (d *TagDecoder) FieldText(name string, encoding int, nBytes uint64) string {
+func (d *TagDecoder) FieldText(name string, encoding int, nBytes int64) string {
 	return d.FieldStrFn(name, func() (string, string) {
 		return d.Text(encoding, nBytes), ""
 	})
@@ -453,9 +453,9 @@ func (d *TagDecoder) DecodeFrame(version int) uint64 {
 		}
 
 		if fn, ok := frames[idNormalized]; ok {
-			d.SubLenFn(dataSize*8, fn)
+			d.SubLenFn(int64(dataSize)*8, fn)
 		} else {
-			d.FieldBytesLen("data", dataSize)
+			d.FieldBytesLen("data", int64(dataSize))
 		}
 
 		idDescription := ""
@@ -473,7 +473,7 @@ func (d *TagDecoder) DecodeFrame(version int) uint64 {
 func (d *TagDecoder) DecodeFrames(version int, size uint64) {
 	for size > 0 {
 		for d.PeekBits(8) == 0 {
-			d.FieldValidateZeroPadding("padding", size*8)
+			d.FieldValidateZeroPadding("padding", int64(size)*8)
 			return
 		}
 
@@ -511,13 +511,13 @@ func (d *TagDecoder) Decode() {
 			switch version {
 			case 3:
 				extHeaderSize = d.FieldU32("size")
-				d.FieldBytesLen("data", extHeaderSize)
+				d.FieldBytesLen("data", int64(extHeaderSize))
 			case 4:
 				extHeaderSize = d.FieldUFn("size", func() (uint64, decode.NumberFormat, string) {
 					return d.SyncSafeU32(), decode.NumberDecimal, ""
 				})
 				// in v4 synchsafe integer includes itself
-				d.FieldBytesLen("data", extHeaderSize-4)
+				d.FieldBytesLen("data", int64(extHeaderSize)-4)
 			}
 		})
 	}

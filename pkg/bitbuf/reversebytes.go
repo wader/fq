@@ -2,7 +2,7 @@ package bitbuf
 
 import "fmt"
 
-func ReverseBytes(nBits uint64, n uint64) uint64 {
+func ReverseBytes(nBits int64, n uint64) uint64 {
 	switch {
 	case nBits <= 8:
 		return n

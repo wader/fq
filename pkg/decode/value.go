@@ -16,15 +16,15 @@ func (b Bits) String() string {
 }
 
 type Range struct {
-	Start uint64
-	Stop  uint64
+	Start int64
+	Stop  int64
 }
 
 func (r Range) String() string {
 	return fmt.Sprintf("%s-%s", Bits(r.Start), Bits(r.Stop))
 }
 
-func (r Range) Length() uint64 {
+func (r Range) Length() int64 {
 	return r.Stop - r.Start
 }
 

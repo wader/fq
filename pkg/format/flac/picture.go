@@ -20,7 +20,7 @@ type PictureDecoder struct {
 func (d *PictureDecoder) Decode() {
 	lenStr := func(name string) string {
 		len := d.FieldU32(name + "_length")
-		return d.FieldUTF8(name, len)
+		return d.FieldUTF8(name, int64(len))
 	}
 	d.FieldU32("picture_type")
 	lenStr("mime")
@@ -30,5 +30,5 @@ func (d *PictureDecoder) Decode() {
 	d.FieldU32("color_depth")
 	d.FieldU32("number_of_index_colors")
 	pictureLen := d.FieldU32("picture_length")
-	d.FieldDecodeLen("picture_data", pictureLen*8, group.Images...)
+	d.FieldDecodeLen("picture_data", int64(pictureLen)*8, group.Images...)
 }

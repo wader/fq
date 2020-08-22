@@ -54,7 +54,7 @@ func TestBitString(t *testing.T) {
 				t.Errorf("expected %s, got %s", tC, actual)
 			}
 
-			for i := uint64(0); i < bb.Len; i++ {
+			for i := int64(0); i < bb.Len; i++ {
 				t.Run(fmt.Sprintf("%s_%d", tC, i), func(t *testing.T) {
 					startBb, _ := bb.BitBufRange(i, bb.Len-i)
 					startExpected := tC[i : i+bb.Len-i]

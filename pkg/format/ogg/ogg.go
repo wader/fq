@@ -20,7 +20,7 @@ var File = &decode.Format{
 }
 
 type stream struct {
-	firstBit   uint64
+	firstBit   int64
 	sequenceNo uint32
 	packetBuf  []byte
 }
@@ -48,7 +48,7 @@ func (d *FileDecoder) Decode() {
 			pageSequenceNo := uint32(d.FieldU32LE("page_sequence_no"))
 			d.FieldU32("page_checksum")
 			pageSegments := d.FieldU8("page_segments")
-			segmentTable := d.FieldBytesLen("segment_table", uint64(pageSegments))
+			segmentTable := d.FieldBytesLen("segment_table", int64(pageSegments))
 
 			s, sFound := d.streams[streamSerialNumber]
 			if !sFound {
@@ -74,7 +74,7 @@ func (d *FileDecoder) Decode() {
 				if s.packetBuf == nil {
 					s.firstBit = d.Pos()
 				}
-				bs := d.FieldBytesLen("segment", uint64(ss))
+				bs := d.FieldBytesLen("segment", int64(ss))
 				s.packetBuf = append(s.packetBuf, bs...)
 				if len(bs) < 255 { // TODO: list range maps of demuxed packets?
 					bb, err := bitbuf.NewFromBytes(s.packetBuf, 0)

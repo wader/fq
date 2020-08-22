@@ -174,7 +174,7 @@ func (d *FileDecoder) Decode() {
 				ecdLen++
 			}
 			d.SeekRel(-ecdLen * 8)
-			d.FieldBytesLen("entropy_coded_data", uint64(ecdLen))
+			d.FieldBytesLen("entropy_coded_data", int64(ecdLen))
 			inECD = false
 		} else {
 			d.FieldNoneFn("marker", func() {
@@ -215,7 +215,7 @@ func (d *FileDecoder) Decode() {
 					}
 				case COM:
 					comLen := d.FieldU16("Lc")
-					d.FieldUTF8("Cm", comLen-2)
+					d.FieldUTF8("Cm", int64(comLen)-2)
 				case SOS:
 					d.FieldU16("Ls")
 					ns := d.FieldU8("Ns")
@@ -248,9 +248,9 @@ func (d *FileDecoder) Decode() {
 						switch {
 						case markerCode == APP1 && bytes.HasPrefix(dataPrefix, app1ExifPrefix):
 							d.FieldUTF8("exif_prefix", 6)
-							d.FieldDecodeLen("exif", (markerLen-2-6)*8, tiff.File)
+							d.FieldDecodeLen("exif", (int64(markerLen)-2-6)*8, tiff.File)
 						default:
-							d.FieldBytesLen("data", markerLen-2)
+							d.FieldBytesLen("data", int64(markerLen)-2)
 						}
 
 					} else {

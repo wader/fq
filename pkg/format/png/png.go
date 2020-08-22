@@ -32,7 +32,7 @@ func (d *FileDecoder) Decode() {
 	d.FieldValidateString("signature", "\x89PNG\r\n\x1a\n")
 	for !d.End() {
 		d.FieldNoneFn("chunk", func() {
-			chunkLength := d.FieldU32("length")
+			chunkLength := int64(d.FieldU32("length"))
 
 			chunkType := d.FieldStrFn("type", func() (string, string) {
 				chunkType := d.UTF8(4)

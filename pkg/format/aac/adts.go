@@ -58,6 +58,6 @@ func (d *ADTSDecoder) Decode() {
 	if hasCRC {
 		d.FieldU16("crc")
 	}
-	d.FieldDecodeLen("frame", dataLength*8, Frame)
+	d.FieldDecodeLen("frame", int64(dataLength)*8, Frame)
 	// d.FieldBytesLen("frame", dataLength)
 }

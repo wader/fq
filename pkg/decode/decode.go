@@ -18,7 +18,7 @@ type Decoder interface {
 	Format() *Format
 	BitBuf() *bitbuf.Buffer
 	Root() *Field
-	AbsPos(pos uint64) uint64
+	AbsPos(pos int64) int64
 
 	MIME() string
 	Error() error
@@ -27,9 +27,9 @@ type Decoder interface {
 type BitBufError struct {
 	Err   error
 	Op    string
-	Size  uint64
+	Size  int64
 	Delta int64
-	Pos   uint64
+	Pos   int64
 }
 
 func (e BitBufError) Error() string {
@@ -40,7 +40,7 @@ func (e BitBufError) Unwrap() error { return e.Err }
 
 type ValidateError struct {
 	Reason string
-	Pos    uint64
+	Pos    int64
 }
 
 func (e ValidateError) Error() string {
@@ -73,7 +73,7 @@ func (c *Common) Finish(err error) {
 func (c *Common) Format() *Format        { return c.format }
 func (c *Common) BitBuf() *bitbuf.Buffer { return c.bitBuf }
 func (c *Common) Root() *Field           { return c.root }
-func (c *Common) AbsPos(pos uint64) uint64 {
+func (c *Common) AbsPos(pos int64) int64 {
 	if c.Parent == nil {
 		return c.Root().Range.Start + pos
 	}
@@ -90,7 +90,7 @@ func (c *Common) MIME() string {
 
 func (c *Common) Error() error { return c.err }
 
-func (c *Common) PeekBits(nBits uint64) uint64 {
+func (c *Common) PeekBits(nBits int64) uint64 {
 	n, err := c.bitBuf.PeekBits(nBits)
 	if err != nil {
 		panic(BitBufError{Err: err, Op: "PeekBits", Size: nBits, Pos: c.bitBuf.Pos})
@@ -98,7 +98,7 @@ func (c *Common) PeekBits(nBits uint64) uint64 {
 	return n
 }
 
-func (c *Common) PeekBytes(nBytes uint64) []byte {
+func (c *Common) PeekBytes(nBytes int64) []byte {
 	bs, err := c.bitBuf.PeekBytes(nBytes)
 	if err != nil {
 		panic(BitBufError{Err: err, Op: "PeekBytes", Size: nBytes * 8, Pos: c.bitBuf.Pos})
@@ -106,8 +106,8 @@ func (c *Common) PeekBytes(nBytes uint64) []byte {
 	return bs
 }
 
-func (c *Common) PeekFind(bits uint64, v uint8, maxLen int64) uint64 {
-	peekBits, err := c.bitBuf.PeekFind(bits, v, maxLen)
+func (c *Common) PeekFind(nBits int64, v uint8, maxLen int64) int64 {
+	peekBits, err := c.bitBuf.PeekFind(nBits, v, maxLen)
 	if err != nil {
 		panic(BitBufError{Err: err, Op: "PeekFind", Size: 0, Pos: c.bitBuf.Pos})
 	}
@@ -115,7 +115,7 @@ func (c *Common) PeekFind(bits uint64, v uint8, maxLen int64) uint64 {
 }
 
 // PeekFindByte number of bytes to next v
-func (c *Common) PeekFindByte(v uint8, maxLen int64) uint64 {
+func (c *Common) PeekFindByte(v uint8, maxLen int64) int64 {
 	peekBits, err := c.bitBuf.PeekFind(8, v, maxLen)
 	if err != nil {
 		panic(BitBufError{Err: err, Op: "PeekFindByte", Size: 0, Pos: c.bitBuf.Pos})
@@ -124,7 +124,7 @@ func (c *Common) PeekFindByte(v uint8, maxLen int64) uint64 {
 	return peekBits / 8
 }
 
-func (c *Common) BytesRange(firstBit uint64, nBytes uint64) []byte {
+func (c *Common) BytesRange(firstBit int64, nBytes int64) []byte {
 	bs, err := c.bitBuf.BytesRange(firstBit, nBytes)
 	if err != nil {
 		panic(BitBufError{Err: err, Op: "BytesRange", Size: nBytes * 8, Pos: firstBit})
@@ -132,7 +132,7 @@ func (c *Common) BytesRange(firstBit uint64, nBytes uint64) []byte {
 	return bs
 }
 
-func (c *Common) BytesLen(nBytes uint64) []byte {
+func (c *Common) BytesLen(nBytes int64) []byte {
 	bs, err := c.bitBuf.BytesLen(nBytes)
 	if err != nil {
 		panic(BitBufError{Err: err, Op: "BytesLen", Size: nBytes * 8, Pos: c.bitBuf.Pos})
@@ -140,22 +140,22 @@ func (c *Common) BytesLen(nBytes uint64) []byte {
 	return bs
 }
 
-func (c *Common) Pos() uint64           { return c.bitBuf.Pos }
-func (c *Common) Len() uint64           { return c.bitBuf.Len }
-func (c *Common) End() bool             { return c.bitBuf.End() }
-func (c *Common) BitsLeft() uint64      { return c.bitBuf.BitsLeft() }
-func (c *Common) ByteAlignBits() uint64 { return c.bitBuf.ByteAlignBits() }
-func (c *Common) BytePos() uint64       { return c.bitBuf.BytePos() }
+func (c *Common) Pos() int64           { return c.bitBuf.Pos }
+func (c *Common) Len() int64           { return c.bitBuf.Len }
+func (c *Common) End() bool            { return c.bitBuf.End() }
+func (c *Common) BitsLeft() int64      { return c.bitBuf.BitsLeft() }
+func (c *Common) ByteAlignBits() int64 { return c.bitBuf.ByteAlignBits() }
+func (c *Common) BytePos() int64       { return c.bitBuf.BytePos() }
 
-func (c *Common) SeekRel(delta int64) uint64 {
-	pos, err := c.bitBuf.SeekRel(delta)
+func (c *Common) SeekRel(deltaBits int64) int64 {
+	pos, err := c.bitBuf.SeekRel(deltaBits)
 	if err != nil {
-		panic(BitBufError{Err: err, Op: "SeekRel", Delta: delta, Pos: c.bitBuf.Pos})
+		panic(BitBufError{Err: err, Op: "SeekRel", Delta: deltaBits, Pos: c.bitBuf.Pos})
 	}
 	return pos
 }
 
-func (c *Common) SeekAbs(pos uint64) uint64 {
+func (c *Common) SeekAbs(pos int64) int64 {
 	pos, err := c.bitBuf.SeekAbs(pos)
 	if err != nil {
 		panic(BitBufError{Err: err, Op: "SeekAbs", Size: pos, Pos: c.bitBuf.Pos})
@@ -163,7 +163,7 @@ func (c *Common) SeekAbs(pos uint64) uint64 {
 	return pos
 }
 
-func (c *Common) UE(nBits uint64, endian bitbuf.Endian) uint64 {
+func (c *Common) UE(nBits int64, endian bitbuf.Endian) uint64 {
 	n, err := c.bitBuf.UE(nBits, endian)
 	if err != nil {
 		panic(BitBufError{Err: err, Op: "UE", Size: nBits, Pos: c.bitBuf.Pos})
@@ -189,54 +189,54 @@ func (c *Common) FieldBool(name string) bool {
 	})
 }
 
-func (c *Common) U(nBits uint64) uint64 { return c.UE(nBits, bitbuf.BigEndian) }
-func (c *Common) U1() uint64            { return c.UE(1, bitbuf.BigEndian) }
-func (c *Common) U2() uint64            { return c.UE(2, bitbuf.BigEndian) }
-func (c *Common) U3() uint64            { return c.UE(3, bitbuf.BigEndian) }
-func (c *Common) U4() uint64            { return c.UE(4, bitbuf.BigEndian) }
-func (c *Common) U5() uint64            { return c.UE(5, bitbuf.BigEndian) }
-func (c *Common) U6() uint64            { return c.UE(6, bitbuf.BigEndian) }
-func (c *Common) U7() uint64            { return c.UE(7, bitbuf.BigEndian) }
-func (c *Common) U8() uint64            { return c.UE(8, bitbuf.BigEndian) }
-func (c *Common) U9() uint64            { return c.UE(9, bitbuf.BigEndian) }
-func (c *Common) U10() uint64           { return c.UE(10, bitbuf.BigEndian) }
-func (c *Common) U11() uint64           { return c.UE(11, bitbuf.BigEndian) }
-func (c *Common) U12() uint64           { return c.UE(12, bitbuf.BigEndian) }
-func (c *Common) U13() uint64           { return c.UE(13, bitbuf.BigEndian) }
-func (c *Common) U14() uint64           { return c.UE(14, bitbuf.BigEndian) }
-func (c *Common) U15() uint64           { return c.UE(15, bitbuf.BigEndian) }
-func (c *Common) U16() uint64           { return c.UE(16, bitbuf.BigEndian) }
-func (c *Common) U24() uint64           { return c.UE(24, bitbuf.BigEndian) }
-func (c *Common) U32() uint64           { return c.UE(32, bitbuf.BigEndian) }
-func (c *Common) U64() uint64           { return c.UE(64, bitbuf.BigEndian) }
+func (c *Common) U(nBits int64) uint64 { return c.UE(nBits, bitbuf.BigEndian) }
+func (c *Common) U1() uint64           { return c.UE(1, bitbuf.BigEndian) }
+func (c *Common) U2() uint64           { return c.UE(2, bitbuf.BigEndian) }
+func (c *Common) U3() uint64           { return c.UE(3, bitbuf.BigEndian) }
+func (c *Common) U4() uint64           { return c.UE(4, bitbuf.BigEndian) }
+func (c *Common) U5() uint64           { return c.UE(5, bitbuf.BigEndian) }
+func (c *Common) U6() uint64           { return c.UE(6, bitbuf.BigEndian) }
+func (c *Common) U7() uint64           { return c.UE(7, bitbuf.BigEndian) }
+func (c *Common) U8() uint64           { return c.UE(8, bitbuf.BigEndian) }
+func (c *Common) U9() uint64           { return c.UE(9, bitbuf.BigEndian) }
+func (c *Common) U10() uint64          { return c.UE(10, bitbuf.BigEndian) }
+func (c *Common) U11() uint64          { return c.UE(11, bitbuf.BigEndian) }
+func (c *Common) U12() uint64          { return c.UE(12, bitbuf.BigEndian) }
+func (c *Common) U13() uint64          { return c.UE(13, bitbuf.BigEndian) }
+func (c *Common) U14() uint64          { return c.UE(14, bitbuf.BigEndian) }
+func (c *Common) U15() uint64          { return c.UE(15, bitbuf.BigEndian) }
+func (c *Common) U16() uint64          { return c.UE(16, bitbuf.BigEndian) }
+func (c *Common) U24() uint64          { return c.UE(24, bitbuf.BigEndian) }
+func (c *Common) U32() uint64          { return c.UE(32, bitbuf.BigEndian) }
+func (c *Common) U64() uint64          { return c.UE(64, bitbuf.BigEndian) }
 
-func (c *Common) UBE(nBits uint64) uint64 { return c.UE(nBits, bitbuf.BigEndian) }
-func (c *Common) U9BE() uint64            { return c.UE(9, bitbuf.BigEndian) }
-func (c *Common) U10BE() uint64           { return c.UE(10, bitbuf.BigEndian) }
-func (c *Common) U11BE() uint64           { return c.UE(11, bitbuf.BigEndian) }
-func (c *Common) U12BE() uint64           { return c.UE(12, bitbuf.BigEndian) }
-func (c *Common) U13BE() uint64           { return c.UE(13, bitbuf.BigEndian) }
-func (c *Common) U14BE() uint64           { return c.UE(14, bitbuf.BigEndian) }
-func (c *Common) U15BE() uint64           { return c.UE(15, bitbuf.BigEndian) }
-func (c *Common) U16BE() uint64           { return c.UE(16, bitbuf.BigEndian) }
-func (c *Common) U24BE() uint64           { return c.UE(24, bitbuf.BigEndian) }
-func (c *Common) U32BE() uint64           { return c.UE(32, bitbuf.BigEndian) }
-func (c *Common) U64BE() uint64           { return c.UE(64, bitbuf.BigEndian) }
+func (c *Common) UBE(nBits int64) uint64 { return c.UE(nBits, bitbuf.BigEndian) }
+func (c *Common) U9BE() uint64           { return c.UE(9, bitbuf.BigEndian) }
+func (c *Common) U10BE() uint64          { return c.UE(10, bitbuf.BigEndian) }
+func (c *Common) U11BE() uint64          { return c.UE(11, bitbuf.BigEndian) }
+func (c *Common) U12BE() uint64          { return c.UE(12, bitbuf.BigEndian) }
+func (c *Common) U13BE() uint64          { return c.UE(13, bitbuf.BigEndian) }
+func (c *Common) U14BE() uint64          { return c.UE(14, bitbuf.BigEndian) }
+func (c *Common) U15BE() uint64          { return c.UE(15, bitbuf.BigEndian) }
+func (c *Common) U16BE() uint64          { return c.UE(16, bitbuf.BigEndian) }
+func (c *Common) U24BE() uint64          { return c.UE(24, bitbuf.BigEndian) }
+func (c *Common) U32BE() uint64          { return c.UE(32, bitbuf.BigEndian) }
+func (c *Common) U64BE() uint64          { return c.UE(64, bitbuf.BigEndian) }
 
-func (c *Common) ULE(nBits uint64) uint64 { return c.UE(nBits, bitbuf.LittleEndian) }
-func (c *Common) U9LE() uint64            { return c.UE(9, bitbuf.LittleEndian) }
-func (c *Common) U10LE() uint64           { return c.UE(10, bitbuf.LittleEndian) }
-func (c *Common) U11LE() uint64           { return c.UE(11, bitbuf.LittleEndian) }
-func (c *Common) U12LE() uint64           { return c.UE(12, bitbuf.LittleEndian) }
-func (c *Common) U13LE() uint64           { return c.UE(13, bitbuf.LittleEndian) }
-func (c *Common) U14LE() uint64           { return c.UE(14, bitbuf.LittleEndian) }
-func (c *Common) U15LE() uint64           { return c.UE(15, bitbuf.LittleEndian) }
-func (c *Common) U16LE() uint64           { return c.UE(16, bitbuf.LittleEndian) }
-func (c *Common) U24LE() uint64           { return c.UE(24, bitbuf.LittleEndian) }
-func (c *Common) U32LE() uint64           { return c.UE(32, bitbuf.LittleEndian) }
-func (c *Common) U64LE() uint64           { return c.UE(64, bitbuf.LittleEndian) }
+func (c *Common) ULE(nBits int64) uint64 { return c.UE(nBits, bitbuf.LittleEndian) }
+func (c *Common) U9LE() uint64           { return c.UE(9, bitbuf.LittleEndian) }
+func (c *Common) U10LE() uint64          { return c.UE(10, bitbuf.LittleEndian) }
+func (c *Common) U11LE() uint64          { return c.UE(11, bitbuf.LittleEndian) }
+func (c *Common) U12LE() uint64          { return c.UE(12, bitbuf.LittleEndian) }
+func (c *Common) U13LE() uint64          { return c.UE(13, bitbuf.LittleEndian) }
+func (c *Common) U14LE() uint64          { return c.UE(14, bitbuf.LittleEndian) }
+func (c *Common) U15LE() uint64          { return c.UE(15, bitbuf.LittleEndian) }
+func (c *Common) U16LE() uint64          { return c.UE(16, bitbuf.LittleEndian) }
+func (c *Common) U24LE() uint64          { return c.UE(24, bitbuf.LittleEndian) }
+func (c *Common) U32LE() uint64          { return c.UE(32, bitbuf.LittleEndian) }
+func (c *Common) U64LE() uint64          { return c.UE(64, bitbuf.LittleEndian) }
 
-func (c *Common) FieldUE(name string, nBits uint64, endian bitbuf.Endian) uint64 {
+func (c *Common) FieldUE(name string, nBits int64, endian bitbuf.Endian) uint64 {
 	return c.FieldUFn(name, func() (uint64, NumberFormat, string) {
 		n, err := c.bitBuf.UE(nBits, endian)
 		if err != nil {
@@ -246,7 +246,7 @@ func (c *Common) FieldUE(name string, nBits uint64, endian bitbuf.Endian) uint64
 	})
 }
 
-func (c *Common) FieldU(name string, nBits uint64) uint64 {
+func (c *Common) FieldU(name string, nBits int64) uint64 {
 	return c.FieldUE(name, nBits, bitbuf.BigEndian)
 }
 func (c *Common) FieldU1(name string) uint64  { return c.FieldUE(name, 1, bitbuf.BigEndian) }
@@ -269,7 +269,7 @@ func (c *Common) FieldU24(name string) uint64 { return c.FieldUE(name, 24, bitbu
 func (c *Common) FieldU32(name string) uint64 { return c.FieldUE(name, 32, bitbuf.BigEndian) }
 func (c *Common) FieldU64(name string) uint64 { return c.FieldUE(name, 64, bitbuf.BigEndian) }
 
-func (c *Common) FieldUBE(nBits uint64, name string) uint64 {
+func (c *Common) FieldUBE(nBits int64, name string) uint64 {
 	return c.FieldUE(name, nBits, bitbuf.BigEndian)
 }
 func (c *Common) FieldU9BE(name string) uint64  { return c.FieldUE(name, 9, bitbuf.BigEndian) }
@@ -284,7 +284,7 @@ func (c *Common) FieldU24BE(name string) uint64 { return c.FieldUE(name, 24, bit
 func (c *Common) FieldU32BE(name string) uint64 { return c.FieldUE(name, 32, bitbuf.BigEndian) }
 func (c *Common) FieldU64BE(name string) uint64 { return c.FieldUE(name, 64, bitbuf.BigEndian) }
 
-func (c *Common) FieldULE(nBits uint64, name string) uint64 {
+func (c *Common) FieldULE(nBits int64, name string) uint64 {
 	return c.FieldUE(name, nBits, bitbuf.LittleEndian)
 }
 func (c *Common) FieldU9LE(name string) uint64  { return c.FieldUE(name, 9, bitbuf.LittleEndian) }
@@ -299,61 +299,61 @@ func (c *Common) FieldU24LE(name string) uint64 { return c.FieldUE(name, 24, bit
 func (c *Common) FieldU32LE(name string) uint64 { return c.FieldUE(name, 32, bitbuf.LittleEndian) }
 func (c *Common) FieldU64LE(name string) uint64 { return c.FieldUE(name, 64, bitbuf.LittleEndian) }
 
-func (c *Common) SE(nBits uint64, endian bitbuf.Endian) int64 {
+func (c *Common) SE(nBits int64, endian bitbuf.Endian) int64 {
 	n, err := c.bitBuf.SE(nBits, endian)
 	if err != nil {
 		panic(BitBufError{Err: err, Op: "SE", Size: nBits, Pos: c.bitBuf.Pos})
 	}
 	return n
 }
-func (c *Common) S(nBits uint64) int64 { return c.SE(nBits, bitbuf.BigEndian) }
-func (c *Common) S1() int64            { return c.SE(1, bitbuf.BigEndian) }
-func (c *Common) S2() int64            { return c.SE(2, bitbuf.BigEndian) }
-func (c *Common) S3() int64            { return c.SE(3, bitbuf.BigEndian) }
-func (c *Common) S4() int64            { return c.SE(4, bitbuf.BigEndian) }
-func (c *Common) S5() int64            { return c.SE(5, bitbuf.BigEndian) }
-func (c *Common) S6() int64            { return c.SE(6, bitbuf.BigEndian) }
-func (c *Common) S7() int64            { return c.SE(7, bitbuf.BigEndian) }
-func (c *Common) S8() int64            { return c.SE(8, bitbuf.BigEndian) }
-func (c *Common) S9() int64            { return c.SE(9, bitbuf.BigEndian) }
-func (c *Common) S10() int64           { return c.SE(10, bitbuf.BigEndian) }
-func (c *Common) S11() int64           { return c.SE(11, bitbuf.BigEndian) }
-func (c *Common) S12() int64           { return c.SE(12, bitbuf.BigEndian) }
-func (c *Common) S13() int64           { return c.SE(13, bitbuf.BigEndian) }
-func (c *Common) S14() int64           { return c.SE(14, bitbuf.BigEndian) }
-func (c *Common) S15() int64           { return c.SE(15, bitbuf.BigEndian) }
-func (c *Common) S16() int64           { return c.SE(16, bitbuf.BigEndian) }
-func (c *Common) S24() int64           { return c.SE(24, bitbuf.BigEndian) }
-func (c *Common) S32() int64           { return c.SE(32, bitbuf.BigEndian) }
-func (c *Common) S64() int64           { return c.SE(64, bitbuf.BigEndian) }
+func (c *Common) S(nBits int64) int64 { return c.SE(nBits, bitbuf.BigEndian) }
+func (c *Common) S1() int64           { return c.SE(1, bitbuf.BigEndian) }
+func (c *Common) S2() int64           { return c.SE(2, bitbuf.BigEndian) }
+func (c *Common) S3() int64           { return c.SE(3, bitbuf.BigEndian) }
+func (c *Common) S4() int64           { return c.SE(4, bitbuf.BigEndian) }
+func (c *Common) S5() int64           { return c.SE(5, bitbuf.BigEndian) }
+func (c *Common) S6() int64           { return c.SE(6, bitbuf.BigEndian) }
+func (c *Common) S7() int64           { return c.SE(7, bitbuf.BigEndian) }
+func (c *Common) S8() int64           { return c.SE(8, bitbuf.BigEndian) }
+func (c *Common) S9() int64           { return c.SE(9, bitbuf.BigEndian) }
+func (c *Common) S10() int64          { return c.SE(10, bitbuf.BigEndian) }
+func (c *Common) S11() int64          { return c.SE(11, bitbuf.BigEndian) }
+func (c *Common) S12() int64          { return c.SE(12, bitbuf.BigEndian) }
+func (c *Common) S13() int64          { return c.SE(13, bitbuf.BigEndian) }
+func (c *Common) S14() int64          { return c.SE(14, bitbuf.BigEndian) }
+func (c *Common) S15() int64          { return c.SE(15, bitbuf.BigEndian) }
+func (c *Common) S16() int64          { return c.SE(16, bitbuf.BigEndian) }
+func (c *Common) S24() int64          { return c.SE(24, bitbuf.BigEndian) }
+func (c *Common) S32() int64          { return c.SE(32, bitbuf.BigEndian) }
+func (c *Common) S64() int64          { return c.SE(64, bitbuf.BigEndian) }
 
-func (c *Common) SBE(nBits uint64) int64 { return c.SE(nBits, bitbuf.BigEndian) }
-func (c *Common) S9BE() int64            { return c.SE(9, bitbuf.BigEndian) }
-func (c *Common) S10BE() int64           { return c.SE(10, bitbuf.BigEndian) }
-func (c *Common) S11BE() int64           { return c.SE(11, bitbuf.BigEndian) }
-func (c *Common) S12BE() int64           { return c.SE(12, bitbuf.BigEndian) }
-func (c *Common) S13BE() int64           { return c.SE(13, bitbuf.BigEndian) }
-func (c *Common) S14BE() int64           { return c.SE(14, bitbuf.BigEndian) }
-func (c *Common) S15BE() int64           { return c.SE(15, bitbuf.BigEndian) }
-func (c *Common) S16BE() int64           { return c.SE(16, bitbuf.BigEndian) }
-func (c *Common) S24BE() int64           { return c.SE(24, bitbuf.BigEndian) }
-func (c *Common) S32BE() int64           { return c.SE(32, bitbuf.BigEndian) }
-func (c *Common) S64BE() int64           { return c.SE(64, bitbuf.BigEndian) }
+func (c *Common) SBE(nBits int64) int64 { return c.SE(nBits, bitbuf.BigEndian) }
+func (c *Common) S9BE() int64           { return c.SE(9, bitbuf.BigEndian) }
+func (c *Common) S10BE() int64          { return c.SE(10, bitbuf.BigEndian) }
+func (c *Common) S11BE() int64          { return c.SE(11, bitbuf.BigEndian) }
+func (c *Common) S12BE() int64          { return c.SE(12, bitbuf.BigEndian) }
+func (c *Common) S13BE() int64          { return c.SE(13, bitbuf.BigEndian) }
+func (c *Common) S14BE() int64          { return c.SE(14, bitbuf.BigEndian) }
+func (c *Common) S15BE() int64          { return c.SE(15, bitbuf.BigEndian) }
+func (c *Common) S16BE() int64          { return c.SE(16, bitbuf.BigEndian) }
+func (c *Common) S24BE() int64          { return c.SE(24, bitbuf.BigEndian) }
+func (c *Common) S32BE() int64          { return c.SE(32, bitbuf.BigEndian) }
+func (c *Common) S64BE() int64          { return c.SE(64, bitbuf.BigEndian) }
 
-func (c *Common) SLE(nBits uint64) int64 { return c.SE(nBits, bitbuf.LittleEndian) }
-func (c *Common) S9LE() int64            { return c.SE(9, bitbuf.LittleEndian) }
-func (c *Common) S10LE() int64           { return c.SE(10, bitbuf.LittleEndian) }
-func (c *Common) S11LE() int64           { return c.SE(11, bitbuf.LittleEndian) }
-func (c *Common) S12LE() int64           { return c.SE(12, bitbuf.LittleEndian) }
-func (c *Common) S13LE() int64           { return c.SE(13, bitbuf.LittleEndian) }
-func (c *Common) S14LE() int64           { return c.SE(14, bitbuf.LittleEndian) }
-func (c *Common) S15LE() int64           { return c.SE(15, bitbuf.LittleEndian) }
-func (c *Common) S16LE() int64           { return c.SE(16, bitbuf.LittleEndian) }
-func (c *Common) S24LE() int64           { return c.SE(24, bitbuf.LittleEndian) }
-func (c *Common) S32LE() int64           { return c.SE(32, bitbuf.LittleEndian) }
-func (c *Common) S64LE() int64           { return c.SE(64, bitbuf.LittleEndian) }
+func (c *Common) SLE(nBits int64) int64 { return c.SE(nBits, bitbuf.LittleEndian) }
+func (c *Common) S9LE() int64           { return c.SE(9, bitbuf.LittleEndian) }
+func (c *Common) S10LE() int64          { return c.SE(10, bitbuf.LittleEndian) }
+func (c *Common) S11LE() int64          { return c.SE(11, bitbuf.LittleEndian) }
+func (c *Common) S12LE() int64          { return c.SE(12, bitbuf.LittleEndian) }
+func (c *Common) S13LE() int64          { return c.SE(13, bitbuf.LittleEndian) }
+func (c *Common) S14LE() int64          { return c.SE(14, bitbuf.LittleEndian) }
+func (c *Common) S15LE() int64          { return c.SE(15, bitbuf.LittleEndian) }
+func (c *Common) S16LE() int64          { return c.SE(16, bitbuf.LittleEndian) }
+func (c *Common) S24LE() int64          { return c.SE(24, bitbuf.LittleEndian) }
+func (c *Common) S32LE() int64          { return c.SE(32, bitbuf.LittleEndian) }
+func (c *Common) S64LE() int64          { return c.SE(64, bitbuf.LittleEndian) }
 
-func (c *Common) FieldSE(name string, nBits uint64, endian bitbuf.Endian) int64 {
+func (c *Common) FieldSE(name string, nBits int64, endian bitbuf.Endian) int64 {
 	return c.FieldSFn(name, func() (int64, NumberFormat, string) {
 		n, err := c.bitBuf.SE(nBits, endian)
 		if err != nil {
@@ -362,7 +362,7 @@ func (c *Common) FieldSE(name string, nBits uint64, endian bitbuf.Endian) int64 
 		return n, NumberDecimal, ""
 	})
 }
-func (c *Common) FieldS(name string, nBits uint64) int64 {
+func (c *Common) FieldS(name string, nBits int64) int64 {
 	return c.FieldSE(name, nBits, bitbuf.BigEndian)
 }
 func (c *Common) FieldS1(name string) int64  { return c.FieldSE(name, 1, bitbuf.BigEndian) }
@@ -385,7 +385,7 @@ func (c *Common) FieldS24(name string) int64 { return c.FieldSE(name, 24, bitbuf
 func (c *Common) FieldS32(name string) int64 { return c.FieldSE(name, 32, bitbuf.BigEndian) }
 func (c *Common) FieldS64(name string) int64 { return c.FieldSE(name, 64, bitbuf.BigEndian) }
 
-func (c *Common) FieldSBE(name string, nBits uint64) int64 {
+func (c *Common) FieldSBE(name string, nBits int64) int64 {
 	return c.FieldSE(name, nBits, bitbuf.BigEndian)
 }
 func (c *Common) FieldS9BE(name string) int64  { return c.FieldSE(name, 9, bitbuf.BigEndian) }
@@ -400,7 +400,7 @@ func (c *Common) FieldS24BE(name string) int64 { return c.FieldSE(name, 24, bitb
 func (c *Common) FieldS32BE(name string) int64 { return c.FieldSE(name, 32, bitbuf.BigEndian) }
 func (c *Common) FieldS64BE(name string) int64 { return c.FieldSE(name, 64, bitbuf.BigEndian) }
 
-func (c *Common) FieldSLE(nBits uint64, name string) int64 {
+func (c *Common) FieldSLE(nBits int64, name string) int64 {
 	return c.FieldSE(name, nBits, bitbuf.LittleEndian)
 }
 func (c *Common) FieldS9LE(name string) int64  { return c.FieldSE(name, 9, bitbuf.LittleEndian) }
@@ -467,7 +467,7 @@ func (c *Common) FieldF64(name string) float64   { return c.FieldF64E(name, bitb
 func (c *Common) FieldF64BE(name string) float64 { return c.FieldF64E(name, bitbuf.BigEndian) }
 func (c *Common) FieldF64LE(name string) float64 { return c.FieldF64E(name, bitbuf.LittleEndian) }
 
-func (c *Common) UTF8(nBytes uint64) string {
+func (c *Common) UTF8(nBytes int64) string {
 	s, err := c.bitBuf.BytesLen(nBytes)
 	if err != nil {
 		panic(BitBufError{Err: err, Op: "UTF8", Size: nBytes * 8, Pos: c.bitBuf.Pos})
@@ -525,7 +525,7 @@ func (c *Common) Unary(s uint64) uint64 {
 	return n
 }
 
-func (c *Common) ZeroPadding(nBits uint64) bool {
+func (c *Common) ZeroPadding(nBits int64) bool {
 	isZero := true
 	left := nBits
 	for {
@@ -552,7 +552,7 @@ func (c *Common) AddChild(f *Field) {
 	c.current.Children = append(c.current.Children, f)
 }
 
-func (c *Common) FieldRangeFn(name string, firstBit uint64, nBits uint64, fn func() Value) Value {
+func (c *Common) FieldRangeFn(name string, firstBit int64, nBits int64, fn func() Value) Value {
 	f := &Field{
 		Name:  name,
 		Range: Range{Start: firstBit, Stop: firstBit + nBits},
@@ -623,7 +623,7 @@ func (c *Common) FieldStrFn(name string, fn func() (string, string)) string {
 	}).Str
 }
 
-func (c *Common) FieldBytesFn(name string, firstBit uint64, nBits uint64, fn func() ([]byte, string)) []byte {
+func (c *Common) FieldBytesFn(name string, firstBit int64, nBits int64, fn func() ([]byte, string)) []byte {
 	return c.FieldRangeFn(name, firstBit, nBits, func() Value {
 		bs, disp := fn()
 		return Value{Type: TypeBytes, Bytes: bs, Display: disp}
@@ -658,7 +658,7 @@ func (c *Common) FieldValidateUFn(name string, v uint64, fn func() uint64) {
 }
 
 // TODO: FieldBytesRange or?
-func (c *Common) FieldBytesLen(name string, nBytes uint64) []byte {
+func (c *Common) FieldBytesLen(name string, nBytes int64) []byte {
 	return c.FieldBytesFn(name, c.bitBuf.Pos, nBytes*8, func() ([]byte, string) {
 		bs, err := c.bitBuf.BytesLen(nBytes)
 		if err != nil {
@@ -668,7 +668,7 @@ func (c *Common) FieldBytesLen(name string, nBytes uint64) []byte {
 	})
 }
 
-func (c *Common) FieldBytesRange(name string, firstBit uint64, nBytes uint64) []byte {
+func (c *Common) FieldBytesRange(name string, firstBit int64, nBytes int64) []byte {
 	return c.FieldBytesFn(name, firstBit, nBytes*8, func() ([]byte, string) {
 		bs, err := c.bitBuf.BytesRange(firstBit, nBytes)
 		if err != nil {
@@ -678,7 +678,7 @@ func (c *Common) FieldBytesRange(name string, firstBit uint64, nBytes uint64) []
 	})
 }
 
-func (c *Common) FieldUTF8(name string, nBytes uint64) string {
+func (c *Common) FieldUTF8(name string, nBytes int64) string {
 	return c.FieldStrFn(name, func() (string, string) {
 		str, err := c.bitBuf.UTF8(nBytes)
 		if err != nil {
@@ -706,7 +706,7 @@ func (c *Common) FieldValidateStringFn(name string, v string, fn func() string) 
 func (c *Common) FieldValidateString(name string, v string) {
 	pos := c.bitBuf.Pos
 	s := c.FieldStrFn(name, func() (string, string) {
-		nBytes := uint64(len(v))
+		nBytes := int64(len(v))
 		str, err := c.bitBuf.UTF8(nBytes)
 		if err != nil {
 			panic(BitBufError{Err: err, Op: "FieldValidateString", Size: nBytes * 8, Pos: c.bitBuf.Pos})
@@ -722,7 +722,7 @@ func (c *Common) FieldValidateString(name string, v string) {
 	}
 }
 
-func (c *Common) FieldValidateZeroPadding(name string, nBits uint64) {
+func (c *Common) FieldValidateZeroPadding(name string, nBits int64) {
 	pos := c.bitBuf.Pos
 	var isZero bool
 	c.FieldFn(name, func() Value {
@@ -738,7 +738,7 @@ func (c *Common) FieldValidateZeroPadding(name string, nBits uint64) {
 	}
 }
 
-func (c *Common) ValidateAtLeastBitsLeft(nBits uint64) {
+func (c *Common) ValidateAtLeastBitsLeft(nBits int64) {
 	bl := c.bitBuf.BitsLeft()
 	if bl < nBits {
 		// TODO:
@@ -746,7 +746,7 @@ func (c *Common) ValidateAtLeastBitsLeft(nBits uint64) {
 	}
 }
 
-func (c *Common) ValidateAtLeastBytesLeft(nBytes uint64) {
+func (c *Common) ValidateAtLeastBytesLeft(nBytes int64) {
 	bl := c.bitBuf.BitsLeft()
 	if bl < nBytes*8 {
 		// TODO:
@@ -760,7 +760,7 @@ func (c *Common) Invalid(reason string) {
 }
 
 // TODO: rename?
-func (c *Common) SubLenFn(nBits uint64, fn func()) {
+func (c *Common) SubLenFn(nBits int64, fn func()) {
 	prevBb := c.bitBuf
 
 	bb, err := c.bitBuf.BitBufRange(0, c.bitBuf.Pos+nBits)
@@ -815,7 +815,7 @@ func (c *Common) FieldTryDecode(name string, forceFormats ...*Format) (Decoder, 
 }
 
 // TODO: FieldTryDecode? just TryDecode?
-func (c *Common) FieldDecodeLen(name string, nBits uint64, forceFormats ...*Format) (Decoder, []error) {
+func (c *Common) FieldDecodeLen(name string, nBits int64, forceFormats ...*Format) (Decoder, []error) {
 	bb, err := c.bitBuf.BitBufRange(c.bitBuf.Pos, nBits)
 	if err != nil {
 		panic(BitBufError{Err: err, Op: "FieldDecodeLen", Size: nBits, Pos: c.bitBuf.Pos})
@@ -838,7 +838,7 @@ func (c *Common) FieldDecodeLen(name string, nBits uint64, forceFormats ...*Form
 }
 
 // TODO: return decooder?
-func (c *Common) FieldTryDecodeRange(name string, firstBit uint64, nBits uint64, forceFormats ...*Format) (Decoder, []error) {
+func (c *Common) FieldTryDecodeRange(name string, firstBit int64, nBits int64, forceFormats ...*Format) (Decoder, []error) {
 	bb, err := c.bitBuf.BitBufRange(firstBit, nBits)
 	if err != nil {
 		panic(BitBufError{Err: err, Op: "FieldDecodeRange", Size: nBits, Pos: c.bitBuf.Pos})
@@ -853,7 +853,7 @@ func (c *Common) FieldTryDecodeRange(name string, firstBit uint64, nBits uint64,
 }
 
 // TODO: return decooder?
-func (c *Common) FieldDecodeRange(name string, firstBit uint64, nBits uint64, forceFormats ...*Format) (Decoder, []error) {
+func (c *Common) FieldDecodeRange(name string, firstBit int64, nBits int64, forceFormats ...*Format) (Decoder, []error) {
 	bb, err := c.bitBuf.BitBufRange(firstBit, nBits)
 	if err != nil {
 		panic(BitBufError{Err: err, Op: "FieldDecodeRange", Size: nBits, Pos: c.bitBuf.Pos})
@@ -870,7 +870,7 @@ func (c *Common) FieldDecodeRange(name string, firstBit uint64, nBits uint64, fo
 }
 
 // TODO: list of ranges?
-func (c *Common) FieldDecodeBitBuf(name string, firstBit uint64, nBits uint64, bb *bitbuf.Buffer, forceFormats ...*Format) (Decoder, []error) {
+func (c *Common) FieldDecodeBitBuf(name string, firstBit int64, nBits int64, bb *bitbuf.Buffer, forceFormats ...*Format) (Decoder, []error) {
 	d, errs := c.registry.Probe(c, name, Range{Start: firstBit, Stop: nBits}, bb, forceFormats)
 	if d != nil {
 		c.AddChild(d.Root())
@@ -881,7 +881,7 @@ func (c *Common) FieldDecodeBitBuf(name string, firstBit uint64, nBits uint64, b
 	return d, errs
 }
 
-func (c *Common) FieldZlib(name string, firsBit uint64, nBits uint64, b []byte, forceFormats ...*Format) (Decoder, []error) {
+func (c *Common) FieldZlib(name string, firsBit int64, nBits int64, b []byte, forceFormats ...*Format) (Decoder, []error) {
 	zr, err := zlib.NewReader(bytes.NewReader(b))
 	if err != nil {
 		panic(err)
@@ -900,7 +900,7 @@ func (c *Common) FieldZlib(name string, firsBit uint64, nBits uint64, b []byte, 
 }
 
 // TODO: range?
-func (c *Common) FieldZlibLen(name string, nBytes uint64, forceFormats ...*Format) (Decoder, []error) {
+func (c *Common) FieldZlibLen(name string, nBytes int64, forceFormats ...*Format) (Decoder, []error) {
 	firstBit := c.bitBuf.Pos
 	zr, err := zlib.NewReader(bytes.NewReader(c.BytesLen(nBytes)))
 	if err != nil {

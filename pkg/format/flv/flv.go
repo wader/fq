@@ -68,13 +68,13 @@ func (d *FileDecoder) Decode() {
 	fieldScriptDataString := func(name string) {
 		d.FieldStrFn(name, func() (string, string) {
 			len := d.U16()
-			return d.UTF8(len), ""
+			return d.UTF8(int64(len)), ""
 		})
 	}
 	fieldScriptDataStringLong := func(name string) {
 		d.FieldStrFn(name, func() (string, string) {
 			len := d.U32()
-			return d.UTF8(len), ""
+			return d.UTF8(int64(len)), ""
 		})
 	}
 
@@ -150,7 +150,7 @@ func (d *FileDecoder) Decode() {
 	d.FieldU1("type_flags_video")
 	dataOffset := d.FieldU32("data_offset")
 
-	d.SeekAbs(dataOffset * 8)
+	d.SeekAbs(int64(dataOffset) * 8)
 
 	for !d.End() {
 		d.FieldU32("previous_tag_size")

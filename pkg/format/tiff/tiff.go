@@ -160,7 +160,7 @@ func (d *FileDecoder) Decode() {
 
 	// TODO: inf loop?
 	for ifdOffset != 0 {
-		d.SeekAbs(ifdOffset * 8)
+		d.SeekAbs(int64(ifdOffset) * 8)
 
 		d.FieldNoneFn("ifd", func() {
 			numberOfFields := fu16("number_of_field")

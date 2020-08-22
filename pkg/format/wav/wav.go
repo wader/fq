@@ -17,7 +17,7 @@ var File = &decode.Format{
 // FileDecoder is a WAV decoder
 type FileDecoder struct{ decode.Common }
 
-func (d *FileDecoder) decodeChunk(expectedChunkId string) uint64 {
+func (d *FileDecoder) decodeChunk(expectedChunkId string) int64 {
 	chunks := map[string]func(){
 		"RIFF": func() {
 			d.FieldU32LE("format")
@@ -37,7 +37,7 @@ func (d *FileDecoder) decodeChunk(expectedChunkId string) uint64 {
 	}
 
 	var chunkID string
-	var chunkLen uint64
+	var chunkLen int64
 	chunkID = d.UTF8(4)
 	if expectedChunkId != "" && chunkID != expectedChunkId {
 		d.Invalid(fmt.Sprintf("expected chunk id %q found %q", expectedChunkId, chunkID))
@@ -46,7 +46,7 @@ func (d *FileDecoder) decodeChunk(expectedChunkId string) uint64 {
 
 	d.FieldStrFn(chunkID, func() (string, string) {
 		d.FieldUTF8("chunk_id", 4)
-		chunkLen = d.FieldU32LE("chunk_size")
+		chunkLen = int64(d.FieldU32LE("chunk_size"))
 
 		if fn, ok := chunks[chunkID]; ok {
 			d.SubLenFn(chunkLen*8, fn)

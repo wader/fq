@@ -7,7 +7,7 @@ import (
 
 // ReadBits read nBits bits large unsigned integer from buf starting from firstBit.
 // Integer is read most significant bit first.
-func ReadBits(buf []byte, firstBit uint64, nBits uint64) uint64 {
+func ReadBits(buf []byte, firstBit int64, nBits int64) uint64 {
 	if nBits > 64 {
 		panic(fmt.Sprintf("unsupported bit length %d", nBits))
 	}

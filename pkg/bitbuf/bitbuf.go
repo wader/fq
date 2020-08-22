@@ -31,19 +31,20 @@ var ErrUnexpectedEOF = errors.New("unexpected EOF")
 // Buffer is a bitbuf buffer
 type Buffer struct {
 	// Len is bit length of buffer
-	Len uint64
+	Len int64
 	// Pos is current bit position in buffer
-	Pos uint64
+	Pos int64
 
 	rs             io.ReadSeeker
-	firstBitOffset uint64
-	readAheadPos   uint64
+	firstBitOffset int64
+	readAheadPos   int64
+	readAheadLen   int64
 	readAhead      []byte
 }
 
 // NewFromReadSeeker bitbuf.Buffer from io.ReadSeeker, start at firstBit with bit length lenBits
 // buf is not copied.
-func NewFromReadSeeker(rs io.ReadSeeker, firstBitOffset uint64) (*Buffer, error) {
+func NewFromReadSeeker(rs io.ReadSeeker, firstBitOffset int64) (*Buffer, error) {
 	len, err := rs.Seek(0, io.SeekEnd)
 	if err != nil {
 		return nil, err
@@ -51,12 +52,12 @@ func NewFromReadSeeker(rs io.ReadSeeker, firstBitOffset uint64) (*Buffer, error)
 	if _, err := rs.Seek(0, io.SeekStart); err != nil {
 		return nil, err
 	}
-	if firstBitOffset > uint64(len*8) {
+	if firstBitOffset > len*8 {
 		return nil, ErrUnexpectedEOF
 	}
 
 	return &Buffer{
-		Len:            uint64(len)*8 - firstBitOffset,
+		Len:            len*8 - firstBitOffset,
 		Pos:            0,
 		rs:             rs,
 		firstBitOffset: firstBitOffset,
@@ -66,13 +67,13 @@ func NewFromReadSeeker(rs io.ReadSeeker, firstBitOffset uint64) (*Buffer, error)
 }
 
 // NewFromBytes bitbuf.Buffer from bytes
-func NewFromBytes(buf []byte, firstBitOffset uint64) (*Buffer, error) {
+func NewFromBytes(buf []byte, firstBitOffset int64) (*Buffer, error) {
 	return NewFromReadSeeker(bytes.NewReader(buf), firstBitOffset)
 }
 
 // NewFromBitBuf bitbuf.Buffer from other bitbuf.Buffer
 // Will be a shallow copy with position reset to zero.
-func NewFromBitBuf(b *Buffer, firstBitOffset uint64) (*Buffer, error) {
+func NewFromBitBuf(b *Buffer, firstBitOffset int64) (*Buffer, error) {
 	if firstBitOffset > b.Len {
 		return nil, ErrUnexpectedEOF
 	}
@@ -94,7 +95,7 @@ func NewFromBitString(s string) (*Buffer, error) {
 	if r > 0 {
 		bufLen++
 	}
-	firstBifOffset := (8 - r) % 8
+	firstBifOffset := int64((8 - r) % 8)
 	buf := make([]byte, bufLen)
 
 	for i := 0; i < len(s); i++ {
@@ -108,18 +109,18 @@ func NewFromBitString(s string) (*Buffer, error) {
 			return nil, fmt.Errorf("invalid bit string %q at index %d %q", s, i, s[i])
 		}
 
-		bufBitOffset := firstBifOffset + i
+		bufBitOffset := firstBifOffset + int64(i)
 		bufByteOffset := bufBitOffset / 8
 		buf[bufByteOffset] |= byte(b << (7 - bufBitOffset%8))
 	}
 
-	return NewFromBytes(buf, uint64(firstBifOffset))
+	return NewFromBytes(buf, firstBifOffset)
 }
 
 // BitBufRange reads nBits bits starting from start
 // Does not update current position.
-func (b *Buffer) BitBufRange(firstBitOffset uint64, nBits uint64) (*Buffer, error) {
-	endPos := uint64(firstBitOffset) + uint64(nBits)
+func (b *Buffer) BitBufRange(firstBitOffset int64, nBits int64) (*Buffer, error) {
+	endPos := firstBitOffset + nBits
 	if endPos > b.Len {
 		return nil, ErrUnexpectedEOF
 	}
@@ -137,7 +138,7 @@ func (b *Buffer) BitBufRange(firstBitOffset uint64, nBits uint64) (*Buffer, erro
 }
 
 // BitBufLen reads nBits
-func (b *Buffer) BitBufLen(nBits uint64) (*Buffer, error) {
+func (b *Buffer) BitBufLen(nBits int64) (*Buffer, error) {
 	bb, err := b.BitBufRange(b.Pos, nBits)
 	if err != nil {
 		return nil, err
@@ -153,13 +154,13 @@ func (b *Buffer) Copy() (*Buffer, error) {
 	return NewFromBitBuf(b, 0)
 }
 
-func (b *Buffer) read(buf []byte, pos uint64, nBits uint64) (uint64, uint64, error) {
+func (b *Buffer) read(buf []byte, pos int64, nBits int64) (int64, int64, error) {
 	// log.Printf("pos: %#+v\n", pos)
 	// log.Printf("nBits: %#+v\n", nBits)
 	// log.Printf("b.firstBitOffset: %#+v\n", b.firstBitOffset)
 	// log.Printf("b.Len: %#+v\n", b.Len)
 
-	endBitPos := uint64(b.Pos) + uint64(nBits)
+	endBitPos := b.Pos + nBits
 	if endBitPos > b.firstBitOffset+b.Len {
 		// log.Println("EOF")
 		return 0, 0, ErrUnexpectedEOF
@@ -186,19 +187,26 @@ func (b *Buffer) read(buf []byte, pos uint64, nBits uint64) (uint64, uint64, err
 
 	// log.Printf("bufLen: %#+v\n", bufLen)
 
-	if _, err := b.rs.Seek(readBytePos, io.SeekStart); err != nil {
-		return 0, 0, err
-	}
+	for {
+		readAheadStart := readBytePos - b.readAheadPos
+		if readAheadStart >= 0 && readBytePos+readBytes <= b.readAheadPos+b.readAheadLen {
+			copy(buf[:readBytePos], b.readAhead[readAheadStart:readAheadStart+readBytes])
+			return readBytes, readSkipBits, nil
+		}
 
-	if _, err := io.ReadFull(b.rs, buf[:readBytes]); err != nil {
-		return 0, 0, nil
-	}
+		if _, err := b.rs.Seek(readBytePos, io.SeekStart); err != nil {
+			return 0, 0, err
+		}
 
-	return readBytes, readSkipBits, nil
+		if _, err := io.ReadFull(b.rs, b.readAhead); err != nil {
+			return 0, 0, nil
+		}
+
+	}
 }
 
 // Bits reads nBits bits from buffer
-func (b *Buffer) bits(nBits uint64) (uint64, error) {
+func (b *Buffer) bits(nBits int64) (uint64, error) {
 	var bufArray [8]byte
 	buf := bufArray[:]
 	_, bufBitOffset, err := b.read(buf[:], b.Pos, nBits)
@@ -212,7 +220,7 @@ func (b *Buffer) bits(nBits uint64) (uint64, error) {
 }
 
 // Bits reads nBits bits from buffer
-func (b *Buffer) Bits(nBits uint64) (uint64, error) {
+func (b *Buffer) Bits(nBits int64) (uint64, error) {
 	n, err := b.bits(nBits)
 	if err != nil {
 		return 0, err
@@ -223,12 +231,12 @@ func (b *Buffer) Bits(nBits uint64) (uint64, error) {
 
 // PeekBits peek nBits bits from buffer
 // TODO: share code?
-func (b *Buffer) PeekBits(nBits uint64) (uint64, error) {
+func (b *Buffer) PeekBits(nBits int64) (uint64, error) {
 	return b.bits(nBits)
 }
 
 // PeekBytes peek nBytes bytes from buffer
-func (b *Buffer) PeekBytes(nBytes uint64) ([]byte, error) {
+func (b *Buffer) PeekBytes(nBytes int64) ([]byte, error) {
 	bs, err := b.BytesRange(b.Pos, nBytes)
 	if err != nil {
 		return bs, nil
@@ -236,10 +244,10 @@ func (b *Buffer) PeekBytes(nBytes uint64) ([]byte, error) {
 	return bs, nil
 }
 
-func (b *Buffer) PeekFind(bits uint64, v uint8, maxLen int64) (uint64, error) {
+func (b *Buffer) PeekFind(nBits int64, v uint8, maxLen int64) (int64, error) {
 	var count int64
 	for {
-		bv, err := b.U(bits)
+		bv, err := b.U(nBits)
 		if err != nil {
 			return 0, err
 		}
@@ -248,15 +256,15 @@ func (b *Buffer) PeekFind(bits uint64, v uint8, maxLen int64) (uint64, error) {
 			break
 		}
 	}
-	_, err := b.SeekRel(-count * int64(bits))
+	_, err := b.SeekRel(-count * int64(nBits))
 	if err != nil {
 		return 0, err
 	}
 
-	return uint64(count) * uint64(bits), nil
+	return count * nBits, nil
 }
 
-func (b *Buffer) BytesBitRange(firstBitOffset uint64, nBits uint64, pad uint8) ([]byte, error) {
+func (b *Buffer) BytesBitRange(firstBitOffset int64, nBits int64, pad uint8) ([]byte, error) {
 	buf := make([]byte, nBits/8+2)
 	readBytes, readSkipBits, err := b.read(buf, firstBitOffset, nBits)
 	if err != nil {
@@ -272,7 +280,7 @@ func (b *Buffer) BytesBitRange(firstBitOffset uint64, nBits uint64, pad uint8) (
 	restBits := nBits % 8
 
 	var rb []byte
-	for i := uint64(0); i < nBytes; i++ {
+	for i := int64(0); i < nBytes; i++ {
 		rb = append(rb, byte(ReadBits(buf, readSkipBits+i*8, 8)))
 	}
 	if restBits != 0 {
@@ -285,12 +293,12 @@ func (b *Buffer) BytesBitRange(firstBitOffset uint64, nBits uint64, pad uint8) (
 
 // BytesRange reads nBytes bytes starting bit position start
 // Does not update current position.
-func (b *Buffer) BytesRange(firstBit uint64, nBytes uint64) ([]byte, error) {
+func (b *Buffer) BytesRange(firstBit int64, nBytes int64) ([]byte, error) {
 	return b.BytesBitRange(firstBit, nBytes*8, 0)
 }
 
 // BytesLen reads nBytes bytes
-func (b *Buffer) BytesLen(nBytes uint64) ([]byte, error) {
+func (b *Buffer) BytesLen(nBytes int64) ([]byte, error) {
 	bb, err := b.BytesRange(b.Pos, nBytes)
 	if err != nil {
 		return nil, err
@@ -305,24 +313,24 @@ func (b *Buffer) End() bool {
 }
 
 // BitsLeft number of bits left until end
-func (b *Buffer) BitsLeft() uint64 {
+func (b *Buffer) BitsLeft() int64 {
 	return b.Len - b.Pos
 }
 
 // ByteAlignBits number of bits to next byte align
-func (b *Buffer) ByteAlignBits() uint64 {
+func (b *Buffer) ByteAlignBits() int64 {
 	return (8 - (b.Pos & 0x7)) & 0x7
 }
 
 // BytePos byte position of current bit position
-func (b *Buffer) BytePos() uint64 {
+func (b *Buffer) BytePos() int64 {
 	return b.Pos & 0x7
 }
 
 // SeekRel seeks relative to current bit position
 // TODO: better name?
-func (b *Buffer) SeekRel(delta int64) (uint64, error) {
-	endPos := uint64(int64(b.Pos) + delta)
+func (b *Buffer) SeekRel(delta int64) (int64, error) {
+	endPos := b.Pos + delta
 	if endPos > b.Len {
 		return b.Pos, ErrUnexpectedEOF
 	}
@@ -332,7 +340,7 @@ func (b *Buffer) SeekRel(delta int64) (uint64, error) {
 }
 
 // SeekAbs seeks to absolute position
-func (b *Buffer) SeekAbs(pos uint64) (uint64, error) {
+func (b *Buffer) SeekAbs(pos int64) (int64, error) {
 	if pos > b.Len {
 		return b.Pos, ErrUnexpectedEOF
 	}
@@ -365,7 +373,7 @@ func (b *Buffer) BitString() string {
 }
 
 // TruncateRel length of buffer to current position plus n
-func (b *Buffer) TruncateRel(nBits uint64) error {
+func (b *Buffer) TruncateRel(nBits int64) error {
 	endPos := b.Pos + nBits
 	if endPos > b.Len {
 		return ErrUnexpectedEOF
@@ -378,7 +386,7 @@ func (b *Buffer) TruncateRel(nBits uint64) error {
 
 // UE reads a nBits bits unsigned integer with byte order endian
 // MSB first
-func (b *Buffer) UE(nBits uint64, endian Endian) (uint64, error) {
+func (b *Buffer) UE(nBits int64, endian Endian) (uint64, error) {
 	n, err := b.Bits(nBits)
 	if err != nil {
 		return 0, err
@@ -399,56 +407,56 @@ func (b *Buffer) Bool() (bool, error) {
 	return n == 1, nil
 }
 
-func (b *Buffer) U(nBits uint64) (uint64, error) { return b.UE(nBits, BigEndian) }
-func (b *Buffer) U1() (uint64, error)            { return b.UE(1, BigEndian) }
-func (b *Buffer) U2() (uint64, error)            { return b.UE(2, BigEndian) }
-func (b *Buffer) U3() (uint64, error)            { return b.UE(3, BigEndian) }
-func (b *Buffer) U4() (uint64, error)            { return b.UE(4, BigEndian) }
-func (b *Buffer) U5() (uint64, error)            { return b.UE(5, BigEndian) }
-func (b *Buffer) U6() (uint64, error)            { return b.UE(6, BigEndian) }
-func (b *Buffer) U7() (uint64, error)            { return b.UE(7, BigEndian) }
-func (b *Buffer) U8() (uint64, error)            { return b.UE(8, BigEndian) }
-func (b *Buffer) U9() (uint64, error)            { return b.UE(9, BigEndian) }
-func (b *Buffer) U10() (uint64, error)           { return b.UE(10, BigEndian) }
-func (b *Buffer) U11() (uint64, error)           { return b.UE(11, BigEndian) }
-func (b *Buffer) U12() (uint64, error)           { return b.UE(12, BigEndian) }
-func (b *Buffer) U13() (uint64, error)           { return b.UE(13, BigEndian) }
-func (b *Buffer) U14() (uint64, error)           { return b.UE(14, BigEndian) }
-func (b *Buffer) U15() (uint64, error)           { return b.UE(15, BigEndian) }
-func (b *Buffer) U16() (uint64, error)           { return b.UE(16, BigEndian) }
-func (b *Buffer) U24() (uint64, error)           { return b.UE(24, BigEndian) }
-func (b *Buffer) U32() (uint64, error)           { return b.UE(32, BigEndian) }
-func (b *Buffer) U64() (uint64, error)           { return b.UE(64, BigEndian) }
+func (b *Buffer) U(nBits int64) (uint64, error) { return b.UE(nBits, BigEndian) }
+func (b *Buffer) U1() (uint64, error)           { return b.UE(1, BigEndian) }
+func (b *Buffer) U2() (uint64, error)           { return b.UE(2, BigEndian) }
+func (b *Buffer) U3() (uint64, error)           { return b.UE(3, BigEndian) }
+func (b *Buffer) U4() (uint64, error)           { return b.UE(4, BigEndian) }
+func (b *Buffer) U5() (uint64, error)           { return b.UE(5, BigEndian) }
+func (b *Buffer) U6() (uint64, error)           { return b.UE(6, BigEndian) }
+func (b *Buffer) U7() (uint64, error)           { return b.UE(7, BigEndian) }
+func (b *Buffer) U8() (uint64, error)           { return b.UE(8, BigEndian) }
+func (b *Buffer) U9() (uint64, error)           { return b.UE(9, BigEndian) }
+func (b *Buffer) U10() (uint64, error)          { return b.UE(10, BigEndian) }
+func (b *Buffer) U11() (uint64, error)          { return b.UE(11, BigEndian) }
+func (b *Buffer) U12() (uint64, error)          { return b.UE(12, BigEndian) }
+func (b *Buffer) U13() (uint64, error)          { return b.UE(13, BigEndian) }
+func (b *Buffer) U14() (uint64, error)          { return b.UE(14, BigEndian) }
+func (b *Buffer) U15() (uint64, error)          { return b.UE(15, BigEndian) }
+func (b *Buffer) U16() (uint64, error)          { return b.UE(16, BigEndian) }
+func (b *Buffer) U24() (uint64, error)          { return b.UE(24, BigEndian) }
+func (b *Buffer) U32() (uint64, error)          { return b.UE(32, BigEndian) }
+func (b *Buffer) U64() (uint64, error)          { return b.UE(64, BigEndian) }
 
-func (b *Buffer) UBE(nBits uint64) (uint64, error) { return b.UE(nBits, BigEndian) }
-func (b *Buffer) U9BE() (uint64, error)            { return b.UE(9, BigEndian) }
-func (b *Buffer) U10BE() (uint64, error)           { return b.UE(10, BigEndian) }
-func (b *Buffer) U11BE() (uint64, error)           { return b.UE(11, BigEndian) }
-func (b *Buffer) U12BE() (uint64, error)           { return b.UE(12, BigEndian) }
-func (b *Buffer) U13BE() (uint64, error)           { return b.UE(13, BigEndian) }
-func (b *Buffer) U14BE() (uint64, error)           { return b.UE(14, BigEndian) }
-func (b *Buffer) U15BE() (uint64, error)           { return b.UE(15, BigEndian) }
-func (b *Buffer) U16BE() (uint64, error)           { return b.UE(16, BigEndian) }
-func (b *Buffer) U24BE() (uint64, error)           { return b.UE(24, BigEndian) }
-func (b *Buffer) U32BE() (uint64, error)           { return b.UE(32, BigEndian) }
-func (b *Buffer) U64BE() (uint64, error)           { return b.UE(64, BigEndian) }
+func (b *Buffer) UBE(nBits int64) (uint64, error) { return b.UE(nBits, BigEndian) }
+func (b *Buffer) U9BE() (uint64, error)           { return b.UE(9, BigEndian) }
+func (b *Buffer) U10BE() (uint64, error)          { return b.UE(10, BigEndian) }
+func (b *Buffer) U11BE() (uint64, error)          { return b.UE(11, BigEndian) }
+func (b *Buffer) U12BE() (uint64, error)          { return b.UE(12, BigEndian) }
+func (b *Buffer) U13BE() (uint64, error)          { return b.UE(13, BigEndian) }
+func (b *Buffer) U14BE() (uint64, error)          { return b.UE(14, BigEndian) }
+func (b *Buffer) U15BE() (uint64, error)          { return b.UE(15, BigEndian) }
+func (b *Buffer) U16BE() (uint64, error)          { return b.UE(16, BigEndian) }
+func (b *Buffer) U24BE() (uint64, error)          { return b.UE(24, BigEndian) }
+func (b *Buffer) U32BE() (uint64, error)          { return b.UE(32, BigEndian) }
+func (b *Buffer) U64BE() (uint64, error)          { return b.UE(64, BigEndian) }
 
-func (b *Buffer) ULE(nBits uint64) (uint64, error) { return b.UE(nBits, LittleEndian) }
-func (b *Buffer) U9LE() (uint64, error)            { return b.UE(9, LittleEndian) }
-func (b *Buffer) U10LE() (uint64, error)           { return b.UE(10, LittleEndian) }
-func (b *Buffer) U11LE() (uint64, error)           { return b.UE(11, LittleEndian) }
-func (b *Buffer) U12LE() (uint64, error)           { return b.UE(12, LittleEndian) }
-func (b *Buffer) U13LE() (uint64, error)           { return b.UE(13, LittleEndian) }
-func (b *Buffer) U14LE() (uint64, error)           { return b.UE(14, LittleEndian) }
-func (b *Buffer) U15LE() (uint64, error)           { return b.UE(15, LittleEndian) }
-func (b *Buffer) U16LE() (uint64, error)           { return b.UE(16, LittleEndian) }
-func (b *Buffer) U24LE() (uint64, error)           { return b.UE(24, LittleEndian) }
-func (b *Buffer) U32LE() (uint64, error)           { return b.UE(32, LittleEndian) }
-func (b *Buffer) U64LE() (uint64, error)           { return b.UE(64, LittleEndian) }
+func (b *Buffer) ULE(nBits int64) (uint64, error) { return b.UE(nBits, LittleEndian) }
+func (b *Buffer) U9LE() (uint64, error)           { return b.UE(9, LittleEndian) }
+func (b *Buffer) U10LE() (uint64, error)          { return b.UE(10, LittleEndian) }
+func (b *Buffer) U11LE() (uint64, error)          { return b.UE(11, LittleEndian) }
+func (b *Buffer) U12LE() (uint64, error)          { return b.UE(12, LittleEndian) }
+func (b *Buffer) U13LE() (uint64, error)          { return b.UE(13, LittleEndian) }
+func (b *Buffer) U14LE() (uint64, error)          { return b.UE(14, LittleEndian) }
+func (b *Buffer) U15LE() (uint64, error)          { return b.UE(15, LittleEndian) }
+func (b *Buffer) U16LE() (uint64, error)          { return b.UE(16, LittleEndian) }
+func (b *Buffer) U24LE() (uint64, error)          { return b.UE(24, LittleEndian) }
+func (b *Buffer) U32LE() (uint64, error)          { return b.UE(32, LittleEndian) }
+func (b *Buffer) U64LE() (uint64, error)          { return b.UE(64, LittleEndian) }
 
 // SE reads a nBits signed (two's-complement) integer with byte order endian
 // MSB first
-func (b *Buffer) SE(nBits uint64, endian Endian) (int64, error) {
+func (b *Buffer) SE(nBits int64, endian Endian) (int64, error) {
 	n, err := b.Bits(nBits)
 	if err != nil {
 		return 0, err
@@ -467,52 +475,52 @@ func (b *Buffer) SE(nBits uint64, endian Endian) (int64, error) {
 	return s, nil
 }
 
-func (b *Buffer) S(nBits uint64) (int64, error) { return b.SE(nBits, BigEndian) }
-func (b *Buffer) S1() (int64, error)            { return b.SE(1, BigEndian) }
-func (b *Buffer) S2() (int64, error)            { return b.SE(2, BigEndian) }
-func (b *Buffer) S3() (int64, error)            { return b.SE(3, BigEndian) }
-func (b *Buffer) S4() (int64, error)            { return b.SE(4, BigEndian) }
-func (b *Buffer) S5() (int64, error)            { return b.SE(5, BigEndian) }
-func (b *Buffer) S6() (int64, error)            { return b.SE(6, BigEndian) }
-func (b *Buffer) S7() (int64, error)            { return b.SE(7, BigEndian) }
-func (b *Buffer) S8() (int64, error)            { return b.SE(8, BigEndian) }
-func (b *Buffer) S9() (int64, error)            { return b.SE(9, BigEndian) }
-func (b *Buffer) S10() (int64, error)           { return b.SE(10, BigEndian) }
-func (b *Buffer) S11() (int64, error)           { return b.SE(11, BigEndian) }
-func (b *Buffer) S12() (int64, error)           { return b.SE(12, BigEndian) }
-func (b *Buffer) S13() (int64, error)           { return b.SE(13, BigEndian) }
-func (b *Buffer) S14() (int64, error)           { return b.SE(14, BigEndian) }
-func (b *Buffer) S15() (int64, error)           { return b.SE(15, BigEndian) }
-func (b *Buffer) S16() (int64, error)           { return b.SE(16, BigEndian) }
-func (b *Buffer) S24() (int64, error)           { return b.SE(24, BigEndian) }
-func (b *Buffer) S32() (int64, error)           { return b.SE(32, BigEndian) }
-func (b *Buffer) S64() (int64, error)           { return b.SE(64, BigEndian) }
+func (b *Buffer) S(nBits int64) (int64, error) { return b.SE(nBits, BigEndian) }
+func (b *Buffer) S1() (int64, error)           { return b.SE(1, BigEndian) }
+func (b *Buffer) S2() (int64, error)           { return b.SE(2, BigEndian) }
+func (b *Buffer) S3() (int64, error)           { return b.SE(3, BigEndian) }
+func (b *Buffer) S4() (int64, error)           { return b.SE(4, BigEndian) }
+func (b *Buffer) S5() (int64, error)           { return b.SE(5, BigEndian) }
+func (b *Buffer) S6() (int64, error)           { return b.SE(6, BigEndian) }
+func (b *Buffer) S7() (int64, error)           { return b.SE(7, BigEndian) }
+func (b *Buffer) S8() (int64, error)           { return b.SE(8, BigEndian) }
+func (b *Buffer) S9() (int64, error)           { return b.SE(9, BigEndian) }
+func (b *Buffer) S10() (int64, error)          { return b.SE(10, BigEndian) }
+func (b *Buffer) S11() (int64, error)          { return b.SE(11, BigEndian) }
+func (b *Buffer) S12() (int64, error)          { return b.SE(12, BigEndian) }
+func (b *Buffer) S13() (int64, error)          { return b.SE(13, BigEndian) }
+func (b *Buffer) S14() (int64, error)          { return b.SE(14, BigEndian) }
+func (b *Buffer) S15() (int64, error)          { return b.SE(15, BigEndian) }
+func (b *Buffer) S16() (int64, error)          { return b.SE(16, BigEndian) }
+func (b *Buffer) S24() (int64, error)          { return b.SE(24, BigEndian) }
+func (b *Buffer) S32() (int64, error)          { return b.SE(32, BigEndian) }
+func (b *Buffer) S64() (int64, error)          { return b.SE(64, BigEndian) }
 
-func (b *Buffer) SBE(nBits uint64) (int64, error) { return b.SE(nBits, BigEndian) }
-func (b *Buffer) S9BE() (int64, error)            { return b.SE(9, BigEndian) }
-func (b *Buffer) S10BE() (int64, error)           { return b.SE(10, BigEndian) }
-func (b *Buffer) S11BE() (int64, error)           { return b.SE(11, BigEndian) }
-func (b *Buffer) S12BE() (int64, error)           { return b.SE(12, BigEndian) }
-func (b *Buffer) S13BE() (int64, error)           { return b.SE(13, BigEndian) }
-func (b *Buffer) S14BE() (int64, error)           { return b.SE(14, BigEndian) }
-func (b *Buffer) S15BE() (int64, error)           { return b.SE(15, BigEndian) }
-func (b *Buffer) S16BE() (int64, error)           { return b.SE(16, BigEndian) }
-func (b *Buffer) S24BE() (int64, error)           { return b.SE(24, BigEndian) }
-func (b *Buffer) S32BE() (int64, error)           { return b.SE(32, BigEndian) }
-func (b *Buffer) S64BE() (int64, error)           { return b.SE(64, BigEndian) }
+func (b *Buffer) SBE(nBits int64) (int64, error) { return b.SE(nBits, BigEndian) }
+func (b *Buffer) S9BE() (int64, error)           { return b.SE(9, BigEndian) }
+func (b *Buffer) S10BE() (int64, error)          { return b.SE(10, BigEndian) }
+func (b *Buffer) S11BE() (int64, error)          { return b.SE(11, BigEndian) }
+func (b *Buffer) S12BE() (int64, error)          { return b.SE(12, BigEndian) }
+func (b *Buffer) S13BE() (int64, error)          { return b.SE(13, BigEndian) }
+func (b *Buffer) S14BE() (int64, error)          { return b.SE(14, BigEndian) }
+func (b *Buffer) S15BE() (int64, error)          { return b.SE(15, BigEndian) }
+func (b *Buffer) S16BE() (int64, error)          { return b.SE(16, BigEndian) }
+func (b *Buffer) S24BE() (int64, error)          { return b.SE(24, BigEndian) }
+func (b *Buffer) S32BE() (int64, error)          { return b.SE(32, BigEndian) }
+func (b *Buffer) S64BE() (int64, error)          { return b.SE(64, BigEndian) }
 
-func (b *Buffer) SLE(nBits uint64) (int64, error) { return b.SE(nBits, LittleEndian) }
-func (b *Buffer) S9LE() (int64, error)            { return b.SE(9, LittleEndian) }
-func (b *Buffer) S10LE() (int64, error)           { return b.SE(10, LittleEndian) }
-func (b *Buffer) S11LE() (int64, error)           { return b.SE(11, LittleEndian) }
-func (b *Buffer) S12LE() (int64, error)           { return b.SE(12, LittleEndian) }
-func (b *Buffer) S13LE() (int64, error)           { return b.SE(13, LittleEndian) }
-func (b *Buffer) S14LE() (int64, error)           { return b.SE(14, LittleEndian) }
-func (b *Buffer) S15LE() (int64, error)           { return b.SE(15, LittleEndian) }
-func (b *Buffer) S16LE() (int64, error)           { return b.SE(16, LittleEndian) }
-func (b *Buffer) S24LE() (int64, error)           { return b.SE(24, LittleEndian) }
-func (b *Buffer) S32LE() (int64, error)           { return b.SE(32, LittleEndian) }
-func (b *Buffer) S64LE() (int64, error)           { return b.SE(64, LittleEndian) }
+func (b *Buffer) SLE(nBits int64) (int64, error) { return b.SE(nBits, LittleEndian) }
+func (b *Buffer) S9LE() (int64, error)           { return b.SE(9, LittleEndian) }
+func (b *Buffer) S10LE() (int64, error)          { return b.SE(10, LittleEndian) }
+func (b *Buffer) S11LE() (int64, error)          { return b.SE(11, LittleEndian) }
+func (b *Buffer) S12LE() (int64, error)          { return b.SE(12, LittleEndian) }
+func (b *Buffer) S13LE() (int64, error)          { return b.SE(13, LittleEndian) }
+func (b *Buffer) S14LE() (int64, error)          { return b.SE(14, LittleEndian) }
+func (b *Buffer) S15LE() (int64, error)          { return b.SE(15, LittleEndian) }
+func (b *Buffer) S16LE() (int64, error)          { return b.SE(16, LittleEndian) }
+func (b *Buffer) S24LE() (int64, error)          { return b.SE(24, LittleEndian) }
+func (b *Buffer) S32LE() (int64, error)          { return b.SE(32, LittleEndian) }
+func (b *Buffer) S64LE() (int64, error)          { return b.SE(64, LittleEndian) }
 
 func (b *Buffer) F32E(endian Endian) (float32, error) {
 	n, err := b.Bits(32)
@@ -571,7 +579,7 @@ func (b *Buffer) FP16() (float64, error) {
 	return float64(float64(n) / (1 << 8)), nil
 }
 
-func (b *Buffer) UTF8(nBytes uint64) (string, error) {
+func (b *Buffer) UTF8(nBytes int64) (string, error) {
 	s, err := b.BytesLen(nBytes)
 	if err != nil {
 		return "", err

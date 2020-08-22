@@ -24,17 +24,17 @@ type FileDecoder struct {
 
 // Decode tar
 func (d *FileDecoder) Decode() {
-	str := func(nBytes uint64) string {
+	str := func(nBytes int64) string {
 		s := d.UTF8(nBytes)
 		ts := strings.Trim(s, "\x00")
 		return ts
 	}
-	fieldStr := func(name string, nBytes uint64) string {
+	fieldStr := func(name string, nBytes int64) string {
 		return d.FieldStrFn(name, func() (string, string) {
 			return str(nBytes), ""
 		})
 	}
-	fieldNumStr := func(name string, nBytes uint64) uint64 {
+	fieldNumStr := func(name string, nBytes int64) uint64 {
 		return d.FieldUFn(name, func() (uint64, decode.NumberFormat, string) {
 			ts := strings.Trim(str(nBytes), "0 \x00")
 			if ts == "" {
@@ -79,7 +79,7 @@ func (d *FileDecoder) Decode() {
 			fieldStr("prefix", 155)
 			fieldBlockPadding()
 			if size > 0 {
-				d.FieldDecodeLen("data", size*8)
+				d.FieldDecodeLen("data", int64(size)*8)
 			}
 			fieldBlockPadding()
 		})

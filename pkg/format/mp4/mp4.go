@@ -40,20 +40,20 @@ type FileDecoder struct {
 	currentTrack *track
 }
 
-func (d *FileDecoder) decodeAtom() uint64 {
-	boxes := map[string]func(dataSize uint64){
-		"ftyp": func(dataSize uint64) {
+func (d *FileDecoder) decodeAtom() int64 {
+	boxes := map[string]func(dataSize int64){
+		"ftyp": func(dataSize int64) {
 			d.FieldUTF8("major_brand", 4)
 			d.FieldU32("minor_version")
 			d.FieldNoneFn("brands", func() {
 				numBrands := (dataSize - 8) / 4
-				for i := uint64(0); i < numBrands; i++ {
+				for i := int64(0); i < numBrands; i++ {
 					d.FieldUTF8("brand", 4)
 				}
 			})
 		},
 		"moov": d.decodeAtoms,
-		"mvhd": func(dataSize uint64) {
+		"mvhd": func(dataSize int64) {
 			d.FieldU8("version")
 			d.FieldUTF8("flags", 3)
 			d.FieldU32("creation_time")
@@ -74,7 +74,7 @@ func (d *FileDecoder) decodeAtom() uint64 {
 		},
 		"trak": d.decodeAtoms,
 		"edts": d.decodeAtoms,
-		"elst": func(dataSize uint64) {
+		"elst": func(dataSize int64) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			numEntries := d.FieldU32("num_entries")
@@ -87,7 +87,7 @@ func (d *FileDecoder) decodeAtom() uint64 {
 			})
 		},
 		"tref": d.decodeAtoms,
-		"tkhd": func(dataSize uint64) {
+		"tkhd": func(dataSize int64) {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
@@ -115,7 +115,7 @@ func (d *FileDecoder) decodeAtom() uint64 {
 			}
 		},
 		"mdia": d.decodeAtoms,
-		"mdhd": func(dataSize uint64) {
+		"mdhd": func(dataSize int64) {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
@@ -128,7 +128,7 @@ func (d *FileDecoder) decodeAtom() uint64 {
 			d.FieldU16("quality")
 		},
 
-		"hdlr": func(dataSize uint64) {
+		"hdlr": func(dataSize int64) {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
@@ -137,12 +137,12 @@ func (d *FileDecoder) decodeAtom() uint64 {
 			d.FieldUTF8("component_manufacturer", 4)
 			d.FieldU32("component_flags")
 			d.FieldU32("component_flags_mask")
-			d.FieldUTF8("component_name", dataSize-24)
+			d.FieldUTF8("component_name", int64(dataSize)-24)
 		},
 
 		"minf": d.decodeAtoms,
 		"dinf": d.decodeAtoms,
-		"dref": func(dataSize uint64) {
+		"dref": func(dataSize int64) {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
@@ -154,12 +154,12 @@ func (d *FileDecoder) decodeAtom() uint64 {
 					d.FieldU8("version")
 					d.FieldU24("flags")
 					dataSize := size - 12
-					d.FieldBytesLen("data", dataSize)
+					d.FieldBytesLen("data", int64(dataSize))
 				}
 			})
 		},
 		"stbl": d.decodeAtoms,
-		"stsd": func(dataSize uint64) {
+		"stsd": func(dataSize int64) {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
@@ -185,7 +185,7 @@ func (d *FileDecoder) decodeAtom() uint64 {
 				}
 			})
 		},
-		"stts": func(dataSize uint64) {
+		"stts": func(dataSize int64) {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
@@ -197,7 +197,7 @@ func (d *FileDecoder) decodeAtom() uint64 {
 				}
 			})
 		},
-		"stsc": func(dataSize uint64) {
+		"stsc": func(dataSize int64) {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
@@ -217,7 +217,7 @@ func (d *FileDecoder) decodeAtom() uint64 {
 				}
 			})
 		},
-		"stsz": func(dataSize uint64) {
+		"stsz": func(dataSize int64) {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
@@ -235,7 +235,7 @@ func (d *FileDecoder) decodeAtom() uint64 {
 				})
 			}
 		},
-		"stco": func(dataSize uint64) {
+		"stco": func(dataSize int64) {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
@@ -251,7 +251,7 @@ func (d *FileDecoder) decodeAtom() uint64 {
 			})
 		},
 		// TODO: refactor: merge with stsco?
-		"co64": func(dataSize uint64) {
+		"co64": func(dataSize int64) {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
@@ -268,7 +268,8 @@ func (d *FileDecoder) decodeAtom() uint64 {
 		},
 	}
 
-	size := d.U32()
+	var size int64
+	size = int64(d.U32())
 	typ := d.UTF8(4)
 	d.SeekRel(-8 * 8)
 	d.FieldNoneFn(typ, func() {
@@ -293,14 +294,14 @@ func (d *FileDecoder) decodeAtom() uint64 {
 		if decodeFn, ok := boxes[typ]; ok {
 			decodeFn(dataLen)
 		} else {
-			d.FieldBytesLen("data", dataLen)
+			d.FieldBytesLen("data", int64(dataLen))
 		}
 	})
 
 	return size
 }
 
-func (d *FileDecoder) decodeAtoms(bytesLeft uint64) {
+func (d *FileDecoder) decodeAtoms(bytesLeft int64) {
 	for bytesLeft > 0 {
 		bytesLeft -= d.decodeAtom()
 	}
@@ -341,10 +342,10 @@ func (d *FileDecoder) Decode() {
 					log.Printf("stz*8: %d %#+v\n", stz, stz*8)
 
 					// if t.dataFormat == "mp4a" {
-					d.FieldDecodeRange("sample", cso*8, stz*8, aac.Frame)
+					d.FieldDecodeRange("sample", int64(cso)*8, int64(stz)*8, aac.Frame)
 
 					//} else {
-					d.FieldBytesRange("sample", cso*8, stz)
+					d.FieldBytesRange("sample", int64(cso)*8, int64(stz))
 
 					//}
 

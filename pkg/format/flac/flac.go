@@ -121,7 +121,7 @@ func (d *FileDecoder) Decode() {
 				d.FieldU("total_samples_in_steam", 36)
 				d.FieldBytesLen("md5", 16)
 			default:
-				d.FieldBytesLen("data", length)
+				d.FieldBytesLen("data", int64(length))
 			}
 		})
 		if lastBlock {
@@ -439,7 +439,7 @@ func (d *FileDecoder) Decode() {
 					decodeWarmupSamples := func(n uint64, sampleSize uint64) {
 						d.FieldNoneFn("warmup_samples", func() {
 							for i := uint64(0); i < n; i++ {
-								d.FieldS("value", sampleSize)
+								d.FieldS("value", int64(sampleSize))
 							}
 						})
 					}
@@ -494,16 +494,16 @@ func (d *FileDecoder) Decode() {
 									count = (blockSize / ricePartitions) - lpcOrder
 								}
 
-								riceParameter := d.FieldU("rice_parameter", riceBits)
+								riceParameter := d.FieldU("rice_parameter", int64(riceBits))
 								if riceParameter == riceEscape {
 									escapeSampleSize := d.FieldU5("escape_sample_size")
-									d.FieldBytesLen("samples", count*escapeSampleSize)
+									d.FieldBytesLen("samples", int64(count*escapeSampleSize))
 								} else {
 									d.FieldNoneFn("samples", func() {
 										for j := uint64(0); j < count; j++ {
 											high := d.Unary(0)
 											_ = high
-											low := d.U(riceParameter)
+											low := d.U(int64(riceParameter))
 											_ = low
 											// r = zigzag(high<<riceParameter | $low)
 										}
@@ -516,10 +516,10 @@ func (d *FileDecoder) Decode() {
 					switch subframeType {
 					case SubframeConstant:
 						// <n> Unencoded constant value of the subblock, n = frame's bits-per-sample.
-						d.FieldS("value", subframeSampleSize)
+						d.FieldS("value", int64(subframeSampleSize))
 					case SubframeVerbatim:
 						// <n> Unencoded warm-up samples (n = frame's bits-per-sample * predictor order).
-						d.FieldBytesLen("samples", blockSize*subframeSampleSize)
+						d.FieldBytesLen("samples", int64(blockSize*subframeSampleSize))
 					case SubframeFixed:
 						// <n> Unencoded warm-up samples (n = frame's bits-per-sample * predictor order).
 						decodeWarmupSamples(lpcOrder, subframeSampleSize)
@@ -537,7 +537,7 @@ func (d *FileDecoder) Decode() {
 						// <n> Unencoded predictor coefficients (n = qlp coeff precision * lpc order) (NOTE: the coefficients are signed two's-complement).
 						d.FieldNoneFn("coefficients", func() {
 							for i := uint64(0); i < lpcOrder; i++ {
-								d.FieldS("value", precision)
+								d.FieldS("value", int64(precision))
 							}
 						})
 						// Encoded residual

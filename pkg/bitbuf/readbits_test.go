@@ -10,8 +10,8 @@ import (
 func TestReadBits(t *testing.T) {
 	testCases := []struct {
 		buf      []byte
-		bitPos   uint64
-		bits     uint64
+		bitPos   int64
+		bits     int64
 		expected uint64
 	}{
 		{buf: []byte{0xff}, bitPos: 0, bits: 8, expected: 0b11111111},

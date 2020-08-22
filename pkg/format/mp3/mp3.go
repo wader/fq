@@ -30,9 +30,9 @@ type FileDecoder struct{ decode.Common }
 func (d *FileDecoder) Decode() {
 	d.FieldTryDecode("header", id3v2.Tag)
 
-	footerLen := uint64(0)
+	footerLen := int64(0)
 
-	id3v1Len := uint64(128 * 8)
+	id3v1Len := int64(128 * 8)
 	if d.BitsLeft() >= id3v1Len {
 		if fd, _ := d.FieldTryDecodeRange(
 			"footer", d.Pos()+d.BitsLeft()-id3v1Len, id3v1Len,

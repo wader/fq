@@ -96,7 +96,7 @@ func (d *PacketDecoder) Decode() {
 	case packetTypeComment:
 		lenStr := func(name string) string {
 			len := d.FieldU32LE(name + "_length")
-			return d.FieldUTF8(name, len)
+			return d.FieldUTF8(name, int64(len))
 		}
 		lenStr("vendor")
 		userCommentListLength := d.FieldU32LE("user_comment_list_length")
@@ -116,8 +116,8 @@ func (d *PacketDecoder) Decode() {
 						}
 
 						d.FieldDecodeBitBuf("picture",
-							d.Pos()-uint64(len(v)*8),
-							uint64(len(v)*8),
+							d.Pos()-int64(len(v))*8,
+							int64(len(v)*8),
 							bb,
 							flac.Picture,
 						)
