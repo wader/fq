@@ -14,6 +14,8 @@ import (
 	"strings"
 )
 
+const readAheadSize = 64 * 1024
+
 // Endian byte order
 type Endian int
 
@@ -35,7 +37,7 @@ type Buffer struct {
 
 	rs             io.ReadSeeker
 	firstBitOffset uint64
-	lastPos        uint64
+	readAheadPos   uint64
 	readAhead      []byte
 }
 
@@ -58,6 +60,8 @@ func NewFromReadSeeker(rs io.ReadSeeker, firstBitOffset uint64) (*Buffer, error)
 		Pos:            0,
 		rs:             rs,
 		firstBitOffset: firstBitOffset,
+		readAheadPos:   0,
+		readAhead:      make([]byte, readAheadSize),
 	}, nil
 }
 
@@ -78,6 +82,8 @@ func NewFromBitBuf(b *Buffer, firstBitOffset uint64) (*Buffer, error) {
 		Pos:            0,
 		rs:             b.rs,
 		firstBitOffset: b.firstBitOffset + firstBitOffset,
+		readAheadPos:   0,
+		readAhead:      make([]byte, readAheadSize),
 	}, nil
 }
 
@@ -123,6 +129,8 @@ func (b *Buffer) BitBufRange(firstBitOffset uint64, nBits uint64) (*Buffer, erro
 		Pos:            0,
 		rs:             b.rs,
 		firstBitOffset: b.firstBitOffset + firstBitOffset,
+		readAheadPos:   0,
+		readAhead:      make([]byte, readAheadSize),
 	}
 
 	return nb, nil
@@ -145,7 +153,7 @@ func (b *Buffer) Copy() (*Buffer, error) {
 	return NewFromBitBuf(b, 0)
 }
 
-func (b *Buffer) read(pos uint64, nBits uint64) ([]byte, uint64, error) {
+func (b *Buffer) read(buf []byte, pos uint64, nBits uint64) (uint64, uint64, error) {
 	// log.Printf("pos: %#+v\n", pos)
 	// log.Printf("nBits: %#+v\n", nBits)
 	// log.Printf("b.firstBitOffset: %#+v\n", b.firstBitOffset)
@@ -154,7 +162,7 @@ func (b *Buffer) read(pos uint64, nBits uint64) ([]byte, uint64, error) {
 	endBitPos := uint64(b.Pos) + uint64(nBits)
 	if endBitPos > b.firstBitOffset+b.Len {
 		// log.Println("EOF")
-		return nil, 0, ErrUnexpectedEOF
+		return 0, 0, ErrUnexpectedEOF
 	}
 
 	// TOOD: cache
@@ -169,38 +177,36 @@ func (b *Buffer) read(pos uint64, nBits uint64) ([]byte, uint64, error) {
 	// log.Printf("readBytePos: %#+v\n", readBytePos)
 	// log.Printf("readSkipBits: %#+v\n", readSkipBits)
 
-	if _, err := b.rs.Seek(readBytePos, io.SeekStart); err != nil {
-		return nil, 0, err
-	}
-
 	readBits := readSkipBits + nBits
 	// log.Printf("readBits: %#+v\n", readBits)
-	bufLen := readBits / 8
+	readBytes := readBits / 8
 	if readBits%8 > 0 {
-		bufLen++
+		readBytes++
 	}
 
 	// log.Printf("bufLen: %#+v\n", bufLen)
 
-	buf := make([]byte, bufLen)
-	if _, err := io.ReadFull(b.rs, buf); err != nil {
-		return nil, 0, nil
+	if _, err := b.rs.Seek(readBytePos, io.SeekStart); err != nil {
+		return 0, 0, err
 	}
 
-	return buf, readSkipBits, nil
+	if _, err := io.ReadFull(b.rs, buf[:readBytes]); err != nil {
+		return 0, 0, nil
+	}
+
+	return readBytes, readSkipBits, nil
 }
 
 // Bits reads nBits bits from buffer
 func (b *Buffer) bits(nBits uint64) (uint64, error) {
-	buf, bufBitOffset, err := b.read(b.Pos, nBits)
+	var bufArray [8]byte
+	buf := bufArray[:]
+	_, bufBitOffset, err := b.read(buf[:], b.Pos, nBits)
 	if err != nil {
 		return 0, err
 	}
 
-	// log.Printf("buf: %#+v\n", buf)
-	// log.Printf("bufBitOffset: %#+v\n", bufBitOffset)
-	// log.Printf("nBits: %#+v\n", nBits)
-	n := ReadBits(buf, bufBitOffset, nBits)
+	n := ReadBits(buf[:], bufBitOffset, nBits)
 
 	return n, nil
 }
@@ -251,12 +257,14 @@ func (b *Buffer) PeekFind(bits uint64, v uint8, maxLen int64) (uint64, error) {
 }
 
 func (b *Buffer) BytesBitRange(firstBitOffset uint64, nBits uint64, pad uint8) ([]byte, error) {
-	buf, bufBitOffset, err := b.read(firstBitOffset, nBits)
+	buf := make([]byte, nBits/8+2)
+	readBytes, readSkipBits, err := b.read(buf, firstBitOffset, nBits)
 	if err != nil {
 		return nil, err
 	}
+	buf = buf[:readBytes]
 
-	if bufBitOffset == 0 && nBits%8 == 0 {
+	if readSkipBits == 0 && nBits%8 == 0 {
 		return buf, nil
 	}
 
@@ -265,10 +273,10 @@ func (b *Buffer) BytesBitRange(firstBitOffset uint64, nBits uint64, pad uint8) (
 
 	var rb []byte
 	for i := uint64(0); i < nBytes; i++ {
-		rb = append(rb, byte(ReadBits(buf, bufBitOffset+i*8, 8)))
+		rb = append(rb, byte(ReadBits(buf, readSkipBits+i*8, 8)))
 	}
 	if restBits != 0 {
-		v := byte(ReadBits(buf, bufBitOffset+nBytes*8, restBits)) << (8 - restBits)
+		v := byte(ReadBits(buf, readSkipBits+nBytes*8, restBits)) << (8 - restBits)
 		rb = append(rb, pad|v)
 	}
 
