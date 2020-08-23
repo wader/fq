@@ -14,7 +14,7 @@ import (
 	"strings"
 )
 
-const readAheadSize = 64 * 1024
+const cacheReadAheadSize = 64 * 1024
 
 // Endian byte order
 type Endian int
@@ -37,9 +37,10 @@ type Buffer struct {
 
 	rs             io.ReadSeeker
 	firstBitOffset int64
-	readAheadPos   int64
-	readAheadLen   int64
-	readAhead      []byte
+
+	cacheBytePos int64
+	cacheByteLen int64
+	cache        []byte
 }
 
 // NewFromReadSeeker bitbuf.Buffer from io.ReadSeeker, start at firstBit with bit length lenBits
@@ -61,8 +62,8 @@ func NewFromReadSeeker(rs io.ReadSeeker, firstBitOffset int64) (*Buffer, error) 
 		Pos:            0,
 		rs:             rs,
 		firstBitOffset: firstBitOffset,
-		readAheadPos:   0,
-		readAhead:      make([]byte, readAheadSize),
+		cacheBytePos:   0,
+		cache:          make([]byte, cacheReadAheadSize),
 	}, nil
 }
 
@@ -83,8 +84,8 @@ func NewFromBitBuf(b *Buffer, firstBitOffset int64) (*Buffer, error) {
 		Pos:            0,
 		rs:             b.rs,
 		firstBitOffset: b.firstBitOffset + firstBitOffset,
-		readAheadPos:   0,
-		readAhead:      make([]byte, readAheadSize),
+		cacheBytePos:   0,
+		cache:          make([]byte, cacheReadAheadSize),
 	}, nil
 }
 
@@ -130,8 +131,8 @@ func (b *Buffer) BitBufRange(firstBitOffset int64, nBits int64) (*Buffer, error)
 		Pos:            0,
 		rs:             b.rs,
 		firstBitOffset: b.firstBitOffset + firstBitOffset,
-		readAheadPos:   0,
-		readAhead:      make([]byte, readAheadSize),
+		cacheBytePos:   0,
+		cache:          make([]byte, cacheReadAheadSize),
 	}
 
 	return nb, nil
@@ -154,45 +155,20 @@ func (b *Buffer) Copy() (*Buffer, error) {
 	return NewFromBitBuf(b, 0)
 }
 
-func (b *Buffer) read(buf []byte, pos int64, nBits int64) (int64, int64, error) {
-	// log.Printf("pos: %#+v\n", pos)
-	// log.Printf("nBits: %#+v\n", nBits)
-	// log.Printf("b.firstBitOffset: %#+v\n", b.firstBitOffset)
-	// log.Printf("b.Len: %#+v\n", b.Len)
-
-	endBitPos := b.Pos + nBits
+func (b *Buffer) read(buf []byte, bitPos int64, nBits int64) (int64, int64, error) {
+	endBitPos := bitPos + nBits
 	if endBitPos > b.firstBitOffset+b.Len {
-		// log.Println("EOF")
 		return 0, 0, ErrUnexpectedEOF
 	}
 
-	// TOOD: cache
-
-	readBitPos := b.firstBitOffset + pos
-
-	// log.Printf("bufBitPos: %#+v\n", readBitPos)
-
+	readBitPos := b.firstBitOffset + bitPos
 	readBytePos := int64(readBitPos / 8)
 	readSkipBits := readBitPos % 8
-
-	// log.Printf("readBytePos: %#+v\n", readBytePos)
-	// log.Printf("readSkipBits: %#+v\n", readSkipBits)
-
 	readBits := readSkipBits + nBits
-	// log.Printf("readBits: %#+v\n", readBits)
 	readBytes := readBits / 8
 	if readBits%8 > 0 {
 		readBytes++
 	}
-
-	// log.Printf("bufLen: %#+v\n", bufLen)
-
-	// for {
-	// readAheadStart := readBytePos - b.readAheadPos
-	// if readAheadStart >= 0 && readBytePos+readBytes <= b.readAheadPos+b.readAheadLen {
-	// 	copy(buf[:readBytePos], b.readAhead[readAheadStart:readAheadStart+readBytes])
-	// 	return readBytes, readSkipBits, nil
-	// }
 
 	if _, err := b.rs.Seek(readBytePos, io.SeekStart); err != nil {
 		return 0, 0, err
@@ -202,10 +178,7 @@ func (b *Buffer) read(buf []byte, pos int64, nBits int64) (int64, int64, error) 
 		return 0, 0, nil
 	}
 
-	// }
-
 	return readBytes, readSkipBits, nil
-
 }
 
 // Bits reads nBits bits from buffer
