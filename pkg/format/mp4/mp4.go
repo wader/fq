@@ -5,7 +5,6 @@ package mp4
 import (
 	"fq/pkg/decode"
 	"fq/pkg/format/aac"
-	"log"
 )
 
 var File = &decode.Format{
@@ -338,8 +337,8 @@ func (d *FileDecoder) Decode() {
 
 					stz := uint64(t.stsz[sampleCount])
 
-					log.Printf("cso*8: %d %#+v\n", cso, cso*8)
-					log.Printf("stz*8: %d %#+v\n", stz, stz*8)
+					// log.Printf("cso*8: %d %#+v\n", cso, cso*8)
+					// log.Printf("stz*8: %d %#+v\n", stz, stz*8)
 
 					// if t.dataFormat == "mp4a" {
 					d.FieldDecodeRange("sample", int64(cso)*8, int64(stz)*8, aac.Frame)

@@ -67,7 +67,7 @@ func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range
 			root:     rootField,
 			current:  rootField,
 		})
-		err = func() (err error) {
+		decodeErr := func() (err error) {
 			defer func() {
 				if recoverErr := recover(); recoverErr != nil {
 					// https://github.com/golang/go/blob/master/src/net/http/server.go#L1770
@@ -100,10 +100,10 @@ func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range
 			return nil
 		}()
 
-		d.Finish(err)
+		d.Finish(decodeErr)
 
-		if err != nil {
-			errs = append(errs, err)
+		if decodeErr != nil {
+			errs = append(errs, decodeErr)
 			if !forceOne {
 				continue
 			}
