@@ -4,8 +4,8 @@ package jpeg
 // TODO: exif https://www.exif.org/Exif2-2.PDF
 
 import (
-	"bytes"
 	"fmt"
+	"fq/pkg/bitbuf"
 	"fq/pkg/decode"
 	"fq/pkg/format/tiff"
 )
@@ -162,6 +162,8 @@ type FileDecoder struct {
 
 // Decode JPEG file
 func (d *FileDecoder) Decode() {
+	var extendedXMP []byte
+
 	inECD := false
 	for !d.End() {
 		if inECD {
@@ -238,20 +240,33 @@ func (d *FileDecoder) Decode() {
 				default:
 					if markerFound {
 						markerLen := d.FieldU16("length")
-						var dataPrefix []byte
-						if d.BitsLeft() > 6*8 {
-							dataPrefix = d.PeekBytes(6)
-						}
+						d.SubLenFn(int64((markerLen-2)*8), func() {
+							app1ExifPrefix := []byte("Exif\x00\x00")
+							extendedXMPPrefix := []byte("http://ns.adobe.com/xmp/extension/\x00")
 
-						app1ExifPrefix := []byte("Exif\x00\x00")
+							switch {
+							case markerCode == APP1 && d.TryHasBytes(app1ExifPrefix):
+								d.FieldUTF8("exif_prefix", 6)
+								d.FieldDecodeLen("exif", d.BitsLeft(), tiff.File)
+							case markerCode == APP1 && d.TryHasBytes(extendedXMPPrefix):
+								d.FieldNoneFn("extended_xmp_chunk", func() {
+									d.FieldUTF8("signature", int64(len(extendedXMPPrefix)))
+									d.FieldUTF8("guid", 32)
+									fullLength := d.FieldU32("full_length")
+									offset := d.FieldU32("offset")
+									// TODO: FieldBitsLen?
+									chunk := d.FieldBytesLen("data", d.BitsLeft()/8)
 
-						switch {
-						case markerCode == APP1 && bytes.HasPrefix(dataPrefix, app1ExifPrefix):
-							d.FieldUTF8("exif_prefix", 6)
-							d.FieldDecodeLen("exif", (int64(markerLen)-2-6)*8, tiff.File)
-						default:
-							d.FieldBytesLen("data", int64(markerLen)-2)
-						}
+									if extendedXMP == nil {
+										extendedXMP = make([]byte, fullLength)
+									}
+									copy(extendedXMP[offset:], chunk)
+								})
+							default:
+								// TODO: FieldBitsLen?
+								d.FieldBytesLen("data", d.BitsLeft()/8)
+							}
+						})
 
 					} else {
 						d.Invalid(fmt.Sprintf("unknown marker %x", markerCode))
@@ -259,5 +274,13 @@ func (d *FileDecoder) Decode() {
 				}
 			})
 		}
+	}
+
+	if extendedXMP != nil {
+		bb, err := bitbuf.NewFromBytes(extendedXMP, 0)
+		if err != nil {
+			panic(err) // TODO: fixme
+		}
+		d.FieldDecodeBitBuf("extended_xmp", 0, bb.Len, bb)
 	}
 }

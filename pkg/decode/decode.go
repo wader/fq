@@ -114,6 +114,15 @@ func (c *Common) PeekFind(nBits int64, v uint8, maxLen int64) int64 {
 	return peekBits
 }
 
+func (c *Common) TryHasBytes(hb []byte) bool {
+	lenHb := int64(len(hb))
+	if c.BitsLeft() < lenHb*8 {
+		return false
+	}
+	bs := c.PeekBytes(lenHb)
+	return bytes.Equal(hb, bs)
+}
+
 // PeekFindByte number of bytes to next v
 func (c *Common) PeekFindByte(v uint8, maxLen int64) int64 {
 	peekBits, err := c.bitBuf.PeekFind(8, v, maxLen)
