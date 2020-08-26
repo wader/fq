@@ -10,7 +10,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"math"
 	"strings"
 )
@@ -72,10 +71,10 @@ func (b *cacheReader) read(buf []byte, bitPos int64, nBits int64) (int64, int64,
 			return readBytes, readSkipBits, nil
 		}
 
-		log.Println("NOPE")
+		// log.Println("NOPE")
 
-		log.Printf("rangeContain(b.cacheBytePos %d, cacheByteEnd %d, readBytePos %d, readByteEnd %d)",
-			b.cacheBytePos, cacheByteEnd, readBytePos, readByteEnd)
+		// log.Printf("rangeContain(b.cacheBytePos %d, cacheByteEnd %d, readBytePos %d, readByteEnd %d)",
+		// 	b.cacheBytePos, cacheByteEnd, readBytePos, readByteEnd)
 
 		if _, err := b.rs.Seek(readBytePos, io.SeekStart); err != nil {
 			return 0, 0, err
@@ -85,7 +84,7 @@ func (b *cacheReader) read(buf []byte, bitPos int64, nBits int64) (int64, int64,
 			if _, err := io.ReadFull(b.rs, buf[0:readBytes]); err != nil {
 				return 0, 0, err
 			}
-			log.Printf("to big %d", readBytes)
+			// log.Printf("to big %d", readBytes)
 			return readBytes, readSkipBits, nil
 		}
 
@@ -110,8 +109,8 @@ func (b *cacheReader) read(buf []byte, bitPos int64, nBits int64) (int64, int64,
 			return 0, 0, err
 		}
 
-		log.Printf("read b.cache[%d:%d]",
-			0, readAheadBytes)
+		// log.Printf("read b.cache[%d:%d]",
+		// 	0, readAheadBytes)
 
 		b.cacheByteLen = readAheadBytes
 		b.cacheBytePos = readBytePos
