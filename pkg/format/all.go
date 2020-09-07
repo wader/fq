@@ -6,6 +6,7 @@ import (
 	"fq/pkg/format/ape"
 	"fq/pkg/format/elf"
 	"fq/pkg/format/flac"
+	"fq/pkg/format/icc"
 	"fq/pkg/format/id3v1"
 	"fq/pkg/format/id3v11"
 	"fq/pkg/format/id3v2"
@@ -43,4 +44,5 @@ var All = []*decode.Format{
 	tiff.File,
 	ape.TagV2,
 	wav.File,
+	icc.Tag,
 }
