@@ -47,91 +47,17 @@ const (
 
 var ErrEOF = errors.New("EOF")
 
-<<<<<<< HEAD
-type cacheReader struct {
-	rs           io.ReadSeeker
-	Len          int64
-	cacheBytePos int64
-	cacheByteLen int64
-	cache        []byte
-}
-
-func (b *cacheReader) read(buf []byte, bitPos int64, nBits int64) (int64, int64, error) {
-	// log.Printf("bitPos=%d nBits=%d", bitPos, nBits)
-
-	readBitPos := bitPos
-	readBytePos := int64(readBitPos / 8)
-	readSkipBits := readBitPos % 8
-=======
 func (b *Buffer) read(buf []byte, bitPos int64, nBits int64) (int64, error) {
 	//log.Printf("bitPos=%d nBits=%d", bitPos, nBits)
 
 	readBytePos := int64(bitPos / 8)
 	readSkipBits := bitPos % 8
->>>>>>> readseeker
 	readBits := readSkipBits + nBits
 	readBytes := readBits / 8
 	if readBits%8 > 0 {
 		readBytes++
 	}
 
-<<<<<<< HEAD
-	readByteEnd := readBytePos + readBytes
-	for {
-		cacheByteEnd := b.cacheBytePos + b.cacheByteLen
-		if rangeContain(b.cacheBytePos, cacheByteEnd, readBytePos, readByteEnd) {
-			offset := readBytePos - b.cacheBytePos
-			copy(buf[0:readBytes], b.cache[offset:offset+readBytes])
-			// log.Printf("cached buf[0:%d], b.cache[%d:%d]",
-			// 	readBytes, offset, offset+readBytes)
-			return readBytes, readSkipBits, nil
-		}
-
-		// log.Println("NOPE")
-
-		// log.Printf("rangeContain(b.cacheBytePos %d, cacheByteEnd %d, readBytePos %d, readByteEnd %d)",
-		// 	b.cacheBytePos, cacheByteEnd, readBytePos, readByteEnd)
-
-		if _, err := b.rs.Seek(readBytePos, io.SeekStart); err != nil {
-			return 0, 0, err
-		}
-
-		if readBytes > cacheReadAheadSize {
-			if _, err := io.ReadFull(b.rs, buf[0:readBytes]); err != nil {
-				return 0, 0, err
-			}
-			// log.Printf("to big %d", readBytes)
-			return readBytes, readSkipBits, nil
-		}
-
-		// var cacheReadAheadKeep int64
-
-		// if readBytePos == cacheByteEnd-1 && b.cacheByteLen != 0 {
-		// cacheReadAheadKeep = min(int64(cacheReadAheadSize), b.cacheByteLen)
-		// readAheadBytes = min(cacheReadAheadSize, maxReadBytes-readBytePos)
-		// } else {
-		// log.Printf("maxReadByte-readBytePoss: %#+v\n", maxReadBytes-readBytePos)
-		// log.Printf("b.Len=%d", b.Len)
-		readAheadBytes := min(cacheReadAheadSize*2, b.Len-readBytePos)
-		// }
-
-		// if cacheReadAheadKeep > 0 {
-		// 	log.Printf("keep b.cache[0:%d], b.cache[%d:]",
-		// 		cacheReadAheadKeep, b.cacheByteLen-cacheReadAheadKeep)
-		// 	copy(b.cache[0:cacheReadAheadKeep], b.cache[b.cacheByteLen-cacheReadAheadKeep:])
-		// }
-
-		if _, err := io.ReadFull(b.rs, b.cache[0:readAheadBytes]); err != nil {
-			return 0, 0, err
-		}
-
-		// log.Printf("read b.cache[%d:%d]",
-		// 	0, readAheadBytes)
-
-		b.cacheByteLen = readAheadBytes
-		b.cacheBytePos = readBytePos
-	}
-=======
 	if readBytes > int64(len(b.buf)) {
 		b.buf = make([]byte, readBytes)
 	}
@@ -168,7 +94,6 @@ func (b *Buffer) read(buf []byte, bitPos int64, nBits int64) (int64, error) {
 	// log.Printf("  readBytes: %#+v\n", readBytes)
 
 	return readBytes, nil
->>>>>>> readseeker
 }
 
 // Buffer is a bitbuf buffer
@@ -180,13 +105,9 @@ type Buffer struct {
 
 	firstBitOffset int64
 
-<<<<<<< HEAD
-	cr *cacheReader
-=======
 	buf []byte
 
 	crs *CachingReadSeeker
->>>>>>> readseeker
 }
 
 // NewFromReadSeeker bitbuf.Buffer from io.ReadSeeker, start at firstBit with bit length lenBits
@@ -207,16 +128,7 @@ func NewFromReadSeeker(rs io.ReadSeeker, firstBitOffset int64) (*Buffer, error) 
 		Len:            len*8 - firstBitOffset,
 		Pos:            0,
 		firstBitOffset: firstBitOffset,
-<<<<<<< HEAD
-		cr: &cacheReader{
-			rs:           rs,
-			Len:          len,
-			cacheBytePos: 0,
-			cache:        make([]byte, cacheReadAheadSize*2),
-		},
-=======
 		crs:            NewCachingReadSeeker(rs, cacheReadAheadSize),
->>>>>>> readseeker
 	}, nil
 }
 
@@ -236,11 +148,7 @@ func NewFromBitBuf(b *Buffer, firstBitOffset int64) (*Buffer, error) {
 		Len:            b.Len - firstBitOffset,
 		Pos:            0,
 		firstBitOffset: b.firstBitOffset + firstBitOffset,
-<<<<<<< HEAD
-		cr:             b.cr,
-=======
 		crs:            b.crs,
->>>>>>> readseeker
 	}, nil
 }
 
