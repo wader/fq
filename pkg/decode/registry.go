@@ -55,10 +55,7 @@ func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range
 			Value:   Value{Type: TypeDecoder, Decoder: d},
 			Decoder: d,
 		}
-		cbb, err := bb.Copy()
-		if err != nil {
-			panic(err)
-		}
+		cbb := bb.Copy()
 		d.Prepare(Common{
 			Parent:   parent,
 			format:   f,

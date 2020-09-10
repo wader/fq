@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"math"
 	"strings"
 )
@@ -58,6 +59,10 @@ func (b *Buffer) read(buf []byte, bitPos int64, nBits int64) (int64, error) {
 		readBytes++
 	}
 
+	if readBytes == 0 {
+		return 0, io.EOF
+	}
+
 	if readBytes > int64(len(b.buf)) {
 		b.buf = make([]byte, readBytes)
 	}
@@ -91,7 +96,7 @@ func (b *Buffer) read(buf []byte, bitPos int64, nBits int64) (int64, error) {
 		buf[nBytes] = byte(ReadBits(b.buf, readSkipBits+nBytes*8, restBits)) << (8 - restBits)
 	}
 
-	// log.Printf("  readBytes: %#+v\n", readBytes)
+	// log.Printf("  BLA readBytes: %#+v\n", readBytes)
 
 	return readBytes, nil
 }
@@ -212,8 +217,9 @@ func (b *Buffer) BitBufLen(nBits int64) (*Buffer, error) {
 // Copy bitbuf
 // TODO: rename? remove?
 // TODO: no error?
-func (b *Buffer) Copy() (*Buffer, error) {
-	return NewFromBitBuf(b, 0)
+func (b *Buffer) Copy() *Buffer {
+	nb, _ := NewFromBitBuf(b, 0)
+	return nb
 }
 
 // Bits reads nBits bits from buffer
@@ -316,8 +322,10 @@ func (b *Buffer) Read(p []byte) (n int, err error) {
 		readBytes = bytesLeft
 	}
 
+	log.Printf("b.firstBitOffset+b.Pos: %#+v\n", b.firstBitOffset+b.Pos)
+	log.Printf("readBytes: %#+v\n", readBytes)
 	if _, err := b.read(p, b.firstBitOffset+b.Pos, readBytes*8); err != nil {
-		return 0, nil
+		return 0, err
 	}
 
 	b.Pos += readBytes * 8

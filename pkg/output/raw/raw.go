@@ -3,6 +3,7 @@ package raw
 import (
 	"fq/pkg/decode"
 	"io"
+	"log"
 )
 
 var FieldOutput = &decode.FieldOutput{
@@ -17,12 +18,11 @@ type FieldWriter struct {
 func (o *FieldWriter) Write(w io.Writer) error {
 	// TODO: not byte aligned? pad with zeros
 	// TODO: BytesRange version with padding?
-	b, err := o.f.BitBuf().BytesRange(0, o.f.Range.Length()/8)
-	if err != nil {
-		return err
-	}
 
-	w.Write(b)
+	log.Printf("o.f: %#+v\n", o.f)
 
-	return nil
+	log.Printf("o.f.BitBuf().Pos: %#+v\n", o.f.BitBuf().Pos)
+
+	_, err := io.Copy(w, o.f.BitBuf().Copy())
+	return err
 }
