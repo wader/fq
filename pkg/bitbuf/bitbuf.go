@@ -77,20 +77,21 @@ func (b *Buffer) read(buf []byte, bitPos int64, nBits int64) (int, error) {
 		return readBytes, nil
 	}
 
-	nBytes := nBits / 8
+	nBytes := int(nBits / 8)
 	restBits := nBits % 8
 
 	// TODO: copy smartness if many bytes
-	for i := int64(0); i < nBytes; i++ {
-		buf[i] = byte(ReadBits(b.buf, readSkipBits+i*8, 8))
+	for i := 0; i < nBytes; i++ {
+		buf[i] = byte(ReadBits(b.buf, readSkipBits+int64(i)*8, 8))
 	}
 	if restBits != 0 {
-		buf[nBytes] = byte(ReadBits(b.buf, readSkipBits+nBytes*8, restBits)) << (8 - restBits)
+		buf[nBytes] = byte(ReadBits(b.buf, readSkipBits+int64(nBytes)*8, restBits)) << (8 - restBits)
+		nBytes++
 	}
 
 	// log.Printf("  BLA readBytes: %#+v\n", readBytes)
 
-	return readBytes, nil
+	return nBytes, nil
 }
 
 // Buffer is a bitbuf buffer
@@ -320,11 +321,12 @@ func (b *Buffer) Read(p []byte) (n int, err error) {
 		readBits = bitsLeft
 	}
 
-	// log.Printf("b.firstBitOffset+b.Pos: %d readBytes=%d readBits=%d bitsLeft=%d bytesLeft=%d\n", b.firstBitOffset+b.Pos, readBytes, readBits, bitsLeft, bytesLeft)
 	n, err = b.read(p, b.firstBitOffset+b.Pos, readBits)
 	if err != nil {
 		return n, err
 	}
+
+	//log.Printf("b.firstBitOffset+b.Pos=%d n=%d readBytes=%d readBits=%d bitsLeft=%d\n", b.firstBitOffset+b.Pos, n, readBytes, readBits, bitsLeft)
 
 	b.Pos += readBits
 

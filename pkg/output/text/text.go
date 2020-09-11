@@ -11,56 +11,7 @@ import (
 )
 
 const lineBytes = 16
-
-const hextable = "0123456789abcdef"
-
-func hexpairs(b []byte, width int, offset int) string {
-	if len(b) == 0 {
-		return ""
-	}
-	t := offset + len(b)
-	s := make([]byte, t*3-1)
-
-	for i := 0; i < t; i++ {
-		if i < offset {
-			s[i*3+0] = ' '
-			s[i*3+1] = ' '
-		} else {
-			v := b[i-offset]
-			s[i*3+0] = hextable[v>>4]
-			s[i*3+1] = hextable[v&0xf]
-		}
-		if i != t-1 {
-			if i > 0 && i%width == width-1 {
-				s[i*3+2] = '\n'
-			} else {
-				s[i*3+2] = ' '
-			}
-		}
-	}
-
-	return string(s[0 : t*3-1])
-}
-
-func printable(b []byte, offset int) string {
-	t := offset + len(b)
-	s := make([]byte, t)
-
-	for i := 0; i < t; i++ {
-		if i < offset {
-			s[i] = ' '
-		} else {
-			v := b[i-offset]
-			if v < 32 || v > 126 {
-				s[i] = '.'
-			} else {
-				s[i] = v
-			}
-		}
-	}
-
-	return string(s)
-}
+const maxBytes = 32
 
 var FieldOutput = &decode.FieldOutput{
 	Name: "text",
@@ -82,10 +33,16 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 
 	startByte := startBit / 8
 	stopByte := stopBit / 8
+	truncatedStopByte := stopByte
+	if truncatedStopByte-startByte > maxBytes {
+		truncatedStopByte = startByte + maxBytes
+	}
+	rangeBytes := truncatedStopByte - startByte
 
 	startLineByte := int((startByte / lineBytes) * lineBytes)
 	startLineByteOffset := int(startByte % lineBytes)
 	stopLineByte := int((stopByte / lineBytes) * lineBytes)
+	truncatedStopLineByte := int((truncatedStopByte / lineBytes) * lineBytes)
 	addrLines := 1
 
 	// log.Printf("startBit: %x\n", startBit)
@@ -101,10 +58,14 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 
 	if len(f.Children) == 0 {
 		b := f.BitBuf()
-		addrLines = ((stopLineByte - startLineByte) / lineBytes) + 1
+		addrLines = ((truncatedStopLineByte - startLineByte) / lineBytes) + 1
 
-		io.Copy(hexpairwriter.New(cw.Columns[2], lineBytes, startLineByteOffset), b.Copy())
-		io.Copy(asciiwriter.New(cw.Columns[4], lineBytes, startLineByteOffset), b.Copy())
+		io.Copy(
+			hexpairwriter.New(cw.Columns[2], lineBytes, startLineByteOffset),
+			io.LimitReader(b.Copy(), rangeBytes))
+		io.Copy(
+			asciiwriter.New(cw.Columns[4], lineBytes, startLineByteOffset),
+			io.LimitReader(b.Copy(), rangeBytes))
 
 		// fmt.Fprintf(cw.Columns[2], "%s", hexpairs(b, lineBytes, startLineByteOffset))
 		// fmt.Fprintf(cw.Columns[4], "%s", printable(b, startLineByteOffset))
@@ -126,6 +87,18 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 
 	cw.Flush()
 
+	if len(f.Children) == 0 && stopLineByte != truncatedStopLineByte {
+		fmt.Fprint(cw.Columns[0], "*\n")
+		fmt.Fprintf(cw.Columns[2], "%d byte skipped", stopLineByte-truncatedStopLineByte)
+		cw.Flush()
+		// TODO: dump last line?
+		fmt.Fprintf(cw.Columns[0], "%.8x\n", int(stopLineByte))
+		fmt.Fprintf(cw.Columns[2], "...")
+		fmt.Fprintf(cw.Columns[3], "|\n")
+		fmt.Fprintf(cw.Columns[5], "|\n")
+		cw.Flush()
+	}
+
 	for _, c := range f.Children {
 		if err := o.output(cw, c, depth+1); err != nil {
 			return err
@@ -142,7 +115,7 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 }
 
 func (o *FieldWriter) Write(w io.Writer) error {
-	cw := columnwriter.New(w, []int{8, 2, lineBytes*3 - 1, 2, lineBytes, 1, -1})
+	cw := columnwriter.New(w, []int{8, 1, lineBytes*3 - 1, 1, lineBytes, 1, -1})
 	// cw.Columns[1].Wrap = true
 	// cw.Columns[2].Wrap = true
 	// cw.Columns[4].Wrap = true
