@@ -9,7 +9,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"log"
 	"math"
 	"strings"
 )
@@ -45,18 +44,18 @@ const (
 	LittleEndian
 )
 
-func (b *Buffer) read(buf []byte, bitPos int64, nBits int64) (int64, error) {
+func (b *Buffer) read(buf []byte, bitPos int64, nBits int64) (int, error) {
 	//log.Printf("bitPos=%d nBits=%d", bitPos, nBits)
 
 	readBytePos := int64(bitPos / 8)
 	readSkipBits := bitPos % 8
 	readBits := readSkipBits + nBits
-	readBytes := readBits / 8
+	readBytes := int(readBits / 8)
 	if readBits%8 > 0 {
 		readBytes++
 	}
 
-	if readBytes > int64(len(b.buf)) {
+	if readBytes > len(b.buf) {
 		b.buf = make([]byte, readBytes)
 	}
 
@@ -119,6 +118,7 @@ func NewFromReadSeeker(rs io.ReadSeeker, firstBitOffset int64) (*Buffer, error) 
 		return nil, err
 	}
 	if firstBitOffset > len*8 {
+		return nil, io.ErrUnexpectedEOF
 	}
 
 	return &Buffer{
@@ -138,6 +138,7 @@ func NewFromBytes(buf []byte, firstBitOffset int64) (*Buffer, error) {
 // Will be a shallow copy with position reset to zero.
 func NewFromBitBuf(b *Buffer, firstBitOffset int64) (*Buffer, error) {
 	if firstBitOffset > b.Len {
+		return nil, io.ErrUnexpectedEOF
 	}
 
 	return &Buffer{
@@ -182,6 +183,7 @@ func NewFromBitString(s string) (*Buffer, error) {
 func (b *Buffer) BitBufRange(firstBitOffset int64, nBits int64) (*Buffer, error) {
 	endPos := firstBitOffset + nBits
 	if endPos > b.Len {
+		return nil, io.ErrUnexpectedEOF
 	}
 
 	nb := &Buffer{
@@ -215,6 +217,7 @@ func (b *Buffer) Copy() *Buffer {
 // Bits reads nBits bits from buffer
 func (b *Buffer) bits(nBits int64) (uint64, error) {
 	if b.Pos+nBits > b.Len {
+		return 0, io.ErrUnexpectedEOF
 	}
 
 	var bufArray [10]byte
@@ -276,6 +279,7 @@ func (b *Buffer) PeekFind(nBits int64, v uint8, maxLen int64) (int64, error) {
 
 func (b *Buffer) ReadBits(buf []byte, bitOffset int64, nBits int64) error {
 	if bitOffset+nBits > b.Len {
+		return io.ErrUnexpectedEOF
 	}
 
 	_, err := b.read(buf, b.firstBitOffset+bitOffset, nBits)
@@ -284,6 +288,7 @@ func (b *Buffer) ReadBits(buf []byte, bitOffset int64, nBits int64) error {
 
 func (b *Buffer) BytesBitRange(firstBitOffset int64, nBits int64, pad uint8) ([]byte, error) {
 	if firstBitOffset+nBits > b.Len {
+		return nil, io.ErrUnexpectedEOF
 	}
 
 	nBytes := nBits / 8
@@ -299,25 +304,31 @@ func (b *Buffer) BytesBitRange(firstBitOffset int64, nBits int64, pad uint8) ([]
 
 func (b *Buffer) Read(p []byte) (n int, err error) {
 	bitsLeft := b.Len - b.Pos
-	bytesLeft := bitsLeft / 8
-	if bitsLeft%8 != 0 {
-		bytesLeft = 1
+	// bytesLeft := bitsLeft / 8
+	// if bitsLeft%8 != 0 {
+	// 	bytesLeft = 1
+	// }
+
+	if bitsLeft == 0 {
+		return 0, io.EOF
 	}
 
 	readBytes := int64(len(p))
-	if readBytes > bytesLeft {
-		readBytes = bytesLeft
+	readBits := readBytes * 8
+
+	if readBits > bitsLeft {
+		readBits = bitsLeft
 	}
 
-	log.Printf("b.firstBitOffset+b.Pos: %#+v\n", b.firstBitOffset+b.Pos)
-	log.Printf("readBytes: %#+v\n", readBytes)
-	if _, err := b.read(p, b.firstBitOffset+b.Pos, readBytes*8); err != nil {
-		return 0, err
+	// log.Printf("b.firstBitOffset+b.Pos: %d readBytes=%d readBits=%d bitsLeft=%d bytesLeft=%d\n", b.firstBitOffset+b.Pos, readBytes, readBits, bitsLeft, bytesLeft)
+	n, err = b.read(p, b.firstBitOffset+b.Pos, readBits)
+	if err != nil {
+		return n, err
 	}
 
-	b.Pos += readBytes * 8
+	b.Pos += readBits
 
-	return int(readBytes), nil
+	return n, nil
 }
 
 // BytesRange reads nBytes bytes starting bit position start
@@ -361,6 +372,8 @@ func (b *Buffer) BytePos() int64 {
 func (b *Buffer) SeekRel(delta int64) (int64, error) {
 	endPos := b.Pos + delta
 	if endPos > b.Len {
+		return 0, io.ErrUnexpectedEOF
+
 	}
 	b.Pos = endPos
 
@@ -370,6 +383,7 @@ func (b *Buffer) SeekRel(delta int64) (int64, error) {
 // SeekAbs seeks to absolute position
 func (b *Buffer) SeekAbs(pos int64) (int64, error) {
 	if pos > b.Len {
+		return 0, io.ErrUnexpectedEOF
 	}
 	b.Pos = pos
 	return b.Pos, nil
@@ -403,6 +417,7 @@ func (b *Buffer) BitString() string {
 func (b *Buffer) TruncateRel(nBits int64) error {
 	endPos := b.Pos + nBits
 	if endPos > b.Len {
+		return io.ErrUnexpectedEOF
 	}
 
 	b.Len = endPos

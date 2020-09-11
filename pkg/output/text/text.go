@@ -2,7 +2,9 @@ package text
 
 import (
 	"fmt"
+	"fq/internal/asciiwriter"
 	"fq/internal/columnwriter"
+	"fq/internal/hexpairwriter"
 	"fq/pkg/decode"
 	"io"
 	"strings"
@@ -98,14 +100,14 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 	// log.Printf("addrLines: %x\n", addrLines)
 
 	if len(f.Children) == 0 {
-		b, err := f.BitBuf().BytesBitRange(0, f.Range.Length(), 0)
-		if err != nil {
-			return err
-		}
+		b := f.BitBuf()
 		addrLines = ((stopLineByte - startLineByte) / lineBytes) + 1
 
-		fmt.Fprintf(cw.Columns[2], "%s", hexpairs(b, lineBytes, startLineByteOffset))
-		fmt.Fprintf(cw.Columns[4], "%s", printable(b, startLineByteOffset))
+		io.Copy(hexpairwriter.New(cw.Columns[2], lineBytes, startLineByteOffset), b.Copy())
+		io.Copy(asciiwriter.New(cw.Columns[4], lineBytes, startLineByteOffset), b.Copy())
+
+		// fmt.Fprintf(cw.Columns[2], "%s", hexpairs(b, lineBytes, startLineByteOffset))
+		// fmt.Fprintf(cw.Columns[4], "%s", printable(b, startLineByteOffset))
 	}
 
 	for i := 0; i < addrLines; i++ {
@@ -140,10 +142,10 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 }
 
 func (o *FieldWriter) Write(w io.Writer) error {
-	cw := columnwriter.New(w, []int{8, 1, lineBytes*3 - 1, 1, lineBytes, 1, -1})
-	cw.Columns[1].Wrap = true
-	cw.Columns[2].Wrap = true
-	cw.Columns[4].Wrap = true
+	cw := columnwriter.New(w, []int{8, 2, lineBytes*3 - 1, 2, lineBytes, 1, -1})
+	// cw.Columns[1].Wrap = true
+	// cw.Columns[2].Wrap = true
+	// cw.Columns[4].Wrap = true
 
 	return o.output(cw, o.f, 0)
 }
