@@ -10,6 +10,7 @@ import (
 )
 
 type Field struct {
+	Index    int
 	Name     string
 	Range    Range
 	Value    Value
@@ -83,6 +84,13 @@ func (f *Field) Sort() {
 			continue
 		}
 		fc.Sort()
+	}
+
+	indexMap := map[string]int{}
+	for _, fc := range f.Children {
+		index := indexMap[fc.Name]
+		fc.Index = index
+		indexMap[fc.Name] = index + 1
 	}
 }
 
