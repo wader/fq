@@ -1,4 +1,8 @@
 
+
+fq bla.ogg '.page | size(.) '
+
+
 flv
 
 "script" api one .go for custom decoder?

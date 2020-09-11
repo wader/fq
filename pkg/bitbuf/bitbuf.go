@@ -7,7 +7,6 @@ package bitbuf
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -45,8 +44,6 @@ const (
 	// LittleEndian byte order
 	LittleEndian
 )
-
-var ErrEOF = errors.New("EOF")
 
 func (b *Buffer) read(buf []byte, bitPos int64, nBits int64) (int64, error) {
 	//log.Printf("bitPos=%d nBits=%d", bitPos, nBits)
@@ -122,7 +119,6 @@ func NewFromReadSeeker(rs io.ReadSeeker, firstBitOffset int64) (*Buffer, error) 
 		return nil, err
 	}
 	if firstBitOffset > len*8 {
-		return nil, ErrEOF
 	}
 
 	return &Buffer{
@@ -142,7 +138,6 @@ func NewFromBytes(buf []byte, firstBitOffset int64) (*Buffer, error) {
 // Will be a shallow copy with position reset to zero.
 func NewFromBitBuf(b *Buffer, firstBitOffset int64) (*Buffer, error) {
 	if firstBitOffset > b.Len {
-		return nil, ErrEOF
 	}
 
 	return &Buffer{
@@ -187,7 +182,6 @@ func NewFromBitString(s string) (*Buffer, error) {
 func (b *Buffer) BitBufRange(firstBitOffset int64, nBits int64) (*Buffer, error) {
 	endPos := firstBitOffset + nBits
 	if endPos > b.Len {
-		return nil, ErrEOF
 	}
 
 	nb := &Buffer{
@@ -221,7 +215,6 @@ func (b *Buffer) Copy() *Buffer {
 // Bits reads nBits bits from buffer
 func (b *Buffer) bits(nBits int64) (uint64, error) {
 	if b.Pos+nBits > b.Len {
-		return 0, ErrEOF
 	}
 
 	var bufArray [10]byte
@@ -283,7 +276,6 @@ func (b *Buffer) PeekFind(nBits int64, v uint8, maxLen int64) (int64, error) {
 
 func (b *Buffer) ReadBits(buf []byte, bitOffset int64, nBits int64) error {
 	if bitOffset+nBits > b.Len {
-		return ErrEOF
 	}
 
 	_, err := b.read(buf, b.firstBitOffset+bitOffset, nBits)
@@ -292,7 +284,6 @@ func (b *Buffer) ReadBits(buf []byte, bitOffset int64, nBits int64) error {
 
 func (b *Buffer) BytesBitRange(firstBitOffset int64, nBits int64, pad uint8) ([]byte, error) {
 	if firstBitOffset+nBits > b.Len {
-		return nil, ErrEOF
 	}
 
 	nBytes := nBits / 8
@@ -370,7 +361,6 @@ func (b *Buffer) BytePos() int64 {
 func (b *Buffer) SeekRel(delta int64) (int64, error) {
 	endPos := b.Pos + delta
 	if endPos > b.Len {
-		return b.Pos, ErrEOF
 	}
 	b.Pos = endPos
 
@@ -380,7 +370,6 @@ func (b *Buffer) SeekRel(delta int64) (int64, error) {
 // SeekAbs seeks to absolute position
 func (b *Buffer) SeekAbs(pos int64) (int64, error) {
 	if pos > b.Len {
-		return b.Pos, ErrEOF
 	}
 	b.Pos = pos
 	return b.Pos, nil
@@ -414,7 +403,6 @@ func (b *Buffer) BitString() string {
 func (b *Buffer) TruncateRel(nBits int64) error {
 	endPos := b.Pos + nBits
 	if endPos > b.Len {
-		return ErrEOF
 	}
 
 	b.Len = endPos
