@@ -45,11 +45,8 @@ func (r *CachingReadSeeker) Read(p []byte) (n int, err error) {
 		n, err := io.ReadFull(r.rs, r.cache[0:readBytes])
 		r.cacheOff = r.off
 		r.cacheUsed = n
-		if err == io.ErrUnexpectedEOF {
-			err = io.EOF
-		}
-		if err != nil {
-			return n, err
+		if n == 0 || (err != io.ErrUnexpectedEOF && err == io.EOF) {
+			return 0, err
 		}
 	}
 }

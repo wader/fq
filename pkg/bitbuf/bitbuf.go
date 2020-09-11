@@ -59,10 +59,6 @@ func (b *Buffer) read(buf []byte, bitPos int64, nBits int64) (int64, error) {
 		readBytes++
 	}
 
-	if readBytes == 0 {
-		return 0, io.EOF
-	}
-
 	if readBytes > int64(len(b.buf)) {
 		b.buf = make([]byte, readBytes)
 	}
