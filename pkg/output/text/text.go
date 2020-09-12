@@ -79,7 +79,11 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 	}
 
 	indent := strings.Repeat("  ", depth)
-	fmt.Fprintf(cw.Columns[6], "%s%s[%d]: %s %s (%s)\n", indent, f.Name, f.Index, f.Value, f.Range, decode.Bits(f.Range.Length()))
+	nameIndex := ""
+	if f.Index > 0 {
+		nameIndex = fmt.Sprintf("[%d]", f.Index)
+	}
+	fmt.Fprintf(cw.Columns[6], "%s%s%s: %s %s (%s)\n", indent, f.Name, nameIndex, f.Value, f.Range, decode.Bits(f.Range.Length()))
 
 	cw.Flush()
 

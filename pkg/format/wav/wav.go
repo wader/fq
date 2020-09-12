@@ -6,6 +6,7 @@ package wav
 import (
 	"fmt"
 	"fq/pkg/decode"
+	"strings"
 )
 
 var File = &decode.Format{
@@ -44,7 +45,8 @@ func (d *FileDecoder) decodeChunk(expectedChunkId string) int64 {
 	}
 	d.SeekRel(-4 * 8)
 
-	d.FieldStrFn(chunkID, func() (string, string) {
+	trimChunkID := strings.TrimSpace(chunkID)
+	d.FieldStrFn(trimChunkID, func() (string, string) {
 		d.FieldUTF8("chunk_id", 4)
 		chunkLen = int64(d.FieldU32LE("chunk_size"))
 
@@ -52,6 +54,10 @@ func (d *FileDecoder) decodeChunk(expectedChunkId string) int64 {
 			d.SubLenFn(chunkLen*8, fn)
 		} else {
 			d.FieldBytesLen("data", chunkLen)
+		}
+
+		if chunkLen%2 != 0 {
+			d.FieldBytesLen("chunk_align", 1)
 		}
 
 		return chunkID, ""
