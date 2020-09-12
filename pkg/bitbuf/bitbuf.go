@@ -16,25 +16,6 @@ import (
 
 const cacheReadAheadSize = 256 * 1024
 
-//rangeContain does a contain b
-func rangeContain(aStart, aEnd, bStart, bEnd int64) bool {
-	return bStart >= aStart && bStart <= aEnd && bEnd <= aEnd
-}
-
-func min64(a, b int64) int64 {
-	if a < b {
-		return a
-	}
-	return b
-}
-
-func max(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
-}
-
 // Endian byte order
 type Endian int
 
