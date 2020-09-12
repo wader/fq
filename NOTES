@@ -1,5 +1,9 @@
 
 
+context?
+
+skip same lines in ascii/hexpairs?
+
 fq bla.ogg '.page | size(.) '
 
 

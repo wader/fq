@@ -1,8 +1,8 @@
-package bitbuf_test
+package aheadreadseeker_test
 
 import (
 	"bytes"
-	"fq/pkg/bitbuf"
+	"fq/internal/aheadreadseeker"
 	"io"
 	"log"
 	"testing"
@@ -43,7 +43,7 @@ func (r *recordingReadSeeker) Seek(offset int64, whence int) (int64, error) {
 
 func TestNewReadAtCache(t *testing.T) {
 	rrs := &recordingReadSeeker{rs: bytes.NewReader([]byte("abc"))}
-	r := bitbuf.NewCachingReadSeeker(rrs, 2)
+	r := aheadreadseeker.New(rrs, 2)
 
 	b := make([]byte, 1)
 	r.Read(b)

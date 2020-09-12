@@ -1,4 +1,4 @@
-package bitbuf
+package aheadreadseeker
 
 import (
 	"io"
@@ -6,7 +6,14 @@ import (
 
 // TODO: smarter cache? cache behind too somehow?
 
-type CachingReadSeeker struct {
+func min64(a, b int64) int64 {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+type Reader struct {
 	rs      io.ReadSeeker
 	minRead int
 
@@ -16,14 +23,14 @@ type CachingReadSeeker struct {
 	cacheUsed int
 }
 
-func NewCachingReadSeeker(rs io.ReadSeeker, minRead int) *CachingReadSeeker {
-	return &CachingReadSeeker{
+func New(rs io.ReadSeeker, minRead int) *Reader {
+	return &Reader{
 		rs:      rs,
 		minRead: minRead,
 	}
 }
 
-func (r *CachingReadSeeker) Read(p []byte) (n int, err error) {
+func (r *Reader) Read(p []byte) (n int, err error) {
 	for {
 		if r.off >= r.cacheOff && r.off < r.cacheOff+int64(r.cacheUsed) {
 			d := r.off - r.cacheOff
@@ -51,7 +58,7 @@ func (r *CachingReadSeeker) Read(p []byte) (n int, err error) {
 	}
 }
 
-func (r *CachingReadSeeker) Seek(offset int64, whence int) (int64, error) {
+func (r *Reader) Seek(offset int64, whence int) (int64, error) {
 	var absOff int64
 	var err error
 

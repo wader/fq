@@ -8,6 +8,7 @@ package bitbuf
 import (
 	"bytes"
 	"fmt"
+	"fq/internal/aheadreadseeker"
 	"io"
 	"math"
 	"strings"
@@ -105,7 +106,7 @@ type Buffer struct {
 
 	buf []byte
 
-	crs *CachingReadSeeker
+	crs *aheadreadseeker.Reader
 }
 
 // NewFromReadSeeker bitbuf.Buffer from io.ReadSeeker, start at firstBit with bit length lenBits
@@ -126,7 +127,7 @@ func NewFromReadSeeker(rs io.ReadSeeker, firstBitOffset int64) (*Buffer, error) 
 		Len:            len*8 - firstBitOffset,
 		Pos:            0,
 		firstBitOffset: firstBitOffset,
-		crs:            NewCachingReadSeeker(rs, cacheReadAheadSize),
+		crs:            aheadreadseeker.New(rs, cacheReadAheadSize),
 	}, nil
 }
 
