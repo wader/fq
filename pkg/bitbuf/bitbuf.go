@@ -14,7 +14,7 @@ import (
 	"strings"
 )
 
-const cacheReadAheadSize = 1024 * 1024
+const cacheReadAheadSize = 256 * 1024
 
 //rangeContain does a contain b
 func rangeContain(aStart, aEnd, bStart, bEnd int64) bool {

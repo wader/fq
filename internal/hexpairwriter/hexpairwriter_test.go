@@ -2,7 +2,7 @@ package hexpairwriter_test
 
 import (
 	"bytes"
-	"fq/pkg/hexpairwriter"
+	"fq/internal/hexpairwriter"
 	"log"
 	"testing"
 )

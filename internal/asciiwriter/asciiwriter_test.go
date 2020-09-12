@@ -2,7 +2,7 @@ package asciiwriter_test
 
 import (
 	"bytes"
-	"fq/pkg/asciiwriter"
+	"fq/internal/asciiwriter"
 	"log"
 	"testing"
 )
