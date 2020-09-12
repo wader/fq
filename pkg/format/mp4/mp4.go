@@ -4,7 +4,7 @@ package mp4
 
 import (
 	"fq/pkg/decode"
-	"fq/pkg/format/aac"
+	"log"
 )
 
 var File = &decode.Format{
@@ -39,20 +39,20 @@ type FileDecoder struct {
 	currentTrack *track
 }
 
-func (d *FileDecoder) decodeAtom() int64 {
-	boxes := map[string]func(dataSize int64){
-		"ftyp": func(dataSize int64) {
+func (d *FileDecoder) decodeAtom() uint64 {
+	boxes := map[string]func(){
+		"ftyp": func() {
 			d.FieldUTF8("major_brand", 4)
 			d.FieldU32("minor_version")
 			d.FieldNoneFn("brands", func() {
-				numBrands := (dataSize - 8) / 4
+				numBrands := d.BitsLeft() / 8 / 4
 				for i := int64(0); i < numBrands; i++ {
 					d.FieldUTF8("brand", 4)
 				}
 			})
 		},
 		"moov": d.decodeAtoms,
-		"mvhd": func(dataSize int64) {
+		"mvhd": func() {
 			d.FieldU8("version")
 			d.FieldUTF8("flags", 3)
 			d.FieldU32("creation_time")
@@ -73,7 +73,7 @@ func (d *FileDecoder) decodeAtom() int64 {
 		},
 		"trak": d.decodeAtoms,
 		"edts": d.decodeAtoms,
-		"elst": func(dataSize int64) {
+		"elst": func() {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			numEntries := d.FieldU32("num_entries")
@@ -86,7 +86,7 @@ func (d *FileDecoder) decodeAtom() int64 {
 			})
 		},
 		"tref": d.decodeAtoms,
-		"tkhd": func(dataSize int64) {
+		"tkhd": func() {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
@@ -114,7 +114,7 @@ func (d *FileDecoder) decodeAtom() int64 {
 			}
 		},
 		"mdia": d.decodeAtoms,
-		"mdhd": func(dataSize int64) {
+		"mdhd": func() {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
@@ -127,7 +127,7 @@ func (d *FileDecoder) decodeAtom() int64 {
 			d.FieldU16("quality")
 		},
 
-		"hdlr": func(dataSize int64) {
+		"hdlr": func() {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
@@ -136,12 +136,12 @@ func (d *FileDecoder) decodeAtom() int64 {
 			d.FieldUTF8("component_manufacturer", 4)
 			d.FieldU32("component_flags")
 			d.FieldU32("component_flags_mask")
-			d.FieldUTF8("component_name", int64(dataSize)-24)
+			d.FieldUTF8("component_name", int64(d.BitsLeft()/8))
 		},
 
 		"minf": d.decodeAtoms,
 		"dinf": d.decodeAtoms,
-		"dref": func(dataSize int64) {
+		"dref": func() {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
@@ -158,7 +158,7 @@ func (d *FileDecoder) decodeAtom() int64 {
 			})
 		},
 		"stbl": d.decodeAtoms,
-		"stsd": func(dataSize int64) {
+		"stsd": func() {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
@@ -184,7 +184,7 @@ func (d *FileDecoder) decodeAtom() int64 {
 				}
 			})
 		},
-		"stts": func(dataSize int64) {
+		"stts": func() {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
@@ -196,7 +196,7 @@ func (d *FileDecoder) decodeAtom() int64 {
 				}
 			})
 		},
-		"stsc": func(dataSize int64) {
+		"stsc": func() {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
@@ -216,7 +216,7 @@ func (d *FileDecoder) decodeAtom() int64 {
 				}
 			})
 		},
-		"stsz": func(dataSize int64) {
+		"stsz": func() {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
@@ -234,7 +234,7 @@ func (d *FileDecoder) decodeAtom() int64 {
 				})
 			}
 		},
-		"stco": func(dataSize int64) {
+		"stco": func() {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
@@ -250,7 +250,7 @@ func (d *FileDecoder) decodeAtom() int64 {
 			})
 		},
 		// TODO: refactor: merge with stsco?
-		"co64": func(dataSize int64) {
+		"co64": func() {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
@@ -267,42 +267,46 @@ func (d *FileDecoder) decodeAtom() int64 {
 		},
 	}
 
-	var size int64
-	size = int64(d.U32())
+	boxSize := d.U32()
 	typ := d.UTF8(4)
 	d.SeekRel(-8 * 8)
 	d.FieldNoneFn(typ, func() {
-		switch size {
+		var dataSize uint64
+		switch boxSize {
 		case 0:
 			// reset of file
 			// TODO: FieldU32 with display?
 			d.FieldUFn("size", func() (uint64, decode.NumberFormat, string) { return d.U32(), decode.NumberDecimal, "Rest of file" })
 			d.FieldUTF8("type", 4)
-			size = d.Len() - d.Pos() - (8 * 8)
+			dataSize = uint64(d.Len()-d.Pos()) / 8
+			boxSize = dataSize + 8
 		case 1:
 			// 64 bit length
 			d.FieldUFn("size", func() (uint64, decode.NumberFormat, string) { return d.U32(), decode.NumberDecimal, "Use 64 bit size" })
 			d.FieldUTF8("type", 4)
-			d.FieldU64("size64")
+			boxSize = d.FieldU64("size64")
+			dataSize = boxSize - 16
 		default:
 			d.FieldU32("size")
 			d.FieldUTF8("type", 4)
+			dataSize = boxSize - 8
 		}
 
-		dataLen := size - 8
+		log.Printf("dataSize: %d\n", dataSize)
+
 		if decodeFn, ok := boxes[typ]; ok {
-			decodeFn(dataLen)
+			d.SubLenFn(int64(dataSize*8), decodeFn)
 		} else {
-			d.FieldBytesLen("data", int64(dataLen))
+			d.FieldBytesLen("data", int64(dataSize))
 		}
 	})
 
-	return size
+	return boxSize
 }
 
-func (d *FileDecoder) decodeAtoms(bytesLeft int64) {
-	for bytesLeft > 0 {
-		bytesLeft -= d.decodeAtom()
+func (d *FileDecoder) decodeAtoms() {
+	for !d.End() {
+		d.decodeAtom()
 	}
 }
 
@@ -320,40 +324,52 @@ func (d *FileDecoder) Decode() {
 	}
 	d.SeekRel(-8 * 8)
 
-	d.decodeAtoms(d.BitsLeft() / 8)
+	d.decodeAtoms()
 
-	for _, t := range d.tracks {
-		d.FieldNoneFn("track", func() {
+	log.Println("BLA")
 
-			d.FieldStrFn("data_format", func() (string, string) { return t.dataFormat, "" })
+	// for _, t := range d.tracks {
+	// 	d.FieldNoneFn("track", func() {
 
-			sampleCount := uint64(0)
+	// 		d.FieldStrFn("data_format", func() (string, string) { return t.dataFormat, "" })
 
-			for _, c := range t.stsc {
+	// 		sampleCount := uint64(0)
 
-				cso := t.stco[c.firstChunk-1]
+	// 		for _, c := range t.stsc {
 
-				for csi := uint32(0); csi < c.samplesPerChunk; csi++ {
+	// 			cso := t.stco[c.firstChunk-1]
 
-					stz := uint64(t.stsz[sampleCount])
+	// 			for csi := uint32(0); csi < c.samplesPerChunk; csi++ {
 
-					// log.Printf("cso*8: %d %#+v\n", cso, cso*8)
-					// log.Printf("stz*8: %d %#+v\n", stz, stz*8)
+	// 				stz := uint64(t.stsz[sampleCount])
 
-					// if t.dataFormat == "mp4a" {
-					d.FieldDecodeRange("sample", int64(cso)*8, int64(stz)*8, aac.Frame)
+	// 				// log.Printf("cso*8: %d %#+v\n", cso, cso*8)
+	// 				// log.Printf("stz*8: %d %#+v\n", stz, stz*8)
 
-					//} else {
-					d.FieldBytesRange("sample", int64(cso)*8, int64(stz))
+	// 				// if t.dataFormat == "mp4a" {
+	// 				d.FieldDecodeRange("sample", int64(cso)*8, int64(stz)*8, aac.Frame)
 
-					//}
+	// 				//} else {
+	// 				d.FieldBytesRange("sample", int64(cso)*8, int64(stz))
 
-					cso += stz
+	// 				//}
 
-					sampleCount++
-				}
-			}
-		})
-	}
+	// 				cso += stz
+
+	// 				sampleCount++
+
+	// 				log.Printf("SAMPLE %d %d", csi, c.samplesPerChunk)
+	// 			}
+
+	// 			log.Println("ATTTTTT1")
+
+	// 		}
+
+	// 		log.Println("ATTTTTT2")
+
+	// 	})
+	// }
+
+	log.Println("BLA2")
 
 }

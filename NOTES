@@ -1,5 +1,7 @@
 
 
+nBits < 0
+
 context?
 
 skip same lines in ascii/hexpairs?
