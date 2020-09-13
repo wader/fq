@@ -2,6 +2,7 @@ package columnwriter
 
 import (
 	"bytes"
+	"fq/internal/ansi"
 	"io"
 	"strings"
 )
@@ -166,10 +167,12 @@ func (w *Writer) Flush() error {
 			}
 
 			if c.Width != -1 {
-				if len(s) > c.Width {
-					s = s[0:c.Width]
-				} else if len(s) < c.Width {
-					s += strings.Repeat(" ", c.Width-len(s))
+				l := ansi.Len(s)
+				// if len(s) > c.Width {
+				// 	//s = s[0:c.Width]
+				// } else
+				if l < c.Width {
+					s += strings.Repeat(" ", c.Width-l)
 				}
 			}
 

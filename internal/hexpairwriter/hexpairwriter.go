@@ -4,7 +4,7 @@ import (
 	"io"
 )
 
-const hextable = "0123456789abcdef"
+const hexTable = "0123456789abcdef"
 
 type Writer struct {
 	w           io.Writer
@@ -50,8 +50,8 @@ func (h *Writer) Write(p []byte) (n int, err error) {
 	for i := 0; i < len(p); i++ {
 		lineOffset := h.offset % h.width
 		v := p[i]
-		h.buf[h.bufOffset+0] = hextable[v>>4]
-		h.buf[h.bufOffset+1] = hextable[v&0xf]
+		h.buf[h.bufOffset+0] = hexTable[v>>4]
+		h.buf[h.bufOffset+1] = hexTable[v&0xf]
 		h.buf[h.bufOffset+2] = ' '
 		h.bufOffset += 3
 

@@ -2,6 +2,7 @@ package text
 
 import (
 	"fmt"
+	"fq/internal/ansi"
 	"fq/internal/asciiwriter"
 	"fq/internal/columnwriter"
 	"fq/internal/hexpairwriter"
@@ -60,11 +61,27 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 		b := f.BitBuf()
 		addrLines = ((truncatedStopLineByte - startLineByte) / lineBytes) + 1
 
+		asciiFn := func(c byte) string {
+			d := c
+			if c < 32 || c > 126 {
+				d = '.'
+			}
+
+			switch {
+			case c < 32 || c > 126:
+				return fmt.Sprintf("%s%c%s", ansi.FgBrightBlack, d, ansi.Reset)
+			case c >= '0' && c <= '9', c >= 'a' && c <= 'z', c >= 'A' && c <= 'Z':
+				return fmt.Sprintf("%s%c%s", ansi.FgBrightWhite, d, ansi.Reset)
+			default:
+				return fmt.Sprintf("%c", d)
+			}
+		}
+
 		io.Copy(
 			hexpairwriter.New(cw.Columns[2], int(lineBytes), int(startLineByteOffset)),
 			io.LimitReader(b.Copy(), rangeBytes))
 		io.Copy(
-			asciiwriter.New(cw.Columns[4], int(lineBytes), int(startLineByteOffset)),
+			asciiwriter.New(cw.Columns[4], int(lineBytes), int(startLineByteOffset), asciiFn),
 			io.LimitReader(b.Copy(), rangeBytes))
 
 		// fmt.Fprintf(cw.Columns[2], "%s", hexpairs(b, lineBytes, startLineByteOffset))

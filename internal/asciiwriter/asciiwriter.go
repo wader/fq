@@ -8,18 +8,20 @@ type Writer struct {
 	w           io.Writer
 	width       int
 	startOffset int
+	fn          func(v byte) string
 	offset      int
 	buf         []byte
 	bufOffset   int
 }
 
-func New(w io.Writer, width int, startOffset int) *Writer {
+func New(w io.Writer, width int, startOffset int, fn func(v byte) string) *Writer {
 	return &Writer{
 		w:           w,
 		width:       width,
 		startOffset: startOffset,
+		fn:          fn,
 		offset:      0,
-		buf:         make([]byte, width+2), // worst case " " or "\n" + width + "\n"
+		buf:         make([]byte, width*11+2), // worst case " " or "\n" + width + "\n"
 		bufOffset:   0,
 	}
 }
@@ -43,15 +45,9 @@ func (h *Writer) Write(p []byte) (n int, err error) {
 
 	for i := 0; i < len(p); i++ {
 		lineOffset := h.offset % h.width
-		v := p[i]
-		if v < 32 || v > 126 {
-			h.buf[h.bufOffset] = '.'
-		} else {
-			h.buf[h.bufOffset] = v
-		}
-		h.bufOffset++
 
-		var b []byte
+		b := []byte(h.fn(p[i]))
+
 		switch {
 		case i < len(p)-1 && lineOffset == h.width-1:
 			h.buf[h.bufOffset] = '\n'
@@ -61,7 +57,7 @@ func (h *Writer) Write(p []byte) (n int, err error) {
 			b = h.buf[:h.bufOffset]
 		}
 
-		// log.Printf("i=%d h.bufOffset=%d lineOffset=%d h.width-1=%d b=%q\n", i, h.bufOffset, lineOffset, h.width-1, b)
+		//log.Printf("i=%d h.bufOffset=%d lineOffset=%d h.width-1=%d b=%q\n", i, h.bufOffset, lineOffset, h.width-1, b)
 		if b != nil {
 			if _, err := h.w.Write(b); err != nil {
 				return 0, err
