@@ -1,5 +1,13 @@
 
 
+decoder guide:
+  invalid is no zero input, assert one valid frame etc
+  try validate input to make it not ambiguous so that multple deocders could match
+  split bit flags etc into a field with subfields for each bit
+  try keep code as declarative as possible
+  split into multiple sub decoders if possible
+
+
 ogg.FileDecoder -> ogg.Page add segments blabl ause from ogg.FileDeocer?
 
 gaps
