@@ -5,6 +5,7 @@ package png
 
 import (
 	"fq/pkg/decode"
+	"fq/pkg/format/icc"
 	"fq/pkg/format/tiff"
 )
 
@@ -95,7 +96,7 @@ func (d *FileDecoder) Decode() {
 				switch compressionMethod {
 				case compressionDeflate:
 					d.FieldZlibLen("uncompressed", chunkLength-profileNameLen-1, decode.FormatFn(func(c *decode.Common) {
-						c.FieldUTF8("text", c.BitsLeft()/8)
+						c.FieldDecodeLen("icc", c.BitsLeft(), icc.Tag)
 					}))
 				default:
 					d.FieldBytesLen("compressed", chunkLength-profileNameLen-1)

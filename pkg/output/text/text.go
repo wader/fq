@@ -12,7 +12,7 @@ import (
 )
 
 const lineBytes = int64(16)
-const maxBytes = int64(32)
+const maxBytes = int64(64)
 
 var FieldOutput = &decode.FieldOutput{
 	Name: "text",
@@ -63,9 +63,9 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 
 		charToANSI := func(c byte) string {
 			switch {
-			case c < 32 || c > 126:
+			case c == 0:
 				return ansi.FgBrightBlack
-			case c >= '0' && c <= '9', c >= 'a' && c <= 'z', c >= 'A' && c <= 'Z':
+			case c >= 32 && c <= 126:
 				return ansi.FgBrightWhite
 			default:
 				return ansi.FgWhite
