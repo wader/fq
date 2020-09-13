@@ -57,6 +57,8 @@ func (d *FileDecoder) Decode() {
 
 	// 512*2 zero bytes
 	endMarker := [512 * 2]byte{}
+	validFiles := 0
+
 	for !d.End() {
 		name := str(100)
 		d.SeekRel(-100 * 8)
@@ -88,5 +90,11 @@ func (d *FileDecoder) Decode() {
 			d.FieldBytesLen("end_marker", 512*2)
 			break
 		}
+
+		validFiles++
+	}
+
+	if validFiles == 0 {
+		d.Invalid("no files found")
 	}
 }

@@ -66,18 +66,16 @@ func (m Main) run() error {
 		return err
 	}
 
-	r := m.OS.Stdin()
+	var rs io.ReadSeeker
 	if fs.Arg(0) != "" && fs.Arg(0) != "-" {
 		f, err := m.OS.Open(fs.Arg(0))
 		if err != nil {
 			return err
 		}
 		defer f.Close()
-		r = f
-	}
-	var rs io.ReadSeeker
-	if rs = r.(io.ReadSeeker); rs == nil {
-		buf, err := ioutil.ReadAll(r)
+		rs = f
+	} else {
+		buf, err := ioutil.ReadAll(m.OS.Stdin())
 		if err != nil {
 			return err
 		}

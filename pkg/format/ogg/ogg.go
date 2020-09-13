@@ -34,6 +34,8 @@ type FileDecoder struct {
 
 // Decode ogg
 func (d *FileDecoder) Decode() {
+	validFrames := 0
+
 	for !d.End() {
 		d.FieldNoneFn("page", func() {
 			// TODO: validate bits left
@@ -91,5 +93,11 @@ func (d *FileDecoder) Decode() {
 				delete(d.streams, streamSerialNumber)
 			}
 		})
+
+		validFrames++
+	}
+
+	if validFrames == 0 {
+		d.Invalid("no frames found")
 	}
 }

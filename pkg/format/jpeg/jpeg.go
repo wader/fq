@@ -163,6 +163,7 @@ type FileDecoder struct {
 // Decode JPEG file
 func (d *FileDecoder) Decode() {
 	var extendedXMP []byte
+	soiMarkerFound := false
 
 	inECD := false
 	for !d.End() {
@@ -201,6 +202,7 @@ func (d *FileDecoder) Decode() {
 				// TODO: warning on 0x00?
 				switch markerCode {
 				case SOI:
+					soiMarkerFound = true
 				case SOF0, SOF1, SOF2, SOF3, SOF5, SOF6, SOF7, SOF9, SOF10, SOF11:
 					d.FieldU16("Lf")
 					d.FieldU8("P")
@@ -274,6 +276,10 @@ func (d *FileDecoder) Decode() {
 				}
 			})
 		}
+	}
+
+	if !soiMarkerFound {
+		d.Invalid("no SOI marker found")
 	}
 
 	if extendedXMP != nil {
