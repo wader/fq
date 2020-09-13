@@ -1,27 +1,29 @@
 package hexpairwriter
 
+// TODO: generalize and rename? make buffer more flexible
+
 import (
 	"io"
 )
-
-const hexTable = "0123456789abcdef"
 
 type Writer struct {
 	w           io.Writer
 	width       int
 	startOffset int
+	fn          func(v byte) string
 	offset      int
 	buf         []byte
 	bufOffset   int
 }
 
-func New(w io.Writer, width int, startOffset int) *Writer {
+func New(w io.Writer, width int, startOffset int, fn func(v byte) string) *Writer {
 	return &Writer{
 		w:           w,
 		width:       width,
 		startOffset: startOffset,
+		fn:          fn,
 		offset:      0,
-		buf:         make([]byte, width*3+1), // worst case " " or "\n" + width*3
+		buf:         make([]byte, width*12+1), // worst case " " or "\n" + width*(XX "+ansi) + "\n"
 		bufOffset:   0,
 	}
 }
@@ -49,11 +51,11 @@ func (h *Writer) Write(p []byte) (n int, err error) {
 
 	for i := 0; i < len(p); i++ {
 		lineOffset := h.offset % h.width
-		v := p[i]
-		h.buf[h.bufOffset+0] = hexTable[v>>4]
-		h.buf[h.bufOffset+1] = hexTable[v&0xf]
-		h.buf[h.bufOffset+2] = ' '
-		h.bufOffset += 3
+		s := []byte(h.fn(p[i]))
+		copy(h.buf[h.bufOffset:], s)
+		h.bufOffset += len(s)
+		h.buf[h.bufOffset] = ' '
+		h.bufOffset++
 
 		var b []byte
 		switch {

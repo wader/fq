@@ -21,7 +21,7 @@ func New(w io.Writer, width int, startOffset int, fn func(v byte) string) *Write
 		startOffset: startOffset,
 		fn:          fn,
 		offset:      0,
-		buf:         make([]byte, width*11+2), // worst case " " or "\n" + width + "\n"
+		buf:         make([]byte, width*11+2), // worst case " " or "\n" + width*(c+ansi) + "\n"
 		bufOffset:   0,
 	}
 }
@@ -46,8 +46,11 @@ func (h *Writer) Write(p []byte) (n int, err error) {
 	for i := 0; i < len(p); i++ {
 		lineOffset := h.offset % h.width
 
-		b := []byte(h.fn(p[i]))
+		s := []byte(h.fn(p[i]))
+		copy(h.buf[h.bufOffset:], s)
+		h.bufOffset += len(s)
 
+		var b []byte
 		switch {
 		case i < len(p)-1 && lineOffset == h.width-1:
 			h.buf[h.bufOffset] = '\n'

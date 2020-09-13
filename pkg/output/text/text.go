@@ -61,24 +61,32 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 		b := f.BitBuf()
 		addrLines = ((truncatedStopLineByte - startLineByte) / lineBytes) + 1
 
+		charToANSI := func(c byte) string {
+			switch {
+			case c < 32 || c > 126:
+				return ansi.FgBrightBlack
+			case c >= '0' && c <= '9', c >= 'a' && c <= 'z', c >= 'A' && c <= 'Z':
+				return ansi.FgBrightWhite
+			default:
+				return ansi.FgWhite
+			}
+		}
+
+		hexpairFn := func(c byte) string {
+			const hexTable = "0123456789abcdef"
+			return fmt.Sprintf("%s%c%c%s", charToANSI(c), hexTable[c>>4], hexTable[c&0xf], ansi.Reset)
+		}
+
 		asciiFn := func(c byte) string {
 			d := c
 			if c < 32 || c > 126 {
 				d = '.'
 			}
-
-			switch {
-			case c < 32 || c > 126:
-				return fmt.Sprintf("%s%c%s", ansi.FgBrightBlack, d, ansi.Reset)
-			case c >= '0' && c <= '9', c >= 'a' && c <= 'z', c >= 'A' && c <= 'Z':
-				return fmt.Sprintf("%s%c%s", ansi.FgBrightWhite, d, ansi.Reset)
-			default:
-				return fmt.Sprintf("%c", d)
-			}
+			return fmt.Sprintf("%s%c%s", charToANSI(c), d, ansi.Reset)
 		}
 
 		io.Copy(
-			hexpairwriter.New(cw.Columns[2], int(lineBytes), int(startLineByteOffset)),
+			hexpairwriter.New(cw.Columns[2], int(lineBytes), int(startLineByteOffset), hexpairFn),
 			io.LimitReader(b.Copy(), rangeBytes))
 		io.Copy(
 			asciiwriter.New(cw.Columns[4], int(lineBytes), int(startLineByteOffset), asciiFn),
