@@ -3,6 +3,7 @@ package decode
 import (
 	"encoding/hex"
 	"fmt"
+	"fq/pkg/bitbuf"
 	"strconv"
 )
 
@@ -38,6 +39,7 @@ const (
 	TypeFloat
 	TypeStr
 	TypeBytes
+	TypeBitBuf
 	TypePadding
 	TypeDecoder
 )
@@ -61,6 +63,7 @@ type Value struct {
 	Float   float64
 	Str     string
 	Bytes   []byte
+	BitBuf  *bitbuf.Buffer
 	Decoder Decoder
 
 	Format  NumberFormat
@@ -92,8 +95,16 @@ func (v Value) String() string {
 			f = fmt.Sprintf("%q", v.Str)
 		}
 	case TypeBytes:
-		if len(v.Bytes) > 50 {
-			f = hex.EncodeToString(v.Bytes[0:25]) + "..."
+		if len(v.Bytes) > 16 {
+			f = hex.EncodeToString(v.Bytes[0:16]) + "..."
+
+		} else {
+			f = hex.EncodeToString(v.Bytes)
+		}
+	case TypeBitBuf:
+		bs, _ := v.BitBuf.BytesBitRange(0, 16*8, 0)
+		if v.BitBuf.Len > 16 {
+			f = hex.EncodeToString(bs) + "..."
 
 		} else {
 			f = hex.EncodeToString(v.Bytes)

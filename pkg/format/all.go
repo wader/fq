@@ -33,6 +33,7 @@ var All = []*decode.Format{
 	id3v2.Tag,
 	elf.File,
 	ogg.File,
+	ogg.Page,
 	vorbis.Packet,
 	jpeg.File,
 	tar.File,

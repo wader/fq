@@ -2,6 +2,7 @@ package id3v1
 
 import (
 	"fq/pkg/decode"
+	"strings"
 )
 
 // TODO: trim strings?
@@ -18,6 +19,12 @@ type TagDecoder struct {
 	decode.Common
 }
 
+func (d *TagDecoder) field(name string, nBytes int64) {
+	d.FieldStrFn(name, func() (string, string) {
+		return strings.Trim(d.UTF8(nBytes), "\x00 "), ""
+	})
+}
+
 // Decode ID3v1 tag
 func (d *TagDecoder) Decode() {
 	d.ValidateAtLeastBitsLeft(128 * 8)
@@ -25,11 +32,11 @@ func (d *TagDecoder) Decode() {
 	if d.PeekBits(8) == uint64('+') {
 		d.Invalid("looks like id3v11")
 	}
-	d.FieldUTF8("song_name", 30)
-	d.FieldUTF8("artist", 30)
-	d.FieldUTF8("album_name", 30)
-	d.FieldUTF8("year", 4)
-	d.FieldUTF8("comment", 30)
+	d.field("song_name", 30)
+	d.field("artist", 30)
+	d.field("album_name", 30)
+	d.field("year", 4)
+	d.field("comment", 30)
 	// from https://en.wikipedia.org/wiki/List_of_ID3v1_Genres
 	d.FieldStringMapFn("genre", map[uint64]string{
 		0:   "Blues",

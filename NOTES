@@ -1,5 +1,9 @@
 
 
+MultiBitBuf reader?
+
+Copy -> Clone? reset pos?
+
 decoder guide:
   invalid is no zero input, assert one valid frame etc
   try validate input to make it not ambiguous so that multple deocders could match

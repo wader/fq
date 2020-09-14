@@ -12,7 +12,7 @@ import (
 )
 
 const lineBytes = int64(16)
-const maxBytes = int64(64)
+const maxBytes = int64(32)
 
 var FieldOutput = &decode.FieldOutput{
 	Name: "text",
@@ -65,10 +65,10 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 			switch {
 			case c == 0:
 				return ansi.FgBrightBlack
-			case c >= 32 && c <= 126:
-				return ansi.FgBrightWhite
-			default:
+			case c >= 32 && c <= 126, c == '\r', c == '\n', c == '\f', c == '\t', c == '\v':
 				return ansi.FgWhite
+			default:
+				return ansi.FgBrightWhite
 			}
 		}
 

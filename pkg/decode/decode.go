@@ -149,6 +149,22 @@ func (c *Common) BytesLen(nBytes int64) []byte {
 	return bs
 }
 
+func (c *Common) BitBufRange(firstBit int64, nBits int64) *bitbuf.Buffer {
+	bs, err := c.bitBuf.BitBufRange(firstBit, nBits)
+	if err != nil {
+		panic(BitBufError{Err: err, Op: "BitBufRange", Size: nBits, Pos: firstBit})
+	}
+	return bs
+}
+
+func (c *Common) BitBufLen(nBits int64) *bitbuf.Buffer {
+	bs, err := c.bitBuf.BitBufLen(nBits)
+	if err != nil {
+		panic(BitBufError{Err: err, Op: "BitBufLen", Size: nBits, Pos: c.bitBuf.Pos})
+	}
+	return bs
+}
+
 func (c *Common) Pos() int64           { return c.bitBuf.Pos }
 func (c *Common) Len() int64           { return c.bitBuf.Len }
 func (c *Common) End() bool            { return c.bitBuf.End() }
@@ -633,10 +649,17 @@ func (c *Common) FieldStrFn(name string, fn func() (string, string)) string {
 }
 
 func (c *Common) FieldBytesFn(name string, firstBit int64, nBits int64, fn func() ([]byte, string)) []byte {
-	return c.FieldRangeFn(name, firstBit, nBits, func() Value {
+	return c.FieldFn(name, func() Value {
 		bs, disp := fn()
 		return Value{Type: TypeBytes, Bytes: bs, Display: disp}
 	}).Bytes
+}
+
+func (c *Common) FieldBitBufFn(name string, firstBit int64, nBits int64, fn func() (*bitbuf.Buffer, string)) *bitbuf.Buffer {
+	return c.FieldFn(name, func() Value {
+		bb, disp := fn()
+		return Value{Type: TypeBitBuf, BitBuf: bb, Display: disp}
+	}).BitBuf
 }
 
 func (c *Common) FieldStringMapFn(name string, sm map[uint64]string, def string, fn func() uint64) uint64 {
@@ -888,6 +911,18 @@ func (c *Common) FieldDecodeBitBuf(name string, firstBit int64, nBits int64, bb 
 	}
 
 	return d, errs
+}
+
+func (c *Common) FieldBitBufRange(name string, firstBit int64, nBits int64) *bitbuf.Buffer {
+	return c.FieldBitBufFn(name, firstBit, nBits, func() (*bitbuf.Buffer, string) {
+		return c.BitBufRange(firstBit, nBits), ""
+	})
+}
+
+func (c *Common) FieldBitBufLen(name string, nBits int64) *bitbuf.Buffer {
+	return c.FieldBitBufFn(name, c.bitBuf.Pos, nBits, func() (*bitbuf.Buffer, string) {
+		return c.BitBufLen(nBits), ""
+	})
 }
 
 func (c *Common) FieldZlib(name string, firsBit int64, nBits int64, b []byte, forceFormats ...*Format) (Decoder, []error) {
