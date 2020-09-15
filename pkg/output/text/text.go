@@ -63,6 +63,8 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 
 	// log.Printf("addrLines: %x\n", addrLines)
 
+	color := false
+
 	if len(f.Children) == 0 {
 		//b := f.BitBuf()
 
@@ -83,7 +85,11 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 
 		hexpairFn := func(c byte) string {
 			const hexTable = "0123456789abcdef"
-			return fmt.Sprintf("%s%c%c%s", charToANSI(c), hexTable[c>>4], hexTable[c&0xf], ansi.Reset)
+			if color {
+				return fmt.Sprintf("%s%c%c%s", charToANSI(c), hexTable[c>>4], hexTable[c&0xf], ansi.Reset)
+
+			}
+			return string(hexTable[c>>4]) + string(hexTable[c&0xf])
 		}
 
 		asciiFn := func(c byte) string {
@@ -91,7 +97,10 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 			if c < 32 || c > 126 {
 				d = '.'
 			}
-			return fmt.Sprintf("%s%c%s", charToANSI(c), d, ansi.Reset)
+			if color {
+				return fmt.Sprintf("%s%c%s", charToANSI(c), d, ansi.Reset)
+			}
+			return string(d)
 		}
 
 		io.Copy(

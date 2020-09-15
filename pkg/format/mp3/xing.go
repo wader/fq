@@ -67,8 +67,8 @@ func (d *XingHeaderDecoder) Decode() {
 			d.FieldU4("lame_flags")
 			d.FieldU4("lame_ath_type")
 			d.FieldU8("abr_vbr")          // TODO:
-			d.FieldU12("encoder_delay_x") // TODO:
-			d.FieldU12("encoder_delay_y") // TODO:
+			d.FieldU12("encoder_delay")   // TODO:
+			d.FieldU12("encoder_padding") // TODO:
 			d.FieldU8("misc")             // TODO:
 			d.FieldU8("mp3_gain")         // TODO:
 			d.FieldU16("preset")          // TODO:
