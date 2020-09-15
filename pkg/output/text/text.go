@@ -34,11 +34,17 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 
 	startByte := startBit / 8
 	stopByte := stopBit / 8
+	if stopBit%8 != 0 {
+		stopByte++
+	}
 	truncatedStopByte := stopByte
 	if truncatedStopByte-startByte > maxBytes {
 		truncatedStopByte = startByte + maxBytes
 	}
-	rangeBytes := truncatedStopByte - startByte + 1
+	rangeBytes := truncatedStopByte - startByte
+	if rangeBytes == 0 {
+		rangeBytes = 1
+	}
 
 	startLineByte := (startByte / lineBytes) * lineBytes
 	startLineByteOffset := startByte % lineBytes
@@ -58,7 +64,10 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 	// log.Printf("addrLines: %x\n", addrLines)
 
 	if len(f.Children) == 0 {
-		b := f.BitBuf()
+		//b := f.BitBuf()
+
+		b, _ := f.Decoder.AbsBitBuf().BitBufRange(startByte*8, rangeBytes*8)
+
 		addrLines = ((truncatedStopLineByte - startLineByte) / lineBytes) + 1
 
 		charToANSI := func(c byte) string {

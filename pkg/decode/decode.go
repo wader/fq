@@ -19,6 +19,7 @@ type Decoder interface {
 	BitBuf() *bitbuf.Buffer
 	Root() *Field
 	AbsPos(pos int64) int64
+	AbsBitBuf() *bitbuf.Buffer
 
 	MIME() string
 	Error() error
@@ -78,6 +79,13 @@ func (c *Common) AbsPos(pos int64) int64 {
 		return c.Root().Range.Start + pos
 	}
 	return c.Parent.AbsPos(0) + c.Root().Range.Start + pos
+}
+
+func (c *Common) AbsBitBuf() *bitbuf.Buffer {
+	if c.Parent == nil {
+		return c.BitBuf()
+	}
+	return c.Parent.AbsBitBuf()
 }
 
 func (c *Common) MIME() string {
