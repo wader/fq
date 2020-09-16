@@ -7,6 +7,7 @@ package tiff
 import (
 	"fq/pkg/decode"
 	"fq/pkg/format/icc"
+	"log"
 )
 
 var File = &decode.Format{
@@ -39,6 +40,8 @@ var typeNames = map[uint64]string{
 	SLONG:     "SLONG",
 	SRATIONAL: "SRATIONAL",
 }
+
+// TODO: tiff 6.0 types
 var typeByteSize = map[uint64]uint64{
 	BYTE:      1,
 	ASCII:     1,
@@ -765,8 +768,9 @@ func (d *FileDecoder) Decode() {
 		d.Invalid("unknown endian")
 	}
 	var fu16 func(name string) uint64
-	var u16 func() uint64
 	var fu32 func(name string) uint64
+	var su32 func(name string) int64
+	var u16 func() uint64
 
 	endian := d.FieldUFn("endian", func() (uint64, decode.NumberFormat, string) {
 		endian := d.U32()
@@ -777,11 +781,15 @@ func (d *FileDecoder) Decode() {
 		switch endian {
 		case littleEndian:
 			fu16 = d.FieldU16LE
+			fu32 = d.FieldU32LE
+			su32 = d.FieldS32LE
 			u16 = d.U16LE
 			fu32 = d.FieldU32LE
 			return endian, decode.NumberHex, "little-endian"
 		case bigEndian:
 			fu16 = d.FieldU16BE
+			fu32 = d.FieldU32BE
+			su32 = d.FieldS32BE
 			u16 = d.U16BE
 			fu32 = d.FieldU32BE
 			return endian, decode.NumberHex, "big-endian"
@@ -799,19 +807,62 @@ func (d *FileDecoder) Decode() {
 			numberOfFields := fu16("number_of_field")
 			for i := uint64(0); i < numberOfFields; i++ {
 				d.FieldNoneFn("ifd", func() {
-					tag := d.FieldStringMapFn("tag", tagNames, "unknown", u16)
-					typ := d.FieldStringMapFn("type", typeNames, "unknown", u16)
+					tag, _ := d.FieldStringMapFn("tag", tagNames, "unknown", u16)
+					typ, typOk := d.FieldStringMapFn("type", typeNames, "unknown", u16)
 					count := fu32("count")
 					// TODO: short values stored in valueOffset directly?
-					valueOffset := fu32("value_offset")
-					_ = valueOffset
-					_ = count
-					_ = typ
+					valueByteOffset := fu32("value_offset")
 
-					switch tag {
-					case InterColorProfile:
-						d.FieldDecodeRange("icc", int64(valueOffset)*8, int64(count)*8, icc.Tag)
+					if !typOk {
+						return
 					}
+
+					valueByteSize := typeByteSize[typ] * count
+					if valueByteSize <= 4 {
+						// if value fits in offset itself use offset to value_offset
+						valueByteOffset = uint64(d.Pos()/8) - 4
+					}
+
+					d.FieldNoneFn("values", func() {
+						switch {
+						case typ == UNDEFINED:
+							switch tag {
+							case InterColorProfile:
+								d.FieldDecodeRange("icc", int64(valueByteOffset)*8, int64(valueByteSize), icc.Tag)
+							default:
+								log.Printf("tag: %#+v\n", tag)
+								log.Printf("valueByteSize: %#+v\n", valueByteSize)
+								d.FieldBytesRange("value", int64(valueByteOffset)*8, int64(valueByteSize))
+							}
+						case typ == ASCII:
+							d.FieldUTF8("value", int64(valueByteSize))
+						default:
+							log.Printf("valueOffset: %d\n", valueByteOffset)
+							log.Printf("valueSize: %d\n", valueByteSize)
+							d.SubRangeFn(int64(valueByteOffset*8), int64(valueByteSize*8), func() {
+								for i := uint64(0); i < count; i++ {
+									switch typ {
+									case BYTE:
+										d.FieldU8("value")
+									case SHORT:
+										fu16("value")
+									case LONG:
+										fu32("value")
+									case RATIONAL:
+										// TODO: endian? correct? unsigned 32:32 fixed point
+										d.FieldUFP64("value")
+									case SLONG:
+										su32("value")
+									case SRATIONAL:
+										// TODO: endian? correct? signed 32:32 fixed point
+										d.FieldFP64("value")
+									default:
+										panic("unknown type")
+									}
+								}
+							})
+						}
+					})
 				})
 			}
 

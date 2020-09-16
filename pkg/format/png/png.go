@@ -75,7 +75,7 @@ func (d *FileDecoder) Decode() {
 				keywordLen := d.PeekFindByte(0, 80)
 				d.FieldUTF8("keyword", keywordLen-1)
 				d.FieldUTF8("null", 1)
-				compressionMethod := d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8)
+				compressionMethod, _ := d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8)
 				_ = compressionMethod
 
 				switch compressionMethod {
@@ -90,7 +90,7 @@ func (d *FileDecoder) Decode() {
 				profileNameLen := d.PeekFindByte(0, 80)
 				d.FieldUTF8("profile_name", profileNameLen-1)
 				d.FieldUTF8("null", 1)
-				compressionMethod := d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8)
+				compressionMethod, _ := d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8)
 				_ = compressionMethod
 
 				switch compressionMethod {

@@ -604,6 +604,33 @@ func (b *Buffer) FP16() (float64, error) {
 	return float64(float64(n) / (1 << 8)), nil
 }
 
+// UFP64 signed fixed point 1:31:32
+func (b *Buffer) UFP64() (float64, error) {
+	n, err := b.U64()
+	if err != nil {
+		return 0, err
+	}
+	return float64(float64(n) / (1 << 32)), nil
+}
+
+// UFP32 signed fixed point 1:15:16
+func (b *Buffer) UFP32() (float64, error) {
+	n, err := b.U32()
+	if err != nil {
+		return 0, err
+	}
+	return float64(float64(n) / (1 << 16)), nil
+}
+
+// UFP16 signed fixed point 1:7:8
+func (b *Buffer) UFP16() (float64, error) {
+	n, err := b.U16()
+	if err != nil {
+		return 0, err
+	}
+	return float64(float64(n) / (1 << 8)), nil
+}
+
 func (b *Buffer) UTF8(nBytes int64) (string, error) {
 	s, err := b.BytesLen(nBytes)
 	if err != nil {

@@ -57,7 +57,7 @@ type FrameDecoder struct {
 
 // Decode AAC frame
 func (d *FrameDecoder) Decode() {
-	se := d.FieldStringMapFn("syntax_element", SyntaxElementNames, "", d.U3)
+	se, _ := d.FieldStringMapFn("syntax_element", SyntaxElementNames, "", d.U3)
 	elementId := d.FieldU4("element_id")
 
 	switch se {

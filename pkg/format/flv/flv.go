@@ -86,7 +86,7 @@ func (d *FileDecoder) Decode() {
 	}
 
 	fieldScriptDataValue := func(name string) uint64 {
-		typ := d.FieldStringMapFn("type", typeNames, "Unknown", d.U8)
+		typ, _ := d.FieldStringMapFn("type", typeNames, "Unknown", d.U8)
 		if typ == typeECMAArray {
 			d.FieldU32("ecma_array_length")
 		}
@@ -156,7 +156,7 @@ func (d *FileDecoder) Decode() {
 		d.FieldU32("previous_tag_size")
 
 		d.FieldNoneFn("tag", func() {
-			tagType := d.FieldStringMapFn("tag_type", tagTypeNames, "unknown", d.U8)
+			tagType, _ := d.FieldStringMapFn("tag_type", tagTypeNames, "unknown", d.U8)
 			dataSize := d.FieldU24("data_size")
 			d.FieldU24("timestamp")
 			d.FieldU8("timestamp_extended")

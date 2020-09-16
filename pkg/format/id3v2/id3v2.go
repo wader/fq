@@ -374,10 +374,10 @@ func (d *TagDecoder) DecodeFrame(version int) uint64 {
 			// Description        <text string according to encoding> $00 (00)
 			// Picture data       <binary data>
 			"APIC": func() {
-				encoding := int(d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8))
+				encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
 				d.FieldTextNull("mime_type", encodingUTF8)
 				d.FieldU8("picture_type") // TODO: table
-				d.FieldTextNull("description", encoding)
+				d.FieldTextNull("description", int(encoding))
 				d.FieldDecodeLen("picture", d.BitsLeft(), group.Images...)
 			},
 			// Unsynced lyrics/text "ULT"
@@ -406,10 +406,10 @@ func (d *TagDecoder) DecodeFrame(version int) uint64 {
 			// Short content descrip. <text string according to encoding> $00 (00)
 			// The actual text        <full text string according to encoding>
 			"COMM": func() {
-				encoding := int(d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8))
+				encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
 				d.FieldUTF8("language", 3)
-				d.FieldTextNull("description", encoding)
-				d.FieldText("value", encoding, d.BitsLeft()/8)
+				d.FieldTextNull("description", int(encoding))
+				d.FieldText("value", int(encoding), d.BitsLeft()/8)
 			},
 			// Text information identifier  "T00" - "TZZ" , excluding "TXX",
 			//                             described in 4.2.2.
@@ -422,8 +422,8 @@ func (d *TagDecoder) DecodeFrame(version int) uint64 {
 			// Text encoding                $xx
 			// Information                  <text string(s) according to encoding>
 			"T000": func() {
-				encoding := int(d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8))
-				d.FieldText("text", encoding, d.BitsLeft()/8)
+				encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
+				d.FieldText("text", int(encoding), d.BitsLeft()/8)
 			},
 			// User defined...   "TXX"
 			// Frame size        $xx xx xx
@@ -436,9 +436,9 @@ func (d *TagDecoder) DecodeFrame(version int) uint64 {
 			// Description       <text string according to encoding> $00 (00)
 			// Value             <text string according to encoding>
 			"TXXX": func() {
-				encoding := int(d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8))
-				d.FieldTextNull("description", encoding)
-				d.FieldText("value", encoding, d.BitsLeft()/8)
+				encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
+				d.FieldTextNull("description", int(encoding))
+				d.FieldText("value", int(encoding), d.BitsLeft()/8)
 			},
 		}
 

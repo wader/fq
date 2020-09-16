@@ -102,12 +102,12 @@ func (d *FrameDecoder) Decode() {
 			return uint64(sampleRateIndex[uint(u)][v-1]), decode.NumberDecimal, ""
 		}
 	})
-	padding := d.FieldStringMapFn("padding", map[uint64]string{
+	padding, _ := d.FieldStringMapFn("padding", map[uint64]string{
 		0: "Not padded",
 		1: "Padded",
 	}, "", d.U1)
 	d.FieldU1("private")
-	channelsIndex := d.FieldStringMapFn("channels", map[uint64]string{
+	channelsIndex, _ := d.FieldStringMapFn("channels", map[uint64]string{
 		0b00: "Stereo",
 		0b01: "Joint Stereo",
 		0b10: "Dual",

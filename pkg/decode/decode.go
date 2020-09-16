@@ -34,7 +34,7 @@ type BitBufError struct {
 }
 
 func (e BitBufError) Error() string {
-	return fmt.Sprintf("%s: failed at bit position %s (size %s delta %s): %s",
+	return fmt.Sprintf("%s: failed at position %s (size %s delta %s): %s",
 		e.Op, Bits(e.Pos), Bits(e.Size), Bits(e.Delta), e.Err)
 }
 func (e BitBufError) Unwrap() error { return e.Err }
@@ -550,6 +550,48 @@ func (c *Common) FieldFP16(name string) float64 {
 	})
 }
 
+func (c *Common) UFP64() float64 {
+	f, err := c.bitBuf.UFP64()
+	if err != nil {
+		panic(BitBufError{Err: err, Op: "UFP64", Size: 8, Pos: c.bitBuf.Pos})
+	}
+	return f
+}
+
+func (c *Common) FieldUFP64(name string) float64 {
+	return c.FieldFloatFn(name, func() (float64, string) {
+		return c.UFP64(), ""
+	})
+}
+
+func (c *Common) UFP32() float64 {
+	f, err := c.bitBuf.UFP32()
+	if err != nil {
+		panic(BitBufError{Err: err, Op: "UFP32", Size: 4, Pos: c.bitBuf.Pos})
+	}
+	return f
+}
+
+func (c *Common) FieldUFP32(name string) float64 {
+	return c.FieldFloatFn(name, func() (float64, string) {
+		return c.UFP32(), ""
+	})
+}
+
+func (c *Common) UFP16() float64 {
+	f, err := c.bitBuf.UFP16()
+	if err != nil {
+		panic(BitBufError{Err: err, Op: "UFP16", Size: 2, Pos: c.bitBuf.Pos})
+	}
+	return f
+}
+
+func (c *Common) FieldUFP16(name string) float64 {
+	return c.FieldFloatFn(name, func() (float64, string) {
+		return c.UFP16(), ""
+	})
+}
+
 func (c *Common) Unary(s uint64) uint64 {
 	n, err := c.bitBuf.Unary(s)
 	if err != nil {
@@ -670,16 +712,17 @@ func (c *Common) FieldBitBufFn(name string, firstBit int64, nBits int64, fn func
 	}).BitBuf
 }
 
-func (c *Common) FieldStringMapFn(name string, sm map[uint64]string, def string, fn func() uint64) uint64 {
+func (c *Common) FieldStringMapFn(name string, sm map[uint64]string, def string, fn func() uint64) (uint64, bool) {
+	var ok bool
 	return c.FieldUFn(name, func() (uint64, NumberFormat, string) {
 		n := fn()
 		var d string
-		d, ok := sm[n]
+		d, ok = sm[n]
 		if !ok {
 			d = def
 		}
 		return n, NumberDecimal, d
-	})
+	}), ok
 }
 
 func (c *Common) FieldValidateUFn(name string, v uint64, fn func() uint64) {
@@ -819,6 +862,24 @@ func (c *Common) SubLenFn(nBits int64, fn func()) {
 	c.SeekRel(int64(bitsLeft))
 
 	prevBb.Pos = c.bitBuf.Pos
+	c.bitBuf = prevBb
+}
+
+func (c *Common) SubRangeFn(firstBit int64, nBits int64, fn func()) {
+	prevBb := c.bitBuf
+
+	bb, err := c.bitBuf.BitBufRange(0, firstBit+nBits)
+	if err != nil {
+		panic(BitBufError{Err: err, Op: "SubRangeFn", Size: nBits, Pos: firstBit})
+	}
+	_, err = bb.SeekAbs(firstBit)
+	if err != nil {
+		panic(err)
+	}
+	c.bitBuf = bb
+
+	fn()
+
 	c.bitBuf = prevBb
 }
 
