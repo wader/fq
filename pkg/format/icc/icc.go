@@ -21,14 +21,22 @@ func (d *TagDecoder) Decode() {
 
 	d.FieldNoneFn("header", func() {
 		d.FieldU32("size")
-		d.FieldU32("cmm_type_singature")
+		d.FieldUTF8("cmm_type_singature", 4)
 		d.FieldU32("version")
-		d.FieldU32("device_class_signature")
-		d.FieldU32("color_space")
-		d.FieldU32("connection_space")
-		d.FieldBytesLen("timestamp", 12) // TODO
-		d.FieldU32("file_signature")
-		d.FieldU32("primary_platform")
+		d.FieldUTF8("device_class_signature", 4)
+		d.FieldUTF8("color_space", 4)
+		d.FieldUTF8("connection_space", 4)
+		d.FieldNoneFn("timestamp", func() {
+			d.FieldU16("year")
+			d.FieldU16("month")
+			d.FieldU16("day")
+			d.FieldU16("hours")
+			d.FieldU16("minutes")
+			d.FieldU16("seconds")
+
+		})
+		d.FieldUTF8("file_signature", 4)
+		d.FieldUTF8("primary_platform", 4)
 		d.FieldU32("flags")
 		d.FieldUTF8("device_manufacturer", 4)
 		d.FieldUTF8("device_model", 4)
@@ -46,8 +54,9 @@ func (d *TagDecoder) Decode() {
 			for i := uint64(0); i < tagCount; i++ {
 				d.FieldNoneFn("element", func() {
 					d.FieldUTF8("signature", 4)
-					d.FieldU32("offset")
-					d.FieldU32("size")
+					offset := d.FieldU32("offset")
+					size := d.FieldU32("size")
+					d.FieldBytesRange("data", int64(offset)*8, int64(size))
 				})
 			}
 		})

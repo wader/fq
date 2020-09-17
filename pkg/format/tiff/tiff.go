@@ -828,7 +828,7 @@ func (d *FileDecoder) Decode() {
 						case typ == UNDEFINED:
 							switch tag {
 							case InterColorProfile:
-								d.FieldDecodeRange("icc", int64(valueByteOffset)*8, int64(valueByteSize), icc.Tag)
+								d.FieldDecodeRange("icc", int64(valueByteOffset)*8, int64(valueByteSize)*8, icc.Tag)
 							default:
 								log.Printf("tag: %#+v\n", tag)
 								log.Printf("valueByteSize: %#+v\n", valueByteSize)
