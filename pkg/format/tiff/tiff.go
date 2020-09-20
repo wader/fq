@@ -835,7 +835,9 @@ func (d *FileDecoder) Decode() {
 								d.FieldBytesRange("value", int64(valueByteOffset)*8, int64(valueByteSize))
 							}
 						case typ == ASCII:
-							d.FieldUTF8("value", int64(valueByteSize))
+							d.SubRangeFn(int64(valueByteOffset*8), int64(valueByteSize*8), func() {
+								d.FieldUTF8("value", int64(valueByteSize))
+							})
 						default:
 							log.Printf("valueOffset: %d\n", valueByteOffset)
 							log.Printf("valueSize: %d\n", valueByteSize)
