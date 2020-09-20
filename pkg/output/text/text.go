@@ -12,7 +12,7 @@ import (
 )
 
 const lineBytes = int64(16)
-const maxBytes = int64(32)
+const maxBytes = int64(16)
 
 var FieldOutput = &decode.FieldOutput{
 	Name: "text",
@@ -37,20 +37,34 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 	if stopBit%8 != 0 {
 		stopByte++
 	}
-	truncatedStopByte := stopByte
-	if truncatedStopByte-startByte > maxBytes {
-		truncatedStopByte = startByte + maxBytes
+	sizeBytes := stopByte - startByte
+
+	lastDisplayByte := stopByte
+	if sizeBytes > maxBytes {
+		// truncate but fill line
+		// TODO: redo with max etc?
+		lastDisplayByte = startByte + maxBytes
+		if lastDisplayByte%lineBytes != 0 {
+			lastDisplayByte += lineBytes - lastDisplayByte%lineBytes
+			if lastDisplayByte > stopByte {
+				lastDisplayByte = stopByte
+			}
+		}
 	}
-	rangeBytes := truncatedStopByte - startByte
-	if rangeBytes == 0 {
-		rangeBytes = 1
+	displaySizeBytes := lastDisplayByte - startByte
+	if displaySizeBytes == 0 {
+		displaySizeBytes = 1
 	}
 
-	startLineByte := (startByte / lineBytes) * lineBytes
+	startLine := startByte / lineBytes
 	startLineByteOffset := startByte % lineBytes
-	stopLineByte := (stopByte / lineBytes) * lineBytes
-	truncatedStopLineByte := truncatedStopByte / lineBytes * lineBytes
-	var addrLines int64 = 1
+	startLineByte := startLine * lineBytes
+	lastDisplayLine := lastDisplayByte / lineBytes
+
+	addrLines := lastDisplayLine - startLine
+	if lastDisplayByte%lineBytes != 0 {
+		addrLines++
+	}
 
 	// log.Printf("startBit: %x\n", startBit)
 	// log.Printf("stopBit: %x\n", stopBit)
@@ -68,9 +82,13 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 	if len(f.Children) == 0 {
 		//b := f.BitBuf()
 
-		b, _ := f.Decoder.AbsBitBuf().BitBufRange(startByte*8, rangeBytes*8)
+		b, _ := f.Decoder.AbsBitBuf().BitBufRange(startByte*8, displaySizeBytes*8)
 
-		addrLines = ((truncatedStopLineByte - startLineByte) / lineBytes) + 1
+		// log.Printf("truncatedStopLineByte: %#+v\n", truncatedStopLineByte)
+		// log.Printf("startLineByte: %#+v\n", startLineByte)
+		// log.Printf("truncatedStopLineByte - startLineByte: %#+v\n", truncatedStopLineByte-startLineByte)
+
+		// log.Printf("addrLines: %#+v\n", addrLines)
 
 		charToANSI := func(c byte) string {
 			switch {
@@ -105,10 +123,10 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 
 		io.Copy(
 			hexpairwriter.New(cw.Columns[2], int(lineBytes), int(startLineByteOffset), hexpairFn),
-			io.LimitReader(b.Copy(), rangeBytes))
+			io.LimitReader(b.Copy(), displaySizeBytes))
 		io.Copy(
 			asciiwriter.New(cw.Columns[4], int(lineBytes), int(startLineByteOffset), asciiFn),
-			io.LimitReader(b.Copy(), rangeBytes))
+			io.LimitReader(b.Copy(), displaySizeBytes))
 
 		// fmt.Fprintf(cw.Columns[2], "%s", hexpairs(b, lineBytes, startLineByteOffset))
 		// fmt.Fprintf(cw.Columns[4], "%s", printable(b, startLineByteOffset))
@@ -130,9 +148,9 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 
 	cw.Flush()
 
-	if len(f.Children) == 0 && stopLineByte != truncatedStopLineByte {
+	if len(f.Children) == 0 && stopByte != lastDisplayByte {
 		fmt.Fprint(cw.Columns[0], "*\n")
-		fmt.Fprintf(cw.Columns[2], "%d byte (end at %x)", stopByte-truncatedStopLineByte, stopByte)
+		fmt.Fprintf(cw.Columns[2], "%d bytes more (end at %x)", stopByte-lastDisplayByte, stopByte)
 		cw.Flush()
 		// TODO: dump last line?
 	}

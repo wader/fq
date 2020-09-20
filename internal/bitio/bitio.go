@@ -26,11 +26,9 @@ type BitReadSeeker interface {
 
 // Reader is BitReadSeeker and BitReaderAt reading from io.ReadSeeker
 type Reader struct {
-	//bitLen int64
-	bytePos int64
-	bitPos  int64
-	rs      io.ReadSeeker
-	buf     []byte
+	bitPos int64
+	rs     io.ReadSeeker
+	buf    []byte
 }
 
 func NewFromReadSeeker(rs io.ReadSeeker) (*Reader, error) {
@@ -68,20 +66,16 @@ func (r *Reader) ReadBitsAt(p []byte, nBits int, bitOffset int64) (int, error) {
 		r.buf = make([]byte, readBytes)
 	}
 
-	// if r.bytePos != readBytePos {
-	seekBytePos, err := r.rs.Seek(readBytePos, io.SeekStart)
+	_, err := r.rs.Seek(readBytePos, io.SeekStart)
 	if err != nil {
 		return 0, err
 	}
-	r.bytePos = seekBytePos
-	// }
 
 	// TODO: nBits should be available
-	n, err := io.ReadFull(r.rs, r.buf[0:readBytes])
+	_, err = io.ReadFull(r.rs, r.buf[0:readBytes])
 	if err != nil {
 		return 0, err
 	}
-	r.bytePos += int64(n)
 
 	// log.Printf("  n: %#+v\n", n)
 
@@ -112,15 +106,14 @@ func (r *Reader) ReadBits(p []byte, nBits int) (n int, err error) {
 }
 
 func (r *Reader) SeekBits(bitOff int64, whence int) (int64, error) {
-	seekBytePos, err := r.rs.Seek(bitOff/8, whence)
+	seekBytesPos, err := r.rs.Seek(bitOff/8, whence)
 	if err != nil {
 		return 0, err
 	}
+	seekBitPos := seekBytesPos*8 + bitOff%8
+	r.bitPos = seekBitPos
 
-	r.bytePos = seekBytePos
-	r.bitPos = bitOff
-
-	return bitOff, nil
+	return seekBitPos, nil
 }
 
 func (r *Reader) Read(p []byte) (n int, err error) {
@@ -151,6 +144,15 @@ func (r *Reader) Read(p []byte) (n int, err error) {
 	r.bitPos += int64(n * 8)
 
 	return n / 8, nil
+}
+
+func (r *Reader) Seek(offset int64, whence int) (int64, error) {
+	seekBytesPos, err := r.rs.Seek(offset, whence)
+	if err != nil {
+		return 0, err
+	}
+	r.bitPos = seekBytesPos * 8
+	return seekBytesPos, nil
 }
 
 // SectionBitReader is BitReadSeeker reading from a BitReaderAt
@@ -240,4 +242,9 @@ func (r *SectionBitReader) Read(p []byte) (n int, err error) {
 	r.bitOff += int64(n) * 8
 
 	return n / 8, nil
+}
+
+func (r *SectionBitReader) Seek(offset int64, whence int) (int64, error) {
+	seekBytePos, err := r.SeekBits(offset*8, whence)
+	return seekBytePos * 8, err
 }

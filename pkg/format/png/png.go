@@ -37,6 +37,7 @@ func (d *FileDecoder) Decode() {
 
 			chunkType := d.FieldStrFn("type", func() (string, string) {
 				chunkType := d.UTF8(4)
+				// upper/lower case in chunk type is used to set flags
 				d.SeekRel(-4 * 8)
 				d.SeekRel(3)
 				d.FieldBool("ancillary")
