@@ -7,6 +7,14 @@ import (
 	"io"
 )
 
+func BitsByteCount(nBits int) int {
+	n := nBits / 8
+	if nBits%8 != 0 {
+		n++
+	}
+	return n
+}
+
 type BitReaderAt interface {
 	ReadBitsAt(p []byte, nBits int, bitOff int64) (n int, err error)
 }
@@ -55,15 +63,12 @@ func (r *Reader) ReadBitsAt(p []byte, nBits int, bitOffset int64) (int, error) {
 
 	readBytePos := bitOffset / 8
 	readSkipBits := int(bitOffset % 8)
-	readBits := readSkipBits + nBits
-	readBytes := readBits / 8
-	if readBits%8 > 0 {
-		readBytes++
-	}
+	wantReadBits := readSkipBits + nBits
+	wantReadBytes := BitsByteCount(wantReadBits)
 
-	if readBytes > len(r.buf) {
+	if wantReadBytes > len(r.buf) {
 		// TODO: use append somehow?
-		r.buf = make([]byte, readBytes)
+		r.buf = make([]byte, wantReadBytes)
 	}
 
 	_, err := r.rs.Seek(readBytePos, io.SeekStart)
@@ -72,9 +77,12 @@ func (r *Reader) ReadBitsAt(p []byte, nBits int, bitOffset int64) (int, error) {
 	}
 
 	// TODO: nBits should be available
-	_, err = io.ReadFull(r.rs, r.buf[0:readBytes])
-	if err != nil {
+	readBytes, err := io.ReadFull(r.rs, r.buf[0:wantReadBytes])
+	if err != nil && err != io.ErrUnexpectedEOF {
 		return 0, err
+	} else if err == io.ErrUnexpectedEOF {
+		diffBytes := wantReadBytes - readBytes
+		nBits = (readSkipBits - 8) + 8*(diffBytes-1)
 	}
 
 	// log.Printf("  n: %#+v\n", n)
@@ -82,7 +90,7 @@ func (r *Reader) ReadBitsAt(p []byte, nBits int, bitOffset int64) (int, error) {
 	if readSkipBits == 0 && nBits%8 == 0 {
 		// log.Println("  aligned")
 		copy(p[0:readBytes], r.buf[0:readBytes])
-		return readBytes, nil
+		return nBits, err
 	}
 
 	nBytes := int(nBits / 8)
@@ -96,7 +104,7 @@ func (r *Reader) ReadBitsAt(p []byte, nBits int, bitOffset int64) (int, error) {
 		p[nBytes] = byte(ReadBits(r.buf, readSkipBits+nBytes*8, restBits)) << (8 - restBits)
 	}
 
-	return nBits, nil
+	return nBits, err
 }
 
 func (r *Reader) ReadBits(p []byte, nBits int) (n int, err error) {
@@ -136,7 +144,7 @@ func (r *Reader) Read(p []byte) (n int, err error) {
 
 	n, err = r.ReadBitsAt(p, len(p)*8, r.bitPos)
 	if err != nil {
-		return n / 8, err
+		return BitsByteCount(n), err
 	}
 
 	//log.Printf("b.firstBitOffset+b.Pos=%d n=%d readBytes=%d readBits=%d bitsLeft=%d\n", b.firstBitOffset+b.Pos, n, readBytes, readBits, bitsLeft)
@@ -234,7 +242,7 @@ func (r *SectionBitReader) Read(p []byte) (n int, err error) {
 
 	n, err = r.ReadBitsAt(p, len(p)*8, r.bitOff-r.bitBase)
 	if err != nil {
-		return n / 8, err
+		return BitsByteCount(n), err
 	}
 
 	//log.Printf("b.firstBitOffset+b.Pos=%d n=%d readBytes=%d readBits=%d bitsLeft=%d\n", b.firstBitOffset+b.Pos, n, readBytes, readBits, bitsLeft)
