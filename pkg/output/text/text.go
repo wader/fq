@@ -61,10 +61,7 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 	startLineByte := startLine * lineBytes
 	lastDisplayLine := lastDisplayByte / lineBytes
 
-	addrLines := lastDisplayLine - startLine
-	if lastDisplayByte%lineBytes != 0 {
-		addrLines++
-	}
+	addrLines := 1
 
 	// log.Printf("startBit: %x\n", startBit)
 	// log.Printf("stopBit: %x\n", stopBit)
@@ -83,6 +80,11 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 		//b := f.BitBuf()
 
 		b, _ := f.Decoder.AbsBitBuf().BitBufRange(startByte*8, displaySizeBytes*8)
+
+		addrLines = int(lastDisplayLine - startLine)
+		if lastDisplayByte%lineBytes != 0 {
+			addrLines++
+		}
 
 		// log.Printf("truncatedStopLineByte: %#+v\n", truncatedStopLineByte)
 		// log.Printf("startLineByte: %#+v\n", startLineByte)
@@ -132,8 +134,8 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 		// fmt.Fprintf(cw.Columns[4], "%s", printable(b, startLineByteOffset))
 	}
 
-	for i := int64(0); i < addrLines; i++ {
-		fmt.Fprintf(cw.Columns[0], "%.8x\n", startLineByte+i*lineBytes)
+	for i := 0; i < addrLines; i++ {
+		fmt.Fprintf(cw.Columns[0], "%.8x\n", startLineByte+int64(i)*lineBytes)
 		fmt.Fprintf(cw.Columns[1], "\n")
 		fmt.Fprintf(cw.Columns[3], "|\n")
 		fmt.Fprintf(cw.Columns[5], "|\n")
@@ -150,7 +152,7 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 
 	if len(f.Children) == 0 && stopByte != lastDisplayByte {
 		fmt.Fprint(cw.Columns[0], "*\n")
-		fmt.Fprintf(cw.Columns[2], "%d bytes more (end at %x)", stopByte-lastDisplayByte, stopByte)
+		fmt.Fprintf(cw.Columns[2], "%d bytes more, ends at %x", stopByte-lastDisplayByte, stopByte)
 		cw.Flush()
 		// TODO: dump last line?
 	}

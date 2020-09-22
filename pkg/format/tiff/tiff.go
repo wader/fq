@@ -7,7 +7,6 @@ package tiff
 import (
 	"fq/pkg/decode"
 	"fq/pkg/format/icc"
-	"log"
 )
 
 var File = &decode.Format{
@@ -830,8 +829,8 @@ func (d *FileDecoder) Decode() {
 							case InterColorProfile:
 								d.FieldDecodeRange("icc", int64(valueByteOffset)*8, int64(valueByteSize)*8, icc.Tag)
 							default:
-								log.Printf("tag: %#+v\n", tag)
-								log.Printf("valueByteSize: %#+v\n", valueByteSize)
+								// log.Printf("tag: %#+v\n", tag)
+								// log.Printf("valueByteSize: %#+v\n", valueByteSize)
 								d.FieldBytesRange("value", int64(valueByteOffset)*8, int64(valueByteSize))
 							}
 						case typ == ASCII:
@@ -839,8 +838,8 @@ func (d *FileDecoder) Decode() {
 								d.FieldUTF8("value", int64(valueByteSize))
 							})
 						default:
-							log.Printf("valueOffset: %d\n", valueByteOffset)
-							log.Printf("valueSize: %d\n", valueByteSize)
+							// log.Printf("valueOffset: %d\n", valueByteOffset)
+							// log.Printf("valueSize: %d\n", valueByteSize)
 							d.SubRangeFn(int64(valueByteOffset*8), int64(valueByteSize*8), func() {
 								for i := uint64(0); i < count; i++ {
 									switch typ {
