@@ -82,7 +82,11 @@ func (r *Reader) ReadBitsAt(p []byte, nBits int, bitOffset int64) (int, error) {
 		return 0, err
 	} else if err == io.ErrUnexpectedEOF {
 		diffBytes := wantReadBytes - readBytes
-		nBits = (readSkipBits - 8) + 8*(diffBytes-1)
+		nBits = readSkipBits - 8
+		if readSkipBits != 0 {
+			diffBytes--
+		}
+		nBits += 8 * diffBytes
 	}
 
 	// log.Printf("  n: %#+v\n", n)
