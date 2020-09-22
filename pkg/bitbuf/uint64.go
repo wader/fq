@@ -1,13 +1,13 @@
-package bitio
+package bitbuf
 
 import (
 	"encoding/binary"
 	"fmt"
 )
 
-// ReadBits read nBits bits large unsigned integer from buf starting from firstBit.
+// Uint64 read nBits bits large unsigned integer from buf starting from firstBit.
 // Integer is read most significant bit first.
-func ReadBits(buf []byte, firstBit int, nBits int) uint64 {
+func Uint64(buf []byte, firstBit int64, nBits int) uint64 {
 	if nBits > 64 {
 		panic(fmt.Sprintf("unsupported bit length %d", nBits))
 	}
@@ -68,10 +68,10 @@ func ReadBits(buf []byte, firstBit int, nBits int) uint64 {
 				}
 			} else {
 				// neither bitPos or bitsLeft byte aligned
-				byteBitsLeft := (8 - byteBitPos) & 0x7
+				byteBitsLeft := int((8 - byteBitPos) & 0x7)
 				if bitsLeft >= byteBitsLeft {
 					n = n<<byteBitsLeft | (uint64(buf[bytePos]) & ((1 << byteBitsLeft) - 1))
-					bitPos += byteBitsLeft
+					bitPos += int64(byteBitsLeft)
 					bitsLeft -= byteBitsLeft
 				} else {
 					n = n<<bitsLeft | (uint64(buf[bytePos])&((1<<byteBitsLeft)-1))>>(byteBitsLeft-bitsLeft)

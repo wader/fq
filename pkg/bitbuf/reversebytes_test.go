@@ -8,7 +8,7 @@ import (
 
 func TestReverseBytes(t *testing.T) {
 	testCases := []struct {
-		nBits    int64
+		nBits    int
 		n        uint64
 		expected uint64
 	}{

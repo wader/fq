@@ -1,4 +1,4 @@
-package bitio_test
+package bitbuf_test
 
 import (
 	"encoding/hex"
@@ -7,11 +7,11 @@ import (
 	"testing"
 )
 
-func TestReadBits(t *testing.T) {
+func TestUint64(t *testing.T) {
 	testCases := []struct {
 		buf      []byte
 		bitPos   int64
-		bits     int64
+		bits     int
 		expected uint64
 	}{
 		{buf: []byte{0xff}, bitPos: 0, bits: 8, expected: 0b11111111},
@@ -80,7 +80,7 @@ func TestReadBits(t *testing.T) {
 	}
 	for _, tC := range testCases {
 		t.Run(fmt.Sprintf("%s %d %d", hex.EncodeToString(tC.buf), tC.bitPos, tC.bits), func(t *testing.T) {
-			actual := bitbuf.ReadBits(tC.buf, tC.bitPos, tC.bits)
+			actual := bitbuf.Uint64(tC.buf, tC.bitPos, tC.bits)
 			if tC.expected != actual {
 				t.Errorf("expected %x, got %x", tC.expected, actual)
 			}
@@ -88,9 +88,9 @@ func TestReadBits(t *testing.T) {
 	}
 }
 
-func TestReadBitsPanic(t *testing.T) {
+func TestUint64Panic(t *testing.T) {
 	// TODO: check panic string
 	defer func() { _ = recover() }()
-	bitbuf.ReadBits([]byte{}, 0, 65)
+	bitbuf.Uint64([]byte{}, 0, 65)
 	t.Error("should panic")
 }

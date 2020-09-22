@@ -45,10 +45,7 @@ func TestBitString(t *testing.T) {
 	}
 	for _, tC := range testCases {
 		t.Run(tC, func(t *testing.T) {
-			bb, err := bitbuf.NewFromBitString(tC)
-			if err != nil {
-				t.Fatal(err)
-			}
+			bb := bitbuf.NewFromBitString(tC)
 			actual := bb.BitString()
 			if tC != actual {
 				t.Errorf("expected %s, got %s", tC, actual)
@@ -89,10 +86,7 @@ func TestBitStringRandom(t *testing.T) {
 			}
 		}
 		expected := strings.Join(ss, "")
-		bb, err := bitbuf.NewFromBitString(expected)
-		if err != nil {
-			t.Error(err)
-		}
+		bb := bitbuf.NewFromBitString(expected)
 		actual := bb.BitString()
 		if expected != actual {
 			t.Errorf("expected %s, got %s", expected, actual)
@@ -101,9 +95,6 @@ func TestBitStringRandom(t *testing.T) {
 }
 
 func TestInvalidBitString(t *testing.T) {
-	_, err := bitbuf.NewFromBitString("01invalid")
-	if err == nil || err.Error() != `invalid bit string "01invalid" at index 2 'i'` {
-		t.Errorf("expected err, got err %v", err)
-
-	}
+	// TODO: check panic?
+	bitbuf.NewFromBitString("01invalid")
 }

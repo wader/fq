@@ -39,7 +39,7 @@ type Reader struct {
 	buf    []byte
 }
 
-func NewFromReadSeeker(rs io.ReadSeeker) (*Reader, error) {
+func NewFromReadSeeker(rs io.ReadSeeker) *Reader {
 	// len, err := rs.Seek(0, io.SeekEnd)
 	// if err != nil {
 	// 	return nil, err
@@ -55,7 +55,7 @@ func NewFromReadSeeker(rs io.ReadSeeker) (*Reader, error) {
 		// bitLen: len*8 - firstBitOffset,
 		bitPos: 0,
 		rs:     rs,
-	}, nil
+	}
 }
 
 func (r *Reader) ReadBitsAt(p []byte, nBits int, bitOffset int64) (int, error) {
@@ -102,10 +102,10 @@ func (r *Reader) ReadBitsAt(p []byte, nBits int, bitOffset int64) (int, error) {
 
 	// TODO: copy smartness if many bytes
 	for i := 0; i < nBytes; i++ {
-		p[i] = byte(ReadBits(r.buf, readSkipBits+i*8, 8))
+		p[i] = byte(Uint64(r.buf, readSkipBits+i*8, 8))
 	}
 	if restBits != 0 {
-		p[nBytes] = byte(ReadBits(r.buf, readSkipBits+nBytes*8, restBits)) << (8 - restBits)
+		p[nBytes] = byte(Uint64(r.buf, readSkipBits+nBytes*8, restBits)) << (8 - restBits)
 	}
 
 	return nBits, err
