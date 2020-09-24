@@ -46,9 +46,10 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 		lastDisplayByte = startByte + maxBytes
 		if lastDisplayByte%lineBytes != 0 {
 			lastDisplayByte += lineBytes - lastDisplayByte%lineBytes
-			if lastDisplayByte > stopByte {
-				lastDisplayByte = stopByte
-			}
+		}
+
+		if lastDisplayByte > stopByte || stopByte-lastDisplayByte <= lineBytes {
+			lastDisplayByte = stopByte
 		}
 	}
 	displaySizeBytes := lastDisplayByte - startByte

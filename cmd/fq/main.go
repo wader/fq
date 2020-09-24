@@ -6,7 +6,5 @@ import (
 )
 
 func main() {
-	//defer profile.Start(profile.CPUProfile).Stop()
-
 	cli.StandardOSMain(format.All)
 }
