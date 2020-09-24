@@ -699,14 +699,14 @@ func (c *Common) FieldStrFn(name string, fn func() (string, string)) string {
 }
 
 func (c *Common) FieldBytesFn(name string, firstBit int64, nBits int64, fn func() ([]byte, string)) []byte {
-	return c.FieldFn(name, func() Value {
+	return c.FieldRangeFn(name, firstBit, nBits, func() Value {
 		bs, disp := fn()
 		return Value{Type: TypeBytes, Bytes: bs, Display: disp}
 	}).Bytes
 }
 
 func (c *Common) FieldBitBufFn(name string, firstBit int64, nBits int64, fn func() (*bitbuf.Buffer, string)) *bitbuf.Buffer {
-	return c.FieldFn(name, func() Value {
+	return c.FieldRangeFn(name, firstBit, nBits, func() Value {
 		bb, disp := fn()
 		return Value{Type: TypeBitBuf, BitBuf: bb, Display: disp}
 	}).BitBuf
@@ -976,7 +976,9 @@ func (c *Common) FieldDecodeBitBuf(name string, firstBit int64, nBits int64, bb 
 	if d != nil {
 		c.AddChild(d.Root())
 	} else {
-		c.FieldRangeFn(name, firstBit, nBits, func() Value { return Value{} })
+		c.FieldBitBufFn(name, firstBit, nBits, func() (*bitbuf.Buffer, string) {
+			return bb, ""
+		})
 	}
 
 	return d, errs

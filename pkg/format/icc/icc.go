@@ -56,7 +56,7 @@ func (d *TagDecoder) Decode() {
 					d.FieldUTF8("signature", 4)
 					offset := d.FieldU32("offset")
 					size := d.FieldU32("size")
-					d.FieldBytesRange("data", int64(offset)*8, int64(size))
+					d.FieldBitBufRange("data", int64(offset)*8, int64(size))
 				})
 			}
 		})

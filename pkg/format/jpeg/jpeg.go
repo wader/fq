@@ -177,7 +177,7 @@ func (d *FileDecoder) Decode() {
 				ecdLen++
 			}
 			d.SeekRel(-ecdLen * 8)
-			d.FieldBytesLen("entropy_coded_data", int64(ecdLen))
+			d.FieldBitBufLen("entropy_coded_data", int64(ecdLen)*8)
 			inECD = false
 		} else {
 			d.FieldNoneFn("marker", func() {
@@ -266,7 +266,7 @@ func (d *FileDecoder) Decode() {
 								})
 							default:
 								// TODO: FieldBitsLen?
-								d.FieldBytesLen("data", d.BitsLeft()/8)
+								d.FieldBitBufLen("data", d.BitsLeft())
 							}
 						})
 

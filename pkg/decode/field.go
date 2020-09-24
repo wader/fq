@@ -96,6 +96,8 @@ func (f *Field) Sort() {
 
 func (f *Field) BitBuf() *bitbuf.Buffer {
 	switch f.Value.Type {
+	case TypeBitBuf:
+		return f.Value.BitBuf
 	case TypeDecoder:
 		return f.Value.Decoder.BitBuf()
 	default:

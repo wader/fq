@@ -67,12 +67,6 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 	// log.Printf("startBit: %x\n", startBit)
 	// log.Printf("stopBit: %x\n", stopBit)
 
-	// log.Printf("startByte: %x\n", startByte)
-	// log.Printf("stopByte: %x\n", stopByte)
-
-	// log.Printf("startLineByte: %x\n", startLineByte)
-	// log.Printf("stopLineByte: %x\n", stopLineByte)
-
 	// log.Printf("addrLines: %x\n", addrLines)
 
 	color := false
@@ -80,7 +74,9 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, depth int
 	if len(f.Children) == 0 {
 		//b := f.BitBuf()
 
-		b, _ := f.Decoder.AbsBitBuf().BitBufRange(startByte*8, displaySizeBytes*8)
+		//f.Value
+
+		b := f.BitBuf()
 
 		addrLines = int(lastDisplayLine - startLine)
 		if lastDisplayByte%lineBytes != 0 {
