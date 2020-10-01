@@ -16,7 +16,7 @@ var File = &decode.Format{
 }
 
 // transformed from ffmpeg libavformat/riff.c
-var audioFormatIdName = map[uint64]string{
+var audioFormatName = map[uint64]string{
 	0x0001: "PCM",
 	0x0002: "ADPCM_MS",
 	0x0003: "PCM_FLOAT",
@@ -99,7 +99,7 @@ func (d *FileDecoder) decodeChunk(expectedChunkId string) int64 {
 			d.decodeChunks()
 		},
 		"fmt ": func() {
-			d.FieldStringMapFn("audio_format", audioFormatIdName, "Unknown", d.U16LE)
+			d.FieldStringMapFn("audio_format", audioFormatName, "Unknown", d.U16LE)
 			d.FieldU16LE("num_channels")
 			d.FieldU32LE("sample_rate")
 			d.FieldU32LE("byte_rate")
