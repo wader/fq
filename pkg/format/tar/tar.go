@@ -85,13 +85,14 @@ func (d *FileDecoder) Decode() {
 			}
 			fieldBlockPadding()
 		})
+		validFiles++
+
 		bs := d.PeekBytes(512 * 2)
 		if bytes.Equal(bs, endMarker[:]) {
 			d.FieldBytesLen("end_marker", 512*2)
 			break
 		}
 
-		validFiles++
 	}
 
 	if validFiles == 0 {

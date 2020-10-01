@@ -133,9 +133,9 @@ func (d *FrameDecoder) Decode() {
 	dataLen := (144 * bitRate / sampleRate) + padding - headerLen
 
 	d.SubLenFn(int64(dataLen)*8, func() {
-		var sideInfoLen uint64
+		var sideInfoLen int64
 		// [mono/stereo][mpeg version]
-		sideInfoIndex := map[bool][4]uint64{
+		sideInfoIndex := map[bool][4]int64{
 			false: {0, 17, 9, 9},   // mono
 			true:  {0, 32, 17, 17}, // stereo
 		}
@@ -144,15 +144,13 @@ func (d *FrameDecoder) Decode() {
 		}
 
 		if sideInfoLen != 0 {
-			d.FieldNoneFn("side_info", func() {
-				d.SeekRel(int64(sideInfoLen * 8))
-			})
+			d.FieldBitBufLen("side_info", sideInfoLen*8)
 		}
 
 		d.FieldTryDecode("xing", XingHeader)
 
 		// TODO: padding slot, 4 bit layer1, 8 bit others?
 
-		d.FieldNoneFn("samples", func() { d.SeekRel(int64(d.BitsLeft())) })
+		d.FieldBitBufLen("samples", d.BitsLeft())
 	})
 }
