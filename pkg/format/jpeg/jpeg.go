@@ -256,7 +256,7 @@ func (d *FileDecoder) Decode() {
 									d.FieldUTF8("guid", 32)
 									fullLength := d.FieldU32("full_length")
 									offset := d.FieldU32("offset")
-									// TODO: FieldBitsLen?
+									// TODO: FieldBitsLen? concat bitbuf?
 									chunk := d.FieldBytesLen("data", d.BitsLeft()/8)
 
 									if extendedXMP == nil {

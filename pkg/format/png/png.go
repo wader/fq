@@ -85,7 +85,7 @@ func (d *FileDecoder) Decode() {
 						c.FieldUTF8("text", c.BitsLeft()/8)
 					}))
 				default:
-					d.FieldBytesLen("compressed", chunkLength-keywordLen-1)
+					d.FieldBitBufLen("compressed", (chunkLength-keywordLen-1)*8)
 				}
 			case "iCCP":
 				profileNameLen := d.PeekFindByte(0, 80)
@@ -100,13 +100,13 @@ func (d *FileDecoder) Decode() {
 						c.FieldDecodeLen("icc", c.BitsLeft(), icc.Tag)
 					}))
 				default:
-					d.FieldBytesLen("compressed", chunkLength-profileNameLen-1)
+					d.FieldBitBufLen("compressed", (chunkLength-profileNameLen-1)*8)
 				}
 			case "eXIf":
 				// TODO: decode fail?
 				d.FieldDecodeLen("exif", chunkLength*8, tiff.File)
 			default:
-				d.FieldBytesLen("data", chunkLength)
+				d.FieldBitBufLen("data", chunkLength*8)
 			}
 
 			crc := d.FieldU32("crc")

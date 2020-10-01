@@ -455,7 +455,7 @@ func (d *TagDecoder) DecodeFrame(version int) uint64 {
 		if fn, ok := frames[idNormalized]; ok {
 			d.SubLenFn(int64(dataSize)*8, fn)
 		} else {
-			d.FieldBytesLen("data", int64(dataSize))
+			d.FieldBitBufLen("data", int64(dataSize*8))
 		}
 
 		idDescription := ""
@@ -511,13 +511,13 @@ func (d *TagDecoder) Decode() {
 			switch version {
 			case 3:
 				extHeaderSize = d.FieldU32("size")
-				d.FieldBytesLen("data", int64(extHeaderSize))
+				d.FieldBitBufLen("data", int64(extHeaderSize)*8)
 			case 4:
 				extHeaderSize = d.FieldUFn("size", func() (uint64, decode.NumberFormat, string) {
 					return d.SyncSafeU32(), decode.NumberDecimal, ""
 				})
 				// in v4 synchsafe integer includes itself
-				d.FieldBytesLen("data", int64(extHeaderSize)-4)
+				d.FieldBitBufLen("data", (int64(extHeaderSize)-4)*8)
 			}
 		})
 	}

@@ -95,13 +95,13 @@ func (d *FileDecoder) decodeAtom() uint64 {
 			trackID := uint32(d.FieldU32("track_id"))
 			d.FieldU32("reserved")
 			d.FieldU32("duration")
-			d.FieldBytesLen("reserved", 8)
+			d.FieldBitBufLen("reserved", 8*8)
 			d.FieldU16("layer")
 			// TODO: values
 			d.FieldU16("alternate_group")
 			d.FieldFP16("volume")
 			d.FieldU16("reserved")
-			d.FieldBytesLen("matrix_structure", 36)
+			d.FieldBitBufLen("matrix_structure", 36*8)
 			d.FieldFP32("track_width")
 			d.FieldFP32("track_height")
 
@@ -153,7 +153,7 @@ func (d *FileDecoder) decodeAtom() uint64 {
 					d.FieldU8("version")
 					d.FieldU24("flags")
 					dataSize := size - 12
-					d.FieldBytesLen("data", int64(dataSize))
+					d.FieldBitBufLen("data", int64(dataSize*8))
 				}
 			})
 		},
@@ -297,7 +297,7 @@ func (d *FileDecoder) decodeAtom() uint64 {
 		if decodeFn, ok := boxes[typ]; ok {
 			d.SubLenFn(int64(dataSize*8), decodeFn)
 		} else {
-			d.FieldBytesLen("data", int64(dataSize))
+			d.FieldBitBufLen("data", int64(dataSize*8))
 		}
 	})
 

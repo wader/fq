@@ -131,7 +131,7 @@ func (d *FileDecoder) decodeChunk(expectedChunkId string) int64 {
 		}
 
 		if chunkLen%2 != 0 {
-			d.FieldBytesLen("chunk_align", 1)
+			d.FieldBitBufLen("chunk_align", 8)
 		}
 
 		return chunkID, ""

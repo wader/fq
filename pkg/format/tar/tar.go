@@ -89,7 +89,7 @@ func (d *FileDecoder) Decode() {
 
 		bs := d.PeekBytes(512 * 2)
 		if bytes.Equal(bs, endMarker[:]) {
-			d.FieldBytesLen("end_marker", 512*2)
+			d.FieldBitBufLen("end_marker", 512*2*8)
 			break
 		}
 
