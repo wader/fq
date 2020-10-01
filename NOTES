@@ -1,5 +1,13 @@
 
 
+If if know size of files... hint that it's outside?
+0204cc30 bf fa 69 c0                                    |..i.            |      chunk_size: 3228170943 33868848-33868852 (4)
+0204cc30             fe 95 95 fb 6b 3c fd 75 57 fa c3 ee|    ....k<.uW...|      data: none 33868852-3262039795 (3228170943)
+0204cc40 fb 37 29 f9 fc 02 fd 8f ea f9 80 2d fe 18 e1 fa|.7)........-....|
+*        3228170915 bytes more, ends at c26ec6f3
+
+
+
 custome functions to help query by positoons etc?
 
 
