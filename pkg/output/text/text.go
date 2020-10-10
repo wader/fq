@@ -164,6 +164,7 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, name stri
 	switch v := f.Value.(type) {
 	case []*decode.Field:
 		fmt.Fprintf(cw.Columns[6], "%s%s: (%s)\n", indent, name)
+		cw.Flush()
 		for _, wf := range v {
 			if err := o.output(cw, wf, wf.Name, -1, depth+1); err != nil {
 				return err
@@ -172,6 +173,7 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, name stri
 	case []decode.Value:
 		for i, wv := range v {
 			fmt.Fprintf(cw.Columns[6], "%s%s[%d]:\n", indent, name, i)
+			cw.Flush()
 			switch wvf := wv.V.(type) {
 			case *decode.Field:
 				if err := o.output(cw, wvf, wvf.Name, i, depth+1); err != nil {
@@ -183,6 +185,11 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, name stri
 		}
 	case decode.Value:
 		o.outputValue(cw, v, name, index, depth)
+	}
+
+	if f.Error != nil {
+		fmt.Fprintf(cw.Columns[6], "error: %s\n", f.Error)
+		cw.Flush()
 	}
 
 	return nil

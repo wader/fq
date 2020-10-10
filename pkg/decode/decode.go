@@ -44,7 +44,6 @@ type Common struct {
 	bitBuf  *bitbuf.Buffer
 	root    *Field
 	current *Field // TODO: need root field also?
-	err     error
 
 	registry *Registry
 }
@@ -66,8 +65,6 @@ func (c *Common) MIME() string {
 	}
 	return "application/x-binary"
 }
-
-func (c *Common) Error() error { return c.err }
 
 func (c *Common) PeekBits(nBits int64) uint64 {
 	n, err := c.bitBuf.PeekBits(nBits)
