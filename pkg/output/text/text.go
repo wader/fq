@@ -6,6 +6,7 @@ import (
 	"fq/internal/asciiwriter"
 	"fq/internal/columnwriter"
 	"fq/internal/hexpairwriter"
+	"fq/pkg/bitbuf"
 	"fq/pkg/decode"
 	"io"
 	"strings"
@@ -78,7 +79,11 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v decode.Value, name 
 	//b := f.BitBuf()
 	// TODO: abs bitbuf
 	//b, _ := v.BitBuf.BitBufRange(startByte*8, displaySizeBytes*8)
-	b, _ := v.BitBuf.BitBufRange(0, 0)
+
+	var b *bitbuf.Buffer
+	if v.BitBuf != nil {
+		b, _ = v.BitBuf.BitBufRange(0, 0)
+	}
 
 	addrLines = int(lastDisplayLine - startLine)
 	if lastDisplayByte%lineBytes != 0 {
@@ -122,12 +127,14 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v decode.Value, name 
 		return string(d)
 	}
 
-	io.Copy(
-		hexpairwriter.New(cw.Columns[2], int(lineBytes), int(startLineByteOffset), hexpairFn),
-		io.LimitReader(b.Copy(), displaySizeBytes))
-	io.Copy(
-		asciiwriter.New(cw.Columns[4], int(lineBytes), int(startLineByteOffset), asciiFn),
-		io.LimitReader(b.Copy(), displaySizeBytes))
+	if b != nil {
+		io.Copy(
+			hexpairwriter.New(cw.Columns[2], int(lineBytes), int(startLineByteOffset), hexpairFn),
+			io.LimitReader(b.Copy(), displaySizeBytes))
+		io.Copy(
+			asciiwriter.New(cw.Columns[4], int(lineBytes), int(startLineByteOffset), asciiFn),
+			io.LimitReader(b.Copy(), displaySizeBytes))
+	}
 
 	// fmt.Fprintf(cw.Columns[2], "%s", hexpairs(b, lineBytes, startLineByteOffset))
 	// fmt.Fprintf(cw.Columns[4], "%s", printable(b, startLineByteOffset))
@@ -161,9 +168,9 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v decode.Value, name 
 func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, name string, index int, depth int) error {
 	indent := strings.Repeat("  ", depth)
 
-	switch v := f.Value.(type) {
+	switch v := f.Value.V.(type) {
 	case []*decode.Field:
-		fmt.Fprintf(cw.Columns[6], "%s%s: (%s)\n", indent, name)
+		fmt.Fprintf(cw.Columns[6], "%s%s: (%s)\n", indent, name, f.Value.Desc)
 		cw.Flush()
 		for _, wf := range v {
 			if err := o.output(cw, wf, wf.Name, -1, depth+1); err != nil {
@@ -183,12 +190,12 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, name stri
 				o.outputValue(cw, wv, name, i, depth+1)
 			}
 		}
-	case decode.Value:
-		o.outputValue(cw, v, name, index, depth)
+	default:
+		o.outputValue(cw, f.Value, name, index, depth)
 	}
 
 	if f.Error != nil {
-		fmt.Fprintf(cw.Columns[6], "error: %s\n", f.Error)
+		fmt.Fprintf(cw.Columns[6], "%s! %s\n", indent, f.Error)
 		cw.Flush()
 	}
 

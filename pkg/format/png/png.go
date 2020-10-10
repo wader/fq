@@ -5,7 +5,9 @@ package png
 
 import (
 	"fq/pkg/decode"
+	"fq/pkg/format/icc"
 	"fq/pkg/format/register"
+	"fq/pkg/format/tiff"
 )
 
 var iccTag []*decode.Format
@@ -37,87 +39,89 @@ var compressionNames = map[uint64]string{
 // Decode PNG file
 func (d *FileDecoder) Decode() {
 	d.FieldValidateString("signature", "\x89PNG\r\n\x1a\n")
-	for !d.End() {
-		d.FieldNoneFn("chunk", func() {
-			chunkLength := int64(d.FieldU32("length"))
+	d.MultiField("chunk", func() {
+		for !d.End() {
+			d.FieldNoneFn("chunk", func() {
+				chunkLength := int64(d.FieldU32("length"))
 
-			chunkType := d.FieldStrFn("type", func() (string, string) {
-				chunkType := d.UTF8(4)
-				// upper/lower case in chunk type is used to set flags
-				d.SeekRel(-4 * 8)
-				d.SeekRel(3)
-				d.FieldBool("ancillary")
-				d.SeekRel(7)
-				d.FieldBool("private")
-				d.SeekRel(7)
-				d.FieldBool("reserved")
-				d.SeekRel(7)
-				d.FieldBool("safe_to_copy")
-				d.SeekRel(4)
-				return chunkType, ""
+				chunkType := d.FieldStrFn("type", func() (string, string) {
+					chunkType := d.UTF8(4)
+					// upper/lower case in chunk type is used to set flags
+					d.SeekRel(-4 * 8)
+					d.SeekRel(3)
+					d.FieldBool("ancillary")
+					d.SeekRel(7)
+					d.FieldBool("private")
+					d.SeekRel(7)
+					d.FieldBool("reserved")
+					d.SeekRel(7)
+					d.FieldBool("safe_to_copy")
+					d.SeekRel(4)
+					return chunkType, ""
+				})
+
+				switch chunkType {
+				case "IHDR":
+					d.FieldU32("width")
+					d.FieldU32("height")
+					d.FieldU8("bit_depth")
+					d.FieldU8("color_type")
+					d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8)
+					d.FieldStringMapFn("filter_method", map[uint64]string{
+						0: "Adaptive filtering",
+					}, "unknown", d.U8)
+					d.FieldStringMapFn("interlace_method", map[uint64]string{
+						0: "No interlace",
+						1: "Adam7 interlace",
+					}, "unknown", d.U8)
+				case "tEXt":
+					// TODO: latin1
+					keywordLen := d.PeekFindByte(0, 80)
+					d.FieldUTF8("keyword", keywordLen-1)
+					d.FieldUTF8("null", 1)
+					d.FieldUTF8("text", chunkLength-keywordLen)
+				case "zTXt":
+					// TODO: latin1
+					keywordLen := d.PeekFindByte(0, 80)
+					d.FieldUTF8("keyword", keywordLen-1)
+					d.FieldUTF8("null", 1)
+					compressionMethod, _ := d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8)
+					_ = compressionMethod
+
+					switch compressionMethod {
+					case compressionDeflate:
+						d.FieldZlibLen("uncompressed", chunkLength-keywordLen-1, decode.FormatFn(func(c *decode.Common) {
+							c.FieldUTF8("text", c.BitsLeft()/8)
+						}))
+					default:
+						d.FieldBitBufLen("compressed", (chunkLength-keywordLen-1)*8)
+					}
+				case "iCCP":
+					profileNameLen := d.PeekFindByte(0, 80)
+					d.FieldUTF8("profile_name", profileNameLen-1)
+					d.FieldUTF8("null", 1)
+					compressionMethod, _ := d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8)
+					_ = compressionMethod
+
+					switch compressionMethod {
+					case compressionDeflate:
+						d.FieldZlibLen("uncompressed", chunkLength-profileNameLen-1, decode.FormatFn(func(c *decode.Common) {
+							c.FieldDecodeLen("icc", c.BitsLeft(), icc.Tag)
+						}))
+					default:
+						d.FieldBitBufLen("compressed", (chunkLength-profileNameLen-1)*8)
+					}
+				case "eXIf":
+					// TODO: decode fail?
+					d.FieldDecodeLen("exif", chunkLength*8, tiff.File)
+				default:
+					d.FieldBitBufLen("data", chunkLength*8)
+				}
+
+				crc := d.FieldU32("crc")
+
+				_ = crc
 			})
-
-			switch chunkType {
-			case "IHDR":
-				d.FieldU32("width")
-				d.FieldU32("height")
-				d.FieldU8("bit_depth")
-				d.FieldU8("color_type")
-				d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8)
-				d.FieldStringMapFn("filter_method", map[uint64]string{
-					0: "Adaptive filtering",
-				}, "unknown", d.U8)
-				d.FieldStringMapFn("interlace_method", map[uint64]string{
-					0: "No interlace",
-					1: "Adam7 interlace",
-				}, "unknown", d.U8)
-			case "tEXt":
-				// TODO: latin1
-				keywordLen := d.PeekFindByte(0, 80)
-				d.FieldUTF8("keyword", keywordLen-1)
-				d.FieldUTF8("null", 1)
-				d.FieldUTF8("text", chunkLength-keywordLen)
-			case "zTXt":
-				// TODO: latin1
-				keywordLen := d.PeekFindByte(0, 80)
-				d.FieldUTF8("keyword", keywordLen-1)
-				d.FieldUTF8("null", 1)
-				compressionMethod, _ := d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8)
-				_ = compressionMethod
-
-				switch compressionMethod {
-				case compressionDeflate:
-					d.FieldZlibLen("uncompressed", chunkLength-keywordLen-1, decode.FormatFn(func(c *decode.Common) {
-						c.FieldUTF8("text", c.BitsLeft()/8)
-					}))
-				default:
-					d.FieldBitBufLen("compressed", (chunkLength-keywordLen-1)*8)
-				}
-			case "iCCP":
-				profileNameLen := d.PeekFindByte(0, 80)
-				d.FieldUTF8("profile_name", profileNameLen-1)
-				d.FieldUTF8("null", 1)
-				compressionMethod, _ := d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8)
-				_ = compressionMethod
-
-				switch compressionMethod {
-				case compressionDeflate:
-					d.FieldZlibLen("uncompressed", chunkLength-profileNameLen-1, decode.FormatFn(func(c *decode.Common) {
-						c.FieldDecodeLen("icc", c.BitsLeft(), iccTag...)
-					}))
-				default:
-					d.FieldBitBufLen("compressed", (chunkLength-profileNameLen-1)*8)
-				}
-			case "eXIf":
-				// TODO: decode fail?
-				d.FieldDecodeLen("exif", chunkLength*8, tiffImage...)
-			default:
-				d.FieldBitBufLen("data", chunkLength*8)
-			}
-
-			crc := d.FieldU32("crc")
-
-			_ = crc
-		})
-	}
+		}
+	})
 }

@@ -803,14 +803,14 @@ func (d *FileDecoder) Decode() {
 
 	ifdOffset := fu32("ifd_offset")
 
-	// TODO: inf loop?
-	for ifdOffset != 0 {
-		d.SeekAbs(int64(ifdOffset) * 8)
+	d.MultiField("ifd", func() {
+		// TODO: inf loop?
+		for ifdOffset != 0 {
+			d.SeekAbs(int64(ifdOffset) * 8)
 
-		d.FieldNoneFn("ifd", func() {
 			numberOfFields := fu16("number_of_field")
 			for i := uint64(0); i < numberOfFields; i++ {
-				d.FieldNoneFn("ifd", func() {
+				d.Fields("ifd", func() {
 					tag, _ := d.FieldStringMapFn("tag", tagNames, "unknown", u16)
 					typ, typOk := d.FieldStringMapFn("type", typeNames, "unknown", u16)
 					count := fu32("count")
@@ -827,7 +827,7 @@ func (d *FileDecoder) Decode() {
 						valueByteOffset = uint64(d.Pos()/8) - 4
 					}
 
-					d.FieldNoneFn("values", func() {
+					d.MultiField("values", func() {
 						switch {
 						case typ == UNDEFINED:
 							switch tag {
@@ -876,8 +876,8 @@ func (d *FileDecoder) Decode() {
 			}
 
 			ifdOffset = fu32("next_ifd")
-		})
-	}
+		}
+	})
 
 	_ = endian
 

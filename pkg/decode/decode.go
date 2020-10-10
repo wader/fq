@@ -591,17 +591,17 @@ func (c *Common) ZeroPadding(nBits int64) bool {
 }
 
 func (c *Common) AddChild(f *Field) {
-	switch fv := c.current.Value.(type) {
+	switch fv := c.current.Value.V.(type) {
 	case []*Field:
 		for _, ff := range fv {
 			if ff.Name == f.Name {
 				panic(fmt.Sprintf("%s already exist", f.Name))
 			}
 		}
-		c.current.Value = append(fv, f)
+		c.current.Value.V = append(fv, f)
 		return
 	case []Value:
-		c.current.Value = append(fv, Value{V: f})
+		c.current.Value.V = append(fv, Value{V: f})
 	}
 
 }
@@ -609,10 +609,14 @@ func (c *Common) AddChild(f *Field) {
 func (c *Common) MultiField(name string, fn func()) {
 	prev := c.current
 
-	f := &Field{Name: name, Value: []Value{}}
+	f := &Field{Name: name, Value: Value{V: []Value{}}}
 	c.AddChild(f)
 	c.current = f
+	// TODO: find start/stop from Ranges instead? what if seekaround?
+	start := c.bitBuf.Pos
 	fn()
+	stop := c.bitBuf.Pos
+	f.Value.BitBuf = c.BitBufRange(start, stop-start)
 
 	c.current = prev
 }
@@ -620,10 +624,14 @@ func (c *Common) MultiField(name string, fn func()) {
 func (c *Common) Fields(name string, fn func()) {
 	prev := c.current
 
-	f := &Field{Name: name, Value: []*Field{}}
+	f := &Field{Name: name, Value: Value{V: []*Field{}}}
 	c.AddChild(f)
 	c.current = f
+	// TODO: find start/stop from Ranges instead? what if seekaround?
+	start := c.bitBuf.Pos
 	fn()
+	stop := c.bitBuf.Pos
+	f.Value.BitBuf = c.BitBufRange(start, stop-start)
 
 	c.current = prev
 }
@@ -657,10 +665,10 @@ func (c *Common) FieldFn(name string, fn func() Value) Value {
 	return v
 }
 
+// TODO: remove
 func (c *Common) FieldNoneFn(name string, fn func()) {
-	c.FieldFn(name, func() Value {
+	c.Fields(name, func() {
 		fn()
-		return Value{}
 	})
 }
 

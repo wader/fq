@@ -47,13 +47,19 @@ func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range
 
 	var errs []error
 	for _, f := range probeable {
+		cbb := bb.Copy()
+
 		// TODO: how to pass regsiters? do later? current field?
 		d := f.New()
 		rootField := &Field{
-			Name:  rootFieldName,
-			Value: []*Field{},
+			Name: rootFieldName,
+			Value: Value{
+				V:      []*Field{},
+				Range:  Range{}, // TODO:
+				BitBuf: cbb,
+				Desc:   f.Name,
+			},
 		}
-		cbb := bb.Copy()
 		var common *Common
 		d.Prepare(func(c *Common) {
 			common = c

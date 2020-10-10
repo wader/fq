@@ -36,7 +36,7 @@ func DisplayFormatToBase(fmt DisplayFormat) int {
 
 // TODO: encoding? endian, string encoding, compression, etc?
 type Value struct {
-	V             interface{} // int64, uint64, float64, string, bool, []byte, error etc
+	V             interface{} // int64, uint64, float64, string, bool, []byte, error, []Value (array), []*Field (struct)
 	Range         Range
 	BitBuf        *bitbuf.Buffer
 	MIME          string
@@ -47,7 +47,7 @@ type Value struct {
 
 type Field struct {
 	Name  string
-	Value interface{} // Value, []Value (array) or []*Field (struct)
+	Value Value
 	Error error
 }
 
@@ -85,7 +85,7 @@ func (f *Field) Lookup(path string) interface{} {
 		index, _ = strconv.Atoi(indexStr)
 	}
 
-	switch v := f.Value.(type) {
+	switch v := f.Value.V.(type) {
 	case []*Field:
 		for _, f := range v {
 			if f.Name != name {
@@ -93,7 +93,7 @@ func (f *Field) Lookup(path string) interface{} {
 			}
 
 			if index != -1 {
-				if vs, ok := f.Value.([]Value); ok {
+				if vs, ok := f.Value.V.([]Value); ok {
 					return vs[index]
 				}
 				return nil
@@ -110,7 +110,7 @@ func (f *Field) Walk(fn func(f *Field)) {
 	var walkFn func(f *Field)
 	walkFn = func(f *Field) {
 		fn(f)
-		switch v := f.Value.(type) {
+		switch v := f.Value.V.(type) {
 		case []*Field:
 			for _, wf := range v {
 				walkFn(wf)
@@ -123,11 +123,12 @@ func (f *Field) Walk(fn func(f *Field)) {
 			}
 		}
 	}
+	walkFn(f)
 }
 
 func (f *Field) WalkValues(fn func(v Value)) {
 	f.Walk(func(f *Field) {
-		if v, ok := f.Value.(Value); ok {
+		if v, ok := f.Value.V.(Value); ok {
 			fn(v)
 		}
 	})
@@ -143,38 +144,14 @@ func (f *Field) Errors() []error {
 	return errs
 }
 
-func (f *Field) Start() int64 {
-	switch v := f.Value.(type) {
-	case []*Field:
-		if len(v) > 0 {
-			return v[0].Start()
-		}
-		// TODO: hmm
-		return 0
-	case []Value:
-		if len(v) > 0 {
-			return v[0].Range.Start
-		}
-		// TODO: hmm
-		return 0
-	case Value:
-		return v.Range.Start
-	case nil:
-		// TODO: hmm
-		return 0
-	default:
-		panic("field not sortable")
-	}
-}
-
 func (f *Field) Sort() {
-	vfs, _ := f.Value.([]*Field)
+	vfs, _ := f.Value.V.([]*Field)
 	if vfs == nil {
 		return
 	}
 
 	sort.Slice(vfs, func(i, j int) bool {
-		return vfs[i].Start() < vfs[j].Start()
+		return vfs[i].Value.Range.Start < vfs[j].Value.Range.Start
 	})
 
 	for _, vf := range vfs {
