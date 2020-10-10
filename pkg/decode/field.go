@@ -9,18 +9,51 @@ import (
 	"strings"
 )
 
+// TODO: interface? Display(v interface{})
+type DisplayFormat int
+
+const (
+	NumberDecimal DisplayFormat = iota
+	NumberBinary
+	NumberOctal
+	NumberHex
+)
+
+func DisplayFormatToBase(fmt DisplayFormat) int {
+	switch fmt {
+	case NumberDecimal:
+		return 10
+	case NumberBinary:
+		return 2
+	case NumberOctal:
+		return 8
+	case NumberHex:
+		return 16
+	default:
+		return 0
+	}
+}
+
+// TODO: encoding? endian, string encoding, compression, etc?
+type Value struct {
+	V             interface{} // int64, uint64, float64, string, bool, []byte, error etc
+	Range         Range
+	BitBuf        *bitbuf.Buffer
+	MIME          string
+	DisplayFormat DisplayFormat
+	Symbol        string
+	Desc          string
+}
+
 type Field struct {
-	Index    int
-	Name     string
-	Range    Range
-	Value    Value
-	Decoder  Decoder
-	Children []*Field
+	Name  string
+	Value interface{} // Value, []Value (array) or []*Field (struct)
+	Error error
 }
 
 var lookupRe = regexp.MustCompile(`^([\w_]*)(?:\[(\d+)\])?$`)
 
-func (f *Field) Eval(exp string) (*Field, error) {
+func (f *Field) Eval(exp string) (interface{}, error) {
 	lf := f.Lookup(exp)
 	if lf == nil {
 		return lf, fmt.Errorf("not found")
@@ -29,7 +62,7 @@ func (f *Field) Eval(exp string) (*Field, error) {
 	return lf, nil
 }
 
-func (f *Field) Lookup(path string) *Field {
+func (f *Field) Lookup(path string) interface{} {
 	if path == "" {
 		return f
 	}
@@ -41,7 +74,7 @@ func (f *Field) Lookup(path string) *Field {
 		rest = parts[1]
 	}
 
-	index := 0
+	index := -1
 	firstSM := lookupRe.FindStringSubmatch(first)
 	if firstSM == nil {
 		return nil
@@ -52,59 +85,99 @@ func (f *Field) Lookup(path string) *Field {
 		index, _ = strconv.Atoi(indexStr)
 	}
 
-	var indexC = 0
-	for _, c := range f.Children {
-		if name != "" && c.Name != name {
-			continue
-		}
+	switch v := f.Value.(type) {
+	case []*Field:
+		for _, f := range v {
+			if f.Name != name {
+				continue
+			}
 
-		if indexC != index {
-			indexC++
-			continue
-		}
+			if index != -1 {
+				if vs, ok := f.Value.([]Value); ok {
+					return vs[index]
+				}
+				return nil
+			}
 
-		return c.Lookup(rest)
+			return f.Lookup(rest)
+		}
 	}
 
 	return nil
 }
 
-func (f *Field) Sort() {
-	if len(f.Children) == 0 {
-		return
-	}
-
-	sort.Slice(f.Children, func(i, j int) bool {
-		return f.Children[i].Range.Start < f.Children[j].Range.Start
-	})
-
-	for _, fc := range f.Children {
-		if fc.Value.Type == TypeDecoder {
-			// already sorted
-			continue
+func (f *Field) Walk(fn func(f *Field)) {
+	var walkFn func(f *Field)
+	walkFn = func(f *Field) {
+		fn(f)
+		switch v := f.Value.(type) {
+		case []*Field:
+			for _, wf := range v {
+				walkFn(wf)
+			}
+		case []Value:
+			for _, wv := range v {
+				if vwf, ok := wv.V.(*Field); ok {
+					walkFn(vwf)
+				}
+			}
 		}
-		fc.Sort()
-	}
-
-	indexMap := map[string]int{}
-	for _, fc := range f.Children {
-		index := indexMap[fc.Name]
-		fc.Index = index
-		indexMap[fc.Name] = index + 1
 	}
 }
 
-func (f *Field) BitBuf() *bitbuf.Buffer {
-	switch f.Value.Type {
-	case TypeBitBuf:
-		return f.Value.BitBuf
-	case TypeDecoder:
-		return f.Value.Decoder.BitBuf()
-	default:
-		bb, err := f.Decoder.BitBuf().BitBufRange(f.Range.Start, f.Range.Length())
-		if err != nil {
-			panic(err)
+func (f *Field) WalkValues(fn func(v Value)) {
+	f.Walk(func(f *Field) {
+		if v, ok := f.Value.(Value); ok {
+			fn(v)
 		}
-		return bb
+	})
+}
+
+func (f *Field) Errors() []error {
+	var errs []error
+	f.Walk(func(f *Field) {
+		if f.Error != nil {
+			errs = append(errs, f.Error)
+		}
+	})
+	return errs
+}
+
+func (f *Field) Start() int64 {
+	switch v := f.Value.(type) {
+	case []*Field:
+		if len(v) > 0 {
+			return v[0].Start()
+		}
+		// TODO: hmm
+		return 0
+	case []Value:
+		if len(v) > 0 {
+			return v[0].Range.Start
+		}
+		// TODO: hmm
+		return 0
+	case Value:
+		return v.Range.Start
+	case nil:
+		// TODO: hmm
+		return 0
+	default:
+		panic("field not sortable")
+	}
+}
+
+func (f *Field) Sort() {
+	vfs, _ := f.Value.([]*Field)
+	if vfs == nil {
+		return
+	}
+
+	sort.Slice(vfs, func(i, j int) bool {
+		return vfs[i].Start() < vfs[j].Start()
+	})
+
+	for _, vf := range vfs {
+		vf.Sort()
 	}
 }

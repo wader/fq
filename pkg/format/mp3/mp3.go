@@ -44,13 +44,16 @@ func (d *FileDecoder) Decode() {
 
 	validFrames := 0
 	d.SubLenFn(d.BitsLeft()-footerLen, func() {
-		for !d.End() {
-			if _, errs := d.FieldTryDecode("frame", Frame); errs != nil {
-				break
-			}
 
-			validFrames++
-		}
+		d.MultiField("frame", func() {
+			for !d.End() {
+				if _, errs := d.FieldTryDecode("frame", Frame); errs != nil {
+					break
+				}
+
+				validFrames++
+			}
+		})
 
 		d.FieldTryDecode("footer", ape.TagV2)
 

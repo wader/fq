@@ -29,129 +29,96 @@ func (r Range) Length() int64 {
 	return r.Stop - r.Start
 }
 
-type Type int
-
-const (
-	TypeNone Type = iota
-	TypeBool
-	TypeSInt
-	TypeUInt
-	TypeFloat
-	TypeStr
-	TypeBytes
-	TypeBitBuf
-	TypePadding
-	TypeDecoder
-)
-
 // TODO: base instead?
-type NumberFormat int
-
-const (
-	NumberDecimal = 10
-	NumberBinary  = 2
-	NumberOctal   = 8
-	NumberHex     = 16
-)
-
-type Value struct {
-	Type Type
-
-	Bool    bool
-	SInt    int64
-	UInt    uint64
-	Float   float64
-	Str     string
-	Bytes   []byte
-	BitBuf  *bitbuf.Buffer
-	Decoder Decoder
-
-	Format  NumberFormat
-	Display string
-	Mime    string
-}
 
 func (v Value) String() string {
 	f := ""
-	switch v.Type {
-	case TypeNone:
-		f = "none"
-	case TypeBool:
+	switch iv := v.V.(type) {
+	case *Field:
+		f = "field"
+	case bool:
 		f = "false"
-		if v.Bool {
+		if iv {
 			f = "true"
 		}
-	case TypeSInt:
-		f = strconv.FormatInt(v.SInt, int(v.Format))
-	case TypeUInt:
-		f = strconv.FormatUint(v.UInt, int(v.Format))
-	case TypeFloat:
-		f = strconv.FormatFloat(v.Float, 'f', -1, 64)
-	case TypeStr:
-		f = v.Str
+	case int64:
+		// TODO: DisplayFormat is weird
+		f = strconv.FormatInt(iv, DisplayFormatToBase(v.DisplayFormat))
+	case uint64:
+		f = strconv.FormatUint(iv, DisplayFormatToBase(v.DisplayFormat))
+	case float64:
+		f = strconv.FormatFloat(iv, 'f', -1, 64)
+	case string:
+		f = iv
 		if len(f) > 50 {
 			f = fmt.Sprintf("%q", f[0:50]) + "..."
 		} else {
-			f = fmt.Sprintf("%q", v.Str)
+			f = fmt.Sprintf("%q", iv)
 		}
-	case TypeBytes:
-		if len(v.Bytes) > 16 {
-			f = hex.EncodeToString(v.Bytes[0:16]) + "..."
+	case []byte:
+		if len(iv) > 16 {
+			f = hex.EncodeToString(iv[0:16]) + "..."
 
 		} else {
-			f = hex.EncodeToString(v.Bytes)
+			f = hex.EncodeToString(iv)
 		}
-	case TypeBitBuf:
+	case *bitbuf.Buffer:
 		bs, _ := v.BitBuf.BytesBitRange(0, 16*8, 0)
 		if v.BitBuf.Len > 16 {
 			f = hex.EncodeToString(bs) + "..."
 		} else {
-			f = hex.EncodeToString(v.Bytes)
+			f = hex.EncodeToString(bs)
 		}
-	case TypePadding:
-		f = "padding"
+	case nil:
+		f = "none"
 		// TODO:
 		//return hex.EncodeToString(v.Bytes)
-	case TypeDecoder:
-		c := v.Decoder
-		f = fmt.Sprintf("%s (%s) %s", c.Format().Name, c.MIME(), Bits(c.BitBuf().Len))
+	// case TypeDecoder:
+	// 	c := v.Decoder
+	// 	f = fmt.Sprintf("%s (%s) %s", c.Format().Name, c.MIME(), Bits(c.BitBuf().Len))
+	// case TypeArray:
+	// 	f = "array"
 	default:
 		panic("unreachable")
 	}
-	if v.Display != "" {
-		return fmt.Sprintf("%s (%s)", v.Display, f)
+	symbol := ""
+	if v.Symbol != "" {
+		symbol = fmt.Sprintf(" (%s)", v.Symbol)
 	}
-	return f
+	desc := ""
+	if v.Desc != "" {
+		desc = fmt.Sprintf(" (%s)", v.Desc)
+	}
+	return fmt.Sprintf("%s%s%s", f, symbol, desc)
 }
 
 func (v Value) RawString() string {
-	f := ""
-	switch v.Type {
-	case TypeNone:
-		f = "none"
-	case TypeBool:
-		f = "false"
-		if v.Bool {
-			f = "true"
+	switch iv := v.V.(type) {
+	case *Field:
+		return "field"
+	case bool:
+		if iv {
+			return "1"
+		} else {
+			return "0"
 		}
-	case TypeSInt:
-		f = strconv.FormatInt(v.SInt, 10)
-	case TypeUInt:
-		f = strconv.FormatUint(v.UInt, 10)
-	case TypeFloat:
-		f = strconv.FormatFloat(v.Float, 'f', -1, 64)
-	case TypeStr:
-		f = v.Str
-	case TypeBytes:
-		f = string(v.Bytes)
-	case TypePadding:
-		f = string(v.Bytes)
-	case TypeDecoder:
-		c := v.Decoder
-		b, _ := c.BitBuf().BytesRange(0, c.BitBuf().Len/8)
-		f = string(b)
+	case int64:
+		// TODO: DisplayFormat is weird
+		return strconv.FormatInt(iv, int(v.DisplayFormat))
+	case uint64:
+		return strconv.FormatUint(iv, int(v.DisplayFormat))
+	case float64:
+		return strconv.FormatFloat(iv, 'f', -1, 64)
+	case string:
+		return iv
+	case []byte:
+		return string(iv)
+	case *bitbuf.Buffer:
+		bs, _ := v.BitBuf.BytesBitRange(0, 16*8, 0)
+		return string(bs)
+	case nil:
+		return ""
 	default:
 		panic("unreachable")
 	}
-	return f
 }

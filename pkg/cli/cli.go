@@ -94,7 +94,7 @@ func (m Main) run() error {
 	if err != nil {
 		panic(err)
 	}
-	d, errs := registry.Probe(nil, fs.Arg(0), decode.Range{Start: 0, Stop: bb.Len}, bb, forceFormats)
+	f, _, errs := registry.Probe(nil, fs.Arg(0), decode.Range{Start: 0, Stop: bb.Len}, bb, forceFormats)
 	if *verboseFlag {
 		for _, err := range errs {
 			fmt.Fprintf(m.OS.Stderr(), "%s\n", err)
@@ -106,8 +106,7 @@ func (m Main) run() error {
 		}
 	}
 
-	if d != nil {
-		f := d.Root()
+	if f != nil {
 		exp := fs.Arg(1)
 		expField, err := f.Eval(exp)
 		if err != nil {
@@ -119,7 +118,8 @@ func (m Main) run() error {
 			if of.Name != *outputFormatFlag {
 				continue
 			}
-			ow = of.New(expField)
+			// TODO: multi?
+			ow = of.New(expField.(*decode.Field))
 		}
 		if ow == nil {
 			return fmt.Errorf("%s: unable to find output format", *outputFormatFlag)

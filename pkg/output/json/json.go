@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"fq/pkg/decode"
 	"io"
-	"strings"
 )
 
 var FieldOutput = &decode.FieldOutput{
@@ -36,20 +35,20 @@ func jsonField(k string, v interface{}) string {
 }
 
 func (o *FieldWriter) output(w io.Writer, f *decode.Field, depth int) error {
-	p := prefixPrinter{w: w, prefix: strings.Repeat("  ", depth)}
+	// p := prefixPrinter{w: w, prefix: strings.Repeat("  ", depth)}
 
-	p.Printf("%s: {", jsonEscape(f.Name))
-	p.Printf(`  "value": %s`, jsonEscape(f.Value))
+	// p.Printf("%s: {", jsonEscape(f.Name))
+	// p.Printf(`  "value": %s`, jsonEscape(f.Value))
 
-	if (len(f.Children)) != 0 {
-		p.Printf(`  "fields": {`)
-		for _, c := range f.Children {
-			o.output(w, c, depth+1)
-		}
-		p.Printf("  }\n")
-	}
+	// if (len(f.Children)) != 0 {
+	// 	p.Printf(`  "fields": {`)
+	// 	for _, c := range f.Children {
+	// 		o.output(w, c, depth+1)
+	// 	}
+	// 	p.Printf("  }\n")
+	// }
 
-	p.Printf("}")
+	// p.Printf("}")
 
 	return nil
 }

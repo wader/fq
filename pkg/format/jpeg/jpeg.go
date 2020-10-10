@@ -192,7 +192,7 @@ func (d *FileDecoder) Decode() {
 					}
 				})
 				markerFound := false
-				markerCode := d.FieldUFn("code", func() (uint64, decode.NumberFormat, string) {
+				markerCode := d.FieldUFn("code", func() (uint64, decode.DisplayFormat, string) {
 					n := uint(d.U8())
 					if m, ok := markers[n]; ok {
 						markerFound = true

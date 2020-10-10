@@ -54,7 +54,7 @@ func (d *ADTSDecoder) Decode() {
 		dataLength -= 2
 	}
 	d.FieldU11("buffer_fullness")
-	d.FieldUFn("number_of_frames", func() (uint64, decode.NumberFormat, string) { return d.U2() + 1, decode.NumberDecimal, "" })
+	d.FieldUFn("number_of_frames", func() (uint64, decode.DisplayFormat, string) { return d.U2() + 1, decode.NumberDecimal, "" })
 	if hasCRC {
 		d.FieldU16("crc")
 	}

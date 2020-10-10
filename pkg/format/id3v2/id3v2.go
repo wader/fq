@@ -294,7 +294,7 @@ func (d *TagDecoder) TextNull(encoding int) string {
 }
 
 func (d *TagDecoder) FieldSyncSafeU32(name string) uint64 {
-	return d.FieldUFn(name, func() (uint64, decode.NumberFormat, string) {
+	return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
 		return d.SyncSafeU32(), decode.NumberDecimal, ""
 	})
 }
@@ -506,7 +506,7 @@ func (d *TagDecoder) Decode() {
 		d.FieldU1("experimental_indicator")
 		d.FieldU5("unused")
 	})
-	size := d.FieldUFn("size", func() (uint64, decode.NumberFormat, string) {
+	size := d.FieldUFn("size", func() (uint64, decode.DisplayFormat, string) {
 		return d.SyncSafeU32(), decode.NumberDecimal, ""
 	})
 
@@ -518,7 +518,7 @@ func (d *TagDecoder) Decode() {
 				extHeaderSize = d.FieldU32("size")
 				d.FieldBitBufLen("data", int64(extHeaderSize)*8)
 			case 4:
-				extHeaderSize = d.FieldUFn("size", func() (uint64, decode.NumberFormat, string) {
+				extHeaderSize = d.FieldUFn("size", func() (uint64, decode.DisplayFormat, string) {
 					return d.SyncSafeU32(), decode.NumberDecimal, ""
 				})
 				// in v4 synchsafe integer includes itself

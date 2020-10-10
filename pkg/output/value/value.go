@@ -15,7 +15,9 @@ type FieldWriter struct {
 }
 
 func (o *FieldWriter) Write(w io.Writer) error {
-	w.Write([]byte(o.f.Value.RawString()))
-	w.Write([]byte("\n"))
+	o.f.WalkValues(func(v decode.Value) {
+		w.Write([]byte(v.RawString()))
+		w.Write([]byte("\n"))
+	})
 	return nil
 }

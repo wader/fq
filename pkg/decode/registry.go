@@ -29,7 +29,7 @@ func (pe *ProbeError) Error() string { return fmt.Sprintf("%s probe: %s", pe.For
 func (pe *ProbeError) Unwrap() error { return pe.Err }
 
 // Probe probes all probeable formats and turns first found Decoder and all other decoder errors
-func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range, bb *bitbuf.Buffer, forceFormats []*Format) (Decoder, []error) {
+func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range, bb *bitbuf.Buffer, forceFormats []*Format) (*Field, int64, []error) {
 	var probeable []*Format
 	var forceOne = len(forceFormats) == 1
 	if forceFormats != nil {
@@ -50,20 +50,22 @@ func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range
 		// TODO: how to pass regsiters? do later? current field?
 		d := f.New()
 		rootField := &Field{
-			Name:    rootFieldName,
-			Range:   parentRange,
-			Value:   Value{Type: TypeDecoder, Decoder: d},
-			Decoder: d,
+			Name:  rootFieldName,
+			Value: []*Field{},
 		}
 		cbb := bb.Copy()
-		d.Prepare(Common{
-			Parent:   parent,
-			format:   f,
-			registry: r,
-			bitBuf:   cbb,
-			root:     rootField,
-			current:  rootField,
+		var common *Common
+		d.Prepare(func(c *Common) {
+			common = c
 		})
+
+		common.Parent = parent
+		common.format = f
+		common.registry = r
+		common.bitBuf = cbb
+		common.root = rootField
+		common.current = rootField
+
 		decodeErr := func() (err error) {
 			defer func() {
 				if recoverErr := recover(); recoverErr != nil {
@@ -97,19 +99,24 @@ func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range
 			return nil
 		}()
 
-		d.Finish(decodeErr)
-
 		if decodeErr != nil {
+			common.current.Error = decodeErr
+
 			errs = append(errs, decodeErr)
 			if !forceOne {
 				continue
 			}
 		}
 
-		return d, errs
+		// TODO: will resort
+		rootField.Sort()
+		// TODO: wrong keep track of largest?
+		_ = cbb.TruncateRel(0)
+
+		return rootField, cbb.Pos, errs
 	}
 
-	return nil, errs
+	return nil, 0, errs
 }
 
 func (r *Registry) FindFormat(name string) *Format {

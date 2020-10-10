@@ -776,7 +776,7 @@ func (d *FileDecoder) Decode() {
 	var su32 func(name string) int64
 	var u16 func() uint64
 
-	endian := d.FieldUFn("endian", func() (uint64, decode.NumberFormat, string) {
+	endian := d.FieldUFn("endian", func() (uint64, decode.DisplayFormat, string) {
 		endian := d.U32()
 		d.SeekRel(-4 * 8)
 		d.FieldUTF8("order", 2)

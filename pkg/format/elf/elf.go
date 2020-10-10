@@ -56,7 +56,7 @@ func (d *FileDecoder) Decode() {
 	d.FieldNoneFn("ident", func() {
 		d.FieldValidateString("magic", "\x7fELF")
 
-		archBits = d.FieldUFn("class", func() (uint64, decode.NumberFormat, string) {
+		archBits = d.FieldUFn("class", func() (uint64, decode.DisplayFormat, string) {
 			switch d.U8() {
 			case 1:
 				return 32, decode.NumberDecimal, ""
@@ -68,7 +68,7 @@ func (d *FileDecoder) Decode() {
 			panic("unreachable")
 		})
 		isBigEndian := true
-		d.FieldUFn("data", func() (uint64, decode.NumberFormat, string) {
+		d.FieldUFn("data", func() (uint64, decode.DisplayFormat, string) {
 			switch d.U8() {
 			case 1:
 				isBigEndian = false
@@ -99,7 +99,7 @@ func (d *FileDecoder) Decode() {
 			panic("unreachable")
 		})
 		fieldNX = func(name string) uint64 {
-			return d.FieldUFn(name, func() (uint64, decode.NumberFormat, string) {
+			return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
 				return dN(), decode.NumberHex, ""
 			})
 		}

@@ -35,7 +35,7 @@ func (d *FileDecoder) Decode() {
 		})
 	}
 	fieldNumStr := func(name string, nBytes int64) uint64 {
-		return d.FieldUFn(name, func() (uint64, decode.NumberFormat, string) {
+		return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
 			ts := strings.Trim(str(nBytes), "0 \x00")
 			if ts == "" {
 				return 0, decode.NumberDecimal, ts

@@ -27,7 +27,7 @@ func (d *FrameDecoder) Decode() {
 	d.FieldValidateUFn("sync", 0b11111111111, d.U11)
 
 	// v = 3 means version 2.5
-	v := d.FieldUFn("mpeg_version", func() (uint64, decode.NumberFormat, string) {
+	v := d.FieldUFn("mpeg_version", func() (uint64, decode.DisplayFormat, string) {
 		switch d.U2() {
 		case 0b00:
 			return 3, decode.NumberDecimal, "MPEG Version 2.5"
@@ -41,7 +41,7 @@ func (d *FrameDecoder) Decode() {
 			panic("unreachable")
 		}
 	})
-	l := d.FieldUFn("layer", func() (uint64, decode.NumberFormat, string) {
+	l := d.FieldUFn("layer", func() (uint64, decode.DisplayFormat, string) {
 		switch d.U2() {
 		case 0b00:
 			return 0, decode.NumberDecimal, "reserved"
@@ -76,7 +76,7 @@ func (d *FrameDecoder) Decode() {
 		0b1101: [...]uint{416, 320, 256, 224, 144, 144, 224, 144, 144},
 		0b1110: [...]uint{448, 384, 320, 256, 160, 160, 256, 160, 160},
 	}
-	bitRate := d.FieldUFn("bitrate", func() (uint64, decode.NumberFormat, string) {
+	bitRate := d.FieldUFn("bitrate", func() (uint64, decode.DisplayFormat, string) {
 		u := d.U4()
 		switch u {
 		case 0b0000:
@@ -93,7 +93,7 @@ func (d *FrameDecoder) Decode() {
 		0b01: [...]uint{48000, 24000, 12000},
 		0b10: [...]uint{32000, 16000, 8000},
 	}
-	sampleRate := d.FieldUFn("sample_rate", func() (uint64, decode.NumberFormat, string) {
+	sampleRate := d.FieldUFn("sample_rate", func() (uint64, decode.DisplayFormat, string) {
 		u := d.U2()
 		switch u {
 		case 0b11:

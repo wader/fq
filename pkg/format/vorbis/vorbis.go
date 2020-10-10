@@ -40,7 +40,7 @@ type PacketDecoder struct {
 
 // Decode vorbis packet
 func (d *PacketDecoder) Decode() {
-	packetType := d.FieldUFn("packet_type", func() (uint64, decode.NumberFormat, string) {
+	packetType := d.FieldUFn("packet_type", func() (uint64, decode.DisplayFormat, string) {
 		packetTypeName := "unknown"
 		t := d.U8()
 		// 4.2.1. Common header decode
@@ -69,10 +69,10 @@ func (d *PacketDecoder) Decode() {
 		d.FieldU32LE("bitrate_nominal")
 		d.FieldU32LE("bitrate_minimum")
 		// TODO: code/comment about 2.1.4. coding bits into byte sequences
-		d.FieldUFn("blocksize_1", func() (uint64, decode.NumberFormat, string) {
+		d.FieldUFn("blocksize_1", func() (uint64, decode.DisplayFormat, string) {
 			return 1 << d.U4(), decode.NumberDecimal, ""
 		})
-		d.FieldUFn("blocksize_0", func() (uint64, decode.NumberFormat, string) {
+		d.FieldUFn("blocksize_0", func() (uint64, decode.DisplayFormat, string) {
 			return 1 << d.U4(), decode.NumberDecimal, ""
 		})
 		// TODO: warning if blocksize0 > blocksize1

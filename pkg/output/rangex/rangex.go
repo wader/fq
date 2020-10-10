@@ -17,10 +17,12 @@ type FieldWriter struct {
 }
 
 func (o *FieldWriter) Write(w io.Writer) error {
-	start := o.f.Decoder.AbsPos(o.f.Range.Start)
-	stop := start + o.f.Range.Length()
+	o.f.WalkValues(func(v decode.Value) {
+		start := v.Range.Start
+		stop := v.Range.Stop
+		w.Write([]byte(fmt.Sprintf("%d %d\n", start, stop)))
 
-	w.Write([]byte(fmt.Sprintf("%d %d\n", start, stop)))
+	})
 
 	return nil
 }
