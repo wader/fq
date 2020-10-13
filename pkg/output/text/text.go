@@ -24,7 +24,7 @@ type FieldWriter struct {
 	f *decode.Field
 }
 
-func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v decode.Value, name string, index int, depth int) error {
+func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v decode.Value, name string, depth int) error {
 
 	startBit := v.Range.Start
 	stopBit := v.Range.Stop
@@ -147,11 +147,7 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v decode.Value, name 
 	}
 
 	indent := strings.Repeat("  ", depth)
-	nameIndex := ""
-	if index != -1 {
-		nameIndex = fmt.Sprintf("[%d]", index)
-	}
-	fmt.Fprintf(cw.Columns[6], "%s%s%s: %s %s (%s)\n", indent, name, nameIndex, v, v.Range, decode.Bits(v.Range.Length()))
+	fmt.Fprintf(cw.Columns[6], "%s%s: %s %s (%s)\n", indent, name, v, v.Range, decode.Bits(v.Range.Length()))
 
 	cw.Flush()
 
@@ -165,7 +161,7 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v decode.Value, name 
 	return nil
 }
 
-func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, name string, index int, depth int) error {
+func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, name string, depth int) error {
 	indent := strings.Repeat("  ", depth)
 
 	switch v := f.Value.V.(type) {
@@ -173,25 +169,26 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, name stri
 		fmt.Fprintf(cw.Columns[6], "%s%s: (%s)\n", indent, name, f.Value.Desc)
 		cw.Flush()
 		for _, wf := range v {
-			if err := o.output(cw, wf, wf.Name, -1, depth+1); err != nil {
+			if err := o.output(cw, wf, wf.Name, depth+1); err != nil {
 				return err
 			}
 		}
 	case []decode.Value:
 		for i, wv := range v {
-			fmt.Fprintf(cw.Columns[6], "%s%s[%d]:\n", indent, name, i)
 			cw.Flush()
 			switch wvf := wv.V.(type) {
 			case *decode.Field:
-				if err := o.output(cw, wvf, wvf.Name, i, depth+1); err != nil {
+				fmt.Fprintf(cw.Columns[6], "%s%s[%d]: (%s)\n", indent, name, i, wvf.Name)
+				cw.Flush()
+				if err := o.output(cw, wvf, wvf.Name, depth); err != nil {
 					return err
 				}
 			default:
-				o.outputValue(cw, wv, name, i, depth+1)
+				o.outputValue(cw, wv, fmt.Sprintf("%s[%d]", name, i), depth+1)
 			}
 		}
 	default:
-		o.outputValue(cw, f.Value, name, index, depth)
+		o.outputValue(cw, f.Value, name, depth+1)
 	}
 
 	if f.Error != nil {
@@ -206,5 +203,5 @@ func (o *FieldWriter) Write(w io.Writer) error {
 
 	cw := columnwriter.New(w, []int{8, 1, int(lineBytes*3) - 1, 1, int(lineBytes), 1, -1})
 
-	return o.output(cw, o.f, o.f.Name, -1, 0)
+	return o.output(cw, o.f, o.f.Name, 0)
 }

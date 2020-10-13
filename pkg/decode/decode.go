@@ -612,11 +612,15 @@ func (c *Common) MultiField(name string, fn func()) {
 	f := &Field{Name: name, Value: Value{V: []Value{}}}
 	c.AddChild(f)
 	c.current = f
-	// TODO: find start/stop from Ranges instead? what if seekaround?
-	start := c.bitBuf.Pos
+
 	fn()
-	stop := c.bitBuf.Pos
-	f.Value.BitBuf = c.BitBufRange(start, stop-start)
+
+	var minMax Range
+	for _, vf := range f.Value.V.([]Value) {
+		minMax = RangeMinMax(minMax, vf.Range)
+	}
+
+	f.Value.BitBuf = c.BitBufRange(minMax.Start, minMax.Stop-minMax.Start)
 
 	c.current = prev
 }
@@ -627,11 +631,16 @@ func (c *Common) Fields(name string, fn func()) {
 	f := &Field{Name: name, Value: Value{V: []*Field{}}}
 	c.AddChild(f)
 	c.current = f
-	// TODO: find start/stop from Ranges instead? what if seekaround?
-	start := c.bitBuf.Pos
+
 	fn()
-	stop := c.bitBuf.Pos
-	f.Value.BitBuf = c.BitBufRange(start, stop-start)
+
+	var minMax Range
+	for _, vf := range f.Value.V.([]*Field) {
+		minMax = RangeMinMax(minMax, vf.Value.Range)
+	}
+
+	// TODO: find start/stop from Ranges instead? what if seekaround? concat bitbufs but want gaps? sort here, crash?
+	f.Value.BitBuf = c.BitBufRange(minMax.Start, minMax.Stop-minMax.Start)
 
 	c.current = prev
 }

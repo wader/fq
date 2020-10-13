@@ -21,6 +21,24 @@ type Range struct {
 	Stop  int64
 }
 
+func max(a, b int64) int64 {
+	if a < b {
+		return b
+	}
+	return a
+}
+
+func min(a, b int64) int64 {
+	if a > b {
+		return b
+	}
+	return a
+}
+
+func RangeMinMax(a, b Range) Range {
+	return Range{Start: min(a.Start, b.Start), Stop: max(a.Stop, b.Stop)}
+}
+
 func (r Range) String() string {
 	return fmt.Sprintf("%s-%s", Bits(r.Start), Bits(r.Stop))
 }
