@@ -49,7 +49,11 @@ func (d *XingHeaderDecoder) Decode() {
 		d.FieldU32("bytes")
 	}
 	if tocPresent {
-		d.FieldBitBufLen("toc", 100*8)
+		d.FieldNoneFn("toc", func() {
+			for i := 0; i < 100; i++ {
+				d.FieldU8("entry")
+			}
+		})
 	}
 	if qualityPresent {
 		d.FieldU32("quality")
