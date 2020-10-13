@@ -7,14 +7,22 @@ package flac
 
 import (
 	"fq/pkg/decode"
+	"fq/pkg/format/register"
 	"math/bits"
 )
 
-var File = &decode.Format{
+var vorbisComment []*decode.Format
+var flacPicture []*decode.Format
+
+var File = register.Register(&decode.Format{
 	Name:  "flac",
 	MIMEs: []string{"audio/x-flac"},
 	New:   func() decode.Decoder { return &FileDecoder{} },
-}
+	Deps: []decode.Dep{
+		{Names: []string{"vorbis_comment"}, Formats: &vorbisComment},
+		{Names: []string{"flac_picture"}, Formats: &flacPicture},
+	},
+})
 
 // FileDecoder is a FLAC file decoder
 type FileDecoder struct{ decode.Common }
@@ -120,6 +128,26 @@ func (d *FileDecoder) Decode() {
 				})
 				d.FieldU("total_samples_in_steam", 36)
 				d.FieldBitBufLen("md5", 16*8)
+			case MetadataBlockVorbisComment:
+				d.FieldDecodeLen("comment", int64(length*8), vorbisComment...)
+			case MetadataBlockPicture:
+				d.FieldDecodeLen("comment", int64(length*8), flacPicture...)
+			case MetadataBlockSeektable:
+				seektableCount := length / 18
+				for i := uint64(0); i < seektableCount; i++ {
+					d.FieldNoneFn("seekpoint", func() {
+						d.FieldUFn("sample_number", func() (uint64, decode.NumberFormat, string) {
+							n := d.U64()
+							d := ""
+							if n == 0xffffffffffffffff {
+								d = "Placeholder"
+							}
+							return n, decode.NumberDecimal, d
+						})
+						d.FieldU64("offset")
+						d.FieldU16("number_of_samples")
+					})
+				}
 			default:
 				d.FieldBitBufLen("data", int64(length*8))
 			}

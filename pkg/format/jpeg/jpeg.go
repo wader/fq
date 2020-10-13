@@ -7,14 +7,19 @@ import (
 	"fmt"
 	"fq/pkg/bitbuf"
 	"fq/pkg/decode"
-	"fq/pkg/format/tiff"
+	"fq/pkg/format/register"
 )
 
-var File = &decode.Format{
+var tiffImage []*decode.Format
+
+var File = register.Register(&decode.Format{
 	Name:  "jpeg",
 	MIMEs: []string{"image/jpeg"},
 	New:   func() decode.Decoder { return &FileDecoder{} },
-}
+	Deps: []decode.Dep{
+		{Names: []string{"tiff"}, Formats: &tiffImage},
+	},
+})
 
 type marker struct {
 	symbol      string
@@ -249,7 +254,7 @@ func (d *FileDecoder) Decode() {
 							switch {
 							case markerCode == APP1 && d.TryHasBytes(app1ExifPrefix):
 								d.FieldUTF8("exif_prefix", 6)
-								d.FieldDecodeLen("exif", d.BitsLeft(), tiff.File)
+								d.FieldDecodeLen("exif", d.BitsLeft(), tiffImage...)
 							case markerCode == APP1 && d.TryHasBytes(extendedXMPPrefix):
 								d.FieldNoneFn("extended_xmp_chunk", func() {
 									d.FieldUTF8("signature", int64(len(extendedXMPPrefix)))

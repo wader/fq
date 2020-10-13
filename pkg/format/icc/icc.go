@@ -4,12 +4,13 @@ package icc
 
 import (
 	"fq/pkg/decode"
+	"fq/pkg/format/register"
 )
 
-var Tag = &decode.Format{
+var Tag = register.Register(&decode.Format{
 	Name: "icc",
 	New:  func() decode.Decoder { return &TagDecoder{} },
-}
+})
 
 // TagDecoder is a ICC profile decoder
 type TagDecoder struct {

@@ -8,15 +8,20 @@ import (
 	"bytes"
 	"fmt"
 	"fq/pkg/decode"
-	"fq/pkg/format/group"
+	"fq/pkg/format/register"
 	"strings"
 )
 
-var Tag = &decode.Format{
+var images []*decode.Format
+
+var Tag = register.Register(&decode.Format{
 	Name:      "id3v2",
 	New:       func() decode.Decoder { return &TagDecoder{} },
 	SkipProbe: true,
-}
+	Deps: []decode.Dep{
+		{Names: []string{"jpeg", "png", "tiff"}, Formats: &images},
+	},
+})
 
 var idDesriptions = map[string]string{
 	"AENC": "Audio encryption",
@@ -378,7 +383,7 @@ func (d *TagDecoder) DecodeFrame(version int) uint64 {
 				d.FieldTextNull("mime_type", encodingUTF8)
 				d.FieldU8("picture_type") // TODO: table
 				d.FieldTextNull("description", int(encoding))
-				d.FieldDecodeLen("picture", d.BitsLeft(), group.Images...)
+				d.FieldDecodeLen("picture", d.BitsLeft(), images...)
 			},
 			// Unsynced lyrics/text "ULT"
 			// Frame size           $xx xx xx

@@ -6,14 +6,19 @@ package tiff
 
 import (
 	"fq/pkg/decode"
-	"fq/pkg/format/icc"
+	"fq/pkg/format/register"
 )
 
-var File = &decode.Format{
+var iccTag []*decode.Format
+
+var File = register.Register(&decode.Format{
 	Name:  "tiff",
 	MIMEs: []string{"image/tiff"},
 	New:   func() decode.Decoder { return &FileDecoder{} },
-}
+	Deps: []decode.Dep{
+		{Names: []string{"icc"}, Formats: &iccTag},
+	},
+})
 
 const littleEndian = 0x49492a00
 const bigEndian = 0x4d4d002a
@@ -827,7 +832,7 @@ func (d *FileDecoder) Decode() {
 						case typ == UNDEFINED:
 							switch tag {
 							case InterColorProfile:
-								d.FieldDecodeRange("icc", int64(valueByteOffset)*8, int64(valueByteSize)*8, icc.Tag)
+								d.FieldDecodeRange("icc", int64(valueByteOffset)*8, int64(valueByteSize)*8, iccTag...)
 							default:
 								// log.Printf("tag: %#+v\n", tag)
 								// log.Printf("valueByteSize: %#+v\n", valueByteSize)

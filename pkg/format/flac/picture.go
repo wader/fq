@@ -2,14 +2,19 @@ package flac
 
 import (
 	"fq/pkg/decode"
-	"fq/pkg/format/group"
+	"fq/pkg/format/register"
 )
 
-var Picture = &decode.Format{
+var images []*decode.Format
+
+var Picture = register.Register(&decode.Format{
 	Name:      "flac_picture",
 	New:       func() decode.Decoder { return &PictureDecoder{} },
 	SkipProbe: true,
-}
+	Deps: []decode.Dep{
+		{Names: []string{"jpeg", "png", "tiff"}, Formats: &images},
+	},
+})
 
 // PictureDecoder is a FLAC picture decoder
 type PictureDecoder struct {
@@ -30,5 +35,5 @@ func (d *PictureDecoder) Decode() {
 	d.FieldU32("color_depth")
 	d.FieldU32("number_of_index_colors")
 	pictureLen := d.FieldU32("picture_length")
-	d.FieldDecodeLen("picture_data", int64(pictureLen)*8, group.Images...)
+	d.FieldDecodeLen("picture_data", int64(pictureLen)*8, images...)
 }

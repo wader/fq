@@ -5,15 +5,21 @@ package png
 
 import (
 	"fq/pkg/decode"
-	"fq/pkg/format/icc"
-	"fq/pkg/format/tiff"
+	"fq/pkg/format/register"
 )
 
-var File = &decode.Format{
+var iccTag []*decode.Format
+var tiffImage []*decode.Format
+
+var File = register.Register(&decode.Format{
 	Name:  "png",
 	MIMEs: []string{"image/png"},
 	New:   func() decode.Decoder { return &FileDecoder{} },
-}
+	Deps: []decode.Dep{
+		{Names: []string{"icc"}, Formats: &iccTag},
+		{Names: []string{"tiff"}, Formats: &tiffImage},
+	},
+})
 
 // FileDecoder is a PNG decoder
 type FileDecoder struct {
@@ -97,14 +103,14 @@ func (d *FileDecoder) Decode() {
 				switch compressionMethod {
 				case compressionDeflate:
 					d.FieldZlibLen("uncompressed", chunkLength-profileNameLen-1, decode.FormatFn(func(c *decode.Common) {
-						c.FieldDecodeLen("icc", c.BitsLeft(), icc.Tag)
+						c.FieldDecodeLen("icc", c.BitsLeft(), iccTag...)
 					}))
 				default:
 					d.FieldBitBufLen("compressed", (chunkLength-profileNameLen-1)*8)
 				}
 			case "eXIf":
 				// TODO: decode fail?
-				d.FieldDecodeLen("exif", chunkLength*8, tiff.File)
+				d.FieldDecodeLen("exif", chunkLength*8, tiffImage...)
 			default:
 				d.FieldBitBufLen("data", chunkLength*8)
 			}

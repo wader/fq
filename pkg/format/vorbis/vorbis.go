@@ -4,18 +4,19 @@ package vorbis
 // TODO: setup? more audio?
 
 import (
-	"encoding/base64"
 	"fmt"
-	"fq/pkg/bitbuf"
 	"fq/pkg/decode"
-	"fq/pkg/format/flac"
-	"strings"
 )
+
+var vorbisComment []*decode.Format
 
 var Packet = &decode.Format{
 	Name:      "vorbis",
 	New:       func() decode.Decoder { return &PacketDecoder{} },
 	SkipProbe: true,
+	Deps: []decode.Dep{
+		{Names: []string{"vorbis_commet"}, Formats: &vorbisComment},
+	},
 }
 
 const (
@@ -94,39 +95,8 @@ func (d *PacketDecoder) Decode() {
 		}
 
 	case packetTypeComment:
-		lenStr := func(name string) string {
-			len := d.FieldU32LE(name + "_length")
-			return d.FieldUTF8(name, int64(len))
-		}
-		lenStr("vendor")
-		userCommentListLength := d.FieldU32LE("user_comment_list_length")
-		for i := uint64(0); i < userCommentListLength; i++ {
-			pair := lenStr("user_comment")
-			pairParts := strings.SplitN(pair, "=", 2)
-			if len(pairParts) == 2 {
-				// METADATA_BLOCK_PICTURE=<base64>
-				k, v := strings.ToUpper(pairParts[0]), pairParts[1]
-				var metadataBlockPicture = "METADATA_BLOCK_PICTURE"
-				if k == metadataBlockPicture {
-					bs, err := base64.StdEncoding.DecodeString(v)
-					if err == nil {
-						bb, err := bitbuf.NewFromBytes(bs, 0)
-						if err != nil {
-							panic(err) // TODO: fixme
-						}
-
-						d.FieldDecodeBitBuf("picture",
-							d.Pos()-int64(len(v))*8,
-							int64(len(v)*8),
-							bb,
-							flac.Picture,
-						)
-					} else {
-						// TODO: warning?
-					}
-				}
-			}
-		}
+		// TODO: should not be try, FieldDecode?
+		d.FieldTryDecode("comment", vorbisComment...)
 		d.FieldValidateZeroPadding("padding", 7)
 		d.FieldValidateUFn("frame_bit", 1, d.U1)
 

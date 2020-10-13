@@ -15,6 +15,7 @@ import (
 	"fq/pkg/format/mp4"
 	"fq/pkg/format/ogg"
 	"fq/pkg/format/png"
+	"fq/pkg/format/register"
 	"fq/pkg/format/tar"
 	"fq/pkg/format/tiff"
 	"fq/pkg/format/vorbis"
@@ -46,4 +47,9 @@ var All = []*decode.Format{
 	ape.TagV2,
 	wav.File,
 	icc.Tag,
+}
+
+// TODO: move
+func init() {
+	register.Resolve()
 }
