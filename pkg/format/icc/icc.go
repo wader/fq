@@ -8,8 +8,9 @@ import (
 )
 
 var Tag = format.MustRegister(&decode.Format{
-	Name: "icc",
-	New:  func() decode.Decoder { return &TagDecoder{} },
+	Name:      "icc",
+	New:       func() decode.Decoder { return &TagDecoder{} },
+	SkipProbe: true,
 })
 
 // TagDecoder is a ICC profile decoder
@@ -22,7 +23,7 @@ func (d *TagDecoder) Decode() {
 
 	d.FieldNoneFn("header", func() {
 		d.FieldU32("size")
-		d.FieldUTF8("cmm_type_singature", 4)
+		d.FieldUTF8("cmm_type_signature", 4)
 		d.FieldU32("version")
 		d.FieldUTF8("device_class_signature", 4)
 		d.FieldUTF8("color_space", 4)

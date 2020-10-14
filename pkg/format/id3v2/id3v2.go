@@ -378,7 +378,7 @@ func (d *TagDecoder) DecodeFrame(version int) uint64 {
 				d.FieldTextNull("mime_type", encodingUTF8)
 				d.FieldU8("picture_type") // TODO: table
 				d.FieldTextNull("description", int(encoding))
-				d.FieldDecodeLen("picture", d.BitsLeft(), images...)
+				d.FieldDecodeLen("picture", d.BitsLeft(), images)
 			},
 			// Unsynced lyrics/text "ULT"
 			// Frame size           $xx xx xx

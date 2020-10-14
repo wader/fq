@@ -14,10 +14,10 @@ type Format struct {
 	Deps      []Dep
 }
 
-func FormatFn(d func(c *Common)) *Format {
-	return &Format{
+func FormatFn(d func(c *Common)) []*Format {
+	return []*Format{{
 		New: func() Decoder { return &DecoderFn{decode: d} },
-	}
+	}}
 }
 
 type DecoderFn struct {

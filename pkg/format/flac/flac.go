@@ -131,9 +131,9 @@ func (d *FileDecoder) Decode() {
 					d.FieldU("total_samples_in_steam", 36)
 					d.FieldBitBufLen("md5", 16*8)
 				case MetadataBlockVorbisComment:
-					d.FieldDecodeLen("comment", int64(length*8), vorbisComment...)
+					d.FieldDecodeLen("comment", int64(length*8), vorbisComment)
 				case MetadataBlockPicture:
-					d.FieldDecodeLen("picture", int64(length*8), flacPicture...)
+					d.FieldDecodeLen("picture", int64(length*8), flacPicture)
 				case MetadataBlockSeektable:
 					seektableCount := length / 18
 					d.MultiField("seekpoint", func() {

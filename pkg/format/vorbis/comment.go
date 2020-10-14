@@ -51,7 +51,7 @@ func (d *CommentDecoder) Decode() {
 						d.Pos()-int64(len(v))*8,
 						int64(len(v)*8),
 						bb,
-						flacPicture...,
+						flacPicture,
 					)
 				} else {
 					panic(err)

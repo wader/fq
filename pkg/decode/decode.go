@@ -902,7 +902,7 @@ func (c *Common) SubRangeFn(firstBit int64, nBits int64, fn func()) {
 }
 
 // TODO: TryDecode?
-func (c *Common) FieldTryDecode(name string, forceFormats ...*Format) (*Field, []error) {
+func (c *Common) FieldTryDecode(name string, forceFormats []*Format) (*Field, []error) {
 	bb, err := c.bitBuf.BitBufRange(c.bitBuf.Pos, c.BitsLeft())
 	if err != nil {
 		// TODO: can't happen?
@@ -925,7 +925,7 @@ func (c *Common) FieldTryDecode(name string, forceFormats ...*Format) (*Field, [
 }
 
 // TODO: FieldTryDecode? just TryDecode?
-func (c *Common) FieldDecodeLen(name string, nBits int64, forceFormats ...*Format) (*Field, []error) {
+func (c *Common) FieldDecodeLen(name string, nBits int64, forceFormats []*Format) (*Field, []error) {
 	bb, err := c.bitBuf.BitBufRange(c.bitBuf.Pos, nBits)
 	if err != nil {
 		panic(BitBufError{Err: err, Op: "FieldDecodeLen", Size: nBits, Pos: c.bitBuf.Pos})
@@ -950,7 +950,7 @@ func (c *Common) FieldDecodeLen(name string, nBits int64, forceFormats ...*Forma
 }
 
 // TODO: return decooder?
-func (c *Common) FieldTryDecodeRange(name string, firstBit int64, nBits int64, forceFormats ...*Format) (*Field, []error) {
+func (c *Common) FieldTryDecodeRange(name string, firstBit int64, nBits int64, forceFormats []*Format) (*Field, []error) {
 	bb, err := c.bitBuf.BitBufRange(firstBit, nBits)
 	if err != nil {
 		panic(BitBufError{Err: err, Op: "FieldDecodeRange", Size: nBits, Pos: c.bitBuf.Pos})
@@ -965,7 +965,7 @@ func (c *Common) FieldTryDecodeRange(name string, firstBit int64, nBits int64, f
 }
 
 // TODO: return decooder?
-func (c *Common) FieldDecodeRange(name string, firstBit int64, nBits int64, forceFormats ...*Format) (*Field, []error) {
+func (c *Common) FieldDecodeRange(name string, firstBit int64, nBits int64, forceFormats []*Format) (*Field, []error) {
 	bb, err := c.bitBuf.BitBufRange(firstBit, nBits)
 	if err != nil {
 		panic(BitBufError{Err: err, Op: "FieldDecodeRange", Size: nBits, Pos: c.bitBuf.Pos})
@@ -982,7 +982,7 @@ func (c *Common) FieldDecodeRange(name string, firstBit int64, nBits int64, forc
 }
 
 // TODO: list of ranges?
-func (c *Common) FieldDecodeBitBuf(name string, firstBit int64, nBits int64, bb *bitbuf.Buffer, forceFormats ...*Format) (*Field, []error) {
+func (c *Common) FieldDecodeBitBuf(name string, firstBit int64, nBits int64, bb *bitbuf.Buffer, forceFormats []*Format) (*Field, []error) {
 	f, _, errs := c.registry.Probe(c, name, Range{Start: firstBit, Stop: nBits}, bb, forceFormats)
 	if f != nil {
 		c.AddChild(f)
@@ -1007,7 +1007,7 @@ func (c *Common) FieldBitBufLen(name string, nBits int64) *bitbuf.Buffer {
 	})
 }
 
-func (c *Common) FieldZlib(name string, firsBit int64, nBits int64, b []byte, forceFormats ...*Format) (*Field, []error) {
+func (c *Common) FieldZlib(name string, firsBit int64, nBits int64, b []byte, forceFormats []*Format) (*Field, []error) {
 	zr, err := zlib.NewReader(bytes.NewReader(b))
 	if err != nil {
 		panic(err)
@@ -1022,11 +1022,11 @@ func (c *Common) FieldZlib(name string, firsBit int64, nBits int64, b []byte, fo
 		return nil, []error{err}
 	}
 
-	return c.FieldDecodeBitBuf(name, firsBit, nBits, zbb, forceFormats...)
+	return c.FieldDecodeBitBuf(name, firsBit, nBits, zbb, forceFormats)
 }
 
 // TODO: range?
-func (c *Common) FieldZlibLen(name string, nBytes int64, forceFormats ...*Format) (*Field, []error) {
+func (c *Common) FieldZlibLen(name string, nBytes int64, forceFormats []*Format) (*Field, []error) {
 	firstBit := c.bitBuf.Pos
 	zr, err := zlib.NewReader(bytes.NewReader(c.BytesLen(nBytes)))
 	if err != nil {
@@ -1042,5 +1042,5 @@ func (c *Common) FieldZlibLen(name string, nBytes int64, forceFormats ...*Format
 		return nil, []error{err}
 	}
 
-	return c.FieldDecodeBitBuf(name, firstBit, firstBit+nBytes*8, zbb, forceFormats...)
+	return c.FieldDecodeBitBuf(name, firstBit, firstBit+nBytes*8, zbb, forceFormats)
 }

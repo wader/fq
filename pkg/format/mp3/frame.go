@@ -153,7 +153,7 @@ func (d *FrameDecoder) Decode() {
 			d.FieldBitBufLen("side_info", sideInfoLen*8)
 		}
 
-		d.FieldTryDecode("xing", XingHeader)
+		d.FieldTryDecode("xing", xingHeader)
 
 		// TODO: padding slot, 4 bit layer1, 8 bit others?
 

@@ -41,7 +41,7 @@ func (d *FileDecoder) Decode() {
 
 	for !d.End() {
 		// TODO: FieldTryDecode return field and decoder?
-		_, errs := d.FieldTryDecode("page", oggPage...)
+		_, errs := d.FieldTryDecode("page", oggPage)
 		if errs != nil {
 			break
 		}

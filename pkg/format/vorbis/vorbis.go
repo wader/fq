@@ -97,7 +97,7 @@ func (d *PacketDecoder) Decode() {
 
 	case packetTypeComment:
 		// TODO: should not be try, FieldDecode?
-		d.FieldTryDecode("comment", vorbisComment...)
+		d.FieldTryDecode("comment", vorbisComment)
 		d.FieldValidateZeroPadding("padding", 7)
 		d.FieldValidateUFn("frame_bit", 1, d.U1)
 

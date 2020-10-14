@@ -87,7 +87,7 @@ func (d *FileDecoder) Decode() {
 			fieldStr("prefix", 155)
 			fieldBlockPadding()
 			if size > 0 {
-				d.FieldDecodeLen("data", int64(size)*8, all...)
+				d.FieldDecodeLen("data", int64(size)*8, all)
 			}
 			fieldBlockPadding()
 		})

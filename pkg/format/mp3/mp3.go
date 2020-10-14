@@ -37,7 +37,7 @@ type FileDecoder struct{ decode.Common }
 // Decode decodes a MP3 stream
 func (d *FileDecoder) Decode() {
 
-	d.FieldTryDecode("header", headerTag...)
+	d.FieldTryDecode("header", headerTag)
 
 	footerLen := int64(0)
 
@@ -45,7 +45,7 @@ func (d *FileDecoder) Decode() {
 	if d.BitsLeft() >= id3v1Len {
 		if fd, _ := d.FieldTryDecodeRange(
 			"footer", d.Pos()+d.BitsLeft()-id3v1Len, id3v1Len,
-			footerTags...); fd != nil {
+			footerTags); fd != nil {
 			footerLen = id3v1Len
 		}
 	}
@@ -54,7 +54,7 @@ func (d *FileDecoder) Decode() {
 	d.SubLenFn(d.BitsLeft()-footerLen, func() {
 		d.MultiField("frame", func() {
 			for !d.End() {
-				if _, errs := d.FieldTryDecode("frame", mp3Frame...); errs != nil {
+				if _, errs := d.FieldTryDecode("frame", mp3Frame); errs != nil {
 					break
 				}
 
@@ -62,7 +62,7 @@ func (d *FileDecoder) Decode() {
 			}
 		})
 
-		d.FieldTryDecode("footer", apeTag...)
+		d.FieldTryDecode("footer", apeTag)
 
 		// TODO: truncated last frame?
 		if d.BitsLeft() > 0 {

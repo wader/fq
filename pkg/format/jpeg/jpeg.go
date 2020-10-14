@@ -255,7 +255,7 @@ func (d *FileDecoder) Decode() {
 							switch {
 							case markerCode == APP1 && d.TryHasBytes(app1ExifPrefix):
 								d.FieldUTF8("exif_prefix", 6)
-								d.FieldDecodeLen("exif", d.BitsLeft(), tiffImage...)
+								d.FieldDecodeLen("exif", d.BitsLeft(), tiffImage)
 							case markerCode == APP1 && d.TryHasBytes(extendedXMPPrefix):
 								d.FieldNoneFn("extended_xmp_chunk", func() {
 									d.FieldUTF8("signature", int64(len(extendedXMPPrefix)))
@@ -293,6 +293,9 @@ func (d *FileDecoder) Decode() {
 		if err != nil {
 			panic(err) // TODO: fixme
 		}
-		d.FieldDecodeBitBuf("extended_xmp", 0, bb.Len, bb)
+		// TODO: bit pos, better bitbhuf api?
+		d.FieldBitBufFn("extended_xmp", 0, bb.Len, func() (*bitbuf.Buffer, string) {
+			return bb, ""
+		})
 	}
 }
