@@ -53,11 +53,11 @@ func (d *FileDecoder) Decode() {
 			return n, decode.NumberDecimal, ts
 		})
 	}
-	fieldBlockPadding := func() {
+	fieldBlockPadding := func(name string) {
 		const blockBits = 512 * 8
 		blockPadding := (blockBits - (d.Pos() % blockBits)) % blockBits
 		if blockPadding > 0 {
-			d.FieldValidateZeroPadding("block_padding", blockPadding)
+			d.FieldValidateZeroPadding(name, blockPadding)
 		}
 	}
 
@@ -65,41 +65,42 @@ func (d *FileDecoder) Decode() {
 	endMarker := [512 * 2]byte{}
 	validFiles := 0
 
-	for !d.End() {
-		name := str(100)
-		d.SeekRel(-100 * 8)
-		d.FieldNoneFn(name, func() {
-			fieldStr("name", 100)
-			fieldNumStr("mode", 8)
-			fieldNumStr("uid", 8)
-			fieldNumStr("gid", 8)
-			size := fieldNumStr("size", 12)
-			fieldNumStr("mtime", 12)
-			fieldNumStr("chksum", 8)
-			fieldStr("typeflag", 1)
-			fieldStr("linkname", 100)
-			fieldStr("magic", 6)
-			fieldNumStr("version", 2)
-			fieldStr("uname", 32)
-			fieldStr("gname", 32)
-			fieldNumStr("devmajor", 8)
-			fieldNumStr("devminor", 8)
-			fieldStr("prefix", 155)
-			fieldBlockPadding()
-			if size > 0 {
-				d.FieldDecodeLen("data", int64(size)*8, all)
+	d.MultiField("file", func() {
+		for !d.End() {
+			name := str(100)
+			d.SeekRel(-100 * 8)
+			d.FieldNoneFn(name, func() {
+				fieldStr("name", 100)
+				fieldNumStr("mode", 8)
+				fieldNumStr("uid", 8)
+				fieldNumStr("gid", 8)
+				size := fieldNumStr("size", 12)
+				fieldNumStr("mtime", 12)
+				fieldNumStr("chksum", 8)
+				fieldStr("typeflag", 1)
+				fieldStr("linkname", 100)
+				fieldStr("magic", 6)
+				fieldNumStr("version", 2)
+				fieldStr("uname", 32)
+				fieldStr("gname", 32)
+				fieldNumStr("devmajor", 8)
+				fieldNumStr("devminor", 8)
+				fieldStr("prefix", 155)
+				fieldBlockPadding("header_block_padding")
+				if size > 0 {
+					d.FieldDecodeLen("data", int64(size)*8, all)
+				}
+				fieldBlockPadding("data_block_padding")
+			})
+			validFiles++
+
+			bs := d.PeekBytes(512 * 2)
+			if bytes.Equal(bs, endMarker[:]) {
+				d.FieldBitBufLen("end_marker", 512*2*8)
+				break
 			}
-			fieldBlockPadding()
-		})
-		validFiles++
-
-		bs := d.PeekBytes(512 * 2)
-		if bytes.Equal(bs, endMarker[:]) {
-			d.FieldBitBufLen("end_marker", 512*2*8)
-			break
 		}
-
-	}
+	})
 
 	if validFiles == 0 {
 		d.Invalid("no files found")

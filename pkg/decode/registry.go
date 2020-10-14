@@ -29,7 +29,7 @@ func (pe *ProbeError) Error() string { return fmt.Sprintf("%s probe: %s", pe.For
 func (pe *ProbeError) Unwrap() error { return pe.Err }
 
 // Probe probes all probeable formats and turns first found Decoder and all other decoder errors
-func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range, bb *bitbuf.Buffer, forceFormats []*Format) (*Field, int64, []error) {
+func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range, bb *bitbuf.Buffer, forceFormats []*Format) (*Field, int64, Decoder, []error) {
 	var probeable []*Format
 	var forceOne = len(forceFormats) == 1
 	if forceFormats != nil {
@@ -119,10 +119,10 @@ func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range
 		// TODO: wrong keep track of largest?
 		_ = cbb.TruncateRel(0)
 
-		return rootField, cbb.Pos, errs
+		return rootField, cbb.Pos, d, errs
 	}
 
-	return nil, 0, errs
+	return nil, 0, nil, errs
 }
 
 func (r *Registry) FindFormat(name string) *Format {

@@ -43,7 +43,7 @@ func (d *FileDecoder) Decode() {
 
 	id3v1Len := int64(128 * 8)
 	if d.BitsLeft() >= id3v1Len {
-		if fd, _ := d.FieldTryDecodeRange(
+		if fd, _, _ := d.FieldTryDecodeRange(
 			"footer", d.Pos()+d.BitsLeft()-id3v1Len, id3v1Len,
 			footerTags); fd != nil {
 			footerLen = id3v1Len
@@ -54,7 +54,7 @@ func (d *FileDecoder) Decode() {
 	d.SubLenFn(d.BitsLeft()-footerLen, func() {
 		d.MultiField("frame", func() {
 			for !d.End() {
-				if _, errs := d.FieldTryDecode("frame", mp3Frame); errs != nil {
+				if _, _, errs := d.FieldTryDecode("frame", mp3Frame); errs != nil {
 					break
 				}
 

@@ -24,7 +24,7 @@ var File = format.MustRegister(&decode.Format{
 
 type marker struct {
 	symbol      string
-	description string
+	description string // TODO: use as description later
 }
 
 const (
@@ -171,118 +171,124 @@ func (d *FileDecoder) Decode() {
 	var extendedXMP []byte
 	soiMarkerFound := false
 
-	inECD := false
-	for !d.End() {
-		if inECD {
-			ecdLen := int64(0)
-			for {
-				if d.PeekBits(8) == 0xff && d.PeekBits(16) != 0xff00 {
-					break
+	d.MultiField("marker", func() {
+		inECD := false
+		for !d.End() {
+			if inECD {
+				ecdLen := int64(0)
+				for {
+					if d.PeekBits(8) == 0xff && d.PeekBits(16) != 0xff00 {
+						break
+					}
+					d.SeekRel(8)
+					ecdLen++
 				}
-				d.SeekRel(8)
-				ecdLen++
-			}
-			d.SeekRel(-ecdLen * 8)
-			d.FieldBitBufLen("entropy_coded_data", int64(ecdLen)*8)
-			inECD = false
-		} else {
-			d.FieldNoneFn("marker", func() {
-				d.FieldNoneFn("prefix", func() {
-					for d.PeekBits(8) == 0xff {
-						d.SeekRel(8)
-					}
-				})
-				markerFound := false
-				markerCode := d.FieldUFn("code", func() (uint64, decode.DisplayFormat, string) {
-					n := uint(d.U8())
-					if m, ok := markers[n]; ok {
-						markerFound = true
-						return uint64(n), decode.NumberDecimal, m.symbol
-					}
-					return uint64(n), decode.NumberDecimal, "RES"
-				})
+				d.SeekRel(-ecdLen * 8)
+				d.FieldBitBufLen("entropy_coded_data", int64(ecdLen)*8)
+				inECD = false
+			} else {
+				d.FieldNoneFn("marker", func() {
+					d.FieldNoneFn("prefix", func() {
+						for d.PeekBits(8) == 0xff {
+							d.SeekRel(8)
+						}
+					})
+					markerFound := false
+					markerCode := d.FieldUFn("code", func() (uint64, decode.DisplayFormat, string) {
+						n := uint(d.U8())
+						if m, ok := markers[n]; ok {
+							markerFound = true
+							return uint64(n), decode.NumberDecimal, m.symbol
+						}
+						return uint64(n), decode.NumberDecimal, "RES"
+					})
 
-				// RST*, SOI, EOI, TEM does not have a length field. All others have a
-				// 2 byte length read as "Lf", "Ls" etc or in the default case as "length".
+					// RST*, SOI, EOI, TEM does not have a length field. All others have a
+					// 2 byte length read as "Lf", "Ls" etc or in the default case as "length".
 
-				// TODO: warning on 0x00?
-				switch markerCode {
-				case SOI:
-					soiMarkerFound = true
-				case SOF0, SOF1, SOF2, SOF3, SOF5, SOF6, SOF7, SOF9, SOF10, SOF11:
-					d.FieldU16("Lf")
-					d.FieldU8("P")
-					d.FieldU16("Y")
-					d.FieldU16("X")
-					nf := d.FieldU8("Nf")
-					for i := uint64(0); i < nf; i++ {
-						d.FieldNoneFn("frame_component", func() {
-							d.FieldU8("C")
-							d.FieldU4("H")
-							d.FieldU4("V")
-							d.FieldU8("Tq")
-						})
-					}
-				case COM:
-					comLen := d.FieldU16("Lc")
-					d.FieldUTF8("Cm", int64(comLen)-2)
-				case SOS:
-					d.FieldU16("Ls")
-					ns := d.FieldU8("Ns")
-					for i := uint64(0); i < ns; i++ {
-						d.FieldNoneFn("scan_component", func() {
-							d.FieldU8("Cs")
-							d.FieldU4("Td")
-							d.FieldU4("Ta")
-						})
-					}
-					d.FieldU8("Ss")
-					d.FieldU8("Se")
-					d.FieldU4("Ah")
-					d.FieldU4("Al")
-					inECD = true
-				case RST0, RST1, RST2, RST3, RST4, RST5, RST6, RST7:
-					inECD = true
-				case TEM:
-				case EOI:
-				default:
-					if markerFound {
-						markerLen := d.FieldU16("length")
-						d.SubLenFn(int64((markerLen-2)*8), func() {
-							app1ExifPrefix := []byte("Exif\x00\x00")
-							extendedXMPPrefix := []byte("http://ns.adobe.com/xmp/extension/\x00")
-
-							switch {
-							case markerCode == APP1 && d.TryHasBytes(app1ExifPrefix):
-								d.FieldUTF8("exif_prefix", 6)
-								d.FieldDecodeLen("exif", d.BitsLeft(), tiffImage)
-							case markerCode == APP1 && d.TryHasBytes(extendedXMPPrefix):
-								d.FieldNoneFn("extended_xmp_chunk", func() {
-									d.FieldUTF8("signature", int64(len(extendedXMPPrefix)))
-									d.FieldUTF8("guid", 32)
-									fullLength := d.FieldU32("full_length")
-									offset := d.FieldU32("offset")
-									// TODO: FieldBitsLen? concat bitbuf?
-									chunk := d.FieldBytesLen("data", d.BitsLeft()/8)
-
-									if extendedXMP == nil {
-										extendedXMP = make([]byte, fullLength)
-									}
-									copy(extendedXMP[offset:], chunk)
+					// TODO: warning on 0x00?
+					switch markerCode {
+					case SOI:
+						soiMarkerFound = true
+					case SOF0, SOF1, SOF2, SOF3, SOF5, SOF6, SOF7, SOF9, SOF10, SOF11:
+						d.FieldU16("Lf")
+						d.FieldU8("P")
+						d.FieldU16("Y")
+						d.FieldU16("X")
+						nf := d.FieldU8("Nf")
+						d.MultiField("frame_component", func() {
+							for i := uint64(0); i < nf; i++ {
+								d.FieldNoneFn("frame_component", func() {
+									d.FieldU8("C")
+									d.FieldU4("H")
+									d.FieldU4("V")
+									d.FieldU8("Tq")
 								})
-							default:
-								// TODO: FieldBitsLen?
-								d.FieldBitBufLen("data", d.BitsLeft())
 							}
 						})
+					case COM:
+						comLen := d.FieldU16("Lc")
+						d.FieldUTF8("Cm", int64(comLen)-2)
+					case SOS:
+						d.FieldU16("Ls")
+						ns := d.FieldU8("Ns")
+						d.MultiField("scan_component", func() {
+							for i := uint64(0); i < ns; i++ {
+								d.FieldNoneFn("scan_component", func() {
+									d.FieldU8("Cs")
+									d.FieldU4("Td")
+									d.FieldU4("Ta")
+								})
+							}
+						})
+						d.FieldU8("Ss")
+						d.FieldU8("Se")
+						d.FieldU4("Ah")
+						d.FieldU4("Al")
+						inECD = true
+					case RST0, RST1, RST2, RST3, RST4, RST5, RST6, RST7:
+						inECD = true
+					case TEM:
+					case EOI:
+					default:
+						if markerFound {
+							markerLen := d.FieldU16("length")
+							d.SubLenFn(int64((markerLen-2)*8), func() {
+								app1ExifPrefix := []byte("Exif\x00\x00")
+								extendedXMPPrefix := []byte("http://ns.adobe.com/xmp/extension/\x00")
 
-					} else {
-						d.Invalid(fmt.Sprintf("unknown marker %x", markerCode))
+								switch {
+								case markerCode == APP1 && d.TryHasBytes(app1ExifPrefix):
+									d.FieldUTF8("exif_prefix", 6)
+									d.FieldDecodeLen("exif", d.BitsLeft(), tiffImage)
+								case markerCode == APP1 && d.TryHasBytes(extendedXMPPrefix):
+									d.FieldNoneFn("extended_xmp_chunk", func() {
+										d.FieldUTF8("signature", int64(len(extendedXMPPrefix)))
+										d.FieldUTF8("guid", 32)
+										fullLength := d.FieldU32("full_length")
+										offset := d.FieldU32("offset")
+										// TODO: FieldBitsLen? concat bitbuf?
+										chunk := d.FieldBytesLen("data", d.BitsLeft()/8)
+
+										if extendedXMP == nil {
+											extendedXMP = make([]byte, fullLength)
+										}
+										copy(extendedXMP[offset:], chunk)
+									})
+								default:
+									// TODO: FieldBitsLen?
+									d.FieldBitBufLen("data", d.BitsLeft())
+								}
+							})
+
+						} else {
+							d.Invalid(fmt.Sprintf("unknown marker %x", markerCode))
+						}
 					}
-				}
-			})
+				})
+			}
 		}
-	}
+	})
 
 	if !soiMarkerFound {
 		d.Invalid("no SOI marker found")

@@ -85,6 +85,9 @@ func Dot(w io.Writer) {
 
 	fmt.Fprintf(w, "digraph formats {\n")
 	for groupName, fs := range allGroups {
+		if groupName == "all" {
+			continue
+		}
 		for _, f := range fs {
 			if groupName != f.Name {
 				fmt.Fprintf(w, "  %s -> %s\n", groupName, f.Name)
