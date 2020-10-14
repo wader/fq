@@ -2,14 +2,19 @@ package aac
 
 import (
 	"fq/pkg/decode"
+	"fq/pkg/format"
 )
 
-// Audio Data Transport Stream (ADTS)
+var aacFrame []*decode.Format
 
-var ADTS = &decode.Format{
+// Audio Data Transport Stream (ADTS)
+var ADTS = format.MustRegister(&decode.Format{
 	Name: "adts",
 	New:  func() decode.Decoder { return &ADTSDecoder{} },
-}
+	Deps: []decode.Dep{
+		{Names: []string{"aac_frame"}, Formats: &aacFrame},
+	},
+})
 
 // ADTSDecoder is a adts  decoder
 type ADTSDecoder struct {
@@ -58,6 +63,6 @@ func (d *ADTSDecoder) Decode() {
 	if hasCRC {
 		d.FieldU16("crc")
 	}
-	d.FieldDecodeLen("frame", int64(dataLength)*8, Frame)
+	d.FieldDecodeLen("frame", int64(dataLength)*8, aacFrame...)
 	// d.FieldBytesLen("frame", dataLength)
 }

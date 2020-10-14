@@ -1,6 +1,9 @@
 package elf
 
-import "fq/pkg/decode"
+import (
+	"fq/pkg/decode"
+	"fq/pkg/format"
+)
 
 /*
 
@@ -34,10 +37,10 @@ typedef struct {
 
 */
 
-var File = &decode.Format{
+var File = format.MustRegister(&decode.Format{
 	Name: "elf",
 	New:  func() decode.Decoder { return &FileDecoder{} },
-}
+})
 
 // FileDecoder is ELF file decoder
 type FileDecoder struct{ decode.Common }

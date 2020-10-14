@@ -8,18 +8,18 @@ import (
 	"bytes"
 	"fmt"
 	"fq/pkg/decode"
-	"fq/pkg/format/register"
+	"fq/pkg/format"
 	"strings"
 )
 
 var images []*decode.Format
 
-var Tag = register.Register(&decode.Format{
+var Tag = format.MustRegister(&decode.Format{
 	Name:      "id3v2",
 	New:       func() decode.Decoder { return &TagDecoder{} },
 	SkipProbe: true,
 	Deps: []decode.Dep{
-		{Names: []string{"jpeg", "png", "tiff"}, Formats: &images},
+		{Names: []string{"image"}, Formats: &images},
 	},
 })
 
@@ -180,8 +180,6 @@ var idDesriptions = map[string]string{
 	"WPB":  "Publishers official webpage",
 	"WXX":  "User defined URL link frame",
 }
-
-type encoding int
 
 const (
 	encodingISO8859_1 = 0
@@ -349,9 +347,6 @@ func (d *TagDecoder) DecodeFrame(version int) uint64 {
 			d.FieldUTF8("id", 4)
 			dataSize = d.FieldSyncSafeU32("size")
 			var headerLen uint64 = 10
-
-			const flagUnsync = 0b10
-			const flagDataLen = 0b1
 
 			dataLenFlag := false
 			d.FieldNoneFn("flags", func() {

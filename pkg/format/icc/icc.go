@@ -4,10 +4,10 @@ package icc
 
 import (
 	"fq/pkg/decode"
-	"fq/pkg/format/register"
+	"fq/pkg/format"
 )
 
-var Tag = register.Register(&decode.Format{
+var Tag = format.MustRegister(&decode.Format{
 	Name: "icc",
 	New:  func() decode.Decoder { return &TagDecoder{} },
 })

@@ -2,13 +2,14 @@ package aac
 
 import (
 	"fq/pkg/decode"
+	"fq/pkg/format"
 )
 
-var Frame = &decode.Format{
+var Frame = format.MustRegister(&decode.Format{
 	Name:      "aac_frame",
 	New:       func() decode.Decoder { return &FrameDecoder{} },
 	SkipProbe: true,
-}
+})
 
 const (
 	SCE  = 0b000

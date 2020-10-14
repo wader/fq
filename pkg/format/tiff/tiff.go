@@ -6,15 +6,16 @@ package tiff
 
 import (
 	"fq/pkg/decode"
-	"fq/pkg/format/register"
+	"fq/pkg/format"
 )
 
 var iccTag []*decode.Format
 
-var File = register.Register(&decode.Format{
-	Name:  "tiff",
-	MIMEs: []string{"image/tiff"},
-	New:   func() decode.Decoder { return &FileDecoder{} },
+var File = format.MustRegister(&decode.Format{
+	Name:   "tiff",
+	Groups: []string{"image"},
+	MIMEs:  []string{"image/tiff"},
+	New:    func() decode.Decoder { return &FileDecoder{} },
 	Deps: []decode.Dep{
 		{Names: []string{"icc"}, Formats: &iccTag},
 	},

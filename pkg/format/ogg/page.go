@@ -5,12 +5,13 @@ package ogg
 import (
 	"fq/pkg/bitbuf"
 	"fq/pkg/decode"
+	"fq/pkg/format"
 )
 
-var Page = &decode.Format{
+var Page = format.MustRegister(&decode.Format{
 	Name: "ogg_page",
 	New:  func() decode.Decoder { return &PageDecoder{} },
-}
+})
 
 // Decoder is a ogg page decoder
 type PageDecoder struct {

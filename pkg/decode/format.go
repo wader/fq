@@ -7,6 +7,7 @@ type Dep struct {
 
 type Format struct {
 	Name      string
+	Groups    []string
 	MIMEs     []string
 	New       func() Decoder
 	SkipProbe bool

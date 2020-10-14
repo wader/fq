@@ -7,15 +7,21 @@ import (
 	"bytes"
 	"fmt"
 	"fq/pkg/decode"
+	"fq/pkg/format"
 	"strconv"
 	"strings"
 )
 
-var File = &decode.Format{
+var all []*decode.Format
+
+var File = format.MustRegister(&decode.Format{
 	Name:  "tar",
 	MIMEs: []string{"application/x-tar"},
 	New:   func() decode.Decoder { return &FileDecoder{} },
-}
+	Deps: []decode.Dep{
+		{Names: []string{"probeable"}, Formats: &all},
+	},
+})
 
 // Decoder is a tar decoder
 type FileDecoder struct {
@@ -81,7 +87,7 @@ func (d *FileDecoder) Decode() {
 			fieldStr("prefix", 155)
 			fieldBlockPadding()
 			if size > 0 {
-				d.FieldDecodeLen("data", int64(size)*8)
+				d.FieldDecodeLen("data", int64(size)*8, all...)
 			}
 			fieldBlockPadding()
 		})

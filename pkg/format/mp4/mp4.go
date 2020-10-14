@@ -4,10 +4,11 @@ package mp4
 
 import (
 	"fq/pkg/decode"
+	"fq/pkg/format"
 	"log"
 )
 
-var File = &decode.Format{
+var File = format.MustRegister(&decode.Format{
 	Name: "mp4",
 	// TODO: implment MIME()
 	MIMEs: []string{"audio/mp4", "video/mp4"},
@@ -16,7 +17,7 @@ var File = &decode.Format{
 			tracks: map[uint32]*track{},
 		}
 	},
-}
+})
 
 type stsc struct {
 	firstChunk      uint32

@@ -6,14 +6,15 @@ package wav
 import (
 	"fmt"
 	"fq/pkg/decode"
+	"fq/pkg/format"
 	"strings"
 )
 
-var File = &decode.Format{
+var File = format.MustRegister(&decode.Format{
 	Name:  "wav",
 	MIMEs: []string{"audio/wav"},
 	New:   func() decode.Decoder { return &FileDecoder{} },
-}
+})
 
 // transformed from ffmpeg libavformat/riff.c
 var audioFormatName = map[uint64]string{

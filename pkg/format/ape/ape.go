@@ -4,13 +4,14 @@ package ape
 
 import (
 	"fq/pkg/decode"
+	"fq/pkg/format"
 )
 
-var TagV2 = &decode.Format{
+var TagV2 = format.MustRegister(&decode.Format{
 	Name:      "apev2",
 	New:       func() decode.Decoder { return &TagV2Decoder{} },
 	SkipProbe: true,
-}
+})
 
 // TagV2Decoder is APE v2 tag decoder
 type TagV2Decoder struct {

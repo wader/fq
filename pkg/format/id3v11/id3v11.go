@@ -2,13 +2,14 @@ package id3v11
 
 import (
 	"fq/pkg/decode"
+	"fq/pkg/format"
 )
 
-var Tag = &decode.Format{
+var Tag = format.MustRegister(&decode.Format{
 	Name:      "id3v11",
 	New:       func() decode.Decoder { return &TagDecoder{} },
 	SkipProbe: true,
-}
+})
 
 // TagDecoder is ID3v11 tag decoder
 type TagDecoder struct{ decode.Common }

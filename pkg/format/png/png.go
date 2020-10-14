@@ -5,18 +5,19 @@ package png
 
 import (
 	"fq/pkg/decode"
+	"fq/pkg/format"
 	"fq/pkg/format/icc"
-	"fq/pkg/format/register"
 	"fq/pkg/format/tiff"
 )
 
 var iccTag []*decode.Format
 var tiffImage []*decode.Format
 
-var File = register.Register(&decode.Format{
-	Name:  "png",
-	MIMEs: []string{"image/png"},
-	New:   func() decode.Decoder { return &FileDecoder{} },
+var File = format.MustRegister(&decode.Format{
+	Name:   "png",
+	Groups: []string{"image"},
+	MIMEs:  []string{"image/png"},
+	New:    func() decode.Decoder { return &FileDecoder{} },
 	Deps: []decode.Dep{
 		{Names: []string{"icc"}, Formats: &iccTag},
 		{Names: []string{"tiff"}, Formats: &tiffImage},

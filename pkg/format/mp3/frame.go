@@ -9,13 +9,19 @@ package mp3
 
 import (
 	"fq/pkg/decode"
+	"fq/pkg/format"
 )
 
-var Frame = &decode.Format{
+var xingHeader []*decode.Format
+
+var Frame = format.MustRegister(&decode.Format{
 	Name:      "mp3_frame",
 	New:       func() decode.Decoder { return &FrameDecoder{} },
 	SkipProbe: true,
-}
+	Deps: []decode.Dep{
+		{Names: []string{"xing_header"}, Formats: &xingHeader},
+	},
+})
 
 // FrameDecoder is a mp3 frame decoder
 type FrameDecoder struct {

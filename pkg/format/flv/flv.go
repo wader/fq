@@ -4,13 +4,14 @@ package flv
 
 import (
 	"fq/pkg/decode"
+	"fq/pkg/format"
 )
 
-var File = &decode.Format{
+var File = format.MustRegister(&decode.Format{
 	Name:  "flv",
 	MIMEs: []string{"video/x-flv"},
 	New:   func() decode.Decoder { return &FileDecoder{} },
-}
+})
 
 const (
 	audioData        = 8

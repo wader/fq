@@ -6,18 +6,19 @@ package vorbis
 import (
 	"fmt"
 	"fq/pkg/decode"
+	"fq/pkg/format"
 )
 
 var vorbisComment []*decode.Format
 
-var Packet = &decode.Format{
+var Packet = format.MustRegister(&decode.Format{
 	Name:      "vorbis",
 	New:       func() decode.Decoder { return &PacketDecoder{} },
 	SkipProbe: true,
 	Deps: []decode.Dep{
-		{Names: []string{"vorbis_commet"}, Formats: &vorbisComment},
+		{Names: []string{"vorbis_comment"}, Formats: &vorbisComment},
 	},
-}
+})
 
 const (
 	packetTypeAudio          = 0

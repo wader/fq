@@ -2,17 +2,17 @@ package flac
 
 import (
 	"fq/pkg/decode"
-	"fq/pkg/format/register"
+	"fq/pkg/format"
 )
 
 var images []*decode.Format
 
-var Picture = register.Register(&decode.Format{
+var Picture = format.MustRegister(&decode.Format{
 	Name:      "flac_picture",
 	New:       func() decode.Decoder { return &PictureDecoder{} },
 	SkipProbe: true,
 	Deps: []decode.Dep{
-		{Names: []string{"jpeg", "png", "tiff"}, Formats: &images},
+		{Names: []string{"image"}, Formats: &images},
 	},
 })
 

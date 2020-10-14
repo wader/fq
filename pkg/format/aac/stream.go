@@ -2,13 +2,19 @@ package aac
 
 import (
 	"fq/pkg/decode"
+	"fq/pkg/format"
 )
 
-var Stream = &decode.Format{
+var adts []*decode.Format
+
+var Stream = format.MustRegister(&decode.Format{
 	Name:  "aac_stream",
 	MIMEs: []string{"audio/aac"},
 	New:   func() decode.Decoder { return &StreamDecoder{} },
-}
+	Deps: []decode.Dep{
+		{Names: []string{"adts"}, Formats: &adts},
+	},
+})
 
 // StreamDecoder is a adts  decoder
 type StreamDecoder struct {
@@ -19,7 +25,7 @@ type StreamDecoder struct {
 func (d *StreamDecoder) Decode() {
 	validFrames := 0
 	for !d.End() {
-		if _, errs := d.FieldTryDecode("frame", ADTS); errs != nil {
+		if _, errs := d.FieldTryDecode("frame", adts...); errs != nil {
 			break
 		}
 		validFrames++

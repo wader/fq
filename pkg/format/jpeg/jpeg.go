@@ -7,15 +7,16 @@ import (
 	"fmt"
 	"fq/pkg/bitbuf"
 	"fq/pkg/decode"
-	"fq/pkg/format/register"
+	"fq/pkg/format"
 )
 
 var tiffImage []*decode.Format
 
-var File = register.Register(&decode.Format{
-	Name:  "jpeg",
-	MIMEs: []string{"image/jpeg"},
-	New:   func() decode.Decoder { return &FileDecoder{} },
+var File = format.MustRegister(&decode.Format{
+	Name:   "jpeg",
+	Groups: []string{"image"},
+	MIMEs:  []string{"image/jpeg"},
+	New:    func() decode.Decoder { return &FileDecoder{} },
 	Deps: []decode.Dep{
 		{Names: []string{"tiff"}, Formats: &tiffImage},
 	},

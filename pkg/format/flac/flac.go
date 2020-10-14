@@ -7,14 +7,14 @@ package flac
 
 import (
 	"fq/pkg/decode"
-	"fq/pkg/format/register"
+	"fq/pkg/format"
 	"math/bits"
 )
 
 var vorbisComment []*decode.Format
 var flacPicture []*decode.Format
 
-var File = register.Register(&decode.Format{
+var File = format.MustRegister(&decode.Format{
 	Name:  "flac",
 	MIMEs: []string{"audio/x-flac"},
 	New:   func() decode.Decoder { return &FileDecoder{} },
@@ -133,23 +133,25 @@ func (d *FileDecoder) Decode() {
 				case MetadataBlockVorbisComment:
 					d.FieldDecodeLen("comment", int64(length*8), vorbisComment...)
 				case MetadataBlockPicture:
-					d.FieldDecodeLen("comment", int64(length*8), flacPicture...)
+					d.FieldDecodeLen("picture", int64(length*8), flacPicture...)
 				case MetadataBlockSeektable:
 					seektableCount := length / 18
-					for i := uint64(0); i < seektableCount; i++ {
-						d.FieldNoneFn("seekpoint", func() {
-							d.FieldUFn("sample_number", func() (uint64, decode.DisplayFormat, string) {
-								n := d.U64()
-								d := ""
-								if n == 0xffffffffffffffff {
-									d = "Placeholder"
-								}
-								return n, decode.NumberDecimal, d
+					d.MultiField("seekpoint", func() {
+						for i := uint64(0); i < seektableCount; i++ {
+							d.FieldNoneFn("seekpoint", func() {
+								d.FieldUFn("sample_number", func() (uint64, decode.DisplayFormat, string) {
+									n := d.U64()
+									d := ""
+									if n == 0xffffffffffffffff {
+										d = "Placeholder"
+									}
+									return n, decode.NumberDecimal, d
+								})
+								d.FieldU64("offset")
+								d.FieldU16("number_of_samples")
 							})
-							d.FieldU64("offset")
-							d.FieldU16("number_of_samples")
-						})
-					}
+						}
+					})
 				default:
 					d.FieldBitBufLen("data", int64(length*8))
 				}

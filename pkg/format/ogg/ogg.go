@@ -4,9 +4,12 @@ package ogg
 
 import (
 	"fq/pkg/decode"
+	"fq/pkg/format"
 )
 
-var File = &decode.Format{
+var oggPage []*decode.Format
+
+var File = format.MustRegister(&decode.Format{
 	Name:  "ogg",
 	MIMEs: []string{"audio/ogg"},
 	New: func() decode.Decoder {
@@ -14,7 +17,10 @@ var File = &decode.Format{
 			streams: map[uint32]*stream{},
 		}
 	},
-}
+	Deps: []decode.Dep{
+		{Names: []string{"ogg_page"}, Formats: &oggPage},
+	},
+})
 
 type stream struct {
 	firstBit   int64
@@ -35,7 +41,7 @@ func (d *FileDecoder) Decode() {
 
 	for !d.End() {
 		// TODO: FieldTryDecode return field and decoder?
-		_, errs := d.FieldTryDecode("page", Page)
+		_, errs := d.FieldTryDecode("page", oggPage...)
 		if errs != nil {
 			break
 		}

@@ -4,13 +4,13 @@ import (
 	"encoding/base64"
 	"fq/pkg/bitbuf"
 	"fq/pkg/decode"
-	"fq/pkg/format/register"
+	"fq/pkg/format"
 	"strings"
 )
 
 var flacPicture []*decode.Format
 
-var Comment = register.Register(&decode.Format{
+var Comment = format.MustRegister(&decode.Format{
 	Name:      "vorbis_comment",
 	New:       func() decode.Decoder { return &CommentDecoder{} },
 	SkipProbe: true,

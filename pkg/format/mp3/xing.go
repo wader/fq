@@ -4,13 +4,14 @@ package mp3
 
 import (
 	"fq/pkg/decode"
+	"fq/pkg/format"
 )
 
-var XingHeader = &decode.Format{
+var XingHeader = format.MustRegister(&decode.Format{
 	Name:      "xing_header",
 	New:       func() decode.Decoder { return &XingHeaderDecoder{} },
 	SkipProbe: true,
-}
+})
 
 // XingHeaderDecoder is a xing header decoder
 type XingHeaderDecoder struct {

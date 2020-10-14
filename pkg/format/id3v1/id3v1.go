@@ -2,17 +2,18 @@ package id3v1
 
 import (
 	"fq/pkg/decode"
+	"fq/pkg/format"
 	"strings"
 )
 
 // TODO: trim strings?
 // TODO: comment 28 long, zero byte, track number
 
-var Tag = &decode.Format{
+var Tag = format.MustRegister(&decode.Format{
 	Name:      "id3v1",
 	New:       func() decode.Decoder { return &TagDecoder{} },
 	SkipProbe: true,
-}
+})
 
 // TagDecoder is ID3v1 tag decoder
 type TagDecoder struct {
