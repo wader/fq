@@ -38,9 +38,6 @@ func (e ValidateError) Error() string {
 }
 
 type Common struct {
-	Parent Decoder
-
-	format  *Format
 	bitBuf  *bitbuf.Buffer
 	root    *Field
 	current *Field // TODO: need root field also?
@@ -48,22 +45,10 @@ type Common struct {
 	registry *Registry
 }
 
-func (c *Common) Common2() *Common {
-	return c
-}
-
 func (c *Common) Decode() {}
 
 func (c *Common) Prepare(fn func(c *Common)) {
 	fn(c)
-}
-
-func (c *Common) MIME() string {
-	mimes := c.format.MIMEs
-	if len(mimes) == 1 {
-		return mimes[0]
-	}
-	return "application/x-binary"
 }
 
 func (c *Common) PeekBits(nBits int64) uint64 {

@@ -175,7 +175,6 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, name stri
 		}
 	case []decode.Value:
 		for i, wv := range v {
-			cw.Flush()
 			switch wvf := wv.V.(type) {
 			case *decode.Field:
 				fmt.Fprintf(cw.Columns[6], "%s%s[%d]: (%s)\n", indent, name, i, wvf.Name)

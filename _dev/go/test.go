@@ -45,11 +45,10 @@ type Range struct {
 }
 
 type Field struct {
-	Name     string
-	Range    Range
-	Display  string
-	Value    Value
-	Children []*Field
+	Name    string
+	Range   Range
+	Display string
+	Value   Value
 }
 
 func readBits(buf []byte, bitPos int64, bits int) uint64 {

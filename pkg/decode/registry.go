@@ -65,8 +65,6 @@ func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range
 			common = c
 		})
 
-		common.Parent = parent
-		common.format = f
 		common.registry = r
 		common.bitBuf = cbb
 		common.root = rootField
