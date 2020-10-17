@@ -113,19 +113,17 @@ func (m Main) run() error {
 			return fmt.Errorf("%s: %s", exp, err)
 		}
 
-		var ow decode.FieldWriter
-		for _, of := range output.All {
-			if of.Name != *outputFormatFlag {
-				continue
+		var of *decode.FieldOutput
+		for _, of = range output.All {
+			if of.Name == *outputFormatFlag {
+				break
 			}
-			// TODO: multi?
-			ow = of.New(expField.(*decode.Field))
 		}
-		if ow == nil {
+		if of == nil {
 			return fmt.Errorf("%s: unable to find output format", *outputFormatFlag)
 		}
 
-		if err := ow.Write(m.OS.Stdout()); err != nil {
+		if err := of.New(expField).Write(m.OS.Stdout()); err != nil {
 			return err
 		}
 

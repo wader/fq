@@ -17,11 +17,11 @@ const maxBytes = int64(16)
 
 var FieldOutput = &decode.FieldOutput{
 	Name: "text",
-	New:  func(f *decode.Field) decode.FieldWriter { return &FieldWriter{f: f} },
+	New:  func(v interface{}) decode.FieldWriter { return &FieldWriter{v: v} },
 }
 
 type FieldWriter struct {
-	f *decode.Field
+	v interface{}
 }
 
 func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v decode.Value, name string, depth int) error {
@@ -198,9 +198,28 @@ func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, name stri
 	return nil
 }
 
+func (o *FieldWriter) write(cw *columnwriter.Writer, v interface{}) error {
+	switch v := v.(type) {
+	case *decode.Field:
+		o.output(cw, v, v.Name, 0)
+	case []*decode.Field:
+		for _, f := range v {
+			o.output(cw, f, f.Name, 0)
+		}
+	case []decode.Value:
+		for _, ve := range v {
+			o.write(cw, ve)
+		}
+	case decode.Value:
+		o.write(cw, v.V)
+	default:
+		panic("unreachable")
+	}
+
+	return nil
+}
+
 func (o *FieldWriter) Write(w io.Writer) error {
-
 	cw := columnwriter.New(w, []int{8, 1, int(lineBytes*3) - 1, 1, int(lineBytes), 1, -1})
-
-	return o.output(cw, o.f, o.f.Name, 0)
+	return o.write(cw, o.v)
 }

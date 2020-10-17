@@ -1,31 +1,50 @@
 package raw
 
 import (
+	"fmt"
 	"fq/pkg/decode"
 	"io"
 )
 
 var FieldOutput = &decode.FieldOutput{
 	Name: "raw",
-	New:  func(f *decode.Field) decode.FieldWriter { return &FieldWriter{f: f} },
+	New:  func(v interface{}) decode.FieldWriter { return &FieldWriter{v: v} },
 }
 
 type FieldWriter struct {
-	f *decode.Field
+	v interface{}
 }
 
 func (o *FieldWriter) Write(w io.Writer) error {
 	// TODO: not byte aligned? pad with zeros
 	// TODO: BytesRange version with padding?
 
-	var err error
-	o.f.WalkValues(func(v decode.Value) {
-		if err != nil {
-			// TODO: return false to stop walk? return err?
-			return
+	switch v := o.v.(type) {
+	case *decode.Field:
+		v.WalkValues(func(v decode.Value) error {
+			_, err := io.Copy(w, v.BitBuf.Copy())
+			return err
+		})
+	case []*decode.Field:
+		for _, f := range v {
+			f.WalkValues(func(v decode.Value) error {
+				_, err := io.Copy(w, v.BitBuf.Copy())
+				return err
+			})
 		}
-		_, err = io.Copy(w, v.BitBuf.Copy())
-	})
+	case []decode.Value:
+		for _, ve := range v {
+			_, err := io.Copy(w, ve.BitBuf.Copy())
+			return err
+		}
+	case decode.Value:
+		_, err := io.Copy(w, v.BitBuf.Copy())
+		return err
+	default:
+		_, err := fmt.Fprintf(w, "%s", v)
+		return err
+	}
 
-	return err
+	return nil
+
 }

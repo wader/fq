@@ -9,7 +9,7 @@ import (
 
 var FieldOutput = &decode.FieldOutput{
 	Name: "json",
-	New:  func(f *decode.Field) decode.FieldWriter { return &FieldWriter{f: f} },
+	New:  func(v interface{}) decode.FieldWriter { return &FieldWriter{v: v} },
 }
 
 type prefixPrinter struct {
@@ -22,7 +22,7 @@ func (pp prefixPrinter) Printf(format string, a ...interface{}) (n int, err erro
 }
 
 type FieldWriter struct {
-	f *decode.Field
+	v interface{}
 }
 
 func jsonEscape(v interface{}) string {
@@ -54,5 +54,6 @@ func (o *FieldWriter) output(w io.Writer, f *decode.Field, depth int) error {
 }
 
 func (o *FieldWriter) Write(w io.Writer) error {
-	return o.output(w, o.f, 0)
+	// return o.output(w, o.v, 0)
+	return nil
 }

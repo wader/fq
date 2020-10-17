@@ -106,40 +106,49 @@ func (f *Field) Lookup(path string) interface{} {
 	return nil
 }
 
-func (f *Field) Walk(fn func(f *Field)) {
-	var walkFn func(f *Field)
-	walkFn = func(f *Field) {
-		fn(f)
+func (f *Field) Walk(fn func(f *Field) error) error {
+	var walkFn func(f *Field) error
+	walkFn = func(f *Field) error {
+		if err := fn(f); err != nil {
+			return err
+		}
 		switch v := f.Value.V.(type) {
 		case []*Field:
 			for _, wf := range v {
-				walkFn(wf)
+				if err := walkFn(wf); err != nil {
+					return err
+				}
 			}
 		case []Value:
 			for _, wv := range v {
 				if vwf, ok := wv.V.(*Field); ok {
-					walkFn(vwf)
+					if err := walkFn(vwf); err != nil {
+						return err
+					}
 				}
 			}
 		}
+		return nil
 	}
-	walkFn(f)
+	return walkFn(f)
 }
 
-func (f *Field) WalkValues(fn func(v Value)) {
-	f.Walk(func(f *Field) {
+func (f *Field) WalkValues(fn func(v Value) error) error {
+	return f.Walk(func(f *Field) error {
 		if v, ok := f.Value.V.(Value); ok {
-			fn(v)
+			return fn(v)
 		}
+		return nil
 	})
 }
 
 func (f *Field) Errors() []error {
 	var errs []error
-	f.Walk(func(f *Field) {
+	_ = f.Walk(func(f *Field) error {
 		if f.Error != nil {
 			errs = append(errs, f.Error)
 		}
+		return nil
 	})
 	return errs
 }

@@ -63,6 +63,15 @@ func (d *PacketDecoder) Decode() {
 	switch packetType {
 	case packetTypeAudio:
 	case packetTypeIdentification:
+		// 1   1) [vorbis_version] = read 32 bits as unsigned integer
+		// 2   2) [audio_channels] = read 8 bit integer as unsigned
+		// 3   3) [audio_sample_rate] = read 32 bits as unsigned integer
+		// 4   4) [bitrate_maximum] = read 32 bits as signed integer
+		// 5   5) [bitrate_nominal] = read 32 bits as signed integer
+		// 6   6) [bitrate_minimum] = read 32 bits as signed integer
+		// 7   7) [blocksize_0] = 2 exponent (read 4 bits as unsigned integer)
+		// 8   8) [blocksize_1] = 2 exponent (read 4 bits as unsigned integer)
+		// 9   9) [framing_flag] = read one bit
 		d.FieldValidateUFn("vorbis_version", 0, d.U32LE)
 		d.FieldU8("audio_channels")
 		d.FieldU32LE("audio_sample_rate")
@@ -81,24 +90,19 @@ func (d *PacketDecoder) Decode() {
 		d.FieldValidateZeroPadding("padding", 7)
 		d.FieldValidateUFn("framing_flag", 1, d.U1)
 
-		// 1   1) [vorbis_version] = read 32 bits as unsigned integer
-		// 2   2) [audio_channels] = read 8 bit integer as unsigned
-		// 3   3) [audio_sample_rate] = read 32 bits as unsigned integer
-		// 4   4) [bitrate_maximum] = read 32 bits as signed integer
-		// 5   5) [bitrate_nominal] = read 32 bits as signed integer
-		// 6   6) [bitrate_minimum] = read 32 bits as signed integer
-		// 7   7) [blocksize_0] = 2 exponent (read 4 bits as unsigned integer)
-		// 8   8) [blocksize_1] = 2 exponent (read 4 bits as unsigned integer)
-		// 9   9) [framing_flag] = read one bit
-
 		if d.BitsLeft() > 0 {
 			d.FieldValidateZeroPadding("padding", d.BitsLeft())
 		}
+	case packetTypeSetup:
+		d.FieldUFn("vorbis_codebook_count", func() (uint64, decode.DisplayFormat, string) {
+			return d.U8() + 1, decode.NumberDecimal, ""
+		})
+		d.FieldU24LE("codecooke_sync")
 
 	case packetTypeComment:
 		// TODO: should not be try, FieldDecode?
 		d.FieldTryDecode("comment", vorbisComment)
-		// note this uses vorbis bitpacking convention
+		// note this uses vorbis bitpacking convention, bits are added LSB first per byte
 		d.FieldValidateZeroPadding("padding", 7)
 		d.FieldValidateUFn("frame_bit", 1, d.U1)
 
