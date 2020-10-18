@@ -82,55 +82,35 @@ func MustGroup(name string) []*decode.Format {
 	}
 }
 
-func MustAll(name string) []*decode.Format {
+func MustAll() []*decode.Format {
 	return MustGroup("all")
 }
 
-// func MustAll() []*decode.Format {
-// 	// TODO: only once
-// 	if err := Resolve(); err != nil {
-// 		panic(err)
-// 	}
-
-// 	formatSeen := map[string]struct{}{}
-// 	var formats []*decode.Format
-
-// 	for _, fs := range allGroups {
-// 		for _, f := range fs {
-// 			if _, ok := formatSeen[f.Name]; ok {
-// 				continue
-// 			}
-// 			formatSeen[f.Name] = struct{}{}
-// 			formats = append(formats, f)
-
-// 		}
-// 	}
-
-// 	return formats
-// }
-
-func Dot(w io.Writer, formats []*decode.Format) {
+func Dot(w io.Writer) {
 	formatSeen := map[string]struct{}{}
 
 	fmt.Fprintf(w, "digraph formats {\n")
-
-	for _, f := range formats {
-		// if groupName != f.Name {
-		// 	fmt.Fprintf(w, "  %s -> %s\n", groupName, f.Name)
-		// }
-
-		if _, ok := formatSeen[f.Name]; ok {
+	for groupName, fs := range allGroups {
+		if groupName == "all" {
 			continue
 		}
-		formatSeen[f.Name] = struct{}{}
+		for _, f := range fs {
+			if groupName != f.Name {
+				fmt.Fprintf(w, "  %s -> %s\n", groupName, f.Name)
+			}
 
-		for _, d := range f.Deps {
+			if _, ok := formatSeen[f.Name]; ok {
+				continue
+			}
+			formatSeen[f.Name] = struct{}{}
 
-			for _, dName := range d.Names {
-				fmt.Fprintf(w, "  %s -> %s\n", f.Name, dName)
+			for _, d := range f.Deps {
+
+				for _, dName := range d.Names {
+					fmt.Fprintf(w, "  %s -> %s\n", f.Name, dName)
+				}
 			}
 		}
 	}
-
 	fmt.Fprintf(w, "}\n")
 }
