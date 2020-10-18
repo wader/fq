@@ -95,11 +95,11 @@ type Value struct {
 
 var lookupRe = regexp.MustCompile(`` +
 	`^(?:` +
-	`([\w_]+)` +
-	`|` +
-	`\[(\d+)\]` +
+	`([\w_]+)` + // .name
+	`|` + // or
+	`\[(\d+)\]` + // [123]
 	`)` +
-	`(?:\.?)`)
+	`(?:\.?)`) // dot separator
 
 func (v *Value) Eval(exp string) (*Value, error) {
 	lf := v.Lookup(exp)
