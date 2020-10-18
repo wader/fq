@@ -606,6 +606,7 @@ func (c *Common) MultiField(name string, fn func()) {
 	}
 
 	v.BitBuf = c.BitBufRange(minMax.Start, minMax.Stop-minMax.Start)
+	v.Range = Range{Start: minMax.Start, Stop: minMax.Stop}
 
 	c.current = prev
 }
@@ -626,6 +627,7 @@ func (c *Common) Fields(name string, fn func()) {
 
 	// TODO: find start/stop from Ranges instead? what if seekaround? concat bitbufs but want gaps? sort here, crash?
 	v.BitBuf = c.BitBufRange(minMax.Start, minMax.Stop-minMax.Start)
+	v.Range = Range{Start: minMax.Start, Stop: minMax.Stop}
 
 	c.current = prev
 }
@@ -634,6 +636,7 @@ func (c *Common) FieldRangeFn(name string, firstBit int64, nBits int64, fn func(
 	v := fn()
 	v.Name = name
 	v.BitBuf = c.BitBufRange(firstBit, nBits)
+	v.Range = Range{Start: firstBit, Stop: firstBit + nBits}
 	c.AddChild(&v)
 
 	return v
@@ -645,6 +648,7 @@ func (c *Common) FieldFn(name string, fn func() Value) Value {
 	stop := c.bitBuf.Pos
 	v.Name = name
 	v.BitBuf = c.BitBufRange(start, stop-start)
+	v.Range = Range{Start: start, Stop: stop}
 	c.AddChild(&v)
 
 	return v
