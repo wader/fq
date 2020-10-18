@@ -52,8 +52,10 @@ func (r Range) Length() int64 {
 func (v Value) String() string {
 	f := ""
 	switch iv := v.V.(type) {
-	case *Field:
-		f = "field"
+	case Array:
+		f = "array"
+	case Struct:
+		f = "struct"
 	case bool:
 		f = "false"
 		if iv {
@@ -112,8 +114,10 @@ func (v Value) String() string {
 
 func (v Value) RawString() string {
 	switch iv := v.V.(type) {
-	case *Field:
-		return "field"
+	case Array:
+		return "array"
+	case Struct:
+		return "struct"
 	case bool:
 		if iv {
 			return "1"

@@ -34,27 +34,27 @@ func DisplayFormatToBase(fmt DisplayFormat) int {
 	}
 }
 
+type Struct []*Value
+
+type Array []*Value
+
 // TODO: encoding? endian, string encoding, compression, etc?
 type Value struct {
-	V             interface{} // int64, uint64, float64, string, bool, []byte, error, []Value (array), []*Field (struct)
+	V             interface{} // int64, uint64, float64, string, bool, []byte, Array, Struct
 	Range         Range
 	BitBuf        *bitbuf.Buffer
+	Name          string
 	MIME          string
 	DisplayFormat DisplayFormat
 	Symbol        string
 	Desc          string
-}
-
-type Field struct {
-	Name  string
-	Value Value
-	Error error
+	Error         error
 }
 
 var lookupRe = regexp.MustCompile(`^([\w_]*)(?:\[(\d+)\])?$`)
 
-func (f *Field) Eval(exp string) (interface{}, error) {
-	lf := f.Lookup(exp)
+func (v *Value) Eval(exp string) (*Value, error) {
+	lf := v.Lookup(exp)
 	if lf == nil {
 		return lf, fmt.Errorf("not found")
 	}
@@ -62,9 +62,9 @@ func (f *Field) Eval(exp string) (interface{}, error) {
 	return lf, nil
 }
 
-func (f *Field) Lookup(path string) interface{} {
+func (v *Value) Lookup(path string) *Value {
 	if path == "" {
-		return f
+		return v
 	}
 
 	parts := strings.SplitN(path, ".", 2)
@@ -85,15 +85,15 @@ func (f *Field) Lookup(path string) interface{} {
 		index, _ = strconv.Atoi(indexStr)
 	}
 
-	switch v := f.Value.V.(type) {
-	case []*Field:
+	switch v := v.V.(type) {
+	case Struct:
 		for _, f := range v {
 			if f.Name != name {
 				continue
 			}
 
 			if index != -1 {
-				if vs, ok := f.Value.V.([]Value); ok {
+				if vs, ok := f.V.(Array); ok {
 					return vs[index]
 				}
 				return nil
@@ -106,61 +106,50 @@ func (f *Field) Lookup(path string) interface{} {
 	return nil
 }
 
-func (f *Field) Walk(fn func(f *Field) error) error {
-	var walkFn func(f *Field) error
-	walkFn = func(f *Field) error {
-		if err := fn(f); err != nil {
+func (v *Value) Walk(fn func(v *Value, depth int) error) error {
+	var walkFn func(v *Value, depth int) error
+	walkFn = func(v *Value, depth int) error {
+		if err := fn(v, depth); err != nil {
 			return err
 		}
-		switch v := f.Value.V.(type) {
-		case []*Field:
-			for _, wf := range v {
-				if err := walkFn(wf); err != nil {
+		switch v := v.V.(type) {
+		case Struct:
+			for _, wv := range v {
+				if err := walkFn(wv, depth+1); err != nil {
 					return err
 				}
 			}
-		case []Value:
+		case Array:
 			for _, wv := range v {
-				if vwf, ok := wv.V.(*Field); ok {
-					if err := walkFn(vwf); err != nil {
-						return err
-					}
+				if err := walkFn(wv, depth+1); err != nil {
+					return err
 				}
 			}
 		}
 		return nil
 	}
-	return walkFn(f)
+	return walkFn(v, 0)
 }
 
-func (f *Field) WalkValues(fn func(v Value) error) error {
-	return f.Walk(func(f *Field) error {
-		if v, ok := f.Value.V.(Value); ok {
-			return fn(v)
-		}
-		return nil
-	})
-}
-
-func (f *Field) Errors() []error {
+func (v *Value) Errors() []error {
 	var errs []error
-	_ = f.Walk(func(f *Field) error {
-		if f.Error != nil {
-			errs = append(errs, f.Error)
+	_ = v.Walk(func(v *Value, depth int) error {
+		if v.Error != nil {
+			errs = append(errs, v.Error)
 		}
 		return nil
 	})
 	return errs
 }
 
-func (f *Field) Sort() {
-	vfs, _ := f.Value.V.([]*Field)
+func (v *Value) Sort() {
+	vfs, _ := v.V.(Struct)
 	if vfs == nil {
 		return
 	}
 
 	sort.Slice(vfs, func(i, j int) bool {
-		return vfs[i].Value.Range.Start < vfs[j].Value.Range.Start
+		return vfs[i].Range.Start < vfs[j].Range.Start
 	})
 
 	for _, vf := range vfs {

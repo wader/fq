@@ -8,7 +8,7 @@ import (
 
 var FieldOutput = &decode.FieldOutput{
 	Name: "range",
-	New:  func(v interface{}) decode.FieldWriter { return &FieldWriter{v: v} },
+	New:  func(v *decode.Value) decode.FieldWriter { return &FieldWriter{v: v} },
 }
 
 type FieldWriter struct {

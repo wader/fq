@@ -17,14 +17,14 @@ const maxBytes = int64(16)
 
 var FieldOutput = &decode.FieldOutput{
 	Name: "text",
-	New:  func(v interface{}) decode.FieldWriter { return &FieldWriter{v: v} },
+	New:  func(v *decode.Value) decode.FieldWriter { return &FieldWriter{v: v} },
 }
 
 type FieldWriter struct {
-	v interface{}
+	v *decode.Value
 }
 
-func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v decode.Value, name string, depth int) error {
+func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, name string, depth int) error {
 
 	startBit := v.Range.Start
 	stopBit := v.Range.Stop
@@ -161,62 +161,30 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v decode.Value, name 
 	return nil
 }
 
-func (o *FieldWriter) output(cw *columnwriter.Writer, f *decode.Field, name string, depth int) error {
-	indent := strings.Repeat("  ", depth)
+func (o *FieldWriter) write(cw *columnwriter.Writer, v *decode.Value) error {
+	var walkFn func(v *decode.Value, name string, depth int) error
+	walkFn = func(v *decode.Value, name string, depth int) error {
+		indent := strings.Repeat("  ", depth)
 
-	switch v := f.Value.V.(type) {
-	case []*decode.Field:
-		fmt.Fprintf(cw.Columns[6], "%s%s: (%s)\n", indent, name, f.Value.Desc)
-		cw.Flush()
-		for _, wf := range v {
-			if err := o.output(cw, wf, wf.Name, depth+1); err != nil {
-				return err
+		switch vv := v.V.(type) {
+		case decode.Struct:
+			fmt.Fprintf(cw.Columns[6], "%s%s: %s\n", indent, v.Name, v)
+			cw.Flush()
+			for _, wv := range vv {
+				walkFn(wv, wv.Name, depth+1)
 			}
-		}
-	case []decode.Value:
-		for i, wv := range v {
-			switch wvf := wv.V.(type) {
-			case *decode.Field:
-				fmt.Fprintf(cw.Columns[6], "%s%s[%d]: (%s)\n", indent, name, i, wvf.Name)
-				cw.Flush()
-				if err := o.output(cw, wvf, wvf.Name, depth); err != nil {
-					return err
-				}
-			default:
-				o.outputValue(cw, wv, fmt.Sprintf("%s[%d]", name, i), depth+1)
+		case decode.Array:
+			fmt.Fprintf(cw.Columns[6], "%s%s: %s\n", indent, v.Name, v)
+			cw.Flush()
+			for _, wv := range vv {
+				walkFn(wv, wv.Name, depth+1)
 			}
+		default:
+			o.outputValue(cw, v, v.Name, depth)
 		}
-	default:
-		o.outputValue(cw, f.Value, name, depth+1)
+		return nil
 	}
-
-	if f.Error != nil {
-		fmt.Fprintf(cw.Columns[6], "%s! %s\n", indent, f.Error)
-		cw.Flush()
-	}
-
-	return nil
-}
-
-func (o *FieldWriter) write(cw *columnwriter.Writer, v interface{}) error {
-	switch v := v.(type) {
-	case *decode.Field:
-		o.output(cw, v, v.Name, 0)
-	case []*decode.Field:
-		for _, f := range v {
-			o.output(cw, f, f.Name, 0)
-		}
-	case []decode.Value:
-		for _, ve := range v {
-			o.write(cw, ve)
-		}
-	case decode.Value:
-		o.write(cw, v.V)
-	default:
-		panic("unreachable")
-	}
-
-	return nil
+	return walkFn(v, v.Name, 0)
 }
 
 func (o *FieldWriter) Write(w io.Writer) error {

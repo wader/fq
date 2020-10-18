@@ -23,7 +23,7 @@ var Tag = format.MustRegister(&decode.Format{
 	},
 })
 
-var idDesriptions = map[string]string{
+var idDescriptions = map[string]string{
 	"AENC": "Audio encryption",
 	"APIC": "Attached picture",
 	"ASPI": "Audio seek point index",
@@ -324,163 +324,166 @@ func (d *TagDecoder) DecodeFrame(version int) uint64 {
 	var size uint64
 	var dataSize uint64
 
-	d.FieldStrFn(id, func() (string, string) {
-		switch version {
-		case 2:
-			// Frame ID   "XXX"
-			// Frame size $xx xx xx
-			d.FieldUTF8("id", 3)
-			dataSize = d.FieldU24("size")
-			size = dataSize + 6
-		case 3:
-			// Frame ID   $xx xx xx xx  (four characters)
-			// Size       $xx xx xx xx
-			// Flags      $xx xx
-			d.FieldUTF8("id", 4)
-			dataSize = d.FieldU32("size")
-			d.FieldU16("flags")
-			size = dataSize + 10
-		case 4:
-			// Frame ID      $xx xx xx xx  (four characters)
-			// Size      4 * %0xxxxxxx  (synchsafe integer)
-			// Flags         $xx xx
-			d.FieldUTF8("id", 4)
-			dataSize = d.FieldSyncSafeU32("size")
-			var headerLen uint64 = 10
+	idDescription := ""
+	if d, ok := idDescriptions[id]; ok {
+		idDescription = d
+	}
 
-			dataLenFlag := false
-			d.FieldNoneFn("flags", func() {
-				d.FieldU14("unused")
-				d.FieldBool("unsync")
-				dataLenFlag = d.FieldBool("data_length_indicator")
-			})
+	switch version {
+	case 2:
+		// Frame ID   "XXX"
+		// Frame size $xx xx xx
+		d.FieldStrFn("id", func() (string, string) { return d.UTF8(3), idDescription })
+		dataSize = d.FieldU24("size")
+		size = dataSize + 6
+	case 3:
+		// Frame ID   $xx xx xx xx  (four characters)
+		// Size       $xx xx xx xx
+		// Flags      $xx xx
+		d.FieldStrFn("id", func() (string, string) { return d.UTF8(4), idDescription })
+		dataSize = d.FieldU32("size")
+		d.FieldU16("flags")
+		size = dataSize + 10
+	case 4:
+		// Frame ID      $xx xx xx xx  (four characters)
+		// Size      4 * %0xxxxxxx  (synchsafe integer)
+		// Flags         $xx xx
+		d.FieldStrFn("id", func() (string, string) { return d.UTF8(4), idDescription })
+		dataSize = d.FieldSyncSafeU32("size")
+		var headerLen uint64 = 10
 
-			if dataLenFlag {
-				d.FieldSyncSafeU32("data_length_indicator")
-				dataSize -= 4
-				headerLen = 4
-			}
+		dataLenFlag := false
+		d.FieldNoneFn("flags", func() {
+			d.FieldU14("unused")
+			d.FieldBool("unsync")
+			dataLenFlag = d.FieldBool("data_length_indicator")
+		})
 
-			size = dataSize + headerLen
+		if dataLenFlag {
+			d.FieldSyncSafeU32("data_length_indicator")
+			dataSize -= 4
+			headerLen = 4
 		}
 
-		// note frame function run inside a SubLenFn so they can use BitLefts and
-		// can't accidentally read too far
-		frames := map[string]func(){
-			// <Header for 'Attached picture', ID: "APIC">
-			// Text encoding      $xx
-			// MIME type          <text string> $00
-			// Picture type       $xx
-			// Description        <text string according to encoding> $00 (00)
-			// Picture data       <binary data>
-			"APIC": func() {
-				encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
-				d.FieldTextNull("mime_type", encodingUTF8)
-				d.FieldU8("picture_type") // TODO: table
-				d.FieldTextNull("description", int(encoding))
-				d.FieldDecodeLen("picture", d.BitsLeft(), images)
-			},
-			// Unsynced lyrics/text "ULT"
-			// Frame size           $xx xx xx
-			// Text encoding        $xx
-			// Language             $xx xx xx
-			// Content descriptor   <textstring> $00 (00)
-			// Lyrics/text          <textstring>
-			//
-			// <Header for 'Unsynchronised lyrics/text transcription', ID: "USLT">
-			// Text encoding        $xx
-			// Language             $xx xx xx
-			// Content descriptor   <text string according to encoding> $00 (00)
-			// Lyrics/text          <full text string according to encoding>
-			//
-			// Comment                   "COM"
-			// Frame size                $xx xx xx
-			// Text encoding             $xx
-			// Language                  $xx xx xx
-			// Short content description <textstring> $00 (00)
-			// The actual text           <textstring>
-			//
-			// <Header for 'Comment', ID: "COMM">
-			// Text encoding          $xx
-			// Language               $xx xx xx
-			// Short content descrip. <text string according to encoding> $00 (00)
-			// The actual text        <full text string according to encoding>
-			"COMM": func() {
-				encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
-				d.FieldUTF8("language", 3)
-				d.FieldTextNull("description", int(encoding))
-				d.FieldText("value", int(encoding), d.BitsLeft()/8)
-			},
-			// Text information identifier  "T00" - "TZZ" , excluding "TXX",
-			//                             described in 4.2.2.
-			// Frame size                   $xx xx xx
-			// Text encoding                $xx
-			// Information                  <textstring>
-			//
-			// <Header for 'Text information frame', ID: "T000" - "TZZZ",
-			// excluding "TXXX" described in 4.2.6.>
-			// Text encoding                $xx
-			// Information                  <text string(s) according to encoding>
-			"T000": func() {
-				encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
-				d.FieldText("text", int(encoding), d.BitsLeft()/8)
-			},
-			// User defined...   "TXX"
-			// Frame size        $xx xx xx
-			// Text encoding     $xx
-			// Description       <textstring> $00 (00)
-			// Value             <textstring>
-			//
-			// <Header for 'User defined text information frame', ID: "TXXX">
-			// Text encoding     $xx
-			// Description       <text string according to encoding> $00 (00)
-			// Value             <text string according to encoding>
-			"TXXX": func() {
-				encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
-				d.FieldTextNull("description", int(encoding))
-				d.FieldText("value", int(encoding), d.BitsLeft()/8)
-			},
-		}
+		size = dataSize + headerLen
+	}
 
-		idNormalized := id
-		switch {
-		case id == "COMM", id == "COM", id == "USLT", id == "ULT":
-			idNormalized = "COMM"
-		case id == "TXX", id == "TXXX":
-			idNormalized = "TXXX"
-		case id[0] == 'T':
-			idNormalized = "T000"
-		}
+	// note frame function run inside a SubLenFn so they can use BitLefts and
+	// can't accidentally read too far
+	frames := map[string]func(){
+		// <Header for 'Attached picture', ID: "APIC">
+		// Text encoding      $xx
+		// MIME type          <text string> $00
+		// Picture type       $xx
+		// Description        <text string according to encoding> $00 (00)
+		// Picture data       <binary data>
+		"APIC": func() {
+			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
+			d.FieldTextNull("mime_type", encodingUTF8)
+			d.FieldU8("picture_type") // TODO: table
+			d.FieldTextNull("description", int(encoding))
+			d.FieldDecodeLen("picture", d.BitsLeft(), images)
+		},
+		// Unsynced lyrics/text "ULT"
+		// Frame size           $xx xx xx
+		// Text encoding        $xx
+		// Language             $xx xx xx
+		// Content descriptor   <textstring> $00 (00)
+		// Lyrics/text          <textstring>
+		//
+		// <Header for 'Unsynchronised lyrics/text transcription', ID: "USLT">
+		// Text encoding        $xx
+		// Language             $xx xx xx
+		// Content descriptor   <text string according to encoding> $00 (00)
+		// Lyrics/text          <full text string according to encoding>
+		//
+		// Comment                   "COM"
+		// Frame size                $xx xx xx
+		// Text encoding             $xx
+		// Language                  $xx xx xx
+		// Short content description <textstring> $00 (00)
+		// The actual text           <textstring>
+		//
+		// <Header for 'Comment', ID: "COMM">
+		// Text encoding          $xx
+		// Language               $xx xx xx
+		// Short content descrip. <text string according to encoding> $00 (00)
+		// The actual text        <full text string according to encoding>
+		"COMM": func() {
+			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
+			d.FieldUTF8("language", 3)
+			d.FieldTextNull("description", int(encoding))
+			d.FieldText("value", int(encoding), d.BitsLeft()/8)
+		},
+		// Text information identifier  "T00" - "TZZ" , excluding "TXX",
+		//                             described in 4.2.2.
+		// Frame size                   $xx xx xx
+		// Text encoding                $xx
+		// Information                  <textstring>
+		//
+		// <Header for 'Text information frame', ID: "T000" - "TZZZ",
+		// excluding "TXXX" described in 4.2.6.>
+		// Text encoding                $xx
+		// Information                  <text string(s) according to encoding>
+		"T000": func() {
+			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
+			d.FieldText("text", int(encoding), d.BitsLeft()/8)
+		},
+		// User defined...   "TXX"
+		// Frame size        $xx xx xx
+		// Text encoding     $xx
+		// Description       <textstring> $00 (00)
+		// Value             <textstring>
+		//
+		// <Header for 'User defined text information frame', ID: "TXXX">
+		// Text encoding     $xx
+		// Description       <text string according to encoding> $00 (00)
+		// Value             <text string according to encoding>
+		"TXXX": func() {
+			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
+			d.FieldTextNull("description", int(encoding))
+			d.FieldText("value", int(encoding), d.BitsLeft()/8)
+		},
+	}
 
-		if fn, ok := frames[idNormalized]; ok {
-			d.SubLenFn(int64(dataSize)*8, fn)
-		} else {
-			d.FieldBitBufLen("data", int64(dataSize*8))
-		}
+	idNormalized := id
+	switch {
+	case id == "COMM", id == "COM", id == "USLT", id == "ULT":
+		idNormalized = "COMM"
+	case id == "TXX", id == "TXXX":
+		idNormalized = "TXXX"
+	case id[0] == 'T':
+		idNormalized = "T000"
+	}
 
-		idDescription := ""
-		if d, ok := idDesriptions[id]; ok {
-			idDescription = d
-		}
-
-		return id, idDescription
-	})
+	if fn, ok := frames[idNormalized]; ok {
+		d.SubLenFn(int64(dataSize)*8, fn)
+	} else {
+		d.FieldBitBufLen("data", int64(dataSize*8))
+	}
 
 	// TODO
 	return size
 }
 
 func (d *TagDecoder) DecodeFrames(version int, size uint64) {
-	for size > 0 {
-		for d.PeekBits(8) == 0 {
-			d.FieldValidateZeroPadding("padding", int64(size)*8)
-			return
+	d.MultiField("frame", func() {
+		for size > 0 {
+			for d.PeekBits(8) == 0 {
+				return
+			}
+
+			d.Fields("frame", func() {
+				size -= d.DecodeFrame(version)
+			})
 		}
 
-		size -= d.DecodeFrame(version)
-	}
+		// TODO: padding?
+	})
 
-	// TODO: padding?
+	if size > 0 {
+		d.FieldValidateZeroPadding("padding", int64(size)*8)
+	}
 }
 
 // Decode ID3v2
@@ -507,7 +510,7 @@ func (d *TagDecoder) Decode() {
 
 	var extHeaderSize uint64
 	if extendedHeader {
-		d.FieldNoneFn("extended_header", func() {
+		d.Fields("extended_header", func() {
 			switch version {
 			case 3:
 				extHeaderSize = d.FieldU32("size")

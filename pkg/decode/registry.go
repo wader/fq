@@ -29,7 +29,7 @@ func (pe *ProbeError) Error() string { return fmt.Sprintf("%s probe: %s", pe.For
 func (pe *ProbeError) Unwrap() error { return pe.Err }
 
 // Probe probes all probeable formats and turns first found Decoder and all other decoder errors
-func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range, bb *bitbuf.Buffer, forceFormats []*Format) (*Field, int64, Decoder, []error) {
+func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range, bb *bitbuf.Buffer, forceFormats []*Format) (*Value, int64, Decoder, []error) {
 	var probeable []*Format
 	var forceOne = len(forceFormats) == 1
 	if forceFormats != nil {
@@ -51,14 +51,12 @@ func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range
 
 		// TODO: how to pass regsiters? do later? current field?
 		d := f.New()
-		rootField := &Field{
-			Name: rootFieldName,
-			Value: Value{
-				V:      []*Field{},
-				Range:  Range{}, // TODO:
-				BitBuf: cbb,
-				Desc:   f.Name,
-			},
+		rootValue := &Value{
+			V:      Struct{}, // TODO: array or struct?
+			Range:  Range{},  // TODO:
+			BitBuf: cbb,
+			Name:   rootFieldName,
+			Desc:   f.Name,
 		}
 		var common *Common
 		d.Prepare(func(c *Common) {
@@ -67,8 +65,8 @@ func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range
 
 		common.registry = r
 		common.bitBuf = cbb
-		common.root = rootField
-		common.current = rootField
+		common.root = rootValue
+		common.current = rootValue
 
 		decodeErr := func() (err error) {
 			defer func() {
@@ -113,11 +111,11 @@ func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range
 		}
 
 		// TODO: will resort
-		rootField.Sort()
+		rootValue.Sort()
 		// TODO: wrong keep track of largest?
 		_ = cbb.TruncateRel(0)
 
-		return rootField, cbb.Pos, d, errs
+		return rootValue, cbb.Pos, d, errs
 	}
 
 	return nil, 0, nil, errs

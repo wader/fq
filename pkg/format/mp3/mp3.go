@@ -36,7 +36,6 @@ type FileDecoder struct{ decode.Common }
 
 // Decode decodes a MP3 stream
 func (d *FileDecoder) Decode() {
-
 	d.FieldTryDecode("header", headerTag)
 
 	footerLen := int64(0)
@@ -55,6 +54,7 @@ func (d *FileDecoder) Decode() {
 		d.MultiField("frame", func() {
 			for !d.End() {
 				if _, _, errs := d.FieldTryDecode("frame", mp3Frame); errs != nil {
+					panic(errs)
 					break
 				}
 

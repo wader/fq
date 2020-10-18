@@ -9,7 +9,7 @@ import (
 
 var FieldOutput = &decode.FieldOutput{
 	Name: "json",
-	New:  func(v interface{}) decode.FieldWriter { return &FieldWriter{v: v} },
+	New:  func(v *decode.Value) decode.FieldWriter { return &FieldWriter{v: v} },
 }
 
 type prefixPrinter struct {
@@ -22,7 +22,7 @@ func (pp prefixPrinter) Printf(format string, a ...interface{}) (n int, err erro
 }
 
 type FieldWriter struct {
-	v interface{}
+	v *decode.Value
 }
 
 func jsonEscape(v interface{}) string {
@@ -34,7 +34,7 @@ func jsonField(k string, v interface{}) string {
 	return fmt.Sprintf("%s: %s", jsonEscape(k), jsonEscape(v))
 }
 
-func (o *FieldWriter) output(w io.Writer, f *decode.Field, depth int) error {
+func (o *FieldWriter) output(w io.Writer, f *decode.Value, depth int) error {
 	// p := prefixPrinter{w: w, prefix: strings.Repeat("  ", depth)}
 
 	// p.Printf("%s: {", jsonEscape(f.Name))

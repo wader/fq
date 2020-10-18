@@ -108,7 +108,7 @@ func (m Main) run() error {
 
 	if f != nil {
 		exp := fs.Arg(1)
-		expField, err := f.Eval(exp)
+		expValue, err := f.Eval(exp)
 		if err != nil {
 			return fmt.Errorf("%s: %s", exp, err)
 		}
@@ -123,7 +123,7 @@ func (m Main) run() error {
 			return fmt.Errorf("%s: unable to find output format", *outputFormatFlag)
 		}
 
-		if err := of.New(expField).Write(m.OS.Stdout()); err != nil {
+		if err := of.New(expValue).Write(m.OS.Stdout()); err != nil {
 			return err
 		}
 

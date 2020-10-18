@@ -9,5 +9,5 @@ type FieldWriter interface {
 
 type FieldOutput struct {
 	Name string
-	New  func(v interface{}) FieldWriter
+	New  func(v *Value) FieldWriter
 }
