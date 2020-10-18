@@ -177,7 +177,7 @@ func (o *FieldWriter) write(cw *columnwriter.Writer, v *decode.Value) error {
 			fmt.Fprintf(cw.Columns[6], "%s%s: %s\n", indent, v.Name, v)
 			cw.Flush()
 			for _, wv := range vv {
-				walkFn(wv, wv.Name, depth+1)
+				walkFn(wv, wv.Name+"ASDSA", depth+1)
 			}
 		default:
 			o.outputValue(cw, v, v.Name, depth)
