@@ -168,16 +168,16 @@ func (o *FieldWriter) write(cw *columnwriter.Writer, v *decode.Value) error {
 
 		switch vv := v.V.(type) {
 		case decode.Struct:
-			fmt.Fprintf(cw.Columns[6], "%s%s: %s\n", indent, v.Name, v)
+			fmt.Fprintf(cw.Columns[6], "%s%s: %s\n", indent, name, v)
 			cw.Flush()
 			for _, wv := range vv {
 				walkFn(wv, wv.Name, depth+1)
 			}
 		case decode.Array:
-			fmt.Fprintf(cw.Columns[6], "%s%s: %s\n", indent, v.Name, v)
+			//fmt.Fprintf(cw.Columns[6], "%s%s: %s\n", indent, name, v)
 			cw.Flush()
-			for _, wv := range vv {
-				walkFn(wv, wv.Name+"ASDSA", depth+1)
+			for i, wv := range vv {
+				walkFn(wv, fmt.Sprintf("%s[%d]", wv.Name, i), depth)
 			}
 		default:
 			o.outputValue(cw, v, v.Name, depth)
