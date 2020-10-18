@@ -97,7 +97,28 @@ func (d *PacketDecoder) Decode() {
 		d.FieldUFn("vorbis_codebook_count", func() (uint64, decode.DisplayFormat, string) {
 			return d.U8() + 1, decode.NumberDecimal, ""
 		})
-		d.FieldU24LE("codecooke_sync")
+		d.FieldValidateUFn("codecooke_sync", 0x564342, d.U24LE)
+		d.FieldU16LE("codebook_dimensions")
+		d.FieldU24LE("codebook_entries")
+
+		// d.SeekRel(7)
+		// ordered := d.FieldBool("ordered")
+
+		// if ordered {
+
+		// } else {
+		// 	d.SeekRel(-2)
+		// 	sparse := d.FieldBool("sparse")
+		// 	d.SeekRel(1)
+
+		// 	if sparse {
+
+		// 	} else {
+		// 		d.SeekRel(-7)
+		// 		d.FieldU5("length")
+
+		// 	}
+		// }
 
 	case packetTypeComment:
 		// TODO: should not be try, FieldDecode?
