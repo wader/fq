@@ -632,7 +632,7 @@ func (c *Common) AddChild(v *Value) {
 
 }
 
-func (c *Common) MultiField(name string, fn func()) {
+func (c *Common) Array(name string, fn func()) {
 	prev := c.current
 
 	v := &Value{Name: name, V: Array{}}
@@ -652,7 +652,7 @@ func (c *Common) MultiField(name string, fn func()) {
 	c.current = prev
 }
 
-func (c *Common) Fields(name string, fn func()) {
+func (c *Common) Struct(name string, fn func()) {
 	prev := c.current
 
 	v := &Value{Name: name, V: Struct{}}
@@ -697,7 +697,7 @@ func (c *Common) FieldFn(name string, fn func() Value) Value {
 
 // TODO: remove
 func (c *Common) FieldNoneFn(name string, fn func()) {
-	c.Fields(name, func() {
+	c.Struct(name, func() {
 		fn()
 	})
 }

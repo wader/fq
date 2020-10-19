@@ -99,7 +99,7 @@ func (d *FileDecoder) Decode() {
 	var streamInfoSamepleRate uint64
 	var streamInfoBitPerSample uint64
 
-	d.MultiField("metadatablock", func() {
+	d.Array("metadatablock", func() {
 		for {
 			lastBlock := false
 			d.FieldNoneFn("metadatablock", func() {
@@ -136,7 +136,7 @@ func (d *FileDecoder) Decode() {
 					d.FieldDecodeLen("picture", int64(length*8), flacPicture)
 				case MetadataBlockSeektable:
 					seektableCount := length / 18
-					d.MultiField("seekpoint", func() {
+					d.Array("seekpoint", func() {
 						for i := uint64(0); i < seektableCount; i++ {
 							d.FieldNoneFn("seekpoint", func() {
 								d.FieldUFn("sample_number", func() (uint64, decode.DisplayFormat, string) {
@@ -162,9 +162,9 @@ func (d *FileDecoder) Decode() {
 		}
 	})
 
-	d.MultiField("frame", func() {
+	d.Array("frame", func() {
 		for !d.End() {
-			d.Fields("frame", func() {
+			d.Struct("frame", func() {
 				// <14> 11111111111110
 				d.FieldValidateUFn("sync", 0b11111111111110, d.U14)
 
@@ -409,9 +409,9 @@ func (d *FileDecoder) Decode() {
 				// CRC-8 (polynomial = x^8 + x^2 + x^1 + x^0, initialized with 0) of everything before the crc, including the sync code
 				d.FieldU8("crc")
 
-				d.MultiField("subframe", func() {
+				d.Array("subframe", func() {
 					for channelIndex := 0; channelIndex < int(channels); channelIndex++ {
-						d.Fields("subframe", func() {
+						d.Struct("subframe", func() {
 							// <1> Zero bit padding, to prevent sync-fooling string of 1s
 							d.FieldValidateUFn("zero_bit", 0, d.U1)
 
@@ -506,9 +506,9 @@ func (d *FileDecoder) Decode() {
 									return ricePartitions, decode.NumberDecimal, ""
 								})
 
-								d.MultiField("partition", func() {
+								d.Array("partition", func() {
 									for i := uint64(0); i < ricePartitions; i++ {
-										d.Fields("partition", func() {
+										d.Struct("partition", func() {
 											// Encoding parameter:
 											// <4(+5)> Encoding parameter:
 											// 0000-1110 : Rice parameter.

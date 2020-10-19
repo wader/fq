@@ -41,7 +41,7 @@ func (d *PageDecoder) Decode() {
 	pageSegments := d.FieldU8("page_segments")
 	segmentTable := d.FieldBytesLen("segment_table", int64(pageSegments))
 
-	d.MultiField("segment", func() {
+	d.Array("segment", func() {
 		for _, ss := range segmentTable {
 			d.Segments = append(d.Segments, d.FieldBitBufLen("segment", int64(ss)*8))
 		}

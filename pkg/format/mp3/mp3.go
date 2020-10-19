@@ -51,7 +51,7 @@ func (d *FileDecoder) Decode() {
 
 	validFrames := 0
 	d.SubLenFn(d.BitsLeft()-footerLen, func() {
-		d.MultiField("frame", func() {
+		d.Array("frame", func() {
 			for !d.End() {
 				if _, _, errs := d.FieldTryDecode("frame", mp3Frame); errs != nil {
 					panic(errs)

@@ -467,13 +467,13 @@ func (d *TagDecoder) DecodeFrame(version int) uint64 {
 }
 
 func (d *TagDecoder) DecodeFrames(version int, size uint64) {
-	d.MultiField("frame", func() {
+	d.Array("frame", func() {
 		for size > 0 {
 			for d.PeekBits(8) == 0 {
 				return
 			}
 
-			d.Fields("frame", func() {
+			d.Struct("frame", func() {
 				size -= d.DecodeFrame(version)
 			})
 		}
@@ -510,7 +510,7 @@ func (d *TagDecoder) Decode() {
 
 	var extHeaderSize uint64
 	if extendedHeader {
-		d.Fields("extended_header", func() {
+		d.Struct("extended_header", func() {
 			switch version {
 			case 3:
 				extHeaderSize = d.FieldU32("size")

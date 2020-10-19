@@ -43,7 +43,7 @@ type FileDecoder struct {
 func (d *FileDecoder) Decode() {
 	validPages := 0
 
-	d.MultiField("page", func() {
+	d.Array("page", func() {
 		for !d.End() {
 			// TODO: FieldTryDecode return field and decoder? handle error?
 			_, pageDecoder, errs := d.FieldTryDecode("page", oggPage)
