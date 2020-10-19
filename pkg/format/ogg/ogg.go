@@ -45,7 +45,7 @@ func (d *FileDecoder) Decode() {
 
 	d.MultiField("page", func() {
 		for !d.End() {
-			// TODO: FieldTryDecode return field and decoder? handle errror?
+			// TODO: FieldTryDecode return field and decoder? handle error?
 			_, pageDecoder, errs := d.FieldTryDecode("page", oggPage)
 			if errs != nil {
 				break

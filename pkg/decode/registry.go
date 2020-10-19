@@ -3,8 +3,17 @@ package decode
 import (
 	"fmt"
 	"fq/pkg/bitbuf"
-	"runtime"
 )
+
+type ProbeError struct {
+	Format        *Format
+	Err           error
+	PanicHandeled bool
+	PanicStack    string
+}
+
+func (pe *ProbeError) Error() string { return fmt.Sprintf("%s probe: %s", pe.Format.Name, pe.Err) }
+func (pe *ProbeError) Unwrap() error { return pe.Err }
 
 type Registry struct {
 	Formats []*Format
@@ -17,16 +26,6 @@ func NewRegistryWithFormats(formats []*Format) *Registry {
 
 	return r
 }
-
-type ProbeError struct {
-	Format        *Format
-	Err           error
-	PanicHandeled bool
-	PanicStack    string
-}
-
-func (pe *ProbeError) Error() string { return fmt.Sprintf("%s probe: %s", pe.Format.Name, pe.Err) }
-func (pe *ProbeError) Unwrap() error { return pe.Err }
 
 // Probe probes all probeable formats and turns first found Decoder and all other decoder errors
 func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range, bb *bitbuf.Buffer, forceFormats []*Format) (*Value, int64, Decoder, []error) {
@@ -58,48 +57,13 @@ func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range
 			Name:   rootFieldName,
 			Desc:   f.Name,
 		}
-		var common *Common
-		d.Prepare(func(c *Common) {
-			common = c
-		})
-
+		common := d.GetCommon()
 		common.registry = r
 		common.bitBuf = cbb
-		common.root = rootValue
 		common.current = rootValue
 
-		decodeErr := func() (err error) {
-			defer func() {
-				if recoverErr := recover(); recoverErr != nil {
-					// https://github.com/golang/go/blob/master/src/net/http/server.go#L1770
-					const size = 64 << 10
-					buf := make([]byte, size)
-					buf = buf[:runtime.Stack(buf, false)]
-
-					pe := &ProbeError{
-						Format:     f,
-						PanicStack: string(buf),
-					}
-					switch panicErr := recoverErr.(type) {
-					case BitBufError:
-						pe.Err = panicErr
-						pe.PanicHandeled = true
-					case ValidateError:
-						pe.Err = panicErr
-						pe.PanicHandeled = true
-					default:
-						pe.Err = fmt.Errorf("%s", panicErr)
-						pe.PanicHandeled = false
-					}
-
-					err = pe
-				}
-			}()
-
-			d.Decode()
-
-			return nil
-		}()
+		decodeErr := d.GetCommon().SafeDecodeFn(d.Decode)
+		// TODO: wrap in ProbeError?
 
 		if decodeErr != nil {
 			common.current.Error = decodeErr

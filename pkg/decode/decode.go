@@ -6,12 +6,21 @@ import (
 	"fmt"
 	"fq/pkg/bitbuf"
 	"io/ioutil"
+	"runtime"
 	"strconv"
 )
 
+type DecodeError struct {
+	Err        error
+	PanicStack string
+}
+
+func (de *DecodeError) Error() string { return de.Err.Error() }
+func (de *DecodeError) Unwrap() error { return de.Err }
+
 type Decoder interface {
 	Decode()
-	Prepare(fn func(c *Common))
+	GetCommon() *Common // TODO: rename
 }
 
 type BitBufError struct {
@@ -39,7 +48,6 @@ func (e ValidateError) Error() string {
 
 type Common struct {
 	bitBuf  *bitbuf.Buffer
-	root    *Value
 	current *Value // TODO: need root field also?
 
 	registry *Registry
@@ -47,8 +55,41 @@ type Common struct {
 
 func (c *Common) Decode() {}
 
-func (c *Common) Prepare(fn func(c *Common)) {
-	fn(c)
+func (c *Common) SafeDecodeFn(fn func()) error {
+	decodeErr := func() (err error) {
+		defer func() {
+			if recoverErr := recover(); recoverErr != nil {
+				// https://github.com/golang/go/blob/master/src/net/http/server.go#L1770
+				const size = 64 << 10
+				buf := make([]byte, size)
+				buf = buf[:runtime.Stack(buf, false)]
+
+				pe := &DecodeError{
+					PanicStack: string(buf),
+				}
+				switch panicErr := recoverErr.(type) {
+				case BitBufError:
+					pe.Err = panicErr
+				case ValidateError:
+					pe.Err = panicErr
+				default:
+					pe.Err = fmt.Errorf("%s", panicErr)
+				}
+
+				err = pe
+			}
+		}()
+
+		fn()
+
+		return nil
+	}()
+
+	return decodeErr
+}
+
+func (c *Common) GetCommon() *Common {
+	return c
 }
 
 func (c *Common) PeekBits(nBits int64) uint64 {
