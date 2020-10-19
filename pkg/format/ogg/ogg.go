@@ -9,22 +9,20 @@ import (
 	"log"
 )
 
+func init() {
+	format.MustRegister(&decode.Format{
+		Name:     "ogg",
+		MIMEs:    []string{"audio/ogg"},
+		DecodeFn: decode2,
+		Deps: []decode.Dep{
+			{Names: []string{"ogg_page"}, Formats: &oggPage},
+			{Names: []string{"vorbis"}, Formats: &vorbisPacket},
+		},
+	})
+}
+
 var oggPage []*decode.Format
 var vorbisPacket []*decode.Format
-
-var File = format.MustRegister(&decode.Format{
-	Name:  "ogg",
-	MIMEs: []string{"audio/ogg"},
-	New: func() decode.Decoder {
-		return &FileDecoder{
-			streams: map[uint32]*stream{},
-		}
-	},
-	Deps: []decode.Dep{
-		{Names: []string{"ogg_page"}, Formats: &oggPage},
-		{Names: []string{"vorbis"}, Formats: &vorbisPacket},
-	},
-})
 
 type stream struct {
 	firstBit   int64
@@ -32,18 +30,13 @@ type stream struct {
 	packetBuf  []byte
 }
 
-// Decoder is a ogg decoder
-type FileDecoder struct {
-	decode.Common
-
-	streams map[uint32]*stream
-}
-
-// Decode ogg
-func (d *FileDecoder) Decode() {
+func decode2(d *decode.Common) {
 	validPages := 0
+	streams := map[uint32]*stream{}
 
-	d.Array("page", func() {
+	packets := d.FieldArray2("packet")
+
+	d.FieldArrayFn2("page", func(d *decode.Common) {
 		for !d.End() {
 			// TODO: FieldTryDecode return field and decoder? handle error?
 			_, pageDecoder, errs := d.FieldTryDecode("page", oggPage)
@@ -56,10 +49,10 @@ func (d *FileDecoder) Decode() {
 				break
 			}
 
-			s, sFound := d.streams[p.StreamSerialNumber]
+			s, sFound := streams[p.StreamSerialNumber]
 			if !sFound {
 				s = &stream{sequenceNo: p.SequenceNo}
-				d.streams[p.StreamSerialNumber] = s
+				streams[p.StreamSerialNumber] = s
 			}
 
 			if !sFound && !p.IsFirstPage {
@@ -92,14 +85,14 @@ func (d *FileDecoder) Decode() {
 					if err != nil {
 						panic(err) // TODO: fixme
 					}
-					d.FieldDecodeBitBuf("packet", s.firstBit, d.Pos(), bb, vorbisPacket)
+					packets.FieldDecodeBitBuf("packet", s.firstBit, d.Pos(), bb, vorbisPacket)
 					s.packetBuf = nil
 				}
 			}
 
 			s.sequenceNo = p.SequenceNo
 			if p.IsLastPage {
-				delete(d.streams, p.StreamSerialNumber)
+				delete(streams, p.StreamSerialNumber)
 			}
 
 			validPages++

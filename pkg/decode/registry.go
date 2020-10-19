@@ -49,37 +49,61 @@ func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range
 		cbb := bb.Copy()
 
 		// TODO: how to pass regsiters? do later? current field?
-		d := f.New()
-		rootValue := &Value{
-			V:      Struct{}, // TODO: array or struct?
-			Range:  Range{},  // TODO:
-			BitBuf: cbb,
-			Name:   rootFieldName,
-			Desc:   f.Name,
-		}
-		common := d.GetCommon()
-		common.registry = r
-		common.bitBuf = cbb
-		common.current = rootValue
 
-		decodeErr := d.GetCommon().SafeDecodeFn(d.Decode)
-		// TODO: wrap in ProbeError?
+		if f.DecodeFn != nil {
 
-		if decodeErr != nil {
-			common.current.Error = decodeErr
+			d := (&Common{}).FieldStructBitBuf(rootFieldName, cbb)
+			decodeErr := d.SafeDecodeFn2(f.DecodeFn)
+			if decodeErr != nil {
+				d.current.Error = decodeErr
 
-			errs = append(errs, decodeErr)
-			if !forceOne {
-				continue
+				errs = append(errs, decodeErr)
+				if !forceOne {
+					continue
+				}
 			}
+
+			// TODO: will resort
+			d.current.Sort()
+			// TODO: wrong keep track of largest?
+			_ = cbb.TruncateRel(0)
+
+			return d.current, cbb.Pos, d, errs
+
+		} else {
+
+			d := f.New()
+			rootValue := &Value{
+				V:      Struct{}, // TODO: array or struct?
+				Range:  Range{},  // TODO:
+				BitBuf: cbb,
+				Name:   rootFieldName,
+				Desc:   f.Name,
+			}
+			common := d.GetCommon()
+			common.registry = r
+			common.bitBuf = cbb
+			common.current = rootValue
+
+			decodeErr := d.GetCommon().SafeDecodeFn(d.Decode)
+			// TODO: wrap in ProbeError?
+
+			if decodeErr != nil {
+				common.current.Error = decodeErr
+
+				errs = append(errs, decodeErr)
+				if !forceOne {
+					continue
+				}
+			}
+
+			// TODO: will resort
+			rootValue.Sort()
+			// TODO: wrong keep track of largest?
+			_ = cbb.TruncateRel(0)
+
+			return rootValue, cbb.Pos, d, errs
 		}
-
-		// TODO: will resort
-		rootValue.Sort()
-		// TODO: wrong keep track of largest?
-		_ = cbb.TruncateRel(0)
-
-		return rootValue, cbb.Pos, d, errs
 	}
 
 	return nil, 0, nil, errs

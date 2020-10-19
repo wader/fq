@@ -10,6 +10,7 @@ type Format struct {
 	Groups    []string
 	MIMEs     []string
 	New       func() Decoder
+	DecodeFn  func(d *Common)
 	SkipProbe bool
 	Deps      []Dep
 }

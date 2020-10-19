@@ -9,8 +9,9 @@ import (
 )
 
 var Page = format.MustRegister(&decode.Format{
-	Name: "ogg_page",
-	New:  func() decode.Decoder { return &PageDecoder{} },
+	Name:      "ogg_page",
+	New:       func() decode.Decoder { return &PageDecoder{} },
+	SkipProbe: true,
 })
 
 // Decoder is a ogg page decoder
@@ -41,7 +42,7 @@ func (d *PageDecoder) Decode() {
 	pageSegments := d.FieldU8("page_segments")
 	segmentTable := d.FieldBytesLen("segment_table", int64(pageSegments))
 
-	d.Array("segment", func() {
+	d.FieldArrayFn("segment", func() {
 		for _, ss := range segmentTable {
 			d.Segments = append(d.Segments, d.FieldBitBufLen("segment", int64(ss)*8))
 		}

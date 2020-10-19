@@ -804,14 +804,14 @@ func (d *FileDecoder) Decode() {
 
 	ifdOffset := fu32("ifd_offset")
 
-	d.Array("ifd", func() {
+	d.FieldArrayFn("ifd", func() {
 		// TODO: inf loop?
 		for ifdOffset != 0 {
 			d.SeekAbs(int64(ifdOffset) * 8)
 
 			numberOfFields := fu16("number_of_field")
 			for i := uint64(0); i < numberOfFields; i++ {
-				d.Struct("ifd", func() {
+				d.FieldStructFn("ifd", func() {
 					tag, _ := d.FieldStringMapFn("tag", tagNames, "unknown", u16)
 					typ, typOk := d.FieldStringMapFn("type", typeNames, "unknown", u16)
 					count := fu32("count")
@@ -828,7 +828,7 @@ func (d *FileDecoder) Decode() {
 						valueByteOffset = uint64(d.Pos()/8) - 4
 					}
 
-					d.Array("values", func() {
+					d.FieldArrayFn("values", func() {
 						switch {
 						case typ == UNDEFINED:
 							switch tag {

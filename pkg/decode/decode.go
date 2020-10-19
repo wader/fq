@@ -47,7 +47,8 @@ func (e ValidateError) Error() string {
 }
 
 type Common struct {
-	bitBuf  *bitbuf.Buffer
+	bitBuf *bitbuf.Buffer
+
 	current *Value // TODO: need root field also?
 
 	registry *Registry
@@ -81,6 +82,39 @@ func (c *Common) SafeDecodeFn(fn func()) error {
 		}()
 
 		fn()
+
+		return nil
+	}()
+
+	return decodeErr
+}
+
+func (c *Common) SafeDecodeFn2(fn func(d *Common)) error {
+	decodeErr := func() (err error) {
+		defer func() {
+			if recoverErr := recover(); recoverErr != nil {
+				// https://github.com/golang/go/blob/master/src/net/http/server.go#L1770
+				const size = 64 << 10
+				buf := make([]byte, size)
+				buf = buf[:runtime.Stack(buf, false)]
+
+				pe := &DecodeError{
+					PanicStack: string(buf),
+				}
+				switch panicErr := recoverErr.(type) {
+				case BitBufError:
+					pe.Err = panicErr
+				case ValidateError:
+					pe.Err = panicErr
+				default:
+					pe.Err = fmt.Errorf("%s", panicErr)
+				}
+
+				err = pe
+			}
+		}()
+
+		fn(c)
 
 		return nil
 	}()
@@ -632,7 +666,7 @@ func (c *Common) AddChild(v *Value) {
 
 }
 
-func (c *Common) Array(name string, fn func()) {
+func (c *Common) FieldArrayFn(name string, fn func()) {
 	prev := c.current
 
 	v := &Value{Name: name, V: Array{}}
@@ -652,7 +686,7 @@ func (c *Common) Array(name string, fn func()) {
 	c.current = prev
 }
 
-func (c *Common) Struct(name string, fn func()) {
+func (c *Common) FieldStructFn(name string, fn func()) {
 	prev := c.current
 
 	v := &Value{Name: name, V: Struct{}}
@@ -671,6 +705,53 @@ func (c *Common) Struct(name string, fn func()) {
 	v.Range = Range{Start: minMax.Start, Stop: minMax.Stop}
 
 	c.current = prev
+}
+
+func (c *Common) fieldDecoder(name string, bitBuf *bitbuf.Buffer, v interface{}) *Common {
+	d := &Common{
+		bitBuf: bitBuf,
+		// TODO: rename current to value?
+		current: &Value{
+			Name: name,
+			V:    v,
+		},
+		registry: c.registry,
+	}
+	// TODO: refactor
+	if c.current != nil {
+		c.AddChild(d.current)
+	}
+	return d
+}
+
+func (c *Common) FieldArray2(name string) *Common {
+	return c.fieldDecoder(name, c.bitBuf, Array{})
+}
+
+func (c *Common) FieldArrayFn2(name string, fn func(d *Common)) *Common {
+	d := c.FieldArray2(name)
+	fn(d)
+	return d
+}
+
+func (c *Common) FieldStruct2(name string) *Common {
+	return c.fieldDecoder(name, c.bitBuf, Struct{})
+}
+
+func (c *Common) FieldStructFn2(name string, fn func(d *Common)) *Common {
+	d := c.FieldStruct2(name)
+	fn(d)
+	return d
+}
+
+func (c *Common) FieldStructBitBuf(name string, bitBuf *bitbuf.Buffer) *Common {
+	return c.fieldDecoder(name, bitBuf, Struct{})
+}
+
+func (c *Common) FieldStructBitBufFn(name string, bitBuf *bitbuf.Buffer, fn func(d *Common)) *Common {
+	d := c.FieldStructBitBuf(name, bitBuf)
+	fn(d)
+	return d
 }
 
 func (c *Common) FieldRangeFn(name string, firstBit int64, nBits int64, fn func() Value) Value {
@@ -697,7 +778,7 @@ func (c *Common) FieldFn(name string, fn func() Value) Value {
 
 // TODO: remove
 func (c *Common) FieldNoneFn(name string, fn func()) {
-	c.Struct(name, func() {
+	c.FieldStructFn(name, func() {
 		fn()
 	})
 }

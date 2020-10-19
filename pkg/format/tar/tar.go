@@ -65,7 +65,7 @@ func (d *FileDecoder) Decode() {
 	endMarker := [512 * 2]byte{}
 	validFiles := 0
 
-	d.Array("file", func() {
+	d.FieldArrayFn("file", func() {
 		for !d.End() {
 			name := str(100)
 			d.SeekRel(-100 * 8)

@@ -171,7 +171,7 @@ func (d *FileDecoder) Decode() {
 	var extendedXMP []byte
 	soiMarkerFound := false
 
-	d.Array("marker", func() {
+	d.FieldArrayFn("marker", func() {
 		inECD := false
 		for !d.End() {
 			if inECD {
@@ -216,7 +216,7 @@ func (d *FileDecoder) Decode() {
 						d.FieldU16("Y")
 						d.FieldU16("X")
 						nf := d.FieldU8("Nf")
-						d.Array("frame_component", func() {
+						d.FieldArrayFn("frame_component", func() {
 							for i := uint64(0); i < nf; i++ {
 								d.FieldNoneFn("frame_component", func() {
 									d.FieldU8("C")
@@ -232,7 +232,7 @@ func (d *FileDecoder) Decode() {
 					case SOS:
 						d.FieldU16("Ls")
 						ns := d.FieldU8("Ns")
-						d.Array("scan_component", func() {
+						d.FieldArrayFn("scan_component", func() {
 							for i := uint64(0); i < ns; i++ {
 								d.FieldNoneFn("scan_component", func() {
 									d.FieldU8("Cs")

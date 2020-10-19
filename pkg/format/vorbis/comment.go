@@ -32,7 +32,7 @@ func (d *CommentDecoder) Decode() {
 	}
 	lenStr("vendor")
 	userCommentListLength := d.FieldU32LE("user_comment_list_length")
-	d.Array("user_comment", func() {
+	d.FieldArrayFn("user_comment", func() {
 		for i := uint64(0); i < userCommentListLength; i++ {
 			pair := lenStr("user_comment")
 			pairParts := strings.SplitN(pair, "=", 2)

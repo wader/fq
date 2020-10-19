@@ -185,6 +185,28 @@ func (v *Value) Errors() []error {
 	return errs
 }
 
+func (v *Value) Prelude() {
+	v.Walk(func(v *Value, depth int) error {
+		var minMax Range
+		switch vv := v.V.(type) {
+		case Struct:
+			for _, vf := range vv {
+				minMax = RangeMinMax(minMax, vf.Range)
+			}
+		case Array:
+			for _, vf := range vv {
+				minMax = RangeMinMax(minMax, vf.Range)
+			}
+		}
+		// v.BitBuf = c.BitBufRange(minMax.Start, minMax.Stop-minMax.Start)
+		// v.Range = Range{Start: minMax.Start, Stop: minMax.Stop}
+		return nil
+	})
+
+	// TODO: find start/stop from Ranges instead? what if seekaround? concat bitbufs but want gaps? sort here, crash?
+
+}
+
 func (v *Value) Sort() {
 	vfs, _ := v.V.(Struct)
 	if vfs == nil {
