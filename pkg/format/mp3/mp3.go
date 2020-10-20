@@ -54,7 +54,6 @@ func (d *FileDecoder) Decode() {
 		d.FieldArrayFn("frame", func() {
 			for !d.End() {
 				if _, _, errs := d.FieldTryDecode("frame", mp3Frame); errs != nil {
-					panic(errs)
 					break
 				}
 

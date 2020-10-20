@@ -98,7 +98,7 @@ func (m Main) run() error {
 	if *verboseFlag {
 		for _, err := range errs {
 			fmt.Fprintf(m.OS.Stderr(), "%s\n", err)
-			if pe := err.(*decode.ProbeError); pe != nil {
+			if pe, ok := err.(*decode.DecodeError); ok {
 				// if pe.PanicHandeled {
 				fmt.Fprintf(m.OS.Stderr(), "%s", pe.PanicStack)
 				// }
