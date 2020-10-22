@@ -1,5 +1,7 @@
 package decode
 
+//go:generate sh -c "cat decode.gen.go.tmpl | go run ../../_dev/tmpl.go > decode.gen.go"
+
 import (
 	"bytes"
 	"compress/zlib"
@@ -250,53 +252,6 @@ func (c *Common) FieldBool(name string) bool {
 	})
 }
 
-func (c *Common) U(nBits int64) uint64 { return c.UE(nBits, bitbuf.BigEndian) }
-func (c *Common) U1() uint64           { return c.UE(1, bitbuf.BigEndian) }
-func (c *Common) U2() uint64           { return c.UE(2, bitbuf.BigEndian) }
-func (c *Common) U3() uint64           { return c.UE(3, bitbuf.BigEndian) }
-func (c *Common) U4() uint64           { return c.UE(4, bitbuf.BigEndian) }
-func (c *Common) U5() uint64           { return c.UE(5, bitbuf.BigEndian) }
-func (c *Common) U6() uint64           { return c.UE(6, bitbuf.BigEndian) }
-func (c *Common) U7() uint64           { return c.UE(7, bitbuf.BigEndian) }
-func (c *Common) U8() uint64           { return c.UE(8, bitbuf.BigEndian) }
-func (c *Common) U9() uint64           { return c.UE(9, bitbuf.BigEndian) }
-func (c *Common) U10() uint64          { return c.UE(10, bitbuf.BigEndian) }
-func (c *Common) U11() uint64          { return c.UE(11, bitbuf.BigEndian) }
-func (c *Common) U12() uint64          { return c.UE(12, bitbuf.BigEndian) }
-func (c *Common) U13() uint64          { return c.UE(13, bitbuf.BigEndian) }
-func (c *Common) U14() uint64          { return c.UE(14, bitbuf.BigEndian) }
-func (c *Common) U15() uint64          { return c.UE(15, bitbuf.BigEndian) }
-func (c *Common) U16() uint64          { return c.UE(16, bitbuf.BigEndian) }
-func (c *Common) U24() uint64          { return c.UE(24, bitbuf.BigEndian) }
-func (c *Common) U32() uint64          { return c.UE(32, bitbuf.BigEndian) }
-func (c *Common) U64() uint64          { return c.UE(64, bitbuf.BigEndian) }
-
-func (c *Common) UBE(nBits int64) uint64 { return c.UE(nBits, bitbuf.BigEndian) }
-func (c *Common) U9BE() uint64           { return c.UE(9, bitbuf.BigEndian) }
-func (c *Common) U10BE() uint64          { return c.UE(10, bitbuf.BigEndian) }
-func (c *Common) U11BE() uint64          { return c.UE(11, bitbuf.BigEndian) }
-func (c *Common) U12BE() uint64          { return c.UE(12, bitbuf.BigEndian) }
-func (c *Common) U13BE() uint64          { return c.UE(13, bitbuf.BigEndian) }
-func (c *Common) U14BE() uint64          { return c.UE(14, bitbuf.BigEndian) }
-func (c *Common) U15BE() uint64          { return c.UE(15, bitbuf.BigEndian) }
-func (c *Common) U16BE() uint64          { return c.UE(16, bitbuf.BigEndian) }
-func (c *Common) U24BE() uint64          { return c.UE(24, bitbuf.BigEndian) }
-func (c *Common) U32BE() uint64          { return c.UE(32, bitbuf.BigEndian) }
-func (c *Common) U64BE() uint64          { return c.UE(64, bitbuf.BigEndian) }
-
-func (c *Common) ULE(nBits int64) uint64 { return c.UE(nBits, bitbuf.LittleEndian) }
-func (c *Common) U9LE() uint64           { return c.UE(9, bitbuf.LittleEndian) }
-func (c *Common) U10LE() uint64          { return c.UE(10, bitbuf.LittleEndian) }
-func (c *Common) U11LE() uint64          { return c.UE(11, bitbuf.LittleEndian) }
-func (c *Common) U12LE() uint64          { return c.UE(12, bitbuf.LittleEndian) }
-func (c *Common) U13LE() uint64          { return c.UE(13, bitbuf.LittleEndian) }
-func (c *Common) U14LE() uint64          { return c.UE(14, bitbuf.LittleEndian) }
-func (c *Common) U15LE() uint64          { return c.UE(15, bitbuf.LittleEndian) }
-func (c *Common) U16LE() uint64          { return c.UE(16, bitbuf.LittleEndian) }
-func (c *Common) U24LE() uint64          { return c.UE(24, bitbuf.LittleEndian) }
-func (c *Common) U32LE() uint64          { return c.UE(32, bitbuf.LittleEndian) }
-func (c *Common) U64LE() uint64          { return c.UE(64, bitbuf.LittleEndian) }
-
 func (c *Common) FieldUE(name string, nBits int64, endian bitbuf.Endian) uint64 {
 	return c.FieldUFn(name, func() (uint64, DisplayFormat, string) {
 		n, err := c.bitBuf.UE(nBits, endian)
@@ -307,59 +262,6 @@ func (c *Common) FieldUE(name string, nBits int64, endian bitbuf.Endian) uint64 
 	})
 }
 
-func (c *Common) FieldU(name string, nBits int64) uint64 {
-	return c.FieldUE(name, nBits, bitbuf.BigEndian)
-}
-func (c *Common) FieldU1(name string) uint64  { return c.FieldUE(name, 1, bitbuf.BigEndian) }
-func (c *Common) FieldU2(name string) uint64  { return c.FieldUE(name, 2, bitbuf.BigEndian) }
-func (c *Common) FieldU3(name string) uint64  { return c.FieldUE(name, 3, bitbuf.BigEndian) }
-func (c *Common) FieldU4(name string) uint64  { return c.FieldUE(name, 4, bitbuf.BigEndian) }
-func (c *Common) FieldU5(name string) uint64  { return c.FieldUE(name, 5, bitbuf.BigEndian) }
-func (c *Common) FieldU6(name string) uint64  { return c.FieldUE(name, 6, bitbuf.BigEndian) }
-func (c *Common) FieldU7(name string) uint64  { return c.FieldUE(name, 7, bitbuf.BigEndian) }
-func (c *Common) FieldU8(name string) uint64  { return c.FieldUE(name, 8, bitbuf.BigEndian) }
-func (c *Common) FieldU9(name string) uint64  { return c.FieldUE(name, 9, bitbuf.BigEndian) }
-func (c *Common) FieldU10(name string) uint64 { return c.FieldUE(name, 10, bitbuf.BigEndian) }
-func (c *Common) FieldU11(name string) uint64 { return c.FieldUE(name, 11, bitbuf.BigEndian) }
-func (c *Common) FieldU12(name string) uint64 { return c.FieldUE(name, 12, bitbuf.BigEndian) }
-func (c *Common) FieldU13(name string) uint64 { return c.FieldUE(name, 13, bitbuf.BigEndian) }
-func (c *Common) FieldU14(name string) uint64 { return c.FieldUE(name, 14, bitbuf.BigEndian) }
-func (c *Common) FieldU15(name string) uint64 { return c.FieldUE(name, 15, bitbuf.BigEndian) }
-func (c *Common) FieldU16(name string) uint64 { return c.FieldUE(name, 16, bitbuf.BigEndian) }
-func (c *Common) FieldU24(name string) uint64 { return c.FieldUE(name, 24, bitbuf.BigEndian) }
-func (c *Common) FieldU32(name string) uint64 { return c.FieldUE(name, 32, bitbuf.BigEndian) }
-func (c *Common) FieldU64(name string) uint64 { return c.FieldUE(name, 64, bitbuf.BigEndian) }
-
-func (c *Common) FieldUBE(nBits int64, name string) uint64 {
-	return c.FieldUE(name, nBits, bitbuf.BigEndian)
-}
-func (c *Common) FieldU9BE(name string) uint64  { return c.FieldUE(name, 9, bitbuf.BigEndian) }
-func (c *Common) FieldU10BE(name string) uint64 { return c.FieldUE(name, 10, bitbuf.BigEndian) }
-func (c *Common) FieldU11BE(name string) uint64 { return c.FieldUE(name, 11, bitbuf.BigEndian) }
-func (c *Common) FieldU12BE(name string) uint64 { return c.FieldUE(name, 12, bitbuf.BigEndian) }
-func (c *Common) FieldU13BE(name string) uint64 { return c.FieldUE(name, 13, bitbuf.BigEndian) }
-func (c *Common) FieldU14BE(name string) uint64 { return c.FieldUE(name, 14, bitbuf.BigEndian) }
-func (c *Common) FieldU15BE(name string) uint64 { return c.FieldUE(name, 15, bitbuf.BigEndian) }
-func (c *Common) FieldU16BE(name string) uint64 { return c.FieldUE(name, 16, bitbuf.BigEndian) }
-func (c *Common) FieldU24BE(name string) uint64 { return c.FieldUE(name, 24, bitbuf.BigEndian) }
-func (c *Common) FieldU32BE(name string) uint64 { return c.FieldUE(name, 32, bitbuf.BigEndian) }
-func (c *Common) FieldU64BE(name string) uint64 { return c.FieldUE(name, 64, bitbuf.BigEndian) }
-
-func (c *Common) FieldULE(nBits int64, name string) uint64 {
-	return c.FieldUE(name, nBits, bitbuf.LittleEndian)
-}
-func (c *Common) FieldU9LE(name string) uint64  { return c.FieldUE(name, 9, bitbuf.LittleEndian) }
-func (c *Common) FieldU10LE(name string) uint64 { return c.FieldUE(name, 10, bitbuf.LittleEndian) }
-func (c *Common) FieldU11LE(name string) uint64 { return c.FieldUE(name, 11, bitbuf.LittleEndian) }
-func (c *Common) FieldU12LE(name string) uint64 { return c.FieldUE(name, 12, bitbuf.LittleEndian) }
-func (c *Common) FieldU13LE(name string) uint64 { return c.FieldUE(name, 13, bitbuf.LittleEndian) }
-func (c *Common) FieldU14LE(name string) uint64 { return c.FieldUE(name, 14, bitbuf.LittleEndian) }
-func (c *Common) FieldU15LE(name string) uint64 { return c.FieldUE(name, 15, bitbuf.LittleEndian) }
-func (c *Common) FieldU16LE(name string) uint64 { return c.FieldUE(name, 16, bitbuf.LittleEndian) }
-func (c *Common) FieldU24LE(name string) uint64 { return c.FieldUE(name, 24, bitbuf.LittleEndian) }
-func (c *Common) FieldU32LE(name string) uint64 { return c.FieldUE(name, 32, bitbuf.LittleEndian) }
-func (c *Common) FieldU64LE(name string) uint64 { return c.FieldUE(name, 64, bitbuf.LittleEndian) }
-
 func (c *Common) SE(nBits int64, endian bitbuf.Endian) int64 {
 	n, err := c.bitBuf.SE(nBits, endian)
 	if err != nil {
@@ -367,52 +269,6 @@ func (c *Common) SE(nBits int64, endian bitbuf.Endian) int64 {
 	}
 	return n
 }
-func (c *Common) S(nBits int64) int64 { return c.SE(nBits, bitbuf.BigEndian) }
-func (c *Common) S1() int64           { return c.SE(1, bitbuf.BigEndian) }
-func (c *Common) S2() int64           { return c.SE(2, bitbuf.BigEndian) }
-func (c *Common) S3() int64           { return c.SE(3, bitbuf.BigEndian) }
-func (c *Common) S4() int64           { return c.SE(4, bitbuf.BigEndian) }
-func (c *Common) S5() int64           { return c.SE(5, bitbuf.BigEndian) }
-func (c *Common) S6() int64           { return c.SE(6, bitbuf.BigEndian) }
-func (c *Common) S7() int64           { return c.SE(7, bitbuf.BigEndian) }
-func (c *Common) S8() int64           { return c.SE(8, bitbuf.BigEndian) }
-func (c *Common) S9() int64           { return c.SE(9, bitbuf.BigEndian) }
-func (c *Common) S10() int64          { return c.SE(10, bitbuf.BigEndian) }
-func (c *Common) S11() int64          { return c.SE(11, bitbuf.BigEndian) }
-func (c *Common) S12() int64          { return c.SE(12, bitbuf.BigEndian) }
-func (c *Common) S13() int64          { return c.SE(13, bitbuf.BigEndian) }
-func (c *Common) S14() int64          { return c.SE(14, bitbuf.BigEndian) }
-func (c *Common) S15() int64          { return c.SE(15, bitbuf.BigEndian) }
-func (c *Common) S16() int64          { return c.SE(16, bitbuf.BigEndian) }
-func (c *Common) S24() int64          { return c.SE(24, bitbuf.BigEndian) }
-func (c *Common) S32() int64          { return c.SE(32, bitbuf.BigEndian) }
-func (c *Common) S64() int64          { return c.SE(64, bitbuf.BigEndian) }
-
-func (c *Common) SBE(nBits int64) int64 { return c.SE(nBits, bitbuf.BigEndian) }
-func (c *Common) S9BE() int64           { return c.SE(9, bitbuf.BigEndian) }
-func (c *Common) S10BE() int64          { return c.SE(10, bitbuf.BigEndian) }
-func (c *Common) S11BE() int64          { return c.SE(11, bitbuf.BigEndian) }
-func (c *Common) S12BE() int64          { return c.SE(12, bitbuf.BigEndian) }
-func (c *Common) S13BE() int64          { return c.SE(13, bitbuf.BigEndian) }
-func (c *Common) S14BE() int64          { return c.SE(14, bitbuf.BigEndian) }
-func (c *Common) S15BE() int64          { return c.SE(15, bitbuf.BigEndian) }
-func (c *Common) S16BE() int64          { return c.SE(16, bitbuf.BigEndian) }
-func (c *Common) S24BE() int64          { return c.SE(24, bitbuf.BigEndian) }
-func (c *Common) S32BE() int64          { return c.SE(32, bitbuf.BigEndian) }
-func (c *Common) S64BE() int64          { return c.SE(64, bitbuf.BigEndian) }
-
-func (c *Common) SLE(nBits int64) int64 { return c.SE(nBits, bitbuf.LittleEndian) }
-func (c *Common) S9LE() int64           { return c.SE(9, bitbuf.LittleEndian) }
-func (c *Common) S10LE() int64          { return c.SE(10, bitbuf.LittleEndian) }
-func (c *Common) S11LE() int64          { return c.SE(11, bitbuf.LittleEndian) }
-func (c *Common) S12LE() int64          { return c.SE(12, bitbuf.LittleEndian) }
-func (c *Common) S13LE() int64          { return c.SE(13, bitbuf.LittleEndian) }
-func (c *Common) S14LE() int64          { return c.SE(14, bitbuf.LittleEndian) }
-func (c *Common) S15LE() int64          { return c.SE(15, bitbuf.LittleEndian) }
-func (c *Common) S16LE() int64          { return c.SE(16, bitbuf.LittleEndian) }
-func (c *Common) S24LE() int64          { return c.SE(24, bitbuf.LittleEndian) }
-func (c *Common) S32LE() int64          { return c.SE(32, bitbuf.LittleEndian) }
-func (c *Common) S64LE() int64          { return c.SE(64, bitbuf.LittleEndian) }
 
 func (c *Common) FieldSE(name string, nBits int64, endian bitbuf.Endian) int64 {
 	return c.FieldSFn(name, func() (int64, DisplayFormat, string) {
@@ -423,58 +279,6 @@ func (c *Common) FieldSE(name string, nBits int64, endian bitbuf.Endian) int64 {
 		return n, NumberDecimal, ""
 	})
 }
-func (c *Common) FieldS(name string, nBits int64) int64 {
-	return c.FieldSE(name, nBits, bitbuf.BigEndian)
-}
-func (c *Common) FieldS1(name string) int64  { return c.FieldSE(name, 1, bitbuf.BigEndian) }
-func (c *Common) FieldS2(name string) int64  { return c.FieldSE(name, 2, bitbuf.BigEndian) }
-func (c *Common) FieldS3(name string) int64  { return c.FieldSE(name, 3, bitbuf.BigEndian) }
-func (c *Common) FieldS4(name string) int64  { return c.FieldSE(name, 4, bitbuf.BigEndian) }
-func (c *Common) FieldS5(name string) int64  { return c.FieldSE(name, 5, bitbuf.BigEndian) }
-func (c *Common) FieldS6(name string) int64  { return c.FieldSE(name, 6, bitbuf.BigEndian) }
-func (c *Common) FieldS7(name string) int64  { return c.FieldSE(name, 7, bitbuf.BigEndian) }
-func (c *Common) FieldS8(name string) int64  { return c.FieldSE(name, 8, bitbuf.BigEndian) }
-func (c *Common) FieldS9(name string) int64  { return c.FieldSE(name, 9, bitbuf.BigEndian) }
-func (c *Common) FieldS10(name string) int64 { return c.FieldSE(name, 10, bitbuf.BigEndian) }
-func (c *Common) FieldS11(name string) int64 { return c.FieldSE(name, 11, bitbuf.BigEndian) }
-func (c *Common) FieldS12(name string) int64 { return c.FieldSE(name, 12, bitbuf.BigEndian) }
-func (c *Common) FieldS13(name string) int64 { return c.FieldSE(name, 13, bitbuf.BigEndian) }
-func (c *Common) FieldS14(name string) int64 { return c.FieldSE(name, 14, bitbuf.BigEndian) }
-func (c *Common) FieldS15(name string) int64 { return c.FieldSE(name, 15, bitbuf.BigEndian) }
-func (c *Common) FieldS16(name string) int64 { return c.FieldSE(name, 16, bitbuf.BigEndian) }
-func (c *Common) FieldS24(name string) int64 { return c.FieldSE(name, 24, bitbuf.BigEndian) }
-func (c *Common) FieldS32(name string) int64 { return c.FieldSE(name, 32, bitbuf.BigEndian) }
-func (c *Common) FieldS64(name string) int64 { return c.FieldSE(name, 64, bitbuf.BigEndian) }
-
-func (c *Common) FieldSBE(name string, nBits int64) int64 {
-	return c.FieldSE(name, nBits, bitbuf.BigEndian)
-}
-func (c *Common) FieldS9BE(name string) int64  { return c.FieldSE(name, 9, bitbuf.BigEndian) }
-func (c *Common) FieldS10BE(name string) int64 { return c.FieldSE(name, 10, bitbuf.BigEndian) }
-func (c *Common) FieldS11BE(name string) int64 { return c.FieldSE(name, 11, bitbuf.BigEndian) }
-func (c *Common) FieldS12BE(name string) int64 { return c.FieldSE(name, 12, bitbuf.BigEndian) }
-func (c *Common) FieldS13BE(name string) int64 { return c.FieldSE(name, 13, bitbuf.BigEndian) }
-func (c *Common) FieldS14BE(name string) int64 { return c.FieldSE(name, 14, bitbuf.BigEndian) }
-func (c *Common) FieldS15BE(name string) int64 { return c.FieldSE(name, 15, bitbuf.BigEndian) }
-func (c *Common) FieldS16BE(name string) int64 { return c.FieldSE(name, 16, bitbuf.BigEndian) }
-func (c *Common) FieldS24BE(name string) int64 { return c.FieldSE(name, 24, bitbuf.BigEndian) }
-func (c *Common) FieldS32BE(name string) int64 { return c.FieldSE(name, 32, bitbuf.BigEndian) }
-func (c *Common) FieldS64BE(name string) int64 { return c.FieldSE(name, 64, bitbuf.BigEndian) }
-
-func (c *Common) FieldSLE(nBits int64, name string) int64 {
-	return c.FieldSE(name, nBits, bitbuf.LittleEndian)
-}
-func (c *Common) FieldS9LE(name string) int64  { return c.FieldSE(name, 9, bitbuf.LittleEndian) }
-func (c *Common) FieldS10LE(name string) int64 { return c.FieldSE(name, 10, bitbuf.LittleEndian) }
-func (c *Common) FieldS11LE(name string) int64 { return c.FieldSE(name, 11, bitbuf.LittleEndian) }
-func (c *Common) FieldS12LE(name string) int64 { return c.FieldSE(name, 12, bitbuf.LittleEndian) }
-func (c *Common) FieldS13LE(name string) int64 { return c.FieldSE(name, 13, bitbuf.LittleEndian) }
-func (c *Common) FieldS14LE(name string) int64 { return c.FieldSE(name, 14, bitbuf.LittleEndian) }
-func (c *Common) FieldS15LE(name string) int64 { return c.FieldSE(name, 15, bitbuf.LittleEndian) }
-func (c *Common) FieldS16LE(name string) int64 { return c.FieldSE(name, 16, bitbuf.LittleEndian) }
-func (c *Common) FieldS24LE(name string) int64 { return c.FieldSE(name, 24, bitbuf.LittleEndian) }
-func (c *Common) FieldS32LE(name string) int64 { return c.FieldSE(name, 32, bitbuf.LittleEndian) }
-func (c *Common) FieldS64LE(name string) int64 { return c.FieldSE(name, 64, bitbuf.LittleEndian) }
 
 func (c *Common) F32E(endian bitbuf.Endian) float64 {
 	f, err := c.bitBuf.F32E(endian)
