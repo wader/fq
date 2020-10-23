@@ -14,22 +14,18 @@ import (
 
 var all []*decode.Format
 
-var File = format.MustRegister(&decode.Format{
-	Name:  "tar",
-	MIMEs: []string{"application/x-tar"},
-	New:   func() decode.Decoder { return &FileDecoder{} },
-	Deps: []decode.Dep{
-		{Names: []string{"probeable"}, Formats: &all},
-	},
-})
-
-// Decoder is a tar decoder
-type FileDecoder struct {
-	decode.Common
+func init() {
+	format.MustRegister(&decode.Format{
+		Name:     "tar",
+		MIMEs:    []string{"application/x-tar"},
+		DecodeFn: tarDecode,
+		Deps: []decode.Dep{
+			{Names: []string{"probeable"}, Formats: &all},
+		},
+	})
 }
 
-// Decode tar
-func (d *FileDecoder) Decode() {
+func tarDecode(d *decode.Common) interface{} {
 	str := func(nBytes int64) string {
 		s := d.UTF8(nBytes)
 		ts := strings.Trim(s, "\x00")
@@ -105,4 +101,6 @@ func (d *FileDecoder) Decode() {
 	if validFiles == 0 {
 		d.Invalid("no files found")
 	}
+
+	return nil
 }

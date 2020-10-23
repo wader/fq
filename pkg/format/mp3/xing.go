@@ -7,19 +7,15 @@ import (
 	"fq/pkg/format"
 )
 
-var XingHeader = format.MustRegister(&decode.Format{
-	Name:      "xing_header",
-	New:       func() decode.Decoder { return &XingHeaderDecoder{} },
-	SkipProbe: true,
-})
-
-// XingHeaderDecoder is a xing header decoder
-type XingHeaderDecoder struct {
-	decode.Common
+func init() {
+	format.MustRegister(&decode.Format{
+		Name:      "xing_header",
+		DecodeFn:  xingDecode,
+		SkipProbe: true,
+	})
 }
 
-// Decode decodes a xing header
-func (d *XingHeaderDecoder) Decode() {
+func xingDecode(d *decode.Common) interface{} {
 	// TODO: info has lame extension?
 	hasLameExtension := false
 	switch string(d.PeekBytes(4)) {
@@ -82,4 +78,6 @@ func (d *XingHeaderDecoder) Decode() {
 			d.FieldU16("tag_crc")   // TODO:
 		})
 	}
+
+	return nil
 }

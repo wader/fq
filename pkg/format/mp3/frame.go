@@ -14,22 +14,18 @@ import (
 
 var xingHeader []*decode.Format
 
-var Frame = format.MustRegister(&decode.Format{
-	Name:      "mp3_frame",
-	New:       func() decode.Decoder { return &FrameDecoder{} },
-	SkipProbe: true,
-	Deps: []decode.Dep{
-		{Names: []string{"xing_header"}, Formats: &xingHeader},
-	},
-})
-
-// FrameDecoder is a mp3 frame decoder
-type FrameDecoder struct {
-	decode.Common
+func init() {
+	format.MustRegister(&decode.Format{
+		Name:      "mp3_frame",
+		DecodeFn:  frameDecode,
+		SkipProbe: true,
+		Deps: []decode.Dep{
+			{Names: []string{"xing_header"}, Formats: &xingHeader},
+		},
+	})
 }
 
-// FrameDecoder MP3 frame decoder
-func (d *FrameDecoder) Decode() {
+func frameDecode(d *decode.Common) interface{} {
 	d.FieldValidateUFn("sync", 0b11111111111, d.U11)
 
 	// v = 3 means version 2.5
@@ -159,4 +155,6 @@ func (d *FrameDecoder) Decode() {
 
 		d.FieldBitBufLen("samples", d.BitsLeft())
 	})
+
+	return nil
 }

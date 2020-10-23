@@ -1,5 +1,9 @@
 
 
+replace Groups by Names "jpeg", "image"
+
+
+
 go build -gcflags="-d=ssa/check_bce/debug=1" boundscheck.go 
 readbits:
 _ = b[7] // bounds check hint to compiler; see golang.org/issue/14808

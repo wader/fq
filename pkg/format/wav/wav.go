@@ -10,11 +10,13 @@ import (
 	"strings"
 )
 
-var File = format.MustRegister(&decode.Format{
-	Name:  "wav",
-	MIMEs: []string{"audio/wav"},
-	New:   func() decode.Decoder { return &FileDecoder{} },
-})
+func init() {
+	format.MustRegister(&decode.Format{
+		Name:     "wav",
+		MIMEs:    []string{"audio/wav"},
+		DecodeFn: wavDecode,
+	})
+}
 
 // transformed from ffmpeg libavformat/riff.c
 var audioFormatName = map[uint64]string{
@@ -90,14 +92,13 @@ var audioFormatName = map[uint64]string{
 	('V' << 8) + 'o': "VORBIS",
 }
 
-// FileDecoder is a WAV decoder
-type FileDecoder struct{ decode.Common }
+func decodeChunk(d *decode.Common, expectedChunkID string) int64 {
+	var chunkLen int64
 
-func (d *FileDecoder) decodeChunk(expectedChunkId string) int64 {
 	chunks := map[string]func(){
 		"RIFF": func() {
 			d.FieldUTF8("format", 4)
-			d.decodeChunks()
+			decodeChunks(d)
 		},
 		"fmt ": func() {
 			d.FieldStringMapFn("audio_format", audioFormatName, "Unknown", d.U16LE)
@@ -113,10 +114,9 @@ func (d *FileDecoder) decodeChunk(expectedChunkId string) int64 {
 	}
 
 	var chunkID string
-	var chunkLen int64
 	chunkID = d.UTF8(4)
-	if expectedChunkId != "" && chunkID != expectedChunkId {
-		d.Invalid(fmt.Sprintf("expected chunk id %q found %q", expectedChunkId, chunkID))
+	if expectedChunkID != "" && chunkID != expectedChunkID {
+		d.Invalid(fmt.Sprintf("expected chunk id %q found %q", expectedChunkID, chunkID))
 	}
 	d.SeekRel(-4 * 8)
 
@@ -141,13 +141,18 @@ func (d *FileDecoder) decodeChunk(expectedChunkId string) int64 {
 	return chunkLen + 8
 }
 
-func (d *FileDecoder) decodeChunks() {
-	for !d.End() {
-		d.decodeChunk("")
-	}
+func decodeChunks(d *decode.Common) {
+	d.FieldArrayFn2("chunk", func(d *decode.Common) {
+		for !d.End() {
+			d.FieldStructFn2("chunk", func(d *decode.Common) {
+				decodeChunk(d, "")
+			})
+		}
+	})
 }
 
 // Decode decodes a WAV stream
-func (d *FileDecoder) Decode() {
-	d.decodeChunk("RIFF")
+func wavDecode(d *decode.Common) interface{} {
+	decodeChunk(d, "RIFF")
+	return nil
 }

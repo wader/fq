@@ -11,15 +11,18 @@ import (
 
 var iccTag []*decode.Format
 
-var File = format.MustRegister(&decode.Format{
-	Name:   "tiff",
-	Groups: []string{"image"},
-	MIMEs:  []string{"image/tiff"},
-	New:    func() decode.Decoder { return &FileDecoder{} },
-	Deps: []decode.Dep{
-		{Names: []string{"icc"}, Formats: &iccTag},
-	},
-})
+func init() {
+	format.MustRegister(&decode.Format{
+		Name:     "tiff",
+		Groups:   []string{"image"},
+		MIMEs:    []string{"image/tiff"},
+		DecodeFn: tiffDecode,
+		Deps: []decode.Dep{
+			{Names: []string{"icc"}, Formats: &iccTag},
+		},
+	})
+
+}
 
 const littleEndian = 0x49492a00
 const bigEndian = 0x4d4d002a
@@ -760,13 +763,7 @@ var tagNames = map[uint64]string{
 	DefaultUserCrop:              "DefaultUserCrop",
 }
 
-// FileDecoder is a TIFF decoder
-type FileDecoder struct {
-	decode.Common
-}
-
-// Decode TIFF file
-func (d *FileDecoder) Decode() {
+func tiffDecode(d *decode.Common) interface{} {
 	switch d.PeekBits(32) {
 	case littleEndian, bigEndian:
 	default:
@@ -882,4 +879,5 @@ func (d *FileDecoder) Decode() {
 
 	_ = endian
 
+	return nil
 }

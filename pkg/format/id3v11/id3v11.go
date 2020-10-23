@@ -5,17 +5,16 @@ import (
 	"fq/pkg/format"
 )
 
-var Tag = format.MustRegister(&decode.Format{
-	Name:      "id3v11",
-	New:       func() decode.Decoder { return &TagDecoder{} },
-	SkipProbe: true,
-})
+func init() {
+	format.MustRegister(&decode.Format{
+		Name:      "id3v11",
+		DecodeFn:  id3v1Decode,
+		SkipProbe: true,
+	})
 
-// TagDecoder is ID3v11 tag decoder
-type TagDecoder struct{ decode.Common }
+}
 
-// Decode ID3v1
-func (d *TagDecoder) Decode() {
+func id3v1Decode(d *decode.Common) interface{} {
 	d.ValidateAtLeastBitsLeft(128 * 8)
 	d.FieldValidateString("magic", "TAG+")
 	d.FieldUTF8("title", 60)
@@ -31,4 +30,6 @@ func (d *TagDecoder) Decode() {
 	d.FieldUTF8("genre", 30)
 	d.FieldUTF8("start", 6)
 	d.FieldUTF8("stop", 6)
+
+	return nil
 }

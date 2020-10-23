@@ -5,11 +5,13 @@ import (
 	"fq/pkg/format"
 )
 
-var Frame = format.MustRegister(&decode.Format{
-	Name:      "aac_frame",
-	New:       func() decode.Decoder { return &FrameDecoder{} },
-	SkipProbe: true,
-})
+func init() {
+	format.MustRegister(&decode.Format{
+		Name:      "aac_frame",
+		DecodeFn:  aacDecode,
+		SkipProbe: true,
+	})
+}
 
 const (
 	SCE  = 0b000
@@ -51,13 +53,7 @@ var ExtenionPayloadIDNames = map[uint64]string{
 	SBR_DATA_CRC:  "SBR_DATA_CRC",
 }
 
-// FrameDecoder is a aac frame decoder
-type FrameDecoder struct {
-	decode.Common
-}
-
-// Decode AAC frame
-func (d *FrameDecoder) Decode() {
+func aacDecode(d *decode.Common) interface{} {
 	se, _ := d.FieldStringMapFn("syntax_element", SyntaxElementNames, "", d.U3)
 	elementId := d.FieldU4("element_id")
 
@@ -82,4 +78,5 @@ func (d *FrameDecoder) Decode() {
 		d.FieldU1("extension_flag")
 	*/
 
+	return nil
 }

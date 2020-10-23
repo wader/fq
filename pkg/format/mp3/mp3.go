@@ -19,23 +19,21 @@ var footerTags []*decode.Format
 var apeTag []*decode.Format
 var mp3Frame []*decode.Format
 
-var File = format.MustRegister(&decode.Format{
-	Name:  "mp3",
-	MIMEs: []string{"audio/mpeg"},
-	New:   func() decode.Decoder { return &FileDecoder{} },
-	Deps: []decode.Dep{
-		{Names: []string{"id3v2"}, Formats: &headerTag},
-		{Names: []string{"id3v1", "id3v11"}, Formats: &footerTags},
-		{Names: []string{"apev2"}, Formats: &apeTag},
-		{Names: []string{"mp3_frame"}, Formats: &mp3Frame},
-	},
-})
+func init() {
+	format.MustRegister(&decode.Format{
+		Name:     "mp3",
+		MIMEs:    []string{"audio/mpeg"},
+		DecodeFn: mp3Decode,
+		Deps: []decode.Dep{
+			{Names: []string{"id3v2"}, Formats: &headerTag},
+			{Names: []string{"id3v1", "id3v11"}, Formats: &footerTags},
+			{Names: []string{"apev2"}, Formats: &apeTag},
+			{Names: []string{"mp3_frame"}, Formats: &mp3Frame},
+		},
+	})
+}
 
-// FileDecoder is a MP3 decoder
-type FileDecoder struct{ decode.Common }
-
-// Decode decodes a MP3 stream
-func (d *FileDecoder) Decode() {
+func mp3Decode(d *decode.Common) interface{} {
 	d.FieldTryDecode("header", headerTag)
 
 	footerLen := int64(0)
@@ -72,4 +70,6 @@ func (d *FileDecoder) Decode() {
 	if validFrames == 0 {
 		d.Invalid("no frames found")
 	}
+
+	return nil
 }

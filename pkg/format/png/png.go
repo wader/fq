@@ -11,20 +11,17 @@ import (
 var iccTag []*decode.Format
 var tiffFile []*decode.Format
 
-var File = format.MustRegister(&decode.Format{
-	Name:   "png",
-	Groups: []string{"image"},
-	MIMEs:  []string{"image/png"},
-	New:    func() decode.Decoder { return &FileDecoder{} },
-	Deps: []decode.Dep{
-		{Names: []string{"icc"}, Formats: &iccTag},
-		{Names: []string{"tiff"}, Formats: &tiffFile},
-	},
-})
-
-// FileDecoder is a PNG decoder
-type FileDecoder struct {
-	decode.Common
+func init() {
+	format.MustRegister(&decode.Format{
+		Name:     "png",
+		Groups:   []string{"image"},
+		MIMEs:    []string{"image/png"},
+		DecodeFn: pngDecode,
+		Deps: []decode.Dep{
+			{Names: []string{"icc"}, Formats: &iccTag},
+			{Names: []string{"tiff"}, Formats: &tiffFile},
+		},
+	})
 }
 
 const (
@@ -35,8 +32,7 @@ var compressionNames = map[uint64]string{
 	compressionDeflate: "deflate",
 }
 
-// Decode PNG file
-func (d *FileDecoder) Decode() {
+func pngDecode(d *decode.Common) interface{} {
 	d.FieldValidateString("signature", "\x89PNG\r\n\x1a\n")
 	d.FieldArrayFn("chunk", func() {
 		for !d.End() {
@@ -123,4 +119,6 @@ func (d *FileDecoder) Decode() {
 			})
 		}
 	})
+
+	return nil
 }

@@ -11,14 +11,16 @@ import (
 
 var vorbisComment []*decode.Format
 
-var Packet = format.MustRegister(&decode.Format{
-	Name:      "vorbis",
-	New:       func() decode.Decoder { return &PacketDecoder{} },
-	SkipProbe: true,
-	Deps: []decode.Dep{
-		{Names: []string{"vorbis_comment"}, Formats: &vorbisComment},
-	},
-})
+func init() {
+	format.MustRegister(&decode.Format{
+		Name:      "vorbis",
+		DecodeFn:  vorbisDecode,
+		SkipProbe: true,
+		Deps: []decode.Dep{
+			{Names: []string{"vorbis_comment"}, Formats: &vorbisComment},
+		},
+	})
+}
 
 const (
 	packetTypeAudio          = 0
@@ -34,13 +36,7 @@ var packetTypeNames = map[uint]string{
 	packetTypeSetup:          "Setup",
 }
 
-// PacketDecoder is a vorbis packet decoder
-type PacketDecoder struct {
-	decode.Common
-}
-
-// Decode vorbis packet
-func (d *PacketDecoder) Decode() {
+func vorbisDecode(d *decode.Common) interface{} {
 	packetType := d.FieldUFn("packet_type", func() (uint64, decode.DisplayFormat, string) {
 		packetTypeName := "unknown"
 		t := d.U8()
@@ -134,4 +130,5 @@ func (d *PacketDecoder) Decode() {
 		d.Invalid(fmt.Sprintf("unknown packet type %d", packetType))
 	}
 
+	return nil
 }

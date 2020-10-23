@@ -28,7 +28,7 @@ func NewRegistryWithFormats(formats []*Format) *Registry {
 }
 
 // Probe probes all probeable formats and turns first found Decoder and all other decoder errors
-func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range, bb *bitbuf.Buffer, forceFormats []*Format) (*Value, int64, Decoder, []error) {
+func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range, bb *bitbuf.Buffer, forceFormats []*Format) (*Value, int64, interface{}, []error) {
 	var probeable []*Format
 	var forceOne = len(forceFormats) == 1
 	if forceFormats != nil {
@@ -53,7 +53,7 @@ func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range
 		if f.DecodeFn != nil {
 
 			d := (&Common{}).FieldStructBitBuf(rootFieldName, cbb)
-			decodeErr := d.SafeDecodeFn2(f.DecodeFn)
+			decodeErr, dv := d.SafeDecodeFn2(f.DecodeFn)
 			if decodeErr != nil {
 				d.current.Error = decodeErr
 
@@ -68,7 +68,7 @@ func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range
 			// TODO: wrong keep track of largest?
 			_ = cbb.TruncateRel(0)
 
-			return d.current, cbb.Pos, d, errs
+			return d.current, cbb.Pos, dv, errs
 
 		} else {
 
@@ -102,7 +102,7 @@ func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range
 			// TODO: wrong keep track of largest?
 			_ = cbb.TruncateRel(0)
 
-			return rootValue, cbb.Pos, d, errs
+			return rootValue, cbb.Pos, nil, errs
 		}
 	}
 

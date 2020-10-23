@@ -12,15 +12,17 @@ import (
 
 var tiffImage []*decode.Format
 
-var File = format.MustRegister(&decode.Format{
-	Name:   "jpeg",
-	Groups: []string{"image"},
-	MIMEs:  []string{"image/jpeg"},
-	New:    func() decode.Decoder { return &FileDecoder{} },
-	Deps: []decode.Dep{
-		{Names: []string{"tiff"}, Formats: &tiffImage},
-	},
-})
+func init() {
+	format.MustRegister(&decode.Format{
+		Name:     "jpeg",
+		Groups:   []string{"image"},
+		MIMEs:    []string{"image/jpeg"},
+		DecodeFn: jpegDecode,
+		Deps: []decode.Dep{
+			{Names: []string{"tiff"}, Formats: &tiffImage},
+		},
+	})
+}
 
 type marker struct {
 	symbol      string
@@ -161,13 +163,7 @@ var markers = map[uint]marker{
 	TEM:   {"TEM", "For temporary private use in arithmetic coding"},
 }
 
-// FileDecoder is a JPEG decoder
-type FileDecoder struct {
-	decode.Common
-}
-
-// Decode JPEG file
-func (d *FileDecoder) Decode() {
+func jpegDecode(d *decode.Common) interface{} {
 	var extendedXMP []byte
 	soiMarkerFound := false
 
@@ -304,4 +300,6 @@ func (d *FileDecoder) Decode() {
 			return bb, ""
 		})
 	}
+
+	return nil
 }

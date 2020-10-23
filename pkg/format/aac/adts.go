@@ -7,22 +7,18 @@ import (
 
 var aacFrame []*decode.Format
 
-// Audio Data Transport Stream (ADTS)
-var ADTS = format.MustRegister(&decode.Format{
-	Name: "adts",
-	New:  func() decode.Decoder { return &ADTSDecoder{} },
-	Deps: []decode.Dep{
-		{Names: []string{"aac_frame"}, Formats: &aacFrame},
-	},
-})
-
-// ADTSDecoder is a adts  decoder
-type ADTSDecoder struct {
-	decode.Common
+func init() {
+	format.MustRegister(&decode.Format{
+		Name:     "adts",
+		DecodeFn: adtsDecoder,
+		Deps: []decode.Dep{
+			{Names: []string{"aac_frame"}, Formats: &aacFrame},
+		},
+	})
 }
 
-// Decode adts
-func (d *ADTSDecoder) Decode() {
+// Audio Data Transport Stream (ADTS)
+func adtsDecoder(d *decode.Common) interface{} {
 
 	// A	12	syncword 0xFFF, all bits must be 1
 	// B	1	MPEG Version: 0 for MPEG-4, 1 for MPEG-2
@@ -65,4 +61,6 @@ func (d *ADTSDecoder) Decode() {
 	}
 	d.FieldDecodeLen("frame", int64(dataLength)*8, aacFrame)
 	// d.FieldBytesLen("frame", dataLength)
+
+	return nil
 }

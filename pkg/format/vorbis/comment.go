@@ -10,22 +10,18 @@ import (
 
 var flacPicture []*decode.Format
 
-var Comment = format.MustRegister(&decode.Format{
-	Name:      "vorbis_comment",
-	New:       func() decode.Decoder { return &CommentDecoder{} },
-	SkipProbe: true,
-	Deps: []decode.Dep{
-		{Names: []string{"flac_picture"}, Formats: &flacPicture},
-	},
-})
-
-// CommentDecoder is a vorbis packet decoder
-type CommentDecoder struct {
-	decode.Common
+func init() {
+	format.MustRegister(&decode.Format{
+		Name:      "vorbis_comment",
+		DecodeFn:  commentDecode,
+		SkipProbe: true,
+		Deps: []decode.Dep{
+			{Names: []string{"flac_picture"}, Formats: &flacPicture},
+		},
+	})
 }
 
-// Decode vorbis comment
-func (d *CommentDecoder) Decode() {
+func commentDecode(d *decode.Common) interface{} {
 	lenStr := func(name string) string {
 		len := d.FieldU32LE(name + "_length")
 		return d.FieldUTF8(name, int64(len))
@@ -61,4 +57,6 @@ func (d *CommentDecoder) Decode() {
 			}
 		}
 	})
+
+	return nil
 }

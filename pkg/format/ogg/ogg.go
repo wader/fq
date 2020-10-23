@@ -30,7 +30,7 @@ type stream struct {
 	packetBuf  []byte
 }
 
-func decode2(d *decode.Common) {
+func decode2(d *decode.Common) interface{} {
 	validPages := 0
 	streams := map[uint32]*stream{}
 
@@ -39,11 +39,11 @@ func decode2(d *decode.Common) {
 	d.FieldArrayFn2("page", func(d *decode.Common) {
 		for !d.End() {
 			// TODO: FieldTryDecode return field and decoder? handle error?
-			_, pageDecoder, errs := d.FieldTryDecode("page", oggPage)
+			_, dv, errs := d.FieldTryDecode("page", oggPage)
 			if errs != nil {
 				break
 			}
-			p, _ := pageDecoder.(*PageDecoder)
+			p, _ := dv.(*page)
 			if p == nil {
 				// TODO: hmm
 				break
@@ -102,4 +102,6 @@ func decode2(d *decode.Common) {
 	if validPages == 0 {
 		d.Invalid("no frames found")
 	}
+
+	return nil
 }
