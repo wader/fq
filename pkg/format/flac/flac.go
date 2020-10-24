@@ -14,18 +14,17 @@ import (
 var vorbisComment []*decode.Format
 var flacPicture []*decode.Format
 
-var File = format.MustRegister(&decode.Format{
-	Name:  "flac",
-	MIMEs: []string{"audio/x-flac"},
-	New:   func() decode.Decoder { return &FileDecoder{} },
-	Deps: []decode.Dep{
-		{Names: []string{"vorbis_comment"}, Formats: &vorbisComment},
-		{Names: []string{"flac_picture"}, Formats: &flacPicture},
-	},
-})
-
-// FileDecoder is a FLAC file decoder
-type FileDecoder struct{ decode.Common }
+func init() {
+	format.MustRegister(&decode.Format{
+		Name:     "flac",
+		MIMEs:    []string{"audio/x-flac"},
+		DecodeFn: flacDecode,
+		Deps: []decode.Dep{
+			{Names: []string{"vorbis_comment"}, Formats: &vorbisComment},
+			{Names: []string{"flac_picture"}, Formats: &flacPicture},
+		},
+	})
+}
 
 const (
 	MetadataBlockStreaminfo    = 0
@@ -72,7 +71,7 @@ var SubframeTypeNames = map[uint]string{
 }
 
 // TODO: generic enough?
-func (d *FileDecoder) UTF8Uint() uint64 {
+func utf8Uint(d *decode.Common) uint64 {
 	n := d.U8()
 	// leading ones, bit negate and count zeroes
 	c := bits.LeadingZeros8(^uint8(n))
@@ -91,8 +90,7 @@ func (d *FileDecoder) UTF8Uint() uint64 {
 	return n
 }
 
-// Decode decodes a FLAC stream
-func (d *FileDecoder) Decode() {
+func flacDecode(d *decode.Common) interface{} {
 	d.FieldValidateString("magic", "fLaC")
 
 	// is used in frame decoding later
@@ -162,9 +160,9 @@ func (d *FileDecoder) Decode() {
 		}
 	})
 
-	d.FieldArrayFn("frame", func() {
+	d.FieldArrayFn2("frame", func(d *decode.Common) {
 		for !d.End() {
-			d.FieldStructFn("frame", func() {
+			d.FieldStructFn2("frame", func(d *decode.Common) {
 				// <14> 11111111111110
 				d.FieldValidateUFn("sync", 0b11111111111110, d.U14)
 
@@ -359,7 +357,7 @@ func (d *FileDecoder) Decode() {
 				// 1 : reserved for future use
 				d.FieldValidateUFn("reserved1", 0, d.U1)
 
-				d.FieldNoneFn("end_of_header", func() {
+				d.FieldStructFn2("end_of_header", func(d *decode.Common) {
 					// if(variable blocksize)
 					//   <8-56>:"UTF-8" coded sample number (decoded number is 36 bits) [4]
 					// else
@@ -367,11 +365,11 @@ func (d *FileDecoder) Decode() {
 					switch blockingStrategy {
 					case BlockingStrategyVariable:
 						d.FieldUFn("sample_number", func() (uint64, decode.DisplayFormat, string) {
-							return d.UTF8Uint(), decode.NumberDecimal, ""
+							return utf8Uint(d), decode.NumberDecimal, ""
 						})
 					case BlockingStrategyFixed:
 						d.FieldUFn("frame_number", func() (uint64, decode.DisplayFormat, string) {
-							return d.UTF8Uint(), decode.NumberDecimal, ""
+							return utf8Uint(d), decode.NumberDecimal, ""
 						})
 					}
 
@@ -409,7 +407,7 @@ func (d *FileDecoder) Decode() {
 				// CRC-8 (polynomial = x^8 + x^2 + x^1 + x^0, initialized with 0) of everything before the crc, including the sync code
 				d.FieldU8("crc")
 
-				d.FieldArrayFn("subframe", func() {
+				d.FieldArrayFn2("subframe", func(d *decode.Common) {
 					for channelIndex := 0; channelIndex < int(channels); channelIndex++ {
 						d.FieldStructFn("subframe", func() {
 							// <1> Zero bit padding, to prevent sync-fooling string of 1s
@@ -472,7 +470,7 @@ func (d *FileDecoder) Decode() {
 							})
 
 							decodeWarmupSamples := func(n uint64, sampleSize uint64) {
-								d.FieldNoneFn("warmup_samples", func() {
+								d.FieldArrayFn2("warmup_samples", func(d *decode.Common) {
 									for i := uint64(0); i < n; i++ {
 										d.FieldS("value", int64(sampleSize))
 									}
@@ -506,9 +504,9 @@ func (d *FileDecoder) Decode() {
 									return ricePartitions, decode.NumberDecimal, ""
 								})
 
-								d.FieldArrayFn("partition", func() {
+								d.FieldArrayFn2("partition", func(d *decode.Common) {
 									for i := uint64(0); i < ricePartitions; i++ {
-										d.FieldStructFn("partition", func() {
+										d.FieldStructFn2("partition", func(d *decode.Common) {
 											// Encoding parameter:
 											// <4(+5)> Encoding parameter:
 											// 0000-1110 : Rice parameter.
@@ -535,7 +533,7 @@ func (d *FileDecoder) Decode() {
 												escapeSampleSize := d.FieldU5("escape_sample_size")
 												d.FieldBitBufLen("samples", int64(count*escapeSampleSize*8))
 											} else {
-												d.FieldNoneFn("samples", func() {
+												d.FieldStructFn2("samples", func(d *decode.Common) {
 													for j := uint64(0); j < count; j++ {
 														high := d.Unary(0)
 														_ = high
@@ -572,7 +570,7 @@ func (d *FileDecoder) Decode() {
 								// <5> Quantized linear predictor coefficient shift needed in bits (NOTE: this number is signed two's-complement).
 								d.FieldS5("shift")
 								// <n> Unencoded predictor coefficients (n = qlp coeff precision * lpc order) (NOTE: the coefficients are signed two's-complement).
-								d.FieldNoneFn("coefficients", func() {
+								d.FieldArrayFn2("coefficients", func(d *decode.Common) {
 									for i := uint64(0); i < lpcOrder; i++ {
 										d.FieldS("value", int64(precision))
 									}
@@ -591,4 +589,6 @@ func (d *FileDecoder) Decode() {
 			})
 		}
 	})
+
+	return nil
 }

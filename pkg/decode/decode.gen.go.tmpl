@@ -5,7 +5,7 @@ import "fq/pkg/bitbuf"
 
 {{- range $s := array (map "short" "S" "desc" "signed" "type" "int64") (map "short" "U" "desc" "unsigned" "type" "uint64")}}
 
-{{- range $e := array (map "short" "" "long" "BigEndian" "desc" "big endian" "from" 1) (map "short" "BE" "long" "BigEndian" "desc" "big endian" "from" 8)  (map "short" "LE" "long" "LittleEndian" "desc" "little endian" "from" 8)}}
+{{- range $e := array (map "short" "" "long" "BigEndian" "desc" "big-endian" "from" 1) (map "short" "BE" "long" "BigEndian" "desc" "big-endian" "from" 8)  (map "short" "LE" "long" "LittleEndian" "desc" "little-endian" "from" 8)}}
 // {{$s.short}} read a nBits {{$s.desc}} {{$e.desc}} integer
 func (c *Common) {{$s.short}}{{$e.short}}(nBits int64) {{$s.type}} { return c.{{$s.short}}E(nBits, bitbuf.{{$e.long}}) }
 {{- range $i := xrange $e.from 64}}

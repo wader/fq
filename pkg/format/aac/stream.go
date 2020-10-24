@@ -7,31 +7,32 @@ import (
 
 var adts []*decode.Format
 
-var Stream = format.MustRegister(&decode.Format{
-	Name:  "aac_stream",
-	MIMEs: []string{"audio/aac"},
-	New:   func() decode.Decoder { return &StreamDecoder{} },
-	Deps: []decode.Dep{
-		{Names: []string{"adts"}, Formats: &adts},
-	},
-})
-
-// StreamDecoder is a adts  decoder
-type StreamDecoder struct {
-	decode.Common
+func init() {
+	format.MustRegister(&decode.Format{
+		Name:     "aac_stream",
+		MIMEs:    []string{"audio/aac"},
+		DecodeFn: adtsDecode,
+		Deps: []decode.Dep{
+			{Names: []string{"adts"}, Formats: &adts},
+		},
+	})
 }
 
-// Decode adts
-func (d *StreamDecoder) Decode() {
+func adtsDecode(d *decode.Common) interface{} {
 	validFrames := 0
-	for !d.End() {
-		if _, _, errs := d.FieldTryDecode("frame", adts); errs != nil {
-			break
+
+	d.FieldArrayFn2("frame", func(d *decode.Common) {
+		for !d.End() {
+			if _, _, errs := d.FieldTryDecode("frame", adts); errs != nil {
+				break
+			}
+			validFrames++
 		}
-		validFrames++
-	}
+	})
 
 	if validFrames == 0 {
 		d.Invalid("no frames found")
 	}
+
+	return nil
 }

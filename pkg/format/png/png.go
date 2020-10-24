@@ -85,8 +85,10 @@ func pngDecode(d *decode.Common) interface{} {
 
 					switch compressionMethod {
 					case compressionDeflate:
-						d.FieldZlibLen("uncompressed", chunkLength-keywordLen-1, decode.FormatFn(func(c *decode.Common) {
+						// TODO: make nicer
+						d.FieldZlibLen("uncompressed", chunkLength-keywordLen-1, decode.FormatFn(func(c *decode.Common) interface{} {
 							c.FieldUTF8("text", c.BitsLeft()/8)
+							return nil
 						}))
 					default:
 						d.FieldBitBufLen("compressed", (chunkLength-keywordLen-1)*8)
@@ -100,8 +102,10 @@ func pngDecode(d *decode.Common) interface{} {
 
 					switch compressionMethod {
 					case compressionDeflate:
-						d.FieldZlibLen("uncompressed", chunkLength-profileNameLen-1, decode.FormatFn(func(c *decode.Common) {
+						// TODO: make nicer
+						d.FieldZlibLen("uncompressed", chunkLength-profileNameLen-1, decode.FormatFn(func(c *decode.Common) interface{} {
 							c.FieldDecodeLen("icc", c.BitsLeft(), iccTag)
+							return nil
 						}))
 					default:
 						d.FieldBitBufLen("compressed", (chunkLength-profileNameLen-1)*8)

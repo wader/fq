@@ -14,6 +14,7 @@ func init() {
 		Deps: []decode.Dep{
 			{Names: []string{"aac_frame"}, Formats: &aacFrame},
 		},
+		SkipProbe: true,
 	})
 }
 

@@ -50,60 +50,26 @@ func (r *Registry) Probe(parent Decoder, rootFieldName string, parentRange Range
 
 		// TODO: how to pass regsiters? do later? current field?
 
-		if f.DecodeFn != nil {
+		d := (&Common{}).FieldStructBitBuf(rootFieldName, cbb)
+		decodeErr, dv := d.SafeDecodeFn2(f.DecodeFn)
+		if decodeErr != nil {
+			d.current.Error = decodeErr
 
-			d := (&Common{}).FieldStructBitBuf(rootFieldName, cbb)
-			decodeErr, dv := d.SafeDecodeFn2(f.DecodeFn)
-			if decodeErr != nil {
-				d.current.Error = decodeErr
-
-				errs = append(errs, decodeErr)
-				if !forceOne {
-					continue
-				}
+			errs = append(errs, decodeErr)
+			if !forceOne {
+				continue
 			}
-
-			// TODO: will resort
-			d.current.Sort()
-			// TODO: wrong keep track of largest?
-			_ = cbb.TruncateRel(0)
-
-			return d.current, cbb.Pos, dv, errs
-
-		} else {
-
-			d := f.New()
-			rootValue := &Value{
-				V:      Struct{}, // TODO: array or struct?
-				Range:  Range{},  // TODO:
-				BitBuf: cbb,
-				Name:   rootFieldName,
-				Desc:   f.Name,
-			}
-			common := d.GetCommon()
-			common.registry = r
-			common.bitBuf = cbb
-			common.current = rootValue
-
-			decodeErr := d.GetCommon().SafeDecodeFn(d.Decode)
-			// TODO: wrap in ProbeError?
-
-			if decodeErr != nil {
-				common.current.Error = decodeErr
-
-				errs = append(errs, decodeErr)
-				if !forceOne {
-					continue
-				}
-			}
-
-			// TODO: will resort
-			rootValue.Sort()
-			// TODO: wrong keep track of largest?
-			_ = cbb.TruncateRel(0)
-
-			return rootValue, cbb.Pos, nil, errs
 		}
+
+		// TODO: nicer
+		d.current.Desc = f.Name
+
+		// TODO: will resort
+		d.current.Sort()
+		// TODO: wrong keep track of largest?
+		_ = cbb.TruncateRel(0)
+
+		return d.current, cbb.Pos, dv, errs
 	}
 
 	return nil, 0, nil, errs

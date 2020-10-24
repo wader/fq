@@ -7,11 +7,13 @@ import (
 	"fq/pkg/format"
 )
 
-var File = format.MustRegister(&decode.Format{
-	Name:  "flv",
-	MIMEs: []string{"video/x-flv"},
-	New:   func() decode.Decoder { return &FileDecoder{} },
-})
+func init() {
+	format.MustRegister(&decode.Format{
+		Name:     "flv",
+		MIMEs:    []string{"video/x-flv"},
+		DecodeFn: flvDecode,
+	})
+}
 
 const (
 	audioData        = 8
@@ -57,11 +59,7 @@ var typeNames = map[uint64]string{
 	typeLongString:  "LongString",
 }
 
-// FileDecoder is a FLV decoder
-type FileDecoder struct{ decode.Common }
-
-// Decode decodes a FLV file
-func (d *FileDecoder) Decode() {
+func flvDecode(d *decode.Common) interface{} {
 
 	var fieldScriptDataObject func()
 	var fieldScriptDataVariable func(name string)
@@ -178,4 +176,6 @@ func (d *FileDecoder) Decode() {
 		})
 
 	}
+
+	return nil
 }

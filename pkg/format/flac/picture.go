@@ -7,22 +7,18 @@ import (
 
 var images []*decode.Format
 
-var Picture = format.MustRegister(&decode.Format{
-	Name:      "flac_picture",
-	New:       func() decode.Decoder { return &PictureDecoder{} },
-	SkipProbe: true,
-	Deps: []decode.Dep{
-		{Names: []string{"image"}, Formats: &images},
-	},
-})
-
-// PictureDecoder is a FLAC picture decoder
-type PictureDecoder struct {
-	decode.Common
+func init() {
+	format.MustRegister(&decode.Format{
+		Name:      "flac_picture",
+		DecodeFn:  pictureDecode,
+		SkipProbe: true,
+		Deps: []decode.Dep{
+			{Names: []string{"image"}, Formats: &images},
+		},
+	})
 }
 
-// PictureDecoder decodes a FLAC picture
-func (d *PictureDecoder) Decode() {
+func pictureDecode(d *decode.Common) interface{} {
 	lenStr := func(name string) string {
 		len := d.FieldU32(name + "_length")
 		return d.FieldUTF8(name, int64(len))
@@ -36,4 +32,6 @@ func (d *PictureDecoder) Decode() {
 	d.FieldU32("number_of_index_colors")
 	pictureLen := d.FieldU32("picture_length")
 	d.FieldDecodeLen("picture_data", int64(pictureLen)*8, images)
+
+	return nil
 }

@@ -1,6 +1,7 @@
 package mp4
 
 // TODO: validate structure better? trak/stco etc
+// TODO: rename atom -> box?
 
 import (
 	"fq/pkg/decode"
@@ -8,12 +9,14 @@ import (
 	"log"
 )
 
-var File = format.MustRegister(&decode.Format{
-	Name: "mp4",
-	// TODO: implment MIME()
-	MIMEs:    []string{"audio/mp4", "video/mp4"},
-	DecodeFn: mp4Decode,
-})
+func init() {
+	format.MustRegister(&decode.Format{
+		Name: "mp4",
+		// TODO: implment MIME()
+		MIMEs:    []string{"audio/mp4", "video/mp4"},
+		DecodeFn: mp4Decode,
+	})
+}
 
 type stsc struct {
 	firstChunk      uint32

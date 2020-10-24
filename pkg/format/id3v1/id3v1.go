@@ -9,35 +9,32 @@ import (
 // TODO: trim strings?
 // TODO: comment 28 long, zero byte, track number
 
-var Tag = format.MustRegister(&decode.Format{
-	Name:      "id3v1",
-	New:       func() decode.Decoder { return &TagDecoder{} },
-	SkipProbe: true,
-})
-
-// TagDecoder is ID3v1 tag decoder
-type TagDecoder struct {
-	decode.Common
+func init() {
+	format.MustRegister(&decode.Format{
+		Name:      "id3v1",
+		DecodeFn:  id3v1Decode,
+		SkipProbe: true,
+	})
 }
 
-func (d *TagDecoder) field(name string, nBytes int64) {
+func field(d *decode.Common, name string, nBytes int64) {
 	d.FieldStrFn(name, func() (string, string) {
 		return strings.Trim(d.UTF8(nBytes), "\x00 "), ""
 	})
 }
 
 // Decode ID3v1 tag
-func (d *TagDecoder) Decode() {
+func id3v1Decode(d *decode.Common) interface{} {
 	d.ValidateAtLeastBitsLeft(128 * 8)
 	d.FieldValidateString("magic", "TAG")
 	if d.PeekBits(8) == uint64('+') {
 		d.Invalid("looks like id3v11")
 	}
-	d.field("song_name", 30)
-	d.field("artist", 30)
-	d.field("album_name", 30)
-	d.field("year", 4)
-	d.field("comment", 30)
+	field(d, "song_name", 30)
+	field(d, "artist", 30)
+	field(d, "album_name", 30)
+	field(d, "year", 4)
+	field(d, "comment", 30)
 	// from https://en.wikipedia.org/wiki/List_of_ID3v1_Genres
 	d.FieldStringMapFn("genre", map[uint64]string{
 		0:   "Blues",
@@ -233,4 +230,6 @@ func (d *TagDecoder) Decode() {
 		190: "Garage Rock",
 		191: "Psybient",
 	}, "Unknown", d.U8)
+
+	return nil
 }

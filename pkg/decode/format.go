@@ -9,15 +9,14 @@ type Format struct {
 	Name      string
 	Groups    []string
 	MIMEs     []string
-	New       func() Decoder
 	DecodeFn  func(d *Common) interface{}
 	SkipProbe bool
 	Deps      []Dep
 }
 
-func FormatFn(d func(c *Common)) []*Format {
+func FormatFn(d func(c *Common) interface{}) []*Format {
 	return []*Format{{
-		New: func() Decoder { return &DecoderFn{decode: d} },
+		DecodeFn: d,
 	}}
 }
 

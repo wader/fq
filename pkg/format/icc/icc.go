@@ -7,19 +7,15 @@ import (
 	"fq/pkg/format"
 )
 
-var Tag = format.MustRegister(&decode.Format{
-	Name:      "icc",
-	New:       func() decode.Decoder { return &TagDecoder{} },
-	SkipProbe: true,
-})
-
-// TagDecoder is a ICC profile decoder
-type TagDecoder struct {
-	decode.Common
+func init() {
+	format.MustRegister(&decode.Format{
+		Name:      "icc",
+		DecodeFn:  iccDecode,
+		SkipProbe: true,
+	})
 }
 
-// Decode ICC tag
-func (d *TagDecoder) Decode() {
+func iccDecode(d *decode.Common) interface{} {
 
 	d.FieldNoneFn("header", func() {
 		d.FieldU32("size")
@@ -85,4 +81,5 @@ func (d *TagDecoder) Decode() {
 	   100..127 28 bytes reserved for future expansion - must be set to zeros
 	*/
 
+	return nil
 }

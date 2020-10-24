@@ -1,4 +1,6 @@
 
+go generate ./pkg/decode/
+
 
 replace Groups by Names "jpeg", "image"
 

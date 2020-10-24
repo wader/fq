@@ -37,26 +37,25 @@ typedef struct {
 
 */
 
-var File = format.MustRegister(&decode.Format{
-	Name: "elf",
-	New:  func() decode.Decoder { return &FileDecoder{} },
-})
+func init() {
+	format.MustRegister(&decode.Format{
+		Name:     "elf",
+		DecodeFn: elfDecode,
+	})
+}
 
-// FileDecoder is ELF file decoder
-type FileDecoder struct{ decode.Common }
-
-// Decode a ELF file
-func (d *FileDecoder) Decode() {
+func elfDecode(d *decode.Common) interface{} {
 	d.ValidateAtLeastBitsLeft(128 * 8)
 
+	// TODO: make endian switching nicer somehow?
 	var archBits uint64
-	var field16 func(name string) uint64
-	var field32 func(name string) uint64
-	var field64 func(name string) uint64
-	var fieldNX func(name string) uint64
-	var dN func() uint64
+	var field16 func(d *decode.Common, name string) uint64
+	var field32 func(d *decode.Common, name string) uint64
+	var field64 func(d *decode.Common, name string) uint64
+	var fieldNX func(d *decode.Common, name string) uint64
+	var dN func(d *decode.Common) uint64
 
-	d.FieldNoneFn("ident", func() {
+	d.FieldStructFn2("ident", func(d *decode.Common) {
 		d.FieldValidateString("magic", "\x7fELF")
 
 		archBits = d.FieldUFn("class", func() (uint64, decode.DisplayFormat, string) {
@@ -75,25 +74,25 @@ func (d *FileDecoder) Decode() {
 			switch d.U8() {
 			case 1:
 				isBigEndian = false
-				field16 = d.FieldU16LE
-				field32 = d.FieldU32LE
-				field64 = d.FieldU64LE
+				field16 = func(d *decode.Common, name string) uint64 { return d.FieldU16LE(name) }
+				field32 = func(d *decode.Common, name string) uint64 { return d.FieldU32LE(name) }
+				field64 = func(d *decode.Common, name string) uint64 { return d.FieldU64LE(name) }
 				switch archBits {
 				case 32:
-					dN = d.U32LE
+					dN = func(d *decode.Common) uint64 { return d.U32LE() }
 				case 64:
-					dN = d.U64LE
+					dN = func(d *decode.Common) uint64 { return d.U64LE() }
 				}
 				return 1, decode.NumberDecimal, "Little-endian"
 			case 2:
-				field16 = d.FieldU16BE
-				field32 = d.FieldU32BE
-				field64 = d.FieldU64BE
+				field16 = func(d *decode.Common, name string) uint64 { return d.FieldU16BE(name) }
+				field32 = func(d *decode.Common, name string) uint64 { return d.FieldU32BE(name) }
+				field64 = func(d *decode.Common, name string) uint64 { return d.FieldU64BE(name) }
 				switch archBits {
 				case 32:
-					dN = d.U32BE
+					dN = func(d *decode.Common) uint64 { return d.U32BE() }
 				case 64:
-					dN = d.U64BE
+					dN = func(d *decode.Common) uint64 { return d.U64BE() }
 				}
 				return 2, decode.NumberDecimal, "Big-endian"
 			default:
@@ -101,9 +100,9 @@ func (d *FileDecoder) Decode() {
 			}
 			panic("unreachable")
 		})
-		fieldNX = func(name string) uint64 {
+		fieldNX = func(d *decode.Common, name string) uint64 {
 			return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
-				return dN(), decode.NumberHex, ""
+				return dN(d), decode.NumberHex, ""
 			})
 		}
 		_ = isBigEndian
@@ -129,71 +128,77 @@ func (d *FileDecoder) Decode() {
 		d.FieldValidateZeroPadding("pad", 7*8)
 	})
 
-	field16("type")
-	field16("machine")
-	field32("version")
-	fieldNX("entry")
-	fieldNX("phoff")
-	fieldNX("shoff")
-	field32("flags")
-	field16("ehsize")
-	field16("phentsize")
-	phnum := field16("phnum")
-	field16("shentsize")
-	shnum := field16("shnum")
-	field16("shstrndx")
+	field16(d, "type")
+	field16(d, "machine")
+	field32(d, "version")
+	fieldNX(d, "entry")
+	fieldNX(d, "phoff")
+	fieldNX(d, "shoff")
+	field32(d, "flags")
+	field16(d, "ehsize")
+	field16(d, "phentsize")
+	phnum := field16(d, "phnum")
+	field16(d, "shentsize")
+	shnum := field16(d, "shnum")
+	field16(d, "shstrndx")
 
-	for i := uint64(0); i < phnum; i++ {
-		d.FieldNoneFn("program_header", func() {
-			switch archBits {
-			case 32:
-				field32("p_type")
-				fieldNX("p_offset")
-				fieldNX("p_vaddr")
-				fieldNX("p_paddr")
-				field32("p_filesz")
-				field32("p_memsz")
-				field32("p_flags")
-				field32("p_align")
-			case 64:
-				field32("p_type")
-				field32("p_flags")
-				fieldNX("p_offset")
-				fieldNX("p_vaddr")
-				fieldNX("p_paddr")
-				field64("p_filesz")
-				field64("p_memsz")
-				field64("p_align")
-			}
-		})
-	}
+	d.FieldArrayFn2("program_header", func(d *decode.Common) {
+		for i := uint64(0); i < phnum; i++ {
+			d.FieldStructFn2("program_header", func(d *decode.Common) {
+				switch archBits {
+				case 32:
+					field32(d, "p_type")
+					fieldNX(d, "p_offset")
+					fieldNX(d, "p_vaddr")
+					fieldNX(d, "p_paddr")
+					field32(d, "p_filesz")
+					field32(d, "p_memsz")
+					field32(d, "p_flags")
+					field32(d, "p_align")
+				case 64:
+					field32(d, "p_type")
+					field32(d, "p_flags")
+					fieldNX(d, "p_offset")
+					fieldNX(d, "p_vaddr")
+					fieldNX(d, "p_paddr")
+					field64(d, "p_filesz")
+					field64(d, "p_memsz")
+					field64(d, "p_align")
+				}
+			})
+		}
+	})
 
-	for i := uint64(0); i < shnum; i++ {
-		d.FieldNoneFn("section_header", func() {
-			switch archBits {
-			case 32:
-				field32("sh_name")
-				field32("sh_type")
-				field32("sh_flags")
-				fieldNX("sh_addr")
-				fieldNX("sh_offset")
-				field32("sh_size")
-				field32("sh_link")
-				field32("sh_info")
-				field32("sh_addralign")
-				field32("sh_entsize")
-			case 64:
-				field32("sh_name")
-				field32("sh_type")
-				field64("sh_flags")
-				fieldNX("sh_addr")
-				fieldNX("sh_offset")
-				field64("sh_size")
-				field32("sh_link")
-				field32("sh_info")
-				field64("sh_addralign")
-				field64("sh_entsize")
-			}
-		})
-	}
+	d.FieldArrayFn2("section_header", func(d *decode.Common) {
+		for i := uint64(0); i < shnum; i++ {
+			d.FieldStructFn2("section_header", func(d *decode.Common) {
+				switch archBits {
+				case 32:
+					field32(d, "sh_name")
+					field32(d, "sh_type")
+					field32(d, "sh_flags")
+					fieldNX(d, "sh_addr")
+					fieldNX(d, "sh_offset")
+					field32(d, "sh_size")
+					field32(d, "sh_link")
+					field32(d, "sh_info")
+					field32(d, "sh_addralign")
+					field32(d, "sh_entsize")
+				case 64:
+					field32(d, "sh_name")
+					field32(d, "sh_type")
+					field64(d, "sh_flags")
+					fieldNX(d, "sh_addr")
+					fieldNX(d, "sh_offset")
+					field64(d, "sh_size")
+					field32(d, "sh_link")
+					field32(d, "sh_info")
+					field64(d, "sh_addralign")
+					field64(d, "sh_entsize")
+				}
+			})
+		}
+	})
+
+	return nil
 }

@@ -14,14 +14,16 @@ import (
 
 var images []*decode.Format
 
-var Tag = format.MustRegister(&decode.Format{
-	Name:      "id3v2",
-	New:       func() decode.Decoder { return &TagDecoder{} },
-	SkipProbe: true,
-	Deps: []decode.Dep{
-		{Names: []string{"image"}, Formats: &images},
-	},
-})
+func init() {
+	format.MustRegister(&decode.Format{
+		Name:      "id3v2",
+		DecodeFn:  id3v2Decode,
+		SkipProbe: true,
+		Deps: []decode.Dep{
+			{Names: []string{"image"}, Formats: &images},
+		},
+	})
+}
 
 var idDescriptions = map[string]string{
 	"AENC": "Audio encryption",
@@ -252,12 +254,7 @@ var encodingToUTF8 = map[int]func(b []byte) string{
 	},
 }
 
-// Decoder is ID3v2 tag decoder
-type TagDecoder struct {
-	decode.Common
-}
-
-func (d *TagDecoder) SyncSafeU32() uint64 {
+func syncSafeU32(d *decode.Common) uint64 {
 	u := d.U32()
 	// syncsafe integer is a number encoded
 	// with 8th bit in each byte set to zero
@@ -269,7 +266,7 @@ func (d *TagDecoder) SyncSafeU32() uint64 {
 		((u & 0x0000007f) >> 0))
 }
 
-func (d *TagDecoder) Text(encoding int, nBytes int64) string {
+func text(d *decode.Common, encoding int, nBytes int64) string {
 	encodingFn := encodingToUTF8[encodingUTF8]
 	if fn, ok := encodingToUTF8[encoding]; ok {
 		encodingFn = fn
@@ -277,39 +274,39 @@ func (d *TagDecoder) Text(encoding int, nBytes int64) string {
 	return strings.TrimRight(encodingFn(d.BytesLen(nBytes)), "\x00")
 }
 
-func (d *TagDecoder) TextNull(encoding int) string {
+func textNull(d *decode.Common, encoding int) string {
 	nullLen := encodingLen[encodingUTF8]
 	if n, ok := encodingLen[uint64(encoding)]; ok {
 		nullLen = n
 	}
 
 	textLen := d.PeekFind(int64(nullLen*8), 0, -1)/8 - int64(nullLen)
-	text := d.Text(encoding, textLen)
+	text := text(d, encoding, textLen)
 	// TODO: field?
 	d.SeekRel(int64(nullLen) * 8)
 
 	return text
 }
 
-func (d *TagDecoder) FieldSyncSafeU32(name string) uint64 {
+func fieldSyncSafeU32(d *decode.Common, name string) uint64 {
 	return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
-		return d.SyncSafeU32(), decode.NumberDecimal, ""
+		return syncSafeU32(d), decode.NumberDecimal, ""
 	})
 }
 
-func (d *TagDecoder) FieldTextNull(name string, encoding int) string {
+func fieldTextNull(d *decode.Common, name string, encoding int) string {
 	return d.FieldStrFn(name, func() (string, string) {
-		return d.TextNull(encoding), ""
+		return textNull(d, encoding), ""
 	})
 }
 
-func (d *TagDecoder) FieldText(name string, encoding int, nBytes int64) string {
+func fieldText(d *decode.Common, name string, encoding int, nBytes int64) string {
 	return d.FieldStrFn(name, func() (string, string) {
-		return d.Text(encoding, nBytes), ""
+		return text(d, encoding, nBytes), ""
 	})
 }
 
-func (d *TagDecoder) DecodeFrame(version int) uint64 {
+func decodeFrame(d *decode.Common, version int) uint64 {
 	var id string
 
 	switch version {
@@ -349,7 +346,7 @@ func (d *TagDecoder) DecodeFrame(version int) uint64 {
 		// Size      4 * %0xxxxxxx  (synchsafe integer)
 		// Flags         $xx xx
 		d.FieldStrFn("id", func() (string, string) { return d.UTF8(4), idDescription })
-		dataSize = d.FieldSyncSafeU32("size")
+		dataSize = fieldSyncSafeU32(d, "size")
 		var headerLen uint64 = 10
 
 		dataLenFlag := false
@@ -360,7 +357,7 @@ func (d *TagDecoder) DecodeFrame(version int) uint64 {
 		})
 
 		if dataLenFlag {
-			d.FieldSyncSafeU32("data_length_indicator")
+			fieldSyncSafeU32(d, "data_length_indicator")
 			dataSize -= 4
 			headerLen = 4
 		}
@@ -379,9 +376,9 @@ func (d *TagDecoder) DecodeFrame(version int) uint64 {
 		// Picture data       <binary data>
 		"APIC": func() {
 			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
-			d.FieldTextNull("mime_type", encodingUTF8)
+			fieldTextNull(d, "mime_type", encodingUTF8)
 			d.FieldU8("picture_type") // TODO: table
-			d.FieldTextNull("description", int(encoding))
+			fieldTextNull(d, "description", int(encoding))
 			d.FieldDecodeLen("picture", d.BitsLeft(), images)
 		},
 		// Unsynced lyrics/text "ULT"
@@ -412,8 +409,8 @@ func (d *TagDecoder) DecodeFrame(version int) uint64 {
 		"COMM": func() {
 			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
 			d.FieldUTF8("language", 3)
-			d.FieldTextNull("description", int(encoding))
-			d.FieldText("value", int(encoding), d.BitsLeft()/8)
+			fieldTextNull(d, "description", int(encoding))
+			fieldText(d, "value", int(encoding), d.BitsLeft()/8)
 		},
 		// Text information identifier  "T00" - "TZZ" , excluding "TXX",
 		//                             described in 4.2.2.
@@ -427,7 +424,7 @@ func (d *TagDecoder) DecodeFrame(version int) uint64 {
 		// Information                  <text string(s) according to encoding>
 		"T000": func() {
 			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
-			d.FieldText("text", int(encoding), d.BitsLeft()/8)
+			fieldText(d, "text", int(encoding), d.BitsLeft()/8)
 		},
 		// User defined...   "TXX"
 		// Frame size        $xx xx xx
@@ -441,8 +438,8 @@ func (d *TagDecoder) DecodeFrame(version int) uint64 {
 		// Value             <text string according to encoding>
 		"TXXX": func() {
 			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
-			d.FieldTextNull("description", int(encoding))
-			d.FieldText("value", int(encoding), d.BitsLeft()/8)
+			fieldTextNull(d, "description", int(encoding))
+			fieldText(d, "value", int(encoding), d.BitsLeft()/8)
 		},
 	}
 
@@ -466,15 +463,15 @@ func (d *TagDecoder) DecodeFrame(version int) uint64 {
 	return size
 }
 
-func (d *TagDecoder) DecodeFrames(version int, size uint64) {
-	d.FieldArrayFn("frame", func() {
+func decodeFrames(d *decode.Common, version int, size uint64) {
+	d.FieldArrayFn2("frame", func(d *decode.Common) {
 		for size > 0 {
 			for d.PeekBits(8) == 0 {
 				return
 			}
 
-			d.FieldStructFn("frame", func() {
-				size -= d.DecodeFrame(version)
+			d.FieldStructFn2("frame", func(d *decode.Common) {
+				size -= decodeFrame(d, version)
 			})
 		}
 
@@ -487,7 +484,7 @@ func (d *TagDecoder) DecodeFrames(version int, size uint64) {
 }
 
 // Decode ID3v2
-func (d *TagDecoder) Decode() {
+func id3v2Decode(d *decode.Common) interface{} {
 	d.ValidateAtLeastBitsLeft(4 * 8)
 	d.FieldValidateString("magic", "ID3")
 	version := int(d.FieldU8("version"))
@@ -505,7 +502,7 @@ func (d *TagDecoder) Decode() {
 		d.FieldU5("unused")
 	})
 	size := d.FieldUFn("size", func() (uint64, decode.DisplayFormat, string) {
-		return d.SyncSafeU32(), decode.NumberDecimal, ""
+		return syncSafeU32(d), decode.NumberDecimal, ""
 	})
 
 	var extHeaderSize uint64
@@ -517,7 +514,7 @@ func (d *TagDecoder) Decode() {
 				d.FieldBitBufLen("data", int64(extHeaderSize)*8)
 			case 4:
 				extHeaderSize = d.FieldUFn("size", func() (uint64, decode.DisplayFormat, string) {
-					return d.SyncSafeU32(), decode.NumberDecimal, ""
+					return syncSafeU32(d), decode.NumberDecimal, ""
 				})
 				// in v4 synchsafe integer includes itself
 				d.FieldBitBufLen("data", (int64(extHeaderSize)-4)*8)
@@ -525,5 +522,7 @@ func (d *TagDecoder) Decode() {
 		})
 	}
 
-	d.DecodeFrames(version, size)
+	decodeFrames(d, version, size)
+
+	return nil
 }
