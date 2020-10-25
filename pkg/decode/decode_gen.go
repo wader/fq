@@ -1,4 +1,4 @@
-// Generated with decode.gen.go.tmpl
+// Generated with decode_gen.go.tmpl
 package decode
 
 import "fq/pkg/bitbuf"

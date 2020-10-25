@@ -1,6 +1,6 @@
 package decode
 
-//go:generate sh -c "cat decode.gen.go.tmpl | go run ../../_dev/tmpl.go | gofmt > decode.gen.go"
+//go:generate sh -c "cat decode_gen.go.tmpl | go run ../../_dev/tmpl.go | gofmt > decode_gen.go"
 
 import (
 	"bytes"
