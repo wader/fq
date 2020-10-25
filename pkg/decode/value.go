@@ -80,6 +80,7 @@ type Array []*Value
 
 // TODO: encoding? endian, string encoding, compression, etc?
 type Value struct {
+	Parent        *Value
 	V             interface{} // int64, uint64, float64, string, bool, []byte, Array, Struct
 	Range         Range
 	BitBuf        *bitbuf.Buffer

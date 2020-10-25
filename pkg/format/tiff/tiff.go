@@ -766,13 +766,10 @@ var tagNames = map[uint64]string{
 func tiffDecode(d *decode.D) interface{} {
 	switch d.PeekBits(32) {
 	case littleEndian, bigEndian:
+		d.Endian = decode.BigEndian
 	default:
 		d.Invalid("unknown endian")
 	}
-	var fu16 func(name string) uint64
-	var fu32 func(name string) uint64
-	var su32 func(name string) int64
-	var u16 func() uint64
 
 	endian := d.FieldUFn("endian", func() (uint64, decode.DisplayFormat, string) {
 		endian := d.U32()
@@ -782,38 +779,35 @@ func tiffDecode(d *decode.D) interface{} {
 		d.FieldU16("integer_42")
 		switch endian {
 		case littleEndian:
-			fu16 = d.FieldU16LE
-			fu32 = d.FieldU32LE
-			su32 = d.FieldS32LE
-			u16 = d.U16LE
-			fu32 = d.FieldU32LE
 			return endian, decode.NumberHex, "little-endian"
 		case bigEndian:
-			fu16 = d.FieldU16BE
-			fu32 = d.FieldU32BE
-			su32 = d.FieldS32BE
-			u16 = d.U16BE
-			fu32 = d.FieldU32BE
 			return endian, decode.NumberHex, "big-endian"
 		}
 		return endian, decode.NumberDecimal, "unknown"
 	})
 
-	ifdOffset := fu32("ifd_offset")
+	switch endian {
+	case littleEndian:
+		d.Endian = decode.LittleEndian
+	case bigEndian:
+		d.Endian = decode.BigEndian
+	}
+
+	ifdOffset := d.FieldU32("ifd_offset")
 
 	d.FieldArrayFn("ifd", func(d *decode.D) {
 		// TODO: inf loop?
 		for ifdOffset != 0 {
 			d.SeekAbs(int64(ifdOffset) * 8)
 
-			numberOfFields := fu16("number_of_field")
+			numberOfFields := d.FieldU16("number_of_field")
 			for i := uint64(0); i < numberOfFields; i++ {
 				d.FieldStructFn("ifd", func(d *decode.D) {
-					tag, _ := d.FieldStringMapFn("tag", tagNames, "unknown", u16)
-					typ, typOk := d.FieldStringMapFn("type", typeNames, "unknown", u16)
-					count := fu32("count")
+					tag, _ := d.FieldStringMapFn("tag", tagNames, "unknown", d.U16)
+					typ, typOk := d.FieldStringMapFn("type", typeNames, "unknown", d.U16)
+					count := d.FieldU32("count")
 					// TODO: short values stored in valueOffset directly?
-					valueByteOffset := fu32("value_offset")
+					valueByteOffset := d.FieldU32("value_offset")
 
 					if !typOk {
 						return
@@ -852,14 +846,14 @@ func tiffDecode(d *decode.D) interface{} {
 									// case BYTE:
 									// 	d.FieldU8("value")
 									case SHORT:
-										fu16("value")
+										d.FieldU16("value")
 									case LONG:
-										fu32("value")
+										d.FieldU32("value")
 									case RATIONAL:
 										// TODO: endian? correct? unsigned 32:32 fixed point
 										d.FieldUFP64("value")
 									case SLONG:
-										su32("value")
+										d.FieldS32("value")
 									case SRATIONAL:
 										// TODO: endian? correct? signed 32:32 fixed point
 										d.FieldFP64("value")
@@ -873,7 +867,7 @@ func tiffDecode(d *decode.D) interface{} {
 				})
 			}
 
-			ifdOffset = fu32("next_ifd")
+			ifdOffset = d.FieldU32("next_ifd")
 		}
 	})
 

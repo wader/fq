@@ -24,7 +24,7 @@ type FieldWriter struct {
 	v *decode.Value
 }
 
-func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, name string, depth int) error {
+func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, index int, depth int) error {
 
 	startBit := v.Range.Start
 	stopBit := v.Range.Stop
@@ -147,7 +147,15 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, name
 	}
 
 	indent := strings.Repeat("  ", depth)
-	fmt.Fprintf(cw.Columns[6], "%s%s: %s %s (%s)\n", indent, name, v, v.Range, decode.Bits(v.Range.Length()))
+
+	switch v.Parent.V.(type) {
+	case decode.Struct:
+		fmt.Fprintf(cw.Columns[6], "%s%s: %s %s (%s)\n", indent, v.Name, v, v.Range, decode.Bits(v.Range.Length()))
+	case decode.Array:
+		fmt.Fprintf(cw.Columns[6], "%s%s[%d] (%s): %s %s (%s)\n", indent, v.Parent.Name, index, v.Name, v, v.Range, decode.Bits(v.Range.Length()))
+	default:
+		panic("invalid parent")
+	}
 
 	cw.Flush()
 
@@ -162,29 +170,29 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, name
 }
 
 func (o *FieldWriter) write(cw *columnwriter.Writer, v *decode.Value) error {
-	var walkFn func(v *decode.Value, name string, depth int) error
-	walkFn = func(v *decode.Value, name string, depth int) error {
+	var walkFn func(v *decode.Value, index int, depth int) error
+	walkFn = func(v *decode.Value, index int, depth int) error {
 		indent := strings.Repeat("  ", depth)
 
 		switch vv := v.V.(type) {
 		case decode.Struct:
-			fmt.Fprintf(cw.Columns[6], "%s%s: %s\n", indent, name, v)
+			fmt.Fprintf(cw.Columns[6], "%s%s: %s %s\n", indent, v.Name, v, v.Range)
 			cw.Flush()
 			for _, wv := range vv {
-				walkFn(wv, wv.Name, depth+1)
+				walkFn(wv, -1, depth+1)
 			}
 		case decode.Array:
-			//fmt.Fprintf(cw.Columns[6], "%s%s: %s\n", indent, name, v)
+			// fmt.Fprintf(cw.Columns[6], "%s%s: %s\n", indent, name, v)
 			cw.Flush()
 			for i, wv := range vv {
-				walkFn(wv, fmt.Sprintf("%s[%d]", wv.Name, i), depth)
+				walkFn(wv, i, depth)
 			}
 		default:
-			o.outputValue(cw, v, v.Name, depth)
+			o.outputValue(cw, v, index, depth)
 		}
 		return nil
 	}
-	return walkFn(v, v.Name, 0)
+	return walkFn(v, -1, 0)
 }
 
 func (o *FieldWriter) Write(w io.Writer) error {

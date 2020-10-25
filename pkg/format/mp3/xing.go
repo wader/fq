@@ -18,7 +18,7 @@ func init() {
 func xingDecode(d *decode.D) interface{} {
 	// TODO: info has lame extension?
 	hasLameExtension := false
-	switch string(d.PeekBytes(4)) {
+	switch d.FieldUTF8("header", 4) {
 	case "Xing":
 	case "Info":
 		hasLameExtension = true
@@ -26,7 +26,6 @@ func xingDecode(d *decode.D) interface{} {
 		d.Invalid("no xing header found")
 	}
 
-	d.FieldUTF8("header", 4)
 	qualityPresent := false
 	tocPresent := false
 	bytesPresent := false

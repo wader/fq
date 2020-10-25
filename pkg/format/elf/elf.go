@@ -47,18 +47,13 @@ func init() {
 func elfDecode(d *decode.D) interface{} {
 	d.ValidateAtLeastBitsLeft(128 * 8)
 
-	// TODO: make endian switching nicer somehow?
-	var archBits uint64
-	var field16 func(d *decode.D, name string) uint64
-	var field32 func(d *decode.D, name string) uint64
-	var field64 func(d *decode.D, name string) uint64
-	var fieldNX func(d *decode.D, name string) uint64
-	var dN func(d *decode.D) uint64
+	var archBits int64
+	var endian decode.Endian
 
 	d.FieldStructFn("ident", func(d *decode.D) {
 		d.FieldValidateString("magic", "\x7fELF")
 
-		archBits = d.FieldUFn("class", func() (uint64, decode.DisplayFormat, string) {
+		archBits = int64(d.FieldUFn("class", func() (uint64, decode.DisplayFormat, string) {
 			switch d.U8() {
 			case 1:
 				return 32, decode.NumberDecimal, ""
@@ -68,44 +63,20 @@ func elfDecode(d *decode.D) interface{} {
 				//d.Invalid()
 			}
 			panic("unreachable")
-		})
-		isBigEndian := true
+		}))
 		d.FieldUFn("data", func() (uint64, decode.DisplayFormat, string) {
 			switch d.U8() {
 			case 1:
-				isBigEndian = false
-				field16 = func(d *decode.D, name string) uint64 { return d.FieldU16LE(name) }
-				field32 = func(d *decode.D, name string) uint64 { return d.FieldU32LE(name) }
-				field64 = func(d *decode.D, name string) uint64 { return d.FieldU64LE(name) }
-				switch archBits {
-				case 32:
-					dN = func(d *decode.D) uint64 { return d.U32LE() }
-				case 64:
-					dN = func(d *decode.D) uint64 { return d.U64LE() }
-				}
+				endian = decode.LittleEndian
 				return 1, decode.NumberDecimal, "Little-endian"
 			case 2:
-				field16 = func(d *decode.D, name string) uint64 { return d.FieldU16BE(name) }
-				field32 = func(d *decode.D, name string) uint64 { return d.FieldU32BE(name) }
-				field64 = func(d *decode.D, name string) uint64 { return d.FieldU64BE(name) }
-				switch archBits {
-				case 32:
-					dN = func(d *decode.D) uint64 { return d.U32BE() }
-				case 64:
-					dN = func(d *decode.D) uint64 { return d.U64BE() }
-				}
+				endian = decode.BigEndian
 				return 2, decode.NumberDecimal, "Big-endian"
 			default:
 				//d.Invalid()
 			}
 			panic("unreachable")
 		})
-		fieldNX = func(d *decode.D, name string) uint64 {
-			return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
-				return dN(d), decode.NumberHex, ""
-			})
-		}
-		_ = isBigEndian
 		d.FieldU8("version")
 		d.FieldStringMapFn("os_abi", map[uint64]string{
 			0:   "Sysv",
@@ -128,42 +99,46 @@ func elfDecode(d *decode.D) interface{} {
 		d.FieldValidateZeroPadding("pad", 7*8)
 	})
 
-	field16(d, "type")
-	field16(d, "machine")
-	field32(d, "version")
-	fieldNX(d, "entry")
-	fieldNX(d, "phoff")
-	fieldNX(d, "shoff")
-	field32(d, "flags")
-	field16(d, "ehsize")
-	field16(d, "phentsize")
-	phnum := field16(d, "phnum")
-	field16(d, "shentsize")
-	shnum := field16(d, "shnum")
-	field16(d, "shstrndx")
+	d.Endian = endian
+
+	// TODO: hex functions?
+
+	d.FieldU16LE("type")
+	d.FieldU16LE("machine")
+	d.FieldU32LE("version")
+	d.FieldU("entry", archBits)
+	d.FieldU("phoff", archBits)
+	d.FieldU("shoff", archBits)
+	d.FieldU32LE("flags")
+	d.FieldU16LE("ehsize")
+	d.FieldU16LE("phentsize")
+	phnum := d.FieldU16LE("phnum")
+	d.FieldU16LE("shentsize")
+	shnum := d.FieldU16LE("shnum")
+	d.FieldU16LE("shstrndx")
 
 	d.FieldArrayFn("program_header", func(d *decode.D) {
 		for i := uint64(0); i < phnum; i++ {
 			d.FieldStructFn("program_header", func(d *decode.D) {
 				switch archBits {
 				case 32:
-					field32(d, "p_type")
-					fieldNX(d, "p_offset")
-					fieldNX(d, "p_vaddr")
-					fieldNX(d, "p_paddr")
-					field32(d, "p_filesz")
-					field32(d, "p_memsz")
-					field32(d, "p_flags")
-					field32(d, "p_align")
+					d.FieldU32LE("p_type")
+					d.FieldU("p_offset", archBits)
+					d.FieldU("p_vaddr", archBits)
+					d.FieldU("p_paddr", archBits)
+					d.FieldU32LE("p_filesz")
+					d.FieldU32LE("p_memsz")
+					d.FieldU32LE("p_flags")
+					d.FieldU32LE("p_align")
 				case 64:
-					field32(d, "p_type")
-					field32(d, "p_flags")
-					fieldNX(d, "p_offset")
-					fieldNX(d, "p_vaddr")
-					fieldNX(d, "p_paddr")
-					field64(d, "p_filesz")
-					field64(d, "p_memsz")
-					field64(d, "p_align")
+					d.FieldU32LE("p_type")
+					d.FieldU32LE("p_flags")
+					d.FieldU("p_offset", archBits)
+					d.FieldU("p_vaddr", archBits)
+					d.FieldU("p_paddr", archBits)
+					d.FieldU64LE("p_filesz")
+					d.FieldU64LE("p_memsz")
+					d.FieldU64LE("p_align")
 				}
 			})
 		}
@@ -174,27 +149,27 @@ func elfDecode(d *decode.D) interface{} {
 			d.FieldStructFn("section_header", func(d *decode.D) {
 				switch archBits {
 				case 32:
-					field32(d, "sh_name")
-					field32(d, "sh_type")
-					field32(d, "sh_flags")
-					fieldNX(d, "sh_addr")
-					fieldNX(d, "sh_offset")
-					field32(d, "sh_size")
-					field32(d, "sh_link")
-					field32(d, "sh_info")
-					field32(d, "sh_addralign")
-					field32(d, "sh_entsize")
+					d.FieldU32LE("sh_name")
+					d.FieldU32LE("sh_type")
+					d.FieldU32LE("sh_flags")
+					d.FieldU("sh_addr", archBits)
+					d.FieldU("sh_offset", archBits)
+					d.FieldU32LE("sh_size")
+					d.FieldU32LE("sh_link")
+					d.FieldU32LE("sh_info")
+					d.FieldU32LE("sh_addralign")
+					d.FieldU32LE("sh_entsize")
 				case 64:
-					field32(d, "sh_name")
-					field32(d, "sh_type")
-					field64(d, "sh_flags")
-					fieldNX(d, "sh_addr")
-					fieldNX(d, "sh_offset")
-					field64(d, "sh_size")
-					field32(d, "sh_link")
-					field32(d, "sh_info")
-					field64(d, "sh_addralign")
-					field64(d, "sh_entsize")
+					d.FieldU32LE("sh_name")
+					d.FieldU32LE("sh_type")
+					d.FieldU64LE("sh_flags")
+					d.FieldU("sh_addr", archBits)
+					d.FieldU("sh_offset", archBits)
+					d.FieldU64LE("sh_size")
+					d.FieldU32LE("sh_link")
+					d.FieldU32LE("sh_info")
+					d.FieldU64LE("sh_addralign")
+					d.FieldU64LE("sh_entsize")
 				}
 			})
 		}
