@@ -7,17 +7,17 @@ import "fq/pkg/bitbuf"
 
 {{- range $e := array (map "short" "" "long" "BigEndian" "desc" "big-endian" "from" 1) (map "short" "BE" "long" "BigEndian" "desc" "big-endian" "from" 8)  (map "short" "LE" "long" "LittleEndian" "desc" "little-endian" "from" 8)}}
 // {{$s.short}} read a nBits {{$s.desc}} {{$e.desc}} integer
-func (c *Common) {{$s.short}}{{$e.short}}(nBits int64) {{$s.type}} { return c.{{$s.short}}E(nBits, bitbuf.{{$e.long}}) }
+func (d *D) {{$s.short}}{{$e.short}}(nBits int64) {{$s.type}} { return d.{{$s.short}}E(nBits, bitbuf.{{$e.long}}) }
 {{- range $i := xrange $e.from 64}}
 // {{$s.short}}{{$i}}{{$e.short}} read {{$i}} bit {{$s.desc}} {{$e.desc}} integer
-func (c *Common) {{$s.short}}{{$i}}{{$e.short}}() {{$s.type}} { return c.{{$s.short}}E({{$i}}, bitbuf.{{$e.long}}) }
+func (d *D) {{$s.short}}{{$i}}{{$e.short}}() {{$s.type}} { return d.{{$s.short}}E({{$i}}, bitbuf.{{$e.long}}) }
 {{- end}}
 
 // Field{{$s.short}}{{$e.short}} read a nBits {{$s}} {{$e.desc}} integer and add a field
-func (c *Common) Field{{$s.short}}{{$e.short}}(name string, nBits int64) {{$s.type}} { return c.Field{{$s.short}}E(name, nBits, bitbuf.{{$e.long}}) }
+func (d *D) Field{{$s.short}}{{$e.short}}(name string, nBits int64) {{$s.type}} { return d.Field{{$s.short}}E(name, nBits, bitbuf.{{$e.long}}) }
 {{- range $i := xrange $e.from 64}}
 // Field{{$s.short}}{{$i}}{{$e.short}} read {{$i}} bit {{$s.desc}} {{$e.desc}} integer and add a field
-func (c *Common) Field{{$s.short}}{{$i}}{{$e.short}}(name string) {{$s.type}} { return c.Field{{$s.short}}E(name, {{$i}}, bitbuf.{{$e.long}}) }
+func (d *D) Field{{$s.short}}{{$i}}{{$e.short}}(name string) {{$s.type}} { return d.Field{{$s.short}}E(name, {{$i}}, bitbuf.{{$e.long}}) }
 {{- end}}
 {{- end}}
 {{- end}}

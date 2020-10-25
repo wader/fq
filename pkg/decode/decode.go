@@ -49,40 +49,7 @@ type D struct {
 	registry *Registry
 }
 
-func (c *D) SafeDecodeFn(fn func()) error {
-	decodeErr := func() (err error) {
-		defer func() {
-			if recoverErr := recover(); recoverErr != nil {
-				// https://github.com/golang/go/blob/master/src/net/http/server.go#L1770
-				const size = 64 << 10
-				buf := make([]byte, size)
-				buf = buf[:runtime.Stack(buf, false)]
-
-				pe := &DecodeError{
-					PanicStack: string(buf),
-				}
-				switch panicErr := recoverErr.(type) {
-				case BitBufError:
-					pe.Err = panicErr
-				case ValidateError:
-					pe.Err = panicErr
-				default:
-					pe.Err = fmt.Errorf("%s", panicErr)
-				}
-
-				err = pe
-			}
-		}()
-
-		fn()
-
-		return nil
-	}()
-
-	return decodeErr
-}
-
-func (c *D) SafeDecodeFn2(fn func(d *D) interface{}) (error, interface{}) {
+func (c *D) SafeDecodeFn(fn func(d *D) interface{}) (error, interface{}) {
 	decodeErr, dv := func() (err error, dv interface{}) {
 		defer func() {
 			if recoverErr := recover(); recoverErr != nil {
@@ -693,7 +660,7 @@ func (c *D) ValidateAtLeastBitsLeft(nBits int64) {
 	bl := c.bitBuf.BitsLeft()
 	if bl < nBits {
 		// TODO:
-		panic(ValidateError{Reason: "not enough bits left", Pos: c.bitBuf.Pos})
+		panic(ValidateError{Reason: fmt.Sprintf("expected bits left %d, found %d", nBits, bl), Pos: c.bitBuf.Pos})
 	}
 }
 
@@ -701,7 +668,7 @@ func (c *D) ValidateAtLeastBytesLeft(nBytes int64) {
 	bl := c.bitBuf.BitsLeft()
 	if bl < nBytes*8 {
 		// TODO:
-		panic(ValidateError{Reason: "not enough bytes left", Pos: c.bitBuf.Pos})
+		panic(ValidateError{Reason: fmt.Sprintf("expected bytes left %d, found %d bits", nBytes, bl), Pos: c.bitBuf.Pos})
 	}
 }
 

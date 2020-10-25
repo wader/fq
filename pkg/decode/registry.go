@@ -51,7 +51,7 @@ func (r *Registry) Probe(rootFieldName string, parentRange Range, bb *bitbuf.Buf
 		// TODO: how to pass regsiters? do later? current field?
 
 		d := (&D{}).FieldStructBitBuf(rootFieldName, cbb)
-		decodeErr, dv := d.SafeDecodeFn2(f.DecodeFn)
+		decodeErr, dv := d.SafeDecodeFn(f.DecodeFn)
 		if decodeErr != nil {
 			d.value.Error = decodeErr
 
