@@ -415,7 +415,7 @@ func (c *D) AddChild(v *Value) {
 	case Struct:
 		for _, ff := range fv {
 			if ff.Name == v.Name {
-				panic(fmt.Sprintf("%s already exist", v.Name))
+				panic(fmt.Sprintf("%s already exist in struct %s", v.Name, c.value.Name))
 			}
 		}
 		c.value.V = append(fv, v)
