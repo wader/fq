@@ -94,7 +94,7 @@ func (m Main) run() error {
 	if err != nil {
 		panic(err)
 	}
-	f, _, _, errs := registry.Probe(nil, fs.Arg(0), decode.Range{Start: 0, Stop: bb.Len}, bb, forceFormats)
+	f, _, _, errs := registry.Probe(fs.Arg(0), decode.Range{Start: 0, Stop: bb.Len}, bb, forceFormats)
 	if *verboseFlag {
 		for _, err := range errs {
 			fmt.Fprintf(m.OS.Stderr(), "%s\n", err)

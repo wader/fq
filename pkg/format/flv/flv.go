@@ -59,32 +59,31 @@ var typeNames = map[uint64]string{
 	typeLongString:  "LongString",
 }
 
-func flvDecode(d *decode.Common) interface{} {
-
+func flvDecode(d *decode.D) interface{} {
 	var fieldScriptDataObject func()
-	var fieldScriptDataVariable func(name string)
+	var fieldScriptDataVariable func(d *decode.D, name string)
 
-	fieldScriptDataString := func(name string) {
+	fieldScriptDataString := func(d *decode.D, name string) {
 		d.FieldStrFn(name, func() (string, string) {
 			len := d.U16()
 			return d.UTF8(int64(len)), ""
 		})
 	}
-	fieldScriptDataStringLong := func(name string) {
+	fieldScriptDataStringLong := func(d *decode.D, name string) {
 		d.FieldStrFn(name, func() (string, string) {
 			len := d.U32()
 			return d.UTF8(int64(len)), ""
 		})
 	}
 
-	fieldScriptDataVariable = func(name string) {
-		d.FieldNoneFn(name, func() {
-			fieldScriptDataString("name")
-			fieldScriptDataString("data")
+	fieldScriptDataVariable = func(d *decode.D, name string) {
+		d.FieldStructFn(name, func(d *decode.D) {
+			fieldScriptDataString(d, "name")
+			fieldScriptDataString(d, "data")
 		})
 	}
 
-	fieldScriptDataValue := func(name string) uint64 {
+	fieldScriptDataValue := func(d *decode.D, name string) uint64 {
 		typ, _ := d.FieldStringMapFn("type", typeNames, "Unknown", d.U8)
 		if typ == typeECMAArray {
 			d.FieldU32("ecma_array_length")
@@ -96,36 +95,36 @@ func flvDecode(d *decode.Common) interface{} {
 		case typeBoolean:
 			d.FieldU8("boolean")
 		case typeString:
-			fieldScriptDataString("string")
+			fieldScriptDataString(d, "string")
 		case typeObject:
 			fieldScriptDataObject()
 		case typeMovieClip:
-			fieldScriptDataString("path")
+			fieldScriptDataString(d, "path")
 		case typeNull:
 		case typeUndefined:
 		case typeReference:
 			d.FieldU16("reference")
 		case typeECMAArray:
-			d.FieldNoneFn("array", func() {
+			d.FieldArrayFn("array", func(d *decode.D) {
 				for {
 					if d.PeekBits(24) == typeObjectEnd { // variableEnd?
 						d.FieldU24("end")
 						break
 					}
-					fieldScriptDataVariable("sasdadas")
+					fieldScriptDataVariable(d, "sasdadas")
 				}
 			})
 		case typeStrictArray:
 			length := d.FieldU32("length")
 			for i := uint64(0); i < length; i++ {
-				fieldScriptDataVariable("sasdadas")
+				fieldScriptDataVariable(d, "sasdadas")
 			}
 		case typeDate:
 			d.FieldF64("date_time")
 			d.FieldS16("local_data_time_offset")
 
 		case typeLongString:
-			fieldScriptDataStringLong("asdsad")
+			fieldScriptDataStringLong(d, "asdsad")
 
 		case typeObjectEnd: // variableEnd also?
 
@@ -135,9 +134,9 @@ func flvDecode(d *decode.Common) interface{} {
 	}
 
 	fieldScriptDataObject = func() {
-		d.FieldNoneFn("object", func() {
-			fieldScriptDataString("name")
-			fieldScriptDataValue("data")
+		d.FieldStructFn("object", func(d *decode.D) {
+			fieldScriptDataString(d, "name")
+			fieldScriptDataValue(d, "data")
 		})
 	}
 
@@ -151,31 +150,31 @@ func flvDecode(d *decode.Common) interface{} {
 
 	d.SeekAbs(int64(dataOffset) * 8)
 
-	for !d.End() {
-		d.FieldU32("previous_tag_size")
+	d.FieldArrayFn("tag", func(d *decode.D) {
+		for !d.End() {
+			d.FieldStructFn("tag", func(d *decode.D) {
+				d.FieldU32("previous_tag_size")
+				tagType, _ := d.FieldStringMapFn("tag_type", tagTypeNames, "unknown", d.U8)
+				dataSize := d.FieldU24("data_size")
+				d.FieldU24("timestamp")
+				d.FieldU8("timestamp_extended")
+				d.FieldU24("stream_id")
 
-		d.FieldNoneFn("tag", func() {
-			tagType, _ := d.FieldStringMapFn("tag_type", tagTypeNames, "unknown", d.U8)
-			dataSize := d.FieldU24("data_size")
-			d.FieldU24("timestamp")
-			d.FieldU8("timestamp_extended")
-			d.FieldU24("stream_id")
-
-			switch tagType {
-			case audioData, videoData:
-				d.SeekRel(int64(dataSize) * 8)
-			case scriptDataObject:
-				for {
-					if d.PeekBits(24) == typeObjectEnd {
-						d.FieldU24("end")
-						break
+				switch tagType {
+				case audioData, videoData:
+					d.SeekRel(int64(dataSize) * 8)
+				case scriptDataObject:
+					for {
+						if d.PeekBits(24) == typeObjectEnd {
+							d.FieldU24("end")
+							break
+						}
+						fieldScriptDataObject()
 					}
-					fieldScriptDataObject()
 				}
-			}
-		})
-
-	}
+			})
+		}
+	})
 
 	return nil
 }

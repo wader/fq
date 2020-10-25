@@ -44,18 +44,18 @@ func init() {
 	})
 }
 
-func elfDecode(d *decode.Common) interface{} {
+func elfDecode(d *decode.D) interface{} {
 	d.ValidateAtLeastBitsLeft(128 * 8)
 
 	// TODO: make endian switching nicer somehow?
 	var archBits uint64
-	var field16 func(d *decode.Common, name string) uint64
-	var field32 func(d *decode.Common, name string) uint64
-	var field64 func(d *decode.Common, name string) uint64
-	var fieldNX func(d *decode.Common, name string) uint64
-	var dN func(d *decode.Common) uint64
+	var field16 func(d *decode.D, name string) uint64
+	var field32 func(d *decode.D, name string) uint64
+	var field64 func(d *decode.D, name string) uint64
+	var fieldNX func(d *decode.D, name string) uint64
+	var dN func(d *decode.D) uint64
 
-	d.FieldStructFn2("ident", func(d *decode.Common) {
+	d.FieldStructFn("ident", func(d *decode.D) {
 		d.FieldValidateString("magic", "\x7fELF")
 
 		archBits = d.FieldUFn("class", func() (uint64, decode.DisplayFormat, string) {
@@ -74,25 +74,25 @@ func elfDecode(d *decode.Common) interface{} {
 			switch d.U8() {
 			case 1:
 				isBigEndian = false
-				field16 = func(d *decode.Common, name string) uint64 { return d.FieldU16LE(name) }
-				field32 = func(d *decode.Common, name string) uint64 { return d.FieldU32LE(name) }
-				field64 = func(d *decode.Common, name string) uint64 { return d.FieldU64LE(name) }
+				field16 = func(d *decode.D, name string) uint64 { return d.FieldU16LE(name) }
+				field32 = func(d *decode.D, name string) uint64 { return d.FieldU32LE(name) }
+				field64 = func(d *decode.D, name string) uint64 { return d.FieldU64LE(name) }
 				switch archBits {
 				case 32:
-					dN = func(d *decode.Common) uint64 { return d.U32LE() }
+					dN = func(d *decode.D) uint64 { return d.U32LE() }
 				case 64:
-					dN = func(d *decode.Common) uint64 { return d.U64LE() }
+					dN = func(d *decode.D) uint64 { return d.U64LE() }
 				}
 				return 1, decode.NumberDecimal, "Little-endian"
 			case 2:
-				field16 = func(d *decode.Common, name string) uint64 { return d.FieldU16BE(name) }
-				field32 = func(d *decode.Common, name string) uint64 { return d.FieldU32BE(name) }
-				field64 = func(d *decode.Common, name string) uint64 { return d.FieldU64BE(name) }
+				field16 = func(d *decode.D, name string) uint64 { return d.FieldU16BE(name) }
+				field32 = func(d *decode.D, name string) uint64 { return d.FieldU32BE(name) }
+				field64 = func(d *decode.D, name string) uint64 { return d.FieldU64BE(name) }
 				switch archBits {
 				case 32:
-					dN = func(d *decode.Common) uint64 { return d.U32BE() }
+					dN = func(d *decode.D) uint64 { return d.U32BE() }
 				case 64:
-					dN = func(d *decode.Common) uint64 { return d.U64BE() }
+					dN = func(d *decode.D) uint64 { return d.U64BE() }
 				}
 				return 2, decode.NumberDecimal, "Big-endian"
 			default:
@@ -100,7 +100,7 @@ func elfDecode(d *decode.Common) interface{} {
 			}
 			panic("unreachable")
 		})
-		fieldNX = func(d *decode.Common, name string) uint64 {
+		fieldNX = func(d *decode.D, name string) uint64 {
 			return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
 				return dN(d), decode.NumberHex, ""
 			})
@@ -142,9 +142,9 @@ func elfDecode(d *decode.Common) interface{} {
 	shnum := field16(d, "shnum")
 	field16(d, "shstrndx")
 
-	d.FieldArrayFn2("program_header", func(d *decode.Common) {
+	d.FieldArrayFn("program_header", func(d *decode.D) {
 		for i := uint64(0); i < phnum; i++ {
-			d.FieldStructFn2("program_header", func(d *decode.Common) {
+			d.FieldStructFn("program_header", func(d *decode.D) {
 				switch archBits {
 				case 32:
 					field32(d, "p_type")
@@ -169,9 +169,9 @@ func elfDecode(d *decode.Common) interface{} {
 		}
 	})
 
-	d.FieldArrayFn2("section_header", func(d *decode.Common) {
+	d.FieldArrayFn("section_header", func(d *decode.D) {
 		for i := uint64(0); i < shnum; i++ {
-			d.FieldStructFn2("section_header", func(d *decode.Common) {
+			d.FieldStructFn("section_header", func(d *decode.D) {
 				switch archBits {
 				case 32:
 					field32(d, "sh_name")

@@ -15,7 +15,7 @@ func init() {
 	})
 }
 
-func xingDecode(d *decode.Common) interface{} {
+func xingDecode(d *decode.D) interface{} {
 	// TODO: info has lame extension?
 	hasLameExtension := false
 	switch string(d.PeekBytes(4)) {
@@ -31,7 +31,7 @@ func xingDecode(d *decode.Common) interface{} {
 	tocPresent := false
 	bytesPresent := false
 	framesPresent := false
-	d.FieldNoneFn("present_flags", func() {
+	d.FieldStructFn("present_flags", func(d *decode.D) {
 		d.FieldU("unused", 28)
 		qualityPresent = d.FieldBool("quality")
 		tocPresent = d.FieldBool("toc")
@@ -46,7 +46,7 @@ func xingDecode(d *decode.Common) interface{} {
 		d.FieldU32("bytes")
 	}
 	if tocPresent {
-		d.FieldNoneFn("toc", func() {
+		d.FieldArrayFn("toc", func(d *decode.D) {
 			for i := 0; i < 100; i++ {
 				d.FieldU8("entry")
 			}
@@ -57,7 +57,7 @@ func xingDecode(d *decode.Common) interface{} {
 	}
 
 	if hasLameExtension {
-		d.FieldNoneFn("lame_extension", func() {
+		d.FieldStructFn("lame_extension", func(d *decode.D) {
 			d.FieldUTF8("encoder", 9)
 			d.FieldU4("tag_revision")
 			d.FieldU4("vbr_method")

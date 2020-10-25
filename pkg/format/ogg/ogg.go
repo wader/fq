@@ -30,13 +30,13 @@ type stream struct {
 	packetBuf  []byte
 }
 
-func decode2(d *decode.Common) interface{} {
+func decode2(d *decode.D) interface{} {
 	validPages := 0
 	streams := map[uint32]*stream{}
 
-	packets := d.FieldArray2("packet")
+	packets := d.FieldArray("packet")
 
-	d.FieldArrayFn2("page", func(d *decode.Common) {
+	d.FieldArrayFn("page", func(d *decode.D) {
 		for !d.End() {
 			// TODO: FieldTryDecode return field and decoder? handle error?
 			_, dv, errs := d.FieldTryDecode("page", oggPage)

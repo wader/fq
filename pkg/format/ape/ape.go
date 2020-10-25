@@ -16,10 +16,10 @@ func init() {
 	})
 }
 
-func apev2Decode(d *decode.Common) interface{} {
-	headerFooterFn := func(d *decode.Common, name string) uint64 {
+func apev2Decode(d *decode.D) interface{} {
+	headerFooterFn := func(d *decode.D, name string) uint64 {
 		var tagCount uint64
-		d.FieldStructFn2(name, func(d *decode.Common) {
+		d.FieldStructFn(name, func(d *decode.D) {
 			d.FieldValidateString("premble", "APETAGEX")
 			d.FieldU32LE("version")
 			d.FieldU32LE("tag_size")
@@ -31,9 +31,9 @@ func apev2Decode(d *decode.Common) interface{} {
 	}
 
 	tagCount := headerFooterFn(d, "header")
-	d.FieldArrayFn2("tag", func(d *decode.Common) {
+	d.FieldArrayFn("tag", func(d *decode.D) {
 		for i := uint64(0); i < tagCount; i++ {
-			d.FieldStructFn2("tag", func(d *decode.Common) {
+			d.FieldStructFn("tag", func(d *decode.D) {
 				itemSize := d.FieldU32LE("item_size")
 				d.FieldU32LE("item_flags")
 				keyLen := d.PeekFindByte(0, -1) - 1

@@ -15,16 +15,16 @@ func init() {
 	})
 }
 
-func iccDecode(d *decode.Common) interface{} {
+func iccDecode(d *decode.D) interface{} {
 
-	d.FieldNoneFn("header", func() {
+	d.FieldStructFn("header", func(d *decode.D) {
 		d.FieldU32("size")
 		d.FieldUTF8("cmm_type_signature", 4)
 		d.FieldU32("version")
 		d.FieldUTF8("device_class_signature", 4)
 		d.FieldUTF8("color_space", 4)
 		d.FieldUTF8("connection_space", 4)
-		d.FieldNoneFn("timestamp", func() {
+		d.FieldStructFn("timestamp", func(d *decode.D) {
 			d.FieldU16("year")
 			d.FieldU16("month")
 			d.FieldU16("day")
@@ -46,11 +46,11 @@ func iccDecode(d *decode.Common) interface{} {
 		d.FieldValidateZeroPadding("reserved", 28*8)
 	})
 
-	d.FieldNoneFn("tag_table", func() {
+	d.FieldStructFn("tag_table", func(d *decode.D) {
 		tagCount := d.FieldU32("count")
-		d.FieldNoneFn("table", func() {
+		d.FieldArrayFn("table", func(d *decode.D) {
 			for i := uint64(0); i < tagCount; i++ {
-				d.FieldNoneFn("element", func() {
+				d.FieldStructFn("element", func(d *decode.D) {
 					d.FieldUTF8("signature", 4)
 					offset := d.FieldU32("offset")
 					size := d.FieldU32("size")

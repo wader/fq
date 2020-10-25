@@ -254,7 +254,7 @@ var encodingToUTF8 = map[int]func(b []byte) string{
 	},
 }
 
-func syncSafeU32(d *decode.Common) uint64 {
+func syncSafeU32(d *decode.D) uint64 {
 	u := d.U32()
 	// syncsafe integer is a number encoded
 	// with 8th bit in each byte set to zero
@@ -266,7 +266,7 @@ func syncSafeU32(d *decode.Common) uint64 {
 		((u & 0x0000007f) >> 0))
 }
 
-func text(d *decode.Common, encoding int, nBytes int64) string {
+func text(d *decode.D, encoding int, nBytes int64) string {
 	encodingFn := encodingToUTF8[encodingUTF8]
 	if fn, ok := encodingToUTF8[encoding]; ok {
 		encodingFn = fn
@@ -274,7 +274,7 @@ func text(d *decode.Common, encoding int, nBytes int64) string {
 	return strings.TrimRight(encodingFn(d.BytesLen(nBytes)), "\x00")
 }
 
-func textNull(d *decode.Common, encoding int) string {
+func textNull(d *decode.D, encoding int) string {
 	nullLen := encodingLen[encodingUTF8]
 	if n, ok := encodingLen[uint64(encoding)]; ok {
 		nullLen = n
@@ -288,25 +288,25 @@ func textNull(d *decode.Common, encoding int) string {
 	return text
 }
 
-func fieldSyncSafeU32(d *decode.Common, name string) uint64 {
+func fieldSyncSafeU32(d *decode.D, name string) uint64 {
 	return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
 		return syncSafeU32(d), decode.NumberDecimal, ""
 	})
 }
 
-func fieldTextNull(d *decode.Common, name string, encoding int) string {
+func fieldTextNull(d *decode.D, name string, encoding int) string {
 	return d.FieldStrFn(name, func() (string, string) {
 		return textNull(d, encoding), ""
 	})
 }
 
-func fieldText(d *decode.Common, name string, encoding int, nBytes int64) string {
+func fieldText(d *decode.D, name string, encoding int, nBytes int64) string {
 	return d.FieldStrFn(name, func() (string, string) {
 		return text(d, encoding, nBytes), ""
 	})
 }
 
-func decodeFrame(d *decode.Common, version int) uint64 {
+func decodeFrame(d *decode.D, version int) uint64 {
 	var id string
 
 	switch version {
@@ -350,7 +350,7 @@ func decodeFrame(d *decode.Common, version int) uint64 {
 		var headerLen uint64 = 10
 
 		dataLenFlag := false
-		d.FieldNoneFn("flags", func() {
+		d.FieldStructFn("flags", func(d *decode.D) {
 			d.FieldU14("unused")
 			d.FieldBool("unsync")
 			dataLenFlag = d.FieldBool("data_length_indicator")
@@ -463,14 +463,14 @@ func decodeFrame(d *decode.Common, version int) uint64 {
 	return size
 }
 
-func decodeFrames(d *decode.Common, version int, size uint64) {
-	d.FieldArrayFn2("frame", func(d *decode.Common) {
+func decodeFrames(d *decode.D, version int, size uint64) {
+	d.FieldArrayFn("frame", func(d *decode.D) {
 		for size > 0 {
 			for d.PeekBits(8) == 0 {
 				return
 			}
 
-			d.FieldStructFn2("frame", func(d *decode.Common) {
+			d.FieldStructFn("frame", func(d *decode.D) {
 				size -= decodeFrame(d, version)
 			})
 		}
@@ -484,7 +484,7 @@ func decodeFrames(d *decode.Common, version int, size uint64) {
 }
 
 // Decode ID3v2
-func id3v2Decode(d *decode.Common) interface{} {
+func id3v2Decode(d *decode.D) interface{} {
 	d.ValidateAtLeastBitsLeft(4 * 8)
 	d.FieldValidateString("magic", "ID3")
 	version := int(d.FieldU8("version"))
@@ -495,7 +495,7 @@ func id3v2Decode(d *decode.Common) interface{} {
 
 	d.FieldU8("revision")
 	var extendedHeader bool
-	d.FieldNoneFn("flags", func() {
+	d.FieldStructFn("flags", func(d *decode.D) {
 		d.FieldU1("unsynchronisation")
 		extendedHeader = d.FieldBool("extended_header")
 		d.FieldU1("experimental_indicator")
@@ -507,7 +507,7 @@ func id3v2Decode(d *decode.Common) interface{} {
 
 	var extHeaderSize uint64
 	if extendedHeader {
-		d.FieldStructFn("extended_header", func() {
+		d.FieldStructFn("extended_header", func(d *decode.D) {
 			switch version {
 			case 3:
 				extHeaderSize = d.FieldU32("size")

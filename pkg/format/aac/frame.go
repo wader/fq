@@ -53,7 +53,7 @@ var ExtenionPayloadIDNames = map[uint64]string{
 	SBR_DATA_CRC:  "SBR_DATA_CRC",
 }
 
-func aacDecode(d *decode.Common) interface{} {
+func aacDecode(d *decode.D) interface{} {
 	se, _ := d.FieldStringMapFn("syntax_element", SyntaxElementNames, "", d.U3)
 	elementId := d.FieldU4("element_id")
 

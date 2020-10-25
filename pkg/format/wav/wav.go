@@ -92,7 +92,7 @@ var audioFormatName = map[uint64]string{
 	('V' << 8) + 'o': "VORBIS",
 }
 
-func decodeChunk(d *decode.Common, expectedChunkID string) int64 {
+func decodeChunk(d *decode.D, expectedChunkID string) int64 {
 	var chunkLen int64
 
 	chunks := map[string]func(){
@@ -141,10 +141,10 @@ func decodeChunk(d *decode.Common, expectedChunkID string) int64 {
 	return chunkLen + 8
 }
 
-func decodeChunks(d *decode.Common) {
-	d.FieldArrayFn2("chunk", func(d *decode.Common) {
+func decodeChunks(d *decode.D) {
+	d.FieldArrayFn("chunk", func(d *decode.D) {
 		for !d.End() {
-			d.FieldStructFn2("chunk", func(d *decode.Common) {
+			d.FieldStructFn("chunk", func(d *decode.D) {
 				decodeChunk(d, "")
 			})
 		}
@@ -152,7 +152,7 @@ func decodeChunks(d *decode.Common) {
 }
 
 // Decode decodes a WAV stream
-func wavDecode(d *decode.Common) interface{} {
+func wavDecode(d *decode.D) interface{} {
 	decodeChunk(d, "RIFF")
 	return nil
 }

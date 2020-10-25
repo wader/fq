@@ -18,10 +18,10 @@ func init() {
 	})
 }
 
-func adtsDecode(d *decode.Common) interface{} {
+func adtsDecode(d *decode.D) interface{} {
 	validFrames := 0
 
-	d.FieldArrayFn2("frame", func(d *decode.Common) {
+	d.FieldArrayFn("frame", func(d *decode.D) {
 		for !d.End() {
 			if _, _, errs := d.FieldTryDecode("frame", adts); errs != nil {
 				break

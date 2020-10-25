@@ -71,7 +71,7 @@ var SubframeTypeNames = map[uint]string{
 }
 
 // TODO: generic enough?
-func utf8Uint(d *decode.Common) uint64 {
+func utf8Uint(d *decode.D) uint64 {
 	n := d.U8()
 	// leading ones, bit negate and count zeroes
 	c := bits.LeadingZeros8(^uint8(n))
@@ -90,17 +90,17 @@ func utf8Uint(d *decode.Common) uint64 {
 	return n
 }
 
-func flacDecode(d *decode.Common) interface{} {
+func flacDecode(d *decode.D) interface{} {
 	d.FieldValidateString("magic", "fLaC")
 
 	// is used in frame decoding later
 	var streamInfoSamepleRate uint64
 	var streamInfoBitPerSample uint64
 
-	d.FieldArrayFn("metadatablock", func() {
+	d.FieldArrayFn("metadatablock", func(d *decode.D) {
 		for {
 			lastBlock := false
-			d.FieldStructFn("metadatablock", func() {
+			d.FieldStructFn("metadatablock", func(d *decode.D) {
 				lastBlock = d.FieldBool("last_block")
 				typ := d.FieldUFn("type", func() (uint64, decode.DisplayFormat, string) {
 					t := d.U7()
@@ -134,9 +134,9 @@ func flacDecode(d *decode.Common) interface{} {
 					d.FieldDecodeLen("picture", int64(length*8), flacPicture)
 				case MetadataBlockSeektable:
 					seektableCount := length / 18
-					d.FieldArrayFn("seekpoint", func() {
+					d.FieldArrayFn("seekpoint", func(d *decode.D) {
 						for i := uint64(0); i < seektableCount; i++ {
-							d.FieldNoneFn("seekpoint", func() {
+							d.FieldStructFn("seekpoint", func(d *decode.D) {
 								d.FieldUFn("sample_number", func() (uint64, decode.DisplayFormat, string) {
 									n := d.U64()
 									d := ""
@@ -160,9 +160,9 @@ func flacDecode(d *decode.Common) interface{} {
 		}
 	})
 
-	d.FieldArrayFn2("frame", func(d *decode.Common) {
+	d.FieldArrayFn("frame", func(d *decode.D) {
 		for !d.End() {
-			d.FieldStructFn2("frame", func(d *decode.Common) {
+			d.FieldStructFn("frame", func(d *decode.D) {
 				// <14> 11111111111110
 				d.FieldValidateUFn("sync", 0b11111111111110, d.U14)
 
@@ -357,7 +357,7 @@ func flacDecode(d *decode.Common) interface{} {
 				// 1 : reserved for future use
 				d.FieldValidateUFn("reserved1", 0, d.U1)
 
-				d.FieldStructFn2("end_of_header", func(d *decode.Common) {
+				d.FieldStructFn("end_of_header", func(d *decode.D) {
 					// if(variable blocksize)
 					//   <8-56>:"UTF-8" coded sample number (decoded number is 36 bits) [4]
 					// else
@@ -407,9 +407,9 @@ func flacDecode(d *decode.Common) interface{} {
 				// CRC-8 (polynomial = x^8 + x^2 + x^1 + x^0, initialized with 0) of everything before the crc, including the sync code
 				d.FieldU8("crc")
 
-				d.FieldArrayFn2("subframe", func(d *decode.Common) {
+				d.FieldArrayFn("subframe", func(d *decode.D) {
 					for channelIndex := 0; channelIndex < int(channels); channelIndex++ {
-						d.FieldStructFn("subframe", func() {
+						d.FieldStructFn("subframe", func(d *decode.D) {
 							// <1> Zero bit padding, to prevent sync-fooling string of 1s
 							d.FieldValidateUFn("zero_bit", 0, d.U1)
 
@@ -470,7 +470,7 @@ func flacDecode(d *decode.Common) interface{} {
 							})
 
 							decodeWarmupSamples := func(n uint64, sampleSize uint64) {
-								d.FieldArrayFn2("warmup_samples", func(d *decode.Common) {
+								d.FieldArrayFn("warmup_samples", func(d *decode.D) {
 									for i := uint64(0); i < n; i++ {
 										d.FieldS("value", int64(sampleSize))
 									}
@@ -504,9 +504,9 @@ func flacDecode(d *decode.Common) interface{} {
 									return ricePartitions, decode.NumberDecimal, ""
 								})
 
-								d.FieldArrayFn2("partition", func(d *decode.Common) {
+								d.FieldArrayFn("partition", func(d *decode.D) {
 									for i := uint64(0); i < ricePartitions; i++ {
-										d.FieldStructFn2("partition", func(d *decode.Common) {
+										d.FieldStructFn("partition", func(d *decode.D) {
 											// Encoding parameter:
 											// <4(+5)> Encoding parameter:
 											// 0000-1110 : Rice parameter.
@@ -533,7 +533,7 @@ func flacDecode(d *decode.Common) interface{} {
 												escapeSampleSize := d.FieldU5("escape_sample_size")
 												d.FieldBitBufLen("samples", int64(count*escapeSampleSize*8))
 											} else {
-												d.FieldStructFn2("samples", func(d *decode.Common) {
+												d.FieldStructFn("samples", func(d *decode.D) {
 													for j := uint64(0); j < count; j++ {
 														high := d.Unary(0)
 														_ = high
@@ -570,7 +570,7 @@ func flacDecode(d *decode.Common) interface{} {
 								// <5> Quantized linear predictor coefficient shift needed in bits (NOTE: this number is signed two's-complement).
 								d.FieldS5("shift")
 								// <n> Unencoded predictor coefficients (n = qlp coeff precision * lpc order) (NOTE: the coefficients are signed two's-complement).
-								d.FieldArrayFn2("coefficients", func(d *decode.Common) {
+								d.FieldArrayFn("coefficients", func(d *decode.D) {
 									for i := uint64(0); i < lpcOrder; i++ {
 										d.FieldS("value", int64(precision))
 									}

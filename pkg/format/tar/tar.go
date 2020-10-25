@@ -25,7 +25,7 @@ func init() {
 	})
 }
 
-func tarDecode(d *decode.Common) interface{} {
+func tarDecode(d *decode.D) interface{} {
 	str := func(nBytes int64) string {
 		s := d.UTF8(nBytes)
 		ts := strings.Trim(s, "\x00")
@@ -61,11 +61,11 @@ func tarDecode(d *decode.Common) interface{} {
 	endMarker := [512 * 2]byte{}
 	validFiles := 0
 
-	d.FieldArrayFn("file", func() {
+	d.FieldArrayFn("file", func(d *decode.D) {
 		for !d.End() {
 			name := str(100)
 			d.SeekRel(-100 * 8)
-			d.FieldNoneFn(name, func() {
+			d.FieldStructFn(name, func(d *decode.D) {
 				fieldStr("name", 100)
 				fieldNumStr("mode", 8)
 				fieldNumStr("uid", 8)

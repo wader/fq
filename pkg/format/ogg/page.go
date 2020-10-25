@@ -25,7 +25,7 @@ type page struct {
 	Segments           []*bitbuf.Buffer
 }
 
-func oggDecode(d *decode.Common) interface{} {
+func oggDecode(d *decode.D) interface{} {
 	p := &page{}
 
 	// TODO: validate bits left
@@ -42,7 +42,7 @@ func oggDecode(d *decode.Common) interface{} {
 	pageSegments := d.FieldU8("page_segments")
 	segmentTable := d.FieldBytesLen("segment_table", int64(pageSegments))
 
-	d.FieldArrayFn("segment", func() {
+	d.FieldArrayFn("segment", func(d *decode.D) {
 		for _, ss := range segmentTable {
 			p.Segments = append(p.Segments, d.FieldBitBufLen("segment", int64(ss)*8))
 		}

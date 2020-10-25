@@ -36,12 +36,12 @@ type decodeContext struct {
 	currentTrack *track
 }
 
-func decodeAtom(ctx *decodeContext, d *decode.Common) uint64 {
-	boxes := map[string]func(ctx *decodeContext, d *decode.Common){
-		"ftyp": func(ctx *decodeContext, d *decode.Common) {
+func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
+	boxes := map[string]func(ctx *decodeContext, d *decode.D){
+		"ftyp": func(ctx *decodeContext, d *decode.D) {
 			d.FieldUTF8("major_brand", 4)
 			d.FieldU32("minor_version")
-			d.FieldArrayFn2("brands", func(d *decode.Common) {
+			d.FieldArrayFn("brands", func(d *decode.D) {
 				numBrands := d.BitsLeft() / 8 / 4
 				for i := int64(0); i < numBrands; i++ {
 					d.FieldUTF8("brand", 4)
@@ -49,7 +49,7 @@ func decodeAtom(ctx *decodeContext, d *decode.Common) uint64 {
 			})
 		},
 		"moov": decodeAtoms,
-		"mvhd": func(ctx *decodeContext, d *decode.Common) {
+		"mvhd": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldUTF8("flags", 3)
 			d.FieldU32("creation_time")
@@ -70,11 +70,11 @@ func decodeAtom(ctx *decodeContext, d *decode.Common) uint64 {
 		},
 		"trak": decodeAtoms,
 		"edts": decodeAtoms,
-		"elst": func(ctx *decodeContext, d *decode.Common) {
+		"elst": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			numEntries := d.FieldU32("num_entries")
-			d.FieldArrayFn2("table", func(d *decode.Common) {
+			d.FieldArrayFn("table", func(d *decode.D) {
 				for i := uint64(0); i < numEntries; i++ {
 					d.FieldU32("track_duration")
 					d.FieldU32("media_item")
@@ -83,7 +83,7 @@ func decodeAtom(ctx *decodeContext, d *decode.Common) uint64 {
 			})
 		},
 		"tref": decodeAtoms,
-		"tkhd": func(ctx *decodeContext, d *decode.Common) {
+		"tkhd": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
@@ -111,7 +111,7 @@ func decodeAtom(ctx *decodeContext, d *decode.Common) uint64 {
 			}
 		},
 		"mdia": decodeAtoms,
-		"mdhd": func(ctx *decodeContext, d *decode.Common) {
+		"mdhd": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
@@ -124,7 +124,7 @@ func decodeAtom(ctx *decodeContext, d *decode.Common) uint64 {
 			d.FieldU16("quality")
 		},
 
-		"hdlr": func(ctx *decodeContext, d *decode.Common) {
+		"hdlr": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
@@ -138,12 +138,12 @@ func decodeAtom(ctx *decodeContext, d *decode.Common) uint64 {
 
 		"minf": decodeAtoms,
 		"dinf": decodeAtoms,
-		"dref": func(ctx *decodeContext, d *decode.Common) {
+		"dref": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
 			numEntries := d.FieldU32("num_entries")
-			d.FieldArrayFn2("references", func(d *decode.Common) {
+			d.FieldArrayFn("references", func(d *decode.D) {
 				for i := uint64(0); i < numEntries; i++ {
 					size := d.FieldU32("size")
 					d.FieldUTF8("type", 4)
@@ -155,12 +155,12 @@ func decodeAtom(ctx *decodeContext, d *decode.Common) uint64 {
 			})
 		},
 		"stbl": decodeAtoms,
-		"stsd": func(ctx *decodeContext, d *decode.Common) {
+		"stsd": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
 			numEntries := d.FieldU32("num_entries")
-			d.FieldArrayFn2("table", func(d *decode.Common) {
+			d.FieldArrayFn("table", func(d *decode.D) {
 				for i := uint64(0); i < numEntries; i++ {
 					//size := d.FieldU32("size")
 					//dataFormat := d.FieldUTF8("data_format", 4)
@@ -181,24 +181,24 @@ func decodeAtom(ctx *decodeContext, d *decode.Common) uint64 {
 				}
 			})
 		},
-		"stts": func(ctx *decodeContext, d *decode.Common) {
+		"stts": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
 			numEntries := d.FieldU32("num_entries")
-			d.FieldArrayFn2("table", func(d *decode.Common) {
+			d.FieldArrayFn("table", func(d *decode.D) {
 				for i := uint64(0); i < numEntries; i++ {
 					d.FieldU32("count")
 					d.FieldU32("duration")
 				}
 			})
 		},
-		"stsc": func(ctx *decodeContext, d *decode.Common) {
+		"stsc": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
 			numEntries := d.FieldU32("num_entries")
-			d.FieldArrayFn2("table", func(d *decode.Common) {
+			d.FieldArrayFn("table", func(d *decode.D) {
 				for i := uint64(0); i < numEntries; i++ {
 					firstChunk := uint32(d.FieldU32("first_chunk"))
 					samplesPerChunk := uint32(d.FieldU32("samples_per_chunk"))
@@ -213,14 +213,14 @@ func decodeAtom(ctx *decodeContext, d *decode.Common) uint64 {
 				}
 			})
 		},
-		"stsz": func(ctx *decodeContext, d *decode.Common) {
+		"stsz": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
 			sampleSize := d.FieldU32("sample_size")
 			numEntries := d.FieldU32("num_entries")
 			if sampleSize == 0 {
-				d.FieldArrayFn2("table", func(d *decode.Common) {
+				d.FieldArrayFn("table", func(d *decode.D) {
 					for i := uint64(0); i < numEntries; i++ {
 						size := uint32(d.FieldU32("size"))
 
@@ -231,12 +231,12 @@ func decodeAtom(ctx *decodeContext, d *decode.Common) uint64 {
 				})
 			}
 		},
-		"stco": func(ctx *decodeContext, d *decode.Common) {
+		"stco": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
 			numEntries := d.FieldU32("num_entries")
-			d.FieldArrayFn2("table", func(d *decode.Common) {
+			d.FieldArrayFn("table", func(d *decode.D) {
 				for i := uint64(0); i < numEntries; i++ {
 					offset := d.FieldU32("offset")
 
@@ -247,12 +247,12 @@ func decodeAtom(ctx *decodeContext, d *decode.Common) uint64 {
 			})
 		},
 		// TODO: refactor: merge with stsco?
-		"co64": func(ctx *decodeContext, d *decode.Common) {
+		"co64": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
 			numEntries := d.FieldU32("num_entries")
-			d.FieldArrayFn2("table", func(d *decode.Common) {
+			d.FieldArrayFn("table", func(d *decode.D) {
 				for i := uint64(0); i < numEntries; i++ {
 					offset := d.FieldU64("offset")
 
@@ -299,17 +299,17 @@ func decodeAtom(ctx *decodeContext, d *decode.Common) uint64 {
 	return boxSize
 }
 
-func decodeAtoms(ctx *decodeContext, d *decode.Common) {
-	d.FieldArrayFn2("box", func(d *decode.Common) {
+func decodeAtoms(ctx *decodeContext, d *decode.D) {
+	d.FieldArrayFn("box", func(d *decode.D) {
 		for !d.End() {
-			d.FieldStructFn2("box", func(d *decode.Common) {
+			d.FieldStructFn("box", func(d *decode.D) {
 				decodeAtom(ctx, d)
 			})
 		}
 	})
 }
 
-func mp4Decode(d *decode.Common) interface{} {
+func mp4Decode(d *decode.D) interface{} {
 	ctx := &decodeContext{
 		tracks: map[uint32]*track{},
 	}

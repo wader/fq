@@ -33,7 +33,7 @@ func init() {
 	})
 }
 
-func mp3Decode(d *decode.Common) interface{} {
+func mp3Decode(d *decode.D) interface{} {
 	d.FieldTryDecode("header", headerTag)
 
 	footerLen := int64(0)
@@ -49,7 +49,7 @@ func mp3Decode(d *decode.Common) interface{} {
 
 	validFrames := 0
 	d.SubLenFn(d.BitsLeft()-footerLen, func() {
-		d.FieldArrayFn("frame", func() {
+		d.FieldArrayFn("frame", func(d *decode.D) {
 			for !d.End() {
 				if _, _, errs := d.FieldTryDecode("frame", mp3Frame); errs != nil {
 					break
@@ -63,7 +63,8 @@ func mp3Decode(d *decode.Common) interface{} {
 
 		// TODO: truncated last frame?
 		if d.BitsLeft() > 0 {
-			d.FieldNoneFn("unknown", func() { d.SeekRel(int64(d.BitsLeft())) })
+			// TODO: some better unknown/garbage handling? generic gap filling?
+			d.FieldBitBufLen("unknown", d.BitsLeft())
 		}
 	})
 

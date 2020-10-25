@@ -25,7 +25,7 @@ func init() {
 	})
 }
 
-func frameDecode(d *decode.Common) interface{} {
+func frameDecode(d *decode.D) interface{} {
 	d.FieldValidateUFn("sync", 0b11111111111, d.U11)
 
 	// v = 3 means version 2.5

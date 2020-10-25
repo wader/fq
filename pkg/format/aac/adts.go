@@ -19,7 +19,7 @@ func init() {
 }
 
 // Audio Data Transport Stream (ADTS)
-func adtsDecoder(d *decode.Common) interface{} {
+func adtsDecoder(d *decode.D) interface{} {
 
 	// A	12	syncword 0xFFF, all bits must be 1
 	// B	1	MPEG Version: 0 for MPEG-4, 1 for MPEG-2

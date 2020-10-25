@@ -163,11 +163,11 @@ var markers = map[uint]marker{
 	TEM:   {"TEM", "For temporary private use in arithmetic coding"},
 }
 
-func jpegDecode(d *decode.Common) interface{} {
+func jpegDecode(d *decode.D) interface{} {
 	var extendedXMP []byte
 	soiMarkerFound := false
 
-	d.FieldArrayFn("marker", func() {
+	d.FieldArrayFn("marker", func(d *decode.D) {
 		inECD := false
 		for !d.End() {
 			if inECD {
@@ -183,12 +183,9 @@ func jpegDecode(d *decode.Common) interface{} {
 				d.FieldBitBufLen("entropy_coded_data", int64(ecdLen)*8)
 				inECD = false
 			} else {
-				d.FieldNoneFn("marker", func() {
-					d.FieldNoneFn("prefix", func() {
-						for d.PeekBits(8) == 0xff {
-							d.SeekRel(8)
-						}
-					})
+				d.FieldStructFn("marker", func(d *decode.D) {
+					prefixLen := d.PeekFindByte(0xff, -1)
+					d.FieldBytesLen("prefix", prefixLen)
 					markerFound := false
 					markerCode := d.FieldUFn("code", func() (uint64, decode.DisplayFormat, string) {
 						n := uint(d.U8())
@@ -212,9 +209,9 @@ func jpegDecode(d *decode.Common) interface{} {
 						d.FieldU16("Y")
 						d.FieldU16("X")
 						nf := d.FieldU8("Nf")
-						d.FieldArrayFn("frame_component", func() {
+						d.FieldArrayFn("frame_component", func(d *decode.D) {
 							for i := uint64(0); i < nf; i++ {
-								d.FieldNoneFn("frame_component", func() {
+								d.FieldStructFn("frame_component", func(d *decode.D) {
 									d.FieldU8("C")
 									d.FieldU4("H")
 									d.FieldU4("V")
@@ -228,9 +225,9 @@ func jpegDecode(d *decode.Common) interface{} {
 					case SOS:
 						d.FieldU16("Ls")
 						ns := d.FieldU8("Ns")
-						d.FieldArrayFn("scan_component", func() {
+						d.FieldArrayFn("scan_component", func(d *decode.D) {
 							for i := uint64(0); i < ns; i++ {
-								d.FieldNoneFn("scan_component", func() {
+								d.FieldStructFn("scan_component", func(d *decode.D) {
 									d.FieldU8("Cs")
 									d.FieldU4("Td")
 									d.FieldU4("Ta")
@@ -258,7 +255,7 @@ func jpegDecode(d *decode.Common) interface{} {
 									d.FieldUTF8("exif_prefix", 6)
 									d.FieldDecodeLen("exif", d.BitsLeft(), tiffImage)
 								case markerCode == APP1 && d.TryHasBytes(extendedXMPPrefix):
-									d.FieldNoneFn("extended_xmp_chunk", func() {
+									d.FieldStructFn("extended_xmp_chunk", func(d *decode.D) {
 										d.FieldUTF8("signature", int64(len(extendedXMPPrefix)))
 										d.FieldUTF8("guid", 32)
 										fullLength := d.FieldU32("full_length")

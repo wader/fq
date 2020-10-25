@@ -763,7 +763,7 @@ var tagNames = map[uint64]string{
 	DefaultUserCrop:              "DefaultUserCrop",
 }
 
-func tiffDecode(d *decode.Common) interface{} {
+func tiffDecode(d *decode.D) interface{} {
 	switch d.PeekBits(32) {
 	case littleEndian, bigEndian:
 	default:
@@ -801,14 +801,14 @@ func tiffDecode(d *decode.Common) interface{} {
 
 	ifdOffset := fu32("ifd_offset")
 
-	d.FieldArrayFn("ifd", func() {
+	d.FieldArrayFn("ifd", func(d *decode.D) {
 		// TODO: inf loop?
 		for ifdOffset != 0 {
 			d.SeekAbs(int64(ifdOffset) * 8)
 
 			numberOfFields := fu16("number_of_field")
 			for i := uint64(0); i < numberOfFields; i++ {
-				d.FieldStructFn("ifd", func() {
+				d.FieldStructFn("ifd", func(d *decode.D) {
 					tag, _ := d.FieldStringMapFn("tag", tagNames, "unknown", u16)
 					typ, typOk := d.FieldStringMapFn("type", typeNames, "unknown", u16)
 					count := fu32("count")
@@ -825,7 +825,7 @@ func tiffDecode(d *decode.Common) interface{} {
 						valueByteOffset = uint64(d.Pos()/8) - 4
 					}
 
-					d.FieldArrayFn("values", func() {
+					d.FieldArrayFn("values", func(d *decode.D) {
 						switch {
 						case typ == UNDEFINED:
 							switch tag {

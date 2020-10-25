@@ -32,11 +32,11 @@ var compressionNames = map[uint64]string{
 	compressionDeflate: "deflate",
 }
 
-func pngDecode(d *decode.Common) interface{} {
+func pngDecode(d *decode.D) interface{} {
 	d.FieldValidateString("signature", "\x89PNG\r\n\x1a\n")
-	d.FieldArrayFn("chunk", func() {
+	d.FieldArrayFn("chunk", func(d *decode.D) {
 		for !d.End() {
-			d.FieldStructFn("chunk", func() {
+			d.FieldStructFn("chunk", func(d *decode.D) {
 				chunkLength := int64(d.FieldU32("length"))
 
 				chunkType := d.FieldStrFn("type", func() (string, string) {
@@ -86,7 +86,7 @@ func pngDecode(d *decode.Common) interface{} {
 					switch compressionMethod {
 					case compressionDeflate:
 						// TODO: make nicer
-						d.FieldZlibLen("uncompressed", chunkLength-keywordLen-1, decode.FormatFn(func(c *decode.Common) interface{} {
+						d.FieldZlibLen("uncompressed", chunkLength-keywordLen-1, decode.FormatFn(func(c *decode.D) interface{} {
 							c.FieldUTF8("text", c.BitsLeft()/8)
 							return nil
 						}))
@@ -103,7 +103,7 @@ func pngDecode(d *decode.Common) interface{} {
 					switch compressionMethod {
 					case compressionDeflate:
 						// TODO: make nicer
-						d.FieldZlibLen("uncompressed", chunkLength-profileNameLen-1, decode.FormatFn(func(c *decode.Common) interface{} {
+						d.FieldZlibLen("uncompressed", chunkLength-profileNameLen-1, decode.FormatFn(func(c *decode.D) interface{} {
 							c.FieldDecodeLen("icc", c.BitsLeft(), iccTag)
 							return nil
 						}))
