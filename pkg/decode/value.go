@@ -284,11 +284,11 @@ func (v Value) String() string {
 			f = hex.EncodeToString(iv)
 		}
 	case *bitbuf.Buffer:
-		if v.BitBuf.Len > 16*8 {
-			bs, _ := v.BitBuf.BytesBitRange(0, 16*8, 0)
+		if v.Range.Length() > 16*8 {
+			bs, _ := v.RelBitBuf().BytesBitRange(0, 16, 0)
 			f = hex.EncodeToString(bs) + "..."
 		} else {
-			bs, _ := v.BitBuf.BytesBitRange(0, v.BitBuf.Len, 0)
+			bs, _ := v.RelBitBuf().BytesBitRange(0, v.BitBuf.Len/8, 0)
 			f = hex.EncodeToString(bs)
 		}
 	case nil:
