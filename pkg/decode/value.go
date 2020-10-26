@@ -113,9 +113,21 @@ func (v *Value) Eval(exp string) (*Value, error) {
 
 func (v *Value) AbsBitBuf() *bitbuf.Buffer {
 	if v.BitBuf != nil {
-		return v.BitBuf
+		return v.BitBuf.Copy()
 	}
-	return v.Parent.AbsBitBuf().Copy()
+	return v.Parent.AbsBitBuf()
+}
+
+func (v *Value) AbsStart() int64 {
+	if v.BitBuf != nil {
+		return 0
+	}
+	return v.Range.Start + v.Parent.AbsStart()
+}
+
+func (v *Value) AbsRange() Range {
+	s := v.AbsStart()
+	return Range{Start: s + v.Range.Start, Stop: s + v.Range.Stop}
 }
 
 func (v *Value) RelBitBuf() *bitbuf.Buffer {

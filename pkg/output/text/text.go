@@ -39,10 +39,12 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, inde
 			fmt.Fprintf(cw.Columns[6], "%s%s{}: %s %s\n", indent, v.Name, v.Range, decode.Bits(v.Range.Length()))
 		}
 	case decode.Array:
-		fmt.Fprintf(cw.Columns[6], "%s%s[]:\n", indent, v.Name)
+		fmt.Fprintf(cw.Columns[6], "%s%s[]: %s\n", indent, v.Name, v.Range)
 	default:
-		startBit := v.Range.Start
-		stopBit := v.Range.Stop
+		absRange := v.AbsRange()
+
+		startBit := absRange.Start
+		stopBit := absRange.Stop
 
 		if startBit != stopBit {
 			stopBit--
@@ -168,7 +170,7 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, inde
 		if isInArray {
 			fmt.Fprintf(cw.Columns[6], "%s%s[%d] (%s): %s %s (%s)\n", indent, v.Parent.Name, index, v.Name, v, v.Range, decode.Bits(v.Range.Length()))
 		} else {
-			fmt.Fprintf(cw.Columns[6], "%s%s: %s %s (%s)\n", indent, v.Name, v, v.Range, decode.Bits(v.Range.Length()))
+			fmt.Fprintf(cw.Columns[6], "%s%s: %s %s %s(%s)\n", indent, v.Name, v, v.Range, absRange, decode.Bits(v.Range.Length()))
 		}
 	}
 
