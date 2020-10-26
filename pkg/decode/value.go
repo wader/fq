@@ -111,6 +111,21 @@ func (v *Value) Eval(exp string) (*Value, error) {
 	return lf, nil
 }
 
+func (v *Value) AbsBitBuf() *bitbuf.Buffer {
+	if v.BitBuf != nil {
+		return v.BitBuf
+	}
+	return v.Parent.AbsBitBuf().Copy()
+}
+
+func (v *Value) RelBitBuf() *bitbuf.Buffer {
+	bb, err := v.AbsBitBuf().BitBufRange(v.Range.Start, v.Range.Length())
+	if err != nil {
+		panic(err) // TODO: hmm
+	}
+	return bb
+}
+
 func (v *Value) Lookup(path string) *Value {
 	if path == "" {
 		return v

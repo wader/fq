@@ -1,90 +1,121 @@
 package decode
 
 import (
+	"errors"
 	"fmt"
-	"fq/pkg/bitbuf"
+	"io"
+	"sync"
 )
 
-type ProbeError struct {
-	Format        *Format
-	Err           error
-	PanicHandeled bool
-	PanicStack    string
-}
-
-func (pe *ProbeError) Error() string { return fmt.Sprintf("%s probe: %s", pe.Format.Name, pe.Err) }
-func (pe *ProbeError) Unwrap() error { return pe.Err }
-
 type Registry struct {
-	Formats []*Format
+	allGroups   map[string][]*Format
+	resolveOnce sync.Once
 }
 
-func NewRegistryWithFormats(formats []*Format) *Registry {
-	r := &Registry{
-		Formats: formats,
+func NewRegistry() *Registry {
+	return &Registry{
+		allGroups:   map[string][]*Format{},
+		resolveOnce: sync.Once{},
 	}
-
-	return r
 }
 
-// Probe probes all probeable formats and turns first found Decoder and all other decoder errors
-func (r *Registry) Probe(rootFieldName string, bb *bitbuf.Buffer, forceFormats []*Format) (*Value, interface{}, []error) {
-	var probeable []*Format
-	var forceOne = len(forceFormats) == 1
-	if forceFormats != nil {
-		probeable = forceFormats
+func (r *Registry) register(groupName string, format *Format, single bool) *Format {
+	formats, ok := r.allGroups[groupName]
+	if ok {
+		if !single {
+			panic(fmt.Sprintf("%s: already registered", groupName))
+		}
 	} else {
-		for _, f := range r.Formats {
-			if f.SkipProbe {
-				continue
-			}
-			probeable = append(probeable, f)
-		}
+		formats = []*Format{}
 	}
+	r.allGroups[groupName] = append(formats, format)
 
-	// TODO: order..
-
-	startPos := bb.Pos
-
-	var errs []error
-	for _, f := range probeable {
-		cbb := bb.Copy()
-
-		// TODO: how to pass regsiters? do later? current field?
-
-		d := (&D{Endian: BigEndian}).FieldStructBitBuf(rootFieldName, cbb)
-		decodeErr, dv := d.SafeDecodeFn(f.DecodeFn)
-		if decodeErr != nil {
-			d.value.Error = decodeErr
-
-			errs = append(errs, decodeErr)
-			if !forceOne {
-				continue
-			}
-		}
-
-		// TODO: nicer
-		d.value.Desc = f.Name
-		d.value.Range = Range{Start: startPos, Stop: cbb.Pos}
-
-		if d.value.Parent == nil {
-			d.value.Sort()
-		}
-
-		// TODO: wrong keep track of largest?
-		_ = cbb.TruncateRel(0)
-
-		return d.value, dv, errs
-	}
-
-	return nil, nil, errs
+	return format
 }
 
-func (r *Registry) FindFormat(name string) *Format {
-	for _, f := range r.Formats {
-		if f.Name == name {
-			return f
+func (r *Registry) resolve() error {
+	for _, fs := range r.allGroups {
+		for _, f := range fs {
+			for _, d := range f.Deps {
+				var formats []*Format
+				for _, dName := range d.Names {
+					df, ok := r.allGroups[dName]
+					if !ok {
+						return fmt.Errorf("%s: can't find dependency %s", f.Name, dName)
+					}
+					formats = append(formats, df...)
+				}
+				*d.Formats = formats
+			}
 		}
 	}
+
 	return nil
+}
+
+func (r *Registry) MustRegister(format *Format) *Format {
+	r.register(format.Name, format, false)
+	for _, g := range format.Groups {
+		r.register(g, format, true)
+	}
+	if !format.SkipProbe {
+		r.register("probeable", format, true)
+	}
+	r.register("all", format, true)
+
+	return format
+}
+
+func (r *Registry) Group(name string) ([]*Format, error) {
+	r.resolveOnce.Do(func() {
+		if err := r.resolve(); err != nil {
+			panic(err)
+		}
+	})
+
+	if g, ok := r.allGroups[name]; ok {
+		return g, nil
+	}
+	return nil, errors.New("no such group")
+}
+
+func (r *Registry) MustGroup(name string) []*Format {
+	if g, err := r.Group(name); err == nil {
+		return g
+	} else {
+		panic(err)
+	}
+}
+
+func (r *Registry) MustAll() []*Format {
+	return r.MustGroup("all")
+}
+
+func (r *Registry) Dot(w io.Writer) {
+	formatSeen := map[string]struct{}{}
+
+	fmt.Fprintf(w, "digraph formats {\n")
+	for groupName, fs := range r.allGroups {
+		if groupName == "all" {
+			continue
+		}
+		for _, f := range fs {
+			if groupName != f.Name {
+				fmt.Fprintf(w, "  %s -> %s\n", groupName, f.Name)
+			}
+
+			if _, ok := formatSeen[f.Name]; ok {
+				continue
+			}
+			formatSeen[f.Name] = struct{}{}
+
+			for _, d := range f.Deps {
+
+				for _, dName := range d.Names {
+					fmt.Fprintf(w, "  %s -> %s\n", f.Name, dName)
+				}
+			}
+		}
+	}
+	fmt.Fprintf(w, "}\n")
 }

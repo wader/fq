@@ -14,8 +14,8 @@ import (
 )
 
 type Main struct {
-	OS          OS
-	FormatsList [][]*decode.Format
+	OS       OS
+	Registry *decode.Registry
 }
 
 // Run cli main
@@ -28,11 +28,8 @@ func (m Main) Run() error {
 }
 
 func (m Main) run() error {
-	var merged []*decode.Format
-	for _, fs := range m.FormatsList {
-		merged = append(merged, fs...)
-	}
-	registry := decode.NewRegistryWithFormats(merged)
+	allFormats := m.Registry.MustAll()
+	probeFormats := m.Registry.MustGroup("probeable") // TODO: const?
 
 	fs := flag.NewFlagSet("", flag.ContinueOnError)
 	fs.SetOutput(m.OS.Stderr())
@@ -41,14 +38,14 @@ func (m Main) run() error {
 	outputFormatFlag := fs.String("o", "text", "Output format")
 	fs.Usage = func() {
 		maxNameLen := 0
-		for _, f := range registry.Formats {
+		for _, f := range allFormats {
 			if len(f.Name) > maxNameLen {
 				maxNameLen = len(f.Name)
 			}
 		}
 
-		formatsSorted := make([]*decode.Format, len(registry.Formats))
-		copy(formatsSorted, registry.Formats)
+		formatsSorted := make([]*decode.Format, len(allFormats))
+		copy(formatsSorted, allFormats)
 		sort.Slice(formatsSorted, func(i, j int) bool {
 			return formatsSorted[i].Name < formatsSorted[j].Name
 		})
@@ -82,19 +79,18 @@ func (m Main) run() error {
 		rs = bytes.NewReader(buf)
 	}
 
-	var forceFormats []*decode.Format
 	if *forceFormatNameFlag != "" {
-		forceFormat := registry.FindFormat(*forceFormatNameFlag)
-		if forceFormat == nil {
-			return fmt.Errorf("%s: could not find format", *forceFormatNameFlag)
+		var err error
+		probeFormats, err = m.Registry.Group(*forceFormatNameFlag)
+		if err != nil {
+			return fmt.Errorf("%s: %s", *forceFormatNameFlag, err)
 		}
-		forceFormats = append(forceFormats, forceFormat)
 	}
 	bb, err := bitbuf.NewFromReadSeeker(rs, 0)
 	if err != nil {
 		panic(err)
 	}
-	f, _, errs := registry.Probe(fs.Arg(0), bb, forceFormats)
+	f, _, errs := decode.Probe(fs.Arg(0), bb, probeFormats)
 	if *verboseFlag {
 		for _, err := range errs {
 			fmt.Fprintf(m.OS.Stderr(), "%s\n", err)

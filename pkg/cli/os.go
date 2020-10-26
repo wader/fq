@@ -32,10 +32,10 @@ func (StandardOS) Stderr() io.Writer                        { return os.Stderr }
 func (StandardOS) Args() []string                           { return os.Args }
 func (StandardOS) Open(name string) (ReadSeekCloser, error) { return os.Open(name) }
 
-func StandardOSMain(formatsList ...[]*decode.Format) {
+func StandardOSMain(r *decode.Registry) {
 	if err := (Main{
-		OS:          StandardOS{},
-		FormatsList: formatsList,
+		OS:       StandardOS{},
+		Registry: r,
 	}).Run(); err != nil {
 		os.Exit(1)
 	}

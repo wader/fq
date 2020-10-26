@@ -6,7 +6,6 @@ import (
 	"fq/internal/asciiwriter"
 	"fq/internal/columnwriter"
 	"fq/internal/hexpairwriter"
-	"fq/pkg/bitbuf"
 	"fq/pkg/decode"
 	"io"
 	"strings"
@@ -96,10 +95,7 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, inde
 		// TODO: abs bitbuf
 		//b, _ := v.BitBuf.BitBufRange(startByte*8, displaySizeBytes*8)
 
-		var b *bitbuf.Buffer
-		if v.BitBuf != nil {
-			b, _ = v.BitBuf.BitBufRange(startByte*8, displaySizeBytes*8)
-		}
+		b, _ := v.AbsBitBuf().BitBufRange(startByte*8, displaySizeBytes*8)
 
 		addrLines = int(lastDisplayLine - startLine)
 		if lastDisplayByte%lineBytes != 0 {

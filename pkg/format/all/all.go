@@ -1,4 +1,4 @@
-package format
+package all
 
 import (
 	_ "fq/pkg/format/aac"

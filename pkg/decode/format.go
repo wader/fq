@@ -14,7 +14,7 @@ type Format struct {
 	Deps      []Dep
 }
 
-func FormatFn(d func(c *D) interface{}) []*Format {
+func FormatFn(d func(d *D) interface{}) []*Format {
 	return []*Format{{
 		DecodeFn: d,
 	}}
