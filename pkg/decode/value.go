@@ -150,34 +150,34 @@ func (v *Value) Lookup(path string) *Value {
 	}
 }
 
-func (v *Value) Walk(fn func(v *Value, depth int) error) error {
-	var walkFn func(v *Value, depth int) error
-	walkFn = func(v *Value, depth int) error {
-		if err := fn(v, depth); err != nil {
+func (v *Value) Walk(fn func(v *Value, index int, depth int) error) error {
+	var walkFn func(v *Value, index int, depth int) error
+	walkFn = func(v *Value, index int, depth int) error {
+		if err := fn(v, index, depth); err != nil {
 			return err
 		}
 		switch v := v.V.(type) {
 		case Struct:
 			for _, wv := range v {
-				if err := walkFn(wv, depth+1); err != nil {
+				if err := walkFn(wv, -1, depth+1); err != nil {
 					return err
 				}
 			}
 		case Array:
-			for _, wv := range v {
-				if err := walkFn(wv, depth+1); err != nil {
+			for i, wv := range v {
+				if err := walkFn(wv, i, depth+1); err != nil {
 					return err
 				}
 			}
 		}
 		return nil
 	}
-	return walkFn(v, 0)
+	return walkFn(v, -1, 0)
 }
 
 func (v *Value) Errors() []error {
 	var errs []error
-	_ = v.Walk(func(v *Value, depth int) error {
+	_ = v.Walk(func(v *Value, index int, depth int) error {
 		if v.Error != nil {
 			errs = append(errs, v.Error)
 		}
@@ -187,7 +187,7 @@ func (v *Value) Errors() []error {
 }
 
 func (v *Value) Prelude() {
-	v.Walk(func(v *Value, depth int) error {
+	v.Walk(func(v *Value, index int, depth int) error {
 		var minMax Range
 		switch vv := v.V.(type) {
 		case Struct:
