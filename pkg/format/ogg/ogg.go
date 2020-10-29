@@ -69,9 +69,6 @@ func decode2(d *decode.D) interface{} {
 				log.Println("page gap")
 			}
 
-			log.Printf("p.SequenceNo: %#+v\n", p.SequenceNo)
-			log.Printf("p.Segments: %#+v\n", p.Segments)
-
 			for _, ps := range p.Segments {
 				if s.packetBuf == nil {
 					s.firstBit = d.Pos()
@@ -80,7 +77,6 @@ func decode2(d *decode.D) interface{} {
 				b, _ := ps.BytesBitRange(0, ps.Len, 0)
 				s.packetBuf = append(s.packetBuf, b...)
 				if ps.Len/8 < 255 { // TODO: list range maps of demuxed packets?
-					log.Printf("len(packetBuf): %#+v\n", len(s.packetBuf))
 					bb, err := bitbuf.NewFromBytes(s.packetBuf, 0)
 					if err != nil {
 						panic(err) // TODO: fixme

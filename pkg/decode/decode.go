@@ -604,7 +604,7 @@ func (d *D) FieldBitBufFn(name string, firstBit int64, nBits int64, fn func() (*
 	return d.FieldRangeFn(name, firstBit, nBits, func() Value {
 		bb, disp := fn()
 		return Value{V: bb, Symbol: disp}
-	}).BitBuf
+	}).V.(*bitbuf.Buffer)
 }
 
 func (d *D) FieldStringMapFn(name string, sm map[uint64]string, def string, fn func() uint64) (uint64, bool) {
