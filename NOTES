@@ -1,4 +1,6 @@
 
+register in reverese order? override? ogg demuxer should deocde using "ogg_packet" group? reverse enalbed override?
+
 array in array
 
 float/fp endian? default?
