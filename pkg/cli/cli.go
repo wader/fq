@@ -9,6 +9,7 @@ import (
 	"fq/pkg/output"
 	"io"
 	"io/ioutil"
+	"os"
 	"sort"
 	"strings"
 )
@@ -33,6 +34,7 @@ func (m Main) run() error {
 
 	fs := flag.NewFlagSet("", flag.ContinueOnError)
 	fs.SetOutput(m.OS.Stderr())
+	dotFlag := fs.Bool("dot", false, "Output dot format graph (... | dot -Tsvg -o formats.svg)")
 	forceFormatNameFlag := fs.String("f", "", "Force format")
 	verboseFlag := fs.Bool("v", false, "Verbose output")
 	outputFormatFlag := fs.String("o", "text", "Output format")
@@ -61,6 +63,11 @@ func (m Main) run() error {
 	}
 	if err := fs.Parse(m.OS.Args()[1:]); err != nil {
 		return err
+	}
+
+	if *dotFlag {
+		m.Registry.Dot(m.OS.Stdout())
+		os.Exit(0)
 	}
 
 	var rs io.ReadSeeker
@@ -122,16 +129,6 @@ func (m Main) run() error {
 		if err := of.New(expValue).Write(m.OS.Stdout()); err != nil {
 			return err
 		}
-
-		// switch expType {
-		// case decode.FieldExpTree:
-		// 	ow.Write(m.OS.Stdout())
-		// case decode.FieldExpValue:
-		// 	fmt.Fprintf(m.OS.Stdout(), "%s", expField.Value.RawString())
-		// case decode.FieldExpRange:
-		// 	fmt.Fprintf(m.OS.Stdout(), "%s\n", expField.Range)
-		// }
-
 	} else {
 		return fmt.Errorf("unable to probe format")
 	}

@@ -7,8 +7,5 @@ import (
 )
 
 func main() {
-	// format.Dot(os.Stdout)
-	// os.Exit(0)
-
 	cli.StandardOSMain(format.DefaultRegistry)
 }
