@@ -9,10 +9,10 @@ var aacFrame []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:     "adts",
+		Name:     format.ADTS,
 		DecodeFn: adtsDecoder,
 		Deps: []decode.Dep{
-			{Names: []string{"aac_frame"}, Formats: &aacFrame},
+			{Names: []string{format.AAC_FRAME}, Formats: &aacFrame},
 		},
 	})
 }
@@ -37,7 +37,7 @@ func adtsDecoder(d *decode.D) interface{} {
 	// P	2	Number of AAC frames (RDBs) in ADTS frame minus 1, for maximum compatibility always use 1 AAC frame per ADTS frame
 	// Q	16	CRC if protection absent is 0
 
-	d.FieldValidateUFn("syncword", 0b111111111111, d.U12)
+	d.FieldValidateUFn("syncword", 0b1111_1111_1111, d.U12)
 	d.FieldU1("mpeg_version")
 	d.FieldValidateUFn("layer", 0, d.U2)
 	hasCRC := !d.FieldBoolFn("protection", func() (bool, string) { return d.Bool(), "" })

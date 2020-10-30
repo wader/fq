@@ -16,11 +16,11 @@ var all []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:     "tar",
+		Name:     format.TAR,
 		MIMEs:    []string{"application/x-tar"},
 		DecodeFn: tarDecode,
 		Deps: []decode.Dep{
-			{Names: []string{"probeable"}, Formats: &all},
+			{Names: []string{format.PROBEABLE}, Formats: &all},
 		},
 	})
 }

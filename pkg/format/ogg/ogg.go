@@ -11,12 +11,12 @@ import (
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:     "ogg",
+		Name:     format.OGG,
 		MIMEs:    []string{"audio/ogg"},
 		DecodeFn: decode2,
 		Deps: []decode.Dep{
-			{Names: []string{"ogg_page"}, Formats: &oggPage},
-			{Names: []string{"vorbis"}, Formats: &vorbisPacket},
+			{Names: []string{format.OGG_PAGE}, Formats: &oggPage},
+			{Names: []string{format.VORBIS}, Formats: &vorbisPacket},
 		},
 	})
 }

@@ -9,7 +9,7 @@ import (
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:     "flv",
+		Name:     format.FLV,
 		MIMEs:    []string{"video/x-flv"},
 		DecodeFn: flvDecode,
 	})

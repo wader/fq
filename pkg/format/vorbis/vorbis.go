@@ -13,11 +13,11 @@ var vorbisComment []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:      "vorbis",
+		Name:      format.VORBIS,
 		DecodeFn:  vorbisDecode,
 		SkipProbe: true,
 		Deps: []decode.Dep{
-			{Names: []string{"vorbis_comment"}, Formats: &vorbisComment},
+			{Names: []string{format.VORBIS_COMMENT}, Formats: &vorbisComment},
 		},
 	})
 }

@@ -12,7 +12,7 @@ import (
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:     "wav",
+		Name:     format.WAV,
 		MIMEs:    []string{"audio/wav"},
 		DecodeFn: wavDecode,
 	})

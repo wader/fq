@@ -21,14 +21,14 @@ var mp3Frame []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:     "mp3",
+		Name:     format.MP3,
 		MIMEs:    []string{"audio/mpeg"},
 		DecodeFn: mp3Decode,
 		Deps: []decode.Dep{
-			{Names: []string{"id3v2"}, Formats: &headerTag},
-			{Names: []string{"id3v1", "id3v11"}, Formats: &footerTags},
-			{Names: []string{"apev2"}, Formats: &apeTag},
-			{Names: []string{"mp3_frame"}, Formats: &mp3Frame},
+			{Names: []string{format.ID3V2}, Formats: &headerTag},
+			{Names: []string{format.ID3V1, "id3v11"}, Formats: &footerTags},
+			{Names: []string{format.APEV2}, Formats: &apeTag},
+			{Names: []string{format.MP3_FRAME}, Formats: &mp3Frame},
 		},
 	})
 }

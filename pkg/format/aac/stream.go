@@ -9,11 +9,11 @@ var adts []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:     "aac_stream",
+		Name:     format.AAC_STREAM,
 		MIMEs:    []string{"audio/aac"},
 		DecodeFn: adtsDecode,
 		Deps: []decode.Dep{
-			{Names: []string{"adts"}, Formats: &adts},
+			{Names: []string{format.ADTS}, Formats: &adts},
 		},
 	})
 }

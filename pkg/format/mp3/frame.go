@@ -16,11 +16,11 @@ var xingHeader []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:      "mp3_frame",
+		Name:      format.MP3_FRAME,
 		DecodeFn:  frameDecode,
 		SkipProbe: true,
 		Deps: []decode.Dep{
-			{Names: []string{"xing_header"}, Formats: &xingHeader},
+			{Names: []string{format.XING_HEADER}, Formats: &xingHeader},
 		},
 	})
 }

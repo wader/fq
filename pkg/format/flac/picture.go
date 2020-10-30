@@ -9,11 +9,11 @@ var images []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:      "flac_picture",
+		Name:      format.FLAC_PICTURE,
 		DecodeFn:  pictureDecode,
 		SkipProbe: true,
 		Deps: []decode.Dep{
-			{Names: []string{"image"}, Formats: &images},
+			{Names: []string{format.IMAGE}, Formats: &images},
 		},
 	})
 }

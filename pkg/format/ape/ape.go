@@ -10,7 +10,7 @@ import (
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:      "apev2",
+		Name:      format.APEV2,
 		DecodeFn:  apev2Decode,
 		SkipProbe: true,
 	})

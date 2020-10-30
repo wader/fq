@@ -16,12 +16,12 @@ var flacPicture []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:     "flac",
+		Name:     format.FLAC,
 		MIMEs:    []string{"audio/x-flac"},
 		DecodeFn: flacDecode,
 		Deps: []decode.Dep{
-			{Names: []string{"vorbis_comment"}, Formats: &vorbisComment},
-			{Names: []string{"flac_picture"}, Formats: &flacPicture},
+			{Names: []string{format.VORBIS_COMMENT}, Formats: &vorbisComment},
+			{Names: []string{format.FLAC_PICTURE}, Formats: &flacPicture},
 		},
 	})
 }

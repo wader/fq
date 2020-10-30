@@ -16,11 +16,11 @@ var images []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:      "id3v2",
+		Name:      format.ID3V2,
 		DecodeFn:  id3v2Decode,
 		SkipProbe: true,
 		Deps: []decode.Dep{
-			{Names: []string{"image"}, Formats: &images},
+			{Names: []string{format.IMAGE}, Formats: &images},
 		},
 	})
 }

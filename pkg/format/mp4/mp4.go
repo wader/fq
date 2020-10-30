@@ -11,7 +11,7 @@ import (
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name: "mp4",
+		Name: format.MP4,
 		// TODO: implment MIME()
 		MIMEs:    []string{"audio/mp4", "video/mp4"},
 		DecodeFn: mp4Decode,

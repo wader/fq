@@ -7,11 +7,10 @@ import (
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:      "id3v11",
+		Name:      format.ID3V11,
 		DecodeFn:  id3v1Decode,
 		SkipProbe: true,
 	})
-
 }
 
 func id3v1Decode(d *decode.D) interface{} {

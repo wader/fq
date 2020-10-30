@@ -39,7 +39,7 @@ typedef struct {
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:     "elf",
+		Name:     format.ELF,
 		DecodeFn: elfDecode,
 	})
 }

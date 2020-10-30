@@ -12,11 +12,11 @@ var flacPicture []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:      "vorbis_comment",
+		Name:      format.VORBIS_COMMENT,
 		DecodeFn:  commentDecode,
 		SkipProbe: true,
 		Deps: []decode.Dep{
-			{Names: []string{"flac_picture"}, Formats: &flacPicture},
+			{Names: []string{format.FLAC_PICTURE}, Formats: &flacPicture},
 		},
 	})
 }

@@ -13,13 +13,13 @@ var tiffFile []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:     "png",
-		Groups:   []string{"image"},
+		Name:     format.PNG,
+		Groups:   []string{format.IMAGE},
 		MIMEs:    []string{"image/png"},
 		DecodeFn: pngDecode,
 		Deps: []decode.Dep{
-			{Names: []string{"icc"}, Formats: &iccTag},
-			{Names: []string{"tiff"}, Formats: &tiffFile},
+			{Names: []string{format.ICC}, Formats: &iccTag},
+			{Names: []string{format.TIFF}, Formats: &tiffFile},
 		},
 	})
 }

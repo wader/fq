@@ -8,7 +8,7 @@ float/fp endian? default?
 go generate -x ./...
 
 
-replace Groups by Names "jpeg", "image"
+replace Groups by Names "jpeg", format.IMAGE
 
 
 

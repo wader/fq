@@ -10,7 +10,7 @@ import (
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:      "ogg_page",
+		Name:      format.OGG_PAGE,
 		DecodeFn:  oggDecode,
 		SkipProbe: true,
 	})

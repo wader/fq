@@ -13,12 +13,12 @@ var iccTag []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:     "tiff",
-		Groups:   []string{"image"},
+		Name:     format.TIFF,
+		Groups:   []string{format.IMAGE},
 		MIMEs:    []string{"image/tiff"},
 		DecodeFn: tiffDecode,
 		Deps: []decode.Dep{
-			{Names: []string{"icc"}, Formats: &iccTag},
+			{Names: []string{format.ICC}, Formats: &iccTag},
 		},
 	})
 
