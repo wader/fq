@@ -70,8 +70,6 @@ func Probe(name string, bb *bitbuf.Buffer, startPos int64, formats []*Format) (*
 	for _, f := range formats {
 		cbb := bb.Copy()
 
-		// TODO: how to pass regsiters? do later? current field?
-
 		d := (&D{Endian: BigEndian, bitBuf: cbb}).FieldStructBitBuf(name, cbb)
 		d.value.Desc = f.Name
 		d.value.BitBuf = cbb
@@ -84,6 +82,9 @@ func Probe(name string, bb *bitbuf.Buffer, startPos int64, formats []*Format) (*
 				continue
 			}
 		}
+
+		// TODO: handle struct and array rangees here?
+		// TODO: only for root?
 
 		var maxPos int64
 
