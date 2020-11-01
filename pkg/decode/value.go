@@ -113,7 +113,7 @@ func (v *Value) Eval(exp string) (*Value, error) {
 
 func (v *Value) AbsBitBuf() *bitbuf.Buffer {
 	if v.BitBuf != nil {
-		return v.BitBuf.Copy()
+		return v.BitBuf
 	}
 	return v.Parent.AbsBitBuf()
 }
@@ -250,7 +250,7 @@ func (v *Value) Sort() {
 	}
 }
 
-func (v Value) String() string {
+func (v *Value) String() string {
 	f := ""
 	switch iv := v.V.(type) {
 	case Array:
@@ -288,7 +288,7 @@ func (v Value) String() string {
 			bs, _ := v.RelBitBuf().BytesBitRange(0, 16, 0)
 			f = hex.EncodeToString(bs) + "..."
 		} else {
-			bs, _ := v.RelBitBuf().BytesBitRange(0, v.BitBuf.Len/8, 0)
+			bs, _ := v.RelBitBuf().BytesBitRange(0, v.Range.Length(), 0)
 			f = hex.EncodeToString(bs)
 		}
 	case nil:
@@ -314,7 +314,7 @@ func (v Value) String() string {
 	return fmt.Sprintf("%s%s%s", f, symbol, desc)
 }
 
-func (v Value) RawString() string {
+func (v *Value) RawString() string {
 	switch iv := v.V.(type) {
 	case Array:
 		return "array"

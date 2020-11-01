@@ -8,6 +8,7 @@ import (
 	"fq/internal/hexpairwriter"
 	"fq/pkg/decode"
 	"io"
+	"log"
 	"strings"
 )
 
@@ -34,14 +35,15 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, inde
 	switch v.V.(type) {
 	case decode.Struct:
 		if isInArray {
-			fmt.Fprintf(cw.Columns[6], "%s%s[%d]{} %s: %s %s\n", indent, v.Parent.Name, index, v.Name, v.Range, decode.Bits(v.Range.Length()))
+			fmt.Fprintf(cw.Columns[6], "%s%s[%d]{}: ", indent, v.Parent.Name, index)
 		} else {
-			fmt.Fprintf(cw.Columns[6], "%s%s{}: %s %s\n", indent, v.Name, v.Range, decode.Bits(v.Range.Length()))
+			fmt.Fprintf(cw.Columns[6], "%s%s{}: ", indent, v.Name)
 		}
+		fmt.Fprintf(cw.Columns[6], "%s %s (%s)\n", v, v.Range, decode.Bits(v.Range.Length()))
 	case decode.Array:
 		fmt.Fprintf(cw.Columns[6], "%s%s[]: %s\n", indent, v.Name, v.Range)
 	default:
-		absRange := v.AbsRange()
+		absRange := v.Range
 
 		startBit := absRange.Start
 		stopBit := absRange.Stop
@@ -97,7 +99,12 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, inde
 		// TODO: abs bitbuf
 		//b, _ := v.BitBuf.BitBufRange(startByte*8, displaySizeBytes*8)
 
-		b, _ := v.AbsBitBuf().BitBufRange(startByte*8, displaySizeBytes*8)
+		absBitBuf := v.AbsBitBuf()
+		vBitBuf, _ := absBitBuf.BitBufRange(startByte*8, displaySizeBytes*8)
+
+		if v.Name == "cmm_type_signature" {
+			log.Println("bla")
+		}
 
 		addrLines = int(lastDisplayLine - startLine)
 		if lastDisplayByte%lineBytes != 0 {
@@ -141,13 +148,13 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, inde
 			return string(d)
 		}
 
-		if b != nil {
+		if vBitBuf != nil {
 			io.Copy(
 				hexpairwriter.New(cw.Columns[2], int(lineBytes), int(startLineByteOffset), hexpairFn),
-				io.LimitReader(b.Copy(), displaySizeBytes))
+				io.LimitReader(vBitBuf.Copy(), displaySizeBytes))
 			io.Copy(
 				asciiwriter.New(cw.Columns[4], int(lineBytes), int(startLineByteOffset), asciiFn),
-				io.LimitReader(b.Copy(), displaySizeBytes))
+				io.LimitReader(vBitBuf.Copy(), displaySizeBytes))
 		}
 
 		// fmt.Fprintf(cw.Columns[2], "%s", hexpairs(b, lineBytes, startLineByteOffset))
@@ -168,10 +175,11 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, inde
 		}
 
 		if isInArray {
-			fmt.Fprintf(cw.Columns[6], "%s%s[%d] (%s): %s %s (%s)\n", indent, v.Parent.Name, index, v.Name, v, v.Range, decode.Bits(v.Range.Length()))
+			fmt.Fprintf(cw.Columns[6], "%s%s[%d] (%s): ", indent, v.Parent.Name, index, v.Name)
 		} else {
-			fmt.Fprintf(cw.Columns[6], "%s%s: %s %s %s(%s)\n", indent, v.Name, v, v.Range, absRange, decode.Bits(v.Range.Length()))
+			fmt.Fprintf(cw.Columns[6], "%s%s: ", indent, v.Name)
 		}
+		fmt.Fprintf(cw.Columns[6], "%s %s (%s)\n", v, v.Range, decode.Bits(v.Range.Length()))
 	}
 
 	cw.Flush()
