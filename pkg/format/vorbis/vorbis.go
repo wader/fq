@@ -118,7 +118,8 @@ func vorbisDecode(d *decode.D) interface{} {
 
 	case packetTypeComment:
 		// TODO: should not be try, FieldDecode?
-		d.FieldTryDecode("comment", vorbisComment)
+		d.FieldDecode("comment", vorbisComment)
+
 		// note this uses vorbis bitpacking convention, bits are added LSB first per byte
 		d.FieldValidateZeroPadding("padding", 7)
 		d.FieldValidateUFn("frame_bit", 1, d.U1)

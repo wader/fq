@@ -189,7 +189,7 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, inde
 
 func (o *FieldWriter) Write(w io.Writer) error {
 	cw := columnwriter.New(w, []int{8, 1, int(lineBytes*3) - 1, 1, int(lineBytes), 1, -1})
-	return o.v.Walk(func(v *decode.Value, index, depth int) error {
+	return o.v.WalkPreOrder(func(v *decode.Value, index, depth int) error {
 		return o.outputValue(cw, v, index, depth)
 	})
 }

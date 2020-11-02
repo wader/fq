@@ -98,7 +98,7 @@ func probe(name string, bb *bitbuf.Buffer, formats []*Format, opts probeOptions)
 
 		var maxPos int64
 
-		d.value.Walk(func(v *Value, index int, depth int) error {
+		d.value.WalkPostOrder(func(v *Value, index int, depth int) error {
 			v.Range = Range{Start: v.Range.Start + opts.startPos, Stop: v.Range.Stop + opts.startPos}
 			maxPos = max(v.Range.Stop, maxPos)
 			return nil
@@ -113,31 +113,8 @@ func probe(name string, bb *bitbuf.Buffer, formats []*Format, opts probeOptions)
 		}
 
 		if opts.isRoot {
-			// TODO: nicer
-			// TODO: find start/stop from Ranges instead? what if seekaround? concat bitbufs but want gaps? sort here, crash?
-
-			d.value.Sort()
-
-			d.value.Walk(func(v *Value, index int, depth int) error {
-				switch vv := v.V.(type) {
-				case Struct:
-					if len(vv) > 0 {
-						v.Range = vv[0].Range
-					}
-					for _, f := range vv {
-						v.Range = RangeMinMax(v.Range, f.Range)
-					}
-				case Array:
-					if len(vv) > 0 {
-						v.Range = vv[0].Range
-					}
-					for _, f := range vv {
-						v.Range = RangeMinMax(v.Range, f.Range)
-					}
-				}
-				return nil
-			})
-
+			// sort and set ranges for struct and arrays
+			d.value.Prelude()
 		}
 
 		return d.value, dv, errs
@@ -813,7 +790,6 @@ func (d *D) SubRangeFn(firstBit int64, nBits int64, fn func()) {
 	d.bitBuf = prevBb
 }
 
-// TODO: TryDecode?
 func (d *D) FieldTryDecode(name string, formats []*Format) (*Value, interface{}, []error) {
 	bb, err := d.bitBuf.BitBufRange(d.bitBuf.Pos, d.BitsLeft())
 	if err != nil {
@@ -836,6 +812,14 @@ func (d *D) FieldTryDecode(name string, formats []*Format) (*Value, interface{},
 		panic(err)
 	}
 
+	return v, dv, errs
+}
+
+func (d *D) FieldDecode(name string, formats []*Format) (*Value, interface{}, []error) {
+	v, dv, errs := d.FieldTryDecode(name, formats)
+	if v == nil || v.Errors() != nil {
+		panic(errs)
+	}
 	return v, dv, errs
 }
 

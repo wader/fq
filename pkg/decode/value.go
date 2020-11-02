@@ -177,11 +177,21 @@ func (v *Value) Lookup(path string) *Value {
 	}
 }
 
-func (v *Value) Walk(fn func(v *Value, index int, depth int) error) error {
+func (v *Value) WalkPreOrder(fn func(v *Value, index int, depth int) error) error {
+	return v.walk(true, fn)
+}
+
+func (v *Value) WalkPostOrder(fn func(v *Value, index int, depth int) error) error {
+	return v.walk(false, fn)
+}
+
+func (v *Value) walk(preOrder bool, fn func(v *Value, index int, depth int) error) error {
 	var walkFn func(v *Value, index int, depth int) error
 	walkFn = func(v *Value, index int, depth int) error {
-		if err := fn(v, index, depth); err != nil {
-			return err
+		if preOrder {
+			if err := fn(v, index, depth); err != nil {
+				return err
+			}
 		}
 		switch v := v.V.(type) {
 		case Struct:
@@ -197,6 +207,11 @@ func (v *Value) Walk(fn func(v *Value, index int, depth int) error) error {
 				}
 			}
 		}
+		if !preOrder {
+			if err := fn(v, index, depth); err != nil {
+				return err
+			}
+		}
 		return nil
 	}
 	return walkFn(v, -1, 0)
@@ -204,7 +219,7 @@ func (v *Value) Walk(fn func(v *Value, index int, depth int) error) error {
 
 func (v *Value) Errors() []error {
 	var errs []error
-	_ = v.Walk(func(v *Value, index int, depth int) error {
+	_ = v.WalkPreOrder(func(v *Value, index int, depth int) error {
 		if v.Error != nil {
 			errs = append(errs, v.Error)
 		}
@@ -214,25 +229,44 @@ func (v *Value) Errors() []error {
 }
 
 func (v *Value) Prelude() {
-	v.Walk(func(v *Value, index int, depth int) error {
-		var minMax Range
-		switch vv := v.V.(type) {
-		case Struct:
-			for _, vf := range vv {
-				minMax = RangeMinMax(minMax, vf.Range)
-			}
-		case Array:
-			for _, vf := range vv {
-				minMax = RangeMinMax(minMax, vf.Range)
-			}
-		}
-		// v.BitBuf = c.BitBufRange(minMax.Start, minMax.Stop-minMax.Start)
-		// v.Range = Range{Start: minMax.Start, Stop: minMax.Stop}
-		return nil
-	})
+	v.Sort()
 
 	// TODO: find start/stop from Ranges instead? what if seekaround? concat bitbufs but want gaps? sort here, crash?
+	// TDOO: if bitbuf set?
 
+	v.WalkPostOrder(func(v *Value, index int, depth int) error {
+		switch vv := v.V.(type) {
+		case Struct:
+			first := true
+			for _, f := range vv {
+				if f.BitBuf != nil {
+					continue
+				}
+
+				if first {
+					v.Range = f.Range
+					first = false
+				} else {
+					v.Range = RangeMinMax(v.Range, f.Range)
+				}
+			}
+		case Array:
+			first := true
+			for _, f := range vv {
+				if f.BitBuf != nil {
+					continue
+				}
+
+				if first {
+					v.Range = f.Range
+					first = false
+				} else {
+					v.Range = RangeMinMax(v.Range, f.Range)
+				}
+			}
+		}
+		return nil
+	})
 }
 
 func (v *Value) Sort() {

@@ -22,15 +22,15 @@ func init() {
 }
 
 func commentDecode(d *decode.D) interface{} {
-	lenStr := func(name string) string {
+	fieldLenStr := func(d *decode.D, name string) string {
 		len := d.FieldU32LE(name + "_length")
 		return d.FieldUTF8(name, int64(len))
 	}
-	lenStr("vendor")
+	fieldLenStr(d, "vendor")
 	userCommentListLength := d.FieldU32LE("user_comment_list_length")
 	d.FieldArrayFn("user_comment", func(d *decode.D) {
 		for i := uint64(0); i < userCommentListLength; i++ {
-			pair := lenStr("user_comment")
+			pair := fieldLenStr(d, "user_comment")
 			pairParts := strings.SplitN(pair, "=", 2)
 			if len(pairParts) == 2 {
 				// METADATA_BLOCK_PICTURE=<base64>

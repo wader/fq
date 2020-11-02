@@ -18,7 +18,7 @@ func (o *FieldWriter) Write(w io.Writer) error {
 	// TODO: not byte aligned? pad with zeros
 	// TODO: BytesRange version with padding?
 
-	o.v.Walk(func(v *decode.Value, index int, depth int) error {
+	o.v.WalkPostOrder(func(v *decode.Value, index int, depth int) error {
 		_, err := io.Copy(w, v.BitBuf.Copy())
 		return err
 	})
