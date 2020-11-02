@@ -97,7 +97,7 @@ func (m Main) run() error {
 	if err != nil {
 		panic(err)
 	}
-	f, _, errs := decode.Probe(fs.Arg(0), bb, 0, probeFormats)
+	f, _, errs := decode.Probe(fs.Arg(0), bb, probeFormats)
 	if *verboseFlag {
 		for _, err := range errs {
 			fmt.Fprintf(m.OS.Stderr(), "%s\n", err)

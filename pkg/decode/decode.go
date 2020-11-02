@@ -60,8 +60,18 @@ type D struct {
 	registry *Registry
 }
 
+type probeOptions struct {
+	isRoot           bool
+	startPos         int64
+	truncateToMaxPos bool
+}
+
 // Probe probes all probeable formats and turns first found Decoder and all other decoder errors
-func Probe(name string, bb *bitbuf.Buffer, startPos int64, formats []*Format) (*Value, interface{}, []error) {
+func Probe(name string, bb *bitbuf.Buffer, formats []*Format) (*Value, interface{}, []error) {
+	return probe(name, bb, formats, probeOptions{isRoot: true, startPos: 0, truncateToMaxPos: false})
+}
+
+func probe(name string, bb *bitbuf.Buffer, formats []*Format, opts probeOptions) (*Value, interface{}, []error) {
 	var forceOne = len(formats) == 1
 
 	// TODO: order..
@@ -89,24 +99,46 @@ func Probe(name string, bb *bitbuf.Buffer, startPos int64, formats []*Format) (*
 		var maxPos int64
 
 		d.value.Walk(func(v *Value, index int, depth int) error {
-
-			v.Range = Range{Start: v.Range.Start + startPos, Stop: v.Range.Stop + startPos}
-
+			v.Range = Range{Start: v.Range.Start + opts.startPos, Stop: v.Range.Stop + opts.startPos}
 			maxPos = max(v.Range.Stop, maxPos)
-
 			return nil
 		})
 
-		// TODO: nicer
-		d.value.Range = Range{Start: startPos, Stop: maxPos}
+		d.value.Range = Range{Start: opts.startPos, Stop: maxPos}
 
-		if d.value.Parent == nil {
-			d.value.Sort()
+		if opts.truncateToMaxPos {
+			// TODO: wrong keep track of largest?
+			cbb.SeekAbs(maxPos)
+			_ = cbb.TruncateRel(0)
 		}
 
-		// TODO: wrong keep track of largest?
-		cbb.SeekAbs(maxPos)
-		_ = cbb.TruncateRel(0)
+		if opts.isRoot {
+			// TODO: nicer
+			// TODO: find start/stop from Ranges instead? what if seekaround? concat bitbufs but want gaps? sort here, crash?
+
+			d.value.Sort()
+
+			d.value.Walk(func(v *Value, index int, depth int) error {
+				switch vv := v.V.(type) {
+				case Struct:
+					if len(vv) > 0 {
+						v.Range = vv[0].Range
+					}
+					for _, f := range vv {
+						v.Range = RangeMinMax(v.Range, f.Range)
+					}
+				case Array:
+					if len(vv) > 0 {
+						v.Range = vv[0].Range
+					}
+					for _, f := range vv {
+						v.Range = RangeMinMax(v.Range, f.Range)
+					}
+				}
+				return nil
+			})
+
+		}
 
 		return d.value, dv, errs
 	}
@@ -490,25 +522,17 @@ func (d *D) AddChild(v *Value) {
 }
 
 func (d *D) fieldDecoder(name string, bitBuf *bitbuf.Buffer, v interface{}) *D {
-	r := Range{}
-	if d.bitBuf != nil {
-		r = Range{Start: d.bitBuf.Pos, Stop: d.bitBuf.Pos}
-	}
-
 	cd := &D{
 		Endian: d.Endian,
 
 		bitBuf: bitBuf,
 		// TODO: rename current to value?
 		value: &Value{
-			Name:  name,
-			V:     v,
-			Range: r,
+			Name: name,
+			V:    v,
 		},
 		registry: d.registry,
 	}
-
-	// TODO: find start/stop from Ranges instead? what if seekaround? concat bitbufs but want gaps? sort here, crash?
 
 	// TODO: refactor
 	if d.value != nil {
@@ -797,7 +821,7 @@ func (d *D) FieldTryDecode(name string, formats []*Format) (*Value, interface{},
 		panic(BitBufError{Err: err, Op: "FieldTryDecode", Size: d.BitsLeft(), Pos: d.bitBuf.Pos})
 	}
 
-	v, dv, errs := Probe(name, bb, d.Pos(), formats)
+	v, dv, errs := probe(name, bb, formats, probeOptions{isRoot: false, startPos: d.bitBuf.Pos, truncateToMaxPos: true})
 	if v == nil || v.Errors() != nil {
 		return nil, nil, errs
 	}
@@ -822,7 +846,7 @@ func (d *D) FieldDecodeLen(name string, nBits int64, formats []*Format) (*Value,
 		panic(BitBufError{Err: err, Op: "FieldDecodeLen", Size: nBits, Pos: d.bitBuf.Pos})
 	}
 
-	v, dv, errs := Probe(name, bb, d.Pos(), formats)
+	v, dv, errs := probe(name, bb, formats, probeOptions{isRoot: false, startPos: d.bitBuf.Pos, truncateToMaxPos: true})
 	if v != nil {
 		v.BitBuf = nil
 
@@ -849,7 +873,7 @@ func (d *D) FieldTryDecodeRange(name string, firstBit int64, nBits int64, format
 		panic(BitBufError{Err: err, Op: "FieldDecodeRange", Size: nBits, Pos: d.bitBuf.Pos})
 	}
 
-	v, dv, errs := Probe(name, bb, d.Pos(), formats)
+	v, dv, errs := probe(name, bb, formats, probeOptions{isRoot: false, startPos: d.bitBuf.Pos, truncateToMaxPos: true})
 	if v != nil {
 		v.BitBuf = nil
 		//v.Range = Range{Start: v.Range.Start + firstBit, Stop: v.Range.Stop + firstBit}
@@ -866,7 +890,7 @@ func (d *D) FieldDecodeRange(name string, firstBit int64, nBits int64, formats [
 		panic(BitBufError{Err: err, Op: "FieldDecodeRange", Size: nBits, Pos: firstBit})
 	}
 
-	v, dv, errs := Probe(name, bb, firstBit, formats)
+	v, dv, errs := probe(name, bb, formats, probeOptions{isRoot: false, startPos: firstBit, truncateToMaxPos: true})
 	if v != nil {
 		v.BitBuf = nil
 		d.AddChild(v)
@@ -878,8 +902,9 @@ func (d *D) FieldDecodeRange(name string, firstBit int64, nBits int64, formats [
 }
 
 // TODO: list of ranges?
+// TODO: firstBit/nBits make no sense?
 func (d *D) FieldDecodeBitBuf(name string, firstBit int64, nBits int64, bb *bitbuf.Buffer, formats []*Format) (*Value, interface{}, []error) {
-	f, dv, errs := Probe(name, bb, 0, formats)
+	f, dv, errs := probe(name, bb, formats, probeOptions{isRoot: false, startPos: 0, truncateToMaxPos: false})
 	if f != nil {
 		d.AddChild(f)
 	} else {

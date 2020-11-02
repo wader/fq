@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-var all []*decode.Format
+var probeable []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -20,7 +20,7 @@ func init() {
 		MIMEs:    []string{"application/x-tar"},
 		DecodeFn: tarDecode,
 		Deps: []decode.Dep{
-			{Names: []string{format.PROBEABLE}, Formats: &all},
+			{Names: []string{format.PROBEABLE}, Formats: &probeable},
 		},
 	})
 }
@@ -84,7 +84,7 @@ func tarDecode(d *decode.D) interface{} {
 				fieldStr("prefix", 155)
 				fieldBlockPadding("header_block_padding")
 				if size > 0 {
-					d.FieldDecodeLen("data", int64(size)*8, all)
+					d.FieldDecodeLen("data", int64(size)*8, probeable)
 				}
 				fieldBlockPadding("data_block_padding")
 			})
