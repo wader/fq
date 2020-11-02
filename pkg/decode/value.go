@@ -229,8 +229,6 @@ func (v *Value) Errors() []error {
 }
 
 func (v *Value) Prelude() {
-	v.Sort()
-
 	// TODO: find start/stop from Ranges instead? what if seekaround? concat bitbufs but want gaps? sort here, crash?
 	// TDOO: if bitbuf set?
 
@@ -250,6 +248,11 @@ func (v *Value) Prelude() {
 					v.Range = RangeMinMax(v.Range, f.Range)
 				}
 			}
+
+			sort.Slice(vv, func(i, j int) bool {
+				return vv[i].Range.Start < vv[j].Range.Start
+			})
+
 		case Array:
 			first := true
 			for _, f := range vv {
@@ -267,21 +270,6 @@ func (v *Value) Prelude() {
 		}
 		return nil
 	})
-}
-
-func (v *Value) Sort() {
-	vfs, _ := v.V.(Struct)
-	if vfs == nil {
-		return
-	}
-
-	sort.Slice(vfs, func(i, j int) bool {
-		return vfs[i].Range.Start < vfs[j].Range.Start
-	})
-
-	for _, vf := range vfs {
-		vf.Sort()
-	}
 }
 
 func (v *Value) String() string {

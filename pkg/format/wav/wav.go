@@ -92,15 +92,15 @@ var audioFormatName = map[uint64]string{
 	('V' << 8) + 'o': "VORBIS",
 }
 
-func decodeChunk(d *decode.D, expectedChunkID string) int64 {
+func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 {
 	var chunkLen int64
 
 	chunks := map[string]func(){
 		"RIFF": func() {
 			d.FieldUTF8("format", 4)
-			decodeChunks(d)
+			decodeChunks(d, false)
 		},
-		"fmt ": func() {
+		"fmt": func() {
 			d.FieldStringMapFn("audio_format", audioFormatName, "Unknown", d.U16LE)
 			d.FieldU16LE("num_channels")
 			d.FieldU32LE("sample_rate")
@@ -111,41 +111,42 @@ func decodeChunk(d *decode.D, expectedChunkID string) int64 {
 		"data": func() {
 			d.FieldBitBufLen("samples", d.BitsLeft())
 		},
+		"LIST": func() {
+			d.FieldUTF8("list_type", 4)
+			decodeChunks(d, true)
+		},
 	}
 
-	var chunkID string
-	chunkID = d.UTF8(4)
-	if expectedChunkID != "" && chunkID != expectedChunkID {
-		d.Invalid(fmt.Sprintf("expected chunk id %q found %q", expectedChunkID, chunkID))
+	trimChunkID := d.FieldStrFn("chunk_id", func() (string, string) {
+		return strings.TrimSpace(d.UTF8(4)), ""
+	})
+	if expectedChunkID != "" && trimChunkID != expectedChunkID {
+		d.Invalid(fmt.Sprintf("expected chunk id %q found %q", expectedChunkID, trimChunkID))
 	}
-	d.SeekRel(-4 * 8)
+	chunkLen = int64(d.FieldU32LE("chunk_size"))
 
-	trimChunkID := strings.TrimSpace(chunkID)
-	d.FieldStrFn(trimChunkID, func() (string, string) {
-		d.FieldUTF8("chunk_id", 4)
-		chunkLen = int64(d.FieldU32LE("chunk_size"))
-
-		if fn, ok := chunks[chunkID]; ok {
-			d.SubLenFn(chunkLen*8, fn)
+	if fn, ok := chunks[trimChunkID]; ok {
+		d.SubLenFn(chunkLen*8, fn)
+	} else {
+		if stringData {
+			d.FieldUTF8("data", chunkLen)
 		} else {
 			d.FieldBitBufLen("data", chunkLen*8)
 		}
+	}
 
-		if chunkLen%2 != 0 {
-			d.FieldBitBufLen("chunk_align", 8)
-		}
-
-		return chunkID, ""
-	})
+	if chunkLen%2 != 0 {
+		d.FieldBitBufLen("chunk_align", 8)
+	}
 
 	return chunkLen + 8
 }
 
-func decodeChunks(d *decode.D) {
+func decodeChunks(d *decode.D, stringData bool) {
 	d.FieldArrayFn("chunk", func(d *decode.D) {
 		for !d.End() {
 			d.FieldStructFn("chunk", func(d *decode.D) {
-				decodeChunk(d, "")
+				decodeChunk(d, "", stringData)
 			})
 		}
 	})
@@ -153,6 +154,6 @@ func decodeChunks(d *decode.D) {
 
 // Decode decodes a WAV stream
 func wavDecode(d *decode.D) interface{} {
-	decodeChunk(d, "RIFF")
+	decodeChunk(d, "RIFF", false)
 	return nil
 }

@@ -882,6 +882,7 @@ func (d *D) FieldTryDecodeBitBuf(name string, firstBit int64, nBits int64, bb *b
 		return nil, nil, errs
 	}
 
+	v.BitBuf = nil
 	d.AddChild(v)
 
 	return v, dv, errs

@@ -31,12 +31,12 @@ func tarDecode(d *decode.D) interface{} {
 		ts := strings.Trim(s, "\x00")
 		return ts
 	}
-	fieldStr := func(name string, nBytes int64) string {
+	fieldStr := func(d *decode.D, name string, nBytes int64) string {
 		return d.FieldStrFn(name, func() (string, string) {
 			return str(nBytes), ""
 		})
 	}
-	fieldNumStr := func(name string, nBytes int64) uint64 {
+	fieldNumStr := func(d *decode.D, name string, nBytes int64) uint64 {
 		return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
 			ts := strings.Trim(str(nBytes), "0 \x00")
 			if ts == "" {
@@ -49,7 +49,7 @@ func tarDecode(d *decode.D) interface{} {
 			return n, decode.NumberDecimal, ts
 		})
 	}
-	fieldBlockPadding := func(name string) {
+	fieldBlockPadding := func(d *decode.D, name string) {
 		const blockBits = 512 * 8
 		blockPadding := (blockBits - (d.Pos() % blockBits)) % blockBits
 		if blockPadding > 0 {
@@ -59,49 +59,50 @@ func tarDecode(d *decode.D) interface{} {
 
 	// 512*2 zero bytes
 	endMarker := [512 * 2]byte{}
-	validFiles := 0
+	foundEndMarker := false
 
 	d.FieldArrayFn("file", func(d *decode.D) {
 		for !d.End() {
-			name := str(100)
-			d.SeekRel(-100 * 8)
-			d.FieldStructFn(name, func(d *decode.D) {
-				fieldStr("name", 100)
-				fieldNumStr("mode", 8)
-				fieldNumStr("uid", 8)
-				fieldNumStr("gid", 8)
-				size := fieldNumStr("size", 12)
-				fieldNumStr("mtime", 12)
-				fieldNumStr("chksum", 8)
-				fieldStr("typeflag", 1)
-				fieldStr("linkname", 100)
-				fieldStr("magic", 6)
-				fieldNumStr("version", 2)
-				fieldStr("uname", 32)
-				fieldStr("gname", 32)
-				fieldNumStr("devmajor", 8)
-				fieldNumStr("devminor", 8)
-				fieldStr("prefix", 155)
-				fieldBlockPadding("header_block_padding")
+			d.FieldStructFn("file", func(d *decode.D) {
+				fieldStr(d, "name", 100)
+				fieldNumStr(d, "mode", 8)
+				fieldNumStr(d, "uid", 8)
+				fieldNumStr(d, "gid", 8)
+				size := fieldNumStr(d, "size", 12)
+				fieldNumStr(d, "mtime", 12)
+				fieldNumStr(d, "chksum", 8)
+				fieldStr(d, "typeflag", 1)
+				fieldStr(d, "linkname", 100)
+				magic := fieldStr(d, "magic", 6)
+				if magic != "ustar" {
+					d.Invalid(fmt.Sprintf("invalid magic %s", magic))
+				}
+				fieldNumStr(d, "version", 2)
+				fieldStr(d, "uname", 32)
+				fieldStr(d, "gname", 32)
+				fieldNumStr(d, "devmajor", 8)
+				fieldNumStr(d, "devminor", 8)
+				fieldStr(d, "prefix", 155)
+				fieldBlockPadding(d, "header_block_padding")
 				if size > 0 {
 					v, _, _ := d.FieldTryDecodeLen("data", int64(size)*8, probeable)
-					if v != nil {
+					if v == nil {
 						d.FieldBitBufLen("data", int64(size)*8)
 					}
 				}
-				fieldBlockPadding("data_block_padding")
+				fieldBlockPadding(d, "data_block_padding")
 			})
-			validFiles++
 
 			bs := d.PeekBytes(512 * 2)
 			if bytes.Equal(bs, endMarker[:]) {
-				d.FieldBitBufLen("end_marker", 512*2*8)
+				foundEndMarker = true
 				break
 			}
 		}
 	})
+	d.FieldBitBufLen("end_marker", 512*2*8)
 
-	if validFiles == 0 {
+	if !foundEndMarker {
 		d.Invalid("no files found")
 	}
 

@@ -34,6 +34,8 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, inde
 
 	switch v.V.(type) {
 	case decode.Struct:
+		fmt.Fprintf(cw.Columns[3], "|\n")
+		fmt.Fprintf(cw.Columns[5], "|\n")
 		if isInArray {
 			fmt.Fprintf(cw.Columns[6], "%s%s[%d]{}: ", indent, v.Parent.Name, index)
 		} else {
@@ -41,6 +43,8 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, inde
 		}
 		fmt.Fprintf(cw.Columns[6], "%s %s (%s)\n", v, v.Range, decode.Bits(v.Range.Length()))
 	case decode.Array:
+		fmt.Fprintf(cw.Columns[3], "|\n")
+		fmt.Fprintf(cw.Columns[5], "|\n")
 		fmt.Fprintf(cw.Columns[6], "%s%s[]: %s\n", indent, v.Name, v.Range)
 	default:
 		absRange := v.Range
@@ -102,7 +106,7 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, inde
 		absBitBuf := v.AbsBitBuf()
 		vBitBuf, _ := absBitBuf.BitBufRange(startByte*8, displaySizeBytes*8)
 
-		if v.Name == "cmm_type_signature" {
+		if v.Name == "bitrate_minimum" {
 			log.Println("bla")
 		}
 
@@ -184,6 +188,8 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, inde
 
 	if v.Error != nil {
 		fmt.Fprintf(cw.Columns[6], "%s!%s\n", indent, v.Error)
+		fmt.Fprintf(cw.Columns[3], "|\n")
+		fmt.Fprintf(cw.Columns[5], "|\n")
 	}
 
 	cw.Flush()
