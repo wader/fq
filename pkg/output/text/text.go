@@ -182,6 +182,10 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, inde
 		fmt.Fprintf(cw.Columns[6], "%s %s (%s)\n", v, v.Range, decode.Bits(v.Range.Length()))
 	}
 
+	if v.Error != nil {
+		fmt.Fprintf(cw.Columns[6], "%s!%s\n", indent, v.Error)
+	}
+
 	cw.Flush()
 
 	return nil

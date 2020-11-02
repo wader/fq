@@ -803,9 +803,6 @@ func (d *D) FieldTryDecode(name string, formats []*Format) (*Value, interface{},
 	}
 
 	v.BitBuf = nil
-	//v.Range = Range{Start: v.Range.Start + d.Pos(), Stop: v.Range.Stop + d.Pos()}
-
-	// TODO: bitbuf len shorten!
 	d.AddChild(v)
 	_, err = d.bitBuf.SeekRel(int64(v.Range.Length()))
 	if err != nil {
@@ -823,30 +820,32 @@ func (d *D) FieldDecode(name string, formats []*Format) (*Value, interface{}, []
 	return v, dv, errs
 }
 
-// TODO: FieldTryDecode? just TryDecode?
-func (d *D) FieldDecodeLen(name string, nBits int64, formats []*Format) (*Value, interface{}, []error) {
+func (d *D) FieldTryDecodeLen(name string, nBits int64, formats []*Format) (*Value, interface{}, []error) {
 	bb, err := d.bitBuf.BitBufRange(d.bitBuf.Pos, nBits)
 	if err != nil {
-		panic(BitBufError{Err: err, Op: "FieldDecodeLen", Size: nBits, Pos: d.bitBuf.Pos})
+		panic(BitBufError{Err: err, Op: "FieldTryDecodeLen", Size: nBits, Pos: d.bitBuf.Pos})
 	}
 
 	v, dv, errs := probe(name, bb, formats, probeOptions{isRoot: false, startPos: d.bitBuf.Pos, truncateToMaxPos: true})
-	if v != nil {
-		v.BitBuf = nil
-
-		d.AddChild(v)
-	} else {
-		// TODO: decoder unknown
-		d.FieldRangeFn(name, d.bitBuf.Pos, nBits, func() Value { return Value{} })
+	if v == nil || v.Errors() != nil {
+		return nil, nil, errs
 	}
 
-	// TODO: nBits - fLen gap?
-
+	v.BitBuf = nil
+	d.AddChild(v)
 	_, err = d.bitBuf.SeekRel(int64(nBits))
 	if err != nil {
 		panic(err)
 	}
 
+	return v, dv, errs
+}
+
+func (d *D) FieldDecodeLen(name string, nBits int64, formats []*Format) (*Value, interface{}, []error) {
+	v, dv, errs := d.FieldTryDecodeLen(name, nBits, formats)
+	if v == nil || v.Errors() != nil {
+		panic(errs)
+	}
 	return v, dv, errs
 }
 
@@ -858,46 +857,42 @@ func (d *D) FieldTryDecodeRange(name string, firstBit int64, nBits int64, format
 	}
 
 	v, dv, errs := probe(name, bb, formats, probeOptions{isRoot: false, startPos: d.bitBuf.Pos, truncateToMaxPos: true})
-	if v != nil {
-		v.BitBuf = nil
-		//v.Range = Range{Start: v.Range.Start + firstBit, Stop: v.Range.Stop + firstBit}
-		d.AddChild(v)
+	if v == nil || v.Errors() != nil {
+		return nil, nil, errs
 	}
+
+	v.BitBuf = nil
+	d.AddChild(v)
 
 	return v, dv, errs
 }
 
-// TODO: return decooder?
 func (d *D) FieldDecodeRange(name string, firstBit int64, nBits int64, formats []*Format) (*Value, interface{}, []error) {
-	bb, err := d.bitBuf.BitBufRange(firstBit, nBits)
-	if err != nil {
-		panic(BitBufError{Err: err, Op: "FieldDecodeRange", Size: nBits, Pos: firstBit})
+	v, dv, errs := d.FieldTryDecodeRange(name, firstBit, nBits, formats)
+	if v == nil || v.Errors() != nil {
+		panic(errs)
+	}
+	return v, dv, errs
+}
+
+// TODO: firstBit/nBits make no sense?
+func (d *D) FieldTryDecodeBitBuf(name string, firstBit int64, nBits int64, bb *bitbuf.Buffer, formats []*Format) (*Value, interface{}, []error) {
+	v, dv, errs := probe(name, bb, formats, probeOptions{isRoot: false, startPos: 0, truncateToMaxPos: false})
+	if v == nil || v.Errors() != nil {
+		return nil, nil, errs
 	}
 
-	v, dv, errs := probe(name, bb, formats, probeOptions{isRoot: false, startPos: firstBit, truncateToMaxPos: true})
-	if v != nil {
-		v.BitBuf = nil
-		d.AddChild(v)
-	} else {
-		d.FieldRangeFn(name, firstBit, nBits, func() Value { return Value{} })
-	}
+	d.AddChild(v)
 
 	return v, dv, errs
 }
 
-// TODO: list of ranges?
-// TODO: firstBit/nBits make no sense?
 func (d *D) FieldDecodeBitBuf(name string, firstBit int64, nBits int64, bb *bitbuf.Buffer, formats []*Format) (*Value, interface{}, []error) {
-	f, dv, errs := probe(name, bb, formats, probeOptions{isRoot: false, startPos: 0, truncateToMaxPos: false})
-	if f != nil {
-		d.AddChild(f)
-	} else {
-		d.FieldBitBufFn(name, firstBit, nBits, func() (*bitbuf.Buffer, string) {
-			return bb, ""
-		})
+	v, dv, errs := d.FieldTryDecodeBitBuf(name, firstBit, nBits, bb, formats)
+	if v == nil || v.Errors() != nil {
+		panic(errs)
 	}
-
-	return f, dv, errs
+	return v, dv, errs
 }
 
 func (d *D) FieldBitBufRange(name string, firstBit int64, nBits int64) *bitbuf.Buffer {

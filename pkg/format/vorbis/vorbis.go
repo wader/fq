@@ -52,8 +52,10 @@ func vorbisDecode(d *decode.D) interface{} {
 	})
 
 	switch packetType {
-	case packetTypeIdentification, packetTypeComment, packetTypeSetup:
+	case packetTypeIdentification, packetTypeSetup, packetTypeComment:
 		d.FieldValidateString("magic", "vorbis")
+	default:
+		d.Invalid(fmt.Sprintf("unknown packet type %d", packetType))
 	}
 
 	switch packetType {
@@ -127,8 +129,6 @@ func vorbisDecode(d *decode.D) interface{} {
 		if d.BitsLeft() > 0 {
 			d.FieldValidateZeroPadding("padding", d.BitsLeft())
 		}
-	default:
-		d.Invalid(fmt.Sprintf("unknown packet type %d", packetType))
 	}
 
 	return nil
