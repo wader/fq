@@ -306,21 +306,21 @@ func (d *D) FieldSE(name string, nBits int64, endian Endian) int64 {
 	})
 }
 
-func (d *D) F32E(endian bitbuf.Endian) float64 {
-	f, err := d.bitBuf.F32E(endian)
+func (d *D) F32E(endian Endian) float64 {
+	f, err := d.bitBuf.F32E(bitbuf.Endian(endian))
 	if err != nil {
 		panic(BitBufError{Err: err, Op: "F32", Size: 32, Pos: d.bitBuf.Pos})
 	}
 	return float64(f)
 }
 
-func (d *D) F32() float64   { return d.F32E(bitbuf.BigEndian) }
-func (d *D) F32BE() float64 { return d.F32E(bitbuf.BigEndian) }
-func (d *D) F32LE() float64 { return d.F32E(bitbuf.LittleEndian) }
+func (d *D) F32() float64   { return d.F32E(d.Endian) }
+func (d *D) F32BE() float64 { return d.F32E(BigEndian) }
+func (d *D) F32LE() float64 { return d.F32E(LittleEndian) }
 
-func (d *D) FieldF32E(name string, endian bitbuf.Endian) float64 {
+func (d *D) FieldF32E(name string, endian Endian) float64 {
 	return d.FieldFloatFn(name, func() (float64, string) {
-		f, err := d.bitBuf.F32E(endian)
+		f, err := d.bitBuf.F32E(bitbuf.Endian(endian))
 		if err != nil {
 			panic(BitBufError{Err: err, Op: "F32", Size: 32, Pos: d.bitBuf.Pos})
 		}
@@ -328,25 +328,25 @@ func (d *D) FieldF32E(name string, endian bitbuf.Endian) float64 {
 	})
 }
 
-func (d *D) FieldF32(name string) float64   { return d.FieldF32E(name, bitbuf.BigEndian) }
-func (d *D) FieldF32BE(name string) float64 { return d.FieldF32E(name, bitbuf.BigEndian) }
-func (d *D) FieldF32LE(name string) float64 { return d.FieldF32E(name, bitbuf.LittleEndian) }
+func (d *D) FieldF32(name string) float64   { return d.FieldF32E(name, d.Endian) }
+func (d *D) FieldF32BE(name string) float64 { return d.FieldF32E(name, BigEndian) }
+func (d *D) FieldF32LE(name string) float64 { return d.FieldF32E(name, LittleEndian) }
 
-func (d *D) F64E(endian bitbuf.Endian) float64 {
-	f, err := d.bitBuf.F64E(endian)
+func (d *D) F64E(endian Endian) float64 {
+	f, err := d.bitBuf.F64E(bitbuf.Endian(endian))
 	if err != nil {
 		panic(BitBufError{Err: err, Op: "F64", Size: 64, Pos: d.bitBuf.Pos})
 	}
 	return float64(f)
 }
 
-func (d *D) F64() float64   { return d.F64E(bitbuf.BigEndian) }
-func (d *D) F64BE() float64 { return d.F64E(bitbuf.BigEndian) }
-func (d *D) F64LE() float64 { return d.F64E(bitbuf.LittleEndian) }
+func (d *D) F64() float64   { return d.F64E(d.Endian) }
+func (d *D) F64BE() float64 { return d.F64E(BigEndian) }
+func (d *D) F64LE() float64 { return d.F64E(LittleEndian) }
 
-func (d *D) FieldF64E(name string, endian bitbuf.Endian) float64 {
+func (d *D) FieldF64E(name string, endian Endian) float64 {
 	return d.FieldFloatFn(name, func() (float64, string) {
-		f, err := d.bitBuf.F64E(endian)
+		f, err := d.bitBuf.F64E(bitbuf.Endian(endian))
 		if err != nil {
 			panic(BitBufError{Err: err, Op: "F64", Size: 64, Pos: d.bitBuf.Pos})
 		}
@@ -354,9 +354,9 @@ func (d *D) FieldF64E(name string, endian bitbuf.Endian) float64 {
 	})
 }
 
-func (d *D) FieldF64(name string) float64   { return d.FieldF64E(name, bitbuf.BigEndian) }
-func (d *D) FieldF64BE(name string) float64 { return d.FieldF64E(name, bitbuf.BigEndian) }
-func (d *D) FieldF64LE(name string) float64 { return d.FieldF64E(name, bitbuf.LittleEndian) }
+func (d *D) FieldF64(name string) float64   { return d.FieldF64E(name, d.Endian) }
+func (d *D) FieldF64BE(name string) float64 { return d.FieldF64E(name, BigEndian) }
+func (d *D) FieldF64LE(name string) float64 { return d.FieldF64E(name, LittleEndian) }
 
 func (d *D) UTF8(nBytes int64) string {
 	s, err := d.bitBuf.BytesLen(nBytes)
