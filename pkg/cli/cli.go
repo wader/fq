@@ -31,7 +31,7 @@ func (m Main) Run() error {
 
 func (m Main) run() error {
 	allFormats := m.Registry.MustAll()
-	probeFormats := m.Registry.MustGroup(format.PROBE) // TODO: const?
+	probeFormats := m.Registry.MustGroup(format.PROBE)
 
 	fs := flag.NewFlagSet("", flag.ContinueOnError)
 	fs.SetOutput(m.OS.Stderr())
