@@ -61,9 +61,6 @@ func (r *Registry) MustRegister(format *Format) *Format {
 	for _, g := range format.Groups {
 		r.register(g, format, true)
 	}
-	if !format.SkipProbe {
-		r.register("probeable", format, true)
-	}
 	r.register("all", format, true)
 
 	return format

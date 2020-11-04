@@ -9,9 +9,8 @@ import (
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:      format.ICC,
-		DecodeFn:  iccDecode,
-		SkipProbe: true,
+		Name:     format.ICC,
+		DecodeFn: iccDecode,
 	})
 }
 

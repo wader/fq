@@ -12,9 +12,8 @@ var flacPicture []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:      format.VORBIS_COMMENT,
-		DecodeFn:  commentDecode,
-		SkipProbe: true,
+		Name:     format.VORBIS_COMMENT,
+		DecodeFn: commentDecode,
 		Deps: []decode.Dep{
 			{Names: []string{format.FLAC_PICTURE}, Formats: &flacPicture},
 		},

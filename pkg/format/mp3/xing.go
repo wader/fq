@@ -9,9 +9,8 @@ import (
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:      format.XING_HEADER,
-		DecodeFn:  xingDecode,
-		SkipProbe: true,
+		Name:     format.XING_HEADER,
+		DecodeFn: xingDecode,
 	})
 }
 

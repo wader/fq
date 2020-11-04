@@ -13,9 +13,9 @@ var vorbisComment []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:      format.VORBIS,
-		DecodeFn:  vorbisDecode,
-		SkipProbe: true,
+		Name:     format.VORBIS,
+		Groups:   []string{format.OGG_PACKET},
+		DecodeFn: vorbisDecode,
 		Deps: []decode.Dep{
 			{Names: []string{format.VORBIS_COMMENT}, Formats: &vorbisComment},
 		},

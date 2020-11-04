@@ -10,6 +10,7 @@ var adts []*decode.Format
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:     format.AAC_STREAM,
+		Groups:   []string{format.PROBE},
 		MIMEs:    []string{"audio/aac"},
 		DecodeFn: adtsDecode,
 		Deps: []decode.Dep{

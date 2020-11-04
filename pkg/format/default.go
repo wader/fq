@@ -9,8 +9,10 @@ func MustRegister(format *decode.Format) *decode.Format {
 }
 
 const (
-	PROBEABLE = "probeable"
-	IMAGE     = "image"
+	PROBE = "probe"
+
+	IMAGE      = "image"
+	OGG_PACKET = "ogg_packet"
 
 	ADTS           = "adts"
 	AAC_FRAME      = "aac_frame"

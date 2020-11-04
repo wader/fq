@@ -12,17 +12,18 @@ import (
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:     format.OGG,
+		Groups:   []string{format.PROBE},
 		MIMEs:    []string{"audio/ogg"},
 		DecodeFn: decodeOgg,
 		Deps: []decode.Dep{
 			{Names: []string{format.OGG_PAGE}, Formats: &oggPage},
-			{Names: []string{format.VORBIS}, Formats: &vorbisPacket},
+			{Names: []string{format.OGG_PACKET}, Formats: &oggPacket},
 		},
 	})
 }
 
 var oggPage []*decode.Format
-var vorbisPacket []*decode.Format
+var oggPacket []*decode.Format
 
 type stream struct {
 	firstBit   int64
@@ -81,7 +82,7 @@ func decodeOgg(d *decode.D) interface{} {
 					if err != nil {
 						panic(err) // TODO: fixme
 					}
-					packets.FieldDecodeBitBuf("packet", s.firstBit, d.Pos(), bb, vorbisPacket)
+					packets.FieldDecodeBitBuf("packet", s.firstBit, d.Pos(), bb, oggPacket)
 					s.packetBuf = nil
 				}
 			}

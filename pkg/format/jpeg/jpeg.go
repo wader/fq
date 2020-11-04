@@ -15,7 +15,7 @@ var tiffImage []*decode.Format
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:     format.JPEG,
-		Groups:   []string{format.IMAGE},
+		Groups:   []string{format.PROBE, format.IMAGE},
 		MIMEs:    []string{"image/jpeg"},
 		DecodeFn: jpegDecode,
 		Deps: []decode.Dep{

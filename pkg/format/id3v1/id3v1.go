@@ -11,9 +11,8 @@ import (
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:      format.ID3V1,
-		DecodeFn:  id3v1Decode,
-		SkipProbe: true,
+		Name:     format.ID3V1,
+		DecodeFn: id3v1Decode,
 	})
 }
 

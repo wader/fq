@@ -40,6 +40,7 @@ typedef struct {
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:     format.ELF,
+		Groups:   []string{format.PROBE},
 		DecodeFn: elfDecode,
 	})
 }

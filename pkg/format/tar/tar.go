@@ -20,7 +20,7 @@ func init() {
 		MIMEs:    []string{"application/x-tar"},
 		DecodeFn: tarDecode,
 		Deps: []decode.Dep{
-			{Names: []string{format.PROBEABLE}, Formats: &probeable},
+			{Names: []string{format.PROBE}, Formats: &probeable},
 		},
 	})
 }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"fq/pkg/bitbuf"
 	"fq/pkg/decode"
+	"fq/pkg/format"
 	"fq/pkg/output"
 	"io"
 	"io/ioutil"
@@ -30,7 +31,7 @@ func (m Main) Run() error {
 
 func (m Main) run() error {
 	allFormats := m.Registry.MustAll()
-	probeFormats := m.Registry.MustGroup("probeable") // TODO: const?
+	probeFormats := m.Registry.MustGroup(format.PROBE) // TODO: const?
 
 	fs := flag.NewFlagSet("", flag.ContinueOnError)
 	fs.SetOutput(m.OS.Stderr())

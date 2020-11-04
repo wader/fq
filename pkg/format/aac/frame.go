@@ -7,9 +7,8 @@ import (
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:      format.AAC_FRAME,
-		DecodeFn:  aacDecode,
-		SkipProbe: true,
+		Name:     format.AAC_FRAME,
+		DecodeFn: aacDecode,
 	})
 }
 

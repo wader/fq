@@ -14,7 +14,7 @@ var iccTag []*decode.Format
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:     format.TIFF,
-		Groups:   []string{format.IMAGE},
+		Groups:   []string{format.PROBE, format.IMAGE},
 		MIMEs:    []string{"image/tiff"},
 		DecodeFn: tiffDecode,
 		Deps: []decode.Dep{

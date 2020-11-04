@@ -22,6 +22,7 @@ var mp3Frame []*decode.Format
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:     format.MP3,
+		Groups:   []string{format.PROBE},
 		MIMEs:    []string{"audio/mpeg"},
 		DecodeFn: mp3Decode,
 		Deps: []decode.Dep{
