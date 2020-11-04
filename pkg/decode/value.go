@@ -290,7 +290,8 @@ func (v *Value) String() string {
 	case uint64:
 		f = strconv.FormatUint(iv, DisplayFormatToBase(v.DisplayFormat))
 	case float64:
-		f = strconv.FormatFloat(iv, 'f', -1, 64)
+		// TODO: float32? better truncated to significant digits?
+		f = strconv.FormatFloat(iv, 'g', -1, 64)
 	case string:
 		f = iv
 		if len(f) > 50 {

@@ -1,5 +1,9 @@
 
-register in reverese order? override? ogg demuxer should deocde using "ogg_packet" group? reverse enalbed override?
+
+warnings? like zero padding or skip junk after id3v2?
+
+DONE register in reverese order? override? ogg demuxer should deocde using "ogg_packet" group? reverse enalbed override?
+
 
 array in array
 

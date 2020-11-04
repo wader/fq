@@ -13,7 +13,7 @@ func init() {
 	format.MustRegister(&decode.Format{
 		Name:     format.OGG,
 		MIMEs:    []string{"audio/ogg"},
-		DecodeFn: decode2,
+		DecodeFn: decodeOgg,
 		Deps: []decode.Dep{
 			{Names: []string{format.OGG_PAGE}, Formats: &oggPage},
 			{Names: []string{format.VORBIS}, Formats: &vorbisPacket},
@@ -30,7 +30,7 @@ type stream struct {
 	packetBuf  []byte
 }
 
-func decode2(d *decode.D) interface{} {
+func decodeOgg(d *decode.D) interface{} {
 	validPages := 0
 	streams := map[uint32]*stream{}
 

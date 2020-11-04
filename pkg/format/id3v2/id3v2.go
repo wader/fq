@@ -3,6 +3,7 @@ package id3v2
 // https://id3.org/id3v2.3.0
 // https://id3.org/id3v2.4.0-structure
 // https://id3.org/id3v2.4.0-frames
+// https://id3.org/id3v2-chapters-1.0
 
 import (
 	"bytes"
@@ -26,6 +27,9 @@ func init() {
 }
 
 var idDescriptions = map[string]string{
+	"CHAP": "Chapter",
+	"CTOC": "Table of contents",
+
 	"AENC": "Audio encryption",
 	"APIC": "Attached picture",
 	"ASPI": "Audio seek point index",
@@ -368,6 +372,32 @@ func decodeFrame(d *decode.D, version int) uint64 {
 	// note frame function run inside a SubLenFn so they can use BitLefts and
 	// can't accidentally read too far
 	frames := map[string]func(){
+		// <ID3v2.3 or ID3v2.4 frame header, ID: "CHAP">           (10 bytes)
+		// Element ID      <text string> $00
+		// Start time      $xx xx xx xx
+		// End time        $xx xx xx xx
+		// Start offset    $xx xx xx xx
+		// End offset      $xx xx xx xx
+		// <Optional embedded sub-frames>
+		"CHAP": func() {
+			fieldTextNull(d, "element_id", encodingUTF8)
+			d.FieldU32("start_time")
+			d.FieldU32("end_time")
+			d.FieldU32("start_offset")
+			d.FieldU32("end_offset")
+			decodeFrames(d, version, uint64(d.BitsLeft()/8))
+		},
+		"CTOC": func() {
+			fieldTextNull(d, "element_id", encodingUTF8)
+			d.FieldU8("ctoc_flags")
+			entryCount := d.FieldU8("entry_count")
+			d.FieldArrayFn("entry", func(d *decode.D) {
+				for i := uint64(0); i < entryCount; i++ {
+					fieldTextNull(d, "entry", encodingUTF8)
+				}
+			})
+		},
+
 		// <Header for 'Attached picture', ID: "APIC">
 		// Text encoding      $xx
 		// MIME type          <text string> $00
@@ -496,9 +526,9 @@ func id3v2Decode(d *decode.D) interface{} {
 	d.FieldU8("revision")
 	var extendedHeader bool
 	d.FieldStructFn("flags", func(d *decode.D) {
-		d.FieldU1("unsynchronisation")
+		d.FieldBool("unsynchronisation")
 		extendedHeader = d.FieldBool("extended_header")
-		d.FieldU1("experimental_indicator")
+		d.FieldBool("experimental_indicator")
 		d.FieldU5("unused")
 	})
 	size := d.FieldUFn("size", func() (uint64, decode.DisplayFormat, string) {
