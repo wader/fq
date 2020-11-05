@@ -22,10 +22,9 @@ func NewRegistry() *Registry {
 func (r *Registry) register(groupName string, format *Format, single bool) *Format {
 	formats, ok := r.allGroups[groupName]
 	if ok {
-		// TODO: we want to overload
-		// if !single {
-		// 	panic(fmt.Sprintf("%s: already registered", groupName))
-		// }
+		if !single {
+			panic(fmt.Sprintf("%s: already registered", groupName))
+		}
 	} else {
 		formats = []*Format{}
 	}
