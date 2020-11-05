@@ -853,10 +853,10 @@ func (d *D) FieldDecodeLen(name string, nBits int64, formats []*Format) (*Value,
 func (d *D) FieldTryDecodeRange(name string, firstBit int64, nBits int64, formats []*Format) (*Value, interface{}, []error) {
 	bb, err := d.bitBuf.BitBufRange(firstBit, nBits)
 	if err != nil {
-		panic(BitBufError{Err: err, Op: "FieldDecodeRange", Size: nBits, Pos: d.bitBuf.Pos})
+		panic(BitBufError{Err: err, Op: "FieldDecodeRange", Size: nBits, Pos: firstBit})
 	}
 
-	v, dv, errs := probe(name, bb, formats, probeOptions{isRoot: false, startPos: d.bitBuf.Pos, truncateToMaxPos: true})
+	v, dv, errs := probe(name, bb, formats, probeOptions{isRoot: false, startPos: firstBit, truncateToMaxPos: true})
 	if v == nil || v.Errors() != nil {
 		return nil, nil, errs
 	}
