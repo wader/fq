@@ -267,6 +267,8 @@ func (v *Value) Prelude() {
 					v.Range = RangeMinMax(v.Range, f.Range)
 				}
 			}
+
+			// TODO: also sort?
 		}
 		return nil
 	})

@@ -13,7 +13,7 @@ var vorbisComment []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:     format.VORBIS,
+		Name:     format.VORBIS_PACKET,
 		Groups:   []string{format.OGG_PACKET},
 		DecodeFn: vorbisDecode,
 		Deps: []decode.Dep{

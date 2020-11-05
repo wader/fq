@@ -37,6 +37,6 @@ const (
 	TAR            = "tar"
 	TIFF           = "tiff"
 	VORBIS_COMMENT = "vorbis_comment"
-	VORBIS         = "vorbis"
+	VORBIS_PACKET  = "vorbis_packet"
 	WAV            = "wav"
 )
