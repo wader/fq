@@ -1,5 +1,7 @@
 
 
+add field name to panics?
+
 warnings? like zero padding or skip junk after id3v2?
 
 DONE register in reverese order? override? ogg demuxer should deocde using "ogg_packet" group? reverse enalbed override?
@@ -9,10 +11,9 @@ array in array
 
 float/fp endian? default?
 
-go generate -x ./...
+DONE go generate -x ./...
 
-
-replace Groups by Names "jpeg", format.IMAGE
+DONE replace Groups by Names "jpeg", format.IMAGE
 
 
 

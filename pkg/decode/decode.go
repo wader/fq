@@ -74,8 +74,6 @@ func Probe(name string, bb *bitbuf.Buffer, formats []*Format) (*Value, interface
 func probe(name string, bb *bitbuf.Buffer, formats []*Format, opts probeOptions) (*Value, interface{}, []error) {
 	var forceOne = len(formats) == 1
 
-	// TODO: order..
-
 	var errs []error
 	for _, f := range formats {
 		cbb := bb.Copy()
@@ -93,11 +91,7 @@ func probe(name string, bb *bitbuf.Buffer, formats []*Format, opts probeOptions)
 			}
 		}
 
-		// TODO: handle struct and array rangees here?
-		// TODO: only for root?
-
 		var maxPos int64
-
 		d.value.WalkPostOrder(func(v *Value, index int, depth int) error {
 			v.Range = Range{Start: v.Range.Start + opts.startPos, Stop: v.Range.Stop + opts.startPos}
 			maxPos = max(v.Range.Stop, maxPos)
@@ -107,7 +101,6 @@ func probe(name string, bb *bitbuf.Buffer, formats []*Format, opts probeOptions)
 		d.value.Range = Range{Start: opts.startPos, Stop: maxPos}
 
 		if opts.truncateToMaxPos {
-			// TODO: wrong keep track of largest?
 			cbb.SeekAbs(maxPos)
 			_ = cbb.TruncateRel(0)
 		}
