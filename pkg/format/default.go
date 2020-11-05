@@ -11,6 +11,7 @@ func MustRegister(format *decode.Format) *decode.Format {
 const (
 	PROBE = "probe"
 
+	// TODO: rename PROBE_* something?
 	IMAGE      = "image"
 	OGG_PACKET = "ogg_packet"
 
