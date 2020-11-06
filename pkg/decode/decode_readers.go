@@ -37,7 +37,7 @@ func (d *D) FieldUE(name string, nBits int64, endian Endian) uint64 {
 	return d.FieldUFn(name, func() (uint64, DisplayFormat, string) {
 		n, err := d.bitBuf.UE(nBits, bitbuf.Endian(endian))
 		if err != nil {
-			panic(BitBufError{Err: err, Op: "FieldU" + (strconv.Itoa(int(nBits))), Size: nBits, Pos: d.bitBuf.Pos})
+			panic(BitBufError{Err: err, Op: "FieldUE" + (strconv.Itoa(int(nBits))), Size: nBits, Pos: d.bitBuf.Pos})
 		}
 		return n, NumberDecimal, ""
 	})
@@ -55,7 +55,7 @@ func (d *D) FieldSE(name string, nBits int64, endian Endian) int64 {
 	return d.FieldSFn(name, func() (int64, DisplayFormat, string) {
 		n, err := d.bitBuf.SE(nBits, bitbuf.Endian(endian))
 		if err != nil {
-			panic(BitBufError{Err: err, Op: "FieldS" + (strconv.Itoa(int(nBits))), Size: nBits, Pos: d.bitBuf.Pos})
+			panic(BitBufError{Err: err, Op: "FieldSE" + (strconv.Itoa(int(nBits))), Size: nBits, Pos: d.bitBuf.Pos})
 		}
 		return n, NumberDecimal, ""
 	})
