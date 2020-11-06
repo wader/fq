@@ -7,6 +7,44 @@ import (
 	"strconv"
 )
 
+func (d *D) ZeroPadding(nBits int64) bool {
+	isZero := true
+	left := nBits
+	for {
+		// TODO: smart skip?
+		rbits := left
+		if rbits == 0 {
+			break
+		}
+		if rbits > 64 {
+			rbits = 64
+		}
+		n, err := d.bitBuf.Bits(rbits)
+		if err != nil {
+			panic(ReadError{Err: err, Op: "ZeroPadding", Size: rbits, Pos: d.bitBuf.Pos})
+		}
+		isZero = isZero && n == 0
+		left -= rbits
+	}
+	return isZero
+}
+
+func (d *D) FieldValidateZeroPadding(name string, nBits int64) {
+	pos := d.bitBuf.Pos
+	var isZero bool
+	d.FieldFn(name, func() Value {
+		isZero = d.ZeroPadding(nBits)
+		s := "Correct"
+		if !isZero {
+			s = "Incorrect"
+		}
+		return Value{Symbol: s, Desc: "zero padding"}
+	})
+	if !isZero {
+		panic(ValidateError{Reason: "expected zero padding", Pos: pos})
+	}
+}
+
 func (d *D) Bool() bool {
 	b, err := d.bitBuf.Bool()
 	if err != nil {
@@ -125,6 +163,16 @@ func (d *D) FieldBytesRange(name string, firstBit int64, nBytes int64) []byte {
 	})
 }
 
+// UTF8 read nBytes utf8 string
+func (d *D) UTF8(nBytes int64) string {
+	s, err := d.bitBuf.BytesLen(nBytes)
+	if err != nil {
+		panic(ReadError{Err: err, Op: "UTF8", Size: nBytes * 8, Pos: d.bitBuf.Pos})
+	}
+	return string(s)
+}
+
+// FieldUTF8 read nBytes utf8 string and add a field
 func (d *D) FieldUTF8(name string, nBytes int64) string {
 	return d.FieldStrFn(name, func() (string, string) {
 		str, err := d.bitBuf.UTF8(nBytes)

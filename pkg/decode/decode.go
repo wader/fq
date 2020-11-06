@@ -248,36 +248,6 @@ func (d *D) SeekAbs(pos int64) int64 {
 	return pos
 }
 
-func (d *D) UTF8(nBytes int64) string {
-	s, err := d.bitBuf.BytesLen(nBytes)
-	if err != nil {
-		panic(ReadError{Err: err, Op: "UTF8", Size: nBytes * 8, Pos: d.bitBuf.Pos})
-	}
-	return string(s)
-}
-
-func (d *D) ZeroPadding(nBits int64) bool {
-	isZero := true
-	left := nBits
-	for {
-		// TODO: smart skip?
-		rbits := left
-		if rbits == 0 {
-			break
-		}
-		if rbits > 64 {
-			rbits = 64
-		}
-		n, err := d.bitBuf.Bits(rbits)
-		if err != nil {
-			panic(ReadError{Err: err, Op: "ZeroPadding", Size: rbits, Pos: d.bitBuf.Pos})
-		}
-		isZero = isZero && n == 0
-		left -= rbits
-	}
-	return isZero
-}
-
 func (d *D) AddChild(v *Value) {
 	v.Parent = d.value
 
@@ -476,22 +446,6 @@ func (d *D) FieldValidateString(name string, v string) {
 	})
 	if s != v {
 		panic(ValidateError{Reason: fmt.Sprintf("expected %s found %s", v, s), Pos: pos})
-	}
-}
-
-func (d *D) FieldValidateZeroPadding(name string, nBits int64) {
-	pos := d.bitBuf.Pos
-	var isZero bool
-	d.FieldFn(name, func() Value {
-		isZero = d.ZeroPadding(nBits)
-		s := "Correct"
-		if !isZero {
-			s = "Incorrect"
-		}
-		return Value{Symbol: s, Desc: "zero padding"}
-	})
-	if !isZero {
-		panic(ValidateError{Reason: "expected zero padding", Pos: pos})
 	}
 }
 
