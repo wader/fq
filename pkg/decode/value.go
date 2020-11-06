@@ -82,6 +82,7 @@ type Array []*Value
 type Value struct {
 	Parent        *Value
 	V             interface{} // int64, uint64, float64, string, bool, []byte, Array, Struct
+	Index         int         // index in parent array/struct
 	Range         Range
 	BitBuf        *bitbuf.Buffer
 	Name          string
@@ -177,49 +178,49 @@ func (v *Value) Lookup(path string) *Value {
 	}
 }
 
-func (v *Value) WalkPreOrder(fn func(v *Value, index int, depth int) error) error {
+func (v *Value) WalkPreOrder(fn func(v *Value, depth int) error) error {
 	return v.walk(true, fn)
 }
 
-func (v *Value) WalkPostOrder(fn func(v *Value, index int, depth int) error) error {
+func (v *Value) WalkPostOrder(fn func(v *Value, depth int) error) error {
 	return v.walk(false, fn)
 }
 
-func (v *Value) walk(preOrder bool, fn func(v *Value, index int, depth int) error) error {
-	var walkFn func(v *Value, index int, depth int) error
-	walkFn = func(v *Value, index int, depth int) error {
+func (v *Value) walk(preOrder bool, fn func(v *Value, depth int) error) error {
+	var walkFn func(v *Value, depth int) error
+	walkFn = func(v *Value, depth int) error {
 		if preOrder {
-			if err := fn(v, index, depth); err != nil {
+			if err := fn(v, depth); err != nil {
 				return err
 			}
 		}
 		switch v := v.V.(type) {
 		case Struct:
 			for _, wv := range v {
-				if err := walkFn(wv, -1, depth+1); err != nil {
+				if err := walkFn(wv, depth+1); err != nil {
 					return err
 				}
 			}
 		case Array:
-			for i, wv := range v {
-				if err := walkFn(wv, i, depth+1); err != nil {
+			for _, wv := range v {
+				if err := walkFn(wv, depth+1); err != nil {
 					return err
 				}
 			}
 		}
 		if !preOrder {
-			if err := fn(v, index, depth); err != nil {
+			if err := fn(v, depth); err != nil {
 				return err
 			}
 		}
 		return nil
 	}
-	return walkFn(v, -1, 0)
+	return walkFn(v, 0)
 }
 
 func (v *Value) Errors() []error {
 	var errs []error
-	_ = v.WalkPreOrder(func(v *Value, index int, depth int) error {
+	_ = v.WalkPreOrder(func(v *Value, depth int) error {
 		if v.Error != nil {
 			errs = append(errs, v.Error)
 		}
@@ -232,7 +233,7 @@ func (v *Value) Prelude() {
 	// TODO: find start/stop from Ranges instead? what if seekaround? concat bitbufs but want gaps? sort here, crash?
 	// TDOO: if bitbuf set?
 
-	v.WalkPostOrder(func(v *Value, index int, depth int) error {
+	v.WalkPostOrder(func(v *Value, depth int) error {
 		switch vv := v.V.(type) {
 		case Struct:
 			first := true
@@ -253,6 +254,9 @@ func (v *Value) Prelude() {
 				return vv[i].Range.Start < vv[j].Range.Start
 			})
 
+			for i, f := range vv {
+				f.Index = i
+			}
 		case Array:
 			first := true
 			for _, f := range vv {
@@ -266,6 +270,10 @@ func (v *Value) Prelude() {
 				} else {
 					v.Range = RangeMinMax(v.Range, f.Range)
 				}
+			}
+
+			for i, f := range vv {
+				f.Index = i
 			}
 
 			// TODO: also sort?

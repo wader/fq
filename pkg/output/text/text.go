@@ -24,7 +24,7 @@ type FieldWriter struct {
 	v *decode.Value
 }
 
-func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, index int, depth int) error {
+func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, depth int) error {
 	isInArray := false
 	if v.Parent != nil {
 		_, isInArray = v.Parent.V.(decode.Array)
@@ -37,7 +37,7 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, inde
 		fmt.Fprintf(cw.Columns[3], "|\n")
 		fmt.Fprintf(cw.Columns[5], "|\n")
 		if isInArray {
-			fmt.Fprintf(cw.Columns[6], "%s%s[%d]{}: ", indent, v.Parent.Name, index)
+			fmt.Fprintf(cw.Columns[6], "%s%s[%d]{}: ", indent, v.Parent.Name, v.Index)
 		} else {
 			fmt.Fprintf(cw.Columns[6], "%s%s{}: ", indent, v.Name)
 		}
@@ -175,11 +175,13 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, inde
 			fmt.Fprint(cw.Columns[0], "*\n")
 			fmt.Fprint(cw.Columns[2], "\n")
 			fmt.Fprintf(cw.Columns[2], "%d bytes more, ends at %x", stopByte-lastDisplayByte, stopByte)
+			fmt.Fprintf(cw.Columns[3], "|\n")
+			fmt.Fprintf(cw.Columns[5], "|\n")
 			// TODO: dump last line?
 		}
 
 		if isInArray {
-			fmt.Fprintf(cw.Columns[6], "%s%s[%d] (%s): ", indent, v.Parent.Name, index, v.Name)
+			fmt.Fprintf(cw.Columns[6], "%s%s[%d] (%s): ", indent, v.Parent.Name, v.Index, v.Name)
 		} else {
 			fmt.Fprintf(cw.Columns[6], "%s%s: ", indent, v.Name)
 		}
@@ -199,7 +201,7 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, inde
 
 func (o *FieldWriter) Write(w io.Writer) error {
 	cw := columnwriter.New(w, []int{8, 1, int(lineBytes*3) - 1, 1, int(lineBytes), 1, -1})
-	return o.v.WalkPreOrder(func(v *decode.Value, index, depth int) error {
-		return o.outputValue(cw, v, index, depth)
+	return o.v.WalkPreOrder(func(v *decode.Value, depth int) error {
+		return o.outputValue(cw, v, depth)
 	})
 }

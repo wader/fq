@@ -547,89 +547,64 @@ func (b *Buffer) S24LE() (int64, error)          { return b.SE(24, LittleEndian)
 func (b *Buffer) S32LE() (int64, error)          { return b.SE(32, LittleEndian) }
 func (b *Buffer) S64LE() (int64, error)          { return b.SE(64, LittleEndian) }
 
-func (b *Buffer) F32E(endian Endian) (float32, error) {
-	n, err := b.Bits(32)
+func (b *Buffer) FE(nBits int64, endian Endian) (float64, error) {
+	n, err := b.Bits(nBits)
 	if err != nil {
 		return 0, err
 	}
 	if endian == LittleEndian {
-		n = ReverseBytes(32, n)
+		n = ReverseBytes(nBits, n)
 	}
-	return math.Float32frombits(uint32(n)), nil
+	switch nBits {
+	case 32:
+		return math.Float64frombits(n), nil
+	case 64:
+		return float64(math.Float32frombits(uint32(n))), nil
+	default:
+		return 0, fmt.Errorf("unsupported float size %d", nBits)
+	}
 }
-func (b *Buffer) F32(s uint) (float32, error)   { return b.F32E(BigEndian) }
-func (b *Buffer) F32BE(s uint) (float32, error) { return b.F32E(BigEndian) }
-func (b *Buffer) F32LE(s uint) (float32, error) { return b.F32E(LittleEndian) }
 
-func (b *Buffer) F64E(endian Endian) (float64, error) {
-	n, err := b.Bits(64)
-	if err != nil {
-		return 0, err
-	}
-	if endian == LittleEndian {
-		n = ReverseBytes(64, n)
-	}
-	return math.Float64frombits(n), nil
-}
-func (b *Buffer) F64(s uint) (float64, error)   { return b.F64E(BigEndian) }
-func (b *Buffer) F64BE(s uint) (float64, error) { return b.F64E(BigEndian) }
-func (b *Buffer) F64LE(s uint) (float64, error) { return b.F64E(LittleEndian) }
+func (b *Buffer) F32E(endian Endian) (float64, error) { return b.FE(32, endian) }
+func (b *Buffer) F32() (float64, error)               { return b.FE(32, BigEndian) }
+func (b *Buffer) F32BE() (float64, error)             { return b.FE(32, BigEndian) }
+func (b *Buffer) F32LE() (float64, error)             { return b.FE(32, LittleEndian) }
+
+func (b *Buffer) F64E(endian Endian) (float64, error) { return b.FE(64, endian) }
+func (b *Buffer) F64() (float64, error)               { return b.F64E(BigEndian) }
+func (b *Buffer) F64BE() (float64, error)             { return b.F64E(BigEndian) }
+func (b *Buffer) F64LE() (float64, error)             { return b.F64E(LittleEndian) }
 
 // TODO: FP64,unsigned/BE/LE? rename SFP32?
 
-// FP64 signed fixed point 1:31:32
-func (b *Buffer) FP64() (float64, error) {
-	n, err := b.S64()
+func (b *Buffer) FPE(nBits int64, dBits int64, endian Endian) (float64, error) {
+	n, err := b.Bits(nBits)
 	if err != nil {
 		return 0, err
 	}
-	return float64(float64(n) / (1 << 32)), nil
+	if endian == LittleEndian {
+		n = ReverseBytes(nBits, n)
+	}
+	return float64(n) / float64(uint64(1<<dBits)), nil
 }
+
+// FP64 signed fixed point 1:31:32
+func (b *Buffer) FP64E(endian Endian) (float64, error) { return b.FPE(64, 32, endian) }
+func (b *Buffer) FP64() (float64, error)               { return b.FPE(64, 32, BigEndian) }
+func (b *Buffer) FP64BE() (float64, error)             { return b.FPE(64, 32, BigEndian) }
+func (b *Buffer) FP64LE() (float64, error)             { return b.FPE(64, 32, LittleEndian) }
 
 // FP32 signed fixed point 1:15:16
-func (b *Buffer) FP32() (float64, error) {
-	n, err := b.S32()
-	if err != nil {
-		return 0, err
-	}
-	return float64(float64(n) / (1 << 16)), nil
-}
+func (b *Buffer) FP32E(endian Endian) (float64, error) { return b.FPE(32, 16, endian) }
+func (b *Buffer) FP32() (float64, error)               { return b.FPE(32, 16, BigEndian) }
+func (b *Buffer) FP32BE() (float64, error)             { return b.FPE(32, 16, BigEndian) }
+func (b *Buffer) FP32LE() (float64, error)             { return b.FPE(32, 16, LittleEndian) }
 
-// FP16 signed fixed point 1:7:8
-func (b *Buffer) FP16() (float64, error) {
-	n, err := b.S16()
-	if err != nil {
-		return 0, err
-	}
-	return float64(float64(n) / (1 << 8)), nil
-}
-
-// UFP64 signed fixed point 1:31:32
-func (b *Buffer) UFP64() (float64, error) {
-	n, err := b.U64()
-	if err != nil {
-		return 0, err
-	}
-	return float64(float64(n) / (1 << 32)), nil
-}
-
-// UFP32 signed fixed point 1:15:16
-func (b *Buffer) UFP32() (float64, error) {
-	n, err := b.U32()
-	if err != nil {
-		return 0, err
-	}
-	return float64(float64(n) / (1 << 16)), nil
-}
-
-// UFP16 signed fixed point 1:7:8
-func (b *Buffer) UFP16() (float64, error) {
-	n, err := b.U16()
-	if err != nil {
-		return 0, err
-	}
-	return float64(float64(n) / (1 << 8)), nil
-}
+// FP16 signed fixed point 1:15:16
+func (b *Buffer) FP16E(endian Endian) (float64, error) { return b.FPE(16, 8, endian) }
+func (b *Buffer) FP16() (float64, error)               { return b.FPE(16, 8, BigEndian) }
+func (b *Buffer) FP16BE() (float64, error)             { return b.FPE(16, 8, BigEndian) }
+func (b *Buffer) FP16LE() (float64, error)             { return b.FPE(16, 8, LittleEndian) }
 
 func (b *Buffer) UTF8(nBytes int64) (string, error) {
 	s, err := b.BytesLen(nBytes)

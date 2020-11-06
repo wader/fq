@@ -763,6 +763,14 @@ var tagNames = map[uint64]string{
 	DefaultUserCrop:              "DefaultUserCrop",
 }
 
+func fieldRational(d *decode.D, name string) float64 {
+	return d.FieldFloatFn(name, func() (float64, string) { return float64(d.U32()) / float64(d.U32()), "" })
+}
+
+func fieldSRational(d *decode.D, name string) float64 {
+	return d.FieldFloatFn(name, func() (float64, string) { return float64(d.S32()) / float64(d.S32()), "" })
+}
+
 func tiffDecode(d *decode.D) interface{} {
 	switch d.PeekBits(32) {
 	case littleEndian, bigEndian:
@@ -850,13 +858,11 @@ func tiffDecode(d *decode.D) interface{} {
 									case LONG:
 										d.FieldU32("value")
 									case RATIONAL:
-										// TODO: endian? correct? unsigned 32:32 fixed point
-										d.FieldUFP64("value")
+										fieldRational(d, "value")
 									case SLONG:
 										d.FieldS32("value")
 									case SRATIONAL:
-										// TODO: endian? correct? signed 32:32 fixed point
-										d.FieldFP64("value")
+										fieldSRational(d, "value")
 									default:
 										panic("unknown type")
 									}

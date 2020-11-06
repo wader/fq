@@ -1,7 +1,5 @@
 package decode
 
-//go:generate sh -c "cat decode_gen.go.tmpl | go run ../../_dev/tmpl.go | gofmt > decode_gen.go"
-
 import (
 	"bytes"
 	"compress/zlib"
@@ -9,7 +7,6 @@ import (
 	"fq/pkg/bitbuf"
 	"io/ioutil"
 	"runtime"
-	"strconv"
 )
 
 type DecodeError struct {
@@ -52,14 +49,6 @@ var (
 	LittleEndian Endian = Endian(bitbuf.LittleEndian)
 )
 
-type D struct {
-	Endian Endian
-
-	bitBuf   *bitbuf.Buffer
-	value    *Value
-	registry *Registry
-}
-
 type probeOptions struct {
 	isRoot           bool
 	startPos         int64
@@ -92,7 +81,7 @@ func probe(name string, bb *bitbuf.Buffer, formats []*Format, opts probeOptions)
 		}
 
 		var maxPos int64
-		d.value.WalkPostOrder(func(v *Value, index int, depth int) error {
+		d.value.WalkPostOrder(func(v *Value, depth int) error {
 			v.Range = Range{Start: v.Range.Start + opts.startPos, Stop: v.Range.Stop + opts.startPos}
 			maxPos = max(v.Range.Stop, maxPos)
 			return nil
@@ -114,6 +103,14 @@ func probe(name string, bb *bitbuf.Buffer, formats []*Format, opts probeOptions)
 	}
 
 	return nil, nil, errs
+}
+
+type D struct {
+	Endian Endian
+
+	bitBuf   *bitbuf.Buffer
+	value    *Value
+	registry *Registry
 }
 
 func (d *D) SafeDecodeFn(fn func(d *D) interface{}) (error, interface{}) {
@@ -145,6 +142,11 @@ func (d *D) SafeDecodeFn(fn func(d *D) interface{}) (error, interface{}) {
 	}()
 
 	return decodeErr, dv
+}
+
+// Invalid stops decode with a reason
+func (d *D) Invalid(reason string) {
+	panic(ValidateError{Reason: reason, Pos: d.bitBuf.Pos})
 }
 
 func (d *D) PeekBits(nBits int64) uint64 {
@@ -245,210 +247,12 @@ func (d *D) SeekAbs(pos int64) int64 {
 	return pos
 }
 
-func (d *D) UE(nBits int64, endian Endian) uint64 {
-	n, err := d.bitBuf.UE(nBits, bitbuf.Endian(endian))
-	if err != nil {
-		panic(BitBufError{Err: err, Op: "UE", Size: nBits, Pos: d.bitBuf.Pos})
-	}
-	return n
-}
-
-func (d *D) Bool() bool {
-	b, err := d.bitBuf.Bool()
-	if err != nil {
-		panic(BitBufError{Err: err, Op: "Bool", Size: 1, Pos: d.bitBuf.Pos})
-	}
-	return b
-}
-
-func (d *D) FieldBool(name string) bool {
-	return d.FieldBoolFn(name, func() (bool, string) {
-		b, err := d.bitBuf.Bool()
-		if err != nil {
-			panic(BitBufError{Err: err, Op: "FieldBool", Size: 1, Pos: d.bitBuf.Pos})
-		}
-		return b, ""
-	})
-}
-
-func (d *D) FieldUE(name string, nBits int64, endian Endian) uint64 {
-	return d.FieldUFn(name, func() (uint64, DisplayFormat, string) {
-		n, err := d.bitBuf.UE(nBits, bitbuf.Endian(endian))
-		if err != nil {
-			panic(BitBufError{Err: err, Op: "FieldU" + (strconv.Itoa(int(nBits))), Size: nBits, Pos: d.bitBuf.Pos})
-		}
-		return n, NumberDecimal, ""
-	})
-}
-
-func (d *D) SE(nBits int64, endian Endian) int64 {
-	n, err := d.bitBuf.SE(nBits, bitbuf.Endian(endian))
-	if err != nil {
-		panic(BitBufError{Err: err, Op: "SE", Size: nBits, Pos: d.bitBuf.Pos})
-	}
-	return n
-}
-
-func (d *D) FieldSE(name string, nBits int64, endian Endian) int64 {
-	return d.FieldSFn(name, func() (int64, DisplayFormat, string) {
-		n, err := d.bitBuf.SE(nBits, bitbuf.Endian(endian))
-		if err != nil {
-			panic(BitBufError{Err: err, Op: "FieldS" + (strconv.Itoa(int(nBits))), Size: nBits, Pos: d.bitBuf.Pos})
-		}
-		return n, NumberDecimal, ""
-	})
-}
-
-func (d *D) F32E(endian Endian) float64 {
-	f, err := d.bitBuf.F32E(bitbuf.Endian(endian))
-	if err != nil {
-		panic(BitBufError{Err: err, Op: "F32", Size: 32, Pos: d.bitBuf.Pos})
-	}
-	return float64(f)
-}
-
-func (d *D) F32() float64   { return d.F32E(d.Endian) }
-func (d *D) F32BE() float64 { return d.F32E(BigEndian) }
-func (d *D) F32LE() float64 { return d.F32E(LittleEndian) }
-
-func (d *D) FieldF32E(name string, endian Endian) float64 {
-	return d.FieldFloatFn(name, func() (float64, string) {
-		f, err := d.bitBuf.F32E(bitbuf.Endian(endian))
-		if err != nil {
-			panic(BitBufError{Err: err, Op: "F32", Size: 32, Pos: d.bitBuf.Pos})
-		}
-		return float64(f), ""
-	})
-}
-
-func (d *D) FieldF32(name string) float64   { return d.FieldF32E(name, d.Endian) }
-func (d *D) FieldF32BE(name string) float64 { return d.FieldF32E(name, BigEndian) }
-func (d *D) FieldF32LE(name string) float64 { return d.FieldF32E(name, LittleEndian) }
-
-func (d *D) F64E(endian Endian) float64 {
-	f, err := d.bitBuf.F64E(bitbuf.Endian(endian))
-	if err != nil {
-		panic(BitBufError{Err: err, Op: "F64", Size: 64, Pos: d.bitBuf.Pos})
-	}
-	return float64(f)
-}
-
-func (d *D) F64() float64   { return d.F64E(d.Endian) }
-func (d *D) F64BE() float64 { return d.F64E(BigEndian) }
-func (d *D) F64LE() float64 { return d.F64E(LittleEndian) }
-
-func (d *D) FieldF64E(name string, endian Endian) float64 {
-	return d.FieldFloatFn(name, func() (float64, string) {
-		f, err := d.bitBuf.F64E(bitbuf.Endian(endian))
-		if err != nil {
-			panic(BitBufError{Err: err, Op: "F64", Size: 64, Pos: d.bitBuf.Pos})
-		}
-		return float64(f), ""
-	})
-}
-
-func (d *D) FieldF64(name string) float64   { return d.FieldF64E(name, d.Endian) }
-func (d *D) FieldF64BE(name string) float64 { return d.FieldF64E(name, BigEndian) }
-func (d *D) FieldF64LE(name string) float64 { return d.FieldF64E(name, LittleEndian) }
-
 func (d *D) UTF8(nBytes int64) string {
 	s, err := d.bitBuf.BytesLen(nBytes)
 	if err != nil {
 		panic(BitBufError{Err: err, Op: "UTF8", Size: nBytes * 8, Pos: d.bitBuf.Pos})
 	}
 	return string(s)
-}
-
-func (d *D) FP64() float64 {
-	f, err := d.bitBuf.FP64()
-	if err != nil {
-		panic(BitBufError{Err: err, Op: "FP64", Size: 8, Pos: d.bitBuf.Pos})
-	}
-	return f
-}
-
-func (d *D) FieldFP64(name string) float64 {
-	return d.FieldFloatFn(name, func() (float64, string) {
-		return d.FP64(), ""
-	})
-}
-
-func (d *D) FP32() float64 {
-	f, err := d.bitBuf.FP32()
-	if err != nil {
-		panic(BitBufError{Err: err, Op: "FP32", Size: 4, Pos: d.bitBuf.Pos})
-	}
-	return f
-}
-
-func (d *D) FieldFP32(name string) float64 {
-	return d.FieldFloatFn(name, func() (float64, string) {
-		return d.FP32(), ""
-	})
-}
-
-func (d *D) FP16() float64 {
-	f, err := d.bitBuf.FP16()
-	if err != nil {
-		panic(BitBufError{Err: err, Op: "FP16", Size: 2, Pos: d.bitBuf.Pos})
-	}
-	return f
-}
-
-func (d *D) FieldFP16(name string) float64 {
-	return d.FieldFloatFn(name, func() (float64, string) {
-		return d.FP16(), ""
-	})
-}
-
-func (d *D) UFP64() float64 {
-	f, err := d.bitBuf.UFP64()
-	if err != nil {
-		panic(BitBufError{Err: err, Op: "UFP64", Size: 8, Pos: d.bitBuf.Pos})
-	}
-	return f
-}
-
-func (d *D) FieldUFP64(name string) float64 {
-	return d.FieldFloatFn(name, func() (float64, string) {
-		return d.UFP64(), ""
-	})
-}
-
-func (d *D) UFP32() float64 {
-	f, err := d.bitBuf.UFP32()
-	if err != nil {
-		panic(BitBufError{Err: err, Op: "UFP32", Size: 4, Pos: d.bitBuf.Pos})
-	}
-	return f
-}
-
-func (d *D) FieldUFP32(name string) float64 {
-	return d.FieldFloatFn(name, func() (float64, string) {
-		return d.UFP32(), ""
-	})
-}
-
-func (d *D) UFP16() float64 {
-	f, err := d.bitBuf.UFP16()
-	if err != nil {
-		panic(BitBufError{Err: err, Op: "UFP16", Size: 2, Pos: d.bitBuf.Pos})
-	}
-	return f
-}
-
-func (d *D) FieldUFP16(name string) float64 {
-	return d.FieldFloatFn(name, func() (float64, string) {
-		return d.UFP16(), ""
-	})
-}
-
-func (d *D) Unary(s uint64) uint64 {
-	n, err := d.bitBuf.Unary(s)
-	if err != nil {
-		panic(BitBufError{Err: err, Op: "Unary", Size: 1, Pos: d.bitBuf.Pos})
-	}
-	return n
 }
 
 func (d *D) ZeroPadding(nBits int64) bool {
@@ -640,37 +444,6 @@ func (d *D) FieldValidateUFn(name string, v uint64, fn func() uint64) {
 	}
 }
 
-// TODO: FieldBytesRange or?
-func (d *D) FieldBytesLen(name string, nBytes int64) []byte {
-	return d.FieldBytesFn(name, d.bitBuf.Pos, nBytes*8, func() ([]byte, string) {
-		bs, err := d.bitBuf.BytesLen(nBytes)
-		if err != nil {
-			panic(BitBufError{Err: err, Op: "FieldBytesLen", Size: nBytes * 8, Pos: d.bitBuf.Pos})
-		}
-		return bs, ""
-	})
-}
-
-func (d *D) FieldBytesRange(name string, firstBit int64, nBytes int64) []byte {
-	return d.FieldBytesFn(name, firstBit, nBytes*8, func() ([]byte, string) {
-		bs, err := d.bitBuf.BytesRange(firstBit, nBytes)
-		if err != nil {
-			panic(BitBufError{Err: err, Op: "FieldBytesRange", Size: nBytes * 8, Pos: firstBit})
-		}
-		return bs, ""
-	})
-}
-
-func (d *D) FieldUTF8(name string, nBytes int64) string {
-	return d.FieldStrFn(name, func() (string, string) {
-		str, err := d.bitBuf.UTF8(nBytes)
-		if err != nil {
-			panic(BitBufError{Err: err, Op: "FieldUTF8", Size: nBytes * 8, Pos: d.bitBuf.Pos})
-		}
-		return str, ""
-	})
-}
-
 func (d *D) FieldValidateStringFn(name string, v string, fn func() string) {
 	pos := d.bitBuf.Pos
 	s := d.FieldStrFn(name, func() (string, string) {
@@ -735,11 +508,6 @@ func (d *D) ValidateAtLeastBytesLeft(nBytes int64) {
 		// TODO:
 		panic(ValidateError{Reason: fmt.Sprintf("expected bytes left %d, found %d bits", nBytes, bl), Pos: d.bitBuf.Pos})
 	}
-}
-
-// Invalid stops decode with a reason
-func (d *D) Invalid(reason string) {
-	panic(ValidateError{Reason: reason, Pos: d.bitBuf.Pos})
 }
 
 // TODO: rename?
