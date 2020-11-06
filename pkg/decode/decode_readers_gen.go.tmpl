@@ -1,12 +1,13 @@
-// Generated with decode_readers_gen.go.tmpl
 package decode
+
+// Generated with decode_readers_gen.go.tmpl
 
 // Integer readers
 
 {{- range $s := array (map "short" "S" "desc" "signed" "type" "int64") (map "short" "U" "desc" "unsigned" "type" "uint64")}}
 {{- range $e := array (map "short" "" "var" "d.Endian" "desc" "big-endian" "from" 1) (map "short" "BE" "var" "BigEndian" "desc" "big-endian" "from" 8)  (map "short" "LE" "var" "LittleEndian" "desc" "little-endian" "from" 8)}}
 
-// {{$s.short}} read a nBits {{$s.desc}} {{$e.desc}} integer
+// {{$s.short}}{{$e.short}} read a nBits {{$s.desc}} {{$e.desc}} integer
 func (d *D) {{$s.short}}{{$e.short}}(nBits int64) {{$s.type}} { return d.{{$s.short}}E(nBits, {{$e.var}}) }
 {{- range $bits := xrange $e.from 64}}
 // {{$s.short}}{{$bits}}{{$e.short}} read {{$bits}} bit {{$s.desc}} {{$e.desc}} integer

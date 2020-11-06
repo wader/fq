@@ -1,5 +1,6 @@
-// Generated with decode_readers_gen.go.tmpl
 package decode
+
+// Generated with decode_readers_gen.go.tmpl
 
 // Integer readers
 
@@ -393,7 +394,7 @@ func (d *D) FieldS63(name string) int64 { return d.FieldSE(name, 63, d.Endian) }
 // FieldS64 read 64 bit signed big-endian integer and add a field
 func (d *D) FieldS64(name string) int64 { return d.FieldSE(name, 64, d.Endian) }
 
-// S read a nBits signed big-endian integer
+// SBE read a nBits signed big-endian integer
 func (d *D) SBE(nBits int64) int64 { return d.SE(nBits, BigEndian) }
 
 // S8BE read 8 bit signed big-endian integer
@@ -741,7 +742,7 @@ func (d *D) FieldS63BE(name string) int64 { return d.FieldSE(name, 63, BigEndian
 // FieldS64BE read 64 bit signed big-endian integer and add a field
 func (d *D) FieldS64BE(name string) int64 { return d.FieldSE(name, 64, BigEndian) }
 
-// S read a nBits signed little-endian integer
+// SLE read a nBits signed little-endian integer
 func (d *D) SLE(nBits int64) int64 { return d.SE(nBits, LittleEndian) }
 
 // S8LE read 8 bit signed little-endian integer
@@ -1479,7 +1480,7 @@ func (d *D) FieldU63(name string) uint64 { return d.FieldUE(name, 63, d.Endian) 
 // FieldU64 read 64 bit unsigned big-endian integer and add a field
 func (d *D) FieldU64(name string) uint64 { return d.FieldUE(name, 64, d.Endian) }
 
-// U read a nBits unsigned big-endian integer
+// UBE read a nBits unsigned big-endian integer
 func (d *D) UBE(nBits int64) uint64 { return d.UE(nBits, BigEndian) }
 
 // U8BE read 8 bit unsigned big-endian integer
@@ -1827,7 +1828,7 @@ func (d *D) FieldU63BE(name string) uint64 { return d.FieldUE(name, 63, BigEndia
 // FieldU64BE read 64 bit unsigned big-endian integer and add a field
 func (d *D) FieldU64BE(name string) uint64 { return d.FieldUE(name, 64, BigEndian) }
 
-// U read a nBits unsigned little-endian integer
+// ULE read a nBits unsigned little-endian integer
 func (d *D) ULE(nBits int64) uint64 { return d.UE(nBits, LittleEndian) }
 
 // U8LE read 8 bit unsigned little-endian integer
