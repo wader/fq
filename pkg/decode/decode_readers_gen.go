@@ -1,4 +1,4 @@
-// Generated with decode_gen.go.tmpl
+// Generated with decode_readers_gen.go.tmpl
 package decode
 
 // Integer readers
@@ -2176,111 +2176,113 @@ func (d *D) FieldU63LE(name string) uint64 { return d.FieldUE(name, 63, LittleEn
 func (d *D) FieldU64LE(name string) uint64 { return d.FieldUE(name, 64, LittleEndian) }
 
 // Float readers
-// F16() read 16 bit big-endian float
+
+// F16 read 16 bit big-endian float
 func (d *D) F16() float64 { return d.FE(16, d.Endian) }
 
-// F32() read 32 bit big-endian float
+// F32 read 32 bit big-endian float
 func (d *D) F32() float64 { return d.FE(32, d.Endian) }
 
-// F64() read 64 bit big-endian float
+// F64 read 64 bit big-endian float
 func (d *D) F64() float64 { return d.FE(64, d.Endian) }
 
-// F16() read 16 bit big-endian float and add a field
+// FieldF16 read 16 bit big-endian float and add a field
 func (d *D) FieldF16(name string) float64 { return d.FieldFE(name, 16, d.Endian) }
 
-// F32() read 32 bit big-endian float and add a field
+// FieldF32 read 32 bit big-endian float and add a field
 func (d *D) FieldF32(name string) float64 { return d.FieldFE(name, 32, d.Endian) }
 
-// F64() read 64 bit big-endian float and add a field
+// FieldF64 read 64 bit big-endian float and add a field
 func (d *D) FieldF64(name string) float64 { return d.FieldFE(name, 64, d.Endian) }
 
-// F16BE() read 16 bit big-endian float
+// F16BE read 16 bit big-endian float
 func (d *D) F16BE() float64 { return d.FE(16, BigEndian) }
 
-// F32BE() read 32 bit big-endian float
+// F32BE read 32 bit big-endian float
 func (d *D) F32BE() float64 { return d.FE(32, BigEndian) }
 
-// F64BE() read 64 bit big-endian float
+// F64BE read 64 bit big-endian float
 func (d *D) F64BE() float64 { return d.FE(64, BigEndian) }
 
-// F16BE() read 16 bit big-endian float and add a field
+// FieldF16BE read 16 bit big-endian float and add a field
 func (d *D) FieldF16BE(name string) float64 { return d.FieldFE(name, 16, BigEndian) }
 
-// F32BE() read 32 bit big-endian float and add a field
+// FieldF32BE read 32 bit big-endian float and add a field
 func (d *D) FieldF32BE(name string) float64 { return d.FieldFE(name, 32, BigEndian) }
 
-// F64BE() read 64 bit big-endian float and add a field
+// FieldF64BE read 64 bit big-endian float and add a field
 func (d *D) FieldF64BE(name string) float64 { return d.FieldFE(name, 64, BigEndian) }
 
-// F16LE() read 16 bit little-endian float
+// F16LE read 16 bit little-endian float
 func (d *D) F16LE() float64 { return d.FE(16, LittleEndian) }
 
-// F32LE() read 32 bit little-endian float
+// F32LE read 32 bit little-endian float
 func (d *D) F32LE() float64 { return d.FE(32, LittleEndian) }
 
-// F64LE() read 64 bit little-endian float
+// F64LE read 64 bit little-endian float
 func (d *D) F64LE() float64 { return d.FE(64, LittleEndian) }
 
-// F16LE() read 16 bit little-endian float and add a field
+// FieldF16LE read 16 bit little-endian float and add a field
 func (d *D) FieldF16LE(name string) float64 { return d.FieldFE(name, 16, LittleEndian) }
 
-// F32LE() read 32 bit little-endian float and add a field
+// FieldF32LE read 32 bit little-endian float and add a field
 func (d *D) FieldF32LE(name string) float64 { return d.FieldFE(name, 32, LittleEndian) }
 
-// F64LE() read 64 bit little-endian float and add a field
+// FieldF64LE read 64 bit little-endian float and add a field
 func (d *D) FieldF64LE(name string) float64 { return d.FieldFE(name, 64, LittleEndian) }
 
 // Fixed-point readers
-// FP16() read 16 bit big-endian fixed-point number
+
+// FP16 read 16 bit big-endian fixed-point number
 func (d *D) FP16() float64 { return d.FPE(16, 8, d.Endian) }
 
-// FP32() read 32 bit big-endian fixed-point number
+// FP32 read 32 bit big-endian fixed-point number
 func (d *D) FP32() float64 { return d.FPE(32, 16, d.Endian) }
 
-// FP64() read 64 bit big-endian fixed-point number
+// FP64 read 64 bit big-endian fixed-point number
 func (d *D) FP64() float64 { return d.FPE(64, 32, d.Endian) }
 
-// FP16() read 16 bit big-endian fixed-point number and add a field
+// FieldFP16 read 16 bit big-endian fixed-point number and add a field
 func (d *D) FieldFP16(name string) float64 { return d.FieldFPE(name, 16, 8, d.Endian) }
 
-// FP32() read 32 bit big-endian fixed-point number and add a field
+// FieldFP32 read 32 bit big-endian fixed-point number and add a field
 func (d *D) FieldFP32(name string) float64 { return d.FieldFPE(name, 32, 16, d.Endian) }
 
-// FP64() read 64 bit big-endian fixed-point number and add a field
+// FieldFP64 read 64 bit big-endian fixed-point number and add a field
 func (d *D) FieldFP64(name string) float64 { return d.FieldFPE(name, 64, 32, d.Endian) }
 
-// FP16BE() read 16 bit big-endian fixed-point number
+// FP16BE read 16 bit big-endian fixed-point number
 func (d *D) FP16BE() float64 { return d.FPE(16, 8, BigEndian) }
 
-// FP32BE() read 32 bit big-endian fixed-point number
+// FP32BE read 32 bit big-endian fixed-point number
 func (d *D) FP32BE() float64 { return d.FPE(32, 16, BigEndian) }
 
-// FP64BE() read 64 bit big-endian fixed-point number
+// FP64BE read 64 bit big-endian fixed-point number
 func (d *D) FP64BE() float64 { return d.FPE(64, 32, BigEndian) }
 
-// FP16BE() read 16 bit big-endian fixed-point number and add a field
+// FieldFP16BE read 16 bit big-endian fixed-point number and add a field
 func (d *D) FieldFP16BE(name string) float64 { return d.FieldFPE(name, 16, 8, BigEndian) }
 
-// FP32BE() read 32 bit big-endian fixed-point number and add a field
+// FieldFP32BE read 32 bit big-endian fixed-point number and add a field
 func (d *D) FieldFP32BE(name string) float64 { return d.FieldFPE(name, 32, 16, BigEndian) }
 
-// FP64BE() read 64 bit big-endian fixed-point number and add a field
+// FieldFP64BE read 64 bit big-endian fixed-point number and add a field
 func (d *D) FieldFP64BE(name string) float64 { return d.FieldFPE(name, 64, 32, BigEndian) }
 
-// FP16LE() read 16 bit little-endian fixed-point number
+// FP16LE read 16 bit little-endian fixed-point number
 func (d *D) FP16LE() float64 { return d.FPE(16, 8, LittleEndian) }
 
-// FP32LE() read 32 bit little-endian fixed-point number
+// FP32LE read 32 bit little-endian fixed-point number
 func (d *D) FP32LE() float64 { return d.FPE(32, 16, LittleEndian) }
 
-// FP64LE() read 64 bit little-endian fixed-point number
+// FP64LE read 64 bit little-endian fixed-point number
 func (d *D) FP64LE() float64 { return d.FPE(64, 32, LittleEndian) }
 
-// FP16LE() read 16 bit little-endian fixed-point number and add a field
+// FieldFP16LE read 16 bit little-endian fixed-point number and add a field
 func (d *D) FieldFP16LE(name string) float64 { return d.FieldFPE(name, 16, 8, LittleEndian) }
 
-// FP32LE() read 32 bit little-endian fixed-point number and add a field
+// FieldFP32LE read 32 bit little-endian fixed-point number and add a field
 func (d *D) FieldFP32LE(name string) float64 { return d.FieldFPE(name, 32, 16, LittleEndian) }
 
-// FP64LE() read 64 bit little-endian fixed-point number and add a field
+// FieldFP64LE read 64 bit little-endian fixed-point number and add a field
 func (d *D) FieldFP64LE(name string) float64 { return d.FieldFPE(name, 64, 32, LittleEndian) }
