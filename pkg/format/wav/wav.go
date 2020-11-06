@@ -130,7 +130,9 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 {
 		d.SubLenFn(chunkLen*8, fn)
 	} else {
 		if stringData {
-			d.FieldUTF8("data", chunkLen)
+			d.FieldStrFn("data", func() (string, string) {
+				return strings.Trim(d.UTF8(chunkLen), " \x00"), ""
+			})
 		} else {
 			d.FieldBitBufLen("data", chunkLen*8)
 		}
