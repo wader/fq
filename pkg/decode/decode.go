@@ -27,8 +27,15 @@ type ReadError struct {
 }
 
 func (e ReadError) Error() string {
+	var prefix string
+	if e.Name != "" {
+		prefix = e.Name + ": " + e.Op
+	} else {
+		prefix = e.Op
+	}
+
 	return fmt.Sprintf("%s: failed at position %s (size %s delta %s): %s",
-		e.Op, Bits(e.Pos), Bits(e.Size), Bits(e.Delta), e.Err)
+		prefix, Bits(e.Pos), Bits(e.Size), Bits(e.Delta), e.Err)
 }
 func (e ReadError) Unwrap() error { return e.Err }
 
@@ -598,7 +605,6 @@ func (d *D) FieldTryDecodeBitBuf(name string, firstBit int64, nBits int64, bb *b
 		return nil, nil, errs
 	}
 
-	v.BitBuf = nil
 	d.AddChild(v)
 
 	return v, dv, errs
