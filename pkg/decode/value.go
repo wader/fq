@@ -50,7 +50,6 @@ func (r Range) Length() int64 {
 	return r.Stop - r.Start
 }
 
-// TODO: interface? Display(v interface{})
 type DisplayFormat int
 
 const (
@@ -112,33 +111,6 @@ func (v *Value) Eval(exp string) (*Value, error) {
 	}
 
 	return lf, nil
-}
-
-func (v *Value) AbsBitBuf() *bitbuf.Buffer {
-	if v.BitBuf != nil {
-		return v.BitBuf
-	}
-	return v.Parent.AbsBitBuf()
-}
-
-func (v *Value) AbsStart() int64 {
-	if v.BitBuf != nil {
-		return 0
-	}
-	return v.Range.Start + v.Parent.AbsStart()
-}
-
-func (v *Value) AbsRange() Range {
-	s := v.AbsStart()
-	return Range{Start: s + v.Range.Start, Stop: s + v.Range.Stop}
-}
-
-func (v *Value) RelBitBuf() *bitbuf.Buffer {
-	bb, err := v.AbsBitBuf().BitBufRange(v.Range.Start, v.Range.Length())
-	if err != nil {
-		panic(err) // TODO: hmm
-	}
-	return bb
 }
 
 func (v *Value) Lookup(path string) *Value {
@@ -259,10 +231,6 @@ func (v *Value) postProcess() {
 		case Struct:
 			first := true
 			for _, f := range vv {
-				if f.BitBuf != nil {
-					continue
-				}
-
 				if first {
 					v.Range = f.Range
 					first = false
@@ -281,10 +249,6 @@ func (v *Value) postProcess() {
 		case Array:
 			first := true
 			for _, f := range vv {
-				if f.BitBuf != nil {
-					continue
-				}
-
 				if first {
 					v.Range = f.Range
 					first = false
@@ -338,22 +302,15 @@ func (v *Value) String() string {
 			f = hex.EncodeToString(iv)
 		}
 	case *bitbuf.Buffer:
-		if v.Range.Length() > 16*8 {
-			bs, _ := v.RelBitBuf().BytesBitRange(0, 16, 0)
+		if iv.Len > 16*8 {
+			bs, _ := iv.BytesBitRange(0, 16*8, 0)
 			f = hex.EncodeToString(bs) + "..."
 		} else {
-			bs, _ := v.RelBitBuf().BytesBitRange(0, v.Range.Length(), 0)
+			bs, _ := iv.BytesBitRange(0, iv.Len, 0)
 			f = hex.EncodeToString(bs)
 		}
 	case nil:
 		f = "none"
-		// TODO:
-		//return hex.EncodeToString(v.Bytes)
-	// case TypeDecoder:
-	// 	c := v.Decoder
-	// 	f = fmt.Sprintf("%s (%s) %s", c.Format().Name, c.MIME(), Bits(c.BitBuf().Len))
-	// case TypeArray:
-	// 	f = "array"
 	default:
 		panic("unreachable")
 	}

@@ -102,8 +102,7 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 		// TODO: abs bitbuf
 		//b, _ := v.BitBuf.BitBufRange(startByte*8, displaySizeBytes*8)
 
-		absBitBuf := v.AbsBitBuf()
-		vBitBuf, _ := absBitBuf.BitBufRange(startByte*8, displaySizeBytes*8)
+		vBitBuf, _ := v.BitBuf.BitBufRange(startByte*8, displaySizeBytes*8)
 
 		addrLines = int(lastDisplayLine - startLine)
 		if lastDisplayByte%lineBytes != 0 {
