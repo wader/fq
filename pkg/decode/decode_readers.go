@@ -32,13 +32,13 @@ func (d *D) ZeroPadding(nBits int64) bool {
 func (d *D) FieldValidateZeroPadding(name string, nBits int64) {
 	pos := d.bitBuf.Pos
 	var isZero bool
-	d.FieldFn(name, func() Value {
+	d.FieldFn(name, func() *Value {
 		isZero = d.ZeroPadding(nBits)
 		s := "Correct"
 		if !isZero {
 			s = "Incorrect"
 		}
-		return Value{Symbol: s, Desc: "zero padding"}
+		return &Value{Symbol: s, Desc: "zero padding"}
 	})
 	if !isZero {
 		panic(ValidateError{Reason: "expected zero padding", Pos: pos})

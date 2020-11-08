@@ -336,74 +336,74 @@ func (d *D) FieldStructBitBufFn(name string, bitBuf *bitbuf.Buffer, fn func(d *D
 	return cd
 }
 
-func (d *D) FieldRangeFn(name string, firstBit int64, nBits int64, fn func() Value) Value {
+func (d *D) FieldRangeFn(name string, firstBit int64, nBits int64, fn func() *Value) *Value {
 	v := fn()
 	v.Name = name
 	//v.BitBuf = d.BitBufRange(firstBit, nBits)
 	v.Range = Range{Start: firstBit, Stop: firstBit + nBits}
-	d.AddChild(&v)
+	d.AddChild(v)
 
 	return v
 }
 
-func (d *D) FieldFn(name string, fn func() Value) Value {
+func (d *D) FieldFn(name string, fn func() *Value) *Value {
 	start := d.bitBuf.Pos
 	v := fn()
 	stop := d.bitBuf.Pos
 	v.Name = name
 	//v.BitBuf = d.BitBufRange(start, stop-start)
 	v.Range = Range{Start: start, Stop: stop}
-	d.AddChild(&v)
+	d.AddChild(v)
 
 	return v
 }
 
 func (d *D) FieldBoolFn(name string, fn func() (bool, string)) bool {
-	return d.FieldFn(name, func() Value {
+	return d.FieldFn(name, func() *Value {
 		b, d := fn()
-		return Value{V: b, Symbol: d}
+		return &Value{V: b, Symbol: d}
 	}).V.(bool)
 }
 
 func (d *D) FieldUFn(name string, fn func() (uint64, DisplayFormat, string)) uint64 {
-	return d.FieldFn(name, func() Value {
+	return d.FieldFn(name, func() *Value {
 		u, fmt, d := fn()
-		return Value{V: u, DisplayFormat: fmt, Symbol: d}
+		return &Value{V: u, DisplayFormat: fmt, Symbol: d}
 	}).V.(uint64)
 }
 
 func (d *D) FieldSFn(name string, fn func() (int64, DisplayFormat, string)) int64 {
-	return d.FieldFn(name, func() Value {
+	return d.FieldFn(name, func() *Value {
 		s, fmt, d := fn()
-		return Value{V: s, DisplayFormat: fmt, Symbol: d}
+		return &Value{V: s, DisplayFormat: fmt, Symbol: d}
 	}).V.(int64)
 }
 
 func (d *D) FieldFloatFn(name string, fn func() (float64, string)) float64 {
-	return d.FieldFn(name, func() Value {
+	return d.FieldFn(name, func() *Value {
 		f, d := fn()
-		return Value{V: f, Symbol: d}
+		return &Value{V: f, Symbol: d}
 	}).V.(float64)
 }
 
 func (d *D) FieldStrFn(name string, fn func() (string, string)) string {
-	return d.FieldFn(name, func() Value {
+	return d.FieldFn(name, func() *Value {
 		str, disp := fn()
-		return Value{V: str, Symbol: disp}
+		return &Value{V: str, Symbol: disp}
 	}).V.(string)
 }
 
 func (d *D) FieldBytesFn(name string, firstBit int64, nBits int64, fn func() ([]byte, string)) []byte {
-	return d.FieldRangeFn(name, firstBit, nBits, func() Value {
+	return d.FieldRangeFn(name, firstBit, nBits, func() *Value {
 		bs, disp := fn()
-		return Value{V: bs, Symbol: disp}
+		return &Value{V: bs, Symbol: disp}
 	}).V.([]byte)
 }
 
 func (d *D) FieldBitBufFn(name string, firstBit int64, nBits int64, fn func() (*bitbuf.Buffer, string)) *bitbuf.Buffer {
-	return d.FieldRangeFn(name, firstBit, nBits, func() Value {
+	return d.FieldRangeFn(name, firstBit, nBits, func() *Value {
 		bb, disp := fn()
-		return Value{V: bb, Symbol: disp}
+		return &Value{V: bb, Symbol: disp}
 	}).V.(*bitbuf.Buffer)
 }
 
