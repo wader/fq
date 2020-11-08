@@ -307,6 +307,14 @@ func (d *D) FieldStruct(name string) *D {
 	return d.fieldDecoder(name, d.bitBuf, Struct{})
 }
 
+func (d *D) FieldStructArrayLoopFn(name string, endFn func() bool, fn func(d *D)) *D {
+	return d.FieldArrayFn(name, func(d *D) {
+		for !endFn() {
+			d.FieldStructFn(name, fn)
+		}
+	})
+}
+
 func (d *D) FieldStructFn(name string, fn func(d *D)) *D {
 	cd := d.FieldStruct(name)
 	fn(cd)

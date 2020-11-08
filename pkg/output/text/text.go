@@ -8,7 +8,6 @@ import (
 	"fq/internal/hexpairwriter"
 	"fq/pkg/decode"
 	"io"
-	"log"
 	"strings"
 )
 
@@ -105,10 +104,6 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 
 		absBitBuf := v.AbsBitBuf()
 		vBitBuf, _ := absBitBuf.BitBufRange(startByte*8, displaySizeBytes*8)
-
-		if v.Name == "bitrate_minimum" {
-			log.Println("bla")
-		}
 
 		addrLines = int(lastDisplayLine - startLine)
 		if lastDisplayByte%lineBytes != 0 {
