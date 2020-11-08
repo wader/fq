@@ -78,6 +78,7 @@ func probe(name string, bb *bitbuf.Buffer, formats []*Format, opts probeOptions)
 		d := (&D{Endian: BigEndian, bitBuf: cbb}).FieldStructBitBuf(name, cbb)
 		d.value.Desc = f.Name
 		d.value.BitBuf = cbb
+		d.value.IsRoot = opts.isRoot
 		decodeErr, dv := d.SafeDecodeFn(f.DecodeFn)
 		if decodeErr != nil {
 			d.value.Error = decodeErr
@@ -89,7 +90,11 @@ func probe(name string, bb *bitbuf.Buffer, formats []*Format, opts probeOptions)
 		}
 
 		var maxPos int64
-		d.value.WalkPostOrder(func(v *Value, depth int) error {
+		d.value.WalkPreOrder(func(v *Value, depth int) error {
+			if v.IsRoot {
+				return ErrWalkSkip
+			}
+
 			v.Range = Range{Start: v.Range.Start + opts.startPos, Stop: v.Range.Stop + opts.startPos}
 			maxPos = max(v.Range.Stop, maxPos)
 			return nil
@@ -104,7 +109,7 @@ func probe(name string, bb *bitbuf.Buffer, formats []*Format, opts probeOptions)
 
 		if opts.isRoot {
 			// sort and set ranges for struct and arrays
-			d.value.Prelude()
+			d.value.postProcess()
 		}
 
 		return d.value, dv, errs
@@ -608,7 +613,7 @@ func (d *D) FieldDecodeRange(name string, firstBit int64, nBits int64, formats [
 
 // TODO: firstBit/nBits make no sense?
 func (d *D) FieldTryDecodeBitBuf(name string, firstBit int64, nBits int64, bb *bitbuf.Buffer, formats []*Format) (*Value, interface{}, []error) {
-	v, dv, errs := probe(name, bb, formats, probeOptions{isRoot: false, startPos: 0, truncateToMaxPos: false})
+	v, dv, errs := probe(name, bb, formats, probeOptions{isRoot: true, startPos: 0, truncateToMaxPos: false})
 	if v == nil || v.Errors() != nil {
 		return nil, nil, errs
 	}

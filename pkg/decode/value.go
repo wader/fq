@@ -2,6 +2,7 @@ package decode
 
 import (
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"fq/pkg/bitbuf"
 	"regexp"
@@ -85,6 +86,7 @@ type Value struct {
 	Index         int         // index in parent array/struct
 	Range         Range
 	BitBuf        *bitbuf.Buffer
+	IsRoot        bool
 	Name          string
 	MIME          string
 	DisplayFormat DisplayFormat
@@ -178,20 +180,23 @@ func (v *Value) Lookup(path string) *Value {
 	}
 }
 
-func (v *Value) WalkPreOrder(fn func(v *Value, depth int) error) error {
-	return v.walk(true, fn)
-}
-
-func (v *Value) WalkPostOrder(fn func(v *Value, depth int) error) error {
-	return v.walk(false, fn)
-}
+var ErrWalkSkip = errors.New("skip")
+var ErrWalkStop = errors.New("stop")
 
 func (v *Value) walk(preOrder bool, fn func(v *Value, depth int) error) error {
 	var walkFn func(v *Value, depth int) error
 	walkFn = func(v *Value, depth int) error {
 		if preOrder {
-			if err := fn(v, depth); err != nil {
-				return err
+			err := fn(v, depth)
+			switch err {
+			case ErrWalkSkip:
+				return nil
+			case ErrWalkStop:
+				fallthrough
+			default:
+				if err != nil {
+					return err
+				}
 			}
 		}
 		switch v := v.V.(type) {
@@ -209,13 +214,29 @@ func (v *Value) walk(preOrder bool, fn func(v *Value, depth int) error) error {
 			}
 		}
 		if !preOrder {
-			if err := fn(v, depth); err != nil {
-				return err
+			err := fn(v, depth)
+			switch err {
+			case ErrWalkSkip:
+				return errors.New("can't skip in post-order")
+			case ErrWalkStop:
+				fallthrough
+			default:
+				if err != nil {
+					return err
+				}
 			}
 		}
 		return nil
 	}
 	return walkFn(v, 0)
+}
+
+func (v *Value) WalkPreOrder(fn func(v *Value, depth int) error) error {
+	return v.walk(true, fn)
+}
+
+func (v *Value) WalkPostOrder(fn func(v *Value, depth int) error) error {
+	return v.walk(false, fn)
 }
 
 func (v *Value) Errors() []error {
@@ -229,7 +250,7 @@ func (v *Value) Errors() []error {
 	return errs
 }
 
-func (v *Value) Prelude() {
+func (v *Value) postProcess() {
 	// TODO: find start/stop from Ranges instead? what if seekaround? concat bitbufs but want gaps? sort here, crash?
 	// TDOO: if bitbuf set?
 
