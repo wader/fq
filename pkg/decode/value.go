@@ -12,11 +12,15 @@ import (
 
 type Bits uint64
 
-func (b Bits) String() string {
+func (b Bits) StringByteBits(base int) string {
 	if b&0x7 != 0 {
-		return strconv.FormatUint(uint64(b)>>3, 10) + "+" + strconv.FormatUint(uint64(b)&0x7, 10)
+		return strconv.FormatUint(uint64(b)>>3, base) + "+" + strconv.FormatUint(uint64(b)&0x7, base)
 	}
-	return strconv.FormatUint(uint64(b>>3), 10)
+	return strconv.FormatUint(uint64(b>>3), base)
+}
+
+func (b Bits) StringBits(base int) string {
+	return strconv.FormatUint(uint64(b), base)
 }
 
 type Range struct {
@@ -42,8 +46,12 @@ func RangeMinMax(a, b Range) Range {
 	return Range{Start: min(a.Start, b.Start), Stop: max(a.Stop, b.Stop)}
 }
 
-func (r Range) String() string {
-	return fmt.Sprintf("%s-%s", Bits(r.Start), Bits(r.Stop))
+func (r Range) StringByteBits(base int) string {
+	return fmt.Sprintf("%s-%s", Bits(r.Start).StringByteBits(base), Bits(r.Stop).StringByteBits(base))
+}
+
+func (r Range) StringBits(base int) string {
+	return fmt.Sprintf("%s-%s", Bits(r.Start).StringBits(base), Bits(r.Stop).StringBits(base))
 }
 
 func (r Range) Length() int64 {

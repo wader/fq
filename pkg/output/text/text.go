@@ -13,6 +13,7 @@ import (
 
 const lineBytes = int64(16)
 const maxBytes = int64(16)
+const addrBase = 16
 
 var FieldOutput = &decode.FieldOutput{
 	Name: "text",
@@ -40,11 +41,11 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 		} else {
 			fmt.Fprintf(cw.Columns[6], "%s%s{}: ", indent, v.Name)
 		}
-		fmt.Fprintf(cw.Columns[6], "%s %s (%s)\n", v, v.Range, decode.Bits(v.Range.Length()))
+		fmt.Fprintf(cw.Columns[6], "%s %s (%s)\n", v, v.Range.StringByteBits(addrBase), decode.Bits(v.Range.Length()).StringByteBits(addrBase))
 	case decode.Array:
 		fmt.Fprintf(cw.Columns[3], "|\n")
 		fmt.Fprintf(cw.Columns[5], "|\n")
-		fmt.Fprintf(cw.Columns[6], "%s%s[]: %s\n", indent, v.Name, v.Range)
+		fmt.Fprintf(cw.Columns[6], "%s%s[]: %s\n", indent, v.Name, v.Range.StringByteBits(addrBase))
 	default:
 		absRange := v.Range
 
@@ -179,7 +180,7 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 		} else {
 			fmt.Fprintf(cw.Columns[6], "%s%s: ", indent, v.Name)
 		}
-		fmt.Fprintf(cw.Columns[6], "%s %s (%s)\n", v, v.Range, decode.Bits(v.Range.Length()))
+		fmt.Fprintf(cw.Columns[6], "%s %s (%s)\n", v, v.Range.StringByteBits(addrBase), decode.Bits(v.Range.Length()).StringByteBits(addrBase))
 	}
 
 	if v.Error != nil {
