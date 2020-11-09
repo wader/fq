@@ -534,15 +534,16 @@ func flacDecode(d *decode.D) interface{} {
 												escapeSampleSize := d.FieldU5("escape_sample_size")
 												d.FieldBitBufLen("samples", int64(count*escapeSampleSize*8))
 											} else {
-												d.FieldStructFn("samples", func(d *decode.D) {
-													for j := uint64(0); j < count; j++ {
-														high := d.Unary(0)
-														_ = high
-														low := d.U(int64(riceParameter))
-														_ = low
-														// r = zigzag(high<<riceParameter | $low)
-													}
-												})
+												samplesStart := d.Pos()
+												for j := uint64(0); j < count; j++ {
+													high := d.Unary(0)
+													_ = high
+													low := d.U(int64(riceParameter))
+													_ = low
+													// r = zigzag(high<<riceParameter | $low)
+												}
+												samplesStop := d.Pos()
+												d.FieldBitBufRange("samples", samplesStart, samplesStop-samplesStart)
 											}
 										})
 									}

@@ -283,6 +283,7 @@ func (d *D) fieldDecoder(name string, bitBuf *bitbuf.Buffer, v interface{}) *D {
 		value: &Value{
 			Name:   name,
 			V:      v,
+			Range:  Range{Start: d.bitBuf.Pos, Stop: d.bitBuf.Pos},
 			BitBuf: d.bitBuf,
 		},
 		registry: d.registry,
