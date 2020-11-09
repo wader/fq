@@ -163,11 +163,16 @@ func (v *Value) Lookup(path string) *Value {
 var ErrWalkSkip = errors.New("skip")
 var ErrWalkStop = errors.New("stop")
 
-func (v *Value) walk(preOrder bool, fn func(v *Value, depth int) error) error {
-	var walkFn func(v *Value, depth int) error
-	walkFn = func(v *Value, depth int) error {
+func (v *Value) walk(preOrder bool, fn func(v *Value, depth int, rootDepth int) error) error {
+	var walkFn func(v *Value, depth int, rootDepth int) error
+	walkFn = func(v *Value, depth int, rootDepth int) error {
+		rootDepthDelta := 0
+		if v.IsRoot {
+			rootDepthDelta = 1
+		}
+
 		if preOrder {
-			err := fn(v, depth)
+			err := fn(v, depth, rootDepth+rootDepthDelta)
 			switch err {
 			case ErrWalkSkip:
 				return nil
@@ -179,22 +184,23 @@ func (v *Value) walk(preOrder bool, fn func(v *Value, depth int) error) error {
 				}
 			}
 		}
+
 		switch v := v.V.(type) {
 		case Struct:
 			for _, wv := range v {
-				if err := walkFn(wv, depth+1); err != nil {
+				if err := walkFn(wv, depth+1, rootDepth+rootDepthDelta); err != nil {
 					return err
 				}
 			}
 		case Array:
 			for _, wv := range v {
-				if err := walkFn(wv, depth+1); err != nil {
+				if err := walkFn(wv, depth+1, rootDepth+rootDepthDelta); err != nil {
 					return err
 				}
 			}
 		}
 		if !preOrder {
-			err := fn(v, depth)
+			err := fn(v, depth, rootDepth+rootDepthDelta)
 			switch err {
 			case ErrWalkSkip:
 				return errors.New("can't skip in post-order")
@@ -208,20 +214,20 @@ func (v *Value) walk(preOrder bool, fn func(v *Value, depth int) error) error {
 		}
 		return nil
 	}
-	return walkFn(v, 0)
+	return walkFn(v, 0, 0)
 }
 
-func (v *Value) WalkPreOrder(fn func(v *Value, depth int) error) error {
+func (v *Value) WalkPreOrder(fn func(v *Value, depth int, rootDepth int) error) error {
 	return v.walk(true, fn)
 }
 
-func (v *Value) WalkPostOrder(fn func(v *Value, depth int) error) error {
+func (v *Value) WalkPostOrder(fn func(v *Value, depth int, rootDepth int) error) error {
 	return v.walk(false, fn)
 }
 
 func (v *Value) Errors() []error {
 	var errs []error
-	_ = v.WalkPreOrder(func(v *Value, depth int) error {
+	_ = v.WalkPreOrder(func(v *Value, depth int, rootDepth int) error {
 		if v.Error != nil {
 			errs = append(errs, v.Error)
 		}
@@ -234,7 +240,7 @@ func (v *Value) postProcess() {
 	// TODO: find start/stop from Ranges instead? what if seekaround? concat bitbufs but want gaps? sort here, crash?
 	// TDOO: if bitbuf set?
 
-	v.WalkPostOrder(func(v *Value, depth int) error {
+	v.WalkPostOrder(func(v *Value, depth int, rootDepth int) error {
 		switch vv := v.V.(type) {
 		case Struct:
 			first := true
@@ -322,15 +328,20 @@ func (v *Value) String() string {
 	default:
 		panic("unreachable")
 	}
-	symbol := ""
+
+	s := ""
 	if v.Symbol != "" {
-		symbol = fmt.Sprintf(" (%s)", v.Symbol)
+		s = fmt.Sprintf("%s (%s)", v.Symbol, f)
+	} else {
+		s = fmt.Sprintf("%s", f)
 	}
+
 	desc := ""
 	if v.Desc != "" {
 		desc = fmt.Sprintf(" (%s)", v.Desc)
 	}
-	return fmt.Sprintf("%s%s%s", f, symbol, desc)
+
+	return fmt.Sprintf("%s%s", s, desc)
 }
 
 func (v *Value) RawString() string {

@@ -15,7 +15,7 @@ type FieldWriter struct {
 }
 
 func (o *FieldWriter) write(w io.Writer, v interface{}) error {
-	return o.v.WalkPreOrder(func(v *decode.Value, depth int) error {
+	return o.v.WalkPreOrder(func(v *decode.Value, depth int, rootDepth int) error {
 		if _, err := w.Write([]byte(v.RawString())); err != nil {
 			return err
 		}

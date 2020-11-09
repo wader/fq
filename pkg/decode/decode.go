@@ -90,7 +90,7 @@ func probe(name string, bb *bitbuf.Buffer, formats []*Format, opts probeOptions)
 		}
 
 		var maxPos int64
-		d.value.WalkPreOrder(func(v *Value, depth int) error {
+		d.value.WalkPreOrder(func(v *Value, depth int, rootDepth int) error {
 			if v.IsRoot {
 				return ErrWalkSkip
 			}
