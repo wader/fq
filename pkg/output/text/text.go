@@ -8,6 +8,8 @@ import (
 	"fq/internal/hexpairwriter"
 	"fq/pkg/decode"
 	"io"
+	"math"
+	"strconv"
 	"strings"
 )
 
@@ -20,11 +22,28 @@ var FieldOutput = &decode.FieldOutput{
 	New:  func(v *decode.Value) decode.FieldWriter { return &FieldWriter{v: v} },
 }
 
+func digitsInBase(n int64, base int) int {
+	if n == 0 {
+		return 1
+	}
+	return int(1 + math.Floor(math.Log(float64(n))/math.Log(float64(base))))
+}
+
+func padFormatInt(i int64, base int, width int) string {
+	s := strconv.FormatInt(i, base)
+	p := width - len(s)
+	if p > 0 {
+		// TODO: something faster?
+		return strings.Repeat("0", p) + s
+	}
+	return s
+}
+
 type FieldWriter struct {
 	v *decode.Value
 }
 
-func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, depth int, rootDepth int) error {
+func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, depth int, rootDepth int, addrWidth int) error {
 	isInArray := false
 	if v.Parent != nil {
 		_, isInArray = v.Parent.V.(decode.Array)
@@ -74,7 +93,7 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 
 	addrLines := 1
 
-	fmt.Fprintf(cw.Columns[0], "%s%.8x\n", rootIndent, startLineByte)
+	fmt.Fprintf(cw.Columns[1], "|\n")
 	fmt.Fprintf(cw.Columns[3], "|\n")
 	fmt.Fprintf(cw.Columns[5], "|\n")
 
@@ -89,6 +108,8 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 	case decode.Array:
 		fmt.Fprintf(cw.Columns[6], "%s%s[]: %s\n", indent, v.Name, v.Range.StringByteBits(addrBase))
 	default:
+
+		fmt.Fprintf(cw.Columns[0], "%s%s\n", rootIndent, padFormatInt(startLineByte, addrBase, addrWidth))
 
 		// log.Printf("startBit: %x\n", startBit)
 		// log.Printf("stopBit: %x\n", stopBit)
@@ -162,14 +183,15 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 		// fmt.Fprintf(cw.Columns[4], "%s", printable(b, startLineByteOffset))
 
 		for i := 1; i < addrLines; i++ {
-			fmt.Fprintf(cw.Columns[0], "%s%.8x\n", rootIndent, startLineByte+int64(i)*lineBytes)
-			fmt.Fprintf(cw.Columns[1], "\n")
+			fmt.Fprintf(cw.Columns[0], "%s%s\n", rootIndent, padFormatInt(startLineByte+int64(i)*lineBytes, addrBase, addrWidth))
+			fmt.Fprintf(cw.Columns[1], "|\n")
 			fmt.Fprintf(cw.Columns[3], "|\n")
 			fmt.Fprintf(cw.Columns[5], "|\n")
 		}
 
 		if stopByte != lastDisplayByte {
-			fmt.Fprintf(cw.Columns[0], "%s*\n", rootIndent)
+			fmt.Fprintf(cw.Columns[0], "*\n")
+			fmt.Fprintf(cw.Columns[1], "|\n")
 			fmt.Fprint(cw.Columns[2], "\n")
 			fmt.Fprintf(cw.Columns[2], "%d bytes more, ends at %x", stopByte-lastDisplayByte, stopByte)
 			fmt.Fprintf(cw.Columns[3], "|\n")
@@ -187,6 +209,7 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 
 	if v.Error != nil {
 		fmt.Fprintf(cw.Columns[6], "%s!%s\n", indent, v.Error)
+		fmt.Fprintf(cw.Columns[1], "|\n")
 		fmt.Fprintf(cw.Columns[3], "|\n")
 		fmt.Fprintf(cw.Columns[5], "|\n")
 	}
@@ -197,24 +220,30 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 }
 
 func (o *FieldWriter) Write(w io.Writer) error {
-	maxRootDepth := 0
+	maxAddrIndentWidth := 0
 	o.v.WalkPreOrder(func(v *decode.Value, depth int, rootDepth int) error {
 		// skip first root level
 		if rootDepth > 0 {
 			rootDepth--
 		}
-		if rootDepth > maxRootDepth {
-			maxRootDepth = rootDepth
+
+		if v.IsRoot {
+			addrIndentWidth := rootDepth + digitsInBase(v.Range.Stop, addrBase)
+			if addrIndentWidth > maxAddrIndentWidth {
+				maxAddrIndentWidth = addrIndentWidth
+			}
 		}
+
 		return nil
 	})
 
-	cw := columnwriter.New(w, []int{8 + maxRootDepth, 1, int(lineBytes*3) - 1, 1, int(lineBytes), 1, -1})
+	cw := columnwriter.New(w, []int{maxAddrIndentWidth, 1, int(lineBytes*3) - 1, 1, int(lineBytes), 1, -1})
 	return o.v.WalkPreOrder(func(v *decode.Value, depth int, rootDepth int) error {
 		// skip first root level
 		if rootDepth > 0 {
 			rootDepth--
 		}
-		return o.outputValue(cw, v, depth, rootDepth)
+
+		return o.outputValue(cw, v, depth, rootDepth, maxAddrIndentWidth-rootDepth)
 	})
 }
