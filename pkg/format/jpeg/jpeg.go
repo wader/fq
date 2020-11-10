@@ -166,10 +166,11 @@ var markers = map[uint]marker{
 func jpegDecode(d *decode.D) interface{} {
 	var extendedXMP []byte
 	soiMarkerFound := false
+	eoiMarkerFound := false
 
 	d.FieldArrayFn("marker", func(d *decode.D) {
 		inECD := false
-		for !d.End() {
+		for d.NotEnd() && !eoiMarkerFound {
 			if inECD {
 				ecdLen := int64(0)
 				for {
@@ -243,6 +244,7 @@ func jpegDecode(d *decode.D) interface{} {
 						inECD = true
 					case TEM:
 					case EOI:
+						eoiMarkerFound = true
 					default:
 						if markerFound {
 							markerLen := d.FieldU16("length")
@@ -292,6 +294,7 @@ func jpegDecode(d *decode.D) interface{} {
 		if err != nil {
 			panic(err) // TODO: fixme
 		}
+
 		// TODO: bit pos, better bitbhuf api?
 		d.FieldBitBufFn("extended_xmp", 0, bb.Len, func() (*bitbuf.Buffer, string) {
 			return bb, ""

@@ -86,11 +86,11 @@ func vorbisDecode(d *decode.D) interface{} {
 		})
 		// TODO: warning if blocksize0 > blocksize1
 		// TODO: warning if not 64-8192
-		d.FieldValidateZeroPadding("padding", 7)
+		d.FieldValidateZeroPadding("padding0", 7)
 		d.FieldValidateUFn("framing_flag", 1, d.U1)
 
 		if d.BitsLeft() > 0 {
-			d.FieldValidateZeroPadding("padding", d.BitsLeft())
+			d.FieldValidateZeroPadding("padding1", d.BitsLeft())
 		}
 	case packetTypeSetup:
 		d.FieldUFn("vorbis_codebook_count", func() (uint64, decode.DisplayFormat, string) {
@@ -124,11 +124,11 @@ func vorbisDecode(d *decode.D) interface{} {
 		d.FieldDecode("comment", vorbisComment)
 
 		// note this uses vorbis bitpacking convention, bits are added LSB first per byte
-		d.FieldValidateZeroPadding("padding", 7)
+		d.FieldValidateZeroPadding("padding0", 7)
 		d.FieldValidateUFn("frame_bit", 1, d.U1)
 
 		if d.BitsLeft() > 0 {
-			d.FieldValidateZeroPadding("padding", d.BitsLeft())
+			d.FieldValidateZeroPadding("padding1", d.BitsLeft())
 		}
 	}
 

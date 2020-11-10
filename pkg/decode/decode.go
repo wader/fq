@@ -35,7 +35,7 @@ func (e ReadError) Error() string {
 	}
 
 	return fmt.Sprintf("%s: failed at position %s (size %s delta %s): %s",
-		prefix, Bits(e.Pos), Bits(e.Size), Bits(e.Delta), e.Err)
+		prefix, Bits(e.Pos).StringByteBits(10), Bits(e.Size).StringByteBits(10), Bits(e.Delta).StringByteBits(10), e.Err)
 }
 func (e ReadError) Unwrap() error { return e.Err }
 
