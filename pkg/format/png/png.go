@@ -35,7 +35,7 @@ var compressionNames = map[uint64]string{
 func pngDecode(d *decode.D) interface{} {
 	d.FieldValidateString("signature", "\x89PNG\r\n\x1a\n")
 
-	d.FieldStructArrayLoopFn("chunk", d.End, func(d *decode.D) {
+	d.FieldStructArrayLoopFn("chunk", d.NotEnd, func(d *decode.D) {
 		chunkLength := int64(d.FieldU32("length"))
 
 		chunkType := d.FieldStrFn("type", func() (string, string) {

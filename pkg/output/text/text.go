@@ -39,6 +39,13 @@ func padFormatInt(i int64, base int, width int) string {
 	return s
 }
 
+func bitsCeilBytes(bits int64) int64 {
+	if bits&0xf != 0 {
+		return bits>>3 + 1
+	}
+	return bits >> 3
+}
+
 type FieldWriter struct {
 	v *decode.Value
 }
@@ -228,7 +235,7 @@ func (o *FieldWriter) Write(w io.Writer) error {
 		}
 
 		if v.IsRoot {
-			addrIndentWidth := rootDepth + digitsInBase(v.Range.Stop, addrBase)
+			addrIndentWidth := rootDepth + digitsInBase(bitsCeilBytes(v.Range.Stop), addrBase)
 			if addrIndentWidth > maxAddrIndentWidth {
 				maxAddrIndentWidth = addrIndentWidth
 			}

@@ -238,6 +238,7 @@ func (d *D) BitBufLen(nBits int64) *bitbuf.Buffer {
 func (d *D) Pos() int64           { return d.bitBuf.Pos }
 func (d *D) Len() int64           { return d.bitBuf.Len }
 func (d *D) End() bool            { return d.bitBuf.End() }
+func (d *D) NotEnd() bool         { return !d.bitBuf.End() }
 func (d *D) BitsLeft() int64      { return d.bitBuf.BitsLeft() }
 func (d *D) ByteAlignBits() int64 { return d.bitBuf.ByteAlignBits() }
 func (d *D) BytePos() int64       { return d.bitBuf.BytePos() }
@@ -310,9 +311,9 @@ func (d *D) FieldStruct(name string) *D {
 	return d.fieldDecoder(name, d.bitBuf, Struct{})
 }
 
-func (d *D) FieldStructArrayLoopFn(name string, endFn func() bool, fn func(d *D)) *D {
+func (d *D) FieldStructArrayLoopFn(name string, condFn func() bool, fn func(d *D)) *D {
 	return d.FieldArrayFn(name, func(d *D) {
-		for !endFn() {
+		for condFn() {
 			d.FieldStructFn(name, fn)
 		}
 	})
