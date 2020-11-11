@@ -82,7 +82,7 @@ func decodeOgg(d *decode.D) interface{} {
 					if err != nil {
 						panic(err) // TODO: fixme
 					}
-					packets.FieldDecodeBitBuf("packet", s.firstBit, d.Pos(), bb, oggPacket)
+					packets.FieldDecodeBitBuf("packet", bb, oggPacket)
 					s.packetBuf = nil
 				}
 			}

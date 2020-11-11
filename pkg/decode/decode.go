@@ -607,8 +607,7 @@ func (d *D) FieldDecodeRange(name string, firstBit int64, nBits int64, formats [
 	return v, dv, errs
 }
 
-// TODO: firstBit/nBits make no sense?
-func (d *D) FieldTryDecodeBitBuf(name string, firstBit int64, nBits int64, bb *bitbuf.Buffer, formats []*Format) (*Value, interface{}, []error) {
+func (d *D) FieldTryDecodeBitBuf(name string, bb *bitbuf.Buffer, formats []*Format) (*Value, interface{}, []error) {
 	v, dv, errs := probe(name, bb, formats, probeOptions{isRoot: true})
 	if v == nil || v.Errors() != nil {
 		return nil, nil, errs
@@ -619,8 +618,8 @@ func (d *D) FieldTryDecodeBitBuf(name string, firstBit int64, nBits int64, bb *b
 	return v, dv, errs
 }
 
-func (d *D) FieldDecodeBitBuf(name string, firstBit int64, nBits int64, bb *bitbuf.Buffer, formats []*Format) (*Value, interface{}, []error) {
-	v, dv, errs := d.FieldTryDecodeBitBuf(name, firstBit, nBits, bb, formats)
+func (d *D) FieldDecodeBitBuf(name string, bb *bitbuf.Buffer, formats []*Format) (*Value, interface{}, []error) {
+	v, dv, errs := d.FieldTryDecodeBitBuf(name, bb, formats)
 	if v == nil || v.Errors() != nil {
 		panic(errs)
 	}
@@ -639,28 +638,13 @@ func (d *D) FieldBitBufLen(name string, nBits int64) *bitbuf.Buffer {
 	})
 }
 
-func (d *D) FieldZlib(name string, firsBit int64, nBits int64, b []byte, formats []*Format) (*Value, interface{}, []error) {
-	zr, err := zlib.NewReader(bytes.NewReader(b))
-	if err != nil {
-		panic(err)
-	}
-	zd, err := ioutil.ReadAll(zr)
-	if err != nil {
-		panic(err)
-	}
-
-	zbb, err := bitbuf.NewFromBytes(zd, 0)
-	if err != nil {
-		return nil, nil, []error{err}
-	}
-
-	return d.FieldDecodeBitBuf(name, firsBit, nBits, zbb, formats)
-}
-
 // TODO: range?
-func (d *D) FieldZlibLen(name string, nBytes int64, formats []*Format) (*Value, interface{}, []error) {
-	firstBit := d.bitBuf.Pos
-	zr, err := zlib.NewReader(bytes.NewReader(d.BytesLen(nBytes)))
+func (d *D) FieldDecodeZlibLen(name string, nBits int64, formats []*Format) (*Value, interface{}, []error) {
+	bb, err := d.bitBuf.BitBufLen(nBits)
+	if err != nil {
+		panic(err)
+	}
+	zr, err := zlib.NewReader(bb)
 	if err != nil {
 		panic(err)
 	}
@@ -668,11 +652,10 @@ func (d *D) FieldZlibLen(name string, nBytes int64, formats []*Format) (*Value, 
 	if err != nil {
 		panic(err)
 	}
-
 	zbb, err := bitbuf.NewFromBytes(zd, 0)
 	if err != nil {
-		return nil, nil, []error{err}
+		panic(err)
 	}
 
-	return d.FieldDecodeBitBuf(name, firstBit, firstBit+nBytes*8, zbb, formats)
+	return d.FieldDecodeBitBuf(name, zbb, formats)
 }

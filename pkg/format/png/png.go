@@ -81,41 +81,39 @@ func pngDecode(d *decode.D) interface{} {
 			d.FieldUTF8("keyword", keywordLen-1)
 			d.FieldUTF8("null", 1)
 			compressionMethod, _ := d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8)
-			_ = compressionMethod
+			dataLen := (chunkLength - keywordLen - 1) * 8
 
 			switch compressionMethod {
 			case compressionDeflate:
-				// TODO: make nicer
-				d.FieldZlibLen("uncompressed", chunkLength-keywordLen-1, decode.FormatFn(func(c *decode.D) interface{} {
-					c.FieldUTF8("text", c.BitsLeft()/8)
-					return nil
-				}))
+				d.FieldStructFn("data", func(d *decode.D) {
+					d.FieldDecodeZlibLen("uncompressed", dataLen, decode.FormatFn(func(d *decode.D) interface{} {
+						d.FieldUTF8("text", d.BitsLeft()/8)
+						return nil
+					}))
+				})
 			default:
-				d.FieldBitBufLen("compressed", (chunkLength-keywordLen-1)*8)
+				d.FieldBitBufLen("data", dataLen)
 			}
 		case "iCCP":
 			profileNameLen := d.PeekFindByte(0, 80)
 			d.FieldUTF8("profile_name", profileNameLen-1)
 			d.FieldUTF8("null", 1)
 			compressionMethod, _ := d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8)
-			_ = compressionMethod
+			dataLen := (chunkLength - profileNameLen - 1) * 8
 
 			switch compressionMethod {
 			case compressionDeflate:
-				// TODO: make nicer
-				d.FieldZlibLen("uncompressed", chunkLength-profileNameLen-1, decode.FormatFn(func(c *decode.D) interface{} {
-					c.FieldDecodeLen("icc", c.BitsLeft(), iccTag)
-					return nil
-				}))
+				d.FieldStructFn("data", func(d *decode.D) {
+					d.FieldDecodeZlibLen("uncompressed", dataLen, iccTag)
+				})
 			default:
-				d.FieldBitBufLen("compressed", (chunkLength-profileNameLen-1)*8)
+				d.FieldBitBufLen("data", dataLen)
 			}
 		case "eXIf":
 			// TODO: decode fail?
 			d.FieldDecodeLen("exif", chunkLength*8, tiffFile)
 		default:
 			d.FieldBitBufLen("data", chunkLength*8)
-
 			if chunkType == "IEND" {
 				iendFound = true
 			}

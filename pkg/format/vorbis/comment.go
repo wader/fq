@@ -44,8 +44,6 @@ func commentDecode(d *decode.D) interface{} {
 						}
 
 						d.FieldDecodeBitBuf("picture",
-							d.Pos()-int64(len(v))*8,
-							int64(len(v)*8),
 							bb,
 							flacPicture,
 						)

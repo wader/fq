@@ -245,6 +245,10 @@ func (v *Value) postProcess() {
 		case Struct:
 			first := true
 			for _, f := range vv {
+				if f.IsRoot {
+					continue
+				}
+
 				if first {
 					v.Range = f.Range
 					first = false
@@ -263,6 +267,10 @@ func (v *Value) postProcess() {
 		case Array:
 			first := true
 			for _, f := range vv {
+				if f.IsRoot {
+					continue
+				}
+
 				if first {
 					v.Range = f.Range
 					first = false
