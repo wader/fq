@@ -33,9 +33,10 @@ var compressionNames = map[uint64]string{
 }
 
 func pngDecode(d *decode.D) interface{} {
-	d.FieldValidateString("signature", "\x89PNG\r\n\x1a\n")
+	iendFound := false
 
-	d.FieldStructArrayLoopFn("chunk", d.NotEnd, func(d *decode.D) {
+	d.FieldValidateString("signature", "\x89PNG\r\n\x1a\n")
+	d.FieldStructArrayLoopFn("chunk", func() bool { return d.NotEnd() && !iendFound }, func(d *decode.D) {
 		chunkLength := int64(d.FieldU32("length"))
 
 		chunkType := d.FieldStrFn("type", func() (string, string) {
@@ -114,6 +115,10 @@ func pngDecode(d *decode.D) interface{} {
 			d.FieldDecodeLen("exif", chunkLength*8, tiffFile)
 		default:
 			d.FieldBitBufLen("data", chunkLength*8)
+
+			if chunkType == "IEND" {
+				iendFound = true
+			}
 		}
 
 		crc := d.FieldU32("crc")
