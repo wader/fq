@@ -76,12 +76,12 @@ func probe(name string, bb *bitbuf.Buffer, formats []*Format, opts probeOptions)
 		cbb := bb.Copy()
 
 		d := (&D{Endian: BigEndian, bitBuf: cbb}).FieldStructBitBuf(name, cbb)
-		d.value.Desc = f.Name
-		d.value.BitBuf = cbb
-		d.value.IsRoot = opts.isRoot
+		d.Value.Desc = f.Name
+		d.Value.BitBuf = cbb
+		d.Value.IsRoot = opts.isRoot
 		decodeErr, dv := d.SafeDecodeFn(f.DecodeFn)
 		if decodeErr != nil {
-			d.value.Error = decodeErr
+			d.Value.Error = decodeErr
 
 			errs = append(errs, decodeErr)
 			if !forceOne {
@@ -90,7 +90,7 @@ func probe(name string, bb *bitbuf.Buffer, formats []*Format, opts probeOptions)
 		}
 
 		var maxPos int64
-		d.value.WalkPreOrder(func(v *Value, depth int, rootDepth int) error {
+		d.Value.WalkPreOrder(func(v *Value, depth int, rootDepth int) error {
 			if v.IsRoot {
 				return ErrWalkSkip
 			}
@@ -103,14 +103,14 @@ func probe(name string, bb *bitbuf.Buffer, formats []*Format, opts probeOptions)
 			return nil
 		})
 
-		d.value.Range = Range{Start: opts.relStart, Stop: maxPos}
+		d.Value.Range = Range{Start: opts.relStart, Stop: maxPos}
 
 		if opts.isRoot {
 			// sort and set ranges for struct and arrays
-			d.value.postProcess()
+			d.Value.postProcess()
 		}
 
-		return d.value, dv, errs
+		return d.Value, dv, errs
 	}
 
 	return nil, nil, errs
@@ -118,9 +118,9 @@ func probe(name string, bb *bitbuf.Buffer, formats []*Format, opts probeOptions)
 
 type D struct {
 	Endian Endian
+	Value  *Value
 
 	bitBuf   *bitbuf.Buffer
-	value    *Value
 	registry *Registry
 }
 
@@ -260,19 +260,19 @@ func (d *D) SeekAbs(pos int64) int64 {
 }
 
 func (d *D) AddChild(v *Value) {
-	v.Parent = d.value
+	v.Parent = d.Value
 
-	switch fv := d.value.V.(type) {
+	switch fv := d.Value.V.(type) {
 	case Struct:
 		for _, ff := range fv {
 			if ff.Name == v.Name {
-				panic(fmt.Sprintf("%s already exist in struct %s", v.Name, d.value.Name))
+				panic(fmt.Sprintf("%s already exist in struct %s", v.Name, d.Value.Name))
 			}
 		}
-		d.value.V = append(fv, v)
+		d.Value.V = append(fv, v)
 		return
 	case Array:
-		d.value.V = append(fv, v)
+		d.Value.V = append(fv, v)
 	}
 
 }
@@ -281,7 +281,7 @@ func (d *D) fieldDecoder(name string, bitBuf *bitbuf.Buffer, v interface{}) *D {
 	cd := &D{
 		Endian: d.Endian,
 		bitBuf: bitBuf,
-		value: &Value{
+		Value: &Value{
 			Name:   name,
 			V:      v,
 			Range:  Range{Start: d.bitBuf.Pos, Stop: d.bitBuf.Pos},
@@ -291,8 +291,8 @@ func (d *D) fieldDecoder(name string, bitBuf *bitbuf.Buffer, v interface{}) *D {
 	}
 
 	// TODO: refactor
-	if d.value != nil {
-		d.AddChild(cd.value)
+	if d.Value != nil {
+		d.AddChild(cd.Value)
 	}
 	return cd
 }

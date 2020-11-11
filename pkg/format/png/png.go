@@ -38,7 +38,6 @@ func pngDecode(d *decode.D) interface{} {
 	d.FieldValidateString("signature", "\x89PNG\r\n\x1a\n")
 	d.FieldStructArrayLoopFn("chunk", func() bool { return d.NotEnd() && !iendFound }, func(d *decode.D) {
 		chunkLength := int64(d.FieldU32("length"))
-
 		chunkType := d.FieldStrFn("type", func() (string, string) {
 			chunkType := d.UTF8(4)
 			// upper/lower case in chunk type is used to set flags
@@ -85,12 +84,14 @@ func pngDecode(d *decode.D) interface{} {
 
 			switch compressionMethod {
 			case compressionDeflate:
-				d.FieldStructFn("data", func(d *decode.D) {
+				dd := d.FieldStructFn("data", func(d *decode.D) {
 					d.FieldDecodeZlibLen("uncompressed", dataLen, decode.FormatFn(func(d *decode.D) interface{} {
 						d.FieldUTF8("text", d.BitsLeft()/8)
 						return nil
 					}))
 				})
+				// TOD: depends on isRoot in postProcess
+				dd.Value.Range = decode.Range{Start: d.Pos() - dataLen, Stop: d.Pos()}
 			default:
 				d.FieldBitBufLen("data", dataLen)
 			}
@@ -103,14 +104,14 @@ func pngDecode(d *decode.D) interface{} {
 
 			switch compressionMethod {
 			case compressionDeflate:
-				d.FieldStructFn("data", func(d *decode.D) {
+				dd := d.FieldStructFn("data", func(d *decode.D) {
 					d.FieldDecodeZlibLen("uncompressed", dataLen, iccTag)
 				})
+				dd.Value.Range = decode.Range{Start: d.Pos() - dataLen, Stop: d.Pos()}
 			default:
 				d.FieldBitBufLen("data", dataLen)
 			}
 		case "eXIf":
-			// TODO: decode fail?
 			d.FieldDecodeLen("exif", chunkLength*8, tiffFile)
 		default:
 			d.FieldBitBufLen("data", chunkLength*8)
