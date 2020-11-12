@@ -113,7 +113,7 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 		}
 		fmt.Fprintf(cw.Columns[6], "%s %s (%s)\n", v, v.Range.StringByteBits(addrBase), decode.Bits(v.Range.Length()).StringByteBits(addrBase))
 	case decode.Array:
-		fmt.Fprintf(cw.Columns[6], "%s%s[]: %s\n", indent, v.Name, v.Range.StringByteBits(addrBase))
+		fmt.Fprintf(cw.Columns[6], "%s%s[]: %s %s\n", indent, v.Name, v, v.Range.StringByteBits(addrBase))
 	default:
 
 		fmt.Fprintf(cw.Columns[0], "%s%s\n", rootIndent, padFormatInt(startLineByte, addrBase, addrWidth))

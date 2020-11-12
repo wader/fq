@@ -764,7 +764,16 @@ var tagNames = map[uint64]string{
 }
 
 func fieldRational(d *decode.D, name string) float64 {
-	return d.FieldFloatFn(name, func() (float64, string) { return float64(d.U32()) / float64(d.U32()), "" })
+	var v float64
+	d.FieldStructFn(name, func(d *decode.D) {
+		numerator := d.FieldU32("numerator")
+		denominator := d.FieldU32("denominator")
+		v := float64(numerator) / float64(denominator)
+		d.FieldFloatFn("float", func() (float64, string) {
+			return v, ""
+		})
+	})
+	return v
 }
 
 func fieldSRational(d *decode.D, name string) float64 {

@@ -293,9 +293,9 @@ func (v *Value) String() string {
 	f := ""
 	switch iv := v.V.(type) {
 	case Array:
-		f = "array"
+		f = fmt.Sprintf("array %s", v.Name)
 	case Struct:
-		f = "struct"
+		f = fmt.Sprintf("struct %s", v.Name)
 	case bool:
 		f = "false"
 		if iv {
