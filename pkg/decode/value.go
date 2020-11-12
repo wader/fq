@@ -4,7 +4,9 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"fq/internal/rangegap"
 	"fq/pkg/bitbuf"
+	"log"
 	"regexp"
 	"sort"
 	"strconv"
@@ -239,6 +241,36 @@ func (v *Value) Errors() []error {
 func (v *Value) postProcess() {
 	// TODO: find start/stop from Ranges instead? what if seekaround? concat bitbufs but want gaps? sort here, crash?
 	// TDOO: if bitbuf set?
+
+	var ranges [][2]int64
+	v.WalkPreOrder(func(iv *Value, depth int, rootDepth int) error {
+		if iv.BitBuf != v.BitBuf && iv.IsRoot {
+			return ErrWalkSkip
+		}
+		switch iv.V.(type) {
+		case Struct, Array:
+
+		default:
+			ranges = append(ranges, [2]int64{iv.Range.Start, iv.Range.Stop})
+		}
+		return nil
+	})
+
+	log.Printf("ranges: %#+v\n", ranges)
+	gaps := rangegap.Find(0, v.BitBuf.Len, ranges)
+	log.Printf("gaps: %#+v\n", gaps)
+
+	for i, gap := range gaps {
+		vv := v.V.(Struct)
+
+		gapbb, _ := v.BitBuf.BitBufRange(gap[0], gap[1]-gap[0])
+		v.V = append(vv, &Value{
+			Name:   fmt.Sprintf("unknown%d", i),
+			Range:  Range{Start: gap[0], Stop: gap[1]},
+			V:      gapbb,
+			BitBuf: v.BitBuf,
+		})
+	}
 
 	v.WalkPostOrder(func(v *Value, depth int, rootDepth int) error {
 		switch vv := v.V.(type) {

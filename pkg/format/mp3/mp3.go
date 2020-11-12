@@ -63,10 +63,10 @@ func mp3Decode(d *decode.D) interface{} {
 		d.FieldTryDecode("footer", apeTag)
 
 		// TODO: truncated last frame?
-		if d.BitsLeft() > 0 {
-			// TODO: some better unknown/garbage handling? generic gap filling?
-			d.FieldBitBufLen("unknown", d.BitsLeft())
-		}
+		// if d.BitsLeft() > 0 {
+		// 	// TODO: some better unknown/garbage handling? generic gap filling?
+		// 	d.FieldBitBufLen("unknown", d.BitsLeft())
+		// }
 	})
 
 	if validFrames == 0 {
