@@ -8,6 +8,7 @@ import (
 	"fq/internal/hexpairwriter"
 	"fq/pkg/decode"
 	"io"
+	"log"
 	"math"
 	"strconv"
 	"strings"
@@ -73,15 +74,20 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 	// if stopBit%8 != 0 {
 	// 	stopByte++
 	// }
-	sizeBytes := stopByte - startByte
+	sizeBytes := (stopByte - startByte) + 1
 
 	lastDisplayByte := stopByte
 	if sizeBytes > maxBytes {
+
+		if v.Name == "text" {
+			log.Println("bla")
+		}
+
 		// truncate but fill line
 		// TODO: redo with max etc?
 		lastDisplayByte = startByte + maxBytes
 		if lastDisplayByte%lineBytes != 0 {
-			lastDisplayByte += lineBytes - lastDisplayByte%lineBytes
+			lastDisplayByte += lineBytes - lastDisplayByte%lineBytes - 1
 		}
 
 		if lastDisplayByte > stopByte || stopByte-lastDisplayByte <= lineBytes {
@@ -91,8 +97,6 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 	displaySizeBytes := lastDisplayByte - startByte
 	if displaySizeBytes == 0 {
 		displaySizeBytes = 1
-	} else {
-		displaySizeBytes++
 	}
 
 	startLine := startByte / lineBytes
