@@ -812,6 +812,9 @@ func tiffDecode(d *decode.D) interface{} {
 
 	ifdOffset := d.FieldU32("ifd_offset")
 
+	var stripOffset []int64
+	var stripByteCounts []int64
+
 	d.FieldArrayFn("ifd", func(d *decode.D) {
 		// TODO: inf loop?
 		for ifdOffset != 0 {
@@ -863,9 +866,21 @@ func tiffDecode(d *decode.D) interface{} {
 									// case BYTE:
 									// 	d.FieldU8("value")
 									case SHORT:
-										d.FieldU16("value")
+										v := d.FieldU16("value")
+										switch tag {
+										case StripOffsets:
+											stripOffset = append(stripOffset, int64(v*8))
+										case StripByteCounts:
+											stripByteCounts = append(stripByteCounts, int64(v*8))
+										}
 									case LONG:
-										d.FieldU32("value")
+										v := d.FieldU32("value")
+										switch tag {
+										case StripOffsets:
+											stripOffset = append(stripOffset, int64(v*8))
+										case StripByteCounts:
+											stripByteCounts = append(stripByteCounts, int64(v*8))
+										}
 									case RATIONAL:
 										fieldRational(d, "value")
 									case SLONG:
@@ -886,7 +901,15 @@ func tiffDecode(d *decode.D) interface{} {
 		}
 	})
 
-	_ = endian
+	if len(stripOffset) != len(stripByteCounts) {
+		// TODO: warning
+	} else {
+		d.FieldArrayFn("strip", func(d *decode.D) {
+			for i := 0; i < len(stripOffset); i++ {
+				d.FieldBitBufRange("strip", stripOffset[i], stripByteCounts[i])
+			}
+		})
+	}
 
 	return nil
 }

@@ -104,16 +104,16 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 	fmt.Fprintf(cw.Columns[3], "|\n")
 	fmt.Fprintf(cw.Columns[5], "|\n")
 
-	switch v.V.(type) {
+	switch vv := v.V.(type) {
 	case decode.Struct:
 		if isInArray {
 			fmt.Fprintf(cw.Columns[6], "%s%s[%d]{}: ", indent, v.Parent.Name, v.Index)
 		} else {
 			fmt.Fprintf(cw.Columns[6], "%s%s{}: ", indent, v.Name)
 		}
-		fmt.Fprintf(cw.Columns[6], "%s %s (%s)\n", v, v.Range.StringByteBits(addrBase), decode.Bits(v.Range.Length()).StringByteBits(addrBase))
+		fmt.Fprintf(cw.Columns[6], "%s %s fields %d (%s)\n", v, v.Range.StringByteBits(addrBase), len(vv), decode.Bits(v.Range.Length()).StringByteBits(addrBase))
 	case decode.Array:
-		fmt.Fprintf(cw.Columns[6], "%s%s[]: %s %s\n", indent, v.Name, v, v.Range.StringByteBits(addrBase))
+		fmt.Fprintf(cw.Columns[6], "%s%s[]: %s %s count %d (%s)\n", indent, v.Name, v, v.Range.StringByteBits(addrBase), len(vv), decode.Bits(v.Range.Length()).StringByteBits(addrBase))
 	default:
 
 		fmt.Fprintf(cw.Columns[0], "%s%s\n", rootIndent, padFormatInt(startLineByte, addrBase, addrWidth))
@@ -235,7 +235,7 @@ func (o *FieldWriter) Write(w io.Writer) error {
 		}
 
 		if v.IsRoot {
-			addrIndentWidth := rootDepth + digitsInBase(bitsCeilBytes(v.Range.Start+v.Range.Len), addrBase)
+			addrIndentWidth := rootDepth + digitsInBase(bitsCeilBytes(v.BitBuf.Len), addrBase)
 			if addrIndentWidth > maxAddrIndentWidth {
 				maxAddrIndentWidth = addrIndentWidth
 			}
