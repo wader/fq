@@ -47,10 +47,16 @@ func RangeMinMax(a, b Range) Range {
 }
 
 func (r Range) StringByteBits(base int) string {
+	if r.Len == 0 {
+		return fmt.Sprintf("%s-NA", Bits(r.Start).StringByteBits(base))
+	}
 	return fmt.Sprintf("%s-%s", Bits(r.Start).StringByteBits(base), Bits(r.Start+r.Len-1).StringByteBits(base))
 }
 
 func (r Range) StringBits(base int) string {
+	if r.Len == 0 {
+		return fmt.Sprintf("%s-NA", Bits(r.Start).StringBits(base))
+	}
 	return fmt.Sprintf("%s-%s", Bits(r.Start).StringBits(base), Bits(r.Start+r.Len-1).StringBits(base))
 }
 

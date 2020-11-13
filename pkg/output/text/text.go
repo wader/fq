@@ -91,6 +91,8 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 	displaySizeBytes := lastDisplayByte - startByte
 	if displaySizeBytes == 0 {
 		displaySizeBytes = 1
+	} else {
+		displaySizeBytes++
 	}
 
 	startLine := startByte / lineBytes
