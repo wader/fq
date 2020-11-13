@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"fq/pkg/bitbuf"
-	"log"
 	"regexp"
 	"sort"
 	"strconv"
@@ -48,11 +47,11 @@ func RangeMinMax(a, b Range) Range {
 }
 
 func (r Range) StringByteBits(base int) string {
-	return fmt.Sprintf("%s-%s", Bits(r.Start).StringByteBits(base), Bits(r.Start+r.Len).StringByteBits(base))
+	return fmt.Sprintf("%s-%s", Bits(r.Start).StringByteBits(base), Bits(r.Start+r.Len-1).StringByteBits(base))
 }
 
 func (r Range) StringBits(base int) string {
-	return fmt.Sprintf("%s-%s", Bits(r.Start).StringBits(base), Bits(r.Start+r.Len).StringBits(base))
+	return fmt.Sprintf("%s-%s", Bits(r.Start).StringBits(base), Bits(r.Start+r.Len-1).StringBits(base))
 }
 
 func (r Range) Length() int64 {
@@ -255,10 +254,7 @@ func (v *Value) postProcess() {
 		return nil
 	})
 
-	log.Printf("ranges: %#+v\n", ranges)
 	gaps := RangeGaps(v.BitBuf.Len, ranges)
-	log.Printf("gaps: %#+v\n", gaps)
-
 	for i, gap := range gaps {
 		vv := v.V.(Struct)
 

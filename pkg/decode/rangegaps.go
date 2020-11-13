@@ -50,7 +50,7 @@ func RangeGaps(totalLen int64, ranges []Range) []Range {
 	for i := 0; i < len(merged)-1; i++ {
 		m := merged[i]
 		n := merged[i+1]
-		gaps = append(gaps, Range{Start: m.Start + m.Len + 1, Len: n.Start - (m.Start + m.Len)})
+		gaps = append(gaps, Range{Start: m.Start + m.Len, Len: n.Start - (m.Start + m.Len)})
 	}
 	l := merged[len(merged)-1]
 	if l.Start+l.Len != totalLen {

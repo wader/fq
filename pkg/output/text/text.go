@@ -62,17 +62,17 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 	absRange := v.Range
 
 	startBit := absRange.Start
-	stopBit := absRange.Start + absRange.Len
+	stopBit := absRange.Start + absRange.Len - 1
 
-	if startBit != stopBit {
-		stopBit--
-	}
+	// if startBit != stopBit {
+	// 	stopBit--
+	// }
 
 	startByte := startBit / 8
 	stopByte := stopBit / 8
-	if stopBit%8 != 0 {
-		stopByte++
-	}
+	// if stopBit%8 != 0 {
+	// 	stopByte++
+	// }
 	sizeBytes := stopByte - startByte
 
 	lastDisplayByte := stopByte
