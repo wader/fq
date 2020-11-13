@@ -4,7 +4,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"fq/internal/rangegap"
 	"fq/pkg/bitbuf"
 	"log"
 	"regexp"
@@ -27,7 +26,7 @@ func (b Bits) StringBits(base int) string {
 
 type Range struct {
 	Start int64
-	Stop  int64
+	Len   int64
 }
 
 func max(a, b int64) int64 {
@@ -45,19 +44,19 @@ func min(a, b int64) int64 {
 }
 
 func RangeMinMax(a, b Range) Range {
-	return Range{Start: min(a.Start, b.Start), Stop: max(a.Stop, b.Stop)}
+	return Range{Start: min(a.Start, b.Start), Len: max(a.Len, b.Len)}
 }
 
 func (r Range) StringByteBits(base int) string {
-	return fmt.Sprintf("%s-%s", Bits(r.Start).StringByteBits(base), Bits(r.Stop).StringByteBits(base))
+	return fmt.Sprintf("%s-%s", Bits(r.Start).StringByteBits(base), Bits(r.Start+r.Len).StringByteBits(base))
 }
 
 func (r Range) StringBits(base int) string {
-	return fmt.Sprintf("%s-%s", Bits(r.Start).StringBits(base), Bits(r.Stop).StringBits(base))
+	return fmt.Sprintf("%s-%s", Bits(r.Start).StringBits(base), Bits(r.Start+r.Len).StringBits(base))
 }
 
 func (r Range) Length() int64 {
-	return r.Stop - r.Start
+	return r.Len
 }
 
 type DisplayFormat int
@@ -242,7 +241,7 @@ func (v *Value) postProcess() {
 	// TODO: find start/stop from Ranges instead? what if seekaround? concat bitbufs but want gaps? sort here, crash?
 	// TDOO: if bitbuf set?
 
-	var ranges [][2]int64
+	var ranges []Range
 	v.WalkPreOrder(func(iv *Value, depth int, rootDepth int) error {
 		if iv.BitBuf != v.BitBuf && iv.IsRoot {
 			return ErrWalkSkip
@@ -251,22 +250,22 @@ func (v *Value) postProcess() {
 		case Struct, Array:
 
 		default:
-			ranges = append(ranges, [2]int64{iv.Range.Start, iv.Range.Stop})
+			ranges = append(ranges, iv.Range)
 		}
 		return nil
 	})
 
 	log.Printf("ranges: %#+v\n", ranges)
-	gaps := rangegap.Find(0, v.BitBuf.Len, ranges)
+	gaps := RangeGaps(v.BitBuf.Len, ranges)
 	log.Printf("gaps: %#+v\n", gaps)
 
 	for i, gap := range gaps {
 		vv := v.V.(Struct)
 
-		gapbb, _ := v.BitBuf.BitBufRange(gap[0], gap[1]-gap[0])
+		gapbb, _ := v.BitBuf.BitBufRange(gap.Start, gap.Len)
 		v.V = append(vv, &Value{
 			Name:   fmt.Sprintf("unknown%d", i),
-			Range:  Range{Start: gap[0], Stop: gap[1]},
+			Range:  gap,
 			V:      gapbb,
 			BitBuf: v.BitBuf,
 		})

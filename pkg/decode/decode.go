@@ -45,7 +45,7 @@ type ValidateError struct {
 }
 
 func (e ValidateError) Error() string {
-	return fmt.Sprintf("failed to validate at position %s: %s", Bits(e.Pos), e.Reason)
+	return fmt.Sprintf("failed to validate at position %s: %s", Bits(e.Pos).StringByteBits(10), e.Reason)
 }
 
 type Endian bitbuf.Endian
@@ -95,15 +95,15 @@ func probe(name string, bb *bitbuf.Buffer, formats []*Format, opts probeOptions)
 				return ErrWalkSkip
 			}
 
-			v.Range = Range{Start: v.Range.Start + opts.relStart, Stop: v.Range.Stop + opts.relStart}
+			v.Range.Start += opts.relStart
 			if opts.relBitBuf != nil {
 				v.BitBuf = opts.relBitBuf
 			}
-			maxPos = max(v.Range.Stop, maxPos)
+			maxPos = max(v.Range.Start+v.Range.Len, maxPos)
 			return nil
 		})
 
-		d.Value.Range = Range{Start: opts.relStart, Stop: maxPos}
+		d.Value.Range = Range{Start: opts.relStart, Len: maxPos - opts.relStart}
 
 		if opts.isRoot {
 			// sort and set ranges for struct and arrays
@@ -284,7 +284,7 @@ func (d *D) fieldDecoder(name string, bitBuf *bitbuf.Buffer, v interface{}) *D {
 		Value: &Value{
 			Name:   name,
 			V:      v,
-			Range:  Range{Start: d.bitBuf.Pos, Stop: d.bitBuf.Pos},
+			Range:  Range{Start: d.bitBuf.Pos, Len: 0},
 			BitBuf: d.bitBuf,
 		},
 		registry: d.registry,
@@ -339,7 +339,7 @@ func (d *D) FieldRangeFn(name string, firstBit int64, nBits int64, fn func() *Va
 	v := fn()
 	v.Name = name
 	v.BitBuf = d.bitBuf
-	v.Range = Range{Start: firstBit, Stop: firstBit + nBits}
+	v.Range = Range{Start: firstBit, Len: nBits}
 	d.AddChild(v)
 
 	return v
@@ -351,7 +351,7 @@ func (d *D) FieldFn(name string, fn func() *Value) *Value {
 	stop := d.bitBuf.Pos
 	v.Name = name
 	v.BitBuf = d.bitBuf
-	v.Range = Range{Start: start, Stop: stop}
+	v.Range = Range{Start: start, Len: stop - start}
 	d.AddChild(v)
 
 	return v

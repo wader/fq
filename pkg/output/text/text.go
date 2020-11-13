@@ -62,7 +62,7 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 	absRange := v.Range
 
 	startBit := absRange.Start
-	stopBit := absRange.Stop
+	stopBit := absRange.Start + absRange.Len
 
 	if startBit != stopBit {
 		stopBit--
@@ -235,7 +235,7 @@ func (o *FieldWriter) Write(w io.Writer) error {
 		}
 
 		if v.IsRoot {
-			addrIndentWidth := rootDepth + digitsInBase(bitsCeilBytes(v.Range.Stop), addrBase)
+			addrIndentWidth := rootDepth + digitsInBase(bitsCeilBytes(v.Range.Start+v.Range.Len), addrBase)
 			if addrIndentWidth > maxAddrIndentWidth {
 				maxAddrIndentWidth = addrIndentWidth
 			}
