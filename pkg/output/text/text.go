@@ -17,6 +17,7 @@ import (
 const lineBytes = int64(16)
 const maxBytes = int64(16)
 const addrBase = 16
+const sizeBase = 10
 
 var FieldOutput = &decode.FieldOutput{
 	Name: "text",
@@ -117,9 +118,9 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 		} else {
 			fmt.Fprintf(cw.Columns[6], "%s%s{}: ", indent, v.Name)
 		}
-		fmt.Fprintf(cw.Columns[6], "%s %s fields %d (%s)\n", v, v.Range.StringByteBits(addrBase), len(vv), decode.Bits(v.Range.Length()).StringByteBits(addrBase))
+		fmt.Fprintf(cw.Columns[6], "%s %s fields %d (%s)\n", v, v.Range.StringByteBits(addrBase), len(vv), decode.Bits(v.Range.Length()).StringByteBits(sizeBase))
 	case decode.Array:
-		fmt.Fprintf(cw.Columns[6], "%s%s[]: %s %s count %d (%s)\n", indent, v.Name, v, v.Range.StringByteBits(addrBase), len(vv), decode.Bits(v.Range.Length()).StringByteBits(addrBase))
+		fmt.Fprintf(cw.Columns[6], "%s%s[]: %s %s count %d (%s)\n", indent, v.Name, v, v.Range.StringByteBits(addrBase), len(vv), decode.Bits(v.Range.Length()).StringByteBits(sizeBase))
 	default:
 
 		fmt.Fprintf(cw.Columns[0], "%s%s\n", rootIndent, padFormatInt(startLineByte, addrBase, addrWidth))
@@ -217,7 +218,7 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 		} else {
 			fmt.Fprintf(cw.Columns[6], "%s%s: ", indent, v.Name)
 		}
-		fmt.Fprintf(cw.Columns[6], "%s %s (%s)\n", v, v.Range.StringByteBits(addrBase), decode.Bits(v.Range.Length()).StringByteBits(addrBase))
+		fmt.Fprintf(cw.Columns[6], "%s %s (%s)\n", v, v.Range.StringByteBits(addrBase), decode.Bits(v.Range.Length()).StringByteBits(sizeBase))
 	}
 
 	if v.Error != nil {
