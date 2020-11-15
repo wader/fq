@@ -219,34 +219,6 @@ func (v *Value) Errors() []error {
 }
 
 func (v *Value) postProcess() {
-
-	var valueRanges []ranges.Range
-	v.WalkPreOrder(func(iv *Value, depth int, rootDepth int) error {
-		if iv.BitBuf != v.BitBuf && iv.IsRoot {
-			return ErrWalkSkip
-		}
-		switch iv.V.(type) {
-		case Struct, Array:
-
-		default:
-			valueRanges = append(valueRanges, iv.Range)
-		}
-		return nil
-	})
-
-	gaps := ranges.Gaps(ranges.Range{Start: 0, Len: v.BitBuf.Len}, valueRanges)
-	for i, gap := range gaps {
-		vv := v.V.(Struct)
-
-		gapbb, _ := v.BitBuf.BitBufRange(gap.Start, gap.Len)
-		v.V = append(vv, &Value{
-			Name:   fmt.Sprintf("unknown%d", i),
-			Range:  gap,
-			V:      gapbb,
-			BitBuf: v.BitBuf,
-		})
-	}
-
 	v.WalkPostOrder(func(v *Value, depth int, rootDepth int) error {
 		switch vv := v.V.(type) {
 		case Struct:
@@ -343,12 +315,11 @@ func (v *Value) String() string {
 	default:
 		panic("unreachable")
 	}
-
 	s := ""
 	if v.Symbol != "" {
 		s = fmt.Sprintf("%s (%s)", v.Symbol, f)
 	} else {
-		s = fmt.Sprintf("%s", f)
+		s = f
 	}
 
 	desc := ""

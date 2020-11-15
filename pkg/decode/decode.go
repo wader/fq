@@ -96,11 +96,11 @@ func probe(name string, bb *bitbuf.Buffer, formats []*Format, opts probeOptions)
 				return ErrWalkSkip
 			}
 
+			maxRange = ranges.MinMax(maxRange, v.Range)
 			v.Range.Start += opts.relStart
 			if opts.relBitBuf != nil {
 				v.BitBuf = opts.relBitBuf
 			}
-			maxRange = ranges.MinMax(maxRange, v.Range)
 			return nil
 		})
 
@@ -108,6 +108,9 @@ func probe(name string, bb *bitbuf.Buffer, formats []*Format, opts probeOptions)
 
 		if opts.isRoot {
 			// sort and set ranges for struct and arrays
+
+			d.FillGaps("unknown")
+
 			d.Value.postProcess()
 		}
 
@@ -154,6 +157,29 @@ func (d *D) SafeDecodeFn(fn func(d *D) interface{}) (error, interface{}) {
 	}()
 
 	return decodeErr, dv
+}
+
+func (d *D) FillGaps(namePrefix string) {
+	// TODO: d.Value is array?
+	var valueRanges []ranges.Range
+	d.Value.WalkPreOrder(func(iv *Value, depth int, rootDepth int) error {
+		if iv.BitBuf != d.Value.BitBuf && iv.IsRoot {
+			return ErrWalkSkip
+		}
+		switch iv.V.(type) {
+		case Struct, Array:
+		default:
+			valueRanges = append(valueRanges, iv.Range)
+		}
+		return nil
+	})
+
+	gaps := ranges.Gaps(ranges.Range{Start: 0, Len: d.bitBuf.Len}, valueRanges)
+	for i, gap := range gaps {
+		d.FieldBitBufRange(
+			fmt.Sprintf("%s%d", namePrefix, i), gap.Start, gap.Len,
+		)
+	}
 }
 
 // Invalid stops decode with a reason
