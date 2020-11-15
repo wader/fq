@@ -10,6 +10,7 @@ import (
 )
 
 func TestRangeGaps(t *testing.T) {
+	// TODO: move to range.go thingy?
 	r := func(s string) decode.Range {
 		ps := strings.Split(s, ",")
 		start, _ := strconv.Atoi(ps[0])
