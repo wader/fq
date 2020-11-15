@@ -260,7 +260,7 @@ func (v *Value) postProcess() {
 		return nil
 	})
 
-	gaps := RangeGaps(v.BitBuf.Len, ranges)
+	gaps := RangeGaps(Range{Start: 0, Len: v.BitBuf.Len}, ranges)
 	for i, gap := range gaps {
 		vv := v.V.(Struct)
 

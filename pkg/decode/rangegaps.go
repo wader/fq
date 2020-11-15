@@ -4,9 +4,9 @@ import (
 	"sort"
 )
 
-func RangeGaps(totalLen int64, ranges []Range) []Range {
+func RangeGaps(total Range, ranges []Range) []Range {
 	if len(ranges) == 0 {
-		return []Range{{Start: 0, Len: totalLen}}
+		return []Range{total}
 	}
 
 	sort.Slice(ranges, func(i, j int) bool {
@@ -43,8 +43,8 @@ func RangeGaps(totalLen int64, ranges []Range) []Range {
 		merged = append(merged, m)
 	}
 
-	var gaps []Range
-	if merged[0].Start > 0 {
+	gaps := []Range{}
+	if merged[0].Start != total.Start {
 		gaps = append(gaps, Range{Start: 0, Len: merged[0].Start})
 	}
 	for i := 0; i < len(merged)-1; i++ {
@@ -53,8 +53,8 @@ func RangeGaps(totalLen int64, ranges []Range) []Range {
 		gaps = append(gaps, Range{Start: m.Start + m.Len, Len: n.Start - (m.Start + m.Len)})
 	}
 	l := merged[len(merged)-1]
-	if l.Start+l.Len != totalLen {
-		gaps = append(gaps, Range{Start: l.Start + l.Len, Len: totalLen - (l.Start + l.Len)})
+	if l.Start+l.Len != total.Start+total.Len {
+		gaps = append(gaps, Range{Start: l.Start + l.Len, Len: total.Start + total.Len - (l.Start + l.Len)})
 	}
 
 	return gaps
