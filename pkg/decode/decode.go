@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"compress/zlib"
 	"fmt"
+	"fq/internal/ranges"
 	"fq/pkg/bitbuf"
 	"io/ioutil"
 	"runtime"
@@ -89,7 +90,7 @@ func probe(name string, bb *bitbuf.Buffer, formats []*Format, opts probeOptions)
 			}
 		}
 
-		var maxPos int64
+		var maxRange ranges.Range
 		d.Value.WalkPreOrder(func(v *Value, depth int, rootDepth int) error {
 			if v.IsRoot {
 				return ErrWalkSkip
@@ -99,11 +100,11 @@ func probe(name string, bb *bitbuf.Buffer, formats []*Format, opts probeOptions)
 			if opts.relBitBuf != nil {
 				v.BitBuf = opts.relBitBuf
 			}
-			maxPos = max(v.Range.Start+v.Range.Len, maxPos)
+			maxRange = ranges.MinMax(maxRange, v.Range)
 			return nil
 		})
 
-		d.Value.Range = Range{Start: opts.relStart, Len: maxPos - opts.relStart}
+		d.Value.Range = ranges.Range{Start: opts.relStart, Len: maxRange.Len}
 
 		if opts.isRoot {
 			// sort and set ranges for struct and arrays
@@ -284,7 +285,7 @@ func (d *D) fieldDecoder(name string, bitBuf *bitbuf.Buffer, v interface{}) *D {
 		Value: &Value{
 			Name:   name,
 			V:      v,
-			Range:  Range{Start: d.bitBuf.Pos, Len: 0},
+			Range:  ranges.Range{Start: d.bitBuf.Pos, Len: 0},
 			BitBuf: d.bitBuf,
 		},
 		registry: d.registry,
@@ -339,7 +340,7 @@ func (d *D) FieldRangeFn(name string, firstBit int64, nBits int64, fn func() *Va
 	v := fn()
 	v.Name = name
 	v.BitBuf = d.bitBuf
-	v.Range = Range{Start: firstBit, Len: nBits}
+	v.Range = ranges.Range{Start: firstBit, Len: nBits}
 	d.AddChild(v)
 
 	return v
@@ -351,7 +352,7 @@ func (d *D) FieldFn(name string, fn func() *Value) *Value {
 	stop := d.bitBuf.Pos
 	v.Name = name
 	v.BitBuf = d.bitBuf
-	v.Range = Range{Start: start, Len: stop - start}
+	v.Range = ranges.Range{Start: start, Len: stop - start}
 	d.AddChild(v)
 
 	return v
@@ -538,7 +539,7 @@ func (d *D) FieldTryDecode(name string, formats []*Format) (*Value, interface{},
 	}
 
 	d.AddChild(v)
-	_, err = d.bitBuf.SeekRel(int64(v.Range.Length()))
+	_, err = d.bitBuf.SeekRel(int64(v.Range.Len))
 	if err != nil {
 		panic(err)
 	}

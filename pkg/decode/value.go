@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"fq/internal/ranges"
 	"fq/pkg/bitbuf"
 	"regexp"
 	"sort"
@@ -23,45 +24,20 @@ func (b Bits) StringBits(base int) string {
 	return strconv.FormatUint(uint64(b), base)
 }
 
-type Range struct {
-	Start int64
-	Len   int64
-}
+type BitRange ranges.Range
 
-func max(a, b int64) int64 {
-	if a < b {
-		return b
-	}
-	return a
-}
-
-func min(a, b int64) int64 {
-	if a > b {
-		return b
-	}
-	return a
-}
-
-func RangeMinMax(a, b Range) Range {
-	return Range{Start: min(a.Start, b.Start), Len: max(a.Len, b.Len)}
-}
-
-func (r Range) StringByteBits(base int) string {
+func (r BitRange) StringByteBits(base int) string {
 	if r.Len == 0 {
 		return fmt.Sprintf("%s-NA", Bits(r.Start).StringByteBits(base))
 	}
 	return fmt.Sprintf("%s-%s", Bits(r.Start).StringByteBits(base), Bits(r.Start+r.Len-1).StringByteBits(base))
 }
 
-func (r Range) StringBits(base int) string {
+func (r BitRange) StringBits(base int) string {
 	if r.Len == 0 {
 		return fmt.Sprintf("%s-NA", Bits(r.Start).StringBits(base))
 	}
 	return fmt.Sprintf("%s-%s", Bits(r.Start).StringBits(base), Bits(r.Start+r.Len-1).StringBits(base))
-}
-
-func (r Range) Length() int64 {
-	return r.Len
 }
 
 type DisplayFormat int
@@ -97,7 +73,7 @@ type Value struct {
 	Parent        *Value
 	V             interface{} // int64, uint64, float64, string, bool, []byte, Array, Struct
 	Index         int         // index in parent array/struct
-	Range         Range
+	Range         ranges.Range
 	BitBuf        *bitbuf.Buffer
 	IsRoot        bool
 	Name          string
@@ -243,10 +219,8 @@ func (v *Value) Errors() []error {
 }
 
 func (v *Value) postProcess() {
-	// TODO: find start/stop from Ranges instead? what if seekaround? concat bitbufs but want gaps? sort here, crash?
-	// TDOO: if bitbuf set?
 
-	var ranges []Range
+	var valueRanges []ranges.Range
 	v.WalkPreOrder(func(iv *Value, depth int, rootDepth int) error {
 		if iv.BitBuf != v.BitBuf && iv.IsRoot {
 			return ErrWalkSkip
@@ -255,12 +229,12 @@ func (v *Value) postProcess() {
 		case Struct, Array:
 
 		default:
-			ranges = append(ranges, iv.Range)
+			valueRanges = append(valueRanges, iv.Range)
 		}
 		return nil
 	})
 
-	gaps := RangeGaps(Range{Start: 0, Len: v.BitBuf.Len}, ranges)
+	gaps := ranges.Gaps(ranges.Range{Start: 0, Len: v.BitBuf.Len}, valueRanges)
 	for i, gap := range gaps {
 		vv := v.V.(Struct)
 
@@ -286,7 +260,7 @@ func (v *Value) postProcess() {
 					v.Range = f.Range
 					first = false
 				} else {
-					v.Range = RangeMinMax(v.Range, f.Range)
+					v.Range = ranges.MinMax(v.Range, f.Range)
 				}
 			}
 
@@ -308,7 +282,7 @@ func (v *Value) postProcess() {
 					v.Range = f.Range
 					first = false
 				} else {
-					v.Range = RangeMinMax(v.Range, f.Range)
+					v.Range = ranges.MinMax(v.Range, f.Range)
 				}
 			}
 

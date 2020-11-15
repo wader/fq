@@ -4,6 +4,7 @@ package png
 // https://ftp-osl.osuosl.org/pub/libpng/documents/pngext-1.5.0.html
 
 import (
+	"fq/internal/ranges"
 	"fq/pkg/decode"
 	"fq/pkg/format"
 )
@@ -91,7 +92,7 @@ func pngDecode(d *decode.D) interface{} {
 					}))
 				})
 				// TOD: depends on isRoot in postProcess
-				dd.Value.Range = decode.Range{Start: d.Pos() - dataLen, Len: dataLen}
+				dd.Value.Range = ranges.Range{Start: d.Pos() - dataLen, Len: dataLen}
 			default:
 				d.FieldBitBufLen("data", dataLen)
 			}
@@ -107,7 +108,7 @@ func pngDecode(d *decode.D) interface{} {
 				dd := d.FieldStructFn("data", func(d *decode.D) {
 					d.FieldDecodeZlibLen("uncompressed", dataLen, iccTag)
 				})
-				dd.Value.Range = decode.Range{Start: d.Pos() - dataLen, Len: dataLen}
+				dd.Value.Range = ranges.Range{Start: d.Pos() - dataLen, Len: dataLen}
 			default:
 				d.FieldBitBufLen("data", dataLen)
 			}

@@ -118,9 +118,9 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 		} else {
 			fmt.Fprintf(cw.Columns[6], "%s%s{}: ", indent, v.Name)
 		}
-		fmt.Fprintf(cw.Columns[6], "%s %s fields %d (%s)\n", v, v.Range.StringByteBits(addrBase), len(vv), decode.Bits(v.Range.Length()).StringByteBits(sizeBase))
+		fmt.Fprintf(cw.Columns[6], "%s %s fields %d (%s)\n", v, decode.BitRange(v.Range).StringByteBits(addrBase), len(vv), decode.Bits(v.Range.Len).StringByteBits(sizeBase))
 	case decode.Array:
-		fmt.Fprintf(cw.Columns[6], "%s%s[]: %s %s count %d (%s)\n", indent, v.Name, v, v.Range.StringByteBits(addrBase), len(vv), decode.Bits(v.Range.Length()).StringByteBits(sizeBase))
+		fmt.Fprintf(cw.Columns[6], "%s%s[]: %s %s count %d (%s)\n", indent, v.Name, v, decode.BitRange(v.Range).StringByteBits(addrBase), len(vv), decode.Bits(v.Range.Len).StringByteBits(sizeBase))
 	default:
 
 		fmt.Fprintf(cw.Columns[0], "%s%s\n", rootIndent, padFormatInt(startLineByte, addrBase, addrWidth))
@@ -218,7 +218,7 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 		} else {
 			fmt.Fprintf(cw.Columns[6], "%s%s: ", indent, v.Name)
 		}
-		fmt.Fprintf(cw.Columns[6], "%s %s (%s)\n", v, v.Range.StringByteBits(addrBase), decode.Bits(v.Range.Length()).StringByteBits(sizeBase))
+		fmt.Fprintf(cw.Columns[6], "%s %s (%s)\n", v, decode.BitRange(v.Range).StringByteBits(addrBase), decode.Bits(v.Range.Len).StringByteBits(sizeBase))
 	}
 
 	if v.Error != nil {
