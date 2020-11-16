@@ -234,7 +234,7 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 }
 
 func (o *FieldWriter) Write(w io.Writer) error {
-	maxAddrIndentWidth := 0
+	maxAddrIndentWidth := digitsInBase(bitsCeilBytes(o.v.BitBuf.Len), addrBase)
 	o.v.WalkPreOrder(func(v *decode.Value, depth int, rootDepth int) error {
 		// skip first root level
 		if rootDepth > 0 {
@@ -243,6 +243,7 @@ func (o *FieldWriter) Write(w io.Writer) error {
 
 		if v.IsRoot {
 			addrIndentWidth := rootDepth + digitsInBase(bitsCeilBytes(v.BitBuf.Len), addrBase)
+			log.Printf("addrIndentWidth: %#+v\n", addrIndentWidth)
 			if addrIndentWidth > maxAddrIndentWidth {
 				maxAddrIndentWidth = addrIndentWidth
 			}
