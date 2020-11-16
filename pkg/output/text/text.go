@@ -243,7 +243,6 @@ func (o *FieldWriter) Write(w io.Writer) error {
 
 		if v.IsRoot {
 			addrIndentWidth := rootDepth + digitsInBase(bitsCeilBytes(v.BitBuf.Len), addrBase)
-			log.Printf("addrIndentWidth: %#+v\n", addrIndentWidth)
 			if addrIndentWidth > maxAddrIndentWidth {
 				maxAddrIndentWidth = addrIndentWidth
 			}
