@@ -133,7 +133,7 @@ func frameDecode(d *decode.D) interface{} {
 	const headerLen = 4
 	dataLen := (144 * bitRate / sampleRate) + padding - headerLen
 
-	d.SubLenFn(int64(dataLen)*8, func() {
+	d.SubLenFn(int64(dataLen)*8, func(d *decode.D) {
 		var sideInfoLen int64
 		// [mono/stereo][mpeg version]
 		sideInfoIndex := map[bool][4]int64{

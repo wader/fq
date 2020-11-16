@@ -49,7 +49,7 @@ func mp3Decode(d *decode.D) interface{} {
 	}
 
 	validFrames := 0
-	d.SubLenFn(d.BitsLeft()-footerLen, func() {
+	d.SubLenFn(d.BitsLeft()-footerLen, func(d *decode.D) {
 		d.FieldArrayFn("frame", func(d *decode.D) {
 			for !d.End() {
 				if _, _, errs := d.FieldTryDecode("frame", mp3Frame); errs != nil {

@@ -370,7 +370,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 
 	// note frame function run inside a SubLenFn so they can use BitLefts and
 	// can't accidentally read too far
-	frames := map[string]func(){
+	frames := map[string]func(d *decode.D){
 		// <ID3v2.3 or ID3v2.4 frame header, ID: "CHAP">           (10 bytes)
 		// Element ID      <text string> $00
 		// Start time      $xx xx xx xx
@@ -378,7 +378,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Start offset    $xx xx xx xx
 		// End offset      $xx xx xx xx
 		// <Optional embedded sub-frames>
-		"CHAP": func() {
+		"CHAP": func(d *decode.D) {
 			fieldTextNull(d, "element_id", encodingUTF8)
 			d.FieldU32("start_time")
 			d.FieldU32("end_time")
@@ -386,7 +386,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			d.FieldU32("end_offset")
 			decodeFrames(d, version, uint64(d.BitsLeft()/8))
 		},
-		"CTOC": func() {
+		"CTOC": func(d *decode.D) {
 			fieldTextNull(d, "element_id", encodingUTF8)
 			d.FieldU8("ctoc_flags")
 			entryCount := d.FieldU8("entry_count")
@@ -403,7 +403,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Picture type       $xx
 		// Description        <text string according to encoding> $00 (00)
 		// Picture data       <binary data>
-		"APIC": func() {
+		"APIC": func(d *decode.D) {
 			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
 			fieldTextNull(d, "mime_type", encodingUTF8)
 			d.FieldU8("picture_type") // TODO: table
@@ -435,7 +435,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Language               $xx xx xx
 		// Short content descrip. <text string according to encoding> $00 (00)
 		// The actual text        <full text string according to encoding>
-		"COMM": func() {
+		"COMM": func(d *decode.D) {
 			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
 			d.FieldUTF8("language", 3)
 			fieldTextNull(d, "description", int(encoding))
@@ -451,7 +451,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// excluding "TXXX" described in 4.2.6.>
 		// Text encoding                $xx
 		// Information                  <text string(s) according to encoding>
-		"T000": func() {
+		"T000": func(d *decode.D) {
 			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
 			fieldText(d, "text", int(encoding), d.BitsLeft()/8)
 		},
@@ -465,7 +465,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Text encoding     $xx
 		// Description       <text string according to encoding> $00 (00)
 		// Value             <text string according to encoding>
-		"TXXX": func() {
+		"TXXX": func(d *decode.D) {
 			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
 			fieldTextNull(d, "description", int(encoding))
 			fieldText(d, "value", int(encoding), d.BitsLeft()/8)

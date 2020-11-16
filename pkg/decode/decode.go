@@ -512,8 +512,9 @@ func (d *D) ValidateAtLeastBytesLeft(nBytes int64) {
 }
 
 // TODO: rename?
-func (d *D) SubLenFn(nBits int64, fn func()) {
+func (d *D) SubLenFn(nBits int64, fn func(d *D)) {
 	prevBb := d.bitBuf
+	prevEndian := d.Endian
 
 	bb, err := d.bitBuf.BitBufRange(0, d.bitBuf.Pos+nBits)
 	if err != nil {
@@ -525,17 +526,19 @@ func (d *D) SubLenFn(nBits int64, fn func()) {
 	}
 	d.bitBuf = bb
 
-	fn()
+	fn(d)
 
 	bitsLeft := nBits - (d.bitBuf.Pos - prevBb.Pos)
 	d.SeekRel(int64(bitsLeft))
 
 	prevBb.Pos = d.bitBuf.Pos
 	d.bitBuf = prevBb
+	d.Endian = prevEndian
 }
 
-func (d *D) SubRangeFn(firstBit int64, nBits int64, fn func()) {
+func (d *D) SubRangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 	prevBb := d.bitBuf
+	prevEndian := d.Endian
 
 	bb, err := d.bitBuf.BitBufRange(0, firstBit+nBits)
 	if err != nil {
@@ -547,9 +550,10 @@ func (d *D) SubRangeFn(firstBit int64, nBits int64, fn func()) {
 	}
 	d.bitBuf = bb
 
-	fn()
+	fn(d)
 
 	d.bitBuf = prevBb
+	d.Endian = prevEndian
 }
 
 func (d *D) FieldTryDecode(name string, formats []*Format) (*Value, interface{}, []error) {

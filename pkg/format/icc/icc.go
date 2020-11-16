@@ -90,7 +90,7 @@ func iccDecode(d *decode.D) interface{} {
 					size := d.FieldU32("size")
 
 					if fn, ok := signatureToDecode[signature]; ok {
-						d.SubRangeFn(int64(offset)*8, int64(size)*8, func() { fn(d) })
+						d.SubRangeFn(int64(offset)*8, int64(size)*8, fn)
 					} else {
 						d.FieldBitBufRange("data", int64(offset)*8, int64(size)*8)
 					}

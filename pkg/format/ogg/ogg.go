@@ -97,7 +97,7 @@ func decodeOgg(d *decode.D) interface{} {
 	})
 
 	if validPages == 0 {
-		d.Invalid("no frames found")
+		d.Invalid("no pages found")
 	}
 
 	return nil

@@ -248,7 +248,7 @@ func jpegDecode(d *decode.D) interface{} {
 					default:
 						if markerFound {
 							markerLen := d.FieldU16("length")
-							d.SubLenFn(int64((markerLen-2)*8), func() {
+							d.SubLenFn(int64((markerLen-2)*8), func(d *decode.D) {
 								app1ExifPrefix := []byte("Exif\x00\x00")
 								extendedXMPPrefix := []byte("http://ns.adobe.com/xmp/extension/\x00")
 

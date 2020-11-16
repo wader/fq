@@ -96,12 +96,12 @@ var audioFormatName = map[uint64]string{
 func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 {
 	var chunkLen int64
 
-	chunks := map[string]func(){
-		"RIFF": func() {
+	chunks := map[string]func(d *decode.D){
+		"RIFF": func(d *decode.D) {
 			d.FieldUTF8("format", 4)
 			decodeChunks(d, false)
 		},
-		"fmt": func() {
+		"fmt": func(d *decode.D) {
 			d.FieldStringMapFn("audio_format", audioFormatName, "Unknown", d.U16LE)
 			d.FieldU16LE("num_channels")
 			d.FieldU32LE("sample_rate")
@@ -109,10 +109,10 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 {
 			d.FieldU16LE("block_align")
 			d.FieldU16LE("bits_per_sample")
 		},
-		"data": func() {
+		"data": func(d *decode.D) {
 			d.FieldBitBufLen("samples", d.BitsLeft())
 		},
-		"LIST": func() {
+		"LIST": func(d *decode.D) {
 			d.FieldUTF8("list_type", 4)
 			decodeChunks(d, true)
 		},
