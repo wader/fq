@@ -1,5 +1,10 @@
 
-RangeGaps: only range args
+
+text: off by one
+
+mp4: aac adts?
+
+DONE RangeGaps: only range args
 
 unknow does not handle nested bitbufs
 
