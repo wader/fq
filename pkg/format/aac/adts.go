@@ -1,5 +1,11 @@
 package aac
 
+// TODO:
+// create ASC decoder
+// https://github.com/mstorsjo/fdk-aac/blob/f285813ec15e7c6f8e4839c9eb4f6b0cd2da1990/libMpegTPEnc/src/tpenc_asc.cpp
+// https://www.iis.fraunhofer.de/content/dam/iis/de/doc/ame/wp/FraunhoferIIS_Application-Bulletin_AAC-Transport-Formats.pdf
+// https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/aac_adtstoasc_bsf.c
+
 import (
 	"fq/pkg/decode"
 	"fq/pkg/format"
@@ -61,7 +67,6 @@ func adtsDecoder(d *decode.D) interface{} {
 		d.FieldU16("crc")
 	}
 	d.FieldDecodeLen("frame", int64(dataLength)*8, aacFrame)
-	// d.FieldBytesLen("frame", dataLength)
 
 	return nil
 }

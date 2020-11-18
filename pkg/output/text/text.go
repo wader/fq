@@ -8,7 +8,6 @@ import (
 	"fq/internal/hexpairwriter"
 	"fq/pkg/decode"
 	"io"
-	"log"
 	"math"
 	"strconv"
 	"strings"
@@ -42,7 +41,7 @@ func padFormatInt(i int64, base int, width int) string {
 }
 
 func bitsCeilBytes(bits int64) int64 {
-	if bits&0xf != 0 {
+	if bits&0x7 != 0 {
 		return bits>>3 + 1
 	}
 	return bits >> 3
@@ -58,54 +57,34 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 		_, isInArray = v.Parent.V.(decode.Array)
 	}
 
-	indent := strings.Repeat("  ", depth)
 	rootIndent := strings.Repeat(" ", rootDepth)
+	indent := strings.Repeat("  ", depth)
 
-	absRange := v.Range
+	startBit := v.Range.Start
+	stopBit := v.Range.Stop() - 1
+	sizeBits := v.Range.Len
+	lastDisplayBit := stopBit
 
-	startBit := absRange.Start
-	stopBit := absRange.Start + absRange.Len - 1
+	if sizeBits > maxBytes*8 {
+		lastDisplayBit = startBit + (maxBytes*8 - 1)
+		if lastDisplayBit%(lineBytes*8) != 0 {
+			lastDisplayBit += (lineBytes * 8) - lastDisplayBit%(lineBytes*8) - 1
+		}
 
-	// if startBit != stopBit {
-	// 	stopBit--
-	// }
+		if lastDisplayBit > stopBit || stopBit-lastDisplayBit <= lineBytes*8 {
+			lastDisplayBit = stopBit
+		}
+	}
 
 	startByte := startBit / 8
 	stopByte := stopBit / 8
-	// if stopBit%8 != 0 {
-	// 	stopByte++
-	// }
-	sizeBytes := (stopByte - startByte) + 1
-
-	lastDisplayByte := stopByte
-	if sizeBytes > maxBytes {
-
-		if v.Name == "text" {
-			log.Println("bla")
-		}
-
-		// truncate but fill line
-		// TODO: redo with max etc?
-		lastDisplayByte = startByte + maxBytes
-		if lastDisplayByte%lineBytes != 0 {
-			lastDisplayByte += lineBytes - lastDisplayByte%lineBytes - 1
-		}
-
-		if lastDisplayByte > stopByte || stopByte-lastDisplayByte <= lineBytes {
-			lastDisplayByte = stopByte
-		}
-	}
-	displaySizeBytes := lastDisplayByte - startByte
-	if displaySizeBytes == 0 {
-		displaySizeBytes = 1
-	}
+	lastDisplayByte := lastDisplayBit / 8
+	displaySizeBytes := lastDisplayByte - startByte + 1
 
 	startLine := startByte / lineBytes
 	startLineByteOffset := startByte % lineBytes
 	startLineByte := startLine * lineBytes
 	lastDisplayLine := lastDisplayByte / lineBytes
-
-	addrLines := 1
 
 	fmt.Fprintf(cw.Columns[1], "|\n")
 	fmt.Fprintf(cw.Columns[3], "|\n")
@@ -122,36 +101,11 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 	case decode.Array:
 		fmt.Fprintf(cw.Columns[6], "%s%s[]: %s %s count %d (%s)\n", indent, v.Name, v, decode.BitRange(v.Range).StringByteBits(addrBase), len(vv), decode.Bits(v.Range.Len).StringByteBits(sizeBase))
 	default:
-
 		fmt.Fprintf(cw.Columns[0], "%s%s\n", rootIndent, padFormatInt(startLineByte, addrBase, addrWidth))
 
-		// log.Printf("startBit: %x\n", startBit)
-		// log.Printf("stopBit: %x\n", stopBit)
-
-		// log.Printf("addrLines: %x\n", addrLines)
-
 		color := false
-
-		//b := f.BitBuf()
-
-		//f.Value
-
-		//b := f.BitBuf()
-		// TODO: abs bitbuf
-		//b, _ := v.BitBuf.BitBufRange(startByte*8, displaySizeBytes*8)
-
 		vBitBuf, _ := v.BitBuf.BitBufRange(startByte*8, displaySizeBytes*8)
-
-		addrLines = int(lastDisplayLine - startLine)
-		if lastDisplayByte%lineBytes != 0 {
-			addrLines++
-		}
-
-		// log.Printf("truncatedStopLineByte: %#+v\n", truncatedStopLineByte)
-		// log.Printf("startLineByte: %#+v\n", startLineByte)
-		// log.Printf("truncatedStopLineByte - startLineByte: %#+v\n", truncatedStopLineByte-startLineByte)
-
-		// log.Printf("addrLines: %#+v\n", addrLines)
+		addrLines := lastDisplayLine - startLine + 1
 
 		charToANSI := func(c byte) string {
 			switch {
@@ -193,10 +147,7 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 				io.LimitReader(vBitBuf.Copy(), displaySizeBytes))
 		}
 
-		// fmt.Fprintf(cw.Columns[2], "%s", hexpairs(b, lineBytes, startLineByteOffset))
-		// fmt.Fprintf(cw.Columns[4], "%s", printable(b, startLineByteOffset))
-
-		for i := 1; i < addrLines; i++ {
+		for i := int64(1); i < addrLines; i++ {
 			fmt.Fprintf(cw.Columns[0], "%s%s\n", rootIndent, padFormatInt(startLineByte+int64(i)*lineBytes, addrBase, addrWidth))
 			fmt.Fprintf(cw.Columns[1], "|\n")
 			fmt.Fprintf(cw.Columns[3], "|\n")
