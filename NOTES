@@ -1,4 +1,7 @@
 
+FieldValidateString -> FieldValidateUTF8/Bytes?
+
+text: show parents when selectin deep down?
 
 DONE text: off by one
 
