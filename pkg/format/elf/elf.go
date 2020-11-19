@@ -52,7 +52,7 @@ func elfDecode(d *decode.D) interface{} {
 	var endian decode.Endian
 
 	d.FieldStructFn("ident", func(d *decode.D) {
-		d.FieldValidateString("magic", "\x7fELF")
+		d.FieldValidateUTF8("magic", "\x7fELF")
 
 		archBits = int64(d.FieldUFn("class", func() (uint64, decode.DisplayFormat, string) {
 			switch d.U8() {

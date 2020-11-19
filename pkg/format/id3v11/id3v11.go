@@ -14,7 +14,7 @@ func init() {
 
 func id3v1Decode(d *decode.D) interface{} {
 	d.ValidateAtLeastBitsLeft(128 * 8)
-	d.FieldValidateString("magic", "TAG+")
+	d.FieldValidateUTF8("magic", "TAG+")
 	d.FieldUTF8("title", 60)
 	d.FieldUTF8("artist", 60)
 	d.FieldUTF8("album", 60)

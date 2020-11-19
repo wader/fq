@@ -461,7 +461,7 @@ func (d *D) FieldValidateUFn(name string, v uint64, fn func() uint64) {
 	}
 }
 
-func (d *D) FieldValidateStringFn(name string, v string, fn func() string) {
+func (d *D) FieldValidateUTF8Fn(name string, v string, fn func() string) {
 	pos := d.bitBuf.Pos
 	s := d.FieldStrFn(name, func() (string, string) {
 		str := fn()
@@ -476,13 +476,13 @@ func (d *D) FieldValidateStringFn(name string, v string, fn func() string) {
 	}
 }
 
-func (d *D) FieldValidateString(name string, v string) {
+func (d *D) FieldValidateUTF8(name string, v string) {
 	pos := d.bitBuf.Pos
 	s := d.FieldStrFn(name, func() (string, string) {
 		nBytes := int64(len(v))
 		str, err := d.bitBuf.UTF8(nBytes)
 		if err != nil {
-			panic(ReadError{Err: err, Name: name, Op: "FieldValidateString", Size: nBytes * 8, Pos: d.bitBuf.Pos})
+			panic(ReadError{Err: err, Name: name, Op: "FieldValidateUTF8", Size: nBytes * 8, Pos: d.bitBuf.Pos})
 		}
 		s := "Correct"
 		if str != v {

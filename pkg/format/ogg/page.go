@@ -28,7 +28,7 @@ func oggDecode(d *decode.D) interface{} {
 	p := &page{}
 
 	// TODO: validate bits left
-	d.FieldValidateString("capture_pattern", "OggS")
+	d.FieldValidateUTF8("capture_pattern", "OggS")
 	d.FieldValidateUFn("stream_structure_version", 0, d.U8)
 	d.FieldU5("unused_flags")
 	p.IsLastPage = d.FieldBool("last_page")

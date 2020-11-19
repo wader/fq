@@ -19,7 +19,7 @@ func apev2Decode(d *decode.D) interface{} {
 	headerFooterFn := func(d *decode.D, name string) uint64 {
 		var tagCount uint64
 		d.FieldStructFn(name, func(d *decode.D) {
-			d.FieldValidateString("premble", "APETAGEX")
+			d.FieldValidateUTF8("premble", "APETAGEX")
 			d.FieldU32LE("version")
 			d.FieldU32LE("tag_size")
 			tagCount = d.FieldU32LE("item_count")

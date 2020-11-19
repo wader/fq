@@ -92,7 +92,7 @@ func utf8Uint(d *decode.D) uint64 {
 }
 
 func flacDecode(d *decode.D) interface{} {
-	d.FieldValidateString("magic", "fLaC")
+	d.FieldValidateUTF8("magic", "fLaC")
 
 	// is used in frame decoding later
 	var streamInfoSamepleRate uint64

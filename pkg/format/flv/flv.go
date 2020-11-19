@@ -141,7 +141,7 @@ func flvDecode(d *decode.D) interface{} {
 		})
 	}
 
-	d.FieldValidateString("signature", "FLV")
+	d.FieldValidateUTF8("signature", "FLV")
 	d.FieldU8("version")
 	d.FieldValidateUFn("type_flags_reserved", 0, d.U5)
 	d.FieldU1("type_flags_audio")
