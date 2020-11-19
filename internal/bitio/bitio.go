@@ -147,15 +147,14 @@ func (r *Reader) Read(p []byte) (n int, err error) {
 	// }
 
 	n, err = r.ReadBitsAt(p, len(p)*8, r.bitPos)
+	r.bitPos += int64(n)
 	if err != nil {
 		return int(BitsByteCount(int64(n))), err
 	}
 
 	//log.Printf("b.firstBitOffset+b.Pos=%d n=%d readBytes=%d readBits=%d bitsLeft=%d\n", b.firstBitOffset+b.Pos, n, readBytes, readBits, bitsLeft)
 
-	r.bitPos += int64(n * 8)
-
-	return n / 8, nil
+	return int(BitsByteCount(int64(n))), nil
 }
 
 func (r *Reader) Seek(offset int64, whence int) (int64, error) {
@@ -223,6 +222,7 @@ func (r *SectionBitReader) SeekBits(bitOff int64, whence int) (int64, error) {
 	if bitOff < r.bitBase {
 		return 0, errOffset
 	}
+	r.bitOff = bitOff
 	return bitOff - r.bitBase, nil
 }
 
@@ -245,15 +245,14 @@ func (r *SectionBitReader) Read(p []byte) (n int, err error) {
 	// }
 
 	n, err = r.ReadBitsAt(p, len(p)*8, r.bitOff-r.bitBase)
+	r.bitOff += int64(n)
 	if err != nil {
 		return int(BitsByteCount(int64(n))), err
 	}
 
 	//log.Printf("b.firstBitOffset+b.Pos=%d n=%d readBytes=%d readBits=%d bitsLeft=%d\n", b.firstBitOffset+b.Pos, n, readBytes, readBits, bitsLeft)
 
-	r.bitOff += int64(n)
-
-	return n / 8, nil
+	return int(BitsByteCount(int64(n))), nil
 }
 
 func (r *SectionBitReader) Seek(offset int64, whence int) (int64, error) {
