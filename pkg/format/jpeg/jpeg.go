@@ -186,7 +186,7 @@ func jpegDecode(d *decode.D) interface{} {
 			} else {
 				d.FieldStructFn("marker", func(d *decode.D) {
 					prefixLen := d.PeekFindByte(0xff, -1)
-					d.FieldBytesLen("prefix", prefixLen)
+					d.FieldBytesLen("prefix", int(prefixLen))
 					markerFound := false
 					markerCode := d.FieldUFn("code", func() (uint64, decode.DisplayFormat, string) {
 						n := uint(d.U8())
@@ -222,7 +222,7 @@ func jpegDecode(d *decode.D) interface{} {
 						})
 					case COM:
 						comLen := d.FieldU16("Lc")
-						d.FieldUTF8("Cm", int64(comLen)-2)
+						d.FieldUTF8("Cm", int(comLen)-2)
 					case SOS:
 						d.FieldU16("Ls")
 						ns := d.FieldU8("Ns")
@@ -258,12 +258,12 @@ func jpegDecode(d *decode.D) interface{} {
 									d.FieldDecodeLen("exif", d.BitsLeft(), tiffImage)
 								case markerCode == APP1 && d.TryHasBytes(extendedXMPPrefix):
 									d.FieldStructFn("extended_xmp_chunk", func(d *decode.D) {
-										d.FieldUTF8("signature", int64(len(extendedXMPPrefix)))
+										d.FieldUTF8("signature", int(len(extendedXMPPrefix)))
 										d.FieldUTF8("guid", 32)
 										fullLength := d.FieldU32("full_length")
 										offset := d.FieldU32("offset")
 										// TODO: FieldBitsLen? concat bitbuf?
-										chunk := d.FieldBytesLen("data", d.BitsLeft()/8)
+										chunk := d.FieldBytesLen("data", int(d.BitsLeft()/8))
 
 										if extendedXMP == nil {
 											extendedXMP = make([]byte, fullLength)
@@ -290,13 +290,9 @@ func jpegDecode(d *decode.D) interface{} {
 	}
 
 	if extendedXMP != nil {
-		bb, err := bitbuf.NewFromBytes(extendedXMP, 0)
-		if err != nil {
-			panic(err) // TODO: fixme
-		}
-
+		bb := bitbuf.NewFromBytes(extendedXMP, 0)
 		// TODO: bit pos, better bitbhuf api?
-		d.FieldBitBufFn("extended_xmp", 0, bb.Len, func() (*bitbuf.Buffer, string) {
+		d.FieldBitBufFn("extended_xmp", 0, bb.Len(), func() (*bitbuf.Buffer, string) {
 			return bb, ""
 		})
 	}

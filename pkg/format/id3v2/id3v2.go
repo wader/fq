@@ -269,7 +269,7 @@ func syncSafeU32(d *decode.D) uint64 {
 		((u & 0x0000007f) >> 0))
 }
 
-func text(d *decode.D, encoding int, nBytes int64) string {
+func text(d *decode.D, encoding int, nBytes int) string {
 	encodingFn := encodingToUTF8[encodingUTF8]
 	if fn, ok := encodingToUTF8[encoding]; ok {
 		encodingFn = fn
@@ -283,7 +283,7 @@ func textNull(d *decode.D, encoding int) string {
 		nullLen = n
 	}
 
-	textLen := d.PeekFind(int64(nullLen*8), 0, -1)/8 - int64(nullLen)
+	textLen := int(d.PeekFind(int(nullLen*8), 0, -1)/8 - int64(nullLen))
 	text := text(d, encoding, textLen)
 	// TODO: field?
 	d.SeekRel(int64(nullLen) * 8)
@@ -303,7 +303,7 @@ func fieldTextNull(d *decode.D, name string, encoding int) string {
 	})
 }
 
-func fieldText(d *decode.D, name string, encoding int, nBytes int64) string {
+func fieldText(d *decode.D, name string, encoding int, nBytes int) string {
 	return d.FieldStrFn(name, func() (string, string) {
 		return text(d, encoding, nBytes), ""
 	})
@@ -439,7 +439,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
 			d.FieldUTF8("language", 3)
 			fieldTextNull(d, "description", int(encoding))
-			fieldText(d, "value", int(encoding), d.BitsLeft()/8)
+			fieldText(d, "value", int(encoding), int(d.BitsLeft()/8))
 		},
 		// Text information identifier  "T00" - "TZZ" , excluding "TXX",
 		//                             described in 4.2.2.
@@ -453,7 +453,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Information                  <text string(s) according to encoding>
 		"T000": func(d *decode.D) {
 			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
-			fieldText(d, "text", int(encoding), d.BitsLeft()/8)
+			fieldText(d, "text", int(encoding), int(d.BitsLeft()/8))
 		},
 		// User defined...   "TXX"
 		// Frame size        $xx xx xx
@@ -468,7 +468,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		"TXXX": func(d *decode.D) {
 			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
 			fieldTextNull(d, "description", int(encoding))
-			fieldText(d, "value", int(encoding), d.BitsLeft()/8)
+			fieldText(d, "value", int(encoding), int(d.BitsLeft()/8))
 		},
 	}
 
@@ -508,7 +508,7 @@ func decodeFrames(d *decode.D, version int, size uint64) {
 	})
 
 	if size > 0 {
-		d.FieldValidateZeroPadding("padding", int64(size)*8)
+		d.FieldValidateZeroPadding("padding", int(size)*8)
 	}
 }
 

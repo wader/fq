@@ -48,13 +48,13 @@ func init() {
 func elfDecode(d *decode.D) interface{} {
 	d.ValidateAtLeastBitsLeft(128 * 8)
 
-	var archBits int64
+	var archBits int
 	var endian decode.Endian
 
 	d.FieldStructFn("ident", func(d *decode.D) {
 		d.FieldValidateUTF8("magic", "\x7fELF")
 
-		archBits = int64(d.FieldUFn("class", func() (uint64, decode.DisplayFormat, string) {
+		archBits = int(d.FieldUFn("class", func() (uint64, decode.DisplayFormat, string) {
 			switch d.U8() {
 			case 1:
 				return 32, decode.NumberDecimal, ""

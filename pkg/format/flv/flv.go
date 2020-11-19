@@ -67,13 +67,13 @@ func flvDecode(d *decode.D) interface{} {
 	fieldScriptDataString := func(d *decode.D, name string) {
 		d.FieldStrFn(name, func() (string, string) {
 			len := d.U16()
-			return d.UTF8(int64(len)), ""
+			return d.UTF8(int(len)), ""
 		})
 	}
 	fieldScriptDataStringLong := func(d *decode.D, name string) {
 		d.FieldStrFn(name, func() (string, string) {
 			len := d.U32()
-			return d.UTF8(int64(len)), ""
+			return d.UTF8(int(len)), ""
 		})
 	}
 

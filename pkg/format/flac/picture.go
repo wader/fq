@@ -20,7 +20,7 @@ func init() {
 func pictureDecode(d *decode.D) interface{} {
 	lenStr := func(name string) string {
 		len := d.FieldU32(name + "_length")
-		return d.FieldUTF8(name, int64(len))
+		return d.FieldUTF8(name, int(len))
 	}
 	d.FieldU32("picture_type")
 	lenStr("mime")

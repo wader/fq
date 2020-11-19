@@ -94,10 +94,7 @@ func (m Main) run() error {
 			return fmt.Errorf("%s: %s", *forceFormatNameFlag, err)
 		}
 	}
-	bb, err := bitbuf.NewFromReadSeeker(rs, 0)
-	if err != nil {
-		panic(err)
-	}
+	bb := bitbuf.NewFromReadSeeker(rs)
 	f, _, errs := decode.Probe(fs.Arg(0), bb, probeFormats)
 	if *verboseFlag {
 		for _, err := range errs {

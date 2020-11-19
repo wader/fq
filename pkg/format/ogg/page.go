@@ -39,7 +39,7 @@ func oggDecode(d *decode.D) interface{} {
 	p.SequenceNo = uint32(d.FieldU32LE("page_sequence_no"))
 	d.FieldU32("page_checksum")
 	pageSegments := d.FieldU8("page_segments")
-	segmentTable := d.FieldBytesLen("segment_table", int64(pageSegments))
+	segmentTable := d.FieldBytesLen("segment_table", int(pageSegments))
 
 	d.FieldArrayFn("segment", func(d *decode.D) {
 		for _, ss := range segmentTable {

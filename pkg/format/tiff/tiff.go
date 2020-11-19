@@ -852,7 +852,7 @@ func tiffDecode(d *decode.D) interface{} {
 							}
 						case typ == ASCII:
 							d.SubRangeFn(int64(valueByteOffset*8), int64(valueByteSize*8), func(d *decode.D) {
-								d.FieldUTF8("value", int64(valueByteSize))
+								d.FieldUTF8("value", int(valueByteSize))
 							})
 						case typ == BYTE:
 							d.FieldBitBufRange("value", int64(valueByteOffset*8), int64(valueByteSize*8))

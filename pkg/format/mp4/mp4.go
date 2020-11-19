@@ -137,7 +137,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			d.FieldUTF8("component_manufacturer", 4)
 			d.FieldU32("component_flags")
 			d.FieldU32("component_flags_mask")
-			d.FieldUTF8("component_name", int64(d.BitsLeft()/8))
+			d.FieldUTF8("component_name", int(d.BitsLeft()/8))
 		},
 
 		"minf": decodeAtoms,

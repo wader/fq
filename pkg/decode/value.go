@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"fq/internal/bitio"
 	"fq/internal/ranges"
 	"fq/pkg/bitbuf"
 	"regexp"
@@ -303,11 +304,11 @@ func (v *Value) String() string {
 			f = hex.EncodeToString(iv)
 		}
 	case *bitbuf.Buffer:
-		if iv.Len > 16*8 {
-			bs, _ := iv.BytesBitRange(0, 16*8, 0)
+		if iv.Len() > 16*8 {
+			bs, _ := iv.BytesRange(0, 16)
 			f = hex.EncodeToString(bs) + "..."
 		} else {
-			bs, _ := iv.BytesBitRange(0, iv.Len, 0)
+			bs, _ := iv.BytesRange(0, int(bitio.BitsByteCount(iv.Len()/8)))
 			f = hex.EncodeToString(bs)
 		}
 	case nil:
@@ -354,7 +355,8 @@ func (v *Value) RawString() string {
 	case []byte:
 		return string(iv)
 	case *bitbuf.Buffer:
-		bs, _ := v.BitBuf.BytesBitRange(0, 16*8, 0)
+		// TODO: RawString, switch to writer somehow?
+		bs, _ := v.BitBuf.BytesRange(0, int(bitio.BitsByteCount(v.BitBuf.Len()/8)))
 		return string(bs)
 	case nil:
 		return ""

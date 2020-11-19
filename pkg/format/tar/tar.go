@@ -27,17 +27,17 @@ func init() {
 }
 
 func tarDecode(d *decode.D) interface{} {
-	str := func(nBytes int64) string {
+	str := func(nBytes int) string {
 		s := d.UTF8(nBytes)
 		ts := strings.Trim(s, "\x00")
 		return ts
 	}
-	fieldStr := func(d *decode.D, name string, nBytes int64) string {
+	fieldStr := func(d *decode.D, name string, nBytes int) string {
 		return d.FieldStrFn(name, func() (string, string) {
 			return str(nBytes), ""
 		})
 	}
-	fieldNumStr := func(d *decode.D, name string, nBytes int64) uint64 {
+	fieldNumStr := func(d *decode.D, name string, nBytes int) uint64 {
 		return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
 			ts := strings.Trim(str(nBytes), "0 \x00")
 			if ts == "" {
@@ -54,7 +54,7 @@ func tarDecode(d *decode.D) interface{} {
 		const blockBits = 512 * 8
 		blockPadding := (blockBits - (d.Pos() % blockBits)) % blockBits
 		if blockPadding > 0 {
-			d.FieldValidateZeroPadding(name, blockPadding)
+			d.FieldValidateZeroPadding(name, int(blockPadding))
 		}
 	}
 

@@ -94,8 +94,6 @@ var audioFormatName = map[uint64]string{
 }
 
 func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 {
-	var chunkLen int64
-
 	chunks := map[string]func(d *decode.D){
 		"RIFF": func(d *decode.D) {
 			d.FieldUTF8("format", 4)
@@ -124,14 +122,14 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 {
 	if expectedChunkID != "" && trimChunkID != expectedChunkID {
 		d.Invalid(fmt.Sprintf("expected chunk id %q found %q", expectedChunkID, trimChunkID))
 	}
-	chunkLen = int64(d.FieldU32LE("chunk_size"))
+	chunkLen := int64(d.FieldU32LE("chunk_size"))
 
 	if fn, ok := chunks[trimChunkID]; ok {
 		d.SubLenFn(chunkLen*8, fn)
 	} else {
 		if stringData {
 			d.FieldStrFn("data", func() (string, string) {
-				return strings.Trim(d.UTF8(chunkLen), " \x00"), ""
+				return strings.Trim(d.UTF8(int(chunkLen)), " \x00"), ""
 			})
 		} else {
 			d.FieldBitBufLen("data", chunkLen*8)

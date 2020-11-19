@@ -36,9 +36,9 @@ func apev2Decode(d *decode.D) interface{} {
 				itemSize := d.FieldU32LE("item_size")
 				d.FieldU32LE("item_flags")
 				keyLen := d.PeekFindByte(0, -1) - 1
-				d.FieldUTF8("key", keyLen)
+				d.FieldUTF8("key", int(keyLen))
 				d.FieldU8("key_terminator")
-				d.FieldUTF8("value", int64(itemSize))
+				d.FieldUTF8("value", int(itemSize))
 			})
 		}
 	})

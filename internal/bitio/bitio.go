@@ -7,7 +7,7 @@ import (
 	"io"
 )
 
-func BitsByteCount(nBits int) int {
+func BitsByteCount(nBits int64) int64 {
 	n := nBits / 8
 	if nBits%8 != 0 {
 		n++
@@ -64,7 +64,7 @@ func (r *Reader) ReadBitsAt(p []byte, nBits int, bitOffset int64) (int, error) {
 	readBytePos := bitOffset / 8
 	readSkipBits := int(bitOffset % 8)
 	wantReadBits := readSkipBits + nBits
-	wantReadBytes := BitsByteCount(wantReadBits)
+	wantReadBytes := int(BitsByteCount(int64(wantReadBits)))
 
 	if wantReadBytes > len(r.buf) {
 		// TODO: use append somehow?
@@ -148,7 +148,7 @@ func (r *Reader) Read(p []byte) (n int, err error) {
 
 	n, err = r.ReadBitsAt(p, len(p)*8, r.bitPos)
 	if err != nil {
-		return BitsByteCount(n), err
+		return int(BitsByteCount(int64(n))), err
 	}
 
 	//log.Printf("b.firstBitOffset+b.Pos=%d n=%d readBytes=%d readBits=%d bitsLeft=%d\n", b.firstBitOffset+b.Pos, n, readBytes, readBits, bitsLeft)
@@ -246,7 +246,7 @@ func (r *SectionBitReader) Read(p []byte) (n int, err error) {
 
 	n, err = r.ReadBitsAt(p, len(p)*8, r.bitOff-r.bitBase)
 	if err != nil {
-		return BitsByteCount(n), err
+		return int(BitsByteCount(int64(n))), err
 	}
 
 	//log.Printf("b.firstBitOffset+b.Pos=%d n=%d readBytes=%d readBits=%d bitsLeft=%d\n", b.firstBitOffset+b.Pos, n, readBytes, readBits, bitsLeft)

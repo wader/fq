@@ -5,7 +5,7 @@ package decode
 // Integer readers
 
 // S read a nBits signed big-endian integer
-func (d *D) S(nBits int64) int64 { return d.SE(nBits, d.Endian) }
+func (d *D) S(nBits int) int64 { return d.SE(nBits, d.Endian) }
 
 // S1 read 1 bit signed big-endian integer
 func (d *D) S1() int64 { return d.SE(1, d.Endian) }
@@ -200,7 +200,7 @@ func (d *D) S63() int64 { return d.SE(63, d.Endian) }
 func (d *D) S64() int64 { return d.SE(64, d.Endian) }
 
 // FieldS read a nBits signed big-endian integer and add a field
-func (d *D) FieldS(name string, nBits int64) int64 { return d.FieldSE(name, nBits, d.Endian) }
+func (d *D) FieldS(name string, nBits int) int64 { return d.FieldSE(name, nBits, d.Endian) }
 
 // FieldS1 read 1 bit signed big-endian integer and add a field
 func (d *D) FieldS1(name string) int64 { return d.FieldSE(name, 1, d.Endian) }
@@ -395,7 +395,7 @@ func (d *D) FieldS63(name string) int64 { return d.FieldSE(name, 63, d.Endian) }
 func (d *D) FieldS64(name string) int64 { return d.FieldSE(name, 64, d.Endian) }
 
 // SBE read a nBits signed big-endian integer
-func (d *D) SBE(nBits int64) int64 { return d.SE(nBits, BigEndian) }
+func (d *D) SBE(nBits int) int64 { return d.SE(nBits, BigEndian) }
 
 // S8BE read 8 bit signed big-endian integer
 func (d *D) S8BE() int64 { return d.SE(8, BigEndian) }
@@ -569,7 +569,7 @@ func (d *D) S63BE() int64 { return d.SE(63, BigEndian) }
 func (d *D) S64BE() int64 { return d.SE(64, BigEndian) }
 
 // FieldSBE read a nBits signed big-endian integer and add a field
-func (d *D) FieldSBE(name string, nBits int64) int64 { return d.FieldSE(name, nBits, BigEndian) }
+func (d *D) FieldSBE(name string, nBits int) int64 { return d.FieldSE(name, nBits, BigEndian) }
 
 // FieldS8BE read 8 bit signed big-endian integer and add a field
 func (d *D) FieldS8BE(name string) int64 { return d.FieldSE(name, 8, BigEndian) }
@@ -743,7 +743,7 @@ func (d *D) FieldS63BE(name string) int64 { return d.FieldSE(name, 63, BigEndian
 func (d *D) FieldS64BE(name string) int64 { return d.FieldSE(name, 64, BigEndian) }
 
 // SLE read a nBits signed little-endian integer
-func (d *D) SLE(nBits int64) int64 { return d.SE(nBits, LittleEndian) }
+func (d *D) SLE(nBits int) int64 { return d.SE(nBits, LittleEndian) }
 
 // S8LE read 8 bit signed little-endian integer
 func (d *D) S8LE() int64 { return d.SE(8, LittleEndian) }
@@ -917,7 +917,7 @@ func (d *D) S63LE() int64 { return d.SE(63, LittleEndian) }
 func (d *D) S64LE() int64 { return d.SE(64, LittleEndian) }
 
 // FieldSLE read a nBits signed little-endian integer and add a field
-func (d *D) FieldSLE(name string, nBits int64) int64 { return d.FieldSE(name, nBits, LittleEndian) }
+func (d *D) FieldSLE(name string, nBits int) int64 { return d.FieldSE(name, nBits, LittleEndian) }
 
 // FieldS8LE read 8 bit signed little-endian integer and add a field
 func (d *D) FieldS8LE(name string) int64 { return d.FieldSE(name, 8, LittleEndian) }
@@ -1091,7 +1091,7 @@ func (d *D) FieldS63LE(name string) int64 { return d.FieldSE(name, 63, LittleEnd
 func (d *D) FieldS64LE(name string) int64 { return d.FieldSE(name, 64, LittleEndian) }
 
 // U read a nBits unsigned big-endian integer
-func (d *D) U(nBits int64) uint64 { return d.UE(nBits, d.Endian) }
+func (d *D) U(nBits int) uint64 { return d.UE(nBits, d.Endian) }
 
 // U1 read 1 bit unsigned big-endian integer
 func (d *D) U1() uint64 { return d.UE(1, d.Endian) }
@@ -1286,7 +1286,7 @@ func (d *D) U63() uint64 { return d.UE(63, d.Endian) }
 func (d *D) U64() uint64 { return d.UE(64, d.Endian) }
 
 // FieldU read a nBits unsigned big-endian integer and add a field
-func (d *D) FieldU(name string, nBits int64) uint64 { return d.FieldUE(name, nBits, d.Endian) }
+func (d *D) FieldU(name string, nBits int) uint64 { return d.FieldUE(name, nBits, d.Endian) }
 
 // FieldU1 read 1 bit unsigned big-endian integer and add a field
 func (d *D) FieldU1(name string) uint64 { return d.FieldUE(name, 1, d.Endian) }
@@ -1481,7 +1481,7 @@ func (d *D) FieldU63(name string) uint64 { return d.FieldUE(name, 63, d.Endian) 
 func (d *D) FieldU64(name string) uint64 { return d.FieldUE(name, 64, d.Endian) }
 
 // UBE read a nBits unsigned big-endian integer
-func (d *D) UBE(nBits int64) uint64 { return d.UE(nBits, BigEndian) }
+func (d *D) UBE(nBits int) uint64 { return d.UE(nBits, BigEndian) }
 
 // U8BE read 8 bit unsigned big-endian integer
 func (d *D) U8BE() uint64 { return d.UE(8, BigEndian) }
@@ -1655,7 +1655,7 @@ func (d *D) U63BE() uint64 { return d.UE(63, BigEndian) }
 func (d *D) U64BE() uint64 { return d.UE(64, BigEndian) }
 
 // FieldUBE read a nBits unsigned big-endian integer and add a field
-func (d *D) FieldUBE(name string, nBits int64) uint64 { return d.FieldUE(name, nBits, BigEndian) }
+func (d *D) FieldUBE(name string, nBits int) uint64 { return d.FieldUE(name, nBits, BigEndian) }
 
 // FieldU8BE read 8 bit unsigned big-endian integer and add a field
 func (d *D) FieldU8BE(name string) uint64 { return d.FieldUE(name, 8, BigEndian) }
@@ -1829,7 +1829,7 @@ func (d *D) FieldU63BE(name string) uint64 { return d.FieldUE(name, 63, BigEndia
 func (d *D) FieldU64BE(name string) uint64 { return d.FieldUE(name, 64, BigEndian) }
 
 // ULE read a nBits unsigned little-endian integer
-func (d *D) ULE(nBits int64) uint64 { return d.UE(nBits, LittleEndian) }
+func (d *D) ULE(nBits int) uint64 { return d.UE(nBits, LittleEndian) }
 
 // U8LE read 8 bit unsigned little-endian integer
 func (d *D) U8LE() uint64 { return d.UE(8, LittleEndian) }
@@ -2003,7 +2003,7 @@ func (d *D) U63LE() uint64 { return d.UE(63, LittleEndian) }
 func (d *D) U64LE() uint64 { return d.UE(64, LittleEndian) }
 
 // FieldULE read a nBits unsigned little-endian integer and add a field
-func (d *D) FieldULE(name string, nBits int64) uint64 { return d.FieldUE(name, nBits, LittleEndian) }
+func (d *D) FieldULE(name string, nBits int) uint64 { return d.FieldUE(name, nBits, LittleEndian) }
 
 // FieldU8LE read 8 bit unsigned little-endian integer and add a field
 func (d *D) FieldU8LE(name string) uint64 { return d.FieldUE(name, 8, LittleEndian) }

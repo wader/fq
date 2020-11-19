@@ -38,7 +38,7 @@ func pngDecode(d *decode.D) interface{} {
 
 	d.FieldValidateUTF8("signature", "\x89PNG\r\n\x1a\n")
 	d.FieldStructArrayLoopFn("chunk", func() bool { return d.NotEnd() && !iendFound }, func(d *decode.D) {
-		chunkLength := int64(d.FieldU32("length"))
+		chunkLength := int(d.FieldU32("length"))
 		chunkType := d.FieldStrFn("type", func() (string, string) {
 			chunkType := d.UTF8(4)
 			// upper/lower case in chunk type is used to set flags
@@ -71,13 +71,13 @@ func pngDecode(d *decode.D) interface{} {
 			}, "unknown", d.U8)
 		case "tEXt":
 			// TODO: latin1
-			keywordLen := d.PeekFindByte(0, 80)
+			keywordLen := int(d.PeekFindByte(0, 80))
 			d.FieldUTF8("keyword", keywordLen-1)
 			d.FieldUTF8("null", 1)
 			d.FieldUTF8("text", chunkLength-keywordLen)
 		case "zTXt":
 			// TODO: latin1
-			keywordLen := d.PeekFindByte(0, 80)
+			keywordLen := int(d.PeekFindByte(0, 80))
 			d.FieldUTF8("keyword", keywordLen-1)
 			d.FieldUTF8("null", 1)
 			compressionMethod, _ := d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8)
@@ -86,18 +86,18 @@ func pngDecode(d *decode.D) interface{} {
 			switch compressionMethod {
 			case compressionDeflate:
 				dd := d.FieldStructFn("data", func(d *decode.D) {
-					d.FieldDecodeZlibLen("uncompressed", dataLen, decode.FormatFn(func(d *decode.D) interface{} {
-						d.FieldUTF8("text", d.BitsLeft()/8)
+					d.FieldDecodeZlibLen("uncompressed", int64(dataLen), decode.FormatFn(func(d *decode.D) interface{} {
+						d.FieldUTF8("text", int(d.BitsLeft()/8))
 						return nil
 					}))
 				})
 				// TOD: depends on isRoot in postProcess
-				dd.Value.Range = ranges.Range{Start: d.Pos() - dataLen, Len: dataLen}
+				dd.Value.Range = ranges.Range{Start: d.Pos() - int64(dataLen), Len: int64(dataLen)}
 			default:
-				d.FieldBitBufLen("data", dataLen)
+				d.FieldBitBufLen("data", int64(dataLen))
 			}
 		case "iCCP":
-			profileNameLen := d.PeekFindByte(0, 80)
+			profileNameLen := int(d.PeekFindByte(0, 80))
 			d.FieldUTF8("profile_name", profileNameLen-1)
 			d.FieldUTF8("null", 1)
 			compressionMethod, _ := d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8)
@@ -106,16 +106,16 @@ func pngDecode(d *decode.D) interface{} {
 			switch compressionMethod {
 			case compressionDeflate:
 				dd := d.FieldStructFn("data", func(d *decode.D) {
-					d.FieldDecodeZlibLen("uncompressed", dataLen, iccTag)
+					d.FieldDecodeZlibLen("uncompressed", int64(dataLen), iccTag)
 				})
-				dd.Value.Range = ranges.Range{Start: d.Pos() - dataLen, Len: dataLen}
+				dd.Value.Range = ranges.Range{Start: d.Pos() - int64(dataLen), Len: int64(dataLen)}
 			default:
-				d.FieldBitBufLen("data", dataLen)
+				d.FieldBitBufLen("data", int64(dataLen))
 			}
 		case "eXIf":
-			d.FieldDecodeLen("exif", chunkLength*8, tiffFile)
+			d.FieldDecodeLen("exif", int64(chunkLength)*8, tiffFile)
 		default:
-			d.FieldBitBufLen("data", chunkLength*8)
+			d.FieldBitBufLen("data", int64(chunkLength)*8)
 			if chunkType == "IEND" {
 				iendFound = true
 			}

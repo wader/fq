@@ -16,7 +16,7 @@ func init() {
 	})
 }
 
-func field(d *decode.D, name string, nBytes int64) {
+func field(d *decode.D, name string, nBytes int) {
 	d.FieldStrFn(name, func() (string, string) {
 		return strings.Trim(d.UTF8(nBytes), "\x00 "), ""
 	})

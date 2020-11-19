@@ -192,7 +192,7 @@ func flacDecode(d *decode.D) interface{} {
 				// 0111 : get 16 bit (blocksize-1) from end of header
 				// 1000-1111 : 256 * (2^(n-8)) samples, i.e. 256/512/1024/2048/4096/8192/16384/32768
 				var blockSizeBits uint64
-				blockSize := d.FieldUFn("block_size", func() (uint64, decode.DisplayFormat, string) {
+				blockSize := int(d.FieldUFn("block_size", func() (uint64, decode.DisplayFormat, string) {
 					blockSizeBits = d.U4()
 					switch blockSizeBits {
 					case 0:
@@ -208,7 +208,7 @@ func flacDecode(d *decode.D) interface{} {
 					default:
 						return 256 * (1 << (blockSizeBits - 8)), decode.NumberDecimal, ""
 					}
-				})
+				}))
 
 				// <4> Sample rate:
 				// 0000 : get from STREAMINFO metadata block
@@ -331,7 +331,7 @@ func flacDecode(d *decode.D) interface{} {
 				// 101 : 20 bits per sample
 				// 110 : 24 bits per sample
 				// 111 : reserved
-				sampleSize := d.FieldUFn("sample_size", func() (uint64, decode.DisplayFormat, string) {
+				sampleSize := int(d.FieldUFn("sample_size", func() (uint64, decode.DisplayFormat, string) {
 					switch d.U3() {
 					case 0:
 						return streamInfoBitPerSample, decode.NumberDecimal, "streaminfo"
@@ -351,7 +351,7 @@ func flacDecode(d *decode.D) interface{} {
 						return 0, decode.NumberDecimal, "reserved"
 					}
 					panic("unreachable")
-				})
+				}))
 
 				// <1> Reserved:
 				// 0 : mandatory value
@@ -378,13 +378,13 @@ func flacDecode(d *decode.D) interface{} {
 					//   8/16 bit (blocksize-1)
 					switch blockSizeBits {
 					case 6:
-						blockSize = d.FieldUFn("block_size", func() (uint64, decode.DisplayFormat, string) {
+						blockSize = int(d.FieldUFn("block_size", func() (uint64, decode.DisplayFormat, string) {
 							return d.U8() + 1, decode.NumberDecimal, ""
-						})
+						}))
 					case 7:
-						blockSize = d.FieldUFn("block_size", func() (uint64, decode.DisplayFormat, string) {
+						blockSize = int(d.FieldUFn("block_size", func() (uint64, decode.DisplayFormat, string) {
 							return d.U16() + 1, decode.NumberDecimal, ""
-						})
+						}))
 					}
 
 					// if(sample rate bits == 11xx)
@@ -422,7 +422,7 @@ func flacDecode(d *decode.D) interface{} {
 							// 001xxx : if(xxx <= 4) SUBFRAME_FIXED, xxx=order ; else reserved
 							// 01xxxx : reserved
 							// 1xxxxx : SUBFRAME_LPC, xxxxx=order-1
-							var lpcOrder uint64
+							var lpcOrder int
 							subframeType := d.FieldUFn("subframe_type", func() (uint64, decode.DisplayFormat, string) {
 								u, fmt, disp := func() (uint64, decode.DisplayFormat, string) {
 									bits := d.U6()
@@ -432,11 +432,11 @@ func flacDecode(d *decode.D) interface{} {
 									case 1:
 										return SubframeVerbatim, decode.NumberDecimal, SubframeTypeNames[SubframeVerbatim]
 									case 8, 9, 10, 11, 12:
-										lpcOrder = bits & 0x7
+										lpcOrder = int(bits & 0x7)
 										return SubframeFixed, decode.NumberDecimal, SubframeTypeNames[SubframeFixed]
 									default:
 										if bits&0x20 > 0 {
-											lpcOrder = (bits & 0x1f) + 1
+											lpcOrder = int((bits & 0x1f) + 1)
 										} else {
 											return 0, decode.NumberDecimal, "reserved"
 										}
@@ -453,11 +453,11 @@ func flacDecode(d *decode.D) interface{} {
 							// 0 : no wasted bits-per-sample in source subblock, k=0
 							// 1 : k wasted bits-per-sample in source subblock, k-1 follows, unary coded; e.g. k=3 => 001 follows, k=7 => 0000001 follows.
 							wastedBitsFlag := d.FieldU1("wasted_bits_flag")
-							var wastedBitsK uint64
+							var wastedBitsK int
 							if wastedBitsFlag != 0 {
-								wastedBitsK = d.FieldUFn("wasted_bits_k", func() (uint64, decode.DisplayFormat, string) {
+								wastedBitsK = int(d.FieldUFn("wasted_bits_k", func() (uint64, decode.DisplayFormat, string) {
 									return uint64(d.Unary(0)) + 1, decode.NumberDecimal, ""
-								})
+								}))
 							}
 
 							subframeSampleSize := sampleSize - wastedBitsK
@@ -467,13 +467,13 @@ func flacDecode(d *decode.D) interface{} {
 								subframeSampleSize++
 							}
 							d.FieldUFn("subframe_sample_size", func() (uint64, decode.DisplayFormat, string) {
-								return subframeSampleSize, decode.NumberDecimal, ""
+								return uint64(subframeSampleSize), decode.NumberDecimal, ""
 							})
 
-							decodeWarmupSamples := func(n uint64, sampleSize uint64) {
+							decodeWarmupSamples := func(n int, sampleSize int) {
 								d.FieldArrayFn("warmup_samples", func(d *decode.D) {
-									for i := uint64(0); i < n; i++ {
-										d.FieldS("value", int64(sampleSize))
+									for i := 0; i < n; i++ {
+										d.FieldS("value", sampleSize)
 									}
 								})
 							}
@@ -483,8 +483,8 @@ func flacDecode(d *decode.D) interface{} {
 								// 00 : partitioned Rice coding with 4-bit Rice parameter; RESIDUAL_CODING_METHOD_PARTITIONED_RICE follows
 								// 01 : partitioned Rice coding with 5-bit Rice parameter; RESIDUAL_CODING_METHOD_PARTITIONED_RICE2 follows
 								// 10-11 : reserved
-								var riceEscape uint64
-								riceBits := d.FieldUFn("residual_coding_method", func() (uint64, decode.DisplayFormat, string) {
+								var riceEscape int
+								riceBits := int(d.FieldUFn("residual_coding_method", func() (uint64, decode.DisplayFormat, string) {
 									switch d.U2() {
 									case 0:
 										riceEscape = 15
@@ -495,18 +495,18 @@ func flacDecode(d *decode.D) interface{} {
 									default:
 										return 0, decode.NumberDecimal, "reserved"
 									}
-								})
+								}))
 
 								// <4> Partition order.
-								partitionOrder := d.FieldU4("partition_order")
+								partitionOrder := int(d.FieldU4("partition_order"))
 								// There will be 2^order partitions.
-								ricePartitions := uint64(1 << partitionOrder)
+								ricePartitions := 1 << partitionOrder
 								d.FieldUFn("rice_partitions", func() (uint64, decode.DisplayFormat, string) {
-									return ricePartitions, decode.NumberDecimal, ""
+									return uint64(ricePartitions), decode.NumberDecimal, ""
 								})
 
 								d.FieldArrayFn("partition", func(d *decode.D) {
-									for i := uint64(0); i < ricePartitions; i++ {
+									for i := 0; i < ricePartitions; i++ {
 										d.FieldStructFn("partition", func(d *decode.D) {
 											// Encoding parameter:
 											// <4(+5)> Encoding parameter:
@@ -520,7 +520,7 @@ func flacDecode(d *decode.D) interface{} {
 											// if the partition order is zero, n = frame's blocksize - predictor order
 											// else if this is not the first partition of the subframe, n = (frame's blocksize / (2^partition order))
 											// else n = (frame's blocksize / (2^partition order)) - predictor order
-											var count uint64
+											var count int
 											if partitionOrder == 0 {
 												count = blockSize - lpcOrder
 											} else if i != 0 {
@@ -529,16 +529,16 @@ func flacDecode(d *decode.D) interface{} {
 												count = (blockSize / ricePartitions) - lpcOrder
 											}
 
-											riceParameter := d.FieldU("rice_parameter", int64(riceBits))
+											riceParameter := int(d.FieldU("rice_parameter", riceBits))
 											if riceParameter == riceEscape {
-												escapeSampleSize := d.FieldU5("escape_sample_size")
+												escapeSampleSize := int(d.FieldU5("escape_sample_size"))
 												d.FieldBitBufLen("samples", int64(count*escapeSampleSize*8))
 											} else {
 												samplesStart := d.Pos()
-												for j := uint64(0); j < count; j++ {
+												for j := 0; j < count; j++ {
 													high := d.Unary(0)
 													_ = high
-													low := d.U(int64(riceParameter))
+													low := d.U(riceParameter)
 													_ = low
 													// r = zigzag(high<<riceParameter | $low)
 												}
@@ -553,7 +553,7 @@ func flacDecode(d *decode.D) interface{} {
 							switch subframeType {
 							case SubframeConstant:
 								// <n> Unencoded constant value of the subblock, n = frame's bits-per-sample.
-								d.FieldS("value", int64(subframeSampleSize))
+								d.FieldS("value", subframeSampleSize)
 							case SubframeVerbatim:
 								// <n> Unencoded warm-up samples (n = frame's bits-per-sample * predictor order).
 								d.FieldBitBufLen("samples", int64(blockSize*subframeSampleSize*8))
@@ -566,15 +566,15 @@ func flacDecode(d *decode.D) interface{} {
 								// <n> Unencoded warm-up samples (n = frame's bits-per-sample * lpc order).
 								decodeWarmupSamples(lpcOrder, subframeSampleSize)
 								// <4> (Quantized linear predictor coefficients' precision in bits)-1 (1111 = invalid).
-								precision := d.FieldUFn("precision", func() (uint64, decode.DisplayFormat, string) {
+								precision := int(d.FieldUFn("precision", func() (uint64, decode.DisplayFormat, string) {
 									return d.U4() + 1, decode.NumberDecimal, ""
-								})
+								}))
 								// <5> Quantized linear predictor coefficient shift needed in bits (NOTE: this number is signed two's-complement).
 								d.FieldS5("shift")
 								// <n> Unencoded predictor coefficients (n = qlp coeff precision * lpc order) (NOTE: the coefficients are signed two's-complement).
 								d.FieldArrayFn("coefficients", func(d *decode.D) {
-									for i := uint64(0); i < lpcOrder; i++ {
-										d.FieldS("value", int64(precision))
+									for i := 0; i < lpcOrder; i++ {
+										d.FieldS("value", precision)
 									}
 								})
 								// Encoded residual

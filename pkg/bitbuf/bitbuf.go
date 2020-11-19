@@ -65,6 +65,13 @@ func (b *Buffer) BitBufRange(firstBitOffset int64, nBits int64) *Buffer {
 	}
 }
 
+// TODO: can be smarter?
+func (b *Buffer) Copy() *Buffer {
+	return &Buffer{
+		br: bitio.NewSectionBitReader(b.br, 0, b.Pos()),
+	}
+}
+
 func (b *Buffer) Pos() int64 {
 	pos, err := b.br.SeekBits(0, io.SeekCurrent)
 	if err != nil {
@@ -135,7 +142,7 @@ func (b *Buffer) PeekBytes(nBytes int) ([]byte, error) {
 	return bs, nil
 }
 
-func (b *Buffer) PeekFind(nBits int64, v uint8, maxLen int64) (int64, error) {
+func (b *Buffer) PeekFind(nBits int, v uint8, maxLen int64) (int64, error) {
 	var count int64
 	for {
 		bv, err := b.U(nBits)
@@ -152,7 +159,7 @@ func (b *Buffer) PeekFind(nBits int64, v uint8, maxLen int64) (int64, error) {
 		return 0, err
 	}
 
-	return count * nBits, nil
+	return count * int64(nBits), nil
 }
 
 func (b *Buffer) ReadBits(buf []byte, bitOffset int64, nBits int) error {
@@ -191,8 +198,8 @@ func (b *Buffer) BitsLeft() int64 {
 }
 
 // ByteAlignBits number of bits to next byte align
-func (b *Buffer) ByteAlignBits() int64 {
-	return (8 - (b.Pos() & 0x7)) & 0x7
+func (b *Buffer) ByteAlignBits() int {
+	return int((8 - (b.Pos() & 0x7)) & 0x7)
 }
 
 // BytePos byte position of current bit position
@@ -233,18 +240,6 @@ func (b *Buffer) BitString() string {
 	}
 
 	return strings.Join(ss, "")
-}
-
-// TruncateRel length of buffer to current position plus n
-func (b *Buffer) TruncateRel(nBits int64) error {
-	endPos := b.Pos + nBits
-	if endPos > b.Len {
-		return io.ErrUnexpectedEOF
-	}
-
-	b.Len = endPos
-
-	return nil
 }
 
 // UE reads a nBits bits unsigned integer with byte order endian
@@ -385,7 +380,7 @@ func (b *Buffer) S24LE() (int64, error)        { return b.SE(24, LittleEndian) }
 func (b *Buffer) S32LE() (int64, error)        { return b.SE(32, LittleEndian) }
 func (b *Buffer) S64LE() (int64, error)        { return b.SE(64, LittleEndian) }
 
-func (b *Buffer) FE(nBits int64, endian Endian) (float64, error) {
+func (b *Buffer) FE(nBits int, endian Endian) (float64, error) {
 	n, err := b.Bits(nBits)
 	if err != nil {
 		return 0, err
@@ -415,7 +410,7 @@ func (b *Buffer) F64LE() (float64, error)             { return b.F64E(LittleEndi
 
 // TODO: FP64,unsigned/BE/LE? rename SFP32?
 
-func (b *Buffer) FPE(nBits int64, dBits int64, endian Endian) (float64, error) {
+func (b *Buffer) FPE(nBits int, dBits int64, endian Endian) (float64, error) {
 	n, err := b.Bits(nBits)
 	if err != nil {
 		return 0, err

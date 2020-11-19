@@ -104,7 +104,7 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 		fmt.Fprintf(cw.Columns[0], "%s%s\n", rootIndent, padFormatInt(startLineByte, addrBase, addrWidth))
 
 		color := false
-		vBitBuf, _ := v.BitBuf.BitBufRange(startByte*8, displaySizeBytes*8)
+		vBitBuf := v.BitBuf.BitBufRange(startByte*8, displaySizeBytes*8)
 		addrLines := lastDisplayLine - startLine + 1
 
 		charToANSI := func(c byte) string {
@@ -185,7 +185,7 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 }
 
 func (o *FieldWriter) Write(w io.Writer) error {
-	maxAddrIndentWidth := digitsInBase(bitsCeilBytes(o.v.BitBuf.Len), addrBase)
+	maxAddrIndentWidth := digitsInBase(bitsCeilBytes(o.v.BitBuf.Len()), addrBase)
 	o.v.WalkPreOrder(func(v *decode.Value, depth int, rootDepth int) error {
 		// skip first root level
 		if rootDepth > 0 {
@@ -193,7 +193,7 @@ func (o *FieldWriter) Write(w io.Writer) error {
 		}
 
 		if v.IsRoot {
-			addrIndentWidth := rootDepth + digitsInBase(bitsCeilBytes(v.BitBuf.Len), addrBase)
+			addrIndentWidth := rootDepth + digitsInBase(bitsCeilBytes(v.BitBuf.Len()), addrBase)
 			if addrIndentWidth > maxAddrIndentWidth {
 				maxAddrIndentWidth = addrIndentWidth
 			}

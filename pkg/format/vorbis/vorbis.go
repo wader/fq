@@ -90,7 +90,7 @@ func vorbisDecode(d *decode.D) interface{} {
 		d.FieldValidateUFn("framing_flag", 1, d.U1)
 
 		if d.BitsLeft() > 0 {
-			d.FieldValidateZeroPadding("padding1", d.BitsLeft())
+			d.FieldValidateZeroPadding("padding1", int(d.BitsLeft()))
 		}
 	case packetTypeSetup:
 		d.FieldUFn("vorbis_codebook_count", func() (uint64, decode.DisplayFormat, string) {
@@ -128,7 +128,7 @@ func vorbisDecode(d *decode.D) interface{} {
 		d.FieldValidateUFn("frame_bit", 1, d.U1)
 
 		if d.BitsLeft() > 0 {
-			d.FieldValidateZeroPadding("padding1", d.BitsLeft())
+			d.FieldValidateZeroPadding("padding1", int(d.BitsLeft()))
 		}
 	}
 
