@@ -79,7 +79,7 @@ func (r *Reader) Seek(offset int64, whence int) (int64, error) {
 		return absOff, nil
 	}
 
-	absOff, err = r.rs.Seek(offset, io.SeekStart)
+	_, err = r.rs.Seek(absOff, io.SeekStart)
 	if err != nil {
 		return 0, err
 	}

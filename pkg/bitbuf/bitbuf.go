@@ -68,7 +68,7 @@ func (b *Buffer) BitBufRange(firstBitOffset int64, nBits int64) *Buffer {
 // TODO: can be smarter?
 func (b *Buffer) Copy() *Buffer {
 	return &Buffer{
-		br: bitio.NewSectionBitReader(b.br, 0, b.Pos()),
+		br: bitio.NewSectionBitReader(b.br, 0, b.Len()),
 	}
 }
 
@@ -183,7 +183,7 @@ func (b *Buffer) BytesRange(bitOffset int64, nBytes int) ([]byte, error) {
 // BytesLen reads nBytes bytes
 func (b *Buffer) BytesLen(nBytes int) ([]byte, error) {
 	buf := make([]byte, nBytes)
-	_, err := io.ReadFull(b.BitBufRange(b.Pos(), int64(nBytes)*8), buf)
+	_, err := io.ReadAtLeast(b, buf, nBytes)
 	return buf, err
 }
 

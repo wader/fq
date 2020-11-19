@@ -251,7 +251,7 @@ func (r *SectionBitReader) Read(p []byte) (n int, err error) {
 
 	//log.Printf("b.firstBitOffset+b.Pos=%d n=%d readBytes=%d readBits=%d bitsLeft=%d\n", b.firstBitOffset+b.Pos, n, readBytes, readBits, bitsLeft)
 
-	r.bitOff += int64(n) * 8
+	r.bitOff += int64(n)
 
 	return n / 8, nil
 }
