@@ -3,7 +3,7 @@ encofing format? endian some name?
 
 text: when color fill with all bytes but dark?
 
-FieldValidateString -> FieldValidateUTF8/Bytes?
+DONE FieldValidateString -> FieldValidateUTF8/Bytes?
 
 text: show parents when selectin deep down?
 
@@ -21,7 +21,7 @@ warnings list, show only mode? unknown section marked with warning?
 
 mulitple file args, make array?
 
-indent address for ntested bifbufs in text viewer?
+DONE indent address for ntested bifbufs in text viewer?
 
 DONE add field name to panics?
 
@@ -32,7 +32,7 @@ DONE register in reverese order? override? ogg demuxer should deocde using "ogg_
 
 array in array
 
-float/fp endian? default?
+DONE float/fp endian? default?
 
 DONE go generate -x ./...
 
