@@ -1,4 +1,8 @@
 
+encofing format? endian some name?
+
+text: when color fill with all bytes but dark?
+
 FieldValidateString -> FieldValidateUTF8/Bytes?
 
 text: show parents when selectin deep down?
