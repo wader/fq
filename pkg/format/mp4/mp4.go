@@ -53,6 +53,8 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			})
 		},
 		"moov": decodeAtoms,
+		"moof": decodeAtoms,
+		"traf": decodeAtoms,
 		"mvhd": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldUTF8("flags", 3)
