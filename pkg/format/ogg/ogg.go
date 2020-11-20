@@ -3,7 +3,7 @@ package ogg
 // https://xiph.org/ogg/doc/framing.html
 
 import (
-	"fq/pkg/bitbuf"
+	"fq/internal/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/format"
 	"log"
@@ -74,11 +74,15 @@ func decodeOgg(d *decode.D) interface{} {
 				if s.packetBuf == nil {
 					s.firstBit = d.Pos()
 				}
+
+				// TODO: decoder buffer api that panics?
+				psLen, _ := ps.Len()
+
 				// TODO: cleanup
-				b, _ := ps.BytesRange(0, int(ps.Len()/8))
+				b, _ := ps.BytesRange(0, int(psLen/8))
 				s.packetBuf = append(s.packetBuf, b...)
-				if ps.Len()/8 < 255 { // TODO: list range maps of demuxed packets?
-					bb := bitbuf.NewFromBytes(s.packetBuf, -1)
+				if psLen/8 < 255 { // TODO: list range maps of demuxed packets?
+					bb := bitio.NewBufferFromBytes(s.packetBuf, -1)
 					packets.FieldDecodeBitBuf("packet", bb, oggPacket)
 					s.packetBuf = nil
 				}

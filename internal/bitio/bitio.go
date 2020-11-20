@@ -39,7 +39,7 @@ type Reader struct {
 	buf    []byte
 }
 
-func NewFromReadSeeker(rs io.ReadSeeker) *Reader {
+func NewReaderFromReadSeeker(rs io.ReadSeeker) *Reader {
 	// len, err := rs.Seek(0, io.SeekEnd)
 	// if err != nil {
 	// 	return nil, err

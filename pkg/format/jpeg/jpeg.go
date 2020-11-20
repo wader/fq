@@ -5,7 +5,7 @@ package jpeg
 
 import (
 	"fmt"
-	"fq/pkg/bitbuf"
+	"fq/internal/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/format"
 )
@@ -290,9 +290,9 @@ func jpegDecode(d *decode.D) interface{} {
 	}
 
 	if extendedXMP != nil {
-		bb := bitbuf.NewFromBytes(extendedXMP, -1)
+		bb := bitio.NewBufferFromBytes(extendedXMP, -1)
 		// TODO: bit pos, better bitbhuf api?
-		d.FieldBitBufFn("extended_xmp", 0, bb.Len(), func() (*bitbuf.Buffer, string) {
+		d.FieldBitBufFn("extended_xmp", 0, int64(len(extendedXMP))*8, func() (*bitio.Buffer, string) {
 			return bb, ""
 		})
 	}

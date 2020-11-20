@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"compress/zlib"
 	"fmt"
+	"fq/internal/bitio"
 	"fq/internal/ranges"
-	"fq/pkg/bitbuf"
 	"io/ioutil"
 	"runtime"
 )
@@ -49,32 +49,35 @@ func (e ValidateError) Error() string {
 	return fmt.Sprintf("failed to validate at position %s: %s", Bits(e.Pos).StringByteBits(10), e.Reason)
 }
 
-type Endian bitbuf.Endian
+type Endian bitio.Endian
 
 var (
 	// BigEndian byte order
-	BigEndian Endian = Endian(bitbuf.BigEndian)
+	BigEndian Endian = Endian(bitio.BigEndian)
 	// LittleEndian byte order
-	LittleEndian Endian = Endian(bitbuf.LittleEndian)
+	LittleEndian Endian = Endian(bitio.LittleEndian)
 )
 
 type probeOptions struct {
 	isRoot    bool
-	relBitBuf *bitbuf.Buffer
+	relBitBuf *bitio.Buffer
 	relStart  int64
 }
 
 // Probe probes all probeable formats and turns first found Decoder and all other decoder errors
-func Probe(name string, bb *bitbuf.Buffer, formats []*Format) (*Value, interface{}, []error) {
+func Probe(name string, bb *bitio.Buffer, formats []*Format) (*Value, interface{}, []error) {
 	return probe(name, bb, formats, probeOptions{isRoot: true})
 }
 
-func probe(name string, bb *bitbuf.Buffer, formats []*Format, opts probeOptions) (*Value, interface{}, []error) {
+func probe(name string, bb *bitio.Buffer, formats []*Format, opts probeOptions) (*Value, interface{}, []error) {
 	var forceOne = len(formats) == 1
 
 	var errs []error
 	for _, f := range formats {
-		cbb := bb.Copy()
+		cbb, err := bb.Copy()
+		if err != nil {
+			return nil, nil, []error{err}
+		}
 
 		d := (&D{Endian: BigEndian, bitBuf: cbb}).FieldStructBitBuf(name, cbb)
 		d.Value.Desc = f.Name
@@ -124,7 +127,7 @@ type D struct {
 	Endian Endian
 	Value  *Value
 
-	bitBuf   *bitbuf.Buffer
+	bitBuf   *bitio.Buffer
 	registry *Registry
 }
 
@@ -174,7 +177,7 @@ func (d *D) FillGaps(namePrefix string) {
 		return nil
 	})
 
-	gaps := ranges.Gaps(ranges.Range{Start: 0, Len: d.bitBuf.Len()}, valueRanges)
+	gaps := ranges.Gaps(ranges.Range{Start: 0, Len: d.Len()}, valueRanges)
 	for i, gap := range gaps {
 		d.FieldBitBufRange(
 			fmt.Sprintf("%s%d", namePrefix, i), gap.Start, gap.Len,
@@ -184,13 +187,13 @@ func (d *D) FillGaps(namePrefix string) {
 
 // Invalid stops decode with a reason
 func (d *D) Invalid(reason string) {
-	panic(ValidateError{Reason: reason, Pos: d.bitBuf.Pos()})
+	panic(ValidateError{Reason: reason, Pos: d.Pos()})
 }
 
 func (d *D) PeekBits(nBits int) uint64 {
 	n, err := d.bitBuf.PeekBits(nBits)
 	if err != nil {
-		panic(ReadError{Err: err, Op: "PeekBits", Size: int64(nBits), Pos: d.bitBuf.Pos()})
+		panic(ReadError{Err: err, Op: "PeekBits", Size: int64(nBits), Pos: d.Pos()})
 	}
 	return n
 }
@@ -198,7 +201,7 @@ func (d *D) PeekBits(nBits int) uint64 {
 func (d *D) PeekBytes(nBytes int) []byte {
 	bs, err := d.bitBuf.PeekBytes(nBytes)
 	if err != nil {
-		panic(ReadError{Err: err, Op: "PeekBytes", Size: int64(nBytes) * 8, Pos: d.bitBuf.Pos()})
+		panic(ReadError{Err: err, Op: "PeekBytes", Size: int64(nBytes) * 8, Pos: d.Pos()})
 	}
 	return bs
 }
@@ -206,7 +209,7 @@ func (d *D) PeekBytes(nBytes int) []byte {
 func (d *D) PeekFind(nBits int, v uint8, maxLen int64) int64 {
 	peekBits, err := d.bitBuf.PeekFind(nBits, v, maxLen)
 	if err != nil {
-		panic(ReadError{Err: err, Op: "PeekFind", Size: 0, Pos: d.bitBuf.Pos()})
+		panic(ReadError{Err: err, Op: "PeekFind", Size: 0, Pos: d.Pos()})
 	}
 	return peekBits
 }
@@ -224,7 +227,7 @@ func (d *D) TryHasBytes(hb []byte) bool {
 func (d *D) PeekFindByte(v uint8, maxLen int64) int64 {
 	peekBits, err := d.bitBuf.PeekFind(8, v, maxLen)
 	if err != nil {
-		panic(ReadError{Err: err, Op: "PeekFindByte", Size: 0, Pos: d.bitBuf.Pos()})
+		panic(ReadError{Err: err, Op: "PeekFindByte", Size: 0, Pos: d.Pos()})
 
 	}
 	return peekBits / 8
@@ -241,36 +244,82 @@ func (d *D) BytesRange(firstBit int64, nBytes int) []byte {
 func (d *D) BytesLen(nBytes int) []byte {
 	bs, err := d.bitBuf.BytesLen(nBytes)
 	if err != nil {
-		panic(ReadError{Err: err, Op: "BytesLen", Size: int64(nBytes) * 8, Pos: d.bitBuf.Pos()})
+		panic(ReadError{Err: err, Op: "BytesLen", Size: int64(nBytes) * 8, Pos: d.Pos()})
 	}
 	return bs
 }
 
 // TODO: rename/remove BitBuf name?
-func (d *D) BitBufRange(firstBit int64, nBits int64) *bitbuf.Buffer {
-	return d.bitBuf.BitBufRange(firstBit, nBits)
+func (d *D) BitBufRange(firstBit int64, nBits int64) *bitio.Buffer {
+	bb, err := d.bitBuf.BitBufRange(firstBit, nBits)
+	if err != nil {
+		panic(ReadError{Err: err, Op: "BitBufRange", Size: nBits, Pos: firstBit})
+	}
+	return bb
 }
 
-func (d *D) BitBufLen(nBits int64) *bitbuf.Buffer {
+func (d *D) BitBufLen(nBits int64) *bitio.Buffer {
 	bs, err := d.bitBuf.BitBufLen(nBits)
 	if err != nil {
-		panic(ReadError{Err: err, Op: "BitBufLen", Size: nBits, Pos: d.bitBuf.Pos()})
+		panic(ReadError{Err: err, Op: "BitBufLen", Size: nBits, Pos: d.Pos()})
 	}
 	return bs
 }
 
-func (d *D) Pos() int64         { return d.bitBuf.Pos() }
-func (d *D) Len() int64         { return d.bitBuf.Len() }
-func (d *D) End() bool          { return d.bitBuf.End() }
-func (d *D) NotEnd() bool       { return !d.bitBuf.End() }
-func (d *D) BitsLeft() int64    { return d.bitBuf.BitsLeft() }
-func (d *D) ByteAlignBits() int { return d.bitBuf.ByteAlignBits() }
-func (d *D) BytePos() int64     { return d.bitBuf.BytePos() }
+func (d *D) Pos() int64 {
+	bPos, err := d.bitBuf.Pos()
+	if err != nil {
+		panic(ReadError{Err: err, Op: "Pos", Size: 0, Pos: bPos})
+	}
+	return bPos
+}
+
+func (d *D) Len() int64 {
+	bLen, err := d.bitBuf.Len()
+	if err != nil {
+		panic(ReadError{Err: err, Op: "Len", Size: 0, Pos: d.Pos()})
+	}
+	return bLen
+}
+
+func (d *D) End() bool {
+	bEnd, err := d.bitBuf.End()
+	if err != nil {
+		panic(ReadError{Err: err, Op: "Len", Size: 0, Pos: d.Pos()})
+	}
+	return bEnd
+}
+
+func (d *D) NotEnd() bool { return !d.End() }
+
+func (d *D) BitsLeft() int64 {
+	bBitsLeft, err := d.bitBuf.BitsLeft()
+	if err != nil {
+		panic(ReadError{Err: err, Op: "BitsLeft", Size: 0, Pos: d.Pos()})
+	}
+	return bBitsLeft
+}
+
+func (d *D) ByteAlignBits() int {
+	bByteAlignBits, err := d.bitBuf.ByteAlignBits()
+	if err != nil {
+		panic(ReadError{Err: err, Op: "ByteAlignBits", Size: 0, Pos: d.Pos()})
+	}
+	return bByteAlignBits
+}
+
+func (d *D) BytePos() int64 {
+	bBytePos, err := d.bitBuf.BytePos()
+	if err != nil {
+		panic(ReadError{Err: err, Op: "BytePos", Size: 0, Pos: d.Pos()})
+	}
+	return bBytePos
+}
 
 func (d *D) SeekRel(deltaBits int64) int64 {
 	pos, err := d.bitBuf.SeekRel(deltaBits)
 	if err != nil {
-		panic(ReadError{Err: err, Op: "SeekRel", Delta: deltaBits, Pos: d.bitBuf.Pos()})
+		panic(ReadError{Err: err, Op: "SeekRel", Delta: deltaBits, Pos: d.Pos()})
 	}
 	return pos
 }
@@ -278,7 +327,7 @@ func (d *D) SeekRel(deltaBits int64) int64 {
 func (d *D) SeekAbs(pos int64) int64 {
 	pos, err := d.bitBuf.SeekAbs(pos)
 	if err != nil {
-		panic(ReadError{Err: err, Op: "SeekAbs", Size: pos, Pos: d.bitBuf.Pos()})
+		panic(ReadError{Err: err, Op: "SeekAbs", Size: pos, Pos: d.Pos()})
 	}
 	return pos
 }
@@ -301,14 +350,14 @@ func (d *D) AddChild(v *Value) {
 
 }
 
-func (d *D) fieldDecoder(name string, bitBuf *bitbuf.Buffer, v interface{}) *D {
+func (d *D) fieldDecoder(name string, bitBuf *bitio.Buffer, v interface{}) *D {
 	cd := &D{
 		Endian: d.Endian,
 		bitBuf: bitBuf,
 		Value: &Value{
 			Name:   name,
 			V:      v,
-			Range:  ranges.Range{Start: d.bitBuf.Pos(), Len: 0},
+			Range:  ranges.Range{Start: d.Pos(), Len: 0},
 			BitBuf: d.bitBuf,
 		},
 		registry: d.registry,
@@ -349,11 +398,11 @@ func (d *D) FieldStructFn(name string, fn func(d *D)) *D {
 	return cd
 }
 
-func (d *D) FieldStructBitBuf(name string, bitBuf *bitbuf.Buffer) *D {
+func (d *D) FieldStructBitBuf(name string, bitBuf *bitio.Buffer) *D {
 	return d.fieldDecoder(name, bitBuf, Struct{})
 }
 
-func (d *D) FieldStructBitBufFn(name string, bitBuf *bitbuf.Buffer, fn func(d *D)) *D {
+func (d *D) FieldStructBitBufFn(name string, bitBuf *bitio.Buffer, fn func(d *D)) *D {
 	cd := d.FieldStructBitBuf(name, bitBuf)
 	fn(cd)
 	return cd
@@ -370,9 +419,9 @@ func (d *D) FieldRangeFn(name string, firstBit int64, nBits int64, fn func() *Va
 }
 
 func (d *D) FieldFn(name string, fn func() *Value) *Value {
-	start := d.bitBuf.Pos()
+	start := d.Pos()
 	v := fn()
-	stop := d.bitBuf.Pos()
+	stop := d.Pos()
 	v.Name = name
 	v.BitBuf = d.bitBuf
 	v.Range = ranges.Range{Start: start, Len: stop - start}
@@ -423,11 +472,11 @@ func (d *D) FieldBytesFn(name string, firstBit int64, nBits int64, fn func() ([]
 	}).V.([]byte)
 }
 
-func (d *D) FieldBitBufFn(name string, firstBit int64, nBits int64, fn func() (*bitbuf.Buffer, string)) *bitbuf.Buffer {
+func (d *D) FieldBitBufFn(name string, firstBit int64, nBits int64, fn func() (*bitio.Buffer, string)) *bitio.Buffer {
 	return d.FieldRangeFn(name, firstBit, nBits, func() *Value {
 		bb, disp := fn()
 		return &Value{V: bb, Symbol: disp}
-	}).V.(*bitbuf.Buffer)
+	}).V.(*bitio.Buffer)
 }
 
 func (d *D) FieldStringMapFn(name string, sm map[uint64]string, def string, fn func() uint64) (uint64, bool) {
@@ -444,7 +493,7 @@ func (d *D) FieldStringMapFn(name string, sm map[uint64]string, def string, fn f
 }
 
 func (d *D) FieldValidateUFn(name string, v uint64, fn func() uint64) {
-	pos := d.bitBuf.Pos
+	pos := d.Pos()
 	n := d.FieldUFn(name, func() (uint64, DisplayFormat, string) {
 		n := fn()
 		s := "Correct"
@@ -454,12 +503,12 @@ func (d *D) FieldValidateUFn(name string, v uint64, fn func() uint64) {
 		return n, NumberHex, s
 	})
 	if n != v {
-		panic(ValidateError{Reason: fmt.Sprintf("expected %d found %d", v, n), Pos: pos()})
+		panic(ValidateError{Reason: fmt.Sprintf("expected %d found %d", v, n), Pos: pos})
 	}
 }
 
 func (d *D) FieldValidateUTF8Fn(name string, v string, fn func() string) {
-	pos := d.bitBuf.Pos()
+	pos := d.Pos()
 	s := d.FieldStrFn(name, func() (string, string) {
 		str := fn()
 		s := "Correct"
@@ -474,12 +523,12 @@ func (d *D) FieldValidateUTF8Fn(name string, v string, fn func() string) {
 }
 
 func (d *D) FieldValidateUTF8(name string, v string) {
-	pos := d.bitBuf.Pos()
+	pos := d.Pos()
 	s := d.FieldStrFn(name, func() (string, string) {
 		nBytes := len(v)
 		str, err := d.bitBuf.UTF8(nBytes)
 		if err != nil {
-			panic(ReadError{Err: err, Name: name, Op: "FieldValidateUTF8", Size: int64(nBytes) * 8, Pos: d.bitBuf.Pos()})
+			panic(ReadError{Err: err, Name: name, Op: "FieldValidateUTF8", Size: int64(nBytes) * 8, Pos: d.Pos()})
 		}
 		s := "Correct"
 		if str != v {
@@ -493,18 +542,18 @@ func (d *D) FieldValidateUTF8(name string, v string) {
 }
 
 func (d *D) ValidateAtLeastBitsLeft(nBits int64) {
-	bl := d.bitBuf.BitsLeft()
+	bl := d.BitsLeft()
 	if bl < nBits {
 		// TODO:
-		panic(ValidateError{Reason: fmt.Sprintf("expected bits left %d, found %d", nBits, bl), Pos: d.bitBuf.Pos()})
+		panic(ValidateError{Reason: fmt.Sprintf("expected bits left %d, found %d", nBits, bl), Pos: d.Pos()})
 	}
 }
 
 func (d *D) ValidateAtLeastBytesLeft(nBytes int64) {
-	bl := d.bitBuf.BitsLeft()
+	bl := d.BitsLeft()
 	if bl < nBytes*8 {
 		// TODO:
-		panic(ValidateError{Reason: fmt.Sprintf("expected bytes left %d, found %d bits", nBytes, bl), Pos: d.bitBuf.Pos()})
+		panic(ValidateError{Reason: fmt.Sprintf("expected bytes left %d, found %d bits", nBytes, bl), Pos: d.Pos()})
 	}
 }
 
@@ -512,10 +561,10 @@ func (d *D) ValidateAtLeastBytesLeft(nBytes int64) {
 func (d *D) SubLenFn(nBits int64, fn func(d *D)) {
 	prevBb := d.bitBuf
 	prevEndian := d.Endian
-	endPos := d.bitBuf.Pos() + nBits
+	endPos := d.Pos() + nBits
 
-	bb := d.bitBuf.BitBufRange(0, d.bitBuf.Pos()+nBits)
-	if _, err := bb.SeekAbs(d.bitBuf.Pos()); err != nil {
+	bb := d.BitBufRange(0, d.Pos()+nBits)
+	if _, err := bb.SeekAbs(d.Pos()); err != nil {
 		panic(err)
 	}
 	d.bitBuf = bb
@@ -531,7 +580,7 @@ func (d *D) SubRangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 	prevBb := d.bitBuf
 	prevEndian := d.Endian
 
-	bb := d.bitBuf.BitBufRange(0, firstBit+nBits)
+	bb := d.BitBufRange(0, firstBit+nBits)
 	if _, err := bb.SeekAbs(firstBit); err != nil {
 		panic(err)
 	}
@@ -544,8 +593,8 @@ func (d *D) SubRangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 }
 
 func (d *D) FieldTryDecode(name string, formats []*Format) (*Value, interface{}, []error) {
-	bb := d.bitBuf.BitBufRange(d.bitBuf.Pos(), d.BitsLeft())
-	v, dv, errs := probe(name, bb, formats, probeOptions{isRoot: false, relStart: d.bitBuf.Pos(), relBitBuf: d.bitBuf})
+	bb := d.BitBufRange(d.Pos(), d.BitsLeft())
+	v, dv, errs := probe(name, bb, formats, probeOptions{isRoot: false, relStart: d.Pos(), relBitBuf: d.bitBuf})
 	if v == nil || v.Errors() != nil {
 		return nil, nil, errs
 	}
@@ -567,8 +616,8 @@ func (d *D) FieldDecode(name string, formats []*Format) (*Value, interface{}, []
 }
 
 func (d *D) FieldTryDecodeLen(name string, nBits int64, formats []*Format) (*Value, interface{}, []error) {
-	bb := d.bitBuf.BitBufRange(d.bitBuf.Pos(), nBits)
-	v, dv, errs := probe(name, bb, formats, probeOptions{isRoot: false, relStart: d.bitBuf.Pos(), relBitBuf: d.bitBuf})
+	bb := d.BitBufRange(d.Pos(), nBits)
+	v, dv, errs := probe(name, bb, formats, probeOptions{isRoot: false, relStart: d.Pos(), relBitBuf: d.bitBuf})
 	if v == nil || v.Errors() != nil {
 		return nil, nil, errs
 	}
@@ -591,7 +640,7 @@ func (d *D) FieldDecodeLen(name string, nBits int64, formats []*Format) (*Value,
 
 // TODO: return decooder?
 func (d *D) FieldTryDecodeRange(name string, firstBit int64, nBits int64, formats []*Format) (*Value, interface{}, []error) {
-	bb := d.bitBuf.BitBufRange(firstBit, nBits)
+	bb := d.BitBufRange(firstBit, nBits)
 	v, dv, errs := probe(name, bb, formats, probeOptions{isRoot: false, relStart: firstBit, relBitBuf: d.bitBuf})
 	if v == nil || v.Errors() != nil {
 		return nil, nil, errs
@@ -610,7 +659,7 @@ func (d *D) FieldDecodeRange(name string, firstBit int64, nBits int64, formats [
 	return v, dv, errs
 }
 
-func (d *D) FieldTryDecodeBitBuf(name string, bb *bitbuf.Buffer, formats []*Format) (*Value, interface{}, []error) {
+func (d *D) FieldTryDecodeBitBuf(name string, bb *bitio.Buffer, formats []*Format) (*Value, interface{}, []error) {
 	v, dv, errs := probe(name, bb, formats, probeOptions{isRoot: true})
 	if v == nil || v.Errors() != nil {
 		return nil, nil, errs
@@ -621,7 +670,7 @@ func (d *D) FieldTryDecodeBitBuf(name string, bb *bitbuf.Buffer, formats []*Form
 	return v, dv, errs
 }
 
-func (d *D) FieldDecodeBitBuf(name string, bb *bitbuf.Buffer, formats []*Format) (*Value, interface{}, []error) {
+func (d *D) FieldDecodeBitBuf(name string, bb *bitio.Buffer, formats []*Format) (*Value, interface{}, []error) {
 	v, dv, errs := d.FieldTryDecodeBitBuf(name, bb, formats)
 	if v == nil || v.Errors() != nil {
 		panic(errs)
@@ -629,14 +678,14 @@ func (d *D) FieldDecodeBitBuf(name string, bb *bitbuf.Buffer, formats []*Format)
 	return v, dv, errs
 }
 
-func (d *D) FieldBitBufRange(name string, firstBit int64, nBits int64) *bitbuf.Buffer {
-	return d.FieldBitBufFn(name, firstBit, nBits, func() (*bitbuf.Buffer, string) {
+func (d *D) FieldBitBufRange(name string, firstBit int64, nBits int64) *bitio.Buffer {
+	return d.FieldBitBufFn(name, firstBit, nBits, func() (*bitio.Buffer, string) {
 		return d.BitBufRange(firstBit, nBits), ""
 	})
 }
 
-func (d *D) FieldBitBufLen(name string, nBits int64) *bitbuf.Buffer {
-	return d.FieldBitBufFn(name, d.bitBuf.Pos(), nBits, func() (*bitbuf.Buffer, string) {
+func (d *D) FieldBitBufLen(name string, nBits int64) *bitio.Buffer {
+	return d.FieldBitBufFn(name, d.Pos(), nBits, func() (*bitio.Buffer, string) {
 		return d.BitBufLen(nBits), ""
 	})
 }
@@ -655,7 +704,7 @@ func (d *D) FieldDecodeZlibLen(name string, nBits int64, formats []*Format) (*Va
 	if err != nil {
 		panic(err)
 	}
-	zbb := bitbuf.NewFromBytes(zd, -1)
+	zbb := bitio.NewBufferFromBytes(zd, -1)
 
 	return d.FieldDecodeBitBuf(name, zbb, formats)
 }

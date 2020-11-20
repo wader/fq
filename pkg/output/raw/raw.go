@@ -19,7 +19,8 @@ func (o *FieldWriter) Write(w io.Writer) error {
 	// TODO: BytesRange version with padding?
 
 	o.v.WalkPostOrder(func(v *decode.Value, depth int, rootDepth int) error {
-		_, err := io.Copy(w, v.BitBuf.Copy())
+		bb, _ := v.BitBuf.Copy()
+		_, err := io.Copy(w, bb)
 		return err
 	})
 

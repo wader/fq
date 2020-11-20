@@ -3,7 +3,7 @@ package ogg
 // https://xiph.org/ogg/doc/framing.html
 
 import (
-	"fq/pkg/bitbuf"
+	"fq/internal/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/format"
 )
@@ -21,7 +21,7 @@ type page struct {
 	IsContinuedPacket  bool
 	StreamSerialNumber uint32
 	SequenceNo         uint32
-	Segments           []*bitbuf.Buffer
+	Segments           []*bitio.Buffer
 }
 
 func oggDecode(d *decode.D) interface{} {

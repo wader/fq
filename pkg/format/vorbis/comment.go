@@ -2,7 +2,7 @@ package vorbis
 
 import (
 	"encoding/base64"
-	"fq/pkg/bitbuf"
+	"fq/internal/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/format"
 	"strings"
@@ -38,7 +38,7 @@ func commentDecode(d *decode.D) interface{} {
 				if k == metadataBlockPicture {
 					bs, err := base64.StdEncoding.DecodeString(v)
 					if err == nil {
-						bb := bitbuf.NewFromBytes(bs, -1)
+						bb := bitio.NewBufferFromBytes(bs, -1)
 						d.FieldDecodeBitBuf("picture",
 							bb,
 							flacPicture,

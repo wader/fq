@@ -104,7 +104,11 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 		fmt.Fprintf(cw.Columns[0], "%s%s\n", rootIndent, padFormatInt(startLineByte, addrBase, addrWidth))
 
 		color := false
-		vBitBuf := v.BitBuf.BitBufRange(startByte*8, displaySizeBytes*8)
+		vBitBuf, err := v.BitBuf.BitBufRange(startByte*8, displaySizeBytes*8)
+		if err != nil {
+			return err
+		}
+
 		addrLines := lastDisplayLine - startLine + 1
 
 		charToANSI := func(c byte) string {
@@ -139,12 +143,14 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 		}
 
 		if vBitBuf != nil {
+			bb, _ := vBitBuf.Copy()
 			io.Copy(
 				hexpairwriter.New(cw.Columns[2], int(lineBytes), int(startLineByteOffset), hexpairFn),
-				io.LimitReader(vBitBuf.Copy(), displaySizeBytes))
+				io.LimitReader(bb, displaySizeBytes))
+			bb, _ = vBitBuf.Copy()
 			io.Copy(
 				asciiwriter.New(cw.Columns[4], int(lineBytes), int(startLineByteOffset), asciiFn),
-				io.LimitReader(vBitBuf.Copy(), displaySizeBytes))
+				io.LimitReader(bb, displaySizeBytes))
 		}
 
 		for i := int64(1); i < addrLines; i++ {
@@ -185,7 +191,12 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 }
 
 func (o *FieldWriter) Write(w io.Writer) error {
-	maxAddrIndentWidth := digitsInBase(bitsCeilBytes(o.v.BitBuf.Len()), addrBase)
+	ovbLen, err := o.v.BitBuf.Len()
+	if err != nil {
+		return err
+	}
+
+	maxAddrIndentWidth := digitsInBase(bitsCeilBytes(ovbLen), addrBase)
 	o.v.WalkPreOrder(func(v *decode.Value, depth int, rootDepth int) error {
 		// skip first root level
 		if rootDepth > 0 {
@@ -193,7 +204,12 @@ func (o *FieldWriter) Write(w io.Writer) error {
 		}
 
 		if v.IsRoot {
-			addrIndentWidth := rootDepth + digitsInBase(bitsCeilBytes(v.BitBuf.Len()), addrBase)
+			vbLen, err := v.BitBuf.Len()
+			if err != nil {
+				return err
+			}
+
+			addrIndentWidth := rootDepth + digitsInBase(bitsCeilBytes(vbLen), addrBase)
 			if addrIndentWidth > maxAddrIndentWidth {
 				maxAddrIndentWidth = addrIndentWidth
 			}

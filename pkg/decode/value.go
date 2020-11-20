@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"fq/internal/bitio"
+	bitbuf "fq/internal/bitio"
 	"fq/internal/ranges"
-	"fq/pkg/bitbuf"
 	"regexp"
 	"sort"
 	"strconv"
@@ -271,44 +271,48 @@ func (v *Value) postProcess() {
 
 func (v *Value) String() string {
 	f := ""
-	switch iv := v.V.(type) {
+	switch vv := v.V.(type) {
 	case Array:
 		f = fmt.Sprintf("array %s", v.Name)
 	case Struct:
 		f = fmt.Sprintf("struct %s", v.Name)
 	case bool:
 		f = "false"
-		if iv {
+		if vv {
 			f = "true"
 		}
 	case int64:
 		// TODO: DisplayFormat is weird
-		f = strconv.FormatInt(iv, DisplayFormatToBase(v.DisplayFormat))
+		f = strconv.FormatInt(vv, DisplayFormatToBase(v.DisplayFormat))
 	case uint64:
-		f = strconv.FormatUint(iv, DisplayFormatToBase(v.DisplayFormat))
+		f = strconv.FormatUint(vv, DisplayFormatToBase(v.DisplayFormat))
 	case float64:
 		// TODO: float32? better truncated to significant digits?
-		f = strconv.FormatFloat(iv, 'g', -1, 64)
+		f = strconv.FormatFloat(vv, 'g', -1, 64)
 	case string:
-		f = iv
+		f = vv
 		if len(f) > 50 {
 			f = fmt.Sprintf("%q", f[0:50]) + "..."
 		} else {
-			f = fmt.Sprintf("%q", iv)
+			f = fmt.Sprintf("%q", vv)
 		}
 	case []byte:
-		if len(iv) > 16 {
-			f = hex.EncodeToString(iv[0:16]) + "..."
+		if len(vv) > 16 {
+			f = hex.EncodeToString(vv[0:16]) + "..."
 
 		} else {
-			f = hex.EncodeToString(iv)
+			f = hex.EncodeToString(vv)
 		}
 	case *bitbuf.Buffer:
-		if iv.Len() > 16*8 {
-			bs, _ := iv.BytesRange(0, 16)
+		vvLen, err := vv.Len()
+		if err != nil {
+			return err.Error()
+		}
+		if vvLen > 16*8 {
+			bs, _ := vv.BytesRange(0, 16)
 			f = hex.EncodeToString(bs) + "..."
 		} else {
-			bs, _ := iv.BytesRange(0, int(bitio.BitsByteCount(iv.Len()/8)))
+			bs, _ := vv.BytesRange(0, int(bitio.BitsByteCount(vvLen)))
 			f = hex.EncodeToString(bs)
 		}
 	case nil:
@@ -332,31 +336,35 @@ func (v *Value) String() string {
 }
 
 func (v *Value) RawString() string {
-	switch iv := v.V.(type) {
+	switch vv := v.V.(type) {
 	case Array:
 		return "array"
 	case Struct:
 		return "struct"
 	case bool:
-		if iv {
+		if vv {
 			return "1"
 		} else {
 			return "0"
 		}
 	case int64:
 		// TODO: DisplayFormat is weird
-		return strconv.FormatInt(iv, int(v.DisplayFormat))
+		return strconv.FormatInt(vv, int(v.DisplayFormat))
 	case uint64:
-		return strconv.FormatUint(iv, int(v.DisplayFormat))
+		return strconv.FormatUint(vv, int(v.DisplayFormat))
 	case float64:
-		return strconv.FormatFloat(iv, 'f', -1, 64)
+		return strconv.FormatFloat(vv, 'f', -1, 64)
 	case string:
-		return iv
+		return vv
 	case []byte:
-		return string(iv)
+		return string(vv)
 	case *bitbuf.Buffer:
 		// TODO: RawString, switch to writer somehow?
-		bs, _ := v.BitBuf.BytesRange(0, int(bitio.BitsByteCount(v.BitBuf.Len()/8)))
+		vvLen, err := vv.Len()
+		if err != nil {
+			return err.Error()
+		}
+		bs, _ := v.BitBuf.BytesRange(0, int(bitio.BitsByteCount(vvLen)))
 		return string(bs)
 	case nil:
 		return ""

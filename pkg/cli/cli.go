@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
-	"fq/pkg/bitbuf"
+	"fq/internal/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/format"
 	"fq/pkg/output"
@@ -94,7 +94,7 @@ func (m Main) run() error {
 			return fmt.Errorf("%s: %s", *forceFormatNameFlag, err)
 		}
 	}
-	bb := bitbuf.NewFromReadSeeker(rs)
+	bb := bitio.NewBufferFromReadSeeker(rs)
 	f, _, errs := decode.Probe(fs.Arg(0), bb, probeFormats)
 	if *verboseFlag {
 		for _, err := range errs {
