@@ -1,7 +1,5 @@
 package bitio
 
-// TODO: seek
-
 import (
 	"errors"
 	"io"
@@ -32,7 +30,7 @@ type BitReadSeeker interface {
 	BitSeeker
 }
 
-// Reader is BitReadSeeker and BitReaderAt reading from io.ReadSeeker
+// Reader is a BitReadSeeker and BitReaderAt reading from a io.ReadSeeker
 type Reader struct {
 	bitPos int64
 	rs     io.ReadSeeker
@@ -40,27 +38,13 @@ type Reader struct {
 }
 
 func NewReaderFromReadSeeker(rs io.ReadSeeker) *Reader {
-	// len, err := rs.Seek(0, io.SeekEnd)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// if _, err := rs.Seek(0, io.SeekStart); err != nil {
-	// 	return nil, err
-	// }
-	// if firstBitOffset > len*8 {
-	// 	return nil, io.ErrUnexpectedEOF
-	// }
-
 	return &Reader{
-		// bitLen: len*8 - firstBitOffset,
 		bitPos: 0,
 		rs:     rs,
 	}
 }
 
 func (r *Reader) ReadBitsAt(p []byte, nBits int, bitOffset int64) (int, error) {
-	//log.Printf("bitPos=%d nBits=%d", bitPos, nBits)
-
 	readBytePos := bitOffset / 8
 	readSkipBits := int(bitOffset % 8)
 	wantReadBits := readSkipBits + nBits
@@ -89,10 +73,7 @@ func (r *Reader) ReadBitsAt(p []byte, nBits int, bitOffset int64) (int, error) {
 		nBits += 8 * diffBytes
 	}
 
-	// log.Printf("  n: %#+v\n", n)
-
 	if readSkipBits == 0 && nBits%8 == 0 {
-		// log.Println("  aligned")
 		copy(p[0:readBytes], r.buf[0:readBytes])
 		return nBits, err
 	}
@@ -129,30 +110,11 @@ func (r *Reader) SeekBits(bitOff int64, whence int) (int64, error) {
 }
 
 func (r *Reader) Read(p []byte) (n int, err error) {
-	//bitsLeft := b.Len - b.Pos
-	// bytesLeft := bitsLeft / 8
-	// if bitsLeft%8 != 0 {
-	// 	bytesLeft = 1
-	// }
-
-	// if bitsLeft == 0 {
-	// 	return 0, io.EOF
-	// }
-
-	// readBytes := len(p)
-	// readBits := readBytes * 8
-
-	// if readBits > bitsLeft {
-	// 	readBits = bitsLeft
-	// }
-
 	n, err = r.ReadBitsAt(p, len(p)*8, r.bitPos)
 	r.bitPos += int64(n)
 	if err != nil {
 		return int(BitsByteCount(int64(n))), err
 	}
-
-	//log.Printf("b.firstBitOffset+b.Pos=%d n=%d readBytes=%d readBits=%d bitsLeft=%d\n", b.firstBitOffset+b.Pos, n, readBytes, readBits, bitsLeft)
 
 	return int(BitsByteCount(int64(n))), nil
 }
@@ -166,7 +128,7 @@ func (r *Reader) Seek(offset int64, whence int) (int64, error) {
 	return seekBytesPos, nil
 }
 
-// SectionBitReader is BitReadSeeker reading from a BitReaderAt
+// SectionBitReader is a BitReadSeeker reading from a BitReaderAt
 // modelled after io.SectionReader
 type SectionBitReader struct {
 	r        BitReaderAt
@@ -227,30 +189,11 @@ func (r *SectionBitReader) SeekBits(bitOff int64, whence int) (int64, error) {
 }
 
 func (r *SectionBitReader) Read(p []byte) (n int, err error) {
-	//bitsLeft := b.Len - b.Pos
-	// bytesLeft := bitsLeft / 8
-	// if bitsLeft%8 != 0 {
-	// 	bytesLeft = 1
-	// }
-
-	// if bitsLeft == 0 {
-	// 	return 0, io.EOF
-	// }
-
-	// readBytes := len(p)
-	// readBits := readBytes * 8
-
-	// if readBits > bitsLeft {
-	// 	readBits = bitsLeft
-	// }
-
 	n, err = r.ReadBitsAt(p, len(p)*8, r.bitOff-r.bitBase)
 	r.bitOff += int64(n)
 	if err != nil {
 		return int(BitsByteCount(int64(n))), err
 	}
-
-	//log.Printf("b.firstBitOffset+b.Pos=%d n=%d readBytes=%d readBits=%d bitsLeft=%d\n", b.firstBitOffset+b.Pos, n, readBytes, readBits, bitsLeft)
 
 	return int(BitsByteCount(int64(n))), nil
 }

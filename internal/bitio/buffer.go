@@ -30,7 +30,7 @@ const (
 // Buffer is a bitbuf buffer
 type Buffer struct {
 	br interface {
-		io.ReadSeeker // TODO: remove?
+		io.Reader // both Reader and SectionBitReader implement io.Reader
 		BitReadSeeker
 		BitReaderAt
 	}
