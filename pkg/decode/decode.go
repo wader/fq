@@ -512,6 +512,7 @@ func (d *D) ValidateAtLeastBytesLeft(nBytes int64) {
 func (d *D) SubLenFn(nBits int64, fn func(d *D)) {
 	prevBb := d.bitBuf
 	prevEndian := d.Endian
+	endPos := d.bitBuf.Pos() + nBits
 
 	bb := d.bitBuf.BitBufRange(0, d.bitBuf.Pos()+nBits)
 	if _, err := bb.SeekAbs(d.bitBuf.Pos()); err != nil {
@@ -521,10 +522,8 @@ func (d *D) SubLenFn(nBits int64, fn func(d *D)) {
 
 	fn(d)
 
-	bitsLeft := nBits - (d.bitBuf.Pos() - prevBb.Pos())
-
 	d.bitBuf = prevBb
-	d.bitBuf.SeekRel(int64(bitsLeft)) // TODO: check err?
+	d.bitBuf.SeekAbs(endPos) // TODO: check err?
 	d.Endian = prevEndian
 }
 

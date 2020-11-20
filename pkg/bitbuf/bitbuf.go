@@ -104,7 +104,8 @@ func (b *Buffer) BitBufLen(nBits int64) (*Buffer, error) {
 
 // Bits reads nBits bits from buffer
 func (b *Buffer) bits(nBits int) (uint64, error) {
-	var bufArray [10]byte
+	// 64 bits max, 9 byte worse case if not byte aligned
+	var bufArray [9]byte
 	buf := bufArray[:]
 	_, err := b.br.ReadBits(buf[:], nBits)
 	if err != nil {
