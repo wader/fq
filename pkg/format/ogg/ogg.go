@@ -78,7 +78,7 @@ func decodeOgg(d *decode.D) interface{} {
 				b, _ := ps.BytesRange(0, int(ps.Len()/8))
 				s.packetBuf = append(s.packetBuf, b...)
 				if ps.Len()/8 < 255 { // TODO: list range maps of demuxed packets?
-					bb := bitbuf.NewFromBytes(s.packetBuf, 0)
+					bb := bitbuf.NewFromBytes(s.packetBuf, -1)
 					packets.FieldDecodeBitBuf("packet", bb, oggPacket)
 					s.packetBuf = nil
 				}

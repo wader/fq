@@ -655,7 +655,7 @@ func (d *D) FieldDecodeZlibLen(name string, nBits int64, formats []*Format) (*Va
 	if err != nil {
 		panic(err)
 	}
-	zbb := bitbuf.NewFromBytes(zd, 0)
+	zbb := bitbuf.NewFromBytes(zd, -1)
 
 	return d.FieldDecodeBitBuf(name, zbb, formats)
 }

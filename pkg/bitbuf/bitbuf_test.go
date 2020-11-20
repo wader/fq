@@ -10,11 +10,7 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	bb, err := bitbuf.NewFromBytes([]byte{0xf5}, 0)
-	if err != nil {
-		panic(err)
-	}
-
+	bb := bitbuf.NewFromBytes([]byte{0xf5}, -1)
 	e4, e4n := bb.Bits(3)
 
 	log.Printf("e4: %#+v\n", e4)

@@ -38,7 +38,7 @@ func commentDecode(d *decode.D) interface{} {
 				if k == metadataBlockPicture {
 					bs, err := base64.StdEncoding.DecodeString(v)
 					if err == nil {
-						bb := bitbuf.NewFromBytes(bs, 0)
+						bb := bitbuf.NewFromBytes(bs, -1)
 						d.FieldDecodeBitBuf("picture",
 							bb,
 							flacPicture,

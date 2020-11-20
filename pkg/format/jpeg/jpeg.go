@@ -290,7 +290,7 @@ func jpegDecode(d *decode.D) interface{} {
 	}
 
 	if extendedXMP != nil {
-		bb := bitbuf.NewFromBytes(extendedXMP, 0)
+		bb := bitbuf.NewFromBytes(extendedXMP, -1)
 		// TODO: bit pos, better bitbhuf api?
 		d.FieldBitBufFn("extended_xmp", 0, bb.Len(), func() (*bitbuf.Buffer, string) {
 			return bb, ""

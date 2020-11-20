@@ -45,7 +45,11 @@ func NewFromReadSeeker(rs io.ReadSeeker) *Buffer {
 }
 
 // NewFromBytes bitbuf.Buffer from bytes
+// if nBits is < 0 nBits is all bits in buf
 func NewFromBytes(buf []byte, nBits int64) *Buffer {
+	if nBits < 0 {
+		nBits = int64(len(buf)) * 8
+	}
 	return &Buffer{
 		br: bitio.NewSectionBitReader(bitio.NewFromReadSeeker(bytes.NewReader(buf)), 0, nBits),
 	}
@@ -59,7 +63,11 @@ func NewFromBitString(s string) *Buffer {
 
 // BitBufRange reads nBits bits starting from start
 // Does not update current position.
+// if nBits is < 0 nBits is all bits after firstBitOffset
 func (b *Buffer) BitBufRange(firstBitOffset int64, nBits int64) *Buffer {
+	if nBits < 0 {
+		nBits = b.Len() - firstBitOffset
+	}
 	return &Buffer{
 		br: bitio.NewSectionBitReader(b.br, firstBitOffset, nBits),
 	}
@@ -177,7 +185,7 @@ func (b *Buffer) Read(p []byte) (n int, err error) {
 // TODO: swap args
 func (b *Buffer) BytesRange(bitOffset int64, nBytes int) ([]byte, error) {
 	buf := make([]byte, nBytes)
-	_, err := b.br.ReadBitsAt(buf, nBytes, bitOffset)
+	_, err := b.br.ReadBitsAt(buf, nBytes*8, bitOffset)
 	return buf, err
 }
 
@@ -226,7 +234,7 @@ func (b *Buffer) String() string {
 	}
 	truncBB := b.BitBufRange(0, truncLen)
 
-	return fmt.Sprintf("0b%s%s /* %d bits */", truncBB.BitString(), truncS, b.Len)
+	return fmt.Sprintf("0b%s%s /* %d bits */", truncBB.BitString(), truncS, b.Len())
 }
 
 // BitString return bit string representation
