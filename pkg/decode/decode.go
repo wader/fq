@@ -656,6 +656,7 @@ func (d *D) FieldDecodeRange(name string, firstBit int64, nBits int64, formats [
 	if v == nil || v.Errors() != nil {
 		panic(errs)
 	}
+
 	return v, dv, errs
 }
 

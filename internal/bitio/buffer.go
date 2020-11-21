@@ -27,7 +27,7 @@ const (
 	LittleEndian
 )
 
-// Buffer is a bitbuf buffer
+// Buffer is a bit buffer
 type Buffer struct {
 	br interface {
 		io.Reader // both Reader and SectionBitReader implement io.Reader
@@ -36,7 +36,7 @@ type Buffer struct {
 	}
 }
 
-// NewBufferFromReadSeeker bitbuf.Buffer from io.ReadSeeker, start at firstBit with bit length lenBits
+// NewBufferFromReadSeeker new Buffer from io.ReadSeeker, start at firstBit with bit length lenBits
 // buf is not copied.
 func NewBufferFromReadSeeker(rs io.ReadSeeker) *Buffer {
 	return &Buffer{
@@ -44,7 +44,7 @@ func NewBufferFromReadSeeker(rs io.ReadSeeker) *Buffer {
 	}
 }
 
-// NewBufferFromBytes bitbuf.Buffer from bytes
+// NewBufferFromBytes new Buffer from bytes
 // if nBits is < 0 nBits is all bits in buf
 func NewBufferFromBytes(buf []byte, nBits int64) *Buffer {
 	if nBits < 0 {
@@ -55,7 +55,7 @@ func NewBufferFromBytes(buf []byte, nBits int64) *Buffer {
 	}
 }
 
-// NewBufferFromBitString bitbuf.Buffer from bit string, ex: "0101"
+// NewBufferFromBitString new Buffer from bit string, ex: "0101"
 func NewBufferFromBitString(s string) *Buffer {
 	b, bBits := BytesFromBitString(s)
 	return NewBufferFromBytes(b, int64(bBits))

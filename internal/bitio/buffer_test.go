@@ -82,7 +82,7 @@ func TestBitStringRandom(t *testing.T) {
 			}
 		}
 		expected := strings.Join(ss, "")
-		bb := bitbuf.NewFromBitString(expected)
+		bb := bitio.NewBufferFromBitString(expected)
 		actual := bb.BitString()
 		if expected != actual {
 			t.Errorf("expected %s, got %s", expected, actual)
@@ -92,5 +92,5 @@ func TestBitStringRandom(t *testing.T) {
 
 func TestInvalidBitString(t *testing.T) {
 	// TODO: check panic?
-	bitbuf.NewFromBitString("01invalid")
+	bitio.NewBufferFromBitString("01invalid")
 }

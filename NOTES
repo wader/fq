@@ -1,4 +1,6 @@
 
+decode and fill gaps if known size?
+
 bitio MultiReader
 
 deocde own bitio.Buffer api that panics?

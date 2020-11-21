@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"fq/internal/bitio"
-	bitbuf "fq/internal/bitio"
 	"fq/internal/ranges"
 	"regexp"
 	"sort"
@@ -75,7 +74,7 @@ type Value struct {
 	V             interface{} // int64, uint64, float64, string, bool, []byte, Array, Struct
 	Index         int         // index in parent array/struct
 	Range         ranges.Range
-	BitBuf        *bitbuf.Buffer
+	BitBuf        *bitio.Buffer
 	IsRoot        bool
 	Name          string
 	MIME          string
@@ -303,7 +302,7 @@ func (v *Value) String() string {
 		} else {
 			f = hex.EncodeToString(vv)
 		}
-	case *bitbuf.Buffer:
+	case *bitio.Buffer:
 		vvLen, err := vv.Len()
 		if err != nil {
 			return err.Error()
@@ -358,7 +357,7 @@ func (v *Value) RawString() string {
 		return vv
 	case []byte:
 		return string(vv)
-	case *bitbuf.Buffer:
+	case *bitio.Buffer:
 		// TODO: RawString, switch to writer somehow?
 		vvLen, err := vv.Len()
 		if err != nil {
