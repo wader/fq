@@ -1,8 +1,11 @@
 
+jq script to summarise?
 
+# mp4 track codecs
 [.. | select(.type._value? == "stsd") | .reference[].type._value]
+# apic picture data
 .. | select(.id._value == "APIC") | .picture._raw
-
+# sidx dump
 .. | select(.type._value=="sidx") | .index_table | [.[] | {size: .size._value, duration: .duration._value}]
 
 
