@@ -6,7 +6,6 @@ package mp4
 import (
 	"fq/pkg/decode"
 	"fq/pkg/format"
-	"log"
 	"strings"
 )
 
@@ -291,7 +290,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 		dataSize = boxSize - 8
 	}
 
-	log.Printf("dataSize: %d\n", dataSize)
+	//log.Printf("dataSize: %d\n", dataSize)
 
 	if decodeFn, ok := boxes[typ]; ok {
 		d.SubLenFn(int64(dataSize*8), func(d *decode.D) { decodeFn(ctx, d) })
@@ -331,7 +330,7 @@ func mp4Decode(d *decode.D) interface{} {
 
 	decodeAtoms(ctx, d)
 
-	log.Println("BLA")
+	//log.Println("BLA")
 
 	// for _, t := range d.tracks {
 	// 	d.FieldNoneFn("track", func() {

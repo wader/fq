@@ -2,6 +2,7 @@ package decode
 
 import (
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"fq/internal/bitio"
@@ -370,4 +371,36 @@ func (v *Value) RawString() string {
 	default:
 		panic("unreachable")
 	}
+}
+
+func (v *Value) ToJQ() interface{} {
+	obj := map[string]interface{}{
+		"name":        v.Name,
+		"field":       v,
+		"description": v.Desc,
+		"range":       []int64{v.Range.Start, v.Range.Len},
+	}
+
+	switch vv := v.V.(type) {
+	case Struct:
+		fields := map[string]interface{}{}
+		for _, f := range vv {
+			fields[f.Name] = f.ToJQ()
+		}
+		obj["value"] = fields
+	case Array:
+		fields := []interface{}{}
+		for _, f := range vv {
+			fields = append(fields, f.ToJQ())
+		}
+		obj["value"] = fields
+	default:
+		obj["value"] = v.V
+	}
+
+	return obj
+}
+
+func (v *Value) MarshalJSON() ([]byte, error) {
+	return json.Marshal("test")
 }

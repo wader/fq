@@ -13,6 +13,8 @@ import (
 	"os"
 	"sort"
 	"strings"
+
+	"github.com/itchyny/gojq"
 )
 
 type Main struct {
@@ -107,26 +109,56 @@ func (m Main) run() error {
 		}
 	}
 
+	var of *decode.FieldOutput
+	for _, of = range output.All {
+		if of.Name == *outputFormatFlag {
+			break
+		}
+	}
+	if of == nil {
+		return fmt.Errorf("%s: unable to find output format", *outputFormatFlag)
+	}
+
 	if f != nil {
-		exp := fs.Arg(1)
-		expValue, err := f.Eval(exp)
+		// exp := fs.Arg(1)
+		// expValue, err := f.Eval(exp)
+		// if err != nil {
+		// 	return fmt.Errorf("%s: %s", exp, err)
+		// }
+
+		query, err := gojq.Parse(fs.Arg(1))
 		if err != nil {
-			return fmt.Errorf("%s: %s", exp, err)
+			panic(err)
 		}
 
-		var of *decode.FieldOutput
-		for _, of = range output.All {
-			if of.Name == *outputFormatFlag {
+		//json.NewEncoder(m.OS.Stdout()).Encode(f.ToJQ())
+
+		iter := query.Run(f.ToJQ())
+		for {
+			v, ok := iter.Next()
+			if !ok {
 				break
 			}
-		}
-		if of == nil {
-			return fmt.Errorf("%s: unable to find output format", *outputFormatFlag)
+
+			//json.NewEncoder(m.OS.Stdout()).Encode(v)
+
+			// log.Printf("v: %#+v\n", v)
+
+			if vobj, ok := v.(map[string]interface{}); ok {
+				if vv, ok := vobj["field"].(*decode.Value); ok {
+					//log.Printf("vv: %#+v\n", vv)
+
+					if err := of.New(vv).Write(m.OS.Stdout()); err != nil {
+						return err
+					}
+				}
+			}
+
 		}
 
-		if err := of.New(expValue).Write(m.OS.Stdout()); err != nil {
-			return err
-		}
+		// if err := of.New(expValue).Write(m.OS.Stdout()); err != nil {
+		// 	return err
+		// }
 	} else {
 		return fmt.Errorf("unable to probe format")
 	}
