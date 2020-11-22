@@ -264,6 +264,28 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 				i++
 			})
 		},
+		"sidx": func(ctx *decodeContext, d *decode.D) {
+			version := d.FieldU8("version")
+			d.FieldU24("flags")
+			d.FieldU32("reference_id")
+			d.FieldU32("timescale")
+			if version == 0 {
+				d.FieldU32("pts")
+				d.FieldU32("offset")
+			} else {
+				d.FieldU64("pts")
+				d.FieldU64("offset")
+			}
+			d.FieldU16("reserved")
+			numEntries := d.FieldU16("num_entries")
+			var i uint64
+			d.FieldStructArrayLoopFn("index_table", func() bool { return i < numEntries }, func(d *decode.D) {
+				d.FieldU32("size")
+				d.FieldU32("duration")
+				d.FieldU32("sap_flags")
+				i++
+			})
+		},
 	}
 
 	boxSize := d.U32()

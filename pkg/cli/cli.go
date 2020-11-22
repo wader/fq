@@ -152,6 +152,8 @@ func (m Main) run() error {
 				}
 			case *bitio.Buffer:
 				io.Copy(m.OS.Stdout(), vv)
+			case string:
+				fmt.Fprintln(m.OS.Stdout(), vv)
 			default:
 				json.NewEncoder(m.OS.Stdout()).Encode(v)
 			}

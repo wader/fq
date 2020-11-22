@@ -1,4 +1,11 @@
 
+
+[.. | select(.type._value? == "stsd") | .reference[].type._value]
+.. | select(.id._value == "APIC") | .picture._raw
+
+.. | select(.type._value=="sidx") | .index_table | [.[] | {size: .size._value, duration: .duration._value}]
+
+
 decode and fill gaps if known size?
 
 bitio MultiReader
