@@ -2,6 +2,7 @@ package cli
 
 import (
 	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"fq/internal/bitio"
@@ -133,27 +134,27 @@ func (m Main) run() error {
 
 		//json.NewEncoder(m.OS.Stdout()).Encode(f.ToJQ())
 
-		iter := query.Run(f.ToJQ())
+		// iter := query.Run(f.ToJQ())
+		iter := query.Run(f)
+
 		for {
 			v, ok := iter.Next()
 			if !ok {
 				break
 			}
 
-			//json.NewEncoder(m.OS.Stdout()).Encode(v)
+			//log.Printf("v: %v\n", v)
 
-			// log.Printf("v: %#+v\n", v)
-
-			if vobj, ok := v.(map[string]interface{}); ok {
-				if vv, ok := vobj["field"].(*decode.Value); ok {
-					//log.Printf("vv: %#+v\n", vv)
-
-					if err := of.New(vv).Write(m.OS.Stdout()); err != nil {
-						return err
-					}
+			switch vv := v.(type) {
+			case *decode.Value:
+				if err := of.New(vv).Write(m.OS.Stdout()); err != nil {
+					return err
 				}
+			case *bitio.Buffer:
+				io.Copy(m.OS.Stdout(), vv)
+			default:
+				json.NewEncoder(m.OS.Stdout()).Encode(v)
 			}
-
 		}
 
 		// if err := of.New(expValue).Write(m.OS.Stdout()); err != nil {

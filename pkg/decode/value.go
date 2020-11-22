@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"fq/internal/bitio"
 	"fq/internal/ranges"
+	"math/big"
 	"regexp"
 	"sort"
 	"strconv"
@@ -374,11 +375,50 @@ func (v *Value) RawString() string {
 }
 
 func (v *Value) ToJQ() interface{} {
+	switch vv := v.V.(type) {
+	case Array:
+		return v
+	case Struct:
+		return v
+	case bool:
+		if vv {
+			return 1
+		} else {
+			return 0
+		}
+	case int64:
+		return big.NewInt(vv)
+	case uint64:
+		return big.NewInt(int64(vv))
+	case float64:
+		return vv
+	case string:
+		return vv
+	case []byte:
+		return string(vv)
+	case *bitio.Buffer:
+		// TODO: RawString, switch to writer somehow?
+		vvLen, err := vv.Len()
+		if err != nil {
+			return err.Error()
+		}
+		bs, _ := v.BitBuf.BytesRange(0, int(bitio.BitsByteCount(vvLen)))
+		return string(bs)
+	case nil:
+		return nil
+	default:
+		panic("unreachable")
+	}
+}
+
+/*
+func (v *Value) ToJQ() interface{} {
 	obj := map[string]interface{}{
 		"name":        v.Name,
 		"field":       v,
 		"description": v.Desc,
 		"range":       []int64{v.Range.Start, v.Range.Len},
+		"size":        v.Range.Len,
 	}
 
 	switch vv := v.V.(type) {
@@ -400,7 +440,141 @@ func (v *Value) ToJQ() interface{} {
 
 	return obj
 }
+*/
 
 func (v *Value) MarshalJSON() ([]byte, error) {
-	return json.Marshal("test")
+	return json.Marshal(fmt.Sprintf("(value %s:%v)", v.Name, v.V))
+}
+
+func (v *Value) JsonLength() int {
+
+	switch vv := v.V.(type) {
+	case Struct:
+		// log.Printf("JsonLength struct %d", len(vv)+5)
+
+		return len(vv)
+	case Array:
+		// log.Printf("JsonLength array %d", len(vv)+5)
+
+		return len(vv)
+	default:
+		// log.Printf("JsonLength value 0")
+
+		panic("unreachable")
+	}
+}
+
+func (v *Value) JsonIndex(index int) interface{} {
+
+	switch vv := v.V.(type) {
+	case Struct:
+		// log.Printf("JsonIndex struct %d nil", index)
+
+		return nil
+	case Array:
+		// log.Printf("JsonIndex array %d %#+v", index, vv[index])
+
+		return vv[index]
+	default:
+		// log.Printf("JsonIndex value %d nil", index)
+
+		return nil
+	}
+}
+
+func (v *Value) JsonRange(start int, end int) []interface{} {
+
+	switch vv := v.V.(type) {
+	case Struct:
+		// log.Printf("JsonRange struct %d-%d nil", start, end)
+
+		return nil
+	case Array:
+		a := []interface{}{}
+		for _, e := range vv[start:end] {
+			a = append(a, e)
+		}
+
+		// log.Printf("JsonRange array %d-%d %#+v", start, end, a)
+
+		return a
+	default:
+		// log.Printf("JsonRange value %d-%d nil", start, end)
+
+		panic("unreachable")
+	}
+}
+
+func (v *Value) JsonProperty(name string) interface{} {
+
+	var r interface{}
+	switch name {
+	case "_name":
+		r = v.Name
+	case "_value":
+		r = v.ToJQ()
+	case "_symbol":
+		r = v.Symbol
+	case "_description":
+		r = v.Desc
+	case "_range":
+		r = []interface{}{big.NewInt(v.Range.Start), big.NewInt(v.Range.Len)} // TODO: bit.Int?
+	case "_size":
+		r = big.NewInt(v.Range.Len)
+	case "_raw":
+		bb, err := v.BitBuf.BitBufRange(v.Range.Start, v.Range.Len)
+		if err != nil {
+			return err
+		}
+		r = bb
+	}
+
+	if r == nil {
+		switch vv := v.V.(type) {
+		case Struct:
+			for _, f := range vv {
+				if f.Name == name {
+					r = f
+					break
+				}
+			}
+		case Array:
+		default:
+			//r = v
+			//panic("unreachable")
+		}
+	}
+
+	//log.Printf("JsonProperty %s %#+v\n", name, r)
+
+	return r
+}
+
+func (v *Value) JsonEach() [][2]interface{} {
+
+	switch vv := v.V.(type) {
+	case Struct:
+		props := [][2]interface{}{}
+		for _, f := range vv {
+			props = append(props, [2]interface{}{f.Name, f})
+		}
+		// log.Printf("JsonEach struct %#+v", props)
+
+		return props
+	case Array:
+		props := [][2]interface{}{}
+		for i, f := range vv {
+			props = append(props, [2]interface{}{i, f})
+		}
+
+		// log.Printf("JsonEach array %#+v", props)
+
+		return props
+	default:
+		// log.Printf("JsonEach value nil")
+		//panic("unreachable")
+
+		return nil
+	}
+
 }
