@@ -382,9 +382,9 @@ func (v *Value) ToJQ() interface{} {
 		return v
 	case bool:
 		if vv {
-			return 1
+			return true
 		} else {
-			return 0
+			return false
 		}
 	case int64:
 		return big.NewInt(vv)
@@ -454,7 +454,7 @@ func (v *Value) JsonLength() int {
 
 		return len(vv)
 	case Array:
-		// log.Printf("JsonLength array %d", len(vv)+5)
+		//log.Printf("JsonLength array %d", len(vv))
 
 		return len(vv)
 	default:
