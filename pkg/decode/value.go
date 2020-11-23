@@ -559,6 +559,9 @@ func (v *Value) JsonEach() [][2]interface{} {
 			props = append(props, [2]interface{}{f.Name, f})
 		}
 		// log.Printf("JsonEach struct %#+v", props)
+		sort.Slice(props, func(i, j int) bool {
+			return props[i][0].(string) < props[j][0].(string)
+		})
 
 		return props
 	case Array:
