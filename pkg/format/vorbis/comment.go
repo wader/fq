@@ -2,7 +2,7 @@ package vorbis
 
 import (
 	"encoding/base64"
-	"fq/internal/bitio"
+	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/format"
 	"strings"

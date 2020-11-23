@@ -5,7 +5,7 @@ package jpeg
 
 import (
 	"fmt"
-	"fq/internal/bitio"
+	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/format"
 )

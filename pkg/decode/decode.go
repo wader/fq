@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"compress/zlib"
 	"fmt"
-	"fq/internal/bitio"
 	"fq/internal/ranges"
+	"fq/pkg/bitio"
 	"io/ioutil"
 	"runtime"
 )

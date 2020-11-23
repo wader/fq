@@ -3,7 +3,7 @@ package ogg
 // https://xiph.org/ogg/doc/framing.html
 
 import (
-	"fq/internal/bitio"
+	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/format"
 )

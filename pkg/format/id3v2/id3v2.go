@@ -495,7 +495,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 func decodeFrames(d *decode.D, version int, size uint64) {
 	d.FieldArrayFn("frame", func(d *decode.D) {
 		for size > 0 {
-			for d.PeekBits(8) == 0 {
+			if d.PeekBits(8) == 0 {
 				return
 			}
 
@@ -504,7 +504,6 @@ func decodeFrames(d *decode.D, version int, size uint64) {
 			})
 		}
 
-		// TODO: padding?
 	})
 
 	if size > 0 {

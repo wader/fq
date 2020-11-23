@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"fq/internal/bitio"
+	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/format"
 	"fq/pkg/output"

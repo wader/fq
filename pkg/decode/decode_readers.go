@@ -3,7 +3,7 @@ package decode
 //go:generate sh -c "cat decode_readers_gen.go.tmpl | go run ../../_dev/tmpl.go | gofmt > decode_readers_gen.go"
 
 import (
-	"fq/internal/bitio"
+	"fq/pkg/bitio"
 	"strconv"
 )
 
@@ -27,6 +27,25 @@ func (d *D) ZeroPadding(nBits int) bool {
 		left -= rbits
 	}
 	return isZero
+}
+
+func (d *D) FieldOptionalFillFn(name string, fn func(d *D)) int64 {
+	start := d.Pos()
+	fn(d)
+	fillLen := d.Pos() - start
+	if fillLen > 0 {
+		d.FieldBitBufRange(name, start, fillLen)
+	}
+
+	return fillLen
+}
+
+func (d *D) FieldOptionalZeroBytes(name string) int64 {
+	return d.FieldOptionalFillFn(name, func(d *D) {
+		for d.BitsLeft() >= 8 && d.PeekBits(8) == 0 {
+			d.SeekRel(8)
+		}
+	})
 }
 
 func (d *D) FieldValidateZeroPadding(name string, nBits int) {
