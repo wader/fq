@@ -147,6 +147,7 @@ func (m Main) run() error {
 
 			switch vv := v.(type) {
 			case *decode.Value:
+				fmt.Fprintf(m.OS.Stdout(), "%s:\n", vv.Path())
 				if err := of.New(vv).Write(m.OS.Stdout()); err != nil {
 					return err
 				}

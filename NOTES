@@ -12,7 +12,8 @@ jq script to summarise?
 .. | select(.id._value == "APIC") | .picture._raw
 # sidx dump
 .. | select(.type._value=="sidx") | .index_table | [.[] | {size: .size._value, duration: .duration._value}]
-
+# what field is at bit position x?
+.. | select(._type == "field" and ._range.start <= x and x < ._range.stop)
 
 decode and fill gaps if known size?
 

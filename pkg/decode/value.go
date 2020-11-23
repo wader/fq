@@ -11,6 +11,7 @@ import (
 	"regexp"
 	"sort"
 	"strconv"
+	"strings"
 )
 
 type Bits uint64
@@ -103,6 +104,27 @@ func (v *Value) Eval(exp string) (*Value, error) {
 	}
 
 	return lf, nil
+}
+
+func (v *Value) Path() string {
+	var parts []string
+
+	for v.Parent != nil {
+		switch v.Parent.V.(type) {
+		case Struct:
+			parts = append([]string{".", v.Name}, parts...)
+		case Array:
+			parts = append([]string{fmt.Sprintf("[%d]", v.Index)}, parts...)
+		}
+		v = v.Parent
+	}
+
+	if len(parts) == 0 {
+		return "."
+	}
+
+	return strings.Join(parts, "")
+
 }
 
 func (v *Value) Lookup(path string) *Value {
@@ -460,7 +482,7 @@ func (v *Value) JsonLength() int {
 	default:
 		// log.Printf("JsonLength value 0")
 
-		panic("unreachable")
+		return 0
 	}
 }
 
@@ -507,8 +529,20 @@ func (v *Value) JsonRange(start int, end int) []interface{} {
 
 func (v *Value) JsonProperty(name string) interface{} {
 
+	// TODO: parent index useful?
+	// TODO: mime, isroot
+
 	var r interface{}
 	switch name {
+	case "_type":
+		switch v.V.(type) {
+		case Struct:
+			return "struct"
+		case Array:
+			return "array"
+		default:
+			return "field"
+		}
 	case "_name":
 		r = v.Name
 	case "_value":
@@ -518,7 +552,11 @@ func (v *Value) JsonProperty(name string) interface{} {
 	case "_description":
 		r = v.Desc
 	case "_range":
-		r = []interface{}{big.NewInt(v.Range.Start), big.NewInt(v.Range.Len)} // TODO: bit.Int?
+		r = map[string]interface{}{
+			"start":  big.NewInt(v.Range.Start),
+			"stop":   big.NewInt(v.Range.Stop()),
+			"length": big.NewInt(v.Range.Len),
+		}
 	case "_size":
 		r = big.NewInt(v.Range.Len)
 	case "_raw":
