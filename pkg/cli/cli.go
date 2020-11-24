@@ -132,10 +132,26 @@ func (m Main) run() error {
 			panic(err)
 		}
 
-		//json.NewEncoder(m.OS.Stdout()).Encode(f.ToJQ())
+		code, err := gojq.Compile(query, gojq.WithExtraFunctions(map[string]gojq.Function{
+			"raw": {
+				Argcount: 1,
+				Callback: func(c interface{}, a []interface{}) interface{} {
+					if v, ok := c.(*decode.Value); ok {
+						bb, err := v.BitBuf.BitBufRange(v.Range.Start, v.Range.Len)
+						if err != nil {
+							return err
+						}
+						return bb
+					}
+					return nil
+				},
+			},
+		}))
+		if err != nil {
+			panic(err)
+		}
 
-		// iter := query.Run(f.ToJQ())
-		iter := query.Run(f)
+		iter := code.Run(f)
 
 		for {
 			v, ok := iter.Next()
