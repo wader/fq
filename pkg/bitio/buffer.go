@@ -8,6 +8,7 @@ package bitio
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"fq/internal/aheadreadseeker"
 	"io"
@@ -68,6 +69,10 @@ func (b *Buffer) BitBufRange(firstBitOffset int64, nBits int64) (*Buffer, error)
 	bufLen, err := b.Len()
 	if err != nil {
 		return nil, err
+	}
+	// TODO: move error check?
+	if firstBitOffset+nBits > bufLen {
+		return nil, errors.New("outside buffer")
 	}
 	if nBits < 0 {
 		nBits = bufLen - firstBitOffset
