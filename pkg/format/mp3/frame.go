@@ -3,6 +3,7 @@ package mp3
 // http://mpgedit.org/mpgedit/mpeg_format/MP3Format.html
 // http://www.multiweb.cz/twoinches/MP3inside.htm
 // https://wiki.hydrogenaud.io/index.php?title=MP3
+// https://www.diva-portal.org/smash/get/diva2:830195/FULLTEXT01.pdf
 
 // TODO: crc
 // TODO: same sample decode?
@@ -145,12 +146,80 @@ func frameDecode(d *decode.D) interface{} {
 		}
 
 		if sideInfoLen != 0 {
-			d.FieldBitBufLen("side_info", sideInfoLen*8)
+			d.FieldStructFn("side_info", func(d *decode.D) {
+				d.FieldU9("main_data_begin")
+				if isStereo {
+					d.FieldU3("private_bits")
+				} else {
+					d.FieldU5("private_bits")
+				}
+				d.FieldU4("share0")
+				if isStereo {
+					d.FieldU4("share1")
+				}
+
+				granuleNr := 0
+				d.FieldStructArrayLoopFn("granule", func() bool { return granuleNr < 2 }, func(d *decode.D) {
+					// TODO: array for channels somehow?
+					// TODO: tables and interpret values a bit
+
+					d.FieldU12("part2_3_length0")
+					if isStereo {
+						d.FieldU12("part2_3_length1")
+					}
+					d.FieldU9("big_values0")
+					if isStereo {
+						d.FieldU9("big_values1")
+					}
+					d.FieldU8("global_gain0")
+					if isStereo {
+						d.FieldU8("global_gain1")
+					}
+					d.FieldU4("scalefac_compress0")
+					if isStereo {
+						d.FieldU4("scalefac_compress1")
+					}
+					d.FieldU1("window_switching0")
+					if isStereo {
+						d.FieldU1("window_switching1")
+					}
+
+					// normal blocks
+					d.FieldU5("table_select0_0")
+					d.FieldU5("table_select0_1")
+					d.FieldU5("table_select0_2")
+					if isStereo {
+						d.FieldU5("table_select1_0")
+						d.FieldU5("table_select1_1")
+						d.FieldU5("table_select1_2")
+					}
+					d.FieldU4("region0_count0")
+					if isStereo {
+						d.FieldU4("region0_count1")
+					}
+					d.FieldU3("region1_count0")
+					if isStereo {
+						d.FieldU3("region1_count1")
+					}
+
+					d.FieldU1("preflag0")
+					if isStereo {
+						d.FieldU1("preflag1")
+					}
+					d.FieldU1("scalefac_scale0")
+					if isStereo {
+						d.FieldU1("scalefac_scale1")
+					}
+					d.FieldU1("count1table_select0")
+					if isStereo {
+						d.FieldU1("count1table_select1")
+					}
+					granuleNr++
+				})
+			})
 		}
 
 		d.FieldTryDecode("xing", xingHeader)
-
-		// TODO: padding slot, 4 bit layer1, 8 bit others?
 
 		d.FieldBitBufLen("samples", d.BitsLeft())
 	})
