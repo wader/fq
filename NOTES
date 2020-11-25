@@ -1,4 +1,5 @@
 
+verbose/derails flag?
 
 bindings in gojq? use for test?
 
@@ -26,6 +27,8 @@ jq script to summarise?
 .. | select(.type._value=="sidx") | .index_table | [.[] | {size: .size._value, duration: .duration._value}]
 # what field is at bit position x?
 .. | select(._type == "field" and ._range.start <= x and x < ._range.stop)
+#
+'.frame[] | [.end_of_header.frame_number._value, ._size] | join(" ")') | gnuplot -p
 
 decode and fill gaps if known size?
 
