@@ -28,6 +28,30 @@ const (
 	LittleEndian
 )
 
+type progressReaderSeeker struct {
+	RS         io.ReadSeeker
+	Length     int64
+	Pos        int64
+	MaxPos     int64
+	ProgressFn func(pos int64, length int64)
+}
+
+func (prs *progressReaderSeeker) Read(p []byte) (n int, err error) {
+	n, err = prs.RS.Read(p)
+	prs.Pos += int64(n)
+	if prs.Pos > prs.MaxPos {
+		prs.MaxPos = prs.Pos
+		prs.ProgressFn(prs.MaxPos, prs.Length)
+	}
+	return n, err
+}
+
+func (prs *progressReaderSeeker) Seek(offset int64, whence int) (int64, error) {
+	pos, err := prs.RS.Seek(offset, whence)
+	prs.Pos = pos
+	return pos, err
+}
+
 // Buffer is a bit buffer
 type Buffer struct {
 	br interface {
@@ -52,6 +76,11 @@ func NewBufferFromReadSeeker(rs io.ReadSeeker) (*Buffer, error) {
 	if _, err := rs.Seek(bPos, io.SeekStart); err != nil {
 		return nil, err
 	}
+
+	// TODO: move
+	// psr := &progressReaderSeeker{RS: rs, Length: bEnd, ProgressFn: func(pos, length int64) {
+	// 	fmt.Fprintf(os.Stderr, "\r%.1f%%", float64(pos*100)/float64(length))
+	// }}
 
 	return &Buffer{
 		br:     NewReaderFromReadSeeker(aheadreadseeker.New(rs, cacheReadAheadSize)),
