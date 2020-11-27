@@ -1,7 +1,7 @@
 package jpeg
 
 // https://www.w3.org/Graphics/JPEG/itu-t81.pdf
-// TODO: exif https://www.exif.org/Exif2-2.PDF
+// TODO: warning on junk before marker?
 
 import (
 	"fmt"
@@ -240,6 +240,19 @@ func jpegDecode(d *decode.D) interface{} {
 						d.FieldU4("Ah")
 						d.FieldU4("Al")
 						inECD = true
+					case DQT:
+						d.FieldU16("Lq")
+						pQ := d.FieldU4("Pq")
+						qBits := 8
+						if pQ != 0 {
+							qBits = 16
+						}
+						d.FieldU4("Tq")
+						qK := 0
+						d.FieldArrayLoopFn("Q", func() bool { return qK < 64 }, func(d *decode.D) {
+							d.FieldU("Q", qBits)
+							qK++
+						})
 					case RST0, RST1, RST2, RST3, RST4, RST5, RST6, RST7:
 						inECD = true
 					case TEM:

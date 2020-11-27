@@ -36,7 +36,7 @@ func (e ReadError) Error() string {
 	}
 
 	return fmt.Sprintf("%s: failed at position %s (size %s delta %s): %s",
-		prefix, Bits(e.Pos).StringByteBits(10), Bits(e.Size).StringByteBits(10), Bits(e.Delta).StringByteBits(10), e.Err)
+		prefix, Bits(e.Pos).StringByteBits(16), Bits(e.Size).StringByteBits(10), Bits(e.Delta).StringByteBits(10), e.Err)
 }
 func (e ReadError) Unwrap() error { return e.Err }
 
@@ -46,7 +46,7 @@ type ValidateError struct {
 }
 
 func (e ValidateError) Error() string {
-	return fmt.Sprintf("failed to validate at position %s: %s", Bits(e.Pos).StringByteBits(10), e.Reason)
+	return fmt.Sprintf("failed to validate at position %s: %s", Bits(e.Pos).StringByteBits(16), e.Reason)
 }
 
 type Endian bitio.Endian
@@ -388,6 +388,14 @@ func (d *D) FieldStructArrayLoopFn(name string, condFn func() bool, fn func(d *D
 	return d.FieldArrayFn(name, func(d *D) {
 		for condFn() {
 			d.FieldStructFn(name, fn)
+		}
+	})
+}
+
+func (d *D) FieldArrayLoopFn(name string, condFn func() bool, fn func(d *D)) *D {
+	return d.FieldArrayFn(name, func(d *D) {
+		for condFn() {
+			fn(d)
 		}
 	})
 }
