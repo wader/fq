@@ -76,12 +76,12 @@ func decodeOgg(d *decode.D) interface{} {
 				}
 
 				// TODO: decoder buffer api that panics?
-				psLen, _ := ps.Len()
+				psBytes := ps.Len() / 8
 
 				// TODO: cleanup
-				b, _ := ps.BytesRange(0, int(psLen/8))
+				b, _ := ps.BytesRange(0, int(psBytes))
 				s.packetBuf = append(s.packetBuf, b...)
-				if psLen/8 < 255 { // TODO: list range maps of demuxed packets?
+				if psBytes < 255 { // TODO: list range maps of demuxed packets?
 					bb := bitio.NewBufferFromBytes(s.packetBuf, -1)
 					packets.FieldDecodeBitBuf("packet", bb, oggPacket)
 					s.packetBuf = nil

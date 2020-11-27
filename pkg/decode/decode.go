@@ -74,10 +74,7 @@ func probe(name string, bb *bitio.Buffer, formats []*Format, opts probeOptions) 
 
 	var errs []error
 	for _, f := range formats {
-		cbb, err := bb.Copy()
-		if err != nil {
-			return nil, nil, []error{err}
-		}
+		cbb := bb.Copy()
 
 		d := (&D{Endian: BigEndian, bitBuf: cbb}).FieldStructBitBuf(name, cbb)
 		d.Value.Desc = f.Name
@@ -275,11 +272,7 @@ func (d *D) Pos() int64 {
 }
 
 func (d *D) Len() int64 {
-	bLen, err := d.bitBuf.Len()
-	if err != nil {
-		panic(ReadError{Err: err, Op: "Len", Size: 0, Pos: d.Pos()})
-	}
-	return bLen
+	return d.bitBuf.Len()
 }
 
 func (d *D) End() bool {

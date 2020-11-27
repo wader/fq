@@ -327,10 +327,7 @@ func (v *Value) String() string {
 			f = hex.EncodeToString(vv)
 		}
 	case *bitio.Buffer:
-		vvLen, err := vv.Len()
-		if err != nil {
-			return err.Error()
-		}
+		vvLen := vv.Len()
 		if vvLen > 16*8 {
 			bs, _ := vv.BytesRange(0, 16)
 			f = hex.EncodeToString(bs) + "..."
@@ -383,10 +380,7 @@ func (v *Value) RawString() string {
 		return string(vv)
 	case *bitio.Buffer:
 		// TODO: RawString, switch to writer somehow?
-		vvLen, err := vv.Len()
-		if err != nil {
-			return err.Error()
-		}
+		vvLen := vv.Len()
 		bs, _ := v.BitBuf.BytesRange(0, int(bitio.BitsByteCount(vvLen)))
 		return string(bs)
 	case nil:
@@ -420,10 +414,7 @@ func (v *Value) ToJQ() interface{} {
 		return string(vv)
 	case *bitio.Buffer:
 		// TODO: RawString, switch to writer somehow?
-		vvLen, err := vv.Len()
-		if err != nil {
-			return err.Error()
-		}
+		vvLen := vv.Len()
 		bs, _ := v.BitBuf.BytesRange(0, int(bitio.BitsByteCount(vvLen)))
 		return string(bs)
 	case nil:

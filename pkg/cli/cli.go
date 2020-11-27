@@ -97,7 +97,10 @@ func (m Main) run() error {
 			return fmt.Errorf("%s: %s", *forceFormatNameFlag, err)
 		}
 	}
-	bb := bitio.NewBufferFromReadSeeker(rs)
+	bb, err := bitio.NewBufferFromReadSeeker(rs)
+	if err != nil {
+		return err
+	}
 	f, _, errs := decode.Probe(fs.Arg(0), bb, probeFormats)
 	if *verboseFlag {
 		for _, err := range errs {

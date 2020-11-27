@@ -143,14 +143,12 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 		}
 
 		if vBitBuf != nil {
-			bb, _ := vBitBuf.Copy()
 			io.Copy(
 				hexpairwriter.New(cw.Columns[2], int(lineBytes), int(startLineByteOffset), hexpairFn),
-				io.LimitReader(bb, displaySizeBytes))
-			bb, _ = vBitBuf.Copy()
+				io.LimitReader(vBitBuf.Copy(), displaySizeBytes))
 			io.Copy(
 				asciiwriter.New(cw.Columns[4], int(lineBytes), int(startLineByteOffset), asciiFn),
-				io.LimitReader(bb, displaySizeBytes))
+				io.LimitReader(vBitBuf.Copy(), displaySizeBytes))
 		}
 
 		for i := int64(1); i < addrLines; i++ {
@@ -191,12 +189,7 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 }
 
 func (o *FieldWriter) Write(w io.Writer) error {
-	ovbLen, err := o.v.BitBuf.Len()
-	if err != nil {
-		return err
-	}
-
-	maxAddrIndentWidth := digitsInBase(bitsCeilBytes(ovbLen), addrBase)
+	maxAddrIndentWidth := digitsInBase(bitsCeilBytes(o.v.BitBuf.Len()), addrBase)
 	o.v.WalkPreOrder(func(v *decode.Value, depth int, rootDepth int) error {
 		// skip first root level
 		if rootDepth > 0 {
@@ -204,12 +197,7 @@ func (o *FieldWriter) Write(w io.Writer) error {
 		}
 
 		if v.IsRoot {
-			vbLen, err := v.BitBuf.Len()
-			if err != nil {
-				return err
-			}
-
-			addrIndentWidth := rootDepth + digitsInBase(bitsCeilBytes(vbLen), addrBase)
+			addrIndentWidth := rootDepth + digitsInBase(bitsCeilBytes(v.BitBuf.Len()), addrBase)
 			if addrIndentWidth > maxAddrIndentWidth {
 				maxAddrIndentWidth = addrIndentWidth
 			}

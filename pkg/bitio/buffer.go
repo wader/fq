@@ -35,14 +35,28 @@ type Buffer struct {
 		BitReadSeeker
 		BitReaderAt
 	}
+	bitLen int64 // mostly to cache len
 }
 
 // NewBufferFromReadSeeker new Buffer from io.ReadSeeker, start at firstBit with bit length lenBits
 // buf is not copied.
-func NewBufferFromReadSeeker(rs io.ReadSeeker) *Buffer {
-	return &Buffer{
-		br: NewReaderFromReadSeeker(aheadreadseeker.New(rs, cacheReadAheadSize)),
+func NewBufferFromReadSeeker(rs io.ReadSeeker) (*Buffer, error) {
+	bPos, err := rs.Seek(0, io.SeekCurrent)
+	if err != nil {
+		return nil, err
 	}
+	bEnd, err := rs.Seek(0, io.SeekEnd)
+	if err != nil {
+		return nil, err
+	}
+	if _, err := rs.Seek(bPos, io.SeekStart); err != nil {
+		return nil, err
+	}
+
+	return &Buffer{
+		br:     NewReaderFromReadSeeker(aheadreadseeker.New(rs, cacheReadAheadSize)),
+		bitLen: bEnd * 8,
+	}, nil
 }
 
 // NewBufferFromBytes new Buffer from bytes
@@ -52,7 +66,8 @@ func NewBufferFromBytes(buf []byte, nBits int64) *Buffer {
 		nBits = int64(len(buf)) * 8
 	}
 	return &Buffer{
-		br: NewSectionBitReader(NewReaderFromReadSeeker(bytes.NewReader(buf)), 0, nBits),
+		br:     NewReaderFromReadSeeker(bytes.NewReader(buf)),
+		bitLen: nBits,
 	}
 }
 
@@ -66,31 +81,24 @@ func NewBufferFromBitString(s string) *Buffer {
 // Does not update current position.
 // if nBits is < 0 nBits is all bits after firstBitOffset
 func (b *Buffer) BitBufRange(firstBitOffset int64, nBits int64) (*Buffer, error) {
-	bufLen, err := b.Len()
-	if err != nil {
-		return nil, err
-	}
 	// TODO: move error check?
-	if firstBitOffset+nBits > bufLen {
+	if firstBitOffset+nBits > b.bitLen {
 		return nil, errors.New("outside buffer")
 	}
 	if nBits < 0 {
-		nBits = bufLen - firstBitOffset
+		nBits = b.bitLen - firstBitOffset
 	}
 	return &Buffer{
-		br: NewSectionBitReader(b.br, firstBitOffset, nBits),
+		br:     NewSectionBitReader(b.br, firstBitOffset, nBits),
+		bitLen: nBits,
 	}, nil
 }
 
-// TODO: can be smarter? no error?
-func (b *Buffer) Copy() (*Buffer, error) {
-	bLen, err := b.Len()
-	if err != nil {
-		return nil, err
-	}
+func (b *Buffer) Copy() *Buffer {
 	return &Buffer{
-		br: NewSectionBitReader(b.br, 0, bLen),
-	}, nil
+		br:     NewSectionBitReader(b.br, 0, b.bitLen),
+		bitLen: b.bitLen,
+	}
 }
 
 func (b *Buffer) Pos() (int64, error) {
@@ -101,19 +109,8 @@ func (b *Buffer) Pos() (int64, error) {
 	return bPos, nil
 }
 
-func (b *Buffer) Len() (int64, error) {
-	bPos, err := b.Pos()
-	if err != nil {
-		return 0, err
-	}
-	bEnd, err := b.br.SeekBits(0, io.SeekEnd)
-	if err != nil {
-		return 0, err
-	}
-	if _, err := b.br.SeekBits(bPos, io.SeekStart); err != nil {
-		return 0, err
-	}
-	return bEnd, nil
+func (b *Buffer) Len() int64 {
+	return b.bitLen
 }
 
 // BitBufLen reads nBits
@@ -242,11 +239,7 @@ func (b *Buffer) End() (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	bLen, err := b.Len()
-	if err != nil {
-		return false, err
-	}
-	return bPos >= bLen, nil
+	return bPos >= b.bitLen, nil
 }
 
 // BitsLeft number of bits left until end
@@ -255,11 +248,7 @@ func (b *Buffer) BitsLeft() (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	bLen, err := b.Len()
-	if err != nil {
-		return 0, err
-	}
-	return bLen - bPos, nil
+	return b.bitLen - bPos, nil
 }
 
 // ByteAlignBits number of bits to next byte align
@@ -292,11 +281,7 @@ func (b *Buffer) SeekAbs(pos int64) (int64, error) {
 }
 
 func (b *Buffer) String() string {
-	bLen, err := b.Len()
-	if err != nil {
-		return err.Error()
-	}
-	truncLen := bLen
+	truncLen := b.bitLen
 	truncS := ""
 	if truncLen > 64 {
 		truncLen, truncS = 64, "..."
@@ -307,7 +292,7 @@ func (b *Buffer) String() string {
 		return err.Error()
 	}
 
-	return fmt.Sprintf("0b%s%s /* %d bits */", bitString, truncS, bLen)
+	return fmt.Sprintf("0b%s%s /* %d bits */", bitString, truncS, b.bitLen)
 }
 
 // BitString return bit string representation
