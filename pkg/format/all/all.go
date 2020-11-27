@@ -20,4 +20,6 @@ import (
 	_ "fq/pkg/format/tiff"
 	_ "fq/pkg/format/vorbis"
 	_ "fq/pkg/format/wav"
+
+	_ "fq/pkg/format/jq"
 )
