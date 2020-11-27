@@ -1,6 +1,8 @@
 
 verbose/derails flag?
 
+warnings []error somehow?
+
 bindings in gojq? use for test?
 
 test syntax:
