@@ -40,7 +40,7 @@ func (m Main) run() error {
 	fs.SetOutput(m.OS.Stderr())
 	dotFlag := fs.Bool("dot", false, "Output dot format graph (... | dot -Tsvg -o formats.svg)")
 	forceFormatNameFlag := fs.String("f", "", "Force format")
-	verboseFlag := fs.Bool("v", false, "Verbose output")
+	// verboseFlag := fs.Bool("v", false, "Verbose output")
 	outputFormatFlag := fs.String("o", "text", "Output format")
 	fs.Usage = func() {
 		maxNameLen := 0
@@ -101,17 +101,17 @@ func (m Main) run() error {
 	if err != nil {
 		return err
 	}
-	f, _, errs := decode.Probe(fs.Arg(0), bb, probeFormats)
-	if *verboseFlag {
-		for _, err := range errs {
-			fmt.Fprintf(m.OS.Stderr(), "%s\n", err)
-			if pe, ok := err.(*decode.DecodeError); ok {
-				// if pe.PanicHandeled {
-				fmt.Fprintf(m.OS.Stderr(), "%s", pe.PanicStack)
-				// }
-			}
-		}
-	}
+	// f, _, errs := decode.Probe(fs.Arg(0), bb, probeFormats)
+	// if *verboseFlag {
+	// 	for _, err := range errs {
+	// 		fmt.Fprintf(m.OS.Stderr(), "%s\n", err)
+	// 		if pe, ok := err.(*decode.DecodeError); ok {
+	// 			// if pe.PanicHandeled {
+	// 			fmt.Fprintf(m.OS.Stderr(), "%s", pe.PanicStack)
+	// 			// }
+	// 		}
+	// 	}
+	// }
 
 	var of *decode.FieldOutput
 	for _, of = range output.All {
@@ -123,68 +123,117 @@ func (m Main) run() error {
 		return fmt.Errorf("%s: unable to find output format", *outputFormatFlag)
 	}
 
-	if f != nil {
-		// exp := fs.Arg(1)
-		// expValue, err := f.Eval(exp)
-		// if err != nil {
-		// 	return fmt.Errorf("%s: %s", exp, err)
-		// }
+	// if f != nil {
+	// exp := fs.Arg(1)
+	// expValue, err := f.Eval(exp)
+	// if err != nil {
+	// 	return fmt.Errorf("%s: %s", exp, err)
+	// }
 
-		query, err := gojq.Parse(fs.Arg(1))
-		if err != nil {
-			panic(err)
-		}
-
-		code, err := gojq.Compile(query, gojq.WithExtraFunctions(map[string]gojq.Function{
-			"raw": {
-				Argcount: 1,
-				Callback: func(c interface{}, a []interface{}) interface{} {
-					if v, ok := c.(*decode.Value); ok {
-						bb, err := v.BitBuf.BitBufRange(v.Range.Start, v.Range.Len)
-						if err != nil {
-							return err
-						}
-						return bb
-					}
-					return nil
-				},
-			},
-		}))
-		if err != nil {
-			panic(err)
-		}
-
-		iter := code.Run(f)
-
-		for {
-			v, ok := iter.Next()
-			if !ok {
-				break
-			}
-
-			//log.Printf("v: %v\n", v)
-
-			switch vv := v.(type) {
-			case *decode.Value:
-				fmt.Fprintf(m.OS.Stdout(), "%s:\n", vv.Path())
-				if err := of.New(vv).Write(m.OS.Stdout()); err != nil {
-					return err
-				}
-			case *bitio.Buffer:
-				io.Copy(m.OS.Stdout(), vv)
-			case string:
-				fmt.Fprintln(m.OS.Stdout(), vv)
-			default:
-				json.NewEncoder(m.OS.Stdout()).Encode(v)
-			}
-		}
-
-		// if err := of.New(expValue).Write(m.OS.Stdout()); err != nil {
-		// 	return err
-		// }
-	} else {
-		return fmt.Errorf("unable to probe format")
+	// TODO: how to skip probe at all in some cases?
+	q := "probe"
+	if fs.Arg(1) != "" {
+		q = fmt.Sprintf("probe | (%s)", fs.Arg(1))
 	}
+
+	query, err := gojq.Parse(q)
+	if err != nil {
+		panic(err)
+	}
+
+	code, err := gojq.Compile(query, gojq.WithExtraFunctions(map[string]gojq.Function{
+		"raw": {
+			Argcount: 1,
+			Callback: func(c interface{}, a []interface{}) interface{} {
+				if v, ok := c.(*decode.Value); ok {
+					bb, err := v.BitBuf.BitBufRange(v.Range.Start, v.Range.Len)
+					if err != nil {
+						return err
+					}
+					return bb
+				}
+				return nil
+			},
+		},
+		"probe": {
+			Argcount: 1<<1 | 1<<0,
+			Callback: func(c interface{}, a []interface{}) interface{} {
+				var bb *bitio.Buffer
+				switch cc := c.(type) {
+				case *decode.Value:
+					bb, err = cc.BitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
+					if err != nil {
+						return err
+					}
+				case *bitio.Buffer:
+					bb = cc
+				default:
+					return fmt.Errorf("value is not a bit buffer")
+				}
+
+				formats := probeFormats
+				if len(a) == 1 {
+					groupName, ok := a[0].(string)
+					if !ok {
+						return fmt.Errorf("format name is not a string")
+					}
+
+					formats, err = m.Registry.Group(groupName)
+					if err != nil {
+						return fmt.Errorf("%s: %s", groupName, err)
+					}
+				}
+
+				// TODO: name? inject filename as variable for root? other just "." or arg?
+				dv, _, errs := decode.Probe("bla", bb, formats)
+				if dv == nil {
+					return errs
+				}
+
+				return dv
+			},
+		},
+	}))
+	if err != nil {
+		panic(err)
+	}
+
+	iter := code.Run(bb)
+
+	for {
+		v, ok := iter.Next()
+		if !ok {
+			break
+		}
+		if err, ok := v.(error); ok {
+			fmt.Fprintf(m.OS.Stderr(), "%s\n", err)
+			break
+		}
+
+		//log.Printf("v: %v\n", v)
+
+		switch vv := v.(type) {
+		case *decode.Value:
+			fmt.Fprintf(m.OS.Stdout(), "%s:\n", vv.Path())
+			if err := of.New(vv).Write(m.OS.Stdout()); err != nil {
+				return err
+			}
+		case *bitio.Buffer:
+			io.Copy(m.OS.Stdout(), vv)
+		case string:
+			fmt.Fprintln(m.OS.Stdout(), vv)
+		default:
+			json.NewEncoder(m.OS.Stdout()).Encode(v)
+		}
+	}
+
+	// if err := of.New(expValue).Write(m.OS.Stdout()); err != nil {
+	// 	return err
+	// }
+	// }
+	// else {
+	// 	return fmt.Errorf("unable to probe format")
+	// }
 
 	return nil
 }
