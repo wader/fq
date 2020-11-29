@@ -47,6 +47,7 @@ func (r *Registry) resolve() error {
 					}
 					formats = append(formats, df...)
 				}
+
 				*d.Formats = formats
 			}
 		}

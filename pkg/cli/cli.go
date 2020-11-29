@@ -9,8 +9,6 @@ import (
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/format"
-	"fq/pkg/output"
-	"fq/pkg/output/text"
 	"io"
 	"io/ioutil"
 	"os"
@@ -43,7 +41,6 @@ func (m Main) run() error {
 	dotFlag := fs.Bool("dot", false, "Output dot format graph (... | dot -Tsvg -o formats.svg)")
 	forceFormatNameFlag := fs.String("f", "", "Force format")
 	// verboseFlag := fs.Bool("v", false, "Verbose output")
-	outputFormatFlag := fs.String("o", "text", "Output format")
 	fs.Usage = func() {
 		maxNameLen := 0
 		for _, f := range allFormats {
@@ -103,34 +100,6 @@ func (m Main) run() error {
 	if err != nil {
 		return err
 	}
-	// f, _, errs := decode.Probe(fs.Arg(0), bb, probeFormats)
-	// if *verboseFlag {
-	// 	for _, err := range errs {
-	// 		fmt.Fprintf(m.OS.Stderr(), "%s\n", err)
-	// 		if pe, ok := err.(*decode.DecodeError); ok {
-	// 			// if pe.PanicHandeled {
-	// 			fmt.Fprintf(m.OS.Stderr(), "%s", pe.PanicStack)
-	// 			// }
-	// 		}
-	// 	}
-	// }
-
-	var of *decode.FieldOutput
-	for _, of = range output.All {
-		if of.Name == *outputFormatFlag {
-			break
-		}
-	}
-	if of == nil {
-		return fmt.Errorf("%s: unable to find output format", *outputFormatFlag)
-	}
-
-	// if f != nil {
-	// exp := fs.Arg(1)
-	// expValue, err := f.Eval(exp)
-	// if err != nil {
-	// 	return fmt.Errorf("%s: %s", exp, err)
-	// }
 
 	// TODO: how to skip probe at all in some cases?
 	q := "probe"
@@ -269,8 +238,7 @@ func (m Main) run() error {
 					}
 				}
 
-				tw := &text.FieldWriter{V: v, MaxDepth: maxDepth}
-				if err := tw.Write(m.OS.Stdout()); err != nil {
+				if err := v.Dump(maxDepth, m.OS.Stdout()); err != nil {
 					return err
 				}
 
@@ -294,12 +262,10 @@ func (m Main) run() error {
 			break
 		}
 
-		//log.Printf("v: %v\n", v)
-
 		switch vv := v.(type) {
 		case *decode.Value:
 			fmt.Fprintf(m.OS.Stdout(), "%s:\n", vv.Path())
-			if err := of.New(vv).Write(m.OS.Stdout()); err != nil {
+			if err := vv.Dump(0, m.OS.Stdout()); err != nil {
 				return err
 			}
 		case *bitio.Buffer:
@@ -310,14 +276,6 @@ func (m Main) run() error {
 			json.NewEncoder(m.OS.Stdout()).Encode(v)
 		}
 	}
-
-	// if err := of.New(expValue).Write(m.OS.Stdout()); err != nil {
-	// 	return err
-	// }
-	// }
-	// else {
-	// 	return fmt.Errorf("unable to probe format")
-	// }
 
 	return nil
 }
