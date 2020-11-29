@@ -74,12 +74,8 @@ func probe(name string, bb *bitio.Buffer, formats []*Format, opts probeOptions) 
 
 	var errs []error
 	for _, f := range formats {
-		cbb := bb.Copy()
+		d := NewDecoder(name, f.Name, bb, opts.isRoot)
 
-		d := (&D{Endian: BigEndian, bitBuf: cbb}).FieldStructBitBuf(name, cbb)
-		d.Value.Desc = f.Name
-		d.Value.BitBuf = cbb
-		d.Value.IsRoot = opts.isRoot
 		decodeErr, dv := d.SafeDecodeFn(f.DecodeFn)
 		if decodeErr != nil {
 			d.Value.Error = decodeErr
@@ -125,6 +121,18 @@ type D struct {
 
 	bitBuf   *bitio.Buffer
 	registry *Registry
+}
+
+// TODO: new struct decoder?
+func NewDecoder(name string, description string, bb *bitio.Buffer, isRoot bool) *D {
+	cbb := bb.Copy()
+
+	d := (&D{Endian: BigEndian, bitBuf: cbb}).FieldStructBitBuf(name, cbb)
+	d.Value.Desc = description
+	d.Value.BitBuf = cbb
+	d.Value.IsRoot = isRoot
+
+	return d
 }
 
 func (d *D) SafeDecodeFn(fn func(d *D) interface{}) (error, interface{}) {

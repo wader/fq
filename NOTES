@@ -1,6 +1,8 @@
 
 pass in context somehow? break in reader?
 
+funciton better wrong value error message
+
 probe name
 
 better error, wrap panics to passhtur bug panics?
@@ -9,9 +11,9 @@ sort formats somehow? determistics
 
 path() function
 some reflection? foramts? input file name etc?
-raw -> bits? slice?
-hexdump function?
-rename text to dump? depth args?
+DONE raw -> bits? slice?
+DONE hexdump function?
+DONE rename text to dump? depth args?
 tests runs jq queries? asset stdoutish? base64 for bin?
 
 verbose/derails flag?

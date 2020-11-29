@@ -224,6 +224,8 @@ func (m Main) run() error {
 				switch cc := c.(type) {
 				case *decode.Value:
 					v = cc
+				case *decode.D:
+					v = cc.Value
 				default:
 					return fmt.Errorf("value is not a decode value")
 				}
@@ -247,6 +249,24 @@ func (m Main) run() error {
 				return c
 			},
 		},
+		"decoder": {
+			Argcount: 1<<1 | 1<<0,
+			Callback: func(c interface{}, a []interface{}) interface{} {
+				var bb *bitio.Buffer
+				switch cc := c.(type) {
+				case *bitio.Buffer:
+					bb = cc
+				default:
+					return fmt.Errorf("value is not decode value or a bit buffer")
+				}
+
+				// TODO: safe, names
+
+				d := decode.NewDecoder("", "", bb, true)
+
+				return d
+			},
+		},
 	}
 
 	dType := reflect.TypeOf(&decode.D{})
@@ -266,7 +286,7 @@ func (m Main) run() error {
 				for i := 1; i < method.Type.NumIn(); i++ {
 					//t := method.Type.In(i)
 					object := a[i-1]
-					fmt.Println(i, "->", object)
+					//fmt.Println(i, "->", object)
 					in[i] = reflect.ValueOf(object)
 				}
 
