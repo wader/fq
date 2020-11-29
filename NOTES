@@ -1,6 +1,9 @@
 
+pass in context somehow? break in reader?
 
 probe name
+
+better error, wrap panics to passhtur bug panics?
 
 sort formats somehow? determistics
 
@@ -149,8 +152,9 @@ error from sub decoder?
 Copy -> Clone? reset pos?
 
 decoder guide:
-  invalid is no zero input, assert one valid frame etc
-  try validate input to make it not ambiguous so that multple deocders could match
+  invalid on zero length inputer, assert one valid frame etc
+  try validate input to make it not ambiguous with other decoders
+  try to not seek and read at end while validating or early, will break progress incidate if not
   split bit flags etc into a field with subfields for each bit
   try keep code as declarative as possible
   split into multiple sub decoders if possible

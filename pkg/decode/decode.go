@@ -107,10 +107,9 @@ func probe(name string, bb *bitio.Buffer, formats []*Format, opts probeOptions) 
 		d.Value.Range = ranges.Range{Start: opts.relStart, Len: maxRange.Len}
 
 		if opts.isRoot {
-			// sort and set ranges for struct and arrays
-
 			d.FillGaps("unknown")
 
+			// sort and set ranges for struct and arrays
 			d.Value.postProcess()
 		}
 

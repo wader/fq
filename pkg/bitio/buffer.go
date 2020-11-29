@@ -77,8 +77,8 @@ func NewBufferFromReadSeeker(rs io.ReadSeeker) (*Buffer, error) {
 		return nil, err
 	}
 
-	// TODO: move
-	// psr := &progressReaderSeeker{RS: rs, Length: bEnd, ProgressFn: func(pos, length int64) {
+	// // TODO: move
+	// prs := &progressReaderSeeker{RS: rs, Length: bEnd, ProgressFn: func(pos, length int64) {
 	// 	fmt.Fprintf(os.Stderr, "\r%.1f%%", float64(pos*100)/float64(length))
 	// }}
 

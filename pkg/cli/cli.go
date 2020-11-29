@@ -73,15 +73,18 @@ func (m Main) run() error {
 		os.Exit(0)
 	}
 
+	filename := fs.Arg(0)
+
 	var rs io.ReadSeeker
-	if fs.Arg(0) != "" && fs.Arg(0) != "-" {
-		f, err := m.OS.Open(fs.Arg(0))
+	if filename != "" && filename != "-" {
+		f, err := m.OS.Open(filename)
 		if err != nil {
 			return err
 		}
 		defer f.Close()
 		rs = f
 	} else {
+		filename = "stdin"
 		buf, err := ioutil.ReadAll(m.OS.Stdin())
 		if err != nil {
 			return err
@@ -102,9 +105,9 @@ func (m Main) run() error {
 	}
 
 	// TODO: how to skip probe at all in some cases?
-	q := "probe"
+	q := `$FQ_BUFFER | probe("probe"; $FQ_FILENAME)`
 	if fs.Arg(1) != "" {
-		q = fmt.Sprintf("probe | (%s)", fs.Arg(1))
+		q = fmt.Sprintf(`$FQ_BUFFER | (%s)`, fs.Arg(1))
 	}
 
 	query, err := gojq.Parse(q)
@@ -112,145 +115,160 @@ func (m Main) run() error {
 		panic(err)
 	}
 
-	code, err := gojq.Compile(query, gojq.WithExtraFunctions(map[string]gojq.Function{
-		"bits": {
-			Argcount: 1,
-			Callback: func(c interface{}, a []interface{}) interface{} {
-				if v, ok := c.(*decode.Value); ok {
-					bb, err := v.BitBuf.BitBufRange(v.Range.Start, v.Range.Len)
-					if err != nil {
+	code, err := gojq.Compile(
+		query,
+		gojq.WithVariables([]string{
+			"$FQ_BUFFER",
+			"$FQ_FILENAME",
+		}),
+		gojq.WithExtraFunctions(map[string]gojq.Function{
+			"bits": {
+				Argcount: 1,
+				Callback: func(c interface{}, a []interface{}) interface{} {
+					if v, ok := c.(*decode.Value); ok {
+						bb, err := v.BitBuf.BitBufRange(v.Range.Start, v.Range.Len)
+						if err != nil {
+							return err
+						}
+						return bb
+					}
+
+					// TODO: passthru c? move raw function?
+					return nil
+				},
+			},
+			"string": {
+				Argcount: 1,
+				Callback: func(c interface{}, a []interface{}) interface{} {
+					var bb *bitio.Buffer
+					switch cc := c.(type) {
+					case *decode.Value:
+						bb, err = cc.BitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
+						if err != nil {
+							return err
+						}
+					case *bitio.Buffer:
+						bb = cc
+					default:
+						return fmt.Errorf("value is not a decode value or bit buffer")
+					}
+
+					sb := &strings.Builder{}
+					if _, err := io.Copy(sb, bb); err != nil {
 						return err
 					}
-					return bb
-				}
 
-				// TODO: passthru c? move raw function?
-				return nil
+					return string(sb.String())
+				},
 			},
-		},
-		"string": {
-			Argcount: 1,
-			Callback: func(c interface{}, a []interface{}) interface{} {
-				var bb *bitio.Buffer
-				switch cc := c.(type) {
-				case *decode.Value:
-					bb, err = cc.BitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
-					if err != nil {
+			"probe": {
+				Argcount: 1<<2 | 1<<1 | 1<<0,
+				Callback: func(c interface{}, a []interface{}) interface{} {
+					var bb *bitio.Buffer
+					switch cc := c.(type) {
+					case *decode.Value:
+						bb, err = cc.BitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
+						if err != nil {
+							return err
+						}
+					case *bitio.Buffer:
+						bb = cc
+					default:
+						return fmt.Errorf("value is not a decode value or bit buffer")
+					}
+
+					formats := probeFormats
+					if len(a) == 1 {
+						groupName, ok := a[0].(string)
+						if !ok {
+							return fmt.Errorf("format name is not a string")
+						}
+
+						formats, err = m.Registry.Group(groupName)
+						if err != nil {
+							return fmt.Errorf("%s: %s", groupName, err)
+						}
+					}
+
+					// TODO: hmm
+					name := "unname"
+					if len(a) == 2 {
+						var ok bool
+						name, ok = a[1].(string)
+						if !ok {
+							return fmt.Errorf("name is not a string")
+						}
+					}
+
+					dv, _, errs := decode.Probe(name, bb, formats)
+					if dv == nil {
+						return errs
+					}
+
+					return dv
+				},
+			},
+			"hexdump": {
+				Argcount: 1 << 0,
+				Callback: func(c interface{}, a []interface{}) interface{} {
+					var bb *bitio.Buffer
+					switch cc := c.(type) {
+					case *decode.Value:
+						bb, err = cc.BitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
+						if err != nil {
+							return err
+						}
+					case *bitio.Buffer:
+						bb = cc
+					default:
+						return fmt.Errorf("value is not decode value or a bit buffer")
+					}
+
+					hw := hex.Dumper(m.OS.Stdout())
+					defer hw.Close()
+					if _, err := io.Copy(hw, bb); err != nil {
 						return err
 					}
-				case *bitio.Buffer:
-					bb = cc
-				default:
-					return fmt.Errorf("value is not a decode value or bit buffer")
-				}
 
-				sb := &strings.Builder{}
-				if _, err := io.Copy(sb, bb); err != nil {
-					return err
-				}
-
-				return string(sb.String())
+					return c
+				},
 			},
-		},
-		"probe": {
-			Argcount: 1<<1 | 1<<0,
-			Callback: func(c interface{}, a []interface{}) interface{} {
-				var bb *bitio.Buffer
-				switch cc := c.(type) {
-				case *decode.Value:
-					bb, err = cc.BitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
-					if err != nil {
+			"dump": {
+				Argcount: 1<<1 | 1<<0,
+				Callback: func(c interface{}, a []interface{}) interface{} {
+					var v *decode.Value
+					switch cc := c.(type) {
+					case *decode.Value:
+						v = cc
+					default:
+						return fmt.Errorf("value is not a decode value")
+					}
+
+					maxDepth := 0
+					if len(a) == 1 {
+						var ok bool
+						maxDepth, ok = a[0].(int)
+						if !ok {
+							return fmt.Errorf("max depth is not a int")
+						}
+						if maxDepth < 0 {
+							return fmt.Errorf("max depth can't be negative")
+						}
+					}
+
+					if err := v.Dump(maxDepth, m.OS.Stdout()); err != nil {
 						return err
 					}
-				case *bitio.Buffer:
-					bb = cc
-				default:
-					return fmt.Errorf("value is not a decode value or bit buffer")
-				}
 
-				formats := probeFormats
-				if len(a) == 1 {
-					groupName, ok := a[0].(string)
-					if !ok {
-						return fmt.Errorf("format name is not a string")
-					}
-
-					formats, err = m.Registry.Group(groupName)
-					if err != nil {
-						return fmt.Errorf("%s: %s", groupName, err)
-					}
-				}
-
-				// TODO: name? inject filename as variable for root? other just "." or arg?
-				dv, _, errs := decode.Probe("bla", bb, formats)
-				if dv == nil {
-					return errs
-				}
-
-				return dv
+					return c
+				},
 			},
-		},
-		"hexdump": {
-			Argcount: 1 << 0,
-			Callback: func(c interface{}, a []interface{}) interface{} {
-				var bb *bitio.Buffer
-				switch cc := c.(type) {
-				case *decode.Value:
-					bb, err = cc.BitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
-					if err != nil {
-						return err
-					}
-				case *bitio.Buffer:
-					bb = cc
-				default:
-					return fmt.Errorf("value is not decode value or a bit buffer")
-				}
-
-				hw := hex.Dumper(m.OS.Stdout())
-				defer hw.Close()
-				if _, err := io.Copy(hw, bb); err != nil {
-					return err
-				}
-
-				return c
-			},
-		},
-		"dump": {
-			Argcount: 1<<1 | 1<<0,
-			Callback: func(c interface{}, a []interface{}) interface{} {
-				var v *decode.Value
-				switch cc := c.(type) {
-				case *decode.Value:
-					v = cc
-				default:
-					return fmt.Errorf("value is not a decode value")
-				}
-
-				maxDepth := 0
-				if len(a) == 1 {
-					var ok bool
-					maxDepth, ok = a[0].(int)
-					if !ok {
-						return fmt.Errorf("max depth is not a int")
-					}
-					if maxDepth < 0 {
-						return fmt.Errorf("max depth can't be negative")
-					}
-				}
-
-				if err := v.Dump(maxDepth, m.OS.Stdout()); err != nil {
-					return err
-				}
-
-				return c
-			},
-		},
-	}))
+		}))
 	if err != nil {
 		panic(err)
 	}
 
-	iter := code.Run(bb)
+	iter := code.Run(bb, bb, filename)
 
 	for {
 		v, ok := iter.Next()
