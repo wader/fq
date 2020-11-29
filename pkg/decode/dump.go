@@ -147,7 +147,7 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootDepth int, addrWidt
 			fmt.Fprintf(cw.Columns[3], "|\n")
 			fmt.Fprintf(cw.Columns[5], "|\n")
 		}
-		// TODO: correct?
+		// TODO: correct? should rethink columnwriter api maybe?
 		lastLineStopByte := startLineByte + int64(addrLines)*int64(opts.LineBytes) - 1
 		if lastDisplayByte == bufferLastByte && lastDisplayByte != lastLineStopByte {
 			fmt.Fprintf(cw.Columns[2], "|\n")
