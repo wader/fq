@@ -50,6 +50,7 @@ func dump(cw *columnwriter.Writer, v *Value, depth int, rootDepth int, addrWidth
 	rootIndent := strings.Repeat(" ", rootDepth)
 	indent := strings.Repeat("  ", depth)
 
+	bufferLastBit := v.BitBuf.Len() - 1
 	startBit := v.Range.Start
 	stopBit := v.Range.Stop() - 1
 	sizeBits := v.Range.Len
@@ -149,10 +150,14 @@ func dump(cw *columnwriter.Writer, v *Value, depth int, rootDepth int, addrWidth
 		}
 
 		if stopByte != lastDisplayByte {
+			isEnd := ""
+			if stopBit == bufferLastBit {
+				isEnd = " (end)"
+			}
 			fmt.Fprintf(cw.Columns[0], "*\n")
 			fmt.Fprintf(cw.Columns[1], "|\n")
 			fmt.Fprint(cw.Columns[2], "\n")
-			fmt.Fprintf(cw.Columns[2], "%d bytes more, ends at %x", stopByte-lastDisplayByte, stopByte)
+			fmt.Fprintf(cw.Columns[2], "%d bytes more until %s%s", stopByte-lastDisplayByte, Bits(stopBit).StringByteBits(addrBase), isEnd)
 			fmt.Fprintf(cw.Columns[3], "|\n")
 			fmt.Fprintf(cw.Columns[5], "|\n")
 			// TODO: dump last line?
