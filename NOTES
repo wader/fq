@@ -47,7 +47,7 @@ jq script to summarise?
 # what field is at bit position x?
 .. | select(._type == "field" and ._range.start <= x and x < ._range.stop)
 #
-'.frame[] | [.end_of_header.frame_number._value, ._size] | join(" ")') | gnuplot -p
+(echo -e "set term svg\nset output 'test.svg'\nplot '-'"; go run cmd/fq/main.go test.flac 'probe | .frame[] | [.end_of_header.frame_number._value, ._size] | join(" ")') | gnuplot
 
 decode and fill gaps if known size?
 
