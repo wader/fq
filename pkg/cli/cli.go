@@ -105,6 +105,13 @@ func (m Main) run() error {
 		return err
 	}
 
+	dumpOpts := decode.DumpOptions{
+		LineBytes:       16,
+		MaxDisplayBytes: 16,
+		AddrBase:        16,
+		SizeBase:        10,
+	}
+
 	fqFuncs := map[string]gojq.Function{
 		"bits": {
 			Argcount: 1,
@@ -242,12 +249,10 @@ func (m Main) run() error {
 					}
 				}
 
-				if err := v.Dump(m.OS.Stdout(), decode.DumpOptions{
-					LineBytes:       16,
-					MaxDisplayBytes: 16,
-					AddrBase:        16,
-					SizeBase:        10,
-				}); err != nil {
+				opts := dumpOpts
+				opts.MaxDepth = maxDepth
+
+				if err := v.Dump(m.OS.Stdout(), opts); err != nil {
 					return err
 				}
 
@@ -337,7 +342,7 @@ func (m Main) run() error {
 		switch vv := v.(type) {
 		case *decode.Value:
 			fmt.Fprintf(m.OS.Stdout(), "%s:\n", vv.Path())
-			if err := vv.Dump(0, m.OS.Stdout()); err != nil {
+			if err := vv.Dump(m.OS.Stdout(), dumpOpts); err != nil {
 				return err
 			}
 		case *bitio.Buffer:
