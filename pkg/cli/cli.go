@@ -11,7 +11,6 @@ import (
 	"fq/pkg/format"
 	"io"
 	"io/ioutil"
-	"os"
 	"reflect"
 	"sort"
 	"strings"
@@ -71,7 +70,7 @@ func (m Main) run() error {
 
 	if *dotFlag {
 		m.Registry.Dot(m.OS.Stdout())
-		os.Exit(0)
+		return nil
 	}
 
 	filename := fs.Arg(0)
