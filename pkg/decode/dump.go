@@ -12,11 +12,6 @@ import (
 	"strings"
 )
 
-const lineBytes = int64(16)
-const maxBytes = int64(16)
-const addrBase = 16
-const sizeBase = 10
-
 func digitsInBase(n int64, base int) int {
 	if n == 0 {
 		return 1
@@ -41,7 +36,15 @@ func bitsCeilBytes(bits int64) int64 {
 	return bits >> 3
 }
 
-func dump(cw *columnwriter.Writer, v *Value, depth int, rootDepth int, addrWidth int) error {
+type DumpOptions struct {
+	MaxDepth        int
+	LineBytes       int
+	MaxDisplayBytes int
+	AddrBase        int
+	SizeBase        int
+}
+
+func (v *Value) dump(cw *columnwriter.Writer, depth int, rootDepth int, addrWidth int, opts DumpOptions) error {
 	isInArray := false
 	if v.Parent != nil {
 		_, isInArray = v.Parent.V.(Array)
@@ -56,13 +59,13 @@ func dump(cw *columnwriter.Writer, v *Value, depth int, rootDepth int, addrWidth
 	sizeBits := v.Range.Len
 	lastDisplayBit := stopBit
 
-	if sizeBits > maxBytes*8 {
-		lastDisplayBit = startBit + (maxBytes*8 - 1)
-		if lastDisplayBit%(lineBytes*8) != 0 {
-			lastDisplayBit += (lineBytes * 8) - lastDisplayBit%(lineBytes*8) - 1
+	if sizeBits > int64(opts.MaxDisplayBytes)*8 {
+		lastDisplayBit = startBit + (int64(opts.MaxDisplayBytes)*8 - 1)
+		if lastDisplayBit%(int64(opts.LineBytes)*8) != 0 {
+			lastDisplayBit += (int64(opts.LineBytes) * 8) - lastDisplayBit%(int64(opts.LineBytes)*8) - 1
 		}
 
-		if lastDisplayBit > stopBit || stopBit-lastDisplayBit <= lineBytes*8 {
+		if lastDisplayBit > stopBit || stopBit-lastDisplayBit <= int64(opts.LineBytes)*8 {
 			lastDisplayBit = stopBit
 		}
 	}
@@ -72,10 +75,10 @@ func dump(cw *columnwriter.Writer, v *Value, depth int, rootDepth int, addrWidth
 	lastDisplayByte := lastDisplayBit / 8
 	displaySizeBytes := lastDisplayByte - startByte + 1
 
-	startLine := startByte / lineBytes
-	startLineByteOffset := startByte % lineBytes
-	startLineByte := startLine * lineBytes
-	lastDisplayLine := lastDisplayByte / lineBytes
+	startLine := startByte / int64(opts.LineBytes)
+	startLineByteOffset := startByte % int64(opts.LineBytes)
+	startLineByte := startLine * int64(opts.LineBytes)
+	lastDisplayLine := lastDisplayByte / int64(opts.LineBytes)
 
 	fmt.Fprintf(cw.Columns[1], "|\n")
 	fmt.Fprintf(cw.Columns[3], "|\n")
@@ -88,11 +91,11 @@ func dump(cw *columnwriter.Writer, v *Value, depth int, rootDepth int, addrWidth
 		} else {
 			fmt.Fprintf(cw.Columns[6], "%s%s{}: ", indent, v.Name)
 		}
-		fmt.Fprintf(cw.Columns[6], "%s %s fields %d (%s)\n", v, BitRange(v.Range).StringByteBits(addrBase), len(vv), Bits(v.Range.Len).StringByteBits(sizeBase))
+		fmt.Fprintf(cw.Columns[6], "%s %s fields %d (%s)\n", v, BitRange(v.Range).StringByteBits(opts.AddrBase), len(vv), Bits(v.Range.Len).StringByteBits(opts.SizeBase))
 	case Array:
-		fmt.Fprintf(cw.Columns[6], "%s%s[]: %s %s count %d (%s)\n", indent, v.Name, v, BitRange(v.Range).StringByteBits(addrBase), len(vv), Bits(v.Range.Len).StringByteBits(sizeBase))
+		fmt.Fprintf(cw.Columns[6], "%s%s[]: %s %s count %d (%s)\n", indent, v.Name, v, BitRange(v.Range).StringByteBits(opts.AddrBase), len(vv), Bits(v.Range.Len).StringByteBits(opts.SizeBase))
 	default:
-		fmt.Fprintf(cw.Columns[0], "%s%s\n", rootIndent, padFormatInt(startLineByte, addrBase, addrWidth))
+		fmt.Fprintf(cw.Columns[0], "%s%s\n", rootIndent, padFormatInt(startLineByte, opts.AddrBase, addrWidth))
 
 		color := false
 		vBitBuf, err := v.BitBuf.BitBufRange(startByte*8, displaySizeBytes*8)
@@ -135,15 +138,15 @@ func dump(cw *columnwriter.Writer, v *Value, depth int, rootDepth int, addrWidth
 
 		if vBitBuf != nil {
 			io.Copy(
-				hexpairwriter.New(cw.Columns[2], int(lineBytes), int(startLineByteOffset), hexpairFn),
+				hexpairwriter.New(cw.Columns[2], opts.LineBytes, int(startLineByteOffset), hexpairFn),
 				io.LimitReader(vBitBuf.Copy(), displaySizeBytes))
 			io.Copy(
-				asciiwriter.New(cw.Columns[4], int(lineBytes), int(startLineByteOffset), asciiFn),
+				asciiwriter.New(cw.Columns[4], opts.LineBytes, int(startLineByteOffset), asciiFn),
 				io.LimitReader(vBitBuf.Copy(), displaySizeBytes))
 		}
 
 		for i := int64(1); i < addrLines; i++ {
-			fmt.Fprintf(cw.Columns[0], "%s%s\n", rootIndent, padFormatInt(startLineByte+int64(i)*lineBytes, addrBase, addrWidth))
+			fmt.Fprintf(cw.Columns[0], "%s%s\n", rootIndent, padFormatInt(startLineByte+int64(i)*int64(opts.LineBytes), opts.AddrBase, addrWidth))
 			fmt.Fprintf(cw.Columns[1], "|\n")
 			fmt.Fprintf(cw.Columns[3], "|\n")
 			fmt.Fprintf(cw.Columns[5], "|\n")
@@ -157,7 +160,7 @@ func dump(cw *columnwriter.Writer, v *Value, depth int, rootDepth int, addrWidth
 			fmt.Fprintf(cw.Columns[0], "*\n")
 			fmt.Fprintf(cw.Columns[1], "|\n")
 			fmt.Fprint(cw.Columns[2], "\n")
-			fmt.Fprintf(cw.Columns[2], "%d bytes more until %s%s", stopByte-lastDisplayByte, Bits(stopBit).StringByteBits(addrBase), isEnd)
+			fmt.Fprintf(cw.Columns[2], "%d bytes more until %s%s", stopByte-lastDisplayByte, Bits(stopBit).StringByteBits(opts.AddrBase), isEnd)
 			fmt.Fprintf(cw.Columns[3], "|\n")
 			fmt.Fprintf(cw.Columns[5], "|\n")
 			// TODO: dump last line?
@@ -168,7 +171,7 @@ func dump(cw *columnwriter.Writer, v *Value, depth int, rootDepth int, addrWidth
 		} else {
 			fmt.Fprintf(cw.Columns[6], "%s%s: ", indent, v.Name)
 		}
-		fmt.Fprintf(cw.Columns[6], "%s %s (%s)\n", v, BitRange(v.Range).StringByteBits(addrBase), Bits(v.Range.Len).StringByteBits(sizeBase))
+		fmt.Fprintf(cw.Columns[6], "%s %s (%s)\n", v, BitRange(v.Range).StringByteBits(opts.AddrBase), Bits(v.Range.Len).StringByteBits(opts.SizeBase))
 	}
 
 	if v.Error != nil {
@@ -183,11 +186,11 @@ func dump(cw *columnwriter.Writer, v *Value, depth int, rootDepth int, addrWidth
 	return nil
 }
 
-func (v *Value) Dump(maxDepth int, w io.Writer) error {
-	maxAddrIndentWidth := digitsInBase(bitsCeilBytes(v.BitBuf.Len()), addrBase)
+func (v *Value) Dump(w io.Writer, opts DumpOptions) error {
+	maxAddrIndentWidth := digitsInBase(bitsCeilBytes(v.BitBuf.Len()), opts.AddrBase)
 	makeWalkFn := func(fn WalkFn) WalkFn {
 		return func(v *Value, depth int, rootDepth int) error {
-			if maxDepth != 0 && depth > maxDepth {
+			if opts.MaxDepth != 0 && depth > opts.MaxDepth {
 				return ErrWalkSkip
 			}
 			// skip first root level
@@ -201,7 +204,7 @@ func (v *Value) Dump(maxDepth int, w io.Writer) error {
 
 	v.WalkPreOrder(makeWalkFn(func(v *Value, depth int, rootDepth int) error {
 		if v.IsRoot {
-			addrIndentWidth := rootDepth + digitsInBase(bitsCeilBytes(v.BitBuf.Len()), addrBase)
+			addrIndentWidth := rootDepth + digitsInBase(bitsCeilBytes(v.BitBuf.Len()), opts.AddrBase)
 			if addrIndentWidth > maxAddrIndentWidth {
 				maxAddrIndentWidth = addrIndentWidth
 			}
@@ -209,9 +212,9 @@ func (v *Value) Dump(maxDepth int, w io.Writer) error {
 		return nil
 	}))
 
-	cw := columnwriter.New(w, []int{maxAddrIndentWidth, 1, int(lineBytes*3) - 1, 1, int(lineBytes), 1, -1})
+	cw := columnwriter.New(w, []int{maxAddrIndentWidth, 1, opts.LineBytes*3 - 1, 1, opts.LineBytes, 1, -1})
 	return v.WalkPreOrder(makeWalkFn(func(v *Value, depth int, rootDepth int) error {
-		return dump(cw, v, depth, rootDepth, maxAddrIndentWidth-rootDepth)
+		return v.dump(cw, depth, rootDepth, maxAddrIndentWidth-rootDepth, opts)
 	}))
 
 }

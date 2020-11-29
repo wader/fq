@@ -242,7 +242,12 @@ func (m Main) run() error {
 					}
 				}
 
-				if err := v.Dump(maxDepth, m.OS.Stdout()); err != nil {
+				if err := v.Dump(m.OS.Stdout(), decode.DumpOptions{
+					LineBytes:       16,
+					MaxDisplayBytes: 16,
+					AddrBase:        16,
+					SizeBase:        10,
+				}); err != nil {
 					return err
 				}
 
