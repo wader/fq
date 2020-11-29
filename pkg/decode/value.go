@@ -1,12 +1,14 @@
 package decode
 
 import (
+	"bytes"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"fq/internal/ranges"
 	"fq/pkg/bitio"
+	"io"
 	"math/big"
 	"regexp"
 	"sort"
@@ -166,11 +168,13 @@ func (v *Value) Lookup(path string) *Value {
 	}
 }
 
+type WalkFn func(v *Value, depth int, rootDepth int) error
+
 var ErrWalkSkip = errors.New("skip")
 var ErrWalkStop = errors.New("stop")
 
-func (v *Value) walk(preOrder bool, fn func(v *Value, depth int, rootDepth int) error) error {
-	var walkFn func(v *Value, depth int, rootDepth int) error
+func (v *Value) walk(preOrder bool, fn WalkFn) error {
+	var walkFn WalkFn
 	walkFn = func(v *Value, depth int, rootDepth int) error {
 		rootDepthDelta := 0
 		if v.IsRoot {
@@ -220,14 +224,20 @@ func (v *Value) walk(preOrder bool, fn func(v *Value, depth int, rootDepth int) 
 		}
 		return nil
 	}
-	return walkFn(v, 0, 0)
+
+	err := walkFn(v, 0, 0)
+	if err == ErrWalkStop {
+		err = nil
+	}
+
+	return err
 }
 
-func (v *Value) WalkPreOrder(fn func(v *Value, depth int, rootDepth int) error) error {
+func (v *Value) WalkPreOrder(fn WalkFn) error {
 	return v.walk(true, fn)
 }
 
-func (v *Value) WalkPostOrder(fn func(v *Value, depth int, rootDepth int) error) error {
+func (v *Value) WalkPostOrder(fn WalkFn) error {
 	return v.walk(false, fn)
 }
 
@@ -424,39 +434,32 @@ func (v *Value) ToJQ() interface{} {
 	}
 }
 
-/*
-func (v *Value) ToJQ() interface{} {
-	obj := map[string]interface{}{
-		"name":        v.Name,
-		"field":       v,
-		"description": v.Desc,
-		"range":       []int64{v.Range.Start, v.Range.Len},
-		"size":        v.Range.Len,
-	}
-
-	switch vv := v.V.(type) {
-	case Struct:
-		fields := map[string]interface{}{}
-		for _, f := range vv {
-			fields[f.Name] = f.ToJQ()
-		}
-		obj["value"] = fields
-	case Array:
-		fields := []interface{}{}
-		for _, f := range vv {
-			fields = append(fields, f.ToJQ())
-		}
-		obj["value"] = fields
-	default:
-		obj["value"] = v.V
-	}
-
-	return obj
-}
-*/
-
 func (v *Value) MarshalJSON() ([]byte, error) {
-	return json.Marshal(fmt.Sprintf("(value %s:%v)", v.Name, v.V))
+	// TODO: range, bits etc?
+	switch vv := v.V.(type) {
+	case Array:
+		arr := []interface{}{}
+		for _, f := range vv {
+			arr = append(arr, f)
+		}
+		return json.Marshal(arr)
+	case Struct:
+		obj := map[string]interface{}{}
+		for _, f := range vv {
+			obj[f.Name] = f.V
+		}
+		return json.Marshal(obj)
+	case bool, int64, uint64, float64, string, []byte, nil:
+		return json.Marshal(vv)
+	case *bitio.Buffer:
+		bb := &bytes.Buffer{}
+		if _, err := io.Copy(bb, vv.Copy()); err != nil {
+			return nil, err
+		}
+		return json.Marshal(bb.Bytes())
+	default:
+		panic("unreachable")
+	}
 }
 
 func (v *Value) JsonLength() int {

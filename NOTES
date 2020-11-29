@@ -1,4 +1,10 @@
 
+some reflection? foramts? input file name etc?
+raw -> bits? slice?
+hexdump function?
+rename text to dump? depth args?
+tests runs jq queries? asset stdoutish? base64 for bin?
+
 verbose/derails flag?
 
 warnings []error somehow?

@@ -20,7 +20,7 @@ const sizeBase = 10
 
 var FieldOutput = &decode.FieldOutput{
 	Name: "text",
-	New:  func(v *decode.Value) decode.FieldWriter { return &FieldWriter{v: v} },
+	New:  func(v *decode.Value) decode.FieldWriter { return &FieldWriter{V: v} },
 }
 
 func digitsInBase(n int64, base int) int {
@@ -48,7 +48,8 @@ func bitsCeilBytes(bits int64) int64 {
 }
 
 type FieldWriter struct {
-	v *decode.Value
+	V        *decode.Value
+	MaxDepth int
 }
 
 func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, depth int, rootDepth int, addrWidth int) error {
@@ -189,30 +190,34 @@ func (o *FieldWriter) outputValue(cw *columnwriter.Writer, v *decode.Value, dept
 }
 
 func (o *FieldWriter) Write(w io.Writer) error {
-	maxAddrIndentWidth := digitsInBase(bitsCeilBytes(o.v.BitBuf.Len()), addrBase)
-	o.v.WalkPreOrder(func(v *decode.Value, depth int, rootDepth int) error {
-		// skip first root level
-		if rootDepth > 0 {
-			rootDepth--
-		}
+	maxAddrIndentWidth := digitsInBase(bitsCeilBytes(o.V.BitBuf.Len()), addrBase)
+	makeWalkFn := func(fn decode.WalkFn) decode.WalkFn {
+		return func(v *decode.Value, depth int, rootDepth int) error {
+			if o.MaxDepth != 0 && depth > o.MaxDepth {
+				return decode.ErrWalkSkip
+			}
+			// skip first root level
+			if rootDepth > 0 {
+				rootDepth--
+			}
 
+			return fn(v, depth, rootDepth)
+		}
+	}
+
+	o.V.WalkPreOrder(makeWalkFn(func(v *decode.Value, depth int, rootDepth int) error {
 		if v.IsRoot {
 			addrIndentWidth := rootDepth + digitsInBase(bitsCeilBytes(v.BitBuf.Len()), addrBase)
 			if addrIndentWidth > maxAddrIndentWidth {
 				maxAddrIndentWidth = addrIndentWidth
 			}
 		}
-
 		return nil
-	})
+	}))
 
 	cw := columnwriter.New(w, []int{maxAddrIndentWidth, 1, int(lineBytes*3) - 1, 1, int(lineBytes), 1, -1})
-	return o.v.WalkPreOrder(func(v *decode.Value, depth int, rootDepth int) error {
-		// skip first root level
-		if rootDepth > 0 {
-			rootDepth--
-		}
-
+	return o.V.WalkPreOrder(makeWalkFn(func(v *decode.Value, depth int, rootDepth int) error {
 		return o.outputValue(cw, v, depth, rootDepth, maxAddrIndentWidth-rootDepth)
-	})
+	}))
+
 }

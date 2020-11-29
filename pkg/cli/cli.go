@@ -2,6 +2,7 @@ package cli
 
 import (
 	"bytes"
+	"encoding/hex"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -9,6 +10,7 @@ import (
 	"fq/pkg/decode"
 	"fq/pkg/format"
 	"fq/pkg/output"
+	"fq/pkg/output/text"
 	"io"
 	"io/ioutil"
 	"os"
@@ -142,7 +144,7 @@ func (m Main) run() error {
 	}
 
 	code, err := gojq.Compile(query, gojq.WithExtraFunctions(map[string]gojq.Function{
-		"raw": {
+		"bits": {
 			Argcount: 1,
 			Callback: func(c interface{}, a []interface{}) interface{} {
 				if v, ok := c.(*decode.Value); ok {
@@ -152,7 +154,33 @@ func (m Main) run() error {
 					}
 					return bb
 				}
+
+				// TODO: passthru c? move raw function?
 				return nil
+			},
+		},
+		"string": {
+			Argcount: 1,
+			Callback: func(c interface{}, a []interface{}) interface{} {
+				var bb *bitio.Buffer
+				switch cc := c.(type) {
+				case *decode.Value:
+					bb, err = cc.BitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
+					if err != nil {
+						return err
+					}
+				case *bitio.Buffer:
+					bb = cc
+				default:
+					return fmt.Errorf("value is not a decode value or bit buffer")
+				}
+
+				sb := &strings.Builder{}
+				if _, err := io.Copy(sb, bb); err != nil {
+					return err
+				}
+
+				return string(sb.String())
 			},
 		},
 		"probe": {
@@ -168,7 +196,7 @@ func (m Main) run() error {
 				case *bitio.Buffer:
 					bb = cc
 				default:
-					return fmt.Errorf("value is not a bit buffer")
+					return fmt.Errorf("value is not a decode value or bit buffer")
 				}
 
 				formats := probeFormats
@@ -191,6 +219,62 @@ func (m Main) run() error {
 				}
 
 				return dv
+			},
+		},
+		"hexdump": {
+			Argcount: 1 << 0,
+			Callback: func(c interface{}, a []interface{}) interface{} {
+				var bb *bitio.Buffer
+				switch cc := c.(type) {
+				case *decode.Value:
+					bb, err = cc.BitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
+					if err != nil {
+						return err
+					}
+				case *bitio.Buffer:
+					bb = cc
+				default:
+					return fmt.Errorf("value is not decode value or a bit buffer")
+				}
+
+				hw := hex.Dumper(m.OS.Stdout())
+				defer hw.Close()
+				if _, err := io.Copy(hw, bb); err != nil {
+					return err
+				}
+
+				return c
+			},
+		},
+		"dump": {
+			Argcount: 1<<1 | 1<<0,
+			Callback: func(c interface{}, a []interface{}) interface{} {
+				var v *decode.Value
+				switch cc := c.(type) {
+				case *decode.Value:
+					v = cc
+				default:
+					return fmt.Errorf("value is not a decode value")
+				}
+
+				maxDepth := 0
+				if len(a) == 1 {
+					var ok bool
+					maxDepth, ok = a[0].(int)
+					if !ok {
+						return fmt.Errorf("max depth is not a int")
+					}
+					if maxDepth < 0 {
+						return fmt.Errorf("max depth can't be negative")
+					}
+				}
+
+				tw := &text.FieldWriter{V: v, MaxDepth: maxDepth}
+				if err := tw.Write(m.OS.Stdout()); err != nil {
+					return err
+				}
+
+				return c
 			},
 		},
 	}))
