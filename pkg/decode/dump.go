@@ -33,7 +33,7 @@ func padFormatInt(i int64, base int, width int) string {
 type DumpOptions struct {
 	MaxDepth        int
 	LineBytes       int
-	MaxDisplayBytes int
+	MaxDisplayBytes int64
 	AddrBase        int
 	SizeBase        int
 }
@@ -53,8 +53,8 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootDepth int, addrWidt
 	sizeBits := v.Range.Len
 	lastDisplayBit := stopBit
 
-	if sizeBits > int64(opts.MaxDisplayBytes)*8 {
-		lastDisplayBit = startBit + (int64(opts.MaxDisplayBytes)*8 - 1)
+	if opts.MaxDisplayBytes > 0 && sizeBits > opts.MaxDisplayBytes*8 {
+		lastDisplayBit = startBit + (opts.MaxDisplayBytes*8 - 1)
 		if lastDisplayBit%(int64(opts.LineBytes)*8) != 0 {
 			lastDisplayBit += (int64(opts.LineBytes) * 8) - lastDisplayBit%(int64(opts.LineBytes)*8) - 1
 		}

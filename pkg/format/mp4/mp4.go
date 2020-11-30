@@ -286,6 +286,23 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 				i++
 			})
 		},
+		"udta": decodeAtoms,
+		"meta": func(ctx *decodeContext, d *decode.D) {
+			// TODO: meta atom sometimes has a 4 byte unknown field? (flag/version?)
+			unknown := d.PeekBits(32)
+			if unknown == 0 {
+				d.FieldU32("unknown")
+			}
+			decodeAtoms(ctx, d)
+		},
+		"ilst":            decodeAtoms,
+		"_apple_ilst_box": decodeAtoms,
+		"data": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+			d.FieldU32("reserved")
+			d.FieldUTF8("data", int(d.BitsLeft()/8))
+		},
 	}
 
 	boxSize := d.U32()
@@ -312,7 +329,9 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 		dataSize = boxSize - 8
 	}
 
-	//log.Printf("dataSize: %d\n", dataSize)
+	if typ[0] == 0xa9 {
+		typ = "_apple_ilst_box"
+	}
 
 	if decodeFn, ok := boxes[typ]; ok {
 		d.SubLenFn(int64(dataSize*8), func(d *decode.D) { decodeFn(ctx, d) })

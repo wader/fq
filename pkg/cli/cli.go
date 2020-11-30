@@ -40,6 +40,7 @@ func (m Main) run() error {
 	fs.SetOutput(m.OS.Stderr())
 	dotFlag := fs.Bool("dot", false, "Output dot format graph (... | dot -Tsvg -o formats.svg)")
 	forceFormatNameFlag := fs.String("f", "", "Force format")
+	maxDisplayBytes := fs.Int64("d", 16, "Max display bytes")
 	// verboseFlag := fs.Bool("v", false, "Verbose output")
 	fs.Usage = func() {
 		maxNameLen := 0
@@ -104,9 +105,9 @@ func (m Main) run() error {
 		return err
 	}
 
-	dumpOpts := decode.DumpOptions{
+	dumpDefaultOpts := decode.DumpOptions{
 		LineBytes:       16,
-		MaxDisplayBytes: 16,
+		MaxDisplayBytes: *maxDisplayBytes,
 		AddrBase:        16,
 		SizeBase:        10,
 	}
@@ -248,7 +249,7 @@ func (m Main) run() error {
 					}
 				}
 
-				opts := dumpOpts
+				opts := dumpDefaultOpts
 				opts.MaxDepth = maxDepth
 
 				if err := v.Dump(m.OS.Stdout(), opts); err != nil {
@@ -341,7 +342,7 @@ func (m Main) run() error {
 		switch vv := v.(type) {
 		case *decode.Value:
 			fmt.Fprintf(m.OS.Stdout(), "%s:\n", vv.Path())
-			if err := vv.Dump(m.OS.Stdout(), dumpOpts); err != nil {
+			if err := vv.Dump(m.OS.Stdout(), dumpDefaultOpts); err != nil {
 				return err
 			}
 		case *bitio.Buffer:
