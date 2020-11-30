@@ -571,13 +571,24 @@ func (d *D) SubRangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 		panic("unreachable")
 	}
 
-	bb := d.BitBufRange(firstBit, nBits)
+	bb := d.BitBufRange(0, firstBit+nBits)
 	if _, err := bb.SeekAbs(firstBit); err != nil {
 		panic(err)
 	}
 	sd := d.fieldDecoder("", bb, subV)
 
 	fn(sd)
+
+	sd.Value.WalkPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
+		if v.IsRoot {
+			return ErrWalkSkip
+		}
+
+		//v.Range.Start += d.Pos()
+		v.RootBitBuf = d.Value.RootBitBuf
+
+		return nil
+	})
 
 	switch vv := sd.Value.V.(type) {
 	case Struct:
