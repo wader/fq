@@ -1,5 +1,7 @@
 
-
+#!/bin/fq -r
+blabla
+pass jq deocde value into jq quert again
 
 pass in context somehow? break in reader?
 
