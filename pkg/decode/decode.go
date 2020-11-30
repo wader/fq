@@ -571,20 +571,18 @@ func (d *D) SubRangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 		panic("unreachable")
 	}
 
-	bb := d.BitBufRange(0, firstBit+nBits)
-	if _, err := bb.SeekAbs(firstBit); err != nil {
-		panic(err)
-	}
+	bb := d.BitBufRange(firstBit, nBits)
 	sd := d.fieldDecoder("", bb, subV)
 
 	fn(sd)
 
+	// TODO: refactor, similar to probe
 	sd.Value.WalkPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
 		if v.IsRoot {
 			return ErrWalkSkip
 		}
 
-		//v.Range.Start += d.Pos()
+		v.Range.Start += firstBit
 		v.RootBitBuf = d.Value.RootBitBuf
 
 		return nil
