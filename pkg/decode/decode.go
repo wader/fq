@@ -87,7 +87,7 @@ func probe(name string, bb *bitio.Buffer, formats []*Format, opts probeOptions) 
 		}
 
 		var maxRange ranges.Range
-		d.Value.WalkPreOrder(func(v *Value, depth int, rootDepth int) error {
+		d.Value.WalkPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
 			if v.IsRoot {
 				return ErrWalkSkip
 			}
@@ -169,7 +169,7 @@ func (d *D) SafeDecodeFn(fn func(d *D) interface{}) (error, interface{}) {
 func (d *D) FillGaps(namePrefix string) {
 	// TODO: d.Value is array?
 	var valueRanges []ranges.Range
-	d.Value.WalkPreOrder(func(iv *Value, depth int, rootDepth int) error {
+	d.Value.WalkPreOrder(func(iv *Value, rootV *Value, depth int, rootDepth int) error {
 		if iv.BitBuf != d.Value.BitBuf && iv.IsRoot {
 			return ErrWalkSkip
 		}

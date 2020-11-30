@@ -166,25 +166,76 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			d.FieldU24("flags")
 			numEntries := d.FieldU32("num_entries")
 			var i uint64
-			d.FieldStructArrayLoopFn("reference", func() bool { return i < numEntries }, func(d *decode.D) {
-				//size := d.FieldU32("size")
-				//dataFormat := d.FieldUTF8("data_format", 4)
-				// d.FieldBytesLen("reserved", 6)
-				// d.FieldU16("data_reference_index")
-				// d.FieldU16("hint_track_version")
-				// d.FieldU16("last_compatible_hint_track_version")
-				// d.FieldU32("max_packet_size")
-				//dataSize := size - 4 - 4
-				//d.FieldBytesLen("data", dataSize)
+			d.FieldStructArrayLoopFn("sample_description", func() bool { return i < numEntries }, func(d *decode.D) {
+				size := d.FieldU32("size")
+				dataFormat := d.FieldUTF8("data_format", 4)
+				d.FieldBytesLen("reserved", 6)
+				d.FieldU16("data_reference_index")
 
-				//decodeAtoms(dataSize)
-				decodeAtom(ctx, d)
+				switch dataFormat {
+				case "mp4a":
+					// https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/QTFFChap3/qtff3.html#//apple_ref/doc/uid/TP40000939-CH205-SW1
+					d.FieldStructFn("data", func(d *decode.D) {
+						switch d.FieldU16("version") {
+						case 0:
+							d.FieldU16("revision_level")
+							d.FieldU32("vendor")
+							d.FieldU16("num_audio_channels")
+							d.FieldU16("sample_size")
+							d.FieldU16("compression_id")
+							d.FieldU16("packet_size")
+							d.FieldFP32("sample_rate")
+							// case 2:
+							// 	d.FieldU16("revision_level")
+							// 	d.FieldU32("vendor")
+							// 	d.FieldU16("always_3")
+							// 	d.FieldU16("always_16")
+							// 	d.FieldU16("always_minus_2")
+							// 	d.FieldU32("always_0")
+							// 	d.FieldU32("always_65536")
+							// 	d.FieldU32("size_of_struct_only")
+							// 	d.FieldF64("sample_rate")
+							// 	d.FieldU32("num_audio_channels")
+							// 	d.FieldU32("always_7f000000")
+							// 	d.FieldU32("const_bits_per_channel")
+							// 	d.FieldU32("format_specific_flags")
+							// 	d.FieldU32("const_bytes_per_audio_packet")
+							// 	d.FieldU32("const_lpcm_frames_per_audio_packet")
+						}
 
-				// if d.currentTrack != nil {
-				// 	d.currentTrack.dataFormat = dataFormat
-				// }
+						// TODO: check for extra 4 zero bytes optionally included in size
+
+						if d.BitsLeft() > 0 {
+							decodeAtoms(ctx, d)
+						}
+					})
+				default:
+					d.FieldBytesLen("data", int(size)-16)
+				}
+
+				// "Some sample descriptions terminate with four zero bytes that are not otherwise indicated."
+				if d.BitsLeft() >= 4 && d.PeekBits(32) == 0 {
+					d.FieldU32("zero_terminator")
+				}
+
 				i++
 			})
+		},
+		"esds": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU32("version")
+			d.FieldU8("tag_id")
+			// E.1 Length encoding
+			length := d.FieldUFn("length", func() (uint64, decode.DisplayFormat, string) {
+				d.U1() // skip first bit
+				v := d.U7()
+				nextBytes := true
+				for nextBytes {
+					nextBytes = d.Bool()
+					v = v<<7 | d.U7()
+				}
+				return v, decode.NumberDecimal, ""
+			})
+			d.FieldBytesLen("bla", int(length))
 		},
 		"stts": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")

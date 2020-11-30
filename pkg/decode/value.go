@@ -168,21 +168,22 @@ func (v *Value) Lookup(path string) *Value {
 	}
 }
 
-type WalkFn func(v *Value, depth int, rootDepth int) error
+type WalkFn func(v *Value, rootV *Value, depth int, rootDepth int) error
 
 var ErrWalkSkip = errors.New("skip")
 var ErrWalkStop = errors.New("stop")
 
 func (v *Value) walk(preOrder bool, fn WalkFn) error {
 	var walkFn WalkFn
-	walkFn = func(v *Value, depth int, rootDepth int) error {
+	walkFn = func(v *Value, rootV *Value, depth int, rootDepth int) error {
 		rootDepthDelta := 0
 		if v.IsRoot {
+			rootV = v
 			rootDepthDelta = 1
 		}
 
 		if preOrder {
-			err := fn(v, depth, rootDepth+rootDepthDelta)
+			err := fn(v, rootV, depth, rootDepth+rootDepthDelta)
 			switch err {
 			case ErrWalkSkip:
 				return nil
@@ -198,19 +199,19 @@ func (v *Value) walk(preOrder bool, fn WalkFn) error {
 		switch v := v.V.(type) {
 		case Struct:
 			for _, wv := range v {
-				if err := walkFn(wv, depth+1, rootDepth+rootDepthDelta); err != nil {
+				if err := walkFn(wv, rootV, depth+1, rootDepth+rootDepthDelta); err != nil {
 					return err
 				}
 			}
 		case Array:
 			for _, wv := range v {
-				if err := walkFn(wv, depth+1, rootDepth+rootDepthDelta); err != nil {
+				if err := walkFn(wv, rootV, depth+1, rootDepth+rootDepthDelta); err != nil {
 					return err
 				}
 			}
 		}
 		if !preOrder {
-			err := fn(v, depth, rootDepth+rootDepthDelta)
+			err := fn(v, rootV, depth, rootDepth+rootDepthDelta)
 			switch err {
 			case ErrWalkSkip:
 				return errors.New("can't skip in post-order")
@@ -225,7 +226,13 @@ func (v *Value) walk(preOrder bool, fn WalkFn) error {
 		return nil
 	}
 
-	err := walkFn(v, 0, 0)
+	// figure out root value for v as it might not be a root itself
+	rootV := v
+	for rootV != nil && !rootV.IsRoot {
+		rootV = rootV.Parent
+	}
+
+	err := walkFn(v, rootV, 0, 0)
 	if err == ErrWalkStop {
 		err = nil
 	}
@@ -243,7 +250,7 @@ func (v *Value) WalkPostOrder(fn WalkFn) error {
 
 func (v *Value) Errors() []error {
 	var errs []error
-	_ = v.WalkPreOrder(func(v *Value, depth int, rootDepth int) error {
+	_ = v.WalkPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
 		if v.Error != nil {
 			errs = append(errs, v.Error)
 		}
@@ -253,7 +260,7 @@ func (v *Value) Errors() []error {
 }
 
 func (v *Value) postProcess() {
-	v.WalkPostOrder(func(v *Value, depth int, rootDepth int) error {
+	v.WalkPostOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
 		switch vv := v.V.(type) {
 		case Struct:
 			first := true
