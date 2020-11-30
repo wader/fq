@@ -851,7 +851,7 @@ func tiffDecode(d *decode.D) interface{} {
 								d.FieldBitBufRange("value", int64(valueByteOffset)*8, int64(valueByteSize)*8)
 							}
 						case typ == ASCII:
-							d.SubRangeFn(int64(valueByteOffset*8), int64(valueByteSize*8), func(d *decode.D) {
+							d.DecodeRangeFn(int64(valueByteOffset*8), int64(valueByteSize*8), func(d *decode.D) {
 								d.FieldUTF8("value", int(valueByteSize))
 							})
 						case typ == BYTE:
@@ -859,7 +859,7 @@ func tiffDecode(d *decode.D) interface{} {
 						default:
 							// log.Printf("valueOffset: %d\n", valueByteOffset)
 							// log.Printf("valueSize: %d\n", valueByteSize)
-							d.SubRangeFn(int64(valueByteOffset*8), int64(valueByteSize*8), func(d *decode.D) {
+							d.DecodeRangeFn(int64(valueByteOffset*8), int64(valueByteSize*8), func(d *decode.D) {
 								for i := uint64(0); i < count; i++ {
 									switch typ {
 									// TODO: only some typ?

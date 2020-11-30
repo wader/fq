@@ -125,7 +125,7 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 {
 	chunkLen := int64(d.FieldU32LE("chunk_size"))
 
 	if fn, ok := chunks[trimChunkID]; ok {
-		d.SubLenFn(chunkLen*8, fn)
+		d.DecodeLenFn(chunkLen*8, fn)
 	} else {
 		if stringData {
 			d.FieldStrFn("data", func() (string, string) {

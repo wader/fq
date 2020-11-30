@@ -483,7 +483,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 	}
 
 	if fn, ok := frames[idNormalized]; ok {
-		d.SubLenFn(int64(dataSize)*8, fn)
+		d.DecodeLenFn(int64(dataSize)*8, fn)
 	} else {
 		d.FieldBitBufLen("data", int64(dataSize*8))
 	}

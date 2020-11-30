@@ -555,12 +555,12 @@ func (d *D) ValidateAtLeastBytesLeft(nBytes int64) {
 }
 
 // TODO: rename?
-func (d *D) SubLenFn(nBits int64, fn func(d *D)) {
-	d.SubRangeFn(d.Pos(), nBits, fn)
+func (d *D) DecodeLenFn(nBits int64, fn func(d *D)) {
+	d.DecodeRangeFn(d.Pos(), nBits, fn)
 	d.SeekRel(nBits)
 }
 
-func (d *D) SubRangeFn(firstBit int64, nBits int64, fn func(d *D)) {
+func (d *D) DecodeRangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 	var subV interface{}
 	switch d.Value.V.(type) {
 	case Struct:
