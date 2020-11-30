@@ -159,7 +159,7 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 			if stopBit == bufferLastBit {
 				isEnd = " (end)"
 			}
-			fmt.Fprintf(cw.Columns[0], "*\n")
+			fmt.Fprintf(cw.Columns[0], "%s*\n", rootIndent)
 			fmt.Fprintf(cw.Columns[1], "|\n")
 			fmt.Fprint(cw.Columns[2], "\n")
 			fmt.Fprintf(cw.Columns[2], "%d bytes more until %s%s", stopByte-lastDisplayByte, Bits(stopBit).StringByteBits(opts.AddrBase), isEnd)
