@@ -37,6 +37,94 @@ type decodeContext struct {
 	currentTrack *track
 }
 
+func esLengthEncoding(d *decode.D) uint64 {
+	d.U1() // skip first bit
+	v := d.U7()
+	nextBytes := true
+	for nextBytes {
+		nextBytes = d.Bool()
+		v = v<<7 | d.U7()
+	}
+	return v
+}
+
+func fieldESLengthEncoding(d *decode.D, name string) uint64 {
+	return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
+		return esLengthEncoding(d), decode.NumberDecimal, ""
+	})
+}
+
+func esDecodeTag(d *decode.D, fn func(d *decode.D)) {
+	d.FieldU8("tag_id")
+	len := fieldESLengthEncoding(d, "length")
+	d.DecodeLenFn(int64(len)*8, fn)
+}
+
+func fieldESDecodeTag(d *decode.D, name string, fn func(d *decode.D)) {
+	d.FieldStructFn(name, func(d *decode.D) {
+		esDecodeTag(d, fn)
+	})
+}
+
+func esDescriptor(d *decode.D) {
+	d.FieldU16("es_id")
+	streamDependencyFlag := d.FieldBool("stream_dependency_flag")
+	urlFlag := d.FieldBool("url_flag")
+	ocrStreamFlag := d.FieldBool("ocr_stream_flag")
+	d.FieldU5("stream_priority")
+	if streamDependencyFlag {
+		d.FieldU16("dependency_on_es_id")
+	}
+	if urlFlag {
+		urlLen := d.FieldU8("url_length")
+		d.FieldUTF8("url", int(urlLen))
+	}
+	if ocrStreamFlag {
+		d.FieldU16("ocr_es_id")
+	}
+	fieldESDecodeTag(d, "decoder_config_descriptor", decoderConfigDescriptor)
+}
+
+func decoderConfigDescriptor(d *decode.D) {
+	d.FieldU8("object_type_indication")
+	// TODO:
+	/*
+		0x00 Forbidden
+		0x01 ObjectDescriptorStream (see 7.2.5)
+		0x02 ClockReferenceStream (see 7.3.2.5)
+		0x03 SceneDescriptionStream (see ISO/IEC 14496-
+		11)
+		0x04 VisualStream
+		0x05 AudioStream
+		0x06 MPEG7Stream
+		0x07 IPMPStream (see 7.2.3.2)
+		0x08 ObjectContentInfoStream (see 7.2.4.2)
+		0x09 MPEGJStream
+		0x0A Interaction Stream
+		0x0B IPMPToolStream (see [14496-13])
+		0x0C - 0x1F reserved for ISO use
+		0x20 - 0x3F user private
+	*/
+	d.FieldU6("steam_type")
+	d.FieldBool("upsteam")
+	d.FieldBool("reserved")
+	d.FieldU24("buffer_size_db")
+	d.FieldU32("max_bit_rate")
+	d.FieldU32("avg_bit_rate")
+
+	fieldESDecodeTag(d, "decoder_specific_info", func(d *decode.D) {
+		// TODO: factor out to own audio specific config decoder
+		d.FieldU5("object_type")
+		d.FieldU4("frequency_index")
+		d.FieldU4("channel_configuration")
+
+		d.FieldU5("object_type2")
+
+		//d.FieldBitBufLen("asd", d.BitsLeft())
+
+	})
+}
+
 func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 	boxes := map[string]func(ctx *decodeContext, d *decode.D){
 		"ftyp": func(ctx *decodeContext, d *decode.D) {
@@ -223,19 +311,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 		},
 		"esds": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU32("version")
-			d.FieldU8("tag_id")
-			// E.1 Length encoding
-			length := d.FieldUFn("length", func() (uint64, decode.DisplayFormat, string) {
-				d.U1() // skip first bit
-				v := d.U7()
-				nextBytes := true
-				for nextBytes {
-					nextBytes = d.Bool()
-					v = v<<7 | d.U7()
-				}
-				return v, decode.NumberDecimal, ""
-			})
-			d.FieldBytesLen("bla", int(length))
+			fieldESDecodeTag(d, "es_descriptor", esDescriptor)
 		},
 		"stts": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
