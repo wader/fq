@@ -117,7 +117,7 @@ func (m Main) run() error {
 			Argcount: 1,
 			Callback: func(c interface{}, a []interface{}) interface{} {
 				if v, ok := c.(*decode.Value); ok {
-					bb, err := v.BitBuf.BitBufRange(v.Range.Start, v.Range.Len)
+					bb, err := v.RootBitBuf.BitBufRange(v.Range.Start, v.Range.Len)
 					if err != nil {
 						return err
 					}
@@ -134,7 +134,7 @@ func (m Main) run() error {
 				var bb *bitio.Buffer
 				switch cc := c.(type) {
 				case *decode.Value:
-					bb, err = cc.BitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
+					bb, err = cc.RootBitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
 					if err != nil {
 						return err
 					}
@@ -158,7 +158,7 @@ func (m Main) run() error {
 				var bb *bitio.Buffer
 				switch cc := c.(type) {
 				case *decode.Value:
-					bb, err = cc.BitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
+					bb, err = cc.RootBitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
 					if err != nil {
 						return err
 					}
@@ -205,7 +205,7 @@ func (m Main) run() error {
 				var bb *bitio.Buffer
 				switch cc := c.(type) {
 				case *decode.Value:
-					bb, err = cc.BitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
+					bb, err = cc.RootBitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
 					if err != nil {
 						return err
 					}

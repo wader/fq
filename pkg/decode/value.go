@@ -79,7 +79,7 @@ type Value struct {
 	V             interface{} // int64, uint64, float64, string, bool, []byte, Array, Struct
 	Index         int         // index in parent array/struct
 	Range         ranges.Range
-	BitBuf        *bitio.Buffer
+	RootBitBuf    *bitio.Buffer
 	IsRoot        bool
 	Name          string
 	MIME          string
@@ -398,7 +398,7 @@ func (v *Value) RawString() string {
 	case *bitio.Buffer:
 		// TODO: RawString, switch to writer somehow?
 		vvLen := vv.Len()
-		bs, _ := v.BitBuf.BytesRange(0, int(bitio.BitsByteCount(vvLen)))
+		bs, _ := v.RootBitBuf.BytesRange(0, int(bitio.BitsByteCount(vvLen)))
 		return string(bs)
 	case nil:
 		return ""
@@ -432,7 +432,7 @@ func (v *Value) ToJQ() interface{} {
 	case *bitio.Buffer:
 		// TODO: RawString, switch to writer somehow?
 		vvLen := vv.Len()
-		bs, _ := v.BitBuf.BytesRange(0, int(bitio.BitsByteCount(vvLen)))
+		bs, _ := v.RootBitBuf.BytesRange(0, int(bitio.BitsByteCount(vvLen)))
 		return string(bs)
 	case nil:
 		return nil
@@ -561,7 +561,7 @@ func (v *Value) JsonProperty(name string) interface{} {
 	case "_size":
 		r = big.NewInt(v.Range.Len)
 	case "_raw":
-		bb, err := v.BitBuf.BitBufRange(v.Range.Start, v.Range.Len)
+		bb, err := v.RootBitBuf.BitBufRange(v.Range.Start, v.Range.Len)
 		if err != nil {
 			return err
 		}

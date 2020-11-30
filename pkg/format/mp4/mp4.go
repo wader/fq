@@ -44,7 +44,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			d.FieldU32("minor_version")
 			numBrands := d.BitsLeft() / 8 / 4
 			var i int64
-			d.FieldStructArrayLoopFn("brands", func() bool { return i < numBrands }, func(d *decode.D) {
+			d.FieldArrayLoopFn("brands", func() bool { return i < numBrands }, func(d *decode.D) {
 				d.FieldStrFn("brand", func() (string, string) {
 					return strings.TrimSpace(d.UTF8(4)), ""
 				})
