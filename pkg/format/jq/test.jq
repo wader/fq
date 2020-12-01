@@ -1,5 +1,6 @@
-#!/usr/local/bin/fq -f jq
+#!/usr/local/bin/fq -f
 
+FieldUTF8("magic"; 4),
 FieldStruct("tjo"),
 FieldU8("asd"),
 (FieldStruct("sdf") |

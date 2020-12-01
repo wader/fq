@@ -5,7 +5,6 @@ import (
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/format"
-	"io/ioutil"
 	"math/big"
 	"reflect"
 
@@ -20,12 +19,12 @@ func init() {
 }
 
 func jqDecode(d *decode.D) interface{} {
-
-	s, err := ioutil.ReadFile("/Users/wader/src/fq/pkg/format/jq/test.jq")
-	if err != nil {
-		panic(err)
+	script, ok := d.Options["script"].(string)
+	if !ok {
+		d.Invalid("no script in options")
 	}
-	query, err := gojq.Parse(string(s))
+
+	query, err := gojq.Parse(script)
 	if err != nil {
 		panic(err)
 	}

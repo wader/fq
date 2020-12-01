@@ -92,13 +92,6 @@ func (m Main) run() error {
 		rs = bytes.NewReader(buf)
 	}
 
-	if *formatNameFlag != "" {
-		var err error
-		probeFormats, err = m.Registry.Group(*formatNameFlag)
-		if err != nil {
-			return fmt.Errorf("%s: %s", *formatNameFlag, err)
-		}
-	}
 	bb, err := bitio.NewBufferFromReadSeeker(rs)
 	if err != nil {
 		return err
@@ -167,22 +160,34 @@ func (m Main) run() error {
 					return fmt.Errorf("value is not a decode value or bit buffer")
 				}
 
+				opts := map[string]interface{}{}
 				formats := probeFormats
-				if len(a) == 1 {
-					groupName, ok := a[0].(string)
+
+				if len(a) >= 1 {
+					formatName, ok := a[0].(string)
 					if !ok {
 						return fmt.Errorf("format name is not a string")
 					}
 
-					formats, err = m.Registry.Group(groupName)
-					if err != nil {
-						return fmt.Errorf("%s: %s", groupName, err)
+					if strings.HasSuffix(formatName, ".jq") {
+						formats, err = m.Registry.Group("jq")
+
+						script, err := ioutil.ReadFile(formatName)
+						if err != nil {
+							return err
+						}
+						opts["script"] = string(script)
+					} else {
+						formats, err = m.Registry.Group(formatName)
+						if err != nil {
+							return fmt.Errorf("%s: %s", formatName, err)
+						}
 					}
 				}
 
 				// TODO: hmm
 				name := "unname"
-				if len(a) == 2 {
+				if len(a) >= 2 {
 					var ok bool
 					name, ok = a[1].(string)
 					if !ok {
@@ -190,7 +195,7 @@ func (m Main) run() error {
 					}
 				}
 
-				dv, _, errs := decode.Probe(name, bb, formats)
+				dv, _, errs := decode.Probe(name, bb, formats, decode.ProbeOptions{FormatOptions: opts})
 				if dv == nil {
 					return errs
 				}
