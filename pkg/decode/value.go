@@ -10,7 +10,6 @@ import (
 	"fq/pkg/bitio"
 	"io"
 	"math/big"
-	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -89,25 +88,6 @@ type Value struct {
 	Error         error
 }
 
-// TODO: base instead?
-
-var lookupRe = regexp.MustCompile(`` +
-	`^(?:` +
-	`([\w_]+)` + // .name
-	`|` + // or
-	`\[(\d+)\]` + // [123]
-	`)` +
-	`(?:\.?)`) // dot separator
-
-func (v *Value) Eval(exp string) (*Value, error) {
-	lf := v.Lookup(exp)
-	if lf == nil {
-		return lf, fmt.Errorf("not found")
-	}
-
-	return lf, nil
-}
-
 func (v *Value) Path() string {
 	var parts []string
 
@@ -127,45 +107,6 @@ func (v *Value) Path() string {
 
 	return strings.Join(parts, "")
 
-}
-
-func (v *Value) Lookup(path string) *Value {
-	if path == "" {
-		return v
-	}
-
-	lookupSM := lookupRe.FindStringSubmatch(path)
-	if lookupSM == nil {
-		return nil
-	}
-	rest := path[len(lookupSM[0]):]
-
-	switch {
-	case lookupSM == nil:
-		return nil
-	case lookupSM[1] != "": // struct lookup
-		name := lookupSM[1]
-		if s, ok := v.V.(Struct); ok {
-			for _, f := range s {
-				if f.Name == name {
-					return f.Lookup(rest)
-				}
-			}
-			return nil
-		} else {
-			return nil
-		}
-	case lookupSM[2] != "": // array lookup
-		indexStr := lookupSM[2]
-		index, _ := strconv.Atoi(indexStr)
-		if a, ok := v.V.(Array); ok {
-			return a[index].Lookup(rest)
-		} else {
-			return nil
-		}
-	default:
-		panic("unreachable")
-	}
 }
 
 type WalkFn func(v *Value, rootV *Value, depth int, rootDepth int) error
@@ -413,20 +354,12 @@ func (v *Value) ToJQ() interface{} {
 		return v
 	case Struct:
 		return v
-	case bool:
-		if vv {
-			return true
-		} else {
-			return false
-		}
+	case int, bool, float64, string, nil:
+		return vv
 	case int64:
 		return big.NewInt(vv)
 	case uint64:
 		return big.NewInt(int64(vv))
-	case float64:
-		return vv
-	case string:
-		return vv
 	case []byte:
 		return string(vv)
 	case *bitio.Buffer:
@@ -434,8 +367,6 @@ func (v *Value) ToJQ() interface{} {
 		vvLen := vv.Len()
 		bs, _ := v.RootBitBuf.BytesRange(0, int(bitio.BitsByteCount(vvLen)))
 		return string(bs)
-	case nil:
-		return nil
 	default:
 		panic("unreachable")
 	}

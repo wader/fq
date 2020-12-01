@@ -1,4 +1,6 @@
 
+skip probe how? -f raw? . is  bitbuf field with name?
+
 #!/bin/fq -r
 blabla
 pass jq deocde value into jq quert again

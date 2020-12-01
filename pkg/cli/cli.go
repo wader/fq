@@ -11,7 +11,6 @@ import (
 	"fq/pkg/format"
 	"io"
 	"io/ioutil"
-	"reflect"
 	"sort"
 	"strings"
 
@@ -39,7 +38,7 @@ func (m Main) run() error {
 	fs := flag.NewFlagSet("", flag.ContinueOnError)
 	fs.SetOutput(m.OS.Stderr())
 	dotFlag := fs.Bool("dot", false, "Output dot format graph (... | dot -Tsvg -o formats.svg)")
-	forceFormatNameFlag := fs.String("f", "", "Force format")
+	formatNameFlag := fs.String("f", "probe", "Format name")
 	maxDisplayBytes := fs.Int64("d", 16, "Max display bytes")
 	// verboseFlag := fs.Bool("v", false, "Verbose output")
 	fs.Usage = func() {
@@ -93,11 +92,11 @@ func (m Main) run() error {
 		rs = bytes.NewReader(buf)
 	}
 
-	if *forceFormatNameFlag != "" {
+	if *formatNameFlag != "" {
 		var err error
-		probeFormats, err = m.Registry.Group(*forceFormatNameFlag)
+		probeFormats, err = m.Registry.Group(*formatNameFlag)
 		if err != nil {
-			return fmt.Errorf("%s: %s", *forceFormatNameFlag, err)
+			return fmt.Errorf("%s: %s", *formatNameFlag, err)
 		}
 	}
 	bb, err := bitio.NewBufferFromReadSeeker(rs)
@@ -234,7 +233,7 @@ func (m Main) run() error {
 				case *decode.D:
 					v = cc.Value
 				default:
-					return fmt.Errorf("value is not a decode value")
+					return fmt.Errorf("%v: value is not a decode value", c)
 				}
 
 				maxDepth := 0
@@ -259,57 +258,13 @@ func (m Main) run() error {
 				return c
 			},
 		},
-		"decoder": {
-			Argcount: 1<<1 | 1<<0,
-			Callback: func(c interface{}, a []interface{}) interface{} {
-				var bb *bitio.Buffer
-				switch cc := c.(type) {
-				case *bitio.Buffer:
-					bb = cc
-				default:
-					return fmt.Errorf("value is not decode value or a bit buffer")
-				}
-
-				// TODO: safe, names
-
-				d := decode.NewDecoder("", "", bb, true)
-
-				return d
-			},
-		},
 	}
 
-	dType := reflect.TypeOf(&decode.D{})
-	for i := 0; i < dType.NumMethod(); i++ {
-		method := dType.Method(i)
-
-		fqFuncs[method.Name] = gojq.Function{
-			Argcount: 1 << (method.Type.NumIn() - 1),
-			Callback: func(c interface{}, a []interface{}) interface{} {
-				method := method
-
-				d := c.(*decode.D)
-
-				in := make([]reflect.Value, method.Type.NumIn())
-				in[0] = reflect.ValueOf(d)
-
-				for i := 1; i < method.Type.NumIn(); i++ {
-					//t := method.Type.In(i)
-					object := a[i-1]
-					//fmt.Println(i, "->", object)
-					in[i] = reflect.ValueOf(object)
-				}
-
-				return method.Func.Call(in)[0].Interface()
-			},
-		}
+	argQ := fs.Arg(1)
+	if fs.Arg(1) == "" {
+		argQ = "."
 	}
-
-	// TODO: how to skip probe at all in some cases?
-	q := `$FQ_BUFFER | probe("probe"; $FQ_FILENAME)`
-	if fs.Arg(1) != "" {
-		q = fmt.Sprintf(`$FQ_BUFFER | (%s)`, fs.Arg(1))
-	}
+	q := fmt.Sprintf(`probe($FQ_FORMAT; $FQ_FILENAME) | %s`, argQ)
 
 	query, err := gojq.Parse(q)
 	if err != nil {
@@ -318,7 +273,7 @@ func (m Main) run() error {
 	code, err := gojq.Compile(
 		query,
 		gojq.WithVariables([]string{
-			"$FQ_BUFFER",
+			"$FQ_FORMAT",
 			"$FQ_FILENAME",
 		}),
 		gojq.WithExtraFunctions(fqFuncs),
@@ -327,7 +282,7 @@ func (m Main) run() error {
 		panic(err)
 	}
 
-	iter := code.Run(bb, bb, filename)
+	iter := code.Run(bb, *formatNameFlag, filename)
 
 	for {
 		v, ok := iter.Next()
@@ -341,8 +296,11 @@ func (m Main) run() error {
 
 		switch vv := v.(type) {
 		case *decode.Value:
-			fmt.Fprintf(m.OS.Stdout(), "%s:\n", vv.Path())
 			if err := vv.Dump(m.OS.Stdout(), dumpDefaultOpts); err != nil {
+				return err
+			}
+		case *decode.D:
+			if err := vv.Value.Dump(m.OS.Stdout(), dumpDefaultOpts); err != nil {
 				return err
 			}
 		case *bitio.Buffer:
