@@ -10,6 +10,7 @@ import (
 )
 
 var mpegESFormat []*decode.Format
+var aacFrameFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -21,6 +22,7 @@ func init() {
 		DecodeFn: mp4Decode,
 		Deps: []decode.Dep{
 			{Names: []string{format.MPEG_ES}, Formats: &mpegESFormat},
+			{Names: []string{format.AAC_FRAME}, Formats: &aacFrameFormat},
 		},
 	})
 }
@@ -336,6 +338,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			// TODO: meta atom sometimes has a 4 byte unknown field? (flag/version?)
 			unknown := d.PeekBits(32)
 			if unknown == 0 {
+				// TODO: rename?
 				d.FieldU32("unknown")
 			}
 			decodeAtoms(ctx, d)
@@ -420,49 +423,57 @@ func mp4Decode(d *decode.D) interface{} {
 
 	//log.Println("BLA")
 
-	// for _, t := range d.tracks {
-	// 	d.FieldNoneFn("track", func() {
+	d.FieldArrayFn("track", func(d *decode.D) {
+		for _, t := range ctx.tracks {
+			d.FieldStructFn("track", func(d *decode.D) {
+				d.FieldStrFn("data_format", func() (string, string) { return t.dataFormat, "" })
 
-	// 		d.FieldStrFn("data_format", func() (string, string) { return t.dataFormat, "" })
+				sampleCount := uint64(0)
 
-	// 		sampleCount := uint64(0)
+				d.FieldArrayFn("sample", func(d *decode.D) {
+					for _, c := range t.stsc {
 
-	// 		for _, c := range t.stsc {
+						cso := t.stco[c.firstChunk-1]
 
-	// 			cso := t.stco[c.firstChunk-1]
+						for csi := uint32(0); csi < c.samplesPerChunk; csi++ {
 
-	// 			for csi := uint32(0); csi < c.samplesPerChunk; csi++ {
+							stz := uint64(t.stsz[sampleCount])
 
-	// 				stz := uint64(t.stsz[sampleCount])
+							// log.Printf("cso*8: %d %#+v\n", cso, cso*8)
+							// log.Printf("stz*8: %d %#+v\n", stz, stz*8)
 
-	// 				// log.Printf("cso*8: %d %#+v\n", cso, cso*8)
-	// 				// log.Printf("stz*8: %d %#+v\n", stz, stz*8)
+							// if t.dataFormat == "mp4a" {
+							//d.FieldDecodeRange("sample", int64(cso)*8, int64(stz)*8, aac.Frame)
 
-	// 				// if t.dataFormat == "mp4a" {
-	// 				d.FieldDecodeRange("sample", int64(cso)*8, int64(stz)*8, aac.Frame)
+							//} else {
+							//							d.FieldBytesRange("sample", int64(cso)*8, int(stz))
 
-	// 				//} else {
-	// 				d.FieldBytesRange("sample", int64(cso)*8, int64(stz))
+							// d.FieldStructFn("sample", func(d *decode.D) {
 
-	// 				//}
+							// 	// d.DecodeRangeFn(int64(cso)*8, int(stz), func(d *decode.D) {
+							// 	// 	d.FieldBool("c1")
+							// 	// 	d.FieldBool("c2")
+							// 	// 	d.FieldU13("fl")
+							// 	// 	d.FieldU13("fl")
+							// 	// }
 
-	// 				cso += stz
+							// })
 
-	// 				sampleCount++
+							//}
 
-	// 				log.Printf("SAMPLE %d %d", csi, c.samplesPerChunk)
-	// 			}
+							d.FieldBitBufRange("sample", int64(cso)*8, int64(stz)*8)
 
-	// 			log.Println("ATTTTTT1")
+							//d.FieldDecodeRange("sample", int64(cso)*8, int64(stz)*8, aacFrameFormat)
 
-	// 		}
+							cso += stz
 
-	// 		log.Println("ATTTTTT2")
-
-	// 	})
-	// }
-
-	//log.Println("BLA2")
+							sampleCount++
+						}
+					}
+				})
+			})
+		}
+	})
 
 	return nil
 

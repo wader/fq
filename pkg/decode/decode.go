@@ -7,6 +7,7 @@ import (
 	"fq/internal/ranges"
 	"fq/pkg/bitio"
 	"io/ioutil"
+	"os"
 	"runtime"
 )
 
@@ -147,11 +148,11 @@ func (d *D) SafeDecodeFn(fn func(d *D) interface{}) (error, interface{}) {
 			if recoverErr := recover(); recoverErr != nil {
 				// https://github.com/golang/go/blob/master/src/net/http/server.go#L1770
 				const size = 64 << 10
-				buf := make([]byte, size)
-				buf = buf[:runtime.Stack(buf, false)]
+				stackBuf := make([]byte, size)
+				strackStr := string(stackBuf[:runtime.Stack(stackBuf, false)])
 
 				pe := &DecodeError{
-					PanicStack: string(buf),
+					PanicStack: strackStr,
 				}
 				switch panicErr := recoverErr.(type) {
 				case ReadError:
@@ -159,7 +160,10 @@ func (d *D) SafeDecodeFn(fn func(d *D) interface{}) (error, interface{}) {
 				case ValidateError:
 					pe.Err = panicErr
 				default:
-					pe.Err = fmt.Errorf("%s", panicErr)
+					// TODO: format somewhere else?
+					fmt.Fprintln(os.Stderr, panicErr)
+					fmt.Fprintln(os.Stderr, strackStr)
+					panic(panicErr)
 				}
 
 				err = pe

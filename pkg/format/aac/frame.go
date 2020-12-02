@@ -1,5 +1,7 @@
 package aac
 
+// SO/IEC 13818-7 Part 7: Advanced Audio Coding (AAC)
+
 import (
 	"fq/pkg/decode"
 	"fq/pkg/format"
@@ -54,29 +56,46 @@ var ExtenionPayloadIDNames = map[uint64]string{
 }
 
 func aacDecode(d *decode.D) interface{} {
-	se, _ := d.FieldStringMapFn("syntax_element", SyntaxElementNames, "", d.U3)
-	elementId := d.FieldU4("element_id")
+	// TODO: multple blocks
+	d.FieldArrayFn("raw_data_block", func(d *decode.D) {
+		//		for {
+		d.FieldStructFn("raw_data_block", func(d *decode.D) {
+			se, _ := d.FieldStringMapFn("syntax_element", SyntaxElementNames, "", d.U3)
 
-	switch se {
-	case FIL:
-		filLength := elementId
-		if filLength == 15 {
-			filLength += d.FieldU8("length_escape")
-		}
+			switch se {
+			case FIL:
+				cnt := d.FieldUFn("cnt", func() (uint64, decode.DisplayFormat, string) {
+					cnt := d.U4()
+					if cnt == 15 {
+						return cnt + d.FieldU8("length_escape") - 1, decode.NumberDecimal, ""
+					}
+					return cnt, decode.NumberDecimal, ""
+				})
 
-		d.FieldStringMapFn("type", ExtenionPayloadIDNames, "", d.U4)
+				d.FieldStructFn("extension_payload", func(d *decode.D) {
+					d.DecodeLenFn(int64(cnt)*8, func(d *decode.D) {
 
-		d.SeekRel(int64(filLength)*8 - 4)
+						extensionType, _ := d.FieldStringMapFn("extension_type", ExtenionPayloadIDNames, "Unknown", d.U4)
+						switch extensionType {
+						case FILL:
+							d.FieldBitBufLen("other_bits", 8*(int64(cnt)-1)+4)
+						}
 
-	}
+					})
+				})
+				// case SCE:
+				// 	d.FieldU4("element_instance_tag")
+				// 	d.FieldU8("global_gain")
+				// case TERM:
+			}
 
-	/*
-		d.FieldU4("sampling_frequency_index")
-		d.FieldU4("channel_configuration")
-		d.FieldU1("frame_length_flag")
-		d.FieldU1("depends_on_core_coder")
-		d.FieldU1("extension_flag")
-	*/
+			// if d.ByteAlignBits() > 0 {
+			// 	d.FieldBitBufLen("byte_align", int64(d.ByteAlignBits()))
+			// }
+			//return // TODO:
+		})
+		//		}
+	})
 
 	return nil
 }
