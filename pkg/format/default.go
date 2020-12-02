@@ -30,6 +30,7 @@ const (
 	JPEG           = "jpeg"
 	MP3_FRAME      = "mp3_frame"
 	MP3            = "mp3"
+	MPEG_ES        = "mpeg_es"
 	XING_HEADER    = "xing_header"
 	MP4            = "mp4"
 	OGG            = "ogg"

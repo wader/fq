@@ -18,6 +18,7 @@ import (
 	_ "fq/pkg/format/png"
 	_ "fq/pkg/format/tar"
 	_ "fq/pkg/format/tiff"
+	_ "fq/pkg/format/ts"
 	_ "fq/pkg/format/vorbis"
 	_ "fq/pkg/format/wav"
 

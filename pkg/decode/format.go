@@ -6,11 +6,12 @@ type Dep struct {
 }
 
 type Format struct {
-	Name     string
-	Groups   []string
-	MIMEs    []string
-	DecodeFn func(d *D) interface{}
-	Deps     []Dep
+	Name        string
+	Description string
+	Groups      []string
+	MIMEs       []string
+	DecodeFn    func(d *D) interface{}
+	Deps        []Dep
 }
 
 func FormatFn(d func(d *D) interface{}) []*Format {
