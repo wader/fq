@@ -52,7 +52,16 @@ func jqDecode(d *decode.D) interface{} {
 					//t := method.Type.In(i)
 					object := a[i-1]
 					// fmt.Println(i, "->", object)
-					in[i] = reflect.ValueOf(object)
+
+					var ar reflect.Value
+					switch aa := a[i-1].(type) {
+					case *big.Int:
+						ar = reflect.ValueOf(aa.Int64())
+					default:
+						ar = reflect.ValueOf(object)
+					}
+
+					in[i] = ar
 				}
 
 				rv := method.Func.Call(in)[0].Interface()
