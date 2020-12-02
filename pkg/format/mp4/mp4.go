@@ -381,7 +381,6 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 	if decodeFn, ok := boxes[typ]; ok {
 		d.DecodeLenFn(int64(dataSize*8), func(d *decode.D) {
 			decodeFn(ctx, d)
-			d.FieldBitBufLen("bla", d.BitsLeft())
 		})
 	} else {
 		d.FieldBitBufLen("data", int64(dataSize*8))
