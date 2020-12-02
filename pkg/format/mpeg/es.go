@@ -1,15 +1,20 @@
-package ts
+package mpeg
 
 import (
 	"fq/pkg/decode"
 	"fq/pkg/format"
 )
 
+var mpegASCFormat []*decode.Format
+
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.MPEG_ES,
 		Description: "MPEG elementary stream",
 		DecodeFn:    esDecode,
+		Deps: []decode.Dep{
+			{Names: []string{format.MPEG_ASC}, Formats: &mpegASCFormat},
+		},
 	})
 }
 
@@ -190,17 +195,9 @@ func odDecodeTag(d *decode.D, expectedTagID int, fn func(d *decode.D)) {
 			d.FieldU32("max_bit_rate")
 			d.FieldU32("avg_bit_rate")
 
-			// TODO: if aac etc
+			// TODO: if aac etc, less depth?
 			fieldODDecodeTag(d, "decoder_specific_info", -1, func(d *decode.D) {
-				// TODO: factor out to own audio specific config decoder
-				// TODO: handle escape
-				d.FieldU5("object_type")
-				d.FieldU4("frequency_index")
-				d.FieldU4("channel_configuration")
-
-				// TODO:
-				d.FieldBitBufLen("var_aot_or_byte_align", d.BitsLeft())
-
+				d.FieldDecode("audio_specific_config", mpegASCFormat)
 			})
 		},
 	}

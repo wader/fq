@@ -43,10 +43,16 @@ func (m Main) run() error {
 	// verboseFlag := fs.Bool("v", false, "Verbose output")
 	fs.Usage = func() {
 		maxNameLen := 0
+		maxDescriptionLen := 0
 		for _, f := range allFormats {
-			if len(f.Name) > maxNameLen {
-				maxNameLen = len(f.Name)
+			m := func(a, b int) int {
+				if a > b {
+					return a
+				}
+				return b
 			}
+			maxNameLen = m(maxNameLen, len(f.Name))
+			maxDescriptionLen = m(maxDescriptionLen, len(f.Description))
 		}
 
 		formatsSorted := make([]*decode.Format, len(allFormats))
@@ -59,9 +65,9 @@ func (m Main) run() error {
 		fmt.Fprintf(fs.Output(), "Usage: %s [FLAGS] FILE [EXP]\n", m.OS.Args()[0])
 		fs.PrintDefaults()
 		fmt.Fprintf(fs.Output(), "\n")
-		fmt.Fprintf(fs.Output(), "Name:%s    MIME:\n", pad(maxNameLen, "Name:"))
+		fmt.Fprintf(fs.Output(), "Name:%s  Description:%s  MIME:\n", pad(maxNameLen, "Name:"), pad(maxNameLen, "Description:"))
 		for _, f := range formatsSorted {
-			fmt.Fprintf(fs.Output(), "%s%s    %s\n", f.Name, pad(maxNameLen, f.Name), strings.Join(f.MIMEs, ", "))
+			fmt.Fprintf(fs.Output(), "%s%s  %s%s  %s\n", f.Name, pad(maxNameLen, f.Name), f.Description, pad(maxDescriptionLen, f.Description), strings.Join(f.MIMEs, ", "))
 		}
 	}
 	if err := fs.Parse(m.OS.Args()[1:]); err != nil {

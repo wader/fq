@@ -1,4 +1,4 @@
-package id3v1
+package id3
 
 import (
 	"fq/pkg/decode"
@@ -11,8 +11,9 @@ import (
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:     format.ID3V1,
-		DecodeFn: id3v1Decode,
+		Name:        format.ID3_V1,
+		Description: "ID3v1 metadata",
+		DecodeFn:    id3v1Decode,
 	})
 }
 

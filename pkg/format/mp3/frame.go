@@ -17,8 +17,9 @@ var xingHeader []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:     format.MP3_FRAME,
-		DecodeFn: frameDecode,
+		Name:        format.MP3_FRAME,
+		Description: "MPEG audio layer 3 frame",
+		DecodeFn:    frameDecode,
 		Deps: []decode.Dep{
 			{Names: []string{format.XING_HEADER}, Formats: &xingHeader},
 		},

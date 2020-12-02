@@ -21,13 +21,14 @@ var mp3Frame []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:     format.MP3,
-		Groups:   []string{format.PROBE},
-		MIMEs:    []string{"audio/mpeg"},
-		DecodeFn: mp3Decode,
+		Name:        format.MP3,
+		Description: "MPEG audio layer 3 file",
+		Groups:      []string{format.PROBE},
+		MIMEs:       []string{"audio/mpeg"},
+		DecodeFn:    mp3Decode,
 		Deps: []decode.Dep{
-			{Names: []string{format.ID3V2}, Formats: &headerTag},
-			{Names: []string{format.ID3V1, format.ID3V11}, Formats: &id3v1Tags},
+			{Names: []string{format.ID3_V2}, Formats: &headerTag},
+			{Names: []string{format.ID3_V1, format.ID3_V11}, Formats: &id3v1Tags},
 			{Names: []string{format.APEV2}, Formats: &apeTag},
 			{Names: []string{format.MP3_FRAME}, Formats: &mp3Frame},
 		},

@@ -11,10 +11,11 @@ import (
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:     format.OGG,
-		Groups:   []string{format.PROBE},
-		MIMEs:    []string{"audio/ogg"},
-		DecodeFn: decodeOgg,
+		Name:        format.OGG,
+		Description: "OGG container",
+		Groups:      []string{format.PROBE},
+		MIMEs:       []string{"audio/ogg"},
+		DecodeFn:    decodeOgg,
 		Deps: []decode.Dep{
 			{Names: []string{format.OGG_PAGE}, Formats: &oggPage},
 			{Names: []string{format.OGG_PACKET}, Formats: &oggPacket},

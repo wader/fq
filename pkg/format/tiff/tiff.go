@@ -9,16 +9,17 @@ import (
 	"fq/pkg/format"
 )
 
-var iccTag []*decode.Format
+var iccProfile []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:     format.TIFF,
-		Groups:   []string{format.PROBE, format.IMAGE},
-		MIMEs:    []string{"image/tiff"},
-		DecodeFn: tiffDecode,
+		Name:        format.TIFF,
+		Description: "Tag Image File Format",
+		Groups:      []string{format.PROBE, format.IMAGE},
+		MIMEs:       []string{"image/tiff"},
+		DecodeFn:    tiffDecode,
 		Deps: []decode.Dep{
-			{Names: []string{format.ICC}, Formats: &iccTag},
+			{Names: []string{format.ICC_PROFILE}, Formats: &iccProfile},
 		},
 	})
 
@@ -844,7 +845,7 @@ func tiffDecode(d *decode.D) interface{} {
 						case typ == UNDEFINED:
 							switch tag {
 							case InterColorProfile:
-								d.FieldDecodeRange("icc", int64(valueByteOffset)*8, int64(valueByteSize)*8, iccTag)
+								d.FieldDecodeRange("icc", int64(valueByteOffset)*8, int64(valueByteSize)*8, iccProfile)
 							default:
 								// log.Printf("tag: %#+v\n", tag)
 								// log.Printf("valueByteSize: %#+v\n", valueByteSize)

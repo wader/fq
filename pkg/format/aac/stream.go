@@ -5,16 +5,17 @@ import (
 	"fq/pkg/format"
 )
 
-var adts []*decode.Format
+var aacADTS []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:     format.AAC_STREAM,
-		Groups:   []string{format.PROBE},
-		MIMEs:    []string{"audio/aac"},
-		DecodeFn: adtsDecode,
+		Name:        format.AAC_STREAM,
+		Description: "Raw audio data transport stream",
+		Groups:      []string{format.PROBE},
+		MIMEs:       []string{"audio/aac"},
+		DecodeFn:    adtsDecode,
 		Deps: []decode.Dep{
-			{Names: []string{format.ADTS}, Formats: &adts},
+			{Names: []string{format.AAC_ADTS}, Formats: &aacADTS},
 		},
 	})
 }
@@ -24,7 +25,7 @@ func adtsDecode(d *decode.D) interface{} {
 
 	d.FieldArrayFn("frame", func(d *decode.D) {
 		for !d.End() {
-			if _, _, errs := d.FieldTryDecode("frame", adts); errs != nil {
+			if _, _, errs := d.FieldTryDecode("frame", aacADTS); errs != nil {
 				break
 			}
 			validFrames++

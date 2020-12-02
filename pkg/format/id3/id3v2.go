@@ -1,4 +1,4 @@
-package id3v2
+package id3
 
 // https://id3.org/id3v2.3.0
 // https://id3.org/id3v2.4.0-structure
@@ -17,8 +17,9 @@ var images []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:     format.ID3V2,
-		DecodeFn: id3v2Decode,
+		Name:        format.ID3_V2,
+		Description: "ID3v2 metadata",
+		DecodeFn:    id3v2Decode,
 		Deps: []decode.Dep{
 			{Names: []string{format.IMAGE}, Formats: &images},
 		},
@@ -511,7 +512,6 @@ func decodeFrames(d *decode.D, version int, size uint64) {
 	}
 }
 
-// Decode ID3v2
 func id3v2Decode(d *decode.D) interface{} {
 	d.ValidateAtLeastBitsLeft(4 * 8)
 	d.FieldValidateUTF8("magic", "ID3")

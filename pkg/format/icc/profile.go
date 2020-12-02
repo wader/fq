@@ -9,8 +9,9 @@ import (
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:     format.ICC,
-		DecodeFn: iccDecode,
+		Name:        format.ICC_PROFILE,
+		Description: "International Color Consortium profile",
+		DecodeFn:    iccProfileDecode,
 	})
 }
 
@@ -30,7 +31,7 @@ var signatureToDecode = map[string]func(d *decode.D){
 	"bXYZ": xyzType,
 }
 
-func iccDecode(d *decode.D) interface{} {
+func iccProfileDecode(d *decode.D) interface{} {
 	/*
 	   0..3 Profile size uInt32Number
 	   4..7 CMM Type signature see below

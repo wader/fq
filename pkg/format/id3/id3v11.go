@@ -1,4 +1,4 @@
-package id3v11
+package id3
 
 import (
 	"fq/pkg/decode"
@@ -7,12 +7,13 @@ import (
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:     format.ID3V11,
-		DecodeFn: id3v1Decode,
+		Name:        format.ID3_V11,
+		Description: "ID3v1.1 metadata",
+		DecodeFn:    id3v11Decode,
 	})
 }
 
-func id3v1Decode(d *decode.D) interface{} {
+func id3v11Decode(d *decode.D) interface{} {
 	d.ValidateAtLeastBitsLeft(128 * 8)
 	d.FieldValidateUTF8("magic", "TAG+")
 	d.FieldUTF8("title", 60)

@@ -9,17 +9,18 @@ import (
 	"strings"
 )
 
-var mpegES []*decode.Format
+var mpegESFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:   format.MP4,
-		Groups: []string{format.PROBE},
+		Name:        format.MP4,
+		Description: "MP4 container",
+		Groups:      []string{format.PROBE},
 		// TODO: implment MIME()
 		MIMEs:    []string{"audio/mp4", "video/mp4"},
 		DecodeFn: mp4Decode,
 		Deps: []decode.Dep{
-			{Names: []string{format.MPEG_ES}, Formats: &mpegES},
+			{Names: []string{format.MPEG_ES}, Formats: &mpegESFormat},
 		},
 	})
 }
@@ -228,7 +229,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 		},
 		"esds": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU32("version")
-			d.FieldDecode("es_desciptor", mpegES)
+			d.FieldDecode("es_desciptor", mpegESFormat)
 		},
 		"stts": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")

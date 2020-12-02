@@ -12,10 +12,11 @@ import (
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:     format.WAV,
-		Groups:   []string{format.PROBE},
-		MIMEs:    []string{"audio/wav"},
-		DecodeFn: wavDecode,
+		Name:        format.WAV,
+		Description: "WAV container",
+		Groups:      []string{format.PROBE},
+		MIMEs:       []string{"audio/wav"},
+		DecodeFn:    wavDecode,
 	})
 }
 

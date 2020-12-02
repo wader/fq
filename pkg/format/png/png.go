@@ -9,17 +9,18 @@ import (
 	"fq/pkg/format"
 )
 
-var iccTag []*decode.Format
+var iccProfile []*decode.Format
 var tiffFile []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:     format.PNG,
-		Groups:   []string{format.PROBE, format.IMAGE},
-		MIMEs:    []string{"image/png"},
-		DecodeFn: pngDecode,
+		Name:        format.PNG,
+		Description: "Portable network graphics image",
+		Groups:      []string{format.PROBE, format.IMAGE},
+		MIMEs:       []string{"image/png"},
+		DecodeFn:    pngDecode,
 		Deps: []decode.Dep{
-			{Names: []string{format.ICC}, Formats: &iccTag},
+			{Names: []string{format.ICC_PROFILE}, Formats: &iccProfile},
 			{Names: []string{format.TIFF}, Formats: &tiffFile},
 		},
 	})
@@ -106,7 +107,7 @@ func pngDecode(d *decode.D) interface{} {
 			switch compressionMethod {
 			case compressionDeflate:
 				dd := d.FieldStructFn("data", func(d *decode.D) {
-					d.FieldDecodeZlibLen("uncompressed", int64(dataLen), iccTag)
+					d.FieldDecodeZlibLen("uncompressed", int64(dataLen), iccProfile)
 				})
 				dd.Value.Range = ranges.Range{Start: d.Pos() - int64(dataLen), Len: int64(dataLen)}
 			default:

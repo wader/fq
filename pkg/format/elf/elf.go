@@ -39,9 +39,10 @@ typedef struct {
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:     format.ELF,
-		Groups:   []string{format.PROBE},
-		DecodeFn: elfDecode,
+		Name:        format.ELF,
+		Description: "Executable and Linkable Format",
+		Groups:      []string{format.PROBE},
+		DecodeFn:    elfDecode,
 	})
 }
 

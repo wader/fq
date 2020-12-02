@@ -10,8 +10,9 @@ import (
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:     format.APEV2,
-		DecodeFn: apev2Decode,
+		Name:        format.APEV2,
+		Description: "APEv2 metadata tag",
+		DecodeFn:    apev2Decode,
 	})
 }
 

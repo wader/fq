@@ -16,10 +16,11 @@ var probeable []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:     format.TAR,
-		Groups:   []string{format.PROBE},
-		MIMEs:    []string{"application/x-tar"},
-		DecodeFn: tarDecode,
+		Name:        format.TAR,
+		Description: "Tar archive",
+		Groups:      []string{format.PROBE},
+		MIMEs:       []string{"application/x-tar"},
+		DecodeFn:    tarDecode,
 		Deps: []decode.Dep{
 			{Names: []string{format.PROBE}, Formats: &probeable},
 		},
