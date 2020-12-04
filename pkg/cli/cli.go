@@ -12,6 +12,7 @@ import (
 	"io"
 	"io/ioutil"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/itchyny/gojq"
@@ -87,7 +88,9 @@ func (m Main) run() error {
 		if err != nil {
 			return err
 		}
-		defer f.Close()
+		if c, ok := f.(io.Closer); ok {
+			defer c.Close()
+		}
 		rs = f
 	} else {
 		filename = "stdin"
@@ -119,8 +122,6 @@ func (m Main) run() error {
 				}
 				return bb
 			}
-
-			// TODO: passthru c? move raw function?
 			return nil
 		}),
 		gojq.WithFunction("string", 0, 0, func(c interface{}, a []interface{}) interface{} {
@@ -298,9 +299,13 @@ func (m Main) run() error {
 				return err
 			}
 		case *bitio.Buffer:
-			io.Copy(m.OS.Stdout(), vv)
-		case string:
+			io.Copy(m.OS.Stdout(), vv.Copy())
+		case string, int, int32, int64, uint, uint32, uint64:
 			fmt.Fprintln(m.OS.Stdout(), vv)
+		case float32:
+			fmt.Fprintln(m.OS.Stdout(), strconv.FormatFloat(float64(vv), 'f', -1, 32))
+		case float64:
+			fmt.Fprintln(m.OS.Stdout(), strconv.FormatFloat(vv, 'f', -1, 64))
 		default:
 			json.NewEncoder(m.OS.Stdout()).Encode(v)
 		}
