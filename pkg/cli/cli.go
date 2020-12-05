@@ -110,98 +110,8 @@ func (m Main) run() error {
 		SizeBase:        10,
 	}
 
-	probeFn := func(c interface{}, a []interface{}) interface{} {
-		var bb *bitio.Buffer
-		switch cc := c.(type) {
-		case *decode.Value:
-			bb, err = cc.RootBitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
-			if err != nil {
-				return err
-			}
-		case *bitio.Buffer:
-			bb = cc
-		default:
-			return fmt.Errorf("value is not a decode value or bit buffer")
-		}
-
-		opts := map[string]interface{}{}
-		formats := probeFormats
-
-		if len(a) >= 1 {
-			formatName, ok := a[0].(string)
-			if !ok {
-				return fmt.Errorf("format name is not a string")
-			}
-
-			if strings.HasSuffix(formatName, ".jq") {
-				formats, err = m.Registry.Group("jq")
-
-				script, err := ioutil.ReadFile(formatName)
-				if err != nil {
-					return err
-				}
-				opts["script"] = string(script)
-			} else {
-				formats, err = m.Registry.Group(formatName)
-				if err != nil {
-					return fmt.Errorf("%s: %s", formatName, err)
-				}
-			}
-		}
-
-		// TODO: hmm
-		name := "unname"
-		if len(a) >= 2 {
-			var ok bool
-			name, ok = a[1].(string)
-			if !ok {
-				return fmt.Errorf("name is not a string")
-			}
-		}
-
-		dv, _, errs := decode.Probe(name, bb, formats, decode.ProbeOptions{FormatOptions: opts})
-		if dv == nil {
-			return errs
-		}
-
-		return dv
-	}
-
-	dumpFn := func(c interface{}, a []interface{}) interface{} {
-		var v *decode.Value
-		switch cc := c.(type) {
-		case *decode.Value:
-			v = cc
-		case *decode.D:
-			v = cc.Value
-		default:
-			return fmt.Errorf("%v: value is not a decode value", c)
-		}
-
-		maxDepth := 0
-		if len(a) == 1 {
-			var ok bool
-			maxDepth, ok = a[0].(int)
-			if !ok {
-				return fmt.Errorf("max depth is not a int")
-			}
-			if maxDepth < 0 {
-				return fmt.Errorf("max depth can't be negative")
-			}
-		}
-
-		opts := dumpDefaultOpts
-		opts.MaxDepth = maxDepth
-
-		if err := v.Dump(m.OS.Stdout(), opts); err != nil {
-			return err
-		}
-
-		return c
-	}
-
 	gojqOptions := []gojq.CompilerOption{
-		gojq.WithFunction("bits", 0, func(c interface{}, a []interface{}) interface{} {
+		gojq.WithFunction("bits", 0, 0, func(c interface{}, a []interface{}) interface{} {
 			if v, ok := c.(*decode.Value); ok {
 				bb, err := v.RootBitBuf.BitBufRange(v.Range.Start, v.Range.Len)
 				if err != nil {
@@ -213,7 +123,7 @@ func (m Main) run() error {
 			// TODO: passthru c? move raw function?
 			return nil
 		}),
-		gojq.WithFunction("string", 0, func(c interface{}, a []interface{}) interface{} {
+		gojq.WithFunction("string", 0, 0, func(c interface{}, a []interface{}) interface{} {
 			var bb *bitio.Buffer
 			switch cc := c.(type) {
 			case *decode.Value:
@@ -234,10 +144,64 @@ func (m Main) run() error {
 
 			return string(sb.String())
 		}),
-		gojq.WithFunction("probe", 0, probeFn),
-		gojq.WithFunction("probe", 1, probeFn),
-		gojq.WithFunction("probe", 2, probeFn),
-		gojq.WithFunction("hexdump", 0, func(c interface{}, a []interface{}) interface{} {
+		gojq.WithFunction("probe", 0, 2, func(c interface{}, a []interface{}) interface{} {
+			var bb *bitio.Buffer
+			switch cc := c.(type) {
+			case *decode.Value:
+				bb, err = cc.RootBitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
+				if err != nil {
+					return err
+				}
+			case *bitio.Buffer:
+				bb = cc
+			default:
+				return fmt.Errorf("value is not a decode value or bit buffer")
+			}
+
+			opts := map[string]interface{}{}
+			formats := probeFormats
+
+			if len(a) >= 1 {
+				formatName, ok := a[0].(string)
+				if !ok {
+					return fmt.Errorf("format name is not a string")
+				}
+
+				if strings.HasSuffix(formatName, ".jq") {
+					formats, err = m.Registry.Group("jq")
+
+					script, err := ioutil.ReadFile(formatName)
+					if err != nil {
+						return err
+					}
+					opts["script"] = string(script)
+				} else {
+					formats, err = m.Registry.Group(formatName)
+					if err != nil {
+						return fmt.Errorf("%s: %s", formatName, err)
+					}
+				}
+			}
+
+			// TODO: hmm
+			name := "unname"
+			if len(a) >= 2 {
+				var ok bool
+				name, ok = a[1].(string)
+				if !ok {
+					return fmt.Errorf("name is not a string")
+				}
+			}
+
+			dv, _, errs := decode.Probe(name, bb, formats, decode.ProbeOptions{FormatOptions: opts})
+			if dv == nil {
+				return errs
+			}
+
+			return dv
+		}),
+
+		gojq.WithFunction("hexdump", 0, 0, func(c interface{}, a []interface{}) interface{} {
 			var bb *bitio.Buffer
 			switch cc := c.(type) {
 			case *decode.Value:
@@ -259,8 +223,38 @@ func (m Main) run() error {
 
 			return c
 		}),
-		gojq.WithFunction("dump", 0, dumpFn),
-		gojq.WithFunction("dump", 1, dumpFn),
+		gojq.WithFunction("dump", 0, 1, func(c interface{}, a []interface{}) interface{} {
+			var v *decode.Value
+			switch cc := c.(type) {
+			case *decode.Value:
+				v = cc
+			case *decode.D:
+				v = cc.Value
+			default:
+				return fmt.Errorf("%v: value is not a decode value", c)
+			}
+
+			maxDepth := 0
+			if len(a) == 1 {
+				var ok bool
+				maxDepth, ok = a[0].(int)
+				if !ok {
+					return fmt.Errorf("max depth is not a int")
+				}
+				if maxDepth < 0 {
+					return fmt.Errorf("max depth can't be negative")
+				}
+			}
+
+			opts := dumpDefaultOpts
+			opts.MaxDepth = maxDepth
+
+			if err := v.Dump(m.OS.Stdout(), opts); err != nil {
+				return err
+			}
+
+			return c
+		}),
 		gojq.WithVariables([]string{
 			"$FQ_FORMAT",
 			"$FQ_FILENAME",
