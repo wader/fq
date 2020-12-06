@@ -138,7 +138,7 @@ func parseTestCases(s string) *testCase {
 
 	// match "name:" or ">args" sections
 	seenRun := false
-	for _, section := range sectionParser(regexp.MustCompile(`^/.*:|>.*$`), s) {
+	for _, section := range sectionParser(regexp.MustCompile(`^/.*:|^>.*$`), s) {
 		n, v := section.Name, section.Value
 
 		switch {
@@ -223,7 +223,7 @@ func testDecodedTestCaseRun(t *testing.T, registry *decode.Registry, tcr *testCa
 	err := m.Run()
 	log.Printf("err: %#+v\n", err)
 
-	log.Printf("tcr.ActualStdoutBuf.String(): %#+v\n", tcr.ActualStdoutBuf.String())
+	//log.Printf("tcr.ActualStdoutBuf.String(): %#+v\n", tcr.ActualStdoutBuf.String())
 
 	// cli.Command{Version: "test", OS: &te}.Run()
 	// deepequal.Error(t, "files", te.ExpectedFiles, te.ActualFiles)
