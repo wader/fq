@@ -18,11 +18,11 @@ type tf interface {
 }
 
 func diff(a, b string, nLineContext int) string {
-	aFile, _ := ioutil.TempFile("", "naivediff")
+	aFile, _ := ioutil.TempFile("", "deepequal")
 	defer os.Remove(aFile.Name())
 	_, _ = io.Copy(aFile, bytes.NewBufferString(a))
 	aFile.Close()
-	bFile, _ := ioutil.TempFile("", "naivediff")
+	bFile, _ := ioutil.TempFile("", "deepequal")
 	defer os.Remove(bFile.Name())
 	_, _ = io.Copy(bFile, bytes.NewBufferString(b))
 	bFile.Close()
