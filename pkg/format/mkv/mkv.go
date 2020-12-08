@@ -9,12 +9,17 @@ import (
 	"fq/pkg/format"
 )
 
+var vorbisPacketFormat []*decode.Format
+
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.MKV,
 		Description: "Matroska EBML",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    mkvDecode,
+		Deps: []decode.Dep{
+			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
+		},
 	})
 }
 
@@ -220,6 +225,7 @@ func decodeMaster(d *decode.D, tag ebmlTag) {
 					d.FieldBitBufLen("value", int64(tagSize)*8)
 				case ebmlBinary:
 					const SimpleBlock = 0xa3
+					const CodecPrivate = 0x63a2
 
 					switch tagID {
 					case SimpleBlock:
@@ -239,6 +245,35 @@ func decodeMaster(d *decode.D, tag ebmlTag) {
 							// TODO: lacing
 							d.FieldBitBufLen("data", d.BitsLeft())
 
+						})
+					case CodecPrivate:
+						// TODO: switch on codec
+						d.DecodeLenFn(int64(tagSize)*8, func(d *decode.D) {
+							numPackets := d.FieldU8("num_packets")
+							// TODO: lacing
+							packetLengths := []int64{}
+							// Xiph-style lacing (similar to ogg) of n-1 packets, last is reset of block
+							d.FieldArrayFn("lace", func(d *decode.D) {
+								for i := uint64(0); i < numPackets; i++ {
+									l := d.FieldUFn("lace", func() (uint64, decode.DisplayFormat, string) {
+										var l uint64
+										for {
+											n := d.U8()
+											l += n
+											if n < 255 {
+												return l, decode.NumberDecimal, ""
+											}
+										}
+									})
+									packetLengths = append(packetLengths, int64(l))
+								}
+							})
+							d.FieldArrayFn("packet", func(d *decode.D) {
+								for _, l := range packetLengths {
+									d.FieldDecodeLen("packet", l*8, vorbisPacketFormat)
+								}
+								d.FieldDecodeLen("packet", d.BitsLeft(), vorbisPacketFormat)
+							})
 						})
 					default:
 						d.FieldBitBufLen("value", int64(tagSize)*8)
