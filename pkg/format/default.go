@@ -30,6 +30,7 @@ const (
 	ID3_V11        = "id3_v11"
 	ID3_V2         = "id3_v2"
 	JPEG           = "jpeg"
+	MKV            = "mkv"
 	MP3_FRAME      = "mp3_frame"
 	MP3            = "mp3"
 	XING_HEADER    = "xing_header"

@@ -10,6 +10,7 @@ import (
 	_ "fq/pkg/format/icc"
 	_ "fq/pkg/format/id3"
 	_ "fq/pkg/format/jpeg"
+	_ "fq/pkg/format/mkv"
 	_ "fq/pkg/format/mp3"
 	_ "fq/pkg/format/mp4"
 	_ "fq/pkg/format/mpeg"

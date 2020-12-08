@@ -136,17 +136,17 @@ func (d *D) FieldFE(name string, nBits int, endian Endian) float64 {
 	})
 }
 
-func (d *D) FPE(nBits int, dBits int64, endian Endian) float64 {
-	n, err := d.bitBuf.FPE(nBits, dBits, bitio.Endian(endian))
+func (d *D) FPE(nBits int, fBits int64, endian Endian) float64 {
+	n, err := d.bitBuf.FPE(nBits, fBits, bitio.Endian(endian))
 	if err != nil {
 		panic(ReadError{Err: err, Op: "FPE" + (strconv.Itoa(int(nBits))), Size: int64(nBits), Pos: d.Pos()})
 	}
 	return n
 }
 
-func (d *D) FieldFPE(name string, nBits int, dBits int64, endian Endian) float64 {
+func (d *D) FieldFPE(name string, nBits int, fBits int64, endian Endian) float64 {
 	return d.FieldFloatFn(name, func() (float64, string) {
-		n, err := d.bitBuf.FPE(nBits, dBits, bitio.Endian(endian))
+		n, err := d.bitBuf.FPE(nBits, fBits, bitio.Endian(endian))
 		if err != nil {
 			panic(ReadError{Err: err, Name: name, Op: "FieldFPE" + (strconv.Itoa(int(nBits))), Size: int64(nBits), Pos: d.Pos()})
 		}

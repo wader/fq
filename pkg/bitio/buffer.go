@@ -513,7 +513,7 @@ func (b *Buffer) F64LE() (float64, error)             { return b.F64E(LittleEndi
 
 // TODO: FP64,unsigned/BE/LE? rename SFP32?
 
-func (b *Buffer) FPE(nBits int, dBits int64, endian Endian) (float64, error) {
+func (b *Buffer) FPE(nBits int, fBits int64, endian Endian) (float64, error) {
 	n, err := b.Bits(nBits)
 	if err != nil {
 		return 0, err
@@ -521,7 +521,7 @@ func (b *Buffer) FPE(nBits int, dBits int64, endian Endian) (float64, error) {
 	if endian == LittleEndian {
 		n = ReverseBytes(nBits, n)
 	}
-	return float64(n) / float64(uint64(1<<dBits)), nil
+	return float64(n) / float64(uint64(1<<fBits)), nil
 }
 
 // FP64 signed fixed point 1:31:32
