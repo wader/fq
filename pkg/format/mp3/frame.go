@@ -58,6 +58,17 @@ func frameDecode(d *decode.D) interface{} {
 			panic("unreachable")
 		}
 	})
+	// [layer][mpeg version]
+	var samplePerFrameIndex = map[uint][4]uint{
+		0: [...]uint{0, 0, 0, 0},
+		1: [...]uint{0, 384, 384, 384},
+		2: [...]uint{0, 1152, 1152, 1152},
+		3: [...]uint{0, 1152, 576, 576},
+	}
+	// TODO: synthentic fields somehow?
+	d.FieldUFn("samples_per_frame", func() (uint64, decode.DisplayFormat, string) {
+		return uint64(samplePerFrameIndex[uint(l)][uint(v)]), decode.NumberDecimal, ""
+	})
 	d.FieldStringMapFn("protection", map[uint64]string{
 		0: "Protected by CRC",
 		1: "Not protected",
@@ -105,6 +116,7 @@ func frameDecode(d *decode.D) interface{} {
 			return uint64(sampleRateIndex[uint(u)][v-1]), decode.NumberDecimal, ""
 		}
 	})
+
 	padding, _ := d.FieldStringMapFn("padding", map[uint64]string{
 		0: "Not padded",
 		1: "Padded",

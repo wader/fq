@@ -39,10 +39,10 @@ func xingDecode(d *decode.D) interface{} {
 	})
 
 	if framesPresent {
-		d.FieldU32("frames")
+		d.FieldU32BE("frames")
 	}
 	if bytesPresent {
-		d.FieldU32("bytes")
+		d.FieldU32BE("bytes")
 	}
 	if tocPresent {
 		d.FieldArrayFn("toc", func(d *decode.D) {
@@ -52,7 +52,7 @@ func xingDecode(d *decode.D) interface{} {
 		})
 	}
 	if qualityPresent {
-		d.FieldU32("quality")
+		d.FieldU32BE("quality")
 	}
 
 	if hasLameExtension {

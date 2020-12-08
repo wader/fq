@@ -4,394 +4,394 @@ package decode
 
 // Integer readers
 
-// S read a nBits signed big-endian integer
+// S read a nBits signed current endian integer
 func (d *D) S(nBits int) int64 { return d.SE(nBits, d.Endian) }
 
-// S1 read 1 bit signed big-endian integer
+// S1 read 1 bit signed current endian integer
 func (d *D) S1() int64 { return d.SE(1, d.Endian) }
 
-// S2 read 2 bit signed big-endian integer
+// S2 read 2 bit signed current endian integer
 func (d *D) S2() int64 { return d.SE(2, d.Endian) }
 
-// S3 read 3 bit signed big-endian integer
+// S3 read 3 bit signed current endian integer
 func (d *D) S3() int64 { return d.SE(3, d.Endian) }
 
-// S4 read 4 bit signed big-endian integer
+// S4 read 4 bit signed current endian integer
 func (d *D) S4() int64 { return d.SE(4, d.Endian) }
 
-// S5 read 5 bit signed big-endian integer
+// S5 read 5 bit signed current endian integer
 func (d *D) S5() int64 { return d.SE(5, d.Endian) }
 
-// S6 read 6 bit signed big-endian integer
+// S6 read 6 bit signed current endian integer
 func (d *D) S6() int64 { return d.SE(6, d.Endian) }
 
-// S7 read 7 bit signed big-endian integer
+// S7 read 7 bit signed current endian integer
 func (d *D) S7() int64 { return d.SE(7, d.Endian) }
 
-// S8 read 8 bit signed big-endian integer
+// S8 read 8 bit signed current endian integer
 func (d *D) S8() int64 { return d.SE(8, d.Endian) }
 
-// S9 read 9 bit signed big-endian integer
+// S9 read 9 bit signed current endian integer
 func (d *D) S9() int64 { return d.SE(9, d.Endian) }
 
-// S10 read 10 bit signed big-endian integer
+// S10 read 10 bit signed current endian integer
 func (d *D) S10() int64 { return d.SE(10, d.Endian) }
 
-// S11 read 11 bit signed big-endian integer
+// S11 read 11 bit signed current endian integer
 func (d *D) S11() int64 { return d.SE(11, d.Endian) }
 
-// S12 read 12 bit signed big-endian integer
+// S12 read 12 bit signed current endian integer
 func (d *D) S12() int64 { return d.SE(12, d.Endian) }
 
-// S13 read 13 bit signed big-endian integer
+// S13 read 13 bit signed current endian integer
 func (d *D) S13() int64 { return d.SE(13, d.Endian) }
 
-// S14 read 14 bit signed big-endian integer
+// S14 read 14 bit signed current endian integer
 func (d *D) S14() int64 { return d.SE(14, d.Endian) }
 
-// S15 read 15 bit signed big-endian integer
+// S15 read 15 bit signed current endian integer
 func (d *D) S15() int64 { return d.SE(15, d.Endian) }
 
-// S16 read 16 bit signed big-endian integer
+// S16 read 16 bit signed current endian integer
 func (d *D) S16() int64 { return d.SE(16, d.Endian) }
 
-// S17 read 17 bit signed big-endian integer
+// S17 read 17 bit signed current endian integer
 func (d *D) S17() int64 { return d.SE(17, d.Endian) }
 
-// S18 read 18 bit signed big-endian integer
+// S18 read 18 bit signed current endian integer
 func (d *D) S18() int64 { return d.SE(18, d.Endian) }
 
-// S19 read 19 bit signed big-endian integer
+// S19 read 19 bit signed current endian integer
 func (d *D) S19() int64 { return d.SE(19, d.Endian) }
 
-// S20 read 20 bit signed big-endian integer
+// S20 read 20 bit signed current endian integer
 func (d *D) S20() int64 { return d.SE(20, d.Endian) }
 
-// S21 read 21 bit signed big-endian integer
+// S21 read 21 bit signed current endian integer
 func (d *D) S21() int64 { return d.SE(21, d.Endian) }
 
-// S22 read 22 bit signed big-endian integer
+// S22 read 22 bit signed current endian integer
 func (d *D) S22() int64 { return d.SE(22, d.Endian) }
 
-// S23 read 23 bit signed big-endian integer
+// S23 read 23 bit signed current endian integer
 func (d *D) S23() int64 { return d.SE(23, d.Endian) }
 
-// S24 read 24 bit signed big-endian integer
+// S24 read 24 bit signed current endian integer
 func (d *D) S24() int64 { return d.SE(24, d.Endian) }
 
-// S25 read 25 bit signed big-endian integer
+// S25 read 25 bit signed current endian integer
 func (d *D) S25() int64 { return d.SE(25, d.Endian) }
 
-// S26 read 26 bit signed big-endian integer
+// S26 read 26 bit signed current endian integer
 func (d *D) S26() int64 { return d.SE(26, d.Endian) }
 
-// S27 read 27 bit signed big-endian integer
+// S27 read 27 bit signed current endian integer
 func (d *D) S27() int64 { return d.SE(27, d.Endian) }
 
-// S28 read 28 bit signed big-endian integer
+// S28 read 28 bit signed current endian integer
 func (d *D) S28() int64 { return d.SE(28, d.Endian) }
 
-// S29 read 29 bit signed big-endian integer
+// S29 read 29 bit signed current endian integer
 func (d *D) S29() int64 { return d.SE(29, d.Endian) }
 
-// S30 read 30 bit signed big-endian integer
+// S30 read 30 bit signed current endian integer
 func (d *D) S30() int64 { return d.SE(30, d.Endian) }
 
-// S31 read 31 bit signed big-endian integer
+// S31 read 31 bit signed current endian integer
 func (d *D) S31() int64 { return d.SE(31, d.Endian) }
 
-// S32 read 32 bit signed big-endian integer
+// S32 read 32 bit signed current endian integer
 func (d *D) S32() int64 { return d.SE(32, d.Endian) }
 
-// S33 read 33 bit signed big-endian integer
+// S33 read 33 bit signed current endian integer
 func (d *D) S33() int64 { return d.SE(33, d.Endian) }
 
-// S34 read 34 bit signed big-endian integer
+// S34 read 34 bit signed current endian integer
 func (d *D) S34() int64 { return d.SE(34, d.Endian) }
 
-// S35 read 35 bit signed big-endian integer
+// S35 read 35 bit signed current endian integer
 func (d *D) S35() int64 { return d.SE(35, d.Endian) }
 
-// S36 read 36 bit signed big-endian integer
+// S36 read 36 bit signed current endian integer
 func (d *D) S36() int64 { return d.SE(36, d.Endian) }
 
-// S37 read 37 bit signed big-endian integer
+// S37 read 37 bit signed current endian integer
 func (d *D) S37() int64 { return d.SE(37, d.Endian) }
 
-// S38 read 38 bit signed big-endian integer
+// S38 read 38 bit signed current endian integer
 func (d *D) S38() int64 { return d.SE(38, d.Endian) }
 
-// S39 read 39 bit signed big-endian integer
+// S39 read 39 bit signed current endian integer
 func (d *D) S39() int64 { return d.SE(39, d.Endian) }
 
-// S40 read 40 bit signed big-endian integer
+// S40 read 40 bit signed current endian integer
 func (d *D) S40() int64 { return d.SE(40, d.Endian) }
 
-// S41 read 41 bit signed big-endian integer
+// S41 read 41 bit signed current endian integer
 func (d *D) S41() int64 { return d.SE(41, d.Endian) }
 
-// S42 read 42 bit signed big-endian integer
+// S42 read 42 bit signed current endian integer
 func (d *D) S42() int64 { return d.SE(42, d.Endian) }
 
-// S43 read 43 bit signed big-endian integer
+// S43 read 43 bit signed current endian integer
 func (d *D) S43() int64 { return d.SE(43, d.Endian) }
 
-// S44 read 44 bit signed big-endian integer
+// S44 read 44 bit signed current endian integer
 func (d *D) S44() int64 { return d.SE(44, d.Endian) }
 
-// S45 read 45 bit signed big-endian integer
+// S45 read 45 bit signed current endian integer
 func (d *D) S45() int64 { return d.SE(45, d.Endian) }
 
-// S46 read 46 bit signed big-endian integer
+// S46 read 46 bit signed current endian integer
 func (d *D) S46() int64 { return d.SE(46, d.Endian) }
 
-// S47 read 47 bit signed big-endian integer
+// S47 read 47 bit signed current endian integer
 func (d *D) S47() int64 { return d.SE(47, d.Endian) }
 
-// S48 read 48 bit signed big-endian integer
+// S48 read 48 bit signed current endian integer
 func (d *D) S48() int64 { return d.SE(48, d.Endian) }
 
-// S49 read 49 bit signed big-endian integer
+// S49 read 49 bit signed current endian integer
 func (d *D) S49() int64 { return d.SE(49, d.Endian) }
 
-// S50 read 50 bit signed big-endian integer
+// S50 read 50 bit signed current endian integer
 func (d *D) S50() int64 { return d.SE(50, d.Endian) }
 
-// S51 read 51 bit signed big-endian integer
+// S51 read 51 bit signed current endian integer
 func (d *D) S51() int64 { return d.SE(51, d.Endian) }
 
-// S52 read 52 bit signed big-endian integer
+// S52 read 52 bit signed current endian integer
 func (d *D) S52() int64 { return d.SE(52, d.Endian) }
 
-// S53 read 53 bit signed big-endian integer
+// S53 read 53 bit signed current endian integer
 func (d *D) S53() int64 { return d.SE(53, d.Endian) }
 
-// S54 read 54 bit signed big-endian integer
+// S54 read 54 bit signed current endian integer
 func (d *D) S54() int64 { return d.SE(54, d.Endian) }
 
-// S55 read 55 bit signed big-endian integer
+// S55 read 55 bit signed current endian integer
 func (d *D) S55() int64 { return d.SE(55, d.Endian) }
 
-// S56 read 56 bit signed big-endian integer
+// S56 read 56 bit signed current endian integer
 func (d *D) S56() int64 { return d.SE(56, d.Endian) }
 
-// S57 read 57 bit signed big-endian integer
+// S57 read 57 bit signed current endian integer
 func (d *D) S57() int64 { return d.SE(57, d.Endian) }
 
-// S58 read 58 bit signed big-endian integer
+// S58 read 58 bit signed current endian integer
 func (d *D) S58() int64 { return d.SE(58, d.Endian) }
 
-// S59 read 59 bit signed big-endian integer
+// S59 read 59 bit signed current endian integer
 func (d *D) S59() int64 { return d.SE(59, d.Endian) }
 
-// S60 read 60 bit signed big-endian integer
+// S60 read 60 bit signed current endian integer
 func (d *D) S60() int64 { return d.SE(60, d.Endian) }
 
-// S61 read 61 bit signed big-endian integer
+// S61 read 61 bit signed current endian integer
 func (d *D) S61() int64 { return d.SE(61, d.Endian) }
 
-// S62 read 62 bit signed big-endian integer
+// S62 read 62 bit signed current endian integer
 func (d *D) S62() int64 { return d.SE(62, d.Endian) }
 
-// S63 read 63 bit signed big-endian integer
+// S63 read 63 bit signed current endian integer
 func (d *D) S63() int64 { return d.SE(63, d.Endian) }
 
-// S64 read 64 bit signed big-endian integer
+// S64 read 64 bit signed current endian integer
 func (d *D) S64() int64 { return d.SE(64, d.Endian) }
 
-// FieldS read a nBits signed big-endian integer and add a field
+// FieldS read a nBits signed current endian integer and add a field
 func (d *D) FieldS(name string, nBits int) int64 { return d.FieldSE(name, nBits, d.Endian) }
 
-// FieldS1 read 1 bit signed big-endian integer and add a field
+// FieldS1 read 1 bit signed current endian integer and add a field
 func (d *D) FieldS1(name string) int64 { return d.FieldSE(name, 1, d.Endian) }
 
-// FieldS2 read 2 bit signed big-endian integer and add a field
+// FieldS2 read 2 bit signed current endian integer and add a field
 func (d *D) FieldS2(name string) int64 { return d.FieldSE(name, 2, d.Endian) }
 
-// FieldS3 read 3 bit signed big-endian integer and add a field
+// FieldS3 read 3 bit signed current endian integer and add a field
 func (d *D) FieldS3(name string) int64 { return d.FieldSE(name, 3, d.Endian) }
 
-// FieldS4 read 4 bit signed big-endian integer and add a field
+// FieldS4 read 4 bit signed current endian integer and add a field
 func (d *D) FieldS4(name string) int64 { return d.FieldSE(name, 4, d.Endian) }
 
-// FieldS5 read 5 bit signed big-endian integer and add a field
+// FieldS5 read 5 bit signed current endian integer and add a field
 func (d *D) FieldS5(name string) int64 { return d.FieldSE(name, 5, d.Endian) }
 
-// FieldS6 read 6 bit signed big-endian integer and add a field
+// FieldS6 read 6 bit signed current endian integer and add a field
 func (d *D) FieldS6(name string) int64 { return d.FieldSE(name, 6, d.Endian) }
 
-// FieldS7 read 7 bit signed big-endian integer and add a field
+// FieldS7 read 7 bit signed current endian integer and add a field
 func (d *D) FieldS7(name string) int64 { return d.FieldSE(name, 7, d.Endian) }
 
-// FieldS8 read 8 bit signed big-endian integer and add a field
+// FieldS8 read 8 bit signed current endian integer and add a field
 func (d *D) FieldS8(name string) int64 { return d.FieldSE(name, 8, d.Endian) }
 
-// FieldS9 read 9 bit signed big-endian integer and add a field
+// FieldS9 read 9 bit signed current endian integer and add a field
 func (d *D) FieldS9(name string) int64 { return d.FieldSE(name, 9, d.Endian) }
 
-// FieldS10 read 10 bit signed big-endian integer and add a field
+// FieldS10 read 10 bit signed current endian integer and add a field
 func (d *D) FieldS10(name string) int64 { return d.FieldSE(name, 10, d.Endian) }
 
-// FieldS11 read 11 bit signed big-endian integer and add a field
+// FieldS11 read 11 bit signed current endian integer and add a field
 func (d *D) FieldS11(name string) int64 { return d.FieldSE(name, 11, d.Endian) }
 
-// FieldS12 read 12 bit signed big-endian integer and add a field
+// FieldS12 read 12 bit signed current endian integer and add a field
 func (d *D) FieldS12(name string) int64 { return d.FieldSE(name, 12, d.Endian) }
 
-// FieldS13 read 13 bit signed big-endian integer and add a field
+// FieldS13 read 13 bit signed current endian integer and add a field
 func (d *D) FieldS13(name string) int64 { return d.FieldSE(name, 13, d.Endian) }
 
-// FieldS14 read 14 bit signed big-endian integer and add a field
+// FieldS14 read 14 bit signed current endian integer and add a field
 func (d *D) FieldS14(name string) int64 { return d.FieldSE(name, 14, d.Endian) }
 
-// FieldS15 read 15 bit signed big-endian integer and add a field
+// FieldS15 read 15 bit signed current endian integer and add a field
 func (d *D) FieldS15(name string) int64 { return d.FieldSE(name, 15, d.Endian) }
 
-// FieldS16 read 16 bit signed big-endian integer and add a field
+// FieldS16 read 16 bit signed current endian integer and add a field
 func (d *D) FieldS16(name string) int64 { return d.FieldSE(name, 16, d.Endian) }
 
-// FieldS17 read 17 bit signed big-endian integer and add a field
+// FieldS17 read 17 bit signed current endian integer and add a field
 func (d *D) FieldS17(name string) int64 { return d.FieldSE(name, 17, d.Endian) }
 
-// FieldS18 read 18 bit signed big-endian integer and add a field
+// FieldS18 read 18 bit signed current endian integer and add a field
 func (d *D) FieldS18(name string) int64 { return d.FieldSE(name, 18, d.Endian) }
 
-// FieldS19 read 19 bit signed big-endian integer and add a field
+// FieldS19 read 19 bit signed current endian integer and add a field
 func (d *D) FieldS19(name string) int64 { return d.FieldSE(name, 19, d.Endian) }
 
-// FieldS20 read 20 bit signed big-endian integer and add a field
+// FieldS20 read 20 bit signed current endian integer and add a field
 func (d *D) FieldS20(name string) int64 { return d.FieldSE(name, 20, d.Endian) }
 
-// FieldS21 read 21 bit signed big-endian integer and add a field
+// FieldS21 read 21 bit signed current endian integer and add a field
 func (d *D) FieldS21(name string) int64 { return d.FieldSE(name, 21, d.Endian) }
 
-// FieldS22 read 22 bit signed big-endian integer and add a field
+// FieldS22 read 22 bit signed current endian integer and add a field
 func (d *D) FieldS22(name string) int64 { return d.FieldSE(name, 22, d.Endian) }
 
-// FieldS23 read 23 bit signed big-endian integer and add a field
+// FieldS23 read 23 bit signed current endian integer and add a field
 func (d *D) FieldS23(name string) int64 { return d.FieldSE(name, 23, d.Endian) }
 
-// FieldS24 read 24 bit signed big-endian integer and add a field
+// FieldS24 read 24 bit signed current endian integer and add a field
 func (d *D) FieldS24(name string) int64 { return d.FieldSE(name, 24, d.Endian) }
 
-// FieldS25 read 25 bit signed big-endian integer and add a field
+// FieldS25 read 25 bit signed current endian integer and add a field
 func (d *D) FieldS25(name string) int64 { return d.FieldSE(name, 25, d.Endian) }
 
-// FieldS26 read 26 bit signed big-endian integer and add a field
+// FieldS26 read 26 bit signed current endian integer and add a field
 func (d *D) FieldS26(name string) int64 { return d.FieldSE(name, 26, d.Endian) }
 
-// FieldS27 read 27 bit signed big-endian integer and add a field
+// FieldS27 read 27 bit signed current endian integer and add a field
 func (d *D) FieldS27(name string) int64 { return d.FieldSE(name, 27, d.Endian) }
 
-// FieldS28 read 28 bit signed big-endian integer and add a field
+// FieldS28 read 28 bit signed current endian integer and add a field
 func (d *D) FieldS28(name string) int64 { return d.FieldSE(name, 28, d.Endian) }
 
-// FieldS29 read 29 bit signed big-endian integer and add a field
+// FieldS29 read 29 bit signed current endian integer and add a field
 func (d *D) FieldS29(name string) int64 { return d.FieldSE(name, 29, d.Endian) }
 
-// FieldS30 read 30 bit signed big-endian integer and add a field
+// FieldS30 read 30 bit signed current endian integer and add a field
 func (d *D) FieldS30(name string) int64 { return d.FieldSE(name, 30, d.Endian) }
 
-// FieldS31 read 31 bit signed big-endian integer and add a field
+// FieldS31 read 31 bit signed current endian integer and add a field
 func (d *D) FieldS31(name string) int64 { return d.FieldSE(name, 31, d.Endian) }
 
-// FieldS32 read 32 bit signed big-endian integer and add a field
+// FieldS32 read 32 bit signed current endian integer and add a field
 func (d *D) FieldS32(name string) int64 { return d.FieldSE(name, 32, d.Endian) }
 
-// FieldS33 read 33 bit signed big-endian integer and add a field
+// FieldS33 read 33 bit signed current endian integer and add a field
 func (d *D) FieldS33(name string) int64 { return d.FieldSE(name, 33, d.Endian) }
 
-// FieldS34 read 34 bit signed big-endian integer and add a field
+// FieldS34 read 34 bit signed current endian integer and add a field
 func (d *D) FieldS34(name string) int64 { return d.FieldSE(name, 34, d.Endian) }
 
-// FieldS35 read 35 bit signed big-endian integer and add a field
+// FieldS35 read 35 bit signed current endian integer and add a field
 func (d *D) FieldS35(name string) int64 { return d.FieldSE(name, 35, d.Endian) }
 
-// FieldS36 read 36 bit signed big-endian integer and add a field
+// FieldS36 read 36 bit signed current endian integer and add a field
 func (d *D) FieldS36(name string) int64 { return d.FieldSE(name, 36, d.Endian) }
 
-// FieldS37 read 37 bit signed big-endian integer and add a field
+// FieldS37 read 37 bit signed current endian integer and add a field
 func (d *D) FieldS37(name string) int64 { return d.FieldSE(name, 37, d.Endian) }
 
-// FieldS38 read 38 bit signed big-endian integer and add a field
+// FieldS38 read 38 bit signed current endian integer and add a field
 func (d *D) FieldS38(name string) int64 { return d.FieldSE(name, 38, d.Endian) }
 
-// FieldS39 read 39 bit signed big-endian integer and add a field
+// FieldS39 read 39 bit signed current endian integer and add a field
 func (d *D) FieldS39(name string) int64 { return d.FieldSE(name, 39, d.Endian) }
 
-// FieldS40 read 40 bit signed big-endian integer and add a field
+// FieldS40 read 40 bit signed current endian integer and add a field
 func (d *D) FieldS40(name string) int64 { return d.FieldSE(name, 40, d.Endian) }
 
-// FieldS41 read 41 bit signed big-endian integer and add a field
+// FieldS41 read 41 bit signed current endian integer and add a field
 func (d *D) FieldS41(name string) int64 { return d.FieldSE(name, 41, d.Endian) }
 
-// FieldS42 read 42 bit signed big-endian integer and add a field
+// FieldS42 read 42 bit signed current endian integer and add a field
 func (d *D) FieldS42(name string) int64 { return d.FieldSE(name, 42, d.Endian) }
 
-// FieldS43 read 43 bit signed big-endian integer and add a field
+// FieldS43 read 43 bit signed current endian integer and add a field
 func (d *D) FieldS43(name string) int64 { return d.FieldSE(name, 43, d.Endian) }
 
-// FieldS44 read 44 bit signed big-endian integer and add a field
+// FieldS44 read 44 bit signed current endian integer and add a field
 func (d *D) FieldS44(name string) int64 { return d.FieldSE(name, 44, d.Endian) }
 
-// FieldS45 read 45 bit signed big-endian integer and add a field
+// FieldS45 read 45 bit signed current endian integer and add a field
 func (d *D) FieldS45(name string) int64 { return d.FieldSE(name, 45, d.Endian) }
 
-// FieldS46 read 46 bit signed big-endian integer and add a field
+// FieldS46 read 46 bit signed current endian integer and add a field
 func (d *D) FieldS46(name string) int64 { return d.FieldSE(name, 46, d.Endian) }
 
-// FieldS47 read 47 bit signed big-endian integer and add a field
+// FieldS47 read 47 bit signed current endian integer and add a field
 func (d *D) FieldS47(name string) int64 { return d.FieldSE(name, 47, d.Endian) }
 
-// FieldS48 read 48 bit signed big-endian integer and add a field
+// FieldS48 read 48 bit signed current endian integer and add a field
 func (d *D) FieldS48(name string) int64 { return d.FieldSE(name, 48, d.Endian) }
 
-// FieldS49 read 49 bit signed big-endian integer and add a field
+// FieldS49 read 49 bit signed current endian integer and add a field
 func (d *D) FieldS49(name string) int64 { return d.FieldSE(name, 49, d.Endian) }
 
-// FieldS50 read 50 bit signed big-endian integer and add a field
+// FieldS50 read 50 bit signed current endian integer and add a field
 func (d *D) FieldS50(name string) int64 { return d.FieldSE(name, 50, d.Endian) }
 
-// FieldS51 read 51 bit signed big-endian integer and add a field
+// FieldS51 read 51 bit signed current endian integer and add a field
 func (d *D) FieldS51(name string) int64 { return d.FieldSE(name, 51, d.Endian) }
 
-// FieldS52 read 52 bit signed big-endian integer and add a field
+// FieldS52 read 52 bit signed current endian integer and add a field
 func (d *D) FieldS52(name string) int64 { return d.FieldSE(name, 52, d.Endian) }
 
-// FieldS53 read 53 bit signed big-endian integer and add a field
+// FieldS53 read 53 bit signed current endian integer and add a field
 func (d *D) FieldS53(name string) int64 { return d.FieldSE(name, 53, d.Endian) }
 
-// FieldS54 read 54 bit signed big-endian integer and add a field
+// FieldS54 read 54 bit signed current endian integer and add a field
 func (d *D) FieldS54(name string) int64 { return d.FieldSE(name, 54, d.Endian) }
 
-// FieldS55 read 55 bit signed big-endian integer and add a field
+// FieldS55 read 55 bit signed current endian integer and add a field
 func (d *D) FieldS55(name string) int64 { return d.FieldSE(name, 55, d.Endian) }
 
-// FieldS56 read 56 bit signed big-endian integer and add a field
+// FieldS56 read 56 bit signed current endian integer and add a field
 func (d *D) FieldS56(name string) int64 { return d.FieldSE(name, 56, d.Endian) }
 
-// FieldS57 read 57 bit signed big-endian integer and add a field
+// FieldS57 read 57 bit signed current endian integer and add a field
 func (d *D) FieldS57(name string) int64 { return d.FieldSE(name, 57, d.Endian) }
 
-// FieldS58 read 58 bit signed big-endian integer and add a field
+// FieldS58 read 58 bit signed current endian integer and add a field
 func (d *D) FieldS58(name string) int64 { return d.FieldSE(name, 58, d.Endian) }
 
-// FieldS59 read 59 bit signed big-endian integer and add a field
+// FieldS59 read 59 bit signed current endian integer and add a field
 func (d *D) FieldS59(name string) int64 { return d.FieldSE(name, 59, d.Endian) }
 
-// FieldS60 read 60 bit signed big-endian integer and add a field
+// FieldS60 read 60 bit signed current endian integer and add a field
 func (d *D) FieldS60(name string) int64 { return d.FieldSE(name, 60, d.Endian) }
 
-// FieldS61 read 61 bit signed big-endian integer and add a field
+// FieldS61 read 61 bit signed current endian integer and add a field
 func (d *D) FieldS61(name string) int64 { return d.FieldSE(name, 61, d.Endian) }
 
-// FieldS62 read 62 bit signed big-endian integer and add a field
+// FieldS62 read 62 bit signed current endian integer and add a field
 func (d *D) FieldS62(name string) int64 { return d.FieldSE(name, 62, d.Endian) }
 
-// FieldS63 read 63 bit signed big-endian integer and add a field
+// FieldS63 read 63 bit signed current endian integer and add a field
 func (d *D) FieldS63(name string) int64 { return d.FieldSE(name, 63, d.Endian) }
 
-// FieldS64 read 64 bit signed big-endian integer and add a field
+// FieldS64 read 64 bit signed current endian integer and add a field
 func (d *D) FieldS64(name string) int64 { return d.FieldSE(name, 64, d.Endian) }
 
 // SBE read a nBits signed big-endian integer
@@ -1090,394 +1090,394 @@ func (d *D) FieldS63LE(name string) int64 { return d.FieldSE(name, 63, LittleEnd
 // FieldS64LE read 64 bit signed little-endian integer and add a field
 func (d *D) FieldS64LE(name string) int64 { return d.FieldSE(name, 64, LittleEndian) }
 
-// U read a nBits unsigned big-endian integer
+// U read a nBits unsigned current endian integer
 func (d *D) U(nBits int) uint64 { return d.UE(nBits, d.Endian) }
 
-// U1 read 1 bit unsigned big-endian integer
+// U1 read 1 bit unsigned current endian integer
 func (d *D) U1() uint64 { return d.UE(1, d.Endian) }
 
-// U2 read 2 bit unsigned big-endian integer
+// U2 read 2 bit unsigned current endian integer
 func (d *D) U2() uint64 { return d.UE(2, d.Endian) }
 
-// U3 read 3 bit unsigned big-endian integer
+// U3 read 3 bit unsigned current endian integer
 func (d *D) U3() uint64 { return d.UE(3, d.Endian) }
 
-// U4 read 4 bit unsigned big-endian integer
+// U4 read 4 bit unsigned current endian integer
 func (d *D) U4() uint64 { return d.UE(4, d.Endian) }
 
-// U5 read 5 bit unsigned big-endian integer
+// U5 read 5 bit unsigned current endian integer
 func (d *D) U5() uint64 { return d.UE(5, d.Endian) }
 
-// U6 read 6 bit unsigned big-endian integer
+// U6 read 6 bit unsigned current endian integer
 func (d *D) U6() uint64 { return d.UE(6, d.Endian) }
 
-// U7 read 7 bit unsigned big-endian integer
+// U7 read 7 bit unsigned current endian integer
 func (d *D) U7() uint64 { return d.UE(7, d.Endian) }
 
-// U8 read 8 bit unsigned big-endian integer
+// U8 read 8 bit unsigned current endian integer
 func (d *D) U8() uint64 { return d.UE(8, d.Endian) }
 
-// U9 read 9 bit unsigned big-endian integer
+// U9 read 9 bit unsigned current endian integer
 func (d *D) U9() uint64 { return d.UE(9, d.Endian) }
 
-// U10 read 10 bit unsigned big-endian integer
+// U10 read 10 bit unsigned current endian integer
 func (d *D) U10() uint64 { return d.UE(10, d.Endian) }
 
-// U11 read 11 bit unsigned big-endian integer
+// U11 read 11 bit unsigned current endian integer
 func (d *D) U11() uint64 { return d.UE(11, d.Endian) }
 
-// U12 read 12 bit unsigned big-endian integer
+// U12 read 12 bit unsigned current endian integer
 func (d *D) U12() uint64 { return d.UE(12, d.Endian) }
 
-// U13 read 13 bit unsigned big-endian integer
+// U13 read 13 bit unsigned current endian integer
 func (d *D) U13() uint64 { return d.UE(13, d.Endian) }
 
-// U14 read 14 bit unsigned big-endian integer
+// U14 read 14 bit unsigned current endian integer
 func (d *D) U14() uint64 { return d.UE(14, d.Endian) }
 
-// U15 read 15 bit unsigned big-endian integer
+// U15 read 15 bit unsigned current endian integer
 func (d *D) U15() uint64 { return d.UE(15, d.Endian) }
 
-// U16 read 16 bit unsigned big-endian integer
+// U16 read 16 bit unsigned current endian integer
 func (d *D) U16() uint64 { return d.UE(16, d.Endian) }
 
-// U17 read 17 bit unsigned big-endian integer
+// U17 read 17 bit unsigned current endian integer
 func (d *D) U17() uint64 { return d.UE(17, d.Endian) }
 
-// U18 read 18 bit unsigned big-endian integer
+// U18 read 18 bit unsigned current endian integer
 func (d *D) U18() uint64 { return d.UE(18, d.Endian) }
 
-// U19 read 19 bit unsigned big-endian integer
+// U19 read 19 bit unsigned current endian integer
 func (d *D) U19() uint64 { return d.UE(19, d.Endian) }
 
-// U20 read 20 bit unsigned big-endian integer
+// U20 read 20 bit unsigned current endian integer
 func (d *D) U20() uint64 { return d.UE(20, d.Endian) }
 
-// U21 read 21 bit unsigned big-endian integer
+// U21 read 21 bit unsigned current endian integer
 func (d *D) U21() uint64 { return d.UE(21, d.Endian) }
 
-// U22 read 22 bit unsigned big-endian integer
+// U22 read 22 bit unsigned current endian integer
 func (d *D) U22() uint64 { return d.UE(22, d.Endian) }
 
-// U23 read 23 bit unsigned big-endian integer
+// U23 read 23 bit unsigned current endian integer
 func (d *D) U23() uint64 { return d.UE(23, d.Endian) }
 
-// U24 read 24 bit unsigned big-endian integer
+// U24 read 24 bit unsigned current endian integer
 func (d *D) U24() uint64 { return d.UE(24, d.Endian) }
 
-// U25 read 25 bit unsigned big-endian integer
+// U25 read 25 bit unsigned current endian integer
 func (d *D) U25() uint64 { return d.UE(25, d.Endian) }
 
-// U26 read 26 bit unsigned big-endian integer
+// U26 read 26 bit unsigned current endian integer
 func (d *D) U26() uint64 { return d.UE(26, d.Endian) }
 
-// U27 read 27 bit unsigned big-endian integer
+// U27 read 27 bit unsigned current endian integer
 func (d *D) U27() uint64 { return d.UE(27, d.Endian) }
 
-// U28 read 28 bit unsigned big-endian integer
+// U28 read 28 bit unsigned current endian integer
 func (d *D) U28() uint64 { return d.UE(28, d.Endian) }
 
-// U29 read 29 bit unsigned big-endian integer
+// U29 read 29 bit unsigned current endian integer
 func (d *D) U29() uint64 { return d.UE(29, d.Endian) }
 
-// U30 read 30 bit unsigned big-endian integer
+// U30 read 30 bit unsigned current endian integer
 func (d *D) U30() uint64 { return d.UE(30, d.Endian) }
 
-// U31 read 31 bit unsigned big-endian integer
+// U31 read 31 bit unsigned current endian integer
 func (d *D) U31() uint64 { return d.UE(31, d.Endian) }
 
-// U32 read 32 bit unsigned big-endian integer
+// U32 read 32 bit unsigned current endian integer
 func (d *D) U32() uint64 { return d.UE(32, d.Endian) }
 
-// U33 read 33 bit unsigned big-endian integer
+// U33 read 33 bit unsigned current endian integer
 func (d *D) U33() uint64 { return d.UE(33, d.Endian) }
 
-// U34 read 34 bit unsigned big-endian integer
+// U34 read 34 bit unsigned current endian integer
 func (d *D) U34() uint64 { return d.UE(34, d.Endian) }
 
-// U35 read 35 bit unsigned big-endian integer
+// U35 read 35 bit unsigned current endian integer
 func (d *D) U35() uint64 { return d.UE(35, d.Endian) }
 
-// U36 read 36 bit unsigned big-endian integer
+// U36 read 36 bit unsigned current endian integer
 func (d *D) U36() uint64 { return d.UE(36, d.Endian) }
 
-// U37 read 37 bit unsigned big-endian integer
+// U37 read 37 bit unsigned current endian integer
 func (d *D) U37() uint64 { return d.UE(37, d.Endian) }
 
-// U38 read 38 bit unsigned big-endian integer
+// U38 read 38 bit unsigned current endian integer
 func (d *D) U38() uint64 { return d.UE(38, d.Endian) }
 
-// U39 read 39 bit unsigned big-endian integer
+// U39 read 39 bit unsigned current endian integer
 func (d *D) U39() uint64 { return d.UE(39, d.Endian) }
 
-// U40 read 40 bit unsigned big-endian integer
+// U40 read 40 bit unsigned current endian integer
 func (d *D) U40() uint64 { return d.UE(40, d.Endian) }
 
-// U41 read 41 bit unsigned big-endian integer
+// U41 read 41 bit unsigned current endian integer
 func (d *D) U41() uint64 { return d.UE(41, d.Endian) }
 
-// U42 read 42 bit unsigned big-endian integer
+// U42 read 42 bit unsigned current endian integer
 func (d *D) U42() uint64 { return d.UE(42, d.Endian) }
 
-// U43 read 43 bit unsigned big-endian integer
+// U43 read 43 bit unsigned current endian integer
 func (d *D) U43() uint64 { return d.UE(43, d.Endian) }
 
-// U44 read 44 bit unsigned big-endian integer
+// U44 read 44 bit unsigned current endian integer
 func (d *D) U44() uint64 { return d.UE(44, d.Endian) }
 
-// U45 read 45 bit unsigned big-endian integer
+// U45 read 45 bit unsigned current endian integer
 func (d *D) U45() uint64 { return d.UE(45, d.Endian) }
 
-// U46 read 46 bit unsigned big-endian integer
+// U46 read 46 bit unsigned current endian integer
 func (d *D) U46() uint64 { return d.UE(46, d.Endian) }
 
-// U47 read 47 bit unsigned big-endian integer
+// U47 read 47 bit unsigned current endian integer
 func (d *D) U47() uint64 { return d.UE(47, d.Endian) }
 
-// U48 read 48 bit unsigned big-endian integer
+// U48 read 48 bit unsigned current endian integer
 func (d *D) U48() uint64 { return d.UE(48, d.Endian) }
 
-// U49 read 49 bit unsigned big-endian integer
+// U49 read 49 bit unsigned current endian integer
 func (d *D) U49() uint64 { return d.UE(49, d.Endian) }
 
-// U50 read 50 bit unsigned big-endian integer
+// U50 read 50 bit unsigned current endian integer
 func (d *D) U50() uint64 { return d.UE(50, d.Endian) }
 
-// U51 read 51 bit unsigned big-endian integer
+// U51 read 51 bit unsigned current endian integer
 func (d *D) U51() uint64 { return d.UE(51, d.Endian) }
 
-// U52 read 52 bit unsigned big-endian integer
+// U52 read 52 bit unsigned current endian integer
 func (d *D) U52() uint64 { return d.UE(52, d.Endian) }
 
-// U53 read 53 bit unsigned big-endian integer
+// U53 read 53 bit unsigned current endian integer
 func (d *D) U53() uint64 { return d.UE(53, d.Endian) }
 
-// U54 read 54 bit unsigned big-endian integer
+// U54 read 54 bit unsigned current endian integer
 func (d *D) U54() uint64 { return d.UE(54, d.Endian) }
 
-// U55 read 55 bit unsigned big-endian integer
+// U55 read 55 bit unsigned current endian integer
 func (d *D) U55() uint64 { return d.UE(55, d.Endian) }
 
-// U56 read 56 bit unsigned big-endian integer
+// U56 read 56 bit unsigned current endian integer
 func (d *D) U56() uint64 { return d.UE(56, d.Endian) }
 
-// U57 read 57 bit unsigned big-endian integer
+// U57 read 57 bit unsigned current endian integer
 func (d *D) U57() uint64 { return d.UE(57, d.Endian) }
 
-// U58 read 58 bit unsigned big-endian integer
+// U58 read 58 bit unsigned current endian integer
 func (d *D) U58() uint64 { return d.UE(58, d.Endian) }
 
-// U59 read 59 bit unsigned big-endian integer
+// U59 read 59 bit unsigned current endian integer
 func (d *D) U59() uint64 { return d.UE(59, d.Endian) }
 
-// U60 read 60 bit unsigned big-endian integer
+// U60 read 60 bit unsigned current endian integer
 func (d *D) U60() uint64 { return d.UE(60, d.Endian) }
 
-// U61 read 61 bit unsigned big-endian integer
+// U61 read 61 bit unsigned current endian integer
 func (d *D) U61() uint64 { return d.UE(61, d.Endian) }
 
-// U62 read 62 bit unsigned big-endian integer
+// U62 read 62 bit unsigned current endian integer
 func (d *D) U62() uint64 { return d.UE(62, d.Endian) }
 
-// U63 read 63 bit unsigned big-endian integer
+// U63 read 63 bit unsigned current endian integer
 func (d *D) U63() uint64 { return d.UE(63, d.Endian) }
 
-// U64 read 64 bit unsigned big-endian integer
+// U64 read 64 bit unsigned current endian integer
 func (d *D) U64() uint64 { return d.UE(64, d.Endian) }
 
-// FieldU read a nBits unsigned big-endian integer and add a field
+// FieldU read a nBits unsigned current endian integer and add a field
 func (d *D) FieldU(name string, nBits int) uint64 { return d.FieldUE(name, nBits, d.Endian) }
 
-// FieldU1 read 1 bit unsigned big-endian integer and add a field
+// FieldU1 read 1 bit unsigned current endian integer and add a field
 func (d *D) FieldU1(name string) uint64 { return d.FieldUE(name, 1, d.Endian) }
 
-// FieldU2 read 2 bit unsigned big-endian integer and add a field
+// FieldU2 read 2 bit unsigned current endian integer and add a field
 func (d *D) FieldU2(name string) uint64 { return d.FieldUE(name, 2, d.Endian) }
 
-// FieldU3 read 3 bit unsigned big-endian integer and add a field
+// FieldU3 read 3 bit unsigned current endian integer and add a field
 func (d *D) FieldU3(name string) uint64 { return d.FieldUE(name, 3, d.Endian) }
 
-// FieldU4 read 4 bit unsigned big-endian integer and add a field
+// FieldU4 read 4 bit unsigned current endian integer and add a field
 func (d *D) FieldU4(name string) uint64 { return d.FieldUE(name, 4, d.Endian) }
 
-// FieldU5 read 5 bit unsigned big-endian integer and add a field
+// FieldU5 read 5 bit unsigned current endian integer and add a field
 func (d *D) FieldU5(name string) uint64 { return d.FieldUE(name, 5, d.Endian) }
 
-// FieldU6 read 6 bit unsigned big-endian integer and add a field
+// FieldU6 read 6 bit unsigned current endian integer and add a field
 func (d *D) FieldU6(name string) uint64 { return d.FieldUE(name, 6, d.Endian) }
 
-// FieldU7 read 7 bit unsigned big-endian integer and add a field
+// FieldU7 read 7 bit unsigned current endian integer and add a field
 func (d *D) FieldU7(name string) uint64 { return d.FieldUE(name, 7, d.Endian) }
 
-// FieldU8 read 8 bit unsigned big-endian integer and add a field
+// FieldU8 read 8 bit unsigned current endian integer and add a field
 func (d *D) FieldU8(name string) uint64 { return d.FieldUE(name, 8, d.Endian) }
 
-// FieldU9 read 9 bit unsigned big-endian integer and add a field
+// FieldU9 read 9 bit unsigned current endian integer and add a field
 func (d *D) FieldU9(name string) uint64 { return d.FieldUE(name, 9, d.Endian) }
 
-// FieldU10 read 10 bit unsigned big-endian integer and add a field
+// FieldU10 read 10 bit unsigned current endian integer and add a field
 func (d *D) FieldU10(name string) uint64 { return d.FieldUE(name, 10, d.Endian) }
 
-// FieldU11 read 11 bit unsigned big-endian integer and add a field
+// FieldU11 read 11 bit unsigned current endian integer and add a field
 func (d *D) FieldU11(name string) uint64 { return d.FieldUE(name, 11, d.Endian) }
 
-// FieldU12 read 12 bit unsigned big-endian integer and add a field
+// FieldU12 read 12 bit unsigned current endian integer and add a field
 func (d *D) FieldU12(name string) uint64 { return d.FieldUE(name, 12, d.Endian) }
 
-// FieldU13 read 13 bit unsigned big-endian integer and add a field
+// FieldU13 read 13 bit unsigned current endian integer and add a field
 func (d *D) FieldU13(name string) uint64 { return d.FieldUE(name, 13, d.Endian) }
 
-// FieldU14 read 14 bit unsigned big-endian integer and add a field
+// FieldU14 read 14 bit unsigned current endian integer and add a field
 func (d *D) FieldU14(name string) uint64 { return d.FieldUE(name, 14, d.Endian) }
 
-// FieldU15 read 15 bit unsigned big-endian integer and add a field
+// FieldU15 read 15 bit unsigned current endian integer and add a field
 func (d *D) FieldU15(name string) uint64 { return d.FieldUE(name, 15, d.Endian) }
 
-// FieldU16 read 16 bit unsigned big-endian integer and add a field
+// FieldU16 read 16 bit unsigned current endian integer and add a field
 func (d *D) FieldU16(name string) uint64 { return d.FieldUE(name, 16, d.Endian) }
 
-// FieldU17 read 17 bit unsigned big-endian integer and add a field
+// FieldU17 read 17 bit unsigned current endian integer and add a field
 func (d *D) FieldU17(name string) uint64 { return d.FieldUE(name, 17, d.Endian) }
 
-// FieldU18 read 18 bit unsigned big-endian integer and add a field
+// FieldU18 read 18 bit unsigned current endian integer and add a field
 func (d *D) FieldU18(name string) uint64 { return d.FieldUE(name, 18, d.Endian) }
 
-// FieldU19 read 19 bit unsigned big-endian integer and add a field
+// FieldU19 read 19 bit unsigned current endian integer and add a field
 func (d *D) FieldU19(name string) uint64 { return d.FieldUE(name, 19, d.Endian) }
 
-// FieldU20 read 20 bit unsigned big-endian integer and add a field
+// FieldU20 read 20 bit unsigned current endian integer and add a field
 func (d *D) FieldU20(name string) uint64 { return d.FieldUE(name, 20, d.Endian) }
 
-// FieldU21 read 21 bit unsigned big-endian integer and add a field
+// FieldU21 read 21 bit unsigned current endian integer and add a field
 func (d *D) FieldU21(name string) uint64 { return d.FieldUE(name, 21, d.Endian) }
 
-// FieldU22 read 22 bit unsigned big-endian integer and add a field
+// FieldU22 read 22 bit unsigned current endian integer and add a field
 func (d *D) FieldU22(name string) uint64 { return d.FieldUE(name, 22, d.Endian) }
 
-// FieldU23 read 23 bit unsigned big-endian integer and add a field
+// FieldU23 read 23 bit unsigned current endian integer and add a field
 func (d *D) FieldU23(name string) uint64 { return d.FieldUE(name, 23, d.Endian) }
 
-// FieldU24 read 24 bit unsigned big-endian integer and add a field
+// FieldU24 read 24 bit unsigned current endian integer and add a field
 func (d *D) FieldU24(name string) uint64 { return d.FieldUE(name, 24, d.Endian) }
 
-// FieldU25 read 25 bit unsigned big-endian integer and add a field
+// FieldU25 read 25 bit unsigned current endian integer and add a field
 func (d *D) FieldU25(name string) uint64 { return d.FieldUE(name, 25, d.Endian) }
 
-// FieldU26 read 26 bit unsigned big-endian integer and add a field
+// FieldU26 read 26 bit unsigned current endian integer and add a field
 func (d *D) FieldU26(name string) uint64 { return d.FieldUE(name, 26, d.Endian) }
 
-// FieldU27 read 27 bit unsigned big-endian integer and add a field
+// FieldU27 read 27 bit unsigned current endian integer and add a field
 func (d *D) FieldU27(name string) uint64 { return d.FieldUE(name, 27, d.Endian) }
 
-// FieldU28 read 28 bit unsigned big-endian integer and add a field
+// FieldU28 read 28 bit unsigned current endian integer and add a field
 func (d *D) FieldU28(name string) uint64 { return d.FieldUE(name, 28, d.Endian) }
 
-// FieldU29 read 29 bit unsigned big-endian integer and add a field
+// FieldU29 read 29 bit unsigned current endian integer and add a field
 func (d *D) FieldU29(name string) uint64 { return d.FieldUE(name, 29, d.Endian) }
 
-// FieldU30 read 30 bit unsigned big-endian integer and add a field
+// FieldU30 read 30 bit unsigned current endian integer and add a field
 func (d *D) FieldU30(name string) uint64 { return d.FieldUE(name, 30, d.Endian) }
 
-// FieldU31 read 31 bit unsigned big-endian integer and add a field
+// FieldU31 read 31 bit unsigned current endian integer and add a field
 func (d *D) FieldU31(name string) uint64 { return d.FieldUE(name, 31, d.Endian) }
 
-// FieldU32 read 32 bit unsigned big-endian integer and add a field
+// FieldU32 read 32 bit unsigned current endian integer and add a field
 func (d *D) FieldU32(name string) uint64 { return d.FieldUE(name, 32, d.Endian) }
 
-// FieldU33 read 33 bit unsigned big-endian integer and add a field
+// FieldU33 read 33 bit unsigned current endian integer and add a field
 func (d *D) FieldU33(name string) uint64 { return d.FieldUE(name, 33, d.Endian) }
 
-// FieldU34 read 34 bit unsigned big-endian integer and add a field
+// FieldU34 read 34 bit unsigned current endian integer and add a field
 func (d *D) FieldU34(name string) uint64 { return d.FieldUE(name, 34, d.Endian) }
 
-// FieldU35 read 35 bit unsigned big-endian integer and add a field
+// FieldU35 read 35 bit unsigned current endian integer and add a field
 func (d *D) FieldU35(name string) uint64 { return d.FieldUE(name, 35, d.Endian) }
 
-// FieldU36 read 36 bit unsigned big-endian integer and add a field
+// FieldU36 read 36 bit unsigned current endian integer and add a field
 func (d *D) FieldU36(name string) uint64 { return d.FieldUE(name, 36, d.Endian) }
 
-// FieldU37 read 37 bit unsigned big-endian integer and add a field
+// FieldU37 read 37 bit unsigned current endian integer and add a field
 func (d *D) FieldU37(name string) uint64 { return d.FieldUE(name, 37, d.Endian) }
 
-// FieldU38 read 38 bit unsigned big-endian integer and add a field
+// FieldU38 read 38 bit unsigned current endian integer and add a field
 func (d *D) FieldU38(name string) uint64 { return d.FieldUE(name, 38, d.Endian) }
 
-// FieldU39 read 39 bit unsigned big-endian integer and add a field
+// FieldU39 read 39 bit unsigned current endian integer and add a field
 func (d *D) FieldU39(name string) uint64 { return d.FieldUE(name, 39, d.Endian) }
 
-// FieldU40 read 40 bit unsigned big-endian integer and add a field
+// FieldU40 read 40 bit unsigned current endian integer and add a field
 func (d *D) FieldU40(name string) uint64 { return d.FieldUE(name, 40, d.Endian) }
 
-// FieldU41 read 41 bit unsigned big-endian integer and add a field
+// FieldU41 read 41 bit unsigned current endian integer and add a field
 func (d *D) FieldU41(name string) uint64 { return d.FieldUE(name, 41, d.Endian) }
 
-// FieldU42 read 42 bit unsigned big-endian integer and add a field
+// FieldU42 read 42 bit unsigned current endian integer and add a field
 func (d *D) FieldU42(name string) uint64 { return d.FieldUE(name, 42, d.Endian) }
 
-// FieldU43 read 43 bit unsigned big-endian integer and add a field
+// FieldU43 read 43 bit unsigned current endian integer and add a field
 func (d *D) FieldU43(name string) uint64 { return d.FieldUE(name, 43, d.Endian) }
 
-// FieldU44 read 44 bit unsigned big-endian integer and add a field
+// FieldU44 read 44 bit unsigned current endian integer and add a field
 func (d *D) FieldU44(name string) uint64 { return d.FieldUE(name, 44, d.Endian) }
 
-// FieldU45 read 45 bit unsigned big-endian integer and add a field
+// FieldU45 read 45 bit unsigned current endian integer and add a field
 func (d *D) FieldU45(name string) uint64 { return d.FieldUE(name, 45, d.Endian) }
 
-// FieldU46 read 46 bit unsigned big-endian integer and add a field
+// FieldU46 read 46 bit unsigned current endian integer and add a field
 func (d *D) FieldU46(name string) uint64 { return d.FieldUE(name, 46, d.Endian) }
 
-// FieldU47 read 47 bit unsigned big-endian integer and add a field
+// FieldU47 read 47 bit unsigned current endian integer and add a field
 func (d *D) FieldU47(name string) uint64 { return d.FieldUE(name, 47, d.Endian) }
 
-// FieldU48 read 48 bit unsigned big-endian integer and add a field
+// FieldU48 read 48 bit unsigned current endian integer and add a field
 func (d *D) FieldU48(name string) uint64 { return d.FieldUE(name, 48, d.Endian) }
 
-// FieldU49 read 49 bit unsigned big-endian integer and add a field
+// FieldU49 read 49 bit unsigned current endian integer and add a field
 func (d *D) FieldU49(name string) uint64 { return d.FieldUE(name, 49, d.Endian) }
 
-// FieldU50 read 50 bit unsigned big-endian integer and add a field
+// FieldU50 read 50 bit unsigned current endian integer and add a field
 func (d *D) FieldU50(name string) uint64 { return d.FieldUE(name, 50, d.Endian) }
 
-// FieldU51 read 51 bit unsigned big-endian integer and add a field
+// FieldU51 read 51 bit unsigned current endian integer and add a field
 func (d *D) FieldU51(name string) uint64 { return d.FieldUE(name, 51, d.Endian) }
 
-// FieldU52 read 52 bit unsigned big-endian integer and add a field
+// FieldU52 read 52 bit unsigned current endian integer and add a field
 func (d *D) FieldU52(name string) uint64 { return d.FieldUE(name, 52, d.Endian) }
 
-// FieldU53 read 53 bit unsigned big-endian integer and add a field
+// FieldU53 read 53 bit unsigned current endian integer and add a field
 func (d *D) FieldU53(name string) uint64 { return d.FieldUE(name, 53, d.Endian) }
 
-// FieldU54 read 54 bit unsigned big-endian integer and add a field
+// FieldU54 read 54 bit unsigned current endian integer and add a field
 func (d *D) FieldU54(name string) uint64 { return d.FieldUE(name, 54, d.Endian) }
 
-// FieldU55 read 55 bit unsigned big-endian integer and add a field
+// FieldU55 read 55 bit unsigned current endian integer and add a field
 func (d *D) FieldU55(name string) uint64 { return d.FieldUE(name, 55, d.Endian) }
 
-// FieldU56 read 56 bit unsigned big-endian integer and add a field
+// FieldU56 read 56 bit unsigned current endian integer and add a field
 func (d *D) FieldU56(name string) uint64 { return d.FieldUE(name, 56, d.Endian) }
 
-// FieldU57 read 57 bit unsigned big-endian integer and add a field
+// FieldU57 read 57 bit unsigned current endian integer and add a field
 func (d *D) FieldU57(name string) uint64 { return d.FieldUE(name, 57, d.Endian) }
 
-// FieldU58 read 58 bit unsigned big-endian integer and add a field
+// FieldU58 read 58 bit unsigned current endian integer and add a field
 func (d *D) FieldU58(name string) uint64 { return d.FieldUE(name, 58, d.Endian) }
 
-// FieldU59 read 59 bit unsigned big-endian integer and add a field
+// FieldU59 read 59 bit unsigned current endian integer and add a field
 func (d *D) FieldU59(name string) uint64 { return d.FieldUE(name, 59, d.Endian) }
 
-// FieldU60 read 60 bit unsigned big-endian integer and add a field
+// FieldU60 read 60 bit unsigned current endian integer and add a field
 func (d *D) FieldU60(name string) uint64 { return d.FieldUE(name, 60, d.Endian) }
 
-// FieldU61 read 61 bit unsigned big-endian integer and add a field
+// FieldU61 read 61 bit unsigned current endian integer and add a field
 func (d *D) FieldU61(name string) uint64 { return d.FieldUE(name, 61, d.Endian) }
 
-// FieldU62 read 62 bit unsigned big-endian integer and add a field
+// FieldU62 read 62 bit unsigned current endian integer and add a field
 func (d *D) FieldU62(name string) uint64 { return d.FieldUE(name, 62, d.Endian) }
 
-// FieldU63 read 63 bit unsigned big-endian integer and add a field
+// FieldU63 read 63 bit unsigned current endian integer and add a field
 func (d *D) FieldU63(name string) uint64 { return d.FieldUE(name, 63, d.Endian) }
 
-// FieldU64 read 64 bit unsigned big-endian integer and add a field
+// FieldU64 read 64 bit unsigned current endian integer and add a field
 func (d *D) FieldU64(name string) uint64 { return d.FieldUE(name, 64, d.Endian) }
 
 // UBE read a nBits unsigned big-endian integer
@@ -2178,23 +2178,32 @@ func (d *D) FieldU64LE(name string) uint64 { return d.FieldUE(name, 64, LittleEn
 
 // Float readers
 
-// F16 read 16 bit big-endian float
+// F read a nBits current endian float
+func (d *D) F(nBits int) float64 { return d.FE(nBits, d.Endian) }
+
+// F16 read 16 bit current endian float
 func (d *D) F16() float64 { return d.FE(16, d.Endian) }
 
-// F32 read 32 bit big-endian float
+// F32 read 32 bit current endian float
 func (d *D) F32() float64 { return d.FE(32, d.Endian) }
 
-// F64 read 64 bit big-endian float
+// F64 read 64 bit current endian float
 func (d *D) F64() float64 { return d.FE(64, d.Endian) }
 
-// FieldF16 read 16 bit big-endian float and add a field
+// FieldF read a nBits current endian float and add a field
+func (d *D) FieldF(name string, nBits int) float64 { return d.FieldFE(name, nBits, d.Endian) }
+
+// FieldF16 read 16 bit current endian float and add a field
 func (d *D) FieldF16(name string) float64 { return d.FieldFE(name, 16, d.Endian) }
 
-// FieldF32 read 32 bit big-endian float and add a field
+// FieldF32 read 32 bit current endian float and add a field
 func (d *D) FieldF32(name string) float64 { return d.FieldFE(name, 32, d.Endian) }
 
-// FieldF64 read 64 bit big-endian float and add a field
+// FieldF64 read 64 bit current endian float and add a field
 func (d *D) FieldF64(name string) float64 { return d.FieldFE(name, 64, d.Endian) }
+
+// FBE read a nBits big-endian float
+func (d *D) FBE(nBits int) float64 { return d.FE(nBits, BigEndian) }
 
 // F16BE read 16 bit big-endian float
 func (d *D) F16BE() float64 { return d.FE(16, BigEndian) }
@@ -2205,6 +2214,9 @@ func (d *D) F32BE() float64 { return d.FE(32, BigEndian) }
 // F64BE read 64 bit big-endian float
 func (d *D) F64BE() float64 { return d.FE(64, BigEndian) }
 
+// FieldFBE read a nBits big-endian float and add a field
+func (d *D) FieldFBE(name string, nBits int) float64 { return d.FieldFE(name, nBits, BigEndian) }
+
 // FieldF16BE read 16 bit big-endian float and add a field
 func (d *D) FieldF16BE(name string) float64 { return d.FieldFE(name, 16, BigEndian) }
 
@@ -2214,6 +2226,9 @@ func (d *D) FieldF32BE(name string) float64 { return d.FieldFE(name, 32, BigEndi
 // FieldF64BE read 64 bit big-endian float and add a field
 func (d *D) FieldF64BE(name string) float64 { return d.FieldFE(name, 64, BigEndian) }
 
+// FLE read a nBits little-endian float
+func (d *D) FLE(nBits int) float64 { return d.FE(nBits, LittleEndian) }
+
 // F16LE read 16 bit little-endian float
 func (d *D) F16LE() float64 { return d.FE(16, LittleEndian) }
 
@@ -2222,6 +2237,9 @@ func (d *D) F32LE() float64 { return d.FE(32, LittleEndian) }
 
 // F64LE read 64 bit little-endian float
 func (d *D) F64LE() float64 { return d.FE(64, LittleEndian) }
+
+// FieldFLE read a nBits little-endian float and add a field
+func (d *D) FieldFLE(name string, nBits int) float64 { return d.FieldFE(name, nBits, LittleEndian) }
 
 // FieldF16LE read 16 bit little-endian float and add a field
 func (d *D) FieldF16LE(name string) float64 { return d.FieldFE(name, 16, LittleEndian) }
