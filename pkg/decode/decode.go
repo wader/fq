@@ -90,13 +90,13 @@ func probe(name string, bb *bitio.Buffer, formats []*Format, opts ProbeOptions) 
 
 		var maxRange ranges.Range
 		d.Value.WalkPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
-			if v.IsRoot {
+			if d.Value != v && v.IsRoot {
 				return ErrWalkSkip
 			}
 
 			maxRange = ranges.MinMax(maxRange, v.Range)
 			v.Range.Start += opts.StartOffset
-
+			v.RootBitBuf = d.Value.RootBitBuf
 			return nil
 		})
 

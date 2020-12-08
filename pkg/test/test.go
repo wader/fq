@@ -138,7 +138,7 @@ func parseTestCases(s string) *testCase {
 
 	// match "name:" or ">args" sections
 	seenRun := false
-	for _, section := range sectionParser(regexp.MustCompile(`^/.*:|^>.*$`), s) {
+	for _, section := range sectionParser(regexp.MustCompile(`^#.*$|^/.*:|^>.*$`), s) {
 		n, v := section.Name, section.Value
 
 		switch {
