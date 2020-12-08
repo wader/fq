@@ -307,7 +307,11 @@ func (m Main) run() error {
 		case float64:
 			fmt.Fprintln(m.OS.Stdout(), strconv.FormatFloat(vv, 'f', -1, 64))
 		default:
-			json.NewEncoder(m.OS.Stdout()).Encode(v)
+			e := json.NewEncoder(m.OS.Stdout())
+			e.SetIndent("", "  ")
+			if err := e.Encode(v); err != nil {
+				return err
+			}
 		}
 	}
 

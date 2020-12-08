@@ -1,4 +1,9 @@
 
+ffmpeg -y -f lavfi -i testsrc -f lavfi -i sine -ac 2 -c:a libvorbis -t 5s test.webm
+
+
+DONE pretty print json
+
 synthentic fields somehow?
 
 var args to encoding and description?
@@ -65,6 +70,9 @@ jq script to summarise?
 .. | select(._type == "field" and ._range.start <= x and x < ._range.stop)
 #
 (echo -e "set term svg\nset output 'test.svg'\nplot '-'"; go run cmd/fq/main.go test.flac 'probe | .frame[] | [.end_of_header.frame_number._value, ._size] | join(" ")') | gnuplot
+
+# mkv metadata tags
+'[.. | select(.id._symbol == "Tags") | .. | select(.id._symbol == "SimpleTag") | {(.element[0].value._value): (.element[1].value._value)}] | add'
 
 decode and fill gaps if known size?
 

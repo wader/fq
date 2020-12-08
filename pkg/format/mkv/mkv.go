@@ -2,11 +2,11 @@ package mkv
 
 // https://tools.ietf.org/html/draft-ietf-cellar-ebml-00
 // https://matroska.org/technical/specs/index.html
+// https://www.matroska.org/technical/basics.html
 
 import (
 	"fq/pkg/decode"
 	"fq/pkg/format"
-	"log"
 )
 
 func init() {
@@ -157,9 +157,9 @@ proc type_master {size _label extra} {
 }
 */
 
-func decodeMaster(d *decode.D, nBytes uint64, tag ebmlTag) {
+func decodeMaster(d *decode.D, tag ebmlTag) {
 
-	d.FieldArrayFn("bla", func(d *decode.D) {
+	d.FieldArrayFn("element", func(d *decode.D) {
 
 		for d.NotEnd() {
 
@@ -177,8 +177,11 @@ func decodeMaster(d *decode.D, nBytes uint64, tag ebmlTag) {
 				}
 			}
 
-			d.FieldStructFn(a.name, func(d *decode.D) {
-				fieldDecodeRawVint(d, "id", decode.NumberHex)
+			d.FieldStructFn("element", func(d *decode.D) {
+				d.FieldUFn("id", func() (uint64, decode.DisplayFormat, string) {
+					n := decodeRawVint(d)
+					return n, decode.NumberHex, a.name
+				})
 				tagSize := fieldDecodeVint(d, "size", decode.NumberDecimal)
 
 				switch a.typ {
@@ -216,14 +219,37 @@ func decodeMaster(d *decode.D, nBytes uint64, tag ebmlTag) {
 					*/
 					d.FieldBitBufLen("value", int64(tagSize)*8)
 				case ebmlBinary:
-					d.FieldBitBufLen("value", int64(tagSize)*8)
+					const SimpleBlock = 0xa3
+
+					switch tagID {
+					case SimpleBlock:
+
+						// TODO: CodecPrivate
+
+						d.DecodeLenFn(int64(tagSize)*8, func(d *decode.D) {
+							fieldDecodeVint(d, "track_number", decode.NumberDecimal)
+							d.FieldU16("timestamp")
+							d.FieldStructFn("flags", func(d *decode.D) {
+								d.FieldBool("key_frame")
+								d.FieldU3("reserved")
+								d.FieldBool("invisible")
+								d.FieldU2("lacing")
+								d.FieldBool("discardable")
+							})
+							// TODO: lacing
+							d.FieldBitBufLen("data", d.BitsLeft())
+
+						})
+					default:
+						d.FieldBitBufLen("value", int64(tagSize)*8)
+
+					}
+
 				case ebmlMaster:
 					d.DecodeLenFn(int64(tagSize)*8, func(d *decode.D) {
-						decodeMaster(d, 0, a.tag)
+						decodeMaster(d, a.tag)
 					})
 				}
-
-				log.Println("bla")
 			})
 		}
 	})
@@ -231,7 +257,11 @@ func decodeMaster(d *decode.D, nBytes uint64, tag ebmlTag) {
 }
 
 func mkvDecode(d *decode.D) interface{} {
-	decodeMaster(d, 0, ebmlRoot)
+	ebmlHeaderID := uint64(0x1a45dfa3)
+	if d.PeekBits(32) != ebmlHeaderID {
+		d.Invalid("no EBML header found")
+	}
+	decodeMaster(d, ebmlRoot)
 	return nil
 }
 
