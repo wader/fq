@@ -157,7 +157,7 @@ func parseTestCases(s string) *testCase {
 
 		switch {
 		case strings.HasPrefix(n, "#"):
-			comment := n[1 : len(n)-1]
+			comment := n[1:]
 			te.parts = append(te.parts, &testCaseComment{comment: comment})
 		case strings.HasPrefix(n, "/"):
 			name := n[1 : len(n)-1]
