@@ -31,8 +31,9 @@ func (tcr *testCaseRun) Stdin() io.Reader  { return nil } // TOOD: special file?
 func (tcr *testCaseRun) Stdout() io.Writer { return tcr.actualStdoutBuf }
 func (tcr *testCaseRun) Stderr() io.Writer { return tcr.actualStderrBuf }
 func (tcr *testCaseRun) Open(name string) (io.ReadSeeker, error) {
-	for _, f := range tcr.testCase.files {
-		if f.name == name {
+	for _, p := range tcr.testCase.parts {
+		f, ok := p.(*testCaseFile)
+		if ok && f.name == name {
 			// if no data assume it's a real file
 			if len(f.data) == 0 {
 				return os.Open(filepath.Join(filepath.Dir(tcr.testCase.path), name))
@@ -43,32 +44,38 @@ func (tcr *testCaseRun) Open(name string) (io.ReadSeeker, error) {
 	return nil, fmt.Errorf("%s: file not found", name)
 }
 
-type testFile struct {
+type testCaseFile struct {
 	name string
 	data []byte
 }
 
+type testCaseComment struct {
+	comment string
+}
+
 type testCase struct {
-	lineNr         int
-	path           string
-	files          []testFile
-	runs           []*testCaseRun
-	expectedStdout string
-	expectedStderr string
+	lineNr int
+	path   string
+	parts  []interface{}
 }
 
 func (tc *testCase) ToActual() string {
 	sb := &strings.Builder{}
+	for _, p := range tc.parts {
 
-	for _, f := range tc.files {
-		fmt.Fprintf(sb, "/%s:\n", f.name)
-		sb.Write(f.data)
+		switch p := p.(type) {
+		case *testCaseComment:
+			fmt.Fprintf(sb, "#%s\n", p.comment)
+		case *testCaseRun:
+			fmt.Fprintf(sb, "> %s\n", strings.Join(p.args, " "))
+			fmt.Fprintf(sb, p.actualStdoutBuf.String())
+		case *testCaseFile:
+			fmt.Fprintf(sb, "/%s:\n", p.name)
+			sb.Write(p.data)
+		default:
+			panic("unreachable")
+		}
 	}
-	for _, r := range tc.runs {
-		fmt.Fprintf(sb, "> %s\n", strings.Join(r.args, " "))
-		fmt.Fprintf(sb, r.actualStdoutBuf.String())
-	}
-
 	return sb.String()
 }
 
@@ -143,7 +150,7 @@ a:
 
 func parseTestCases(s string) *testCase {
 	te := &testCase{}
-	te.files = []testFile{}
+	te.parts = []interface{}{}
 
 	// match "name:" or ">args" sections
 	seenRun := false
@@ -151,13 +158,16 @@ func parseTestCases(s string) *testCase {
 		n, v := section.name, section.value
 
 		switch {
+		case strings.HasPrefix(n, "#"):
+			comment := n[1 : len(n)-1]
+			te.parts = append(te.parts, &testCaseComment{comment: comment})
 		case !seenRun && strings.HasPrefix(n, "/"):
 			name := n[1 : len(n)-1]
-			te.files = append(te.files, testFile{name: name, data: []byte(v)})
+			te.parts = append(te.parts, &testCaseFile{name: name, data: []byte(v)})
 		case strings.HasPrefix(n, ">"):
 			seenRun = true
 			args := strings.Fields(strings.TrimPrefix(n, ">"))
-			te.runs = append(te.runs, &testCaseRun{
+			te.parts = append(te.parts, &testCaseRun{
 				lineNr:          section.lineNr,
 				testCase:        te,
 				args:            args,
@@ -262,7 +272,12 @@ func TestPath(t *testing.T, registry *decode.Registry) {
 			tcs = append(tcs, tc)
 			tc.path = path
 
-			for _, tcr := range tc.runs {
+			for _, p := range tc.parts {
+				tcr, ok := p.(*testCaseRun)
+				if !ok {
+					continue
+				}
+
 				t.Run(strconv.Itoa(tcr.lineNr), func(t *testing.T) {
 					testDecodedTestCaseRun(t, registry, tcr)
 				})
@@ -272,9 +287,11 @@ func TestPath(t *testing.T, registry *decode.Registry) {
 		return nil
 	})
 
-	for _, tc := range tcs {
-		if err := ioutil.WriteFile(tc.path, []byte(tc.ToActual()), 0644); err != nil {
-			t.Error(err)
+	if v := os.Getenv("WRITE_ACTUAL"); v != "" {
+		for _, tc := range tcs {
+			if err := ioutil.WriteFile(tc.path, []byte(tc.ToActual()), 0644); err != nil {
+				t.Error(err)
+			}
 		}
 	}
 }
