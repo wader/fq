@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -274,8 +273,8 @@ func TestPath(t *testing.T, registry *decode.Registry) {
 	})
 
 	for _, tc := range tcs {
-		log.Printf("%s", tc.ToActual())
-
-		log.Printf("tc.path: %#+v\n", tc.path)
+		if err := ioutil.WriteFile(tc.path, []byte(tc.ToActual()), 0644); err != nil {
+			t.Error(err)
+		}
 	}
 }
