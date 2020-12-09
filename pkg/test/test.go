@@ -32,18 +32,27 @@ func (tcr *testCaseRun) Stdin() io.Reader  { return nil } // TOOD: special file?
 func (tcr *testCaseRun) Stdout() io.Writer { return tcr.actualStdoutBuf }
 func (tcr *testCaseRun) Stderr() io.Writer { return tcr.actualStderrBuf }
 func (tcr *testCaseRun) Open(name string) (io.ReadSeeker, error) {
-	data, _ := tcr.testCase.files[name]
-	// if no data assume it's a real file
-	if len(data) == 0 {
-		return os.Open(filepath.Join(tcr.testCase.path, name))
+	for _, f := range tcr.testCase.files {
+		if f.name == name {
+			// if no data assume it's a real file
+			if len(f.data) == 0 {
+				return os.Open(filepath.Join(tcr.testCase.path, name))
+			}
+			return io.NewSectionReader(bytes.NewReader(f.data), 0, int64(len(f.data))), nil
+		}
 	}
-	return io.NewSectionReader(bytes.NewReader(data), 0, int64(len(data))), nil
+	return nil, fmt.Errorf("%s: file not found", name)
+}
+
+type testFile struct {
+	name string
+	data []byte
 }
 
 type testCase struct {
 	lineNr         int
 	path           string
-	files          map[string][]byte
+	files          []testFile
 	runs           []*testCaseRun
 	expectedStdout string
 	expectedStderr string
@@ -52,14 +61,13 @@ type testCase struct {
 func (tc *testCase) ToActual() string {
 	sb := &strings.Builder{}
 
-	for filename, c := range tc.files {
-		fmt.Fprintf(sb, "/%s:\n", filename)
-		sb.Write(c)
+	for _, f := range tc.files {
+		fmt.Fprintf(sb, "/%s:\n", f.name)
+		sb.Write(f.data)
 	}
 	for _, r := range tc.runs {
 		fmt.Fprintf(sb, "> %s\n", strings.Join(r.args, " "))
 		fmt.Fprintf(sb, r.actualStdoutBuf.String())
-		fmt.Fprintln(sb)
 	}
 
 	return sb.String()
@@ -136,7 +144,7 @@ a:
 
 func parseTestCases(s string) *testCase {
 	te := &testCase{}
-	te.files = map[string][]byte{}
+	te.files = []testFile{}
 
 	// match "name:" or ">args" sections
 	seenRun := false
@@ -146,7 +154,7 @@ func parseTestCases(s string) *testCase {
 		switch {
 		case !seenRun && strings.HasPrefix(n, "/"):
 			name := n[1 : len(n)-1]
-			te.files[name] = []byte(v)
+			te.files = append(te.files, testFile{name: name, data: []byte(v)})
 		case strings.HasPrefix(n, ">"):
 			seenRun = true
 			args := strings.Fields(strings.TrimPrefix(n, ">"))
