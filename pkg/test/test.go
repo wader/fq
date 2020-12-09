@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -27,24 +26,23 @@ func (StandardOS) Args() []string                          { return os.Args }
 func (StandardOS) Open(name string) (io.ReadSeeker, error) { return os.Open(name) }
 
 type testCaseRun struct {
-	LineNr          int
+	lineNr          int
 	testCase        *testCase
-	_Args           []string
-	ExpectedStdout  string
-	ActualStdoutBuf *bytes.Buffer
-	ActualStderrBuf *bytes.Buffer
+	args            []string
+	expectedStdout  string
+	actualStdoutBuf *bytes.Buffer
+	actualStderrBuf *bytes.Buffer
 }
 
-func (tcr *testCaseRun) Args() []string    { return tcr._Args }
+func (tcr *testCaseRun) Args() []string    { return tcr.args }
 func (tcr *testCaseRun) Stdin() io.Reader  { return nil } // TOOD: special file?
-func (tcr *testCaseRun) Stdout() io.Writer { return tcr.ActualStdoutBuf }
-func (tcr *testCaseRun) Stderr() io.Writer { return tcr.ActualStderrBuf }
+func (tcr *testCaseRun) Stdout() io.Writer { return tcr.actualStdoutBuf }
+func (tcr *testCaseRun) Stderr() io.Writer { return tcr.actualStderrBuf }
 func (tcr *testCaseRun) Open(name string) (io.ReadSeeker, error) {
-	data, _ := tcr.testCase.Files[name]
+	data, _ := tcr.testCase.files[name]
 	if len(data) == 0 {
 		var err error
-		log.Printf("%s filepath.Join(tcr.testCase.Path, name): %#+v\n", tcr.testCase.Path, filepath.Join(tcr.testCase.Path, name))
-		f, err := os.Open(filepath.Join(tcr.testCase.Path, name))
+		f, err := os.Open(filepath.Join(tcr.testCase.path, name))
 		return f, err
 	}
 
@@ -52,15 +50,12 @@ func (tcr *testCaseRun) Open(name string) (io.ReadSeeker, error) {
 }
 
 type testCase struct {
-	LineNr int
-
-	Path string
-
-	Files map[string][]byte
-	Runs  []*testCaseRun
-
-	ExpectedStdout string
-	ExpectedStderr string
+	lineNr         int
+	path           string
+	files          map[string][]byte
+	runs           []*testCaseRun
+	expectedStdout string
+	expectedStderr string
 }
 
 type section struct {
@@ -134,7 +129,7 @@ a:
 
 func parseTestCases(s string) *testCase {
 	te := &testCase{}
-	te.Files = map[string][]byte{}
+	te.files = map[string][]byte{}
 
 	// match "name:" or ">args" sections
 	seenRun := false
@@ -144,17 +139,17 @@ func parseTestCases(s string) *testCase {
 		switch {
 		case !seenRun && strings.HasPrefix(n, "/"):
 			name := n[1 : len(n)-1]
-			te.Files[name] = []byte(v)
+			te.files[name] = []byte(v)
 		case strings.HasPrefix(n, ">"):
 			seenRun = true
 			args := append([]string{"fq"}, strings.Fields(strings.TrimPrefix(n, ">"))...)
-			te.Runs = append(te.Runs, &testCaseRun{
-				LineNr:          section.LineNr,
+			te.runs = append(te.runs, &testCaseRun{
+				lineNr:          section.LineNr,
 				testCase:        te,
-				_Args:           args,
-				ExpectedStdout:  v,
-				ActualStdoutBuf: &bytes.Buffer{},
-				ActualStderrBuf: &bytes.Buffer{},
+				args:            args,
+				expectedStdout:  v,
+				actualStdoutBuf: &bytes.Buffer{},
+				actualStderrBuf: &bytes.Buffer{},
 			})
 		default:
 			panic(fmt.Sprintf("%d: unexpected section %q %q", section.LineNr, n, v))
@@ -221,13 +216,16 @@ func testDecodedTestCaseRun(t *testing.T, registry *decode.Registry, tcr *testCa
 		Registry: registry,
 	}
 	err := m.Run()
-	log.Printf("err: %#+v\n", err)
+	if err != nil {
+		// TODO: expect error
+		t.Error(err)
+	}
 
 	//log.Printf("tcr.ActualStdoutBuf.String(): %#+v\n", tcr.ActualStdoutBuf.String())
 
 	// cli.Command{Version: "test", OS: &te}.Run()
 	// deepequal.Error(t, "files", te.ExpectedFiles, te.ActualFiles)
-	deepequal.Error(t, "stdout", tcr.ExpectedStdout, tcr.ActualStdoutBuf.String())
+	deepequal.Error(t, "stdout", tcr.expectedStdout, tcr.actualStdoutBuf.String())
 	//deepequal.Error(t, "stderr", te.ExpectedStderr, te.ActualStderrBuf.String())
 }
 
@@ -245,11 +243,10 @@ func TestPath(t *testing.T, registry *decode.Registry) {
 				t.Fatal(err)
 			}
 			tc := parseTestCases(string(b))
-			tc.Path = filepath.Dir(path) // TODO: move?
-			log.Printf("tc.Path: %#+v\n", tc.Path)
+			tc.path = filepath.Dir(path) // TODO: move?
 
-			for _, tcr := range tc.Runs {
-				t.Run(strconv.Itoa(tcr.LineNr), func(t *testing.T) {
+			for _, tcr := range tc.runs {
+				t.Run(strconv.Itoa(tcr.lineNr), func(t *testing.T) {
 					testDecodedTestCaseRun(t, registry, tcr)
 				})
 			}
