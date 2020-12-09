@@ -275,5 +275,7 @@ func TestPath(t *testing.T, registry *decode.Registry) {
 
 	for _, tc := range tcs {
 		log.Printf("%s", tc.ToActual())
+
+		log.Printf("tc.path: %#+v\n", tc.path)
 	}
 }
