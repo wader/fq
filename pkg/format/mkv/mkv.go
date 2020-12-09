@@ -7,6 +7,7 @@ package mkv
 import (
 	"fq/pkg/decode"
 	"fq/pkg/format"
+	"log"
 )
 
 var vorbisPacketFormat []*decode.Format
@@ -110,6 +111,19 @@ var ebmlRoot = ebmlTag{
 	0x18538067: {name: "Segment", typ: ebmlMaster, tag: mkvSegment},
 }
 
+type track struct {
+	parentD             *decode.D
+	number              int
+	codec               string
+	codecPrivatePos     int64
+	codecPrivateTagSize int64
+}
+
+type decodeContext struct {
+	currentTrack *track
+	tracks       []*track
+}
+
 /*
 proc type_master {size _label extra} {
     upvar #0 "ebml_$extra" tags
@@ -162,7 +176,7 @@ proc type_master {size _label extra} {
 }
 */
 
-func decodeMaster(d *decode.D, tag ebmlTag) {
+func decodeMaster(d *decode.D, tag ebmlTag, dc *decodeContext) {
 
 	d.FieldArrayFn("element", func(d *decode.D) {
 
@@ -182,7 +196,18 @@ func decodeMaster(d *decode.D, tag ebmlTag) {
 				}
 			}
 
+			const SimpleBlock = 0xa3
+			const CodecPrivate = 0x63a2
+			const CodecID = 0x86
+			const TrackNumber = 0xd7
+			const TrackEntry = 0xae
+
 			d.FieldStructFn("element", func(d *decode.D) {
+				if tagID == TrackEntry {
+					dc.currentTrack = &track{}
+					dc.tracks = append(dc.tracks, dc.currentTrack)
+				}
+
 				d.FieldUFn("id", func() (uint64, decode.DisplayFormat, string) {
 					n := decodeRawVint(d)
 					return n, decode.NumberHex, a.name
@@ -191,13 +216,19 @@ func decodeMaster(d *decode.D, tag ebmlTag) {
 
 				switch a.typ {
 				case ebmlInteger:
-					d.FieldS("value", int(tagSize)*8)
+					v := d.FieldS("value", int(tagSize)*8)
+					if dc.currentTrack != nil && tagID == TrackNumber {
+						dc.currentTrack.number = int(v)
+					}
 				case ebmlUinteger:
 					d.FieldU("value", int(tagSize)*8)
 				case ebmlFloat:
 					d.FieldF("value", int(tagSize)*8)
 				case ebmlString:
-					d.FieldUTF8("value", int(tagSize))
+					v := d.FieldUTF8("value", int(tagSize))
+					if dc.currentTrack != nil && tagID == CodecID {
+						dc.currentTrack.codec = v
+					}
 				case ebmlUTF8:
 					d.FieldUTF8("value", int(tagSize))
 				case ebmlDate:
@@ -224,13 +255,12 @@ func decodeMaster(d *decode.D, tag ebmlTag) {
 					*/
 					d.FieldBitBufLen("value", int64(tagSize)*8)
 				case ebmlBinary:
-					const SimpleBlock = 0xa3
-					const CodecPrivate = 0x63a2
 
 					switch tagID {
 					case SimpleBlock:
 
 						// TODO: CodecPrivate
+						// TODO: collect decode later when we know track codec?
 
 						d.DecodeLenFn(int64(tagSize)*8, func(d *decode.D) {
 							fieldDecodeVint(d, "track_number", decode.NumberDecimal)
@@ -247,34 +277,12 @@ func decodeMaster(d *decode.D, tag ebmlTag) {
 
 						})
 					case CodecPrivate:
-						// TODO: switch on codec
-						d.DecodeLenFn(int64(tagSize)*8, func(d *decode.D) {
-							numPackets := d.FieldU8("num_packets")
-							// TODO: lacing
-							packetLengths := []int64{}
-							// Xiph-style lacing (similar to ogg) of n-1 packets, last is reset of block
-							d.FieldArrayFn("lace", func(d *decode.D) {
-								for i := uint64(0); i < numPackets; i++ {
-									l := d.FieldUFn("lace", func() (uint64, decode.DisplayFormat, string) {
-										var l uint64
-										for {
-											n := d.U8()
-											l += n
-											if n < 255 {
-												return l, decode.NumberDecimal, ""
-											}
-										}
-									})
-									packetLengths = append(packetLengths, int64(l))
-								}
-							})
-							d.FieldArrayFn("packet", func(d *decode.D) {
-								for _, l := range packetLengths {
-									d.FieldDecodeLen("packet", l*8, vorbisPacketFormat)
-								}
-								d.FieldDecodeLen("packet", d.BitsLeft(), vorbisPacketFormat)
-							})
-						})
+						if dc.currentTrack != nil {
+							dc.currentTrack.parentD = d
+							dc.currentTrack.codecPrivatePos = d.Pos()
+							dc.currentTrack.codecPrivateTagSize = int64(tagSize) * 8
+						}
+						d.SeekRel(int64(tagSize) * 8)
 					default:
 						d.FieldBitBufLen("value", int64(tagSize)*8)
 
@@ -282,7 +290,7 @@ func decodeMaster(d *decode.D, tag ebmlTag) {
 
 				case ebmlMaster:
 					d.DecodeLenFn(int64(tagSize)*8, func(d *decode.D) {
-						decodeMaster(d, a.tag)
+						decodeMaster(d, a.tag, dc)
 					})
 				}
 			})
@@ -296,7 +304,52 @@ func mkvDecode(d *decode.D) interface{} {
 	if d.PeekBits(32) != ebmlHeaderID {
 		d.Invalid("no EBML header found")
 	}
-	decodeMaster(d, ebmlRoot)
+	dc := &decodeContext{tracks: []*track{}}
+	decodeMaster(d, ebmlRoot, dc)
+
+	log.Printf("dc: %#+v\n", dc)
+
+	for _, t := range dc.tracks {
+		// no CodecPrivate found
+		if t.parentD == nil {
+			continue
+		}
+
+		switch t.codec {
+		case "A_VORBIS":
+			t.parentD.DecodeRangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
+				numPackets := d.FieldU8("num_packets")
+				// TODO: lacing
+				packetLengths := []int64{}
+				// Xiph-style lacing (similar to ogg) of n-1 packets, last is reset of block
+				d.FieldArrayFn("lace", func(d *decode.D) {
+					for i := uint64(0); i < numPackets; i++ {
+						l := d.FieldUFn("lace", func() (uint64, decode.DisplayFormat, string) {
+							var l uint64
+							for {
+								n := d.U8()
+								l += n
+								if n < 255 {
+									return l, decode.NumberDecimal, ""
+								}
+							}
+						})
+						packetLengths = append(packetLengths, int64(l))
+					}
+				})
+				d.FieldArrayFn("packet", func(d *decode.D) {
+					for _, l := range packetLengths {
+						d.FieldDecodeLen("packet", l*8, vorbisPacketFormat)
+					}
+					d.FieldDecodeLen("packet", d.BitsLeft(), vorbisPacketFormat)
+				})
+			})
+		default:
+			t.parentD.FieldBitBufRange("value", t.codecPrivatePos, t.codecPrivateTagSize)
+		}
+
+	}
+
 	return nil
 }
 

@@ -580,7 +580,9 @@ func (d *D) DecodeRangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 		panic("unreachable")
 	}
 
-	bb := d.BitBufRange(firstBit, nBits)
+	// TODO: do some kind of DecodeLimitedLen/RangeFn?
+	bb := d.BitBufRange(0, firstBit+nBits)
+	bb.SeekAbs(firstBit)
 	sd := d.fieldDecoder("", bb, subV)
 
 	fn(sd)
@@ -591,7 +593,7 @@ func (d *D) DecodeRangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 			return ErrWalkSkip
 		}
 
-		v.Range.Start += firstBit
+		//v.Range.Start += firstBit
 		v.RootBitBuf = d.Value.RootBitBuf
 
 		return nil
