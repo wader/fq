@@ -3,6 +3,7 @@ package mkv
 // https://tools.ietf.org/html/draft-ietf-cellar-ebml-00
 // https://matroska.org/technical/specs/index.html
 // https://www.matroska.org/technical/basics.html
+// https://www.matroska.org/technical/codec_specs.html
 
 import (
 	"fq/pkg/decode"

@@ -1,6 +1,8 @@
 
-ffmpeg -y -f lavfi -i testsrc -f lavfi -i sine -ac 2 -c:a libvorbis -t 5s test.webm
 
+Replace Value function? maybe nice when doing non-liner decode?
+
+ffmpeg -y -f lavfi -i testsrc -f lavfi -i sine -ac 2 -c:a libvorbis -t 5s test.webm
 
 DONE pretty print json
 
