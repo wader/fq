@@ -36,7 +36,7 @@ func (tcr *testCaseRun) Open(name string) (io.ReadSeeker, error) {
 		if f.name == name {
 			// if no data assume it's a real file
 			if len(f.data) == 0 {
-				return os.Open(filepath.Join(tcr.testCase.path, name))
+				return os.Open(filepath.Join(filepath.Dir(tcr.testCase.path), name))
 			}
 			return io.NewSectionReader(bytes.NewReader(f.data), 0, int64(len(f.data))), nil
 		}
@@ -261,7 +261,7 @@ func TestPath(t *testing.T, registry *decode.Registry) {
 			}
 			tc := parseTestCases(string(b))
 			tcs = append(tcs, tc)
-			tc.path = filepath.Dir(path) // TODO: move?
+			tc.path = path
 
 			for _, tcr := range tc.runs {
 				t.Run(strconv.Itoa(tcr.lineNr), func(t *testing.T) {
