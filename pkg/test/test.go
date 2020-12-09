@@ -152,8 +152,6 @@ func parseTestCases(s string) *testCase {
 	te := &testCase{}
 	te.parts = []interface{}{}
 
-	// match "name:" or ">args" sections
-	seenRun := false
 	for _, section := range sectionParser(regexp.MustCompile(`^#.*$|^/.*:|^>.*$`), s) {
 		n, v := section.name, section.value
 
@@ -161,11 +159,10 @@ func parseTestCases(s string) *testCase {
 		case strings.HasPrefix(n, "#"):
 			comment := n[1 : len(n)-1]
 			te.parts = append(te.parts, &testCaseComment{comment: comment})
-		case !seenRun && strings.HasPrefix(n, "/"):
+		case strings.HasPrefix(n, "/"):
 			name := n[1 : len(n)-1]
 			te.parts = append(te.parts, &testCaseFile{name: name, data: []byte(v)})
 		case strings.HasPrefix(n, ">"):
-			seenRun = true
 			args := strings.Fields(strings.TrimPrefix(n, ">"))
 			te.parts = append(te.parts, &testCaseRun{
 				lineNr:          section.lineNr,
@@ -278,7 +275,7 @@ func TestPath(t *testing.T, registry *decode.Registry) {
 					continue
 				}
 
-				t.Run(strconv.Itoa(tcr.lineNr), func(t *testing.T) {
+				t.Run(strconv.Itoa(tcr.lineNr)+":"+strings.Join(tcr.args, " "), func(t *testing.T) {
 					testDecodedTestCaseRun(t, registry, tcr)
 				})
 			}

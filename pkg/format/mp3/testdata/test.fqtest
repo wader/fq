@@ -1,6 +1,8 @@
 /tjo:
 asdads
-# asd
+# as
+> test.mp3 .header.magic
+000|49 44 33                                       |ID3             |magic: Correct ("ID3") 0-2+7 (3)
 /test.mp3:
 > test.mp3 .
    |                                               |                |test.mp3{}: struct test.mp3 (mp3) 0-452+7 fields 4 (1107)
