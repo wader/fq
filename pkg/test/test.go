@@ -68,7 +68,7 @@ func (tc *testCase) ToActual() string {
 			fmt.Fprintf(sb, "#%s\n", p.comment)
 		case *testCaseRun:
 			fmt.Fprintf(sb, "> %s\n", strings.Join(p.args, " "))
-			fmt.Fprintf(sb, p.actualStdoutBuf.String())
+			fmt.Fprint(sb, p.actualStdoutBuf.String())
 		case *testCaseFile:
 			fmt.Fprintf(sb, "/%s:\n", p.name)
 			sb.Write(p.data)

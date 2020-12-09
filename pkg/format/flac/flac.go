@@ -8,6 +8,7 @@ package flac
 import (
 	"fq/pkg/decode"
 	"fq/pkg/format"
+	"io"
 	"math/bits"
 )
 
@@ -71,6 +72,49 @@ var SubframeTypeNames = map[uint]string{
 	SubframeFixed:    "Fixed",
 	SubframeLPC:      "LPC",
 }
+
+type crc8Table [256]uint8
+
+func crc8MakeTable(poly int, bits int) crc8Table {
+	table := [256]uint8{}
+
+	for i := 0; i < 256; i++ {
+		var crc uint8 = uint8(i)
+		for j := 0; j < 8; j++ {
+			if crc&(1<<(bits-1)) > 0 {
+				crc = ((crc << 1) ^ uint8(poly)) & 0xff
+			} else {
+				crc = (crc << 1) & 0xff
+			}
+		}
+		table[i] = crc
+	}
+
+	return crc8Table(table)
+}
+
+var flacCRC8Table = crc8MakeTable(0x7, 8)
+
+type crc8 struct {
+	sum   uint8
+	table crc8Table
+}
+
+func NewCRC8(table crc8Table) *crc8 {
+	return &crc8{table: table}
+}
+
+func (c *crc8) Write(p []byte) (n int, err error) {
+	for _, b := range p {
+		c.sum = c.table[c.sum^b]
+	}
+	return len(p), nil
+}
+
+func (c *crc8) Sum(b []byte) []byte { return append(b, c.sum) }
+func (c *crc8) Reset()              { c.sum = 0 }
+func (c *crc8) Size() int           { return 1 }
+func (c *crc8) BlockSize() int      { return 1 }
 
 // TODO: generic enough?
 func utf8Uint(d *decode.D) uint64 {
@@ -165,6 +209,7 @@ func flacDecode(d *decode.D) interface{} {
 	d.FieldArrayFn("frame", func(d *decode.D) {
 		for !d.End() {
 			d.FieldStructFn("frame", func(d *decode.D) {
+				frameStart := d.Pos()
 				// <14> 11111111111110
 				d.FieldValidateUFn("sync", 0b11111111111110, d.U14)
 
@@ -407,7 +452,9 @@ func flacDecode(d *decode.D) interface{} {
 				})
 
 				// CRC-8 (polynomial = x^8 + x^2 + x^1 + x^0, initialized with 0) of everything before the crc, including the sync code
-				d.FieldU8("crc")
+				headerCRC := NewCRC8(flacCRC8Table)
+				_, _ = io.Copy(headerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
+				d.FieldValidateUFn("crc", uint64(headerCRC.Sum(nil)[0]), d.U8)
 
 				d.FieldArrayFn("subframe", func(d *decode.D) {
 					for channelIndex := 0; channelIndex < int(channels); channelIndex++ {

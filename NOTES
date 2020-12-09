@@ -1,4 +1,7 @@
 
+validate should only add warning if fail?
+
+FieldAssert?
 
 Replace Value function? maybe nice when doing non-liner decode?
 
