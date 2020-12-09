@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -17,14 +18,6 @@ import (
 	"fq/pkg/decode"
 )
 
-type StandardOS struct{}
-
-func (StandardOS) Stdin() io.Reader                        { return os.Stdin }
-func (StandardOS) Stdout() io.Writer                       { return os.Stdout }
-func (StandardOS) Stderr() io.Writer                       { return os.Stderr }
-func (StandardOS) Args() []string                          { return os.Args }
-func (StandardOS) Open(name string) (io.ReadSeeker, error) { return os.Open(name) }
-
 type testCaseRun struct {
 	lineNr          int
 	testCase        *testCase
@@ -34,18 +27,16 @@ type testCaseRun struct {
 	actualStderrBuf *bytes.Buffer
 }
 
-func (tcr *testCaseRun) Args() []string    { return tcr.args }
+func (tcr *testCaseRun) Args() []string    { return append([]string{"fq"}, tcr.args...) }
 func (tcr *testCaseRun) Stdin() io.Reader  { return nil } // TOOD: special file?
 func (tcr *testCaseRun) Stdout() io.Writer { return tcr.actualStdoutBuf }
 func (tcr *testCaseRun) Stderr() io.Writer { return tcr.actualStderrBuf }
 func (tcr *testCaseRun) Open(name string) (io.ReadSeeker, error) {
 	data, _ := tcr.testCase.files[name]
+	// if no data assume it's a real file
 	if len(data) == 0 {
-		var err error
-		f, err := os.Open(filepath.Join(tcr.testCase.path, name))
-		return f, err
+		return os.Open(filepath.Join(tcr.testCase.path, name))
 	}
-
 	return io.NewSectionReader(bytes.NewReader(data), 0, int64(len(data))), nil
 }
 
@@ -58,10 +49,26 @@ type testCase struct {
 	expectedStderr string
 }
 
+func (tc *testCase) ToActual() string {
+	sb := &strings.Builder{}
+
+	for filename, c := range tc.files {
+		fmt.Fprintf(sb, "/%s:\n", filename)
+		sb.Write(c)
+	}
+	for _, r := range tc.runs {
+		fmt.Fprintf(sb, "> %s\n", strings.Join(r.args, " "))
+		fmt.Fprintf(sb, r.actualStdoutBuf.String())
+		fmt.Fprintln(sb)
+	}
+
+	return sb.String()
+}
+
 type section struct {
-	LineNr int
-	Name   string
-	Value  string
+	lineNr int
+	name   string
+	value  string
 }
 
 func sectionParser(re *regexp.Regexp, s string) []section {
@@ -92,11 +99,11 @@ func sectionParser(re *regexp.Regexp, s string) []section {
 			sections = append(sections, section{})
 			cs = &sections[len(sections)-1]
 
-			cs.LineNr = lineNr
-			cs.Name = firstMatch(sm, func(s string) bool { return len(s) != 0 })
+			cs.lineNr = lineNr
+			cs.name = firstMatch(sm, func(s string) bool { return len(s) != 0 })
 		} else {
 			// TODO: use builder somehow if performance is needed
-			cs.Value += l + lineDelim
+			cs.value += l + lineDelim
 		}
 
 	}
@@ -118,10 +125,10 @@ a:
 `[1:])
 
 	expectedSections := []section{
-		{LineNr: 1, Name: "a:", Value: "c\nc\n"},
-		{LineNr: 4, Name: "b:", Value: ""},
-		{LineNr: 5, Name: "a:", Value: "c\n"},
-		{LineNr: 7, Name: "a:", Value: ""},
+		{lineNr: 1, name: "a:", value: "c\nc\n"},
+		{lineNr: 4, name: "b:", value: ""},
+		{lineNr: 5, name: "a:", value: "c\n"},
+		{lineNr: 7, name: "a:", value: ""},
 	}
 
 	deepequal.Error(t, "sections", expectedSections, actualSections)
@@ -134,7 +141,7 @@ func parseTestCases(s string) *testCase {
 	// match "name:" or ">args" sections
 	seenRun := false
 	for _, section := range sectionParser(regexp.MustCompile(`^#.*$|^/.*:|^>.*$`), s) {
-		n, v := section.Name, section.Value
+		n, v := section.name, section.value
 
 		switch {
 		case !seenRun && strings.HasPrefix(n, "/"):
@@ -142,9 +149,9 @@ func parseTestCases(s string) *testCase {
 			te.files[name] = []byte(v)
 		case strings.HasPrefix(n, ">"):
 			seenRun = true
-			args := append([]string{"fq"}, strings.Fields(strings.TrimPrefix(n, ">"))...)
+			args := strings.Fields(strings.TrimPrefix(n, ">"))
 			te.runs = append(te.runs, &testCaseRun{
-				lineNr:          section.LineNr,
+				lineNr:          section.lineNr,
 				testCase:        te,
 				args:            args,
 				expectedStdout:  v,
@@ -152,7 +159,7 @@ func parseTestCases(s string) *testCase {
 				actualStderrBuf: &bytes.Buffer{},
 			})
 		default:
-			panic(fmt.Sprintf("%d: unexpected section %q %q", section.LineNr, n, v))
+			panic(fmt.Sprintf("%d: unexpected section %q %q", section.lineNr, n, v))
 		}
 	}
 
@@ -218,7 +225,7 @@ func testDecodedTestCaseRun(t *testing.T, registry *decode.Registry, tcr *testCa
 	err := m.Run()
 	if err != nil {
 		// TODO: expect error
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	//log.Printf("tcr.ActualStdoutBuf.String(): %#+v\n", tcr.ActualStdoutBuf.String())
@@ -232,6 +239,8 @@ func testDecodedTestCaseRun(t *testing.T, registry *decode.Registry, tcr *testCa
 func TestPath(t *testing.T, registry *decode.Registry) {
 	const testDataDir = "testdata"
 
+	tcs := []*testCase{}
+
 	filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
 		if filepath.Ext(path) != ".fqtest" {
 			return nil
@@ -243,6 +252,7 @@ func TestPath(t *testing.T, registry *decode.Registry) {
 				t.Fatal(err)
 			}
 			tc := parseTestCases(string(b))
+			tcs = append(tcs, tc)
 			tc.path = filepath.Dir(path) // TODO: move?
 
 			for _, tcr := range tc.runs {
@@ -254,4 +264,8 @@ func TestPath(t *testing.T, registry *decode.Registry) {
 
 		return nil
 	})
+
+	for _, tc := range tcs {
+		log.Printf("%s", tc.ToActual())
+	}
 }
