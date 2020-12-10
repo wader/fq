@@ -59,9 +59,6 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 				i++
 			})
 		},
-		"moov": decodeAtoms,
-		"moof": decodeAtoms,
-		"traf": decodeAtoms,
 		"mvhd": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldUTF8("flags", 3)
@@ -177,6 +174,9 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			d.FieldStructArrayLoopFn("sample_description", func() bool { return i < numEntries }, func(d *decode.D) {
 				size := d.FieldU32("size")
 				dataFormat := d.FieldUTF8("data_format", 4)
+				if ctx.currentTrack != nil {
+					ctx.currentTrack.dataFormat = dataFormat
+				}
 				d.FieldBytesLen("reserved", 6)
 				d.FieldU16("data_reference_index")
 
@@ -217,6 +217,30 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 							decodeAtoms(ctx, d)
 						}
 					})
+				case "avc1":
+					d.FieldStructFn("data", func(d *decode.D) {
+
+						d.FieldU16("version")
+						d.FieldU16("revision_level")
+						d.FieldU32("vendor")
+						d.FieldU32("temporal_quality")
+						d.FieldU32("spatial_quality")
+						d.FieldU16("width")
+						d.FieldU16("height")
+						d.FieldFP32("horizontal_resolution")
+						d.FieldFP32("vertical_resolution")
+						d.FieldU32("data_size")
+						d.FieldU16("frame_count")
+						d.FieldUTF8("compression_name", 32)
+						d.FieldU16("depth")
+						d.FieldS16("color_table_id")
+						// TODO: if 0 decode ctab
+
+						if d.BitsLeft() > 0 {
+							decodeAtoms(ctx, d)
+						}
+					})
+
 				default:
 					d.FieldBytesLen("data", int(size)-16)
 				}
@@ -229,9 +253,23 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 				i++
 			})
 		},
+		"avcC": func(ctx *decodeContext, d *decode.D) {
+			d.FieldBitBufLen("data", d.BitsLeft())
+		},
 		"esds": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU32("version")
-			d.FieldDecode("es_desciptor", mpegESFormat)
+
+			dataFormat := ""
+			if ctx.currentTrack != nil {
+				dataFormat = ctx.currentTrack.dataFormat
+			}
+			switch dataFormat {
+			case "mp4a":
+				//d.FieldDecode("es_desciptor", mpegESFormat)
+			default:
+				d.FieldBitBufLen("data", d.BitsLeft())
+			}
+
 		},
 		"stts": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
@@ -350,6 +388,104 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			d.FieldU24("flags")
 			d.FieldU32("reserved")
 			d.FieldUTF8("data", int(d.BitsLeft()/8))
+		},
+		"moov": decodeAtoms,
+		"moof": decodeAtoms,
+		// Track Fragment
+		"traf": decodeAtoms,
+		// Movie Fragment Header
+		"mfhd": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+			d.FieldU32("sequence_number")
+		},
+		// Track Fragment Header
+		"tfhd": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			baseDataOffsetPresent := false
+			sampleDescriptionIndexPresent := false
+			defaultSampleDurationPresent := false
+			defaultSampleSizePresent := false
+			defaultSampleFlagsPresent := false
+			d.FieldStructFn("flags", func(d *decode.D) {
+				d.FieldU7("unused0")
+				d.FieldBool("duration_is_empty")
+				d.FieldU10("unused1")
+				defaultSampleFlagsPresent = d.FieldBool("default_sample_flags_present")
+				defaultSampleSizePresent = d.FieldBool("default_sample_size_present")
+				defaultSampleDurationPresent = d.FieldBool("default_sample_duration_present")
+				d.FieldU1("unused2")
+				sampleDescriptionIndexPresent = d.FieldBool("sample_description_index_present")
+				baseDataOffsetPresent = d.FieldBool("base_data_offset_present")
+
+			})
+			d.FieldU32("track_id")
+			if baseDataOffsetPresent {
+				d.FieldU64("base_data_offset")
+			}
+			if sampleDescriptionIndexPresent {
+				d.FieldU32("sample_description_index")
+			}
+			if defaultSampleDurationPresent {
+				d.FieldU32("default_sample_duration")
+			}
+			if defaultSampleSizePresent {
+				d.FieldU32("default_sample_size")
+			}
+			if defaultSampleFlagsPresent {
+				d.FieldU32("default_sample_flags")
+			}
+		},
+		// Track Fragment Run
+		"trun": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			sampleCompositionTimeOffsetsPresent := false
+			sampleFlagsPresent := false
+			sampleSizePresent := false
+			sampleDurationPresent := false
+			firstSampleFlagsPresent := false
+			dataOffsetPresent := false
+			d.FieldStructFn("flags", func(d *decode.D) {
+				d.FieldU12("unused0")
+				sampleCompositionTimeOffsetsPresent = d.FieldBool("sampleCompositionTimeOffsetsPresent")
+				sampleFlagsPresent = d.FieldBool("sample_flags_present")
+				sampleSizePresent = d.FieldBool("sample_size_present")
+				sampleDurationPresent = d.FieldBool("sample_duration_present")
+				d.FieldU5("unused1")
+				firstSampleFlagsPresent = d.FieldBool("first_sample_flags_present")
+				d.FieldU1("unused2")
+				dataOffsetPresent = d.FieldBool("dataOffset_present")
+			})
+			sampleCount := d.FieldU32("sample_count")
+			if dataOffsetPresent {
+				d.FieldS32("data_offset")
+			}
+			if firstSampleFlagsPresent {
+				d.FieldU32("first_sample_flags")
+			}
+			d.FieldArrayFn("sample", func(d *decode.D) {
+				for i := uint64(0); i < sampleCount; i++ {
+					d.FieldStructFn("sample", func(d *decode.D) {
+						if sampleDurationPresent {
+							d.FieldU32("sample_duration")
+						}
+						if sampleSizePresent {
+							d.FieldU32("sample_size")
+						}
+						if sampleFlagsPresent {
+							d.FieldU32("sample_flags")
+						}
+						if sampleCompositionTimeOffsetsPresent {
+							d.FieldU32("sample_composition_time_offset")
+						}
+					})
+				}
+			})
+		},
+		"tfdt": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+			d.FieldU32("start_time")
 		},
 	}
 
