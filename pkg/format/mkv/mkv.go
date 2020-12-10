@@ -232,12 +232,12 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebmlTag, dc *decodeContext) 
 
 				switch a.typ {
 				case ebmlInteger:
-					v := d.FieldS("value", int(tagSize)*8)
+					d.FieldS("value", int(tagSize)*8)
+				case ebmlUinteger:
+					v := d.FieldU("value", int(tagSize)*8)
 					if dc.currentTrack != nil && tagID == TrackNumber {
 						dc.currentTrack.number = int(v)
 					}
-				case ebmlUinteger:
-					d.FieldU("value", int(tagSize)*8)
 				case ebmlFloat:
 					d.FieldF("value", int(tagSize)*8)
 				case ebmlString:
@@ -294,6 +294,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebmlTag, dc *decodeContext) 
 						// })
 
 						dc.simpleBlocks = append(dc.simpleBlocks, simpleBlock{
+							d: d,
 							r: ranges.Range{Start: d.Pos(), Len: int64(tagSize) * 8},
 						})
 
@@ -328,8 +329,6 @@ func mkvDecode(d *decode.D) interface{} {
 	}
 	dc := &decodeContext{tracks: []*track{}}
 	decodeMaster(d, d.BitsLeft(), ebmlRoot, dc)
-
-	log.Printf("dc: %#+v\n", dc)
 
 	trackCodec := map[int]string{}
 
@@ -378,7 +377,7 @@ func mkvDecode(d *decode.D) interface{} {
 
 	for _, s := range dc.simpleBlocks {
 		s.d.DecodeRangeFn(s.r.Start, s.r.Len, func(d *decode.D) {
-			fieldDecodeVint(d, "track_number", decode.NumberDecimal)
+			trackNumber := fieldDecodeVint(d, "track_number", decode.NumberDecimal)
 			d.FieldU16("timestamp")
 			d.FieldStructFn("flags", func(d *decode.D) {
 				d.FieldBool("key_frame")
@@ -387,8 +386,16 @@ func mkvDecode(d *decode.D) interface{} {
 				d.FieldU2("lacing")
 				d.FieldBool("discardable")
 			})
-			// TODO: lacing
-			d.FieldBitBufLen("data", d.BitsLeft())
+			// TODO: lacing etc
+
+			switch trackCodec[int(trackNumber)] {
+			case "A_VORBIS":
+				d.FieldDecodeLen("packet", d.BitsLeft(), vorbisPacketFormat)
+			case "V_VP9":
+				d.FieldDecodeLen("packet", d.BitsLeft(), vp9FrameFormat)
+			default:
+				d.FieldBitBufLen("data", d.BitsLeft())
+			}
 
 		})
 	}
