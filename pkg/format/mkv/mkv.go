@@ -177,14 +177,13 @@ proc type_master {size _label extra} {
 }
 */
 
-func decodeMaster(d *decode.D, tag ebmlTag, dc *decodeContext) {
+func decodeMaster(d *decode.D, bitsLimit int64, tag ebmlTag, dc *decodeContext) {
+	tagEndBit := d.Pos() + bitsLimit
 
 	d.FieldArrayFn("element", func(d *decode.D) {
 
-		for d.NotEnd() {
-
+		for d.Pos() < tagEndBit && d.NotEnd() {
 			startPos := d.Pos()
-
 			tagID := decodeRawVint(d)
 			d.SeekAbs(startPos)
 
@@ -193,6 +192,8 @@ func decodeMaster(d *decode.D, tag ebmlTag, dc *decodeContext) {
 				a, ok = ebmlGlobal[tagID]
 				if !ok {
 					//return
+					log.Printf("tag: %#+v\n", tag)
+					log.Printf("tagID: %#+v\n", tagID)
 					panic("asdsad")
 				}
 			}
@@ -213,6 +214,11 @@ func decodeMaster(d *decode.D, tag ebmlTag, dc *decodeContext) {
 					n := decodeRawVint(d)
 					return n, decode.NumberHex, a.name
 				})
+				// tagSize could be 0xffffffffffffff which means "unknown" size, then we will read until eof
+				// TODO: should read until unknown id:
+				//    The end of a Master-element with unknown size is determined by the beginning of the next
+				//    element that is not a valid sub-element of that Master-element
+				// TODO: should also handle garbage between tags
 				tagSize := fieldDecodeVint(d, "size", decode.NumberDecimal)
 
 				switch a.typ {
@@ -290,9 +296,9 @@ func decodeMaster(d *decode.D, tag ebmlTag, dc *decodeContext) {
 					}
 
 				case ebmlMaster:
-					d.DecodeLenFn(int64(tagSize)*8, func(d *decode.D) {
-						decodeMaster(d, a.tag, dc)
-					})
+					//d.DecodeLenFn(int64(tagSize)*8, func(d *decode.D) {
+					decodeMaster(d, int64(tagSize)*8, a.tag, dc)
+					//})
 				}
 			})
 		}
@@ -306,7 +312,7 @@ func mkvDecode(d *decode.D) interface{} {
 		d.Invalid("no EBML header found")
 	}
 	dc := &decodeContext{tracks: []*track{}}
-	decodeMaster(d, ebmlRoot, dc)
+	decodeMaster(d, d.BitsLeft(), ebmlRoot, dc)
 
 	log.Printf("dc: %#+v\n", dc)
 
