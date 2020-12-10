@@ -42,5 +42,6 @@ const (
 	TIFF           = "tiff"
 	VORBIS_COMMENT = "vorbis_comment"
 	VORBIS_PACKET  = "vorbis_packet"
+	VP9_FRAME      = "vp9_frame"
 	WAV            = "wav"
 )

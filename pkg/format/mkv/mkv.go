@@ -6,12 +6,14 @@ package mkv
 // https://www.matroska.org/technical/codec_specs.html
 
 import (
+	"fq/internal/ranges"
 	"fq/pkg/decode"
 	"fq/pkg/format"
 	"log"
 )
 
 var vorbisPacketFormat []*decode.Format
+var vp9FrameFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -21,6 +23,7 @@ func init() {
 		DecodeFn:    mkvDecode,
 		Deps: []decode.Dep{
 			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
+			{Names: []string{format.VP9_FRAME}, Formats: &vp9FrameFormat},
 		},
 	})
 }
@@ -120,9 +123,15 @@ type track struct {
 	codecPrivateTagSize int64
 }
 
+type simpleBlock struct {
+	d *decode.D
+	r ranges.Range
+}
+
 type decodeContext struct {
 	currentTrack *track
 	tracks       []*track
+	simpleBlocks []simpleBlock
 }
 
 /*
@@ -218,7 +227,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebmlTag, dc *decodeContext) 
 				// TODO: should read until unknown id:
 				//    The end of a Master-element with unknown size is determined by the beginning of the next
 				//    element that is not a valid sub-element of that Master-element
-				// TODO: should also handle garbage between tags
+				// TODO: should also handle garbage between
 				tagSize := fieldDecodeVint(d, "size", decode.NumberDecimal)
 
 				switch a.typ {
@@ -269,20 +278,26 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebmlTag, dc *decodeContext) 
 						// TODO: CodecPrivate
 						// TODO: collect decode later when we know track codec?
 
-						d.DecodeLenFn(int64(tagSize)*8, func(d *decode.D) {
-							fieldDecodeVint(d, "track_number", decode.NumberDecimal)
-							d.FieldU16("timestamp")
-							d.FieldStructFn("flags", func(d *decode.D) {
-								d.FieldBool("key_frame")
-								d.FieldU3("reserved")
-								d.FieldBool("invisible")
-								d.FieldU2("lacing")
-								d.FieldBool("discardable")
-							})
-							// TODO: lacing
-							d.FieldBitBufLen("data", d.BitsLeft())
+						// d.DecodeLenFn(int64(tagSize)*8, func(d *decode.D) {
+						// 	fieldDecodeVint(d, "track_number", decode.NumberDecimal)
+						// 	d.FieldU16("timestamp")
+						// 	d.FieldStructFn("flags", func(d *decode.D) {
+						// 		d.FieldBool("key_frame")
+						// 		d.FieldU3("reserved")
+						// 		d.FieldBool("invisible")
+						// 		d.FieldU2("lacing")
+						// 		d.FieldBool("discardable")
+						// 	})
+						// 	// TODO: lacing
+						// 	d.FieldBitBufLen("data", d.BitsLeft())
 
+						// })
+
+						dc.simpleBlocks = append(dc.simpleBlocks, simpleBlock{
+							r: ranges.Range{Start: d.Pos(), Len: int64(tagSize) * 8},
 						})
+
+						d.SeekRel(int64(tagSize) * 8)
 					case CodecPrivate:
 						if dc.currentTrack != nil {
 							dc.currentTrack.parentD = d
@@ -316,7 +331,12 @@ func mkvDecode(d *decode.D) interface{} {
 
 	log.Printf("dc: %#+v\n", dc)
 
+	trackCodec := map[int]string{}
+
 	for _, t := range dc.tracks {
+		if t.codec != "" {
+			trackCodec[t.number] = t.codec
+		}
 		// no CodecPrivate found
 		if t.parentD == nil {
 			continue
@@ -354,7 +374,23 @@ func mkvDecode(d *decode.D) interface{} {
 		default:
 			t.parentD.FieldBitBufRange("value", t.codecPrivatePos, t.codecPrivateTagSize)
 		}
+	}
 
+	for _, s := range dc.simpleBlocks {
+		s.d.DecodeRangeFn(s.r.Start, s.r.Len, func(d *decode.D) {
+			fieldDecodeVint(d, "track_number", decode.NumberDecimal)
+			d.FieldU16("timestamp")
+			d.FieldStructFn("flags", func(d *decode.D) {
+				d.FieldBool("key_frame")
+				d.FieldU3("reserved")
+				d.FieldBool("invisible")
+				d.FieldU2("lacing")
+				d.FieldBool("discardable")
+			})
+			// TODO: lacing
+			d.FieldBitBufLen("data", d.BitsLeft())
+
+		})
 	}
 
 	return nil

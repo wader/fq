@@ -19,6 +19,7 @@ import (
 	_ "fq/pkg/format/tar"
 	_ "fq/pkg/format/tiff"
 	_ "fq/pkg/format/vorbis"
+	_ "fq/pkg/format/vpx"
 	_ "fq/pkg/format/wav"
 
 	_ "fq/pkg/format/jq"
