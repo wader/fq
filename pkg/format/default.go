@@ -10,6 +10,7 @@ func MustRegister(format *decode.Format) *decode.Format {
 
 const (
 	PROBE = "probe"
+	RAW   = "raw"
 
 	// TODO: rename PROBE_* something?
 	IMAGE      = "image"

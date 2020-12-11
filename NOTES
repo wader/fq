@@ -1,4 +1,8 @@
 
+bits(statr; len)
+
+range, byte_range?
+
 FieldBytesFn hmm clean up readers?
 
 validate should only add warning if fail?

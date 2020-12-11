@@ -16,6 +16,7 @@ import (
 	_ "fq/pkg/format/mpeg"
 	_ "fq/pkg/format/ogg"
 	_ "fq/pkg/format/png"
+	_ "fq/pkg/format/raw"
 	_ "fq/pkg/format/tar"
 	_ "fq/pkg/format/tiff"
 	_ "fq/pkg/format/vorbis"

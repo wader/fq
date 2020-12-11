@@ -11,6 +11,7 @@ import (
 	"fq/pkg/format"
 	"io"
 	"io/ioutil"
+	"math/big"
 	"sort"
 	"strconv"
 	"strings"
@@ -30,6 +31,19 @@ func (m Main) Run() error {
 		fmt.Fprintf(m.OS.Stderr(), "%s\n", err)
 	}
 	return err
+}
+
+func toInt64(v interface{}) (int64, error) {
+	switch v := v.(type) {
+	case *big.Int:
+		return v.Int64(), nil
+	case int:
+		return int64(v), nil
+	case float64:
+		return int64(v), nil
+	default:
+		return 0, fmt.Errorf("value is not a number")
+	}
 }
 
 func (m Main) run() error {
@@ -114,15 +128,52 @@ func (m Main) run() error {
 	}
 
 	gojqOptions := []gojq.CompilerOption{
-		gojq.WithFunction("bits", 0, 0, func(c interface{}, a []interface{}) interface{} {
-			if v, ok := c.(*decode.Value); ok {
-				bb, err := v.RootBitBuf.BitBufRange(v.Range.Start, v.Range.Len)
+		gojq.WithFunction("bits", 0, 2, func(c interface{}, a []interface{}) interface{} {
+			var bb *bitio.Buffer
+			switch cc := c.(type) {
+			case *decode.Value:
+				bb, err = cc.RootBitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
 				if err != nil {
 					return err
 				}
-				return bb
+			case *bitio.Buffer:
+				bb = cc
+			default:
+				return fmt.Errorf("value is not a decode value or bit buffer")
 			}
-			return nil
+
+			startArg := int64(0)
+			endArg := int64(-1)
+			var err error
+			toAbs := func(v int64, l int64) int64 {
+				if v < 0 {
+					return l + v + 1
+				}
+				return v
+			}
+
+			if len(a) >= 1 {
+				startArg, err = toInt64(a[0])
+				if err != nil {
+					return err
+				}
+			}
+			if len(a) >= 2 {
+				endArg, err = toInt64(a[1])
+				if err != nil {
+					return err
+				}
+			}
+
+			startArg = toAbs(startArg, bb.Len())
+			endArg = toAbs(endArg, bb.Len())
+
+			bb, err = bb.BitBufRange(startArg, endArg-startArg)
+			if err != nil {
+				return err
+			}
+
+			return bb
 		}),
 		gojq.WithFunction("string", 0, 0, func(c interface{}, a []interface{}) interface{} {
 			var bb *bitio.Buffer
@@ -185,7 +236,7 @@ func (m Main) run() error {
 			}
 
 			// TODO: hmm
-			name := "unname"
+			name := "unnamed"
 			if len(a) >= 2 {
 				var ok bool
 				name, ok = a[1].(string)

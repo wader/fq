@@ -69,6 +69,11 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 	stopByte := stopBit / 8
 	lastDisplayByte := lastDisplayBit / 8
 	displaySizeBytes := lastDisplayByte - startByte + 1
+	displaySizeBits := displaySizeBytes * 8
+	maxDisplaySizeBits := bufferLastBit - startByte*8 + 1
+	if displaySizeBits > maxDisplaySizeBits {
+		displaySizeBits = maxDisplaySizeBits
+	}
 
 	startLine := startByte / int64(opts.LineBytes)
 	startLineByteOffset := startByte % int64(opts.LineBytes)
@@ -93,7 +98,7 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 		fmt.Fprintf(cw.Columns[0], "%s%s\n", rootIndent, padFormatInt(startLineByte, opts.AddrBase, addrWidth))
 
 		color := false
-		vBitBuf, err := rootV.RootBitBuf.BitBufRange(startByte*8, displaySizeBytes*8)
+		vBitBuf, err := rootV.RootBitBuf.BitBufRange(startByte*8, displaySizeBits)
 		if err != nil {
 			return err
 		}
