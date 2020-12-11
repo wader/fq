@@ -1,4 +1,8 @@
 
+
+synthentic fields somehow? with range to positon?
+
+
 DONE FieldCRC -> FieldChecksum
 
 DONE bits(statr; len)
@@ -17,7 +21,6 @@ ffmpeg -y -f lavfi -i testsrc -f lavfi -i sine -ac 2 -c:a libvorbis -t 5s test.w
 
 DONE pretty print json
 
-synthentic fields somehow?
 
 var args to encoding and description?
 format descriptions
