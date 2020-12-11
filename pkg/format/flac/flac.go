@@ -1,9 +1,7 @@
 package flac
 
-// TODO: more metablocks
-// TODO: crc, md5
-// TODO: 24 picture truncate
-// TODO: flacpicture
+// TODO: sample md5
+// TODO: 24 picture truncate warning
 
 import (
 	"fq/pkg/decode"
