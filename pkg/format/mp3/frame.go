@@ -20,7 +20,7 @@ func init() {
 		Name:        format.MP3_FRAME,
 		Description: "MPEG audio layer 3 frame",
 		DecodeFn:    frameDecode,
-		Deps: []decode.Dep{
+		Dependencies: []decode.Dependency{
 			{Names: []string{format.XING_HEADER}, Formats: &xingHeader},
 		},
 	})

@@ -21,7 +21,7 @@ func init() {
 		Groups:      []string{format.PROBE},
 		MIMEs:       []string{"application/x-tar"},
 		DecodeFn:    tarDecode,
-		Deps: []decode.Dep{
+		Dependencies: []decode.Dependency{
 			{Names: []string{format.PROBE}, Formats: &probeable},
 		},
 	})

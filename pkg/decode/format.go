@@ -1,17 +1,17 @@
 package decode
 
-type Dep struct {
+type Dependency struct {
 	Names   []string
 	Formats *[]*Format
 }
 
 type Format struct {
-	Name        string
-	Description string
-	Groups      []string
-	MIMEs       []string
-	DecodeFn    func(d *D) interface{}
-	Deps        []Dep
+	Name         string
+	Description  string
+	Groups       []string
+	MIMEs        []string
+	DecodeFn     func(d *D) interface{}
+	Dependencies []Dependency
 }
 
 func FormatFn(d func(d *D) interface{}) []*Format {

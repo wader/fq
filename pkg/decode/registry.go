@@ -38,7 +38,7 @@ func (r *Registry) register(groupName string, format *Format, single bool) *Form
 func (r *Registry) resolve() error {
 	for _, fs := range r.allGroups {
 		for _, f := range fs {
-			for _, d := range f.Deps {
+			for _, d := range f.Dependencies {
 				var formats []*Format
 				for _, dName := range d.Names {
 					df, ok := r.allGroups[dName]
@@ -109,7 +109,7 @@ func (r *Registry) Dot(w io.Writer) {
 			}
 			formatSeen[f.Name] = struct{}{}
 
-			for _, d := range f.Deps {
+			for _, d := range f.Dependencies {
 
 				for _, dName := range d.Names {
 					fmt.Fprintf(w, "  %s -> %s\n", f.Name, dName)

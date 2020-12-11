@@ -20,7 +20,7 @@ func init() {
 		// TODO: implment MIME()
 		MIMEs:    []string{"audio/mp4", "video/mp4"},
 		DecodeFn: mp4Decode,
-		Deps: []decode.Dep{
+		Dependencies: []decode.Dependency{
 			{Names: []string{format.MPEG_ES}, Formats: &mpegESFormat},
 			{Names: []string{format.AAC_FRAME}, Formats: &aacFrameFormat},
 		},

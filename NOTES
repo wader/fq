@@ -1,5 +1,7 @@
 
-bits(statr; len)
+DONE FieldCRC -> FieldChecksum
+
+DONE bits(statr; len)
 
 range, byte_range?
 

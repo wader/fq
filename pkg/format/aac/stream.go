@@ -14,7 +14,7 @@ func init() {
 		Groups:      []string{format.PROBE},
 		MIMEs:       []string{"audio/aac"},
 		DecodeFn:    adtsDecode,
-		Deps: []decode.Dep{
+		Dependencies: []decode.Dependency{
 			{Names: []string{format.AAC_ADTS}, Formats: &aacADTS},
 		},
 	})

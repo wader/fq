@@ -501,7 +501,7 @@ func (d *D) FieldStringMapFn(name string, sm map[uint64]string, def string, fn f
 	}), ok
 }
 
-func (d *D) FieldCRC(name string, expectedNBytes int, firstBit int64, nBits int64, h hash.Hash) {
+func (d *D) FieldChecksum(name string, expectedNBytes int, firstBit int64, nBits int64, h hash.Hash) {
 	_, _ = io.Copy(h, d.BitBufRange(firstBit, nBits))
 	actual := h.Sum(nil)
 
@@ -582,6 +582,10 @@ func (d *D) ValidateAtLeastBytesLeft(nBytes int64) {
 		// TODO:
 		panic(ValidateError{Reason: fmt.Sprintf("expected bytes left %d, found %d bits", nBytes, bl), Pos: d.Pos()})
 	}
+}
+
+func (d *D) FieldValueStr(name string, v string, desc string) {
+	d.FieldStrFn(name, func() (string, string) { return v, desc })
 }
 
 // TODO: rename?

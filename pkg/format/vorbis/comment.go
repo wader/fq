@@ -15,7 +15,7 @@ func init() {
 		Name:        format.VORBIS_COMMENT,
 		Description: "Vorbis comment",
 		DecodeFn:    commentDecode,
-		Deps: []decode.Dep{
+		Dependencies: []decode.Dependency{
 			{Names: []string{format.FLAC_PICTURE}, Formats: &flacPicture},
 		},
 	})

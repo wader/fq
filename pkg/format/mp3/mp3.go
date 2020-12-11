@@ -26,7 +26,7 @@ func init() {
 		Groups:      []string{format.PROBE},
 		MIMEs:       []string{"audio/mpeg"},
 		DecodeFn:    mp3Decode,
-		Deps: []decode.Dep{
+		Dependencies: []decode.Dependency{
 			{Names: []string{format.ID3_V2}, Formats: &headerTag},
 			{Names: []string{format.ID3_V1, format.ID3_V11}, Formats: &id3v1Tags},
 			{Names: []string{format.APEV2}, Formats: &apeTag},

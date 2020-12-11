@@ -19,7 +19,7 @@ func init() {
 		Description: "Audio data transport stream packet",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    adtsDecoder,
-		Deps: []decode.Dep{
+		Dependencies: []decode.Dependency{
 			{Names: []string{format.AAC_FRAME}, Formats: &aacFrame},
 		},
 	})

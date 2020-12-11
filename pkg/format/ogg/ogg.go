@@ -16,7 +16,7 @@ func init() {
 		Groups:      []string{format.PROBE},
 		MIMEs:       []string{"audio/ogg"},
 		DecodeFn:    decodeOgg,
-		Deps: []decode.Dep{
+		Dependencies: []decode.Dependency{
 			{Names: []string{format.OGG_PAGE}, Formats: &oggPage},
 			{Names: []string{format.OGG_PACKET}, Formats: &oggPacket},
 		},

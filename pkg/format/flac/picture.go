@@ -12,7 +12,7 @@ func init() {
 		Name:        format.FLAC_PICTURE,
 		Description: "FLAC metadata block picture",
 		DecodeFn:    pictureDecode,
-		Deps: []decode.Dep{
+		Dependencies: []decode.Dependency{
 			{Names: []string{format.IMAGE}, Formats: &images},
 		},
 	})

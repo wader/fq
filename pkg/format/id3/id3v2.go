@@ -20,7 +20,7 @@ func init() {
 		Name:        format.ID3_V2,
 		Description: "ID3v2 metadata",
 		DecodeFn:    id3v2Decode,
-		Deps: []decode.Dep{
+		Dependencies: []decode.Dependency{
 			{Names: []string{format.IMAGE}, Formats: &images},
 		},
 	})

@@ -21,7 +21,7 @@ func init() {
 		Description: "Matroska EBML",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    mkvDecode,
-		Deps: []decode.Dep{
+		Dependencies: []decode.Dependency{
 			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
 			{Names: []string{format.VP9_FRAME}, Formats: &vp9FrameFormat},
 		},

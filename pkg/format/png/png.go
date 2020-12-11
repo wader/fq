@@ -19,7 +19,7 @@ func init() {
 		Groups:      []string{format.PROBE, format.IMAGE},
 		MIMEs:       []string{"image/png"},
 		DecodeFn:    pngDecode,
-		Deps: []decode.Dep{
+		Dependencies: []decode.Dependency{
 			{Names: []string{format.ICC_PROFILE}, Formats: &iccProfile},
 			{Names: []string{format.TIFF}, Formats: &tiffFile},
 		},

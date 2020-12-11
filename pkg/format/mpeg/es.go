@@ -12,7 +12,7 @@ func init() {
 		Name:        format.MPEG_ES,
 		Description: "MPEG elementary stream",
 		DecodeFn:    esDecode,
-		Deps: []decode.Dep{
+		Dependencies: []decode.Dependency{
 			{Names: []string{format.MPEG_ASC}, Formats: &mpegASCFormat},
 		},
 	})

@@ -17,7 +17,7 @@ func init() {
 		Description: "Vorbis packet",
 		Groups:      []string{format.OGG_PACKET},
 		DecodeFn:    vorbisDecode,
-		Deps: []decode.Dep{
+		Dependencies: []decode.Dependency{
 			{Names: []string{format.VORBIS_COMMENT}, Formats: &vorbisComment},
 		},
 	})
