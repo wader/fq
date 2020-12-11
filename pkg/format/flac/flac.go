@@ -8,7 +8,6 @@ package flac
 import (
 	"fq/pkg/decode"
 	"fq/pkg/format"
-	"io"
 	"math/bits"
 )
 
@@ -451,10 +450,7 @@ func flacDecode(d *decode.D) interface{} {
 					}
 				})
 
-				// CRC-8 (polynomial = x^8 + x^2 + x^1 + x^0, initialized with 0) of everything before the crc, including the sync code
-				headerCRC := NewCRC8(flacCRC8Table)
-				_, _ = io.Copy(headerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
-				d.FieldValidateUFn("crc", uint64(headerCRC.Sum(nil)[0]), d.U8)
+				d.FieldCRC("crc", 1, frameStart, d.Pos()-frameStart, NewCRC8(flacCRC8Table))
 
 				d.FieldArrayFn("subframe", func(d *decode.D) {
 					for channelIndex := 0; channelIndex < int(channels); channelIndex++ {

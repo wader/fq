@@ -1,4 +1,6 @@
 
+FieldBytesFn hmm clean up readers?
+
 validate should only add warning if fail?
 
 FieldAssert?

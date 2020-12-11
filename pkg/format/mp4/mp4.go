@@ -265,7 +265,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			}
 			switch dataFormat {
 			case "mp4a":
-				//d.FieldDecode("es_desciptor", mpegESFormat)
+				d.FieldDecode("es_desciptor", mpegESFormat)
 			default:
 				d.FieldBitBufLen("data", d.BitsLeft())
 			}
@@ -454,7 +454,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 				d.FieldU5("unused1")
 				firstSampleFlagsPresent = d.FieldBool("first_sample_flags_present")
 				d.FieldU1("unused2")
-				dataOffsetPresent = d.FieldBool("dataOffset_present")
+				dataOffsetPresent = d.FieldBool("data_offset_present")
 			})
 			sampleCount := d.FieldU32("sample_count")
 			if dataOffsetPresent {
