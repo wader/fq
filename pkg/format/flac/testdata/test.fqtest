@@ -1,7 +1,7 @@
 # ffmpeg -f lavfi -i anoisesrc -t 10ms -ac 2 pkg/format/flac/testdata/test.flac
 /test.flac:
 > -f flac test.flac
-    |                                               |                |test.flac{}: struct test.flac (flac) 0-2617+7 fields 3 (9752)
+    |                                               |                |test.flac{}: struct test.flac (flac) 0-2617+7 fields 4 (9752)
 0000|66 4c 61 43                                    |fLaC            |  magic: Correct ("fLaC") 0-3+7 (4)
     |                                               |                |  metadatablock[]: array metadatablock 4-205f+7 count 3 (8284)
     |                                               |                |    metadatablock[0]{}: struct metadatablock 4-29+7 fields 12 (38)
@@ -98,3 +98,4 @@
 2610|      00 00 00 00                              |  ....          |          value: 0 2612+5-2615+5 (3+1)
 2610|               00                              |     .          |      byte_align: Correct (0) 2615+6-2615+7 (0+2)
 2610|                  c7 50|                       |      .P|       |      footer_crc: Correct (c750) 2616-2617+7 (2)
+2610||                                              ||               |  calculated_md5: Correct ("1faa5547203c52df96986d3880a77f9b") 2618-NA (0)
