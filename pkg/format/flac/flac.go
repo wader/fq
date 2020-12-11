@@ -72,48 +72,72 @@ var SubframeTypeNames = map[uint]string{
 	SubframeLPC:      "LPC",
 }
 
-type crc8Table [256]uint8
+type crcTable [256]uint
 
-func crc8MakeTable(poly int, bits int) crc8Table {
-	table := [256]uint8{}
+func crcMakeTable(poly int, bits int) crcTable {
+	table := [256]uint{}
+	mask := uint((1 << bits) - 1)
 
 	for i := 0; i < 256; i++ {
-		var crc uint8 = uint8(i)
+		// note sure about -8 for > 16 bit crc
+		var crc uint = uint(i << (bits - 8))
 		for j := 0; j < 8; j++ {
 			if crc&(1<<(bits-1)) > 0 {
-				crc = ((crc << 1) ^ uint8(poly)) & 0xff
+				crc = ((crc << 1) ^ uint(poly)) & mask
 			} else {
-				crc = (crc << 1) & 0xff
+				crc = (crc << 1) & mask
 			}
 		}
 		table[i] = crc
 	}
 
-	return crc8Table(table)
+	return crcTable(table)
 }
 
-var flacCRC8Table = crc8MakeTable(0x7, 8)
+var flacCRC8Table = crcMakeTable(0x7, 8)
+var flacCRC16Table = crcMakeTable(0x8005, 16)
 
-type crc8 struct {
-	sum   uint8
-	table crc8Table
+type crc struct {
+	bits  int
+	sum   uint
+	table crcTable
 }
 
-func NewCRC8(table crc8Table) *crc8 {
-	return &crc8{table: table}
+func NewCRC(bits int, table crcTable) *crc {
+	return &crc{bits: bits, table: table}
 }
 
-func (c *crc8) Write(p []byte) (n int, err error) {
-	for _, b := range p {
-		c.sum = c.table[c.sum^b]
+func (c *crc) Write(p []byte) (n int, err error) {
+	switch c.bits {
+	case 8:
+		for _, b := range p {
+			c.sum = c.table[c.sum^uint(b)]
+		}
+	case 16:
+		for _, b := range p {
+			c.sum = (c.sum<<8 ^ c.table[(c.sum>>8)^uint(b)]) & 0xffff
+		}
+	default:
+		panic("unsupported")
 	}
+
 	return len(p), nil
 }
 
-func (c *crc8) Sum(b []byte) []byte { return append(b, c.sum) }
-func (c *crc8) Reset()              { c.sum = 0 }
-func (c *crc8) Size() int           { return 1 }
-func (c *crc8) BlockSize() int      { return 1 }
+func (c *crc) Sum(b []byte) []byte {
+	switch c.bits {
+	case 8:
+		return append(b, byte(c.sum))
+	case 16:
+		return append(b, byte(c.sum>>8), byte(c.sum))
+	default:
+		panic("unsupported")
+	}
+
+}
+func (c *crc) Reset()         { c.sum = 0 }
+func (c *crc) Size() int      { return c.bits / 8 }
+func (c *crc) BlockSize() int { return c.bits / 8 }
 
 // TODO: generic enough?
 func utf8Uint(d *decode.D) uint64 {
@@ -450,7 +474,7 @@ func flacDecode(d *decode.D) interface{} {
 					}
 				})
 
-				d.FieldCRC("crc", 1, frameStart, d.Pos()-frameStart, NewCRC8(flacCRC8Table))
+				d.FieldCRC("crc", 1, frameStart, d.Pos()-frameStart, NewCRC(8, flacCRC8Table))
 
 				d.FieldArrayFn("subframe", func(d *decode.D) {
 					for channelIndex := 0; channelIndex < int(channels); channelIndex++ {
@@ -631,7 +655,7 @@ func flacDecode(d *decode.D) interface{} {
 				// <?> Zero-padding to byte alignment.
 				d.FieldValidateUFn("byte_align", 0, func() uint64 { return d.U(d.ByteAlignBits()) })
 				// <16> CRC-16 (polynomial = x^16 + x^15 + x^2 + x^0, initialized with 0) of everything before the crc, back to and including the frame header sync code
-				d.FieldU16("footer_crc")
+				d.FieldCRC("footer_crc", 2, frameStart, d.Pos()-frameStart, NewCRC(16, flacCRC16Table))
 			})
 		}
 	})
