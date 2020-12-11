@@ -9,11 +9,12 @@ import (
 	"fq/internal/ranges"
 	"fq/pkg/decode"
 	"fq/pkg/format"
-	"log"
 )
 
 var vorbisPacketFormat []*decode.Format
 var vp9FrameFormat []*decode.Format
+var aacFrameFormat []*decode.Format
+var mpegASCFrameFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -24,6 +25,8 @@ func init() {
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
 			{Names: []string{format.VP9_FRAME}, Formats: &vp9FrameFormat},
+			{Names: []string{format.AAC_FRAME}, Formats: &aacFrameFormat},
+			{Names: []string{format.MPEG_ASC}, Formats: &mpegASCFrameFormat},
 		},
 	})
 }
@@ -200,9 +203,6 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebmlTag, dc *decodeContext) 
 			if !ok {
 				a, ok = ebmlGlobal[tagID]
 				if !ok {
-					//return
-					log.Printf("tag: %#+v\n", tag)
-					log.Printf("tagID: %#+v\n", tagID)
 					panic("asdsad")
 				}
 			}
@@ -370,6 +370,8 @@ func mkvDecode(d *decode.D) interface{} {
 					d.FieldDecodeLen("packet", d.BitsLeft(), vorbisPacketFormat)
 				})
 			})
+		case "A_AAC":
+			t.parentD.FieldDecodeRange("asc", t.codecPrivatePos, t.codecPrivateTagSize, mpegASCFrameFormat)
 		default:
 			t.parentD.FieldBitBufRange("value", t.codecPrivatePos, t.codecPrivateTagSize)
 		}
@@ -393,6 +395,9 @@ func mkvDecode(d *decode.D) interface{} {
 				d.FieldDecodeLen("packet", d.BitsLeft(), vorbisPacketFormat)
 			case "V_VP9":
 				d.FieldDecodeLen("packet", d.BitsLeft(), vp9FrameFormat)
+			// case "A_AAC":
+			// 	log.Println("bla")
+			// 	d.FieldDecodeLen("packet", d.BitsLeft(), aacFrameFormat)
 			default:
 				d.FieldBitBufLen("data", d.BitsLeft())
 			}
