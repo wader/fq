@@ -5,13 +5,11 @@ package flac
 // TODO: reuse samples buffer
 
 import (
-	"bytes"
 	"crypto/md5"
 	"encoding/binary"
-	"encoding/hex"
-	"fmt"
 	"fq/pkg/decode"
 	"fq/pkg/format"
+	"io"
 	"math/bits"
 )
 
@@ -184,6 +182,7 @@ func flacDecode(d *decode.D) interface{} {
 	var streamInfoSamepleRate uint64
 	var streamInfoBitPerSample uint64
 	var streamInfoMD5 []byte
+	var streamInfoD *decode.D
 
 	d.FieldArrayFn("metadatablock", func(d *decode.D) {
 		for {
@@ -203,6 +202,7 @@ func flacDecode(d *decode.D) interface{} {
 
 				switch typ {
 				case MetadataBlockStreaminfo:
+					streamInfoD = d
 					d.FieldU16("minimum_block_size")
 					d.FieldU16("maximum_block_size")
 					d.FieldU24("minimum_frame_size")
@@ -495,7 +495,9 @@ func flacDecode(d *decode.D) interface{} {
 			}
 		})
 
-		d.FieldChecksum("crc", 1, frameStart, d.Pos()-frameStart, NewCRC(8, flacCRC8Table))
+		headerHash := NewCRC(8, flacCRC8Table)
+		io.Copy(headerHash, d.BitBufRange(frameStart, d.Pos()-frameStart))
+		d.FieldChecksumLen("crc", 8, headerHash)
 
 		var channelSamples [][]int64
 		d.FieldArrayFn("subframe", func(d *decode.D) {
@@ -733,7 +735,9 @@ func flacDecode(d *decode.D) interface{} {
 		// <?> Zero-padding to byte alignment.
 		d.FieldValidateUFn("byte_align", 0, func() uint64 { return d.U(d.ByteAlignBits()) })
 		// <16> CRC-16 (polynomial = x^16 + x^15 + x^2 + x^0, initialized with 0) of everything before the crc, back to and including the frame header sync code
-		d.FieldChecksum("footer_crc", 2, frameStart, d.Pos()-frameStart, NewCRC(16, flacCRC16Table))
+		footerHash := NewCRC(16, flacCRC16Table)
+		io.Copy(footerHash, d.BitBufRange(frameStart, d.Pos()-frameStart))
+		d.FieldChecksumLen("footer_crc", 16, footerHash)
 
 		// Transform mid/side channels into left, right
 		// mid = (left + right)/2
@@ -785,13 +789,11 @@ func flacDecode(d *decode.D) interface{} {
 		md5Samples.Write(interleavedSamplesBuf)
 	})
 
-	calculatedMD5 := md5Samples.Sum(nil)
-	calculatedMD5Desc := "Correct"
-	if !bytes.Equal(streamInfoMD5, calculatedMD5) {
-		calculatedMD5Desc = fmt.Sprintf("Incorrect (expected %s)", hex.EncodeToString(streamInfoMD5))
+	if streamInfoD != nil {
+		md5Value := streamInfoD.FieldGet("md5")
+		streamInfoD.FieldRemove("md5")
+		streamInfoD.FieldChecksumRange("md5", md5Value.Range.Start, md5Value.Range.Len, md5Samples)
 	}
-	// TODO: make nicer
-	d.FieldValueStr("calculated_md5", hex.EncodeToString(calculatedMD5), calculatedMD5Desc)
 
 	return nil
 }

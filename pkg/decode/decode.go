@@ -377,6 +377,35 @@ func (d *D) fieldDecoder(name string, bitBuf *bitio.Buffer, v interface{}) *D {
 	}
 }
 
+func (d *D) FieldRemove(name string) {
+	switch fv := d.Value.V.(type) {
+	case Struct:
+		for fi, ff := range fv {
+			if ff.Name == name {
+				d.Value.V = append(fv[0:fi], fv[fi+1:]...)
+				return
+			}
+		}
+		panic(fmt.Sprintf("%s not found in struct %s", name, d.Value.Name))
+	default:
+		panic(fmt.Sprintf("%s is not a struct", d.Value.Name))
+	}
+}
+
+func (d *D) FieldGet(name string) *Value {
+	switch fv := d.Value.V.(type) {
+	case Struct:
+		for _, ff := range fv {
+			if ff.Name == name {
+				return ff
+			}
+		}
+		panic(fmt.Sprintf("%s not found in struct %s", name, d.Value.Name))
+	default:
+		panic(fmt.Sprintf("%s is not a struct", d.Value.Name))
+	}
+}
+
 func (d *D) FieldArray(name string) *D {
 	cd := d.fieldDecoder(name, d.bitBuf, Array{})
 	d.AddChild(cd.Value)
@@ -517,6 +546,29 @@ func (d *D) FieldChecksum(name string, expectedNBytes int, firstBit int64, nBits
 
 		return &Value{V: expectedBB.Copy(), Symbol: fmt.Sprintf("Incorrect (calculated %s)", hex.EncodeToString(actual))}
 	})
+}
+
+func (d *D) FieldChecksumRange(name string, firstBit int64, nBits int64, h hash.Hash) {
+	actual := h.Sum(nil)
+
+	nBytes := int(nBits / 8)
+	d.FieldRangeFn(name, firstBit, nBits, func() *Value {
+		expectedBB := d.BitBufRange(firstBit, nBits)
+		expected, _ := expectedBB.BytesLen(nBytes)
+
+		hex.EncodeToString(expected)
+
+		if bytes.Equal(expected, actual) {
+			return &Value{V: expectedBB.Copy(), Symbol: "Correct"}
+		}
+
+		return &Value{V: expectedBB.Copy(), Symbol: fmt.Sprintf("Incorrect (calculated %s)", hex.EncodeToString(actual))}
+	})
+}
+
+func (d *D) FieldChecksumLen(name string, nBits int64, h hash.Hash) {
+	d.FieldChecksumRange(name, d.Pos(), nBits, h)
+	d.SeekRel(nBits)
 }
 
 func (d *D) FieldValidateUFn(name string, v uint64, fn func() uint64) {
