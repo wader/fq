@@ -7,6 +7,7 @@ package flac
 import (
 	"crypto/md5"
 	"encoding/binary"
+	"fq/pkg/crc"
 	"fq/pkg/decode"
 	"fq/pkg/format"
 	"io"
@@ -79,73 +80,6 @@ const (
 	ChannelSideRight = 0b1001
 	ChannelMidSide   = 0b1010
 )
-
-type crcTable [256]uint
-
-func crcMakeTable(poly int, bits int) crcTable {
-	table := [256]uint{}
-	mask := uint((1 << bits) - 1)
-
-	for i := 0; i < 256; i++ {
-		// note sure about -8 for > 16 bit crc
-		var crc uint = uint(i << (bits - 8))
-		for j := 0; j < 8; j++ {
-			if crc&(1<<(bits-1)) > 0 {
-				crc = ((crc << 1) ^ uint(poly)) & mask
-			} else {
-				crc = (crc << 1) & mask
-			}
-		}
-		table[i] = crc
-	}
-
-	return crcTable(table)
-}
-
-var flacCRC8Table = crcMakeTable(0x7, 8)
-var flacCRC16Table = crcMakeTable(0x8005, 16)
-
-type crc struct {
-	bits  int
-	sum   uint
-	table crcTable
-}
-
-func NewCRC(bits int, table crcTable) *crc {
-	return &crc{bits: bits, table: table}
-}
-
-func (c *crc) Write(p []byte) (n int, err error) {
-	switch c.bits {
-	case 8:
-		for _, b := range p {
-			c.sum = c.table[c.sum^uint(b)]
-		}
-	case 16:
-		for _, b := range p {
-			c.sum = (c.sum<<8 ^ c.table[(c.sum>>8)^uint(b)]) & 0xffff
-		}
-	default:
-		panic("unsupported")
-	}
-
-	return len(p), nil
-}
-
-func (c *crc) Sum(b []byte) []byte {
-	switch c.bits {
-	case 8:
-		return append(b, byte(c.sum))
-	case 16:
-		return append(b, byte(c.sum>>8), byte(c.sum))
-	default:
-		panic("unsupported")
-	}
-
-}
-func (c *crc) Reset()         { c.sum = 0 }
-func (c *crc) Size() int      { return c.bits / 8 }
-func (c *crc) BlockSize() int { return c.bits / 8 }
 
 // TODO: generic enough?
 func utf8Uint(d *decode.D) uint64 {
@@ -493,7 +427,7 @@ func flacDecode(d *decode.D) interface{} {
 			}
 		})
 
-		headerHash := NewCRC(8, flacCRC8Table)
+		headerHash := &crc.CRC{Bits: 8, Current: 0, Table: crc.ATM8Table}
 		if _, err := io.Copy(headerHash, d.BitBufRange(frameStart, d.Pos()-frameStart)); err != nil {
 			panic(err)
 		}
@@ -735,7 +669,7 @@ func flacDecode(d *decode.D) interface{} {
 		// <?> Zero-padding to byte alignment.
 		d.FieldValidateUFn("byte_align", 0, func() uint64 { return d.U(d.ByteAlignBits()) })
 		// <16> CRC-16 (polynomial = x^16 + x^15 + x^2 + x^0, initialized with 0) of everything before the crc, back to and including the frame header sync code
-		footerHash := NewCRC(16, flacCRC16Table)
+		footerHash := &crc.CRC{Bits: 16, Current: 0, Table: crc.ANSI16Table}
 		if _, err := io.Copy(footerHash, d.BitBufRange(frameStart, d.Pos()-frameStart)); err != nil {
 			panic(err)
 		}
@@ -794,8 +728,7 @@ func flacDecode(d *decode.D) interface{} {
 	})
 
 	if streamInfoD != nil {
-		md5Value := streamInfoD.FieldGet("md5")
-		streamInfoD.FieldRemove("md5")
+		md5Value := streamInfoD.FieldMustRemove("md5")
 		streamInfoD.FieldChecksumRange("md5", md5Value.Range.Start, md5Value.Range.Len, md5Samples.Sum(nil))
 	}
 

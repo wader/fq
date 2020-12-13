@@ -84,7 +84,7 @@ type Value struct {
 	MIME          string
 	DisplayFormat DisplayFormat
 	Symbol        string
-	Desc          string
+	Description   string
 	Error         error
 }
 
@@ -306,8 +306,8 @@ func (v *Value) String() string {
 	}
 
 	desc := ""
-	if v.Desc != "" {
-		desc = fmt.Sprintf(" (%s)", v.Desc)
+	if v.Description != "" {
+		desc = fmt.Sprintf(" (%s)", v.Description)
 	}
 
 	return fmt.Sprintf("%s%s", s, desc)
@@ -364,8 +364,7 @@ func (v *Value) ToJQ() interface{} {
 		return string(vv)
 	case *bitio.Buffer:
 		// TODO: RawString, switch to writer somehow?
-		vvLen := vv.Len()
-		bs, _ := v.RootBitBuf.BytesRange(0, int(bitio.BitsByteCount(vvLen)))
+		bs, _ := v.RootBitBuf.BytesRange(v.Range.Start, int(bitio.BitsByteCount(v.Range.Len)))
 		return string(bs)
 	default:
 		panic("unreachable")
@@ -482,7 +481,7 @@ func (v *Value) JsonProperty(name string) interface{} {
 	case "_symbol":
 		r = v.Symbol
 	case "_description":
-		r = v.Desc
+		r = v.Description
 	case "_range":
 		r = map[string]interface{}{
 			"start":  big.NewInt(v.Range.Start),

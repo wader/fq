@@ -40,7 +40,7 @@ asdads
 030|30 00                                          |0.              |
 030|      00 00 00 00 00 00 00 00 00 00            |  ..........    |    padding: Correct (none) (zero padding) 32-3b+7 (10)
    |                                               |                |  frame[3]: array 3c-44e+7 (1043)
-   |                                               |                |    frame[0]{}: struct (mp3_frame) 3c-10b+7 fields 17 (208)
+   |                                               |                |    frame[0]{}: struct (mp3_frame) 3c-10b+7 fields 18 (208)
 030|                                    ff fb      |            ..  |      sync: Correct (7ff) 3c-3d+2 (1+3)
 030|                                       fb      |             .  |      mpeg_version: MPEG Version 1 (1) 3d+3-3d+4 (0+2)
 030|                                       fb      |             .  |      layer: Layer III (3) 3d+5-3d+6 (0+2)
@@ -250,7 +250,8 @@ asdads
 0f0|                              78 24            |          x$    |          tag_crc: 30756 fa-fb+7 (2)
 0f0|                                    00 00 00 00|            ....|      samples: 00000000000000000000000000000000 fc-10b+7 (16)
 100|00 00 00 00 00 00 00 00 00 00 00 00            |............    |
-   |                                               |                |    frame[1]{}: struct (mp3_frame) 10c-2ac+7 fields 16 (417)
+100|                                               |                |      crc_calculated: f7d3 10c-NA (0)
+   |                                               |                |    frame[1]{}: struct (mp3_frame) 10c-2ac+7 fields 17 (417)
 100|                                    ff fb      |            ..  |      sync: Correct (7ff) 10c-10d+2 (1+3)
 100|                                       fb      |             .  |      mpeg_version: MPEG Version 1 (1) 10d+3-10d+4 (0+2)
 100|                                       fb      |             .  |      layer: Layer III (3) 10d+5-10d+6 (0+2)
@@ -328,7 +329,8 @@ asdads
 120|                                             00|               .|            count1table_select1: 0 12f+7-12f+7 (0+1)
 130|0a 6b 6d d8 c2 12 cd a0 0d bf 4d 03 01 8d 4c 35|.km.......M...L5|      samples: 0a6b6dd8c212cda00dbf4d03018d4c35... 130-2ac+7 (381)
 *  |365 bytes more until 2ac+7                     |                |
-   |                                               |                |    frame[2]{}: struct (mp3_frame) 2ad-44e+7 fields 16 (418)
+2a0|                                               |                |      crc_calculated: 8dee 2ad-NA (0)
+   |                                               |                |    frame[2]{}: struct (mp3_frame) 2ad-44e+7 fields 17 (418)
 2a0|                                       ff fb   |             .. |      sync: Correct (7ff) 2ad-2ae+2 (1+3)
 2a0|                                          fb   |              . |      mpeg_version: MPEG Version 1 (1) 2ae+3-2ae+4 (0+2)
 2a0|                                          fb   |              . |      layer: Layer III (3) 2ae+5-2ae+6 (0+2)
@@ -408,6 +410,7 @@ asdads
 2d0|   1b ce df 3b ce e0 f6 b8 ee 43 ed 0c c0 f0 3b| ...;.....C....;|      samples: 1bcedf3bcee0f6b8ee43ed0cc0f03bb1... 2d1-44e+7 (382)
 2e0|b1 13 ad 9f 35 94 cd 5e 65 cf fe ff 7f ff 9e ee|....5..^e.......|
 *  |351 bytes more until 44e+7                     |                |
+440|                                               |                |      crc_calculated: c270 44f-NA (0)
    |                                               |                |  footer[0]: array 44f-NA (0)
 440|                                             61|               a|  unknown0: 61736461 44f-452+7 (4)
 450|73 64 61|                                      |sda|            |

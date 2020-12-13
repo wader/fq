@@ -5,10 +5,11 @@ package mp3
 // https://wiki.hydrogenaud.io/index.php?title=MP3
 // https://www.diva-portal.org/smash/get/diva2:830195/FULLTEXT01.pdf
 
-// TODO: crc
 // TODO: same sample decode?
+// TODO: LSF, version 2.5 and 2?
 
 import (
+	"fq/pkg/crc"
 	"fq/pkg/decode"
 	"fq/pkg/format"
 )
@@ -69,10 +70,11 @@ func frameDecode(d *decode.D) interface{} {
 	d.FieldUFn("samples_per_frame", func() (uint64, decode.DisplayFormat, string) {
 		return uint64(samplePerFrameIndex[uint(l)][uint(v)]), decode.NumberDecimal, ""
 	})
-	d.FieldStringMapFn("protection", map[uint64]string{
+	protection, _ := d.FieldStringMapFn("protection", map[uint64]string{
 		0: "Protected by CRC",
 		1: "Not protected",
 	}, "", d.U1)
+	hasCRC := protection == 0
 	// V1,L1 V1,L2 V1,L3  V2,L1 V2,L2 V2,L3  V2.5,L1 V2.5,L2 V2.5,L3
 	var bitRateIndex = map[uint][9]uint{
 		0b0001: [...]uint{32, 32, 32, 32, 8, 8, 32, 8, 8},
@@ -143,21 +145,26 @@ func frameDecode(d *decode.D) interface{} {
 		0b10: "reserved",
 		0b11: "CCIT J.17",
 	}, "", d.U2)
+	crcLen := uint64(0)
+	if hasCRC {
+		d.FieldBitBufLen("crc", 16)
+		crcLen = 2
+	}
 
 	const headerLen = 4
-	dataLen := (144 * bitRate / sampleRate) + padding - headerLen
+	dataLen := (144 * bitRate / sampleRate) + padding - crcLen - headerLen
+
+	var sideInfoLen int64
+	// [mono/stereo][mpeg version]
+	sideInfoIndex := map[bool][4]int64{
+		false: {0, 17, 9, 9},   // mono
+		true:  {0, 32, 17, 17}, // stereo
+	}
+	if l == 3 {
+		sideInfoLen = sideInfoIndex[isStereo][int(v)]
+	}
 
 	d.DecodeLenFn(int64(dataLen)*8, func(d *decode.D) {
-		var sideInfoLen int64
-		// [mono/stereo][mpeg version]
-		sideInfoIndex := map[bool][4]int64{
-			false: {0, 17, 9, 9},   // mono
-			true:  {0, 32, 17, 17}, // stereo
-		}
-		if l == 3 {
-			sideInfoLen = sideInfoIndex[isStereo][int(v)]
-		}
-
 		if sideInfoLen != 0 {
 			d.FieldStructFn("side_info", func(d *decode.D) {
 				d.FieldU9("main_data_begin")
@@ -236,6 +243,18 @@ func frameDecode(d *decode.D) interface{} {
 
 		d.FieldBitBufLen("samples", d.BitsLeft())
 	})
+
+	crcHash := &crc.CRC{Bits: 16, Current: 0xffff, Table: crc.ANSI16Table}
+	// 2 bytes after sync and some other fields + all of side info
+	decode.MustCopy(crcHash, d.BitBufRange(2*8, 2*8))
+	decode.MustCopy(crcHash, d.BitBufRange(6*8, sideInfoLen*8))
+	crcValue := d.FieldGet("crc")
+	if crcValue != nil {
+		d.FieldRemove("crc")
+		d.FieldChecksumRange("crc", crcValue.Range.Start, crcValue.Range.Len, crcHash.Sum(nil))
+	} else {
+		d.FieldValueBytes("crc_calculated", crcHash.Sum(nil), "")
+	}
 
 	return nil
 }

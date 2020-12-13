@@ -65,6 +65,7 @@ func (r *Reader) ReadBitsAt(p []byte, nBits int, bitOffset int64) (int, error) {
 	if err != nil && err != io.ErrUnexpectedEOF {
 		return 0, err
 	} else if err == io.ErrUnexpectedEOF {
+		// TODO: this is wrong
 		diffBytes := wantReadBytes - readBytes
 		nBits = readSkipBits - 8
 		if readSkipBits != 0 {

@@ -133,12 +133,12 @@ func NewDecoder(name string, description string, bb *bitio.Buffer, opts ProbeOpt
 	return &D{
 		Endian: BigEndian,
 		Value: &Value{
-			Name:       name,
-			Desc:       description,
-			V:          Struct{},
-			IsRoot:     opts.IsRoot,
-			RootBitBuf: cbb,
-			Range:      ranges.Range{Start: 0, Len: 0},
+			Name:        name,
+			Description: description,
+			V:           Struct{},
+			IsRoot:      opts.IsRoot,
+			RootBitBuf:  cbb,
+			Range:       ranges.Range{Start: 0, Len: 0},
 		},
 		Options: opts.FormatOptions,
 		bitBuf:  cbb,
@@ -377,19 +377,26 @@ func (d *D) fieldDecoder(name string, bitBuf *bitio.Buffer, v interface{}) *D {
 	}
 }
 
-func (d *D) FieldRemove(name string) {
+func (d *D) FieldRemove(name string) *Value {
 	switch fv := d.Value.V.(type) {
 	case Struct:
 		for fi, ff := range fv {
 			if ff.Name == name {
 				d.Value.V = append(fv[0:fi], fv[fi+1:]...)
-				return
+				return ff
 			}
 		}
 		panic(fmt.Sprintf("%s not found in struct %s", name, d.Value.Name))
 	default:
 		panic(fmt.Sprintf("%s is not a struct", d.Value.Name))
 	}
+}
+
+func (d *D) FieldMustRemove(name string) *Value {
+	if v := d.FieldRemove(name); v != nil {
+		return v
+	}
+	panic(fmt.Sprintf("%s not found in struct %s", name, d.Value.Name))
 }
 
 func (d *D) FieldGet(name string) *Value {
@@ -400,10 +407,17 @@ func (d *D) FieldGet(name string) *Value {
 				return ff
 			}
 		}
-		panic(fmt.Sprintf("%s not found in struct %s", name, d.Value.Name))
 	default:
 		panic(fmt.Sprintf("%s is not a struct", d.Value.Name))
 	}
+	return nil
+}
+
+func (d *D) FieldMustGet(name string) *Value {
+	if v := d.FieldGet(name); v != nil {
+		return v
+	}
+	panic(fmt.Sprintf("%s not found in struct %s", name, d.Value.Name))
 }
 
 func (d *D) FieldArray(name string) *D {
@@ -631,8 +645,12 @@ func (d *D) ValidateAtLeastBytesLeft(nBytes int64) {
 	}
 }
 
-func (d *D) FieldValueStr(name string, v string, desc string) {
-	d.FieldStrFn(name, func() (string, string) { return v, desc })
+func (d *D) FieldValueStr(name string, v string, symbol string) {
+	d.FieldStrFn(name, func() (string, string) { return v, symbol })
+}
+
+func (d *D) FieldValueBytes(name string, b []byte, symbol string) {
+	d.FieldBytesFn(name, d.Pos(), 0, func() ([]byte, string) { return b, symbol })
 }
 
 // TODO: rename?

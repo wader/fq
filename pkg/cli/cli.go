@@ -11,6 +11,7 @@ import (
 	"fq/pkg/format"
 	"io"
 	"io/ioutil"
+	"log"
 	"math/big"
 	"sort"
 	"strconv"
@@ -138,6 +139,10 @@ func (m Main) run() error {
 				}
 			case *bitio.Buffer:
 				bb = cc
+			case []byte:
+				bb = bitio.NewBufferFromBytes(cc, -1)
+			case string:
+				bb = bitio.NewBufferFromBytes([]byte(cc), -1)
 			default:
 				return fmt.Errorf("value is not a decode value or bit buffer")
 			}
@@ -254,6 +259,7 @@ func (m Main) run() error {
 		}),
 
 		gojq.WithFunction("hexdump", 0, 0, func(c interface{}, a []interface{}) interface{} {
+			log.Println("BLA")
 			var bb *bitio.Buffer
 			switch cc := c.(type) {
 			case *decode.Value:
@@ -263,6 +269,11 @@ func (m Main) run() error {
 				}
 			case *bitio.Buffer:
 				bb = cc
+			case []byte:
+				bb = bitio.NewBufferFromBytes(cc, -1)
+			case string:
+				log.Printf("cc: %#+v\n", cc)
+				bb = bitio.NewBufferFromBytes([]byte(cc), -1)
 			default:
 				return fmt.Errorf("value is not decode value or a bit buffer")
 			}

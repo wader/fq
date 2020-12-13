@@ -57,7 +57,7 @@ func (d *D) FieldValidateZeroPadding(name string, nBits int) {
 		if !isZero {
 			s = "Incorrect"
 		}
-		return &Value{Symbol: s, Desc: "zero padding"}
+		return &Value{Symbol: s, Description: "zero padding"}
 	})
 	if !isZero {
 		panic(ValidateError{Reason: "expected zero padding", Pos: pos})

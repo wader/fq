@@ -1,7 +1,7 @@
 # ffmpeg -y -f lavfi -i sine -ac 1 -t 10ms -f mp3 file && fq file '.frame[1] | bits' > mp3-frame-mono
 /mp3-frame-mono:
 > -f mp3_frame mp3-frame-mono
-  |                                               |                |mp3-frame-mono{}: struct (mp3_frame) 0-cf+7 fields 16 (208)
+  |                                               |                |mp3-frame-mono{}: struct (mp3_frame) 0-cf+7 fields 17 (208)
 00|ff fb                                          |..              |  sync: Correct (7ff) 0-1+2 (1+3)
 00|   fb                                          | .              |  mpeg_version: MPEG Version 1 (1) 1+3-1+4 (0+2)
 00|   fb                                          | .              |  layer: Layer III (3) 1+5-1+6 (0+2)
@@ -53,3 +53,4 @@
 10|               07 aa c3 8e 33 85 d3 64 f1 a1 c1|     ....3..d...|  samples: 07aac38e3385d364f1a1c1081c581f5e... 15-cf+7 (187)
 20|08 1c 58 1f 5e 1f 18 1c 46 04 1e 89 e5 b3 2e 5a|..X.^...F......Z|
 * |160 bytes more until cf+7 (end)                |                |
+d0|                                               |                |  crc_calculated: e5b0 d0-NA (0)

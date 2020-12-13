@@ -1,4 +1,12 @@
 
+
+REPL? reuse probe output in variable?
+
+io.Copy variant that panic? NoErrCopy helper? for crc etc
+
+read file function?
+diff function?
+
 DONE d.FieldRemove?
 
 tests, unscape into list of bitio.buffers etc? multi bit reader?
@@ -14,13 +22,13 @@ DONE bits(statr; len)
 
 range, byte_range?
 
-FieldBytesFn hmm clean up readers?
 
 validate should only add warning if fail?
 
 FieldAssert?
 
-Replace Value function? maybe nice when doing non-liner decode?
+FieldBytesFn hmm clean up readers?
+Replace Value function? maybe nice when doing non-liner decode? FieldValueBytes mess
 
 ffmpeg -y -f lavfi -i testsrc -f lavfi -i sine -ac 2 -c:a libvorbis -t 5s test.webm
 
