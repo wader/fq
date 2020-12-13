@@ -1,10 +1,12 @@
-package test
+package fqtest
 
 import (
 	"bytes"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -13,6 +15,7 @@ import (
 	"testing"
 
 	"fq/internal/deepequal"
+	"fq/pkg/bitio"
 	"fq/pkg/cli"
 	"fq/pkg/decode"
 )
@@ -79,14 +82,32 @@ func (tc *testCase) ToActual() string {
 	return sb.String()
 }
 
-type section struct {
-	lineNr int
-	name   string
-	value  string
+type Section struct {
+	LineNr int
+	Name   string
+	Value  string
 }
 
-func sectionParser(re *regexp.Regexp, s string) []section {
-	var sections []section
+var unescapeRe = regexp.MustCompile(`\\(?:b[01]+|x[0-f]+)`)
+
+func Unescape(s string) string {
+	return unescapeRe.ReplaceAllStringFunc(s, func(r string) string {
+		log.Printf("r: %s\n", r)
+		switch {
+		case r[1] == 'b':
+			b, _ := bitio.BytesFromBitString(r[2:])
+			return string(b)
+		case r[1] == 'x':
+			b, _ := hex.DecodeString(r[2:])
+			return string(b)
+		default:
+			return r
+		}
+	})
+}
+
+func SectionParser(re *regexp.Regexp, s string) []Section {
+	var sections []Section
 
 	firstMatch := func(ss []string, fn func(s string) bool) string {
 		for _, s := range ss {
@@ -98,7 +119,7 @@ func sectionParser(re *regexp.Regexp, s string) []section {
 	}
 
 	const lineDelim = "\n"
-	var cs *section
+	var cs *Section
 	lineNr := 0
 	lines := strings.Split(s, lineDelim)
 	// skip last if empty because of how split works "a\n" -> ["a", ""]
@@ -110,14 +131,14 @@ func sectionParser(re *regexp.Regexp, s string) []section {
 
 		sm := re.FindStringSubmatch(l)
 		if cs == nil || len(sm) > 0 {
-			sections = append(sections, section{})
+			sections = append(sections, Section{})
 			cs = &sections[len(sections)-1]
 
-			cs.lineNr = lineNr
-			cs.name = firstMatch(sm, func(s string) bool { return len(s) != 0 })
+			cs.LineNr = lineNr
+			cs.Name = firstMatch(sm, func(s string) bool { return len(s) != 0 })
 		} else {
 			// TODO: use builder somehow if performance is needed
-			cs.value += l + lineDelim
+			cs.Value += l + lineDelim
 		}
 
 	}
@@ -125,35 +146,12 @@ func sectionParser(re *regexp.Regexp, s string) []section {
 	return sections
 }
 
-func TestSectionParser(t *testing.T) {
-	actualSections := sectionParser(
-		regexp.MustCompile(`^(?:(a:)|(b:))$`),
-		`
-a:
-c
-c
-b:
-a:
-c
-a:
-`[1:])
-
-	expectedSections := []section{
-		{lineNr: 1, name: "a:", value: "c\nc\n"},
-		{lineNr: 4, name: "b:", value: ""},
-		{lineNr: 5, name: "a:", value: "c\n"},
-		{lineNr: 7, name: "a:", value: ""},
-	}
-
-	deepequal.Error(t, "sections", expectedSections, actualSections)
-}
-
 func parseTestCases(s string) *testCase {
 	te := &testCase{}
 	te.parts = []interface{}{}
 
-	for _, section := range sectionParser(regexp.MustCompile(`^#.*$|^/.*:|^>.*$`), s) {
-		n, v := section.name, section.value
+	for _, section := range SectionParser(regexp.MustCompile(`^#.*$|^/.*:|^>.*$`), s) {
+		n, v := section.Name, section.Value
 
 		switch {
 		case strings.HasPrefix(n, "#"):
@@ -165,7 +163,7 @@ func parseTestCases(s string) *testCase {
 		case strings.HasPrefix(n, ">"):
 			args := strings.Fields(strings.TrimPrefix(n, ">"))
 			te.parts = append(te.parts, &testCaseRun{
-				lineNr:          section.lineNr,
+				lineNr:          section.LineNr,
 				testCase:        te,
 				args:            args,
 				expectedStdout:  v,
@@ -173,7 +171,7 @@ func parseTestCases(s string) *testCase {
 				actualStderrBuf: &bytes.Buffer{},
 			})
 		default:
-			panic(fmt.Sprintf("%d: unexpected section %q %q", section.lineNr, n, v))
+			panic(fmt.Sprintf("%d: unexpected section %q %q", section.LineNr, n, v))
 		}
 	}
 

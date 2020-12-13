@@ -91,11 +91,14 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 		} else {
 			fmt.Fprintf(cw.Columns[6], "%s%s{}: ", indent, v.Name)
 		}
-		fmt.Fprintf(cw.Columns[6], "%s %s fields %d (%s)\n", v, BitRange(v.Range).StringByteBits(opts.AddrBase), len(vv), Bits(v.Range.Len).StringByteBits(opts.SizeBase))
+		fmt.Fprintf(cw.Columns[6], "%s %s fields %d (%s)\n",
+			v, BitRange(v.Range).StringByteBits(opts.AddrBase), len(vv), Bits(v.Range.Len).StringByteBits(opts.SizeBase))
 	case Array:
-		fmt.Fprintf(cw.Columns[6], "%s%s[]: %s %s count %d (%s)\n", indent, v.Name, v, BitRange(v.Range).StringByteBits(opts.AddrBase), len(vv), Bits(v.Range.Len).StringByteBits(opts.SizeBase))
+		fmt.Fprintf(cw.Columns[6], "%s%s[%d]: %s %s (%s)\n",
+			indent, v.Name, len(vv), v, BitRange(v.Range).StringByteBits(opts.AddrBase), Bits(v.Range.Len).StringByteBits(opts.SizeBase))
 	default:
-		fmt.Fprintf(cw.Columns[0], "%s%s\n", rootIndent, padFormatInt(startLineByte, opts.AddrBase, addrWidth))
+		fmt.Fprintf(cw.Columns[0], "%s%s\n",
+			rootIndent, padFormatInt(startLineByte, opts.AddrBase, addrWidth))
 
 		color := false
 		vBitBuf, err := rootV.RootBitBuf.BitBufRange(startByte*8, displaySizeBits)
@@ -167,7 +170,8 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 			fmt.Fprintf(cw.Columns[0], "%s*\n", rootIndent)
 			fmt.Fprintf(cw.Columns[1], "|\n")
 			fmt.Fprint(cw.Columns[2], "\n")
-			fmt.Fprintf(cw.Columns[2], "%d bytes more until %s%s", stopByte-lastDisplayByte, Bits(stopBit).StringByteBits(opts.AddrBase), isEnd)
+			fmt.Fprintf(cw.Columns[2], "%d bytes more until %s%s",
+				stopByte-lastDisplayByte, Bits(stopBit).StringByteBits(opts.AddrBase), isEnd)
 			fmt.Fprintf(cw.Columns[3], "|\n")
 			fmt.Fprintf(cw.Columns[5], "|\n")
 			// TODO: dump last line?
@@ -178,7 +182,8 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 		} else {
 			fmt.Fprintf(cw.Columns[6], "%s%s: ", indent, v.Name)
 		}
-		fmt.Fprintf(cw.Columns[6], "%s %s (%s)\n", v, BitRange(v.Range).StringByteBits(opts.AddrBase), Bits(v.Range.Len).StringByteBits(opts.SizeBase))
+		fmt.Fprintf(cw.Columns[6], "%s %s (%s)\n",
+			v, BitRange(v.Range).StringByteBits(opts.AddrBase), Bits(v.Range.Len).StringByteBits(opts.SizeBase))
 	}
 
 	if v.Error != nil {

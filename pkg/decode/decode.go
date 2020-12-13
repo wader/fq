@@ -548,26 +548,21 @@ func (d *D) FieldChecksum(name string, expectedNBytes int, firstBit int64, nBits
 	})
 }
 
-func (d *D) FieldChecksumRange(name string, firstBit int64, nBits int64, h hash.Hash) {
-	actual := h.Sum(nil)
-
+func (d *D) FieldChecksumRange(name string, firstBit int64, nBits int64, calculated []byte) {
 	nBytes := int(nBits / 8)
 	d.FieldRangeFn(name, firstBit, nBits, func() *Value {
 		expectedBB := d.BitBufRange(firstBit, nBits)
 		expected, _ := expectedBB.BytesLen(nBytes)
-
-		hex.EncodeToString(expected)
-
-		if bytes.Equal(expected, actual) {
+		if bytes.Equal(expected, calculated) {
 			return &Value{V: expectedBB.Copy(), Symbol: "Correct"}
 		}
 
-		return &Value{V: expectedBB.Copy(), Symbol: fmt.Sprintf("Incorrect (calculated %s)", hex.EncodeToString(actual))}
+		return &Value{V: expectedBB.Copy(), Symbol: fmt.Sprintf("Incorrect (calculated %s)", hex.EncodeToString(calculated))}
 	})
 }
 
-func (d *D) FieldChecksumLen(name string, nBits int64, h hash.Hash) {
-	d.FieldChecksumRange(name, d.Pos(), nBits, h)
+func (d *D) FieldChecksumLen(name string, nBits int64, calculated []byte) {
+	d.FieldChecksumRange(name, d.Pos(), nBits, calculated)
 	d.SeekRel(nBits)
 }
 

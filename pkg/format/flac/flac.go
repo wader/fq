@@ -181,7 +181,6 @@ func flacDecode(d *decode.D) interface{} {
 	// is used in frame decoding later
 	var streamInfoSamepleRate uint64
 	var streamInfoBitPerSample uint64
-	var streamInfoMD5 []byte
 	var streamInfoD *decode.D
 
 	d.FieldArrayFn("metadatablock", func(d *decode.D) {
@@ -215,8 +214,7 @@ func flacDecode(d *decode.D) interface{} {
 						return d.U5() + 1, decode.NumberDecimal, ""
 					})
 					d.FieldU("total_samples_in_steam", 36)
-					md5BB := d.FieldBitBufLen("md5", 16*8)
-					streamInfoMD5, _ = md5BB.BytesLen(16)
+					d.FieldBitBufLen("md5", 16*8)
 				case MetadataBlockVorbisComment:
 					d.FieldDecodeLen("comment", int64(length*8), vorbisComment)
 				case MetadataBlockPicture:
@@ -496,8 +494,10 @@ func flacDecode(d *decode.D) interface{} {
 		})
 
 		headerHash := NewCRC(8, flacCRC8Table)
-		io.Copy(headerHash, d.BitBufRange(frameStart, d.Pos()-frameStart))
-		d.FieldChecksumLen("crc", 8, headerHash)
+		if _, err := io.Copy(headerHash, d.BitBufRange(frameStart, d.Pos()-frameStart)); err != nil {
+			panic(err)
+		}
+		d.FieldChecksumLen("crc", 8, headerHash.Sum(nil))
 
 		var channelSamples [][]int64
 		d.FieldArrayFn("subframe", func(d *decode.D) {
@@ -736,8 +736,10 @@ func flacDecode(d *decode.D) interface{} {
 		d.FieldValidateUFn("byte_align", 0, func() uint64 { return d.U(d.ByteAlignBits()) })
 		// <16> CRC-16 (polynomial = x^16 + x^15 + x^2 + x^0, initialized with 0) of everything before the crc, back to and including the frame header sync code
 		footerHash := NewCRC(16, flacCRC16Table)
-		io.Copy(footerHash, d.BitBufRange(frameStart, d.Pos()-frameStart))
-		d.FieldChecksumLen("footer_crc", 16, footerHash)
+		if _, err := io.Copy(footerHash, d.BitBufRange(frameStart, d.Pos()-frameStart)); err != nil {
+			panic(err)
+		}
+		d.FieldChecksumLen("footer_crc", 16, footerHash.Sum(nil))
 
 		// Transform mid/side channels into left, right
 		// mid = (left + right)/2
@@ -786,13 +788,15 @@ func flacDecode(d *decode.D) interface{} {
 			}
 		}
 
-		md5Samples.Write(interleavedSamplesBuf)
+		if _, err := md5Samples.Write(interleavedSamplesBuf); err != nil {
+			panic(err)
+		}
 	})
 
 	if streamInfoD != nil {
 		md5Value := streamInfoD.FieldGet("md5")
 		streamInfoD.FieldRemove("md5")
-		streamInfoD.FieldChecksumRange("md5", md5Value.Range.Start, md5Value.Range.Len, md5Samples)
+		streamInfoD.FieldChecksumRange("md5", md5Value.Range.Start, md5Value.Range.Len, md5Samples.Sum(nil))
 	}
 
 	return nil

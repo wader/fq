@@ -1,4 +1,6 @@
 
+DONE d.FieldRemove?
+
 tests, unscape into list of bitio.buffers etc? multi bit reader?
 
 jq functions to conmfigre depth etc? wrapper structs?

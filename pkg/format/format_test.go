@@ -4,10 +4,10 @@ import (
 	_ "fq/pkg/format/all"
 
 	"fq/pkg/format"
-	"fq/pkg/test"
+	"fq/pkg/fqtest"
 	"testing"
 )
 
 func Test(t *testing.T) {
-	test.TestPath(t, format.DefaultRegistry)
+	fqtest.TestPath(t, format.DefaultRegistry)
 }
