@@ -1,6 +1,5 @@
 package flac
 
-// TODO: sample md5
 // TODO: 24 bit picture length truncate warning
 // TODO: reuse samples buffer
 
