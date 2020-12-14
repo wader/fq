@@ -18,17 +18,6 @@ func init() {
 	})
 }
 
-var poly04c11db7Table = crc.MakeTable(0x04c11db7, 32)
-
-/*
-func oggCRCUpdate(crc uint32, tab *crc32Table, p []byte) uint32 {
-	for _, v := range p {
-		crc = (crc << 8) ^ tab[byte(crc>>24)^v]
-	}
-	return crc
-}
-*/
-
 type page struct {
 	IsLastPage         bool
 	IsFirstPage        bool
@@ -64,7 +53,7 @@ func oggDecode(d *decode.D) interface{} {
 	endPos := d.Pos()
 
 	pageChecksum := d.FieldMustRemove("page_checksum")
-	pageCRC := &crc.CRC{Bits: 32, Table: poly04c11db7Table}
+	pageCRC := &crc.CRC{Bits: 32, Table: crc.Poly04c11db7Table}
 	decode.MustCopy(pageCRC, d.BitBufRange(startPos, pageChecksum.Range.Start-startPos))                 // header before checksum
 	decode.MustCopy(pageCRC, bytes.NewReader([]byte{0, 0, 0, 0}))                                        // zero checksum bits
 	decode.MustCopy(pageCRC, d.BitBufRange(pageChecksum.Range.Stop(), endPos-pageChecksum.Range.Stop())) // rest of page
