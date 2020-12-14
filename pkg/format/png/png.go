@@ -7,6 +7,7 @@ import (
 	"fq/internal/ranges"
 	"fq/pkg/decode"
 	"fq/pkg/format"
+	"hash/crc32"
 )
 
 var iccProfile []*decode.Format
@@ -40,6 +41,7 @@ func pngDecode(d *decode.D) interface{} {
 	d.FieldValidateUTF8("signature", "\x89PNG\r\n\x1a\n")
 	d.FieldStructArrayLoopFn("chunk", func() bool { return d.NotEnd() && !iendFound }, func(d *decode.D) {
 		chunkLength := int(d.FieldU32("length"))
+		crcStartPos := d.Pos()
 		chunkType := d.FieldStrFn("type", func() (string, string) {
 			chunkType := d.UTF8(4)
 			// upper/lower case in chunk type is used to set flags
@@ -122,9 +124,9 @@ func pngDecode(d *decode.D) interface{} {
 			}
 		}
 
-		crc := d.FieldU32("crc")
-
-		_ = crc
+		chunkCRC := crc32.NewIEEE()
+		decode.MustCopy(chunkCRC, d.BitBufRange(crcStartPos, d.Pos()-crcStartPos))
+		d.FieldChecksumLen("crc", 32, chunkCRC.Sum(nil), decode.BigEndian)
 	})
 
 	return nil

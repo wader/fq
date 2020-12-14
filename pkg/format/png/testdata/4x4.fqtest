@@ -1,0 +1,3 @@
+# convert -size 4x4 "xc:#000" 4x4.png
+/4x4.png:
+> -f png 4x4.png .
