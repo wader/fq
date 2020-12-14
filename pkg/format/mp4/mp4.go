@@ -557,8 +557,6 @@ func mp4Decode(d *decode.D) interface{} {
 
 	decodeAtoms(ctx, d)
 
-	//log.Println("BLA")
-
 	d.FieldArrayFn("track", func(d *decode.D) {
 		for _, t := range ctx.tracks {
 			d.FieldStructFn("track", func(d *decode.D) {

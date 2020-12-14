@@ -140,7 +140,6 @@ func SectionParser(re *regexp.Regexp, s string) []Section {
 			// TODO: use builder somehow if performance is needed
 			cs.Value += l + lineDelim
 		}
-
 	}
 
 	return sections
@@ -249,8 +248,6 @@ func testDecodedTestCaseRun(t *testing.T, registry *decode.Registry, tcr *testCa
 }
 
 func TestPath(t *testing.T, registry *decode.Registry) {
-	const testDataDir = "testdata"
-
 	tcs := []*testCase{}
 
 	filepath.Walk(".", func(path string, info os.FileInfo, err error) error {

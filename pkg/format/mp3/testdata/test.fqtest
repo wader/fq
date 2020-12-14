@@ -1,6 +1,5 @@
 /tjo:
 asdads
-# as
 > test.mp3 .header.magic
 000|49 44 33                                       |ID3             |magic: Correct ("ID3") 0-2+7 (3)
 /test.mp3:

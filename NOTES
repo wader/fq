@@ -1,4 +1,8 @@
 
+error tests
+- unknown format
+- other errors
+- ._value string hexdump test (unexpected eof weirdness)
 
 REPL? reuse probe output in variable?
 
