@@ -10,7 +10,6 @@ import (
 	"fq/pkg/crc"
 	"fq/pkg/decode"
 	"fq/pkg/format"
-	"io"
 	"math/bits"
 )
 
@@ -427,11 +426,9 @@ func flacDecode(d *decode.D) interface{} {
 			}
 		})
 
-		headerHash := &crc.CRC{Bits: 8, Current: 0, Table: crc.ATM8Table}
-		if _, err := io.Copy(headerHash, d.BitBufRange(frameStart, d.Pos()-frameStart)); err != nil {
-			panic(err)
-		}
-		d.FieldChecksumLen("crc", 8, headerHash.Sum(nil))
+		headerCRC := &crc.CRC{Bits: 8, Table: crc.ATM8Table}
+		decode.MustCopy(headerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
+		d.FieldChecksumLen("crc", 8, headerCRC.Sum(nil), decode.BigEndian)
 
 		var channelSamples [][]int64
 		d.FieldArrayFn("subframe", func(d *decode.D) {
@@ -669,11 +666,9 @@ func flacDecode(d *decode.D) interface{} {
 		// <?> Zero-padding to byte alignment.
 		d.FieldValidateUFn("byte_align", 0, func() uint64 { return d.U(d.ByteAlignBits()) })
 		// <16> CRC-16 (polynomial = x^16 + x^15 + x^2 + x^0, initialized with 0) of everything before the crc, back to and including the frame header sync code
-		footerHash := &crc.CRC{Bits: 16, Current: 0, Table: crc.ANSI16Table}
-		if _, err := io.Copy(footerHash, d.BitBufRange(frameStart, d.Pos()-frameStart)); err != nil {
-			panic(err)
-		}
-		d.FieldChecksumLen("footer_crc", 16, footerHash.Sum(nil))
+		footerCRC := &crc.CRC{Bits: 16, Table: crc.ANSI16Table}
+		decode.MustCopy(footerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
+		d.FieldChecksumLen("footer_crc", 16, footerCRC.Sum(nil), decode.BigEndian)
 
 		// Transform mid/side channels into left, right
 		// mid = (left + right)/2
@@ -729,7 +724,7 @@ func flacDecode(d *decode.D) interface{} {
 
 	if streamInfoD != nil {
 		md5Value := streamInfoD.FieldMustRemove("md5")
-		streamInfoD.FieldChecksumRange("md5", md5Value.Range.Start, md5Value.Range.Len, md5Samples.Sum(nil))
+		streamInfoD.FieldChecksumRange("md5", md5Value.Range.Start, md5Value.Range.Len, md5Samples.Sum(nil), decode.BigEndian)
 	}
 
 	return nil

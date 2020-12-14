@@ -13,7 +13,7 @@ func TestReader(t *testing.T) {
 
 	bb, bbBits := bitio.BytesFromBitString("011011110")
 
-	br, _ := bitio.NewFromReadSeeker(bytes.NewReader(bb))
+	br := bitio.NewReaderFromReadSeeker(bytes.NewReader(bb))
 	sbr := bitio.NewSectionBitReader(br, 0, int64(bbBits))
 	sbr2 := bitio.NewSectionBitReader(sbr, 0, 4)
 
@@ -28,7 +28,7 @@ func TestReader(t *testing.T) {
 
 func TestCopy(t *testing.T) {
 
-	br, _ := bitio.NewFromReadSeeker(bytes.NewReader([]byte{0xf0, 0xff, 0xff}))
+	br := bitio.NewReaderFromReadSeeker(bytes.NewReader([]byte{0xf0, 0xff, 0xff}))
 	sbr := bitio.NewSectionBitReader(br, 0, 8*3-1)
 
 	b := &bytes.Buffer{}

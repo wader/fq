@@ -562,11 +562,17 @@ func (d *D) FieldChecksum(name string, expectedNBytes int, firstBit int64, nBits
 	})
 }
 
-func (d *D) FieldChecksumRange(name string, firstBit int64, nBits int64, calculated []byte) {
+func (d *D) FieldChecksumRange(name string, firstBit int64, nBits int64, calculated []byte, endian Endian) {
 	nBytes := int(nBits / 8)
 	d.FieldRangeFn(name, firstBit, nBits, func() *Value {
 		expectedBB := d.BitBufRange(firstBit, nBits)
 		expected, _ := expectedBB.BytesLen(nBytes)
+
+		if endian == LittleEndian {
+			bitio.ReverseBytes(expected)
+			expectedBB = bitio.NewBufferFromBytes(expected, -1)
+		}
+
 		if bytes.Equal(expected, calculated) {
 			return &Value{V: expectedBB.Copy(), Symbol: "Correct"}
 		}
@@ -575,8 +581,8 @@ func (d *D) FieldChecksumRange(name string, firstBit int64, nBits int64, calcula
 	})
 }
 
-func (d *D) FieldChecksumLen(name string, nBits int64, calculated []byte) {
-	d.FieldChecksumRange(name, d.Pos(), nBits, calculated)
+func (d *D) FieldChecksumLen(name string, nBits int64, calculated []byte, endian Endian) {
+	d.FieldChecksumRange(name, d.Pos(), nBits, calculated, endian)
 	d.SeekRel(nBits)
 }
 

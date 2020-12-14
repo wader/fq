@@ -251,7 +251,7 @@ func frameDecode(d *decode.D) interface{} {
 	crcValue := d.FieldGet("crc")
 	if crcValue != nil {
 		d.FieldRemove("crc")
-		d.FieldChecksumRange("crc", crcValue.Range.Start, crcValue.Range.Len, crcHash.Sum(nil))
+		d.FieldChecksumRange("crc", crcValue.Range.Start, crcValue.Range.Len, crcHash.Sum(nil), decode.BigEndian)
 	} else {
 		d.FieldValueBytes("crc_calculated", crcHash.Sum(nil), "")
 	}

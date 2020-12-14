@@ -1,5 +1,7 @@
 package bitio_test
 
+// TODO: unbreak, check err
+
 import (
 	"fmt"
 	"fq/pkg/bitio"
@@ -42,23 +44,26 @@ func TestBufferBitString(t *testing.T) {
 	for _, tC := range testCases {
 		t.Run(tC, func(t *testing.T) {
 			bb := bitio.NewBufferFromBitString(tC)
-			actual := bb.BitString()
+			actual, err := bb.BitString()
+			if err != nil {
+				t.Error(err)
+			}
 			if tC != actual {
 				t.Errorf("expected %s, got %s", tC, actual)
 			}
 
-			for i := int64(0); i < bb.Len; i++ {
+			for i := int64(0); i < bb.Len(); i++ {
 				t.Run(fmt.Sprintf("%s_%d", tC, i), func(t *testing.T) {
-					startBb, _ := bb.BitBufRange(i, bb.Len-i)
-					startExpected := tC[i : i+bb.Len-i]
-					startActual := startBb.BitString()
+					startBb, _ := bb.BitBufRange(i, bb.Len()-i)
+					startExpected := tC[i : i+bb.Len()-i]
+					startActual, _ := startBb.BitString()
 					if startExpected != startActual {
 						t.Errorf("startBb expected %s, got %s", startExpected, startActual)
 					}
 
 					lenBb, _ := bb.BitBufRange(0, i)
 					lenExpected := tC[0:i]
-					lenActual := lenBb.BitString()
+					lenActual, _ := lenBb.BitString()
 					if lenExpected != lenActual {
 						t.Errorf("lenBb expected %s, got %s", lenExpected, lenActual)
 					}
@@ -83,7 +88,7 @@ func TestBitStringRandom(t *testing.T) {
 		}
 		expected := strings.Join(ss, "")
 		bb := bitio.NewBufferFromBitString(expected)
-		actual := bb.BitString()
+		actual, _ := bb.BitString()
 		if expected != actual {
 			t.Errorf("expected %s, got %s", expected, actual)
 		}

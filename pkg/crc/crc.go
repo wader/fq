@@ -1,5 +1,7 @@
 package crc
 
+import "fmt"
+
 // TODO: lazy make table?
 
 type Table [256]uint
@@ -12,7 +14,7 @@ func MakeTable(poly int, bits int) Table {
 		// note sure about -8 for > 16 bit crc
 		var crc uint = uint(i << (bits - 8))
 		for j := 0; j < 8; j++ {
-			if crc&(1<<(bits-1)) > 0 {
+			if crc&(1<<(bits-1)) != 0 {
 				crc = ((crc << 1) ^ uint(poly)) & mask
 			} else {
 				crc = (crc << 1) & mask
@@ -42,23 +44,30 @@ func (c *CRC) Write(p []byte) (n int, err error) {
 		}
 	case 16:
 		for _, b := range p {
-			c.Current = (c.Current<<8 ^ c.Table[(c.Current>>8)^uint(b)]) & 0xffff
+			c.Current = (c.Current<<8 ^ c.Table[(c.Current>>8)^uint(b)]) & 0xff_ff
+		}
+	case 32:
+		for _, b := range p {
+			c.Current = (c.Current<<8 ^ c.Table[(c.Current>>24)^uint(b)]) & 0xff_ff_ff_ff
 		}
 	default:
-		panic("unsupported")
+		panic(fmt.Sprintf("unsupported crc bit length %d", c.Bits))
 	}
 
 	return len(p), nil
 }
 
 func (c *CRC) Sum(b []byte) []byte {
+	s := c.Current
 	switch c.Bits {
 	case 8:
-		return append(b, byte(c.Current))
+		return append(b, byte(s))
 	case 16:
-		return append(b, byte(c.Current>>8), byte(c.Current))
+		return append(b, byte(s>>8), byte(s))
+	case 32:
+		return append(b, byte(s>>24), byte(s>>16), byte(s>>8), byte(s))
 	default:
-		panic("unsupported")
+		panic(fmt.Sprintf("unsupported crc bit length %d", c.Bits))
 	}
 
 }

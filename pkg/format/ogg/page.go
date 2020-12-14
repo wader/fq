@@ -3,7 +3,9 @@ package ogg
 // https://xiph.org/ogg/doc/framing.html
 
 import (
+	"bytes"
 	"fq/pkg/bitio"
+	"fq/pkg/crc"
 	"fq/pkg/decode"
 	"fq/pkg/format"
 )
@@ -16,6 +18,17 @@ func init() {
 	})
 }
 
+var poly04c11db7Table = crc.MakeTable(0x04c11db7, 32)
+
+/*
+func oggCRCUpdate(crc uint32, tab *crc32Table, p []byte) uint32 {
+	for _, v := range p {
+		crc = (crc << 8) ^ tab[byte(crc>>24)^v]
+	}
+	return crc
+}
+*/
+
 type page struct {
 	IsLastPage         bool
 	IsFirstPage        bool
@@ -27,6 +40,7 @@ type page struct {
 
 func oggDecode(d *decode.D) interface{} {
 	p := &page{}
+	startPos := d.Pos()
 
 	// TODO: validate bits left
 	d.FieldValidateUTF8("capture_pattern", "OggS")
@@ -38,7 +52,7 @@ func oggDecode(d *decode.D) interface{} {
 	d.FieldU64LE("absolute_granule_position")
 	p.StreamSerialNumber = uint32(d.FieldU32LE("stream_serial_number"))
 	p.SequenceNo = uint32(d.FieldU32LE("page_sequence_no"))
-	d.FieldU32("page_checksum")
+	d.FieldU32LE("page_checksum")
 	pageSegments := d.FieldU8("page_segments")
 	segmentTable := d.FieldBytesLen("segment_table", int(pageSegments))
 
@@ -47,6 +61,14 @@ func oggDecode(d *decode.D) interface{} {
 			p.Segments = append(p.Segments, d.FieldBitBufLen("segment", int64(ss)*8))
 		}
 	})
+	endPos := d.Pos()
+
+	pageChecksum := d.FieldMustRemove("page_checksum")
+	pageCRC := &crc.CRC{Bits: 32, Table: poly04c11db7Table}
+	decode.MustCopy(pageCRC, d.BitBufRange(startPos, pageChecksum.Range.Start-startPos))                 // header before checksum
+	decode.MustCopy(pageCRC, bytes.NewReader([]byte{0, 0, 0, 0}))                                        // zero checksum bits
+	decode.MustCopy(pageCRC, d.BitBufRange(pageChecksum.Range.Stop(), endPos-pageChecksum.Range.Stop())) // rest of page
+	d.FieldChecksumRange("page_checksum", pageChecksum.Range.Start, pageChecksum.Range.Len, pageCRC.Sum(nil), decode.LittleEndian)
 
 	return p
 }

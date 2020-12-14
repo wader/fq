@@ -111,6 +111,9 @@ func NewBufferFromBitString(s string) *Buffer {
 // if nBits is < 0 nBits is all bits after firstBitOffset
 func (b *Buffer) BitBufRange(firstBitOffset int64, nBits int64) (*Buffer, error) {
 	// TODO: move error check?
+	if nBits < 0 {
+		return nil, errors.New("negative nBits")
+	}
 	if firstBitOffset+nBits > b.bitLen {
 		return nil, errors.New("outside buffer")
 	}
@@ -353,7 +356,7 @@ func (b *Buffer) UE(nBits int, endian Endian) (uint64, error) {
 		return 0, err
 	}
 	if endian == LittleEndian {
-		n = ReverseBytes(nBits, n)
+		n = Uint64ReverseBytes(nBits, n)
 	}
 
 	return n, nil
@@ -423,7 +426,7 @@ func (b *Buffer) SE(nBits int, endian Endian) (int64, error) {
 		return 0, err
 	}
 	if endian == LittleEndian {
-		n = ReverseBytes(nBits, n)
+		n = Uint64ReverseBytes(nBits, n)
 	}
 	var s int64
 	if n&(1<<(nBits-1)) > 0 {
@@ -489,7 +492,7 @@ func (b *Buffer) FE(nBits int, endian Endian) (float64, error) {
 		return 0, err
 	}
 	if endian == LittleEndian {
-		n = ReverseBytes(nBits, n)
+		n = Uint64ReverseBytes(nBits, n)
 	}
 	switch nBits {
 	case 32:
@@ -519,7 +522,7 @@ func (b *Buffer) FPE(nBits int, fBits int64, endian Endian) (float64, error) {
 		return 0, err
 	}
 	if endian == LittleEndian {
-		n = ReverseBytes(nBits, n)
+		n = Uint64ReverseBytes(nBits, n)
 	}
 	return float64(n) / float64(uint64(1<<fBits)), nil
 }
