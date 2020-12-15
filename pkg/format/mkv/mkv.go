@@ -5,6 +5,8 @@ package mkv
 // https://www.matroska.org/technical/basics.html
 // https://www.matroska.org/technical/codec_specs.html
 
+// TODO: rename simepleblock/block to just defer decode etc?
+
 import (
 	"fq/internal/ranges"
 	"fq/pkg/decode"
@@ -135,6 +137,7 @@ type decodeContext struct {
 	currentTrack *track
 	tracks       []*track
 	simpleBlocks []simpleBlock
+	blocks       []simpleBlock
 }
 
 /*
@@ -208,6 +211,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebmlTag, dc *decodeContext) 
 			}
 
 			const SimpleBlock = 0xa3
+			const Block = 0xa1
 			const CodecPrivate = 0x63a2
 			const CodecID = 0x86
 			const TrackNumber = 0xd7
@@ -294,6 +298,32 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebmlTag, dc *decodeContext) 
 						// })
 
 						dc.simpleBlocks = append(dc.simpleBlocks, simpleBlock{
+							d: d,
+							r: ranges.Range{Start: d.Pos(), Len: int64(tagSize) * 8},
+						})
+
+						d.SeekRel(int64(tagSize) * 8)
+					case Block:
+
+						// TODO: CodecPrivate
+						// TODO: collect decode later when we know track codec?
+
+						// d.DecodeLenFn(int64(tagSize)*8, func(d *decode.D) {
+						// 	fieldDecodeVint(d, "track_number", decode.NumberDecimal)
+						// 	d.FieldU16("timestamp")
+						// 	d.FieldStructFn("flags", func(d *decode.D) {
+						// 		d.FieldBool("key_frame")
+						// 		d.FieldU3("reserved")
+						// 		d.FieldBool("invisible")
+						// 		d.FieldU2("lacing")
+						// 		d.FieldBool("discardable")
+						// 	})
+						// 	// TODO: lacing
+						// 	d.FieldBitBufLen("data", d.BitsLeft())
+
+						// })
+
+						dc.blocks = append(dc.blocks, simpleBlock{
 							d: d,
 							r: ranges.Range{Start: d.Pos(), Len: int64(tagSize) * 8},
 						})
@@ -401,6 +431,36 @@ func mkvDecode(d *decode.D) interface{} {
 			default:
 				d.FieldBitBufLen("data", d.BitsLeft())
 			}
+
+		})
+	}
+
+	for _, s := range dc.blocks {
+		s.d.DecodeRangeFn(s.r.Start, s.r.Len, func(d *decode.D) {
+			fieldDecodeVint(d, "track_number", decode.NumberDecimal)
+			d.FieldU16("timestamp")
+			// d.FieldStructFn("flags", func(d *decode.D) {
+			// 	d.FieldBool("key_frame")
+			// 	d.FieldU3("reserved")
+			// 	d.FieldBool("invisible")
+			// 	d.FieldU2("lacing")
+			// 	d.FieldBool("discardable")
+			// })
+			// // TODO: lacing etc
+
+			// switch trackCodec[int(trackNumber)] {
+			// case "A_VORBIS":
+			// 	d.FieldDecodeLen("packet", d.BitsLeft(), vorbisPacketFormat)
+			// case "V_VP9":
+			// 	d.FieldDecodeLen("packet", d.BitsLeft(), vp9FrameFormat)
+			// // case "A_AAC":
+			// // 	log.Println("bla")
+			// // 	d.FieldDecodeLen("packet", d.BitsLeft(), aacFrameFormat)
+			// default:
+			// 	d.FieldBitBufLen("data", d.BitsLeft())
+			// }
+
+			d.FieldBitBufLen("data", d.BitsLeft())
 
 		})
 	}
