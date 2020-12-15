@@ -1,0 +1,376 @@
+package query
+
+// TODO: rename to context etc? env?
+
+import (
+	"bufio"
+	"encoding/hex"
+	"encoding/json"
+	"fmt"
+	"fq/pkg/bitio"
+	"fq/pkg/decode"
+	"fq/pkg/format"
+	"fq/pkg/osenv"
+	"io"
+	"io/ioutil"
+	"log"
+	"math/big"
+	"strconv"
+	"strings"
+
+	"github.com/itchyny/gojq"
+)
+
+func toInt64(v interface{}) (int64, error) {
+	switch v := v.(type) {
+	case *big.Int:
+		return v.Int64(), nil
+	case int:
+		return int64(v), nil
+	case float64:
+		return int64(v), nil
+	default:
+		return 0, fmt.Errorf("value is not a number")
+	}
+}
+
+type QueryOptions struct {
+	Value       interface{}
+	Variables   []Variable
+	FormatName  string
+	Filename    string
+	Registry    *decode.Registry
+	DumpOptions decode.DumpOptions
+	OS          osenv.OS
+}
+
+type Variable struct {
+	Name  string
+	Value interface{}
+}
+
+type Query struct {
+	opts                QueryOptions
+	gojqQuery           *gojq.Query
+	gojqCompilerOptions []gojq.CompilerOption
+	allFormats          []*decode.Format
+	probeFormats        []*decode.Format
+	variables           []Variable
+	last                interface{}
+	outCount            int
+}
+
+func NewQuery(opts QueryOptions) *Query {
+	q := &Query{opts: opts}
+
+	// TODO: cleanup group names and panics
+	q.allFormats = opts.Registry.MustAll()
+	q.probeFormats = opts.Registry.MustGroup(format.PROBE)
+	q.gojqCompilerOptions = []gojq.CompilerOption{
+		gojq.WithFunction("bits", 0, 2, q.bits),
+		gojq.WithFunction("string", 0, 0, q.string_),
+		gojq.WithFunction("probe", 0, 2, q.probe),
+		gojq.WithFunction("hexdump", 0, 0, q.hexdump),
+		gojq.WithFunction("dump", 0, 1, q.dump),
+	}
+	q.variables = []Variable{
+		{Name: "FQ_FORMAT", Value: opts.FormatName},
+		{Name: "FQ_FILENAME", Value: opts.Filename},
+	}
+
+	return q
+}
+
+func (q *Query) bits(c interface{}, a []interface{}) interface{} {
+	var bb *bitio.Buffer
+	switch cc := c.(type) {
+	case *decode.Value:
+		var err error
+		bb, err = cc.RootBitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
+		if err != nil {
+			return err
+		}
+	case *bitio.Buffer:
+		bb = cc
+	case []byte:
+		bb = bitio.NewBufferFromBytes(cc, -1)
+	case string:
+		bb = bitio.NewBufferFromBytes([]byte(cc), -1)
+	default:
+		return fmt.Errorf("value is not a decode value or bit buffer")
+	}
+
+	startArg := int64(0)
+	endArg := int64(-1)
+	var err error
+	toAbs := func(v int64, l int64) int64 {
+		if v < 0 {
+			return l + v + 1
+		}
+		return v
+	}
+
+	if len(a) >= 1 {
+		startArg, err = toInt64(a[0])
+		if err != nil {
+			return err
+		}
+	}
+	if len(a) >= 2 {
+		endArg, err = toInt64(a[1])
+		if err != nil {
+			return err
+		}
+	}
+
+	startArg = toAbs(startArg, bb.Len())
+	endArg = toAbs(endArg, bb.Len())
+
+	bb, err = bb.BitBufRange(startArg, endArg-startArg)
+	if err != nil {
+		return err
+	}
+
+	return bb
+}
+
+func (q *Query) string_(c interface{}, a []interface{}) interface{} {
+	var bb *bitio.Buffer
+	switch cc := c.(type) {
+	case *decode.Value:
+		var err error
+		bb, err = cc.RootBitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
+		if err != nil {
+			return err
+		}
+	case *bitio.Buffer:
+		bb = cc
+	default:
+		return fmt.Errorf("value is not a decode value or bit buffer")
+	}
+
+	sb := &strings.Builder{}
+	if _, err := io.Copy(sb, bb); err != nil {
+		return err
+	}
+
+	return string(sb.String())
+}
+
+func (q *Query) probe(c interface{}, a []interface{}) interface{} {
+	var bb *bitio.Buffer
+	switch cc := c.(type) {
+	case *decode.Value:
+		var err error
+		bb, err = cc.RootBitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
+		if err != nil {
+			return err
+		}
+	case *bitio.Buffer:
+		bb = cc
+	default:
+		return fmt.Errorf("value is not a decode value or bit buffer")
+	}
+
+	opts := map[string]interface{}{}
+	formats := q.probeFormats
+
+	if len(a) >= 1 {
+		formatName, ok := a[0].(string)
+		if !ok {
+			return fmt.Errorf("format name is not a string")
+		}
+
+		if strings.HasSuffix(formatName, ".jq") {
+			var err error
+			formats, err = q.opts.Registry.Group("jq")
+
+			script, err := ioutil.ReadFile(formatName)
+			if err != nil {
+				return err
+			}
+			opts["script"] = string(script)
+		} else {
+			var err error
+			formats, err = q.opts.Registry.Group(formatName)
+			if err != nil {
+				return fmt.Errorf("%s: %s", formatName, err)
+			}
+		}
+	}
+
+	// TODO: hmm
+	name := "unnamed"
+	if len(a) >= 2 {
+		var ok bool
+		name, ok = a[1].(string)
+		if !ok {
+			return fmt.Errorf("name is not a string")
+		}
+	}
+
+	dv, _, errs := decode.Probe(name, bb, formats, decode.ProbeOptions{FormatOptions: opts})
+	if dv == nil {
+		return errs
+	}
+
+	return dv
+}
+
+func (q *Query) hexdump(c interface{}, a []interface{}) interface{} {
+	var bb *bitio.Buffer
+	switch cc := c.(type) {
+	case *decode.Value:
+		var err error
+		bb, err = cc.RootBitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
+		if err != nil {
+			return err
+		}
+	case *bitio.Buffer:
+		bb = cc
+	case []byte:
+		bb = bitio.NewBufferFromBytes(cc, -1)
+	case string:
+		bb = bitio.NewBufferFromBytes([]byte(cc), -1)
+	default:
+		return fmt.Errorf("value is not decode value or a bit buffer")
+	}
+
+	hw := hex.Dumper(q.opts.OS.Stdout())
+	defer hw.Close()
+	if _, err := io.Copy(hw, bb); err != nil {
+		return err
+	}
+
+	return c
+}
+
+func (q *Query) dump(c interface{}, a []interface{}) interface{} {
+	var v *decode.Value
+	switch cc := c.(type) {
+	case *decode.Value:
+		v = cc
+	case *decode.D:
+		v = cc.Value
+	default:
+		return fmt.Errorf("%v: value is not a decode value", c)
+	}
+
+	maxDepth := 0
+	if len(a) == 1 {
+		var ok bool
+		maxDepth, ok = a[0].(int)
+		if !ok {
+			return fmt.Errorf("max depth is not a int")
+		}
+		if maxDepth < 0 {
+			return fmt.Errorf("max depth can't be negative")
+		}
+	}
+
+	opts := q.opts.DumpOptions
+	opts.MaxDepth = maxDepth
+
+	if err := v.Dump(q.opts.OS.Stdout(), opts); err != nil {
+		return err
+	}
+
+	return c
+}
+
+func (q *Query) Run(src string) ([]interface{}, error) {
+	var err error
+
+	query, err := gojq.Parse(src)
+	if err != nil {
+		return nil, err
+	}
+
+	var variableNames []string
+	var variableValues []interface{}
+	variableNames = append(variableNames, "$last")
+	variableValues = append(variableValues, q.last)
+	for _, v := range q.variables {
+		variableNames = append(variableNames, "$"+v.Name)
+		variableValues = append(variableValues, v.Value)
+	}
+
+	var compilerOpts []gojq.CompilerOption
+	compilerOpts = append(compilerOpts, q.gojqCompilerOptions...)
+	compilerOpts = append(compilerOpts, gojq.WithVariables(variableNames))
+	code, err := gojq.Compile(query, compilerOpts...)
+	if err != nil {
+		panic(err)
+	}
+	iter := code.Run(q.opts.Value, variableValues...)
+
+	var vs []interface{}
+	for {
+		var ok bool
+		var v interface{}
+
+		if v, ok = iter.Next(); !ok {
+			break
+		}
+		if err, ok = v.(error); ok {
+			fmt.Fprintf(q.opts.OS.Stderr(), "%s\n", err)
+			break
+		}
+
+		switch vv := v.(type) {
+		case *decode.Value:
+			if err := vv.Dump(q.opts.OS.Stdout(), q.opts.DumpOptions); err != nil {
+				return nil, err
+			}
+		case *decode.D:
+			if err := vv.Value.Dump(q.opts.OS.Stdout(), q.opts.DumpOptions); err != nil {
+				return nil, err
+			}
+		case *bitio.Buffer:
+			io.Copy(q.opts.OS.Stdout(), vv.Copy())
+		case string, int, int32, int64, uint, uint32, uint64:
+			fmt.Fprintln(q.opts.OS.Stdout(), vv)
+		case float32:
+			fmt.Fprintln(q.opts.OS.Stdout(), strconv.FormatFloat(float64(vv), 'f', -1, 32))
+		case float64:
+			fmt.Fprintln(q.opts.OS.Stdout(), strconv.FormatFloat(vv, 'f', -1, 64))
+		default:
+			e := json.NewEncoder(q.opts.OS.Stdout())
+			e.SetIndent("", "  ")
+			if err := e.Encode(v); err != nil {
+				return nil, err
+			}
+		}
+
+		vs = append(vs, v)
+	}
+
+	return vs, err
+}
+
+func (q *Query) REPL() error {
+	scanner := bufio.NewScanner(q.opts.OS.Stdin())
+
+	for {
+		fmt.Fprintf(q.opts.OS.Stdout(), ">")
+		if !scanner.Scan() {
+			return scanner.Err()
+		}
+		src := scanner.Text()
+		log.Printf("src: %#+v\n", src)
+
+		vs, err := q.Run(src)
+		if err != nil {
+			fmt.Fprintf(q.opts.OS.Stdout(), "err %s\n", err)
+		}
+		varName := fmt.Sprintf("out%d", q.outCount)
+		q.variables = append(q.variables, Variable{Name: varName, Value: vs})
+		q.outCount++
+
+		if len(vs) > 0 {
+			q.last = vs[0]
+		}
+
+		fmt.Fprintf(q.opts.OS.Stdout(), "%s\n", varName)
+	}
+}

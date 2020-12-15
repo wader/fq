@@ -9,6 +9,8 @@ func MustRegister(format *decode.Format) *decode.Format {
 }
 
 const (
+	ALL = "all"
+
 	PROBE = "probe"
 	RAW   = "raw"
 
