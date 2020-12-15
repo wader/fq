@@ -1,4 +1,4 @@
-# ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.page[0] | bits' >page
+# ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.page[0] | bits' > page
 /page:
 > -f ogg_page page
   |                                               |                |page{}: struct (ogg_page) 0-39+7 fields 13 (58)
