@@ -4,6 +4,7 @@ package query
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -34,8 +35,31 @@ func toInt64(v interface{}) (int64, error) {
 	}
 }
 
+func toBB(v interface{}) (*bitio.Buffer, string, error) {
+	var bb *bitio.Buffer
+	switch vv := v.(type) {
+	case *queryBB:
+		return vv.bb, vv.filename, nil
+	case *decode.Value:
+		var err error
+		bb, err = vv.RootBitBuf.BitBufRange(vv.Range.Start, vv.Range.Len)
+		if err != nil {
+			return nil, "", err
+		}
+	case *bitio.Buffer:
+		bb = vv
+	case []byte:
+		bb = bitio.NewBufferFromBytes(vv, -1)
+	case string:
+		bb = bitio.NewBufferFromBytes([]byte(vv), -1)
+	default:
+		return nil, "", fmt.Errorf("value should be decode value, bit buffer, byte slice or string")
+	}
+
+	return bb, "", nil
+}
+
 type QueryOptions struct {
-	Value       interface{}
 	Variables   []Variable
 	FormatName  string
 	Filename    string
@@ -51,7 +75,6 @@ type Variable struct {
 
 type Query struct {
 	opts                QueryOptions
-	gojqQuery           *gojq.Query
 	gojqCompilerOptions []gojq.CompilerOption
 	allFormats          []*decode.Format
 	probeFormats        []*decode.Format
@@ -69,40 +92,32 @@ func NewQuery(opts QueryOptions) *Query {
 	q.gojqCompilerOptions = []gojq.CompilerOption{
 		gojq.WithFunction("bits", 0, 2, q.bits),
 		gojq.WithFunction("string", 0, 0, q.string_),
-		gojq.WithFunction("probe", 0, 2, q.probe),
+		gojq.WithFunction("probe", 0, 1, q.probe),
 		gojq.WithFunction("hexdump", 0, 0, q.hexdump),
 		gojq.WithFunction("dump", 0, 1, q.dump),
+		gojq.WithFunction("open", 0, 1, q.open),
 	}
 	q.variables = []Variable{
-		{Name: "FQ_FORMAT", Value: opts.FormatName},
-		{Name: "FQ_FILENAME", Value: opts.Filename},
+		{Name: "FORMAT", Value: opts.FormatName},
+		{Name: "FILENAME", Value: opts.Filename},
 	}
 
 	return q
 }
 
+type queryBB struct {
+	bb       *bitio.Buffer
+	filename string
+}
+
 func (q *Query) bits(c interface{}, a []interface{}) interface{} {
-	var bb *bitio.Buffer
-	switch cc := c.(type) {
-	case *decode.Value:
-		var err error
-		bb, err = cc.RootBitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
-		if err != nil {
-			return err
-		}
-	case *bitio.Buffer:
-		bb = cc
-	case []byte:
-		bb = bitio.NewBufferFromBytes(cc, -1)
-	case string:
-		bb = bitio.NewBufferFromBytes([]byte(cc), -1)
-	default:
-		return fmt.Errorf("value is not a decode value or bit buffer")
+	bb, _, err := toBB(c)
+	if err != nil {
+		return err
 	}
 
 	startArg := int64(0)
 	endArg := int64(-1)
-	var err error
 	toAbs := func(v int64, l int64) int64 {
 		if v < 0 {
 			return l + v + 1
@@ -158,18 +173,9 @@ func (q *Query) string_(c interface{}, a []interface{}) interface{} {
 }
 
 func (q *Query) probe(c interface{}, a []interface{}) interface{} {
-	var bb *bitio.Buffer
-	switch cc := c.(type) {
-	case *decode.Value:
-		var err error
-		bb, err = cc.RootBitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
-		if err != nil {
-			return err
-		}
-	case *bitio.Buffer:
-		bb = cc
-	default:
-		return fmt.Errorf("value is not a decode value or bit buffer")
+	bb, filename, err := toBB(c)
+	if err != nil {
+		return err
 	}
 
 	opts := map[string]interface{}{}
@@ -199,14 +205,9 @@ func (q *Query) probe(c interface{}, a []interface{}) interface{} {
 		}
 	}
 
-	// TODO: hmm
 	name := "unnamed"
-	if len(a) >= 2 {
-		var ok bool
-		name, ok = a[1].(string)
-		if !ok {
-			return fmt.Errorf("name is not a string")
-		}
+	if filename != "" {
+		name = filename
 	}
 
 	dv, _, errs := decode.Probe(name, bb, formats, decode.ProbeOptions{FormatOptions: opts})
@@ -218,22 +219,9 @@ func (q *Query) probe(c interface{}, a []interface{}) interface{} {
 }
 
 func (q *Query) hexdump(c interface{}, a []interface{}) interface{} {
-	var bb *bitio.Buffer
-	switch cc := c.(type) {
-	case *decode.Value:
-		var err error
-		bb, err = cc.RootBitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
-		if err != nil {
-			return err
-		}
-	case *bitio.Buffer:
-		bb = cc
-	case []byte:
-		bb = bitio.NewBufferFromBytes(cc, -1)
-	case string:
-		bb = bitio.NewBufferFromBytes([]byte(cc), -1)
-	default:
-		return fmt.Errorf("value is not decode value or a bit buffer")
+	bb, _, err := toBB(c)
+	if err != nil {
+		return err
 	}
 
 	hw := hex.Dumper(q.opts.OS.Stdout())
@@ -278,6 +266,49 @@ func (q *Query) dump(c interface{}, a []interface{}) interface{} {
 	return c
 }
 
+func (q *Query) open(c interface{}, a []interface{}) interface{} {
+	var rs io.ReadSeeker
+
+	var filename string
+	if len(a) == 1 {
+		var filenameOk bool
+		filename, filenameOk = a[0].(string)
+		if !filenameOk {
+			return fmt.Errorf("filename must be a string")
+		}
+	}
+
+	if filename == "" || filename == "-" {
+		filename = "stdin"
+		buf, err := ioutil.ReadAll(q.opts.OS.Stdin())
+		if err != nil {
+			return err
+		}
+		rs = bytes.NewReader(buf)
+	} else {
+
+		f, err := q.opts.OS.Open(filename)
+		if err != nil {
+			return err
+		}
+		// TODO: query Close method that cleanups?
+		// if c, ok := f.(io.Closer); ok {
+		// 	defer c.Close()
+		// }
+		rs = f
+	}
+
+	bb, err := bitio.NewBufferFromReadSeeker(rs)
+	if err != nil {
+		return err
+	}
+
+	return &queryBB{
+		bb:       bb,
+		filename: filename,
+	}
+}
+
 func (q *Query) Run(src string) ([]interface{}, error) {
 	var err error
 
@@ -302,7 +333,7 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 	if err != nil {
 		panic(err)
 	}
-	iter := code.Run(q.opts.Value, variableValues...)
+	iter := code.Run(nil, variableValues...)
 
 	var vs []interface{}
 	for {

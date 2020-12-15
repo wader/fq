@@ -3,15 +3,11 @@ package cli
 // TODO: REPL and reading from stdin?
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
-	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/osenv"
 	"fq/pkg/query"
-	"io"
-	"io/ioutil"
 	"os"
 	"sort"
 	"strings"
@@ -90,32 +86,7 @@ func (m Main) run() error {
 
 	filename := fs.Arg(0)
 
-	var rs io.ReadSeeker
-	if filename != "" && filename != "-" {
-		f, err := m.OS.Open(filename)
-		if err != nil {
-			return err
-		}
-		if c, ok := f.(io.Closer); ok {
-			defer c.Close()
-		}
-		rs = f
-	} else {
-		filename = "stdin"
-		buf, err := ioutil.ReadAll(m.OS.Stdin())
-		if err != nil {
-			return err
-		}
-		rs = bytes.NewReader(buf)
-	}
-
-	bb, err := bitio.NewBufferFromReadSeeker(rs)
-	if err != nil {
-		return err
-	}
-
 	q := query.NewQuery(query.QueryOptions{
-		Value:      bb,
 		FormatName: *formatNameFlag,
 		Filename:   filename,
 		Registry:   m.Registry,
@@ -132,7 +103,7 @@ func (m Main) run() error {
 	if fs.Arg(1) == "" {
 		src = "."
 	}
-	src = fmt.Sprintf(`probe($FQ_FORMAT; $FQ_FILENAME) | %s`, src)
+	src = fmt.Sprintf(`open($FILENAME) | probe($FORMAT) | %s`, src)
 
 	q.Run(src)
 
