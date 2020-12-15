@@ -4,9 +4,9 @@ package png
 // https://ftp-osl.osuosl.org/pub/libpng/documents/pngext-1.5.0.html
 
 import (
-	"fq/internal/ranges"
 	"fq/pkg/decode"
 	"fq/pkg/format"
+	"fq/pkg/ranges"
 	"hash/crc32"
 )
 

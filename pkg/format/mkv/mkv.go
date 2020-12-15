@@ -8,9 +8,9 @@ package mkv
 // TODO: rename simepleblock/block to just defer decode etc?
 
 import (
-	"fq/internal/ranges"
 	"fq/pkg/decode"
 	"fq/pkg/format"
+	"fq/pkg/ranges"
 )
 
 var vorbisPacketFormat []*decode.Format
