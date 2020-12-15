@@ -1,4 +1,11 @@
 
+rename dump?
+
+hexdump use own, matches dump hexumpd
+
+outout separate with something? path?
+
+root show full path?
 
 mustio.Copy?
 

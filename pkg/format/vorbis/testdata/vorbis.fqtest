@@ -1,7 +1,7 @@
 # ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.packet[0] | bits' > vorbis-identifcation
 /vorbis-identifcation:
 > -f vorbis_packet vorbis-identifcation .
-  |                                               |                |vorbis-identifcation{}: struct (vorbis_packet) 0-1d+7 fields 12 (30)
+  |                                               |                |.{}: struct (vorbis_packet) 0-1d+7 fields 12 (30)
 00|01                                             |.               |  packet_type: Identification (1) 0-0+7 (1)
 00|   76 6f 72 62 69 73                           | vorbis         |  magic: Correct ("vorbis") 1-6+7 (6)
 00|                     00 00 00 00               |       ....     |  vorbis_version: Correct (0) 7-a+7 (4)
@@ -17,7 +17,7 @@
 # ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.packet[1] | bits' > vorbis-identifcation
 /vorbis-comment:
 > -f vorbis_packet vorbis-comment .
-  |                                               |                |vorbis-comment{}: struct (vorbis_packet) 0-3f+7 fields 5 (64)
+  |                                               |                |.{}: struct (vorbis_packet) 0-3f+7 fields 5 (64)
 00|03                                             |.               |  packet_type: Comment (3) 0-0+7 (1)
 00|   76 6f 72 62 69 73                           | vorbis         |  magic: Correct ("vorbis") 1-6+7 (6)
   |                                               |                |  comment{}: struct (vorbis_comment) 7-3e+7 fields 4 (56)
@@ -34,7 +34,7 @@
 # ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.packet[2] | bits' > vorbis-identifcation
 /vorbis-setup:
 > -f vorbis_packet vorbis-setup .
-   |                                               |                |vorbis-setup{}: struct (vorbis_packet) 0-c74+7 fields 7 (3189)
+   |                                               |                |.{}: struct (vorbis_packet) 0-c74+7 fields 7 (3189)
 000|05                                             |.               |  packet_type: Setup (5) 0-0+7 (1)
 000|   76 6f 72 62 69 73                           | vorbis         |  magic: Correct ("vorbis") 1-6+7 (6)
 000|                     22                        |       "        |  vorbis_codebook_count: 35 7-7+7 (1)
@@ -46,7 +46,7 @@
 # ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.packet[3] | bits' > vorbis-identifcation
 /vorbis-audio:
 > -f vorbis_packet vorbis-audio .
-  |                                               |                |vorbis-audio{}: struct (vorbis_packet) 0-20+7 fields 2 (33)
+  |                                               |                |.{}: struct (vorbis_packet) 0-20+7 fields 2 (33)
 00|54                                             |T               |  packet_type: Audio (0) 0-0+7 (1)
 00|   dd cb ce aa 5e d8 7f 2d 01 42 00 a0 dd 71 77| ....^..-.B...qw|  unknown0: ddcbceaa5ed87f2d014200a0dd71778b... 1-20+7 (32)
 10|8b ed cd 37 df 7c 33 3a 0c c3 30 0c c3 30 d4 50|...7.|3:..0..0.P|

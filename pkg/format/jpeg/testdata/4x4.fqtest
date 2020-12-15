@@ -1,7 +1,7 @@
 # gm convert -size 4x4 'xc:#000' 4x4.jpg
 /4x4.jpg:
 > -f jpeg 4x4.jpg .
-  |                                               |                |4x4.jpg{}: struct (jpeg) 0-9f+7 fields 1 (160)
+  |                                               |                |.{}: struct (jpeg) 0-9f+7 fields 1 (160)
   |                                               |                |  marker[9]: array 0-9f+7 (160)
   |                                               |                |    marker[0]{}: struct 0-1+7 fields 2 (2)
 00|ff                                             |.               |      prefix: ff 0-0+7 (1)

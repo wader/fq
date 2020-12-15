@@ -105,10 +105,14 @@ func (m Main) run() error {
 	}
 	src = fmt.Sprintf(`open($FILENAME) | probe($FORMAT) | %s`, src)
 
-	q.Run(src)
+	if _, err := q.Run(src); err != nil {
+		return err
+	}
 
 	if *replFlag {
-		q.REPL()
+		if err := q.REPL(); err != nil {
+			return err
+		}
 	}
 
 	return nil

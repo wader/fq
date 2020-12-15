@@ -1,7 +1,7 @@
 # ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.page[0] | bits' > page
 /page:
 > -f ogg_page page
-  |                                               |                |page{}: struct (ogg_page) 0-39+7 fields 13 (58)
+  |                                               |                |.{}: struct (ogg_page) 0-39+7 fields 13 (58)
 00|4f 67 67 53                                    |OggS            |  capture_pattern: Correct ("OggS") 0-3+7 (4)
 00|            00                                 |    .           |  stream_structure_version: Correct (0) 4-4+7 (1)
 00|               02                              |     .          |  unused_flags: 0 5-5+4 (0+5)

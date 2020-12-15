@@ -1,10 +1,10 @@
 /tjo:
 asdads
 > test.mp3 .header.magic
-000|49 44 33                                       |ID3             |magic: Correct ("ID3") 0-2+7 (3)
+000|49 44 33                                       |ID3             |.header.magic: Correct ("ID3") 0-2+7 (3)
 /test.mp3:
 > test.mp3 .
-   |                                               |                |test.mp3{}: struct (mp3) 0-452+7 fields 4 (1107)
+   |                                               |                |.{}: struct (mp3) 0-452+7 fields 4 (1107)
    |                                               |                |  header{}: struct (id3_v2) 0-3b+7 fields 7 (60)
 000|49 44 33                                       |ID3             |    magic: Correct ("ID3") 0-2+7 (3)
 000|         04                                    |   .            |    version: 4 3-3+7 (1)

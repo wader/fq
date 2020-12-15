@@ -1,7 +1,7 @@
 # gm convert -size 4x4 'xc:#000' 4x4.tiff
 /4x4.tiff:
 > -f tiff 4x4.tiff .
-   |                                               |                |4x4.tiff{}: struct (tiff) 0-107+7 fields 7 (264)
+   |                                               |                |.{}: struct (tiff) 0-107+7 fields 7 (264)
 000|49 49                                          |II              |  order: "II" 0-1+7 (2)
 000|49 49 2a 00                                    |II*.            |  endian: little-endian (49492a00) 0-3+7 (4)
 000|      2a 00                                    |  *.            |  integer_42: 10752 2-3+7 (2)

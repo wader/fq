@@ -14,7 +14,6 @@ import (
 	"fq/pkg/osenv"
 	"io"
 	"io/ioutil"
-	"log"
 	"math/big"
 	"strconv"
 	"strings"
@@ -108,6 +107,15 @@ func NewQuery(opts QueryOptions) *Query {
 type queryBB struct {
 	bb       *bitio.Buffer
 	filename string
+}
+
+type queryDump struct {
+	maxDepth int
+	v        *decode.Value
+}
+
+type queryHexDump struct {
+	bb *bitio.Buffer
 }
 
 func (q *Query) bits(c interface{}, a []interface{}) interface{} {
@@ -224,13 +232,9 @@ func (q *Query) hexdump(c interface{}, a []interface{}) interface{} {
 		return err
 	}
 
-	hw := hex.Dumper(q.opts.OS.Stdout())
-	defer hw.Close()
-	if _, err := io.Copy(hw, bb); err != nil {
-		return err
+	return &queryHexDump{
+		bb: bb,
 	}
-
-	return c
 }
 
 func (q *Query) dump(c interface{}, a []interface{}) interface{} {
@@ -256,14 +260,10 @@ func (q *Query) dump(c interface{}, a []interface{}) interface{} {
 		}
 	}
 
-	opts := q.opts.DumpOptions
-	opts.MaxDepth = maxDepth
-
-	if err := v.Dump(q.opts.OS.Stdout(), opts); err != nil {
-		return err
+	return &queryDump{
+		maxDepth: maxDepth,
+		v:        v,
 	}
-
-	return c
 }
 
 func (q *Query) open(c interface{}, a []interface{}) interface{} {
@@ -331,7 +331,7 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 	compilerOpts = append(compilerOpts, gojq.WithVariables(variableNames))
 	code, err := gojq.Compile(query, compilerOpts...)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	iter := code.Run(nil, variableValues...)
 
@@ -349,12 +349,24 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 		}
 
 		switch vv := v.(type) {
+		case *queryDump:
+			opts := q.opts.DumpOptions
+			opts.MaxDepth = vv.maxDepth
+			if err := vv.v.Dump(q.opts.OS.Stdout(), opts); err != nil {
+				return nil, err
+			}
 		case *decode.Value:
 			if err := vv.Dump(q.opts.OS.Stdout(), q.opts.DumpOptions); err != nil {
 				return nil, err
 			}
 		case *decode.D:
 			if err := vv.Value.Dump(q.opts.OS.Stdout(), q.opts.DumpOptions); err != nil {
+				return nil, err
+			}
+		case *queryHexDump:
+			hw := hex.Dumper(q.opts.OS.Stdout())
+			defer hw.Close()
+			if _, err := io.Copy(hw, vv.bb); err != nil {
 				return nil, err
 			}
 		case *bitio.Buffer:
@@ -388,7 +400,6 @@ func (q *Query) REPL() error {
 			return scanner.Err()
 		}
 		src := scanner.Text()
-		log.Printf("src: %#+v\n", src)
 
 		vs, err := q.Run(src)
 		if err != nil {
