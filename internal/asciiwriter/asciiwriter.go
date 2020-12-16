@@ -14,6 +14,13 @@ type Writer struct {
 	bufOffset   int
 }
 
+func SafeASCII(c byte) string {
+	if c < 32 || c > 126 {
+		return "."
+	}
+	return string(c)
+}
+
 func New(w io.Writer, width int, startOffset int, fn func(v byte) string) *Writer {
 	return &Writer{
 		w:           w,

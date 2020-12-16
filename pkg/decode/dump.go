@@ -6,29 +6,11 @@ import (
 	"fq/internal/asciiwriter"
 	"fq/internal/columnwriter"
 	"fq/internal/hexpairwriter"
+	"fq/internal/num"
 	"fq/pkg/bitio"
 	"io"
-	"math"
-	"strconv"
 	"strings"
 )
-
-func digitsInBase(n int64, base int) int {
-	if n == 0 {
-		return 1
-	}
-	return int(1 + math.Floor(math.Log(float64(n))/math.Log(float64(base))))
-}
-
-func padFormatInt(i int64, base int, width int) string {
-	s := strconv.FormatInt(i, base)
-	p := width - len(s)
-	if p > 0 {
-		// TODO: something faster?
-		return strings.Repeat("0", p) + s
-	}
-	return s
-}
 
 type DumpOptions struct {
 	MaxDepth        int
@@ -106,7 +88,7 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 			indent, name, len(vv), v, BitRange(v.Range).StringByteBits(opts.AddrBase), Bits(v.Range.Len).StringByteBits(opts.SizeBase))
 	default:
 		fmt.Fprintf(cw.Columns[0], "%s%s\n",
-			rootIndent, padFormatInt(startLineByte, opts.AddrBase, addrWidth))
+			rootIndent, num.PadFormatInt(startLineByte, opts.AddrBase, addrWidth))
 
 		color := false
 		vBitBuf, err := rootV.RootBitBuf.BitBufRange(startByte*8, displaySizeBits)
@@ -128,23 +110,18 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 		}
 
 		hexpairFn := func(c byte) string {
-			const hexTable = "0123456789abcdef"
+			s := hexpairwriter.Pair(c)
 			if color {
-				return fmt.Sprintf("%s%c%c%s", charToANSI(c), hexTable[c>>4], hexTable[c&0xf], ansi.Reset)
+				return fmt.Sprintf("%s%s%s", charToANSI(c), s, ansi.Reset)
 
 			}
-			return string(hexTable[c>>4]) + string(hexTable[c&0xf])
+			return s
 		}
-
 		asciiFn := func(c byte) string {
-			d := c
-			if c < 32 || c > 126 {
-				d = '.'
-			}
 			if color {
-				return fmt.Sprintf("%s%c%s", charToANSI(c), d, ansi.Reset)
+				return fmt.Sprintf("%s%s%s", charToANSI(c), asciiwriter.SafeASCII(c), ansi.Reset)
 			}
-			return string(d)
+			return asciiwriter.SafeASCII(c)
 		}
 
 		if vBitBuf != nil {
@@ -158,7 +135,7 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 
 		for i := int64(1); i < addrLines; i++ {
 			lineStartByte := startLineByte + int64(i)*int64(opts.LineBytes)
-			fmt.Fprintf(cw.Columns[0], "%s%s\n", rootIndent, padFormatInt(lineStartByte, opts.AddrBase, addrWidth))
+			fmt.Fprintf(cw.Columns[0], "%s%s\n", rootIndent, num.PadFormatInt(lineStartByte, opts.AddrBase, addrWidth))
 			fmt.Fprintf(cw.Columns[1], "|\n")
 			fmt.Fprintf(cw.Columns[3], "|\n")
 			fmt.Fprintf(cw.Columns[5], "|\n")
@@ -207,7 +184,7 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 }
 
 func (v *Value) Dump(w io.Writer, opts DumpOptions) error {
-	maxAddrIndentWidth := digitsInBase(bitio.BitsByteCount(v.RootBitBuf.Len()), opts.AddrBase)
+	maxAddrIndentWidth := num.DigitsInBase(bitio.BitsByteCount(v.RootBitBuf.Len()), opts.AddrBase)
 	makeWalkFn := func(fn WalkFn) WalkFn {
 		return func(v *Value, rootV *Value, depth int, rootDepth int) error {
 			if opts.MaxDepth != 0 && depth > opts.MaxDepth {
@@ -224,7 +201,7 @@ func (v *Value) Dump(w io.Writer, opts DumpOptions) error {
 
 	v.WalkPreOrder(makeWalkFn(func(v *Value, rootV *Value, depth int, rootDepth int) error {
 		if v.IsRoot {
-			addrIndentWidth := rootDepth + digitsInBase(bitio.BitsByteCount(v.RootBitBuf.Len()), opts.AddrBase)
+			addrIndentWidth := rootDepth + num.DigitsInBase(bitio.BitsByteCount(v.RootBitBuf.Len()), opts.AddrBase)
 			if addrIndentWidth > maxAddrIndentWidth {
 				maxAddrIndentWidth = addrIndentWidth
 			}

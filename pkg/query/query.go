@@ -5,9 +5,10 @@ package query
 import (
 	"bufio"
 	"bytes"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"fq/internal/hexdump"
+	"fq/internal/num"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/format"
@@ -364,7 +365,10 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 				return nil, err
 			}
 		case *queryHexDump:
-			hw := hex.Dumper(q.opts.OS.Stdout())
+			hw := hexdump.New(
+				q.opts.OS.Stdout(),
+				num.DigitsInBase(bitio.BitsByteCount(vv.bb.Len()), 16),
+				q.opts.DumpOptions.LineBytes)
 			defer hw.Close()
 			if _, err := io.Copy(hw, vv.bb); err != nil {
 				return nil, err
