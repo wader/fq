@@ -21,6 +21,7 @@ const (
 	AAC_ADTS       = "aac_adts"
 	MPEG_ASC       = "mpeg_asc"
 	MPEG_ES        = "mpeg_es"
+	MPEG_SPU       = "mpeg_spu"
 	AAC_FRAME      = "aac_frame"
 	AAC_STREAM     = "aac_stream"
 	APEV2          = "apev2"

@@ -17,11 +17,12 @@ var vorbisPacketFormat []*decode.Format
 var vp9FrameFormat []*decode.Format
 var aacFrameFormat []*decode.Format
 var mpegASCFrameFormat []*decode.Format
+var mpegSPUFrameFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.MKV,
-		Description: "Matroska EBML",
+		Description: "Matroska (EBML)",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    mkvDecode,
 		Dependencies: []decode.Dependency{
@@ -29,6 +30,7 @@ func init() {
 			{Names: []string{format.VP9_FRAME}, Formats: &vp9FrameFormat},
 			{Names: []string{format.AAC_FRAME}, Formats: &aacFrameFormat},
 			{Names: []string{format.MPEG_ASC}, Formats: &mpegASCFrameFormat},
+			{Names: []string{format.MPEG_SPU}, Formats: &mpegSPUFrameFormat},
 		},
 	})
 }
@@ -425,6 +427,8 @@ func mkvDecode(d *decode.D) interface{} {
 				d.FieldDecodeLen("packet", d.BitsLeft(), vorbisPacketFormat)
 			case "V_VP9":
 				d.FieldDecodeLen("packet", d.BitsLeft(), vp9FrameFormat)
+			case "V_VOBSUB":
+				d.FieldDecodeLen("packet", d.BitsLeft(), mpegSPUFrameFormat)
 			// case "A_AAC":
 			// 	log.Println("bla")
 			// 	d.FieldDecodeLen("packet", d.BitsLeft(), aacFrameFormat)
@@ -437,8 +441,15 @@ func mkvDecode(d *decode.D) interface{} {
 
 	for _, s := range dc.blocks {
 		s.d.DecodeRangeFn(s.r.Start, s.r.Len, func(d *decode.D) {
-			fieldDecodeVint(d, "track_number", decode.NumberDecimal)
+			trackNumber := fieldDecodeVint(d, "track_number", decode.NumberDecimal)
 			d.FieldU16("timestamp")
+			d.FieldStructFn("flags", func(d *decode.D) {
+				d.FieldU4("reserved")
+				d.FieldBool("invisible")
+				d.FieldU2("lacing")
+				d.FieldBool("not_used")
+			})
+
 			// d.FieldStructFn("flags", func(d *decode.D) {
 			// 	d.FieldBool("key_frame")
 			// 	d.FieldU3("reserved")
@@ -460,7 +471,15 @@ func mkvDecode(d *decode.D) interface{} {
 			// 	d.FieldBitBufLen("data", d.BitsLeft())
 			// }
 
-			d.FieldBitBufLen("data", d.BitsLeft())
+			switch trackCodec[int(trackNumber)] {
+			case "S_VOBSUB":
+				d.FieldDecodeLen("packet", d.BitsLeft(), mpegSPUFrameFormat)
+			// case "A_AAC":
+			// 	log.Println("bla")
+			// 	d.FieldDecodeLen("packet", d.BitsLeft(), aacFrameFormat)
+			default:
+				d.FieldBitBufLen("data", d.BitsLeft())
+			}
 
 		})
 	}
