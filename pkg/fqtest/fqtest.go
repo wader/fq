@@ -15,6 +15,7 @@ import (
 	"testing"
 
 	"fq/internal/deepequal"
+	"fq/internal/shquote"
 	"fq/pkg/bitio"
 	"fq/pkg/cli"
 	"fq/pkg/decode"
@@ -23,13 +24,15 @@ import (
 type testCaseRun struct {
 	lineNr          int
 	testCase        *testCase
-	args            []string
+	args            string
 	expectedStdout  string
 	actualStdoutBuf *bytes.Buffer
 	actualStderrBuf *bytes.Buffer
 }
 
-func (tcr *testCaseRun) Args() []string    { return append([]string{"fq"}, tcr.args...) }
+func (tcr *testCaseRun) Args() []string {
+	return append([]string{"fq"}, shquote.Split(tcr.args)...)
+}
 func (tcr *testCaseRun) Stdin() io.Reader  { return nil } // TOOD: special file?
 func (tcr *testCaseRun) Stdout() io.Writer { return tcr.actualStdoutBuf }
 func (tcr *testCaseRun) Stderr() io.Writer { return tcr.actualStderrBuf }
@@ -70,7 +73,7 @@ func (tc *testCase) ToActual() string {
 		case *testCaseComment:
 			fmt.Fprintf(sb, "#%s\n", p.comment)
 		case *testCaseRun:
-			fmt.Fprintf(sb, "> %s\n", strings.Join(p.args, " "))
+			fmt.Fprintf(sb, ">%s\n", p.args)
 			fmt.Fprint(sb, p.actualStdoutBuf.String())
 		case *testCaseFile:
 			fmt.Fprintf(sb, "/%s:\n", p.name)
@@ -160,11 +163,10 @@ func parseTestCases(s string) *testCase {
 			name := n[1 : len(n)-1]
 			te.parts = append(te.parts, &testCaseFile{name: name, data: []byte(v)})
 		case strings.HasPrefix(n, ">"):
-			args := strings.Fields(strings.TrimPrefix(n, ">"))
 			te.parts = append(te.parts, &testCaseRun{
 				lineNr:          section.LineNr,
 				testCase:        te,
-				args:            args,
+				args:            strings.TrimPrefix(n, ">"),
 				expectedStdout:  v,
 				actualStdoutBuf: &bytes.Buffer{},
 				actualStderrBuf: &bytes.Buffer{},
@@ -270,7 +272,7 @@ func TestPath(t *testing.T, registry *decode.Registry) {
 					continue
 				}
 
-				t.Run(strconv.Itoa(tcr.lineNr)+":"+strings.Join(tcr.args, " "), func(t *testing.T) {
+				t.Run(strconv.Itoa(tcr.lineNr)+":"+tcr.args, func(t *testing.T) {
 					testDecodedTestCaseRun(t, registry, tcr)
 				})
 			}
