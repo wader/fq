@@ -6,6 +6,7 @@ package mkv
 // https://www.matroska.org/technical/codec_specs.html
 
 // TODO: rename simepleblock/block to just defer decode etc?
+// TODO: CRC
 
 import (
 	"fq/pkg/decode"
@@ -198,6 +199,8 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebmlTag, dc *decodeContext) 
 	tagEndBit := d.Pos() + bitsLimit
 
 	d.FieldArrayFn("element", func(d *decode.D) {
+		// var crcD *decode.D
+		// var crcStart int64
 
 		for d.Pos() < tagEndBit && d.NotEnd() {
 			startPos := d.Pos()
@@ -212,6 +215,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebmlTag, dc *decodeContext) 
 				}
 			}
 
+			const CRC = 0xbf
 			const SimpleBlock = 0xa3
 			const Block = 0xa1
 			const CodecPrivate = 0x63a2
@@ -340,6 +344,10 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebmlTag, dc *decodeContext) 
 						d.SeekRel(int64(tagSize) * 8)
 					default:
 						d.FieldBitBufLen("value", int64(tagSize)*8)
+						// if tagID == CRC {
+						// 	crcD = d
+						// 	crcStart = d.Pos()
+						// }
 
 					}
 
@@ -350,6 +358,14 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebmlTag, dc *decodeContext) 
 				}
 			})
 		}
+
+		// if crcD != nil {
+		// 	crcValue := crcD.FieldMustRemove("value")
+		// 	elementCRC := &crc.CRC{Bits: 32, Current: 0xffff_ffff, Table: crc.IEEELETable}
+		// 	//log.Printf("crc: %x-%x %d\n", crcStart/8, d.Pos()/8, (d.Pos()-crcStart)/8)
+		// 	decode.MustCopy(elementCRC, d.BitBufRange(crcStart, d.Pos()-crcStart))
+		// 	crcD.FieldChecksumRange("value", crcValue.Range.Start, crcValue.Range.Len, elementCRC.Sum(nil), decode.LittleEndian)
+		// }
 	})
 
 }

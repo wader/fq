@@ -28,7 +28,9 @@ func MakeTable(poly int, bits int) Table {
 
 var ATM8Table = MakeTable(0x7, 8)
 var ANSI16Table = MakeTable(0x8005, 16)
-var Poly04c11db7Table = MakeTable(0x04c11db7, 32)
+var Poly04c11db7Table = MakeTable(0x04c11db7, 32) // TODO: is this IEEE?
+
+var IEEELETable = MakeTable(0xedb88320, 32) // TODO: is this IEEE?
 
 // CRC implements hash.Hash
 type CRC struct {

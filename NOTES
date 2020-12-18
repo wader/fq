@@ -1,4 +1,14 @@
+mkv crc
 
+can't use range while decoding not calucalted yet
+
+fix errors and warnings
+
+nested bitbuf
+
+jq hex bin
+
+encoding used
 
 show name in dump? how?!
 
