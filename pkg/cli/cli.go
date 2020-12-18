@@ -103,9 +103,9 @@ func (m Main) run() error {
 	if fs.Arg(1) == "" {
 		src = "."
 	}
-	src = fmt.Sprintf(`open($FILENAME) | probe($FORMAT) | %s`, src)
+	src = fmt.Sprintf(`open($FILENAME) | probe($FORMAT) | %s | dot`, src)
 
-	if _, err := q.Run(src, true); err != nil {
+	if _, err := q.Run(src); err != nil {
 		return err
 	}
 

@@ -98,6 +98,7 @@ func NewQuery(opts QueryOptions) *Query {
 		gojq.WithFunction("dump", 0, 1, q.dump),
 		gojq.WithFunction("open", 0, 1, q.open),
 		gojq.WithFunction("u", 1, 1, q.u),
+		gojq.WithFunction("dot", 0, 0, q.dot),
 	}
 	q.variables = []Variable{
 		{Name: "FORMAT", Value: opts.FormatName},
@@ -331,7 +332,12 @@ func (q *Query) u(c interface{}, a []interface{}) interface{} {
 	return new(big.Int).SetUint64(n)
 }
 
-func (q *Query) Run(src string, save bool) ([]interface{}, error) {
+func (q *Query) dot(c interface{}, a []interface{}) interface{} {
+	q.dotValue = c
+	return c
+}
+
+func (q *Query) Run(src string) ([]interface{}, error) {
 	var err error
 
 	query, err := gojq.Parse(src)
@@ -416,31 +422,27 @@ func (q *Query) Run(src string, save bool) ([]interface{}, error) {
 		vs = append(vs, v)
 	}
 
-	if save && len(vs) > 0 {
-		q.dotValue = vs[0]
-	}
-
 	return vs, err
 }
 
 func (q *Query) REPL() error {
 	scanner := bufio.NewScanner(q.opts.OS.Stdin())
 
-	path := ""
-	if q.dotValue != nil {
-		if v, ok := q.dotValue.(*decode.Value); ok {
-			path = v.Path()
-		}
-	}
-
 	for {
+		path := ""
+		if q.dotValue != nil {
+			if v, ok := q.dotValue.(*decode.Value); ok {
+				path = v.Path()
+			}
+		}
+
 		fmt.Fprintf(q.opts.OS.Stdout(), "%s> ", path)
 		if !scanner.Scan() {
 			return scanner.Err()
 		}
 		src := scanner.Text()
 
-		vs, err := q.Run(src, false)
+		vs, err := q.Run(src)
 		if err != nil {
 			fmt.Fprintf(q.opts.OS.Stdout(), "err %s\n", err)
 		}
@@ -452,6 +454,6 @@ func (q *Query) REPL() error {
 			q.last = vs[0]
 		}
 
-		fmt.Fprintf(q.opts.OS.Stdout(), "%s\n", varName)
+		//fmt.Fprintf(q.opts.OS.Stdout(), "%s\n", varName)
 	}
 }
