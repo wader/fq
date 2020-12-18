@@ -78,6 +78,8 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 	fmt.Fprintf(cw.Columns[3], "|\n")
 	fmt.Fprintf(cw.Columns[5], "|\n")
 
+	isField := false
+
 	switch vv := v.V.(type) {
 	case Struct:
 		fmt.Fprintf(cw.Columns[6], "%s%s{}: %s %s fields %d (%s)\n",
@@ -87,6 +89,10 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 		fmt.Fprintf(cw.Columns[6], "%s%s[%d]: %s %s (%s)\n",
 			indent, name, len(vv), v, BitRange(v.Range).StringByteBits(opts.AddrBase), Bits(v.Range.Len).StringByteBits(opts.SizeBase))
 	default:
+		isField = true
+	}
+
+	if isField || (opts.MaxDepth != 0 && opts.MaxDepth == depth) {
 		fmt.Fprintf(cw.Columns[0], "%s%s\n",
 			rootIndent, num.PadFormatInt(startLineByte, opts.AddrBase, addrWidth))
 
@@ -161,6 +167,9 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 			fmt.Fprintf(cw.Columns[5], "|\n")
 			// TODO: dump last line?
 		}
+	}
+
+	if isField {
 
 		if isInArray {
 			fmt.Fprintf(cw.Columns[6], "%s%s (%s): ", indent, name, v.Name)

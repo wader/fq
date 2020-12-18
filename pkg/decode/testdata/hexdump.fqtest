@@ -1,0 +1,44 @@
+# ffmpeg -f lavfi -i sine -t 10ms test.mp3
+/test.mp3:
+> -f mp3 test.mp3 hexdump
+001|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|
+002|00 0f 00 00 03 4c 61 76 66 35 38 2e 34 35 2e 31|.....Lavf58.45.1|
+003|30 30 00 00 00 00 00 00 00 00 00 00 00 ff fb 40|00.............@|
+004|c0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
+005|00 00 49 6e 66 6f 00 00 00 0f 00 00 00 02 00 00|..Info..........|
+006|02 57 00 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6|.W..............|
+007|a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6|................|
+008|a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6|................|
+009|a6 a6 a6 a6 ff ff ff ff ff ff ff ff ff ff ff ff|................|
+00a|ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|
+00b|ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|
+00c|ff ff ff ff ff ff 00 00 00 00 4c 61 76 63 35 38|..........Lavc58|
+00d|2e 39 31 00 00 00 00 00 00 00 00 00 00 00 00 24|.91............$|
+00e|05 07 00 00 00 00 00 00 02 57 62 f0 5a 35 00 00|.........Wb.Z5..|
+00f|00 00 00 ff fb 50 c4 00 00 0a 2c 43 2e 55 94 80|.....P....,C.U..|
+010|01 80 93 6b 27 30 80 00 07 aa c3 8e 33 85 d3 64|...k'0......3..d|
+011|f1 a1 c1 08 1c 58 1f 5e 1f 18 1c 46 04 1e 89 e5|.....X.^...F....|
+012|b3 2e 5a 0f a8 3b 13 6b f0 f8 60 50 14 04 03 02|..Z..;.k..`P....|
+013|82 44 0c 4e 68 d1 a3 6c 1f 78 80 10 04 31 38 3f|.D.Nh..l.x...18?|
+014|c1 07 4e 74 f9 ce 5f ce 72 fe ee 9f 77 2e 0f 83|..Nt.._.r...w...|
+015|e0 f8 7c 10 0c 4a 00 c1 fd 20 01 ff ff fe 79 e7|..|..J... ....y.|
+016|9e 78 4f b1 0f 29 07 5c e5 37 51 60 d6 22 86 6a|.xO..).\.7Q`.".j|
+017|96 1a 7e a3 55 33 6e 2f e1 26 d1 e0 0a 24 26 1b|..~.U3n/.&...$&.|
+018|3d 04 70 54 7b 4a ad 19 36 1e 88 26 8b 7f ef 14|=.pT{J..6..&....|
+019|9c 0b 0d 62 7f ff ef b8 21 46 39 47 fa 09 9f 2a|...b....!F9G...*|
+01a|1a 0a 05 7d 1e 05 04 48 83 67 7e e4 f2 a0 21 13|...}...H.g~...!.|
+01b|42 41 2f ff e3 90 49 83 d6 b5 09 04 40 c0 99 4a|BA/...I.....@..J|
+01c|a0 88 11 ff fb 52 c4 04 83 c9 14 39 29 3c c3 00|.....R.....9)<..|
+01d|00 00 00 34 80 00 00 04 11 4b 36 4a 08 83 58 c9|...4.....K6J..X.|
+01e|20 d4 29 52 98 c8 c8 f9 13 80 40 24 bc 91 23 42| .)R......@$..#B|
+01f|50 56 0d 18 11 03 41 de b0 55 60 ac 44 78 b0 76|PV....A..U`.Dx.v|
+020|0a fa 3f 89 4e 95 72 81 a8 35 2a 75 67 62 2f f0|..?.N.r..5*ugb/.|
+021|57 96 3d c4 bf ff f1 12 4c 41 4d 45 33 2e 31 30|W.=.....LAME3.10|
+022|30 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa|0...............|
+023|aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa|................|
+024|aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa|................|
+025|aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa|................|
+026|aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa|................|
+027|aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa|................|
+028|aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa|................|
+028|aa aa aa aa                                    |....            |

@@ -1,4 +1,4 @@
-package format_test
+package decode_test
 
 import (
 	_ "fq/pkg/format/all"
@@ -8,6 +8,6 @@ import (
 	"testing"
 )
 
-func Test(t *testing.T) {
+func TestFQTests(t *testing.T) {
 	fqtest.TestPath(t, format.DefaultRegistry)
 }

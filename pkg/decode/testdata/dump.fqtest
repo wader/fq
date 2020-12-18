@@ -1,0 +1,33 @@
+# ffmpeg -f lavfi -i sine -t 10ms test.mp3
+/test.mp3:
+> -f mp3 test.mp3 dump(1)
+   |                                               |                |.{}: struct (mp3) 0-283+7 fields 3 (644)
+000|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|  header{}: struct (id3_v2) 0-2c+7 fields 7 (45)
+*  |29 bytes more until 2c+7                       |                |
+020|                                       ff fb 40|             ..@|  frame[3]: array 2d-283+7 (599)
+030|c0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
+*  |580 bytes more until 283+7 (end)               |                |
+280||                                              ||               |  footer[0]: array 284-NA (0)
+> -f mp3 test.mp3 dump(2)
+   |                                               |                |.{}: struct (mp3) 0-283+7 fields 3 (644)
+   |                                               |                |  header{}: struct (id3_v2) 0-2c+7 fields 7 (45)
+000|49 44 33                                       |ID3             |    magic: Correct ("ID3") 0-2+7 (3)
+000|         04                                    |   .            |    version: 4 3-3+7 (1)
+000|            00                                 |    .           |    revision: 0 4-4+7 (1)
+000|               00                              |     .          |    flags{}: struct 5-5+7 fields 4 (1)
+000|                  00 00 00 23                  |      ...#      |    size: 35 6-9+7 (4)
+000|                              54 53 53 45 00 00|          TSSE..|    frame[1]: array a-22+7 (25)
+010|00 0f 00 00 03 4c 61 76 66 35 38 2e 34 35 2e 31|.....Lavf58.45.1|
+020|30 30 00                                       |00.             |
+020|         00 00 00 00 00 00 00 00 00 00         |   ..........   |    padding: Correct (none) (zero padding) 23-2c+7 (10)
+   |                                               |                |  frame[3]: array 2d-283+7 (599)
+020|                                       ff fb 40|             ..@|    frame[0]{}: struct (mp3_frame) 2d-e2+7 fields 18 (182)
+030|c0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
+*  |163 bytes more until e2+7                      |                |
+0e0|         ff fb 50 c4 00 00 0a 2c 43 2e 55 94 80|   ..P....,C.U..|    frame[1]{}: struct (mp3_frame) e3-1b2+7 fields 17 (208)
+0f0|01 80 93 6b 27 30 80 00 07 aa c3 8e 33 85 d3 64|...k'0......3..d|
+*  |179 bytes more until 1b2+7                     |                |
+1b0|         ff fb 52 c4 04 83 c9 14 39 29 3c c3 00|   ..R.....9)<..|    frame[2]{}: struct (mp3_frame) 1b3-283+7 fields 17 (209)
+1c0|00 00 00 34 80 00 00 04 11 4b 36 4a 08 83 58 c9|...4.....K6J..X.|
+*  |180 bytes more until 283+7 (end)               |                |
+   |                                               |                |  footer[0]: array 284-NA (0)

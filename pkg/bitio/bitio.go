@@ -1,17 +1,11 @@
 package bitio
 
+// TODO: should return int64?
+
 import (
 	"errors"
 	"io"
 )
-
-func BitsByteCount(nBits int64) int64 {
-	n := nBits / 8
-	if nBits%8 != 0 {
-		n++
-	}
-	return n
-}
 
 type BitReaderAt interface {
 	ReadBitsAt(p []byte, nBits int, bitOff int64) (n int, err error)
@@ -28,6 +22,35 @@ type BitSeeker interface {
 type BitReadSeeker interface {
 	BitReader
 	BitSeeker
+}
+
+type BitReadAtSeeker interface {
+	BitReaderAt
+	BitSeeker
+}
+
+func BitsByteCount(nBits int64) int64 {
+	n := nBits / 8
+	if nBits%8 != 0 {
+		n++
+	}
+	return n
+}
+
+func EndPos(rs BitSeeker) (int64, error) {
+	c, err := rs.SeekBits(0, io.SeekCurrent)
+	if err != nil {
+		return 0, err
+	}
+	e, err := rs.SeekBits(0, io.SeekEnd)
+	if err != nil {
+		return 0, err
+	}
+	_, err = rs.SeekBits(c, io.SeekStart)
+	if err != nil {
+		return 0, err
+	}
+	return e, nil
 }
 
 // Reader is a BitReadSeeker and BitReaderAt reading from a io.ReadSeeker
@@ -198,3 +221,76 @@ func (r *SectionBitReader) Seek(offset int64, whence int) (int64, error) {
 	seekBytePos, err := r.SeekBits(offset*8, whence)
 	return seekBytePos * 8, err
 }
+
+/*
+type multiBitReader struct {
+	pos        int64
+	posIndex   int
+	readers    []BitReadAtSeeker
+	readerEnds []int64
+}
+
+func MultiBitReader(rs []BitReadAtSeeker) (*multiBitReader, error) {
+	readerEnds := make([]int64, len(rs))
+	var esSum int64
+	for i, r := range rs {
+		e, err := EndPos(r)
+		if err != nil {
+			return nil, err
+		}
+		esSum += e
+		readerEnds[i] = esSum
+	}
+	return &multiBitReader{readers: rs, readerEnds: readerEnds}, nil
+}
+
+func (m *multiBitReader) ReadBitsAt(p []byte, nBits int, bitOff int64) (n int, err error) {
+	nLeft := nBits
+	p := bitOff
+
+	var i int
+	var e int64
+	for i, e = range m.readerEnds {
+		if bitOff < e {
+			break
+		}
+	}
+
+	for nLeft > 0 {
+
+		r := m.readers[i]
+		r.ReadBitsAt(p, nLeft, p)
+
+	}
+
+	return 0, nil
+}
+
+func (m *multiBitReader) ReadBits(p []byte, nBits int) (n int, err error) {
+	n, err = m.ReadBitsAt(p, nBits, m.pos)
+	m.pos += int64(n)
+	return n, err
+}
+
+func (m *multiBitReader) SeekBits(bitOff int64, whence int) (int64, error) {
+	var p int64
+	end := m.readerEnds[len(m.readerEnds)-1]
+
+	switch whence {
+	case io.SeekStart:
+		p = m.pos
+	case io.SeekCurrent:
+		p = m.pos + bitOff
+	case io.SeekEnd:
+		p = end + bitOff
+	default:
+		panic("unknown whence")
+	}
+	if p < 0 || p > end {
+		return 0, errOffset
+	}
+
+	_, err := m.ReadBitsAt(nil, 0, p)
+	return p, err
+}
+*/
