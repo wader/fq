@@ -105,7 +105,7 @@ func (m Main) run() error {
 	}
 	src = fmt.Sprintf(`open($FILENAME) | probe($FORMAT) | %s`, src)
 
-	if _, err := q.Run(src); err != nil {
+	if _, err := q.Run(src, true); err != nil {
 		return err
 	}
 

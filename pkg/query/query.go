@@ -78,6 +78,7 @@ type Query struct {
 	gojqCompilerOptions []gojq.CompilerOption
 	allFormats          []*decode.Format
 	probeFormats        []*decode.Format
+	dotValue            interface{}
 	variables           []Variable
 	last                interface{}
 	outCount            int
@@ -96,6 +97,7 @@ func NewQuery(opts QueryOptions) *Query {
 		gojq.WithFunction("hexdump", 0, 0, q.hexdump),
 		gojq.WithFunction("dump", 0, 1, q.dump),
 		gojq.WithFunction("open", 0, 1, q.open),
+		gojq.WithFunction("u", 1, 1, q.u),
 	}
 	q.variables = []Variable{
 		{Name: "FORMAT", Value: opts.FormatName},
@@ -244,6 +246,7 @@ func (q *Query) dump(c interface{}, a []interface{}) interface{} {
 	case *decode.Value:
 		v = cc
 	case *decode.D:
+		// TODO: remove?
 		v = cc.Value
 	default:
 		return fmt.Errorf("%v: value is not a decode value", c)
@@ -310,7 +313,25 @@ func (q *Query) open(c interface{}, a []interface{}) interface{} {
 	}
 }
 
-func (q *Query) Run(src string) ([]interface{}, error) {
+func (q *Query) u(c interface{}, a []interface{}) interface{} {
+	bb, _, err := toBB(c)
+	if err != nil {
+		return err
+	}
+
+	nBits, err := toInt64(a[0])
+	if err != nil {
+		return err
+	}
+	n, err := bb.U(int(nBits))
+	if err != nil {
+		return err
+	}
+
+	return new(big.Int).SetUint64(n)
+}
+
+func (q *Query) Run(src string, save bool) ([]interface{}, error) {
 	var err error
 
 	query, err := gojq.Parse(src)
@@ -334,7 +355,7 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	iter := code.Run(nil, variableValues...)
+	iter := code.Run(q.dotValue, variableValues...)
 
 	var vs []interface{}
 	for {
@@ -357,10 +378,13 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 				return nil, err
 			}
 		case *decode.Value:
-			if err := vv.Dump(q.opts.OS.Stdout(), q.opts.DumpOptions); err != nil {
+			opts := q.opts.DumpOptions
+			opts.MaxDepth = 1
+			if err := vv.Dump(q.opts.OS.Stdout(), opts); err != nil {
 				return nil, err
 			}
 		case *decode.D:
+			// TODO: remove?
 			if err := vv.Value.Dump(q.opts.OS.Stdout(), q.opts.DumpOptions); err != nil {
 				return nil, err
 			}
@@ -392,20 +416,31 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 		vs = append(vs, v)
 	}
 
+	if save && len(vs) > 0 {
+		q.dotValue = vs[0]
+	}
+
 	return vs, err
 }
 
 func (q *Query) REPL() error {
 	scanner := bufio.NewScanner(q.opts.OS.Stdin())
 
+	path := ""
+	if q.dotValue != nil {
+		if v, ok := q.dotValue.(*decode.Value); ok {
+			path = v.Path()
+		}
+	}
+
 	for {
-		fmt.Fprintf(q.opts.OS.Stdout(), ">")
+		fmt.Fprintf(q.opts.OS.Stdout(), "%s> ", path)
 		if !scanner.Scan() {
 			return scanner.Err()
 		}
 		src := scanner.Text()
 
-		vs, err := q.Run(src)
+		vs, err := q.Run(src, false)
 		if err != nil {
 			fmt.Fprintf(q.opts.OS.Stdout(), "err %s\n", err)
 		}
