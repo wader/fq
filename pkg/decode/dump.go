@@ -82,9 +82,9 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 
 	switch vv := v.V.(type) {
 	case Struct:
-		fmt.Fprintf(cw.Columns[6], "%s%s{}: %s %s fields %d (%s)\n",
+		fmt.Fprintf(cw.Columns[6], "%s%s{}: %s %s (%s)\n",
 			indent, name,
-			v, BitRange(v.Range).StringByteBits(opts.AddrBase), len(vv), Bits(v.Range.Len).StringByteBits(opts.SizeBase))
+			v, BitRange(v.Range).StringByteBits(opts.AddrBase), Bits(v.Range.Len).StringByteBits(opts.SizeBase))
 	case Array:
 		fmt.Fprintf(cw.Columns[6], "%s%s[%d]: %s %s (%s)\n",
 			indent, name, len(vv), v, BitRange(v.Range).StringByteBits(opts.AddrBase), Bits(v.Range.Len).StringByteBits(opts.SizeBase))

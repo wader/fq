@@ -1,10 +1,10 @@
 # ffmpeg -f lavfi -i anoisesrc -t 10ms -ac 2 pkg/format/flac/testdata/test.flac
 /test.flac:
-> -f flac test.flac
-    |                                               |                |.{}: struct (flac) 0-2617+7 fields 3 (9752)
+> -f flac test.flac dump
+    |                                               |                |.{}: struct (flac) 0-2617+7 (9752)
 0000|66 4c 61 43                                    |fLaC            |  magic: Correct ("fLaC") 0-3+7 (4)
     |                                               |                |  metadatablock[3]: array 4-205f+7 (8284)
-    |                                               |                |    metadatablock[0]{}: struct 4-29+7 fields 12 (38)
+    |                                               |                |    metadatablock[0]{}: struct 4-29+7 (38)
 0000|            00                                 |    .           |      last_block: false 4-4 (0+1)
 0000|            00                                 |    .           |      type: Streaminfo (0) 4+1-4+7 (0+7)
 0000|               00 00 22                        |     .."        |      length: 34 5-7+7 (3)
@@ -19,11 +19,11 @@
 0010|               70 00 00 01 e0                  |     p....      |      total_samples_in_steam: 480 15+4-19+7 (4+4)
 0010|                              1f aa 55 47 20 3c|          ..UG <|      md5: Correct (1faa5547203c52df96986d3880a77f9b) 1a-29+7 (16)
 0020|52 df 96 98 6d 38 80 a7 7f 9b                  |R...m8....      |
-    |                                               |                |    metadatablock[1]{}: struct 2a-5b+7 fields 4 (50)
+    |                                               |                |    metadatablock[1]{}: struct 2a-5b+7 (50)
 0020|                              04               |          .     |      last_block: false 2a-2a (0+1)
 0020|                              04               |          .     |      type: Vorbis comment (4) 2a+1-2a+7 (0+7)
 0020|                                 00 00 2e      |           ...  |      length: 46 2b-2d+7 (3)
-    |                                               |                |      comment{}: struct (vorbis_comment) 2e-5b+7 fields 4 (46)
+    |                                               |                |      comment{}: struct (vorbis_comment) 2e-5b+7 (46)
 0020|                                          0d 00|              ..|        vendor_length: 13 2e-31+7 (4)
 0030|00 00                                          |..              |
 0030|      4c 61 76 66 35 38 2e 34 35 2e 31 30 30   |  Lavf58.45.100 |        vendor: "Lavf58.45.100" 32-3e+7 (13)
@@ -33,14 +33,14 @@
 0040|         15 00 00 00                           |   ....         |          user_comment[0] (user_comment_length): 21 43-46+7 (4)
 0040|                     65 6e 63 6f 64 65 72 3d 4c|       encoder=L|          user_comment[1] (user_comment): "encoder=Lavf58.45.100" 47-5b+7 (21)
 0050|61 76 66 35 38 2e 34 35 2e 31 30 30            |avf58.45.100    |
-    |                                               |                |    metadatablock[2]{}: struct 5c-205f+7 fields 4 (8196)
+    |                                               |                |    metadatablock[2]{}: struct 5c-205f+7 (8196)
 0050|                                    81         |            .   |      last_block: true 5c-5c (0+1)
 0050|                                    81         |            .   |      type: Padding (1) 5c+1-5c+7 (0+7)
 0050|                                       00 20 00|             . .|      length: 8192 5d-5f+7 (3)
 0060|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|      data: 00000000000000000000000000000000... 60-205f+7 (8192)
 *   |8176 bytes more until 205f+7                   |                |
     |                                               |                |  frame[1]: array 2060-2617+7 (1464)
-    |                                               |                |    frame[0]{}: struct 2060-2617+7 fields 13 (1464)
+    |                                               |                |    frame[0]{}: struct 2060-2617+7 (1464)
 2060|ff f8                                          |..              |      sync: Correct (3ffe) 2060-2061+5 (1+6)
 2060|   f8                                          | .              |      reserved0: Correct (0) 2061+6-2061+6 (0+1)
 2060|   f8                                          | .              |      blocking_strategy: Fixed (0) 2061+7-2061+7 (0+1)
@@ -49,12 +49,12 @@
 2060|         8c                                    |   .            |      channel_assignment: left/side (2) 2063-2063+3 (0+4)
 2060|         8c                                    |   .            |      sample_size: 24 2063+4-2063+6 (0+3)
 2060|         8c                                    |   .            |      reserved1: Correct (0) 2063+7-2063+7 (0+1)
-    |                                               |                |      end_of_header{}: struct 2064-2066+7 fields 2 (3)
+    |                                               |                |      end_of_header{}: struct 2064-2066+7 (3)
 2060|            00                                 |    .           |        frame_number: 0 2064-2064+7 (1)
 2060|               01 df                           |     ..         |        block_size: 480 2065-2066+7 (2)
 2060|                     a8                        |       .        |      crc: Correct (a8) 2067-2067+7 (1)
     |                                               |                |      subframe[2]: array 2068-2615+5 (1453+6)
-    |                                               |                |        subframe[0]{}: struct 2068-2611+4 fields 13 (1449+5)
+    |                                               |                |        subframe[0]{}: struct 2068-2611+4 (1449+5)
 2060|                        4c                     |        L       |          zero_bit: Correct (0) 2068-2068 (0+1)
 2060|                        4c                     |        L       |          subframe_type: LPC (3) 2068+1-2068+6 (0+6)
 2060|                        4c                     |        L       |          lpc_order: 7 2068+7-NA (0)
@@ -84,12 +84,12 @@
 2080|                                    90         |            .   |          partition_order: 0 208c+4-208c+7 (0+4)
 2080|                                               |                |          rice_partitions: 1 208d-NA (0)
     |                                               |                |          partition[1]: array 208d-2611+4 (1412+5)
-    |                                               |                |            partition[0]{}: struct 208d-2611+4 fields 2 (1412+5)
+    |                                               |                |            partition[0]{}: struct 208d-2611+4 (1412+5)
 2080|                                       b3      |             .  |              rice_parameter: 22 208d-208d+4 (0+5)
 2080|                                       b3 52 21|             .R!|              samples: 6a4430351171b4d02a2871949099f939... 208d+5-2611+4 (1412)
 2090|81 a8 8b 8d a6 81 51 43 8c a4 84 cf c9 cd 23 2d|......QC......#-|
 *   |1394 bytes more until 2611+4                   |                |
-    |                                               |                |        subframe[1]{}: struct 2611+5-2615+5 fields 6 (4+1)
+    |                                               |                |        subframe[1]{}: struct 2611+5-2615+5 (4+1)
 2610|   80                                          | .              |          zero_bit: Correct (0) 2611+5-2611+5 (0+1)
 2610|   80 00                                       | ..             |          subframe_type: Constant (0) 2611+6-2612+3 (0+6)
 2610|      00                                       |  .             |          lpc_order: 0 2612+4-NA (0)
