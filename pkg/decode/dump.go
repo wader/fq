@@ -82,12 +82,9 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 
 	switch vv := v.V.(type) {
 	case Struct:
-		fmt.Fprintf(cw.Columns[6], "%s%s{}: %s %s (%s)\n",
-			indent, name,
-			v, BitRange(v.Range).StringByteBits(opts.AddrBase), Bits(v.Range.Len).StringByteBits(opts.SizeBase))
+		fmt.Fprintf(cw.Columns[6], "%s%s{}: %s", indent, name, v)
 	case Array:
-		fmt.Fprintf(cw.Columns[6], "%s%s[%d]: %s %s (%s)\n",
-			indent, name, len(vv), v, BitRange(v.Range).StringByteBits(opts.AddrBase), Bits(v.Range.Len).StringByteBits(opts.SizeBase))
+		fmt.Fprintf(cw.Columns[6], "%s%s[%d]: %s", indent, name, len(vv), v)
 	default:
 		isField = true
 	}
@@ -170,15 +167,16 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 	}
 
 	if isField {
-
 		if isInArray {
 			fmt.Fprintf(cw.Columns[6], "%s%s (%s): ", indent, name, v.Name)
 		} else {
 			fmt.Fprintf(cw.Columns[6], "%s%s: ", indent, name)
 		}
-		fmt.Fprintf(cw.Columns[6], "%s %s (%s)\n",
-			v, BitRange(v.Range).StringByteBits(opts.AddrBase), Bits(v.Range.Len).StringByteBits(opts.SizeBase))
+		fmt.Fprintf(cw.Columns[6], "%s", v)
 	}
+
+	fmt.Fprintf(cw.Columns[6], " %s (%s)\n",
+		BitRange(v.Range).StringByteBits(opts.AddrBase), Bits(v.Range.Len).StringByteBits(opts.SizeBase))
 
 	if v.Error != nil {
 		fmt.Fprintf(cw.Columns[6], "%s!%s\n", indent, v.Error)
