@@ -1,6 +1,7 @@
 package bitio
 
 // TODO: should return int64?
+// TODO: document len(p)/nBits, should be +1 for when not aligned
 
 import (
 	"errors"
@@ -102,10 +103,10 @@ func (r *Reader) ReadBitsAt(p []byte, nBits int, bitOffset int64) (int, error) {
 
 	// TODO: copy smartness if many bytes
 	for i := 0; i < nBytes; i++ {
-		p[i] = byte(Uint64(r.buf, readSkipBits+i*8, 8))
+		p[i] = byte(Read64(r.buf, readSkipBits+i*8, 8))
 	}
 	if restBits != 0 {
-		p[nBytes] = byte(Uint64(r.buf, readSkipBits+nBytes*8, restBits)) << (8 - restBits)
+		p[nBytes] = byte(Read64(r.buf, readSkipBits+nBytes*8, restBits)) << (8 - restBits)
 	}
 
 	return nBits, err
@@ -228,6 +229,7 @@ type multiBitReader struct {
 	posIndex   int
 	readers    []BitReadAtSeeker
 	readerEnds []int64
+	buf        []byte
 }
 
 func MultiBitReader(rs []BitReadAtSeeker) (*multiBitReader, error) {
@@ -244,21 +246,58 @@ func MultiBitReader(rs []BitReadAtSeeker) (*multiBitReader, error) {
 	return &multiBitReader{readers: rs, readerEnds: readerEnds}, nil
 }
 
-func (m *multiBitReader) ReadBitsAt(p []byte, nBits int, bitOff int64) (n int, err error) {
-	nLeft := nBits
-	p := bitOff
+func (m *multiBitReader) readBitsAt(r BitReaderAt, p []byte, pOff int64, nBits int, bitOffset int64) (int, error) {
+	wantReadBytes := int(BitsByteCount(int64(nBits)))
+	if wantReadBytes > len(m.buf) {
+		// TODO: use append somehow?
+		m.buf = make([]byte, wantReadBytes)
+	}
 
-	var i int
-	var e int64
-	for i, e = range m.readerEnds {
+	readBits, err := r.ReadBitsAt(m.buf[0:wantReadBytes], nBits, bitOffset)
+	if err != nil {
+		return 0, err
+	}
+
+	if readSkipBits == 0 && nBits%8 == 0 {
+		copy(p[0:readBytes], m.buf[0:readBytes])
+		return nBits, err
+	}
+
+	nBytes := int(nBits / 8)
+	restBits := nBits % 8
+
+	// TODO: copy smartness if many bytes
+	for i := 0; i < nBytes; i++ {
+		p[i] = byte(Read64(m.buf, readSkipBits+i*8, 8))
+	}
+	if restBits != 0 {
+		p[nBytes] = byte(Read64(m.buf, readSkipBits+nBytes*8, restBits)) << (8 - restBits)
+	}
+
+	return nBits, err
+}
+
+func (m *multiBitReader) ReadBitsAt(p []byte, nBits int, bitOff int64) (n int, err error) {
+	wantReadBytes := int(BitsByteCount(int64(nBits)))
+	if wantReadBytes > len(m.buf) {
+		// TODO: use append somehow?
+		m.buf = make([]byte, wantReadBytes)
+	}
+
+	nLeft := nBits
+
+	var ci int
+	var ce BitReaderAt
+	for i, e := range m.readerEnds {
 		if bitOff < e {
+			ci = i
 			break
 		}
+		ce = e
 	}
 
 	for nLeft > 0 {
-
-		r := m.readers[i]
+		r := m.readers[ci]
 		r.ReadBitsAt(p, nLeft, p)
 
 	}

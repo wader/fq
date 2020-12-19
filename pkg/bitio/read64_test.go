@@ -80,7 +80,7 @@ func TestUint64(t *testing.T) {
 	}
 	for _, tC := range testCases {
 		t.Run(fmt.Sprintf("%s %d %d", hex.EncodeToString(tC.buf), tC.bitPos, tC.bits), func(t *testing.T) {
-			actual := bitio.Uint64(tC.buf, tC.bitPos, tC.bits)
+			actual := bitio.Read64(tC.buf, tC.bitPos, tC.bits)
 			if tC.expected != actual {
 				t.Errorf("expected %x, got %x", tC.expected, actual)
 			}
@@ -91,7 +91,7 @@ func TestUint64(t *testing.T) {
 func TestUint64Panic(t *testing.T) {
 	// TODO: check panic string
 	defer func() { _ = recover() }()
-	bitio.Uint64([]byte{}, 0, 65)
+	bitio.Read64([]byte{}, 0, 65)
 	t.Error("should panic")
 }
 

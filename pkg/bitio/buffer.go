@@ -172,7 +172,7 @@ func (b *Buffer) bits(nBits int) (uint64, error) {
 		return 0, err
 	}
 
-	return Uint64(buf[:], 0, nBits), nil
+	return Read64(buf[:], 0, nBits), nil
 }
 
 // Bits reads nBits bits from buffer
