@@ -73,15 +73,22 @@ type Variable struct {
 	Value interface{}
 }
 
+type Function struct {
+	Name     string
+	MinArity int
+	MaxArity int
+	Fn       func(interface{}, []interface{}) interface{}
+}
+
 type Query struct {
-	opts                QueryOptions
-	gojqCompilerOptions []gojq.CompilerOption
-	allFormats          []*decode.Format
-	probeFormats        []*decode.Format
-	dotValue            interface{}
-	variables           []Variable
-	last                interface{}
-	outCount            int
+	opts         QueryOptions
+	allFormats   []*decode.Format
+	probeFormats []*decode.Format
+	dotValue     interface{}
+	variables    []Variable
+	functions    []Function
+	last         interface{}
+	outCount     int
 }
 
 func NewQuery(opts QueryOptions) *Query {
@@ -90,15 +97,19 @@ func NewQuery(opts QueryOptions) *Query {
 	// TODO: cleanup group names and panics
 	q.allFormats = opts.Registry.MustAll()
 	q.probeFormats = opts.Registry.MustGroup(format.PROBE)
-	q.gojqCompilerOptions = []gojq.CompilerOption{
-		gojq.WithFunction("bits", 0, 2, q.bits),
-		gojq.WithFunction("string", 0, 0, q.string_),
-		gojq.WithFunction("probe", 0, 1, q.probe),
-		gojq.WithFunction("hexdump", 0, 0, q.hexdump),
-		gojq.WithFunction("dump", 0, 1, q.dump),
-		gojq.WithFunction("open", 0, 1, q.open),
-		gojq.WithFunction("u", 1, 1, q.u),
-		gojq.WithFunction("dot", 0, 0, q.dot),
+	q.functions = []Function{
+		{"help", 0, 0, q.help},
+		{"bits", 0, 2, q.bits},
+		{"string", 0, 0, q.string_},
+		{"probe", 0, 1, q.makeProbeFn(q.probeFormats)},
+		{"hexdump", 0, 0, q.hexdump},
+		{"dump", 0, 1, q.dump},
+		{"open", 0, 1, q.open},
+		{"u", 1, 1, q.u},
+		{"dot", 0, 0, q.dot},
+	}
+	for _, f := range q.allFormats {
+		q.functions = append(q.functions, Function{f.Name, 0, 0, q.makeProbeFn([]*decode.Format{f})})
 	}
 	q.variables = []Variable{
 		{Name: "FORMAT", Value: opts.FormatName},
@@ -120,6 +131,35 @@ type queryDump struct {
 
 type queryHexDump struct {
 	bb *bitio.Buffer
+}
+
+type queryHelp struct{}
+
+func (q *Query) help(c interface{}, a []interface{}) interface{} {
+	return &queryHelp{}
+}
+
+func (q *Query) makeProbeFn(formats []*decode.Format) func(c interface{}, a []interface{}) interface{} {
+	return func(c interface{}, a []interface{}) interface{} {
+		bb, filename, err := toBB(c)
+		if err != nil {
+			return err
+		}
+
+		opts := map[string]interface{}{}
+
+		name := "unnamed"
+		if filename != "" {
+			name = filename
+		}
+
+		dv, _, errs := decode.Probe(name, bb, formats, decode.ProbeOptions{FormatOptions: opts})
+		if dv == nil {
+			return errs
+		}
+
+		return dv
+	}
 }
 
 func (q *Query) bits(c interface{}, a []interface{}) interface{} {
@@ -182,52 +222,6 @@ func (q *Query) string_(c interface{}, a []interface{}) interface{} {
 	}
 
 	return string(sb.String())
-}
-
-func (q *Query) probe(c interface{}, a []interface{}) interface{} {
-	bb, filename, err := toBB(c)
-	if err != nil {
-		return err
-	}
-
-	opts := map[string]interface{}{}
-	formats := q.probeFormats
-
-	if len(a) >= 1 {
-		formatName, ok := a[0].(string)
-		if !ok {
-			return fmt.Errorf("format name is not a string")
-		}
-
-		if strings.HasSuffix(formatName, ".jq") {
-			var err error
-			formats, err = q.opts.Registry.Group("jq")
-
-			script, err := ioutil.ReadFile(formatName)
-			if err != nil {
-				return err
-			}
-			opts["script"] = string(script)
-		} else {
-			var err error
-			formats, err = q.opts.Registry.Group(formatName)
-			if err != nil {
-				return fmt.Errorf("%s: %s", formatName, err)
-			}
-		}
-	}
-
-	name := "unnamed"
-	if filename != "" {
-		name = filename
-	}
-
-	dv, _, errs := decode.Probe(name, bb, formats, decode.ProbeOptions{FormatOptions: opts})
-	if dv == nil {
-		return errs
-	}
-
-	return dv
 }
 
 func (q *Query) hexdump(c interface{}, a []interface{}) interface{} {
@@ -355,7 +349,10 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 	}
 
 	var compilerOpts []gojq.CompilerOption
-	compilerOpts = append(compilerOpts, q.gojqCompilerOptions...)
+	for _, f := range q.functions {
+		compilerOpts = append(compilerOpts,
+			gojq.WithFunction(f.Name, f.MinArity, f.MaxArity, f.Fn))
+	}
 	compilerOpts = append(compilerOpts, gojq.WithVariables(variableNames))
 	code, err := gojq.Compile(query, compilerOpts...)
 	if err != nil {
@@ -372,11 +369,20 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 			break
 		}
 		if err, ok = v.(error); ok {
-			fmt.Fprintf(q.opts.OS.Stderr(), "%s\n", err)
 			break
 		}
 
 		switch vv := v.(type) {
+		case *queryHelp:
+			for _, f := range q.functions {
+				for i := f.MinArity; i <= f.MaxArity; i++ {
+					fmt.Fprintf(q.opts.OS.Stdout(), "%s/%d", f.Name, i)
+					if i != f.MaxArity {
+						fmt.Fprintf(q.opts.OS.Stdout(), ", ")
+					}
+				}
+				fmt.Fprintf(q.opts.OS.Stdout(), "\n")
+			}
 		case *queryDump:
 			opts := q.opts.DumpOptions
 			opts.MaxDepth = vv.maxDepth
@@ -429,14 +435,14 @@ func (q *Query) REPL() error {
 	scanner := bufio.NewScanner(q.opts.OS.Stdin())
 
 	for {
-		path := ""
+		prompt := "> "
 		if q.dotValue != nil {
 			if v, ok := q.dotValue.(*decode.Value); ok {
-				path = v.Path()
+				prompt = v.Path() + "> "
 			}
 		}
 
-		fmt.Fprintf(q.opts.OS.Stdout(), "%s> ", path)
+		fmt.Fprint(q.opts.OS.Stdout(), prompt)
 		if !scanner.Scan() {
 			return scanner.Err()
 		}
@@ -444,7 +450,7 @@ func (q *Query) REPL() error {
 
 		vs, err := q.Run(src)
 		if err != nil {
-			fmt.Fprintf(q.opts.OS.Stdout(), "err %s\n", err)
+			fmt.Fprintf(q.opts.OS.Stdout(), "error: %s\n", err)
 		}
 		varName := fmt.Sprintf("out%d", q.outCount)
 		q.variables = append(q.variables, Variable{Name: varName, Value: vs})

@@ -87,9 +87,8 @@ func (m Main) run() error {
 	filename := fs.Arg(0)
 
 	q := query.NewQuery(query.QueryOptions{
-		FormatName: *formatNameFlag,
-		Filename:   filename,
-		Registry:   m.Registry,
+		Filename: filename,
+		Registry: m.Registry,
 		DumpOptions: decode.DumpOptions{
 			LineBytes:       16,
 			MaxDisplayBytes: *maxDisplayBytes,
@@ -103,7 +102,7 @@ func (m Main) run() error {
 	if fs.Arg(1) == "" {
 		src = "."
 	}
-	src = fmt.Sprintf(`open($FILENAME) | probe($FORMAT) | %s | dot`, src)
+	src = fmt.Sprintf(`open($FILENAME) | %s | %s | dot`, *formatNameFlag, src)
 
 	if _, err := q.Run(src); err != nil {
 		return err
