@@ -18,7 +18,7 @@ type DumpOptions struct {
 	MaxDisplayBytes int64
 	AddrBase        int
 	SizeBase        int
-	ShowSizeAddr    bool
+	Verbose         bool
 }
 
 func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth int, addrWidth int, opts DumpOptions) error {
@@ -168,15 +168,13 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 	}
 
 	if isField {
-		if isInArray {
-			fmt.Fprintf(cw.Columns[6], "%s%s (%s): ", indent, name, v.Name)
-		} else {
-			fmt.Fprintf(cw.Columns[6], "%s%s: ", indent, name)
+		fmt.Fprintf(cw.Columns[6], "%s%s: %s", indent, name, v)
+		if isInArray && opts.Verbose {
+			fmt.Fprintf(cw.Columns[6], " (%s)", v.Name)
 		}
-		fmt.Fprintf(cw.Columns[6], "%s", v)
 	}
 
-	if opts.ShowSizeAddr {
+	if opts.Verbose {
 		fmt.Fprintf(cw.Columns[6], " %s (%s)",
 			BitRange(v.Range).StringByteBits(opts.AddrBase), Bits(v.Range.Len).StringByteBits(opts.SizeBase))
 	}

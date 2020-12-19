@@ -1,4 +1,8 @@
 
+solid lines in cli? printf "\x1b(0\x78\x1b(B"
+
+show details in Path()? struct name etc?
+
 ... | default
 
 ... | push?
