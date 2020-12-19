@@ -18,6 +18,7 @@ type DumpOptions struct {
 	MaxDisplayBytes int64
 	AddrBase        int
 	SizeBase        int
+	ShowSizeAddr    bool
 }
 
 func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth int, addrWidth int, opts DumpOptions) error {
@@ -175,8 +176,10 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 		fmt.Fprintf(cw.Columns[6], "%s", v)
 	}
 
-	fmt.Fprintf(cw.Columns[6], " %s (%s)\n",
-		BitRange(v.Range).StringByteBits(opts.AddrBase), Bits(v.Range.Len).StringByteBits(opts.SizeBase))
+	if opts.ShowSizeAddr {
+		fmt.Fprintf(cw.Columns[6], " %s (%s)",
+			BitRange(v.Range).StringByteBits(opts.AddrBase), Bits(v.Range.Len).StringByteBits(opts.SizeBase))
+	}
 
 	if v.Error != nil {
 		fmt.Fprintf(cw.Columns[6], "%s!%s\n", indent, v.Error)
