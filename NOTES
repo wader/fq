@@ -1,5 +1,7 @@
 
-solid lines in cli? printf "\x1b(0\x78\x1b(B"
+solid lines in cli? printf "\x1b(0\x78\x1b(B" if LANG LC_ALL? only if -u or so? pipe /copypaste?
+\xe2\x94\x82
+
 
 show details in Path()? struct name etc?
 
