@@ -74,7 +74,7 @@ type Variable struct {
 }
 
 type Function struct {
-	Name     string
+	Names    []string
 	MinArity int
 	MaxArity int
 	Fn       func(interface{}, []interface{}) interface{}
@@ -98,18 +98,18 @@ func NewQuery(opts QueryOptions) *Query {
 	q.allFormats = opts.Registry.MustAll()
 	q.probeFormats = opts.Registry.MustGroup(format.PROBE)
 	q.functions = []Function{
-		{"help", 0, 0, q.help},
-		{"bits", 0, 2, q.bits},
-		{"string", 0, 0, q.string_},
-		{"probe", 0, 1, q.makeProbeFn(q.probeFormats)},
-		{"hexdump", 0, 0, q.hexdump},
-		{"dump", 0, 1, q.dump},
-		{"open", 0, 1, q.open},
-		{"u", 1, 1, q.u},
-		{"dot", 0, 0, q.dot},
+		{[]string{"help"}, 0, 0, q.help},
+		{[]string{"bits"}, 0, 2, q.bits},
+		{[]string{"string"}, 0, 0, q.string_},
+		{[]string{"probe"}, 0, 1, q.makeProbeFn(q.probeFormats)},
+		{[]string{"hexdump"}, 0, 0, q.hexdump},
+		{[]string{"dump", "d"}, 0, 1, q.dump},
+		{[]string{"open"}, 0, 1, q.open},
+		{[]string{"u"}, 1, 1, q.u},
+		{[]string{"dot"}, 0, 0, q.dot},
 	}
 	for _, f := range q.allFormats {
-		q.functions = append(q.functions, Function{f.Name, 0, 0, q.makeProbeFn([]*decode.Format{f})})
+		q.functions = append(q.functions, Function{[]string{f.Name}, 0, 0, q.makeProbeFn([]*decode.Format{f})})
 	}
 	q.variables = []Variable{
 		{Name: "FORMAT", Value: opts.FormatName},
@@ -350,8 +350,10 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 
 	var compilerOpts []gojq.CompilerOption
 	for _, f := range q.functions {
-		compilerOpts = append(compilerOpts,
-			gojq.WithFunction(f.Name, f.MinArity, f.MaxArity, f.Fn))
+		for _, n := range f.Names {
+			compilerOpts = append(compilerOpts,
+				gojq.WithFunction(n, f.MinArity, f.MaxArity, f.Fn))
+		}
 	}
 	compilerOpts = append(compilerOpts, gojq.WithVariables(variableNames))
 	code, err := gojq.Compile(query, compilerOpts...)
@@ -375,13 +377,13 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 		switch vv := v.(type) {
 		case *queryHelp:
 			for _, f := range q.functions {
-				for i := f.MinArity; i <= f.MaxArity; i++ {
-					fmt.Fprintf(q.opts.OS.Stdout(), "%s/%d", f.Name, i)
-					if i != f.MaxArity {
-						fmt.Fprintf(q.opts.OS.Stdout(), ", ")
+				var names []string
+				for _, n := range f.Names {
+					for j := f.MinArity; j <= f.MaxArity; j++ {
+						names = append(names, fmt.Sprintf("%s/%d", n, j))
 					}
 				}
-				fmt.Fprintf(q.opts.OS.Stdout(), "\n")
+				fmt.Fprintf(q.opts.OS.Stdout(), "%s\n", strings.Join(names, ", "))
 			}
 		case *queryDump:
 			opts := q.opts.DumpOptions
@@ -410,7 +412,9 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 				return nil, err
 			}
 		case *bitio.Buffer:
-			io.Copy(q.opts.OS.Stdout(), vv.Copy())
+			if _, err := io.Copy(q.opts.OS.Stdout(), vv.Copy()); err != nil {
+				return nil, err
+			}
 		case string, int, int32, int64, uint, uint32, uint64:
 			fmt.Fprintln(q.opts.OS.Stdout(), vv)
 		case float32:

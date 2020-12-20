@@ -8,23 +8,32 @@ import (
 	"fq/pkg/decode"
 	"fq/pkg/osenv"
 	"fq/pkg/query"
+	"io"
 	"os"
 	"sort"
 	"strings"
 )
 
-type Main struct {
-	OS       osenv.OS
-	Registry *decode.Registry
-}
+type StandardOS struct{}
+
+func (StandardOS) Stdin() io.Reader                        { return os.Stdin }
+func (StandardOS) Stdout() io.Writer                       { return os.Stdout }
+func (StandardOS) Stderr() io.Writer                       { return os.Stderr }
+func (StandardOS) Args() []string                          { return os.Args }
+func (StandardOS) Open(name string) (io.ReadSeeker, error) { return os.Open(name) }
 
 func StandardOSMain(r *decode.Registry) {
 	if err := (Main{
-		OS:       osenv.StandardOS{},
+		OS:       StandardOS{},
 		Registry: r,
 	}).Run(); err != nil {
 		os.Exit(1)
 	}
+}
+
+type Main struct {
+	OS       osenv.OS
+	Registry *decode.Registry
 }
 
 // Run cli main
