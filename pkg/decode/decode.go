@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"fq/pkg/bitio"
 	"fq/pkg/ranges"
-	"hash"
-	"io"
 	"io/ioutil"
 	"os"
 	"runtime"
@@ -542,24 +540,6 @@ func (d *D) FieldStringMapFn(name string, sm map[uint64]string, def string, fn f
 		}
 		return n, NumberDecimal, d
 	}), ok
-}
-
-func (d *D) FieldChecksum(name string, expectedNBytes int, firstBit int64, nBits int64, h hash.Hash) {
-	_, _ = io.Copy(h, d.BitBufRange(firstBit, nBits))
-	actual := h.Sum(nil)
-
-	d.FieldRangeFn(name, d.Pos(), int64(expectedNBytes)*8, func() *Value {
-		expectedBB := d.BitBufLen(int64(expectedNBytes * 8))
-		expected, _ := expectedBB.BytesLen(expectedNBytes)
-
-		hex.EncodeToString(expected)
-
-		if bytes.Equal(expected, actual) {
-			return &Value{V: expectedBB.Copy(), Symbol: "Correct"}
-		}
-
-		return &Value{V: expectedBB.Copy(), Symbol: fmt.Sprintf("Incorrect (calculated %s)", hex.EncodeToString(actual))}
-	})
 }
 
 func (d *D) FieldChecksumRange(name string, firstBit int64, nBits int64, calculated []byte, endian Endian) {

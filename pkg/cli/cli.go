@@ -111,7 +111,7 @@ func (m Main) run() error {
 	if fs.Arg(1) == "" {
 		src = "."
 	}
-	src = fmt.Sprintf(`open($FILENAME) | %s | %s | dot`, *formatNameFlag, src)
+	src = fmt.Sprintf(`open($FILENAME) | %s | %s | push`, *formatNameFlag, src)
 
 	if _, err := q.Run(src); err != nil {
 		return err

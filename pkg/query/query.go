@@ -84,7 +84,7 @@ type Query struct {
 	opts         QueryOptions
 	allFormats   []*decode.Format
 	probeFormats []*decode.Format
-	dotValue     interface{}
+	valueStack   []interface{}
 	variables    []Variable
 	functions    []Function
 	last         interface{}
@@ -106,7 +106,8 @@ func NewQuery(opts QueryOptions) *Query {
 		{[]string{"dump", "d"}, 0, 1, q.dump},
 		{[]string{"open"}, 0, 1, q.open},
 		{[]string{"u"}, 1, 1, q.u},
-		{[]string{"dot"}, 0, 0, q.dot},
+		{[]string{"push"}, 0, 0, q.push},
+		{[]string{"pop"}, 0, 0, q.pop},
 	}
 	for _, f := range q.allFormats {
 		q.functions = append(q.functions, Function{[]string{f.Name}, 0, 0, q.makeProbeFn([]*decode.Format{f})})
@@ -326,9 +327,22 @@ func (q *Query) u(c interface{}, a []interface{}) interface{} {
 	return new(big.Int).SetUint64(n)
 }
 
-func (q *Query) dot(c interface{}, a []interface{}) interface{} {
-	q.dotValue = c
+func (q *Query) push(c interface{}, a []interface{}) interface{} {
+	if _, ok := c.(error); !ok {
+		q.valueStack = append(q.valueStack, c)
+	}
 	return c
+}
+
+func (q *Query) pop(c interface{}, a []interface{}) interface{} {
+	var v interface{}
+	if len(q.valueStack) > 0 {
+		if len(q.valueStack) > 1 {
+			v = q.valueStack[len(q.valueStack)-2]
+		}
+		q.valueStack = q.valueStack[0 : len(q.valueStack)-1]
+	}
+	return v
 }
 
 func (q *Query) Run(src string) ([]interface{}, error) {
@@ -360,7 +374,11 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	iter := code.Run(q.dotValue, variableValues...)
+	var v interface{}
+	if len(q.valueStack) > 0 {
+		v = q.valueStack[len(q.valueStack)-1]
+	}
+	iter := code.Run(v, variableValues...)
 
 	var vs []interface{}
 	for {
@@ -440,8 +458,12 @@ func (q *Query) REPL() error {
 
 	for {
 		prompt := "> "
-		if q.dotValue != nil {
-			if v, ok := q.dotValue.(*decode.Value); ok {
+		var v interface{}
+		if len(q.valueStack) > 0 {
+			v = q.valueStack[len(q.valueStack)-1]
+		}
+		if v != nil {
+			if v, ok := v.(*decode.Value); ok {
 				prompt = v.Path() + "> "
 			}
 		}
