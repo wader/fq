@@ -1,4 +1,15 @@
 
+
+dump options? how? verbose? global per call?
+
+hexdump absolute buf address? same as dump?
+
+rename dump? tree? summary? show?
+
+with iter as value
+
+| json?
+
 solid lines in cli? printf "\x1b(0\x78\x1b(B" if LANG LC_ALL? only if -u or so? pipe /copypaste?
 \xe2\x94\x82
 

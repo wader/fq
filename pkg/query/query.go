@@ -1,6 +1,7 @@
 package query
 
 // TODO: rename to context etc? env?
+// TODO: per run context?
 
 import (
 	"bufio"
@@ -22,6 +23,30 @@ import (
 	"github.com/itchyny/gojq"
 )
 
+func valueToTypeString(v interface{}) (string, bool) {
+	switch v.(type) {
+	case uint, uint8, uint16, uint32, uint64, int, int8, int16, int32, int64, float32, float64, complex64, complex128, uintptr, *big.Int:
+		return "number", true
+	case string:
+		return "string", true
+	}
+	return "?", false
+}
+
+type EmptyError interface {
+	IsEmptyError() bool
+}
+
+type emptyError struct{}
+
+func (*emptyError) Error() string { return "" }
+
+func (*emptyError) IsEmptyError() bool { return true }
+
+type iterFn func() (interface{}, bool)
+
+func (i iterFn) Next() (interface{}, bool) { return i() }
+
 func toInt64(v interface{}) (int64, error) {
 	switch v := v.(type) {
 	case *big.Int:
@@ -38,7 +63,7 @@ func toInt64(v interface{}) (int64, error) {
 func toBB(v interface{}) (*bitio.Buffer, string, error) {
 	var bb *bitio.Buffer
 	switch vv := v.(type) {
-	case *queryBB:
+	case *queryOpen:
 		return vv.bb, vv.filename, nil
 	case *decode.Value:
 		var err error
@@ -84,12 +109,33 @@ type Query struct {
 	opts         QueryOptions
 	allFormats   []*decode.Format
 	probeFormats []*decode.Format
-	valueStack   []interface{}
+	inputStack   [][]interface{}
 	variables    []Variable
 	functions    []Function
-	last         interface{}
-	outCount     int
+
+	pushAcc  []interface{}
+	popCalls int
 }
+
+type queryHelp struct{}
+
+type queryOpen struct {
+	bb       *bitio.Buffer
+	filename string
+}
+
+type queryDump struct {
+	maxDepth int
+	v        *decode.Value
+}
+
+type queryHexDump struct {
+	bb *bitio.Buffer
+}
+
+type queryPush struct{}
+
+type queryPop struct{}
 
 func NewQuery(opts QueryOptions) *Query {
 	q := &Query{opts: opts}
@@ -99,12 +145,12 @@ func NewQuery(opts QueryOptions) *Query {
 	q.probeFormats = opts.Registry.MustGroup(format.PROBE)
 	q.functions = []Function{
 		{[]string{"help"}, 0, 0, q.help},
+		{[]string{"open"}, 0, 1, q.open},
+		{[]string{"dump", "d"}, 0, 1, q.dump},
+		{[]string{"hexdump"}, 0, 0, q.hexdump},
 		{[]string{"bits"}, 0, 2, q.bits},
 		{[]string{"string"}, 0, 0, q.string_},
 		{[]string{"probe"}, 0, 1, q.makeProbeFn(q.probeFormats)},
-		{[]string{"hexdump"}, 0, 0, q.hexdump},
-		{[]string{"dump", "d"}, 0, 1, q.dump},
-		{[]string{"open"}, 0, 1, q.open},
 		{[]string{"u"}, 1, 1, q.u},
 		{[]string{"push"}, 0, 0, q.push},
 		{[]string{"pop"}, 0, 0, q.pop},
@@ -120,24 +166,92 @@ func NewQuery(opts QueryOptions) *Query {
 	return q
 }
 
-type queryBB struct {
-	bb       *bitio.Buffer
-	filename string
-}
-
-type queryDump struct {
-	maxDepth int
-	v        *decode.Value
-}
-
-type queryHexDump struct {
-	bb *bitio.Buffer
-}
-
-type queryHelp struct{}
-
 func (q *Query) help(c interface{}, a []interface{}) interface{} {
 	return &queryHelp{}
+}
+
+func (q *Query) open(c interface{}, a []interface{}) interface{} {
+	var rs io.ReadSeeker
+
+	var filename string
+	if len(a) == 1 {
+		var filenameOk bool
+		filename, filenameOk = a[0].(string)
+		if !filenameOk {
+			return fmt.Errorf("filename must be a string")
+		}
+	}
+
+	if filename == "" || filename == "-" {
+		filename = "stdin"
+		buf, err := ioutil.ReadAll(q.opts.OS.Stdin())
+		if err != nil {
+			return err
+		}
+		rs = bytes.NewReader(buf)
+	} else {
+
+		f, err := q.opts.OS.Open(filename)
+		if err != nil {
+			return err
+		}
+		// TODO: query Close method that cleanups?
+		// if c, ok := f.(io.Closer); ok {
+		// 	defer c.Close()
+		// }
+		rs = f
+	}
+
+	bb, err := bitio.NewBufferFromReadSeeker(rs)
+	if err != nil {
+		return err
+	}
+
+	return &queryOpen{
+		bb:       bb,
+		filename: filename,
+	}
+}
+
+func (q *Query) dump(c interface{}, a []interface{}) interface{} {
+	var v *decode.Value
+	switch cc := c.(type) {
+	case *decode.Value:
+		v = cc
+	case *decode.D:
+		// TODO: remove?
+		v = cc.Value
+	default:
+		return fmt.Errorf("%v: value is not a decode value", c)
+	}
+
+	maxDepth := 0
+	if len(a) == 1 {
+		var ok bool
+		maxDepth, ok = a[0].(int)
+		if !ok {
+			return fmt.Errorf("max depth is not a int")
+		}
+		if maxDepth < 0 {
+			return fmt.Errorf("max depth can't be negative")
+		}
+	}
+
+	return &queryDump{
+		maxDepth: maxDepth,
+		v:        v,
+	}
+}
+
+func (q *Query) hexdump(c interface{}, a []interface{}) interface{} {
+	bb, _, err := toBB(c)
+	if err != nil {
+		return err
+	}
+
+	return &queryHexDump{
+		bb: bb,
+	}
 }
 
 func (q *Query) makeProbeFn(formats []*decode.Format) func(c interface{}, a []interface{}) interface{} {
@@ -225,90 +339,6 @@ func (q *Query) string_(c interface{}, a []interface{}) interface{} {
 	return string(sb.String())
 }
 
-func (q *Query) hexdump(c interface{}, a []interface{}) interface{} {
-	bb, _, err := toBB(c)
-	if err != nil {
-		return err
-	}
-
-	return &queryHexDump{
-		bb: bb,
-	}
-}
-
-func (q *Query) dump(c interface{}, a []interface{}) interface{} {
-	var v *decode.Value
-	switch cc := c.(type) {
-	case *decode.Value:
-		v = cc
-	case *decode.D:
-		// TODO: remove?
-		v = cc.Value
-	default:
-		return fmt.Errorf("%v: value is not a decode value", c)
-	}
-
-	maxDepth := 0
-	if len(a) == 1 {
-		var ok bool
-		maxDepth, ok = a[0].(int)
-		if !ok {
-			return fmt.Errorf("max depth is not a int")
-		}
-		if maxDepth < 0 {
-			return fmt.Errorf("max depth can't be negative")
-		}
-	}
-
-	return &queryDump{
-		maxDepth: maxDepth,
-		v:        v,
-	}
-}
-
-func (q *Query) open(c interface{}, a []interface{}) interface{} {
-	var rs io.ReadSeeker
-
-	var filename string
-	if len(a) == 1 {
-		var filenameOk bool
-		filename, filenameOk = a[0].(string)
-		if !filenameOk {
-			return fmt.Errorf("filename must be a string")
-		}
-	}
-
-	if filename == "" || filename == "-" {
-		filename = "stdin"
-		buf, err := ioutil.ReadAll(q.opts.OS.Stdin())
-		if err != nil {
-			return err
-		}
-		rs = bytes.NewReader(buf)
-	} else {
-
-		f, err := q.opts.OS.Open(filename)
-		if err != nil {
-			return err
-		}
-		// TODO: query Close method that cleanups?
-		// if c, ok := f.(io.Closer); ok {
-		// 	defer c.Close()
-		// }
-		rs = f
-	}
-
-	bb, err := bitio.NewBufferFromReadSeeker(rs)
-	if err != nil {
-		return err
-	}
-
-	return &queryBB{
-		bb:       bb,
-		filename: filename,
-	}
-}
-
 func (q *Query) u(c interface{}, a []interface{}) interface{} {
 	bb, _, err := toBB(c)
 	if err != nil {
@@ -329,24 +359,32 @@ func (q *Query) u(c interface{}, a []interface{}) interface{} {
 
 func (q *Query) push(c interface{}, a []interface{}) interface{} {
 	if _, ok := c.(error); !ok {
-		q.valueStack = append(q.valueStack, c)
+		q.pushAcc = append(q.pushAcc, c)
 	}
-	return c
+	return &queryPush{}
 }
 
+// TODO: nope this wont work with input iters
 func (q *Query) pop(c interface{}, a []interface{}) interface{} {
-	var v interface{}
-	if len(q.valueStack) > 0 {
-		if len(q.valueStack) > 1 {
-			v = q.valueStack[len(q.valueStack)-2]
-		}
-		q.valueStack = q.valueStack[0 : len(q.valueStack)-1]
-	}
-	return v
+	//q.popCalls++
+	// if len(q.inputStack) > 0 {
+	// 	q.inputStack = q.inputStack[0 : len(q.inputStack)-1]
+	// }
+
+	return &queryPop{}
 }
 
 func (q *Query) Run(src string) ([]interface{}, error) {
 	var err error
+
+	q.pushAcc = nil
+	q.popCalls = 0
+
+	if src != "" {
+		src = "inputs | " + src
+	} else {
+		src = "inputs"
+	}
 
 	query, err := gojq.Parse(src)
 	if err != nil {
@@ -355,8 +393,6 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 
 	var variableNames []string
 	var variableValues []interface{}
-	variableNames = append(variableNames, "$last")
-	variableValues = append(variableValues, q.last)
 	for _, v := range q.variables {
 		variableNames = append(variableNames, "$"+v.Name)
 		variableValues = append(variableValues, v.Value)
@@ -370,15 +406,29 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 		}
 	}
 	compilerOpts = append(compilerOpts, gojq.WithVariables(variableNames))
+	var inputs []interface{}
+	if len(q.inputStack) > 0 {
+		inputs = q.inputStack[len(q.inputStack)-1]
+	} else {
+		// TODO: hmm
+		inputs = []interface{}{nil}
+	}
+	compilerOpts = append(compilerOpts, gojq.WithInputIter(iterFn(func() (interface{}, bool) {
+		if len(inputs) == 0 {
+			return nil, false
+		}
+		var input interface{}
+		input, inputs = inputs[0], inputs[1:]
+		return input, true
+	})))
+
 	code, err := gojq.Compile(query, compilerOpts...)
 	if err != nil {
 		return nil, err
 	}
-	var v interface{}
-	if len(q.valueStack) > 0 {
-		v = q.valueStack[len(q.valueStack)-1]
-	}
-	iter := code.Run(v, variableValues...)
+
+	pops := 0
+	iter := code.Run(nil, variableValues...)
 
 	var vs []interface{}
 	for {
@@ -389,6 +439,10 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 			break
 		}
 		if err, ok = v.(error); ok {
+			if ee, ok := err.(EmptyError); ok && ee.IsEmptyError() {
+				err = nil
+				continue
+			}
 			break
 		}
 
@@ -403,21 +457,12 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 				}
 				fmt.Fprintf(q.opts.OS.Stdout(), "%s\n", strings.Join(names, ", "))
 			}
+		case *queryOpen:
+			fmt.Fprintf(q.opts.OS.Stdout(), "<open %s>\n", vv.filename)
 		case *queryDump:
 			opts := q.opts.DumpOptions
 			opts.MaxDepth = vv.maxDepth
 			if err := vv.v.Dump(q.opts.OS.Stdout(), opts); err != nil {
-				return nil, err
-			}
-		case *decode.Value:
-			opts := q.opts.DumpOptions
-			opts.MaxDepth = 1
-			if err := vv.Dump(q.opts.OS.Stdout(), opts); err != nil {
-				return nil, err
-			}
-		case *decode.D:
-			// TODO: remove?
-			if err := vv.Value.Dump(q.opts.OS.Stdout(), q.opts.DumpOptions); err != nil {
 				return nil, err
 			}
 		case *queryHexDump:
@@ -429,6 +474,23 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 			if _, err := io.Copy(hw, vv.bb); err != nil {
 				return nil, err
 			}
+		case *queryPush:
+			// nop
+		case *queryPop:
+			pops++
+
+		case *decode.Value:
+			opts := q.opts.DumpOptions
+			opts.MaxDepth = 1
+			if err := vv.Dump(q.opts.OS.Stdout(), opts); err != nil {
+				return nil, err
+			}
+		case *decode.D:
+			// TODO: remove?
+			if err := vv.Value.Dump(q.opts.OS.Stdout(), q.opts.DumpOptions); err != nil {
+				return nil, err
+			}
+
 		case *bitio.Buffer:
 			if _, err := io.Copy(q.opts.OS.Stdout(), vv.Copy()); err != nil {
 				return nil, err
@@ -450,6 +512,15 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 		vs = append(vs, v)
 	}
 
+	if pops > 0 {
+		q.inputStack = q.inputStack[0 : len(q.inputStack)-1]
+	}
+
+	if q.pushAcc != nil {
+		// TODO: use vs?
+		q.inputStack = append(q.inputStack, q.pushAcc)
+	}
+
 	return vs, err
 }
 
@@ -457,16 +528,25 @@ func (q *Query) REPL() error {
 	scanner := bufio.NewScanner(q.opts.OS.Stdin())
 
 	for {
-		prompt := "> "
-		var v interface{}
-		if len(q.valueStack) > 0 {
-			v = q.valueStack[len(q.valueStack)-1]
+		var v []interface{}
+		if len(q.inputStack) > 0 {
+			v = q.inputStack[len(q.inputStack)-1]
 		}
-		if v != nil {
-			if v, ok := v.(*decode.Value); ok {
-				prompt = v.Path() + "> "
+		var inputSummary []string
+		if len(v) > 0 {
+			first := v[0]
+			if vv, ok := first.(*decode.Value); ok {
+				inputSummary = append(inputSummary, vv.Path())
+			} else if t, ok := valueToTypeString(first); ok {
+				inputSummary = append(inputSummary, t)
+			} else {
+				inputSummary = append(inputSummary, "?")
 			}
 		}
+		if len(v) > 1 {
+			inputSummary = append(inputSummary, "...")
+		}
+		prompt := fmt.Sprintf("inputs[%d] [%s]> ", len(q.inputStack), strings.Join(inputSummary, ", "))
 
 		fmt.Fprint(q.opts.OS.Stdout(), prompt)
 		if !scanner.Scan() {
@@ -474,18 +554,8 @@ func (q *Query) REPL() error {
 		}
 		src := scanner.Text()
 
-		vs, err := q.Run(src)
-		if err != nil {
+		if _, err := q.Run(src); err != nil {
 			fmt.Fprintf(q.opts.OS.Stdout(), "error: %s\n", err)
 		}
-		varName := fmt.Sprintf("out%d", q.outCount)
-		q.variables = append(q.variables, Variable{Name: varName, Value: vs})
-		q.outCount++
-
-		if len(vs) > 0 {
-			q.last = vs[0]
-		}
-
-		//fmt.Fprintf(q.opts.OS.Stdout(), "%s\n", varName)
 	}
 }
