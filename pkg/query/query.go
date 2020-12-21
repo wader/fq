@@ -17,11 +17,13 @@ import (
 	"io"
 	"io/ioutil"
 	"math/big"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
+	"github.com/chzyer/readline"
 	"github.com/itchyny/gojq"
-	"github.com/peterh/liner"
 )
 
 func valueToTypeString(v interface{}) (string, bool) {
@@ -544,25 +546,31 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 }
 
 func (q *Query) REPL() error {
+	// TODO: refactor
+	historyFile := ""
+	cacheDir, err := os.UserCacheDir()
+	if err != nil {
+		return err
+	}
+	historyFile = filepath.Join(cacheDir, "fq/history")
+	_ = os.MkdirAll(filepath.Dir(historyFile), 0700)
 
-	line := liner.NewLiner()
+	l, err := readline.NewEx(&readline.Config{
+		Stdin:       ioutil.NopCloser(q.opts.OS.Stdin()),
+		Stdout:      q.opts.OS.Stdout(),
+		Stderr:      q.opts.OS.Stderr(),
+		Prompt:      "\033[31m»\033[0m ",
+		HistoryFile: historyFile,
+		// AutoComplete:    completer,
+		InterruptPrompt: "^C",
+		EOFPrompt:       "exit",
 
-	// l, err := readline.NewEx(&readline.Config{
-	// 	Stdin:       ioutil.NopCloser(q.opts.OS.Stdin()),
-	// 	Stdout:      q.opts.OS.Stdout(),
-	// 	Stderr:      q.opts.OS.Stderr(),
-	// 	Prompt:      "\033[31m»\033[0m ",
-	// 	HistoryFile: "/tmp/readline.tmp",
-	// 	// AutoComplete:    completer,
-	// 	InterruptPrompt: "^C",
-	// 	EOFPrompt:       "exit",
-
-	// 	HistorySearchFold: true,
-	// 	// FuncFilterInputRune: filterInput,
-	// })
-	// if err != nil {
-	// 	return err
-	// }
+		HistorySearchFold: true,
+		// FuncFilterInputRune: filterInput,
+	})
+	if err != nil {
+		return err
+	}
 
 	for {
 		var v []interface{}
@@ -585,21 +593,19 @@ func (q *Query) REPL() error {
 		}
 		prompt := fmt.Sprintf("inputs[%d] [%s]> ", len(q.inputStack), strings.Join(inputSummary, ", "))
 
-		// l.SetPrompt(prompt)
+		l.SetPrompt(prompt)
 
-		// src, err := l.Readline()
-		// if err == readline.ErrInterrupt {
-		// 	if len(line) == 0 {
-		// 		break
-		// 	} else {
-		// 		continue
-		// 	}
-		// } else if err == io.EOF {
-		// 	break
-		// }
+		src, err := l.Readline()
+		if err == readline.ErrInterrupt {
+			if len(src) == 0 {
+				break
+			} else {
+				continue
+			}
+		} else if err == io.EOF {
+			break
+		}
 
-		src, err := line.Prompt(prompt)
-		line.AppendHistory(src)
 		if err != nil {
 			return err
 		}
@@ -607,8 +613,6 @@ func (q *Query) REPL() error {
 		if _, err := q.Run(src); err != nil {
 			fmt.Fprintf(q.opts.OS.Stdout(), "error: %s\n", err)
 		}
-
-		// l.Refresh()
 	}
 
 	return nil
