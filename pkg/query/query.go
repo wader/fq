@@ -4,7 +4,6 @@ package query
 // TODO: per run context?
 
 import (
-	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -20,6 +19,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/chzyer/readline"
 	"github.com/itchyny/gojq"
 )
 
@@ -512,7 +512,7 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 		vs = append(vs, v)
 	}
 
-	if pops > 0 {
+	if pops > 0 && len(q.inputStack) > 0 {
 		q.inputStack = q.inputStack[0 : len(q.inputStack)-1]
 	}
 
@@ -525,7 +525,20 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 }
 
 func (q *Query) REPL() error {
-	scanner := bufio.NewScanner(q.opts.OS.Stdin())
+	l, err := readline.NewEx(&readline.Config{
+		Stdin:       ioutil.NopCloser(q.opts.OS.Stdin()),
+		Prompt:      "\033[31m»\033[0m ",
+		HistoryFile: "/tmp/readline.tmp",
+		// AutoComplete:    completer,
+		InterruptPrompt: "^C",
+		EOFPrompt:       "exit",
+
+		HistorySearchFold: true,
+		// FuncFilterInputRune: filterInput,
+	})
+	if err != nil {
+		return err
+	}
 
 	for {
 		var v []interface{}
@@ -546,16 +559,25 @@ func (q *Query) REPL() error {
 		if len(v) > 1 {
 			inputSummary = append(inputSummary, "...")
 		}
-		prompt := fmt.Sprintf("inputs[%d] [%s]> ", len(q.inputStack), strings.Join(inputSummary, ", "))
+		l.SetPrompt(fmt.Sprintf("inputs[%d] [%s]> ", len(q.inputStack), strings.Join(inputSummary, ", ")))
 
-		fmt.Fprint(q.opts.OS.Stdout(), prompt)
-		if !scanner.Scan() {
-			return scanner.Err()
+		line, err := l.Readline()
+		if err == readline.ErrInterrupt {
+			if len(line) == 0 {
+				break
+			} else {
+				continue
+			}
+		} else if err == io.EOF {
+			break
 		}
-		src := scanner.Text()
+
+		src := line
 
 		if _, err := q.Run(src); err != nil {
 			fmt.Fprintf(q.opts.OS.Stdout(), "error: %s\n", err)
 		}
 	}
+
+	return nil
 }
