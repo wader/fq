@@ -7,13 +7,13 @@ import (
 )
 
 type Writer struct {
-	w           io.Writer
-	width       int
-	startOffset int
-	fn          func(v byte) string
-	offset      int
-	buf         []byte
-	bufOffset   int
+	w               io.Writer
+	width           int
+	startLineOffset int
+	fn              func(v byte) string
+	offset          int
+	buf             []byte
+	bufOffset       int
 }
 
 // for i in $(seq 0 255) ; do printf "%02x" $i ; done | while read -n 32 s ; do echo "\"$s\""+; done
@@ -39,20 +39,20 @@ func Pair(c byte) string {
 	return hexstring[int(c)*2 : int(c)*2+2]
 }
 
-func New(w io.Writer, width int, startOffset int, fn func(v byte) string) *Writer {
+func New(w io.Writer, width int, startLineOffset int, fn func(v byte) string) *Writer {
 	return &Writer{
-		w:           w,
-		width:       width,
-		startOffset: startOffset,
-		fn:          fn,
-		offset:      0,
-		buf:         make([]byte, width*12+1), // worst case " " or "\n" + width*(XX "+ansi) + "\n"
-		bufOffset:   0,
+		w:               w,
+		width:           width,
+		startLineOffset: startLineOffset,
+		fn:              fn,
+		offset:          0,
+		buf:             make([]byte, width*12+1), // worst case " " or "\n" + width*(XX "+ansi) + "\n"
+		bufOffset:       0,
 	}
 }
 
 func (h *Writer) Write(p []byte) (n int, err error) {
-	for h.offset < h.startOffset {
+	for h.offset < h.startLineOffset {
 		b := []byte("   ")
 		if h.offset%h.width == h.width-1 {
 			b = []byte("  \n")
@@ -63,7 +63,7 @@ func (h *Writer) Write(p []byte) (n int, err error) {
 		h.offset++
 	}
 
-	if h.offset > h.startOffset {
+	if h.offset > h.startLineOffset {
 		if h.offset%h.width == 0 {
 			h.buf[0] = '\n'
 		} else {

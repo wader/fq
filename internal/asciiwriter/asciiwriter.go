@@ -5,13 +5,13 @@ import (
 )
 
 type Writer struct {
-	w           io.Writer
-	width       int
-	startOffset int
-	fn          func(v byte) string
-	offset      int
-	buf         []byte
-	bufOffset   int
+	w               io.Writer
+	width           int
+	startLineOffset int
+	fn              func(v byte) string
+	offset          int
+	buf             []byte
+	bufOffset       int
 }
 
 func SafeASCII(c byte) string {
@@ -21,20 +21,20 @@ func SafeASCII(c byte) string {
 	return string(c)
 }
 
-func New(w io.Writer, width int, startOffset int, fn func(v byte) string) *Writer {
+func New(w io.Writer, width int, startLineOffset int, fn func(v byte) string) *Writer {
 	return &Writer{
-		w:           w,
-		width:       width,
-		startOffset: startOffset,
-		fn:          fn,
-		offset:      0,
-		buf:         make([]byte, width*11+2), // worst case " " or "\n" + width*(c+ansi) + "\n"
-		bufOffset:   0,
+		w:               w,
+		width:           width,
+		startLineOffset: startLineOffset,
+		fn:              fn,
+		offset:          0,
+		buf:             make([]byte, width*11+2), // worst case " " or "\n" + width*(c+ansi) + "\n"
+		bufOffset:       0,
 	}
 }
 
 func (h *Writer) Write(p []byte) (n int, err error) {
-	for h.offset < h.startOffset {
+	for h.offset < h.startLineOffset {
 		b := []byte(" ")
 		if h.offset%h.width == h.width-1 {
 			b = []byte("\n")
@@ -45,7 +45,7 @@ func (h *Writer) Write(p []byte) (n int, err error) {
 		h.offset++
 	}
 
-	if h.offset > h.startOffset && h.offset%h.width == 0 {
+	if h.offset > h.startLineOffset && h.offset%h.width == 0 {
 		h.buf[0] = '\n'
 		h.bufOffset = 1
 	}

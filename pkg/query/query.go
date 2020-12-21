@@ -13,20 +13,23 @@ import (
 	"fq/pkg/decode"
 	"fq/pkg/format"
 	"fq/pkg/osenv"
+	"fq/pkg/ranges"
 	"io"
 	"io/ioutil"
 	"math/big"
 	"strconv"
 	"strings"
 
-	"github.com/chzyer/readline"
 	"github.com/itchyny/gojq"
+	"github.com/peterh/liner"
 )
 
 func valueToTypeString(v interface{}) (string, bool) {
 	switch v.(type) {
 	case uint, uint8, uint16, uint32, uint64, int, int8, int16, int32, int64, float32, float64, complex64, complex128, uintptr, *big.Int:
 		return "number", true
+	case bool:
+		return "boolean", true
 	case string:
 		return "string", true
 	}
@@ -60,28 +63,24 @@ func toInt64(v interface{}) (int64, error) {
 	}
 }
 
-func toBB(v interface{}) (*bitio.Buffer, string, error) {
-	var bb *bitio.Buffer
+// TODO: refactor to return struct?
+func toBitBuf(v interface{}) (*bitio.Buffer, ranges.Range, string, error) {
 	switch vv := v.(type) {
 	case *queryOpen:
-		return vv.bb, vv.filename, nil
+		return vv.bb, ranges.Range{Start: 0, Len: vv.bb.Len()}, vv.filename, nil
 	case *decode.Value:
-		var err error
-		bb, err = vv.RootBitBuf.BitBufRange(vv.Range.Start, vv.Range.Len)
-		if err != nil {
-			return nil, "", err
-		}
+		return vv.RootBitBuf, vv.Range, "", nil
 	case *bitio.Buffer:
-		bb = vv
+		return vv, ranges.Range{Start: 0, Len: vv.Len()}, "", nil
 	case []byte:
-		bb = bitio.NewBufferFromBytes(vv, -1)
+		bb := bitio.NewBufferFromBytes(vv, -1)
+		return bb, ranges.Range{Start: 0, Len: bb.Len()}, "", nil
 	case string:
-		bb = bitio.NewBufferFromBytes([]byte(vv), -1)
+		bb := bitio.NewBufferFromBytes([]byte(vv), -1)
+		return bb, ranges.Range{Start: 0, Len: bb.Len()}, "", nil
 	default:
-		return nil, "", fmt.Errorf("value should be decode value, bit buffer, byte slice or string")
+		return nil, ranges.Range{}, "", fmt.Errorf("value should be decode value, bit buffer, byte slice or string")
 	}
-
-	return bb, "", nil
 }
 
 type QueryOptions struct {
@@ -131,6 +130,7 @@ type queryDump struct {
 
 type queryHexDump struct {
 	bb *bitio.Buffer
+	r  ranges.Range
 }
 
 type queryPush struct{}
@@ -244,19 +244,24 @@ func (q *Query) dump(c interface{}, a []interface{}) interface{} {
 }
 
 func (q *Query) hexdump(c interface{}, a []interface{}) interface{} {
-	bb, _, err := toBB(c)
+	bb, r, _, err := toBitBuf(c)
 	if err != nil {
 		return err
 	}
 
 	return &queryHexDump{
 		bb: bb,
+		r:  r,
 	}
 }
 
 func (q *Query) makeProbeFn(formats []*decode.Format) func(c interface{}, a []interface{}) interface{} {
 	return func(c interface{}, a []interface{}) interface{} {
-		bb, filename, err := toBB(c)
+		bb, r, filename, err := toBitBuf(c)
+		if err != nil {
+			return err
+		}
+		bb, err = bb.BitBufRange(r.Start, r.Len)
 		if err != nil {
 			return err
 		}
@@ -278,7 +283,11 @@ func (q *Query) makeProbeFn(formats []*decode.Format) func(c interface{}, a []in
 }
 
 func (q *Query) bits(c interface{}, a []interface{}) interface{} {
-	bb, _, err := toBB(c)
+	bb, r, _, err := toBitBuf(c)
+	if err != nil {
+		return err
+	}
+	bb, err = bb.BitBufRange(r.Start, r.Len)
 	if err != nil {
 		return err
 	}
@@ -340,7 +349,11 @@ func (q *Query) string_(c interface{}, a []interface{}) interface{} {
 }
 
 func (q *Query) u(c interface{}, a []interface{}) interface{} {
-	bb, _, err := toBB(c)
+	bb, r, _, err := toBitBuf(c)
+	if err != nil {
+		return err
+	}
+	bb, err = bb.BitBufRange(r.Start, r.Len)
 	if err != nil {
 		return err
 	}
@@ -466,14 +479,20 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 				return nil, err
 			}
 		case *queryHexDump:
-			hw := hexdump.New(
-				q.opts.OS.Stdout(),
-				num.DigitsInBase(bitio.BitsByteCount(vv.bb.Len()), 16),
-				q.opts.DumpOptions.LineBytes)
-			defer hw.Close()
-			if _, err := io.Copy(hw, vv.bb); err != nil {
+			bitsByteAlign := vv.r.Start % 8
+			bb, err := vv.bb.BitBufRange(vv.r.Start-bitsByteAlign, vv.r.Len+bitsByteAlign)
+			if err != nil {
 				return nil, err
 			}
+			hw := hexdump.New(
+				q.opts.OS.Stdout(),
+				(vv.r.Start-bitsByteAlign)/8,
+				num.DigitsInBase(bitio.BitsByteCount(vv.r.Stop()+bitsByteAlign), 16),
+				q.opts.DumpOptions.LineBytes)
+			if _, err := io.Copy(hw, bb); err != nil {
+				return nil, err
+			}
+			hw.Close()
 		case *queryPush:
 			// nop
 		case *queryPop:
@@ -525,20 +544,25 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 }
 
 func (q *Query) REPL() error {
-	l, err := readline.NewEx(&readline.Config{
-		Stdin:       ioutil.NopCloser(q.opts.OS.Stdin()),
-		Prompt:      "\033[31m»\033[0m ",
-		HistoryFile: "/tmp/readline.tmp",
-		// AutoComplete:    completer,
-		InterruptPrompt: "^C",
-		EOFPrompt:       "exit",
 
-		HistorySearchFold: true,
-		// FuncFilterInputRune: filterInput,
-	})
-	if err != nil {
-		return err
-	}
+	line := liner.NewLiner()
+
+	// l, err := readline.NewEx(&readline.Config{
+	// 	Stdin:       ioutil.NopCloser(q.opts.OS.Stdin()),
+	// 	Stdout:      q.opts.OS.Stdout(),
+	// 	Stderr:      q.opts.OS.Stderr(),
+	// 	Prompt:      "\033[31m»\033[0m ",
+	// 	HistoryFile: "/tmp/readline.tmp",
+	// 	// AutoComplete:    completer,
+	// 	InterruptPrompt: "^C",
+	// 	EOFPrompt:       "exit",
+
+	// 	HistorySearchFold: true,
+	// 	// FuncFilterInputRune: filterInput,
+	// })
+	// if err != nil {
+	// 	return err
+	// }
 
 	for {
 		var v []interface{}
@@ -559,24 +583,32 @@ func (q *Query) REPL() error {
 		if len(v) > 1 {
 			inputSummary = append(inputSummary, "...")
 		}
-		l.SetPrompt(fmt.Sprintf("inputs[%d] [%s]> ", len(q.inputStack), strings.Join(inputSummary, ", ")))
+		prompt := fmt.Sprintf("inputs[%d] [%s]> ", len(q.inputStack), strings.Join(inputSummary, ", "))
 
-		line, err := l.Readline()
-		if err == readline.ErrInterrupt {
-			if len(line) == 0 {
-				break
-			} else {
-				continue
-			}
-		} else if err == io.EOF {
-			break
+		// l.SetPrompt(prompt)
+
+		// src, err := l.Readline()
+		// if err == readline.ErrInterrupt {
+		// 	if len(line) == 0 {
+		// 		break
+		// 	} else {
+		// 		continue
+		// 	}
+		// } else if err == io.EOF {
+		// 	break
+		// }
+
+		src, err := line.Prompt(prompt)
+		line.AppendHistory(src)
+		if err != nil {
+			return err
 		}
-
-		src := line
 
 		if _, err := q.Run(src); err != nil {
 			fmt.Fprintf(q.opts.OS.Stdout(), "error: %s\n", err)
 		}
+
+		// l.Refresh()
 	}
 
 	return nil
