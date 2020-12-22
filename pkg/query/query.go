@@ -591,7 +591,7 @@ func (q *Query) REPL() error {
 		if len(v) > 1 {
 			inputSummary = append(inputSummary, "...")
 		}
-		prompt := fmt.Sprintf("inputs[%d] [%s]> ", len(q.inputStack), strings.Join(inputSummary, ", "))
+		prompt := fmt.Sprintf("inputs[%d] [%s]> ", len(q.inputStack), strings.Join(inputSummary, ","))
 
 		l.SetPrompt(prompt)
 

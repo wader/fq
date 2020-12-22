@@ -107,11 +107,18 @@ func (m Main) run() error {
 		OS: m.OS,
 	})
 
-	src := fs.Arg(1)
-	if fs.Arg(1) == "" {
-		src = "."
+	srcs := []string{
+		`open($FILENAME)`,
+		*formatNameFlag,
 	}
-	src = fmt.Sprintf(`open($FILENAME) | %s | %s | push`, *formatNameFlag, src)
+	if e := fs.Arg(1); e != "" {
+		srcs = append(srcs, e)
+	}
+	if *replFlag {
+		srcs = append(srcs, `push`)
+
+	}
+	src := strings.Join(srcs, " | ")
 
 	if _, err := q.Run(src); err != nil {
 		return err
