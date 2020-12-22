@@ -13,12 +13,13 @@ import (
 )
 
 type DumpOptions struct {
-	MaxDepth        int
+	MaxDepth int
+	Verbose  bool
+
 	LineBytes       int
 	MaxDisplayBytes int64
 	AddrBase        int
 	SizeBase        int
-	Verbose         bool
 }
 
 func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth int, addrWidth int, opts DumpOptions) error {
@@ -66,6 +67,9 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 	displaySizeBytes := lastDisplayByte - startByte + 1
 	displaySizeBits := displaySizeBytes * 8
 	maxDisplaySizeBits := bufferLastBit - startByte*8 + 1
+	if sizeBits == 0 {
+		displaySizeBits = 0
+	}
 	if displaySizeBits > maxDisplaySizeBits {
 		displaySizeBits = maxDisplaySizeBits
 	}
@@ -196,7 +200,7 @@ func (v *Value) Dump(w io.Writer, opts DumpOptions) error {
 	makeWalkFn := func(fn WalkFn) WalkFn {
 		return func(v *Value, rootV *Value, depth int, rootDepth int) error {
 			if opts.MaxDepth != 0 && depth > opts.MaxDepth {
-				return ErrWalkSkip
+				return ErrWalkSkipChildren
 			}
 			// skip first root level
 			if rootDepth > 0 {

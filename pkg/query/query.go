@@ -133,6 +133,7 @@ type queryOpen struct {
 
 type queryDump struct {
 	maxDepth int
+	verbose  bool
 	v        *decode.Value
 }
 
@@ -154,7 +155,9 @@ func NewQuery(opts QueryOptions) *Query {
 	q.functions = []Function{
 		{[]string{"help"}, 0, 0, q.help},
 		{[]string{"open"}, 0, 1, q.open},
-		{[]string{"dump", "d"}, 0, 1, q.dump},
+		{[]string{"dump", "d"}, 0, 1, q.makeDumpFn(queryDump{})},
+		{[]string{"verbose", "v"}, 0, 1, q.makeDumpFn(queryDump{verbose: true})},
+		{[]string{"summary", "s"}, 0, 1, q.makeDumpFn(queryDump{maxDepth: 1})},
 		{[]string{"hexdump"}, 0, 0, q.hexdump},
 		{[]string{"bits"}, 0, 2, q.bits},
 		{[]string{"string"}, 0, 0, q.string_},
@@ -221,33 +224,36 @@ func (q *Query) open(c interface{}, a []interface{}) interface{} {
 	}
 }
 
-func (q *Query) dump(c interface{}, a []interface{}) interface{} {
-	var v *decode.Value
-	switch cc := c.(type) {
-	case *decode.Value:
-		v = cc
-	case *decode.D:
-		// TODO: remove?
-		v = cc.Value
-	default:
-		return fmt.Errorf("%v: value is not a decode value", c)
-	}
-
-	maxDepth := 0
-	if len(a) == 1 {
-		var ok bool
-		maxDepth, ok = a[0].(int)
-		if !ok {
-			return fmt.Errorf("max depth is not a int")
+func (q *Query) makeDumpFn(qd queryDump) func(c interface{}, a []interface{}) interface{} {
+	return func(c interface{}, a []interface{}) interface{} {
+		var v *decode.Value
+		switch cc := c.(type) {
+		case *decode.Value:
+			v = cc
+		case *decode.D:
+			// TODO: remove?
+			v = cc.Value
+		default:
+			return fmt.Errorf("%v: value is not a decode value", c)
 		}
-		if maxDepth < 0 {
-			return fmt.Errorf("max depth can't be negative")
-		}
-	}
 
-	return &queryDump{
-		maxDepth: maxDepth,
-		v:        v,
+		maxDepth := 0
+		if len(a) == 1 {
+			var ok bool
+			maxDepth, ok = a[0].(int)
+			if !ok {
+				return fmt.Errorf("max depth is not a int")
+			}
+			if maxDepth < 0 {
+				return fmt.Errorf("max depth can't be negative")
+			}
+		}
+
+		return &queryDump{
+			maxDepth: qd.maxDepth,
+			verbose:  qd.verbose,
+			v:        v,
+		}
 	}
 }
 
@@ -483,6 +489,7 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 		case *queryDump:
 			opts := q.opts.DumpOptions
 			opts.MaxDepth = vv.maxDepth
+			opts.Verbose = vv.verbose
 			if err := vv.v.Dump(q.opts.OS.Stdout(), opts); err != nil {
 				return nil, err
 			}

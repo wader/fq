@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i sine -f lavfi -i testsrc -t 10ms test.mkv
 /test.mkv:
-> -f mkv test.mkv dump
+> -f mkv test.mkv verbose
     |                                               |                |.{}: struct (mkv) 0-1b8b+7 (7052)
     |                                               |                |  element[2]: array 0-1b8b+7 (7052)
     |                                               |                |    element[0]{}: struct 0-27+7 (40)
@@ -252,8 +252,8 @@
 01f0|               4c f3                           |     L.         |                  size: 3315 1f5-1f6+7 (2)
 01f0|                     02                        |       .        |                  num_packets: 2 1f7-1f7+7 (1)
     |                                               |                |                  lace[2]: array 1f8-1f9+7 (2)
-01f0|                        1e                     |        .       |                    lace[0] (lace): 30 1f8-1f8+7 (1)
-01f0|                           5d                  |         ]      |                    lace[1] (lace): 93 1f9-1f9+7 (1)
+01f0|                        1e                     |        .       |                    lace[0]: 30 (lace) 1f8-1f8+7 (1)
+01f0|                           5d                  |         ]      |                    lace[1]: 93 (lace) 1f9-1f9+7 (1)
     |                                               |                |                  packet[3]: array 1fa-284+7 (139)
     |                                               |                |                    packet[0]{}: struct (vorbis_packet) 1fa-217+7 (30)
 01f0|                              01               |          .     |                      packet_type: Identification (1) 1fa-1fa+7 (1)
@@ -281,8 +281,8 @@
 *   |23 bytes more until 256+7                      |                |
 0250|                     01 00 00 00               |       ....     |                        user_comment_list_length: 1 257-25a+7 (4)
     |                                               |                |                        user_comment[2]: array 25b-273+7 (25)
-0250|                                 15 00 00 00   |           .... |                          user_comment[0] (user_comment_length): 21 25b-25e+7 (4)
-0250|                                             65|               e|                          user_comment[1] (user_comment): "encoder=Lavc58.91.100" 25f-273+7 (21)
+0250|                                 15 00 00 00   |           .... |                          user_comment[0]: 21 (user_comment_length) 25b-25e+7 (4)
+0250|                                             65|               e|                          user_comment[1]: "encoder=Lavc58.91.100" (user_comment) 25f-273+7 (21)
 0260|6e 63 6f 64 65 72 3d 4c 61 76 63 35 38 2e 39 31|ncoder=Lavc58.91|
 0270|2e 31 30 30                                    |.100            |
 0270|            01                                 |    .           |                      padding0: Correct (none) (zero padding) 274-274+6 (0+7)

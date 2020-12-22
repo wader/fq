@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.page[0] | bits' > page
 /page:
-> -f ogg_page page dump
+> -f ogg_page page verbose
   |                                               |                |.{}: struct (ogg_page) 0-39+7 (58)
 00|4f 67 67 53                                    |OggS            |  capture_pattern: Correct ("OggS") 0-3+7 (4)
 00|            00                                 |    .           |  stream_structure_version: Correct (0) 4-4+7 (1)
@@ -16,6 +16,6 @@
 10|                              01               |          .     |  page_segments: 1 1a-1a+7 (1)
 10|                                 1e            |           .    |  segment_table: 1e 1b-1b+7 (1)
   |                                               |                |  segment[1]: array 1c-39+7 (30)
-10|                                    01 76 6f 72|            .vor|    segment[0] (segment): 01766f72626973000000000144ac0000... 1c-39+7 (30)
+10|                                    01 76 6f 72|            .vor|    segment[0]: 01766f72626973000000000144ac0000... (segment) 1c-39+7 (30)
 20|62 69 73 00 00 00 00 01 44 ac 00 00 00 00 00 00|bis.....D.......|
 30|80 38 01 00 00 00 00 00 b8 01|                 |.8........|     |

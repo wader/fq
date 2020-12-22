@@ -1,11 +1,11 @@
 # ffmpeg -y -f lavfi -i sine -ac 1 -t 10ms -f mp3 file && fq file '.frame[1] | bits' > mp3-frame-mono
 /mp3-frame-mono:
-> -f mp3_frame mp3-frame-mono dump
+> -f mp3_frame mp3-frame-mono verbose
   |                                               |                |.{}: struct (mp3_frame) 0-cf+7 (208)
 00|ff fb                                          |..              |  sync: Correct (7ff) 0-1+2 (1+3)
 00|   fb                                          | .              |  mpeg_version: MPEG Version 1 (1) 1+3-1+4 (0+2)
 00|   fb                                          | .              |  layer: Layer III (3) 1+5-1+6 (0+2)
-00|   fb                                          | .              |  samples_per_frame: 1152 1+7-NA (0)
+00|                                               |                |  samples_per_frame: 1152 1+7-NA (0)
 00|   fb                                          | .              |  protection: Not protected (1) 1+7-1+7 (0+1)
 00|      50                                       |  P             |  bitrate: 64000 2-2+3 (0+4)
 00|      50                                       |  P             |  sample_rate: 44100 2+4-2+5 (0+2)

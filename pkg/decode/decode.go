@@ -92,7 +92,7 @@ func probe(name string, bb *bitio.Buffer, formats []*Format, opts ProbeOptions) 
 		var maxRange ranges.Range
 		d.Value.WalkPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
 			if d.Value != v && v.IsRoot {
-				return ErrWalkSkip
+				return ErrWalkSkipChildren
 			}
 
 			maxRange = ranges.MinMax(maxRange, v.Range)
@@ -182,7 +182,7 @@ func (d *D) FillGaps(namePrefix string) {
 	var valueRanges []ranges.Range
 	d.Value.WalkPreOrder(func(iv *Value, rootV *Value, depth int, rootDepth int) error {
 		if iv.RootBitBuf != d.Value.RootBitBuf && iv.IsRoot {
-			return ErrWalkSkip
+			return ErrWalkSkipChildren
 		}
 		switch iv.V.(type) {
 		case Struct, Array:
@@ -671,7 +671,7 @@ func (d *D) DecodeRangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 	// TODO: refactor, similar to probe
 	sd.Value.WalkPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
 		if v.IsRoot {
-			return ErrWalkSkip
+			return ErrWalkSkipChildren
 		}
 
 		//v.Range.Start += firstBit

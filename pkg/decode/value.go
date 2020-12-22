@@ -111,7 +111,7 @@ func (v *Value) Path() string {
 
 type WalkFn func(v *Value, rootV *Value, depth int, rootDepth int) error
 
-var ErrWalkSkip = errors.New("skip")
+var ErrWalkSkipChildren = errors.New("skip children")
 var ErrWalkStop = errors.New("stop")
 
 func (v *Value) walk(preOrder bool, fn WalkFn) error {
@@ -126,7 +126,7 @@ func (v *Value) walk(preOrder bool, fn WalkFn) error {
 		if preOrder {
 			err := fn(v, rootV, depth, rootDepth+rootDepthDelta)
 			switch err {
-			case ErrWalkSkip:
+			case ErrWalkSkipChildren:
 				return nil
 			case ErrWalkStop:
 				fallthrough
@@ -154,8 +154,8 @@ func (v *Value) walk(preOrder bool, fn WalkFn) error {
 		if !preOrder {
 			err := fn(v, rootV, depth, rootDepth+rootDepthDelta)
 			switch err {
-			case ErrWalkSkip:
-				return errors.New("can't skip in post-order")
+			case ErrWalkSkipChildren:
+				return errors.New("can't skip children in post-order")
 			case ErrWalkStop:
 				fallthrough
 			default:
@@ -490,6 +490,8 @@ func (v *Value) JsonProperty(name string) interface{} {
 		}
 	case "_size":
 		r = big.NewInt(v.Range.Len)
+	case "_path":
+		r = v.Path()
 	case "_raw":
 		bb, err := v.RootBitBuf.BitBufRange(v.Range.Start, v.Range.Len)
 		if err != nil {

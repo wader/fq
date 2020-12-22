@@ -1,6 +1,6 @@
 # convert -size 4x4 "xc:#000" 4x4.png
 /4x4.png:
-> -f png 4x4.png dump
+> -f png 4x4.png verbose
    |                                               |                |.{}: struct (png) 0-102+7 (259)
 000|89 50 4e 47 0d 0a 1a 0a                        |.PNG....        |  signature: Correct ("\x89PNG\r\n\x1a\n") 0-7+7 (8)
    |                                               |                |  chunk[9]: array 8-102+7 (251)

@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i sine -t 10ms -ac 2 stereo.wav
 /stereo.wav:
-> -f wav stereo.wav dump
+> -f wav stereo.wav verbose
    |                                               |                |.{}: struct (wav) 0-731+7 (1842)
 000|52 49 46 46                                    |RIFF            |  chunk_id: "RIFF" 0-3+7 (4)
 000|            2a 07 00 00                        |    *...        |  chunk_size: 1834 4-7+7 (4)

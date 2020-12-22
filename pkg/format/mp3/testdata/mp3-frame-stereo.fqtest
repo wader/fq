@@ -1,11 +1,11 @@
 # ffmpeg -y -f lavfi -i sine -ac 2 -t 10ms -f mp3 file && fq file '.frame[1] | bits' > mp3-frame-stereo
 /mp3-frame-stereo:
-> -f mp3_frame mp3-frame-stereo dump
+> -f mp3_frame mp3-frame-stereo verbose
    |                                               |                |.{}: struct (mp3_frame) 0-1a0+7 (417)
 000|ff fb                                          |..              |  sync: Correct (7ff) 0-1+2 (1+3)
 000|   fb                                          | .              |  mpeg_version: MPEG Version 1 (1) 1+3-1+4 (0+2)
 000|   fb                                          | .              |  layer: Layer III (3) 1+5-1+6 (0+2)
-000|   fb                                          | .              |  samples_per_frame: 1152 1+7-NA (0)
+000|                                               |                |  samples_per_frame: 1152 1+7-NA (0)
 000|   fb                                          | .              |  protection: Not protected (1) 1+7-1+7 (0+1)
 000|      90                                       |  .             |  bitrate: 128000 2-2+3 (0+4)
 000|      90                                       |  .             |  sample_rate: 44100 2+4-2+5 (0+2)
