@@ -1,4 +1,4 @@
-# ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.packet[0] | bits' > vorbis-identifcation
+# ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.steam[0].packet[0] | bits' > vorbis-identifcation
 /vorbis-identifcation:
 > -f vorbis_packet vorbis-identifcation verbose
   |                                               |                |.{}: struct (vorbis_packet) 0-1d+7 (30)
