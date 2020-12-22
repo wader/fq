@@ -631,6 +631,11 @@ func (d *D) ValidateAtLeastBytesLeft(nBytes int64) {
 	}
 }
 
+// TOOD: rethink
+func (d *D) FieldValueU(name string, v uint64, symbol string) {
+	d.FieldUFn(name, func() (uint64, DisplayFormat, string) { return v, NumberDecimal, symbol })
+}
+
 func (d *D) FieldValueStr(name string, v string, symbol string) {
 	d.FieldStrFn(name, func() (string, string) { return v, symbol })
 }
@@ -774,6 +779,13 @@ func (d *D) FieldDecodeBitBuf(name string, bb *bitio.Buffer, formats []*Format) 
 		panic(errs)
 	}
 	return v, dv, errs
+}
+
+// TODO: rethink this
+func (d *D) FieldBitBuf(name string, bb *bitio.Buffer) *bitio.Buffer {
+	return d.FieldBitBufFn(name, d.Pos(), 0, func() (*bitio.Buffer, string) {
+		return bb, ""
+	})
 }
 
 func (d *D) FieldBitBufRange(name string, firstBit int64, nBits int64) *bitio.Buffer {

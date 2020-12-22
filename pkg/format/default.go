@@ -15,8 +15,7 @@ const (
 	RAW   = "raw"
 
 	// TODO: rename PROBE_* something?
-	IMAGE      = "image"
-	OGG_PACKET = "ogg_packet"
+	IMAGE = "image"
 
 	AAC_ADTS       = "aac_adts"
 	MPEG_ASC       = "mpeg_asc"
@@ -41,6 +40,7 @@ const (
 	MP4            = "mp4"
 	OGG            = "ogg"
 	OGG_PAGE       = "ogg_page"
+	OPUS_PACKET    = "opus_packet"
 	PNG            = "png"
 	TAR            = "tar"
 	TIFF           = "tiff"

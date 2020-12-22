@@ -1,4 +1,6 @@
 
+refacotr run to make it possible to run steps? fixes iterator thingy?
+
 -i without input?
 
 dump options? how? verbose? global per call?

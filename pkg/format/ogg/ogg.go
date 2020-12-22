@@ -3,6 +3,7 @@ package ogg
 // https://xiph.org/ogg/doc/framing.html
 
 import (
+	"bytes"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/format"
@@ -18,25 +19,41 @@ func init() {
 		DecodeFn:    decodeOgg,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.OGG_PAGE}, Formats: &oggPage},
-			{Names: []string{format.OGG_PACKET}, Formats: &oggPacket},
+			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacket},
+			{Names: []string{format.OPUS_PACKET}, Formats: &opusPacket},
 		},
 	})
 }
 
 var oggPage []*decode.Format
-var oggPacket []*decode.Format
+var vorbisPacket []*decode.Format
+var opusPacket []*decode.Format
+
+var (
+	vorbisIdentification = []byte("\x01vorbis")
+	opusIdentification   = []byte("OpusHead")
+)
+
+type streamCodec int
+
+const (
+	codecUnknown streamCodec = iota
+	codecVorbis
+	codecOpus
+)
 
 type stream struct {
 	firstBit   int64
 	sequenceNo uint32
 	packetBuf  []byte
+	packetD    *decode.D
+	codec      streamCodec
 }
 
 func decodeOgg(d *decode.D) interface{} {
 	validPages := 0
 	streams := map[uint32]*stream{}
-
-	packets := d.FieldArray("packet")
+	streamD := d.FieldArray("stream")
 
 	d.FieldArrayFn("page", func(d *decode.D) {
 		for !d.End() {
@@ -53,7 +70,16 @@ func decodeOgg(d *decode.D) interface{} {
 
 			s, sFound := streams[p.StreamSerialNumber]
 			if !sFound {
-				s = &stream{sequenceNo: p.SequenceNo}
+				var packetD *decode.D
+				streamD.FieldStructFn("stream", func(d *decode.D) {
+					d.FieldValueU("serial_number", uint64(p.StreamSerialNumber), "")
+					packetD = d.FieldArray("packet")
+				})
+				s = &stream{
+					sequenceNo: p.SequenceNo,
+					packetD:    packetD,
+					codec:      codecUnknown,
+				}
 				streams[p.StreamSerialNumber] = s
 			}
 
@@ -84,7 +110,24 @@ func decodeOgg(d *decode.D) interface{} {
 				s.packetBuf = append(s.packetBuf, b...)
 				if psBytes < 255 { // TODO: list range maps of demuxed packets?
 					bb := bitio.NewBufferFromBytes(s.packetBuf, -1)
-					packets.FieldDecodeBitBuf("packet", bb, oggPacket)
+
+					if s.codec == codecUnknown {
+						if b, err := bb.PeekBytes(len(vorbisIdentification)); err == nil && bytes.Equal(b, vorbisIdentification) {
+							s.codec = codecVorbis
+						} else if b, err := bb.PeekBytes(len(opusIdentification)); err == nil && bytes.Equal(b, opusIdentification) {
+							s.codec = codecOpus
+						}
+					}
+
+					switch s.codec {
+					case codecVorbis:
+						s.packetD.FieldTryDecodeBitBuf("packet", bb, vorbisPacket)
+					case codecOpus:
+						s.packetD.FieldTryDecodeBitBuf("packet", bb, opusPacket)
+					case codecUnknown:
+						s.packetD.FieldBitBuf("packet", bb)
+					}
+
 					s.packetBuf = nil
 				}
 			}

@@ -52,6 +52,12 @@ type iterFn func() (interface{}, bool)
 
 func (i iterFn) Next() (interface{}, bool) { return i() }
 
+type autoCompleterFn func(line []rune, pos int) (newLine [][]rune, length int)
+
+func (a autoCompleterFn) Do(line []rune, pos int) (newLine [][]rune, length int) {
+	return a(line, pos)
+}
+
 func toInt64(v interface{}) (int64, error) {
 	switch v := v.(type) {
 	case *big.Int:
@@ -559,9 +565,18 @@ func (q *Query) REPL() error {
 		Stdin:       ioutil.NopCloser(q.opts.OS.Stdin()),
 		Stdout:      q.opts.OS.Stdout(),
 		Stderr:      q.opts.OS.Stderr(),
-		Prompt:      "\033[31m»\033[0m ",
 		HistoryFile: historyFile,
-		// AutoComplete:    completer,
+		// AutoComplete: autoCompleterFn(func(line []rune, pos int) (newLine [][]rune, length int) {
+
+		// 	q, err := gojq.Parse(string(line))
+		// 	log.Printf("err: %#+v\n", err)
+		// 	log.Printf("q: %#+v\n", q)
+
+		// 	log.Printf("line: %#+v\n", line)
+		// 	log.Printf("pos: %#+v\n", pos)
+
+		// 	return [][]rune{}, 0
+		// }),
 		InterruptPrompt: "^C",
 		EOFPrompt:       "exit",
 
