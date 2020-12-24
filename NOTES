@@ -1,10 +1,10 @@
 
-settings via object?
+settings via object? global s({verbose: true), verbose(true) ? 
 
-spu signal end?
+DONE spu signal end?
 
-select assign crahes...
-%!s(PANIC=Error method: invalid value: struct)
+DONE select assign crahes...
+DONE %!s(PANIC=Error method: invalid value: struct)
 
 sub decoder doing seek at end but no more reads... probe will ignore it as part of length, offset wrong how to fix
 

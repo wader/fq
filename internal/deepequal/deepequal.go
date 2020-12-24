@@ -1,15 +1,10 @@
 package deepequal
 
 import (
-	"bytes"
 	"fmt"
-	"io"
-	"io/ioutil"
-	"os"
-	"os/exec"
 	"reflect"
-	"strconv"
-	"strings"
+
+	"github.com/pmezard/go-difflib/difflib"
 )
 
 type tf interface {
@@ -17,31 +12,27 @@ type tf interface {
 	Fatalf(format string, args ...interface{})
 }
 
-func diff(a, b string, nLineContext int) string {
-	aFile, _ := ioutil.TempFile("", "deepequal")
-	defer os.Remove(aFile.Name())
-	_, _ = io.Copy(aFile, bytes.NewBufferString(a))
-	aFile.Close()
-	bFile, _ := ioutil.TempFile("", "deepequal")
-	defer os.Remove(bFile.Name())
-	_, _ = io.Copy(bFile, bytes.NewBufferString(b))
-	bFile.Close()
-	c := exec.Command("diff", "-U", strconv.Itoa(nLineContext), aFile.Name(), bFile.Name())
-	diffBuf, _ := c.Output()
-	realDiff := strings.Join(strings.Split(string(diffBuf), "\n")[2:], "\n")
-	return realDiff
-}
-
 func testDeepEqual(fn func(format string, args ...interface{}), name string, expected interface{}, actual interface{}) {
 	expectedStr := fmt.Sprintf("%s", expected)
 	actualStr := fmt.Sprintf("%s", actual)
 
 	if !reflect.DeepEqual(expected, actual) {
+		diff := difflib.UnifiedDiff{
+			A:        difflib.SplitLines(expectedStr),
+			B:        difflib.SplitLines(actualStr),
+			FromFile: "expected",
+			ToFile:   "actual",
+			Context:  3,
+		}
+		udiff, err := difflib.GetUnifiedDiffString(diff)
+		if err != nil {
+			panic(err)
+		}
 		fn(`
 %s diff:
 %s
 `,
-			name, diff(expectedStr, actualStr, 5))
+			name, udiff)
 	}
 }
 
