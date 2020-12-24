@@ -5,8 +5,11 @@ package mpeg
 // TODO: still some unknown data before and after pixel data
 
 import (
+	"fmt"
 	"fq/pkg/decode"
 	"fq/pkg/format"
+	"log"
+	"strings"
 )
 
 func init() {
@@ -67,32 +70,31 @@ func decodeLines(d *decode.D, lines int, width int) []string {
 	var ls []string
 
 	for i := 0; i < lines; i++ {
-		//l := ""
+		l := ""
 		for x := 0; x < int(width); {
 			n, c, b := rleValue(d)
-			_ = c
-			// pixel := " "
-			// if c != 0 {
-			// 	pixel = fmt.Sprintf("%d", c)
-			// }
+			pixel := " "
+			if c != 0 {
+				pixel = fmt.Sprintf("%d", c)
+			}
 
 			//log.Printf("n=%d c=%d b=%d\n", n, c, b)
 
 			if n == 0 && b == 16 {
-				// l += strings.Repeat(pixel, int(width)-len(l))
+				l += strings.Repeat(pixel, int(width)-len(l))
 				break
 			}
 
 			x += int(n)
 
 			//log.Printf("n: %d c %d b %d\n", n, c, b)
-			// l += strings.Repeat(pixel, int(n))
+			l += strings.Repeat(pixel, int(n))
 		}
 		if d.ByteAlignBits() > 0 {
 			d.U(d.ByteAlignBits())
 		}
 
-		//ls = append(ls, l)
+		ls = append(ls, l)
 	}
 
 	return ls
@@ -165,30 +167,30 @@ func spuDecode(d *decode.D) interface{} {
 				})
 
 				halfHeight := int(height) / 2
-				// var tLines []string
-				// var bLines []string
+				var tLines []string
+				var bLines []string
 
 				if pxdTFOffset != 0 {
 					d.SeekAbs(pxdTFOffset)
-					_ = decodeLines(d, halfHeight, int(width))
+					tLines = decodeLines(d, halfHeight, int(width))
 					d.FieldBitBufRange("top_pixels", pxdTFOffset, d.Pos()-pxdTFOffset)
 				}
 				if pxdBFOffset != 0 {
 					d.SeekAbs(pxdBFOffset)
-					_ = decodeLines(d, halfHeight, int(width))
+					bLines = decodeLines(d, halfHeight, int(width))
 					d.FieldBitBufRange("bottom_pixels", pxdBFOffset, d.Pos()-pxdBFOffset)
 
 				}
 
-				// var lines []string
-				// for i := 0; i < halfHeight; i++ {
-				// 	lines = append(lines, tLines[i])
-				// 	lines = append(lines, bLines[i])
-				// }
+				var lines []string
+				for i := 0; i < halfHeight; i++ {
+					lines = append(lines, tLines[i])
+					lines = append(lines, bLines[i])
+				}
 
-				// for _, l := range lines {
-				// 	log.Printf("l: '%s'\n", l)
-				// }
+				for _, l := range lines {
+					log.Printf("l: '%s'\n", l)
+				}
 
 				d.SeekAbs(int64(offset) * 8)
 			})

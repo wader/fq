@@ -1,4 +1,16 @@
 
+settings via object?
+
+spu signal end?
+
+select assign crahes...
+%!s(PANIC=Error method: invalid value: struct)
+
+sub decoder doing seek at end but no more reads... probe will ignore it as part of length, offset wrong how to fix
+
+decodeLen should fill gaps somehow? deferred?
+
+
 refacotr run to make it possible to run steps? fixes iterator thingy?
 
 -i without input?
