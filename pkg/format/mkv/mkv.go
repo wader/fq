@@ -21,6 +21,7 @@ var aacFrameFormat []*decode.Format
 var mpegASCFrameFormat []*decode.Format
 var mpegSPUFrameFormat []*decode.Format
 var opusPacketFrameFormat []*decode.Format
+var mp3FrameFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -35,6 +36,7 @@ func init() {
 			{Names: []string{format.MPEG_ASC}, Formats: &mpegASCFrameFormat},
 			{Names: []string{format.MPEG_SPU}, Formats: &mpegSPUFrameFormat},
 			{Names: []string{format.OPUS_PACKET}, Formats: &opusPacketFrameFormat},
+			{Names: []string{format.MP3_FRAME}, Formats: &mp3FrameFormat},
 		},
 	})
 }
@@ -446,6 +448,8 @@ func mkvDecode(d *decode.D) interface{} {
 			switch trackCodec[int(trackNumber)] {
 			case "A_VORBIS":
 				d.FieldDecodeLen("packet", d.BitsLeft(), vorbisPacketFormat)
+			case "A_MPEG/L3":
+				d.FieldDecodeLen("packet", d.BitsLeft(), mp3FrameFormat)
 			case "V_VP9":
 				d.FieldDecodeLen("packet", d.BitsLeft(), vp9FrameFormat)
 			case "V_VOBSUB":
@@ -497,6 +501,8 @@ func mkvDecode(d *decode.D) interface{} {
 				d.FieldDecodeLen("packet", d.BitsLeft(), mpegSPUFrameFormat)
 			case "A_OPUS":
 				d.FieldDecodeLen("packet", d.BitsLeft(), opusPacketFrameFormat)
+			case "A_MPEG/L3":
+				d.FieldDecodeLen("packet", d.BitsLeft(), mp3FrameFormat)
 			// case "A_AAC":
 			// 	log.Println("bla")
 			// 	d.FieldDecodeLen("packet", d.BitsLeft(), aacFrameFormat)
