@@ -4,6 +4,7 @@ package mkv
 // https://matroska.org/technical/specs/index.html
 // https://www.matroska.org/technical/basics.html
 // https://www.matroska.org/technical/codec_specs.html
+// https://wiki.xiph.org/MatroskaOpus
 
 // TODO: rename simepleblock/block to just defer decode etc?
 // TODO: CRC
@@ -19,6 +20,7 @@ var vp9FrameFormat []*decode.Format
 var aacFrameFormat []*decode.Format
 var mpegASCFrameFormat []*decode.Format
 var mpegSPUFrameFormat []*decode.Format
+var opusPacketFrameFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -32,6 +34,7 @@ func init() {
 			{Names: []string{format.AAC_FRAME}, Formats: &aacFrameFormat},
 			{Names: []string{format.MPEG_ASC}, Formats: &mpegASCFrameFormat},
 			{Names: []string{format.MPEG_SPU}, Formats: &mpegSPUFrameFormat},
+			{Names: []string{format.OPUS_PACKET}, Formats: &opusPacketFrameFormat},
 		},
 	})
 }
@@ -419,7 +422,9 @@ func mkvDecode(d *decode.D) interface{} {
 				})
 			})
 		case "A_AAC":
-			t.parentD.FieldDecodeRange("asc", t.codecPrivatePos, t.codecPrivateTagSize, mpegASCFrameFormat)
+			t.parentD.FieldDecodeRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegASCFrameFormat)
+		case "A_OPUS":
+			t.parentD.FieldDecodeRange("value", t.codecPrivatePos, t.codecPrivateTagSize, opusPacketFrameFormat)
 		default:
 			t.parentD.FieldBitBufRange("value", t.codecPrivatePos, t.codecPrivateTagSize)
 		}
@@ -490,6 +495,8 @@ func mkvDecode(d *decode.D) interface{} {
 			switch trackCodec[int(trackNumber)] {
 			case "S_VOBSUB":
 				d.FieldDecodeLen("packet", d.BitsLeft(), mpegSPUFrameFormat)
+			case "A_OPUS":
+				d.FieldDecodeLen("packet", d.BitsLeft(), opusPacketFrameFormat)
 			// case "A_AAC":
 			// 	log.Println("bla")
 			// 	d.FieldDecodeLen("packet", d.BitsLeft(), aacFrameFormat)

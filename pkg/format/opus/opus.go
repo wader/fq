@@ -15,14 +15,14 @@ func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.OPUS_PACKET,
 		Description: "Opus packet",
-		DecodeFn:    vorbisDecode,
+		DecodeFn:    opusDecode,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.VORBIS_COMMENT}, Formats: &vorbisComment},
 		},
 	})
 }
 
-func vorbisDecode(d *decode.D) interface{} {
+func opusDecode(d *decode.D) interface{} {
 	var prefix []byte
 	if d.BitsLeft() >= 8*8 {
 		prefix = d.PeekBytes(8)
