@@ -1,4 +1,7 @@
 
+
+| bits, support numbers and list as bytes? iolistish?
+
 settings via object? global s({verbose: true), verbose(true) ? 
 
 DONE spu signal end?

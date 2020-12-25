@@ -22,6 +22,8 @@ var mpegASCFrameFormat []*decode.Format
 var mpegSPUFrameFormat []*decode.Format
 var opusPacketFrameFormat []*decode.Format
 var mp3FrameFormat []*decode.Format
+var flacFormat []*decode.Format
+var flacFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -37,6 +39,8 @@ func init() {
 			{Names: []string{format.MPEG_SPU}, Formats: &mpegSPUFrameFormat},
 			{Names: []string{format.OPUS_PACKET}, Formats: &opusPacketFrameFormat},
 			{Names: []string{format.MP3_FRAME}, Formats: &mp3FrameFormat},
+			{Names: []string{format.FLAC_METADATABLOCK}, Formats: &flacMetadatablockFrameFormat},
+			{Names: []string{format.FLAC}, Formats: &flacMetadatablockFrameFormat},
 		},
 	})
 }
