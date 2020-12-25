@@ -4,7 +4,6 @@ package ogg
 
 import (
 	"bytes"
-	"fq/pkg/bitio"
 	"fq/pkg/crc"
 	"fq/pkg/decode"
 	"fq/pkg/format"
@@ -14,21 +13,12 @@ func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.OGG_PAGE,
 		Description: "OGG page",
-		DecodeFn:    oggDecode,
+		DecodeFn:    pageDecode,
 	})
 }
 
-type page struct {
-	IsLastPage         bool
-	IsFirstPage        bool
-	IsContinuedPacket  bool
-	StreamSerialNumber uint32
-	SequenceNo         uint32
-	Segments           []*bitio.Buffer
-}
-
-func oggDecode(d *decode.D) interface{} {
-	p := &page{}
+func pageDecode(d *decode.D) interface{} {
+	p := &format.OggPageOut{}
 	startPos := d.Pos()
 
 	// TODO: validate bits left

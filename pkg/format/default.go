@@ -1,6 +1,10 @@
 package format
 
-import "fq/pkg/decode"
+import (
+	"fq/pkg/bitio"
+	"fq/pkg/decode"
+	"fq/pkg/ranges"
+)
 
 var DefaultRegistry = decode.NewRegistry()
 
@@ -57,11 +61,11 @@ const (
 type FlacMetadatablockStreamInfo struct {
 	SampleRate   uint64
 	BitPerSample uint64
+	MD5Range     ranges.Range
 }
 
 type FlacMetadatablockOut struct {
 	StreamInfo FlacMetadatablockStreamInfo
-	//            *decode.D
 }
 
 type FlacFrameIn struct {
@@ -70,4 +74,13 @@ type FlacFrameIn struct {
 
 type FlacFrameOut struct {
 	SamplesBuf []byte
+}
+
+type OggPageOut struct {
+	IsLastPage         bool
+	IsFirstPage        bool
+	IsContinuedPacket  bool
+	StreamSerialNumber uint32
+	SequenceNo         uint32
+	Segments           []*bitio.Buffer
 }

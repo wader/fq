@@ -108,7 +108,7 @@ func opusDecode(d *decode.D) interface{} {
 					2: {2, "2 frames, different size"},
 					3: {0, "arbitrary number of frames"},
 				}
-				n := d.U2()
+				n := d.FieldU2("config")
 				config := framesPerPacketConfigs[n]
 				d.FieldValueU("frames", config.frames, "")
 				d.FieldValueStr("mode", config.mode, "")

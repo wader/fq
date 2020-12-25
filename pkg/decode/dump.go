@@ -29,10 +29,11 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 	}
 
 	nameV := v
+	name := nameV.Name
 	if isInArray {
 		nameV = v.Parent
+		name = ""
 	}
-	name := nameV.Name
 	if depth == 0 {
 		name = nameV.Path()
 	}
@@ -42,6 +43,38 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 
 	rootIndent := strings.Repeat(" ", rootDepth)
 	indent := strings.Repeat("  ", depth)
+
+	isField := false
+
+	fmt.Fprint(cw.Columns[6], indent, name)
+
+	switch vv := v.V.(type) {
+	case Struct:
+		fmt.Fprint(cw.Columns[6], "{}:")
+		if v.Description != "" {
+			fmt.Fprint(cw.Columns[6], " ", v.Description)
+		}
+	case Array:
+		fmt.Fprintf(cw.Columns[6], "[%d]:", len(vv))
+	default:
+		fmt.Fprintf(cw.Columns[6], ": %s", v)
+		isField = true
+		if isInArray && opts.Verbose {
+			fmt.Fprintf(cw.Columns[6], " (%s)", v.Name)
+		}
+	}
+
+	if opts.Verbose {
+		fmt.Fprintf(cw.Columns[6], " %s (%s)",
+			BitRange(v.Range).StringByteBits(opts.AddrBase), Bits(v.Range.Len).StringByteBits(opts.SizeBase))
+	}
+
+	if v.Error != nil {
+		fmt.Fprintf(cw.Columns[6], "%s!%s\n", indent, v.Error)
+		fmt.Fprintf(cw.Columns[1], "|\n")
+		fmt.Fprintf(cw.Columns[3], "|\n")
+		fmt.Fprintf(cw.Columns[5], "|\n")
+	}
 
 	bufferLastBit := rootV.RootBitBuf.Len() - 1
 	startBit := v.Range.Start
@@ -82,17 +115,6 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 	fmt.Fprintf(cw.Columns[1], "|\n")
 	fmt.Fprintf(cw.Columns[3], "|\n")
 	fmt.Fprintf(cw.Columns[5], "|\n")
-
-	isField := false
-
-	switch vv := v.V.(type) {
-	case Struct:
-		fmt.Fprintf(cw.Columns[6], "%s%s{}: %s", indent, name, v)
-	case Array:
-		fmt.Fprintf(cw.Columns[6], "%s%s[%d]: %s", indent, name, len(vv), v)
-	default:
-		isField = true
-	}
 
 	if isField || (opts.MaxDepth != 0 && opts.MaxDepth == depth) {
 		fmt.Fprintf(cw.Columns[0], "%s%s\n",
@@ -169,25 +191,6 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 			fmt.Fprintf(cw.Columns[5], "|\n")
 			// TODO: dump last line?
 		}
-	}
-
-	if isField {
-		fmt.Fprintf(cw.Columns[6], "%s%s: %s", indent, name, v)
-		if isInArray && opts.Verbose {
-			fmt.Fprintf(cw.Columns[6], " (%s)", v.Name)
-		}
-	}
-
-	if opts.Verbose {
-		fmt.Fprintf(cw.Columns[6], " %s (%s)",
-			BitRange(v.Range).StringByteBits(opts.AddrBase), Bits(v.Range.Len).StringByteBits(opts.SizeBase))
-	}
-
-	if v.Error != nil {
-		fmt.Fprintf(cw.Columns[6], "%s!%s\n", indent, v.Error)
-		fmt.Fprintf(cw.Columns[1], "|\n")
-		fmt.Fprintf(cw.Columns[3], "|\n")
-		fmt.Fprintf(cw.Columns[5], "|\n")
 	}
 
 	cw.Flush()

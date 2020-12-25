@@ -22,34 +22,29 @@ func init() {
 }
 
 func commentDecode(d *decode.D) interface{} {
-	fieldLenStr := func(d *decode.D, name string) string {
-		len := int(d.FieldU32LE(name + "_length"))
-		return d.FieldUTF8(name, len)
-	}
-	fieldLenStr(d, "vendor")
+	vendorLen := d.FieldU32LE("vendor_length")
+	d.FieldUTF8("vendor", int(vendorLen))
 	userCommentListLength := d.FieldU32LE("user_comment_list_length")
-	d.FieldArrayFn("user_comment", func(d *decode.D) {
-		for i := uint64(0); i < userCommentListLength; i++ {
-			pair := fieldLenStr(d, "user_comment")
-			pairParts := strings.SplitN(pair, "=", 2)
-			if len(pairParts) == 2 {
-				// METADATA_BLOCK_PICTURE=<base64>
-				k, v := strings.ToUpper(pairParts[0]), pairParts[1]
-				var metadataBlockPicture = "METADATA_BLOCK_PICTURE"
-				if k == metadataBlockPicture {
-					bs, err := base64.StdEncoding.DecodeString(v)
-					if err == nil {
-						bb := bitio.NewBufferFromBytes(bs, -1)
-						d.FieldDecodeBitBuf("picture",
-							bb,
-							flacPicture,
-						)
-					} else {
-						panic(err)
-					}
+	i := uint64(0)
+	d.FieldStructArrayLoopFn("user_comment", func() bool { return i < userCommentListLength }, func(d *decode.D) {
+		userCommentLength := d.FieldU32LE("length")
+		userComment := d.FieldUTF8("vendor", int(userCommentLength))
+		pairParts := strings.SplitN(userComment, "=", 2)
+		if len(pairParts) == 2 {
+			k, v := strings.ToUpper(pairParts[0]), pairParts[1]
+			var metadataBlockPicture = "METADATA_BLOCK_PICTURE"
+			if k == metadataBlockPicture {
+				// METADATA_BLOCK_PICTURE=<base64-flac-picture-metadatablock>
+				bs, err := base64.StdEncoding.DecodeString(v)
+				if err == nil {
+					bb := bitio.NewBufferFromBytes(bs, -1)
+					d.FieldDecodeBitBuf("picture", bb, flacPicture)
+				} else {
+					panic(err)
 				}
 			}
 		}
+		i++
 	})
 
 	return nil

@@ -11,6 +11,7 @@ type Format struct {
 	Groups       []string
 	MIMEs        []string
 	DecodeFn     func(d *D) interface{}
+	DecodeFn2    func(d *D, in interface{}) interface{}
 	Dependencies []Dependency
 }
 

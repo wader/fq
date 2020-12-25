@@ -22,8 +22,8 @@ var mpegASCFrameFormat []*decode.Format
 var mpegSPUFrameFormat []*decode.Format
 var opusPacketFrameFormat []*decode.Format
 var mp3FrameFormat []*decode.Format
-var flacFormat []*decode.Format
-var flacFormat []*decode.Format
+var flacMetadatablockFormat []*decode.Format
+var flacFrameFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -39,8 +39,8 @@ func init() {
 			{Names: []string{format.MPEG_SPU}, Formats: &mpegSPUFrameFormat},
 			{Names: []string{format.OPUS_PACKET}, Formats: &opusPacketFrameFormat},
 			{Names: []string{format.MP3_FRAME}, Formats: &mp3FrameFormat},
-			{Names: []string{format.FLAC_METADATABLOCK}, Formats: &flacMetadatablockFrameFormat},
-			{Names: []string{format.FLAC}, Formats: &flacMetadatablockFrameFormat},
+			{Names: []string{format.FLAC_METADATABLOCK}, Formats: &flacMetadatablockFormat},
+			{Names: []string{format.FLAC_FRAME}, Formats: &flacFrameFormat},
 		},
 	})
 }
@@ -388,6 +388,7 @@ func mkvDecode(d *decode.D) interface{} {
 	decodeMaster(d, d.BitsLeft(), ebmlRoot, dc)
 
 	trackCodec := map[int]string{}
+	var flacFrameIn *format.FlacFrameIn
 
 	for _, t := range dc.tracks {
 		if t.codec != "" {
@@ -397,6 +398,8 @@ func mkvDecode(d *decode.D) interface{} {
 		if t.parentD == nil {
 			continue
 		}
+
+		// TODO: refactor, one DecodeRangeFn or refactor to add FieldDecodeRangeFn?
 
 		switch t.codec {
 		case "A_VORBIS":
@@ -431,6 +434,18 @@ func mkvDecode(d *decode.D) interface{} {
 			t.parentD.FieldDecodeRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegASCFrameFormat)
 		case "A_OPUS":
 			t.parentD.FieldDecodeRange("value", t.codecPrivatePos, t.codecPrivateTagSize, opusPacketFrameFormat)
+		case "A_FLAC":
+			t.parentD.DecodeRangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
+				d.FieldStructFn("value", func(d *decode.D) {
+					d.FieldValidateUTF8("magic", "fLaC")
+					_, dv := d.FieldDecode("bla", flacMetadatablockFormat)
+					if dv, ok := dv.(*format.FlacMetadatablockOut); ok {
+						flacFrameIn = &format.FlacFrameIn{StreamInfo: dv.StreamInfo}
+					}
+
+					_ = flacFrameIn
+				})
+			})
 		default:
 			t.parentD.FieldBitBufRange("value", t.codecPrivatePos, t.codecPrivateTagSize)
 		}
@@ -454,10 +469,13 @@ func mkvDecode(d *decode.D) interface{} {
 				d.FieldDecodeLen("packet", d.BitsLeft(), vorbisPacketFormat)
 			case "A_MPEG/L3":
 				d.FieldDecodeLen("packet", d.BitsLeft(), mp3FrameFormat)
+			case "A_FLAC":
+				d.FieldDecodeLen("packet", d.BitsLeft(), flacFrameFormat, decode.FormatOptions{InArg: flacFrameIn})
 			case "V_VP9":
 				d.FieldDecodeLen("packet", d.BitsLeft(), vp9FrameFormat)
 			case "V_VOBSUB":
 				d.FieldDecodeLen("packet", d.BitsLeft(), mpegSPUFrameFormat)
+
 			// case "A_AAC":
 			// 	log.Println("bla")
 			// 	d.FieldDecodeLen("packet", d.BitsLeft(), aacFrameFormat)

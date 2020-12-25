@@ -64,22 +64,46 @@ type ProbeOptions struct {
 	IsRoot        bool
 	StartOffset   int64
 	FormatOptions map[string]interface{}
+	FormatInArg   interface{}
+}
+
+type FormatOptions struct {
+	InArg interface{}
 }
 
 // Probe probes all probeable formats and turns first found Decoder and all other decoder errors
-func Probe(name string, bb *bitio.Buffer, formats []*Format, opts ProbeOptions) (*Value, interface{}, []error) {
-	opts.IsRoot = true
+func Probe(name string, bb *bitio.Buffer, formats []*Format, opts ...interface{}) (*Value, interface{}, []error) {
+	opts = append(opts, ProbeOptions{IsRoot: true})
 	return probe(name, bb, formats, opts)
 }
 
-func probe(name string, bb *bitio.Buffer, formats []*Format, opts ProbeOptions) (*Value, interface{}, []error) {
+func probe(name string, bb *bitio.Buffer, formats []*Format, opts []interface{}) (*Value, interface{}, []error) {
 	var forceOne = len(formats) == 1
+
+	var probeOpts ProbeOptions
+	var formatOpts FormatOptions
+	for _, opts := range opts {
+		switch opt := opts.(type) {
+		case ProbeOptions:
+			probeOpts = opt
+		case FormatOptions:
+			formatOpts = opt
+		default:
+			panic(fmt.Sprintf("unknown probe option %v", opts))
+		}
+	}
 
 	var errs []error
 	for _, f := range formats {
-		d := NewDecoder(name, f.Name, bb, opts)
+		d := NewDecoder(name, f.Name, bb, probeOpts)
 
-		decodeErr, dv := d.SafeDecodeFn(f.DecodeFn)
+		decodeErr, dv := d.SafeDecodeFn(func(d *D) interface{} {
+			if f.DecodeFn != nil {
+				return f.DecodeFn(d)
+			}
+			return f.DecodeFn2(d, formatOpts.InArg)
+		})
+
 		if decodeErr != nil {
 			d.Value.Error = decodeErr
 
@@ -96,14 +120,14 @@ func probe(name string, bb *bitio.Buffer, formats []*Format, opts ProbeOptions) 
 			}
 
 			maxRange = ranges.MinMax(maxRange, v.Range)
-			v.Range.Start += opts.StartOffset
+			v.Range.Start += probeOpts.StartOffset
 			v.RootBitBuf = d.Value.RootBitBuf
 			return nil
 		})
 
-		d.Value.Range = ranges.Range{Start: opts.StartOffset, Len: maxRange.Len}
+		d.Value.Range = ranges.Range{Start: probeOpts.StartOffset, Len: maxRange.Len}
 
-		if opts.IsRoot {
+		if probeOpts.IsRoot {
 			d.FillGaps("unknown")
 
 			// sort and set ranges for struct and arrays
@@ -698,9 +722,32 @@ func (d *D) DecodeRangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 	}
 }
 
-func (d *D) FieldTryDecode(name string, formats []*Format) (*Value, interface{}, []error) {
+func (d *D) Decode(formats []*Format, opts ...interface{}) interface{} {
+	v, dv, errs := d.FieldTryDecode("", formats, opts...)
+	if v == nil || v.Errors() != nil {
+		panic(errs)
+	}
+
+	switch vv := v.V.(type) {
+	case Struct:
+		for _, f := range vv {
+			d.AddChild(f)
+		}
+	case Array:
+		for _, f := range vv {
+			d.AddChild(f)
+		}
+	default:
+		panic("unreachable")
+	}
+
+	return dv
+}
+
+func (d *D) FieldTryDecode(name string, formats []*Format, opts ...interface{}) (*Value, interface{}, []error) {
 	bb := d.BitBufRange(d.Pos(), d.BitsLeft())
-	v, dv, errs := probe(name, bb, formats, ProbeOptions{IsRoot: false, StartOffset: d.Pos()})
+	opts = append(opts, ProbeOptions{IsRoot: false, StartOffset: d.Pos()})
+	v, dv, errs := probe(name, bb, formats, opts)
 	if v == nil || v.Errors() != nil {
 		return nil, nil, errs
 	}
@@ -713,17 +760,18 @@ func (d *D) FieldTryDecode(name string, formats []*Format) (*Value, interface{},
 	return v, dv, errs
 }
 
-func (d *D) FieldDecode(name string, formats []*Format) (*Value, interface{}, []error) {
-	v, dv, errs := d.FieldTryDecode(name, formats)
+func (d *D) FieldDecode(name string, formats []*Format, opts ...interface{}) (*Value, interface{}) {
+	v, dv, errs := d.FieldTryDecode(name, formats, opts...)
 	if v == nil || v.Errors() != nil {
 		panic(errs)
 	}
-	return v, dv, errs
+	return v, dv
 }
 
-func (d *D) FieldTryDecodeLen(name string, nBits int64, formats []*Format) (*Value, interface{}, []error) {
+func (d *D) FieldTryDecodeLen(name string, nBits int64, formats []*Format, opts ...interface{}) (*Value, interface{}, []error) {
 	bb := d.BitBufRange(d.Pos(), nBits)
-	v, dv, errs := probe(name, bb, formats, ProbeOptions{IsRoot: false, StartOffset: d.Pos()})
+	opts = append(opts, ProbeOptions{IsRoot: false, StartOffset: d.Pos()})
+	v, dv, errs := probe(name, bb, formats, opts)
 	if v == nil || v.Errors() != nil {
 		return nil, nil, errs
 	}
@@ -736,18 +784,19 @@ func (d *D) FieldTryDecodeLen(name string, nBits int64, formats []*Format) (*Val
 	return v, dv, errs
 }
 
-func (d *D) FieldDecodeLen(name string, nBits int64, formats []*Format) (*Value, interface{}, []error) {
+func (d *D) FieldDecodeLen(name string, nBits int64, formats []*Format, opts ...interface{}) (*Value, interface{}) {
 	v, dv, errs := d.FieldTryDecodeLen(name, nBits, formats)
 	if v == nil || v.Errors() != nil {
 		panic(errs)
 	}
-	return v, dv, errs
+	return v, dv
 }
 
 // TODO: return decooder?
-func (d *D) FieldTryDecodeRange(name string, firstBit int64, nBits int64, formats []*Format) (*Value, interface{}, []error) {
+func (d *D) FieldTryDecodeRange(name string, firstBit int64, nBits int64, formats []*Format, opts ...interface{}) (*Value, interface{}, []error) {
 	bb := d.BitBufRange(firstBit, nBits)
-	v, dv, errs := probe(name, bb, formats, ProbeOptions{IsRoot: false, StartOffset: firstBit})
+	opts = append(opts, ProbeOptions{IsRoot: false, StartOffset: firstBit})
+	v, dv, errs := probe(name, bb, formats, opts)
 	if v == nil || v.Errors() != nil {
 		return nil, nil, errs
 	}
@@ -757,17 +806,18 @@ func (d *D) FieldTryDecodeRange(name string, firstBit int64, nBits int64, format
 	return v, dv, errs
 }
 
-func (d *D) FieldDecodeRange(name string, firstBit int64, nBits int64, formats []*Format) (*Value, interface{}, []error) {
-	v, dv, errs := d.FieldTryDecodeRange(name, firstBit, nBits, formats)
+func (d *D) FieldDecodeRange(name string, firstBit int64, nBits int64, formats []*Format, opts ...interface{}) (*Value, interface{}) {
+	v, dv, errs := d.FieldTryDecodeRange(name, firstBit, nBits, formats, opts...)
 	if v == nil || v.Errors() != nil {
 		panic(errs)
 	}
 
-	return v, dv, errs
+	return v, dv
 }
 
-func (d *D) FieldTryDecodeBitBuf(name string, bb *bitio.Buffer, formats []*Format) (*Value, interface{}, []error) {
-	v, dv, errs := probe(name, bb, formats, ProbeOptions{IsRoot: true})
+func (d *D) FieldTryDecodeBitBuf(name string, bb *bitio.Buffer, formats []*Format, opts ...interface{}) (*Value, interface{}, []error) {
+	opts = append(opts, ProbeOptions{IsRoot: true})
+	v, dv, errs := probe(name, bb, formats, opts)
 	if v == nil || v.Errors() != nil {
 		return nil, nil, errs
 	}
@@ -777,12 +827,12 @@ func (d *D) FieldTryDecodeBitBuf(name string, bb *bitio.Buffer, formats []*Forma
 	return v, dv, errs
 }
 
-func (d *D) FieldDecodeBitBuf(name string, bb *bitio.Buffer, formats []*Format) (*Value, interface{}, []error) {
-	v, dv, errs := d.FieldTryDecodeBitBuf(name, bb, formats)
+func (d *D) FieldDecodeBitBuf(name string, bb *bitio.Buffer, formats []*Format, opts ...interface{}) (*Value, interface{}) {
+	v, dv, errs := d.FieldTryDecodeBitBuf(name, bb, formats, opts...)
 	if v == nil || v.Errors() != nil {
 		panic(errs)
 	}
-	return v, dv, errs
+	return v, dv
 }
 
 // TODO: rethink this
@@ -805,7 +855,7 @@ func (d *D) FieldBitBufLen(name string, nBits int64) *bitio.Buffer {
 }
 
 // TODO: range?
-func (d *D) FieldDecodeZlibLen(name string, nBits int64, formats []*Format) (*Value, interface{}, []error) {
+func (d *D) FieldDecodeZlibLen(name string, nBits int64, formats []*Format) (*Value, interface{}) {
 	bb, err := d.bitBuf.BitBufLen(nBits)
 	if err != nil {
 		panic(err)

@@ -6,6 +6,7 @@ package flac
 import (
 	"fq/pkg/decode"
 	"fq/pkg/format"
+	"fq/pkg/ranges"
 )
 
 var flacPicture []*decode.Format
@@ -43,12 +44,6 @@ var metadataBlockNames = map[uint]string{
 	MetadataBlockPicture:       "Picture",
 }
 
-type streamInfo struct {
-	sampleRate   uint64
-	bitPerSample uint64
-	d            *decode.D
-}
-
 func metadatablockDecode(d *decode.D) interface{} {
 	var si format.FlacMetadatablockStreamInfo
 
@@ -69,7 +64,6 @@ func metadatablockDecode(d *decode.D) interface{} {
 
 				switch typ {
 				case MetadataBlockStreaminfo:
-					//si.d = d
 					d.FieldU16("minimum_block_size")
 					d.FieldU16("maximum_block_size")
 					d.FieldU24("minimum_frame_size")
@@ -82,6 +76,7 @@ func metadatablockDecode(d *decode.D) interface{} {
 						return d.U5() + 1, decode.NumberDecimal, ""
 					})
 					d.FieldU("total_samples_in_steam", 36)
+					si.MD5Range = ranges.Range{Start: d.Pos(), Len: 16 * 8}
 					d.FieldBitBufLen("md5", 16*8)
 				case MetadataBlockVorbisComment:
 					d.FieldDecodeLen("comment", int64(length*8), vorbisCommentFormat)

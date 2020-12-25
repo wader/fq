@@ -7,7 +7,6 @@ package flac
 // TODO: how to reutrn md5? return sample buf instead?
 
 import (
-	"crypto/md5"
 	"encoding/binary"
 	"fq/pkg/crc"
 	"fq/pkg/decode"
@@ -19,7 +18,7 @@ func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.FLAC_FRAME,
 		Description: "FLAC frame",
-		DecodeFn:    frameDecode,
+		DecodeFn2:   frameDecode,
 	})
 }
 
@@ -79,9 +78,12 @@ func zigzag(n int64) int64 {
 	return n>>1 ^ -(n & 1)
 }
 
-func frameDecode(d *decode.D) interface{} {
-
-	md5Samples := md5.New()
+// in argument is an optional FlacFrameIn struct with stream info
+func frameDecode(d *decode.D, in interface{}) interface{} {
+	var inStreamInfo *format.FlacMetadatablockStreamInfo
+	if in, ok := in.(*format.FlacFrameIn); ok {
+		inStreamInfo = &in.StreamInfo
+	}
 
 	frameStart := d.Pos()
 	// <14> 11111111111110
@@ -152,7 +154,10 @@ func frameDecode(d *decode.D) interface{} {
 		sampleRateBits = d.U4()
 		switch sampleRateBits {
 		case 0:
-			return si.sampleRate, decode.NumberDecimal, "streaminfo"
+			if inStreamInfo == nil {
+				d.Invalid("streaminfo required for sample rate")
+			}
+			return inStreamInfo.SampleRate, decode.NumberDecimal, "streaminfo"
 		case 1:
 			return 88200, decode.NumberDecimal, ""
 		case 2:
@@ -257,7 +262,10 @@ func frameDecode(d *decode.D) interface{} {
 	sampleSize := int(d.FieldUFn("sample_size", func() (uint64, decode.DisplayFormat, string) {
 		switch d.U3() {
 		case 0:
-			return si.bitPerSample, decode.NumberDecimal, "streaminfo"
+			if inStreamInfo == nil {
+				d.Invalid("streaminfo required for bit per sample")
+			}
+			return inStreamInfo.BitPerSample, decode.NumberDecimal, "streaminfo"
 		case 1:
 			return 8, decode.NumberDecimal, ""
 		case 2:
@@ -596,7 +604,7 @@ func frameDecode(d *decode.D) interface{} {
 		// no side channel
 	}
 
-	bytesPerSample := int(si.bitPerSample / 8)
+	bytesPerSample := int(sampleSize / 8)
 	interleavedSamplesBuf := make([]byte, len(channelSamples)*len(channelSamples[0])*bytesPerSample)
 	p := 0
 	le := binary.LittleEndian
@@ -604,7 +612,7 @@ func frameDecode(d *decode.D) interface{} {
 	for i := 0; i < len(channelSamples[0]); i++ {
 		for j := 0; j < len(channelSamples); j++ {
 			s := channelSamples[j][i]
-			switch si.bitPerSample {
+			switch sampleSize {
 			case 8:
 				interleavedSamplesBuf[p] = byte(s)
 			case 16:
@@ -619,9 +627,7 @@ func frameDecode(d *decode.D) interface{} {
 		}
 	}
 
-	if _, err := md5Samples.Write(interleavedSamplesBuf); err != nil {
-		panic(err)
+	return &format.FlacFrameOut{
+		SamplesBuf: interleavedSamplesBuf,
 	}
-
-	return nil
 }

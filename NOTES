@@ -1,5 +1,13 @@
 
 
+flac md5 fix
+
+move more fields things into value.go?
+
+checksum, update existing... hard when split between decoders, *decode.D can't be passed around becuse offset wrong
+
+SafeDecodeFn logs to stderr
+
 | bits, support numbers and list as bytes? iolistish?
 
 settings via object? global s({verbose: true), verbose(true) ? 

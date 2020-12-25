@@ -7,7 +7,6 @@ import (
 	"crypto/md5"
 	"fq/pkg/decode"
 	"fq/pkg/format"
-	"log"
 )
 
 var metadatablockFormat []*decode.Format
@@ -32,23 +31,32 @@ func flacDecode(d *decode.D) interface{} {
 
 	md5Samples := md5.New()
 
-	dv := metadatablockFormat[0].DecodeFn(d)
-	si, ok := dv.(*streamInfo)
-	if !ok {
-		d.Invalid("failed to decode metadatablock")
+	var flacFrameIn *format.FlacFrameIn
+	var streamInfo format.FlacMetadatablockStreamInfo
+
+	dv := d.Decode(metadatablockFormat)
+	if dv, ok := dv.(*format.FlacMetadatablockOut); ok {
+		streamInfo = dv.StreamInfo
+		flacFrameIn = &format.FlacFrameIn{StreamInfo: dv.StreamInfo}
 	}
 
 	d.FieldArrayFn("frame", func(d *decode.D) {
 		for d.NotEnd() {
-			d.FieldDecode("frame", frameFormat)
+			// flac frame might need some fields from stream info to decode
+			_, dv := d.FieldDecode("frame", frameFormat, decode.FormatOptions{InArg: flacFrameIn})
+			if dv, ok := dv.(*format.FlacFrameOut); ok {
+				if _, err := md5Samples.Write(dv.SamplesBuf); err != nil {
+					panic(err)
+				}
+			}
 		}
 	})
 
-	if si.d != nil {
-		md5Value := si.d.FieldGet("md5")
-		log.Printf("md5Value: %#+v\n", md5Value)
-		si.d.FieldChecksumRange("md5_", md5Value.Range.Start, md5Value.Range.Len, md5Samples.Sum(nil), decode.BigEndian)
-	}
+	_ = streamInfo
+	// if streamInfo.D != nil {
+	// 	md5Value := streamInfo.D.FieldGet("md5")
+	// 	d.FieldChecksumRange("md5_calculated", md5Value.Range.Start, md5Value.Range.Len, md5Samples.Sum(nil), decode.BigEndian)
+	// }
 
 	return nil
 }

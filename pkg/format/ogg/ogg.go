@@ -57,47 +57,45 @@ func decodeOgg(d *decode.D) interface{} {
 
 	d.FieldArrayFn("page", func(d *decode.D) {
 		for !d.End() {
-			// TODO: FieldTryDecode return field and decoder? handle error?
 			_, dv, errs := d.FieldTryDecode("page", oggPage)
 			if errs != nil {
 				break
 			}
-			p, _ := dv.(*page)
-			if p == nil {
-				// TODO: hmm
-				break
+			oggPageOut, _ := dv.(*format.OggPageOut)
+			if oggPageOut == nil {
+				panic("page decode is not a oggPageOut")
 			}
 
-			s, sFound := streams[p.StreamSerialNumber]
+			s, sFound := streams[oggPageOut.StreamSerialNumber]
 			if !sFound {
 				var packetD *decode.D
 				streamD.FieldStructFn("stream", func(d *decode.D) {
-					d.FieldValueU("serial_number", uint64(p.StreamSerialNumber), "")
+					d.FieldValueU("serial_number", uint64(oggPageOut.StreamSerialNumber), "")
 					packetD = d.FieldArray("packet")
 				})
 				s = &stream{
-					sequenceNo: p.SequenceNo,
+					sequenceNo: oggPageOut.SequenceNo,
 					packetD:    packetD,
 					codec:      codecUnknown,
 				}
-				streams[p.StreamSerialNumber] = s
+				streams[oggPageOut.StreamSerialNumber] = s
 			}
 
-			if !sFound && !p.IsFirstPage {
+			if !sFound && !oggPageOut.IsFirstPage {
 				// TODO: not first page and we haven't seen the stream before
 				log.Println("not first page and we haven't seen the stream before")
 			}
 			hasData := len(s.packetBuf) > 0
-			if p.IsContinuedPacket && !hasData {
+			if oggPageOut.IsContinuedPacket && !hasData {
 				// TODO: continuation but we haven't seen any packet data yet
 				log.Println("continuation but we haven't seen any packet data yet")
 			}
-			if !p.IsFirstPage && s.sequenceNo+1 != p.SequenceNo {
+			if !oggPageOut.IsFirstPage && s.sequenceNo+1 != oggPageOut.SequenceNo {
 				// TODO: page gap
 				log.Println("page gap")
 			}
 
-			for _, ps := range p.Segments {
+			for _, ps := range oggPageOut.Segments {
 				if s.packetBuf == nil {
 					s.firstBit = d.Pos()
 				}
@@ -132,9 +130,9 @@ func decodeOgg(d *decode.D) interface{} {
 				}
 			}
 
-			s.sequenceNo = p.SequenceNo
-			if p.IsLastPage {
-				delete(streams, p.StreamSerialNumber)
+			s.sequenceNo = oggPageOut.SequenceNo
+			if oggPageOut.IsLastPage {
+				delete(streams, oggPageOut.StreamSerialNumber)
 			}
 
 			validPages++
