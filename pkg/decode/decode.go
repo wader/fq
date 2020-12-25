@@ -723,7 +723,9 @@ func (d *D) DecodeRangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 }
 
 func (d *D) Decode(formats []*Format, opts ...interface{}) interface{} {
-	v, dv, errs := d.FieldTryDecode("", formats, opts...)
+	bb := d.BitBufRange(d.Pos(), d.BitsLeft())
+	opts = append(opts, ProbeOptions{IsRoot: false, StartOffset: d.Pos()})
+	v, dv, errs := probe("", bb, formats, opts)
 	if v == nil || v.Errors() != nil {
 		panic(errs)
 	}
@@ -739,6 +741,10 @@ func (d *D) Decode(formats []*Format, opts ...interface{}) interface{} {
 		}
 	default:
 		panic("unreachable")
+	}
+
+	if _, err := d.bitBuf.SeekRel(int64(v.Range.Len)); err != nil {
+		panic(err)
 	}
 
 	return dv

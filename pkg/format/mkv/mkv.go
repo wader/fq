@@ -438,7 +438,7 @@ func mkvDecode(d *decode.D) interface{} {
 			t.parentD.DecodeRangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
 				d.FieldStructFn("value", func(d *decode.D) {
 					d.FieldValidateUTF8("magic", "fLaC")
-					_, dv := d.FieldDecode("bla", flacMetadatablockFormat)
+					dv := d.Decode(flacMetadatablockFormat)
 					if dv, ok := dv.(*format.FlacMetadatablockOut); ok {
 						flacFrameIn = &format.FlacFrameIn{StreamInfo: dv.StreamInfo}
 					}
