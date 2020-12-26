@@ -59,9 +59,9 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 	default:
 		fmt.Fprintf(cw.Columns[6], ": %s", v)
 		isField = true
-		if isInArray && opts.Verbose {
-			fmt.Fprintf(cw.Columns[6], " (%s)", v.Name)
-		}
+	}
+	if opts.Verbose {
+		fmt.Fprintf(cw.Columns[6], " (%s)", v.Name)
 	}
 
 	if opts.Verbose {
