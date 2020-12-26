@@ -1,5 +1,18 @@
 
 
+zero file test
+
+go run cmd/fq/main.go flac.mkv '"fLaC", (.. | select(._name == "metadatablock" and ._type == "struct")), (.. | select(.packet._description=="flac_frame" ) | .packet) | bits' > bla.flac
+
+
+dump support other things than value? "asdsd" | d ? nice when messing around
+
+
+progress estimate, have a 1024 buckets for whole file and mark truncated pos as going along? count += 1 if flag not set before?
+
+
+Decode... descriptin gone
+
 flac md5 fix
 
 move more fields things into value.go?
