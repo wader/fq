@@ -5,12 +5,13 @@ package flac
 
 import (
 	"crypto/md5"
+	"fmt"
 	"fq/pkg/decode"
 	"fq/pkg/format"
 )
 
-var metadatablockFormat []*decode.Format
-var frameFormat []*decode.Format
+var flacMetadatablockFormat []*decode.Format
+var flacFrameFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -20,8 +21,8 @@ func init() {
 		MIMEs:       []string{"audio/x-flac"},
 		DecodeFn:    flacDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.FLAC_METADATABLOCK}, Formats: &metadatablockFormat},
-			{Names: []string{format.FLAC_FRAME}, Formats: &frameFormat},
+			{Names: []string{format.FLAC_METADATABLOCK}, Formats: &flacMetadatablockFormat},
+			{Names: []string{format.FLAC_FRAME}, Formats: &flacFrameFormat},
 		},
 	})
 }
@@ -29,21 +30,31 @@ func init() {
 func flacDecode(d *decode.D) interface{} {
 	d.FieldValidateUTF8("magic", "fLaC")
 
-	md5Samples := md5.New()
-
-	var flacFrameIn *format.FlacFrameIn
 	var streamInfo format.FlacMetadatablockStreamInfo
+	var flacFrameIn *format.FlacFrameIn
 
-	dv := d.Decode(metadatablockFormat)
-	if dv, ok := dv.(*format.FlacMetadatablockOut); ok {
-		streamInfo = dv.StreamInfo
-		flacFrameIn = &format.FlacFrameIn{StreamInfo: dv.StreamInfo}
-	}
+	d.FieldArrayFn("metadatablocks", func(d *decode.D) {
+		for {
+			_, dv := d.FieldDecode("metadatablock", flacMetadatablockFormat)
+			flacMetadatablockOut, _ := dv.(*format.FlacMetadatablockOut)
+			if flacMetadatablockOut == nil {
+				d.Invalid(fmt.Sprintf("expected FlacMetadatablockOut got %v", dv))
+			}
+			if flacMetadatablockOut.StreamInfo != nil {
+				streamInfo = *flacMetadatablockOut.StreamInfo
+				flacFrameIn = &format.FlacFrameIn{StreamInfo: streamInfo}
+			}
+			if flacMetadatablockOut.LastBlock {
+				return
+			}
+		}
+	})
 
+	md5Samples := md5.New()
 	d.FieldArrayFn("frame", func(d *decode.D) {
 		for d.NotEnd() {
 			// flac frame might need some fields from stream info to decode
-			_, dv := d.FieldDecode("frame", frameFormat, decode.FormatOptions{InArg: flacFrameIn})
+			_, dv := d.FieldDecode("frame", flacFrameFormat, decode.FormatOptions{InArg: flacFrameIn})
 			if dv, ok := dv.(*format.FlacFrameOut); ok {
 				if _, err := md5Samples.Write(dv.SamplesBuf); err != nil {
 					panic(err)

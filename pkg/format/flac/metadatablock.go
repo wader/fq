@@ -1,7 +1,6 @@
 package flac
 
 // TODO: 24 bit picture length truncate warning
-// TODO: reuse samples buffer
 
 import (
 	"fq/pkg/decode"
@@ -45,72 +44,66 @@ var metadataBlockNames = map[uint]string{
 }
 
 func metadatablockDecode(d *decode.D) interface{} {
-	var si format.FlacMetadatablockStreamInfo
+	mb := &format.FlacMetadatablockOut{}
 
-	d.FieldArrayFn("metadatablock", func(d *decode.D) {
-		for {
-			lastBlock := false
-			d.FieldStructFn("metadatablock", func(d *decode.D) {
-				lastBlock = d.FieldBool("last_block")
-				typ := d.FieldUFn("type", func() (uint64, decode.DisplayFormat, string) {
-					t := d.U7()
-					name := "Unknown"
-					if s, ok := metadataBlockNames[uint(t)]; ok {
-						name = s
-					}
-					return t, decode.NumberDecimal, name
-				})
-				length := d.FieldU24("length")
-
-				switch typ {
-				case MetadataBlockStreaminfo:
-					d.FieldU16("minimum_block_size")
-					d.FieldU16("maximum_block_size")
-					d.FieldU24("minimum_frame_size")
-					d.FieldU24("maximum_frame_size")
-					si.SampleRate = d.FieldU("sample_rate", 20)
-					// <3> (number of channels)-1. FLAC supports from 1 to 8 channels
-					d.FieldUFn("channels", func() (uint64, decode.DisplayFormat, string) { return d.U3() + 1, decode.NumberDecimal, "" })
-					// <5> (bits per sample)-1. FLAC supports from 4 to 32 bits per sample. Currently the reference encoder and decoders only support up to 24 bits per sample.
-					si.BitPerSample = d.FieldUFn("bits_per_sample", func() (uint64, decode.DisplayFormat, string) {
-						return d.U5() + 1, decode.NumberDecimal, ""
-					})
-					d.FieldU("total_samples_in_steam", 36)
-					si.MD5Range = ranges.Range{Start: d.Pos(), Len: 16 * 8}
-					d.FieldBitBufLen("md5", 16*8)
-				case MetadataBlockVorbisComment:
-					d.FieldDecodeLen("comment", int64(length*8), vorbisCommentFormat)
-				case MetadataBlockPicture:
-					d.FieldDecodeLen("picture", int64(length*8), flacPicture)
-				case MetadataBlockSeektable:
-					seektableCount := length / 18
-					d.FieldArrayFn("seekpoint", func(d *decode.D) {
-						for i := uint64(0); i < seektableCount; i++ {
-							d.FieldStructFn("seekpoint", func(d *decode.D) {
-								d.FieldUFn("sample_number", func() (uint64, decode.DisplayFormat, string) {
-									n := d.U64()
-									d := ""
-									if n == 0xffffffffffffffff {
-										d = "Placeholder"
-									}
-									return n, decode.NumberDecimal, d
-								})
-								d.FieldU64("offset")
-								d.FieldU16("number_of_samples")
-							})
-						}
-					})
-				default:
-					d.FieldBitBufLen("data", int64(length*8))
-				}
-			})
-			if lastBlock {
-				break
-			}
+	mb.LastBlock = d.FieldBool("last_block")
+	typ := d.FieldUFn("type", func() (uint64, decode.DisplayFormat, string) {
+		t := d.U7()
+		name := "Unknown"
+		if s, ok := metadataBlockNames[uint(t)]; ok {
+			name = s
 		}
+		return t, decode.NumberDecimal, name
 	})
+	length := d.FieldU24("length")
 
-	return &format.FlacMetadatablockOut{
-		StreamInfo: si,
+	switch typ {
+	case MetadataBlockStreaminfo:
+		d.FieldU16("minimum_block_size")
+		d.FieldU16("maximum_block_size")
+		d.FieldU24("minimum_frame_size")
+		d.FieldU24("maximum_frame_size")
+		sampleRate := d.FieldU("sample_rate", 20)
+		// <3> (number of channels)-1. FLAC supports from 1 to 8 channels
+		d.FieldUFn("channels", func() (uint64, decode.DisplayFormat, string) { return d.U3() + 1, decode.NumberDecimal, "" })
+		// <5> (bits per sample)-1. FLAC supports from 4 to 32 bits per sample. Currently the reference encoder and decoders only support up to 24 bits per sample.
+		bitPerSample := d.FieldUFn("bits_per_sample", func() (uint64, decode.DisplayFormat, string) {
+			return d.U5() + 1, decode.NumberDecimal, ""
+		})
+		d.FieldU("total_samples_in_steam", 36)
+		md5Range := ranges.Range{Start: d.Pos(), Len: 16 * 8}
+		d.FieldBitBufLen("md5", 16*8)
+
+		mb.StreamInfo = &format.FlacMetadatablockStreamInfo{
+			SampleRate:   sampleRate,
+			BitPerSample: bitPerSample,
+			MD5Range:     md5Range,
+		}
+	case MetadataBlockVorbisComment:
+		d.FieldDecodeLen("comment", int64(length*8), vorbisCommentFormat)
+	case MetadataBlockPicture:
+		d.FieldDecodeLen("picture", int64(length*8), flacPicture)
+	case MetadataBlockSeektable:
+		seektableCount := length / 18
+		d.FieldArrayFn("seekpoint", func(d *decode.D) {
+			for i := uint64(0); i < seektableCount; i++ {
+				d.FieldStructFn("seekpoint", func(d *decode.D) {
+					d.FieldUFn("sample_number", func() (uint64, decode.DisplayFormat, string) {
+						n := d.U64()
+						d := ""
+						if n == 0xffffffffffffffff {
+							d = "Placeholder"
+						}
+						return n, decode.NumberDecimal, d
+					})
+					d.FieldU64("offset")
+					d.FieldU16("number_of_samples")
+				})
+			}
+		})
+	default:
+		d.FieldBitBufLen("data", int64(length*8))
 	}
+
+	return mb
 }

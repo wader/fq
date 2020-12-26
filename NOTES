@@ -1,5 +1,9 @@
 
 
+d.Panic?
+
+pluralize array/struct thingy
+
 zero file test
 
 go run cmd/fq/main.go flac.mkv '"fLaC", (.. | select(._name == "metadatablock" and ._type == "struct")), (.. | select(.packet._description=="flac_frame" ) | .packet) | bits' > bla.flac

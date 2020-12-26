@@ -1,10 +1,6 @@
 package flac
 
-// TODO: 24 bit picture length truncate warning
-// TODO: reuse samples buffer
-
-// TODO: how to pass in stream info inputs?
-// TODO: how to reutrn md5? return sample buf instead?
+// TODO: reuse samples buffer. pass in buf?
 
 import (
 	"encoding/binary"

@@ -10,6 +10,7 @@ package mkv
 // TODO: CRC
 
 import (
+	"fmt"
 	"fq/pkg/decode"
 	"fq/pkg/format"
 	"fq/pkg/ranges"
@@ -438,12 +439,25 @@ func mkvDecode(d *decode.D) interface{} {
 			t.parentD.DecodeRangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
 				d.FieldStructFn("value", func(d *decode.D) {
 					d.FieldValidateUTF8("magic", "fLaC")
-					dv := d.Decode(flacMetadatablockFormat)
-					if dv, ok := dv.(*format.FlacMetadatablockOut); ok {
-						flacFrameIn = &format.FlacFrameIn{StreamInfo: dv.StreamInfo}
-					}
 
-					_ = flacFrameIn
+					var streamInfo format.FlacMetadatablockStreamInfo
+
+					d.FieldArrayFn("metadatablocks", func(d *decode.D) {
+						for {
+							_, dv := d.FieldDecode("metadatablock", flacMetadatablockFormat)
+							flacMetadatablockOut, _ := dv.(*format.FlacMetadatablockOut)
+							if flacMetadatablockOut == nil {
+								d.Invalid(fmt.Sprintf("expected FlacMetadatablockOut got %v", dv))
+							}
+							if flacMetadatablockOut.StreamInfo != nil {
+								streamInfo = *flacMetadatablockOut.StreamInfo
+								flacFrameIn = &format.FlacFrameIn{StreamInfo: streamInfo}
+							}
+							if flacMetadatablockOut.LastBlock {
+								return
+							}
+						}
+					})
 				})
 			})
 		default:
@@ -471,6 +485,7 @@ func mkvDecode(d *decode.D) interface{} {
 				d.FieldDecodeLen("packet", d.BitsLeft(), mp3FrameFormat)
 			case "A_FLAC":
 				d.FieldDecodeLen("packet", d.BitsLeft(), flacFrameFormat, decode.FormatOptions{InArg: flacFrameIn})
+				// TODO: could to md5 here somehow, see flac.go
 			case "V_VP9":
 				d.FieldDecodeLen("packet", d.BitsLeft(), vp9FrameFormat)
 			case "V_VOBSUB":
