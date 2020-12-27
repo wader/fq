@@ -41,7 +41,7 @@ func opusDecode(d *decode.D, in interface{}) interface{} {
 			d.FieldU8("stream_count")
 			d.FieldU8("coupled_count")
 			i := uint64(0)
-			d.FieldArrayLoopFn("channel_mapping", func() bool { return i < channelCount }, func(d *decode.D) {
+			d.FieldArrayLoopFn("channel_mappings", func() bool { return i < channelCount }, func(d *decode.D) {
 				d.FieldU8("channel_mapping")
 			})
 		}

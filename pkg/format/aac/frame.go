@@ -57,7 +57,7 @@ var ExtenionPayloadIDNames = map[uint64]string{
 
 func aacDecode(d *decode.D, in interface{}) interface{} {
 	// TODO: multple blocks
-	d.FieldArrayFn("raw_data_block", func(d *decode.D) {
+	d.FieldArrayFn("raw_data_blocks", func(d *decode.D) {
 		//		for {
 		d.FieldStructFn("raw_data_block", func(d *decode.D) {
 			se, _ := d.FieldStringMapFn("syntax_element", SyntaxElementNames, "", d.U3)

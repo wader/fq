@@ -31,7 +31,7 @@ func apev2Decode(d *decode.D, in interface{}) interface{} {
 	}
 
 	tagCount := headerFooterFn(d, "header")
-	d.FieldArrayFn("tag", func(d *decode.D) {
+	d.FieldArrayFn("tags", func(d *decode.D) {
 		for i := uint64(0); i < tagCount; i++ {
 			d.FieldStructFn("tag", func(d *decode.D) {
 				itemSize := d.FieldU32LE("item_size")

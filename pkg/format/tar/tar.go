@@ -63,7 +63,7 @@ func tarDecode(d *decode.D, in interface{}) interface{} {
 	endMarker := [512 * 2]byte{}
 	foundEndMarker := false
 
-	d.FieldArrayFn("file", func(d *decode.D) {
+	d.FieldArrayFn("files", func(d *decode.D) {
 		for !d.End() {
 			d.FieldStructFn("file", func(d *decode.D) {
 				fieldStr(d, "name", 100)

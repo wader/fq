@@ -145,12 +145,8 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 {
 }
 
 func decodeChunks(d *decode.D, stringData bool) {
-	d.FieldArrayFn("chunk", func(d *decode.D) {
-		for !d.End() {
-			d.FieldStructFn("chunk", func(d *decode.D) {
-				decodeChunk(d, "", stringData)
-			})
-		}
+	d.FieldStructArrayLoopFn("chunks", "chunk", d.NotEnd, func(d *decode.D) {
+		decodeChunk(d, "", stringData)
 	})
 }
 

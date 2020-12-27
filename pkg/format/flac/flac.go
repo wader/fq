@@ -51,7 +51,7 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 	})
 
 	md5Samples := md5.New()
-	d.FieldArrayFn("frame", func(d *decode.D) {
+	d.FieldArrayFn("frames", func(d *decode.D) {
 		for d.NotEnd() {
 			// flac frame might need some fields from stream info to decode
 			_, dv := d.FieldDecode("frame", flacFrameFormat, decode.FormatOptions{InArg: flacFrameIn})

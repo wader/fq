@@ -53,9 +53,9 @@ type stream struct {
 func decodeOgg(d *decode.D, in interface{}) interface{} {
 	validPages := 0
 	streams := map[uint32]*stream{}
-	streamD := d.FieldArray("stream")
+	streamsD := d.FieldArray("streams")
 
-	d.FieldArrayFn("page", func(d *decode.D) {
+	d.FieldArrayFn("pages", func(d *decode.D) {
 		for !d.End() {
 			_, dv, errs := d.FieldTryDecode("page", oggPage)
 			if errs != nil {
@@ -68,14 +68,14 @@ func decodeOgg(d *decode.D, in interface{}) interface{} {
 
 			s, sFound := streams[oggPageOut.StreamSerialNumber]
 			if !sFound {
-				var packetD *decode.D
-				streamD.FieldStructFn("stream", func(d *decode.D) {
+				var packetsD *decode.D
+				streamsD.FieldStructFn("stream", func(d *decode.D) {
 					d.FieldValueU("serial_number", uint64(oggPageOut.StreamSerialNumber), "")
-					packetD = d.FieldArray("packet")
+					packetsD = d.FieldArray("packets")
 				})
 				s = &stream{
 					sequenceNo: oggPageOut.SequenceNo,
-					packetD:    packetD,
+					packetD:    packetsD,
 					codec:      codecUnknown,
 				}
 				streams[oggPageOut.StreamSerialNumber] = s

@@ -457,10 +457,10 @@ func (d *D) FieldStruct(name string) *D {
 	return cd
 }
 
-func (d *D) FieldStructArrayLoopFn(name string, condFn func() bool, fn func(d *D)) *D {
+func (d *D) FieldStructArrayLoopFn(name string, structName string, condFn func() bool, fn func(d *D)) *D {
 	return d.FieldArrayFn(name, func(d *D) {
 		for condFn() {
-			d.FieldStructFn(name, fn)
+			d.FieldStructFn(structName, fn)
 		}
 	})
 }

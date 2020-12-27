@@ -39,7 +39,7 @@ func mp3Decode(d *decode.D, in interface{}) interface{} {
 	d.FieldTryDecode("header", headerTag)
 
 	validFrames := 0
-	d.FieldArrayFn("frame", func(d *decode.D) {
+	d.FieldArrayFn("frames", func(d *decode.D) {
 		for !d.End() {
 			if _, _, errs := d.FieldTryDecode("frame", mp3Frame); errs != nil {
 				break
@@ -54,7 +54,7 @@ func mp3Decode(d *decode.D, in interface{}) interface{} {
 	}
 
 	// only check for footer if there was some frames
-	d.FieldArrayFn("footer", func(d *decode.D) {
+	d.FieldArrayFn("footers", func(d *decode.D) {
 		d.FieldTryDecode("footer", apeTag)
 		if d.BitsLeft() >= 128*8 {
 			d.SeekAbs(d.Len() - 128*8)

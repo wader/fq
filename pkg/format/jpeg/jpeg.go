@@ -175,7 +175,7 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 	soiMarkerFound := false
 	eoiMarkerFound := false
 
-	d.FieldArrayFn("marker", func(d *decode.D) {
+	d.FieldArrayFn("markers", func(d *decode.D) {
 		inECD := false
 		for d.NotEnd() && !eoiMarkerFound {
 			if inECD {
@@ -217,7 +217,7 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 						d.FieldU16("Y")
 						d.FieldU16("X")
 						nf := d.FieldU8("Nf")
-						d.FieldArrayFn("frame_component", func(d *decode.D) {
+						d.FieldArrayFn("frame_components", func(d *decode.D) {
 							for i := uint64(0); i < nf; i++ {
 								d.FieldStructFn("frame_component", func(d *decode.D) {
 									d.FieldU8("C")
@@ -233,7 +233,7 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 					case SOS:
 						d.FieldU16("Ls")
 						ns := d.FieldU8("Ns")
-						d.FieldArrayFn("scan_component", func(d *decode.D) {
+						d.FieldArrayFn("scan_components", func(d *decode.D) {
 							for i := uint64(0); i < ns; i++ {
 								d.FieldStructFn("scan_component", func(d *decode.D) {
 									d.FieldU8("Cs")

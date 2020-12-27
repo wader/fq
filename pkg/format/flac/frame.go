@@ -337,7 +337,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldChecksumLen("crc", 8, headerCRC.Sum(nil), decode.BigEndian)
 
 	var channelSamples [][]int64
-	d.FieldArrayFn("subframe", func(d *decode.D) {
+	d.FieldArrayFn("subframes", func(d *decode.D) {
 		for channelIndex := 0; channelIndex < int(channels); channelIndex++ {
 			d.FieldStructFn("subframe", func(d *decode.D) {
 				// <1> Zero bit padding, to prevent sync-fooling string of 1s
@@ -439,7 +439,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 						return uint64(ricePartitions), decode.NumberDecimal, ""
 					})
 
-					d.FieldArrayFn("partition", func(d *decode.D) {
+					d.FieldArrayFn("partitions", func(d *decode.D) {
 						for i := 0; i < ricePartitions; i++ {
 							d.FieldStructFn("partition", func(d *decode.D) {
 								// Encoding parameter:

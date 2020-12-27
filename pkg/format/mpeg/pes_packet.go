@@ -384,7 +384,7 @@ func pesPacketDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldU7("reserved")
 		d.FieldArrayFn("stream_bound_entries", func(d *decode.D) {
 			for d.PeekBits(1) == 1 {
-				d.FieldStructFn("stream_bound_entries", func(d *decode.D) {
+				d.FieldStructFn("stream_bound_entry", func(d *decode.D) {
 					d.FieldU8("stream_id")
 					d.FieldU2("skip0")
 					d.FieldU1("pstd_buffer_bound_scale")

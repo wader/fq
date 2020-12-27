@@ -179,7 +179,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 				}
 
 				granuleNr := 0
-				d.FieldStructArrayLoopFn("granule", func() bool { return granuleNr < 2 }, func(d *decode.D) {
+				d.FieldStructArrayLoopFn("granules", "granule", func() bool { return granuleNr < 2 }, func(d *decode.D) {
 					// TODO: array for channels somehow?
 					// TODO: tables and interpret values a bit
 

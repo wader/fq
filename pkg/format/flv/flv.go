@@ -152,7 +152,7 @@ func flvDecode(d *decode.D, in interface{}) interface{} {
 
 	d.SeekAbs(int64(dataOffset) * 8)
 
-	d.FieldArrayFn("tag", func(d *decode.D) {
+	d.FieldArrayFn("tags", func(d *decode.D) {
 		for !d.End() {
 			d.FieldStructFn("tag", func(d *decode.D) {
 				d.FieldU32("previous_tag_size")

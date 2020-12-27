@@ -208,7 +208,7 @@ proc type_master {size _label extra} {
 func decodeMaster(d *decode.D, bitsLimit int64, tag ebmlTag, dc *decodeContext) {
 	tagEndBit := d.Pos() + bitsLimit
 
-	d.FieldArrayFn("element", func(d *decode.D) {
+	d.FieldArrayFn("elements", func(d *decode.D) {
 		// var crcD *decode.D
 		// var crcStart int64
 
@@ -409,7 +409,7 @@ func mkvDecode(d *decode.D, in interface{}) interface{} {
 				// TODO: lacing
 				packetLengths := []int64{}
 				// Xiph-style lacing (similar to ogg) of n-1 packets, last is reset of block
-				d.FieldArrayFn("lace", func(d *decode.D) {
+				d.FieldArrayFn("laces", func(d *decode.D) {
 					for i := uint64(0); i < numPackets; i++ {
 						l := d.FieldUFn("lace", func() (uint64, decode.DisplayFormat, string) {
 							var l uint64
@@ -424,7 +424,7 @@ func mkvDecode(d *decode.D, in interface{}) interface{} {
 						packetLengths = append(packetLengths, int64(l))
 					}
 				})
-				d.FieldArrayFn("packet", func(d *decode.D) {
+				d.FieldArrayFn("packets", func(d *decode.D) {
 					for _, l := range packetLengths {
 						d.FieldDecodeLen("packet", l*8, vorbisPacketFormat)
 					}

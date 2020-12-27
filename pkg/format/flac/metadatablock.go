@@ -85,7 +85,7 @@ func metadatablockDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldDecodeLen("picture", int64(length*8), flacPicture)
 	case MetadataBlockSeektable:
 		seektableCount := length / 18
-		d.FieldArrayFn("seekpoint", func(d *decode.D) {
+		d.FieldArrayFn("seekpoints", func(d *decode.D) {
 			for i := uint64(0); i < seektableCount; i++ {
 				d.FieldStructFn("seekpoint", func(d *decode.D) {
 					d.FieldUFn("sample_number", func() (uint64, decode.DisplayFormat, string) {

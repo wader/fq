@@ -119,7 +119,7 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 	shnum := d.FieldU16LE("shnum")
 	d.FieldU16LE("shstrndx")
 
-	d.FieldArrayFn("program_header", func(d *decode.D) {
+	d.FieldArrayFn("program_headers", func(d *decode.D) {
 		for i := uint64(0); i < phnum; i++ {
 			d.FieldStructFn("program_header", func(d *decode.D) {
 				switch archBits {
@@ -146,7 +146,7 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 		}
 	})
 
-	d.FieldArrayFn("section_header", func(d *decode.D) {
+	d.FieldArrayFn("section_headers", func(d *decode.D) {
 		for i := uint64(0); i < shnum; i++ {
 			d.FieldStructFn("section_header", func(d *decode.D) {
 				switch archBits {

@@ -23,7 +23,7 @@ func init() {
 func adtsDecode(d *decode.D, in interface{}) interface{} {
 	validFrames := 0
 
-	d.FieldArrayFn("frame", func(d *decode.D) {
+	d.FieldArrayFn("frames", func(d *decode.D) {
 		for !d.End() {
 			if _, _, errs := d.FieldTryDecode("frame", aacADTS); errs != nil {
 				break

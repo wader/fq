@@ -391,7 +391,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			fieldTextNull(d, "element_id", encodingUTF8)
 			d.FieldU8("ctoc_flags")
 			entryCount := d.FieldU8("entry_count")
-			d.FieldArrayFn("entry", func(d *decode.D) {
+			d.FieldArrayFn("entries", func(d *decode.D) {
 				for i := uint64(0); i < entryCount; i++ {
 					fieldTextNull(d, "entry", encodingUTF8)
 				}
@@ -494,7 +494,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 }
 
 func decodeFrames(d *decode.D, version int, size uint64) {
-	d.FieldArrayFn("frame", func(d *decode.D) {
+	d.FieldArrayFn("frames", func(d *decode.D) {
 		for size > 0 {
 			if d.PeekBits(8) == 0 {
 				return

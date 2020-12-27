@@ -42,9 +42,9 @@ func pesDecode(d *decode.D, in interface{}) interface{} {
 
 	i := 0
 
-	spuD := d.FieldArray("spu")
+	spuD := d.FieldArray("spus")
 
-	d.FieldArrayFn("packet", func(d *decode.D) {
+	d.FieldArrayFn("packets", func(d *decode.D) {
 		for d.NotEnd() && i < 10000000 {
 			dd, dv, errs := d.FieldTryDecode("packet", pesPacketFormat)
 			if dd == nil || errs != nil {

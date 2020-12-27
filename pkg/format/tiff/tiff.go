@@ -811,12 +811,12 @@ func tiffDecode(d *decode.D, in interface{}) interface{} {
 		d.Endian = decode.BigEndian
 	}
 
-	ifdOffset := d.FieldU32("ifd_offset")
+	ifdOffset := d.FieldU32("first_ifd")
 
 	var stripOffset []int64
 	var stripByteCounts []int64
 
-	d.FieldArrayFn("ifd", func(d *decode.D) {
+	d.FieldArrayFn("ifds", func(d *decode.D) {
 		// TODO: inf loop?
 		for ifdOffset != 0 {
 			d.SeekAbs(int64(ifdOffset) * 8)
@@ -905,7 +905,7 @@ func tiffDecode(d *decode.D, in interface{}) interface{} {
 	if len(stripOffset) != len(stripByteCounts) {
 		// TODO: warning
 	} else {
-		d.FieldArrayFn("strip", func(d *decode.D) {
+		d.FieldArrayFn("strips", func(d *decode.D) {
 			for i := 0; i < len(stripOffset); i++ {
 				d.FieldBitBufRange("strip", stripOffset[i], stripByteCounts[i])
 			}

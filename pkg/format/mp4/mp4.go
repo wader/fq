@@ -85,7 +85,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			d.FieldU24("flags")
 			numEntries := d.FieldU32("num_entries")
 			var i uint64
-			d.FieldStructArrayLoopFn("table", func() bool { return i < numEntries }, func(d *decode.D) {
+			d.FieldStructArrayLoopFn("table", "entry", func() bool { return i < numEntries }, func(d *decode.D) {
 				d.FieldU32("track_duration")
 				d.FieldU32("media_time")
 				d.FieldFP32("media_rate")
@@ -154,7 +154,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			d.FieldU24("flags")
 			numEntries := d.FieldU32("num_entries")
 			var i uint64
-			d.FieldStructArrayLoopFn("reference", func() bool { return i < numEntries }, func(d *decode.D) {
+			d.FieldStructArrayLoopFn("references", "reference", func() bool { return i < numEntries }, func(d *decode.D) {
 				size := d.FieldU32("size")
 				d.FieldUTF8("type", 4)
 				d.FieldU8("version")
@@ -171,7 +171,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			d.FieldU24("flags")
 			numEntries := d.FieldU32("num_entries")
 			var i uint64
-			d.FieldStructArrayLoopFn("sample_description", func() bool { return i < numEntries }, func(d *decode.D) {
+			d.FieldStructArrayLoopFn("sample_descriptions", "sample_description", func() bool { return i < numEntries }, func(d *decode.D) {
 				size := d.FieldU32("size")
 				dataFormat := d.FieldUTF8("data_format", 4)
 				if ctx.currentTrack != nil {
@@ -277,7 +277,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			d.FieldU24("flags")
 			numEntries := d.FieldU32("num_entries")
 			var i uint64
-			d.FieldStructArrayLoopFn("table", func() bool { return i < numEntries }, func(d *decode.D) {
+			d.FieldStructArrayLoopFn("table", "entry", func() bool { return i < numEntries }, func(d *decode.D) {
 				d.FieldU32("count")
 				d.FieldU32("duration")
 				i++
@@ -289,7 +289,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			d.FieldU24("flags")
 			numEntries := d.FieldU32("num_entries")
 			var i uint64
-			d.FieldStructArrayLoopFn("table", func() bool { return i < numEntries }, func(d *decode.D) {
+			d.FieldStructArrayLoopFn("table", "entry", func() bool { return i < numEntries }, func(d *decode.D) {
 				firstChunk := uint32(d.FieldU32("first_chunk"))
 				samplesPerChunk := uint32(d.FieldU32("samples_per_chunk"))
 				d.FieldU32("sample_description_id")
@@ -311,7 +311,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			numEntries := d.FieldU32("num_entries")
 			if sampleSize == 0 {
 				var i uint64
-				d.FieldStructArrayLoopFn("table", func() bool { return i < numEntries }, func(d *decode.D) {
+				d.FieldStructArrayLoopFn("table", "entry", func() bool { return i < numEntries }, func(d *decode.D) {
 					size := uint32(d.FieldU32("size"))
 					if ctx.currentTrack != nil {
 						ctx.currentTrack.stsz = append(ctx.currentTrack.stsz, size)
@@ -326,7 +326,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			d.FieldU24("flags")
 			numEntries := d.FieldU32("num_entries")
 			var i uint64
-			d.FieldStructArrayLoopFn("table", func() bool { return i < numEntries }, func(d *decode.D) {
+			d.FieldStructArrayLoopFn("table", "entry", func() bool { return i < numEntries }, func(d *decode.D) {
 				offset := d.FieldU32("offset")
 				if ctx.currentTrack != nil {
 					ctx.currentTrack.stco = append(ctx.currentTrack.stco, offset)
@@ -341,7 +341,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			d.FieldU24("flags")
 			numEntries := d.FieldU32("num_entries")
 			var i uint64
-			d.FieldStructArrayLoopFn("table", func() bool { return i < numEntries }, func(d *decode.D) {
+			d.FieldStructArrayLoopFn("table", "entry", func() bool { return i < numEntries }, func(d *decode.D) {
 				offset := d.FieldU64("offset")
 				if ctx.currentTrack != nil {
 					ctx.currentTrack.stco = append(ctx.currentTrack.stco, offset)
@@ -364,7 +364,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			d.FieldU16("reserved")
 			numEntries := d.FieldU16("num_entries")
 			var i uint64
-			d.FieldStructArrayLoopFn("index_table", func() bool { return i < numEntries }, func(d *decode.D) {
+			d.FieldStructArrayLoopFn("index_table", "entry", func() bool { return i < numEntries }, func(d *decode.D) {
 				d.FieldU32("size")
 				d.FieldU32("duration")
 				d.FieldU32("sap_flags")
@@ -463,7 +463,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			if firstSampleFlagsPresent {
 				d.FieldU32("first_sample_flags")
 			}
-			d.FieldArrayFn("sample", func(d *decode.D) {
+			d.FieldArrayFn("samples", func(d *decode.D) {
 				for i := uint64(0); i < sampleCount; i++ {
 					d.FieldStructFn("sample", func(d *decode.D) {
 						if sampleDurationPresent {
@@ -529,12 +529,8 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 }
 
 func decodeAtoms(ctx *decodeContext, d *decode.D) {
-	d.FieldArrayFn("box", func(d *decode.D) {
-		for !d.End() {
-			d.FieldStructFn("box", func(d *decode.D) {
-				decodeAtom(ctx, d)
-			})
-		}
+	d.FieldStructArrayLoopFn("boxes", "box", d.NotEnd, func(d *decode.D) {
+		decodeAtom(ctx, d)
 	})
 }
 
@@ -557,14 +553,14 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 
 	decodeAtoms(ctx, d)
 
-	d.FieldArrayFn("track", func(d *decode.D) {
+	d.FieldArrayFn("tracks", func(d *decode.D) {
 		for _, t := range ctx.tracks {
 			d.FieldStructFn("track", func(d *decode.D) {
 				d.FieldStrFn("data_format", func() (string, string) { return t.dataFormat, "" })
 
 				sampleCount := uint64(0)
 
-				d.FieldArrayFn("sample", func(d *decode.D) {
+				d.FieldArrayFn("samples", func(d *decode.D) {
 					for _, c := range t.stsc {
 
 						cso := t.stco[c.firstChunk-1]
