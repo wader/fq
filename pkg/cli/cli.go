@@ -10,6 +10,8 @@ import (
 	"fq/pkg/osenv"
 	"fq/pkg/query"
 	"io"
+	"io/ioutil"
+	"log"
 	"os"
 	"sort"
 	"strings"
@@ -55,6 +57,7 @@ func (m Main) run() error {
 	dotFlag := fs.Bool("dot", false, "Output dot format graph (... | dot -Tsvg -o formats.svg)")
 	formatNameFlag := fs.String("f", "probe", "Format name")
 	maxDisplayBytes := fs.Int64("d", 16, "Max display bytes")
+	scriptFlag := fs.String("s", "", "Script path")
 	replFlag := fs.Bool("i", false, "REPL")
 	// verboseFlag := fs.Bool("v", false, "Verbose output")
 	fs.Usage = func() {
@@ -97,7 +100,6 @@ func (m Main) run() error {
 		m.Registry.Dot(m.OS.Stdout())
 		return nil
 	}
-
 	filename := fs.Arg(0)
 
 	q := query.NewQuery(query.QueryOptions{
@@ -112,18 +114,33 @@ func (m Main) run() error {
 		OS: m.OS,
 	})
 
-	srcs := []string{
-		`open($FILENAME)`,
-		*formatNameFlag, // format decode exist as functions with same name
-	}
-	if e := fs.Arg(1); e != "" {
-		srcs = append(srcs, e)
-	}
-	if *replFlag {
-		srcs = append(srcs, `push`)
+	src := ""
+	if *scriptFlag != "" {
+		r, err := m.OS.Open(*scriptFlag)
+		if err != nil {
+			return err
+		}
+		scriptBytes, err := ioutil.ReadAll(r)
+		if err != nil {
+			return err
+		}
+		src = string(scriptBytes)
+	} else {
+		srcs := []string{
+			`open($FILENAME)`,
+			*formatNameFlag, // format decode exist as functions with same name
+		}
+		if e := fs.Arg(1); e != "" {
+			srcs = append(srcs, e)
+		}
+		if *replFlag {
+			srcs = append(srcs, `push`)
 
+		}
+		src = strings.Join(srcs, " | ")
 	}
-	src := strings.Join(srcs, " | ")
+
+	log.Printf("src: %#+v\n", src)
 
 	if _, err := q.Run(src); err != nil {
 		return err

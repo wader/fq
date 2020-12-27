@@ -557,7 +557,7 @@ func (b *Buffer) FE(nBits int, endian Endian) (float64, error) {
 	case 32:
 		return math.Float64frombits(n), nil
 	case 64:
-		return float64(math.Float32frombits(uint32(n))), nil
+		return float64(math.Float64frombits(uint64(n))), nil
 	default:
 		return 0, fmt.Errorf("unsupported float size %d", nBits)
 	}

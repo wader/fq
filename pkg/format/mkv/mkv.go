@@ -8,6 +8,7 @@ package mkv
 
 // TODO: rename simepleblock/block to just defer decode etc?
 // TODO: CRC
+// TODO: value to names (TrackType etc)
 
 import (
 	"fmt"
