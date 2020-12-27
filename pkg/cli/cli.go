@@ -5,6 +5,7 @@ package cli
 import (
 	"flag"
 	"fmt"
+	"fq"
 	"fq/pkg/decode"
 	"fq/pkg/osenv"
 	"fq/pkg/query"
@@ -50,6 +51,7 @@ func (m Main) run() error {
 
 	fs := flag.NewFlagSet("", flag.ContinueOnError)
 	fs.SetOutput(m.OS.Stderr())
+	versionFlag := fs.Bool("version", false, fmt.Sprintf("Show version(%s)", fq.Version))
 	dotFlag := fs.Bool("dot", false, "Output dot format graph (... | dot -Tsvg -o formats.svg)")
 	formatNameFlag := fs.String("f", "probe", "Format name")
 	maxDisplayBytes := fs.Int64("d", 16, "Max display bytes")
@@ -87,7 +89,10 @@ func (m Main) run() error {
 	if err := fs.Parse(m.OS.Args()[1:]); err != nil {
 		return err
 	}
-
+	if *versionFlag {
+		fmt.Fprintln(m.OS.Stdout(), fq.Version)
+		return nil
+	}
 	if *dotFlag {
 		m.Registry.Dot(m.OS.Stdout())
 		return nil
@@ -109,7 +114,7 @@ func (m Main) run() error {
 
 	srcs := []string{
 		`open($FILENAME)`,
-		*formatNameFlag,
+		*formatNameFlag, // format decode exist as functions with same name
 	}
 	if e := fs.Arg(1); e != "" {
 		srcs = append(srcs, e)
