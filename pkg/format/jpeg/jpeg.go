@@ -165,7 +165,7 @@ var markers = map[uint]marker{
 	TEM:   {"TEM", "For temporary private use in arithmetic coding"},
 }
 
-func jpegDecode(d *decode.D) interface{} {
+func jpegDecode(d *decode.D, in interface{}) interface{} {
 	d.ValidateAtLeastBytesLeft(2)
 	if !bytes.Equal(d.PeekBytes(2), []byte{0xff, SOI}) {
 		d.Invalid("no SOI marker")

@@ -18,7 +18,7 @@ func init() {
 	})
 }
 
-func pictureDecode(d *decode.D) interface{} {
+func pictureDecode(d *decode.D, in interface{}) interface{} {
 	lenStr := func(name string) string {
 		len := d.FieldU32(name + "_length")
 		return d.FieldUTF8(name, int(len))

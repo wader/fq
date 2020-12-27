@@ -99,7 +99,7 @@ func decodeLines(d *decode.D, lines int, width int) []string {
 	return ls
 }
 
-func spuDecode(d *decode.D) interface{} {
+func spuDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldU16("size")
 	dcsqtOffset := d.FieldU16("dcsqt_offset")
 

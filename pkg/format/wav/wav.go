@@ -155,7 +155,7 @@ func decodeChunks(d *decode.D, stringData bool) {
 }
 
 // Decode decodes a WAV stream
-func wavDecode(d *decode.D) interface{} {
+func wavDecode(d *decode.D, in interface{}) interface{} {
 	decodeChunk(d, "RIFF", false)
 	return nil
 }

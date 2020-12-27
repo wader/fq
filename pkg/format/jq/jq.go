@@ -12,7 +12,7 @@ func init() {
 	})
 }
 
-func jqDecode(d *decode.D) interface{} {
+func jqDecode(d *decode.D, in interface{}) interface{} {
 	// script, ok := d.Options["script"].(string)
 	// if !ok {
 	// 	d.Invalid("no script in options")

@@ -98,10 +98,7 @@ func probe(name string, bb *bitio.Buffer, formats []*Format, opts []interface{})
 		d := NewDecoder(name, f.Name, bb, probeOpts)
 
 		decodeErr, dv := d.SafeDecodeFn(func(d *D) interface{} {
-			if f.DecodeFn != nil {
-				return f.DecodeFn(d)
-			}
-			return f.DecodeFn2(d, formatOpts.InArg)
+			return f.DecodeFn(d, formatOpts.InArg)
 		})
 
 		if decodeErr != nil {

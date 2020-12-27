@@ -380,7 +380,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebmlTag, dc *decodeContext) 
 
 }
 
-func mkvDecode(d *decode.D) interface{} {
+func mkvDecode(d *decode.D, in interface{}) interface{} {
 	ebmlHeaderID := uint64(0x1a45dfa3)
 	if d.PeekBits(32) != ebmlHeaderID {
 		d.Invalid("no EBML header found")

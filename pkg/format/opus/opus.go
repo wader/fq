@@ -22,7 +22,7 @@ func init() {
 	})
 }
 
-func opusDecode(d *decode.D) interface{} {
+func opusDecode(d *decode.D, in interface{}) interface{} {
 	var prefix []byte
 	if d.BitsLeft() >= 8*8 {
 		prefix = d.PeekBytes(8)

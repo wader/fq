@@ -35,7 +35,7 @@ var compressionNames = map[uint64]string{
 	compressionDeflate: "deflate",
 }
 
-func pngDecode(d *decode.D) interface{} {
+func pngDecode(d *decode.D, in interface{}) interface{} {
 	iendFound := false
 
 	d.FieldValidateUTF8("signature", "\x89PNG\r\n\x1a\n")
@@ -89,7 +89,7 @@ func pngDecode(d *decode.D) interface{} {
 			switch compressionMethod {
 			case compressionDeflate:
 				dd := d.FieldStructFn("data", func(d *decode.D) {
-					d.FieldDecodeZlibLen("uncompressed", int64(dataLen), decode.FormatFn(func(d *decode.D) interface{} {
+					d.FieldDecodeZlibLen("uncompressed", int64(dataLen), decode.FormatFn(func(d *decode.D, in interface{}) interface{} {
 						d.FieldUTF8("text", int(d.BitsLeft()/8))
 						return nil
 					}))

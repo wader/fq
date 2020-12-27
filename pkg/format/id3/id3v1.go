@@ -24,7 +24,7 @@ func field(d *decode.D, name string, nBytes int) {
 }
 
 // Decode ID3v1 tag
-func id3v1Decode(d *decode.D) interface{} {
+func id3v1Decode(d *decode.D, in interface{}) interface{} {
 	d.ValidateAtLeastBitsLeft(128 * 8)
 	d.FieldValidateUTF8("magic", "TAG")
 	if d.PeekBits(8) == uint64('+') {

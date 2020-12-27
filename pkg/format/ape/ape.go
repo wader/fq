@@ -16,7 +16,7 @@ func init() {
 	})
 }
 
-func apev2Decode(d *decode.D) interface{} {
+func apev2Decode(d *decode.D, in interface{}) interface{} {
 	headerFooterFn := func(d *decode.D, name string) uint64 {
 		var tagCount uint64
 		d.FieldStructFn(name, func(d *decode.D) {

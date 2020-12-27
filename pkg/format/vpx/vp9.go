@@ -17,7 +17,7 @@ func init() {
 	})
 }
 
-func vp9Decode(d *decode.D) interface{} {
+func vp9Decode(d *decode.D, in interface{}) interface{} {
 
 	// TODO: header_size at end? even for show_existing_frame?
 

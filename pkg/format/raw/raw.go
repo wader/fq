@@ -9,6 +9,6 @@ func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.RAW,
 		Description: "Raw bits",
-		DecodeFn:    func(d *decode.D) interface{} { return nil },
+		DecodeFn:    func(d *decode.D, in interface{}) interface{} { return nil },
 	})
 }

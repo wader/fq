@@ -55,7 +55,7 @@ var ExtenionPayloadIDNames = map[uint64]string{
 	SBR_DATA_CRC:  "SBR_DATA_CRC",
 }
 
-func aacDecode(d *decode.D) interface{} {
+func aacDecode(d *decode.D, in interface{}) interface{} {
 	// TODO: multple blocks
 	d.FieldArrayFn("raw_data_block", func(d *decode.D) {
 		//		for {

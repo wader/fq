@@ -10,12 +10,11 @@ type Format struct {
 	Description  string
 	Groups       []string
 	MIMEs        []string
-	DecodeFn     func(d *D) interface{}
-	DecodeFn2    func(d *D, in interface{}) interface{}
+	DecodeFn     func(d *D, in interface{}) interface{}
 	Dependencies []Dependency
 }
 
-func FormatFn(d func(d *D) interface{}) []*Format {
+func FormatFn(d func(d *D, in interface{}) interface{}) []*Format {
 	return []*Format{{
 		DecodeFn: d,
 	}}

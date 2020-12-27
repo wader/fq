@@ -538,7 +538,7 @@ func decodeAtoms(ctx *decodeContext, d *decode.D) {
 	})
 }
 
-func mp4Decode(d *decode.D) interface{} {
+func mp4Decode(d *decode.D, in interface{}) interface{} {
 	ctx := &decodeContext{
 		tracks: map[uint32]*track{},
 	}

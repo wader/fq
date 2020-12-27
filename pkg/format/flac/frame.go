@@ -14,7 +14,7 @@ func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.FLAC_FRAME,
 		Description: "FLAC frame",
-		DecodeFn2:   frameDecode,
+		DecodeFn:    frameDecode,
 	})
 }
 

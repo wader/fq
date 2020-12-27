@@ -50,7 +50,7 @@ type stream struct {
 	codec      streamCodec
 }
 
-func decodeOgg(d *decode.D) interface{} {
+func decodeOgg(d *decode.D, in interface{}) interface{} {
 	validPages := 0
 	streams := map[uint32]*stream{}
 	streamD := d.FieldArray("stream")

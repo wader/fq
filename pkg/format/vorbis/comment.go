@@ -21,7 +21,7 @@ func init() {
 	})
 }
 
-func commentDecode(d *decode.D) interface{} {
+func commentDecode(d *decode.D, in interface{}) interface{} {
 	vendorLen := d.FieldU32LE("vendor_length")
 	d.FieldUTF8("vendor", int(vendorLen))
 	userCommentListLength := d.FieldU32LE("user_comment_list_length")

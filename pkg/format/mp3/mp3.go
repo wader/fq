@@ -35,7 +35,7 @@ func init() {
 	})
 }
 
-func mp3Decode(d *decode.D) interface{} {
+func mp3Decode(d *decode.D, in interface{}) interface{} {
 	d.FieldTryDecode("header", headerTag)
 
 	validFrames := 0

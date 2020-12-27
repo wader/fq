@@ -20,7 +20,7 @@ func init() {
 	})
 }
 
-func adtsDecode(d *decode.D) interface{} {
+func adtsDecode(d *decode.D, in interface{}) interface{} {
 	validFrames := 0
 
 	d.FieldArrayFn("frame", func(d *decode.D) {

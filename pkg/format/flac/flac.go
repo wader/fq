@@ -27,7 +27,7 @@ func init() {
 	})
 }
 
-func flacDecode(d *decode.D) interface{} {
+func flacDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldValidateUTF8("magic", "fLaC")
 
 	var streamInfo format.FlacMetadatablockStreamInfo

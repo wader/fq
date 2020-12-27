@@ -340,7 +340,7 @@ var streamHasExtension = map[uint64]bool{
 	0xef: true, // MPEG1OrMPEG2VideoStream
 }
 
-func pesPacketDecode(d *decode.D) interface{} {
+func pesPacketDecode(d *decode.D, in interface{}) interface{} {
 	var v interface{}
 
 	d.FieldValidateUFn("prefix", 0b0000_0000_0000_0000_0000_0001, d.U24)

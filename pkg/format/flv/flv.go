@@ -61,7 +61,7 @@ var typeNames = map[uint64]string{
 	typeLongString:  "LongString",
 }
 
-func flvDecode(d *decode.D) interface{} {
+func flvDecode(d *decode.D, in interface{}) interface{} {
 	var fieldScriptDataObject func()
 	var fieldScriptDataVariable func(d *decode.D, name string)
 

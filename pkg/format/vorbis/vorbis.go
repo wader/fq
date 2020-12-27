@@ -36,7 +36,7 @@ var packetTypeNames = map[uint]string{
 	packetTypeSetup:          "Setup",
 }
 
-func vorbisDecode(d *decode.D) interface{} {
+func vorbisDecode(d *decode.D, in interface{}) interface{} {
 	packetType := d.FieldUFn("packet_type", func() (uint64, decode.DisplayFormat, string) {
 		packetTypeName := "unknown"
 		t := d.U8()

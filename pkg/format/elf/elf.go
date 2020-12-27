@@ -46,7 +46,7 @@ func init() {
 	})
 }
 
-func elfDecode(d *decode.D) interface{} {
+func elfDecode(d *decode.D, in interface{}) interface{} {
 	d.ValidateAtLeastBitsLeft(128 * 8)
 
 	var archBits int

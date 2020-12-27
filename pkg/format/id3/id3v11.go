@@ -13,7 +13,7 @@ func init() {
 	})
 }
 
-func id3v11Decode(d *decode.D) interface{} {
+func id3v11Decode(d *decode.D, in interface{}) interface{} {
 	d.ValidateAtLeastBitsLeft(128 * 8)
 	d.FieldValidateUTF8("magic", "TAG+")
 	d.FieldUTF8("title", 60)

@@ -216,7 +216,7 @@ func odDecodeTag(d *decode.D, expectedTagID int, fn func(d *decode.D)) {
 	}
 }
 
-func esDecode(d *decode.D) interface{} {
+func esDecode(d *decode.D, in interface{}) interface{} {
 	odDecodeTag(d, -1, nil)
 	return nil
 }

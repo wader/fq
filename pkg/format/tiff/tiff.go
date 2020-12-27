@@ -781,7 +781,7 @@ func fieldSRational(d *decode.D, name string) float64 {
 	return d.FieldFloatFn(name, func() (float64, string) { return float64(d.S32()) / float64(d.S32()), "" })
 }
 
-func tiffDecode(d *decode.D) interface{} {
+func tiffDecode(d *decode.D, in interface{}) interface{} {
 	switch d.PeekBits(32) {
 	case littleEndian, bigEndian:
 		d.Endian = decode.BigEndian

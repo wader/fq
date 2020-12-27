@@ -43,7 +43,7 @@ var metadataBlockNames = map[uint]string{
 	MetadataBlockPicture:       "Picture",
 }
 
-func metadatablockDecode(d *decode.D) interface{} {
+func metadatablockDecode(d *decode.D, in interface{}) interface{} {
 	mb := &format.FlacMetadatablockOut{}
 
 	mb.LastBlock = d.FieldBool("last_block")

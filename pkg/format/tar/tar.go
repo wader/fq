@@ -27,7 +27,7 @@ func init() {
 	})
 }
 
-func tarDecode(d *decode.D) interface{} {
+func tarDecode(d *decode.D, in interface{}) interface{} {
 	str := func(nBytes int) string {
 		s := d.UTF8(nBytes)
 		ts := strings.Trim(s, "\x00")

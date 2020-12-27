@@ -93,7 +93,7 @@ var channelConfigurationNames = map[uint64]string{
 	7: "channels: front-center, front-left, front-right, side-left, side-right, back-left, back-right, LFE-channel",
 }
 
-func ascDecoder(d *decode.D) interface{} {
+func ascDecoder(d *decode.D, in interface{}) interface{} {
 	d.FieldStringMapFn("object_type", aotNames, "Unknown", func() uint64 {
 		n := d.U5()
 		if n == 31 {
