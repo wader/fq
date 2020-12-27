@@ -1,21 +1,21 @@
 # ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.page[0] | bits' > page
 /page:
 > -f ogg_page page verbose
-  |                                               |                |.{}: ogg_page 0-39+7 (58)
-00|4f 67 67 53                                    |OggS            |  capture_pattern: Correct ("OggS") 0-3+7 (4)
-00|            00                                 |    .           |  stream_structure_version: Correct (0) 4-4+7 (1)
-00|               02                              |     .          |  unused_flags: 0 5-5+4 (0+5)
-00|               02                              |     .          |  last_page: false 5+5-5+5 (0+1)
-00|               02                              |     .          |  first_page: true 5+6-5+6 (0+1)
-00|               02                              |     .          |  continued_packet: false 5+7-5+7 (0+1)
-00|                  00 00 00 00 00 00 00 00      |      ........  |  absolute_granule_position: 0 6-d+7 (8)
-00|                                          80 3c|              .<|  stream_serial_number: 3738778752 e-11+7 (4)
+  |                                               |                |.{}: ogg_page (page) 0-39+7 (58)
+00|4f 67 67 53                                    |OggS            |  capture_pattern: Correct ("OggS") (capture_pattern) 0-3+7 (4)
+00|            00                                 |    .           |  stream_structure_version: Correct (0) (stream_structure_version) 4-4+7 (1)
+00|               02                              |     .          |  unused_flags: 0 (unused_flags) 5-5+4 (0+5)
+00|               02                              |     .          |  last_page: false (last_page) 5+5-5+5 (0+1)
+00|               02                              |     .          |  first_page: true (first_page) 5+6-5+6 (0+1)
+00|               02                              |     .          |  continued_packet: false (continued_packet) 5+7-5+7 (0+1)
+00|                  00 00 00 00 00 00 00 00      |      ........  |  absolute_granule_position: 0 (absolute_granule_position) 6-d+7 (8)
+00|                                          80 3c|              .<|  stream_serial_number: 3738778752 (stream_serial_number) e-11+7 (4)
 10|d9 de                                          |..              |
-10|      00 00 00 00                              |  ....          |  page_sequence_no: 0 12-15+7 (4)
-10|                  8e 0b a0 26                  |      ...&      |  page_checksum: Correct (26a00b8e) 16-19+7 (4)
-10|                              01               |          .     |  page_segments: 1 1a-1a+7 (1)
-10|                                 1e            |           .    |  segment_table: 1e 1b-1b+7 (1)
-  |                                               |                |  segment[1]: 1c-39+7 (30)
+10|      00 00 00 00                              |  ....          |  page_sequence_no: 0 (page_sequence_no) 12-15+7 (4)
+10|                  8e 0b a0 26                  |      ...&      |  page_checksum: Correct (26a00b8e) (page_checksum) 16-19+7 (4)
+10|                              01               |          .     |  page_segments: 1 (page_segments) 1a-1a+7 (1)
+10|                                 1e            |           .    |  segment_table: 1e (segment_table) 1b-1b+7 (1)
+  |                                               |                |  segments[1]: (segments) 1c-39+7 (30)
 10|                                    01 76 6f 72|            .vor|    [0]: 01766f72626973000000000144ac0000... (segment) 1c-39+7 (30)
 20|62 69 73 00 00 00 00 01 44 ac 00 00 00 00 00 00|bis.....D.......|
 30|80 38 01 00 00 00 00 00 b8 01|                 |.8........|     |
