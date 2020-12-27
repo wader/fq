@@ -6,6 +6,8 @@ require (
 	github.com/chzyer/logex v1.1.10 // indirect
 	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e
 	github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1 // indirect
+	github.com/d5/tengo v1.24.8
+	github.com/d5/tengo/v2 v2.6.2
 	github.com/itchyny/gojq v0.11.2
 	github.com/pmezard/go-difflib v1.0.0
 )

@@ -50,7 +50,7 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 
 	switch vv := v.V.(type) {
 	case Struct:
-		fmt.Fprint(cw.Columns[6], "{}:")
+		fmt.Fprint(cw.Columns[6], ":")
 		if v.Description != "" {
 			fmt.Fprint(cw.Columns[6], " ", v.Description)
 		}
@@ -60,7 +60,7 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 		fmt.Fprintf(cw.Columns[6], ": %s", v)
 		isField = true
 	}
-	if opts.Verbose {
+	if opts.Verbose && isInArray {
 		fmt.Fprintf(cw.Columns[6], " (%s)", v.Name)
 	}
 
