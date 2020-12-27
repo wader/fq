@@ -585,7 +585,7 @@ func (q *Query) REPL() error {
 		// 	return [][]rune{}, 0
 		// }),
 		InterruptPrompt: "^C",
-		EOFPrompt:       "exit",
+		// EOFPrompt:       "exit",
 
 		HistorySearchFold: true,
 		// FuncFilterInputRune: filterInput,
