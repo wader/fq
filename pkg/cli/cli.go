@@ -11,7 +11,6 @@ import (
 	"fq/pkg/query"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"sort"
 	"strings"
@@ -139,8 +138,6 @@ func (m Main) run() error {
 		}
 		src = strings.Join(srcs, " | ")
 	}
-
-	log.Printf("src: %#+v\n", src)
 
 	if _, err := q.Run(src); err != nil {
 		return err
