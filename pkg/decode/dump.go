@@ -46,18 +46,21 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 
 	isField := false
 
-	fmt.Fprint(cw.Columns[6], indent, name)
-
 	switch vv := v.V.(type) {
 	case Struct:
-		fmt.Fprint(cw.Columns[6], ":")
+		if depth == 0 {
+			fmt.Fprint(cw.Columns[6], name, ":")
+		} else {
+			fmt.Fprint(cw.Columns[6], indent[1:], "-", name, ":")
+		}
 		if v.Description != "" {
 			fmt.Fprint(cw.Columns[6], " ", v.Description)
 		}
 	case Array:
+		fmt.Fprint(cw.Columns[6], indent, name)
 		fmt.Fprintf(cw.Columns[6], "[%d]:", len(vv))
 	default:
-		fmt.Fprintf(cw.Columns[6], ": %s", v)
+		fmt.Fprint(cw.Columns[6], indent, name, ": ", v)
 		isField = true
 	}
 	if opts.Verbose && isInArray {
