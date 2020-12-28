@@ -115,7 +115,7 @@ asdads
 050|                                             00|               .|            scalefac_scale1: 0 5f+5-5f+5 (0+1)
 050|                                             00|               .|            count1table_select0: 0 5f+6-5f+6 (0+1)
 050|                                             00|               .|            count1table_select1: 0 5f+7-5f+7 (0+1)
-   |                                               |                |      xing: xing_header 60-fb+7 (156)
+   |                                               |                |      xing: mp3_xing 60-fb+7 (156)
 060|49 6e 66 6f                                    |Info            |        header: "Info" 60-63+7 (4)
    |                                               |                |        present_flags: 64-67+7 (4)
 060|            00 00 00 0f                        |    ....        |          unused: 0 64-67+3 (3+4)

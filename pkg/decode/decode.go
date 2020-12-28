@@ -845,6 +845,19 @@ func (d *D) FieldBitBuf(name string, bb *bitio.Buffer) *bitio.Buffer {
 	})
 }
 
+// TODO: rethink this
+func (d *D) FieldRootBitBuf(name string, bb *bitio.Buffer) *Value {
+	v := &Value{}
+	v.V = bb
+	v.Name = name
+	v.IsRoot = true
+	v.RootBitBuf = bb
+	v.Range = ranges.Range{Start: 0, Len: bb.Len()}
+	d.AddChild(v)
+
+	return v
+}
+
 func (d *D) FieldBitBufRange(name string, firstBit int64, nBits int64) *bitio.Buffer {
 	return d.FieldBitBufFn(name, firstBit, nBits, func() (*bitio.Buffer, string) {
 		return d.BitBufRange(firstBit, nBits), ""
