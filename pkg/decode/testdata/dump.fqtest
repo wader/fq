@@ -2,7 +2,7 @@
 /test.mp3:
 > -f mp3 test.mp3 dump(1)
    |                                               |                |.: mp3
-000|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|  header: id3_v2
+000|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..| -header: id3_v2
 *  |29 bytes more until 2c+7                       |                |
 020|                                       ff fb 40|             ..@|  frames[3]:
 030|c0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
@@ -10,24 +10,24 @@
 280||                                              ||               |  footers[0]:
 > -f mp3 test.mp3 dump(2)
    |                                               |                |.: mp3
-   |                                               |                |  header: id3_v2
+   |                                               |                | -header: id3_v2
 000|49 44 33                                       |ID3             |    magic: Correct ("ID3")
 000|         04                                    |   .            |    version: 4
 000|            00                                 |    .           |    revision: 0
-000|               00                              |     .          |    flags:
+000|               00                              |     .          |   -flags:
 000|                  00 00 00 23                  |      ...#      |    size: 35
 000|                              54 53 53 45 00 00|          TSSE..|    frames[1]:
 010|00 0f 00 00 03 4c 61 76 66 35 38 2e 34 35 2e 31|.....Lavf58.45.1|
 020|30 30 00                                       |00.             |
 020|         00 00 00 00 00 00 00 00 00 00         |   ..........   |    padding: Correct (none) (zero padding)
    |                                               |                |  frames[3]:
-020|                                       ff fb 40|             ..@|    [0]: mp3_frame
+020|                                       ff fb 40|             ..@|   -[0]: mp3_frame
 030|c0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
 *  |163 bytes more until e2+7                      |                |
-0e0|         ff fb 50 c4 00 00 0a 2c 43 2e 55 94 80|   ..P....,C.U..|    [1]: mp3_frame
+0e0|         ff fb 50 c4 00 00 0a 2c 43 2e 55 94 80|   ..P....,C.U..|   -[1]: mp3_frame
 0f0|01 80 93 6b 27 30 80 00 07 aa c3 8e 33 85 d3 64|...k'0......3..d|
 *  |179 bytes more until 1b2+7                     |                |
-1b0|         ff fb 52 c4 04 83 c9 14 39 29 3c c3 00|   ..R.....9)<..|    [2]: mp3_frame
+1b0|         ff fb 52 c4 04 83 c9 14 39 29 3c c3 00|   ..R.....9)<..|   -[2]: mp3_frame
 1c0|00 00 00 34 80 00 00 04 11 4b 36 4a 08 83 58 c9|...4.....K6J..X.|
 *  |180 bytes more until 283+7 (end)               |                |
    |                                               |                |  footers[0]:

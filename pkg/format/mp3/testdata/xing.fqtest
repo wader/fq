@@ -3,7 +3,7 @@
 > -f mp3_xing xing verbose
   |                                               |                |.: mp3_xing 0-9b+7 (156)
 00|49 6e 66 6f                                    |Info            |  header: "Info" 0-3+7 (4)
-  |                                               |                |  present_flags: 4-7+7 (4)
+  |                                               |                | -present_flags: 4-7+7 (4)
 00|            00 00 00 0f                        |    ....        |    unused: 0 4-7+3 (3+4)
 00|                     0f                        |       .        |    quality: true 7+4-7+4 (0+1)
 00|                     0f                        |       .        |    toc: true 7+5-7+5 (0+1)
@@ -113,7 +113,7 @@
 70|      ff                                       |  .             |    [98]: 255 (entry) 72-72+7 (1)
 70|         ff                                    |   .            |    [99]: 255 (entry) 73-73+7 (1)
 70|            00 00 00 00                        |    ....        |  quality: 0 74-77+7 (4)
-  |                                               |                |  lame_extension: 78-9b+7 (36)
+  |                                               |                | -lame_extension: 78-9b+7 (36)
 70|                        4c 61 76 63 35 38 2e 39|        Lavc58.9|    encoder: "Lavc58.91" 78-80+7 (9)
 80|31                                             |1               |
 80|   00                                          | .              |    tag_revision: 0 81-81+3 (0+4)

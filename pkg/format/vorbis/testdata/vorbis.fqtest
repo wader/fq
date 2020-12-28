@@ -20,13 +20,13 @@
   |                                               |                |.: vorbis_packet 0-3f+7 (64)
 00|03                                             |.               |  packet_type: Comment (3) 0-0+7 (1)
 00|   76 6f 72 62 69 73                           | vorbis         |  magic: Correct ("vorbis") 1-6+7 (6)
-  |                                               |                |  comment: vorbis_comment 7-3e+7 (56)
+  |                                               |                | -comment: vorbis_comment 7-3e+7 (56)
 00|                     0d 00 00 00               |       ....     |    vendor_length: 13 7-a+7 (4)
 00|                                 4c 61 76 66 35|           Lavf5|    vendor: "Lavf58.29.100" b-17+7 (13)
 10|38 2e 32 39 2e 31 30 30                        |8.29.100        |
 10|                        01 00 00 00            |        ....    |    user_comment_list_length: 1 18-1b+7 (4)
   |                                               |                |    user_comments[1]: 1c-3e+7 (35)
-  |                                               |                |      [0]: (user_comment) 1c-3e+7 (35)
+  |                                               |                |     -[0]: (user_comment) 1c-3e+7 (35)
 10|                                    1f 00 00 00|            ....|        length: 31 1c-1f+7 (4)
 20|65 6e 63 6f 64 65 72 3d 4c 61 76 63 35 38 2e 35|encoder=Lavc58.5|        vendor: "encoder=Lavc58.54.100 libvorbis" 20-3e+7 (31)
 30|34 2e 31 30 30 20 6c 69 62 76 6f 72 62 69 73   |4.100 libvorbis |
