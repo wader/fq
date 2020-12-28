@@ -237,23 +237,19 @@ func (q *Query) makeDumpFn(qd queryDump) func(c interface{}, a []interface{}) in
 			return fmt.Errorf("%v: value is not a decode value", c)
 		}
 
-		maxDepth := 0
-		if len(a) == 1 {
-			var ok bool
-			maxDepth, ok = a[0].(int)
-			if !ok {
-				return fmt.Errorf("max depth is not a int")
-			}
-			if maxDepth < 0 {
-				return fmt.Errorf("max depth can't be negative")
+		qd.v = v
+		for _, av := range a {
+			switch av := av.(type) {
+			case int:
+				qd.maxDepth = av
+			case int64:
+				qd.maxDepth = int(av)
+			case bool:
+				qd.verbose = av
 			}
 		}
 
-		return &queryDump{
-			maxDepth: qd.maxDepth,
-			verbose:  qd.verbose,
-			v:        v,
-		}
+		return &qd
 	}
 }
 
