@@ -10,7 +10,7 @@ var images []*decode.Format
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.FLAC_PICTURE,
-		Description: "FLAC metadata block picture",
+		Description: "FLAC metadatablock picture",
 		DecodeFn:    pictureDecode,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.IMAGE}, Formats: &images},

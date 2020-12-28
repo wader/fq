@@ -1,7 +1,9 @@
 
-bested buf... struct nested ranges "leak out" to parent.. for example zero
+summary count uniq paths only count arrays
 
-reomve {} i dump for struct
+nested buf... struct nested ranges "leak out" to parent.. for example zero
+
+DONE reomve {} i dump for struct
 
 // TODO: addr|hh h hh hh  hh hh hh hh  hh hh hh hh hh|aaaa aaaa aaaa aaaa
 

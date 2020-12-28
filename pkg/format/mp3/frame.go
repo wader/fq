@@ -5,8 +5,8 @@ package mp3
 // https://wiki.hydrogenaud.io/index.php?title=MP3
 // https://www.diva-portal.org/smash/get/diva2:830195/FULLTEXT01.pdf
 
-// TODO: same sample decode?
-// TODO: LSF, version 2.5 and 2?
+// TODO: some sample decode?
+// TODO: LSF, version 2.5 and 2? other decoder?
 
 import (
 	"fq/pkg/crc"
