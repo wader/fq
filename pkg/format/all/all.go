@@ -7,7 +7,8 @@ import (
 	_ "fq/pkg/format/flac"
 
 	//_ "fq/pkg/format/flv"
-	_ "fq/pkg/format/gz"
+	_ "fq/pkg/format/bzip2"
+	_ "fq/pkg/format/gzip"
 	_ "fq/pkg/format/icc"
 	_ "fq/pkg/format/id3"
 	_ "fq/pkg/format/jpeg"

@@ -25,6 +25,7 @@ const (
 	AAC_FRAME          = "aac_frame"
 	AAC_STREAM         = "aac_stream"
 	APEV2              = "apev2"
+	BZIP2              = "bzip2"
 	ELF                = "elf"
 	FLAC               = "flac"
 	FLAC_FRAME         = "flac_frame"
