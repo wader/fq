@@ -1,54 +1,54 @@
 # ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.steam[0].packet[0] | bits' > vorbis-identifcation
 /vorbis-identifcation:
 > -f vorbis_packet vorbis-identifcation verbose
-  |                                               |                |.{}: vorbis_packet (vorbis-identifcation) 0-1d+7 (30)
-00|01                                             |.               |  packet_type: Identification (1) (packet_type) 0-0+7 (1)
-00|   76 6f 72 62 69 73                           | vorbis         |  magic: Correct ("vorbis") (magic) 1-6+7 (6)
-00|                     00 00 00 00               |       ....     |  vorbis_version: Correct (0) (vorbis_version) 7-a+7 (4)
-00|                                 01            |           .    |  audio_channels: 1 (audio_channels) b-b+7 (1)
-00|                                    44 ac 00 00|            D...|  audio_sample_rate: 44100 (audio_sample_rate) c-f+7 (4)
-10|00 00 00 00                                    |....            |  bitrate_maximum: 0 (bitrate_maximum) 10-13+7 (4)
-10|            80 38 01 00                        |    .8..        |  bitrate_nominal: 80000 (bitrate_nominal) 14-17+7 (4)
-10|                        00 00 00 00            |        ....    |  bitrate_minimum: 0 (bitrate_minimum) 18-1b+7 (4)
-10|                                    b8         |            .   |  blocksize_1: 2048 (blocksize_1) 1c-1c+3 (0+4)
-10|                                    b8         |            .   |  blocksize_0: 256 (blocksize_0) 1c+4-1c+7 (0+4)
-10|                                       01|     |             .| |  padding0: Correct (none) (zero padding) (padding0) 1d-1d+6 (0+7)
-10|                                       01|     |             .| |  framing_flag: Correct (1) (framing_flag) 1d+7-1d+7 (0+1)
+  |                                               |                |.: vorbis_packet 0-1d+7 (30)
+00|01                                             |.               |  packet_type: Identification (1) 0-0+7 (1)
+00|   76 6f 72 62 69 73                           | vorbis         |  magic: Correct ("vorbis") 1-6+7 (6)
+00|                     00 00 00 00               |       ....     |  vorbis_version: Correct (0) 7-a+7 (4)
+00|                                 01            |           .    |  audio_channels: 1 b-b+7 (1)
+00|                                    44 ac 00 00|            D...|  audio_sample_rate: 44100 c-f+7 (4)
+10|00 00 00 00                                    |....            |  bitrate_maximum: 0 10-13+7 (4)
+10|            80 38 01 00                        |    .8..        |  bitrate_nominal: 80000 14-17+7 (4)
+10|                        00 00 00 00            |        ....    |  bitrate_minimum: 0 18-1b+7 (4)
+10|                                    b8         |            .   |  blocksize_1: 2048 1c-1c+3 (0+4)
+10|                                    b8         |            .   |  blocksize_0: 256 1c+4-1c+7 (0+4)
+10|                                       01|     |             .| |  padding0: Correct (none) (zero padding) 1d-1d+6 (0+7)
+10|                                       01|     |             .| |  framing_flag: Correct (1) 1d+7-1d+7 (0+1)
 # ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.packet[1] | bits' > vorbis-identifcation
 /vorbis-comment:
 > -f vorbis_packet vorbis-comment verbose
-  |                                               |                |.{}: vorbis_packet (vorbis-comment) 0-3f+7 (64)
-00|03                                             |.               |  packet_type: Comment (3) (packet_type) 0-0+7 (1)
-00|   76 6f 72 62 69 73                           | vorbis         |  magic: Correct ("vorbis") (magic) 1-6+7 (6)
-  |                                               |                |  comment{}: vorbis_comment (comment) 7-3e+7 (56)
-00|                     0d 00 00 00               |       ....     |    vendor_length: 13 (vendor_length) 7-a+7 (4)
-00|                                 4c 61 76 66 35|           Lavf5|    vendor: "Lavf58.29.100" (vendor) b-17+7 (13)
+  |                                               |                |.: vorbis_packet 0-3f+7 (64)
+00|03                                             |.               |  packet_type: Comment (3) 0-0+7 (1)
+00|   76 6f 72 62 69 73                           | vorbis         |  magic: Correct ("vorbis") 1-6+7 (6)
+  |                                               |                |  comment: vorbis_comment 7-3e+7 (56)
+00|                     0d 00 00 00               |       ....     |    vendor_length: 13 7-a+7 (4)
+00|                                 4c 61 76 66 35|           Lavf5|    vendor: "Lavf58.29.100" b-17+7 (13)
 10|38 2e 32 39 2e 31 30 30                        |8.29.100        |
-10|                        01 00 00 00            |        ....    |    user_comment_list_length: 1 (user_comment_list_length) 18-1b+7 (4)
-  |                                               |                |    user_comments[1]: (user_comments) 1c-3e+7 (35)
-  |                                               |                |      [0]{}: (user_comment) 1c-3e+7 (35)
-10|                                    1f 00 00 00|            ....|        length: 31 (length) 1c-1f+7 (4)
-20|65 6e 63 6f 64 65 72 3d 4c 61 76 63 35 38 2e 35|encoder=Lavc58.5|        vendor: "encoder=Lavc58.54.100 libvorbis" (vendor) 20-3e+7 (31)
+10|                        01 00 00 00            |        ....    |    user_comment_list_length: 1 18-1b+7 (4)
+  |                                               |                |    user_comments[1]: 1c-3e+7 (35)
+  |                                               |                |      [0]: (user_comment) 1c-3e+7 (35)
+10|                                    1f 00 00 00|            ....|        length: 31 1c-1f+7 (4)
+20|65 6e 63 6f 64 65 72 3d 4c 61 76 63 35 38 2e 35|encoder=Lavc58.5|        vendor: "encoder=Lavc58.54.100 libvorbis" 20-3e+7 (31)
 30|34 2e 31 30 30 20 6c 69 62 76 6f 72 62 69 73   |4.100 libvorbis |
-30|                                             01|               .|  padding0: Correct (none) (zero padding) (padding0) 3f-3f+6 (0+7)
-30|                                             01|               .|  frame_bit: Correct (1) (frame_bit) 3f+7-3f+7 (0+1)
+30|                                             01|               .|  padding0: Correct (none) (zero padding) 3f-3f+6 (0+7)
+30|                                             01|               .|  frame_bit: Correct (1) 3f+7-3f+7 (0+1)
 # ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.packet[2] | bits' > vorbis-identifcation
 /vorbis-setup:
 > -f vorbis_packet vorbis-setup verbose
-   |                                               |                |.{}: vorbis_packet (vorbis-setup) 0-c74+7 (3189)
-000|05                                             |.               |  packet_type: Setup (5) (packet_type) 0-0+7 (1)
-000|   76 6f 72 62 69 73                           | vorbis         |  magic: Correct ("vorbis") (magic) 1-6+7 (6)
-000|                     22                        |       "        |  vorbis_codebook_count: 35 (vorbis_codebook_count) 7-7+7 (1)
-000|                        42 43 56               |        BCV     |  codecooke_sync: Correct (564342) (codecooke_sync) 8-a+7 (3)
-000|                                 01 00         |           ..   |  codebook_dimensions: 1 (codebook_dimensions) b-c+7 (2)
-000|                                       40 00 00|             @..|  codebook_entries: 64 (codebook_entries) d-f+7 (3)
-010|24 73 18 2a 46 a5 73 16 84 10 1a 42 50 19 e3 1c|$s.*F.s....BP...|  unknown0: 2473182a46a5731684101a425019e31c... (unknown0) 10-c74+7 (3173)
+   |                                               |                |.: vorbis_packet 0-c74+7 (3189)
+000|05                                             |.               |  packet_type: Setup (5) 0-0+7 (1)
+000|   76 6f 72 62 69 73                           | vorbis         |  magic: Correct ("vorbis") 1-6+7 (6)
+000|                     22                        |       "        |  vorbis_codebook_count: 35 7-7+7 (1)
+000|                        42 43 56               |        BCV     |  codecooke_sync: Correct (564342) 8-a+7 (3)
+000|                                 01 00         |           ..   |  codebook_dimensions: 1 b-c+7 (2)
+000|                                       40 00 00|             @..|  codebook_entries: 64 d-f+7 (3)
+010|24 73 18 2a 46 a5 73 16 84 10 1a 42 50 19 e3 1c|$s.*F.s....BP...|  unknown0: 2473182a46a5731684101a425019e31c... 10-c74+7 (3173)
 *  |3157 bytes more until c74+7 (end)              |                |
 # ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.packet[3] | bits' > vorbis-identifcation
 /vorbis-audio:
 > -f vorbis_packet vorbis-audio verbose
-  |                                               |                |.{}: vorbis_packet (vorbis-audio) 0-20+7 (33)
-00|54                                             |T               |  packet_type: Audio (0) (packet_type) 0-0+7 (1)
-00|   dd cb ce aa 5e d8 7f 2d 01 42 00 a0 dd 71 77| ....^..-.B...qw|  unknown0: ddcbceaa5ed87f2d014200a0dd71778b... (unknown0) 1-20+7 (32)
+  |                                               |                |.: vorbis_packet 0-20+7 (33)
+00|54                                             |T               |  packet_type: Audio (0) 0-0+7 (1)
+00|   dd cb ce aa 5e d8 7f 2d 01 42 00 a0 dd 71 77| ....^..-.B...qw|  unknown0: ddcbceaa5ed87f2d014200a0dd71778b... 1-20+7 (32)
 10|8b ed cd 37 df 7c 33 3a 0c c3 30 0c c3 30 d4 50|...7.|3:..0..0.P|
 20|02|                                            |.|              |

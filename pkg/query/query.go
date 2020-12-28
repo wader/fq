@@ -158,7 +158,7 @@ func NewQuery(opts QueryOptions) *Query {
 		{[]string{"dump", "d"}, 0, 1, q.makeDumpFn(queryDump{})},
 		{[]string{"verbose", "v"}, 0, 1, q.makeDumpFn(queryDump{verbose: true})},
 		{[]string{"summary", "s"}, 0, 1, q.makeDumpFn(queryDump{maxDepth: 1})},
-		{[]string{"hexdump"}, 0, 0, q.hexdump},
+		{[]string{"hexdump", "hd", "h"}, 0, 0, q.hexdump},
 		{[]string{"bits"}, 0, 2, q.bits},
 		{[]string{"string"}, 0, 0, q.string_},
 		{[]string{"probe"}, 0, 1, q.makeProbeFn(q.probeFormats)},
