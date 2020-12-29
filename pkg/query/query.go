@@ -91,6 +91,24 @@ func toBitBuf(v interface{}) (*bitio.Buffer, ranges.Range, string, error) {
 	}
 }
 
+func CompleteQuery(s string) (string, string) {
+	// HACK: use gojq ast somehow
+	dotI := strings.LastIndexAny(s, ".")
+	if dotI == -1 {
+		return "", ""
+	}
+
+	pipeOrDotI := strings.LastIndexAny(s[:dotI], ".|")
+	if pipeOrDotI == -1 {
+		return s[dotI+1:], s[0 : dotI+1]
+	}
+	if s[pipeOrDotI] == '.' {
+		return s[dotI+1:], s[0:dotI]
+	}
+
+	return s[dotI+1:], s[0 : dotI+1]
+}
+
 type QueryOptions struct {
 	Variables   []Variable
 	FormatName  string
@@ -165,6 +183,7 @@ func NewQuery(opts QueryOptions) *Query {
 		{[]string{"u"}, 1, 1, q.u},
 		{[]string{"push"}, 0, 0, q.push},
 		{[]string{"pop"}, 0, 0, q.pop},
+		{[]string{"_value_keys"}, 0, 0, q._valueKeys},
 	}
 	for _, f := range q.allFormats {
 		q.functions = append(q.functions, Function{[]string{f.Name}, 0, 0, q.makeProbeFn([]*decode.Format{f})})
@@ -397,7 +416,26 @@ func (q *Query) pop(c interface{}, a []interface{}) interface{} {
 	return &queryPop{}
 }
 
-func (q *Query) Run(src string) ([]interface{}, error) {
+func (q *Query) _valueKeys(c interface{}, a []interface{}) interface{} {
+	_, ok := c.(*decode.Value)
+	if !ok {
+		return nil
+	}
+
+	return []interface{}{
+		"_type",
+		"_name",
+		"_value",
+		"_symbol",
+		"_description",
+		"_range",
+		"_size",
+		"_path",
+		"_raw",
+	}
+}
+
+func (q *Query) Run(src string, printResult bool) ([]interface{}, error) {
 	var err error
 
 	q.pushAcc = nil
@@ -467,6 +505,12 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 				continue
 			}
 			break
+		}
+
+		vs = append(vs, v)
+
+		if !printResult {
+			continue
 		}
 
 		switch vv := v.(type) {
@@ -539,7 +583,6 @@ func (q *Query) Run(src string) ([]interface{}, error) {
 			}
 		}
 
-		vs = append(vs, v)
 	}
 
 	if pops > 0 && len(q.inputStack) > 0 {
@@ -569,17 +612,45 @@ func (q *Query) REPL() error {
 		Stdout:      q.opts.OS.Stdout(),
 		Stderr:      q.opts.OS.Stderr(),
 		HistoryFile: historyFile,
-		// AutoComplete: autoCompleterFn(func(line []rune, pos int) (newLine [][]rune, length int) {
+		AutoComplete: autoCompleterFn(func(line []rune, pos int) (newLine [][]rune, length int) {
 
-		// 	q, err := gojq.Parse(string(line))
-		// 	log.Printf("err: %#+v\n", err)
-		// 	log.Printf("q: %#+v\n", q)
+			origQ := string(line[0:pos])
+			prefix, completeQuery := CompleteQuery(origQ)
+			if completeQuery == "" {
+				return [][]rune{}, pos
+			}
 
-		// 	log.Printf("line: %#+v\n", line)
-		// 	log.Printf("pos: %#+v\n", pos)
+			shareLen := len(prefix)
 
-		// 	return [][]rune{}, 0
-		// }),
+			vss, err := q.Run("["+completeQuery+" | keys?, _value_keys?] | add | unique", false)
+			if err != nil {
+				return [][]rune{}, pos
+			}
+
+			vs := vss[0].([]interface{})
+
+			var names []string
+			for _, v := range vs {
+				v, _ := v.(string)
+				if v == "" {
+					continue
+				}
+				if strings.HasPrefix(v, prefix) {
+					names = append(names, v[shareLen:])
+				}
+			}
+
+			if len(names) <= 1 {
+				shareLen = 0
+			}
+
+			var runeNames [][]rune
+			for _, n := range names {
+				runeNames = append(runeNames, []rune(n))
+			}
+
+			return runeNames, shareLen
+		}),
 		InterruptPrompt: "^C",
 		// EOFPrompt:       "exit",
 
@@ -628,7 +699,7 @@ func (q *Query) REPL() error {
 			return err
 		}
 
-		if _, err := q.Run(src); err != nil {
+		if _, err := q.Run(src, true); err != nil {
 			fmt.Fprintf(q.opts.OS.Stdout(), "error: %s\n", err)
 		}
 	}

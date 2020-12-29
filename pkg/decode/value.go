@@ -522,33 +522,56 @@ func (v *Value) JsonProperty(name string) interface{} {
 }
 
 func (v *Value) JsonEach() [][2]interface{} {
+	props := [][2]interface{}{}
 
 	switch vv := v.V.(type) {
 	case Struct:
-		props := [][2]interface{}{}
 		for _, f := range vv {
 			props = append(props, [2]interface{}{f.Name, f})
 		}
 		// log.Printf("JsonEach struct %#+v", props)
-		sort.Slice(props, func(i, j int) bool {
-			return props[i][0].(string) < props[j][0].(string)
-		})
 
-		return props
 	case Array:
-		props := [][2]interface{}{}
 		for i, f := range vv {
 			props = append(props, [2]interface{}{i, f})
 		}
 
 		// log.Printf("JsonEach array %#+v", props)
-
-		return props
-	default:
-		// log.Printf("JsonEach value nil")
-		//panic("unreachable")
-
-		return nil
 	}
 
+	/*
+		specialProps := []string{
+			"_type",
+			"_name",
+			"_value",
+			"_symbol",
+			"_description",
+			"_range",
+			"_size",
+			"_path",
+			"_raw",
+		}
+
+		for _, p := range specialProps {
+			props = append(props, [2]interface{}{p, v.JsonProperty(p)})
+		}
+	*/
+
+	sort.Slice(props, func(i, j int) bool {
+		iString, iIsString := props[i][0].(string)
+		jString, jIsString := props[j][0].(string)
+		iInt, iIsInt := props[i][0].(string)
+		jInt, jIsInt := props[j][0].(string)
+		if iIsString && jIsString {
+			return iString < jString
+		} else if iIsInt && jIsInt {
+			return iInt < jInt
+		} else if iIsInt {
+			return true
+		}
+
+		return false
+	})
+
+	return props
 }
