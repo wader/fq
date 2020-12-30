@@ -1,5 +1,6 @@
 
 
+repl in jq, expose parse/run?
 
 go run cmd/fq/main.go -n - '["digraph formats {"] + [[formats[] | . as $f | .dependencies | flatten? | .[] | [$f.name, .]] + [formats[] | . as $f | .groups | flatten? | .[] | [., $f.name]] | .[] | join(" -> ")] + ["}"] | join("\n")' | dot -Tsvg -o formats.svg
 
