@@ -8,19 +8,19 @@ import (
 )
 
 type Registry struct {
-	allGroups   map[string][]*Format
+	Groups      map[string][]*Format
 	resolveOnce sync.Once
 }
 
 func NewRegistry() *Registry {
 	return &Registry{
-		allGroups:   map[string][]*Format{},
+		Groups:      map[string][]*Format{},
 		resolveOnce: sync.Once{},
 	}
 }
 
 func (r *Registry) register(groupName string, format *Format, single bool) *Format {
-	formats, ok := r.allGroups[groupName]
+	formats, ok := r.Groups[groupName]
 	if ok {
 		if !single {
 			panic(fmt.Sprintf("%s: already registered", groupName))
@@ -30,18 +30,18 @@ func (r *Registry) register(groupName string, format *Format, single bool) *Form
 	}
 
 	// prepend to allow override
-	r.allGroups[groupName] = append([]*Format{format}, formats...)
+	r.Groups[groupName] = append([]*Format{format}, formats...)
 
 	return format
 }
 
 func (r *Registry) resolve() error {
-	for _, fs := range r.allGroups {
+	for _, fs := range r.Groups {
 		for _, f := range fs {
 			for _, d := range f.Dependencies {
 				var formats []*Format
 				for _, dName := range d.Names {
-					df, ok := r.allGroups[dName]
+					df, ok := r.Groups[dName]
 					if !ok {
 						return fmt.Errorf("%s: can't find dependency %s", f.Name, dName)
 					}
@@ -73,7 +73,7 @@ func (r *Registry) Group(name string) ([]*Format, error) {
 		}
 	})
 
-	if g, ok := r.allGroups[name]; ok {
+	if g, ok := r.Groups[name]; ok {
 		return g, nil
 	}
 	return nil, errors.New("no such group")
@@ -94,8 +94,9 @@ func (r *Registry) MustAll() []*Format {
 func (r *Registry) Dot(w io.Writer) {
 	formatSeen := map[string]struct{}{}
 
+	fmt.Fprintf(w, "// pipe thru: dot -Tsvg -o formats.svg\n")
 	fmt.Fprintf(w, "digraph formats {\n")
-	for groupName, fs := range r.allGroups {
+	for groupName, fs := range r.Groups {
 		if groupName == "all" {
 			continue
 		}

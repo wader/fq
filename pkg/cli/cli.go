@@ -54,8 +54,8 @@ func (m Main) run() error {
 	fs := flag.NewFlagSet("", flag.ContinueOnError)
 	fs.SetOutput(m.OS.Stderr())
 	versionFlag := fs.Bool("version", false, fmt.Sprintf("Show version(%s)", fq.Version))
-	dotFlag := fs.Bool("dot", false, "Output dot format graph (... | dot -Tsvg -o formats.svg)")
 	formatNameFlag := fs.String("f", "probe", "Format name")
+	noInputFlag := fs.Bool("n", false, "No input")
 	maxDisplayBytes := fs.Int64("d", 16, "Max display bytes")
 	scriptFlag := fs.String("s", "", "Script path")
 	replFlag := fs.Bool("i", false, "REPL")
@@ -81,7 +81,7 @@ func (m Main) run() error {
 		})
 
 		pad := func(n int, s string) string { return strings.Repeat(" ", n-len(s)) }
-		fmt.Fprintf(fs.Output(), "Usage: %s [FLAGS] FILE [EXP]\n", m.OS.Args()[0])
+		fmt.Fprintf(fs.Output(), "Usage: %s [FLAGS] [FILE] [EXP]\n", m.OS.Args()[0])
 		fs.PrintDefaults()
 		fmt.Fprintf(fs.Output(), "\n")
 		fmt.Fprintf(fs.Output(), "Name:%s  Description:%s  MIME:\n", pad(maxNameLen, "Name:"), pad(maxNameLen, "Description:"))
@@ -94,10 +94,6 @@ func (m Main) run() error {
 	}
 	if *versionFlag {
 		fmt.Fprintln(m.OS.Stdout(), fq.Version)
-		return nil
-	}
-	if *dotFlag {
-		m.Registry.Dot(m.OS.Stdout())
 		return nil
 	}
 	filename := fs.Arg(0)
@@ -126,9 +122,12 @@ func (m Main) run() error {
 		}
 		src = string(scriptBytes)
 	} else {
-		srcs := []string{
-			`open($FILENAME)`,
-			*formatNameFlag, // format decode exist as functions with same name
+		var srcs []string
+		if !*noInputFlag {
+			srcs = append(srcs,
+				`open($FILENAME)`,
+				*formatNameFlag)
+
 		}
 		if e := fs.Arg(1); e != "" {
 			srcs = append(srcs, e)

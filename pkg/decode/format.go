@@ -2,7 +2,7 @@ package decode
 
 type Dependency struct {
 	Names   []string
-	Formats *[]*Format
+	Formats *[]*Format // TODO: rename to outFormats to make it clear it's used to assign?
 }
 
 type Format struct {

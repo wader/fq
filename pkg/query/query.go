@@ -93,37 +93,6 @@ func toBitBuf(v interface{}) (*bitio.Buffer, ranges.Range, string, error) {
 	}
 }
 
-type CompleteResult string
-
-const (
-	CompleteNone CompleteResult = "none"
-	CompleteProp                = "prop"
-	CompleteFunc                = "func"
-)
-
-func CompleteQuery(s string) (string, string, CompleteResult) {
-	// HACK: use gojq ast somehow
-	dotI := strings.LastIndexAny(s, ".")
-	if dotI == -1 {
-		// p := strings.TrimSpace(s)
-		// if p != "" {
-		// 	return p, "", CompleteFunc
-		// }
-
-		return "", "", CompleteNone
-	}
-
-	pipeOrDotI := strings.LastIndexAny(s[:dotI], ".|")
-	if pipeOrDotI == -1 {
-		return s[dotI+1:], s[0 : dotI+1], CompleteProp
-	}
-	if s[pipeOrDotI] == '.' {
-		return s[dotI+1:], s[0:dotI], CompleteProp
-	}
-
-	return s[dotI+1:], s[0 : dotI+1], CompleteProp
-}
-
 type CompletionType string
 
 const (
@@ -137,7 +106,7 @@ func BuildCompletionQuery(src string) (*gojq.Query, CompletionType, string) {
 		return nil, CompletionTypeNone, ""
 	}
 
-	// HACK: if ending with "." append a probe index that we remove later
+	// HACK: if ending with "." append a test index that we remove later
 	probePrefix := ""
 	if len(src) > 0 && strings.HasSuffix(src, ".") {
 		probePrefix = "x"
@@ -156,6 +125,8 @@ func BuildCompletionQuery(src string) (*gojq.Query, CompletionType, string) {
 	return cq, ct, prefix
 }
 
+// find the right most term that is completeable
+// return a query to find possible names and a prefix to filter by
 func buildCompletionQuery(q *gojq.Query) (*gojq.Query, CompletionType, string) {
 	switch q.Op {
 	case gojq.OpPipe:
@@ -247,6 +218,8 @@ type queryHexDump struct {
 	r  ranges.Range
 }
 
+type queryDot struct{}
+
 type queryPush struct{}
 
 type queryPop struct{}
@@ -255,7 +228,6 @@ func NewQuery(opts QueryOptions) *Query {
 	q := &Query{opts: opts}
 
 	// TODO: cleanup group names and panics
-	q.allFormats = opts.Registry.MustAll()
 	q.probeFormats = opts.Registry.MustGroup(format.PROBE)
 	q.functions = []Function{
 		{[]string{"help"}, 0, 0, q.help},
@@ -271,9 +243,11 @@ func NewQuery(opts QueryOptions) *Query {
 		{[]string{"push"}, 0, 0, q.push},
 		{[]string{"pop"}, 0, 0, q.pop},
 		{[]string{"_value_keys"}, 0, 0, q._valueKeys},
+		{[]string{"_dot"}, 0, 0, q._dot},
+		{[]string{"formats"}, 0, 0, q.formats},
 	}
-	for _, f := range q.allFormats {
-		q.functions = append(q.functions, Function{[]string{f.Name}, 0, 0, q.makeProbeFn([]*decode.Format{f})})
+	for name, f := range q.opts.Registry.Groups {
+		q.functions = append(q.functions, Function{[]string{name}, 0, 0, q.makeProbeFn(f)})
 	}
 	q.variables = []Variable{
 		{Name: "FORMAT", Value: opts.FormatName},
@@ -522,6 +496,44 @@ func (q *Query) _valueKeys(c interface{}, a []interface{}) interface{} {
 	}
 }
 
+func (q *Query) _dot(c interface{}, a []interface{}) interface{} {
+	return &queryDot{}
+}
+
+func (q *Query) formats(c interface{}, a []interface{}) interface{} {
+	vs := map[string]interface{}{}
+
+	for n, fs := range q.opts.Registry.Groups {
+		var vfs []interface{}
+		for _, f := range fs {
+			vf := map[string]interface{}{
+				"name":        f.Name,
+				"description": f.Description,
+			}
+
+			var dependenciesVs []interface{}
+			for _, d := range f.Dependencies {
+				dependenciesVs = append(dependenciesVs, d.Names)
+			}
+			if len(dependenciesVs) > 0 {
+				vf["dependencies"] = dependenciesVs
+			}
+			var groupsVs []interface{}
+			for _, n := range f.Groups {
+				groupsVs = append(groupsVs, n)
+			}
+			if len(groupsVs) > 0 {
+				vf["groups"] = groupsVs
+			}
+
+			vfs = append(vfs, vf)
+		}
+		vs[n] = vfs
+	}
+
+	return vs
+}
+
 func (q *Query) Run(ctx context.Context, src string, printResult bool) ([]interface{}, error) {
 	var err error
 
@@ -639,6 +651,8 @@ func (q *Query) Run(ctx context.Context, src string, printResult bool) ([]interf
 			// nop
 		case *queryPop:
 			pops++
+		case *queryDot:
+			q.opts.Registry.Dot(q.opts.OS.Stdout())
 
 		case *decode.Value:
 			opts := q.opts.DumpOptions

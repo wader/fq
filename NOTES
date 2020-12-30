@@ -1,4 +1,8 @@
 
+Run should know if autocompleting? dont allow open() etc
+
+refactor query.go to be more modular
+
 summary count uniq paths only count arrays
 
 nested buf... struct nested ranges "leak out" to parent.. for example zero
