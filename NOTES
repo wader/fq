@@ -1,5 +1,8 @@
 
 
+
+go run cmd/fq/main.go -n - '["digraph formats {"] + [[formats[] | . as $f | .dependencies | flatten? | .[] | [$f.name, .]] + [formats[] | . as $f | .groups | flatten? | .[] | [., $f.name]] | .[] | join(" -> ")] + ["}"] | join("\n")' | dot -Tsvg -o formats.svg
+
 replace dot function with jq to dot formatting somehow?
 
 Run should know if autocompleting? dont allow open() etc

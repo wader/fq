@@ -3,7 +3,6 @@ package decode
 import (
 	"errors"
 	"fmt"
-	"io"
 	"sync"
 )
 
@@ -89,34 +88,4 @@ func (r *Registry) MustGroup(name string) []*Format {
 
 func (r *Registry) MustAll() []*Format {
 	return r.MustGroup("all")
-}
-
-func (r *Registry) Dot(w io.Writer) {
-	formatSeen := map[string]struct{}{}
-
-	fmt.Fprintf(w, "// pipe thru: dot -Tsvg -o formats.svg\n")
-	fmt.Fprintf(w, "digraph formats {\n")
-	for groupName, fs := range r.Groups {
-		if groupName == "all" {
-			continue
-		}
-		for _, f := range fs {
-			if groupName != f.Name {
-				fmt.Fprintf(w, "  %s -> %s\n", groupName, f.Name)
-			}
-
-			if _, ok := formatSeen[f.Name]; ok {
-				continue
-			}
-			formatSeen[f.Name] = struct{}{}
-
-			for _, d := range f.Dependencies {
-
-				for _, dName := range d.Names {
-					fmt.Fprintf(w, "  %s -> %s\n", f.Name, dName)
-				}
-			}
-		}
-	}
-	fmt.Fprintf(w, "}\n")
 }

@@ -44,12 +44,6 @@ type EmptyError interface {
 	IsEmptyError() bool
 }
 
-type emptyError struct{}
-
-func (*emptyError) Error() string { return "" }
-
-func (*emptyError) IsEmptyError() bool { return true }
-
 type iterFn func() (interface{}, bool)
 
 func (i iterFn) Next() (interface{}, bool) { return i() }
@@ -190,7 +184,6 @@ type Function struct {
 
 type Query struct {
 	opts         QueryOptions
-	allFormats   []*decode.Format
 	probeFormats []*decode.Format
 	inputStack   [][]interface{}
 	variables    []Variable
@@ -218,8 +211,6 @@ type queryHexDump struct {
 	r  ranges.Range
 }
 
-type queryDot struct{}
-
 type queryPush struct{}
 
 type queryPop struct{}
@@ -243,7 +234,6 @@ func NewQuery(opts QueryOptions) *Query {
 		{[]string{"push"}, 0, 0, q.push},
 		{[]string{"pop"}, 0, 0, q.pop},
 		{[]string{"_value_keys"}, 0, 0, q._valueKeys},
-		{[]string{"_dot"}, 0, 0, q._dot},
 		{[]string{"formats"}, 0, 0, q.formats},
 	}
 	for name, f := range q.opts.Registry.Groups {
@@ -496,39 +486,46 @@ func (q *Query) _valueKeys(c interface{}, a []interface{}) interface{} {
 	}
 }
 
-func (q *Query) _dot(c interface{}, a []interface{}) interface{} {
-	return &queryDot{}
-}
-
 func (q *Query) formats(c interface{}, a []interface{}) interface{} {
-	vs := map[string]interface{}{}
 
-	for n, fs := range q.opts.Registry.Groups {
-		var vfs []interface{}
+	allFormats := map[string]*decode.Format{}
+
+	for _, fs := range q.opts.Registry.Groups {
 		for _, f := range fs {
-			vf := map[string]interface{}{
-				"name":        f.Name,
-				"description": f.Description,
+			if _, ok := allFormats[f.Name]; ok {
+				continue
 			}
-
-			var dependenciesVs []interface{}
-			for _, d := range f.Dependencies {
-				dependenciesVs = append(dependenciesVs, d.Names)
-			}
-			if len(dependenciesVs) > 0 {
-				vf["dependencies"] = dependenciesVs
-			}
-			var groupsVs []interface{}
-			for _, n := range f.Groups {
-				groupsVs = append(groupsVs, n)
-			}
-			if len(groupsVs) > 0 {
-				vf["groups"] = groupsVs
-			}
-
-			vfs = append(vfs, vf)
+			allFormats[f.Name] = f
 		}
-		vs[n] = vfs
+	}
+
+	vs := map[string]interface{}{}
+	for _, f := range allFormats {
+		vf := map[string]interface{}{
+			"name":        f.Name,
+			"description": f.Description,
+		}
+
+		var dependenciesVs []interface{}
+		for _, d := range f.Dependencies {
+			var dNamesVs []interface{}
+			for _, n := range d.Names {
+				dNamesVs = append(dNamesVs, n)
+			}
+			dependenciesVs = append(dependenciesVs, dNamesVs)
+		}
+		if len(dependenciesVs) > 0 {
+			vf["dependencies"] = dependenciesVs
+		}
+		var groupsVs []interface{}
+		for _, n := range f.Groups {
+			groupsVs = append(groupsVs, n)
+		}
+		if len(groupsVs) > 0 {
+			vf["groups"] = groupsVs
+		}
+
+		vs[f.Name] = vf
 	}
 
 	return vs
@@ -651,8 +648,6 @@ func (q *Query) Run(ctx context.Context, src string, printResult bool) ([]interf
 			// nop
 		case *queryPop:
 			pops++
-		case *queryDot:
-			q.opts.Registry.Dot(q.opts.OS.Stdout())
 
 		case *decode.Value:
 			opts := q.opts.DumpOptions
