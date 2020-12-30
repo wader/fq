@@ -8,7 +8,6 @@ import (
 	"fq/pkg/bitio"
 	"fq/pkg/ranges"
 	"io/ioutil"
-	"os"
 	"runtime"
 )
 
@@ -183,9 +182,9 @@ func (d *D) SafeDecodeFn(fn func(d *D) interface{}) (error, interface{}) {
 					pe.Err = panicErr
 				default:
 					// TODO: format somewhere else?
-					fmt.Fprintln(os.Stderr, panicErr)
-					fmt.Fprintln(os.Stderr, strackStr)
-					panic(panicErr)
+					//fmt.Fprintln(os.Stderr, panicErr)
+					//fmt.Fprintln(os.Stderr, strackStr)
+					//panic(panicErr)
 				}
 
 				err = pe
