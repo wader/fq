@@ -3,6 +3,7 @@ package cli
 // TODO: REPL and reading from stdin?
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"fq"
@@ -139,12 +140,12 @@ func (m Main) run() error {
 		src = strings.Join(srcs, " | ")
 	}
 
-	if _, err := q.Run(src, true); err != nil {
+	if _, err := q.Run(context.Background(), src, true); err != nil {
 		return err
 	}
 
 	if *replFlag {
-		if err := q.REPL(); err != nil {
+		if err := q.REPL(context.Background()); err != nil {
 			return err
 		}
 	}

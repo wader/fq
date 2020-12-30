@@ -5,6 +5,7 @@ package query
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"fq/internal/hexdump"
@@ -21,6 +22,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/chzyer/readline"
 	"github.com/itchyny/gojq"
@@ -520,7 +522,7 @@ func (q *Query) _valueKeys(c interface{}, a []interface{}) interface{} {
 	}
 }
 
-func (q *Query) Run(src string, printResult bool) ([]interface{}, error) {
+func (q *Query) Run(ctx context.Context, src string, printResult bool) ([]interface{}, error) {
 	var err error
 
 	q.pushAcc = nil
@@ -574,7 +576,7 @@ func (q *Query) Run(src string, printResult bool) ([]interface{}, error) {
 	}
 
 	pops := 0
-	iter := code.Run(nil, variableValues...)
+	iter := code.RunWithContext(ctx, nil, variableValues...)
 
 	var vs []interface{}
 	for {
@@ -682,7 +684,64 @@ func (q *Query) Run(src string, printResult bool) ([]interface{}, error) {
 	return vs, err
 }
 
-func (q *Query) REPL() error {
+func (q *Query) autoComplete(ctx context.Context, line []rune, pos int) (newLine [][]rune, length int) {
+	lineStr := string(line[0:pos])
+	namesQuery, namesType, namesPrefix := BuildCompletionQuery(lineStr)
+
+	// log.Println("------")
+	// log.Printf("namesQuery: %s\n", namesQuery)
+	// log.Printf("namesType: %#+v\n", namesType)
+	// log.Printf("namesPrefix: %#+v\n", namesPrefix)
+
+	src := ""
+	switch namesType {
+	case CompletionTypeNone:
+		return [][]rune{}, pos
+	case CompletionTypeIndex:
+		namesQueryStr := namesQuery.String()
+		src = fmt.Sprintf(`[[(%s) | keys?, _value_keys?] | add | unique | sort | .[] | strings | select(test("^%s"))]`, namesQueryStr, namesPrefix)
+	case CompletionTypeFunc:
+		src = fmt.Sprintf(`[[builtins[] | split("/") | .[0]] | unique | sort | .[] | select(test("^%s"))]`, namesPrefix)
+	default:
+		panic("unreachable")
+	}
+
+	// log.Printf("src: %#+v\n", src)
+
+	vss, err := q.Run(ctx, src, false)
+	if err != nil {
+		// log.Printf("err: %#+v\n", err)
+		return [][]rune{}, pos
+	}
+
+	shareLen := len(namesPrefix)
+
+	vs := vss[0].([]interface{})
+	var names []string
+	for _, v := range vs {
+		v, _ := v.(string)
+		if v == "" {
+			continue
+		}
+		names = append(names, v[shareLen:])
+	}
+
+	if len(names) <= 1 {
+		shareLen = 0
+	}
+
+	// log.Printf("shareLen: %#+v\n", shareLen)
+	// log.Printf("names: %#+v\n", names)
+
+	var runeNames [][]rune
+	for _, n := range names {
+		runeNames = append(runeNames, []rune(n))
+	}
+
+	return runeNames, shareLen
+}
+
+func (q *Query) REPL(ctx context.Context) error {
 	// TODO: refactor
 	historyFile := ""
 	cacheDir, err := os.UserCacheDir()
@@ -700,60 +759,9 @@ func (q *Query) REPL() error {
 		Stderr:      q.opts.OS.Stderr(),
 		HistoryFile: historyFile,
 		AutoComplete: autoCompleterFn(func(line []rune, pos int) (newLine [][]rune, length int) {
-			lineStr := string(line[0:pos])
-			namesQuery, namesType, namesPrefix := BuildCompletionQuery(lineStr)
-
-			// log.Println("------")
-			// log.Printf("namesQuery: %s\n", namesQuery)
-			// log.Printf("namesType: %#+v\n", namesType)
-			// log.Printf("namesPrefix: %#+v\n", namesPrefix)
-
-			src := ""
-			switch namesType {
-			case CompletionTypeNone:
-				return [][]rune{}, pos
-			case CompletionTypeIndex:
-				namesQueryStr := namesQuery.String()
-				src = fmt.Sprintf(`[[(%s) | keys?, _value_keys?] | add | unique | sort | .[] | strings | select(test("^%s"))]`, namesQueryStr, namesPrefix)
-			case CompletionTypeFunc:
-				src = fmt.Sprintf(`[[builtins[] | split("/") | .[0]] | unique | sort | .[] | select(test("^%s"))]`, namesPrefix)
-			default:
-				panic("unreachable")
-			}
-
-			// log.Printf("src: %#+v\n", src)
-
-			vss, err := q.Run(src, false)
-			if err != nil {
-				// log.Printf("err: %#+v\n", err)
-				return [][]rune{}, pos
-			}
-
-			shareLen := len(namesPrefix)
-
-			vs := vss[0].([]interface{})
-			var names []string
-			for _, v := range vs {
-				v, _ := v.(string)
-				if v == "" {
-					continue
-				}
-				names = append(names, v[shareLen:])
-			}
-
-			if len(names) <= 1 {
-				shareLen = 0
-			}
-
-			// log.Printf("shareLen: %#+v\n", shareLen)
-			// log.Printf("names: %#+v\n", names)
-
-			var runeNames [][]rune
-			for _, n := range names {
-				runeNames = append(runeNames, []rune(n))
-			}
-
-			return runeNames, shareLen
+			completeCtx, completeCtxCancelFn := context.WithTimeout(ctx, 1*time.Second)
+			defer completeCtxCancelFn()
+			return q.autoComplete(completeCtx, line, pos)
 		}),
 		InterruptPrompt: "^C",
 		// EOFPrompt:       "exit",
@@ -803,7 +811,7 @@ func (q *Query) REPL() error {
 			return err
 		}
 
-		if _, err := q.Run(src, true); err != nil {
+		if _, err := q.Run(ctx, src, true); err != nil {
 			fmt.Fprintf(q.opts.OS.Stdout(), "error: %s\n", err)
 		}
 	}
