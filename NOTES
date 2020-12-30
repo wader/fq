@@ -1,4 +1,7 @@
 
+
+replace dot function with jq to dot formatting somehow?
+
 Run should know if autocompleting? dont allow open() etc
 
 refactor query.go to be more modular
