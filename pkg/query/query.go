@@ -235,6 +235,7 @@ func NewQuery(opts QueryOptions) *Query {
 		{[]string{"pop"}, 0, 0, q.pop},
 		{[]string{"_value_keys"}, 0, 0, q._valueKeys},
 		{[]string{"formats"}, 0, 0, q.formats},
+		{[]string{"summary2"}, 0, 0, q.summary2},
 	}
 	for name, f := range q.opts.Registry.Groups {
 		q.functions = append(q.functions, Function{[]string{name}, 0, 0, q.makeProbeFn(f)})
@@ -468,22 +469,14 @@ func (q *Query) pop(c interface{}, a []interface{}) interface{} {
 }
 
 func (q *Query) _valueKeys(c interface{}, a []interface{}) interface{} {
-	_, ok := c.(*decode.Value)
-	if !ok {
-		return nil
+	if v, ok := c.(*decode.Value); ok {
+		var vs []interface{}
+		for _, s := range v.SpecialPropNames() {
+			vs = append(vs, s)
+		}
+		return vs
 	}
-
-	return []interface{}{
-		"_type",
-		"_name",
-		"_value",
-		"_symbol",
-		"_description",
-		"_range",
-		"_size",
-		"_path",
-		"_raw",
-	}
+	return nil
 }
 
 func (q *Query) formats(c interface{}, a []interface{}) interface{} {
@@ -529,6 +522,19 @@ func (q *Query) formats(c interface{}, a []interface{}) interface{} {
 	}
 
 	return vs
+}
+
+func (q *Query) summary2(c interface{}, a []interface{}) interface{} {
+
+	v, ok := c.(*decode.Value)
+	if !ok {
+		return c
+	}
+	if err := v.Summary(q.opts.OS.Stdout()); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (q *Query) Run(ctx context.Context, src string, printResult bool) ([]interface{}, error) {

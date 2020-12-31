@@ -13,6 +13,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/itchyny/gojq"
 )
 
 type Bits uint64
@@ -71,6 +73,9 @@ func DisplayFormatToBase(fmt DisplayFormat) int {
 type Struct []*Value
 
 type Array []*Value
+
+// assert that *Value implements JSONObject
+var _ gojq.JSONObject = &Value{}
 
 // TODO: encoding? endian, string encoding, compression, etc?
 type Value struct {
@@ -436,7 +441,6 @@ func (v *Value) JsonIndex(index int) interface{} {
 }
 
 func (v *Value) JsonRange(start int, end int) []interface{} {
-
 	switch vv := v.V.(type) {
 	case Struct:
 		// log.Printf("JsonRange struct %d-%d nil", start, end)
@@ -455,6 +459,20 @@ func (v *Value) JsonRange(start int, end int) []interface{} {
 		// log.Printf("JsonRange value %d-%d nil", start, end)
 
 		panic("unreachable")
+	}
+}
+
+func (v *Value) SpecialPropNames() []string {
+	return []string{
+		"_type",
+		"_name",
+		"_value",
+		"_symbol",
+		"_description",
+		"_range",
+		"_size",
+		"_path",
+		"_raw",
 	}
 }
 
@@ -516,46 +534,25 @@ func (v *Value) JsonProperty(name string) interface{} {
 		}
 	}
 
-	//log.Printf("JsonProperty %s %#+v\n", name, r)
-
 	return r
 }
 
 func (v *Value) JsonEach() [][2]interface{} {
 	props := [][2]interface{}{}
-
 	switch vv := v.V.(type) {
 	case Struct:
 		for _, f := range vv {
 			props = append(props, [2]interface{}{f.Name, f})
 		}
-		// log.Printf("JsonEach struct %#+v", props)
-
 	case Array:
 		for i, f := range vv {
 			props = append(props, [2]interface{}{i, f})
 		}
-
-		// log.Printf("JsonEach array %#+v", props)
 	}
 
-	/*
-		specialProps := []string{
-			"_type",
-			"_name",
-			"_value",
-			"_symbol",
-			"_description",
-			"_range",
-			"_size",
-			"_path",
-			"_raw",
-		}
-
-		for _, p := range specialProps {
-			props = append(props, [2]interface{}{p, v.JsonProperty(p)})
-		}
-	*/
+	// for _, p := range v.specialPropNames() {
+	// 	props = append(props, [2]interface{}{p, v.JsonProperty(p)})
+	// }
 
 	sort.Slice(props, func(i, j int) bool {
 		iString, iIsString := props[i][0].(string)
@@ -574,4 +571,15 @@ func (v *Value) JsonEach() [][2]interface{} {
 	})
 
 	return props
+}
+
+func (v *Value) JsonType() string {
+	switch v.V.(type) {
+	case Struct:
+		return "object"
+	case Array:
+		return "array"
+	default:
+		return "field"
+	}
 }
