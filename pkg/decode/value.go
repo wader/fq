@@ -353,6 +353,54 @@ func (v *Value) RawString() string {
 	}
 }
 
+func (v *Value) PreviewString() string {
+	switch vv := v.V.(type) {
+	case Array:
+		return "[]"
+	case Struct:
+		return v.Description
+	case bool:
+		if vv {
+			return "true"
+		} else {
+			return "false"
+		}
+	case int64:
+		// TODO: DisplayFormat is weird
+		return strconv.FormatInt(vv, DisplayFormatToBase(v.DisplayFormat))
+	case uint64:
+		return strconv.FormatUint(vv, DisplayFormatToBase(v.DisplayFormat))
+	case float64:
+		// TODO: float32? better truncated to significant digits?
+		return strconv.FormatFloat(vv, 'g', -1, 64)
+	case string:
+		if len(vv) > 10 {
+			return fmt.Sprintf("%s...", vv[0:10])
+		} else {
+			return vv
+		}
+	case []byte:
+		if len(vv) > 16 {
+			return hex.EncodeToString(vv[0:16]) + "..."
+		} else {
+			return hex.EncodeToString(vv)
+		}
+	case *bitio.Buffer:
+		vvLen := vv.Len()
+		if vvLen > 16*8 {
+			bs, _ := vv.BytesRange(0, 16)
+			return hex.EncodeToString(bs) + "..."
+		} else {
+			bs, _ := vv.BytesRange(0, int(bitio.BitsByteCount(vvLen)))
+			return hex.EncodeToString(bs)
+		}
+	case nil:
+		return "nil"
+	default:
+		panic("unreachable")
+	}
+}
+
 func (v *Value) ToJQ() interface{} {
 	switch vv := v.V.(type) {
 	case Array:

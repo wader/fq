@@ -87,6 +87,19 @@ func toBitBuf(v interface{}) (*bitio.Buffer, ranges.Range, string, error) {
 	}
 }
 
+func toValue(v interface{}) (*decode.Value, error) {
+	switch v := v.(type) {
+	case *decode.Value:
+		return v, nil
+	case *decode.D:
+		// TODO: remove decode.D?
+		return v.Value, nil
+	default:
+		// TODO: remove decode.D?
+		return nil, fmt.Errorf("%v: value is not a decode value", v)
+	}
+}
+
 type CompletionType string
 
 const (
@@ -215,6 +228,10 @@ type queryPush struct{}
 
 type queryPop struct{}
 
+type queryPreview struct {
+	v *decode.Value
+}
+
 func NewQuery(opts QueryOptions) *Query {
 	q := &Query{opts: opts}
 
@@ -235,7 +252,7 @@ func NewQuery(opts QueryOptions) *Query {
 		{[]string{"pop"}, 0, 0, q.pop},
 		{[]string{"_value_keys"}, 0, 0, q._valueKeys},
 		{[]string{"formats"}, 0, 0, q.formats},
-		{[]string{"summary2"}, 0, 0, q.summary2},
+		{[]string{"preview", "p"}, 0, 0, q.preview},
 	}
 	for name, f := range q.opts.Registry.Groups {
 		q.functions = append(q.functions, Function{[]string{name}, 0, 0, q.makeProbeFn(f)})
@@ -297,17 +314,10 @@ func (q *Query) open(c interface{}, a []interface{}) interface{} {
 
 func (q *Query) makeDumpFn(qd queryDump) func(c interface{}, a []interface{}) interface{} {
 	return func(c interface{}, a []interface{}) interface{} {
-		var v *decode.Value
-		switch cc := c.(type) {
-		case *decode.Value:
-			v = cc
-		case *decode.D:
-			// TODO: remove?
-			v = cc.Value
-		default:
+		v, err := toValue(c)
+		if err != nil {
 			return fmt.Errorf("%v: value is not a decode value", c)
 		}
-
 		qd.v = v
 		for _, av := range a {
 			switch av := av.(type) {
@@ -524,17 +534,12 @@ func (q *Query) formats(c interface{}, a []interface{}) interface{} {
 	return vs
 }
 
-func (q *Query) summary2(c interface{}, a []interface{}) interface{} {
-
-	v, ok := c.(*decode.Value)
-	if !ok {
-		return c
+func (q *Query) preview(c interface{}, a []interface{}) interface{} {
+	v, err := toValue(c)
+	if err != nil {
+		return fmt.Errorf("%v: value is not a decode value", c)
 	}
-	if err := v.Summary(q.opts.OS.Stdout()); err != nil {
-		return err
-	}
-
-	return nil
+	return &queryPreview{v: v}
 }
 
 func (q *Query) Run(ctx context.Context, src string, printResult bool) ([]interface{}, error) {
@@ -654,6 +659,10 @@ func (q *Query) Run(ctx context.Context, src string, printResult bool) ([]interf
 			// nop
 		case *queryPop:
 			pops++
+		case *queryPreview:
+			if err := vv.v.Preview(q.opts.OS.Stdout()); err != nil {
+				return nil, err
+			}
 
 		case *decode.Value:
 			opts := q.opts.DumpOptions
