@@ -167,7 +167,21 @@ func buildCompletionQuery(q *gojq.Query) (*gojq.Query, CompletionType, string) {
 
 			return nil, CompletionTypeNone, ""
 		case gojq.TermTypeFunc:
-			return nil, CompletionTypeFunc, q.Term.Func.Name
+			if len(q.Term.SuffixList) == 0 {
+				return nil, CompletionTypeFunc, q.Term.Func.Name
+			}
+
+			// TODO: refactor to share with index
+			last := q.Term.SuffixList[len(q.Term.SuffixList)-1]
+			if last.Index != nil && last.Index.Start == nil {
+				qc := *q
+				tc := *q.Term
+				qc.Term = &tc
+				qc.Term.SuffixList = qc.Term.SuffixList[0 : len(qc.Term.SuffixList)-1]
+				return &qc, CompletionTypeIndex, last.Index.Name
+			}
+			return nil, CompletionTypeNone, ""
+
 		default:
 			return nil, CompletionTypeNone, ""
 		}

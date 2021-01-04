@@ -16,13 +16,14 @@ depgraph.svg:
 .PHONY: formatdgraph.svg
 formatdgraph.svg:
 	go run cmd/fq/main.go -n - '\
-		["digraph formats {"] + \
-		[ \
-			[formats[] | . as $$f | .dependencies | flatten? | .[] | [$$f.name, .]] + \
-			[formats[] | . as $$f | .groups | flatten? | .[] | [., $$f.name]] | \
-			.[] | \
-			join(" -> ") \
-		] + \
-		["}"] | \
-		join("\n")' \
-		| dot -Tsvg -o formatdgraph.svg
+		"digraph formats {", \
+		"nodesep=0.5", \
+		"ranksep=0.5", \
+		"node [shape=\"box\",style=\"rounded,filled\"]", \
+		"edge [arrowsize=\"0.7\"]", \
+		(formats[] | "\(.name) -> {\(.dependencies | flatten? | join(" "))}"), \
+		(formats[] | .name as $$name | .groups[]? | "\(.) -> \($$name)"), \
+		(formats | keys[] | "\(.) [color=\"paleturquoise\"]"), \
+		([formats[].groups[]?] | unique[] | "\(.) [color=\"palegreen\"]"), \
+		"}" \
+		' | dot -Tsvg -o formatdgraph.svg
