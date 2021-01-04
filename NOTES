@@ -29,8 +29,9 @@ DONE pluralize array/struct thingy
 
 zero file test
 
-go run cmd/fq/main.go flac.mkv '"fLaC", (.. | select(._name == "metadatablock" and ._type == "struct")), (.. | select(.packet._description=="flac_frame" ) | .packet) | bits' > bla.flac
 
+go run cmd/fq/main.go flac.mkv '"fLaC", (.. | select(._name == "metadatablock" and ._type == "struct")), (.. | select(.packet._description=="flac_frame" ) | .packet) | bits' > bla.flac
+go run cmd/fq/main.go flac.mp4 '"fLaC", (.. | select(._name == "metadatablock" and ._type == "struct")), .tracks[0].samples[] | bits' > bla.flac
 
 dump support other things than value? "asdsd" | d ? nice when messing around
 
