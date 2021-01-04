@@ -1,9 +1,12 @@
 package mp4
 
+// Quicktime file format https://developer.apple.com/standards/qtff-2001.pdf
+// FLAC in ISOBMFF https://github.com/xiph/flac/blob/master/doc/isoflac.txt
 // TODO: validate structure better? trak/stco etc
 // TODO: rename atom -> box?
 
 import (
+	"fmt"
 	"fq/pkg/decode"
 	"fq/pkg/format"
 	"strings"
@@ -11,6 +14,8 @@ import (
 
 var mpegESFormat []*decode.Format
 var aacFrameFormat []*decode.Format
+var flacMetadatablockFormat []*decode.Format
+var flacFrameFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -23,6 +28,8 @@ func init() {
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.MPEG_ES}, Formats: &mpegESFormat},
 			{Names: []string{format.AAC_FRAME}, Formats: &aacFrameFormat},
+			{Names: []string{format.FLAC_METADATABLOCK}, Formats: &flacMetadatablockFormat},
+			{Names: []string{format.FLAC_FRAME}, Formats: &flacFrameFormat},
 		},
 	})
 }
@@ -38,6 +45,7 @@ type track struct {
 	stco       []uint64 //
 	stsc       []stsc
 	stsz       []uint32
+	decodeOpts []decode.Option
 }
 
 type decodeContext struct {
@@ -177,6 +185,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 				if ctx.currentTrack != nil {
 					ctx.currentTrack.dataFormat = dataFormat
 				}
+				// TODO: really common?
 				d.FieldBytesLen("reserved", 6)
 				d.FieldU16("data_reference_index")
 
@@ -241,6 +250,21 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 						}
 					})
 
+				case "fLaC":
+					// TODO: AudioSampleEntry
+
+					d.FieldU16("version")
+					d.FieldU16("revision_level")
+					d.FieldU32("vendor")
+					d.FieldU16("channelcount")
+					d.FieldU16("samplesize")
+					d.FieldU16("compression_id")
+					d.FieldU16("packet_size")
+					d.FieldFP32("samplerate")
+					if d.BitsLeft() > 0 {
+						decodeAtoms(ctx, d)
+					}
+
 				default:
 					d.FieldBytesLen("data", int(size)-16)
 				}
@@ -255,6 +279,29 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 		},
 		"avcC": func(ctx *decodeContext, d *decode.D) {
 			d.FieldBitBufLen("data", d.BitsLeft())
+		},
+		"dfLa": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			// TODO: values
+			d.FieldU24("flags")
+			d.FieldArrayFn("metadatablocks", func(d *decode.D) {
+				for {
+					_, dv := d.FieldDecode("metadatablock", flacMetadatablockFormat)
+					flacMetadatablockOut, ok := dv.(format.FlacMetadatablockOut)
+					if !ok {
+						d.Invalid(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", dv))
+					}
+					if flacMetadatablockOut.HasStreamInfo {
+						if ctx.currentTrack != nil {
+							ctx.currentTrack.decodeOpts = append(ctx.currentTrack.decodeOpts,
+								decode.FormatOptions{InArg: format.FlacFrameIn{StreamInfo: flacMetadatablockOut.StreamInfo}})
+						}
+					}
+					if flacMetadatablockOut.IsLastBlock {
+						return
+					}
+				}
+			})
 		},
 		"esds": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU32("version")
@@ -311,13 +358,19 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			numEntries := d.FieldU32("num_entries")
 			if sampleSize == 0 {
 				var i uint64
-				d.FieldStructArrayLoopFn("table", "entry", func() bool { return i < numEntries }, func(d *decode.D) {
+				d.FieldArrayLoopFn("table", func() bool { return i < numEntries }, func(d *decode.D) {
 					size := uint32(d.FieldU32("size"))
 					if ctx.currentTrack != nil {
 						ctx.currentTrack.stsz = append(ctx.currentTrack.stsz, size)
 					}
 					i++
 				})
+			} else {
+				if ctx.currentTrack != nil {
+					for i := uint64(0); i < numEntries; i++ {
+						ctx.currentTrack.stsz = append(ctx.currentTrack.stsz, uint32(sampleSize))
+					}
+				}
 			}
 		},
 		"stco": func(ctx *decodeContext, d *decode.D) {
@@ -591,9 +644,13 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 
 							//}
 
-							d.FieldBitBufRange("sample", int64(cso)*8, int64(stz)*8)
+							switch t.dataFormat {
+							case "fLaC":
+								d.FieldDecodeRange("sample", int64(cso)*8, int64(stz)*8, flacFrameFormat, ctx.currentTrack.decodeOpts...)
+							default:
+								d.FieldBitBufRange("sample", int64(cso)*8, int64(stz)*8)
 
-							//d.FieldDecodeRange("sample", int64(cso)*8, int64(stz)*8, aacFrameFormat)
+							}
 
 							cso += stz
 

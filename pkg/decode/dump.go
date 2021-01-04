@@ -77,6 +77,16 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 		fmt.Fprintf(cw.Columns[1], "|\n")
 		fmt.Fprintf(cw.Columns[3], "|\n")
 		fmt.Fprintf(cw.Columns[5], "|\n")
+
+		if de, ok := v.Error.(*DecodeError); ok && de.PanicStack != "" {
+			ps := de.PanicStack
+			for _, l := range strings.Split(ps, "\n") {
+				fmt.Fprintf(cw.Columns[6], "%s%s\n", indent, l)
+				fmt.Fprintf(cw.Columns[1], "|\n")
+				fmt.Fprintf(cw.Columns[3], "|\n")
+				fmt.Fprintf(cw.Columns[5], "|\n")
+			}
+		}
 	}
 
 	bufferLastBit := rootV.RootBitBuf.Len() - 1

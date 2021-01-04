@@ -67,8 +67,9 @@ type FlacMetadatablockStreamInfo struct {
 }
 
 type FlacMetadatablockOut struct {
-	LastBlock  bool
-	StreamInfo *FlacMetadatablockStreamInfo
+	IsLastBlock   bool
+	HasStreamInfo bool
+	StreamInfo    FlacMetadatablockStreamInfo
 }
 
 type FlacFrameIn struct {

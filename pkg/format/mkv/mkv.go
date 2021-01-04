@@ -140,6 +140,7 @@ type track struct {
 	codec               string
 	codecPrivatePos     int64
 	codecPrivateTagSize int64
+	decodeOpts          []decode.Option
 }
 
 type simpleBlock struct {
@@ -389,13 +390,12 @@ func mkvDecode(d *decode.D, in interface{}) interface{} {
 	dc := &decodeContext{tracks: []*track{}}
 	decodeMaster(d, d.BitsLeft(), ebmlRoot, dc)
 
-	trackCodec := map[int]string{}
-	var flacFrameIn *format.FlacFrameIn
+	trackNumberToTrack := map[int]*track{}
+	for _, t := range dc.tracks {
+		trackNumberToTrack[t.number] = t
+	}
 
 	for _, t := range dc.tracks {
-		if t.codec != "" {
-			trackCodec[t.number] = t.codec
-		}
 		// no CodecPrivate found
 		if t.parentD == nil {
 			continue
@@ -440,21 +440,18 @@ func mkvDecode(d *decode.D, in interface{}) interface{} {
 			t.parentD.DecodeRangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
 				d.FieldStructFn("value", func(d *decode.D) {
 					d.FieldValidateUTF8("magic", "fLaC")
-
-					var streamInfo format.FlacMetadatablockStreamInfo
-
 					d.FieldArrayFn("metadatablocks", func(d *decode.D) {
 						for {
 							_, dv := d.FieldDecode("metadatablock", flacMetadatablockFormat)
-							flacMetadatablockOut, _ := dv.(*format.FlacMetadatablockOut)
-							if flacMetadatablockOut == nil {
-								d.Invalid(fmt.Sprintf("expected FlacMetadatablockOut got %v", dv))
+							flacMetadatablockOut, ok := dv.(format.FlacMetadatablockOut)
+							if !ok {
+								d.Invalid(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", dv))
 							}
-							if flacMetadatablockOut.StreamInfo != nil {
-								streamInfo = *flacMetadatablockOut.StreamInfo
-								flacFrameIn = &format.FlacFrameIn{StreamInfo: streamInfo}
+							if flacMetadatablockOut.HasStreamInfo {
+								t.decodeOpts = append(t.decodeOpts,
+									decode.FormatOptions{InArg: format.FlacFrameIn{StreamInfo: flacMetadatablockOut.StreamInfo}})
 							}
-							if flacMetadatablockOut.LastBlock {
+							if flacMetadatablockOut.IsLastBlock {
 								return
 							}
 						}
@@ -479,13 +476,21 @@ func mkvDecode(d *decode.D, in interface{}) interface{} {
 			})
 			// TODO: lacing etc
 
-			switch trackCodec[int(trackNumber)] {
+			codec := ""
+			var decodeOpts []decode.Option
+			t := trackNumberToTrack[int(trackNumber)]
+			if t != nil {
+				codec = t.codec
+				decodeOpts = t.decodeOpts
+			}
+
+			switch codec {
 			case "A_VORBIS":
 				d.FieldDecodeLen("packet", d.BitsLeft(), vorbisPacketFormat)
 			case "A_MPEG/L3":
 				d.FieldDecodeLen("packet", d.BitsLeft(), mp3FrameFormat)
 			case "A_FLAC":
-				d.FieldDecodeLen("packet", d.BitsLeft(), flacFrameFormat, decode.FormatOptions{InArg: flacFrameIn})
+				d.FieldDecodeLen("packet", d.BitsLeft(), flacFrameFormat, decodeOpts...)
 				// TODO: could to md5 here somehow, see flac.go
 			case "V_VP9":
 				d.FieldDecodeLen("packet", d.BitsLeft(), vp9FrameFormat)
@@ -534,7 +539,13 @@ func mkvDecode(d *decode.D, in interface{}) interface{} {
 			// 	d.FieldBitBufLen("data", d.BitsLeft())
 			// }
 
-			switch trackCodec[int(trackNumber)] {
+			codec := ""
+			t := trackNumberToTrack[int(trackNumber)]
+			if t != nil {
+				codec = t.codec
+			}
+
+			switch codec {
 			case "S_VOBSUB":
 				d.FieldDecodeLen("packet", d.BitsLeft(), mpegSPUFrameFormat)
 			case "A_OPUS":

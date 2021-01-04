@@ -44,9 +44,9 @@ var metadataBlockNames = map[uint]string{
 }
 
 func metadatablockDecode(d *decode.D, in interface{}) interface{} {
-	mb := &format.FlacMetadatablockOut{}
+	mb := format.FlacMetadatablockOut{}
 
-	mb.LastBlock = d.FieldBool("last_block")
+	mb.IsLastBlock = d.FieldBool("last_block")
 	typ := d.FieldUFn("type", func() (uint64, decode.DisplayFormat, string) {
 		t := d.U7()
 		name := "Unknown"
@@ -74,11 +74,12 @@ func metadatablockDecode(d *decode.D, in interface{}) interface{} {
 		md5Range := ranges.Range{Start: d.Pos(), Len: 16 * 8}
 		d.FieldBitBufLen("md5", 16*8)
 
-		mb.StreamInfo = &format.FlacMetadatablockStreamInfo{
+		mb.StreamInfo = format.FlacMetadatablockStreamInfo{
 			SampleRate:   sampleRate,
 			BitPerSample: bitPerSample,
 			MD5Range:     md5Range,
 		}
+		mb.HasStreamInfo = true
 	case MetadataBlockVorbisComment:
 		d.FieldDecodeLen("comment", int64(length*8), vorbisCommentFormat)
 	case MetadataBlockPicture:

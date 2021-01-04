@@ -30,20 +30,20 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldValidateUTF8("magic", "fLaC")
 
 	var streamInfo format.FlacMetadatablockStreamInfo
-	var flacFrameIn *format.FlacFrameIn
+	var flacFrameIn format.FlacFrameIn
 
 	d.FieldArrayFn("metadatablocks", func(d *decode.D) {
 		for {
 			_, dv := d.FieldDecode("metadatablock", flacMetadatablockFormat)
-			flacMetadatablockOut, _ := dv.(*format.FlacMetadatablockOut)
-			if flacMetadatablockOut == nil {
-				d.Invalid(fmt.Sprintf("expected FlacMetadatablockOut got %v", dv))
+			flacMetadatablockOut, ok := dv.(format.FlacMetadatablockOut)
+			if !ok {
+				d.Invalid(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", dv))
 			}
-			if flacMetadatablockOut.StreamInfo != nil {
-				streamInfo = *flacMetadatablockOut.StreamInfo
-				flacFrameIn = &format.FlacFrameIn{StreamInfo: streamInfo}
+			if flacMetadatablockOut.HasStreamInfo {
+				streamInfo = flacMetadatablockOut.StreamInfo
+				flacFrameIn = format.FlacFrameIn{StreamInfo: streamInfo}
 			}
-			if flacMetadatablockOut.LastBlock {
+			if flacMetadatablockOut.IsLastBlock {
 				return
 			}
 		}
