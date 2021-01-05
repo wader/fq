@@ -54,6 +54,12 @@ func (a autoCompleterFn) Do(line []rune, pos int) (newLine [][]rune, length int)
 	return a(line, pos)
 }
 
+type loadModuleFn func(name string) (*gojq.Query, error)
+
+func (l loadModuleFn) LoadModule(name string) (*gojq.Query, error) {
+	return l(name)
+}
+
 func toInt64(v interface{}) (int64, error) {
 	switch v := v.(type) {
 	case *big.Int:
@@ -563,9 +569,9 @@ func (q *Query) Run(ctx context.Context, src string, printResult bool) ([]interf
 	q.popCalls = 0
 
 	if src != "" {
-		src = "inputs | " + src
+		src = `include "fq" ; inputs | ` + src
 	} else {
-		src = "inputs"
+		src = `include "fq" ; inputs`
 	}
 
 	query, err := gojq.Parse(src)
@@ -602,6 +608,23 @@ func (q *Query) Run(ctx context.Context, src string, printResult bool) ([]interf
 		var input interface{}
 		input, inputs = inputs[0], inputs[1:]
 		return input, true
+	})))
+	compilerOpts = append(compilerOpts, gojq.WithModuleLoader(loadModuleFn(func(name string) (*gojq.Query, error) {
+		switch name {
+		case "fq":
+			return gojq.Parse(`
+				def bytes:
+					def _bytes:
+						if . > 0 then
+							. % 256, (. /  256 | trunc | _bytes)
+						else
+							empty
+						end;
+					if . == 0 then [0]
+					else [_bytes] end;
+			`)
+		}
+		return nil, fmt.Errorf("module not found: %q", name)
 	})))
 
 	code, err := gojq.Compile(query, compilerOpts...)

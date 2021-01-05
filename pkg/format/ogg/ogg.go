@@ -61,8 +61,8 @@ func decodeOgg(d *decode.D, in interface{}) interface{} {
 			if errs != nil {
 				break
 			}
-			oggPageOut, _ := dv.(*format.OggPageOut)
-			if oggPageOut == nil {
+			oggPageOut, ok := dv.(format.OggPageOut)
+			if !ok {
 				panic("page decode is not a oggPageOut")
 			}
 

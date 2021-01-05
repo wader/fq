@@ -18,7 +18,7 @@ func init() {
 }
 
 func pageDecode(d *decode.D, in interface{}) interface{} {
-	p := &format.OggPageOut{}
+	p := format.OggPageOut{}
 	startPos := d.Pos()
 
 	// TODO: validate bits left
