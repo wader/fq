@@ -1,4 +1,6 @@
 
+hex, binary, 
+
 ffmpeg -f lavfi -i sine -ac 2 -c:a flac -strict experimental -f mp4 -t 50ms flac.mp4
 
 
