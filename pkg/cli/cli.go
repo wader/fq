@@ -139,7 +139,7 @@ func (m Main) run() error {
 		src = strings.Join(srcs, " | ")
 	}
 
-	if _, err := q.Run(context.Background(), src, true); err != nil {
+	if _, err := q.Run(context.Background(), src, m.OS.Stdout()); err != nil {
 		return err
 	}
 

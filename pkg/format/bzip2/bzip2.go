@@ -3,6 +3,7 @@ package bzip2
 // https://en.wikipedia.org/wiki/Bzip2
 // https://github.com/dsnet/compress/blob/master/doc/bzip2-format.pdf
 // TODO: multiple streams, possible to figure out length of compressed? use footer magic?
+// TODO: empty file, no streams
 
 import (
 	"bytes"

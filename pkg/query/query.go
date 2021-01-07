@@ -73,6 +73,15 @@ func toInt64(v interface{}) (int64, error) {
 	}
 }
 
+func toString(v interface{}) (string, error) {
+	switch v := v.(type) {
+	case string:
+		return v, nil
+	default:
+		return "", fmt.Errorf("value is not a string")
+	}
+}
+
 // TODO: refactor to return struct?
 func toBitBuf(v interface{}) (*bitio.Buffer, ranges.Range, string, error) {
 	switch vv := v.(type) {
@@ -216,14 +225,12 @@ type Function struct {
 }
 
 type Query struct {
-	opts         QueryOptions
-	probeFormats []*decode.Format
-	inputStack   [][]interface{}
-	variables    []Variable
-	functions    []Function
+	opts       QueryOptions
+	inputStack [][]interface{}
+	variables  []Variable
+	functions  []Function
 
-	pushAcc  []interface{}
-	popCalls int
+	pushAcc []interface{}
 }
 
 type queryHelp struct{}
@@ -256,7 +263,6 @@ func NewQuery(opts QueryOptions) *Query {
 	q := &Query{opts: opts}
 
 	// TODO: cleanup group names and panics
-	q.probeFormats = opts.Registry.MustGroup(format.PROBE)
 	q.functions = []Function{
 		{[]string{"help"}, 0, 0, q.help},
 		{[]string{"open"}, 0, 1, q.open},
@@ -266,8 +272,8 @@ func NewQuery(opts QueryOptions) *Query {
 		{[]string{"hexdump", "hd", "h"}, 0, 0, q.hexdump},
 		{[]string{"bits"}, 0, 2, q.bits},
 		{[]string{"string"}, 0, 0, q.string_},
-		{[]string{"probe"}, 0, 1, q.makeProbeFn(q.probeFormats)},
-		{[]string{"u"}, 1, 1, q.u},
+		{[]string{"probe"}, 0, 1, q.makeProbeFn(opts.Registry, opts.Registry.MustGroup(format.PROBE))},
+		{[]string{"u"}, 0, 1, q.u},
 		{[]string{"push"}, 0, 0, q.push},
 		{[]string{"pop"}, 0, 0, q.pop},
 		{[]string{"_value_keys"}, 0, 0, q._valueKeys},
@@ -275,10 +281,10 @@ func NewQuery(opts QueryOptions) *Query {
 		{[]string{"preview", "p"}, 0, 0, q.preview},
 	}
 	for name, f := range q.opts.Registry.Groups {
-		q.functions = append(q.functions, Function{[]string{name}, 0, 0, q.makeProbeFn(f)})
+		q.functions = append(q.functions, Function{[]string{name}, 0, 0, q.makeProbeFn(opts.Registry, f)})
 	}
 	q.variables = []Variable{
-		{Name: "FORMAT", Value: opts.FormatName},
+		// TODO: redo args handling in jq? a cli_entry function that reads args?
 		{Name: "FILENAME", Value: opts.Filename},
 	}
 
@@ -294,10 +300,10 @@ func (q *Query) open(c interface{}, a []interface{}) interface{} {
 
 	var filename string
 	if len(a) == 1 {
-		var filenameOk bool
-		filename, filenameOk = a[0].(string)
-		if !filenameOk {
-			return fmt.Errorf("filename must be a string")
+		var err error
+		filename, err = toString(a[0])
+		if err != nil {
+			return fmt.Errorf("%s: %w", filename, err)
 		}
 	}
 
@@ -366,7 +372,7 @@ func (q *Query) hexdump(c interface{}, a []interface{}) interface{} {
 	}
 }
 
-func (q *Query) makeProbeFn(formats []*decode.Format) func(c interface{}, a []interface{}) interface{} {
+func (q *Query) makeProbeFn(registry *decode.Registry, probeFormats []*decode.Format) func(c interface{}, a []interface{}) interface{} {
 	return func(c interface{}, a []interface{}) interface{} {
 		bb, r, filename, err := toBitBuf(c)
 		if err != nil {
@@ -384,7 +390,18 @@ func (q *Query) makeProbeFn(formats []*decode.Format) func(c interface{}, a []in
 			name = filename
 		}
 
-		dv, _, errs := decode.Probe(name, bb, formats, decode.ProbeOptions{FormatOptions: opts})
+		if len(a) >= 1 {
+			formatName, err := toString(a[0])
+			if err != nil {
+				return fmt.Errorf("%s: %w", formatName, err)
+			}
+			probeFormats, err = registry.Group(formatName)
+			if err != nil {
+				return fmt.Errorf("%s: %w", formatName, err)
+			}
+		}
+
+		dv, _, errs := decode.Probe(name, bb, probeFormats, decode.ProbeOptions{FormatOptions: opts})
 		if dv == nil {
 			return errs
 		}
@@ -464,21 +481,34 @@ func (q *Query) u(c interface{}, a []interface{}) interface{} {
 	if err != nil {
 		return err
 	}
-	bb, err = bb.BitBufRange(r.Start, r.Len)
+
+	nBits := r.Len
+	if len(a) == 1 {
+		n, err := toInt64(a[0])
+		if err != nil {
+			return err
+		}
+		nBits = n
+	}
+
+	bb, err = bb.BitBufRange(r.Start, nBits)
 	if err != nil {
 		return err
 	}
 
-	nBits, err := toInt64(a[0])
-	if err != nil {
-		return err
-	}
-	n, err := bb.U(int(nBits))
-	if err != nil {
-		return err
+	// TODO: smart and maybe use int if bits can fit?
+	bi := new(big.Int)
+	for i := bb.Len() - 1; i >= 0; i-- {
+		v, err := bb.Bool()
+		if err != nil {
+			return err
+		}
+		if v {
+			bi.SetBit(bi, int(i), 1)
+		}
 	}
 
-	return new(big.Int).SetUint64(n)
+	return bi
 }
 
 func (q *Query) push(c interface{}, a []interface{}) interface{} {
@@ -488,13 +518,7 @@ func (q *Query) push(c interface{}, a []interface{}) interface{} {
 	return &queryPush{}
 }
 
-// TODO: nope this wont work with input iters
 func (q *Query) pop(c interface{}, a []interface{}) interface{} {
-	//q.popCalls++
-	// if len(q.inputStack) > 0 {
-	// 	q.inputStack = q.inputStack[0 : len(q.inputStack)-1]
-	// }
-
 	return &queryPop{}
 }
 
@@ -562,11 +586,10 @@ func (q *Query) preview(c interface{}, a []interface{}) interface{} {
 	return &queryPreview{v: v}
 }
 
-func (q *Query) Run(ctx context.Context, src string, printResult bool) ([]interface{}, error) {
+func (q *Query) Run(ctx context.Context, src string, stdout io.Writer) ([]interface{}, error) {
 	var err error
 
 	q.pushAcc = nil
-	q.popCalls = 0
 
 	if src != "" {
 		src = `include "fq" ; inputs | ` + src
@@ -613,15 +636,59 @@ func (q *Query) Run(ctx context.Context, src string, printResult bool) ([]interf
 		switch name {
 		case "fq":
 			return gojq.Parse(`
+				# convert number to array of bytes
 				def bytes:
 					def _bytes:
 						if . > 0 then
-							. % 256, (. /  256 | trunc | _bytes)
+							. % 256, (. /  256 | _bytes)
 						else
 							empty
 						end;
 					if . == 0 then [0]
-					else [_bytes] end;
+					else [_bytes] | reverse end;
+
+				# from https://rosettacode.org/wiki/Non-decimal_radices/Convert#jq
+				# unknown author
+				# Convert the input integer to a string in the specified base (2 to 36 inclusive)
+				def _convert(base):
+					def stream:
+						recurse(if . > 0 then . / base | floor else empty end) | . % base;
+					if . == 0 then
+						"0"
+					else
+						[stream] |
+						reverse  |
+						.[1:] |
+						if base <  10 then
+							map(tostring) | join("")
+						elif base <= 36 then
+							map(if . < 10 then 48 + . else . + 87 end) | implode
+						else
+							error("base too large")
+						end
+					end;
+
+				# input string is converted from "base" to an integer, within limits
+				# of the underlying arithmetic operations, and without error-checking:
+				def _to_i(base):
+					explode
+					| reverse
+					| map(if . > 96  then . - 87 else . - 48 end)  # "a" ~ 97 => 10 ~ 87
+					| reduce .[] as $c
+						# state: [power, ans]
+						([1,0]; (.[0] * base) as $b | [$b, .[1] + (.[0] * $c)])
+					| .[1];
+
+				# like iprint
+				def i:
+					{
+						bin: "0b\(_convert(2))",
+						oct: "0o\(_convert(8))",
+						dec: "\(_convert(10))",
+						hex: "0x\(_convert(16))",
+						str: ([.] | implode),
+					};
+
 			`)
 		}
 		return nil, fmt.Errorf("module not found: %q", name)
@@ -653,10 +720,6 @@ func (q *Query) Run(ctx context.Context, src string, printResult bool) ([]interf
 
 		vs = append(vs, v)
 
-		if !printResult {
-			continue
-		}
-
 		switch vv := v.(type) {
 		case *queryHelp:
 			for _, f := range q.functions {
@@ -666,15 +729,15 @@ func (q *Query) Run(ctx context.Context, src string, printResult bool) ([]interf
 						names = append(names, fmt.Sprintf("%s/%d", n, j))
 					}
 				}
-				fmt.Fprintf(q.opts.OS.Stdout(), "%s\n", strings.Join(names, ", "))
+				fmt.Fprintf(stdout, "%s\n", strings.Join(names, ", "))
 			}
 		case *queryOpen:
-			fmt.Fprintf(q.opts.OS.Stdout(), "<open %s>\n", vv.filename)
+			fmt.Fprintf(stdout, "<open %s>\n", vv.filename)
 		case *queryDump:
 			opts := q.opts.DumpOptions
 			opts.MaxDepth = vv.maxDepth
 			opts.Verbose = vv.verbose
-			if err := vv.v.Dump(q.opts.OS.Stdout(), opts); err != nil {
+			if err := vv.v.Dump(stdout, opts); err != nil {
 				return nil, err
 			}
 		case *queryHexDump:
@@ -684,7 +747,7 @@ func (q *Query) Run(ctx context.Context, src string, printResult bool) ([]interf
 				return nil, err
 			}
 			hw := hexdump.New(
-				q.opts.OS.Stdout(),
+				stdout,
 				(vv.r.Start-bitsByteAlign)/8,
 				num.DigitsInBase(bitio.BitsByteCount(vv.r.Stop()+bitsByteAlign), 16),
 				q.opts.DumpOptions.LineBytes)
@@ -697,34 +760,35 @@ func (q *Query) Run(ctx context.Context, src string, printResult bool) ([]interf
 		case *queryPop:
 			pops++
 		case *queryPreview:
-			if err := vv.v.Preview(q.opts.OS.Stdout()); err != nil {
+			if err := vv.v.Preview(stdout); err != nil {
 				return nil, err
 			}
 
 		case *decode.Value:
 			opts := q.opts.DumpOptions
 			opts.MaxDepth = 1
-			if err := vv.Dump(q.opts.OS.Stdout(), opts); err != nil {
+			if err := vv.Dump(stdout, opts); err != nil {
 				return nil, err
 			}
 		case *decode.D:
 			// TODO: remove?
-			if err := vv.Value.Dump(q.opts.OS.Stdout(), q.opts.DumpOptions); err != nil {
+			if err := vv.Value.Dump(stdout, q.opts.DumpOptions); err != nil {
 				return nil, err
 			}
 
 		case *bitio.Buffer:
-			if _, err := io.Copy(q.opts.OS.Stdout(), vv.Copy()); err != nil {
+			if _, err := io.Copy(stdout, vv.Copy()); err != nil {
 				return nil, err
 			}
 		case string, int, int32, int64, uint, uint32, uint64:
-			fmt.Fprintln(q.opts.OS.Stdout(), vv)
+			fmt.Fprintln(stdout, vv)
 		case float32:
-			fmt.Fprintln(q.opts.OS.Stdout(), strconv.FormatFloat(float64(vv), 'f', -1, 32))
+			// TODO: should not happen?
+			fmt.Fprintln(stdout, strconv.FormatFloat(float64(vv), 'f', -1, 32))
 		case float64:
-			fmt.Fprintln(q.opts.OS.Stdout(), strconv.FormatFloat(vv, 'f', -1, 64))
+			fmt.Fprintln(stdout, strconv.FormatFloat(vv, 'f', -1, 64))
 		default:
-			e := json.NewEncoder(q.opts.OS.Stdout())
+			e := json.NewEncoder(stdout)
 			e.SetIndent("", "  ")
 			if err := e.Encode(v); err != nil {
 				return nil, err
@@ -769,7 +833,7 @@ func (q *Query) autoComplete(ctx context.Context, line []rune, pos int) (newLine
 
 	// log.Printf("src: %#+v\n", src)
 
-	vss, err := q.Run(ctx, src, false)
+	vss, err := q.Run(ctx, src, ioutil.Discard)
 	if err != nil {
 		// log.Printf("err: %#+v\n", err)
 		return [][]rune{}, pos
@@ -802,6 +866,7 @@ func (q *Query) autoComplete(ctx context.Context, line []rune, pos int) (newLine
 	return runeNames, shareLen
 }
 
+// REPL read-eval-print-loop
 func (q *Query) REPL(ctx context.Context) error {
 	// TODO: refactor
 	historyFile := ""
@@ -872,7 +937,7 @@ func (q *Query) REPL(ctx context.Context) error {
 			return err
 		}
 
-		if _, err := q.Run(ctx, src, true); err != nil {
+		if _, err := q.Run(ctx, src, q.opts.OS.Stdout()); err != nil {
 			fmt.Fprintf(q.opts.OS.Stdout(), "error: %s\n", err)
 		}
 	}

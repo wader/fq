@@ -22,7 +22,7 @@ func (r *Registry) register(groupName string, format *Format, single bool) *Form
 	formats, ok := r.Groups[groupName]
 	if ok {
 		if !single {
-			panic(fmt.Sprintf("%s: already registered", groupName))
+			panic(fmt.Sprintf("%s: format already registered", groupName))
 		}
 	} else {
 		formats = []*Format{}
@@ -42,7 +42,7 @@ func (r *Registry) resolve() error {
 				for _, dName := range d.Names {
 					df, ok := r.Groups[dName]
 					if !ok {
-						return fmt.Errorf("%s: can't find dependency %s", f.Name, dName)
+						return fmt.Errorf("%s: can't find format dependency %s", f.Name, dName)
 					}
 					formats = append(formats, df...)
 				}
@@ -75,7 +75,7 @@ func (r *Registry) Group(name string) ([]*Format, error) {
 	if g, ok := r.Groups[name]; ok {
 		return g, nil
 	}
-	return nil, errors.New("no such group")
+	return nil, errors.New("format group not found")
 }
 
 func (r *Registry) MustGroup(name string) []*Format {
