@@ -889,7 +889,7 @@ func (q *Query) REPL(ctx context.Context) error {
 			defer completeCtxCancelFn()
 			return q.autoComplete(completeCtx, line, pos)
 		}),
-		InterruptPrompt: "^C",
+		// InterruptPrompt: "^C",
 		// EOFPrompt:       "exit",
 
 		HistorySearchFold: true,
