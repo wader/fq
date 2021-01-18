@@ -1,24 +1,10 @@
 
 
-2021/01/11 22:12:45 r: "break"
-inputs[1] [.]> 999000000000000 / 3
-2021/01/11 22:12:50 l: 999000000000000
-2021/01/11 22:12:50 r: 3
-333000000000000
-2021/01/11 22:12:50 l: "break"
-2021/01/11 22:12:50 r: "break"
-inputs[1] [.]> 182812892749652077953760942202754471806 / 255
-2021/01/11 22:12:53 l: +182812892749652077953760942202754471806
-2021/01/11 22:12:53 r: 255
-2021/01/11 22:12:53 BLA1
-716913304900596400000000000000000000
-2021/01/11 22:12:53 l: "break"
 
 
-... | repeat(flac_frame)
+pos in buf .. ... | repeat(flac_frame)
 
-
-.frames[-20:-0][].block_size : panic
+DONE .frames[-20:-0][].block_size : panic
 
 [.frames[-16:][] | (.end_of_header.block_size._value // .block_size._value)] | add
 
@@ -363,7 +349,8 @@ decoder guide:
   split bit flags etc into a field with subfields for each bit
   try keep code as declarative as possible
   split into multiple sub decoders if possible
-
+doc:
+  .Endian inheriet inside buffer, reset on new buffer
 
 ogg.FileDecoder -> ogg.Page add segments blabl ause from ogg.FileDeocer?
 

@@ -689,6 +689,18 @@ func (q *Query) Run(ctx context.Context, src string, stdout io.Writer) ([]interf
 						str: ([.] | implode),
 					};
 
+				def _formats_dot:
+					"digraph formats {",
+					"  nodesep=0.5",
+					"  ranksep=0.5",
+					"  node [shape=\"box\",style=\"rounded,filled\"]",
+					"  edge [arrowsize=\"0.7\"]",
+					(.[] | "  \(.name) -> {\(.dependencies | flatten? | join(" "))}"),
+					(.[] | .name as $name | .groups[]? | "  \(.) -> \($name)"),
+					(keys[] | "  \(.) [color=\"paleturquoise\"]"),
+					([.[].groups[]?] | unique[] | "  \(.) [color=\"palegreen\"]"),
+					"}";
+
 			`)
 		}
 		return nil, fmt.Errorf("module not found: %q", name)
