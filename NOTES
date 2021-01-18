@@ -15,6 +15,8 @@ inputs[1] [.]> 182812892749652077953760942202754471806 / 255
 2021/01/11 22:12:53 l: "break"
 
 
+... | repeat(flac_frame)
+
 
 .frames[-20:-0][].block_size : panic
 
