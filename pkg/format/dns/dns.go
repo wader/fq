@@ -11,7 +11,7 @@ func init() {
 		Name:        format.DNS,
 		Description: "DNS packet",
 		DecodeFn:    dnsDecode,
-	})
+	})q
 }
 
 // TODO: type consts
@@ -23,12 +23,12 @@ var classNames = map[[2]uint64]string{
 	{0x0002, 0x0002}: "Unassigned",
 	{0x0003, 0x0003}: "Chaos",
 	{0x0004, 0x0004}: "Hesiod",
-	{0x0005, 0x00FD}: "Unassigned",
-	{0x00FE, 0x00FE}: "QCLASS NONE",
-	{0x00FF, 0x00FF}: "QCLASS ANY",
-	{0x0100, 0xFEFF}: "Unassigned",
-	{0xFF00, 0xFFFE}: "Reserved for Private Use",
-	{0xFFFF, 0xFFFF}: "Reserved",
+	{0x0005, 0x00fd}: "Unassigned",
+	{0x00fe, 0x00fe}: "QCLASS NONE",
+	{0x00ff, 0x00ff}: "QCLASS ANY",
+	{0x0100, 0xfeff}: "Unassigned",
+	{0xff00, 0xfffe}: "Reserved for Private Use",
+	{0xffff, 0xffff}: "Reserved",
 }
 
 var typeNames = map[uint64]string{
