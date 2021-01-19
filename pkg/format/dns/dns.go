@@ -11,7 +11,7 @@ func init() {
 		Name:        format.DNS,
 		Description: "DNS packet",
 		DecodeFn:    dnsDecode,
-	})q
+	})
 }
 
 // TODO: type consts
