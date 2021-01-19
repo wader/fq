@@ -8,6 +8,7 @@ import (
 
 	//_ "fq/pkg/format/flv"
 	_ "fq/pkg/format/bzip2"
+	_ "fq/pkg/format/dns"
 	_ "fq/pkg/format/gzip"
 	_ "fq/pkg/format/icc"
 	_ "fq/pkg/format/id3"
