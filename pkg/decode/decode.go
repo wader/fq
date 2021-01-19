@@ -569,6 +569,19 @@ func (d *D) FieldStringMapFn(name string, sm map[uint64]string, def string, fn f
 	}), ok
 }
 
+func (d *D) FieldStringRangeMapFn(name string, rm map[[2]uint64]string, def string, fn func() uint64) (uint64, bool) {
+	var ok bool
+	return d.FieldUFn(name, func() (uint64, DisplayFormat, string) {
+		n := fn()
+		for r, s := range rm {
+			if n >= r[0] && n <= r[1] {
+				return n, NumberDecimal, s
+			}
+		}
+		return n, NumberDecimal, def
+	}), ok
+}
+
 func (d *D) FieldChecksumRange(name string, firstBit int64, nBits int64, calculated []byte, endian Endian) {
 	nBytes := int(nBits / 8)
 	d.FieldRangeFn(name, firstBit, nBits, func() *Value {

@@ -15,7 +15,21 @@ func init() {
 }
 
 // TODO: type consts
-// TODO: aaaa rddata
+// TODO: aaaa,a rddata
+
+var classNames = map[[2]uint64]string{
+	{0x0000, 0x0000}: "Reserved",
+	{0x0001, 0x0001}: "IN",
+	{0x0002, 0x0002}: "Unassigned",
+	{0x0003, 0x0003}: "Chaos",
+	{0x0004, 0x0004}: "Hesiod",
+	{0x0005, 0x00FD}: "Unassigned",
+	{0x00FE, 0x00FE}: "QCLASS NONE",
+	{0x00FF, 0x00FF}: "QCLASS ANY",
+	{0x0100, 0xFEFF}: "Unassigned",
+	{0xFF00, 0xFFFE}: "Reserved for Private Use",
+	{0xFFFF, 0xFFFF}: "Reserved",
+}
 
 var typeNames = map[uint64]string{
 	1:     "A",
@@ -120,7 +134,7 @@ func fieldDecodeRR(d *decode.D, count uint64, name string, structName string) {
 			d.FieldStructFn(structName, func(d *decode.D) {
 				fieldDecodeLabel(d, "name")
 				typ, _ := d.FieldStringMapFn("type", typeNames, "Unknown", d.U16)
-				d.FieldU16("class")
+				d.FieldStringRangeMapFn("class", classNames, "Unknown", d.U16)
 				d.FieldU32("ttl")
 				// TODO: pointer?
 				rdLength := d.FieldU16("rd_length")
@@ -160,7 +174,7 @@ func dnsDecode(d *decode.D, in interface{}) interface{} {
 			d.FieldStructFn("question", func(d *decode.D) {
 				fieldDecodeLabel(d, "name")
 				d.FieldStringMapFn("type", typeNames, "Unknown", d.U16)
-				d.FieldU16("class")
+				d.FieldStringRangeMapFn("class", classNames, "Unknown", d.U16)
 			})
 		}
 	})
