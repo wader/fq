@@ -837,6 +837,7 @@ func (q *Query) Run(ctx context.Context, src string, stdout io.Writer) ([]interf
 					};
 
 				def _formats_dot:
+					"# ... | dot -Tsvg -o formats.svg",
 					"digraph formats {",
 					"  nodesep=0.5",
 					"  ranksep=0.5",
