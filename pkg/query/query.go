@@ -6,6 +6,11 @@ package query
 import (
 	"bytes"
 	"context"
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/md5"
+	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"fq/internal/hexdump"
@@ -79,6 +84,24 @@ func toString(v interface{}) (string, error) {
 		return v, nil
 	default:
 		return "", fmt.Errorf("value is not a string")
+	}
+}
+
+func toBytes(v interface{}) ([]byte, error) {
+	switch v := v.(type) {
+	case []byte:
+		return v, nil
+	default:
+		bb, _, _, err := toBitBuf(v)
+		if err != nil {
+			return nil, fmt.Errorf("value is not bytes")
+		}
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, bb); err != nil {
+			return nil, err
+		}
+
+		return buf.Bytes(), nil
 	}
 }
 
@@ -279,6 +302,12 @@ func NewQuery(opts QueryOptions) *Query {
 		{[]string{"_value_keys"}, 0, 0, q._valueKeys},
 		{[]string{"formats"}, 0, 0, q.formats},
 		{[]string{"preview", "p"}, 0, 0, q.preview},
+		{[]string{"md5"}, 0, 0, q.md5},
+		{[]string{"base64"}, 0, 0, q.base64},
+		{[]string{"unbase64"}, 0, 0, q.unbase64},
+		{[]string{"hex"}, 0, 0, q.hex},
+		{[]string{"unhex"}, 0, 0, q.unhex},
+		{[]string{"aes_ctr"}, 1, 2, q.aesCtr},
 	}
 	for name, f := range q.opts.Registry.Groups {
 		q.functions = append(q.functions, Function{[]string{name}, 0, 0, q.makeProbeFn(opts.Registry, f)})
@@ -289,6 +318,124 @@ func NewQuery(opts QueryOptions) *Query {
 	}
 
 	return q
+}
+
+func (q *Query) md5(c interface{}, a []interface{}) interface{} {
+	bb, _, _, err := toBitBuf(c)
+	if err != nil {
+		return err
+	}
+
+	md5 := md5.New()
+	if _, err := io.Copy(md5, bb); err != nil {
+		return err
+	}
+
+	return md5.Sum(nil)
+}
+
+func (q *Query) base64(c interface{}, a []interface{}) interface{} {
+	bb, _, _, err := toBitBuf(c)
+	if err != nil {
+		return err
+	}
+
+	b64Buf := &bytes.Buffer{}
+	b64 := base64.NewEncoder(base64.StdEncoding, b64Buf)
+	if _, err := io.Copy(b64Buf, bb); err != nil {
+		return err
+	}
+	b64.Close()
+
+	return b64Buf.Bytes()
+}
+
+func (q *Query) unbase64(c interface{}, a []interface{}) interface{} {
+	bb, _, _, err := toBitBuf(c)
+	if err != nil {
+		return err
+	}
+
+	b64Buf := &bytes.Buffer{}
+	b64 := base64.NewDecoder(base64.StdEncoding, bb)
+	if _, err := io.Copy(b64Buf, b64); err != nil {
+		return err
+	}
+
+	return b64Buf.Bytes()
+}
+
+func (q *Query) hex(c interface{}, a []interface{}) interface{} {
+	bb, _, _, err := toBitBuf(c)
+	if err != nil {
+		return err
+	}
+
+	b64Buf := &bytes.Buffer{}
+	if _, err := io.Copy(hex.NewEncoder(b64Buf), bb); err != nil {
+		return err
+	}
+
+	return b64Buf.Bytes()
+}
+
+func (q *Query) unhex(c interface{}, a []interface{}) interface{} {
+	bb, _, _, err := toBitBuf(c)
+	if err != nil {
+		return err
+	}
+
+	b64Buf := &bytes.Buffer{}
+	if _, err := io.Copy(b64Buf, hex.NewDecoder(bb)); err != nil {
+		return err
+	}
+
+	return b64Buf.Bytes()
+}
+
+func (q *Query) aesCtr(c interface{}, a []interface{}) interface{} {
+	keyBytes, err := toBytes(a[0])
+	if err != nil {
+		return err
+	}
+
+	switch len(keyBytes) {
+	case 16, 24, 32:
+	default:
+		return fmt.Errorf("key length should be 16, 24 or 32 bytes, is %d bytes", len(keyBytes))
+	}
+
+	block, err := aes.NewCipher(keyBytes)
+	if err != nil {
+		return err
+	}
+
+	var ivBytes []byte
+	if len(a) >= 2 {
+		var err error
+		ivBytes, err = toBytes(a[1])
+		if err != nil {
+			return err
+		}
+		if len(ivBytes) != block.BlockSize() {
+			return fmt.Errorf("iv length should be %d bytes, is %d bytes", block.BlockSize(), len(ivBytes))
+		}
+	} else {
+		ivBytes = make([]byte, block.BlockSize())
+	}
+
+	bb, _, _, err := toBitBuf(c)
+	if err != nil {
+		return err
+	}
+
+	buf := &bytes.Buffer{}
+	reader := &cipher.StreamReader{S: cipher.NewCTR(block, ivBytes), R: bb}
+	if _, err := io.Copy(buf, reader); err != nil {
+		return err
+	}
+
+	return buf.Bytes()
 }
 
 func (q *Query) help(c interface{}, a []interface{}) interface{} {
