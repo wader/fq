@@ -52,7 +52,6 @@ const (
 	OGG                = "ogg"
 	OGG_PAGE           = "ogg_page"
 	OPUS_PACKET        = "opus_packet"
-	PCAP               = "pcap"
 	PNG                = "png"
 	TAR                = "tar"
 	TIFF               = "tiff"
