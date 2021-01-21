@@ -2,7 +2,7 @@
 /4x4.jpg:
 > -f jpeg 4x4.jpg verbose
   |                                               |                |.: jpeg 0-9f+7 (160)
-  |                                               |                |  markers[9]: 0-9f+7 (160)
+  |                                               |                |  segments[9]: 0-9f+7 (160)
   |                                               |                |   -[0]: (marker) 0-1+7 (2)
 00|ff                                             |.               |      prefix: ff 0-0+7 (1)
 00|   d8                                          | .              |      code: SOI (216) 1-1+7 (1)
