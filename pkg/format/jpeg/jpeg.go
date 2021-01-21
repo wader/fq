@@ -175,7 +175,7 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 	soiMarkerFound := false
 	eoiMarkerFound := false
 
-	d.FieldArrayFn("markers", func(d *decode.D) {
+	d.FieldArrayFn("segments", func(d *decode.D) {
 		inECD := false
 		for d.NotEnd() && !eoiMarkerFound {
 			if inECD {
