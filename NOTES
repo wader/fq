@@ -1,4 +1,8 @@
 
+big.Int and floor etc
+
+array of bytes?
+
 // for ((i=0x01; i <= 0xaf; i++)); do printf '0x%x Slice\n' $i ; done | pbcopy
 
 

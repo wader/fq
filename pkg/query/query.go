@@ -23,6 +23,7 @@ import (
 	"io"
 	"io/ioutil"
 	"math/big"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -83,7 +84,12 @@ func toString(v interface{}) (string, error) {
 	case string:
 		return v, nil
 	default:
-		return "", fmt.Errorf("value is not a string")
+		b, err := toBytes(v)
+		if err != nil {
+			return "", fmt.Errorf("value can't be a string")
+		}
+
+		return string(b), nil
 	}
 }
 
@@ -307,6 +313,10 @@ func NewQuery(opts QueryOptions) *Query {
 		{[]string{"unbase64"}, 0, 0, q.unbase64},
 		{[]string{"hex"}, 0, 0, q.hex},
 		{[]string{"unhex"}, 0, 0, q.unhex},
+		{[]string{"query_escape"}, 0, 0, q.queryEscape},
+		{[]string{"query_unescape"}, 0, 0, q.queryUnescape},
+		{[]string{"path_escape"}, 0, 0, q.pathEscape},
+		{[]string{"path_unescape"}, 0, 0, q.pathUnescape},
 		{[]string{"aes_ctr"}, 1, 2, q.aesCtr},
 	}
 	for name, f := range q.opts.Registry.Groups {
@@ -356,13 +366,12 @@ func (q *Query) unbase64(c interface{}, a []interface{}) interface{} {
 		return err
 	}
 
-	b64Buf := &bytes.Buffer{}
-	b64 := base64.NewDecoder(base64.StdEncoding, bb)
-	if _, err := io.Copy(b64Buf, b64); err != nil {
+	buf := &bytes.Buffer{}
+	if _, err := io.Copy(buf, base64.NewDecoder(base64.StdEncoding, bb)); err != nil {
 		return err
 	}
 
-	return b64Buf.Bytes()
+	return buf.Bytes()
 }
 
 func (q *Query) hex(c interface{}, a []interface{}) interface{} {
@@ -371,12 +380,12 @@ func (q *Query) hex(c interface{}, a []interface{}) interface{} {
 		return err
 	}
 
-	b64Buf := &bytes.Buffer{}
-	if _, err := io.Copy(hex.NewEncoder(b64Buf), bb); err != nil {
+	buf := &bytes.Buffer{}
+	if _, err := io.Copy(hex.NewEncoder(buf), bb); err != nil {
 		return err
 	}
 
-	return b64Buf.Bytes()
+	return buf.String()
 }
 
 func (q *Query) unhex(c interface{}, a []interface{}) interface{} {
@@ -391,6 +400,45 @@ func (q *Query) unhex(c interface{}, a []interface{}) interface{} {
 	}
 
 	return b64Buf.Bytes()
+}
+
+func (q *Query) queryEscape(c interface{}, a []interface{}) interface{} {
+	s, err := toString(c)
+	if err != nil {
+		return err
+	}
+	return url.QueryEscape(s)
+}
+
+func (q *Query) queryUnescape(c interface{}, a []interface{}) interface{} {
+	s, err := toString(c)
+	if err != nil {
+		return err
+	}
+	u, err := url.QueryUnescape(s)
+	if err != nil {
+		return err
+	}
+	return u
+}
+func (q *Query) pathEscape(c interface{}, a []interface{}) interface{} {
+	s, err := toString(c)
+	if err != nil {
+		return err
+	}
+	return url.PathEscape(s)
+}
+
+func (q *Query) pathUnescape(c interface{}, a []interface{}) interface{} {
+	s, err := toString(c)
+	if err != nil {
+		return err
+	}
+	u, err := url.PathUnescape(s)
+	if err != nil {
+		return err
+	}
+	return u
 }
 
 func (q *Query) aesCtr(c interface{}, a []interface{}) interface{} {
@@ -799,7 +847,7 @@ func (q *Query) Run(ctx context.Context, src string, stdout io.Writer) ([]interf
 				# Convert the input integer to a string in the specified base (2 to 36 inclusive)
 				def _convert(base):
 					def stream:
-						recurse(if . > 0 then . / base | floor else empty end) | . % base;
+						recurse(if . > 0 then . / base else empty end) | . % base;
 					if . == 0 then
 						"0"
 					else
