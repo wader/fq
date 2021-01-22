@@ -30,7 +30,7 @@ var flacFrameFormat []*decode.Format
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.MKV,
-		Description: "Matroska (EBML)",
+		Description: "Matroska",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    mkvDecode,
 		Dependencies: []decode.Dependency{
