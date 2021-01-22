@@ -1,7 +1,5 @@
 package cli
 
-// TODO: REPL and reading from stdin?
-
 import (
 	"context"
 	"flag"
