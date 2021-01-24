@@ -1,6 +1,9 @@
 package query
 
 import (
+	"context"
+	"fmt"
+	"io/ioutil"
 	"strings"
 
 	"github.com/itchyny/gojq"
@@ -92,4 +95,61 @@ func buildCompletionQuery(q *gojq.Query) (*gojq.Query, CompletionType, string) {
 			return nil, CompletionTypeNone, ""
 		}
 	}
+}
+
+func autoComplete(ctx context.Context, q *Query, line []rune, pos int) (newLine [][]rune, length int) {
+	lineStr := string(line[0:pos])
+	namesQuery, namesType, namesPrefix := BuildCompletionQuery(lineStr)
+
+	// log.Println("------")
+	// log.Printf("namesQuery: %s\n", namesQuery)
+	// log.Printf("namesType: %#+v\n", namesType)
+	// log.Printf("namesPrefix: %#+v\n", namesPrefix)
+
+	src := ""
+	switch namesType {
+	case CompletionTypeNone:
+		return [][]rune{}, pos
+	case CompletionTypeIndex:
+		namesQueryStr := namesQuery.String()
+		src = fmt.Sprintf(`[[(%s) | keys?, _value_keys?] | add | unique | sort | .[] | strings | select(test("^%s"))]`, namesQueryStr, namesPrefix)
+	case CompletionTypeFunc:
+		src = fmt.Sprintf(`[[builtins[] | split("/") | .[0]] | unique | sort | .[] | select(test("^%s"))]`, namesPrefix)
+	default:
+		panic("unreachable")
+	}
+
+	// log.Printf("src: %#+v\n", src)
+
+	vss, err := q.Run(ctx, src, ioutil.Discard)
+	if err != nil {
+		// log.Printf("err: %#+v\n", err)
+		return [][]rune{}, pos
+	}
+
+	shareLen := len(namesPrefix)
+
+	vs := vss[0].([]interface{})
+	var names []string
+	for _, v := range vs {
+		v, _ := v.(string)
+		if v == "" {
+			continue
+		}
+		names = append(names, v[shareLen:])
+	}
+
+	if len(names) <= 1 {
+		shareLen = 0
+	}
+
+	// log.Printf("shareLen: %#+v\n", shareLen)
+	// log.Printf("names: %#+v\n", names)
+
+	var runeNames [][]rune
+	for _, n := range names {
+		runeNames = append(runeNames, []rune(n))
+	}
+
+	return runeNames, shareLen
 }

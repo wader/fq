@@ -137,15 +137,16 @@ func (q *Query) open(c interface{}, a []interface{}) interface{} {
 		}
 		rs = bytes.NewReader(buf)
 	} else {
-
 		f, err := q.opts.OS.Open(filename)
 		if err != nil {
 			return err
 		}
-		// TODO: query Close method that cleanups?
+
+		// TODO: cleanup? bitbuf have optional close method etc?
 		// if c, ok := f.(io.Closer); ok {
-		// 	defer c.Close()
+		// 	c.Close()
 		// }
+
 		rs = f
 	}
 
@@ -331,13 +332,21 @@ func (q *Query) u(c interface{}, a []interface{}) interface{} {
 
 func (q *Query) push(c interface{}, a []interface{}) interface{} {
 	if _, ok := c.(error); !ok {
-		q.pushAcc = append(q.pushAcc, c)
+		q.runContext.pushVs = append(q.runContext.pushVs, c)
 	}
-	return &queryPush{}
+	return func(stdout io.Writer) error {
+		// nop
+		return nil
+	}
+
 }
 
 func (q *Query) pop(c interface{}, a []interface{}) interface{} {
-	return &queryPop{}
+	q.runContext.pops++
+	return func(stdout io.Writer) error {
+		// nop
+		return nil
+	}
 }
 
 func (q *Query) md5(c interface{}, a []interface{}) interface{} {
