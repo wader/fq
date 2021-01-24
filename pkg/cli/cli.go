@@ -125,14 +125,12 @@ func (m Main) run() error {
 			srcs = append(srcs,
 				`open($FILENAME)`,
 				*formatNameFlag)
-
 		}
 		if e := fs.Arg(1); e != "" {
 			srcs = append(srcs, e)
 		}
 		if *replFlag {
 			srcs = append(srcs, `push`)
-
 		}
 		src = strings.Join(srcs, " | ")
 	}

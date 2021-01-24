@@ -6,15 +6,8 @@ package query
 import (
 	"bytes"
 	"context"
-	"crypto/aes"
-	"crypto/cipher"
-	"crypto/md5"
-	"encoding/base64"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"fq/internal/hexdump"
-	"fq/internal/num"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/format"
@@ -23,7 +16,6 @@ import (
 	"io"
 	"io/ioutil"
 	"math/big"
-	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -114,7 +106,7 @@ func toBytes(v interface{}) ([]byte, error) {
 // TODO: refactor to return struct?
 func toBitBuf(v interface{}) (*bitio.Buffer, ranges.Range, string, error) {
 	switch vv := v.(type) {
-	case *queryOpen:
+	case *bitBufFile:
 		return vv.bb, ranges.Range{Start: 0, Len: vv.bb.Len()}, vv.filename, nil
 	case *decode.Value:
 		return vv.RootBitBuf, vv.Range, "", nil
@@ -141,94 +133,6 @@ func toValue(v interface{}) (*decode.Value, error) {
 	default:
 		// TODO: remove decode.D?
 		return nil, fmt.Errorf("%v: value is not a decode value", v)
-	}
-}
-
-type CompletionType string
-
-const (
-	CompletionTypeIndex CompletionType = "index"
-	CompletionTypeFunc  CompletionType = "func"
-	CompletionTypeNone  CompletionType = "none"
-)
-
-func BuildCompletionQuery(src string) (*gojq.Query, CompletionType, string) {
-	if src == "" {
-		return nil, CompletionTypeNone, ""
-	}
-
-	// HACK: if ending with "." append a test index that we remove later
-	probePrefix := ""
-	if len(src) > 0 && strings.HasSuffix(src, ".") {
-		probePrefix = "x"
-	}
-
-	q, err := gojq.Parse(src + probePrefix)
-	if err != nil {
-		return nil, CompletionTypeNone, ""
-	}
-
-	cq, ct, prefix := buildCompletionQuery(q)
-	if prefix != "" && probePrefix != "" {
-		prefix = strings.TrimPrefix(prefix, probePrefix)
-	}
-
-	return cq, ct, prefix
-}
-
-// find the right most term that is completeable
-// return a query to find possible names and a prefix to filter by
-func buildCompletionQuery(q *gojq.Query) (*gojq.Query, CompletionType, string) {
-	switch q.Op {
-	case gojq.OpPipe:
-		r, ct, prefix := buildCompletionQuery(q.Right)
-		if r == nil {
-			return nil, ct, prefix
-		}
-		qc := *q
-		qc.Right = r
-		return &qc, ct, prefix
-	default:
-		switch q.Term.Type {
-		case gojq.TermTypeIdentity:
-			return q, CompletionTypeIndex, ""
-		case gojq.TermTypeIndex:
-			if len(q.Term.SuffixList) == 0 {
-				if q.Term.Index.Start == nil {
-					return &gojq.Query{Term: &gojq.Term{Type: gojq.TermTypeIdentity}}, CompletionTypeIndex, q.Term.Index.Name
-				}
-				return nil, CompletionTypeNone, ""
-			}
-
-			last := q.Term.SuffixList[len(q.Term.SuffixList)-1]
-			if last.Index != nil && last.Index.Start == nil {
-				qc := *q
-				tc := *q.Term
-				qc.Term = &tc
-				qc.Term.SuffixList = qc.Term.SuffixList[0 : len(qc.Term.SuffixList)-1]
-				return &qc, CompletionTypeIndex, last.Index.Name
-			}
-
-			return nil, CompletionTypeNone, ""
-		case gojq.TermTypeFunc:
-			if len(q.Term.SuffixList) == 0 {
-				return nil, CompletionTypeFunc, q.Term.Func.Name
-			}
-
-			// TODO: refactor to share with index
-			last := q.Term.SuffixList[len(q.Term.SuffixList)-1]
-			if last.Index != nil && last.Index.Start == nil {
-				qc := *q
-				tc := *q.Term
-				qc.Term = &tc
-				qc.Term.SuffixList = qc.Term.SuffixList[0 : len(qc.Term.SuffixList)-1]
-				return &qc, CompletionTypeIndex, last.Index.Name
-			}
-			return nil, CompletionTypeNone, ""
-
-		default:
-			return nil, CompletionTypeNone, ""
-		}
 	}
 }
 
@@ -262,31 +166,14 @@ type Query struct {
 	pushAcc []interface{}
 }
 
-type queryHelp struct{}
-
-type queryOpen struct {
+type bitBufFile struct {
 	bb       *bitio.Buffer
 	filename string
-}
-
-type queryDump struct {
-	maxDepth int
-	verbose  bool
-	v        *decode.Value
-}
-
-type queryHexDump struct {
-	bb *bitio.Buffer
-	r  ranges.Range
 }
 
 type queryPush struct{}
 
 type queryPop struct{}
-
-type queryPreview struct {
-	v *decode.Value
-}
 
 func NewQuery(opts QueryOptions) *Query {
 	q := &Query{opts: opts}
@@ -295,9 +182,9 @@ func NewQuery(opts QueryOptions) *Query {
 	q.functions = []Function{
 		{[]string{"help"}, 0, 0, q.help},
 		{[]string{"open"}, 0, 1, q.open},
-		{[]string{"dump", "d"}, 0, 1, q.makeDumpFn(queryDump{})},
-		{[]string{"verbose", "v"}, 0, 1, q.makeDumpFn(queryDump{verbose: true})},
-		{[]string{"summary", "s"}, 0, 1, q.makeDumpFn(queryDump{maxDepth: 1})},
+		{[]string{"dump", "d"}, 0, 1, q.makeDumpFn(decode.DumpOptions{})},
+		{[]string{"verbose", "v"}, 0, 1, q.makeDumpFn(decode.DumpOptions{Verbose: true})},
+		{[]string{"summary", "s"}, 0, 1, q.makeDumpFn(decode.DumpOptions{MaxDepth: 1})},
 		{[]string{"hexdump", "hd", "h"}, 0, 0, q.hexdump},
 		{[]string{"bits"}, 0, 2, q.bits},
 		{[]string{"string"}, 0, 0, q.string_},
@@ -328,457 +215,6 @@ func NewQuery(opts QueryOptions) *Query {
 	}
 
 	return q
-}
-
-func (q *Query) md5(c interface{}, a []interface{}) interface{} {
-	bb, _, _, err := toBitBuf(c)
-	if err != nil {
-		return err
-	}
-
-	md5 := md5.New()
-	if _, err := io.Copy(md5, bb); err != nil {
-		return err
-	}
-
-	return md5.Sum(nil)
-}
-
-func (q *Query) base64(c interface{}, a []interface{}) interface{} {
-	bb, _, _, err := toBitBuf(c)
-	if err != nil {
-		return err
-	}
-
-	b64Buf := &bytes.Buffer{}
-	b64 := base64.NewEncoder(base64.StdEncoding, b64Buf)
-	if _, err := io.Copy(b64Buf, bb); err != nil {
-		return err
-	}
-	b64.Close()
-
-	return b64Buf.Bytes()
-}
-
-func (q *Query) unbase64(c interface{}, a []interface{}) interface{} {
-	bb, _, _, err := toBitBuf(c)
-	if err != nil {
-		return err
-	}
-
-	buf := &bytes.Buffer{}
-	if _, err := io.Copy(buf, base64.NewDecoder(base64.StdEncoding, bb)); err != nil {
-		return err
-	}
-
-	return buf.Bytes()
-}
-
-func (q *Query) hex(c interface{}, a []interface{}) interface{} {
-	bb, _, _, err := toBitBuf(c)
-	if err != nil {
-		return err
-	}
-
-	buf := &bytes.Buffer{}
-	if _, err := io.Copy(hex.NewEncoder(buf), bb); err != nil {
-		return err
-	}
-
-	return buf.String()
-}
-
-func (q *Query) unhex(c interface{}, a []interface{}) interface{} {
-	bb, _, _, err := toBitBuf(c)
-	if err != nil {
-		return err
-	}
-
-	b64Buf := &bytes.Buffer{}
-	if _, err := io.Copy(b64Buf, hex.NewDecoder(bb)); err != nil {
-		return err
-	}
-
-	return b64Buf.Bytes()
-}
-
-func (q *Query) queryEscape(c interface{}, a []interface{}) interface{} {
-	s, err := toString(c)
-	if err != nil {
-		return err
-	}
-	return url.QueryEscape(s)
-}
-
-func (q *Query) queryUnescape(c interface{}, a []interface{}) interface{} {
-	s, err := toString(c)
-	if err != nil {
-		return err
-	}
-	u, err := url.QueryUnescape(s)
-	if err != nil {
-		return err
-	}
-	return u
-}
-func (q *Query) pathEscape(c interface{}, a []interface{}) interface{} {
-	s, err := toString(c)
-	if err != nil {
-		return err
-	}
-	return url.PathEscape(s)
-}
-
-func (q *Query) pathUnescape(c interface{}, a []interface{}) interface{} {
-	s, err := toString(c)
-	if err != nil {
-		return err
-	}
-	u, err := url.PathUnescape(s)
-	if err != nil {
-		return err
-	}
-	return u
-}
-
-func (q *Query) aesCtr(c interface{}, a []interface{}) interface{} {
-	keyBytes, err := toBytes(a[0])
-	if err != nil {
-		return err
-	}
-
-	switch len(keyBytes) {
-	case 16, 24, 32:
-	default:
-		return fmt.Errorf("key length should be 16, 24 or 32 bytes, is %d bytes", len(keyBytes))
-	}
-
-	block, err := aes.NewCipher(keyBytes)
-	if err != nil {
-		return err
-	}
-
-	var ivBytes []byte
-	if len(a) >= 2 {
-		var err error
-		ivBytes, err = toBytes(a[1])
-		if err != nil {
-			return err
-		}
-		if len(ivBytes) != block.BlockSize() {
-			return fmt.Errorf("iv length should be %d bytes, is %d bytes", block.BlockSize(), len(ivBytes))
-		}
-	} else {
-		ivBytes = make([]byte, block.BlockSize())
-	}
-
-	bb, _, _, err := toBitBuf(c)
-	if err != nil {
-		return err
-	}
-
-	buf := &bytes.Buffer{}
-	reader := &cipher.StreamReader{S: cipher.NewCTR(block, ivBytes), R: bb}
-	if _, err := io.Copy(buf, reader); err != nil {
-		return err
-	}
-
-	return buf.Bytes()
-}
-
-func (q *Query) help(c interface{}, a []interface{}) interface{} {
-	return &queryHelp{}
-}
-
-func (q *Query) open(c interface{}, a []interface{}) interface{} {
-	var rs io.ReadSeeker
-
-	var filename string
-	if len(a) == 1 {
-		var err error
-		filename, err = toString(a[0])
-		if err != nil {
-			return fmt.Errorf("%s: %w", filename, err)
-		}
-	}
-
-	if filename == "" || filename == "-" {
-		filename = "stdin"
-		buf, err := ioutil.ReadAll(q.opts.OS.Stdin())
-		if err != nil {
-			return err
-		}
-		rs = bytes.NewReader(buf)
-	} else {
-
-		f, err := q.opts.OS.Open(filename)
-		if err != nil {
-			return err
-		}
-		// TODO: query Close method that cleanups?
-		// if c, ok := f.(io.Closer); ok {
-		// 	defer c.Close()
-		// }
-		rs = f
-	}
-
-	bb, err := bitio.NewBufferFromReadSeeker(rs)
-	if err != nil {
-		return err
-	}
-
-	return &queryOpen{
-		bb:       bb,
-		filename: filename,
-	}
-}
-
-func (q *Query) makeDumpFn(qd queryDump) func(c interface{}, a []interface{}) interface{} {
-	return func(c interface{}, a []interface{}) interface{} {
-		v, err := toValue(c)
-		if err != nil {
-			return fmt.Errorf("%v: value is not a decode value", c)
-		}
-		qd.v = v
-		for _, av := range a {
-			switch av := av.(type) {
-			case int:
-				qd.maxDepth = av
-			case int64:
-				qd.maxDepth = int(av)
-			case bool:
-				qd.verbose = av
-			}
-		}
-
-		return &qd
-	}
-}
-
-func (q *Query) hexdump(c interface{}, a []interface{}) interface{} {
-	bb, r, _, err := toBitBuf(c)
-	if err != nil {
-		return err
-	}
-
-	return &queryHexDump{
-		bb: bb,
-		r:  r,
-	}
-}
-
-func (q *Query) makeProbeFn(registry *decode.Registry, probeFormats []*decode.Format) func(c interface{}, a []interface{}) interface{} {
-	return func(c interface{}, a []interface{}) interface{} {
-		bb, r, filename, err := toBitBuf(c)
-		if err != nil {
-			return err
-		}
-		bb, err = bb.BitBufRange(r.Start, r.Len)
-		if err != nil {
-			return err
-		}
-
-		opts := map[string]interface{}{}
-
-		name := "unnamed"
-		if filename != "" {
-			name = filename
-		}
-
-		if len(a) >= 1 {
-			formatName, err := toString(a[0])
-			if err != nil {
-				return fmt.Errorf("%s: %w", formatName, err)
-			}
-			probeFormats, err = registry.Group(formatName)
-			if err != nil {
-				return fmt.Errorf("%s: %w", formatName, err)
-			}
-		}
-
-		dv, _, errs := decode.Probe(name, bb, probeFormats, decode.ProbeOptions{FormatOptions: opts})
-		if dv == nil {
-			return errs
-		}
-
-		return dv
-	}
-}
-
-func (q *Query) bits(c interface{}, a []interface{}) interface{} {
-	bb, r, _, err := toBitBuf(c)
-	if err != nil {
-		return err
-	}
-	bb, err = bb.BitBufRange(r.Start, r.Len)
-	if err != nil {
-		return err
-	}
-
-	startArg := int64(0)
-	endArg := int64(-1)
-	toAbs := func(v int64, l int64) int64 {
-		if v < 0 {
-			return l + v + 1
-		}
-		return v
-	}
-
-	if len(a) >= 1 {
-		startArg, err = toInt64(a[0])
-		if err != nil {
-			return err
-		}
-	}
-	if len(a) >= 2 {
-		endArg, err = toInt64(a[1])
-		if err != nil {
-			return err
-		}
-	}
-
-	startArg = toAbs(startArg, bb.Len())
-	endArg = toAbs(endArg, bb.Len())
-
-	bb, err = bb.BitBufRange(startArg, endArg-startArg)
-	if err != nil {
-		return err
-	}
-
-	return bb
-}
-
-func (q *Query) string_(c interface{}, a []interface{}) interface{} {
-	var bb *bitio.Buffer
-	switch cc := c.(type) {
-	case *decode.Value:
-		var err error
-		bb, err = cc.RootBitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
-		if err != nil {
-			return err
-		}
-	case *bitio.Buffer:
-		bb = cc
-	default:
-		return fmt.Errorf("value is not a decode value or bit buffer")
-	}
-
-	sb := &strings.Builder{}
-	if _, err := io.Copy(sb, bb); err != nil {
-		return err
-	}
-
-	return string(sb.String())
-}
-
-func (q *Query) u(c interface{}, a []interface{}) interface{} {
-	bb, r, _, err := toBitBuf(c)
-	if err != nil {
-		return err
-	}
-
-	nBits := r.Len
-	if len(a) == 1 {
-		n, err := toInt64(a[0])
-		if err != nil {
-			return err
-		}
-		nBits = n
-	}
-
-	bb, err = bb.BitBufRange(r.Start, nBits)
-	if err != nil {
-		return err
-	}
-
-	// TODO: smart and maybe use int if bits can fit?
-	bi := new(big.Int)
-	for i := bb.Len() - 1; i >= 0; i-- {
-		v, err := bb.Bool()
-		if err != nil {
-			return err
-		}
-		if v {
-			bi.SetBit(bi, int(i), 1)
-		}
-	}
-
-	return bi
-}
-
-func (q *Query) push(c interface{}, a []interface{}) interface{} {
-	if _, ok := c.(error); !ok {
-		q.pushAcc = append(q.pushAcc, c)
-	}
-	return &queryPush{}
-}
-
-func (q *Query) pop(c interface{}, a []interface{}) interface{} {
-	return &queryPop{}
-}
-
-func (q *Query) _valueKeys(c interface{}, a []interface{}) interface{} {
-	if v, ok := c.(*decode.Value); ok {
-		var vs []interface{}
-		for _, s := range v.SpecialPropNames() {
-			vs = append(vs, s)
-		}
-		return vs
-	}
-	return nil
-}
-
-func (q *Query) formats(c interface{}, a []interface{}) interface{} {
-
-	allFormats := map[string]*decode.Format{}
-
-	for _, fs := range q.opts.Registry.Groups {
-		for _, f := range fs {
-			if _, ok := allFormats[f.Name]; ok {
-				continue
-			}
-			allFormats[f.Name] = f
-		}
-	}
-
-	vs := map[string]interface{}{}
-	for _, f := range allFormats {
-		vf := map[string]interface{}{
-			"name":        f.Name,
-			"description": f.Description,
-		}
-
-		var dependenciesVs []interface{}
-		for _, d := range f.Dependencies {
-			var dNamesVs []interface{}
-			for _, n := range d.Names {
-				dNamesVs = append(dNamesVs, n)
-			}
-			dependenciesVs = append(dependenciesVs, dNamesVs)
-		}
-		if len(dependenciesVs) > 0 {
-			vf["dependencies"] = dependenciesVs
-		}
-		var groupsVs []interface{}
-		for _, n := range f.Groups {
-			groupsVs = append(groupsVs, n)
-		}
-		if len(groupsVs) > 0 {
-			vf["groups"] = groupsVs
-		}
-
-		vs[f.Name] = vf
-	}
-
-	return vs
-}
-
-func (q *Query) preview(c interface{}, a []interface{}) interface{} {
-	v, err := toValue(c)
-	if err != nil {
-		return fmt.Errorf("%v: value is not a decode value", c)
-	}
-	return &queryPreview{v: v}
 }
 
 func (q *Query) Run(ctx context.Context, src string, stdout io.Writer) ([]interface{}, error) {
@@ -929,48 +365,16 @@ func (q *Query) Run(ctx context.Context, src string, stdout io.Writer) ([]interf
 		vs = append(vs, v)
 
 		switch vv := v.(type) {
-		case *queryHelp:
-			for _, f := range q.functions {
-				var names []string
-				for _, n := range f.Names {
-					for j := f.MinArity; j <= f.MaxArity; j++ {
-						names = append(names, fmt.Sprintf("%s/%d", n, j))
-					}
-				}
-				fmt.Fprintf(stdout, "%s\n", strings.Join(names, ", "))
-			}
-		case *queryOpen:
-			fmt.Fprintf(stdout, "<open %s>\n", vv.filename)
-		case *queryDump:
-			opts := q.opts.DumpOptions
-			opts.MaxDepth = vv.maxDepth
-			opts.Verbose = vv.verbose
-			if err := vv.v.Dump(stdout, opts); err != nil {
+		case func(stdout io.Writer) error:
+			if err := vv(stdout); err != nil {
 				return nil, err
 			}
-		case *queryHexDump:
-			bitsByteAlign := vv.r.Start % 8
-			bb, err := vv.bb.BitBufRange(vv.r.Start-bitsByteAlign, vv.r.Len+bitsByteAlign)
-			if err != nil {
-				return nil, err
-			}
-			hw := hexdump.New(
-				stdout,
-				(vv.r.Start-bitsByteAlign)/8,
-				num.DigitsInBase(bitio.BitsByteCount(vv.r.Stop()+bitsByteAlign), 16),
-				q.opts.DumpOptions.LineBytes)
-			if _, err := io.Copy(hw, bb); err != nil {
-				return nil, err
-			}
-			hw.Close()
+		case *bitBufFile:
+			fmt.Fprintf(stdout, "<file %s>\n", vv.filename)
 		case *queryPush:
 			// nop
 		case *queryPop:
 			pops++
-		case *queryPreview:
-			if err := vv.v.Preview(stdout); err != nil {
-				return nil, err
-			}
 
 		case *decode.Value:
 			opts := q.opts.DumpOptions
