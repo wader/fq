@@ -1,11 +1,5 @@
 package mp3
 
-// http://mpgedit.org/mpgedit/mpeg_format/MP3Format.html
-// http://www.multiweb.cz/twoinches/MP3inside.htm
-// https://wiki.hydrogenaud.io/index.php?title=MP3
-
-// TODO: crc
-// TODO: same sample decode?
 // TODO: vbri
 // TOFO: resync on garbage?
 

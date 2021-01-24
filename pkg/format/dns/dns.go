@@ -94,7 +94,6 @@ func fieldDecodeLabel(d *decode.D, name string) {
 	var endPos int64
 
 	d.FieldStructFn(name, func(d *decode.D) {
-
 		var ls []string
 		d.FieldArrayFn("labels", func(d *decode.D) {
 			seenTermintor := false
@@ -116,9 +115,7 @@ func fieldDecodeLabel(d *decode.D, name string) {
 					}
 					ls = append(ls, d.FieldUTF8("value", int(l)))
 				})
-
 			}
-
 		})
 		d.FieldValueStr("value", strings.Join(ls, "."), "")
 	})
