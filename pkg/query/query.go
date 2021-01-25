@@ -394,6 +394,10 @@ func (q *Query) Run(ctx context.Context, src string, stdout io.Writer) ([]interf
 			fmt.Fprintln(stdout, strconv.FormatFloat(float64(vv), 'f', -1, 32))
 		case float64:
 			fmt.Fprintln(stdout, strconv.FormatFloat(vv, 'f', -1, 64))
+		case []byte:
+			if _, err := io.Copy(stdout, bytes.NewBuffer(vv)); err != nil {
+				return nil, err
+			}
 		default:
 			e := json.NewEncoder(stdout)
 			e.SetIndent("", "  ")
