@@ -103,7 +103,7 @@ func (q *Query) preview(c interface{}, a []interface{}) interface{} {
 }
 
 func (q *Query) help(c interface{}, a []interface{}) interface{} {
-	return func(stdout io.Writer) error {
+	return queryErrorFn(func(stdout io.Writer) error {
 		for _, f := range q.functions {
 			var names []string
 			for _, n := range f.Names {
@@ -114,7 +114,7 @@ func (q *Query) help(c interface{}, a []interface{}) interface{} {
 			fmt.Fprintf(stdout, "%s\n", strings.Join(names, ", "))
 		}
 		return nil
-	}
+	})
 }
 
 func (q *Query) open(c interface{}, a []interface{}) interface{} {

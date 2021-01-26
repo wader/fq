@@ -175,6 +175,10 @@ type runContext struct {
 	pops   int
 }
 
+type queryErrorFn func(stdout io.Writer) error
+
+func (queryErrorFn) Error() string { return "" }
+
 func NewQuery(opts QueryOptions) *Query {
 	q := &Query{opts: opts}
 
@@ -355,9 +359,14 @@ func (q *Query) Run(ctx context.Context, src string, stdout io.Writer) ([]interf
 			break
 		}
 		if err, ok = v.(error); ok {
-			if ee, ok := err.(EmptyError); ok && ee.IsEmptyError() {
-				err = nil
-				continue
+			switch ee := err.(type) {
+			case EmptyError:
+				if ee.IsEmptyError() {
+					err = nil
+					continue
+				}
+			case queryErrorFn:
+				return nil, ee(stdout)
 			}
 			break
 		}
