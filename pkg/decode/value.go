@@ -452,7 +452,7 @@ func (v *Value) MarshalJSON() ([]byte, error) {
 	}
 }
 
-func (v *Value) JsonLength() int {
+func (v *Value) JsonLength() interface{} {
 
 	switch vv := v.V.(type) {
 	case Struct:
@@ -466,7 +466,7 @@ func (v *Value) JsonLength() int {
 	default:
 		// log.Printf("JsonLength value 0")
 
-		return 0
+		return fmt.Errorf("%v has no length", v)
 	}
 }
 
@@ -488,7 +488,7 @@ func (v *Value) JsonIndex(index int) interface{} {
 	}
 }
 
-func (v *Value) JsonRange(start int, end int) []interface{} {
+func (v *Value) JsonRange(start int, end int) interface{} {
 	switch vv := v.V.(type) {
 	case Struct:
 		// log.Printf("JsonRange struct %d-%d nil", start, end)
@@ -506,7 +506,7 @@ func (v *Value) JsonRange(start int, end int) []interface{} {
 	default:
 		// log.Printf("JsonRange value %d-%d nil", start, end)
 
-		panic("unreachable")
+		return fmt.Errorf("%v can't be indexed", v)
 	}
 }
 
@@ -585,7 +585,7 @@ func (v *Value) JsonProperty(name string) interface{} {
 	return r
 }
 
-func (v *Value) JsonEach() [][2]interface{} {
+func (v *Value) JsonEach() interface{} {
 	props := [][2]interface{}{}
 	switch vv := v.V.(type) {
 	case Struct:
