@@ -287,7 +287,7 @@ func (q *Query) Run(ctx context.Context, src string, stdout io.Writer) ([]interf
 				# Convert the input integer to a string in the specified base (2 to 36 inclusive)
 				def _convert(base):
 					def stream:
-						recurse(if . > 0 then . / base else empty end) | . % base;
+						recurse(if . > 0 then . div base else empty end) | . % base;
 					if . == 0 then
 						"0"
 					else
