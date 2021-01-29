@@ -216,7 +216,7 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 }
 
 func (v *Value) Dump(w io.Writer, opts DumpOptions) error {
-	maxAddrIndentWidth := 0 //num.DigitsInBase(bitio.BitsByteCount(v.RootBitBuf.Len()), opts.AddrBase)
+	maxAddrIndentWidth := 0
 	makeWalkFn := func(fn WalkFn) WalkFn {
 		return func(v *Value, rootV *Value, depth int, rootDepth int) error {
 			if opts.MaxDepth != 0 && depth > opts.MaxDepth {
