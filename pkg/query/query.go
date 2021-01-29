@@ -137,9 +137,7 @@ func toValue(v interface{}) (*decode.Value, error) {
 }
 
 type QueryOptions struct {
-	Variables   []Variable
-	FormatName  string
-	Filename    string
+	Variables   map[string]interface{}
 	Registry    *decode.Registry
 	DumpOptions decode.DumpOptions
 	OS          osenv.OS
@@ -160,7 +158,7 @@ type Function struct {
 type Query struct {
 	opts       QueryOptions
 	inputStack [][]interface{}
-	variables  []Variable
+	variables  map[string]interface{}
 	functions  []Function
 	runContext *runContext
 }
@@ -213,10 +211,9 @@ func NewQuery(opts QueryOptions) *Query {
 	for name, f := range q.opts.Registry.Groups {
 		q.functions = append(q.functions, Function{[]string{name}, 0, 0, q.makeProbeFn(opts.Registry, f)})
 	}
-	q.variables = []Variable{
-		// TODO: redo args handling in jq? a cli_entry function that reads args?
-		{Name: "FILENAME", Value: opts.Filename},
-	}
+
+	// TODO: redo args handling in jq? a cli_entry function that reads args?
+	q.variables = opts.Variables
 
 	return q
 }
@@ -239,9 +236,9 @@ func (q *Query) Run(ctx context.Context, src string, stdout io.Writer) ([]interf
 
 	var variableNames []string
 	var variableValues []interface{}
-	for _, v := range q.variables {
-		variableNames = append(variableNames, "$"+v.Name)
-		variableValues = append(variableValues, v.Value)
+	for k, v := range q.variables {
+		variableNames = append(variableNames, "$"+k)
+		variableValues = append(variableValues, v)
 	}
 
 	var compilerOpts []gojq.CompilerOption
@@ -347,7 +344,6 @@ func (q *Query) Run(ctx context.Context, src string, stdout io.Writer) ([]interf
 		return nil, err
 	}
 
-	pops := 0
 	iter := code.RunWithContext(ctx, nil, variableValues...)
 
 	var vs []interface{}
@@ -417,7 +413,7 @@ func (q *Query) Run(ctx context.Context, src string, stdout io.Writer) ([]interf
 
 	}
 
-	if pops > 0 && len(q.inputStack) > 0 {
+	if q.runContext.pops > 0 && len(q.inputStack) > 0 {
 		q.inputStack = q.inputStack[0 : len(q.inputStack)-1]
 	}
 

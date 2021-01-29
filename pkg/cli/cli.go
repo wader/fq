@@ -97,7 +97,9 @@ func (m Main) run() error {
 	filename := fs.Arg(0)
 
 	q := query.NewQuery(query.QueryOptions{
-		Filename: filename,
+		Variables: map[string]interface{}{
+			"FILENAME": filename,
+		},
 		Registry: m.Registry,
 		DumpOptions: decode.DumpOptions{
 			LineBytes:       16,
