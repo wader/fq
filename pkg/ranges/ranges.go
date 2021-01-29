@@ -56,6 +56,7 @@ func MinMax(a, b Range) Range {
 	return Range{Start: minStart, Len: maxStop - minStart}
 }
 
+// Gaps in ranges limited by total range
 func Gaps(total Range, ranges []Range) []Range {
 	if len(ranges) == 0 {
 		return []Range{total}
