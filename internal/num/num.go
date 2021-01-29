@@ -22,3 +22,31 @@ func PadFormatInt(i int64, base int, width int) string {
 	}
 	return s
 }
+
+func MaxInt64(a, b int64) int64 {
+	if a < b {
+		return b
+	}
+	return a
+}
+
+func MinInt64(a, b int64) int64 {
+	if a > b {
+		return b
+	}
+	return a
+}
+
+func MaxInt(a, b int) int {
+	if a < b {
+		return b
+	}
+	return a
+}
+
+func MinInt(a, b int) int {
+	if a > b {
+		return b
+	}
+	return a
+}

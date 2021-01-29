@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"fq"
+	"fq/internal/num"
 	"fq/pkg/decode"
 	"fq/pkg/osenv"
 	"fq/pkg/query"
@@ -62,14 +63,8 @@ func (m Main) run() error {
 		maxNameLen := 0
 		maxDescriptionLen := 0
 		for _, f := range allFormats {
-			m := func(a, b int) int {
-				if a > b {
-					return a
-				}
-				return b
-			}
-			maxNameLen = m(maxNameLen, len(f.Name))
-			maxDescriptionLen = m(maxDescriptionLen, len(f.Description))
+			maxNameLen = num.MaxInt(maxNameLen, len(f.Name))
+			maxDescriptionLen = num.MaxInt(maxDescriptionLen, len(f.Description))
 		}
 
 		formatsSorted := make([]*decode.Format, len(allFormats))
@@ -99,6 +94,7 @@ func (m Main) run() error {
 	q := query.NewQuery(query.QueryOptions{
 		Variables: map[string]interface{}{
 			"FILENAME": filename,
+			"VERSION":  fq.Version,
 		},
 		Registry: m.Registry,
 		DumpOptions: decode.DumpOptions{
