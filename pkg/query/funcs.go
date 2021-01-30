@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"fq/internal/hexdump"
 	"fq/internal/num"
+	"fq/internal/progressreadseeker"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"io"
@@ -150,14 +151,47 @@ func (q *Query) open(c interface{}, a []interface{}) interface{} {
 		rs = f
 	}
 
+	//TODO: how to know when probe is done?
+	// TODO: refactor
+	bPos, err := rs.Seek(0, io.SeekCurrent)
+	if err != nil {
+		return err
+	}
+	bEnd, err := rs.Seek(0, io.SeekEnd)
+	if err != nil {
+		return err
+	}
+	if _, err := rs.Seek(bPos, io.SeekStart); err != nil {
+		return err
+	}
+
+	// TODO: make nicer
+	// we don't want to print any progress things after decode is done
+	var decodeDoneFn func()
+	if q.runContext.mode == REPLMode {
+		decodeDone := false
+		decodeDoneFn = func() {
+			fmt.Fprint(q.runContext.stdout, "\r")
+			decodeDone = true
+		}
+
+		rs = progressreadseeker.New(rs, bEnd, func(readBytes int64, length int64) {
+			if decodeDone {
+				return
+			}
+			fmt.Fprintf(q.runContext.stdout, "\r%.1f%%", (float64(readBytes)/float64(length))*100)
+		})
+	}
+
 	bb, err := bitio.NewBufferFromReadSeeker(rs)
 	if err != nil {
 		return err
 	}
 
 	return &bitBufFile{
-		bb:       bb,
-		filename: filename,
+		bb:           bb,
+		filename:     filename,
+		decodeDoneFn: decodeDoneFn,
 	}
 }
 
@@ -182,6 +216,16 @@ func (q *Query) makeDumpFn(fnOpts decode.DumpOptions) func(c interface{}, a []in
 
 func (q *Query) makeProbeFn(registry *decode.Registry, probeFormats []*decode.Format) func(c interface{}, a []interface{}) interface{} {
 	return func(c interface{}, a []interface{}) interface{} {
+		// TODO: progress hack
+		// would be nice to move progress code into decode but it might be
+		// tricky to keep track of absolute positions in the underlaying readers
+		// when it uses BitBuf slices, maybe only in Pos()?
+		if bbf, ok := c.(*bitBufFile); ok {
+			if bbf.decodeDoneFn != nil {
+				defer bbf.decodeDoneFn()
+			}
+		}
+
 		bb, r, filename, err := toBitBuf(c)
 		if err != nil {
 			return err

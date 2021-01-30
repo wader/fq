@@ -121,7 +121,7 @@ func autoComplete(ctx context.Context, q *Query, line []rune, pos int) (newLine 
 
 	// log.Printf("src: %#+v\n", src)
 
-	vss, err := q.Run(ctx, src, ioutil.Discard)
+	vss, err := q.Run(ctx, CompletionMode, src, ioutil.Discard)
 	if err != nil {
 		// log.Printf("err: %#+v\n", err)
 		return [][]rune{}, pos

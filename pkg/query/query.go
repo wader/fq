@@ -166,11 +166,23 @@ type Query struct {
 type bitBufFile struct {
 	bb       *bitio.Buffer
 	filename string
+
+	decodeDoneFn func()
 }
 
+type RunMode int
+
+const (
+	ScriptMode RunMode = iota
+	REPLMode
+	CompletionMode
+)
+
 type runContext struct {
+	mode   RunMode
 	pushVs []interface{}
 	pops   int
+	stdout io.Writer
 }
 
 type queryErrorFn func(stdout io.Writer) error
@@ -218,10 +230,13 @@ func NewQuery(opts QueryOptions) *Query {
 	return q
 }
 
-func (q *Query) Run(ctx context.Context, src string, stdout io.Writer) ([]interface{}, error) {
+func (q *Query) Run(ctx context.Context, mode RunMode, src string, stdout io.Writer) ([]interface{}, error) {
 	var err error
 
-	q.runContext = &runContext{}
+	q.runContext = &runContext{
+		mode:   mode,
+		stdout: stdout,
+	}
 
 	if src != "" {
 		src = `include "fq" ; inputs | ` + src
@@ -496,7 +511,7 @@ func (q *Query) REPL(ctx context.Context) error {
 			return err
 		}
 
-		if _, err := q.Run(ctx, src, q.opts.OS.Stdout()); err != nil {
+		if _, err := q.Run(ctx, REPLMode, src, q.opts.OS.Stdout()); err != nil {
 			fmt.Fprintf(q.opts.OS.Stdout(), "error: %s\n", err)
 		}
 	}

@@ -106,6 +106,11 @@ func (m Main) run() error {
 		OS: m.OS,
 	})
 
+	runMode := query.ScriptMode
+	if *replFlag {
+		runMode = query.REPLMode
+	}
+
 	src := ""
 	if *scriptFlag != "" {
 		r, err := m.OS.Open(*scriptFlag)
@@ -133,7 +138,7 @@ func (m Main) run() error {
 		src = strings.Join(srcs, " | ")
 	}
 
-	if _, err := q.Run(context.Background(), src, m.OS.Stdout()); err != nil {
+	if _, err := q.Run(context.Background(), runMode, src, m.OS.Stdout()); err != nil {
 		return err
 	}
 
