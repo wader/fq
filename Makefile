@@ -5,6 +5,10 @@ test:
 	go test -v -cover -race -coverpkg=./... -coverprofile=cover.out ./...
 	go tool cover -func=cover.out
 
+.PHONY: generate
+generate:
+	go generate -x ./...
+
 .PHONY: lint
 lint:
 	golangci-lint run

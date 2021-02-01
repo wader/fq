@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"regexp"
 	"strings"
 
 	"github.com/itchyny/gojq"
@@ -14,6 +15,7 @@ type CompletionType string
 const (
 	CompletionTypeIndex CompletionType = "index"
 	CompletionTypeFunc  CompletionType = "func"
+	CompletionTypeVar   CompletionType = "var"
 	CompletionTypeNone  CompletionType = "none"
 )
 
@@ -22,20 +24,22 @@ func BuildCompletionQuery(src string) (*gojq.Query, CompletionType, string) {
 		return nil, CompletionTypeNone, ""
 	}
 
-	// HACK: if ending with "." append a test index that we remove later
+	// HACK: if ending with "." or "$" append a test index that we remove later
 	probePrefix := ""
-	if len(src) > 0 && strings.HasSuffix(src, ".") {
+	if len(src) > 0 && strings.HasSuffix(src, ".") || strings.HasSuffix(src, "$") {
 		probePrefix = "x"
 	}
+
+	// log.Printf("src + probePrefix: %#+v\n", src+probePrefix)
 
 	q, err := gojq.Parse(src + probePrefix)
 	if err != nil {
 		return nil, CompletionTypeNone, ""
 	}
 
-	cq, ct, prefix := buildCompletionQuery(q)
-	if prefix != "" && probePrefix != "" {
-		prefix = strings.TrimPrefix(prefix, probePrefix)
+	cq, ct, prefix := transformToCompletionQuery(q)
+	if probePrefix != "" {
+		prefix = strings.TrimSuffix(prefix, probePrefix)
 	}
 
 	return cq, ct, prefix
@@ -43,83 +47,96 @@ func BuildCompletionQuery(src string) (*gojq.Query, CompletionType, string) {
 
 // find the right most term that is completeable
 // return a query to find possible names and a prefix to filter by
-func buildCompletionQuery(q *gojq.Query) (*gojq.Query, CompletionType, string) {
-	switch q.Op {
-	case gojq.OpPipe:
-		r, ct, prefix := buildCompletionQuery(q.Right)
+func transformToCompletionQuery(q *gojq.Query) (*gojq.Query, CompletionType, string) {
+	// pipe, eq etc
+	if q.Right != nil {
+		r, ct, prefix := transformToCompletionQuery(q.Right)
 		if r == nil {
 			return nil, ct, prefix
 		}
-		qc := *q
-		qc.Right = r
-		return &qc, ct, prefix
-	default:
-		switch q.Term.Type {
-		case gojq.TermTypeIdentity:
-			return q, CompletionTypeIndex, ""
-		case gojq.TermTypeIndex:
-			if len(q.Term.SuffixList) == 0 {
-				if q.Term.Index.Start == nil {
-					return &gojq.Query{Term: &gojq.Term{Type: gojq.TermTypeIdentity}}, CompletionTypeIndex, q.Term.Index.Name
-				}
-				return nil, CompletionTypeNone, ""
-			}
+		q.Right = r
+		return q, ct, prefix
+	}
 
-			last := q.Term.SuffixList[len(q.Term.SuffixList)-1]
-			if last.Index != nil && last.Index.Start == nil {
-				qc := *q
-				tc := *q.Term
-				qc.Term = &tc
-				qc.Term.SuffixList = qc.Term.SuffixList[0 : len(qc.Term.SuffixList)-1]
-				return &qc, CompletionTypeIndex, last.Index.Name
+	// ... as ...
+	if q.Term.SuffixList != nil {
+		last := q.Term.SuffixList[len(q.Term.SuffixList)-1]
+		if last.Bind != nil {
+			r, ct, prefix := transformToCompletionQuery(last.Bind.Body)
+			if r == nil {
+				return nil, ct, prefix
 			}
+			last.Bind.Body = r
+			return q, ct, prefix
+		}
+	}
 
-			return nil, CompletionTypeNone, ""
-		case gojq.TermTypeFunc:
-			if len(q.Term.SuffixList) == 0 {
-				return nil, CompletionTypeFunc, q.Term.Func.Name
+	switch q.Term.Type {
+	case gojq.TermTypeIdentity:
+		return q, CompletionTypeIndex, ""
+	case gojq.TermTypeIndex:
+		if len(q.Term.SuffixList) == 0 {
+			if q.Term.Index.Start == nil {
+				return &gojq.Query{Term: &gojq.Term{Type: gojq.TermTypeIdentity}}, CompletionTypeIndex, q.Term.Index.Name
 			}
-
-			// TODO: refactor to share with index
-			last := q.Term.SuffixList[len(q.Term.SuffixList)-1]
-			if last.Index != nil && last.Index.Start == nil {
-				qc := *q
-				tc := *q.Term
-				qc.Term = &tc
-				qc.Term.SuffixList = qc.Term.SuffixList[0 : len(qc.Term.SuffixList)-1]
-				return &qc, CompletionTypeIndex, last.Index.Name
-			}
-			return nil, CompletionTypeNone, ""
-
-		default:
 			return nil, CompletionTypeNone, ""
 		}
+
+		last := q.Term.SuffixList[len(q.Term.SuffixList)-1]
+		if last.Index != nil && last.Index.Start == nil {
+			q.Term.SuffixList = q.Term.SuffixList[0 : len(q.Term.SuffixList)-1]
+			return q, CompletionTypeIndex, last.Index.Name
+		}
+
+		return nil, CompletionTypeNone, ""
+	case gojq.TermTypeFunc:
+		if len(q.Term.SuffixList) == 0 {
+			if strings.HasPrefix(q.Term.Func.Name, "$") {
+				return &gojq.Query{Term: &gojq.Term{Type: gojq.TermTypeIdentity}}, CompletionTypeVar, q.Term.Func.Name
+			} else {
+				return &gojq.Query{Term: &gojq.Term{Type: gojq.TermTypeIdentity}}, CompletionTypeFunc, q.Term.Func.Name
+			}
+		}
+
+		return nil, CompletionTypeNone, ""
+	default:
+		return nil, CompletionTypeNone, ""
+
 	}
 }
 
 func autoComplete(ctx context.Context, q *Query, line []rune, pos int) (newLine [][]rune, length int) {
 	lineStr := string(line[0:pos])
-	namesQuery, namesType, namesPrefix := BuildCompletionQuery(lineStr)
+	namesQuery, nameType, namePrefix := BuildCompletionQuery(lineStr)
 
 	// log.Println("------")
 	// log.Printf("namesQuery: %s\n", namesQuery)
-	// log.Printf("namesType: %#+v\n", namesType)
-	// log.Printf("namesPrefix: %#+v\n", namesPrefix)
+	// log.Printf("namesType: %#+v\n", nameType)
+	// log.Printf("namesPrefix: %#+v\n", namePrefix)
+
+	if nameType == CompletionTypeNone {
+		return [][]rune{}, pos
+	}
+
+	namesQueryStr := namesQuery.String()
+	namePrefixReStr := jsonEscape("^" + regexp.QuoteMeta(namePrefix))
 
 	src := ""
-	switch namesType {
-	case CompletionTypeNone:
-		return [][]rune{}, pos
+	switch nameType {
 	case CompletionTypeIndex:
-		namesQueryStr := namesQuery.String()
-		src = fmt.Sprintf(`[[(%s) | keys?, _value_keys?] | add | unique | sort | .[] | strings | select(test("^%s"))]`, namesQueryStr, namesPrefix)
+		src = fmt.Sprintf(`[[(%s) | keys?, _value_keys?] | add | unique | sort | .[] | strings | select(test(%s))]`,
+			namesQueryStr, namePrefixReStr)
 	case CompletionTypeFunc:
-		src = fmt.Sprintf(`[[builtins[] | split("/") | .[0]] | unique | sort | .[] | select(test("^%s"))]`, namesPrefix)
+		src = fmt.Sprintf(`[[%s | builtins[] | split("/") | .[0]] | unique | sort | .[] | select(test(%s))]`,
+			namesQueryStr, namePrefixReStr)
+	case CompletionTypeVar:
+		src = fmt.Sprintf(`[%s | variables[] | select(test(%s))] | sort`,
+			namesQueryStr, namePrefixReStr)
 	default:
 		panic("unreachable")
 	}
 
-	// log.Printf("src: %#+v\n", src)
+	// log.Printf("src: %s\n", src)
 
 	vss, err := q.Run(ctx, CompletionMode, src, ioutil.Discard)
 	if err != nil {
@@ -127,7 +144,7 @@ func autoComplete(ctx context.Context, q *Query, line []rune, pos int) (newLine 
 		return [][]rune{}, pos
 	}
 
-	shareLen := len(namesPrefix)
+	shareLen := len(namePrefix)
 
 	vs := vss[0].([]interface{})
 	var names []string

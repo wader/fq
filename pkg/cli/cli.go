@@ -58,7 +58,6 @@ func (m Main) run() error {
 	maxDisplayBytes := fs.Int64("d", 16, "Max display bytes")
 	scriptFlag := fs.String("s", "", "Script path")
 	replFlag := fs.Bool("i", false, "REPL")
-	// verboseFlag := fs.Bool("v", false, "Verbose output")
 	fs.Usage = func() {
 		maxNameLen := 0
 		maxDescriptionLen := 0
@@ -93,8 +92,8 @@ func (m Main) run() error {
 
 	q := query.NewQuery(query.QueryOptions{
 		Variables: map[string]interface{}{
-			"FILENAME": filename,
-			"VERSION":  fq.Version,
+			"$FILENAME": filename,
+			"$VERSION":  fq.Version,
 		},
 		Registry: m.Registry,
 		DumpOptions: decode.DumpOptions{

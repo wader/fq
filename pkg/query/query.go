@@ -26,6 +26,11 @@ import (
 	"github.com/itchyny/gojq"
 )
 
+func jsonEscape(v interface{}) string {
+	b, _ := json.Marshal(v)
+	return string(b)
+}
+
 func valueToTypeString(v interface{}) (string, bool) {
 	switch v.(type) {
 	case uint, uint8, uint16, uint32, uint64, int, int8, int16, int32, int64, float32, float64, complex64, complex128, uintptr, *big.Int:
@@ -252,7 +257,7 @@ func (q *Query) Run(ctx context.Context, mode RunMode, src string, stdout io.Wri
 	var variableNames []string
 	var variableValues []interface{}
 	for k, v := range q.variables {
-		variableNames = append(variableNames, "$"+k)
+		variableNames = append(variableNames, k)
 		variableValues = append(variableValues, v)
 	}
 
@@ -348,6 +353,8 @@ func (q *Query) Run(ctx context.Context, mode RunMode, src string, stdout io.Wri
 					(keys[] | "  \(.) [color=\"paleturquoise\"]"),
 					([.[].groups[]?] | unique[] | "  \(.) [color=\"palegreen\"]"),
 					"}";
+
+				def field_inrange($p): ._type == "field" and ._range.start <= $p and $p < ._range.stop;
 
 			`)
 		}
