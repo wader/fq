@@ -126,11 +126,8 @@ func autoComplete(ctx context.Context, q *Query, line []rune, pos int) (newLine 
 	case CompletionTypeIndex:
 		src = fmt.Sprintf(`[[(%s) | keys?, _value_keys?] | add | unique | sort | .[] | strings | select(test(%s))]`,
 			namesQueryStr, namePrefixReStr)
-	case CompletionTypeFunc:
-		src = fmt.Sprintf(`[[%s | builtins[] | split("/") | .[0]] | unique | sort | .[] | select(test(%s))]`,
-			namesQueryStr, namePrefixReStr)
-	case CompletionTypeVar:
-		src = fmt.Sprintf(`[%s | variables[] | select(test(%s))] | sort`,
+	case CompletionTypeFunc, CompletionTypeVar:
+		src = fmt.Sprintf(`[%s | scope[] | select(test(%s))]`,
 			namesQueryStr, namePrefixReStr)
 	default:
 		panic("unreachable")
