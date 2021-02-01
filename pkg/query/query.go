@@ -287,7 +287,7 @@ func (q *Query) Run(ctx context.Context, mode RunMode, src string, stdout io.Wri
 				def bytes:
 					def _bytes:
 						if . > 0 then
-							. % 256, (. div  256 | _bytes)
+							. % 256, (. div 256 | _bytes)
 						else
 							empty
 						end;
