@@ -7,7 +7,6 @@ import (
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/format"
-	"log"
 )
 
 func init() {
@@ -83,16 +82,16 @@ func decodeOgg(d *decode.D, in interface{}) interface{} {
 
 			if !sFound && !oggPageOut.IsFirstPage {
 				// TODO: not first page and we haven't seen the stream before
-				log.Println("not first page and we haven't seen the stream before")
+				// log.Println("not first page and we haven't seen the stream before")
 			}
 			hasData := len(s.packetBuf) > 0
 			if oggPageOut.IsContinuedPacket && !hasData {
 				// TODO: continuation but we haven't seen any packet data yet
-				log.Println("continuation but we haven't seen any packet data yet")
+				// log.Println("continuation but we haven't seen any packet data yet")
 			}
 			if !oggPageOut.IsFirstPage && s.sequenceNo+1 != oggPageOut.SequenceNo {
 				// TODO: page gap
-				log.Println("page gap")
+				// log.Println("page gap")
 			}
 
 			for _, ps := range oggPageOut.Segments {
