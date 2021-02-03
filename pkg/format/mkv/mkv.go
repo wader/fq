@@ -20,6 +20,8 @@ import (
 var vorbisPacketFormat []*decode.Format
 var vp9FrameFormat []*decode.Format
 var aacFrameFormat []*decode.Format
+var mpegAVCSampleFormat []*decode.Format
+var mpegAVCDCRFrameFormat []*decode.Format
 var mpegASCFrameFormat []*decode.Format
 var mpegSPUFrameFormat []*decode.Format
 var opusPacketFrameFormat []*decode.Format
@@ -37,6 +39,8 @@ func init() {
 			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
 			{Names: []string{format.VP9_FRAME}, Formats: &vp9FrameFormat},
 			{Names: []string{format.AAC_FRAME}, Formats: &aacFrameFormat},
+			{Names: []string{format.MPEG_AVC}, Formats: &mpegAVCSampleFormat},
+			{Names: []string{format.MPEG_AVC_DCR}, Formats: &mpegAVCDCRFrameFormat},
 			{Names: []string{format.MPEG_ASC}, Formats: &mpegASCFrameFormat},
 			{Names: []string{format.MPEG_SPU}, Formats: &mpegSPUFrameFormat},
 			{Names: []string{format.OPUS_PACKET}, Formats: &opusPacketFrameFormat},
@@ -458,6 +462,16 @@ func mkvDecode(d *decode.D, in interface{}) interface{} {
 					})
 				})
 			})
+		case "V_MPEG4/ISO/AVC":
+			_, dv := t.parentD.FieldDecodeRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegAVCDCRFrameFormat)
+			// TODO: might be followed by a extension block
+
+			avcDcrOut, ok := dv.(format.AvcDcrOut)
+			if !ok {
+				d.Invalid(fmt.Sprintf("expected AvcDcrOut got %#+v", dv))
+			}
+			t.decodeOpts = append(t.decodeOpts,
+				decode.FormatOptions{InArg: format.AvcIn{LengthSize: avcDcrOut.LengthSize}})
 		default:
 			t.parentD.FieldBitBufRange("value", t.codecPrivatePos, t.codecPrivateTagSize)
 		}
@@ -496,10 +510,8 @@ func mkvDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldDecodeLen("packet", d.BitsLeft(), vp9FrameFormat)
 			case "V_VOBSUB":
 				d.FieldDecodeLen("packet", d.BitsLeft(), mpegSPUFrameFormat)
-
-			// case "A_AAC":
-			// 	log.Println("bla")
-			// 	d.FieldDecodeLen("packet", d.BitsLeft(), aacFrameFormat)
+			case "V_MPEG4/ISO/AVC":
+				d.FieldDecodeLen("packet", d.BitsLeft(), mpegAVCSampleFormat, decodeOpts...)
 			default:
 				d.FieldBitBufLen("data", d.BitsLeft())
 			}

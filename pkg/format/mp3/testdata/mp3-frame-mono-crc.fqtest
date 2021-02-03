@@ -1,4 +1,4 @@
 # ffmpeg -f lavfi -i sine -t 10ms -f wav pipe:1 | lame - - | fq - '.frame[1] | bits' > mp3-frame-mono-crc
 /mp3-frame-mono-crc:
 > -f mp3_frame mp3-frame-mono-crc '.crc | verbose'
-00|            2c b9                              |    ,.          |.crc: Correct (2cb9) 4-5+7 (2)
+0|            2c b9                              |    ,.          |.crc: Correct (2cb9) 4-5+7 (2)

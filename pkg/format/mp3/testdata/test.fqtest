@@ -1,7 +1,7 @@
 /tjo:
 asdads
 > test.mp3 '.header.magic | verbose'
-000|49 44 33                                       |ID3             |.header.magic: Correct ("ID3") 0-2+7 (3)
+0|49 44 33                                       |ID3             |.header.magic: Correct ("ID3") 0-2+7 (3)
 /test.mp3:
 > test.mp3 verbose
    |                                               |                |.: mp3 0-452+7 (1107)

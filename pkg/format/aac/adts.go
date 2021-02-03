@@ -1,5 +1,7 @@
 package aac
 
+// TODO: move aac things to mpeg?
+
 // TODO:
 // create ASC decoder
 // https://github.com/mstorsjo/fdk-aac/blob/f285813ec15e7c6f8e4839c9eb4f6b0cd2da1990/libMpegTPEnc/src/tpenc_asc.cpp

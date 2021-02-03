@@ -807,7 +807,7 @@ func (d *D) FieldTryDecodeLen(name string, nBits int64, formats []*Format, opts 
 }
 
 func (d *D) FieldDecodeLen(name string, nBits int64, formats []*Format, opts ...Option) (*Value, interface{}) {
-	v, dv, errs := d.FieldTryDecodeLen(name, nBits, formats)
+	v, dv, errs := d.FieldTryDecodeLen(name, nBits, formats, opts...)
 	if v == nil || v.Errors() != nil {
 		panic(errs)
 	}

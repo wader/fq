@@ -145,10 +145,10 @@
 0120|                                    84         |            .   |              size: 4 12c-12c+7 (1)
 0120|                                       3a d3 04|             :..|              value: 3ad304f7 12d-130+7 (4)
 0130|f7                                             |.               |
-    |                                               |                |           -[1]: (element) 131-1b1+7 (129)
+    |                                               |                |           -[1]: (element) 131-1ad+7 (125)
 0130|   ae                                          | .              |              id: TrackEntry (ae) 131-131+7 (1)
 0130|      01 00 00 00 00 00 00 78                  |  .......x      |              size: 120 132-139+7 (8)
-    |                                               |                |              elements[9]: 13a-1b1+7 (120)
+    |                                               |                |              elements[9]: 13a-1ad+7 (116)
     |                                               |                |               -[0]: (element) 13a-13c+7 (3)
 0130|                              d7               |          .     |                  id: TrackNumber (d7) 13a-13a+7 (1)
 0130|                                 81            |           .    |                  size: 1 13b-13b+7 (1)
@@ -196,12 +196,29 @@
 0170|                                          9a   |              . |                      id: FlagInterlaced (9a) 17e-17e+7 (1)
 0170|                                             81|               .|                      size: 1 17f-17f+7 (1)
 0180|02                                             |.               |                      value: 2 180-180+7 (1)
-    |                                               |                |               -[8]: (element) 181-1b1+7 (49)
+    |                                               |                |               -[8]: (element) 181-1ad+7 (45)
 0180|   63 a2                                       | c.             |                  id: CodecPrivate (63a2) 181-182+7 (2)
 0180|         ae                                    |   .            |                  size: 46 183-183+7 (1)
-0180|            01 f4 00 0d ff e1 00 19 67 f4 00 0d|    ........g...|                  value: 01f4000dffe1001967f4000d919b2828... 184-1b1+7 (46)
+    |                                               |                |                 -value: mpeg_avc_dcr 184-1ad+7 (42)
+0180|            01                                 |    .           |                    configuration_version: 1 184-184+7 (1)
+0180|               f4                              |     .          |                    profile_indication: 244 185-185+7 (1)
+0180|                  00                           |      .         |                    profile_compatibility: 0 186-186+7 (1)
+0180|                     0d                        |       .        |                    level_indication: 13 187-187+7 (1)
+0180|                        ff                     |        .       |                    reserved0: 63 188-188+5 (0+6)
+0180|                        ff                     |        .       |                    length_size_minus_one: 3 188+6-188+7 (0+2)
+0180|                           e1                  |         .      |                    reserved1: 7 189-189+2 (0+3)
+0180|                           e1                  |         .      |                    num_of_sequence_parameter_sets: 1 189+3-189+7 (0+5)
+    |                                               |                |                    sequence_parameter_sets[1]: 18a-1a4+7 (27)
+    |                                               |                |                     -[0]: (parameter_set) 18a-1a4+7 (27)
+0180|                              00 19            |          ..    |                        length: 25 18a-18b+7 (2)
+0180|                                    67 f4 00 0d|            g...|                        set: 67f4000d919b28283f60220000030002... 18c-1a4+7 (25)
 0190|91 9b 28 28 3f 60 22 00 00 03 00 02 00 00 03 00|..((?`".........|
-*   |18 bytes more until 1b1+7                      |                |
+01a0|64 1e 28 53 2c                                 |d.(S,           |
+01a0|               01                              |     .          |                    num_of_picture_parameter_sets: 1 1a5-1a5+7 (1)
+    |                                               |                |                    parameter_sets[1]: 1a6-1ad+7 (8)
+    |                                               |                |                     -[0]: (parameter_set) 1a6-1ad+7 (8)
+01a0|                  00 06                        |      ..        |                        length: 6 1a6-1a7+7 (2)
+01a0|                        68 eb e3 c4 48 44      |        h...HD  |                        set: 68ebe3c44844 1a8-1ad+7 (6)
     |                                               |                |           -[2]: (element) 1b2-284+7 (211)
 01b0|      ae                                       |  .             |              id: TrackEntry (ae) 1b2-1b2+7 (1)
 01b0|         01 00 00 00 00 00 0d 2f               |   ......./     |              size: 3375 1b3-1ba+7 (8)
@@ -443,9 +460,18 @@
 1030|                     80                        |       .        |                invisible: false 1037+4-1037+4 (0+1)
 1030|                     80                        |       .        |                lacing: 0 1037+5-1037+6 (0+2)
 1030|                     80                        |       .        |                discardable: false 1037+7-1037+7 (0+1)
-1030|                        00 00 02 ad 06 05 ff ff|        ........|              data: 000002ad0605ffffa9dc45e9bde6d948... 1038-1af7+7 (2752)
+    |                                               |                |             -packet: mpeg_avc 1038-1af7+7 (2752)
+    |                                               |                |                nals[2]: 1038-1af7+7 (2752)
+    |                                               |                |                 -[0]: (nal) 1038-12e8+7 (689)
+1030|                        00 00 02 ad            |        ....    |                    length: 685 1038-103b+7 (4)
+1030|                                    06 05 ff ff|            ....|                    data: 0605ffffa9dc45e9bde6d948b7962cd8... 103c-12e8+7 (685)
 1040|a9 dc 45 e9 bd e6 d9 48 b7 96 2c d8 20 d9 23 ee|..E....H..,. .#.|
-*   |2728 bytes more until 1af7+7                   |                |
+*   |665 bytes more until 12e8+7                    |                |
+    |                                               |                |                 -[1]: (nal) 12e9-1af7+7 (2063)
+12e0|                           00 00 08 0b         |         ....   |                    length: 2059 12e9-12ec+7 (4)
+12e0|                                       65 88 84|             e..|                    data: 658884002bfffef5dbf32cac66673dff... 12ed-1af7+7 (2059)
+12f0|00 2b ff fe f5 db f3 2c ac 66 67 3d ff ed 3b 60|.+.....,.fg=..;`|
+*   |2040 bytes more until 1af7+7                   |                |
     |                                               |                |           -[4]: (element) 1af8-1afe+7 (7)
 1af0|                        a3                     |        .       |              id: SimpleBlock (a3) 1af8-1af8+7 (1)
 1af0|                           f6                  |         .      |              size: 118 1af9-1af9+7 (1)
@@ -491,12 +517,14 @@
 1b80|                           f0                  |         .      |                      id: CueRelativePosition (f0) 1b89-1b89+7 (1)
 1b80|                              81               |          .     |                      size: 1 1b8a-1b8a+7 (1)
 1b80|                                 30|           |           0|   |                      value: 48 1b8b-1b8b+7 (1)
-0280|               24 73 18 2a 46 a5 73 16 84 10 1a|     $s.*F.s....|  unknown0: 2473182a46a5731684101a425019e31c... 285-ee9+7 (3173)
+01a0|                                          ff f8|              ..|  unknown0: fff8f800 1ae-1b1+7 (4)
+01b0|f8 00                                          |..              |
+0280|               24 73 18 2a 46 a5 73 16 84 10 1a|     $s.*F.s....|  unknown1: 2473182a46a5731684101a425019e31c... 285-ee9+7 (3173)
 0290|42 50 19 e3 1c 42 ce 6b ec 19 42 4c 11 82 1c 32|BP...B.k..BL...2|
 *   |3146 bytes more until ee9+7                    |                |
-1010|   dd cb ce aa 5e d8 7f 2d 01 42 00 a0 dd 71 77| ....^..-.B...qw|  unknown1: ddcbceaa5ed87f2d014200a0dd71778b... 1011-1030+7 (32)
+1010|   dd cb ce aa 5e d8 7f 2d 01 42 00 a0 dd 71 77| ....^..-.B...qw|  unknown2: ddcbceaa5ed87f2d014200a0dd71778b... 1011-1030+7 (32)
 1020|8b ed cd 37 df 7c 33 3a 0c c3 30 0c c3 30 d4 50|...7.|3:..0..0.P|
 1030|02                                             |.               |
-1af0|                                             78|               x|  unknown2: 78bd0dbf7dff5f003b54b0f7fcf4fbfd... 1aff-1b6f+7 (113)
+1af0|                                             78|               x|  unknown3: 78bd0dbf7dff5f003b54b0f7fcf4fbfd... 1aff-1b6f+7 (113)
 1b00|bd 0d bf 7d ff 5f 00 3b 54 b0 f7 fc f4 fb fd bc|...}._.;T.......|
 *   |96 bytes more until 1b6f+7                     |                |

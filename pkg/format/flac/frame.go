@@ -77,7 +77,7 @@ func zigzag(n int64) int64 {
 // in argument is an optional FlacFrameIn struct with stream info
 func frameDecode(d *decode.D, in interface{}) interface{} {
 	var inStreamInfo *format.FlacMetadatablockStreamInfo
-	if in, ok := in.(*format.FlacFrameIn); ok {
+	if in, ok := in.(format.FlacFrameIn); ok {
 		inStreamInfo = &in.StreamInfo
 	}
 

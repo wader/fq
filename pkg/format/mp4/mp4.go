@@ -12,8 +12,10 @@ import (
 	"strings"
 )
 
-var mpegESFormat []*decode.Format
 var aacFrameFormat []*decode.Format
+var mpegESFormat []*decode.Format
+var mpegAVCSampleFormat []*decode.Format
+var mpegAVCDCRFrameFormat []*decode.Format
 var flacMetadatablockFormat []*decode.Format
 var flacFrameFormat []*decode.Format
 
@@ -26,8 +28,10 @@ func init() {
 		MIMEs:    []string{"audio/mp4", "video/mp4"},
 		DecodeFn: mp4Decode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.MPEG_ES}, Formats: &mpegESFormat},
 			{Names: []string{format.AAC_FRAME}, Formats: &aacFrameFormat},
+			{Names: []string{format.MPEG_ES}, Formats: &mpegESFormat},
+			{Names: []string{format.MPEG_AVC}, Formats: &mpegAVCSampleFormat},
+			{Names: []string{format.MPEG_AVC_DCR}, Formats: &mpegAVCDCRFrameFormat},
 			{Names: []string{format.FLAC_METADATABLOCK}, Formats: &flacMetadatablockFormat},
 			{Names: []string{format.FLAC_FRAME}, Formats: &flacFrameFormat},
 		},
@@ -278,7 +282,13 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			})
 		},
 		"avcC": func(ctx *decodeContext, d *decode.D) {
-			d.FieldBitBufLen("data", d.BitsLeft())
+			_, dv := d.FieldDecode("value", mpegAVCDCRFrameFormat)
+			avcDcrOut, ok := dv.(format.AvcDcrOut)
+			if !ok {
+				d.Invalid(fmt.Sprintf("expected AvcDcrOut got %#+v", dv))
+			}
+			ctx.currentTrack.decodeOpts = append(ctx.currentTrack.decodeOpts,
+				decode.FormatOptions{InArg: format.AvcIn{LengthSize: avcDcrOut.LengthSize}})
 		},
 		"dfLa": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
@@ -647,9 +657,10 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 							switch t.dataFormat {
 							case "fLaC":
 								d.FieldDecodeRange("sample", int64(cso)*8, int64(stz)*8, flacFrameFormat, ctx.currentTrack.decodeOpts...)
+							case "avc1":
+								d.FieldDecodeRange("sample", int64(cso)*8, int64(stz)*8, mpegAVCSampleFormat, ctx.currentTrack.decodeOpts...)
 							default:
 								d.FieldBitBufRange("sample", int64(cso)*8, int64(stz)*8)
-
 							}
 
 							cso += stz

@@ -45,6 +45,8 @@ const (
 	MP3_XING           = "mp3_xing"
 	MP4                = "mp4"
 	MPEG_ASC           = "mpeg_asc"
+	MPEG_AVC           = "mpeg_avc"
+	MPEG_AVC_DCR       = "mpeg_avc_dcr"
 	MPEG_ES            = "mpeg_es"
 	MPEG_PES           = "mpeg_pes"
 	MPEG_PES_PACKET    = "mpeg_pes_packet"
@@ -88,4 +90,12 @@ type OggPageOut struct {
 	StreamSerialNumber uint32
 	SequenceNo         uint32
 	Segments           []*bitio.Buffer
+}
+
+type AvcIn struct {
+	LengthSize uint64
+}
+
+type AvcDcrOut struct {
+	LengthSize uint64
 }
