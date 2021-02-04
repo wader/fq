@@ -12,11 +12,12 @@ import (
 	"strings"
 )
 
-var aacFrameFormat []*decode.Format
 var mpegESFormat []*decode.Format
 var mpegAVCSampleFormat []*decode.Format
 var mpegAVCDCRFrameFormat []*decode.Format
 var flacMetadatablockFormat []*decode.Format
+var aacFrameFormat []*decode.Format
+var mp3FrameFormat []*decode.Format
 var flacFrameFormat []*decode.Format
 
 func init() {
@@ -28,10 +29,11 @@ func init() {
 		MIMEs:    []string{"audio/mp4", "video/mp4"},
 		DecodeFn: mp4Decode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.AAC_FRAME}, Formats: &aacFrameFormat},
 			{Names: []string{format.MPEG_ES}, Formats: &mpegESFormat},
 			{Names: []string{format.MPEG_AVC}, Formats: &mpegAVCSampleFormat},
 			{Names: []string{format.MPEG_AVC_DCR}, Formats: &mpegAVCDCRFrameFormat},
+			{Names: []string{format.AAC_FRAME}, Formats: &aacFrameFormat},
+			{Names: []string{format.MP3_FRAME}, Formats: &mp3FrameFormat},
 			{Names: []string{format.FLAC_METADATABLOCK}, Formats: &flacMetadatablockFormat},
 			{Names: []string{format.FLAC_FRAME}, Formats: &flacFrameFormat},
 		},
@@ -50,6 +52,7 @@ type track struct {
 	stsc       []stsc
 	stsz       []uint32
 	decodeOpts []decode.Option
+	objectType int // if data format is "mp4a"
 }
 
 type decodeContext struct {
@@ -282,6 +285,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			})
 		},
 		"avcC": func(ctx *decodeContext, d *decode.D) {
+			// d.FieldBitBuf("data", d.BitsLeft())
 			_, dv := d.FieldDecode("value", mpegAVCDCRFrameFormat)
 			avcDcrOut, ok := dv.(format.AvcDcrOut)
 			if !ok {
@@ -322,7 +326,16 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			}
 			switch dataFormat {
 			case "mp4a":
-				d.FieldDecode("es_desciptor", mpegESFormat)
+				_, dv := d.FieldDecode("es_descriptor", mpegESFormat)
+				mpegEsOut, ok := dv.(format.MpegEsOut)
+				if !ok {
+					d.Invalid(fmt.Sprintf("expected mpegEsOut got %#+v", dv))
+				}
+
+				if ctx.currentTrack != nil && len(mpegEsOut.ObjectTypes) > 0 {
+					ctx.currentTrack.objectType = mpegEsOut.ObjectTypes[0]
+				}
+
 			default:
 				d.FieldBitBufLen("data", d.BitsLeft())
 			}
@@ -621,50 +634,40 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 			d.FieldStructFn("track", func(d *decode.D) {
 				d.FieldStrFn("data_format", func() (string, string) { return t.dataFormat, "" })
 
+				// TODO: what to do with only one stsc?
 				sampleCount := uint64(0)
 
 				d.FieldArrayFn("samples", func(d *decode.D) {
 					for _, c := range t.stsc {
-
 						cso := t.stco[c.firstChunk-1]
 
 						for csi := uint32(0); csi < c.samplesPerChunk; csi++ {
-
 							stz := uint64(t.stsz[sampleCount])
-
-							// log.Printf("cso*8: %d %#+v\n", cso, cso*8)
-							// log.Printf("stz*8: %d %#+v\n", stz, stz*8)
-
-							// if t.dataFormat == "mp4a" {
-							//d.FieldDecodeRange("sample", int64(cso)*8, int64(stz)*8, aac.Frame)
-
-							//} else {
-							//							d.FieldBytesRange("sample", int64(cso)*8, int(stz))
-
-							// d.FieldStructFn("sample", func(d *decode.D) {
-
-							// 	// d.DecodeRangeFn(int64(cso)*8, int(stz), func(d *decode.D) {
-							// 	// 	d.FieldBool("c1")
-							// 	// 	d.FieldBool("c2")
-							// 	// 	d.FieldU13("fl")
-							// 	// 	d.FieldU13("fl")
-							// 	// }
-
-							// })
-
-							//}
 
 							switch t.dataFormat {
 							case "fLaC":
-								d.FieldDecodeRange("sample", int64(cso)*8, int64(stz)*8, flacFrameFormat, ctx.currentTrack.decodeOpts...)
+								d.FieldDecodeRange("sample", int64(cso)*8, int64(stz)*8, flacFrameFormat, t.decodeOpts...)
 							case "avc1":
-								d.FieldDecodeRange("sample", int64(cso)*8, int64(stz)*8, mpegAVCSampleFormat, ctx.currentTrack.decodeOpts...)
+								d.FieldDecodeRange("sample", int64(cso)*8, int64(stz)*8, mpegAVCSampleFormat, t.decodeOpts...)
+							case "mp4a":
+								// TODO: refactor to share somehow?
+								const (
+									MPEG1AudioL1L2L3 = 0x6b
+									MPEG4Audio       = 0x40
+								)
+								switch t.objectType {
+								case MPEG1AudioL1L2L3:
+									d.FieldDecodeRange("sample", int64(cso)*8, int64(stz)*8, mp3FrameFormat, t.decodeOpts...)
+								// case MPEG4Audio:
+								// 	d.FieldDecodeRange("sample", int64(cso)*8, int64(stz)*8, aacFrameFormat, t.decodeOpts...)
+								default:
+									d.FieldBitBufRange("sample", int64(cso)*8, int64(stz)*8)
+								}
 							default:
 								d.FieldBitBufRange("sample", int64(cso)*8, int64(stz)*8)
 							}
 
 							cso += stz
-
 							sampleCount++
 						}
 					}

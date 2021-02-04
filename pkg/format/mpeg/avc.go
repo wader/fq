@@ -5,7 +5,6 @@ package mpeg
 import (
 	"fq/pkg/decode"
 	"fq/pkg/format"
-	"log"
 )
 
 func init() {
@@ -17,7 +16,6 @@ func init() {
 }
 
 func avcDecode(d *decode.D, in interface{}) interface{} {
-	log.Printf("in: %#+v\n", in)
 	avcIn, ok := in.(format.AvcIn)
 	if !ok {
 		d.Invalid("avcIn required")

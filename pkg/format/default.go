@@ -99,3 +99,8 @@ type AvcIn struct {
 type AvcDcrOut struct {
 	LengthSize uint64
 }
+
+type MpegEsOut struct {
+	// TODO: slice of decoder description structs?
+	ObjectTypes []int
+}

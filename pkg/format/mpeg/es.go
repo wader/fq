@@ -114,6 +114,16 @@ var odTagNames = map[uint64]string{
 	Forbidden1:                          "Forbidden",
 }
 
+const (
+	MPEG1AudioL1L2L3 = 0x6b
+	MPEG4Audio       = 0x40
+)
+
+var objectTypeNames = map[uint64]string{
+	MPEG1AudioL1L2L3: "MPEG1AudioL1L2L3",
+	MPEG4Audio:       "MPEG4Audio",
+}
+
 func esLengthEncoding(d *decode.D) uint64 {
 	d.U1() // skip first bit
 	v := d.U7()
@@ -131,13 +141,13 @@ func fieldESLengthEncoding(d *decode.D, name string) uint64 {
 	})
 }
 
-func fieldODDecodeTag(d *decode.D, name string, expectedTagID int, fn func(d *decode.D)) {
+func fieldODDecodeTag(d *decode.D, mpegEsOut *format.MpegEsOut, name string, expectedTagID int, fn func(d *decode.D)) {
 	d.FieldStructFn(name, func(d *decode.D) {
-		odDecodeTag(d, expectedTagID, fn)
+		odDecodeTag(d, mpegEsOut, expectedTagID, fn)
 	})
 }
 
-func odDecodeTag(d *decode.D, expectedTagID int, fn func(d *decode.D)) {
+func odDecodeTag(d *decode.D, mpegEsOut *format.MpegEsOut, expectedTagID int, fn func(d *decode.D)) {
 	odDecoders := map[uint64]func(d *decode.D){
 		ES_DescrTag: func(d *decode.D) {
 			d.FieldU16("es_id")
@@ -155,11 +165,11 @@ func odDecodeTag(d *decode.D, expectedTagID int, fn func(d *decode.D)) {
 			if ocrStreamFlag {
 				d.FieldU16("ocr_es_id")
 			}
-			fieldODDecodeTag(d, "dec_config_descr", -1, nil)
-			fieldODDecodeTag(d, "sl_config_descr", -1, nil)
+			fieldODDecodeTag(d, mpegEsOut, "dec_config_descr", -1, nil)
+			fieldODDecodeTag(d, mpegEsOut, "sl_config_descr", -1, nil)
 		},
 		DecoderConfigDescrTag: func(d *decode.D) {
-			d.FieldU8("object_type_indication")
+			objectType, _ := d.FieldStringMapFn("object_type_indication", objectTypeNames, "Unknown", d.U8)
 			const (
 				Forbidden               = 0x00
 				ObjectDescriptorStream  = 0x01
@@ -190,15 +200,22 @@ func odDecodeTag(d *decode.D, expectedTagID int, fn func(d *decode.D)) {
 			}
 			d.FieldStringMapFn("stream_type", streamTypeNames, "Unknown", d.U6)
 			d.FieldBool("upsteam")
-			d.FieldBool("reserved")
+			specificInfoFlag := d.FieldBool("specific_info_flag")
 			d.FieldU24("buffer_size_db")
 			d.FieldU32("max_bit_rate")
 			d.FieldU32("avg_bit_rate")
 
-			// TODO: if aac etc, less depth?
-			fieldODDecodeTag(d, "decoder_specific_info", -1, func(d *decode.D) {
-				d.FieldDecode("audio_specific_config", mpegASCFormat)
-			})
+			switch objectType {
+			case MPEG4Audio:
+				// TODO: only if aac?
+				if specificInfoFlag {
+					fieldODDecodeTag(d, mpegEsOut, "decoder_specific_info", -1, func(d *decode.D) {
+						d.FieldDecode("audio_specific_config", mpegASCFormat)
+					})
+				}
+			}
+
+			mpegEsOut.ObjectTypes = append(mpegEsOut.ObjectTypes, int(objectType))
 		},
 	}
 
@@ -217,6 +234,7 @@ func odDecodeTag(d *decode.D, expectedTagID int, fn func(d *decode.D)) {
 }
 
 func esDecode(d *decode.D, in interface{}) interface{} {
-	odDecodeTag(d, -1, nil)
-	return nil
+	var mpegEsOut format.MpegEsOut
+	odDecodeTag(d, &mpegEsOut, -1, nil)
+	return mpegEsOut
 }
