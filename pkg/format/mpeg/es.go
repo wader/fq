@@ -125,8 +125,7 @@ var objectTypeNames = map[uint64]string{
 }
 
 func esLengthEncoding(d *decode.D) uint64 {
-	d.U1() // skip first bit
-	v := d.U7()
+	v := uint64(0)
 	nextByte := true
 	for nextByte {
 		nextByte = d.Bool()

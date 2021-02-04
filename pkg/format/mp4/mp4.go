@@ -324,6 +324,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			if ctx.currentTrack != nil {
 				dataFormat = ctx.currentTrack.dataFormat
 			}
+
 			switch dataFormat {
 			case "mp4a":
 				_, dv := d.FieldDecode("es_descriptor", mpegESFormat)
@@ -457,8 +458,13 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			}
 			decodeAtoms(ctx, d)
 		},
-		"ilst":            decodeAtoms,
-		"_apple_ilst_box": decodeAtoms,
+		"ilst":        decodeAtoms,
+		"_apple_list": decodeAtoms,
+		"_apple_entry": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+			d.FieldUTF8("data", int(d.BitsLeft()/8))
+		},
 		"data": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
@@ -589,8 +595,12 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 		dataSize = boxSize - 8
 	}
 
-	if typ[0] == 0xa9 {
-		typ = "_apple_ilst_box"
+	// TODO: not sure about this
+	switch {
+	case typ == "\xa9too":
+		typ = "_apple_list"
+	case typ[0] == 0xa9:
+		typ = "_apple_entry"
 	}
 
 	if decodeFn, ok := boxes[typ]; ok {
@@ -635,20 +645,27 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 				d.FieldStrFn("data_format", func() (string, string) { return t.dataFormat, "" })
 
 				// TODO: what to do with only one stsc?
-				sampleCount := uint64(0)
 
 				d.FieldArrayFn("samples", func(d *decode.D) {
-					for _, c := range t.stsc {
-						cso := t.stco[c.firstChunk-1]
+					stscIndex := 0
+					chunkNr := uint32(0)
+					sampleNr := uint64(0)
 
-						for csi := uint32(0); csi < c.samplesPerChunk; csi++ {
-							stz := uint64(t.stsz[sampleCount])
+					for sampleNr < uint64(len(t.stsz)) {
+						stscEntry := t.stsc[stscIndex]
+						sampleOffset := t.stco[chunkNr]
+
+						for i := uint32(0); i < stscEntry.samplesPerChunk; i++ {
+							sampleSize := t.stsz[sampleNr]
+
+							// log.Printf("%s %d/%d %d/%d sample=%d/%d chunk=%d size=%d %d-%d\n", t.dataFormat, stscIndex, len(t.stsc), i, stscEntry.samplesPerChunk, sampleNr, len(t.stsz), chunkNr, sampleSize, sampleOffset, sampleOffset+uint64(sampleSize))
 
 							switch t.dataFormat {
 							case "fLaC":
-								d.FieldDecodeRange("sample", int64(cso)*8, int64(stz)*8, flacFrameFormat, t.decodeOpts...)
+								d.FieldDecodeRange("sample", int64(sampleOffset)*8, int64(sampleSize)*8, flacFrameFormat, t.decodeOpts...)
 							case "avc1":
-								d.FieldDecodeRange("sample", int64(cso)*8, int64(stz)*8, mpegAVCSampleFormat, t.decodeOpts...)
+								// log.Printf("t.decodeOpts: %#+v\n", t.decodeOpts)
+								d.FieldDecodeRange("sample", int64(sampleOffset)*8, int64(sampleSize)*8, mpegAVCSampleFormat, t.decodeOpts...)
 							case "mp4a":
 								// TODO: refactor to share somehow?
 								const (
@@ -657,18 +674,24 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 								)
 								switch t.objectType {
 								case MPEG1AudioL1L2L3:
-									d.FieldDecodeRange("sample", int64(cso)*8, int64(stz)*8, mp3FrameFormat, t.decodeOpts...)
-								// case MPEG4Audio:
-								// 	d.FieldDecodeRange("sample", int64(cso)*8, int64(stz)*8, aacFrameFormat, t.decodeOpts...)
+									d.FieldDecodeRange("sample", int64(sampleOffset)*8, int64(sampleSize)*8, mp3FrameFormat, t.decodeOpts...)
+								case MPEG4Audio:
+									d.FieldDecodeRange("sample", int64(sampleOffset)*8, int64(sampleSize)*8, aacFrameFormat, t.decodeOpts...)
 								default:
-									d.FieldBitBufRange("sample", int64(cso)*8, int64(stz)*8)
+									d.FieldBitBufRange("sample", int64(sampleOffset)*8, int64(sampleSize)*8)
 								}
 							default:
-								d.FieldBitBufRange("sample", int64(cso)*8, int64(stz)*8)
+								d.FieldBitBufRange("sample", int64(sampleOffset)*8, int64(sampleSize)*8)
 							}
 
-							cso += stz
-							sampleCount++
+							sampleOffset += uint64(sampleSize)
+							sampleNr++
+
+						}
+
+						chunkNr++
+						if stscIndex < len(t.stsc)-1 && chunkNr >= t.stsc[stscIndex+1].firstChunk-1 {
+							stscIndex++
 						}
 					}
 				})
