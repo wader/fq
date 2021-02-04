@@ -644,8 +644,6 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 			d.FieldStructFn("track", func(d *decode.D) {
 				d.FieldStrFn("data_format", func() (string, string) { return t.dataFormat, "" })
 
-				// TODO: what to do with only one stsc?
-
 				d.FieldArrayFn("samples", func(d *decode.D) {
 					stscIndex := 0
 					chunkNr := uint32(0)
@@ -664,7 +662,6 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 							case "fLaC":
 								d.FieldDecodeRange("sample", int64(sampleOffset)*8, int64(sampleSize)*8, flacFrameFormat, t.decodeOpts...)
 							case "avc1":
-								// log.Printf("t.decodeOpts: %#+v\n", t.decodeOpts)
 								d.FieldDecodeRange("sample", int64(sampleOffset)*8, int64(sampleSize)*8, mpegAVCSampleFormat, t.decodeOpts...)
 							case "mp4a":
 								// TODO: refactor to share somehow?
