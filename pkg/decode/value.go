@@ -631,3 +631,23 @@ func (v *Value) JsonType() string {
 		return "field"
 	}
 }
+
+func (v *Value) JsonPrimitiveValue() interface{} {
+	switch vv := v.V.(type) {
+	case Array:
+		return v
+	case Struct:
+		return v
+	case int, bool, float64, string, nil:
+		return vv
+	case int64:
+		return big.NewInt(vv)
+	case uint64:
+		return big.NewInt(int64(vv))
+	case []byte:
+		return string(vv)
+	default:
+		// TODO: error?
+		return nil
+	}
+}
