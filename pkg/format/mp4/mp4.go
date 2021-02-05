@@ -4,6 +4,7 @@ package mp4
 // FLAC in ISOBMFF https://github.com/xiph/flac/blob/master/doc/isoflac.txt
 // TODO: validate structure better? trak/stco etc
 // TODO: rename atom -> box?
+// TODO: fmp4, default samples sizes etc
 
 import (
 	"fmt"
@@ -45,19 +46,29 @@ type stsc struct {
 	samplesPerChunk uint32
 }
 
+type moof struct {
+	offset            int64
+	defaultSampleSize uint32
+	dataOffset        uint32
+	samplesSizes      []uint32
+}
+
 type track struct {
-	id         uint32
 	dataFormat string
 	stco       []uint64 //
 	stsc       []stsc
 	stsz       []uint32
 	decodeOpts []decode.Option
 	objectType int // if data format is "mp4a"
+
+	moofs       []*moof // for fmp4
+	currentMoof *moof
 }
 
 type decodeContext struct {
-	tracks       map[uint32]*track
-	currentTrack *track
+	tracks            map[uint32]*track
+	currentTrack      *track
+	currentMoofOffset int64
 }
 
 func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
@@ -451,10 +462,10 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 		"udta": decodeAtoms,
 		"meta": func(ctx *decodeContext, d *decode.D) {
 			// TODO: meta atom sometimes has a 4 byte unknown field? (flag/version?)
-			unknown := d.PeekBits(32)
-			if unknown == 0 {
+			maybeFlags := d.PeekBits(32)
+			if maybeFlags == 0 {
 				// TODO: rename?
-				d.FieldU32("unknown")
+				d.FieldU32("maybe_flags")
 			}
 			decodeAtoms(ctx, d)
 		},
@@ -472,7 +483,10 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			d.FieldUTF8("data", int(d.BitsLeft()/8))
 		},
 		"moov": decodeAtoms,
-		"moof": decodeAtoms,
+		"moof": func(ctx *decodeContext, d *decode.D) {
+			ctx.currentMoofOffset = (d.Pos() / 8) - 8
+			decodeAtoms(ctx, d)
+		},
 		// Track Fragment
 		"traf": decodeAtoms,
 		// Movie Fragment Header
@@ -501,7 +515,14 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 				baseDataOffsetPresent = d.FieldBool("base_data_offset_present")
 
 			})
-			d.FieldU32("track_id")
+			trackID := uint32(d.FieldU32("track_id"))
+			m := &moof{}
+			ctx.currentTrack = ctx.tracks[trackID]
+			if ctx.currentTrack != nil {
+				ctx.currentTrack.moofs = append(ctx.currentTrack.moofs, m)
+				ctx.currentTrack.currentMoof = m
+			}
+
 			if baseDataOffsetPresent {
 				d.FieldU64("base_data_offset")
 			}
@@ -512,7 +533,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 				d.FieldU32("default_sample_duration")
 			}
 			if defaultSampleSizePresent {
-				d.FieldU32("default_sample_size")
+				m.defaultSampleSize = uint32(d.FieldU32("default_sample_size"))
 			}
 			if defaultSampleFlagsPresent {
 				d.FieldU32("default_sample_flags")
@@ -520,6 +541,12 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 		},
 		// Track Fragment Run
 		"trun": func(ctx *decodeContext, d *decode.D) {
+			m := &moof{}
+			if ctx.currentTrack != nil && ctx.currentTrack.currentMoof != nil {
+				m = ctx.currentTrack.currentMoof
+			}
+			m.offset = ctx.currentMoofOffset
+
 			d.FieldU8("version")
 			sampleCompositionTimeOffsetsPresent := false
 			sampleFlagsPresent := false
@@ -529,7 +556,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			dataOffsetPresent := false
 			d.FieldStructFn("flags", func(d *decode.D) {
 				d.FieldU12("unused0")
-				sampleCompositionTimeOffsetsPresent = d.FieldBool("sampleCompositionTimeOffsetsPresent")
+				sampleCompositionTimeOffsetsPresent = d.FieldBool("sample_composition_time_sffsets_present")
 				sampleFlagsPresent = d.FieldBool("sample_flags_present")
 				sampleSizePresent = d.FieldBool("sample_size_present")
 				sampleDurationPresent = d.FieldBool("sample_duration_present")
@@ -540,19 +567,21 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			})
 			sampleCount := d.FieldU32("sample_count")
 			if dataOffsetPresent {
-				d.FieldS32("data_offset")
+				m.dataOffset = uint32(d.FieldS32("data_offset"))
 			}
 			if firstSampleFlagsPresent {
 				d.FieldU32("first_sample_flags")
 			}
+
 			d.FieldArrayFn("samples", func(d *decode.D) {
 				for i := uint64(0); i < sampleCount; i++ {
+					sampleSize := m.defaultSampleSize
 					d.FieldStructFn("sample", func(d *decode.D) {
 						if sampleDurationPresent {
 							d.FieldU32("sample_duration")
 						}
 						if sampleSizePresent {
-							d.FieldU32("sample_size")
+							sampleSize = uint32(d.FieldU32("sample_size"))
 						}
 						if sampleFlagsPresent {
 							d.FieldU32("sample_flags")
@@ -561,13 +590,67 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 							d.FieldU32("sample_composition_time_offset")
 						}
 					})
+
+					m.samplesSizes = append(m.samplesSizes, sampleSize)
 				}
 			})
 		},
 		"tfdt": func(ctx *decodeContext, d *decode.D) {
+			version := d.FieldU8("version")
+			d.FieldU24("flags")
+			if version == 1 {
+				d.FieldU64("start_time")
+			} else {
+				d.FieldU32("start_time")
+			}
+		},
+		"mvex": decodeAtoms,
+		"trex": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
-			d.FieldU32("start_time")
+			d.FieldU32("track_id")
+			d.FieldU32("default_sample_description_index")
+			d.FieldU32("default_sample_duration")
+			d.FieldU32("default_sample_size")
+			d.FieldU4("reserved0")
+			d.FieldU2("is_leading")
+			d.FieldU2("sample_depends_on")
+			d.FieldU2("sample_is_depended_on")
+			d.FieldU2("sample_has_redundancy")
+			d.FieldU3("sample_padding_value")
+			d.FieldU1("sample_is_non_sync_sample")
+			d.FieldU16("sample_degradation_priority")
+		},
+		"mfra": decodeAtoms,
+		"tfra": func(ctx *decodeContext, d *decode.D) {
+			version := d.FieldU8("version")
+			d.FieldU24("flags")
+			d.FieldU26("reserved")
+			lengthSizeOfTrafNum := d.FieldU2("length_size_of_traf_num")
+			sampleLengthSizeOfTrunNum := d.FieldU2("sample_length_size_of_trun_num")
+			lengthSizeOfSampleNum := d.FieldU2("length_size_of_sample_num")
+			numEntries := d.FieldU32("number_of_entry")
+			d.FieldArrayFn("entries", func(d *decode.D) {
+				for i := uint64(0); i < numEntries; i++ {
+					d.FieldStructFn("entry", func(d *decode.D) {
+						if version == 1 {
+							d.FieldU64("time")
+							d.FieldU64("moof_offset")
+						} else {
+							d.FieldU32("time")
+							d.FieldU32("moof_offset")
+						}
+						d.FieldU("traf_number", int(lengthSizeOfTrafNum+1)*8)
+						d.FieldU("trun_number", int(sampleLengthSizeOfTrunNum+1)*8)
+						d.FieldU("sample_number", int(lengthSizeOfSampleNum+1)*8)
+					})
+				}
+			})
+		},
+		"mfro": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+			d.FieldU32("mfra_size")
 		},
 	}
 
@@ -641,6 +724,33 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 
 	d.FieldArrayFn("tracks", func(d *decode.D) {
 		for _, t := range ctx.tracks {
+			decodeSampleRange := func(d *decode.D, t *track, name string, firstBit int64, nBits int64, opts ...decode.Option) {
+				switch t.dataFormat {
+				case "fLaC":
+					d.FieldDecodeRange("sample", firstBit, nBits, flacFrameFormat, t.decodeOpts...)
+				case "avc1":
+					d.FieldDecodeRange("sample", firstBit, nBits, mpegAVCSampleFormat, t.decodeOpts...)
+				case "mp4a":
+					// TODO: refactor to share somehow?
+					const (
+						MPEG1AudioL1L2L3 = 0x6b
+						MPEG4Audio       = 0x40
+					)
+					switch t.objectType {
+					case MPEG1AudioL1L2L3:
+						d.FieldDecodeRange("sample", firstBit, nBits, mp3FrameFormat, t.decodeOpts...)
+					case MPEG4Audio:
+						d.FieldDecodeRange("sample", firstBit, nBits, aacFrameFormat, t.decodeOpts...)
+					default:
+						d.FieldBitBufRange("sample", firstBit, nBits)
+					}
+				default:
+					d.FieldBitBufRange("sample", firstBit, nBits)
+				}
+			}
+
+			// log.Printf("t.moofs: %#+v\n", t.moofs)
+
 			d.FieldStructFn("track", func(d *decode.D) {
 				d.FieldStrFn("data_format", func() (string, string) { return t.dataFormat, "" })
 
@@ -656,30 +766,9 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 						for i := uint32(0); i < stscEntry.samplesPerChunk; i++ {
 							sampleSize := t.stsz[sampleNr]
 
-							// log.Printf("%s %d/%d %d/%d sample=%d/%d chunk=%d size=%d %d-%d\n", t.dataFormat, stscIndex, len(t.stsc), i, stscEntry.samplesPerChunk, sampleNr, len(t.stsz), chunkNr, sampleSize, sampleOffset, sampleOffset+uint64(sampleSize))
+							decodeSampleRange(d, t, "sample", int64(sampleOffset)*8, int64(sampleSize)*8, t.decodeOpts...)
 
-							switch t.dataFormat {
-							case "fLaC":
-								d.FieldDecodeRange("sample", int64(sampleOffset)*8, int64(sampleSize)*8, flacFrameFormat, t.decodeOpts...)
-							case "avc1":
-								d.FieldDecodeRange("sample", int64(sampleOffset)*8, int64(sampleSize)*8, mpegAVCSampleFormat, t.decodeOpts...)
-							case "mp4a":
-								// TODO: refactor to share somehow?
-								const (
-									MPEG1AudioL1L2L3 = 0x6b
-									MPEG4Audio       = 0x40
-								)
-								switch t.objectType {
-								case MPEG1AudioL1L2L3:
-									d.FieldDecodeRange("sample", int64(sampleOffset)*8, int64(sampleSize)*8, mp3FrameFormat, t.decodeOpts...)
-								case MPEG4Audio:
-									d.FieldDecodeRange("sample", int64(sampleOffset)*8, int64(sampleSize)*8, aacFrameFormat, t.decodeOpts...)
-								default:
-									d.FieldBitBufRange("sample", int64(sampleOffset)*8, int64(sampleSize)*8)
-								}
-							default:
-								d.FieldBitBufRange("sample", int64(sampleOffset)*8, int64(sampleSize)*8)
-							}
+							// log.Printf("%s %d/%d %d/%d sample=%d/%d chunk=%d size=%d %d-%d\n", t.dataFormat, stscIndex, len(t.stsc), i, stscEntry.samplesPerChunk, sampleNr, len(t.stsz), chunkNr, sampleSize, sampleOffset, sampleOffset+uint64(sampleSize))
 
 							sampleOffset += uint64(sampleSize)
 							sampleNr++
@@ -689,6 +778,16 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 						chunkNr++
 						if stscIndex < len(t.stsc)-1 && chunkNr >= t.stsc[stscIndex+1].firstChunk-1 {
 							stscIndex++
+						}
+					}
+
+					for _, m := range t.moofs {
+						sampleOffset := m.offset + int64(m.dataOffset)
+						for _, sz := range m.samplesSizes {
+							// log.Printf("moof sample %s %d-%d\n", t.dataFormat, sampleOffset, int64(sz))
+
+							decodeSampleRange(d, t, "sample", sampleOffset*8, int64(sz)*8, t.decodeOpts...)
+							sampleOffset += int64(sz)
 						}
 					}
 				})

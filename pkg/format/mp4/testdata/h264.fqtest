@@ -269,7 +269,7 @@ d90|               75 64 74 61                     |     udta       |          t
 d90|                           00 00 00 5a         |         ...Z   |              size: 90 d99-d9c+7 (4)
 d90|                                       6d 65 74|             met|              type: "meta" d9d-da0+7 (4)
 da0|61                                             |a               |
-da0|   00 00 00 00                                 | ....           |              unknown: 0 da1-da4+7 (4)
+da0|   00 00 00 00                                 | ....           |              maybe_flags: 0 da1-da4+7 (4)
    |                                               |                |              boxes[2]: da5-df2+7 (78)
    |                                               |                |               -[0]: (box) da5-dc5+7 (33)
 da0|               00 00 00 21                     |     ...!       |                  size: 33 da5-da8+7 (4)
