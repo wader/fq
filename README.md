@@ -85,6 +85,8 @@ TODO: piping
 
 ## Decoders
 
+[_dev/decoders_markdown]: sh-start
+
 |Name|Description|
 |-|-|
 |aac_adts|Audio data transport stream packet|
@@ -128,6 +130,8 @@ TODO: piping
 |vorbis_packet|Vorbis packet|
 |vp9_frame|VP9 frame|
 |wav|WAV container|
+
+[#]: sh-end
 
 TODO: format graph?
 

@@ -20,3 +20,8 @@ depgraph.svg:
 .PHONY: formatdgraph.svg
 formatdgraph.svg:
 	go run cmd/fq/main.go -n - 'formats | _formats_dot' | dot -Tsvg -o formatdgraph.svg
+
+.PHONY: README.md
+README.md:
+	PATH=${PWD}/_dev:${PATH} go run _dev/mdsh.go < README.md > README.md.new
+	mv README.md.new README.md
