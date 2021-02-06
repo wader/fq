@@ -1,18 +1,17 @@
 
 
-go run cmd/fq/main.go -n - '"|Name|Description|", "|-|-|", (formats | to_entries[] | "|\(.key)|\(.value.description)|")'
+jq options argument parser?
+
+DONE go run cmd/fq/main.go -n - '"|Name|Description|", "|-|-|", (formats | to_entries[] | "|\(.key)|\(.value.description)|")'
 
 split Value into multiple?
 
 A*|2X 2X 2X 2X 2X  2X 2X 2X 2X
 
 
-
-
-
 help using QueryErrFunc? error to fail out?
 
-intdiv operator?
+DONE intdiv operator?
 
 
 big.Int and floor etc
