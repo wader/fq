@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i sine -t 10ms test.mp3
 /test.mp3:
-> -f mp3 test.mp3 dump(1)
+> -f mp3 test.mp3 dump({maxdepth: 1})
    |                                               |                |.: mp3
 000|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..| -header: id3_v2
 *  |29 bytes more until 2c+7                       |                |
@@ -8,7 +8,7 @@
 030|c0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
 *  |580 bytes more until 283+7 (end)               |                |
 280||                                              ||               |  footers[0]:
-> -f mp3 test.mp3 dump(2)
+> -f mp3 test.mp3 dump({maxdepth: 2})
    |                                               |                |.: mp3
    |                                               |                | -header: id3_v2
 000|49 44 33                                       |ID3             |    magic: Correct ("ID3")

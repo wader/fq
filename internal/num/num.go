@@ -50,3 +50,11 @@ func MinInt(a, b int) int {
 	}
 	return a
 }
+
+func ClampInt(min, max, v int) int {
+	return MaxInt(min, MinInt(max, v))
+}
+
+func ClampInt64(min, max, v int64) int64 {
+	return MaxInt64(min, MinInt64(max, v))
+}
