@@ -1,4 +1,4 @@
-package aac
+package mpeg
 
 import (
 	"fq/pkg/decode"
@@ -9,13 +9,13 @@ var aacADTS []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:        format.AAC_STREAM,
+		Name:        format.MPEG_AAC_STREAM,
 		Description: "Raw audio data transport stream",
 		Groups:      []string{format.PROBE},
 		MIMEs:       []string{"audio/aac"},
 		DecodeFn:    adtsDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.AAC_ADTS}, Formats: &aacADTS},
+			{Names: []string{format.MPEG_ADTS}, Formats: &aacADTS},
 		},
 	})
 }

@@ -21,9 +21,6 @@ const (
 	// TODO: rename PROBE_* something?
 	IMAGE = "image"
 
-	AAC_ADTS           = "aac_adts"
-	AAC_FRAME          = "aac_frame"
-	AAC_STREAM         = "aac_stream"
 	APEV2              = "apev2"
 	BZIP2              = "bzip2"
 	DNS                = "dns"
@@ -44,6 +41,9 @@ const (
 	MP3_FRAME          = "mp3_frame"
 	MP3_XING           = "mp3_xing"
 	MP4                = "mp4"
+	MPEG_AAC_FRAME     = "mpeg_aac_frame"
+	MPEG_AAC_STREAM    = "mpeg_aac_stream"
+	MPEG_ADTS          = "mpeg_adts"
 	MPEG_ASC           = "mpeg_asc"
 	MPEG_AVC           = "mpeg_avc"
 	MPEG_AVC_DCR       = "mpeg_avc_dcr"

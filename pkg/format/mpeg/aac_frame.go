@@ -1,4 +1,4 @@
-package aac
+package mpeg
 
 // SO/IEC 13818-7 Part 7: Advanced Audio Coding (AAC)
 
@@ -9,7 +9,7 @@ import (
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:        format.AAC_FRAME,
+		Name:        format.MPEG_AAC_FRAME,
 		Description: "Advanced Audio Coding frame",
 		DecodeFn:    aacDecode,
 	})

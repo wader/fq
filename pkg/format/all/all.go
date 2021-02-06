@@ -1,7 +1,6 @@
 package all
 
 import (
-	_ "fq/pkg/format/aac"
 	_ "fq/pkg/format/ape"
 	_ "fq/pkg/format/elf"
 	_ "fq/pkg/format/flac"

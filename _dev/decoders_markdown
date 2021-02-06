@@ -1,0 +1,7 @@
+#!/usr/bin/env fq -s
+"|Name|Description|",
+"|-|-|",
+(
+    formats | to_entries[] |
+    "|\(.key)|\(.value.description)|"
+)

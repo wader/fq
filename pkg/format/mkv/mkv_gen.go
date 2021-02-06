@@ -1,0 +1,395 @@
+package mkv
+
+// code below generated with ebml_gen.go
+// https://raw.githubusercontent.com/cellar-wg/matroska-specification/aa2144a58b661baf54b99bab41113d66b0f5ff62/ebml_matroska.xml
+
+var mkvSegment = ebmlTag{
+	0x114d9b74: {name: "SeekHead", typ: ebmlMaster, tag: mkvSeekHead},
+	0x1549a966: {name: "Info", typ: ebmlMaster, tag: mkvInfo},
+	0x1f43b675: {name: "Cluster", typ: ebmlMaster, tag: mkvCluster},
+	0x1654ae6b: {name: "Tracks", typ: ebmlMaster, tag: mkvTracks},
+	0x1c53bb6b: {name: "Cues", typ: ebmlMaster, tag: mkvCues},
+	0x1941a469: {name: "Attachments", typ: ebmlMaster, tag: mkvAttachments},
+	0x1043a770: {name: "Chapters", typ: ebmlMaster, tag: mkvChapters},
+	0x1254c367: {name: "Tags", typ: ebmlMaster, tag: mkvTags},
+}
+
+var mkvSeekHead = ebmlTag{
+	0x4dbb: {name: "Seek", typ: ebmlMaster, tag: mkvSeek},
+}
+
+var mkvSeek = ebmlTag{
+	0x53ab: {name: "SeekID", typ: ebmlBinary},
+	0x53ac: {name: "SeekPosition", typ: ebmlUinteger},
+}
+
+var mkvInfo = ebmlTag{
+	0x73a4:   {name: "SegmentUID", typ: ebmlBinary},
+	0x7384:   {name: "SegmentFilename", typ: ebmlUTF8},
+	0x3cb923: {name: "PrevUID", typ: ebmlBinary},
+	0x3c83ab: {name: "PrevFilename", typ: ebmlUTF8},
+	0x3eb923: {name: "NextUID", typ: ebmlBinary},
+	0x3e83bb: {name: "NextFilename", typ: ebmlUTF8},
+	0x4444:   {name: "SegmentFamily", typ: ebmlBinary},
+	0x6924:   {name: "ChapterTranslate", typ: ebmlMaster, tag: mkvChapterTranslate},
+	0x2ad7b1: {name: "TimestampScale", typ: ebmlUinteger},
+	0x4489:   {name: "Duration", typ: ebmlFloat},
+	0x4461:   {name: "DateUTC", typ: ebmlDate},
+	0x7ba9:   {name: "Title", typ: ebmlUTF8},
+	0x4d80:   {name: "MuxingApp", typ: ebmlUTF8},
+	0x5741:   {name: "WritingApp", typ: ebmlUTF8},
+}
+
+var mkvChapterTranslate = ebmlTag{
+	0x69fc: {name: "ChapterTranslateEditionUID", typ: ebmlUinteger},
+	0x69bf: {name: "ChapterTranslateCodec", typ: ebmlUinteger},
+	0x69a5: {name: "ChapterTranslateID", typ: ebmlBinary},
+}
+
+var mkvCluster = ebmlTag{
+	0xe7:   {name: "Timestamp", typ: ebmlUinteger},
+	0x5854: {name: "SilentTracks", typ: ebmlMaster, tag: mkvSilentTracks},
+	0xa7:   {name: "Position", typ: ebmlUinteger},
+	0xab:   {name: "PrevSize", typ: ebmlUinteger},
+	0xa3:   {name: "SimpleBlock", typ: ebmlBinary},
+	0xa0:   {name: "BlockGroup", typ: ebmlMaster, tag: mkvBlockGroup},
+	0xaf:   {name: "EncryptedBlock", typ: ebmlBinary},
+}
+
+var mkvSilentTracks = ebmlTag{
+	0x58d7: {name: "SilentTrackNumber", typ: ebmlUinteger},
+}
+
+var mkvBlockGroup = ebmlTag{
+	0xa1:   {name: "Block", typ: ebmlBinary},
+	0xa2:   {name: "BlockVirtual", typ: ebmlBinary},
+	0x75a1: {name: "BlockAdditions", typ: ebmlMaster, tag: mkvBlockAdditions},
+	0x9b:   {name: "BlockDuration", typ: ebmlUinteger},
+	0xfa:   {name: "ReferencePriority", typ: ebmlUinteger},
+	0xfb:   {name: "ReferenceBlock", typ: ebmlInteger},
+	0xfd:   {name: "ReferenceVirtual", typ: ebmlInteger},
+	0xa4:   {name: "CodecState", typ: ebmlBinary},
+	0x75a2: {name: "DiscardPadding", typ: ebmlInteger},
+	0x8e:   {name: "Slices", typ: ebmlMaster, tag: mkvSlices},
+	0xc8:   {name: "ReferenceFrame", typ: ebmlMaster, tag: mkvReferenceFrame},
+}
+
+var mkvBlockAdditions = ebmlTag{
+	0xa6: {name: "BlockMore", typ: ebmlMaster, tag: mkvBlockMore},
+}
+
+var mkvBlockMore = ebmlTag{
+	0xee: {name: "BlockAddID", typ: ebmlUinteger},
+	0xa5: {name: "BlockAdditional", typ: ebmlBinary},
+}
+
+var mkvSlices = ebmlTag{
+	0xe8: {name: "TimeSlice", typ: ebmlMaster, tag: mkvTimeSlice},
+}
+
+var mkvTimeSlice = ebmlTag{
+	0xcc: {name: "LaceNumber", typ: ebmlUinteger},
+	0xcd: {name: "FrameNumber", typ: ebmlUinteger},
+	0xcb: {name: "BlockAdditionID", typ: ebmlUinteger},
+	0xce: {name: "Delay", typ: ebmlUinteger},
+	0xcf: {name: "SliceDuration", typ: ebmlUinteger},
+}
+
+var mkvReferenceFrame = ebmlTag{
+	0xc9: {name: "ReferenceOffset", typ: ebmlUinteger},
+	0xca: {name: "ReferenceTimestamp", typ: ebmlUinteger},
+}
+
+var mkvTracks = ebmlTag{
+	0xae: {name: "TrackEntry", typ: ebmlMaster, tag: mkvTrackEntry},
+}
+
+var mkvTrackEntry = ebmlTag{
+	0xd7:     {name: "TrackNumber", typ: ebmlUinteger},
+	0x73c5:   {name: "TrackUID", typ: ebmlUinteger},
+	0x83:     {name: "TrackType", typ: ebmlUinteger},
+	0xb9:     {name: "FlagEnabled", typ: ebmlUinteger},
+	0x88:     {name: "FlagDefault", typ: ebmlUinteger},
+	0x55aa:   {name: "FlagForced", typ: ebmlUinteger},
+	0x9c:     {name: "FlagLacing", typ: ebmlUinteger},
+	0x6de7:   {name: "MinCache", typ: ebmlUinteger},
+	0x6df8:   {name: "MaxCache", typ: ebmlUinteger},
+	0x23e383: {name: "DefaultDuration", typ: ebmlUinteger},
+	0x234e7a: {name: "DefaultDecodedFieldDuration", typ: ebmlUinteger},
+	0x23314f: {name: "TrackTimestampScale", typ: ebmlFloat},
+	0x537f:   {name: "TrackOffset", typ: ebmlInteger},
+	0x55ee:   {name: "MaxBlockAdditionID", typ: ebmlUinteger},
+	0x41e4:   {name: "BlockAdditionMapping", typ: ebmlMaster, tag: mkvBlockAdditionMapping},
+	0x536e:   {name: "Name", typ: ebmlUTF8},
+	0x22b59c: {name: "Language", typ: ebmlString},
+	0x22b59d: {name: "LanguageIETF", typ: ebmlString},
+	0x86:     {name: "CodecID", typ: ebmlString},
+	0x63a2:   {name: "CodecPrivate", typ: ebmlBinary},
+	0x258688: {name: "CodecName", typ: ebmlUTF8},
+	0x7446:   {name: "AttachmentLink", typ: ebmlUinteger},
+	0x3a9697: {name: "CodecSettings", typ: ebmlUTF8},
+	0x3b4040: {name: "CodecInfoURL", typ: ebmlString},
+	0x26b240: {name: "CodecDownloadURL", typ: ebmlString},
+	0xaa:     {name: "CodecDecodeAll", typ: ebmlUinteger},
+	0x6fab:   {name: "TrackOverlay", typ: ebmlUinteger},
+	0x56aa:   {name: "CodecDelay", typ: ebmlUinteger},
+	0x56bb:   {name: "SeekPreRoll", typ: ebmlUinteger},
+	0x6624:   {name: "TrackTranslate", typ: ebmlMaster, tag: mkvTrackTranslate},
+	0xe0:     {name: "Video", typ: ebmlMaster, tag: mkvVideo},
+	0xe1:     {name: "Audio", typ: ebmlMaster, tag: mkvAudio},
+	0xe2:     {name: "TrackOperation", typ: ebmlMaster, tag: mkvTrackOperation},
+	0xc0:     {name: "TrickTrackUID", typ: ebmlUinteger},
+	0xc1:     {name: "TrickTrackSegmentUID", typ: ebmlBinary},
+	0xc6:     {name: "TrickTrackFlag", typ: ebmlUinteger},
+	0xc7:     {name: "TrickMasterTrackUID", typ: ebmlUinteger},
+	0xc4:     {name: "TrickMasterTrackSegmentUID", typ: ebmlBinary},
+	0x6d80:   {name: "ContentEncodings", typ: ebmlMaster, tag: mkvContentEncodings},
+}
+
+var mkvBlockAdditionMapping = ebmlTag{
+	0x41f0: {name: "BlockAddIDValue", typ: ebmlUinteger},
+	0x41a4: {name: "BlockAddIDName", typ: ebmlString},
+	0x41e7: {name: "BlockAddIDType", typ: ebmlUinteger},
+	0x41ed: {name: "BlockAddIDExtraData", typ: ebmlBinary},
+}
+
+var mkvTrackTranslate = ebmlTag{
+	0x66fc: {name: "TrackTranslateEditionUID", typ: ebmlUinteger},
+	0x66bf: {name: "TrackTranslateCodec", typ: ebmlUinteger},
+	0x66a5: {name: "TrackTranslateTrackID", typ: ebmlBinary},
+}
+
+var mkvVideo = ebmlTag{
+	0x9a:     {name: "FlagInterlaced", typ: ebmlUinteger},
+	0x9d:     {name: "FieldOrder", typ: ebmlUinteger},
+	0x53b8:   {name: "StereoMode", typ: ebmlUinteger},
+	0x53c0:   {name: "AlphaMode", typ: ebmlUinteger},
+	0x53b9:   {name: "OldStereoMode", typ: ebmlUinteger},
+	0xb0:     {name: "PixelWidth", typ: ebmlUinteger},
+	0xba:     {name: "PixelHeight", typ: ebmlUinteger},
+	0x54aa:   {name: "PixelCropBottom", typ: ebmlUinteger},
+	0x54bb:   {name: "PixelCropTop", typ: ebmlUinteger},
+	0x54cc:   {name: "PixelCropLeft", typ: ebmlUinteger},
+	0x54dd:   {name: "PixelCropRight", typ: ebmlUinteger},
+	0x54b0:   {name: "DisplayWidth", typ: ebmlUinteger},
+	0x54ba:   {name: "DisplayHeight", typ: ebmlUinteger},
+	0x54b2:   {name: "DisplayUnit", typ: ebmlUinteger},
+	0x54b3:   {name: "AspectRatioType", typ: ebmlUinteger},
+	0x2eb524: {name: "ColourSpace", typ: ebmlBinary},
+	0x2fb523: {name: "GammaValue", typ: ebmlFloat},
+	0x2383e3: {name: "FrameRate", typ: ebmlFloat},
+	0x55b0:   {name: "Colour", typ: ebmlMaster, tag: mkvColour},
+	0x7670:   {name: "Projection", typ: ebmlMaster, tag: mkvProjection},
+}
+
+var mkvColour = ebmlTag{
+	0x55b1: {name: "MatrixCoefficients", typ: ebmlUinteger},
+	0x55b2: {name: "BitsPerChannel", typ: ebmlUinteger},
+	0x55b3: {name: "ChromaSubsamplingHorz", typ: ebmlUinteger},
+	0x55b4: {name: "ChromaSubsamplingVert", typ: ebmlUinteger},
+	0x55b5: {name: "CbSubsamplingHorz", typ: ebmlUinteger},
+	0x55b6: {name: "CbSubsamplingVert", typ: ebmlUinteger},
+	0x55b7: {name: "ChromaSitingHorz", typ: ebmlUinteger},
+	0x55b8: {name: "ChromaSitingVert", typ: ebmlUinteger},
+	0x55b9: {name: "Range", typ: ebmlUinteger},
+	0x55ba: {name: "TransferCharacteristics", typ: ebmlUinteger},
+	0x55bb: {name: "Primaries", typ: ebmlUinteger},
+	0x55bc: {name: "MaxCLL", typ: ebmlUinteger},
+	0x55bd: {name: "MaxFALL", typ: ebmlUinteger},
+	0x55d0: {name: "MasteringMetadata", typ: ebmlMaster, tag: mkvMasteringMetadata},
+}
+
+var mkvMasteringMetadata = ebmlTag{
+	0x55d1: {name: "PrimaryRChromaticityX", typ: ebmlFloat},
+	0x55d2: {name: "PrimaryRChromaticityY", typ: ebmlFloat},
+	0x55d3: {name: "PrimaryGChromaticityX", typ: ebmlFloat},
+	0x55d4: {name: "PrimaryGChromaticityY", typ: ebmlFloat},
+	0x55d5: {name: "PrimaryBChromaticityX", typ: ebmlFloat},
+	0x55d6: {name: "PrimaryBChromaticityY", typ: ebmlFloat},
+	0x55d7: {name: "WhitePointChromaticityX", typ: ebmlFloat},
+	0x55d8: {name: "WhitePointChromaticityY", typ: ebmlFloat},
+	0x55d9: {name: "LuminanceMax", typ: ebmlFloat},
+	0x55da: {name: "LuminanceMin", typ: ebmlFloat},
+}
+
+var mkvProjection = ebmlTag{
+	0x7671: {name: "ProjectionType", typ: ebmlUinteger},
+	0x7672: {name: "ProjectionPrivate", typ: ebmlBinary},
+	0x7673: {name: "ProjectionPoseYaw", typ: ebmlFloat},
+	0x7674: {name: "ProjectionPosePitch", typ: ebmlFloat},
+	0x7675: {name: "ProjectionPoseRoll", typ: ebmlFloat},
+}
+
+var mkvAudio = ebmlTag{
+	0xb5:   {name: "SamplingFrequency", typ: ebmlFloat},
+	0x78b5: {name: "OutputSamplingFrequency", typ: ebmlFloat},
+	0x9f:   {name: "Channels", typ: ebmlUinteger},
+	0x7d7b: {name: "ChannelPositions", typ: ebmlBinary},
+	0x6264: {name: "BitDepth", typ: ebmlUinteger},
+}
+
+var mkvTrackOperation = ebmlTag{
+	0xe3: {name: "TrackCombinePlanes", typ: ebmlMaster, tag: mkvTrackCombinePlanes},
+	0xe9: {name: "TrackJoinBlocks", typ: ebmlMaster, tag: mkvTrackJoinBlocks},
+}
+
+var mkvTrackCombinePlanes = ebmlTag{
+	0xe4: {name: "TrackPlane", typ: ebmlMaster, tag: mkvTrackPlane},
+}
+
+var mkvTrackPlane = ebmlTag{
+	0xe5: {name: "TrackPlaneUID", typ: ebmlUinteger},
+	0xe6: {name: "TrackPlaneType", typ: ebmlUinteger},
+}
+
+var mkvTrackJoinBlocks = ebmlTag{
+	0xed: {name: "TrackJoinUID", typ: ebmlUinteger},
+}
+
+var mkvContentEncodings = ebmlTag{
+	0x6240: {name: "ContentEncoding", typ: ebmlMaster, tag: mkvContentEncoding},
+}
+
+var mkvContentEncoding = ebmlTag{
+	0x5031: {name: "ContentEncodingOrder", typ: ebmlUinteger},
+	0x5032: {name: "ContentEncodingScope", typ: ebmlUinteger},
+	0x5033: {name: "ContentEncodingType", typ: ebmlUinteger},
+	0x5034: {name: "ContentCompression", typ: ebmlMaster, tag: mkvContentCompression},
+	0x5035: {name: "ContentEncryption", typ: ebmlMaster, tag: mkvContentEncryption},
+}
+
+var mkvContentCompression = ebmlTag{
+	0x4254: {name: "ContentCompAlgo", typ: ebmlUinteger},
+	0x4255: {name: "ContentCompSettings", typ: ebmlBinary},
+}
+
+var mkvContentEncryption = ebmlTag{
+	0x47e1: {name: "ContentEncAlgo", typ: ebmlUinteger},
+	0x47e2: {name: "ContentEncKeyID", typ: ebmlBinary},
+	0x47e7: {name: "ContentEncAESSettings", typ: ebmlMaster, tag: mkvContentEncAESSettings},
+	0x47e3: {name: "ContentSignature", typ: ebmlBinary},
+	0x47e4: {name: "ContentSigKeyID", typ: ebmlBinary},
+	0x47e5: {name: "ContentSigAlgo", typ: ebmlUinteger},
+	0x47e6: {name: "ContentSigHashAlgo", typ: ebmlUinteger},
+}
+
+var mkvContentEncAESSettings = ebmlTag{
+	0x47e8: {name: "AESSettingsCipherMode", typ: ebmlUinteger},
+}
+
+var mkvCues = ebmlTag{
+	0xbb: {name: "CuePoint", typ: ebmlMaster, tag: mkvCuePoint},
+}
+
+var mkvCuePoint = ebmlTag{
+	0xb3: {name: "CueTime", typ: ebmlUinteger},
+	0xb7: {name: "CueTrackPositions", typ: ebmlMaster, tag: mkvCueTrackPositions},
+}
+
+var mkvCueTrackPositions = ebmlTag{
+	0xf7:   {name: "CueTrack", typ: ebmlUinteger},
+	0xf1:   {name: "CueClusterPosition", typ: ebmlUinteger},
+	0xf0:   {name: "CueRelativePosition", typ: ebmlUinteger},
+	0xb2:   {name: "CueDuration", typ: ebmlUinteger},
+	0x5378: {name: "CueBlockNumber", typ: ebmlUinteger},
+	0xea:   {name: "CueCodecState", typ: ebmlUinteger},
+	0xdb:   {name: "CueReference", typ: ebmlMaster, tag: mkvCueReference},
+}
+
+var mkvCueReference = ebmlTag{
+	0x96:   {name: "CueRefTime", typ: ebmlUinteger},
+	0x97:   {name: "CueRefCluster", typ: ebmlUinteger},
+	0x535f: {name: "CueRefNumber", typ: ebmlUinteger},
+	0xeb:   {name: "CueRefCodecState", typ: ebmlUinteger},
+}
+
+var mkvAttachments = ebmlTag{
+	0x61a7: {name: "AttachedFile", typ: ebmlMaster, tag: mkvAttachedFile},
+}
+
+var mkvAttachedFile = ebmlTag{
+	0x467e: {name: "FileDescription", typ: ebmlUTF8},
+	0x466e: {name: "FileName", typ: ebmlUTF8},
+	0x4660: {name: "FileMimeType", typ: ebmlString},
+	0x465c: {name: "FileData", typ: ebmlBinary},
+	0x46ae: {name: "FileUID", typ: ebmlUinteger},
+	0x4675: {name: "FileReferral", typ: ebmlBinary},
+	0x4661: {name: "FileUsedStartTime", typ: ebmlUinteger},
+	0x4662: {name: "FileUsedEndTime", typ: ebmlUinteger},
+}
+
+var mkvChapters = ebmlTag{
+	0x45b9: {name: "EditionEntry", typ: ebmlMaster, tag: mkvEditionEntry},
+}
+
+var mkvEditionEntry = ebmlTag{
+	0x45bc: {name: "EditionUID", typ: ebmlUinteger},
+	0x45bd: {name: "EditionFlagHidden", typ: ebmlUinteger},
+	0x45db: {name: "EditionFlagDefault", typ: ebmlUinteger},
+	0x45dd: {name: "EditionFlagOrdered", typ: ebmlUinteger},
+	0xb6:   {name: "ChapterAtom", typ: ebmlMaster, tag: mkvChapterAtom},
+}
+
+var mkvChapterAtom = ebmlTag{
+	0x73c4: {name: "ChapterUID", typ: ebmlUinteger},
+	0x5654: {name: "ChapterStringUID", typ: ebmlUTF8},
+	0x91:   {name: "ChapterTimeStart", typ: ebmlUinteger},
+	0x92:   {name: "ChapterTimeEnd", typ: ebmlUinteger},
+	0x98:   {name: "ChapterFlagHidden", typ: ebmlUinteger},
+	0x4598: {name: "ChapterFlagEnabled", typ: ebmlUinteger},
+	0x6e67: {name: "ChapterSegmentUID", typ: ebmlBinary},
+	0x6ebc: {name: "ChapterSegmentEditionUID", typ: ebmlUinteger},
+	0x63c3: {name: "ChapterPhysicalEquiv", typ: ebmlUinteger},
+	0x8f:   {name: "ChapterTrack", typ: ebmlMaster, tag: mkvChapterTrack},
+	0x80:   {name: "ChapterDisplay", typ: ebmlMaster, tag: mkvChapterDisplay},
+	0x6944: {name: "ChapProcess", typ: ebmlMaster, tag: mkvChapProcess},
+}
+
+var mkvChapterTrack = ebmlTag{
+	0x89: {name: "ChapterTrackUID", typ: ebmlUinteger},
+}
+
+var mkvChapterDisplay = ebmlTag{
+	0x85:   {name: "ChapString", typ: ebmlUTF8},
+	0x437c: {name: "ChapLanguage", typ: ebmlString},
+	0x437d: {name: "ChapLanguageIETF", typ: ebmlString},
+	0x437e: {name: "ChapCountry", typ: ebmlString},
+}
+
+var mkvChapProcess = ebmlTag{
+	0x6955: {name: "ChapProcessCodecID", typ: ebmlUinteger},
+	0x450d: {name: "ChapProcessPrivate", typ: ebmlBinary},
+	0x6911: {name: "ChapProcessCommand", typ: ebmlMaster, tag: mkvChapProcessCommand},
+}
+
+var mkvChapProcessCommand = ebmlTag{
+	0x6922: {name: "ChapProcessTime", typ: ebmlUinteger},
+	0x6933: {name: "ChapProcessData", typ: ebmlBinary},
+}
+
+var mkvTags = ebmlTag{
+	0x7373: {name: "Tag", typ: ebmlMaster, tag: mkvTag},
+}
+
+var mkvTag = ebmlTag{
+	0x63c0: {name: "Targets", typ: ebmlMaster, tag: mkvTargets},
+	0x67c8: {name: "SimpleTag", typ: ebmlMaster, tag: mkvSimpleTag},
+}
+
+var mkvTargets = ebmlTag{
+	0x68ca: {name: "TargetTypeValue", typ: ebmlUinteger},
+	0x63ca: {name: "TargetType", typ: ebmlString},
+	0x63c5: {name: "TagTrackUID", typ: ebmlUinteger},
+	0x63c9: {name: "TagEditionUID", typ: ebmlUinteger},
+	0x63c4: {name: "TagChapterUID", typ: ebmlUinteger},
+	0x63c6: {name: "TagAttachmentUID", typ: ebmlUinteger},
+}
+
+var mkvSimpleTag = ebmlTag{
+	0x45a3: {name: "TagName", typ: ebmlUTF8},
+	0x447a: {name: "TagLanguage", typ: ebmlString},
+	0x447b: {name: "TagLanguageIETF", typ: ebmlString},
+	0x4484: {name: "TagDefault", typ: ebmlUinteger},
+	0x4487: {name: "TagString", typ: ebmlUTF8},
+	0x4485: {name: "TagBinary", typ: ebmlBinary},
+}

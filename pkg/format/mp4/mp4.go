@@ -33,7 +33,7 @@ func init() {
 			{Names: []string{format.MPEG_ES}, Formats: &mpegESFormat},
 			{Names: []string{format.MPEG_AVC}, Formats: &mpegAVCSampleFormat},
 			{Names: []string{format.MPEG_AVC_DCR}, Formats: &mpegAVCDCRFrameFormat},
-			{Names: []string{format.AAC_FRAME}, Formats: &aacFrameFormat},
+			{Names: []string{format.MPEG_AAC_FRAME}, Formats: &aacFrameFormat},
 			{Names: []string{format.MP3_FRAME}, Formats: &mp3FrameFormat},
 			{Names: []string{format.FLAC_METADATABLOCK}, Formats: &flacMetadatablockFormat},
 			{Names: []string{format.FLAC_FRAME}, Formats: &flacFrameFormat},

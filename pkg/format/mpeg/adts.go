@@ -1,4 +1,4 @@
-package aac
+package mpeg
 
 // TODO: move aac things to mpeg?
 
@@ -17,12 +17,12 @@ var aacFrame []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:        format.AAC_ADTS,
+		Name:        format.MPEG_ADTS,
 		Description: "Audio data transport stream packet",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    adtsDecoder,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.AAC_FRAME}, Formats: &aacFrame},
+			{Names: []string{format.MPEG_AAC_FRAME}, Formats: &aacFrame},
 		},
 	})
 }
