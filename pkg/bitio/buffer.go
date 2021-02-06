@@ -199,7 +199,7 @@ func (b *Buffer) PeekFind(nBits int, v uint8, maxLen int64) (int64, error) {
 			return 0, err
 		}
 		count++
-		if uint8(bv) == v || count == maxLen {
+		if bv == uint64(v) || count == maxLen {
 			break
 		}
 	}
