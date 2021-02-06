@@ -8,9 +8,8 @@ import (
 	"fq/pkg/format"
 )
 
-var headerTag []*decode.Format
-var id3v1Tags []*decode.Format
-var apeTag []*decode.Format
+var headerFormat []*decode.Format
+var footerFormat []*decode.Format
 var mp3Frame []*decode.Format
 
 func init() {
@@ -21,16 +20,21 @@ func init() {
 		MIMEs:       []string{"audio/mpeg"},
 		DecodeFn:    mp3Decode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.ID3_V2}, Formats: &headerTag},
-			{Names: []string{format.ID3_V1, format.ID3_V11}, Formats: &id3v1Tags},
-			{Names: []string{format.APEV2}, Formats: &apeTag},
+			{Names: []string{format.ID3_V2}, Formats: &headerFormat},
+			{Names: []string{format.ID3_V1, format.ID3_V11, format.APEV2}, Formats: &footerFormat},
 			{Names: []string{format.MP3_FRAME}, Formats: &mp3Frame},
 		},
 	})
 }
 
 func mp3Decode(d *decode.D, in interface{}) interface{} {
-	d.FieldTryDecode("header", headerTag)
+	d.FieldArrayFn("headers", func(d *decode.D) {
+		for d.NotEnd() {
+			if _, _, err := d.FieldTryDecode("header", headerFormat); err != nil {
+				return
+			}
+		}
+	})
 
 	validFrames := 0
 	d.FieldArrayFn("frames", func(d *decode.D) {
@@ -38,22 +42,18 @@ func mp3Decode(d *decode.D, in interface{}) interface{} {
 			if _, _, errs := d.FieldTryDecode("frame", mp3Frame); errs != nil {
 				break
 			}
-
 			validFrames++
 		}
 	})
-
 	if validFrames == 0 {
 		d.Invalid("no frames found")
 	}
 
-	// only check for footer if there was some frames
 	d.FieldArrayFn("footers", func(d *decode.D) {
-		d.FieldTryDecode("footer", apeTag)
-		if d.BitsLeft() >= 128*8 {
-			d.SeekAbs(d.Len() - 128*8)
-			d.FieldTryDecode("footer", id3v1Tags)
-
+		for d.NotEnd() {
+			if _, _, err := d.FieldTryDecode("footer", headerFormat); err != nil {
+				return
+			}
 		}
 	})
 
