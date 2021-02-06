@@ -512,6 +512,8 @@ func mkvDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldDecodeLen("packet", d.BitsLeft(), mpegSPUFrameFormat)
 			case "V_MPEG4/ISO/AVC":
 				d.FieldDecodeLen("packet", d.BitsLeft(), mpegAVCSampleFormat, decodeOpts...)
+			case "A_AAC":
+				d.FieldDecodeLen("packet", d.BitsLeft(), aacFrameFormat)
 			default:
 				d.FieldBitBufLen("data", d.BitsLeft())
 			}
