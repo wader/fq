@@ -1,5 +1,7 @@
 
 
+go run cmd/fq/main.go -n - '"|Name|Description|", "|-|-|", (formats | to_entries[] | "|\(.key)|\(.value.description)|")'
+
 split Value into multiple?
 
 A*|2X 2X 2X 2X 2X  2X 2X 2X 2X
