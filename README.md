@@ -152,7 +152,7 @@ TODO
 - Cleanup decoders
 - Document decode maturity/completeness
 - Embed jq code using go 1.16 embed
-- Arbitrary integer base literals 
+- Arbitrary integer base literals
 
 ### Ideas
 
