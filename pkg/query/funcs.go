@@ -21,6 +21,79 @@ import (
 	"strings"
 )
 
+var fqModuleSrc = `
+# convert number to array of bytes
+def number_to_bytes($bits):
+	def _number_to_bytes($d):
+		if . > 0 then
+			. % $d, (. div $d | _number_to_bytes($d))
+		else
+			empty
+		end;
+	if . == 0 then [0]
+	else [_number_to_bytes(1 bsl $bits)] | reverse end;
+def number_to_bytes:
+	number_to_bytes(8);
+
+# from https://rosettacode.org/wiki/Non-decimal_radices/Convert#jq
+# unknown author
+# Convert the input integer to a string in the specified base (2 to 36 inclusive)
+def _convert(base):
+	def stream:
+		recurse(if . > 0 then . div base else empty end) | . % base;
+	if . == 0 then
+		"0"
+	else
+		[stream] |
+		reverse  |
+		.[1:] |
+		if base <  10 then
+			map(tostring) | join("")
+		elif base <= 36 then
+			map(if . < 10 then 48 + . else . + 87 end) | implode
+		else
+			error("base too large")
+		end
+	end;
+
+# input string is converted from "base" to an integer, within limits
+# of the underlying arithmetic operations, and without error-checking:
+def _to_i(base):
+	explode
+	| reverse
+	| map(if . > 96  then . - 87 else . - 48 end)  # "a" ~ 97 => 10 ~ 87
+	| reduce .[] as $c
+		# state: [power, ans]
+		([1,0]; (.[0] * base) as $b | [$b, .[1] + (.[0] * $c)])
+	| .[1];
+
+# like iprint
+def i:
+	{
+		bin: "0b\(_convert(2))",
+		oct: "0o\(_convert(8))",
+		dec: "\(_convert(10))",
+		hex: "0x\(_convert(16))",
+		str: ([.] | implode),
+	};
+
+def _formats_dot:
+	"# ... | dot -Tsvg -o formats.svg",
+	"digraph formats {",
+	"  nodesep=0.5",
+	"  ranksep=0.5",
+	"  node [shape=\"box\",style=\"rounded,filled\"]",
+	"  edge [arrowsize=\"0.7\"]",
+	(.[] | "  \(.name) -> {\(.dependencies | flatten? | join(" "))}"),
+	(.[] | .name as $name | .groups[]? | "  \(.) -> \($name)"),
+	(keys[] | "  \(.) [color=\"paleturquoise\"]"),
+	([.[].groups[]?] | unique[] | "  \(.) [color=\"palegreen\"]"),
+	"}";
+
+def field_inrange($p): ._type == "field" and ._range.start <= $p and $p < ._range.stop;
+
+`
+
 // TODO: make it nicer somehow?
 func (q *Query) makeFunctions(opts QueryOptions) []Function {
 	fs := []Function{
