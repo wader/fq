@@ -1,6 +1,6 @@
 # fq
 
-jq for binary files
+jq for binaries
 
 Tool and framework for querying and exploring binary formats.
 
@@ -146,6 +146,7 @@ TODO
 
 ### TODOs
 
+- Function documentation in code, generate md etc
 - Copy/pasteable output, add base prefixes
 - Nested BitBufs, how to show? what about ranges? for example compressed data, demuxed ogg
 - CRC fields, how to update with actual? fix flac

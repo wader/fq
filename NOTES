@@ -1,5 +1,7 @@
 
 
+more aac, ff f8 thingy efter mpeg es
+
 jq options argument parser?
 
 DONE go run cmd/fq/main.go -n - '"|Name|Description|", "|-|-|", (formats | to_entries[] | "|\(.key)|\(.value.description)|")'
