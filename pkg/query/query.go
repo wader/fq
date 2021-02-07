@@ -129,6 +129,19 @@ func toString(v interface{}) (string, error) {
 	}
 }
 
+func toBigInt(v interface{}) (*big.Int, error) {
+	switch v := v.(type) {
+	case int:
+		return new(big.Int).SetInt64(int64(v)), nil
+	case float64:
+		return new(big.Int).SetInt64(int64(v)), nil
+	case *big.Int:
+		return v, nil
+	default:
+		return nil, fmt.Errorf("value is not a number")
+	}
+}
+
 func toBytes(v interface{}) ([]byte, error) {
 	switch v := v.(type) {
 	case []byte:
@@ -161,6 +174,13 @@ func toBitBuf(v interface{}) (*bitio.Buffer, ranges.Range, string, error) {
 		return bb, ranges.Range{Start: 0, Len: bb.Len()}, "", nil
 	case string:
 		bb := bitio.NewBufferFromBytes([]byte(vv), -1)
+		return bb, ranges.Range{Start: 0, Len: bb.Len()}, "", nil
+	case int, float64, *big.Int:
+		bi, err := toBigInt(v)
+		if err != nil {
+			return nil, ranges.Range{}, "", err
+		}
+		bb := bitio.NewBufferFromBytes(bi.Bytes(), -1)
 		return bb, ranges.Range{Start: 0, Len: bb.Len()}, "", nil
 	default:
 		return nil, ranges.Range{}, "", fmt.Errorf("value should be decode value, bit buffer, byte slice or string")
@@ -298,15 +318,17 @@ func (q *Query) Run(ctx context.Context, mode RunMode, src string, stdout io.Wri
 		case "fq":
 			return gojq.Parse(`
 				# convert number to array of bytes
-				def bytes:
-					def _bytes:
+				def number_to_bytes($bits):
+					def _number_to_bytes($d):
 						if . > 0 then
-							. % 256, (. div 256 | _bytes)
+							. % $d, (. div $d | _number_to_bytes($d))
 						else
 							empty
 						end;
 					if . == 0 then [0]
-					else [_bytes] | reverse end;
+					else [_number_to_bytes(1 bsl $bits)] | reverse end;
+				def number_to_bytes:
+					number_to_bytes(8);
 
 				# from https://rosettacode.org/wiki/Non-decimal_radices/Convert#jq
 				# unknown author
