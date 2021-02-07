@@ -64,8 +64,11 @@ func main() {
 					cmd := exec.Command("sh", "-c", l[1:])
 					o, _ := cmd.CombinedOutput()
 					fmt.Print(string(o))
-				} else if strings.HasPrefix(l, "#") || []rune(l) == nonBreakingSpace {
-					// keep comments and empty lines
+				} else if strings.HasPrefix(l, "#") {
+					// keep comments
+					fmt.Println(l)
+				} else if len(l) >= 2 && []rune(l)[0] == nonBreakingSpace {
+					// keep non-breaking space empty lines
 					fmt.Println(l)
 				}
 			}
