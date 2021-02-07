@@ -13,12 +13,49 @@ import (
 	"fq/internal/progressreadseeker"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
+	"fq/pkg/format"
 	"io"
 	"io/ioutil"
 	"math/big"
 	"net/url"
 	"strings"
 )
+
+// TODO: make it nicer somehow?
+func (q *Query) makeFunctions(opts QueryOptions) []Function {
+	fs := []Function{
+		{[]string{"help"}, 0, 0, q.help},
+		{[]string{"open"}, 0, 1, q.open},
+		{[]string{"dump", "d"}, 0, 1, q.makeDumpFn(decode.DumpOptions{})},
+		{[]string{"verbose", "v"}, 0, 1, q.makeDumpFn(decode.DumpOptions{Verbose: true})},
+		{[]string{"summary", "s"}, 0, 1, q.makeDumpFn(decode.DumpOptions{MaxDepth: 1})},
+		{[]string{"hexdump", "hd", "h"}, 0, 0, q.hexdump},
+		{[]string{"bits"}, 0, 2, q.bits},
+		{[]string{"string"}, 0, 0, q.string_},
+		{[]string{"decode"}, 0, 1, q.makeDecodeFn(opts.Registry, opts.Registry.MustGroup(format.PROBE))},
+		{[]string{"u"}, 0, 1, q.u},
+		{[]string{"push"}, 0, 0, q.push},
+		{[]string{"pop"}, 0, 0, q.pop},
+		{[]string{"_value_keys"}, 0, 0, q._valueKeys},
+		{[]string{"formats"}, 0, 0, q.formats},
+		{[]string{"preview", "p"}, 0, 0, q.preview},
+		{[]string{"md5"}, 0, 0, q.md5},
+		{[]string{"base64"}, 0, 0, q.base64},
+		{[]string{"unbase64"}, 0, 0, q.unbase64},
+		{[]string{"hex"}, 0, 0, q.hex},
+		{[]string{"unhex"}, 0, 0, q.unhex},
+		{[]string{"query_escape"}, 0, 0, q.queryEscape},
+		{[]string{"query_unescape"}, 0, 0, q.queryUnescape},
+		{[]string{"path_escape"}, 0, 0, q.pathEscape},
+		{[]string{"path_unescape"}, 0, 0, q.pathUnescape},
+		{[]string{"aes_ctr"}, 1, 2, q.aesCtr},
+	}
+	for name, f := range q.opts.Registry.Groups {
+		fs = append(fs, Function{[]string{name}, 0, 0, q.makeDecodeFn(opts.Registry, f)})
+	}
+
+	return fs
+}
 
 func (q *Query) hexdump(c interface{}, a []interface{}) interface{} {
 	bb, r, _, err := toBitBuf(c)
@@ -207,6 +244,7 @@ func (q *Query) makeDumpFn(fnOpts decode.DumpOptions) func(c interface{}, a []in
 		opts.Verbose = fnOpts.Verbose
 
 		if len(a) >= 1 {
+			// TODO: refactor to somekind of read options function?
 			if optsMap, ok := a[0].(map[string]interface{}); ok {
 				if v, ok := optsMap["maxdepth"]; ok {
 					opts.MaxDepth = num.MaxInt(0, v.(int))

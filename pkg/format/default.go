@@ -89,7 +89,7 @@ type OggPageOut struct {
 	IsContinuedPacket  bool
 	StreamSerialNumber uint32
 	SequenceNo         uint32
-	Segments           []*bitio.Buffer
+	Segments           []*bitio.Buffer // TODO: bitio.Reader (bitio.MultiReader internally?)
 }
 
 type AvcIn struct {
@@ -102,5 +102,5 @@ type AvcDcrOut struct {
 
 type MpegEsOut struct {
 	// TODO: slice of decoder description structs?
-	ObjectTypes []int
+	ObjectTypes []int // use format type?
 }

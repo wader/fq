@@ -56,8 +56,8 @@ Language:
 Functions:
 
 - `open(path) ` opens file
-- `decode([name])` decode as name or try to automatically detect
-- All decoders are available as functions with their name, e.g. `... | mp3_frame`
+- `decode([name])` decode as named format or try to automatically detect
+- All decoders an groups are available as decode functions with their name, e.g. `... | mp3_frame`, `image`, `probe`.
 - `d`/`dump` show field tree
 - `v`/`verbose` show field tree verbosely
 - `p`/`preview` show preview of field tree
@@ -149,6 +149,7 @@ TODO
 - Document decode maturity/completeness
 - Embed jq code using go 1.16 embed
 - Arbitrary integer base literals
+- Make jq functions that change state fail is called more than once? decode etc?
 
 ### Ideas
 
