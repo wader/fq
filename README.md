@@ -1,53 +1,41 @@
-## fq
+# fq
 
 jq for binary files
 
-```
+Tool and framework for querying and exploring binary formats.
+
+##
+
+``` (exec)
 # duration of a mp3 file
 $ fq file.mp3 '[.frames[] | .samples_per_frame / .sample_rate] | add'
-7504.169795907116
+0.0783673469387755
 
-# width/height of embedded id3v2 jpeg picture
-$ fq file.mp3 '.header.frames[] | select(.id == "APIC").picture.segments[] | select(.code._symbol == "SOF0")'
-   |                                               |                |.header.frames[8].picture.segments[4]:
-3b0|ff                                             |.               |  prefix: ff
-3b0|   c0                                          | .              |  code: SOF0 (192)
-3b0|      00 11                                    |  ..            |  Lf: 17
-3b0|            08                                 |    .           |  P: 8
-3b0|               01 40                           |     .@         |  Y: 320
-3b0|                     01 40                     |       .@       |  X: 320
-3b0|                           03                  |         .      |  Nf: 3
-3b0|                              01 22 00 02 11 01|          ."....|  frame_components[3]:
-3c0|03 11 01                                       |...             |
-$  fq file.mp3 '.header.frames[] | select(.id == "APIC").picture.segments[] | select(.code._symbol == "SOF0") | {X,Y}'
+# embedded id3v2 png picture
+$ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture'
+   |                                               |                |.headers[0].frames[1].picture: png
+030|                              89 50 4e 47 0d 0a|          .PNG..|  signature: Correct ("\x89PNG\r\n\x1a\n")
+040|1a 0a                                          |..              |
+040|      00 00 00 0d 49 48 44 52 00 00 01 40 00 00|  ....IHDR...@..|  chunks[4]:
+050|00 f0 08 02 00 00 00 fe 4f 2a 3c 00 00 00 09 70|........O*<....p|
+*  |2649 bytes more until ab8+7                    |                |
+
+# resolution of embedded png picture
+$ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture.chunks[] | select(.type == "IHDR") | {width, height}'
 {
-  "X": 320,
-  "Y": 320
+  "height": 240,
+  "width": 320
 }
-$ fq file.mp3 '.header.frames[] | select(.id == "APIC").picture._raw' > picture.jpeg
-$ file picture.jpeg
-JPEG image data, JFIF standard 1.01, resolution (DPI), density 96x96, segment length 16, baseline, precision 8, 320x320, components 3
 
-# bitrate of first two and last frames
-$ fq file.mp3 '[(.frames[0:2] + .frames[-3:-1])[].bitrate]'
-[
-  128000,
-  128000,
-  128000,
-  128000
-]
+$ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture._raw' > file.png
+$ file file.png
+file.png: PNG image data, 320 x 240, 8-bit/color RGB, non-interlaced
 
-# mp4 sidx
-$ fq test.mp4 '.. | select(.type == "sidx") | [.index_table[] | {size, duration}]'
+# codecs in mp4 file
+$ fq file.mp4 '[.. | select(.type == "stsd").sample_descriptions[].data_format]'
 [
-  {
-    "duration": 94208,
-    "size": 104035
-  },
-  {
-    "duration": 33792,
-    "size": 38475
-  }
+  "avc1",
+  "mp4a"
 ]
 ```
 
@@ -81,17 +69,15 @@ TODO: repl
 ## How to use
 
 TODO: unknown for gaps
+
 TODO: piping
 
 ## Decoders
 
-[_dev/decoders_markdown]: sh-start
+[./decoders_markdown]: sh-start
 
 |Name|Description|
 |-|-|
-|aac_adts|Audio data transport stream packet|
-|aac_frame|Advanced Audio Coding frame|
-|aac_stream|Raw audio data transport stream|
 |apev2|APEv2 metadata tag|
 |bzip2|bzip2 compression|
 |dns|DNS packet|
@@ -112,6 +98,9 @@ TODO: piping
 |mp3_frame|MPEG audio layer 3 frame|
 |mp3_xing|Xing header|
 |mp4|MP4 container|
+|mpeg_aac_frame|Advanced Audio Coding frame|
+|mpeg_aac_stream|Raw audio data transport stream|
+|mpeg_adts|Audio data transport stream packet|
 |mpeg_asc|MPEG-4 Audio specific config|
 |mpeg_avc|H.264/AVC sample|
 |mpeg_avc_dcr|H.264/AVC Decoder configuration record|
@@ -149,9 +138,10 @@ TODO
 ### TODOs
 
 - Nested BitBufs, how to show? what about ranges? for example compressed data, demuxed ogg
+- CRC fields, how to update with actual? fix flac
 - Clean up panics, errors, better partial decode
 - bitio.MultiBitReader to save memory
-- Cleanup decoder API
+- Cleanup decoder API, nested bufs, decoders, try decode loop? decodebuf?
 - Save encoding for values, LE, BE, varint etc
 - Cleanup decoders
 - Document decode maturity/completeness
@@ -160,8 +150,9 @@ TODO
 
 ### Ideas
 
-- Some kind of UI, web and cli? maybe would be nice to show hex dump etc with overlapping fields?
-- Would it be possible to save memory by just record range/decoder at first decode and
+- Suppose writing decoder in scripting language, jq, js, tango etc?
+- Some kind of UI, web and cli? would be nice to visualize overlapping fields
+- Is it possible to save memory by just record range/decoder at first decode and
 then decode as needed later?
 - Move more things to jq code, dumper, CLI, help, REPL?
 - Some kind of bit vs bytes position notation/type

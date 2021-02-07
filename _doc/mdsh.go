@@ -40,6 +40,7 @@ func main() {
 		return scanner.Text(), ok
 	}
 
+	execRe := regexp.MustCompile("```.* (exec)")
 	shStartRe := regexp.MustCompile(`\[(.*)\]: sh-start`)
 	shEnd := "[#]: sh-end"
 
@@ -49,7 +50,7 @@ func main() {
 			break
 		}
 
-		if l == "```sh (exec)" {
+		if execRe.MatchString(l) {
 			fmt.Println(l)
 			for {
 				l, ok := nextLine()
@@ -62,7 +63,8 @@ func main() {
 					cmd := exec.Command("sh", "-c", l[1:])
 					o, _ := cmd.CombinedOutput()
 					fmt.Print(string(o))
-				} else if strings.HasPrefix(l, "#") {
+				} else if strings.HasPrefix(l, "#") || l == "" {
+					// keep comments and empty lines
 					fmt.Println(l)
 				}
 			}

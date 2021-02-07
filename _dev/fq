@@ -1,3 +1,0 @@
-#!/bin/sh
-# wrapper to have in $PATH for README.md generator etc to run current version
-exec go run cmd/fq/main.go "$@"

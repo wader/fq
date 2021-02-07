@@ -28,6 +28,7 @@ func init() {
 }
 
 func mp3Decode(d *decode.D, in interface{}) interface{} {
+	// there are mp3s files in the wild with multiple headers, two id3v2 tags etc
 	d.FieldArrayFn("headers", func(d *decode.D) {
 		for d.NotEnd() {
 			if _, _, err := d.FieldTryDecode("header", headerFormat); err != nil {
@@ -38,7 +39,7 @@ func mp3Decode(d *decode.D, in interface{}) interface{} {
 
 	validFrames := 0
 	d.FieldArrayFn("frames", func(d *decode.D) {
-		for !d.End() {
+		for d.NotEnd() {
 			if _, _, errs := d.FieldTryDecode("frame", mp3Frame); errs != nil {
 				break
 			}
