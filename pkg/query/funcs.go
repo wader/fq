@@ -247,22 +247,22 @@ func (q *Query) makeDumpFn(fnOpts decode.DumpOptions) func(c interface{}, a []in
 			// TODO: refactor to somekind of read options function?
 			if optsMap, ok := a[0].(map[string]interface{}); ok {
 				if v, ok := optsMap["maxdepth"]; ok {
-					opts.MaxDepth = num.MaxInt(0, v.(int))
+					opts.MaxDepth = num.MaxInt(0, toIntZ(v))
 				}
 				if v, ok := optsMap["verbose"]; ok {
-					opts.Verbose = v.(bool)
+					opts.Verbose = toBoolZ(v)
 				}
 				if v, ok := optsMap["linebytes"]; ok {
-					opts.LineBytes = num.MaxInt(0, v.(int))
+					opts.LineBytes = num.MaxInt(0, toIntZ(v))
 				}
 				if v, ok := optsMap["maxdisplaybytes"]; ok {
-					opts.MaxDisplayBytes = num.MaxInt64(0, v.(int64))
+					opts.MaxDisplayBytes = num.MaxInt64(0, toInt64Z(v))
 				}
 				if v, ok := optsMap["addrbase"]; ok {
-					opts.AddrBase = num.ClampInt(2, 36, v.(int))
+					opts.AddrBase = num.ClampInt(2, 36, toIntZ(v))
 				}
 				if v, ok := optsMap["sizebase"]; ok {
-					opts.SizeBase = num.ClampInt(2, 36, v.(int))
+					opts.SizeBase = num.ClampInt(2, 36, toIntZ(v))
 				}
 			}
 		}

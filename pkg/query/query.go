@@ -61,6 +61,41 @@ type loadModuleFn func(name string) (*gojq.Query, error)
 func (l loadModuleFn) LoadModule(name string) (*gojq.Query, error) {
 	return l(name)
 }
+func toBool(v interface{}) (bool, error) {
+	switch v := v.(type) {
+	case *big.Int:
+		return v.Int64() != 0, nil
+	case int:
+		return v != 0, nil
+	case float64:
+		return v != 0, nil
+	default:
+		return false, fmt.Errorf("value is not a number")
+	}
+}
+
+func toBoolZ(v interface{}) bool {
+	b, _ := toBool(v)
+	return b
+}
+
+func toInt(v interface{}) (int, error) {
+	switch v := v.(type) {
+	case *big.Int:
+		return int(v.Int64()), nil
+	case int:
+		return v, nil
+	case float64:
+		return int(v), nil
+	default:
+		return 0, fmt.Errorf("value is not a number")
+	}
+}
+
+func toIntZ(v interface{}) int {
+	n, _ := toInt(v)
+	return n
+}
 
 func toInt64(v interface{}) (int64, error) {
 	switch v := v.(type) {
@@ -73,6 +108,11 @@ func toInt64(v interface{}) (int64, error) {
 	default:
 		return 0, fmt.Errorf("value is not a number")
 	}
+}
+
+func toInt64Z(v interface{}) int64 {
+	n, _ := toInt64(v)
+	return n
 }
 
 func toString(v interface{}) (string, error) {

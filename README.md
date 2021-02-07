@@ -139,6 +139,7 @@ TODO
 
 ### TODOs
 
+- Copy/pasteable output, add base prefixes
 - Nested BitBufs, how to show? what about ranges? for example compressed data, demuxed ogg
 - CRC fields, how to update with actual? fix flac
 - Clean up panics, errors, better partial decode
