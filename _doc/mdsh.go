@@ -40,7 +40,8 @@ func main() {
 		return scanner.Text(), ok
 	}
 
-	execRe := regexp.MustCompile("```.* (exec)")
+	execRe := regexp.MustCompile("```.* \\(exec\\)")
+	const nonBreakingSpace = rune(0xa0) // -> " "
 	shStartRe := regexp.MustCompile(`\[(.*)\]: sh-start`)
 	shEnd := "[#]: sh-end"
 
@@ -63,7 +64,7 @@ func main() {
 					cmd := exec.Command("sh", "-c", l[1:])
 					o, _ := cmd.CombinedOutput()
 					fmt.Print(string(o))
-				} else if strings.HasPrefix(l, "#") || l == "" {
+				} else if strings.HasPrefix(l, "#") || []rune(l) == nonBreakingSpace {
 					// keep comments and empty lines
 					fmt.Println(l)
 				}

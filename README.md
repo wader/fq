@@ -10,7 +10,7 @@ Tool and framework for querying and exploring binary formats.
 # duration of a mp3 file
 $ fq file.mp3 '[.frames[] | .samples_per_frame / .sample_rate] | add'
 0.0783673469387755
-
+ 
 # embedded id3v2 png picture
 $ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture'
    |                                               |                |.headers[0].frames[1].picture: png
@@ -19,18 +19,18 @@ $ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture'
 040|      00 00 00 0d 49 48 44 52 00 00 01 40 00 00|  ....IHDR...@..|  chunks[4]:
 050|00 f0 08 02 00 00 00 fe 4f 2a 3c 00 00 00 09 70|........O*<....p|
 *  |2649 bytes more until ab8+7                    |                |
-
+ 
 # resolution of embedded png picture
 $ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture.chunks[] | select(.type == "IHDR") | {width, height}'
 {
   "height": 240,
   "width": 320
 }
-
+ 
 $ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture._raw' > file.png
 $ file file.png
 file.png: PNG image data, 320 x 240, 8-bit/color RGB, non-interlaced
-
+ 
 # codecs in mp4 file
 $ fq file.mp4 '[.. | select(.type == "stsd").sample_descriptions[].data_format]'
 [
