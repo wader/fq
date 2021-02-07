@@ -344,8 +344,8 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 					d.Invalid(fmt.Sprintf("expected mpegEsOut got %#+v", dv))
 				}
 
-				if ctx.currentTrack != nil && len(mpegEsOut.ObjectTypes) > 0 {
-					ctx.currentTrack.objectType = mpegEsOut.ObjectTypes[0]
+				if ctx.currentTrack != nil && len(mpegEsOut.DecoderConfigs) > 0 {
+					ctx.currentTrack.objectType = mpegEsOut.DecoderConfigs[0].ObjectType
 				}
 
 			default:
@@ -731,15 +731,10 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 				case "avc1":
 					d.FieldDecodeRange("sample", firstBit, nBits, mpegAVCSampleFormat, t.decodeOpts...)
 				case "mp4a":
-					// TODO: refactor to share somehow?
-					const (
-						MPEG1AudioL1L2L3 = 0x6b
-						MPEG4Audio       = 0x40
-					)
 					switch t.objectType {
-					case MPEG1AudioL1L2L3:
+					case format.MPEG1AudioL1L2L3:
 						d.FieldDecodeRange("sample", firstBit, nBits, mp3FrameFormat, t.decodeOpts...)
-					case MPEG4Audio:
+					case format.MPEG4Audio:
 						d.FieldDecodeRange("sample", firstBit, nBits, aacFrameFormat, t.decodeOpts...)
 					default:
 						d.FieldBitBufRange("sample", firstBit, nBits)

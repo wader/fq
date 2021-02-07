@@ -100,7 +100,21 @@ type AvcDcrOut struct {
 	LengthSize uint64
 }
 
+// TODO: better names? move to some kind of ns with shared constants?
+const (
+	MPEG1AudioL1L2L3 = 0x6b
+	MPEG4Audio       = 0x40
+)
+
+var MpegObjectTypeNames = map[uint64]string{
+	MPEG1AudioL1L2L3: "MPEG1AudioL1L2L3",
+	MPEG4Audio:       "MPEG4Audio",
+}
+
+type MpegDecoderConfig struct {
+	ObjectType int
+}
+
 type MpegEsOut struct {
-	// TODO: slice of decoder description structs?
-	ObjectTypes []int // use format type?
+	DecoderConfigs []MpegDecoderConfig
 }

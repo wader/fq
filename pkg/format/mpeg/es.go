@@ -115,13 +115,33 @@ var odTagNames = map[uint64]string{
 }
 
 const (
-	MPEG1AudioL1L2L3 = 0x6b
-	MPEG4Audio       = 0x40
+	Forbidden               = 0x00
+	ObjectDescriptorStream  = 0x01
+	ClockReferenceStream    = 0x02
+	SceneDescriptionStream  = 0x03
+	VisualStream            = 0x04
+	AudioStream             = 0x05
+	MPEG7Stream             = 0x06
+	IPMPStream              = 0x07
+	ObjectContentInfoStream = 0x08
+	MPEGJStream             = 0x09
+	InteractionStream       = 0x0A
+	IPMPToolStream          = 0x0B
 )
 
-var objectTypeNames = map[uint64]string{
-	MPEG1AudioL1L2L3: "MPEG1AudioL1L2L3",
-	MPEG4Audio:       "MPEG4Audio",
+var streamTypeNames = map[uint64]string{
+	Forbidden:               "Forbidden",
+	ObjectDescriptorStream:  "ObjectDescriptorStream",
+	ClockReferenceStream:    "ClockReferenceStream",
+	SceneDescriptionStream:  "SceneDescriptionStream",
+	VisualStream:            "VisualStream",
+	AudioStream:             "AudioStream",
+	MPEG7Stream:             "MPEG7Stream",
+	IPMPStream:              "IPMPStream",
+	ObjectContentInfoStream: "ObjectContentInfoStream",
+	MPEGJStream:             "MPEGJStream",
+	InteractionStream:       "InteractionStream",
+	IPMPToolStream:          "IPMPToolStream",
 }
 
 func esLengthEncoding(d *decode.D) uint64 {
@@ -168,35 +188,7 @@ func odDecodeTag(d *decode.D, mpegEsOut *format.MpegEsOut, expectedTagID int, fn
 			fieldODDecodeTag(d, mpegEsOut, "sl_config_descr", -1, nil)
 		},
 		DecoderConfigDescrTag: func(d *decode.D) {
-			objectType, _ := d.FieldStringMapFn("object_type_indication", objectTypeNames, "Unknown", d.U8)
-			const (
-				Forbidden               = 0x00
-				ObjectDescriptorStream  = 0x01
-				ClockReferenceStream    = 0x02
-				SceneDescriptionStream  = 0x03
-				VisualStream            = 0x04
-				AudioStream             = 0x05
-				MPEG7Stream             = 0x06
-				IPMPStream              = 0x07
-				ObjectContentInfoStream = 0x08
-				MPEGJStream             = 0x09
-				InteractionStream       = 0x0A
-				IPMPToolStream          = 0x0B
-			)
-			streamTypeNames := map[uint64]string{
-				Forbidden:               "Forbidden",
-				ObjectDescriptorStream:  "ObjectDescriptorStream",
-				ClockReferenceStream:    "ClockReferenceStream",
-				SceneDescriptionStream:  "SceneDescriptionStream",
-				VisualStream:            "VisualStream",
-				AudioStream:             "AudioStream",
-				MPEG7Stream:             "MPEG7Stream",
-				IPMPStream:              "IPMPStream",
-				ObjectContentInfoStream: "ObjectContentInfoStream",
-				MPEGJStream:             "MPEGJStream",
-				InteractionStream:       "InteractionStream",
-				IPMPToolStream:          "IPMPToolStream",
-			}
+			objectType, _ := d.FieldStringMapFn("object_type_indication", format.MpegObjectTypeNames, "Unknown", d.U8)
 			d.FieldStringMapFn("stream_type", streamTypeNames, "Unknown", d.U6)
 			d.FieldBool("upsteam")
 			specificInfoFlag := d.FieldBool("specific_info_flag")
@@ -205,7 +197,7 @@ func odDecodeTag(d *decode.D, mpegEsOut *format.MpegEsOut, expectedTagID int, fn
 			d.FieldU32("avg_bit_rate")
 
 			switch objectType {
-			case MPEG4Audio:
+			case format.MPEG4Audio:
 				// TODO: only if aac?
 				if specificInfoFlag {
 					fieldODDecodeTag(d, mpegEsOut, "decoder_specific_info", -1, func(d *decode.D) {
@@ -214,7 +206,9 @@ func odDecodeTag(d *decode.D, mpegEsOut *format.MpegEsOut, expectedTagID int, fn
 				}
 			}
 
-			mpegEsOut.ObjectTypes = append(mpegEsOut.ObjectTypes, int(objectType))
+			mpegEsOut.DecoderConfigs = append(mpegEsOut.DecoderConfigs, format.MpegDecoderConfig{
+				ObjectType: int(objectType),
+			})
 		},
 	}
 

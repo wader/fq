@@ -152,6 +152,7 @@ TODO
 - Make jq functions that change state fail if called more than once? decode etc?
 - REPL push/pop, variables etc?
 - REPL tests
+- Refactor *[]decode.Format into something more abstract, group?
 
 ### Ideas
 
