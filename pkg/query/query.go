@@ -207,7 +207,7 @@ func NewQuery(opts QueryOptions) *Query {
 		{[]string{"hexdump", "hd", "h"}, 0, 0, q.hexdump},
 		{[]string{"bits"}, 0, 2, q.bits},
 		{[]string{"string"}, 0, 0, q.string_},
-		{[]string{"probe"}, 0, 1, q.makeProbeFn(opts.Registry, opts.Registry.MustGroup(format.PROBE))},
+		{[]string{"decode"}, 0, 1, q.makeDecodeFn(opts.Registry, opts.Registry.MustGroup(format.PROBE))},
 		{[]string{"u"}, 0, 1, q.u},
 		{[]string{"push"}, 0, 0, q.push},
 		{[]string{"pop"}, 0, 0, q.pop},
@@ -226,7 +226,7 @@ func NewQuery(opts QueryOptions) *Query {
 		{[]string{"aes_ctr"}, 1, 2, q.aesCtr},
 	}
 	for name, f := range q.opts.Registry.Groups {
-		q.functions = append(q.functions, Function{[]string{name}, 0, 0, q.makeProbeFn(opts.Registry, f)})
+		q.functions = append(q.functions, Function{[]string{name}, 0, 0, q.makeDecodeFn(opts.Registry, f)})
 	}
 
 	// TODO: redo args handling in jq? a cli_entry function that reads args?

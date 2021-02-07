@@ -77,7 +77,7 @@ def gnuplot($plot):
 
 gnuplot(makeplot(
     [
-        open($FILENAME) | probe | .frames[] | . as $f |
+        open($FILENAME) | decode | .frames[] | . as $f |
         [[$f.end_of_header.frame_number, ._size/8]] +
         [.subframes[] | [$f.end_of_header.frame_number, .rice_partitions]]
     ] | transpose

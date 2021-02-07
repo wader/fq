@@ -53,7 +53,8 @@ func (m Main) run() error {
 	fs := flag.NewFlagSet("", flag.ContinueOnError)
 	fs.SetOutput(m.OS.Stderr())
 	versionFlag := fs.Bool("version", false, fmt.Sprintf("Show version(%s)", fq.Version))
-	formatNameFlag := fs.String("f", "probe", "Format name")
+	// TODO: confusing that "decode" is default?
+	formatNameFlag := fs.String("f", "decode", "Format name")
 	noInputFlag := fs.Bool("n", false, "No input")
 	maxDisplayBytes := fs.Int64("d", 16, "Max display bytes")
 	scriptFlag := fs.String("s", "", "Script path")

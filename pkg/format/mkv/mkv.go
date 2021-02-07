@@ -146,7 +146,7 @@ type track struct {
 	codec               string
 	codecPrivatePos     int64
 	codecPrivateTagSize int64
-	decodeOpts          []decode.Option
+	decodeOpts          []decode.Options
 }
 
 type simpleBlock struct {
@@ -398,7 +398,7 @@ func mkvDecode(d *decode.D, in interface{}) interface{} {
 			// TODO: lacing etc
 
 			codec := ""
-			var decodeOpts []decode.Option
+			var decodeOpts []decode.Options
 			t := trackNumberToTrack[int(trackNumber)]
 			if t != nil {
 				codec = t.codec

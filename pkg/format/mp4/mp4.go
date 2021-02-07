@@ -58,7 +58,7 @@ type track struct {
 	stco       []uint64 //
 	stsc       []stsc
 	stsz       []uint32
-	decodeOpts []decode.Option
+	decodeOpts []decode.Options
 	objectType int // if data format is "mp4a"
 
 	moofs       []*moof // for fmp4
@@ -724,7 +724,7 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 
 	d.FieldArrayFn("tracks", func(d *decode.D) {
 		for _, t := range ctx.tracks {
-			decodeSampleRange := func(d *decode.D, t *track, name string, firstBit int64, nBits int64, opts ...decode.Option) {
+			decodeSampleRange := func(d *decode.D, t *track, name string, firstBit int64, nBits int64, opts ...decode.Options) {
 				switch t.dataFormat {
 				case "fLaC":
 					d.FieldDecodeRange("sample", firstBit, nBits, flacFrameFormat, t.decodeOpts...)

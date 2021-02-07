@@ -151,7 +151,7 @@ func (q *Query) open(c interface{}, a []interface{}) interface{} {
 		rs = f
 	}
 
-	//TODO: how to know when probe is done?
+	//TODO: how to know when decode is done?
 	// TODO: refactor
 	bPos, err := rs.Seek(0, io.SeekCurrent)
 	if err != nil {
@@ -238,7 +238,7 @@ func (q *Query) makeDumpFn(fnOpts decode.DumpOptions) func(c interface{}, a []in
 	}
 }
 
-func (q *Query) makeProbeFn(registry *decode.Registry, probeFormats []*decode.Format) func(c interface{}, a []interface{}) interface{} {
+func (q *Query) makeDecodeFn(registry *decode.Registry, decodeFormats []*decode.Format) func(c interface{}, a []interface{}) interface{} {
 	return func(c interface{}, a []interface{}) interface{} {
 		// TODO: progress hack
 		// would be nice to move progress code into decode but it might be
@@ -271,13 +271,13 @@ func (q *Query) makeProbeFn(registry *decode.Registry, probeFormats []*decode.Fo
 			if err != nil {
 				return fmt.Errorf("%s: %w", formatName, err)
 			}
-			probeFormats, err = registry.Group(formatName)
+			decodeFormats, err = registry.Group(formatName)
 			if err != nil {
 				return fmt.Errorf("%s: %w", formatName, err)
 			}
 		}
 
-		dv, _, errs := decode.Probe(name, bb, probeFormats, decode.ProbeOptions{FormatOptions: opts})
+		dv, _, errs := decode.Decode(name, bb, decodeFormats, decode.DecodeOptions{FormatOptions: opts})
 		if dv == nil {
 			return errs
 		}

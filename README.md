@@ -45,24 +45,26 @@ TODO
 
 ## Differences to jq / gojq
 
-fq uses a fork of gojq that has these language additions
+fq uses a fork of [gojq](https://github.com/itchyny/gojq) that has these additions
+
+Language:
 
 - Hex `0xab`, octal `0o77` and binary `0b101` integer literals
 - Bitwise operations, `band`, `bor`, `bxor`, `bsl`, `bsr`, `bnot`
 - `div` integer division function
 
-fq also has some additions
+Functions:
 
-- TODO: `scope` and `scopedump` functions used to implement REPL completion
-- TODO: Custom object interface used to traverse fq's field tree and to allowing a terse
-syntax for comparing and working with fields, accessing child fields and special properties like `_range`.
 - `open(path) ` opens file
-- `probe([name])` try to automatically detect and decode, TODO: rename to `decode`?
+- `decode([name])` decode as name or try to automatically detect
 - All decoders are available as functions with their name, e.g. `... | mp3_frame`
 - `d`/`dump` show field tree
 - `v`/`verbose` show field tree verbosely
 - `p`/`preview` show preview of field tree
 - TODO: more functions
+- TODO: `scope` and `scopedump` functions used to implement REPL completion
+- TODO: Custom object interface used to traverse fq's field tree and to allowing a terse
+syntax for comparing and working with fields, accessing child fields and special properties like `_range`.
 
 TODO: repl
 
@@ -159,5 +161,5 @@ then decode as needed later?
 
 ## Thanks
 
-Would not be possible without [itchyny](https://github.com/itchyny)'s
+fq would not be possible without [itchyny](https://github.com/itchyny)'s
 jq implementation [gojq](https://github.com/itchyny/gojq).
