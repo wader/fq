@@ -149,7 +149,9 @@ TODO
 - Document decode maturity/completeness
 - Embed jq code using go 1.16 embed
 - Arbitrary integer base literals
-- Make jq functions that change state fail is called more than once? decode etc?
+- Make jq functions that change state fail if called more than once? decode etc?
+- REPL push/pop, variables etc?
+- REPL tests
 
 ### Ideas
 
