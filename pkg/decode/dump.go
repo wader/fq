@@ -135,7 +135,7 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 
 	if isField || (opts.MaxDepth != 0 && opts.MaxDepth == depth) {
 		fmt.Fprintf(cw.Columns[0], "%s%s\n",
-			rootIndent, num.PadFormatInt(startLineByte, opts.AddrBase, addrWidth))
+			rootIndent, num.PadFormatInt(startLineByte, opts.AddrBase, true, addrWidth))
 
 		color := false
 		vBitBuf, err := rootV.RootBitBuf.BitBufRange(startByte*8, displaySizeBits)
@@ -182,7 +182,7 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 
 		for i := int64(1); i < addrLines; i++ {
 			lineStartByte := startLineByte + int64(i)*int64(opts.LineBytes)
-			fmt.Fprintf(cw.Columns[0], "%s%s\n", rootIndent, num.PadFormatInt(lineStartByte, opts.AddrBase, addrWidth))
+			fmt.Fprintf(cw.Columns[0], "%s%s\n", rootIndent, num.PadFormatInt(lineStartByte, opts.AddrBase, true, addrWidth))
 			fmt.Fprintf(cw.Columns[1], "|\n")
 			fmt.Fprintf(cw.Columns[3], "|\n")
 			fmt.Fprintf(cw.Columns[5], "|\n")
@@ -234,7 +234,7 @@ func (v *Value) Dump(w io.Writer, opts DumpOptions) error {
 	v.WalkPreOrder(makeWalkFn(func(v *Value, rootV *Value, depth int, rootDepth int) error {
 		maxAddrIndentWidth = num.MaxInt(
 			maxAddrIndentWidth,
-			rootDepth+num.DigitsInBase(bitio.BitsByteCount(v.Range.Stop()), opts.AddrBase),
+			rootDepth+num.DigitsInBase(bitio.BitsByteCount(v.Range.Stop()), true, opts.AddrBase),
 		)
 		return nil
 	}))

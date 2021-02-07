@@ -94,6 +94,27 @@ def field_inrange($p): ._type == "field" and ._range.start <= $p and $p < ._rang
 
 `
 
+func mapSetDumpOptions(d *decode.DumpOptions, m map[string]interface{}) {
+	if v, ok := m["maxdepth"]; ok {
+		d.MaxDepth = num.MaxInt(0, toIntZ(v))
+	}
+	if v, ok := m["verbose"]; ok {
+		d.Verbose = toBoolZ(v)
+	}
+	if v, ok := m["linebytes"]; ok {
+		d.LineBytes = num.MaxInt(0, toIntZ(v))
+	}
+	if v, ok := m["maxdisplaybytes"]; ok {
+		d.MaxDisplayBytes = num.MaxInt64(0, toInt64Z(v))
+	}
+	if v, ok := m["addrbase"]; ok {
+		d.AddrBase = num.ClampInt(2, 36, toIntZ(v))
+	}
+	if v, ok := m["sizebase"]; ok {
+		d.SizeBase = num.ClampInt(2, 36, toIntZ(v))
+	}
+}
+
 // TODO: make it nicer somehow?
 func (q *Query) makeFunctions(opts QueryOptions) []Function {
 	fs := []Function{
@@ -102,7 +123,7 @@ func (q *Query) makeFunctions(opts QueryOptions) []Function {
 		{[]string{"dump", "d"}, 0, 1, q.makeDumpFn(decode.DumpOptions{})},
 		{[]string{"verbose", "v"}, 0, 1, q.makeDumpFn(decode.DumpOptions{Verbose: true})},
 		{[]string{"summary", "s"}, 0, 1, q.makeDumpFn(decode.DumpOptions{MaxDepth: 1})},
-		{[]string{"hexdump", "hd", "h"}, 0, 0, q.hexdump},
+		{[]string{"hexdump", "hd", "h"}, 0, 1, q.hexdump},
 		{[]string{"bits"}, 0, 2, q.bits},
 		{[]string{"string"}, 0, 0, q.string_},
 		{[]string{"decode"}, 0, 1, q.makeDecodeFn(opts.Registry, opts.Registry.MustGroup(format.PROBE))},
@@ -142,11 +163,22 @@ func (q *Query) hexdump(c interface{}, a []interface{}) interface{} {
 		if err != nil {
 			return err
 		}
+
+		opts := q.opts.DumpOptions
+
+		if len(a) >= 1 {
+			// TODO: refactor to somekind of read options function?
+			if optsMap, ok := a[0].(map[string]interface{}); ok {
+				mapSetDumpOptions(&opts, optsMap)
+			}
+		}
+
 		hw := hexdump.New(
 			stdout,
 			(r.Start-bitsByteAlign)/8,
-			num.DigitsInBase(bitio.BitsByteCount(r.Stop()+bitsByteAlign), 16),
-			q.opts.DumpOptions.LineBytes)
+			num.DigitsInBase(bitio.BitsByteCount(r.Stop()+bitsByteAlign), true, opts.AddrBase),
+			opts.AddrBase,
+			opts.LineBytes)
 		if _, err := io.Copy(hw, bb); err != nil {
 			return err
 		}
@@ -319,24 +351,7 @@ func (q *Query) makeDumpFn(fnOpts decode.DumpOptions) func(c interface{}, a []in
 		if len(a) >= 1 {
 			// TODO: refactor to somekind of read options function?
 			if optsMap, ok := a[0].(map[string]interface{}); ok {
-				if v, ok := optsMap["maxdepth"]; ok {
-					opts.MaxDepth = num.MaxInt(0, toIntZ(v))
-				}
-				if v, ok := optsMap["verbose"]; ok {
-					opts.Verbose = toBoolZ(v)
-				}
-				if v, ok := optsMap["linebytes"]; ok {
-					opts.LineBytes = num.MaxInt(0, toIntZ(v))
-				}
-				if v, ok := optsMap["maxdisplaybytes"]; ok {
-					opts.MaxDisplayBytes = num.MaxInt64(0, toInt64Z(v))
-				}
-				if v, ok := optsMap["addrbase"]; ok {
-					opts.AddrBase = num.ClampInt(2, 36, toIntZ(v))
-				}
-				if v, ok := optsMap["sizebase"]; ok {
-					opts.SizeBase = num.ClampInt(2, 36, toIntZ(v))
-				}
+				mapSetDumpOptions(&opts, optsMap)
 			}
 		}
 

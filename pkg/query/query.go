@@ -63,6 +63,8 @@ func (l loadModuleFn) LoadModule(name string) (*gojq.Query, error) {
 }
 func toBool(v interface{}) (bool, error) {
 	switch v := v.(type) {
+	case bool:
+		return v, nil
 	case *big.Int:
 		return v.Int64() != 0, nil
 	case int:

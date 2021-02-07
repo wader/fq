@@ -6,21 +6,36 @@ import (
 	"strings"
 )
 
-func DigitsInBase(n int64, base int) int {
-	if n == 0 {
-		return 1
-	}
-	return int(1 + math.Floor(math.Log(float64(n))/math.Log(float64(base))))
+var BasePrefixMap = map[int]string{
+	2:  "0b",
+	8:  "0o",
+	16: "0x",
 }
 
-func PadFormatInt(i int64, base int, width int) string {
-	s := strconv.FormatInt(i, base)
-	p := width - len(s)
-	if p > 0 {
-		// TODO: something faster?
-		return strings.Repeat("0", p) + s
+func DigitsInBase(n int64, basePrefix bool, base int) int {
+	prefixLen := 0
+	if basePrefix {
+		prefixLen = len(BasePrefixMap[base])
 	}
-	return s
+	if n == 0 {
+		return prefixLen + 1
+	}
+	return prefixLen + int(1+math.Floor(math.Log(float64(n))/math.Log(float64(base))))
+}
+
+func PadFormatInt(i int64, base int, basePrefix bool, width int) string {
+	s := strconv.FormatInt(i, base)
+	prefixStr := ""
+	if basePrefix {
+		prefixStr = BasePrefixMap[base]
+	}
+	padStr := ""
+	padN := width - len(s) - len(prefixStr)
+	if padN > 0 {
+		// TODO: something faster?
+		padStr = strings.Repeat("0", padN)
+	}
+	return prefixStr + padStr + s
 }
 
 func MaxInt64(a, b int64) int64 {

@@ -43,7 +43,7 @@ func Test(t *testing.T) {
 	for _, tC := range testCases {
 		t.Run(fmt.Sprintf("%v", tC.writes), func(t *testing.T) {
 			b := &bytes.Buffer{}
-			hd := hexdump.New(b, int64(tC.startOffset), 2, 4)
+			hd := hexdump.New(b, int64(tC.startOffset), 2, 16, 4)
 			for _, w := range tC.writes {
 				if _, err := hd.Write(w); err != nil {
 					t.Fatal(err)

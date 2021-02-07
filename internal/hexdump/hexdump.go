@@ -11,6 +11,7 @@ import (
 
 type Dumper struct {
 	addrLen     int
+	addrBase    int
 	lineBytes   int64
 	columnW     *columnwriter.Writer
 	separatorsW io.Writer
@@ -18,10 +19,13 @@ type Dumper struct {
 	offset      int64
 }
 
-func New(w io.Writer, startOffset int64, addrLen int, lineBytes int) *Dumper {
+// TODO: replace addrLen width highest address and calc instead
+
+func New(w io.Writer, startOffset int64, addrLen int, addrBase int, lineBytes int) *Dumper {
 	cw := columnwriter.New(w, []int{addrLen, 1, lineBytes*3 - 1, 1, lineBytes, 1})
 	return &Dumper{
 		addrLen:     addrLen,
+		addrBase:    addrBase,
 		lineBytes:   int64(lineBytes),
 		columnW:     cw,
 		separatorsW: io.MultiWriter(cw.Columns[1], cw.Columns[3], cw.Columns[5]),
@@ -32,7 +36,7 @@ func New(w io.Writer, startOffset int64, addrLen int, lineBytes int) *Dumper {
 
 func (d *Dumper) flush() error {
 	if _, err := d.columnW.Columns[0].Write([]byte(
-		num.PadFormatInt(((d.offset-1)/d.lineBytes)*d.lineBytes, 16, d.addrLen))); err != nil {
+		num.PadFormatInt(((d.offset-1)/d.lineBytes)*d.lineBytes, d.addrBase, true, d.addrLen))); err != nil {
 		return err
 	}
 	if _, err := d.separatorsW.Write([]byte("|")); err != nil {
