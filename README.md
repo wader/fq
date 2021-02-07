@@ -12,13 +12,19 @@ $ fq file.mp3 '[.frames[] | .samples_per_frame / .sample_rate] | add'
 0.0783673469387755
  
 # embedded id3v2 png picture
-$ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture'
-   |                                               |                |.headers[0].frames[1].picture: png
-030|                              89 50 4e 47 0d 0a|          .PNG..|  signature: Correct ("\x89PNG\r\n\x1a\n")
-040|1a 0a                                          |..              |
-040|      00 00 00 0d 49 48 44 52 00 00 01 40 00 00|  ....IHDR...@..|  chunks[4]:
-050|00 f0 08 02 00 00 00 fe 4f 2a 3c 00 00 00 09 70|........O*<....p|
-*  |2649 bytes more until ab8+7                    |                |
+$ fq file.mp3 '.headers[].frames[] | select(.id == "APIC")'
+     |                                               |                |.headers[0].frames[1]:
+0x020|         41 50 49 43                           |   APIC         |  id: Attached picture ("APIC")
+0x020|                     00 00 15 0c               |       ....     |  size: 2700
+0x020|                                 00 00         |           ..   | -flags:
+0x020|                                       03      |             .  |  text_encoding: UTF-8 (3)
+0x020|                                          69 6d|              im|  mime_type: "image/png"
+0x030|61 67 65 2f 70 6e 67 00                        |age/png.        |
+0x030|                        00                     |        .       |  picture_type: 0
+0x030|                           00                  |         .      |  description: ""
+0x030|                              89 50 4e 47 0d 0a|          .PNG..| -picture: png
+0x040|1a 0a 00 00 00 0d 49 48 44 52 00 00 01 40 00 00|......IHDR...@..|
+*    |2665 bytes more until 0xab8+7                  |                |
  
 # resolution of embedded png picture
 $ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture.chunks[] | select(.type == "IHDR") | {width, height}'
@@ -27,11 +33,12 @@ $ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture.chunks[] | se
   "width": 320
 }
  
+# extract png
 $ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture._raw' > file.png
 $ file file.png
 file.png: PNG image data, 320 x 240, 8-bit/color RGB, non-interlaced
  
-# codecs in mp4 file
+# codecs in a mp4 file
 $ fq file.mp4 '[.. | select(.type == "stsd").sample_descriptions[].data_format]'
 [
   "avc1",

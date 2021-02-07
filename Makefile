@@ -32,10 +32,8 @@ README.md: _doc/file.mp3  _doc/file.mp4
 	mv "${TEMPDIR}/$@" "${REPODIR}/$@"
 	rm -rf "${TEMPDIR}"
 
-.PHONY: _doc/file.mp3
-_doc/file.mp3:
+_doc/file.mp3: Makefile
 	ffmpeg -y -f lavfi -i sine -f lavfi -i testsrc -map 0:0 -map 1:0 -t 20ms "$@"
 
-.PHONY: _doc/file.mp4
-_doc/file.mp4:
+_doc/file.mp4: Makefile
 	ffmpeg -y -f lavfi -i sine -f lavfi -i testsrc -c:a aac -c:v h264 -f mp4 -t 20ms "$@"
