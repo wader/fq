@@ -59,7 +59,7 @@ def gnuplot($plot):
         ),
         "EOD\n",
         "\n",
-        "set terminal svg ", [
+        "set terminal svg enhanced mouse ", [
             ($plot.size | if . then ["size ", join(",")] else empty end)
         ], "\n",
         ($plot.title | if . then ["set title '", ., "'\n"] else empty end),
