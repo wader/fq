@@ -511,6 +511,7 @@ func (v *Value) SpecialPropNames() []string {
 		"_size",
 		"_path",
 		"_raw",
+		"_error",
 	}
 }
 
@@ -554,6 +555,13 @@ func (v *Value) JsonProperty(name string) interface{} {
 			return err
 		}
 		r = bb
+	case "_error":
+		// TODO: export position, stack frames etc?
+		if de, ok := v.Error.(*DecodeError); ok {
+			r = de.PanicStack
+		} else {
+			r = v.Error
+		}
 	}
 
 	if r == nil {
