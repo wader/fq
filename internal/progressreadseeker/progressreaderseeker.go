@@ -11,7 +11,6 @@ package progressreadseeker
 
 import (
 	"io"
-	"log"
 )
 
 const progressPrecision = 1024
@@ -48,7 +47,7 @@ func (prs *progressReaderSeeker) Read(p []byte) (n int, err error) {
 	partStart := prs.pos / prs.partitionSize
 	partEnd := newPos / prs.partitionSize
 
-	log.Printf("prs.length: len=%d partitionSize=%d %d-%d pos %d->%d\n", prs.length, prs.partitionSize, partStart, partEnd, prs.pos, newPos)
+	// log.Printf("prs.length: len=%d partitionSize=%d %d-%d pos %d->%d\n", prs.length, prs.partitionSize, partStart, partEnd, prs.pos, newPos)
 
 	for i := partStart; i < partEnd; i++ {
 		if prs.partitions[i] {
