@@ -162,6 +162,7 @@ TODO
 - REPL push/pop, variables etc?
 - REPL tests
 - Refactor *[]decode.Format into something more abstract, group?
+- Interrupt output without exiting in REPL somehow
 
 ### Ideas
 
