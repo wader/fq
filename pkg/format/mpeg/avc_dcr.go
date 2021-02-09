@@ -67,6 +67,12 @@ func avcDcrDecode(d *decode.D, in interface{}) interface{} {
 	})
 
 	_ = profileIdc
+
+	// TODO:
+	// Compatible extensions to this record will extend it and will not change the configuration version code. Readers
+	// should be prepared to ignore unrecognised data beyond the definition of the data they understand (e.g. after
+	// the parameter sets in this specification).
+
 	// TODO: something wrong here, seen files with profileIdc = 100 with no bytes after picture_parameter_sets
 	// https://github.com/FFmpeg/FFmpeg/blob/069d2b4a50a6eb2f925f36884e6b9bd9a1e54670/libavcodec/h264_ps.c#L333
 
