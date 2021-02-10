@@ -77,7 +77,7 @@ func obuDecode(d *decode.D, in interface{}) interface{} {
 	if hasSizeField {
 		obuSize = int64(fieldLeb128(d, "size"))
 	} else {
-		obuSize = d.Len() / 8
+		obuSize = d.BitsLeft() / 8
 		if hasExtension {
 			obuSize--
 		}
