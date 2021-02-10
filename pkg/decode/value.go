@@ -10,6 +10,7 @@ import (
 	"fq/pkg/bitio"
 	"fq/pkg/ranges"
 	"io"
+	"log"
 	"math/big"
 	"sort"
 	"strconv"
@@ -556,12 +557,11 @@ func (v *Value) JsonProperty(name string) interface{} {
 		}
 		r = bb
 	case "_error":
-		// TODO: export position, stack frames etc?
 		if de, ok := v.Error.(*DecodeError); ok {
-			r = de.PanicStack
-		} else {
-			r = v.Error
+			return &decodeError2{de}
 		}
+		return v.Error
+
 	}
 
 	if r == nil {
@@ -647,5 +647,76 @@ func (v *Value) JsonPrimitiveValue() interface{} {
 	default:
 		// TODO: error?
 		return nil
+	}
+}
+
+type decodeError2 struct {
+	v *DecodeError
+}
+
+func (de *decodeError2) JsonLength() interface{} {
+	log.Printf("JsonLength: %#+v\n", de)
+	return nil
+}
+func (de *decodeError2) JsonIndex(index int) interface{} {
+	log.Printf("JsonIndex: %#+v\n", de)
+
+	return nil
+}
+func (de *decodeError2) JsonRange(start int, end int) interface{} {
+	log.Printf("JsonRange: %#+v\n", de)
+
+	return nil
+}
+func (de *decodeError2) JsonProperty(name string) interface{} {
+	log.Printf("JsonProperty: %#+v\n", de)
+
+	switch name {
+	case "errs":
+		var errs []interface{}
+		for _, e := range de.v.Errs {
+			if de, ok := e.(*DecodeError); ok {
+				errs = append(errs, &decodeError2{de})
+			} else {
+				errs = append(errs, e)
+			}
+		}
+		return errs
+	}
+
+	return nil
+}
+func (de *decodeError2) JsonEach() interface{} {
+	log.Printf("JsonEach: %#+v\n", de)
+
+	return nil
+}
+func (de *decodeError2) JsonType() string {
+	log.Printf("JsonType: %#+v\n", de)
+
+	return "object"
+}
+func (de *decodeError2) JsonPrimitiveValue() interface{} {
+	log.Printf("JsonPrimitiveValue: %#+v\n", de)
+
+	var errs []interface{}
+	for _, e := range de.v.Errs {
+		if de, ok := e.(*DecodeError); ok {
+			errs = append(errs, &decodeError2{de})
+		} else {
+			errs = append(errs, e)
+		}
+	}
+
+	var err interface{} = de.v.Err
+	if de, ok := err.(*DecodeError); ok {
+		err = &decodeError2{de}
+	}
+
+	return map[string]interface{}{
+
+		"stack": de.v.PanicStack,
+		"err":   de.v.Err,
+		"errs":  errs,
 	}
 }

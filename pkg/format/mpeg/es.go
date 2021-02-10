@@ -6,6 +6,7 @@ import (
 )
 
 var mpegASCFormat []*decode.Format
+var vorbisPacketFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -14,6 +15,7 @@ func init() {
 		DecodeFn:    esDecode,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.MPEG_ASC}, Formats: &mpegASCFormat},
+			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
 		},
 	})
 }
@@ -197,13 +199,41 @@ func odDecodeTag(d *decode.D, mpegEsOut *format.MpegEsOut, expectedTagID int, fn
 			d.FieldU32("avg_bit_rate")
 
 			switch objectType {
-			case format.MPEG4Audio:
+			case format.MPEGObjectTypeAAC:
 				// TODO: only if aac?
 				if specificInfoFlag {
 					fieldODDecodeTag(d, mpegEsOut, "decoder_specific_info", -1, func(d *decode.D) {
 						d.FieldDecode("audio_specific_config", mpegASCFormat)
 					})
 				}
+			case format.MPEGObjectTypeVORBIS:
+				fieldODDecodeTag(d, mpegEsOut, "decoder_specific_info", -1, func(d *decode.D) {
+					numPackets := d.FieldU8("num_packets")
+					// TODO: lacing
+					packetLengths := []int64{}
+					// Xiph-style lacing (similar to ogg) of n-1 packets, last is reset of block
+					d.FieldArrayFn("laces", func(d *decode.D) {
+						for i := uint64(0); i < numPackets; i++ {
+							l := d.FieldUFn("lace", func() (uint64, decode.DisplayFormat, string) {
+								var l uint64
+								for {
+									n := d.U8()
+									l += n
+									if n < 255 {
+										return l, decode.NumberDecimal, ""
+									}
+								}
+							})
+							packetLengths = append(packetLengths, int64(l))
+						}
+					})
+					d.FieldArrayFn("packets", func(d *decode.D) {
+						for _, l := range packetLengths {
+							d.FieldDecodeLen("packet", l*8, vorbisPacketFormat)
+						}
+						d.FieldDecodeLen("packet", d.BitsLeft(), vorbisPacketFormat)
+					})
+				})
 			}
 
 			mpegEsOut.DecoderConfigs = append(mpegEsOut.DecoderConfigs, format.MpegDecoderConfig{

@@ -19,13 +19,14 @@ import (
 	"fq/pkg/ranges"
 )
 
-var vorbisPacketFormat []*decode.Format
 var vp9FrameFormat []*decode.Format
 var aacFrameFormat []*decode.Format
 var mpegAVCSampleFormat []*decode.Format
-var mpegAVCDCRFrameFormat []*decode.Format
+var mpegAVCDCRFormat []*decode.Format
+var av1CCRFormat []*decode.Format
 var mpegASCFrameFormat []*decode.Format
 var mpegSPUFrameFormat []*decode.Format
+var vorbisPacketFormat []*decode.Format
 var opusPacketFrameFormat []*decode.Format
 var mp3FrameFormat []*decode.Format
 var flacMetadatablockFormat []*decode.Format
@@ -38,13 +39,14 @@ func init() {
 		Groups:      []string{format.PROBE},
 		DecodeFn:    mkvDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
 			{Names: []string{format.VP9_FRAME}, Formats: &vp9FrameFormat},
 			{Names: []string{format.MPEG_AAC_FRAME}, Formats: &aacFrameFormat},
 			{Names: []string{format.MPEG_AVC}, Formats: &mpegAVCSampleFormat},
-			{Names: []string{format.MPEG_AVC_DCR}, Formats: &mpegAVCDCRFrameFormat},
+			{Names: []string{format.MPEG_AVC_DCR}, Formats: &mpegAVCDCRFormat},
+			{Names: []string{format.AV1_CCR}, Formats: &av1CCRFormat},
 			{Names: []string{format.MPEG_ASC}, Formats: &mpegASCFrameFormat},
 			{Names: []string{format.MPEG_SPU}, Formats: &mpegSPUFrameFormat},
+			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
 			{Names: []string{format.OPUS_PACKET}, Formats: &opusPacketFrameFormat},
 			{Names: []string{format.MP3_FRAME}, Formats: &mp3FrameFormat},
 			{Names: []string{format.FLAC_METADATABLOCK}, Formats: &flacMetadatablockFormat},
@@ -370,7 +372,7 @@ func mkvDecode(d *decode.D, in interface{}) interface{} {
 				})
 			})
 		case "V_MPEG4/ISO/AVC":
-			_, dv := t.parentD.FieldDecodeRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegAVCDCRFrameFormat)
+			_, dv := t.parentD.FieldDecodeRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegAVCDCRFormat)
 			// TODO: might be followed by a extension block
 
 			avcDcrOut, ok := dv.(format.AvcDcrOut)
@@ -379,6 +381,8 @@ func mkvDecode(d *decode.D, in interface{}) interface{} {
 			}
 			t.decodeOpts = append(t.decodeOpts,
 				decode.FormatOptions{InArg: format.AvcIn{LengthSize: avcDcrOut.LengthSize}})
+		case "V_AV1":
+			t.parentD.FieldDecodeRange("value", t.codecPrivatePos, t.codecPrivateTagSize, av1CCRFormat)
 		default:
 			t.parentD.FieldBitBufRange("value", t.codecPrivatePos, t.codecPrivateTagSize)
 		}

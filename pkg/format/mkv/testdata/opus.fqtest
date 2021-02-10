@@ -1,4 +1,4 @@
-# fmpeg -f lavfi -i sine -strict experimental -c:a opus -f matroska -t 50ms opus.mkv
+# ffmpeg -f lavfi -i sine -strict experimental -c:a opus -f matroska -t 50ms opus.mkv
 /opus.mkv:
 > -f mkv opus.mkv verbose
      |                                               |                |.: mkv 0x0-0x3ec+7 (1005)

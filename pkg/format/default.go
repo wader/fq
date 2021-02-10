@@ -21,6 +21,7 @@ const (
 	// TODO: rename PROBE_* something?
 	IMAGE = "image"
 
+	AV1_CCR            = "av1_ccr"
 	APEV2              = "apev2"
 	BZIP2              = "bzip2"
 	DNS                = "dns"
@@ -100,15 +101,83 @@ type AvcDcrOut struct {
 	LengthSize uint64
 }
 
-// TODO: better names? move to some kind of ns with shared constants?
+// based on ffmpeg libavformat/isom.c ff_mp4_obj_type
 const (
-	MPEG1AudioL1L2L3 = 0x6b
-	MPEG4Audio       = 0x40
+	MPEGObjectTypeMOV_TEXT          = 0x08
+	MPEGObjectTypeMPEG4             = 0x20
+	MPEGObjectTypeH264              = 0x21
+	MPEGObjectTypeHEVC              = 0x23
+	MPEGObjectTypeAAC               = 0x40
+	MPEGObjectTypeMPEG2VideoMain    = 0x61 /* MPEG-2 Main */
+	MPEGObjectTypeMPEG2VideoSimple  = 0x60 /* MPEG-2 Simple */
+	MPEGObjectTypeMPEG2VideoSNR     = 0x62 /* MPEG-2 SNR */
+	MPEGObjectTypeMPEG2VideoSpatial = 0x63 /* MPEG-2 Spatial */
+	MPEGObjectTypeMPEG2VideoHigh    = 0x64 /* MPEG-2 High */
+	MPEGObjectTypeMPEG2Video422     = 0x65 /* MPEG-2 422 */
+	MPEGObjectTypeAACMain           = 0x66 /* MPEG-2 AAC Main */
+	MPEGObjectTypeAACLow            = 0x67 /* MPEG-2 AAC Low */
+	MPEGObjectTypeAACSSR            = 0x68 /* MPEG-2 AAC SSR */
+	MPEGObjectTypeMP32MP3           = 0x69 /* 13818-3 */
+	MPEGObjectTypeMPEG1VIDEO        = 0x6A /* 11172-2 */
+	MPEGObjectTypeMP3               = 0x6B /* 11172-3 */
+	MPEGObjectTypeMJPEG             = 0x6C /* 10918-1 */
+	MPEGObjectTypePNG               = 0x6D
+	MPEGObjectTypeJPEG2000          = 0x6E /* 15444-1 */
+	MPEGObjectTypeVC1               = 0xA3
+	MPEGObjectTypeDIRAC             = 0xA4
+	MPEGObjectTypeAC3               = 0xA5
+	MPEGObjectTypeEAC3              = 0xA6
+	MPEGObjectTypeDTS               = 0xA9 /* mp4ra.org */
+	MPEGObjectTypeOPUS              = 0xAD /* mp4ra.org */
+	MPEGObjectTypeVP9               = 0xB1 /* mp4ra.org */
+	MPEGObjectTypeFLAC              = 0xC1 /* nonstandard, update when there is a standard value */
+	MPEGObjectTypeTSCC2             = 0xD0 /* nonstandard, camtasia uses it */
+	MPEGObjectTypeEVRC              = 0xD1 /* nonstandard, pvAuthor uses it */
+	MPEGObjectTypeVORBIS            = 0xDD /* nonstandard, gpac uses it */
+	MPEGObjectTypeDVDSubtitle       = 0xE0 /* nonstandard, see unsupported-embedded-subs-2.mp4 */
+	MPEGObjectTypeQCELP             = 0xE1
+	MPEGObjectTypeMPEG4SYSTEMS1     = 0x01
+	MPEGObjectTypeMPEG4SYSTEMS2     = 0x02
+	MPEGObjectTypeNONE              = 0
 )
 
 var MpegObjectTypeNames = map[uint64]string{
-	MPEG1AudioL1L2L3: "MPEG1AudioL1L2L3",
-	MPEG4Audio:       "MPEG4Audio",
+	MPEGObjectTypeMOV_TEXT:          "MPEGObjectTypeMOV_TEXT",
+	MPEGObjectTypeMPEG4:             "MPEGObjectTypeMPEG4",
+	MPEGObjectTypeH264:              "MPEGObjectTypeH264",
+	MPEGObjectTypeHEVC:              "MPEGObjectTypeHEVC",
+	MPEGObjectTypeAAC:               "MPEGObjectTypeAAC",
+	MPEGObjectTypeMPEG2VideoMain:    "MPEGObjectTypeMPEG2VideoMain",
+	MPEGObjectTypeMPEG2VideoSimple:  "MPEGObjectTypeMPEG2VideoSimple",
+	MPEGObjectTypeMPEG2VideoSNR:     "MPEGObjectTypeMPEG2VideoSNR",
+	MPEGObjectTypeMPEG2VideoSpatial: "MPEGObjectTypeMPEG2VideoSpatial",
+	MPEGObjectTypeMPEG2VideoHigh:    "MPEGObjectTypeMPEG2VideoHigh",
+	MPEGObjectTypeMPEG2Video422:     "MPEGObjectTypeMPEG2Video422",
+	MPEGObjectTypeAACMain:           "MPEGObjectTypeAACMain",
+	MPEGObjectTypeAACLow:            "MPEGObjectTypeAACLow",
+	MPEGObjectTypeAACSSR:            "MPEGObjectTypeAACSSR",
+	MPEGObjectTypeMP32MP3:           "MPEGObjectTypeMP32MP3",
+	MPEGObjectTypeMPEG1VIDEO:        "MPEGObjectTypeMPEG1VIDEO",
+	MPEGObjectTypeMP3:               "MPEGObjectTypeMP3",
+	MPEGObjectTypeMJPEG:             "MPEGObjectTypeMJPEG",
+	MPEGObjectTypePNG:               "MPEGObjectTypePNG",
+	MPEGObjectTypeJPEG2000:          "MPEGObjectTypeJPEG2000",
+	MPEGObjectTypeVC1:               "MPEGObjectTypeVC1",
+	MPEGObjectTypeDIRAC:             "MPEGObjectTypeDIRAC",
+	MPEGObjectTypeAC3:               "MPEGObjectTypeAC3",
+	MPEGObjectTypeEAC3:              "MPEGObjectTypeEAC3",
+	MPEGObjectTypeDTS:               "MPEGObjectTypeDTS",
+	MPEGObjectTypeOPUS:              "MPEGObjectTypeOPUS",
+	MPEGObjectTypeVP9:               "MPEGObjectTypeVP9",
+	MPEGObjectTypeFLAC:              "MPEGObjectTypeFLAC",
+	MPEGObjectTypeTSCC2:             "MPEGObjectTypeTSCC2",
+	MPEGObjectTypeEVRC:              "MPEGObjectTypeEVRC",
+	MPEGObjectTypeVORBIS:            "MPEGObjectTypeVORBIS",
+	MPEGObjectTypeDVDSubtitle:       "MPEGObjectTypeDVDSubtitle",
+	MPEGObjectTypeQCELP:             "MPEGObjectTypeQCELP",
+	MPEGObjectTypeMPEG4SYSTEMS1:     "MPEGObjectTypeMPEG4SYSTEMS1",
+	MPEGObjectTypeMPEG4SYSTEMS2:     "MPEGObjectTypeMPEG4SYSTEMS2",
+	MPEGObjectTypeNONE:              "MPEGObjectTypeNONE",
 }
 
 type MpegDecoderConfig struct {

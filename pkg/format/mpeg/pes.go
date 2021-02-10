@@ -45,7 +45,7 @@ func pesDecode(d *decode.D, in interface{}) interface{} {
 	spuD := d.FieldArray("spus")
 
 	d.FieldArrayFn("packets", func(d *decode.D) {
-		for d.NotEnd() && i < 10000000 {
+		for d.NotEnd() {
 			dd, dv, errs := d.FieldTryDecode("packet", pesPacketFormat)
 			if dd == nil || errs != nil {
 				log.Printf("errs[0]: %#+v\n", errs[0])

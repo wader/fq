@@ -6,6 +6,7 @@ import (
 	_ "fq/pkg/format/flac"
 
 	//_ "fq/pkg/format/flv"
+	_ "fq/pkg/format/av1"
 	_ "fq/pkg/format/bzip2"
 	_ "fq/pkg/format/dns"
 	_ "fq/pkg/format/gzip"

@@ -13,6 +13,7 @@ import (
 
 type DecodeError struct {
 	Err        error
+	Errs       []error
 	PanicStack string
 }
 
@@ -84,6 +85,10 @@ func Decode(name string, bb *bitio.Buffer, formats []*Format, opts ...Options) (
 }
 
 func decode(name string, bb *bitio.Buffer, formats []*Format, opts []Options) (*Value, interface{}, []error) {
+	if formats == nil {
+		panic("formats is nil, failed to register format?")
+	}
+
 	var forceOne = len(formats) == 1
 
 	var decodeOpts DecodeOptions
@@ -182,11 +187,16 @@ func (d *D) SafeDecodeFn(fn func(d *D) interface{}) (error, interface{}) {
 				pe := &DecodeError{
 					PanicStack: strackStr,
 				}
+
 				switch panicErr := recoverErr.(type) {
-				case ReadError:
+				// case ReadError:
+				// 	pe.Err = panicErr
+				// case ValidateError:
+				// 	pe.Err = panicErr
+				case error:
 					pe.Err = panicErr
-				case ValidateError:
-					pe.Err = panicErr
+				case []error:
+					pe.Errs = panicErr
 				default:
 					// TODO: format somewhere else?
 					//fmt.Fprintln(os.Stderr, panicErr)

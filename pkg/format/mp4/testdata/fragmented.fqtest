@@ -346,7 +346,7 @@
       |                                               |                |                                     -dec_config_descr: 0x3c9-0x3e4+7 (28)
 0x03c0|                           04                  |         .      |                                        tag_id: DecoderConfigDescrTag (4) 0x3c9-0x3c9+7 (1)
 0x03c0|                              80 80 80 17      |          ....  |                                        length: 23 0x3ca-0x3cd+7 (4)
-0x03c0|                                          40   |              @ |                                        object_type_indication: MPEG4Audio (64) 0x3ce-0x3ce+7 (1)
+0x03c0|                                          40   |              @ |                                        object_type_indication: MPEGObjectTypeAAC (64) 0x3ce-0x3ce+7 (1)
 0x03c0|                                             15|               .|                                        stream_type: AudioStream (5) 0x3cf-0x3cf+5 (0+6)
 0x03c0|                                             15|               .|                                        upsteam: false 0x3cf+6-0x3cf+6 (0+1)
 0x03c0|                                             15|               .|                                        specific_info_flag: true 0x3cf+7-0x3cf+7 (0+1)

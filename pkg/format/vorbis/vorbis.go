@@ -2,6 +2,7 @@ package vorbis
 
 // https://xiph.org/vorbis/doc/Vorbis_I_spec.html
 // TODO: setup? more audio?
+// TODO: end padding? byte align?
 
 import (
 	"fmt"
@@ -89,9 +90,9 @@ func vorbisDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldValidateZeroPadding("padding0", 7)
 		d.FieldValidateUFn("framing_flag", 1, d.U1)
 
-		if d.BitsLeft() > 0 {
-			d.FieldValidateZeroPadding("padding1", int(d.BitsLeft()))
-		}
+		// if d.BitsLeft() > 0 {
+		// 	d.FieldValidateZeroPadding("padding1", int(d.BitsLeft()))
+		// }
 	case packetTypeSetup:
 		d.FieldUFn("vorbis_codebook_count", func() (uint64, decode.DisplayFormat, string) {
 			return d.U8() + 1, decode.NumberDecimal, ""
@@ -127,9 +128,9 @@ func vorbisDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldValidateZeroPadding("padding0", 7)
 		d.FieldValidateUFn("frame_bit", 1, d.U1)
 
-		if d.BitsLeft() > 0 {
-			d.FieldValidateZeroPadding("padding1", int(d.BitsLeft()))
-		}
+		// if d.BitsLeft() > 0 {
+		// 	d.FieldValidateZeroPadding("padding1", int(d.BitsLeft()))
+		// }
 	}
 
 	return nil

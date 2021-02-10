@@ -16,9 +16,12 @@ import (
 var mpegESFormat []*decode.Format
 var mpegAVCSampleFormat []*decode.Format
 var mpegAVCDCRFrameFormat []*decode.Format
-var flacMetadatablockFormat []*decode.Format
+var av1CCRFormat []*decode.Format
+var vorbisPacketFormat []*decode.Format
+var opusPacketFrameFormat []*decode.Format
 var aacFrameFormat []*decode.Format
 var mp3FrameFormat []*decode.Format
+var flacMetadatablockFormat []*decode.Format
 var flacFrameFormat []*decode.Format
 
 func init() {
@@ -33,6 +36,9 @@ func init() {
 			{Names: []string{format.MPEG_ES}, Formats: &mpegESFormat},
 			{Names: []string{format.MPEG_AVC}, Formats: &mpegAVCSampleFormat},
 			{Names: []string{format.MPEG_AVC_DCR}, Formats: &mpegAVCDCRFrameFormat},
+			{Names: []string{format.AV1_CCR}, Formats: &av1CCRFormat},
+			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
+			{Names: []string{format.OPUS_PACKET}, Formats: &opusPacketFrameFormat},
 			{Names: []string{format.MPEG_AAC_FRAME}, Formats: &aacFrameFormat},
 			{Names: []string{format.MP3_FRAME}, Formats: &mp3FrameFormat},
 			{Names: []string{format.FLAC_METADATABLOCK}, Formats: &flacMetadatablockFormat},
@@ -207,6 +213,8 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 				d.FieldBytesLen("reserved", 6)
 				d.FieldU16("data_reference_index")
 
+				// TODO: refactor to audio/video? i think they share
+
 				switch dataFormat {
 				case "mp4a":
 					// https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/QTFFChap3/qtff3.html#//apple_ref/doc/uid/TP40000939-CH205-SW1
@@ -267,8 +275,46 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 							decodeAtoms(ctx, d)
 						}
 					})
+				case "av01":
+					d.FieldStructFn("data", func(d *decode.D) {
+
+						d.FieldU16("version")
+						d.FieldU16("revision_level")
+						d.FieldU32("vendor")
+						d.FieldU32("temporal_quality")
+						d.FieldU32("spatial_quality")
+						d.FieldU16("width")
+						d.FieldU16("height")
+						d.FieldFP32("horizontal_resolution")
+						d.FieldFP32("vertical_resolution")
+						d.FieldU32("data_size")
+						d.FieldU16("frame_count")
+						d.FieldUTF8("compression_name", 32)
+						d.FieldU16("depth")
+						d.FieldS16("color_table_id")
+						// TODO: if 0 decode ctab
+
+						if d.BitsLeft() > 0 {
+							decodeAtoms(ctx, d)
+						}
+					})
 
 				case "fLaC":
+					// TODO: AudioSampleEntry
+
+					d.FieldU16("version")
+					d.FieldU16("revision_level")
+					d.FieldU32("vendor")
+					d.FieldU16("channelcount")
+					d.FieldU16("samplesize")
+					d.FieldU16("compression_id")
+					d.FieldU16("packet_size")
+					d.FieldFP32("samplerate")
+					if d.BitsLeft() > 0 {
+						decodeAtoms(ctx, d)
+					}
+
+				case "Opus":
 					// TODO: AudioSampleEntry
 
 					d.FieldU16("version")
@@ -296,7 +342,6 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			})
 		},
 		"avcC": func(ctx *decodeContext, d *decode.D) {
-			// d.FieldBitBuf("data", d.BitsLeft())
 			_, dv := d.FieldDecode("value", mpegAVCDCRFrameFormat)
 			avcDcrOut, ok := dv.(format.AvcDcrOut)
 			if !ok {
@@ -327,6 +372,12 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 					}
 				}
 			})
+		},
+		"dOps": func(ctx *decodeContext, d *decode.D) {
+			d.FieldDecode("value", opusPacketFrameFormat)
+		},
+		"av1C": func(ctx *decodeContext, d *decode.D) {
+			d.FieldDecode("value", av1CCRFormat)
 		},
 		"esds": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU32("version")
@@ -728,14 +779,19 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 				switch t.dataFormat {
 				case "fLaC":
 					d.FieldDecodeRange("sample", firstBit, nBits, flacFrameFormat, t.decodeOpts...)
+				case "Opus":
+					d.FieldDecodeRange("sample", firstBit, nBits, opusPacketFrameFormat, t.decodeOpts...)
 				case "avc1":
 					d.FieldDecodeRange("sample", firstBit, nBits, mpegAVCSampleFormat, t.decodeOpts...)
 				case "mp4a":
 					switch t.objectType {
-					case format.MPEG1AudioL1L2L3:
+					case format.MPEGObjectTypeMP3:
 						d.FieldDecodeRange("sample", firstBit, nBits, mp3FrameFormat, t.decodeOpts...)
-					case format.MPEG4Audio:
+					case format.MPEGObjectTypeAAC:
+						// TODO: MPEGObjectTypeAACLow, Main etc?
 						d.FieldDecodeRange("sample", firstBit, nBits, aacFrameFormat, t.decodeOpts...)
+					case format.MPEGObjectTypeVORBIS:
+						d.FieldDecodeRange("sample", firstBit, nBits, vorbisPacketFormat, t.decodeOpts...)
 					default:
 						d.FieldBitBufRange("sample", firstBit, nBits)
 					}

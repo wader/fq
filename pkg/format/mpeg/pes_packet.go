@@ -62,58 +62,6 @@ var startAndStreamNames = map[[2]uint64]string{
 	{0xff, 0xff}: "Program Stream Directory",
 }
 
-var streamHasExtension = map[uint64]bool{
-	0xbd: true, // Privatestream1
-	0xc0: true, // MPEG1OrMPEG2AudioStream
-	0xc1: true, // MPEG1OrMPEG2AudioStream
-	0xc2: true, // MPEG1OrMPEG2AudioStream
-	0xc3: true, // MPEG1OrMPEG2AudioStream
-	0xc4: true, // MPEG1OrMPEG2AudioStream
-	0xc5: true, // MPEG1OrMPEG2AudioStream
-	0xc6: true, // MPEG1OrMPEG2AudioStream
-	0xc7: true, // MPEG1OrMPEG2AudioStream
-	0xc8: true, // MPEG1OrMPEG2AudioStream
-	0xc9: true, // MPEG1OrMPEG2AudioStream
-	0xca: true, // MPEG1OrMPEG2AudioStream
-	0xcb: true, // MPEG1OrMPEG2AudioStream
-	0xcc: true, // MPEG1OrMPEG2AudioStream
-	0xcd: true, // MPEG1OrMPEG2AudioStream
-	0xce: true, // MPEG1OrMPEG2AudioStream
-	0xcf: true, // MPEG1OrMPEG2AudioStream
-	0xd0: true, // MPEG1OrMPEG2AudioStream
-	0xd1: true, // MPEG1OrMPEG2AudioStream
-	0xd2: true, // MPEG1OrMPEG2AudioStream
-	0xd3: true, // MPEG1OrMPEG2AudioStream
-	0xd4: true, // MPEG1OrMPEG2AudioStream
-	0xd5: true, // MPEG1OrMPEG2AudioStream
-	0xd6: true, // MPEG1OrMPEG2AudioStream
-	0xd7: true, // MPEG1OrMPEG2AudioStream
-	0xd8: true, // MPEG1OrMPEG2AudioStream
-	0xd9: true, // MPEG1OrMPEG2AudioStream
-	0xda: true, // MPEG1OrMPEG2AudioStream
-	0xdb: true, // MPEG1OrMPEG2AudioStream
-	0xdc: true, // MPEG1OrMPEG2AudioStream
-	0xdd: true, // MPEG1OrMPEG2AudioStream
-	0xde: true, // MPEG1OrMPEG2AudioStream
-	0xdf: true, // MPEG1OrMPEG2AudioStream
-	0xe0: true, // MPEG1OrMPEG2VideoStream
-	0xe1: true, // MPEG1OrMPEG2VideoStream
-	0xe2: true, // MPEG1OrMPEG2VideoStream
-	0xe3: true, // MPEG1OrMPEG2VideoStream
-	0xe4: true, // MPEG1OrMPEG2VideoStream
-	0xe5: true, // MPEG1OrMPEG2VideoStream
-	0xe6: true, // MPEG1OrMPEG2VideoStream
-	0xe7: true, // MPEG1OrMPEG2VideoStream
-	0xe8: true, // MPEG1OrMPEG2VideoStream
-	0xe9: true, // MPEG1OrMPEG2VideoStream
-	0xea: true, // MPEG1OrMPEG2VideoStream
-	0xeb: true, // MPEG1OrMPEG2VideoStream
-	0xec: true, // MPEG1OrMPEG2VideoStream
-	0xed: true, // MPEG1OrMPEG2VideoStream
-	0xee: true, // MPEG1OrMPEG2VideoStream
-	0xef: true, // MPEG1OrMPEG2VideoStream
-}
-
 func pesPacketDecode(d *decode.D, in interface{}) interface{} {
 	var v interface{}
 
@@ -169,7 +117,10 @@ func pesPacketDecode(d *decode.D, in interface{}) interface{} {
 	case startCode >= 0xbd:
 		//log.Printf("startCode: %#+v\n", startCode)
 		length := d.FieldU16("length")
-		hasExtension := streamHasExtension[startCode]
+		// 0xbd-0xbd // Privatestream1
+		// 0xc0-0xdf // MPEG1OrMPEG2AudioStream
+		// 0xe0-0xef // MPEG1OrMPEG2VideoStream
+		hasExtension := startCode == 0xbd || (startCode >= 0xc0 && startCode <= 0xef)
 		var headerDataLength uint64
 		var extensionLength uint64
 		if hasExtension {
