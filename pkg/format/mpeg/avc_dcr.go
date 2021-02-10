@@ -68,6 +68,10 @@ func avcDcrDecode(d *decode.D, in interface{}) interface{} {
 
 	_ = profileIdc
 
+	if d.BitsLeft() > 0 {
+		d.FieldBitBufLen("data", d.BitsLeft())
+	}
+
 	// TODO:
 	// Compatible extensions to this record will extend it and will not change the configuration version code. Readers
 	// should be prepared to ignore unrecognised data beyond the definition of the data they understand (e.g. after
