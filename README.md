@@ -89,6 +89,8 @@ TODO: piping
 |-|-|
 |apev2|APEv2 metadata tag|
 |av1_ccr|AV1 codec configuration record|
+|av1_frame|AV1 frame|
+|av1_obu|AV1 open bitstream unit|
 |bzip2|bzip2 compression|
 |dns|DNS packet|
 |elf|Executable and Linkable Format|
@@ -115,6 +117,8 @@ TODO: piping
 |mpeg_avc|H.264/AVC sample|
 |mpeg_avc_dcr|H.264/AVC Decoder configuration record|
 |mpeg_es|MPEG elementary stream|
+|mpeg_hevc|H.265/HEVC sample|
+|mpeg_hevc_dcr|H.265/HEVC Decoder configuration record|
 |mpeg_pes|MPEG Packetized elementary stream|
 |mpeg_pes_packet|MPEG Packetized elementary stream packet|
 |mpeg_spu|Sub picture unit (dvd subtitle)|
