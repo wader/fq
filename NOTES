@@ -1,8 +1,9 @@
 
 
+dont expose *bitio.Buffer to jq, always wrap? ToBitBuf?
+
 more aac, ff f8 thingy efter mpeg es
-av1
-hevc
+DONE av1, hevc
 more aac
 
 jq options argument parser?

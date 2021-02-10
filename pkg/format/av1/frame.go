@@ -9,20 +9,23 @@ import (
 	"fq/pkg/format"
 )
 
+var obuFormat []*decode.Format
+
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.AV1_FRAME,
 		Description: "AV1 frame",
 		DecodeFn:    frameDecode,
+		Dependencies: []decode.Dependency{
+			{Names: []string{format.AV1_OBU}, Formats: &obuFormat},
+		},
 	})
 }
 
 func frameDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldArrayFn("frame", func(d *decode.D) {
 		for d.NotEnd() {
-			d.FieldStructFn("obu", func(d *decode.D) {
-				obuDecode(d, nil)
-			})
+			d.FieldDecode("obu", obuFormat)
 		}
 	})
 

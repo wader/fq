@@ -162,7 +162,7 @@ func toBytes(v interface{}) ([]byte, error) {
 	}
 }
 
-type ToBifBuf interface {
+type ToBitBuf interface {
 	ToBifBuf() *bitio.Buffer
 }
 
@@ -188,7 +188,7 @@ func toBitBuf(v interface{}) (*bitio.Buffer, ranges.Range, string, error) {
 		}
 		bb := bitio.NewBufferFromBytes(bi.Bytes(), -1)
 		return bb, ranges.Range{Start: 0, Len: bb.Len()}, "", nil
-	case ToBifBuf:
+	case ToBitBuf:
 		bb := vv.ToBifBuf()
 		return bb, ranges.Range{Start: 0, Len: bb.Len()}, "", nil
 	default:
@@ -389,6 +389,11 @@ func (q *Query) Run(ctx context.Context, mode RunMode, src string, stdout io.Wri
 				return nil, err
 			}
 
+		case ToBitBuf:
+			bb := vv.ToBifBuf()
+			if _, err := io.Copy(stdout, bb.Copy()); err != nil {
+				return nil, err
+			}
 		case *bitio.Buffer:
 			if _, err := io.Copy(stdout, vv.Copy()); err != nil {
 				return nil, err
