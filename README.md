@@ -34,7 +34,7 @@ $ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture.chunks[] | se
 }
  
 # extract png
-$ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture._raw' > file.png
+$ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture._bits' > file.png
 $ file file.png
 file.png: PNG image data, 320 x 240, 8-bit/color RGB, non-interlaced
  

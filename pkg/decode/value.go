@@ -511,7 +511,8 @@ func (v *Value) SpecialPropNames() []string {
 		"_range",
 		"_size",
 		"_path",
-		"_raw",
+		"_bits",
+		"_bytes",
 		"_error",
 	}
 }
@@ -550,18 +551,24 @@ func (v *Value) JsonProperty(name string) interface{} {
 		r = big.NewInt(v.Range.Len)
 	case "_path":
 		r = v.Path()
-	case "_raw":
-		bb, err := v.RootBitBuf.BitBufRange(v.Range.Start, v.Range.Len)
-		if err != nil {
-			return err
-		}
-		r = bb
 	case "_error":
 		if de, ok := v.Error.(*DecodeError); ok {
 			return &decodeError2{de}
 		}
 		return v.Error
 
+	case "_bits":
+		bb, err := v.RootBitBuf.BitBufRange(v.Range.Start, v.Range.Len)
+		if err != nil {
+			return err
+		}
+		r = &bitBufObject{bb: bb, unit: 1}
+	case "_bytes":
+		bb, err := v.RootBitBuf.BitBufRange(v.Range.Start, v.Range.Len)
+		if err != nil {
+			return err
+		}
+		r = &bitBufObject{bb: bb, unit: 8}
 	}
 
 	if r == nil {
@@ -719,4 +726,56 @@ func (de *decodeError2) JsonPrimitiveValue() interface{} {
 		"err":   de.v.Err,
 		"errs":  errs,
 	}
+}
+
+type bitBufObject struct {
+	bb   *bitio.Buffer
+	unit int
+}
+
+func (bo *bitBufObject) JsonLength() interface{} {
+	return int(bo.bb.Len()) / bo.unit
+}
+func (bo *bitBufObject) JsonIndex(index int) interface{} {
+	pos, err := bo.bb.Pos()
+	if err != nil {
+		return err
+	}
+	if _, err := bo.bb.SeekAbs(int64(index) * int64(bo.unit)); err != nil {
+		return err
+	}
+	v, err := bo.bb.U(bo.unit)
+	if err != nil {
+		return err
+	}
+	if _, err := bo.bb.SeekAbs(pos); err != nil {
+		return err
+	}
+	return int(v)
+}
+func (bo *bitBufObject) JsonRange(start int, end int) interface{} {
+	rbb, err := bo.bb.BitBufRange(int64(start*bo.unit), int64((end-start)*bo.unit))
+	if err != nil {
+		return err
+	}
+	return &bitBufObject{bb: rbb, unit: bo.unit}
+}
+func (bo *bitBufObject) JsonProperty(name string) interface{} {
+	return nil
+}
+func (bo *bitBufObject) JsonEach() interface{} {
+	return nil
+}
+func (bo *bitBufObject) JsonType() string {
+	return "buffer"
+}
+func (bo *bitBufObject) JsonPrimitiveValue() interface{} {
+	buf := &bytes.Buffer{}
+	if _, err := io.Copy(buf, bo.bb.Copy()); err != nil {
+		return err
+	}
+	return buf.String()
+}
+func (bo *bitBufObject) ToBifBuf() *bitio.Buffer {
+	return bo.bb.Copy()
 }

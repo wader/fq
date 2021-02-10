@@ -162,6 +162,10 @@ func toBytes(v interface{}) ([]byte, error) {
 	}
 }
 
+type ToBifBuf interface {
+	ToBifBuf() *bitio.Buffer
+}
+
 // TODO: refactor to return struct?
 func toBitBuf(v interface{}) (*bitio.Buffer, ranges.Range, string, error) {
 	switch vv := v.(type) {
@@ -183,6 +187,9 @@ func toBitBuf(v interface{}) (*bitio.Buffer, ranges.Range, string, error) {
 			return nil, ranges.Range{}, "", err
 		}
 		bb := bitio.NewBufferFromBytes(bi.Bytes(), -1)
+		return bb, ranges.Range{Start: 0, Len: bb.Len()}, "", nil
+	case ToBifBuf:
+		bb := vv.ToBifBuf()
 		return bb, ranges.Range{Start: 0, Len: bb.Len()}, "", nil
 	default:
 		return nil, ranges.Range{}, "", fmt.Errorf("value should be decode value, bit buffer, byte slice or string")
