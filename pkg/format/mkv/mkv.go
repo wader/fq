@@ -19,21 +19,21 @@ import (
 	"fq/pkg/ranges"
 )
 
-var vp9FrameFormat []*decode.Format
 var aacFrameFormat []*decode.Format
-var mpegAVCSampleFormat []*decode.Format
-var mpegAVCDCRFormat []*decode.Format
-var mpegHEVCSampleFormat []*decode.Format
-var mpegHEVCDCRFormat []*decode.Format
 var av1CCRFormat []*decode.Format
 var av1FrameFormat []*decode.Format
-var mpegASCFrameFormat []*decode.Format
-var mpegSPUFrameFormat []*decode.Format
-var vorbisPacketFormat []*decode.Format
-var opusPacketFrameFormat []*decode.Format
-var mp3FrameFormat []*decode.Format
-var flacMetadatablockFormat []*decode.Format
 var flacFrameFormat []*decode.Format
+var flacMetadatablockFormat []*decode.Format
+var mp3FrameFormat []*decode.Format
+var mpegASCFrameFormat []*decode.Format
+var mpegAVCDCRFormat []*decode.Format
+var mpegAVCSampleFormat []*decode.Format
+var mpegHEVCDCRFormat []*decode.Format
+var mpegHEVCSampleFormat []*decode.Format
+var mpegSPUFrameFormat []*decode.Format
+var opusPacketFrameFormat []*decode.Format
+var vorbisPacketFormat []*decode.Format
+var vp9FrameFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -42,21 +42,21 @@ func init() {
 		Groups:      []string{format.PROBE},
 		DecodeFn:    mkvDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.VP9_FRAME}, Formats: &vp9FrameFormat},
-			{Names: []string{format.MPEG_AAC_FRAME}, Formats: &aacFrameFormat},
-			{Names: []string{format.MPEG_AVC}, Formats: &mpegAVCSampleFormat},
-			{Names: []string{format.MPEG_AVC_DCR}, Formats: &mpegAVCDCRFormat},
-			{Names: []string{format.MPEG_HEVC}, Formats: &mpegHEVCSampleFormat},
-			{Names: []string{format.MPEG_HEVC_DCR}, Formats: &mpegHEVCDCRFormat},
 			{Names: []string{format.AV1_CCR}, Formats: &av1CCRFormat},
 			{Names: []string{format.AV1_FRAME}, Formats: &av1FrameFormat},
-			{Names: []string{format.MPEG_ASC}, Formats: &mpegASCFrameFormat},
-			{Names: []string{format.MPEG_SPU}, Formats: &mpegSPUFrameFormat},
-			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
-			{Names: []string{format.OPUS_PACKET}, Formats: &opusPacketFrameFormat},
-			{Names: []string{format.MP3_FRAME}, Formats: &mp3FrameFormat},
-			{Names: []string{format.FLAC_METADATABLOCK}, Formats: &flacMetadatablockFormat},
 			{Names: []string{format.FLAC_FRAME}, Formats: &flacFrameFormat},
+			{Names: []string{format.FLAC_METADATABLOCK}, Formats: &flacMetadatablockFormat},
+			{Names: []string{format.MP3_FRAME}, Formats: &mp3FrameFormat},
+			{Names: []string{format.MPEG_AAC_FRAME}, Formats: &aacFrameFormat},
+			{Names: []string{format.MPEG_ASC}, Formats: &mpegASCFrameFormat},
+			{Names: []string{format.MPEG_AVC_DCR}, Formats: &mpegAVCDCRFormat},
+			{Names: []string{format.MPEG_AVC}, Formats: &mpegAVCSampleFormat},
+			{Names: []string{format.MPEG_HEVC_DCR}, Formats: &mpegHEVCDCRFormat},
+			{Names: []string{format.MPEG_HEVC}, Formats: &mpegHEVCSampleFormat},
+			{Names: []string{format.MPEG_SPU}, Formats: &mpegSPUFrameFormat},
+			{Names: []string{format.OPUS_PACKET}, Formats: &opusPacketFrameFormat},
+			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
+			{Names: []string{format.VP9_FRAME}, Formats: &vp9FrameFormat},
 		},
 	})
 }

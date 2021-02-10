@@ -13,19 +13,19 @@ import (
 	"strings"
 )
 
-var mpegESFormat []*decode.Format
-var mpegAVCSampleFormat []*decode.Format
-var mpegAVCDCRFrameFormat []*decode.Format
-var mpegHEVCSampleFormat []*decode.Format
-var mpegHEVCDCRFrameFormat []*decode.Format
+var aacFrameFormat []*decode.Format
 var av1CCRFormat []*decode.Format
 var av1FrameFormat []*decode.Format
-var vorbisPacketFormat []*decode.Format
-var opusPacketFrameFormat []*decode.Format
-var aacFrameFormat []*decode.Format
-var mp3FrameFormat []*decode.Format
-var flacMetadatablockFormat []*decode.Format
 var flacFrameFormat []*decode.Format
+var flacMetadatablockFormat []*decode.Format
+var mp3FrameFormat []*decode.Format
+var mpegAVCDCRFormat []*decode.Format
+var mpegAVCSampleFormat []*decode.Format
+var mpegESFormat []*decode.Format
+var mpegHEVCDCRFrameFormat []*decode.Format
+var mpegHEVCSampleFormat []*decode.Format
+var opusPacketFrameFormat []*decode.Format
+var vorbisPacketFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -36,19 +36,19 @@ func init() {
 		MIMEs:    []string{"audio/mp4", "video/mp4"},
 		DecodeFn: mp4Decode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.MPEG_ES}, Formats: &mpegESFormat},
-			{Names: []string{format.MPEG_AVC}, Formats: &mpegAVCSampleFormat},
-			{Names: []string{format.MPEG_AVC_DCR}, Formats: &mpegAVCDCRFrameFormat},
-			{Names: []string{format.MPEG_HEVC}, Formats: &mpegHEVCSampleFormat},
-			{Names: []string{format.MPEG_HEVC_DCR}, Formats: &mpegHEVCDCRFrameFormat},
 			{Names: []string{format.AV1_CCR}, Formats: &av1CCRFormat},
 			{Names: []string{format.AV1_FRAME}, Formats: &av1FrameFormat},
-			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
-			{Names: []string{format.OPUS_PACKET}, Formats: &opusPacketFrameFormat},
-			{Names: []string{format.MPEG_AAC_FRAME}, Formats: &aacFrameFormat},
-			{Names: []string{format.MP3_FRAME}, Formats: &mp3FrameFormat},
-			{Names: []string{format.FLAC_METADATABLOCK}, Formats: &flacMetadatablockFormat},
 			{Names: []string{format.FLAC_FRAME}, Formats: &flacFrameFormat},
+			{Names: []string{format.FLAC_METADATABLOCK}, Formats: &flacMetadatablockFormat},
+			{Names: []string{format.MP3_FRAME}, Formats: &mp3FrameFormat},
+			{Names: []string{format.MPEG_AAC_FRAME}, Formats: &aacFrameFormat},
+			{Names: []string{format.MPEG_AVC_DCR}, Formats: &mpegAVCDCRFormat},
+			{Names: []string{format.MPEG_AVC}, Formats: &mpegAVCSampleFormat},
+			{Names: []string{format.MPEG_ES}, Formats: &mpegESFormat},
+			{Names: []string{format.MPEG_HEVC_DCR}, Formats: &mpegHEVCDCRFrameFormat},
+			{Names: []string{format.MPEG_HEVC}, Formats: &mpegHEVCSampleFormat},
+			{Names: []string{format.OPUS_PACKET}, Formats: &opusPacketFrameFormat},
+			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
 		},
 	})
 }
@@ -348,7 +348,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			})
 		},
 		"avcC": func(ctx *decodeContext, d *decode.D) {
-			_, dv := d.FieldDecode("value", mpegAVCDCRFrameFormat)
+			_, dv := d.FieldDecode("value", mpegAVCDCRFormat)
 			avcDcrOut, ok := dv.(format.AvcDcrOut)
 			if !ok {
 				d.Invalid(fmt.Sprintf("expected AvcDcrOut got %#+v", dv))
