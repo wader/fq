@@ -26,6 +26,7 @@ var mpegHEVCDCRFrameFormat []*decode.Format
 var mpegHEVCSampleFormat []*decode.Format
 var opusPacketFrameFormat []*decode.Format
 var vorbisPacketFormat []*decode.Format
+var vp9FrameFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -49,6 +50,7 @@ func init() {
 			{Names: []string{format.MPEG_HEVC}, Formats: &mpegHEVCSampleFormat},
 			{Names: []string{format.OPUS_PACKET}, Formats: &opusPacketFrameFormat},
 			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
+			{Names: []string{format.VP9_FRAME}, Formats: &vp9FrameFormat},
 		},
 	})
 }
@@ -796,6 +798,8 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 					d.FieldDecodeRange("sample", firstBit, nBits, flacFrameFormat, t.decodeOpts...)
 				case "Opus":
 					d.FieldDecodeRange("sample", firstBit, nBits, opusPacketFrameFormat, t.decodeOpts...)
+				case "vp09":
+					d.FieldDecodeRange("sample", firstBit, nBits, vp9FrameFormat, t.decodeOpts...)
 				case "avc1":
 					d.FieldDecodeRange("sample", firstBit, nBits, mpegAVCSampleFormat, t.decodeOpts...)
 				case "hev1":
