@@ -88,6 +88,7 @@ TODO: piping
 |Name|Description|
 |-|-|
 |apev2|APEv2 metadata tag|
+|av1_ccr|AV1 codec configuration record|
 |bzip2|bzip2 compression|
 |dns|DNS packet|
 |elf|Executable and Linkable Format|

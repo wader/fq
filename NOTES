@@ -77,6 +77,9 @@ progress estimate, have a 1024 buckets for whole file and mark truncated pos as 
 
 Decode... descriptin gone
 
+
+show error tree? errors?
+
 flac md5 fix
 
 move more fields things into value.go?
