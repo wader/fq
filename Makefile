@@ -17,7 +17,7 @@ lint:
 depgraph.svg:
 	godepgraph -s cmd/fq/main.go | dot -Tsvg -o godepgraph.svg
 
-.PHONY: formatdgraph.svg
+.PHONY: formats.svg
 formats.svg:
 	go run cmd/fq/main.go -n - 'formats | _formats_dot' | dot -Tsvg -o formats.svg
 
