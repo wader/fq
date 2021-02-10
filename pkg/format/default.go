@@ -21,7 +21,9 @@ const (
 	// TODO: rename PROBE_* something?
 	IMAGE = "image"
 
+	AV1_FRAME          = "av1_frame"
 	AV1_CCR            = "av1_ccr"
+	AV1_OBU            = "av1_obu"
 	APEV2              = "apev2"
 	BZIP2              = "bzip2"
 	DNS                = "dns"

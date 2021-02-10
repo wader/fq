@@ -7,7 +7,6 @@ package av1
 import (
 	"fq/pkg/decode"
 	"fq/pkg/format"
-	"log"
 )
 
 func init() {
@@ -19,7 +18,6 @@ func init() {
 }
 
 func ccrDecode(d *decode.D, in interface{}) interface{} {
-	log.Println("BLA")
 	d.FieldU1("marker")
 	d.FieldU7("version")
 	d.FieldU3("seq_profile")

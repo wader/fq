@@ -24,6 +24,7 @@ var aacFrameFormat []*decode.Format
 var mpegAVCSampleFormat []*decode.Format
 var mpegAVCDCRFormat []*decode.Format
 var av1CCRFormat []*decode.Format
+var av1FrameFormat []*decode.Format
 var mpegASCFrameFormat []*decode.Format
 var mpegSPUFrameFormat []*decode.Format
 var vorbisPacketFormat []*decode.Format
@@ -44,6 +45,7 @@ func init() {
 			{Names: []string{format.MPEG_AVC}, Formats: &mpegAVCSampleFormat},
 			{Names: []string{format.MPEG_AVC_DCR}, Formats: &mpegAVCDCRFormat},
 			{Names: []string{format.AV1_CCR}, Formats: &av1CCRFormat},
+			{Names: []string{format.AV1_FRAME}, Formats: &av1FrameFormat},
 			{Names: []string{format.MPEG_ASC}, Formats: &mpegASCFrameFormat},
 			{Names: []string{format.MPEG_SPU}, Formats: &mpegSPUFrameFormat},
 			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
@@ -419,6 +421,8 @@ func mkvDecode(d *decode.D, in interface{}) interface{} {
 				// TODO: could to md5 here somehow, see flac.go
 			case "V_VP9":
 				d.FieldDecodeLen("packet", d.BitsLeft(), vp9FrameFormat)
+			case "V_AV1":
+				d.FieldDecodeLen("packet", d.BitsLeft(), av1FrameFormat)
 			case "V_VOBSUB":
 				d.FieldDecodeLen("packet", d.BitsLeft(), mpegSPUFrameFormat)
 			case "V_MPEG4/ISO/AVC":
@@ -456,6 +460,8 @@ func mkvDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldDecodeLen("packet", d.BitsLeft(), opusPacketFrameFormat)
 			case "A_MPEG/L3":
 				d.FieldDecodeLen("packet", d.BitsLeft(), mp3FrameFormat)
+			case "V_AV1":
+				d.FieldDecodeLen("packet", d.BitsLeft(), av1FrameFormat)
 			default:
 				d.FieldBitBufLen("data", d.BitsLeft())
 			}

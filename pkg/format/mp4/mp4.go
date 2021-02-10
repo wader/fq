@@ -17,6 +17,7 @@ var mpegESFormat []*decode.Format
 var mpegAVCSampleFormat []*decode.Format
 var mpegAVCDCRFrameFormat []*decode.Format
 var av1CCRFormat []*decode.Format
+var av1FrameFormat []*decode.Format
 var vorbisPacketFormat []*decode.Format
 var opusPacketFrameFormat []*decode.Format
 var aacFrameFormat []*decode.Format
@@ -37,6 +38,7 @@ func init() {
 			{Names: []string{format.MPEG_AVC}, Formats: &mpegAVCSampleFormat},
 			{Names: []string{format.MPEG_AVC_DCR}, Formats: &mpegAVCDCRFrameFormat},
 			{Names: []string{format.AV1_CCR}, Formats: &av1CCRFormat},
+			{Names: []string{format.AV1_FRAME}, Formats: &av1FrameFormat},
 			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
 			{Names: []string{format.OPUS_PACKET}, Formats: &opusPacketFrameFormat},
 			{Names: []string{format.MPEG_AAC_FRAME}, Formats: &aacFrameFormat},
@@ -783,6 +785,8 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 					d.FieldDecodeRange("sample", firstBit, nBits, opusPacketFrameFormat, t.decodeOpts...)
 				case "avc1":
 					d.FieldDecodeRange("sample", firstBit, nBits, mpegAVCSampleFormat, t.decodeOpts...)
+				case "av01":
+					d.FieldDecodeRange("sample", firstBit, nBits, av1FrameFormat, t.decodeOpts...)
 				case "mp4a":
 					switch t.objectType {
 					case format.MPEGObjectTypeMP3:
