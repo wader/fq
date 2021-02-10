@@ -16,6 +16,8 @@ import (
 var mpegESFormat []*decode.Format
 var mpegAVCSampleFormat []*decode.Format
 var mpegAVCDCRFrameFormat []*decode.Format
+var mpegHEVCSampleFormat []*decode.Format
+var mpegHEVCDCRFrameFormat []*decode.Format
 var av1CCRFormat []*decode.Format
 var av1FrameFormat []*decode.Format
 var vorbisPacketFormat []*decode.Format
@@ -37,6 +39,8 @@ func init() {
 			{Names: []string{format.MPEG_ES}, Formats: &mpegESFormat},
 			{Names: []string{format.MPEG_AVC}, Formats: &mpegAVCSampleFormat},
 			{Names: []string{format.MPEG_AVC_DCR}, Formats: &mpegAVCDCRFrameFormat},
+			{Names: []string{format.MPEG_HEVC}, Formats: &mpegHEVCSampleFormat},
+			{Names: []string{format.MPEG_HEVC_DCR}, Formats: &mpegHEVCDCRFrameFormat},
 			{Names: []string{format.AV1_CCR}, Formats: &av1CCRFormat},
 			{Names: []string{format.AV1_FRAME}, Formats: &av1FrameFormat},
 			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
@@ -254,7 +258,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 							decodeAtoms(ctx, d)
 						}
 					})
-				case "avc1":
+				case "hev1", "avc1":
 					d.FieldStructFn("data", func(d *decode.D) {
 
 						d.FieldU16("version")
@@ -351,6 +355,15 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			}
 			ctx.currentTrack.decodeOpts = append(ctx.currentTrack.decodeOpts,
 				decode.FormatOptions{InArg: format.AvcIn{LengthSize: avcDcrOut.LengthSize}})
+		},
+		"hvcC": func(ctx *decodeContext, d *decode.D) {
+			_, dv := d.FieldDecode("value", mpegHEVCDCRFrameFormat)
+			hevcDcrOut, ok := dv.(format.HevcDcrOut)
+			if !ok {
+				d.Invalid(fmt.Sprintf("expected HevcDcrOut got %#+v", dv))
+			}
+			ctx.currentTrack.decodeOpts = append(ctx.currentTrack.decodeOpts,
+				decode.FormatOptions{InArg: format.HevcIn{LengthSize: hevcDcrOut.LengthSize}})
 		},
 		"dfLa": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
@@ -785,6 +798,8 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 					d.FieldDecodeRange("sample", firstBit, nBits, opusPacketFrameFormat, t.decodeOpts...)
 				case "avc1":
 					d.FieldDecodeRange("sample", firstBit, nBits, mpegAVCSampleFormat, t.decodeOpts...)
+				case "hev1":
+					d.FieldDecodeRange("sample", firstBit, nBits, mpegHEVCSampleFormat, t.decodeOpts...)
 				case "av01":
 					d.FieldDecodeRange("sample", firstBit, nBits, av1FrameFormat, t.decodeOpts...)
 				case "mp4a":

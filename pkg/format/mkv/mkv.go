@@ -23,6 +23,8 @@ var vp9FrameFormat []*decode.Format
 var aacFrameFormat []*decode.Format
 var mpegAVCSampleFormat []*decode.Format
 var mpegAVCDCRFormat []*decode.Format
+var mpegHEVCSampleFormat []*decode.Format
+var mpegHEVCDCRFormat []*decode.Format
 var av1CCRFormat []*decode.Format
 var av1FrameFormat []*decode.Format
 var mpegASCFrameFormat []*decode.Format
@@ -44,6 +46,8 @@ func init() {
 			{Names: []string{format.MPEG_AAC_FRAME}, Formats: &aacFrameFormat},
 			{Names: []string{format.MPEG_AVC}, Formats: &mpegAVCSampleFormat},
 			{Names: []string{format.MPEG_AVC_DCR}, Formats: &mpegAVCDCRFormat},
+			{Names: []string{format.MPEG_HEVC}, Formats: &mpegHEVCSampleFormat},
+			{Names: []string{format.MPEG_HEVC_DCR}, Formats: &mpegHEVCDCRFormat},
 			{Names: []string{format.AV1_CCR}, Formats: &av1CCRFormat},
 			{Names: []string{format.AV1_FRAME}, Formats: &av1FrameFormat},
 			{Names: []string{format.MPEG_ASC}, Formats: &mpegASCFrameFormat},
@@ -375,14 +379,20 @@ func mkvDecode(d *decode.D, in interface{}) interface{} {
 			})
 		case "V_MPEG4/ISO/AVC":
 			_, dv := t.parentD.FieldDecodeRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegAVCDCRFormat)
-			// TODO: might be followed by a extension block
-
 			avcDcrOut, ok := dv.(format.AvcDcrOut)
 			if !ok {
 				d.Invalid(fmt.Sprintf("expected AvcDcrOut got %#+v", dv))
 			}
 			t.decodeOpts = append(t.decodeOpts,
 				decode.FormatOptions{InArg: format.AvcIn{LengthSize: avcDcrOut.LengthSize}})
+		case "V_MPEGH/ISO/HEVC":
+			_, dv := t.parentD.FieldDecodeRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegHEVCDCRFormat)
+			hevcDcrOut, ok := dv.(format.HevcDcrOut)
+			if !ok {
+				d.Invalid(fmt.Sprintf("expected HevcDcrOut got %#+v", dv))
+			}
+			t.decodeOpts = append(t.decodeOpts,
+				decode.FormatOptions{InArg: format.HevcIn{LengthSize: hevcDcrOut.LengthSize}})
 		case "V_AV1":
 			t.parentD.FieldDecodeRange("value", t.codecPrivatePos, t.codecPrivateTagSize, av1CCRFormat)
 		default:
@@ -427,6 +437,8 @@ func mkvDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldDecodeLen("packet", d.BitsLeft(), mpegSPUFrameFormat)
 			case "V_MPEG4/ISO/AVC":
 				d.FieldDecodeLen("packet", d.BitsLeft(), mpegAVCSampleFormat, decodeOpts...)
+			case "V_MPEGH/ISO/HEVC":
+				d.FieldDecodeLen("packet", d.BitsLeft(), mpegHEVCSampleFormat, decodeOpts...)
 			case "A_AAC":
 				d.FieldDecodeLen("packet", d.BitsLeft(), aacFrameFormat)
 			default:

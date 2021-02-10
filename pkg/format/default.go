@@ -50,6 +50,8 @@ const (
 	MPEG_ASC           = "mpeg_asc"
 	MPEG_AVC           = "mpeg_avc"
 	MPEG_AVC_DCR       = "mpeg_avc_dcr"
+	MPEG_HEVC          = "mpeg_hevc"
+	MPEG_HEVC_DCR      = "mpeg_hevc_dcr"
 	MPEG_ES            = "mpeg_es"
 	MPEG_PES           = "mpeg_pes"
 	MPEG_PES_PACKET    = "mpeg_pes_packet"
@@ -100,6 +102,14 @@ type AvcIn struct {
 }
 
 type AvcDcrOut struct {
+	LengthSize uint64
+}
+
+type HevcIn struct {
+	LengthSize uint64
+}
+
+type HevcDcrOut struct {
 	LengthSize uint64
 }
 

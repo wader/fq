@@ -1,7 +1,5 @@
 package mpeg
 
-// ISO/IEC 14496-15, 5.3.3.1.2 Syntax
-
 import (
 	"fq/pkg/decode"
 	"fq/pkg/format"
@@ -9,14 +7,14 @@ import (
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:        format.MPEG_AVC,
-		Description: "H.264/AVC sample",
-		DecodeFn:    avcDecode,
+		Name:        format.MPEG_HEVC,
+		Description: "H.265/HEVC sample",
+		DecodeFn:    hevcDecode,
 	})
 }
 
-func avcDecode(d *decode.D, in interface{}) interface{} {
-	avcIn, ok := in.(format.AvcIn)
+func hevcDecode(d *decode.D, in interface{}) interface{} {
+	hevcIn, ok := in.(format.HevcIn)
 	if !ok {
 		d.Invalid("avcIn required")
 	}
@@ -26,7 +24,7 @@ func avcDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldArrayFn("nals", func(d *decode.D) {
 		for d.NotEnd() {
 			d.FieldStructFn("nal", func(d *decode.D) {
-				l := d.FieldU("length", int(avcIn.LengthSize)*8)
+				l := d.FieldU("length", int(hevcIn.LengthSize)*8)
 				d.FieldBitBufLen("data", int64(l)*8)
 			})
 		}
