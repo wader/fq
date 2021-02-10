@@ -80,8 +80,6 @@ def i:
 def _formats_dot:
 	"# ... | dot -Tsvg -o formats.svg",
 	"digraph formats {",
-	"  nodesep=0.5",
-	"  ranksep=0.5",
 	"  node [shape=\"box\",style=\"rounded,filled\"]",
 	"  edge [arrowsize=\"0.7\"]",
 	(.[] | "  \(.name) -> {\(.dependencies | flatten? | join(" "))}"),
