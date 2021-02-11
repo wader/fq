@@ -294,7 +294,7 @@
       |                                               |                |      samples[1]: 0x2c-0x11bf+7 (4500)
       |                                               |                |       -[0]: av1_frame (sample) 0x2c-0x11bf+7 (4500)
       |                                               |                |          frame[3]: 0x2c-0x11bf+7 (4500)
-      |                                               |                |           -[0]: (obu) 0x2c-0x3a+7 (15)
+      |                                               |                |           -[0]: av1_obu (obu) 0x2c-0x3a+7 (15)
       |                                               |                |             -header: 0x2c-0x2c+7 (1)
 0x0020|                                    0a         |            .   |                forbidden_bit: 0 0x2c-0x2c (0+1)
 0x0020|                                    0a         |            .   |                type: OBU_SEQUENCE_HEADER (1) 0x2c+1-0x2c+4 (0+4)
@@ -304,7 +304,7 @@
 0x0020|                                       0d      |             .  |              size: 13 0x2d-0x2d+7 (1)
 0x0020|                                          20 00|               .|              data: 200000fa1e7fde210ad0202025 0x2e-0x3a+7 (13)
 0x0030|00 fa 1e 7f de 21 0a d0 20 20 25               |.....!..  %     |
-      |                                               |                |           -[1]: (obu) 0x3b-0x4c+7 (18)
+      |                                               |                |           -[1]: av1_obu (obu) 0x3b-0x4c+7 (18)
       |                                               |                |             -header: 0x3b-0x3b+7 (1)
 0x0030|                                 1a            |           .    |                forbidden_bit: 0 0x3b-0x3b (0+1)
 0x0030|                                 1a            |           .    |                type: OBU_FRAME_HEADER (3) 0x3b+1-0x3b+4 (0+4)
@@ -314,7 +314,7 @@
 0x0030|                                    10         |            .   |              size: 16 0x3c-0x3c+7 (1)
 0x0030|                                       10 02 27|             ..'|              data: 100227c8e9e6643fc1f8a49820822a60 0x3d-0x4c+7 (16)
 0x0040|c8 e9 e6 64 3f c1 f8 a4 98 20 82 2a 60         |...d?.... .*`   |
-      |                                               |                |           -[2]: (obu) 0x4d-0x11bf+7 (4467)
+      |                                               |                |           -[2]: av1_obu (obu) 0x4d-0x11bf+7 (4467)
       |                                               |                |             -header: 0x4d-0x4d+7 (1)
 0x0040|                                       22      |             "  |                forbidden_bit: 0 0x4d-0x4d (0+1)
 0x0040|                                       22      |             "  |                type: OBU_TILE_GROUP (4) 0x4d+1-0x4d+4 (0+4)
