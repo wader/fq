@@ -61,6 +61,13 @@ type loadModuleFn func(name string) (*gojq.Query, error)
 func (l loadModuleFn) LoadModule(name string) (*gojq.Query, error) {
 	return l(name)
 }
+
+type listenerFn func(line []rune, pos int, key rune) (newLine []rune, newPos int, ok bool)
+
+func (lf listenerFn) OnChange(line []rune, pos int, key rune) (newLine []rune, newPos int, ok bool) {
+	return lf(line, pos, key)
+}
+
 func toBool(v interface{}) (bool, error) {
 	switch v := v.(type) {
 	case bool:
@@ -459,6 +466,16 @@ func (q *Query) REPL(ctx context.Context) error {
 
 		HistorySearchFold: true,
 		// FuncFilterInputRune: filterInput,
+
+		// FuncFilterInputRune: func(r rune) (rune, bool) {
+		// 	log.Printf("r: %#+v\n", r)
+		// 	return r, true
+		// },
+
+		// Listener: listenerFn(func(line []rune, pos int, key rune) (newLine []rune, newPos int, ok bool) {
+		// 	log.Printf("line: %#+v pos=%v key=%d\n", line, pos, key)
+		// 	return line, pos, false
+		// }),
 	})
 	if err != nil {
 		return err
