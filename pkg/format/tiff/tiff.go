@@ -1,8 +1,7 @@
 package tiff
 
-// http://www.libpng.org/pub/png/spec/1.2/PNG-Contents.html
-// https://ftp-osl.osuosl.org/pub/libpng/documents/pngext-1.5.0.html
-// TODO: gps
+// https://www.adobe.io/content/dam/udp/en/open/standards/tiff/TIFF6.pdf
+// TODO: location data etc
 
 import (
 	"fq/pkg/decode"
@@ -781,6 +780,113 @@ func fieldSRational(d *decode.D, name string) float64 {
 	return d.FieldFloatFn(name, func() (float64, string) { return float64(d.S32()) / float64(d.S32()), "" })
 }
 
+type strips struct {
+	offsets    []int64
+	byteCounts []int64
+}
+
+func decodeIfd(d *decode.D, s *strips) int64 {
+	var nextIfdOffset int64
+
+	d.FieldStructFn("ifd", func(d *decode.D) {
+		numberOfFields := d.FieldU16("number_of_field")
+		d.FieldArrayFn("entries", func(d *decode.D) {
+			for i := uint64(0); i < numberOfFields; i++ {
+				d.FieldStructFn("entry", func(d *decode.D) {
+					tag, _ := d.FieldStringMapFn("tag", tagNames, "unknown", d.U16)
+					typ, typOk := d.FieldStringMapFn("type", typeNames, "unknown", d.U16)
+					count := d.FieldU32("count")
+					// TODO: short values stored in valueOffset directly?
+					valueOrByteOffset := d.FieldU32("value_offset")
+
+					if !typOk {
+						return
+					}
+
+					valueByteOffset := valueOrByteOffset
+					valueByteSize := typeByteSize[typ] * count
+					if valueByteSize <= 4 {
+						// if value fits in offset itself use offset to value_offset
+						valueByteOffset = uint64(d.Pos()/8) - 4
+					}
+
+					switch {
+					case typ == LONG && tag == ExifIFD:
+						ifdPos := valueOrByteOffset
+						pos := d.Pos()
+						d.SeekAbs(int64(ifdPos * 8))
+						decodeIfd(d, &strips{})
+						d.SeekAbs(pos)
+					default:
+
+						d.FieldArrayFn("values", func(d *decode.D) {
+							switch {
+							case typ == UNDEFINED:
+								switch tag {
+								case InterColorProfile:
+									d.FieldDecodeRange("icc", int64(valueByteOffset)*8, int64(valueByteSize)*8, iccProfile)
+								default:
+									// log.Printf("tag: %#+v\n", tag)
+									// log.Printf("valueByteSize: %#+v\n", valueByteSize)
+									d.FieldBitBufRange("value", int64(valueByteOffset)*8, int64(valueByteSize)*8)
+								}
+							case typ == ASCII:
+								d.DecodeRangeFn(int64(valueByteOffset*8), int64(valueByteSize*8), func(d *decode.D) {
+									d.FieldUTF8("value", int(valueByteSize))
+								})
+							case typ == BYTE:
+								d.FieldBitBufRange("value", int64(valueByteOffset*8), int64(valueByteSize*8))
+							default:
+								// log.Printf("valueOffset: %d\n", valueByteOffset)
+								// log.Printf("valueSize: %d\n", valueByteSize)
+								d.DecodeRangeFn(int64(valueByteOffset*8), int64(valueByteSize*8), func(d *decode.D) {
+									for i := uint64(0); i < count; i++ {
+										switch typ {
+										// TODO: only some typ?
+										case BYTE:
+											d.FieldU8("value")
+										case SHORT:
+											v := d.FieldU16("value")
+											_ = v
+											switch tag {
+											case StripOffsets:
+												s.offsets = append(s.offsets, int64(v*8))
+											case StripByteCounts:
+												s.byteCounts = append(s.byteCounts, int64(v*8))
+											}
+										case LONG:
+											v := d.FieldU32("value")
+											_ = v
+											switch tag {
+											case StripOffsets:
+												s.offsets = append(s.offsets, int64(v*8))
+											case StripByteCounts:
+												s.byteCounts = append(s.byteCounts, int64(v*8))
+											}
+										case RATIONAL:
+											fieldRational(d, "value")
+										case SLONG:
+											d.FieldS32("value")
+										case SRATIONAL:
+											fieldSRational(d, "value")
+										default:
+											panic("unknown type")
+										}
+									}
+								})
+							}
+						})
+					}
+				})
+			}
+		})
+
+		nextIfdOffset = int64(d.FieldU32("next_ifd"))
+	})
+
+	return nextIfdOffset
+}
+
 func tiffDecode(d *decode.D, in interface{}) interface{} {
 	switch d.PeekBits(32) {
 	case littleEndian, bigEndian:
@@ -811,103 +917,23 @@ func tiffDecode(d *decode.D, in interface{}) interface{} {
 		d.Endian = decode.BigEndian
 	}
 
-	ifdOffset := d.FieldU32("first_ifd")
-
-	var stripOffset []int64
-	var stripByteCounts []int64
+	ifdOffset := int64(d.FieldU32("first_ifd"))
+	s := &strips{}
 
 	d.FieldArrayFn("ifds", func(d *decode.D) {
 		// TODO: inf loop?
 		for ifdOffset != 0 {
-			d.SeekAbs(int64(ifdOffset) * 8)
-
-			numberOfFields := d.FieldU16("number_of_field")
-			for i := uint64(0); i < numberOfFields; i++ {
-				d.FieldStructFn("ifd", func(d *decode.D) {
-					tag, _ := d.FieldStringMapFn("tag", tagNames, "unknown", d.U16)
-					typ, typOk := d.FieldStringMapFn("type", typeNames, "unknown", d.U16)
-					count := d.FieldU32("count")
-					// TODO: short values stored in valueOffset directly?
-					valueByteOffset := d.FieldU32("value_offset")
-
-					if !typOk {
-						return
-					}
-
-					valueByteSize := typeByteSize[typ] * count
-					if valueByteSize <= 4 {
-						// if value fits in offset itself use offset to value_offset
-						valueByteOffset = uint64(d.Pos()/8) - 4
-					}
-
-					d.FieldArrayFn("values", func(d *decode.D) {
-						switch {
-						case typ == UNDEFINED:
-							switch tag {
-							case InterColorProfile:
-								d.FieldDecodeRange("icc", int64(valueByteOffset)*8, int64(valueByteSize)*8, iccProfile)
-							default:
-								// log.Printf("tag: %#+v\n", tag)
-								// log.Printf("valueByteSize: %#+v\n", valueByteSize)
-								d.FieldBitBufRange("value", int64(valueByteOffset)*8, int64(valueByteSize)*8)
-							}
-						case typ == ASCII:
-							d.DecodeRangeFn(int64(valueByteOffset*8), int64(valueByteSize*8), func(d *decode.D) {
-								d.FieldUTF8("value", int(valueByteSize))
-							})
-						case typ == BYTE:
-							d.FieldBitBufRange("value", int64(valueByteOffset*8), int64(valueByteSize*8))
-						default:
-							// log.Printf("valueOffset: %d\n", valueByteOffset)
-							// log.Printf("valueSize: %d\n", valueByteSize)
-							d.DecodeRangeFn(int64(valueByteOffset*8), int64(valueByteSize*8), func(d *decode.D) {
-								for i := uint64(0); i < count; i++ {
-									switch typ {
-									// TODO: only some typ?
-									// case BYTE:
-									// 	d.FieldU8("value")
-									case SHORT:
-										v := d.FieldU16("value")
-										switch tag {
-										case StripOffsets:
-											stripOffset = append(stripOffset, int64(v*8))
-										case StripByteCounts:
-											stripByteCounts = append(stripByteCounts, int64(v*8))
-										}
-									case LONG:
-										v := d.FieldU32("value")
-										switch tag {
-										case StripOffsets:
-											stripOffset = append(stripOffset, int64(v*8))
-										case StripByteCounts:
-											stripByteCounts = append(stripByteCounts, int64(v*8))
-										}
-									case RATIONAL:
-										fieldRational(d, "value")
-									case SLONG:
-										d.FieldS32("value")
-									case SRATIONAL:
-										fieldSRational(d, "value")
-									default:
-										panic("unknown type")
-									}
-								}
-							})
-						}
-					})
-				})
-			}
-
-			ifdOffset = d.FieldU32("next_ifd")
+			d.SeekAbs(ifdOffset * 8)
+			ifdOffset = decodeIfd(d, s)
 		}
 	})
 
-	if len(stripOffset) != len(stripByteCounts) {
+	if len(s.offsets) != len(s.byteCounts) {
 		// TODO: warning
 	} else {
 		d.FieldArrayFn("strips", func(d *decode.D) {
-			for i := 0; i < len(stripOffset); i++ {
-				d.FieldBitBufRange("strip", stripOffset[i], stripByteCounts[i])
+			for i := 0; i < len(s.offsets); i++ {
+				d.FieldBitBufRange("strip", s.offsets[i], s.byteCounts[i])
 			}
 		})
 	}
