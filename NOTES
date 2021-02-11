@@ -1,4 +1,7 @@
 
+
+decodelen variant that adds unknown?
+
 jq int64 array pos etc?
 
 dont expose *bitio.Buffer to jq, always wrap? ToBitBuf?
