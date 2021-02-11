@@ -4,6 +4,7 @@ package png
 // https://ftp-osl.osuosl.org/pub/libpng/documents/pngext-1.5.0.html
 
 import (
+	"fq/internal/ioextra"
 	"fq/pkg/decode"
 	"fq/pkg/format"
 	"fq/pkg/ranges"
@@ -125,7 +126,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 		}
 
 		chunkCRC := crc32.NewIEEE()
-		decode.MustCopy(chunkCRC, d.BitBufRange(crcStartPos, d.Pos()-crcStartPos))
+		ioextra.MustCopy(chunkCRC, d.BitBufRange(crcStartPos, d.Pos()-crcStartPos))
 		d.FieldChecksumLen("crc", 32, chunkCRC.Sum(nil), decode.BigEndian)
 	})
 

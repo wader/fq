@@ -12,4 +12,5 @@ require (
 	github.com/pmezard/go-difflib v1.0.0
 )
 
+//github.com/chzyer/readline => /Users/wader/src/readline
 replace github.com/itchyny/gojq => /Users/wader/src/gojq

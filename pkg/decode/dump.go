@@ -22,7 +22,35 @@ type DumpOptions struct {
 	SizeBase        int
 }
 
+// 0   12      34    56
+// addr|hexdump|ascii|field
+const (
+	colAddr  = 0
+	colHex   = 2
+	colAscii = 4
+	colField = 6
+)
+
 func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth int, addrWidth int, opts DumpOptions) error {
+	var cerr error
+	cprint := func(c int, a ...interface{}) {
+		if cerr != nil {
+			return
+		}
+		_, cerr = fmt.Fprint(cw.Columns[c], a...)
+	}
+	cfmt := func(c int, format string, a ...interface{}) {
+		if cerr != nil {
+			return
+		}
+		_, cerr = fmt.Fprintf(cw.Columns[c], format, a...)
+	}
+	columns := func() {
+		cprint(1, "|\n")
+		cprint(3, "|\n")
+		cprint(5, "|\n")
+	}
+
 	isInArray := false
 	if v.Parent != nil {
 		_, isInArray = v.Parent.V.(Array)
@@ -49,45 +77,41 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 	switch vv := v.V.(type) {
 	case Struct:
 		if depth == 0 {
-			fmt.Fprint(cw.Columns[6], name, ":")
+			cprint(colField, name, ":")
 		} else {
-			fmt.Fprint(cw.Columns[6], indent[1:], "-", name, ":")
+			cprint(colField, indent[1:], "-", name, ":")
 		}
 		if v.Description != "" {
-			fmt.Fprint(cw.Columns[6], " ", v.Description)
+			cprint(colField, " ", v.Description)
 		}
 	case Array:
-		fmt.Fprint(cw.Columns[6], indent, name)
-		fmt.Fprintf(cw.Columns[6], "[%d]:", len(vv))
+		cprint(colField, indent, name)
+		cfmt(colField, "[%d]:", len(vv))
 	default:
-		fmt.Fprint(cw.Columns[6], indent, name, ": ", v)
+		cprint(colField, indent, name, ": ", v)
 		isField = true
 	}
 	if opts.Verbose && isInArray {
-		fmt.Fprintf(cw.Columns[6], " (%s)", v.Name)
+		cfmt(colField, " (%s)", v.Name)
 	}
 
 	if opts.Verbose {
-		fmt.Fprintf(cw.Columns[6], " %s (%s)",
+		cfmt(colField, " %s (%s)",
 			BitRange(v.Range).StringByteBits(opts.AddrBase), Bits(v.Range.Len).StringByteBits(opts.SizeBase))
 	}
 
-	fmt.Fprintln(cw.Columns[6])
+	cprint(colField)
 
 	if v.Error != nil {
-		fmt.Fprintf(cw.Columns[6], "%s!%s\n", indent, v.Error)
-		fmt.Fprintf(cw.Columns[1], "|\n")
-		fmt.Fprintf(cw.Columns[3], "|\n")
-		fmt.Fprintf(cw.Columns[5], "|\n")
+		columns()
+		cfmt(colField, "%s!%s\n", indent, v.Error)
 
 		if opts.Verbose {
 			if de, ok := v.Error.(*DecodeError); ok && de.PanicStack != "" {
 				ps := de.PanicStack
 				for _, l := range strings.Split(ps, "\n") {
-					fmt.Fprintf(cw.Columns[6], "%s%s\n", indent, l)
-					fmt.Fprintf(cw.Columns[1], "|\n")
-					fmt.Fprintf(cw.Columns[3], "|\n")
-					fmt.Fprintf(cw.Columns[5], "|\n")
+					columns()
+					cfmt(colField, "%s%s\n", indent, l)
 				}
 			}
 		}
@@ -129,12 +153,10 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 	startLineByte := startLine * int64(opts.LineBytes)
 	lastDisplayLine := lastDisplayByte / int64(opts.LineBytes)
 
-	fmt.Fprintf(cw.Columns[1], "|\n")
-	fmt.Fprintf(cw.Columns[3], "|\n")
-	fmt.Fprintf(cw.Columns[5], "|\n")
+	columns()
 
 	if isField && v.Range.Len > 0 {
-		fmt.Fprintf(cw.Columns[0], "%s%s\n",
+		cfmt(0, "%s%s\n",
 			rootIndent, num.PadFormatInt(startLineByte, opts.AddrBase, true, addrWidth))
 
 		color := false
@@ -172,26 +194,29 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 		}
 
 		if vBitBuf != nil {
-			io.Copy(
-				hexpairwriter.New(cw.Columns[2], opts.LineBytes, int(startLineByteOffset), hexpairFn),
-				io.LimitReader(vBitBuf.Copy(), displaySizeBytes))
-			io.Copy(
-				asciiwriter.New(cw.Columns[4], opts.LineBytes, int(startLineByteOffset), asciiFn),
-				io.LimitReader(vBitBuf.Copy(), displaySizeBytes))
+			if _, err := io.Copy(
+				hexpairwriter.New(cw.Columns[colHex], opts.LineBytes, int(startLineByteOffset), hexpairFn),
+				io.LimitReader(vBitBuf.Copy(), displaySizeBytes)); err != nil {
+				return err
+			}
+			if _, err := io.Copy(
+				asciiwriter.New(cw.Columns[colAscii], opts.LineBytes, int(startLineByteOffset), asciiFn),
+				io.LimitReader(vBitBuf.Copy(), displaySizeBytes)); err != nil {
+				return err
+			}
 		}
 
 		for i := int64(1); i < addrLines; i++ {
 			lineStartByte := startLineByte + int64(i)*int64(opts.LineBytes)
-			fmt.Fprintf(cw.Columns[0], "%s%s\n", rootIndent, num.PadFormatInt(lineStartByte, opts.AddrBase, true, addrWidth))
-			fmt.Fprintf(cw.Columns[1], "|\n")
-			fmt.Fprintf(cw.Columns[3], "|\n")
-			fmt.Fprintf(cw.Columns[5], "|\n")
+			columns()
+			cfmt(colAddr, "%s%s\n", rootIndent, num.PadFormatInt(lineStartByte, opts.AddrBase, true, addrWidth))
 		}
 		// TODO: correct? should rethink columnwriter api maybe?
 		lastLineStopByte := startLineByte + int64(addrLines)*int64(opts.LineBytes) - 1
 		if lastDisplayByte == bufferLastByte && lastDisplayByte != lastLineStopByte {
-			fmt.Fprintf(cw.Columns[2], "|\n")
-			fmt.Fprintf(cw.Columns[4], "|\n")
+			// extra "|" in as EOF markers
+			cfmt(colHex, "|\n")
+			cfmt(colAscii, "|\n")
 		}
 
 		if stopByte != lastDisplayByte {
@@ -199,20 +224,20 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 			if stopBit == bufferLastBit {
 				isEnd = " (end)"
 			}
-			fmt.Fprintf(cw.Columns[0], "%s*\n", rootIndent)
-			fmt.Fprintf(cw.Columns[1], "|\n")
-			fmt.Fprint(cw.Columns[2], "\n")
-			fmt.Fprintf(cw.Columns[2], "%d bytes more until %s%s",
+			columns()
+
+			cfmt(colAddr, "%s*\n", rootIndent)
+			cprint(colHex, "\n")
+			// TODO: truncate if displaybytes is small?
+			cfmt(colHex, "%d bytes more until %s%s",
 				stopByte-lastDisplayByte, Bits(stopBit).StringByteBits(opts.AddrBase), isEnd)
-			fmt.Fprintf(cw.Columns[3], "|\n")
-			fmt.Fprintf(cw.Columns[5], "|\n")
 			// TODO: dump last line?
 		}
 	}
 
 	cw.Flush()
 
-	return nil
+	return cerr
 }
 
 func (v *Value) Dump(w io.Writer, opts DumpOptions) error {

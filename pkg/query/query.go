@@ -16,6 +16,7 @@ import (
 	"io/ioutil"
 	"math/big"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -259,10 +260,12 @@ const (
 )
 
 type runContext struct {
+	ctx    context.Context
 	mode   RunMode
+	stdout io.Writer
+
 	pushVs []interface{}
 	pops   int
-	stdout io.Writer
 }
 
 type queryErrorFn func(stdout io.Writer) error
@@ -284,6 +287,7 @@ func (q *Query) Run(ctx context.Context, mode RunMode, src string, stdout io.Wri
 	var err error
 
 	q.runContext = &runContext{
+		ctx:    ctx,
 		mode:   mode,
 		stdout: stdout,
 	}
@@ -449,7 +453,8 @@ func (q *Query) REPL(ctx context.Context) error {
 	historyFile = filepath.Join(cacheDir, "fq/history")
 	_ = os.MkdirAll(filepath.Dir(historyFile), 0700)
 
-	// log := log.New(func() io.Writer { f, _ := os.Create("/tmp/log"); return f }(), "", 0)
+	interruptChan := make(chan os.Signal, 1)
+	signal.Notify(interruptChan, os.Interrupt)
 
 	l, err := readline.NewEx(&readline.Config{
 		Stdin:       ioutil.NopCloser(q.opts.OS.Stdin()),
@@ -482,6 +487,17 @@ func (q *Query) REPL(ctx context.Context) error {
 	}
 
 	for {
+		runCtx, runCtxCancelFn := context.WithCancel(ctx)
+		_ = runCtxCancelFn
+		go func() {
+			select {
+			case <-interruptChan:
+				runCtxCancelFn()
+			case <-ctx.Done():
+				// nop
+			}
+		}()
+
 		var v []interface{}
 		if len(q.inputStack) > 0 {
 			v = q.inputStack[len(q.inputStack)-1]
@@ -506,11 +522,7 @@ func (q *Query) REPL(ctx context.Context) error {
 
 		src, err := l.Readline()
 		if err == readline.ErrInterrupt {
-			if len(src) == 0 {
-				break
-			} else {
-				continue
-			}
+			continue
 		} else if err == io.EOF {
 			break
 		}
@@ -519,9 +531,12 @@ func (q *Query) REPL(ctx context.Context) error {
 			return err
 		}
 
-		if _, err := q.Run(ctx, REPLMode, src, q.opts.OS.Stdout()); err != nil {
-			fmt.Fprintf(q.opts.OS.Stdout(), "error: %s\n", err)
+		if _, err := q.Run(runCtx, REPLMode, src, q.opts.OS.Stdout()); err != nil {
+			if err != context.Canceled {
+				fmt.Fprintf(q.opts.OS.Stdout(), "error: %s\n", err)
+			}
 		}
+		runCtxCancelFn()
 	}
 
 	return nil
