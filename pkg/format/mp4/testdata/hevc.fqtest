@@ -15,7 +15,7 @@
       |                                               |                |   -[1]: (box) 0x1c-0x23+7 (8)
 0x0010|                                    00 00 00 08|            ....|      size: 8 0x1c-0x1f+7 (4)
 0x0020|66 72 65 65                                    |free            |      type: "free" 0x20-0x23+7 (4)
-0x0020|                                               |                |      data:  0x24-NA (0)
+      |                                               |                |      data:  0x24-NA (0)
       |                                               |                |   -[2]: (box) 0x24-0x880+7 (2141)
 0x0020|            00 00 08 5d                        |    ...]        |      size: 2141 0x24-0x27+7 (4)
 0x0020|                        6d 64 61 74            |        mdat    |      type: "mdat" 0x28-0x2b+7 (4)
@@ -157,7 +157,7 @@
 0x0a00|                                          00   |              . |                              version: 0 0xa0e-0xa0e+7 (1)
 0x0a00|                                             00|               .|                              flags: 1 0xa0f-0xa11+7 (3)
 0x0a10|00 01                                          |..              |
-0x0a10|                                               |                |                              data:  0xa12-NA (0)
+      |                                               |                |                              data:  0xa12-NA (0)
       |                                               |                |                   -[2]: (box) 0xa12-0x1438+7 (2599)
 0x0a10|      00 00 0a 27                              |  ...'          |                      size: 2599 0xa12-0xa15+7 (4)
 0x0a10|                  73 74 62 6c                  |      stbl      |                      type: "stbl" 0xa16-0xa19+7 (4)
@@ -367,4 +367,4 @@
 0x0020|                                    00 00 08 51|            ...Q|              length: 2129 0x2c-0x2f+7 (4)
 0x0030|28 01 af 1d 20 aa 55 b7 88 a0 62 7f ff fa 2c 46|(... .U...b...,F|              data: 2801af1d20aa55b788a0627ffffa2c46... 0x30-0x880+7 (2129)
 *     |2113 bytes more until 0x880+7                  |                |
-0x1490||                                              ||               |      data_format: "hev1" 0x149b-NA (0)
+      |                                               |                |      data_format: "hev1" 0x149b-NA (0)

@@ -16,7 +16,7 @@
      |                                               |                |   -[1]: (box) 0x20-0x27+7 (8)
 0x020|00 00 00 08                                    |....            |      size: 8 0x20-0x23+7 (4)
 0x020|            66 72 65 65                        |    free        |      type: "free" 0x24-0x27+7 (4)
-0x020|                                               |                |      data:  0x28-NA (0)
+     |                                               |                |      data:  0x28-NA (0)
      |                                               |                |   -[2]: (box) 0x28-0xaef+7 (2760)
 0x020|                        00 00 0a c8            |        ....    |      size: 2760 0x28-0x2b+7 (4)
 0x020|                                    6d 64 61 74|            mdat|      type: "mdat" 0x2c-0x2f+7 (4)
@@ -144,7 +144,7 @@
 0xc70|                                       00      |             .  |                              version: 0 0xc7d-0xc7d+7 (1)
 0xc70|                                          00 00|              ..|                              flags: 1 0xc7e-0xc80+7 (3)
 0xc80|01                                             |.               |
-0xc80|                                               |                |                              data:  0xc81-NA (0)
+     |                                               |                |                              data:  0xc81-NA (0)
      |                                               |                |                   -[2]: (box) 0xc81-0xd90+7 (272)
 0xc80|   00 00 01 10                                 | ....           |                      size: 272 0xc81-0xc84+7 (4)
 0xc80|               73 74 62 6c                     |     stbl       |                      type: "stbl" 0xc85-0xc88+7 (4)
@@ -318,4 +318,4 @@
 0x2e0|               65 88 84 00 2b ff fe f5 db f3 2c|     e...+.....,|              data: 658884002bfffef5dbf32cac66673dff... 0x2e5-0xaef+7 (2059)
 0x2f0|ac 66 67 3d ff ed 3b 60 00 21 74 ff c0 cf 1f fc|.fg=..;`.!t.....|
 *    |2032 bytes more until 0xaef+7                  |                |
-0xdf0||                                              ||               |      data_format: "avc1" 0xdf3-NA (0)
+     |                                               |                |      data_format: "avc1" 0xdf3-NA (0)

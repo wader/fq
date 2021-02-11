@@ -15,7 +15,7 @@
       |                                               |                |   -[1]: (box) 0x1c-0x23+7 (8)
 0x0010|                                    00 00 00 08|            ....|      size: 8 0x1c-0x1f+7 (4)
 0x0020|66 72 65 65                                    |free            |      type: "free" 0x20-0x23+7 (4)
-0x0020|                                               |                |      data:  0x24-NA (0)
+      |                                               |                |      data:  0x24-NA (0)
       |                                               |                |   -[2]: (box) 0x24-0x1dc+7 (441)
 0x0020|            00 00 01 b9                        |    ....        |      size: 441 0x24-0x27+7 (4)
 0x0020|                        6d 64 61 74            |        mdat    |      type: "mdat" 0x28-0x2b+7 (4)
@@ -158,7 +158,7 @@
 0x0360|      75 72 6c 20                              |  url           |                              type: "url " 0x362-0x365+7 (4)
 0x0360|                  00                           |      .         |                              version: 0 0x366-0x366+7 (1)
 0x0360|                     00 00 01                  |       ...      |                              flags: 1 0x367-0x369+7 (3)
-0x0360|                                               |                |                              data:  0x36a-NA (0)
+      |                                               |                |                              data:  0x36a-NA (0)
       |                                               |                |                   -[2]: (box) 0x36a-0x1126+7 (3517)
 0x0360|                              00 00 0d bd      |          ....  |                      size: 3517 0x36a-0x36d+7 (4)
 0x0360|                                          73 74|              st|                      type: "stbl" 0x36e-0x371+7 (4)
@@ -237,7 +237,7 @@
 0x03f0|         76 6f 72 62 69 73                     |   vorbis       |                                              magic: Correct ("vorbis") 0x3f3-0x3f8+7 (6)
       |                                               |                |                                             -comment: vorbis_comment 0x3f9-0x400+7 (8)
 0x03f0|                           00 00 00 00         |         ....   |                                                vendor_length: 0 0x3f9-0x3fc+7 (4)
-0x03f0|                                               |                |                                                vendor: "" 0x3fd-NA (0)
+      |                                               |                |                                                vendor: "" 0x3fd-NA (0)
 0x03f0|                                       00 00 00|             ...|                                                user_comment_list_length: 0 0x3fd-0x400+7 (4)
 0x0400|00                                             |.               |
       |                                               |                |                                                user_comments[0]: 0x401-NA (0)
@@ -352,7 +352,7 @@
 0x00e0|      be                                       |  .             |          packet_type: Audio (0) 0xe2-0xe2+7 (1)
       |                                               |                |       -[2]: vorbis_packet (sample) 0x12e-0x12e+7 (1)
 0x0120|                                          be   |              . |          packet_type: Audio (0) 0x12e-0x12e+7 (1)
-0x1180||                                              ||               |      data_format: "mp4a" 0x1189-NA (0)
+      |                                               |                |      data_format: "mp4a" 0x1189-NA (0)
 0x0410|      84 74 9a 59 aa 01 22 cc 40 86 81 d0 90 95|  .t.Y..".@.....|  unknown0: 84749a59aa0122cc408681d090950000... 0x412-0x10b0+7 (3231)
 0x0420|00 00 02 00 00 60 84 22 0c 31 20 34 64 25 00 00|.....`.".1 4d%..|
 *     |3201 bytes more until 0x10b0+7                 |                |

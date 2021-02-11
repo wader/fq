@@ -5,7 +5,7 @@
 0x000|ff fb                                          |..              |  sync: Correct (7ff) 0x0-0x1+2 (1+3)
 0x000|   fb                                          | .              |  mpeg_version: MPEG Version 1 (1) 0x1+3-0x1+4 (0+2)
 0x000|   fb                                          | .              |  layer: Layer III (3) 0x1+5-0x1+6 (0+2)
-0x000|                                               |                |  samples_per_frame: 1152 0x1+7-NA (0)
+     |                                               |                |  samples_per_frame: 1152 0x1+7-NA (0)
 0x000|   fb                                          | .              |  protection: Not protected (1) 0x1+7-0x1+7 (0+1)
 0x000|      90                                       |  .             |  bitrate: 128000 0x2-0x2+3 (0+4)
 0x000|      90                                       |  .             |  sample_rate: 44100 0x2+4-0x2+5 (0+2)
@@ -81,4 +81,4 @@
 0x020|            0a 6b 6d d8 c2 12 cd a0 0d bf 4d 03|    .km.......M.|  samples: 0a6b6dd8c212cda00dbf4d03018d4c35... 0x24-0x1a0+7 (381)
 0x030|01 8d 4c 35 18 20 0c 1d db 6b 6d 7d df 7f e3 72|..L5. ...km}...r|
 *    |353 bytes more until 0x1a0+7 (end)             |                |
-0x1a0||                                              ||               |  crc_calculated: 1855 0x1a1-NA (0)
+     |                                               |                |  crc_calculated: 1855 0x1a1-NA (0)

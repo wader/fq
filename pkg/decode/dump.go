@@ -133,7 +133,7 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 	fmt.Fprintf(cw.Columns[3], "|\n")
 	fmt.Fprintf(cw.Columns[5], "|\n")
 
-	if isField {
+	if isField && v.Range.Len > 0 {
 		fmt.Fprintf(cw.Columns[0], "%s%s\n",
 			rootIndent, num.PadFormatInt(startLineByte, opts.AddrBase, true, addrWidth))
 

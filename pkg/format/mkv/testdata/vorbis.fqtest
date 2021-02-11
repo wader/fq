@@ -218,7 +218,7 @@
       |                                               |                |                     -comment: vorbis_comment 0x19e-0x1a5+7 (8)
 0x0190|                                          00 00|              ..|                        vendor_length: 0 0x19e-0x1a1+7 (4)
 0x01a0|00 00                                          |..              |
-0x01a0|                                               |                |                        vendor: "" 0x1a2-NA (0)
+      |                                               |                |                        vendor: "" 0x1a2-NA (0)
 0x01a0|      00 00 00 00                              |  ....          |                        user_comment_list_length: 0 0x1a2-0x1a5+7 (4)
       |                                               |                |                        user_comments[0]: 0x1a6-NA (0)
 0x01a0|                  01                           |      .         |                      padding0: Correct (none) (zero padding) 0x1a6-0x1a6+6 (0+7)

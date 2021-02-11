@@ -15,7 +15,7 @@
      |                                               |                |   -[1]: (box) 0x1c-0x23+7 (8)
 0x010|                                    00 00 00 08|            ....|      size: 8 0x1c-0x1f+7 (4)
 0x020|66 72 65 65                                    |free            |      type: "free" 0x20-0x23+7 (4)
-0x020|                                               |                |      data:  0x24-NA (0)
+     |                                               |                |      data:  0x24-NA (0)
      |                                               |                |   -[2]: (box) 0x24-0x291+7 (622)
 0x020|            00 00 02 6e                        |    ...n        |      size: 622 0x24-0x27+7 (4)
 0x020|                        6d 64 61 74            |        mdat    |      type: "mdat" 0x28-0x2b+7 (4)
@@ -156,7 +156,7 @@
 0x410|                     75 72 6c 20               |       url      |                              type: "url " 0x417-0x41a+7 (4)
 0x410|                                 00            |           .    |                              version: 0 0x41b-0x41b+7 (1)
 0x410|                                    00 00 01   |            ... |                              flags: 1 0x41c-0x41e+7 (3)
-0x410|                                               |                |                              data:  0x41f-NA (0)
+     |                                               |                |                              data:  0x41f-NA (0)
      |                                               |                |                   -[2]: (box) 0x41f-0x53a+7 (284)
 0x410|                                             00|               .|                      size: 284 0x41f-0x422+7 (4)
 0x420|00 01 1c                                       |...             |
@@ -348,4 +348,4 @@
      |                                               |                |          raw_data_blocks[1]: 0x28d-0x28d+2 (0+3)
      |                                               |                |           -[0]: (raw_data_block) 0x28d-0x28d+2 (0+3)
 0x280|                                       01      |             .  |              syntax_element: SCE (0) 0x28d-0x28d+2 (0+3)
-0x590||                                              ||               |      data_format: "mp4a" 0x59d-NA (0)
+     |                                               |                |      data_format: "mp4a" 0x59d-NA (0)

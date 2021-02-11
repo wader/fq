@@ -107,6 +107,6 @@
 0x0f0|                                    45         |            E   |      private: false 0xfc+3-0xfc+3 (0+1)
 0x0f0|                                       4e      |             N  |      reserved: false 0xfd+3-0xfd+3 (0+1)
 0x0f0|                                          44   |              D |      safe_to_copy: false 0xfe+3-0xfe+3 (0+1)
-0x0f0|                                               |                |      data:  0xff-NA (0)
+     |                                               |                |      data:  0xff-NA (0)
 0x0f0|                                             ae|               .|      crc: Correct (ae426082) 0xff-0x102+7 (4)
 0x100|42 60 82|                                      |B`.|            |
