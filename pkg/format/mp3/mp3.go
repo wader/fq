@@ -1,7 +1,7 @@
 package mp3
 
 // TODO: vbri
-// TOFO: resync on garbage?
+// TOFO: resync on garbage? between id3v2 and first frame for example
 
 import (
 	"fq/pkg/decode"
