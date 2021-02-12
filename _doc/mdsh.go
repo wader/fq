@@ -63,7 +63,8 @@ func main() {
 					break
 				}
 
-				if len(l) >= 2 && []rune(l)[len(l)-1] == nonBreakingSpace {
+				rl := []rune(l)
+				if len(rl) >= 1 && []rune(rl)[len(rl)-1] == nonBreakingSpace {
 					fmt.Println(l)
 					if strings.HasPrefix(l, "$") {
 						cmd := exec.Command("sh", "-c", l[1:len(l)-2])
