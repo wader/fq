@@ -7,7 +7,7 @@ Tool and framework for querying and exploring binary formats.
 ##
 
 <sub>
-<pre exec>
+<pre sh>
 <b># duration of a mp3 file</b> 
 $ fq file.mp3 '[.frames[] | .samples_per_frame / .sample_rate] | add' 
 0.0783673469387755
@@ -86,7 +86,6 @@ TODO: piping
 ## Decoders
 
 [./decoders_markdown]: sh-start
-
 |Name|Description|
 |-|-|
 |apev2|APEv2 metadata tag|
@@ -135,7 +134,6 @@ TODO: piping
 |vorbis_packet|Vorbis packet|
 |vp9_frame|VP9 frame|
 |wav|WAV file|
-
 [#]: sh-end
 
 TODO: format graph?

@@ -1,27 +1,40 @@
 // Takes markdown on stdin and outputs same markdown with shell commands expanded
-//
-// ```sh (exec)
+// lines inside sh sections ending with non-breaking-space " " will be kept and
+// those starting with $ will also be exected as shell commands and output will
+// be inserted.
+
+// <pre sh>
 // # comment
 // $ echo test
+// will be replaced
+// </pre>
+// Becomes:
+// <pre sh>
+// # comment
+// $ echo test
+// test
+// </pre>
+//
+// ```sh (sh)
+// # comment
+// $ echo test
+// will be replaced
 // ```
 // Becomes:
-// ```sh (exec)
+// ```sh (sh)
 // # comment
 // $ echo test
 // test
 // ```
 //
 // [echo test]: sh-start
-//
-// anything here
-//
+// will be replaced
 // [#]: sh-end
 // Becomes:
 // [echo test]: sh-start
-//
 // test
-//
 // [#]: sh-end
+
 package main
 
 import (
@@ -40,8 +53,8 @@ func main() {
 		return scanner.Text(), ok
 	}
 
-	preExecRe := regexp.MustCompile("<pre exec>")
-	execRe := regexp.MustCompile("```.* \\(exec\\)")
+	preShRe := regexp.MustCompile("<pre sh>")
+	shRe := regexp.MustCompile("```.* \\(sh\\)")
 	const nonBreakingSpace = rune(0xa0) // -> " "
 	shStartRe := regexp.MustCompile(`\[(.*)\]: sh-start`)
 	shEnd := "[#]: sh-end"
@@ -52,13 +65,13 @@ func main() {
 			break
 		}
 
-		preExecReMatches := preExecRe.MatchString(l)
-		execReMatches := execRe.MatchString(l)
-		if preExecReMatches || execReMatches {
+		preShReMatches := preShRe.MatchString(l)
+		shReMatches := shRe.MatchString(l)
+		if preShReMatches || shReMatches {
 			fmt.Println(l)
 			for {
 				l, ok := nextLine()
-				if !ok || ((execReMatches && l == "```") || preExecReMatches && l == "</pre>") {
+				if !ok || ((shReMatches && l == "```") || preShReMatches && l == "</pre>") {
 					fmt.Println(l)
 					break
 				}
@@ -75,7 +88,6 @@ func main() {
 			}
 		} else if sm := shStartRe.FindStringSubmatch(l); sm != nil {
 			fmt.Println(l)
-			fmt.Println()
 			for {
 				l, ok := nextLine()
 				if !ok || l == shEnd {
@@ -85,7 +97,6 @@ func main() {
 			cmd := exec.Command("sh", "-c", sm[1])
 			o, _ := cmd.CombinedOutput()
 			fmt.Print(string(o))
-			fmt.Println()
 			fmt.Println(shEnd)
 		} else {
 			fmt.Println(l)
