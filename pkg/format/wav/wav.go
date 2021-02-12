@@ -13,7 +13,7 @@ import (
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.WAV,
-		Description: "WAV container",
+		Description: "WAV file",
 		Groups:      []string{format.PROBE},
 		MIMEs:       []string{"audio/wav"},
 		DecodeFn:    wavDecode,
@@ -150,7 +150,6 @@ func decodeChunks(d *decode.D, stringData bool) {
 	})
 }
 
-// Decode decodes a WAV stream
 func wavDecode(d *decode.D, in interface{}) interface{} {
 	decodeChunk(d, "RIFF", false)
 	return nil

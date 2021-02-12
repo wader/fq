@@ -62,6 +62,7 @@ func (c *Column) Flush() {
 	}
 }
 
+// Writer maintins multiple column io.Writer:s. On Flush() row align them.
 type Writer struct {
 	Columns []*Column
 	w       io.Writer
@@ -92,48 +93,6 @@ func New(w io.Writer, widths []int) *Writer {
 	}
 }
 
-/*
-func (w *Writer) Write(p []byte) (int, error) {
-	c := &w.columns[w.current]
-	bb := &c.buf
-
-	bb.Write(p)
-
-	b := bb.Bytes()
-	pos := 0
-
-	for {
-		i := indexByteSet(b[pos:], []byte{'\n'})
-		if i < 0 {
-			break
-		}
-
-		c.lines = append(c.lines, string([]rune(string(b[pos:pos+i]))))
-		pos += i + 1
-	}
-	bb.Reset()
-	bb.Write(b[pos:])
-
-	return len(p), nil
-}
-*/
-
-/*
-func (w *Writer) Next() {
-	c := &w.columns[w.current]
-	if c.buf.Len() > 0 {
-		w.Write([]byte{'\n'})
-	}
-
-	w.current++
-	if w.current == len(w.columns) {
-		// panic(fmt.Sprintf("column index %d > %d", w.current, len(w.columns)))
-		w.Row()
-		w.current = 0
-	}
-}
-*/
-
 func (w *Writer) Flush() error {
 	for _, c := range w.Columns {
 		c.Flush()
@@ -142,18 +101,6 @@ func (w *Writer) Flush() error {
 	maxLines := 0
 	for _, c := range w.Columns {
 		lenLines := len(c.Lines)
-		// if c.Wrap {
-		// 	lenLines = 0
-		// 	for _, l := range c.Lines {
-		// 		lenLine := len(l)
-		// 		wrappedLines := lenLines / c.Width
-		// 		if lenLine%c.Width != 0 {
-		// 			wrappedLines++
-		// 		}
-		// 		lenLines += wrappedLines
-		// 	}
-		// }
-
 		if lenLines > maxLines {
 			maxLines = len(c.Lines)
 		}
@@ -168,9 +115,6 @@ func (w *Writer) Flush() error {
 
 			if c.Width != -1 {
 				l := ansi.Len(s)
-				// if len(s) > c.Width {
-				// 	//s = s[0:c.Width]
-				// } else
 				if l < c.Width {
 					s += strings.Repeat(" ", c.Width-l)
 				}

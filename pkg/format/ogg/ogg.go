@@ -12,7 +12,7 @@ import (
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.OGG,
-		Description: "OGG container",
+		Description: "OGG file",
 		Groups:      []string{format.PROBE},
 		MIMEs:       []string{"audio/ogg"},
 		DecodeFn:    decodeOgg,

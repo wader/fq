@@ -16,15 +16,13 @@ $ fq file.mp3 '.headers[].frames[] | select(.id == "APIC")'
      |                                               |                |.headers[0].frames[1]:
 0x020|         41 50 49 43                           |   APIC         |  id: Attached picture ("APIC")
 0x020|                     00 00 15 0c               |       ....     |  size: 2700
-0x020|                                 00 00         |           ..   | -flags:
+     |                                               |                | -flags:
 0x020|                                       03      |             .  |  text_encoding: UTF-8 (3)
 0x020|                                          69 6d|              im|  mime_type: "image/png"
 0x030|61 67 65 2f 70 6e 67 00                        |age/png.        |
 0x030|                        00                     |        .       |  picture_type: 0
 0x030|                           00                  |         .      |  description: ""
-0x030|                              89 50 4e 47 0d 0a|          .PNG..| -picture: png
-0x040|1a 0a 00 00 00 0d 49 48 44 52 00 00 01 40 00 00|......IHDR...@..|
-*    |2665 bytes more until 0xab8+7                  |                |
+     |                                               |                | -picture: png
  
 # resolution of embedded png picture
 $ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture.chunks[] | select(.type == "IHDR") | {width, height}'
@@ -109,7 +107,7 @@ TODO: piping
 |mp3|MPEG audio layer 3 file|
 |mp3_frame|MPEG audio layer 3 frame|
 |mp3_xing|Xing header|
-|mp4|MP4 container|
+|mp4|MP4 file|
 |mpeg_aac_frame|Advanced Audio Coding frame|
 |mpeg_aac_stream|Raw audio data transport stream|
 |mpeg_adts|Audio data transport stream packet|
@@ -122,7 +120,7 @@ TODO: piping
 |mpeg_pes|MPEG Packetized elementary stream|
 |mpeg_pes_packet|MPEG Packetized elementary stream packet|
 |mpeg_spu|Sub picture unit (dvd subtitle)|
-|ogg|OGG container|
+|ogg|OGG file|
 |ogg_page|OGG page|
 |opus_packet|Opus packet|
 |png|Portable network graphics image|
@@ -132,7 +130,7 @@ TODO: piping
 |vorbis_comment|Vorbis comment|
 |vorbis_packet|Vorbis packet|
 |vp9_frame|VP9 frame|
-|wav|WAV container|
+|wav|WAV file|
 
 [#]: sh-end
 

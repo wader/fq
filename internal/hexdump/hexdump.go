@@ -19,7 +19,10 @@ type Dumper struct {
 	offset      int64
 }
 
-// TODO: replace addrLen width highest address and calc instead
+// TODO: something more generic? bin, octal, arbitrary base?
+// TODO: template for columns?
+// TODO: merge with dump?
+// TODO: replace addrLen with highest address and calc instead
 
 func New(w io.Writer, startOffset int64, addrLen int, addrBase int, lineBytes int) *Dumper {
 	cw := columnwriter.New(w, []int{addrLen, 1, lineBytes*3 - 1, 1, lineBytes, 1})

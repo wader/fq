@@ -1,6 +1,5 @@
 package opus
 
-// TODO: maybe this file format should be ogg_opus?
 // https://tools.ietf.org/html/rfc7845
 
 import (
