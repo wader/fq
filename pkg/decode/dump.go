@@ -72,7 +72,7 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 	rootIndent := strings.Repeat(" ", rootDepth)
 	indent := strings.Repeat("  ", depth)
 
-	isField := false
+	isSimple := false
 
 	switch vv := v.V.(type) {
 	case Struct:
@@ -89,7 +89,7 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 		cfmt(colField, "[%d]:", len(vv))
 	default:
 		cprint(colField, indent, name, ": ", v)
-		isField = true
+		isSimple = true
 	}
 	if opts.Verbose && isInArray {
 		cfmt(colField, " (%s)", v.Name)
@@ -155,7 +155,8 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 
 	columns()
 
-	if isField && v.Range.Len > 0 {
+	// has length and is a simple value or a collapsed struct/array
+	if v.Range.Len > 0 && (isSimple || (opts.MaxDepth != 0 && opts.MaxDepth == depth)) {
 		cfmt(0, "%s%s\n",
 			rootIndent, num.PadFormatInt(startLineByte, opts.AddrBase, true, addrWidth))
 
@@ -229,8 +230,10 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 			cfmt(colAddr, "%s*\n", rootIndent)
 			cprint(colHex, "\n")
 			// TODO: truncate if displaybytes is small?
-			cfmt(colHex, "%d bytes more until %s%s",
-				stopByte-lastDisplayByte, Bits(stopBit).StringByteBits(opts.AddrBase), isEnd)
+			cfmt(colHex, "%s bytes more until %s%s",
+				num.PadFormatInt(stopByte-lastDisplayByte, opts.SizeBase, true, 0),
+				Bits(stopBit).StringByteBits(opts.AddrBase),
+				isEnd)
 			// TODO: dump last line?
 		}
 	}
