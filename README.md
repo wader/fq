@@ -85,55 +85,55 @@ TODO: piping
 
 ## Decoders
 
-[./decoders_markdown]: sh-start
-|Name|Description|
+[./decoders_markdown.jq]: sh-start
+|Name               |Description|
 |-|-|
-|apev2|APEv2 metadata tag|
-|av1_ccr|AV1 codec configuration record|
-|av1_frame|AV1 frame|
-|av1_obu|AV1 open bitstream unit|
-|bzip2|bzip2 compression|
-|dns|DNS packet|
-|elf|Executable and Linkable Format|
-|flac|Free lossless audio codec|
-|flac_frame|FLAC frame|
-|flac_metadatablock|FLAC metadatablock|
-|flac_picture|FLAC metadatablock picture|
-|gzip|GZIP compression|
-|icc_profile|International Color Consortium profile|
-|id3_v1|ID3v1 metadata|
-|id3_v11|ID3v1.1 metadata|
-|id3_v2|ID3v2 metadata|
-|jpeg|Joint Photographic Experts Group image|
-|jq||
-|mkv|Matroska|
-|mp3|MPEG audio layer 3 file|
-|mp3_frame|MPEG audio layer 3 frame|
-|mp3_xing|Xing header|
-|mp4|MP4 file|
-|mpeg_aac_frame|Advanced Audio Coding frame|
-|mpeg_aac_stream|Raw audio data transport stream|
-|mpeg_adts|Audio data transport stream packet|
-|mpeg_asc|MPEG-4 Audio specific config|
-|mpeg_avc|H.264/AVC sample|
-|mpeg_avc_dcr|H.264/AVC Decoder configuration record|
-|mpeg_es|MPEG elementary stream|
-|mpeg_hevc|H.265/HEVC sample|
-|mpeg_hevc_dcr|H.265/HEVC Decoder configuration record|
-|mpeg_pes|MPEG Packetized elementary stream|
-|mpeg_pes_packet|MPEG Packetized elementary stream packet|
-|mpeg_spu|Sub picture unit (dvd subtitle)|
-|ogg|OGG file|
-|ogg_page|OGG page|
-|opus_packet|Opus packet|
-|png|Portable network graphics image|
-|raw|Raw bits|
-|tar|Tar archive|
-|tiff|Tag Image File Format|
-|vorbis_comment|Vorbis comment|
-|vorbis_packet|Vorbis packet|
-|vp9_frame|VP9 frame|
-|wav|WAV file|
+|apev2              |APEv2 metadata tag|
+|av1_ccr            |AV1 codec configuration record|
+|av1_frame          |AV1 frame|
+|av1_obu            |AV1 open bitstream unit|
+|bzip2              |bzip2 compression|
+|dns                |DNS packet|
+|elf                |Executable and Linkable Format|
+|flac               |Free lossless audio codec|
+|flac_frame         |FLAC frame|
+|flac_metadatablock |FLAC metadatablock|
+|flac_picture       |FLAC metadatablock picture|
+|gzip               |GZIP compression|
+|icc_profile        |International Color Consortium profile|
+|id3_v1             |ID3v1 metadata|
+|id3_v11            |ID3v1.1 metadata|
+|id3_v2             |ID3v2 metadata|
+|jpeg               |Joint Photographic Experts Group image|
+|jq                 ||
+|mkv                |Matroska|
+|mp3                |MPEG audio layer 3 file|
+|mp3_frame          |MPEG audio layer 3 frame|
+|mp3_xing           |Xing header|
+|mp4                |MP4 file|
+|mpeg_aac_frame     |Advanced Audio Coding frame|
+|mpeg_aac_stream    |Raw audio data transport stream|
+|mpeg_adts          |Audio data transport stream packet|
+|mpeg_asc           |MPEG-4 Audio specific config|
+|mpeg_avc           |H.264/AVC sample|
+|mpeg_avc_dcr       |H.264/AVC Decoder configuration record|
+|mpeg_es            |MPEG elementary stream|
+|mpeg_hevc          |H.265/HEVC sample|
+|mpeg_hevc_dcr      |H.265/HEVC Decoder configuration record|
+|mpeg_pes           |MPEG Packetized elementary stream|
+|mpeg_pes_packet    |MPEG Packetized elementary stream packet|
+|mpeg_spu           |Sub picture unit (dvd subtitle)|
+|ogg                |OGG file|
+|ogg_page           |OGG page|
+|opus_packet        |Opus packet|
+|png                |Portable network graphics image|
+|raw                |Raw bits|
+|tar                |Tar archive|
+|tiff               |Tag Image File Format|
+|vorbis_comment     |Vorbis comment|
+|vorbis_packet      |Vorbis packet|
+|vp9_frame          |VP9 frame|
+|wav                |WAV file|
 [#]: sh-end
 
 TODO: format graph?
