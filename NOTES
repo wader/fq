@@ -1,4 +1,6 @@
 
+switch -f for file, -d for decode format
+
 REPL: extract readline?
 
 ctrl-c sometimes does not cancel?
