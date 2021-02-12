@@ -6,13 +6,14 @@ Tool and framework for querying and exploring binary formats.
 
 ##
 
-``` (exec)
-# duration of a mp3 file
-$ fq file.mp3 '[.frames[] | .samples_per_frame / .sample_rate] | add'
+<sub>
+<pre exec>
+<b># duration of a mp3 file</b> 
+$ fq file.mp3 '[.frames[] | .samples_per_frame / .sample_rate] | add' 
 0.0783673469387755
  
-# embedded id3v2 png picture
-$ fq file.mp3 '.headers[].frames[] | select(.id == "APIC")'
+<b># embedded id3v2 png picture</b> 
+$ fq file.mp3 '.headers[].frames[] | select(.id == "APIC")' 
      |                                               |                |.headers[0].frames[1]:
 0x020|         41 50 49 43                           |   APIC         |  id: Attached picture ("APIC")
 0x020|                     00 00 15 0c               |       ....     |  size: 2700
@@ -26,25 +27,26 @@ $ fq file.mp3 '.headers[].frames[] | select(.id == "APIC")'
 0x040|1a 0a 00 00 00 0d 49 48 44 52 00 00 01 40 00 00|......IHDR...@..|
 *    |2665 bytes more until 0xab8+7                  |                |
  
-# resolution of embedded png picture
-$ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture.chunks[] | select(.type == "IHDR") | {width, height}'
+<b># resolution of embedded png picture</b> 
+$ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture.chunks[] | select(.type == "IHDR") | {width, height}' 
 {
   "height": 240,
   "width": 320
 }
  
-# extract png
-$ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture._bits' > file.png
-$ file file.png
+<b># extract png</b> 
+$ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture._bits' > file.png 
+$ file file.png 
 file.png: PNG image data, 320 x 240, 8-bit/color RGB, non-interlaced
  
-# codecs in a mp4 file
-$ fq file.mp4 '[.. | select(.type == "stsd").sample_descriptions[].data_format]'
+<b># codecs in a mp4 file</b> 
+$ fq file.mp4 '[.. | select(.type == "stsd").sample_descriptions[].data_format]' 
 [
   "avc1",
   "mp4a"
 ]
-```
+</pre>
+</sub>
 
 ## Install
 

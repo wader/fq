@@ -40,6 +40,7 @@ func main() {
 		return scanner.Text(), ok
 	}
 
+	preExecRe := regexp.MustCompile("<pre exec>")
 	execRe := regexp.MustCompile("```.* \\(exec\\)")
 	const nonBreakingSpace = rune(0xa0) // -> " "
 	shStartRe := regexp.MustCompile(`\[(.*)\]: sh-start`)
@@ -51,25 +52,24 @@ func main() {
 			break
 		}
 
-		if execRe.MatchString(l) {
+		preExecReMatches := preExecRe.MatchString(l)
+		execReMatches := execRe.MatchString(l)
+		if preExecReMatches || execReMatches {
 			fmt.Println(l)
 			for {
 				l, ok := nextLine()
-				if !ok || l == "```" {
+				if !ok || ((execReMatches && l == "```") || preExecReMatches && l == "</pre>") {
 					fmt.Println(l)
 					break
 				}
-				if strings.HasPrefix(l, "$") {
+
+				if len(l) >= 2 && []rune(l)[len(l)-1] == nonBreakingSpace {
 					fmt.Println(l)
-					cmd := exec.Command("sh", "-c", l[1:])
-					o, _ := cmd.CombinedOutput()
-					fmt.Print(string(o))
-				} else if strings.HasPrefix(l, "#") {
-					// keep comments
-					fmt.Println(l)
-				} else if len(l) >= 2 && []rune(l)[0] == nonBreakingSpace {
-					// keep non-breaking space empty lines
-					fmt.Println(l)
+					if strings.HasPrefix(l, "$") {
+						cmd := exec.Command("sh", "-c", l[1:len(l)-2])
+						o, _ := cmd.CombinedOutput()
+						fmt.Print(string(o))
+					}
 				}
 			}
 		} else if sm := shStartRe.FindStringSubmatch(l); sm != nil {
