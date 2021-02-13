@@ -7,6 +7,7 @@ package query
 import (
 	"context"
 	"fmt"
+	"fq/internal/ioextra"
 	"fq/pkg/decode"
 	"io"
 	"io/ioutil"
@@ -108,7 +109,7 @@ func (q *Query) REPL(ctx context.Context) error {
 			return err
 		}
 
-		if _, err := q.Run(runCtx, REPLMode, src, q.opts.OS.Stdout()); err != nil {
+		if _, err := q.Run(runCtx, REPLMode, src, ioextra.ContextWriter{W: q.opts.OS.Stdout(), C: runCtx}); err != nil {
 			if err != context.Canceled {
 				fmt.Fprintf(q.opts.OS.Stdout(), "error: %s\n", err)
 			}

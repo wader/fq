@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"fq/internal/hexdump"
-	"fq/internal/ioextra"
 	"fq/internal/num"
 	"fq/internal/progressreadseeker"
 	"fq/pkg/bitio"
@@ -305,7 +304,7 @@ func (q *Query) hexdump(c interface{}, a []interface{}) interface{} {
 			num.DigitsInBase(bitio.BitsByteCount(r.Stop()+bitsByteAlign), true, opts.AddrBase),
 			opts.AddrBase,
 			opts.LineBytes)
-		if _, err := io.Copy(ioextra.ContextWriter{W: hw, C: q.runContext.ctx}, bb); err != nil {
+		if _, err := io.Copy(hw, bb); err != nil {
 			return err
 		}
 		hw.Close()
@@ -482,7 +481,7 @@ func (q *Query) makeDumpFn(fnOpts decode.DumpOptions) func(c interface{}, a []in
 		}
 
 		return func(stdout io.Writer) error {
-			if err := v.Dump(ioextra.ContextWriter{W: stdout, C: q.runContext.ctx}, opts); err != nil {
+			if err := v.Dump(stdout, opts); err != nil {
 				return err
 			}
 			return nil

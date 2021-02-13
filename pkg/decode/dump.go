@@ -95,7 +95,7 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 			BitRange(v.Range).StringByteBits(opts.AddrBase), Bits(v.Range.Len).StringByteBits(opts.SizeBase))
 	}
 
-	cprint(colField)
+	cprint(colField, "\n")
 
 	if v.Error != nil {
 		columns()
