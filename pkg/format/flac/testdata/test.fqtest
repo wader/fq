@@ -2,7 +2,7 @@
 /test.flac:
 > -f flac test.flac verbose
       |                                               |                |.: flac 0x0-0x2617+7 (9752)
-0x0000|66 4c 61 43                                    |fLaC            |  magic: Correct ("fLaC") 0x0-0x3+7 (4)
+0x0000|66 4c 61 43                                    |fLaC            |  magic: "fLaC" (Correct) 0x0-0x3+7 (4)
       |                                               |                |  metadatablocks[3]: 0x4-0x205f+7 (8284)
       |                                               |                |   -[0]: flac_metadatablock (metadatablock) 0x4-0x29+7 (38)
 0x0000|            00                                 |    .           |      last_block: false 0x4-0x4 (0+1)

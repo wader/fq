@@ -3,7 +3,7 @@
 > -f vorbis_packet vorbis-identifcation verbose
     |                                               |                |.: vorbis_packet 0x0-0x1d+7 (30)
 0x00|01                                             |.               |  packet_type: Identification (1) 0x0-0x0+7 (1)
-0x00|   76 6f 72 62 69 73                           | vorbis         |  magic: Correct ("vorbis") 0x1-0x6+7 (6)
+0x00|   76 6f 72 62 69 73                           | vorbis         |  magic: "vorbis" (Correct) 0x1-0x6+7 (6)
 0x00|                     00 00 00 00               |       ....     |  vorbis_version: Correct (0) 0x7-0xa+7 (4)
 0x00|                                 01            |           .    |  audio_channels: 1 0xb-0xb+7 (1)
 0x00|                                    44 ac 00 00|            D...|  audio_sample_rate: 44100 0xc-0xf+7 (4)
@@ -19,7 +19,7 @@
 > -f vorbis_packet vorbis-comment verbose
     |                                               |                |.: vorbis_packet 0x0-0x3f+7 (64)
 0x00|03                                             |.               |  packet_type: Comment (3) 0x0-0x0+7 (1)
-0x00|   76 6f 72 62 69 73                           | vorbis         |  magic: Correct ("vorbis") 0x1-0x6+7 (6)
+0x00|   76 6f 72 62 69 73                           | vorbis         |  magic: "vorbis" (Correct) 0x1-0x6+7 (6)
     |                                               |                | -comment: vorbis_comment 0x7-0x3e+7 (56)
 0x00|                     0d 00 00 00               |       ....     |    vendor_length: 13 0x7-0xa+7 (4)
 0x00|                                 4c 61 76 66 35|           Lavf5|    vendor: "Lavf58.29.100" 0xb-0x17+7 (13)
@@ -37,7 +37,7 @@
 > -f vorbis_packet vorbis-setup verbose
      |                                               |                |.: vorbis_packet 0x0-0xc74+7 (3189)
 0x000|05                                             |.               |  packet_type: Setup (5) 0x0-0x0+7 (1)
-0x000|   76 6f 72 62 69 73                           | vorbis         |  magic: Correct ("vorbis") 0x1-0x6+7 (6)
+0x000|   76 6f 72 62 69 73                           | vorbis         |  magic: "vorbis" (Correct) 0x1-0x6+7 (6)
 0x000|                     22                        |       "        |  vorbis_codebook_count: 35 0x7-0x7+7 (1)
 0x000|                        42 43 56               |        BCV     |  codecooke_sync: Correct (564342) 0x8-0xa+7 (3)
 0x000|                                 01 00         |           ..   |  codebook_dimensions: 1 0xb-0xc+7 (2)

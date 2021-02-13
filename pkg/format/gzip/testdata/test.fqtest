@@ -2,7 +2,7 @@
 /test.gz:
 > -f gzip test.gz verbose
     |                                               |                |.: gzip 0x0-0x18+7 (25)
-0x00|1f 8b                                          |..              |  identification: Correct ("\x1f\x8b") 0x0-0x1+7 (2)
+0x00|1f 8b                                          |..              |  identification: "\x1f\x8b" (Correct) 0x0-0x1+7 (2)
  0x0|74 65 73 74 0a|                                |test.|          |  uncompressed: 746573740a 0x0-0x4+7 (5)
 0x00|      08                                       |  .             |  compression_method: deflate (8) 0x2-0x2+7 (1)
     |                                               |                | -flags: 0x3-0x3+7 (1)

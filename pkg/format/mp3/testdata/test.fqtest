@@ -1,13 +1,13 @@
 /tjo:
 asdads
 > test.mp3 '.headers[0].magic | verbose'
-0x0|49 44 33                                       |ID3             |.headers[0].magic: Correct ("ID3") 0x0-0x2+7 (3)
+0x0|49 44 33                                       |ID3             |.headers[0].magic: "ID3" (Correct) 0x0-0x2+7 (3)
 /test.mp3:
 > test.mp3 verbose
      |                                               |                |.: mp3 0x0-0x452+7 (1107)
      |                                               |                |  headers[1]: 0x0-0x3b+7 (60)
      |                                               |                |   -[0]: id3_v2 (header) 0x0-0x3b+7 (60)
-0x000|49 44 33                                       |ID3             |      magic: Correct ("ID3") 0x0-0x2+7 (3)
+0x000|49 44 33                                       |ID3             |      magic: "ID3" (Correct) 0x0-0x2+7 (3)
 0x000|         04                                    |   .            |      version: 4 0x3-0x3+7 (1)
 0x000|            00                                 |    .           |      revision: 0 0x4-0x4+7 (1)
      |                                               |                |     -flags: 0x5-0x5+7 (1)
@@ -18,7 +18,7 @@ asdads
 0x000|                  00 00 00 32                  |      ...2      |      size: 50 0x6-0x9+7 (4)
      |                                               |                |      frames[2]: 0xa-0x31+7 (40)
      |                                               |                |       -[0]: (frame) 0xa-0x18+7 (15)
-0x000|                              54 50 45 31      |          TPE1  |          id: Lead performer(s)/Soloist(s) ("TPE1") 0xa-0xd+7 (4)
+0x000|                              54 50 45 31      |          TPE1  |          id: "TPE1" (Lead performer(s)/Soloist(s)) 0xa-0xd+7 (4)
 0x000|                                          00 00|              ..|          size: 5 0xe-0x11+7 (4)
 0x010|00 05                                          |..              |
      |                                               |                |         -flags: 0x12-0x13+7 (2)
@@ -28,7 +28,7 @@ asdads
 0x010|            03                                 |    .           |          text_encoding: UTF-8 (3) 0x14-0x14+7 (1)
 0x010|               62 6c 61 00                     |     bla.       |          text: "bla" 0x15-0x18+7 (4)
      |                                               |                |       -[1]: (frame) 0x19-0x31+7 (25)
-0x010|                           54 53 53 45         |         TSSE   |          id: Software/Hardware and settings used for encoding ("TSSE") 0x19-0x1c+7 (4)
+0x010|                           54 53 53 45         |         TSSE   |          id: "TSSE" (Software/Hardware and settings used for encoding) 0x19-0x1c+7 (4)
 0x010|                                       00 00 00|             ...|          size: 15 0x1d-0x20+7 (4)
 0x020|0f                                             |.               |
      |                                               |                |         -flags: 0x21-0x22+7 (2)

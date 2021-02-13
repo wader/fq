@@ -15,7 +15,7 @@ $ fq file.mp3 '[.frames[] | .samples_per_frame / .sample_rate] | add' 
 <b># embedded id3v2 png picture</b> 
 $ fq file.mp3 '.headers[].frames[] | select(.id == "APIC")' 
      |                                               |                |.headers[0].frames[1]:
-0x020|         41 50 49 43                           |   APIC         |  id: Attached picture ("APIC")
+0x020|         41 50 49 43                           |   APIC         |  id: "APIC" (Attached picture)
 0x020|                     00 00 15 0c               |       ....     |  size: 2700
 0x020|                                 00 00         |           ..   | -flags:
 0x020|                                       03      |             .  |  text_encoding: UTF-8 (3)

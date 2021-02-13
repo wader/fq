@@ -200,7 +200,7 @@
       |                                               |                |                  packets[3]: 0x179-0x1b6+7 (62)
       |                                               |                |                   -[0]: vorbis_packet (packet) 0x179-0x196+7 (30)
 0x0170|                           01                  |         .      |                      packet_type: Identification (1) 0x179-0x179+7 (1)
-0x0170|                              76 6f 72 62 69 73|          vorbis|                      magic: Correct ("vorbis") 0x17a-0x17f+7 (6)
+0x0170|                              76 6f 72 62 69 73|          vorbis|                      magic: "vorbis" (Correct) 0x17a-0x17f+7 (6)
 0x0180|00 00 00 00                                    |....            |                      vorbis_version: Correct (0) 0x180-0x183+7 (4)
 0x0180|            02                                 |    .           |                      audio_channels: 2 0x184-0x184+7 (1)
 0x0180|               44 ac 00 00                     |     D...       |                      audio_sample_rate: 44100 0x185-0x188+7 (4)
@@ -214,7 +214,7 @@
 0x0190|                  01                           |      .         |                      framing_flag: Correct (1) 0x196+7-0x196+7 (0+1)
       |                                               |                |                   -[1]: vorbis_packet (packet) 0x197-0x1a6+7 (16)
 0x0190|                     03                        |       .        |                      packet_type: Comment (3) 0x197-0x197+7 (1)
-0x0190|                        76 6f 72 62 69 73      |        vorbis  |                      magic: Correct ("vorbis") 0x198-0x19d+7 (6)
+0x0190|                        76 6f 72 62 69 73      |        vorbis  |                      magic: "vorbis" (Correct) 0x198-0x19d+7 (6)
       |                                               |                |                     -comment: vorbis_comment 0x19e-0x1a5+7 (8)
 0x0190|                                          00 00|              ..|                        vendor_length: 0 0x19e-0x1a1+7 (4)
 0x01a0|00 00                                          |..              |
@@ -225,7 +225,7 @@
 0x01a0|                  01                           |      .         |                      frame_bit: Correct (1) 0x1a6+7-0x1a6+7 (0+1)
       |                                               |                |                   -[2]: vorbis_packet (packet) 0x1a7-0x1b6+7 (16)
 0x01a0|                     05                        |       .        |                      packet_type: Setup (5) 0x1a7-0x1a7+7 (1)
-0x01a0|                        76 6f 72 62 69 73      |        vorbis  |                      magic: Correct ("vorbis") 0x1a8-0x1ad+7 (6)
+0x01a0|                        76 6f 72 62 69 73      |        vorbis  |                      magic: "vorbis" (Correct) 0x1a8-0x1ad+7 (6)
 0x01a0|                                          1c   |              . |                      vorbis_codebook_count: 29 0x1ae-0x1ae+7 (1)
 0x01a0|                                             42|               B|                      codecooke_sync: Correct (564342) 0x1af-0x1b1+7 (3)
 0x01b0|43 56                                          |CV              |

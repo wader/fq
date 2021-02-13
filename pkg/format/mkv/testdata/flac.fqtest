@@ -195,7 +195,7 @@
 0x170|a2                                             |.               |
 0x170|   aa                                          | .              |                  size: 42 0x171-0x171+7 (1)
      |                                               |                |                 -value: 0x172-0x19b+7 (42)
-0x170|      66 4c 61 43                              |  fLaC          |                    magic: Correct ("fLaC") 0x172-0x175+7 (4)
+0x170|      66 4c 61 43                              |  fLaC          |                    magic: "fLaC" (Correct) 0x172-0x175+7 (4)
      |                                               |                |                    metadatablocks[1]: 0x176-0x19b+7 (38)
      |                                               |                |                     -[0]: flac_metadatablock (metadatablock) 0x176-0x19b+7 (38)
 0x170|                  80                           |      .         |                        last_block: true 0x176-0x176 (0+1)

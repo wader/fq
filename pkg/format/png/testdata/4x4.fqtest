@@ -2,7 +2,7 @@
 /4x4.png:
 > -f png 4x4.png verbose
      |                                               |                |.: png 0x0-0x102+7 (259)
-0x000|89 50 4e 47 0d 0a 1a 0a                        |.PNG....        |  signature: Correct ("\x89PNG\r\n\x1a\n") 0x0-0x7+7 (8)
+0x000|89 50 4e 47 0d 0a 1a 0a                        |.PNG....        |  signature: "\x89PNG\r\n\x1a\n" (Correct) 0x0-0x7+7 (8)
      |                                               |                |  chunks[9]: 0x8-0x102+7 (251)
      |                                               |                |   -[0]: (chunk) 0x8-0x20+7 (25)
 0x000|                        00 00 00 0d            |        ....    |      length: 13 0x8-0xb+7 (4)

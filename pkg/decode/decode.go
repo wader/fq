@@ -547,8 +547,8 @@ func (d *D) FieldFloatFn(name string, fn func() (float64, string)) float64 {
 
 func (d *D) FieldStrFn(name string, fn func() (string, string)) string {
 	return d.FieldFn(name, func() *Value {
-		str, disp := fn()
-		return &Value{V: str, Symbol: disp}
+		str, desc := fn()
+		return &Value{V: str, Description: desc}
 	}).V.(string)
 }
 

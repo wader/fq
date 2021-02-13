@@ -722,6 +722,11 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 		},
 	}
 
+	typeFn := func() (string, string) {
+		typ := d.UTF8(4)
+		return typ, boxDescriptions[typ]
+	}
+
 	boxSize := d.U32()
 	typ := d.UTF8(4)
 	d.SeekRel(-8 * 8)
@@ -730,19 +735,23 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 	case 0:
 		// reset of file
 		// TODO: FieldU32 with display?
-		d.FieldUFn("size", func() (uint64, decode.DisplayFormat, string) { return d.U32(), decode.NumberDecimal, "Rest of file" })
-		d.FieldUTF8("type", 4)
+		d.FieldUFn("size", func() (uint64, decode.DisplayFormat, string) {
+			return d.U32(), decode.NumberDecimal, "Rest of file"
+		})
+		d.FieldStrFn("type", typeFn)
 		dataSize = uint64(d.Len()-d.Pos()) / 8
 		boxSize = dataSize + 8
 	case 1:
 		// 64 bit length
-		d.FieldUFn("size", func() (uint64, decode.DisplayFormat, string) { return d.U32(), decode.NumberDecimal, "Use 64 bit size" })
-		d.FieldUTF8("type", 4)
+		d.FieldUFn("size", func() (uint64, decode.DisplayFormat, string) {
+			return d.U32(), decode.NumberDecimal, "Use 64 bit size"
+		})
+		d.FieldStrFn("type", typeFn)
 		boxSize = d.FieldU64("size64")
 		dataSize = boxSize - 16
 	default:
 		d.FieldU32("size")
-		d.FieldUTF8("type", 4)
+		d.FieldStrFn("type", typeFn)
 		dataSize = boxSize - 8
 	}
 
