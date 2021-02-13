@@ -1,4 +1,4 @@
-#!/usr/bin/env fq -s
+#!/usr/bin/env fq -f
 
 # TODO: esds, make fancy printer? shared?
 # TODO: handle -1 media_time

@@ -54,10 +54,9 @@ func (m Main) run() error {
 	fs.SetOutput(m.OS.Stderr())
 	versionFlag := fs.Bool("version", false, fmt.Sprintf("Show version(%s)", fq.Version))
 	// TODO: confusing that "decode" is default?
-	formatNameFlag := fs.String("f", "decode", "Format name")
+	decodeFormatFlag := fs.String("d", "probe", "Decode format")
 	noInputFlag := fs.Bool("n", false, "No input")
-	maxDisplayBytes := fs.Int64("d", 16, "Max display bytes")
-	scriptFlag := fs.String("s", "", "Script path")
+	fileFlag := fs.String("f", "", "Read script from file")
 	replFlag := fs.Bool("i", false, "REPL")
 	fs.Usage = func() {
 		maxNameLen := 0
@@ -99,7 +98,7 @@ func (m Main) run() error {
 		Registry: m.Registry,
 		DumpOptions: decode.DumpOptions{
 			LineBytes:       16,
-			MaxDisplayBytes: *maxDisplayBytes,
+			MaxDisplayBytes: 16,
 			AddrBase:        16,
 			SizeBase:        10,
 		},
@@ -112,8 +111,8 @@ func (m Main) run() error {
 	}
 
 	src := ""
-	if *scriptFlag != "" {
-		r, err := m.OS.Open(*scriptFlag)
+	if *fileFlag != "" {
+		r, err := m.OS.Open(*fileFlag)
 		if err != nil {
 			return err
 		}
@@ -127,7 +126,7 @@ func (m Main) run() error {
 		if !*noInputFlag {
 			srcs = append(srcs,
 				`open($FILENAME)`,
-				*formatNameFlag)
+				*decodeFormatFlag)
 		}
 		if e := fs.Arg(1); e != "" {
 			srcs = append(srcs, e)

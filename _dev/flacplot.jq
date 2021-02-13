@@ -1,4 +1,4 @@
-#!/usr/bin/env fq -s
+#!/usr/bin/env fq -f
 
 # {
 #     title: "Name of plot",
