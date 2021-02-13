@@ -7,6 +7,7 @@ import (
 	"crypto/md5"
 	"encoding/base64"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"fq/internal/hexdump"
 	"fq/internal/ioextra"
@@ -246,12 +247,34 @@ func (q *Query) makeFunctions(opts QueryOptions) []Function {
 		{[]string{"path_escape"}, 0, 0, q.pathEscape},
 		{[]string{"path_unescape"}, 0, 0, q.pathUnescape},
 		{[]string{"aes_ctr"}, 1, 2, q.aesCtr},
+
+		{[]string{"json"}, 0, 0, q._json},
 	}
 	for name, f := range q.opts.Registry.Groups {
 		fs = append(fs, Function{[]string{name}, 0, 0, q.makeDecodeFn(opts.Registry, f)})
 	}
 
 	return fs
+}
+
+func (q *Query) _json(c interface{}, a []interface{}) interface{} {
+	bb, _, _, err := toBitBuf(c)
+	if err != nil {
+		return err
+	}
+
+	buf := &bytes.Buffer{}
+	if _, err := io.Copy(buf, bb); err != nil {
+		return err
+	}
+
+	var vv interface{}
+	if err := json.Unmarshal(buf.Bytes(), &vv); err != nil {
+		return err
+	}
+
+	return vv
+
 }
 
 func (q *Query) hexdump(c interface{}, a []interface{}) interface{} {

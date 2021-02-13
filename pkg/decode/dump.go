@@ -32,18 +32,13 @@ const (
 )
 
 func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth int, addrWidth int, opts DumpOptions) error {
-	var cerr error
+	// no error check as we write into buffering column
+	// we check for err later for Flush()
 	cprint := func(c int, a ...interface{}) {
-		if cerr != nil {
-			return
-		}
-		_, cerr = fmt.Fprint(cw.Columns[c], a...)
+		fmt.Fprint(cw.Columns[c], a...)
 	}
 	cfmt := func(c int, format string, a ...interface{}) {
-		if cerr != nil {
-			return
-		}
-		_, cerr = fmt.Fprintf(cw.Columns[c], format, a...)
+		fmt.Fprintf(cw.Columns[c], format, a...)
 	}
 	columns := func() {
 		cprint(1, "|\n")
@@ -195,16 +190,12 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 		}
 
 		if vBitBuf != nil {
-			if _, err := io.Copy(
+			io.Copy(
 				hexpairwriter.New(cw.Columns[colHex], opts.LineBytes, int(startLineByteOffset), hexpairFn),
-				io.LimitReader(vBitBuf.Copy(), displaySizeBytes)); err != nil {
-				return err
-			}
-			if _, err := io.Copy(
+				io.LimitReader(vBitBuf.Copy(), displaySizeBytes))
+			io.Copy(
 				asciiwriter.New(cw.Columns[colAscii], opts.LineBytes, int(startLineByteOffset), asciiFn),
-				io.LimitReader(vBitBuf.Copy(), displaySizeBytes)); err != nil {
-				return err
-			}
+				io.LimitReader(vBitBuf.Copy(), displaySizeBytes))
 		}
 
 		for i := int64(1); i < addrLines; i++ {
@@ -238,9 +229,11 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 		}
 	}
 
-	cw.Flush()
+	if err := cw.Flush(); err != nil {
+		return err
+	}
 
-	return cerr
+	return nil
 }
 
 func (v *Value) Dump(w io.Writer, opts DumpOptions) error {
@@ -271,5 +264,4 @@ func (v *Value) Dump(w io.Writer, opts DumpOptions) error {
 	return v.WalkPreOrder(makeWalkFn(func(v *Value, rootV *Value, depth int, rootDepth int) error {
 		return v.dump(cw, depth, rootV, rootDepth, maxAddrIndentWidth-rootDepth, opts)
 	}))
-
 }
