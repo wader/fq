@@ -177,6 +177,7 @@ TODO
 then decode as needed later?
 - Move more things to jq code, dumper, CLI, help, REPL?
 - Some kind of bit vs bytes position notation/type
+- Range/field user annotations
 
 ## Thanks
 
