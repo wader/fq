@@ -200,13 +200,13 @@ def field_inrange($p): ._type == "field" and ._range.start <= $p and $p < ._rang
 
 `
 
-func buildDumpOptions(opts decode.DumpOptions, m map[string]interface{}) decode.DumpOptions {
-	if m != nil {
+func buildDumpOptions(opts decode.DumpOptions, ms ...map[string]interface{}) decode.DumpOptions {
+	for _, m := range ms {
 		mapSetDumpOptions(&opts, m)
 	}
 	opts.Decorator = decoratorFromDumpOptions(opts)
-	return opts
 
+	return opts
 }
 
 func mapSetDumpOptions(d *decode.DumpOptions, m map[string]interface{}) {
@@ -225,8 +225,8 @@ func mapSetDumpOptions(d *decode.DumpOptions, m map[string]interface{}) {
 	if v, ok := m["linebytes"]; ok {
 		d.LineBytes = num.MaxInt(0, toIntZ(v))
 	}
-	if v, ok := m["maxdisplaybytes"]; ok {
-		d.MaxDisplayBytes = num.MaxInt64(0, toInt64Z(v))
+	if v, ok := m["displaybytes"]; ok {
+		d.DisplayBytes = num.MaxInt64(0, toInt64Z(v))
 	}
 	if v, ok := m["addrbase"]; ok {
 		d.AddrBase = num.ClampInt(2, 36, toIntZ(v))
@@ -279,6 +279,8 @@ type Decorators struct {
 // TODO: make it nicer somehow?
 func (q *Query) makeFunctions(opts QueryOptions) []Function {
 	fs := []Function{
+		{[]string{"options"}, 1, 1, q.options},
+
 		{[]string{"help"}, 0, 0, q.help},
 		{[]string{"open"}, 0, 1, q.open},
 		{[]string{"dump", "d"}, 0, 1, q.makeDumpFn(decode.DumpOptions{})},
@@ -312,6 +314,16 @@ func (q *Query) makeFunctions(opts QueryOptions) []Function {
 	}
 
 	return fs
+}
+
+func (q *Query) options(c interface{}, a []interface{}) interface{} {
+	opts, ok := a[0].(map[string]interface{})
+	if !ok {
+		return fmt.Errorf("%v: value is not object", a[0])
+	}
+	q.runContext.opts = opts
+
+	return nil
 }
 
 func (q *Query) _json(c interface{}, a []interface{}) interface{} {
@@ -349,9 +361,9 @@ func (q *Query) hexdump(c interface{}, a []interface{}) interface{} {
 
 		var opts decode.DumpOptions
 		if len(a) >= 1 {
-			opts = buildDumpOptions(q.opts.DumpOptions, a[0].(map[string]interface{}))
+			opts = buildDumpOptions(opts, q.runContext.opts, a[0].(map[string]interface{}))
 		} else {
-			opts = buildDumpOptions(q.opts.DumpOptions, nil)
+			opts = buildDumpOptions(opts, q.runContext.opts)
 		}
 
 		d := opts.Decorator
@@ -530,14 +542,14 @@ func (q *Query) makeDumpFn(fnOpts decode.DumpOptions) func(c interface{}, a []in
 			return fmt.Errorf("%v: value is not a decode value", c)
 		}
 
-		opts := q.opts.DumpOptions
+		var opts decode.DumpOptions
 		opts.MaxDepth = fnOpts.MaxDepth
 		opts.Verbose = fnOpts.Verbose
 
 		if len(a) >= 1 {
-			opts = buildDumpOptions(q.opts.DumpOptions, a[0].(map[string]interface{}))
+			opts = buildDumpOptions(opts, q.runContext.opts, a[0].(map[string]interface{}))
 		} else {
-			opts = buildDumpOptions(q.opts.DumpOptions, nil)
+			opts = buildDumpOptions(opts, q.runContext.opts)
 		}
 
 		return func(stdout io.Writer) error {

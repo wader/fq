@@ -24,10 +24,10 @@ type DumpOptions struct {
 	Color    bool
 	Unicode  bool
 
-	LineBytes       int
-	MaxDisplayBytes int64
-	AddrBase        int
-	SizeBase        int
+	LineBytes    int
+	DisplayBytes int64
+	AddrBase     int
+	SizeBase     int
 
 	Decorator Decorator
 }
@@ -130,8 +130,8 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 	sizeBits := v.Range.Len
 	lastDisplayBit := stopBit
 
-	if opts.MaxDisplayBytes > 0 && sizeBits > opts.MaxDisplayBytes*8 {
-		lastDisplayBit = startBit + (opts.MaxDisplayBytes*8 - 1)
+	if opts.DisplayBytes > 0 && sizeBits > opts.DisplayBytes*8 {
+		lastDisplayBit = startBit + (opts.DisplayBytes*8 - 1)
 		if lastDisplayBit%(int64(opts.LineBytes)*8) != 0 {
 			lastDisplayBit += (int64(opts.LineBytes) * 8) - lastDisplayBit%(int64(opts.LineBytes)*8) - 1
 		}

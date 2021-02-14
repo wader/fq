@@ -34,6 +34,22 @@ func StandardOSMain(r *decode.Registry) {
 	}
 }
 
+type OptionValueFlag map[string]string
+
+func (o OptionValueFlag) String() string {
+	return "options"
+}
+
+func (o OptionValueFlag) Set(v string) error {
+	parts := strings.SplitN(v, "=", 2)
+	if len(parts) < 2 {
+		return fmt.Errorf("not key=value")
+	}
+	(map[string]string)(o)[parts[0]] = parts[1]
+
+	return nil
+}
+
 type Main struct {
 	OS       osenv.OS
 	Registry *decode.Registry
@@ -59,6 +75,14 @@ func (m Main) run() error {
 	noInputFlag := fs.Bool("n", false, "No input")
 	fileFlag := fs.String("f", "", "Read script from file")
 	replFlag := fs.Bool("i", false, "REPL")
+	opts := map[string]string{
+		"linebytes":    "16",
+		"displaybytes": "16",
+		"addrbase":     "16",
+		"sizebase":     "10",
+	}
+	optsFlag := OptionValueFlag(opts)
+	fs.Var(optsFlag, "o", "Options")
 	fs.Usage = func() {
 		maxNameLen := 0
 		maxDescriptionLen := 0
@@ -85,6 +109,7 @@ func (m Main) run() error {
 	if err := fs.Parse(m.OS.Args()[1:]); err != nil {
 		return err
 	}
+
 	if *versionFlag {
 		fmt.Fprintln(m.OS.Stdout(), fq.Version)
 		return nil
@@ -97,13 +122,8 @@ func (m Main) run() error {
 			"$VERSION":  fq.Version,
 		},
 		Registry: m.Registry,
-		DumpOptions: decode.DumpOptions{
-			LineBytes:       16,
-			MaxDisplayBytes: 16,
-			AddrBase:        16,
-			SizeBase:        10,
-		},
-		OS: m.OS,
+		Options:  opts,
+		OS:       m.OS,
 	})
 
 	runMode := query.ScriptMode

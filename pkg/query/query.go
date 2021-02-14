@@ -211,10 +211,10 @@ func toValue(v interface{}) (*decode.Value, error) {
 }
 
 type QueryOptions struct {
-	Variables   map[string]interface{}
-	Registry    *decode.Registry
-	DumpOptions decode.DumpOptions
-	OS          osenv.OS
+	Variables map[string]interface{}
+	Registry  *decode.Registry
+	Options   map[string]string
+	OS        osenv.OS
 }
 
 type Variable struct {
@@ -256,6 +256,7 @@ type runContext struct {
 	ctx    context.Context
 	mode   RunMode
 	stdout io.Writer
+	opts   map[string]interface{}
 
 	pushVs []interface{}
 	pops   int
@@ -283,15 +284,21 @@ func (q *Query) Run(ctx context.Context, mode RunMode, src string, stdout io.Wri
 		ctx:    ctx,
 		mode:   mode,
 		stdout: stdout,
+		opts:   map[string]interface{}{},
 	}
 
+	optsExpr := "{"
+	for k, v := range q.opts.Options {
+		optsExpr += fmt.Sprintf(`"%s": (%s),`, k, v)
+	}
+	optsExpr += "}"
+
+	runQuery := fmt.Sprintf(`include "fq"; options(%s) | inputs`, optsExpr)
 	if src != "" {
-		src = `include "fq" ; inputs | ` + src
-	} else {
-		src = `include "fq" ; inputs`
+		runQuery += `| ` + src
 	}
 
-	query, err := gojq.Parse(src)
+	query, err := gojq.Parse(runQuery)
 	if err != nil {
 		return nil, err
 	}
@@ -382,14 +389,15 @@ func (q *Query) Run(ctx context.Context, mode RunMode, src string, stdout io.Wri
 		case *bitBufFile:
 			fmt.Fprintf(stdout, "<file %s>\n", vv.filename)
 		case *decode.Value:
-			opts := q.opts.DumpOptions
-			opts.MaxDepth = 1
-			if err := vv.Dump(stdout, opts); err != nil {
+			opts := decode.DumpOptions{MaxDepth: 1}
+			if err := vv.Dump(stdout, buildDumpOptions(opts, q.runContext.opts, map[string]interface{}{
+				"maxdepth": 1,
+			})); err != nil {
 				return nil, err
 			}
 		case *decode.D:
 			// TODO: remove?
-			if err := vv.Value.Dump(stdout, q.opts.DumpOptions); err != nil {
+			if err := vv.Value.Dump(stdout, buildDumpOptions(decode.DumpOptions{}, q.runContext.opts)); err != nil {
 				return nil, err
 			}
 

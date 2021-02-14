@@ -24,7 +24,7 @@
 0x1c0|00 00 00 34 80 00 00 04 11 4b 36 4a 08 83 58 c9|...4.....K6J..X.|
 *    |180 bytes more until 0x283+7 (end)             |                |
      |                                               |                |  footers[0]:
-> fq -d mp3 test.mp3 'dump({maxdepth: 1, maxdisplaybytes: 8})'
+> fq -d mp3 test.mp3 'dump({maxdepth: 1, displaybytes: 8})'
      |                                               |                |.: mp3
 0x000|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|  headers[1]:
 *    |29 bytes more until 0x2c+7                     |                |
