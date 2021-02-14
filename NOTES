@@ -1,4 +1,6 @@
 
+jq expr as conf vars? display bytes etc?
+
 cli test repl test
 
 FieldDecode
