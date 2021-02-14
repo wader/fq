@@ -30,12 +30,13 @@ type testCaseRun struct {
 	actualStderrBuf *bytes.Buffer
 }
 
-func (tcr *testCaseRun) Args() []string {
-	return append([]string{"fq"}, shquote.Split(tcr.args)...)
-}
 func (tcr *testCaseRun) Stdin() io.Reader  { return nil } // TOOD: special file?
 func (tcr *testCaseRun) Stdout() io.Writer { return tcr.actualStdoutBuf }
 func (tcr *testCaseRun) Stderr() io.Writer { return tcr.actualStderrBuf }
+func (tcr *testCaseRun) Environ() []string { return nil }
+func (tcr *testCaseRun) Args() []string {
+	return append([]string{"fq"}, shquote.Split(tcr.args)...)
+}
 func (tcr *testCaseRun) Open(name string) (io.ReadSeeker, error) {
 	for _, p := range tcr.testCase.parts {
 		f, ok := p.(*testCaseFile)
