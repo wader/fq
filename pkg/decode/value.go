@@ -301,12 +301,7 @@ func (v *Value) String() string {
 		s = f
 	}
 
-	desc := ""
-	if v.Description != "" {
-		desc = fmt.Sprintf(" (%s)", v.Description)
-	}
-
-	return fmt.Sprintf("%s%s", s, desc)
+	return s
 }
 
 func (v *Value) RawString() string {

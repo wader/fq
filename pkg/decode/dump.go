@@ -96,6 +96,10 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 		cfmt(colField, "[%d]:", len(vv))
 	default:
 		cprint(colField, indent, name, ": ", d.Value(v.String()))
+		if v.Description != "" {
+			cprint(colField, fmt.Sprintf(" (%s)", v.Description))
+		}
+
 		isSimple = true
 	}
 	if opts.Verbose && isInArray {
