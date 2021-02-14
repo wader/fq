@@ -1,5 +1,13 @@
 
-switch -f for file, -d for decode format
+FieldDecode
+FieldDecodeLimitedLen
+FieldDecodeFixedLen
+FieldTryDecode
+FieldTryDecodeLimitedLen
+FieldTryDecodeFixedLen
+
+
+DONE switch -f for file, -d for decode format
 
 REPL: extract readline?
 

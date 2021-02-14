@@ -318,6 +318,7 @@ func (q *Query) Run(ctx context.Context, mode RunMode, src string, stdout io.Wri
 		// TODO: hmm
 		inputs = []interface{}{nil}
 	}
+	compilerOpts = append(compilerOpts, gojq.WithEnvironLoader(q.opts.OS.Environ))
 	compilerOpts = append(compilerOpts, gojq.WithInputIter(iterFn(func() (interface{}, bool) {
 		if len(inputs) == 0 {
 			return nil, false
@@ -327,7 +328,6 @@ func (q *Query) Run(ctx context.Context, mode RunMode, src string, stdout io.Wri
 		return input, true
 	})))
 	compilerOpts = append(compilerOpts, gojq.WithModuleLoader(loadModuleFn(func(name string) (*gojq.Query, error) {
-
 		var fqQuery *gojq.Query
 
 		switch name {

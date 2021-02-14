@@ -21,6 +21,7 @@ type StandardOS struct{}
 func (StandardOS) Stdin() io.Reader                        { return os.Stdin }
 func (StandardOS) Stdout() io.Writer                       { return os.Stdout }
 func (StandardOS) Stderr() io.Writer                       { return os.Stderr }
+func (StandardOS) Environ() []string                       { return os.Environ() }
 func (StandardOS) Args() []string                          { return os.Args }
 func (StandardOS) Open(name string) (io.ReadSeeker, error) { return os.Open(name) }
 
