@@ -1,6 +1,6 @@
 # ffmpeg -y -f lavfi -i sine -ac 1 -t 10ms -f mp3 file && fq file '.frame[1] | bits' > mp3-frame-mono
 /mp3-frame-mono:
-> -f mp3_frame mp3-frame-mono verbose
+> fq -d mp3_frame mp3-frame-mono verbose
     |                                               |                |.: mp3_frame 0x0-0xcf+7 (208)
 0x00|ff fb                                          |..              |  sync: Correct (7ff) 0x0-0x1+2 (1+3)
 0x00|   fb                                          | .              |  mpeg_version: MPEG Version 1 (1) 0x1+3-0x1+4 (0+2)

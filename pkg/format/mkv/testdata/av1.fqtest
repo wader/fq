@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i testsrc -g 1 -c:v librav1e -t 50ms av1.mkv
 /av1.mkv:
-> -f mkv av1.mkv verbose
+> fq -d mkv av1.mkv verbose
       |                                               |                |.: mkv 0x0-0x13e6+7 (5095)
       |                                               |                |  elements[2]: 0x0-0x13e6+7 (5095)
       |                                               |                |   -[0]: (element) 0x0-0x27+7 (40)

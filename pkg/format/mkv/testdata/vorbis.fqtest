@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i sine -ac 2 -strict experimental -c:a vorbis -f matroska -t 50ms vorbis.mkv
 /vorbis.mkv:
-> -f mkv vorbis.mkv verbose
+> fq -d mkv vorbis.mkv verbose
       |                                               |                |.: mkv 0x0-0x10fa+7 (4347)
       |                                               |                |  elements[2]: 0x0-0x10fa+7 (4347)
       |                                               |                |   -[0]: (element) 0x0-0x27+7 (40)

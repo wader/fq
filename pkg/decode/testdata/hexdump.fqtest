@@ -1,5 +1,5 @@
 # ffmpeg -f lavfi -i sine -t 10ms test.mp3
 /test.mp3:
-> -f mp3 test.mp3 'bits(0;(16+8)*8) | hexdump'
+> fq -d mp3 test.mp3 'bits(0;(16+8)*8) | hexdump'
 0x00|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|
 0x10|00 0f 00 00 03 4c 61 76                        |.....Lav        |

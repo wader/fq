@@ -35,7 +35,7 @@ func (tcr *testCaseRun) Stdout() io.Writer { return tcr.actualStdoutBuf }
 func (tcr *testCaseRun) Stderr() io.Writer { return tcr.actualStderrBuf }
 func (tcr *testCaseRun) Environ() []string { return nil }
 func (tcr *testCaseRun) Args() []string {
-	return append([]string{"fq"}, shquote.Split(tcr.args)...)
+	return shquote.Split(tcr.args)
 }
 func (tcr *testCaseRun) Open(name string) (io.ReadSeeker, error) {
 	for _, p := range tcr.testCase.parts {

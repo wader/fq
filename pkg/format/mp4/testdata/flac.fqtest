@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i sine -ac 2 -c:a flac -strict experimental -f mp4 -t 50ms flac.mp4
 /flac.mp4:
-> -f mp4 flac.mp4 verbose
+> fq -d mp4 flac.mp4 verbose
      |                                               |                |.: mp4 0x0-0x542+7 (1347)
      |                                               |                |  boxes[4]: 0x0-0x542+7 (1347)
      |                                               |                |   -[0]: (box) 0x0-0x1b+7 (28)

@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i sine -strict experimental -c:a opus -t 50ms opus.mp4
 /opus.mp4:
-> -f mp4 opus.mp4 verbose
+> fq -d mp4 opus.mp4 verbose
      |                                               |                |.: mp4 0x0-0x438+7 (1081)
      |                                               |                |  boxes[4]: 0x0-0x438+7 (1081)
      |                                               |                |   -[0]: (box) 0x0-0x1b+7 (28)

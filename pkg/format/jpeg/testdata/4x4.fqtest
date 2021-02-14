@@ -1,6 +1,6 @@
 # gm convert -size 4x4 'xc:#000' 4x4.jpg
 /4x4.jpg:
-> -f jpeg 4x4.jpg verbose
+> fq -d jpeg 4x4.jpg verbose
     |                                               |                |.: jpeg 0x0-0x9f+7 (160)
     |                                               |                |  segments[9]: 0x0-0x9f+7 (160)
     |                                               |                |   -[0]: (marker) 0x0-0x1+7 (2)

@@ -1,6 +1,6 @@
 # gm convert -size 4x4 'xc:#000' 4x4.tiff
 /4x4.tiff:
-> -f tiff 4x4.tiff verbose
+> fq -d tiff 4x4.tiff verbose
      |                                               |                |.: tiff 0x0-0x107+7 (264)
 0x000|49 49                                          |II              |  order: "II" 0x0-0x1+7 (2)
 0x000|49 49 2a 00                                    |II*.            |  endian: little-endian (49492a00) 0x0-0x3+7 (4)

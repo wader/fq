@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i sine -f lavfi -i testsrc -t 10ms test.mkv
 /test.mkv:
-> -f mkv test.mkv verbose
+> fq -d mkv test.mkv verbose
       |                                               |                |.: mkv 0x0-0x1b8b+7 (7052)
       |                                               |                |  elements[2]: 0x0-0x1b8b+7 (7052)
       |                                               |                |   -[0]: (element) 0x0-0x27+7 (40)

@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i anoisesrc -t 10ms -ac 2 pkg/format/flac/testdata/test.flac
 /test.flac:
-> -f flac test.flac verbose
+> fq -d flac test.flac verbose
       |                                               |                |.: flac 0x0-0x2617+7 (9752)
 0x0000|66 4c 61 43                                    |fLaC            |  magic: "fLaC" (Correct) 0x0-0x3+7 (4)
       |                                               |                |  metadatablocks[3]: 0x4-0x205f+7 (8284)

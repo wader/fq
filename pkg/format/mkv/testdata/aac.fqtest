@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i sine -c:a aac -f matroska -t 50ms aac.mkv
 /aac.mkv:
-> -f mkv aac.mkv verbose
+> fq -d mkv aac.mkv verbose
      |                                               |                |.: mkv 0x0-0x4c3+7 (1220)
      |                                               |                |  elements[2]: 0x0-0x4c3+7 (1220)
      |                                               |                |   -[0]: (element) 0x0-0x27+7 (40)

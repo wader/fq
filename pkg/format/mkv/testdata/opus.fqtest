@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i sine -strict experimental -c:a opus -f matroska -t 50ms opus.mkv
 /opus.mkv:
-> -f mkv opus.mkv verbose
+> fq -d mkv opus.mkv verbose
      |                                               |                |.: mkv 0x0-0x3ec+7 (1005)
      |                                               |                |  elements[2]: 0x0-0x3ec+7 (1005)
      |                                               |                |   -[0]: (element) 0x0-0x27+7 (40)

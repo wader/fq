@@ -1,9 +1,9 @@
 /tjo:
 asdads
-> test.mp3 '.headers[0].magic | verbose'
+> fq -d mp3 test.mp3 '.headers[0].magic | verbose'
 0x0|49 44 33                                       |ID3             |.headers[0].magic: "ID3" (Correct) 0x0-0x2+7 (3)
 /test.mp3:
-> test.mp3 verbose
+> fq -d mp3 test.mp3 verbose
      |                                               |                |.: mp3 0x0-0x452+7 (1107)
      |                                               |                |  headers[1]: 0x0-0x3b+7 (60)
      |                                               |                |   -[0]: id3_v2 (header) 0x0-0x3b+7 (60)
@@ -414,5 +414,5 @@ asdads
      |                                               |                |  footers[0]: 0x44f-NA (0)
 0x440|                                             61|               a|  unknown0: 61736461 0x44f-0x452+7 (4)
 0x450|73 64 61|                                      |sda|            |
-> test.mp3 .header.frame[0].text._value
+> fq -d mp3 test.mp3 .header.frame[0].text._value
 null
