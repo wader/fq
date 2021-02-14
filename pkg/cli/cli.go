@@ -76,6 +76,10 @@ func (m Main) run() error {
 	fileFlag := fs.String("f", "", "Read script from file")
 	replFlag := fs.Bool("i", false, "REPL")
 	opts := map[string]string{
+		"maxdepth":     "0",
+		"verbose":      "false",
+		"color":        "false",
+		"unicode":      "false",
 		"linebytes":    "16",
 		"displaybytes": "16",
 		"addrbase":     "16",
