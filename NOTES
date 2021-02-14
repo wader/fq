@@ -1,4 +1,6 @@
 
+cli test repl test
+
 FieldDecode
 FieldDecodeLimitedLen
 FieldDecodeFixedLen
