@@ -181,5 +181,7 @@ then decode as needed later?
 
 ## Thanks
 
-fq would not be possible without [itchyny](https://github.com/itchyny)'s
-jq implementation [gojq](https://github.com/itchyny/gojq).
+This project would not be possible without [itchyny](https://github.com/itchyny)'s
+jq implementation [gojq](https://github.com/itchyny/gojq). Also want to thank [HexFiend](https://github.com/HexFiend/HexFiend) for inspiration and ideas,
+[stedolan](https://github.com/stedolan) for inventing the [jq](https://github.com/stedolan/jq)
+language.

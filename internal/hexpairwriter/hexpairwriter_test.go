@@ -9,7 +9,7 @@ import (
 
 func TestWrite(t *testing.T) {
 	b := &bytes.Buffer{}
-	h := hexpairwriter.New(b, 4, 0)
+	h := hexpairwriter.New(b, 4, 0, hexpairwriter.Pair)
 	h.Write([]byte(""))
 	h.Write([]byte("ab"))
 	h.Write([]byte("c"))
