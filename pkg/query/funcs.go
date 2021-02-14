@@ -9,7 +9,10 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"fq/internal/ansi"
+	"fq/internal/asciiwriter"
 	"fq/internal/hexdump"
+	"fq/internal/hexpairwriter"
 	"fq/internal/num"
 	"fq/internal/progressreadseeker"
 	"fq/pkg/bitio"
@@ -197,12 +200,27 @@ def field_inrange($p): ._type == "field" and ._range.start <= $p and $p < ._rang
 
 `
 
+func buildDumpOptions(opts decode.DumpOptions, m map[string]interface{}) decode.DumpOptions {
+	if m != nil {
+		mapSetDumpOptions(&opts, m)
+	}
+	opts.Decorator = decoratorFromDumpOptions(opts)
+	return opts
+
+}
+
 func mapSetDumpOptions(d *decode.DumpOptions, m map[string]interface{}) {
 	if v, ok := m["maxdepth"]; ok {
 		d.MaxDepth = num.MaxInt(0, toIntZ(v))
 	}
 	if v, ok := m["verbose"]; ok {
 		d.Verbose = toBoolZ(v)
+	}
+	if v, ok := m["color"]; ok {
+		d.Color = toBoolZ(v)
+	}
+	if v, ok := m["unicode"]; ok {
+		d.Unicode = toBoolZ(v)
 	}
 	if v, ok := m["linebytes"]; ok {
 		d.LineBytes = num.MaxInt(0, toIntZ(v))
@@ -216,6 +234,46 @@ func mapSetDumpOptions(d *decode.DumpOptions, m map[string]interface{}) {
 	if v, ok := m["sizebase"]; ok {
 		d.SizeBase = num.ClampInt(2, 36, toIntZ(v))
 	}
+}
+
+func decoratorFromDumpOptions(opts decode.DumpOptions) decode.Decorator {
+	colStr := "|"
+	if opts.Unicode {
+		colStr = "\xe2\x94\x82"
+	}
+	nameFn := func(s string) string { return s }
+	valueFn := func(s string) string { return s }
+	byteFn := func(b byte, s string) string { return s }
+	column := colStr + "\n"
+	if opts.Color {
+		nameFn = func(s string) string { return ansi.FgBrightBlue + s + ansi.Reset }
+		valueFn = func(s string) string { return ansi.FgBrightCyan + s + ansi.Reset }
+		byteFn = func(b byte, s string) string {
+			switch {
+			case b == 0:
+				return ansi.FgBrightBlack + s + ansi.Reset
+			case b >= 32 && b <= 126, b == '\r', b == '\n', b == '\f', b == '\t', b == '\v':
+				return ansi.FgWhite + s + ansi.Reset
+			default:
+				return ansi.FgBrightWhite + s + ansi.Reset
+			}
+		}
+		column = ansi.FgWhite + colStr + ansi.Reset + "\n"
+	}
+
+	return decode.Decorator{
+		Name:   nameFn,
+		Value:  valueFn,
+		Byte:   byteFn,
+		Column: column,
+	}
+}
+
+type Decorators struct {
+	Name   func(s string) string
+	Value  func(s string) string
+	Byte   func(b byte, s string) string
+	Column string
 }
 
 // TODO: make it nicer somehow?
@@ -289,21 +347,24 @@ func (q *Query) hexdump(c interface{}, a []interface{}) interface{} {
 			return err
 		}
 
-		opts := q.opts.DumpOptions
-
+		var opts decode.DumpOptions
 		if len(a) >= 1 {
-			// TODO: refactor to somekind of read options function?
-			if optsMap, ok := a[0].(map[string]interface{}); ok {
-				mapSetDumpOptions(&opts, optsMap)
-			}
+			opts = buildDumpOptions(q.opts.DumpOptions, a[0].(map[string]interface{}))
+		} else {
+			opts = buildDumpOptions(q.opts.DumpOptions, nil)
 		}
 
+		d := opts.Decorator
 		hw := hexdump.New(
 			stdout,
 			(r.Start-bitsByteAlign)/8,
 			num.DigitsInBase(bitio.BitsByteCount(r.Stop()+bitsByteAlign), true, opts.AddrBase),
 			opts.AddrBase,
-			opts.LineBytes)
+			opts.LineBytes,
+			func(b byte) string { return d.Byte(b, hexpairwriter.Pair(b)) },
+			func(b byte) string { return d.Byte(b, asciiwriter.SafeASCII(b)) },
+			d.Column,
+		)
 		if _, err := io.Copy(hw, bb); err != nil {
 			return err
 		}
@@ -474,10 +535,9 @@ func (q *Query) makeDumpFn(fnOpts decode.DumpOptions) func(c interface{}, a []in
 		opts.Verbose = fnOpts.Verbose
 
 		if len(a) >= 1 {
-			// TODO: refactor to somekind of read options function?
-			if optsMap, ok := a[0].(map[string]interface{}); ok {
-				mapSetDumpOptions(&opts, optsMap)
-			}
+			opts = buildDumpOptions(q.opts.DumpOptions, a[0].(map[string]interface{}))
+		} else {
+			opts = buildDumpOptions(q.opts.DumpOptions, nil)
 		}
 
 		return func(stdout io.Writer) error {

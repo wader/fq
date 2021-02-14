@@ -39,7 +39,7 @@ func Pair(c byte) string {
 	return hexstring[int(c)*2 : int(c)*2+2]
 }
 
-func New(w io.Writer, width int, startLineOffset int, fn func(v byte) string) *Writer {
+func New(w io.Writer, width int, startLineOffset int, fn func(b byte) string) *Writer {
 	return &Writer{
 		w:               w,
 		width:           width,

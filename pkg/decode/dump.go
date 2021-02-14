@@ -2,7 +2,6 @@ package decode
 
 import (
 	"fmt"
-	"fq/internal/ansi"
 	"fq/internal/asciiwriter"
 	"fq/internal/columnwriter"
 	"fq/internal/hexpairwriter"
@@ -12,14 +11,25 @@ import (
 	"strings"
 )
 
+type Decorator struct {
+	Name   func(s string) string
+	Value  func(s string) string
+	Byte   func(b byte, s string) string
+	Column string
+}
+
 type DumpOptions struct {
 	MaxDepth int
 	Verbose  bool
+	Color    bool
+	Unicode  bool
 
 	LineBytes       int
 	MaxDisplayBytes int64
 	AddrBase        int
 	SizeBase        int
+
+	Decorator Decorator
 }
 
 // 0   12      34    56
@@ -32,6 +42,7 @@ const (
 )
 
 func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth int, addrWidth int, opts DumpOptions) error {
+	d := opts.Decorator
 	// no error check as we write into buffering column
 	// we check for err later for Flush()
 	cprint := func(c int, a ...interface{}) {
@@ -40,10 +51,11 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 	cfmt := func(c int, format string, a ...interface{}) {
 		fmt.Fprintf(cw.Columns[c], format, a...)
 	}
+
 	columns := func() {
-		cprint(1, "|\n")
-		cprint(3, "|\n")
-		cprint(5, "|\n")
+		cprint(1, d.Column)
+		cprint(3, d.Column)
+		cprint(5, d.Column)
 	}
 
 	isInArray := false
@@ -52,7 +64,7 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 	}
 
 	nameV := v
-	name := nameV.Name
+	name := d.Name(nameV.Name)
 	if isInArray {
 		nameV = v.Parent
 		name = ""
@@ -83,7 +95,7 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 		cprint(colField, indent, name)
 		cfmt(colField, "[%d]:", len(vv))
 	default:
-		cprint(colField, indent, name, ": ", v)
+		cprint(colField, indent, name, ": ", d.Value(v.String()))
 		isSimple = true
 	}
 	if opts.Verbose && isInArray {
@@ -155,39 +167,14 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 		cfmt(0, "%s%s\n",
 			rootIndent, num.PadFormatInt(startLineByte, opts.AddrBase, true, addrWidth))
 
-		color := false
 		vBitBuf, err := rootV.RootBitBuf.BitBufRange(startByte*8, displaySizeBits)
 		if err != nil {
 			return err
 		}
 
 		addrLines := lastDisplayLine - startLine + 1
-
-		charToANSI := func(c byte) string {
-			switch {
-			case c == 0:
-				return ansi.FgBrightBlack
-			case c >= 32 && c <= 126, c == '\r', c == '\n', c == '\f', c == '\t', c == '\v':
-				return ansi.FgWhite
-			default:
-				return ansi.FgBrightWhite
-			}
-		}
-
-		hexpairFn := func(c byte) string {
-			s := hexpairwriter.Pair(c)
-			if color {
-				return fmt.Sprintf("%s%s%s", charToANSI(c), s, ansi.Reset)
-
-			}
-			return s
-		}
-		asciiFn := func(c byte) string {
-			if color {
-				return fmt.Sprintf("%s%s%s", charToANSI(c), asciiwriter.SafeASCII(c), ansi.Reset)
-			}
-			return asciiwriter.SafeASCII(c)
-		}
+		hexpairFn := func(b byte) string { return d.Byte(b, hexpairwriter.Pair(b)) }
+		asciiFn := func(b byte) string { return d.Byte(b, asciiwriter.SafeASCII(b)) }
 
 		if vBitBuf != nil {
 			io.Copy(

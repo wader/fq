@@ -1,9 +1,7 @@
 package hexdump
 
 import (
-	"fq/internal/asciiwriter"
 	"fq/internal/columnwriter"
-	"fq/internal/hexpairwriter"
 	"fq/internal/num"
 	"io"
 	"strings"
@@ -17,6 +15,9 @@ type Dumper struct {
 	separatorsW io.Writer
 	startOffset int64
 	offset      int64
+	hexFn       func(b byte) string
+	asciiFn     func(b byte) string
+	column      string
 }
 
 // TODO: something more generic? bin, octal, arbitrary base?
@@ -24,7 +25,8 @@ type Dumper struct {
 // TODO: merge with dump?
 // TODO: replace addrLen with highest address and calc instead
 
-func New(w io.Writer, startOffset int64, addrLen int, addrBase int, lineBytes int) *Dumper {
+func New(w io.Writer, startOffset int64, addrLen int, addrBase int, lineBytes int,
+	hexFn func(b byte) string, asciiFn func(b byte) string, column string) *Dumper {
 	cw := columnwriter.New(w, []int{addrLen, 1, lineBytes*3 - 1, 1, lineBytes, 1})
 	return &Dumper{
 		addrLen:     addrLen,
@@ -34,6 +36,9 @@ func New(w io.Writer, startOffset int64, addrLen int, addrBase int, lineBytes in
 		separatorsW: io.MultiWriter(cw.Columns[1], cw.Columns[3], cw.Columns[5]),
 		startOffset: startOffset,
 		offset:      startOffset - startOffset%int64(lineBytes),
+		hexFn:       hexFn,
+		asciiFn:     asciiFn,
+		column:      column,
 	}
 }
 
@@ -42,7 +47,7 @@ func (d *Dumper) flush() error {
 		num.PadFormatInt(((d.offset-1)/d.lineBytes)*d.lineBytes, d.addrBase, true, d.addrLen))); err != nil {
 		return err
 	}
-	if _, err := d.separatorsW.Write([]byte("|")); err != nil {
+	if _, err := d.separatorsW.Write([]byte(d.column)); err != nil {
 		return err
 	}
 	if err := d.columnW.Flush(); err != nil {
@@ -76,7 +81,7 @@ func (d *Dumper) Write(p []byte) (n int, err error) {
 		for _, b := range ps {
 			d.offset++
 
-			if _, err := d.columnW.Columns[2].Write([]byte(hexpairwriter.Pair(b))); err != nil {
+			if _, err := d.columnW.Columns[2].Write([]byte(d.hexFn(b))); err != nil {
 				return n, err
 			}
 			if d.offset%d.lineBytes != 0 {
@@ -84,7 +89,7 @@ func (d *Dumper) Write(p []byte) (n int, err error) {
 					return n, err
 				}
 			}
-			if _, err := d.columnW.Columns[4].Write([]byte(asciiwriter.SafeASCII(b))); err != nil {
+			if _, err := d.columnW.Columns[4].Write([]byte(d.asciiFn(b))); err != nil {
 				return n, err
 			}
 			n++
