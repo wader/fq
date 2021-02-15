@@ -1,6 +1,6 @@
 package decode
 
-//go:generate sh -c "cat decode_readers_gen.go.tmpl | go run ../../_dev/tmpl.go | gofmt > decode_readers_gen.go"
+//go:generate sh -c "cat decode_readers_gen.go.tmpl | go run ../../_dev/tmpl.go decode_readers_gen.go.json | gofmt > decode_readers_gen.go"
 
 import (
 	"fq/pkg/bitio"

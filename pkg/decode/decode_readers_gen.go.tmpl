@@ -4,8 +4,8 @@ package decode
 
 // Integer readers
 
-{{- range $s := array (map "short" "S" "desc" "signed" "type" "int64") (map "short" "U" "desc" "unsigned" "type" "uint64")}}
-{{- range $e := array (map "short" "" "var" "d.Endian" "desc" "current endian" "from" 1) (map "short" "BE" "var" "BigEndian" "desc" "big-endian" "from" 8)  (map "short" "LE" "var" "LittleEndian" "desc" "little-endian" "from" 8)}}
+{{- range $s := $.signs }}
+{{- range $e := $.endians }}
 
 // {{$s.short}}{{$e.short}} read a nBits {{$s.desc}} {{$e.desc}} integer
 func (d *D) {{$s.short}}{{$e.short}}(nBits int) {{$s.type}} { return d.{{$s.short}}E(nBits, {{$e.var}}) }
@@ -29,12 +29,12 @@ func (d *D) Field{{$s.short}}{{$bits}}{{$e.short}}(name string) {{$s.type}} { re
 // Float readers
 
 
-{{ range $e := array (map "short" "" "var" "d.Endian" "desc" "current endian") (map "short" "BE" "var" "BigEndian" "desc" "big-endian")  (map "short" "LE" "var" "LittleEndian" "desc" "little-endian")}}
+{{ range $e := $.endians }}
 
 // F{{$e.short}} read a nBits {{$e.desc}} float
 func (d *D) F{{$e.short}}(nBits int) float64 { return d.FE(nBits, {{$e.var}}) }
 
-{{- range $bits := array 16 32 64}}
+{{- range $bits := $.bits }}
 // F{{$bits}}{{$e.short}} read {{$bits}} bit {{$e.desc}} float
 func (d *D) F{{$bits}}{{$e.short}}() float64 { return d.FE({{$bits}}, {{$e.var}}) }
 {{- end}}
@@ -42,7 +42,7 @@ func (d *D) F{{$bits}}{{$e.short}}() float64 { return d.FE({{$bits}}, {{$e.var}}
 // FieldF{{$e.short}} read a nBits {{$e.desc}} float and add a field
 func (d *D) FieldF{{$e.short}}(name string, nBits int) float64 { return d.FieldFE(name, nBits, {{$e.var}}) }
 
-{{- range $bits := array 16 32 64}}
+{{- range $bits := $.bits }}
 // FieldF{{$bits}}{{$e.short}} read {{$bits}} bit {{$e.desc}} float and add a field
 func (d *D) FieldF{{$bits}}{{$e.short}}(name string) float64 { return d.FieldFE(name, {{$bits}}, {{$e.var}}) }
 {{- end}}
@@ -52,12 +52,12 @@ func (d *D) FieldF{{$bits}}{{$e.short}}(name string) float64 { return d.FieldFE(
 
 // Fixed-point readers
 
-{{ range $e := array (map "short" "" "var" "d.Endian" "desc" "current endian") (map "short" "BE" "var" "BigEndian" "desc" "big-endian")  (map "short" "LE" "var" "LittleEndian" "desc" "little-endian")}}
+{{ range $e :=$.endians }}
 
 // FP{{$e.short}} read a nBits {{$e.desc}} fBits fraction bits fixed-point number 
 func (d *D) FP{{$e.short}}(nBits int, fBits int64) float64 { return d.FPE(nBits, fBits, {{$e.var}}) }
 
-{{- range $fp := array (map "bits" 16 "d" 8) (map "bits" 32 "d" 16) (map "bits" 64 "d" 32)}}
+{{- range $fp := $.fpbits }}
 // FP{{$fp.bits}}{{$e.short}} read {{$fp.bits}} bit {{$e.desc}} fixed-point number
 func (d *D) FP{{$fp.bits}}{{$e.short}}() float64 { return d.FPE({{$fp.bits}}, {{$fp.d}}, {{$e.var}}) }
 {{- end}}
@@ -65,7 +65,7 @@ func (d *D) FP{{$fp.bits}}{{$e.short}}() float64 { return d.FPE({{$fp.bits}}, {{
 // FieldFP{{$e.short}} read a nBits {{$e.desc}} fBits fraction fixed-point number and add a field
 func (d *D) FieldFP{{$e.short}}(name string, nBits int, fBits int64) float64 { return d.FieldFPE(name, nBits, fBits, {{$e.var}}) }
 
-{{- range $fp := array (map "bits" 16 "d" 8) (map "bits" 32 "d" 16) (map "bits" 64 "d" 32)}}
+{{- range $fp := $.fpbits }}
 // FieldFP{{$fp.bits}}{{$e.short}} read {{$fp.bits}} bit {{$e.desc}} fixed-point number and add a field
 func (d *D) FieldFP{{$fp.bits}}{{$e.short}}(name string) float64 { return d.FieldFPE(name, {{$fp.bits}}, {{$fp.d}}, {{$e.var}}) }
 {{- end}}
