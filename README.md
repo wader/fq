@@ -86,6 +86,7 @@ TODO: piping
 ## Decoders
 
 [./decoders_markdown.jq]: sh-start
+
 |Name               |Description|
 |-|-|
 |apev2              |APEv2 metadata tag|
@@ -134,6 +135,7 @@ TODO: piping
 |vorbis_packet      |Vorbis packet|
 |vp9_frame          |VP9 frame|
 |wav                |WAV file|
+
 [#]: sh-end
 
 TODO: format graph?
