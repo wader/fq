@@ -2,7 +2,7 @@
 
 jq for binaries
 
-Tool and framework for querying and exploring binary formats.
+Tool and framework for querying and exploring binary data.
 
 ##
 
