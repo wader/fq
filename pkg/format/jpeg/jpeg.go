@@ -195,13 +195,13 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 					prefixLen := d.PeekFindByte(0xff, -1)
 					d.FieldBytesLen("prefix", int(prefixLen))
 					markerFound := false
-					markerCode := d.FieldUFn("code", func() (uint64, decode.DisplayFormat, string) {
+					markerCode := d.FieldUDescFn("code", func() (uint64, decode.DisplayFormat, string, string) {
 						n := uint(d.U8())
 						if m, ok := markers[n]; ok {
 							markerFound = true
-							return uint64(n), decode.NumberDecimal, m.symbol
+							return uint64(n), decode.NumberDecimal, m.symbol, m.description
 						}
-						return uint64(n), decode.NumberDecimal, "RES"
+						return uint64(n), decode.NumberDecimal, "RES", "Reset"
 					})
 
 					// RST*, SOI, EOI, TEM does not have a length field. All others have a

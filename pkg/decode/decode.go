@@ -531,6 +531,13 @@ func (d *D) FieldUFn(name string, fn func() (uint64, DisplayFormat, string)) uin
 	}).V.(uint64)
 }
 
+func (d *D) FieldUDescFn(name string, fn func() (uint64, DisplayFormat, string, string)) uint64 {
+	return d.FieldFn(name, func() *Value {
+		u, fmt, s, d := fn()
+		return &Value{V: u, DisplayFormat: fmt, Symbol: s, Description: d}
+	}).V.(uint64)
+}
+
 func (d *D) FieldSFn(name string, fn func() (int64, DisplayFormat, string)) int64 {
 	return d.FieldFn(name, func() *Value {
 		s, fmt, d := fn()
