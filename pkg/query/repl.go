@@ -14,7 +14,6 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/chzyer/readline"
@@ -77,24 +76,28 @@ func (q *Query) REPL(ctx context.Context) error {
 		}()
 
 		var v []interface{}
+		stackLenStr := ""
 		if len(q.inputStack) > 0 {
 			v = q.inputStack[len(q.inputStack)-1]
 		}
-		var inputSummary []string
+		if len(q.inputStack) > 1 {
+			stackLenStr = fmt.Sprintf("[%d]", len(q.inputStack))
+		}
+		inputSummary := ""
 		if len(v) > 0 {
 			first := v[0]
 			if vv, ok := first.(*decode.Value); ok {
-				inputSummary = append(inputSummary, vv.Path())
+				inputSummary = vv.Path()
 			} else if t, ok := valueToTypeString(first); ok {
-				inputSummary = append(inputSummary, t)
+				inputSummary = t
 			} else {
-				inputSummary = append(inputSummary, "?")
+				inputSummary = "?"
 			}
 		}
 		if len(v) > 1 {
-			inputSummary = append(inputSummary, "...")
+			inputSummary = "(" + inputSummary + ",...)"
 		}
-		prompt := fmt.Sprintf("inputs[%d] [%s]> ", len(q.inputStack), strings.Join(inputSummary, ","))
+		prompt := fmt.Sprintf("%s%s> ", stackLenStr, inputSummary)
 
 		l.SetPrompt(prompt)
 

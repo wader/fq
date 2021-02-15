@@ -23,6 +23,8 @@ import (
 	"math/big"
 	"net/url"
 	"strings"
+
+	"github.com/chzyer/readline"
 )
 
 var fqModuleSrc = `
@@ -279,7 +281,8 @@ type Decorators struct {
 // TODO: make it nicer somehow?
 func (q *Query) makeFunctions(opts QueryOptions) []Function {
 	fs := []Function{
-		{[]string{"options"}, 1, 1, q.options},
+		{[]string{"tty"}, 1, 1, q.tty},
+		{[]string{"options"}, 0, 1, q.options},
 
 		{[]string{"help"}, 0, 0, q.help},
 		{[]string{"open"}, 0, 1, q.open},
@@ -316,14 +319,27 @@ func (q *Query) makeFunctions(opts QueryOptions) []Function {
 	return fs
 }
 
-func (q *Query) options(c interface{}, a []interface{}) interface{} {
-	opts, ok := a[0].(map[string]interface{})
+func (q *Query) tty(c interface{}, a []interface{}) interface{} {
+	fd, ok := a[0].(int)
 	if !ok {
-		return fmt.Errorf("%v: value is not object", a[0])
+		return fmt.Errorf("%v: value is not a number", a[0])
 	}
-	q.runContext.opts = opts
+	w, h, _ := readline.GetSize(fd)
+	return map[string]interface{}{
+		"is_terminal": readline.IsTerminal(fd),
+		"size":        []interface{}{w, h},
+	}
+}
 
-	return nil
+func (q *Query) options(c interface{}, a []interface{}) interface{} {
+	if len(a) > 0 {
+		opts, ok := a[0].(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("%v: value is not object", a[0])
+		}
+		q.runContext.opts = opts
+	}
+	return q.runContext.opts
 }
 
 func (q *Query) _json(c interface{}, a []interface{}) interface{} {

@@ -1,5 +1,7 @@
 
-jq expr as conf vars? display bytes etc?
+func./env. comptions
+
+DONE jq expr as conf vars? display bytes etc?
 
 cli test repl test
 

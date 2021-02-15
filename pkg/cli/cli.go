@@ -78,9 +78,9 @@ func (m Main) run() error {
 	opts := map[string]string{
 		"maxdepth":     "0",
 		"verbose":      "false",
-		"color":        "false",
-		"unicode":      "false",
-		"linebytes":    "16",
+		"color":        `tty(1).is_terminal and env.CLICOLOR!=null`,
+		"unicode":      "tty(1).is_terminal and env.CLIUNICODE!=null",
+		"linebytes":    "if tty(1).is_terminal then [((tty(1).size[0] div 10) div 2) * 2, 4] | max else 16 end",
 		"displaybytes": "16",
 		"addrbase":     "16",
 		"sizebase":     "10",
