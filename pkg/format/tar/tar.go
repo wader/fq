@@ -40,7 +40,7 @@ func tarDecode(d *decode.D, in interface{}) interface{} {
 	}
 	fieldNumStr := func(d *decode.D, name string, nBytes int) uint64 {
 		return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
-			ts := strings.Trim(str(nBytes), "0 \x00")
+			ts := strings.TrimLeft(str(nBytes), "0 \x00")
 			if ts == "" {
 				return 0, decode.NumberDecimal, ts
 			}
