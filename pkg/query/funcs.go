@@ -202,9 +202,12 @@ def field_inrange($p): ._type == "field" and ._range.start <= $p and $p < ._rang
 
 `
 
-func buildDumpOptions(opts decode.DumpOptions, ms ...map[string]interface{}) decode.DumpOptions {
+func buildDumpOptions(ms ...map[string]interface{}) decode.DumpOptions {
+	var opts decode.DumpOptions
 	for _, m := range ms {
-		mapSetDumpOptions(&opts, m)
+		if m != nil {
+			mapSetDumpOptions(&opts, m)
+		}
 	}
 	opts.Decorator = decoratorFromDumpOptions(opts)
 
@@ -286,9 +289,8 @@ func (q *Query) makeFunctions(opts QueryOptions) []Function {
 
 		{[]string{"help"}, 0, 0, q.help},
 		{[]string{"open"}, 0, 1, q.open},
-		{[]string{"dump", "d"}, 0, 1, q.makeDumpFn(decode.DumpOptions{})},
-		{[]string{"verbose", "v"}, 0, 1, q.makeDumpFn(decode.DumpOptions{Verbose: true})},
-		{[]string{"summary", "s"}, 0, 1, q.makeDumpFn(decode.DumpOptions{MaxDepth: 1})},
+		{[]string{"dump", "d"}, 0, 1, q.makeDumpFn(nil)},
+		{[]string{"verbose", "v"}, 0, 1, q.makeDumpFn(map[string]interface{}{"verbose": true})},
 		{[]string{"hexdump", "hd", "h"}, 0, 1, q.hexdump},
 		{[]string{"bits"}, 0, 2, q.bits},
 		{[]string{"string"}, 0, 0, q.string_},
@@ -377,9 +379,9 @@ func (q *Query) hexdump(c interface{}, a []interface{}) interface{} {
 
 		var opts decode.DumpOptions
 		if len(a) >= 1 {
-			opts = buildDumpOptions(opts, q.runContext.opts, a[0].(map[string]interface{}))
+			opts = buildDumpOptions(q.runContext.opts, a[0].(map[string]interface{}))
 		} else {
-			opts = buildDumpOptions(opts, q.runContext.opts)
+			opts = buildDumpOptions(q.runContext.opts)
 		}
 
 		d := opts.Decorator
@@ -551,7 +553,7 @@ func (q *Query) open(c interface{}, a []interface{}) interface{} {
 	}
 }
 
-func (q *Query) makeDumpFn(fnOpts decode.DumpOptions) func(c interface{}, a []interface{}) interface{} {
+func (q *Query) makeDumpFn(fnOpts map[string]interface{}) func(c interface{}, a []interface{}) interface{} {
 	return func(c interface{}, a []interface{}) interface{} {
 		v, err := toValue(c)
 		if err != nil {
@@ -559,13 +561,10 @@ func (q *Query) makeDumpFn(fnOpts decode.DumpOptions) func(c interface{}, a []in
 		}
 
 		var opts decode.DumpOptions
-		opts.MaxDepth = fnOpts.MaxDepth
-		opts.Verbose = fnOpts.Verbose
-
 		if len(a) >= 1 {
-			opts = buildDumpOptions(opts, q.runContext.opts, a[0].(map[string]interface{}))
+			opts = buildDumpOptions(q.runContext.opts, fnOpts, a[0].(map[string]interface{}))
 		} else {
-			opts = buildDumpOptions(opts, q.runContext.opts)
+			opts = buildDumpOptions(q.runContext.opts, fnOpts)
 		}
 
 		return func(stdout io.Writer) error {

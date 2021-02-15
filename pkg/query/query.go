@@ -389,15 +389,14 @@ func (q *Query) Run(ctx context.Context, mode RunMode, src string, stdout io.Wri
 		case *bitBufFile:
 			fmt.Fprintf(stdout, "<file %s>\n", vv.filename)
 		case *decode.Value:
-			opts := decode.DumpOptions{MaxDepth: 1}
-			if err := vv.Dump(stdout, buildDumpOptions(opts, q.runContext.opts, map[string]interface{}{
+			if err := vv.Dump(stdout, buildDumpOptions(q.runContext.opts, map[string]interface{}{
 				"maxdepth": 1,
 			})); err != nil {
 				return nil, err
 			}
 		case *decode.D:
 			// TODO: remove?
-			if err := vv.Value.Dump(stdout, buildDumpOptions(decode.DumpOptions{}, q.runContext.opts)); err != nil {
+			if err := vv.Value.Dump(stdout, buildDumpOptions(q.runContext.opts)); err != nil {
 				return nil, err
 			}
 
