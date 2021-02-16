@@ -290,7 +290,7 @@ type Decorators struct {
 // TODO: make it nicer somehow?
 func (q *Query) makeFunctions(opts QueryOptions) []Function {
 	fs := []Function{
-		{[]string{"tty"}, 1, 1, q.tty},
+		{[]string{"tty"}, 0, 0, q.tty},
 		{[]string{"options"}, 0, 1, q.options},
 
 		{[]string{"help"}, 0, 0, q.help},
@@ -328,14 +328,17 @@ func (q *Query) makeFunctions(opts QueryOptions) []Function {
 }
 
 func (q *Query) tty(c interface{}, a []interface{}) interface{} {
-	fd, ok := a[0].(int)
-	if !ok {
-		return fmt.Errorf("%v: value is not a number", a[0])
+	isTerminal := false
+	size := []interface{}{0, 0}
+	f, ok := q.runContext.stdout.(interface{ Fd() uintptr })
+	if ok {
+		isTerminal = readline.IsTerminal(int(f.Fd()))
+		w, h, _ := readline.GetSize(int(f.Fd()))
+		size = []interface{}{w, h}
 	}
-	w, h, _ := readline.GetSize(fd)
 	return map[string]interface{}{
-		"is_terminal": readline.IsTerminal(fd),
-		"size":        []interface{}{w, h},
+		"is_terminal": isTerminal,
+		"size":        size,
 	}
 }
 
