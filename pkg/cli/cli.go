@@ -75,13 +75,15 @@ func (m Main) run() error {
 	noInputFlag := fs.Bool("n", false, "No input")
 	fileFlag := fs.String("f", "", "Read script from file")
 	replFlag := fs.Bool("i", false, "REPL")
+	// TODO: refactor our to jq helper function?
+	lineBytesSrc := `if tty(1).is_terminal then [((tty(1).size[0] div 10) div 2) * 2, 4] | max else 16 end`
 	opts := map[string]string{
 		"maxdepth":     "0",
 		"verbose":      "false",
 		"color":        `tty(1).is_terminal and env.CLICOLOR!=null`,
 		"unicode":      "tty(1).is_terminal and env.CLIUNICODE!=null",
-		"linebytes":    "if tty(1).is_terminal then [((tty(1).size[0] div 10) div 2) * 2, 4] | max else 16 end",
-		"displaybytes": "16",
+		"linebytes":    lineBytesSrc,
+		"displaybytes": lineBytesSrc,
 		"addrbase":     "16",
 		"sizebase":     "10",
 	}
