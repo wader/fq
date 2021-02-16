@@ -248,17 +248,26 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 						d.FieldU4("Al")
 						inECD = true
 					case DQT:
-						lQ := d.FieldU16("Lq") - 3
-						pQ := d.FieldU4("Pq")
-						qBits := 8
-						if pQ != 0 {
-							qBits = 16
-						}
-						d.FieldU4("Tq")
-						qK := uint64(0)
-						d.FieldArrayLoopFn("Q", func() bool { return qK < lQ }, func(d *decode.D) {
-							d.FieldU("Q", qBits)
-							qK++
+						lQ := int64(d.FieldU16("Lq"))
+						// TODO: how to extract n? spec says lq is 2 + sum for i in 1 to n 65+64*Pq(i)
+						d.DecodeLenFn(lQ*8-16, func(d *decode.D) {
+							d.FieldArrayFn("Qs", func(d *decode.D) {
+								for d.NotEnd() {
+									d.FieldStructFn("Q", func(d *decode.D) {
+										pQ := d.FieldU4("Pq")
+										qBits := 8
+										if pQ != 0 {
+											qBits = 16
+										}
+										d.FieldU4("Tq")
+										qK := uint64(0)
+										d.FieldArrayLoopFn("Q", func() bool { return qK < 64 }, func(d *decode.D) {
+											d.FieldU("Q", qBits)
+											qK++
+										})
+									})
+								}
+							})
 						})
 					case RST0, RST1, RST2, RST3, RST4, RST5, RST6, RST7:
 						inECD = true
