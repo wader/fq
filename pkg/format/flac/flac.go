@@ -15,7 +15,7 @@ var flacFrameFormat []*decode.Format
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.FLAC,
-		Description: "Free lossless audio codec",
+		Description: "Free lossless audio codec file",
 		Groups:      []string{format.PROBE},
 		MIMEs:       []string{"audio/x-flac"},
 		DecodeFn:    flacDecode,

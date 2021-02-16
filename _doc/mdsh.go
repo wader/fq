@@ -88,6 +88,7 @@ func main() {
 			}
 		} else if sm := shStartRe.FindStringSubmatch(l); sm != nil {
 			fmt.Println(l)
+			fmt.Println()
 			for {
 				l, ok := nextLine()
 				if !ok || l == shEnd {
@@ -97,6 +98,7 @@ func main() {
 			cmd := exec.Command("sh", "-c", sm[1])
 			o, _ := cmd.CombinedOutput()
 			fmt.Print(string(o))
+			fmt.Println()
 			fmt.Println(shEnd)
 		} else {
 			fmt.Println(l)

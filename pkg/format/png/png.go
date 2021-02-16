@@ -17,7 +17,7 @@ var tiffFile []*decode.Format
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.PNG,
-		Description: "Portable network graphics image",
+		Description: "Portable network graphics file",
 		Groups:      []string{format.PROBE, format.IMAGE},
 		MIMEs:       []string{"image/png"},
 		DecodeFn:    pngDecode,

@@ -96,7 +96,7 @@ TODO: piping
 |bzip2              |bzip2 compression|
 |dns                |DNS packet|
 |elf                |Executable and Linkable Format|
-|flac               |Free lossless audio codec|
+|flac               |Free lossless audio codec file|
 |flac_frame         |FLAC frame|
 |flac_metadatablock |FLAC metadatablock|
 |flac_picture       |FLAC metadatablock picture|
@@ -105,13 +105,13 @@ TODO: piping
 |id3_v1             |ID3v1 metadata|
 |id3_v11            |ID3v1.1 metadata|
 |id3_v2             |ID3v2 metadata|
-|jpeg               |Joint Photographic Experts Group image|
+|jpeg               |Joint Photographic Experts Group file|
 |jq                 ||
 |mkv                |Matroska|
-|mp3                |MPEG audio layer 3 file|
+|mp3                |MP3 file|
 |mp3_frame          |MPEG audio layer 3 frame|
 |mp3_xing           |Xing header|
-|mp4                |MP4 file|
+|mp4                |MPEG-4 file|
 |mpeg_aac_frame     |Advanced Audio Coding frame|
 |mpeg_aac_stream    |Raw audio data transport stream|
 |mpeg_adts          |Audio data transport stream packet|
@@ -127,7 +127,7 @@ TODO: piping
 |ogg                |OGG file|
 |ogg_page           |OGG page|
 |opus_packet        |Opus packet|
-|png                |Portable network graphics image|
+|png                |Portable network graphics file|
 |raw                |Raw bits|
 |tar                |Tar archive|
 |tiff               |Tag Image File Format|

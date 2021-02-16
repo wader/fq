@@ -31,7 +31,7 @@ var vp9FrameFormat []*decode.Format
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.MP4,
-		Description: "MP4 file",
+		Description: "MPEG-4 file",
 		Groups:      []string{format.PROBE},
 		// TODO: implment MIME()
 		MIMEs:    []string{"audio/mp4", "video/mp4"},
