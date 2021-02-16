@@ -52,7 +52,7 @@ $ fq file.mp4 '[.. | select(.type == "stsd").sample_descriptions[].data_format]'
 
 TODO
 
-## Differences to jq / gojq
+## Differences to jq
 
 fq uses a fork of [gojq](https://github.com/itchyny/gojq) that has these additions
 
@@ -169,7 +169,6 @@ TODO
 - REPL push/pop, variables etc?
 - REPL tests
 - Refactor *[]decode.Format into something more abstract, group?
-- Interrupt output without exiting in REPL somehow
 
 ### Ideas
 
@@ -184,6 +183,7 @@ then decode as needed later?
 ## Thanks
 
 This project would not be possible without [itchyny](https://github.com/itchyny)'s
-jq implementation [gojq](https://github.com/itchyny/gojq). Also want to thank [HexFiend](https://github.com/HexFiend/HexFiend) for inspiration and ideas,
+jq implementation [gojq](https://github.com/itchyny/gojq). Also want to thank
+[HexFiend](https://github.com/HexFiend/HexFiend) for inspiration and ideas and
 [stedolan](https://github.com/stedolan) for inventing the [jq](https://github.com/stedolan/jq)
 language.
