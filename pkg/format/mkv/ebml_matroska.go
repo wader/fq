@@ -1,7 +1,5 @@
+// Code below generated from ebml_matroska.xml
 package mkv
-
-// code below generated with ebml_gen.go
-// https://raw.githubusercontent.com/cellar-wg/matroska-specification/aa2144a58b661baf54b99bab41113d66b0f5ff62/ebml_matroska.xml
 
 var mkvSegment = ebmlTag{
 	0x114d9b74: {name: "SeekHead", typ: ebmlMaster, tag: mkvSeekHead},

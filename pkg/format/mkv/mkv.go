@@ -1,5 +1,8 @@
 package mkv
 
+// https://raw.githubusercontent.com/cellar-wg/matroska-specification/aa2144a58b661baf54b99bab41113d66b0f5ff62/ebml_matroska.xml
+//go:generate sh -c "go run ebml_gen.go ebml_matroska.xml mkv | gofmt > ebml_matroska.go"
+
 // https://tools.ietf.org/html/draft-ietf-cellar-ebml-00
 // https://matroska.org/technical/specs/index.html
 // https://www.matroska.org/technical/basics.html

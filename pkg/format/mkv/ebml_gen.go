@@ -1,5 +1,3 @@
-// https://raw.githubusercontent.com/cellar-wg/matroska-specification/aa2144a58b661baf54b99bab41113d66b0f5ff62/ebml_matroska.xml
-
 // +build ignore
 
 package main
@@ -36,10 +34,15 @@ type documentation struct {
 }
 
 func main() {
-	r, err := os.Open(os.Args[1])
+	xmlPath := os.Args[1]
+	r, err := os.Open(xmlPath)
 	if err != nil {
 		panic(err)
 	}
+	pkgName := os.Args[2]
+
+	fmt.Printf("// Code below generated from %s\n", xmlPath)
+	fmt.Printf("package %s\n", pkgName)
 
 	xd := xml.NewDecoder(r)
 	var es EBMLSchema
