@@ -248,15 +248,15 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 						d.FieldU4("Al")
 						inECD = true
 					case DQT:
-						d.FieldU16("Lq")
+						lQ := d.FieldU16("Lq") - 3
 						pQ := d.FieldU4("Pq")
 						qBits := 8
 						if pQ != 0 {
 							qBits = 16
 						}
 						d.FieldU4("Tq")
-						qK := 0
-						d.FieldArrayLoopFn("Q", func() bool { return qK < 64 }, func(d *decode.D) {
+						qK := uint64(0)
+						d.FieldArrayLoopFn("Q", func() bool { return qK < lQ }, func(d *decode.D) {
 							d.FieldU("Q", qBits)
 							qK++
 						})
