@@ -28,6 +28,12 @@ import (
 )
 
 var fqModuleSrc = `
+def _options_default_color: tty(1).is_terminal and env.CLICOLOR!=null;
+def _options_default_unicode: tty(1).is_terminal and env.CLIUNICODE!=null;
+def _options_default_linebytes: if tty(1).is_terminal then [((tty(1).size[0] div 10) div 2) * 2, 4] | max else 16 end;
+def _options_default_displaybytes: _options_default_linebytes;
+
+
 # convert number to array of bytes
 def number_to_bytes($bits):
 	def _number_to_bytes($d):
