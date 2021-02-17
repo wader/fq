@@ -15,6 +15,7 @@ import (
 	"io"
 	"math/big"
 	"strconv"
+	"strings"
 
 	"github.com/itchyny/gojq"
 )
@@ -230,11 +231,12 @@ type Function struct {
 }
 
 type Query struct {
-	opts       QueryOptions
-	inputStack [][]interface{}
-	variables  map[string]interface{}
-	functions  []Function
-	runContext *runContext
+	opts              QueryOptions
+	inputStack        [][]interface{}
+	variables         map[string]interface{}
+	functions         []Function
+	runContext        *runContext
+	builtinQueryCache map[string]*gojq.Query
 }
 
 type bitBufFile struct {
@@ -273,6 +275,7 @@ func NewQuery(opts QueryOptions) *Query {
 	q.functions = q.makeFunctions(opts)
 	// TODO: redo args handling in jq? a cli_entry function that reads args?
 	q.variables = opts.Variables
+	q.builtinQueryCache = map[string]*gojq.Query{}
 
 	return q
 }
@@ -293,7 +296,7 @@ func (q *Query) Run(ctx context.Context, mode RunMode, src string, stdout Output
 	}
 	optsExpr += "}"
 
-	runQuery := fmt.Sprintf(`include "fq"; options(%s) | inputs`, optsExpr)
+	runQuery := fmt.Sprintf(`include "%s/fq.jq"; options(%s) | inputs`, builtinPrefix, optsExpr)
 	if src != "" {
 		runQuery += `| ` + src
 	}
@@ -335,19 +338,25 @@ func (q *Query) Run(ctx context.Context, mode RunMode, src string, stdout Output
 		return input, true
 	})))
 	compilerOpts = append(compilerOpts, gojq.WithModuleLoader(loadModuleFn(func(name string) (*gojq.Query, error) {
-		var fqQuery *gojq.Query
+		parts := strings.Split(name, "/")
 
-		switch name {
-		case "fq":
-			if fqQuery == nil {
-				var err error
-				fqQuery, err = gojq.Parse(fqModuleSrc)
-				if err != nil {
-					return nil, err
-				}
+		if len(parts) > 0 && parts[0] == builtinPrefix {
+			name = strings.Join(parts[1:], "/")
+			if q, ok := q.builtinQueryCache[name]; ok {
+				return q, nil
 			}
-			return fqQuery, nil
+			b, err := builtinFS.ReadFile(name)
+			if err != nil {
+				return nil, err
+			}
+			mq, err := gojq.Parse(string(b))
+			if err != nil {
+				return nil, err
+			}
+			q.builtinQueryCache[name] = mq
+			return mq, nil
 		}
+
 		return nil, fmt.Errorf("module not found: %q", name)
 	})))
 
