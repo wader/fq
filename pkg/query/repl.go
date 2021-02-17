@@ -7,7 +7,6 @@ package query
 import (
 	"context"
 	"fmt"
-	"fq/internal/ioextra"
 	"fq/pkg/decode"
 	"io"
 	"io/ioutil"
@@ -18,6 +17,51 @@ import (
 
 	"github.com/chzyer/readline"
 )
+
+// TODO: move to OS? Input/Outout interfaces?
+type Output interface {
+	io.Writer
+	Size() (int, int)
+	IsTerminal() bool
+}
+
+// TODO: move
+type DiscardOutput struct{}
+
+func (o DiscardOutput) Write(p []byte) (n int, err error) {
+	return n, nil
+}
+func (o DiscardOutput) Size() (int, int) { return 0, 0 }
+func (o DiscardOutput) IsTerminal() bool { return false }
+
+type WriterOutput struct {
+	Ctx context.Context
+	W   io.Writer
+}
+
+// TODO: move
+func (o WriterOutput) Write(p []byte) (n int, err error) {
+	if err := o.Ctx.Err(); err != nil {
+		return 0, err
+	}
+	return o.W.Write(p)
+}
+
+func (o WriterOutput) Size() (int, int) {
+	f, ok := o.W.(interface{ Fd() uintptr })
+	if ok {
+		w, h, _ := readline.GetSize(int(f.Fd()))
+		return w, h
+	}
+	return 0, 0
+}
+
+func (o WriterOutput) IsTerminal() bool {
+	if f, ok := o.W.(interface{ Fd() uintptr }); ok {
+		return readline.IsTerminal(int(f.Fd()))
+	}
+	return false
+}
 
 // REPL read-eval-print-loop
 func (q *Query) REPL(ctx context.Context) error {
@@ -64,61 +108,69 @@ func (q *Query) REPL(ctx context.Context) error {
 	}
 
 	for {
-		runCtx, runCtxCancelFn := context.WithCancel(ctx)
-		_ = runCtxCancelFn
-		go func() {
-			select {
-			case <-interruptChan:
-				runCtxCancelFn()
-			case <-ctx.Done():
-				// nop
+		if ok, err := func() (bool, error) {
+			var v []interface{}
+			stackLenStr := ""
+			if len(q.inputStack) > 0 {
+				v = q.inputStack[len(q.inputStack)-1]
 			}
-		}()
-
-		var v []interface{}
-		stackLenStr := ""
-		if len(q.inputStack) > 0 {
-			v = q.inputStack[len(q.inputStack)-1]
-		}
-		if len(q.inputStack) > 1 {
-			stackLenStr = fmt.Sprintf("[%d]", len(q.inputStack))
-		}
-		inputSummary := ""
-		if len(v) > 0 {
-			first := v[0]
-			if vv, ok := first.(*decode.Value); ok {
-				inputSummary = vv.Path()
-			} else if t, ok := valueToTypeString(first); ok {
-				inputSummary = t
-			} else {
-				inputSummary = "?"
+			if len(q.inputStack) > 1 {
+				stackLenStr = fmt.Sprintf("[%d]", len(q.inputStack))
 			}
-		}
-		if len(v) > 1 {
-			inputSummary = "(" + inputSummary + ",...)"
-		}
-		prompt := fmt.Sprintf("%s%s> ", stackLenStr, inputSummary)
+			inputSummary := ""
+			if len(v) > 0 {
+				first := v[0]
+				if vv, ok := first.(*decode.Value); ok {
+					inputSummary = vv.Path()
+				} else if t, ok := valueToTypeString(first); ok {
+					inputSummary = t
+				} else {
+					inputSummary = "?"
+				}
+			}
+			if len(v) > 1 {
+				inputSummary = "(" + inputSummary + ",...)"
+			}
+			prompt := fmt.Sprintf("%s%s> ", stackLenStr, inputSummary)
 
-		l.SetPrompt(prompt)
+			l.SetPrompt(prompt)
 
-		src, err := l.Readline()
-		if err == readline.ErrInterrupt {
-			continue
-		} else if err == io.EOF {
-			break
-		}
+			src, err := l.Readline()
+			if err == readline.ErrInterrupt {
+				return true, nil
+			} else if err == io.EOF {
+				return false, nil
+			}
 
-		if err != nil {
+			if err != nil {
+				return false, err
+			}
+
+			interruptCtx, interruptCtxCancelFn := context.WithCancel(ctx)
+			defer interruptCtxCancelFn()
+			go func() {
+				select {
+				case <-interruptChan:
+					interruptCtxCancelFn()
+				case <-ctx.Done():
+					// nop
+				}
+			}()
+
+			output := WriterOutput{
+				Ctx: interruptCtx,
+				W:   q.opts.OS.Stdout(),
+			}
+
+			if _, err := q.Run(interruptCtx, REPLMode, src, output); err != nil {
+				if err != context.Canceled {
+					fmt.Fprintf(q.opts.OS.Stdout(), "error: %s\n", err)
+				}
+			}
+
+			return true, nil
+		}(); !ok {
 			return err
 		}
-
-		if _, err := q.Run(runCtx, REPLMode, src, ioextra.ContextWriter{W: q.opts.OS.Stdout(), C: runCtx}); err != nil {
-			if err != context.Canceled {
-				fmt.Fprintf(q.opts.OS.Stdout(), "error: %s\n", err)
-			}
-		}
-		runCtxCancelFn()
 	}
-
-	return nil
 }

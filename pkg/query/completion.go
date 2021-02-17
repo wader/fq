@@ -3,7 +3,6 @@ package query
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"regexp"
 	"strings"
 
@@ -135,7 +134,7 @@ func autoComplete(ctx context.Context, q *Query, line []rune, pos int) (newLine 
 
 	// log.Printf("src: %s\n", src)
 
-	vss, err := q.Run(ctx, CompletionMode, src, ioutil.Discard)
+	vss, err := q.Run(ctx, CompletionMode, src, DiscardOutput{})
 	if err != nil {
 		// log.Printf("err: %#+v\n", err)
 		return [][]rune{}, pos

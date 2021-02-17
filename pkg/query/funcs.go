@@ -23,8 +23,6 @@ import (
 	"math/big"
 	"net/url"
 	"strings"
-
-	"github.com/chzyer/readline"
 )
 
 var fqModuleSrc = `
@@ -328,17 +326,10 @@ func (q *Query) makeFunctions(opts QueryOptions) []Function {
 }
 
 func (q *Query) tty(c interface{}, a []interface{}) interface{} {
-	isTerminal := false
-	size := []interface{}{0, 0}
-	f, ok := q.runContext.stdout.(interface{ Fd() uintptr })
-	if ok {
-		isTerminal = readline.IsTerminal(int(f.Fd()))
-		w, h, _ := readline.GetSize(int(f.Fd()))
-		size = []interface{}{w, h}
-	}
+	w, h := q.runContext.stdout.Size()
 	return map[string]interface{}{
-		"is_terminal": isTerminal,
-		"size":        size,
+		"is_terminal": q.runContext.stdout.IsTerminal(),
+		"size":        []interface{}{w, h},
 	}
 }
 
@@ -481,6 +472,8 @@ func (q *Query) help(c interface{}, a []interface{}) interface{} {
 			}
 			fmt.Fprintf(stdout, "%s\n", strings.Join(names, ", "))
 		}
+		fmt.Fprintf(stdout, "^D to exit\n")
+		fmt.Fprintf(stdout, "^C to interrupt\n")
 		return nil
 	})
 }

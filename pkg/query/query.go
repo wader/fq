@@ -255,7 +255,7 @@ const (
 type runContext struct {
 	ctx    context.Context
 	mode   RunMode
-	stdout io.Writer
+	stdout Output // TODO: rename?
 	opts   map[string]interface{}
 
 	pushVs []interface{}
@@ -277,7 +277,7 @@ func NewQuery(opts QueryOptions) *Query {
 	return q
 }
 
-func (q *Query) Run(ctx context.Context, mode RunMode, src string, stdout io.Writer) ([]interface{}, error) {
+func (q *Query) Run(ctx context.Context, mode RunMode, src string, stdout Output) ([]interface{}, error) {
 	var err error
 
 	q.runContext = &runContext{

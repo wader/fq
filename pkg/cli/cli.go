@@ -163,7 +163,7 @@ func (m Main) run() error {
 		src = strings.Join(srcs, " | ")
 	}
 
-	if _, err := q.Run(context.Background(), runMode, src, m.OS.Stdout()); err != nil {
+	if _, err := q.Run(context.Background(), runMode, src, query.WriterOutput{Ctx: context.Background(), W: m.OS.Stdout()}); err != nil {
 		return err
 	}
 
