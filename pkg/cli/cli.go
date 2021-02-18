@@ -87,7 +87,8 @@ func (m Main) run() error {
 		"sizebase":     "10",
 	}
 	optsFlag := OptionValueFlag(opts)
-	fs.Var(optsFlag, "o", "Options")
+	// TODO: show options? do in jq show values?
+	fs.Var(optsFlag, "o", "key=value option, eg: color=true")
 	fs.Usage = func() {
 		maxNameLen := 0
 		maxDescriptionLen := 0
