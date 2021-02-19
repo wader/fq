@@ -1,9 +1,13 @@
-package decode
+package query
 
 import (
+	"encoding/hex"
 	"fmt"
+	"fq/pkg/bitio"
+	"fq/pkg/decode"
 	"io"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -15,11 +19,59 @@ type previewNode struct {
 	nodes    map[string]*previewNode
 }
 
-func (v *Value) Preview(w io.Writer) error {
+func previewValue(v *decode.Value) string {
+	switch vv := v.V.(type) {
+	case decode.Array:
+		return "[]"
+	case decode.Struct:
+		return v.Description
+	case bool:
+		if vv {
+			return "true"
+		} else {
+			return "false"
+		}
+	case int64:
+		// TODO: DisplayFormat is weird
+		return strconv.FormatInt(vv, decode.DisplayFormatToBase(v.DisplayFormat))
+	case uint64:
+		return strconv.FormatUint(vv, decode.DisplayFormatToBase(v.DisplayFormat))
+	case float64:
+		// TODO: float32? better truncated to significant digits?
+		return strconv.FormatFloat(vv, 'g', -1, 64)
+	case string:
+		if len(vv) > 50 {
+			return fmt.Sprintf("%q", vv[0:50]) + "..."
+		} else {
+			return fmt.Sprintf("%q", vv)
+		}
+	case []byte:
+		if len(vv) > 16 {
+			return hex.EncodeToString(vv[0:16]) + "..."
+		} else {
+			return hex.EncodeToString(vv)
+		}
+	case *bitio.Buffer:
+		vvLen := vv.Len()
+		if vvLen > 16*8 {
+			bs, _ := vv.BytesRange(0, 16)
+			return hex.EncodeToString(bs) + "..."
+		} else {
+			bs, _ := vv.BytesRange(0, int(bitio.BitsByteCount(vvLen)))
+			return hex.EncodeToString(bs)
+		}
+	case nil:
+		return "none"
+	default:
+		panic("unreachable")
+	}
+}
+
+func preview(v *decode.Value, w io.Writer) error {
 	switch v.V.(type) {
-	case Struct:
+	case decode.Struct:
 		sn := &previewNode{name: ".", count: -1, previews: map[string]struct{}{}, nodes: map[string]*previewNode{}}
-		err := v.preview(sn, 0)
+		err := previewEx(v, sn, 0)
 		if err != nil {
 			return err
 		}
@@ -65,15 +117,15 @@ func (v *Value) Preview(w io.Writer) error {
 
 		printFn(sn, 0)
 	default:
-		fmt.Fprintln(w, v.PreviewString())
+		fmt.Fprintln(w, previewValue(v))
 	}
 	return nil
 }
 
-func (v *Value) preview(n *previewNode, depth int) error {
+func previewEx(v *decode.Value, n *previewNode, depth int) error {
 
-	if _, ok := v.V.(Array); !ok {
-		p := v.PreviewString()
+	if _, ok := v.V.(decode.Array); !ok {
+		p := previewValue(v)
 		if p != "" {
 			if _, ok := n.previews[p]; !ok {
 				n.previews[p] = struct{}{}
@@ -82,7 +134,7 @@ func (v *Value) preview(n *previewNode, depth int) error {
 	}
 
 	switch vv := v.V.(type) {
-	case Struct:
+	case decode.Struct:
 		for _, sv := range vv {
 			sn, ok := n.nodes[sv.Name]
 			if !ok {
@@ -93,20 +145,20 @@ func (v *Value) preview(n *previewNode, depth int) error {
 					previews: map[string]struct{}{},
 					nodes:    map[string]*previewNode{},
 				}
-				if a, ok := sv.V.(Array); ok {
+				if a, ok := sv.V.(decode.Array); ok {
 					sn.count = len(a)
 				}
 				n.nodes[sv.Name] = sn
 			}
 
-			err := sv.preview(sn, depth+1)
+			err := previewEx(sv, sn, depth+1)
 			if err != nil {
 				return nil
 			}
 		}
-	case Array:
+	case decode.Array:
 		for _, av := range vv {
-			err := av.preview(n, depth+1)
+			err := previewEx(av, n, depth+1)
 			_ = n
 			if err != nil {
 				return err

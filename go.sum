@@ -30,6 +30,8 @@ github.com/stretchr/testify v1.6.1 h1:hDPOHmpOpP40lSULcqw7IrRb/u7w6RpDC9399XyoNd
 github.com/stretchr/testify v1.6.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/wader/gojq v0.12.1-0.20210206152702-fef2a4facf55 h1:QObZe5Fd+jcc3ce4L5Rsz1stkc51AT3eZ0rXJ4cxZEE=
 github.com/wader/gojq v0.12.1-0.20210206152702-fef2a4facf55/go.mod h1:SMffq6VPU8iasjHsvRqaa9uz7tkrZ1KuxWI4GjSUud8=
+github.com/wader/gojq v0.12.1-0.20210219205417-8d3017ec07d3 h1:WKPiM+GG1WLwnVKUBXVtGfgfSGokeOuAEUNdi0vU1U8=
+github.com/wader/gojq v0.12.1-0.20210219205417-8d3017ec07d3/go.mod h1:SMffq6VPU8iasjHsvRqaa9uz7tkrZ1KuxWI4GjSUud8=
 golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sys v0.0.0-20190222072716-a9d3bda3a223/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 golang.org/x/sys v0.0.0-20191008105621-543471e840be/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=

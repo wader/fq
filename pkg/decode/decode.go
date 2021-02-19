@@ -575,6 +575,18 @@ func (d *D) FieldBitBufFn(name string, firstBit int64, nBits int64, fn func() (*
 	}).V.(*bitio.Buffer)
 }
 
+func (d *D) FieldBoolMapFn(name string, trueS string, falseS string, fn func() bool) (bool, bool) {
+	var ok bool
+	return d.FieldBoolFn(name, func() (bool, string) {
+		n := fn()
+		d := falseS
+		if n {
+			d = trueS
+		}
+		return n, d
+	}), ok
+}
+
 func (d *D) FieldStringMapFn(name string, sm map[uint64]string, def string, fn func() uint64) (uint64, bool) {
 	var ok bool
 	return d.FieldUFn(name, func() (uint64, DisplayFormat, string) {

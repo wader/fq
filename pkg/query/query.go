@@ -165,7 +165,7 @@ func toBytes(v interface{}) ([]byte, error) {
 }
 
 type Display interface {
-	Display(w io.Writer, opts decode.DisplayOptions) error
+	Display(w io.Writer, opts DisplayOptions) error
 }
 
 type ToBitBuf interface {
@@ -190,19 +190,6 @@ func toBitBuf(v interface{}) (*bitio.Buffer, ranges.Range, string, error) {
 		return bb, ranges.Range{Start: 0, Len: bb.Len()}, "", nil
 	default:
 		return nil, ranges.Range{}, "", fmt.Errorf("value should be decode value, bit buffer, byte slice or string")
-	}
-}
-
-func toValue(v interface{}) (*decode.Value, error) {
-	switch v := v.(type) {
-	case *decode.Value:
-		return v, nil
-	case *decode.D:
-		// TODO: remove decode.D?
-		return v.Value, nil
-	default:
-		// TODO: remove decode.D?
-		return nil, fmt.Errorf("%v: value is not a decode value", v)
 	}
 }
 

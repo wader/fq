@@ -31,8 +31,8 @@ const builtinPrefix = "@builtin"
 //go:embed *.jq
 var builtinFS embed.FS
 
-func buildDisplayOptions(ms ...map[string]interface{}) decode.DisplayOptions {
-	var opts decode.DisplayOptions
+func buildDisplayOptions(ms ...map[string]interface{}) DisplayOptions {
+	var opts DisplayOptions
 	for _, m := range ms {
 		if m != nil {
 			mapSetDisplayOptions(&opts, m)
@@ -43,7 +43,7 @@ func buildDisplayOptions(ms ...map[string]interface{}) decode.DisplayOptions {
 	return opts
 }
 
-func mapSetDisplayOptions(d *decode.DisplayOptions, m map[string]interface{}) {
+func mapSetDisplayOptions(d *DisplayOptions, m map[string]interface{}) {
 	if v, ok := m["maxdepth"]; ok {
 		d.MaxDepth = num.MaxInt(0, toIntZ(v))
 	}
@@ -73,7 +73,7 @@ func mapSetDisplayOptions(d *decode.DisplayOptions, m map[string]interface{}) {
 	}
 }
 
-func decoratorFromDumpOptions(opts decode.DisplayOptions) decode.Decorator {
+func decoratorFromDumpOptions(opts DisplayOptions) Decorator {
 	colStr := "|"
 	if opts.Unicode {
 		colStr = "\xe2\x94\x82"
@@ -98,7 +98,7 @@ func decoratorFromDumpOptions(opts decode.DisplayOptions) decode.Decorator {
 		column = ansi.FgWhite + colStr + ansi.Reset + "\n"
 	}
 
-	return decode.Decorator{
+	return Decorator{
 		Name:   nameFn,
 		Value:  valueFn,
 		Byte:   byteFn,
@@ -204,7 +204,7 @@ func (q *Query) hexdump(c interface{}, a []interface{}) interface{} {
 			return err
 		}
 
-		var opts decode.DisplayOptions
+		var opts DisplayOptions
 		if len(a) >= 1 {
 			opts = buildDisplayOptions(q.runContext.opts, a[0].(map[string]interface{}))
 		} else {
@@ -276,12 +276,12 @@ func (q *Query) formats(c interface{}, a []interface{}) interface{} {
 }
 
 func (q *Query) preview(c interface{}, a []interface{}) interface{} {
-	v, err := toValue(c)
-	if err != nil {
+	vo, ok := c.(valueObject)
+	if !ok {
 		return fmt.Errorf("%v: value is not a decode value", c)
 	}
 	return func(stdout io.Writer) error {
-		if err := v.Preview(stdout); err != nil {
+		if err := preview(vo.v, stdout); err != nil {
 			return err
 		}
 		return nil
@@ -312,7 +312,7 @@ type bitBufFile struct {
 	decodeDoneFn func()
 }
 
-func (bbf *bitBufFile) Display(w io.Writer, opts decode.DisplayOptions) error {
+func (bbf *bitBufFile) Display(w io.Writer, opts DisplayOptions) error {
 	_, err := fmt.Fprintf(w, "<%s>\n", bbf.filename)
 	return err
 }
@@ -400,13 +400,8 @@ func (q *Query) open(c interface{}, a []interface{}) interface{} {
 
 func (q *Query) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}, a []interface{}) interface{} {
 	return func(c interface{}, a []interface{}) interface{} {
-		// v, err := toValue(c)
-		// if err != nil {
-		// 	return fmt.Errorf("%v: value is not a decode value", c)
-		// }
-
 		return func(stdout io.Writer) error {
-			var opts decode.DisplayOptions
+			var opts DisplayOptions
 			if len(a) >= 1 {
 				opts = buildDisplayOptions(q.runContext.opts, fnOpts, a[0].(map[string]interface{}))
 			} else {
@@ -470,12 +465,12 @@ func (q *Query) makeDecodeFn(registry *decode.Registry, decodeFormats []*decode.
 			return errs
 		}
 
-		return dv
+		return valueObject{v: dv}
 	}
 }
 
 func (q *Query) _valueKeys(c interface{}, a []interface{}) interface{} {
-	if v, ok := c.(*decode.Value); ok {
+	if v, ok := c.(valueObject); ok {
 		var vs []interface{}
 		for _, s := range v.SpecialPropNames() {
 			vs = append(vs, s)
@@ -488,9 +483,9 @@ func (q *Query) _valueKeys(c interface{}, a []interface{}) interface{} {
 func (q *Query) string_(c interface{}, a []interface{}) interface{} {
 	var bb *bitio.Buffer
 	switch cc := c.(type) {
-	case *decode.Value:
+	case valueObject:
 		var err error
-		bb, err = cc.RootBitBuf.BitBufRange(cc.Range.Start, cc.Range.Len)
+		bb, err = cc.v.RootBitBuf.BitBufRange(cc.v.Range.Start, cc.v.Range.Len)
 		if err != nil {
 			return err
 		}

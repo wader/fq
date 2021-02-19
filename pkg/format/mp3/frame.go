@@ -7,6 +7,7 @@ package mp3
 
 // TODO: some sample decode?
 // TODO: LSF, version 2.5 and 2? other decoder?
+// TODO: mpeg_version int value use desc? same protection etc?
 
 import (
 	"fq/internal/ioextra"
@@ -71,11 +72,9 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldUFn("samples_per_frame", func() (uint64, decode.DisplayFormat, string) {
 		return uint64(samplePerFrameIndex[uint(l)][uint(v)]), decode.NumberDecimal, ""
 	})
-	protection, _ := d.FieldStringMapFn("protection", map[uint64]string{
-		0: "Protected by CRC",
-		1: "Not protected",
-	}, "", d.U1)
-	hasCRC := protection == 0
+	protection, _ := d.FieldBoolMapFn("protection", "Not protected", "Protected by CRC", d.Bool)
+	// note false mean has protection
+	hasCRC := !protection
 	// V1,L1 V1,L2 V1,L3  V2,L1 V2,L2 V2,L3  V2.5,L1 V2.5,L2 V2.5,L3
 	var bitRateIndex = map[uint][9]uint{
 		0b0001: [...]uint{32, 32, 32, 32, 8, 8, 32, 8, 8},

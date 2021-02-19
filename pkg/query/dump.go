@@ -1,4 +1,4 @@
-package decode
+package query
 
 import (
 	"fmt"
@@ -7,6 +7,7 @@ import (
 	"fq/internal/hexpairwriter"
 	"fq/internal/num"
 	"fq/pkg/bitio"
+	"fq/pkg/decode"
 	"io"
 	"strings"
 )
@@ -42,7 +43,7 @@ const (
 	colField = 6
 )
 
-func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth int, addrWidth int, opts DisplayOptions) error {
+func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.Value, rootDepth int, addrWidth int, opts DisplayOptions) error {
 	d := opts.Decorator
 	// no error check as we write into buffering column
 	// we check for err later for Flush()
@@ -61,7 +62,7 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 
 	isInArray := false
 	if v.Parent != nil {
-		_, isInArray = v.Parent.V.(Array)
+		_, isInArray = v.Parent.V.(decode.Array)
 	}
 
 	nameV := v
@@ -83,7 +84,7 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 	isSimple := false
 
 	switch vv := v.V.(type) {
-	case Struct:
+	case decode.Struct:
 		if depth == 0 {
 			cprint(colField, name, ":")
 		} else {
@@ -92,11 +93,18 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 		if v.Description != "" {
 			cprint(colField, " ", v.Description)
 		}
-	case Array:
+	case decode.Array:
 		cprint(colField, indent, name)
 		cfmt(colField, "[%d]:", len(vv))
 	default:
-		cprint(colField, indent, name, ": ", d.Value(v.String()))
+		cprint(colField, indent, name, ": ")
+
+		if v.Symbol != "" {
+			cprint(colField, d.Value(v.Symbol))
+			cprint(colField, " (", previewValue(v), ")")
+		} else {
+			cprint(colField, d.Value(previewValue(v)))
+		}
 		if v.Description != "" {
 			cprint(colField, fmt.Sprintf(" (%s)", v.Description))
 		}
@@ -109,7 +117,7 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 
 	if opts.Verbose {
 		cfmt(colField, " %s (%s)",
-			BitRange(v.Range).StringByteBits(opts.AddrBase), Bits(v.Range.Len).StringByteBits(opts.SizeBase))
+			decode.BitRange(v.Range).StringByteBits(opts.AddrBase), decode.Bits(v.Range.Len).StringByteBits(opts.SizeBase))
 	}
 
 	cprint(colField, "\n")
@@ -119,7 +127,7 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 		cfmt(colField, "%s!%s\n", indent, v.Error)
 
 		if opts.Verbose {
-			if de, ok := v.Error.(*DecodeError); ok && de.PanicStack != "" {
+			if de, ok := v.Error.(*decode.DecodeError); ok && de.PanicStack != "" {
 				ps := de.PanicStack
 				for _, l := range strings.Split(ps, "\n") {
 					columns()
@@ -215,7 +223,7 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 			// TODO: truncate if displaybytes is small?
 			cfmt(colHex, "%s bytes more until %s%s",
 				num.PadFormatInt(stopByte-lastDisplayByte, opts.SizeBase, true, 0),
-				Bits(stopBit).StringByteBits(opts.AddrBase),
+				decode.Bits(stopBit).StringByteBits(opts.AddrBase),
 				isEnd)
 			// TODO: dump last line?
 		}
@@ -228,12 +236,12 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 	return nil
 }
 
-func (v *Value) Dump(w io.Writer, opts DisplayOptions) error {
+func dump(v *decode.Value, w io.Writer, opts DisplayOptions) error {
 	maxAddrIndentWidth := 0
-	makeWalkFn := func(fn WalkFn) WalkFn {
-		return func(v *Value, rootV *Value, depth int, rootDepth int) error {
+	makeWalkFn := func(fn decode.WalkFn) decode.WalkFn {
+		return func(v *decode.Value, rootV *decode.Value, depth int, rootDepth int) error {
 			if opts.MaxDepth != 0 && depth > opts.MaxDepth {
-				return ErrWalkSkipChildren
+				return decode.ErrWalkSkipChildren
 			}
 			// skip first root level
 			if rootDepth > 0 {
@@ -244,7 +252,7 @@ func (v *Value) Dump(w io.Writer, opts DisplayOptions) error {
 		}
 	}
 
-	v.WalkPreOrder(makeWalkFn(func(v *Value, rootV *Value, depth int, rootDepth int) error {
+	v.WalkPreOrder(makeWalkFn(func(v *decode.Value, rootV *decode.Value, depth int, rootDepth int) error {
 		maxAddrIndentWidth = num.MaxInt(
 			maxAddrIndentWidth,
 			rootDepth+num.DigitsInBase(bitio.BitsByteCount(v.Range.Stop()), true, opts.AddrBase),
@@ -253,7 +261,7 @@ func (v *Value) Dump(w io.Writer, opts DisplayOptions) error {
 	}))
 
 	cw := columnwriter.New(w, []int{maxAddrIndentWidth, 1, opts.LineBytes*3 - 1, 1, opts.LineBytes, 1, -1})
-	return v.WalkPreOrder(makeWalkFn(func(v *Value, rootV *Value, depth int, rootDepth int) error {
-		return v.dump(cw, depth, rootV, rootDepth, maxAddrIndentWidth-rootDepth, opts)
+	return v.WalkPreOrder(makeWalkFn(func(v *decode.Value, rootV *decode.Value, depth int, rootDepth int) error {
+		return dumpEx(v, cw, depth, rootV, rootDepth, maxAddrIndentWidth-rootDepth, opts)
 	}))
 }
