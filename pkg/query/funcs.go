@@ -31,11 +31,11 @@ const builtinPrefix = "@builtin"
 //go:embed *.jq
 var builtinFS embed.FS
 
-func buildDumpOptions(ms ...map[string]interface{}) decode.DumpOptions {
-	var opts decode.DumpOptions
+func buildDisplayOptions(ms ...map[string]interface{}) decode.DisplayOptions {
+	var opts decode.DisplayOptions
 	for _, m := range ms {
 		if m != nil {
-			mapSetDumpOptions(&opts, m)
+			mapSetDisplayOptions(&opts, m)
 		}
 	}
 	opts.Decorator = decoratorFromDumpOptions(opts)
@@ -43,7 +43,7 @@ func buildDumpOptions(ms ...map[string]interface{}) decode.DumpOptions {
 	return opts
 }
 
-func mapSetDumpOptions(d *decode.DumpOptions, m map[string]interface{}) {
+func mapSetDisplayOptions(d *decode.DisplayOptions, m map[string]interface{}) {
 	if v, ok := m["maxdepth"]; ok {
 		d.MaxDepth = num.MaxInt(0, toIntZ(v))
 	}
@@ -55,6 +55,9 @@ func mapSetDumpOptions(d *decode.DumpOptions, m map[string]interface{}) {
 	}
 	if v, ok := m["unicode"]; ok {
 		d.Unicode = toBoolZ(v)
+	}
+	if v, ok := m["raw"]; ok {
+		d.Raw = toBoolZ(v)
 	}
 	if v, ok := m["linebytes"]; ok {
 		d.LineBytes = num.MaxInt(0, toIntZ(v))
@@ -70,7 +73,7 @@ func mapSetDumpOptions(d *decode.DumpOptions, m map[string]interface{}) {
 	}
 }
 
-func decoratorFromDumpOptions(opts decode.DumpOptions) decode.Decorator {
+func decoratorFromDumpOptions(opts decode.DisplayOptions) decode.Decorator {
 	colStr := "|"
 	if opts.Unicode {
 		colStr = "\xe2\x94\x82"
@@ -118,10 +121,9 @@ func (q *Query) makeFunctions(opts QueryOptions) []Function {
 
 		{[]string{"help"}, 0, 0, q.help},
 		{[]string{"open"}, 0, 1, q.open},
-		{[]string{"dump", "d"}, 0, 1, q.makeDumpFn(nil)},
-		{[]string{"verbose", "v"}, 0, 1, q.makeDumpFn(map[string]interface{}{"verbose": true})},
+		{[]string{"display", "d"}, 0, 1, q.makeDisplayFn(nil)},
+		{[]string{"verbose", "v"}, 0, 1, q.makeDisplayFn(map[string]interface{}{"verbose": true})},
 		{[]string{"hexdump", "hd", "h"}, 0, 1, q.hexdump},
-		{[]string{"bits"}, 0, 2, q.bits},
 		{[]string{"string"}, 0, 0, q.string_},
 		{[]string{"decode"}, 0, 1, q.makeDecodeFn(opts.Registry, opts.Registry.MustGroup(format.PROBE))},
 		{[]string{"u"}, 0, 1, q.u},
@@ -202,11 +204,11 @@ func (q *Query) hexdump(c interface{}, a []interface{}) interface{} {
 			return err
 		}
 
-		var opts decode.DumpOptions
+		var opts decode.DisplayOptions
 		if len(a) >= 1 {
-			opts = buildDumpOptions(q.runContext.opts, a[0].(map[string]interface{}))
+			opts = buildDisplayOptions(q.runContext.opts, a[0].(map[string]interface{}))
 		} else {
-			opts = buildDumpOptions(q.runContext.opts)
+			opts = buildDisplayOptions(q.runContext.opts)
 		}
 
 		d := opts.Decorator
@@ -303,6 +305,22 @@ func (q *Query) help(c interface{}, a []interface{}) interface{} {
 	})
 }
 
+type bitBufFile struct {
+	bb       *bitio.Buffer
+	filename string
+
+	decodeDoneFn func()
+}
+
+func (bbf *bitBufFile) Display(w io.Writer, opts decode.DisplayOptions) error {
+	_, err := fmt.Fprintf(w, "<%s>\n", bbf.filename)
+	return err
+}
+
+func (bbf *bitBufFile) ToBifBuf() *bitio.Buffer {
+	return bbf.bb.Copy()
+}
+
 func (q *Query) open(c interface{}, a []interface{}) interface{} {
 	var rs io.ReadSeeker
 
@@ -380,23 +398,28 @@ func (q *Query) open(c interface{}, a []interface{}) interface{} {
 	}
 }
 
-func (q *Query) makeDumpFn(fnOpts map[string]interface{}) func(c interface{}, a []interface{}) interface{} {
+func (q *Query) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}, a []interface{}) interface{} {
 	return func(c interface{}, a []interface{}) interface{} {
-		v, err := toValue(c)
-		if err != nil {
-			return fmt.Errorf("%v: value is not a decode value", c)
-		}
-
-		var opts decode.DumpOptions
-		if len(a) >= 1 {
-			opts = buildDumpOptions(q.runContext.opts, fnOpts, a[0].(map[string]interface{}))
-		} else {
-			opts = buildDumpOptions(q.runContext.opts, fnOpts)
-		}
+		// v, err := toValue(c)
+		// if err != nil {
+		// 	return fmt.Errorf("%v: value is not a decode value", c)
+		// }
 
 		return func(stdout io.Writer) error {
-			if err := v.Dump(stdout, opts); err != nil {
-				return err
+			var opts decode.DisplayOptions
+			if len(a) >= 1 {
+				opts = buildDisplayOptions(q.runContext.opts, fnOpts, a[0].(map[string]interface{}))
+			} else {
+				opts = buildDisplayOptions(q.runContext.opts, fnOpts)
+			}
+
+			switch v := c.(type) {
+			case Display:
+				if err := v.Display(stdout, opts); err != nil {
+					return err
+				}
+			default:
+				return fmt.Errorf("%v: not displayable", c)
 			}
 			return nil
 		}
@@ -460,49 +483,6 @@ func (q *Query) _valueKeys(c interface{}, a []interface{}) interface{} {
 		return vs
 	}
 	return nil
-}
-
-func (q *Query) bits(c interface{}, a []interface{}) interface{} {
-	bb, r, _, err := toBitBuf(c)
-	if err != nil {
-		return err
-	}
-	bb, err = bb.BitBufRange(r.Start, r.Len)
-	if err != nil {
-		return err
-	}
-
-	startArg := int64(0)
-	endArg := int64(-1)
-	toAbs := func(v int64, l int64) int64 {
-		if v < 0 {
-			return l + v + 1
-		}
-		return v
-	}
-
-	if len(a) >= 1 {
-		startArg, err = toInt64(a[0])
-		if err != nil {
-			return err
-		}
-	}
-	if len(a) >= 2 {
-		endArg, err = toInt64(a[1])
-		if err != nil {
-			return err
-		}
-	}
-
-	startArg = toAbs(startArg, bb.Len())
-	endArg = toAbs(endArg, bb.Len())
-
-	bb, err = bb.BitBufRange(startArg, endArg-startArg)
-	if err != nil {
-		return err
-	}
-
-	return bb
 }
 
 func (q *Query) string_(c interface{}, a []interface{}) interface{} {

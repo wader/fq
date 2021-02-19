@@ -67,7 +67,7 @@ Functions:
 - `open(path) ` opens file
 - `decode([name])` decode as named format or try to automatically detect
 - All decoders an groups are available as decode functions with their name, e.g. `... | mp3_frame`, `image`, `probe`.
-- `d`/`dump` show field tree
+- `d`/`display` show field tree
 - `v`/`verbose` show field tree verbosely
 - `p`/`preview` show preview of field tree
 - TODO: more functions

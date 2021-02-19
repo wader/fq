@@ -18,11 +18,12 @@ type Decorator struct {
 	Column string
 }
 
-type DumpOptions struct {
+type DisplayOptions struct {
 	MaxDepth int
 	Verbose  bool
 	Color    bool
 	Unicode  bool
+	Raw      bool
 
 	LineBytes    int
 	DisplayBytes int64
@@ -41,7 +42,7 @@ const (
 	colField = 6
 )
 
-func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth int, addrWidth int, opts DumpOptions) error {
+func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth int, addrWidth int, opts DisplayOptions) error {
 	d := opts.Decorator
 	// no error check as we write into buffering column
 	// we check for err later for Flush()
@@ -227,7 +228,7 @@ func (v *Value) dump(cw *columnwriter.Writer, depth int, rootV *Value, rootDepth
 	return nil
 }
 
-func (v *Value) Dump(w io.Writer, opts DumpOptions) error {
+func (v *Value) Dump(w io.Writer, opts DisplayOptions) error {
 	maxAddrIndentWidth := 0
 	makeWalkFn := func(fn WalkFn) WalkFn {
 		return func(v *Value, rootV *Value, depth int, rootDepth int) error {

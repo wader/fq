@@ -1,5 +1,7 @@
 package decode
 
+//go:generate sh -c "cat decode_decoder_gen.go.tmpl | go run ../../_dev/tmpl.go decode_decoder_gen.go.json | gofmt > decode_decoder_gen.go"
+
 import (
 	"bytes"
 	"compress/zlib"

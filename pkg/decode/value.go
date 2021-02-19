@@ -652,6 +652,18 @@ func (v *Value) JsonPrimitiveValue() interface{} {
 	}
 }
 
+func (v *Value) Display(w io.Writer, opts DisplayOptions) error {
+	return v.Dump(w, opts)
+}
+
+func (v *Value) ToBifBuf() *bitio.Buffer {
+	bb, err := v.RootBitBuf.BitBufRange(v.Range.Start, v.Range.Len)
+	if err != nil {
+		return nil
+	}
+	return bb.Copy()
+}
+
 type decodeError2 struct {
 	v *DecodeError
 }
@@ -771,6 +783,27 @@ func (bo *bitBufObject) JsonPrimitiveValue() interface{} {
 	}
 	return buf.String()
 }
+
+func (bo *bitBufObject) Display(w io.Writer, opts DisplayOptions) error {
+	if opts.Raw {
+		if _, err := io.Copy(w, bo.bb.Copy()); err != nil {
+			return err
+		}
+		return nil
+	}
+
+	unitNames := map[int]string{
+		1: "bits",
+		8: "bytes",
+	}
+	unitName := unitNames[bo.unit]
+	if unitName == "" {
+		unitName = "units"
+	}
+	_, err := fmt.Fprintf(w, "<%d %s>\n", bo.bb.Len()/int64(bo.unit), unitName)
+	return err
+}
+
 func (bo *bitBufObject) ToBifBuf() *bitio.Buffer {
 	return bo.bb.Copy()
 }

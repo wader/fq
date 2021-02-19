@@ -164,6 +164,10 @@ func toBytes(v interface{}) ([]byte, error) {
 	}
 }
 
+type Display interface {
+	Display(w io.Writer, opts decode.DisplayOptions) error
+}
+
 type ToBitBuf interface {
 	ToBifBuf() *bitio.Buffer
 }
@@ -171,14 +175,8 @@ type ToBitBuf interface {
 // TODO: refactor to return struct?
 func toBitBuf(v interface{}) (*bitio.Buffer, ranges.Range, string, error) {
 	switch vv := v.(type) {
-	case *bitBufFile:
-		return vv.bb, ranges.Range{Start: 0, Len: vv.bb.Len()}, vv.filename, nil
-	case *decode.Value:
-		return vv.RootBitBuf, vv.Range, "", nil
-	case *bitio.Buffer:
-		return vv, ranges.Range{Start: 0, Len: vv.Len()}, "", nil
-	case []byte:
-		bb := bitio.NewBufferFromBytes(vv, -1)
+	case ToBitBuf:
+		bb := vv.ToBifBuf()
 		return bb, ranges.Range{Start: 0, Len: bb.Len()}, "", nil
 	case string:
 		bb := bitio.NewBufferFromBytes([]byte(vv), -1)
@@ -189,9 +187,6 @@ func toBitBuf(v interface{}) (*bitio.Buffer, ranges.Range, string, error) {
 			return nil, ranges.Range{}, "", err
 		}
 		bb := bitio.NewBufferFromBytes(bi.Bytes(), -1)
-		return bb, ranges.Range{Start: 0, Len: bb.Len()}, "", nil
-	case ToBitBuf:
-		bb := vv.ToBifBuf()
 		return bb, ranges.Range{Start: 0, Len: bb.Len()}, "", nil
 	default:
 		return nil, ranges.Range{}, "", fmt.Errorf("value should be decode value, bit buffer, byte slice or string")
@@ -237,13 +232,6 @@ type Query struct {
 	functions         []Function
 	runContext        *runContext
 	builtinQueryCache map[string]*gojq.Query
-}
-
-type bitBufFile struct {
-	bb       *bitio.Buffer
-	filename string
-
-	decodeDoneFn func()
 }
 
 type RunMode int
@@ -395,27 +383,10 @@ func (q *Query) Run(ctx context.Context, mode RunMode, src string, stdout Output
 			if err := vv(stdout); err != nil {
 				return nil, err
 			}
-		case *bitBufFile:
-			fmt.Fprintf(stdout, "<file %s>\n", vv.filename)
-		case *decode.Value:
-			if err := vv.Dump(stdout, buildDumpOptions(q.runContext.opts, map[string]interface{}{
-				"maxdepth": 1,
-			})); err != nil {
-				return nil, err
-			}
-		case *decode.D:
-			// TODO: remove?
-			if err := vv.Value.Dump(stdout, buildDumpOptions(q.runContext.opts)); err != nil {
-				return nil, err
-			}
-
-		case ToBitBuf:
-			bb := vv.ToBifBuf()
-			if _, err := io.Copy(stdout, bb.Copy()); err != nil {
-				return nil, err
-			}
-		case *bitio.Buffer:
-			if _, err := io.Copy(stdout, vv.Copy()); err != nil {
+		case Display:
+			opts := buildDisplayOptions(q.runContext.opts)
+			opts.MaxDepth = 1
+			if err := vv.Display(stdout, opts); err != nil {
 				return nil, err
 			}
 		case string, int, int32, int64, uint, uint32, uint64:

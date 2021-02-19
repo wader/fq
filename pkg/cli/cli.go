@@ -81,6 +81,7 @@ func (m Main) run() error {
 		"verbose":      "false",
 		"color":        `_options_default_color`,
 		"unicode":      `_options_default_unicode`,
+		"raw":          `_options_default_raw`,
 		"linebytes":    `_options_default_linebytes`,
 		"displaybytes": `_options_default_displaybytes`,
 		"addrbase":     "16",

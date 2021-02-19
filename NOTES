@@ -1,6 +1,10 @@
 
 
-Display interface? Value implemnts and dumps? error show fancy error?
+filename? desc?
+
+iolist, multireader? flatten for now?
+
+DONE Display interface? Value implemnts and dumps? error show fancy error?
 
 readline wite context abort, reset?
 
