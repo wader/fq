@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"fq/pkg/decode"
 	"fq/pkg/format"
+	"sort"
 	"strings"
 )
 
@@ -68,6 +69,7 @@ type moof struct {
 }
 
 type track struct {
+	id         uint32
 	dataFormat string
 	stco       []uint64 //
 	stsc       []stsc
@@ -153,7 +155,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			d.FieldFP32("track_height")
 
 			if _, ok := ctx.tracks[trackID]; !ok {
-				t := &track{}
+				t := &track{id: trackID}
 				ctx.tracks[trackID] = t
 				ctx.currentTrack = t
 			} else {
@@ -799,8 +801,15 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 
 	decodeAtoms(ctx, d)
 
+	// keep track order stable
+	var sortedTracks []*track
+	for _, t := range ctx.tracks {
+		sortedTracks = append(sortedTracks, t)
+	}
+	sort.Slice(sortedTracks, func(i, j int) bool { return sortedTracks[i].id < sortedTracks[j].id })
+
 	d.FieldArrayFn("tracks", func(d *decode.D) {
-		for _, t := range ctx.tracks {
+		for _, t := range sortedTracks {
 			decodeSampleRange := func(d *decode.D, t *track, name string, firstBit int64, nBits int64, opts ...decode.Options) {
 				switch t.dataFormat {
 				case "fLaC":
