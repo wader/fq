@@ -29,9 +29,8 @@ func TestBuildCompletionQuery(t *testing.T) {
 		{`.a["b"].c`, `.a["b"]`, query.CompletionTypeIndex, `c`},
 		{`.a[1:2]`, ``, query.CompletionTypeNone, ``},
 		{`.a[1:2].c`, `.a[1:2]`, query.CompletionTypeIndex, `c`},
-
-		{`a`, ``, query.CompletionTypeFunc, `a`},
-		{`a | b`, ``, query.CompletionTypeFunc, `b`},
+		{`a`, `.`, query.CompletionTypeFunc, `a`},
+		{`a | b`, `a | .`, query.CompletionTypeFunc, `b`},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.input, func(t *testing.T) {

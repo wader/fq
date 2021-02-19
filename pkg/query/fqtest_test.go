@@ -1,4 +1,4 @@
-package decode_test
+package query_test
 
 import (
 	_ "fq/pkg/format/all"
