@@ -176,24 +176,27 @@ def _formats_dot:
 
 def field_inrange($p): ._type == "field" and ._range.start <= $p and $p < ._range.stop;
 
+def _eval_values: with_entries(.value |= eval(.));
 
-def _derive_options:
-	{
-		maxdepth:     0,
-		verbose:      false,
-		color:        (tty.is_terminal and env.CLICOLOR!=null),
-		unicode:      (tty.is_terminal and env.CLIUNICODE!=null),
-		raw:          (tty.is_terminal | not),
-		linebytes:    (if tty.is_terminal then [((tty.size[0] div 8) div 2) * 2, 4] | max else 16 end),
-		displaybytes: (if tty.is_terminal then [((tty.size[0] div 8) div 2) * 2, 4] | max else 16 end),
-		addrbase:     16,
-		sizebase:     10,
-	};
+	# {
+	# 	maxdepth:     0,
+	# 	verbose:      false,
+	# 	color:        (tty.is_terminal and env.CLICOLOR!=null),
+	# 	unicode:      (tty.is_terminal and env.CLIUNICODE!=null),
+	# 	raw:          (tty.is_terminal | not),
+	# 	linebytes:    (if tty.is_terminal then [((tty.size[0] div 8) div 2) * 2, 4] | max else 16 end),
+	# 	displaybytes: (if tty.is_terminal then [((tty.size[0] div 8) div 2) * 2, 4] | max else 16 end),
+	# 	addrbase:     16,
+	# 	sizebase:     10,
+	# };
 
 def dv($p):
-    . as $c | [$p, $c] | "ignore" | $c;
+    . as $c | [$p, $c] | debug | $c;
 
-def trim: gsub("\\s"; "");
+def trim: capture("^\\s*(?<a>.*?)\\s*$"; "").a;
+
+# does +1 and [:1] as " "*0 is null
+def rpad($w;$s): . + ($s * (([0,$w-(.|length)] | max)+1))[1:];
 
 def readline_expr:
 	(readline | trim) as $e |
@@ -202,12 +205,10 @@ def readline_expr:
 
 def repl:
     . as $c |
-    ($c | readline_expr | dv("readline")) as $e |
-    ($c | dv("input") | .[] |
-		dv("iter") |
-		# print
+    ($c | readline_expr) as $e |
+    ($c[] |
 		try
-			(eval($e) | dv("eval")) |
+			eval($e) |
 			. as $v |
 			try
 				($v | display({maxdepth: 1}))
@@ -217,11 +218,184 @@ def repl:
 	),
     ($c | repl);
 
+def opts_parse($args;$opts):
+	def _parse($args;$flagmap;$parsed):
+		$args[0] as $arg |
+		if $arg == null then
+			{parsed: $parsed, rest: []}
+		elif $arg == "--" then
+			{parsed: $parsed, rest: $args[1:]}
+		elif ($arg | length > 1) and $arg[0:1] == "-" then
+			$flagmap[$arg] as $o |
+			$opts[$o] as $opt |
+			if $opt == null then error("\($arg): no such argument") else . end |
+			if $opt.arg then
+				if ($args | length) < 2 then
+					error("\($arg): needs an argument")
+				else
+					$args[1] as $value |
+					if $opt.object then
+						(
+							$value | capture("^(?<key>.*?)=(?<value>.*)$") // error("\($value): should be key=value")
+						) as {$key, $value} |
+						_parse($args[2:];$flagmap;($parsed|.[$o] |= .+{($key): $value}))
+					elif $opt.array then
+						_parse($args[2:];$flagmap;($parsed|.[$o] |= .+[$value]))
+					else
+						_parse($args[2:];$flagmap;($parsed|.[$o] |= $value))
+					end
+				end
+			else
+				_parse($args[1:];$flagmap;($parsed|.[$o] |= true))
+			end
+		else
+			{parsed: $parsed, rest: $args}
+		end;
+	def _flagmap:
+		($opts | to_entries | map({(.value.short): .key, (.value.long): .key}) | add);
+	def _defaults:
+		($opts | to_entries | map(select(.value.default)) | map({(.key): .value.default}) | add);
+	_parse($args;_flagmap;_defaults);
+
+def opts_help_text($opts):
+	def _opthelp:
+		[
+			"\(.long),\(.short)",
+			if .arg then " arg" else "" end
+		] | join("");
+	def _maxoptlen:
+		[$opts[] | (.|_opthelp|length)] | max;
+	_maxoptlen as $l |
+	[
+		$opts | to_entries[] | [
+		"\(.value|_opthelp|rpad($l;" "))  \(.value.description)",
+		if .value.default then
+			if .value.object then
+				[
+					"\n",
+					if .value.eval then
+						[.value.default | to_entries[] | "\(" "*$l)    \(.key)=\(eval(.value))\n"]
+					else
+						[.value.default | to_entries[] | "\(" "*$l)    \(.key)=\(.value)\n"]
+					end
+				]
+			else
+				" (\(.value.default))\n"
+			end
+		else
+			"\n"
+		end
+		]
+	] |
+	flatten | join("");
+
+def formats_help_text:
+	((formats | keys | map(length) | max)+2) as $m | [
+		"\("Name:" | rpad($m;" "))Description:", "\n",
+		(
+			formats | to_entries[] |
+			"\(.key|rpad($m;" "))\(.value.description)", "\n"
+		)
+	] | join("");
+
 def main($args):
-    open($FILENAME) |
-    decode("probe") |
-    [.] |
-	repl;
+	def _opts:
+		{
+			"help": {
+				short: "-h",
+				long: "--help",
+				description: "Show help",
+			},
+			"noinput": {
+				short: "-n",
+				long: "--noinput",
+				description: "No input",
+			},
+			"decode": {
+				short: "-d",
+				long: "--decode",
+				description: "Decoder",
+				default: "probe",
+				arg: true
+			},
+			"repl": {
+				short: "-i",
+				long: "--repl",
+				description: "Interactive REPL",
+			},
+			"file": {
+				short: "-f",
+				long: "--file",
+				description: "Read script from file",
+				arg: true
+			},
+			"version": {
+				short: "-v",
+				long: "--version",
+				description: "Show version (\($VERSION))"
+			},
+			"option": {
+				short: "-o",
+				long: "--option",
+				description: "Set option, eg: color=true",
+				arg: true,
+				object: true,
+				eval: true,
+				default: {
+					maxdepth:     "0",
+					verbose:      "false",
+					color:        "tty.is_terminal and env.CLICOLOR!=null",
+					unicode:      "tty.is_terminal and env.CLIUNICODE!=null",
+					raw:          "tty.is_terminal | not",
+					linebytes:    "if tty.is_terminal then [((tty.size[0] div 8) div 2) * 2, 4] | max else 16 end",
+					displaybytes: "if tty.is_terminal then [((tty.size[0] div 8) div 2) * 2, 4] | max else 16 end",
+					addrbase:     "16",
+					sizebase:     "10",
+				}
+			},
+		};
+	opts_parse($args[1:];_opts) as {$parsed, $rest} |
+	options($parsed.option|_eval_values) |
+	if $parsed.version then
+		$VERSION | print
+	elif $parsed.help then
+		"Usage: \($args[0]) [OPTIONS] [FILE] [EXPR]" | print |
+		opts_help_text(_opts) | print |
+		formats_help_text | print
+	else
+		(if $rest[0] then $rest[0] else "-" end) as $filename |
+		(
+			if $parsed.file then
+				open($parsed.file) | string
+			elif $rest[1] then $rest[1]
+			else "." end
+		) as $expr |
+		if $parsed.noinput then
+			null
+		else
+			open($filename) |
+			decode($parsed.decode)
+		end |
+		if $parsed.repl then
+			[eval($expr)] |
+			repl
+		else
+			eval($expr) |
+			try display({maxdepth: 1})
+			catch (tojson | print)
+		end
+	end;
+
+	# $args | print |
+	# if ($args | length) > 1 and $args[1] == "-h" then
+	# 	"help" | print
+	# else 
+	# 	open($args[1]) |
+	# 	decode("probe") |
+	# 	if ($args | length) > 2 then [eval($args[2])]
+	# 	else [.] end |
+	# 	repl
+	# end;
 
 
 

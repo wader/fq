@@ -245,6 +245,8 @@ type Query struct {
 	functions         []Function
 	runContext        *runContext
 	builtinQueryCache map[string]*gojq.Query
+
+	globalOpts map[string]interface{}
 }
 
 type RunMode int
@@ -442,18 +444,18 @@ func (q *Query) Run(ctx context.Context, mode RunMode, src string, stdout Output
 	return vs, err
 }
 
-func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, src string, stdout Output) (gojq.Iter, error) {
+func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, opts map[string]interface{}, src string, stdout Output) (gojq.Iter, error) {
 	var err error
 
 	q.runContext = &runContext{
 		ctx:    ctx,
 		mode:   mode,
 		stdout: stdout,
-		opts:   map[string]interface{}{},
+		opts:   opts,
 	}
 
 	// TODO: move things out to jq?
-	runQuery := `include "@builtin/fq.jq"; . as $c | options(_derive_options) | $c | ` + src
+	runQuery := `include "@builtin/fq.jq"; ` + src
 
 	gq, err := gojq.Parse(runQuery)
 	if err != nil {

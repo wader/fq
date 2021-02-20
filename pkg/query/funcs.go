@@ -273,7 +273,7 @@ func (q *Query) eval(c interface{}, a []interface{}) interface{} {
 		return fmt.Errorf("%v: src is not a string", a[0])
 	}
 
-	iter, err := q.Eval(q.runContext.ctx, q.runContext.mode, c, src, q.runContext.stdout)
+	iter, err := q.Eval(q.runContext.ctx, q.runContext.mode, c, q.runContext.opts, src, q.runContext.stdout)
 	if err != nil {
 		return err
 	}
@@ -611,18 +611,9 @@ func (q *Query) _valueKeys(c interface{}, a []interface{}) interface{} {
 }
 
 func (q *Query) string_(c interface{}, a []interface{}) interface{} {
-	var bb *bitio.Buffer
-	switch cc := c.(type) {
-	case valueObject:
-		var err error
-		bb, err = cc.v.RootBitBuf.BitBufRange(cc.v.Range.Start, cc.v.Range.Len)
-		if err != nil {
-			return err
-		}
-	case *bitio.Buffer:
-		bb = cc
-	default:
-		return fmt.Errorf("value is not a decode value or bit buffer")
+	bb, _, _, err := toBitBuf(c)
+	if err != nil {
+		return err
 	}
 
 	sb := &strings.Builder{}

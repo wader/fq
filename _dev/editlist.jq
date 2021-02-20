@@ -1,4 +1,4 @@
-#!/usr/bin/env fq -f
+#!/usr/bin/env fq -d mp4 -f
 
 # TODO: esds, make fancy printer? shared?
 # TODO: handle -1 media_time
@@ -16,7 +16,6 @@
 #             stsd (sample description)
 #       elst (edit list)
 
-open($FILENAME) | mp4 |
 first(.boxes[] | select(.type == "moov")) |
 first(.boxes[] | select(.type == "mvhd")) as $mvhd |
 {
