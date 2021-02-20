@@ -175,3 +175,53 @@ def _formats_dot:
 	"}";
 
 def field_inrange($p): ._type == "field" and ._range.start <= $p and $p < ._range.stop;
+
+
+def _derive_options:
+	{
+		maxdepth:     0,
+		verbose:      false,
+		color:        (tty.is_terminal and env.CLICOLOR!=null),
+		unicode:      (tty.is_terminal and env.CLIUNICODE!=null),
+		raw:          (tty.is_terminal | not),
+		linebytes:    (if tty.is_terminal then [((tty.size[0] div 8) div 2) * 2, 4] | max else 16 end),
+		displaybytes: (if tty.is_terminal then [((tty.size[0] div 8) div 2) * 2, 4] | max else 16 end),
+		addrbase:     16,
+		sizebase:     10,
+	};
+
+def dv($p):
+    . as $c | [$p, $c] | "ignore" | $c;
+
+def trim: gsub("\\s"; "");
+
+def readline_expr:
+	(readline | trim) as $e |
+	if $e == "" then "." else $e end;
+
+
+def repl:
+    . as $c |
+    ($c | readline_expr | dv("readline")) as $e |
+    ($c | dv("input") | .[] |
+		dv("iter") |
+		# print
+		try
+			(eval($e) | dv("eval")) |
+			. as $v |
+			try
+				($v | display({maxdepth: 1}))
+			catch ($v | print)
+		catch (. as $err | ("ERR: " + $err) | print) |
+		empty
+	),
+    ($c | repl);
+
+def main($args):
+    open($FILENAME) |
+    decode("probe") |
+    [.] |
+	repl;
+
+
+

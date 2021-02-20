@@ -85,7 +85,7 @@ func (q *Query) REPL(ctx context.Context) error {
 		AutoComplete: autoCompleterFn(func(line []rune, pos int) (newLine [][]rune, length int) {
 			completeCtx, completeCtxCancelFn := context.WithTimeout(ctx, 1*time.Second)
 			defer completeCtxCancelFn()
-			return autoComplete(completeCtx, q, line, pos)
+			return autoComplete(completeCtx, nil, q, line, pos)
 		}),
 		// InterruptPrompt: "^C",
 		// EOFPrompt:       "exit",
@@ -121,7 +121,7 @@ func (q *Query) REPL(ctx context.Context) error {
 			if len(v) > 0 {
 				first := v[0]
 				if vv, ok := first.(*decode.Value); ok {
-					inputSummary = vv.Path()
+					inputSummary = valuePath(vv)
 				} else if t, ok := valueToTypeString(first); ok {
 					inputSummary = t
 				} else {
@@ -152,7 +152,7 @@ func (q *Query) REPL(ctx context.Context) error {
 				select {
 				case <-interruptChan:
 					interruptCtxCancelFn()
-				case <-ctx.Done():
+				case <-interruptCtx.Done():
 					// nop
 				}
 			}()

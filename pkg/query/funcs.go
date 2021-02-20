@@ -2,6 +2,7 @@ package query
 
 import (
 	"bytes"
+	"context"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/md5"
@@ -23,7 +24,13 @@ import (
 	"io/ioutil"
 	"math/big"
 	"net/url"
+	"os"
+	"os/signal"
+	"path/filepath"
 	"strings"
+	"time"
+
+	"github.com/chzyer/readline"
 )
 
 const builtinPrefix = "@builtin"
@@ -119,6 +126,10 @@ func (q *Query) makeFunctions(opts QueryOptions) []Function {
 		{[]string{"tty"}, 0, 0, q.tty},
 		{[]string{"options"}, 0, 1, q.options},
 
+		{[]string{"readline"}, 0, 0, q.readline},
+		{[]string{"eval"}, 1, 1, q.eval},
+		{[]string{"print"}, 0, 0, q.print},
+
 		{[]string{"help"}, 0, 0, q.help},
 		{[]string{"open"}, 0, 1, q.open},
 		{[]string{"display", "d"}, 0, 1, q.makeDisplayFn(nil)},
@@ -171,6 +182,130 @@ func (q *Query) options(c interface{}, a []interface{}) interface{} {
 	return q.runContext.opts
 }
 
+func (q *Query) readline(c interface{}, a []interface{}) interface{} {
+
+	// TODO: refactor
+	historyFile := ""
+	cacheDir, err := os.UserCacheDir()
+	if err != nil {
+		return err
+	}
+	historyFile = filepath.Join(cacheDir, "fq/history")
+	_ = os.MkdirAll(filepath.Dir(historyFile), 0700)
+
+	interruptChan := make(chan os.Signal, 1)
+	signal.Notify(interruptChan, os.Interrupt)
+
+	l, err := readline.NewEx(&readline.Config{
+		Stdin:       ioutil.NopCloser(q.opts.OS.Stdin()),
+		Stdout:      q.opts.OS.Stdout(),
+		Stderr:      q.opts.OS.Stderr(),
+		HistoryFile: historyFile,
+		AutoComplete: autoCompleterFn(func(line []rune, pos int) (newLine [][]rune, length int) {
+			completeCtx, completeCtxCancelFn := context.WithTimeout(q.runContext.ctx, 1*time.Second)
+			defer completeCtxCancelFn()
+			return autoComplete(completeCtx, c, q, line, pos)
+		}),
+		// InterruptPrompt: "^C",
+		// EOFPrompt:       "exit",
+
+		HistorySearchFold: true,
+		// FuncFilterInputRune: filterInput,
+
+		// FuncFilterInputRune: func(r rune) (rune, bool) {
+		// 	log.Printf("r: %#+v\n", r)
+		// 	return r, true
+		// },
+
+		// Listener: listenerFn(func(line []rune, pos int, key rune) (newLine []rune, newPos int, ok bool) {
+		// 	log.Printf("line: %#+v pos=%v key=%d\n", line, pos, key)
+		// 	return line, pos, false
+		// }),
+	})
+	if err != nil {
+		return err
+	}
+
+	// log.Printf("c: %#+v\n", c)
+
+	v := c.([]interface{})
+	inputSummary := ""
+	if len(v) > 0 {
+		first := v[0]
+		if vv, ok := first.(valueObject); ok {
+			inputSummary = vv.Path()
+		} else if t, ok := valueToTypeString(first); ok {
+			inputSummary = t
+		} else {
+			inputSummary = "?"
+		}
+	}
+	if len(v) > 1 {
+		inputSummary = "(" + inputSummary + ",...)"
+	}
+	prompt := fmt.Sprintf("%s> ", inputSummary)
+
+	l.SetPrompt(prompt)
+
+	src, err := l.Readline()
+	// log.Printf("src: %#+v\n", src)
+	// log.Printf("err: %#+v\n", err)
+	// if err == readline.ErrInterrupt {
+	// 	return true, nil
+	// } else if err == io.EOF {
+	// 	return false, nil
+	// }
+
+	// exception on error?
+
+	if err != nil {
+		return err
+	}
+
+	return src
+
+}
+
+func (q *Query) eval(c interface{}, a []interface{}) interface{} {
+
+	src, ok := a[0].(string)
+	if !ok {
+		return fmt.Errorf("%v: src is not a string", a[0])
+	}
+
+	iter, err := q.Eval(q.runContext.ctx, q.runContext.mode, c, src, q.runContext.stdout)
+	if err != nil {
+		return err
+	}
+
+	return iter
+
+	// q.Run(q.runContext.ctx, q.runContext.mode, src, q.runContext.stdout)
+
+	// src = `include "@builtin/fq.jq"; ` + src
+	// log.Printf("src: %#+v\n", src)
+
+	// gq, err := gojq.Parse(src)
+	// if err != nil {
+	// 	return err
+	// }
+	// gc, err := gojq.Compile(gq, q.runContext.compilerOpts...)
+	// if err != nil {
+	// 	return err
+	// }
+
+	// return gc.RunWithContext(q.runContext.ctx, c, q.runContext.variableValues...)
+
+}
+
+func (q *Query) print(c interface{}, a []interface{}) interface{} {
+	// log.Printf("print c: %#+v\n", c)
+	if _, err := fmt.Fprintln(q.runContext.stdout, c); err != nil {
+		return err
+	}
+	return c
+}
+
 func (q *Query) _json(c interface{}, a []interface{}) interface{} {
 	bb, _, _, err := toBitBuf(c)
 	if err != nil {
@@ -197,37 +332,36 @@ func (q *Query) hexdump(c interface{}, a []interface{}) interface{} {
 		return err
 	}
 
-	return func(stdout io.Writer) error {
-		bitsByteAlign := r.Start % 8
-		bb, err := bb.BitBufRange(r.Start-bitsByteAlign, r.Len+bitsByteAlign)
-		if err != nil {
-			return err
-		}
-
-		var opts DisplayOptions
-		if len(a) >= 1 {
-			opts = buildDisplayOptions(q.runContext.opts, a[0].(map[string]interface{}))
-		} else {
-			opts = buildDisplayOptions(q.runContext.opts)
-		}
-
-		d := opts.Decorator
-		hw := hexdump.New(
-			stdout,
-			(r.Start-bitsByteAlign)/8,
-			num.DigitsInBase(bitio.BitsByteCount(r.Stop()+bitsByteAlign), true, opts.AddrBase),
-			opts.AddrBase,
-			opts.LineBytes,
-			func(b byte) string { return d.Byte(b, hexpairwriter.Pair(b)) },
-			func(b byte) string { return d.Byte(b, asciiwriter.SafeASCII(b)) },
-			d.Column,
-		)
-		if _, err := io.Copy(hw, bb); err != nil {
-			return err
-		}
-		hw.Close()
-		return nil
+	bitsByteAlign := r.Start % 8
+	bb, err = bb.BitBufRange(r.Start-bitsByteAlign, r.Len+bitsByteAlign)
+	if err != nil {
+		return err
 	}
+
+	var opts DisplayOptions
+	if len(a) >= 1 {
+		opts = buildDisplayOptions(q.runContext.opts, a[0].(map[string]interface{}))
+	} else {
+		opts = buildDisplayOptions(q.runContext.opts)
+	}
+
+	d := opts.Decorator
+	hw := hexdump.New(
+		q.runContext.stdout,
+		(r.Start-bitsByteAlign)/8,
+		num.DigitsInBase(bitio.BitsByteCount(r.Stop()+bitsByteAlign), true, opts.AddrBase),
+		opts.AddrBase,
+		opts.LineBytes,
+		func(b byte) string { return d.Byte(b, hexpairwriter.Pair(b)) },
+		func(b byte) string { return d.Byte(b, asciiwriter.SafeASCII(b)) },
+		d.Column,
+	)
+	if _, err := io.Copy(hw, bb); err != nil {
+		return err
+	}
+	hw.Close()
+
+	return emptyIter{}
 }
 
 func (q *Query) formats(c interface{}, a []interface{}) interface{} {
@@ -289,20 +423,18 @@ func (q *Query) preview(c interface{}, a []interface{}) interface{} {
 }
 
 func (q *Query) help(c interface{}, a []interface{}) interface{} {
-	return queryErrorFn(func(stdout io.Writer) error {
-		for _, f := range q.functions {
-			var names []string
-			for _, n := range f.Names {
-				for j := f.MinArity; j <= f.MaxArity; j++ {
-					names = append(names, fmt.Sprintf("%s/%d", n, j))
-				}
+	for _, f := range q.functions {
+		var names []string
+		for _, n := range f.Names {
+			for j := f.MinArity; j <= f.MaxArity; j++ {
+				names = append(names, fmt.Sprintf("%s/%d", n, j))
 			}
-			fmt.Fprintf(stdout, "%s\n", strings.Join(names, ", "))
 		}
-		fmt.Fprintf(stdout, "^D to exit\n")
-		fmt.Fprintf(stdout, "^C to interrupt\n")
-		return nil
-	})
+		fmt.Fprintf(q.runContext.stdout, "%s\n", strings.Join(names, ", "))
+	}
+	fmt.Fprintf(q.runContext.stdout, "^D to exit\n")
+	fmt.Fprintf(q.runContext.stdout, "^C to interrupt\n")
+	return nil
 }
 
 type bitBufFile struct {
@@ -400,7 +532,8 @@ func (q *Query) open(c interface{}, a []interface{}) interface{} {
 
 func (q *Query) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}, a []interface{}) interface{} {
 	return func(c interface{}, a []interface{}) interface{} {
-		return func(stdout io.Writer) error {
+		switch v := c.(type) {
+		case Display:
 			var opts DisplayOptions
 			if len(a) >= 1 {
 				opts = buildDisplayOptions(q.runContext.opts, fnOpts, a[0].(map[string]interface{}))
@@ -408,15 +541,12 @@ func (q *Query) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{},
 				opts = buildDisplayOptions(q.runContext.opts, fnOpts)
 			}
 
-			switch v := c.(type) {
-			case Display:
-				if err := v.Display(stdout, opts); err != nil {
-					return err
-				}
-			default:
-				return fmt.Errorf("%v: not displayable", c)
+			if err := v.Display(q.runContext.stdout, opts); err != nil {
+				return err
 			}
-			return nil
+			return emptyIter{}
+		default:
+			return fmt.Errorf("%v: not displayable", c)
 		}
 	}
 }

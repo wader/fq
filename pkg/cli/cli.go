@@ -165,15 +165,25 @@ func (m Main) run() error {
 		src = strings.Join(srcs, " | ")
 	}
 
-	if _, err := q.Run(context.Background(), runMode, src, query.WriterOutput{Ctx: context.Background(), W: m.OS.Stdout()}); err != nil {
+	_ = src
+
+	i, err := q.Eval(context.Background(), runMode, []interface{}{1, 2}, "main([])", query.WriterOutput{Ctx: context.Background(), W: m.OS.Stdout()})
+	if err != nil {
 		return err
 	}
-
-	if *replFlag {
-		if err := q.REPL(context.Background()); err != nil {
-			return err
+	for {
+		_, ok := i.Next()
+		if !ok {
+			break
 		}
+		//fmt.Fprintln(m.OS.Stdout(), v)
 	}
+
+	// if *replFlag {
+	// 	if err := q.REPL(context.Background()); err != nil {
+	// 		return err
+	// 	}
+	// }
 
 	return nil
 }

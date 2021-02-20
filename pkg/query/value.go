@@ -21,6 +21,11 @@ type valueObject struct {
 	v *decode.Value
 }
 
+// TODO: jq function somehow?
+func (vo valueObject) Path() string {
+	return valuePath(vo.v)
+}
+
 func (vo valueObject) ToJQ() interface{} {
 	v := vo.v
 	switch vv := v.V.(type) {
@@ -187,7 +192,7 @@ func (vo valueObject) JsonProperty(name string) interface{} {
 	case "_size":
 		r = big.NewInt(v.Range.Len)
 	case "_path":
-		r = v.Path()
+		r = valuePath(v)
 	case "_error":
 		if de, ok := v.Error.(*decode.DecodeError); ok {
 			return &decodeError2{de}

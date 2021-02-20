@@ -37,6 +37,28 @@ func valueToTypeString(v interface{}) (string, bool) {
 	return "?", false
 }
 
+// TODO: jq function somehow?
+func valuePath(v *decode.Value) string {
+	var parts []string
+
+	for v.Parent != nil {
+		switch v.Parent.V.(type) {
+		case decode.Struct:
+			parts = append([]string{".", v.Name}, parts...)
+		case decode.Array:
+			parts = append([]string{fmt.Sprintf("[%d]", v.Index)}, parts...)
+		}
+		v = v.Parent
+	}
+
+	if len(parts) == 0 {
+		return "."
+	}
+
+	return strings.Join(parts, "")
+
+}
+
 type EmptyError interface {
 	IsEmptyError() bool
 }
@@ -44,6 +66,10 @@ type EmptyError interface {
 type iterFn func() (interface{}, bool)
 
 func (i iterFn) Next() (interface{}, bool) { return i() }
+
+type emptyIter struct{}
+
+func (emptyIter) Next() (interface{}, bool) { return nil, false }
 
 type autoCompleterFn func(line []rune, pos int) (newLine [][]rune, length int)
 
@@ -230,10 +256,12 @@ const (
 )
 
 type runContext struct {
-	ctx    context.Context
-	mode   RunMode
-	stdout Output // TODO: rename?
-	opts   map[string]interface{}
+	ctx            context.Context
+	mode           RunMode
+	stdout         Output // TODO: rename?
+	opts           map[string]interface{}
+	compilerOpts   []gojq.CompilerOption
+	variableValues []interface{}
 
 	pushVs []interface{}
 	pops   int
@@ -265,16 +293,18 @@ func (q *Query) Run(ctx context.Context, mode RunMode, src string, stdout Output
 		opts:   map[string]interface{}{},
 	}
 
-	optsExpr := "{"
-	for k, v := range q.opts.Options {
-		optsExpr += fmt.Sprintf(`"%s": (%s),`, k, v)
-	}
-	optsExpr += "}"
+	// optsExpr := "{"
+	// for k, v := range q.opts.Options {
+	// 	optsExpr += fmt.Sprintf(`"%s": (%s),`, k, v)
+	// }
+	// optsExpr += "}"
 
-	runQuery := fmt.Sprintf(`include "%s/fq.jq"; options(%s) | inputs`, builtinPrefix, optsExpr)
-	if src != "" {
-		runQuery += `| ` + src
-	}
+	// runQuery := fmt.Sprintf(`include "%s/fq.jq"; options(%s) | inputs`, builtinPrefix, optsExpr)
+	// if src != "" {
+	// 	runQuery += `| ` + src
+	// }
+
+	runQuery := `include "@builtin/fq.jq"; ` + src
 
 	query, err := gojq.Parse(runQuery)
 	if err != nil {
@@ -342,6 +372,9 @@ func (q *Query) Run(ctx context.Context, mode RunMode, src string, stdout Output
 
 	iter := code.RunWithContext(ctx, nil, variableValues...)
 
+	q.runContext.compilerOpts = compilerOpts
+	q.runContext.variableValues = variableValues
+
 	var vs []interface{}
 	for {
 		var ok bool
@@ -407,4 +440,89 @@ func (q *Query) Run(ctx context.Context, mode RunMode, src string, stdout Output
 	}
 
 	return vs, err
+}
+
+func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, src string, stdout Output) (gojq.Iter, error) {
+	var err error
+
+	q.runContext = &runContext{
+		ctx:    ctx,
+		mode:   mode,
+		stdout: stdout,
+		opts:   map[string]interface{}{},
+	}
+
+	// TODO: move things out to jq?
+	runQuery := `include "@builtin/fq.jq"; . as $c | options(_derive_options) | $c | ` + src
+
+	gq, err := gojq.Parse(runQuery)
+	if err != nil {
+		return nil, err
+	}
+
+	var variableNames []string
+	var variableValues []interface{}
+	for k, v := range q.variables {
+		variableNames = append(variableNames, k)
+		variableValues = append(variableValues, v)
+	}
+
+	var compilerOpts []gojq.CompilerOption
+	for _, f := range q.functions {
+		for _, n := range f.Names {
+			compilerOpts = append(compilerOpts,
+				gojq.WithFunction(n, f.MinArity, f.MaxArity, f.Fn))
+		}
+	}
+	compilerOpts = append(compilerOpts, gojq.WithEnvironLoader(q.opts.OS.Environ))
+	compilerOpts = append(compilerOpts, gojq.WithVariables(variableNames))
+	// var inputs []interface{}
+	// if len(q.inputStack) > 0 {
+	// 	inputs = q.inputStack[len(q.inputStack)-1]
+	// } else {
+	// 	// TODO: hmm
+	// 	inputs = []interface{}{nil}
+	// }
+	// compilerOpts = append(compilerOpts, gojq.WithInputIter(iterFn(func() (interface{}, bool) {
+	// 	if len(inputs) == 0 {
+	// 		return nil, false
+	// 	}
+	// 	var input interface{}
+	// 	input, inputs = inputs[0], inputs[1:]
+	// 	return input, true
+	// })))
+	compilerOpts = append(compilerOpts, gojq.WithModuleLoader(loadModuleFn(func(name string) (*gojq.Query, error) {
+		parts := strings.Split(name, "/")
+
+		if len(parts) > 0 && parts[0] == builtinPrefix {
+			name = strings.Join(parts[1:], "/")
+			if q, ok := q.builtinQueryCache[name]; ok {
+				return q, nil
+			}
+			b, err := builtinFS.ReadFile(name)
+			if err != nil {
+				return nil, err
+			}
+			mq, err := gojq.Parse(string(b))
+			if err != nil {
+				return nil, err
+			}
+			q.builtinQueryCache[name] = mq
+			return mq, nil
+		}
+
+		return nil, fmt.Errorf("module not found: %q", name)
+	})))
+
+	gc, err := gojq.Compile(gq, compilerOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	iter := gc.RunWithContext(ctx, c, variableValues...)
+
+	// q.runContext.compilerOpts = compilerOpts
+	// q.runContext.variableValues = variableValues
+
+	return iter, nil
 }

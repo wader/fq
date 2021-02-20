@@ -3,6 +3,7 @@ package query
 import (
 	"context"
 	"fmt"
+	"log"
 	"regexp"
 	"strings"
 
@@ -104,7 +105,7 @@ func transformToCompletionQuery(q *gojq.Query) (*gojq.Query, CompletionType, str
 	}
 }
 
-func autoComplete(ctx context.Context, q *Query, line []rune, pos int) (newLine [][]rune, length int) {
+func autoComplete(ctx context.Context, c interface{}, q *Query, line []rune, pos int) (newLine [][]rune, length int) {
 	lineStr := string(line[0:pos])
 	namesQuery, nameType, namePrefix := BuildCompletionQuery(lineStr)
 
@@ -132,13 +133,25 @@ func autoComplete(ctx context.Context, q *Query, line []rune, pos int) (newLine 
 		panic("unreachable")
 	}
 
-	// log.Printf("src: %s\n", src)
+	log.Printf("src: %s\n", src)
 
-	vss, err := q.Run(ctx, CompletionMode, src, DiscardOutput{})
+	i, err := q.Eval(ctx, CompletionMode, c, src, DiscardOutput{})
 	if err != nil {
-		// log.Printf("err: %#+v\n", err)
+		log.Printf("err: %#+v\n", err)
 		return [][]rune{}, pos
 	}
+
+	var vss []interface{}
+	for {
+		vs, ok := i.Next()
+		if !ok {
+			break
+		}
+		log.Printf("vs: %#+v\n", vs)
+		vss = append(vss, vs)
+	}
+
+	log.Printf("vss: %#+v\n", vss)
 
 	shareLen := len(namePrefix)
 

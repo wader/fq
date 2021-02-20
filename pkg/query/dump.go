@@ -72,7 +72,7 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 		name = ""
 	}
 	if depth == 0 {
-		name = nameV.Path()
+		name = valuePath(nameV)
 	}
 	if isInArray {
 		name += fmt.Sprintf("[%d]", v.Index)

@@ -8,7 +8,6 @@ import (
 	"fq/pkg/ranges"
 	"sort"
 	"strconv"
-	"strings"
 )
 
 type Bits uint64
@@ -71,27 +70,6 @@ type Value struct {
 	Symbol        string
 	Description   string
 	Error         error
-}
-
-func (v *Value) Path() string {
-	var parts []string
-
-	for v.Parent != nil {
-		switch v.Parent.V.(type) {
-		case Struct:
-			parts = append([]string{".", v.Name}, parts...)
-		case Array:
-			parts = append([]string{fmt.Sprintf("[%d]", v.Index)}, parts...)
-		}
-		v = v.Parent
-	}
-
-	if len(parts) == 0 {
-		return "."
-	}
-
-	return strings.Join(parts, "")
-
 }
 
 type WalkFn func(v *Value, rootV *Value, depth int, rootDepth int) error
