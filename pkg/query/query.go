@@ -457,7 +457,7 @@ func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, opts map[
 	// TODO: move things out to jq?
 	runQuery := `include "@builtin/fq.jq"; ` + src
 
-	// TODO: would be nice if gojq has something for this? maybe missing something?
+	// TODO: would be nice if gojq had something for this? maybe missing something?
 	offsetToLine := func(s string, offset int) int {
 		co := 0
 		line := 1

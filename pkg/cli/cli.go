@@ -186,7 +186,7 @@ func (m Main) run() error {
 		if !ok {
 			break
 		} else if err, ok := v.(error); ok {
-			fmt.Fprint(m.OS.Stderr(), err)
+			fmt.Fprintln(m.OS.Stderr(), err)
 			break
 		} else if d, ok := v.([2]interface{}); ok {
 			fmt.Fprintf(m.OS.Stdout(), "%s: %v\n", d[0], d[1])

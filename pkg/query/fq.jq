@@ -190,6 +190,7 @@ def _eval_values: with_entries(.value |= eval(.));
 	# 	sizebase:     10,
 	# };
 
+
 def dv($p):
     . as $c | [$p, $c] | debug | $c;
 
@@ -219,6 +220,7 @@ def repl:
     ($c | repl);
 
 # TODO: validate option name? has key
+# TODO: multi short -in
 def opts_parse($args;$opts):
 	def _parse($args;$flagmap;$parsed):
 		def _parse_with_arg($argskip;$optname;$value;$opt):
@@ -241,11 +243,11 @@ def opts_parse($args;$opts):
 		if $arg == null then
 			{parsed: $parsed, rest: []}
 		else
-			$flagmap[$arg] as $optname |
-			$opts[$optname] as $opt |
 			if $arg == "--" then
 				{parsed: $parsed, rest: $args[1:]}
-			elif $arg[0:1] == "-" or $arg[0:2] == "--" then
+			elif $arg | test("^--?.+") then
+				$flagmap[$arg] as $optname |
+				($opts[$optname]? // null) as $opt |
 				if $opt == null then
 					error("\($arg): no such argument")
 				elif $opt.arg then
@@ -368,7 +370,6 @@ def main($args):
 			},
 		};
 	opts_parse($args[1:];_opts) as {$parsed, $rest} |
-	($parsed | dv("parsed")) |
 	options($parsed.option|_eval_values) |
 	if $parsed.version then
 		$VERSION | print
