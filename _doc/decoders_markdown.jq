@@ -5,5 +5,5 @@ def rpad($s;$w): . + ($s * ($w+1-length))[1:];
 "|-|-|",
 (
     formats | to_entries[] |
-    "|\(.key|rpad(" ";$m))|\(.value.description)|"
+    "|\("`"+.key+"`"|rpad(" ";$m))|\(.value.description)|"
 )
