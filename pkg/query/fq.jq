@@ -203,21 +203,19 @@ def readline_expr:
 	(readline | trim) as $e |
 	if $e == "" then "." else $e end;
 
+def eval_print($e):
+	try eval($e) as $v |
+		try ($v | display({maxdepth: 1}))
+		catch ($v | print)
+	catch (. as $err | ("ERR: " + $err) | print);
 
 def repl:
-    . as $c |
-    ($c | readline_expr) as $e |
-    ($c[] |
-		try
-			eval($e) |
-			. as $v |
-			try
-				($v | display({maxdepth: 1}))
-			catch ($v | print)
-		catch (. as $err | ("ERR: " + $err) | print) |
-		empty
-	),
-    ($c | repl);
+	def _as_array: if (. | type) == "array" then . else [.] end;
+	def _repl:
+		readline_expr as $e |
+		(.[] | eval_print($e) | empty),
+		_repl;
+    _as_array | _repl;
 
 # TODO: validate option name? has key
 # TODO: multi short -in
@@ -392,12 +390,10 @@ def main($args):
 			decode($parsed.decode)
 		end |
 		if $parsed.repl then
-			[eval($expr)] |
+			eval($expr) |
 			repl
 		else
-			eval($expr) |
-			try display({maxdepth: 1})
-			catch (tojson | print)
+			eval_print($expr) 
 		end
 	end;
 

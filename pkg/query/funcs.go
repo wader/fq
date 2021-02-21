@@ -226,8 +226,6 @@ func (q *Query) readline(c interface{}, a []interface{}) interface{} {
 		return err
 	}
 
-	// log.Printf("c: %#+v\n", c)
-
 	v := c.([]interface{})
 	inputSummary := ""
 	if len(v) > 0 {
