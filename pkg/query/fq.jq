@@ -1,3 +1,9 @@
+# TODO;
+# autoc omplete
+# prompt summary
+# modules?
+# options
+
 def _options_default_color: tty.is_terminal and env.CLICOLOR!=null;
 def _options_default_unicode: tty.is_terminal and env.CLIUNICODE!=null;
 def _options_default_raw: tty.is_terminal | not;
@@ -22,7 +28,7 @@ def from_base($base;$table):
 	split("")
 	| reverse
 	| map($table[.])
-	| if . == null then error("invalid char \(.)") else . end
+	| if . == null then error("invalid char \(.)") end
 	| reduce .[] as $c
 		# state: [power, ans]
 		([1,0]; (.[0] * $base) as $b | [$b, .[1] + (.[0] * $c)])
@@ -200,8 +206,7 @@ def trim: capture("^\\s*(?<a>.*?)\\s*$"; "").a;
 def rpad($w;$s): . + ($s * (([0,$w-(.|length)] | max)+1))[1:];
 
 def readline_expr:
-	(readline | trim) as $e |
-	if $e == "" then "." else $e end;
+	readline | trim | if . == "" then "." end;
 
 def eval_print($e):
 	try eval($e) as $v |
@@ -210,7 +215,7 @@ def eval_print($e):
 	catch (. as $err | ("ERR: " + $err) | print);
 
 def repl:
-	def _as_array: if (. | type) == "array" then . else [.] end;
+	def _as_array: if (. | type) != "array" then [.] end;
 	def _repl:
 		readline_expr as $e |
 		(.[] | eval_print($e) | empty),
@@ -219,6 +224,7 @@ def repl:
 
 # TODO: validate option name? has key
 # TODO: multi short -in
+# TODO: parse -args until -- or end, collect unknown to rest
 def opts_parse($args;$opts):
 	def _parse($args;$flagmap;$parsed):
 		def _parse_with_arg($argskip;$optname;$value;$opt):
@@ -396,17 +402,4 @@ def main($args):
 			eval_print($expr) 
 		end
 	end;
-
-	# $args | print |
-	# if ($args | length) > 1 and $args[1] == "-h" then
-	# 	"help" | print
-	# else 
-	# 	open($args[1]) |
-	# 	decode("probe") |
-	# 	if ($args | length) > 2 then [eval($args[2])]
-	# 	else [.] end |
-	# 	repl
-	# end;
-
-
 
