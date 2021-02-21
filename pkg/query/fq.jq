@@ -218,38 +218,51 @@ def repl:
 	),
     ($c | repl);
 
+# TODO: validate option name? has key
 def opts_parse($args;$opts):
 	def _parse($args;$flagmap;$parsed):
-		$args[0] as $arg |
+		def _parse_with_arg($argskip;$optname;$value;$opt):
+			if $opt.object then
+				($value | capture("^(?<key>.*?)=(?<value>.*)$") // error("\($value): should be key=value"))
+				as {$key, $value} |
+				_parse($args[$argskip:];$flagmap;($parsed|.[$optname] |= .+{($key): $value}))
+			elif $opt.array then
+				_parse($args[$argskip:];$flagmap;($parsed|.[$optname] |= .+[$value]))
+			else
+				_parse($args[$argskip:];$flagmap;($parsed|.[$optname] |= $value))
+			end;
+		def _parse_without_arg($optname):
+			_parse($args[1:];$flagmap;($parsed|.[$optname] |= true));
+		($args[0] | index("=")) as $assigni |
+		(
+			if $assigni then $args[0][0:$assigni]
+			else $args[0] end
+		) as $arg |
 		if $arg == null then
 			{parsed: $parsed, rest: []}
-		elif $arg == "--" then
-			{parsed: $parsed, rest: $args[1:]}
-		elif ($arg | length > 1) and $arg[0:1] == "-" then
-			$flagmap[$arg] as $o |
-			$opts[$o] as $opt |
-			if $opt == null then error("\($arg): no such argument") else . end |
-			if $opt.arg then
-				if ($args | length) < 2 then
-					error("\($arg): needs an argument")
-				else
-					$args[1] as $value |
-					if $opt.object then
-						(
-							$value | capture("^(?<key>.*?)=(?<value>.*)$") // error("\($value): should be key=value")
-						) as {$key, $value} |
-						_parse($args[2:];$flagmap;($parsed|.[$o] |= .+{($key): $value}))
-					elif $opt.array then
-						_parse($args[2:];$flagmap;($parsed|.[$o] |= .+[$value]))
+		else
+			$flagmap[$arg] as $optname |
+			$opts[$optname] as $opt |
+			if $arg == "--" then
+				{parsed: $parsed, rest: $args[1:]}
+			elif $arg[0:1] == "-" or $arg[0:2] == "--" then
+				if $opt == null then
+					error("\($arg): no such argument")
+				elif $opt.arg then
+					if $assigni then
+						_parse_with_arg(1;$optname;$args[0][$assigni+1:];$opt)
+					elif ($args | length) < 2 then
+						error("\($arg): needs an argument")
 					else
-						_parse($args[2:];$flagmap;($parsed|.[$o] |= $value))
+						_parse_with_arg(2;$optname;$args[1];$opt)
 					end
+				else
+					if $assigni then error("\($arg): takes no argument")
+					else _parse_without_arg($optname) end
 				end
 			else
-				_parse($args[1:];$flagmap;($parsed|.[$o] |= true))
+				{parsed: $parsed, rest: $args}
 			end
-		else
-			{parsed: $parsed, rest: $args}
 		end;
 	def _flagmap:
 		($opts | to_entries | map({(.value.short): .key, (.value.long): .key}) | add);
@@ -261,7 +274,7 @@ def opts_help_text($opts):
 	def _opthelp:
 		[
 			"\(.long),\(.short)",
-			if .arg then " arg" else "" end
+			if .arg then "=ARG,\(.short) ARG" else "" end
 		] | join("");
 	def _maxoptlen:
 		[$opts[] | (.|_opthelp|length)] | max;
@@ -355,6 +368,7 @@ def main($args):
 			},
 		};
 	opts_parse($args[1:];_opts) as {$parsed, $rest} |
+	($parsed | dv("parsed")) |
 	options($parsed.option|_eval_values) |
 	if $parsed.version then
 		$VERSION | print

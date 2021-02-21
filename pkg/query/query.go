@@ -457,9 +457,41 @@ func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, opts map[
 	// TODO: move things out to jq?
 	runQuery := `include "@builtin/fq.jq"; ` + src
 
+	// TODO: would be nice if gojq has something for this? maybe missing something?
+	offsetToLine := func(s string, offset int) int {
+		co := 0
+		line := 1
+		for {
+			no := strings.Index(s[co:], "\n")
+			if no == -1 || co+no >= offset {
+				return line
+			}
+			co += no + 1
+			line++
+		}
+	}
+	queryErrorLine := func(v error) int {
+		var offset int
+		var content string
+
+		if tokif, ok := err.(interface{ Token() (string, int) }); ok {
+			_, offset = tokif.Token()
+		}
+		if qeif, ok := err.(interface {
+			QueryParseError() (string, string, string, error)
+		}); ok {
+			_, _, content, _ = qeif.QueryParseError()
+		}
+
+		if offset > 0 && content != "" {
+			return offsetToLine(content, offset)
+		}
+		return 0
+	}
+
 	gq, err := gojq.Parse(runQuery)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%d: %w", queryErrorLine(err), err)
 	}
 
 	var variableNames []string
@@ -518,7 +550,7 @@ func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, opts map[
 
 	gc, err := gojq.Compile(gq, compilerOpts...)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%d: %w", queryErrorLine(err), err)
 	}
 
 	iter := gc.RunWithContext(ctx, c, variableValues...)
