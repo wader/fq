@@ -65,6 +65,7 @@ func (o WriterOutput) IsTerminal() bool {
 
 // REPL read-eval-print-loop
 func (q *Query) REPL(ctx context.Context) error {
+	panic("unused")
 	// TODO: refactor
 	historyFile := ""
 	cacheDir, err := os.UserCacheDir()

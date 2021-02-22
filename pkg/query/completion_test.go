@@ -1,6 +1,7 @@
 package query_test
 
 import (
+	"fmt"
 	"fq/pkg/query"
 	"testing"
 )
@@ -48,6 +49,31 @@ func TestBuildCompletionQuery(t *testing.T) {
 			}
 			if tC.expectedPrefix != actualPrefix {
 				t.Errorf("expected prefix %s, got prefix %q", tC.expectedPrefix, actualPrefix)
+			}
+		})
+	}
+}
+
+func TestSharedPrefix(t *testing.T) {
+	testCases := []struct {
+		vs     []string
+		shared string
+	}{
+		{vs: []string{}, shared: ""},
+		{vs: []string{""}, shared: ""},
+		{vs: []string{"a"}, shared: "a"},
+		{vs: []string{"a", "a"}, shared: "a"},
+		{vs: []string{"aa", "ab"}, shared: "a"},
+		{vs: []string{"aa", "aa"}, shared: "aa"},
+		{vs: []string{"abc", "abc", "ab"}, shared: "ab"},
+		{vs: []string{"ab", "abc", "ab"}, shared: "ab"},
+		{vs: []string{"abc", "abc", "abd"}, shared: "ab"},
+	}
+	for _, tC := range testCases {
+		t.Run(fmt.Sprintf("%v", tC.vs), func(t *testing.T) {
+			actual := query.SharedPrefix(tC.vs)
+			if tC.shared != actual {
+				t.Errorf("expected %v, got %v", tC.shared, actual)
 			}
 		})
 	}

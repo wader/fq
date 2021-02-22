@@ -6,7 +6,6 @@ package query
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
@@ -14,16 +13,10 @@ import (
 	"fq/pkg/ranges"
 	"io"
 	"math/big"
-	"strconv"
 	"strings"
 
 	"github.com/itchyny/gojq"
 )
-
-func jsonEscape(v interface{}) string {
-	b, _ := json.Marshal(v)
-	return string(b)
-}
 
 func valueToTypeString(v interface{}) (string, bool) {
 	switch v.(type) {
@@ -220,6 +213,8 @@ func toBitBuf(v interface{}) (*bitio.Buffer, ranges.Range, string, error) {
 }
 
 type QueryOptions struct {
+	Ctx       context.Context
+	Opts      map[string]interface{}
 	Variables map[string]interface{}
 	Registry  *decode.Registry
 	Options   map[string]string
@@ -239,11 +234,15 @@ type Function struct {
 }
 
 type Query struct {
-	opts              QueryOptions
-	inputStack        [][]interface{}
-	variables         map[string]interface{}
-	functions         []Function
-	runContext        *runContext
+	c      interface{}
+	ctx    context.Context
+	mode   RunMode
+	opts   map[string]interface{}
+	stdout Output // TODO: rename?
+
+	variables map[string]interface{}
+	functions []Function
+	// runContext        *runContext
 	builtinQueryCache map[string]*gojq.Query
 
 	globalOpts map[string]interface{}
@@ -257,23 +256,20 @@ const (
 	CompletionMode
 )
 
-type runContext struct {
-	ctx            context.Context
-	mode           RunMode
-	stdout         Output // TODO: rename?
-	opts           map[string]interface{}
-	compilerOpts   []gojq.CompilerOption
-	variableValues []interface{}
+// type runContext struct {
+// 	// opts           map[string]interface{}
+// 	// compilerOpts   []gojq.CompilerOption
+// 	// variableValues []interface{}
 
-	pushVs []interface{}
-	pops   int
-}
+// 	pushVs []interface{}
+// 	pops   int
+// }
 
 type queryErrorFn func(stdout io.Writer) error
 
 func (queryErrorFn) Error() string { return "" }
 
-func NewQuery(opts QueryOptions) *Query {
+func NewQuery(ctx context.Context, opts QueryOptions) *Query {
 	q := &Query{opts: opts}
 
 	// TODO: cleanup group names and panics
@@ -285,6 +281,7 @@ func NewQuery(opts QueryOptions) *Query {
 	return q
 }
 
+/*
 func (q *Query) Run(ctx context.Context, mode RunMode, src string, stdout Output) ([]interface{}, error) {
 	var err error
 
@@ -443,9 +440,16 @@ func (q *Query) Run(ctx context.Context, mode RunMode, src string, stdout Output
 
 	return vs, err
 }
+*/
 
-func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, opts map[string]interface{}, src string, stdout Output) (gojq.Iter, error) {
+func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, src string, stdout Output) (gojq.Iter, error) {
 	var err error
+
+	// TODO: hmm query should not be shared
+	var opts map[string]interface{}
+	if q.runContext != nil {
+		opts = q.runContext.opts
+	}
 
 	q.runContext = &runContext{
 		ctx:    ctx,

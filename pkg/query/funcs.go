@@ -22,13 +22,12 @@ import (
 	"fq/pkg/format"
 	"io"
 	"io/ioutil"
+	"log"
 	"math/big"
 	"net/url"
 	"os"
-	"os/signal"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/chzyer/readline"
 )
@@ -130,6 +129,8 @@ func (q *Query) makeFunctions(opts QueryOptions) []Function {
 		{[]string{"eval"}, 1, 1, q.eval},
 		{[]string{"print"}, 0, 0, q.print},
 
+		{[]string{"complete_query"}, 0, 0, q.completeQuery},
+
 		{[]string{"help"}, 0, 0, q.help},
 		{[]string{"open"}, 0, 1, q.open},
 		{[]string{"display", "d"}, 0, 1, q.makeDisplayFn(nil)},
@@ -172,6 +173,9 @@ func (q *Query) tty(c interface{}, a []interface{}) interface{} {
 }
 
 func (q *Query) options(c interface{}, a []interface{}) interface{} {
+
+	// log.Printf("options q: %#+v c=%#+v\n", q, c)
+
 	if len(a) > 0 {
 		opts, ok := a[0].(map[string]interface{})
 		if !ok {
@@ -193,8 +197,8 @@ func (q *Query) readline(c interface{}, a []interface{}) interface{} {
 	historyFile = filepath.Join(cacheDir, "fq/history")
 	_ = os.MkdirAll(filepath.Dir(historyFile), 0700)
 
-	interruptChan := make(chan os.Signal, 1)
-	signal.Notify(interruptChan, os.Interrupt)
+	// interruptChan := make(chan os.Signal, 1)
+	// signal.Notify(interruptChan, os.Interrupt)
 
 	l, err := readline.NewEx(&readline.Config{
 		Stdin:       ioutil.NopCloser(q.opts.OS.Stdin()),
@@ -202,9 +206,10 @@ func (q *Query) readline(c interface{}, a []interface{}) interface{} {
 		Stderr:      q.opts.OS.Stderr(),
 		HistoryFile: historyFile,
 		AutoComplete: autoCompleterFn(func(line []rune, pos int) (newLine [][]rune, length int) {
-			completeCtx, completeCtxCancelFn := context.WithTimeout(q.runContext.ctx, 1*time.Second)
-			defer completeCtxCancelFn()
-			return autoComplete(completeCtx, c, q, line, pos)
+			log.Println("AutoComplete")
+			//completeCtx, completeCtxCancelFn := context.WithTimeout(context.Background(), 1*time.Second)
+			//defer completeCtxCancelFn()
+			return autoComplete2(context.Background(), c, q, line, pos)
 		}),
 		// InterruptPrompt: "^C",
 		// EOFPrompt:       "exit",
@@ -257,6 +262,7 @@ func (q *Query) readline(c interface{}, a []interface{}) interface{} {
 	// exception on error?
 
 	if err != nil {
+		log.Printf("err: %#+v\n", err)
 		return err
 	}
 
@@ -266,15 +272,21 @@ func (q *Query) readline(c interface{}, a []interface{}) interface{} {
 
 func (q *Query) eval(c interface{}, a []interface{}) interface{} {
 
+	log.Printf("eval c: %#+v\n", c)
+
 	src, ok := a[0].(string)
 	if !ok {
+		log.Printf("eval src: %#+v\n", src)
 		return fmt.Errorf("%v: src is not a string", a[0])
 	}
 
-	iter, err := q.Eval(q.runContext.ctx, q.runContext.mode, c, q.runContext.opts, src, q.runContext.stdout)
+	iter, err := q.Eval(context.Background(), q.runContext.mode, c, src, q.runContext.stdout)
 	if err != nil {
+		log.Printf("err: %#+v\n", err)
 		return err
 	}
+
+	log.Println("bla")
 
 	return iter
 
@@ -302,6 +314,27 @@ func (q *Query) print(c interface{}, a []interface{}) interface{} {
 		return err
 	}
 	return c
+}
+
+func (q *Query) completeQuery(c interface{}, a []interface{}) interface{} {
+	// log.Printf("print c: %#+v\n", c)
+
+	s, ok := c.(string)
+	if !ok {
+		return fmt.Errorf("%v: value is not a string", c)
+	}
+
+	gq, typ, prefix := BuildCompletionQuery(s)
+	queryStr := ""
+	if gq != nil {
+		queryStr = gq.String()
+	}
+
+	return map[string]interface{}{
+		"query":  queryStr,
+		"type":   string(typ),
+		"prefix": prefix,
+	}
 }
 
 func (q *Query) _json(c interface{}, a []interface{}) interface{} {

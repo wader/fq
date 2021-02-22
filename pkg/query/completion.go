@@ -2,6 +2,7 @@ package query
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"regexp"
@@ -14,10 +15,15 @@ type CompletionType string
 
 const (
 	CompletionTypeIndex CompletionType = "index"
-	CompletionTypeFunc  CompletionType = "func"
-	CompletionTypeVar   CompletionType = "var"
+	CompletionTypeFunc  CompletionType = "function"
+	CompletionTypeVar   CompletionType = "variable"
 	CompletionTypeNone  CompletionType = "none"
 )
+
+func jsonEscape(v interface{}) string {
+	b, _ := json.Marshal(v)
+	return string(b)
+}
 
 func BuildCompletionQuery(src string) (*gojq.Query, CompletionType, string) {
 	if src == "" {
@@ -105,6 +111,103 @@ func transformToCompletionQuery(q *gojq.Query) (*gojq.Query, CompletionType, str
 	}
 }
 
+func SharedPrefix(vs []string) string {
+	if len(vs) == 0 {
+		return ""
+	}
+
+	l := len(vs[0])
+	for _, s := range vs[1:] {
+		if l > len(s) {
+			l = len(s)
+		}
+	}
+
+	for i := 0; i < l; i++ {
+		for _, s := range vs[1:] {
+			if vs[0][i] != s[i] {
+				return vs[0][0:i]
+			}
+		}
+	}
+
+	return vs[0][0:l]
+}
+
+func autoComplete2(ctx context.Context, c interface{}, q *Query, line []rune, pos int) (newLine [][]rune, length int) {
+	lineStr := string(line[0:pos])
+
+	log.Printf("ctx: %#+v\n", ctx)
+
+	// TODO: pass partialLine nicer?
+	src := fmt.Sprintf("complete(%s)", jsonEscape(lineStr))
+	i, err := q.Eval(ctx, CompletionMode, c, src, DiscardOutput{})
+	if err != nil {
+		log.Printf("err: %#+v\n", err)
+		return [][]rune{}, pos
+	}
+
+	// {abc: 123, abd: 123} | complete(".ab") will return {prefix: "ab", names: ["abc", "abd"]}
+
+	var names []string
+	var prefix string
+	v, ok := i.Next()
+	if !ok {
+		return [][]rune{}, pos
+	} else if _, ok := v.(error); ok {
+		log.Printf("v: %#+v\n", v)
+		return [][]rune{}, pos
+	}
+
+	cm, ok := v.(map[string]interface{})
+	if !ok {
+		return [][]rune{}, pos
+	}
+	if namesv, ok := cm["names"].([]interface{}); ok {
+		for _, name := range namesv {
+			names = append(names, name.(string))
+		}
+	}
+	if prefixv, ok := cm["prefix"].(interface{}); ok {
+		prefix = prefixv.(string)
+	}
+
+	if len(names) == 0 {
+		return [][]rune{}, pos
+	}
+
+	sharedLen := len(prefix)
+
+	// log.Printf("names: %#+v\n", names)
+	// log.Printf("sharedLen: %#+v\n", sharedLen)
+
+	// shareLen := len(prefix)
+
+	// var names []string
+	// for _, s := range vs {
+	// 	if s == "" {
+	// 		continue
+	// 	}
+	// 	names = append(names, s[sharedLen:])
+	// }
+
+	// if len(names) <= 1 {
+	// 	sharedLen = 0
+	// }
+
+	// log.Printf("shareLen: %#+v\n", sharedLen)
+	// log.Printf("names: %#+v\n", names)
+
+	var runeNames [][]rune
+	for _, name := range names {
+		runeNames = append(runeNames, []rune(name[sharedLen:]))
+	}
+
+	// log.Printf("runeNames: %#+v\n", runeNames)
+
+	return runeNames, sharedLen
+}
+
 func autoComplete(ctx context.Context, c interface{}, q *Query, line []rune, pos int) (newLine [][]rune, length int) {
 	lineStr := string(line[0:pos])
 	namesQuery, nameType, namePrefix := BuildCompletionQuery(lineStr)
@@ -133,11 +236,11 @@ func autoComplete(ctx context.Context, c interface{}, q *Query, line []rune, pos
 		panic("unreachable")
 	}
 
-	log.Printf("src: %s\n", src)
+	// log.Printf("src: %s\n", src)
 
-	i, err := q.Eval(ctx, CompletionMode, c, nil, src, DiscardOutput{})
+	i, err := q.Eval(ctx, CompletionMode, c, src, DiscardOutput{})
 	if err != nil {
-		log.Printf("err: %#+v\n", err)
+		// log.Printf("err: %#+v\n", err)
 		return [][]rune{}, pos
 	}
 
@@ -147,11 +250,11 @@ func autoComplete(ctx context.Context, c interface{}, q *Query, line []rune, pos
 		if !ok {
 			break
 		}
-		log.Printf("vs: %#+v\n", vs)
+		// log.Printf("vs: %#+v\n", vs)
 		vss = append(vss, vs)
 	}
 
-	log.Printf("vss: %#+v\n", vss)
+	// log.Printf("vss: %#+v\n", vss)
 
 	shareLen := len(namePrefix)
 

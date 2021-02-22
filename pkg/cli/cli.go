@@ -9,6 +9,7 @@ import (
 	"fq/pkg/osenv"
 	"fq/pkg/query"
 	"io"
+	"log"
 	"os"
 	"strings"
 )
@@ -177,12 +178,13 @@ func (m Main) run() error {
 		_ = src
 	*/
 
-	i, err := q.Eval(context.Background(), runMode, []interface{}{1, 2}, nil, "main($ARGS)", query.WriterOutput{Ctx: context.Background(), W: m.OS.Stdout()})
+	i, err := q.Eval(context.Background(), runMode, nil, "main($ARGS)", query.WriterOutput{Ctx: context.Background(), W: m.OS.Stdout()})
 	if err != nil {
 		return err
 	}
 	for {
 		v, ok := i.Next()
+		log.Printf("v: %#+v\n", v)
 		if !ok {
 			break
 		} else if err, ok := v.(error); ok {

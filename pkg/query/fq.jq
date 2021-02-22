@@ -205,8 +205,24 @@ def trim: capture("^\\s*(?<a>.*?)\\s*$"; "").a;
 # does +1 and [:1] as " "*0 is null
 def rpad($w;$s): . + ($s * (([0,$w-(.|length)] | max)+1))[1:];
 
-def readline_expr:
-	readline | trim | if . == "" then "." end;
+
+
+# TODO: completionMode
+def complete($e):
+	($e | complete_query) as {$type, $query, $prefix} |
+	{
+		prefix: $prefix,
+		names: (
+			if $type == "function" or $type == "variable" then
+				[.[] | eval($query) | scope[] | select(startswith($prefix))]
+			elif $type == "index" then
+				[[.[] | eval($query) | keys?, _value_keys?] | add | unique | sort | .[] | strings | select(startswith($prefix))]
+			else
+				[]
+			end
+		)
+	};
+
 
 def eval_print($e):
 	try eval($e) as $v |
@@ -215,9 +231,10 @@ def eval_print($e):
 	catch (. as $err | ("ERR: " + $err) | print);
 
 def repl:
+	def _readline_expr: readline | trim | if . == "" then "." end;
 	def _as_array: if (. | type) != "array" then [.] end;
 	def _repl:
-		readline_expr as $e |
+		_readline_expr as $e |
 		(.[] | eval_print($e) | empty),
 		_repl;
     _as_array | _repl;
