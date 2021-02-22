@@ -234,7 +234,7 @@ def repl:
 	def _readline_expr: readline | trim | if . == "" then "." end;
 	def _as_array: if (. | type) != "array" then [.] end;
 	def _repl:
-		_readline_expr as $e |
+		try _readline_expr as $e |
 		(.[] | eval_print($e) | empty),
 		_repl;
     _as_array | _repl;

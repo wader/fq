@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
-	"fq/pkg/osenv"
 	"fq/pkg/ranges"
 	"io"
 	"math/big"
@@ -213,12 +212,11 @@ func toBitBuf(v interface{}) (*bitio.Buffer, ranges.Range, string, error) {
 }
 
 type QueryOptions struct {
-	Ctx       context.Context
-	Opts      map[string]interface{}
 	Variables map[string]interface{}
 	Registry  *decode.Registry
-	Options   map[string]string
-	OS        osenv.OS
+	Environ   func() []string
+	Stdin     io.Reader
+	Open      func(name string) (io.ReadSeeker, error)
 }
 
 type Variable struct {
@@ -234,18 +232,15 @@ type Function struct {
 }
 
 type Query struct {
-	c      interface{}
-	ctx    context.Context
-	mode   RunMode
-	opts   map[string]interface{}
-	stdout Output // TODO: rename?
-
 	variables map[string]interface{}
-	functions []Function
-	// runContext        *runContext
+	registry  *decode.Registry
+	environ   func() []string
+	stdin     io.Reader
+	open      func(name string) (io.ReadSeeker, error)
+
 	builtinQueryCache map[string]*gojq.Query
 
-	globalOpts map[string]interface{}
+	evalContext *evalContext
 }
 
 type RunMode int
@@ -256,26 +251,30 @@ const (
 	CompletionMode
 )
 
-// type runContext struct {
-// 	// opts           map[string]interface{}
-// 	// compilerOpts   []gojq.CompilerOption
-// 	// variableValues []interface{}
-
-// 	pushVs []interface{}
-// 	pops   int
-// }
+type evalContext struct {
+	ctx    context.Context
+	opts   map[string]interface{}
+	stdout Output // TODO: rename?
+	mode   RunMode
+}
 
 type queryErrorFn func(stdout io.Writer) error
 
 func (queryErrorFn) Error() string { return "" }
 
-func NewQuery(ctx context.Context, opts QueryOptions) *Query {
-	q := &Query{opts: opts}
+func NewQuery(opts QueryOptions) *Query {
+	q := &Query{
+		variables: opts.Variables,
+		registry:  opts.Registry,
+		environ:   opts.Environ,
+		stdin:     opts.Stdin,
+		open:      opts.Open,
+	}
 
 	// TODO: cleanup group names and panics
-	q.functions = q.makeFunctions(opts)
+	// q.functions = q.makeFunctions(opts)
 	// TODO: redo args handling in jq? a cli_entry function that reads args?
-	q.variables = opts.Variables
+	// q.variables = opts.Variables
 	q.builtinQueryCache = map[string]*gojq.Query{}
 
 	return q
@@ -442,16 +441,16 @@ func (q *Query) Run(ctx context.Context, mode RunMode, src string, stdout Output
 }
 */
 
-func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, src string, stdout Output) (gojq.Iter, error) {
+func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, src string, stdout Output, opts map[string]interface{}) (gojq.Iter, error) {
 	var err error
 
-	// TODO: hmm query should not be shared
-	var opts map[string]interface{}
-	if q.runContext != nil {
-		opts = q.runContext.opts
-	}
+	cq := *q
+	nq := &cq
 
-	q.runContext = &runContext{
+	// TODO: did not work
+	// nq := &(*q)
+
+	nq.evalContext = &evalContext{
 		ctx:    ctx,
 		mode:   mode,
 		stdout: stdout,
@@ -500,43 +499,28 @@ func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, src strin
 
 	var variableNames []string
 	var variableValues []interface{}
-	for k, v := range q.variables {
+	for k, v := range nq.variables {
 		variableNames = append(variableNames, k)
 		variableValues = append(variableValues, v)
 	}
 
 	var compilerOpts []gojq.CompilerOption
-	for _, f := range q.functions {
+	for _, f := range nq.makeFunctions(nq.registry) {
 		for _, n := range f.Names {
 			compilerOpts = append(compilerOpts,
 				gojq.WithFunction(n, f.MinArity, f.MaxArity, f.Fn))
 		}
 	}
-	compilerOpts = append(compilerOpts, gojq.WithEnvironLoader(q.opts.OS.Environ))
+	compilerOpts = append(compilerOpts, gojq.WithEnvironLoader(nq.environ))
 	compilerOpts = append(compilerOpts, gojq.WithVariables(variableNames))
-	// var inputs []interface{}
-	// if len(q.inputStack) > 0 {
-	// 	inputs = q.inputStack[len(q.inputStack)-1]
-	// } else {
-	// 	// TODO: hmm
-	// 	inputs = []interface{}{nil}
-	// }
-	// compilerOpts = append(compilerOpts, gojq.WithInputIter(iterFn(func() (interface{}, bool) {
-	// 	if len(inputs) == 0 {
-	// 		return nil, false
-	// 	}
-	// 	var input interface{}
-	// 	input, inputs = inputs[0], inputs[1:]
-	// 	return input, true
-	// })))
 	compilerOpts = append(compilerOpts, gojq.WithModuleLoader(loadModuleFn(func(name string) (*gojq.Query, error) {
 		parts := strings.Split(name, "/")
 
 		if len(parts) > 0 && parts[0] == builtinPrefix {
 			name = strings.Join(parts[1:], "/")
-			if q, ok := q.builtinQueryCache[name]; ok {
-				return q, nil
-			}
+			// if q, ok := nq.builtinQueryCache[name]; ok {
+			// 	return q, nil
+			// }
 			b, err := builtinFS.ReadFile(name)
 			if err != nil {
 				return nil, err
@@ -545,7 +529,7 @@ func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, src strin
 			if err != nil {
 				return nil, err
 			}
-			q.builtinQueryCache[name] = mq
+			nq.builtinQueryCache[name] = mq
 			return mq, nil
 		}
 
@@ -558,9 +542,6 @@ func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, src strin
 	}
 
 	iter := gc.RunWithContext(ctx, c, variableValues...)
-
-	// q.runContext.compilerOpts = compilerOpts
-	// q.runContext.variableValues = variableValues
 
 	return iter, nil
 }

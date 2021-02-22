@@ -137,8 +137,10 @@ func (m Main) run() error {
 			"$ARGS":     args,
 		},
 		Registry: m.Registry,
-		//Options:  opts,
-		OS: m.OS,
+
+		Environ: m.OS.Environ, // TODO: func?
+		Stdin:   m.OS.Stdin(),
+		Open:    m.OS.Open,
 	})
 
 	runMode := query.ScriptMode
@@ -178,7 +180,7 @@ func (m Main) run() error {
 		_ = src
 	*/
 
-	i, err := q.Eval(context.Background(), runMode, nil, "main($ARGS)", query.WriterOutput{Ctx: context.Background(), W: m.OS.Stdout()})
+	i, err := q.Eval(context.Background(), runMode, nil, "main($ARGS)", query.WriterOutput{Ctx: context.Background(), W: m.OS.Stdout()}, nil)
 	if err != nil {
 		return err
 	}

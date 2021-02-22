@@ -6,14 +6,7 @@ package query
 
 import (
 	"context"
-	"fmt"
-	"fq/pkg/decode"
 	"io"
-	"io/ioutil"
-	"os"
-	"os/signal"
-	"path/filepath"
-	"time"
 
 	"github.com/chzyer/readline"
 )
@@ -64,6 +57,7 @@ func (o WriterOutput) IsTerminal() bool {
 }
 
 // REPL read-eval-print-loop
+/*
 func (q *Query) REPL(ctx context.Context) error {
 	panic("unused")
 	// TODO: refactor
@@ -110,28 +104,28 @@ func (q *Query) REPL(ctx context.Context) error {
 
 	for {
 		if ok, err := func() (bool, error) {
-			var v []interface{}
+			// var v []interface{}
 			stackLenStr := ""
-			if len(q.inputStack) > 0 {
-				v = q.inputStack[len(q.inputStack)-1]
-			}
-			if len(q.inputStack) > 1 {
-				stackLenStr = fmt.Sprintf("[%d]", len(q.inputStack))
-			}
+			// if len(q.inputStack) > 0 {
+			// 	v = q.inputStack[len(q.inputStack)-1]
+			// }
+			// if len(q.inputStack) > 1 {
+			// 	stackLenStr = fmt.Sprintf("[%d]", len(q.inputStack))
+			// }
 			inputSummary := ""
-			if len(v) > 0 {
-				first := v[0]
-				if vv, ok := first.(*decode.Value); ok {
-					inputSummary = valuePath(vv)
-				} else if t, ok := valueToTypeString(first); ok {
-					inputSummary = t
-				} else {
-					inputSummary = "?"
-				}
-			}
-			if len(v) > 1 {
-				inputSummary = "(" + inputSummary + ",...)"
-			}
+			// if len(v) > 0 {
+			// 	first := v[0]
+			// 	if vv, ok := first.(*decode.Value); ok {
+			// 		inputSummary = valuePath(vv)
+			// 	} else if t, ok := valueToTypeString(first); ok {
+			// 		inputSummary = t
+			// 	} else {
+			// 		inputSummary = "?"
+			// 	}
+			// }
+			// if len(v) > 1 {
+			// 	inputSummary = "(" + inputSummary + ",...)"
+			// }
 			prompt := fmt.Sprintf("%s%s> ", stackLenStr, inputSummary)
 
 			l.SetPrompt(prompt)
@@ -160,7 +154,7 @@ func (q *Query) REPL(ctx context.Context) error {
 
 			output := WriterOutput{
 				Ctx: interruptCtx,
-				W:   q.opts.OS.Stdout(),
+				W:   q.opts.stdout(),
 			}
 
 			if _, err := q.Run(interruptCtx, REPLMode, src, output); err != nil {
@@ -175,3 +169,4 @@ func (q *Query) REPL(ctx context.Context) error {
 		}
 	}
 }
+*/

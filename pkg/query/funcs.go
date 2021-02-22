@@ -28,6 +28,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/chzyer/readline"
 )
@@ -120,7 +121,7 @@ type Decorators struct {
 }
 
 // TODO: make it nicer somehow?
-func (q *Query) makeFunctions(opts QueryOptions) []Function {
+func (q *Query) makeFunctions(registry *decode.Registry) []Function {
 	fs := []Function{
 		{[]string{"tty"}, 0, 0, q.tty},
 		{[]string{"options"}, 0, 1, q.options},
@@ -132,15 +133,14 @@ func (q *Query) makeFunctions(opts QueryOptions) []Function {
 		{[]string{"complete_query"}, 0, 0, q.completeQuery},
 
 		{[]string{"help"}, 0, 0, q.help},
-		{[]string{"open"}, 0, 1, q.open},
+		{[]string{"open"}, 0, 1, q._open},
 		{[]string{"display", "d"}, 0, 1, q.makeDisplayFn(nil)},
 		{[]string{"verbose", "v"}, 0, 1, q.makeDisplayFn(map[string]interface{}{"verbose": true})},
 		{[]string{"hexdump", "hd", "h"}, 0, 1, q.hexdump},
 		{[]string{"string"}, 0, 0, q.string_},
-		{[]string{"decode"}, 0, 1, q.makeDecodeFn(opts.Registry, opts.Registry.MustGroup(format.PROBE))},
+		{[]string{"decode"}, 0, 1, q.makeDecodeFn(registry, registry.MustGroup(format.PROBE))},
 		{[]string{"u"}, 0, 1, q.u},
-		{[]string{"push"}, 0, 0, q.push},
-		{[]string{"pop"}, 0, 0, q.pop},
+
 		{[]string{"_value_keys"}, 0, 0, q._valueKeys},
 		{[]string{"formats"}, 0, 0, q.formats},
 		{[]string{"preview", "p"}, 0, 0, q.preview},
@@ -157,33 +157,30 @@ func (q *Query) makeFunctions(opts QueryOptions) []Function {
 
 		{[]string{"json"}, 0, 0, q._json},
 	}
-	for name, f := range q.opts.Registry.Groups {
-		fs = append(fs, Function{[]string{name}, 0, 0, q.makeDecodeFn(opts.Registry, f)})
+	for name, f := range q.registry.Groups {
+		fs = append(fs, Function{[]string{name}, 0, 0, q.makeDecodeFn(registry, f)})
 	}
 
 	return fs
 }
 
 func (q *Query) tty(c interface{}, a []interface{}) interface{} {
-	w, h := q.runContext.stdout.Size()
+	w, h := q.evalContext.stdout.Size()
 	return map[string]interface{}{
-		"is_terminal": q.runContext.stdout.IsTerminal(),
+		"is_terminal": q.evalContext.stdout.IsTerminal(),
 		"size":        []interface{}{w, h},
 	}
 }
 
 func (q *Query) options(c interface{}, a []interface{}) interface{} {
-
-	// log.Printf("options q: %#+v c=%#+v\n", q, c)
-
 	if len(a) > 0 {
 		opts, ok := a[0].(map[string]interface{})
 		if !ok {
 			return fmt.Errorf("%v: value is not object", a[0])
 		}
-		q.runContext.opts = opts
+		q.evalContext.opts = opts
 	}
-	return q.runContext.opts
+	return q.evalContext.opts
 }
 
 func (q *Query) readline(c interface{}, a []interface{}) interface{} {
@@ -201,15 +198,14 @@ func (q *Query) readline(c interface{}, a []interface{}) interface{} {
 	// signal.Notify(interruptChan, os.Interrupt)
 
 	l, err := readline.NewEx(&readline.Config{
-		Stdin:       ioutil.NopCloser(q.opts.OS.Stdin()),
-		Stdout:      q.opts.OS.Stdout(),
-		Stderr:      q.opts.OS.Stderr(),
+		Stdin:       ioutil.NopCloser(q.stdin),
+		Stdout:      q.evalContext.stdout,
+		Stderr:      q.evalContext.stdout, // TODO: ??
 		HistoryFile: historyFile,
 		AutoComplete: autoCompleterFn(func(line []rune, pos int) (newLine [][]rune, length int) {
-			log.Println("AutoComplete")
-			//completeCtx, completeCtxCancelFn := context.WithTimeout(context.Background(), 1*time.Second)
-			//defer completeCtxCancelFn()
-			return autoComplete2(context.Background(), c, q, line, pos)
+			completeCtx, completeCtxCancelFn := context.WithTimeout(q.evalContext.ctx, 1*time.Second)
+			defer completeCtxCancelFn()
+			return autoComplete(completeCtx, c, q, line, pos)
 		}),
 		// InterruptPrompt: "^C",
 		// EOFPrompt:       "exit",
@@ -251,18 +247,8 @@ func (q *Query) readline(c interface{}, a []interface{}) interface{} {
 	l.SetPrompt(prompt)
 
 	src, err := l.Readline()
-	// log.Printf("src: %#+v\n", src)
-	// log.Printf("err: %#+v\n", err)
-	// if err == readline.ErrInterrupt {
-	// 	return true, nil
-	// } else if err == io.EOF {
-	// 	return false, nil
-	// }
-
-	// exception on error?
 
 	if err != nil {
-		log.Printf("err: %#+v\n", err)
 		return err
 	}
 
@@ -271,54 +257,28 @@ func (q *Query) readline(c interface{}, a []interface{}) interface{} {
 }
 
 func (q *Query) eval(c interface{}, a []interface{}) interface{} {
-
-	log.Printf("eval c: %#+v\n", c)
-
 	src, ok := a[0].(string)
 	if !ok {
-		log.Printf("eval src: %#+v\n", src)
 		return fmt.Errorf("%v: src is not a string", a[0])
 	}
 
-	iter, err := q.Eval(context.Background(), q.runContext.mode, c, src, q.runContext.stdout)
+	// TODO: modes opts?
+	iter, err := q.Eval(context.Background(), ScriptMode, c, src, q.evalContext.stdout, q.evalContext.opts)
 	if err != nil {
-		log.Printf("err: %#+v\n", err)
 		return err
 	}
 
-	log.Println("bla")
-
 	return iter
-
-	// q.Run(q.runContext.ctx, q.runContext.mode, src, q.runContext.stdout)
-
-	// src = `include "@builtin/fq.jq"; ` + src
-	// log.Printf("src: %#+v\n", src)
-
-	// gq, err := gojq.Parse(src)
-	// if err != nil {
-	// 	return err
-	// }
-	// gc, err := gojq.Compile(gq, q.runContext.compilerOpts...)
-	// if err != nil {
-	// 	return err
-	// }
-
-	// return gc.RunWithContext(q.runContext.ctx, c, q.runContext.variableValues...)
-
 }
 
 func (q *Query) print(c interface{}, a []interface{}) interface{} {
-	// log.Printf("print c: %#+v\n", c)
-	if _, err := fmt.Fprintln(q.runContext.stdout, c); err != nil {
+	if _, err := fmt.Fprintln(q.evalContext.stdout, c); err != nil {
 		return err
 	}
 	return c
 }
 
 func (q *Query) completeQuery(c interface{}, a []interface{}) interface{} {
-	// log.Printf("print c: %#+v\n", c)
-
 	s, ok := c.(string)
 	if !ok {
 		return fmt.Errorf("%v: value is not a string", c)
@@ -371,14 +331,14 @@ func (q *Query) hexdump(c interface{}, a []interface{}) interface{} {
 
 	var opts DisplayOptions
 	if len(a) >= 1 {
-		opts = buildDisplayOptions(q.runContext.opts, a[0].(map[string]interface{}))
+		opts = buildDisplayOptions(q.evalContext.opts, a[0].(map[string]interface{}))
 	} else {
-		opts = buildDisplayOptions(q.runContext.opts)
+		opts = buildDisplayOptions(q.evalContext.opts)
 	}
 
 	d := opts.Decorator
 	hw := hexdump.New(
-		q.runContext.stdout,
+		q.evalContext.stdout,
 		(r.Start-bitsByteAlign)/8,
 		num.DigitsInBase(bitio.BitsByteCount(r.Stop()+bitsByteAlign), true, opts.AddrBase),
 		opts.AddrBase,
@@ -399,7 +359,7 @@ func (q *Query) formats(c interface{}, a []interface{}) interface{} {
 
 	allFormats := map[string]*decode.Format{}
 
-	for _, fs := range q.opts.Registry.Groups {
+	for _, fs := range q.registry.Groups {
 		for _, f := range fs {
 			if _, ok := allFormats[f.Name]; ok {
 				continue
@@ -454,17 +414,18 @@ func (q *Query) preview(c interface{}, a []interface{}) interface{} {
 }
 
 func (q *Query) help(c interface{}, a []interface{}) interface{} {
-	for _, f := range q.functions {
-		var names []string
-		for _, n := range f.Names {
-			for j := f.MinArity; j <= f.MaxArity; j++ {
-				names = append(names, fmt.Sprintf("%s/%d", n, j))
-			}
-		}
-		fmt.Fprintf(q.runContext.stdout, "%s\n", strings.Join(names, ", "))
-	}
-	fmt.Fprintf(q.runContext.stdout, "^D to exit\n")
-	fmt.Fprintf(q.runContext.stdout, "^C to interrupt\n")
+	// TODO:
+	// for _, f := range q.functions {
+	// 	var names []string
+	// 	for _, n := range f.Names {
+	// 		for j := f.MinArity; j <= f.MaxArity; j++ {
+	// 			names = append(names, fmt.Sprintf("%s/%d", n, j))
+	// 		}
+	// 	}
+	// 	fmt.Fprintf(q.evalContext.stdout, "%s\n", strings.Join(names, ", "))
+	// }
+	fmt.Fprintf(q.evalContext.stdout, "^D to exit\n")
+	fmt.Fprintf(q.evalContext.stdout, "^C to interrupt\n")
 	return nil
 }
 
@@ -484,7 +445,7 @@ func (bbf *bitBufFile) ToBifBuf() *bitio.Buffer {
 	return bbf.bb.Copy()
 }
 
-func (q *Query) open(c interface{}, a []interface{}) interface{} {
+func (q *Query) _open(c interface{}, a []interface{}) interface{} {
 	var rs io.ReadSeeker
 
 	var filename string
@@ -498,13 +459,13 @@ func (q *Query) open(c interface{}, a []interface{}) interface{} {
 
 	if filename == "" || filename == "-" {
 		filename = "stdin"
-		buf, err := ioutil.ReadAll(q.opts.OS.Stdin())
+		buf, err := ioutil.ReadAll(q.stdin)
 		if err != nil {
 			return err
 		}
 		rs = bytes.NewReader(buf)
 	} else {
-		f, err := q.opts.OS.Open(filename)
+		f, err := q.open(filename)
 		if err != nil {
 			return err
 		}
@@ -534,10 +495,10 @@ func (q *Query) open(c interface{}, a []interface{}) interface{} {
 	// TODO: make nicer
 	// we don't want to print any progress things after decode is done
 	var decodeDoneFn func()
-	if q.runContext.mode == REPLMode {
+	if q.evalContext.mode == REPLMode {
 		decodeDone := false
 		decodeDoneFn = func() {
-			fmt.Fprint(q.runContext.stdout, "\r")
+			fmt.Fprint(q.evalContext.stdout, "\r")
 			decodeDone = true
 		}
 
@@ -545,7 +506,7 @@ func (q *Query) open(c interface{}, a []interface{}) interface{} {
 			if decodeDone {
 				return
 			}
-			fmt.Fprintf(q.runContext.stdout, "\r%.1f%%", (float64(readBytes)/float64(length))*100)
+			fmt.Fprintf(q.evalContext.stdout, "\r%.1f%%", (float64(readBytes)/float64(length))*100)
 		})
 	}
 
@@ -563,16 +524,20 @@ func (q *Query) open(c interface{}, a []interface{}) interface{} {
 
 func (q *Query) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}, a []interface{}) interface{} {
 	return func(c interface{}, a []interface{}) interface{} {
+		log.Printf("dispaly c: %#+v\n", c)
+		log.Printf("q.evalContext: %#+v\n", q.evalContext)
+		log.Printf("q.evalContext.opts: %#+v\n", q.evalContext.opts)
 		switch v := c.(type) {
 		case Display:
 			var opts DisplayOptions
 			if len(a) >= 1 {
-				opts = buildDisplayOptions(q.runContext.opts, fnOpts, a[0].(map[string]interface{}))
+				opts = buildDisplayOptions(q.evalContext.opts, fnOpts, a[0].(map[string]interface{}))
 			} else {
-				opts = buildDisplayOptions(q.runContext.opts, fnOpts)
+				opts = buildDisplayOptions(q.evalContext.opts, fnOpts)
 			}
 
-			if err := v.Display(q.runContext.stdout, opts); err != nil {
+			if err := v.Display(q.evalContext.stdout, opts); err != nil {
+				log.Printf("err: %#+v\n", err)
 				return err
 			}
 			return emptyIter{}
@@ -688,25 +653,6 @@ func (q *Query) u(c interface{}, a []interface{}) interface{} {
 	}
 
 	return bi
-}
-
-func (q *Query) push(c interface{}, a []interface{}) interface{} {
-	if _, ok := c.(error); !ok {
-		q.runContext.pushVs = append(q.runContext.pushVs, c)
-	}
-	return func(stdout io.Writer) error {
-		// nop
-		return nil
-	}
-
-}
-
-func (q *Query) pop(c interface{}, a []interface{}) interface{} {
-	q.runContext.pops++
-	return func(stdout io.Writer) error {
-		// nop
-		return nil
-	}
 }
 
 func (q *Query) md5(c interface{}, a []interface{}) interface{} {
