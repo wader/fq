@@ -248,14 +248,14 @@ def opts_parse($args;$opts):
 			if $opt.object then
 				($value | capture("^(?<key>.*?)=(?<value>.*)$") // error("\($value): should be key=value"))
 				as {$key, $value} |
-				_parse($args[$argskip:];$flagmap;($parsed|.[$optname] |= .+{($key): $value}))
+				_parse($args[$argskip:];$flagmap;($parsed|.[$optname][$key] += $value))
 			elif $opt.array then
-				_parse($args[$argskip:];$flagmap;($parsed|.[$optname] |= .+[$value]))
+				_parse($args[$argskip:];$flagmap;($parsed|.[$optname] += [$value]))
 			else
-				_parse($args[$argskip:];$flagmap;($parsed|.[$optname] |= $value))
+				_parse($args[$argskip:];$flagmap;($parsed|.[$optname] = $value))
 			end;
 		def _parse_without_arg($optname):
-			_parse($args[1:];$flagmap;($parsed|.[$optname] |= true));
+			_parse($args[1:];$flagmap;($parsed|.[$optname] = true));
 		($args[0] | index("=")) as $assigni |
 		(
 			if $assigni then $args[0][0:$assigni]
@@ -271,7 +271,7 @@ def opts_parse($args;$opts):
 				($opts[$optname]? // null) as $opt |
 				if $opt == null then
 					error("\($arg): no such argument")
-				elif $opt.arg then
+				elif $opt.value or $opt.array or $opt.object then
 					if $assigni then
 						_parse_with_arg(1;$optname;$args[0][$assigni+1:];$opt)
 					elif ($args | length) < 2 then
@@ -297,7 +297,7 @@ def opts_help_text($opts):
 	def _opthelp:
 		[
 			"\(.long),\(.short)",
-			if .arg then "=ARG,\(.short) ARG" else "" end
+			if .value or .array or .object then "=ARG,\(.short) ARG" else "" end
 		] | join("");
 	def _maxoptlen:
 		[$opts[] | (.|_opthelp|length)] | max;
@@ -352,7 +352,7 @@ def main($args):
 				long: "--decode",
 				description: "Decoder",
 				default: "probe",
-				arg: true
+				value: true
 			},
 			"repl": {
 				short: "-i",
@@ -363,7 +363,7 @@ def main($args):
 				short: "-f",
 				long: "--file",
 				description: "Read script from file",
-				arg: true
+				value: true
 			},
 			"version": {
 				short: "-v",
@@ -374,7 +374,6 @@ def main($args):
 				short: "-o",
 				long: "--option",
 				description: "Set option, eg: color=true",
-				arg: true,
 				object: true,
 				eval: true,
 				default: {
