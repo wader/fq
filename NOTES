@@ -1,4 +1,6 @@
 
+_bits.bytes
+_bits[:200]._bytes?
 
 fancy json
 
