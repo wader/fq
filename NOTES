@@ -1,4 +1,6 @@
 
+# nicer options, some kind of "eval state object"?
+
 watch expr?
 
 _bits.bytes

@@ -10,7 +10,6 @@ import (
 	"fq/pkg/decode"
 	"fq/pkg/ranges"
 	"io"
-	"log"
 	"math/big"
 	"os"
 	"os/signal"
@@ -602,10 +601,7 @@ func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, src strin
 		select {
 		case <-interruptChan:
 			if !nq.evalContext.inEval {
-				log.Println("signal stop")
 				interruptCtxCancelFn()
-			} else {
-				log.Println("signal ignored has eval")
 			}
 		case <-interruptCtx.Done():
 			// nop
@@ -624,12 +620,10 @@ func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, src strin
 	iterCtxWrapped := iterFn(func() (interface{}, bool) {
 		v, ok := iter.Next()
 		if v == context.Canceled {
-			log.Println("cancel")
 			cleanupFn()
 			return nil, false
 		}
 		if !ok {
-			log.Printf("stop v: %#+v\n", v)
 			cleanupFn()
 		}
 		return v, ok

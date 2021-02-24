@@ -1,7 +1,5 @@
 # TODO;
 # modules?
-# done interrupt
-# nicer options, some kind of "eval state object"?
 
 # convert number to array of bytes
 def number_to_bytes($bits):

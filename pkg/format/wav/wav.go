@@ -117,13 +117,13 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 {
 		},
 	}
 
-	trimChunkID := d.FieldStrFn("chunk_id", func() (string, string) {
+	trimChunkID := d.FieldStrFn("id", func() (string, string) {
 		return strings.TrimSpace(d.UTF8(4)), ""
 	})
 	if expectedChunkID != "" && trimChunkID != expectedChunkID {
 		d.Invalid(fmt.Sprintf("expected chunk id %q found %q", expectedChunkID, trimChunkID))
 	}
-	chunkLen := int64(d.FieldU32LE("chunk_size"))
+	chunkLen := int64(d.FieldU32LE("size"))
 
 	if fn, ok := chunks[trimChunkID]; ok {
 		d.DecodeLenFn(chunkLen*8, fn)
@@ -138,7 +138,7 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 {
 	}
 
 	if chunkLen%2 != 0 {
-		d.FieldBitBufLen("chunk_align", 8)
+		d.FieldBitBufLen("align", 8)
 	}
 
 	return chunkLen + 8

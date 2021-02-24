@@ -95,7 +95,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 						return nil
 					}))
 				})
-				// TOD: depends on isRoot in postProcess
+				// TODO: depends on isRoot in postProcess
 				dd.Value.Range = ranges.Range{Start: d.Pos() - int64(dataLen), Len: int64(dataLen)}
 			default:
 				d.FieldBitBufLen("data", int64(dataLen))
