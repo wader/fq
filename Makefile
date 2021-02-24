@@ -22,7 +22,7 @@ formats.svg:
 	go run cmd/fq/main.go -n - 'formats | _formats_dot' | dot -Tsvg -o formats.svg
 
 .PHONY: README.md
-README.md: _doc/file.mp3  _doc/file.mp4
+README.md: _doc/file.mp3 _doc/file.mp4
 	$(eval REPODIR=$(shell pwd))
 	$(eval TEMPDIR=$(shell mktemp -d))
 	cp -a _doc/* "${TEMPDIR}"

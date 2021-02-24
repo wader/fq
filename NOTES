@@ -1,4 +1,7 @@
 
+
+gojq ast as json?
+
 stdin inerrupt, ctrl-c readin stdin
 
 100% on interrupt
