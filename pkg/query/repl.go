@@ -4,58 +4,6 @@
 
 package query
 
-import (
-	"context"
-	"io"
-
-	"github.com/chzyer/readline"
-)
-
-// TODO: move to OS? Input/Outout interfaces?
-type Output interface {
-	io.Writer
-	Size() (int, int)
-	IsTerminal() bool
-}
-
-// TODO: move
-type DiscardOutput struct{}
-
-func (o DiscardOutput) Write(p []byte) (n int, err error) {
-	return n, nil
-}
-func (o DiscardOutput) Size() (int, int) { return 0, 0 }
-func (o DiscardOutput) IsTerminal() bool { return false }
-
-type WriterOutput struct {
-	Ctx context.Context
-	W   io.Writer
-}
-
-// TODO: move
-func (o WriterOutput) Write(p []byte) (n int, err error) {
-	if err := o.Ctx.Err(); err != nil {
-		return 0, err
-	}
-	return o.W.Write(p)
-}
-
-func (o WriterOutput) Size() (int, int) {
-	f, ok := o.W.(interface{ Fd() uintptr })
-	if ok {
-		w, h, _ := readline.GetSize(int(f.Fd()))
-		return w, h
-	}
-	return 0, 0
-}
-
-func (o WriterOutput) IsTerminal() bool {
-	if f, ok := o.W.(interface{ Fd() uintptr }); ok {
-		return readline.IsTerminal(int(f.Fd()))
-	}
-	return false
-}
-
 // REPL read-eval-print-loop
 /*
 func (q *Query) REPL(ctx context.Context) error {

@@ -22,7 +22,6 @@ import (
 	"fq/pkg/format"
 	"io"
 	"io/ioutil"
-	"log"
 	"math/big"
 	"net/url"
 	"os"
@@ -223,9 +222,6 @@ func (q *Query) readline(c interface{}, a []interface{}) interface{} {
 	historyFile = filepath.Join(cacheDir, "fq/history")
 	_ = os.MkdirAll(filepath.Dir(historyFile), 0700)
 
-	// interruptChan := make(chan os.Signal, 1)
-	// signal.Notify(interruptChan, os.Interrupt)
-
 	var autoComplete readline.AutoCompleter
 	if completeFn != "" {
 		autoComplete = autoCompleterFn(func(line []rune, pos int) (newLine [][]rune, length int) {
@@ -275,23 +271,6 @@ func (q *Query) readline(c interface{}, a []interface{}) interface{} {
 	if err != nil {
 		return err
 	}
-
-	// v := c.([]interface{})
-	// inputSummary := ""
-	// if len(v) > 0 {
-	// 	first := v[0]
-	// 	if vv, ok := first.(valueObject); ok {
-	// 		inputSummary = vv.Path()
-	// 	} else if t, ok := valueToTypeString(first); ok {
-	// 		inputSummary = t
-	// 	} else {
-	// 		inputSummary = "?"
-	// 	}
-	// }
-	// if len(v) > 1 {
-	// 	inputSummary = "(" + inputSummary + ",...)"
-	// }
-	// prompt := fmt.Sprintf("%s> ", inputSummary)
 
 	l.SetPrompt(prompt)
 
@@ -462,12 +441,10 @@ func (q *Query) preview(c interface{}, a []interface{}) interface{} {
 	if !ok {
 		return fmt.Errorf("%v: value is not a decode value", c)
 	}
-	return func(stdout io.Writer) error {
-		if err := preview(vo.v, stdout); err != nil {
-			return err
-		}
-		return nil
+	if err := preview(vo.v, q.evalContext.stdout); err != nil {
+		return err
 	}
+	return nil
 }
 
 func (q *Query) help(c interface{}, a []interface{}) interface{} {
@@ -594,7 +571,6 @@ func (q *Query) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{},
 			}
 
 			if err := v.Display(q.evalContext.stdout, opts); err != nil {
-				log.Printf("err: %#+v\n", err)
 				return err
 			}
 			return emptyIter{}

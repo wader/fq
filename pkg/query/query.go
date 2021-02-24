@@ -10,11 +10,102 @@ import (
 	"fq/pkg/decode"
 	"fq/pkg/ranges"
 	"io"
+	"log"
 	"math/big"
+	"os"
+	"os/signal"
 	"strings"
 
+	"github.com/chzyer/readline"
 	"github.com/itchyny/gojq"
 )
+
+// TODO: would be nice if gojq had something for this? maybe missing something?
+func offsetToLine(s string, offset int) int {
+	co := 0
+	line := 1
+	for {
+		no := strings.Index(s[co:], "\n")
+		if no == -1 || co+no >= offset {
+			return line
+		}
+		co += no + 1
+		line++
+	}
+}
+
+func queryErrorLine(v error) int {
+	var offset int
+	var content string
+
+	if tokif, ok := v.(interface{ Token() (string, int) }); ok {
+		_, offset = tokif.Token()
+	}
+	if qeif, ok := v.(interface {
+		QueryParseError() (string, string, string, error)
+	}); ok {
+		_, _, content, _ = qeif.QueryParseError()
+	}
+
+	if offset > 0 && content != "" {
+		return offsetToLine(content, offset)
+	}
+	return 0
+}
+
+// TODO: move to OS? Input/Outout interfaces?
+type Output interface {
+	io.Writer
+	Size() (int, int)
+	IsTerminal() bool
+	WithContext(ctx context.Context) Output
+}
+
+// TODO: move
+type DiscardOutput struct{}
+
+func (o DiscardOutput) Write(p []byte) (n int, err error) {
+	return n, nil
+}
+func (o DiscardOutput) Size() (int, int)                       { return 0, 0 }
+func (o DiscardOutput) IsTerminal() bool                       { return false }
+func (o DiscardOutput) WithContext(ctx context.Context) Output { return o }
+
+type WriterOutput struct {
+	Ctx context.Context
+	W   io.Writer
+}
+
+// TODO: move
+func (o WriterOutput) Write(p []byte) (n int, err error) {
+	if err := o.Ctx.Err(); err != nil {
+		return 0, err
+	}
+	return o.W.Write(p)
+}
+
+func (o WriterOutput) Size() (int, int) {
+	f, ok := o.W.(interface{ Fd() uintptr })
+	if ok {
+		w, h, _ := readline.GetSize(int(f.Fd()))
+		return w, h
+	}
+	return 0, 0
+}
+
+func (o WriterOutput) IsTerminal() bool {
+	if f, ok := o.W.(interface{ Fd() uintptr }); ok {
+		return readline.IsTerminal(int(f.Fd()))
+	}
+	return false
+}
+
+func (o WriterOutput) WithContext(ctx context.Context) Output {
+	return WriterOutput{
+		Ctx: ctx,
+		W:   o.W,
+	}
+}
 
 type QueryObject interface {
 	gojq.JSONObject
@@ -49,9 +140,9 @@ type EmptyError interface {
 	IsEmptyError() bool
 }
 
-// type iterFn func() (interface{}, bool)
+type iterFn func() (interface{}, bool)
 
-// func (i iterFn) Next() (interface{}, bool) { return i() }
+func (i iterFn) Next() (interface{}, bool) { return i() }
 
 type emptyIter struct{}
 
@@ -233,6 +324,7 @@ type evalContext struct {
 	opts     map[string]interface{}
 	stdout   Output // TODO: rename?
 	mode     RunMode
+	inEval   bool
 }
 
 type Query struct {
@@ -433,61 +525,28 @@ func (q *Query) Run(ctx context.Context, mode RunMode, src string, stdout Output
 func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, src string, stdout Output, optsExpr map[string]interface{}) (gojq.Iter, error) {
 	var err error
 
-	cq := *q
-	nq := &cq
-
 	// TODO: did not work
 	// nq := &(*q)
 
+	// TODO: move things out to jq?
+	runQuery := `include "@builtin/fq.jq"; ` + src
+
+	gq, err := gojq.Parse(runQuery)
+	if err != nil {
+		return nil, fmt.Errorf("%d: %w", queryErrorLine(err), err)
+	}
+
+	cq := *q
+	nq := &cq
 	if optsExpr == nil {
 		optsExpr = map[string]interface{}{}
 	}
 	nq.evalContext = &evalContext{
 		ctx:      ctx,
 		mode:     mode,
-		stdout:   stdout,
 		optsExpr: optsExpr,
 		opts:     q.evalContext.opts,
-	}
-
-	// TODO: move things out to jq?
-	runQuery := `include "@builtin/fq.jq"; ` + src
-
-	// TODO: would be nice if gojq had something for this? maybe missing something?
-	offsetToLine := func(s string, offset int) int {
-		co := 0
-		line := 1
-		for {
-			no := strings.Index(s[co:], "\n")
-			if no == -1 || co+no >= offset {
-				return line
-			}
-			co += no + 1
-			line++
-		}
-	}
-	queryErrorLine := func(v error) int {
-		var offset int
-		var content string
-
-		if tokif, ok := err.(interface{ Token() (string, int) }); ok {
-			_, offset = tokif.Token()
-		}
-		if qeif, ok := err.(interface {
-			QueryParseError() (string, string, string, error)
-		}); ok {
-			_, _, content, _ = qeif.QueryParseError()
-		}
-
-		if offset > 0 && content != "" {
-			return offsetToLine(content, offset)
-		}
-		return 0
-	}
-
-	gq, err := gojq.Parse(runQuery)
-	if err != nil {
-		return nil, fmt.Errorf("%d: %w", queryErrorLine(err), err)
+		inEval:   false,
 	}
 
 	var variableNames []string
@@ -534,9 +593,49 @@ func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, src strin
 		return nil, fmt.Errorf("%d: %w", queryErrorLine(err), err)
 	}
 
+	q.evalContext.inEval = true
+
+	interruptChan := make(chan os.Signal, 1)
+	signal.Notify(interruptChan, os.Interrupt)
+	interruptCtx, interruptCtxCancelFn := context.WithCancel(ctx)
+	go func() {
+		select {
+		case <-interruptChan:
+			if !nq.evalContext.inEval {
+				log.Println("signal stop")
+				interruptCtxCancelFn()
+			} else {
+				log.Println("signal ignored has eval")
+			}
+		case <-interruptCtx.Done():
+			// nop
+		}
+	}()
+	cleanupFn := func() {
+		signal.Stop(interruptChan)
+		// stop interruptChan goroutine
+		interruptCtxCancelFn()
+		q.evalContext.inEval = false
+	}
+	nq.evalContext.stdout = stdout.WithContext(interruptCtx)
+
 	iter := gc.RunWithContext(ctx, c, variableValues...)
 
-	return iter, nil
+	iterCtxWrapped := iterFn(func() (interface{}, bool) {
+		v, ok := iter.Next()
+		if v == context.Canceled {
+			log.Println("cancel")
+			cleanupFn()
+			return nil, false
+		}
+		if !ok {
+			log.Printf("stop v: %#+v\n", v)
+			cleanupFn()
+		}
+		return v, ok
+	})
+
+	return iterCtxWrapped, nil
 }
 
 func (q *Query) EvalValue(ctx context.Context, mode RunMode, c interface{}, src string, stdout Output, optsExpr map[string]interface{}) interface{} {
