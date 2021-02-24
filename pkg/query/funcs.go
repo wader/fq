@@ -124,13 +124,15 @@ type Decorators struct {
 func (q *Query) makeFunctions(registry *decode.Registry) []Function {
 	fs := []Function{
 		{[]string{"tty"}, 0, 0, q.tty},
+		{[]string{"options_expr"}, 0, 1, q.optionsExpr},
 		{[]string{"options"}, 0, 1, q.options},
 
-		{[]string{"readline"}, 0, 0, q.readline},
+		{[]string{"readline"}, 0, 2, q.readline},
 		{[]string{"eval"}, 1, 1, q.eval},
 		{[]string{"print"}, 0, 0, q.print},
 
 		{[]string{"complete_query"}, 0, 0, q.completeQuery},
+		{[]string{"display_name"}, 0, 0, q.displayName},
 
 		{[]string{"help"}, 0, 0, q.help},
 		{[]string{"open"}, 0, 1, q._open},
@@ -172,11 +174,22 @@ func (q *Query) tty(c interface{}, a []interface{}) interface{} {
 	}
 }
 
+func (q *Query) optionsExpr(c interface{}, a []interface{}) interface{} {
+	if len(a) > 0 {
+		opts, ok := a[0].(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("%v: value is not an object", a[0])
+		}
+		q.evalContext.optsExpr = opts
+	}
+	return q.evalContext.optsExpr
+}
+
 func (q *Query) options(c interface{}, a []interface{}) interface{} {
 	if len(a) > 0 {
 		opts, ok := a[0].(map[string]interface{})
 		if !ok {
-			return fmt.Errorf("%v: value is not object", a[0])
+			return fmt.Errorf("%v: value is not an object", a[0])
 		}
 		q.evalContext.opts = opts
 	}
@@ -184,8 +197,24 @@ func (q *Query) options(c interface{}, a []interface{}) interface{} {
 }
 
 func (q *Query) readline(c interface{}, a []interface{}) interface{} {
+	var ok bool
+	completeFn := ""
+	promptFn := ""
 
-	// TODO: refactor
+	if len(a) > 0 {
+		completeFn, ok = a[0].(string)
+		if !ok {
+			return fmt.Errorf("%v: complete function name is not a string", a[0])
+		}
+	}
+	if len(a) > 1 {
+		promptFn, ok = a[1].(string)
+		if !ok {
+			return fmt.Errorf("%v: prompt function name is not a string", a[1])
+		}
+	}
+
+	// TODO: refactor, shared?
 	historyFile := ""
 	cacheDir, err := os.UserCacheDir()
 	if err != nil {
@@ -197,16 +226,36 @@ func (q *Query) readline(c interface{}, a []interface{}) interface{} {
 	// interruptChan := make(chan os.Signal, 1)
 	// signal.Notify(interruptChan, os.Interrupt)
 
-	l, err := readline.NewEx(&readline.Config{
-		Stdin:       ioutil.NopCloser(q.stdin),
-		Stdout:      q.evalContext.stdout,
-		Stderr:      q.evalContext.stdout, // TODO: ??
-		HistoryFile: historyFile,
-		AutoComplete: autoCompleterFn(func(line []rune, pos int) (newLine [][]rune, length int) {
+	var autoComplete readline.AutoCompleter
+	if completeFn != "" {
+		autoComplete = autoCompleterFn(func(line []rune, pos int) (newLine [][]rune, length int) {
 			completeCtx, completeCtxCancelFn := context.WithTimeout(q.evalContext.ctx, 1*time.Second)
 			defer completeCtxCancelFn()
-			return autoComplete(completeCtx, c, q, line, pos)
-		}),
+			// TODO: err
+			names, shared, _ := completeTrampoline(completeCtx, completeFn, c, q, line, pos)
+			return names, shared
+		})
+	}
+
+	prompt := ""
+	if promptFn != "" {
+		var ok bool
+		v := q.EvalValue(q.evalContext.ctx, CompletionMode, c, promptFn, DiscardOutput{}, q.evalContext.optsExpr)
+		if _, ok := v.(error); ok {
+			return err
+		}
+		prompt, ok = v.(string)
+		if !ok {
+			return fmt.Errorf("%v: prompt function return not string", v)
+		}
+	}
+
+	l, err := readline.NewEx(&readline.Config{
+		Stdin:        ioutil.NopCloser(q.stdin),
+		Stdout:       q.evalContext.stdout,
+		Stderr:       q.evalContext.stdout, // TODO: ??
+		HistoryFile:  historyFile,
+		AutoComplete: autoComplete,
 		// InterruptPrompt: "^C",
 		// EOFPrompt:       "exit",
 
@@ -227,22 +276,22 @@ func (q *Query) readline(c interface{}, a []interface{}) interface{} {
 		return err
 	}
 
-	v := c.([]interface{})
-	inputSummary := ""
-	if len(v) > 0 {
-		first := v[0]
-		if vv, ok := first.(valueObject); ok {
-			inputSummary = vv.Path()
-		} else if t, ok := valueToTypeString(first); ok {
-			inputSummary = t
-		} else {
-			inputSummary = "?"
-		}
-	}
-	if len(v) > 1 {
-		inputSummary = "(" + inputSummary + ",...)"
-	}
-	prompt := fmt.Sprintf("%s> ", inputSummary)
+	// v := c.([]interface{})
+	// inputSummary := ""
+	// if len(v) > 0 {
+	// 	first := v[0]
+	// 	if vv, ok := first.(valueObject); ok {
+	// 		inputSummary = vv.Path()
+	// 	} else if t, ok := valueToTypeString(first); ok {
+	// 		inputSummary = t
+	// 	} else {
+	// 		inputSummary = "?"
+	// 	}
+	// }
+	// if len(v) > 1 {
+	// 	inputSummary = "(" + inputSummary + ",...)"
+	// }
+	// prompt := fmt.Sprintf("%s> ", inputSummary)
 
 	l.SetPrompt(prompt)
 
@@ -263,7 +312,7 @@ func (q *Query) eval(c interface{}, a []interface{}) interface{} {
 	}
 
 	// TODO: modes opts?
-	iter, err := q.Eval(context.Background(), ScriptMode, c, src, q.evalContext.stdout, q.evalContext.opts)
+	iter, err := q.Eval(q.evalContext.ctx, ScriptMode, c, src, q.evalContext.stdout, q.evalContext.optsExpr)
 	if err != nil {
 		return err
 	}
@@ -295,6 +344,14 @@ func (q *Query) completeQuery(c interface{}, a []interface{}) interface{} {
 		"type":   string(typ),
 		"prefix": prefix,
 	}
+}
+
+func (q *Query) displayName(c interface{}, a []interface{}) interface{} {
+	qo, ok := c.(QueryObject)
+	if !ok {
+		return fmt.Errorf("%v: value is not query object", c)
+	}
+	return qo.DisplayName()
 }
 
 func (q *Query) _json(c interface{}, a []interface{}) interface{} {
@@ -492,13 +549,16 @@ func (q *Query) _open(c interface{}, a []interface{}) interface{} {
 		return err
 	}
 
+	opts := buildDisplayOptions(q.evalContext.opts)
+
 	// TODO: make nicer
 	// we don't want to print any progress things after decode is done
 	var decodeDoneFn func()
-	if q.evalContext.mode == REPLMode {
+	if !opts.Raw {
 		decodeDone := false
 		decodeDoneFn = func() {
-			fmt.Fprint(q.evalContext.stdout, "\r")
+			// cleanup when done
+			fmt.Fprint(q.evalContext.stdout, "100.0%\r")
 			decodeDone = true
 		}
 
@@ -524,9 +584,6 @@ func (q *Query) _open(c interface{}, a []interface{}) interface{} {
 
 func (q *Query) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}, a []interface{}) interface{} {
 	return func(c interface{}, a []interface{}) interface{} {
-		log.Printf("dispaly c: %#+v\n", c)
-		log.Printf("q.evalContext: %#+v\n", q.evalContext)
-		log.Printf("q.evalContext.opts: %#+v\n", q.evalContext.opts)
 		switch v := c.(type) {
 		case Display:
 			var opts DisplayOptions

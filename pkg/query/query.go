@@ -1,7 +1,6 @@
 package query
 
 // TODO: rename to context etc? env?
-// TODO: per run context?
 
 import (
 	"bytes"
@@ -17,19 +16,14 @@ import (
 	"github.com/itchyny/gojq"
 )
 
-func valueToTypeString(v interface{}) (string, bool) {
-	switch v.(type) {
-	case uint, uint8, uint16, uint32, uint64, int, int8, int16, int32, int64, float32, float64, complex64, complex128, uintptr, *big.Int:
-		return "number", true
-	case bool:
-		return "boolean", true
-	case string:
-		return "string", true
-	}
-	return "?", false
+type QueryObject interface {
+	gojq.JSONObject
+
+	DisplayName() string
+	SpecialPropNames() []string
 }
 
-// TODO: jq function somehow?
+// TODO: jq function somehow? escape keys?
 func valuePath(v *decode.Value) string {
 	var parts []string
 
@@ -55,9 +49,9 @@ type EmptyError interface {
 	IsEmptyError() bool
 }
 
-type iterFn func() (interface{}, bool)
+// type iterFn func() (interface{}, bool)
 
-func (i iterFn) Next() (interface{}, bool) { return i() }
+// func (i iterFn) Next() (interface{}, bool) { return i() }
 
 type emptyIter struct{}
 
@@ -73,12 +67,6 @@ type loadModuleFn func(name string) (*gojq.Query, error)
 
 func (l loadModuleFn) LoadModule(name string) (*gojq.Query, error) {
 	return l(name)
-}
-
-type listenerFn func(line []rune, pos int, key rune) (newLine []rune, newPos int, ok bool)
-
-func (lf listenerFn) OnChange(line []rune, pos int, key rune) (newLine []rune, newPos int, ok bool) {
-	return lf(line, pos, key)
 }
 
 func toBool(v interface{}) (bool, error) {
@@ -231,6 +219,22 @@ type Function struct {
 	Fn       func(interface{}, []interface{}) interface{}
 }
 
+type RunMode int
+
+const (
+	ScriptMode RunMode = iota
+	REPLMode
+	CompletionMode
+)
+
+type evalContext struct {
+	ctx      context.Context
+	optsExpr map[string]interface{}
+	opts     map[string]interface{}
+	stdout   Output // TODO: rename?
+	mode     RunMode
+}
+
 type Query struct {
 	variables map[string]interface{}
 	registry  *decode.Registry
@@ -242,25 +246,6 @@ type Query struct {
 
 	evalContext *evalContext
 }
-
-type RunMode int
-
-const (
-	ScriptMode RunMode = iota
-	REPLMode
-	CompletionMode
-)
-
-type evalContext struct {
-	ctx    context.Context
-	opts   map[string]interface{}
-	stdout Output // TODO: rename?
-	mode   RunMode
-}
-
-type queryErrorFn func(stdout io.Writer) error
-
-func (queryErrorFn) Error() string { return "" }
 
 func NewQuery(opts QueryOptions) *Query {
 	q := &Query{
@@ -276,6 +261,10 @@ func NewQuery(opts QueryOptions) *Query {
 	// TODO: redo args handling in jq? a cli_entry function that reads args?
 	// q.variables = opts.Variables
 	q.builtinQueryCache = map[string]*gojq.Query{}
+	q.evalContext = &evalContext{
+		optsExpr: map[string]interface{}{},
+		opts:     map[string]interface{}{},
+	}
 
 	return q
 }
@@ -441,7 +430,7 @@ func (q *Query) Run(ctx context.Context, mode RunMode, src string, stdout Output
 }
 */
 
-func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, src string, stdout Output, opts map[string]interface{}) (gojq.Iter, error) {
+func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, src string, stdout Output, optsExpr map[string]interface{}) (gojq.Iter, error) {
 	var err error
 
 	cq := *q
@@ -450,11 +439,15 @@ func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, src strin
 	// TODO: did not work
 	// nq := &(*q)
 
+	if optsExpr == nil {
+		optsExpr = map[string]interface{}{}
+	}
 	nq.evalContext = &evalContext{
-		ctx:    ctx,
-		mode:   mode,
-		stdout: stdout,
-		opts:   opts,
+		ctx:      ctx,
+		mode:     mode,
+		stdout:   stdout,
+		optsExpr: optsExpr,
+		opts:     q.evalContext.opts,
 	}
 
 	// TODO: move things out to jq?
@@ -544,4 +537,13 @@ func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, src strin
 	iter := gc.RunWithContext(ctx, c, variableValues...)
 
 	return iter, nil
+}
+
+func (q *Query) EvalValue(ctx context.Context, mode RunMode, c interface{}, src string, stdout Output, optsExpr map[string]interface{}) interface{} {
+	iter, err := q.Eval(ctx, mode, c, src, stdout, optsExpr)
+	if err != nil {
+		return err
+	}
+	v, _ := iter.Next()
+	return v
 }

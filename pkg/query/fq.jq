@@ -1,14 +1,7 @@
 # TODO;
-# autoc omplete
-# prompt summary
 # modules?
-# options
-
-def _options_default_color: tty.is_terminal and env.CLICOLOR!=null;
-def _options_default_unicode: tty.is_terminal and env.CLIUNICODE!=null;
-def _options_default_raw: tty.is_terminal | not;
-def _options_default_linebytes: if tty.is_terminal then [((tty.size[0] div 8) div 2) * 2, 4] | max else 16 end;
-def _options_default_displaybytes: _options_default_linebytes;
+# interrupt
+# nicer options, some kind of "eval state object"?
 
 # convert number to array of bytes
 def number_to_bytes($bits):
@@ -182,20 +175,6 @@ def _formats_dot:
 
 def field_inrange($p): ._type == "field" and ._range.start <= $p and $p < ._range.stop;
 
-def _eval_values: with_entries(.value |= eval(.));
-
-	# {
-	# 	maxdepth:     0,
-	# 	verbose:      false,
-	# 	color:        (tty.is_terminal and env.CLICOLOR!=null),
-	# 	unicode:      (tty.is_terminal and env.CLIUNICODE!=null),
-	# 	raw:          (tty.is_terminal | not),
-	# 	linebytes:    (if tty.is_terminal then [((tty.size[0] div 8) div 2) * 2, 4] | max else 16 end),
-	# 	displaybytes: (if tty.is_terminal then [((tty.size[0] div 8) div 2) * 2, 4] | max else 16 end),
-	# 	addrbase:     16,
-	# 	sizebase:     10,
-	# };
-
 
 def dv($p):
     . as $c | [$p, $c] | debug | $c;
@@ -216,22 +195,41 @@ def complete($e):
 			if $type == "function" or $type == "variable" then
 				[.[] | eval($query) | scope[] | select(startswith($prefix))]
 			elif $type == "index" then
-				[[.[] | eval($query) | keys?, _value_keys?] | add | unique | sort | .[] | strings | select(startswith($prefix))]
+				[
+					[.[] | eval($query) | keys?, _value_keys?] |
+					add | unique | sort | .[] | strings | select(startswith($prefix))
+				]
 			else
 				[]
 			end
 		)
 	};
 
+def set_eval_options: options(options_expr | with_entries(.value |= eval(.)));
+
+def prompt:
+	def _display_name:
+		. as $c | try (. | display_name) catch ($c | type);
+	((.[0] | _display_name) +
+	if (. | length) > 1 then ",[\((. | length) - 1)]..." else "" end) + "> ";
 
 def eval_print($e):
+	set_eval_options as $_ |
 	try eval($e) as $v |
 		try ($v | display({maxdepth: 1}))
-		catch ($v | print)
+		catch ($v | tojson | print)
 	catch (. as $err | ("ERR: " + $err) | print);
 
+
+# def readline: #:: [a]|(string;string) => string
+# First argument is name of completion function [a](string) => [string],
+# it will be called with same input as readline and a string argument being the
+# current line from start to current cursor position. Should return possible completions.
+# Second argument is name of prompt function [a] => string, it will be called with
+# same input as readline and should return a string.
+
 def repl:
-	def _readline_expr: readline | trim | if . == "" then "." end;
+	def _readline_expr: readline("complete";"prompt") | trim | if . == "" then "." end;
 	def _as_array: if (. | type) != "array" then [.] end;
 	def _repl:
 		try _readline_expr as $e |
@@ -248,7 +246,7 @@ def opts_parse($args;$opts):
 			if $opt.object then
 				($value | capture("^(?<key>.*?)=(?<value>.*)$") // error("\($value): should be key=value"))
 				as {$key, $value} |
-				_parse($args[$argskip:];$flagmap;($parsed|.[$optname][$key] += $value))
+				_parse($args[$argskip:];$flagmap;($parsed|.[$optname][$key] |= $value))
 			elif $opt.array then
 				_parse($args[$argskip:];$flagmap;($parsed|.[$optname] += [$value]))
 			else
@@ -309,7 +307,7 @@ def opts_help_text($opts):
 			if .value.object then
 				[
 					"\n",
-					if .value.eval then
+					if .value.default_eval then
 						[.value.default | to_entries[] | "\(" "*$l)    \(.key)=\(eval(.value))\n"]
 					else
 						[.value.default | to_entries[] | "\(" "*$l)    \(.key)=\(.value)\n"]
@@ -370,12 +368,12 @@ def main($args):
 				long: "--version",
 				description: "Show version (\($VERSION))"
 			},
-			"option": {
+			"options": {
 				short: "-o",
 				long: "--option",
 				description: "Set option, eg: color=true",
 				object: true,
-				eval: true,
+				default_eval: true,
 				default: {
 					maxdepth:     "0",
 					verbose:      "false",
@@ -390,13 +388,15 @@ def main($args):
 			},
 		};
 	opts_parse($args[1:];_opts) as {$parsed, $rest} |
-	options($parsed.option|_eval_values) |
+	options_expr($parsed.options) |
+	set_eval_options |
 	if $parsed.version then
 		$VERSION | print
 	elif $parsed.help then
-		"Usage: \($args[0]) [OPTIONS] [FILE] [EXPR]" | print |
-		opts_help_text(_opts) | print |
-		formats_help_text | print
+		("Usage: \($args[0]) [OPTIONS] [FILE] [EXPR]",
+			opts_help_text(_opts),
+		 	formats_help_text
+		) | print
 	else
 		(if $rest[0] then $rest[0] else "-" end) as $filename |
 		(

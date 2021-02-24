@@ -10,12 +10,10 @@ import (
 	"log"
 	"math/big"
 	"sort"
-
-	"github.com/itchyny/gojq"
 )
 
-// assert that *Value implements JSONObject
-var _ gojq.JSONObject = &valueObject{}
+// assert that *Value implements QueryObject
+var _ QueryObject = &valueObject{}
 
 type valueObject struct {
 	v *decode.Value
@@ -155,6 +153,21 @@ func (vo valueObject) SpecialPropNames() []string {
 		"_bits",
 		"_bytes",
 		"_error",
+	}
+}
+
+func (vo valueObject) DisplayName() string {
+	v := vo.v
+	if v.Description != "" {
+		return vo.v.Description
+	}
+	switch v.V.(type) {
+	case decode.Struct:
+		return "struct"
+	case decode.Array:
+		return "array"
+	default:
+		return "field"
 	}
 }
 
@@ -395,10 +408,15 @@ func (de *decodeError2) JsonPrimitiveValue() interface{} {
 	}
 }
 
+var _ QueryObject = &bitBufObject{}
+
 type bitBufObject struct {
 	bb   *bitio.Buffer
 	unit int
 }
+
+func (*bitBufObject) DisplayName() string        { return "buffer" }
+func (*bitBufObject) SpecialPropNames() []string { return nil }
 
 func (bo *bitBufObject) JsonLength() interface{} {
 	return int(bo.bb.Len()) / bo.unit

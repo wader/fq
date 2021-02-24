@@ -1,4 +1,6 @@
 
+watch expr?
+
 _bits.bytes
 _bits[:200]._bytes?
 

@@ -9,7 +9,6 @@ import (
 	"fq/pkg/osenv"
 	"fq/pkg/query"
 	"io"
-	"log"
 	"os"
 	"strings"
 )
@@ -186,7 +185,6 @@ func (m Main) run() error {
 	}
 	for {
 		v, ok := i.Next()
-		log.Printf("v: %#+v\n", v)
 		if !ok {
 			break
 		} else if err, ok := v.(error); ok {

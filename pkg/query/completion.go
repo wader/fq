@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/itchyny/gojq"
@@ -110,44 +109,39 @@ func transformToCompletionQuery(q *gojq.Query) (*gojq.Query, CompletionType, str
 	}
 }
 
-func autoComplete(ctx context.Context, c interface{}, q *Query, line []rune, pos int) (newLine [][]rune, length int) {
+func completeTrampoline(ctx context.Context, completeFn string, c interface{}, q *Query, line []rune, pos int) (newLine [][]rune, length int, err error) {
 	lineStr := string(line[0:pos])
 
 	// TODO: pass partialLine nicer?
-	src := fmt.Sprintf("complete(%s)", jsonEscape(lineStr))
-	i, err := q.Eval(ctx, CompletionMode, c, src, DiscardOutput{}, q.evalContext.opts)
-	if err != nil {
-		log.Printf("err: %#+v\n", err)
-		return [][]rune{}, pos
+	src := fmt.Sprintf("%s(%s)", completeFn, jsonEscape(lineStr))
+	v := q.EvalValue(ctx, CompletionMode, c, src, DiscardOutput{}, q.evalContext.optsExpr)
+	if _, ok := v.(error); ok {
+		return [][]rune{}, pos, err
 	}
 
 	// {abc: 123, abd: 123} | complete(".ab") will return {prefix: "ab", names: ["abc", "abd"]}
 
 	var names []string
 	var prefix string
-	v, ok := i.Next()
-	if !ok {
-		return [][]rune{}, pos
-	} else if _, ok := v.(error); ok {
-		log.Printf("v: %#+v\n", v)
-		return [][]rune{}, pos
-	}
-
 	cm, ok := v.(map[string]interface{})
 	if !ok {
-		return [][]rune{}, pos
+		return [][]rune{}, pos, fmt.Errorf("%v: compete function return value not an object", cm)
 	}
 	if namesv, ok := cm["names"].([]interface{}); ok {
 		for _, name := range namesv {
 			names = append(names, name.(string))
 		}
+	} else {
+		return [][]rune{}, pos, fmt.Errorf("%v: names missing in complete return object", cm)
 	}
 	if prefixv, ok := cm["prefix"].(interface{}); ok {
 		prefix = prefixv.(string)
+	} else {
+		return [][]rune{}, pos, fmt.Errorf("%v: prefix missing in complete return object", cm)
 	}
 
 	if len(names) == 0 {
-		return [][]rune{}, pos
+		return [][]rune{}, pos, nil
 	}
 
 	sharedLen := len(prefix)
@@ -157,5 +151,5 @@ func autoComplete(ctx context.Context, c interface{}, q *Query, line []rune, pos
 		runeNames = append(runeNames, []rune(name[sharedLen:]))
 	}
 
-	return runeNames, sharedLen
+	return runeNames, sharedLen, nil
 }
