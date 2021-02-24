@@ -173,7 +173,6 @@ def _formats_dot:
 
 def field_inrange($p): ._type == "field" and ._range.start <= $p and $p < ._range.stop;
 
-
 def dv($p):
     . as $c | [$p, $c] | debug | $c;
 
@@ -239,29 +238,30 @@ def repl:
 # TODO: multi short -in
 # TODO: parse -args until -- or end, collect unknown to rest
 def opts_parse($args;$opts):
-	def _parse($args;$flagmap;$parsed):
+	def _parse($args;$flagmap;$r):
 		def _parse_with_arg($argskip;$optname;$value;$opt):
 			if $opt.object then
-				($value | capture("^(?<key>.*?)=(?<value>.*)$") // error("\($value): should be key=value"))
+				($value | capture("^(?<key>.*?)=(?<value>.*)$")
+					// error("\($value): should be key=value"))
 				as {$key, $value} |
-				_parse($args[$argskip:];$flagmap;($parsed|.[$optname][$key] |= $value))
+				_parse($args[$argskip:];$flagmap;($r|.parsed.[$optname][$key] |= $value))
 			elif $opt.array then
-				_parse($args[$argskip:];$flagmap;($parsed|.[$optname] += [$value]))
+				_parse($args[$argskip:];$flagmap;($r|.parsed.[$optname] += [$value]))
 			else
-				_parse($args[$argskip:];$flagmap;($parsed|.[$optname] = $value))
+				_parse($args[$argskip:];$flagmap;($r|.parsed.[$optname] = $value))
 			end;
 		def _parse_without_arg($optname):
-			_parse($args[1:];$flagmap;($parsed|.[$optname] = true));
+			_parse($args[1:];$flagmap;($r|.parsed.[$optname] = true));
 		($args[0] | index("=")) as $assigni |
 		(
 			if $assigni then $args[0][0:$assigni]
 			else $args[0] end
 		) as $arg |
 		if $arg == null then
-			{parsed: $parsed, rest: []}
+			$r
 		else
 			if $arg == "--" then
-				{parsed: $parsed, rest: $args[1:]}
+				$r|.rest += $args[1:]
 			elif $arg | test("^--?.+") then
 				$flagmap[$arg] as $optname |
 				($opts[$optname]? // null) as $opt |
@@ -280,14 +280,15 @@ def opts_parse($args;$opts):
 					else _parse_without_arg($optname) end
 				end
 			else
-				{parsed: $parsed, rest: $args}
+				_parse($args[1:];$flagmap;($r|.rest += [$arg]))
 			end
 		end;
+	# build {"-s": "name", "--long": "name", ...}
 	def _flagmap:
 		($opts | to_entries | map({(.value.short): .key, (.value.long): .key}) | add);
 	def _defaults:
 		($opts | to_entries | map(select(.value.default)) | map({(.key): .value.default}) | add);
-	_parse($args;_flagmap;_defaults);
+	_parse($args;_flagmap;{parsed: _defaults, rest: []});
 
 def opts_help_text($opts):
 	def _opthelp:
