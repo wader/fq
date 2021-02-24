@@ -236,22 +236,21 @@ def repl:
 
 # TODO: validate option name? has key
 # TODO: multi short -in
-# TODO: parse -args until -- or end, collect unknown to rest
 def opts_parse($args;$opts):
 	def _parse($args;$flagmap;$r):
-		def _parse_with_arg($argskip;$optname;$value;$opt):
+		def _parse_with_arg($newargs;$optname;$value;$opt):
 			if $opt.object then
 				($value | capture("^(?<key>.*?)=(?<value>.*)$")
 					// error("\($value): should be key=value"))
 				as {$key, $value} |
-				_parse($args[$argskip:];$flagmap;($r|.parsed.[$optname][$key] |= $value))
+				_parse($newargs;$flagmap;($r|.parsed.[$optname][$key] |= $value))
 			elif $opt.array then
-				_parse($args[$argskip:];$flagmap;($r|.parsed.[$optname] += [$value]))
+				_parse($newargs;$flagmap;($r|.parsed.[$optname] += [$value]))
 			else
-				_parse($args[$argskip:];$flagmap;($r|.parsed.[$optname] = $value))
+				_parse($newargs;$flagmap;($r|.parsed.[$optname] = $value))
 			end;
-		def _parse_without_arg($optname):
-			_parse($args[1:];$flagmap;($r|.parsed.[$optname] = true));
+		def _parse_without_arg($newargs;$optname):
+			_parse($newargs;$flagmap;($r|.parsed.[$optname] = true));
 		($args[0] | index("=")) as $assigni |
 		(
 			if $assigni then $args[0][0:$assigni]
@@ -262,22 +261,33 @@ def opts_parse($args;$opts):
 		else
 			if $arg == "--" then
 				$r|.rest += $args[1:]
-			elif $arg | test("^--?.+") then
+			elif $arg | test("^--?[^-]") then
 				$flagmap[$arg] as $optname |
 				($opts[$optname]? // null) as $opt |
 				if $opt == null then
-					error("\($arg): no such argument")
-				elif $opt.value or $opt.array or $opt.object then
+					if $arg | test("^-[^-]") then
+						$arg[0:2] as $arg |
+						$flagmap[$arg] as $optname |
+						($opts[$optname]? // null) as $opt |
+						if $opt and $opt.bool then
+							_parse_without_arg((["-"+$args[0][2:]]+$args[1:]);$optname)
+						else
+							error("\($arg): needs an argument")
+						end
+					else
+						error("\($arg): no such argument")
+					end
+				elif $opt.string or $opt.array or $opt.object then
 					if $assigni then
-						_parse_with_arg(1;$optname;$args[0][$assigni+1:];$opt)
+						_parse_with_arg($args[1:];$optname;$args[0][$assigni+1:];$opt)
 					elif ($args | length) < 2 then
 						error("\($arg): needs an argument")
 					else
-						_parse_with_arg(2;$optname;$args[1];$opt)
+						_parse_with_arg($args[2:];$optname;$args[1];$opt)
 					end
 				else
 					if $assigni then error("\($arg): takes no argument")
-					else _parse_without_arg($optname) end
+					else _parse_without_arg($args[1:];$optname) end
 				end
 			else
 				_parse($args[1:];$flagmap;($r|.rest += [$arg]))
@@ -338,23 +348,26 @@ def main($args):
 				short: "-h",
 				long: "--help",
 				description: "Show help",
+				bool: true
 			},
 			"noinput": {
 				short: "-n",
 				long: "--noinput",
 				description: "No input",
+				bool: true
 			},
 			"decode": {
 				short: "-d",
 				long: "--decode",
 				description: "Decoder",
 				default: "probe",
-				value: true
+				string: true
 			},
 			"repl": {
 				short: "-i",
 				long: "--repl",
 				description: "Interactive REPL",
+				bool: true
 			},
 			"file": {
 				short: "-f",
@@ -365,7 +378,8 @@ def main($args):
 			"version": {
 				short: "-v",
 				long: "--version",
-				description: "Show version (\($VERSION))"
+				description: "Show version (\($VERSION))",
+				bool: true
 			},
 			"options": {
 				short: "-o",
