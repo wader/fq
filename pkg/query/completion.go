@@ -113,6 +113,7 @@ func completeTrampoline(ctx context.Context, completeFn string, c interface{}, q
 	lineStr := string(line[0:pos])
 
 	// TODO: pass partialLine nicer?
+	// TODO: helper function to call with args? reuse?
 	src := fmt.Sprintf("%s(%s)", completeFn, jsonEscape(lineStr))
 	v := q.EvalValue(ctx, CompletionMode, c, src, DiscardOutput{}, q.evalContext.optsExpr)
 	if _, ok := v.(error); ok {

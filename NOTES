@@ -1,4 +1,8 @@
 
+stdin inerrupt, ctrl-c readin stdin
+
+100% on interrupt
+
 # nicer options, some kind of "eval state object"?
 
 watch expr?
