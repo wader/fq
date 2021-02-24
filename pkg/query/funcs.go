@@ -11,7 +11,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"fq/internal/ansi"
 	"fq/internal/asciiwriter"
 	"fq/internal/hexdump"
 	"fq/internal/hexpairwriter"
@@ -37,88 +36,6 @@ const builtinPrefix = "@builtin"
 //go:embed *.jq
 var builtinFS embed.FS
 
-func buildDisplayOptions(ms ...map[string]interface{}) DisplayOptions {
-	var opts DisplayOptions
-	for _, m := range ms {
-		if m != nil {
-			mapSetDisplayOptions(&opts, m)
-		}
-	}
-	opts.Decorator = decoratorFromDumpOptions(opts)
-
-	return opts
-}
-
-func mapSetDisplayOptions(d *DisplayOptions, m map[string]interface{}) {
-	if v, ok := m["maxdepth"]; ok {
-		d.MaxDepth = num.MaxInt(0, toIntZ(v))
-	}
-	if v, ok := m["verbose"]; ok {
-		d.Verbose = toBoolZ(v)
-	}
-	if v, ok := m["color"]; ok {
-		d.Color = toBoolZ(v)
-	}
-	if v, ok := m["unicode"]; ok {
-		d.Unicode = toBoolZ(v)
-	}
-	if v, ok := m["raw"]; ok {
-		d.Raw = toBoolZ(v)
-	}
-	if v, ok := m["linebytes"]; ok {
-		d.LineBytes = num.MaxInt(0, toIntZ(v))
-	}
-	if v, ok := m["displaybytes"]; ok {
-		d.DisplayBytes = num.MaxInt64(0, toInt64Z(v))
-	}
-	if v, ok := m["addrbase"]; ok {
-		d.AddrBase = num.ClampInt(2, 36, toIntZ(v))
-	}
-	if v, ok := m["sizebase"]; ok {
-		d.SizeBase = num.ClampInt(2, 36, toIntZ(v))
-	}
-}
-
-func decoratorFromDumpOptions(opts DisplayOptions) Decorator {
-	colStr := "|"
-	if opts.Unicode {
-		colStr = "\xe2\x94\x82"
-	}
-	nameFn := func(s string) string { return s }
-	valueFn := func(s string) string { return s }
-	byteFn := func(b byte, s string) string { return s }
-	column := colStr + "\n"
-	if opts.Color {
-		nameFn = func(s string) string { return ansi.FgBrightBlue + s + ansi.Reset }
-		valueFn = func(s string) string { return ansi.FgBrightCyan + s + ansi.Reset }
-		byteFn = func(b byte, s string) string {
-			switch {
-			case b == 0:
-				return ansi.FgBrightBlack + s + ansi.Reset
-			case b >= 32 && b <= 126, b == '\r', b == '\n', b == '\f', b == '\t', b == '\v':
-				return ansi.FgWhite + s + ansi.Reset
-			default:
-				return ansi.FgBrightWhite + s + ansi.Reset
-			}
-		}
-		column = ansi.FgWhite + colStr + ansi.Reset + "\n"
-	}
-
-	return Decorator{
-		Name:   nameFn,
-		Value:  valueFn,
-		Byte:   byteFn,
-		Column: column,
-	}
-}
-
-type Decorators struct {
-	Name   func(s string) string
-	Value  func(s string) string
-	Byte   func(b byte, s string) string
-	Column string
-}
-
 // TODO: make it nicer somehow?
 func (q *Query) makeFunctions(registry *decode.Registry) []Function {
 	fs := []Function{
@@ -132,19 +49,21 @@ func (q *Query) makeFunctions(registry *decode.Registry) []Function {
 
 		{[]string{"complete_query"}, 0, 0, q.completeQuery},
 		{[]string{"display_name"}, 0, 0, q.displayName},
-
-		{[]string{"help"}, 0, 0, q.help},
-		{[]string{"open"}, 0, 1, q._open},
-		{[]string{"display", "d"}, 0, 1, q.makeDisplayFn(nil)},
-		{[]string{"verbose", "v"}, 0, 1, q.makeDisplayFn(map[string]interface{}{"verbose": true})},
-		{[]string{"hexdump", "hd", "h"}, 0, 1, q.hexdump},
-		{[]string{"string"}, 0, 0, q.string_},
-		{[]string{"decode"}, 0, 1, q.makeDecodeFn(registry, registry.MustGroup(format.PROBE))},
-		{[]string{"u"}, 0, 1, q.u},
-
 		{[]string{"_value_keys"}, 0, 0, q._valueKeys},
 		{[]string{"formats"}, 0, 0, q.formats},
+
+		{[]string{"help"}, 0, 0, q.help},
+
+		{[]string{"open"}, 0, 1, q._open},
+		{[]string{"decode"}, 0, 1, q.makeDecodeFn(registry, registry.MustGroup(format.PROBE))},
+
+		{[]string{"display", "d"}, 0, 1, q.makeDisplayFn(nil)},
+		{[]string{"verbose", "v"}, 0, 1, q.makeDisplayFn(map[string]interface{}{"verbose": true})},
 		{[]string{"preview", "p"}, 0, 0, q.preview},
+		{[]string{"hexdump", "hd", "h"}, 0, 1, q.hexdump},
+		{[]string{"string"}, 0, 0, q.string_},
+		{[]string{"u"}, 0, 1, q.u},
+
 		{[]string{"md5"}, 0, 0, q.md5},
 		{[]string{"base64"}, 0, 0, q.base64},
 		{[]string{"unbase64"}, 0, 0, q.unbase64},
@@ -155,7 +74,6 @@ func (q *Query) makeFunctions(registry *decode.Registry) []Function {
 		{[]string{"path_escape"}, 0, 0, q.pathEscape},
 		{[]string{"path_unescape"}, 0, 0, q.pathUnescape},
 		{[]string{"aes_ctr"}, 1, 2, q.aesCtr},
-
 		{[]string{"json"}, 0, 0, q._json},
 	}
 	for name, f := range q.registry.Groups {
@@ -333,62 +251,15 @@ func (q *Query) displayName(c interface{}, a []interface{}) interface{} {
 	return qo.DisplayName()
 }
 
-func (q *Query) _json(c interface{}, a []interface{}) interface{} {
-	bb, _, _, err := toBitBuf(c)
-	if err != nil {
-		return err
+func (q *Query) _valueKeys(c interface{}, a []interface{}) interface{} {
+	if v, ok := c.(valueObject); ok {
+		var vs []interface{}
+		for _, s := range v.SpecialPropNames() {
+			vs = append(vs, s)
+		}
+		return vs
 	}
-
-	buf := &bytes.Buffer{}
-	if _, err := io.Copy(buf, bb); err != nil {
-		return err
-	}
-
-	var vv interface{}
-	if err := json.Unmarshal(buf.Bytes(), &vv); err != nil {
-		return err
-	}
-
-	return vv
-
-}
-
-func (q *Query) hexdump(c interface{}, a []interface{}) interface{} {
-	bb, r, _, err := toBitBuf(c)
-	if err != nil {
-		return err
-	}
-
-	bitsByteAlign := r.Start % 8
-	bb, err = bb.BitBufRange(r.Start-bitsByteAlign, r.Len+bitsByteAlign)
-	if err != nil {
-		return err
-	}
-
-	var opts DisplayOptions
-	if len(a) >= 1 {
-		opts = buildDisplayOptions(q.evalContext.opts, a[0].(map[string]interface{}))
-	} else {
-		opts = buildDisplayOptions(q.evalContext.opts)
-	}
-
-	d := opts.Decorator
-	hw := hexdump.New(
-		q.evalContext.stdout,
-		(r.Start-bitsByteAlign)/8,
-		num.DigitsInBase(bitio.BitsByteCount(r.Stop()+bitsByteAlign), true, opts.AddrBase),
-		opts.AddrBase,
-		opts.LineBytes,
-		func(b byte) string { return d.Byte(b, hexpairwriter.Pair(b)) },
-		func(b byte) string { return d.Byte(b, asciiwriter.SafeASCII(b)) },
-		d.Column,
-	)
-	if _, err := io.Copy(hw, bb); err != nil {
-		return err
-	}
-	hw.Close()
-
-	return emptyIter{}
+	return nil
 }
 
 func (q *Query) formats(c interface{}, a []interface{}) interface{} {
@@ -434,17 +305,6 @@ func (q *Query) formats(c interface{}, a []interface{}) interface{} {
 	}
 
 	return vs
-}
-
-func (q *Query) preview(c interface{}, a []interface{}) interface{} {
-	vo, ok := c.(valueObject)
-	if !ok {
-		return fmt.Errorf("%v: value is not a decode value", c)
-	}
-	if err := preview(vo.v, q.evalContext.stdout); err != nil {
-		return err
-	}
-	return nil
 }
 
 func (q *Query) help(c interface{}, a []interface{}) interface{} {
@@ -559,27 +419,6 @@ func (q *Query) _open(c interface{}, a []interface{}) interface{} {
 	}
 }
 
-func (q *Query) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}, a []interface{}) interface{} {
-	return func(c interface{}, a []interface{}) interface{} {
-		switch v := c.(type) {
-		case Display:
-			var opts DisplayOptions
-			if len(a) >= 1 {
-				opts = buildDisplayOptions(q.evalContext.opts, fnOpts, a[0].(map[string]interface{}))
-			} else {
-				opts = buildDisplayOptions(q.evalContext.opts, fnOpts)
-			}
-
-			if err := v.Display(q.evalContext.stdout, opts); err != nil {
-				return err
-			}
-			return emptyIter{}
-		default:
-			return fmt.Errorf("%v: not displayable", c)
-		}
-	}
-}
-
 func (q *Query) makeDecodeFn(registry *decode.Registry, decodeFormats []*decode.Format) func(c interface{}, a []interface{}) interface{} {
 	return func(c interface{}, a []interface{}) interface{} {
 		// TODO: progress hack
@@ -628,15 +467,74 @@ func (q *Query) makeDecodeFn(registry *decode.Registry, decodeFormats []*decode.
 	}
 }
 
-func (q *Query) _valueKeys(c interface{}, a []interface{}) interface{} {
-	if v, ok := c.(valueObject); ok {
-		var vs []interface{}
-		for _, s := range v.SpecialPropNames() {
-			vs = append(vs, s)
+func (q *Query) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}, a []interface{}) interface{} {
+	return func(c interface{}, a []interface{}) interface{} {
+		switch v := c.(type) {
+		case Display:
+			var opts DisplayOptions
+			if len(a) >= 1 {
+				opts = buildDisplayOptions(q.evalContext.opts, fnOpts, a[0].(map[string]interface{}))
+			} else {
+				opts = buildDisplayOptions(q.evalContext.opts, fnOpts)
+			}
+
+			if err := v.Display(q.evalContext.stdout, opts); err != nil {
+				return err
+			}
+			return emptyIter{}
+		default:
+			return fmt.Errorf("%v: not displayable", c)
 		}
-		return vs
 	}
-	return nil
+}
+
+func (q *Query) preview(c interface{}, a []interface{}) interface{} {
+	vo, ok := c.(valueObject)
+	if !ok {
+		return fmt.Errorf("%v: value is not a decode value", c)
+	}
+	if err := preview(vo.v, q.evalContext.stdout); err != nil {
+		return err
+	}
+	return emptyIter{}
+}
+
+func (q *Query) hexdump(c interface{}, a []interface{}) interface{} {
+	bb, r, _, err := toBitBuf(c)
+	if err != nil {
+		return err
+	}
+
+	bitsByteAlign := r.Start % 8
+	bb, err = bb.BitBufRange(r.Start-bitsByteAlign, r.Len+bitsByteAlign)
+	if err != nil {
+		return err
+	}
+
+	var opts DisplayOptions
+	if len(a) >= 1 {
+		opts = buildDisplayOptions(q.evalContext.opts, a[0].(map[string]interface{}))
+	} else {
+		opts = buildDisplayOptions(q.evalContext.opts)
+	}
+
+	d := opts.Decorator
+	hw := hexdump.New(
+		q.evalContext.stdout,
+		(r.Start-bitsByteAlign)/8,
+		num.DigitsInBase(bitio.BitsByteCount(r.Stop()+bitsByteAlign), true, opts.AddrBase),
+		opts.AddrBase,
+		opts.LineBytes,
+		func(b byte) string { return d.Byte(b, hexpairwriter.Pair(b)) },
+		func(b byte) string { return d.Byte(b, asciiwriter.SafeASCII(b)) },
+		d.Column,
+	)
+	if _, err := io.Copy(hw, bb); err != nil {
+		return err
+	}
+	hw.Close()
+
+	return emptyIter{}
 }
 
 func (q *Query) string_(c interface{}, a []interface{}) interface{} {
@@ -842,4 +740,24 @@ func (q *Query) aesCtr(c interface{}, a []interface{}) interface{} {
 	}
 
 	return buf.Bytes()
+}
+
+func (q *Query) _json(c interface{}, a []interface{}) interface{} {
+	bb, _, _, err := toBitBuf(c)
+	if err != nil {
+		return err
+	}
+
+	buf := &bytes.Buffer{}
+	if _, err := io.Copy(buf, bb); err != nil {
+		return err
+	}
+
+	var vv interface{}
+	if err := json.Unmarshal(buf.Bytes(), &vv); err != nil {
+		return err
+	}
+
+	return vv
+
 }

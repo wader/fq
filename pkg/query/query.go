@@ -6,6 +6,8 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"fq/internal/ansi"
+	"fq/internal/num"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/ranges"
@@ -50,6 +52,88 @@ func queryErrorLine(v error) int {
 		return offsetToLine(content, offset)
 	}
 	return 0
+}
+
+func buildDisplayOptions(ms ...map[string]interface{}) DisplayOptions {
+	var opts DisplayOptions
+	for _, m := range ms {
+		if m != nil {
+			mapSetDisplayOptions(&opts, m)
+		}
+	}
+	opts.Decorator = decoratorFromDumpOptions(opts)
+
+	return opts
+}
+
+func mapSetDisplayOptions(d *DisplayOptions, m map[string]interface{}) {
+	if v, ok := m["maxdepth"]; ok {
+		d.MaxDepth = num.MaxInt(0, toIntZ(v))
+	}
+	if v, ok := m["verbose"]; ok {
+		d.Verbose = toBoolZ(v)
+	}
+	if v, ok := m["color"]; ok {
+		d.Color = toBoolZ(v)
+	}
+	if v, ok := m["unicode"]; ok {
+		d.Unicode = toBoolZ(v)
+	}
+	if v, ok := m["raw"]; ok {
+		d.Raw = toBoolZ(v)
+	}
+	if v, ok := m["linebytes"]; ok {
+		d.LineBytes = num.MaxInt(0, toIntZ(v))
+	}
+	if v, ok := m["displaybytes"]; ok {
+		d.DisplayBytes = num.MaxInt64(0, toInt64Z(v))
+	}
+	if v, ok := m["addrbase"]; ok {
+		d.AddrBase = num.ClampInt(2, 36, toIntZ(v))
+	}
+	if v, ok := m["sizebase"]; ok {
+		d.SizeBase = num.ClampInt(2, 36, toIntZ(v))
+	}
+}
+
+func decoratorFromDumpOptions(opts DisplayOptions) Decorator {
+	colStr := "|"
+	if opts.Unicode {
+		colStr = "\xe2\x94\x82"
+	}
+	nameFn := func(s string) string { return s }
+	valueFn := func(s string) string { return s }
+	byteFn := func(b byte, s string) string { return s }
+	column := colStr + "\n"
+	if opts.Color {
+		nameFn = func(s string) string { return ansi.FgBrightBlue + s + ansi.Reset }
+		valueFn = func(s string) string { return ansi.FgBrightCyan + s + ansi.Reset }
+		byteFn = func(b byte, s string) string {
+			switch {
+			case b == 0:
+				return ansi.FgBrightBlack + s + ansi.Reset
+			case b >= 32 && b <= 126, b == '\r', b == '\n', b == '\f', b == '\t', b == '\v':
+				return ansi.FgWhite + s + ansi.Reset
+			default:
+				return ansi.FgBrightWhite + s + ansi.Reset
+			}
+		}
+		column = ansi.FgWhite + colStr + ansi.Reset + "\n"
+	}
+
+	return Decorator{
+		Name:   nameFn,
+		Value:  valueFn,
+		Byte:   byteFn,
+		Column: column,
+	}
+}
+
+type Decorators struct {
+	Name   func(s string) string
+	Value  func(s string) string
+	Byte   func(b byte, s string) string
+	Column string
 }
 
 // TODO: move to OS? Input/Outout interfaces?
@@ -374,6 +458,7 @@ func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, src strin
 		return nil, fmt.Errorf("%d: %w", queryErrorLine(err), err)
 	}
 
+	// make copy of query
 	cq := *q
 	nq := &cq
 	if optsExpr == nil {
