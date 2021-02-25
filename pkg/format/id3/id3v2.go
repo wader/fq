@@ -409,7 +409,10 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			fieldTextNull(d, "mime_type", encodingUTF8)
 			d.FieldU8("picture_type") // TODO: table
 			fieldTextNull(d, "description", int(encoding))
-			d.FieldDecodeLen("picture", d.BitsLeft(), images)
+			v, _, _ := d.FieldTryDecodeLen("picture", d.BitsLeft(), images)
+			if v == nil {
+				d.FieldBitBufLen("picture", d.BitsLeft())
+			}
 		},
 		// Unsynced lyrics/text "ULT"
 		// Frame size           $xx xx xx
