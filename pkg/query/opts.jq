@@ -55,7 +55,7 @@ def opts_parse($args;$opts):
 					else _parse_without_arg($args[1:];$optname) end
 				end
 			else
-				_parse($args[1:];$flagmap;($r|.rest += [$arg]))
+				_parse($args[1:];$flagmap;($r|.rest += [$args[0]]))
 			end
 		end;
 	# build {"-s": "name", "--long": "name", ...}
