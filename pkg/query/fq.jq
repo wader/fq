@@ -137,16 +137,15 @@ def main($args):
 		 	formats_help_text
 		) | print
 	else
-		(if $rest[0] then $rest[0] else "-" end) as $filename |
-		(
-			if $parsed.file then
-				open($parsed.file) | string
-			elif $rest[1] then $rest[1]
-			else "." end
+		(if $parsed.file then open($parsed.file) | string
+		 else
+			(if $parsed.noinput then $rest[0] else $rest[1] end) // "."
+		 end
 		) as $expr |
 		if $parsed.noinput then
 			null
 		else
+			(if $rest[0] then $rest[0] else "-" end) as $filename |
 			open($filename) |
 			decode($parsed.decode)
 		end |
