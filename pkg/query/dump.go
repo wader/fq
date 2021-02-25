@@ -25,6 +25,7 @@ type DisplayOptions struct {
 	Color    bool
 	Unicode  bool
 	Raw      bool
+	REPL     bool
 
 	LineBytes    int
 	DisplayBytes int64

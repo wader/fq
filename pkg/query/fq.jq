@@ -126,7 +126,8 @@ def main($args):
 			},
 		};
 	opts_parse($args[1:];_opts) as {$parsed, $rest} |
-	options_expr($parsed.options) |
+	# TODO: pass repl some other way
+	options_expr($parsed.options + {repl: ($parsed.repl|tojson)}) |
 	set_eval_options |
 	if $parsed.version then
 		$VERSION | print

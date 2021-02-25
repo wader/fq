@@ -54,6 +54,7 @@ func queryErrorLine(v error) int {
 	return 0
 }
 
+// TODO: rename, not only display things
 func buildDisplayOptions(ms ...map[string]interface{}) DisplayOptions {
 	var opts DisplayOptions
 	for _, m := range ms {
@@ -81,6 +82,9 @@ func mapSetDisplayOptions(d *DisplayOptions, m map[string]interface{}) {
 	}
 	if v, ok := m["raw"]; ok {
 		d.Raw = toBoolZ(v)
+	}
+	if v, ok := m["repl"]; ok {
+		d.REPL = toBoolZ(v)
 	}
 	if v, ok := m["linebytes"]; ok {
 		d.LineBytes = num.MaxInt(0, toIntZ(v))
@@ -516,28 +520,35 @@ func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, src strin
 		return nil, fmt.Errorf("%d: %w", queryErrorLine(err), err)
 	}
 
-	q.evalContext.inEval = true
+	opts := buildDisplayOptions(q.evalContext.opts)
+	cleanupFn := func() {}
+	stdoutCtx := ctx
 
-	interruptChan := make(chan os.Signal, 1)
-	signal.Notify(interruptChan, os.Interrupt)
-	interruptCtx, interruptCtxCancelFn := context.WithCancel(ctx)
-	go func() {
-		select {
-		case <-interruptChan:
-			if !nq.evalContext.inEval {
-				interruptCtxCancelFn()
+	if opts.REPL {
+		q.evalContext.inEval = true
+		interruptChan := make(chan os.Signal, 1)
+		signal.Notify(interruptChan, os.Interrupt)
+		interruptCtx, interruptCtxCancelFn := context.WithCancel(ctx)
+		stdoutCtx = interruptCtx
+		go func() {
+			select {
+			case <-interruptChan:
+				if !nq.evalContext.inEval {
+					interruptCtxCancelFn()
+				}
+			case <-interruptCtx.Done():
+				// nop
 			}
-		case <-interruptCtx.Done():
-			// nop
+		}()
+		cleanupFn = func() {
+			signal.Stop(interruptChan)
+			// stop interruptChan goroutine
+			interruptCtxCancelFn()
+			q.evalContext.inEval = false
 		}
-	}()
-	cleanupFn := func() {
-		signal.Stop(interruptChan)
-		// stop interruptChan goroutine
-		interruptCtxCancelFn()
-		q.evalContext.inEval = false
 	}
-	nq.evalContext.stdout = stdout.WithContext(interruptCtx)
+
+	nq.evalContext.stdout = stdout.WithContext(stdoutCtx)
 
 	iter := gc.RunWithContext(ctx, c, variableValues...)
 
