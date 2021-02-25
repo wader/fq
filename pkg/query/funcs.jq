@@ -159,13 +159,21 @@ def i:
 	};
 
 def _formats_dot:
+	def _label($title;$fields):
+		"" +
+			($title|"<\(.)> \(.)") +
+			(if $fields | length > 0 then "|" + ($fields|flatten|map("<\(.)> \(.)")|join("|")) else "" end) +
+		"";
 	"# ... | dot -Tsvg -o formats.svg",
 	"digraph formats {",
-	"  node [shape=\"box\",style=\"rounded,filled\"]",
+	"  graph [",
+	"  rankdir = \"LR\"",
+	"  ]",
+	"  node [shape=\"record\",style=\"rounded,filled\"]",
 	"  edge [arrowsize=\"0.7\"]",
-	(.[] | "  \(.name) -> {\(.dependencies | flatten? | join(" "))}"),
-	(.[] | .name as $name | .groups[]? | "  \(.) -> \($name)"),
-	(keys[] | "  \(.) [color=\"paleturquoise\"]"),
+	(.[] | . as $f | .dependencies|flatten?|.[] | "  \"\($f.name)\":\(.) -> \(.)"),
+	(.[] | .name as $name | .groups[]? | "  \(.) -> \"\($name)\":\($name)"),
+	(to_entries[] | "  \(.key) [color=\"paleturquoise\", label=\"\(_label(.key;(.value.dependencies//[])))\"]"),
 	([.[].groups[]?] | unique[] | "  \(.) [color=\"palegreen\"]"),
 	"}";
 
