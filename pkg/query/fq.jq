@@ -35,7 +35,11 @@ def prompt:
 def eval_print($e):
 	set_eval_options as $_ |
 	try eval($e) as $v |
-		try ($v | display({maxdepth: 1}))
+		try (
+			if $v | type == "string" then $v | print
+			elif $v | type == "number" then $v | print
+			else $v | display({maxdepth: 1}) end
+			)
 		catch ($v | tojson | print)
 	catch (. as $err | ("ERR: " + $err) | print);
 
