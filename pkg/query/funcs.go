@@ -52,8 +52,6 @@ func (q *Query) makeFunctions(registry *decode.Registry) []Function {
 		{[]string{"_value_keys"}, 0, 0, q._valueKeys},
 		{[]string{"formats"}, 0, 0, q.formats},
 
-		{[]string{"help"}, 0, 0, q.help},
-
 		{[]string{"open"}, 0, 1, q._open},
 		{[]string{"decode"}, 0, 1, q.makeDecodeFn(registry, registry.MustGroup(format.PROBE))},
 
@@ -221,7 +219,7 @@ func (q *Query) print(c interface{}, a []interface{}) interface{} {
 	if _, err := fmt.Fprintln(q.evalContext.stdout, c); err != nil {
 		return err
 	}
-	return c
+	return emptyIter{}
 }
 
 func (q *Query) completeQuery(c interface{}, a []interface{}) interface{} {
@@ -305,22 +303,6 @@ func (q *Query) formats(c interface{}, a []interface{}) interface{} {
 	}
 
 	return vs
-}
-
-func (q *Query) help(c interface{}, a []interface{}) interface{} {
-	// TODO:
-	// for _, f := range q.functions {
-	// 	var names []string
-	// 	for _, n := range f.Names {
-	// 		for j := f.MinArity; j <= f.MaxArity; j++ {
-	// 			names = append(names, fmt.Sprintf("%s/%d", n, j))
-	// 		}
-	// 	}
-	// 	fmt.Fprintf(q.evalContext.stdout, "%s\n", strings.Join(names, ", "))
-	// }
-	fmt.Fprintf(q.evalContext.stdout, "^D to exit\n")
-	fmt.Fprintf(q.evalContext.stdout, "^C to interrupt\n")
-	return nil
 }
 
 type bitBufFile struct {

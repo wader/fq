@@ -171,3 +171,9 @@ def _formats_dot:
 
 def field_inrange($p): ._type == "field" and ._range.start <= $p and $p < ._range.stop;
 
+# TODO: introspect and show doc, reflection somehow?
+def help:
+    (
+        builtins[], 
+        "^C or ^D to interrupt"
+    ) | print;
