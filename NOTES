@@ -1,5 +1,7 @@
 
 
+replace $FILENAME abd .repl with some kind of env global?
+
 DONE readline promp just string? no need for q.Eval? only compelteFn
 
 DONE EvalFunc(c interface{}, name string, a []) { return Eval(c, %s(json(a)..)")
