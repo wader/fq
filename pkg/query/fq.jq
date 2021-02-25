@@ -50,11 +50,10 @@ def eval_print($e):
 # First argument is name of completion function [a](string) => [string],
 # it will be called with same input as readline and a string argument being the
 # current line from start to current cursor position. Should return possible completions.
-# Second argument is name of prompt function [a] => string, it will be called with
-# same input as readline and should return a string.
+# Second argument is prompt to use.
 
 def repl:
-	def _readline_expr: readline("complete";"prompt") | trim | if . == "" then "." end;
+	def _readline_expr: readline("complete";prompt) | trim | if . == "" then "." end;
 	def _as_array: if (. | type) != "array" then [.] end;
 	def _repl:
 		try _readline_expr as $e |

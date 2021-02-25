@@ -114,7 +114,7 @@ func (q *Query) options(c interface{}, a []interface{}) interface{} {
 func (q *Query) readline(c interface{}, a []interface{}) interface{} {
 	var ok bool
 	completeFn := ""
-	promptFn := ""
+	prompt := ""
 
 	if len(a) > 0 {
 		completeFn, ok = a[0].(string)
@@ -123,9 +123,9 @@ func (q *Query) readline(c interface{}, a []interface{}) interface{} {
 		}
 	}
 	if len(a) > 1 {
-		promptFn, ok = a[1].(string)
+		prompt, ok = a[1].(string)
 		if !ok {
-			return fmt.Errorf("%v: prompt function name is not a string", a[1])
+			return fmt.Errorf("%v: prompt is not a string", a[1])
 		}
 	}
 
@@ -147,19 +147,6 @@ func (q *Query) readline(c interface{}, a []interface{}) interface{} {
 			names, shared, _ := completeTrampoline(completeCtx, completeFn, c, q, line, pos)
 			return names, shared
 		})
-	}
-
-	prompt := ""
-	if promptFn != "" {
-		var ok bool
-		v := q.EvalValue(q.evalContext.ctx, CompletionMode, c, promptFn, DiscardOutput{}, q.evalContext.optsExpr)
-		if _, ok := v.(error); ok {
-			return err
-		}
-		prompt, ok = v.(string)
-		if !ok {
-			return fmt.Errorf("%v: prompt function return not string", v)
-		}
 	}
 
 	l, err := readline.NewEx(&readline.Config{
