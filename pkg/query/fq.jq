@@ -33,15 +33,17 @@ def prompt:
 	if (. | length) > 1 then ",[\((. | length) - 1)]..." else "" end) + "> ";
 
 def eval_print($e):
+	def _display:
+		. as $c |
+		try $c | display({maxdepth: 1})
+		catch (
+			if $c | type == "string" then $c
+			elif $c | type == "number" then $c
+			else $c | tojson end
+		);
 	set_eval_options as $_ |
-	try eval($e) as $v |
-		try (
-			if $v | type == "string" then $v | print
-			elif $v | type == "number" then $v | print
-			else $v | display({maxdepth: 1}) end
-			)
-		catch ($v | tojson | print)
-	catch (. as $err | ("ERR: " + $err) | print);
+	try eval($e) | _display | print
+	catch (. as $err | ("error: " + $err) | print);
 
 
 # def readline: #:: [a]|(string;string) => string
