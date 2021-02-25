@@ -241,8 +241,7 @@
 0x3c0|                                             00|               .|                          num_entries: 1 0x3cf-0x3d2+7 (4)
 0x3d0|00 00 01                                       |...             |
      |                                               |                |                          table[1]: 0x3d3-0x3d6+7 (4)
-     |                                               |                |                           -[0]: (entry) 0x3d3-0x3d6+7 (4)
-0x3d0|         00 00 00 2c                           |   ...,         |                              offset: 44 0x3d3-0x3d6+7 (4)
+0x3d0|         00 00 00 2c                           |   ...,         |                            [0]: 44 (offset) 0x3d3-0x3d6+7 (4)
      |                                               |                |       -[2]: (box) 0x3d7-0x438+7 (98)
 0x3d0|                     00 00 00 62               |       ...b     |          size: 98 0x3d7-0x3da+7 (4)
 0x3d0|                                 75 64 74 61   |           udta |          type: "udta" (User-data) 0x3db-0x3de+7 (4)

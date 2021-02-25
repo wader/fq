@@ -484,7 +484,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			d.FieldU24("flags")
 			numEntries := d.FieldU32("num_entries")
 			var i uint64
-			d.FieldStructArrayLoopFn("table", "entry", func() bool { return i < numEntries }, func(d *decode.D) {
+			d.FieldArrayLoopFn("table", func() bool { return i < numEntries }, func(d *decode.D) {
 				offset := d.FieldU32("offset")
 				if ctx.currentTrack != nil {
 					ctx.currentTrack.stco = append(ctx.currentTrack.stco, offset)
@@ -499,7 +499,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			d.FieldU24("flags")
 			numEntries := d.FieldU32("num_entries")
 			var i uint64
-			d.FieldStructArrayLoopFn("table", "entry", func() bool { return i < numEntries }, func(d *decode.D) {
+			d.FieldArrayLoopFn("table", func() bool { return i < numEntries }, func(d *decode.D) {
 				offset := d.FieldU64("offset")
 				if ctx.currentTrack != nil {
 					ctx.currentTrack.stco = append(ctx.currentTrack.stco, offset)
