@@ -143,9 +143,7 @@ def _main:
 		) | print
 	else
 		(if $parsed.file then open($parsed.file) | string
-		 else
-			(if $parsed.noinput then $rest[0] else $rest[1] end) // "."
-		 end
+		 else (if $parsed.noinput then $rest[0] else $rest[1] end) // "." end
 		) as $expr |
 		if $parsed.noinput then
 			null
