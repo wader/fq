@@ -373,12 +373,16 @@ func (q *Query) _open(c interface{}, a []interface{}) interface{} {
 	// TODO: make nicer
 	// we don't want to print any progress things after decode is done
 	var decodeDoneFn func()
-	if !opts.Raw {
+	if opts.REPL {
+		shownProgress := false
 		decodeDone := false
 		decodeDoneFn = func() {
+			decodeDone = true
+			if !shownProgress {
+				return
+			}
 			// cleanup when done
 			fmt.Fprint(q.evalContext.stdout, "100.0%\r")
-			decodeDone = true
 		}
 
 		rs = progressreadseeker.New(rs, bEnd, func(readBytes int64, length int64) {
@@ -386,6 +390,7 @@ func (q *Query) _open(c interface{}, a []interface{}) interface{} {
 				return
 			}
 			fmt.Fprintf(q.evalContext.stdout, "\r%.1f%%", (float64(readBytes)/float64(length))*100)
+			shownProgress = true
 		})
 	}
 

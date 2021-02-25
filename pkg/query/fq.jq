@@ -98,7 +98,7 @@ def main($args):
 				short: "-f",
 				long: "--file",
 				description: "Read script from file",
-				value: true
+				string: true
 			},
 			"version": {
 				short: "-v",
