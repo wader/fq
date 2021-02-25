@@ -34,7 +34,7 @@ $ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture.chunks[] | se
 <b># extract png</b> 
 $ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture._bits' > file.png 
 $ file file.png 
-file.png: ASCII text
+file.png: PNG image data, 320 x 240, 8-bit/color RGB, non-interlaced
  
 <b># codecs in a mp4 file</b> 
 $ fq file.mp4 '[.. | select(.type == "stsd").sample_descriptions[].data_format]' 

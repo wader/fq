@@ -2,11 +2,15 @@ all: test
 
 .PHONY: test
 test:
-	go test -v -cover -race -coverpkg=./... -coverprofile=cover.out ./pkg/... ./internal/...
-	go tool cover -func=cover.out
+	go test -v -cover -race -coverpkg=./... -coverprofile=cover.out ./pkg/format ./pkg/query
+	#go tool cover -func=cover.out
+testwrite: export WRITE_ACTUAL=1
+testwrite: test
 
-.PHONY: generate
-generate:
+generate: README.md testwrite
+
+.PHONY: gogenerate
+gogenerate:
 	go generate -x ./...
 
 .PHONY: lint

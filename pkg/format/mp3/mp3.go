@@ -52,7 +52,7 @@ func mp3Decode(d *decode.D, in interface{}) interface{} {
 
 	d.FieldArrayFn("footers", func(d *decode.D) {
 		for d.NotEnd() {
-			if _, _, err := d.FieldTryDecode("footer", headerFormat); err != nil {
+			if _, _, err := d.FieldTryDecode("footer", footerFormat); err != nil {
 				return
 			}
 		}
