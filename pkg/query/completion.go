@@ -111,11 +111,7 @@ func transformToCompletionQuery(q *gojq.Query) (*gojq.Query, CompletionType, str
 
 func completeTrampoline(ctx context.Context, completeFn string, c interface{}, q *Query, line []rune, pos int) (newLine [][]rune, length int, err error) {
 	lineStr := string(line[0:pos])
-
-	// TODO: pass partialLine nicer?
-	// TODO: helper function to call with args? reuse?
-	src := fmt.Sprintf("%s(%s)", completeFn, jsonEscape(lineStr))
-	v := q.EvalValue(ctx, CompletionMode, c, src, DiscardOutput{}, q.evalContext.optsExpr)
+	v := q.EvalFuncValue(ctx, CompletionMode, c, completeFn, []interface{}{lineStr}, DiscardOutput{}, q.evalContext.optsExpr)
 	if _, ok := v.(error); ok {
 		return [][]rune{}, pos, err
 	}

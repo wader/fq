@@ -5,6 +5,7 @@ package query
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"fq/internal/ansi"
 	"fq/internal/num"
@@ -567,8 +568,25 @@ func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, src strin
 	return iterCtxWrapped, nil
 }
 
-func (q *Query) EvalValue(ctx context.Context, mode RunMode, c interface{}, src string, stdout Output, optsExpr map[string]interface{}) interface{} {
-	iter, err := q.Eval(ctx, mode, c, src, stdout, optsExpr)
+func (q *Query) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output, optsExpr map[string]interface{}) (gojq.Iter, error) {
+	var argsJSON []string
+	for _, arg := range args {
+		b, err := json.Marshal(arg)
+		if err != nil {
+			return nil, err
+		}
+		argsJSON = append(argsJSON, string(b))
+	}
+
+	iter, err := q.Eval(ctx, mode, c, fmt.Sprintf("%s(%s)", name, strings.Join(argsJSON, ";")), stdout, optsExpr)
+	if err != nil {
+		return nil, err
+	}
+	return iter, nil
+}
+
+func (q *Query) EvalFuncValue(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output, optsExpr map[string]interface{}) interface{} {
+	iter, err := q.EvalFunc(ctx, mode, c, name, args, stdout, optsExpr)
 	if err != nil {
 		return err
 	}
