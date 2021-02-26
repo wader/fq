@@ -22,35 +22,45 @@ func (a autoCompleterFn) Do(line []rune, pos int) (newLine [][]rune, length int)
 	return a(line, pos)
 }
 
-type StandardOS struct{}
+type StandardOS struct {
+	rl *readline.Instance
+}
 
-func (StandardOS) Stdin() io.Reader                        { return os.Stdin }
-func (StandardOS) Stdout() io.Writer                       { return os.Stdout }
-func (StandardOS) Stderr() io.Writer                       { return os.Stderr }
-func (StandardOS) Environ() []string                       { return os.Environ() }
-func (StandardOS) Args() []string                          { return os.Args }
-func (StandardOS) Open(name string) (io.ReadSeeker, error) { return os.Open(name) }
-func (o StandardOS) Readline(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error) {
+func newStandardOS() (*StandardOS, error) {
 	// TODO: refactor, shared?
 	historyFile := ""
 	cacheDir, err := os.UserCacheDir()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	historyFile = filepath.Join(cacheDir, "fq/history")
 	_ = os.MkdirAll(filepath.Dir(historyFile), 0700)
 
+	rl, err := readline.NewEx(&readline.Config{
+		Stdin:             ioutil.NopCloser(os.Stdin),
+		Stdout:            os.Stdin,
+		Stderr:            os.Stderr,
+		HistoryFile:       historyFile,
+		HistorySearchFold: true,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &StandardOS{rl: rl}, nil
+}
+
+func (*StandardOS) Stdin() io.Reader                        { return os.Stdin }
+func (*StandardOS) Stdout() io.Writer                       { return os.Stdout }
+func (*StandardOS) Stderr() io.Writer                       { return os.Stderr }
+func (*StandardOS) Environ() []string                       { return os.Environ() }
+func (*StandardOS) Args() []string                          { return os.Args }
+func (*StandardOS) Open(name string) (io.ReadSeeker, error) { return os.Open(name) }
+func (o *StandardOS) Readline(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error) {
 	var autoComplete readline.AutoCompleter
 	if complete != nil {
 		autoComplete = autoCompleterFn(func(line []rune, pos int) (newLine [][]rune, length int) {
-			// completeCtx, completeCtxCancelFn := context.WithTimeout(ctx, 1*time.Second)
-			// defer completeCtxCancelFn()
-
-			// // TODO: err
-			// names, shared, _ := completeTrampoline(completeCtx, completeFn, c, q, string(line), pos)
-
 			names, shared := complete(string(line), pos)
-
 			var runeNames [][]rune
 			for _, name := range names {
 				runeNames = append(runeNames, []rune(name[shared:]))
@@ -60,34 +70,9 @@ func (o StandardOS) Readline(prompt string, complete func(line string, pos int) 
 		})
 	}
 
-	l, err := readline.NewEx(&readline.Config{
-		Stdin:        ioutil.NopCloser(os.Stdin),
-		Stdout:       os.Stdin,
-		Stderr:       os.Stderr, // TODO: ??
-		HistoryFile:  historyFile,
-		AutoComplete: autoComplete,
-		// InterruptPrompt: "^C",
-		// EOFPrompt:       "exit",
-
-		HistorySearchFold: true,
-		// FuncFilterInputRune: filterInput,
-
-		// FuncFilterInputRune: func(r rune) (rune, bool) {
-		// 	log.Printf("r: %#+v\n", r)
-		// 	return r, true
-		// },
-
-		// Listener: listenerFn(func(line []rune, pos int, key rune) (newLine []rune, newPos int, ok bool) {
-		// 	log.Printf("line: %#+v pos=%v key=%d\n", line, pos, key)
-		// 	return line, pos, false
-		// }),
-	})
-	if err != nil {
-		return "", err
-	}
-
-	l.SetPrompt(prompt)
-	src, err := l.Readline()
+	o.rl.Config.AutoComplete = autoComplete
+	o.rl.SetPrompt(prompt)
+	src, err := o.rl.Readline()
 	if err != nil {
 		return "", err
 	}
@@ -96,8 +81,14 @@ func (o StandardOS) Readline(prompt string, complete func(line string, pos int) 
 }
 
 func StandardOSMain(r *decode.Registry) {
+	o, err := newStandardOS()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
 	if err := (Main{
-		OS:       StandardOS{},
+		OS:       o,
 		Registry: r,
 	}).Run(); err != nil {
 		os.Exit(1)
@@ -119,6 +110,7 @@ func (m Main) Run() error {
 }
 
 func (m Main) run() error {
+	// TODO: pass with some kind of env?
 	filename := "asd"
 
 	var args []interface{}
