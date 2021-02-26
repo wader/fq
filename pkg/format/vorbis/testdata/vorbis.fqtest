@@ -14,7 +14,7 @@
 0x10|                                    b8         |            .   |  blocksize_0: 256 0x1c+4-0x1c+7 (0+4)
 0x10|                                       01|     |             .| |  padding0: Correct (none) (zero padding) 0x1d-0x1d+6 (0+7)
 0x10|                                       01|     |             .| |  framing_flag: Correct (1) 0x1d+7-0x1d+7 (0+1)
-# ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.packet[1] | bits' > vorbis-identifcation
+# ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.packet[1] | bits' > vorbis-comment
 /vorbis-comment:
 > fq -d vorbis_packet vorbis-comment verbose
     |                                               |                |.: vorbis_packet 0x0-0x3f+7 (64)
@@ -32,7 +32,7 @@
 0x30|34 2e 31 30 30 20 6c 69 62 76 6f 72 62 69 73   |4.100 libvorbis |
 0x30|                                             01|               .|  padding0: Correct (none) (zero padding) 0x3f-0x3f+6 (0+7)
 0x30|                                             01|               .|  frame_bit: Correct (1) 0x3f+7-0x3f+7 (0+1)
-# ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.packet[2] | bits' > vorbis-identifcation
+# ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.packet[2] | bits' > vorbis-setup
 /vorbis-setup:
 > fq -d vorbis_packet vorbis-setup verbose
      |                                               |                |.: vorbis_packet 0x0-0xc74+7 (3189)
@@ -44,7 +44,7 @@
 0x000|                                       40 00 00|             @..|  codebook_entries: 64 0xd-0xf+7 (3)
 0x010|24 73 18 2a 46 a5 73 16 84 10 1a 42 50 19 e3 1c|$s.*F.s....BP...|  unknown0: 2473182a46a5731684101a425019e31c... 0x10-0xc74+7 (3173)
 *    |3157 bytes more until 0xc74+7 (end)            |                |
-# ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.packet[3] | bits' > vorbis-identifcation
+# ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.packet[3] | bits' > vorbis-audio
 /vorbis-audio:
 > fq -d vorbis_packet vorbis-audio verbose
     |                                               |                |.: vorbis_packet 0x0-0x20+7 (33)
