@@ -9,8 +9,18 @@ import (
 	"fq/pkg/osenv"
 	"fq/pkg/query"
 	"io"
+	"io/ioutil"
 	"os"
+	"path/filepath"
+
+	"github.com/chzyer/readline"
 )
+
+type autoCompleterFn func(line []rune, pos int) (newLine [][]rune, length int)
+
+func (a autoCompleterFn) Do(line []rune, pos int) (newLine [][]rune, length int) {
+	return a(line, pos)
+}
 
 type StandardOS struct{}
 
@@ -20,6 +30,70 @@ func (StandardOS) Stderr() io.Writer                       { return os.Stderr }
 func (StandardOS) Environ() []string                       { return os.Environ() }
 func (StandardOS) Args() []string                          { return os.Args }
 func (StandardOS) Open(name string) (io.ReadSeeker, error) { return os.Open(name) }
+func (o StandardOS) Readline(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error) {
+	// TODO: refactor, shared?
+	historyFile := ""
+	cacheDir, err := os.UserCacheDir()
+	if err != nil {
+		return "", err
+	}
+	historyFile = filepath.Join(cacheDir, "fq/history")
+	_ = os.MkdirAll(filepath.Dir(historyFile), 0700)
+
+	var autoComplete readline.AutoCompleter
+	if complete != nil {
+		autoComplete = autoCompleterFn(func(line []rune, pos int) (newLine [][]rune, length int) {
+			// completeCtx, completeCtxCancelFn := context.WithTimeout(ctx, 1*time.Second)
+			// defer completeCtxCancelFn()
+
+			// // TODO: err
+			// names, shared, _ := completeTrampoline(completeCtx, completeFn, c, q, string(line), pos)
+
+			names, shared := complete(string(line), pos)
+
+			var runeNames [][]rune
+			for _, name := range names {
+				runeNames = append(runeNames, []rune(name[shared:]))
+			}
+
+			return runeNames, shared
+		})
+	}
+
+	l, err := readline.NewEx(&readline.Config{
+		Stdin:        ioutil.NopCloser(os.Stdin),
+		Stdout:       os.Stdin,
+		Stderr:       os.Stderr, // TODO: ??
+		HistoryFile:  historyFile,
+		AutoComplete: autoComplete,
+		// InterruptPrompt: "^C",
+		// EOFPrompt:       "exit",
+
+		HistorySearchFold: true,
+		// FuncFilterInputRune: filterInput,
+
+		// FuncFilterInputRune: func(r rune) (rune, bool) {
+		// 	log.Printf("r: %#+v\n", r)
+		// 	return r, true
+		// },
+
+		// Listener: listenerFn(func(line []rune, pos int, key rune) (newLine []rune, newPos int, ok bool) {
+		// 	log.Printf("line: %#+v pos=%v key=%d\n", line, pos, key)
+		// 	return line, pos, false
+		// }),
+	})
+	if err != nil {
+		return "", err
+	}
+
+	l.SetPrompt(prompt)
+	src, err := l.Readline()
+	if err != nil {
+		return "", err
+	}
+
+	return src, nil
+}
 
 func StandardOSMain(r *decode.Registry) {
 	if err := (Main{
@@ -60,9 +134,10 @@ func (m Main) run() error {
 		},
 		Registry: m.Registry,
 
-		Environ: m.OS.Environ, // TODO: func?
-		Stdin:   m.OS.Stdin(),
-		Open:    m.OS.Open,
+		Environ:  m.OS.Environ, // TODO: func?
+		Stdin:    m.OS.Stdin(),
+		Open:     m.OS.Open,
+		Readline: m.OS.Readline,
 	})
 
 	runMode := query.ScriptMode

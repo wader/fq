@@ -68,12 +68,12 @@ def repl:
 
 def formats_help_text:
 	((formats | keys | map(length) | max)+2) as $m | [
-		"\("Name:" | rpad($m;" "))Description:", "\n",
+		"\("Name:" | rpad($m;" "))Description:",
 		(
 			formats | to_entries[] |
-			"\(.key|rpad($m;" "))\(.value.description)", "\n"
+			"\(.key|rpad($m;" "))\(.value.description)"
 		)
-	] | join("");
+	] | join("\n");
 
 def _main:
 	def _opts:

@@ -23,12 +23,8 @@ import (
 	"io/ioutil"
 	"math/big"
 	"net/url"
-	"os"
-	"path/filepath"
 	"strings"
 	"time"
-
-	"github.com/chzyer/readline"
 )
 
 const builtinPrefix = "@builtin"
@@ -129,55 +125,13 @@ func (q *Query) read(c interface{}, a []interface{}) interface{} {
 		}
 	}
 
-	// TODO: refactor, shared?
-	historyFile := ""
-	cacheDir, err := os.UserCacheDir()
-	if err != nil {
-		return err
-	}
-	historyFile = filepath.Join(cacheDir, "fq/history")
-	_ = os.MkdirAll(filepath.Dir(historyFile), 0700)
-
-	var autoComplete readline.AutoCompleter
-	if completeFn != "" {
-		autoComplete = autoCompleterFn(func(line []rune, pos int) (newLine [][]rune, length int) {
-			completeCtx, completeCtxCancelFn := context.WithTimeout(q.evalContext.ctx, 1*time.Second)
-			defer completeCtxCancelFn()
-			// TODO: err
-			names, shared, _ := completeTrampoline(completeCtx, completeFn, c, q, line, pos)
-			return names, shared
-		})
-	}
-
-	l, err := readline.NewEx(&readline.Config{
-		Stdin:        ioutil.NopCloser(q.stdin),
-		Stdout:       q.evalContext.stdout,
-		Stderr:       q.evalContext.stdout, // TODO: ??
-		HistoryFile:  historyFile,
-		AutoComplete: autoComplete,
-		// InterruptPrompt: "^C",
-		// EOFPrompt:       "exit",
-
-		HistorySearchFold: true,
-		// FuncFilterInputRune: filterInput,
-
-		// FuncFilterInputRune: func(r rune) (rune, bool) {
-		// 	log.Printf("r: %#+v\n", r)
-		// 	return r, true
-		// },
-
-		// Listener: listenerFn(func(line []rune, pos int, key rune) (newLine []rune, newPos int, ok bool) {
-		// 	log.Printf("line: %#+v pos=%v key=%d\n", line, pos, key)
-		// 	return line, pos, false
-		// }),
+	src, err := q.readline(prompt, func(line string, pos int) (newLine []string, shared int) {
+		completeCtx, completeCtxCancelFn := context.WithTimeout(q.evalContext.ctx, 1*time.Second)
+		defer completeCtxCancelFn()
+		// TODO: err
+		names, shared, _ := completeTrampoline(completeCtx, completeFn, c, q, string(line), pos)
+		return names, shared
 	})
-	if err != nil {
-		return err
-	}
-
-	l.SetPrompt(prompt)
-
-	src, err := l.Readline()
 
 	if err != nil {
 		return err

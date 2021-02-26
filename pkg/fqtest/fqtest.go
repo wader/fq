@@ -50,6 +50,9 @@ func (tcr *testCaseRun) Open(name string) (io.ReadSeeker, error) {
 	}
 	return nil, fmt.Errorf("%s: file not found", name)
 }
+func (tcr *testCaseRun) Readline(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error) {
+	return "", nil
+}
 
 type testCaseFile struct {
 	name string

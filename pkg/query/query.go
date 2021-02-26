@@ -236,12 +236,6 @@ type emptyIter struct{}
 
 func (emptyIter) Next() (interface{}, bool) { return nil, false }
 
-type autoCompleterFn func(line []rune, pos int) (newLine [][]rune, length int)
-
-func (a autoCompleterFn) Do(line []rune, pos int) (newLine [][]rune, length int) {
-	return a(line, pos)
-}
-
 type loadModuleFn func(name string) (*gojq.Query, error)
 
 func (l loadModuleFn) LoadModule(name string) (*gojq.Query, error) {
@@ -384,6 +378,7 @@ type QueryOptions struct {
 	Environ   func() []string
 	Stdin     io.Reader
 	Open      func(name string) (io.ReadSeeker, error)
+	Readline  func(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error)
 }
 
 type Variable struct {
@@ -421,6 +416,7 @@ type Query struct {
 	environ   func() []string
 	stdin     io.Reader
 	open      func(name string) (io.ReadSeeker, error)
+	readline  func(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error)
 
 	builtinQueryCache map[string]*gojq.Query
 
@@ -434,6 +430,7 @@ func NewQuery(opts QueryOptions) *Query {
 		environ:   opts.Environ,
 		stdin:     opts.Stdin,
 		open:      opts.Open,
+		readline:  opts.Readline,
 	}
 
 	// TODO: cleanup group names and panics

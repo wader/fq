@@ -109,11 +109,11 @@ func transformToCompletionQuery(q *gojq.Query) (*gojq.Query, CompletionType, str
 	}
 }
 
-func completeTrampoline(ctx context.Context, completeFn string, c interface{}, q *Query, line []rune, pos int) (newLine [][]rune, length int, err error) {
+func completeTrampoline(ctx context.Context, completeFn string, c interface{}, q *Query, line string, pos int) (newLine []string, shared int, err error) {
 	lineStr := string(line[0:pos])
 	v := q.EvalFuncValue(ctx, CompletionMode, c, completeFn, []interface{}{lineStr}, DiscardOutput{}, q.evalContext.optsExpr)
 	if _, ok := v.(error); ok {
-		return [][]rune{}, pos, err
+		return nil, pos, err
 	}
 
 	// {abc: 123, abd: 123} | complete(".ab") will return {prefix: "ab", names: ["abc", "abd"]}
@@ -122,31 +122,26 @@ func completeTrampoline(ctx context.Context, completeFn string, c interface{}, q
 	var prefix string
 	cm, ok := v.(map[string]interface{})
 	if !ok {
-		return [][]rune{}, pos, fmt.Errorf("%v: compete function return value not an object", cm)
+		return nil, pos, fmt.Errorf("%v: compete function return value not an object", cm)
 	}
 	if namesv, ok := cm["names"].([]interface{}); ok {
 		for _, name := range namesv {
 			names = append(names, name.(string))
 		}
 	} else {
-		return [][]rune{}, pos, fmt.Errorf("%v: names missing in complete return object", cm)
+		return nil, pos, fmt.Errorf("%v: names missing in complete return object", cm)
 	}
 	if prefixv, ok := cm["prefix"].(interface{}); ok {
 		prefix = prefixv.(string)
 	} else {
-		return [][]rune{}, pos, fmt.Errorf("%v: prefix missing in complete return object", cm)
+		return nil, pos, fmt.Errorf("%v: prefix missing in complete return object", cm)
 	}
 
 	if len(names) == 0 {
-		return [][]rune{}, pos, nil
+		return nil, pos, nil
 	}
 
 	sharedLen := len(prefix)
 
-	var runeNames [][]rune
-	for _, name := range names {
-		runeNames = append(runeNames, []rune(name[sharedLen:]))
-	}
-
-	return runeNames, sharedLen, nil
+	return names, sharedLen, nil
 }
