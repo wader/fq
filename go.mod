@@ -13,6 +13,6 @@ require (
 )
 
 //github.com/chzyer/readline => /Users/wader/src/readline
-replace github.com/itchyny/gojq => /Users/wader/src/gojq
+//replace github.com/itchyny/gojq => /Users/wader/src/gojq
 
-//replace github.com/itchyny/gojq => github.com/wader/gojq v0.12.1-0.20210219205417-8d3017ec07d3
+replace github.com/itchyny/gojq => github.com/wader/gojq v0.12.1-0.20210220020006-cf7e513d04ee
