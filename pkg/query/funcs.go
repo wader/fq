@@ -43,7 +43,7 @@ func (q *Query) makeFunctions(registry *decode.Registry) []Function {
 		{[]string{"options_expr"}, 0, 1, q.optionsExpr},
 		{[]string{"options"}, 0, 1, q.options},
 
-		{[]string{"readline"}, 0, 2, q.readline},
+		{[]string{"read"}, 0, 2, q.read},
 		{[]string{"eval"}, 1, 1, q.eval},
 		{[]string{"print"}, 0, 0, q.print},
 
@@ -111,21 +111,21 @@ func (q *Query) options(c interface{}, a []interface{}) interface{} {
 	return q.evalContext.opts
 }
 
-func (q *Query) readline(c interface{}, a []interface{}) interface{} {
+func (q *Query) read(c interface{}, a []interface{}) interface{} {
 	var ok bool
 	completeFn := ""
 	prompt := ""
 
 	if len(a) > 0 {
-		completeFn, ok = a[0].(string)
+		prompt, ok = a[0].(string)
 		if !ok {
-			return fmt.Errorf("%v: complete function name is not a string", a[0])
+			return fmt.Errorf("%v: prompt is not a string", a[1])
 		}
 	}
 	if len(a) > 1 {
-		prompt, ok = a[1].(string)
+		completeFn, ok = a[1].(string)
 		if !ok {
-			return fmt.Errorf("%v: prompt is not a string", a[1])
+			return fmt.Errorf("%v: complete function name is not a string", a[0])
 		}
 	}
 

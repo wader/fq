@@ -46,17 +46,21 @@ def eval_print($e):
 	catch (. as $err | ("error: " + $err) | print);
 
 
-# def readline: #:: [a]|(string;string) => string
-# First argument is name of completion function [a](string) => [string],
-# it will be called with same input as readline and a string argument being the
+# def read: #:: [a]| => string
+# read with no prompt or completion
+# def read: #:: [a]|(string) => string
+# read with prompt and no completion
+# def read: #:: [a]|(string;string) => string
+# First argument is prompt to use.
+# Second argument is name of completion function [a](string) => [string],
+# it will be called with same input as read and a string argument being the
 # current line from start to current cursor position. Should return possible completions.
-# Second argument is prompt to use.
 
 def repl:
-	def _readline_expr: readline("complete";prompt) | trim | if . == "" then "." end;
+	def _read_expr: read(prompt;"complete") | trim | if . == "" then "." end;
 	def _as_array: if (. | type) != "array" then [.] end;
 	def _repl:
-		try _readline_expr as $e |
+		try _read_expr as $e |
 		(.[] | eval_print($e) | empty),
 		_repl;
     _as_array | _repl;
