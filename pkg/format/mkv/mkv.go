@@ -36,6 +36,7 @@ var mpegHEVCSampleFormat []*decode.Format
 var mpegSPUFrameFormat []*decode.Format
 var opusPacketFrameFormat []*decode.Format
 var vorbisPacketFormat []*decode.Format
+var vp8FrameFormat []*decode.Format
 var vp9FrameFormat []*decode.Format
 
 func init() {
@@ -59,6 +60,7 @@ func init() {
 			{Names: []string{format.MPEG_SPU}, Formats: &mpegSPUFrameFormat},
 			{Names: []string{format.OPUS_PACKET}, Formats: &opusPacketFrameFormat},
 			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
+			{Names: []string{format.VP8_FRAME}, Formats: &vp8FrameFormat},
 			{Names: []string{format.VP9_FRAME}, Formats: &vp9FrameFormat},
 		},
 	})
@@ -432,6 +434,8 @@ func mkvDecode(d *decode.D, in interface{}) interface{} {
 			case "A_FLAC":
 				d.FieldDecodeLen("packet", d.BitsLeft(), flacFrameFormat, decodeOpts...)
 				// TODO: could to md5 here somehow, see flac.go
+			case "V_VP8":
+				d.FieldDecodeLen("packet", d.BitsLeft(), vp8FrameFormat)
 			case "V_VP9":
 				d.FieldDecodeLen("packet", d.BitsLeft(), vp9FrameFormat)
 			case "V_AV1":

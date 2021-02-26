@@ -4,6 +4,7 @@ package mp3
 // http://www.multiweb.cz/twoinches/MP3inside.htm
 // https://wiki.hydrogenaud.io/index.php?title=MP3
 // https://www.diva-portal.org/smash/get/diva2:830195/FULLTEXT01.pdf
+// https://hydrogenaud.io/index.php?topic=36445.0
 
 // TODO: some sample decode?
 // TODO: LSF, version 2.5 and 2? other decoder?

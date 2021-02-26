@@ -64,8 +64,10 @@ const (
 	TIFF               = "tiff"
 	VORBIS_COMMENT     = "vorbis_comment"
 	VORBIS_PACKET      = "vorbis_packet"
+	VP8_FRAME          = "vp8_frame"
 	VP9_FRAME          = "vp9_frame"
 	WAV                = "wav"
+	WEBP               = "webp"
 )
 
 type FlacMetadatablockStreamInfo struct {

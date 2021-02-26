@@ -9,6 +9,10 @@ import (
 	"fq/pkg/format"
 )
 
+var oggPage []*decode.Format
+var vorbisPacket []*decode.Format
+var opusPacket []*decode.Format
+
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.OGG,
@@ -23,10 +27,6 @@ func init() {
 		},
 	})
 }
-
-var oggPage []*decode.Format
-var vorbisPacket []*decode.Format
-var opusPacket []*decode.Format
 
 var (
 	vorbisIdentification = []byte("\x01vorbis")

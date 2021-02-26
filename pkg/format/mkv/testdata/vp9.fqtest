@@ -291,7 +291,7 @@
 0x0230|      a2                                       |  .             |                profile_low_bit: 1 0x232+2-0x232+2 (0+1)
 0x0230|      a2                                       |  .             |                profile_high_bit: 0 0x232+3-0x232+3 (0+1)
 0x0230|      a2                                       |  .             |                show_existing_frame: false 0x232+4-0x232+4 (0+1)
-0x0230|      a2                                       |  .             |                frame_type: key_frame (0) 0x232+5-0x232+5 (0+1)
+0x0230|      a2                                       |  .             |                frame_type: key_frame (false) 0x232+5-0x232+5 (0+1)
 0x0230|      a2                                       |  .             |                show_frame: 1 0x232+6-0x232+6 (0+1)
 0x0230|      a2                                       |  .             |                error_resilient_mode: 0 0x232+7-0x232+7 (0+1)
 0x0230|         49 83 42 e0 13 f0 0e f6 0a 38 24 1c 18|   I.B......8$..|                data: 498342e013f00ef60a38241c184a000b... 0x233-0x1769+7 (5431)

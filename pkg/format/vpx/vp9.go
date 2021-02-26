@@ -33,15 +33,7 @@ func vp9Decode(d *decode.D, in interface{}) interface{} {
 		return nil
 	}
 
-	d.FieldUFn("frame_type", func() (uint64, decode.DisplayFormat, string) {
-		switch d.U1() {
-		case 0:
-			return 0, decode.NumberDecimal, "key_frame"
-		case 1:
-			return 0, decode.NumberDecimal, "non_key_frame"
-		}
-		panic("unreachable")
-	})
+	d.FieldBoolMapFn("frame_type", "non_key_frame", "key_frame", d.Bool)
 	d.FieldU1("show_frame")
 	d.FieldU1("error_resilient_mode")
 
