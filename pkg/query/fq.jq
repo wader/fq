@@ -130,14 +130,15 @@ def _main:
 				}
 			},
 		};
-	opts_parse(.[1:];_opts) as {$parsed, $rest} |
+	. as $args |
+	opts_parse($args[1:];_opts) as {$parsed, $rest} |
 	# TODO: pass repl some other way
 	options_expr($parsed.options + {repl: ($parsed.repl|tojson)}) |
 	set_eval_options |
 	if $parsed.version then
 		$VERSION | print
 	elif $parsed.help then
-		("Usage: \(.[0]) [OPTIONS] [FILE] [EXPR]",
+		("Usage: \($args[0]) [OPTIONS] [FILE] [EXPR]",
 			opts_help_text(_opts),
 		 	formats_help_text
 		) | print
