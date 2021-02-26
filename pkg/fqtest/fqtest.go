@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -21,6 +22,12 @@ import (
 	"fq/pkg/decode"
 )
 
+type testCaseReadline struct {
+	input          string
+	expectedPrompt string
+	expectedStdout string
+}
+
 type testCaseRun struct {
 	lineNr          int
 	testCase        *testCase
@@ -28,7 +35,11 @@ type testCaseRun struct {
 	expectedStdout  string
 	actualStdoutBuf *bytes.Buffer
 	actualStderrBuf *bytes.Buffer
+	readlines       []testCaseReadline
+	readlinesPos    int
 }
+
+func (tcr *testCaseRun) Line() int { return tcr.lineNr }
 
 func (tcr *testCaseRun) Stdin() io.Reader  { return nil } // TOOD: special file?
 func (tcr *testCaseRun) Stdout() io.Writer { return tcr.actualStdoutBuf }
@@ -51,27 +62,77 @@ func (tcr *testCaseRun) Open(name string) (io.ReadSeeker, error) {
 	return nil, fmt.Errorf("%s: file not found", name)
 }
 func (tcr *testCaseRun) Readline(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error) {
-	return "", nil
+	tcr.actualStdoutBuf.WriteString(prompt)
+	if tcr.readlinesPos > len(tcr.readlines) {
+		return "", io.EOF
+	}
+
+	tcrl := tcr.readlines[tcr.readlinesPos]
+	tcr.readlinesPos++
+
+	tcr.actualStdoutBuf.WriteString(tcrl.input + "\n")
+
+	if tcrl.input == "^D" {
+		return "", io.EOF
+	}
+
+	return tcrl.input, nil
+}
+
+func (tcr *testCaseRun) ToExpected() string {
+	sb := &strings.Builder{}
+
+	if len(tcr.readlines) == 0 {
+		fmt.Fprint(sb, tcr.expectedStdout)
+	} else {
+		for _, rl := range tcr.readlines {
+			fmt.Fprintf(sb, "%s%s\n", rl.expectedPrompt, rl.input)
+			if rl.expectedStdout != "" {
+				fmt.Fprint(sb, rl.expectedStdout)
+			}
+		}
+	}
+
+	return sb.String()
+}
+
+type part interface {
+	Line() int
 }
 
 type testCaseFile struct {
-	name string
-	data []byte
+	lineNr int
+	name   string
+	data   []byte
 }
 
+func (tcf *testCaseFile) Line() int { return tcf.lineNr }
+
 type testCaseComment struct {
+	lineNr  int
 	comment string
 }
+
+func (tcr *testCaseComment) Line() int { return tcr.lineNr }
 
 type testCase struct {
 	lineNr int
 	path   string
-	parts  []interface{}
+	parts  []part
 }
 
 func (tc *testCase) ToActual() string {
-	sb := &strings.Builder{}
+
+	var partsLineSorted []part
 	for _, p := range tc.parts {
+		partsLineSorted = append(partsLineSorted, p)
+	}
+	sort.Slice(partsLineSorted, func(i, j int) bool {
+		return partsLineSorted[i].Line() < partsLineSorted[j].Line()
+	})
+
+	sb := &strings.Builder{}
+	for _, p := range partsLineSorted {
 
 		switch p := p.(type) {
 		case *testCaseComment:
@@ -86,6 +147,7 @@ func (tc *testCase) ToActual() string {
 			panic("unreachable")
 		}
 	}
+
 	return sb.String()
 }
 
@@ -154,30 +216,68 @@ func SectionParser(re *regexp.Regexp, s string) []Section {
 
 func parseTestCases(s string) *testCase {
 	te := &testCase{}
-	te.parts = []interface{}{}
+	te.parts = []part{}
+	var currentTestRun *testCaseRun
+	const promptEnd = "> "
+	replDepth := 0
 
-	for _, section := range SectionParser(regexp.MustCompile(`^#.*$|^/.*:|^>.*$`), s) {
+	// TODO: better section splitter, too much heuristics now
+	for _, section := range SectionParser(regexp.MustCompile(`^#.*$|^/.*:|^> .*|^[a-z].+> .*`), s) {
 		n, v := section.Name, section.Value
 
 		switch {
 		case strings.HasPrefix(n, "#"):
 			comment := n[1:]
-			te.parts = append(te.parts, &testCaseComment{comment: comment})
+			te.parts = append(te.parts, &testCaseComment{lineNr: section.LineNr, comment: comment})
 		case strings.HasPrefix(n, "/"):
 			name := n[1 : len(n)-1]
-			te.parts = append(te.parts, &testCaseFile{name: name, data: []byte(v)})
+			te.parts = append(te.parts, &testCaseFile{lineNr: section.LineNr, name: name, data: []byte(v)})
 		case strings.HasPrefix(n, ">"):
-			te.parts = append(te.parts, &testCaseRun{
+			replDepth++
+
+			if currentTestRun != nil {
+				te.parts = append(te.parts, currentTestRun)
+			}
+
+			currentTestRun = &testCaseRun{
 				lineNr:          section.LineNr,
 				testCase:        te,
 				args:            strings.TrimPrefix(n, ">"),
 				expectedStdout:  v,
 				actualStdoutBuf: &bytes.Buffer{},
 				actualStderrBuf: &bytes.Buffer{},
+			}
+		case strings.Index(n, promptEnd) != -1: // TODO: better
+			parts := strings.SplitN(n, promptEnd, 2)
+			prompt := parts[0] + promptEnd
+			input := parts[1]
+
+			currentTestRun.readlines = append(currentTestRun.readlines, testCaseReadline{
+				input:          input,
+				expectedPrompt: prompt,
+				expectedStdout: v,
 			})
+
+			// TODO: hack
+			if strings.Index(input, "| repl") != -1 {
+				replDepth++
+			}
+			if input == "^D" {
+				replDepth--
+			}
+
+			if replDepth == 0 {
+				te.parts = append(te.parts, currentTestRun)
+				currentTestRun = nil
+			}
+
 		default:
 			panic(fmt.Sprintf("%d: unexpected section %q %q", section.LineNr, n, v))
 		}
+	}
+
+	if currentTestRun != nil {
+		te.parts = append(te.parts, currentTestRun)
 	}
 
 	return te
@@ -233,8 +333,6 @@ func parseTestCases(s string) *testCase {
 // }
 
 func testDecodedTestCaseRun(t *testing.T, registry *decode.Registry, tcr *testCaseRun) {
-	//log.Printf("tcr: %#+v\n", tcr)
-
 	m := cli.Main{
 		OS:       tcr,
 		Registry: registry,
@@ -245,11 +343,9 @@ func testDecodedTestCaseRun(t *testing.T, registry *decode.Registry, tcr *testCa
 		t.Fatal(err)
 	}
 
-	//log.Printf("tcr.ActualStdoutBuf.String(): %#+v\n", tcr.ActualStdoutBuf.String())
-
 	// cli.Command{Version: "test", OS: &te}.Run()
 	// deepequal.Error(t, "files", te.ExpectedFiles, te.ActualFiles)
-	deepequal.Error(t, "stdout", tcr.expectedStdout, tcr.actualStdoutBuf.String())
+	deepequal.Error(t, "stdout", tcr.ToExpected(), tcr.actualStdoutBuf.String())
 	//deepequal.Error(t, "stderr", te.ExpectedStderr, te.ActualStderrBuf.String())
 }
 
@@ -267,6 +363,7 @@ func TestPath(t *testing.T, registry *decode.Registry) {
 				t.Fatal(err)
 			}
 			tc := parseTestCases(string(b))
+
 			tcs = append(tcs, tc)
 			tc.path = path
 

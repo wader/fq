@@ -323,14 +323,14 @@ func (q *Query) _open(c interface{}, a []interface{}) interface{} {
 				return
 			}
 			// cleanup when done
-			fmt.Fprint(q.evalContext.stdout, "100.0%\r")
+			fmt.Fprint(q.stderr, "100.0%\r")
 		}
 
 		rs = progressreadseeker.New(rs, bEnd, func(readBytes int64, length int64) {
 			if decodeDone {
 				return
 			}
-			fmt.Fprintf(q.evalContext.stdout, "\r%.1f%%", (float64(readBytes)/float64(length))*100)
+			fmt.Fprintf(q.stderr, "\r%.1f%%", (float64(readBytes)/float64(length))*100)
 			shownProgress = true
 		})
 	}

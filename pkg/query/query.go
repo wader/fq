@@ -377,6 +377,7 @@ type QueryOptions struct {
 	Registry  *decode.Registry
 	Environ   func() []string
 	Stdin     io.Reader
+	Stderr    io.Writer
 	Open      func(name string) (io.ReadSeeker, error)
 	Readline  func(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error)
 }
@@ -415,6 +416,7 @@ type Query struct {
 	registry  *decode.Registry
 	environ   func() []string
 	stdin     io.Reader
+	stderr    io.Writer // TODO: move? rename?
 	open      func(name string) (io.ReadSeeker, error)
 	readline  func(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error)
 
@@ -429,6 +431,7 @@ func NewQuery(opts QueryOptions) *Query {
 		registry:  opts.Registry,
 		environ:   opts.Environ,
 		stdin:     opts.Stdin,
+		stderr:    opts.Stderr,
 		open:      opts.Open,
 		readline:  opts.Readline,
 	}

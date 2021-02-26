@@ -128,6 +128,7 @@ func (m Main) run() error {
 
 		Environ:  m.OS.Environ, // TODO: func?
 		Stdin:    m.OS.Stdin(),
+		Stderr:   m.OS.Stderr(),
 		Open:     m.OS.Open,
 		Readline: m.OS.Readline,
 	})
