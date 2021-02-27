@@ -157,8 +157,7 @@ TODO
 - Save encoding for values, LE, BE, varint etc
 - Cleanup decoders
 - Document decode maturity/completeness
-- Embed jq code using go 1.16 embed
-- Arbitrary integer base literals
+- Arbitrary base integer literals
 - Make jq functions that change state fail if called more than once? decode etc?
 - REPL push/pop, variables etc?
 - REPL tests
@@ -170,7 +169,7 @@ TODO
 - Some kind of UI, web and cli? would be nice to visualize overlapping fields
 - Is it possible to save memory by just record range/decoder at first decode and
 then decode as needed later?
-- Move more things to jq code, dumper, CLI, help, REPL?
+- Move more things to jq code, dumper?
 - Some kind of bit vs bytes position notation/type
 - Range/field user annotations
 

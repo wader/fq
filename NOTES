@@ -1,4 +1,9 @@
 
+fisis repl tests, newer parser? comments out of order
+
+factor out readline from query
+
+display do json, string, number too?
 
 replace $FILENAME abd .repl with some kind of env global?
 
