@@ -449,6 +449,28 @@ func NewQuery(opts QueryOptions) *Query {
 	return q
 }
 
+func (q *Query) Main(stdout io.Writer) error {
+	runMode := ScriptMode
+
+	i, err := q.Eval(context.Background(), runMode, nil, "main", WriterOutput{Ctx: context.Background(), W: stdout}, nil)
+	if err != nil {
+		return err
+	}
+	for {
+		v, ok := i.Next()
+		if !ok {
+			break
+		} else if err, ok := v.(error); ok {
+			fmt.Fprintln(q.stderr, err)
+			return err
+		} else if d, ok := v.([2]interface{}); ok {
+			fmt.Fprintf(q.stderr, "%s: %v\n", d[0], d[1])
+		}
+	}
+
+	return nil
+}
+
 func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, src string, stdout Output, optsExpr map[string]interface{}) (gojq.Iter, error) {
 	var err error
 

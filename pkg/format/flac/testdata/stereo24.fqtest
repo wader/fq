@@ -1,0 +1,2 @@
+/stereo24.flac:
+> fq -d flac stereo24.flac verbose

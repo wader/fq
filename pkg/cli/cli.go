@@ -1,8 +1,6 @@
 package cli
 
 import (
-	"context"
-	"flag"
 	"fmt"
 	"fq"
 	"fq/pkg/decode"
@@ -100,16 +98,7 @@ type Main struct {
 	Registry *decode.Registry
 }
 
-// Run cli main
 func (m Main) Run() error {
-	err := m.run()
-	if err != nil && err != flag.ErrHelp {
-		fmt.Fprintf(m.OS.Stderr(), "%s\n", err)
-	}
-	return err
-}
-
-func (m Main) run() error {
 	// TODO: pass with some kind of env?
 	filename := "asd"
 
@@ -133,23 +122,5 @@ func (m Main) run() error {
 		Readline: m.OS.Readline,
 	})
 
-	runMode := query.ScriptMode
-
-	i, err := q.Eval(context.Background(), runMode, nil, "main", query.WriterOutput{Ctx: context.Background(), W: m.OS.Stdout()}, nil)
-	if err != nil {
-		return err
-	}
-	for {
-		v, ok := i.Next()
-		if !ok {
-			break
-		} else if err, ok := v.(error); ok {
-			fmt.Fprintln(m.OS.Stderr(), err)
-			break
-		} else if d, ok := v.([2]interface{}); ok {
-			fmt.Fprintf(m.OS.Stdout(), "%s: %v\n", d[0], d[1])
-		}
-	}
-
-	return nil
+	return q.Main(m.OS.Stdout())
 }

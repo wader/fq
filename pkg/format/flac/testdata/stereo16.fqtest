@@ -1,0 +1,2 @@
+/stereo16.flac:
+> fq -d flac stereo16.flac verbose

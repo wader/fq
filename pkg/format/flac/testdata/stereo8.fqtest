@@ -1,0 +1,2 @@
+/stereo8.flac:
+> fq -d flac stereo8.flac verbose
