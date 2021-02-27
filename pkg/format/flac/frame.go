@@ -114,15 +114,15 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	blockSize := int(d.FieldUFn("block_size", func() (uint64, decode.DisplayFormat, string) {
 		blockSizeBits = d.U4()
 		switch blockSizeBits {
-		case 0:
+		case 0b0000:
 			return 0, decode.NumberDecimal, "reserved"
-		case 1:
+		case 0b0001:
 			return 192, decode.NumberDecimal, ""
-		case 2, 3, 4, 5:
+		case 0b0010, 0b0011, 0b0100, 0b0101:
 			return 576 * (1 << (blockSizeBits - 2)), decode.NumberDecimal, ""
-		case 6:
+		case 0b0110:
 			return 0, decode.NumberDecimal, "end of header (8 bit)"
-		case 7:
+		case 0b0111:
 			return 0, decode.NumberDecimal, "end of header (16 bit)"
 		default:
 			return 256 * (1 << (blockSizeBits - 8)), decode.NumberDecimal, ""
@@ -155,33 +155,33 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 				d.Invalid("streaminfo required for sample rate")
 			}
 			return inStreamInfo.SampleRate, decode.NumberDecimal, "streaminfo"
-		case 1:
+		case 0b0001:
 			return 88200, decode.NumberDecimal, ""
-		case 2:
+		case 0b0010:
 			return 176000, decode.NumberDecimal, ""
-		case 3:
+		case 0b0011:
 			return 19200, decode.NumberDecimal, ""
-		case 4:
+		case 0b0100:
 			return 800, decode.NumberDecimal, ""
-		case 5:
+		case 0b0101:
 			return 1600, decode.NumberDecimal, ""
-		case 6:
+		case 0b0110:
 			return 22050, decode.NumberDecimal, ""
-		case 7:
+		case 0b0111:
 			return 44100, decode.NumberDecimal, ""
-		case 8:
+		case 0b1000:
 			return 32000, decode.NumberDecimal, ""
-		case 9:
+		case 0b1001:
 			return 44100, decode.NumberDecimal, ""
-		case 10:
+		case 0b1010:
 			return 48000, decode.NumberDecimal, ""
-		case 11:
+		case 0b1011:
 			return 96000, decode.NumberDecimal, ""
-		case 12:
+		case 0b1100:
 			return 0, decode.NumberDecimal, "end of header (8 bit*1000)"
-		case 13:
+		case 0b1101:
 			return 0, decode.NumberDecimal, "end of header (16 bit)"
-		case 14:
+		case 0b1110:
 			return 0, decode.NumberDecimal, "end of header (16 bit*10)"
 		default:
 			return 0, decode.NumberDecimal, "invalid"
@@ -224,13 +224,13 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 				return v, -1, 7, decode.NumberDecimal, "front left, front right, front center, LFE, back center, side left, side right"
 			case 7:
 				return v, -1, 8, decode.NumberDecimal, "front left, front right, front center, LFE, back left, back right, side left, side right"
-			case 8:
+			case 0b1000:
 				sideChannelIndex = 1
 				return v, -1, 2, decode.NumberDecimal, "left/side"
-			case 9:
+			case 0b1001:
 				sideChannelIndex = 0
 				return v, -1, 2, decode.NumberDecimal, "side/right"
-			case 10:
+			case 0b1010:
 				sideChannelIndex = 1
 				return v, -1, 2, decode.NumberDecimal, "mid/side"
 			default:
@@ -258,24 +258,24 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	// 111 : reserved
 	sampleSize := int(d.FieldUFn("sample_size", func() (uint64, decode.DisplayFormat, string) {
 		switch d.U3() {
-		case 0:
+		case 0b000:
 			if inStreamInfo == nil {
 				d.Invalid("streaminfo required for bit per sample")
 			}
 			return inStreamInfo.BitPerSample, decode.NumberDecimal, "streaminfo"
-		case 1:
+		case 0b001:
 			return 8, decode.NumberDecimal, ""
-		case 2:
+		case 0b010:
 			return 12, decode.NumberDecimal, ""
-		case 3:
+		case 0b011:
 			return 0, decode.NumberDecimal, "reserved"
-		case 4:
+		case 0b100:
 			return 16, decode.NumberDecimal, ""
-		case 5:
+		case 0b101:
 			return 20, decode.NumberDecimal, ""
-		case 6:
+		case 0b110:
 			return 24, decode.NumberDecimal, ""
-		case 7:
+		case 0b111:
 			return 0, decode.NumberDecimal, "reserved"
 		}
 		panic("unreachable")
@@ -305,11 +305,11 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		// if(blocksize bits == 011x)
 		//   8/16 bit (blocksize-1)
 		switch blockSizeBits {
-		case 6:
+		case 0b0110:
 			blockSize = int(d.FieldUFn("block_size", func() (uint64, decode.DisplayFormat, string) {
 				return d.U8() + 1, decode.NumberDecimal, ""
 			}))
-		case 7:
+		case 0b0111:
 			blockSize = int(d.FieldUFn("block_size", func() (uint64, decode.DisplayFormat, string) {
 				return d.U16() + 1, decode.NumberDecimal, ""
 			}))
@@ -318,18 +318,20 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		// if(sample rate bits == 11xx)
 		//   8/16 bit sample rate
 		switch sampleRateBits {
-		case 12:
+		case 0b1100:
 			d.FieldUFn("sample_rate", func() (uint64, decode.DisplayFormat, string) {
 				return d.U8() * 1000, decode.NumberDecimal, ""
 			})
-		case 13:
+		case 0b1101:
 			d.FieldUFn("sample_rate", func() (uint64, decode.DisplayFormat, string) {
 				return d.U16(), decode.NumberDecimal, ""
 			})
-		case 14:
+		case 0b1110:
 			d.FieldUFn("sample_rate", func() (uint64, decode.DisplayFormat, string) {
 				return d.U16() * 10, decode.NumberDecimal, ""
 			})
+		case 0b1111:
+			// TODO: reserved?
 		}
 	})
 
@@ -357,11 +359,11 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 					u, fmt, disp := func() (uint64, decode.DisplayFormat, string) {
 						bits := d.U6()
 						switch bits {
-						case 0:
+						case 0b000000:
 							return SubframeConstant, decode.NumberDecimal, SubframeTypeNames[SubframeConstant]
-						case 1:
+						case 0b000001:
 							return SubframeVerbatim, decode.NumberDecimal, SubframeTypeNames[SubframeVerbatim]
-						case 8, 9, 10, 11, 12:
+						case 0b001000, 0b001001, 0b001010, 0b001011, 0b001100:
 							lpcOrder = int(bits & 0x7)
 							return SubframeFixed, decode.NumberDecimal, SubframeTypeNames[SubframeFixed]
 						default:
