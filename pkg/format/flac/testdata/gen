@@ -17,13 +17,13 @@ ffmpeg \
 [6:0][7:0]amerge=inputs=2[merge3];
 [8:0][9:0]amerge=inputs=2[merge4];
 [merge0][merge1][merge2][merge3][merge4]concat=n=5:v=0:a=1[concat0];
-[concat0]asplit=outputs=3[out0][out1][out2]' \
+[concat0]asplit=outputs=6[out0][out1][out2][out3][out4][out5]' \
     -map '[out0]' -ar 44100 -ac 1 -c:a pcm_u8 -f wav mono8.wav \
     -map '[out1]' -ar 44100 -ac 1 -c:a pcm_s16le -f wav mono16.wav \
-    -map '[out2]' -ar 44100 -ac 1 -c:a pcm_s24le -f wav mono24.wav
-    -map '[out0]' -ar 44100 -ac 2 -c:a pcm_u8 -f wav stereo8.wav \
-    -map '[out1]' -ar 44100 -ac 2 -c:a pcm_s16le -f wav stereo16.wav \
-    -map '[out2]' -ar 44100 -ac 2 -c:a pcm_s24le -f wav stereo24.wav
+    -map '[out2]' -ar 44100 -ac 1 -c:a pcm_s24le -f wav mono24.wav \
+    -map '[out3]' -ar 44100 -ac 2 -c:a pcm_u8 -f wav stereo8.wav \
+    -map '[out4]' -ar 44100 -ac 2 -c:a pcm_s16le -f wav stereo16.wav \
+    -map '[out5]' -ar 44100 -ac 2 -c:a pcm_s24le -f wav stereo24.wav
 flac -fo mono8.flac mono8.wav
 flac -fo mono16.flac mono16.wav
 flac -fo mono24.flac mono24.wav
