@@ -116,9 +116,9 @@ type testCaseComment struct {
 func (tcr *testCaseComment) Line() int { return tcr.lineNr }
 
 type testCase struct {
-	lineNr int
-	path   string
-	parts  []part
+	path      string
+	parts     []part
+	wasTested bool
 }
 
 func (tc *testCase) ToActual() string {
@@ -375,6 +375,7 @@ func TestPath(t *testing.T, registry *decode.Registry) {
 
 				t.Run(strconv.Itoa(tcr.lineNr)+":"+tcr.args, func(t *testing.T) {
 					testDecodedTestCaseRun(t, registry, tcr)
+					tc.wasTested = true
 				})
 			}
 		})
@@ -384,6 +385,9 @@ func TestPath(t *testing.T, registry *decode.Registry) {
 
 	if v := os.Getenv("WRITE_ACTUAL"); v != "" {
 		for _, tc := range tcs {
+			if !tc.wasTested {
+				continue
+			}
 			if err := ioutil.WriteFile(tc.path, []byte(tc.ToActual()), 0644); err != nil {
 				t.Error(err)
 			}
