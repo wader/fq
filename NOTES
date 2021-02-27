@@ -1,4 +1,14 @@
 
+
+
+go mod edit -replace github.com/itchyny/gojq=github.com/wader/gojq@ffb6d053b8bcae411fada254b1378aa6d42c9caa
+go mod download
+go mod tidy
+
+use moduleLoaderinit insread of include? for prelude and rc?
+
+load json?
+
 fisis repl tests, newer parser? comments out of order
 
 factor out readline from query
