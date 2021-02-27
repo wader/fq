@@ -15,6 +15,8 @@ func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.WEBP,
 		Description: "WEBP image",
+		Groups:      []string{format.PROBE},
+		MIMEs:       []string{"image/webp"},
 		DecodeFn:    webpDecode,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.VP8_FRAME}, Formats: &vp8Frame},
