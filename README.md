@@ -127,8 +127,10 @@ TODO: piping
 |`tiff`             |Tag Image File Format|
 |`vorbis_comment`   |Vorbis comment|
 |`vorbis_packet`    |Vorbis packet|
+|`vp8_frame`        |VP8 frame|
 |`vp9_frame`        |VP9 frame|
 |`wav`              |WAV file|
+|`webp`             |WEBP image|
 
 [#]: sh-end
 
