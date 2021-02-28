@@ -18,11 +18,11 @@ func (a autoCompleterFn) Do(line []rune, pos int) (newLine [][]rune, length int)
 	return a(line, pos)
 }
 
-type StandardOS struct {
+type standardOS struct {
 	rl *readline.Instance
 }
 
-func newStandardOS() (*StandardOS, error) {
+func newStandardOS() (*standardOS, error) {
 	// TODO: refactor, shared?
 	historyFile := ""
 	cacheDir, err := os.UserCacheDir()
@@ -43,7 +43,7 @@ func newStandardOS() (*StandardOS, error) {
 		return nil, err
 	}
 
-	return &StandardOS{rl: rl}, nil
+	return &standardOS{rl: rl}, nil
 }
 
 type standardOsOutput struct{}
@@ -61,13 +61,13 @@ func (o standardOsOutput) IsTerminal() bool {
 	return readline.IsTerminal(int(os.Stdout.Fd()))
 }
 
-func (*StandardOS) Stdin() io.Reader                        { return os.Stdin }
-func (*StandardOS) Stdout() query.Output                    { return standardOsOutput{} }
-func (*StandardOS) Stderr() io.Writer                       { return os.Stderr }
-func (*StandardOS) Environ() []string                       { return os.Environ() }
-func (*StandardOS) Args() []string                          { return os.Args }
-func (*StandardOS) Open(name string) (io.ReadSeeker, error) { return os.Open(name) }
-func (o *StandardOS) Readline(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error) {
+func (*standardOS) Stdin() io.Reader                        { return os.Stdin }
+func (*standardOS) Stdout() query.Output                    { return standardOsOutput{} }
+func (*standardOS) Stderr() io.Writer                       { return os.Stderr }
+func (*standardOS) Environ() []string                       { return os.Environ() }
+func (*standardOS) Args() []string                          { return os.Args }
+func (*standardOS) Open(name string) (io.ReadSeeker, error) { return os.Open(name) }
+func (o *standardOS) Readline(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error) {
 	var autoComplete readline.AutoCompleter
 	if complete != nil {
 		autoComplete = autoCompleterFn(func(line []rune, pos int) (newLine [][]rune, length int) {
@@ -91,38 +91,21 @@ func (o *StandardOS) Readline(prompt string, complete func(line string, pos int)
 	return src, nil
 }
 
-func StandardOSMain(r *decode.Registry) {
+func Main(r *decode.Registry) {
 	o, err := newStandardOS()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-
-	if err := (Main{
-		OS:       o,
-		Registry: r,
-	}).Run(); err != nil {
-		os.Exit(1)
-	}
-}
-
-type Main struct {
-	OS       query.OS
-	Registry *decode.Registry
-}
-
-func (m Main) Run() error {
-	// TODO: pass with some kind of env?
-
 	q, err := query.NewQuery(query.QueryOptions{
-		Registry: m.Registry,
-
-		OS: m.OS,
+		Registry: r,
+		OS:       o,
 	})
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return err
+		fmt.Fprintln(o.Stderr(), err)
+		os.Exit(1)
 	}
-
-	return q.Main(m.OS.Stdout())
+	if err := q.Main(o.Stdout()); err != nil {
+		os.Exit(1)
+	}
 }

@@ -17,5 +17,5 @@ func init() {
 }
 
 func main() {
-	cli.StandardOSMain(format.DefaultRegistry)
+	cli.Main(format.DefaultRegistry)
 }

@@ -18,7 +18,6 @@ import (
 	"fq/internal/deepequal"
 	"fq/internal/shquote"
 	"fq/pkg/bitio"
-	"fq/pkg/cli"
 	"fq/pkg/decode"
 	"fq/pkg/query"
 )
@@ -346,11 +345,12 @@ func parseTestCases(s string) *testCase {
 // }
 
 func testDecodedTestCaseRun(t *testing.T, registry *decode.Registry, tcr *testCaseRun) {
-	m := cli.Main{
-		OS:       tcr,
-		Registry: registry,
+	q, err := query.NewQuery(query.QueryOptions{Registry: registry, OS: tcr})
+	if err != nil {
+		t.Fatal(err)
 	}
-	err := m.Run()
+
+	err = q.Main(tcr.Stdout())
 	if err != nil {
 		// TODO: expect error
 		t.Fatal(err)
