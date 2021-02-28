@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"context"
 	"fmt"
 	"fq/pkg/decode"
 	"fq/pkg/interp"
@@ -97,7 +98,7 @@ func Main(r *decode.Registry) {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	q, err := interp.New(interp.InterpOptions{
+	i, err := interp.New(interp.InterpOptions{
 		Registry: r,
 		OS:       o,
 	})
@@ -105,7 +106,7 @@ func Main(r *decode.Registry) {
 		fmt.Fprintln(o.Stderr(), err)
 		os.Exit(1)
 	}
-	if err := q.Main(o.Stdout()); err != nil {
+	if err := i.Main(context.Background(), o.Stdout()); err != nil {
 		os.Exit(1)
 	}
 }

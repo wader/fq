@@ -27,81 +27,81 @@ import (
 )
 
 // TODO: make it nicer somehow?
-func (q *Interp) makeFunctions(registry *decode.Registry) []Function {
+func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
 	fs := []Function{
-		{[]string{"tty"}, 0, 0, q.tty},
-		{[]string{"options_expr"}, 0, 1, q.optionsExpr},
-		{[]string{"options"}, 0, 1, q.options},
+		{[]string{"tty"}, 0, 0, i.tty},
+		{[]string{"options_expr"}, 0, 1, i.optionsExpr},
+		{[]string{"options"}, 0, 1, i.options},
 
-		{[]string{"read"}, 0, 2, q.read},
-		{[]string{"eval"}, 1, 1, q.eval},
-		{[]string{"print"}, 0, 0, q.print},
+		{[]string{"read"}, 0, 2, i.read},
+		{[]string{"eval"}, 1, 1, i.eval},
+		{[]string{"print"}, 0, 0, i.print},
 
-		{[]string{"complete_query"}, 0, 0, q.completeQuery},
-		{[]string{"display_name"}, 0, 0, q.displayName},
-		{[]string{"_value_keys"}, 0, 0, q._valueKeys},
-		{[]string{"formats"}, 0, 0, q.formats},
+		{[]string{"complete_query"}, 0, 0, i.completeQuery},
+		{[]string{"display_name"}, 0, 0, i.displayName},
+		{[]string{"_value_keys"}, 0, 0, i._valueKeys},
+		{[]string{"formats"}, 0, 0, i.formats},
 
-		{[]string{"open"}, 0, 1, q._open},
-		{[]string{"decode"}, 0, 1, q.makeDecodeFn(registry, registry.MustGroup(format.PROBE))},
+		{[]string{"open"}, 0, 1, i._open},
+		{[]string{"decode"}, 0, 1, i.makeDecodeFn(registry, registry.MustGroup(format.PROBE))},
 
-		{[]string{"display", "d"}, 0, 1, q.makeDisplayFn(nil)},
-		{[]string{"verbose", "v"}, 0, 1, q.makeDisplayFn(map[string]interface{}{"verbose": true})},
-		{[]string{"preview", "p"}, 0, 0, q.preview},
-		{[]string{"hexdump", "hd", "h"}, 0, 1, q.hexdump},
-		{[]string{"string"}, 0, 0, q.string_},
-		{[]string{"u"}, 0, 1, q.u},
+		{[]string{"display", "d"}, 0, 1, i.makeDisplayFn(nil)},
+		{[]string{"verbose", "v"}, 0, 1, i.makeDisplayFn(map[string]interface{}{"verbose": true})},
+		{[]string{"preview", "p"}, 0, 0, i.preview},
+		{[]string{"hexdump", "hd", "h"}, 0, 1, i.hexdump},
+		{[]string{"string"}, 0, 0, i.string_},
+		{[]string{"u"}, 0, 1, i.u},
 
-		{[]string{"md5"}, 0, 0, q.md5},
-		{[]string{"base64"}, 0, 0, q.base64},
-		{[]string{"unbase64"}, 0, 0, q.unbase64},
-		{[]string{"hex"}, 0, 0, q.hex},
-		{[]string{"unhex"}, 0, 0, q.unhex},
-		{[]string{"query_escape"}, 0, 0, q.queryEscape},
-		{[]string{"query_unescape"}, 0, 0, q.queryUnescape},
-		{[]string{"path_escape"}, 0, 0, q.pathEscape},
-		{[]string{"path_unescape"}, 0, 0, q.pathUnescape},
-		{[]string{"aes_ctr"}, 1, 2, q.aesCtr},
-		{[]string{"json"}, 0, 0, q._json},
+		{[]string{"md5"}, 0, 0, i.md5},
+		{[]string{"base64"}, 0, 0, i.base64},
+		{[]string{"unbase64"}, 0, 0, i.unbase64},
+		{[]string{"hex"}, 0, 0, i.hex},
+		{[]string{"unhex"}, 0, 0, i.unhex},
+		{[]string{"query_escape"}, 0, 0, i.queryEscape},
+		{[]string{"query_unescape"}, 0, 0, i.queryUnescape},
+		{[]string{"path_escape"}, 0, 0, i.pathEscape},
+		{[]string{"path_unescape"}, 0, 0, i.pathUnescape},
+		{[]string{"aes_ctr"}, 1, 2, i.aesCtr},
+		{[]string{"json"}, 0, 0, i._json},
 	}
-	for name, f := range q.registry.Groups {
-		fs = append(fs, Function{[]string{name}, 0, 0, q.makeDecodeFn(registry, f)})
+	for name, f := range i.registry.Groups {
+		fs = append(fs, Function{[]string{name}, 0, 0, i.makeDecodeFn(registry, f)})
 	}
 
 	return fs
 }
 
-func (q *Interp) tty(c interface{}, a []interface{}) interface{} {
-	w, h := q.evalContext.stdout.Size()
+func (i *Interp) tty(c interface{}, a []interface{}) interface{} {
+	w, h := i.evalContext.stdout.Size()
 	return map[string]interface{}{
-		"is_terminal": q.evalContext.stdout.IsTerminal(),
+		"is_terminal": i.evalContext.stdout.IsTerminal(),
 		"size":        []interface{}{w, h},
 	}
 }
 
-func (q *Interp) optionsExpr(c interface{}, a []interface{}) interface{} {
+func (i *Interp) optionsExpr(c interface{}, a []interface{}) interface{} {
 	if len(a) > 0 {
 		opts, ok := a[0].(map[string]interface{})
 		if !ok {
 			return fmt.Errorf("%v: value is not an object", a[0])
 		}
-		q.evalContext.optsExpr = opts
+		i.evalContext.optsExpr = opts
 	}
-	return q.evalContext.optsExpr
+	return i.evalContext.optsExpr
 }
 
-func (q *Interp) options(c interface{}, a []interface{}) interface{} {
+func (i *Interp) options(c interface{}, a []interface{}) interface{} {
 	if len(a) > 0 {
 		opts, ok := a[0].(map[string]interface{})
 		if !ok {
 			return fmt.Errorf("%v: value is not an object", a[0])
 		}
-		q.evalContext.opts = opts
+		i.evalContext.opts = opts
 	}
-	return q.evalContext.opts
+	return i.evalContext.opts
 }
 
-func (q *Interp) read(c interface{}, a []interface{}) interface{} {
+func (i *Interp) read(c interface{}, a []interface{}) interface{} {
 	var ok bool
 	completeFn := ""
 	prompt := ""
@@ -119,11 +119,11 @@ func (q *Interp) read(c interface{}, a []interface{}) interface{} {
 		}
 	}
 
-	src, err := q.os.Readline(prompt, func(line string, pos int) (newLine []string, shared int) {
-		completeCtx, completeCtxCancelFn := context.WithTimeout(q.evalContext.ctx, 1*time.Second)
+	src, err := i.os.Readline(prompt, func(line string, pos int) (newLine []string, shared int) {
+		completeCtx, completeCtxCancelFn := context.WithTimeout(i.evalContext.ctx, 1*time.Second)
 		defer completeCtxCancelFn()
 		// TODO: err
-		names, shared, _ := completeTrampoline(completeCtx, completeFn, c, q, string(line), pos)
+		names, shared, _ := completeTrampoline(completeCtx, completeFn, c, i, string(line), pos)
 		return names, shared
 	})
 	if err != nil {
@@ -133,14 +133,14 @@ func (q *Interp) read(c interface{}, a []interface{}) interface{} {
 	return src
 }
 
-func (q *Interp) eval(c interface{}, a []interface{}) interface{} {
+func (i *Interp) eval(c interface{}, a []interface{}) interface{} {
 	src, ok := a[0].(string)
 	if !ok {
 		return fmt.Errorf("%v: src is not a string", a[0])
 	}
 
 	// TODO: modes opts?
-	iter, err := q.Eval(q.evalContext.ctx, ScriptMode, c, src, q.evalContext.stdout, q.evalContext.optsExpr)
+	iter, err := i.Eval(i.evalContext.ctx, ScriptMode, c, src, i.evalContext.stdout, i.evalContext.optsExpr)
 	if err != nil {
 		return err
 	}
@@ -148,14 +148,14 @@ func (q *Interp) eval(c interface{}, a []interface{}) interface{} {
 	return iter
 }
 
-func (q *Interp) print(c interface{}, a []interface{}) interface{} {
-	if _, err := fmt.Fprintln(q.evalContext.stdout, c); err != nil {
+func (i *Interp) print(c interface{}, a []interface{}) interface{} {
+	if _, err := fmt.Fprintln(i.evalContext.stdout, c); err != nil {
 		return err
 	}
 	return emptyIter{}
 }
 
-func (q *Interp) completeQuery(c interface{}, a []interface{}) interface{} {
+func (i *Interp) completeQuery(c interface{}, a []interface{}) interface{} {
 	s, ok := c.(string)
 	if !ok {
 		return fmt.Errorf("%v: value is not a string", c)
@@ -174,7 +174,7 @@ func (q *Interp) completeQuery(c interface{}, a []interface{}) interface{} {
 	}
 }
 
-func (q *Interp) displayName(c interface{}, a []interface{}) interface{} {
+func (i *Interp) displayName(c interface{}, a []interface{}) interface{} {
 	qo, ok := c.(InterpObject)
 	if !ok {
 		return fmt.Errorf("%v: value is not query object", c)
@@ -182,7 +182,7 @@ func (q *Interp) displayName(c interface{}, a []interface{}) interface{} {
 	return qo.DisplayName()
 }
 
-func (q *Interp) _valueKeys(c interface{}, a []interface{}) interface{} {
+func (i *Interp) _valueKeys(c interface{}, a []interface{}) interface{} {
 	if v, ok := c.(valueObject); ok {
 		var vs []interface{}
 		for _, s := range v.SpecialPropNames() {
@@ -193,11 +193,11 @@ func (q *Interp) _valueKeys(c interface{}, a []interface{}) interface{} {
 	return nil
 }
 
-func (q *Interp) formats(c interface{}, a []interface{}) interface{} {
+func (i *Interp) formats(c interface{}, a []interface{}) interface{} {
 
 	allFormats := map[string]*decode.Format{}
 
-	for _, fs := range q.registry.Groups {
+	for _, fs := range i.registry.Groups {
 		for _, f := range fs {
 			if _, ok := allFormats[f.Name]; ok {
 				continue
@@ -254,7 +254,7 @@ func (bbf *bitBufFile) ToBifBuf() *bitio.Buffer {
 	return bbf.bb.Copy()
 }
 
-func (q *Interp) _open(c interface{}, a []interface{}) interface{} {
+func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 	var rs io.ReadSeeker
 
 	var filename string
@@ -268,13 +268,13 @@ func (q *Interp) _open(c interface{}, a []interface{}) interface{} {
 
 	if filename == "" || filename == "-" {
 		filename = "stdin"
-		buf, err := ioutil.ReadAll(q.os.Stdin())
+		buf, err := ioutil.ReadAll(i.os.Stdin())
 		if err != nil {
 			return err
 		}
 		rs = bytes.NewReader(buf)
 	} else {
-		f, err := q.os.Open(filename)
+		f, err := i.os.Open(filename)
 		if err != nil {
 			return err
 		}
@@ -301,7 +301,7 @@ func (q *Interp) _open(c interface{}, a []interface{}) interface{} {
 		return err
 	}
 
-	opts := buildDisplayOptions(q.evalContext.opts)
+	opts := buildDisplayOptions(i.evalContext.opts)
 
 	// TODO: make nicer
 	// we don't want to print any progress things after decode is done
@@ -315,14 +315,14 @@ func (q *Interp) _open(c interface{}, a []interface{}) interface{} {
 				return
 			}
 			// cleanup when done
-			fmt.Fprint(q.os.Stderr(), "100.0%\r")
+			fmt.Fprint(i.os.Stderr(), "100.0%\r")
 		}
 
 		rs = progressreadseeker.New(rs, bEnd, func(readBytes int64, length int64) {
 			if decodeDone {
 				return
 			}
-			fmt.Fprintf(q.os.Stderr(), "\r%.1f%%", (float64(readBytes)/float64(length))*100)
+			fmt.Fprintf(i.os.Stderr(), "\r%.1f%%", (float64(readBytes)/float64(length))*100)
 			shownProgress = true
 		})
 	}
@@ -339,7 +339,7 @@ func (q *Interp) _open(c interface{}, a []interface{}) interface{} {
 	}
 }
 
-func (q *Interp) makeDecodeFn(registry *decode.Registry, decodeFormats []*decode.Format) func(c interface{}, a []interface{}) interface{} {
+func (i *Interp) makeDecodeFn(registry *decode.Registry, decodeFormats []*decode.Format) func(c interface{}, a []interface{}) interface{} {
 	return func(c interface{}, a []interface{}) interface{} {
 		// TODO: progress hack
 		// would be nice to move progress code into decode but it might be
@@ -387,18 +387,18 @@ func (q *Interp) makeDecodeFn(registry *decode.Registry, decodeFormats []*decode
 	}
 }
 
-func (q *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}, a []interface{}) interface{} {
+func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}, a []interface{}) interface{} {
 	return func(c interface{}, a []interface{}) interface{} {
 		switch v := c.(type) {
 		case Display:
 			var opts DisplayOptions
 			if len(a) >= 1 {
-				opts = buildDisplayOptions(q.evalContext.opts, fnOpts, a[0].(map[string]interface{}))
+				opts = buildDisplayOptions(i.evalContext.opts, fnOpts, a[0].(map[string]interface{}))
 			} else {
-				opts = buildDisplayOptions(q.evalContext.opts, fnOpts)
+				opts = buildDisplayOptions(i.evalContext.opts, fnOpts)
 			}
 
-			if err := v.Display(q.evalContext.stdout, opts); err != nil {
+			if err := v.Display(i.evalContext.stdout, opts); err != nil {
 				return err
 			}
 			return emptyIter{}
@@ -408,18 +408,18 @@ func (q *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 	}
 }
 
-func (q *Interp) preview(c interface{}, a []interface{}) interface{} {
+func (i *Interp) preview(c interface{}, a []interface{}) interface{} {
 	vo, ok := c.(valueObject)
 	if !ok {
 		return fmt.Errorf("%v: value is not a decode value", c)
 	}
-	if err := preview(vo.v, q.evalContext.stdout); err != nil {
+	if err := preview(vo.v, i.evalContext.stdout); err != nil {
 		return err
 	}
 	return emptyIter{}
 }
 
-func (q *Interp) hexdump(c interface{}, a []interface{}) interface{} {
+func (i *Interp) hexdump(c interface{}, a []interface{}) interface{} {
 	bb, r, _, err := toBitBuf(c)
 	if err != nil {
 		return err
@@ -433,14 +433,14 @@ func (q *Interp) hexdump(c interface{}, a []interface{}) interface{} {
 
 	var opts DisplayOptions
 	if len(a) >= 1 {
-		opts = buildDisplayOptions(q.evalContext.opts, a[0].(map[string]interface{}))
+		opts = buildDisplayOptions(i.evalContext.opts, a[0].(map[string]interface{}))
 	} else {
-		opts = buildDisplayOptions(q.evalContext.opts)
+		opts = buildDisplayOptions(i.evalContext.opts)
 	}
 
 	d := opts.Decorator
 	hw := hexdump.New(
-		q.evalContext.stdout,
+		i.evalContext.stdout,
 		(r.Start-bitsByteAlign)/8,
 		num.DigitsInBase(bitio.BitsByteCount(r.Stop()+bitsByteAlign), true, opts.AddrBase),
 		opts.AddrBase,
@@ -457,7 +457,7 @@ func (q *Interp) hexdump(c interface{}, a []interface{}) interface{} {
 	return emptyIter{}
 }
 
-func (q *Interp) string_(c interface{}, a []interface{}) interface{} {
+func (i *Interp) string_(c interface{}, a []interface{}) interface{} {
 	bb, _, _, err := toBitBuf(c)
 	if err != nil {
 		return err
@@ -471,7 +471,7 @@ func (q *Interp) string_(c interface{}, a []interface{}) interface{} {
 	return string(sb.String())
 }
 
-func (q *Interp) u(c interface{}, a []interface{}) interface{} {
+func (i *Interp) u(c interface{}, a []interface{}) interface{} {
 	bb, r, _, err := toBitBuf(c)
 	if err != nil {
 		return err
@@ -506,7 +506,7 @@ func (q *Interp) u(c interface{}, a []interface{}) interface{} {
 	return bi
 }
 
-func (q *Interp) md5(c interface{}, a []interface{}) interface{} {
+func (i *Interp) md5(c interface{}, a []interface{}) interface{} {
 	bb, _, _, err := toBitBuf(c)
 	if err != nil {
 		return err
@@ -520,7 +520,7 @@ func (q *Interp) md5(c interface{}, a []interface{}) interface{} {
 	return md5.Sum(nil)
 }
 
-func (q *Interp) base64(c interface{}, a []interface{}) interface{} {
+func (i *Interp) base64(c interface{}, a []interface{}) interface{} {
 	bb, _, _, err := toBitBuf(c)
 	if err != nil {
 		return err
@@ -536,7 +536,7 @@ func (q *Interp) base64(c interface{}, a []interface{}) interface{} {
 	return b64Buf.Bytes()
 }
 
-func (q *Interp) unbase64(c interface{}, a []interface{}) interface{} {
+func (i *Interp) unbase64(c interface{}, a []interface{}) interface{} {
 	bb, _, _, err := toBitBuf(c)
 	if err != nil {
 		return err
@@ -550,7 +550,7 @@ func (q *Interp) unbase64(c interface{}, a []interface{}) interface{} {
 	return buf.Bytes()
 }
 
-func (q *Interp) hex(c interface{}, a []interface{}) interface{} {
+func (i *Interp) hex(c interface{}, a []interface{}) interface{} {
 	bb, _, _, err := toBitBuf(c)
 	if err != nil {
 		return err
@@ -564,7 +564,7 @@ func (q *Interp) hex(c interface{}, a []interface{}) interface{} {
 	return buf.String()
 }
 
-func (q *Interp) unhex(c interface{}, a []interface{}) interface{} {
+func (i *Interp) unhex(c interface{}, a []interface{}) interface{} {
 	bb, _, _, err := toBitBuf(c)
 	if err != nil {
 		return err
@@ -578,7 +578,7 @@ func (q *Interp) unhex(c interface{}, a []interface{}) interface{} {
 	return b64Buf.Bytes()
 }
 
-func (q *Interp) queryEscape(c interface{}, a []interface{}) interface{} {
+func (i *Interp) queryEscape(c interface{}, a []interface{}) interface{} {
 	s, err := toString(c)
 	if err != nil {
 		return err
@@ -586,7 +586,7 @@ func (q *Interp) queryEscape(c interface{}, a []interface{}) interface{} {
 	return url.QueryEscape(s)
 }
 
-func (q *Interp) queryUnescape(c interface{}, a []interface{}) interface{} {
+func (i *Interp) queryUnescape(c interface{}, a []interface{}) interface{} {
 	s, err := toString(c)
 	if err != nil {
 		return err
@@ -597,7 +597,7 @@ func (q *Interp) queryUnescape(c interface{}, a []interface{}) interface{} {
 	}
 	return u
 }
-func (q *Interp) pathEscape(c interface{}, a []interface{}) interface{} {
+func (i *Interp) pathEscape(c interface{}, a []interface{}) interface{} {
 	s, err := toString(c)
 	if err != nil {
 		return err
@@ -605,7 +605,7 @@ func (q *Interp) pathEscape(c interface{}, a []interface{}) interface{} {
 	return url.PathEscape(s)
 }
 
-func (q *Interp) pathUnescape(c interface{}, a []interface{}) interface{} {
+func (i *Interp) pathUnescape(c interface{}, a []interface{}) interface{} {
 	s, err := toString(c)
 	if err != nil {
 		return err
@@ -617,7 +617,7 @@ func (q *Interp) pathUnescape(c interface{}, a []interface{}) interface{} {
 	return u
 }
 
-func (q *Interp) aesCtr(c interface{}, a []interface{}) interface{} {
+func (i *Interp) aesCtr(c interface{}, a []interface{}) interface{} {
 	keyBytes, err := toBytes(a[0])
 	if err != nil {
 		return err
@@ -662,7 +662,7 @@ func (q *Interp) aesCtr(c interface{}, a []interface{}) interface{} {
 	return buf.Bytes()
 }
 
-func (q *Interp) _json(c interface{}, a []interface{}) interface{} {
+func (i *Interp) _json(c interface{}, a []interface{}) interface{} {
 	bb, _, _, err := toBitBuf(c)
 	if err != nil {
 		return err

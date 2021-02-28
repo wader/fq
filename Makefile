@@ -2,7 +2,7 @@ all: test
 
 .PHONY: test
 test:
-	go test -v -cover -race -coverpkg=./... -coverprofile=cover.out ./pkg/format ./pkg/query
+	go test -v -cover -race -coverpkg=./... -coverprofile=cover.out ./pkg/format ./pkg/interp
 	go tool cover -html=cover.out -o cover.out.html
 	cat cover.out.html | grep '<option value="file' | sed -E 's/.*>(.*) \((.*)%\)<.*/\2 \1/' | sort -rn
 testwrite: export WRITE_ACTUAL=1

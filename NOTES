@@ -1,4 +1,8 @@
 
+cleanup MustGroup decode()
+
+cleanup hash/crypto, makeCipher() function etc?
+
 pre-parse fq.jq?
 
 cleanup interp.go... many fuctions passed now, run/main mess?

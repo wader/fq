@@ -37,7 +37,7 @@ func TestBuildCompletionQuery(t *testing.T) {
 			actualQuery, actualType, actualPrefix := interp.BuildCompletionQuery(tC.input)
 			actualQueryStr := ""
 			if actualQuery != nil {
-				actualQueryStr = actualinterp.String()
+				actualQueryStr = actualQuery.String()
 			}
 
 			if tC.expectedQuery != actualQueryStr {

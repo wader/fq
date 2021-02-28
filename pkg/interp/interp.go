@@ -1,7 +1,5 @@
 package interp
 
-// TODO: rename to context etc? env?
-
 import (
 	"bytes"
 	"context"
@@ -426,34 +424,32 @@ type Interp struct {
 func New(opts InterpOptions) (*Interp, error) {
 	var err error
 
-	q := &Interp{
+	i := &Interp{
 		variables: opts.Variables,
 		registry:  opts.Registry,
 		os:        opts.OS,
 	}
 
 	// TODO: cleanup group names and panics
-	// q.functions = q.makeFunctions(opts)
-	// TODO: redo args handling in jq? a cli_entry function that reads args?
-	// q.variables = opts.Variables
-	q.builtinQueryCache = map[string]*gojq.Query{}
-	q.evalContext = &evalContext{
+
+	i.builtinQueryCache = map[string]*gojq.Query{}
+	i.evalContext = &evalContext{
 		optsExpr: map[string]interface{}{},
 		opts:     map[string]interface{}{},
 	}
-	q.includeFqQuery, err = gojq.Parse(string(fqJq))
+	i.includeFqQuery, err = gojq.Parse(string(fqJq))
 	if err != nil {
 		return nil, fmt.Errorf("%d: %w", queryErrorLine(err), err)
 	}
 
-	return q, nil
+	return i, nil
 }
 
-func (q *Interp) Main(stdout io.Writer) error {
+func (i *Interp) Main(ctx context.Context, stdout io.Writer) error {
 	runMode := ScriptMode
 
 	var args []interface{}
-	for _, a := range q.os.Args() {
+	for _, a := range i.os.Args() {
 		args = append(args, a)
 	}
 
@@ -462,27 +458,27 @@ func (q *Interp) Main(stdout io.Writer) error {
 		"version": fq.Version,
 	}
 
-	i, err := q.Eval(context.Background(), runMode, input, "main", q.os.Stdout(), nil)
+	iter, err := i.Eval(ctx, runMode, input, "main", i.os.Stdout(), nil)
 	if err != nil {
 		log.Printf("err: %#+v\n", err)
 		return err
 	}
 	for {
-		v, ok := i.Next()
+		v, ok := iter.Next()
 		if !ok {
 			break
 		} else if err, ok := v.(error); ok {
-			fmt.Fprintln(q.os.Stderr(), err)
+			fmt.Fprintln(i.os.Stderr(), err)
 			return err
 		} else if d, ok := v.([2]interface{}); ok {
-			fmt.Fprintf(q.os.Stderr(), "%s: %v\n", d[0], d[1])
+			fmt.Fprintf(i.os.Stderr(), "%s: %v\n", d[0], d[1])
 		}
 	}
 
 	return nil
 }
 
-func (q *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src string, stdout Output, optsExpr map[string]interface{}) (gojq.Iter, error) {
+func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src string, stdout Output, optsExpr map[string]interface{}) (gojq.Iter, error) {
 	var err error
 
 	// TODO: did not work
@@ -494,45 +490,45 @@ func (q *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	}
 
 	// make copy of query
-	cq := *q
-	nq := &cq
+	ci := *i
+	ni := &ci
 	if optsExpr == nil {
 		optsExpr = map[string]interface{}{}
 	}
-	nq.evalContext = &evalContext{
+	ni.evalContext = &evalContext{
 		ctx:      ctx,
 		mode:     mode,
 		optsExpr: optsExpr,
-		opts:     q.evalContext.opts,
+		opts:     i.evalContext.opts,
 		inEval:   false,
 	}
 
 	var variableNames []string
 	var variableValues []interface{}
-	for k, v := range nq.variables {
+	for k, v := range ni.variables {
 		variableNames = append(variableNames, k)
 		variableValues = append(variableValues, v)
 	}
 
 	var compilerOpts []gojq.CompilerOption
-	for _, f := range nq.makeFunctions(nq.registry) {
+	for _, f := range ni.makeFunctions(ni.registry) {
 		for _, n := range f.Names {
 			compilerOpts = append(compilerOpts,
 				gojq.WithFunction(n, f.MinArity, f.MaxArity, f.Fn))
 		}
 	}
-	compilerOpts = append(compilerOpts, gojq.WithEnvironLoader(nq.os.Environ))
+	compilerOpts = append(compilerOpts, gojq.WithEnvironLoader(ni.os.Environ))
 	compilerOpts = append(compilerOpts, gojq.WithVariables(variableNames))
 	compilerOpts = append(compilerOpts, gojq.WithModuleLoader(loadModule{
 		init: func() ([]*gojq.Query, error) {
-			return []*gojq.Query{q.includeFqQuery}, nil
+			return []*gojq.Query{i.includeFqQuery}, nil
 		},
 		load: func(name string) (*gojq.Query, error) {
 			parts := strings.Split(name, "/")
 
 			if len(parts) > 0 && parts[0] == builtinPrefix {
 				name = strings.Join(parts[1:], "/")
-				if q, ok := nq.builtinQueryCache[name]; ok {
+				if q, ok := ni.builtinQueryCache[name]; ok {
 					return q, nil
 				}
 				b, err := builtinFS.ReadFile(name)
@@ -543,7 +539,7 @@ func (q *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 				if err != nil {
 					return nil, err
 				}
-				nq.builtinQueryCache[name] = mq
+				ni.builtinQueryCache[name] = mq
 				return mq, nil
 			}
 
@@ -556,12 +552,12 @@ func (q *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 		return nil, fmt.Errorf("%d: %w", queryErrorLine(err), err)
 	}
 
-	opts := buildDisplayOptions(q.evalContext.opts)
+	opts := buildDisplayOptions(i.evalContext.opts)
 	cleanupFn := func() {}
 	stdoutCtx := ctx
 
 	if opts.REPL {
-		q.evalContext.inEval = true
+		i.evalContext.inEval = true
 		interruptChan := make(chan os.Signal, 1)
 		signal.Notify(interruptChan, os.Interrupt)
 		interruptCtx, interruptCtxCancelFn := context.WithCancel(ctx)
@@ -569,7 +565,7 @@ func (q *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 		go func() {
 			select {
 			case <-interruptChan:
-				if !nq.evalContext.inEval {
+				if !ni.evalContext.inEval {
 					interruptCtxCancelFn()
 				}
 			case <-interruptCtx.Done():
@@ -580,11 +576,11 @@ func (q *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 			signal.Stop(interruptChan)
 			// stop interruptChan goroutine
 			interruptCtxCancelFn()
-			q.evalContext.inEval = false
+			i.evalContext.inEval = false
 		}
 	}
 
-	nq.evalContext.stdout = CtxOutput{Output: stdout, Ctx: stdoutCtx}
+	ni.evalContext.stdout = CtxOutput{Output: stdout, Ctx: stdoutCtx}
 
 	iter := gc.RunWithContext(ctx, c, variableValues...)
 
@@ -603,7 +599,7 @@ func (q *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	return iterCtxWrapped, nil
 }
 
-func (q *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output, optsExpr map[string]interface{}) (gojq.Iter, error) {
+func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output, optsExpr map[string]interface{}) (gojq.Iter, error) {
 	var argsJSON []string
 	for _, arg := range args {
 		b, err := json.Marshal(arg)
@@ -617,15 +613,15 @@ func (q *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name
 		argsStr = "(" + strings.Join(argsJSON, ";") + ")"
 	}
 
-	iter, err := q.Eval(ctx, mode, c, fmt.Sprintf("%s%s", name, argsStr), stdout, optsExpr)
+	iter, err := i.Eval(ctx, mode, c, fmt.Sprintf("%s%s", name, argsStr), stdout, optsExpr)
 	if err != nil {
 		return nil, err
 	}
 	return iter, nil
 }
 
-func (q *Interp) EvalFuncValue(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output, optsExpr map[string]interface{}) interface{} {
-	iter, err := q.EvalFunc(ctx, mode, c, name, args, stdout, optsExpr)
+func (i *Interp) EvalFuncValue(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output, optsExpr map[string]interface{}) interface{} {
+	iter, err := i.EvalFunc(ctx, mode, c, name, args, stdout, optsExpr)
 	if err != nil {
 		return err
 	}

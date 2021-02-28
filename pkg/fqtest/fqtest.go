@@ -32,13 +32,8 @@ type testCaseRunOutput struct {
 	io.Writer
 }
 
-func (o testCaseRunOutput) Size() (int, int) {
-	return 120, 25
-}
-
-func (o testCaseRunOutput) IsTerminal() bool {
-	return false
-}
+func (o testCaseRunOutput) Size() (int, int) { return 120, 25 }
+func (o testCaseRunOutput) IsTerminal() bool { return false }
 
 type testCaseRun struct {
 	lineNr          int
