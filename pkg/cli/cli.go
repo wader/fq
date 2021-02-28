@@ -3,7 +3,7 @@ package cli
 import (
 	"fmt"
 	"fq/pkg/decode"
-	"fq/pkg/query"
+	"fq/pkg/interp"
 	"io"
 	"io/ioutil"
 	"os"
@@ -62,7 +62,7 @@ func (o standardOsOutput) IsTerminal() bool {
 }
 
 func (*standardOS) Stdin() io.Reader                        { return os.Stdin }
-func (*standardOS) Stdout() query.Output                    { return standardOsOutput{} }
+func (*standardOS) Stdout() interp.Output                   { return standardOsOutput{} }
 func (*standardOS) Stderr() io.Writer                       { return os.Stderr }
 func (*standardOS) Environ() []string                       { return os.Environ() }
 func (*standardOS) Args() []string                          { return os.Args }
@@ -97,7 +97,7 @@ func Main(r *decode.Registry) {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	q, err := query.NewQuery(query.QueryOptions{
+	q, err := interp.New(interp.InterpOptions{
 		Registry: r,
 		OS:       o,
 	})

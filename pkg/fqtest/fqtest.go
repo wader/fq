@@ -19,7 +19,7 @@ import (
 	"fq/internal/shquote"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
-	"fq/pkg/query"
+	"fq/pkg/interp"
 )
 
 type testCaseReadline struct {
@@ -53,10 +53,10 @@ type testCaseRun struct {
 
 func (tcr *testCaseRun) Line() int { return tcr.lineNr }
 
-func (tcr *testCaseRun) Stdin() io.Reader     { return nil } // TOOD: special file?
-func (tcr *testCaseRun) Stdout() query.Output { return testCaseRunOutput{tcr.actualStdoutBuf} }
-func (tcr *testCaseRun) Stderr() io.Writer    { return tcr.actualStderrBuf }
-func (tcr *testCaseRun) Environ() []string    { return nil }
+func (tcr *testCaseRun) Stdin() io.Reader      { return nil } // TOOD: special file?
+func (tcr *testCaseRun) Stdout() interp.Output { return testCaseRunOutput{tcr.actualStdoutBuf} }
+func (tcr *testCaseRun) Stderr() io.Writer     { return tcr.actualStderrBuf }
+func (tcr *testCaseRun) Environ() []string     { return nil }
 func (tcr *testCaseRun) Args() []string {
 	return shquote.Split(tcr.args)
 }
@@ -345,7 +345,7 @@ func parseTestCases(s string) *testCase {
 // }
 
 func testDecodedTestCaseRun(t *testing.T, registry *decode.Registry, tcr *testCaseRun) {
-	q, err := query.NewQuery(query.QueryOptions{Registry: registry, OS: tcr})
+	q, err := interp.New(interp.InterpOptions{Registry: registry, OS: tcr})
 	if err != nil {
 		t.Fatal(err)
 	}

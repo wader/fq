@@ -1,4 +1,4 @@
-package query
+package interp
 
 // TODO: rename to context etc? env?
 
@@ -198,7 +198,7 @@ func (o CtxOutput) Write(p []byte) (n int, err error) {
 	return o.Output.Write(p)
 }
 
-type QueryObject interface {
+type InterpObject interface {
 	gojq.JSONObject
 
 	DisplayName() string
@@ -377,7 +377,7 @@ func toBitBuf(v interface{}) (*bitio.Buffer, ranges.Range, string, error) {
 	}
 }
 
-type QueryOptions struct {
+type InterpOptions struct {
 	Variables map[string]interface{}
 	Registry  *decode.Registry
 	OS        OS
@@ -412,7 +412,7 @@ type evalContext struct {
 	inEval   bool
 }
 
-type Query struct {
+type Interp struct {
 	variables map[string]interface{}
 	registry  *decode.Registry
 	os        OS
@@ -423,10 +423,10 @@ type Query struct {
 	evalContext *evalContext
 }
 
-func NewQuery(opts QueryOptions) (*Query, error) {
+func New(opts InterpOptions) (*Interp, error) {
 	var err error
 
-	q := &Query{
+	q := &Interp{
 		variables: opts.Variables,
 		registry:  opts.Registry,
 		os:        opts.OS,
@@ -449,7 +449,7 @@ func NewQuery(opts QueryOptions) (*Query, error) {
 	return q, nil
 }
 
-func (q *Query) Main(stdout io.Writer) error {
+func (q *Interp) Main(stdout io.Writer) error {
 	runMode := ScriptMode
 
 	var args []interface{}
@@ -482,7 +482,7 @@ func (q *Query) Main(stdout io.Writer) error {
 	return nil
 }
 
-func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, src string, stdout Output, optsExpr map[string]interface{}) (gojq.Iter, error) {
+func (q *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src string, stdout Output, optsExpr map[string]interface{}) (gojq.Iter, error) {
 	var err error
 
 	// TODO: did not work
@@ -603,7 +603,7 @@ func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, src strin
 	return iterCtxWrapped, nil
 }
 
-func (q *Query) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output, optsExpr map[string]interface{}) (gojq.Iter, error) {
+func (q *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output, optsExpr map[string]interface{}) (gojq.Iter, error) {
 	var argsJSON []string
 	for _, arg := range args {
 		b, err := json.Marshal(arg)
@@ -624,7 +624,7 @@ func (q *Query) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name 
 	return iter, nil
 }
 
-func (q *Query) EvalFuncValue(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output, optsExpr map[string]interface{}) interface{} {
+func (q *Interp) EvalFuncValue(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output, optsExpr map[string]interface{}) interface{} {
 	iter, err := q.EvalFunc(ctx, mode, c, name, args, stdout, optsExpr)
 	if err != nil {
 		return err

@@ -1,4 +1,4 @@
-package query
+package interp
 
 import (
 	"bytes"
@@ -12,8 +12,8 @@ import (
 	"sort"
 )
 
-// assert that *Value implements QueryObject
-var _ QueryObject = &valueObject{}
+// assert that *Value implements InterpObject
+var _ InterpObject = &valueObject{}
 
 type valueObject struct {
 	v *decode.Value
@@ -408,7 +408,7 @@ func (de *decodeError2) JsonPrimitiveValue() interface{} {
 	}
 }
 
-var _ QueryObject = &bitBufObject{}
+var _ InterpObject = &bitBufObject{}
 
 type bitBufObject struct {
 	bb   *bitio.Buffer

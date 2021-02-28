@@ -1,4 +1,4 @@
-package query
+package interp
 
 import (
 	"encoding/hex"
