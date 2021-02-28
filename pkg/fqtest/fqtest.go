@@ -20,12 +20,25 @@ import (
 	"fq/pkg/bitio"
 	"fq/pkg/cli"
 	"fq/pkg/decode"
+	"fq/pkg/query"
 )
 
 type testCaseReadline struct {
 	input          string
 	expectedPrompt string
 	expectedStdout string
+}
+
+type testCaseRunOutput struct {
+	io.Writer
+}
+
+func (o testCaseRunOutput) Size() (int, int) {
+	return 120, 25
+}
+
+func (o testCaseRunOutput) IsTerminal() bool {
+	return false
 }
 
 type testCaseRun struct {
@@ -41,10 +54,10 @@ type testCaseRun struct {
 
 func (tcr *testCaseRun) Line() int { return tcr.lineNr }
 
-func (tcr *testCaseRun) Stdin() io.Reader  { return nil } // TOOD: special file?
-func (tcr *testCaseRun) Stdout() io.Writer { return tcr.actualStdoutBuf }
-func (tcr *testCaseRun) Stderr() io.Writer { return tcr.actualStderrBuf }
-func (tcr *testCaseRun) Environ() []string { return nil }
+func (tcr *testCaseRun) Stdin() io.Reader     { return nil } // TOOD: special file?
+func (tcr *testCaseRun) Stdout() query.Output { return testCaseRunOutput{tcr.actualStdoutBuf} }
+func (tcr *testCaseRun) Stderr() io.Writer    { return tcr.actualStderrBuf }
+func (tcr *testCaseRun) Environ() []string    { return nil }
 func (tcr *testCaseRun) Args() []string {
 	return shquote.Split(tcr.args)
 }

@@ -1,4 +1,6 @@
 
+pre-parse fq.jq?
+
 cleanup query.go... many fuctions passed now, run/main mess?
 
 

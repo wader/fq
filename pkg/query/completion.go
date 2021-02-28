@@ -111,7 +111,7 @@ func transformToCompletionQuery(q *gojq.Query) (*gojq.Query, CompletionType, str
 
 func completeTrampoline(ctx context.Context, completeFn string, c interface{}, q *Query, line string, pos int) (newLine []string, shared int, err error) {
 	lineStr := string(line[0:pos])
-	v := q.EvalFuncValue(ctx, CompletionMode, c, completeFn, []interface{}{lineStr}, DiscardOutput{}, q.evalContext.optsExpr)
+	v := q.EvalFuncValue(ctx, CompletionMode, c, completeFn, []interface{}{lineStr}, DiscardOutput{Ctx: ctx}, q.evalContext.optsExpr)
 	if _, ok := v.(error); ok {
 		return nil, pos, err
 	}

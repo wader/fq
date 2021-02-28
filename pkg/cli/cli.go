@@ -3,7 +3,6 @@ package cli
 import (
 	"fmt"
 	"fq/pkg/decode"
-	"fq/pkg/osenv"
 	"fq/pkg/query"
 	"io"
 	"io/ioutil"
@@ -47,8 +46,23 @@ func newStandardOS() (*StandardOS, error) {
 	return &StandardOS{rl: rl}, nil
 }
 
+type standardOsOutput struct{}
+
+func (o standardOsOutput) Write(p []byte) (n int, err error) {
+	return os.Stdout.Write(p)
+}
+
+func (o standardOsOutput) Size() (int, int) {
+	w, h, _ := readline.GetSize(int(os.Stdout.Fd()))
+	return w, h
+}
+
+func (o standardOsOutput) IsTerminal() bool {
+	return readline.IsTerminal(int(os.Stdout.Fd()))
+}
+
 func (*StandardOS) Stdin() io.Reader                        { return os.Stdin }
-func (*StandardOS) Stdout() io.Writer                       { return os.Stdout }
+func (*StandardOS) Stdout() query.Output                    { return standardOsOutput{} }
 func (*StandardOS) Stderr() io.Writer                       { return os.Stderr }
 func (*StandardOS) Environ() []string                       { return os.Environ() }
 func (*StandardOS) Args() []string                          { return os.Args }
@@ -93,7 +107,7 @@ func StandardOSMain(r *decode.Registry) {
 }
 
 type Main struct {
-	OS       osenv.OS
+	OS       query.OS
 	Registry *decode.Registry
 }
 
@@ -103,12 +117,7 @@ func (m Main) Run() error {
 	q, err := query.NewQuery(query.QueryOptions{
 		Registry: m.Registry,
 
-		Args:     m.OS.Args(),
-		Environ:  m.OS.Environ, // TODO: func?
-		Stdin:    m.OS.Stdin(),
-		Stderr:   m.OS.Stderr(),
-		Open:     m.OS.Open,
-		Readline: m.OS.Readline,
+		OS: m.OS,
 	})
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)

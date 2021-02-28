@@ -1,0 +1,14 @@
+// +build ignore
+
+
+{{- range $t := $.try }}
+{{- range $h := $.how }}
+{{- range $w := $.where }}
+
+func (d *D) FieldDecode{{$t.name}}{{$h.name}}{{$w.name}}(nBits int) float64 {
+    return
+}
+
+{{- end}}
+{{- end}}
+{{- end}}

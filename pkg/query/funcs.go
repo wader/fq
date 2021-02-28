@@ -119,20 +119,18 @@ func (q *Query) read(c interface{}, a []interface{}) interface{} {
 		}
 	}
 
-	src, err := q.readline(prompt, func(line string, pos int) (newLine []string, shared int) {
+	src, err := q.os.Readline(prompt, func(line string, pos int) (newLine []string, shared int) {
 		completeCtx, completeCtxCancelFn := context.WithTimeout(q.evalContext.ctx, 1*time.Second)
 		defer completeCtxCancelFn()
 		// TODO: err
 		names, shared, _ := completeTrampoline(completeCtx, completeFn, c, q, string(line), pos)
 		return names, shared
 	})
-
 	if err != nil {
 		return err
 	}
 
 	return src
-
 }
 
 func (q *Query) eval(c interface{}, a []interface{}) interface{} {
@@ -270,13 +268,13 @@ func (q *Query) _open(c interface{}, a []interface{}) interface{} {
 
 	if filename == "" || filename == "-" {
 		filename = "stdin"
-		buf, err := ioutil.ReadAll(q.stdin)
+		buf, err := ioutil.ReadAll(q.os.Stdin())
 		if err != nil {
 			return err
 		}
 		rs = bytes.NewReader(buf)
 	} else {
-		f, err := q.open(filename)
+		f, err := q.os.Open(filename)
 		if err != nil {
 			return err
 		}
@@ -317,14 +315,14 @@ func (q *Query) _open(c interface{}, a []interface{}) interface{} {
 				return
 			}
 			// cleanup when done
-			fmt.Fprint(q.stderr, "100.0%\r")
+			fmt.Fprint(q.os.Stderr(), "100.0%\r")
 		}
 
 		rs = progressreadseeker.New(rs, bEnd, func(readBytes int64, length int64) {
 			if decodeDone {
 				return
 			}
-			fmt.Fprintf(q.stderr, "\r%.1f%%", (float64(readBytes)/float64(length))*100)
+			fmt.Fprintf(q.os.Stderr(), "\r%.1f%%", (float64(readBytes)/float64(length))*100)
 			shownProgress = true
 		})
 	}

@@ -21,7 +21,6 @@ import (
 	"os/signal"
 	"strings"
 
-	"github.com/chzyer/readline"
 	"github.com/itchyny/gojq"
 )
 
@@ -32,6 +31,24 @@ var builtinFS embed.FS
 
 //go:embed fq.jq
 var fqJq []byte
+
+// TODO: move to OS? Input/Outout interfaces?
+type Output interface {
+	io.Writer
+	Size() (int, int)
+	IsTerminal() bool
+}
+
+type OS interface {
+	Stdin() io.Reader
+	Stdout() Output
+	Stderr() io.Writer
+	Args() []string
+	Environ() []string
+	// returned io.ReadSeeker can optionally implement io.Closer
+	Open(name string) (io.ReadSeeker, error)
+	Readline(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error)
+}
 
 // TODO: would be nice if gojq had something for this? maybe missing something?
 func offsetToLine(s string, offset int) int {
@@ -152,58 +169,33 @@ type Decorators struct {
 	Column string
 }
 
-// TODO: move to OS? Input/Outout interfaces?
-type Output interface {
-	io.Writer
-	Size() (int, int)
-	IsTerminal() bool
-	WithContext(ctx context.Context) Output
-}
-
 // TODO: move
-type DiscardOutput struct{}
+type DiscardOutput struct {
+	Output
+	Ctx context.Context
+}
 
 func (o DiscardOutput) Write(p []byte) (n int, err error) {
+	if o.Ctx != nil {
+		if err := o.Ctx.Err(); err != nil {
+			return 0, err
+		}
+	}
 	return n, nil
 }
-func (o DiscardOutput) Size() (int, int)                       { return 0, 0 }
-func (o DiscardOutput) IsTerminal() bool                       { return false }
-func (o DiscardOutput) WithContext(ctx context.Context) Output { return o }
 
-type WriterOutput struct {
+type CtxOutput struct {
+	Output
 	Ctx context.Context
-	W   io.Writer
 }
 
-// TODO: move
-func (o WriterOutput) Write(p []byte) (n int, err error) {
-	if err := o.Ctx.Err(); err != nil {
-		return 0, err
+func (o CtxOutput) Write(p []byte) (n int, err error) {
+	if o.Ctx != nil {
+		if err := o.Ctx.Err(); err != nil {
+			return 0, err
+		}
 	}
-	return o.W.Write(p)
-}
-
-func (o WriterOutput) Size() (int, int) {
-	f, ok := o.W.(interface{ Fd() uintptr })
-	if ok {
-		w, h, _ := readline.GetSize(int(f.Fd()))
-		return w, h
-	}
-	return 0, 0
-}
-
-func (o WriterOutput) IsTerminal() bool {
-	if f, ok := o.W.(interface{ Fd() uintptr }); ok {
-		return readline.IsTerminal(int(f.Fd()))
-	}
-	return false
-}
-
-func (o WriterOutput) WithContext(ctx context.Context) Output {
-	return WriterOutput{
-		Ctx: ctx,
-		W:   o.W,
-	}
+	return o.Output.Write(p)
 }
 
 type QueryObject interface {
@@ -388,12 +380,7 @@ func toBitBuf(v interface{}) (*bitio.Buffer, ranges.Range, string, error) {
 type QueryOptions struct {
 	Variables map[string]interface{}
 	Registry  *decode.Registry
-	Args      []string
-	Environ   func() []string
-	Stdin     io.Reader
-	Stderr    io.Writer
-	Open      func(name string) (io.ReadSeeker, error)
-	Readline  func(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error)
+	OS        OS
 }
 
 type Variable struct {
@@ -428,12 +415,7 @@ type evalContext struct {
 type Query struct {
 	variables map[string]interface{}
 	registry  *decode.Registry
-	args      []string
-	environ   func() []string
-	stdin     io.Reader
-	stderr    io.Writer // TODO: move? rename?
-	open      func(name string) (io.ReadSeeker, error)
-	readline  func(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error)
+	os        OS
 
 	builtinQueryCache map[string]*gojq.Query
 	includeFqQuery    *gojq.Query
@@ -447,12 +429,7 @@ func NewQuery(opts QueryOptions) (*Query, error) {
 	q := &Query{
 		variables: opts.Variables,
 		registry:  opts.Registry,
-		args:      opts.Args,
-		environ:   opts.Environ,
-		stdin:     opts.Stdin,
-		stderr:    opts.Stderr,
-		open:      opts.Open,
-		readline:  opts.Readline,
+		os:        opts.OS,
 	}
 
 	// TODO: cleanup group names and panics
@@ -476,7 +453,7 @@ func (q *Query) Main(stdout io.Writer) error {
 	runMode := ScriptMode
 
 	var args []interface{}
-	for _, a := range q.args {
+	for _, a := range q.os.Args() {
 		args = append(args, a)
 	}
 
@@ -485,7 +462,7 @@ func (q *Query) Main(stdout io.Writer) error {
 		"version": fq.Version,
 	}
 
-	i, err := q.Eval(context.Background(), runMode, input, "main", WriterOutput{Ctx: context.Background(), W: stdout}, nil)
+	i, err := q.Eval(context.Background(), runMode, input, "main", q.os.Stdout(), nil)
 	if err != nil {
 		log.Printf("err: %#+v\n", err)
 		return err
@@ -495,10 +472,10 @@ func (q *Query) Main(stdout io.Writer) error {
 		if !ok {
 			break
 		} else if err, ok := v.(error); ok {
-			fmt.Fprintln(q.stderr, err)
+			fmt.Fprintln(q.os.Stderr(), err)
 			return err
 		} else if d, ok := v.([2]interface{}); ok {
-			fmt.Fprintf(q.stderr, "%s: %v\n", d[0], d[1])
+			fmt.Fprintf(q.os.Stderr(), "%s: %v\n", d[0], d[1])
 		}
 	}
 
@@ -544,7 +521,7 @@ func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, src strin
 				gojq.WithFunction(n, f.MinArity, f.MaxArity, f.Fn))
 		}
 	}
-	compilerOpts = append(compilerOpts, gojq.WithEnvironLoader(nq.environ))
+	compilerOpts = append(compilerOpts, gojq.WithEnvironLoader(nq.os.Environ))
 	compilerOpts = append(compilerOpts, gojq.WithVariables(variableNames))
 	compilerOpts = append(compilerOpts, gojq.WithModuleLoader(loadModule{
 		init: func() ([]*gojq.Query, error) {
@@ -607,7 +584,7 @@ func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, src strin
 		}
 	}
 
-	nq.evalContext.stdout = stdout.WithContext(stdoutCtx)
+	nq.evalContext.stdout = CtxOutput{Output: stdout, Ctx: stdoutCtx}
 
 	iter := gc.RunWithContext(ctx, c, variableValues...)
 
