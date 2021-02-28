@@ -6,7 +6,6 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/md5"
-	"embed"
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
@@ -26,11 +25,6 @@ import (
 	"strings"
 	"time"
 )
-
-const builtinPrefix = "@builtin"
-
-//go:embed *.jq
-var builtinFS embed.FS
 
 // TODO: make it nicer somehow?
 func (q *Query) makeFunctions(registry *decode.Registry) []Function {

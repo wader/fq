@@ -5,14 +5,17 @@ package query
 import (
 	"bytes"
 	"context"
+	"embed"
 	"encoding/json"
 	"fmt"
+	"fq"
 	"fq/internal/ansi"
 	"fq/internal/num"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/ranges"
 	"io"
+	"log"
 	"math/big"
 	"os"
 	"os/signal"
@@ -21,6 +24,14 @@ import (
 	"github.com/chzyer/readline"
 	"github.com/itchyny/gojq"
 )
+
+const builtinPrefix = "@builtin"
+
+//go:embed *.jq
+var builtinFS embed.FS
+
+//go:embed fq.jq
+var fqJq []byte
 
 // TODO: would be nice if gojq had something for this? maybe missing something?
 func offsetToLine(s string, offset int) int {
@@ -236,11 +247,13 @@ type emptyIter struct{}
 
 func (emptyIter) Next() (interface{}, bool) { return nil, false }
 
-type loadModuleFn func(name string) (*gojq.Query, error)
-
-func (l loadModuleFn) LoadModule(name string) (*gojq.Query, error) {
-	return l(name)
+type loadModule struct {
+	init func() ([]*gojq.Query, error)
+	load func(name string) (*gojq.Query, error)
 }
+
+func (l loadModule) LoadModule(name string) (*gojq.Query, error) { return l.load(name) }
+func (l loadModule) LoadInitModules() ([]*gojq.Query, error)     { return l.init() }
 
 func toBool(v interface{}) (bool, error) {
 	switch v := v.(type) {
@@ -375,6 +388,7 @@ func toBitBuf(v interface{}) (*bitio.Buffer, ranges.Range, string, error) {
 type QueryOptions struct {
 	Variables map[string]interface{}
 	Registry  *decode.Registry
+	Args      []string
 	Environ   func() []string
 	Stdin     io.Reader
 	Stderr    io.Writer
@@ -414,6 +428,7 @@ type evalContext struct {
 type Query struct {
 	variables map[string]interface{}
 	registry  *decode.Registry
+	args      []string
 	environ   func() []string
 	stdin     io.Reader
 	stderr    io.Writer // TODO: move? rename?
@@ -421,14 +436,18 @@ type Query struct {
 	readline  func(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error)
 
 	builtinQueryCache map[string]*gojq.Query
+	includeFqQuery    *gojq.Query
 
 	evalContext *evalContext
 }
 
-func NewQuery(opts QueryOptions) *Query {
+func NewQuery(opts QueryOptions) (*Query, error) {
+	var err error
+
 	q := &Query{
 		variables: opts.Variables,
 		registry:  opts.Registry,
+		args:      opts.Args,
 		environ:   opts.Environ,
 		stdin:     opts.Stdin,
 		stderr:    opts.Stderr,
@@ -445,15 +464,30 @@ func NewQuery(opts QueryOptions) *Query {
 		optsExpr: map[string]interface{}{},
 		opts:     map[string]interface{}{},
 	}
+	q.includeFqQuery, err = gojq.Parse(string(fqJq))
+	if err != nil {
+		return nil, fmt.Errorf("%d: %w", queryErrorLine(err), err)
+	}
 
-	return q
+	return q, nil
 }
 
 func (q *Query) Main(stdout io.Writer) error {
 	runMode := ScriptMode
 
-	i, err := q.Eval(context.Background(), runMode, nil, "main", WriterOutput{Ctx: context.Background(), W: stdout}, nil)
+	var args []interface{}
+	for _, a := range q.args {
+		args = append(args, a)
+	}
+
+	input := map[string]interface{}{
+		"args":    args,
+		"version": fq.Version,
+	}
+
+	i, err := q.Eval(context.Background(), runMode, input, "main", WriterOutput{Ctx: context.Background(), W: stdout}, nil)
 	if err != nil {
+		log.Printf("err: %#+v\n", err)
 		return err
 	}
 	for {
@@ -477,10 +511,7 @@ func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, src strin
 	// TODO: did not work
 	// nq := &(*q)
 
-	// TODO: move things out to jq?
-	runQuery := `include "@builtin/fq.jq"; ` + src
-
-	gq, err := gojq.Parse(runQuery)
+	gq, err := gojq.Parse(src)
 	if err != nil {
 		return nil, fmt.Errorf("%d: %w", queryErrorLine(err), err)
 	}
@@ -515,28 +546,33 @@ func (q *Query) Eval(ctx context.Context, mode RunMode, c interface{}, src strin
 	}
 	compilerOpts = append(compilerOpts, gojq.WithEnvironLoader(nq.environ))
 	compilerOpts = append(compilerOpts, gojq.WithVariables(variableNames))
-	compilerOpts = append(compilerOpts, gojq.WithModuleLoader(loadModuleFn(func(name string) (*gojq.Query, error) {
-		parts := strings.Split(name, "/")
+	compilerOpts = append(compilerOpts, gojq.WithModuleLoader(loadModule{
+		init: func() ([]*gojq.Query, error) {
+			return []*gojq.Query{q.includeFqQuery}, nil
+		},
+		load: func(name string) (*gojq.Query, error) {
+			parts := strings.Split(name, "/")
 
-		if len(parts) > 0 && parts[0] == builtinPrefix {
-			name = strings.Join(parts[1:], "/")
-			if q, ok := nq.builtinQueryCache[name]; ok {
-				return q, nil
+			if len(parts) > 0 && parts[0] == builtinPrefix {
+				name = strings.Join(parts[1:], "/")
+				if q, ok := nq.builtinQueryCache[name]; ok {
+					return q, nil
+				}
+				b, err := builtinFS.ReadFile(name)
+				if err != nil {
+					return nil, err
+				}
+				mq, err := gojq.Parse(string(b))
+				if err != nil {
+					return nil, err
+				}
+				nq.builtinQueryCache[name] = mq
+				return mq, nil
 			}
-			b, err := builtinFS.ReadFile(name)
-			if err != nil {
-				return nil, err
-			}
-			mq, err := gojq.Parse(string(b))
-			if err != nil {
-				return nil, err
-			}
-			nq.builtinQueryCache[name] = mq
-			return mq, nil
-		}
 
-		return nil, fmt.Errorf("module not found: %q", name)
-	})))
+			return nil, fmt.Errorf("module not found: %q", name)
+		},
+	}))
 
 	gc, err := gojq.Compile(gq, compilerOpts...)
 	if err != nil {
@@ -599,8 +635,12 @@ func (q *Query) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name 
 		}
 		argsJSON = append(argsJSON, string(b))
 	}
+	argsStr := ""
+	if len(argsJSON) > 0 {
+		argsStr = "(" + strings.Join(argsJSON, ";") + ")"
+	}
 
-	iter, err := q.Eval(ctx, mode, c, fmt.Sprintf("%s(%s)", name, strings.Join(argsJSON, ";")), stdout, optsExpr)
+	iter, err := q.Eval(ctx, mode, c, fmt.Sprintf("%s%s", name, argsStr), stdout, optsExpr)
 	if err != nil {
 		return nil, err
 	}

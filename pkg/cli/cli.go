@@ -2,7 +2,6 @@ package cli
 
 import (
 	"fmt"
-	"fq"
 	"fq/pkg/decode"
 	"fq/pkg/osenv"
 	"fq/pkg/query"
@@ -100,27 +99,21 @@ type Main struct {
 
 func (m Main) Run() error {
 	// TODO: pass with some kind of env?
-	filename := "asd"
 
-	var args []interface{}
-	for _, a := range m.OS.Args() {
-		args = append(args, a)
-	}
-
-	q := query.NewQuery(query.QueryOptions{
-		Variables: map[string]interface{}{
-			"$FILENAME": filename,
-			"$VERSION":  fq.Version,
-			"$ARGS":     args,
-		},
+	q, err := query.NewQuery(query.QueryOptions{
 		Registry: m.Registry,
 
+		Args:     m.OS.Args(),
 		Environ:  m.OS.Environ, // TODO: func?
 		Stdin:    m.OS.Stdin(),
 		Stderr:   m.OS.Stderr(),
 		Open:     m.OS.Open,
 		Readline: m.OS.Readline,
 	})
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return err
+	}
 
 	return q.Main(m.OS.Stdout())
 }

@@ -75,8 +75,8 @@ def formats_help_text:
 		)
 	] | join("\n");
 
-def _main:
-	def _opts:
+def main:
+	def _opts($version):
 		{
 			"help": {
 				short: "-h",
@@ -112,7 +112,7 @@ def _main:
 			"version": {
 				short: "-v",
 				long: "--version",
-				description: "Show version (\($VERSION))",
+				description: "Show version (\($version))",
 				bool: true
 			},
 			"options": {
@@ -134,16 +134,17 @@ def _main:
 				}
 			},
 		};
-	. as $args |
-	opts_parse($args[1:];_opts) as {$parsed, $rest} |
+	.version as $version |
+	.args[0] as $arg0 |
+	opts_parse(.args[1:];_opts($version)) as {$parsed, $rest} |
 	# TODO: pass repl some other way
 	options_expr($parsed.options + {repl: ($parsed.repl|tojson)}) |
 	set_eval_options |
 	if $parsed.version then
-		$VERSION | print
+		$version | print
 	elif $parsed.help then
-		("Usage: \($args[0]) [OPTIONS] [FILE] [EXPR]",
-			opts_help_text(_opts),
+		("Usage: \($arg0) [OPTIONS] [FILE] [EXPR]",
+			opts_help_text(_opts($version)),
 		 	formats_help_text
 		) | print
 	else
@@ -164,4 +165,3 @@ def _main:
 			eval_print($expr) 
 		end
 	end;
-def main: $ARGS | _main;

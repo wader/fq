@@ -1,4 +1,5 @@
 
+cleanup query.go... many fuctions passed now, run/main mess?
 
 
 go mod edit -replace github.com/itchyny/gojq=github.com/wader/gojq@ffb6d053b8bcae411fada254b1378aa6d42c9caa
