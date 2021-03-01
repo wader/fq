@@ -29,7 +29,10 @@ $ fq file.mp3 '.headers[].frames[] | select(.id == "APIC")' 
  
 <b># resolution of embedded png picture</b> 
 $ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture.chunks[] | select(.type == "IHDR") | {width, height}' 
-{"height":240,"width":320}
+{
+  "height": 240,
+  "width": 320
+}
  
 <b># extract png</b> 
 $ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture._bits' > file.png 
@@ -38,7 +41,10 @@ file.png: PNG image data, 320 x 240, 8-bit/color RGB, non-interlaced
  
 <b># codecs in a mp4 file</b> 
 $ fq file.mp4 '[.. | select(.type == "stsd").sample_descriptions[].data_format]' 
-["avc1","mp4a"]
+[
+  "avc1",
+  "mp4a"
+]
 </pre>
 </sub>
 

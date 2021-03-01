@@ -2,6 +2,7 @@ package fqtest
 
 import (
 	"bytes"
+	"context"
 	"encoding/hex"
 	"fmt"
 	"io"
@@ -345,7 +346,7 @@ func testDecodedTestCaseRun(t *testing.T, registry *decode.Registry, tcr *testCa
 		t.Fatal(err)
 	}
 
-	err = q.Main(tcr.Stdout())
+	err = q.Main(context.Background(), tcr.Stdout())
 	if err != nil {
 		// TODO: expect error
 		t.Fatal(err)
