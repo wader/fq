@@ -13,7 +13,6 @@ import (
 	"fq/pkg/decode"
 	"fq/pkg/ranges"
 	"io"
-	"log"
 	"math/big"
 	"os"
 	"os/signal"
@@ -459,7 +458,6 @@ func (i *Interp) Main(ctx context.Context, stdout io.Writer) error {
 
 	iter, err := i.Eval(ctx, runMode, input, "main", i.os.Stdout(), nil)
 	if err != nil {
-		log.Printf("err: %#+v\n", err)
 		return err
 	}
 	for {
@@ -553,14 +551,14 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 
 	opts := buildDisplayOptions(i.evalContext.opts)
 	cleanupFn := func() {}
-	stdoutCtx := ctx
+	runCtx := ctx
 
 	if opts.REPL {
 		i.evalContext.inEval = true
 		interruptChan := make(chan os.Signal, 1)
 		signal.Notify(interruptChan, os.Interrupt)
 		interruptCtx, interruptCtxCancelFn := context.WithCancel(ctx)
-		stdoutCtx = interruptCtx
+		runCtx = interruptCtx
 		go func() {
 			select {
 			case <-interruptChan:
@@ -579,9 +577,9 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 		}
 	}
 
-	ni.evalContext.stdout = CtxOutput{Output: stdout, Ctx: stdoutCtx}
+	ni.evalContext.stdout = CtxOutput{Output: stdout, Ctx: runCtx}
 
-	iter := gc.RunWithContext(ctx, c, variableValues...)
+	iter := gc.RunWithContext(runCtx, c, variableValues...)
 
 	iterCtxWrapped := iterFn(func() (interface{}, bool) {
 		v, ok := iter.Next()

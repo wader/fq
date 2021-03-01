@@ -1,4 +1,6 @@
 
+._size and _bitsize
+
 tests:
   preserve comments order
   write actual must run all caes in a file or copy current expected?
