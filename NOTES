@@ -1,4 +1,8 @@
 
+colorjson sync colors
+
+inter.OS Progress() function?
+
 cleanup MustGroup decode()
 
 cleanup hash/crypto, makeCipher() function etc?

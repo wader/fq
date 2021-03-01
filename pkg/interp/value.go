@@ -301,13 +301,13 @@ func (vo valueObject) JsonPrimitiveValue() interface{} {
 	case decode.Array:
 		arr := []interface{}{}
 		for _, f := range vv {
-			arr = append(arr, valueObject{v: f})
+			arr = append(arr, valueObject{v: f}.JsonPrimitiveValue())
 		}
 		return arr
 	case decode.Struct:
 		obj := map[string]interface{}{}
 		for _, f := range vv {
-			obj[f.Name] = valueObject{v: f}
+			obj[f.Name] = valueObject{v: f}.JsonPrimitiveValue()
 		}
 		return obj
 	case int, bool, float64, string, nil:

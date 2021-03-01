@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"fq/internal/asciiwriter"
+	"fq/internal/colorjson"
 	"fq/internal/hexdump"
 	"fq/internal/hexpairwriter"
 	"fq/internal/num"
@@ -50,6 +51,8 @@ func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
 		{[]string{"preview", "p"}, 0, 0, i.preview},
 		{[]string{"hexdump", "hd", "h"}, 0, 1, i.hexdump},
 		{[]string{"string"}, 0, 0, i.string_},
+		{[]string{"tovalue"}, 0, 0, i.tovalue},
+
 		{[]string{"u"}, 0, 1, i.u},
 
 		{[]string{"md5"}, 0, 0, i.md5},
@@ -389,18 +392,28 @@ func (i *Interp) makeDecodeFn(registry *decode.Registry, decodeFormats []*decode
 
 func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}, a []interface{}) interface{} {
 	return func(c interface{}, a []interface{}) interface{} {
+		var opts DisplayOptions
+		if len(a) >= 1 {
+			opts = buildDisplayOptions(i.evalContext.opts, fnOpts, a[0].(map[string]interface{}))
+		} else {
+			opts = buildDisplayOptions(i.evalContext.opts, fnOpts)
+		}
+
 		switch v := c.(type) {
 		case Display:
-			var opts DisplayOptions
-			if len(a) >= 1 {
-				opts = buildDisplayOptions(i.evalContext.opts, fnOpts, a[0].(map[string]interface{}))
-			} else {
-				opts = buildDisplayOptions(i.evalContext.opts, fnOpts)
-			}
-
 			if err := v.Display(i.evalContext.stdout, opts); err != nil {
 				return err
 			}
+			return emptyIter{}
+		case map[string]interface{}, []interface{}, InterpObject:
+			colorjson.NewEncoder(opts.Color, false, 2,
+				func(v interface{}) interface{} {
+					if o, ok := v.(InterpObject); ok {
+						return o.JsonPrimitiveValue()
+					}
+					return v
+				}).Marshal(v, i.evalContext.stdout)
+			fmt.Fprintln(i.evalContext.stdout)
 			return emptyIter{}
 		default:
 			return fmt.Errorf("%v: not displayable", c)
@@ -469,6 +482,15 @@ func (i *Interp) string_(c interface{}, a []interface{}) interface{} {
 	}
 
 	return string(sb.String())
+}
+
+func (i *Interp) tovalue(c interface{}, a []interface{}) interface{} {
+	switch c := c.(type) {
+	case InterpObject:
+		return c.JsonPrimitiveValue()
+	default:
+		return c
+	}
 }
 
 func (i *Interp) u(c interface{}, a []interface{}) interface{} {

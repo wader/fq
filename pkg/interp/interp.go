@@ -30,7 +30,6 @@ var builtinFS embed.FS
 //go:embed fq.jq
 var fqJq []byte
 
-// TODO: move to OS? Input/Outout interfaces?
 type Output interface {
 	io.Writer
 	Size() (int, int)
