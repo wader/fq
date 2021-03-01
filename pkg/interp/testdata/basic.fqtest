@@ -19,4 +19,9 @@ true
 > fq -d mp3 test.mp3 '.frames[0].protection._value == true'
 true
 > fq -d mp3 test.mp3 '.headers[0].flags + {}'
-{"experimental_indicator":false,"extended_header":false,"unsynchronisation":false,"unused":0}
+{
+  "experimental_indicator": false,
+  "extended_header": false,
+  "unsynchronisation": false,
+  "unused": 0
+}
