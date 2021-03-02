@@ -247,4 +247,7 @@ var boxDescriptions = map[string]string{
 	"matt":       "Visual track matte for compositing",
 	"pnot":       "Preview container",
 	"wide":       "Expansion space reservation",
+	"fiel":       "Video field order",
+
+	"\x00\x00\x00\x00": "Terminator Atom",
 }

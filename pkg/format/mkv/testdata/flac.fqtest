@@ -1,7 +1,7 @@
 # ffmpeg -f lavfi -i sine -ac 2 -c:a flac -strict experimental -f matroska -t 50ms pkg/format/mkv/testdata/flac.mkv
 /flac.mkv:
 > fq -d mkv flac.mkv verbose
-     |                                               |                |.: mkv 0x0-0x4ce+7 (1231)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: mkv 0x0-0x4ce+7 (1231)
      |                                               |                |  elements[2]: 0x0-0x4ce+7 (1231)
      |                                               |                |   -[0]: (element) 0x0-0x27+7 (40)
 0x000|1a 45 df a3                                    |.E..            |      id: EBML (1a45dfa3) 0x0-0x3+7 (4)

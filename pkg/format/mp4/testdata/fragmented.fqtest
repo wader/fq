@@ -1,7 +1,7 @@
 # ffmpeg -f lavfi -i sine -f lavfi -i testsrc -g 1 -c:a aac -c:v h264 -f mp4 -movflags frag_keyframe+empty_moov -t 100ms fragmented.mp4
 /fragmented.mp4:
 > fq -d mp4 fragmented.mp4 verbose
-      |                                               |                |.: mp4 0x0-0x2b06+7 (11015)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: mp4 0x0-0x2b06+7 (11015)
       |                                               |                |  boxes[9]: 0x0-0x2b06+7 (11015)
       |                                               |                |   -[0]: (box) 0x0-0x23+7 (36)
 0x0000|00 00 00 24                                    |...$            |      size: 36 0x0-0x3+7 (4)

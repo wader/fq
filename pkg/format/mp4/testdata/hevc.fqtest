@@ -1,7 +1,7 @@
 # ffmpeg -f lavfi -i testsrc -c:v hevc -f mp4 -t 50ms hevc.mp4
 /hevc.mp4:
 > fq -d mp4 hevc.mp4 verbose
-      |                                               |                |.: mp4 0x0-0x149a+7 (5275)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: mp4 0x0-0x149a+7 (5275)
       |                                               |                |  boxes[4]: 0x0-0x149a+7 (5275)
       |                                               |                |   -[0]: (box) 0x0-0x1b+7 (28)
 0x0000|00 00 00 1c                                    |....            |      size: 28 0x0-0x3+7 (4)
@@ -267,7 +267,7 @@
 *     |2227 bytes more until 0x13c2+7                 |                |
       |                                               |                |                                 -[1]: (box) 0x13c3-0x13cc+7 (10)
 0x13c0|         00 00 00 0a                           |   ....         |                                    size: 10 0x13c3-0x13c6+7 (4)
-0x13c0|                     66 69 65 6c               |       fiel     |                                    type: "fiel" 0x13c7-0x13ca+7 (4)
+0x13c0|                     66 69 65 6c               |       fiel     |                                    type: "fiel" (Video field order) 0x13c7-0x13ca+7 (4)
 0x13c0|                                 01 00         |           ..   |                                    data: 0100 0x13cb-0x13cc+7 (2)
       |                                               |                |                                 -[2]: (box) 0x13cd-0x13dc+7 (16)
 0x13c0|                                       00 00 00|             ...|                                    size: 16 0x13cd-0x13d0+7 (4)

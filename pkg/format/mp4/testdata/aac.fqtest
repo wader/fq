@@ -1,7 +1,7 @@
 # ffmpeg -f lavfi -i sine -c:a aac -f mp4 -t 50ms aac.mp4
 /aac.mp4:
 > fq -d mp4 aac.mp4 verbose
-     |                                               |                |.: mp4 0x0-0x59c+7 (1437)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: mp4 0x0-0x59c+7 (1437)
      |                                               |                |  boxes[4]: 0x0-0x59c+7 (1437)
      |                                               |                |   -[0]: (box) 0x0-0x1b+7 (28)
 0x000|00 00 00 1c                                    |....            |      size: 28 0x0-0x3+7 (4)

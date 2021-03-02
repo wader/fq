@@ -1,7 +1,7 @@
 # ffmpeg -y -v trace -f lavfi -i testsrc -c:v librav1e -t 50ms av1.mp4
 /av1.mp4:
 > fq -d mp4 av1.mp4 verbose
-      |                                               |                |.: mp4 0x0-0x14b1+7 (5298)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: mp4 0x0-0x14b1+7 (5298)
       |                                               |                |  boxes[4]: 0x0-0x14b1+7 (5298)
       |                                               |                |   -[0]: (box) 0x0-0x1b+7 (28)
 0x0000|00 00 00 1c                                    |....            |      size: 28 0x0-0x3+7 (4)
@@ -206,7 +206,7 @@
 0x13d0|fa 1e 7f de 21 0a d0 20 20 25                  |....!..  %      |
       |                                               |                |                                 -[1]: (box) 0x13da-0x13e3+7 (10)
 0x13d0|                              00 00 00 0a      |          ....  |                                    size: 10 0x13da-0x13dd+7 (4)
-0x13d0|                                          66 69|              fi|                                    type: "fiel" 0x13de-0x13e1+7 (4)
+0x13d0|                                          66 69|              fi|                                    type: "fiel" (Video field order) 0x13de-0x13e1+7 (4)
 0x13e0|65 6c                                          |el              |
 0x13e0|      01 00                                    |  ..            |                                    data: 0100 0x13e2-0x13e3+7 (2)
       |                                               |                |                                 -[2]: (box) 0x13e4-0x13f3+7 (16)
