@@ -186,7 +186,7 @@ func (i *Interp) displayName(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) _valueKeys(c interface{}, a []interface{}) interface{} {
-	if v, ok := c.(valueObject); ok {
+	if v, ok := c.(InterpObject); ok {
 		var vs []interface{}
 		for _, s := range v.SpecialPropNames() {
 			vs = append(vs, s)
@@ -422,14 +422,16 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 }
 
 func (i *Interp) preview(c interface{}, a []interface{}) interface{} {
-	vo, ok := c.(valueObject)
-	if !ok {
-		return fmt.Errorf("%v: value is not a decode value", c)
+	opts := buildDisplayOptions(i.evalContext.opts)
+	switch v := c.(type) {
+	case Preview:
+		if err := v.Preview(i.evalContext.stdout, opts); err != nil {
+			return err
+		}
+		return emptyIter{}
+	default:
+		return fmt.Errorf("%v: not previewable", c)
 	}
-	if err := preview(vo.v, i.evalContext.stdout); err != nil {
-		return err
-	}
-	return emptyIter{}
 }
 
 func (i *Interp) hexdump(c interface{}, a []interface{}) interface{} {

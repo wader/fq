@@ -201,6 +201,18 @@ type InterpObject interface {
 	SpecialPropNames() []string
 }
 
+type Display interface {
+	Display(w io.Writer, opts DisplayOptions) error
+}
+
+type Preview interface {
+	Preview(w io.Writer, opts DisplayOptions) error
+}
+
+type ToBitBuf interface {
+	ToBifBuf() *bitio.Buffer
+}
+
 // TODO: jq function somehow? escape keys?
 func valuePath(v *decode.Value) string {
 	var parts []string
@@ -342,14 +354,6 @@ func toBytes(v interface{}) ([]byte, error) {
 
 		return buf.Bytes(), nil
 	}
-}
-
-type Display interface {
-	Display(w io.Writer, opts DisplayOptions) error
-}
-
-type ToBitBuf interface {
-	ToBifBuf() *bitio.Buffer
 }
 
 // TODO: refactor to return struct?

@@ -147,7 +147,7 @@ func (vo valueObject) SpecialPropNames() []string {
 		"_value",
 		"_symbol",
 		"_description",
-		"_range",
+		// "_range",
 		"_size",
 		"_path",
 		"_bits",
@@ -196,14 +196,14 @@ func (vo valueObject) JsonProperty(name string) interface{} {
 		r = v.Symbol
 	case "_description":
 		r = v.Description
-	case "_range":
-		r = map[string]interface{}{
-			"start":  big.NewInt(v.Range.Start),
-			"stop":   big.NewInt(v.Range.Stop()),
-			"length": big.NewInt(v.Range.Len),
-		}
+	// case "_range":
+	// 	r = map[string]interface{}{
+	// 		"start":  big.NewInt(v.Range.Start),
+	// 		"stop":   big.NewInt(v.Range.Stop()),
+	// 		"length": big.NewInt(v.Range.Len),
+	// 	}
 	case "_size":
-		r = big.NewInt(v.Range.Len)
+		r = big.NewInt(v.Range.Len / 8)
 	case "_path":
 		r = valuePath(v)
 	case "_error":
@@ -217,13 +217,13 @@ func (vo valueObject) JsonProperty(name string) interface{} {
 		if err != nil {
 			return err
 		}
-		r = &bitBufObject{bb: bb, unit: 1}
+		r = &bitBufObject{bb: bb, unit: 1, r: v.Range}
 	case "_bytes":
 		bb, err := v.RootBitBuf.BitBufRange(v.Range.Start, v.Range.Len)
 		if err != nil {
 			return err
 		}
-		r = &bitBufObject{bb: bb, unit: 8}
+		r = &bitBufObject{bb: bb, unit: 8, r: v.Range}
 	}
 
 	if r == nil {
@@ -328,6 +328,10 @@ func (vo valueObject) Display(w io.Writer, opts DisplayOptions) error {
 	return dump(vo.v, w, opts)
 }
 
+func (vo valueObject) Preview(w io.Writer, opts DisplayOptions) error {
+	return preview(vo.v, w, opts)
+}
+
 func (vo valueObject) ToBifBuf() *bitio.Buffer {
 	v := vo.v
 	bb, err := v.RootBitBuf.BitBufRange(v.Range.Start, v.Range.Len)
@@ -406,82 +410,4 @@ func (de *decodeError2) JsonPrimitiveValue() interface{} {
 		"err":   de.v.Err,
 		"errs":  errs,
 	}
-}
-
-var _ InterpObject = &bitBufObject{}
-
-type bitBufObject struct {
-	bb   *bitio.Buffer
-	unit int
-}
-
-func (*bitBufObject) DisplayName() string        { return "buffer" }
-func (*bitBufObject) SpecialPropNames() []string { return nil }
-
-func (bo *bitBufObject) JsonLength() interface{} {
-	return int(bo.bb.Len()) / bo.unit
-}
-func (bo *bitBufObject) JsonIndex(index int) interface{} {
-	pos, err := bo.bb.Pos()
-	if err != nil {
-		return err
-	}
-	if _, err := bo.bb.SeekAbs(int64(index) * int64(bo.unit)); err != nil {
-		return err
-	}
-	v, err := bo.bb.U(bo.unit)
-	if err != nil {
-		return err
-	}
-	if _, err := bo.bb.SeekAbs(pos); err != nil {
-		return err
-	}
-	return int(v)
-}
-func (bo *bitBufObject) JsonRange(start int, end int) interface{} {
-	rbb, err := bo.bb.BitBufRange(int64(start*bo.unit), int64((end-start)*bo.unit))
-	if err != nil {
-		return err
-	}
-	return &bitBufObject{bb: rbb, unit: bo.unit}
-}
-func (bo *bitBufObject) JsonProperty(name string) interface{} {
-	return nil
-}
-func (bo *bitBufObject) JsonEach() interface{} {
-	return nil
-}
-func (bo *bitBufObject) JsonType() string {
-	return "buffer"
-}
-func (bo *bitBufObject) JsonPrimitiveValue() interface{} {
-	buf := &bytes.Buffer{}
-	if _, err := io.Copy(buf, bo.bb.Copy()); err != nil {
-		return err
-	}
-	return buf.String()
-}
-
-func (bo *bitBufObject) Display(w io.Writer, opts DisplayOptions) error {
-	if opts.Raw {
-		if _, err := io.Copy(w, bo.bb.Copy()); err != nil {
-			return err
-		}
-		return nil
-	}
-
-	unitNames := map[int]string{
-		1: "bits",
-		8: "bytes",
-	}
-	unitName := unitNames[bo.unit]
-	if unitName == "" {
-		unitName = "units"
-	}
-	_, err := fmt.Fprintf(w, "<%d %s>\n", bo.bb.Len()/int64(bo.unit), unitName)
-	return err
-}
-
-func (bo *bitBufObject) ToBifBuf() *bitio.Buffer {
-	return bo.bb.Copy()
 }

@@ -61,6 +61,15 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 		cprint(5, d.Column)
 	}
 
+	if depth == 0 {
+		for i := 0; i < opts.LineBytes; i++ {
+			cprint(colHex, num.PadFormatInt(int64(i), opts.AddrBase, false, 2))
+			if i < opts.LineBytes-1 {
+				cprint(colHex, " ")
+			}
+		}
+	}
+
 	isInArray := false
 	if v.Parent != nil {
 		_, isInArray = v.Parent.V.(decode.Array)
@@ -262,6 +271,7 @@ func dump(v *decode.Value, w io.Writer, opts DisplayOptions) error {
 	}))
 
 	cw := columnwriter.New(w, []int{maxAddrIndentWidth, 1, opts.LineBytes*3 - 1, 1, opts.LineBytes, 1, -1})
+
 	return v.WalkPreOrder(makeWalkFn(func(v *decode.Value, rootV *decode.Value, depth int, rootDepth int) error {
 		return dumpEx(v, cw, depth, rootV, rootDepth, maxAddrIndentWidth-rootDepth, opts)
 	}))

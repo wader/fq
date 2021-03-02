@@ -8,16 +8,17 @@ import (
 )
 
 type Dumper struct {
-	addrLen     int
-	addrBase    int
-	lineBytes   int64
-	columnW     *columnwriter.Writer
-	separatorsW io.Writer
-	startOffset int64
-	offset      int64
-	hexFn       func(b byte) string
-	asciiFn     func(b byte) string
-	column      string
+	addrLen          int
+	addrBase         int
+	lineBytes        int64
+	columnW          *columnwriter.Writer
+	separatorsW      io.Writer
+	startOffset      int64
+	offset           int64
+	hexFn            func(b byte) string
+	asciiFn          func(b byte) string
+	column           string
+	hasWrittenHeader bool
 }
 
 // TODO: something more generic? bin, octal, arbitrary base?
@@ -29,16 +30,17 @@ func New(w io.Writer, startOffset int64, addrLen int, addrBase int, lineBytes in
 	hexFn func(b byte) string, asciiFn func(b byte) string, column string) *Dumper {
 	cw := columnwriter.New(w, []int{addrLen, 1, lineBytes*3 - 1, 1, lineBytes, 1})
 	return &Dumper{
-		addrLen:     addrLen,
-		addrBase:    addrBase,
-		lineBytes:   int64(lineBytes),
-		columnW:     cw,
-		separatorsW: io.MultiWriter(cw.Columns[1], cw.Columns[3], cw.Columns[5]),
-		startOffset: startOffset,
-		offset:      startOffset - startOffset%int64(lineBytes),
-		hexFn:       hexFn,
-		asciiFn:     asciiFn,
-		column:      column,
+		addrLen:          addrLen,
+		addrBase:         addrBase,
+		lineBytes:        int64(lineBytes),
+		columnW:          cw,
+		separatorsW:      io.MultiWriter(cw.Columns[1], cw.Columns[3], cw.Columns[5]),
+		startOffset:      startOffset,
+		offset:           startOffset - startOffset%int64(lineBytes),
+		hexFn:            hexFn,
+		asciiFn:          asciiFn,
+		column:           column,
+		hasWrittenHeader: false,
 	}
 }
 
@@ -57,6 +59,26 @@ func (d *Dumper) flush() error {
 }
 
 func (d *Dumper) Write(p []byte) (n int, err error) {
+	if !d.hasWrittenHeader {
+		if _, err := d.separatorsW.Write([]byte(d.column)); err != nil {
+			return 0, err
+		}
+		for i := int64(0); i < d.lineBytes; i++ {
+			if _, err := d.columnW.Columns[2].Write([]byte(num.PadFormatInt(i, d.addrBase, false, 2))); err != nil {
+				return 0, err
+			}
+			if i < d.lineBytes-1 {
+				if _, err := d.columnW.Columns[2].Write([]byte(" ")); err != nil {
+					return 0, err
+				}
+			}
+		}
+		if err := d.columnW.Flush(); err != nil {
+			return 0, err
+		}
+		d.hasWrittenHeader = true
+	}
+
 	if d.offset < d.startOffset {
 		r := int(d.startOffset - d.offset)
 		if _, err := d.columnW.Columns[2].Write([]byte(strings.Repeat("   ", r))); err != nil {
