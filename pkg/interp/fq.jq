@@ -11,26 +11,32 @@ def complete($e):
 	{
 		prefix: $prefix,
 		names: (
-			if $type == "function" or $type == "variable" then
-				[.[] | eval($query) | scope[] | select(startswith($prefix))]
+			(if $type == "function" or $type == "variable" then
+				[.[] | eval($query) | scope] | add
 			elif $type == "index" then
-				[
-					[.[] | eval($query) | keys?, _value_keys?] |
-					add | unique | sort | .[] | strings | select(startswith($prefix))
-				]
+				[.[] | eval($query) | keys?, _value_keys?] | add
 			else
 				[]
-			end
+			end) | map(select(strings and select(startswith($prefix)))) | unique | sort
 		)
 	};
 
 def set_eval_options: options(options_expr | with_entries(.value |= eval(.)));
 
 def prompt:
-	def _display_name:
+	def _type_name:
 		. as $c | try (. | display_name) catch ($c | type);
-	((.[0] | _display_name) +
-	if (. | length) > 1 then ",[\((. | length) - 1)]..." else "" end) + "> ";
+	def _path_prefix:
+		(._path? // ".") | if . == "." then "" else .+" " end;
+	(if (. | length) == 1 then
+		.[0] | (_path_prefix + _type_name)
+	else
+		"[" +
+		((.[0] | _type_name) +
+		if (. | length) > 1 then ",..." else "" end) +
+		"]" + "[\(length)]"
+	end
+	) + "> ";
 
 def eval_print($e):
 	def _display:

@@ -1,5 +1,11 @@
 
-._size and _bitsize
+
+[1 | scope] empty string in list
+
+DONE ._size and _bitsize
+
+maxdepth -> depth?
+error on unknown options?
 
 tests:
   preserve comments order

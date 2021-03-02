@@ -147,7 +147,6 @@ func (vo valueObject) SpecialPropNames() []string {
 		"_value",
 		"_symbol",
 		"_description",
-		// "_range",
 		"_size",
 		"_path",
 		"_bits",
@@ -196,14 +195,8 @@ func (vo valueObject) JsonProperty(name string) interface{} {
 		r = v.Symbol
 	case "_description":
 		r = v.Description
-	// case "_range":
-	// 	r = map[string]interface{}{
-	// 		"start":  big.NewInt(v.Range.Start),
-	// 		"stop":   big.NewInt(v.Range.Stop()),
-	// 		"length": big.NewInt(v.Range.Len),
-	// 	}
 	case "_size":
-		r = big.NewInt(v.Range.Len / 8)
+		r = big.NewInt(bitio.BitsByteCount(v.Range.Len))
 	case "_path":
 		r = valuePath(v)
 	case "_error":
