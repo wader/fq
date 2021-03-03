@@ -71,23 +71,27 @@ def repl:
 		_repl;
     _as_array | _repl;
 
-
-def formats_help_text:
-	((formats | keys | map(length) | max)+2) as $m | [
-		"\("Name:" | rpad($m;" "))Description:",
-		(
-			formats | to_entries[] |
-			"\(.key|rpad($m;" "))\(.value.description)"
-		)
-	] | join("\n");
-
 def main:
+	def _formats_list:
+		((formats | keys | map(length) | max)+2) as $m | [
+			"\("Name:" | rpad($m;" "))Description:",
+			(
+				formats | to_entries[] |
+				"\(.key|rpad($m;" "))\(.value.description)"
+			)
+		] | join("\n");
 	def _opts($version):
 		{
 			"help": {
 				short: "-h",
 				long: "--help",
 				description: "Show help",
+				bool: true
+			},
+			"formats": {
+				short: "-h",
+				long: "--formats",
+				description: "Show formats",
 				bool: true
 			},
 			"noinput": {
@@ -148,10 +152,11 @@ def main:
 	set_eval_options |
 	if $parsed.version then
 		$version | print
+	elif $parsed.formats then
+		_formats_list | print
 	elif $parsed.help then
 		("Usage: \($arg0) [OPTIONS] [FILE] [EXPR]",
-			opts_help_text(_opts($version)),
-		 	formats_help_text
+			opts_help_text(_opts($version))
 		) | print
 	else
 		(if $parsed.file then open($parsed.file) | string
