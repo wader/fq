@@ -1,5 +1,7 @@
-def dv($p):
-    . as $c | [$p, $c] | debug | $c;
+# eval is implemented as an internal function evaluting $e for input and
+# returns an array with all generated values, we then each over the values
+# to make it behave as a normal jq generator.
+def eval($e): _eval($e)[];
 
 def trim: capture("^\\s*(?<a>.*?)\\s*$"; "").a;
 

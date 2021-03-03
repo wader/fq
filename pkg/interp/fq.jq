@@ -1,6 +1,3 @@
-# TODO;
-# modules?
-
 include "@builtin/common.jq";
 include "@builtin/opts.jq";
 include "@builtin/funcs.jq";
@@ -38,6 +35,12 @@ def prompt:
 	end
 	) + "> ";
 
+
+def eval_f($e;f):
+	set_eval_options as $_ |
+	try eval($e) | f
+	catch (. as $err | ("error: " + $err) | print);
+
 def eval_print($e):
 	def _display:
 		. as $c |
@@ -47,9 +50,7 @@ def eval_print($e):
 			elif $c | type == "number" then $c
 			else $c | tojson end
 		);
-	set_eval_options as $_ |
-	try eval($e) | _display | print
-	catch (. as $err | ("error: " + $err) | print);
+	eval_f($e;_display | print);
 
 
 # def read: #:: [a]| => string
@@ -61,7 +62,6 @@ def eval_print($e):
 # Second argument is name of completion function [a](string) => [string],
 # it will be called with same input as read and a string argument being the
 # current line from start to current cursor position. Should return possible completions.
-
 def repl:
 	def _read_expr: read(prompt;"complete") | trim | if . == "" then "." end;
 	def _as_array: if (. | type) != "array" then [.] end;
@@ -165,9 +165,8 @@ def main:
 			decode($parsed.decode)
 		end |
 		if $parsed.repl then
-			eval($expr) |
-			repl
+			eval_f($expr;repl)
 		else
-			eval_print($expr) 
+			eval_print($expr)
 		end
 	end;

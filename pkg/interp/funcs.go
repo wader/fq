@@ -35,7 +35,7 @@ func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
 		{[]string{"options"}, 0, 1, i.options},
 
 		{[]string{"read"}, 0, 2, i.read},
-		{[]string{"eval"}, 1, 1, i.eval},
+		{[]string{"_eval"}, 1, 1, i.eval},
 		{[]string{"print"}, 0, 0, i.print},
 
 		{[]string{"complete_query"}, 0, 0, i.completeQuery},
@@ -141,14 +141,25 @@ func (i *Interp) eval(c interface{}, a []interface{}) interface{} {
 	if !ok {
 		return fmt.Errorf("%v: src is not a string", a[0])
 	}
-
-	// TODO: modes opts?
 	iter, err := i.Eval(i.evalContext.ctx, ScriptMode, c, src, i.evalContext.stdout, i.evalContext.optsExpr)
 	if err != nil {
 		return err
 	}
 
-	return iter
+	// TODO: modes opts?
+	var vs []interface{}
+	for {
+		v, ok := iter.Next()
+		if !ok {
+			break
+		}
+		vs = append(vs, v)
+		if _, ok := v.(error); ok {
+			break
+		}
+	}
+
+	return vs
 }
 
 func (i *Interp) print(c interface{}, a []interface{}) interface{} {
