@@ -45,11 +45,7 @@ def eval_print($e):
 	def _display:
 		. as $c |
 		try $c | display({maxdepth: 1})
-		catch (
-			if $c | type == "string" then $c
-			elif $c | type == "number" then $c
-			else $c | tojson end
-		);
+		catch . | print;
 	eval_f($e;_display | print);
 
 
@@ -147,7 +143,7 @@ def main:
 	.version as $version |
 	.args[0] as $arg0 |
 	opts_parse(.args[1:];_opts($version)) as {$parsed, $rest} |
-	# TODO: pass repl some other way
+	# TODO: pass opts some other way
 	options_expr($parsed.options + {repl: ($parsed.repl|tojson)}) |
 	set_eval_options |
 	if $parsed.version then

@@ -417,14 +417,16 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 				return err
 			}
 			return []interface{}{}
-		case map[string]interface{}, []interface{}, InterpObject:
-			colorjson.NewEncoder(opts.Color, false, 2,
+		case nil, bool, float64, int, string, map[string]interface{}, []interface{}, InterpObject:
+			if err := colorjson.NewEncoder(opts.Color, false, 2,
 				func(v interface{}) interface{} {
 					if o, ok := v.(InterpObject); ok {
 						return o.JsonPrimitiveValue()
 					}
 					return v
-				}).Marshal(v, i.evalContext.stdout)
+				}).Marshal(v, i.evalContext.stdout); err != nil {
+				return err
+			}
 			fmt.Fprintln(i.evalContext.stdout)
 			return []interface{}{}
 		default:
