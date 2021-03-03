@@ -1,5 +1,7 @@
 
 
+decoder options, mp4 skip sample decode etc? mp4({skip_samples:true})?
+
 [1 | scope] empty string in list
 
 DONE ._size and _bitsize
