@@ -27,48 +27,49 @@ import (
 	"time"
 )
 
-// TODO: make it nicer somehow?
+// TODO: make it nicer somehow? generate generators? remove from struct?
 func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
 	fs := []Function{
-		{[]string{"tty"}, 0, 0, i.tty},
-		{[]string{"options_expr"}, 0, 1, i.optionsExpr},
-		{[]string{"options"}, 0, 1, i.options},
+		{[]string{"tty"}, 0, 0, i.tty, false},
+		{[]string{"options_expr"}, 0, 1, i.optionsExpr, false},
+		{[]string{"options"}, 0, 1, i.options, false},
 
-		{[]string{"read"}, 0, 2, i.read},
-		{[]string{"_eval"}, 1, 1, i.eval},
-		{[]string{"print"}, 0, 0, i.print},
+		{[]string{"read"}, 0, 2, i.read, false},
+		{[]string{"_eval"}, 1, 1, i.eval, true},
+		{[]string{"_print"}, 0, 0, i.print, true},
 
-		{[]string{"complete_query"}, 0, 0, i.completeQuery},
-		{[]string{"display_name"}, 0, 0, i.displayName},
-		{[]string{"_value_keys"}, 0, 0, i._valueKeys},
-		{[]string{"formats"}, 0, 0, i.formats},
+		{[]string{"complete_query"}, 0, 0, i.completeQuery, false},
+		{[]string{"display_name"}, 0, 0, i.displayName, false},
+		{[]string{"_value_keys"}, 0, 0, i._valueKeys, false},
+		{[]string{"formats"}, 0, 0, i.formats, false},
 
-		{[]string{"open"}, 0, 1, i._open},
-		{[]string{"decode"}, 0, 1, i.makeDecodeFn(registry, registry.MustGroup(format.PROBE))},
+		{[]string{"open"}, 0, 1, i._open, false},
+		{[]string{"decode"}, 0, 1, i.makeDecodeFn(registry, registry.MustGroup(format.PROBE)), false},
 
-		{[]string{"display", "d"}, 0, 1, i.makeDisplayFn(nil)},
-		{[]string{"verbose", "v"}, 0, 1, i.makeDisplayFn(map[string]interface{}{"verbose": true})},
-		{[]string{"preview", "p"}, 0, 0, i.preview},
-		{[]string{"hexdump", "hd", "h"}, 0, 1, i.hexdump},
-		{[]string{"string"}, 0, 0, i.string_},
-		{[]string{"tovalue"}, 0, 0, i.tovalue},
+		{[]string{"_display"}, 0, 1, i.makeDisplayFn(nil), true},
+		{[]string{"_verbose"}, 0, 1, i.makeDisplayFn(map[string]interface{}{"verbose": true}), true},
+		{[]string{"_preview"}, 0, 1, i.preview, true},
+		{[]string{"_hexdump"}, 0, 1, i.hexdump, true},
 
-		{[]string{"u"}, 0, 1, i.u},
+		{[]string{"string"}, 0, 0, i.string_, false},
+		{[]string{"tovalue"}, 0, 0, i.tovalue, false},
 
-		{[]string{"md5"}, 0, 0, i.md5},
-		{[]string{"base64"}, 0, 0, i.base64},
-		{[]string{"unbase64"}, 0, 0, i.unbase64},
-		{[]string{"hex"}, 0, 0, i.hex},
-		{[]string{"unhex"}, 0, 0, i.unhex},
-		{[]string{"query_escape"}, 0, 0, i.queryEscape},
-		{[]string{"query_unescape"}, 0, 0, i.queryUnescape},
-		{[]string{"path_escape"}, 0, 0, i.pathEscape},
-		{[]string{"path_unescape"}, 0, 0, i.pathUnescape},
-		{[]string{"aes_ctr"}, 1, 2, i.aesCtr},
-		{[]string{"json"}, 0, 0, i._json},
+		{[]string{"u"}, 0, 1, i.u, false},
+
+		{[]string{"md5"}, 0, 0, i.md5, false},
+		{[]string{"base64"}, 0, 0, i.base64, false},
+		{[]string{"unbase64"}, 0, 0, i.unbase64, false},
+		{[]string{"hex"}, 0, 0, i.hex, false},
+		{[]string{"unhex"}, 0, 0, i.unhex, false},
+		{[]string{"query_escape"}, 0, 0, i.queryEscape, false},
+		{[]string{"query_unescape"}, 0, 0, i.queryUnescape, false},
+		{[]string{"path_escape"}, 0, 0, i.pathEscape, false},
+		{[]string{"path_unescape"}, 0, 0, i.pathUnescape, false},
+		{[]string{"aes_ctr"}, 1, 2, i.aesCtr, false},
+		{[]string{"json"}, 0, 0, i._json, false},
 	}
 	for name, f := range i.registry.Groups {
-		fs = append(fs, Function{[]string{name}, 0, 0, i.makeDecodeFn(registry, f)})
+		fs = append(fs, Function{[]string{name}, 0, 0, i.makeDecodeFn(registry, f), false})
 	}
 
 	return fs
@@ -166,7 +167,7 @@ func (i *Interp) print(c interface{}, a []interface{}) interface{} {
 	if _, err := fmt.Fprintln(i.evalContext.stdout, c); err != nil {
 		return err
 	}
-	return emptyIter{}
+	return []interface{}{}
 }
 
 func (i *Interp) completeQuery(c interface{}, a []interface{}) interface{} {
@@ -415,7 +416,7 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 			if err := v.Display(i.evalContext.stdout, opts); err != nil {
 				return err
 			}
-			return emptyIter{}
+			return []interface{}{}
 		case map[string]interface{}, []interface{}, InterpObject:
 			colorjson.NewEncoder(opts.Color, false, 2,
 				func(v interface{}) interface{} {
@@ -425,21 +426,28 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 					return v
 				}).Marshal(v, i.evalContext.stdout)
 			fmt.Fprintln(i.evalContext.stdout)
-			return emptyIter{}
+			return []interface{}{}
 		default:
 			return fmt.Errorf("%v: not displayable", c)
 		}
 	}
 }
 
+// TODO: opts and colors?
 func (i *Interp) preview(c interface{}, a []interface{}) interface{} {
-	opts := buildDisplayOptions(i.evalContext.opts)
+	var opts DisplayOptions
+	if len(a) >= 1 {
+		opts = buildDisplayOptions(i.evalContext.opts, a[0].(map[string]interface{}))
+	} else {
+		opts = buildDisplayOptions(i.evalContext.opts)
+	}
+
 	switch v := c.(type) {
 	case Preview:
 		if err := v.Preview(i.evalContext.stdout, opts); err != nil {
 			return err
 		}
-		return emptyIter{}
+		return []interface{}{}
 	default:
 		return fmt.Errorf("%v: not previewable", c)
 	}
@@ -480,7 +488,7 @@ func (i *Interp) hexdump(c interface{}, a []interface{}) interface{} {
 	}
 	hw.Close()
 
-	return emptyIter{}
+	return []interface{}{}
 }
 
 func (i *Interp) string_(c interface{}, a []interface{}) interface{} {

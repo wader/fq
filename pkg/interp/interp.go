@@ -243,10 +243,6 @@ type iterFn func() (interface{}, bool)
 
 func (i iterFn) Next() (interface{}, bool) { return i() }
 
-type emptyIter struct{}
-
-func (emptyIter) Next() (interface{}, bool) { return nil, false }
-
 type loadModule struct {
 	init func() ([]*gojq.Query, error)
 	load func(name string) (*gojq.Query, error)
@@ -389,10 +385,11 @@ type Variable struct {
 }
 
 type Function struct {
-	Names    []string
-	MinArity int
-	MaxArity int
-	Fn       func(interface{}, []interface{}) interface{}
+	Names     []string
+	MinArity  int
+	MaxArity  int
+	Fn        func(interface{}, []interface{}) interface{}
+	Generator bool
 }
 
 type RunMode int
