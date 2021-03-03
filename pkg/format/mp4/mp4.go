@@ -5,6 +5,7 @@ package mp4
 // TODO: validate structure better? trak/stco etc
 // TODO: rename atom -> box?
 // TODO: fmp4, default samples sizes etc
+// TODO: keep track of structure somehow to detect errors
 
 import (
 	"fmt"
@@ -71,6 +72,7 @@ type moof struct {
 type track struct {
 	id         uint32
 	dataFormat string
+	subType    string
 	stco       []uint64 //
 	stsc       []stsc
 	stsz       []uint32
@@ -181,11 +183,19 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			// TODO: values
 			d.FieldU24("flags")
 			d.FieldUTF8("component_type", 4)
-			d.FieldUTF8("component_subtype", 4)
+			subType := d.FieldUTF8("component_subtype", 4)
 			d.FieldUTF8("component_manufacturer", 4)
 			d.FieldU32("component_flags")
 			d.FieldU32("component_flags_mask")
 			d.FieldUTF8("component_name", int(d.BitsLeft()/8))
+
+			if ctx.currentTrack != nil {
+				// component_type seems to be all zero sometimes so can't look for "mhlr"
+				switch subType {
+				case "vide", "soun":
+					ctx.currentTrack.subType = subType
+				}
+			}
 		},
 
 		"minf": decodeAtoms,
@@ -218,65 +228,60 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 					// TODO: decode len?
 					size := d.FieldU32("size")
 					dataFormat := d.FieldUTF8("data_format", 4)
+					subType := ""
 					if ctx.currentTrack != nil {
 						ctx.currentTrack.dataFormat = dataFormat
+						subType = ctx.currentTrack.subType
 					}
 
 					d.DecodeLenFn(int64(size-8)*8, func(d *decode.D) {
-						// TODO: common?
 						d.FieldBytesLen("reserved", 6)
 						d.FieldU16("data_reference_index")
-
-						// TODO: refactor to audio/video? i think they share
+						version := d.FieldU16("version")
+						d.FieldU16("revision_level")
+						d.FieldU32("max_packet_size")
 
 						// "Some sample descriptions terminate with four zero bytes that are not otherwise indicated."
 						// uses decodeAtomsZeroTerminate
 
-						switch dataFormat {
-						case "mp4a":
+						switch subType {
+						case "soun":
+							// AudioSampleEntry
 							// https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/QTFFChap3/qtff3.html#//apple_ref/doc/uid/TP40000939-CH205-SW1
-							d.FieldStructFn("data", func(d *decode.D) {
-								switch d.FieldU16("version") {
-								case 0:
-									d.FieldU16("revision_level")
-									d.FieldU32("vendor")
-
-									d.FieldU16("num_audio_channels")
-									d.FieldU16("sample_size")
-									d.FieldU16("compression_id")
-									d.FieldU16("packet_size")
-									d.FieldFP32("sample_rate")
-									// case 2:
-									// 	d.FieldU16("revision_level")
-									// 	d.FieldU32("vendor")
-									// 	d.FieldU16("always_3")
-									// 	d.FieldU16("always_16")
-									// 	d.FieldU16("always_minus_2")
-									// 	d.FieldU32("always_0")
-									// 	d.FieldU32("always_65536")
-									// 	d.FieldU32("size_of_struct_only")
-									// 	d.FieldF64("sample_rate")
-									// 	d.FieldU32("num_audio_channels")
-									// 	d.FieldU32("always_7f000000")
-									// 	d.FieldU32("const_bits_per_channel")
-									// 	d.FieldU32("format_specific_flags")
-									// 	d.FieldU32("const_bytes_per_audio_packet")
-									// 	d.FieldU32("const_lpcm_frames_per_audio_packet")
-								}
-
-								//TODO: check for extra 4 zero bytes optionally included in size
+							switch version {
+							case 0:
+								d.FieldU16("num_audio_channels")
+								d.FieldU16("sample_size")
+								d.FieldU16("compression_id")
+								d.FieldU16("packet_size")
+								d.FieldFP32("sample_rate")
+								// case 2:
+								// 	d.FieldU16("revision_level")
+								// 	d.FieldU32("vendor")
+								// 	d.FieldU16("always_3")
+								// 	d.FieldU16("always_16")
+								// 	d.FieldU16("always_minus_2")
+								// 	d.FieldU32("always_0")
+								// 	d.FieldU32("always_65536")
+								// 	d.FieldU32("size_of_struct_only")
+								// 	d.FieldF64("sample_rate")
+								// 	d.FieldU32("num_audio_channels")
+								// 	d.FieldU32("always_7f000000")
+								// 	d.FieldU32("const_bits_per_channel")
+								// 	d.FieldU32("format_specific_flags")
+								// 	d.FieldU32("const_bytes_per_audio_packet")
+								// 	d.FieldU32("const_lpcm_frames_per_audio_packet")
 
 								if d.BitsLeft() > 0 {
 									decodeAtomsZeroTerminate(ctx, d)
 								}
-
-							})
-						case "hev1", "avc1":
-							d.FieldStructFn("data", func(d *decode.D) {
-
-								d.FieldU16("version")
-								d.FieldU16("revision_level")
-								d.FieldU32("vendor")
+							default:
+								d.FieldBitBufLen("data", d.BitsLeft())
+							}
+						case "vide":
+							// VideoSampleEntry
+							switch version {
+							case 0:
 								d.FieldU32("temporal_quality")
 								d.FieldU32("spatial_quality")
 								d.FieldU16("width")
@@ -289,69 +294,16 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 								d.FieldU16("depth")
 								d.FieldS16("color_table_id")
 								// TODO: if 0 decode ctab
-
 								if d.BitsLeft() > 0 {
 									decodeAtomsZeroTerminate(ctx, d)
 								}
-							})
-						case "av01":
-							d.FieldStructFn("data", func(d *decode.D) {
-
-								d.FieldU16("version")
-								d.FieldU16("revision_level")
-								d.FieldU32("vendor")
-								d.FieldU32("temporal_quality")
-								d.FieldU32("spatial_quality")
-								d.FieldU16("width")
-								d.FieldU16("height")
-								d.FieldFP32("horizontal_resolution")
-								d.FieldFP32("vertical_resolution")
-								d.FieldU32("data_size")
-								d.FieldU16("frame_count")
-								d.FieldUTF8("compression_name", 32)
-								d.FieldU16("depth")
-								d.FieldS16("color_table_id")
-								// TODO: if 0 decode ctab
-
-								if d.BitsLeft() > 0 {
-									decodeAtomsZeroTerminate(ctx, d)
-								}
-							})
-
-						case "fLaC":
-							// TODO: AudioSampleEntry
-
-							d.FieldU16("version")
-							d.FieldU16("revision_level")
-							d.FieldU32("vendor")
-							d.FieldU16("channelcount")
-							d.FieldU16("samplesize")
-							d.FieldU16("compression_id")
-							d.FieldU16("packet_size")
-							d.FieldFP32("samplerate")
-							if d.BitsLeft() > 0 {
-								decodeAtoms(ctx, d)
+							default:
+								d.FieldBitBufLen("data", d.BitsLeft())
 							}
-
-						case "Opus":
-							// TODO: AudioSampleEntry
-
-							d.FieldU16("version")
-							d.FieldU16("revision_level")
-							d.FieldU32("vendor")
-							d.FieldU16("channelcount")
-							d.FieldU16("samplesize")
-							d.FieldU16("compression_id")
-							d.FieldU16("packet_size")
-							d.FieldFP32("samplerate")
-							if d.BitsLeft() > 0 {
-								decodeAtomsZeroTerminate(ctx, d)
-							}
-
+							// case "hint": TODO: Hint entry
 						default:
 							d.FieldBitBufLen("data", d.BitsLeft())
 						}
-
 					})
 
 					i++
