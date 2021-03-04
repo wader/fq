@@ -8,13 +8,13 @@ def complete($e):
 	{
 		prefix: $prefix,
 		names: (
-			(if $type == "function" or $type == "variable" then
+			if $type == "function" or $type == "variable" then
 				[.[] | eval($query) | scope] | add
 			elif $type == "index" then
 				[.[] | eval($query) | keys?, _value_keys?] | add
 			else
 				[]
-			end) | map(select(strings and select(startswith($prefix)))) | unique | sort
+			end | map(select(strings and startswith($prefix))) | unique | sort
 		)
 	};
 
