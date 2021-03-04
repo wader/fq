@@ -34,6 +34,44 @@ const BgBrightCyan = "\x1b[106m"
 const BgBrightWhite = "\x1b[107m"
 const Reset = "\x1b[0m"
 
+var Foreground = map[string]string{
+	"black":         FgBlack,
+	"red":           FgRed,
+	"green":         FgGreen,
+	"yellow":        FgYellow,
+	"blue":          FgBlue,
+	"magenta":       FgMagenta,
+	"cyan":          FgCyan,
+	"white":         FgWhite,
+	"brightblack":   FgBrightBlack,
+	"brightred":     FgBrightRed,
+	"brightgreen":   FgBrightGreen,
+	"brightyellow":  FgBrightYellow,
+	"brightblue":    FgBrightBlue,
+	"brightmagenta": FgBrightMagenta,
+	"brightcyan":    FgBrightCyan,
+	"brightwhite":   FgBrightWhite,
+}
+
+var Background = map[string]string{
+	"black":         BgBlack,
+	"red":           BgRed,
+	"green":         BgGreen,
+	"yellow":        BgYellow,
+	"blue":          BgBlue,
+	"magenta":       BgMagenta,
+	"cyan":          BgCyan,
+	"white":         BgWhite,
+	"brightblack":   BgBrightBlack,
+	"brightred":     BgBrightRed,
+	"brightgreen":   BgBrightGreen,
+	"brightyellow":  BgBrightYellow,
+	"brightblue":    BgBrightBlue,
+	"brightmagenta": BgBrightMagenta,
+	"brightcyan":    BgBrightCyan,
+	"brightwhite":   BgBrightWhite,
+}
+
 // Len of string excluding ANSI escape sequences
 func Len(s string) int {
 	l := 0
