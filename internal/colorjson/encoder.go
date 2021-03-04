@@ -26,7 +26,7 @@
 package colorjson
 
 import (
-	"bytes"
+	"bufio"
 	"fmt"
 	"io"
 	"math"
@@ -37,8 +37,8 @@ import (
 )
 
 type Encoder struct {
-	out     io.Writer
-	w       *bytes.Buffer
+	w       *bufio.Writer
+	werr    error
 	color   bool
 	tab     bool
 	indent  int
@@ -49,15 +49,16 @@ type Encoder struct {
 
 func NewEncoder(color bool, tab bool, indent int, valueFn func(v interface{}) interface{}) *Encoder {
 	// reuse the buffer in multiple calls of marshal
-	return &Encoder{w: new(bytes.Buffer), color: color, tab: tab, indent: indent, valueFn: valueFn}
+	return &Encoder{color: color, tab: tab, indent: indent, valueFn: valueFn}
 }
 
 func (e *Encoder) Marshal(v interface{}, w io.Writer) error {
-	e.out = w
+	e.w = bufio.NewWriter(w)
 	e.encode(v)
-	_, err := w.Write(e.w.Bytes())
-	e.w.Reset()
-	return err
+	if e.werr != nil {
+		return e.werr
+	}
+	return e.w.Flush()
 }
 
 func (e *Encoder) encode(v interface{}) {
@@ -91,10 +92,6 @@ func (e *Encoder) encode(v interface{}) {
 		}
 		e.encode(e.valueFn(v))
 
-	}
-	if e.w.Len() > 8*1024 {
-		e.out.Write(e.w.Bytes())
-		e.w.Reset()
 	}
 }
 
@@ -259,29 +256,51 @@ func (e *Encoder) writeIndent() {
 }
 
 func (e *Encoder) writeByte(b byte, color []byte) {
+	if e.werr != nil {
+		return
+	}
 	if color == nil {
-		e.w.WriteByte(b)
+		if err := e.w.WriteByte(b); err != nil {
+			e.werr = err
+		}
 	} else {
 		if e.color {
-			e.w.Write(color)
+			if _, err := e.w.Write(color); err != nil {
+				e.werr = err
+			}
 		}
-		e.w.WriteByte(b)
+		if err := e.w.WriteByte(b); err != nil {
+			e.werr = err
+		}
 		if e.color {
-			e.w.Write(resetColor)
+			if _, err := e.w.Write(resetColor); err != nil {
+				e.werr = err
+			}
 		}
 	}
 }
 
 func (e *Encoder) write(bs []byte, color []byte) {
+	if e.werr != nil {
+		return
+	}
 	if color == nil {
-		e.w.Write(bs)
+		if _, err := e.w.Write(bs); err != nil {
+			e.werr = err
+		}
 	} else {
 		if e.color {
-			e.w.Write(color)
+			if _, err := e.w.Write(color); err != nil {
+				e.werr = err
+			}
 		}
-		e.w.Write(bs)
+		if _, err := e.w.Write(bs); err != nil {
+			e.werr = err
+		}
 		if e.color {
-			e.w.Write(resetColor)
+			if _, err := e.w.Write(resetColor); err != nil {
+				e.werr = err
+			}
 		}
 	}
 }

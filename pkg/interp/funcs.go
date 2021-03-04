@@ -330,7 +330,7 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 				return
 			}
 			// cleanup when done
-			fmt.Fprint(i.os.Stderr(), "100.0%\r")
+			fmt.Fprint(i.os.Stderr(), "\r      \r")
 		}
 
 		rs = progressreadseeker.New(rs, bEnd, func(readBytes int64, length int64) {
