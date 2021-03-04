@@ -417,7 +417,7 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 				return err
 			}
 			return []interface{}{}
-		case nil, bool, float64, int, string, map[string]interface{}, []interface{}, InterpObject:
+		case nil, bool, float64, int, string, *big.Int, map[string]interface{}, []interface{}, InterpObject:
 			if err := colorjson.NewEncoder(opts.Color, false, 2,
 				func(v interface{}) interface{} {
 					if o, ok := v.(InterpObject); ok {
@@ -430,7 +430,7 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 			fmt.Fprintln(i.evalContext.stdout)
 			return []interface{}{}
 		default:
-			return fmt.Errorf("%v: not displayable", c)
+			return fmt.Errorf("%v (%t): not displayable", c, c)
 		}
 	}
 }
