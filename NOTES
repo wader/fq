@@ -6,7 +6,7 @@ decoder options, mp4 skip sample decode etc? mp4({skip_samples:true})?
 
 DONE ._size and _bitsize
 
-maxdepth -> depth?
+depth -> depth?
 error on unknown options?
 
 tests:

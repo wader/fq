@@ -20,12 +20,12 @@ type Decorator struct {
 }
 
 type DisplayOptions struct {
-	MaxDepth int
-	Verbose  bool
-	Color    bool
-	Unicode  bool
-	Raw      bool
-	REPL     bool
+	Depth   int
+	Verbose bool
+	Color   bool
+	Unicode bool
+	Raw     bool
+	REPL    bool
 
 	LineBytes    int
 	DisplayBytes int64
@@ -186,7 +186,7 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 	columns()
 
 	// has length and is a simple value or a collapsed struct/array
-	if v.Range.Len > 0 && (isSimple || (opts.MaxDepth != 0 && opts.MaxDepth == depth)) {
+	if v.Range.Len > 0 && (isSimple || (opts.Depth != 0 && opts.Depth == depth)) {
 		cfmt(0, "%s%s\n",
 			rootIndent, num.PadFormatInt(startLineByte, opts.AddrBase, true, addrWidth))
 
@@ -250,7 +250,7 @@ func dump(v *decode.Value, w io.Writer, opts DisplayOptions) error {
 	maxAddrIndentWidth := 0
 	makeWalkFn := func(fn decode.WalkFn) decode.WalkFn {
 		return func(v *decode.Value, rootV *decode.Value, depth int, rootDepth int) error {
-			if opts.MaxDepth != 0 && depth > opts.MaxDepth {
+			if opts.Depth != 0 && depth > opts.Depth {
 				return decode.ErrWalkSkipChildren
 			}
 			// skip first root level

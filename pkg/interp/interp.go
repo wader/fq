@@ -93,8 +93,8 @@ func buildDisplayOptions(ms ...map[string]interface{}) DisplayOptions {
 }
 
 func mapSetDisplayOptions(d *DisplayOptions, m map[string]interface{}) {
-	if v, ok := m["maxdepth"]; ok {
-		d.MaxDepth = num.MaxInt(0, toIntZ(v))
+	if v, ok := m["depth"]; ok {
+		d.Depth = num.MaxInt(0, toIntZ(v))
 	}
 	if v, ok := m["verbose"]; ok {
 		d.Verbose = toBoolZ(v)

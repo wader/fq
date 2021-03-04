@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i sine -t 10ms test.mp3
 /test.mp3:
-> fq -d mp3 test.mp3 'display({maxdepth: 1})'
+> fq -d mp3 test.mp3 'display({depth: 1})'
      |                                               |                |.: mp3
 0x000|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|  headers[1]:
 *    |29 bytes more until 0x2c+7                     |                |
@@ -8,7 +8,7 @@
 0x030|c0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
 *    |580 bytes more until 0x283+7 (end)             |                |
      |                                               |                |  footers[0]:
-> fq -d mp3 test.mp3 'display({maxdepth: 2})'
+> fq -d mp3 test.mp3 'display({depth: 2})'
      |                                               |                |.: mp3
      |                                               |                |  headers[1]:
 0x000|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|   -[0]: id3_v2
@@ -24,7 +24,7 @@
 0x1c0|00 00 00 34 80 00 00 04 11 4b 36 4a 08 83 58 c9|...4.....K6J..X.|
 *    |180 bytes more until 0x283+7 (end)             |                |
      |                                               |                |  footers[0]:
-> fq -d mp3 test.mp3 'display({maxdepth: 1, displaybytes: 8})'
+> fq -d mp3 test.mp3 'display({depth: 1, displaybytes: 8})'
      |                                               |                |.: mp3
 0x000|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|  headers[1]:
 *    |29 bytes more until 0x2c+7                     |                |
@@ -32,7 +32,7 @@
 0x030|c0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
 *    |580 bytes more until 0x283+7 (end)             |                |
      |                                               |                |  footers[0]:
-> fq -d mp3 test.mp3 'display({maxdepth: 1, linebytes: 8})'
+> fq -d mp3 test.mp3 'display({depth: 1, linebytes: 8})'
      |                       |        |.: mp3
 0x000|49 44 33 04 00 00 00 00|ID3.....|  headers[1]:
 0x008|00 23 54 53 53 45 00 00|.#TSSE..|
@@ -42,7 +42,7 @@
 0x038|00 00 00 00 00 00 00 00|........|
 *    |580 bytes more until 0x283+7 (end)|        |
      |                       |        |  footers[0]:
-> fq -d mp3 test.mp3 '.frames[0] | verbose({maxdepth: 1, addrbase: 10})'
+> fq -d mp3 test.mp3 '.frames[0] | verbose({depth: 1, addrbase: 10})'
    |                                               |                |.frames[0]: mp3_frame (frame) 45-226+7 (182)
 032|                                       ff fb   |             .. |  sync: Correct (7ff) 45-46+2 (1+3)
 032|                                          fb   |              . |  mpeg_version: MPEG Version 1 (1) 46+3-46+4 (0+2)
@@ -66,7 +66,7 @@
 208|                                          00 00|              ..|  samples: 0000000000 222-226+7 (5)
 224|00 00 00                                       |...             |
    |                                               |                |  crc_calculated: 827a 227-NA (0)
-> fq -d mp3 test.mp3 '.frames[0] | verbose({maxdepth: 1, sizebase: 16})'
+> fq -d mp3 test.mp3 '.frames[0] | verbose({depth: 1, sizebase: 16})'
     |                                               |                |.frames[0]: mp3_frame (frame) 0x2d-0xe2+7 (0xb6)
 0x20|                                       ff fb   |             .. |  sync: Correct (7ff) 0x2d-0x2e+2 (0x1+3)
 0x20|                                          fb   |              . |  mpeg_version: MPEG Version 1 (1) 0x2e+3-0x2e+4 (0x0+2)

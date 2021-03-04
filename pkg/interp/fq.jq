@@ -44,7 +44,7 @@ def eval_f($e;f):
 def eval_print($e):
 	def _display:
 		. as $c |
-		try $c | display({maxdepth: 1})
+		try $c | display({depth: 1})
 		catch . | print;
 	eval_f($e;_display | print);
 
@@ -128,7 +128,7 @@ def main:
 				object: true,
 				default_eval: true,
 				default: {
-					maxdepth:     "0",
+					depth:     "0",
 					verbose:      "false",
 					color:        "tty.is_terminal and env.CLICOLOR!=null",
 					unicode:      "tty.is_terminal and env.CLIUNICODE!=null",
