@@ -5,6 +5,7 @@ import (
 	"context"
 	"embed"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"fq"
 	"fq/internal/ansi"
@@ -14,8 +15,6 @@ import (
 	"fq/pkg/ranges"
 	"io"
 	"math/big"
-	"os"
-	"os/signal"
 	"strings"
 
 	"github.com/itchyny/gojq"
@@ -29,6 +28,16 @@ var builtinFS embed.FS
 //go:embed fq.jq
 var fqJq []byte
 
+type valueErr struct {
+	v interface{}
+}
+
+func (v valueErr) Error() string      { return fmt.Sprintf("error: %v", v.v) }
+func (v valueErr) Value() interface{} { return v.v }
+
+var ErrEOF = io.EOF
+var ErrInterrupt = errors.New("Interrupt")
+
 type Output interface {
 	io.Writer
 	Size() (int, int)
@@ -39,6 +48,7 @@ type OS interface {
 	Stdin() io.Reader
 	Stdout() Output
 	Stderr() io.Writer
+	Interrupt() chan struct{}
 	Args() []string
 	Environ() []string
 	// returned io.ReadSeeker can optionally implement io.Closer
@@ -406,7 +416,6 @@ type evalContext struct {
 	opts     map[string]interface{}
 	stdout   Output // TODO: rename?
 	mode     RunMode
-	inEval   bool
 }
 
 type Interp struct {
@@ -498,7 +507,6 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 		mode:     mode,
 		optsExpr: optsExpr,
 		opts:     i.evalContext.opts,
-		inEval:   false,
 	}
 
 	var variableNames []string
@@ -550,51 +558,11 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 		return nil, fmt.Errorf("%d: %w", queryErrorLine(err), err)
 	}
 
-	opts := buildDisplayOptions(i.evalContext.opts)
-	cleanupFn := func() {}
-	runCtx := ctx
+	ni.evalContext.stdout = stdout
 
-	if opts.REPL {
-		i.evalContext.inEval = true
-		interruptChan := make(chan os.Signal, 1)
-		signal.Notify(interruptChan, os.Interrupt)
-		interruptCtx, interruptCtxCancelFn := context.WithCancel(ctx)
-		runCtx = interruptCtx
-		go func() {
-			select {
-			case <-interruptChan:
-				if !ni.evalContext.inEval {
-					interruptCtxCancelFn()
-				}
-			case <-interruptCtx.Done():
-				// nop
-			}
-		}()
-		cleanupFn = func() {
-			signal.Stop(interruptChan)
-			// stop interruptChan goroutine
-			interruptCtxCancelFn()
-			i.evalContext.inEval = false
-		}
-	}
+	iter := gc.RunWithContext(ctx, c, variableValues...)
 
-	ni.evalContext.stdout = CtxOutput{Output: stdout, Ctx: runCtx}
-
-	iter := gc.RunWithContext(runCtx, c, variableValues...)
-
-	iterCtxWrapped := iterFn(func() (interface{}, bool) {
-		v, ok := iter.Next()
-		if v == context.Canceled {
-			cleanupFn()
-			return nil, false
-		}
-		if !ok {
-			cleanupFn()
-		}
-		return v, ok
-	})
-
-	return iterCtxWrapped, nil
+	return iter, nil
 }
 
 func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output, optsExpr map[string]interface{}) (gojq.Iter, error) {

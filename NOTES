@@ -1,12 +1,29 @@
 
 
+
+nicer context close when ctrl-c
+
+createa a makeWriterFunction thingy?
+
+Varlues with error show in Display?
+
+colo headers?
+
+repl options args
+
+decod_nestede=-all,+all,-flac_frame
+
+interrupted writer wrapper call?
+interruptableWriter(ctx, func(w io.Writer() error { return dumo(w); })
+
+
 decoder options, mp4 skip sample decode etc? mp4({skip_samples:true})?
 
 [1 | scope] empty string in list
 
 DONE ._size and _bitsize
 
-depth -> depth?
+DONE maxdepth -> depth?
 error on unknown options?
 
 tests:

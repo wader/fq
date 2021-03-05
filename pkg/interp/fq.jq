@@ -62,9 +62,15 @@ def repl:
 	def _read_expr: read(prompt;"complete") | trim | if . == "" then "." end;
 	def _as_array: if (. | type) != "array" then [.] end;
 	def _repl:
+		. as $c |
 		try _read_expr as $e |
-		(.[] | eval_print($e) | empty),
-		_repl;
+			(.[] | eval_print($e) | empty),
+			_repl
+		catch
+			if . == "interrupt" then $c | repl
+			elif . == "eof" then empty
+			else error(.) end
+		;
     _as_array | _repl;
 
 def main:
@@ -151,7 +157,8 @@ def main:
 	elif $parsed.formats then
 		_formats_list | print
 	elif $parsed.help then
-		("Usage: \($arg0) [OPTIONS] [FILE] [EXPR]",
+		(
+			"Usage: \($arg0) [OPTIONS] [FILE] [EXPR]",
 			opts_help_text(_opts($version))
 		) | print
 	else

@@ -192,5 +192,6 @@ def field_inrange($p): ._type == "field" and ._range.start <= $p and $p < ._rang
 def help:
     (
         builtins[], 
-        "^C or ^D to interrupt"
+		"^C interrupt",
+		"^D exit REPL"
     ) | print;

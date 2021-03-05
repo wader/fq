@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"os/signal"
 	"path/filepath"
 
 	"github.com/chzyer/readline"
@@ -20,7 +21,9 @@ func (a autoCompleterFn) Do(line []rune, pos int) (newLine [][]rune, length int)
 }
 
 type standardOS struct {
-	rl *readline.Instance
+	rl                  *readline.Instance
+	interruptSignalChan chan os.Signal
+	interruptChan       chan struct{}
 }
 
 func newStandardOS() (*standardOS, error) {
@@ -44,7 +47,24 @@ func newStandardOS() (*standardOS, error) {
 		return nil, err
 	}
 
-	return &standardOS{rl: rl}, nil
+	interruptChan := make(chan struct{}, 1)
+	interruptSignalChan := make(chan os.Signal, 1)
+	signal.Notify(interruptSignalChan, os.Interrupt)
+	go func() {
+		defer signal.Stop(interruptSignalChan)
+		for range interruptSignalChan {
+			select {
+			case interruptChan <- struct{}{}:
+			default:
+			}
+		}
+	}()
+
+	return &standardOS{
+		rl:                  rl,
+		interruptSignalChan: interruptSignalChan,
+		interruptChan:       interruptChan,
+	}, nil
 }
 
 type standardOsOutput struct{}
@@ -62,9 +82,15 @@ func (o standardOsOutput) IsTerminal() bool {
 	return readline.IsTerminal(int(os.Stdout.Fd()))
 }
 
+func (o standardOS) Close() error {
+	close(o.interruptSignalChan)
+	return nil
+}
+
 func (*standardOS) Stdin() io.Reader                        { return os.Stdin }
 func (*standardOS) Stdout() interp.Output                   { return standardOsOutput{} }
 func (*standardOS) Stderr() io.Writer                       { return os.Stderr }
+func (o *standardOS) Interrupt() chan struct{}              { return o.interruptChan }
 func (*standardOS) Environ() []string                       { return os.Environ() }
 func (*standardOS) Args() []string                          { return os.Args }
 func (*standardOS) Open(name string) (io.ReadSeeker, error) { return os.Open(name) }
@@ -84,12 +110,16 @@ func (o *standardOS) Readline(prompt string, complete func(line string, pos int)
 
 	o.rl.Config.AutoComplete = autoComplete
 	o.rl.SetPrompt(prompt)
-	src, err := o.rl.Readline()
-	if err != nil {
+	line, err := o.rl.Readline()
+	if err == readline.ErrInterrupt {
+		return "", interp.ErrInterrupt
+	} else if err == io.EOF {
+		return "", interp.ErrEOF
+	} else if err != nil {
 		return "", err
 	}
 
-	return src, nil
+	return line, nil
 }
 
 func Main(r *decode.Registry) {
@@ -98,6 +128,7 @@ func Main(r *decode.Registry) {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+	defer o.Close()
 	i, err := interp.New(interp.InterpOptions{
 		Registry: r,
 		OS:       o,

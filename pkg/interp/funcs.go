@@ -27,6 +27,37 @@ import (
 	"time"
 )
 
+type ctxWriter struct {
+	io.Writer
+	Ctx context.Context
+}
+
+func (o ctxWriter) Write(p []byte) (n int, err error) {
+	if err := o.Ctx.Err(); err != nil {
+		return 0, err
+	}
+	return o.Writer.Write(p)
+}
+
+func interruptWriter(ctx context.Context, ic chan struct{}, w io.Writer, fn func(w io.Writer) error) error {
+	interruptCtx, interruptCtxCancelFn := context.WithCancel(ctx)
+	interruptW := ctxWriter{Writer: w, Ctx: interruptCtx}
+	go func() {
+		select {
+		case <-ic:
+			interruptCtxCancelFn()
+		case <-interruptCtx.Done():
+			// nop
+		}
+	}()
+	defer func() {
+		// stop interruptChan goroutine
+		interruptCtxCancelFn()
+	}()
+
+	return fn(interruptW)
+}
+
 // TODO: make it nicer somehow? generate generators? remove from struct?
 func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
 	fs := []Function{
@@ -130,7 +161,12 @@ func (i *Interp) read(c interface{}, a []interface{}) interface{} {
 		names, shared, _ := completeTrampoline(completeCtx, completeFn, c, i, string(line), pos)
 		return names, shared
 	})
-	if err != nil {
+
+	if err == ErrInterrupt {
+		return valueErr{"interrupt"}
+	} else if err == ErrEOF {
+		return valueErr{"eof"}
+	} else if err != nil {
 		return err
 	}
 
@@ -413,24 +449,29 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 
 		switch v := c.(type) {
 		case Display:
-			if err := v.Display(i.evalContext.stdout, opts); err != nil {
+			if err := interruptWriter(i.evalContext.ctx, i.os.Interrupt(), i.evalContext.stdout, func(w io.Writer) error {
+				return v.Display(w, opts)
+			}); err != nil {
 				return err
 			}
 			return []interface{}{}
 		case nil, bool, float64, int, string, *big.Int, map[string]interface{}, []interface{}, InterpObject:
-			if err := colorjson.NewEncoder(opts.Color, false, 2,
-				func(v interface{}) interface{} {
-					if o, ok := v.(InterpObject); ok {
-						return o.JsonPrimitiveValue()
-					}
-					return v
-				}).Marshal(v, i.evalContext.stdout); err != nil {
+			if err := interruptWriter(i.evalContext.ctx, i.os.Interrupt(), i.evalContext.stdout, func(w io.Writer) error {
+				err := colorjson.NewEncoder(opts.Color, false, 2,
+					func(v interface{}) interface{} {
+						if o, ok := v.(InterpObject); ok {
+							return o.JsonPrimitiveValue()
+						}
+						return v
+					}).Marshal(v, w)
+				fmt.Fprintln(w)
+				return err
+			}); err != nil {
 				return err
 			}
-			fmt.Fprintln(i.evalContext.stdout)
 			return []interface{}{}
 		default:
-			return fmt.Errorf("%v (%t): not displayable", c, c)
+			return fmt.Errorf("%v: not displayable", c)
 		}
 	}
 }
@@ -467,28 +508,31 @@ func (i *Interp) hexdump(c interface{}, a []interface{}) interface{} {
 		return err
 	}
 
-	var opts DisplayOptions
-	if len(a) >= 1 {
-		opts = buildDisplayOptions(i.evalContext.opts, a[0].(map[string]interface{}))
-	} else {
-		opts = buildDisplayOptions(i.evalContext.opts)
-	}
+	if err := interruptWriter(i.evalContext.ctx, i.os.Interrupt(), i.evalContext.stdout, func(w io.Writer) error {
+		var opts DisplayOptions
+		if len(a) >= 1 {
+			opts = buildDisplayOptions(i.evalContext.opts, a[0].(map[string]interface{}))
+		} else {
+			opts = buildDisplayOptions(i.evalContext.opts)
+		}
+		d := opts.Decorator
+		hw := hexdump.New(
+			w,
+			(r.Start-bitsByteAlign)/8,
+			num.DigitsInBase(bitio.BitsByteCount(r.Stop()+bitsByteAlign), true, opts.AddrBase),
+			opts.AddrBase,
+			opts.LineBytes,
+			func(b byte) string { return d.Byte(b, hexpairwriter.Pair(b)) },
+			func(b byte) string { return d.Byte(b, asciiwriter.SafeASCII(b)) },
+			d.Column,
+		)
+		defer hw.Close()
+		_, err := io.Copy(hw, bb)
 
-	d := opts.Decorator
-	hw := hexdump.New(
-		i.evalContext.stdout,
-		(r.Start-bitsByteAlign)/8,
-		num.DigitsInBase(bitio.BitsByteCount(r.Stop()+bitsByteAlign), true, opts.AddrBase),
-		opts.AddrBase,
-		opts.LineBytes,
-		func(b byte) string { return d.Byte(b, hexpairwriter.Pair(b)) },
-		func(b byte) string { return d.Byte(b, asciiwriter.SafeASCII(b)) },
-		d.Column,
-	)
-	if _, err := io.Copy(hw, bb); err != nil {
+		return err
+	}); err != nil {
 		return err
 	}
-	hw.Close()
 
 	return []interface{}{}
 }
