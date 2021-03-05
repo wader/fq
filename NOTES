@@ -1,13 +1,13 @@
 
+warnings show "*"?
 
-
-nicer context close when ctrl-c
+DONE nicer context close when ctrl-c
 
 createa a makeWriterFunction thingy?
 
-Varlues with error show in Display?
+DONE Varlues with error show in Display?
 
-colo headers?
+color headers?
 
 repl options args
 
