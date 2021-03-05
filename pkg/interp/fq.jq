@@ -21,15 +21,19 @@ def complete($e):
 def set_eval_options: options(options_expr | with_entries(.value |= eval(.)));
 
 def prompt:
-	def _type_name:
-		. as $c | try (. | display_name) catch ($c | type);
+	def _type_name_error:
+		. as $c |
+		try
+			(. | display_name) +
+			if ._error then "!" else "" end
+		catch ($c | type);
 	def _path_prefix:
 		(._path? // ".") | if . == "." then "" else .+" " end;
 	(if (. | length) == 1 then
-		.[0] | (_path_prefix + _type_name)
+		.[0] | (_path_prefix + _type_name_error)
 	else
 		"[" +
-		((.[0] | _type_name) +
+		((.[0] | _type_name_error) +
 		if (. | length) > 1 then ",..." else "" end) +
 		"]" + "[\(length)]"
 	end
