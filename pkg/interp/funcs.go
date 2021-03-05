@@ -358,24 +358,19 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 	// we don't want to print any progress things after decode is done
 	var decodeDoneFn func()
 	if opts.REPL {
-		shownProgress := false
 		decodeDone := false
-		decodeDoneFn = func() {
-			decodeDone = true
-			if !shownProgress {
-				return
-			}
-			// cleanup when done
-			fmt.Fprint(i.os.Stderr(), "\r      \r")
-		}
-
-		rs = progressreadseeker.New(rs, bEnd, func(readBytes int64, length int64) {
+		progressFn := func(r, l int64) {
 			if decodeDone {
 				return
 			}
-			fmt.Fprintf(i.os.Stderr(), "\r%.1f%%", (float64(readBytes)/float64(length))*100)
-			shownProgress = true
-		})
+			fmt.Fprintf(i.os.Stderr(), "\r%.1f%%", (float64(r)/float64(l))*100)
+		}
+		decodeDoneFn = func() {
+			decodeDone = true
+			// cleanup when done
+			fmt.Fprint(i.os.Stderr(), "\r      \r")
+		}
+		rs = progressreadseeker.New(rs, bEnd, progressFn)
 	}
 
 	bb, err := bitio.NewBufferFromReadSeeker(rs)

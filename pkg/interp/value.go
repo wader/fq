@@ -311,6 +311,17 @@ func (vo valueObject) JsonPrimitiveValue() interface{} {
 		return big.NewInt(int64(vv))
 	case []byte:
 		return string(vv)
+	case *bitio.Buffer:
+		return fmt.Sprintf("<%s bytes>", decode.Bits(v.Range.Len).StringByteBits(10))
+		// bb, err := v.RootBitBuf.BitBufRange(v.Range.Start, v.Range.Len)
+		// if err != nil {
+		// 	return err
+		// }
+		// buf := &bytes.Buffer{}
+		// if _, err := io.Copy(buf, bb.Copy()); err != nil {
+		// 	return err
+		// }
+		// return buf.String()
 	default:
 		// TODO: error?
 		return nil

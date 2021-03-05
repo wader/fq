@@ -4,8 +4,8 @@ include "@builtin/funcs.jq";
 
 # TODO: completionMode
 def complete($e):
-	($e | complete_query) as {$type, $query, $prefix} |
-	{
+	($e | complete_query) as {$type, $query, $prefix}
+	| {
 		prefix: $prefix,
 		names: (
 			if $type == "function" or $type == "variable" then
@@ -14,7 +14,10 @@ def complete($e):
 				[.[] | eval($query) | keys?, _value_keys?] | add
 			else
 				[]
-			end | map(select(strings and startswith($prefix))) | unique | sort
+			end
+			| map(select(strings and startswith($prefix)))
+			| unique
+			| sort
 		)
 	};
 
@@ -22,20 +25,23 @@ def set_eval_options: options(options_expr | with_entries(.value |= eval(.)));
 
 def prompt:
 	def _type_name_error:
-		. as $c |
-		try
+		. as $c
+		| try
 			(. | display_name) +
-			if ._error then "!" else "" end
+				if ._error then "!" else "" end
 		catch ($c | type);
 	def _path_prefix:
-		(._path? // ".") | if . == "." then "" else .+" " end;
+		(._path? // ".")
+		| if . == "." then "" else .+" " end;
 	(if (. | length) == 1 then
 		.[0] | (_path_prefix + _type_name_error)
 	else
-		"[" +
-		((.[0] | _type_name_error) +
-		if (. | length) > 1 then ",..." else "" end) +
-		"]" + "[\(length)]"
+		[ "["
+		, ((.[0] | _type_name_error)
+		, if (. | length) > 1 then ",..." else "" end)
+		, "]"
+		, "[\(length)]"
+		] | join("")
 	end
 	) + "> ";
 
@@ -47,9 +53,9 @@ def eval_f($e;f):
 
 def eval_print($e):
 	def _display:
-		. as $c |
-		try $c | display({depth: 1})
-		catch . | print;
+		. as $c
+		| try $c | display({depth: 1})
+		  catch (. | print);
 	eval_f($e;_display | print);
 
 
@@ -63,18 +69,21 @@ def eval_print($e):
 # it will be called with same input as read and a string argument being the
 # current line from start to current cursor position. Should return possible completions.
 def repl:
-	def _read_expr: read(prompt;"complete") | trim | if . == "" then "." end;
+	def _read_expr:
+		read(prompt;"complete")
+		| trim
+		| if . == "" then "." end;
 	def _as_array: if (. | type) != "array" then [.] end;
 	def _repl:
-		. as $c |
-		try _read_expr as $e |
-			(.[] | eval_print($e) | empty),
+		. as $c
+		| try
+			_read_expr as $e
+			| (.[] | eval_print($e) | empty),
 			_repl
-		catch
+		  catch
 			if . == "interrupt" then $c | repl
 			elif . == "eof" then empty
-			else error(.) end
-		;
+			else error(.) end;
     _as_array | _repl;
 
 def main:
@@ -138,7 +147,7 @@ def main:
 				object: true,
 				default_eval: true,
 				default: {
-					depth:     "0",
+					depth:        "0",
 					verbose:      "false",
 					color:        "tty.is_terminal and env.CLICOLOR!=null",
 					unicode:      "tty.is_terminal and env.CLIUNICODE!=null",
@@ -150,35 +159,35 @@ def main:
 				}
 			},
 		};
-	.version as $version |
-	.args[0] as $arg0 |
-	opts_parse(.args[1:];_opts($version)) as {$parsed, $rest} |
+	.version as $version
+	| .args[0] as $arg0
+	| opts_parse(.args[1:];_opts($version)) as {$parsed, $rest}
 	# TODO: pass opts some other way
-	options_expr($parsed.options + {repl: ($parsed.repl|tojson)}) |
-	set_eval_options |
-	if $parsed.version then
+	| options_expr($parsed.options + {repl: ($parsed.repl|tojson)})
+	| set_eval_options
+	| if $parsed.version then
 		$version | print
-	elif $parsed.formats then
+	  elif $parsed.formats then
 		_formats_list | print
-	elif $parsed.help then
-		(
-			"Usage: \($arg0) [OPTIONS] [FILE] [EXPR]",
-			opts_help_text(_opts($version))
-		) | print
-	else
-		(if $parsed.file then open($parsed.file) | string
-		 else (if $parsed.noinput then $rest[0] else $rest[1] end) // "." end
-		) as $expr |
-		if $parsed.noinput then
+	  elif $parsed.help then
+		"Usage: \($arg0) [OPTIONS] [FILE] [EXPR]",
+		opts_help_text(_opts($version))
+		| print
+	  else
+		( if $parsed.file then open($parsed.file) | string
+		  else (if $parsed.noinput then $rest[0] else $rest[1] end) // "." end
+		) as $expr
+		| if $parsed.noinput then
 			null
-		else
-			(if $rest[0] then $rest[0] else "-" end) as $filename |
-			open($filename) |
-			decode($parsed.decode)
-		end |
-		if $parsed.repl then
+		  else
+			( if $rest[0] then $rest[0] else "-" end) as $filename
+			| open($filename)
+			| decode($parsed.decode
+			)
+		  end
+		| if $parsed.repl then
 			eval_f($expr;repl)
-		else
+		  else
 			eval_print($expr)
-		end
-	end;
+		  end
+	  end;
