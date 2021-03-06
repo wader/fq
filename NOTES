@@ -1,4 +1,6 @@
 
+ctrl-c non-repl, also ctrl decode? ctx per call?
+
 warnings show "*"?
 
 DONE nicer context close when ctrl-c
