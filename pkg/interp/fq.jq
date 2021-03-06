@@ -179,10 +179,9 @@ def main:
 		| if $parsed.noinput then
 			null
 		  else
-			( if $rest[0] then $rest[0] else "-" end) as $filename
+			(if $rest[0] then $rest[0] else "-" end) as $filename
 			| open($filename)
-			| decode($parsed.decode
-			)
+			| decode($parsed.decode)
 		  end
 		| if $parsed.repl then
 			eval_f($expr;repl)

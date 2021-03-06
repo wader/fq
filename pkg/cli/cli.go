@@ -11,7 +11,7 @@ import (
 	"os/signal"
 	"path/filepath"
 
-	"github.com/chzyer/readline"
+	"github.com/goinsane/readline"
 )
 
 type autoCompleterFn func(line []rune, pos int) (newLine [][]rune, length int)
