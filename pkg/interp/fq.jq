@@ -32,7 +32,7 @@ def prompt:
 		catch ($c | type);
 	def _path_prefix:
 		(._path? // ".")
-		| if . == "." then "" else .+" " end;
+		| if . == "." then "" else . + " " end;
 	(if (. | length) == 1 then
 		.[0] | (_path_prefix + _type_name_error)
 	else
@@ -81,7 +81,7 @@ def repl:
 			| (.[] | eval_print($e) | empty),
 			_repl
 		  catch
-			if . == "interrupt" then $c | repl
+			if . == "interrupt" then $c | _repl
 			elif . == "eof" then empty
 			else error(.) end;
     _as_array | _repl;
