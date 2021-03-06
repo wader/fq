@@ -104,7 +104,6 @@ def main:
 				bool: true
 			},
 			"formats": {
-				short: "-h",
 				long: "--formats",
 				description: "Show formats",
 				bool: true

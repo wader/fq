@@ -63,7 +63,10 @@ def opts_parse($args;$opts):
 	def _flagmap:
 		( $opts
 		| to_entries
-		| map({(.value.short): .key, (.value.long): .key})
+		| map(
+			({(.value.short): .key}? // {}) +
+			({(.value.long): .key}? // {})
+		  )
 		| add
 		);
 	def _defaults:
@@ -77,10 +80,12 @@ def opts_parse($args;$opts):
 
 def opts_help_text($opts):
 	def _opthelp:
-		[ "\(.long),\(.short)"
-		, if .value or .array or .object then "=ARG,\(.short) ARG"
-		  else "" end
-		] | join("");
+		( [ .long
+		  , .short
+		  ] | map(select(strings)) | join(",")
+		) +
+		if .value or .array or .object then "=ARG"
+		else null end;
 	def _maxoptlen:
 		[$opts[] | (.|_opthelp|length)] | max;
 	_maxoptlen as $l
