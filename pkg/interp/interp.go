@@ -9,16 +9,37 @@ import (
 	"fmt"
 	"fq"
 	"fq/internal/ansi"
+	"fq/internal/chanstack"
 	"fq/internal/num"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/ranges"
 	"io"
+	"log"
 	"math/big"
 	"strings"
 
 	"github.com/itchyny/gojq"
 )
+
+func contextWithChan(ctx context.Context, c chan struct{}) (context.Context, func()) {
+	chanCtx, cancelFn := context.WithCancel(ctx)
+	chanCtxCancelChan := make(chan struct{})
+	go func() {
+		select {
+		case <-chanCtxCancelChan:
+			log.Println("chanctx cancel")
+			return
+		case <-c:
+			log.Println("chanctx got c chancel")
+			cancelFn()
+		}
+	}()
+
+	return chanCtx, func() {
+		close(chanCtxCancelChan)
+	}
+}
 
 const builtinPrefix = "@builtin"
 
@@ -425,6 +446,7 @@ type Interp struct {
 
 	builtinQueryCache map[string]*gojq.Query
 	includeFqQuery    *gojq.Query
+	interruptStack    *chanstack.Stack
 
 	evalContext *evalContext
 }
@@ -441,13 +463,14 @@ func New(opts InterpOptions) (*Interp, error) {
 	// TODO: cleanup group names and panics
 
 	i.builtinQueryCache = map[string]*gojq.Query{}
-	i.evalContext = &evalContext{
-		optsExpr: map[string]interface{}{},
-		opts:     map[string]interface{}{},
-	}
 	i.includeFqQuery, err = gojq.Parse(string(fqJq))
 	if err != nil {
 		return nil, fmt.Errorf("%d: %w", queryErrorLine(err), err)
+	}
+	i.interruptStack = chanstack.New(opts.OS.Interrupt())
+	i.evalContext = &evalContext{
+		optsExpr: map[string]interface{}{},
+		opts:     map[string]interface{}{},
 	}
 
 	return i, nil
@@ -503,7 +526,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 		optsExpr = map[string]interface{}{}
 	}
 	ni.evalContext = &evalContext{
-		ctx:      ctx,
+		// ctx:      ctx,
 		mode:     mode,
 		optsExpr: optsExpr,
 		opts:     i.evalContext.opts,
@@ -558,11 +581,36 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 		return nil, fmt.Errorf("%d: %w", queryErrorLine(err), err)
 	}
 
-	ni.evalContext.stdout = stdout
+	log.Println("pushed")
+
+	runCtx, runCtxCancelFn := contextWithChan(ctx, i.interruptStack.Push())
+
+	ni.evalContext.stdout = CtxOutput{Output: stdout, Ctx: runCtx}
+	ni.evalContext.ctx = runCtx
 
 	iter := gc.RunWithContext(ctx, c, variableValues...)
 
-	return iter, nil
+	// interruptChan := make(chan os.Signal, 1)
+	// signal.Notify(interruptChan, os.Interrupt)
+	// go func() {
+	// 	log.Printf("i: wait for interrupt signal%p\n", i)
+	// 	select {
+	// 	case <-interruptChan:
+	// 		log.Printf("i: got interrupt signal%p\n", i)
+	// 	}
+	// }()
+
+	iterWrapper := iterFn(func() (interface{}, bool) {
+		v, ok := iter.Next()
+		_, isErr := v.(error)
+		if !ok || isErr {
+			runCtxCancelFn()
+		}
+
+		return v, ok
+	})
+
+	return iterWrapper, nil
 }
 
 func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output, optsExpr map[string]interface{}) (gojq.Iter, error) {

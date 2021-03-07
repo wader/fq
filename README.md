@@ -64,7 +64,7 @@ Language:
 
 Functions:
 
-- `open(path) ` open file
+- `open(path)` open file
 - `decode([name])` decode as named format or try to automatically detect
 - All decoders and groups are available as functions with their name, e.g. `... | mp3_frame`, `image`, `probe`.
 - `repl` nested REPL

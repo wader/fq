@@ -52,11 +52,7 @@ def eval_f($e;f):
 	catch (. as $err | ("error: " + $err) | print);
 
 def eval_print($e):
-	def _display:
-		. as $c
-		| try $c | display({depth: 1})
-		  catch (. | print);
-	eval_f($e;_display | print);
+	eval_f($e;display({depth: 1}));
 
 
 # def read: #:: [a]| => string

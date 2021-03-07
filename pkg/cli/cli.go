@@ -67,6 +67,11 @@ func newStandardOS() (*standardOS, error) {
 	}, nil
 }
 
+func (o standardOS) Close() error {
+	close(o.interruptSignalChan)
+	return nil
+}
+
 type standardOsOutput struct{}
 
 func (o standardOsOutput) Write(p []byte) (n int, err error) {
@@ -80,11 +85,6 @@ func (o standardOsOutput) Size() (int, int) {
 
 func (o standardOsOutput) IsTerminal() bool {
 	return readline.IsTerminal(int(os.Stdout.Fd()))
-}
-
-func (o standardOS) Close() error {
-	close(o.interruptSignalChan)
-	return nil
 }
 
 func (*standardOS) Stdin() io.Reader                        { return os.Stdin }
@@ -107,6 +107,19 @@ func (o *standardOS) Readline(prompt string, complete func(line string, pos int)
 			return runeNames, shared
 		})
 	}
+
+	// _ = autoComplete
+
+	// s := bufio.NewScanner(os.Stdin)
+	// if ok := s.Scan(); !ok {
+	// 	fmt.Fprintln(os.Stdout)
+	// 	return "", io.EOF
+	// }
+	// line := s.Text()
+	// if err := s.Err(); err != nil {
+	// 	return "", err
+	// }
+	// return line, nil
 
 	o.rl.Config.AutoComplete = autoComplete
 	o.rl.SetPrompt(prompt)

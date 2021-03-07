@@ -196,6 +196,8 @@ func (i *Interp) eval(c interface{}, a []interface{}) interface{} {
 		}
 	}
 
+	i.interruptStack.Pop()
+
 	return vs
 }
 
