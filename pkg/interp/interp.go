@@ -630,7 +630,7 @@ func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name
 		"input": c,
 		"args":  args,
 	}
-	// {input: ..., args: [...]} | .input | fn(.args[0], ...)
+	// {input: ..., args: [...]} | .args as $a | .input | name[($a[0]; ...)]
 	trampolineExpr := fmt.Sprintf(".args as $a | .input | %s%s", name, argExpr)
 	iter, err := i.Eval(ctx, mode, trampolineInput, trampolineExpr, stdout, optsExpr)
 	if err != nil {

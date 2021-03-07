@@ -1,4 +1,9 @@
 
+protobuf decode optinka foramt option with "schema"?
+
+rawstring option? if only string skip quotes?
+
+colors config
 
 cleanup open files on interp return?
 
