@@ -14,6 +14,7 @@ import (
 	"fq/internal/colorjson"
 	"fq/internal/hexdump"
 	"fq/internal/hexpairwriter"
+	"fq/internal/ioextra"
 	"fq/internal/num"
 	"fq/internal/progressreadseeker"
 	"fq/pkg/bitio"
@@ -76,9 +77,9 @@ func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
 }
 
 func (i *Interp) tty(c interface{}, a []interface{}) interface{} {
-	w, h := i.evalContext.stdout.Size()
+	w, h := i.stdout.Size()
 	return map[string]interface{}{
-		"is_terminal": i.evalContext.stdout.IsTerminal(),
+		"is_terminal": i.stdout.IsTerminal(),
 		"size":        []interface{}{w, h},
 	}
 }
@@ -89,9 +90,9 @@ func (i *Interp) optionsExpr(c interface{}, a []interface{}) interface{} {
 		if !ok {
 			return fmt.Errorf("%v: value is not an object", a[0])
 		}
-		i.evalContext.optsExpr = opts
+		i.optsExpr = opts
 	}
-	return i.evalContext.optsExpr
+	return i.optsExpr
 }
 
 func (i *Interp) options(c interface{}, a []interface{}) interface{} {
@@ -100,9 +101,9 @@ func (i *Interp) options(c interface{}, a []interface{}) interface{} {
 		if !ok {
 			return fmt.Errorf("%v: value is not an object", a[0])
 		}
-		i.evalContext.opts = opts
+		i.opts = opts
 	}
-	return i.evalContext.opts
+	return i.opts
 }
 
 func (i *Interp) read(c interface{}, a []interface{}) interface{} {
@@ -124,7 +125,7 @@ func (i *Interp) read(c interface{}, a []interface{}) interface{} {
 	}
 
 	src, err := i.os.Readline(prompt, func(line string, pos int) (newLine []string, shared int) {
-		completeCtx, completeCtxCancelFn := context.WithTimeout(i.evalContext.ctx, 1*time.Second)
+		completeCtx, completeCtxCancelFn := context.WithTimeout(i.ctx, 1*time.Second)
 		defer completeCtxCancelFn()
 		// TODO: err
 		names, shared, _ := completeTrampoline(completeCtx, completeFn, c, i, string(line), pos)
@@ -147,7 +148,7 @@ func (i *Interp) eval(c interface{}, a []interface{}) interface{} {
 	if !ok {
 		return fmt.Errorf("%v: src is not a string", a[0])
 	}
-	iter, err := i.Eval(i.evalContext.ctx, ScriptMode, c, src, i.evalContext.stdout, i.evalContext.optsExpr)
+	iter, err := i.Eval(i.ctx, ScriptMode, c, src, i.stdout, i.optsExpr)
 	if err != nil {
 		return err
 	}
@@ -165,13 +166,11 @@ func (i *Interp) eval(c interface{}, a []interface{}) interface{} {
 		}
 	}
 
-	i.interruptStack.Pop()
-
 	return vs
 }
 
 func (i *Interp) print(c interface{}, a []interface{}) interface{} {
-	if _, err := fmt.Fprintln(i.evalContext.stdout, c); err != nil {
+	if _, err := fmt.Fprintln(i.stdout, c); err != nil {
 		return err
 	}
 	return []interface{}{}
@@ -290,6 +289,7 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 
 	if filename == "" || filename == "-" {
 		filename = "stdin"
+		// TODO: cancellable?
 		buf, err := ioutil.ReadAll(i.os.Stdin())
 		if err != nil {
 			return err
@@ -309,21 +309,12 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 		rs = f
 	}
 
-	//TODO: how to know when decode is done?
-	// TODO: refactor
-	bPos, err := rs.Seek(0, io.SeekCurrent)
+	bEnd, err := ioextra.SeekerEnd(rs)
 	if err != nil {
-		return err
-	}
-	bEnd, err := rs.Seek(0, io.SeekEnd)
-	if err != nil {
-		return err
-	}
-	if _, err := rs.Seek(bPos, io.SeekStart); err != nil {
 		return err
 	}
 
-	opts := buildDisplayOptions(i.evalContext.opts)
+	opts := buildDisplayOptions(i.opts)
 
 	// TODO: make nicer
 	// we don't want to print any progress things after decode is done
@@ -408,14 +399,14 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 	return func(c interface{}, a []interface{}) interface{} {
 		var opts DisplayOptions
 		if len(a) >= 1 {
-			opts = buildDisplayOptions(i.evalContext.opts, fnOpts, a[0].(map[string]interface{}))
+			opts = buildDisplayOptions(i.opts, fnOpts, a[0].(map[string]interface{}))
 		} else {
-			opts = buildDisplayOptions(i.evalContext.opts, fnOpts)
+			opts = buildDisplayOptions(i.opts, fnOpts)
 		}
 
 		switch v := c.(type) {
 		case Display:
-			if err := v.Display(i.evalContext.stdout, opts); err != nil {
+			if err := v.Display(i.stdout, opts); err != nil {
 				return err
 			}
 			return []interface{}{}
@@ -426,10 +417,10 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 						return o.JsonPrimitiveValue()
 					}
 					return v
-				}).Marshal(v, i.evalContext.stdout); err != nil {
+				}).Marshal(v, i.stdout); err != nil {
 				return err
 			}
-			fmt.Fprintln(i.evalContext.stdout)
+			fmt.Fprintln(i.stdout)
 			return []interface{}{}
 		default:
 			return fmt.Errorf("%v: not displayable", c)
@@ -441,14 +432,14 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 func (i *Interp) preview(c interface{}, a []interface{}) interface{} {
 	var opts DisplayOptions
 	if len(a) >= 1 {
-		opts = buildDisplayOptions(i.evalContext.opts, a[0].(map[string]interface{}))
+		opts = buildDisplayOptions(i.opts, a[0].(map[string]interface{}))
 	} else {
-		opts = buildDisplayOptions(i.evalContext.opts)
+		opts = buildDisplayOptions(i.opts)
 	}
 
 	switch v := c.(type) {
 	case Preview:
-		if err := v.Preview(i.evalContext.stdout, opts); err != nil {
+		if err := v.Preview(i.stdout, opts); err != nil {
 			return err
 		}
 		return []interface{}{}
@@ -471,13 +462,13 @@ func (i *Interp) hexdump(c interface{}, a []interface{}) interface{} {
 
 	var opts DisplayOptions
 	if len(a) >= 1 {
-		opts = buildDisplayOptions(i.evalContext.opts, a[0].(map[string]interface{}))
+		opts = buildDisplayOptions(i.opts, a[0].(map[string]interface{}))
 	} else {
-		opts = buildDisplayOptions(i.evalContext.opts)
+		opts = buildDisplayOptions(i.opts)
 	}
 	d := opts.Decorator
 	hw := hexdump.New(
-		i.evalContext.stdout,
+		i.stdout,
 		(r.Start-bitsByteAlign)/8,
 		num.DigitsInBase(bitio.BitsByteCount(r.Stop()+bitsByteAlign), true, opts.AddrBase),
 		opts.AddrBase,

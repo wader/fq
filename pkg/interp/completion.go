@@ -2,7 +2,6 @@ package interp
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -17,11 +16,6 @@ const (
 	CompletionTypeVar   CompletionType = "variable"
 	CompletionTypeNone  CompletionType = "none"
 )
-
-func jsonEscape(v interface{}) string {
-	b, _ := json.Marshal(v)
-	return string(b)
-}
 
 func BuildCompletionQuery(src string) (*gojq.Query, CompletionType, string) {
 	if src == "" {
@@ -111,7 +105,7 @@ func transformToCompletionQuery(q *gojq.Query) (*gojq.Query, CompletionType, str
 
 func completeTrampoline(ctx context.Context, completeFn string, c interface{}, i *Interp, line string, pos int) (newLine []string, shared int, err error) {
 	lineStr := string(line[0:pos])
-	v := i.EvalFuncValue(ctx, CompletionMode, c, completeFn, []interface{}{lineStr}, DiscardOutput{Ctx: ctx}, i.evalContext.optsExpr)
+	v := i.EvalFuncValue(ctx, CompletionMode, c, completeFn, []interface{}{lineStr}, DiscardOutput{Ctx: ctx}, i.optsExpr)
 	if _, ok := v.(error); ok {
 		return nil, pos, err
 	}

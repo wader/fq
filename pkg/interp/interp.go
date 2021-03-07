@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"fq"
 	"fq/internal/ansi"
-	"fq/internal/chanstack"
+	"fq/internal/ctxstack"
 	"fq/internal/num"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
@@ -431,7 +431,7 @@ const (
 	CompletionMode
 )
 
-type evalContext struct {
+type runContext struct {
 	ctx      context.Context
 	optsExpr map[string]interface{}
 	opts     map[string]interface{}
@@ -446,9 +446,10 @@ type Interp struct {
 
 	builtinQueryCache map[string]*gojq.Query
 	includeFqQuery    *gojq.Query
-	interruptStack    *chanstack.Stack
+	interruptStack    *ctxstack.Stack
 
-	evalContext *evalContext
+	// new for each run other values are copied
+	runContext
 }
 
 func New(opts InterpOptions) (*Interp, error) {
@@ -467,8 +468,15 @@ func New(opts InterpOptions) (*Interp, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%d: %w", queryErrorLine(err), err)
 	}
-	i.interruptStack = chanstack.New(opts.OS.Interrupt())
-	i.evalContext = &evalContext{
+	i.interruptStack = ctxstack.New(func(closeCh chan struct{}) {
+		select {
+		case <-closeCh:
+			return
+		case <-opts.OS.Interrupt():
+			return
+		}
+	})
+	i.runContext = runContext{
 		optsExpr: map[string]interface{}{},
 		opts:     map[string]interface{}{},
 	}
@@ -525,11 +533,10 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	if optsExpr == nil {
 		optsExpr = map[string]interface{}{}
 	}
-	ni.evalContext = &evalContext{
-		// ctx:      ctx,
+	ni.runContext = runContext{
 		mode:     mode,
 		optsExpr: optsExpr,
-		opts:     i.evalContext.opts,
+		opts:     i.opts,
 	}
 
 	var variableNames []string
@@ -581,24 +588,11 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 		return nil, fmt.Errorf("%d: %w", queryErrorLine(err), err)
 	}
 
-	log.Println("pushed")
+	runCtx, runCtxCancelFn := i.interruptStack.Push(ctx)
 
-	runCtx, runCtxCancelFn := contextWithChan(ctx, i.interruptStack.Push())
-
-	ni.evalContext.stdout = CtxOutput{Output: stdout, Ctx: runCtx}
-	ni.evalContext.ctx = runCtx
-
+	ni.stdout = CtxOutput{Output: stdout, Ctx: runCtx}
+	ni.ctx = runCtx
 	iter := gc.RunWithContext(ctx, c, variableValues...)
-
-	// interruptChan := make(chan os.Signal, 1)
-	// signal.Notify(interruptChan, os.Interrupt)
-	// go func() {
-	// 	log.Printf("i: wait for interrupt signal%p\n", i)
-	// 	select {
-	// 	case <-interruptChan:
-	// 		log.Printf("i: got interrupt signal%p\n", i)
-	// 	}
-	// }()
 
 	iterWrapper := iterFn(func() (interface{}, bool) {
 		v, ok := iter.Next()
