@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"embed"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"fq"
@@ -506,7 +505,7 @@ func (i *Interp) Main(ctx context.Context, stdout io.Writer) error {
 		"version": fq.Version,
 	}
 
-	iter, err := i.Eval(ctx, runMode, input, "main", i.os.Stdout(), nil)
+	iter, err := i.EvalFunc(ctx, runMode, input, "main", nil, i.os.Stdout(), nil)
 	if err != nil {
 		fmt.Fprintln(i.os.Stderr(), err)
 		return err
@@ -618,20 +617,22 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 }
 
 func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output, optsExpr map[string]interface{}) (gojq.Iter, error) {
-	var argsJSON []string
-	for _, arg := range args {
-		b, err := json.Marshal(arg)
-		if err != nil {
-			return nil, err
-		}
-		argsJSON = append(argsJSON, string(b))
+	var argsExpr []string
+	for i := range args {
+		argsExpr = append(argsExpr, fmt.Sprintf(".args[%d]", i))
 	}
-	argsStr := ""
-	if len(argsJSON) > 0 {
-		argsStr = "(" + strings.Join(argsJSON, ";") + ")"
+	argExpr := ""
+	if len(argsExpr) > 0 {
+		argExpr = "(" + strings.Join(argsExpr, ";") + ")"
 	}
 
-	iter, err := i.Eval(ctx, mode, c, fmt.Sprintf("%s%s", name, argsStr), stdout, optsExpr)
+	trampolineInput := map[string]interface{}{
+		"input": c,
+		"args":  args,
+	}
+	// {input: ..., args: [...]} | .input | fn(.args[0], ...)
+	trampolineExpr := fmt.Sprintf(".input | %s%s", name, argExpr)
+	iter, err := i.Eval(ctx, mode, trampolineInput, trampolineExpr, stdout, optsExpr)
 	if err != nil {
 		return nil, err
 	}
