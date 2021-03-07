@@ -472,8 +472,6 @@ func New(opts InterpOptions) (*Interp, error) {
 		os:        opts.OS,
 	}
 
-	// TODO: cleanup group names and panics
-
 	i.builtinQueryCache = map[string]*gojq.Query{}
 	i.includeFqQuery, err = gojq.Parse(string(fqJq))
 	if err != nil {
@@ -539,7 +537,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 		return nil, fmt.Errorf("%d: %w", queryErrorLine(err), err)
 	}
 
-	// make copy of query
+	// make copy of interp
 	ci := *i
 	ni := &ci
 	if optsExpr == nil {

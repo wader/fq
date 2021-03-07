@@ -27,7 +27,6 @@ type standardOS struct {
 }
 
 func newStandardOS() (*standardOS, error) {
-	// TODO: refactor, shared?
 	historyFile := ""
 	cacheDir, err := os.UserCacheDir()
 	if err != nil {
@@ -107,19 +106,6 @@ func (o *standardOS) Readline(prompt string, complete func(line string, pos int)
 			return runeNames, shared
 		})
 	}
-
-	// _ = autoComplete
-
-	// s := bufio.NewScanner(os.Stdin)
-	// if ok := s.Scan(); !ok {
-	// 	fmt.Fprintln(os.Stdout)
-	// 	return "", io.EOF
-	// }
-	// line := s.Text()
-	// if err := s.Err(); err != nil {
-	// 	return "", err
-	// }
-	// return line, nil
 
 	o.rl.Config.AutoComplete = autoComplete
 	o.rl.SetPrompt(prompt)
