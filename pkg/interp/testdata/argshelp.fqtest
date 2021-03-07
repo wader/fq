@@ -1,0 +1,21 @@
+> fq -h
+Usage: fq [OPTIONS] [FILE] [EXPR]
+--decode,-d      Decoder (probe)
+--file,-f        Read script from file
+--formats        Show formats
+--help,-h        Show help
+--noinput,-n     No input
+--option,-o=ARG  Set option, eg: color=true
+                   addrbase=16
+                   color=false
+                   depth=0
+                   displaybytes=16
+                   linebytes=16
+                   raw=true
+                   sizebase=10
+                   unicode=false
+                   verbose=false
+
+-r               Raw strings
+--repl,-i        Interactive REPL
+--version,-v     Show version (dev)
