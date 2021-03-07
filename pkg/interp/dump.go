@@ -40,7 +40,7 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 
 	if depth == 0 {
 		for i := 0; i < opts.LineBytes; i++ {
-			cprint(colHex, num.PadFormatInt(int64(i), opts.AddrBase, false, 2))
+			cprint(colHex, d.Frame(num.PadFormatInt(int64(i), opts.AddrBase, false, 2)))
 			if i < opts.LineBytes-1 {
 				cprint(colHex, " ")
 			}
@@ -165,7 +165,7 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 	// has length and is a simple value or a collapsed struct/array
 	if v.Range.Len > 0 && (isSimple || (opts.Depth != 0 && opts.Depth == depth)) {
 		cfmt(0, "%s%s\n",
-			rootIndent, num.PadFormatInt(startLineByte, opts.AddrBase, true, addrWidth))
+			rootIndent, d.Frame(num.PadFormatInt(startLineByte, opts.AddrBase, true, addrWidth)))
 
 		vBitBuf, err := rootV.RootBitBuf.BitBufRange(startByte*8, displaySizeBits)
 		if err != nil {
@@ -188,7 +188,7 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 		for i := int64(1); i < addrLines; i++ {
 			lineStartByte := startLineByte + int64(i)*int64(opts.LineBytes)
 			columns()
-			cfmt(colAddr, "%s%s\n", rootIndent, num.PadFormatInt(lineStartByte, opts.AddrBase, true, addrWidth))
+			cfmt(colAddr, "%s%s\n", rootIndent, d.Frame(num.PadFormatInt(lineStartByte, opts.AddrBase, true, addrWidth)))
 		}
 		// TODO: correct? should rethink columnwriter api maybe?
 		lastLineStopByte := startLineByte + int64(addrLines)*int64(opts.LineBytes) - 1
@@ -205,7 +205,7 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 			}
 			columns()
 
-			cfmt(colAddr, "%s*\n", rootIndent)
+			cprint(colAddr, rootIndent, d.Frame("*"), "\n")
 			cprint(colHex, "\n")
 			// TODO: truncate if displaybytes is small?
 			cfmt(colHex, "%s bytes more until %s%s",

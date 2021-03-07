@@ -497,6 +497,7 @@ func (i *Interp) hexdump(c interface{}, a []interface{}) interface{} {
 		opts.LineBytes,
 		func(b byte) string { return d.Byte(b, hexpairwriter.Pair(b)) },
 		func(b byte) string { return d.Byte(b, asciiwriter.SafeASCII(b)) },
+		func(s string) string { return d.Frame(s) },
 		d.Column,
 	)
 	defer hw.Close()

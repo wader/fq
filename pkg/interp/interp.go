@@ -109,13 +109,6 @@ func queryErrorLine(v error) int {
 	return 0
 }
 
-type Decorator struct {
-	Name   func(s string) string
-	Value  func(s string) string
-	Byte   func(b byte, s string) string
-	Column string
-}
-
 type DisplayOptions struct {
 	Depth     int
 	Verbose   bool
@@ -189,11 +182,13 @@ func decoratorFromDumpOptions(opts DisplayOptions) Decorator {
 	}
 	nameFn := func(s string) string { return s }
 	valueFn := func(s string) string { return s }
+	frameFn := func(s string) string { return s }
 	byteFn := func(b byte, s string) string { return s }
 	column := colStr + "\n"
 	if opts.Color {
 		nameFn = func(s string) string { return ansi.FgBrightBlue + s + ansi.Reset }
 		valueFn = func(s string) string { return ansi.FgBrightCyan + s + ansi.Reset }
+		frameFn = func(s string) string { return ansi.FgYellow + s + ansi.Reset }
 		byteFn = func(b byte, s string) string {
 			switch {
 			case b == 0:
@@ -210,14 +205,16 @@ func decoratorFromDumpOptions(opts DisplayOptions) Decorator {
 	return Decorator{
 		Name:   nameFn,
 		Value:  valueFn,
+		Frame:  frameFn,
 		Byte:   byteFn,
 		Column: column,
 	}
 }
 
-type Decorators struct {
+type Decorator struct {
 	Name   func(s string) string
 	Value  func(s string) string
+	Frame  func(s string) string
 	Byte   func(b byte, s string) string
 	Column string
 }
