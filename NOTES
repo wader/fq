@@ -1,4 +1,6 @@
 
+.frames[0:30] | repl 
+  interrupt exits repl
 
 cleanup display interrupt
 

@@ -39,9 +39,13 @@ func (s *Stack) Close() {
 
 func (s *Stack) Push(parent context.Context) (context.Context, func()) {
 	stackCtx, stackCtxCancel := context.WithCancel(parent)
+	stackIdx := len(s.cancelFns)
 	s.cancelFns = append(s.cancelFns, stackCtxCancel)
 
 	return stackCtx, func() {
+		if stackIdx != len(s.cancelFns)-1 {
+			panic("cancelled in wrong order")
+		}
 		s.cancelFns = s.cancelFns[0 : len(s.cancelFns)-1]
 		stackCtxCancel()
 	}
