@@ -1,4 +1,8 @@
 
+
+slow?
+  panic stack strace? only  addrs, format later?
+
 protobuf decode optinka foramt option with "schema"?
 
 rawstring option? if only string skip quotes?

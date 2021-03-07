@@ -33,16 +33,16 @@ def prompt:
 	def _path_prefix:
 		(._path? // ".")
 		| if . == "." then "" else . + " " end;
-	(if (. | length) == 1 then
-		.[0] | (_path_prefix + _type_name_error)
-	else
+	( if (. | length) == 1 then
+		.[0] | _path_prefix + _type_name_error
+	  else
 		[ "["
 		, ((.[0] | _type_name_error)
 		, if (. | length) > 1 then ",..." else "" end)
 		, "]"
 		, "[\(length)]"
 		] | join("")
-	end
+	  end
 	) + "> ";
 
 
@@ -65,11 +65,11 @@ def eval_print($e):
 # it will be called with same input as read and a string argument being the
 # current line from start to current cursor position. Should return possible completions.
 def repl:
+	def _as_array: if (. | type) != "array" then [.] end;
 	def _read_expr:
 		read(prompt;"complete")
 		| trim
 		| if . == "" then "." end;
-	def _as_array: if (. | type) != "array" then [.] end;
 	def _repl:
 		. as $c
 		| try

@@ -11,7 +11,6 @@ import (
 	"fq/pkg/bitio"
 	"fq/pkg/ranges"
 	"io/ioutil"
-	"runtime"
 )
 
 type DecodeError struct {
@@ -189,12 +188,12 @@ func (d *D) SafeDecodeFn(fn func(d *D) interface{}) (interface{}, *DecodeError) 
 		defer func() {
 			if recoverErr := recover(); recoverErr != nil {
 				// https://github.com/golang/go/blob/master/src/net/http/server.go#L1770
-				const size = 64 << 10
-				stackBuf := make([]byte, size)
-				strackStr := string(stackBuf[:runtime.Stack(stackBuf, false)])
+				// const size = 64 << 10
+				// stackBuf := make([]byte, size)
+				// strackStr := string(stackBuf[:runtime.Stack(stackBuf, false)])
 
 				pe := &DecodeError{
-					PanicStack: strackStr,
+					PanicStack: "",
 				}
 
 				switch panicErr := recoverErr.(type) {

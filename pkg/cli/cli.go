@@ -136,6 +136,7 @@ func Main(r *decode.Registry) {
 		fmt.Fprintln(o.Stderr(), err)
 		os.Exit(1)
 	}
+
 	if err := i.Main(context.Background(), o.Stdout()); err != nil {
 		os.Exit(1)
 	}
