@@ -54,19 +54,20 @@ TODO
 
 ## Differences to jq
 
-fq uses a fork of [gojq](https://github.com/itchyny/gojq) that has these additions
+fq uses a fork of [gojq](https://github.com/itchyny/gojq) that has these additions:
 
 Language:
 
 - Hex `0xab`, octal `0o77` and binary `0b101` integer literals
 - Bitwise operations, `band`, `bor`, `bxor`, `bsl`, `bsr`, `bnot`
-- `div` integer division function
+- `div` integer division operator
 
 Functions:
 
-- `open(path) ` opens file
+- `open(path) ` open file
 - `decode([name])` decode as named format or try to automatically detect
-- All decoders an groups are available as decode functions with their name, e.g. `... | mp3_frame`, `image`, `probe`.
+- All decoders and groups are available as functions with their name, e.g. `... | mp3_frame`, `image`, `probe`.
+- `repl` nested REPL
 - `d`/`display` show field tree
 - `v`/`verbose` show field tree verbosely
 - `p`/`preview` show preview of field tree

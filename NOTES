@@ -1,4 +1,6 @@
 
+in REPL reset color at prompt? context cancel
+
 ctrl-c non-repl, also ctrl decode? ctx per call?
 
 warnings show "*"?
