@@ -178,7 +178,7 @@ def main:
 			(if $rest[0] then $rest[0] else "-" end) as $filename
 			| open($filename)
 			| try decode($parsed.decode)
-			  catch (.[] | debug | (try display catch (. | debug))| empty)
+			  catch (.[] | (try display catch (. | print))| empty)
 		  end
 		| if $parsed.repl then
 			eval_f($expr;repl)

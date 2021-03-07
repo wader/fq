@@ -1,19 +1,8 @@
 package progressreadseeker
 
-// // TODO: move
-// prs := &progressReaderSeeker{RS: rs, Length: bEnd, ProgressFn: func(pos, length int64) {
-// 	fmt.Fprintf(os.Stderr, " %.1f%%\r", float64(pos*100)/float64(length))
-// }}
-
-// prs := newProgressReaderSeeker2(rs, bEnd, func(readBytes int64, length int64) {
-// 	fmt.Fprintf(os.Stderr, " %.1f%%\r", (float64(readBytes)/float64(length))*100)
-// })
-
 import (
 	"io"
 )
-
-const progressPrecision = 1024
 
 type progressReaderSeeker struct {
 	rs                  io.ReadSeeker
@@ -25,16 +14,16 @@ type progressReaderSeeker struct {
 	progressFn          func(readBytes int64, length int64)
 }
 
-func New(rs io.ReadSeeker, length int64, fn func(pos int64, length int64)) *progressReaderSeeker {
-	partitionSize := length / progressPrecision
-	if length%progressPrecision != 0 {
+func New(rs io.ReadSeeker, precision int64, length int64, fn func(pos int64, length int64)) *progressReaderSeeker {
+	partitionSize := length / precision
+	if length%precision != 0 {
 		partitionSize++
 	}
 	return &progressReaderSeeker{
 		rs:            rs,
 		length:        length,
 		partitionSize: partitionSize,
-		partitions:    make([]bool, progressPrecision),
+		partitions:    make([]bool, precision),
 		progressFn:    fn,
 	}
 }
@@ -46,8 +35,6 @@ func (prs *progressReaderSeeker) Read(p []byte) (n int, err error) {
 
 	partStart := prs.pos / prs.partitionSize
 	partEnd := newPos / prs.partitionSize
-
-	// log.Printf("prs.length: len=%d partitionSize=%d %d-%d pos %d->%d\n", prs.length, prs.partitionSize, partStart, partEnd, prs.pos, newPos)
 
 	for i := partStart; i < partEnd; i++ {
 		if prs.partitions[i] {

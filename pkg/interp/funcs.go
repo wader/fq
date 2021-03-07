@@ -10,6 +10,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"fq/internal/aheadreadseeker"
 	"fq/internal/asciiwriter"
 	"fq/internal/colorjson"
 	"fq/internal/hexdump"
@@ -334,8 +335,12 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 			// cleanup when done
 			fmt.Fprint(i.os.Stderr(), "\r      \r")
 		}
-		rs = progressreadseeker.New(rs, bEnd, progressFn)
+		const progressPrecision = 1024
+		rs = progressreadseeker.New(rs, progressPrecision, bEnd, progressFn)
 	}
+
+	const cacheReadAheadSize = 512 * 1024
+	rs = aheadreadseeker.New(rs, cacheReadAheadSize)
 
 	bb, err := bitio.NewBufferFromReadSeeker(rs)
 	if err != nil {

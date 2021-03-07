@@ -66,7 +66,8 @@ func Gaps(total Range, ranges []Range) []Range {
 		return ranges[i].Start < ranges[j].Start
 	})
 
-	var merged []Range
+	// worst case ranges+1 gaps
+	merged := make([]Range, 0, len(ranges)+1)
 	var madded bool
 	var m Range
 
@@ -95,7 +96,7 @@ func Gaps(total Range, ranges []Range) []Range {
 		merged = append(merged, m)
 	}
 
-	gaps := []Range{}
+	gaps := make([]Range, 0, len(merged))
 	if merged[0].Start != total.Start {
 		gaps = append(gaps, Range{Start: 0, Len: merged[0].Start})
 	}

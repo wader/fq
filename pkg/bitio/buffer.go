@@ -11,13 +11,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"fq/internal/aheadreadseeker"
 	"io"
 	"math"
 	"strings"
 )
-
-const cacheReadAheadSize = 256 * 1024
 
 // Endian byte order
 type Endian int
@@ -56,7 +53,7 @@ func NewBufferFromReadSeeker(rs io.ReadSeeker) (*Buffer, error) {
 	}
 
 	return &Buffer{
-		br:     NewReaderFromReadSeeker(aheadreadseeker.New(rs, cacheReadAheadSize)),
+		br:     NewReaderFromReadSeeker(rs),
 		bitLen: bEnd * 8,
 	}, nil
 }
