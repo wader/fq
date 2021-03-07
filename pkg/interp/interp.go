@@ -619,7 +619,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output, optsExpr map[string]interface{}) (gojq.Iter, error) {
 	var argsExpr []string
 	for i := range args {
-		argsExpr = append(argsExpr, fmt.Sprintf(".args[%d]", i))
+		argsExpr = append(argsExpr, fmt.Sprintf("$a[%d]", i))
 	}
 	argExpr := ""
 	if len(argsExpr) > 0 {
@@ -631,7 +631,7 @@ func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name
 		"args":  args,
 	}
 	// {input: ..., args: [...]} | .input | fn(.args[0], ...)
-	trampolineExpr := fmt.Sprintf(".input | %s%s", name, argExpr)
+	trampolineExpr := fmt.Sprintf(".args as $a | .input | %s%s", name, argExpr)
 	iter, err := i.Eval(ctx, mode, trampolineInput, trampolineExpr, stdout, optsExpr)
 	if err != nil {
 		return nil, err
@@ -639,11 +639,21 @@ func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name
 	return iter, nil
 }
 
-func (i *Interp) EvalFuncValue(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output, optsExpr map[string]interface{}) interface{} {
+func (i *Interp) EvalFuncValues(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output, optsExpr map[string]interface{}) ([]interface{}, error) {
 	iter, err := i.EvalFunc(ctx, mode, c, name, args, stdout, optsExpr)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	v, _ := iter.Next()
-	return v
+
+	var vs []interface{}
+	for {
+		v, ok := iter.Next()
+		_, isErr := v.(error)
+		vs = append(vs, v)
+		if !ok || isErr {
+			break
+		}
+	}
+
+	return vs, nil
 }
