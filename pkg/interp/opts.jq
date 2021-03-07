@@ -102,7 +102,7 @@ def opts_help_text($opts):
 				end
 				]
 			else
-				" (\(.value.default))\n"
+				" (\(.value.default))"
 			end
 		else
 			""

@@ -14,7 +14,7 @@ $ fq file.mp3 '[.frames[] | .samples_per_frame / .sample_rate] | add' 
  
 <b># embedded id3v2 png picture</b> 
 $ fq file.mp3 '.headers[].frames[] | select(.id == "APIC")' 
-     |                                               |                |.headers[0].frames[1]:
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.headers[0].frames[1]:
 0x020|         41 50 49 43                           |   APIC         |  id: "APIC" (Attached picture)
 0x020|                     00 00 15 0c               |       ....     |  size: 2700
 0x020|                                 00 00         |           ..   | -flags:
@@ -88,56 +88,56 @@ TODO: piping
 
 [./decoders_markdown.jq]: sh-start
 
-|Name               |Description|
-|-|-|
-|`apev2`            |APEv2 metadata tag|
-|`av1_ccr`          |AV1 codec configuration record|
-|`av1_frame`        |AV1 frame|
-|`av1_obu`          |AV1 open bitstream unit|
-|`bzip2`            |bzip2 compression|
-|`dns`              |DNS packet|
-|`elf`              |Executable and Linkable Format|
-|`flac`             |Free lossless audio codec file|
-|`flac_frame`       |FLAC frame|
-|`flac_metadatablock`|FLAC metadatablock|
-|`flac_picture`     |FLAC metadatablock picture|
-|`gzip`             |GZIP compression|
-|`icc_profile`      |International Color Consortium profile|
-|`id3_v1`           |ID3v1 metadata|
-|`id3_v11`          |ID3v1.1 metadata|
-|`id3_v2`           |ID3v2 metadata|
-|`jpeg`             |Joint Photographic Experts Group file|
-|`jq`               ||
-|`mkv`              |Matroska|
-|`mp3`              |MP3 file|
-|`mp3_frame`        |MPEG audio layer 3 frame|
-|`mp3_xing`         |Xing header|
-|`mp4`              |MPEG-4 file|
-|`mpeg_aac_frame`   |Advanced Audio Coding frame|
-|`mpeg_aac_stream`  |Raw audio data transport stream|
-|`mpeg_adts`        |Audio data transport stream packet|
-|`mpeg_asc`         |MPEG-4 Audio specific config|
-|`mpeg_avc`         |H.264/AVC sample|
-|`mpeg_avc_dcr`     |H.264/AVC Decoder configuration record|
-|`mpeg_es`          |MPEG elementary stream|
-|`mpeg_hevc`        |H.265/HEVC sample|
-|`mpeg_hevc_dcr`    |H.265/HEVC Decoder configuration record|
-|`mpeg_pes`         |MPEG Packetized elementary stream|
-|`mpeg_pes_packet`  |MPEG Packetized elementary stream packet|
-|`mpeg_spu`         |Sub picture unit (dvd subtitle)|
-|`ogg`              |OGG file|
-|`ogg_page`         |OGG page|
-|`opus_packet`      |Opus packet|
-|`png`              |Portable network graphics file|
-|`raw`              |Raw bits|
-|`tar`              |Tar archive|
-|`tiff`             |Tag Image File Format|
-|`vorbis_comment`   |Vorbis comment|
-|`vorbis_packet`    |Vorbis packet|
-|`vp8_frame`        |VP8 frame|
-|`vp9_frame`        |VP9 frame|
-|`wav`              |WAV file|
-|`webp`             |WEBP image|
+"|Name               |Description|"
+"|-|-|"
+"|`apev2`            |APEv2 metadata tag|"
+"|`av1_ccr`          |AV1 codec configuration record|"
+"|`av1_frame`        |AV1 frame|"
+"|`av1_obu`          |AV1 open bitstream unit|"
+"|`bzip2`            |bzip2 compression|"
+"|`dns`              |DNS packet|"
+"|`elf`              |Executable and Linkable Format|"
+"|`flac`             |Free lossless audio codec file|"
+"|`flac_frame`       |FLAC frame|"
+"|`flac_metadatablock`|FLAC metadatablock|"
+"|`flac_picture`     |FLAC metadatablock picture|"
+"|`gzip`             |GZIP compression|"
+"|`icc_profile`      |International Color Consortium profile|"
+"|`id3_v1`           |ID3v1 metadata|"
+"|`id3_v11`          |ID3v1.1 metadata|"
+"|`id3_v2`           |ID3v2 metadata|"
+"|`jpeg`             |Joint Photographic Experts Group file|"
+"|`jq`               ||"
+"|`mkv`              |Matroska|"
+"|`mp3`              |MP3 file|"
+"|`mp3_frame`        |MPEG audio layer 3 frame|"
+"|`mp3_xing`         |Xing header|"
+"|`mp4`              |MPEG-4 file|"
+"|`mpeg_aac_frame`   |Advanced Audio Coding frame|"
+"|`mpeg_aac_stream`  |Raw audio data transport stream|"
+"|`mpeg_adts`        |Audio data transport stream packet|"
+"|`mpeg_asc`         |MPEG-4 Audio specific config|"
+"|`mpeg_avc`         |H.264/AVC sample|"
+"|`mpeg_avc_dcr`     |H.264/AVC Decoder configuration record|"
+"|`mpeg_es`          |MPEG elementary stream|"
+"|`mpeg_hevc`        |H.265/HEVC sample|"
+"|`mpeg_hevc_dcr`    |H.265/HEVC Decoder configuration record|"
+"|`mpeg_pes`         |MPEG Packetized elementary stream|"
+"|`mpeg_pes_packet`  |MPEG Packetized elementary stream packet|"
+"|`mpeg_spu`         |Sub picture unit (dvd subtitle)|"
+"|`ogg`              |OGG file|"
+"|`ogg_page`         |OGG page|"
+"|`opus_packet`      |Opus packet|"
+"|`png`              |Portable network graphics file|"
+"|`raw`              |Raw bits|"
+"|`tar`              |Tar archive|"
+"|`tiff`             |Tag Image File Format|"
+"|`vorbis_comment`   |Vorbis comment|"
+"|`vorbis_packet`    |Vorbis packet|"
+"|`vp8_frame`        |VP8 frame|"
+"|`vp9_frame`        |VP9 frame|"
+"|`wav`              |WAV file|"
+"|`webp`             |WEBP image|"
 
 [#]: sh-end
 

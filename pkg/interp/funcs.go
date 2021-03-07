@@ -428,6 +428,11 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 			}
 			return []interface{}{}
 		case nil, bool, float64, int, string, *big.Int, map[string]interface{}, []interface{}, gojq.JSONObject:
+			if s, ok := v.(string); ok && opts.RawString {
+				fmt.Fprintln(i.stdout, s)
+				return []interface{}{}
+			}
+
 			if err := colorjson.NewEncoder(opts.Color, false, 2,
 				func(v interface{}) interface{} {
 					if o, ok := v.(gojq.JSONObject); ok {

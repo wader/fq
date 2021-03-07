@@ -109,6 +109,30 @@ func queryErrorLine(v error) int {
 	return 0
 }
 
+type Decorator struct {
+	Name   func(s string) string
+	Value  func(s string) string
+	Byte   func(b byte, s string) string
+	Column string
+}
+
+type DisplayOptions struct {
+	Depth     int
+	Verbose   bool
+	Color     bool
+	Unicode   bool
+	Raw       bool
+	REPL      bool
+	RawString bool
+
+	LineBytes    int
+	DisplayBytes int64
+	AddrBase     int
+	SizeBase     int
+
+	Decorator Decorator
+}
+
 // TODO: rename, not only display things
 func buildDisplayOptions(ms ...map[string]interface{}) DisplayOptions {
 	var opts DisplayOptions
@@ -140,6 +164,9 @@ func mapSetDisplayOptions(d *DisplayOptions, m map[string]interface{}) {
 	}
 	if v, ok := m["repl"]; ok {
 		d.REPL = toBoolZ(v)
+	}
+	if v, ok := m["rawstring"]; ok {
+		d.RawString = toBoolZ(v)
 	}
 	if v, ok := m["linebytes"]; ok {
 		d.LineBytes = num.MaxInt(0, toIntZ(v))

@@ -12,29 +12,6 @@ import (
 	"strings"
 )
 
-type Decorator struct {
-	Name   func(s string) string
-	Value  func(s string) string
-	Byte   func(b byte, s string) string
-	Column string
-}
-
-type DisplayOptions struct {
-	Depth   int
-	Verbose bool
-	Color   bool
-	Unicode bool
-	Raw     bool
-	REPL    bool
-
-	LineBytes    int
-	DisplayBytes int64
-	AddrBase     int
-	SizeBase     int
-
-	Decorator Decorator
-}
-
 // 0   12      34    56
 // addr|hexdump|ascii|field
 const (

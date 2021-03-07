@@ -93,6 +93,12 @@ def main:
 		] | join("\n");
 	def _opts($version):
 		{
+			"version": {
+				short: "-v",
+				long: "--version",
+				description: "Show version (\($version))",
+				bool: true
+			},
 			"help": {
 				short: "-h",
 				long: "--help",
@@ -129,10 +135,9 @@ def main:
 				description: "Read script from file",
 				string: true
 			},
-			"version": {
-				short: "-v",
-				long: "--version",
-				description: "Show version (\($version))",
+			"rawstring": {
+				short: "-r",
+				description: "Raw strings",
 				bool: true
 			},
 			"options": {
@@ -157,8 +162,11 @@ def main:
 	.version as $version
 	| .args[0] as $arg0
 	| opts_parse(.args[1:];_opts($version)) as {$parsed, $rest}
-	# TODO: pass opts some other way
-	| options_expr($parsed.options + {repl: ($parsed.repl|tojson)})
+	# TODO: hack, pass opts some other way
+	| options_expr($parsed.options + {
+		repl: ($parsed.repl|tojson),
+		rawstring: ($parsed.rawstring|tojson),
+	  })
 	| set_eval_options
 	| if $parsed.version then
 		$version | print
