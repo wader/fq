@@ -409,9 +409,9 @@ func (de *decodeError2) JsonPrimitiveValue() interface{} {
 	}
 
 	return map[string]interface{}{
-
-		"stack": de.v.PanicStack,
-		"err":   de.v.Err,
-		"errs":  errs,
+		"format": de.v.Format.Name,
+		"stack":  de.v.PanicStack,
+		// "err":    de.v.Err,
+		// "errs":   errs,
 	}
 }

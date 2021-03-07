@@ -26,6 +26,8 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/itchyny/gojq"
 )
 
 // TODO: make it nicer somehow? generate generators? remove from struct?
@@ -386,9 +388,19 @@ func (i *Interp) makeDecodeFn(registry *decode.Registry, decodeFormats []*decode
 			}
 		}
 
-		dv, _, errs := decode.Decode(name, bb, decodeFormats, decode.DecodeOptions{FormatOptions: opts})
+		dv, _, errs := decode.Decode(i.ctx, name, bb, decodeFormats, decode.DecodeOptions{FormatOptions: opts})
 		if dv == nil {
-			return errs
+
+			var verrs []interface{}
+			for _, e := range errs {
+				if de, ok := e.(*decode.DecodeError); ok {
+					verrs = append(verrs, &decodeError2{de})
+				} else {
+					verrs = append(verrs, e)
+				}
+			}
+
+			return valueErr{verrs}
 		}
 
 		return valueObject{v: dv}
@@ -410,13 +422,13 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 				return err
 			}
 			return []interface{}{}
-		case nil, bool, float64, int, string, *big.Int, map[string]interface{}, []interface{}, InterpObject:
+		case nil, bool, float64, int, string, *big.Int, map[string]interface{}, []interface{}, gojq.JSONObject:
 			if err := colorjson.NewEncoder(opts.Color, false, 2,
 				func(v interface{}) interface{} {
-					if o, ok := v.(InterpObject); ok {
+					if o, ok := v.(gojq.JSONObject); ok {
 						return o.JsonPrimitiveValue()
 					}
-					return v
+					return nil
 				}).Marshal(v, i.stdout); err != nil {
 				return err
 			}
@@ -500,12 +512,7 @@ func (i *Interp) string_(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) tovalue(c interface{}, a []interface{}) interface{} {
-	switch c := c.(type) {
-	case InterpObject:
-		return c.JsonPrimitiveValue()
-	default:
-		return c
-	}
+	return toValue(c)
 }
 
 func (i *Interp) u(c interface{}, a []interface{}) interface{} {

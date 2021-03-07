@@ -90,7 +90,7 @@ func (e *Encoder) encode(v interface{}) {
 		if v == nil {
 			panic(fmt.Sprintf("invalid value: %#+v", v))
 		}
-		e.encode(e.valueFn(v))
+		e.encode(v)
 
 	}
 }

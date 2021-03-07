@@ -1,4 +1,7 @@
 
+
+cleanup open files on interp return?
+
 .frames[0:30] | repl 
   interrupt exits repl
 

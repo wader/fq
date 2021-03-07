@@ -8,6 +8,7 @@ package bitio
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"fq/internal/aheadreadseeker"
@@ -36,6 +37,7 @@ type Buffer struct {
 		BitReaderAt
 	}
 	bitLen int64 // mostly to cache len
+	ctx    context.Context
 }
 
 // NewBufferFromReadSeeker new Buffer from io.ReadSeeker, start at firstBit with bit length lenBits
@@ -94,13 +96,19 @@ func (b *Buffer) BitBufRange(firstBitOffset int64, nBits int64) (*Buffer, error)
 	return &Buffer{
 		br:     NewSectionBitReader(b.br, firstBitOffset, nBits),
 		bitLen: nBits,
+		ctx:    b.ctx,
 	}, nil
 }
 
 func (b *Buffer) Copy() *Buffer {
+	return b.CopyWithContext(b.ctx)
+}
+
+func (b *Buffer) CopyWithContext(ctx context.Context) *Buffer {
 	return &Buffer{
 		br:     NewSectionBitReader(b.br, 0, b.bitLen),
 		bitLen: b.bitLen,
+		ctx:    ctx,
 	}
 }
 
@@ -135,6 +143,12 @@ func (b *Buffer) BitBufLen(nBits int64) (*Buffer, error) {
 
 // Bits reads nBits bits from buffer
 func (b *Buffer) bits(nBits int) (uint64, error) {
+	ctx := b.ctx
+	if ctx != nil {
+		if err := ctx.Err(); err != nil {
+			return 0, err
+		}
+	}
 	// 64 bits max, 9 byte worse case if not byte aligned
 	var bufArray [9]byte
 	buf := bufArray[:]

@@ -5,6 +5,7 @@ package decode
 import (
 	"bytes"
 	"compress/zlib"
+	"context"
 	"encoding/hex"
 	"fmt"
 	"fq/pkg/bitio"
@@ -17,6 +18,7 @@ type DecodeError struct {
 	Err        error
 	Errs       []error
 	PanicStack string
+	Format     *Format
 }
 
 func (de *DecodeError) Error() string { return de.Err.Error() }
@@ -81,12 +83,12 @@ type FormatOptions struct {
 func (FormatOptions) decodeOptions() {}
 
 // Decode try decode formats and return first success and all other decoder errors
-func Decode(name string, bb *bitio.Buffer, formats []*Format, opts ...Options) (*Value, interface{}, []error) {
+func Decode(ctx context.Context, name string, bb *bitio.Buffer, formats []*Format, opts ...Options) (*Value, interface{}, []error) {
 	opts = append(opts, DecodeOptions{IsRoot: true})
-	return decode(name, bb, formats, opts)
+	return decode(ctx, name, bb, formats, opts)
 }
 
-func decode(name string, bb *bitio.Buffer, formats []*Format, opts []Options) (*Value, interface{}, []error) {
+func decode(ctx context.Context, name string, bb *bitio.Buffer, formats []*Format, opts []Options) (*Value, interface{}, []error) {
 	if formats == nil {
 		panic("formats is nil, failed to register format?")
 	}
@@ -108,13 +110,15 @@ func decode(name string, bb *bitio.Buffer, formats []*Format, opts []Options) (*
 
 	var errs []error
 	for _, f := range formats {
-		d := NewDecoder(name, f.Name, bb, decodeOpts)
+		d := NewDecoder(ctx, name, f.Name, bb, decodeOpts)
 
-		decodeErr, dv := d.SafeDecodeFn(func(d *D) interface{} {
+		dv, decodeErr := d.SafeDecodeFn(func(d *D) interface{} {
 			return f.DecodeFn(d, formatOpts.InArg)
 		})
 
 		if decodeErr != nil {
+			decodeErr.Format = f
+
 			d.Value.Error = decodeErr
 
 			errs = append(errs, decodeErr)
@@ -155,12 +159,13 @@ type D struct {
 	Value   *Value
 	Options map[string]interface{}
 
+	ctx    context.Context
 	bitBuf *bitio.Buffer
 }
 
 // TODO: new struct decoder?
-func NewDecoder(name string, description string, bb *bitio.Buffer, opts DecodeOptions) *D {
-	cbb := bb.Copy()
+func NewDecoder(ctx context.Context, name string, description string, bb *bitio.Buffer, opts DecodeOptions) *D {
+	cbb := bb.CopyWithContext(ctx)
 
 	return &D{
 		Endian: BigEndian,
@@ -173,12 +178,14 @@ func NewDecoder(name string, description string, bb *bitio.Buffer, opts DecodeOp
 			Range:       ranges.Range{Start: 0, Len: 0},
 		},
 		Options: opts.FormatOptions,
-		bitBuf:  cbb,
+
+		ctx:    ctx,
+		bitBuf: cbb,
 	}
 }
 
-func (d *D) SafeDecodeFn(fn func(d *D) interface{}) (error, interface{}) {
-	decodeErr, dv := func() (err error, dv interface{}) {
+func (d *D) SafeDecodeFn(fn func(d *D) interface{}) (interface{}, *DecodeError) {
+	dv, decodeErr := func() (dv interface{}, err *DecodeError) {
 		defer func() {
 			if recoverErr := recover(); recoverErr != nil {
 				// https://github.com/golang/go/blob/master/src/net/http/server.go#L1770
@@ -210,10 +217,10 @@ func (d *D) SafeDecodeFn(fn func(d *D) interface{}) (error, interface{}) {
 			}
 		}()
 
-		return nil, fn(d)
+		return fn(d), nil
 	}()
 
-	return decodeErr, dv
+	return dv, decodeErr
 }
 
 func (d *D) FillGaps(namePrefix string) {
@@ -410,7 +417,9 @@ func (d *D) fieldDecoder(name string, bitBuf *bitio.Buffer, v interface{}) *D {
 			RootBitBuf: d.bitBuf,
 		},
 		Options: d.Options,
-		bitBuf:  bitBuf,
+
+		ctx:    d.ctx,
+		bitBuf: bitBuf,
 	}
 }
 
@@ -772,7 +781,7 @@ func (d *D) DecodeRangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 func (d *D) Decode(formats []*Format, opts ...Options) interface{} {
 	bb := d.BitBufRange(d.Pos(), d.BitsLeft())
 	opts = append(opts, DecodeOptions{IsRoot: false, StartOffset: d.Pos()})
-	v, dv, errs := decode("", bb, formats, opts)
+	v, dv, errs := decode(d.ctx, "", bb, formats, opts)
 	if v == nil || v.Errors() != nil {
 		panic(errs)
 	}
@@ -800,7 +809,7 @@ func (d *D) Decode(formats []*Format, opts ...Options) interface{} {
 func (d *D) FieldTryDecode(name string, formats []*Format, opts ...Options) (*Value, interface{}, []error) {
 	bb := d.BitBufRange(d.Pos(), d.BitsLeft())
 	opts = append(opts, DecodeOptions{IsRoot: false, StartOffset: d.Pos()})
-	v, dv, errs := decode(name, bb, formats, opts)
+	v, dv, errs := decode(d.ctx, name, bb, formats, opts)
 	if v == nil || v.Errors() != nil {
 		return nil, nil, errs
 	}
@@ -824,7 +833,7 @@ func (d *D) FieldDecode(name string, formats []*Format, opts ...Options) (*Value
 func (d *D) FieldTryDecodeLen(name string, nBits int64, formats []*Format, opts ...Options) (*Value, interface{}, []error) {
 	bb := d.BitBufRange(d.Pos(), nBits)
 	opts = append(opts, DecodeOptions{IsRoot: false, StartOffset: d.Pos()})
-	v, dv, errs := decode(name, bb, formats, opts)
+	v, dv, errs := decode(d.ctx, name, bb, formats, opts)
 	if v == nil || v.Errors() != nil {
 		return nil, nil, errs
 	}
@@ -849,7 +858,7 @@ func (d *D) FieldDecodeLen(name string, nBits int64, formats []*Format, opts ...
 func (d *D) FieldTryDecodeRange(name string, firstBit int64, nBits int64, formats []*Format, opts ...Options) (*Value, interface{}, []error) {
 	bb := d.BitBufRange(firstBit, nBits)
 	opts = append(opts, DecodeOptions{IsRoot: false, StartOffset: firstBit})
-	v, dv, errs := decode(name, bb, formats, opts)
+	v, dv, errs := decode(d.ctx, name, bb, formats, opts)
 	if v == nil || v.Errors() != nil {
 		return nil, nil, errs
 	}
@@ -870,7 +879,7 @@ func (d *D) FieldDecodeRange(name string, firstBit int64, nBits int64, formats [
 
 func (d *D) FieldTryDecodeBitBuf(name string, bb *bitio.Buffer, formats []*Format, opts ...Options) (*Value, interface{}, []error) {
 	opts = append(opts, DecodeOptions{IsRoot: true})
-	v, dv, errs := decode(name, bb, formats, opts)
+	v, dv, errs := decode(d.ctx, name, bb, formats, opts)
 	if v == nil || v.Errors() != nil {
 		return nil, nil, errs
 	}

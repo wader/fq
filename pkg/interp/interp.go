@@ -404,6 +404,17 @@ func toBitBuf(v interface{}) (*bitio.Buffer, ranges.Range, string, error) {
 	}
 }
 
+func toValue(v interface{}) interface{} {
+	switch v := v.(type) {
+	case gojq.JSONObject:
+		return v.JsonPrimitiveValue()
+	case nil, bool, float64, int, string, *big.Int, map[string]interface{}, []interface{}:
+		return v
+	default:
+		return nil
+	}
+}
+
 type InterpOptions struct {
 	Variables map[string]interface{}
 	Registry  *decode.Registry
@@ -499,6 +510,7 @@ func (i *Interp) Main(ctx context.Context, stdout io.Writer) error {
 
 	iter, err := i.Eval(ctx, runMode, input, "main", i.os.Stdout(), nil)
 	if err != nil {
+		fmt.Fprintln(i.os.Stderr(), err)
 		return err
 	}
 	for {
