@@ -39,7 +39,13 @@ def nbsp: gsub(" ";"&nbsp;");
 ]
 | table(
     [.name, .desc, .uses];
-    ([""] + map(. as $rc | $rc.string | rpad(" ";$rc.maxwidth)) + [""]) | join("|")
+    [ ""
+    , ( .[] as $rc
+        | if $rc.column == 2 then $rc.string
+          else $rc.string | rpad(" ";$rc.maxwidth) end
+      )
+    , ""
+    ] | join("|")
   )
 
 
