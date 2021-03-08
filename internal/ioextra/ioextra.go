@@ -1,6 +1,7 @@
 package ioextra
 
 import (
+	"errors"
 	"io"
 )
 
@@ -27,3 +28,7 @@ func SeekerEnd(s io.Seeker) (int64, error) {
 
 	return epos, nil
 }
+
+type NopSeeker struct{ io.Reader }
+
+func (r *NopSeeker) Seek(offset int64, whence int) (int64, error) { return 0, errors.New("nopseek") }

@@ -13,6 +13,7 @@ import (
 	"fq/internal/aheadreadseeker"
 	"fq/internal/asciiwriter"
 	"fq/internal/colorjson"
+	"fq/internal/ctxreadseeker"
 	"fq/internal/hexdump"
 	"fq/internal/hexpairwriter"
 	"fq/internal/ioextra"
@@ -280,6 +281,7 @@ func (bbf *bitBufFile) ToBifBuf() *bitio.Buffer {
 
 func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 	var rs io.ReadSeeker
+	opts := buildDisplayOptions(i.opts)
 
 	var filename string
 	if len(a) == 1 {
@@ -292,8 +294,7 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 
 	if filename == "" || filename == "-" {
 		filename = "stdin"
-		// TODO: cancellable?
-		buf, err := ioutil.ReadAll(i.os.Stdin())
+		buf, err := ioutil.ReadAll(ctxreadseeker.New(i.ctx, &ioextra.NopSeeker{Reader: i.os.Stdin()}))
 		if err != nil {
 			return err
 		}
@@ -304,20 +305,22 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 			return err
 		}
 
-		// TODO: cleanup? bitbuf have optional close method etc?
-		// if c, ok := f.(io.Closer); ok {
-		// 	c.Close()
-		// }
-
 		rs = f
 	}
 
-	bEnd, err := ioextra.SeekerEnd(rs)
+	ctxRs := ctxreadseeker.New(i.ctx, rs)
+	// TODO: cleanup? bitbuf have optional close method etc?
+	// TODO: can call ctxRs directory of need to forward close thru aheadreadseeker etc?
+	// if c, ok := rs.(io.Closer); ok {
+	// 	ctxRs.Close()
+	// }
+
+	bEnd, err := ioextra.SeekerEnd(ctxRs)
 	if err != nil {
 		return err
 	}
 
-	opts := buildDisplayOptions(i.opts)
+	var progressRs io.ReadSeeker = ctxRs
 
 	// TODO: make nicer
 	// we don't want to print any progress things after decode is done
@@ -336,13 +339,15 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 			fmt.Fprint(i.os.Stderr(), "\r      \r")
 		}
 		const progressPrecision = 1024
-		rs = progressreadseeker.New(rs, progressPrecision, bEnd, progressFn)
+		progressRs = progressreadseeker.New(ctxRs, progressPrecision, bEnd, progressFn)
 	}
 
 	const cacheReadAheadSize = 512 * 1024
-	rs = aheadreadseeker.New(rs, cacheReadAheadSize)
+	aheadRs := aheadreadseeker.New(progressRs, cacheReadAheadSize)
 
-	bb, err := bitio.NewBufferFromReadSeeker(rs)
+	// bb -> aheadreadseeker -> progressreadseeker -> ctxreadseeker -> readerseeker
+
+	bb, err := bitio.NewBufferFromReadSeeker(aheadRs)
 	if err != nil {
 		return err
 	}

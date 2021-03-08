@@ -132,6 +132,7 @@ func Main(r *decode.Registry) {
 		Registry: r,
 		OS:       o,
 	})
+	defer i.Stop()
 	if err != nil {
 		fmt.Fprintln(o.Stderr(), err)
 		os.Exit(1)

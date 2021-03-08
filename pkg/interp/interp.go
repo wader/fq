@@ -516,6 +516,11 @@ func New(opts InterpOptions) (*Interp, error) {
 	return i, nil
 }
 
+func (i *Interp) Stop() {
+	// TODO: cancel all run instances?
+	i.interruptStack.Stop()
+}
+
 func (i *Interp) Main(ctx context.Context, stdout io.Writer) error {
 	runMode := ScriptMode
 
