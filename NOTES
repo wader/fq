@@ -1,6 +1,10 @@
 
 decoder vs format? hmm
 
+fq stdin hangs, open() doe not use ctx
+
+repl: just enter calls display in currnt interp and not in readline so can be signqlled
+
 slow?
   panic stack strace? only  addrs, format later?
 
