@@ -38,11 +38,12 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 		cprint(5, d.Column)
 	}
 
+	var header string
 	if depth == 0 {
 		for i := 0; i < opts.LineBytes; i++ {
-			cprint(colHex, d.Frame(num.PadFormatInt(int64(i), opts.AddrBase, false, 2)))
+			header += num.PadFormatInt(int64(i), opts.AddrBase, false, 2)
 			if i < opts.LineBytes-1 {
-				cprint(colHex, " ")
+				header += " "
 			}
 		}
 	}
@@ -73,6 +74,7 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 	switch vv := v.V.(type) {
 	case decode.Struct:
 		if depth == 0 {
+			cprint(colHex, d.Frame(header))
 			cprint(colField, name, ":")
 		} else {
 			cprint(colField, indent[1:], "-", name, ":")
@@ -81,9 +83,19 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 			cprint(colField, " ", v.Description)
 		}
 	case decode.Array:
+		if depth == 0 {
+			cprint(colHex, d.Frame(header))
+		}
+
 		cprint(colField, indent, name)
 		cfmt(colField, "[%d]:", len(vv))
 	default:
+		if depth == 0 {
+			columns()
+			cprint(colHex, d.Frame(header))
+			cw.Flush()
+		}
+
 		cprint(colField, indent, name, ": ")
 
 		if v.Symbol != "" {

@@ -22,6 +22,7 @@ import (
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/format"
+	"fq/pkg/ranges"
 	"io"
 	"io/ioutil"
 	"math/big"
@@ -270,13 +271,15 @@ type bitBufFile struct {
 	decodeDoneFn func()
 }
 
+var _ ToBitBuf = &bitBufFile{}
+
 func (bbf *bitBufFile) Display(w io.Writer, opts DisplayOptions) error {
 	_, err := fmt.Fprintf(w, "<%s>\n", bbf.filename)
 	return err
 }
 
-func (bbf *bitBufFile) ToBifBuf() *bitio.Buffer {
-	return bbf.bb.Copy()
+func (bbf *bitBufFile) ToBitBuf() (*bitio.Buffer, ranges.Range) {
+	return bbf.bb.Copy(), ranges.Range{Start: 0, Len: bbf.bb.Len()}
 }
 
 func (i *Interp) _open(c interface{}, a []interface{}) interface{} {

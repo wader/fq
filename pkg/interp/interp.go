@@ -264,7 +264,7 @@ type Preview interface {
 }
 
 type ToBitBuf interface {
-	ToBifBuf() *bitio.Buffer
+	ToBitBuf() (*bitio.Buffer, ranges.Range)
 }
 
 // TODO: jq function somehow? escape keys?
@@ -410,8 +410,8 @@ func toBytes(v interface{}) ([]byte, error) {
 func toBitBuf(v interface{}) (*bitio.Buffer, ranges.Range, string, error) {
 	switch vv := v.(type) {
 	case ToBitBuf:
-		bb := vv.ToBifBuf()
-		return bb, ranges.Range{Start: 0, Len: bb.Len()}, "", nil
+		bb, r := vv.ToBitBuf()
+		return bb, r, "", nil
 	case string:
 		bb := bitio.NewBufferFromBytes([]byte(vv), -1)
 		return bb, ranges.Range{Start: 0, Len: bb.Len()}, "", nil

@@ -6,14 +6,16 @@ import (
 	"fmt"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
+	"fq/pkg/ranges"
 	"io"
 	"log"
 	"math/big"
 	"sort"
 )
 
-// assert that *Value implements InterpObject
+// assert that *Value implements InterpObject and ToBitBuf
 var _ InterpObject = &valueObject{}
+var _ ToBitBuf = &valueObject{}
 
 type valueObject struct {
 	v *decode.Value
@@ -336,13 +338,9 @@ func (vo valueObject) Preview(w io.Writer, opts DisplayOptions) error {
 	return preview(vo.v, w, opts)
 }
 
-func (vo valueObject) ToBifBuf() *bitio.Buffer {
+func (vo valueObject) ToBitBuf() (*bitio.Buffer, ranges.Range) {
 	v := vo.v
-	bb, err := v.RootBitBuf.BitBufRange(v.Range.Start, v.Range.Len)
-	if err != nil {
-		return nil
-	}
-	return bb.Copy()
+	return v.RootBitBuf.Copy(), v.Range
 }
 
 type decodeError2 struct {

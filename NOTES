@@ -1,4 +1,8 @@
 
+cli history
+
+DONE hd offset broken
+
 decoder vs format? hmm
 
 fq stdin hangs, open() doe not use ctx

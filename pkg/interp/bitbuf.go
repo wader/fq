@@ -10,6 +10,7 @@ import (
 )
 
 var _ InterpObject = &bitBufObject{}
+var _ ToBitBuf = &bitBufObject{}
 
 type bitBufObject struct {
 	bb   *bitio.Buffer
@@ -122,6 +123,6 @@ func (bo *bitBufObject) Display(w io.Writer, opts DisplayOptions) error {
 	return err
 }
 
-func (bo *bitBufObject) ToBifBuf() *bitio.Buffer {
-	return bo.bb.Copy()
+func (bo *bitBufObject) ToBitBuf() (*bitio.Buffer, ranges.Range) {
+	return bo.bb.Copy(), ranges.Range{Start: 0, Len: bo.bb.Len()}
 }
