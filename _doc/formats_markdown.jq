@@ -1,22 +1,20 @@
 #!/usr/bin/env fq -rnf
 
 # {columns: [{name: "name", "title": "Name"}, ...], rows: [{name: "Abc", ...}, ...]}
-def table:
+def table(row):
     def _rpad($s;$w): . + ($s * ($w+1-length))[1:];
     def _column_widths:
-        [. as {columns: $cs, rows: $rs}
-            | $cs[]
-            | . as $c
-            | [$c.title, ($rs[] | .[$c.name])]
-            | {
+        [ . as {columns: $cs, rows: $rs}
+          | $cs[]
+          | . as $c
+          | [$c.title, ($rs[] | .[$c.name])]
+          | {
             ($c.name): (. | map(length) | max)
-            }
+          }
         ] | add;
-    def _row: ([""] + .  + [""]) | join("|");
     _column_widths as $cw
     | . as {columns: $cs, rows: $rs}
-    | ( ($cs | map(. as $c | .title | _rpad(" ";$cw[$c.name])) | _row)
-      , ([range($cs | length) | "-"]  | _row)
+    | ( ($cs | map(. as $c | .title | _rpad(" ";$cw[$c.name])) | row)
       , ($rs[]
         | . as $r
         | [ ($cs[]
@@ -24,7 +22,7 @@ def table:
             | ($r[$c.name] | _rpad(" ";$cw[$c.name]))
             )
           ]
-        | _row
+        | row
         )
       );
 
@@ -39,6 +37,11 @@ def nbsp: gsub(" ";"&nbsp;");
         {name: "uses", "title": "Uses"}
     ],
     rows: [
+        {
+            name: "-",
+            desc: "-",
+            uses: "-"
+        },
         ( formats
           | to_entries[]
           | {
@@ -47,20 +50,19 @@ def nbsp: gsub(" ";"&nbsp;");
             uses: (((.value.dependencies | flatten | map(code)) | join(", "))? // "")
           }
         ),
-        (
-        [ formats
+        ( [ formats
+            | to_entries[]
+            | . as $e
+            | select(.value.groups)
+            | .value.groups[] | {key: ., value: $e.key}
+          ]
+          | reduce .[] as $e ({}; .[$e.key] += [$e.value])
           | to_entries[]
-          | . as $e
-          | select(.value.groups)
-          | .value.groups[] | {key: ., value: $e.key}
-        ]
-        | reduce .[] as $e ({}; .[$e.key] += [$e.value])
-        | to_entries[]
-        | {
-            name: ((.key | code) + " "),
-            desc: "Group",
-            uses: ((.value | map(code)) | join(", "))
-        }
+          | {
+              name: ((.key | code) + " "),
+              desc: "Group",
+              uses: ((.value | map(code)) | join(", "))
+          }
         )
     ]
-} | table
+} | table(([""] + .  + [""]) | join("|"))
