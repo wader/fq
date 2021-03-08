@@ -42,7 +42,7 @@ var vp9FrameFormat []*decode.Format
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.MKV,
-		Description: "Matroska",
+		Description: "Matroska file",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    mkvDecode,
 		Dependencies: []decode.Dependency{
@@ -433,7 +433,7 @@ func mkvDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldDecodeLen("packet", d.BitsLeft(), mp3FrameFormat)
 			case "A_FLAC":
 				d.FieldDecodeLen("packet", d.BitsLeft(), flacFrameFormat, decodeOpts...)
-				// TODO: could to md5 here somehow, see flac.go
+				// TODO: could use md5 here somehow, see flac.go
 			case "V_VP8":
 				d.FieldDecodeLen("packet", d.BitsLeft(), vp8FrameFormat)
 			case "V_VP9":
