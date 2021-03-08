@@ -91,7 +91,7 @@ def opts_help_text($opts):
 	_maxoptlen as $l
 	| $opts
 	| to_entries[]
-	| [ "\(.value|_opthelp|rpad($l;" "))  \(.value.description)"
+	| [ "\(.value|_opthelp|rpad(" ";$l))  \(.value.description)"
 	  , if .value.default then
 			if .value.object then
 				[ "\n",

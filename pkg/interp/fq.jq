@@ -85,10 +85,10 @@ def repl:
 def main:
 	def _formats_list:
 		((formats | keys | map(length) | max)+2) as $m | [
-			"\("Name:" | rpad($m;" "))Description:",
+			"\("Name:" | rpad(" ";$m))Description:",
 			(
 				formats | to_entries[] |
-				"\(.key|rpad($m;" "))\(.value.description)"
+				"\(.key|rpad(" ";$m))\(.value.description)"
 			)
 		] | join("\n");
 	def _opts($version):

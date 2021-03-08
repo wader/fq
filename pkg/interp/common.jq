@@ -30,6 +30,30 @@ def h($opts): _hexdump($opts)[];
 def trim: capture("^\\s*(?<a>.*?)\\s*$"; "").a;
 
 # does +1 and [:1] as " "*0 is null
-def rpad($w;$s): . + ($s * (([0,$w-(.|length)] | max)+1))[1:];
+def rpad($s;$w): . + ($s * ($w+1-length))[1:];
 
 def maybe_each: if (. | type) == "array" then .[] end;
+
+# [{a: 123, ...}, ...]
+# colmap maps something into [col, ...]
+# render maps [{string: "coltext", maxwidth: 12}, ..] into a row string
+def table(colmap;render):
+    def _column_widths:
+        [ . as $rs
+          | range($rs[0] | length) as $i
+          | [$rs[] | colmap | (.[$i] | length)]
+          | max
+        ];
+    if (. | length) == 0 then ""
+    else
+      _column_widths as $cw
+      | . as $rs
+      | ( ($rs[]
+          | . as $r
+          | [ range($r | length) as $i
+              | ($r | colmap | {column: $i, string: .[$i], maxwidth: $cw[$i]})
+            ]
+          | render
+          )
+        )
+      end;
