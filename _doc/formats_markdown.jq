@@ -1,8 +1,9 @@
 #!/usr/bin/env fq -rnf
 
-# {columns: [{name: "name", "title": "Name"}, ...], rows: [{name: "Abc", ...}, ...]}
+# [{a: 123, ...}, ...]
+# colmap maps something into [col, ...]
+# render maps [{string: "coltext", maxwidth: 12}, ..] into a row string
 def table(colmap;render):
-    def _rpad($s;$w): . + ($s * ($w+1-length))[1:];
     def _column_widths:
         [ . as $rs
           | range($rs[0] | length) as $i
@@ -16,7 +17,7 @@ def table(colmap;render):
       | ( ($rs[]
           | . as $r
           | [ range($r | length) as $i
-              | ($r | colmap | .[$i] | _rpad(" ";$cw[$i]))
+              | ($r | colmap | {string: .[$i], maxwidth: $cw[$i]})
             ]
           | render
           )
@@ -24,6 +25,7 @@ def table(colmap;render):
       end;
 
 
+def rpad($s;$w): . + ($s * ($w+1-length))[1:];
 def code: "`" + . + "`";
 def nbsp: gsub(" ";"&nbsp;");
 
@@ -63,5 +65,5 @@ def nbsp: gsub(" ";"&nbsp;");
 ]
 | table(
     [.name, .desc, .uses];
-    ([""] + .  + [""]) | join("|")
+    ([""] + map(. as $rc | $rc.string | rpad(" ";$rc.maxwidth)) + [""]) | join("|")
   )
