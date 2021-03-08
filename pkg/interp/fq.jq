@@ -84,13 +84,17 @@ def repl:
 
 def main:
 	def _formats_list:
-		((formats | keys | map(length) | max)+2) as $m | [
-			"\("Name:" | rpad(" ";$m))Description:",
-			(
-				formats | to_entries[] |
-				"\(.key|rpad(" ";$m))\(.value.description)"
+		[
+			["Name:", "Description:"],
+			( formats
+			  | to_entries[]
+			  | [(.key+" "), .value.description]
 			)
-		] | join("\n");
+		]
+		| table(
+			.;
+			[.[] as $rc | $rc.string | rpad(" ";$rc.maxwidth)] | join("")
+		);
 	def _opts($version):
 		{
 			"version": {
