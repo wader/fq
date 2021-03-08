@@ -19,7 +19,7 @@ def nbsp: gsub(" ";"&nbsp;");
       | {
         name: ((.key | code) + " "),
         desc: ((.value.description | nbsp) + " "),
-        uses: (((.value.dependencies | flatten | map(code)) | join(", "))? // "")
+        uses: "<sub>\((((.value.dependencies | flatten | map(code)) | join(", "))? // ""))</sub>"
       }
     ),
     ( [ formats
@@ -33,17 +33,16 @@ def nbsp: gsub(" ";"&nbsp;");
       | {
           name: ((.key | code) + " "),
           desc: "Group",
-          uses: ((.value | map(code)) | join(", "))
+          uses: "<sub>\(((.value | map(code)) | join(", ")))</sub>"
       }
     )
 ]
 | table(
     [.name, .desc, .uses];
     [ ""
-    , ( .[] as $rc
-        | if $rc.column == 2 then $rc.string
-          else $rc.string | rpad(" ";$rc.maxwidth) end
-      )
+    , (.[0] | . as $rc | $rc.string | rpad(" ";$rc.maxwidth))
+    , (.[1] | . as $rc | $rc.string | rpad(" ";$rc.maxwidth))
+    , .[2].string
     , ""
     ] | join("|")
   )

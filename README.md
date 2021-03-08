@@ -90,56 +90,56 @@ TODO: piping
 
 |Name                 |Description                                                  |Uses|
 |-                    |-                                                            |-|
-|`apev2`              |APEv2&nbsp;metadata&nbsp;tag                                 ||
-|`av1_ccr`            |AV1&nbsp;codec&nbsp;configuration&nbsp;record                ||
-|`av1_frame`          |AV1&nbsp;frame                                               |`av1_obu`|
-|`av1_obu`            |AV1&nbsp;open&nbsp;bitstream&nbsp;unit                       ||
-|`bzip2`              |bzip2&nbsp;compression                                       |`probe`|
-|`dns`                |DNS&nbsp;packet                                              ||
-|`elf`                |Executable&nbsp;and&nbsp;Linkable&nbsp;Format                ||
-|`flac`               |Free&nbsp;lossless&nbsp;audio&nbsp;codec&nbsp;file           |`flac_metadatablock`, `flac_frame`|
-|`flac_frame`         |FLAC&nbsp;frame                                              ||
-|`flac_metadatablock` |FLAC&nbsp;metadatablock                                      |`flac_picture`, `vorbis_comment`|
-|`flac_picture`       |FLAC&nbsp;metadatablock&nbsp;picture                         |`image`|
-|`gzip`               |GZIP&nbsp;compression                                        |`probe`|
-|`icc_profile`        |International&nbsp;Color&nbsp;Consortium&nbsp;profile        ||
-|`id3_v1`             |ID3v1&nbsp;metadata                                          ||
-|`id3_v11`            |ID3v1.1&nbsp;metadata                                        ||
-|`id3_v2`             |ID3v2&nbsp;metadata                                          |`image`|
-|`jpeg`               |Joint&nbsp;Photographic&nbsp;Experts&nbsp;Group&nbsp;file    |`tiff`|
-|`jq`                 |                                                             ||
-|`mkv`                |Matroska                                                     |`av1_ccr`, `av1_frame`, `flac_frame`, `flac_metadatablock`, `mp3_frame`, `mpeg_aac_frame`, `mpeg_asc`, `mpeg_avc_dcr`, `mpeg_avc`, `mpeg_hevc_dcr`, `mpeg_hevc`, `mpeg_spu`, `opus_packet`, `vorbis_packet`, `vp8_frame`, `vp9_frame`|
-|`mp3`                |MP3&nbsp;file                                                |`id3_v2`, `id3_v1`, `id3_v11`, `apev2`, `mp3_frame`|
-|`mp3_frame`          |MPEG&nbsp;audio&nbsp;layer&nbsp;3&nbsp;frame                 |`mp3_xing`|
-|`mp3_xing`           |Xing&nbsp;header                                             ||
-|`mp4`                |MPEG-4&nbsp;file                                             |`av1_ccr`, `av1_frame`, `flac_frame`, `flac_metadatablock`, `mp3_frame`, `mpeg_aac_frame`, `mpeg_avc_dcr`, `mpeg_avc`, `mpeg_es`, `mpeg_hevc_dcr`, `mpeg_hevc`, `opus_packet`, `vorbis_packet`, `vp9_frame`|
-|`mpeg_aac_frame`     |Advanced&nbsp;Audio&nbsp;Coding&nbsp;frame                   ||
-|`mpeg_aac_stream`    |Raw&nbsp;audio&nbsp;data&nbsp;transport&nbsp;stream          |`mpeg_adts`|
-|`mpeg_adts`          |Audio&nbsp;data&nbsp;transport&nbsp;stream&nbsp;packet       |`mpeg_aac_frame`|
-|`mpeg_asc`           |MPEG-4&nbsp;Audio&nbsp;specific&nbsp;config                  ||
-|`mpeg_avc`           |H.264/AVC&nbsp;sample                                        ||
-|`mpeg_avc_dcr`       |H.264/AVC&nbsp;Decoder&nbsp;configuration&nbsp;record        ||
-|`mpeg_es`            |MPEG&nbsp;elementary&nbsp;stream                             |`mpeg_asc`, `vorbis_packet`|
-|`mpeg_hevc`          |H.265/HEVC&nbsp;sample                                       ||
-|`mpeg_hevc_dcr`      |H.265/HEVC&nbsp;Decoder&nbsp;configuration&nbsp;record       ||
-|`mpeg_pes`           |MPEG&nbsp;Packetized&nbsp;elementary&nbsp;stream             |`mpeg_pes_packet`, `mpeg_spu`|
-|`mpeg_pes_packet`    |MPEG&nbsp;Packetized&nbsp;elementary&nbsp;stream&nbsp;packet ||
-|`mpeg_spu`           |Sub&nbsp;picture&nbsp;unit&nbsp;(dvd&nbsp;subtitle)          ||
-|`ogg`                |OGG&nbsp;file                                                |`ogg_page`, `vorbis_packet`, `opus_packet`|
-|`ogg_page`           |OGG&nbsp;page                                                ||
-|`opus_packet`        |Opus&nbsp;packet                                             |`vorbis_comment`|
-|`png`                |Portable&nbsp;network&nbsp;graphics&nbsp;file                |`icc_profile`, `tiff`|
-|`raw`                |Raw&nbsp;bits                                                ||
-|`tar`                |Tar&nbsp;archive                                             |`probe`|
-|`tiff`               |Tag&nbsp;Image&nbsp;File&nbsp;Format                         |`icc_profile`|
-|`vorbis_comment`     |Vorbis&nbsp;comment                                          |`flac_picture`|
-|`vorbis_packet`      |Vorbis&nbsp;packet                                           |`vorbis_comment`|
-|`vp8_frame`          |VP8&nbsp;frame                                               ||
-|`vp9_frame`          |VP9&nbsp;frame                                               ||
-|`wav`                |WAV&nbsp;file                                                ||
-|`webp`               |WEBP&nbsp;image                                              |`vp8_frame`|
-|`image`              |Group                                                        |`jpeg`, `png`, `tiff`, `webp`|
-|`probe`              |Group                                                        |`bzip2`, `elf`, `flac`, `gzip`, `jpeg`, `mkv`, `mp3`, `mp4`, `mpeg_aac_stream`, `mpeg_adts`, `ogg`, `png`, `tar`, `tiff`, `wav`, `webp`|
+|`apev2`              |APEv2&nbsp;metadata&nbsp;tag                                 |<sub></sub>|
+|`av1_ccr`            |AV1&nbsp;codec&nbsp;configuration&nbsp;record                |<sub></sub>|
+|`av1_frame`          |AV1&nbsp;frame                                               |<sub>`av1_obu`</sub>|
+|`av1_obu`            |AV1&nbsp;open&nbsp;bitstream&nbsp;unit                       |<sub></sub>|
+|`bzip2`              |bzip2&nbsp;compression                                       |<sub>`probe`</sub>|
+|`dns`                |DNS&nbsp;packet                                              |<sub></sub>|
+|`elf`                |Executable&nbsp;and&nbsp;Linkable&nbsp;Format                |<sub></sub>|
+|`flac`               |Free&nbsp;lossless&nbsp;audio&nbsp;codec&nbsp;file           |<sub>`flac_metadatablock`, `flac_frame`</sub>|
+|`flac_frame`         |FLAC&nbsp;frame                                              |<sub></sub>|
+|`flac_metadatablock` |FLAC&nbsp;metadatablock                                      |<sub>`flac_picture`, `vorbis_comment`</sub>|
+|`flac_picture`       |FLAC&nbsp;metadatablock&nbsp;picture                         |<sub>`image`</sub>|
+|`gzip`               |GZIP&nbsp;compression                                        |<sub>`probe`</sub>|
+|`icc_profile`        |International&nbsp;Color&nbsp;Consortium&nbsp;profile        |<sub></sub>|
+|`id3_v1`             |ID3v1&nbsp;metadata                                          |<sub></sub>|
+|`id3_v11`            |ID3v1.1&nbsp;metadata                                        |<sub></sub>|
+|`id3_v2`             |ID3v2&nbsp;metadata                                          |<sub>`image`</sub>|
+|`jpeg`               |Joint&nbsp;Photographic&nbsp;Experts&nbsp;Group&nbsp;file    |<sub>`tiff`</sub>|
+|`jq`                 |                                                             |<sub></sub>|
+|`mkv`                |Matroska                                                     |<sub>`av1_ccr`, `av1_frame`, `flac_frame`, `flac_metadatablock`, `mp3_frame`, `mpeg_aac_frame`, `mpeg_asc`, `mpeg_avc_dcr`, `mpeg_avc`, `mpeg_hevc_dcr`, `mpeg_hevc`, `mpeg_spu`, `opus_packet`, `vorbis_packet`, `vp8_frame`, `vp9_frame`</sub>|
+|`mp3`                |MP3&nbsp;file                                                |<sub>`id3_v2`, `id3_v1`, `id3_v11`, `apev2`, `mp3_frame`</sub>|
+|`mp3_frame`          |MPEG&nbsp;audio&nbsp;layer&nbsp;3&nbsp;frame                 |<sub>`mp3_xing`</sub>|
+|`mp3_xing`           |Xing&nbsp;header                                             |<sub></sub>|
+|`mp4`                |MPEG-4&nbsp;file                                             |<sub>`av1_ccr`, `av1_frame`, `flac_frame`, `flac_metadatablock`, `mp3_frame`, `mpeg_aac_frame`, `mpeg_avc_dcr`, `mpeg_avc`, `mpeg_es`, `mpeg_hevc_dcr`, `mpeg_hevc`, `opus_packet`, `vorbis_packet`, `vp9_frame`</sub>|
+|`mpeg_aac_frame`     |Advanced&nbsp;Audio&nbsp;Coding&nbsp;frame                   |<sub></sub>|
+|`mpeg_aac_stream`    |Raw&nbsp;audio&nbsp;data&nbsp;transport&nbsp;stream          |<sub>`mpeg_adts`</sub>|
+|`mpeg_adts`          |Audio&nbsp;data&nbsp;transport&nbsp;stream&nbsp;packet       |<sub>`mpeg_aac_frame`</sub>|
+|`mpeg_asc`           |MPEG-4&nbsp;Audio&nbsp;specific&nbsp;config                  |<sub></sub>|
+|`mpeg_avc`           |H.264/AVC&nbsp;sample                                        |<sub></sub>|
+|`mpeg_avc_dcr`       |H.264/AVC&nbsp;Decoder&nbsp;configuration&nbsp;record        |<sub></sub>|
+|`mpeg_es`            |MPEG&nbsp;elementary&nbsp;stream                             |<sub>`mpeg_asc`, `vorbis_packet`</sub>|
+|`mpeg_hevc`          |H.265/HEVC&nbsp;sample                                       |<sub></sub>|
+|`mpeg_hevc_dcr`      |H.265/HEVC&nbsp;Decoder&nbsp;configuration&nbsp;record       |<sub></sub>|
+|`mpeg_pes`           |MPEG&nbsp;Packetized&nbsp;elementary&nbsp;stream             |<sub>`mpeg_pes_packet`, `mpeg_spu`</sub>|
+|`mpeg_pes_packet`    |MPEG&nbsp;Packetized&nbsp;elementary&nbsp;stream&nbsp;packet |<sub></sub>|
+|`mpeg_spu`           |Sub&nbsp;picture&nbsp;unit&nbsp;(dvd&nbsp;subtitle)          |<sub></sub>|
+|`ogg`                |OGG&nbsp;file                                                |<sub>`ogg_page`, `vorbis_packet`, `opus_packet`</sub>|
+|`ogg_page`           |OGG&nbsp;page                                                |<sub></sub>|
+|`opus_packet`        |Opus&nbsp;packet                                             |<sub>`vorbis_comment`</sub>|
+|`png`                |Portable&nbsp;network&nbsp;graphics&nbsp;file                |<sub>`icc_profile`, `tiff`</sub>|
+|`raw`                |Raw&nbsp;bits                                                |<sub></sub>|
+|`tar`                |Tar&nbsp;archive                                             |<sub>`probe`</sub>|
+|`tiff`               |Tag&nbsp;Image&nbsp;File&nbsp;Format                         |<sub>`icc_profile`</sub>|
+|`vorbis_comment`     |Vorbis&nbsp;comment                                          |<sub>`flac_picture`</sub>|
+|`vorbis_packet`      |Vorbis&nbsp;packet                                           |<sub>`vorbis_comment`</sub>|
+|`vp8_frame`          |VP8&nbsp;frame                                               |<sub></sub>|
+|`vp9_frame`          |VP9&nbsp;frame                                               |<sub></sub>|
+|`wav`                |WAV&nbsp;file                                                |<sub></sub>|
+|`webp`               |WEBP&nbsp;image                                              |<sub>`vp8_frame`</sub>|
+|`image`              |Group                                                        |<sub>`jpeg`, `png`, `tiff`, `webp`</sub>|
+|`probe`              |Group                                                        |<sub>`bzip2`, `elf`, `flac`, `gzip`, `jpeg`, `mkv`, `mp3`, `mp4`, `mpeg_aac_stream`, `mpeg_adts`, `ogg`, `png`, `tar`, `tiff`, `wav`, `webp`</sub>|
 
 [#]: sh-end
 
