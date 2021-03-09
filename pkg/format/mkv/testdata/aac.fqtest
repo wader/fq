@@ -195,7 +195,7 @@
 0x170|85                                             |.               |                  size: 5 0x170-0x170+7 (1)
      |                                               |                |                 -value: mpeg_asc 0x171-0x175+7 (5)
 0x170|   12                                          | .              |                    object_type: AAC LC (Low Complexity) (2) 0x171-0x171+4 (0+5)
-0x170|   12 08                                       | ..             |                    frequence_index: 44100 0x171+5-0x172 (0+4)
+0x170|   12 08                                       | ..             |                    frequency_index: 44100 0x171+5-0x172 (0+4)
 0x170|      08                                       |  .             |                    channel_configuration: channel: front-center (1) 0x172+1-0x172+4 (0+4)
 0x170|      08 56 e5 00                              |  .V..          |                    var_aot_or_byte_align: 0adca000 0x172+5-0x175+7 (3+3)
      |                                               |                |       -[4]: (element) 0x176-0x217+7 (162)

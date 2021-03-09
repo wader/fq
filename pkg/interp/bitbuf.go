@@ -50,9 +50,9 @@ func (bo *bitBufObject) JsonIndex(index int) interface{} {
 	return int(v)
 }
 func (bo *bitBufObject) JsonRange(start int, end int) interface{} {
-	rstart := int64(start * bo.unit)
-	rlen := int64((end - start) * bo.unit)
-	rbb, err := bo.bb.BitBufRange(rstart, rlen)
+	rStart := int64(start * bo.unit)
+	rLen := int64((end - start) * bo.unit)
+	rbb, err := bo.bb.BitBufRange(rStart, rLen)
 	if err != nil {
 		return err
 	}
@@ -60,7 +60,7 @@ func (bo *bitBufObject) JsonRange(start int, end int) interface{} {
 	return &bitBufObject{
 		bb:   rbb,
 		unit: bo.unit,
-		r:    ranges.Range{Start: bo.r.Start + rstart, Len: rlen},
+		r:    ranges.Range{Start: bo.r.Start + rStart, Len: rLen},
 	}
 }
 func (bo *bitBufObject) JsonProperty(name string) interface{} {

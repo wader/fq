@@ -74,7 +74,7 @@ func avcDcrDecode(d *decode.D, in interface{}) interface{} {
 
 	// TODO:
 	// Compatible extensions to this record will extend it and will not change the configuration version code. Readers
-	// should be prepared to ignore unrecognised data beyond the definition of the data they understand (e.g. after
+	// should be prepared to ignore unrecognized data beyond the definition of the data they understand (e.g. after
 	// the parameter sets in this specification).
 
 	// TODO: something wrong here, seen files with profileIdc = 100 with no bytes after picture_parameter_sets

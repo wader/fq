@@ -101,7 +101,7 @@ func ascDecoder(d *decode.D, in interface{}) interface{} {
 		}
 		return n
 	})
-	d.FieldUFn("frequence_index", func() (uint64, decode.DisplayFormat, string) {
+	d.FieldUFn("frequency_index", func() (uint64, decode.DisplayFormat, string) {
 		v := d.U4()
 		if v == 15 {
 			return d.U24(), decode.NumberDecimal, ""

@@ -12,19 +12,19 @@ func (d *D) ZeroPadding(nBits int) bool {
 	left := nBits
 	for {
 		// TODO: smart skip?
-		rbits := left
-		if rbits == 0 {
+		rBits := left
+		if rBits == 0 {
 			break
 		}
-		if rbits > 64 {
-			rbits = 64
+		if rBits > 64 {
+			rBits = 64
 		}
-		n, err := d.bitBuf.Bits(int(rbits))
+		n, err := d.bitBuf.Bits(int(rBits))
 		if err != nil {
-			panic(ReadError{Err: err, Op: "ZeroPadding", Size: int64(rbits), Pos: d.Pos()})
+			panic(ReadError{Err: err, Op: "ZeroPadding", Size: int64(rBits), Pos: d.Pos()})
 		}
 		isZero = isZero && n == 0
-		left -= rbits
+		left -= rBits
 	}
 	return isZero
 }

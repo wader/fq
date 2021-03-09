@@ -14,31 +14,11 @@ import (
 	"fq/pkg/decode"
 	"fq/pkg/ranges"
 	"io"
-	"log"
 	"math/big"
 	"strings"
 
 	"github.com/itchyny/gojq"
 )
-
-func contextWithChan(ctx context.Context, c chan struct{}) (context.Context, func()) {
-	chanCtx, cancelFn := context.WithCancel(ctx)
-	chanCtxCancelChan := make(chan struct{})
-	go func() {
-		select {
-		case <-chanCtxCancelChan:
-			log.Println("chanctx cancel")
-			return
-		case <-c:
-			log.Println("chanctx got c chancel")
-			cancelFn()
-		}
-	}()
-
-	return chanCtx, func() {
-		close(chanCtxCancelChan)
-	}
-}
 
 const builtinPrefix = "@builtin"
 
@@ -94,13 +74,13 @@ func queryErrorLine(v error) int {
 	var offset int
 	var content string
 
-	if tokif, ok := v.(interface{ Token() (string, int) }); ok {
-		_, offset = tokif.Token()
+	if tokIf, ok := v.(interface{ Token() (string, int) }); ok {
+		_, offset = tokIf.Token()
 	}
-	if qeif, ok := v.(interface {
+	if qeIf, ok := v.(interface {
 		QueryParseError() (string, string, string, error)
 	}); ok {
-		_, _, content, _ = qeif.QueryParseError()
+		_, _, content, _ = qeIf.QueryParseError()
 	}
 
 	if offset > 0 && content != "" {

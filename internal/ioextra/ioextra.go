@@ -14,7 +14,7 @@ func MustCopy(r io.Writer, w io.Reader) int64 {
 }
 
 func SeekerEnd(s io.Seeker) (int64, error) {
-	cpos, err := s.Seek(0, io.SeekCurrent)
+	cPos, err := s.Seek(0, io.SeekCurrent)
 	if err != nil {
 		return 0, err
 	}
@@ -22,7 +22,7 @@ func SeekerEnd(s io.Seeker) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	if _, err := s.Seek(cpos, io.SeekStart); err != nil {
+	if _, err := s.Seek(cPos, io.SeekStart); err != nil {
 		return 0, err
 	}
 

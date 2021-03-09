@@ -17,10 +17,6 @@ func TestNew(t *testing.T) {
 
 	log.Printf("e4: %#+v\n", e4)
 	log.Printf("e4n: %#+v\n", e4n)
-
-	// sbb, sbbn := bb.BitBufLen(5)
-	// log.Printf("sbbn: %#+v\n", sbbn)
-	// log.Printf("sbb.BitString(): %#+v\n", sbb.BitString())
 }
 
 func TestBufferBitString(t *testing.T) {

@@ -214,7 +214,7 @@
 0x480|      80 80 80 05                              |  ....          |                                        length: 5 0x482-0x485+7 (4)
      |                                               |                |                                       -audio_specific_config: mpeg_asc 0x486-0x48a+7 (5)
 0x480|                  12                           |      .         |                                          object_type: AAC LC (Low Complexity) (2) 0x486-0x486+4 (0+5)
-0x480|                  12 08                        |      ..        |                                          frequence_index: 44100 0x486+5-0x487 (0+4)
+0x480|                  12 08                        |      ..        |                                          frequency_index: 44100 0x486+5-0x487 (0+4)
 0x480|                     08                        |       .        |                                          channel_configuration: channel: front-center (1) 0x487+1-0x487+4 (0+4)
 0x480|                     08 56 e5 00               |       .V..     |                                          var_aot_or_byte_align: 0adca000 0x487+5-0x48a+7 (3+3)
      |                                               |                |                                   -sl_config_descr: 0x48b-0x490+7 (6)

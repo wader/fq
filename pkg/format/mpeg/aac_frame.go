@@ -46,7 +46,7 @@ const (
 	SBR_DATA_CRC  = 0xe
 )
 
-var ExtenionPayloadIDNames = map[uint64]string{
+var ExtensionPayloadIDNames = map[uint64]string{
 	FILL:          "FILL",
 	FILL_DATA:     "FILL_DATA",
 	DATA_ELEMENT:  "DATA_ELEMENT",
@@ -75,7 +75,7 @@ func aacDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldStructFn("extension_payload", func(d *decode.D) {
 					d.DecodeLenFn(int64(cnt)*8, func(d *decode.D) {
 
-						extensionType, _ := d.FieldStringMapFn("extension_type", ExtenionPayloadIDNames, "Unknown", d.U4)
+						extensionType, _ := d.FieldStringMapFn("extension_type", ExtensionPayloadIDNames, "Unknown", d.U4)
 						switch extensionType {
 						case FILL:
 							d.FieldBitBufLen("other_bits", 8*(int64(cnt)-1)+4)

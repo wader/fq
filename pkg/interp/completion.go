@@ -125,15 +125,15 @@ func completeTrampoline(ctx context.Context, completeFn string, c interface{}, i
 	if !ok {
 		return nil, pos, fmt.Errorf("%v: compete function return value not an object", cm)
 	}
-	if namesv, ok := cm["names"].([]interface{}); ok {
-		for _, name := range namesv {
+	if namesV, ok := cm["names"].([]interface{}); ok {
+		for _, name := range namesV {
 			names = append(names, name.(string))
 		}
 	} else {
 		return nil, pos, fmt.Errorf("%v: names missing in complete return object", cm)
 	}
-	if prefixv, ok := cm["prefix"].(interface{}); ok {
-		prefix = prefixv.(string)
+	if prefixV, ok := cm["prefix"].(interface{}); ok {
+		prefix = prefixV.(string)
 	} else {
 		return nil, pos, fmt.Errorf("%v: prefix missing in complete return object", cm)
 	}

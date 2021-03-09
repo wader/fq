@@ -7,7 +7,7 @@ import (
 
 // Read64 read nBits bits large unsigned integer from buf starting from firstBit.
 // Integer is read most significant bit first.
-func Read64(obuf []byte, firstBit int, nBits int) uint64 {
+func Read64(buf []byte, firstBit int, nBits int) uint64 {
 	if nBits > 64 {
 		panic(fmt.Sprintf("unsupported bit length %d", nBits))
 	}
@@ -23,41 +23,41 @@ func Read64(obuf []byte, firstBit int, nBits int) uint64 {
 		if byteBitPos == 0 && bitsLeft&0x7 == 0 {
 			bytesLeft := bitsLeft >> 3
 			// BCE: let compiler know the bounds
-			buf := obuf[bytePos : bytePos+bytesLeft : bytePos+bytesLeft]
+			nBuf := buf[bytePos : bytePos+bytesLeft : bytePos+bytesLeft]
 
 			// bitPos and bitsLeft are byte aligned
 			// BCE: for some reason -1 helps remove check for some cases
 			switch bytesLeft - 1 {
 			case 0:
-				n = n<<8 | uint64(buf[0])
+				n = n<<8 | uint64(nBuf[0])
 			case 1:
-				n = n<<16 | uint64(be.Uint16(buf))
+				n = n<<16 | uint64(be.Uint16(nBuf))
 			case 2:
 				n = n<<24 |
-					(uint64(be.Uint16(buf))<<8 |
-						uint64(buf[2]))
+					(uint64(be.Uint16(nBuf))<<8 |
+						uint64(nBuf[2]))
 			case 3:
 				n = n<<32 |
-					uint64(be.Uint32(buf))
+					uint64(be.Uint32(nBuf))
 			case 4:
 				n = n<<40 |
-					(uint64(be.Uint32(buf))<<8 |
-						uint64(buf[4]))
+					(uint64(be.Uint32(nBuf))<<8 |
+						uint64(nBuf[4]))
 			case 5:
 				n = n<<48 |
-					(uint64(be.Uint32(buf))<<16 |
-						uint64(be.Uint16(buf[4:6])))
+					(uint64(be.Uint32(nBuf))<<16 |
+						uint64(be.Uint16(nBuf[4:6])))
 			case 6:
-				n = n<<56 | (uint64(be.Uint32(buf))<<24 |
-					uint64(be.Uint16(buf[4:6]))<<8 |
-					uint64(buf[6]))
+				n = n<<56 | (uint64(be.Uint32(nBuf))<<24 |
+					uint64(be.Uint16(nBuf[4:6]))<<8 |
+					uint64(nBuf[6]))
 			case 7:
-				n = be.Uint64(buf)
+				n = be.Uint64(nBuf)
 			}
 			// done
 			return n
 		} else {
-			b := obuf[bytePos]
+			b := buf[bytePos]
 
 			if byteBitPos == 0 {
 				// bitPos is byte aligned but not bitsLeft

@@ -24,7 +24,7 @@ func testDeepEqual(fn func(format string, args ...interface{}), name string, exp
 			ToFile:   "actual",
 			Context:  3,
 		}
-		udiff, err := difflib.GetUnifiedDiffString(diff)
+		uDiff, err := difflib.GetUnifiedDiffString(diff)
 		if err != nil {
 			panic(err)
 		}
@@ -32,7 +32,7 @@ func testDeepEqual(fn func(format string, args ...interface{}), name string, exp
 %s diff:
 %s
 `,
-			name, udiff)
+			name, uDiff)
 	}
 }
 

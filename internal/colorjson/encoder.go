@@ -38,7 +38,7 @@ import (
 
 type Encoder struct {
 	w       *bufio.Writer
-	werr    error
+	wErr    error
 	color   bool
 	tab     bool
 	indent  int
@@ -55,8 +55,8 @@ func NewEncoder(color bool, tab bool, indent int, valueFn func(v interface{}) in
 func (e *Encoder) Marshal(v interface{}, w io.Writer) error {
 	e.w = bufio.NewWriter(w)
 	e.encode(v)
-	if e.werr != nil {
-		return e.werr
+	if e.wErr != nil {
+		return e.wErr
 	}
 	return e.w.Flush()
 }
@@ -256,50 +256,50 @@ func (e *Encoder) writeIndent() {
 }
 
 func (e *Encoder) writeByte(b byte, color []byte) {
-	if e.werr != nil {
+	if e.wErr != nil {
 		return
 	}
 	if color == nil {
 		if err := e.w.WriteByte(b); err != nil {
-			e.werr = err
+			e.wErr = err
 		}
 	} else {
 		if e.color {
 			if _, err := e.w.Write(color); err != nil {
-				e.werr = err
+				e.wErr = err
 			}
 		}
 		if err := e.w.WriteByte(b); err != nil {
-			e.werr = err
+			e.wErr = err
 		}
 		if e.color {
 			if _, err := e.w.Write(resetColor); err != nil {
-				e.werr = err
+				e.wErr = err
 			}
 		}
 	}
 }
 
 func (e *Encoder) write(bs []byte, color []byte) {
-	if e.werr != nil {
+	if e.wErr != nil {
 		return
 	}
 	if color == nil {
 		if _, err := e.w.Write(bs); err != nil {
-			e.werr = err
+			e.wErr = err
 		}
 	} else {
 		if e.color {
 			if _, err := e.w.Write(color); err != nil {
-				e.werr = err
+				e.wErr = err
 			}
 		}
 		if _, err := e.w.Write(bs); err != nil {
-			e.werr = err
+			e.wErr = err
 		}
 		if e.color {
 			if _, err := e.w.Write(resetColor); err != nil {
-				e.werr = err
+				e.wErr = err
 			}
 		}
 	}

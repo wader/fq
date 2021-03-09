@@ -49,7 +49,7 @@ type testCaseRun struct {
 
 func (tcr *testCaseRun) Line() int { return tcr.lineNr }
 
-func (tcr *testCaseRun) Stdin() io.Reader         { return nil } // TOOD: special file?
+func (tcr *testCaseRun) Stdin() io.Reader         { return nil } // TODO: special file?
 func (tcr *testCaseRun) Stdout() interp.Output    { return testCaseRunOutput{tcr.actualStdoutBuf} }
 func (tcr *testCaseRun) Stderr() io.Writer        { return tcr.actualStderrBuf }
 func (tcr *testCaseRun) Interrupt() chan struct{} { return nil }
@@ -76,16 +76,16 @@ func (tcr *testCaseRun) Readline(prompt string, complete func(line string, pos i
 		return "", io.EOF
 	}
 
-	tcrl := tcr.readlines[tcr.readlinesPos]
+	tcrLine := tcr.readlines[tcr.readlinesPos]
 	tcr.readlinesPos++
 
-	tcr.actualStdoutBuf.WriteString(tcrl.input + "\n")
+	tcr.actualStdoutBuf.WriteString(tcrLine.input + "\n")
 
-	if tcrl.input == "^D" {
+	if tcrLine.input == "^D" {
 		return "", io.EOF
 	}
 
-	return tcrl.input, nil
+	return tcrLine.input, nil
 }
 
 func (tcr *testCaseRun) ToExpected() string {

@@ -710,7 +710,7 @@ func (d *D) ValidateAtLeastBytesLeft(nBytes int64) {
 	}
 }
 
-// TOOD: rethink
+// TODO: rethink
 func (d *D) FieldValueU(name string, v uint64, symbol string) {
 	d.FieldUFn(name, func() (uint64, DisplayFormat, string) { return v, NumberDecimal, symbol })
 }

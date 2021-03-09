@@ -176,7 +176,7 @@ func (vo valueObject) JsonProperty(name string) interface{} {
 	v := vo.v
 
 	// TODO: parent index useful?
-	// TODO: mime, isroot
+	// TODO: mime, isRoot
 
 	var r interface{}
 	switch name {
