@@ -14,8 +14,8 @@ import (
 )
 
 // assert that *Value implements InterpObject and ToBitBuf
-var _ InterpObject = &valueObject{}
-var _ ToBitBuf = &valueObject{}
+var _ InterpObject = (*valueObject)(nil)
+var _ ToBitBuf = (*valueObject)(nil)
 
 type valueObject struct {
 	v *decode.Value

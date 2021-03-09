@@ -271,7 +271,7 @@ type bitBufFile struct {
 	decodeDoneFn func()
 }
 
-var _ ToBitBuf = &bitBufFile{}
+var _ ToBitBuf = (*bitBufFile)(nil)
 
 func (bbf *bitBufFile) Display(w io.Writer, opts DisplayOptions) error {
 	_, err := fmt.Fprintf(w, "<%s>\n", bbf.filename)

@@ -9,8 +9,8 @@ import (
 	"math/big"
 )
 
-var _ InterpObject = &bitBufObject{}
-var _ ToBitBuf = &bitBufObject{}
+var _ InterpObject = (*bitBufObject)(nil)
+var _ ToBitBuf = (*bitBufObject)(nil)
 
 type bitBufObject struct {
 	bb   *bitio.Buffer
