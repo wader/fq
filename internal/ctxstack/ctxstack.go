@@ -37,6 +37,7 @@ func New(triggerCh func(closeCh chan struct{})) *Stack {
 }
 
 // Stop context stack
+// TODO: should cancel the whole stack? different function?
 func (s *Stack) Stop() {
 	close(s.closeCh)
 }

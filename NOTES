@@ -1,9 +1,17 @@
 
 
+
+jq parser..
+
+
+field("bla";u(32))
+
+struct("bla";
+  field("as";u(32))
+  , 
+)
+
 123 as $var | repl
-
-
-
  . as $bla | scopedump | .["$bla"]
 
 
