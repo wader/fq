@@ -49,5 +49,6 @@
         "tmpl",
         "ufffd",
         "xrange"
-    ]
+    ],
+    "editor.formatOnSave": true
 }
