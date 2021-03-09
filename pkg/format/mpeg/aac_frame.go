@@ -1,6 +1,7 @@
 package mpeg
 
 // SO/IEC 13818-7 Part 7: Advanced Audio Coding (AAC)
+// ISO/IEC 14496-3
 
 import (
 	"fq/pkg/decode"
@@ -55,47 +56,132 @@ var ExtensionPayloadIDNames = map[uint64]string{
 	SBR_DATA_CRC:  "SBR_DATA_CRC",
 }
 
-func aacDecode(d *decode.D, in interface{}) interface{} {
-	// TODO: multple blocks
-	d.FieldArrayFn("raw_data_blocks", func(d *decode.D) {
-		//		for {
-		d.FieldStructFn("raw_data_block", func(d *decode.D) {
-			se, _ := d.FieldStringMapFn("syntax_element", SyntaxElementNames, "", d.U3)
+const (
+	ONLY_LONG_SEQUENCE   = 0x0
+	LONG_START_SEQUENCE  = 0x1
+	EIGHT_START_SEQUENCE = 0x2
+	LONG_STOP_SEQUENCE   = 0x3
+)
 
-			switch se {
-			case FIL:
-				cnt := d.FieldUFn("cnt", func() (uint64, decode.DisplayFormat, string) {
-					cnt := d.U4()
-					if cnt == 15 {
-						return cnt + d.FieldU8("length_escape") - 1, decode.NumberDecimal, ""
-					}
-					return cnt, decode.NumberDecimal, ""
-				})
+var windowSequnceNames = map[uint64]string{
+	ONLY_LONG_SEQUENCE:   "ONLY_LONG_SEQUENCE",
+	LONG_START_SEQUENCE:  "LONG_START_SEQUENCE",
+	EIGHT_START_SEQUENCE: "EIGHT_START_SEQUENCE",
+	LONG_STOP_SEQUENCE:   "LONG_STOP_SEQUENCE",
+}
 
-				d.FieldStructFn("extension_payload", func(d *decode.D) {
-					d.DecodeLenFn(int64(cnt)*8, func(d *decode.D) {
+var windowSequnceNumWindows = map[uint64]int{
+	ONLY_LONG_SEQUENCE:   1,
+	LONG_START_SEQUENCE:  1,
+	EIGHT_START_SEQUENCE: 8,
+	LONG_STOP_SEQUENCE:   1,
+}
 
-						extensionType, _ := d.FieldStringMapFn("extension_type", ExtensionPayloadIDNames, "Unknown", d.U4)
-						switch extensionType {
-						case FILL:
-							d.FieldBitBufLen("other_bits", 8*(int64(cnt)-1)+4)
-						}
+func aacIcsInfo(d *decode.D) {
 
-					})
-				})
-				// case SCE:
-				// 	d.FieldU4("element_instance_tag")
-				// 	d.FieldU8("global_gain")
-				// case TERM:
+	d.FieldStructFn("ics_info", func(d *decode.D) {
+		d.FieldU1("ics_reserved_bit")
+		windowSequence, _ := d.FieldStringMapFn("window_sequence", windowSequnceNames, "", d.U2)
+		d.FieldU1("window_shape")
+		switch windowSequence {
+		case EIGHT_START_SEQUENCE:
+			d.FieldU4("max_sfb")
+			d.FieldU7("scale_factor_grouping")
+		default:
+			d.FieldU6("max_sfb")
+			predictorDataPresent := d.FieldBool("predictor_data_present")
+			if predictorDataPresent {
+
 			}
 
-			// if d.ByteAlignBits() > 0 {
-			// 	d.FieldBitBufLen("byte_align", int64(d.ByteAlignBits()))
-			// }
-			//return // TODO:
-		})
-		//		}
+		}
+
+		// 		;
+		// 		if (window_sequence == EIGHT_SHORT_SEQUENCE) {
+		// 		max_sfb; scale_factor_grouping;
+		// 		} }
+		// 		else {
+		// 		ltp_data_present;
+		// 		if (ltp_data_present) {
+		// 		ltp_data(); }
+		// 		if (common_window) {
+		// 		ltp_data_present;
+		// 		LICENSED TO MECON Limited. - RANCHI/BANGALORE,
+		// 		FOR INTERNAL USE AT THIS LOCATION ONLY, SUPPLIED BY BOOK SUPPLY BUREAU.
+		// 		if (ltp_data_present) {
+		// 		ltp_data(); }
+		// 		} }
+		// 		} }
+		// }
 	})
+
+}
+
+func aacDecode(d *decode.D, in interface{}) interface{} {
+	// TODO: seems tricky to know length of blocks
+	// TODO: currently break when length is unknown
+	d.FieldArrayFn("raw_data_blocks", func(d *decode.D) {
+		seenTerm := false
+		for !seenTerm {
+			d.FieldStructFn("raw_data_block", func(d *decode.D) {
+				se, _ := d.FieldStringMapFn("syntax_element", SyntaxElementNames, "", d.U3)
+
+				switch se {
+				case FIL:
+					var cnt uint64
+					d.FieldStructFn("cnt", func(d *decode.D) {
+						count := d.FieldU4("count")
+						cnt = count
+						if cnt == 15 {
+							escCount := d.FieldU8("esc_count")
+							cnt += escCount - 1
+						}
+					})
+					d.FieldValueU("payload_length", cnt, "")
+
+					d.FieldStructFn("extension_payload", func(d *decode.D) {
+						d.DecodeLenFn(int64(cnt)*8, func(d *decode.D) {
+
+							extensionType, _ := d.FieldStringMapFn("extension_type", ExtensionPayloadIDNames, "Unknown", d.U4)
+
+							// d.FieldU("align4", 2)
+
+							switch extensionType {
+							case FILL:
+								d.FieldU4("fill_nibble")
+								d.FieldBitBufLen("fill_byte", 8*(int64(cnt)-1))
+							}
+						})
+					})
+
+					if d.ByteAlignBits() > 0 {
+						d.FieldBitBufLen("byte_align", int64(d.ByteAlignBits()))
+					}
+
+				case SCE:
+					d.FieldU4("element_instance_tag")
+					d.FieldU8("global_gain")
+					aacIcsInfo(d)
+
+					if d.ByteAlignBits() > 0 {
+						d.FieldBitBufLen("byte_align", int64(d.ByteAlignBits()))
+					}
+					seenTerm = true
+
+				default:
+					if d.ByteAlignBits() > 0 {
+						d.FieldBitBufLen("data", int64(d.ByteAlignBits()))
+					}
+					fallthrough
+				case TERM:
+					seenTerm = true
+				}
+
+			})
+		}
+	})
+
+	d.FieldBitBufLen("data", d.BitsLeft())
 
 	return nil
 }

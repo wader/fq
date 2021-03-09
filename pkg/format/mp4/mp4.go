@@ -6,6 +6,7 @@ package mp4
 // TODO: rename atom -> box?
 // TODO: fmp4, default samples sizes etc
 // TODO: keep track of structure somehow to detect errors
+// TODO: ISO-14496 says mp4 mdat can begin and end with original header/trailer (no used i guess?)
 
 import (
 	"fmt"

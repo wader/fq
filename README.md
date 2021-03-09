@@ -101,7 +101,7 @@ TODO: piping
 |`flac_frame`         |FLAC&nbsp;frame                                              |<sub></sub>|
 |`flac_metadatablock` |FLAC&nbsp;metadatablock                                      |<sub>`flac_picture`, `vorbis_comment`</sub>|
 |`flac_picture`       |FLAC&nbsp;metadatablock&nbsp;picture                         |<sub>`image`</sub>|
-|`gzip`               |GZIP&nbsp;compression                                        |<sub>`probe`</sub>|
+|`gzip`               |gzip&nbsp;compression                                        |<sub>`probe`</sub>|
 |`icc_profile`        |International&nbsp;Color&nbsp;Consortium&nbsp;profile        |<sub></sub>|
 |`id3_v1`             |ID3v1&nbsp;metadata                                          |<sub></sub>|
 |`id3_v11`            |ID3v1.1&nbsp;metadata                                        |<sub></sub>|

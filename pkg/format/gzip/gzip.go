@@ -19,7 +19,7 @@ var probeFormat []*decode.Format
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.GZIP,
-		Description: "GZIP compression",
+		Description: "gzip compression",
 		Groups:      []string{format.PROBE},
 		MIMEs:       []string{"application/gzip"},
 		DecodeFn:    gzDecode,
