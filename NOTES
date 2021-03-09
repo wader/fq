@@ -1,4 +1,13 @@
 
+
+123 as $var | repl
+
+
+
+ . as $bla | scopedump | .["$bla"]
+
+
+
 cli history
 
 DONE hd offset broken
