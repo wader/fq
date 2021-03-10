@@ -2,78 +2,152 @@ package interp
 
 import (
 	"fq/internal/ansi"
+	"fq/pkg/decode"
+	"strconv"
+	"strings"
 )
+
+type stringRanges struct {
+	rs [][2]int
+	s  string
+}
+
+// 0-255:brightwhite,0:brightblack,32-126+9-13:white
+func ParseStringRanges(s string) []stringRanges {
+	var srs []stringRanges
+
+	for _, stringRangesStr := range strings.Split(s, ",") {
+		var rs [][2]int
+
+		stringRangesParts := strings.Split(stringRangesStr, ":")
+		if len(stringRangesParts) != 2 {
+			continue
+		}
+
+		for _, rangeStr := range strings.Split(stringRangesParts[0], "+") {
+			var err error
+			rangeStrParts := strings.SplitN(rangeStr, "-", 2)
+			start := 0
+			stop := 0
+
+			if len(rangeStrParts) == 1 {
+				start, err = strconv.Atoi(rangeStrParts[0])
+				if err != nil {
+					continue
+				}
+				stop = start
+			} else {
+				start, err = strconv.Atoi(rangeStrParts[0])
+				if err != nil {
+					continue
+				}
+				stop, err = strconv.Atoi(rangeStrParts[1])
+				if err != nil {
+					continue
+				}
+			}
+
+			rs = append(rs, [2]int{start, stop})
+		}
+
+		srs = append(srs, stringRanges{rs: rs, s: stringRangesParts[1]})
+	}
+
+	return srs
+}
 
 func decoratorFromDumpOptions(opts DisplayOptions) Decorator {
 	colStr := "|"
 	if opts.Unicode {
 		colStr = "\xe2\x94\x82"
 	}
-	// nameFn := func(s string) string { return s }
-	// valueFn := func(s string) string { return s }
-	// frameFn := func(s string) string { return s }
-	// byteFn := func(b byte, s string) string { return s }
-	// column := colStr + "\n"
-	// if opts.Color {
-	// 	nameFn = func(s string) string { return ansi.FgBrightBlue + s + ansi.Reset }
-	// 	valueFn = func(s string) string { return ansi.FgBrightCyan + s + ansi.Reset }
-	// 	frameFn = func(s string) string { return ansi.FgYellow + s + ansi.Reset }
-	// 	byteFn = func(b byte, s string) string {
-	// 		switch {
-	// 		case b == 0:
-	// 			return ansi.FgBrightBlack + s + ansi.Reset
-	// 		case b >= 32 && b <= 126, b == '\r', b == '\n', b == '\f', b == '\t', b == '\v':
-	// 			return ansi.FgWhite + s + ansi.Reset
-	// 		default:
-	// 			return ansi.FgBrightWhite + s + ansi.Reset
-	// 		}
-	// 	}
-	// 	column = ansi.FgWhite + colStr + ansi.Reset + "\n"
-	// }
 
-	return Decorator{
-		Reset:  ansi.FromString(opts.Color["reset"]),
-		Null:   ansi.FromString(opts.Color["null"]),
-		False:  ansi.FromString(opts.Color["false"]),
-		True:   ansi.FromString(opts.Color["true"]),
-		Number: ansi.FromString(opts.Color["number"]),
-		String: ansi.FromString(opts.Color["string"]),
-		Key:    ansi.FromString(opts.Color["key"]),
-		Array:  ansi.FromString(opts.Color["array"]),
-		Object: ansi.FromString(opts.Color["object"]),
-
-		Name:  ansi.FromString(opts.Color["name"]),
-		Frame: ansi.FromString(opts.Color["frame"]),
-
-		ByteColor: func(b byte) ansi.Color { return ansi.FromString("white") },
-
+	deco := Decorator{
 		Column: colStr,
 	}
+
+	if opts.Color {
+		deco.Null = ansi.FromString(opts.Colors["null"])
+		deco.False = ansi.FromString(opts.Colors["false"])
+		deco.True = ansi.FromString(opts.Colors["true"])
+		deco.Number = ansi.FromString(opts.Colors["number"])
+		deco.String = ansi.FromString(opts.Colors["string"])
+		deco.ObjectKey = ansi.FromString(opts.Colors["objectkey"])
+		deco.Array = ansi.FromString(opts.Colors["array"])
+		deco.Object = ansi.FromString(opts.Colors["object"])
+
+		deco.Index = ansi.FromString(opts.Colors["index"])
+
+		deco.Value = ansi.FromString(opts.Colors["value"])
+		deco.Frame = ansi.FromString(opts.Colors["frame"])
+
+		deco.Error = ansi.FromString(opts.Colors["error"])
+
+		deco.ValueColor = func(v *decode.Value) ansi.Color {
+			switch vv := v.V.(type) {
+			case decode.Array:
+				return deco.Array
+			case decode.Struct:
+				return deco.Object
+			case bool:
+				if vv {
+					return deco.True
+				}
+				return deco.False
+			case string:
+				return deco.String
+			case nil:
+				return deco.Null
+			case int, float64, int64, uint64:
+				// TODO: clean up number types
+				return deco.Number
+			default:
+				// TODO: error?
+				return deco.Value
+			}
+		}
+
+		byteColors := map[byte]ansi.Color{}
+		byteDefaultColor := ansi.FromString("")
+		for i := 0; i < 256; i++ {
+			byteColors[byte(i)] = byteDefaultColor
+		}
+		for _, sr := range ParseStringRanges(opts.Colors["bytes"]) {
+			c := ansi.FromString(sr.s)
+			for _, r := range sr.rs {
+				for i := r[0]; i <= r[1]; i++ {
+					byteColors[byte(i)] = c
+				}
+			}
+		}
+		deco.ByteColor = func(b byte) ansi.Color { return byteColors[b] }
+	} else {
+		deco.ValueColor = func(v *decode.Value) ansi.Color { return ansi.FromString("") }
+		deco.ByteColor = func(b byte) ansi.Color { return ansi.FromString("") }
+	}
+
+	return deco
 }
 
-// resetColor     = newColor("0")    // Reset
-// nullColor      = newColor("90")   // Bright black
-// falseColor     = newColor("33")   // Yellow
-// trueColor      = newColor("33")   // Yellow
-// numberColor    = newColor("36")   // Cyan
-// stringColor    = newColor("32")   // Green
-// objectKeyColor = newColor("34;1") // Bold Blue
-// arrayColor     = []byte(nil)      // No color
-// objectColor    = []byte(nil)      // No color
-
 type Decorator struct {
-	Reset  ansi.Color // Reset
-	Null   ansi.Color // Bright black
-	False  ansi.Color // Yellow
-	True   ansi.Color // Yellow
-	Number ansi.Color // Cyan
-	String ansi.Color // Green
-	Key    ansi.Color // Bold Blue
-	Array  ansi.Color // White
-	Object ansi.Color // White
+	Null      ansi.Color
+	False     ansi.Color
+	True      ansi.Color
+	Number    ansi.Color
+	String    ansi.Color
+	ObjectKey ansi.Color
+	Array     ansi.Color
+	Object    ansi.Color
+
+	Index ansi.Color
 
 	Name  ansi.Color
+	Value ansi.Color
 	Frame ansi.Color
+
+	Error ansi.Color
+
+	ValueColor func(v *decode.Value) ansi.Color
 
 	ByteColor func(b byte) ansi.Color
 

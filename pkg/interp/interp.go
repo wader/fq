@@ -91,7 +91,8 @@ func queryErrorLine(v error) int {
 type DisplayOptions struct {
 	Depth     int
 	Verbose   bool
-	Color     map[string]string
+	Color     bool
+	Colors    map[string]string
 	Unicode   bool
 	Raw       bool
 	REPL      bool
@@ -126,7 +127,10 @@ func mapSetDisplayOptions(d *DisplayOptions, m map[string]interface{}) {
 		d.Verbose = toBoolZ(v)
 	}
 	if v, ok := m["color"]; ok {
-		d.Color = toStringMapZ(v)
+		d.Color = toBoolZ(v)
+	}
+	if v, ok := m["colors"]; ok {
+		d.Colors = toStringMapZ(v)
 	}
 	if v, ok := m["unicode"]; ok {
 		d.Unicode = toBoolZ(v)

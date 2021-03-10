@@ -9,6 +9,7 @@ import (
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"io"
+	"strconv"
 	"strings"
 )
 
@@ -22,7 +23,7 @@ const (
 )
 
 func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.Value, rootDepth int, addrWidth int, opts DisplayOptions) error {
-	d := opts.Decorator
+	deco := opts.Decorator
 	// no error check as we write into buffering column
 	// we check for err later for Flush()
 	cprint := func(c int, a ...interface{}) {
@@ -33,9 +34,9 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 	}
 
 	columns := func() {
-		cprint(1, d.Column)
-		cprint(3, d.Column)
-		cprint(5, d.Column)
+		cprint(1, deco.Column, "\n")
+		cprint(3, deco.Column, "\n")
+		cprint(5, deco.Column, "\n")
 	}
 
 	var header string
@@ -54,7 +55,7 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 	}
 
 	nameV := v
-	name := d.Name(nameV.Name)
+	name := nameV.Name
 	if isInArray {
 		nameV = v.Parent
 		name = ""
@@ -62,50 +63,52 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 	if depth == 0 {
 		name = valuePath(nameV)
 	}
-	if isInArray {
-		name += fmt.Sprintf("[%d]", v.Index)
-	}
 
 	rootIndent := strings.Repeat(" ", rootDepth)
 	indent := strings.Repeat("  ", depth)
 
 	isSimple := false
 
-	switch vv := v.V.(type) {
-	case decode.Struct:
-		if depth == 0 {
-			cprint(colHex, d.Frame(header))
-			cprint(colField, name, ":")
-		} else {
-			cprint(colField, indent[1:], "-", name, ":")
-		}
-		if v.Description != "" {
-			cprint(colField, " ", v.Description)
-		}
-	case decode.Array:
-		if depth == 0 {
-			cprint(colHex, d.Frame(header))
-		}
-
-		cprint(colField, indent, name)
-		cfmt(colField, "[%d]:", len(vv))
-	default:
-		if depth == 0 {
+	if depth == 0 {
+		switch v.V.(type) {
+		case decode.Struct:
+			cfmt(colHex, "%s", deco.Frame.F(header))
+		case decode.Array:
+			cfmt(colHex, "%s", deco.Frame.F(header))
+		default:
 			columns()
-			cprint(colHex, d.Frame(header))
+			cfmt(colHex, "%s", deco.Frame.F(header))
 			cw.Flush()
 		}
+	}
 
-		cprint(colField, indent, name, ": ")
+	cfmt(colField, "%s%s", indent, deco.ObjectKey.F(name))
+	if isInArray {
+		cfmt(colField, "%s%s%s", deco.Index.F("["), deco.Number.F(strconv.Itoa(v.Index)), deco.Index.F("]"))
+	}
+	switch vv := v.V.(type) {
+	case decode.Array:
+		cfmt(colField, "%s%s%s", deco.Index.F("["), deco.Number.F(strconv.Itoa(len(vv))), deco.Index.F("]"))
+	}
+	cprint(colField, ":")
 
-		if v.Symbol != "" {
-			cprint(colField, d.Value(v.Symbol))
-			cprint(colField, " (", previewValue(v), ")")
+	switch v.V.(type) {
+	case decode.Struct:
+		if v.Description != "" {
+			cfmt(colField, " %s", deco.Value.F(v.Description))
 		} else {
-			cprint(colField, d.Value(previewValue(v)))
+			cfmt(colField, "%s", deco.Object.F("{}"))
+		}
+	case decode.Array:
+	default:
+		if v.Symbol != "" {
+			cfmt(colField, " %s", deco.Value.F(v.Symbol))
+			cfmt(colField, " (%s)", deco.ValueColor(v).F(previewValue(v)))
+		} else {
+			cfmt(colField, " %s", deco.ValueColor(v).F(previewValue(v)))
 		}
 		if v.Description != "" {
-			cprint(colField, fmt.Sprintf(" (%s)", v.Description))
+			cfmt(colField, fmt.Sprintf(" (%s)", deco.Value.F(v.Description)))
 		}
 
 		isSimple = true
@@ -123,7 +126,7 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 
 	if v.Error != nil {
 		columns()
-		cfmt(colField, "%s!%s\n", indent, v.Error)
+		cfmt(colField, "%s!%s\n", indent, deco.Error.F(v.Error.Error()))
 
 		if opts.Verbose {
 			if de, ok := v.Error.(*decode.DecodeError); ok && de.PanicStack != "" {
@@ -176,8 +179,8 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 
 	// has length and is a simple value or a collapsed struct/array
 	if v.Range.Len > 0 && (isSimple || (opts.Depth != 0 && opts.Depth == depth)) {
-		cfmt(0, "%s%s\n",
-			rootIndent, d.Frame(num.PadFormatInt(startLineByte, opts.AddrBase, true, addrWidth)))
+		cfmt(colAddr, "%s%s\n",
+			rootIndent, deco.Frame.F(num.PadFormatInt(startLineByte, opts.AddrBase, true, addrWidth)))
 
 		vBitBuf, err := rootV.RootBitBuf.BitBufRange(startByte*8, displaySizeBits)
 		if err != nil {
@@ -185,8 +188,8 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 		}
 
 		addrLines := lastDisplayLine - startLine + 1
-		hexpairFn := func(b byte) string { return d.Byte(b, hexpairwriter.Pair(b)) }
-		asciiFn := func(b byte) string { return d.Byte(b, asciiwriter.SafeASCII(b)) }
+		hexpairFn := func(b byte) string { return deco.ByteColor(b).Wrap(hexpairwriter.Pair(b)) }
+		asciiFn := func(b byte) string { return deco.ByteColor(b).Wrap(asciiwriter.SafeASCII(b)) }
 
 		if vBitBuf != nil {
 			io.Copy(
@@ -200,14 +203,14 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 		for i := int64(1); i < addrLines; i++ {
 			lineStartByte := startLineByte + int64(i)*int64(opts.LineBytes)
 			columns()
-			cfmt(colAddr, "%s%s\n", rootIndent, d.Frame(num.PadFormatInt(lineStartByte, opts.AddrBase, true, addrWidth)))
+			cfmt(colAddr, "%s%s\n", rootIndent, deco.Frame.F(num.PadFormatInt(lineStartByte, opts.AddrBase, true, addrWidth)))
 		}
 		// TODO: correct? should rethink columnwriter api maybe?
 		lastLineStopByte := startLineByte + int64(addrLines)*int64(opts.LineBytes) - 1
 		if lastDisplayByte == bufferLastByte && lastDisplayByte != lastLineStopByte {
 			// extra "|" in as EOF markers
-			cfmt(colHex, "|\n")
-			cfmt(colAscii, "|\n")
+			cprint(colHex, "|\n")
+			cprint(colAscii, "|\n")
 		}
 
 		if stopByte != lastDisplayByte {
@@ -217,7 +220,7 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 			}
 			columns()
 
-			cprint(colAddr, rootIndent, d.Frame("*"), "\n")
+			cfmt(colAddr, "%s%s\n", rootIndent, deco.Frame.F("*"))
 			cprint(colHex, "\n")
 			// TODO: truncate if displaybytes is small?
 			cfmt(colHex, "%s bytes more until %s%s",

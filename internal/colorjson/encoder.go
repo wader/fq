@@ -1,4 +1,5 @@
 // This is gojq:s cli/encoder.go extract to be reusable and non-global color config
+// TODO: possible gojq can export it?
 //
 // The MIT License (MIT)
 // Copyright (c) 2019-2021 itchyny
@@ -21,7 +22,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 //
-// TODO: possible gojq can export it?
 
 package colorjson
 
@@ -36,6 +36,18 @@ import (
 	"unicode/utf8"
 )
 
+type Colors struct {
+	Reset     []byte
+	Null      []byte
+	False     []byte
+	True      []byte
+	Number    []byte
+	String    []byte
+	ObjectKey []byte
+	Array     []byte
+	Object    []byte
+}
+
 type Encoder struct {
 	w       *bufio.Writer
 	wErr    error
@@ -45,11 +57,18 @@ type Encoder struct {
 	depth   int
 	buf     [64]byte
 	valueFn func(v interface{}) interface{}
+	colors  Colors
 }
 
-func NewEncoder(color bool, tab bool, indent int, valueFn func(v interface{}) interface{}) *Encoder {
+func NewEncoder(color bool, tab bool, indent int, valueFn func(v interface{}) interface{}, colors Colors) *Encoder {
 	// reuse the buffer in multiple calls of marshal
-	return &Encoder{color: color, tab: tab, indent: indent, valueFn: valueFn}
+	return &Encoder{
+		color:   color,
+		tab:     tab,
+		indent:  indent,
+		valueFn: valueFn,
+		colors:  colors,
+	}
 }
 
 func (e *Encoder) Marshal(v interface{}, w io.Writer) error {
@@ -64,21 +83,21 @@ func (e *Encoder) Marshal(v interface{}, w io.Writer) error {
 func (e *Encoder) encode(v interface{}) {
 	switch v := v.(type) {
 	case nil:
-		e.write([]byte("null"), nullColor)
+		e.write([]byte("null"), e.colors.Null)
 	case bool:
 		if v {
-			e.write([]byte("true"), trueColor)
+			e.write([]byte("true"), e.colors.True)
 		} else {
-			e.write([]byte("false"), falseColor)
+			e.write([]byte("false"), e.colors.False)
 		}
 	case int:
-		e.write(strconv.AppendInt(e.buf[:0], int64(v), 10), numberColor)
+		e.write(strconv.AppendInt(e.buf[:0], int64(v), 10), e.colors.Number)
 	case float64:
 		e.encodeFloat64(v)
 	case *big.Int:
-		e.write(v.Append(e.buf[:0], 10), numberColor)
+		e.write(v.Append(e.buf[:0], 10), e.colors.Number)
 	case string:
-		e.encodeString(v, stringColor)
+		e.encodeString(v, e.colors.String)
 	case []interface{}:
 		e.encodeArray(v)
 	case map[string]interface{}:
@@ -98,7 +117,7 @@ func (e *Encoder) encode(v interface{}) {
 // ref: floatEncoder in encoding/json
 func (e *Encoder) encodeFloat64(f float64) {
 	if math.IsNaN(f) {
-		e.write([]byte("null"), nullColor)
+		e.write([]byte("null"), e.colors.Null)
 		return
 	}
 	if f >= math.MaxFloat64 {
@@ -118,7 +137,7 @@ func (e *Encoder) encodeFloat64(f float64) {
 			buf = buf[:n-1]
 		}
 	}
-	e.write(buf, numberColor)
+	e.write(buf, e.colors.Number)
 }
 
 // ref: encodeState#string in encoding/json
@@ -174,16 +193,16 @@ func (e *Encoder) encodeString(s string, color []byte) {
 	}
 	e.w.WriteByte('"')
 	if e.color {
-		e.w.Write(resetColor)
+		e.w.Write(e.colors.Reset)
 	}
 }
 
 func (e *Encoder) encodeArray(vs []interface{}) {
-	e.writeByte('[', arrayColor)
+	e.writeByte('[', e.colors.Array)
 	e.depth += e.indent
 	for i, v := range vs {
 		if i > 0 {
-			e.writeByte(',', arrayColor)
+			e.writeByte(',', e.colors.Array)
 		}
 		if e.indent != 0 {
 			e.writeIndent()
@@ -194,11 +213,11 @@ func (e *Encoder) encodeArray(vs []interface{}) {
 	if len(vs) > 0 && e.indent != 0 {
 		e.writeIndent()
 	}
-	e.writeByte(']', arrayColor)
+	e.writeByte(']', e.colors.Array)
 }
 
 func (e *Encoder) encodeMap(vs map[string]interface{}) {
-	e.writeByte('{', objectColor)
+	e.writeByte('{', e.colors.Object)
 	e.depth += e.indent
 	type keyVal struct {
 		key string
@@ -215,13 +234,13 @@ func (e *Encoder) encodeMap(vs map[string]interface{}) {
 	})
 	for i, kv := range kvs {
 		if i > 0 {
-			e.writeByte(',', objectColor)
+			e.writeByte(',', e.colors.Object)
 		}
 		if e.indent != 0 {
 			e.writeIndent()
 		}
-		e.encodeString(kv.key, objectKeyColor)
-		e.writeByte(':', objectColor)
+		e.encodeString(kv.key, e.colors.ObjectKey)
+		e.writeByte(':', e.colors.Object)
 		if e.indent != 0 {
 			e.w.WriteByte(' ')
 		}
@@ -231,7 +250,7 @@ func (e *Encoder) encodeMap(vs map[string]interface{}) {
 	if len(vs) > 0 && e.indent != 0 {
 		e.writeIndent()
 	}
-	e.writeByte('}', objectColor)
+	e.writeByte('}', e.colors.Object)
 }
 
 func (e *Encoder) writeIndent() {
@@ -273,7 +292,7 @@ func (e *Encoder) writeByte(b byte, color []byte) {
 			e.wErr = err
 		}
 		if e.color {
-			if _, err := e.w.Write(resetColor); err != nil {
+			if _, err := e.w.Write(e.colors.Reset); err != nil {
 				e.wErr = err
 			}
 		}
@@ -298,7 +317,7 @@ func (e *Encoder) write(bs []byte, color []byte) {
 			e.wErr = err
 		}
 		if e.color {
-			if _, err := e.w.Write(resetColor); err != nil {
+			if _, err := e.w.Write(e.colors.Reset); err != nil {
 				e.wErr = err
 			}
 		}

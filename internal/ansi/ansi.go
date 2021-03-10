@@ -116,7 +116,7 @@ func (c Color) Wrap(s string) string {
 	return s
 }
 
-type colorFormatter []string
+type colorFormatter [3]string
 
 func (cf colorFormatter) Format(state fmt.State, verb rune) {
 	switch verb {
@@ -134,9 +134,9 @@ func (cf colorFormatter) Format(state fmt.State, verb rune) {
 
 func (c Color) F(s string) fmt.Formatter {
 	if c != "" {
-		return colorFormatter([]string{string(c), s, Reset})
+		return colorFormatter([3]string{string(c), s, Reset})
 	}
-	return colorFormatter([]string{s})
+	return colorFormatter([3]string{s})
 }
 
 type colorWriter struct {

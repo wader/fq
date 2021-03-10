@@ -160,6 +160,26 @@ def main:
 					displaybytes: "if tty.is_terminal then [((tty.size[0] div 8) div 2) * 2, 4] | max else 16 end",
 					addrbase:     "16",
 					sizebase:     "10",
+					colors: ({
+						"null": "brightblack",
+						"false": "yellow",
+						"true": "yellow",
+						"number": "cyan",
+						"string": "green",
+						"objectkey": "brightblue",
+						"array": "white",
+						"object": "white",
+
+						"index": "white",
+
+						"value": "white",
+						"error": "brightred",
+						"frame": "yellow",
+
+						#"bytes": "0-255:brightwhite,0:brightblack,9-13:white,32-126:green"
+
+						"bytes": "0-255:brightwhite,0:brightblack,32-126+9-13:white"
+					} | tojson)
 				}
 			},
 		};

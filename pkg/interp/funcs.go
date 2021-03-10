@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"fq/internal/aheadreadseeker"
+	"fq/internal/ansi"
 	"fq/internal/asciiwriter"
 	"fq/internal/colorjson"
 	"fq/internal/ctxreadseeker"
@@ -441,13 +442,26 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 				return []interface{}{}
 			}
 
-			if err := colorjson.NewEncoder(opts.Color, false, 2,
+			if err := colorjson.NewEncoder(
+				opts.Color, false, 2,
 				func(v interface{}) interface{} {
 					if o, ok := v.(gojq.JSONObject); ok {
 						return o.JsonPrimitiveValue()
 					}
 					return nil
-				}).Marshal(v, i.stdout); err != nil {
+				},
+				colorjson.Colors{
+					Reset:     []byte(ansi.Reset),
+					Null:      []byte(opts.Decorator.Null),
+					False:     []byte(opts.Decorator.False),
+					True:      []byte(opts.Decorator.True),
+					Number:    []byte(opts.Decorator.Number),
+					String:    []byte(opts.Decorator.String),
+					ObjectKey: []byte(opts.Decorator.ObjectKey),
+					Array:     []byte(opts.Decorator.Array),
+					Object:    []byte(opts.Decorator.Object),
+				},
+			).Marshal(v, i.stdout); err != nil {
 				return err
 			}
 			fmt.Fprintln(i.stdout)
@@ -503,9 +517,9 @@ func (i *Interp) hexdump(c interface{}, a []interface{}) interface{} {
 		num.DigitsInBase(bitio.BitsByteCount(r.Stop()+bitsByteAlign), true, opts.AddrBase),
 		opts.AddrBase,
 		opts.LineBytes,
-		func(b byte) string { return d.Byte(b, hexpairwriter.Pair(b)) },
-		func(b byte) string { return d.Byte(b, asciiwriter.SafeASCII(b)) },
-		func(s string) string { return d.Frame(s) },
+		func(b byte) string { return d.ByteColor(b).Wrap(hexpairwriter.Pair(b)) },
+		func(b byte) string { return d.ByteColor(b).Wrap(asciiwriter.SafeASCII(b)) },
+		func(s string) string { return d.Frame.Wrap(s) },
 		d.Column,
 	)
 	defer hw.Close()

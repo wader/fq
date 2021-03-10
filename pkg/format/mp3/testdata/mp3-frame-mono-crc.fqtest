@@ -2,4 +2,4 @@
 /mp3-frame-mono-crc:
 > fq -d mp3_frame mp3-frame-mono-crc '.crc | verbose'
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
-0x0|            2c b9                              |    ,.          |.crc: Correct (2cb9) 0x4-0x5+7 (2)
+0x0|            2c b9                              |    ,.          |.crc: Correct (2cb9) 0x4-0x5.7 (2)
