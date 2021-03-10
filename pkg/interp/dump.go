@@ -22,7 +22,7 @@ const (
 )
 
 func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.Value, rootDepth int, addrWidth int, opts DisplayOptions) error {
-	d := opts.Decoration
+	d := opts.Decorator
 	// no error check as we write into buffering column
 	// we check for err later for Flush()
 	cprint := func(c int, a ...interface{}) {

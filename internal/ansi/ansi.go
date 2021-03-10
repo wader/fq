@@ -1,5 +1,11 @@
 package ansi
 
+import (
+	"fmt"
+	"io"
+	"strings"
+)
+
 const FgBlack = "\x1b[30m"
 const FgRed = "\x1b[31m"
 const FgGreen = "\x1b[32m"
@@ -70,6 +76,83 @@ var Background = map[string]string{
 	"brightmagenta": BgBrightMagenta,
 	"brightcyan":    BgBrightCyan,
 	"brightwhite":   BgBrightWhite,
+}
+
+type Color string
+
+func FromString(s string) Color {
+	parts := strings.SplitN(s, ":", 2)
+	fg := ""
+	bg := ""
+	if len(parts) > 0 {
+		fg = Foreground[parts[0]]
+	}
+	if len(parts) > 1 {
+		bg = Foreground[parts[1]]
+	}
+	return Color(fg + bg)
+}
+
+func (c Color) Write(w io.Writer, p []byte) (int, error) {
+	if c != "" {
+		if n, err := w.Write([]byte(c)); err != nil {
+			return n, err
+		}
+		if n, err := w.Write(p); err != nil {
+			return n, err
+		}
+		if n, err := w.Write([]byte(Reset)); err != nil {
+			return n, err
+		}
+		return len(c) + len(p) + len(Reset), nil
+	}
+	return w.Write(p)
+}
+
+func (c Color) Wrap(s string) string {
+	if c != "" {
+		return string(c) + s + Reset
+	}
+	return s
+}
+
+type colorFormatter []string
+
+func (cf colorFormatter) Format(state fmt.State, verb rune) {
+	switch verb {
+	case 's':
+		switch len(cf) {
+		case 1:
+			fmt.Fprint(state, cf[0])
+		case 3:
+			fmt.Fprint(state, cf[0], cf[1], cf[2])
+		default:
+			panic("unreachable")
+		}
+	}
+}
+
+func (c Color) F(s string) fmt.Formatter {
+	if c != "" {
+		return colorFormatter([]string{string(c), s, Reset})
+	}
+	return colorFormatter([]string{s})
+}
+
+type colorWriter struct {
+	w io.Writer
+	c Color
+}
+
+func (cw colorWriter) Write(p []byte) (int, error) {
+	return cw.c.Write(cw.w, p)
+}
+
+func (c Color) W(w io.Writer) io.Writer {
+	if c != "" {
+		return colorWriter{w: w, c: c}
+	}
+	return w
 }
 
 // Len of string excluding ANSI escape sequences

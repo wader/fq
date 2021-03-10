@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"fq"
-	"fq/internal/ansi"
 	"fq/internal/ctxstack"
 	"fq/internal/num"
 	"fq/pkg/bitio"
@@ -92,7 +91,7 @@ func queryErrorLine(v error) int {
 type DisplayOptions struct {
 	Depth     int
 	Verbose   bool
-	Color     bool
+	Color     map[string]string
 	Unicode   bool
 	Raw       bool
 	REPL      bool
@@ -127,7 +126,7 @@ func mapSetDisplayOptions(d *DisplayOptions, m map[string]interface{}) {
 		d.Verbose = toBoolZ(v)
 	}
 	if v, ok := m["color"]; ok {
-		d.Color = toBoolZ(v)
+		d.Color = toStringMapZ(v)
 	}
 	if v, ok := m["unicode"]; ok {
 		d.Unicode = toBoolZ(v)
@@ -153,50 +152,6 @@ func mapSetDisplayOptions(d *DisplayOptions, m map[string]interface{}) {
 	if v, ok := m["sizebase"]; ok {
 		d.SizeBase = num.ClampInt(2, 36, toIntZ(v))
 	}
-}
-
-func decoratorFromDumpOptions(opts DisplayOptions) Decorator {
-	colStr := "|"
-	if opts.Unicode {
-		colStr = "\xe2\x94\x82"
-	}
-	nameFn := func(s string) string { return s }
-	valueFn := func(s string) string { return s }
-	frameFn := func(s string) string { return s }
-	byteFn := func(b byte, s string) string { return s }
-	column := colStr + "\n"
-	if opts.Color {
-		nameFn = func(s string) string { return ansi.FgBrightBlue + s + ansi.Reset }
-		valueFn = func(s string) string { return ansi.FgBrightCyan + s + ansi.Reset }
-		frameFn = func(s string) string { return ansi.FgYellow + s + ansi.Reset }
-		byteFn = func(b byte, s string) string {
-			switch {
-			case b == 0:
-				return ansi.FgBrightBlack + s + ansi.Reset
-			case b >= 32 && b <= 126, b == '\r', b == '\n', b == '\f', b == '\t', b == '\v':
-				return ansi.FgWhite + s + ansi.Reset
-			default:
-				return ansi.FgBrightWhite + s + ansi.Reset
-			}
-		}
-		column = ansi.FgWhite + colStr + ansi.Reset + "\n"
-	}
-
-	return Decorator{
-		Name:   nameFn,
-		Value:  valueFn,
-		Frame:  frameFn,
-		Byte:   byteFn,
-		Column: column,
-	}
-}
-
-type Decorator struct {
-	Name   func(s string) string
-	Value  func(s string) string
-	Frame  func(s string) string
-	Byte   func(b byte, s string) string
-	Column string
 }
 
 // TODO: move
@@ -339,6 +294,28 @@ func toInt64(v interface{}) (int64, error) {
 func toInt64Z(v interface{}) int64 {
 	n, _ := toInt64(v)
 	return n
+}
+
+func toStringMap(v interface{}) (map[string]string, error) {
+	vm, ok := v.(map[string]interface{})
+	if !ok {
+		return nil, fmt.Errorf("value is not a string map")
+	}
+	sm := map[string]string{}
+	for vmk, vmv := range vm {
+		vmvs, ok := vmv.(string)
+		if !ok {
+			return nil, fmt.Errorf("string map value is not a string")
+		}
+		sm[vmk] = vmvs
+	}
+
+	return sm, nil
+}
+
+func toStringMapZ(v interface{}) map[string]string {
+	sm, _ := toStringMap(v)
+	return sm
 }
 
 func toString(v interface{}) (string, error) {
