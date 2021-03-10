@@ -116,7 +116,7 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 
 	if opts.Verbose {
 		cfmt(colField, " %s (%s)",
-			decode.BitRange(v.Range).StringByteBits(opts.AddrBase), decode.Bits(v.Range.Len).StringByteBits(opts.SizeBase))
+			num.BitRange(v.Range).StringByteBits(opts.AddrBase), num.Bits(v.Range.Len).StringByteBits(opts.SizeBase))
 	}
 
 	cprint(colField, "\n")
@@ -222,7 +222,7 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 			// TODO: truncate if displaybytes is small?
 			cfmt(colHex, "%s bytes more until %s%s",
 				num.PadFormatInt(stopByte-lastDisplayByte, opts.SizeBase, true, 0),
-				decode.Bits(stopBit).StringByteBits(opts.AddrBase),
+				num.Bits(stopBit).StringByteBits(opts.AddrBase),
 				isEnd)
 			// TODO: dump last line?
 		}

@@ -1,6 +1,8 @@
 package num
 
 import (
+	"fmt"
+	"fq/pkg/ranges"
 	"math"
 	"strconv"
 	"strings"
@@ -72,4 +74,22 @@ func ClampInt(min, max, v int) int {
 
 func ClampInt64(min, max, v int64) int64 {
 	return MaxInt64(min, MinInt64(max, v))
+}
+
+type Bits uint64
+
+func (b Bits) StringByteBits(base int) string {
+	if b&0x7 != 0 {
+		return BasePrefixMap[base] + strconv.FormatUint(uint64(b)>>3, base) + "." + strconv.FormatUint(uint64(b)&0x7, base)
+	}
+	return BasePrefixMap[base] + strconv.FormatUint(uint64(b>>3), base)
+}
+
+type BitRange ranges.Range
+
+func (r BitRange) StringByteBits(base int) string {
+	if r.Len == 0 {
+		return fmt.Sprintf("%s-NA", Bits(r.Start).StringByteBits(base))
+	}
+	return fmt.Sprintf("%s-%s", Bits(r.Start).StringByteBits(base), Bits(r.Start+r.Len-1).StringByteBits(base))
 }

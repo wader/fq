@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
+	"fq/internal/num"
 	"fq/pkg/bitio"
 	"fq/pkg/ranges"
 	"io/ioutil"
@@ -41,7 +42,7 @@ func (e ReadError) Error() string {
 	}
 
 	return fmt.Sprintf("%s: failed at position %s (size %s delta %s): %s",
-		prefix, Bits(e.Pos).StringByteBits(10), Bits(e.Size).StringByteBits(10), Bits(e.Delta).StringByteBits(10), e.Err)
+		prefix, num.Bits(e.Pos).StringByteBits(10), num.Bits(e.Size).StringByteBits(10), num.Bits(e.Delta).StringByteBits(10), e.Err)
 }
 func (e ReadError) Unwrap() error { return e.Err }
 
@@ -51,7 +52,7 @@ type ValidateError struct {
 }
 
 func (e ValidateError) Error() string {
-	return fmt.Sprintf("failed to validate at position %s: %s", Bits(e.Pos).StringByteBits(16), e.Reason)
+	return fmt.Sprintf("failed to validate at position %s: %s", num.Bits(e.Pos).StringByteBits(16), e.Reason)
 }
 
 type Endian bitio.Endian

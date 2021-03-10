@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"fq/internal/num"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/ranges"
@@ -314,7 +315,7 @@ func (vo valueObject) JsonPrimitiveValue() interface{} {
 	case []byte:
 		return string(vv)
 	case *bitio.Buffer:
-		return fmt.Sprintf("<%s bytes>", decode.Bits(v.Range.Len).StringByteBits(10))
+		return fmt.Sprintf("<%s bytes>", num.Bits(v.Range.Len).StringByteBits(10))
 		// bb, err := v.RootBitBuf.BitBufRange(v.Range.Start, v.Range.Len)
 		// if err != nil {
 		// 	return err

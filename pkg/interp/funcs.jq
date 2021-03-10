@@ -192,8 +192,10 @@ def _formats_dot:
 	  )
 	, "}";
 
-def field_inrange($p):
-	._type == "field" and (._range | .start <= $p and $p < .stop);
+def in_bits_range($p):
+	._type == "field" and (._bits | .start <= $p and $p < .stop);
+def in_bytes_range($p):
+	._type == "field" and (._bytes | .start <= $p and $p < .stop);
 
 # TODO: introspect and show doc, reflection somehow?
 def help:

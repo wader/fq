@@ -2,31 +2,10 @@ package decode
 
 import (
 	"errors"
-	"fmt"
-	"fq/internal/num"
 	"fq/pkg/bitio"
 	"fq/pkg/ranges"
 	"sort"
-	"strconv"
 )
-
-type Bits uint64
-
-func (b Bits) StringByteBits(base int) string {
-	if b&0x7 != 0 {
-		return num.BasePrefixMap[base] + strconv.FormatUint(uint64(b)>>3, base) + "+" + strconv.FormatUint(uint64(b)&0x7, base)
-	}
-	return num.BasePrefixMap[base] + strconv.FormatUint(uint64(b>>3), base)
-}
-
-type BitRange ranges.Range
-
-func (r BitRange) StringByteBits(base int) string {
-	if r.Len == 0 {
-		return fmt.Sprintf("%s-NA", Bits(r.Start).StringByteBits(base))
-	}
-	return fmt.Sprintf("%s-%s", Bits(r.Start).StringByteBits(base), Bits(r.Start+r.Len-1).StringByteBits(base))
-}
 
 type DisplayFormat int
 
