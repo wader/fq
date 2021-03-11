@@ -3,6 +3,7 @@
 // Cancel functions need to be cancelled in reverse they were pushed.
 // This can be used to keep track of contexts for nested REPL:s were you only want to cancel
 // the current active "top" REPL.
+// TODO: should New take a parent context?
 package ctxstack
 
 import (
@@ -15,7 +16,7 @@ type Stack struct {
 	closeCh   chan struct{}
 }
 
-// New ctxstack.Stack
+// New context stack
 func New(triggerCh func(closeCh chan struct{})) *Stack {
 	closeCh := make(chan struct{})
 	s := &Stack{closeCh: closeCh}
@@ -25,6 +26,7 @@ func New(triggerCh func(closeCh chan struct{})) *Stack {
 			triggerCh(closeCh)
 			select {
 			case <-closeCh:
+				// stop if closed
 			default:
 				s.cancelFns[len(s.cancelFns)-1]()
 				continue
@@ -42,7 +44,7 @@ func (s *Stack) Stop() {
 	close(s.closeCh)
 }
 
-// Push a new context and return it. Cancel to pop it.
+// Push creates, pushes and returns new context. Cancel pops it.
 func (s *Stack) Push(parent context.Context) (context.Context, func()) {
 	stackCtx, stackCtxCancel := context.WithCancel(parent)
 	stackIdx := len(s.cancelFns)
