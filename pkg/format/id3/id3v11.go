@@ -25,7 +25,7 @@ func id3v11Decode(d *decode.D, in interface{}) interface{} {
 		2: "medium",
 		3: "fast",
 		4: "hardcore",
-	}, "Unknown", d.U8)
+	}, "Unknown", d.U8, decode.NumberDecimal)
 	d.FieldUTF8("genre", 30)
 	d.FieldUTF8("start", 6)
 	d.FieldUTF8("stop", 6)

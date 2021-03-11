@@ -126,7 +126,7 @@ func spuDecode(d *decode.D, in interface{}) interface{} {
 					seenEnd := false
 					for !seenEnd {
 						d.FieldStructFn("command", func(d *decode.D) {
-							cmd, _ := d.FieldStringMapFn("type", commandNames, "Unknown", d.U8)
+							cmd, _ := d.FieldStringMapFn("type", commandNames, "Unknown", d.U8, decode.NumberDecimal)
 							switch cmd {
 							case CMD_END:
 								seenEnd = true

@@ -63,7 +63,7 @@ func obuDecode(d *decode.D, in interface{}) interface{} {
 
 	d.FieldStructFn("header", func(d *decode.D) {
 		d.FieldU1("forbidden_bit")
-		obuType, _ = d.FieldStringMapFn("type", obuTypeNames, "Reserved", d.U4)
+		obuType, _ = d.FieldStringMapFn("type", obuTypeNames, "Reserved", d.U4, decode.NumberDecimal)
 		hasExtension = d.FieldBool("extension_flag")
 		hasSizeField = d.FieldBool("has_size_field")
 		d.FieldU1("reserved_1bit")

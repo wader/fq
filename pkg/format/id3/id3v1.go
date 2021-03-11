@@ -229,7 +229,7 @@ func id3v1Decode(d *decode.D, in interface{}) interface{} {
 		189: "Dubstep",
 		190: "Garage Rock",
 		191: "Psybient",
-	}, "Unknown", d.U8)
+	}, "Unknown", d.U8, decode.NumberDecimal)
 
 	return nil
 }

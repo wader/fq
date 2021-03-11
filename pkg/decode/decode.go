@@ -596,7 +596,7 @@ func (d *D) FieldBoolMapFn(name string, trueS string, falseS string, fn func() b
 	}), ok
 }
 
-func (d *D) FieldStringMapFn(name string, sm map[uint64]string, def string, fn func() uint64) (uint64, bool) {
+func (d *D) FieldStringMapFn(name string, sm map[uint64]string, def string, fn func() uint64, df DisplayFormat) (uint64, bool) {
 	var ok bool
 	return d.FieldUFn(name, func() (uint64, DisplayFormat, string) {
 		n := fn()
@@ -605,11 +605,11 @@ func (d *D) FieldStringMapFn(name string, sm map[uint64]string, def string, fn f
 		if !ok {
 			d = def
 		}
-		return n, NumberDecimal, d
+		return n, df, d
 	}), ok
 }
 
-func (d *D) FieldStringRangeMapFn(name string, rm map[[2]uint64]string, def string, fn func() uint64) (uint64, bool) {
+func (d *D) FieldStringRangeMapFn(name string, rm map[[2]uint64]string, def string, fn func() uint64, df DisplayFormat) (uint64, bool) {
 	var ok bool
 	return d.FieldUFn(name, func() (uint64, DisplayFormat, string) {
 		n := fn()
@@ -618,7 +618,7 @@ func (d *D) FieldStringRangeMapFn(name string, rm map[[2]uint64]string, def stri
 				return n, NumberDecimal, s
 			}
 		}
-		return n, NumberDecimal, def
+		return n, df, def
 	}), ok
 }
 

@@ -81,7 +81,7 @@ func aacIcsInfo(d *decode.D) {
 
 	d.FieldStructFn("ics_info", func(d *decode.D) {
 		d.FieldU1("ics_reserved_bit")
-		windowSequence, _ := d.FieldStringMapFn("window_sequence", windowSequnceNames, "", d.U2)
+		windowSequence, _ := d.FieldStringMapFn("window_sequence", windowSequnceNames, "", d.U2, decode.NumberDecimal)
 		d.FieldU1("window_shape")
 		switch windowSequence {
 		case EIGHT_START_SEQUENCE:
@@ -124,7 +124,7 @@ func aacDecode(d *decode.D, in interface{}) interface{} {
 		seenTerm := false
 		for !seenTerm {
 			d.FieldStructFn("raw_data_block", func(d *decode.D) {
-				se, _ := d.FieldStringMapFn("syntax_element", SyntaxElementNames, "", d.U3)
+				se, _ := d.FieldStringMapFn("syntax_element", SyntaxElementNames, "", d.U3, decode.NumberDecimal)
 
 				switch se {
 				case FIL:
@@ -142,7 +142,7 @@ func aacDecode(d *decode.D, in interface{}) interface{} {
 					d.FieldStructFn("extension_payload", func(d *decode.D) {
 						d.DecodeLenFn(int64(cnt)*8, func(d *decode.D) {
 
-							extensionType, _ := d.FieldStringMapFn("extension_type", ExtensionPayloadIDNames, "Unknown", d.U4)
+							extensionType, _ := d.FieldStringMapFn("extension_type", ExtensionPayloadIDNames, "Unknown", d.U4, decode.NumberDecimal)
 
 							// d.FieldU("align4", 2)
 

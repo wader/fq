@@ -66,7 +66,7 @@ func pesPacketDecode(d *decode.D, in interface{}) interface{} {
 	var v interface{}
 
 	d.FieldValidateUFn("prefix", 0b0000_0000_0000_0000_0000_0001, d.U24)
-	startCode, _ := d.FieldStringRangeMapFn("start_code", startAndStreamNames, "Unknown", d.U8)
+	startCode, _ := d.FieldStringRangeMapFn("start_code", startAndStreamNames, "Unknown", d.U8, decode.NumberHex)
 
 	switch {
 	case startCode == packHeader:

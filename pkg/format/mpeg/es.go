@@ -190,8 +190,8 @@ func odDecodeTag(d *decode.D, mpegEsOut *format.MpegEsOut, expectedTagID int, fn
 			fieldODDecodeTag(d, mpegEsOut, "sl_config_descr", -1, nil)
 		},
 		DecoderConfigDescrTag: func(d *decode.D) {
-			objectType, _ := d.FieldStringMapFn("object_type_indication", format.MpegObjectTypeNames, "Unknown", d.U8)
-			d.FieldStringMapFn("stream_type", streamTypeNames, "Unknown", d.U6)
+			objectType, _ := d.FieldStringMapFn("object_type_indication", format.MpegObjectTypeNames, "Unknown", d.U8, decode.NumberDecimal)
+			d.FieldStringMapFn("stream_type", streamTypeNames, "Unknown", d.U6, decode.NumberDecimal)
 			d.FieldBool("upsteam")
 			specificInfoFlag := d.FieldBool("specific_info_flag")
 			d.FieldU24("buffer_size_db")
@@ -244,7 +244,7 @@ func odDecodeTag(d *decode.D, mpegEsOut *format.MpegEsOut, expectedTagID int, fn
 
 	// TODO: expectedTagID
 
-	tagID, _ := d.FieldStringMapFn("tag_id", odTagNames, "Unknown", d.U8)
+	tagID, _ := d.FieldStringMapFn("tag_id", odTagNames, "Unknown", d.U8, decode.NumberDecimal)
 	len := fieldESLengthEncoding(d, "length")
 
 	if fn != nil {

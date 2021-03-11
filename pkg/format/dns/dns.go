@@ -130,8 +130,8 @@ func fieldDecodeRR(d *decode.D, count uint64, name string, structName string) {
 		for i := uint64(0); i < count; i++ {
 			d.FieldStructFn(structName, func(d *decode.D) {
 				fieldDecodeLabel(d, "name")
-				typ, _ := d.FieldStringMapFn("type", typeNames, "Unknown", d.U16)
-				d.FieldStringRangeMapFn("class", classNames, "Unknown", d.U16)
+				typ, _ := d.FieldStringMapFn("type", typeNames, "Unknown", d.U16, decode.NumberDecimal)
+				d.FieldStringRangeMapFn("class", classNames, "Unknown", d.U16, decode.NumberDecimal)
 				d.FieldU32("ttl")
 				// TODO: pointer?
 				rdLength := d.FieldU16("rd_length")
@@ -158,7 +158,7 @@ func dnsDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldBool("recursion_desired")
 		d.FieldBool("recursion_available")
 		d.FieldU3("z")
-		d.FieldStringMapFn("rcode", rcodeNames, "Unknown", d.U4)
+		d.FieldStringMapFn("rcode", rcodeNames, "Unknown", d.U4, decode.NumberDecimal)
 	})
 
 	qdCount := d.FieldU16("qd_count")
@@ -170,8 +170,8 @@ func dnsDecode(d *decode.D, in interface{}) interface{} {
 		for i := uint64(0); i < qdCount; i++ {
 			d.FieldStructFn("question", func(d *decode.D) {
 				fieldDecodeLabel(d, "name")
-				d.FieldStringMapFn("type", typeNames, "Unknown", d.U16)
-				d.FieldStringRangeMapFn("class", classNames, "Unknown", d.U16)
+				d.FieldStringMapFn("type", typeNames, "Unknown", d.U16, decode.NumberDecimal)
+				d.FieldStringRangeMapFn("class", classNames, "Unknown", d.U16, decode.NumberDecimal)
 			})
 		}
 	})

@@ -123,21 +123,21 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	padding, _ := d.FieldStringMapFn("padding", map[uint64]string{
 		0: "Not padded",
 		1: "Padded",
-	}, "", d.U1)
+	}, "", d.U1, decode.NumberBinary)
 	d.FieldU1("private")
 	channelsIndex, _ := d.FieldStringMapFn("channels", map[uint64]string{
 		0b00: "Stereo",
 		0b01: "Joint Stereo",
 		0b10: "Dual",
 		0b11: "Mono",
-	}, "", d.U2)
+	}, "", d.U2, decode.NumberBinary)
 	isStereo := channelsIndex != 0b11
 	d.FieldStringMapFn("channel_mode", map[uint64]string{
 		0b00: "",
 		0b01: "Intensity Stereo",
 		0b10: "MS Stereo",
 		0b11: "Intensity Stereo,MS Stereo",
-	}, "", d.U2)
+	}, "", d.U2, decode.NumberBinary)
 	d.FieldU1("copyright")
 	d.FieldU1("original")
 	d.FieldStringMapFn("emphasis", map[uint64]string{
@@ -145,7 +145,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		0b01: "50/15",
 		0b10: "reserved",
 		0b11: "CCIT J.17",
-	}, "", d.U2)
+	}, "", d.U2, decode.NumberBinary)
 	crcLen := uint64(0)
 	if hasCRC {
 		d.FieldBitBufLen("crc", 16)

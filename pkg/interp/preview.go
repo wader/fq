@@ -3,6 +3,7 @@ package interp
 import (
 	"encoding/hex"
 	"fmt"
+	"fq/internal/num"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"io"
@@ -33,9 +34,9 @@ func previewValue(v *decode.Value) string {
 		}
 	case int64:
 		// TODO: DisplayFormat is weird
-		return strconv.FormatInt(vv, decode.DisplayFormatToBase(v.DisplayFormat))
+		return num.PadFormatInt(vv, decode.DisplayFormatToBase(v.DisplayFormat), true, 0)
 	case uint64:
-		return strconv.FormatUint(vv, decode.DisplayFormatToBase(v.DisplayFormat))
+		return num.PadFormatUint(vv, decode.DisplayFormatToBase(v.DisplayFormat), true, 0)
 	case float64:
 		// TODO: float32? better truncated to significant digits?
 		return strconv.FormatFloat(vv, 'g', -1, 64)

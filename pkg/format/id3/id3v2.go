@@ -405,7 +405,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Description        <text string according to encoding> $00 (00)
 		// Picture data       <binary data>
 		"APIC": func(d *decode.D) {
-			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
+			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8, decode.NumberDecimal)
 			fieldTextNull(d, "mime_type", encodingUTF8)
 			d.FieldU8("picture_type") // TODO: table
 			fieldTextNull(d, "description", int(encoding))
@@ -440,7 +440,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Short content descrip. <text string according to encoding> $00 (00)
 		// The actual text        <full text string according to encoding>
 		"COMM": func(d *decode.D) {
-			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
+			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8, decode.NumberDecimal)
 			d.FieldUTF8("language", 3)
 			fieldTextNull(d, "description", int(encoding))
 			fieldText(d, "value", int(encoding), int(d.BitsLeft()/8))
@@ -456,7 +456,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Text encoding                $xx
 		// Information                  <text string(s) according to encoding>
 		"T000": func(d *decode.D) {
-			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
+			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8, decode.NumberDecimal)
 			fieldText(d, "text", int(encoding), int(d.BitsLeft()/8))
 		},
 		// User defined...   "TXX"
@@ -470,7 +470,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Description       <text string according to encoding> $00 (00)
 		// Value             <text string according to encoding>
 		"TXXX": func(d *decode.D) {
-			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8)
+			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8, decode.NumberDecimal)
 			fieldTextNull(d, "description", int(encoding))
 			fieldText(d, "value", int(encoding), int(d.BitsLeft()/8))
 		},

@@ -25,8 +25,7 @@ func DigitsInBase(n int64, basePrefix bool, base int) int {
 	return prefixLen + int(1+math.Floor(math.Log(float64(n))/math.Log(float64(base))))
 }
 
-func PadFormatInt(i int64, base int, basePrefix bool, width int) string {
-	s := strconv.FormatInt(i, base)
+func padFormatNumber(s string, base int, basePrefix bool, width int) string {
 	prefixStr := ""
 	if basePrefix {
 		prefixStr = BasePrefixMap[base]
@@ -38,6 +37,15 @@ func PadFormatInt(i int64, base int, basePrefix bool, width int) string {
 		padStr = strings.Repeat("0", padN)
 	}
 	return prefixStr + padStr + s
+}
+
+func PadFormatInt(i int64, base int, basePrefix bool, width int) string {
+	return padFormatNumber(strconv.FormatInt(i, base), base, basePrefix, width)
+}
+
+func PadFormatUint(i uint64, base int, basePrefix bool, width int) string {
+	return padFormatNumber(strconv.FormatUint(i, base), base, basePrefix, width)
+
 }
 
 func MaxInt64(a, b int64) int64 {

@@ -101,7 +101,7 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 {
 			decodeChunks(d, false)
 		},
 		"fmt": func(d *decode.D) {
-			d.FieldStringMapFn("audio_format", audioFormatName, "Unknown", d.U16LE)
+			d.FieldStringMapFn("audio_format", audioFormatName, "Unknown", d.U16LE, decode.NumberDecimal)
 			d.FieldU16LE("num_channels")
 			d.FieldU32LE("sample_rate")
 			d.FieldU32LE("byte_rate")

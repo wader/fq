@@ -65,14 +65,14 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 			d.FieldU32("height")
 			d.FieldU8("bit_depth")
 			d.FieldU8("color_type")
-			d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8)
+			d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8, decode.NumberDecimal)
 			d.FieldStringMapFn("filter_method", map[uint64]string{
 				0: "Adaptive filtering",
-			}, "unknown", d.U8)
+			}, "unknown", d.U8, decode.NumberDecimal)
 			d.FieldStringMapFn("interlace_method", map[uint64]string{
 				0: "No interlace",
 				1: "Adam7 interlace",
-			}, "unknown", d.U8)
+			}, "unknown", d.U8, decode.NumberDecimal)
 		case "tEXt":
 			// TODO: latin1
 			keywordLen := int(d.PeekFindByte(0, 80))
@@ -84,7 +84,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 			keywordLen := int(d.PeekFindByte(0, 80))
 			d.FieldUTF8("keyword", keywordLen-1)
 			d.FieldUTF8("null", 1)
-			compressionMethod, _ := d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8)
+			compressionMethod, _ := d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8, decode.NumberDecimal)
 			dataLen := (chunkLength - keywordLen - 1) * 8
 
 			switch compressionMethod {
@@ -104,7 +104,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 			profileNameLen := int(d.PeekFindByte(0, 80))
 			d.FieldUTF8("profile_name", profileNameLen-1)
 			d.FieldUTF8("null", 1)
-			compressionMethod, _ := d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8)
+			compressionMethod, _ := d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8, decode.NumberDecimal)
 			dataLen := (chunkLength - profileNameLen - 1) * 8
 
 			switch compressionMethod {

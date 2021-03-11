@@ -1,4 +1,7 @@
 
+
+format alias? exif / tiff? maybe is differetnt default tag id tables?
+
 promp display_name shows _description, weird for crc etc
 
 jq parser..
@@ -13,6 +16,10 @@ struct("bla";
 
 123 as $var | repl
  . as $bla | scopedump | .["$bla"]
+
+
+'.. | select(.type == "mdat")._bytes[0x1a:] | tiff | .. | select(.tag._symbol == "GPSInfo") | [.. | select(.tag._symbol | . ==  "GPSLatitude" or . == "GPSLongitude") | [.values[].float] | .[0] + .[1]/60 + .[2]/3600] | join(",")'
+59.70330833333334,12.856802777777778
 
 
 

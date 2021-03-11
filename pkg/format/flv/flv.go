@@ -86,7 +86,7 @@ func flvDecode(d *decode.D, in interface{}) interface{} {
 	}
 
 	fieldScriptDataValue := func(d *decode.D, name string) uint64 {
-		typ, _ := d.FieldStringMapFn("type", typeNames, "Unknown", d.U8)
+		typ, _ := d.FieldStringMapFn("type", typeNames, "Unknown", d.U8, decode.NumberDecimal)
 		if typ == typeECMAArray {
 			d.FieldU32("ecma_array_length")
 		}
@@ -156,7 +156,7 @@ func flvDecode(d *decode.D, in interface{}) interface{} {
 		for !d.End() {
 			d.FieldStructFn("tag", func(d *decode.D) {
 				d.FieldU32("previous_tag_size")
-				tagType, _ := d.FieldStringMapFn("tag_type", tagTypeNames, "unknown", d.U8)
+				tagType, _ := d.FieldStringMapFn("tag_type", tagTypeNames, "unknown", d.U8, decode.NumberDecimal)
 				dataSize := d.FieldU24("data_size")
 				d.FieldU24("timestamp")
 				d.FieldU8("timestamp_extended")

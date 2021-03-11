@@ -101,7 +101,7 @@ func ascDecoder(d *decode.D, in interface{}) interface{} {
 			n = 32 + d.U6()
 		}
 		return n
-	})
+	}, decode.NumberDecimal)
 	d.FieldUFn("frequency_index", func() (uint64, decode.DisplayFormat, string) {
 		v := d.U4()
 		if v == 15 {
@@ -112,7 +112,7 @@ func ascDecoder(d *decode.D, in interface{}) interface{} {
 		}
 		return 0, decode.NumberDecimal, "Invalid"
 	})
-	d.FieldStringMapFn("channel_configuration", channelConfigurationNames, "Reserved", d.U4)
+	d.FieldStringMapFn("channel_configuration", channelConfigurationNames, "Reserved", d.U4, decode.NumberDecimal)
 	// TODO: GASpecificConfig etc
 	d.FieldBitBufLen("var_aot_or_byte_align", d.BitsLeft())
 

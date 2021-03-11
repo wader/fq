@@ -98,7 +98,7 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 	default:
 		d.FieldU8("extra_flags")
 	}
-	d.FieldStringMapFn("os", osNames, "unknown", d.U8)
+	d.FieldStringMapFn("os", osNames, "unknown", d.U8, decode.NumberDecimal)
 	if hasExtra {
 		// TODO:
 		xLen := d.FieldU16("xlen")

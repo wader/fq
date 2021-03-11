@@ -96,7 +96,7 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 			12:  "OpenBSD",
 			97:  "Arm",
 			255: "Standalone",
-		}, "Unknown", d.U8)
+		}, "Unknown", d.U8, decode.NumberDecimal)
 		d.FieldU8("abi_version")
 		d.FieldValidateZeroPadding("pad", 7*8)
 	})
