@@ -17,7 +17,7 @@
     |                                               |                |      first_part_size: 9 0x17-NA (0)
     |                                               |                |      reconstruction: "Bicubic" 0x17-NA (0)
     |                                               |                |      loop: "Normal" 0x17-NA (0)
-0x10|                     9d 01 2a                  |       ..*      |    start_code: Correct (9d012a) 0x17-0x19.7 (3)
+0x10|                     9d 01 2a                  |       ..*      |    start_code: Correct (0x9d012a) 0x17-0x19.7 (3)
 0x10|                              04               |          .     |    width0: 4 0x1a-0x1a.7 (1)
 0x10|                                 00            |           .    |    horizontal_scale: 0 0x1b-0x1b.1 (0.2)
 0x10|                                 00            |           .    |    width1: 0 0x1b.2-0x1b.7 (0.6)
