@@ -14,18 +14,18 @@ $ fq file.mp3 '[.frames[] | .samples_per_frame / .sample_rate] | add' 
  
 <b># embedded id3v2 png picture</b> 
 $ fq file.mp3 '.headers[].frames[] | select(.id == "APIC")' 
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.headers[0].frames[1]:
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.headers[0].frames[1]: {}
 0x020|         41 50 49 43                           |   APIC         |  id: "APIC" (Attached picture)
 0x020|                     00 00 15 0c               |       ....     |  size: 2700
-0x020|                                 00 00         |           ..   | -flags:
+0x020|                                 00 00         |           ..   |  flags: {}
 0x020|                                       03      |             .  |  text_encoding: UTF-8 (3)
 0x020|                                          69 6d|              im|  mime_type: "image/png"
 0x030|61 67 65 2f 70 6e 67 00                        |age/png.        |
 0x030|                        00                     |        .       |  picture_type: 0
 0x030|                           00                  |         .      |  description: ""
-0x030|                              89 50 4e 47 0d 0a|          .PNG..| -picture: png
+0x030|                              89 50 4e 47 0d 0a|          .PNG..|  picture: png
 0x040|1a 0a 00 00 00 0d 49 48 44 52 00 00 01 40 00 00|......IHDR...@..|
-*    |2665 bytes more until 0xab8+7                  |                |
+*    |2665 bytes more until 0xab8.7                  |                |
  
 <b># resolution of embedded png picture</b> 
 $ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture.chunks[] | select(.type == "IHDR") | {width, height}' 

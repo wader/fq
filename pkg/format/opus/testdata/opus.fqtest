@@ -4,14 +4,14 @@
 > fq -d opus_packet opus-audio verbose
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: opus_packet 0x0-0x1b5.7 (438)
      |                                               |                |  type: "audio" 0x0-NA (0)
-     |                                               |                |  toc:{} 0x0-0x1b5.7 (438)
-     |                                               |                |    config:{} 0x0-0x0.4 (0.5)
+     |                                               |                |  toc: {} 0x0-0x1b5.7 (438)
+     |                                               |                |    config: {} 0x0-0x0.4 (0.5)
 0x000|fc                                             |.               |      config: 31 0x0-0x0.4 (0.5)
      |                                               |                |      mode: "CELT-only" 0x0.5-NA (0)
      |                                               |                |      bandwidth: "FB" 0x0.5-NA (0)
      |                                               |                |      frame_size: 20 0x0.5-NA (0)
 0x000|fc                                             |.               |    stereo: true 0x0.5-0x0.5 (0.1)
-     |                                               |                |    frames_per_packet:{} 0x0.6-0x0.7 (0.2)
+     |                                               |                |    frames_per_packet: {} 0x0.6-0x0.7 (0.2)
 0x000|fc                                             |.               |      config: 0 0x0.6-0x0.7 (0.2)
      |                                               |                |      frames: 1 0x1-NA (0)
      |                                               |                |      mode: "1 frame" 0x1-NA (0)
@@ -40,12 +40,12 @@
 0x10|35 38 2e 34 35 2e 31 30 30                     |58.45.100       |
 0x10|                           02 00 00 00         |         ....   |    user_comment_list_length: 2 0x19-0x1c.7 (4)
     |                                               |                |    user_comments[2]: 0x1d-0x4b.7 (47)
-    |                                               |                |      [0]:{} (user_comment) 0x1d-0x3d.7 (33)
+    |                                               |                |      [0]: {} (user_comment) 0x1d-0x3d.7 (33)
 0x10|                                       1d 00 00|             ...|        length: 29 0x1d-0x20.7 (4)
 0x20|00                                             |.               |
 0x20|   65 6e 63 6f 64 65 72 3d 4c 61 76 63 35 38 2e| encoder=Lavc58.|        vendor: "encoder=Lavc58.91.100 libopus" 0x21-0x3d.7 (29)
 0x30|39 31 2e 31 30 30 20 6c 69 62 6f 70 75 73      |91.100 libopus  |
-    |                                               |                |      [1]:{} (user_comment) 0x3e-0x4b.7 (14)
+    |                                               |                |      [1]: {} (user_comment) 0x3e-0x4b.7 (14)
 0x30|                                          0a 00|              ..|        length: 10 0x3e-0x41.7 (4)
 0x40|00 00                                          |..              |
 0x40|      61 72 74 69 73 74 3d 62 6c 61|           |  artist=bla|   |        vendor: "artist=bla" 0x42-0x4b.7 (10)

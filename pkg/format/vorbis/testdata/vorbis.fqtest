@@ -26,7 +26,7 @@
 0x10|38 2e 32 39 2e 31 30 30                        |8.29.100        |
 0x10|                        01 00 00 00            |        ....    |    user_comment_list_length: 1 0x18-0x1b.7 (4)
     |                                               |                |    user_comments[1]: 0x1c-0x3e.7 (35)
-    |                                               |                |      [0]:{} (user_comment) 0x1c-0x3e.7 (35)
+    |                                               |                |      [0]: {} (user_comment) 0x1c-0x3e.7 (35)
 0x10|                                    1f 00 00 00|            ....|        length: 31 0x1c-0x1f.7 (4)
 0x20|65 6e 63 6f 64 65 72 3d 4c 61 76 63 35 38 2e 35|encoder=Lavc58.5|        vendor: "encoder=Lavc58.54.100 libvorbis" 0x20-0x3e.7 (31)
 0x30|34 2e 31 30 30 20 6c 69 62 76 6f 72 62 69 73   |4.100 libvorbis |

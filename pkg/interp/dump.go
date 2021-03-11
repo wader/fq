@@ -97,7 +97,7 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 		if v.Description != "" {
 			cfmt(colField, " %s", deco.Value.F(v.Description))
 		} else {
-			cfmt(colField, "%s", deco.Object.F("{}"))
+			cfmt(colField, " %s", deco.Object.F("{}"))
 		}
 	case decode.Array:
 	default:

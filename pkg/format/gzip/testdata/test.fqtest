@@ -5,7 +5,7 @@
 0x00|1f 8b                                          |..              |  identification: "\x1f\x8b" (Correct) 0x0-0x1.7 (2)
  0x0|74 65 73 74 0a|                                |test.|          |  uncompressed: 746573740a 0x0-0x4.7 (5)
 0x00|      08                                       |  .             |  compression_method: deflate (8) 0x2-0x2.7 (1)
-    |                                               |                |  flags:{} 0x3-0x3.7 (1)
+    |                                               |                |  flags: {} 0x3-0x3.7 (1)
 0x00|         00                                    |   .            |    text: false 0x3-0x3 (0.1)
 0x00|         00                                    |   .            |    header_crc: false 0x3.1-0x3.1 (0.1)
 0x00|         00                                    |   .            |    extra: false 0x3.2-0x3.2 (0.1)
