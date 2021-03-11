@@ -75,7 +75,16 @@ func fieldRational(d *decode.D, name string) float64 {
 }
 
 func fieldSRational(d *decode.D, name string) float64 {
-	return d.FieldFloatFn(name, func() (float64, string) { return float64(d.S32()) / float64(d.S32()), "" })
+	var v float64
+	d.FieldStructFn(name, func(d *decode.D) {
+		numerator := d.FieldS32("numerator")
+		denominator := d.FieldS32("denominator")
+		v := float64(numerator) / float64(denominator)
+		d.FieldFloatFn("float", func() (float64, string) {
+			return v, ""
+		})
+	})
+	return v
 }
 
 type strips struct {
