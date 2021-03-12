@@ -7,7 +7,7 @@ import (
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:        format.MPEG_HEVC,
+		Name:        format.HEVC_NAL,
 		Description: "H.265/HEVC sample",
 		DecodeFn:    hevcDecode,
 	})

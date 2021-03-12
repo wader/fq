@@ -186,7 +186,7 @@
 0xce0|                                             00|               .|                                  size: 54 0xcef-0xcf2.7 (4)
 0xcf0|00 00 36                                       |..6             |
 0xcf0|         61 76 63 43                           |   avcC         |                                  type: "avcC" 0xcf3-0xcf6.7 (4)
-     |                                               |                |                                  value: mpeg_avc_dcr 0xcf7-0xd24.7 (46)
+     |                                               |                |                                  value: avc_dcr 0xcf7-0xd24.7 (46)
 0xcf0|                     01                        |       .        |                                    configuration_version: 1 0xcf7-0xcf7.7 (1)
 0xcf0|                        f4                     |        .       |                                    profile_indication: 244 0xcf8-0xcf8.7 (1)
 0xcf0|                           00                  |         .      |                                    profile_compatibility: 0 0xcf9-0xcf9.7 (1)
@@ -304,7 +304,7 @@
      |                                               |                |  tracks: [1] 0x30-0xdf2.7 (3523)
      |                                               |                |    [0]: {} (track) 0x30-0xdf2.7 (3523)
      |                                               |                |      samples: [1] 0x30-0xaef.7 (2752)
-     |                                               |                |        [0]: mpeg_avc (sample) 0x30-0xaef.7 (2752)
+     |                                               |                |        [0]: avc_nal (sample) 0x30-0xaef.7 (2752)
      |                                               |                |          nals: [2] 0x30-0xaef.7 (2752)
      |                                               |                |            [0]: {} (nal) 0x30-0x2e0.7 (689)
 0x030|00 00 02 ad                                    |....            |              length: 685 0x30-0x33.7 (4)

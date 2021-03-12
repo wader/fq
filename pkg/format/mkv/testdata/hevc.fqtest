@@ -195,7 +195,7 @@
 0x0170|                                             63|               c|                  id: CodecPrivate (0x63a2) 0x17f-0x180.7 (2)
 0x0180|a2                                             |.               |
 0x0180|   49 3b                                       | I;             |                  size: 2363 0x181-0x182.7 (2)
-      |                                               |                |                  value: mpeg_hevc_dcr 0x183-0xabd.7 (2363)
+      |                                               |                |                  value: hevc_dcr 0x183-0xabd.7 (2363)
 0x0180|         01                                    |   .            |                    configurationVersion: 1 0x183-0x183.7 (1)
 0x0180|            04                                 |    .           |                    general_profile_space: 0 0x184-0x184.1 (0.2)
 0x0180|            04                                 |    .           |                    general_tier_flag: 0 0x184.2-0x184.2 (0.1)
@@ -359,7 +359,7 @@
 0x0b70|                           80                  |         .      |                invisible: false 0xb79.4-0xb79.4 (0.1)
 0x0b70|                           80                  |         .      |                lacing: 0 0xb79.5-0xb79.6 (0.2)
 0x0b70|                           80                  |         .      |                discardable: false 0xb79.7-0xb79.7 (0.1)
-      |                                               |                |              packet: mpeg_hevc 0xb7a-0x13ce.7 (2133)
+      |                                               |                |              packet: hevc_nal 0xb7a-0x13ce.7 (2133)
       |                                               |                |                nals: [1] 0xb7a-0x13ce.7 (2133)
       |                                               |                |                  [0]: {} (nal) 0xb7a-0x13ce.7 (2133)
 0x0b70|                              00 00 08 51      |          ...Q  |                    length: 2129 0xb7a-0xb7d.7 (4)

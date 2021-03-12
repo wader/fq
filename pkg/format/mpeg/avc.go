@@ -9,7 +9,7 @@ import (
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:        format.MPEG_AVC,
+		Name:        format.AVC_NAL,
 		Description: "H.264/AVC sample",
 		DecodeFn:    avcDecode,
 	})

@@ -2,15 +2,14 @@ package jq
 
 import (
 	"fq/pkg/decode"
-	"fq/pkg/format"
 )
 
-func init() {
-	format.MustRegister(&decode.Format{
-		Name:     "jq",
-		DecodeFn: jqDecode,
-	})
-}
+// func init() {
+// 	format.MustRegister(&decode.Format{
+// 		Name:     "jq",
+// 		DecodeFn: jqDecode,
+// 	})
+// }
 
 func jqDecode(d *decode.D, in interface{}) interface{} {
 	// script, ok := d.Options["script"].(string)

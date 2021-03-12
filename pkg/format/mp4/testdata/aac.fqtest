@@ -324,7 +324,7 @@
      |                                               |                |  tracks: [1] 0x2c-0x59c.7 (1393)
      |                                               |                |    [0]: {} (track) 0x2c-0x59c.7 (1393)
      |                                               |                |      samples: [4] 0x2c-0x291.7 (614)
-     |                                               |                |        [0]: mpeg_aac_frame (sample) 0x2c-0xf8.7 (205)
+     |                                               |                |        [0]: aac_frame (sample) 0x2c-0xf8.7 (205)
      |                                               |                |          raw_data_blocks: [2] 0x2c-0x40.7 (21)
      |                                               |                |            [0]: {} (raw_data_block) 0x2c-0x3c.7 (17)
 0x020|                                    de         |            .   |              syntax_element: FIL (6) 0x2c-0x2c.2 (0.3)
@@ -353,7 +353,7 @@
 0x040|   a9 8c 72 50 8b 4c aa de 1d 71 72 5c 88 42 08| ..rP.L...qr\.B.|          data: a98c72508b4caade1d71725c88420810... 0x41-0xf8.7 (184)
 0x050|10 0e 80 0c d5 9f 71 6c 47 12 cb b6 16 71 ec 69|......qlG....q.i|
 *    |153 bytes more until 0xf8.7                    |                |
-     |                                               |                |        [1]: mpeg_aac_frame (sample) 0xf9-0x1d2.7 (218)
+     |                                               |                |        [1]: aac_frame (sample) 0xf9-0x1d2.7 (218)
      |                                               |                |          raw_data_blocks: [1] 0xf9-0xfc.7 (4)
      |                                               |                |            [0]: {} (raw_data_block) 0xf9-0xfc.7 (4)
 0x0f0|                           01                  |         .      |              syntax_element: SCE (0) 0xf9-0xf9.2 (0.3)
@@ -369,7 +369,7 @@
 0x0f0|                                       d8 3d d6|             .=.|          data: d83dd6938076db22136a38461c9c5eae... 0xfd-0x1d2.7 (214)
 0x100|93 80 76 db 22 13 6a 38 46 1c 9c 5e ae 85 f1 ab|..v.".j8F..^....|
 *    |195 bytes more until 0x1d2.7                   |                |
-     |                                               |                |        [2]: mpeg_aac_frame (sample) 0x1d3-0x28c.7 (186)
+     |                                               |                |        [2]: aac_frame (sample) 0x1d3-0x28c.7 (186)
      |                                               |                |          raw_data_blocks: [1] 0x1d3-0x1d6.7 (4)
      |                                               |                |            [0]: {} (raw_data_block) 0x1d3-0x1d6.7 (4)
 0x1d0|         01                                    |   .            |              syntax_element: SCE (0) 0x1d3-0x1d3.2 (0.3)
@@ -385,7 +385,7 @@
 0x1d0|                     d3 21 41 ad 34 86 c8 cd 9a|       .!A.4....|          data: d32141ad3486c8cd9af03d04a1e75f1d... 0x1d7-0x28c.7 (182)
 0x1e0|f0 3d 04 a1 e7 5f 1d 0c ff 81 d6 bd bc da b0 65|.=..._.........e|
 *    |157 bytes more until 0x28c.7                   |                |
-     |                                               |                |        [3]: mpeg_aac_frame (sample) 0x28d-0x291.7 (5)
+     |                                               |                |        [3]: aac_frame (sample) 0x28d-0x291.7 (5)
      |                                               |                |          raw_data_blocks: [1] 0x28d-0x290.7 (4)
      |                                               |                |            [0]: {} (raw_data_block) 0x28d-0x290.7 (4)
 0x280|                                       01      |             .  |              syntax_element: SCE (0) 0x28d-0x28d.2 (0.3)

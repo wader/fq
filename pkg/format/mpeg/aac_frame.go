@@ -10,7 +10,7 @@ import (
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:        format.MPEG_AAC_FRAME,
+		Name:        format.AAC_FRAME,
 		Description: "Advanced Audio Coding frame",
 		DecodeFn:    aacDecode,
 	})

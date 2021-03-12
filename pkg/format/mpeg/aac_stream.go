@@ -9,13 +9,13 @@ var aacADTS []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:        format.MPEG_AAC_STREAM,
+		Name:        format.AAC_STREAM,
 		Description: "Raw audio data transport stream",
 		Groups:      []string{format.PROBE},
 		MIMEs:       []string{"audio/aac"},
 		DecodeFn:    adtsDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.MPEG_ADTS}, Formats: &aacADTS},
+			{Names: []string{format.ADTS}, Formats: &aacADTS},
 		},
 	})
 }

@@ -10,7 +10,7 @@ import (
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:        format.MPEG_HEVC_DCR,
+		Name:        format.HEVC_DCR,
 		Description: "H.265/HEVC Decoder configuration record",
 		DecodeFn:    hevcDcrDecode,
 	})

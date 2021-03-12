@@ -17,12 +17,12 @@ var aacFrame []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:        format.MPEG_ADTS,
+		Name:        format.ADTS,
 		Description: "Audio data transport stream packet",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    adtsDecoder,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.MPEG_AAC_FRAME}, Formats: &aacFrame},
+			{Names: []string{format.AAC_FRAME}, Formats: &aacFrame},
 		},
 	})
 }
