@@ -8,6 +8,7 @@ Usage: fq [OPTIONS] [FILE] [EXPR]
 --option,-o=ARG  Set option, eg: color=true
                    addrbase=16
                    color=false
+                   colors={"array":"white","bytes":"0-255:brightwhite,0:brightblack,32-126+9-13:white","error":"brightred","false":"yellow","frame":"yellow","index":"white","null":"brightblack","number":"cyan","object":"white","objectkey":"brightblue","string":"green","true":"yellow","value":"white"}
                    depth=0
                    displaybytes=16
                    linebytes=16
