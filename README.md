@@ -90,10 +90,15 @@ TODO: piping
 
 |Name                 |Description                                                  |Uses|
 |-                    |-                                                            |-|
+|`aac_frame`          |Advanced&nbsp;Audio&nbsp;Coding&nbsp;frame                   |<sub></sub>|
+|`aac_stream`         |Raw&nbsp;audio&nbsp;data&nbsp;transport&nbsp;stream          |<sub>`adts`</sub>|
+|`adts`               |Audio&nbsp;data&nbsp;transport&nbsp;stream&nbsp;packet       |<sub>`aac_frame`</sub>|
 |`apev2`              |APEv2&nbsp;metadata&nbsp;tag                                 |<sub></sub>|
 |`av1_ccr`            |AV1&nbsp;codec&nbsp;configuration&nbsp;record                |<sub></sub>|
 |`av1_frame`          |AV1&nbsp;frame                                               |<sub>`av1_obu`</sub>|
 |`av1_obu`            |AV1&nbsp;open&nbsp;bitstream&nbsp;unit                       |<sub></sub>|
+|`avc_dcr`            |H.264/AVC&nbsp;Decoder&nbsp;configuration&nbsp;record        |<sub></sub>|
+|`avc_nal`            |H.264/AVC&nbsp;sample                                        |<sub></sub>|
 |`bzip2`              |bzip2&nbsp;compression                                       |<sub>`probe`</sub>|
 |`dns`                |DNS&nbsp;packet                                              |<sub></sub>|
 |`elf`                |Executable&nbsp;and&nbsp;Linkable&nbsp;Format                |<sub></sub>|
@@ -104,26 +109,20 @@ TODO: piping
 |`flac_picture`       |FLAC&nbsp;metadatablock&nbsp;picture                         |<sub>`image`</sub>|
 |`gif`                |Graphics&nbsp;Interchange&nbsp;Format                        |<sub></sub>|
 |`gzip`               |gzip&nbsp;compression                                        |<sub>`probe`</sub>|
+|`hevc_dcr`           |H.265/HEVC&nbsp;Decoder&nbsp;configuration&nbsp;record       |<sub></sub>|
+|`hevc_nal`           |H.265/HEVC&nbsp;sample                                       |<sub></sub>|
 |`icc_profile`        |International&nbsp;Color&nbsp;Consortium&nbsp;profile        |<sub></sub>|
 |`id3_v1`             |ID3v1&nbsp;metadata                                          |<sub></sub>|
 |`id3_v11`            |ID3v1.1&nbsp;metadata                                        |<sub></sub>|
 |`id3_v2`             |ID3v2&nbsp;metadata                                          |<sub>`image`</sub>|
 |`jpeg`               |Joint&nbsp;Photographic&nbsp;Experts&nbsp;Group&nbsp;file    |<sub>`exif`</sub>|
-|`jq`                 |                                                             |<sub></sub>|
-|`mkv`                |Matroska&nbsp;file                                           |<sub>`av1_ccr`, `av1_frame`, `flac_frame`, `flac_metadatablock`, `mp3_frame`, `mpeg_aac_frame`, `mpeg_asc`, `mpeg_avc_dcr`, `mpeg_avc`, `mpeg_hevc_dcr`, `mpeg_hevc`, `mpeg_spu`, `opus_packet`, `vorbis_packet`, `vp8_frame`, `vp9_frame`</sub>|
+|`mkv`                |Matroska&nbsp;file                                           |<sub>`av1_ccr`, `av1_frame`, `flac_frame`, `flac_metadatablock`, `mp3_frame`, `aac_frame`, `mpeg_asc`, `avc_dcr`, `avc_nal`, `hevc_dcr`, `hevc_nal`, `mpeg_spu`, `opus_packet`, `vorbis_packet`, `vp8_frame`, `vp9_frame`</sub>|
 |`mp3`                |MP3&nbsp;file                                                |<sub>`id3_v2`, `id3_v1`, `id3_v11`, `apev2`, `mp3_frame`</sub>|
 |`mp3_frame`          |MPEG&nbsp;audio&nbsp;layer&nbsp;3&nbsp;frame                 |<sub>`mp3_xing`</sub>|
 |`mp3_xing`           |Xing&nbsp;header                                             |<sub></sub>|
-|`mp4`                |MPEG-4&nbsp;file                                             |<sub>`av1_ccr`, `av1_frame`, `flac_frame`, `flac_metadatablock`, `mp3_frame`, `mpeg_aac_frame`, `mpeg_avc_dcr`, `mpeg_avc`, `mpeg_es`, `mpeg_hevc_dcr`, `mpeg_hevc`, `opus_packet`, `vorbis_packet`, `vp9_frame`</sub>|
-|`mpeg_aac_frame`     |Advanced&nbsp;Audio&nbsp;Coding&nbsp;frame                   |<sub></sub>|
-|`mpeg_aac_stream`    |Raw&nbsp;audio&nbsp;data&nbsp;transport&nbsp;stream          |<sub>`mpeg_adts`</sub>|
-|`mpeg_adts`          |Audio&nbsp;data&nbsp;transport&nbsp;stream&nbsp;packet       |<sub>`mpeg_aac_frame`</sub>|
+|`mp4`                |MPEG-4&nbsp;file                                             |<sub>`av1_ccr`, `av1_frame`, `flac_frame`, `flac_metadatablock`, `mp3_frame`, `aac_frame`, `avc_dcr`, `avc_nal`, `mpeg_es`, `hevc_dcr`, `hevc_nal`, `opus_packet`, `vorbis_packet`, `vp9_frame`</sub>|
 |`mpeg_asc`           |MPEG-4&nbsp;Audio&nbsp;specific&nbsp;config                  |<sub></sub>|
-|`mpeg_avc`           |H.264/AVC&nbsp;sample                                        |<sub></sub>|
-|`mpeg_avc_dcr`       |H.264/AVC&nbsp;Decoder&nbsp;configuration&nbsp;record        |<sub></sub>|
 |`mpeg_es`            |MPEG&nbsp;elementary&nbsp;stream                             |<sub>`mpeg_asc`, `vorbis_packet`</sub>|
-|`mpeg_hevc`          |H.265/HEVC&nbsp;sample                                       |<sub></sub>|
-|`mpeg_hevc_dcr`      |H.265/HEVC&nbsp;Decoder&nbsp;configuration&nbsp;record       |<sub></sub>|
 |`mpeg_pes`           |MPEG&nbsp;Packetized&nbsp;elementary&nbsp;stream             |<sub>`mpeg_pes_packet`, `mpeg_spu`</sub>|
 |`mpeg_pes_packet`    |MPEG&nbsp;Packetized&nbsp;elementary&nbsp;stream&nbsp;packet |<sub></sub>|
 |`mpeg_spu`           |Sub&nbsp;picture&nbsp;unit&nbsp;(dvd&nbsp;subtitle)          |<sub></sub>|
@@ -141,7 +140,7 @@ TODO: piping
 |`wav`                |WAV&nbsp;file                                                |<sub></sub>|
 |`webp`               |WebP&nbsp;image                                              |<sub>`vp8_frame`</sub>|
 |`image`              |Group                                                        |<sub>`gif`, `jpeg`, `png`, `tiff`, `webp`</sub>|
-|`probe`              |Group                                                        |<sub>`bzip2`, `elf`, `flac`, `gif`, `gzip`, `jpeg`, `mkv`, `mp3`, `mp4`, `mpeg_aac_stream`, `mpeg_adts`, `ogg`, `png`, `tar`, `tiff`, `wav`, `webp`</sub>|
+|`probe`              |Group                                                        |<sub>`aac_stream`, `adts`, `bzip2`, `elf`, `flac`, `gif`, `gzip`, `jpeg`, `mkv`, `mp3`, `mp4`, `ogg`, `png`, `tar`, `tiff`, `wav`, `webp`</sub>|
 
 [#]: sh-end
 
