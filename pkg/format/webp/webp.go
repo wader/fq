@@ -14,7 +14,7 @@ var vp8Frame []*decode.Format
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.WEBP,
-		Description: "WEBP image",
+		Description: "WebP image",
 		Groups:      []string{format.PROBE, format.IMAGE},
 		MIMEs:       []string{"image/webp"},
 		DecodeFn:    webpDecode,

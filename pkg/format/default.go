@@ -21,10 +21,10 @@ const (
 	// TODO: rename PROBE_* something?
 	IMAGE = "image"
 
-	AV1_FRAME          = "av1_frame"
-	AV1_CCR            = "av1_ccr"
-	AV1_OBU            = "av1_obu"
 	APEV2              = "apev2"
+	AV1_CCR            = "av1_ccr"
+	AV1_FRAME          = "av1_frame"
+	AV1_OBU            = "av1_obu"
 	BZIP2              = "bzip2"
 	DNS                = "dns"
 	ELF                = "elf"
@@ -33,6 +33,7 @@ const (
 	FLAC_METADATABLOCK = "flac_metadatablock"
 	FLAC_PICTURE       = "flac_picture"
 	FLV                = "flv" // TODO:
+	GIF                = "gif"
 	GZIP               = "gzip"
 	ICC_PROFILE        = "icc_profile"
 	ID3_V1             = "id3_v1"
@@ -50,9 +51,9 @@ const (
 	MPEG_ASC           = "mpeg_asc"
 	MPEG_AVC           = "mpeg_avc"
 	MPEG_AVC_DCR       = "mpeg_avc_dcr"
+	MPEG_ES            = "mpeg_es"
 	MPEG_HEVC          = "mpeg_hevc"
 	MPEG_HEVC_DCR      = "mpeg_hevc_dcr"
-	MPEG_ES            = "mpeg_es"
 	MPEG_PES           = "mpeg_pes"
 	MPEG_PES_PACKET    = "mpeg_pes_packet"
 	MPEG_SPU           = "mpeg_spu"

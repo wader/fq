@@ -1,5 +1,10 @@
 
 
+
+mp3!> 0b
+1.7976931348623157e+308
+
+
 format alias? exif / tiff? maybe is differetnt default tag id tables?
 
 promp display_name shows _description, weird for crc etc

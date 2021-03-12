@@ -9,6 +9,7 @@ import (
 	_ "fq/pkg/format/dns"
 	_ "fq/pkg/format/elf"
 	_ "fq/pkg/format/flac"
+	_ "fq/pkg/format/gif"
 	_ "fq/pkg/format/gzip"
 	_ "fq/pkg/format/icc"
 	_ "fq/pkg/format/id3"

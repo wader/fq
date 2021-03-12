@@ -101,6 +101,7 @@ TODO: piping
 |`flac_frame`         |FLAC&nbsp;frame                                              |<sub></sub>|
 |`flac_metadatablock` |FLAC&nbsp;metadatablock                                      |<sub>`flac_picture`, `vorbis_comment`</sub>|
 |`flac_picture`       |FLAC&nbsp;metadatablock&nbsp;picture                         |<sub>`image`</sub>|
+|`gif`                |Graphics&nbsp;Interchange&nbsp;Format                        |<sub></sub>|
 |`gzip`               |gzip&nbsp;compression                                        |<sub>`probe`</sub>|
 |`icc_profile`        |International&nbsp;Color&nbsp;Consortium&nbsp;profile        |<sub></sub>|
 |`id3_v1`             |ID3v1&nbsp;metadata                                          |<sub></sub>|
@@ -137,9 +138,9 @@ TODO: piping
 |`vp8_frame`          |VP8&nbsp;frame                                               |<sub></sub>|
 |`vp9_frame`          |VP9&nbsp;frame                                               |<sub></sub>|
 |`wav`                |WAV&nbsp;file                                                |<sub></sub>|
-|`webp`               |WEBP&nbsp;image                                              |<sub>`vp8_frame`</sub>|
-|`image`              |Group                                                        |<sub>`jpeg`, `png`, `tiff`, `webp`</sub>|
-|`probe`              |Group                                                        |<sub>`bzip2`, `elf`, `flac`, `gzip`, `jpeg`, `mkv`, `mp3`, `mp4`, `mpeg_aac_stream`, `mpeg_adts`, `ogg`, `png`, `tar`, `tiff`, `wav`, `webp`</sub>|
+|`webp`               |WebP&nbsp;image                                              |<sub>`vp8_frame`</sub>|
+|`image`              |Group                                                        |<sub>`gif`, `jpeg`, `png`, `tiff`, `webp`</sub>|
+|`probe`              |Group                                                        |<sub>`bzip2`, `elf`, `flac`, `gif`, `gzip`, `jpeg`, `mkv`, `mp3`, `mp4`, `mpeg_aac_stream`, `mpeg_adts`, `ogg`, `png`, `tar`, `tiff`, `wav`, `webp`</sub>|
 
 [#]: sh-end
 
