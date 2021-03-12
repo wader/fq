@@ -51,8 +51,10 @@ def eval_f($e;f):
 	try eval($e) | f
 	catch (. as $err | ("error: " + $err) | print);
 
+def default_display: display({depth: 1});
+
 def eval_print($e):
-	eval_f($e;display({depth: 1}));
+	eval_f($e;default_display);
 
 
 # def read: #:: [a]| => string
@@ -201,20 +203,25 @@ def main:
 		opts_help_text(_opts($version))
 		| print
 	  else
-		( if $parsed.file then open($parsed.file) | string
-		  else (if $parsed.noinput then $rest[0] else $rest[1] end) // "." end
-		) as $expr
-		| if $parsed.noinput then
-			null
-		  else
-			(if $rest[0] then $rest[0] else "-" end) as $filename
-			| open($filename)
-			| try decode($parsed.decode)
-			  catch (.[] | (try display catch (. | print))| empty)
+		null
+		# figure out filename and expressions
+		| ( if $parsed.noinput then [null, $rest]
+		    elif $rest[0] then [$rest[0], $rest[1:]]
+		    else ["-", $rest]
+		    end
+		) as [$filename, $exprs]
+		| if $filename then
+			( open($filename)
+			  | decode($parsed.decode)
+			)
 		  end
-		| if $parsed.repl then
-			eval_f($expr;repl)
-		  else
-			eval_print($expr)
+		| if $parsed.file then
+			( (open($parsed.file) | string)
+			  as $file_expr
+			  | eval_f($file_expr;.)
+			)
 		  end
+		| (reduce $exprs[] as $expr ([.];[.[] | eval_f($expr;.)]))[]
+		| if $parsed.repl then repl
+		  else default_display end
 	  end;
