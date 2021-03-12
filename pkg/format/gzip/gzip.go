@@ -48,18 +48,6 @@ var osNames = map[uint64]string{
 	13: " Acorn RISCOS",
 }
 
-func fieldStrZeroTerminated(d *decode.D, name string) string {
-	return d.FieldStrFn(name, func() (string, string) {
-		return strZeroTerminated(d), ""
-	})
-}
-
-func strZeroTerminated(d *decode.D) string {
-	c := d.PeekFindByte(0, -1)
-	s := d.UTF8(int(c))
-	return s[:len(s)-1]
-}
-
 func gzDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldValidateUTF8("identification", "\x1f\x8b")
 	compressionMethod := d.FieldUFn("compression_method", func() (uint64, decode.DisplayFormat, string) {
@@ -105,10 +93,10 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldBitBufLen("extra_fields", int64(xLen*8))
 	}
 	if hasName {
-		fieldStrZeroTerminated(d, "name")
+		d.FieldStrZeroTerminated("name")
 	}
 	if hasComment {
-		fieldStrZeroTerminated(d, "comment")
+		d.FieldStrZeroTerminated("comment")
 	}
 	if hasHeaderCRC {
 		d.FieldU16LE("header_crc")

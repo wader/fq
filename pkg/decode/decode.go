@@ -947,3 +947,15 @@ func (d *D) FieldDecodeZlibLen(name string, nBits int64, formats []*Format) (*Va
 
 	return d.FieldDecodeBitBuf(name, zbb, formats)
 }
+
+func (d *D) FieldStrZeroTerminated(name string) string {
+	return d.FieldStrFn(name, func() (string, string) {
+		return d.StrZeroTerminated(), ""
+	})
+}
+
+func (d *D) StrZeroTerminated() string {
+	c := d.PeekFindByte(0, -1)
+	s := d.UTF8(int(c))
+	return s[:len(s)-1]
+}

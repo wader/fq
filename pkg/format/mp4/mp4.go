@@ -7,6 +7,7 @@ package mp4
 // TODO: fmp4, default samples sizes etc
 // TODO: keep track of structure somehow to detect errors
 // TODO: ISO-14496 says mp4 mdat can begin and end with original header/trailer (no used i guess?)
+// TODO: heic decode hevc samples (iloc box?)
 
 import (
 	"fmt"
@@ -318,8 +319,10 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			if !ok {
 				d.Invalid(fmt.Sprintf("expected AvcDcrOut got %#+v", dv))
 			}
-			ctx.currentTrack.decodeOpts = append(ctx.currentTrack.decodeOpts,
-				decode.FormatOptions{InArg: format.AvcIn{LengthSize: avcDcrOut.LengthSize}})
+			if ctx.currentTrack != nil {
+				ctx.currentTrack.decodeOpts = append(ctx.currentTrack.decodeOpts,
+					decode.FormatOptions{InArg: format.AvcIn{LengthSize: avcDcrOut.LengthSize}})
+			}
 		},
 		"hvcC": func(ctx *decodeContext, d *decode.D) {
 			_, dv := d.FieldDecode("value", mpegHEVCDCRFrameFormat)
@@ -327,8 +330,10 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			if !ok {
 				d.Invalid(fmt.Sprintf("expected HevcDcrOut got %#+v", dv))
 			}
-			ctx.currentTrack.decodeOpts = append(ctx.currentTrack.decodeOpts,
-				decode.FormatOptions{InArg: format.HevcIn{LengthSize: hevcDcrOut.LengthSize}})
+			if ctx.currentTrack != nil {
+				ctx.currentTrack.decodeOpts = append(ctx.currentTrack.decodeOpts,
+					decode.FormatOptions{InArg: format.HevcIn{LengthSize: hevcDcrOut.LengthSize}})
+			}
 		},
 		"dfLa": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
@@ -683,6 +688,56 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			d.FieldU24("flags")
 			d.FieldU32("mfra_size")
 		},
+		// HEIC image
+		"iloc": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+			offsetSize := d.FieldU4("offet_size")
+			lengthSize := d.FieldU4("length_size")
+			baseOffsetSize := d.FieldU4("base_offset_size")
+			d.FieldU4("reserved")
+			itemCount := d.FieldU16("item_count")
+			d.FieldArrayFn("items", func(d *decode.D) {
+				for i := uint64(0); i < itemCount; i++ {
+					d.FieldStructFn("item", func(d *decode.D) {
+						d.FieldU16("id")
+						d.FieldU16("data_reference_index")
+						d.FieldU("base_offset", int(baseOffsetSize)*8)
+						extentCount := d.FieldU16("extent_count")
+						d.FieldArrayFn("extends", func(d *decode.D) {
+							for i := uint64(0); i < extentCount; i++ {
+								d.FieldStructFn("extent", func(d *decode.D) {
+									d.FieldU("offset", int(offsetSize)*8)
+									d.FieldU("length", int(lengthSize)*8)
+								})
+							}
+						})
+					})
+				}
+			})
+		},
+		"infe": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+			d.FieldU16("id")
+			d.FieldU16("protection_index")
+			d.FieldStrZeroTerminated("item_name")
+			// TODO: really optional? seems so
+			if d.NotEnd() {
+				d.FieldStrZeroTerminated("content_type")
+			}
+			if d.NotEnd() {
+				d.FieldStrZeroTerminated("content_encoding")
+			}
+		},
+		"iinf": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+			_ = d.FieldU16("entry_count")
+			decodeAtoms(ctx, d)
+		},
+		"iprp": decodeAtoms,
+		"ipco": decodeAtoms,
 	}
 
 	typeFn := func() (string, string) {
