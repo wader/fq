@@ -86,13 +86,9 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 	if isInArray {
 		cfmt(colField, "%s%s%s", deco.Index.F("["), deco.Number.F(strconv.Itoa(v.Index)), deco.Index.F("]"))
 	}
-	switch vv := v.V.(type) {
-	case decode.Array:
-		cfmt(colField, "%s%s%s", deco.Index.F("["), deco.Number.F(strconv.Itoa(len(vv))), deco.Index.F("]"))
-	}
 	cprint(colField, ":")
 
-	switch v.V.(type) {
+	switch vv := v.V.(type) {
 	case decode.Struct:
 		if v.Description != "" {
 			cfmt(colField, " %s", deco.Value.F(v.Description))
@@ -100,6 +96,7 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 			cfmt(colField, " %s", deco.Object.F("{}"))
 		}
 	case decode.Array:
+		cfmt(colField, " %s%s%s", deco.Index.F("["), deco.Number.F(strconv.Itoa(len(vv))), deco.Index.F("]"))
 	default:
 		if v.Symbol != "" {
 			cfmt(colField, " %s", deco.Value.F(v.Symbol))

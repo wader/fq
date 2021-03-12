@@ -3,7 +3,7 @@
 > fq -d png 4x4a.apng verbose
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: png 0x0-0xf3.7 (244)
 0x00|89 50 4e 47 0d 0a 1a 0a                        |.PNG....        |  signature: "\x89PNG\r\n\x1a\n" (Correct) 0x0-0x7.7 (8)
-    |                                               |                |  chunks[8]: 0x8-0xf3.7 (236)
+    |                                               |                |  chunks: [8] 0x8-0xf3.7 (236)
     |                                               |                |    [0]: {} (chunk) 0x8-0x20.7 (25)
 0x00|                        00 00 00 0d            |        ....    |      length: 13 0x8-0xb.7 (4)
 0x00|                                    49 48 44 52|            IHDR|      type: "IHDR" 0xc-0xf.7 (4)

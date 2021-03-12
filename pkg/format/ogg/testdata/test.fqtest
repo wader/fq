@@ -2,7 +2,7 @@
 /test.ogg:
 > fq -d ogg test.ogg verbose
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: ogg 0x0-0xe45.7 (3654)
-      |                                               |                |  pages[3]: 0x0-0xe45.7 (3654)
+      |                                               |                |  pages: [3] 0x0-0xe45.7 (3654)
       |                                               |                |    [0]: ogg_page (page) 0x0-0x39.7 (58)
 0x0000|4f 67 67 53                                    |OggS            |      capture_pattern: "OggS" (Correct) 0x0-0x3.7 (4)
 0x0000|            00                                 |    .           |      stream_structure_version: Correct (0x0) 0x4-0x4.7 (1)
@@ -17,7 +17,7 @@
 0x0010|                  3f e1 85 3b                  |      ?..;      |      page_checksum: Correct (3b85e13f) 0x16-0x19.7 (4)
 0x0010|                              01               |          .     |      page_segments: 1 0x1a-0x1a.7 (1)
 0x0010|                                 1e            |           .    |      segment_table: 1e 0x1b-0x1b.7 (1)
-      |                                               |                |      segments[1]: 0x1c-0x39.7 (30)
+      |                                               |                |      segments: [1] 0x1c-0x39.7 (30)
 0x0010|                                    01 76 6f 72|            .vor|        [0]: 01766f72626973000000000144ac0000... (segment) 0x1c-0x39.7 (30)
 0x0020|62 69 73 00 00 00 00 01 44 ac 00 00 00 00 00 00|bis.....D.......|
 0x0030|80 38 01 00 00 00 00 00 b8 01                  |.8........      |
@@ -35,7 +35,7 @@
 0x0050|            0e                                 |    .           |      page_segments: 14 0x54-0x54.7 (1)
 0x0050|               40 ff ff ff ff ff ff ff ff ff ff|     @..........|      segment_table: 40ffffffffffffffffffffffff81 0x55-0x62.7 (14)
 0x0060|ff ff 81                                       |...             |
-      |                                               |                |      segments[14]: 0x63-0xd17.7 (3253)
+      |                                               |                |      segments: [14] 0x63-0xd17.7 (3253)
 0x0060|         03 76 6f 72 62 69 73 0d 00 00 00 4c 61|   .vorbis....La|        [0]: 03766f726269730d0000004c61766635... (segment) 0x63-0xa2.7 (64)
 0x0070|76 66 35 38 2e 34 35 2e 31 30 30 01 00 00 00 1f|vf58.45.100.....|
 *     |35 bytes more until 0xa2.7                     |                |
@@ -92,7 +92,7 @@
 0x0d30|0e cf                                          |..              |
 0x0d30|      04                                       |  .             |      page_segments: 4 0xd32-0xd32.7 (1)
 0x0d30|         1f 3c 34 80                           |   .<4.         |      segment_table: 1f3c3480 0xd33-0xd36.7 (4)
-      |                                               |                |      segments[4]: 0xd37-0xe45.7 (271)
+      |                                               |                |      segments: [4] 0xd37-0xe45.7 (271)
 0x0d30|                     5c dd ab 3a ab ba b0 ff 5a|       \..:....Z|        [0]: 5cddab3aabbab0ff5a02041000c08cda... (segment) 0xd37-0xd55.7 (31)
 0x0d40|02 04 10 00 c0 8c da 2d b6 37 df 7c f3 cd 30 0c|.......-.7.|..0.|
 0x0d50|c3 30 0c c3 7a 00                              |.0..z.          |
@@ -105,10 +105,10 @@
 0x0dc0|                  3e 37 dd 37 fe ee 85 47 7c 3c|      >7.7...G|<|        [3]: 3e37dd37feee85477c3c61029b3106f6... (segment) 0xdc6-0xe45.7 (128)
 0x0dd0|61 02 9b 31 06 f6 bb ef 9f 04 62 46 41 04 c0 c0|a..1......bFA...|
 *     |102 bytes more until 0xe45.7 (end)             |                |
-      |                                               |                |  streams[1]: 0x3a-NA (0)
+      |                                               |                |  streams: [1] 0x3a-NA (0)
       |                                               |                |    [0]: {} (stream) 0x3a-NA (0)
       |                                               |                |      serial_number: 4033295155 0x3a-NA (0)
-      |                                               |                |      packets[7]: 0x3a-NA (0)
+      |                                               |                |      packets: [7] 0x3a-NA (0)
       |                                               |                |        [0]: vorbis_packet (packet) 0x0-0x1d.7 (30)
  0x000|01                                             |.               |          packet_type: Identification (1) 0x0-0x0.7 (1)
  0x000|   76 6f 72 62 69 73                           | vorbis         |          magic: "vorbis" (Correct) 0x1-0x6.7 (6)
@@ -130,7 +130,7 @@
  0x000|                                 4c 61 76 66 35|           Lavf5|            vendor: "Lavf58.45.100" 0xb-0x17.7 (13)
  0x010|38 2e 34 35 2e 31 30 30                        |8.45.100        |
  0x010|                        01 00 00 00            |        ....    |            user_comment_list_length: 1 0x18-0x1b.7 (4)
-      |                                               |                |            user_comments[1]: 0x1c-0x3e.7 (35)
+      |                                               |                |            user_comments: [1] 0x1c-0x3e.7 (35)
       |                                               |                |              [0]: {} (user_comment) 0x1c-0x3e.7 (35)
  0x010|                                    1f 00 00 00|            ....|                length: 31 0x1c-0x1f.7 (4)
  0x020|65 6e 63 6f 64 65 72 3d 4c 61 76 63 35 38 2e 39|encoder=Lavc58.9|                vendor: "encoder=Lavc58.91.100 libvorbis" 0x20-0x3e.7 (31)

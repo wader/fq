@@ -39,7 +39,7 @@
 0x00|                                    4c 61 76 66|            Lavf|    vendor: "Lavf58.45.100" 0xc-0x18.7 (13)
 0x10|35 38 2e 34 35 2e 31 30 30                     |58.45.100       |
 0x10|                           02 00 00 00         |         ....   |    user_comment_list_length: 2 0x19-0x1c.7 (4)
-    |                                               |                |    user_comments[2]: 0x1d-0x4b.7 (47)
+    |                                               |                |    user_comments: [2] 0x1d-0x4b.7 (47)
     |                                               |                |      [0]: {} (user_comment) 0x1d-0x3d.7 (33)
 0x10|                                       1d 00 00|             ...|        length: 29 0x1d-0x20.7 (4)
 0x20|00                                             |.               |
