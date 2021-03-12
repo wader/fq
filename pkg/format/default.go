@@ -28,6 +28,7 @@ const (
 	BZIP2              = "bzip2"
 	DNS                = "dns"
 	ELF                = "elf"
+	EXIF               = "exif"
 	FLAC               = "flac"
 	FLAC_FRAME         = "flac_frame"
 	FLAC_METADATABLOCK = "flac_metadatablock"

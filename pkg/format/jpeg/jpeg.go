@@ -11,7 +11,7 @@ import (
 	"fq/pkg/format"
 )
 
-var tiffImage []*decode.Format
+var exifFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -21,7 +21,7 @@ func init() {
 		MIMEs:       []string{"image/jpeg"},
 		DecodeFn:    jpegDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.TIFF}, Formats: &tiffImage},
+			{Names: []string{format.EXIF}, Formats: &exifFormat},
 		},
 	})
 }
@@ -284,7 +284,7 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 								switch {
 								case markerCode == APP1 && d.TryHasBytes(app1ExifPrefix):
 									d.FieldUTF8("exif_prefix", 6)
-									d.FieldDecodeLen("exif", d.BitsLeft(), tiffImage)
+									d.FieldDecodeLen("exif", d.BitsLeft(), exifFormat)
 								case markerCode == APP1 && d.TryHasBytes(extendedXMPPrefix):
 									d.FieldStructFn("extended_xmp_chunk", func(d *decode.D) {
 										d.FieldUTF8("signature", int(len(extendedXMPPrefix)))

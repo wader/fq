@@ -12,8 +12,8 @@ import (
 	"hash/crc32"
 )
 
-var iccProfile []*decode.Format
-var tiffFile []*decode.Format
+var iccProfileFormat []*decode.Format
+var exifFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -23,8 +23,8 @@ func init() {
 		MIMEs:       []string{"image/png"},
 		DecodeFn:    pngDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.ICC_PROFILE}, Formats: &iccProfile},
-			{Names: []string{format.TIFF}, Formats: &tiffFile},
+			{Names: []string{format.ICC_PROFILE}, Formats: &iccProfileFormat},
+			{Names: []string{format.EXIF}, Formats: &exifFormat},
 		},
 	})
 }
@@ -133,7 +133,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 			switch compressionMethod {
 			case compressionDeflate:
 				dd := d.FieldStructFn("data", func(d *decode.D) {
-					d.FieldDecodeZlibLen("uncompressed", int64(dataLen), iccProfile)
+					d.FieldDecodeZlibLen("uncompressed", int64(dataLen), iccProfileFormat)
 				})
 				dd.Value.Range = ranges.Range{Start: d.Pos() - int64(dataLen), Len: int64(dataLen)}
 			default:
@@ -158,7 +158,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 			d.FieldFloatFn("blue_x", df)
 			d.FieldFloatFn("blue_y", df)
 		case "eXIf":
-			d.FieldDecodeLen("exif", int64(chunkLength)*8, tiffFile)
+			d.FieldDecodeLen("exif", int64(chunkLength)*8, exifFormat)
 		case "acTL":
 			d.FieldU32("num_frames")
 			d.FieldU32("num_plays")

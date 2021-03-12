@@ -97,6 +97,7 @@ TODO: piping
 |`bzip2`              |bzip2&nbsp;compression                                       |<sub>`probe`</sub>|
 |`dns`                |DNS&nbsp;packet                                              |<sub></sub>|
 |`elf`                |Executable&nbsp;and&nbsp;Linkable&nbsp;Format                |<sub></sub>|
+|`exif`               |Exchangeable&nbsp;Image&nbsp;File&nbsp;Format                |<sub>`icc_profile`</sub>|
 |`flac`               |Free&nbsp;lossless&nbsp;audio&nbsp;codec&nbsp;file           |<sub>`flac_metadatablock`, `flac_frame`</sub>|
 |`flac_frame`         |FLAC&nbsp;frame                                              |<sub></sub>|
 |`flac_metadatablock` |FLAC&nbsp;metadatablock                                      |<sub>`flac_picture`, `vorbis_comment`</sub>|
@@ -107,7 +108,7 @@ TODO: piping
 |`id3_v1`             |ID3v1&nbsp;metadata                                          |<sub></sub>|
 |`id3_v11`            |ID3v1.1&nbsp;metadata                                        |<sub></sub>|
 |`id3_v2`             |ID3v2&nbsp;metadata                                          |<sub>`image`</sub>|
-|`jpeg`               |Joint&nbsp;Photographic&nbsp;Experts&nbsp;Group&nbsp;file    |<sub>`tiff`</sub>|
+|`jpeg`               |Joint&nbsp;Photographic&nbsp;Experts&nbsp;Group&nbsp;file    |<sub>`exif`</sub>|
 |`jq`                 |                                                             |<sub></sub>|
 |`mkv`                |Matroska&nbsp;file                                           |<sub>`av1_ccr`, `av1_frame`, `flac_frame`, `flac_metadatablock`, `mp3_frame`, `mpeg_aac_frame`, `mpeg_asc`, `mpeg_avc_dcr`, `mpeg_avc`, `mpeg_hevc_dcr`, `mpeg_hevc`, `mpeg_spu`, `opus_packet`, `vorbis_packet`, `vp8_frame`, `vp9_frame`</sub>|
 |`mp3`                |MP3&nbsp;file                                                |<sub>`id3_v2`, `id3_v1`, `id3_v11`, `apev2`, `mp3_frame`</sub>|
@@ -129,7 +130,7 @@ TODO: piping
 |`ogg`                |OGG&nbsp;file                                                |<sub>`ogg_page`, `vorbis_packet`, `opus_packet`</sub>|
 |`ogg_page`           |OGG&nbsp;page                                                |<sub></sub>|
 |`opus_packet`        |Opus&nbsp;packet                                             |<sub>`vorbis_comment`</sub>|
-|`png`                |Portable&nbsp;network&nbsp;graphics&nbsp;file                |<sub>`icc_profile`, `tiff`</sub>|
+|`png`                |Portable&nbsp;network&nbsp;graphics&nbsp;file                |<sub>`icc_profile`, `exif`</sub>|
 |`raw`                |Raw&nbsp;bits                                                |<sub></sub>|
 |`tar`                |Tar&nbsp;archive                                             |<sub>`probe`</sub>|
 |`tiff`               |Tag&nbsp;Image&nbsp;File&nbsp;Format                         |<sub>`icc_profile`</sub>|

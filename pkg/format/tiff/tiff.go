@@ -8,7 +8,8 @@ import (
 	"fq/pkg/format"
 )
 
-var iccProfile []*decode.Format
+var tiffIccProfile []*decode.Format
+var exifFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -18,10 +19,9 @@ func init() {
 		MIMEs:       []string{"image/tiff"},
 		DecodeFn:    tiffDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.ICC_PROFILE}, Formats: &iccProfile},
+			{Names: []string{format.ICC_PROFILE}, Formats: &tiffIccProfile},
 		},
 	})
-
 }
 
 const littleEndian = 0x49492a00 // "II*\0"
@@ -139,7 +139,7 @@ func decodeIfd(d *decode.D, s *strips, tagNames map[uint64]string) int64 {
 							case typ == UNDEFINED:
 								switch tag {
 								case InterColorProfile:
-									d.FieldDecodeRange("icc", int64(valueByteOffset)*8, int64(valueByteSize)*8, iccProfile)
+									d.FieldDecodeRange("icc", int64(valueByteOffset)*8, int64(valueByteSize)*8, tiffIccProfile)
 								default:
 									// log.Printf("tag: %#+v\n", tag)
 									// log.Printf("valueByteSize: %#+v\n", valueByteSize)
