@@ -199,7 +199,7 @@ def main:
 	  elif $parsed.formats then
 		_formats_list | print
 	  elif $parsed.help then
-		"Usage: \($arg0) [OPTIONS] [FILE] [EXPR]",
+		"Usage: \($arg0) [OPTIONS] [FILE] [EXPR]...",
 		opts_help_text(_opts($version))
 		| print
 	  else
@@ -209,16 +209,15 @@ def main:
 		    elif $rest[0] then [$rest[0], $rest[1:]]
 		    else ["-", $rest]
 		    end
-		) as [$filename, $exprs]
+		  ) as [$filename, $exprs]
 		| if $filename then
 			( open($filename)
-			  | decode($parsed.decode)
+			| decode($parsed.decode)
 			)
 		  end
 		| if $parsed.file then
-			( (open($parsed.file) | string)
-			  as $file_expr
-			  | eval_f($file_expr;.)
+			( (open($parsed.file) | string) as $file_expr
+			| eval_f($file_expr;.)
 			)
 		  end
 		| (reduce $exprs[] as $expr ([.];[.[] | eval_f($expr;.)]))[]

@@ -51,5 +51,6 @@
         "ufffd",
         "xrange"
     ],
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "cSpell.allowCompoundWords": true
 }

@@ -1,5 +1,5 @@
 > fq -h
-Usage: fq [OPTIONS] [FILE] [EXPR]
+Usage: fq [OPTIONS] [FILE] [EXPR]...
 --decode,-d      Decoder (probe)
 --file,-f        Read script from file
 --formats        Show formats
