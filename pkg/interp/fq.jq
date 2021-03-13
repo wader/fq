@@ -21,7 +21,68 @@ def complete($e):
 		)
 	};
 
-def set_eval_options: options(options_expr | with_entries(.value |= eval(.)));
+def csv: split(",");
+def csv_kv: [csv[] | split("=") | {(.[0]): .[1]}] | add;
+def obj_to_csv_kv: [to_entries[] | [.key, .value] | join("=")] | join(",");
+# TODO: errors?
+def csv_range_map:
+	# "0-2=a,1=b" -> ["a", "b", "a"]
+	[ csv[]
+	  | split("=")
+	  | .[1] as $c
+	  | .[0]
+	  | split(":")[]
+	  | split("-")
+	  | map(tonumber)
+	  | if (.[1] | not) then [.[0], .[0]] end
+	  | range(.[0]; .[1]+1)
+	  | [., $c]
+	  ]
+	| reduce .[] as $r ([]; .[$r[0]] = $r[1]);
+
+def default_options:
+	{
+		depth:        0,
+		verbose:      false,
+		color:        (tty.is_terminal and env.CLICOLOR!=null),
+		unicode:      (tty.is_terminal and env.CLIUNICODE!=null),
+		raw:          (tty.is_terminal | not),
+		linebytes:    (if tty.is_terminal then [((tty.size[0] div 8) div 2) * 2, 4] | max else 16 end),
+		displaybytes: (if tty.is_terminal then [((tty.size[0] div 8) div 2) * 2, 4] | max else 16 end),
+		addrbase:     16,
+		sizebase:     10,
+		colors: ({
+			null: "brightblack",
+			false: "yellow",
+			true: "yellow",
+			number: "cyan",
+			string: "green",
+			objectkey: "brightblue",
+			array: "white",
+			object: "white",
+			index: "white",
+			value: "white",
+			error: "brightred",
+			frame: "yellow"
+		} | obj_to_csv_kv),
+		bytecolors: "0-255=brightwhite,0=brightblack,32-126:9-13=white",
+	}
+	| with_entries(.value |= tojson);
+
+def eval_options:
+	{
+		depth:        (.depth | fromjson),
+		verbose:      (.verbose | fromjson),
+		color:        (.color | fromjson),
+		unicode:      (.unicode | fromjson),
+		raw:          (.raw | fromjson),
+		linebytes:    (.linebytes | fromjson),
+		displaybytes: (.displaybytes | fromjson),
+		addrbase:     (.addrbase | fromjson),
+		sizebase:     (.sizebase | fromjson),
+		colors: 	  (.colors | fromjson | csv_kv),
+		bytecolors:   (.bytecolors | fromjson | csv_range_map),
+	};
 
 def prompt:
 	def _type_name_error:
@@ -47,7 +108,6 @@ def prompt:
 
 
 def eval_f($e;f):
-	set_eval_options as $_ |
 	try eval($e) | f
 	catch (. as $err | ("error: " + $err) | print);
 
@@ -151,49 +211,20 @@ def main:
 				long: "--option",
 				description: "Set option, eg: color=true",
 				object: true,
-				default_eval: true,
-				default: {
-					depth:        "0",
-					verbose:      "false",
-					color:        "tty.is_terminal and env.CLICOLOR!=null",
-					unicode:      "tty.is_terminal and env.CLIUNICODE!=null",
-					raw:          "tty.is_terminal | not",
-					linebytes:    "if tty.is_terminal then [((tty.size[0] div 8) div 2) * 2, 4] | max else 16 end",
-					displaybytes: "if tty.is_terminal then [((tty.size[0] div 8) div 2) * 2, 4] | max else 16 end",
-					addrbase:     "16",
-					sizebase:     "10",
-					colors: ({
-						"null": "brightblack",
-						"false": "yellow",
-						"true": "yellow",
-						"number": "cyan",
-						"string": "green",
-						"objectkey": "brightblue",
-						"array": "white",
-						"object": "white",
-
-						"index": "white",
-
-						"value": "white",
-						"error": "brightred",
-						"frame": "yellow",
-
-						#"bytes": "0-255:brightwhite,0:brightblack,9-13:white,32-126:green"
-
-						"bytes": "0-255:brightwhite,0:brightblack,32-126+9-13:white"
-					} | tojson)
-				}
+				default: default_options
 			},
 		};
 	.version as $version
 	| .args[0] as $arg0
 	| opts_parse(.args[1:];_opts($version)) as {$parsed, $rest}
 	# TODO: hack, pass opts some other way
-	| options_expr($parsed.options + {
-		repl: ($parsed.repl|tojson),
-		rawstring: ($parsed.rawstring|tojson),
-	  })
-	| set_eval_options
+	| options(
+		($parsed.options | eval_options)
+		+ {
+			repl: $parsed.repl,
+			rawstring: $parsed.rawstring,
+		}
+	)
 	| if $parsed.version then
 		$version | print
 	  elif $parsed.formats then
@@ -220,6 +251,7 @@ def main:
 			| eval_f($file_expr;.)
 			)
 		  end
+		# this evaluates and combines all expression in order
 		| (reduce $exprs[] as $expr ([.];[.[] | eval_f($expr;.)]))[]
 		| if $parsed.repl then repl
 		  else default_display end

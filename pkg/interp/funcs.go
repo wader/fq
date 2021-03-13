@@ -38,7 +38,6 @@ import (
 func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
 	fs := []Function{
 		{[]string{"tty"}, 0, 0, i.tty, false},
-		{[]string{"options_expr"}, 0, 1, i.optionsExpr, false},
 		{[]string{"options"}, 0, 1, i.options, false},
 
 		{[]string{"read"}, 0, 2, i.read, false},
@@ -88,17 +87,6 @@ func (i *Interp) tty(c interface{}, a []interface{}) interface{} {
 		"is_terminal": i.stdout.IsTerminal(),
 		"size":        []interface{}{w, h},
 	}
-}
-
-func (i *Interp) optionsExpr(c interface{}, a []interface{}) interface{} {
-	if len(a) > 0 {
-		opts, ok := a[0].(map[string]interface{})
-		if !ok {
-			return fmt.Errorf("%v: value is not an object", a[0])
-		}
-		i.optsExpr = opts
-	}
-	return i.optsExpr
 }
 
 func (i *Interp) options(c interface{}, a []interface{}) interface{} {
@@ -154,7 +142,7 @@ func (i *Interp) eval(c interface{}, a []interface{}) interface{} {
 	if !ok {
 		return fmt.Errorf("%v: src is not a string", a[0])
 	}
-	iter, err := i.Eval(i.ctx, ScriptMode, c, src, i.stdout, i.optsExpr)
+	iter, err := i.Eval(i.ctx, ScriptMode, c, src, i.stdout)
 	if err != nil {
 		return err
 	}
@@ -285,7 +273,10 @@ func (bbf *bitBufFile) ToBitBuf() (*bitio.Buffer, ranges.Range) {
 
 func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 	var rs io.ReadSeeker
-	opts := buildDisplayOptions(i.opts)
+	opts, err := buildDisplayOptions(i.opts)
+	if err != nil {
+		return err
+	}
 
 	var filename string
 	if len(a) == 1 {
@@ -423,11 +414,9 @@ func (i *Interp) makeDecodeFn(registry *decode.Registry, decodeFormats []*decode
 
 func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}, a []interface{}) interface{} {
 	return func(c interface{}, a []interface{}) interface{} {
-		var opts DisplayOptions
-		if len(a) >= 1 {
-			opts = buildDisplayOptions(i.opts, fnOpts, a[0].(map[string]interface{}))
-		} else {
-			opts = buildDisplayOptions(i.opts, fnOpts)
+		opts, err := buildDisplayOptions(append([]interface{}{i.opts, fnOpts}, a...)...)
+		if err != nil {
+			return err
 		}
 
 		switch v := c.(type) {
@@ -474,11 +463,9 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 
 // TODO: opts and colors?
 func (i *Interp) preview(c interface{}, a []interface{}) interface{} {
-	var opts DisplayOptions
-	if len(a) >= 1 {
-		opts = buildDisplayOptions(i.opts, a[0].(map[string]interface{}))
-	} else {
-		opts = buildDisplayOptions(i.opts)
+	opts, err := buildDisplayOptions(append([]interface{}{i.opts}, a...)...)
+	if err != nil {
+		return err
 	}
 
 	switch v := c.(type) {
@@ -504,12 +491,11 @@ func (i *Interp) hexdump(c interface{}, a []interface{}) interface{} {
 		return err
 	}
 
-	var opts DisplayOptions
-	if len(a) >= 1 {
-		opts = buildDisplayOptions(i.opts, a[0].(map[string]interface{}))
-	} else {
-		opts = buildDisplayOptions(i.opts)
+	opts, err := buildDisplayOptions(append([]interface{}{i.opts}, a...)...)
+	if err != nil {
+		return err
 	}
+
 	d := opts.Decorator
 	hw := hexdump.New(
 		i.stdout,

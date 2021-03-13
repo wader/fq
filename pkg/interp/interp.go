@@ -89,14 +89,15 @@ func queryErrorLine(v error) int {
 }
 
 type DisplayOptions struct {
-	Depth     int
-	Verbose   bool
-	Color     bool
-	Colors    map[string]string
-	Unicode   bool
-	Raw       bool
-	REPL      bool
-	RawString bool
+	Depth      int
+	Verbose    bool
+	Color      bool
+	Colors     map[string]string
+	ByteColors map[byte]string
+	Unicode    bool
+	Raw        bool
+	REPL       bool
+	RawString  bool
 
 	LineBytes    int
 	DisplayBytes int64
@@ -107,16 +108,22 @@ type DisplayOptions struct {
 }
 
 // TODO: rename, not only display things
-func buildDisplayOptions(ms ...map[string]interface{}) DisplayOptions {
+func buildDisplayOptions(mvs ...interface{}) (DisplayOptions, error) {
 	var opts DisplayOptions
-	for _, m := range ms {
-		if m != nil {
-			mapSetDisplayOptions(&opts, m)
+	for _, mv := range mvs {
+		if mv == nil {
+			return DisplayOptions{}, fmt.Errorf("%v: value is not a object", mv)
 		}
+		m, ok := mv.(map[string]interface{})
+		if !ok {
+			return DisplayOptions{}, fmt.Errorf("%v: value is not a object", mv)
+		}
+
+		mapSetDisplayOptions(&opts, m)
 	}
 	opts.Decorator = decoratorFromDumpOptions(opts)
 
-	return opts
+	return opts, nil
 }
 
 func mapSetDisplayOptions(d *DisplayOptions, m map[string]interface{}) {
@@ -131,6 +138,14 @@ func mapSetDisplayOptions(d *DisplayOptions, m map[string]interface{}) {
 	}
 	if v, ok := m["colors"]; ok {
 		d.Colors = toStringMapZ(v)
+	}
+	if v, ok := m["bytecolors"]; ok {
+		colorNames := toArrayZ(v)
+		byteColors := map[byte]string{}
+		for i := 0; i < len(colorNames); i++ {
+			byteColors[byte(i)] = colorNames[i].(string)
+		}
+		d.ByteColors = byteColors
 	}
 	if v, ok := m["unicode"]; ok {
 		d.Unicode = toBoolZ(v)
@@ -336,6 +351,27 @@ func toString(v interface{}) (string, error) {
 	}
 }
 
+func toStringZ(v interface{}) string {
+	s, _ := toString(v)
+	return s
+}
+
+func toArray(v interface{}) ([]interface{}, error) {
+	switch v := v.(type) {
+	case []interface{}:
+		return v, nil
+	default:
+		return nil, fmt.Errorf("value can't be a array")
+	}
+}
+
+func toArrayZ(v interface{}) []interface{} {
+	if a, err := toArray(v); err == nil {
+		return a
+	}
+	return nil
+}
+
 func toBigInt(v interface{}) (*big.Int, error) {
 	switch v := v.(type) {
 	case int:
@@ -427,11 +463,10 @@ const (
 )
 
 type runContext struct {
-	ctx      context.Context
-	optsExpr map[string]interface{}
-	opts     map[string]interface{}
-	stdout   Output // TODO: rename?
-	mode     RunMode
+	ctx    context.Context
+	opts   map[string]interface{}
+	stdout Output // TODO: rename?
+	mode   RunMode
 }
 
 type Interp struct {
@@ -470,8 +505,7 @@ func New(opts InterpOptions) (*Interp, error) {
 		}
 	})
 	i.runContext = runContext{
-		optsExpr: map[string]interface{}{},
-		opts:     map[string]interface{}{},
+		opts: map[string]interface{}{},
 	}
 
 	return i, nil
@@ -495,7 +529,7 @@ func (i *Interp) Main(ctx context.Context, stdout io.Writer) error {
 		"version": fq.Version,
 	}
 
-	iter, err := i.EvalFunc(ctx, runMode, input, "main", nil, i.os.Stdout(), nil)
+	iter, err := i.EvalFunc(ctx, runMode, input, "main", nil, i.os.Stdout())
 	if err != nil {
 		fmt.Fprintln(i.os.Stderr(), err)
 		return err
@@ -515,7 +549,7 @@ func (i *Interp) Main(ctx context.Context, stdout io.Writer) error {
 	return nil
 }
 
-func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src string, stdout Output, optsExpr map[string]interface{}) (gojq.Iter, error) {
+func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src string, stdout Output) (gojq.Iter, error) {
 	var err error
 
 	// TODO: did not work
@@ -529,13 +563,9 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	// make copy of interp
 	ci := *i
 	ni := &ci
-	if optsExpr == nil {
-		optsExpr = map[string]interface{}{}
-	}
 	ni.runContext = runContext{
-		mode:     mode,
-		optsExpr: optsExpr,
-		opts:     i.opts,
+		mode: mode,
+		opts: i.opts,
 	}
 
 	var variableNames []string
@@ -606,7 +636,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	return iterWrapper, nil
 }
 
-func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output, optsExpr map[string]interface{}) (gojq.Iter, error) {
+func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output) (gojq.Iter, error) {
 	var argsExpr []string
 	for i := range args {
 		argsExpr = append(argsExpr, fmt.Sprintf("$a[%d]", i))
@@ -622,15 +652,15 @@ func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name
 	}
 	// {input: ..., args: [...]} | .args as $a | .input | name[($a[0]; ...)]
 	trampolineExpr := fmt.Sprintf(".args as $a | .input | %s%s", name, argExpr)
-	iter, err := i.Eval(ctx, mode, trampolineInput, trampolineExpr, stdout, optsExpr)
+	iter, err := i.Eval(ctx, mode, trampolineInput, trampolineExpr, stdout)
 	if err != nil {
 		return nil, err
 	}
 	return iter, nil
 }
 
-func (i *Interp) EvalFuncValues(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output, optsExpr map[string]interface{}) ([]interface{}, error) {
-	iter, err := i.EvalFunc(ctx, mode, c, name, args, stdout, optsExpr)
+func (i *Interp) EvalFuncValues(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output) ([]interface{}, error) {
+	iter, err := i.EvalFunc(ctx, mode, c, name, args, stdout)
 	if err != nil {
 		return nil, err
 	}

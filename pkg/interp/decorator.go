@@ -3,58 +3,7 @@ package interp
 import (
 	"fq/internal/ansi"
 	"fq/pkg/decode"
-	"strconv"
-	"strings"
 )
-
-type stringRanges struct {
-	rs [][2]int
-	s  string
-}
-
-// 0-255:brightwhite,0:brightblack,32-126+9-13:white
-func ParseStringRanges(s string) []stringRanges {
-	var srs []stringRanges
-
-	for _, stringRangesStr := range strings.Split(s, ",") {
-		var rs [][2]int
-
-		stringRangesParts := strings.Split(stringRangesStr, ":")
-		if len(stringRangesParts) != 2 {
-			continue
-		}
-
-		for _, rangeStr := range strings.Split(stringRangesParts[0], "+") {
-			var err error
-			rangeStrParts := strings.SplitN(rangeStr, "-", 2)
-			start := 0
-			stop := 0
-
-			if len(rangeStrParts) == 1 {
-				start, err = strconv.Atoi(rangeStrParts[0])
-				if err != nil {
-					continue
-				}
-				stop = start
-			} else {
-				start, err = strconv.Atoi(rangeStrParts[0])
-				if err != nil {
-					continue
-				}
-				stop, err = strconv.Atoi(rangeStrParts[1])
-				if err != nil {
-					continue
-				}
-			}
-
-			rs = append(rs, [2]int{start, stop})
-		}
-
-		srs = append(srs, stringRanges{rs: rs, s: stringRangesParts[1]})
-	}
-
-	return srs
-}
 
 func decoratorFromDumpOptions(opts DisplayOptions) Decorator {
 	colStr := "|"
@@ -108,17 +57,8 @@ func decoratorFromDumpOptions(opts DisplayOptions) Decorator {
 		}
 
 		byteColors := map[byte]ansi.Color{}
-		byteDefaultColor := ansi.FromString("")
 		for i := 0; i < 256; i++ {
-			byteColors[byte(i)] = byteDefaultColor
-		}
-		for _, sr := range ParseStringRanges(opts.Colors["bytes"]) {
-			c := ansi.FromString(sr.s)
-			for _, r := range sr.rs {
-				for i := r[0]; i <= r[1]; i++ {
-					byteColors[byte(i)] = c
-				}
-			}
+			byteColors[byte(i)] = ansi.FromString(opts.ByteColors[byte(i)])
 		}
 		deco.ByteColor = func(b byte) ansi.Color { return byteColors[b] }
 	} else {
