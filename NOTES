@@ -1,4 +1,13 @@
 
+https://github.com/progrium/topframe/edit/main/README.md
+
+
+
+now cant override 
+need to fix options, default glboal + func ...
+1. built default, tty, with, default color config not "evaled"
+2. combine global + arg + function
+3. eval for each
 
 no struct root in decoer? fix avc_nals etc?
 
