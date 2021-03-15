@@ -92,8 +92,8 @@ type DisplayOptions struct {
 	Depth      int
 	Verbose    bool
 	Color      bool
-	Colors     map[string]string
-	ByteColors map[byte]string
+	Colors     string
+	ByteColors string
 	Unicode    bool
 	Raw        bool
 	REPL       bool
@@ -137,15 +137,10 @@ func mapSetDisplayOptions(d *DisplayOptions, m map[string]interface{}) {
 		d.Color = toBoolZ(v)
 	}
 	if v, ok := m["colors"]; ok {
-		d.Colors = toStringMapZ(v)
+		d.Colors = toStringZ(v)
 	}
 	if v, ok := m["bytecolors"]; ok {
-		colorNames := toArrayZ(v)
-		byteColors := map[byte]string{}
-		for i := 0; i < len(colorNames); i++ {
-			byteColors[byte(i)] = colorNames[i].(string)
-		}
-		d.ByteColors = byteColors
+		d.ByteColors = toStringZ(v)
 	}
 	if v, ok := m["unicode"]; ok {
 		d.Unicode = toBoolZ(v)

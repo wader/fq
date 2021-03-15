@@ -21,24 +21,7 @@ def complete($e):
 		)
 	};
 
-def csv: split(",");
-def csv_kv: [csv[] | split("=") | {(.[0]): .[1]}] | add;
 def obj_to_csv_kv: [to_entries[] | [.key, .value] | join("=")] | join(",");
-# TODO: errors?
-def csv_range_map:
-	# "0-2=a,1=b" -> ["a", "b", "a"]
-	[ csv[]
-	  | split("=")
-	  | .[1] as $c
-	  | .[0]
-	  | split(":")[]
-	  | split("-")
-	  | map(tonumber)
-	  | if (.[1] | not) then [.[0], .[0]] end
-	  | range(.[0]; .[1]+1)
-	  | [., $c]
-	  ]
-	| reduce .[] as $r ([]; .[$r[0]] = $r[1]);
 
 def default_options:
 	{
@@ -68,21 +51,6 @@ def default_options:
 		bytecolors: "0-255=brightwhite,0=brightblack,32-126:9-13=white",
 	}
 	| with_entries(.value |= tojson);
-
-def eval_options:
-	{
-		depth:        (.depth | fromjson),
-		verbose:      (.verbose | fromjson),
-		color:        (.color | fromjson),
-		unicode:      (.unicode | fromjson),
-		raw:          (.raw | fromjson),
-		linebytes:    (.linebytes | fromjson),
-		displaybytes: (.displaybytes | fromjson),
-		addrbase:     (.addrbase | fromjson),
-		sizebase:     (.sizebase | fromjson),
-		colors: 	  (.colors | fromjson | csv_kv),
-		bytecolors:   (.bytecolors | fromjson | csv_range_map),
-	};
 
 def prompt:
 	def _type_name_error:
@@ -211,7 +179,8 @@ def main:
 				long: "--option",
 				description: "Set option, eg: color=true",
 				object: true,
-				default: default_options
+				default: {},
+				help_default: default_options
 			},
 		};
 	.version as $version
@@ -219,7 +188,7 @@ def main:
 	| opts_parse(.args[1:];_opts($version)) as {$parsed, $rest}
 	# TODO: hack, pass opts some other way
 	| options(
-		($parsed.options | eval_options)
+		$parsed.options
 		+ {
 			repl: $parsed.repl,
 			rawstring: $parsed.rawstring,

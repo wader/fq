@@ -73,6 +73,8 @@ func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
 		{[]string{"path_unescape"}, 0, 0, i.pathUnescape, false},
 		{[]string{"aes_ctr"}, 1, 2, i.aesCtr, false},
 		{[]string{"json"}, 0, 0, i._json, false},
+
+		{[]string{"_opts"}, 1, 1, i._opts, false},
 	}
 	for name, f := range i.registry.Groups {
 		fs = append(fs, Function{[]string{name}, 0, 0, i.makeDecodeFn(registry, f), false})
@@ -739,6 +741,17 @@ func (i *Interp) _json(c interface{}, a []interface{}) interface{} {
 	var vv interface{}
 	if err := json.Unmarshal(buf.Bytes(), &vv); err != nil {
 		return err
+	}
+
+	return vv
+}
+
+func (i *Interp) _opts(c interface{}, a []interface{}) interface{} {
+
+	var envv []interface{}
+
+	for _, kv := range i.os.Environ() {
+
 	}
 
 	return vv

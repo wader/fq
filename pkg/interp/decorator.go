@@ -3,12 +3,83 @@ package interp
 import (
 	"fq/internal/ansi"
 	"fq/pkg/decode"
+	"strconv"
+	"strings"
 )
+
+type stringRanges struct {
+	rs [][2]int
+	s  string
+}
+
+// 0-255=brightwhite,0=brightblack,32-126:9-13=white
+func parseCSVRangeMap(s string) []stringRanges {
+	var srs []stringRanges
+
+	for _, stringRangesStr := range strings.Split(s, ",") {
+		stringRangesStr = strings.TrimSpace(stringRangesStr)
+		var rs [][2]int
+
+		stringRangesParts := strings.Split(stringRangesStr, "=")
+		if len(stringRangesParts) != 2 {
+			continue
+		}
+
+		for _, rangeStr := range strings.Split(stringRangesParts[0], ":") {
+			rangeStr = strings.TrimSpace(rangeStr)
+			var err error
+			rangeStrParts := strings.SplitN(rangeStr, "-", 2)
+			start := 0
+			stop := 0
+
+			if len(rangeStrParts) == 1 {
+				start, err = strconv.Atoi(rangeStrParts[0])
+				if err != nil {
+					continue
+				}
+				stop = start
+			} else {
+				start, err = strconv.Atoi(rangeStrParts[0])
+				if err != nil {
+					continue
+				}
+				stop, err = strconv.Atoi(rangeStrParts[1])
+				if err != nil {
+					continue
+				}
+			}
+
+			rs = append(rs, [2]int{start, stop})
+		}
+
+		srs = append(srs, stringRanges{rs: rs, s: stringRangesParts[1]})
+	}
+
+	return srs
+}
+
+// key=value,a=b,.. -> {"key": "value", "a": "b", ...}
+func parseCSVStringMap(s string) map[string]string {
+	m := map[string]string{}
+
+	for _, stringKVStr := range strings.Split(s, ",") {
+		stringKVStr = strings.TrimSpace(stringKVStr)
+		stringKVParts := strings.Split(stringKVStr, "=")
+		if len(stringKVParts) != 2 {
+			continue
+		}
+
+		m[strings.TrimSpace(stringKVParts[0])] = strings.TrimSpace(stringKVParts[1])
+	}
+
+	return m
+}
 
 func decoratorFromDumpOptions(opts DisplayOptions) Decorator {
 	colStr := "|"
 	if opts.Unicode {
-		colStr = "\xe2\x94\x82"
+		// U+2502 Box Drawings Light Vertical
+		colStr = "│"
 	}
 
 	deco := Decorator{
@@ -16,21 +87,23 @@ func decoratorFromDumpOptions(opts DisplayOptions) Decorator {
 	}
 
 	if opts.Color {
-		deco.Null = ansi.FromString(opts.Colors["null"])
-		deco.False = ansi.FromString(opts.Colors["false"])
-		deco.True = ansi.FromString(opts.Colors["true"])
-		deco.Number = ansi.FromString(opts.Colors["number"])
-		deco.String = ansi.FromString(opts.Colors["string"])
-		deco.ObjectKey = ansi.FromString(opts.Colors["objectkey"])
-		deco.Array = ansi.FromString(opts.Colors["array"])
-		deco.Object = ansi.FromString(opts.Colors["object"])
+		colors := parseCSVStringMap(opts.Colors)
 
-		deco.Index = ansi.FromString(opts.Colors["index"])
+		deco.Null = ansi.FromString(colors["null"])
+		deco.False = ansi.FromString(colors["false"])
+		deco.True = ansi.FromString(colors["true"])
+		deco.Number = ansi.FromString(colors["number"])
+		deco.String = ansi.FromString(colors["string"])
+		deco.ObjectKey = ansi.FromString(colors["objectkey"])
+		deco.Array = ansi.FromString(colors["array"])
+		deco.Object = ansi.FromString(colors["object"])
 
-		deco.Value = ansi.FromString(opts.Colors["value"])
-		deco.Frame = ansi.FromString(opts.Colors["frame"])
+		deco.Index = ansi.FromString(colors["index"])
 
-		deco.Error = ansi.FromString(opts.Colors["error"])
+		deco.Value = ansi.FromString(colors["value"])
+		deco.Frame = ansi.FromString(colors["frame"])
+
+		deco.Error = ansi.FromString(colors["error"])
 
 		deco.ValueColor = func(v *decode.Value) ansi.Color {
 			switch vv := v.V.(type) {
@@ -55,12 +128,19 @@ func decoratorFromDumpOptions(opts DisplayOptions) Decorator {
 				return deco.Value
 			}
 		}
-
+		byteDefaultColor := ansi.FromString("")
 		byteColors := map[byte]ansi.Color{}
 		for i := 0; i < 256; i++ {
-			byteColors[byte(i)] = ansi.FromString(opts.ByteColors[byte(i)])
+			byteColors[byte(i)] = byteDefaultColor
 		}
-		deco.ByteColor = func(b byte) ansi.Color { return byteColors[b] }
+		for _, sr := range parseCSVRangeMap(opts.ByteColors) {
+			c := ansi.FromString(sr.s)
+			for _, r := range sr.rs {
+				for i := r[0]; i <= r[1]; i++ {
+					byteColors[byte(i)] = c
+				}
+			}
+		}
 	} else {
 		deco.ValueColor = func(v *decode.Value) ansi.Color { return ansi.FromString("") }
 		deco.ByteColor = func(b byte) ansi.Color { return ansi.FromString("") }

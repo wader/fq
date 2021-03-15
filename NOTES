@@ -1,5 +1,14 @@
 
 
+repl level?
+
+stack of maps? set option(  default_optonns() + stack  )
+
+def repl($opts):
+  _repl(options + ($opts | .level += 1))
+
+https://github.com/progrium/topframe/edit/main/README.md
+
 rootDepth indent sis strange sometimes
 
 https://github.com/progrium/topframe/edit/main/README.md
