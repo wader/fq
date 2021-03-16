@@ -474,6 +474,14 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			fieldTextNull(d, "description", int(encoding))
 			fieldText(d, "value", int(encoding), int(d.BitsLeft()/8))
 		},
+		// <Header for 'Private frame', ID: "PRIV">
+		// Owner identifier      <text string> $00
+		// The private data      <binary data>
+		"PRIV": func(d *decode.D) {
+			// TODO: default ISO8859-1?
+			fieldTextNull(d, "owner", int(encodingISO8859_1))
+			d.FieldBitBufLen("data", d.BitsLeft())
+		},
 	}
 
 	idNormalized := id
