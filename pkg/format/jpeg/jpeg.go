@@ -123,7 +123,7 @@ var markers = map[uint]marker{
 	RST5:  {"RST5", "Restart with modulo 8 count 5"},
 	RST6:  {"RST6", "Restart with modulo 8 count 6"},
 	RST7:  {"RST7", "Restart with modulo 8 count 7"},
-	SOI:   {"SOI", "Start of image "},
+	SOI:   {"SOI", "Start of image"},
 	EOI:   {"EOI", "End of image true"},
 	SOS:   {"SOS", "Start of scan"},
 	DQT:   {"DQT", "Define quantization table(s)"},
