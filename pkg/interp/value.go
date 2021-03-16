@@ -331,11 +331,11 @@ func (vo valueObject) JsonPrimitiveValue() interface{} {
 	}
 }
 
-func (vo valueObject) Display(w io.Writer, opts DisplayOptions) error {
+func (vo valueObject) Display(w io.Writer, opts Options) error {
 	return dump(vo.v, w, opts)
 }
 
-func (vo valueObject) Preview(w io.Writer, opts DisplayOptions) error {
+func (vo valueObject) Preview(w io.Writer, opts Options) error {
 	return preview(vo.v, w, opts)
 }
 

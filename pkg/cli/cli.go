@@ -128,10 +128,7 @@ func Main(r *decode.Registry) {
 		os.Exit(1)
 	}
 	defer o.Close()
-	i, err := interp.New(interp.InterpOptions{
-		Registry: r,
-		OS:       o,
-	})
+	i, err := interp.New(o, r)
 	defer i.Stop()
 	if err != nil {
 		fmt.Fprintln(o.Stderr(), err)

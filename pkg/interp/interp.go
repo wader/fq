@@ -88,7 +88,7 @@ func queryErrorLine(v error) int {
 	return 0
 }
 
-type DisplayOptions struct {
+type Options struct {
 	Depth      int
 	Verbose    bool
 	Color      bool
@@ -105,67 +105,6 @@ type DisplayOptions struct {
 	SizeBase     int
 
 	Decorator Decorator
-}
-
-// TODO: rename, not only display things
-func buildDisplayOptions(mvs ...interface{}) (DisplayOptions, error) {
-	var opts DisplayOptions
-	for _, mv := range mvs {
-		if mv == nil {
-			return DisplayOptions{}, fmt.Errorf("%v: value is not a object", mv)
-		}
-		m, ok := mv.(map[string]interface{})
-		if !ok {
-			return DisplayOptions{}, fmt.Errorf("%v: value is not a object", mv)
-		}
-
-		mapSetDisplayOptions(&opts, m)
-	}
-	opts.Decorator = decoratorFromDumpOptions(opts)
-
-	return opts, nil
-}
-
-func mapSetDisplayOptions(d *DisplayOptions, m map[string]interface{}) {
-	if v, ok := m["depth"]; ok {
-		d.Depth = num.MaxInt(0, toIntZ(v))
-	}
-	if v, ok := m["verbose"]; ok {
-		d.Verbose = toBoolZ(v)
-	}
-	if v, ok := m["color"]; ok {
-		d.Color = toBoolZ(v)
-	}
-	if v, ok := m["colors"]; ok {
-		d.Colors = toStringZ(v)
-	}
-	if v, ok := m["bytecolors"]; ok {
-		d.ByteColors = toStringZ(v)
-	}
-	if v, ok := m["unicode"]; ok {
-		d.Unicode = toBoolZ(v)
-	}
-	if v, ok := m["raw"]; ok {
-		d.Raw = toBoolZ(v)
-	}
-	if v, ok := m["repl"]; ok {
-		d.REPL = toBoolZ(v)
-	}
-	if v, ok := m["rawstring"]; ok {
-		d.RawString = toBoolZ(v)
-	}
-	if v, ok := m["linebytes"]; ok {
-		d.LineBytes = num.MaxInt(0, toIntZ(v))
-	}
-	if v, ok := m["displaybytes"]; ok {
-		d.DisplayBytes = num.MaxInt64(0, toInt64Z(v))
-	}
-	if v, ok := m["addrbase"]; ok {
-		d.AddrBase = num.ClampInt(2, 36, toIntZ(v))
-	}
-	if v, ok := m["sizebase"]; ok {
-		d.SizeBase = num.ClampInt(2, 36, toIntZ(v))
-	}
 }
 
 // TODO: move
@@ -205,11 +144,11 @@ type InterpObject interface {
 }
 
 type Display interface {
-	Display(w io.Writer, opts DisplayOptions) error
+	Display(w io.Writer, opts Options) error
 }
 
 type Preview interface {
-	Preview(w io.Writer, opts DisplayOptions) error
+	Preview(w io.Writer, opts Options) error
 }
 
 type ToBitBuf interface {
@@ -430,12 +369,6 @@ func toValue(v interface{}) interface{} {
 	}
 }
 
-type InterpOptions struct {
-	Variables map[string]interface{}
-	Registry  *decode.Registry
-	OS        OS
-}
-
 type Variable struct {
 	Name  string
 	Value interface{}
@@ -459,31 +392,30 @@ const (
 
 type runContext struct {
 	ctx    context.Context
-	opts   map[string]interface{}
 	stdout Output // TODO: rename?
 	mode   RunMode
+	state  map[string]interface{}
 }
 
 type Interp struct {
-	variables map[string]interface{}
-	registry  *decode.Registry
-	os        OS
+	// variables map[string]interface{}
+	registry *decode.Registry
+	os       OS
 
 	builtinQueryCache map[string]*gojq.Query
 	includeFqQuery    *gojq.Query
 	interruptStack    *ctxstack.Stack
 
-	// new for each run other values are copied
+	// new for each run, other values are copied by ref
 	runContext
 }
 
-func New(opts InterpOptions) (*Interp, error) {
+func New(os OS, registry *decode.Registry) (*Interp, error) {
 	var err error
 
 	i := &Interp{
-		variables: opts.Variables,
-		registry:  opts.Registry,
-		os:        opts.OS,
+		os:       os,
+		registry: registry,
 	}
 
 	i.builtinQueryCache = map[string]*gojq.Query{}
@@ -495,13 +427,10 @@ func New(opts InterpOptions) (*Interp, error) {
 		select {
 		case <-closeCh:
 			return
-		case <-opts.OS.Interrupt():
+		case <-os.Interrupt():
 			return
 		}
 	})
-	i.runContext = runContext{
-		opts: map[string]interface{}{},
-	}
 
 	return i, nil
 }
@@ -558,17 +487,25 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	// make copy of interp
 	ci := *i
 	ni := &ci
-	ni.runContext = runContext{
-		mode: mode,
-		opts: i.opts,
+
+	newState := map[string]interface{}{}
+	if i.runContext.state != nil {
+		for k, v := range i.runContext.state {
+			newState[k] = v
+		}
 	}
 
-	var variableNames []string
-	var variableValues []interface{}
-	for k, v := range ni.variables {
-		variableNames = append(variableNames, k)
-		variableValues = append(variableValues, v)
+	ni.runContext = runContext{
+		state: newState,
+		mode:  mode,
 	}
+
+	// var variableNames []string
+	// var variableValues []interface{}
+	// for k, v := range ni.variables {
+	// 	variableNames = append(variableNames, k)
+	// 	variableValues = append(variableValues, v)
+	// }
 
 	var compilerOpts []gojq.CompilerOption
 	for _, f := range ni.makeFunctions(ni.registry) {
@@ -578,7 +515,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 		}
 	}
 	compilerOpts = append(compilerOpts, gojq.WithEnvironLoader(ni.os.Environ))
-	compilerOpts = append(compilerOpts, gojq.WithVariables(variableNames))
+	// compilerOpts = append(compilerOpts, gojq.WithVariables(variableNames))
 	compilerOpts = append(compilerOpts, gojq.WithModuleLoader(loadModule{
 		init: func() ([]*gojq.Query, error) {
 			return []*gojq.Query{i.includeFqQuery}, nil
@@ -613,10 +550,11 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	}
 
 	runCtx, runCtxCancelFn := i.interruptStack.Push(ctx)
-
-	ni.stdout = CtxOutput{Output: stdout, Ctx: runCtx}
 	ni.ctx = runCtx
-	iter := gc.RunWithContext(ctx, c, variableValues...)
+	ni.stdout = CtxOutput{Output: stdout, Ctx: runCtx}
+
+	iter := gc.RunWithContext(ctx, c)
+	// iter := gc.RunWithContext(ctx, c, variableValues...)
 
 	iterWrapper := iterFn(func() (interface{}, bool) {
 		v, ok := iter.Next()
@@ -671,4 +609,89 @@ func (i *Interp) EvalFuncValues(ctx context.Context, mode RunMode, c interface{}
 	}
 
 	return vs, nil
+}
+
+func mapSetOptions(d *Options, m map[string]interface{}) {
+	if v, ok := m["depth"]; ok {
+		d.Depth = num.MaxInt(0, toIntZ(v))
+	}
+	if v, ok := m["verbose"]; ok {
+		d.Verbose = toBoolZ(v)
+	}
+	if v, ok := m["color"]; ok {
+		d.Color = toBoolZ(v)
+	}
+	if v, ok := m["colors"]; ok {
+		d.Colors = toStringZ(v)
+	}
+	if v, ok := m["bytecolors"]; ok {
+		d.ByteColors = toStringZ(v)
+	}
+	if v, ok := m["unicode"]; ok {
+		d.Unicode = toBoolZ(v)
+	}
+	if v, ok := m["raw"]; ok {
+		d.Raw = toBoolZ(v)
+	}
+	if v, ok := m["repl"]; ok {
+		d.REPL = toBoolZ(v)
+	}
+	if v, ok := m["rawstring"]; ok {
+		d.RawString = toBoolZ(v)
+	}
+	if v, ok := m["linebytes"]; ok {
+		d.LineBytes = num.MaxInt(0, toIntZ(v))
+	}
+	if v, ok := m["displaybytes"]; ok {
+		d.DisplayBytes = num.MaxInt64(0, toInt64Z(v))
+	}
+	if v, ok := m["addrbase"]; ok {
+		d.AddrBase = num.ClampInt(2, 36, toIntZ(v))
+	}
+	if v, ok := m["sizebase"]; ok {
+		d.SizeBase = num.ClampInt(2, 36, toIntZ(v))
+	}
+}
+
+func (i *Interp) Options(fnOptsV ...interface{}) (Options, error) {
+	var opts Options
+
+	defaultOptsV := i.state["default_options"]
+	if defaultOptsV == nil {
+		return Options{}, fmt.Errorf("default_options state not set")
+	}
+	defaultOpts, ok := defaultOptsV.(map[string]interface{})
+	if !ok {
+		return Options{}, fmt.Errorf("default_options not an object")
+	}
+	mapSetOptions(&opts, defaultOpts)
+
+	optsStackV := i.state["options_stack"]
+	if optsStackV == nil {
+		return Options{}, fmt.Errorf("options_stack state not set")
+	}
+	optsStack, ok := optsStackV.([]interface{})
+	if !ok {
+		return Options{}, fmt.Errorf("options_stack is not an array")
+	}
+	for i := len(optsStack) - 1; i >= 0; i-- {
+		ov := optsStack[i]
+		o, ok := ov.(map[string]interface{})
+		if !ok {
+			return Options{}, fmt.Errorf("optsStack[%d] not an object: %v", i, ov)
+		}
+		mapSetOptions(&opts, o)
+	}
+
+	for _, fnOptsV := range fnOptsV {
+		fnOpts, ok := fnOptsV.(map[string]interface{})
+		if !ok {
+			return Options{}, fmt.Errorf("options not an object")
+		}
+		mapSetOptions(&opts, fnOpts)
+	}
+
+	opts.Decorator = decoratorFromOptions(opts)
+
+	return opts, nil
 }

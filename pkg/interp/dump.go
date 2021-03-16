@@ -22,7 +22,7 @@ const (
 	colField = 6
 )
 
-func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.Value, rootDepth int, addrWidth int, opts DisplayOptions) error {
+func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.Value, rootDepth int, addrWidth int, opts Options) error {
 	deco := opts.Decorator
 	// no error check as we write into buffering column
 	// we check for err later for Flush()
@@ -235,7 +235,7 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 	return nil
 }
 
-func dump(v *decode.Value, w io.Writer, opts DisplayOptions) error {
+func dump(v *decode.Value, w io.Writer, opts Options) error {
 	maxAddrIndentWidth := 0
 	makeWalkFn := func(fn decode.WalkFn) decode.WalkFn {
 		return func(v *decode.Value, rootV *decode.Value, depth int, rootDepth int) error {

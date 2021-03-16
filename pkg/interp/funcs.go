@@ -38,7 +38,6 @@ import (
 func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
 	fs := []Function{
 		{[]string{"tty"}, 0, 0, i.tty, false},
-		{[]string{"options"}, 0, 1, i.options, false},
 
 		{[]string{"read"}, 0, 2, i.read, false},
 		{[]string{"_eval"}, 1, 1, i.eval, true},
@@ -74,7 +73,7 @@ func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
 		{[]string{"aes_ctr"}, 1, 2, i.aesCtr, false},
 		{[]string{"json"}, 0, 0, i._json, false},
 
-		{[]string{"_opts"}, 1, 1, i._opts, false},
+		{[]string{"_state"}, 1, 2, i._state, false},
 	}
 	for name, f := range i.registry.Groups {
 		fs = append(fs, Function{[]string{name}, 0, 0, i.makeDecodeFn(registry, f), false})
@@ -89,17 +88,6 @@ func (i *Interp) tty(c interface{}, a []interface{}) interface{} {
 		"is_terminal": i.stdout.IsTerminal(),
 		"size":        []interface{}{w, h},
 	}
-}
-
-func (i *Interp) options(c interface{}, a []interface{}) interface{} {
-	if len(a) > 0 {
-		opts, ok := a[0].(map[string]interface{})
-		if !ok {
-			return fmt.Errorf("%v: value is not an object", a[0])
-		}
-		i.opts = opts
-	}
-	return i.opts
 }
 
 func (i *Interp) read(c interface{}, a []interface{}) interface{} {
@@ -264,7 +252,7 @@ type bitBufFile struct {
 
 var _ ToBitBuf = (*bitBufFile)(nil)
 
-func (bbf *bitBufFile) Display(w io.Writer, opts DisplayOptions) error {
+func (bbf *bitBufFile) Display(w io.Writer, opts Options) error {
 	_, err := fmt.Fprintf(w, "<%s>\n", bbf.filename)
 	return err
 }
@@ -275,7 +263,7 @@ func (bbf *bitBufFile) ToBitBuf() (*bitio.Buffer, ranges.Range) {
 
 func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 	var rs io.ReadSeeker
-	opts, err := buildDisplayOptions(i.opts)
+	opts, err := i.Options()
 	if err != nil {
 		return err
 	}
@@ -416,7 +404,7 @@ func (i *Interp) makeDecodeFn(registry *decode.Registry, decodeFormats []*decode
 
 func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}, a []interface{}) interface{} {
 	return func(c interface{}, a []interface{}) interface{} {
-		opts, err := buildDisplayOptions(append([]interface{}{i.opts, fnOpts}, a...)...)
+		opts, err := i.Options(append([]interface{}{fnOpts}, a...)...)
 		if err != nil {
 			return err
 		}
@@ -465,7 +453,7 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 
 // TODO: opts and colors?
 func (i *Interp) preview(c interface{}, a []interface{}) interface{} {
-	opts, err := buildDisplayOptions(append([]interface{}{i.opts}, a...)...)
+	opts, err := i.Options(a...)
 	if err != nil {
 		return err
 	}
@@ -493,7 +481,7 @@ func (i *Interp) hexdump(c interface{}, a []interface{}) interface{} {
 		return err
 	}
 
-	opts, err := buildDisplayOptions(append([]interface{}{i.opts}, a...)...)
+	opts, err := i.Options(a...)
 	if err != nil {
 		return err
 	}
@@ -746,14 +734,16 @@ func (i *Interp) _json(c interface{}, a []interface{}) interface{} {
 	return vv
 }
 
-func (i *Interp) _opts(c interface{}, a []interface{}) interface{} {
-
-	var envv []interface{}
-
-	for _, kv := range i.os.Environ() {
-
+func (i *Interp) _state(c interface{}, a []interface{}) interface{} {
+	name, ok := a[0].(string)
+	if !ok {
+		return fmt.Errorf("%v: value is not a string", c)
 	}
 
-	return vv
+	s := i.state[name]
+	if len(a) > 1 {
+		i.state[name] = a[1]
+	}
 
+	return s
 }

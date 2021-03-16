@@ -103,7 +103,7 @@ func (bo *bitBufObject) JsonPrimitiveValue() interface{} {
 	return buf.String()
 }
 
-func (bo *bitBufObject) Display(w io.Writer, opts DisplayOptions) error {
+func (bo *bitBufObject) Display(w io.Writer, opts Options) error {
 	if opts.Raw {
 		if _, err := io.Copy(w, bo.bb.Copy()); err != nil {
 			return err

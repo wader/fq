@@ -23,7 +23,7 @@ def complete($e):
 
 def obj_to_csv_kv: [to_entries[] | [.key, .value] | join("=")] | join(",");
 
-def default_options:
+def build_default_options:
 	{
 		depth:        0,
 		verbose:      false,
@@ -49,8 +49,7 @@ def default_options:
 			frame: "yellow"
 		} | obj_to_csv_kv),
 		bytecolors: "0-255=brightwhite,0=brightblack,32-126:9-13=white",
-	}
-	| with_entries(.value |= tojson);
+	};
 
 def prompt:
 	def _type_name_error:
@@ -74,10 +73,10 @@ def prompt:
 	  end
 	) + "> ";
 
-
 def eval_f($e;f):
-	try eval($e) | f
-	catch (. as $err | ("error: " + $err) | print);
+	default_options(build_default_options) as $_
+	| try eval($e) | f
+	  catch (. as $err | ("error: " + $err) | print);
 
 def default_display: display({depth: 1});
 
@@ -180,14 +179,15 @@ def main:
 				description: "Set option, eg: color=true",
 				object: true,
 				default: {},
-				help_default: default_options
+				help_default: build_default_options
 			},
 		};
 	.version as $version
 	| .args[0] as $arg0
 	| opts_parse(.args[1:];_opts($version)) as {$parsed, $rest}
 	# TODO: hack, pass opts some other way
-	| options(
+	| default_options(build_default_options) as $_
+	| push_options(
 		$parsed.options
 		+ {
 			repl: $parsed.repl,

@@ -342,7 +342,7 @@ func parseTestCases(s string) *testCase {
 // }
 
 func testDecodedTestCaseRun(t *testing.T, registry *decode.Registry, tcr *testCaseRun) {
-	q, err := interp.New(interp.InterpOptions{Registry: registry, OS: tcr})
+	q, err := interp.New(tcr, registry)
 	if err != nil {
 		t.Fatal(err)
 	}

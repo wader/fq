@@ -68,7 +68,7 @@ func previewValue(v *decode.Value) string {
 	}
 }
 
-func preview(v *decode.Value, w io.Writer, opts DisplayOptions) error {
+func preview(v *decode.Value, w io.Writer, opts Options) error {
 	switch v.V.(type) {
 	case decode.Struct:
 		sn := &previewNode{name: ".", count: -1, previews: map[string]struct{}{}, nodes: map[string]*previewNode{}}

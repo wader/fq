@@ -75,7 +75,7 @@ func parseCSVStringMap(s string) map[string]string {
 	return m
 }
 
-func decoratorFromDumpOptions(opts DisplayOptions) Decorator {
+func decoratorFromOptions(opts Options) Decorator {
 	colStr := "|"
 	if opts.Unicode {
 		// U+2502 Box Drawings Light Vertical
@@ -141,6 +141,7 @@ func decoratorFromDumpOptions(opts DisplayOptions) Decorator {
 				}
 			}
 		}
+		deco.ByteColor = func(b byte) ansi.Color { return byteColors[b] }
 	} else {
 		deco.ValueColor = func(v *decode.Value) ansi.Color { return ansi.FromString("") }
 		deco.ByteColor = func(b byte) ansi.Color { return ansi.FromString("") }
