@@ -1,5 +1,9 @@
 
 
+byte range when abs not rel?
+
+mp3> .unknown0._value
+panic: unreachable
 
 -o options and optisons_stack how?
 
