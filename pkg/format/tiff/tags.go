@@ -349,6 +349,17 @@ const (
 	NewRawImageDigest            = 0xc7a7
 	RawToPreviewGain             = 0xc7a8
 	DefaultUserCrop              = 0xc7b5
+
+	// TODO: where are these documented?
+	FrameDelay       = 0x5100
+	LoopCount        = 0x5101
+	GlobalPalette    = 0x5102
+	IndexBackground  = 0x5103
+	IndexTransparent = 0x5104
+	PixelUnit        = 0x5110
+	PixelPerUnitX    = 0x5111
+	PixelPerUnitY    = 0x5112
+	PaletteHistogram = 0x5113
 )
 
 var tiffTagNames = map[uint64]string{
@@ -700,6 +711,16 @@ var tiffTagNames = map[uint64]string{
 	NewRawImageDigest:            "NewRawImageDigest",
 	RawToPreviewGain:             "RawToPreviewGain",
 	DefaultUserCrop:              "DefaultUserCrop",
+
+	FrameDelay:       "FrameDelay",
+	LoopCount:        "LoopCount",
+	GlobalPalette:    "GlobalPalette",
+	IndexBackground:  "IndexBackground",
+	IndexTransparent: "IndexTransparent",
+	PixelUnit:        "PixelUnit",
+	PixelPerUnitX:    "PixelPerUnitX",
+	PixelPerUnitY:    "PixelPerUnitY",
+	PaletteHistogram: "PaletteHistogram",
 }
 
 const (
