@@ -5,14 +5,6 @@ import (
 	"io"
 )
 
-func MustCopy(r io.Writer, w io.Reader) int64 {
-	n, err := io.Copy(r, w)
-	if err != nil {
-		panic(err)
-	}
-	return n
-}
-
 func SeekerEnd(s io.Seeker) (int64, error) {
 	cPos, err := s.Seek(0, io.SeekCurrent)
 	if err != nil {

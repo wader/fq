@@ -4,7 +4,6 @@ package flac
 
 import (
 	"encoding/binary"
-	"fq/internal/ioextra"
 	"fq/pkg/crc"
 	"fq/pkg/decode"
 	"fq/pkg/format"
@@ -336,7 +335,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	})
 
 	headerCRC := &crc.CRC{Bits: 8, Table: crc.ATM8Table}
-	ioextra.MustCopy(headerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
+	decode.MustCopy(headerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
 	d.FieldChecksumLen("crc", 8, headerCRC.Sum(nil), decode.BigEndian)
 
 	var channelSamples [][]int64
@@ -576,7 +575,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldValidateUFn("byte_align", 0, func() uint64 { return d.U(d.ByteAlignBits()) })
 	// <16> CRC-16 (polynomial = x^16 + x^15 + x^2 + x^0, initialized with 0) of everything before the crc, back to and including the frame header sync code
 	footerCRC := &crc.CRC{Bits: 16, Table: crc.ANSI16Table}
-	ioextra.MustCopy(footerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
+	decode.MustCopy(footerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
 	d.FieldChecksumLen("footer_crc", 16, footerCRC.Sum(nil), decode.BigEndian)
 
 	// Transform mid/side channels into left, right

@@ -11,7 +11,6 @@ package mp3
 // TODO: mpeg_version int value use desc? same protection etc?
 
 import (
-	"fq/internal/ioextra"
 	"fq/pkg/crc"
 	"fq/pkg/decode"
 	"fq/pkg/format"
@@ -247,8 +246,8 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 
 	crcHash := &crc.CRC{Bits: 16, Current: 0xffff, Table: crc.ANSI16Table}
 	// 2 bytes after sync and some other fields + all of side info
-	ioextra.MustCopy(crcHash, d.BitBufRange(2*8, 2*8))
-	ioextra.MustCopy(crcHash, d.BitBufRange(6*8, sideInfoLen*8))
+	decode.MustCopy(crcHash, d.BitBufRange(2*8, 2*8))
+	decode.MustCopy(crcHash, d.BitBufRange(6*8, sideInfoLen*8))
 	crcValue := d.FieldGet("crc")
 	if crcValue != nil {
 		d.FieldRemove("crc")

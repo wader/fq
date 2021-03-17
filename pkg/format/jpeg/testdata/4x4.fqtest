@@ -5,7 +5,7 @@
     |                                               |                |  segments: [9] 0x0-0x9f.7 (160)
     |                                               |                |    [0]: {} (marker) 0x0-0x1.7 (2)
 0x00|ff                                             |.               |      prefix: ff 0x0-0x0.7 (1)
-0x00|   d8                                          | .              |      code: SOI (216) (Start of image ) 0x1-0x1.7 (1)
+0x00|   d8                                          | .              |      code: SOI (216) (Start of image) 0x1-0x1.7 (1)
     |                                               |                |    [1]: {} (marker) 0x2-0x13.7 (18)
 0x00|      ff                                       |  .             |      prefix: ff 0x2-0x2.7 (1)
 0x00|         e0                                    |   .            |      code: APP0 (224) (Reserved for application segments) 0x3-0x3.7 (1)

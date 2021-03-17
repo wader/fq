@@ -5,7 +5,6 @@ package png
 // https://wiki.mozilla.org/APNG_Specification
 
 import (
-	"fq/internal/ioextra"
 	"fq/pkg/decode"
 	"fq/pkg/format"
 	"fq/pkg/ranges"
@@ -184,7 +183,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 		}
 
 		chunkCRC := crc32.NewIEEE()
-		ioextra.MustCopy(chunkCRC, d.BitBufRange(crcStartPos, d.Pos()-crcStartPos))
+		decode.MustCopy(chunkCRC, d.BitBufRange(crcStartPos, d.Pos()-crcStartPos))
 		d.FieldChecksumLen("crc", 32, chunkCRC.Sum(nil), decode.BigEndian)
 	})
 

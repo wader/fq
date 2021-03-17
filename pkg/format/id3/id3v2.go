@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"fq/pkg/decode"
 	"fq/pkg/format"
+	"io"
 	"strings"
 )
 
@@ -187,6 +188,32 @@ var idDescriptions = map[string]string{
 	"WXX":  "User defined URL link frame",
 }
 
+// id3v2 MPEG/AAC unsynchronisation reader
+// Replace 0xff 0x00 0xab with 0xff 0xab in byte stream
+type unsyncReader struct {
+	io.Reader
+	lastFF bool
+}
+
+func (r unsyncReader) Read(p []byte) (n int, err error) {
+	n, err = r.Reader.Read(p)
+
+	ni := 0
+	for i, b := range p[0:n] {
+		if r.lastFF && b == 0x00 {
+			n--
+			r.lastFF = false
+			continue
+		} else {
+			r.lastFF = b == 0xff
+		}
+		p[ni] = p[i]
+		ni++
+	}
+
+	return n, err
+}
+
 const (
 	encodingISO8859_1 = 0
 	encodingUTF16     = 1
@@ -324,6 +351,8 @@ func decodeFrame(d *decode.D, version int) uint64 {
 
 	var size uint64
 	var dataSize uint64
+	// TODO: global tag unsync?
+	unsyncFlag := false
 
 	idDescription := ""
 	if d, ok := idDescriptions[id]; ok {
@@ -344,6 +373,23 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		d.FieldStrFn("id", func() (string, string) { return d.UTF8(4), idDescription })
 		dataSize = d.FieldU32("size")
 		d.FieldU16("flags")
+
+		d.FieldStructFn("flags", func(d *decode.D) {
+			// %abc00000 %ijk00000
+			d.FieldBool("tag_alter_preservation")
+			d.FieldBool("file_alter_preservation")
+			d.FieldBool("read_only")
+
+			d.FieldU5("unused0")
+
+			d.FieldBool("compression")
+			// TODO: read encruption byte, skip decode of frame data?
+			d.FieldBool("encryption")
+			d.FieldBool("grouping_identity")
+
+			d.FieldU5("unused1")
+		})
+
 		size = dataSize + 10
 	case 4:
 		// Frame ID      $xx xx xx xx  (four characters)
@@ -355,15 +401,29 @@ func decodeFrame(d *decode.D, version int) uint64 {
 
 		dataLenFlag := false
 		d.FieldStructFn("flags", func(d *decode.D) {
-			d.FieldU14("unused")
-			d.FieldBool("unsync")
+			// %0abc0000 %0h00kmnp
+			d.FieldU1("unused0")
+			d.FieldBool("tag_alter_preservation")
+			d.FieldBool("file_alter_preservation")
+			d.FieldBool("read_only")
+
+			d.FieldU5("unused1")
+
+			d.FieldBool("grouping_identity")
+
+			d.FieldU2("unused2")
+
+			d.FieldBool("compression")
+			// TODO: read encruption byte, skip decode of frame data?
+			d.FieldBool("encryption")
+			unsyncFlag = d.FieldBool("unsync")
 			dataLenFlag = d.FieldBool("data_length_indicator")
 		})
 
 		if dataLenFlag {
 			fieldSyncSafeU32(d, "data_length_indicator")
 			dataSize -= 4
-			headerLen = 4
+			headerLen += 4
 		}
 
 		size = dataSize + headerLen
@@ -478,7 +538,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Owner identifier      <text string> $00
 		// The private data      <binary data>
 		"PRIV": func(d *decode.D) {
-			// TODO: default ISO8859-1?
+			// TODO: is default ISO8859-1?
 			fieldTextNull(d, "owner", int(encodingISO8859_1))
 			d.FieldBitBufLen("data", d.BitsLeft())
 		},
@@ -494,13 +554,30 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		idNormalized = "T000"
 	}
 
-	if fn, ok := frames[idNormalized]; ok {
-		d.DecodeLenFn(int64(dataSize)*8, fn)
-	} else {
+	if unsyncFlag {
+		// TODO: DecodeFn
+		// TODO: unknown after frame decode
+		unsyncedBb := decode.MustNewBitBufFromReader(unsyncReader{Reader: d.BitBufRange(d.Pos(), int64(dataSize)*8)})
+		d.FieldDecodeBitBuf("unsync", unsyncedBb, decode.FormatFn(func(d *decode.D, in interface{}) interface{} {
+			if fn, ok := frames[idNormalized]; ok {
+				fn(d)
+			} else {
+				d.FieldBitBufLen("data", d.BitsLeft())
+			}
+
+			return nil
+		}))
 		d.FieldBitBufLen("data", int64(dataSize*8))
+	} else {
+		if fn, ok := frames[idNormalized]; ok {
+			d.DecodeLenFn(int64(dataSize)*8, func(d *decode.D) {
+				fn(d)
+			})
+		} else {
+			d.FieldBitBufLen("data", int64(dataSize*8))
+		}
 	}
 
-	// TODO
 	return size
 }
 
