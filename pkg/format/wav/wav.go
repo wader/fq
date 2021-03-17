@@ -2,6 +2,7 @@ package wav
 
 // http://soundfile.sapp.org/doc/WaveFormat/
 // https://github.com/FFmpeg/FFmpeg/blob/master/libavformat/wavdec.c
+// https://tech.ebu.ch/docs/tech/tech3285.pdf
 
 import (
 	"fmt"
@@ -123,7 +124,18 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 {
 	if expectedChunkID != "" && trimChunkID != expectedChunkID {
 		d.Invalid(fmt.Sprintf("expected chunk id %q found %q", expectedChunkID, trimChunkID))
 	}
-	chunkLen := int64(d.FieldU32LE("size"))
+	const restOfFileLen = 0xffffffff
+	chunkLen := int64(d.FieldUFn("size", func() (uint64, decode.DisplayFormat, string) {
+		l := d.U32LE()
+		if l == restOfFileLen {
+			return l, decode.NumberHex, "rest of file"
+		}
+		return l, decode.NumberDecimal, ""
+	}))
+
+	if chunkLen == 0xffffffff {
+		chunkLen = d.BitsLeft() / 8
+	}
 
 	if fn, ok := chunks[trimChunkID]; ok {
 		d.DecodeLenFn(chunkLen*8, fn)
