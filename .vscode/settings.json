@@ -52,5 +52,6 @@
         "xrange"
     ],
     "editor.formatOnSave": true,
-    "cSpell.allowCompoundWords": true
+    "cSpell.allowCompoundWords": true,
+    "cSpell.enabled": true
 }
