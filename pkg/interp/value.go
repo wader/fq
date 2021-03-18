@@ -341,7 +341,15 @@ func (vo valueObject) Preview(w io.Writer, opts Options) error {
 
 func (vo valueObject) ToBitBuf() (*bitio.Buffer, ranges.Range) {
 	v := vo.v
-	return v.RootBitBuf.Copy(), v.Range
+
+	switch vv := v.V.(type) {
+	case []byte:
+		bb := bitio.NewBufferFromBytes(vv, -1)
+		return bb, ranges.Range{Start: 0, Len: bb.Len()}
+	default:
+		return v.RootBitBuf.Copy(), v.Range
+	}
+
 }
 
 type decodeError2 struct {

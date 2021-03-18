@@ -324,7 +324,7 @@ func toBytes(v interface{}) ([]byte, error) {
 	case []byte:
 		return v, nil
 	default:
-		bb, _, _, err := toBitBuf(v)
+		bb, _, err := toBitBuf(v)
 		if err != nil {
 			return nil, fmt.Errorf("value is not bytes")
 		}
@@ -338,23 +338,26 @@ func toBytes(v interface{}) ([]byte, error) {
 }
 
 // TODO: refactor to return struct?
-func toBitBuf(v interface{}) (*bitio.Buffer, ranges.Range, string, error) {
+func toBitBuf(v interface{}) (*bitio.Buffer, ranges.Range, error) {
 	switch vv := v.(type) {
 	case ToBitBuf:
 		bb, r := vv.ToBitBuf()
-		return bb, r, "", nil
+		return bb, r, nil
 	case string:
 		bb := bitio.NewBufferFromBytes([]byte(vv), -1)
-		return bb, ranges.Range{Start: 0, Len: bb.Len()}, "", nil
+		return bb, ranges.Range{Start: 0, Len: bb.Len()}, nil
+	case []byte:
+		bb := bitio.NewBufferFromBytes(vv, -1)
+		return bb, ranges.Range{Start: 0, Len: bb.Len()}, nil
 	case int, float64, *big.Int:
 		bi, err := toBigInt(v)
 		if err != nil {
-			return nil, ranges.Range{}, "", err
+			return nil, ranges.Range{}, err
 		}
 		bb := bitio.NewBufferFromBytes(bi.Bytes(), -1)
-		return bb, ranges.Range{Start: 0, Len: bb.Len()}, "", nil
+		return bb, ranges.Range{Start: 0, Len: bb.Len()}, nil
 	default:
-		return nil, ranges.Range{}, "", fmt.Errorf("value should be decode value, bit buffer, byte slice or string")
+		return nil, ranges.Range{}, fmt.Errorf("value should be decode value, bit buffer, byte slice or string")
 	}
 }
 
