@@ -70,14 +70,15 @@ func metadatablockDecode(d *decode.D, in interface{}) interface{} {
 		bitPerSample := d.FieldUFn("bits_per_sample", func() (uint64, decode.DisplayFormat, string) {
 			return d.U5() + 1, decode.NumberDecimal, ""
 		})
-		d.FieldU("total_samples_in_steam", 36)
+		totalSamplesInStream := d.FieldU("total_samples_in_stream", 36)
 		md5Range := ranges.Range{Start: d.Pos(), Len: 16 * 8}
 		d.FieldBitBufLen("md5", 16*8)
 
 		mb.StreamInfo = format.FlacMetadatablockStreamInfo{
-			SampleRate:   sampleRate,
-			BitPerSample: bitPerSample,
-			MD5Range:     md5Range,
+			SampleRate:           sampleRate,
+			BitPerSample:         bitPerSample,
+			TotalSamplesInStream: totalSamplesInStream,
+			MD5Range:             md5Range,
 		}
 		mb.HasStreamInfo = true
 	case MetadataBlockVorbisComment:

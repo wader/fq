@@ -4,6 +4,8 @@ package flac
 
 import (
 	"encoding/binary"
+	"fmt"
+	"fq/internal/num"
 	"fq/pkg/crc"
 	"fq/pkg/decode"
 	"fq/pkg/format"
@@ -77,9 +79,11 @@ func zigzag(n int64) int64 {
 // in argument is an optional FlacFrameIn struct with stream info
 func frameDecode(d *decode.D, in interface{}) interface{} {
 	var inStreamInfo *format.FlacMetadatablockStreamInfo
-	if in, ok := in.(format.FlacFrameIn); ok {
-		inStreamInfo = &in.StreamInfo
+	ffi, ok := in.(format.FlacFrameIn)
+	if !ok {
+		d.Panic(fmt.Sprintf("expected FlacFrameIn got %#+v", ffi))
 	}
+	inStreamInfo = &ffi.StreamInfo
 
 	frameStart := d.Pos()
 	// <14> 11111111111110
@@ -603,11 +607,17 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	}
 
 	bytesPerSample := int(sampleSize / 8)
-	interleavedSamplesBuf := make([]byte, len(channelSamples)*len(channelSamples[0])*bytesPerSample)
 	p := 0
 	le := binary.LittleEndian
+	streamSamples := len(channelSamples[0])
+	// 0 total samples means unknown
+	if inStreamInfo.TotalSamplesInStream > 0 {
+		streamSamples = num.MinInt(int(ffi.NSamplesLeft), len(channelSamples[0]))
+	}
+	interleavedSamplesBuf := make([]byte, len(channelSamples)*streamSamples*bytesPerSample)
 
-	for i := 0; i < len(channelSamples[0]); i++ {
+	// TODO: speedup by using more cache friendly memory layout for samples
+	for i := 0; i < streamSamples; i++ {
 		for j := 0; j < len(channelSamples); j++ {
 			s := channelSamples[j][i]
 			switch sampleSize {
@@ -626,6 +636,8 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	}
 
 	return &format.FlacFrameOut{
-		SamplesBuf: interleavedSamplesBuf,
+		SamplesBuf:      interleavedSamplesBuf,
+		NSteamSamples:   uint64(streamSamples),
+		NDecodedSamples: uint64(len(channelSamples[0])),
 	}
 }

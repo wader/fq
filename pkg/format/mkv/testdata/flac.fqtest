@@ -209,7 +209,7 @@
 0x180|            0a c4 42                           |    ..B         |                        sample_rate: 44100 0x184-0x186.3 (2.4)
 0x180|                  42                           |      B         |                        channels: 2 0x186.4-0x186.6 (0.3)
 0x180|                  42 f0                        |      B.        |                        bits_per_sample: 16 0x186.7-0x187.3 (0.5)
-0x180|                     f0 00 00 08 9d            |       .....    |                        total_samples_in_steam: 2205 0x187.4-0x18b.7 (4.4)
+0x180|                     f0 00 00 08 9d            |       .....    |                        total_samples_in_stream: 2205 0x187.4-0x18b.7 (4.4)
 0x180|                                    e9 16 ab 02|            ....|                        md5: e916ab02137281386a28174fe11bffec 0x18c-0x19b.7 (16)
 0x190|13 72 81 38 6a 28 17 4f e1 1b ff ec            |.r.8j(.O....    |
      |                                               |                |        [4]: {} (element) 0x19c-0x23e.7 (163)

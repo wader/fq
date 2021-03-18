@@ -55,6 +55,15 @@ func (e ValidateError) Error() string {
 	return fmt.Sprintf("failed to validate at position %s: %s", num.Bits(e.Pos).StringByteBits(16), e.Reason)
 }
 
+type PanicError struct {
+	Reason string
+	Pos    int64
+}
+
+func (e PanicError) Error() string {
+	return fmt.Sprintf("panic position %s: %s", num.Bits(e.Pos).StringByteBits(16), e.Reason)
+}
+
 type Endian bitio.Endian
 
 var (
@@ -249,6 +258,11 @@ func (d *D) FillGaps(namePrefix string) {
 // Invalid stops decode with a reason
 func (d *D) Invalid(reason string) {
 	panic(ValidateError{Reason: reason, Pos: d.Pos()})
+}
+
+// TODO: things that should not happen
+func (d *D) Panic(reason string) {
+	panic(PanicError{Reason: reason, Pos: d.Pos()})
 }
 
 func (d *D) PeekBits(nBits int) uint64 {

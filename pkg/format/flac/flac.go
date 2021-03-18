@@ -3,6 +3,7 @@ package flac
 // TODO: reuse samples buffer
 
 import (
+	"bytes"
 	"crypto/md5"
 	"fmt"
 	"fq/pkg/decode"
@@ -31,17 +32,21 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 
 	var streamInfo format.FlacMetadatablockStreamInfo
 	var flacFrameIn format.FlacFrameIn
+	var framesNDecodedSamples uint64
 
 	d.FieldArrayFn("metadatablocks", func(d *decode.D) {
 		for {
 			_, dv := d.FieldDecode("metadatablock", flacMetadatablockFormat)
 			flacMetadatablockOut, ok := dv.(format.FlacMetadatablockOut)
 			if !ok {
-				d.Invalid(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", dv))
+				d.Panic(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", dv))
 			}
 			if flacMetadatablockOut.HasStreamInfo {
 				streamInfo = flacMetadatablockOut.StreamInfo
-				flacFrameIn = format.FlacFrameIn{StreamInfo: streamInfo}
+				flacFrameIn = format.FlacFrameIn{
+					StreamInfo:   streamInfo,
+					NSamplesLeft: streamInfo.TotalSamplesInStream,
+				}
 			}
 			if flacMetadatablockOut.IsLastBlock {
 				return
@@ -54,10 +59,16 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 		for d.NotEnd() {
 			// flac frame might need some fields from stream info to decode
 			_, dv := d.FieldDecode("frame", flacFrameFormat, decode.FormatOptions{InArg: flacFrameIn})
-			if dv, ok := dv.(*format.FlacFrameOut); ok {
-				if _, err := md5Samples.Write(dv.SamplesBuf); err != nil {
-					panic(err)
-				}
+			ffo, ok := dv.(*format.FlacFrameOut)
+			if !ok {
+				d.Panic(fmt.Sprintf("expected FlacFrameOut got %#+v", dv))
+			}
+
+			decode.MustCopy(md5Samples, bytes.NewReader(ffo.SamplesBuf))
+			framesNDecodedSamples += uint64(ffo.NDecodedSamples)
+			// 0 total samples means unknown
+			if streamInfo.TotalSamplesInStream > 0 {
+				flacFrameIn.NSamplesLeft -= ffo.NSteamSamples
 			}
 		}
 	})
@@ -67,6 +78,8 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 	// 	md5Value := streamInfo.D.FieldGet("md5")
 	// 	d.FieldChecksumRange("md5_calculated", md5Value.Range.Start, md5Value.Range.Len, md5Samples.Sum(nil), decode.BigEndian)
 	// }
+	d.FieldValueBytes("md5_calculated", md5Samples.Sum(nil), "")
+	d.FieldValueU("decoded_samples", framesNDecodedSamples, "")
 
 	return nil
 }

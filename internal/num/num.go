@@ -47,6 +47,19 @@ func PadFormatUint(i uint64, base int, basePrefix bool, width int) string {
 	return padFormatNumber(strconv.FormatUint(i, base), base, basePrefix, width)
 
 }
+func MaxUInt64(a, b uint64) uint64 {
+	if a < b {
+		return b
+	}
+	return a
+}
+
+func MinUInt64(a, b uint64) uint64 {
+	if a > b {
+		return b
+	}
+	return a
+}
 
 func MaxInt64(a, b int64) int64 {
 	if a < b {

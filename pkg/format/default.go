@@ -73,9 +73,10 @@ const (
 )
 
 type FlacMetadatablockStreamInfo struct {
-	SampleRate   uint64
-	BitPerSample uint64
-	MD5Range     ranges.Range
+	SampleRate           uint64
+	BitPerSample         uint64
+	TotalSamplesInStream uint64
+	MD5Range             ranges.Range
 }
 
 type FlacMetadatablockOut struct {
@@ -85,11 +86,14 @@ type FlacMetadatablockOut struct {
 }
 
 type FlacFrameIn struct {
-	StreamInfo FlacMetadatablockStreamInfo
+	StreamInfo   FlacMetadatablockStreamInfo
+	NSamplesLeft uint64
 }
 
 type FlacFrameOut struct {
-	SamplesBuf []byte
+	SamplesBuf      []byte
+	NSteamSamples   uint64
+	NDecodedSamples uint64
 }
 
 type OggPageOut struct {

@@ -15,7 +15,7 @@
 0x0010|      0a c4 42                                 |  ..B           |      sample_rate: 44100 0x12-0x14.3 (2.4)
 0x0010|            42                                 |    B           |      channels: 2 0x14.4-0x14.6 (0.3)
 0x0010|            42 70                              |    Bp          |      bits_per_sample: 8 0x14.7-0x15.3 (0.5)
-0x0010|               70 00 00 56 22                  |     p..V"      |      total_samples_in_steam: 22050 0x15.4-0x19.7 (4.4)
+0x0010|               70 00 00 56 22                  |     p..V"      |      total_samples_in_stream: 22050 0x15.4-0x19.7 (4.4)
 0x0010|                              ef 79 00 9c ce 3b|          .y...;|      md5: ef79009cce3bd79ef4b5668ebb98d113 0x1a-0x29.7 (16)
 0x0020|d7 9e f4 b5 66 8e bb 98 d1 13                  |....f.....      |
       |                                               |                |    [1]: flac_metadatablock (metadatablock) 0x2a-0x3f.7 (22)
@@ -815,3 +815,5 @@
 *     |363 bytes more until 0x6d5a.2                  |                |
 0x6d50|                              40               |          @     |      byte_align: Correct (0x0) 0x6d5a.3-0x6d5a.7 (0.5)
 0x6d50|                                 ee 38|        |           .8|  |      footer_crc: Correct (ee38) 0x6d5b-0x6d5c.7 (2)
+      |                                               |                |  md5_calculated: ef79009cce3bd79ef4b5668ebb98d113 0x6d5d-NA (0)
+      |                                               |                |  decoded_samples: 22050 0x6d5d-NA (0)
