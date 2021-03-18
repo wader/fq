@@ -133,7 +133,7 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 {
 		return l, decode.NumberDecimal, ""
 	}))
 
-	if chunkLen == 0xffffffff {
+	if chunkLen == restOfFileLen {
 		chunkLen = d.BitsLeft() / 8
 	}
 
