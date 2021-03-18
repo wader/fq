@@ -356,7 +356,7 @@ func (i *Interp) makeDecodeFn(registry *decode.Registry, decodeFormats []*decode
 			}
 		}
 
-		bb, r, filename, err := toBitBuf(c)
+		bb, r, err := toBitBuf(c)
 		if err != nil {
 			return err
 		}
@@ -367,10 +367,8 @@ func (i *Interp) makeDecodeFn(registry *decode.Registry, decodeFormats []*decode
 
 		opts := map[string]interface{}{}
 
+		// TODO:
 		name := "unnamed"
-		if filename != "" {
-			name = filename
-		}
 
 		if len(a) >= 1 {
 			formatName, err := toString(a[0])
@@ -470,7 +468,7 @@ func (i *Interp) preview(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) hexdump(c interface{}, a []interface{}) interface{} {
-	bb, r, _, err := toBitBuf(c)
+	bb, r, err := toBitBuf(c)
 	if err != nil {
 		return err
 	}
@@ -507,7 +505,7 @@ func (i *Interp) hexdump(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) string_(c interface{}, a []interface{}) interface{} {
-	bb, _, _, err := toBitBuf(c)
+	bb, _, err := toBitBuf(c)
 	if err != nil {
 		return err
 	}
@@ -525,7 +523,7 @@ func (i *Interp) tovalue(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) u(c interface{}, a []interface{}) interface{} {
-	bb, r, _, err := toBitBuf(c)
+	bb, r, err := toBitBuf(c)
 	if err != nil {
 		return err
 	}
@@ -560,7 +558,7 @@ func (i *Interp) u(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) md5(c interface{}, a []interface{}) interface{} {
-	bb, _, _, err := toBitBuf(c)
+	bb, _, err := toBitBuf(c)
 	if err != nil {
 		return err
 	}
@@ -574,7 +572,7 @@ func (i *Interp) md5(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) base64(c interface{}, a []interface{}) interface{} {
-	bb, _, _, err := toBitBuf(c)
+	bb, _, err := toBitBuf(c)
 	if err != nil {
 		return err
 	}
@@ -590,7 +588,7 @@ func (i *Interp) base64(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) unbase64(c interface{}, a []interface{}) interface{} {
-	bb, _, _, err := toBitBuf(c)
+	bb, _, err := toBitBuf(c)
 	if err != nil {
 		return err
 	}
@@ -604,7 +602,13 @@ func (i *Interp) unbase64(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) hex(c interface{}, a []interface{}) interface{} {
-	bb, _, _, err := toBitBuf(c)
+	bb, r, err := toBitBuf(c)
+	if err != nil {
+		return err
+	}
+
+	bitsByteAlign := r.Start % 8
+	bb, err = bb.BitBufRange(r.Start-bitsByteAlign, r.Len+bitsByteAlign)
 	if err != nil {
 		return err
 	}
@@ -618,7 +622,7 @@ func (i *Interp) hex(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) unhex(c interface{}, a []interface{}) interface{} {
-	bb, _, _, err := toBitBuf(c)
+	bb, _, err := toBitBuf(c)
 	if err != nil {
 		return err
 	}
@@ -701,7 +705,7 @@ func (i *Interp) aesCtr(c interface{}, a []interface{}) interface{} {
 		ivBytes = make([]byte, block.BlockSize())
 	}
 
-	bb, _, _, err := toBitBuf(c)
+	bb, _, err := toBitBuf(c)
 	if err != nil {
 		return err
 	}
@@ -716,7 +720,7 @@ func (i *Interp) aesCtr(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) _json(c interface{}, a []interface{}) interface{} {
-	bb, _, _, err := toBitBuf(c)
+	bb, _, err := toBitBuf(c)
 	if err != nil {
 		return err
 	}

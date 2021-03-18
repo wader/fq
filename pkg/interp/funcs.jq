@@ -155,7 +155,7 @@ def i:
 		oct: "0o\(base8)",
 		dec: "\(.)",
 		hex: "0x\(base16)",
-		str: ([.] | implode),
+		str: (try ([.] | implode) catch null),
 	};
 
 def _formats_dot:
