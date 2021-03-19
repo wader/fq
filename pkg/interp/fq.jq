@@ -48,20 +48,20 @@ def build_default_options:
 			error: "brightred",
 			frame: "yellow"
 		} | obj_to_csv_kv),
-		bytecolors: "0-255=brightwhite,0=brightblack,32-126:9-13=white",
+		bytecolors: "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
 	};
 
 def parse_options:
 	{
-			depth:        (try (.depth | fromjson) catch null),
-			verbose:      (try (.verbose | fromjson) catch null),
-			color:        (try (.color | fromjson) catch null),
-			unicode:      (try (.unicode | fromjson) catch null),
-			raw:          (try (.raw | fromjson) catch null),
-			linebytes:    (try (.linebytes | fromjson) catch null),
-			displaybytes: (try (.displaybytes | fromjson) catch null),
-			addrbase:     (try (.addrbase | fromjson) catch null),
-			sizebase:     (try (.sizebase | fromjson) catch null),
+			depth:        (.depth | if . then eval(.) else null end),
+			verbose:      (.verbose | if . then eval(.) else null end),
+			color:        (.color | if . then eval(.) else null end),
+			unicode:      (.unicode | if . then eval(.) else null end),
+			raw:          (.raw | if . then eval(.) else null end),
+			linebytes:    (.linebytes | if . then eval(.) else null end),
+			displaybytes: (.displaybytes | if . then eval(.) else null end),
+			addrbase:     (.addrbase | if . then eval(.) else null end),
+			sizebase:     (.sizebase | if . then eval(.) else null end),
 			colors:       .colors,
 			bytecolors:   .bytecolors,
 	}

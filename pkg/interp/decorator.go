@@ -12,6 +12,11 @@ type stringRanges struct {
 	s  string
 }
 
+func atoi(s string) int {
+	n, _ := strconv.ParseUint(s, 0, 64)
+	return int(n)
+}
+
 // 0-255=brightwhite,0=brightblack,32-126:9-13=white
 func parseCSVRangeMap(s string) []stringRanges {
 	var srs []stringRanges
@@ -27,26 +32,16 @@ func parseCSVRangeMap(s string) []stringRanges {
 
 		for _, rangeStr := range strings.Split(stringRangesParts[0], ":") {
 			rangeStr = strings.TrimSpace(rangeStr)
-			var err error
 			rangeStrParts := strings.SplitN(rangeStr, "-", 2)
 			start := 0
 			stop := 0
 
 			if len(rangeStrParts) == 1 {
-				start, err = strconv.Atoi(rangeStrParts[0])
-				if err != nil {
-					continue
-				}
+				start = atoi(rangeStrParts[0])
 				stop = start
 			} else {
-				start, err = strconv.Atoi(rangeStrParts[0])
-				if err != nil {
-					continue
-				}
-				stop, err = strconv.Atoi(rangeStrParts[1])
-				if err != nil {
-					continue
-				}
+				start = atoi(rangeStrParts[0])
+				stop = atoi(rangeStrParts[1])
 			}
 
 			rs = append(rs, [2]int{start, stop})
