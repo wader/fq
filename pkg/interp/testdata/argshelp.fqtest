@@ -7,9 +7,9 @@ Usage: fq [OPTIONS] [FILE] [EXPR]...
 --noinput,-n     No input
 --option,-o=ARG  Set option, eg: color=true
                    addrbase=16
-                   bytecolors="0-255=brightwhite,0=brightblack,32-126:9-13=white"
+                   bytecolors=0-255=brightwhite,0=brightblack,32-126:9-13=white
                    color=false
-                   colors="array=white,error=brightred,false=yellow,frame=yellow,index=white,null=brightblack,number=cyan,object=white,objectkey=brightblue,string=green,true=yellow,value=white"
+                   colors=array=white,error=brightred,false=yellow,frame=yellow,index=white,null=brightblack,number=cyan,object=white,objectkey=brightblue,string=green,true=yellow,value=white
                    depth=0
                    displaybytes=16
                    linebytes=16
