@@ -9,6 +9,16 @@ def default_options($opts): _state("default_options"; $opts);
 def push_options($opts): _state("options_stack"; [$opts] + (_state("options_stack") // []));
 def pop_options: _state("options_stack"; _state("options_stack")[1:]);
 
+def with_options($opts; f):
+	push_options($opts) as $_
+	| try f
+	  catch (
+		  pop_options as $_
+		  | error(.)
+	  )
+	| pop_options as $_
+	| .;
+
 def print: _print[];
 
 def display: _display[];

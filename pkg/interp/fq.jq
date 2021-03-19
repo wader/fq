@@ -99,7 +99,6 @@ def default_display: display({depth: 1});
 def eval_print($e):
 	eval_f($e;default_display);
 
-
 # def read: #:: [a]| => string
 # read with no prompt or completion
 # def read: #:: [a]|(string) => string
@@ -109,7 +108,7 @@ def eval_print($e):
 # Second argument is name of completion function [a](string) => [string],
 # it will be called with same input as read and a string argument being the
 # current line from start to current cursor position. Should return possible completions.
-def repl:
+def repl($opts):
 	def _as_array: if (. | type) != "array" then [.] end;
 	def _read_expr:
 		read(prompt;"complete")
@@ -125,7 +124,9 @@ def repl:
 			if . == "interrupt" then $c | _repl
 			elif . == "eof" then empty
 			else error(.) end;
-    _as_array | _repl;
+	with_options($opts; _as_array | _repl);
+
+def repl: repl({});
 
 def main:
 	def _formats_list:
