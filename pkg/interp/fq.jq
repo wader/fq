@@ -51,6 +51,22 @@ def build_default_options:
 		bytecolors: "0-255=brightwhite,0=brightblack,32-126:9-13=white",
 	};
 
+def parse_options:
+	{
+			depth:        (try (.depth | fromjson) catch null),
+			verbose:      (try (.verbose | fromjson) catch null),
+			color:        (try (.color | fromjson) catch null),
+			unicode:      (try (.unicode | fromjson) catch null),
+			raw:          (try (.raw | fromjson) catch null),
+			linebytes:    (try (.linebytes | fromjson) catch null),
+			displaybytes: (try (.displaybytes | fromjson) catch null),
+			addrbase:     (try (.addrbase | fromjson) catch null),
+			sizebase:     (try (.sizebase | fromjson) catch null),
+			colors:       .colors,
+			bytecolors:   .bytecolors,
+	}
+	| with_entries(select(.value));
+
 def prompt:
 	def _type_name_error:
 		. as $c
@@ -188,7 +204,7 @@ def main:
 	# TODO: hack, pass opts some other way
 	| default_options(build_default_options) as $_
 	| push_options(
-		$parsed.options
+		($parsed.options | parse_options)
 		+ {
 			repl: $parsed.repl,
 			rawstring: $parsed.rawstring,
