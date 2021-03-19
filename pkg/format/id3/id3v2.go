@@ -372,7 +372,6 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Flags      $xx xx
 		d.FieldStrFn("id", func() (string, string) { return d.UTF8(4), idDescription })
 		dataSize = d.FieldU32("size")
-		d.FieldU16("flags")
 
 		d.FieldStructFn("flags", func(d *decode.D) {
 			// %abc00000 %ijk00000
