@@ -96,7 +96,7 @@ def opts_help_text($opts):
 	  , if $default then
 			if .value.object then
 				[ "\n",
-				  [$default | to_entries[] | "\(" "*$l)    \(.key)=\(.value)\n"]
+				  ([$default | to_entries[] | "\(" "*$l)    \(.key)=\(.value)"] | join("\n"))
 				]
 			else
 				" (\($default))"
