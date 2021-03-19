@@ -1,4 +1,6 @@
 
+mp3 make header/footer optional
+
 version etc from Main in options? use with_options in _main?
 
 crc and validations as warning/info/error annotaitons per field?
