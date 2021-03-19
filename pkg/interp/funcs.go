@@ -57,6 +57,7 @@ func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
 		{[]string{"_hexdump"}, 0, 1, i.hexdump, true},
 
 		{[]string{"string"}, 0, 0, i.string_, false},
+		{[]string{"bytes"}, 0, 0, i.bytes, false},
 		{[]string{"tovalue"}, 0, 0, i.tovalue, false},
 
 		{[]string{"u"}, 0, 1, i.u, false},
@@ -516,6 +517,15 @@ func (i *Interp) string_(c interface{}, a []interface{}) interface{} {
 	}
 
 	return string(sb.String())
+}
+
+func (i *Interp) bytes(c interface{}, a []interface{}) interface{} {
+	bb, _, err := toBitBuf(c)
+	if err != nil {
+		return err
+	}
+
+	return &bitBufObject{bb: bb, unit: 8, r: ranges.Range{Len: bb.Len()}}
 }
 
 func (i *Interp) tovalue(c interface{}, a []interface{}) interface{} {
