@@ -246,6 +246,20 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 						// "Some sample descriptions terminate with four zero bytes that are not otherwise indicated."
 						// uses decodeAtomsZeroTerminate
 
+						// Timecode sample
+						// TODO: tc64
+						// d.DecodeRangeFn(firstBit, nBits, func(d *decode.D) {
+						// 	d.FieldStructFn("sample", func(d *decode.D) {
+						// 		d.FieldU32("reserved0")
+						// 		d.FieldBitBufLen("data", d.BitsLeft())
+						// 		// d.FieldU32("flags")
+						// 		// d.FieldS32("timescale")
+						// 		// d.FieldS32("frame_duration")
+						// 		// d.FieldS32("num_frames")
+						// 		// d.FieldU8("reserved1")
+						// 	})
+						// })
+
 						switch subType {
 						case "soun":
 							// AudioSampleEntry
