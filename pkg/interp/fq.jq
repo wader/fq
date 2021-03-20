@@ -77,7 +77,12 @@ def prompt:
 	def _path_prefix:
 		(._path? // ".")
 		| if . == "." then "" else . + " " end;
-	( if (. | length) == 1 then
+	( options.repllevel
+	  | if . > 1 then ((.-1) * ">") + " "
+	    else "" end
+	)
+	+ (
+	  if (. | length) == 1 then
 		.[0] | _path_prefix + _type_name_error
 	  else
 		[ "["
@@ -87,7 +92,8 @@ def prompt:
 		, "[\(length)]"
 		] | join("")
 	  end
-	) + "> ";
+	) +
+	"> ";
 
 def eval_f($e;f):
 	default_options(build_default_options) as $_
@@ -124,7 +130,7 @@ def repl($opts):
 			if . == "interrupt" then $c | _repl
 			elif . == "eof" then empty
 			else error(.) end;
-	with_options($opts; _as_array | _repl);
+	with_options($opts | .repllevel = options.repllevel+1; _as_array | _repl);
 
 def repl: repl({});
 
@@ -208,6 +214,7 @@ def main:
 		+ {
 			repl: $parsed.repl,
 			rawstring: $parsed.rawstring,
+			repllevel: 0,
 		}
 	)
 	| if $parsed.version then

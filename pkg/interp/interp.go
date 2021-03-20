@@ -88,25 +88,6 @@ func queryErrorLine(v error) int {
 	return 0
 }
 
-type Options struct {
-	Depth      int
-	Verbose    bool
-	Color      bool
-	Colors     string
-	ByteColors string
-	Unicode    bool
-	Raw        bool
-	REPL       bool
-	RawString  bool
-
-	LineBytes    int
-	DisplayBytes int64
-	AddrBase     int
-	SizeBase     int
-
-	Decorator Decorator
-}
-
 // TODO: move
 type DiscardOutput struct {
 	Output
@@ -614,6 +595,27 @@ func (i *Interp) EvalFuncValues(ctx context.Context, mode RunMode, c interface{}
 	return vs, nil
 }
 
+type Options struct {
+	Depth      int    `json:"depth"`
+	Verbose    bool   `json:"verbose"`
+	Color      bool   `json:"color"`
+	Colors     string `json:"colors"`
+	ByteColors string `json:"bytecolors"`
+	Unicode    bool   `json:"unicode"`
+	Raw        bool   `json:"raw"`
+	REPL       bool   `json:"repl"`
+	RawString  bool   `json:"rawstring"`
+
+	LineBytes    int   `json:"linebytes"`
+	DisplayBytes int64 `json:"displaybytes"`
+	AddrBase     int   `json:"addrbase"`
+	SizeBase     int   `json:"sizebase"`
+
+	REPLLevel int `json:"repllevel"`
+
+	Decorator Decorator `json:"-"`
+}
+
 func mapSetOptions(d *Options, m map[string]interface{}) {
 	if v, ok := m["depth"]; ok {
 		d.Depth = num.MaxInt(0, toIntZ(v))
@@ -642,6 +644,7 @@ func mapSetOptions(d *Options, m map[string]interface{}) {
 	if v, ok := m["rawstring"]; ok {
 		d.RawString = toBoolZ(v)
 	}
+
 	if v, ok := m["linebytes"]; ok {
 		d.LineBytes = num.MaxInt(0, toIntZ(v))
 	}
@@ -653,6 +656,10 @@ func mapSetOptions(d *Options, m map[string]interface{}) {
 	}
 	if v, ok := m["sizebase"]; ok {
 		d.SizeBase = num.ClampInt(2, 36, toIntZ(v))
+	}
+
+	if v, ok := m["repllevel"]; ok {
+		d.REPLLevel = toIntZ(v)
 	}
 }
 

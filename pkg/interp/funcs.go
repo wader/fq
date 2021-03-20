@@ -76,6 +76,7 @@ func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
 		{[]string{"json"}, 0, 0, i._json, false},
 
 		{[]string{"_state"}, 1, 2, i._state, false},
+		{[]string{"options"}, 0, 0, i.options, false},
 	}
 	for name, f := range i.registry.Groups {
 		fs = append(fs, Function{[]string{name}, 0, 0, i.makeDecodeFn(registry, f), false})
@@ -770,4 +771,23 @@ func (i *Interp) _state(c interface{}, a []interface{}) interface{} {
 	}
 
 	return s
+}
+
+func (i *Interp) options(c interface{}, a []interface{}) interface{} {
+	opts, err := i.Options()
+	if err != nil {
+		return err
+	}
+
+	// TODO: ugly
+	var v map[string]interface{}
+	b := &bytes.Buffer{}
+	if err := json.NewEncoder(b).Encode(&opts); err != nil {
+		return err
+	}
+	if err := json.NewDecoder(b).Decode(&v); err != nil {
+		return err
+	}
+
+	return v
 }
