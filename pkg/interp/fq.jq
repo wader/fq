@@ -23,6 +23,45 @@ def complete($e):
 
 def obj_to_csv_kv: [to_entries[] | [.key, .value] | join("=")] | join(",");
 
+def color_themes:
+	{
+		default: {
+			colors: ({
+				null: "brightblack",
+				false: "yellow",
+				true: "yellow",
+				number: "cyan",
+				string: "green",
+				objectkey: "brightblue",
+				array: "white",
+				object: "white",
+				index: "white",
+				value: "white",
+				error: "brightred",
+				frame: "yellow"
+			} | obj_to_csv_kv),
+			bytecolors: "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
+		},
+		# TODO: more configurable? colors=neon?
+		neon: {
+			colors: ({
+				null: "brightblack",
+				false: "brightyellow",
+				true: "brightyellow",
+				number: "brightcyan",
+				string: "brightgreen",
+				objectkey: "brightblue",
+				array: "brightwhite",
+				object: "brightwhite",
+				index: "brightwhite",
+				value: "brightwhite",
+				error: "brightred",
+				frame: "brightyellow"
+			} | obj_to_csv_kv),
+			bytecolors: "0-0xff=brightwhite,0=brightblack,32-126:9-13=brightgreen",
+		}
+	};
+
 def build_default_options:
 	{
 		depth:        0,
@@ -34,21 +73,8 @@ def build_default_options:
 		displaybytes: (if tty.is_terminal then [((tty.size[0] div 8) div 2) * 2, 4] | max else 16 end),
 		addrbase:     16,
 		sizebase:     10,
-		colors: ({
-			null: "brightblack",
-			false: "yellow",
-			true: "yellow",
-			number: "cyan",
-			string: "green",
-			objectkey: "brightblue",
-			array: "white",
-			object: "white",
-			index: "white",
-			value: "white",
-			error: "brightred",
-			frame: "yellow"
-		} | obj_to_csv_kv),
-		bytecolors: "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
+		colors:       color_themes.default.colors,
+		bytecolors:   color_themes.default.bytecolors,
 	};
 
 def parse_options:
@@ -65,7 +91,7 @@ def parse_options:
 			colors:       .colors,
 			bytecolors:   .bytecolors,
 	}
-	| with_entries(select(.value));
+	| with_entries(select(.value != null));
 
 def prompt:
 	def _type_name_error:
@@ -213,7 +239,7 @@ def main:
 		($parsed.options | parse_options)
 		+ {
 			repl: $parsed.repl,
-			rawstring: $parsed.rawstring,
+			rawstring: ($parsed.rawstring == true),
 			repllevel: 0,
 		}
 	)
