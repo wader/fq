@@ -1,4 +1,6 @@
 
+parse cli opts limits, zero base etc?
+
 mp3 make header/footer optional
 
 version etc from Main in options? use with_options in _main?
@@ -16,7 +18,7 @@ id3v2 unsync test, short priv frame?
 color in path:
 .metadatablocks[0].total_samples_in_steam: ....
 
-byte range when abs not rel?
+confusing index into byte range when abs not rel? dont know
 
 mp3> .unknown0._value
 panic: unreachable
