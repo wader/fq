@@ -4,7 +4,7 @@ Usage: fq [OPTIONS] [FILE] [EXPR]...
 --file,-f        Read script from file
 --formats        Show formats
 --help,-h        Show help
---noinput,-n     No input
+-n               Null input
 --option,-o=ARG  Set option, eg: color=true
                    addrbase=16
                    bytecolors=0-0xff=brightwhite,0=brightblack,32-126:9-13=white

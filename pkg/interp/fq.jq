@@ -160,10 +160,9 @@ def main:
 				description: "Show formats",
 				bool: true
 			},
-			"noinput": {
+			"nullinput": {
 				short: "-n",
-				long: "--noinput",
-				description: "No input",
+				description: "Null input",
 				bool: true
 			},
 			"decode": {
@@ -222,7 +221,7 @@ def main:
 	  else
 		null
 		# figure out filename and expressions
-		| ( if $parsed.noinput then [null, $rest]
+		| ( if $parsed.nullinput then [null, $rest]
 		    elif $rest[0] then [$rest[0], $rest[1:]]
 		    else ["-", $rest]
 		    end
