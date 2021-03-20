@@ -80,6 +80,8 @@ var Background = map[string]string{
 
 type Color string
 
+var None Color
+
 func FromString(s string) Color {
 	parts := strings.SplitN(s, ":", 2)
 	fg := ""

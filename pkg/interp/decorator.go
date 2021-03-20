@@ -138,8 +138,8 @@ func decoratorFromOptions(opts Options) Decorator {
 		}
 		deco.ByteColor = func(b byte) ansi.Color { return byteColors[b] }
 	} else {
-		deco.ValueColor = func(v *decode.Value) ansi.Color { return ansi.FromString("") }
-		deco.ByteColor = func(b byte) ansi.Color { return ansi.FromString("") }
+		deco.ValueColor = func(v *decode.Value) ansi.Color { return ansi.None }
+		deco.ByteColor = func(b byte) ansi.Color { return ansi.None }
 	}
 
 	return deco
@@ -164,8 +164,13 @@ type Decorator struct {
 	Error ansi.Color
 
 	ValueColor func(v *decode.Value) ansi.Color
-
-	ByteColor func(b byte) ansi.Color
+	ByteColor  func(b byte) ansi.Color
 
 	Column string
+}
+
+var PlainDecorator = Decorator{
+	Column:     "|",
+	ValueColor: func(v *decode.Value) ansi.Color { return ansi.None },
+	ByteColor:  func(b byte) ansi.Color { return ansi.None },
 }

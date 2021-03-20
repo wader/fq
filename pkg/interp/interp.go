@@ -14,6 +14,7 @@ import (
 	"fq/pkg/ranges"
 	"io"
 	"math/big"
+	"strconv"
 	"strings"
 
 	"github.com/itchyny/gojq"
@@ -136,16 +137,16 @@ type ToBitBuf interface {
 	ToBitBuf() (*bitio.Buffer, ranges.Range)
 }
 
-// TODO: jq function somehow? escape keys?
-func valuePath(v *decode.Value) string {
+func valuePathDecorated(v *decode.Value, d Decorator) string {
 	var parts []string
 
 	for v.Parent != nil {
 		switch v.Parent.V.(type) {
 		case decode.Struct:
-			parts = append([]string{".", v.Name}, parts...)
+			parts = append([]string{".", d.ObjectKey.Wrap(v.Name)}, parts...)
 		case decode.Array:
-			parts = append([]string{fmt.Sprintf("[%d]", v.Index)}, parts...)
+			indexStr := strconv.Itoa(v.Index)
+			parts = append([]string{fmt.Sprintf("%s%d%s", d.Index.F("["), d.Number.F(indexStr), d.Index.F("]"))}, parts...)
 		}
 		v = v.Parent
 	}
@@ -155,7 +156,11 @@ func valuePath(v *decode.Value) string {
 	}
 
 	return strings.Join(parts, "")
+}
 
+// TODO: jq function somehow? escape keys?
+func valuePath(v *decode.Value) string {
+	return valuePathDecorated(v, PlainDecorator)
 }
 
 type EmptyError interface {

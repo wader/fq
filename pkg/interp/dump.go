@@ -61,7 +61,9 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 		name = ""
 	}
 	if depth == 0 {
-		name = valuePath(nameV)
+		name = valuePathDecorated(nameV, deco)
+	} else {
+		name = deco.ObjectKey.Wrap(name)
 	}
 
 	rootIndent := strings.Repeat(" ", rootDepth)
@@ -82,7 +84,7 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 		}
 	}
 
-	cfmt(colField, "%s%s", indent, deco.ObjectKey.F(name))
+	cfmt(colField, "%s%s", indent, name)
 	if isInArray {
 		cfmt(colField, "%s%s%s", deco.Index.F("["), deco.Number.F(strconv.Itoa(v.Index)), deco.Index.F("]"))
 	}
