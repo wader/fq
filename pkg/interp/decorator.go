@@ -70,57 +70,60 @@ func parseCSVStringMap(s string) map[string]string {
 	return m
 }
 
+var PlainDecorator = Decorator{
+	Column:     "|",
+	ValueColor: func(v *decode.Value) ansi.Color { return ansi.None },
+	ByteColor:  func(b byte) ansi.Color { return ansi.None },
+}
+
 func decoratorFromOptions(opts Options) Decorator {
-	colStr := "|"
+	d := PlainDecorator
+
 	if opts.Unicode {
 		// U+2502 Box Drawings Light Vertical
-		colStr = "│"
-	}
-
-	deco := Decorator{
-		Column: colStr,
+		d.Column = "│"
 	}
 
 	if opts.Color {
 		colors := parseCSVStringMap(opts.Colors)
 
-		deco.Null = ansi.FromString(colors["null"])
-		deco.False = ansi.FromString(colors["false"])
-		deco.True = ansi.FromString(colors["true"])
-		deco.Number = ansi.FromString(colors["number"])
-		deco.String = ansi.FromString(colors["string"])
-		deco.ObjectKey = ansi.FromString(colors["objectkey"])
-		deco.Array = ansi.FromString(colors["array"])
-		deco.Object = ansi.FromString(colors["object"])
+		d.Null = ansi.FromString(colors["null"])
+		d.False = ansi.FromString(colors["false"])
+		d.True = ansi.FromString(colors["true"])
+		d.Number = ansi.FromString(colors["number"])
+		d.String = ansi.FromString(colors["string"])
+		d.ObjectKey = ansi.FromString(colors["objectkey"])
+		d.Array = ansi.FromString(colors["array"])
+		d.Object = ansi.FromString(colors["object"])
 
-		deco.Index = ansi.FromString(colors["index"])
+		d.Index = ansi.FromString(colors["index"])
 
-		deco.Value = ansi.FromString(colors["value"])
-		deco.Frame = ansi.FromString(colors["frame"])
+		d.Value = ansi.FromString(colors["value"])
+		d.Frame = ansi.FromString(colors["frame"])
 
-		deco.Error = ansi.FromString(colors["error"])
+		d.Error = ansi.FromString(colors["error"])
 
-		deco.ValueColor = func(v *decode.Value) ansi.Color {
+		d.ValueColor = func(v *decode.Value) ansi.Color {
 			switch vv := v.V.(type) {
 			case decode.Array:
-				return deco.Array
+				return d.Array
 			case decode.Struct:
-				return deco.Object
+				return d.Object
 			case bool:
 				if vv {
-					return deco.True
+					return d.True
 				}
-				return deco.False
+				return d.False
 			case string:
-				return deco.String
+				return d.String
 			case nil:
-				return deco.Null
+				return d.Null
 			case int, float64, int64, uint64:
 				// TODO: clean up number types
-				return deco.Number
+				return d.Number
 			default:
 				// TODO: error?
-				return deco.Value
+				return d.Value
 			}
 		}
 		byteDefaultColor := ansi.FromString("")
@@ -136,13 +139,13 @@ func decoratorFromOptions(opts Options) Decorator {
 				}
 			}
 		}
-		deco.ByteColor = func(b byte) ansi.Color { return byteColors[b] }
+		d.ByteColor = func(b byte) ansi.Color { return byteColors[b] }
 	} else {
-		deco.ValueColor = func(v *decode.Value) ansi.Color { return ansi.None }
-		deco.ByteColor = func(b byte) ansi.Color { return ansi.None }
+		d.ValueColor = func(v *decode.Value) ansi.Color { return ansi.None }
+		d.ByteColor = func(b byte) ansi.Color { return ansi.None }
 	}
 
-	return deco
+	return d
 }
 
 type Decorator struct {
@@ -167,10 +170,4 @@ type Decorator struct {
 	ByteColor  func(b byte) ansi.Color
 
 	Column string
-}
-
-var PlainDecorator = Decorator{
-	Column:     "|",
-	ValueColor: func(v *decode.Value) ansi.Color { return ansi.None },
-	ByteColor:  func(b byte) ansi.Color { return ansi.None },
 }
