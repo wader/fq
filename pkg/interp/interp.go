@@ -146,7 +146,7 @@ func valuePathDecorated(v *decode.Value, d Decorator) string {
 			parts = append([]string{".", d.ObjectKey.Wrap(v.Name)}, parts...)
 		case decode.Array:
 			indexStr := strconv.Itoa(v.Index)
-			parts = append([]string{fmt.Sprintf("%s%d%s", d.Index.F("["), d.Number.F(indexStr), d.Index.F("]"))}, parts...)
+			parts = append([]string{fmt.Sprintf("%s%s%s", d.Index.F("["), d.Number.F(indexStr), d.Index.F("]"))}, parts...)
 		}
 		v = v.Parent
 	}
