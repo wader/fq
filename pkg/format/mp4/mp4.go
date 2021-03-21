@@ -702,11 +702,12 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			d.FieldU24("flags")
 			d.FieldU32("mfra_size")
 		},
+		// TODO: item location
 		// HEIC image
 		"iloc": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
-			offsetSize := d.FieldU4("offet_size")
+			offsetSize := d.FieldU4("offset_size")
 			lengthSize := d.FieldU4("length_size")
 			baseOffsetSize := d.FieldU4("base_offset_size")
 			d.FieldU4("reserved")
