@@ -2,6 +2,7 @@ package jpeg
 
 // https://www.w3.org/Graphics/JPEG/itu-t81.pdf
 // TODO: warning on junk before marker?
+// TODO: extract photohop to own decoder?
 
 import (
 	"bytes"
@@ -275,39 +276,64 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 					case EOI:
 						eoiMarkerFound = true
 					default:
-						if markerFound {
-							markerLen := d.FieldU16("length")
-							d.DecodeLenFn(int64((markerLen-2)*8), func(d *decode.D) {
-								app1ExifPrefix := []byte("Exif\x00\x00")
-								extendedXMPPrefix := []byte("http://ns.adobe.com/xmp/extension/\x00")
-
-								switch {
-								case markerCode == APP1 && d.TryHasBytes(app1ExifPrefix):
-									d.FieldUTF8("exif_prefix", 6)
-									d.FieldDecodeLen("exif", d.BitsLeft(), exifFormat)
-								case markerCode == APP1 && d.TryHasBytes(extendedXMPPrefix):
-									d.FieldStructFn("extended_xmp_chunk", func(d *decode.D) {
-										d.FieldUTF8("signature", int(len(extendedXMPPrefix)))
-										d.FieldUTF8("guid", 32)
-										fullLength := d.FieldU32("full_length")
-										offset := d.FieldU32("offset")
-										// TODO: FieldBitsLen? concat bitbuf?
-										chunk := d.FieldBytesLen("data", int(d.BitsLeft()/8))
-
-										if extendedXMP == nil {
-											extendedXMP = make([]byte, fullLength)
-										}
-										copy(extendedXMP[offset:], chunk)
-									})
-								default:
-									// TODO: FieldBitsLen?
-									d.FieldBitBufLen("data", d.BitsLeft())
-								}
-							})
-
-						} else {
+						if !markerFound {
 							d.Invalid(fmt.Sprintf("unknown marker %x", markerCode))
 						}
+
+						markerLen := d.FieldU16("length")
+						d.DecodeLenFn(int64((markerLen-2)*8), func(d *decode.D) {
+							// TODO: map lookup and descriptions?
+							app0JFIFPrefix := []byte("JFIF\x00")
+							app1ExifPrefix := []byte("Exif\x00\x00")
+							extendedXMPPrefix := []byte("http://ns.adobe.com/xmp/extension/\x00")
+							// TODO: other version? generic?
+							app13PhotoshopPrefix := []byte("Photoshop 3.0\x00")
+
+							switch {
+							case markerCode == APP0 && d.TryHasBytes(app0JFIFPrefix):
+								d.FieldUTF8("identifier", len(app0JFIFPrefix))
+								d.FieldStructFn("version", func(d *decode.D) {
+									d.FieldU8("major")
+									d.FieldU8("minor")
+								})
+								d.FieldU8("density_units")
+								d.FieldU16("xdensity")
+								d.FieldU16("ydensity")
+								xThumbnail := d.FieldU8("xthumbnail")
+								yThumbnail := d.FieldU8("ythumbnail")
+								d.FieldBitBufLen("data", int64(xThumbnail*yThumbnail)*3*8)
+							case markerCode == APP1 && d.TryHasBytes(app1ExifPrefix):
+								d.FieldUTF8("exif_prefix", len(app1ExifPrefix))
+								d.FieldDecodeLen("exif", d.BitsLeft(), exifFormat)
+							case markerCode == APP1 && d.TryHasBytes(extendedXMPPrefix):
+								d.FieldStructFn("extended_xmp_chunk", func(d *decode.D) {
+									d.FieldUTF8("signature", len(extendedXMPPrefix))
+									d.FieldUTF8("guid", 32)
+									fullLength := d.FieldU32("full_length")
+									offset := d.FieldU32("offset")
+									// TODO: FieldBitsLen? concat bitbuf?
+									chunk := d.FieldBytesLen("data", int(d.BitsLeft()/8))
+
+									if extendedXMP == nil {
+										extendedXMP = make([]byte, fullLength)
+									}
+									copy(extendedXMP[offset:], chunk)
+								})
+							case markerCode == APP13 && d.TryHasBytes(app13PhotoshopPrefix):
+								d.FieldUTF8("identifier", len(app13PhotoshopPrefix))
+								signature := d.FieldUTF8("signature", 4)
+								switch signature {
+								case "8BIM":
+									// TODO: description?
+									d.FieldStringMapFn("block", psImageResourceBlockNames, "Unknown", d.U16, decode.NumberDecimal)
+									d.FieldBitBufLen("data", d.BitsLeft())
+								default:
+								}
+							default:
+								// TODO: FieldBitsLen?
+								d.FieldBitBufLen("data", d.BitsLeft())
+							}
+						})
 					}
 				})
 			}
