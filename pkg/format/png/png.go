@@ -3,6 +3,7 @@ package png
 // http://www.libpng.org/pub/png/spec/1.2/PNG-Contents.html
 // https://ftp-osl.osuosl.org/pub/libpng/documents/pngext-1.5.0.html
 // https://wiki.mozilla.org/APNG_Specification
+// TODO: color types
 
 import (
 	"fq/pkg/decode"
@@ -81,106 +82,108 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 			return chunkType, ""
 		})
 
-		switch chunkType {
-		case "IHDR":
-			d.FieldU32("width")
-			d.FieldU32("height")
-			d.FieldU8("bit_depth")
-			d.FieldU8("color_type")
-			d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8, decode.NumberDecimal)
-			d.FieldStringMapFn("filter_method", map[uint64]string{
-				0: "Adaptive filtering",
-			}, "unknown", d.U8, decode.NumberDecimal)
-			d.FieldStringMapFn("interlace_method", map[uint64]string{
-				0: "No interlace",
-				1: "Adam7 interlace",
-			}, "unknown", d.U8, decode.NumberDecimal)
-		case "tEXt":
-			// TODO: latin1
-			keywordLen := int(d.PeekFindByte(0, 80))
-			d.FieldUTF8("keyword", keywordLen-1)
-			d.FieldUTF8("null", 1)
-			d.FieldUTF8("text", chunkLength-keywordLen)
-		case "zTXt":
-			// TODO: latin1
-			keywordLen := int(d.PeekFindByte(0, 80))
-			d.FieldUTF8("keyword", keywordLen-1)
-			d.FieldUTF8("null", 1)
-			compressionMethod, _ := d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8, decode.NumberDecimal)
-			dataLen := (chunkLength - keywordLen - 1) * 8
+		d.DecodeLenFn(int64(chunkLength)*8, func(d *decode.D) {
+			switch chunkType {
+			case "IHDR":
+				d.FieldU32("width")
+				d.FieldU32("height")
+				d.FieldU8("bit_depth")
+				d.FieldU8("color_type")
+				d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8, decode.NumberDecimal)
+				d.FieldStringMapFn("filter_method", map[uint64]string{
+					0: "Adaptive filtering",
+				}, "unknown", d.U8, decode.NumberDecimal)
+				d.FieldStringMapFn("interlace_method", map[uint64]string{
+					0: "No interlace",
+					1: "Adam7 interlace",
+				}, "unknown", d.U8, decode.NumberDecimal)
+			case "tEXt":
+				// TODO: latin1
+				keywordLen := int(d.PeekFindByte(0, 80))
+				d.FieldUTF8("keyword", keywordLen-1)
+				d.FieldUTF8("null", 1)
+				d.FieldUTF8("text", chunkLength-keywordLen)
+			case "zTXt":
+				// TODO: latin1
+				keywordLen := int(d.PeekFindByte(0, 80))
+				d.FieldUTF8("keyword", keywordLen-1)
+				d.FieldUTF8("null", 1)
+				compressionMethod, _ := d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8, decode.NumberDecimal)
+				dataLen := (chunkLength - keywordLen - 1) * 8
 
-			switch compressionMethod {
-			case compressionDeflate:
-				dd := d.FieldStructFn("data", func(d *decode.D) {
-					d.FieldDecodeZlibLen("uncompressed", int64(dataLen), decode.FormatFn(func(d *decode.D, in interface{}) interface{} {
-						d.FieldUTF8("text", int(d.BitsLeft()/8))
-						return nil
-					}))
-				})
-				// TODO: depends on isRoot in postProcess
-				dd.Value.Range = ranges.Range{Start: d.Pos() - int64(dataLen), Len: int64(dataLen)}
-			default:
-				d.FieldBitBufLen("data", int64(dataLen))
-			}
-		case "iCCP":
-			profileNameLen := int(d.PeekFindByte(0, 80))
-			d.FieldUTF8("profile_name", profileNameLen-1)
-			d.FieldUTF8("null", 1)
-			compressionMethod, _ := d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8, decode.NumberDecimal)
-			dataLen := (chunkLength - profileNameLen - 1) * 8
+				switch compressionMethod {
+				case compressionDeflate:
+					dd := d.FieldStructFn("data", func(d *decode.D) {
+						d.FieldDecodeZlibLen("uncompressed", int64(dataLen), decode.FormatFn(func(d *decode.D, in interface{}) interface{} {
+							d.FieldUTF8("text", int(d.BitsLeft()/8))
+							return nil
+						}))
+					})
+					// TODO: depends on isRoot in postProcess
+					dd.Value.Range = ranges.Range{Start: d.Pos() - int64(dataLen), Len: int64(dataLen)}
+				default:
+					d.FieldBitBufLen("data", int64(dataLen))
+				}
+			case "iCCP":
+				profileNameLen := int(d.PeekFindByte(0, 80))
+				d.FieldUTF8("profile_name", profileNameLen-1)
+				d.FieldUTF8("null", 1)
+				compressionMethod, _ := d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8, decode.NumberDecimal)
+				dataLen := (chunkLength - profileNameLen - 1) * 8
 
-			switch compressionMethod {
-			case compressionDeflate:
-				dd := d.FieldStructFn("data", func(d *decode.D) {
-					d.FieldDecodeZlibLen("uncompressed", int64(dataLen), iccProfileFormat)
-				})
-				dd.Value.Range = ranges.Range{Start: d.Pos() - int64(dataLen), Len: int64(dataLen)}
+				switch compressionMethod {
+				case compressionDeflate:
+					dd := d.FieldStructFn("data", func(d *decode.D) {
+						d.FieldDecodeZlibLen("uncompressed", int64(dataLen), iccProfileFormat)
+					})
+					dd.Value.Range = ranges.Range{Start: d.Pos() - int64(dataLen), Len: int64(dataLen)}
+				default:
+					d.FieldBitBufLen("data", int64(dataLen))
+				}
+			case "pHYs":
+				d.FieldU32("x_pixels_per_unit")
+				d.FieldU32("y_pixels_per_unit")
+				d.FieldU8("unit")
+			case "bKGD":
+				d.FieldU16("value")
+			case "gAMA":
+				d.FieldU32("value")
+			case "cHRM":
+				df := func() (float64, string) { return float64(d.U32()) / 1000.0, "" }
+				d.FieldFloatFn("white_point_x", df)
+				d.FieldFloatFn("white_point_y", df)
+				d.FieldFloatFn("red_x", df)
+				d.FieldFloatFn("red_y", df)
+				d.FieldFloatFn("green_x", df)
+				d.FieldFloatFn("green_y", df)
+				d.FieldFloatFn("blue_x", df)
+				d.FieldFloatFn("blue_y", df)
+			case "eXIf":
+				d.FieldDecodeLen("exif", int64(chunkLength)*8, exifFormat)
+			case "acTL":
+				d.FieldU32("num_frames")
+				d.FieldU32("num_plays")
+			case "fcTL":
+				d.FieldU32("sequence_number")
+				d.FieldU32("width")
+				d.FieldU32("height")
+				d.FieldU32("x_offset")
+				d.FieldU32("y_offset")
+				d.FieldU16("delay_num")
+				d.FieldU16("delay_sep")
+				d.FieldStringMapFn("dispose_op", disposeOpNames, "Unknown", d.U8, decode.NumberDecimal)
+				d.FieldStringMapFn("blend_op", blendOpNames, "Unknown", d.U8, decode.NumberDecimal)
+			case "fdAT":
+				d.FieldU32("sequence_number")
+				d.FieldBitBufLen("data", int64(chunkLength-4)*8)
 			default:
-				d.FieldBitBufLen("data", int64(dataLen))
+				if chunkType == "IEND" {
+					iEndFound = true
+				} else {
+					d.FieldBitBufLen("data", int64(chunkLength)*8)
+				}
 			}
-		case "pHYs":
-			d.FieldU32("x_pixels_per_unit")
-			d.FieldU32("y_pixels_per_unit")
-			d.FieldU8("unit")
-		case "bKGD":
-			d.FieldU16("value")
-		case "gAMA":
-			d.FieldU32("value")
-		case "cHRM":
-			df := func() (float64, string) { return float64(d.U32()) / 1000.0, "" }
-			d.FieldFloatFn("white_point_x", df)
-			d.FieldFloatFn("white_point_y", df)
-			d.FieldFloatFn("red_x", df)
-			d.FieldFloatFn("red_y", df)
-			d.FieldFloatFn("green_x", df)
-			d.FieldFloatFn("green_y", df)
-			d.FieldFloatFn("blue_x", df)
-			d.FieldFloatFn("blue_y", df)
-		case "eXIf":
-			d.FieldDecodeLen("exif", int64(chunkLength)*8, exifFormat)
-		case "acTL":
-			d.FieldU32("num_frames")
-			d.FieldU32("num_plays")
-		case "fcTL":
-			d.FieldU32("sequence_number")
-			d.FieldU32("width")
-			d.FieldU32("height")
-			d.FieldU32("x_offset")
-			d.FieldU32("y_offset")
-			d.FieldU16("delay_num")
-			d.FieldU16("delay_sep")
-			d.FieldStringMapFn("dispose_op", disposeOpNames, "Unknown", d.U8, decode.NumberDecimal)
-			d.FieldStringMapFn("blend_op", blendOpNames, "Unknown", d.U8, decode.NumberDecimal)
-		case "fdAT":
-			d.FieldU32("sequence_number")
-			d.FieldBitBufLen("data", int64(chunkLength-4)*8)
-		default:
-			if chunkType == "IEND" {
-				iEndFound = true
-			} else {
-				d.FieldBitBufLen("data", int64(chunkLength)*8)
-			}
-		}
+		})
 
 		chunkCRC := crc32.NewIEEE()
 		decode.MustCopy(chunkCRC, d.BitBufRange(crcStartPos, d.Pos()-crcStartPos))
