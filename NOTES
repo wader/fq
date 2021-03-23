@@ -1,4 +1,5 @@
 
+decode struct/array collects? simiar to jq?
 
 decode defer function for postprocess? or flag or special range? decode/limit range
 
