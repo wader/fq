@@ -1,7 +1,7 @@
 # eval is implemented as an internal function evaluting $e for input and
 # returns an array with all generated values, we then each over the values
 # to make it behave as a normal jq generator.
-def eval($e): _eval($e)[];
+# def eval($e): _eval($e)[];
 
 def default_options: _state("default_options");
 def default_options($opts): _state("default_options"; $opts);
@@ -20,29 +20,29 @@ def finally(f; fin):
 def with_options($opts; f):
 	push_options($opts) as $_ | finally(f; pop_options);
 
-def print: _print[];
+# def print: _print[];
 
-def display: _display[];
-def display($opts): _display($opts)[];
-def d: _display[];
-def d($opts): _display($opts)[];
+# def display: _display[];
+# def display($opts): _display($opts)[];
+# def d: _display[];
+# def d($opts): _display($opts)[];
 
-def verbose: _verbose[];
-def verbose($opts): _verbose($opts)[];
-def v: _verbose[];
-def v($opts): _verbose($opts)[];
+# def verbose: _verbose[];
+# def verbose($opts): _verbose($opts)[];
+# def v: _verbose[];
+# def v($opts): _verbose($opts)[];
 
-def preview: _preview[];
-def preview($opts): _preview($opts)[];
-def p: _preview[];
-def p($opts): _preview($opts)[];
+# def preview: _preview[];
+# def preview($opts): _preview($opts)[];
+# def p: _preview[];
+# def p($opts): _preview($opts)[];
 
-def hexdump: _hexdump[];
-def hexdump($opts): _hexdump($opts)[];
-def hd: _hexdump[];
-def hd($opts): _hexdump($opts)[];
-def h: _hexdump[];
-def h($opts): _hexdump($opts)[];
+# def hexdump: _hexdump[];
+# def hexdump($opts): _hexdump($opts)[];
+# def hd: _hexdump[];
+# def hd($opts): _hexdump($opts)[];
+# def h: _hexdump[];
+# def h($opts): _hexdump($opts)[];
 
 def trim: capture("^\\s*(?<str>.*?)\\s*$"; "").str;
 

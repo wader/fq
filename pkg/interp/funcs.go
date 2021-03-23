@@ -40,8 +40,8 @@ func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
 		{[]string{"tty"}, 0, 0, i.tty, false},
 
 		{[]string{"read"}, 0, 2, i.read, false},
-		{[]string{"_eval"}, 1, 1, i.eval, true},
-		{[]string{"_print"}, 0, 0, i.print, true},
+		{[]string{"eval"}, 1, 1, i.eval, true},
+		{[]string{"print"}, 0, 0, i.print, true},
 
 		{[]string{"complete_query"}, 0, 0, i.completeQuery, false},
 		{[]string{"display_name"}, 0, 0, i.displayName, false},
@@ -51,10 +51,10 @@ func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
 		{[]string{"open"}, 0, 1, i._open, false},
 		{[]string{"decode"}, 0, 1, i.makeDecodeFn(registry, registry.MustGroup(format.PROBE)), false},
 
-		{[]string{"_display"}, 0, 1, i.makeDisplayFn(nil), true},
-		{[]string{"_verbose"}, 0, 1, i.makeDisplayFn(map[string]interface{}{"verbose": true}), true},
-		{[]string{"_preview"}, 0, 1, i.preview, true},
-		{[]string{"_hexdump"}, 0, 1, i.hexdump, true},
+		{[]string{"display", "d"}, 0, 1, i.makeDisplayFn(nil), true},
+		{[]string{"verbose", "v"}, 0, 1, i.makeDisplayFn(map[string]interface{}{"verbose": true}), true},
+		{[]string{"preview", "p"}, 0, 1, i.preview, true},
+		{[]string{"hexdump", "hd", "h"}, 0, 1, i.hexdump, true},
 
 		{[]string{"string"}, 0, 0, i.string_, false},
 		{[]string{"bytes"}, 0, 0, i.bytes, false},
@@ -451,7 +451,7 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 		case error:
 			return v
 		default:
-			return fmt.Errorf("%v: not displayable", c)
+			return fmt.Errorf("%+#v: not displayable", c)
 		}
 	}
 }

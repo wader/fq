@@ -499,8 +499,13 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	var compilerOpts []gojq.CompilerOption
 	for _, f := range ni.makeFunctions(ni.registry) {
 		for _, n := range f.Names {
-			compilerOpts = append(compilerOpts,
-				gojq.WithFunction(n, f.MinArity, f.MaxArity, f.Fn))
+			if f.Generator {
+				compilerOpts = append(compilerOpts,
+					gojq.WithIterator(n, f.MinArity, f.MaxArity, f.Fn))
+			} else {
+				compilerOpts = append(compilerOpts,
+					gojq.WithFunction(n, f.MinArity, f.MaxArity, f.Fn))
+			}
 		}
 	}
 	compilerOpts = append(compilerOpts, gojq.WithEnvironLoader(ni.os.Environ))
