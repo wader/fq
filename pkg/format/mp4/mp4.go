@@ -2,6 +2,7 @@ package mp4
 
 // Quicktime file format https://developer.apple.com/standards/qtff-2001.pdf
 // FLAC in ISOBMFF https://github.com/xiph/flac/blob/master/doc/isoflac.txt
+// https://www.webmproject.org/vp9/mp4/
 // TODO: validate structure better? trak/stco etc
 // TODO: rename atom -> box?
 // TODO: fmp4, default samples sizes etc
@@ -31,6 +32,7 @@ var mpegHEVCSampleFormat []*decode.Format
 var opusPacketFrameFormat []*decode.Format
 var vorbisPacketFormat []*decode.Format
 var vp9FrameFormat []*decode.Format
+var vpxCCRFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -55,6 +57,7 @@ func init() {
 			{Names: []string{format.OPUS_PACKET}, Formats: &opusPacketFrameFormat},
 			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
 			{Names: []string{format.VP9_FRAME}, Formats: &vp9FrameFormat},
+			{Names: []string{format.VPX_CCR}, Formats: &vpxCCRFormat},
 		},
 	})
 }
@@ -377,6 +380,11 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 		},
 		"av1C": func(ctx *decodeContext, d *decode.D) {
 			d.FieldDecode("value", av1CCRFormat)
+		},
+		"vpcC": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+			d.FieldDecode("value", vpxCCRFormat)
 		},
 		"esds": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU32("version")

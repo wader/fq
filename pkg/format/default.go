@@ -68,6 +68,8 @@ const (
 	VORBIS_PACKET      = "vorbis_packet"
 	VP8_FRAME          = "vp8_frame"
 	VP9_FRAME          = "vp9_frame"
+	VP9_CFM            = "vp9_cfm"
+	VPX_CCR            = "vpx_ccr"
 	WAV                = "wav"
 	WEBP               = "webp"
 )

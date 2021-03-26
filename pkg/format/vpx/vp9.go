@@ -9,6 +9,20 @@ import (
 
 // TODO: vpx frame?
 
+const (
+	vp9FeatureProfile           = 1
+	vp9FeatureLevel             = 2
+	vp9FeatureBitDepth          = 3
+	vp9FeatureChromaSubsampling = 4
+)
+
+var vp9FeatureIDNames = map[uint64]string{
+	vp9FeatureProfile:           "Profile",
+	vp9FeatureLevel:             "Level",
+	vp9FeatureBitDepth:          "Bit Depth",
+	vp9FeatureChromaSubsampling: "Chroma Subsampling",
+}
+
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.VP9_FRAME,

@@ -38,6 +38,7 @@ var opusPacketFrameFormat []*decode.Format
 var vorbisPacketFormat []*decode.Format
 var vp8FrameFormat []*decode.Format
 var vp9FrameFormat []*decode.Format
+var vp9CFMFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -62,6 +63,7 @@ func init() {
 			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
 			{Names: []string{format.VP8_FRAME}, Formats: &vp8FrameFormat},
 			{Names: []string{format.VP9_FRAME}, Formats: &vp9FrameFormat},
+			{Names: []string{format.VP9_CFM}, Formats: &vp9CFMFormat},
 		},
 	})
 }
@@ -400,6 +402,8 @@ func mkvDecode(d *decode.D, in interface{}) interface{} {
 				decode.FormatOptions{InArg: format.HevcIn{LengthSize: hevcDcrOut.LengthSize}})
 		case "V_AV1":
 			t.parentD.FieldDecodeRange("value", t.codecPrivatePos, t.codecPrivateTagSize, av1CCRFormat)
+		case "V_VP9":
+			t.parentD.FieldDecodeRange("value", t.codecPrivatePos, t.codecPrivateTagSize, vp9CFMFormat)
 		default:
 			t.parentD.FieldBitBufRange("value", t.codecPrivatePos, t.codecPrivateTagSize)
 		}
