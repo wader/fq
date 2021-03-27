@@ -605,7 +605,7 @@ func (i *Interp) base64(c interface{}, a []interface{}) interface{} {
 	}
 	b64.Close()
 
-	return b64Buf.Bytes()
+	return b64Buf.String()
 }
 
 func (i *Interp) unbase64(c interface{}, a []interface{}) interface{} {
@@ -619,7 +619,9 @@ func (i *Interp) unbase64(c interface{}, a []interface{}) interface{} {
 		return err
 	}
 
-	return buf.Bytes()
+	ubb := bitio.NewBufferFromBytes(buf.Bytes(), -1)
+
+	return &bitBufObject{bb: ubb, unit: 8, r: ranges.Range{Len: ubb.Len()}}
 }
 
 func (i *Interp) hex(c interface{}, a []interface{}) interface{} {
@@ -653,7 +655,9 @@ func (i *Interp) unhex(c interface{}, a []interface{}) interface{} {
 		return err
 	}
 
-	return b64Buf.Bytes()
+	ubb := bitio.NewBufferFromBytes(b64Buf.Bytes(), -1)
+
+	return &bitBufObject{bb: ubb, unit: 8, r: ranges.Range{Len: ubb.Len()}}
 }
 
 func (i *Interp) queryEscape(c interface{}, a []interface{}) interface{} {
