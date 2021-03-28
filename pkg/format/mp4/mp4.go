@@ -50,7 +50,7 @@ func init() {
 			{Names: []string{format.MP3_FRAME}, Formats: &mp3FrameFormat},
 			{Names: []string{format.AAC_FRAME}, Formats: &aacFrameFormat},
 			{Names: []string{format.MPEG_AVC_DCR}, Formats: &mpegAVCDCRFormat},
-			{Names: []string{format.AVC_NAL}, Formats: &mpegAVCSampleFormat},
+			{Names: []string{format.AVC_NALS}, Formats: &mpegAVCSampleFormat},
 			{Names: []string{format.MPEG_ES}, Formats: &mpegESFormat},
 			{Names: []string{format.HEVC_DCR}, Formats: &mpegHEVCDCRFrameFormat},
 			{Names: []string{format.HEVC_NAL}, Formats: &mpegHEVCSampleFormat},

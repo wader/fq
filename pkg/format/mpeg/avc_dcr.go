@@ -12,8 +12,7 @@ import (
 	"fq/pkg/format"
 )
 
-var avcSPSFormat []*decode.Format
-var avcPPSFormat []*decode.Format
+var avcNALFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -21,8 +20,7 @@ func init() {
 		Description: "H.264/AVC Decoder configuration record",
 		DecodeFn:    avcDcrDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.MPEG_AVC_SPS}, Formats: &avcSPSFormat},
-			{Names: []string{format.MPEG_AVC_PPS}, Formats: &avcPPSFormat},
+			{Names: []string{format.MPEG_AVC_NAL}, Formats: &avcNALFormat},
 		},
 	})
 }
@@ -161,38 +159,7 @@ func avcDcrParameterSet(d *decode.D, numParamSets uint64) {
 	for i := uint64(0); i < numParamSets; i++ {
 		d.FieldStructFn("set", func(d *decode.D) {
 			paramSetLen := d.FieldU16("length")
-			d.DecodeLenFn(int64(paramSetLen)*8, func(d *decode.D) {
-				d.FieldBool("forbidden_zero_bit")
-				d.FieldU2("nal_ref_idc")
-				nalType, _ := d.FieldStringMapFn("nal_unit_type", avcNALNames, "Unknown", d.U5, decode.NumberDecimal)
-				unescapedBb := decode.MustNewBitBufFromReader(decode.NALUnescapeReader{Reader: d.BitBufRange(d.Pos(), int64(paramSetLen-1)*8)})
-
-				switch nalType {
-				case avcNALSequenceParameterSet:
-					d.FieldDecodeBitBuf("nal", unescapedBb, avcSPSFormat)
-				case avcNALPictureParameterSet:
-					d.FieldDecodeBitBuf("nal", unescapedBb, avcPPSFormat)
-				}
-
-				d.FieldBitBufLen("data", d.BitsLeft())
-
-				// 	d.FieldDecodeBitBuf()
-
-				// 	unescapedBb := decode.MustNewBitBufFromReader(nalUnescapeReader{Reader: d.BitBufRange(d.Pos(), int64(paramSetLen-1)*8)})
-				// 	d.FieldDecodeBitBuf("unescaped", unescapedBb, decode.FormatFn(func(d *decode.D, in interface{}) interface{} {
-
-				// 		switch nalType {
-				// 		case avcNALSequenceParameterSet:
-				// 			d.Decode(avcSPSFormat)
-				// 		case avcNALPictureParameterSet:
-				// 			d.Decode(avcPPSFormat)
-				// 		default:
-				// 			d.FieldBitBufLen("data", d.BitsLeft())
-				// 		}
-				// 		return nil
-				// 	}))
-				// })
-			})
+			d.FieldDecodeLen("nal", int64(paramSetLen)*8, avcNALFormat)
 		})
 	}
 }

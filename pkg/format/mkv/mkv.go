@@ -55,7 +55,7 @@ func init() {
 			{Names: []string{format.AAC_FRAME}, Formats: &aacFrameFormat},
 			{Names: []string{format.MPEG_ASC}, Formats: &mpegASCFrameFormat},
 			{Names: []string{format.MPEG_AVC_DCR}, Formats: &mpegAVCDCRFormat},
-			{Names: []string{format.AVC_NAL}, Formats: &mpegAVCSampleFormat},
+			{Names: []string{format.AVC_NALS}, Formats: &mpegAVCSampleFormat},
 			{Names: []string{format.HEVC_DCR}, Formats: &mpegHEVCDCRFormat},
 			{Names: []string{format.HEVC_NAL}, Formats: &mpegHEVCSampleFormat},
 			{Names: []string{format.MPEG_SPU}, Formats: &mpegSPUFrameFormat},

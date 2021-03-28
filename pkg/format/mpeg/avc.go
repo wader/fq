@@ -2,6 +2,8 @@ package mpeg
 
 // ISO/IEC 14496-15, 5.3.3.1.2 Syntax
 
+// TODO: merge with other nal?
+
 import (
 	"fq/pkg/decode"
 	"fq/pkg/format"
@@ -9,7 +11,7 @@ import (
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:        format.AVC_NAL,
+		Name:        format.AVC_NALS,
 		Description: "H.264/AVC sample",
 		DecodeFn:    avcDecode,
 	})
