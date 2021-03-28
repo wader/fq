@@ -55,6 +55,7 @@ const (
 	MPEG_ASC           = "mpeg_asc"
 	MPEG_AVC_DCR       = "avc_dcr"
 	MPEG_AVC_SPS       = "avc_sps"
+	MPEG_AVC_PPS       = "avc_pps"
 	MPEG_ES            = "mpeg_es"
 	MPEG_PES           = "mpeg_pes"
 	MPEG_PES_PACKET    = "mpeg_pes_packet"

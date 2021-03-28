@@ -16,44 +16,6 @@ func init() {
 	})
 }
 
-// TODO: share?
-func zigzag(n uint64) int64 {
-	return int64(n>>1 ^ -(n & 1))
-}
-
-// 14496-10 9.1 Parsing process for Exp-Golomb codes
-func expGolomb(d *decode.D) uint64 {
-	leadingZeroBits := -1
-	for b := false; !b; leadingZeroBits++ {
-		b = d.Bool()
-	}
-
-	var expN uint64
-	if leadingZeroBits == 0 {
-		expN = 1
-	} else {
-		expN = 2 << (leadingZeroBits - 1)
-	}
-
-	return expN - 1 + d.U(leadingZeroBits)
-}
-
-func uEV(d *decode.D) uint64 { return expGolomb(d) }
-
-func fieldUEV(d *decode.D, name string) uint64 {
-	return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
-		return uEV(d), decode.NumberDecimal, ""
-	})
-}
-
-func sEV(d *decode.D) int64 { return zigzag(expGolomb(d)) }
-
-func fieldSEV(d *decode.D, name string) int64 {
-	return d.FieldSFn(name, func() (int64, decode.DisplayFormat, string) {
-		return sEV(d), decode.NumberDecimal, ""
-	})
-}
-
 func avcVuiParameters(d *decode.D) {
 	aspectRatioInfoPresentFlag := d.FieldBool("aspect_ratio_info_present_flag")
 	if aspectRatioInfoPresentFlag {

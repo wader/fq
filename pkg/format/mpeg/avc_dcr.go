@@ -14,6 +14,7 @@ import (
 )
 
 var avcSPSFormat []*decode.Format
+var avcPPSFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -22,7 +23,46 @@ func init() {
 		DecodeFn:    avcDcrDecode,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.MPEG_AVC_SPS}, Formats: &avcSPSFormat},
+			{Names: []string{format.MPEG_AVC_PPS}, Formats: &avcPPSFormat},
 		},
+	})
+}
+
+// TODO: share?
+func zigzag(n uint64) int64 {
+	return int64(n>>1 ^ -(n & 1))
+}
+
+// 14496-10 9.1 Parsing process for Exp-Golomb codes
+func expGolomb(d *decode.D) uint64 {
+	leadingZeroBits := -1
+	for b := false; !b; leadingZeroBits++ {
+		b = d.Bool()
+	}
+
+	var expN uint64
+	if leadingZeroBits == 0 {
+		expN = 1
+	} else {
+		expN = 2 << (leadingZeroBits - 1)
+	}
+
+	return expN - 1 + d.U(leadingZeroBits)
+}
+
+func uEV(d *decode.D) uint64 { return expGolomb(d) }
+
+func fieldUEV(d *decode.D, name string) uint64 {
+	return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
+		return uEV(d), decode.NumberDecimal, ""
+	})
+}
+
+func sEV(d *decode.D) int64 { return zigzag(expGolomb(d)) }
+
+func fieldSEV(d *decode.D, name string) int64 {
+	return d.FieldSFn(name, func() (int64, decode.DisplayFormat, string) {
+		return sEV(d), decode.NumberDecimal, ""
 	})
 }
 
@@ -53,12 +93,12 @@ func (r nalUnescapeReader) Read(p []byte) (n int, err error) {
 }
 
 const (
-	acvNALSequenceParameterSet = 7
+	avcNALSequenceParameterSet = 7
 	avcNALPictureParameterSet  = 8
 )
 
 var avcNALNames = map[uint64]string{
-	acvNALSequenceParameterSet: "SequenceParameterSet",
+	avcNALSequenceParameterSet: "SequenceParameterSet",
 	avcNALPictureParameterSet:  "PictureParameterSet",
 }
 
@@ -105,19 +145,33 @@ func avcDcrParameterSet(d *decode.D, numParamSets uint64) {
 				d.FieldBool("forbidden_zero_bit")
 				d.FieldU2("nal_ref_idc")
 				nalType, _ := d.FieldStringMapFn("nal_unit_type", avcNALNames, "Unknown", d.U5, decode.NumberDecimal)
-				_ = nalType
-
 				unescapedBb := decode.MustNewBitBufFromReader(nalUnescapeReader{Reader: d.BitBufRange(d.Pos(), int64(paramSetLen-1)*8)})
-				d.FieldDecodeBitBuf("unescaped", unescapedBb, decode.FormatFn(func(d *decode.D, in interface{}) interface{} {
 
-					switch nalType {
-					case acvNALSequenceParameterSet:
-						d.Decode(avcSPSFormat)
-					default:
-						d.FieldBitBufLen("data", d.BitsLeft())
-					}
-					return nil
-				}))
+				switch nalType {
+				case avcNALSequenceParameterSet:
+					d.FieldDecodeBitBuf("nal", unescapedBb, avcSPSFormat)
+				case avcNALPictureParameterSet:
+					d.FieldDecodeBitBuf("nal", unescapedBb, avcPPSFormat)
+				}
+
+				d.FieldBitBufLen("data", d.BitsLeft())
+
+				// 	d.FieldDecodeBitBuf()
+
+				// 	unescapedBb := decode.MustNewBitBufFromReader(nalUnescapeReader{Reader: d.BitBufRange(d.Pos(), int64(paramSetLen-1)*8)})
+				// 	d.FieldDecodeBitBuf("unescaped", unescapedBb, decode.FormatFn(func(d *decode.D, in interface{}) interface{} {
+
+				// 		switch nalType {
+				// 		case avcNALSequenceParameterSet:
+				// 			d.Decode(avcSPSFormat)
+				// 		case avcNALPictureParameterSet:
+				// 			d.Decode(avcPPSFormat)
+				// 		default:
+				// 			d.FieldBitBufLen("data", d.BitsLeft())
+				// 		}
+				// 		return nil
+				// 	}))
+				// })
 			})
 		})
 	}
