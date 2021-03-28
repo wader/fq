@@ -1,6 +1,7 @@
 package mpeg
 
-// TODO: unescape configurable? merge with AVC_NAL?
+// TODO: unescape configurable? merge with AVC_NAL? merge with HEVC?
+// TODO: naming
 
 import (
 	"fq/pkg/decode"
