@@ -97,8 +97,10 @@ TODO: piping
 |`av1_ccr`            |AV1&nbsp;codec&nbsp;configuration&nbsp;record                |<sub></sub>|
 |`av1_frame`          |AV1&nbsp;frame                                               |<sub>`av1_obu`</sub>|
 |`av1_obu`            |AV1&nbsp;open&nbsp;bitstream&nbsp;unit                       |<sub></sub>|
-|`avc_dcr`            |H.264/AVC&nbsp;Decoder&nbsp;configuration&nbsp;record        |<sub></sub>|
+|`avc_dcr`            |H.264/AVC&nbsp;Decoder&nbsp;configuration&nbsp;record        |<sub>`avc_sps`, `avc_pps`</sub>|
 |`avc_nal`            |H.264/AVC&nbsp;sample                                        |<sub></sub>|
+|`avc_pps`            |H.264/AVC&nbsp;picture&nbsp;parameter&nbsp;set               |<sub></sub>|
+|`avc_sps`            |H.264/AVC&nbsp;sequence&nbsp;parameter&nbsp;set              |<sub></sub>|
 |`bzip2`              |bzip2&nbsp;compression                                       |<sub>`probe`</sub>|
 |`dns`                |DNS&nbsp;packet                                              |<sub></sub>|
 |`elf`                |Executable&nbsp;and&nbsp;Linkable&nbsp;Format                |<sub></sub>|
@@ -116,11 +118,11 @@ TODO: piping
 |`id3_v11`            |ID3v1.1&nbsp;metadata                                        |<sub></sub>|
 |`id3_v2`             |ID3v2&nbsp;metadata                                          |<sub>`image`</sub>|
 |`jpeg`               |Joint&nbsp;Photographic&nbsp;Experts&nbsp;Group&nbsp;file    |<sub>`exif`</sub>|
-|`mkv`                |Matroska&nbsp;file                                           |<sub>`av1_ccr`, `av1_frame`, `flac_frame`, `flac_metadatablock`, `mp3_frame`, `aac_frame`, `mpeg_asc`, `avc_dcr`, `avc_nal`, `hevc_dcr`, `hevc_nal`, `mpeg_spu`, `opus_packet`, `vorbis_packet`, `vp8_frame`, `vp9_frame`</sub>|
+|`mkv`                |Matroska&nbsp;file                                           |<sub>`av1_ccr`, `av1_frame`, `flac_frame`, `flac_metadatablock`, `mp3_frame`, `aac_frame`, `mpeg_asc`, `avc_dcr`, `avc_nal`, `hevc_dcr`, `hevc_nal`, `mpeg_spu`, `opus_packet`, `vorbis_packet`, `vp8_frame`, `vp9_frame`, `vp9_cfm`</sub>|
 |`mp3`                |MP3&nbsp;file                                                |<sub>`id3_v2`, `id3_v1`, `id3_v11`, `apev2`, `mp3_frame`</sub>|
 |`mp3_frame`          |MPEG&nbsp;audio&nbsp;layer&nbsp;3&nbsp;frame                 |<sub>`mp3_xing`</sub>|
 |`mp3_xing`           |Xing&nbsp;header                                             |<sub></sub>|
-|`mp4`                |MPEG-4&nbsp;file                                             |<sub>`av1_ccr`, `av1_frame`, `flac_frame`, `flac_metadatablock`, `mp3_frame`, `aac_frame`, `avc_dcr`, `avc_nal`, `mpeg_es`, `hevc_dcr`, `hevc_nal`, `opus_packet`, `vorbis_packet`, `vp9_frame`</sub>|
+|`mp4`                |MPEG-4&nbsp;file                                             |<sub>`av1_ccr`, `av1_frame`, `flac_frame`, `flac_metadatablock`, `mp3_frame`, `aac_frame`, `avc_dcr`, `avc_nal`, `mpeg_es`, `hevc_dcr`, `hevc_nal`, `opus_packet`, `vorbis_packet`, `vp9_frame`, `vpx_ccr`</sub>|
 |`mpeg_asc`           |MPEG-4&nbsp;Audio&nbsp;specific&nbsp;config                  |<sub></sub>|
 |`mpeg_es`            |MPEG&nbsp;elementary&nbsp;stream                             |<sub>`mpeg_asc`, `vorbis_packet`</sub>|
 |`mpeg_pes`           |MPEG&nbsp;Packetized&nbsp;elementary&nbsp;stream             |<sub>`mpeg_pes_packet`, `mpeg_spu`</sub>|
@@ -136,7 +138,9 @@ TODO: piping
 |`vorbis_comment`     |Vorbis&nbsp;comment                                          |<sub>`flac_picture`</sub>|
 |`vorbis_packet`      |Vorbis&nbsp;packet                                           |<sub>`vorbis_comment`</sub>|
 |`vp8_frame`          |VP8&nbsp;frame                                               |<sub></sub>|
+|`vp9_cfm`            |VP9&nbsp;Codec&nbsp;Feature&nbsp;Metadata                    |<sub></sub>|
 |`vp9_frame`          |VP9&nbsp;frame                                               |<sub></sub>|
+|`vpx_ccr`            |VPX&nbsp;Codec&nbsp;Configuration&nbsp;Record                |<sub></sub>|
 |`wav`                |WAV&nbsp;file                                                |<sub></sub>|
 |`webp`               |WebP&nbsp;image                                              |<sub>`vp8_frame`</sub>|
 |`image`              |Group                                                        |<sub>`gif`, `jpeg`, `png`, `tiff`, `webp`</sub>|
