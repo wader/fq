@@ -65,9 +65,11 @@ func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
 
 		{[]string{"md5"}, 0, 0, i.md5, false},
 		{[]string{"base64"}, 0, 0, i.base64, false},
-		{[]string{"unbase64"}, 0, 0, i.unbase64, false},
+		{[]string{"unbase64"}, 0, 0, i.unbase64(), false},
 		{[]string{"hex"}, 0, 0, i.hex, false},
-		{[]string{"unhex"}, 0, 0, i.unhex, false},
+		{[]string{"unhex"}, 0, 0, i.unhex(), false},
+		{[]string{"nal_unescape"}, 0, 0, i.nalUnescape(), false},
+
 		{[]string{"query_escape"}, 0, 0, i.queryEscape, false},
 		{[]string{"query_unescape"}, 0, 0, i.queryUnescape, false},
 		{[]string{"path_escape"}, 0, 0, i.pathEscape, false},
@@ -608,22 +610,6 @@ func (i *Interp) base64(c interface{}, a []interface{}) interface{} {
 	return b64Buf.String()
 }
 
-func (i *Interp) unbase64(c interface{}, a []interface{}) interface{} {
-	bb, _, err := toBitBuf(c)
-	if err != nil {
-		return err
-	}
-
-	buf := &bytes.Buffer{}
-	if _, err := io.Copy(buf, base64.NewDecoder(base64.StdEncoding, bb)); err != nil {
-		return err
-	}
-
-	ubb := bitio.NewBufferFromBytes(buf.Bytes(), -1)
-
-	return &bitBufObject{bb: ubb, unit: 8, r: ranges.Range{Len: ubb.Len()}}
-}
-
 func (i *Interp) hex(c interface{}, a []interface{}) interface{} {
 	bb, r, err := toBitBuf(c)
 	if err != nil {
@@ -644,20 +630,45 @@ func (i *Interp) hex(c interface{}, a []interface{}) interface{} {
 	return buf.String()
 }
 
-func (i *Interp) unhex(c interface{}, a []interface{}) interface{} {
-	bb, _, err := toBitBuf(c)
-	if err != nil {
-		return err
+func makeBitBufTransformFn(fn func(r io.Reader, a []interface{}) (io.Reader, error)) func(c interface{}, a []interface{}) interface{} {
+	return func(c interface{}, a []interface{}) interface{} {
+		inBB, _, err := toBitBuf(c)
+		if err != nil {
+			return err
+		}
+
+		r, err := fn(inBB, a)
+		if err != nil {
+			return err
+		}
+
+		outBuf := &bytes.Buffer{}
+		if _, err := io.Copy(outBuf, r); err != nil {
+			return err
+		}
+
+		outBB := bitio.NewBufferFromBytes(outBuf.Bytes(), -1)
+
+		return &bitBufObject{bb: outBB, unit: 8, r: ranges.Range{Len: outBB.Len()}}
 	}
+}
 
-	b64Buf := &bytes.Buffer{}
-	if _, err := io.Copy(b64Buf, hex.NewDecoder(bb)); err != nil {
-		return err
-	}
+func (i *Interp) unhex() func(c interface{}, a []interface{}) interface{} {
+	return makeBitBufTransformFn(func(r io.Reader, a []interface{}) (io.Reader, error) {
+		return hex.NewDecoder(r), nil
+	})
+}
 
-	ubb := bitio.NewBufferFromBytes(b64Buf.Bytes(), -1)
+func (i *Interp) unbase64() func(c interface{}, a []interface{}) interface{} {
+	return makeBitBufTransformFn(func(r io.Reader, a []interface{}) (io.Reader, error) {
+		return base64.NewDecoder(base64.StdEncoding, r), nil
+	})
+}
 
-	return &bitBufObject{bb: ubb, unit: 8, r: ranges.Range{Len: ubb.Len()}}
+func (i *Interp) nalUnescape() func(c interface{}, a []interface{}) interface{} {
+	return makeBitBufTransformFn(func(r io.Reader, a []interface{}) (io.Reader, error) {
+		return &decode.NALUnescapeReader{Reader: r}, nil
+	})
 }
 
 func (i *Interp) queryEscape(c interface{}, a []interface{}) interface{} {

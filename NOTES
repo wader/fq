@@ -1,4 +1,6 @@
 
+add mime codec encode/decoder "avc1.PPCCLL" etc
+https://tools.ietf.org/html/rfc6381#section-3.3
 
 x264 first sample, decode config?
 
