@@ -25,69 +25,6 @@ func init() {
 	})
 }
 
-// TODO: share?
-func zigzag(n uint64) int64 {
-	return int64(n>>1 ^ -(n & 1))
-}
-
-// 14496-10 9.1 Parsing process for Exp-Golomb codes
-func expGolomb(d *decode.D) uint64 {
-	leadingZeroBits := -1
-	for b := false; !b; leadingZeroBits++ {
-		b = d.Bool()
-	}
-
-	var expN uint64
-	if leadingZeroBits == 0 {
-		expN = 1
-	} else {
-		expN = 2 << (leadingZeroBits - 1)
-	}
-
-	return expN - 1 + d.U(leadingZeroBits)
-}
-
-func uEV(d *decode.D) uint64 { return expGolomb(d) }
-
-func fieldUEV(d *decode.D, name string) uint64 {
-	return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
-		return uEV(d), decode.NumberDecimal, ""
-	})
-}
-
-func sEV(d *decode.D) int64 { return zigzag(expGolomb(d)) }
-
-func fieldSEV(d *decode.D, name string) int64 {
-	return d.FieldSFn(name, func() (int64, decode.DisplayFormat, string) {
-		return sEV(d), decode.NumberDecimal, ""
-	})
-}
-
-const (
-	avcNALSequenceParameterSet = 7
-	avcNALPictureParameterSet  = 8
-)
-
-var avcNALNames = map[uint64]string{
-	1:                          "Coded slice of a non-IDR picture",
-	2:                          "Coded slice data partition A",
-	3:                          "Coded slice data partition B",
-	4:                          "Coded slice data partition C",
-	5:                          "Coded slice of an IDR picture",
-	6:                          "Supplemental enhancement information (SEI)",
-	avcNALSequenceParameterSet: "Sequence parameter set",
-	avcNALPictureParameterSet:  "Picture parameter set",
-	9:                          "Access unit delimiter",
-	10:                         "End of sequence",
-	11:                         "End of stream",
-	12:                         "Filler data",
-	13:                         "Sequence parameter set extension",
-	14:                         "Prefix NAL unit",
-	15:                         "Subset sequence parameter set",
-	19:                         "Coded slice of an auxiliary coded picture without partitioning",
-	20:                         "Coded slice extension",
-}
-
 type avcLevel struct {
 	Name         string
 	MaxMBPS      uint64
