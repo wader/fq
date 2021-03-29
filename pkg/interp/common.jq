@@ -9,15 +9,16 @@ def default_options($opts): _state("default_options"; $opts);
 def push_options($opts): _state("options_stack"; [$opts] + (_state("options_stack") // []));
 def pop_options: _state("options_stack"; _state("options_stack")[1:]);
 
+# eval f and finally eval fin even on empty or error
+def finally(f; fin):
+	( try f // (fin | empty)
+	  catch (fin as $_ | error(.))
+  )
+  | fin as $_
+  | .;
+
 def with_options($opts; f):
-	push_options($opts) as $_
-	| try f
-	  catch (
-		  pop_options as $_
-		  | error(.)
-	  )
-	| pop_options as $_
-	| .;
+	push_options($opts) as $_ | finally(f; pop_options);
 
 def print: _print[];
 
