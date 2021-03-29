@@ -2,18 +2,21 @@ package mpeg
 
 // ISO/IEC 14496-15, 5.3.3.1.2 Syntax
 
-// TODO: merge with other nal?
-
 import (
 	"fq/pkg/decode"
 	"fq/pkg/format"
 )
 
+var avcSampleNALFormat []*decode.Format
+
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:        format.AVC_NALS,
-		Description: "H.264/AVC sample",
+		Name:        format.MPEG_AVC_AU,
+		Description: "H.264/AVC access unit",
 		DecodeFn:    avcDecode,
+		Dependencies: []decode.Dependency{
+			{Names: []string{format.MPEG_AVC_NALU}, Formats: &avcSampleNALFormat},
+		},
 	})
 }
 
@@ -23,13 +26,11 @@ func avcDecode(d *decode.D, in interface{}) interface{} {
 		d.Invalid("avcIn required")
 	}
 
-	// TODO: PictureLength?
-
-	d.FieldArrayFn("nals", func(d *decode.D) {
+	d.FieldArrayFn("sample", func(d *decode.D) {
 		for d.NotEnd() {
 			d.FieldStructFn("nal", func(d *decode.D) {
 				l := d.FieldU("length", int(avcIn.LengthSize)*8)
-				d.FieldBitBufLen("data", int64(l)*8)
+				d.FieldDecodeLen("nal", int64(l)*8, avcSampleNALFormat)
 			})
 		}
 	})

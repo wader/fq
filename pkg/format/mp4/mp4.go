@@ -25,7 +25,7 @@ var flacFrameFormat []*decode.Format
 var flacMetadatablockFormat []*decode.Format
 var mp3FrameFormat []*decode.Format
 var mpegAVCDCRFormat []*decode.Format
-var mpegAVCSampleFormat []*decode.Format
+var mpegAVCAUFormat []*decode.Format
 var mpegESFormat []*decode.Format
 var mpegHEVCDCRFrameFormat []*decode.Format
 var mpegHEVCSampleFormat []*decode.Format
@@ -50,7 +50,7 @@ func init() {
 			{Names: []string{format.MP3_FRAME}, Formats: &mp3FrameFormat},
 			{Names: []string{format.AAC_FRAME}, Formats: &aacFrameFormat},
 			{Names: []string{format.MPEG_AVC_DCR}, Formats: &mpegAVCDCRFormat},
-			{Names: []string{format.AVC_NALS}, Formats: &mpegAVCSampleFormat},
+			{Names: []string{format.MPEG_AVC_AU}, Formats: &mpegAVCAUFormat},
 			{Names: []string{format.MPEG_ES}, Formats: &mpegESFormat},
 			{Names: []string{format.HEVC_DCR}, Formats: &mpegHEVCDCRFrameFormat},
 			{Names: []string{format.HEVC_NAL}, Formats: &mpegHEVCSampleFormat},
@@ -871,7 +871,7 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 				case "vp09":
 					d.FieldDecodeRange("sample", firstBit, nBits, vp9FrameFormat, t.decodeOpts...)
 				case "avc1":
-					d.FieldDecodeRange("sample", firstBit, nBits, mpegAVCSampleFormat, t.decodeOpts...)
+					d.FieldDecodeRange("sample", firstBit, nBits, mpegAVCAUFormat, t.decodeOpts...)
 				case "hev1":
 					d.FieldDecodeRange("sample", firstBit, nBits, mpegHEVCSampleFormat, t.decodeOpts...)
 				case "av01":

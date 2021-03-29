@@ -20,7 +20,7 @@ func init() {
 		Description: "H.264/AVC Decoder configuration record",
 		DecodeFn:    avcDcrDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.MPEG_AVC_NAL}, Formats: &avcNALFormat},
+			{Names: []string{format.MPEG_AVC_NALU}, Formats: &avcNALFormat},
 		},
 	})
 }
@@ -69,8 +69,23 @@ const (
 )
 
 var avcNALNames = map[uint64]string{
-	avcNALSequenceParameterSet: "SequenceParameterSet",
-	avcNALPictureParameterSet:  "PictureParameterSet",
+	1:                          "Coded slice of a non-IDR picture",
+	2:                          "Coded slice data partition A",
+	3:                          "Coded slice data partition B",
+	4:                          "Coded slice data partition C",
+	5:                          "Coded slice of an IDR picture",
+	6:                          "Supplemental enhancement information (SEI)",
+	avcNALSequenceParameterSet: "Sequence parameter set",
+	avcNALPictureParameterSet:  "Picture parameter set",
+	9:                          "Access unit delimiter",
+	10:                         "End of sequence",
+	11:                         "End of stream",
+	12:                         "Filler data",
+	13:                         "Sequence parameter set extension",
+	14:                         "Prefix NAL unit",
+	15:                         "Subset sequence parameter set",
+	19:                         "Coded slice of an auxiliary coded picture without partitioning",
+	20:                         "Coded slice extension",
 }
 
 type avcLevel struct {

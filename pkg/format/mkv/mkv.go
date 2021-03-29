@@ -30,7 +30,7 @@ var flacMetadatablockFormat []*decode.Format
 var mp3FrameFormat []*decode.Format
 var mpegASCFrameFormat []*decode.Format
 var mpegAVCDCRFormat []*decode.Format
-var mpegAVCSampleFormat []*decode.Format
+var mpegAVCAUFormat []*decode.Format
 var mpegHEVCDCRFormat []*decode.Format
 var mpegHEVCSampleFormat []*decode.Format
 var mpegSPUFrameFormat []*decode.Format
@@ -55,7 +55,7 @@ func init() {
 			{Names: []string{format.AAC_FRAME}, Formats: &aacFrameFormat},
 			{Names: []string{format.MPEG_ASC}, Formats: &mpegASCFrameFormat},
 			{Names: []string{format.MPEG_AVC_DCR}, Formats: &mpegAVCDCRFormat},
-			{Names: []string{format.AVC_NALS}, Formats: &mpegAVCSampleFormat},
+			{Names: []string{format.MPEG_AVC_AU}, Formats: &mpegAVCAUFormat},
 			{Names: []string{format.HEVC_DCR}, Formats: &mpegHEVCDCRFormat},
 			{Names: []string{format.HEVC_NAL}, Formats: &mpegHEVCSampleFormat},
 			{Names: []string{format.MPEG_SPU}, Formats: &mpegSPUFrameFormat},
@@ -447,7 +447,7 @@ func mkvDecode(d *decode.D, in interface{}) interface{} {
 			case "V_VOBSUB":
 				d.FieldDecodeLen("packet", d.BitsLeft(), mpegSPUFrameFormat)
 			case "V_MPEG4/ISO/AVC":
-				d.FieldDecodeLen("packet", d.BitsLeft(), mpegAVCSampleFormat, decodeOpts...)
+				d.FieldDecodeLen("packet", d.BitsLeft(), mpegAVCAUFormat, decodeOpts...)
 			case "V_MPEGH/ISO/HEVC":
 				d.FieldDecodeLen("packet", d.BitsLeft(), mpegHEVCSampleFormat, decodeOpts...)
 			case "A_AAC":
