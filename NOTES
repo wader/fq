@@ -1,4 +1,7 @@
 
+
+optmize jq join, maybe use funcadd and optmize it?
+
 add mime codec encode/decoder "avc1.PPCCLL" etc
 https://tools.ietf.org/html/rfc6381#section-3.3
 
