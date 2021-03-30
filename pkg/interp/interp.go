@@ -542,7 +542,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	ni.ctx = runCtx
 	ni.stdout = CtxOutput{Output: stdout, Ctx: runCtx}
 
-	iter := gc.RunWithContext(ctx, c)
+	iter := gc.RunWithContext(runCtx, c)
 	// iter := gc.RunWithContext(ctx, c, variableValues...)
 
 	iterWrapper := iterFn(func() (interface{}, bool) {
