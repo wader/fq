@@ -12,7 +12,7 @@ import (
 type Reader struct {
 	rs     io.ReadSeeker
 	ctx    context.Context
-	fnCh   chan func(rs io.ReadSeeker)
+	fnCh   chan func()
 	waitCh chan struct{}
 }
 
@@ -20,7 +20,7 @@ func New(ctx context.Context, rs io.ReadSeeker) *Reader {
 	r := &Reader{
 		rs:     rs,
 		ctx:    ctx,
-		fnCh:   make(chan func(rs io.ReadSeeker)),
+		fnCh:   make(chan func()),
 		waitCh: make(chan struct{}),
 	}
 	go r.loop()
@@ -39,46 +39,51 @@ func (r *Reader) loop() {
 			if !ok {
 				panic("unreachable")
 			}
-			fn(r.rs)
+			fn()
 			r.waitCh <- struct{}{}
 		}
 	}
 }
 
-func (r *Reader) Read(p []byte) (n int, err error) {
+func (r *Reader) callWait(fn func()) error {
 	select {
 	case <-r.ctx.Done():
-		return 0, r.ctx.Err()
-	case r.fnCh <- func(rs io.ReadSeeker) {
-		n, err = rs.Read(p)
-	}:
-		<-r.waitCh
+		return r.ctx.Err()
+	case r.fnCh <- fn:
+		select {
+		case <-r.ctx.Done():
+			return r.ctx.Err()
+		case <-r.waitCh:
+		}
+	}
+	return nil
+}
+
+func (r *Reader) Read(p []byte) (n int, err error) {
+	if err := r.callWait(func() {
+		n, err = r.rs.Read(p)
+	}); err != nil {
+		return 0, err
 	}
 	return n, err
 }
 
 func (r *Reader) Seek(offset int64, whence int) (n int64, err error) {
-	select {
-	case <-r.ctx.Done():
-		return 0, r.ctx.Err()
-	case r.fnCh <- func(rs io.ReadSeeker) {
-		n, err = rs.Seek(offset, whence)
-	}:
-		<-r.waitCh
+	if err := r.callWait(func() {
+		n, err = r.rs.Seek(offset, whence)
+	}); err != nil {
+		return 0, err
 	}
 	return n, err
 }
 
 func (r *Reader) Close() (err error) {
-	select {
-	case <-r.ctx.Done():
-		return r.ctx.Err()
-	case r.fnCh <- func(rs io.ReadSeeker) {
+	if err := r.callWait(func() {
 		if c, ok := r.rs.(io.Closer); ok {
 			err = c.Close()
 		}
-	}:
-		<-r.waitCh
+	}); err != nil {
+		return err
 	}
 	return err
 }
