@@ -448,6 +448,8 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 			}
 			fmt.Fprintln(i.stdout)
 			return []interface{}{}
+		case error:
+			return v
 		default:
 			return fmt.Errorf("%v: not displayable", c)
 		}

@@ -105,42 +105,121 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 
 	// TODO: hex functions?
 
-	d.FieldU16LE("type")
-	d.FieldU16LE("machine")
-	d.FieldU32LE("version")
+	d.FieldStringMapFn("type", map[uint64]string{
+		0x00:   "None",
+		0x01:   "Rel",
+		0x02:   "Exec",
+		0x03:   "Dyn",
+		0x04:   "Core",
+		0xfe00: "Loos",
+		0xfeff: "Hios",
+		0xff00: "Loproc",
+		0xffff: "Hiproc",
+	}, "Unknown", d.U16, decode.NumberHex)
+
+	d.FieldStringMapFn("machine", map[uint64]string{
+		0x00:  "No specific instruction set",
+		0x01:  "AT&T WE 32100",
+		0x02:  "SPARC",
+		0x03:  "x86",
+		0x04:  "Motorola 68000 (M68k)",
+		0x05:  "Motorola 88000 (M88k)",
+		0x06:  "Intel MCU",
+		0x07:  "Intel 80860",
+		0x08:  "MIPS",
+		0x09:  "IBM_System/370",
+		0x0A:  "MIPS RS3000 Little-endian",
+		0x0E:  "Hewlett-Packard PA-RISC",
+		0x0F:  "Reserved for future use",
+		0x13:  "Intel 80960",
+		0x14:  "PowerPC",
+		0x15:  "PowerPC (64-bit)",
+		0x16:  "S390, including S390x",
+		0x17:  "IBM SPU/SPC",
+		0x24:  "NEC V800",
+		0x25:  "Fujitsu FR20",
+		0x26:  "TRW RH-32",
+		0x27:  "Motorola RCE",
+		0x28:  "ARM (up to ARMv7/Aarch32)",
+		0x29:  "Digital Alpha",
+		0x2A:  "SuperH",
+		0x2B:  "SPARC Version 9",
+		0x2C:  "Siemens TriCore embedded processor",
+		0x2D:  "Argonaut RISC Core",
+		0x2E:  "Hitachi H8/300",
+		0x2F:  "Hitachi H8/300H",
+		0x30:  "Hitachi H8S",
+		0x31:  "Hitachi H8/500",
+		0x32:  "IA-64",
+		0x33:  "Stanford MIPS-X",
+		0x34:  "Motorola ColdFire",
+		0x35:  "Motorola M68HC12",
+		0x36:  "Fujitsu MMA Multimedia Accelerator",
+		0x37:  "Siemens PCP",
+		0x38:  "Sony nCPU embedded RISC processor",
+		0x39:  "Denso NDR1 microprocessor",
+		0x3A:  "Motorola Star*Core processor",
+		0x3B:  "Toyota ME16 processor",
+		0x3C:  "STMicroelectronics ST100 processor",
+		0x3D:  "Advanced Logic Corp. TinyJ embedded processor family",
+		0x3E:  "AMD x86-64",
+		0x8C:  "TMS320C6000 Family",
+		0xB7:  "ARM 64-bits (ARMv8/Aarch64)",
+		0xF3:  "RISC-V",
+		0xF7:  "Berkeley Packet Filter",
+		0x101: "WDC 65C816",
+	}, "Unknown", d.U16, decode.NumberHex)
+
+	d.FieldU32("version")
 	d.FieldU("entry", archBits)
 	d.FieldU("phoff", archBits)
 	d.FieldU("shoff", archBits)
-	d.FieldU32LE("flags")
-	d.FieldU16LE("ehsize")
-	d.FieldU16LE("phentsize")
-	phnum := d.FieldU16LE("phnum")
-	d.FieldU16LE("shentsize")
-	shnum := d.FieldU16LE("shnum")
-	d.FieldU16LE("shstrndx")
+	d.FieldU32("flags")
+	d.FieldU16("ehsize")
+	d.FieldU16("phentsize")
+	phnum := d.FieldU16("phnum")
+	d.FieldU16("shentsize")
+	shnum := d.FieldU16("shnum")
+	d.FieldU16("shstrndx")
 
 	d.FieldArrayFn("program_headers", func(d *decode.D) {
 		for i := uint64(0); i < phnum; i++ {
+
+			pTypeNames := map[uint64]string{
+				0x00000000: "PT_NULL",
+				0x00000001: "PT_LOAD",
+				0x00000002: "PT_DYNAMIC",
+				0x00000003: "PT_INTERP",
+				0x00000004: "PT_NOTE",
+				0x00000005: "PT_SHLIB",
+				0x00000006: "PT_PHDR",
+				0x00000007: "PT_TLS",
+				0x60000000: "PT_LOOS",
+				0x6FFFFFFF: "PT_HIOS",
+				0x70000000: "PT_LOPROC",
+				0x7FFFFFFF: "PT_HIPROC",
+			}
+
 			d.FieldStructFn("program_header", func(d *decode.D) {
 				switch archBits {
 				case 32:
-					d.FieldU32LE("p_type")
+					d.FieldStringMapFn("p_type", pTypeNames, "Unknown", d.U32, decode.NumberHex)
 					d.FieldU("p_offset", archBits)
 					d.FieldU("p_vaddr", archBits)
 					d.FieldU("p_paddr", archBits)
-					d.FieldU32LE("p_filesz")
-					d.FieldU32LE("p_memsz")
-					d.FieldU32LE("p_flags")
-					d.FieldU32LE("p_align")
+					d.FieldU32("p_filesz")
+					d.FieldU32("p_memsz")
+					d.FieldU32("p_flags")
+					d.FieldU32("p_align")
 				case 64:
-					d.FieldU32LE("p_type")
-					d.FieldU32LE("p_flags")
+					d.FieldStringMapFn("p_type", pTypeNames, "Unknown", d.U32, decode.NumberHex)
+					d.FieldU32("p_flags")
 					d.FieldU("p_offset", archBits)
 					d.FieldU("p_vaddr", archBits)
 					d.FieldU("p_paddr", archBits)
-					d.FieldU64LE("p_filesz")
-					d.FieldU64LE("p_memsz")
-					d.FieldU64LE("p_align")
+					d.FieldU64("p_filesz")
+					d.FieldU64("p_memsz")
+					d.FieldU64("p_align")
 				}
 			})
 		}
@@ -149,29 +228,52 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldArrayFn("section_headers", func(d *decode.D) {
 		for i := uint64(0); i < shnum; i++ {
 			d.FieldStructFn("section_header", func(d *decode.D) {
+
+				shTypeNames := map[uint64]string{
+					0x0:        "SHT_NULL",
+					0x1:        "SHT_PROGBITS",
+					0x2:        "SHT_SYMTAB",
+					0x3:        "SHT_STRTAB",
+					0x4:        "SHT_RELA",
+					0x5:        "SHT_HASH",
+					0x6:        "SHT_DYNAMIC",
+					0x7:        "SHT_NOTE",
+					0x8:        "SHT_NOBITS",
+					0x9:        "SHT_REL",
+					0x0a:       "SHT_SHLIB",
+					0x0b:       "SHT_DYNSYM",
+					0x0e:       "SHT_INIT_ARRAY",
+					0x0f:       "SHT_FINI_ARRAY",
+					0x10:       "SHT_PREINIT_ARRAY",
+					0x11:       "SHT_GROUP",
+					0x12:       "SHT_SYMTAB_SHNDX",
+					0x13:       "SHT_NUM",
+					0x60000000: "SHT_LOOS",
+				}
+
 				switch archBits {
 				case 32:
-					d.FieldU32LE("sh_name")
-					d.FieldU32LE("sh_type")
-					d.FieldU32LE("sh_flags")
+					d.FieldU32("sh_name")
+					d.FieldStringMapFn("sh_type", shTypeNames, "Unknown", d.U32, decode.NumberHex)
+					d.FieldU32("sh_flags")
 					d.FieldU("sh_addr", archBits)
 					d.FieldU("sh_offset", archBits)
-					d.FieldU32LE("sh_size")
-					d.FieldU32LE("sh_link")
-					d.FieldU32LE("sh_info")
-					d.FieldU32LE("sh_addralign")
-					d.FieldU32LE("sh_entsize")
+					d.FieldU32("sh_size")
+					d.FieldU32("sh_link")
+					d.FieldU32("sh_info")
+					d.FieldU32("sh_addralign")
+					d.FieldU32("sh_entsize")
 				case 64:
-					d.FieldU32LE("sh_name")
-					d.FieldU32LE("sh_type")
-					d.FieldU64LE("sh_flags")
+					d.FieldU32("sh_name")
+					d.FieldStringMapFn("sh_type", shTypeNames, "Unknown", d.U32, decode.NumberHex)
+					d.FieldU64("sh_flags")
 					d.FieldU("sh_addr", archBits)
 					d.FieldU("sh_offset", archBits)
-					d.FieldU64LE("sh_size")
-					d.FieldU32LE("sh_link")
-					d.FieldU32LE("sh_info")
-					d.FieldU64LE("sh_addralign")
-					d.FieldU64LE("sh_entsize")
+					d.FieldU64("sh_size")
+					d.FieldU32("sh_link")
+					d.FieldU32("sh_info")
+					d.FieldU64("sh_addralign")
+					d.FieldU64("sh_entsize")
 				}
 			})
 		}
