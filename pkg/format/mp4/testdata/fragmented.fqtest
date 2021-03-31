@@ -950,10 +950,10 @@
       |                                               |                |    [0]: {} (track) 0x5b1-0x2b06.7 (9558)
       |                                               |                |      samples: [3] 0x5b1-0x2a47.7 (9367)
       |                                               |                |        [0]: avc_au (sample) 0x5b1-0x1333.7 (3459)
-      |                                               |                |          sample: [2] 0x5b1-0x1333.7 (3459)
-      |                                               |                |            [0]: {} (nal) 0x5b1-0x811.7 (609)
+      |                                               |                |          access_unit: [2] 0x5b1-0x1333.7 (3459)
+      |                                               |                |            [0]: {} (nalu) 0x5b1-0x811.7 (609)
 0x05b0|   00 00 02 5d                                 | ...]           |              length: 605 0x5b1-0x5b4.7 (4)
-      |                                               |                |              nal: avc_nalu 0x5b5-0x811.7 (605)
+      |                                               |                |              nalu: avc_nalu 0x5b5-0x811.7 (605)
       |                                               |                |                sei: avc_sei 0x0-0x25b.7 (604)
  0x000|05                                             |.               |                  payload_type: 5 0x0-0x0.7 (1)
  0x000|   ff ff 59                                    | ..Y            |                  payload_size: 599 0x1-0x3.7 (3)
@@ -969,9 +969,9 @@
 0x05b0|                  05 ff ff 59 dc 45 e9 bd e6 d9|      ...Y.E....|                data: 05ffff59dc45e9bde6d948b7962cd820... 0x5b6-0x811.7 (604)
 0x05c0|48 b7 96 2c d8 20 d9 23 ee ef 78 32 36 34 20 2d|H..,. .#..x264 -|
 *     |578 bytes more until 0x811.7                   |                |
-      |                                               |                |            [1]: {} (nal) 0x812-0x1333.7 (2850)
+      |                                               |                |            [1]: {} (nalu) 0x812-0x1333.7 (2850)
 0x0810|      00 00 0b 1e                              |  ....          |              length: 2846 0x812-0x815.7 (4)
-      |                                               |                |              nal: avc_nalu 0x816-0x1333.7 (2846)
+      |                                               |                |              nalu: avc_nalu 0x816-0x1333.7 (2846)
 0x0810|                  65                           |      e         |                forbidden_zero_bit: false 0x816-0x816 (0.1)
 0x0810|                  65                           |      e         |                nal_ref_idc: 3 0x816.1-0x816.2 (0.2)
 0x0810|                  65                           |      e         |                nal_unit_type: Coded slice of an IDR picture (5) 0x816.3-0x816.7 (0.5)
@@ -983,11 +983,11 @@
 0x0820|37 0c ac ff ea 87 fd 4f 9c 30 95 e0 00 43 0f 7b|7......O.0...C.{|
 *     |2820 bytes more until 0x1333.7                 |                |
       |                                               |                |        [1]: avc_au (sample) 0x166f-0x1f38.7 (2250)
-      |                                               |                |          sample: [1] 0x166f-0x1f38.7 (2250)
-      |                                               |                |            [0]: {} (nal) 0x166f-0x1f38.7 (2250)
+      |                                               |                |          access_unit: [1] 0x166f-0x1f38.7 (2250)
+      |                                               |                |            [0]: {} (nalu) 0x166f-0x1f38.7 (2250)
 0x1660|                                             00|               .|              length: 2246 0x166f-0x1672.7 (4)
 0x1670|00 08 c6                                       |...             |
-      |                                               |                |              nal: avc_nalu 0x1673-0x1f38.7 (2246)
+      |                                               |                |              nalu: avc_nalu 0x1673-0x1f38.7 (2246)
 0x1670|         65                                    |   e            |                forbidden_zero_bit: false 0x1673-0x1673 (0.1)
 0x1670|         65                                    |   e            |                nal_ref_idc: 3 0x1673.1-0x1673.2 (0.2)
 0x1670|         65                                    |   e            |                nal_unit_type: Coded slice of an IDR picture (5) 0x1673.3-0x1673.7 (0.5)
@@ -999,10 +999,10 @@
 0x1680|af ff f2 50 06 7f 30 02 17 55 d4 5a 6f db ca e6|...P..0..U.Zo...|
 *     |2217 bytes more until 0x1f38.7                 |                |
       |                                               |                |        [2]: avc_au (sample) 0x2188-0x2a47.7 (2240)
-      |                                               |                |          sample: [1] 0x2188-0x2a47.7 (2240)
-      |                                               |                |            [0]: {} (nal) 0x2188-0x2a47.7 (2240)
+      |                                               |                |          access_unit: [1] 0x2188-0x2a47.7 (2240)
+      |                                               |                |            [0]: {} (nalu) 0x2188-0x2a47.7 (2240)
 0x2180|                        00 00 08 bc            |        ....    |              length: 2236 0x2188-0x218b.7 (4)
-      |                                               |                |              nal: avc_nalu 0x218c-0x2a47.7 (2236)
+      |                                               |                |              nalu: avc_nalu 0x218c-0x2a47.7 (2236)
 0x2180|                                    65         |            e   |                forbidden_zero_bit: false 0x218c-0x218c (0.1)
 0x2180|                                    65         |            e   |                nal_ref_idc: 3 0x218c.1-0x218c.2 (0.2)
 0x2180|                                    65         |            e   |                nal_unit_type: Coded slice of an IDR picture (5) 0x218c.3-0x218c.7 (0.5)

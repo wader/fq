@@ -39,8 +39,6 @@ const (
 	FLV                = "flv" // TODO:
 	GIF                = "gif"
 	GZIP               = "gzip"
-	HEVC_DCR           = "hevc_dcr"
-	HEVC_NAL           = "hevc_nal"
 	ICC_PROFILE        = "icc_profile"
 	ID3_V1             = "id3_v1"
 	ID3_V11            = "id3_v11"
@@ -58,6 +56,9 @@ const (
 	MPEG_AVC_SEI       = "avc_sei"
 	MPEG_AVC_NALU      = "avc_nalu"
 	MPEG_AVC_AU        = "avc_au"
+	MPEG_HEVC_AU       = "hevc_au"
+	MPEG_HEVC_NALU     = "hevc_nalu"
+	MPEG_HEVC_DCR      = "hevc_dcr"
 	MPEG_ES            = "mpeg_es"
 	MPEG_PES           = "mpeg_pes"
 	MPEG_PES_PACKET    = "mpeg_pes_packet"

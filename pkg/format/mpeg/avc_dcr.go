@@ -12,7 +12,7 @@ import (
 	"fq/pkg/format"
 )
 
-var avcNALFormat []*decode.Format
+var avcDCRNALFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -20,7 +20,7 @@ func init() {
 		Description: "H.264/AVC Decoder Configuration Record",
 		DecodeFn:    avcDcrDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.MPEG_AVC_NALU}, Formats: &avcNALFormat},
+			{Names: []string{format.MPEG_AVC_NALU}, Formats: &avcDCRNALFormat},
 		},
 	})
 }
@@ -111,7 +111,7 @@ func avcDcrParameterSet(d *decode.D, numParamSets uint64) {
 	for i := uint64(0); i < numParamSets; i++ {
 		d.FieldStructFn("set", func(d *decode.D) {
 			paramSetLen := d.FieldU16("length")
-			d.FieldDecodeLen("nal", int64(paramSetLen)*8, avcNALFormat)
+			d.FieldDecodeLen("nal", int64(paramSetLen)*8, avcDCRNALFormat)
 		})
 	}
 }

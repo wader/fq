@@ -7,7 +7,7 @@ import (
 	"fq/pkg/format"
 )
 
-var avcSampleNALFormat []*decode.Format
+var avcAUNALFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -15,7 +15,7 @@ func init() {
 		Description: "H.264/AVC Access Unit",
 		DecodeFn:    avcDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.MPEG_AVC_NALU}, Formats: &avcSampleNALFormat},
+			{Names: []string{format.MPEG_AVC_NALU}, Formats: &avcAUNALFormat},
 		},
 	})
 }
@@ -26,11 +26,11 @@ func avcDecode(d *decode.D, in interface{}) interface{} {
 		d.Invalid("avcIn required")
 	}
 
-	d.FieldArrayFn("sample", func(d *decode.D) {
+	d.FieldArrayFn("access_unit", func(d *decode.D) {
 		for d.NotEnd() {
-			d.FieldStructFn("nal", func(d *decode.D) {
+			d.FieldStructFn("nalu", func(d *decode.D) {
 				l := d.FieldU("length", int(avcIn.LengthSize)*8)
-				d.FieldDecodeLen("nal", int64(l)*8, avcSampleNALFormat)
+				d.FieldDecodeLen("nalu", int64(l)*8, avcAUNALFormat)
 			})
 		}
 	})

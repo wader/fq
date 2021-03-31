@@ -16,7 +16,7 @@ func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.MPEG_AVC_NALU,
 		Description: "H.264/AVC Network Access Layer Unit",
-		DecodeFn:    avcNALDecode,
+		DecodeFn:    avcNALUDecode,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.MPEG_AVC_SPS}, Formats: &avcSPSFormat},
 			{Names: []string{format.MPEG_AVC_PPS}, Formats: &avcPPSFormat},
@@ -109,7 +109,7 @@ var sliceNames = map[uint64]string{
 	9: "SI",
 }
 
-func avcNALDecode(d *decode.D, in interface{}) interface{} {
+func avcNALUDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldBool("forbidden_zero_bit")
 	d.FieldU2("nal_ref_idc")
 	nalType, _ := d.FieldStringMapFn("nal_unit_type", avcNALNames, "Unknown", d.U5, decode.NumberDecimal)

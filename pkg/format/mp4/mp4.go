@@ -39,9 +39,8 @@ func init() {
 		Name:        format.MP4,
 		Description: "MPEG-4 file",
 		Groups:      []string{format.PROBE},
-		// TODO: implment MIME()
-		MIMEs:    []string{"audio/mp4", "video/mp4"},
-		DecodeFn: mp4Decode,
+		MIMEs:       []string{"audio/mp4", "video/mp4"},
+		DecodeFn:    mp4Decode,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.AV1_CCR}, Formats: &av1CCRFormat},
 			{Names: []string{format.AV1_FRAME}, Formats: &av1FrameFormat},
@@ -52,8 +51,8 @@ func init() {
 			{Names: []string{format.MPEG_AVC_DCR}, Formats: &mpegAVCDCRFormat},
 			{Names: []string{format.MPEG_AVC_AU}, Formats: &mpegAVCAUFormat},
 			{Names: []string{format.MPEG_ES}, Formats: &mpegESFormat},
-			{Names: []string{format.HEVC_DCR}, Formats: &mpegHEVCDCRFrameFormat},
-			{Names: []string{format.HEVC_NAL}, Formats: &mpegHEVCSampleFormat},
+			{Names: []string{format.MPEG_HEVC_DCR}, Formats: &mpegHEVCDCRFrameFormat},
+			{Names: []string{format.MPEG_HEVC_AU}, Formats: &mpegHEVCSampleFormat},
 			{Names: []string{format.OPUS_PACKET}, Formats: &opusPacketFrameFormat},
 			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
 			{Names: []string{format.VP9_FRAME}, Formats: &vp9FrameFormat},

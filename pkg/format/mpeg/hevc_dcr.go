@@ -1,23 +1,25 @@
 package mpeg
 
-// ISO/IEC 14496-15 AVC file format, 5.3.3.1.2 Syntax
-// ISO_IEC_14496-10 AVC
-
 import (
 	"fq/pkg/decode"
 	"fq/pkg/format"
 )
 
+var hevcDCRNALFormat []*decode.Format
+
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:        format.HEVC_DCR,
-		Description: "H.265/HEVC Decoder configuration record",
+		Name:        format.MPEG_HEVC_DCR,
+		Description: "H.265/HEVC Decoder Configuration Record",
 		DecodeFn:    hevcDcrDecode,
+		Dependencies: []decode.Dependency{
+			{Names: []string{format.MPEG_HEVC_NALU}, Formats: &hevcDCRNALFormat},
+		},
 	})
 }
 
 func hevcDcrDecode(d *decode.D, in interface{}) interface{} {
-	d.FieldU8("configurationVersion")
+	d.FieldU8("configuration_version")
 	d.FieldU2("general_profile_space")
 	d.FieldU1("general_tier_flag")
 	d.FieldU5("general_profile_idc")
@@ -45,13 +47,13 @@ func hevcDcrDecode(d *decode.D, in interface{}) interface{} {
 			d.FieldStructFn("array", func(d *decode.D) {
 				d.FieldU1("array_completeness")
 				d.FieldU1("reserved0")
-				d.FieldU6("nal_unit_type")
+				d.FieldStringMapFn("nal_unit_type", hevcNALNames, "Unknown", d.U6, decode.NumberDecimal)
 				numNals := d.FieldU16("num_nalus")
 				d.FieldArrayFn("nals", func(d *decode.D) {
 					for i := uint64(0); i < numNals; i++ {
 						d.FieldStructFn("nal", func(d *decode.D) {
 							nalUnitLength := int64(d.FieldU16("nal_unit_length"))
-							d.FieldBitBufLen("data", nalUnitLength*8)
+							d.FieldDecodeLen("nal", int64(nalUnitLength)*8, hevcDCRNALFormat)
 						})
 					}
 				})
