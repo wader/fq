@@ -13,14 +13,14 @@ func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.MPEG_AVC_AU,
 		Description: "H.264/AVC Access Unit",
-		DecodeFn:    avcDecode,
+		DecodeFn:    avcAUDecode,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.MPEG_AVC_NALU}, Formats: &avcAUNALFormat},
 		},
 	})
 }
 
-func avcDecode(d *decode.D, in interface{}) interface{} {
+func avcAUDecode(d *decode.D, in interface{}) interface{} {
 	avcIn, ok := in.(format.AvcIn)
 	if !ok {
 		d.Invalid("avcIn required")

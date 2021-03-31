@@ -11,14 +11,14 @@ func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.MPEG_HEVC_AU,
 		Description: "H.265/HEVC Access Unit",
-		DecodeFn:    hevcDecode,
+		DecodeFn:    hevcAUDecode,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.MPEG_HEVC_NALU}, Formats: &hevcAUNALFormat},
 		},
 	})
 }
 
-func hevcDecode(d *decode.D, in interface{}) interface{} {
+func hevcAUDecode(d *decode.D, in interface{}) interface{} {
 	hevcIn, ok := in.(format.HevcIn)
 	if !ok {
 		d.Invalid("hevcIn required")
