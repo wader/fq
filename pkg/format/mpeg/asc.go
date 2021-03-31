@@ -10,7 +10,7 @@ import (
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.MPEG_ASC,
-		Description: "MPEG-4 Audio specific config",
+		Description: "MPEG-4 Audio Specific Config",
 		DecodeFn:    ascDecoder,
 	})
 }

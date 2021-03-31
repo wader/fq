@@ -14,7 +14,7 @@ var avcPPSFormat []*decode.Format
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.MPEG_AVC_NALU,
-		Description: "H.264/AVC network access layer unit",
+		Description: "H.264/AVC Network Access Layer Unit",
 		DecodeFn:    avcNALDecode,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.MPEG_AVC_SPS}, Formats: &avcSPSFormat},

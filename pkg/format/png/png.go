@@ -18,7 +18,7 @@ var exifFormat []*decode.Format
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.PNG,
-		Description: "Portable network graphics file",
+		Description: "Portable Network Graphics file",
 		Groups:      []string{format.PROBE, format.IMAGE},
 		MIMEs:       []string{"image/png"},
 		DecodeFn:    pngDecode,

@@ -18,7 +18,7 @@ var aacFrame []*decode.Format
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.ADTS,
-		Description: "Audio data transport stream packet",
+		Description: "Audio Data Transport Stream packet",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    adtsDecoder,
 		Dependencies: []decode.Dependency{

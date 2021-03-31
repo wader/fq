@@ -8,7 +8,7 @@ import (
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.AV1_OBU,
-		Description: "AV1 open bitstream unit",
+		Description: "AV1 Open Bitstream Unit",
 		DecodeFn:    obuDecode,
 	})
 }

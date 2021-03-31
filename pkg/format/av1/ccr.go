@@ -12,7 +12,7 @@ import (
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.AV1_CCR,
-		Description: "AV1 codec configuration record",
+		Description: "AV1 Codec Configuration Record",
 		DecodeFn:    ccrDecode,
 	})
 }

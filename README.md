@@ -92,21 +92,21 @@ TODO: piping
 |-                    |-                                                            |-|
 |`aac_frame`          |Advanced&nbsp;Audio&nbsp;Coding&nbsp;frame                   |<sub></sub>|
 |`aac_stream`         |Raw&nbsp;audio&nbsp;data&nbsp;transport&nbsp;stream          |<sub>`adts`</sub>|
-|`adts`               |Audio&nbsp;data&nbsp;transport&nbsp;stream&nbsp;packet       |<sub>`aac_frame`</sub>|
+|`adts`               |Audio&nbsp;Data&nbsp;Transport&nbsp;Stream&nbsp;packet       |<sub>`aac_frame`</sub>|
 |`apev2`              |APEv2&nbsp;metadata&nbsp;tag                                 |<sub></sub>|
-|`av1_ccr`            |AV1&nbsp;codec&nbsp;configuration&nbsp;record                |<sub></sub>|
+|`av1_ccr`            |AV1&nbsp;Codec&nbsp;Configuration&nbsp;Record                |<sub></sub>|
 |`av1_frame`          |AV1&nbsp;frame                                               |<sub>`av1_obu`</sub>|
-|`av1_obu`            |AV1&nbsp;open&nbsp;bitstream&nbsp;unit                       |<sub></sub>|
-|`avc_au`             |H.264/AVC&nbsp;access&nbsp;unit                              |<sub>`avc_nalu`</sub>|
-|`avc_dcr`            |H.264/AVC&nbsp;Decoder&nbsp;configuration&nbsp;record        |<sub>`avc_nalu`</sub>|
-|`avc_nalu`           |H.264/AVC&nbsp;network&nbsp;access&nbsp;layer&nbsp;unit      |<sub>`avc_sps`, `avc_pps`</sub>|
-|`avc_pps`            |H.264/AVC&nbsp;picture&nbsp;parameter&nbsp;set               |<sub></sub>|
-|`avc_sps`            |H.264/AVC&nbsp;sequence&nbsp;parameter&nbsp;set              |<sub></sub>|
+|`av1_obu`            |AV1&nbsp;Open&nbsp;Bitstream&nbsp;Unit                       |<sub></sub>|
+|`avc_au`             |H.264/AVC&nbsp;Access&nbsp;Unit                              |<sub>`avc_nalu`</sub>|
+|`avc_dcr`            |H.264/AVC&nbsp;Decoder&nbsp;Configuration&nbsp;Record        |<sub>`avc_nalu`</sub>|
+|`avc_nalu`           |H.264/AVC&nbsp;Network&nbsp;Access&nbsp;Layer&nbsp;Unit      |<sub>`avc_sps`, `avc_pps`</sub>|
+|`avc_pps`            |H.264/AVC&nbsp;Picture&nbsp;Parameter&nbsp;Set               |<sub></sub>|
+|`avc_sps`            |H.264/AVC&nbsp;Sequence&nbsp;Parameter&nbsp;Set              |<sub></sub>|
 |`bzip2`              |bzip2&nbsp;compression                                       |<sub>`probe`</sub>|
 |`dns`                |DNS&nbsp;packet                                              |<sub></sub>|
 |`elf`                |Executable&nbsp;and&nbsp;Linkable&nbsp;Format                |<sub></sub>|
 |`exif`               |Exchangeable&nbsp;Image&nbsp;File&nbsp;Format                |<sub>`icc_profile`</sub>|
-|`flac`               |Free&nbsp;lossless&nbsp;audio&nbsp;codec&nbsp;file           |<sub>`flac_metadatablock`, `flac_frame`</sub>|
+|`flac`               |Free&nbsp;Lossless&nbsp;Audio&nbsp;Codec&nbsp;file           |<sub>`flac_metadatablock`, `flac_frame`</sub>|
 |`flac_frame`         |FLAC&nbsp;frame                                              |<sub></sub>|
 |`flac_metadatablock` |FLAC&nbsp;metadatablock                                      |<sub>`flac_picture`, `vorbis_comment`</sub>|
 |`flac_picture`       |FLAC&nbsp;metadatablock&nbsp;picture                         |<sub>`image`</sub>|
@@ -124,15 +124,15 @@ TODO: piping
 |`mp3_frame`          |MPEG&nbsp;audio&nbsp;layer&nbsp;3&nbsp;frame                 |<sub>`mp3_xing`</sub>|
 |`mp3_xing`           |Xing&nbsp;header                                             |<sub></sub>|
 |`mp4`                |MPEG-4&nbsp;file                                             |<sub>`av1_ccr`, `av1_frame`, `flac_frame`, `flac_metadatablock`, `mp3_frame`, `aac_frame`, `avc_dcr`, `avc_au`, `mpeg_es`, `hevc_dcr`, `hevc_nal`, `opus_packet`, `vorbis_packet`, `vp9_frame`, `vpx_ccr`</sub>|
-|`mpeg_asc`           |MPEG-4&nbsp;Audio&nbsp;specific&nbsp;config                  |<sub></sub>|
-|`mpeg_es`            |MPEG&nbsp;elementary&nbsp;stream                             |<sub>`mpeg_asc`, `vorbis_packet`</sub>|
+|`mpeg_asc`           |MPEG-4&nbsp;Audio&nbsp;Specific&nbsp;Config                  |<sub></sub>|
+|`mpeg_es`            |MPEG&nbsp;Elementary&nbsp;Stream                             |<sub>`mpeg_asc`, `vorbis_packet`</sub>|
 |`mpeg_pes`           |MPEG&nbsp;Packetized&nbsp;elementary&nbsp;stream             |<sub>`mpeg_pes_packet`, `mpeg_spu`</sub>|
 |`mpeg_pes_packet`    |MPEG&nbsp;Packetized&nbsp;elementary&nbsp;stream&nbsp;packet |<sub></sub>|
-|`mpeg_spu`           |Sub&nbsp;picture&nbsp;unit&nbsp;(dvd&nbsp;subtitle)          |<sub></sub>|
+|`mpeg_spu`           |Sub&nbsp;Picture&nbsp;Unit&nbsp;(DVD&nbsp;subtitle)          |<sub></sub>|
 |`ogg`                |OGG&nbsp;file                                                |<sub>`ogg_page`, `vorbis_packet`, `opus_packet`</sub>|
 |`ogg_page`           |OGG&nbsp;page                                                |<sub></sub>|
 |`opus_packet`        |Opus&nbsp;packet                                             |<sub>`vorbis_comment`</sub>|
-|`png`                |Portable&nbsp;network&nbsp;graphics&nbsp;file                |<sub>`icc_profile`, `exif`</sub>|
+|`png`                |Portable&nbsp;Network&nbsp;Graphics&nbsp;file                |<sub>`icc_profile`, `exif`</sub>|
 |`raw`                |Raw&nbsp;bits                                                |<sub></sub>|
 |`tar`                |Tar&nbsp;archive                                             |<sub>`probe`</sub>|
 |`tiff`               |Tag&nbsp;Image&nbsp;File&nbsp;Format                         |<sub>`icc_profile`</sub>|

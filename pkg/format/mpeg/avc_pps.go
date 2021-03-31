@@ -8,7 +8,7 @@ import (
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.MPEG_AVC_PPS,
-		Description: "H.264/AVC picture parameter set",
+		Description: "H.264/AVC Picture Parameter Set",
 		DecodeFn:    avcPPSDecode,
 	})
 }

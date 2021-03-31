@@ -11,7 +11,7 @@ var vorbisPacketFormat []*decode.Format
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.MPEG_ES,
-		Description: "MPEG elementary stream",
+		Description: "MPEG Elementary Stream",
 		DecodeFn:    esDecode,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.MPEG_ASC}, Formats: &mpegASCFormat},
