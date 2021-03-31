@@ -966,7 +966,11 @@
 0x0810|                  65                           |      e         |                forbidden_zero_bit: false 0x816-0x816 (0.1)
 0x0810|                  65                           |      e         |                nal_ref_idc: 3 0x816.1-0x816.2 (0.2)
 0x0810|                  65                           |      e         |                nal_unit_type: Coded slice of an IDR picture (5) 0x816.3-0x816.7 (0.5)
-0x0810|                     88 84 04 bf fe f7 84 7e 05|       .......~.|                data: 888404bffef7847e05370cacffea87fd... 0x817-0x1333.7 (2845)
+      |                                               |                |                slice_header: {} 0x817-0x818 (1.1)
+0x0810|                     88                        |       .        |                  first_mb_in_slice: 0 0x817-0x817 (0.1)
+0x0810|                     88                        |       .        |                  slice_type: I (7) 0x817.1-0x817.7 (0.7)
+0x0810|                        84                     |        .       |                  pic_parameter_set_id: 0 0x818-0x818 (0.1)
+0x0810|                        84 04 bf fe f7 84 7e 05|        ......~.|                data: 08097ffdef08fc0a6e1959ffd50ffa9f... 0x818.1-0x1333.7 (2843.7)
 0x0820|37 0c ac ff ea 87 fd 4f 9c 30 95 e0 00 43 0f 7b|7......O.0...C.{|
 *     |2820 bytes more until 0x1333.7                 |                |
       |                                               |                |        [1]: avc_au (sample) 0x166f-0x1f38.7 (2250)
@@ -978,7 +982,11 @@
 0x1670|         65                                    |   e            |                forbidden_zero_bit: false 0x1673-0x1673 (0.1)
 0x1670|         65                                    |   e            |                nal_ref_idc: 3 0x1673.1-0x1673.2 (0.2)
 0x1670|         65                                    |   e            |                nal_unit_type: Coded slice of an IDR picture (5) 0x1673.3-0x1673.7 (0.5)
-0x1670|            88 82 03 3f fe f6 86 f8 14 d8 53 23|    ...?......S#|                data: 8882033ffef686f814d85323affff250... 0x1674-0x1f38.7 (2245)
+      |                                               |                |                slice_header: {} 0x1674-0x1675 (1.1)
+0x1670|            88                                 |    .           |                  first_mb_in_slice: 0 0x1674-0x1674 (0.1)
+0x1670|            88                                 |    .           |                  slice_type: I (7) 0x1674.1-0x1674.7 (0.7)
+0x1670|               82                              |     .          |                  pic_parameter_set_id: 0 0x1675-0x1675 (0.1)
+0x1670|               82 03 3f fe f6 86 f8 14 d8 53 23|     ..?......S#|                data: 04067ffded0df029b0a6475fffe4a00c... 0x1675.1-0x1f38.7 (2243.7)
 0x1680|af ff f2 50 06 7f 30 02 17 55 d4 5a 6f db ca e6|...P..0..U.Zo...|
 *     |2217 bytes more until 0x1f38.7                 |                |
       |                                               |                |        [2]: avc_au (sample) 0x2188-0x2a47.7 (2240)
@@ -989,7 +997,11 @@
 0x2180|                                    65         |            e   |                forbidden_zero_bit: false 0x218c-0x218c (0.1)
 0x2180|                                    65         |            e   |                nal_ref_idc: 3 0x218c.1-0x218c.2 (0.2)
 0x2180|                                    65         |            e   |                nal_unit_type: Coded slice of an IDR picture (5) 0x218c.3-0x218c.7 (0.5)
-0x2180|                                       88 84 0c|             ...|                data: 88840cfffef686f814d85323affff250... 0x218d-0x2a47.7 (2235)
+      |                                               |                |                slice_header: {} 0x218d-0x218e (1.1)
+0x2180|                                       88      |             .  |                  first_mb_in_slice: 0 0x218d-0x218d (0.1)
+0x2180|                                       88      |             .  |                  slice_type: I (7) 0x218d.1-0x218d.7 (0.7)
+0x2180|                                          84   |              . |                  pic_parameter_set_id: 0 0x218e-0x218e (0.1)
+0x2180|                                          84 0c|              ..|                data: 0819fffded0df029b0a6475fffe4a00c... 0x218e.1-0x2a47.7 (2233.7)
 0x2190|ff fe f6 86 f8 14 d8 53 23 af ff f2 50 06 7f 30|.......S#...P..0|
 *     |2216 bytes more until 0x2a47.7                 |                |
       |                                               |                |      data_format: "avc1" 0x2b07-NA (0)

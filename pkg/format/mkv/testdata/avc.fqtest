@@ -407,7 +407,11 @@
 0x520|65                                             |e               |                      forbidden_zero_bit: false 0x520-0x520 (0.1)
 0x520|65                                             |e               |                      nal_ref_idc: 3 0x520.1-0x520.2 (0.2)
 0x520|65                                             |e               |                      nal_unit_type: Coded slice of an IDR picture (5) 0x520.3-0x520.7 (0.5)
-0x520|   88 84 00 2b ff fe f5 db f3 2c ac 66 67 3d ff| ...+.....,.fg=.|                      data: 8884002bfffef5dbf32cac66673dffed... 0x521-0xd2a.7 (2058)
+     |                                               |                |                      slice_header: {} 0x521-0x522 (1.1)
+0x520|   88                                          | .              |                        first_mb_in_slice: 0 0x521-0x521 (0.1)
+0x520|   88                                          | .              |                        slice_type: I (7) 0x521.1-0x521.7 (0.7)
+0x520|      84                                       |  .             |                        pic_parameter_set_id: 0 0x522-0x522 (0.1)
+0x520|      84 00 2b ff fe f5 db f3 2c ac 66 67 3d ff|  ..+.....,.fg=.|                      data: 080057fffdebb7e65958ccce7bffda76... 0x522.1-0xd2a.7 (2056.7)
 0x530|ed 3b 60 00 21 74 ff c0 cf 1f fc 67 ff cd 99 a7|.;`.!t.....g....|
 *    |2027 bytes more until 0xd2a.7                  |                |
      |                                               |                |        [6]: {} (element) 0xd2b-0xd46.7 (28)

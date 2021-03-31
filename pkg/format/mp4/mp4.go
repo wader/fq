@@ -395,7 +395,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			}
 
 			switch dataFormat {
-			case "mp4a":
+			case "mp4a", "mp4v":
 				_, dv := d.FieldDecode("es_descriptor", mpegESFormat)
 				mpegEsOut, ok := dv.(format.MpegEsOut)
 				if !ok {

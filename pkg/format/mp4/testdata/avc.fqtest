@@ -394,7 +394,11 @@
 0x2e0|               65                              |     e          |                forbidden_zero_bit: false 0x2e5-0x2e5 (0.1)
 0x2e0|               65                              |     e          |                nal_ref_idc: 3 0x2e5.1-0x2e5.2 (0.2)
 0x2e0|               65                              |     e          |                nal_unit_type: Coded slice of an IDR picture (5) 0x2e5.3-0x2e5.7 (0.5)
-0x2e0|                  88 84 00 2b ff fe f5 db f3 2c|      ...+.....,|                data: 8884002bfffef5dbf32cac66673dffed... 0x2e6-0xaef.7 (2058)
+     |                                               |                |                slice_header: {} 0x2e6-0x2e7 (1.1)
+0x2e0|                  88                           |      .         |                  first_mb_in_slice: 0 0x2e6-0x2e6 (0.1)
+0x2e0|                  88                           |      .         |                  slice_type: I (7) 0x2e6.1-0x2e6.7 (0.7)
+0x2e0|                     84                        |       .        |                  pic_parameter_set_id: 0 0x2e7-0x2e7 (0.1)
+0x2e0|                     84 00 2b ff fe f5 db f3 2c|       ..+.....,|                data: 080057fffdebb7e65958ccce7bffda76... 0x2e7.1-0xaef.7 (2056.7)
 0x2f0|ac 66 67 3d ff ed 3b 60 00 21 74 ff c0 cf 1f fc|.fg=..;`.!t.....|
 *    |2032 bytes more until 0xaef.7                  |                |
      |                                               |                |      data_format: "avc1" 0xdf3-NA (0)
