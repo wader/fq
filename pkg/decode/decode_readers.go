@@ -163,20 +163,10 @@ func (d *D) Unary(s uint64) uint64 {
 }
 
 func (d *D) FieldBytesLen(name string, nBytes int) []byte {
-	return d.FieldBytesFn(name, d.Pos(), int64(nBytes)*8, func() ([]byte, string) {
+	return d.FieldBytesFn(name, func() ([]byte, string) {
 		bs, err := d.bitBuf.BytesLen(nBytes)
 		if err != nil {
 			panic(ReadError{Err: err, Name: name, Op: "FieldBytesLen", Size: int64(nBytes) * 8, Pos: d.Pos()})
-		}
-		return bs, ""
-	})
-}
-
-func (d *D) FieldBytesRange(name string, firstBit int64, nBytes int) []byte {
-	return d.FieldBytesFn(name, firstBit, int64(nBytes)*8, func() ([]byte, string) {
-		bs, err := d.bitBuf.BytesRange(firstBit, nBytes)
-		if err != nil {
-			panic(ReadError{Err: err, Name: name, Op: "FieldBytesRange", Size: int64(nBytes) * 8, Pos: firstBit})
 		}
 		return bs, ""
 	})

@@ -546,6 +546,15 @@
       |                                               |                |                  [0]: {} (nal) 0x1038-0x12e8.7 (689)
 0x1030|                        00 00 02 ad            |        ....    |                    length: 685 0x1038-0x103b.7 (4)
       |                                               |                |                    nal: avc_nalu 0x103c-0x12e8.7 (685)
+      |                                               |                |                      sei: avc_sei 0x0-0x2ab.7 (684)
+ 0x000|05                                             |.               |                        payload_type: 5 0x0-0x0.7 (1)
+ 0x000|   ff ff a9                                    | ...            |                        payload_size: 679 0x1-0x3.7 (3)
+ 0x000|            dc 45 e9 bd e6 d9 48 b7 96 2c d8 20|    .E....H..,. |                        uuid: x264 (dc45e9bde6d948b7962cd820d923eeef) 0x4-0x13.7 (16)
+ 0x010|d9 23 ee ef                                    |.#..            |
+ 0x010|            78 32 36 34 20 2d 20 63 6f 72 65 20|    x264 - core |                        data: 78323634202d20636f72652031363120... 0x14-0x2aa.7 (663)
+ 0x020|31 36 31 20 72 33 30 32 30 20 64 31 39 38 39 33|161 r3020 d19893|
+ *    |635 bytes more until 0x2aa.7                   |                |
+ 0x2a0|                                 80|           |           .|   |                        rbsp_trailing_bits: 80 0x2ab-0x2ab.7 (1)
 0x1030|                                    06         |            .   |                      forbidden_zero_bit: false 0x103c-0x103c (0.1)
 0x1030|                                    06         |            .   |                      nal_ref_idc: 0 0x103c.1-0x103c.2 (0.2)
 0x1030|                                    06         |            .   |                      nal_unit_type: Supplemental enhancement information (SEI) (6) 0x103c.3-0x103c.7 (0.5)

@@ -584,8 +584,8 @@ func (d *D) FieldStrFn(name string, fn func() (string, string)) string {
 	}).V.(string)
 }
 
-func (d *D) FieldBytesFn(name string, firstBit int64, nBits int64, fn func() ([]byte, string)) []byte {
-	return d.FieldRangeFn(name, firstBit, nBits, func() *Value {
+func (d *D) FieldBytesFn(name string, fn func() ([]byte, string)) []byte {
+	return d.FieldFn(name, func() *Value {
 		bs, disp := fn()
 		return &Value{V: bs, Symbol: disp}
 	}).V.([]byte)
@@ -633,6 +633,19 @@ func (d *D) FieldStringRangeMapFn(name string, rm map[[2]uint64]string, def stri
 			}
 		}
 		return n, df, def
+	}), ok
+}
+
+func (d *D) FieldStringUUIDMapFn(name string, um map[[16]byte]string, def string, fn func() []byte) ([]byte, bool) {
+	var ok bool
+	return d.FieldBytesFn(name, func() ([]byte, string) {
+		uuid := fn()
+		for u, s := range um {
+			if bytes.Equal(u[:], uuid[:]) {
+				return uuid, s
+			}
+		}
+		return uuid, def
 	}), ok
 }
 
@@ -739,7 +752,7 @@ func (d *D) FieldValueStr(name string, v string, symbol string) {
 }
 
 func (d *D) FieldValueBytes(name string, b []byte, symbol string) {
-	d.FieldBytesFn(name, d.Pos(), 0, func() ([]byte, string) { return b, symbol })
+	d.FieldBytesFn(name, func() ([]byte, string) { return b, symbol })
 }
 
 // TODO: rename?

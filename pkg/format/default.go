@@ -55,6 +55,7 @@ const (
 	MPEG_AVC_DCR       = "avc_dcr"
 	MPEG_AVC_SPS       = "avc_sps"
 	MPEG_AVC_PPS       = "avc_pps"
+	MPEG_AVC_SEI       = "avc_sei"
 	MPEG_AVC_NALU      = "avc_nalu"
 	MPEG_AVC_AU        = "avc_au"
 	MPEG_ES            = "mpeg_es"

@@ -10,6 +10,7 @@ import (
 
 var avcSPSFormat []*decode.Format
 var avcPPSFormat []*decode.Format
+var avcSEIFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -19,6 +20,7 @@ func init() {
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.MPEG_AVC_SPS}, Formats: &avcSPSFormat},
 			{Names: []string{format.MPEG_AVC_PPS}, Formats: &avcPPSFormat},
+			{Names: []string{format.MPEG_AVC_SEI}, Formats: &avcSEIFormat},
 		},
 	})
 }
@@ -62,35 +64,36 @@ func fieldSEV(d *decode.D, name string) int64 {
 }
 
 const (
-	avcNALCodedSliceNonIDR              = 1
-	avcNALCodedSlicePartitionA          = 2
-	avcNALCodedSlicePartitionB          = 3
-	avcNALCodedSlicePartitionC          = 4
-	avcNALCodedSliceIDR                 = 5
-	avcNALSequenceParameterSet          = 7
-	avcNALPictureParameterSet           = 8
-	avcNALCodedSliceAuxWithoutPartition = 19
-	avcNALCodedSliceExtension           = 20
+	avcNALCodedSliceNonIDR                   = 1
+	avcNALCodedSlicePartitionA               = 2
+	avcNALCodedSlicePartitionB               = 3
+	avcNALCodedSlicePartitionC               = 4
+	avcNALCodedSliceIDR                      = 5
+	avcNALSupplementalEnhancementInformation = 6
+	avcNALSequenceParameterSet               = 7
+	avcNALPictureParameterSet                = 8
+	avcNALCodedSliceAuxWithoutPartition      = 19
+	avcNALCodedSliceExtension                = 20
 )
 
 var avcNALNames = map[uint64]string{
-	1:                          "Coded slice of a non-IDR picture",
-	2:                          "Coded slice data partition A",
-	3:                          "Coded slice data partition B",
-	4:                          "Coded slice data partition C",
-	5:                          "Coded slice of an IDR picture",
-	6:                          "Supplemental enhancement information (SEI)",
-	avcNALSequenceParameterSet: "Sequence parameter set",
-	avcNALPictureParameterSet:  "Picture parameter set",
-	9:                          "Access unit delimiter",
-	10:                         "End of sequence",
-	11:                         "End of stream",
-	12:                         "Filler data",
-	13:                         "Sequence parameter set extension",
-	14:                         "Prefix NAL unit",
-	15:                         "Subset sequence parameter set",
-	19:                         "Coded slice of an auxiliary coded picture without partitioning",
-	20:                         "Coded slice extension",
+	1:                                        "Coded slice of a non-IDR picture",
+	2:                                        "Coded slice data partition A",
+	3:                                        "Coded slice data partition B",
+	4:                                        "Coded slice data partition C",
+	5:                                        "Coded slice of an IDR picture",
+	avcNALSupplementalEnhancementInformation: "Supplemental enhancement information (SEI)",
+	avcNALSequenceParameterSet:               "Sequence parameter set",
+	avcNALPictureParameterSet:                "Picture parameter set",
+	9:                                        "Access unit delimiter",
+	10:                                       "End of sequence",
+	11:                                       "End of stream",
+	12:                                       "Filler data",
+	13:                                       "Sequence parameter set extension",
+	14:                                       "Prefix NAL unit",
+	15:                                       "Subset sequence parameter set",
+	19:                                       "Coded slice of an auxiliary coded picture without partitioning",
+	20:                                       "Coded slice extension",
 }
 
 var sliceNames = map[uint64]string{
@@ -126,6 +129,8 @@ func avcNALDecode(d *decode.D, in interface{}) interface{} {
 			fieldUEV(d, "pic_parameter_set_id")
 			// TODO: if ( separate_colour_plane_flag from SPS ) colour_plane_id; frame_num
 		})
+	case avcNALSupplementalEnhancementInformation:
+		d.FieldDecodeBitBuf("sei", unescapedBb, avcSEIFormat)
 	case avcNALSequenceParameterSet:
 		d.FieldDecodeBitBuf("sps", unescapedBb, avcSPSFormat)
 	case avcNALPictureParameterSet:
