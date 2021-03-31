@@ -3,6 +3,7 @@ package elf
 import (
 	"fq/pkg/decode"
 	"fq/pkg/format"
+	"log"
 )
 
 /*
@@ -172,111 +173,143 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 
 	d.FieldU32("version")
 	d.FieldU("entry", archBits)
-	d.FieldU("phoff", archBits)
-	d.FieldU("shoff", archBits)
+	phoff := d.FieldU("phoff", archBits)
+	shoff := d.FieldU("shoff", archBits)
 	d.FieldU32("flags")
 	d.FieldU16("ehsize")
-	d.FieldU16("phentsize")
+	phsize := d.FieldU16("phentsize")
 	phnum := d.FieldU16("phnum")
-	d.FieldU16("shentsize")
+	shentsize := d.FieldU16("shentsize")
 	shnum := d.FieldU16("shnum")
-	d.FieldU16("shstrndx")
+	shstrndx := d.FieldU16("shstrndx")
 
-	d.FieldArrayFn("program_headers", func(d *decode.D) {
-		for i := uint64(0); i < phnum; i++ {
-
-			pTypeNames := map[uint64]string{
-				0x00000000: "PT_NULL",
-				0x00000001: "PT_LOAD",
-				0x00000002: "PT_DYNAMIC",
-				0x00000003: "PT_INTERP",
-				0x00000004: "PT_NOTE",
-				0x00000005: "PT_SHLIB",
-				0x00000006: "PT_PHDR",
-				0x00000007: "PT_TLS",
-				0x60000000: "PT_LOOS",
-				0x6FFFFFFF: "PT_HIOS",
-				0x70000000: "PT_LOPROC",
-				0x7FFFFFFF: "PT_HIPROC",
+	// TODO: make this nicer, API to update fields?
+	// TODO: is wrong: string table is one large string to index into
+	// TODO: and string can overlap
+	strTable := map[uint64]string{}
+	if shstrndx != 0 {
+		var strTableOffset uint64
+		var strTableSize uint64
+		d.DecodeRangeFn(int64((shoff+shstrndx*shentsize)*8), int64(shentsize*8), func(d *decode.D) {
+			d.SeekRel(32)
+			d.SeekRel(32)
+			d.SeekRel(int64(archBits))
+			d.SeekRel(int64(archBits))
+			strTableOffset = d.U(archBits)
+			strTableSize = d.U(archBits)
+			_ = strTable
+		})
+		d.DecodeRangeFn(int64(strTableOffset*8), int64(strTableSize*8), func(d *decode.D) {
+			var i uint64
+			for d.NotEnd() {
+				s := d.StrZeroTerminated()
+				strTable[i] = s
+				i += uint64(len(s)) + 1
 			}
+		})
+	}
 
-			d.FieldStructFn("program_header", func(d *decode.D) {
-				switch archBits {
-				case 32:
-					d.FieldStringMapFn("p_type", pTypeNames, "Unknown", d.U32, decode.NumberHex)
-					d.FieldU("p_offset", archBits)
-					d.FieldU("p_vaddr", archBits)
-					d.FieldU("p_paddr", archBits)
-					d.FieldU32("p_filesz")
-					d.FieldU32("p_memsz")
-					d.FieldU32("p_flags")
-					d.FieldU32("p_align")
-				case 64:
-					d.FieldStringMapFn("p_type", pTypeNames, "Unknown", d.U32, decode.NumberHex)
-					d.FieldU32("p_flags")
-					d.FieldU("p_offset", archBits)
-					d.FieldU("p_vaddr", archBits)
-					d.FieldU("p_paddr", archBits)
-					d.FieldU64("p_filesz")
-					d.FieldU64("p_memsz")
-					d.FieldU64("p_align")
+	log.Printf("strTable: %#+v\n", strTable)
+
+	d.DecodeRangeFn(int64(phoff)*8, int64(phnum*phsize*8), func(d *decode.D) {
+		d.FieldArrayFn("program_headers", func(d *decode.D) {
+			for i := uint64(0); i < phnum; i++ {
+
+				pTypeNames := map[uint64]string{
+					0x00000000: "PT_NULL",
+					0x00000001: "PT_LOAD",
+					0x00000002: "PT_DYNAMIC",
+					0x00000003: "PT_INTERP",
+					0x00000004: "PT_NOTE",
+					0x00000005: "PT_SHLIB",
+					0x00000006: "PT_PHDR",
+					0x00000007: "PT_TLS",
+					0x60000000: "PT_LOOS",
+					0x6FFFFFFF: "PT_HIOS",
+					0x70000000: "PT_LOPROC",
+					0x7FFFFFFF: "PT_HIPROC",
 				}
-			})
-		}
+
+				d.FieldStructFn("program_header", func(d *decode.D) {
+					switch archBits {
+					case 32:
+						d.FieldStringMapFn("p_type", pTypeNames, "Unknown", d.U32, decode.NumberDecimal)
+						d.FieldU("p_offset", archBits)
+						d.FieldU("p_vaddr", archBits)
+						d.FieldU("p_paddr", archBits)
+						d.FieldU32("p_filesz")
+						d.FieldU32("p_memsz")
+						d.FieldU32("p_flags")
+						d.FieldU32("p_align")
+					case 64:
+						d.FieldStringMapFn("p_type", pTypeNames, "Unknown", d.U32, decode.NumberDecimal)
+						d.FieldU32("p_flags")
+						d.FieldU("p_offset", archBits)
+						d.FieldU("p_vaddr", archBits)
+						d.FieldU("p_paddr", archBits)
+						d.FieldU64("p_filesz")
+						d.FieldU64("p_memsz")
+						d.FieldU64("p_align")
+					}
+				})
+			}
+		})
 	})
 
-	d.FieldArrayFn("section_headers", func(d *decode.D) {
-		for i := uint64(0); i < shnum; i++ {
-			d.FieldStructFn("section_header", func(d *decode.D) {
+	d.DecodeRangeFn(int64(shoff)*8, int64(shnum*shentsize*8), func(d *decode.D) {
+		d.FieldArrayFn("section_headers", func(d *decode.D) {
+			for i := uint64(0); i < shnum; i++ {
+				d.FieldStructFn("section_header", func(d *decode.D) {
 
-				shTypeNames := map[uint64]string{
-					0x0:        "SHT_NULL",
-					0x1:        "SHT_PROGBITS",
-					0x2:        "SHT_SYMTAB",
-					0x3:        "SHT_STRTAB",
-					0x4:        "SHT_RELA",
-					0x5:        "SHT_HASH",
-					0x6:        "SHT_DYNAMIC",
-					0x7:        "SHT_NOTE",
-					0x8:        "SHT_NOBITS",
-					0x9:        "SHT_REL",
-					0x0a:       "SHT_SHLIB",
-					0x0b:       "SHT_DYNSYM",
-					0x0e:       "SHT_INIT_ARRAY",
-					0x0f:       "SHT_FINI_ARRAY",
-					0x10:       "SHT_PREINIT_ARRAY",
-					0x11:       "SHT_GROUP",
-					0x12:       "SHT_SYMTAB_SHNDX",
-					0x13:       "SHT_NUM",
-					0x60000000: "SHT_LOOS",
-				}
+					shTypeNames := map[uint64]string{
+						0x0:        "SHT_NULL",
+						0x1:        "SHT_PROGBITS",
+						0x2:        "SHT_SYMTAB",
+						0x3:        "SHT_STRTAB",
+						0x4:        "SHT_RELA",
+						0x5:        "SHT_HASH",
+						0x6:        "SHT_DYNAMIC",
+						0x7:        "SHT_NOTE",
+						0x8:        "SHT_NOBITS",
+						0x9:        "SHT_REL",
+						0x0a:       "SHT_SHLIB",
+						0x0b:       "SHT_DYNSYM",
+						0x0e:       "SHT_INIT_ARRAY",
+						0x0f:       "SHT_FINI_ARRAY",
+						0x10:       "SHT_PREINIT_ARRAY",
+						0x11:       "SHT_GROUP",
+						0x12:       "SHT_SYMTAB_SHNDX",
+						0x13:       "SHT_NUM",
+						0x60000000: "SHT_LOOS",
+					}
 
-				switch archBits {
-				case 32:
-					d.FieldU32("sh_name")
-					d.FieldStringMapFn("sh_type", shTypeNames, "Unknown", d.U32, decode.NumberHex)
-					d.FieldU32("sh_flags")
-					d.FieldU("sh_addr", archBits)
-					d.FieldU("sh_offset", archBits)
-					d.FieldU32("sh_size")
-					d.FieldU32("sh_link")
-					d.FieldU32("sh_info")
-					d.FieldU32("sh_addralign")
-					d.FieldU32("sh_entsize")
-				case 64:
-					d.FieldU32("sh_name")
-					d.FieldStringMapFn("sh_type", shTypeNames, "Unknown", d.U32, decode.NumberHex)
-					d.FieldU64("sh_flags")
-					d.FieldU("sh_addr", archBits)
-					d.FieldU("sh_offset", archBits)
-					d.FieldU64("sh_size")
-					d.FieldU32("sh_link")
-					d.FieldU32("sh_info")
-					d.FieldU64("sh_addralign")
-					d.FieldU64("sh_entsize")
-				}
-			})
-		}
+					switch archBits {
+					case 32:
+						d.FieldStringMapFn("sh_name", strTable, "Unknown", d.U32, decode.NumberDecimal)
+						d.FieldStringMapFn("sh_type", shTypeNames, "Unknown", d.U32, decode.NumberHex)
+						d.FieldU32("sh_flags")
+						d.FieldU("sh_addr", archBits)
+						d.FieldU("sh_offset", archBits)
+						d.FieldU32("sh_size")
+						d.FieldU32("sh_link")
+						d.FieldU32("sh_info")
+						d.FieldU32("sh_addralign")
+						d.FieldU32("sh_entsize")
+					case 64:
+						d.FieldStringMapFn("sh_name", strTable, "Unknown", d.U32, decode.NumberDecimal)
+						d.FieldStringMapFn("sh_type", shTypeNames, "Unknown", d.U32, decode.NumberHex)
+						d.FieldU64("sh_flags")
+						d.FieldU("sh_addr", archBits)
+						d.FieldU("sh_offset", archBits)
+						d.FieldU64("sh_size")
+						d.FieldU32("sh_link")
+						d.FieldU32("sh_info")
+						d.FieldU64("sh_addralign")
+						d.FieldU64("sh_entsize")
+					}
+				})
+			}
+		})
 	})
 
 	return nil
