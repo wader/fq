@@ -2,6 +2,7 @@ package elf
 
 // https://en.wikipedia.org/wiki/Executable_and_Linkable_Format
 // https://man7.org/linux/man-pages/man5/elf.5.html
+// https://github.com/torvalds/linux/blob/master/include/uapi/linux/elf.h
 
 import (
 	"fq/pkg/decode"
@@ -31,11 +32,11 @@ func strIndexNull(idx int, s string) string {
 	return s[idx : idx+i]
 }
 
-func fieldStringStrIndexFn(d *decode.D, name string, strTable string, fn func() uint64) uint64 {
-	return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
+func fieldStringStrIndexFn(d *decode.D, name string, strTable string, fn func() uint64) string {
+	return d.FieldFn(name, func() *decode.Value {
 		idx := fn()
-		return idx, decode.NumberDecimal, strIndexNull(int(idx), strTable)
-	})
+		return &decode.Value{V: idx, Symbol: strIndexNull(int(idx), strTable)}
+	}).Symbol
 }
 
 func elfDecode(d *decode.D, in interface{}) interface{} {
@@ -349,10 +350,66 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 			d.FieldStructFn("section_header", func(d *decode.D) {
 				var offset uint64
 				var size uint64
+				var shname string
+
+				const (
+					DT_NULL     = 0
+					DT_NEEDED   = 1
+					DT_PLTRELSZ = 2
+					DT_PLTGOT   = 3
+					DT_HASH     = 4
+					DT_STRTAB   = 5
+					DT_SYMTAB   = 6
+					DT_RELA     = 7
+					DT_RELASZ   = 8
+					DT_RELAENT  = 9
+					DT_STRSZ    = 10
+					DT_SYMENT   = 11
+					DT_INIT     = 12
+					DT_FINI     = 13
+					DT_SONAME   = 14
+					DT_RPATH    = 15
+					DT_SYMBOLIC = 16
+					DT_REL      = 17
+					DT_RELSZ    = 18
+					DT_RELENT   = 19
+					DT_PLTREL   = 20
+					DT_DEBUG    = 21
+					DT_TEXTREL  = 22
+					DT_JMPREL   = 23
+					DT_ENCODING = 32
+				)
+				var dtNames = map[uint64]string{
+					DT_NULL:     "DT_NULL",
+					DT_NEEDED:   "DT_NEEDED",
+					DT_PLTRELSZ: "DT_PLTRELSZ",
+					DT_PLTGOT:   "DT_PLTGOT",
+					DT_HASH:     "DT_HASH",
+					DT_STRTAB:   "DT_STRTAB",
+					DT_SYMTAB:   "DT_SYMTAB",
+					DT_RELA:     "DT_RELA",
+					DT_RELASZ:   "DT_RELASZ",
+					DT_RELAENT:  "DT_RELAENT",
+					DT_STRSZ:    "DT_STRSZ",
+					DT_SYMENT:   "DT_SYMENT",
+					DT_INIT:     "DT_INIT",
+					DT_FINI:     "DT_FINI",
+					DT_SONAME:   "DT_SONAME",
+					DT_RPATH:    "DT_RPATH",
+					DT_SYMBOLIC: "DT_SYMBOLIC",
+					DT_REL:      "DT_REL",
+					DT_RELSZ:    "DT_RELSZ",
+					DT_RELENT:   "DT_RELENT",
+					DT_PLTREL:   "DT_PLTREL",
+					DT_DEBUG:    "DT_DEBUG",
+					DT_TEXTREL:  "DT_TEXTREL",
+					DT_JMPREL:   "DT_JMPREL",
+					DT_ENCODING: "DT_ENCODING",
+				}
 
 				switch archBits {
 				case 32:
-					fieldStringStrIndexFn(d, "sh_name", strIndexTable, d.U32)
+					shname = fieldStringStrIndexFn(d, "sh_name", strIndexTable, d.U32)
 					d.FieldStringMapFn("sh_type", shTypeNames, "Unknown", d.U32, decode.NumberHex)
 					shFlags(d, archBits)
 					d.FieldU("sh_addr", archBits)
@@ -363,7 +420,7 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 					d.FieldU32("sh_addralign")
 					d.FieldU32("sh_entsize")
 				case 64:
-					fieldStringStrIndexFn(d, "sh_name", strIndexTable, d.U32)
+					shname = fieldStringStrIndexFn(d, "sh_name", strIndexTable, d.U32)
 					d.FieldStringMapFn("sh_type", shTypeNames, "Unknown", d.U32, decode.NumberHex)
 					shFlags(d, archBits)
 					d.FieldU("sh_addr", archBits)
@@ -376,6 +433,28 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 				}
 
 				d.FieldBitBufRange("data", int64(offset*8), int64(size*8))
+
+				d.DecodeRangeFn(int64(offset)*8, int64(size*8), func(d *decode.D) {
+					switch shname {
+					// TODO: PT_DYNAMIC?
+					case ".dynamic":
+						d.FieldArrayFn("dynamic_tags", func(d *decode.D) {
+							for d.NotEnd() {
+								d.FieldStructFn("tag", func(d *decode.D) {
+									tag, _ := d.FieldStringMapFn("tag", dtNames, "Unknown", func() uint64 { return d.U(archBits) }, decode.NumberHex)
+									switch tag {
+									case DT_NEEDED:
+										// TODO: DT_STRTAB
+										fieldStringStrIndexFn(d, "val", strIndexTable, func() uint64 { return d.U(archBits) })
+									default:
+										d.FieldU("d_un", archBits)
+									}
+								})
+							}
+						})
+					}
+
+				})
 			})
 		}
 	})
