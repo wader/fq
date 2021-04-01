@@ -1,42 +1,15 @@
 package elf
 
+// https://en.wikipedia.org/wiki/Executable_and_Linkable_Format
+// https://man7.org/linux/man-pages/man5/elf.5.html
+
 import (
 	"fq/pkg/decode"
 	"fq/pkg/format"
-	"log"
+	"strings"
 )
 
-/*
-
-ElfN_Addr       Unsigned program address, uintN_t
-ElfN_Off        Unsigned file offset, uintN_t
-ElfN_Section    Unsigned section index, uint16_t
-ElfN_Versym     Unsigned version symbol information, uint16_t
-Elf_Byte        unsigned char
-ElfN_Half       uint16_t
-ElfN_Sword      int32_t
-ElfN_Word       uint32_t
-ElfN_Sxword     int64_t
-ElfN_Xword      uint64_t
-
-typedef struct {
-	unsigned char e_ident[EI_NIDENT];
-	uint16_t      e_type;
-	uint16_t      e_machine;
-	uint32_t      e_version;
-	ElfN_Addr     e_entry;
-	ElfN_Off      e_phoff;
-	ElfN_Off      e_shoff;
-	uint32_t      e_flags;
-	uint16_t      e_ehsize;
-	uint16_t      e_phentsize;
-	uint16_t      e_phnum;
-	uint16_t      e_shentsize;
-	uint16_t      e_shnum;
-	uint16_t      e_shstrndx;
-} ElfN_Ehdr;
-
-*/
+// TODO: p_type hi/lo
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -47,11 +20,29 @@ func init() {
 	})
 }
 
+func strIndexNull(idx int, s string) string {
+	if idx > len(s) {
+		return ""
+	}
+	i := strings.IndexByte(s[idx:], 0)
+	if i == -1 {
+		return s
+	}
+	return s[idx : idx+i]
+}
+
+func fieldStringStrIndexFn(d *decode.D, name string, strTable string, fn func() uint64) uint64 {
+	return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
+		idx := fn()
+		return idx, decode.NumberDecimal, strIndexNull(int(idx), strTable)
+	})
+}
+
 func elfDecode(d *decode.D, in interface{}) interface{} {
 	d.ValidateAtLeastBitsLeft(128 * 8)
 
+	rootD := d
 	var archBits int
-	var endian decode.Endian
 
 	d.FieldStructFn("ident", func(d *decode.D) {
 		d.FieldValidateUTF8("magic", "\x7fELF")
@@ -70,10 +61,10 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldUFn("data", func() (uint64, decode.DisplayFormat, string) {
 			switch d.U8() {
 			case 1:
-				endian = decode.LittleEndian
+				rootD.Endian = decode.LittleEndian
 				return 1, decode.NumberDecimal, "Little-endian"
 			case 2:
-				endian = decode.BigEndian
+				rootD.Endian = decode.BigEndian
 				return 2, decode.NumberDecimal, "Big-endian"
 			default:
 				//d.Invalid()
@@ -101,8 +92,6 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldU8("abi_version")
 		d.FieldValidateZeroPadding("pad", 7*8)
 	})
-
-	d.Endian = endian
 
 	// TODO: hex functions?
 
@@ -186,7 +175,7 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 	// TODO: make this nicer, API to update fields?
 	// TODO: is wrong: string table is one large string to index into
 	// TODO: and string can overlap
-	strTable := map[uint64]string{}
+	var strIndexTable string
 	if shstrndx != 0 {
 		var strTableOffset uint64
 		var strTableSize uint64
@@ -197,120 +186,200 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 			d.SeekRel(int64(archBits))
 			strTableOffset = d.U(archBits)
 			strTableSize = d.U(archBits)
-			_ = strTable
+			_ = strIndexTable
 		})
-		d.DecodeRangeFn(int64(strTableOffset*8), int64(strTableSize*8), func(d *decode.D) {
-			var i uint64
-			for d.NotEnd() {
-				s := d.StrZeroTerminated()
-				strTable[i] = s
-				i += uint64(len(s)) + 1
-			}
-		})
+
+		strIndexTable = string(d.BytesRange(int64(strTableOffset*8), int(strTableSize)*8))
 	}
 
-	log.Printf("strTable: %#+v\n", strTable)
+	// d.DecodeRangeFn(int64(phoff)*8, int64(phnum*phsize*8), func(d *decode.D) {
+	d.FieldArrayFn("program_headers", func(d *decode.D) {
+		for i := uint64(0); i < phnum; i++ {
+			d.SeekAbs(int64(phoff*8) + int64(i*phsize*8))
 
-	d.DecodeRangeFn(int64(phoff)*8, int64(phnum*phsize*8), func(d *decode.D) {
-		d.FieldArrayFn("program_headers", func(d *decode.D) {
-			for i := uint64(0); i < phnum; i++ {
+			pTypeNames := map[uint64]string{
+				0x00000000: "PT_NULL",
+				0x00000001: "PT_LOAD",
+				0x00000002: "PT_DYNAMIC",
+				0x00000003: "PT_INTERP",
+				0x00000004: "PT_NOTE",
+				0x00000005: "PT_SHLIB",
+				0x00000006: "PT_PHDR",
+				0x00000007: "PT_TLS",
+				0x60000000: "PT_LOOS",
+				0x6fffffff: "PT_HIOS",
+				0x70000000: "PT_LOPROC",
+				0x7fffffff: "PT_HIPROC",
+			}
 
-				pTypeNames := map[uint64]string{
-					0x00000000: "PT_NULL",
-					0x00000001: "PT_LOAD",
-					0x00000002: "PT_DYNAMIC",
-					0x00000003: "PT_INTERP",
-					0x00000004: "PT_NOTE",
-					0x00000005: "PT_SHLIB",
-					0x00000006: "PT_PHDR",
-					0x00000007: "PT_TLS",
-					0x60000000: "PT_LOOS",
-					0x6fffffff: "PT_HIOS",
-					0x70000000: "PT_LOPROC",
-					0x7fffffff: "PT_HIPROC",
+			pFlags := func(d *decode.D) {
+				d.FieldStructFn("p_flags", func(d *decode.D) {
+					if d.Endian == decode.LittleEndian {
+						d.FieldU5("unused0")
+						d.FieldBool("PF_R")
+						d.FieldBool("PF_W")
+						d.FieldBool("PF_X")
+						d.FieldU24("unused1")
+					} else {
+						d.FieldU29("unused0")
+						d.FieldBool("PF_R")
+						d.FieldBool("PF_W")
+						d.FieldBool("PF_X")
+					}
+				})
+			}
+
+			d.FieldStructFn("program_header", func(d *decode.D) {
+				var offset uint64
+				var size uint64
+
+				switch archBits {
+				case 32:
+					d.FieldStringMapFn("p_type", pTypeNames, "Unknown", func() uint64 { return d.U32() & 0xf }, decode.NumberDecimal)
+					offset = d.FieldU("p_offset", archBits)
+					d.FieldU("p_vaddr", archBits)
+					d.FieldU("p_paddr", archBits)
+					size = d.FieldU32("p_filesz")
+					d.FieldU32("p_memsz")
+					pFlags(d)
+					d.FieldU32("p_align")
+				case 64:
+					d.FieldStringMapFn("p_type", pTypeNames, "Unknown", func() uint64 { return d.U32() & 0xf }, decode.NumberDecimal)
+					pFlags(d)
+					offset = d.FieldU("p_offset", archBits)
+					d.FieldU("p_vaddr", archBits)
+					d.FieldU("p_paddr", archBits)
+					size = d.FieldU64("p_filesz")
+					d.FieldU64("p_memsz")
+					d.FieldU64("p_align")
 				}
 
-				d.FieldStructFn("program_header", func(d *decode.D) {
-					switch archBits {
-					case 32:
-						d.FieldStringMapFn("p_type", pTypeNames, "Unknown", d.U32, decode.NumberDecimal)
-						d.FieldU("p_offset", archBits)
-						d.FieldU("p_vaddr", archBits)
-						d.FieldU("p_paddr", archBits)
-						d.FieldU32("p_filesz")
-						d.FieldU32("p_memsz")
-						d.FieldU32("p_flags")
-						d.FieldU32("p_align")
-					case 64:
-						d.FieldStringMapFn("p_type", pTypeNames, "Unknown", d.U32, decode.NumberDecimal)
-						d.FieldU32("p_flags")
-						d.FieldU("p_offset", archBits)
-						d.FieldU("p_vaddr", archBits)
-						d.FieldU("p_paddr", archBits)
-						d.FieldU64("p_filesz")
-						d.FieldU64("p_memsz")
-						d.FieldU64("p_align")
+				d.FieldBitBufRange("data", int64(offset*8), int64(size*8))
+			})
+		}
+	})
+	// })
+
+	// d.DecodeRangeFn(int64(shoff)*8, int64(shnum*shentsize*8), func(d *decode.D) {
+	d.FieldArrayFn("section_headers", func(d *decode.D) {
+		for i := uint64(0); i < shnum; i++ {
+			d.SeekAbs(int64(shoff*8) + int64(i*shentsize*8))
+
+			shTypeNames := map[uint64]string{
+				0x0:        "SHT_NULL",
+				0x1:        "SHT_PROGBITS",
+				0x2:        "SHT_SYMTAB",
+				0x3:        "SHT_STRTAB",
+				0x4:        "SHT_RELA",
+				0x5:        "SHT_HASH",
+				0x6:        "SHT_DYNAMIC",
+				0x7:        "SHT_NOTE",
+				0x8:        "SHT_NOBITS",
+				0x9:        "SHT_REL",
+				0x0a:       "SHT_SHLIB",
+				0x0b:       "SHT_DYNSYM",
+				0x0e:       "SHT_INIT_ARRAY",
+				0x0f:       "SHT_FINI_ARRAY",
+				0x10:       "SHT_PREINIT_ARRAY",
+				0x11:       "SHT_GROUP",
+				0x12:       "SHT_SYMTAB_SHNDX",
+				0x13:       "SHT_NUM",
+				0x60000000: "SHT_LOOS",
+			}
+
+			shFlags := func(d *decode.D, archBits int) {
+				d.FieldStructFn("sh_flags", func(d *decode.D) {
+					if d.Endian == decode.LittleEndian {
+						d.FieldBool("SHF_LINK_ORDER")
+						d.FieldBool("SHF_INFO_LINK")
+						d.FieldBool("SHF_STRINGS")
+						d.FieldBool("SHF_MERGE")
+						d.FieldU1("unused0")
+						d.FieldBool("SHF_EXECINSTR")
+						d.FieldBool("SHF_ALLOC")
+						d.FieldBool("SHF_WRITE")
+						d.FieldBool("SHF_TLS")
+						d.FieldBool("SHF_GROUP")
+						d.FieldBool("SHF_OS_NONCONFORMING")
+
+						d.FieldU9("unused1")
+
+						d.FieldU8("os_specific")
+						d.FieldU4("processor_specific")
+						if archBits == 64 {
+							d.FieldU32("unused2")
+						}
+					} else {
+						// TODO: add d.FieldUnused that is per decoder?
+						if archBits == 64 {
+							d.FieldU32("unused0")
+						}
+						d.FieldU4("processor_specific")
+						d.FieldU8("os_specific")
+						d.FieldU9("unused1")
+						d.FieldBool("SHF_TLS")
+						d.FieldBool("SHF_GROUP")
+						d.FieldBool("SHF_OS_NONCONFORMING")
+						d.FieldBool("SHF_LINK_ORDER")
+						d.FieldBool("SHF_INFO_LINK")
+						d.FieldBool("SHF_STRINGS")
+						d.FieldBool("SHF_MERGE")
+						d.FieldU1("unused2")
+						d.FieldBool("SHF_EXECINSTR")
+						d.FieldBool("SHF_ALLOC")
+						d.FieldBool("SHF_WRITE")
+						// 0x1	SHF_WRITE	Writable
+						// 0x2	SHF_ALLOC	Occupies memory during execution
+						// 0x4	SHF_EXECINSTR	Executable
+						// 0x10	SHF_MERGE	Might be merged
+						// 0x20	SHF_STRINGS	Contains null-terminated strings
+						// 0x40	SHF_INFO_LINK	'sh_info' contains SHT index
+						// 0x80	SHF_LINK_ORDER	Preserve order after combining
+						// 0x100	SHF_OS_NONCONFORMING	Non-standard OS specific handling required
+						// 0x200	SHF_GROUP	Section is member of a group
+						// 0x400	SHF_TLS	Section hold thread-local data
+						// 0x0ff00000	SHF_MASKOS	OS-specific
+						// 0xf0000000	SHF_MASKPROC	Processor-specific
+						// 0x4000000	SHF_ORDERED	Special ordering requirement (Solaris)
+						// 0x8000000	SHF_EXCLUDE	Section is excluded unless referenced or allocated (Solaris)
 					}
 				})
 			}
-		})
+
+			d.FieldStructFn("section_header", func(d *decode.D) {
+				var offset uint64
+				var size uint64
+
+				switch archBits {
+				case 32:
+					fieldStringStrIndexFn(d, "sh_name", strIndexTable, d.U32)
+					d.FieldStringMapFn("sh_type", shTypeNames, "Unknown", d.U32, decode.NumberHex)
+					shFlags(d, archBits)
+					d.FieldU("sh_addr", archBits)
+					offset = d.FieldU("sh_offset", archBits)
+					size = d.FieldU32("sh_size")
+					d.FieldU32("sh_link")
+					d.FieldU32("sh_info")
+					d.FieldU32("sh_addralign")
+					d.FieldU32("sh_entsize")
+				case 64:
+					fieldStringStrIndexFn(d, "sh_name", strIndexTable, d.U32)
+					d.FieldStringMapFn("sh_type", shTypeNames, "Unknown", d.U32, decode.NumberHex)
+					shFlags(d, archBits)
+					d.FieldU("sh_addr", archBits)
+					offset = d.FieldU("sh_offset", archBits)
+					size = d.FieldU64("sh_size")
+					d.FieldU32("sh_link")
+					d.FieldU32("sh_info")
+					d.FieldU64("sh_addralign")
+					d.FieldU64("sh_entsize")
+				}
+
+				d.FieldBitBufRange("data", int64(offset*8), int64(size*8))
+			})
+		}
 	})
-
-	d.DecodeRangeFn(int64(shoff)*8, int64(shnum*shentsize*8), func(d *decode.D) {
-		d.FieldArrayFn("section_headers", func(d *decode.D) {
-			for i := uint64(0); i < shnum; i++ {
-				d.FieldStructFn("section_header", func(d *decode.D) {
-
-					shTypeNames := map[uint64]string{
-						0x0:        "SHT_NULL",
-						0x1:        "SHT_PROGBITS",
-						0x2:        "SHT_SYMTAB",
-						0x3:        "SHT_STRTAB",
-						0x4:        "SHT_RELA",
-						0x5:        "SHT_HASH",
-						0x6:        "SHT_DYNAMIC",
-						0x7:        "SHT_NOTE",
-						0x8:        "SHT_NOBITS",
-						0x9:        "SHT_REL",
-						0x0a:       "SHT_SHLIB",
-						0x0b:       "SHT_DYNSYM",
-						0x0e:       "SHT_INIT_ARRAY",
-						0x0f:       "SHT_FINI_ARRAY",
-						0x10:       "SHT_PREINIT_ARRAY",
-						0x11:       "SHT_GROUP",
-						0x12:       "SHT_SYMTAB_SHNDX",
-						0x13:       "SHT_NUM",
-						0x60000000: "SHT_LOOS",
-					}
-
-					switch archBits {
-					case 32:
-						d.FieldStringMapFn("sh_name", strTable, "Unknown", d.U32, decode.NumberDecimal)
-						d.FieldStringMapFn("sh_type", shTypeNames, "Unknown", d.U32, decode.NumberHex)
-						d.FieldU32("sh_flags")
-						d.FieldU("sh_addr", archBits)
-						d.FieldU("sh_offset", archBits)
-						d.FieldU32("sh_size")
-						d.FieldU32("sh_link")
-						d.FieldU32("sh_info")
-						d.FieldU32("sh_addralign")
-						d.FieldU32("sh_entsize")
-					case 64:
-						d.FieldStringMapFn("sh_name", strTable, "Unknown", d.U32, decode.NumberDecimal)
-						d.FieldStringMapFn("sh_type", shTypeNames, "Unknown", d.U32, decode.NumberHex)
-						d.FieldU64("sh_flags")
-						d.FieldU("sh_addr", archBits)
-						d.FieldU("sh_offset", archBits)
-						d.FieldU64("sh_size")
-						d.FieldU32("sh_link")
-						d.FieldU32("sh_info")
-						d.FieldU64("sh_addralign")
-						d.FieldU64("sh_entsize")
-					}
-				})
-			}
-		})
-	})
+	// })
 
 	return nil
 }
