@@ -9,6 +9,9 @@ package mp4
 // TODO: keep track of structure somehow to detect errors
 // TODO: ISO-14496 says mp4 mdat can begin and end with original header/trailer (no used i guess?)
 // TODO: heic decode hevc samples (iloc box?)
+// TODO: more metadata
+// https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/Metadata/Metadata.html#//apple_ref/doc/uid/TP40000939-CH1-SW43
+// TODO: split into mov and mp4 decoder?
 
 import (
 	"fmt"
@@ -479,7 +482,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 				i++
 			})
 		},
-		// TODO: refactor: merge with stsco?
+		// TODO: refactor: merge with stco?
 		"co64": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			// TODO: values

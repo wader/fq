@@ -1,4 +1,5 @@
 
+endian bitfield helper (elf etc)
 
 optmize jq join, maybe use funcadd and optmize it?
 crc.correct/valid etc?

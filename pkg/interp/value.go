@@ -165,9 +165,9 @@ func (vo valueObject) DisplayName() string {
 	}
 	switch v.V.(type) {
 	case decode.Struct:
-		return "struct"
+		return "{}"
 	case decode.Array:
-		return "array"
+		return "[]"
 	default:
 		return "field"
 	}
