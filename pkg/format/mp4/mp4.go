@@ -784,6 +784,14 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			})
 			d.FieldDecode("data", id3v2Format)
 		},
+		"mehd": func(ctx *decodeContext, d *decode.D) {
+			flags := d.FieldU24("flags")
+			if flags&0b1 != 0 {
+				d.FieldU64("fragment_duration")
+			} else {
+				d.FieldU32("fragment_duration")
+			}
+		},
 	}
 
 	typeFn := func() (string, string) {
