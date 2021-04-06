@@ -36,6 +36,7 @@ var opusPacketFrameFormat []*decode.Format
 var vorbisPacketFormat []*decode.Format
 var vp9FrameFormat []*decode.Format
 var vpxCCRFormat []*decode.Format
+var id3v2Format []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -60,6 +61,7 @@ func init() {
 			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
 			{Names: []string{format.VP9_FRAME}, Formats: &vp9FrameFormat},
 			{Names: []string{format.VPX_CCR}, Formats: &vpxCCRFormat},
+			{Names: []string{format.ID3_V2}, Formats: &id3v2Format},
 		},
 	})
 }
@@ -97,6 +99,11 @@ type decodeContext struct {
 }
 
 func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
+
+	aliases := map[string]string{
+		"styp": "ftyp",
+	}
+
 	boxes := map[string]func(ctx *decodeContext, d *decode.D){
 		"ftyp": func(ctx *decodeContext, d *decode.D) {
 			d.FieldUTF8("major_brand", 4)
@@ -763,6 +770,20 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 		},
 		"iprp": decodeAtoms,
 		"ipco": decodeAtoms,
+		"ID32": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+			d.FieldU1("pad")
+			// ISO-639-2/T as 3*5 bit intgers - 0x60
+			d.FieldStrFn("langauge", func() (string, string) {
+				s := ""
+				for i := 0; i < 3; i++ {
+					s += fmt.Sprintf("%c", int(d.U5())+0x60)
+				}
+				return s, ""
+			})
+			d.FieldDecode("data", id3v2Format)
+		},
 	}
 
 	typeFn := func() (string, string) {
@@ -805,6 +826,10 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 		typ = "_apple_list"
 	case typ[0] == 0xa9:
 		typ = "_apple_entry"
+	}
+
+	if a, ok := aliases[typ]; ok {
+		typ = a
 	}
 
 	if decodeFn, ok := boxes[typ]; ok {
