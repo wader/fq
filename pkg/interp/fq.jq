@@ -2,6 +2,18 @@ include "@builtin/common.jq";
 include "@builtin/opts.jq";
 include "@builtin/funcs.jq";
 
+# def read: #:: [a]| => string
+# read with no prompt or completion
+
+# def read($promp): #:: [a]|(string) => string
+# read with prompt and no completion
+
+# def read($promp; $completion): #:: [a]|(string;string) => string
+# First argument is prompt to use.
+# Second argument is name of completion function [a](string) => [string],
+# it will be called with same input as read and a string argument being the
+# current line from start to current cursor position. Should return possible completions.
+
 # TODO: completionMode
 def complete($e):
 	($e | complete_query) as {$type, $query, $prefix}
@@ -131,16 +143,8 @@ def default_display: display({depth: 1});
 def eval_print($e):
 	eval_f($e;default_display);
 
-# def read: #:: [a]| => string
-# read with no prompt or completion
-# def read: #:: [a]|(string) => string
-# read with prompt and no completion
-# def read: #:: [a]|(string;string) => string
-# First argument is prompt to use.
-# Second argument is name of completion function [a](string) => [string],
-# it will be called with same input as read and a string argument being the
-# current line from start to current cursor position. Should return possible completions.
-def repl($opts):
+# run read-eval-print-loop
+def repl($opts): #:: a|(Opts) => @
 	def _as_array: if (. | type) != "array" then [.] end;
 	def _read_expr:
 		read(prompt;"complete")
@@ -157,8 +161,8 @@ def repl($opts):
 			elif . == "eof" then empty
 			else error(.) end;
 	with_options($opts | .repllevel = options.repllevel+1; _as_array | _repl);
-
-def repl: repl({});
+# same as repl({})
+def repl: repl({}); #:: a| => @
 
 def main:
 	def _formats_list:

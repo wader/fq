@@ -1,6 +1,8 @@
 
 
 dump: linewrap smart texts etc if width is known?
+https://github.com/charmbracelet/glow/blob/master/console_windows.go
+
 
 endian bitfield helper (elf etc)
 
