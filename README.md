@@ -1,6 +1,6 @@
 # fq
 
-jq for binaries
+jq for binary
 
 Tool and framework for querying and exploring binary data.
 
