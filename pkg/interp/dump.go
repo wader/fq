@@ -208,8 +208,8 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 		lastLineStopByte := startLineByte + int64(addrLines)*int64(opts.LineBytes) - 1
 		if lastDisplayByte == bufferLastByte && lastDisplayByte != lastLineStopByte {
 			// extra "|" in as EOF markers
-			cprint(colHex, "|\n")
-			cprint(colAscii, "|\n")
+			cfmt(colHex, "%s\n", deco.Column)
+			cfmt(colAscii, "%s\n", deco.Column)
 		}
 
 		if stopByte != lastDisplayByte {

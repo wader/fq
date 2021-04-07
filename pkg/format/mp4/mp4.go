@@ -792,6 +792,43 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 				d.FieldU32("fragment_duration")
 			}
 		},
+		"pssh": func(ctx *decodeContext, d *decode.D) {
+			systemIDNames := map[[16]byte]string{
+				{0x10, 0x77, 0xEF, 0xEC, 0xC0, 0xB2, 0x4D, 0x02, 0xAC, 0xE3, 0x3C, 0x1E, 0x52, 0xE2, 0xFB, 0x4B}: "Common",
+				{0xED, 0xEF, 0x8B, 0xA9, 0x79, 0xD6, 0x4A, 0xCE, 0xA3, 0xC8, 0x27, 0xDC, 0xD5, 0x1D, 0x21, 0xED}: "Widevine",
+				{0x9A, 0x04, 0xF0, 0x79, 0x98, 0x40, 0x42, 0x86, 0xAB, 0x92, 0xE6, 0x5B, 0xE0, 0x88, 0x5F, 0x95}: "PlayReady",
+			}
+
+			version := d.FieldU8("version")
+			d.FieldU24("flags")
+			d.FieldStringUUIDMapFn("system_id", systemIDNames, "Unknown", func() []byte { return d.BytesLen(16) })
+			switch version {
+			case 0:
+			case 1:
+				kidCount := d.FieldU32("kid_count")
+				d.FieldArrayFn("kids", func(d *decode.D) {
+					for i := uint64(0); i < kidCount; i++ {
+						d.FieldBitBufLen("kid", 16*8)
+					}
+				})
+			}
+			dataLen := d.FieldU32("data_size")
+			d.FieldBitBufLen("data", int64(dataLen)*8)
+		},
+		"sinf": decodeAtoms,
+		"frma": func(ctx *decodeContext, d *decode.D) {
+			d.FieldUTF8("format", 4)
+		},
+		"schm": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+			d.FieldUTF8("encryption_type", 4)
+			d.FieldU16("encryption_version")
+			if d.BitsLeft() > 0 {
+				d.FieldUTF8("uri", int(d.BitsLeft())/8)
+			}
+		},
+		"schi": decodeAtoms,
 	}
 
 	typeFn := func() (string, string) {

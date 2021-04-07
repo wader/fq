@@ -29,3 +29,25 @@ func Test2(t *testing.T) {
 
 	log.Printf("b.String(): %#+v\n", b.String())
 }
+
+func TestLen(t *testing.T) {
+	testCases := []struct {
+		s string
+		l int
+	}{
+		{"", 0},
+		{"abc", 3},
+		{ansi.FgRed + "a" + "bc" + ansi.Reset + "d", 4},
+		{"a" + ansi.FgRed + "bc" + ansi.Reset + "d", 4},
+		{"a" + ansi.FgRed + "bcd" + ansi.Reset, 4},
+		{"a│b", 3},
+	}
+	for _, tC := range testCases {
+		t.Run(tC.s, func(t *testing.T) {
+			actualL := ansi.Len(tC.s)
+			if tC.l != actualL {
+				t.Errorf("expected %d, got %d", tC.l, actualL)
+			}
+		})
+	}
+}

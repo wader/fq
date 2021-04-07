@@ -1,4 +1,7 @@
 
+
+dump: linewrap smart texts etc if width is known?
+
 endian bitfield helper (elf etc)
 
 optmize jq join, maybe use funcadd and optmize it?
