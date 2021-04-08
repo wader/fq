@@ -1,4 +1,5 @@
 
+flac: samples: [.frames[] | .end_of_header.block_size // .block_size][-9:-1] | add
 
 dump: linewrap smart texts etc if width is known?
 https://github.com/charmbracelet/glow/blob/master/console_windows.go

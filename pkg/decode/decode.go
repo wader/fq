@@ -743,6 +743,14 @@ func (d *D) FieldValueU(name string, v uint64, symbol string) {
 	d.FieldUFn(name, func() (uint64, DisplayFormat, string) { return v, NumberDecimal, symbol })
 }
 
+func (d *D) FieldValueS(name string, v int64, symbol string) {
+	d.FieldSFn(name, func() (int64, DisplayFormat, string) { return v, NumberDecimal, symbol })
+}
+
+func (d *D) FieldValueBool(name string, v bool, symbol string) {
+	d.FieldBoolFn(name, func() (bool, string) { return v, symbol })
+}
+
 func (d *D) FieldValueFloat(name string, v float64, symbol string) {
 	d.FieldFloatFn(name, func() (float64, string) { return v, symbol })
 }

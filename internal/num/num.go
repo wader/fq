@@ -114,3 +114,17 @@ func (r BitRange) StringByteBits(base int) string {
 	}
 	return fmt.Sprintf("%s-%s", Bits(r.Start).StringByteBits(base), Bits(r.Start+r.Len-1).StringByteBits(base))
 }
+
+func TwosComplement(nBits int, n uint64) int64 {
+	if n&(1<<(nBits-1)) > 0 {
+		// two's complement
+		return -int64((^n & ((1 << nBits) - 1)) + 1)
+	}
+	return int64(n)
+}
+
+// decode zigzag encoded integer
+// https://developers.google.com/protocol-buffers/docs/encoding
+func ZigZag(n uint64) int64 {
+	return int64(n>>1 ^ -(n & 1))
+}

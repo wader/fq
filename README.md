@@ -125,7 +125,7 @@ TODO: piping
 |`mp3`                |MP3&nbsp;file                                                 |<sub>`id3_v2`, `id3_v1`, `id3_v11`, `apev2`, `mp3_frame`</sub>|
 |`mp3_frame`          |MPEG&nbsp;audio&nbsp;layer&nbsp;3&nbsp;frame                  |<sub>`mp3_xing`</sub>|
 |`mp3_xing`           |Xing&nbsp;header                                              |<sub></sub>|
-|`mp4`                |MPEG-4&nbsp;file                                              |<sub>`av1_ccr`, `av1_frame`, `flac_frame`, `flac_metadatablock`, `mp3_frame`, `aac_frame`, `avc_dcr`, `avc_au`, `mpeg_es`, `hevc_dcr`, `hevc_au`, `opus_packet`, `vorbis_packet`, `vp9_frame`, `vpx_ccr`</sub>|
+|`mp4`                |MPEG-4&nbsp;file                                              |<sub>`av1_ccr`, `av1_frame`, `flac_frame`, `flac_metadatablock`, `mp3_frame`, `aac_frame`, `avc_dcr`, `avc_au`, `mpeg_es`, `hevc_dcr`, `hevc_au`, `opus_packet`, `vorbis_packet`, `vp9_frame`, `vpx_ccr`, `id3_v2`, `protobuf_widevine`</sub>|
 |`mpeg_asc`           |MPEG-4&nbsp;Audio&nbsp;Specific&nbsp;Config                   |<sub></sub>|
 |`mpeg_es`            |MPEG&nbsp;Elementary&nbsp;Stream                              |<sub>`mpeg_asc`, `vorbis_packet`</sub>|
 |`mpeg_pes`           |MPEG&nbsp;Packetized&nbsp;elementary&nbsp;stream              |<sub>`mpeg_pes_packet`, `mpeg_spu`</sub>|
@@ -135,6 +135,8 @@ TODO: piping
 |`ogg_page`           |OGG&nbsp;page                                                 |<sub></sub>|
 |`opus_packet`        |Opus&nbsp;packet                                              |<sub>`vorbis_comment`</sub>|
 |`png`                |Portable&nbsp;Network&nbsp;Graphics&nbsp;file                 |<sub>`icc_profile`, `exif`</sub>|
+|`protobuf`           |Protobuf                                                      |<sub></sub>|
+|`protobuf_widevine`  |Widevine&nbsp;protobuf                                        |<sub>`protobuf`</sub>|
 |`raw`                |Raw&nbsp;bits                                                 |<sub></sub>|
 |`tar`                |Tar&nbsp;archive                                              |<sub>`probe`</sub>|
 |`tiff`               |Tag&nbsp;Image&nbsp;File&nbsp;Format                          |<sub>`icc_profile`</sub>|
