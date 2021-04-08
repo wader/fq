@@ -110,7 +110,9 @@ func protobufDecodeField(d *decode.D, pbm *format.ProtoBufMessage) {
 					d.FieldValueBytes("value", d.BytesRange(valueStart, int(length)), "")
 				case format.ProtoBufTypeMessage:
 					// TODO: test
-					protobufDecodeFields(d, &pbf.Message)
+					d.DecodeLenFn(int64(length)*8, func(d *decode.D) {
+						protobufDecodeFields(d, &pbf.Message)
+					})
 				case format.ProtoBufTypePackedRepeated:
 					// TODO:
 				case format.ProtoBufTypeFixed32:
