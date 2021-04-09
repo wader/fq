@@ -29,6 +29,4 @@ import (
 	_ "fq/pkg/format/vpx"
 	_ "fq/pkg/format/wav"
 	_ "fq/pkg/format/webp"
-
-	_ "fq/pkg/format/jq"
 )
