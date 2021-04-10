@@ -14,6 +14,7 @@ package mp4
 // TODO: split into mov and mp4 decoder?
 
 import (
+	"bytes"
 	"fmt"
 	"fq/pkg/decode"
 	"fq/pkg/format"
@@ -795,15 +796,20 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			}
 		},
 		"pssh": func(ctx *decodeContext, d *decode.D) {
+			var (
+				systemIDCommon    = [16]byte{0x10, 0x77, 0xef, 0xec, 0xc0, 0xb2, 0x4d, 0x02, 0xac, 0xe3, 0x3c, 0x1e, 0x52, 0xe2, 0xfb, 0x4b}
+				systemIDWidevine  = [16]byte{0xed, 0xef, 0x8b, 0xa9, 0x79, 0xd6, 0x4a, 0xce, 0xa3, 0xc8, 0x27, 0xdc, 0xd5, 0x1d, 0x21, 0xed}
+				systemIDPlayReady = [16]byte{0x9a, 0x04, 0xf0, 0x79, 0x98, 0x40, 0x42, 0x86, 0xab, 0x92, 0xe6, 0x5b, 0xe0, 0x88, 0x5f, 0x95}
+			)
 			systemIDNames := map[[16]byte]string{
-				{0x10, 0x77, 0xef, 0xec, 0xc0, 0xb2, 0x4d, 0x02, 0xac, 0xe3, 0x3c, 0x1e, 0x52, 0xe2, 0xfb, 0x4b}: "Common",
-				{0xed, 0xef, 0x8b, 0xa9, 0x79, 0xd6, 0x4a, 0xce, 0xa3, 0xc8, 0x27, 0xdc, 0xd5, 0x1d, 0x21, 0xed}: "Widevine",
-				{0x9a, 0x04, 0xf0, 0x79, 0x98, 0x40, 0x42, 0x86, 0xab, 0x92, 0xe6, 0x5b, 0xe0, 0x88, 0x5f, 0x95}: "PlayReady",
+				systemIDCommon:    "Common",
+				systemIDWidevine:  "Widevine",
+				systemIDPlayReady: "PlayReady",
 			}
 
 			version := d.FieldU8("version")
 			d.FieldU24("flags")
-			d.FieldStringUUIDMapFn("system_id", systemIDNames, "Unknown", func() []byte { return d.BytesLen(16) })
+			systemID, _ := d.FieldStringUUIDMapFn("system_id", systemIDNames, "Unknown", func() []byte { return d.BytesLen(16) })
 			switch version {
 			case 0:
 			case 1:
@@ -816,8 +822,14 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			}
 			dataLen := d.FieldU32("data_size")
 
-			d.FieldDecodeLen("data", int64(dataLen)*8, protoBufWidevineFormat)
-
+			switch {
+			case systemID == nil:
+				fallthrough
+			default:
+				d.FieldBitBufLen("data", int64(dataLen)*8)
+			case bytes.Equal(systemID, systemIDWidevine[:]):
+				d.FieldDecodeLen("data", int64(dataLen)*8, protoBufWidevineFormat)
+			}
 		},
 		"sinf": decodeAtoms,
 		"frma": func(ctx *decodeContext, d *decode.D) {
