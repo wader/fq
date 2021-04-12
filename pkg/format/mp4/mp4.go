@@ -823,12 +823,12 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			dataLen := d.FieldU32("data_size")
 
 			switch {
+			case bytes.Equal(systemID, systemIDWidevine[:]):
+				d.FieldDecodeLen("data", int64(dataLen)*8, protoBufWidevineFormat)
 			case systemID == nil:
 				fallthrough
 			default:
 				d.FieldBitBufLen("data", int64(dataLen)*8)
-			case bytes.Equal(systemID, systemIDWidevine[:]):
-				d.FieldDecodeLen("data", int64(dataLen)*8, protoBufWidevineFormat)
 			}
 		},
 		"sinf": decodeAtoms,
