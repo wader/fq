@@ -2,7 +2,7 @@ include "@builtin/common.jq";
 
 def opts_parse($args;$opts):
 	def _parse($args;$flagmap;$r):
-		def _parse_with_arg($newargs;$optname;$value;$opt):
+		def _parse_with_arg($new_args;$optname;$value;$opt):
 			if $opt.object then
 				( $value
 				| capture("^(?<key>.*?)=(?<value>.*)$")
@@ -10,16 +10,16 @@ def opts_parse($args;$opts):
 				)
 				as {$key, $value} |
                 # TODO: validate option name key
-				_parse($newargs;$flagmap;($r|.parsed.[$optname][$key] |= $value))
+				_parse($new_args;$flagmap;($r|.parsed.[$optname][$key] |= $value))
 			elif $opt.array then
-				_parse($newargs;$flagmap;($r|.parsed.[$optname] += [$value]))
+				_parse($new_args;$flagmap;($r|.parsed.[$optname] += [$value]))
 			else
-				_parse($newargs;$flagmap;($r|.parsed.[$optname] = $value))
+				_parse($new_args;$flagmap;($r|.parsed.[$optname] = $value))
 			end;
-		def _parse_without_arg($newargs;$optname):
-			_parse($newargs;$flagmap;($r|.parsed.[$optname] = true));
-		($args[0] | index("=")) as $assigni
-		| (if $assigni then $args[0][0:$assigni]
+		def _parse_without_arg($new_args;$optname):
+			_parse($new_args;$flagmap;($r|.parsed.[$optname] = true));
+		($args[0] | index("=")) as $assign_i
+		| (if $assign_i then $args[0][0:$assign_i]
 		   else $args[0] end
 		  ) as $arg
 		| if $arg == null then
@@ -44,15 +44,15 @@ def opts_parse($args;$opts):
 						error("\($arg): no such argument")
 					end
 				  elif $opt.string or $opt.array or $opt.object then
-					if $assigni then
-						_parse_with_arg($args[1:];$optname;$args[0][$assigni+1:];$opt)
+					if $assign_i then
+						_parse_with_arg($args[1:];$optname;$args[0][$assign_i+1:];$opt)
 					elif ($args | length) < 2 then
 						error("\($arg): needs an argument")
 					else
 						_parse_with_arg($args[2:];$optname;$args[1];$opt)
 					end
 				  else
-					if $assigni then error("\($arg): takes no argument")
+					if $assign_i then error("\($arg): takes no argument")
 					else _parse_without_arg($args[1:];$optname) end
 				  end
 			else

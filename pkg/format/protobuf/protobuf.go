@@ -73,9 +73,9 @@ func protobufDecodeField(d *decode.D, pbm *format.ProtoBufMessage) {
 		if pbm != nil {
 			if pbf, ok := (*pbm)[int(fieldNumber)]; ok {
 				d.FieldValueStr("name", pbf.Name, "")
-				d.FieldValueStr("type", format.ProtoBufTypeNames[uint64(pbf.Typ)], "")
+				d.FieldValueStr("type", format.ProtoBufTypeNames[uint64(pbf.Type)], "")
 
-				switch pbf.Typ {
+				switch pbf.Type {
 				case format.ProtoBufTypeInt32, format.ProtoBufTypeInt64:
 					v := decode.ZigZag(value)
 					d.FieldValueS("value", v, "")

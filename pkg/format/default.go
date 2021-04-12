@@ -262,7 +262,7 @@ var ProtoBufTypeNames = map[uint64]string{
 }
 
 type ProtoBufField struct {
-	Typ     int
+	Type    int
 	Name    string
 	Message ProtoBufMessage
 	Enums   map[uint64]string
