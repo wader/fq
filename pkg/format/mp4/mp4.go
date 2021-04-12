@@ -756,13 +756,13 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			d.FieldU24("flags")
 			d.FieldU16("id")
 			d.FieldU16("protection_index")
-			d.FieldStrZeroTerminated("item_name")
+			d.FieldStrNullTerminated("item_name")
 			// TODO: really optional? seems so
 			if d.NotEnd() {
-				d.FieldStrZeroTerminated("content_type")
+				d.FieldStrNullTerminated("content_type")
 			}
 			if d.NotEnd() {
-				d.FieldStrZeroTerminated("content_encoding")
+				d.FieldStrNullTerminated("content_encoding")
 			}
 		},
 		"iinf": func(ctx *decodeContext, d *decode.D) {

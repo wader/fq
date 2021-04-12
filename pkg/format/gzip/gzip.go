@@ -93,10 +93,10 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldBitBufLen("extra_fields", int64(xLen*8))
 	}
 	if hasName {
-		d.FieldStrZeroTerminated("name")
+		d.FieldStrNullTerminated("name")
 	}
 	if hasComment {
-		d.FieldStrZeroTerminated("comment")
+		d.FieldStrNullTerminated("comment")
 	}
 	if hasHeaderCRC {
 		d.FieldU16LE("header_crc")

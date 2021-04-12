@@ -12,6 +12,7 @@ import (
 	"fq/pkg/bitio"
 	"fq/pkg/ranges"
 	"io/ioutil"
+	"strings"
 )
 
 type DecodeError struct {
@@ -983,14 +984,29 @@ func (d *D) FieldDecodeZlibLen(name string, nBits int64, formats []*Format) (*Va
 	return d.FieldDecodeBitBuf(name, zbb, formats)
 }
 
-func (d *D) FieldStrZeroTerminated(name string) string {
+func (d *D) FieldStrNullTerminated(name string) string {
 	return d.FieldStrFn(name, func() (string, string) {
-		return d.StrZeroTerminated(), ""
+		return d.StrNullTerminated(), ""
 	})
 }
 
-func (d *D) StrZeroTerminated() string {
+func (d *D) StrNullTerminated() string {
 	c := d.PeekFindByte(0, -1)
 	s := d.UTF8(int(c))
 	return s[:len(s)-1]
+}
+
+func (d *D) FieldStrNullTerminatedLen(name string, nBytes int) string {
+	return d.FieldStrFn(name, func() (string, string) {
+		return d.StrNullTerminatedLen(nBytes), ""
+	})
+}
+
+func (d *D) StrNullTerminatedLen(nBytes int) string {
+	s := d.UTF8(nBytes)
+	nullIndex := strings.IndexByte(s, 0)
+	if nullIndex == -1 {
+		return s
+	}
+	return s[:nullIndex]
 }

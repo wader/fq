@@ -13,6 +13,7 @@ import (
 )
 
 var exifFormat []*decode.Format
+var iccProfileFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -23,6 +24,7 @@ func init() {
 		DecodeFn:    jpegDecode,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.EXIF}, Formats: &exifFormat},
+			{Names: []string{format.ICC_PROFILE}, Formats: &iccProfileFormat},
 		},
 	})
 }
@@ -286,6 +288,7 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 							app0JFIFPrefix := []byte("JFIF\x00")
 							app1ExifPrefix := []byte("Exif\x00\x00")
 							extendedXMPPrefix := []byte("http://ns.adobe.com/xmp/extension/\x00")
+							app2ICCProfile := []byte("ICC_PROFILE\x00")
 							// TODO: other version? generic?
 							app13PhotoshopPrefix := []byte("Photoshop 3.0\x00")
 
@@ -319,6 +322,12 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 									}
 									copy(extendedXMP[offset:], chunk)
 								})
+							case markerCode == APP2 && d.TryHasBytes(app2ICCProfile):
+								d.FieldUTF8("icc_profile_prefix", len(app2ICCProfile))
+								// TODO: support multimarker?
+								d.FieldU8("cur_marker")
+								d.FieldU8("num_markers")
+								d.FieldDecodeLen("icc_profile", d.BitsLeft(), iccProfileFormat)
 							case markerCode == APP13 && d.TryHasBytes(app13PhotoshopPrefix):
 								d.FieldUTF8("identifier", len(app13PhotoshopPrefix))
 								signature := d.FieldUTF8("signature", 4)
