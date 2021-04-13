@@ -18,6 +18,7 @@ func init() {
 }
 
 const (
+	sequenceHeader = 0xb3
 	packHeader     = 0xba
 	systemHeader   = 0xbb
 	privateStream1 = 0xbd
@@ -69,6 +70,16 @@ func pesPacketDecode(d *decode.D, in interface{}) interface{} {
 	startCode, _ := d.FieldStringRangeMapFn("start_code", startAndStreamNames, "Unknown", d.U8, decode.NumberHex)
 
 	switch {
+	case startCode == sequenceHeader:
+		d.FieldU12("horizontal_size")
+		d.FieldU12("vertical_size")
+		d.FieldU4("aspect_ratio")
+		d.FieldU4("frame_rate_code")
+		d.FieldU18("bit_rate")
+		d.FieldU1("marker_bit")
+		d.FieldU10("vbv_buf_size")
+		d.FieldU1("constrained_parameters_flag")
+		d.FieldU1("load_intra_quantizer_matrix")
 	case startCode == packHeader:
 		d.FieldStructFn("scr", func(d *decode.D) {
 			d.FieldU2("skip0")

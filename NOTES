@@ -1,4 +1,10 @@
 
+_bytes: way to keep offset from original buffer?
+
+flac: frame number discontinuity: [.frames[] | .end_of_header.frame_number] as $l | [range(($l | length) - 1) | $l[.+1]-$l[.] | select(. != 1)]
+
+decode: filename as descriptin for rootroot
+
 dump: colorize/notify row range discontinuity
 
 mp3: optional header/footer

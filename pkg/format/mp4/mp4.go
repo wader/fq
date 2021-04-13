@@ -33,6 +33,7 @@ var mpegAVCAUFormat []*decode.Format
 var mpegESFormat []*decode.Format
 var mpegHEVCDCRFrameFormat []*decode.Format
 var mpegHEVCSampleFormat []*decode.Format
+var mpegPESPacketSampleFormat []*decode.Format
 var opusPacketFrameFormat []*decode.Format
 var vorbisPacketFormat []*decode.Format
 var vp9FrameFormat []*decode.Format
@@ -59,6 +60,7 @@ func init() {
 			{Names: []string{format.MPEG_ES}, Formats: &mpegESFormat},
 			{Names: []string{format.MPEG_HEVC_DCR}, Formats: &mpegHEVCDCRFrameFormat},
 			{Names: []string{format.MPEG_HEVC_AU}, Formats: &mpegHEVCSampleFormat},
+			{Names: []string{format.MPEG_PES_PACKET}, Formats: &mpegPESPacketSampleFormat},
 			{Names: []string{format.OPUS_PACKET}, Formats: &opusPacketFrameFormat},
 			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
 			{Names: []string{format.VP9_FRAME}, Formats: &vp9FrameFormat},
@@ -973,6 +975,13 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 						d.FieldDecodeRange("sample", firstBit, nBits, aacFrameFormat, t.decodeOpts...)
 					case format.MPEGObjectTypeVORBIS:
 						d.FieldDecodeRange("sample", firstBit, nBits, vorbisPacketFormat, t.decodeOpts...)
+					default:
+						d.FieldBitBufRange("sample", firstBit, nBits)
+					}
+				case "mp4v":
+					switch t.objectType {
+					case format.MPEGObjectTypeMPEG2VideoMain:
+						d.FieldDecodeRange("sample", firstBit, nBits, mpegPESPacketSampleFormat, t.decodeOpts...)
 					default:
 						d.FieldBitBufRange("sample", firstBit, nBits)
 					}

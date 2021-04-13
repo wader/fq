@@ -4,7 +4,6 @@ package flac
 
 import (
 	"encoding/binary"
-	"fmt"
 	"fq/internal/num"
 	"fq/pkg/crc"
 	"fq/pkg/decode"
@@ -74,10 +73,9 @@ func utf8Uint(d *decode.D) uint64 {
 func frameDecode(d *decode.D, in interface{}) interface{} {
 	var inStreamInfo *format.FlacMetadatablockStreamInfo
 	ffi, ok := in.(format.FlacFrameIn)
-	if !ok {
-		d.Panic(fmt.Sprintf("expected FlacFrameIn got %#+v", ffi))
+	if ok {
+		inStreamInfo = &ffi.StreamInfo
 	}
-	inStreamInfo = &ffi.StreamInfo
 
 	frameStart := d.Pos()
 	// <14> 11111111111110
@@ -605,7 +603,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	le := binary.LittleEndian
 	streamSamples := len(channelSamples[0])
 	// 0 total samples means unknown
-	if inStreamInfo.TotalSamplesInStream > 0 {
+	if inStreamInfo != nil && inStreamInfo.TotalSamplesInStream > 0 {
 		streamSamples = num.MinInt(int(ffi.NSamplesLeft), len(channelSamples[0]))
 	}
 	interleavedSamplesBuf := make([]byte, len(channelSamples)*streamSamples*bytesPerSample)
