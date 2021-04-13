@@ -26,6 +26,18 @@ depgraph.svg:
 formats.svg:
 	go run cmd/fq/main.go -rn 'formats | _formats_dot' | dot -Tsvg -o formats.svg
 
+.PHONY: prof
+prof:
+	go build -o fq.prof ./cmd/fq
+	CPUPROFILE=fq.cpu.prof MEMPROFILE=fq.mem.prof ./fq.prof "${ARGS}"
+.PHONY: memprof
+memprof: prof
+	go tool pprof -http :5555 fq.prof fq.mem.prof
+
+.PHONY: cpuprof
+cpuprof: prof
+	go tool pprof -http :5555 fq.prof fq.cpu.prof
+
 .PHONY: README.md
 README.md: _doc/file.mp3 _doc/file.mp4
 	$(eval REPODIR=$(shell pwd))
