@@ -188,7 +188,7 @@
       |                                               |                |                              boxes: [1] 0x3a6-0x10b6.7 (3345)
       |                                               |                |                                [0]: {} (box) 0x3a6-0x10b6.7 (3345)
 0x03a0|                  00 00 0d 11                  |      ....      |                                  size: 3345 0x3a6-0x3a9.7 (4)
-0x03a0|                              65 73 64 73      |          esds  |                                  type: "esds" 0x3aa-0x3ad.7 (4)
+0x03a0|                              65 73 64 73      |          esds  |                                  type: "esds" (Elementary stream descriptor) 0x3aa-0x3ad.7 (4)
 0x03a0|                                          00 00|              ..|                                  version: 0 0x3ae-0x3b1.7 (4)
 0x03b0|00 00                                          |..              |
       |                                               |                |                                  es_descriptor: mpeg_es 0x3b2-0x10b6.7 (3333)

@@ -75,11 +75,21 @@ func pesPacketDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldU12("vertical_size")
 		d.FieldU4("aspect_ratio")
 		d.FieldU4("frame_rate_code")
+		// TODO: bit rate * 400, rounded upwards. Use 0x3FFFF for variable bit rate
 		d.FieldU18("bit_rate")
 		d.FieldU1("marker_bit")
 		d.FieldU10("vbv_buf_size")
 		d.FieldU1("constrained_parameters_flag")
-		d.FieldU1("load_intra_quantizer_matrix")
+		loadIntraQuantizerMatrix := d.FieldBool("load_intra_quantizer_matrix")
+		if loadIntraQuantizerMatrix {
+			d.FieldBitBufLen("intra_quantizer_matrix", 8*64)
+
+		}
+		loadNonIntraQuantizerMatrix := d.FieldBool("load_non_intra_quantizer_matrix")
+		if loadNonIntraQuantizerMatrix {
+			d.FieldBitBufLen("non_intra_quantizer_matrix", 8*64)
+
+		}
 	case startCode == packHeader:
 		d.FieldStructFn("scr", func(d *decode.D) {
 			d.FieldU2("skip0")
@@ -174,6 +184,8 @@ func pesPacketDecode(d *decode.D, in interface{}) interface{} {
 		default:
 			d.FieldBitBufLen("data", dataLen)
 		}
+	default:
+		d.FieldBitBufLen("data", d.BitsLeft())
 	}
 
 	return v

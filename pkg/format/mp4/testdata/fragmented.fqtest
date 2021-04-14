@@ -396,7 +396,7 @@
       |                                               |                |                              boxes: [1] 0x3b5-0x3ea.7 (54)
       |                                               |                |                                [0]: {} (box) 0x3b5-0x3ea.7 (54)
 0x03b0|               00 00 00 36                     |     ...6       |                                  size: 54 0x3b5-0x3b8.7 (4)
-0x03b0|                           65 73 64 73         |         esds   |                                  type: "esds" 0x3b9-0x3bc.7 (4)
+0x03b0|                           65 73 64 73         |         esds   |                                  type: "esds" (Elementary stream descriptor) 0x3b9-0x3bc.7 (4)
 0x03b0|                                       00 00 00|             ...|                                  version: 0 0x3bd-0x3c0.7 (4)
 0x03c0|00                                             |.               |
       |                                               |                |                                  es_descriptor: mpeg_es 0x3c1-0x3ea.7 (42)

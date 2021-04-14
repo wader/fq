@@ -187,7 +187,7 @@
      |                                               |                |                              boxes: [1] 0x45b-0x490.7 (54)
      |                                               |                |                                [0]: {} (box) 0x45b-0x490.7 (54)
 0x450|                                 00 00 00 36   |           ...6 |                                  size: 54 0x45b-0x45e.7 (4)
-0x450|                                             65|               e|                                  type: "esds" 0x45f-0x462.7 (4)
+0x450|                                             65|               e|                                  type: "esds" (Elementary stream descriptor) 0x45f-0x462.7 (4)
 0x460|73 64 73                                       |sds             |
 0x460|         00 00 00 00                           |   ....         |                                  version: 0 0x463-0x466.7 (4)
      |                                               |                |                                  es_descriptor: mpeg_es 0x467-0x490.7 (42)

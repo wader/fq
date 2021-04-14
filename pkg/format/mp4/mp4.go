@@ -847,6 +847,13 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			}
 		},
 		"schi": decodeAtoms,
+		"btrt": func(ctx *decodeContext, d *decode.D) {
+			// d.FieldU8("version")
+			// d.FieldU24("flags")
+			d.FieldU32("decoding_buffer_size")
+			d.FieldU32("max_bitrate")
+			d.FieldU32("avg_bitrate")
+		},
 	}
 
 	typeFn := func() (string, string) {
