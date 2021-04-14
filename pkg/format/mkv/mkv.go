@@ -34,6 +34,7 @@ var mpegAVCAUFormat []*decode.Format
 var mpegHEVCDCRFormat []*decode.Format
 var mpegHEVCSampleFormat []*decode.Format
 var mpegSPUFrameFormat []*decode.Format
+var mpegPESPacketSampleFormat []*decode.Format
 var opusPacketFrameFormat []*decode.Format
 var vorbisPacketFormat []*decode.Format
 var vp8FrameFormat []*decode.Format
@@ -59,6 +60,7 @@ func init() {
 			{Names: []string{format.MPEG_HEVC_DCR}, Formats: &mpegHEVCDCRFormat},
 			{Names: []string{format.MPEG_HEVC_AU}, Formats: &mpegHEVCSampleFormat},
 			{Names: []string{format.MPEG_SPU}, Formats: &mpegSPUFrameFormat},
+			{Names: []string{format.MPEG_PES_PACKET}, Formats: &mpegPESPacketSampleFormat},
 			{Names: []string{format.OPUS_PACKET}, Formats: &opusPacketFrameFormat},
 			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
 			{Names: []string{format.VP8_FRAME}, Formats: &vp8FrameFormat},
@@ -450,6 +452,9 @@ func mkvDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldDecodeLen("packet", d.BitsLeft(), mpegAVCAUFormat, decodeOpts...)
 			case "V_MPEGH/ISO/HEVC":
 				d.FieldDecodeLen("packet", d.BitsLeft(), mpegHEVCSampleFormat, decodeOpts...)
+			case "V_MPEG2":
+				// TODO: many samples? maybe should be in es decoder etc?
+				d.FieldDecodeLen("packet", d.BitsLeft(), mpegPESPacketSampleFormat, decodeOpts...)
 			case "A_AAC":
 				d.FieldDecodeLen("packet", d.BitsLeft(), aacFrameFormat)
 			default:
