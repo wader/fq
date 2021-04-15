@@ -1,7 +1,7 @@
 package mkv
 
 // https://raw.githubusercontent.com/cellar-wg/matroska-specification/aa2144a58b661baf54b99bab41113d66b0f5ff62/ebml_matroska.xml
-//go:generate sh -c "go run ebml_gen.go ebml_matroska.xml mkv | gofmt > ebml_matroska.go"
+//go:generate sh -c "go run ebml/gen/main.go ebml_matroska.xml mkv fq/pkg/format/mkv/ebml mkv | gofmt > ebml_matroska.go"
 
 // https://tools.ietf.org/html/draft-ietf-cellar-ebml-00
 // https://matroska.org/technical/specs/index.html
@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"fq/pkg/decode"
 	"fq/pkg/format"
+	"fq/pkg/format/mkv/ebml"
 	"fq/pkg/ranges"
 )
 
@@ -105,56 +106,9 @@ func fieldDecodeVint(d *decode.D, name string, displayFormat decode.DisplayForma
 	})
 }
 
-type ebmlType int
-
-const (
-	ebmlInteger ebmlType = iota
-	ebmlUinteger
-	ebmlFloat
-	ebmlString
-	ebmlUTF8
-	ebmlDate
-	ebmlBinary
-	ebmlMaster
-)
-
-var ebmlTypeNames = map[ebmlType]string{
-	ebmlInteger:  "integer",
-	ebmlUinteger: "uinteger",
-	ebmlFloat:    "float",
-	ebmlString:   "string",
-	ebmlUTF8:     "UTF8",
-	ebmlDate:     "data",
-	ebmlBinary:   "binary",
-	ebmlMaster:   "master",
-}
-
-type ebmlAttribute struct {
-	name string
-	typ  ebmlType
-	tag  ebmlTag
-}
-
-type ebmlTag map[uint64]ebmlAttribute
-
-var ebmlGlobal = ebmlTag{
-	0xbf: {name: "CRC-32", typ: ebmlBinary},
-	0xec: {name: "Void", typ: ebmlBinary},
-}
-
-var ebmlHeader = ebmlTag{
-	0x4286: {name: "EBMLVersion", typ: ebmlUinteger},
-	0x42f7: {name: "EBMLReadVersion", typ: ebmlUinteger},
-	0x42f2: {name: "EBMLMaxIDLength", typ: ebmlUinteger},
-	0x42f3: {name: "EBMLMaxSizeLength", typ: ebmlUinteger},
-	0x4282: {name: "DocType", typ: ebmlString},
-	0x4287: {name: "DocTypeVersion", typ: ebmlUinteger},
-	0x4285: {name: "DocTypeReadVersion", typ: ebmlUinteger},
-}
-
-var ebmlRoot = ebmlTag{
-	0x1a45dfa3: {name: "EBML", typ: ebmlMaster, tag: ebmlHeader},
-	0x18538067: {name: "Segment", typ: ebmlMaster, tag: mkvSegment},
+var mkvRoot = ebml.Tag{
+	0x1a45dfa3: {Name: "EBML", Type: ebml.Master, Tag: ebml.Header},
+	0x18538067: {Name: "Segment", Type: ebml.Master, Tag: mkvSegment},
 }
 
 type track struct {
@@ -178,7 +132,7 @@ type decodeContext struct {
 	blocks       []simpleBlock
 }
 
-func decodeMaster(d *decode.D, bitsLimit int64, tag ebmlTag, dc *decodeContext) {
+func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext) {
 	tagEndBit := d.Pos() + bitsLimit
 
 	d.FieldArrayFn("elements", func(d *decode.D) {
@@ -192,9 +146,9 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebmlTag, dc *decodeContext) 
 
 			a, ok := tag[tagID]
 			if !ok {
-				a, ok = ebmlGlobal[tagID]
+				a, ok = ebml.Global[tagID]
 				if !ok {
-					panic("asdsad")
+					d.Invalid(fmt.Sprintf("unknown id %d", tagID))
 				}
 			}
 
@@ -214,7 +168,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebmlTag, dc *decodeContext) 
 
 				d.FieldUFn("id", func() (uint64, decode.DisplayFormat, string) {
 					n := decodeRawVint(d)
-					return n, decode.NumberHex, a.name
+					return n, decode.NumberHex, a.Name
 				})
 				// tagSize could be 0xffffffffffffff which means "unknown" size, then we will read until eof
 				// TODO: should read until unknown id:
@@ -223,24 +177,50 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebmlTag, dc *decodeContext) 
 				// TODO: should also handle garbage between
 				tagSize := fieldDecodeVint(d, "size", decode.NumberDecimal)
 
-				switch a.typ {
-				case ebmlInteger:
-					d.FieldS("value", int(tagSize)*8)
-				case ebmlUinteger:
-					v := d.FieldU("value", int(tagSize)*8)
+				switch a.Type {
+				case ebml.Integer:
+					d.FieldSFn("value", func() (int64, decode.DisplayFormat, string) {
+						n := d.S(int(tagSize) * 8)
+						if len(a.UintegerEnums) > 0 {
+							// TODO: use enum Defintion as description
+							return n, decode.NumberDecimal, a.IntegerEnums[n].Label
+
+						}
+						return n, decode.NumberDecimal, ""
+					})
+				case ebml.Uinteger:
+					v := d.FieldUFn("value", func() (uint64, decode.DisplayFormat, string) {
+						n := d.U(int(tagSize) * 8)
+						if len(a.UintegerEnums) > 0 {
+							// TODO: use enum Defintion as description
+							return n, decode.NumberDecimal, a.UintegerEnums[n].Label
+
+						}
+						return n, decode.NumberDecimal, ""
+					})
+
 					if dc.currentTrack != nil && tagID == TrackNumber {
 						dc.currentTrack.number = int(v)
 					}
-				case ebmlFloat:
+				case ebml.Float:
 					d.FieldF("value", int(tagSize)*8)
-				case ebmlString:
-					v := d.FieldUTF8("value", int(tagSize))
+				case ebml.String:
+					v := d.FieldStrFn("value", func() (string, string) {
+						s := d.UTF8(int(tagSize))
+						if len(a.StringEnums) > 0 {
+							// TODO: use enum Defintion as description
+							return s, a.StringEnums[s].Label
+
+						}
+						return s, ""
+					})
+
 					if dc.currentTrack != nil && tagID == CodecID {
 						dc.currentTrack.codec = v
 					}
-				case ebmlUTF8:
+				case ebml.UTF8:
 					d.FieldUTF8("value", int(tagSize))
-				case ebmlDate:
+				case ebml.Date:
 					// TODO:
 					/*
 						proc type_date {size label _extra} {
@@ -263,7 +243,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebmlTag, dc *decodeContext) 
 						}
 					*/
 					d.FieldBitBufLen("value", int64(tagSize)*8)
-				case ebmlBinary:
+				case ebml.Binary:
 
 					switch tagID {
 					case SimpleBlock:
@@ -293,8 +273,8 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebmlTag, dc *decodeContext) 
 						// }
 					}
 
-				case ebmlMaster:
-					decodeMaster(d, int64(tagSize)*8, a.tag, dc)
+				case ebml.Master:
+					decodeMaster(d, int64(tagSize)*8, a.Tag, dc)
 				}
 			})
 		}
@@ -316,7 +296,7 @@ func mkvDecode(d *decode.D, in interface{}) interface{} {
 		d.Invalid("no EBML header found")
 	}
 	dc := &decodeContext{tracks: []*track{}}
-	decodeMaster(d, d.BitsLeft(), ebmlRoot, dc)
+	decodeMaster(d, d.BitsLeft(), mkvRoot, dc)
 
 	trackNumberToTrack := map[int]*track{}
 	for _, t := range dc.tracks {

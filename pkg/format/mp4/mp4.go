@@ -12,6 +12,7 @@ package mp4
 // TODO: more metadata
 // https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/Metadata/Metadata.html#//apple_ref/doc/uid/TP40000939-CH1-SW43
 // TODO: split into mov and mp4 decoder?
+// TODO: fragmented: tracks per fragment? fragment_index in samples?
 
 import (
 	"bytes"
