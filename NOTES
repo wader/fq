@@ -1,4 +1,8 @@
 
+[0x6b, 0x68, 0x40, 0xf2, 0x5f, 0x24, 0x4f, 0xc5, 0xba, 0x39, 0xa5, 0x1b, 0xcf, 0x03, 0x23, 0xf3] | bytes / hd ?
+
+string functuion does not handle sub bitbuf?
+
 _bytes: way to keep offset from original buffer?
 
 flac: frame number discontinuity: [.frames[] | .end_of_header.frame_number] as $l | [range(($l | length) - 1) | $l[.+1]-$l[.] | select(. != 1)]

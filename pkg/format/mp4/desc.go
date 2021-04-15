@@ -148,6 +148,7 @@ var boxDescriptions = map[string]string{
 	"orie":       "Orientation information",
 	"padb":       "Sample padding bits",
 	"paen":       "Partition Entry",
+	"pasp":       "Pixel aspect ratio",
 	"pclr":       "Palette which maps a single component in index space to a multiple- component image",
 	"pdat":       "Partial Data",
 	"pdin":       "Progressive download information",

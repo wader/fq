@@ -228,9 +228,10 @@
 0x21d0|                           01 00               |         ..     |                                  data: 0100 0x21d9-0x21da.7 (2)
       |                                               |                |                                [2]: {} (box) 0x21db-0x21ea.7 (16)
 0x21d0|                                 00 00 00 10   |           .... |                                  size: 16 0x21db-0x21de.7 (4)
-0x21d0|                                             70|               p|                                  type: "pasp" 0x21df-0x21e2.7 (4)
+0x21d0|                                             70|               p|                                  type: "pasp" (Pixel aspect ratio) 0x21df-0x21e2.7 (4)
 0x21e0|61 73 70                                       |asp             |
-0x21e0|         00 00 00 01 00 00 00 01               |   ........     |                                  data: 0000000100000001 0x21e3-0x21ea.7 (8)
+0x21e0|         00 00 00 01                           |   ....         |                                  h_spacing: 1 0x21e3-0x21e6.7 (4)
+0x21e0|                     00 00 00 01               |       ....     |                                  v_spacing: 1 0x21e7-0x21ea.7 (4)
       |                                               |                |                        [1]: {} (box) 0x21eb-0x2202.7 (24)
 0x21e0|                                 00 00 00 18   |           .... |                          size: 24 0x21eb-0x21ee.7 (4)
 0x21e0|                                             73|               s|                          type: "stts" (Sample time-to-sample) 0x21ef-0x21f2.7 (4)

@@ -288,9 +288,10 @@
 0x0d20|   ff f8 f8 00                                 | ....           |                                    data: fff8f800 0xd21-0xd24.7 (4)
       |                                               |                |                                [1]: {} (box) 0xd25-0xd34.7 (16)
 0x0d20|               00 00 00 10                     |     ....       |                                  size: 16 0xd25-0xd28.7 (4)
-0x0d20|                           70 61 73 70         |         pasp   |                                  type: "pasp" 0xd29-0xd2c.7 (4)
-0x0d20|                                       00 00 00|             ...|                                  data: 0000000100000001 0xd2d-0xd34.7 (8)
-0x0d30|01 00 00 00 01                                 |.....           |
+0x0d20|                           70 61 73 70         |         pasp   |                                  type: "pasp" (Pixel aspect ratio) 0xd29-0xd2c.7 (4)
+0x0d20|                                       00 00 00|             ...|                                  h_spacing: 1 0xd2d-0xd30.7 (4)
+0x0d30|01                                             |.               |
+0x0d30|   00 00 00 01                                 | ....           |                                  v_spacing: 1 0xd31-0xd34.7 (4)
       |                                               |                |                        [1]: {} (box) 0xd35-0xd4c.7 (24)
 0x0d30|               00 00 00 18                     |     ....       |                          size: 24 0xd35-0xd38.7 (4)
 0x0d30|                           73 74 74 73         |         stts   |                          type: "stts" (Sample time-to-sample) 0xd39-0xd3c.7 (4)
