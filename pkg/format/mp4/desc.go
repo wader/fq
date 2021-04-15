@@ -177,7 +177,7 @@ var boxDescriptions = map[string]string{
 	"schm":       "Scheme type box",
 	"sdep":       "Sample dependency",
 	"sdhd":       "Reserved for SceneDescriptionStream header",
-	"sdtp":       "Independent and Disposable Samples Box",
+	"sdtp":       "Sample Dependency Flags",
 	"sdvp":       "SD Profile Box",
 	"segr":       "File delivery session group",
 	"seii":       "SEI information box",

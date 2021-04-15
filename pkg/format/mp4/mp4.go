@@ -495,6 +495,37 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 				i++
 			})
 		},
+		"stss": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+			numEntries := d.FieldU32("num_entries")
+			d.FieldArrayFn("entries", func(d *decode.D) {
+				for i := uint64(0); i < numEntries; i++ {
+					d.FieldU32("entry")
+				}
+			})
+		},
+		"sdtp": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+			// TODO: should be count from stsz
+			d.FieldArrayFn("entries", func(d *decode.D) {
+				for d.NotEnd() {
+					d.FieldU8("entry")
+				}
+			})
+		},
+		"ctts": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+			numEntries := d.FieldU32("num_entries")
+			var i uint64
+			d.FieldStructArrayLoopFn("table", "entry", func() bool { return i < numEntries }, func(d *decode.D) {
+				d.FieldU32("sample_count")
+				d.FieldU32("composition_offset")
+				i++
+			})
+		},
 		// TODO: refactor: merge with stco?
 		"co64": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
@@ -702,7 +733,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			lengthSizeOfTrafNum := d.FieldU2("length_size_of_traf_num")
 			sampleLengthSizeOfTrunNum := d.FieldU2("sample_length_size_of_trun_num")
 			lengthSizeOfSampleNum := d.FieldU2("length_size_of_sample_num")
-			numEntries := d.FieldU32("number_of_entry")
+			numEntries := d.FieldU32("num_entries")
 			d.FieldArrayFn("entries", func(d *decode.D) {
 				for i := uint64(0); i < numEntries; i++ {
 					d.FieldStructFn("entry", func(d *decode.D) {
