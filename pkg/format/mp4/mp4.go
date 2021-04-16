@@ -1025,9 +1025,9 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 	}
 	firstType := d.UTF8(4)
 	switch firstType {
-	case "ftyp", "free":
+	case "ftyp", "free", "moov":
 	default:
-		d.Invalid("no ftyp or free box found")
+		d.Invalid("no ftyp, free or moov box found")
 	}
 
 	d.SeekRel(-8 * 8)
