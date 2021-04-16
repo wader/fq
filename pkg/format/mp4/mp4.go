@@ -13,6 +13,7 @@ package mp4
 // https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/Metadata/Metadata.html#//apple_ref/doc/uid/TP40000939-CH1-SW43
 // TODO: split into mov and mp4 decoder?
 // TODO: fragmented: tracks per fragment? fragment_index in samples?
+// TODO: better probe, find first 2 boxes, should be free,ftyp or mdat?
 
 import (
 	"bytes"
@@ -104,7 +105,7 @@ type decodeContext struct {
 	currentMoofOffset int64
 }
 
-func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
+func decodeAtom(ctx *decodeContext, d *decode.D) {
 
 	aliases := map[string]string{
 		"styp": "ftyp",
@@ -259,10 +260,10 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 						d.FieldU16("data_reference_index")
 						version := d.FieldU16("version")
 						d.FieldU16("revision_level")
-						d.FieldU32("max_packet_size")
+						d.FieldU32("max_packet_size") // TODO: vendor?
 
 						// "Some sample descriptions terminate with four zero bytes that are not otherwise indicated."
-						// uses decodeAtomsZeroTerminate
+						// uses decodeAtoms
 
 						// Timecode sample
 						// TODO: tc64
@@ -289,25 +290,38 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 								d.FieldU16("compression_id")
 								d.FieldU16("packet_size")
 								d.FieldFP32("sample_rate")
-								// case 2:
-								// 	d.FieldU16("revision_level")
-								// 	d.FieldU32("vendor")
-								// 	d.FieldU16("always_3")
-								// 	d.FieldU16("always_16")
-								// 	d.FieldU16("always_minus_2")
-								// 	d.FieldU32("always_0")
-								// 	d.FieldU32("always_65536")
-								// 	d.FieldU32("size_of_struct_only")
-								// 	d.FieldF64("sample_rate")
-								// 	d.FieldU32("num_audio_channels")
-								// 	d.FieldU32("always_7f000000")
-								// 	d.FieldU32("const_bits_per_channel")
-								// 	d.FieldU32("format_specific_flags")
-								// 	d.FieldU32("const_bytes_per_audio_packet")
-								// 	d.FieldU32("const_lpcm_frames_per_audio_packet")
-
 								if d.BitsLeft() > 0 {
-									decodeAtomsZeroTerminate(ctx, d)
+									decodeAtoms(ctx, d)
+								}
+							case 1:
+								d.FieldU16("num_audio_channels")
+								d.FieldU16("sample_size")
+								d.FieldU16("compression_id")
+								d.FieldU16("packet_size")
+								d.FieldFP32("sample_rate")
+								d.FieldU32("samples_per_packet")
+								d.FieldU32("bytes_per_packet")
+								d.FieldU32("bytes_per_frame")
+								d.FieldU32("bytes_per_sample")
+								if d.BitsLeft() > 0 {
+									decodeAtoms(ctx, d)
+								}
+							case 2:
+								d.FieldU16("always_3")
+								d.FieldU16("always_16")
+								d.FieldU16("always_minus_2")
+								d.FieldU32("always_0")
+								d.FieldU32("always_65536")
+								d.FieldU32("size_of_struct_only")
+								d.FieldF64("audio_sample_rate")
+								d.FieldU32("num_audio_channels")
+								d.FieldU32("always_7f000000")
+								d.FieldU32("const_bits_per_channel")
+								d.FieldU32("format_specific_flags")
+								d.FieldU32("const_bytes_per_audio_packet")
+								d.FieldU32("const_lpcm_frames_per_audio_packet")
+								if d.BitsLeft() > 0 {
+									decodeAtoms(ctx, d)
 								}
 							default:
 								d.FieldBitBufLen("data", d.BitsLeft())
@@ -329,7 +343,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 								d.FieldS16("color_table_id")
 								// TODO: if 0 decode ctab
 								if d.BitsLeft() > 0 {
-									decodeAtomsZeroTerminate(ctx, d)
+									decodeAtoms(ctx, d)
 								}
 							default:
 								d.FieldBitBufLen("data", d.BitsLeft())
@@ -462,6 +476,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
+			// TODO: bytes_per_sample from audio stsd?
 			sampleSize := d.FieldU32("sample_size")
 			numEntries := d.FieldU32("num_entries")
 			if sampleSize == 0 {
@@ -903,6 +918,21 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 			d.FieldStringUUIDMapFn("uuid", uuidNames, "Unknown", func() []byte { return d.BytesLen(16) })
 			d.FieldBitBufLen("data", d.BitsLeft())
 		},
+		"keys": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+			entryCount := d.FieldU32("entry_count")
+			d.FieldArrayFn("entries", func(d *decode.D) {
+				for i := uint64(0); i < entryCount; i++ {
+					d.FieldStructFn("entry", func(d *decode.D) {
+						keySize := d.FieldU32("key_size")
+						d.FieldUTF8("key_namespace", 4)
+						d.FieldUTF8("key_name", int(keySize)-8)
+					})
+				}
+			})
+		},
+		"wave": decodeAtoms,
 	}
 
 	typeFn := func() (string, string) {
@@ -910,8 +940,14 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 		return typ, boxDescriptions[typ]
 	}
 
+	if d.BitsLeft() < 8*8 {
+		d.FieldBitBufLen("padding", d.BitsLeft())
+		return
+	}
+
 	boxSize := d.U32()
 	typ := d.UTF8(4)
+
 	d.SeekRel(-8 * 8)
 	var dataSize uint64
 	switch boxSize {
@@ -958,26 +994,22 @@ func decodeAtom(ctx *decodeContext, d *decode.D) uint64 {
 	} else {
 		d.FieldBitBufLen("data", int64(dataSize*8))
 	}
-
-	return boxSize
-}
-
-// TODO: ok to merge into decodeAtoms? what about terminator atom? different?
-func decodeAtomsZeroTerminate(ctx *decodeContext, d *decode.D) {
-	d.FieldStructArrayLoopFn("boxes", "box", d.NotEnd, func(d *decode.D) {
-		// "Some sample descriptions terminate with four zero bytes that are not otherwise indicated."
-		if d.BitsLeft() == 32 && d.PeekBits(32) == 0 {
-			d.FieldU32("zero_terminator")
-			return
-		}
-		decodeAtom(ctx, d)
-	})
 }
 
 func decodeAtoms(ctx *decodeContext, d *decode.D) {
-	d.FieldStructArrayLoopFn("boxes", "box", d.NotEnd, func(d *decode.D) {
+	d.FieldStructArrayLoopFn("boxes", "box", func() bool { return d.BitsLeft() >= 8*8 }, func(d *decode.D) {
 		decodeAtom(ctx, d)
 	})
+
+	if d.BitsLeft() > 0 {
+		// "Some sample descriptions terminate with four zero bytes that are not otherwise indicated."
+		if d.BitsLeft() >= 32 && d.PeekBits(32) == 0 {
+			d.FieldU32("zero_terminator")
+		}
+		if d.BitsLeft() > 0 {
+			d.FieldBitBufLen("padding", d.BitsLeft())
+		}
+	}
 }
 
 func mp4Decode(d *decode.D, in interface{}) interface{} {
@@ -988,13 +1020,16 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 	// TODO: nicer, validate functions without field?
 	d.ValidateAtLeastBytesLeft(16)
 	size := d.U32()
-	if size < 16 {
-		d.Invalid("first box size too small < 16")
+	if size < 8 {
+		d.Invalid("first box size too small < 8")
 	}
-	ftyp := d.UTF8(4)
-	if ftyp != "ftyp" {
-		d.Invalid("no ftyp box found")
+	firstType := d.UTF8(4)
+	switch firstType {
+	case "ftyp", "free":
+	default:
+		d.Invalid("no ftyp or free box found")
 	}
+
 	d.SeekRel(-8 * 8)
 
 	decodeAtoms(ctx, d)
@@ -1045,8 +1080,6 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 					d.FieldBitBufRange("sample", firstBit, nBits)
 				}
 			}
-
-			// log.Printf("t.moofs: %#+v\n", t.moofs)
 
 			d.FieldStructFn("track", func(d *decode.D) {
 				d.FieldStrFn("data_format", func() (string, string) { return t.dataFormat, "" })
