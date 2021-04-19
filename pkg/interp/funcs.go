@@ -142,27 +142,14 @@ func (i *Interp) eval(c interface{}, a []interface{}) interface{} {
 		return err
 	}
 
-	// TODO: modes opts?
-	var vs []interface{}
-	for {
-		v, ok := iter.Next()
-		if !ok {
-			break
-		}
-		vs = append(vs, v)
-		if _, ok := v.(error); ok {
-			break
-		}
-	}
-
-	return vs
+	return iter
 }
 
 func (i *Interp) print(c interface{}, a []interface{}) interface{} {
 	if _, err := fmt.Fprintln(i.stdout, c); err != nil {
 		return err
 	}
-	return []interface{}{}
+	return gojq.EmptyIter{}
 }
 
 func (i *Interp) completeQuery(c interface{}, a []interface{}) interface{} {
@@ -447,7 +434,8 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 				return err
 			}
 			fmt.Fprintln(i.stdout)
-			return []interface{}{}
+
+			return gojq.EmptyIter{}
 		case error:
 			return v
 		default:
@@ -468,7 +456,7 @@ func (i *Interp) preview(c interface{}, a []interface{}) interface{} {
 		if err := v.Preview(i.stdout, opts); err != nil {
 			return err
 		}
-		return []interface{}{}
+		return gojq.EmptyIter{}
 	default:
 		return fmt.Errorf("%v: not previewable", c)
 	}
@@ -508,7 +496,7 @@ func (i *Interp) hexdump(c interface{}, a []interface{}) interface{} {
 		return err
 	}
 
-	return []interface{}{}
+	return gojq.EmptyIter{}
 }
 
 func (i *Interp) string_(c interface{}, a []interface{}) interface{} {
