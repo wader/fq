@@ -20,30 +20,6 @@ def finally(f; fin):
 def with_options($opts; f):
 	push_options($opts) as $_ | finally(f; pop_options);
 
-# def print: _print[];
-
-# def display: _display[];
-# def display($opts): _display($opts)[];
-# def d: _display[];
-# def d($opts): _display($opts)[];
-
-# def verbose: _verbose[];
-# def verbose($opts): _verbose($opts)[];
-# def v: _verbose[];
-# def v($opts): _verbose($opts)[];
-
-# def preview: _preview[];
-# def preview($opts): _preview($opts)[];
-# def p: _preview[];
-# def p($opts): _preview($opts)[];
-
-# def hexdump: _hexdump[];
-# def hexdump($opts): _hexdump($opts)[];
-# def hd: _hexdump[];
-# def hd($opts): _hexdump($opts)[];
-# def h: _hexdump[];
-# def h($opts): _hexdump($opts)[];
-
 def trim: capture("^\\s*(?<str>.*?)\\s*$"; "").str;
 
 # does +1 and [:1] as " "*0 is null

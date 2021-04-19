@@ -235,28 +235,6 @@ func toInt64Z(v interface{}) int64 {
 	return n
 }
 
-func toStringMap(v interface{}) (map[string]string, error) {
-	vm, ok := v.(map[string]interface{})
-	if !ok {
-		return nil, fmt.Errorf("value is not a string map")
-	}
-	sm := map[string]string{}
-	for vmk, vmv := range vm {
-		vmvs, ok := vmv.(string)
-		if !ok {
-			return nil, fmt.Errorf("string map value is not a string")
-		}
-		sm[vmk] = vmvs
-	}
-
-	return sm, nil
-}
-
-func toStringMapZ(v interface{}) map[string]string {
-	sm, _ := toStringMap(v)
-	return sm
-}
-
 func toString(v interface{}) (string, error) {
 	switch v := v.(type) {
 	case string:
@@ -274,22 +252,6 @@ func toString(v interface{}) (string, error) {
 func toStringZ(v interface{}) string {
 	s, _ := toString(v)
 	return s
-}
-
-func toArray(v interface{}) ([]interface{}, error) {
-	switch v := v.(type) {
-	case []interface{}:
-		return v, nil
-	default:
-		return nil, fmt.Errorf("value can't be a array")
-	}
-}
-
-func toArrayZ(v interface{}) []interface{} {
-	if a, err := toArray(v); err == nil {
-		return a
-	}
-	return nil
 }
 
 func toBigInt(v interface{}) (*big.Int, error) {
