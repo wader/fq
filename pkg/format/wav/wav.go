@@ -3,6 +3,8 @@ package wav
 // http://soundfile.sapp.org/doc/WaveFormat/
 // https://github.com/FFmpeg/FFmpeg/blob/master/libavformat/wavdec.c
 // https://tech.ebu.ch/docs/tech/tech3285.pdf
+// http://www-mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html
+// TODO: 0xFFFE	WAVE_FORMAT_EXTENSIBLE	Determined by SubFormat, extension bytes GUID format
 
 import (
 	"fmt"
