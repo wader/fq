@@ -1,5 +1,5 @@
 
-WAVE_FORMAT_EXTENSIBLE test2.wav ( id3_v2 | .unknown0 | wav | d)
+DONE WAVE_FORMAT_EXTENSIBLE test2.wav ( id3_v2 | .unknown0 | wav | d)
 
 mp3: last frame truncated? can happen if frame does not use all bits?
 "If there are more Huffman code bits than necessary
@@ -9,7 +9,7 @@ padding to compensate the lack of data. " is why ffmpeg is ok with it?
 
 gojq: join: is exponential, make add with strings fast, use add: ["a","b","c"] | add 
 
-repl: frames[].bitrate ctr-c cancels repl interp, real generatro should fix? sub eval stays alive?
+DONE repl: frames[].bitrate ctr-c cancels repl interp, real generatro should fix? sub eval stays alive?
 
 search in binary, bin and string?
 

@@ -4,7 +4,6 @@ package wav
 // https://github.com/FFmpeg/FFmpeg/blob/master/libavformat/wavdec.c
 // https://tech.ebu.ch/docs/tech/tech3285.pdf
 // http://www-mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html
-// TODO: 0xFFFE	WAVE_FORMAT_EXTENSIBLE	Determined by SubFormat, extension bytes GUID format
 
 import (
 	"fmt"
@@ -13,6 +12,9 @@ import (
 	"strings"
 )
 
+var headerFormat []*decode.Format
+var footerFormat []*decode.Format
+
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.WAV,
@@ -20,8 +22,16 @@ func init() {
 		Groups:      []string{format.PROBE},
 		MIMEs:       []string{"audio/wav"},
 		DecodeFn:    wavDecode,
+		Dependencies: []decode.Dependency{
+			{Names: []string{format.ID3_V2}, Formats: &headerFormat},
+			{Names: []string{format.ID3_V1, format.ID3_V11}, Formats: &footerFormat},
+		},
 	})
 }
+
+const (
+	formatExtensible = 0xfffe
+)
 
 // transformed from ffmpeg libavformat/riff.c
 var audioFormatName = map[uint64]string{
@@ -31,7 +41,7 @@ var audioFormatName = map[uint64]string{
 	/* must come after f32le in this list */
 	0x0006: "PCM_ALAW",
 	0x0007: "PCM_MULAW",
-	0x000A: "WMAVOICE",
+	0x000a: "WMAVOICE",
 	0x0010: "ADPCM_IMA_OKI",
 	0x0011: "ADPCM_IMA_WAV",
 	/* must come after adpcm_ima_wav in this list */
@@ -71,7 +81,7 @@ var audioFormatName = map[uint64]string{
 	0x0215:           "DVAUDIO",
 	0x0216:           "DVAUDIO",
 	0x0270:           "ATRAC3",
-	0x028F:           "ADPCM_G722",
+	0x028f:           "ADPCM_G722",
 	0x0401:           "IMC",
 	0x0402:           "IAC",
 	0x0500:           "ON2AVC",
@@ -87,14 +97,21 @@ var audioFormatName = map[uint64]string{
 	0x706d:           "AAC",
 	0x4143:           "AAC",
 	0x594a:           "XAN_DPCM",
-	0x729A:           "G729",
-	0xA100:           "G723_1", /* Comverse Infosys Ltd. G723 1 */
-	0xA106:           "AAC",
-	0xA109:           "SPEEX",
-	0xF1AC:           "FLAC",
+	0x729a:           "G729",
+	0xa100:           "G723_1", /* Comverse Infosys Ltd. G723 1 */
+	0xa106:           "AAC",
+	0xa109:           "SPEEX",
+	0xf1ac:           "FLAC",
 	('S' << 8) + 'F': "ADPCM_SWF",
 	/* HACK/FIXME: Does Vorbis in WAV/AVI have an (in)official ID? */
 	('V' << 8) + 'o': "VORBIS",
+
+	formatExtensible: "Extensible",
+}
+
+var subFormatNames = map[[16]byte]string{
+	{0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}: "PCM",
+	{0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}: "IEEE_FLOAT",
 }
 
 func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 {
@@ -104,12 +121,19 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 {
 			decodeChunks(d, false)
 		},
 		"fmt": func(d *decode.D) {
-			d.FieldStringMapFn("audio_format", audioFormatName, "Unknown", d.U16LE, decode.NumberDecimal)
+			audioFormat, _ := d.FieldStringMapFn("audio_format", audioFormatName, "Unknown", d.U16LE, decode.NumberDecimal)
 			d.FieldU16LE("num_channels")
 			d.FieldU32LE("sample_rate")
 			d.FieldU32LE("byte_rate")
 			d.FieldU16LE("block_align")
 			d.FieldU16LE("bits_per_sample")
+
+			if audioFormat == formatExtensible && d.BitsLeft() > 0 {
+				d.FieldU16LE("extension_size")
+				d.FieldU16LE("valid_bits_per_sample")
+				d.FieldU32LE("channel_mask")
+				d.FieldStringUUIDMapFn("sub_format", subFormatNames, "Unknown", func() []byte { return d.BytesLen(16) })
+			}
 		},
 		"data": func(d *decode.D) {
 			d.FieldBitBufLen("samples", d.BitsLeft())
@@ -117,6 +141,9 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 {
 		"LIST": func(d *decode.D) {
 			d.FieldUTF8("list_type", 4)
 			decodeChunks(d, true)
+		},
+		"fact": func(d *decode.D) {
+			d.FieldU32LE("sample_length")
 		},
 	}
 
@@ -165,6 +192,12 @@ func decodeChunks(d *decode.D, stringData bool) {
 }
 
 func wavDecode(d *decode.D, in interface{}) interface{} {
+	// there are wav files in the wild with id3v2 header id3v1 footer
+	d.FieldTryDecode("header", headerFormat)
+
 	decodeChunk(d, "RIFF", false)
+
+	d.FieldTryDecode("footer", footerFormat)
+
 	return nil
 }
