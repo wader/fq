@@ -427,11 +427,11 @@
 0x110|00                                             |.               |                    preflag: 0 0x110.5-0x110.5 (0.1)
 0x110|00                                             |.               |                    scalefac_scale: 0 0x110.6-0x110.6 (0.1)
 0x110|00                                             |.               |                    count1table_select: 0 0x110.7-0x110.7 (0.1)
-0x110|   01 d9 81 38 05 c9 80 20 04 f1 80 8e 07 01 96| ...8... .......|          data: 01d9813805c9802004f1808e070196d2... 0x111-0x1c3.7 (179)
+0x110|   01 d9 81 38 05 c9 80 20 04 f1 80 8e 07 01 96| ...8... .......|          data: 01d9813805c9802004f1808e070196d2... 0x111-0x1c2.7 (178)
 0x120|d2 b0 19 91 ec 2a 39 85 70 0d c9 82 90 07 39 81|.....*9.p.....9.|
-*    |148 bytes more until 0x1c3.7                   |                |
-0x1c0|            62                                 |    b           |          padding_byte: 62 0x1c4-0x1c4.7 (1)
-0x1c0|               08 3d a0 52 36 7f 26 17         |     .=.R6.&.   |          other_data: 083da052367f2617 0x1c5-0x1cc.7 (8)
+*    |147 bytes more until 0x1c2.7                   |                |
+0x1c0|         85                                    |   .            |          padding_byte: 85 0x1c3-0x1c3.7 (1)
+0x1c0|            62 08 3d a0 52 36 7f 26 17         |    b.=.R6.&.   |          other_data: 62083da052367f2617 0x1c4-0x1cc.7 (9)
      |                                               |                |          crc_calculated: 9950 0x1cd-NA (0)
      |                                               |                |        [2]: mp3_frame (sample) 0x1cd-0x29d.7 (209)
      |                                               |                |          header: {} 0x1cd-0x1d0.7 (4)
@@ -491,11 +491,11 @@
 0x1e0|   00                                          | .              |                    preflag: 0 0x1e1.5-0x1e1.5 (0.1)
 0x1e0|   00                                          | .              |                    scalefac_scale: 0 0x1e1.6-0x1e1.6 (0.1)
 0x1e0|   00                                          | .              |                    count1table_select: 0 0x1e1.7-0x1e1.7 (0.1)
-0x1e0|      53 ca 1e 59 fd 29 ba 0b 84 d4 8a f8 8d cb|  S..Y.)........|          data: 53ca1e59fd29ba0b84d48af88dcba077... 0x1e2-0x282.7 (161)
+0x1e0|      53 ca 1e 59 fd 29 ba 0b 84 d4 8a f8 8d cb|  S..Y.)........|          data: 53ca1e59fd29ba0b84d48af88dcba077... 0x1e2-0x281.7 (160)
 0x1f0|a0 77 10 07 47 8b 8c 7b 2e 82 33 01 c4 c0 04 9f|.w..G..{..3.....|
-*    |131 bytes more until 0x282.7                   |                |
-0x280|         4c                                    |   L            |          padding_byte: 4c 0x283-0x283.7 (1)
-0x280|            41 4d 45 33 2e 31 30 30 aa aa aa aa|    AME3.100....|          other_data: 414d45332e313030aaaaaaaaaaaaaaaa... 0x284-0x29d.7 (26)
+*    |130 bytes more until 0x281.7                   |                |
+0x280|      6a                                       |  j             |          padding_byte: 6a 0x282-0x282.7 (1)
+0x280|         4c 41 4d 45 33 2e 31 30 30 aa aa aa aa|   LAME3.100....|          other_data: 4c414d45332e313030aaaaaaaaaaaaaa... 0x283-0x29d.7 (27)
 0x290|aa aa aa aa aa aa aa aa aa aa aa aa aa aa      |..............  |
      |                                               |                |          crc_calculated: c36b 0x29e-NA (0)
      |                                               |                |      data_format: "mp4a" 0x565-NA (0)

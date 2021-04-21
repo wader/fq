@@ -1,4 +1,6 @@
 
+help/builtins does not show jq functions
+
 Use gojq errors? nicer error
 error: can't check key for decode.Struct{(*decode.Value)(0xc0002e66e0), (*decode.Value)(0xc0002e7b80), (*decode.Value)(0xc00040f860)}
 

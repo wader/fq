@@ -419,11 +419,11 @@
 0x310|                                    00         |            .   |                          preflag: 0 0x31c.5-0x31c.5 (0.1)
 0x310|                                    00         |            .   |                          scalefac_scale: 0 0x31c.6-0x31c.6 (0.1)
 0x310|                                    00         |            .   |                          count1table_select: 0 0x31c.7-0x31c.7 (0.1)
-0x310|                                       01 d9 81|             ...|                data: 01d9813805c9802004f1808e070196d2... 0x31d-0x3cf.7 (179)
+0x310|                                       01 d9 81|             ...|                data: 01d9813805c9802004f1808e070196d2... 0x31d-0x3ce.7 (178)
 0x320|38 05 c9 80 20 04 f1 80 8e 07 01 96 d2 b0 19 91|8... ...........|
-*    |160 bytes more until 0x3cf.7                   |                |
-0x3d0|62                                             |b               |                padding_byte: 62 0x3d0-0x3d0.7 (1)
-0x3d0|   08 3d a0 52 36 7f 26 17                     | .=.R6.&.       |                other_data: 083da052367f2617 0x3d1-0x3d8.7 (8)
+*    |159 bytes more until 0x3ce.7                   |                |
+0x3c0|                                             85|               .|                padding_byte: 85 0x3cf-0x3cf.7 (1)
+0x3d0|62 08 3d a0 52 36 7f 26 17                     |b.=.R6.&.       |                other_data: 62083da052367f2617 0x3d0-0x3d8.7 (9)
      |                                               |                |                crc_calculated: 9950 0x3d9-NA (0)
      |                                               |                |            [4]: {} (element) 0x3d9-0x4bf.7 (231)
 0x3d0|                           a0                  |         .      |              id: BlockGroup (0xa0) 0x3d9-0x3d9.7 (1)
@@ -498,11 +498,12 @@
 0x3f0|                                       00      |             .  |                              preflag: 0 0x3fd.5-0x3fd.5 (0.1)
 0x3f0|                                       00      |             .  |                              scalefac_scale: 0 0x3fd.6-0x3fd.6 (0.1)
 0x3f0|                                       00      |             .  |                              count1table_select: 0 0x3fd.7-0x3fd.7 (0.1)
-0x3f0|                                          53 ca|              S.|                    data: 53ca1e59fd29ba0b84d48af88dcba077... 0x3fe-0x49e.7 (161)
+0x3f0|                                          53 ca|              S.|                    data: 53ca1e59fd29ba0b84d48af88dcba077... 0x3fe-0x49d.7 (160)
 0x400|1e 59 fd 29 ba 0b 84 d4 8a f8 8d cb a0 77 10 07|.Y.).........w..|
-*    |143 bytes more until 0x49e.7                   |                |
-0x490|                                             4c|               L|                    padding_byte: 4c 0x49f-0x49f.7 (1)
-0x4a0|41 4d 45 33 2e 31 30 30 aa aa aa aa aa aa aa aa|AME3.100........|                    other_data: 414d45332e313030aaaaaaaaaaaaaaaa... 0x4a0-0x4b9.7 (26)
+*    |142 bytes more until 0x49d.7                   |                |
+0x490|                                          6a   |              j |                    padding_byte: 6a 0x49e-0x49e.7 (1)
+0x490|                                             4c|               L|                    other_data: 4c414d45332e313030aaaaaaaaaaaaaa... 0x49f-0x4b9.7 (27)
+0x4a0|41 4d 45 33 2e 31 30 30 aa aa aa aa aa aa aa aa|AME3.100........|
 0x4b0|aa aa aa aa aa aa aa aa aa aa                  |..........      |
      |                                               |                |                    crc_calculated: c36b 0x4ba-NA (0)
      |                                               |                |                [1]: {} (element) 0x4ba-0x4bf.7 (6)

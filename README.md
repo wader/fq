@@ -9,7 +9,7 @@ Tool and framework for querying and exploring binary data.
 <sub>
 <pre sh>
 <b># duration of a mp3 file</b> 
-$ fq file.mp3 '[.frames[] | .samples_per_frame / .sample_rate] | add' 
+$ fq file.mp3 '[.frames[].header | .samples_per_frame / .sample_rate] | add' 
 0.0783673469387755
  
 <b># embedded id3v2 png picture</b> 
@@ -131,6 +131,7 @@ TODO: piping
 |`mpeg_pes`           |MPEG&nbsp;Packetized&nbsp;elementary&nbsp;stream              |<sub>`mpeg_pes_packet`, `mpeg_spu`</sub>|
 |`mpeg_pes_packet`    |MPEG&nbsp;Packetized&nbsp;elementary&nbsp;stream&nbsp;packet  |<sub></sub>|
 |`mpeg_spu`           |Sub&nbsp;Picture&nbsp;Unit&nbsp;(DVD&nbsp;subtitle)           |<sub></sub>|
+|`mpeg_ts`            |MPEG&nbsp;Transport&nbsp;Stream                               |<sub></sub>|
 |`ogg`                |OGG&nbsp;file                                                 |<sub>`ogg_page`, `vorbis_packet`, `opus_packet`</sub>|
 |`ogg_page`           |OGG&nbsp;page                                                 |<sub></sub>|
 |`opus_packet`        |Opus&nbsp;packet                                              |<sub>`vorbis_comment`</sub>|
@@ -146,10 +147,10 @@ TODO: piping
 |`vp9_cfm`            |VP9&nbsp;Codec&nbsp;Feature&nbsp;Metadata                     |<sub></sub>|
 |`vp9_frame`          |VP9&nbsp;frame                                                |<sub></sub>|
 |`vpx_ccr`            |VPX&nbsp;Codec&nbsp;Configuration&nbsp;Record                 |<sub></sub>|
-|`wav`                |WAV&nbsp;file                                                 |<sub></sub>|
+|`wav`                |WAV&nbsp;file                                                 |<sub>`id3_v2`, `id3_v1`, `id3_v11`</sub>|
 |`webp`               |WebP&nbsp;image                                               |<sub>`vp8_frame`</sub>|
 |`image`              |Group                                                         |<sub>`gif`, `jpeg`, `png`, `tiff`, `webp`</sub>|
-|`probe`              |Group                                                         |<sub>`aac_stream`, `adts`, `bzip2`, `elf`, `flac`, `gif`, `gzip`, `jpeg`, `mkv`, `mp3`, `mp4`, `ogg`, `png`, `tar`, `tiff`, `wav`, `webp`</sub>|
+|`probe`              |Group                                                         |<sub>`aac_stream`, `adts`, `bzip2`, `elf`, `flac`, `gif`, `gzip`, `jpeg`, `mkv`, `mp3`, `mp4`, `mpeg_ts`, `ogg`, `png`, `tar`, `tiff`, `wav`, `webp`</sub>|
 
 [#]: sh-end
 

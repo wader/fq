@@ -319,8 +319,8 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		paddingBytes := dataWithPaddingBytes - v.Range.Len/8
 		d.FieldBitBufLen("padding", paddingBytes*8)
 	} else {
-		frameMainDataPartBytes := dataWithPaddingBytes - int64(mainDataEnd)
-		followingFrameMainDataPartsBytes := int64(mainDataEnd - paddingBytes)
+		frameMainDataPartBytes := dataWithPaddingBytes - int64(mainDataEnd) - int64(paddingBytes)
+		followingFrameMainDataPartsBytes := int64(mainDataEnd)
 
 		// main data ends in previous frame
 		if frameMainDataPartBytes < 0 {
