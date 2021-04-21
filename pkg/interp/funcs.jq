@@ -13,7 +13,7 @@ def number_to_bytes:
 	number_to_bytes(8);
 
 
-def from_base($base;$table):
+def from_radix($base; $table):
 	split("")
 	| reverse
 	| map($table[.])
@@ -23,41 +23,38 @@ def from_base($base;$table):
 		([1,0]; (.[0] * $base) as $b | [$b, .[1] + (.[0] * $c)])
 	| .[1];
 
-def to_base($base;$table):
-	def stream:
-		recurse(if . > 0 then . div $base else empty end) | . % $base;
-	if . == 0 then
-		"0"
+def to_radix($base; $table):
+	if . == 0 then "0"
 	else
-		[stream] |
-		reverse  |
-		.[1:] |
-		if $base <= ($table | length) then
-			map($table[.]) | join("")
-		else
-			error("base too large")
-		end
+		[recurse(if . > 0 then . div $base else empty end) | . % $base]
+		| reverse
+		| .[1:]
+		| if $base <= ($table | length) then
+		 	map($table[.]) | join("")
+		  else
+		 	error("base too large")
+		  end
 	end;
 
-def base2:
-	if (. | type) == "number" then to_base(2;"01")
-	else from_base(2;{"0": 0, "1": 1}) end;
+def radix2:
+	if (. | type) == "number" then to_radix(2;"01")
+	else from_radix(2;{"0": 0, "1": 1}) end;
 
-def base8:
-	if (. | type) == "number" then to_base(8;"01234567")
-	else from_base(8;{"0": 0, "1": 1, "2": 2, "3": 3,"4": 4, "5": 5, "6": 6, "7": 7}) end;
+def radix8:
+	if (. | type) == "number" then to_radix(8;"01234567")
+	else from_radix(8;{"0": 0, "1": 1, "2": 2, "3": 3,"4": 4, "5": 5, "6": 6, "7": 7}) end;
 
-def base16:
-	if (. | type) == "number" then to_base(16;"0123456789abcdef")
-	else from_base(16;{
+def radix16:
+	if (. | type) == "number" then to_radix(16;"0123456789abcdef")
+	else from_radix(16;{
 		"0": 0, "1": 1, "2": 2, "3": 3,"4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9,
 		"a": 10, "b": 11, "c": 12, "d": 13, "e": 14, "f": 15
 	})
 	end;
 
-def base62:
-	if (. | type) == "number" then to_base(62;"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
-	else from_base(62;{
+def radix62:
+	if (. | type) == "number" then to_radix(62;"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
+	else from_radix(62;{
 		"0": 0, "1": 1, "2": 2, "3": 3,"4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9,
 		"A": 10, "B": 11, "C": 12, "D": 13, "E": 14, "F": 15, "G": 16,
 		"H": 17, "I": 18, "J": 19, "K": 20, "L": 21, "M": 22, "N": 23,
@@ -70,9 +67,9 @@ def base62:
 	})
 	end;
 
-def base62sp:
-	if (. | type) == "number" then to_base(62;"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-	else from_base(62;{
+def radix62sp:
+	if (. | type) == "number" then to_radix(62;"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	else from_radix(62;{
 		"0": 0, "1": 1, "2": 2, "3": 3,"4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9,
 		"a": 10, "b": 11, "c": 12, "d": 13, "e": 14, "f": 15, "g": 16,
 		"h": 17, "i": 18, "j": 19, "k": 20, "l": 21, "m": 22, "n": 23,
@@ -85,9 +82,9 @@ def base62sp:
 	})
 	end;
 
-def base62:
-	if (. | type) == "number" then to_base(62;"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")
-	else from_base(62;{
+def radix62:
+	if (. | type) == "number" then to_radix(62;"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")
+	else from_radix(62;{
 		"A": 0, "B": 1, "C": 2, "D": 3, "E": 4, "F": 5, "G": 6,
 		"H": 7, "I": 8, "J": 9, "K": 10, "L": 11, "M": 12, "N": 13,
 		"O": 14, "P": 15, "Q": 16, "R": 17, "S": 18, "T": 19, "U": 20,
@@ -100,9 +97,9 @@ def base62:
 	})
 	end;
 
-def base64:
-	if (. | type) == "number" then to_base(64;"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")
-	else from_base(64;{
+def radix64:
+	if (. | type) == "number" then to_radix(64;"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")
+	else from_radix(64;{
 		"A": 0, "B": 1, "C": 2, "D": 3, "E": 4, "F": 5, "G": 6,
 		"H": 7, "I": 8, "J": 9, "K": 10, "L": 11, "M": 12, "N": 13,
 		"O": 14, "P": 15, "Q": 16, "R": 17, "S": 18, "T": 19, "U": 20,
@@ -114,27 +111,6 @@ def base64:
 		"0": 52, "1": 53, "2": 54, "3": 55, "4": 56, "5": 57, "6": 58, "7": 59, "8": 60, "9": 61,
 		"+": 62, "/": 63
 	})
-	end;
-
-# from https://rosettacode.org/wiki/Non-decimal_radices/Convert#jq
-# unknown author
-# Convert the input integer to a string in the specified base (2 to 36 inclusive)
-def _convert(base):
-	def stream:
-		recurse(if . > 0 then . div base else empty end) | . % base;
-	if . == 0 then
-		"0"
-	else
-		[stream] |
-		reverse  |
-		.[1:] |
-		if base <  10 then
-			map(tostring) | join("")
-		elif base <= 36 then
-			map(if . < 10 then 48 + . else . + 87 end) | implode
-		else
-			error("base too large")
-		end
 	end;
 
 # input string is converted from "base" to an integer, within limits
@@ -151,10 +127,10 @@ def _to_i(base):
 # like iprint
 def i:
 	{
-		bin: "0b\(base2)",
-		oct: "0o\(base8)",
+		bin: "0b\(radix2)",
+		oct: "0o\(radix8)",
 		dec: "\(.)",
-		hex: "0x\(base16)",
+		hex: "0x\(radix16)",
 		str: (try ([.] | implode) catch null),
 	};
 

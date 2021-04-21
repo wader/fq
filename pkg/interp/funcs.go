@@ -64,10 +64,26 @@ func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
 		{[]string{"u"}, 0, 1, i.u, false},
 
 		{[]string{"md5"}, 0, 0, i.md5, false},
-		{[]string{"base64"}, 0, 0, i.base64, false},
-		{[]string{"unbase64"}, 0, 0, i.unbase64(), false},
-		{[]string{"hex"}, 0, 0, i.hex, false},
-		{[]string{"unhex"}, 0, 0, i.unhex(), false},
+
+		{[]string{"hex"}, 0, 0, makeStringBitBufTransformFn(
+			func(r io.Reader) (io.Reader, error) { return hex.NewDecoder(r), nil },
+			func(r io.Writer) (io.Writer, error) { return hex.NewEncoder(r), nil },
+		), false},
+
+		{[]string{"base64"}, 0, 0, makeStringBitBufTransformFn(
+			func(r io.Reader) (io.Reader, error) { return base64.NewDecoder(base64.StdEncoding, r), nil },
+			func(r io.Writer) (io.Writer, error) { return base64.NewEncoder(base64.StdEncoding, r), nil },
+		), false},
+		{[]string{"rawbase64"}, 0, 0, makeStringBitBufTransformFn(
+			func(r io.Reader) (io.Reader, error) { return base64.NewDecoder(base64.RawURLEncoding, r), nil },
+			func(r io.Writer) (io.Writer, error) { return base64.NewEncoder(base64.RawURLEncoding, r), nil },
+		), false},
+
+		{[]string{"urlbase64"}, 0, 0, makeStringBitBufTransformFn(
+			func(r io.Reader) (io.Reader, error) { return base64.NewDecoder(base64.URLEncoding, r), nil },
+			func(r io.Writer) (io.Writer, error) { return base64.NewEncoder(base64.URLEncoding, r), nil },
+		), false},
+
 		{[]string{"nal_unescape"}, 0, 0, i.nalUnescape(), false},
 
 		{[]string{"query_escape"}, 0, 0, i.queryEscape, false},
@@ -92,6 +108,55 @@ func (i *Interp) tty(c interface{}, a []interface{}) interface{} {
 	return map[string]interface{}{
 		"is_terminal": i.stdout.IsTerminal(),
 		"size":        []interface{}{w, h},
+	}
+}
+
+func makeStringBitBufTransformFn(
+	decodeFn func(r io.Reader) (io.Reader, error),
+	encodeFn func(w io.Writer) (io.Writer, error),
+) func(c interface{}, a []interface{}) interface{} {
+	return func(c interface{}, a []interface{}) interface{} {
+		switch c := c.(type) {
+		case string:
+			bb, _, err := toBitBuf(c)
+			if err != nil {
+				return err
+			}
+
+			r, err := decodeFn(bb)
+			if err != nil {
+				return err
+			}
+
+			buf := &bytes.Buffer{}
+			if _, err := io.Copy(buf, r); err != nil {
+				return err
+			}
+			outBB := bitio.NewBufferFromBytes(buf.Bytes(), -1)
+
+			return &bitBufObject{bb: outBB, unit: 8, r: ranges.Range{Len: outBB.Len()}}
+		default:
+			bb, _, err := toBitBuf(c)
+			if err != nil {
+				return err
+			}
+
+			buf := &bytes.Buffer{}
+			w, err := encodeFn(buf)
+			if err != nil {
+				return err
+			}
+
+			if _, err := io.Copy(w, bb); err != nil {
+				return err
+			}
+
+			if c, ok := w.(io.Closer); ok {
+				c.Close()
+			}
+
+			return buf.String()
+		}
 	}
 }
 
@@ -584,50 +649,14 @@ func (i *Interp) md5(c interface{}, a []interface{}) interface{} {
 	return md5.Sum(nil)
 }
 
-func (i *Interp) base64(c interface{}, a []interface{}) interface{} {
-	bb, _, err := toBitBuf(c)
-	if err != nil {
-		return err
-	}
-
-	b64Buf := &bytes.Buffer{}
-	b64 := base64.NewEncoder(base64.StdEncoding, b64Buf)
-	if _, err := io.Copy(b64Buf, bb); err != nil {
-		return err
-	}
-	b64.Close()
-
-	return b64Buf.String()
-}
-
-func (i *Interp) hex(c interface{}, a []interface{}) interface{} {
-	bb, r, err := toBitBuf(c)
-	if err != nil {
-		return err
-	}
-
-	bitsByteAlign := r.Start % 8
-	bb, err = bb.BitBufRange(r.Start-bitsByteAlign, r.Len+bitsByteAlign)
-	if err != nil {
-		return err
-	}
-
-	buf := &bytes.Buffer{}
-	if _, err := io.Copy(hex.NewEncoder(buf), bb); err != nil {
-		return err
-	}
-
-	return buf.String()
-}
-
-func makeBitBufTransformFn(fn func(r io.Reader, a []interface{}) (io.Reader, error)) func(c interface{}, a []interface{}) interface{} {
+func makeBitBufTransformFn(fn func(r io.Reader) (io.Reader, error)) func(c interface{}, a []interface{}) interface{} {
 	return func(c interface{}, a []interface{}) interface{} {
 		inBB, _, err := toBitBuf(c)
 		if err != nil {
 			return err
 		}
 
-		r, err := fn(inBB, a)
+		r, err := fn(inBB)
 		if err != nil {
 			return err
 		}
@@ -643,20 +672,8 @@ func makeBitBufTransformFn(fn func(r io.Reader, a []interface{}) (io.Reader, err
 	}
 }
 
-func (i *Interp) unhex() func(c interface{}, a []interface{}) interface{} {
-	return makeBitBufTransformFn(func(r io.Reader, a []interface{}) (io.Reader, error) {
-		return hex.NewDecoder(r), nil
-	})
-}
-
-func (i *Interp) unbase64() func(c interface{}, a []interface{}) interface{} {
-	return makeBitBufTransformFn(func(r io.Reader, a []interface{}) (io.Reader, error) {
-		return base64.NewDecoder(base64.StdEncoding, r), nil
-	})
-}
-
 func (i *Interp) nalUnescape() func(c interface{}, a []interface{}) interface{} {
-	return makeBitBufTransformFn(func(r io.Reader, a []interface{}) (io.Reader, error) {
+	return makeBitBufTransformFn(func(r io.Reader) (io.Reader, error) {
 		return &decode.NALUnescapeReader{Reader: r}, nil
 	})
 }
