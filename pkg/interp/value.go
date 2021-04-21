@@ -279,6 +279,52 @@ func (vo valueObject) JsonEach() interface{} {
 	return props
 }
 
+func (vo valueObject) JsonKeys() interface{} {
+	var kvs []interface{}
+
+	v := vo.v
+	switch vv := v.V.(type) {
+	case decode.Struct:
+		for _, f := range vv {
+			kvs = append(kvs, f.Name)
+		}
+	case decode.Array:
+		for i := range vv {
+			kvs = append(kvs, i)
+		}
+	default:
+		return fmt.Errorf("can't get keys from %v", v.V)
+	}
+
+	return kvs
+}
+
+func (vo valueObject) JsonHasKey(key interface{}) interface{} {
+	v := vo.v
+	switch vv := v.V.(type) {
+	case decode.Struct:
+		s, sOk := key.(string)
+		if !sOk {
+			return fmt.Errorf("can't check key for %#v", v.V)
+		}
+		for _, f := range vv {
+			if f.Name == s {
+				return true
+			}
+		}
+		return false
+	case decode.Array:
+		// TODO: toInt? int64?
+		i, iOk := key.(int)
+		if !iOk {
+			return fmt.Errorf("can't check key for %#v", v.V)
+		}
+		return i >= 0 && i < len(vv)
+	default:
+		return fmt.Errorf("can't check key for %#v", v.V)
+	}
+}
+
 func (vo valueObject) JsonType() string {
 	v := vo.v
 	switch v.V.(type) {
@@ -286,6 +332,14 @@ func (vo valueObject) JsonType() string {
 		return "object"
 	case decode.Array:
 		return "array"
+	case int, float64, int64, uint64:
+		return "number"
+	case bool:
+		return "boolean"
+	case string, []byte:
+		return "string"
+	case nil:
+		return "null"
 	default:
 		return "field"
 	}

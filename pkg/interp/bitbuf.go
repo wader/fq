@@ -95,6 +95,13 @@ func (bo *bitBufObject) JsonEach() interface{} {
 func (bo *bitBufObject) JsonType() string {
 	return "buffer"
 }
+func (bo *bitBufObject) JsonKeys() interface{} {
+	return fmt.Errorf("can't get keys from bitbuf")
+}
+func (bo *bitBufObject) JsonHasKey(key interface{}) interface{} {
+	return fmt.Errorf("can't get keys from bitbuf")
+}
+
 func (bo *bitBufObject) JsonPrimitiveValue() interface{} {
 	buf := &bytes.Buffer{}
 	if _, err := io.Copy(buf, bo.bb.Copy()); err != nil {

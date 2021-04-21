@@ -158,6 +158,29 @@ def i:
 		str: (try ([.] | implode) catch null),
 	};
 
+def diff($a; $b):
+    ($a | type) as $at
+    | ($b | type) as $bt
+    | if $at != $bt then {a: $a, b: $b}
+      elif ($at == "array" or $at == "object" or $at == "struct") then
+        [ ((($a | keys) + ($b | keys)) | unique)[] as $k
+        | {
+          ($k | tostring): (
+            [($a | has($k)), ($b | has($k))]
+            | if . == [true, true] then diff($a[$k]; $b[$k])
+              elif . == [true, false] then {a: $a[$k]}
+              elif . == [false, true] then {b: $b[$k]}
+              else empty # TODO: can't happen? error?
+              end
+          )
+        }
+        ]
+        | add
+        | if . == null then empty end
+      else
+        if $a == $b then empty else {a: $a, b: $b} end
+      end;
+
 def _formats_dot:
 	def _record($title;$fields):
 		[  "<"
