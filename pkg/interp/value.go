@@ -12,6 +12,8 @@ import (
 	"log"
 	"math/big"
 	"sort"
+
+	"github.com/itchyny/gojq"
 )
 
 // assert that *Value implements InterpObject and ToBitBuf
@@ -203,10 +205,10 @@ func (vo valueObject) JsonProperty(name string) interface{} {
 	case "_path":
 		r = valuePath(v)
 	case "_error":
-		if de, ok := v.Error.(*decode.DecodeError); ok {
+		if de, ok := v.Err.(*decode.DecodeError); ok {
 			return &decodeError2{de}
 		}
-		return v.Error
+		return v.Err
 
 	case "_bits":
 		bb, err := v.RootBitBuf.BitBufRange(v.Range.Start, v.Range.Len)
@@ -406,6 +408,8 @@ func (vo valueObject) ToBitBuf() (*bitio.Buffer, ranges.Range) {
 
 }
 
+var _ gojq.JSONObject = (*decodeError2)(nil)
+
 type decodeError2 struct {
 	v *decode.DecodeError
 }
@@ -430,12 +434,8 @@ func (de *decodeError2) JsonProperty(name string) interface{} {
 	switch name {
 	case "errs":
 		var errs []interface{}
-		for _, e := range de.v.Errs {
-			if de, ok := e.(*decode.DecodeError); ok {
-				errs = append(errs, &decodeError2{de})
-			} else {
-				errs = append(errs, e)
-			}
+		for _, e := range de.v.FormatErrs {
+			errs = append(errs, e)
 		}
 		return errs
 	}
@@ -452,27 +452,22 @@ func (de *decodeError2) JsonType() string {
 
 	return "object"
 }
+
+func (de *decodeError2) JsonKeys() interface{} {
+	return fmt.Errorf("todo")
+}
+
+func (de *decodeError2) JsonHasKey(key interface{}) interface{} {
+	return fmt.Errorf("todo")
+}
+
 func (de *decodeError2) JsonPrimitiveValue() interface{} {
 	log.Printf("JsonPrimitiveValue: %#+v\n", de)
 
-	var errs []interface{}
-	for _, e := range de.v.Errs {
-		if de, ok := e.(*decode.DecodeError); ok {
-			errs = append(errs, &decodeError2{de})
-		} else {
-			errs = append(errs, e)
-		}
+	em := map[string]interface{}{}
+	for _, e := range de.v.FormatErrs {
+		em[e.Format.Name] = e.Err.Error()
 	}
 
-	var err interface{} = de.v.Err
-	if de, ok := err.(*decode.DecodeError); ok {
-		err = &decodeError2{de}
-	}
-
-	return map[string]interface{}{
-		"format": de.v.Format.Name,
-		"stack":  de.v.PanicStack,
-		// "err":    de.v.Err,
-		// "errs":   errs,
-	}
+	return em
 }

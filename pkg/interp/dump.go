@@ -123,18 +123,18 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 
 	cprint(colField, "\n")
 
-	if v.Error != nil {
+	if v.Err != nil {
 		columns()
-		cfmt(colField, "%s!%s\n", indent, deco.Error.F(v.Error.Error()))
+		cfmt(colField, "%s!%s\n", indent, deco.Error.F(v.Err.Error()))
 
 		if opts.Verbose {
-			if de, ok := v.Error.(*decode.DecodeError); ok && de.PanicStack != "" {
-				ps := de.PanicStack
-				for _, l := range strings.Split(ps, "\n") {
-					columns()
-					cfmt(colField, "%s%s\n", indent, l)
-				}
-			}
+			// if de, ok := v.Err.(*decode.DecodeError); ok {
+			// 	ps := de.PanicStack
+			// 	for _, l := range strings.Split(ps, "\n") {
+			// 		columns()
+			// 		cfmt(colField, "%s%s\n", indent, l)
+			// 	}
+			// }
 		}
 	}
 

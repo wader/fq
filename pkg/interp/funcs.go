@@ -438,19 +438,17 @@ func (i *Interp) makeDecodeFn(registry *decode.Registry, decodeFormats []*decode
 			}
 		}
 
-		dv, _, errs := decode.Decode(i.ctx, name, bb, decodeFormats, decode.DecodeOptions{FormatOptions: opts})
+		dv, _, err := decode.Decode(i.ctx, name, bb, decodeFormats, decode.DecodeOptions{FormatOptions: opts})
 		if dv == nil {
-
-			var verrs []interface{}
-			for _, e := range errs {
-				if de, ok := e.(*decode.DecodeError); ok {
-					verrs = append(verrs, &decodeError2{de})
-				} else {
-					verrs = append(verrs, e)
+			switch err := err.(type) {
+			case *decode.DecodeError:
+				var verrs []interface{}
+				for _, e := range err.FormatErrs {
+					verrs = append(verrs, e.Err)
 				}
+				return valueErr{verrs}
 			}
-
-			return valueErr{verrs}
+			return valueErr{err}
 		}
 
 		return valueObject{v: dv}

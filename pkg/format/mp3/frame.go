@@ -314,9 +314,9 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	calcFrameBytes := int64(144*bitRate/sampleRate + paddingBytes)
 	dataWithPaddingBytes := calcFrameBytes - headerBytes - crcBytes - sideInfoBytes
 
-	if v, _, err := d.FieldTryDecode("xing", xingHeader); err == nil {
+	if dv, _, _ := d.FieldTryDecode("xing", xingHeader); dv != nil {
 		// TODO: allow shorter?
-		paddingBytes := dataWithPaddingBytes - v.Range.Len/8
+		paddingBytes := dataWithPaddingBytes - dv.Range.Len/8
 		d.FieldBitBufLen("padding", paddingBytes*8)
 	} else {
 		frameMainDataPartBytes := dataWithPaddingBytes - int64(mainDataEnd) - int64(paddingBytes)

@@ -46,13 +46,13 @@ func pesDecode(d *decode.D, in interface{}) interface{} {
 
 	d.FieldArrayFn("packets", func(d *decode.D) {
 		for d.NotEnd() {
-			dd, dv, errs := d.FieldTryDecode("packet", pesPacketFormat)
-			if dd == nil || errs != nil {
-				log.Printf("errs[0]: %#+v\n", errs[0])
+			dv, v, err := d.FieldTryDecode("packet", pesPacketFormat)
+			if dv == nil || err != nil {
+				log.Printf("errs[0]: %#+v\n", err)
 				break
 			}
 
-			switch dvv := dv.(type) {
+			switch dvv := v.(type) {
 			case subStreamPacket:
 				s, ok := substreams[dvv.number]
 				if !ok {

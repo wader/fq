@@ -56,8 +56,8 @@ func decodeOgg(d *decode.D, in interface{}) interface{} {
 
 	d.FieldArrayFn("pages", func(d *decode.D) {
 		for !d.End() {
-			_, dv, errs := d.FieldTryDecode("page", oggPage)
-			if errs != nil {
+			_, dv, _ := d.FieldTryDecode("page", oggPage)
+			if dv == nil {
 				break
 			}
 			oggPageOut, ok := dv.(format.OggPageOut)

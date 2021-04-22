@@ -468,8 +468,8 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			fieldTextNull(d, "mime_type", encodingUTF8)
 			d.FieldU8("picture_type") // TODO: table
 			fieldTextNull(d, "description", int(encoding))
-			v, _, _ := d.FieldTryDecodeLen("picture", d.BitsLeft(), images)
-			if v == nil {
+			dv, _, _ := d.FieldTryDecodeLen("picture", d.BitsLeft(), images)
+			if dv == nil {
 				d.FieldBitBufLen("picture", d.BitsLeft())
 			}
 		},

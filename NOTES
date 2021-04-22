@@ -1,4 +1,6 @@
 
+completion cancel causes ctxstack order panic
+
 make "fq -i" "fq -ni" as there is no input?
 
 help/builtins does not show jq functions

@@ -48,7 +48,7 @@ type Value struct {
 	DisplayFormat DisplayFormat
 	Symbol        string
 	Description   string
-	Error         error
+	Err           error
 }
 
 type WalkFn func(v *Value, rootV *Value, depth int, rootDepth int) error
@@ -134,8 +134,8 @@ func (v *Value) WalkPostOrder(fn WalkFn) error {
 func (v *Value) Errors() []error {
 	var errs []error
 	_ = v.WalkPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
-		if v.Error != nil {
-			errs = append(errs, v.Error)
+		if v.Err != nil {
+			errs = append(errs, v.Err)
 		}
 		return nil
 	})
