@@ -13,6 +13,10 @@ doc: jq doc in go files for builtints?
 
 "asdsad" | ctr(aes("key"), "iv")
 "asdasd" | cipher(ctr("iv"), aes("key))
+less/grep in repl?
+
+warnings: mp4 sample count etc
+warnings: show show dump? collect deep warnings?
 
 completion cancel causes ctxstack order panic
 
