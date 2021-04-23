@@ -940,11 +940,6 @@ func decodeAtom(ctx *decodeContext, d *decode.D) {
 		return typ, boxDescriptions[typ]
 	}
 
-	if d.BitsLeft() < 8*8 {
-		d.FieldBitBufLen("padding", d.BitsLeft())
-		return
-	}
-
 	boxSize := d.U32()
 	typ := d.UTF8(4)
 
@@ -1094,6 +1089,11 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 						sampleOffset := t.stco[chunkNr]
 
 						for i := uint32(0); i < stscEntry.samplesPerChunk; i++ {
+							if int(sampleNr) >= len(t.stsz) {
+								// TODO: add warning
+								break
+							}
+
 							sampleSize := t.stsz[sampleNr]
 
 							decodeSampleRange(d, t, "sample", int64(sampleOffset)*8, int64(sampleSize)*8, t.decodeOpts...)
