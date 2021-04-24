@@ -1,4 +1,13 @@
 
+cancel big json output
+
+pathdiff
+
+doc: jq doc in go files for builtints?
+
+"asdsad" | ctr(aes("key"), "iv")
+"asdasd" | cipher(ctr("iv"), aes("key))
+
 completion cancel causes ctxstack order panic
 
 make "fq -i" "fq -ni" as there is no input?
