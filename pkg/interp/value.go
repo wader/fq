@@ -29,31 +29,6 @@ func (vo valueObject) Path() string {
 	return valuePath(vo.v)
 }
 
-func (vo valueObject) ToJQ() interface{} {
-	v := vo.v
-	switch vv := v.V.(type) {
-	case decode.Array:
-		return vo
-	case decode.Struct:
-		return vo
-	case int, bool, float64, string, nil:
-		return vv
-	case int64:
-		return big.NewInt(vv)
-	case uint64:
-		return big.NewInt(int64(vv))
-	case []byte:
-		return string(vv)
-	// TODO:
-	// case *bitio.Buffer:
-	// 	// TODO: RawString, switch to writer somehow?
-	// 	bs, _ := v.RootBitBuf.BytesRange(v.Range.Start, int(bitio.BitsByteCount(v.Range.Len)))
-	// 	return string(bs)
-	default:
-		panic("unreachable")
-	}
-}
-
 func (vo valueObject) MarshalJSON() ([]byte, error) {
 	v := vo.v
 
@@ -195,7 +170,7 @@ func (vo valueObject) JQValueProperty(name string) interface{} {
 	case "_name":
 		r = v.Name
 	case "_value":
-		r = vo.ToJQ()
+		r = vo.JQValue()
 	case "_symbol":
 		r = v.Symbol
 	case "_description":
@@ -362,7 +337,9 @@ func (vo valueObject) JQValue() interface{} {
 			obj[f.Name] = valueObject{v: f}.JQValue()
 		}
 		return obj
-	case int, bool, float64, string, nil:
+	case int, bool, float64:
+		return vv
+	case string:
 		return vv
 	case int64:
 		return big.NewInt(vv)
@@ -381,6 +358,8 @@ func (vo valueObject) JQValue() interface{} {
 		// 	return err
 		// }
 		// return buf.String()
+	case nil:
+		return vv
 	default:
 		// TODO: error?
 		return nil
