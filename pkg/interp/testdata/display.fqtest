@@ -44,49 +44,25 @@
      |                       |        |  footers: [0]
 > fq -d mp3 test.mp3 '.frames[0] | verbose({depth: 1, addrbase: 10})'
    |00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15|                |.frames[0]: mp3_frame (frame) 45-226.7 (182)
-032|                                       ff fb   |             .. |  sync: Correct (0x7ff) 45-46.2 (1.3)
-032|                                          fb   |              . |  mpeg_version: MPEG Version 1 (1) 46.3-46.4 (0.2)
-032|                                          fb   |              . |  layer: Layer III (3) 46.5-46.6 (0.2)
-   |                                               |                |  samples_per_frame: 1152 46.7-NA (0)
-032|                                          fb   |              . |  protection: Not protected (true) 46.7-46.7 (0.1)
-032|                                             40|               @|  bitrate: 56000 47-47.3 (0.4)
-032|                                             40|               @|  sample_rate: 44100 47.4-47.5 (0.2)
-032|                                             40|               @|  padding: Not padded (0b0) 47.6-47.6 (0.1)
-032|                                             40|               @|  private: 0 47.7-47.7 (0.1)
-048|c0                                             |.               |  channels: Mono (0b11) 48-48.1 (0.2)
-048|c0                                             |.               |  channel_mode: 0b0 48.2-48.3 (0.2)
-048|c0                                             |.               |  copyright: 0 48.4-48.4 (0.1)
-048|c0                                             |.               |  original: 0 48.5-48.5 (0.1)
-048|c0                                             |.               |  emphasis: None (0b0) 48.6-48.7 (0.2)
+032|                                       ff fb 40|             ..@|  header: {} 45-48.7 (4)
+048|c0                                             |.               |
 048|   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00| ...............|  side_info: {} 49-65.7 (17)
 064|00 00                                          |..              |
 064|      49 6e 66 6f 00 00 00 0f 00 00 00 02 00 00|  Info..........|  xing: mp3_xing 66-221.7 (156)
 080|02 57 00 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6|.W..............|
 *  |126 bytes more until 221.7                     |                |
-208|                                          00 00|              ..|  samples: 0000000000 222-226.7 (5)
+208|                                          00 00|              ..|  padding: 0000000000 222-226.7 (5)
 224|00 00 00                                       |...             |
    |                                               |                |  crc_calculated: 827a 227-NA (0)
 > fq -d mp3 test.mp3 '.frames[0] | verbose({depth: 1, sizebase: 16})'
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.frames[0]: mp3_frame (frame) 0x2d-0xe2.7 (0xb6)
-0x20|                                       ff fb   |             .. |  sync: Correct (0x7ff) 0x2d-0x2e.2 (0x1.3)
-0x20|                                          fb   |              . |  mpeg_version: MPEG Version 1 (1) 0x2e.3-0x2e.4 (0x0.2)
-0x20|                                          fb   |              . |  layer: Layer III (3) 0x2e.5-0x2e.6 (0x0.2)
-    |                                               |                |  samples_per_frame: 1152 0x2e.7-NA (0x0)
-0x20|                                          fb   |              . |  protection: Not protected (true) 0x2e.7-0x2e.7 (0x0.1)
-0x20|                                             40|               @|  bitrate: 56000 0x2f-0x2f.3 (0x0.4)
-0x20|                                             40|               @|  sample_rate: 44100 0x2f.4-0x2f.5 (0x0.2)
-0x20|                                             40|               @|  padding: Not padded (0b0) 0x2f.6-0x2f.6 (0x0.1)
-0x20|                                             40|               @|  private: 0 0x2f.7-0x2f.7 (0x0.1)
-0x30|c0                                             |.               |  channels: Mono (0b11) 0x30-0x30.1 (0x0.2)
-0x30|c0                                             |.               |  channel_mode: 0b0 0x30.2-0x30.3 (0x0.2)
-0x30|c0                                             |.               |  copyright: 0 0x30.4-0x30.4 (0x0.1)
-0x30|c0                                             |.               |  original: 0 0x30.5-0x30.5 (0x0.1)
-0x30|c0                                             |.               |  emphasis: None (0b0) 0x30.6-0x30.7 (0x0.2)
+0x20|                                       ff fb 40|             ..@|  header: {} 0x2d-0x30.7 (0x4)
+0x30|c0                                             |.               |
 0x30|   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00| ...............|  side_info: {} 0x31-0x41.7 (0x11)
 0x40|00 00                                          |..              |
 0x40|      49 6e 66 6f 00 00 00 0f 00 00 00 02 00 00|  Info..........|  xing: mp3_xing 0x42-0xdd.7 (0x9c)
 0x50|02 57 00 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6|.W..............|
 *   |0x7e bytes more until 0xdd.7                   |                |
-0xd0|                                          00 00|              ..|  samples: 0000000000 0xde-0xe2.7 (0x5)
+0xd0|                                          00 00|              ..|  padding: 0000000000 0xde-0xe2.7 (0x5)
 0xe0|00 00 00                                       |...             |
     |                                               |                |  crc_calculated: 827a 0xe3-NA (0x0)

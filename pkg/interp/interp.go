@@ -119,7 +119,7 @@ func (o CtxOutput) Write(p []byte) (n int, err error) {
 }
 
 type InterpObject interface {
-	gojq.JSONObject
+	gojq.JQValue
 
 	DisplayName() string
 	SpecialPropNames() []string
@@ -311,8 +311,8 @@ func toBitBuf(v interface{}) (*bitio.Buffer, ranges.Range, error) {
 
 func toValue(v interface{}) interface{} {
 	switch v := v.(type) {
-	case gojq.JSONObject:
-		return v.JsonPrimitiveValue()
+	case gojq.JQValue:
+		return v.JQValue()
 	case nil, bool, float64, int, string, *big.Int, map[string]interface{}, []interface{}:
 		return v
 	default:

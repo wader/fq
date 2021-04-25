@@ -29,10 +29,10 @@ func (*bitBufObject) SpecialPropNames() []string {
 	}
 }
 
-func (bo *bitBufObject) JsonLength() interface{} {
+func (bo *bitBufObject) JQValueLength() interface{} {
 	return int(bo.bb.Len()) / bo.unit
 }
-func (bo *bitBufObject) JsonIndex(index int) interface{} {
+func (bo *bitBufObject) JQValueIndex(index int) interface{} {
 	pos, err := bo.bb.Pos()
 	if err != nil {
 		return err
@@ -49,7 +49,7 @@ func (bo *bitBufObject) JsonIndex(index int) interface{} {
 	}
 	return int(v)
 }
-func (bo *bitBufObject) JsonRange(start int, end int) interface{} {
+func (bo *bitBufObject) JQValueSlice(start int, end int) interface{} {
 	rStart := int64(start * bo.unit)
 	rLen := int64((end - start) * bo.unit)
 	rbb, err := bo.bb.BitBufRange(rStart, rLen)
@@ -63,7 +63,7 @@ func (bo *bitBufObject) JsonRange(start int, end int) interface{} {
 		r:    ranges.Range{Start: bo.r.Start + rStart, Len: rLen},
 	}
 }
-func (bo *bitBufObject) JsonProperty(name string) interface{} {
+func (bo *bitBufObject) JQValueProperty(name string) interface{} {
 	switch name {
 	case "size":
 		return new(big.Int).SetInt64(bo.bb.Len() / int64(bo.unit))
@@ -89,20 +89,20 @@ func (bo *bitBufObject) JsonProperty(name string) interface{} {
 	}
 	return nil
 }
-func (bo *bitBufObject) JsonEach() interface{} {
+func (bo *bitBufObject) JQValueEach() interface{} {
 	return nil
 }
-func (bo *bitBufObject) JsonType() string {
+func (bo *bitBufObject) JQValueType() string {
 	return "buffer"
 }
-func (bo *bitBufObject) JsonKeys() interface{} {
+func (bo *bitBufObject) JQValueKeys() interface{} {
 	return fmt.Errorf("can't get keys from bitbuf")
 }
-func (bo *bitBufObject) JsonHasKey(key interface{}) interface{} {
+func (bo *bitBufObject) JQValueHasKey(key interface{}) interface{} {
 	return fmt.Errorf("can't get keys from bitbuf")
 }
 
-func (bo *bitBufObject) JsonPrimitiveValue() interface{} {
+func (bo *bitBufObject) JQValue() interface{} {
 	buf := &bytes.Buffer{}
 	if _, err := io.Copy(buf, bo.bb.Copy()); err != nil {
 		return err

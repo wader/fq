@@ -12,11 +12,11 @@ true
 true
 > fq -d mp3 test.mp3 '.headers[0].version._value == 4'
 true
-> fq -d mp3 test.mp3 '.frames[0].protection._value'
+> fq -d mp3 test.mp3 '.frames[0].header.protection._value'
 true
-> fq -d mp3 test.mp3 '.frames[0].protection == true'
+> fq -d mp3 test.mp3 '.frames[0].header.protection == true'
 true
-> fq -d mp3 test.mp3 '.frames[0].protection._value == true'
+> fq -d mp3 test.mp3 '.frames[0].header.protection._value == true'
 true
 > fq -d mp3 test.mp3 '.headers[0].flags + {}'
 {

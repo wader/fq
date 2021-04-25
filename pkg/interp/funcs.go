@@ -468,7 +468,7 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 				return err
 			}
 			return []interface{}{}
-		case nil, bool, float64, int, string, *big.Int, map[string]interface{}, []interface{}, gojq.JSONObject:
+		case nil, bool, float64, int, string, *big.Int, map[string]interface{}, []interface{}, gojq.JQValue:
 			if s, ok := v.(string); ok && opts.RawString {
 				fmt.Fprintln(i.stdout, s)
 				return []interface{}{}
@@ -477,8 +477,8 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 			if err := colorjson.NewEncoder(
 				opts.Color, false, 2,
 				func(v interface{}) interface{} {
-					if o, ok := v.(gojq.JSONObject); ok {
-						return o.JsonPrimitiveValue()
+					if o, ok := v.(gojq.JQValue); ok {
+						return o.JQValue()
 					}
 					return nil
 				},

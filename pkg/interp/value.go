@@ -84,7 +84,7 @@ func (vo valueObject) MarshalJSON() ([]byte, error) {
 	}
 }
 
-func (vo valueObject) JsonLength() interface{} {
+func (vo valueObject) JQValueLength() interface{} {
 	v := vo.v
 	switch vv := v.V.(type) {
 	case decode.Struct:
@@ -102,7 +102,7 @@ func (vo valueObject) JsonLength() interface{} {
 	}
 }
 
-func (vo valueObject) JsonIndex(index int) interface{} {
+func (vo valueObject) JQValueIndex(index int) interface{} {
 	v := vo.v
 
 	switch vv := v.V.(type) {
@@ -121,12 +121,12 @@ func (vo valueObject) JsonIndex(index int) interface{} {
 	}
 }
 
-func (vo valueObject) JsonRange(start int, end int) interface{} {
+func (vo valueObject) JQValueSlice(start int, end int) interface{} {
 	v := vo.v
 
 	switch vv := v.V.(type) {
 	case decode.Struct:
-		// log.Printf("JsonRange struct %d-%d nil", start, end)
+		// log.Printf("JQValueSlice struct %d-%d nil", start, end)
 
 		return nil
 	case decode.Array:
@@ -135,11 +135,11 @@ func (vo valueObject) JsonRange(start int, end int) interface{} {
 			a = append(a, valueObject{v: e})
 		}
 
-		// log.Printf("JsonRange array %d-%d %#+v", start, end, a)
+		// log.Printf("JQValueSlice array %d-%d %#+v", start, end, a)
 
 		return a
 	default:
-		// log.Printf("JsonRange value %d-%d nil", start, end)
+		// log.Printf("JQValueSlice value %d-%d nil", start, end)
 
 		return fmt.Errorf("%v can't be indexed", v)
 	}
@@ -175,7 +175,7 @@ func (vo valueObject) DisplayName() string {
 	}
 }
 
-func (vo valueObject) JsonProperty(name string) interface{} {
+func (vo valueObject) JQValueProperty(name string) interface{} {
 	v := vo.v
 
 	// TODO: parent index useful?
@@ -243,7 +243,7 @@ func (vo valueObject) JsonProperty(name string) interface{} {
 	return r
 }
 
-func (vo valueObject) JsonEach() interface{} {
+func (vo valueObject) JQValueEach() interface{} {
 	v := vo.v
 
 	props := [][2]interface{}{}
@@ -281,7 +281,7 @@ func (vo valueObject) JsonEach() interface{} {
 	return props
 }
 
-func (vo valueObject) JsonKeys() interface{} {
+func (vo valueObject) JQValueKeys() interface{} {
 	var kvs []interface{}
 
 	v := vo.v
@@ -301,7 +301,7 @@ func (vo valueObject) JsonKeys() interface{} {
 	return kvs
 }
 
-func (vo valueObject) JsonHasKey(key interface{}) interface{} {
+func (vo valueObject) JQValueHasKey(key interface{}) interface{} {
 	v := vo.v
 	switch vv := v.V.(type) {
 	case decode.Struct:
@@ -327,7 +327,7 @@ func (vo valueObject) JsonHasKey(key interface{}) interface{} {
 	}
 }
 
-func (vo valueObject) JsonType() string {
+func (vo valueObject) JQValueType() string {
 	v := vo.v
 	switch v.V.(type) {
 	case decode.Struct:
@@ -347,19 +347,19 @@ func (vo valueObject) JsonType() string {
 	}
 }
 
-func (vo valueObject) JsonPrimitiveValue() interface{} {
+func (vo valueObject) JQValue() interface{} {
 	v := vo.v
 	switch vv := v.V.(type) {
 	case decode.Array:
 		arr := []interface{}{}
 		for _, f := range vv {
-			arr = append(arr, valueObject{v: f}.JsonPrimitiveValue())
+			arr = append(arr, valueObject{v: f}.JQValue())
 		}
 		return arr
 	case decode.Struct:
 		obj := map[string]interface{}{}
 		for _, f := range vv {
-			obj[f.Name] = valueObject{v: f}.JsonPrimitiveValue()
+			obj[f.Name] = valueObject{v: f}.JQValue()
 		}
 		return obj
 	case int, bool, float64, string, nil:
@@ -408,27 +408,27 @@ func (vo valueObject) ToBitBuf() (*bitio.Buffer, ranges.Range) {
 
 }
 
-var _ gojq.JSONObject = (*decodeError2)(nil)
+var _ gojq.JQValue = (*decodeError2)(nil)
 
 type decodeError2 struct {
 	v *decode.DecodeError
 }
 
-func (de *decodeError2) JsonLength() interface{} {
+func (de *decodeError2) JQValueLength() interface{} {
 	log.Printf("JsonLength: %#+v\n", de)
 	return nil
 }
-func (de *decodeError2) JsonIndex(index int) interface{} {
+func (de *decodeError2) JQValueIndex(index int) interface{} {
 	log.Printf("JsonIndex: %#+v\n", de)
 
 	return nil
 }
-func (de *decodeError2) JsonRange(start int, end int) interface{} {
-	log.Printf("JsonRange: %#+v\n", de)
+func (de *decodeError2) JQValueSlice(start int, end int) interface{} {
+	log.Printf("JQValueSlice: %#+v\n", de)
 
 	return nil
 }
-func (de *decodeError2) JsonProperty(name string) interface{} {
+func (de *decodeError2) JQValueProperty(name string) interface{} {
 	log.Printf("JsonProperty: %#+v\n", de)
 
 	switch name {
@@ -442,27 +442,27 @@ func (de *decodeError2) JsonProperty(name string) interface{} {
 
 	return nil
 }
-func (de *decodeError2) JsonEach() interface{} {
+func (de *decodeError2) JQValueEach() interface{} {
 	log.Printf("JsonEach: %#+v\n", de)
 
 	return nil
 }
-func (de *decodeError2) JsonType() string {
+func (de *decodeError2) JQValueType() string {
 	log.Printf("JsonType: %#+v\n", de)
 
 	return "object"
 }
 
-func (de *decodeError2) JsonKeys() interface{} {
+func (de *decodeError2) JQValueKeys() interface{} {
 	return fmt.Errorf("todo")
 }
 
-func (de *decodeError2) JsonHasKey(key interface{}) interface{} {
+func (de *decodeError2) JQValueHasKey(key interface{}) interface{} {
 	return fmt.Errorf("todo")
 }
 
-func (de *decodeError2) JsonPrimitiveValue() interface{} {
-	log.Printf("JsonPrimitiveValue: %#+v\n", de)
+func (de *decodeError2) JQValue() interface{} {
+	log.Printf("JQValue: %#+v\n", de)
 
 	em := map[string]interface{}{}
 	for _, e := range de.v.FormatErrs {
