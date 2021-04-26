@@ -180,7 +180,7 @@ func decode(ctx context.Context, name string, bb *bitio.Buffer, formats []*Forma
 			d.Value.postProcess()
 		}
 
-		return d.Value, v, decodeErr
+		return d.Value, decodeV, decodeErr
 	}
 
 	return nil, nil, decodeErr
