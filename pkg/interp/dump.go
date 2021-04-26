@@ -124,23 +124,39 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 	cprint(colField, "\n")
 
 	if v.Err != nil {
-		switch err := v.Err.(type) {
-		case decode.FormatError:
-			columns()
-			cfmt(colField, "%s  %s: %s\n", indent, deco.Error.F("error"), err.Err.Error())
+		var printErrs func(depth int, err error)
+		printErrs = func(depth int, err error) {
+			indent := strings.Repeat("  ", depth)
 
-			if opts.Verbose {
-				for _, f := range err.Stacktrace.Frames() {
-					columns()
-					cfmt(colField, "%s    %s\n", indent, f.Function)
-					columns()
-					cfmt(colField, "%s      %s:%d\n", indent, f.File, f.Line)
+			switch err := err.(type) {
+			case decode.FormatError:
+				columns()
+				cfmt(colField, "%s  %s: %s: %s\n", indent, deco.Error.F("error"), err.Format.Name, err.Err.Error())
+
+				if opts.Verbose {
+					for _, f := range err.Stacktrace.Frames() {
+						columns()
+						cfmt(colField, "%s    %s\n", indent, f.Function)
+						columns()
+						cfmt(colField, "%s      %s:%d\n", indent, f.File, f.Line)
+					}
 				}
+				switch err.Err.(type) {
+				case decode.DecodeFormatsError:
+					printErrs(depth+1, err.Err)
+				}
+			case decode.DecodeFormatsError:
+				cfmt(colField, "%s  %s\n", indent, err)
+				for _, e := range err.Errs {
+					printErrs(depth+1, e)
+				}
+			default:
+				columns()
+				cfmt(colField, "%s!%s\n", indent, deco.Error.F(v.Err.Error()))
 			}
-		default:
-			columns()
-			cfmt(colField, "%s!%s\n", indent, deco.Error.F(v.Err.Error()))
 		}
+
+		printErrs(depth, v.Err)
 	}
 
 	bufferLastBit := rootV.RootBitBuf.Len() - 1

@@ -35,12 +35,12 @@ type FormatError struct {
 }
 
 func (fe FormatError) Error() string {
-	var fns []string
-	for _, f := range fe.Stacktrace.Frames() {
-		fns = append(fns, fmt.Sprintf("%s:%d:%s", f.File, f.Line, f.Function))
-	}
+	// var fns []string
+	// for _, f := range fe.Stacktrace.Frames() {
+	// 	fns = append(fns, fmt.Sprintf("%s:%d:%s", f.File, f.Line, f.Function))
+	// }
 
-	return fmt.Sprintf("%s: %s: %s", fe.Format.Name, strings.Join(fns, " / "), fe.Err.Error())
+	return fe.Err.Error()
 }
 
 type ReadError struct {
@@ -140,7 +140,7 @@ func decode(ctx context.Context, name string, bb *bitio.Buffer, formats []*Forma
 
 		if !rOk {
 			switch panicV := r.RecoverV.(type) {
-			case ReadError, ValidateError:
+			case ReadError, ValidateError, DecodeFormatsError:
 				panicErr := panicV.(error)
 				formatErr := FormatError{
 					Err:        panicErr,

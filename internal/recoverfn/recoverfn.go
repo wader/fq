@@ -89,5 +89,5 @@ func (r Raw) RePanic() {
 		fmt.Fprintf(os.Stderr, "%s\n", f.Function)
 		fmt.Fprintf(os.Stderr, "\t%s:%d\n", f.File, f.Line)
 	}
-	panic("repanic")
+	panic(r.RecoverV)
 }
