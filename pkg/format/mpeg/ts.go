@@ -1,6 +1,7 @@
 package mpeg
 
 import (
+	"bytes"
 	"fq/pkg/decode"
 	"fq/pkg/format"
 )
@@ -17,6 +18,11 @@ func init() {
 // TODO: ts_packet
 
 func tsDecode(d *decode.D, in interface{}) interface{} {
+	gifHeader := []byte("GIF89a")
+	if d.BitsLeft()*8 >= int64(len(gifHeader)) && bytes.Equal(d.PeekBytes(len(gifHeader)), []byte("GIF89a")) {
+		d.Invalid("looks like GIF")
+	}
+
 	d.FieldValidateUFn("sync", 0x47, d.U8)
 	d.FieldBool("transport_error_indicator")
 	d.FieldBool("payload_unit_start")

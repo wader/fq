@@ -45,7 +45,6 @@ func fieldColorMap(d *decode.D, name string, bitDepth int) {
 				d.FieldU8("r")
 				d.FieldU8("g")
 				d.FieldU8("b")
-
 			})
 		}
 	})
