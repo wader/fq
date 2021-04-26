@@ -258,8 +258,9 @@ def main:
 	  else
 		null
 		# figure out filename and expressions
-		# -ni and -i without args is the same
-		| ( if $parsed.nullinput or ($rest[0] | not) then [null, $rest]
+		| ( if $parsed.nullinput then [null, $rest]
+		    # make -ni and -i without args act the same
+		    elif $parsed.repl and ($rest[0] | not) then [null, $rest]
 		    elif $rest[0] then [$rest[0], $rest[1:]]
 		    else ["-", $rest]
 		    end

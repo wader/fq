@@ -1,3 +1,4 @@
+/test.mp3:
 > fq -h
 Usage: fq [OPTIONS] [FILE] [EXPR]...
 --decode,-d      Decoder (probe)
@@ -20,3 +21,15 @@ Usage: fq [OPTIONS] [FILE] [EXPR]...
 -r               Raw strings
 --repl,-i        Interactive REPL
 --version,-v     Show version (dev)
+> fq -i
+null> ^D
+> fq -i test.mp3
+mp3> ^D
+> fq -n
+null
+> fq -ni
+null> ^D
+> fq -n 123
+123
+> fq -ni 123
+number> ^D
