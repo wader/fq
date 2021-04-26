@@ -441,12 +441,8 @@ func (i *Interp) makeDecodeFn(registry *decode.Registry, decodeFormats []*decode
 		dv, _, err := decode.Decode(i.ctx, name, bb, decodeFormats, decode.DecodeOptions{FormatOptions: opts})
 		if dv == nil {
 			switch err := err.(type) {
-			case *decode.DecodeError:
-				var verrs []interface{}
-				for _, e := range err.FormatErrs {
-					verrs = append(verrs, e.Err)
-				}
-				return valueErr{verrs}
+			case decode.DecodeFormatsError:
+				return decodeError{err}
 			}
 			return valueErr{err}
 		}

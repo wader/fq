@@ -9,11 +9,8 @@ import (
 	"fq/pkg/decode"
 	"fq/pkg/ranges"
 	"io"
-	"log"
 	"math/big"
 	"sort"
-
-	"github.com/itchyny/gojq"
 )
 
 // assert that *Value implements InterpObject and ToBitBuf
@@ -180,9 +177,11 @@ func (vo valueObject) JQValueProperty(name string) interface{} {
 	case "_path":
 		r = valuePath(v)
 	case "_error":
-		if de, ok := v.Err.(*decode.DecodeError); ok {
-			return &decodeError2{de}
+		switch err := v.Err.(type) {
+		case decode.FormatError:
+			return formatError{err}
 		}
+
 		return v.Err
 
 	case "_bits":
@@ -385,68 +384,4 @@ func (vo valueObject) ToBitBuf() (*bitio.Buffer, ranges.Range) {
 		return v.RootBitBuf.Copy(), v.Range
 	}
 
-}
-
-var _ gojq.JQValue = (*decodeError2)(nil)
-
-type decodeError2 struct {
-	v *decode.DecodeError
-}
-
-func (de *decodeError2) JQValueLength() interface{} {
-	log.Printf("JsonLength: %#+v\n", de)
-	return nil
-}
-func (de *decodeError2) JQValueIndex(index int) interface{} {
-	log.Printf("JsonIndex: %#+v\n", de)
-
-	return nil
-}
-func (de *decodeError2) JQValueSlice(start int, end int) interface{} {
-	log.Printf("JQValueSlice: %#+v\n", de)
-
-	return nil
-}
-func (de *decodeError2) JQValueProperty(name string) interface{} {
-	log.Printf("JsonProperty: %#+v\n", de)
-
-	switch name {
-	case "errs":
-		var errs []interface{}
-		for _, e := range de.v.FormatErrs {
-			errs = append(errs, e)
-		}
-		return errs
-	}
-
-	return nil
-}
-func (de *decodeError2) JQValueEach() interface{} {
-	log.Printf("JsonEach: %#+v\n", de)
-
-	return nil
-}
-func (de *decodeError2) JQValueType() string {
-	log.Printf("JsonType: %#+v\n", de)
-
-	return "object"
-}
-
-func (de *decodeError2) JQValueKeys() interface{} {
-	return fmt.Errorf("todo")
-}
-
-func (de *decodeError2) JQValueHasKey(key interface{}) interface{} {
-	return fmt.Errorf("todo")
-}
-
-func (de *decodeError2) JQValue() interface{} {
-	log.Printf("JQValue: %#+v\n", de)
-
-	em := map[string]interface{}{}
-	for _, e := range de.v.FormatErrs {
-		em[e.Format.Name] = e.Err.Error()
-	}
-
-	return em
 }

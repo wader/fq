@@ -39,7 +39,7 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 			_, dv := d.FieldDecode("metadatablock", flacMetadatablockFormat)
 			flacMetadatablockOut, ok := dv.(format.FlacMetadatablockOut)
 			if !ok {
-				d.Panic(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", dv))
+				panic(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", dv))
 			}
 			if flacMetadatablockOut.HasStreamInfo {
 				streamInfo = flacMetadatablockOut.StreamInfo
@@ -61,7 +61,7 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 			_, dv := d.FieldDecode("frame", flacFrameFormat, decode.FormatOptions{InArg: flacFrameIn})
 			ffo, ok := dv.(*format.FlacFrameOut)
 			if !ok {
-				d.Panic(fmt.Sprintf("expected FlacFrameOut got %#+v", dv))
+				panic(fmt.Sprintf("expected FlacFrameOut got %#+v", dv))
 			}
 
 			decode.MustCopy(md5Samples, bytes.NewReader(ffo.SamplesBuf))

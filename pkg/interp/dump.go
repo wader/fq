@@ -124,17 +124,22 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 	cprint(colField, "\n")
 
 	if v.Err != nil {
-		columns()
-		cfmt(colField, "%s!%s\n", indent, deco.Error.F(v.Err.Error()))
+		switch err := v.Err.(type) {
+		case decode.FormatError:
+			columns()
+			cfmt(colField, "%s  %s: %s\n", indent, deco.Error.F("error"), err.Err.Error())
 
-		if opts.Verbose {
-			// if de, ok := v.Err.(*decode.DecodeError); ok {
-			// 	ps := de.PanicStack
-			// 	for _, l := range strings.Split(ps, "\n") {
-			// 		columns()
-			// 		cfmt(colField, "%s%s\n", indent, l)
-			// 	}
-			// }
+			if opts.Verbose {
+				for _, f := range err.Stacktrace.Frames() {
+					columns()
+					cfmt(colField, "%s    %s\n", indent, f.Function)
+					columns()
+					cfmt(colField, "%s      %s:%d\n", indent, f.File, f.Line)
+				}
+			}
+		default:
+			columns()
+			cfmt(colField, "%s!%s\n", indent, deco.Error.F(v.Err.Error()))
 		}
 	}
 
