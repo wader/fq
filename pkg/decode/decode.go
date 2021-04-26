@@ -9,19 +9,20 @@ import (
 	"encoding/hex"
 	"fmt"
 	"fq/internal/num"
+	"fq/internal/recoverfn"
 	"fq/pkg/bitio"
 	"fq/pkg/ranges"
 	"io/ioutil"
 	"strings"
 )
 
-type DecodeError struct {
-	FormatErrs []FormatError
+type DecodeFormatsError struct {
+	Errs []FormatError
 }
 
-func (de *DecodeError) Error() string {
+func (de DecodeFormatsError) Error() string {
 	var errs []string
-	for _, err := range de.FormatErrs {
+	for _, err := range de.Errs {
 		errs = append(errs, err.Error())
 	}
 	return strings.Join(errs, ", ")
@@ -30,10 +31,17 @@ func (de *DecodeError) Error() string {
 type FormatError struct {
 	Err        error
 	Format     *Format
-	PanicStack string
+	Stacktrace recoverfn.Raw
 }
 
-func (fe *FormatError) Error() string { return fe.Format.Name + ":" + fe.Err.Error() }
+func (fe FormatError) Error() string {
+	var fns []string
+	for _, f := range fe.Stacktrace.Frames() {
+		fns = append(fns, fmt.Sprintf("%s:%d:%s", f.File, f.Line, f.Function))
+	}
+
+	return fmt.Sprintf("%s: %s: %s", fe.Format.Name, strings.Join(fns, " / "), fe.Err.Error())
+}
 
 type ReadError struct {
 	Err   error
@@ -47,7 +55,7 @@ type ReadError struct {
 func (e ReadError) Error() string {
 	var prefix string
 	if e.Name != "" {
-		prefix = e.Name + ": " + e.Op
+		prefix = e.Op + "(" + e.Name + ")"
 	} else {
 		prefix = e.Op
 	}
@@ -64,15 +72,6 @@ type ValidateError struct {
 
 func (e ValidateError) Error() string {
 	return fmt.Sprintf("failed to validate at position %s: %s", num.Bits(e.Pos).StringByteBits(16), e.Reason)
-}
-
-type PanicError struct {
-	Reason string
-	Pos    int64
-}
-
-func (e PanicError) Error() string {
-	return fmt.Sprintf("panic position %s: %s", num.Bits(e.Pos).StringByteBits(16), e.Reason)
 }
 
 type Endian bitio.Endian
@@ -128,25 +127,35 @@ func decode(ctx context.Context, name string, bb *bitio.Buffer, formats []*Forma
 		}
 	}
 
-	decodeErr := &DecodeError{}
+	decodeErr := DecodeFormatsError{}
 
 	for _, f := range formats {
 		d := NewDecoder(ctx, name, f.Name, bb, decodeOpts)
 
-		v, safeDecodeErr := d.SafeDecodeFn(func(d *D) interface{} {
-			return f.DecodeFn(d, formatOpts.InArg)
+		var decodeV interface{}
+
+		r, rOk := recoverfn.Run(func() {
+			decodeV = f.DecodeFn(d, formatOpts.InArg)
 		})
 
-		if safeDecodeErr != nil {
-			decodeErr.FormatErrs = append(decodeErr.FormatErrs, FormatError{
-				Format: f,
-				Err:    safeDecodeErr,
-			})
+		if !rOk {
+			switch panicV := r.RecoverV.(type) {
+			case ReadError, ValidateError:
+				panicErr := panicV.(error)
+				formatErr := FormatError{
+					Err:        panicErr,
+					Format:     f,
+					Stacktrace: r,
+				}
+				decodeErr.Errs = append(decodeErr.Errs, formatErr)
 
-			d.Value.Err = decodeErr
+				d.Value.Err = formatErr
 
-			if !forceOne {
-				continue
+				if !forceOne {
+					continue
+				}
+			default:
+				r.RePanic()
 			}
 		}
 
@@ -207,30 +216,6 @@ func NewDecoder(ctx context.Context, name string, description string, bb *bitio.
 	}
 }
 
-func (d *D) SafeDecodeFn(fn func(d *D) interface{}) (interface{}, error) {
-	v, decodeErr := func() (v interface{}, err error) {
-		defer func() {
-			if recoverErr := recover(); recoverErr != nil {
-				// https://github.com/golang/go/blob/master/src/net/http/server.go#L1770
-				// const size = 64 << 10
-				// stackBuf := make([]byte, size)
-				// strackStr := string(stackBuf[:runtime.Stack(stackBuf, false)])
-
-				switch recoverErr := recoverErr.(type) {
-				case error:
-					err = recoverErr
-				default:
-					panic(recoverErr)
-				}
-			}
-		}()
-
-		return fn(d), nil
-	}()
-
-	return v, decodeErr
-}
-
 func (d *D) FillGaps(namePrefix string) {
 	// TODO: d.Value is array?
 	var valueRanges []ranges.Range
@@ -257,11 +242,6 @@ func (d *D) FillGaps(namePrefix string) {
 // Invalid stops decode with a reason
 func (d *D) Invalid(reason string) {
 	panic(ValidateError{Reason: reason, Pos: d.Pos()})
-}
-
-// TODO: things that should not happen
-func (d *D) Panic(reason string) {
-	panic(PanicError{Reason: reason, Pos: d.Pos()})
 }
 
 func (d *D) PeekBits(nBits int) uint64 {
