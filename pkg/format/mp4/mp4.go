@@ -1078,6 +1078,8 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 					switch t.objectType {
 					case format.MPEGObjectTypeMPEG2VideoMain:
 						d.FieldDecodeRange("sample", firstBit, nBits, mpegPESPacketSampleFormat, t.decodeOpts...)
+					case format.MPEGObjectTypeMJPEG:
+						d.FieldDecodeRange("sample", firstBit, nBits, jpegFormat, t.decodeOpts...)
 					default:
 						d.FieldBitBufRange("sample", firstBit, nBits)
 					}
