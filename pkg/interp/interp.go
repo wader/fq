@@ -417,7 +417,7 @@ func (i *Interp) Main(ctx context.Context, stdout io.Writer) error {
 			fmt.Fprintln(i.os.Stderr(), err)
 			return err
 		} else if d, ok := v.([2]interface{}); ok {
-			fmt.Fprintf(i.os.Stderr(), "%s: %v\n", d[0], d[1])
+			fmt.Fprintln(i.os.Stderr(), d[:]...)
 		}
 	}
 
