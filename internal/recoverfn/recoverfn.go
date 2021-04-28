@@ -6,8 +6,6 @@ import (
 	"runtime"
 )
 
-type Frame runtime.Frame
-
 const stackSizeLimit = 256
 
 type Raw struct {
@@ -48,7 +46,7 @@ func Run(fn func()) (Raw, bool) {
 	}, false
 }
 
-func (r Raw) frames(startSkip int, bottomSkip int, bottomPC uintptr) []Frame {
+func (r Raw) frames(startSkip int, bottomSkip int, bottomPC uintptr) []runtime.Frame {
 	var bottomFrame runtime.Frame
 	bottomIndex := -1
 	if bottomPC != 0 {
@@ -56,7 +54,7 @@ func (r Raw) frames(startSkip int, bottomSkip int, bottomPC uintptr) []Frame {
 		bottomFrame, _ = runtime.CallersFrames(bottomPCs[:]).Next()
 	}
 
-	fs := make([]Frame, len(r.PCs))
+	fs := make([]runtime.Frame, len(r.PCs))
 	frames := runtime.CallersFrames(r.PCs)
 	for i := 0; ; i++ {
 		f, more := frames.Next()
@@ -66,7 +64,7 @@ func (r Raw) frames(startSkip int, bottomSkip int, bottomPC uintptr) []Frame {
 		if bottomPC != 0 && f.Function == bottomFrame.Function {
 			bottomIndex = i
 		}
-		fs[i] = Frame(f)
+		fs[i] = f
 	}
 
 	endIndex := len(fs) - 1
@@ -77,7 +75,7 @@ func (r Raw) frames(startSkip int, bottomSkip int, bottomPC uintptr) []Frame {
 	return fs[startSkip:endIndex]
 }
 
-func (r Raw) Frames() []Frame {
+func (r Raw) Frames() []runtime.Frame {
 	// 3 to skip runtime.Callers, Recover help function and runtime.gopanic
 	// 1 to skip Recover defer recover() function
 	return r.frames(3, 1, r.RecoverPC)
