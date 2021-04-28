@@ -783,23 +783,48 @@ func decodeAtom(ctx *decodeContext, d *decode.D) {
 		// TODO: item location
 		// HEIC image
 		"iloc": func(ctx *decodeContext, d *decode.D) {
-			d.FieldU8("version")
+			version := d.FieldU8("version")
 			d.FieldU24("flags")
+
 			offsetSize := d.FieldU4("offset_size")
 			lengthSize := d.FieldU4("length_size")
 			baseOffsetSize := d.FieldU4("base_offset_size")
-			d.FieldU4("reserved")
-			itemCount := d.FieldU16("item_count")
+			var indexSize uint64
+			switch version {
+			case 1, 2:
+				indexSize = d.FieldU4("index_size")
+			default:
+				d.FieldU4("reserved")
+			}
+			var itemCount uint64
+			if version < 2 {
+				itemCount = d.FieldU16("item_count")
+			} else {
+				itemCount = d.FieldU32("item_count")
+			}
 			d.FieldArrayFn("items", func(d *decode.D) {
 				for i := uint64(0); i < itemCount; i++ {
 					d.FieldStructFn("item", func(d *decode.D) {
-						d.FieldU16("id")
+						switch version {
+						case 0, 1:
+							d.FieldU16("id")
+						case 2:
+							d.FieldU32("id")
+						}
+						switch version {
+						case 1, 2:
+							d.FieldU12("reserved")
+							d.FieldU4("construction_method")
+						}
 						d.FieldU16("data_reference_index")
 						d.FieldU("base_offset", int(baseOffsetSize)*8)
 						extentCount := d.FieldU16("extent_count")
 						d.FieldArrayFn("extends", func(d *decode.D) {
 							for i := uint64(0); i < extentCount; i++ {
 								d.FieldStructFn("extent", func(d *decode.D) {
+									if (version == 1 || version == 2) && indexSize > 0 {
+										d.FieldU("index", int(offsetSize)*8)
+									}
 									d.FieldU("offset", int(offsetSize)*8)
 									d.FieldU("length", int(lengthSize)*8)
 								})
