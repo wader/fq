@@ -1,4 +1,7 @@
 
+
+rework "iolist" thing, toBitBuf return range easy to miss
+
 debug print as json
 
 ffmpeg test files archive
