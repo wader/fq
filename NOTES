@@ -1,6 +1,9 @@
 
 
+bitio.ReadAtFull: ErrUnexpectedEOF, same as io.ReadFull
+
 rework "iolist" thing, toBitBuf return range easy to miss
+
 
 debug print as json
 
