@@ -38,6 +38,49 @@ func BitsByteCount(nBits int64) int64 {
 	return n
 }
 
+func ReadAtFull(r BitReaderAt, p []byte, nBits int, bitOff int64) (int, error) {
+	readBitOffset := int64(0)
+	for readBitOffset < int64(nBits) {
+		// log.Printf("bitOffset: %d  nBits %d\n", bitOffset, nBits)
+		byteOffset := int(readBitOffset / 8)
+		byteBitsOffset := readBitOffset % 8
+		partialByteBitsLeft := int((8 - byteBitsOffset) % 8)
+		leftBits := int(int64(nBits) - readBitOffset)
+
+		if partialByteBitsLeft != 0 || leftBits < 8 {
+			readBits := partialByteBitsLeft
+			if partialByteBitsLeft == 0 || leftBits < readBits {
+				readBits = leftBits
+			}
+
+			var pb [1]byte
+			rBits, err := r.ReadBitsAt(pb[:], readBits, bitOff+readBitOffset)
+			// log.Printf("partial ReadBits: %d -> %d\n", readBits, rBits)
+
+			p[byteOffset] |= pb[0] >> byteBitsOffset
+			readBitOffset += int64(rBits)
+
+			if err != nil {
+				return int(int64(nBits) - readBitOffset), err
+			}
+
+			continue
+		}
+
+		rBits, err := r.ReadBitsAt(p[byteOffset:], int(int64(nBits)-readBitOffset), bitOff+readBitOffset)
+
+		// log.Printf("aligned ReadBits: %d -> %d\n", nBits-bitOffset, rBits)
+
+		readBitOffset += int64(rBits)
+		if err != nil {
+			return int(int64(nBits) - readBitOffset), err
+		}
+	}
+
+	return nBits, nil
+}
+
+// TODO: move?
 func EndPos(rs BitSeeker) (int64, error) {
 	c, err := rs.SeekBits(0, io.SeekCurrent)
 	if err != nil {
@@ -55,6 +98,7 @@ func EndPos(rs BitSeeker) (int64, error) {
 }
 
 // Reader is a BitReadSeeker and BitReaderAt reading from a io.ReadSeeker
+// TODO: private?
 type Reader struct {
 	bitPos int64
 	rs     io.ReadSeeker
@@ -174,9 +218,6 @@ func (r *SectionBitReader) ReadBitsAt(p []byte, nBits int, bitOff int64) (int, e
 	if maxBits := int(r.bitLimit - bitOff); nBits > maxBits {
 		nBits = maxBits
 		rBits, err := r.r.ReadBitsAt(p, nBits, bitOff)
-		if err == nil {
-			err = io.EOF
-		}
 		return rBits, err
 	}
 	return r.r.ReadBitsAt(p, nBits, bitOff)
@@ -211,11 +252,7 @@ func (r *SectionBitReader) SeekBits(bitOff int64, whence int) (int64, error) {
 func (r *SectionBitReader) Read(p []byte) (n int, err error) {
 	n, err = r.ReadBitsAt(p, len(p)*8, r.bitOff-r.bitBase)
 	r.bitOff += int64(n)
-	if err != nil {
-		return int(BitsByteCount(int64(n))), err
-	}
-
-	return int(BitsByteCount(int64(n))), nil
+	return int(BitsByteCount(int64(n))), err
 }
 
 func (r *SectionBitReader) Seek(offset int64, whence int) (int64, error) {
@@ -223,16 +260,14 @@ func (r *SectionBitReader) Seek(offset int64, whence int) (int64, error) {
 	return seekBytePos * 8, err
 }
 
-/*
+// TODO: smart, track index?
 type multiBitReader struct {
 	pos        int64
-	posIndex   int
 	readers    []BitReadAtSeeker
 	readerEnds []int64
-	buf        []byte
 }
 
-func MultiBitReader(rs []BitReadAtSeeker) (*multiBitReader, error) {
+func NewMultiBitReader(rs []BitReadAtSeeker) (*multiBitReader, error) {
 	readerEnds := make([]int64, len(rs))
 	var esSum int64
 	for i, r := range rs {
@@ -246,63 +281,29 @@ func MultiBitReader(rs []BitReadAtSeeker) (*multiBitReader, error) {
 	return &multiBitReader{readers: rs, readerEnds: readerEnds}, nil
 }
 
-func (m *multiBitReader) readBitsAt(r BitReaderAt, p []byte, pOff int64, nBits int, bitOffset int64) (int, error) {
-	wantReadBytes := int(BitsByteCount(int64(nBits)))
-	if wantReadBytes > len(m.buf) {
-		// TODO: use append somehow?
-		m.buf = make([]byte, wantReadBytes)
-	}
-
-	readBits, err := r.ReadBitsAt(m.buf[0:wantReadBytes], nBits, bitOffset)
-	if err != nil {
-		return 0, err
-	}
-
-	if readSkipBits == 0 && nBits%8 == 0 {
-		copy(p[0:readBytes], m.buf[0:readBytes])
-		return nBits, err
-	}
-
-	nBytes := int(nBits / 8)
-	restBits := nBits % 8
-
-	// TODO: copy smartness if many bytes
-	for i := 0; i < nBytes; i++ {
-		p[i] = byte(Read64(m.buf, readSkipBits+i*8, 8))
-	}
-	if restBits != 0 {
-		p[nBytes] = byte(Read64(m.buf, readSkipBits+nBytes*8, restBits)) << (8 - restBits)
-	}
-
-	return nBits, err
-}
-
 func (m *multiBitReader) ReadBitsAt(p []byte, nBits int, bitOff int64) (n int, err error) {
-	wantReadBytes := int(BitsByteCount(int64(nBits)))
-	if wantReadBytes > len(m.buf) {
-		// TODO: use append somehow?
-		m.buf = make([]byte, wantReadBytes)
-	}
-
-	nLeft := nBits
-
-	var ci int
-	var ce BitReaderAt
-	for i, e := range m.readerEnds {
-		if bitOff < e {
-			ci = i
+	// log.Printf("ReadBitsAt nBits: %#+v\n", nBits)
+	prevAtEnd := int64(0)
+	readerAt := m.readers[0]
+	for i, end := range m.readerEnds {
+		if bitOff < end {
+			readerAt = m.readers[i]
 			break
 		}
-		ce = e
+		prevAtEnd = end
 	}
 
-	for nLeft > 0 {
-		r := m.readers[ci]
-		r.ReadBitsAt(p, nLeft, p)
-
+	rBits, err := readerAt.ReadBitsAt(p, nBits, bitOff-prevAtEnd)
+	if err == io.EOF {
+		if bitOff+int64(rBits) < m.readerEnds[len(m.readers)-1] {
+			err = nil
+		}
 	}
 
-	return 0, nil
+	// log.Printf("err: %#+v\n", err)
+	// log.Printf("rBits: %#+v\n", rBits)
+
+	return rBits, err
 }
 
 func (m *multiBitReader) ReadBits(p []byte, nBits int) (n int, err error) {
@@ -317,7 +318,7 @@ func (m *multiBitReader) SeekBits(bitOff int64, whence int) (int64, error) {
 
 	switch whence {
 	case io.SeekStart:
-		p = m.pos
+		p = bitOff
 	case io.SeekCurrent:
 		p = m.pos + bitOff
 	case io.SeekEnd:
@@ -329,7 +330,21 @@ func (m *multiBitReader) SeekBits(bitOff int64, whence int) (int64, error) {
 		return 0, errOffset
 	}
 
-	_, err := m.ReadBitsAt(nil, 0, p)
-	return p, err
+	m.pos = p
+
+	return p, nil
 }
-*/
+
+func (m *multiBitReader) Read(p []byte) (n int, err error) {
+	n, err = m.ReadBitsAt(p, len(p)*8, m.pos)
+	m.pos += int64(n)
+
+	// log.Printf("n: %#+v\n", n)
+	// log.Printf("err: %#+v\n", err)
+
+	if err != nil {
+		return int(BitsByteCount(int64(n))), err
+	}
+
+	return int(BitsByteCount(int64(n))), nil
+}

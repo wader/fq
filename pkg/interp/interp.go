@@ -304,6 +304,34 @@ func toBitBuf(v interface{}) (*bitio.Buffer, ranges.Range, error) {
 		}
 		bb := bitio.NewBufferFromBytes(bi.Bytes(), -1)
 		return bb, ranges.Range{Start: 0, Len: bb.Len()}, nil
+	case []interface{}:
+		var rr []bitio.BitReadAtSeeker
+		for _, e := range vv {
+			eReader, eRange, eErr := toBitBuf(e)
+			if eErr != nil {
+				return nil, ranges.Range{}, eErr
+			}
+
+			eReader, _ = bitio.NewBufferFromBitReadSeeker(bitio.NewSectionBitReader(eReader, eRange.Start, eRange.Len))
+
+			rr = append(rr, eReader)
+		}
+
+		mb, err := bitio.NewMultiBitReader(rr)
+		if err != nil {
+			return nil, ranges.Range{}, err
+		}
+		endPos, err := bitio.EndPos(mb)
+		if err != nil {
+			return nil, ranges.Range{}, err
+		}
+
+		bb, err := bitio.NewBufferFromBitReadSeeker(mb)
+		if err != nil {
+			return nil, ranges.Range{}, err
+		}
+
+		return bb, ranges.Range{Start: 0, Len: endPos}, nil
 	default:
 		return nil, ranges.Range{}, fmt.Errorf("value should be decode value, bit buffer, byte slice or string")
 	}

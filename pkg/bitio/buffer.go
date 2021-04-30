@@ -33,6 +33,7 @@ type Buffer struct {
 		BitReadSeeker
 		BitReaderAt
 	}
+
 	bitLen int64 // mostly to cache len
 	ctx    context.Context
 }
@@ -55,6 +56,29 @@ func NewBufferFromReadSeeker(rs io.ReadSeeker) (*Buffer, error) {
 	return &Buffer{
 		br:     NewReaderFromReadSeeker(rs),
 		bitLen: bEnd * 8,
+	}, nil
+}
+
+func NewBufferFromBitReadSeeker(br interface {
+	io.Reader
+	BitReadSeeker
+	BitReaderAt
+}) (*Buffer, error) {
+	bPos, err := br.SeekBits(0, io.SeekCurrent)
+	if err != nil {
+		return nil, err
+	}
+	bEnd, err := br.SeekBits(0, io.SeekEnd)
+	if err != nil {
+		return nil, err
+	}
+	if _, err := br.SeekBits(bPos, io.SeekStart); err != nil {
+		return nil, err
+	}
+
+	return &Buffer{
+		br:     br,
+		bitLen: bEnd,
 	}, nil
 }
 
@@ -221,9 +245,12 @@ func (b *Buffer) PeekFind(nBits int, v uint8, maxLen int64) (int64, error) {
 	return count * int64(nBits), nil
 }
 
-func (b *Buffer) ReadBits(buf []byte, bitOffset int64, nBits int) error {
-	_, err := b.br.ReadBitsAt(buf, nBits, bitOffset)
-	return err
+func (b *Buffer) ReadBitsAt(p []byte, nBits int, bitOff int64) (n int, err error) {
+	return b.br.ReadBitsAt(p, nBits, bitOff)
+}
+
+func (b *Buffer) SeekBits(bitOffset int64, whence int) (int64, error) {
+	return b.br.SeekBits(bitOffset, whence)
 }
 
 func (b *Buffer) Read(p []byte) (n int, err error) {
@@ -301,6 +328,9 @@ func (b *Buffer) String() string {
 		truncLen, truncS = 64, "..."
 	}
 	truncBB, err := b.BitBufRange(0, truncLen)
+	if err != nil {
+		return err.Error()
+	}
 	bitString, err := truncBB.BitString()
 	if err != nil {
 		return err.Error()
