@@ -318,6 +318,8 @@ func (bbf *bitBufFile) ToBitBuf() (*bitio.Buffer, ranges.Range) {
 	return bbf.bb.Copy(), ranges.Range{Start: 0, Len: bbf.bb.Len()}
 }
 
+// def open($path): #:: [a]|(string) => buffer
+// open read file from filesystem
 func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 	var rs io.ReadSeeker
 	opts, err := i.Options()
