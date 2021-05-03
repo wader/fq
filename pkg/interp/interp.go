@@ -122,7 +122,7 @@ type InterpObject interface {
 	gojq.JQValue
 
 	DisplayName() string
-	SpecialPropNames() []string
+	ExtValueKeys() []string
 }
 
 type Display interface {

@@ -23,7 +23,7 @@ def complete($e):
 			if $type == "function" or $type == "variable" then
 				[.[] | eval($query) | scope] | add
 			elif $type == "index" then
-				[.[] | eval($query) | keys?, _value_keys?] | add
+				[.[] | eval($query) | keys?, extkeys?] | add
 			else
 				[]
 			end

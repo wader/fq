@@ -2,123 +2,130 @@ package interp
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
-	"fq/internal/num"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/ranges"
 	"io"
+	"log"
 	"math/big"
 	"sort"
+	"strings"
 )
 
-// assert that *Value implements InterpObject and ToBitBuf
-var _ InterpObject = (*valueObject)(nil)
-var _ ToBuffer = (*valueObject)(nil)
-var _ ToBufferRange = (*valueObject)(nil)
+// TODO: refactor to use errors from gojq?
+// TODO: preview errors
 
-type valueObject struct {
-	v *decode.Value
+type funcTypeError struct {
+	name string
+	typ  string
 }
 
-// TODO: jq function somehow?
-func (vo valueObject) Path() string {
-	return valuePath(vo.v)
+func (err *funcTypeError) Error() string { return err.name + " cannot be applied to: " + err.typ }
+
+type expectedObjectError struct {
+	typ string
 }
 
-func (vo valueObject) MarshalJSON() ([]byte, error) {
-	v := vo.v
+func (err expectedObjectError) Error() string {
+	return "expected an object but got: " + err.typ
+}
 
-	// TODO: range, bits etc?
-	switch vv := v.V.(type) {
+type expectedArrayError struct {
+	typ string
+}
+
+func (err expectedArrayError) Error() string {
+	return "expected an array but got: " + err.typ
+}
+
+type iteratorError struct {
+	typ string
+}
+
+func (err iteratorError) Error() string {
+	return "cannot iterate over: " + err.typ
+}
+
+type hasKeyTypeError struct {
+	l, r string
+}
+
+func (err hasKeyTypeError) Error() string {
+	return "cannot check whether " + err.l + " has a key: " + err.r
+}
+
+type valueObjectIf interface {
+	InterpObject
+	ToBuffer
+}
+
+func makeValueObject(dv *decode.Value) valueObjectIf {
+	switch vv := dv.V.(type) {
 	case decode.Array:
-		arr := []interface{}{}
-		for _, f := range vv {
-			arr = append(arr, valueObject{v: f})
-		}
-		return json.Marshal(arr)
+		av := arrayValueObject{baseValueObject: baseValueObject{dv: dv, typ: "array"}, vv: vv}
+		av.baseValueObject.vFn = av.JQValue
+		return av
 	case decode.Struct:
-		obj := map[string]interface{}{}
-		for _, f := range vv {
-			obj[f.Name] = valueObject{v: f}
-		}
-		return json.Marshal(obj)
-	case bool, int64, uint64, float64, string, []byte, nil:
-		return json.Marshal(vv)
+		sv := structValueObject{baseValueObject: baseValueObject{dv: dv, typ: "object"}, vv: vv}
+		sv.baseValueObject.vFn = sv.JQValue
+		return sv
+	case bool:
+		return baseValueObject{dv: dv, vFn: func() interface{} { return vv }, typ: "boolean"}
+	case int, float64:
+		return baseValueObject{dv: dv, vFn: func() interface{} { return vv }, typ: "number"}
+	case string:
+		sv := stringValueObject{baseValueObject: baseValueObject{dv: dv, typ: "string"}, vv: vv}
+		sv.baseValueObject.vFn = sv.JQValue
+		return sv
+	case int64:
+		return baseValueObject{dv: dv, vFn: func() interface{} { return big.NewInt(int64(vv)) }, typ: "number"}
+	case uint64:
+		return baseValueObject{dv: dv, vFn: func() interface{} { return new(big.Int).SetUint64(vv) }, typ: "number"}
+	case []byte:
+		sv := stringValueObject{baseValueObject: baseValueObject{dv: dv, typ: "string"}, vv: string(vv)}
+		sv.baseValueObject.vFn = sv.JQValue
+		return sv
 	case *bitio.Buffer:
 		bb := &bytes.Buffer{}
-		if _, err := io.Copy(bb, vv.Copy()); err != nil {
-			return nil, err
-		}
-		return json.Marshal(bb.Bytes())
+		// TODO: err
+		io.Copy(bb, vv.Copy())
+		sv := stringValueObject{baseValueObject: baseValueObject{dv: dv, typ: "string"}, vv: bb.String()}
+		sv.baseValueObject.vFn = sv.JQValue
+		return sv
+	case nil:
+		return baseValueObject{dv: dv, vFn: func() interface{} { return nil }, typ: "null"}
 	default:
+		log.Printf("dv: %#+v\n", dv)
+		// TODO: error?
 		panic("unreachable")
 	}
 }
 
-func (vo valueObject) JQValueLength() interface{} {
-	v := vo.v
-	switch vv := v.V.(type) {
-	case decode.Struct:
-		// log.Printf("JsonLength struct %d", len(vv)+5)
+var _ valueObjectIf = baseValueObject{}
 
-		return len(vv)
-	case decode.Array:
-		//log.Printf("JsonLength array %d", len(vv))
-
-		return len(vv)
-	default:
-		// log.Printf("JsonLength value 0")
-
-		return fmt.Errorf("%v has no length", v)
-	}
+type baseValueObject struct {
+	dv  *decode.Value
+	vFn func() interface{}
+	typ string
 }
 
-func (vo valueObject) JQValueIndex(index int) interface{} {
-	v := vo.v
-
-	switch vv := v.V.(type) {
-	case decode.Struct:
-		// log.Printf("JsonIndex struct %d nil", index)
-
-		return nil
-	case decode.Array:
-		// log.Printf("JsonIndex array %d %#+v", index, vv[index])
-
-		return valueObject{v: vv[index]}
-	default:
-		// log.Printf("JsonIndex value %d nil", index)
-
-		return nil
+func (bv baseValueObject) DisplayName() string {
+	if bv.dv.Description != "" {
+		return bv.dv.Description
 	}
+	return bv.typ
+}
+func (bv baseValueObject) Display(w io.Writer, opts Options) error { return dump(bv.dv, w, opts) }
+func (bv baseValueObject) Preview(w io.Writer, opts Options) error { return preview(bv.dv, w, opts) }
+func (bv baseValueObject) ToBuffer() (*bitio.Buffer, error) {
+	return bv.dv.RootBitBuf.Copy().BitBufRange(bv.dv.Range.Start, bv.dv.Range.Len)
+}
+func (bv baseValueObject) ToBufferRange() (bufferRange, error) {
+	return bufferRange{bb: bv.dv.RootBitBuf.Copy(), r: bv.dv.Range}, nil
 }
 
-func (vo valueObject) JQValueSlice(start int, end int) interface{} {
-	v := vo.v
-
-	switch vv := v.V.(type) {
-	case decode.Struct:
-		// log.Printf("JQValueSlice struct %d-%d nil", start, end)
-
-		return nil
-	case decode.Array:
-		a := []interface{}{}
-		for _, e := range vv[start:end] {
-			a = append(a, valueObject{v: e})
-		}
-
-		// log.Printf("JQValueSlice array %d-%d %#+v", start, end, a)
-
-		return a
-	default:
-		// log.Printf("JQValueSlice value %d-%d nil", start, end)
-
-		return fmt.Errorf("%v can't be indexed", v)
-	}
-}
-
-func (vo valueObject) SpecialPropNames() []string {
+func (bv baseValueObject) ExtValueKeys() []string {
 	return []string{
 		"_type",
 		"_start",
@@ -135,263 +142,203 @@ func (vo valueObject) SpecialPropNames() []string {
 	}
 }
 
-func (vo valueObject) DisplayName() string {
-	v := vo.v
-	if v.Description != "" {
-		return vo.v.Description
-	}
-	switch v.V.(type) {
-	case decode.Struct:
-		return "{}"
-	case decode.Array:
-		return "[]"
-	default:
-		return "field"
-	}
+func (bv baseValueObject) JQValueLength() interface{} {
+	return funcTypeError{name: "length", typ: bv.typ}
 }
+func (bv baseValueObject) JQValueIndex(index int) interface{} {
+	return expectedArrayError{typ: bv.typ}
+}
+func (bv baseValueObject) JQValueSlice(start int, end int) interface{} {
+	return expectedArrayError{typ: bv.typ}
+}
+func (bv baseValueObject) JQValueProperty(name string) interface{} {
+	if strings.HasPrefix(name, "_") {
+		dv := bv.dv
 
-func (vo valueObject) JQValueProperty(name string) interface{} {
-	v := vo.v
-
-	// TODO: parent index useful?
-	// TODO: mime, isRoot
-
-	switch name {
-	case "_type":
-		switch v.V.(type) {
-		case decode.Struct:
-			return "struct"
-		case decode.Array:
-			return "array"
-		default:
-			return "field"
-		}
-	case "_start":
-		return big.NewInt(v.Range.Start)
-	case "_stop":
-		return big.NewInt(v.Range.Stop())
-	case "_len":
-		return big.NewInt(v.Range.Len)
-	case "_name":
-		return v.Name
-	case "_value":
-		return vo.JQValue()
-	case "_symbol":
-		return v.Symbol
-	case "_description":
-		return v.Description
-	case "_path":
-		return valuePath(v)
-	case "_error":
-		switch err := v.Err.(type) {
-		case decode.FormatError:
-			return formatError{err}
-		}
-
-		return v.Err
-
-	case "_bits":
-		bb, err := v.RootBitBuf.BitBufRange(v.Range.Start, v.Range.Len)
-		if err != nil {
-			return err
-		}
-		return newBifBufObject(bb, 1)
-	case "_bytes":
-		bb, err := v.RootBitBuf.BitBufRange(v.Range.Start, v.Range.Len)
-		if err != nil {
-			return err
-		}
-		return newBifBufObject(bb, 8)
-	default:
-		switch vv := v.V.(type) {
-		case decode.Struct:
-			for _, f := range vv {
-				if f.Name == name {
-					return valueObject{v: f}
-				}
+		switch name {
+		case "_type":
+			return bv.typ
+		case "_start":
+			return big.NewInt(dv.Range.Start)
+		case "_stop":
+			return big.NewInt(dv.Range.Stop())
+		case "_len":
+			return big.NewInt(dv.Range.Len)
+		case "_name":
+			return dv.Name
+		case "_value":
+			return bv.vFn()
+		case "_symbol":
+			return dv.Symbol
+		case "_description":
+			return dv.Description
+		case "_path":
+			return valuePath(dv)
+		case "_error":
+			switch err := dv.Err.(type) {
+			case decode.FormatError:
+				return formatError{err}
 			}
-			return nil
-		case decode.Array:
-			return fmt.Errorf("can't index array with string")
-		default:
-			return fmt.Errorf("can't index field with string")
-		}
-	}
-}
 
-func (vo valueObject) JQValueEach() interface{} {
-	v := vo.v
-
-	props := [][2]interface{}{}
-	switch vv := v.V.(type) {
-	case decode.Struct:
-		for _, f := range vv {
-			props = append(props, [2]interface{}{f.Name, valueObject{v: f}})
-		}
-	case decode.Array:
-		for i, f := range vv {
-			props = append(props, [2]interface{}{i, valueObject{v: f}})
-		}
-	}
-
-	// for _, p := range v.specialPropNames() {
-	// 	props = append(props, [2]interface{}{p, v.JsonProperty(p)})
-	// }
-
-	sort.Slice(props, func(i, j int) bool {
-		iString, iIsString := props[i][0].(string)
-		jString, jIsString := props[j][0].(string)
-		iInt, iIsInt := props[i][0].(string)
-		jInt, jIsInt := props[j][0].(string)
-		if iIsString && jIsString {
-			return iString < jString
-		} else if iIsInt && jIsInt {
-			return iInt < jInt
-		} else if iIsInt {
-			return true
-		}
-
-		return false
-	})
-
-	return props
-}
-
-func (vo valueObject) JQValueKeys() interface{} {
-	var kvs []interface{}
-
-	v := vo.v
-	switch vv := v.V.(type) {
-	case decode.Struct:
-		for _, f := range vv {
-			kvs = append(kvs, f.Name)
-		}
-	case decode.Array:
-		for i := range vv {
-			kvs = append(kvs, i)
-		}
-	default:
-		return fmt.Errorf("can't get keys from %v", v.V)
-	}
-
-	return kvs
-}
-
-func (vo valueObject) JQValueHasKey(key interface{}) interface{} {
-	v := vo.v
-	switch vv := v.V.(type) {
-	case decode.Struct:
-		s, sOk := key.(string)
-		if !sOk {
-			return fmt.Errorf("can't check key for %#v", v.V)
-		}
-		for _, f := range vv {
-			if f.Name == s {
-				return true
+			return dv.Err
+		case "_bits":
+			bb, err := dv.RootBitBuf.BitBufRange(dv.Range.Start, dv.Range.Len)
+			if err != nil {
+				return err
 			}
+			return newBifBufObject(bb, 1)
+		case "_bytes":
+			bb, err := dv.RootBitBuf.BitBufRange(dv.Range.Start, dv.Range.Len)
+			if err != nil {
+				return err
+			}
+			return newBifBufObject(bb, 8)
 		}
-		return false
-	case decode.Array:
-		// TODO: toInt? int64?
-		i, iOk := key.(int)
-		if !iOk {
-			return fmt.Errorf("can't check key for %#v", v.V)
-		}
-		return i >= 0 && i < len(vv)
-	default:
-		return fmt.Errorf("can't check key for %#v", v.V)
-	}
-}
-
-func (vo valueObject) JQValueType() string {
-	v := vo.v
-	switch v.V.(type) {
-	case decode.Struct:
-		return "object"
-	case decode.Array:
-		return "array"
-	case int, float64, int64, uint64:
-		return "number"
-	case bool:
-		return "boolean"
-	case string, []byte:
-		return "string"
-	case nil:
-		return "null"
-	default:
-		return "field"
-	}
-}
-
-func (vo valueObject) JQValue() interface{} {
-	v := vo.v
-	switch vv := v.V.(type) {
-	case decode.Array:
-		arr := []interface{}{}
-		for _, f := range vv {
-			arr = append(arr, valueObject{v: f}.JQValue())
-		}
-		return arr
-	case decode.Struct:
-		obj := map[string]interface{}{}
-		for _, f := range vv {
-			obj[f.Name] = valueObject{v: f}.JQValue()
-		}
-		return obj
-	case int, bool, float64:
-		return vv
-	case string:
-		return vv
-	case int64:
-		return big.NewInt(vv)
-	case uint64:
-		return big.NewInt(int64(vv))
-	case []byte:
-		return string(vv)
-	case *bitio.Buffer:
-		return fmt.Sprintf("<%s bytes>", num.Bits(v.Range.Len).StringByteBits(10))
-		// bb, err := v.RootBitBuf.BitBufRange(v.Range.Start, v.Range.Len)
-		// if err != nil {
-		// 	return err
-		// }
-		// buf := &bytes.Buffer{}
-		// if _, err := io.Copy(buf, bb.Copy()); err != nil {
-		// 	return err
-		// }
-		// return buf.String()
-	case nil:
-		return vv
-	default:
 		// TODO: error?
 		return nil
 	}
+	return expectedObjectError{typ: bv.typ}
+}
+func (bv baseValueObject) JQValueEach() interface{} {
+	return iteratorError{typ: bv.typ}
+}
+func (bv baseValueObject) JQValueKeys() interface{} {
+	return funcTypeError{name: "keys", typ: bv.typ}
+}
+func (bv baseValueObject) JQValueHasKey(key interface{}) interface{} {
+	return hasKeyTypeError{l: bv.typ, r: fmt.Sprintf("%v", key)}
+}
+func (bv baseValueObject) JQValueType() string  { return bv.typ }
+func (bv baseValueObject) JQValue() interface{} { return bv.vFn() }
+
+type stringValueObject struct {
+	baseValueObject
+	vv string
 }
 
-func (vo valueObject) Display(w io.Writer, opts Options) error {
-	return dump(vo.v, w, opts)
+// string
+
+func (sv stringValueObject) ToBuffer() (*bitio.Buffer, error) {
+	return bitio.NewBufferFromBytes([]byte(sv.vv), -1), nil
+}
+func (sv stringValueObject) ToBufferRange() (bufferRange, error) {
+	bb := bitio.NewBufferFromBytes([]byte(sv.vv), -1)
+	return bufferRange{bb: bb, r: ranges.Range{Start: 0, Len: bb.Len()}}, nil
 }
 
-func (vo valueObject) Preview(w io.Writer, opts Options) error {
-	return preview(vo.v, w, opts)
+func (sv stringValueObject) JQValueLength() interface{} { return len(sv.vv) }
+func (sv stringValueObject) JQValueIndex(index int) interface{} {
+	return fmt.Sprintf("%c", sv.vv[index])
+}
+func (sv stringValueObject) JQValueSlice(start int, end int) interface{} {
+	return sv.vv[start:end]
+}
+func (sv stringValueObject) JQValue() interface{} {
+	return sv.vv
 }
 
-func (vo valueObject) ToBuffer() (*bitio.Buffer, error) {
-	v := vo.v
-	switch vv := v.V.(type) {
-	case []byte:
-		return bitio.NewBufferFromBytes(vv, -1), nil
-	default:
-		return v.RootBitBuf.Copy().BitBufRange(vo.v.Range.Start, vo.v.Range.Len)
+// array
+
+type arrayValueObject struct {
+	baseValueObject
+	vv decode.Array
+}
+
+func (av arrayValueObject) JQValueLength() interface{} { return len(av.vv) }
+func (av arrayValueObject) JQValueIndex(index int) interface{} {
+	return makeValueObject(av.vv[index])
+}
+func (av arrayValueObject) JQValueSlice(start int, end int) interface{} {
+	vs := make([]interface{}, len(av.vv))
+	for _, e := range av.vv[start:end] {
+		vs = append(vs, makeValueObject(e))
 	}
+	return vs
+}
+func (av arrayValueObject) JQValueEach() interface{} {
+	props := make([][2]interface{}, len(av.vv))
+	for i, v := range av.vv {
+		props[i] = [2]interface{}{i, makeValueObject(v)}
+	}
+	return props
+}
+func (av arrayValueObject) JQValueKeys() interface{} {
+	vs := make([]interface{}, len(av.vv))
+	for i := range av.vv {
+		vs[i] = i
+	}
+	return vs
+}
+func (av arrayValueObject) JQValueHasKey(key interface{}) interface{} {
+	// TODO: toInt? int64?
+	i, iOk := key.(int)
+	if !iOk {
+		return hasKeyTypeError{l: av.typ, r: fmt.Sprintf("%v", key)}
+	}
+	return i >= 0 && i < len(av.vv)
+}
+func (av arrayValueObject) JQValue() interface{} {
+	vs := make([]interface{}, len(av.vv))
+	for i, v := range av.vv {
+		vs[i] = makeValueObject(v).JQValue()
+	}
+	return vs
 }
 
-func (vo valueObject) ToBufferRange() (bufferRange, error) {
-	v := vo.v
-	switch vv := v.V.(type) {
-	case []byte:
-		bb := bitio.NewBufferFromBytes(vv, -1)
-		return bufferRange{bb: bb, r: ranges.Range{Start: 0, Len: bb.Len()}}, nil
-	default:
-		return bufferRange{bb: v.RootBitBuf.Copy(), r: vo.v.Range}, nil
+// struct
+
+type structValueObject struct {
+	baseValueObject
+	vv decode.Struct
+}
+
+func (sv structValueObject) JQValueLength() interface{} { return len(sv.vv) }
+func (sv structValueObject) JQValueProperty(name string) interface{} {
+	if strings.HasPrefix(name, "_") {
+		return sv.baseValueObject.JQValueProperty(name)
 	}
+	for _, v := range sv.vv {
+		if v.Name == name {
+			return makeValueObject(v)
+		}
+	}
+	return nil
+}
+func (sv structValueObject) JQValueEach() interface{} {
+	props := make([][2]interface{}, len(sv.vv))
+	for i, v := range sv.vv {
+		props[i] = [2]interface{}{v.Name, makeValueObject(v)}
+	}
+	sort.Slice(props, func(i, j int) bool {
+		iString, _ := props[i][0].(string)
+		jString, _ := props[j][0].(string)
+		return iString < jString
+	})
+	return props
+}
+func (sv structValueObject) JQValueKeys() interface{} {
+	vs := make([]interface{}, len(sv.vv))
+	for i, v := range sv.vv {
+		vs[i] = v.Name
+	}
+	return vs
+}
+func (sv structValueObject) JQValueHasKey(key interface{}) interface{} {
+	s, sOk := key.(string)
+	if !sOk {
+		return hasKeyTypeError{l: sv.typ, r: fmt.Sprintf("%v", key)}
+	}
+	for _, f := range sv.vv {
+		if f.Name == s {
+			return true
+		}
+	}
+	return false
+}
+func (sv structValueObject) JQValue() interface{} {
+	vm := make(map[string]interface{}, len(sv.vv))
+	for _, v := range sv.vv {
+		vm[v.Name] = makeValueObject(v).JQValue()
+	}
+	return vm
 }

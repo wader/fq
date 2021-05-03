@@ -30,7 +30,7 @@ func newBifBufObject(bb *bitio.Buffer, unit int) *bitBufObject {
 }
 
 func (*bitBufObject) DisplayName() string { return "buffer" }
-func (*bitBufObject) SpecialPropNames() []string {
+func (*bitBufObject) ExtValueKeys() []string {
 	return []string{
 		"size",
 		"start",

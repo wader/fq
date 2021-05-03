@@ -46,7 +46,7 @@ func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
 
 		{[]string{"complete_query"}, 0, 0, i.completeQuery, false},
 		{[]string{"display_name"}, 0, 0, i.displayName, false},
-		{[]string{"_value_keys"}, 0, 0, i._valueKeys, false},
+		{[]string{"extkeys"}, 0, 0, i._extKeys, false},
 		{[]string{"formats"}, 0, 0, i.formats, false},
 
 		{[]string{"open"}, 0, 1, i._open, false},
@@ -294,10 +294,10 @@ func (i *Interp) displayName(c interface{}, a []interface{}) interface{} {
 	return qo.DisplayName()
 }
 
-func (i *Interp) _valueKeys(c interface{}, a []interface{}) interface{} {
+func (i *Interp) _extKeys(c interface{}, a []interface{}) interface{} {
 	if v, ok := c.(InterpObject); ok {
 		var vs []interface{}
-		for _, s := range v.SpecialPropNames() {
+		for _, s := range v.ExtValueKeys() {
 			vs = append(vs, s)
 		}
 		return vs
@@ -495,7 +495,7 @@ func (i *Interp) makeDecodeFn(registry *decode.Registry, decodeFormats []*decode
 			return valueErr{err}
 		}
 
-		return valueObject{v: dv}
+		return makeValueObject(dv)
 	}
 }
 
