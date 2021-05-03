@@ -8,11 +8,17 @@ Tool and framework for querying and exploring binary data.
 
 <sub>
 <pre sh>
-<b># duration of a mp3 file</b> 
-$ fq file.mp3 '[.frames[].header | .samples_per_frame / .sample_rate] | add' 
-0.0783673469387755
+<b># Overview of mp3 file</b> 
+$ fq file.mp3 
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: mp3
+0x000|49 44 33 04 00 00 00 00 15 39 54 53 53 45 00 00|ID3......9TSSE..|  headers: [1]
+*    |2739 bytes more until 0xac2.7                  |                |
+0xac0|         ff fb 40 c0 00 00 00 00 00 00 00 00 00|   ..@..........|  frames: [3]
+0xad0|00 00 00 00 00 00 00 00 49 6e 66 6f 00 00 00 0f|........Info....|
+*    |570 bytes more until 0xd19.7 (end)             |                |
+     |                                               |                |  footers: [0]
  
-<b># embedded id3v2 png picture</b> 
+<b># Show ID3v2 APIC frame</b> 
 $ fq file.mp3 '.headers[].frames[] | select(.id == "APIC")' 
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.headers[0].frames[1]: {}
 0x020|         41 50 49 43                           |   APIC         |  id: "APIC" (Attached picture)
@@ -27,24 +33,21 @@ $ fq file.mp3 '.headers[].frames[] | select(.id == "APIC")' 
 0x040|1a 0a 00 00 00 0d 49 48 44 52 00 00 01 40 00 00|......IHDR...@..|
 *    |2665 bytes more until 0xab8.7                  |                |
  
-<b># resolution of embedded png picture</b> 
+<b># Resolution of embedded PNG file</b> 
 $ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture.chunks[] | select(.type == "IHDR") | {width, height}' 
 {
   "height": 240,
   "width": 320
 }
  
-<b># extract png</b> 
-$ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture._bits' > file.png 
+<b># Extract PNG file</b> 
+$ fq file.mp3 '.headers[].frames[] | select(.id == "APIC")?.picture._bits' > file.png 
 $ file file.png 
 file.png: PNG image data, 320 x 240, 8-bit/color RGB, non-interlaced
  
-<b># codecs in a mp4 file</b> 
+<b># Codecs in a mp4 file</b> 
 $ fq file.mp4 '[.. | select(.type == "stsd").sample_descriptions[].data_format]' 
-[
-  "avc1",
-  "mp4a"
-]
+error: expected an object but got: array
 </pre>
 </sub>
 
