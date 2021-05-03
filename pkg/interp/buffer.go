@@ -9,28 +9,36 @@ import (
 	"math/big"
 )
 
+type expectedBufferError struct {
+	typ string
+}
+
+func (err expectedBufferError) Error() string {
+	return "expected an buffer but got: " + err.typ
+}
+
 type bufferRange struct {
 	bb *bitio.Buffer
 	r  ranges.Range
 }
 
-var _ InterpObject = (*bitBufObject)(nil)
-var _ ToBuffer = (*bitBufObject)(nil)
+var _ InterpObject = (*bufferObject)(nil)
+var _ ToBuffer = (*bufferObject)(nil)
 
-type bitBufObject struct {
+type bufferObject struct {
 	bbr  bufferRange
 	unit int
 }
 
-func newBifBufObject(bb *bitio.Buffer, unit int) *bitBufObject {
-	return &bitBufObject{
+func newBifBufObject(bb *bitio.Buffer, unit int) *bufferObject {
+	return &bufferObject{
 		bbr:  bufferRange{bb: bb, r: ranges.Range{Start: 0, Len: bb.Len()}},
 		unit: unit,
 	}
 }
 
-func (*bitBufObject) DisplayName() string { return "buffer" }
-func (*bitBufObject) ExtValueKeys() []string {
+func (*bufferObject) DisplayName() string { return "buffer" }
+func (*bufferObject) ExtValueKeys() []string {
 	return []string{
 		"size",
 		"start",
@@ -40,10 +48,10 @@ func (*bitBufObject) ExtValueKeys() []string {
 	}
 }
 
-func (bo *bitBufObject) JQValueLength() interface{} {
+func (bo *bufferObject) JQValueLength() interface{} {
 	return int(bo.bbr.r.Len / int64(bo.unit))
 }
-func (bo *bitBufObject) JQValueIndex(index int) interface{} {
+func (bo *bufferObject) JQValueIndex(index int) interface{} {
 	pos, err := bo.bbr.bb.Pos()
 	if err != nil {
 		return err
@@ -60,7 +68,7 @@ func (bo *bitBufObject) JQValueIndex(index int) interface{} {
 	}
 	return int(v)
 }
-func (bo *bitBufObject) JQValueSlice(start int, end int) interface{} {
+func (bo *bufferObject) JQValueSlice(start int, end int) interface{} {
 	rStart := int64(start * bo.unit)
 	rLen := int64((end - start) * bo.unit)
 	rbb, err := bo.bbr.bb.BitBufRange(rStart, rLen)
@@ -68,12 +76,12 @@ func (bo *bitBufObject) JQValueSlice(start int, end int) interface{} {
 		return err
 	}
 
-	return &bitBufObject{
+	return &bufferObject{
 		bbr:  bufferRange{bb: rbb, r: ranges.Range{Start: bo.bbr.r.Start + rStart, Len: rLen}},
 		unit: bo.unit,
 	}
 }
-func (bo *bitBufObject) JQValueProperty(name string) interface{} {
+func (bo *bufferObject) JQValueProperty(name string) interface{} {
 	switch name {
 	case "size":
 		return new(big.Int).SetInt64(bo.bbr.r.Len / int64(bo.unit))
@@ -90,29 +98,29 @@ func (bo *bitBufObject) JQValueProperty(name string) interface{} {
 		if bo.unit == 1 {
 			return bo
 		}
-		return &bitBufObject{bbr: bo.bbr, unit: 1}
+		return &bufferObject{bbr: bo.bbr, unit: 1}
 	case "bytes":
 		if bo.unit == 8 {
 			return bo
 		}
-		return &bitBufObject{bbr: bo.bbr, unit: 8}
+		return &bufferObject{bbr: bo.bbr, unit: 8}
 	}
 	return nil
 }
-func (bo *bitBufObject) JQValueEach() interface{} {
+func (bo *bufferObject) JQValueEach() interface{} {
 	return nil
 }
-func (bo *bitBufObject) JQValueType() string {
+func (bo *bufferObject) JQValueType() string {
 	return "buffer"
 }
-func (bo *bitBufObject) JQValueKeys() interface{} {
-	return fmt.Errorf("can't get keys from bitbuf")
+func (bo *bufferObject) JQValueKeys() interface{} {
+	return funcTypeError{name: "keys", typ: "buffer"}
 }
-func (bo *bitBufObject) JQValueHasKey(key interface{}) interface{} {
-	return fmt.Errorf("can't get keys from bitbuf")
+func (bo *bufferObject) JQValueHasKey(key interface{}) interface{} {
+	return hasKeyTypeError{l: "buffer", r: fmt.Sprintf("%v", key)}
 }
 
-func (bo *bitBufObject) JQValue() interface{} {
+func (bo *bufferObject) JQValue() interface{} {
 	buf := &bytes.Buffer{}
 	if _, err := io.Copy(buf, bo.bbr.bb.Copy()); err != nil {
 		return err
@@ -120,12 +128,26 @@ func (bo *bitBufObject) JQValue() interface{} {
 	return buf.String()
 }
 
-func (bo *bitBufObject) Display(w io.Writer, opts Options) error {
+func (bo *bufferObject) Display(w io.Writer, opts Options) error {
 	if opts.Raw {
 		if _, err := io.Copy(w, bo.bbr.bb.Copy()); err != nil {
 			return err
 		}
 		return nil
+	}
+
+	bbr := bo.bbr
+	if bbr.r.Len/8 > opts.DisplayBytes {
+		bbr.r.Len = opts.DisplayBytes * 8
+		bb, err := bbr.bb.BitBufRange(bbr.r.Start, bbr.r.Len)
+		if err != nil {
+			return err
+		}
+		bbr.bb = bb
+	}
+
+	if err := hexdumpRange(bbr, w, opts); err != nil {
+		return err
 	}
 
 	unitNames := map[int]string{
@@ -140,6 +162,6 @@ func (bo *bitBufObject) Display(w io.Writer, opts Options) error {
 	return err
 }
 
-func (bo *bitBufObject) ToBuffer() (*bitio.Buffer, error) {
+func (bo *bufferObject) ToBuffer() (*bitio.Buffer, error) {
 	return bo.bbr.bb, nil
 }

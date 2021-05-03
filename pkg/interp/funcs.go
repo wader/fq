@@ -12,13 +12,9 @@ import (
 	"fmt"
 	"fq/internal/aheadreadseeker"
 	"fq/internal/ansi"
-	"fq/internal/asciiwriter"
 	"fq/internal/colorjson"
 	"fq/internal/ctxreadseeker"
-	"fq/internal/hexdump"
-	"fq/internal/hexpairwriter"
 	"fq/internal/ioextra"
-	"fq/internal/num"
 	"fq/internal/progressreadseeker"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
@@ -575,31 +571,12 @@ func (i *Interp) hexdump(c interface{}, a []interface{}) interface{} {
 		return err
 	}
 
-	bitsByteAlign := bbr.r.Start % 8
-	bb, err := bbr.bb.BitBufRange(bbr.r.Start-bitsByteAlign, bbr.r.Len+bitsByteAlign)
-	if err != nil {
-		return err
-	}
-
 	opts, err := i.Options(a...)
 	if err != nil {
 		return err
 	}
 
-	d := opts.Decorator
-	hw := hexdump.New(
-		i.stdout,
-		(bbr.r.Start-bitsByteAlign)/8,
-		num.DigitsInBase(bitio.BitsByteCount(bbr.r.Stop()+bitsByteAlign), true, opts.AddrBase),
-		opts.AddrBase,
-		opts.LineBytes,
-		func(b byte) string { return d.ByteColor(b).Wrap(hexpairwriter.Pair(b)) },
-		func(b byte) string { return d.ByteColor(b).Wrap(asciiwriter.SafeASCII(b)) },
-		func(s string) string { return d.Frame.Wrap(s) },
-		d.Column,
-	)
-	defer hw.Close()
-	if _, err = io.Copy(hw, bb); err != nil {
+	if err := hexdumpRange(bbr, i.stdout, opts); err != nil {
 		return err
 	}
 
