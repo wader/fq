@@ -26,7 +26,7 @@ def from_radix($base; $table):
 def to_radix($base; $table):
 	if . == 0 then "0"
 	else
-		[recurse(if . > 0 then . div $base else empty end) | . % $base]
+		[ recurse(if . > 0 then . div $base else empty end) | . % $base]
 		| reverse
 		| .[1:]
 		| if $base <= ($table | length) then
@@ -195,6 +195,16 @@ def in_bits_range($p):
 	._type == "field" and (._bits | .start <= $p and $p < .stop);
 def in_bytes_range($p):
 	._type == "field" and (._bytes | .start <= $p and $p < .stop);
+
+# TODO: split? can't really switch on type
+def grep(f):
+	if f | type == "string" then
+		.. | select((._name | contains(f)) or (._value | contains(f)? // false))
+	elif f | type == "number" then
+		.. | select(._value == f)
+	else
+		.. | debug | select(f)?
+	end;
 
 # TODO: introspect and show doc, reflection somehow?
 def help:

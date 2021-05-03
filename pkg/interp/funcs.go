@@ -26,6 +26,7 @@ import (
 	"fq/pkg/ranges"
 	"io"
 	"io/ioutil"
+	"log"
 	"math/big"
 	"net/url"
 	"strings"
@@ -95,6 +96,8 @@ func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
 
 		{[]string{"_state"}, 1, 2, i._state, false},
 		{[]string{"options"}, 0, 0, i.options, false},
+
+		{[]string{"find"}, 1, 1, i.find, false},
 	}
 	for name, f := range i.registry.Groups {
 		fs = append(fs, Function{[]string{name}, 0, 0, i.makeDecodeFn(registry, f), false})
@@ -808,4 +811,39 @@ func (i *Interp) options(c interface{}, a []interface{}) interface{} {
 	}
 
 	return v
+}
+
+func (i *Interp) find(c interface{}, a []interface{}) interface{} {
+	bb, _, err := toBitBuf(c)
+	if err != nil {
+		return err
+	}
+
+	sbb, _, err := toBitBuf(a[0])
+	if err != nil {
+		return err
+	}
+
+	log.Printf("sbb: %#+v\n", sbb)
+
+	// TODO: error, bitio.Copy?
+
+	bbBytes := &bytes.Buffer{}
+	io.Copy(bbBytes, bb)
+
+	sbbBytes := &bytes.Buffer{}
+	io.Copy(sbbBytes, sbb)
+
+	// log.Printf("bbBytes.Bytes(): %#+v\n", bbBytes.Bytes())
+	// log.Printf("sbbBytes.Bytes(): %#+v\n", sbbBytes.Bytes())
+
+	idx := bytes.Index(bbBytes.Bytes(), sbbBytes.Bytes())
+	if idx == -1 {
+		return gojq.EmptyIter{}
+	}
+
+	bbo := &bitBufObject{bb: bb, unit: 8, r: ranges.Range{Start: int64(idx), Len: sbb.Len()}}
+	// log.Printf("bbo: %#+v\n", bbo)
+
+	return bbo
 }

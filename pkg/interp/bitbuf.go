@@ -131,5 +131,5 @@ func (bo *bitBufObject) Display(w io.Writer, opts Options) error {
 }
 
 func (bo *bitBufObject) ToBitBuf() (*bitio.Buffer, ranges.Range) {
-	return bo.bb.Copy(), ranges.Range{Start: 0, Len: bo.bb.Len()}
+	return bo.bb.Copy(), ranges.Range{Start: bo.r.Start * int64(bo.unit), Len: bo.r.Len * int64(bo.unit)}
 }
