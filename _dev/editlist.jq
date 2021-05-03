@@ -17,8 +17,8 @@
 #       elst (edit list)
 
 .
-| first(.boxes[] | select(.type == "moov"))
-| first(.boxes[] | select(.type == "mvhd")) as $mvhd
+| first(.boxes[] | select(.type == "moov")?)
+| first(.boxes[] | select(.type == "mvhd")?) as $mvhd
 | {
     duration: $mvhd.duration,
     time_scale: $mvhd.time_scale,
@@ -26,10 +26,10 @@
     tracks:
     [ .boxes[]
         | select(.type == "trak")
-        | first(.. | select(.type == "mdhd")) as $mdhd
-        | first(.. | select(.type == "hdlr")) as $hdlr
-        | first(.. | select(.type == "stsd")) as $stsd
-        | first(.. | select(.type == "elst")) as $elst
+        | first(.. | select(.type == "mdhd")?) as $mdhd
+        | first(.. | select(.type == "hdlr")?) as $hdlr
+        | first(.. | select(.type == "stsd")?) as $stsd
+        | first(.. | select(.type == "elst")?) as $elst
         | {
             component_type: $hdlr.component_subtype,
             data_format: $stsd.sample_descriptions[0].data_format,

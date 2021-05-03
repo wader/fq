@@ -133,8 +133,12 @@ type Preview interface {
 	Preview(w io.Writer, opts Options) error
 }
 
-type ToBitBuf interface {
-	ToBitBuf() (*bitio.Buffer, ranges.Range)
+type ToBuffer interface {
+	ToBuffer() (*bitio.Buffer, error)
+}
+
+type ToBufferRange interface {
+	ToBufferRange() (bufferRange, error)
 }
 
 func valuePathDecorated(v *decode.Value, d Decorator) string {
@@ -272,7 +276,7 @@ func toBytes(v interface{}) ([]byte, error) {
 	case []byte:
 		return v, nil
 	default:
-		bb, _, err := toBitBuf(v)
+		bb, err := toBuffer(v)
 		if err != nil {
 			return nil, fmt.Errorf("value is not bytes")
 		}
@@ -286,54 +290,61 @@ func toBytes(v interface{}) ([]byte, error) {
 }
 
 // TODO: refactor to return struct?
-func toBitBuf(v interface{}) (*bitio.Buffer, ranges.Range, error) {
+func toBuffer(v interface{}) (*bitio.Buffer, error) {
 	switch vv := v.(type) {
-	case ToBitBuf:
-		bb, r := vv.ToBitBuf()
-		return bb, r, nil
+	case ToBuffer:
+		return vv.ToBuffer()
 	case string:
-		bb := bitio.NewBufferFromBytes([]byte(vv), -1)
-		return bb, ranges.Range{Start: 0, Len: bb.Len()}, nil
+		return bitio.NewBufferFromBytes([]byte(vv), -1), nil
 	case []byte:
-		bb := bitio.NewBufferFromBytes(vv, -1)
-		return bb, ranges.Range{Start: 0, Len: bb.Len()}, nil
+		return bitio.NewBufferFromBytes(vv, -1), nil
 	case int, float64, *big.Int:
 		bi, err := toBigInt(v)
 		if err != nil {
-			return nil, ranges.Range{}, err
+			return nil, err
 		}
-		bb := bitio.NewBufferFromBytes(bi.Bytes(), -1)
-		return bb, ranges.Range{Start: 0, Len: bb.Len()}, nil
+		return bitio.NewBufferFromBytes(bi.Bytes(), -1), nil
 	case []interface{}:
 		var rr []bitio.BitReadAtSeeker
 		for _, e := range vv {
-			eReader, eRange, eErr := toBitBuf(e)
+			eBB, eErr := toBuffer(e)
 			if eErr != nil {
-				return nil, ranges.Range{}, eErr
+				return nil, eErr
 			}
-
-			eReader, _ = bitio.NewBufferFromBitReadSeeker(bitio.NewSectionBitReader(eReader, eRange.Start, eRange.Len))
-
-			rr = append(rr, eReader)
+			rr = append(rr, eBB)
 		}
 
 		mb, err := bitio.NewMultiBitReader(rr)
 		if err != nil {
-			return nil, ranges.Range{}, err
-		}
-		endPos, err := bitio.EndPos(mb)
-		if err != nil {
-			return nil, ranges.Range{}, err
+			return nil, err
 		}
 
 		bb, err := bitio.NewBufferFromBitReadSeeker(mb)
 		if err != nil {
-			return nil, ranges.Range{}, err
+			return nil, err
 		}
 
-		return bb, ranges.Range{Start: 0, Len: endPos}, nil
+		return bb, nil
 	default:
-		return nil, ranges.Range{}, fmt.Errorf("value should be decode value, bit buffer, byte slice or string")
+		return nil, fmt.Errorf("value can't be buffer")
+	}
+}
+
+func toBufferRange(v interface{}) (bufferRange, error) {
+	switch vv := v.(type) {
+	case ToBufferRange:
+		return vv.ToBufferRange()
+	default:
+		switch vv := v.(type) {
+		case ToBuffer:
+			bb, err := vv.ToBuffer()
+			if err != nil {
+				return bufferRange{}, err
+			}
+			return bufferRange{bb: bb, r: ranges.Range{Len: bb.Len()}}, nil
+		default:
+			return bufferRange{}, fmt.Errorf("value can't be buffer")
+		}
 	}
 }
 

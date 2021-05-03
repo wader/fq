@@ -5,7 +5,6 @@ import (
 	"context"
 	"crypto/aes"
 	"crypto/cipher"
-	"crypto/md5"
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
@@ -23,7 +22,6 @@ import (
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/format"
-	"fq/pkg/ranges"
 	"io"
 	"io/ioutil"
 	"log"
@@ -62,10 +60,6 @@ func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
 		{[]string{"bits"}, 0, 0, i.bits, false},
 		{[]string{"tovalue"}, 0, 0, i.tovalue, false},
 
-		{[]string{"u"}, 0, 1, i.u, false},
-
-		{[]string{"md5"}, 0, 0, i.md5, false},
-
 		{[]string{"hex"}, 0, 0, makeStringBitBufTransformFn(
 			func(r io.Reader) (io.Reader, error) { return hex.NewDecoder(r), nil },
 			func(r io.Writer) (io.Writer, error) { return hex.NewEncoder(r), nil },
@@ -85,7 +79,14 @@ func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
 			func(r io.Writer) (io.Writer, error) { return base64.NewEncoder(base64.URLEncoding, r), nil },
 		), false},
 
-		{[]string{"nal_unescape"}, 0, 0, i.nalUnescape(), false},
+		{[]string{"nal_unescape"}, 0, 0, makeBitBufTransformFn(func(r io.Reader) (io.Reader, error) {
+			return &decode.NALUnescapeReader{Reader: r}, nil
+		}), false},
+
+		// {[]string{"md5"}, 0, 0, makeStringBitBufTransformFn(
+		// 	func(r io.Reader) (io.Reader, error) { return r, nil },
+		// 	func(r io.Writer) (io.Writer, error) { return md5.New(), nil },
+		// ), false},
 
 		{[]string{"query_escape"}, 0, 0, i.queryEscape, false},
 		{[]string{"query_unescape"}, 0, 0, i.queryUnescape, false},
@@ -121,7 +122,7 @@ func makeStringBitBufTransformFn(
 	return func(c interface{}, a []interface{}) interface{} {
 		switch c := c.(type) {
 		case string:
-			bb, _, err := toBitBuf(c)
+			bb, err := toBuffer(c)
 			if err != nil {
 				return err
 			}
@@ -137,9 +138,9 @@ func makeStringBitBufTransformFn(
 			}
 			outBB := bitio.NewBufferFromBytes(buf.Bytes(), -1)
 
-			return &bitBufObject{bb: outBB, unit: 8, r: ranges.Range{Len: outBB.Len()}}
+			return newBifBufObject(outBB, 8)
 		default:
-			bb, _, err := toBitBuf(c)
+			bb, err := toBuffer(c)
 			if err != nil {
 				return err
 			}
@@ -310,15 +311,15 @@ type bitBufFile struct {
 	decodeDoneFn func()
 }
 
-var _ ToBitBuf = (*bitBufFile)(nil)
+var _ ToBuffer = (*bitBufFile)(nil)
 
 func (bbf *bitBufFile) Display(w io.Writer, opts Options) error {
 	_, err := fmt.Fprintf(w, "<%s>\n", bbf.filename)
 	return err
 }
 
-func (bbf *bitBufFile) ToBitBuf() (*bitio.Buffer, ranges.Range) {
-	return bbf.bb.Copy(), ranges.Range{Start: 0, Len: bbf.bb.Len()}
+func (bbf *bitBufFile) ToBuffer() (*bitio.Buffer, error) {
+	return bbf.bb.Copy(), nil
 }
 
 // def open($path): #:: [a]|(string) => buffer
@@ -418,11 +419,7 @@ func (i *Interp) makeDecodeFn(registry *decode.Registry, decodeFormats []*decode
 			}
 		}
 
-		bb, r, err := toBitBuf(c)
-		if err != nil {
-			return err
-		}
-		bb, err = bb.BitBufRange(r.Start, r.Len)
+		bb, err := toBuffer(c)
 		if err != nil {
 			return err
 		}
@@ -527,13 +524,13 @@ func (i *Interp) preview(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) hexdump(c interface{}, a []interface{}) interface{} {
-	bb, r, err := toBitBuf(c)
+	bbr, err := toBufferRange(c)
 	if err != nil {
 		return err
 	}
 
-	bitsByteAlign := r.Start % 8
-	bb, err = bb.BitBufRange(r.Start-bitsByteAlign, r.Len+bitsByteAlign)
+	bitsByteAlign := bbr.r.Start % 8
+	bb, err := bbr.bb.BitBufRange(bbr.r.Start-bitsByteAlign, bbr.r.Len+bitsByteAlign)
 	if err != nil {
 		return err
 	}
@@ -546,8 +543,8 @@ func (i *Interp) hexdump(c interface{}, a []interface{}) interface{} {
 	d := opts.Decorator
 	hw := hexdump.New(
 		i.stdout,
-		(r.Start-bitsByteAlign)/8,
-		num.DigitsInBase(bitio.BitsByteCount(r.Stop()+bitsByteAlign), true, opts.AddrBase),
+		(bbr.r.Start-bitsByteAlign)/8,
+		num.DigitsInBase(bitio.BitsByteCount(bbr.r.Stop()+bitsByteAlign), true, opts.AddrBase),
 		opts.AddrBase,
 		opts.LineBytes,
 		func(b byte) string { return d.ByteColor(b).Wrap(hexpairwriter.Pair(b)) },
@@ -564,7 +561,7 @@ func (i *Interp) hexdump(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) string_(c interface{}, a []interface{}) interface{} {
-	bb, _, err := toBitBuf(c)
+	bb, err := toBuffer(c)
 	if err != nil {
 		return err
 	}
@@ -578,79 +575,41 @@ func (i *Interp) string_(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) bytes(c interface{}, a []interface{}) interface{} {
-	bb, _, err := toBitBuf(c)
+	bb, err := toBuffer(c)
 	if err != nil {
 		return err
 	}
-
-	return &bitBufObject{bb: bb, unit: 8, r: ranges.Range{Len: bb.Len()}}
+	return newBifBufObject(bb, 8)
 }
 
 func (i *Interp) bits(c interface{}, a []interface{}) interface{} {
-	bb, _, err := toBitBuf(c)
+	bb, err := toBuffer(c)
 	if err != nil {
 		return err
 	}
-
-	return &bitBufObject{bb: bb, unit: 1, r: ranges.Range{Len: bb.Len()}}
+	return newBifBufObject(bb, 1)
 }
 
 func (i *Interp) tovalue(c interface{}, a []interface{}) interface{} {
 	return toValue(c)
 }
 
-func (i *Interp) u(c interface{}, a []interface{}) interface{} {
-	bb, r, err := toBitBuf(c)
-	if err != nil {
-		return err
-	}
+// func (i *Interp) md5(c interface{}, a []interface{}) interface{} {
+// 	bb, _, err := toBuffer(c)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	nBits := r.Len
-	if len(a) == 1 {
-		n, err := toInt64(a[0])
-		if err != nil {
-			return err
-		}
-		nBits = n
-	}
+// 	if _, err := io.Copy(md5, bb); err != nil {
+// 		return err
+// 	}
 
-	bb, err = bb.BitBufRange(r.Start, nBits)
-	if err != nil {
-		return err
-	}
-
-	// TODO: smart and maybe use int if bits can fit?
-	bi := new(big.Int)
-	for i := bb.Len() - 1; i >= 0; i-- {
-		v, err := bb.Bool()
-		if err != nil {
-			return err
-		}
-		if v {
-			bi.SetBit(bi, int(i), 1)
-		}
-	}
-
-	return bi
-}
-
-func (i *Interp) md5(c interface{}, a []interface{}) interface{} {
-	bb, _, err := toBitBuf(c)
-	if err != nil {
-		return err
-	}
-
-	md5 := md5.New()
-	if _, err := io.Copy(md5, bb); err != nil {
-		return err
-	}
-
-	return md5.Sum(nil)
-}
+// 	return md5.Sum(nil)
+// }
 
 func makeBitBufTransformFn(fn func(r io.Reader) (io.Reader, error)) func(c interface{}, a []interface{}) interface{} {
 	return func(c interface{}, a []interface{}) interface{} {
-		inBB, _, err := toBitBuf(c)
+		inBB, err := toBuffer(c)
 		if err != nil {
 			return err
 		}
@@ -667,7 +626,7 @@ func makeBitBufTransformFn(fn func(r io.Reader) (io.Reader, error)) func(c inter
 
 		outBB := bitio.NewBufferFromBytes(outBuf.Bytes(), -1)
 
-		return &bitBufObject{bb: outBB, unit: 8, r: ranges.Range{Len: outBB.Len()}}
+		return newBifBufObject(outBB, 8)
 	}
 }
 
@@ -747,7 +706,7 @@ func (i *Interp) aesCtr(c interface{}, a []interface{}) interface{} {
 		ivBytes = make([]byte, block.BlockSize())
 	}
 
-	bb, _, err := toBitBuf(c)
+	bb, err := toBuffer(c)
 	if err != nil {
 		return err
 	}
@@ -762,7 +721,7 @@ func (i *Interp) aesCtr(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) _json(c interface{}, a []interface{}) interface{} {
-	bb, _, err := toBitBuf(c)
+	bb, err := toBuffer(c)
 	if err != nil {
 		return err
 	}
@@ -814,12 +773,12 @@ func (i *Interp) options(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) find(c interface{}, a []interface{}) interface{} {
-	bb, _, err := toBitBuf(c)
+	bb, err := toBuffer(c)
 	if err != nil {
 		return err
 	}
 
-	sbb, _, err := toBitBuf(a[0])
+	sbb, err := toBuffer(a[0])
 	if err != nil {
 		return err
 	}
@@ -842,7 +801,7 @@ func (i *Interp) find(c interface{}, a []interface{}) interface{} {
 		return gojq.EmptyIter{}
 	}
 
-	bbo := &bitBufObject{bb: bb, unit: 8, r: ranges.Range{Start: int64(idx), Len: sbb.Len()}}
+	bbo := newBifBufObject(bb, 8)
 	// log.Printf("bbo: %#+v\n", bbo)
 
 	return bbo

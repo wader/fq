@@ -15,7 +15,8 @@ import (
 
 // assert that *Value implements InterpObject and ToBitBuf
 var _ InterpObject = (*valueObject)(nil)
-var _ ToBitBuf = (*valueObject)(nil)
+var _ ToBuffer = (*valueObject)(nil)
+var _ ToBufferRange = (*valueObject)(nil)
 
 type valueObject struct {
 	v *decode.Value
@@ -120,11 +121,13 @@ func (vo valueObject) JQValueSlice(start int, end int) interface{} {
 func (vo valueObject) SpecialPropNames() []string {
 	return []string{
 		"_type",
+		"_start",
+		"_stop",
+		"_len",
 		"_name",
 		"_value",
 		"_symbol",
 		"_description",
-		"_size",
 		"_path",
 		"_bits",
 		"_bytes",
@@ -153,7 +156,6 @@ func (vo valueObject) JQValueProperty(name string) interface{} {
 	// TODO: parent index useful?
 	// TODO: mime, isRoot
 
-	var r interface{}
 	switch name {
 	case "_type":
 		switch v.V.(type) {
@@ -164,18 +166,22 @@ func (vo valueObject) JQValueProperty(name string) interface{} {
 		default:
 			return "field"
 		}
+	case "_start":
+		return big.NewInt(v.Range.Start)
+	case "_stop":
+		return big.NewInt(v.Range.Stop())
+	case "_len":
+		return big.NewInt(v.Range.Len)
 	case "_name":
-		r = v.Name
+		return v.Name
 	case "_value":
-		r = vo.JQValue()
+		return vo.JQValue()
 	case "_symbol":
-		r = v.Symbol
+		return v.Symbol
 	case "_description":
-		r = v.Description
-	case "_size":
-		r = big.NewInt(bitio.BitsByteCount(v.Range.Len))
+		return v.Description
 	case "_path":
-		r = valuePath(v)
+		return valuePath(v)
 	case "_error":
 		switch err := v.Err.(type) {
 		case decode.FormatError:
@@ -189,32 +195,28 @@ func (vo valueObject) JQValueProperty(name string) interface{} {
 		if err != nil {
 			return err
 		}
-		r = &bitBufObject{bb: bb, unit: 1, r: v.Range}
+		return newBifBufObject(bb, 1)
 	case "_bytes":
 		bb, err := v.RootBitBuf.BitBufRange(v.Range.Start, v.Range.Len)
 		if err != nil {
 			return err
 		}
-		r = &bitBufObject{bb: bb, unit: 8, r: v.Range}
-	}
-
-	if r == nil {
+		return newBifBufObject(bb, 8)
+	default:
 		switch vv := v.V.(type) {
 		case decode.Struct:
 			for _, f := range vv {
 				if f.Name == name {
-					r = valueObject{v: f}
-					break
+					return valueObject{v: f}
 				}
 			}
+			return nil
 		case decode.Array:
+			return fmt.Errorf("can't index array with string")
 		default:
-			//r = v
-			//panic("unreachable")
+			return fmt.Errorf("can't index field with string")
 		}
 	}
-
-	return r
 }
 
 func (vo valueObject) JQValueEach() interface{} {
@@ -373,15 +375,23 @@ func (vo valueObject) Preview(w io.Writer, opts Options) error {
 	return preview(vo.v, w, opts)
 }
 
-func (vo valueObject) ToBitBuf() (*bitio.Buffer, ranges.Range) {
+func (vo valueObject) ToBuffer() (*bitio.Buffer, error) {
 	v := vo.v
+	switch vv := v.V.(type) {
+	case []byte:
+		return bitio.NewBufferFromBytes(vv, -1), nil
+	default:
+		return v.RootBitBuf.Copy().BitBufRange(vo.v.Range.Start, vo.v.Range.Len)
+	}
+}
 
+func (vo valueObject) ToBufferRange() (bufferRange, error) {
+	v := vo.v
 	switch vv := v.V.(type) {
 	case []byte:
 		bb := bitio.NewBufferFromBytes(vv, -1)
-		return bb, ranges.Range{Start: 0, Len: bb.Len()}
+		return bufferRange{bb: bb, r: ranges.Range{Start: 0, Len: bb.Len()}}, nil
 	default:
-		return v.RootBitBuf.Copy(), v.Range
+		return bufferRange{bb: v.RootBitBuf.Copy(), r: vo.v.Range}, nil
 	}
-
 }
