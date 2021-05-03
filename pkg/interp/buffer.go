@@ -9,14 +9,6 @@ import (
 	"math/big"
 )
 
-type expectedBufferError struct {
-	typ string
-}
-
-func (err expectedBufferError) Error() string {
-	return "expected an buffer but got: " + err.typ
-}
-
 type bufferRange struct {
 	bb *bitio.Buffer
 	r  ranges.Range
