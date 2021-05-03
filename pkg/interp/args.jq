@@ -1,6 +1,6 @@
 include "@builtin/common.jq";
 
-def opts_parse($args;$opts):
+def args_parse($args;$opts):
 	def _parse($args;$flagmap;$r):
 		def _parse_with_arg($new_args;$optname;$value;$opt):
 			if $opt.object then
@@ -78,7 +78,7 @@ def opts_parse($args;$opts):
 		);
 	_parse($args;_flagmap;{parsed: _defaults, rest: []});
 
-def opts_help_text($opts):
+def args_help_text($opts):
 	def _opthelp:
 		( [ .long
 		  , .short

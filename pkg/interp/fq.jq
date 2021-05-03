@@ -1,5 +1,5 @@
 include "@builtin/common.jq";
-include "@builtin/opts.jq";
+include "@builtin/args.jq";
 include "@builtin/funcs.jq";
 
 # def read: #:: [a]| => string
@@ -236,7 +236,7 @@ def main:
 		};
 	.version as $version
 	| .args[0] as $arg0
-	| opts_parse(.args[1:];_opts($version)) as {$parsed, $rest}
+	| args_parse(.args[1:];_opts($version)) as {$parsed, $rest}
 	# TODO: hack, pass opts some other way
 	| default_options(build_default_options) as $_
 	| push_options(
@@ -253,7 +253,7 @@ def main:
 		_formats_list | print
 	  elif $parsed.help then
 		"Usage: \($arg0) [OPTIONS] [FILE] [EXPR]...",
-		opts_help_text(_opts($version))
+		args_help_text(_opts($version))
 		| print
 	  else
 		null
