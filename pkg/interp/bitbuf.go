@@ -24,7 +24,7 @@ type bitBufObject struct {
 
 func newBifBufObject(bb *bitio.Buffer, unit int) *bitBufObject {
 	return &bitBufObject{
-		bbr:  bufferRange{bb: bb, r: ranges.Range{Start: 0, Len: bb.Len() / int64(unit)}},
+		bbr:  bufferRange{bb: bb, r: ranges.Range{Start: 0, Len: bb.Len()}},
 		unit: unit,
 	}
 }

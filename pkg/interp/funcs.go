@@ -5,6 +5,7 @@ import (
 	"context"
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/md5"
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
@@ -22,6 +23,7 @@ import (
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/format"
+	"hash"
 	"io"
 	"io/ioutil"
 	"log"
@@ -83,10 +85,7 @@ func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
 			return &decode.NALUnescapeReader{Reader: r}, nil
 		}), false},
 
-		// {[]string{"md5"}, 0, 0, makeStringBitBufTransformFn(
-		// 	func(r io.Reader) (io.Reader, error) { return r, nil },
-		// 	func(r io.Writer) (io.Writer, error) { return md5.New(), nil },
-		// ), false},
+		{[]string{"md5"}, 0, 0, makeHashFn(func() (hash.Hash, error) { return md5.New(), nil }), false},
 
 		{[]string{"query_escape"}, 0, 0, i.queryEscape, false},
 		{[]string{"query_unescape"}, 0, 0, i.queryUnescape, false},
@@ -115,6 +114,7 @@ func (i *Interp) tty(c interface{}, a []interface{}) interface{} {
 	}
 }
 
+// transform byte string <-> buffer using fn:s
 func makeStringBitBufTransformFn(
 	decodeFn func(r io.Reader) (io.Reader, error),
 	encodeFn func(w io.Writer) (io.Writer, error),
@@ -161,6 +161,52 @@ func makeStringBitBufTransformFn(
 
 			return buf.String()
 		}
+	}
+}
+
+// transform to buffer using fn
+func makeBitBufTransformFn(fn func(r io.Reader) (io.Reader, error)) func(c interface{}, a []interface{}) interface{} {
+	return func(c interface{}, a []interface{}) interface{} {
+		inBB, err := toBuffer(c)
+		if err != nil {
+			return err
+		}
+
+		r, err := fn(inBB)
+		if err != nil {
+			return err
+		}
+
+		outBuf := &bytes.Buffer{}
+		if _, err := io.Copy(outBuf, r); err != nil {
+			return err
+		}
+
+		outBB := bitio.NewBufferFromBytes(outBuf.Bytes(), -1)
+
+		return newBifBufObject(outBB, 8)
+	}
+}
+
+// transform to buffer using fn
+func makeHashFn(fn func() (hash.Hash, error)) func(c interface{}, a []interface{}) interface{} {
+	return func(c interface{}, a []interface{}) interface{} {
+		inBB, err := toBuffer(c)
+		if err != nil {
+			return err
+		}
+
+		h, err := fn()
+		if err != nil {
+			return err
+		}
+		if _, err := io.Copy(h, inBB); err != nil {
+			return err
+		}
+
+		outBB := bitio.NewBufferFromBytes(h.Sum(nil), -1)
+
+		return newBifBufObject(outBB, 8)
 	}
 }
 
@@ -606,35 +652,6 @@ func (i *Interp) tovalue(c interface{}, a []interface{}) interface{} {
 
 // 	return md5.Sum(nil)
 // }
-
-func makeBitBufTransformFn(fn func(r io.Reader) (io.Reader, error)) func(c interface{}, a []interface{}) interface{} {
-	return func(c interface{}, a []interface{}) interface{} {
-		inBB, err := toBuffer(c)
-		if err != nil {
-			return err
-		}
-
-		r, err := fn(inBB)
-		if err != nil {
-			return err
-		}
-
-		outBuf := &bytes.Buffer{}
-		if _, err := io.Copy(outBuf, r); err != nil {
-			return err
-		}
-
-		outBB := bitio.NewBufferFromBytes(outBuf.Bytes(), -1)
-
-		return newBifBufObject(outBB, 8)
-	}
-}
-
-func (i *Interp) nalUnescape() func(c interface{}, a []interface{}) interface{} {
-	return makeBitBufTransformFn(func(r io.Reader) (io.Reader, error) {
-		return &decode.NALUnescapeReader{Reader: r}, nil
-	})
-}
 
 func (i *Interp) queryEscape(c interface{}, a []interface{}) interface{} {
 	s, err := toString(c)
