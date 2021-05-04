@@ -14,7 +14,8 @@
 0x10|      00 00 00 00                              |  ....          |  page_sequence_no: 0 0x12-0x15.7 (4)
 0x10|                  8e 0b a0 26                  |      ...&      |  page_checksum: Correct (26a00b8e) 0x16-0x19.7 (4)
 0x10|                              01               |          .     |  page_segments: 1 0x1a-0x1a.7 (1)
-0x10|                                 1e            |           .    |  segment_table: 1e 0x1b-0x1b.7 (1)
+    |                                               |                |  segment_table: [1] 0x1b-0x1b.7 (1)
+0x10|                                 1e            |           .    |    [0]: 30 (segment_size) 0x1b-0x1b.7 (1)
     |                                               |                |  segments: [1] 0x1c-0x39.7 (30)
 0x10|                                    01 76 6f 72|            .vor|    [0]: 01766f72626973000000000144ac0000... (segment) 0x1c-0x39.7 (30)
 0x20|62 69 73 00 00 00 00 01 44 ac 00 00 00 00 00 00|bis.....D.......|

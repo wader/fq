@@ -33,8 +33,12 @@ func pageDecode(d *decode.D, in interface{}) interface{} {
 	p.SequenceNo = uint32(d.FieldU32LE("page_sequence_no"))
 	d.FieldU32LE("page_checksum")
 	pageSegments := d.FieldU8("page_segments")
-	segmentTable := d.FieldBytesLen("segment_table", int(pageSegments))
-
+	var segmentTable []uint64
+	d.FieldArrayFn("segment_table", func(d *decode.D) {
+		for i := uint64(0); i < pageSegments; i++ {
+			segmentTable = append(segmentTable, d.FieldU8("segment_size"))
+		}
+	})
 	d.FieldArrayFn("segments", func(d *decode.D) {
 		for _, ss := range segmentTable {
 			p.Segments = append(p.Segments, d.FieldBitBufLen("segment", int64(ss)*8))
