@@ -165,8 +165,8 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 	sizeBits := v.Range.Len
 	lastDisplayBit := stopBit
 
-	if opts.DisplayBytes > 0 && sizeBits > opts.DisplayBytes*8 {
-		lastDisplayBit = startBit + (opts.DisplayBytes*8 - 1)
+	if opts.DisplayBytes > 0 && sizeBits > int64(opts.DisplayBytes)*8 {
+		lastDisplayBit = startBit + (int64(opts.DisplayBytes)*8 - 1)
 		if lastDisplayBit%(int64(opts.LineBytes)*8) != 0 {
 			lastDisplayBit += (int64(opts.LineBytes) * 8) - lastDisplayBit%(int64(opts.LineBytes)*8) - 1
 		}
@@ -243,8 +243,8 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 			cfmt(colAddr, "%s%s\n", rootIndent, deco.Frame.F("*"))
 			cprint(colHex, "\n")
 			// TODO: truncate if displaybytes is small?
-			cfmt(colHex, "%s bytes more until %s%s",
-				num.PadFormatInt(stopByte-lastDisplayByte, opts.SizeBase, true, 0),
+			cfmt(colHex, "%s bytes until %s%s",
+				num.PadFormatInt(bitio.BitsByteCount(sizeBits), opts.SizeBase, true, 0),
 				num.Bits(stopBit).StringByteBits(opts.AddrBase),
 				isEnd)
 			// TODO: dump last line?

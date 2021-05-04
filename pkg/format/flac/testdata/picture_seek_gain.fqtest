@@ -52,7 +52,7 @@
 0x0090|                                 22 00 00 00   |           "... |            length: 34 0x9b-0x9e.7 (4)
 0x0090|                                             52|               R|            vendor: "REPLAYGAIN_TRACK_GAIN=-24601.00 dB" 0x9f-0xc0.7 (34)
 0x00a0|45 50 4c 41 59 47 41 49 4e 5f 54 52 41 43 4b 5f|EPLAYGAIN_TRACK_|
-*     |17 bytes more until 0xc0.7                     |                |
+*     |34 bytes until 0xc0.7                          |                |
       |                                               |                |          [3]: {} (user_comment) 0xc1-0xe4.7 (36)
 0x00c0|   20 00 00 00                                 |  ...           |            length: 32 0xc1-0xc4.7 (4)
 0x00c0|               52 45 50 4c 41 59 47 41 49 4e 5f|     REPLAYGAIN_|            vendor: "REPLAYGAIN_TRACK_PEAK=0.12496948" 0xc5-0xe4.7 (32)
@@ -205,7 +205,7 @@
 0x0260|00 1d fd                                       |...             |      length: 7677 0x260-0x262.7 (3)
 0x0260|         00 00 00 00 00 00 00 00 00 00 00 00 00|   .............|      data: 00000000000000000000000000000000... 0x263-0x205f.7 (7677)
 0x0270|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
-*     |7648 bytes more until 0x205f.7                 |                |
+*     |7677 bytes until 0x205f.7                      |                |
       |                                               |                |  frames: [1] 0x2060-0x225f.7 (512)
       |                                               |                |    [0]: flac_frame (frame) 0x2060-0x225f.7 (512)
 0x2060|ff f8                                          |..              |      sync: Correct (0x3ffe) 0x2060-0x2061.5 (1.6)
@@ -257,7 +257,7 @@
 0x2080|                           80 ee               |         ..     |              rice_parameter: 7 0x2089.7-0x208a.2 (0.4)
 0x2080|                              ee e7 63 a9 cc e0|          ..c...|              samples: 773b1d4e670369a8cc612e164a64d239... 0x208a.3-0x225d.2 (467)
 0x2090|6d 35 19 8c 25 c2 c9 4c 9a 47 20 bd ba 36 b3 2f|m5..%..L.G ..6./|
-*     |446 bytes more until 0x225d.2                  |                |
+*     |467 bytes until 0x225d.2                       |                |
 0x2250|                                       20      |                |      byte_align: Correct (0x0) 0x225d.3-0x225d.7 (0.5)
 0x2250|                                          7f ab|              ..|      footer_crc: Correct (7fab) 0x225e-0x225f.7 (2)
       |                                               |                |  md5_calculated: 89887b80f810285b45f6c4ecc72c977e 0x2260-NA (0)

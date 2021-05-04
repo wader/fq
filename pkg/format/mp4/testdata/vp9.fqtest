@@ -21,7 +21,7 @@
 0x0020|                        6d 64 61 74            |        mdat    |      type: "mdat" (Media data container) 0x28-0x2b.7 (4)
 0x0020|                                    a2 49 83 42|            .I.B|      data: a2498342e013f00ef60a38241c184a00... 0x2c-0x1563.7 (5432)
 0x0030|e0 13 f0 0e f6 0a 38 24 1c 18 4a 00 0b 70 7f d9|......8$..J..p..|
-*     |5412 bytes more until 0x1563.7                 |                |
+*     |5432 bytes until 0x1563.7                      |                |
       |                                               |                |    [3]: {} (box) 0x1564-0x184e.7 (747)
 0x1560|            00 00 02 eb                        |    ....        |      size: 747 0x1564-0x1567.7 (4)
 0x1560|                        6d 6f 6f 76            |        moov    |      type: "moov" (Container for all the meta-data) 0x1568-0x156b.7 (4)
@@ -69,7 +69,7 @@
 0x1600|                                    00 00      |            ..  |              volume: 0 0x160c-0x160d.7 (2)
 0x1600|                                          00 00|              ..|              reserved3: 0 0x160e-0x160f.7 (2)
 0x1610|00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|              matrix_structure: 00010000000000000000000000000000... 0x1610-0x1633.7 (36)
-*     |20 bytes more until 0x1633.7                   |                |
+*     |36 bytes until 0x1633.7                        |                |
 0x1630|            01 40 00 00                        |    .@..        |              track_width: 320 0x1634-0x1637.7 (4)
 0x1630|                        00 f0 00 00            |        ....    |              track_height: 240 0x1638-0x163b.7 (4)
       |                                               |                |            [1]: {} (box) 0x163c-0x165f.7 (36)
@@ -302,5 +302,5 @@
 0x0020|                                    a2         |            .   |          error_resilient_mode: 0 0x2c.7-0x2c.7 (0.1)
 0x0020|                                       49 83 42|             I.B|          data: 498342e013f00ef60a38241c184a000b... 0x2d-0x1563.7 (5431)
 0x0030|e0 13 f0 0e f6 0a 38 24 1c 18 4a 00 0b 70 7f d9|......8$..J..p..|
-*     |5412 bytes more until 0x1563.7                 |                |
+*     |5431 bytes until 0x1563.7                      |                |
       |                                               |                |      data_format: "vp09" 0x184f-NA (0)

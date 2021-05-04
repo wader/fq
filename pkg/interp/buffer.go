@@ -129,8 +129,8 @@ func (bo *bufferObject) Display(w io.Writer, opts Options) error {
 	}
 
 	bbr := bo.bbr
-	if bbr.r.Len/8 > opts.DisplayBytes {
-		bbr.r.Len = opts.DisplayBytes * 8
+	if bbr.r.Len/8 > int64(opts.DisplayBytes) {
+		bbr.r.Len = int64(opts.DisplayBytes) * 8
 		bb, err := bbr.bb.BitBufRange(bbr.r.Start, bbr.r.Len)
 		if err != nil {
 			return err

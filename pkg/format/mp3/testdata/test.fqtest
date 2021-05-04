@@ -364,7 +364,7 @@
 0x120|                                             00|               .|                scalefac_scale: 0 0x12f.6-0x12f.6 (0.1)
 0x120|                                             00|               .|                count1table_select: 0 0x12f.7-0x12f.7 (0.1)
 0x130|0a 6b 6d d8 c2 12 cd a0 0d bf 4d 03 01 8d 4c 35|.km.......M...L5|      data: 0a6b6dd8c212cda00dbf4d03018d4c35... 0x130-0x2ac.7 (381)
-*    |365 bytes more until 0x2ac.7                   |                |
+*    |381 bytes until 0x2ac.7                        |                |
      |                                               |                |      other_data:  0x2ad-NA (0)
      |                                               |                |      crc_calculated: 8dee 0x2ad-NA (0)
      |                                               |                |    [2]: mp3_frame (frame) 0x2ad-0x44e.7 (418)
@@ -461,11 +461,11 @@
 0x2d0|04                                             |.               |                count1table_select: 0 0x2d0.7-0x2d0.7 (0.1)
 0x2d0|   1b ce df 3b ce e0 f6 b8 ee 43 ed 0c c0 f0 3b| ...;.....C....;|      data: 1bcedf3bcee0f6b8ee43ed0cc0f03bb1... 0x2d1-0x3d1.7 (257)
 0x2e0|b1 13 ad 9f 35 94 cd 5e 65 cf fe ff 7f ff 9e ee|....5..^e.......|
-*    |226 bytes more until 0x3d1.7                   |                |
+*    |257 bytes until 0x3d1.7                        |                |
 0x3d0|      aa                                       |  .             |      padding_byte: aa 0x3d2-0x3d2.7 (1)
 0x3d0|         aa aa aa aa aa aa aa aa aa aa aa aa aa|   .............|      other_data: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa... 0x3d3-0x44e.7 (124)
 0x3e0|aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa|................|
-*    |95 bytes more until 0x44e.7                    |                |
+*    |124 bytes until 0x44e.7                        |                |
      |                                               |                |      crc_calculated: c270 0x44f-NA (0)
      |                                               |                |  footers: [0] 0x44f-NA (0)
 0x440|                                             61|               a|  unknown0: 61736461 0x44f-0x452.7 (4)

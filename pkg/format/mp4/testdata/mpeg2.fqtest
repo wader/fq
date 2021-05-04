@@ -21,7 +21,7 @@
 0x0020|                        6d 64 61 74            |        mdat    |      type: "mdat" (Media data container) 0x28-0x2b.7 (4)
 0x0020|                                    00 00 01 b3|            ....|      data: 000001b31400f023ffffe018000001b5... 0x2c-0x1fa5.7 (8058)
 0x0030|14 00 f0 23 ff ff e0 18 00 00 01 b5 14 8a 00 01|...#............|
-*     |8038 bytes more until 0x1fa5.7                 |                |
+*     |8058 bytes until 0x1fa5.7                      |                |
       |                                               |                |    [3]: {} (box) 0x1fa6-0x22a8.7 (771)
 0x1fa0|                  00 00 03 03                  |      ....      |      size: 771 0x1fa6-0x1fa9.7 (4)
 0x1fa0|                              6d 6f 6f 76      |          moov  |      type: "moov" (Container for all the meta-data) 0x1faa-0x1fad.7 (4)

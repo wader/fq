@@ -43,7 +43,7 @@
 0x000|                                 01 00         |           ..   |  codebook_dimensions: 1 0xb-0xc.7 (2)
 0x000|                                       40 00 00|             @..|  codebook_entries: 64 0xd-0xf.7 (3)
 0x010|24 73 18 2a 46 a5 73 16 84 10 1a 42 50 19 e3 1c|$s.*F.s....BP...|  unknown0: 2473182a46a5731684101a425019e31c... 0x10-0xc74.7 (3173)
-*    |3157 bytes more until 0xc74.7 (end)            |                |
+*    |3173 bytes until 0xc74.7 (end)                 |                |
 # ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.packet[3] | bits' > vorbis-audio
 /vorbis-audio:
 > fq -d vorbis_packet vorbis-audio verbose

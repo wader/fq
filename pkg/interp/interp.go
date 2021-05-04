@@ -617,10 +617,10 @@ type Options struct {
 	REPL       bool   `json:"repl"`
 	RawString  bool   `json:"rawstring"`
 
-	LineBytes    int   `json:"linebytes"`
-	DisplayBytes int64 `json:"displaybytes"`
-	AddrBase     int   `json:"addrbase"`
-	SizeBase     int   `json:"sizebase"`
+	LineBytes    int `json:"linebytes"`
+	DisplayBytes int `json:"displaybytes"`
+	AddrBase     int `json:"addrbase"`
+	SizeBase     int `json:"sizebase"`
 
 	REPLLevel int `json:"repllevel"`
 
@@ -660,7 +660,7 @@ func mapSetOptions(d *Options, m map[string]interface{}) {
 		d.LineBytes = num.MaxInt(0, toIntZ(v))
 	}
 	if v, ok := m["displaybytes"]; ok {
-		d.DisplayBytes = num.MaxInt64(0, toInt64Z(v))
+		d.DisplayBytes = num.MaxInt(0, toIntZ(v))
 	}
 	if v, ok := m["addrbase"]; ok {
 		d.AddrBase = num.ClampInt(2, 36, toIntZ(v))

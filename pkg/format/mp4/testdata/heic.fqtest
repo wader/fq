@@ -172,11 +172,11 @@
 0x170|6d 64 61 74                                    |mdat            |      type: "mdat" (Media data container) 0x170-0x173.7 (4)
 0x170|            00 00 08 b9 4e 01 05 ff ff ff ff ff|    ....N.......|      data: 000008b94e0105ffffffffffffffffb4... 0x174-0xaf2.7 (2431)
 0x180|ff ff ff b4 2c a2 de 09 b5 17 47 db bb 55 a4 fe|....,.....G..U..|
-*    |2403 bytes more until 0xaf2.7                  |                |
+*    |2431 bytes until 0xaf2.7                       |                |
      |                                               |                |    [3]: {} (box) 0xaf3-0xb2c.7 (58)
 0xaf0|         00 00 00 3a                           |   ...:         |      size: 58 0xaf3-0xaf6.7 (4)
 0xaf0|                     66 72 65 65               |       free     |      type: "free" (Free space) 0xaf7-0xafa.7 (4)
 0xaf0|                                 49 73 6f 4d 65|           IsoMe|      data: 49736f4d656469612046696c65205072... 0xafb-0xb2c.7 (50)
 0xb00|64 69 61 20 46 69 6c 65 20 50 72 6f 64 75 63 65|dia File Produce|
-*    |29 bytes more until 0xb2c.7 (end)              |                |
+*    |50 bytes until 0xb2c.7 (end)                   |                |
      |                                               |                |  tracks: [0] 0xb2d-NA (0)
