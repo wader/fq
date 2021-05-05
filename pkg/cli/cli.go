@@ -120,20 +120,20 @@ func (o *standardOS) Readline(prompt string, complete func(line string, pos int)
 }
 
 func Main(r *decode.Registry) {
-	o, err := newStandardOS()
+	sos, err := newStandardOS()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	defer o.Close()
-	i, err := interp.New(o, r)
+	defer sos.Close()
+	i, err := interp.New(sos, r)
 	defer i.Stop()
 	if err != nil {
-		fmt.Fprintln(o.Stderr(), err)
+		fmt.Fprintln(sos.Stderr(), err)
 		os.Exit(1)
 	}
 
-	if err := i.Main(context.Background(), o.Stdout()); err != nil {
+	if err := i.Main(context.Background(), sos.Stdout()); err != nil {
 		os.Exit(1)
 	}
 }
