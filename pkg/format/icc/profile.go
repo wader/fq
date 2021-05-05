@@ -139,12 +139,10 @@ func iccProfileDecode(d *decode.D, in interface{}) interface{} {
 								d.FieldBitBufLen("data", int64(size-4-4)*8)
 							}
 						})
-
 					})
 				}
 			})
 		})
-
 	})
 
 	return nil
