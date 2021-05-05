@@ -63,13 +63,14 @@ func (bo *bufferObject) JQValueIndex(index int) interface{} {
 func (bo *bufferObject) JQValueSlice(start int, end int) interface{} {
 	rStart := int64(start * bo.unit)
 	rLen := int64((end - start) * bo.unit)
+
 	rbb, err := bo.bbr.bb.BitBufRange(rStart, rLen)
 	if err != nil {
 		return err
 	}
 
 	return &bufferObject{
-		bbr:  bufferRange{bb: rbb, r: ranges.Range{Start: bo.bbr.r.Start + rStart, Len: rLen}},
+		bbr:  bufferRange{bb: rbb, r: ranges.Range{Start: 0, Len: rLen}},
 		unit: bo.unit,
 	}
 }
