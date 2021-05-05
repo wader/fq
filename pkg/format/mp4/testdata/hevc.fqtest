@@ -21,7 +21,7 @@
 0x0020|                        6d 64 61 74            |        mdat    |      type: "mdat" (Media data container) 0x28-0x2b.7 (4)
 0x0020|                                    00 00 08 51|            ...Q|      data: 000008512801af1d20aa55b788a0627f... 0x2c-0x880.7 (2133)
 0x0030|28 01 af 1d 20 aa 55 b7 88 a0 62 7f ff fa 2c 46|(... .U...b...,F|
-*     |2133 bytes until 0x880.7                       |                |
+*     |until 0x880.7 (2133)                           |                |
       |                                               |                |    [3]: {} (box) 0x881-0x149a.7 (3098)
 0x0880|   00 00 0c 1a                                 | ....           |      size: 3098 0x881-0x884.7 (4)
 0x0880|               6d 6f 6f 76                     |     moov       |      type: "moov" (Container for all the meta-data) 0x885-0x888.7 (4)
@@ -77,7 +77,7 @@
 0x0920|                                 00 00         |           ..   |              reserved3: 0 0x92b-0x92c.7 (2)
 0x0920|                                       00 01 00|             ...|              matrix_structure: 00010000000000000000000000000000... 0x92d-0x950.7 (36)
 0x0930|00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00|................|
-*     |36 bytes until 0x950.7                         |                |
+*     |until 0x950.7 (36)                             |                |
 0x0950|   01 40 00 00                                 | .@..           |              track_width: 320 0x951-0x954.7 (4)
 0x0950|               00 f0 00 00                     |     ....       |              track_height: 240 0x955-0x958.7 (4)
       |                                               |                |            [1]: {} (box) 0x959-0x97c.7 (36)
@@ -284,7 +284,7 @@
 0x0af0|                                          01   |              . |                                              nuh_temporal_id_plus1: 1 0xafe.5-0xafe.7 (0.3)
 0x0af0|                                             05|               .|                                              data: 05ffffffffffffffffc12ca2de09b517... 0xaff-0x13c2.7 (2244)
 0x0b00|ff ff ff ff ff ff ff ff c1 2c a2 de 09 b5 17 47|.........,.....G|
-*     |2244 bytes until 0x13c2.7                      |                |
+*     |until 0x13c2.7 (2244)                          |                |
       |                                               |                |                                [1]: {} (box) 0x13c3-0x13cc.7 (10)
 0x13c0|         00 00 00 0a                           |   ....         |                                  size: 10 0x13c3-0x13c6.7 (4)
 0x13c0|                     66 69 65 6c               |       fiel     |                                  type: "fiel" (Video field order) 0x13c7-0x13ca.7 (4)
@@ -392,5 +392,5 @@
 0x0030|   01                                          | .              |                nuh_temporal_id_plus1: 1 0x31.5-0x31.7 (0.3)
 0x0030|      af 1d 20 aa 55 b7 88 a0 62 7f ff fa 2c 46|  .. .U...b...,F|                data: af1d20aa55b788a0627ffffa2c46fda9... 0x32-0x880.7 (2127)
 0x0040|fd a9 78 83 ff fb 75 6c 0b 3f ff 94 ce 7f aa fe|..x...ul.?......|
-*     |2127 bytes until 0x880.7                       |                |
+*     |until 0x880.7 (2127)                           |                |
       |                                               |                |      data_format: "hev1" 0x149b-NA (0)

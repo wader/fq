@@ -369,10 +369,10 @@ func decodeAtom(ctx *decodeContext, d *decode.D) {
 			})
 		},
 		"avcC": func(ctx *decodeContext, d *decode.D) {
-			_, dv := d.FieldDecode("value", mpegAVCDCRFormat)
-			avcDcrOut, ok := dv.(format.AvcDcrOut)
+			_, v := d.FieldDecode("value", mpegAVCDCRFormat)
+			avcDcrOut, ok := v.(format.AvcDcrOut)
 			if !ok {
-				d.Invalid(fmt.Sprintf("expected AvcDcrOut got %#+v", dv))
+				d.Invalid(fmt.Sprintf("expected AvcDcrOut got %#+v", v))
 			}
 			if ctx.currentTrack != nil {
 				ctx.currentTrack.decodeOpts = append(ctx.currentTrack.decodeOpts,
@@ -380,10 +380,10 @@ func decodeAtom(ctx *decodeContext, d *decode.D) {
 			}
 		},
 		"hvcC": func(ctx *decodeContext, d *decode.D) {
-			_, dv := d.FieldDecode("value", mpegHEVCDCRFrameFormat)
-			hevcDcrOut, ok := dv.(format.HevcDcrOut)
+			_, v := d.FieldDecode("value", mpegHEVCDCRFrameFormat)
+			hevcDcrOut, ok := v.(format.HevcDcrOut)
 			if !ok {
-				d.Invalid(fmt.Sprintf("expected HevcDcrOut got %#+v", dv))
+				d.Invalid(fmt.Sprintf("expected HevcDcrOut got %#+v", v))
 			}
 			if ctx.currentTrack != nil {
 				ctx.currentTrack.decodeOpts = append(ctx.currentTrack.decodeOpts,
@@ -396,10 +396,10 @@ func decodeAtom(ctx *decodeContext, d *decode.D) {
 			d.FieldU24("flags")
 			d.FieldArrayFn("metadatablocks", func(d *decode.D) {
 				for {
-					_, dv := d.FieldDecode("metadatablock", flacMetadatablockFormat)
-					flacMetadatablockOut, ok := dv.(format.FlacMetadatablockOut)
+					_, v := d.FieldDecode("metadatablock", flacMetadatablockFormat)
+					flacMetadatablockOut, ok := v.(format.FlacMetadatablockOut)
 					if !ok {
-						d.Invalid(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", dv))
+						d.Invalid(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
 					}
 					if flacMetadatablockOut.HasStreamInfo {
 						if ctx.currentTrack != nil {
@@ -434,14 +434,17 @@ func decodeAtom(ctx *decodeContext, d *decode.D) {
 
 			switch dataFormat {
 			case "mp4a", "mp4v":
-				_, dv := d.FieldDecode("es_descriptor", mpegESFormat)
-				mpegEsOut, ok := dv.(format.MpegEsOut)
+				_, v := d.FieldDecode("es_descriptor", mpegESFormat)
+				mpegEsOut, ok := v.(format.MpegEsOut)
 				if !ok {
-					d.Invalid(fmt.Sprintf("expected mpegEsOut got %#+v", dv))
+					d.Invalid(fmt.Sprintf("expected mpegEsOut got %#+v", v))
 				}
 
 				if ctx.currentTrack != nil && len(mpegEsOut.DecoderConfigs) > 0 {
-					ctx.currentTrack.objectType = mpegEsOut.DecoderConfigs[0].ObjectType
+					dc := mpegEsOut.DecoderConfigs[0]
+					ctx.currentTrack.objectType = dc.ObjectType
+					ctx.currentTrack.decodeOpts = append(ctx.currentTrack.decodeOpts,
+						decode.FormatOptions{InArg: format.AACFrameIn{ObjectType: dc.ASCObjectType}})
 				}
 
 			default:

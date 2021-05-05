@@ -148,24 +148,24 @@ const (
 	MPEGObjectTypeAACLow            = 0x67 /* MPEG-2 AAC Low */
 	MPEGObjectTypeAACSSR            = 0x68 /* MPEG-2 AAC SSR */
 	MPEGObjectTypeMP32MP3           = 0x69 /* 13818-3 */
-	MPEGObjectTypeMPEG1VIDEO        = 0x6A /* 11172-2 */
-	MPEGObjectTypeMP3               = 0x6B /* 11172-3 */
-	MPEGObjectTypeMJPEG             = 0x6C /* 10918-1 */
-	MPEGObjectTypePNG               = 0x6D
-	MPEGObjectTypeJPEG2000          = 0x6E /* 15444-1 */
-	MPEGObjectTypeVC1               = 0xA3
-	MPEGObjectTypeDIRAC             = 0xA4
-	MPEGObjectTypeAC3               = 0xA5
-	MPEGObjectTypeEAC3              = 0xA6
-	MPEGObjectTypeDTS               = 0xA9 /* mp4ra.org */
-	MPEGObjectTypeOPUS              = 0xAD /* mp4ra.org */
-	MPEGObjectTypeVP9               = 0xB1 /* mp4ra.org */
-	MPEGObjectTypeFLAC              = 0xC1 /* nonstandard, update when there is a standard value */
-	MPEGObjectTypeTSCC2             = 0xD0 /* nonstandard, camtasia uses it */
-	MPEGObjectTypeEVRC              = 0xD1 /* nonstandard, pvAuthor uses it */
-	MPEGObjectTypeVORBIS            = 0xDD /* nonstandard, gpac uses it */
-	MPEGObjectTypeDVDSubtitle       = 0xE0 /* nonstandard, see unsupported-embedded-subs-2.mp4 */
-	MPEGObjectTypeQCELP             = 0xE1
+	MPEGObjectTypeMPEG1VIDEO        = 0x6a /* 11172-2 */
+	MPEGObjectTypeMP3               = 0x6b /* 11172-3 */
+	MPEGObjectTypeMJPEG             = 0x6c /* 10918-1 */
+	MPEGObjectTypePNG               = 0x6d
+	MPEGObjectTypeJPEG2000          = 0x6e /* 15444-1 */
+	MPEGObjectTypeVC1               = 0xa3
+	MPEGObjectTypeDIRAC             = 0xa4
+	MPEGObjectTypeAC3               = 0xa5
+	MPEGObjectTypeEAC3              = 0xa6
+	MPEGObjectTypeDTS               = 0xa9 /* mp4ra.org */
+	MPEGObjectTypeOPUS              = 0xad /* mp4ra.org */
+	MPEGObjectTypeVP9               = 0xb1 /* mp4ra.org */
+	MPEGObjectTypeFLAC              = 0xc1 /* nonstandard, update when there is a standard value */
+	MPEGObjectTypeTSCC2             = 0xd0 /* nonstandard, camtasia uses it */
+	MPEGObjectTypeEVRC              = 0xd1 /* nonstandard, pvAuthor uses it */
+	MPEGObjectTypeVORBIS            = 0xdd /* nonstandard, gpac uses it */
+	MPEGObjectTypeDVDSubtitle       = 0xe0 /* nonstandard, see unsupported-embedded-subs-2.mp4 */
+	MPEGObjectTypeQCELP             = 0xe1
 	MPEGObjectTypeMPEG4SYSTEMS1     = 0x01
 	MPEGObjectTypeMPEG4SYSTEMS2     = 0x02
 	MPEGObjectTypeNONE              = 0
@@ -211,7 +211,8 @@ var MpegObjectTypeNames = map[uint64]string{
 }
 
 type MpegDecoderConfig struct {
-	ObjectType int
+	ObjectType    int
+	ASCObjectType int
 }
 
 type MpegEsOut struct {
@@ -273,4 +274,70 @@ type ProtoBufMessage map[int]ProtoBufField
 
 type ProtoBufIn struct {
 	Message ProtoBufMessage
+}
+
+const (
+	MPEGAudioObjectTypeMain      = 1
+	MPEGAudioObjectTypeLC        = 2
+	MPEGAudioObjectTypeSSR       = 3
+	MPEGAudioObjectTypeLTP       = 4
+	MPEGAudioObjectTypeSBR       = 5
+	MPEGAudioObjectTypeER_AAC_LD = 23
+)
+
+var MPEGAudioObjectTypeNames = map[uint64]string{
+	0:                            "Null",
+	MPEGAudioObjectTypeMain:      "AAC Main",
+	MPEGAudioObjectTypeLC:        "AAC LC (Low Complexity)",
+	MPEGAudioObjectTypeSSR:       "AAC SSR (Scalable Sample Rate)",
+	MPEGAudioObjectTypeLTP:       "AAC LTP (Long Term Prediction)",
+	MPEGAudioObjectTypeSBR:       "SBR (Spectral Band Replication)",
+	6:                            "AAC Scalable",
+	7:                            "TwinVQ",
+	8:                            "CELP (Code Excited Linear Prediction)",
+	9:                            "HXVC (Harmonic Vector eXcitation Coding)",
+	10:                           "Reserved",
+	11:                           "Reserved",
+	12:                           "TTSI (Text-To-Speech Interface)",
+	13:                           "Main Synthesis",
+	14:                           "Wavetable Synthesis",
+	15:                           "General MIDI",
+	16:                           "Algorithmic Synthesis and Audio Effects",
+	17:                           "ER (Error Resilient) AAC LC",
+	18:                           "Reserved",
+	19:                           "ER AAC LTP",
+	20:                           "ER AAC Scalable",
+	21:                           "ER TwinVQ",
+	22:                           "ER BSAC (Bit-Sliced Arithmetic Coding)",
+	MPEGAudioObjectTypeER_AAC_LD: "ER AAC LD (Low Delay)",
+	24:                           "ER CELP",
+	25:                           "ER HVXC",
+	26:                           "ER HILN (Harmonic and Individual Lines plus Noise)",
+	27:                           "ER Parametric",
+	28:                           "SSC (SinuSoidal Coding)",
+	29:                           "PS (Parametric Stereo)",
+	30:                           "MPEG Surround",
+	31:                           "(Escape value)",
+	32:                           "Layer-1",
+	33:                           "Layer-2",
+	34:                           "Layer-3",
+	35:                           "DST (Direct Stream Transfer)",
+	36:                           "ALS (Audio Lossless)",
+	37:                           "SLS (Scalable LosslesS)",
+	38:                           "SLS non-core",
+	39:                           "ER AAC ELD (Enhanced Low Delay)",
+	40:                           "SMR (Symbolic Music Representation) Simple",
+	41:                           "SMR Main",
+	42:                           "USAC (Unified Speech and Audio Coding) (no SBR)",
+	43:                           "SAOC (Spatial Audio Object Coding)",
+	44:                           "LD MPEG Surround",
+	45:                           "USAC",
+}
+
+type MPEGASCOut struct {
+	ObjectType int
+}
+
+type AACFrameIn struct {
+	ObjectType int
 }

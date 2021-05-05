@@ -21,7 +21,7 @@
 0x020|                        6d 64 61 74            |        mdat    |      type: "mdat" (Media data container) 0x28-0x2b.7 (4)
 0x020|                                    ff f8 79 88|            ..y.|      data: fff8798800089c254a000000b5016902... 0x2c-0x289.7 (606)
 0x030|00 08 9c 25 4a 00 00 00 b5 01 69 02 1d 02 ce 03|...%J.....i.....|
-*    |606 bytes until 0x289.7                        |                |
+*    |until 0x289.7 (606)                            |                |
      |                                               |                |    [3]: {} (box) 0x28a-0x542.7 (697)
 0x280|                              00 00 02 b9      |          ....  |      size: 697 0x28a-0x28d.7 (4)
 0x280|                                          6d 6f|              mo|      type: "moov" (Container for all the meta-data) 0x28e-0x291.7 (4)
@@ -43,7 +43,7 @@
 0x2b0|            00 00 00 00 00 00 00 00 00 00      |    ..........  |          reserved: "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" 0x2b4-0x2bd.7 (10)
 0x2b0|                                          00 01|              ..|          matrix_structure: "\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00@\x00\x00\x00" 0x2be-0x2e1.7 (36)
 0x2c0|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01|................|
-*    |36 bytes until 0x2e1.7                         |                |
+*    |until 0x2e1.7 (36)                             |                |
 0x2e0|      00 00 00 00                              |  ....          |          preview_time: 0 0x2e2-0x2e5.7 (4)
 0x2e0|                  00 00 00 00                  |      ....      |          preview_duration: 0 0x2e6-0x2e9.7 (4)
 0x2e0|                              00 00 00 00      |          ....  |          poster_time: 0 0x2ea-0x2ed.7 (4)
@@ -338,7 +338,7 @@
 0x040|                                          01   |              . |                  rice_parameter: 0 0x4e.1-0x4e.4 (0.4)
 0x040|                                          01 27|              .'|                  samples: 24e6664f264c9cccce649a670ff324f3... 0x4e.5-0x284 (565.4)
 0x050|33 32 79 32 64 e6 66 73 24 d3 38 7f 99 27 99 3c|32y2d.fs$.8..'.<|
-*    |566 bytes until 0x284                          |                |
+*    |until 0x284 (566)                              |                |
      |                                               |                |            [1]: {} (subframe) 0x284.1-0x287.1 (3.1)
 0x280|            80                                 |    .           |              zero_bit: Correct (0x0) 0x284.1-0x284.1 (0.1)
 0x280|            80                                 |    .           |              subframe_type: Constant (0) 0x284.2-0x284.7 (0.6)

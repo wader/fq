@@ -52,6 +52,6 @@
 0x020|                           80 ee               |         ..     |          rice_parameter: 7 0x29.7-0x2a.2 (0.4)
 0x020|                              ee e7 63 a9 cc e0|          ..c...|          samples: 773b1d4e670369a8cc612e164a64d239... 0x2a.3-0x1fd.2 (467)
 0x030|6d 35 19 8c 25 c2 c9 4c 9a 47 20 bd ba 36 b3 2f|m5..%..L.G ..6./|
-*    |467 bytes until 0x1fd.2                        |                |
+*    |until 0x1fd.2 (467)                            |                |
 0x1f0|                                       20      |                |  byte_align: Correct (0x0) 0x1fd.3-0x1fd.7 (0.5)
 0x1f0|                                          7f ab|              ..|  footer_crc: Correct (7fab) 0x1fe-0x1ff.7 (2)

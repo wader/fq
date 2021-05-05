@@ -103,7 +103,7 @@
 0x080|00 53                                          |.S              |
 0x080|      00 00 00 00 00 00 00 00 00 00 00 00 00 00|  ..............|          value: 00000000000000000000000000000000... 0x82-0xd4.7 (83)
 0x090|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
-*    |83 bytes until 0xd4.7                          |                |
+*    |until 0xd4.7 (83)                              |                |
      |                                               |                |        [2]: {} (element) 0xd5-0x124.7 (80)
 0x0d0|               15 49 a9 66                     |     .I.f       |          id: Info (0x1549a966) 0xd5-0xd8.7 (4)
 0x0d0|                           cb                  |         .      |          size: 75 0xd9-0xd9.7 (1)
@@ -315,14 +315,14 @@
 0x240|5c                                             |\               |
      |                                               |                |                    ics_info: {} 0x240.7-0x242.5 (1.7)
 0x240|5c                                             |\               |                      ics_reserved_bit: 0 0x240.7-0x240.7 (0.1)
-0x240|   ab                                          | .              |                      window_sequence: EIGHT_START_SEQUENCE (2) 0x241-0x241.1 (0.2)
+0x240|   ab                                          | .              |                      window_sequence: EIGHT_SHORT_SEQUENCE (2) 0x241-0x241.1 (0.2)
 0x240|   ab                                          | .              |                      window_shape: 1 0x241.2-0x241.2 (0.1)
 0x240|   ab                                          | .              |                      max_sfb: 5 0x241.3-0x241.6 (0.4)
 0x240|   ab 59                                       | .Y             |                      scale_factor_grouping: 86 0x241.7-0x242.5 (0.7)
 0x240|      59                                       |  Y             |                    byte_align: 40 0x242.6-0x242.7 (0.2)
 0x240|         a9 8c 72 50 8b 4c aa de 1d 71 72 5c 88|   ..rP.L...qr\.|                data: a98c72508b4caade1d71725c88420810... 0x243-0x2fa.7 (184)
 0x250|42 08 10 0e 80 0c d5 9f 71 6c 47 12 cb b6 16 71|B.......qlG....q|
-*    |184 bytes until 0x2fa.7                        |                |
+*    |until 0x2fa.7 (184)                            |                |
      |                                               |                |            [3]: {} (element) 0x2fb-0x3db.7 (225)
 0x2f0|                                 a3            |           .    |              id: SimpleBlock (0xa3) 0x2fb-0x2fb.7 (1)
 0x2f0|                                    40 de      |            @.  |              size: 222 0x2fc-0x2fd.7 (2)
@@ -343,14 +343,14 @@
 0x300|      01 22                                    |  ."            |                    global_gain: 145 0x302.7-0x303.6 (1)
      |                                               |                |                    ics_info: {} 0x303.7-0x305.5 (1.7)
 0x300|         22                                    |   "            |                      ics_reserved_bit: 0 0x303.7-0x303.7 (0.1)
-0x300|            98                                 |    .           |                      window_sequence: EIGHT_START_SEQUENCE (2) 0x304-0x304.1 (0.2)
+0x300|            98                                 |    .           |                      window_sequence: EIGHT_SHORT_SEQUENCE (2) 0x304-0x304.1 (0.2)
 0x300|            98                                 |    .           |                      window_shape: 0 0x304.2-0x304.2 (0.1)
 0x300|            98                                 |    .           |                      max_sfb: 12 0x304.3-0x304.6 (0.4)
 0x300|            98 da                              |    ..          |                      scale_factor_grouping: 54 0x304.7-0x305.5 (0.7)
 0x300|               da                              |     .          |                    byte_align: 80 0x305.6-0x305.7 (0.2)
 0x300|                  d8 3d d6 93 80 76 db 22 13 6a|      .=...v.".j|                data: d83dd6938076db22136a38461c9c5eae... 0x306-0x3db.7 (214)
 0x310|38 46 1c 9c 5e ae 85 f1 ab d5 ff 4d 7b 0f 3e 6d|8F..^......M{.>m|
-*    |214 bytes until 0x3db.7                        |                |
+*    |until 0x3db.7 (214)                            |                |
      |                                               |                |            [4]: {} (element) 0x3dc-0x49c.7 (193)
 0x3d0|                                    a3         |            .   |              id: SimpleBlock (0xa3) 0x3dc-0x3dc.7 (1)
 0x3d0|                                       40 be   |             @. |              size: 190 0x3dd-0x3de.7 (2)
@@ -370,14 +370,14 @@
 0x3e0|         01 1a                                 |   ..           |                    global_gain: 141 0x3e3.7-0x3e4.6 (1)
      |                                               |                |                    ics_info: {} 0x3e4.7-0x3e6.5 (1.7)
 0x3e0|            1a                                 |    .           |                      ics_reserved_bit: 0 0x3e4.7-0x3e4.7 (0.1)
-0x3e0|               99                              |     .          |                      window_sequence: EIGHT_START_SEQUENCE (2) 0x3e5-0x3e5.1 (0.2)
+0x3e0|               99                              |     .          |                      window_sequence: EIGHT_SHORT_SEQUENCE (2) 0x3e5-0x3e5.1 (0.2)
 0x3e0|               99                              |     .          |                      window_shape: 0 0x3e5.2-0x3e5.2 (0.1)
 0x3e0|               99                              |     .          |                      max_sfb: 12 0x3e5.3-0x3e5.6 (0.4)
 0x3e0|               99 a6                           |     ..         |                      scale_factor_grouping: 105 0x3e5.7-0x3e6.5 (0.7)
 0x3e0|                  a6                           |      .         |                    byte_align: 80 0x3e6.6-0x3e6.7 (0.2)
 0x3e0|                     d3 21 41 ad 34 86 c8 cd 9a|       .!A.4....|                data: d32141ad3486c8cd9af03d04a1e75f1d... 0x3e7-0x49c.7 (182)
 0x3f0|f0 3d 04 a1 e7 5f 1d 0c ff 81 d6 bd bc da b0 65|.=..._.........e|
-*    |182 bytes until 0x49c.7                        |                |
+*    |until 0x49c.7 (182)                            |                |
      |                                               |                |            [5]: {} (element) 0x49d-0x4a7.7 (11)
 0x490|                                       a3      |             .  |              id: SimpleBlock (0xa3) 0x49d-0x49d.7 (1)
 0x490|                                          89   |              . |              size: 9 0x49e-0x49e.7 (1)
@@ -397,7 +397,7 @@
 0x4a0|         01 18                                 |   ..           |                    global_gain: 140 0x4a3.7-0x4a4.6 (1)
      |                                               |                |                    ics_info: {} 0x4a4.7-0x4a6.5 (1.7)
 0x4a0|            18                                 |    .           |                      ics_reserved_bit: 0 0x4a4.7-0x4a4.7 (0.1)
-0x4a0|               81                              |     .          |                      window_sequence: EIGHT_START_SEQUENCE (2) 0x4a5-0x4a5.1 (0.2)
+0x4a0|               81                              |     .          |                      window_sequence: EIGHT_SHORT_SEQUENCE (2) 0x4a5-0x4a5.1 (0.2)
 0x4a0|               81                              |     .          |                      window_shape: 0 0x4a5.2-0x4a5.2 (0.1)
 0x4a0|               81                              |     .          |                      max_sfb: 0 0x4a5.3-0x4a5.6 (0.4)
 0x4a0|               81 b4                           |     ..         |                      scale_factor_grouping: 109 0x4a5.7-0x4a6.5 (0.7)

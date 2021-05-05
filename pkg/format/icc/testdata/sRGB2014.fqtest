@@ -66,7 +66,7 @@
 0x1c0|00 00 00 00                                    |....            |        reserved: 0 0x1c0-0x1c3.7 (4)
 0x1c0|            00 00 04 00 00 00 00 05 00 0a 00 0f|    ............|        data: 0000040000000005000a000f00140019... 0x1c4-0x9c7.7 (2052)
 0x1d0|00 14 00 19 00 1e 00 23 00 28 00 2d 00 32 00 37|.......#.(.-.2.7|
-*    |2052 bytes until 0x9c7.7                       |                |
+*    |until 0x9c7.7 (2052)                           |                |
      |                                               |                |      [3]: {} (element) 0xa8-0x9c7.7 (2336)
 0x0a0|                        67 54 52 43            |        gTRC    |        signature: "gTRC" 0xa8-0xab.7 (4)
 0x0a0|                                    00 00 01 bc|            ....|        offset: 444 0xac-0xaf.7 (4)
@@ -75,7 +75,7 @@
 0x1c0|00 00 00 00                                    |....            |        reserved: 0 0x1c0-0x1c3.7 (4)
 0x1c0|            00 00 04 00 00 00 00 05 00 0a 00 0f|    ............|        data: 0000040000000005000a000f00140019... 0x1c4-0x9c7.7 (2052)
 0x1d0|00 14 00 19 00 1e 00 23 00 28 00 2d 00 32 00 37|.......#.(.-.2.7|
-*    |2052 bytes until 0x9c7.7                       |                |
+*    |until 0x9c7.7 (2052)                           |                |
      |                                               |                |      [4]: {} (element) 0xb4-0x9c7.7 (2324)
 0x0b0|            72 54 52 43                        |    rTRC        |        signature: "rTRC" 0xb4-0xb7.7 (4)
 0x0b0|                        00 00 01 bc            |        ....    |        offset: 444 0xb8-0xbb.7 (4)
@@ -84,7 +84,7 @@
 0x1c0|00 00 00 00                                    |....            |        reserved: 0 0x1c0-0x1c3.7 (4)
 0x1c0|            00 00 04 00 00 00 00 05 00 0a 00 0f|    ............|        data: 0000040000000005000a000f00140019... 0x1c4-0x9c7.7 (2052)
 0x1d0|00 14 00 19 00 1e 00 23 00 28 00 2d 00 32 00 37|.......#.(.-.2.7|
-*    |2052 bytes until 0x9c7.7                       |                |
+*    |until 0x9c7.7 (2052)                           |                |
      |                                               |                |      [5]: {} (element) 0xc0-0xa0f.7 (2384)
 0x0c0|64 6d 64 64                                    |dmdd            |        signature: "dmdd" 0xc0-0xc3.7 (4)
 0x0c0|            00 00 09 c8                        |    ....        |        offset: 2504 0xc4-0xc7.7 (4)
@@ -94,7 +94,7 @@
 0x9d0|00 00 00 2e                                    |....            |        description_length: 46 0x9d0-0x9d3.7 (4)
 0x9d0|            49 45 43 20 36 31 39 36 36 2d 32 2d|    IEC 61966-2-|        description: "IEC 61966-2-1 Default RGB Colour Space - sRGB" 0x9d4-0xa01.7 (46)
 0x9e0|31 20 44 65 66 61 75 6c 74 20 52 47 42 20 43 6f|1 Default RGB Co|
-*    |46 bytes until 0xa01.7                         |                |
+*    |until 0xa01.7 (46)                             |                |
 0xa00|      00 00 00 00                              |  ....          |        language_code: 0 0xa02-0xa05.7 (4)
 0xa00|                  00 00 00 00                  |      ....      |        localizable_description_length: 0 0xa06-0xa09.7 (4)
      |                                               |                |        localizable_description: "" 0xa0a-NA (0)
@@ -161,7 +161,7 @@
 0xad0|                        00 00 00 2d            |        ...-    |        description_length: 45 0xad8-0xadb.7 (4)
 0xad0|                                    52 65 66 65|            Refe|        description: "Reference Viewing Condition in IEC 61966-2-1" 0xadc-0xb08.7 (45)
 0xae0|72 65 6e 63 65 20 56 69 65 77 69 6e 67 20 43 6f|rence Viewing Co|
-*    |45 bytes until 0xb08.7                         |                |
+*    |until 0xb08.7 (45)                             |                |
 0xb00|                           00 00 00 00         |         ....   |        language_code: 0 0xb09-0xb0c.7 (4)
 0xb00|                                       00 00 00|             ...|        localizable_description_length: 0 0xb0d-0xb10.7 (4)
 0xb10|00                                             |.               |
@@ -186,7 +186,7 @@
 0xb70|00 00 00 00                                    |....            |        reserved: 0 0xb70-0xb73.7 (4)
 0xb70|            43 6f 70 79 72 69 67 68 74 20 49 6e|    Copyright In|        text: "Copyright International Color Consortium, 2015" 0xb74-0xba2.7 (47)
 0xb80|74 65 72 6e 61 74 69 6f 6e 61 6c 20 43 6f 6c 6f|ternational Colo|
-*    |47 bytes until 0xba2.7                         |                |
+*    |until 0xba2.7 (47)                             |                |
      |                                               |                |      [15]: {} (element) 0x138-0xbcf.7 (2712)
 0x130|                        63 68 61 64            |        chad    |        signature: "chad" 0x138-0x13b.7 (4)
 0x130|                                    00 00 0b a4|            ....|        offset: 2980 0x13c-0x13f.7 (4)
@@ -198,10 +198,10 @@
 0xbc0|ff ff fb a1 ff ff fd a2 00 00 03 db 00 00 c0 75|...............u|
 0x160|                     00 00 00 00 00 00 00 00 00|       .........|  unknown0: 00000000000000000000000000000000... 0x167-0x1a7.7 (65)
 0x170|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
-*    |65 bytes until 0x1a7.7                         |                |
+*    |until 0x1a7.7 (65)                             |                |
 0xa10|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|  unknown1: 00000000000000000000000000000000... 0xa10-0xa4f.7 (64)
-*    |64 bytes until 0xa4f.7                         |                |
+*    |until 0xa4f.7 (64)                             |                |
 0xb10|                     00 00 00 00 00 00 00 00 00|       .........|  unknown2: 00000000000000000000000000000000... 0xb17-0xb57.7 (65)
 0xb20|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
-*    |65 bytes until 0xb57.7                         |                |
+*    |until 0xb57.7 (65)                             |                |
 0xba0|         00                                    |   .            |  unknown3: 00 0xba3-0xba3.7 (1)

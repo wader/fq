@@ -15,55 +15,6 @@ func init() {
 	})
 }
 
-var aotNames = map[uint64]string{
-	0:  "Null",
-	1:  "AAC Main",
-	2:  "AAC LC (Low Complexity)",
-	3:  "AAC SSR (Scalable Sample Rate)",
-	4:  "AAC LTP (Long Term Prediction)",
-	5:  "SBR (Spectral Band Replication)",
-	6:  "AAC Scalable",
-	7:  "TwinVQ",
-	8:  "CELP (Code Excited Linear Prediction)",
-	9:  "HXVC (Harmonic Vector eXcitation Coding)",
-	10: "Reserved",
-	11: "Reserved",
-	12: "TTSI (Text-To-Speech Interface)",
-	13: "Main Synthesis",
-	14: "Wavetable Synthesis",
-	15: "General MIDI",
-	16: "Algorithmic Synthesis and Audio Effects",
-	17: "ER (Error Resilient) AAC LC",
-	18: "Reserved",
-	19: "ER AAC LTP",
-	20: "ER AAC Scalable",
-	21: "ER TwinVQ",
-	22: "ER BSAC (Bit-Sliced Arithmetic Coding)",
-	23: "ER AAC LD (Low Delay)",
-	24: "ER CELP",
-	25: "ER HVXC",
-	26: "ER HILN (Harmonic and Individual Lines plus Noise)",
-	27: "ER Parametric",
-	28: "SSC (SinuSoidal Coding)",
-	29: "PS (Parametric Stereo)",
-	30: "MPEG Surround",
-	31: "(Escape value)",
-	32: "Layer-1",
-	33: "Layer-2",
-	34: "Layer-3",
-	35: "DST (Direct Stream Transfer)",
-	36: "ALS (Audio Lossless)",
-	37: "SLS (Scalable LosslesS)",
-	38: "SLS non-core",
-	39: "ER AAC ELD (Enhanced Low Delay)",
-	40: "SMR (Symbolic Music Representation) Simple",
-	41: "SMR Main",
-	42: "USAC (Unified Speech and Audio Coding) (no SBR)",
-	43: "SAOC (Spatial Audio Object Coding)",
-	44: "LD MPEG Surround",
-	45: "USAC",
-}
-
 var frequencyIndexHz = map[uint64]int{
 	0x0: 96000,
 	0x1: 88200,
@@ -95,7 +46,7 @@ var channelConfigurationNames = map[uint64]string{
 }
 
 func ascDecoder(d *decode.D, in interface{}) interface{} {
-	d.FieldStringMapFn("object_type", aotNames, "Unknown", func() uint64 {
+	objectType, _ := d.FieldStringMapFn("object_type", format.MPEGAudioObjectTypeNames, "Unknown", func() uint64 {
 		n := d.U5()
 		if n == 31 {
 			n = 32 + d.U6()
@@ -116,5 +67,5 @@ func ascDecoder(d *decode.D, in interface{}) interface{} {
 	// TODO: GASpecificConfig etc
 	d.FieldBitBufLen("var_aot_or_byte_align", d.BitsLeft())
 
-	return nil
+	return format.MPEGASCOut{ObjectType: int(objectType)}
 }

@@ -21,7 +21,7 @@
 0x020|                        6d 64 61 74            |        mdat    |      type: "mdat" (Media data container) 0x28-0x2b.7 (4)
 0x020|                                    de 02 00 4c|            ...L|      data: de02004c61766335382e39312e313030... 0x2c-0x291.7 (614)
 0x030|61 76 63 35 38 2e 39 31 2e 31 30 30 00 02 5c ab|avc58.91.100..\.|
-*    |614 bytes until 0x291.7                        |                |
+*    |until 0x291.7 (614)                            |                |
      |                                               |                |    [3]: {} (box) 0x292-0x59c.7 (779)
 0x290|      00 00 03 0b                              |  ....          |      size: 779 0x292-0x295.7 (4)
 0x290|                  6d 6f 6f 76                  |      moov      |      type: "moov" (Container for all the meta-data) 0x296-0x299.7 (4)
@@ -77,7 +77,7 @@
 0x330|                                    00 00      |            ..  |              reserved3: 0 0x33c-0x33d.7 (2)
 0x330|                                          00 01|              ..|              matrix_structure: 00010000000000000000000000000000... 0x33e-0x361.7 (36)
 0x340|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01|................|
-*    |36 bytes until 0x361.7                         |                |
+*    |until 0x361.7 (36)                             |                |
 0x360|      00 00 00 00                              |  ....          |              track_width: 0 0x362-0x365.7 (4)
 0x360|                  00 00 00 00                  |      ....      |              track_height: 0 0x366-0x369.7 (4)
      |                                               |                |            [1]: {} (box) 0x36a-0x38d.7 (36)
@@ -203,7 +203,7 @@
 0x470|80 80 80 17                                    |....            |                                      length: 23 0x470-0x473.7 (4)
 0x470|            40                                 |    @           |                                      object_type_indication: MPEGObjectTypeAAC (64) 0x474-0x474.7 (1)
 0x470|               15                              |     .          |                                      stream_type: AudioStream (5) 0x475-0x475.5 (0.6)
-0x470|               15                              |     .          |                                      upsteam: false 0x475.6-0x475.6 (0.1)
+0x470|               15                              |     .          |                                      upstream: false 0x475.6-0x475.6 (0.1)
 0x470|               15                              |     .          |                                      specific_info_flag: true 0x475.7-0x475.7 (0.1)
 0x470|                  00 00 00                     |      ...       |                                      buffer_size_db: 0 0x476-0x478.7 (3)
 0x470|                           00 01 0d 88         |         ....   |                                      max_bit_rate: 69000 0x479-0x47c.7 (4)
@@ -344,7 +344,7 @@
 0x030|                                       02 5c   |             .\ |              global_gain: 46 0x3d.7-0x3e.6 (1)
      |                                               |                |              ics_info: {} 0x3e.7-0x40.5 (1.7)
 0x030|                                          5c   |              \ |                ics_reserved_bit: 0 0x3e.7-0x3e.7 (0.1)
-0x030|                                             ab|               .|                window_sequence: EIGHT_START_SEQUENCE (2) 0x3f-0x3f.1 (0.2)
+0x030|                                             ab|               .|                window_sequence: EIGHT_SHORT_SEQUENCE (2) 0x3f-0x3f.1 (0.2)
 0x030|                                             ab|               .|                window_shape: 1 0x3f.2-0x3f.2 (0.1)
 0x030|                                             ab|               .|                max_sfb: 5 0x3f.3-0x3f.6 (0.4)
 0x030|                                             ab|               .|                scale_factor_grouping: 86 0x3f.7-0x40.5 (0.7)
@@ -352,7 +352,7 @@
 0x040|59                                             |Y               |              byte_align: 40 0x40.6-0x40.7 (0.2)
 0x040|   a9 8c 72 50 8b 4c aa de 1d 71 72 5c 88 42 08| ..rP.L...qr\.B.|          data: a98c72508b4caade1d71725c88420810... 0x41-0xf8.7 (184)
 0x050|10 0e 80 0c d5 9f 71 6c 47 12 cb b6 16 71 ec 69|......qlG....q.i|
-*    |184 bytes until 0xf8.7                         |                |
+*    |until 0xf8.7 (184)                             |                |
      |                                               |                |        [1]: aac_frame (sample) 0xf9-0x1d2.7 (218)
      |                                               |                |          raw_data_blocks: [1] 0xf9-0xfc.7 (4)
      |                                               |                |            [0]: {} (raw_data_block) 0xf9-0xfc.7 (4)
@@ -361,14 +361,14 @@
 0x0f0|                           01 22               |         ."     |              global_gain: 145 0xf9.7-0xfa.6 (1)
      |                                               |                |              ics_info: {} 0xfa.7-0xfc.5 (1.7)
 0x0f0|                              22               |          "     |                ics_reserved_bit: 0 0xfa.7-0xfa.7 (0.1)
-0x0f0|                                 98            |           .    |                window_sequence: EIGHT_START_SEQUENCE (2) 0xfb-0xfb.1 (0.2)
+0x0f0|                                 98            |           .    |                window_sequence: EIGHT_SHORT_SEQUENCE (2) 0xfb-0xfb.1 (0.2)
 0x0f0|                                 98            |           .    |                window_shape: 0 0xfb.2-0xfb.2 (0.1)
 0x0f0|                                 98            |           .    |                max_sfb: 12 0xfb.3-0xfb.6 (0.4)
 0x0f0|                                 98 da         |           ..   |                scale_factor_grouping: 54 0xfb.7-0xfc.5 (0.7)
 0x0f0|                                    da         |            .   |              byte_align: 80 0xfc.6-0xfc.7 (0.2)
 0x0f0|                                       d8 3d d6|             .=.|          data: d83dd6938076db22136a38461c9c5eae... 0xfd-0x1d2.7 (214)
 0x100|93 80 76 db 22 13 6a 38 46 1c 9c 5e ae 85 f1 ab|..v.".j8F..^....|
-*    |214 bytes until 0x1d2.7                        |                |
+*    |until 0x1d2.7 (214)                            |                |
      |                                               |                |        [2]: aac_frame (sample) 0x1d3-0x28c.7 (186)
      |                                               |                |          raw_data_blocks: [1] 0x1d3-0x1d6.7 (4)
      |                                               |                |            [0]: {} (raw_data_block) 0x1d3-0x1d6.7 (4)
@@ -377,14 +377,14 @@
 0x1d0|         01 1a                                 |   ..           |              global_gain: 141 0x1d3.7-0x1d4.6 (1)
      |                                               |                |              ics_info: {} 0x1d4.7-0x1d6.5 (1.7)
 0x1d0|            1a                                 |    .           |                ics_reserved_bit: 0 0x1d4.7-0x1d4.7 (0.1)
-0x1d0|               99                              |     .          |                window_sequence: EIGHT_START_SEQUENCE (2) 0x1d5-0x1d5.1 (0.2)
+0x1d0|               99                              |     .          |                window_sequence: EIGHT_SHORT_SEQUENCE (2) 0x1d5-0x1d5.1 (0.2)
 0x1d0|               99                              |     .          |                window_shape: 0 0x1d5.2-0x1d5.2 (0.1)
 0x1d0|               99                              |     .          |                max_sfb: 12 0x1d5.3-0x1d5.6 (0.4)
 0x1d0|               99 a6                           |     ..         |                scale_factor_grouping: 105 0x1d5.7-0x1d6.5 (0.7)
 0x1d0|                  a6                           |      .         |              byte_align: 80 0x1d6.6-0x1d6.7 (0.2)
 0x1d0|                     d3 21 41 ad 34 86 c8 cd 9a|       .!A.4....|          data: d32141ad3486c8cd9af03d04a1e75f1d... 0x1d7-0x28c.7 (182)
 0x1e0|f0 3d 04 a1 e7 5f 1d 0c ff 81 d6 bd bc da b0 65|.=..._.........e|
-*    |182 bytes until 0x28c.7                        |                |
+*    |until 0x28c.7 (182)                            |                |
      |                                               |                |        [3]: aac_frame (sample) 0x28d-0x291.7 (5)
      |                                               |                |          raw_data_blocks: [1] 0x28d-0x290.7 (4)
      |                                               |                |            [0]: {} (raw_data_block) 0x28d-0x290.7 (4)
@@ -393,7 +393,7 @@
 0x280|                                       01 18   |             .. |              global_gain: 140 0x28d.7-0x28e.6 (1)
      |                                               |                |              ics_info: {} 0x28e.7-0x290.5 (1.7)
 0x280|                                          18   |              . |                ics_reserved_bit: 0 0x28e.7-0x28e.7 (0.1)
-0x280|                                             81|               .|                window_sequence: EIGHT_START_SEQUENCE (2) 0x28f-0x28f.1 (0.2)
+0x280|                                             81|               .|                window_sequence: EIGHT_SHORT_SEQUENCE (2) 0x28f-0x28f.1 (0.2)
 0x280|                                             81|               .|                window_shape: 0 0x28f.2-0x28f.2 (0.1)
 0x280|                                             81|               .|                max_sfb: 0 0x28f.3-0x28f.6 (0.4)
 0x280|                                             81|               .|                scale_factor_grouping: 109 0x28f.7-0x290.5 (0.7)

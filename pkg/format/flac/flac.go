@@ -36,10 +36,10 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 
 	d.FieldArrayFn("metadatablocks", func(d *decode.D) {
 		for {
-			_, dv := d.FieldDecode("metadatablock", flacMetadatablockFormat)
-			flacMetadatablockOut, ok := dv.(format.FlacMetadatablockOut)
+			_, v := d.FieldDecode("metadatablock", flacMetadatablockFormat)
+			flacMetadatablockOut, ok := v.(format.FlacMetadatablockOut)
 			if !ok {
-				panic(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", dv))
+				panic(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
 			}
 			if flacMetadatablockOut.HasStreamInfo {
 				streamInfo = flacMetadatablockOut.StreamInfo
@@ -58,10 +58,10 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldArrayFn("frames", func(d *decode.D) {
 		for d.NotEnd() {
 			// flac frame might need some fields from stream info to decode
-			_, dv := d.FieldDecode("frame", flacFrameFormat, decode.FormatOptions{InArg: flacFrameIn})
-			ffo, ok := dv.(*format.FlacFrameOut)
+			_, v := d.FieldDecode("frame", flacFrameFormat, decode.FormatOptions{InArg: flacFrameIn})
+			ffo, ok := v.(*format.FlacFrameOut)
 			if !ok {
-				panic(fmt.Sprintf("expected FlacFrameOut got %#+v", dv))
+				panic(fmt.Sprintf("expected FlacFrameOut got %#+v", v))
 			}
 
 			decode.MustCopy(md5Samples, bytes.NewReader(ffo.SamplesBuf))

@@ -21,7 +21,7 @@
 0x0020|                        00 00 0a c8            |        ....    |      size: 2760 0x28-0x2b.7 (4)
 0x0020|                                    6d 64 61 74|            mdat|      type: "mdat" (Media data container) 0x2c-0x2f.7 (4)
 0x0030|00 00 02 ad 06 05 ff ff a9 dc 45 e9 bd e6 d9 48|..........E....H|      data: 000002ad0605ffffa9dc45e9bde6d948... 0x30-0xaef.7 (2752)
-*     |2752 bytes until 0xaef.7                       |                |
+*     |until 0xaef.7 (2752)                           |                |
       |                                               |                |    [3]: {} (box) 0xaf0-0xdf2.7 (771)
 0x0af0|00 00 03 03                                    |....            |      size: 771 0xaf0-0xaf3.7 (4)
 0x0af0|            6d 6f 6f 76                        |    moov        |      type: "moov" (Container for all the meta-data) 0xaf4-0xaf7.7 (4)
@@ -390,14 +390,14 @@
  0x010|d9 23 ee ef                                    |.#..            |
  0x010|            78 32 36 34 20 2d 20 63 6f 72 65 20|    x264 - core |                  data: 78323634202d20636f72652031363120... 0x14-0x2aa.7 (663)
  0x020|31 36 31 20 72 33 30 32 30 20 64 31 39 38 39 33|161 r3020 d19893|
- *    |663 bytes until 0x2aa.7                        |                |
+ *    |until 0x2aa.7 (663)                            |                |
  0x2a0|                                 80|           |           .|   |                  rbsp_trailing_bits: 80 0x2ab-0x2ab.7 (1)
 0x0030|            06                                 |    .           |                forbidden_zero_bit: false 0x34-0x34 (0.1)
 0x0030|            06                                 |    .           |                nal_ref_idc: 0 0x34.1-0x34.2 (0.2)
 0x0030|            06                                 |    .           |                nal_unit_type: Supplemental enhancement information (SEI) (6) 0x34.3-0x34.7 (0.5)
 0x0030|               05 ff ff a9 dc 45 e9 bd e6 d9 48|     .....E....H|                data: 05ffffa9dc45e9bde6d948b7962cd820... 0x35-0x2e0.7 (684)
 0x0040|b7 96 2c d8 20 d9 23 ee ef 78 32 36 34 20 2d 20|..,. .#..x264 - |
-*     |684 bytes until 0x2e0.7                        |                |
+*     |until 0x2e0.7 (684)                            |                |
       |                                               |                |            [1]: {} (nalu) 0x2e1-0xaef.7 (2063)
 0x02e0|   00 00 08 0b                                 | ....           |              length: 2059 0x2e1-0x2e4.7 (4)
       |                                               |                |              nalu: avc_nalu 0x2e5-0xaef.7 (2059)
@@ -410,5 +410,5 @@
 0x02e0|                     84                        |       .        |                  pic_parameter_set_id: 0 0x2e7-0x2e7 (0.1)
 0x02e0|                     84 00 2b ff fe f5 db f3 2c|       ..+.....,|                data: 080057fffdebb7e65958ccce7bffda76... 0x2e7.1-0xaef.7 (2056.7)
 0x02f0|ac 66 67 3d ff ed 3b 60 00 21 74 ff c0 cf 1f fc|.fg=..;`.!t.....|
-*     |2057 bytes until 0xaef.7                       |                |
+*     |until 0xaef.7 (2057)                           |                |
       |                                               |                |      data_format: "avc1" 0xdf3-NA (0)

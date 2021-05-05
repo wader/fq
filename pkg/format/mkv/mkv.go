@@ -350,10 +350,10 @@ func mkvDecode(d *decode.D, in interface{}) interface{} {
 					d.FieldValidateUTF8("magic", "fLaC")
 					d.FieldArrayFn("metadatablocks", func(d *decode.D) {
 						for {
-							_, dv := d.FieldDecode("metadatablock", flacMetadatablockFormat)
-							flacMetadatablockOut, ok := dv.(format.FlacMetadatablockOut)
+							_, v := d.FieldDecode("metadatablock", flacMetadatablockFormat)
+							flacMetadatablockOut, ok := v.(format.FlacMetadatablockOut)
 							if !ok {
-								d.Invalid(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", dv))
+								d.Invalid(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
 							}
 							if flacMetadatablockOut.HasStreamInfo {
 								t.decodeOpts = append(t.decodeOpts,
@@ -367,18 +367,18 @@ func mkvDecode(d *decode.D, in interface{}) interface{} {
 				})
 			})
 		case "V_MPEG4/ISO/AVC":
-			_, dv := t.parentD.FieldDecodeRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegAVCDCRFormat)
-			avcDcrOut, ok := dv.(format.AvcDcrOut)
+			_, v := t.parentD.FieldDecodeRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegAVCDCRFormat)
+			avcDcrOut, ok := v.(format.AvcDcrOut)
 			if !ok {
-				d.Invalid(fmt.Sprintf("expected AvcDcrOut got %#+v", dv))
+				d.Invalid(fmt.Sprintf("expected AvcDcrOut got %#+v", v))
 			}
 			t.decodeOpts = append(t.decodeOpts,
 				decode.FormatOptions{InArg: format.AvcIn{LengthSize: avcDcrOut.LengthSize}})
 		case "V_MPEGH/ISO/HEVC":
-			_, dv := t.parentD.FieldDecodeRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegHEVCDCRFormat)
-			hevcDcrOut, ok := dv.(format.HevcDcrOut)
+			_, v := t.parentD.FieldDecodeRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegHEVCDCRFormat)
+			hevcDcrOut, ok := v.(format.HevcDcrOut)
 			if !ok {
-				d.Invalid(fmt.Sprintf("expected HevcDcrOut got %#+v", dv))
+				d.Invalid(fmt.Sprintf("expected HevcDcrOut got %#+v", v))
 			}
 			t.decodeOpts = append(t.decodeOpts,
 				decode.FormatOptions{InArg: format.HevcIn{LengthSize: hevcDcrOut.LengthSize}})

@@ -52,45 +52,45 @@
       |                                               |                |      segments: [14] 0x63-0xd17.7 (3253)
 0x0060|         03 76 6f 72 62 69 73 0d 00 00 00 4c 61|   .vorbis....La|        [0]: 03766f726269730d0000004c61766635... (segment) 0x63-0xa2.7 (64)
 0x0070|76 66 35 38 2e 34 35 2e 31 30 30 01 00 00 00 1f|vf58.45.100.....|
-*     |64 bytes until 0xa2.7                          |                |
+*     |until 0xa2.7 (64)                              |                |
 0x00a0|         05 76 6f 72 62 69 73 22 42 43 56 01 00|   .vorbis"BCV..|        [1]: 05766f72626973224243560100400000... (segment) 0xa3-0x1a1.7 (255)
 0x00b0|40 00 00 24 73 18 2a 46 a5 73 16 84 10 1a 42 50|@..$s.*F.s....BP|
-*     |255 bytes until 0x1a1.7                        |                |
+*     |until 0x1a1.7 (255)                            |                |
 0x01a0|      c9 91 1c c9 b1 1c 0b 08 0d 59 05 00 00 01|  .........Y....|        [2]: c9911cc9b11c0b080d59050000010008... (segment) 0x1a2-0x2a0.7 (255)
 0x01b0|00 08 00 00 a0 48 8a a4 48 8e e4 48 92 24 59 92|.....H..H..H.$Y.|
-*     |255 bytes until 0x2a0.7                        |                |
+*     |until 0x2a0.7 (255)                            |                |
 0x02a0|   e7 9c 05 ad 69 8e 9a 4b b1 39 e7 9c 48 b9 79| ....i..K.9..H.y|        [3]: e79c05ad698e9a4bb139e79c48b97952... (segment) 0x2a1-0x39f.7 (255)
 0x02b0|52 9b 4b b5 39 e7 9c 73 ce 39 e7 9c 73 ce 39 e7|R.K.9..s.9..s.9.|
-*     |255 bytes until 0x39f.7                        |                |
+*     |until 0x39f.7 (255)                            |                |
 0x03a0|11 1d d1 11 1d d1 11 1d d1 11 1d d1 f1 1c cf 11|................|        [4]: 111dd1111dd1111dd1111dd1f11ccf11... (segment) 0x3a0-0x49e.7 (255)
-*     |255 bytes until 0x49e.7                        |                |
+*     |until 0x49e.7 (255)                            |                |
 0x0490|                                             78|               x|        [5]: 788aa9788aa8788ee88892689996a8a9... (segment) 0x49f-0x59d.7 (255)
 0x04a0|8a a9 78 8a a8 78 8e e8 88 92 68 99 96 a8 a9 9a|..x..x....h.....|
-*     |255 bytes until 0x59d.7                        |                |
+*     |until 0x59d.7 (255)                            |                |
 0x0590|                                          45 ce|              E.|        [6]: 45ce392a1da5c63947a9a3d4514ab1a6... (segment) 0x59e-0x69c.7 (255)
 0x05a0|39 2a 1d a5 c6 39 47 a9 a3 d4 51 4a b1 a6 5a 3b|9*...9G...QJ..Z;|
-*     |255 bytes until 0x69c.7                        |                |
+*     |until 0x69c.7 (255)                            |                |
 0x0690|                                       57 d6 7d|             W.}|        [7]: 57d67d4d1455d5534dd91555559655d9... (segment) 0x69d-0x79b.7 (255)
 0x06a0|4d 14 55 d5 53 4d d9 15 55 55 96 55 d9 d5 65 55|M.U.SM..UU.U..eU|
-*     |255 bytes until 0x79b.7                        |                |
+*     |until 0x79b.7 (255)                            |                |
 0x0790|                                    57 65 d9 f7|            We..|        [8]: 5765d9f75557f67d5bf785e1f67ddf18... (segment) 0x79c-0x89a.7 (255)
 0x07a0|55 57 f6 7d 5b f7 85 e1 f6 7d df 18 55 d7 f7 55|UW.}[....}..U..U|
-*     |255 bytes until 0x89a.7                        |                |
+*     |until 0x89a.7 (255)                            |                |
 0x0890|                                 52 6b 95 73 52|           Rk.sR|        [9]: 526b9573523a0829650e4a2a29c5584a... (segment) 0x89b-0x999.7 (255)
 0x08a0|3a 08 29 65 0e 4a 2a 29 c5 58 4a 4a 31 73 4e 4a|:.)e.J*).XJJ1sNJ|
-*     |255 bytes until 0x999.7                        |                |
+*     |until 0x999.7 (255)                            |                |
 0x0990|                              9c 94 8a 31 e7 20|          ...1. |        [10]: 9c948a31e720a45231e61c845232e720... (segment) 0x99a-0xa98.7 (255)
 0x09a0|a4 52 31 e6 1c 84 52 32 e7 20 94 92 52 e6 1c 84|.R1...R2. ..R...|
-*     |255 bytes until 0xa98.7                        |                |
+*     |until 0xa98.7 (255)                            |                |
 0x0a90|                           52 4a 29 a5 94 12 42|         RJ)...B|        [11]: 524a29a5941242082184104208218410... (segment) 0xa99-0xb97.7 (255)
 0x0aa0|08 21 84 10 42 08 21 84 10 42 08 21 84 10 42 08|.!..B.!..B.!..B.|
-*     |255 bytes until 0xb97.7                        |                |
+*     |until 0xb97.7 (255)                            |                |
 0x0b90|                        08 25 64 8c 39 e7 1c 84|        .%d.9...|        [12]: 0825648c39e71c84104228a5948c31e7... (segment) 0xb98-0xc96.7 (255)
 0x0ba0|10 42 28 a5 94 8c 31 e7 9c 83 10 42 09 a5 94 92|.B(...1....B....|
-*     |255 bytes until 0xc96.7                        |                |
+*     |until 0xc96.7 (255)                            |                |
 0x0c90|                     87 07 95 00 11 31 15 00 24|       .....1..$|        [13]: 8707950011311500242628e4024085c5... (segment) 0xc97-0xd17.7 (129)
 0x0ca0|26 28 e4 02 40 85 c5 45 da c5 05 74 19 e0 82 2e|&(..@..E...t....|
-*     |129 bytes until 0xd17.7                        |                |
+*     |until 0xd17.7 (129)                            |                |
       |                                               |                |    [2]: ogg_page (page) 0xd18-0xe45.7 (302)
 0x0d10|                        4f 67 67 53            |        OggS    |      capture_pattern: "OggS" (Correct) 0xd18-0xd1b.7 (4)
 0x0d10|                                    00         |            .   |      stream_structure_version: Correct (0x0) 0xd1c-0xd1c.7 (1)
@@ -116,13 +116,13 @@
 0x0d50|c3 30 0c c3 7a 00                              |.0..z.          |
 0x0d50|                  9a d8 3d 07 6f d2 9e 5b 5c 05|      ..=.o..[\.|        [1]: 9ad83d076fd29e5b5c056622402a0000... (segment) 0xd56-0xd91.7 (60)
 0x0d60|66 22 40 2a 00 00 00 00 00 00 00 00 00 00 00 fa|f"@*............|
-*     |60 bytes until 0xd91.7                         |                |
+*     |until 0xd91.7 (60)                             |                |
 0x0d90|      be d8 dd e6 ae 92 f7 23 3e 6f cc 0d 80 7a|  .......#>o...z|        [2]: bed8dde6ae92f7233e6fcc0d807a0000... (segment) 0xd92-0xdc5.7 (52)
 0x0da0|00 00 00 00 01 06 00 00 00 00 00 00 e0 b9 05 42|...............B|
-*     |52 bytes until 0xdc5.7                         |                |
+*     |until 0xdc5.7 (52)                             |                |
 0x0dc0|                  3e 37 dd 37 fe ee 85 47 7c 3c|      >7.7...G|<|        [3]: 3e37dd37feee85477c3c61029b3106f6... (segment) 0xdc6-0xe45.7 (128)
 0x0dd0|61 02 9b 31 06 f6 bb ef 9f 04 62 46 41 04 c0 c0|a..1......bFA...|
-*     |128 bytes until 0xe45.7 (end)                  |                |
+*     |until 0xe45.7 (end) (128)                      |                |
       |                                               |                |  streams: [1] 0x3a-NA (0)
       |                                               |                |    [0]: {} (stream) 0x3a-NA (0)
       |                                               |                |      serial_number: 4033295155 0x3a-NA (0)
@@ -163,7 +163,7 @@
  0x000|                                 01 00         |           ..   |          codebook_dimensions: 1 0xb-0xc.7 (2)
  0x000|                                       40 00 00|             @..|          codebook_entries: 64 0xd-0xf.7 (3)
  0x010|24 73 18 2a 46 a5 73 16 84 10 1a 42 50 19 e3 1c|$s.*F.s....BP...|          unknown0: 2473182a46a5731684101a425019e31c... 0x10-0xc74.7 (3173)
- *    |3173 bytes until 0xc74.7 (end)                 |                |
+ *    |until 0xc74.7 (end) (3173)                     |                |
       |                                               |                |        [3]: vorbis_packet (packet) 0x0-0x1e.7 (31)
  0x000|5c                                             |\               |          packet_type: Audio (0) 0x0-0x0.7 (1)
  0x000|   dd ab 3a ab ba b0 ff 5a 02 04 10 00 c0 8c da| ..:....Z.......|          unknown0: ddab3aabbab0ff5a02041000c08cda2d... 0x1-0x1e.7 (30)
@@ -172,14 +172,14 @@
  0x000|9a                                             |.               |          packet_type: Audio (0) 0x0-0x0.7 (1)
  0x000|   d8 3d 07 6f d2 9e 5b 5c 05 66 22 40 2a 00 00| .=.o..[\.f"@*..|          unknown0: d83d076fd29e5b5c056622402a000000... 0x1-0x3b.7 (59)
  0x010|00 00 00 00 00 00 00 00 00 fa fd 60 9f ce 01 d1|...........`....|
- *    |59 bytes until 0x3b.7 (end)                    |                |
+ *    |until 0x3b.7 (end) (59)                        |                |
       |                                               |                |        [5]: vorbis_packet (packet) 0x0-0x33.7 (52)
  0x000|be                                             |.               |          packet_type: Audio (0) 0x0-0x0.7 (1)
  0x000|   d8 dd e6 ae 92 f7 23 3e 6f cc 0d 80 7a 00 00| ......#>o...z..|          unknown0: d8dde6ae92f7233e6fcc0d807a000000... 0x1-0x33.7 (51)
  0x010|00 00 01 06 00 00 00 00 00 00 e0 b9 05 42 5c 27|.............B\'|
- *    |51 bytes until 0x33.7 (end)                    |                |
+ *    |until 0x33.7 (end) (51)                        |                |
       |                                               |                |        [6]: vorbis_packet (packet) 0x0-0x7f.7 (128)
  0x000|3e                                             |>               |          packet_type: Audio (0) 0x0-0x0.7 (1)
  0x000|   37 dd 37 fe ee 85 47 7c 3c 61 02 9b 31 06 f6| 7.7...G|<a..1..|          unknown0: 37dd37feee85477c3c61029b3106f6bb... 0x1-0x7f.7 (127)
  0x010|bb ef 9f 04 62 46 41 04 c0 c0 00 00 f0 3d f4 1d|....bFA......=..|
- *    |127 bytes until 0x7f.7 (end)                   |                |
+ *    |until 0x7f.7 (end) (127)                       |                |

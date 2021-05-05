@@ -61,6 +61,6 @@
 0x10|            00                                 |    .           |            count1table_select: 0 0x14.7-0x14.7 (0.1)
 0x10|               07 aa c3 8e 33 85 d3 64 f1 a1 c1|     ....3..d...|  data: 07aac38e3385d364f1a1c1081c581f5e... 0x15-0xcf.7 (187)
 0x20|08 1c 58 1f 5e 1f 18 1c 46 04 1e 89 e5 b3 2e 5a|..X.^...F......Z|
-*   |187 bytes until 0xcf.7 (end)                   |                |
+*   |until 0xcf.7 (end) (187)                       |                |
     |                                               |                |  other_data:  0xd0-NA (0)
     |                                               |                |  crc_calculated: e5b0 0xd0-NA (0)

@@ -21,7 +21,7 @@
 0x0020|                        6d 64 61 74            |        mdat    |      type: "mdat" (Media data container) 0x28-0x2b.7 (4)
 0x0020|                                    0a 0d 20 00|            .. .|      data: 0a0d200000fa1e7fde210ad02020251a... 0x2c-0x11bf.7 (4500)
 0x0030|00 fa 1e 7f de 21 0a d0 20 20 25 1a 10 10 02 27|.....!..  %....'|
-*     |4500 bytes until 0x11bf.7                      |                |
+*     |until 0x11bf.7 (4500)                          |                |
       |                                               |                |    [3]: {} (box) 0x11c0-0x14b1.7 (754)
 0x11c0|00 00 02 f2                                    |....            |      size: 754 0x11c0-0x11c3.7 (4)
 0x11c0|            6d 6f 6f 76                        |    moov        |      type: "moov" (Container for all the meta-data) 0x11c4-0x11c7.7 (4)
@@ -321,5 +321,5 @@
 0x0040|                                       22      |             "  |                reserved_1bit: 0 0x4d.7-0x4d.7 (0.1)
 0x0040|                                          f0 22|              ."|              size: 4464 0x4e-0x4f.7 (2)
 0x0050|f6 0a 4f ae f3 fe ec e7 30 4f 3f 13 9c 75 c9 6a|..O.....0O?..u.j|              data: f60a4faef3feece7304f3f139c75c96a... 0x50-0x11bf.7 (4464)
-*     |4464 bytes until 0x11bf.7                      |                |
+*     |until 0x11bf.7 (4464)                          |                |
       |                                               |                |      data_format: "av01" 0x14b2-NA (0)

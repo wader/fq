@@ -103,7 +103,7 @@
 0x0080|00 53                                          |.S              |
 0x0080|      00 00 00 00 00 00 00 00 00 00 00 00 00 00|  ..............|          value: 00000000000000000000000000000000... 0x82-0xd4.7 (83)
 0x0090|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
-*     |83 bytes until 0xd4.7                          |                |
+*     |until 0xd4.7 (83)                              |                |
       |                                               |                |        [2]: {} (element) 0xd5-0x124.7 (80)
 0x00d0|               15 49 a9 66                     |     .I.f       |          id: Info (0x1549a966) 0xd5-0xd8.7 (4)
 0x00d0|                           cb                  |         .      |          size: 75 0xd9-0xd9.7 (1)
@@ -251,7 +251,7 @@
 0x01b0|                                    01         |            .   |                              nuh_temporal_id_plus1: 1 0x1bc.5-0x1bc.7 (0.3)
 0x01b0|                                       01 04 08|             ...|                              data: 010408000003009e0800000300003c90... 0x1bd-0x1e5.7 (41)
 0x01c0|00 00 03 00 9e 08 00 00 03 00 00 3c 90 01 41 01|...........<..A.|
-*     |41 bytes until 0x1e5.7                         |                |
+*     |until 0x1e5.7 (41)                             |                |
       |                                               |                |                      [2]: {} (array) 0x1e6-0x1f2.7 (13)
 0x01e0|                  22                           |      "         |                        array_completeness: 0 0x1e6-0x1e6 (0.1)
 0x01e0|                  22                           |      "         |                        reserved0: 0 0x1e6.1-0x1e6.1 (0.1)
@@ -282,7 +282,7 @@
 0x01f0|                           01                  |         .      |                              nuh_temporal_id_plus1: 1 0x1f9.5-0x1f9.7 (0.3)
 0x01f0|                              05 ff ff ff ff ff|          ......|                              data: 05ffffffffffffffffc12ca2de09b517... 0x1fa-0xabd.7 (2244)
 0x0200|ff ff ff c1 2c a2 de 09 b5 17 47 db bb 55 a4 fe|....,.....G..U..|
-*     |2244 bytes until 0xabd.7                       |                |
+*     |until 0xabd.7 (2244)                           |                |
       |                                               |                |        [4]: {} (element) 0xabe-0xb63.7 (166)
 0x0ab0|                                          12 54|              .T|          id: Tags (0x1254c367) 0xabe-0xac1.7 (4)
 0x0ac0|c3 67                                          |.g              |
@@ -389,7 +389,7 @@
 0x0b70|                                          28 01|              (.|                      nuh_layer_id: 0 0xb7e.7-0xb7f.4 (0.6)
 0x0b70|                                             01|               .|                      nuh_temporal_id_plus1: 1 0xb7f.5-0xb7f.7 (0.3)
 0x0b80|af 1d 20 aa 55 b7 88 a0 62 7f ff fa 2c 46 fd a9|.. .U...b...,F..|                      data: af1d20aa55b788a0627ffffa2c46fda9... 0xb80-0x13ce.7 (2127)
-*     |2127 bytes until 0x13ce.7                      |                |
+*     |until 0x13ce.7 (2127)                          |                |
       |                                               |                |        [6]: {} (element) 0x13cf-0x13ea.7 (28)
 0x13c0|                                             1c|               .|          id: Cues (0x1c53bb6b) 0x13cf-0x13d2.7 (4)
 0x13d0|53 bb 6b                                       |S.k             |

@@ -95,6 +95,6 @@
 0x020|         00                                    |   .            |            count1table_select: 0 0x23.7-0x23.7 (0.1)
 0x020|            0a 6b 6d d8 c2 12 cd a0 0d bf 4d 03|    .km.......M.|  data: 0a6b6dd8c212cda00dbf4d03018d4c35... 0x24-0x1a0.7 (381)
 0x030|01 8d 4c 35 18 20 0c 1d db 6b 6d 7d df 7f e3 72|..L5. ...km}...r|
-*    |381 bytes until 0x1a0.7 (end)                  |                |
+*    |until 0x1a0.7 (end) (381)                      |                |
      |                                               |                |  other_data:  0x1a1-NA (0)
      |                                               |                |  crc_calculated: 1855 0x1a1-NA (0)

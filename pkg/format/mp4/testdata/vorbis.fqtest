@@ -21,7 +21,7 @@
 0x0020|                        6d 64 61 74            |        mdat    |      type: "mdat" (Media data container) 0x28-0x2b.7 (4)
 0x0020|                                    be b7 f2 81|            ....|      data: beb7f281467415420b520817328e4308... 0x2c-0x1dc.7 (433)
 0x0030|46 74 15 42 0b 52 08 17 32 8e 43 08 65 84 84 f6|Ft.B.R..2.C.e...|
-*     |433 bytes until 0x1dc.7                        |                |
+*     |until 0x1dc.7 (433)                            |                |
       |                                               |                |    [3]: {} (box) 0x1dd-0x1188.7 (4012)
 0x01d0|                                       00 00 0f|             ...|      size: 4012 0x1dd-0x1e0.7 (4)
 0x01e0|ac                                             |.               |
@@ -204,7 +204,7 @@
 0x03b0|                                 80 80 99 72   |           ...r |                                      length: 3314 0x3bb-0x3be.7 (4)
 0x03b0|                                             dd|               .|                                      object_type_indication: MPEGObjectTypeVORBIS (221) 0x3bf-0x3bf.7 (1)
 0x03c0|15                                             |.               |                                      stream_type: AudioStream (5) 0x3c0-0x3c0.5 (0.6)
-0x03c0|15                                             |.               |                                      upsteam: false 0x3c0.6-0x3c0.6 (0.1)
+0x03c0|15                                             |.               |                                      upstream: false 0x3c0.6-0x3c0.6 (0.1)
 0x03c0|15                                             |.               |                                      specific_info_flag: true 0x3c0.7-0x3c0.7 (0.1)
 0x03c0|   00 00 00                                    | ...            |                                      buffer_size_db: 0 0x3c1-0x3c3.7 (3)
 0x03c0|            00 01 0a 65                        |    ...e        |                                      max_bit_rate: 68197 0x3c4-0x3c7.7 (4)
@@ -353,4 +353,4 @@
       |                                               |                |      data_format: "mp4a" 0x1189-NA (0)
 0x0410|      84 74 9a 59 aa 01 22 cc 40 86 81 d0 90 95|  .t.Y..".@.....|  unknown0: 84749a59aa0122cc408681d090950000... 0x412-0x10b0.7 (3231)
 0x0420|00 00 02 00 00 60 84 22 0c 31 20 34 64 25 00 00|.....`.".1 4d%..|
-*     |3231 bytes until 0x10b0.7                      |                |
+*     |until 0x10b0.7 (3231)                          |                |

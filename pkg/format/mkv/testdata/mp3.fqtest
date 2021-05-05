@@ -103,7 +103,7 @@
 0x080|00 53                                          |.S              |
 0x080|      00 00 00 00 00 00 00 00 00 00 00 00 00 00|  ..............|          value: 00000000000000000000000000000000... 0x82-0xd4.7 (83)
 0x090|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
-*    |83 bytes until 0xd4.7                          |                |
+*    |until 0xd4.7 (83)                              |                |
      |                                               |                |        [2]: {} (element) 0xd5-0x124.7 (80)
 0x0d0|               15 49 a9 66                     |     .I.f       |          id: Info (0x1549a966) 0xd5-0xd8.7 (4)
 0x0d0|                           cb                  |         .      |          size: 75 0xd9-0xd9.7 (1)
@@ -347,7 +347,7 @@
 0x240|               00                              |     .          |                          count1table_select: 0 0x245.7-0x245.7 (0.1)
 0x240|                  07 aa c3 8e 33 85 d3 64 f1 a1|      ....3..d..|                data: 07aac38e3385d364f1a1c1081c581f5e... 0x246-0x300.7 (187)
 0x250|c1 08 1c 58 1f 5e 1f 18 1c 46 04 1e 89 e5 b3 2e|...X.^...F......|
-*    |187 bytes until 0x300.7                        |                |
+*    |until 0x300.7 (187)                            |                |
      |                                               |                |                other_data:  0x301-NA (0)
      |                                               |                |                crc_calculated: 2e0a 0x301-NA (0)
      |                                               |                |            [3]: {} (element) 0x301-0x3d8.7 (216)
@@ -421,7 +421,7 @@
 0x310|                                    00         |            .   |                          count1table_select: 0 0x31c.7-0x31c.7 (0.1)
 0x310|                                       01 d9 81|             ...|                data: 01d9813805c9802004f1808e070196d2... 0x31d-0x3ce.7 (178)
 0x320|38 05 c9 80 20 04 f1 80 8e 07 01 96 d2 b0 19 91|8... ...........|
-*    |178 bytes until 0x3ce.7                        |                |
+*    |until 0x3ce.7 (178)                            |                |
 0x3c0|                                             85|               .|                padding_byte: 85 0x3cf-0x3cf.7 (1)
 0x3d0|62 08 3d a0 52 36 7f 26 17                     |b.=.R6.&.       |                other_data: 62083da052367f2617 0x3d0-0x3d8.7 (9)
      |                                               |                |                crc_calculated: 9950 0x3d9-NA (0)
@@ -500,7 +500,7 @@
 0x3f0|                                       00      |             .  |                              count1table_select: 0 0x3fd.7-0x3fd.7 (0.1)
 0x3f0|                                          53 ca|              S.|                    data: 53ca1e59fd29ba0b84d48af88dcba077... 0x3fe-0x49d.7 (160)
 0x400|1e 59 fd 29 ba 0b 84 d4 8a f8 8d cb a0 77 10 07|.Y.).........w..|
-*    |160 bytes until 0x49d.7                        |                |
+*    |until 0x49d.7 (160)                            |                |
 0x490|                                          6a   |              j |                    padding_byte: 6a 0x49e-0x49e.7 (1)
 0x490|                                             4c|               L|                    other_data: 4c414d45332e313030aaaaaaaaaaaaaa... 0x49f-0x4b9.7 (27)
 0x4a0|41 4d 45 33 2e 31 30 30 aa aa aa aa aa aa aa aa|AME3.100........|

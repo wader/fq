@@ -103,7 +103,7 @@
 0x0080|00 53                                          |.S              |
 0x0080|      00 00 00 00 00 00 00 00 00 00 00 00 00 00|  ..............|          value: 00000000000000000000000000000000... 0x82-0xd4.7 (83)
 0x0090|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
-*     |83 bytes until 0xd4.7                          |                |
+*     |until 0xd4.7 (83)                              |                |
       |                                               |                |        [2]: {} (element) 0xd5-0x124.7 (80)
 0x00d0|               15 49 a9 66                     |     .I.f       |          id: Info (0x1549a966) 0xd5-0xd8.7 (4)
 0x00d0|                           cb                  |         .      |          size: 75 0xd9-0xd9.7 (1)
@@ -403,13 +403,13 @@
  0x010|d9 23 ee ef                                    |.#..            |
  0x010|            78 32 36 34 20 2d 20 63 6f 72 65 20|    x264 - core |                        data: 78323634202d20636f72652031363120... 0x14-0x2aa.7 (663)
  0x020|31 36 31 20 72 33 30 32 30 20 64 31 39 38 39 33|161 r3020 d19893|
- *    |663 bytes until 0x2aa.7                        |                |
+ *    |until 0x2aa.7 (663)                            |                |
  0x2a0|                                 80|           |           .|   |                        rbsp_trailing_bits: 80 0x2ab-0x2ab.7 (1)
 0x0260|                                             06|               .|                      forbidden_zero_bit: false 0x26f-0x26f (0.1)
 0x0260|                                             06|               .|                      nal_ref_idc: 0 0x26f.1-0x26f.2 (0.2)
 0x0260|                                             06|               .|                      nal_unit_type: Supplemental enhancement information (SEI) (6) 0x26f.3-0x26f.7 (0.5)
 0x0270|05 ff ff a9 dc 45 e9 bd e6 d9 48 b7 96 2c d8 20|.....E....H..,. |                      data: 05ffffa9dc45e9bde6d948b7962cd820... 0x270-0x51b.7 (684)
-*     |684 bytes until 0x51b.7                        |                |
+*     |until 0x51b.7 (684)                            |                |
       |                                               |                |                  [1]: {} (nalu) 0x51c-0xd2a.7 (2063)
 0x0510|                                    00 00 08 0b|            ....|                    length: 2059 0x51c-0x51f.7 (4)
       |                                               |                |                    nalu: avc_nalu 0x520-0xd2a.7 (2059)
@@ -422,7 +422,7 @@
 0x0520|      84                                       |  .             |                        pic_parameter_set_id: 0 0x522-0x522 (0.1)
 0x0520|      84 00 2b ff fe f5 db f3 2c ac 66 67 3d ff|  ..+.....,.fg=.|                      data: 080057fffdebb7e65958ccce7bffda76... 0x522.1-0xd2a.7 (2056.7)
 0x0530|ed 3b 60 00 21 74 ff c0 cf 1f fc 67 ff cd 99 a7|.;`.!t.....g....|
-*     |2057 bytes until 0xd2a.7                       |                |
+*     |until 0xd2a.7 (2057)                           |                |
       |                                               |                |        [6]: {} (element) 0xd2b-0xd46.7 (28)
 0x0d20|                                 1c 53 bb 6b   |           .S.k |          id: Cues (0x1c53bb6b) 0xd2b-0xd2e.7 (4)
 0x0d20|                                             97|               .|          size: 23 0xd2f-0xd2f.7 (1)

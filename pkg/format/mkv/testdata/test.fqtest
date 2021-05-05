@@ -103,7 +103,7 @@
 0x0080|00 53                                          |.S              |
 0x0080|      00 00 00 00 00 00 00 00 00 00 00 00 00 00|  ..............|          value: 00000000000000000000000000000000... 0x82-0xd4.7 (83)
 0x0090|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
-*     |83 bytes until 0xd4.7                          |                |
+*     |until 0xd4.7 (83)                              |                |
       |                                               |                |        [2]: {} (element) 0xd5-0x124.7 (80)
 0x00d0|               15 49 a9 66                     |     .I.f       |          id: Info (0x1549a966) 0xd5-0xd8.7 (4)
 0x00d0|                           cb                  |         .      |          size: 75 0xd9-0xd9.7 (1)
@@ -376,7 +376,7 @@
 0x0220|00 00 00                                       |...             |
 0x0220|         58 69 70 68 2e 4f 72 67 20 6c 69 62 56|   Xiph.Org libV|                        vendor: "Xiph.Org libVorbis I 20200704 (Reducing Environmen"... 0x223-0x256.7 (52)
 0x0230|6f 72 62 69 73 20 49 20 32 30 32 30 30 37 30 34|orbis I 20200704|
-*     |52 bytes until 0x256.7                         |                |
+*     |until 0x256.7 (52)                             |                |
 0x0250|                     01 00 00 00               |       ....     |                        user_comment_list_length: 1 0x257-0x25a.7 (4)
       |                                               |                |                        user_comments: [1] 0x25b-0x273.7 (25)
       |                                               |                |                          [0]: {} (user_comment) 0x25b-0x273.7 (25)
@@ -553,14 +553,14 @@
  0x010|d9 23 ee ef                                    |.#..            |
  0x010|            78 32 36 34 20 2d 20 63 6f 72 65 20|    x264 - core |                        data: 78323634202d20636f72652031363120... 0x14-0x2aa.7 (663)
  0x020|31 36 31 20 72 33 30 32 30 20 64 31 39 38 39 33|161 r3020 d19893|
- *    |663 bytes until 0x2aa.7                        |                |
+ *    |until 0x2aa.7 (663)                            |                |
  0x2a0|                                 80|           |           .|   |                        rbsp_trailing_bits: 80 0x2ab-0x2ab.7 (1)
 0x1030|                                    06         |            .   |                      forbidden_zero_bit: false 0x103c-0x103c (0.1)
 0x1030|                                    06         |            .   |                      nal_ref_idc: 0 0x103c.1-0x103c.2 (0.2)
 0x1030|                                    06         |            .   |                      nal_unit_type: Supplemental enhancement information (SEI) (6) 0x103c.3-0x103c.7 (0.5)
 0x1030|                                       05 ff ff|             ...|                      data: 05ffffa9dc45e9bde6d948b7962cd820... 0x103d-0x12e8.7 (684)
 0x1040|a9 dc 45 e9 bd e6 d9 48 b7 96 2c d8 20 d9 23 ee|..E....H..,. .#.|
-*     |684 bytes until 0x12e8.7                       |                |
+*     |until 0x12e8.7 (684)                           |                |
       |                                               |                |                  [1]: {} (nalu) 0x12e9-0x1af7.7 (2063)
 0x12e0|                           00 00 08 0b         |         ....   |                    length: 2059 0x12e9-0x12ec.7 (4)
       |                                               |                |                    nalu: avc_nalu 0x12ed-0x1af7.7 (2059)
@@ -573,7 +573,7 @@
 0x12e0|                                             84|               .|                        pic_parameter_set_id: 0 0x12ef-0x12ef (0.1)
 0x12e0|                                             84|               .|                      data: 080057fffdebb7e65958ccce7bffda76... 0x12ef.1-0x1af7.7 (2056.7)
 0x12f0|00 2b ff fe f5 db f3 2c ac 66 67 3d ff ed 3b 60|.+.....,.fg=..;`|
-*     |2057 bytes until 0x1af7.7                      |                |
+*     |until 0x1af7.7 (2057)                          |                |
       |                                               |                |            [4]: {} (element) 0x1af8-0x1afe.7 (7)
 0x1af0|                        a3                     |        .       |              id: SimpleBlock (0xa3) 0x1af8-0x1af8.7 (1)
 0x1af0|                           f6                  |         .      |              size: 118 0x1af9-0x1af9.7 (1)
@@ -621,10 +621,10 @@
 0x1b80|                                 30|           |           0|   |                      value: 48 0x1b8b-0x1b8b.7 (1)
 0x0280|               24 73 18 2a 46 a5 73 16 84 10 1a|     $s.*F.s....|  unknown0: 2473182a46a5731684101a425019e31c... 0x285-0xee9.7 (3173)
 0x0290|42 50 19 e3 1c 42 ce 6b ec 19 42 4c 11 82 1c 32|BP...B.k..BL...2|
-*     |3173 bytes until 0xee9.7                       |                |
+*     |until 0xee9.7 (3173)                           |                |
 0x1010|   dd cb ce aa 5e d8 7f 2d 01 42 00 a0 dd 71 77| ....^..-.B...qw|  unknown1: ddcbceaa5ed87f2d014200a0dd71778b... 0x1011-0x1030.7 (32)
 0x1020|8b ed cd 37 df 7c 33 3a 0c c3 30 0c c3 30 d4 50|...7.|3:..0..0.P|
 0x1030|02                                             |.               |
 0x1af0|                                             78|               x|  unknown2: 78bd0dbf7dff5f003b54b0f7fcf4fbfd... 0x1aff-0x1b6f.7 (113)
 0x1b00|bd 0d bf 7d ff 5f 00 3b 54 b0 f7 fc f4 fb fd bc|...}._.;T.......|
-*     |113 bytes until 0x1b6f.7                       |                |
+*     |until 0x1b6f.7 (113)                           |                |
