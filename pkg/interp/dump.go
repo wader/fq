@@ -243,10 +243,10 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 			cfmt(colAddr, "%s%s\n", rootIndent, deco.Frame.F("*"))
 			cprint(colHex, "\n")
 			// TODO: truncate if displaybytes is small?
-			cfmt(colHex, "%s bytes until %s%s",
-				num.PadFormatInt(bitio.BitsByteCount(sizeBits), opts.SizeBase, true, 0),
+			cfmt(colHex, "until %s%s (%s)",
 				num.Bits(stopBit).StringByteBits(opts.AddrBase),
-				isEnd)
+				isEnd,
+				num.PadFormatInt(bitio.BitsByteCount(sizeBits), opts.SizeBase, true, 0))
 			// TODO: dump last line?
 		}
 	}

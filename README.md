@@ -12,10 +12,10 @@ Tool and framework for querying and exploring binary data.
 $ fq file.mp3 
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: mp3
 0x000|49 44 33 04 00 00 00 00 15 39 54 53 53 45 00 00|ID3......9TSSE..|  headers: [1]
-*    |2739 bytes more until 0xac2.7                  |                |
+*    |until 0xac2.7 (2755)                           |                |
 0xac0|         ff fb 40 c0 00 00 00 00 00 00 00 00 00|   ..@..........|  frames: [3]
 0xad0|00 00 00 00 00 00 00 00 49 6e 66 6f 00 00 00 0f|........Info....|
-*    |570 bytes more until 0xd19.7 (end)             |                |
+*    |until 0xd19.7 (end) (599)                      |                |
      |                                               |                |  footers: [0]
  
 <b># Show ID3v2 APIC frame</b> 
@@ -31,7 +31,7 @@ $ fq file.mp3 '.headers[].frames[] | select(.id == "APIC")' 
 0x030|                           00                  |         .      |  description: ""
 0x030|                              89 50 4e 47 0d 0a|          .PNG..|  picture: png
 0x040|1a 0a 00 00 00 0d 49 48 44 52 00 00 01 40 00 00|......IHDR...@..|
-*    |2665 bytes more until 0xab8.7                  |                |
+*    |until 0xab8.7 (2687)                           |                |
  
 <b># Resolution of embedded PNG file</b> 
 $ fq file.mp3 '.headers[].frames[] | select(.id == "APIC").picture.chunks[] | select(.type == "IHDR") | {width, height}' 
@@ -46,8 +46,11 @@ $ file file.png 
 file.png: PNG image data, 320 x 240, 8-bit/color RGB, non-interlaced
  
 <b># Codecs in a mp4 file</b> 
-$ fq file.mp4 '[.. | select(.type == "stsd").sample_descriptions[].data_format]' 
-error: expected an object but got: array
+$ fq file.mp4 '[.. | select(.type == "stsd")?.sample_descriptions[].data_format]' 
+[
+  "avc1",
+  "mp4a"
+]
 </pre>
 </sub>
 

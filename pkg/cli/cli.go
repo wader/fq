@@ -94,9 +94,8 @@ func (*standardOS) Environ() []string                       { return os.Environ(
 func (*standardOS) Args() []string                          { return os.Args }
 func (*standardOS) Open(name string) (io.ReadSeeker, error) { return os.Open(name) }
 func (o *standardOS) Readline(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error) {
-	var autoComplete readline.AutoCompleter
 	if complete != nil {
-		autoComplete = autoCompleterFn(func(line []rune, pos int) (newLine [][]rune, length int) {
+		o.rl.Config.AutoComplete = autoCompleterFn(func(line []rune, pos int) (newLine [][]rune, length int) {
 			names, shared := complete(string(line), pos)
 			var runeNames [][]rune
 			for _, name := range names {
@@ -107,7 +106,6 @@ func (o *standardOS) Readline(prompt string, complete func(line string, pos int)
 		})
 	}
 
-	o.rl.Config.AutoComplete = autoComplete
 	o.rl.SetPrompt(prompt)
 	line, err := o.rl.Readline()
 	if err == readline.ErrInterrupt {
