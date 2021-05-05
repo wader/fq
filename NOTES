@@ -1,4 +1,15 @@
 
+zlib/demux etc, return bitio.Buffer:
+bb := d.FieldDeflateLen("compressed", 10)
+d.FieldDecodeBitBuf("something", bb)
+alt:
+d.FieldDeflateLenFn("compressed", 10, func(bb) {
+  d.FieldDecodeBitBuf("something", bb)
+})
+how to handle ranges in bitbufs?
+
+auto keep track of roots? know if new bifbuf root?
+
 find bytes/pattern? bitbuf range? find in bytes find in value? find("asdsad), find([1,2,3])
 
 bitio.ReadAtFull: ErrUnexpectedEOF, same as io.ReadFull
