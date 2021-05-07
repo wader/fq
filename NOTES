@@ -1,4 +1,8 @@
 
+verbose support hash digest bitbuf? compare files parts
+maybe binary filter "md5", "base64", "string" etc?
+
+
 zlib/demux etc, return bitio.Buffer:
 bb := d.FieldDeflateLen("compressed", 10)
 d.FieldDecodeBitBuf("something", bb)
