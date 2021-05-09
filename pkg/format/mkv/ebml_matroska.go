@@ -3,43 +3,296 @@ package mkv
 
 import "fq/pkg/format/mkv/ebml"
 
+const (
+	EBMLMaxIDLength             = 0x42F2
+	EBMLMaxSizeLength           = 0x42F3
+	Segment                     = 0x18538067
+	SeekHead                    = 0x114D9B74
+	Seek                        = 0x4DBB
+	SeekID                      = 0x53AB
+	SeekPosition                = 0x53AC
+	Info                        = 0x1549A966
+	SegmentUID                  = 0x73A4
+	SegmentFilename             = 0x7384
+	PrevUID                     = 0x3CB923
+	PrevFilename                = 0x3C83AB
+	NextUID                     = 0x3EB923
+	NextFilename                = 0x3E83BB
+	SegmentFamily               = 0x4444
+	ChapterTranslate            = 0x6924
+	ChapterTranslateEditionUID  = 0x69FC
+	ChapterTranslateCodec       = 0x69BF
+	ChapterTranslateID          = 0x69A5
+	TimestampScale              = 0x2AD7B1
+	Duration                    = 0x4489
+	DateUTC                     = 0x4461
+	Title                       = 0x7BA9
+	MuxingApp                   = 0x4D80
+	WritingApp                  = 0x5741
+	Cluster                     = 0x1F43B675
+	Timestamp                   = 0xE7
+	SilentTracks                = 0x5854
+	SilentTrackNumber           = 0x58D7
+	Position                    = 0xA7
+	PrevSize                    = 0xAB
+	SimpleBlock                 = 0xA3
+	BlockGroup                  = 0xA0
+	Block                       = 0xA1
+	BlockVirtual                = 0xA2
+	BlockAdditions              = 0x75A1
+	BlockMore                   = 0xA6
+	BlockAddID                  = 0xEE
+	BlockAdditional             = 0xA5
+	BlockDuration               = 0x9B
+	ReferencePriority           = 0xFA
+	ReferenceBlock              = 0xFB
+	ReferenceVirtual            = 0xFD
+	CodecState                  = 0xA4
+	DiscardPadding              = 0x75A2
+	Slices                      = 0x8E
+	TimeSlice                   = 0xE8
+	LaceNumber                  = 0xCC
+	FrameNumber                 = 0xCD
+	BlockAdditionID             = 0xCB
+	Delay                       = 0xCE
+	SliceDuration               = 0xCF
+	ReferenceFrame              = 0xC8
+	ReferenceOffset             = 0xC9
+	ReferenceTimestamp          = 0xCA
+	EncryptedBlock              = 0xAF
+	Tracks                      = 0x1654AE6B
+	TrackEntry                  = 0xAE
+	TrackNumber                 = 0xD7
+	TrackUID                    = 0x73C5
+	TrackType                   = 0x83
+	FlagEnabled                 = 0xB9
+	FlagDefault                 = 0x88
+	FlagForced                  = 0x55AA
+	FlagLacing                  = 0x9C
+	MinCache                    = 0x6DE7
+	MaxCache                    = 0x6DF8
+	DefaultDuration             = 0x23E383
+	DefaultDecodedFieldDuration = 0x234E7A
+	TrackTimestampScale         = 0x23314F
+	TrackOffset                 = 0x537F
+	MaxBlockAdditionID          = 0x55EE
+	BlockAdditionMapping        = 0x41E4
+	BlockAddIDValue             = 0x41F0
+	BlockAddIDName              = 0x41A4
+	BlockAddIDType              = 0x41E7
+	BlockAddIDExtraData         = 0x41ED
+	Name                        = 0x536E
+	Language                    = 0x22B59C
+	LanguageIETF                = 0x22B59D
+	CodecID                     = 0x86
+	CodecPrivate                = 0x63A2
+	CodecName                   = 0x258688
+	AttachmentLink              = 0x7446
+	CodecSettings               = 0x3A9697
+	CodecInfoURL                = 0x3B4040
+	CodecDownloadURL            = 0x26B240
+	CodecDecodeAll              = 0xAA
+	TrackOverlay                = 0x6FAB
+	CodecDelay                  = 0x56AA
+	SeekPreRoll                 = 0x56BB
+	TrackTranslate              = 0x6624
+	TrackTranslateEditionUID    = 0x66FC
+	TrackTranslateCodec         = 0x66BF
+	TrackTranslateTrackID       = 0x66A5
+	Video                       = 0xE0
+	FlagInterlaced              = 0x9A
+	FieldOrder                  = 0x9D
+	StereoMode                  = 0x53B8
+	AlphaMode                   = 0x53C0
+	OldStereoMode               = 0x53B9
+	PixelWidth                  = 0xB0
+	PixelHeight                 = 0xBA
+	PixelCropBottom             = 0x54AA
+	PixelCropTop                = 0x54BB
+	PixelCropLeft               = 0x54CC
+	PixelCropRight              = 0x54DD
+	DisplayWidth                = 0x54B0
+	DisplayHeight               = 0x54BA
+	DisplayUnit                 = 0x54B2
+	AspectRatioType             = 0x54B3
+	ColourSpace                 = 0x2EB524
+	GammaValue                  = 0x2FB523
+	FrameRate                   = 0x2383E3
+	Colour                      = 0x55B0
+	MatrixCoefficients          = 0x55B1
+	BitsPerChannel              = 0x55B2
+	ChromaSubsamplingHorz       = 0x55B3
+	ChromaSubsamplingVert       = 0x55B4
+	CbSubsamplingHorz           = 0x55B5
+	CbSubsamplingVert           = 0x55B6
+	ChromaSitingHorz            = 0x55B7
+	ChromaSitingVert            = 0x55B8
+	Range                       = 0x55B9
+	TransferCharacteristics     = 0x55BA
+	Primaries                   = 0x55BB
+	MaxCLL                      = 0x55BC
+	MaxFALL                     = 0x55BD
+	MasteringMetadata           = 0x55D0
+	PrimaryRChromaticityX       = 0x55D1
+	PrimaryRChromaticityY       = 0x55D2
+	PrimaryGChromaticityX       = 0x55D3
+	PrimaryGChromaticityY       = 0x55D4
+	PrimaryBChromaticityX       = 0x55D5
+	PrimaryBChromaticityY       = 0x55D6
+	WhitePointChromaticityX     = 0x55D7
+	WhitePointChromaticityY     = 0x55D8
+	LuminanceMax                = 0x55D9
+	LuminanceMin                = 0x55DA
+	Projection                  = 0x7670
+	ProjectionType              = 0x7671
+	ProjectionPrivate           = 0x7672
+	ProjectionPoseYaw           = 0x7673
+	ProjectionPosePitch         = 0x7674
+	ProjectionPoseRoll          = 0x7675
+	Audio                       = 0xE1
+	SamplingFrequency           = 0xB5
+	OutputSamplingFrequency     = 0x78B5
+	Channels                    = 0x9F
+	ChannelPositions            = 0x7D7B
+	BitDepth                    = 0x6264
+	TrackOperation              = 0xE2
+	TrackCombinePlanes          = 0xE3
+	TrackPlane                  = 0xE4
+	TrackPlaneUID               = 0xE5
+	TrackPlaneType              = 0xE6
+	TrackJoinBlocks             = 0xE9
+	TrackJoinUID                = 0xED
+	TrickTrackUID               = 0xC0
+	TrickTrackSegmentUID        = 0xC1
+	TrickTrackFlag              = 0xC6
+	TrickMasterTrackUID         = 0xC7
+	TrickMasterTrackSegmentUID  = 0xC4
+	ContentEncodings            = 0x6D80
+	ContentEncoding             = 0x6240
+	ContentEncodingOrder        = 0x5031
+	ContentEncodingScope        = 0x5032
+	ContentEncodingType         = 0x5033
+	ContentCompression          = 0x5034
+	ContentCompAlgo             = 0x4254
+	ContentCompSettings         = 0x4255
+	ContentEncryption           = 0x5035
+	ContentEncAlgo              = 0x47E1
+	ContentEncKeyID             = 0x47E2
+	ContentEncAESSettings       = 0x47E7
+	AESSettingsCipherMode       = 0x47E8
+	ContentSignature            = 0x47E3
+	ContentSigKeyID             = 0x47E4
+	ContentSigAlgo              = 0x47E5
+	ContentSigHashAlgo          = 0x47E6
+	Cues                        = 0x1C53BB6B
+	CuePoint                    = 0xBB
+	CueTime                     = 0xB3
+	CueTrackPositions           = 0xB7
+	CueTrack                    = 0xF7
+	CueClusterPosition          = 0xF1
+	CueRelativePosition         = 0xF0
+	CueDuration                 = 0xB2
+	CueBlockNumber              = 0x5378
+	CueCodecState               = 0xEA
+	CueReference                = 0xDB
+	CueRefTime                  = 0x96
+	CueRefCluster               = 0x97
+	CueRefNumber                = 0x535F
+	CueRefCodecState            = 0xEB
+	Attachments                 = 0x1941A469
+	AttachedFile                = 0x61A7
+	FileDescription             = 0x467E
+	FileName                    = 0x466E
+	FileMimeType                = 0x4660
+	FileData                    = 0x465C
+	FileUID                     = 0x46AE
+	FileReferral                = 0x4675
+	FileUsedStartTime           = 0x4661
+	FileUsedEndTime             = 0x4662
+	Chapters                    = 0x1043A770
+	EditionEntry                = 0x45B9
+	EditionUID                  = 0x45BC
+	EditionFlagHidden           = 0x45BD
+	EditionFlagDefault          = 0x45DB
+	EditionFlagOrdered          = 0x45DD
+	ChapterAtom                 = 0xB6
+	ChapterUID                  = 0x73C4
+	ChapterStringUID            = 0x5654
+	ChapterTimeStart            = 0x91
+	ChapterTimeEnd              = 0x92
+	ChapterFlagHidden           = 0x98
+	ChapterFlagEnabled          = 0x4598
+	ChapterSegmentUID           = 0x6E67
+	ChapterSegmentEditionUID    = 0x6EBC
+	ChapterPhysicalEquiv        = 0x63C3
+	ChapterTrack                = 0x8F
+	ChapterTrackUID             = 0x89
+	ChapterDisplay              = 0x80
+	ChapString                  = 0x85
+	ChapLanguage                = 0x437C
+	ChapLanguageIETF            = 0x437D
+	ChapCountry                 = 0x437E
+	ChapProcess                 = 0x6944
+	ChapProcessCodecID          = 0x6955
+	ChapProcessPrivate          = 0x450D
+	ChapProcessCommand          = 0x6911
+	ChapProcessTime             = 0x6922
+	ChapProcessData             = 0x6933
+	Tags                        = 0x1254C367
+	Tag                         = 0x7373
+	Targets                     = 0x63C0
+	TargetTypeValue             = 0x68CA
+	TargetType                  = 0x63CA
+	TagTrackUID                 = 0x63C5
+	TagEditionUID               = 0x63C9
+	TagChapterUID               = 0x63C4
+	TagAttachmentUID            = 0x63C6
+	SimpleTag                   = 0x67C8
+	TagName                     = 0x45A3
+	TagLanguage                 = 0x447A
+	TagLanguageIETF             = 0x447B
+	TagDefault                  = 0x4484
+	TagString                   = 0x4487
+	TagBinary                   = 0x4485
+)
+
 var mkvSegment = ebml.Tag{
-	0x114d9b74: {
+	SeekHead: {
 		Name:       "SeekHead",
 		Definition: "Contains the Segment Position of other Top-Level Elements.",
 		Type:       ebml.Master, Tag: mkvSeekHead,
 	},
-	0x1549a966: {
+	Info: {
 		Name:       "Info",
 		Definition: "Contains general information about the Segment.",
 		Type:       ebml.Master, Tag: mkvInfo,
 	},
-	0x1f43b675: {
+	Cluster: {
 		Name:       "Cluster",
 		Definition: "The Top-Level Element containing the (monolithic) Block structure.",
 		Type:       ebml.Master, Tag: mkvCluster,
 	},
-	0x1654ae6b: {
+	Tracks: {
 		Name:       "Tracks",
 		Definition: "A Top-Level Element of information with many tracks described.",
 		Type:       ebml.Master, Tag: mkvTracks,
 	},
-	0x1c53bb6b: {
+	Cues: {
 		Name:       "Cues",
 		Definition: "A Top-Level Element to speed seeking access. All entries are local to the Segment.",
 		Type:       ebml.Master, Tag: mkvCues,
 	},
-	0x1941a469: {
+	Attachments: {
 		Name:       "Attachments",
 		Definition: "Contain attached files.",
 		Type:       ebml.Master, Tag: mkvAttachments,
 	},
-	0x1043a770: {
+	Chapters: {
 		Name:       "Chapters",
 		Definition: "A system to define basic menus and partition data. For more detailed information, look at the .",
 		Type:       ebml.Master, Tag: mkvChapters,
 	},
-	0x1254c367: {
+	Tags: {
 		Name:       "Tags",
 		Definition: "Element containing metadata describing Tracks, Editions, Chapters, Attachments, or the Segment as a whole. A list of valid tags can be found",
 		Type:       ebml.Master, Tag: mkvTags,
@@ -47,7 +300,7 @@ var mkvSegment = ebml.Tag{
 }
 
 var mkvSeekHead = ebml.Tag{
-	0x4dbb: {
+	Seek: {
 		Name:       "Seek",
 		Definition: "Contains a single seek entry to an EBML Element.",
 		Type:       ebml.Master, Tag: mkvSeek,
@@ -55,12 +308,12 @@ var mkvSeekHead = ebml.Tag{
 }
 
 var mkvSeek = ebml.Tag{
-	0x53ab: {
+	SeekID: {
 		Name:       "SeekID",
 		Definition: "The binary ID corresponding to the Element name.",
 		Type:       ebml.Binary,
 	},
-	0x53ac: {
+	SeekPosition: {
 		Name:       "SeekPosition",
 		Definition: "The Segment Position of the Element.",
 		Type:       ebml.Uinteger,
@@ -68,72 +321,72 @@ var mkvSeek = ebml.Tag{
 }
 
 var mkvInfo = ebml.Tag{
-	0x73a4: {
+	SegmentUID: {
 		Name:       "SegmentUID",
 		Definition: "A randomly generated unique ID to identify the Segment amongst many others (128 bits).",
 		Type:       ebml.Binary,
 	},
-	0x7384: {
+	SegmentFilename: {
 		Name:       "SegmentFilename",
 		Definition: "A filename corresponding to this Segment.",
 		Type:       ebml.UTF8,
 	},
-	0x3cb923: {
+	PrevUID: {
 		Name:       "PrevUID",
 		Definition: "A unique ID to identify the previous Segment of a Linked Segment (128 bits).",
 		Type:       ebml.Binary,
 	},
-	0x3c83ab: {
+	PrevFilename: {
 		Name:       "PrevFilename",
 		Definition: "A filename corresponding to the file of the previous Linked Segment.",
 		Type:       ebml.UTF8,
 	},
-	0x3eb923: {
+	NextUID: {
 		Name:       "NextUID",
 		Definition: "A unique ID to identify the next Segment of a Linked Segment (128 bits).",
 		Type:       ebml.Binary,
 	},
-	0x3e83bb: {
+	NextFilename: {
 		Name:       "NextFilename",
 		Definition: "A filename corresponding to the file of the next Linked Segment.",
 		Type:       ebml.UTF8,
 	},
-	0x4444: {
+	SegmentFamily: {
 		Name:       "SegmentFamily",
 		Definition: "A randomly generated unique ID that all Segments of a Linked Segment MUST share (128 bits).",
 		Type:       ebml.Binary,
 	},
-	0x6924: {
+	ChapterTranslate: {
 		Name:       "ChapterTranslate",
 		Definition: "A tuple of corresponding ID used by chapter codecs to represent this Segment.",
 		Type:       ebml.Master, Tag: mkvChapterTranslate,
 	},
-	0x2ad7b1: {
+	TimestampScale: {
 		Name:       "TimestampScale",
 		Definition: "Timestamp scale in nanoseconds (1.000.000 means all timestamps in the Segment are expressed in milliseconds).",
 		Type:       ebml.Uinteger,
 	},
-	0x4489: {
+	Duration: {
 		Name:       "Duration",
 		Definition: "Duration of the Segment in nanoseconds based on TimestampScale.",
 		Type:       ebml.Float,
 	},
-	0x4461: {
+	DateUTC: {
 		Name:       "DateUTC",
 		Definition: "The date and time that the Segment was created by the muxing application or library.",
 		Type:       ebml.Date,
 	},
-	0x7ba9: {
+	Title: {
 		Name:       "Title",
 		Definition: "General name of the Segment.",
 		Type:       ebml.UTF8,
 	},
-	0x4d80: {
+	MuxingApp: {
 		Name:       "MuxingApp",
 		Definition: "Muxing application or library (example: \"libmatroska-0.4.3\").",
 		Type:       ebml.UTF8,
 	},
-	0x5741: {
+	WritingApp: {
 		Name:       "WritingApp",
 		Definition: "Writing application (example: \"mkvmerge-0.3.3\").",
 		Type:       ebml.UTF8,
@@ -141,12 +394,12 @@ var mkvInfo = ebml.Tag{
 }
 
 var mkvChapterTranslate = ebml.Tag{
-	0x69fc: {
+	ChapterTranslateEditionUID: {
 		Name:       "ChapterTranslateEditionUID",
 		Definition: "Specify an edition UID on which this correspondence applies. When not specified, it means for all editions found in the Segment.",
 		Type:       ebml.Uinteger,
 	},
-	0x69bf: {
+	ChapterTranslateCodec: {
 		Name:       "ChapterTranslateCodec",
 		Definition: "The",
 		Type:       ebml.Uinteger,
@@ -161,7 +414,7 @@ var mkvChapterTranslate = ebml.Tag{
 			},
 		},
 	},
-	0x69a5: {
+	ChapterTranslateID: {
 		Name:       "ChapterTranslateID",
 		Definition: "The binary value used to represent this Segment in the chapter codec data. The format depends on the  used.",
 		Type:       ebml.Binary,
@@ -169,37 +422,37 @@ var mkvChapterTranslate = ebml.Tag{
 }
 
 var mkvCluster = ebml.Tag{
-	0xe7: {
+	Timestamp: {
 		Name:       "Timestamp",
 		Definition: "Absolute timestamp of the cluster (based on TimestampScale).",
 		Type:       ebml.Uinteger,
 	},
-	0x5854: {
+	SilentTracks: {
 		Name:       "SilentTracks",
 		Definition: "The list of tracks that are not used in that part of the stream. It is useful when using overlay tracks on seeking or to decide what track to use.",
 		Type:       ebml.Master, Tag: mkvSilentTracks,
 	},
-	0xa7: {
+	Position: {
 		Name:       "Position",
 		Definition: "The Segment Position of the Cluster in the Segment (0 in live streams). It might help to resynchronise offset on damaged streams.",
 		Type:       ebml.Uinteger,
 	},
-	0xab: {
+	PrevSize: {
 		Name:       "PrevSize",
 		Definition: "Size of the previous Cluster, in octets. Can be useful for backward playing.",
 		Type:       ebml.Uinteger,
 	},
-	0xa3: {
+	SimpleBlock: {
 		Name:       "SimpleBlock",
 		Definition: "Similar to  but without all the extra information, mostly used to reduced overhead when no extra feature is needed. (see )",
 		Type:       ebml.Binary,
 	},
-	0xa0: {
+	BlockGroup: {
 		Name:       "BlockGroup",
 		Definition: "Basic container of information containing a single Block and information specific to that Block.",
 		Type:       ebml.Master, Tag: mkvBlockGroup,
 	},
-	0xaf: {
+	EncryptedBlock: {
 		Name:       "EncryptedBlock",
 		Definition: "Similar to  but the data inside the Block are Transformed (encrypt and/or signed). (see )",
 		Type:       ebml.Binary,
@@ -207,7 +460,7 @@ var mkvCluster = ebml.Tag{
 }
 
 var mkvSilentTracks = ebml.Tag{
-	0x58d7: {
+	SilentTrackNumber: {
 		Name:       "SilentTrackNumber",
 		Definition: "One of the track number that are not used from now on in the stream. It could change later if not specified as silent in a further Cluster.",
 		Type:       ebml.Uinteger,
@@ -215,57 +468,57 @@ var mkvSilentTracks = ebml.Tag{
 }
 
 var mkvBlockGroup = ebml.Tag{
-	0xa1: {
+	Block: {
 		Name:       "Block",
 		Definition: "Block containing the actual data to be rendered and a timestamp relative to the Cluster Timestamp. (see )",
 		Type:       ebml.Binary,
 	},
-	0xa2: {
+	BlockVirtual: {
 		Name:       "BlockVirtual",
 		Definition: "A Block with no data. It MUST be stored in the stream at the place the real Block would be in display order. (see )",
 		Type:       ebml.Binary,
 	},
-	0x75a1: {
+	BlockAdditions: {
 		Name:       "BlockAdditions",
 		Definition: "Contain additional blocks to complete the main one. An EBML parser that has no knowledge of the Block structure could still see and use/skip these data.",
 		Type:       ebml.Master, Tag: mkvBlockAdditions,
 	},
-	0x9b: {
+	BlockDuration: {
 		Name:       "BlockDuration",
 		Definition: "The duration of the Block (based on TimestampScale). The BlockDuration Element can be useful at the end of a Track to define the duration of the last frame (as there is no subsequent Block available), or when there is a break in a track like for subtitle tracks.",
 		Type:       ebml.Uinteger,
 	},
-	0xfa: {
+	ReferencePriority: {
 		Name:       "ReferencePriority",
 		Definition: "This frame is referenced and has the specified cache priority. In cache only a frame of the same or higher priority can replace this frame. A value of 0 means the frame is not referenced.",
 		Type:       ebml.Uinteger,
 	},
-	0xfb: {
+	ReferenceBlock: {
 		Name:       "ReferenceBlock",
 		Definition: "Timestamp of another frame used as a reference (ie: B or P frame). The timestamp is relative to the block it's attached to.",
 		Type:       ebml.Integer,
 	},
-	0xfd: {
+	ReferenceVirtual: {
 		Name:       "ReferenceVirtual",
 		Definition: "The Segment Position of the data that would otherwise be in position of the virtual block.",
 		Type:       ebml.Integer,
 	},
-	0xa4: {
+	CodecState: {
 		Name:       "CodecState",
 		Definition: "The new codec state to use. Data interpretation is private to the codec. This information SHOULD always be referenced by a seek entry.",
 		Type:       ebml.Binary,
 	},
-	0x75a2: {
+	DiscardPadding: {
 		Name:       "DiscardPadding",
 		Definition: "Duration in nanoseconds of the silent data added to the Block (padding at the end of the Block for positive value, at the beginning of the Block for negative value). The duration of DiscardPadding is not calculated in the duration of the TrackEntry and SHOULD be discarded during playback.",
 		Type:       ebml.Integer,
 	},
-	0x8e: {
+	Slices: {
 		Name:       "Slices",
 		Definition: "Contains slices description.",
 		Type:       ebml.Master, Tag: mkvSlices,
 	},
-	0xc8: {
+	ReferenceFrame: {
 		Name:       "ReferenceFrame",
 		Definition: "",
 		Type:       ebml.Master, Tag: mkvReferenceFrame,
@@ -273,7 +526,7 @@ var mkvBlockGroup = ebml.Tag{
 }
 
 var mkvBlockAdditions = ebml.Tag{
-	0xa6: {
+	BlockMore: {
 		Name:       "BlockMore",
 		Definition: "Contain the BlockAdditional and some parameters.",
 		Type:       ebml.Master, Tag: mkvBlockMore,
@@ -281,12 +534,12 @@ var mkvBlockAdditions = ebml.Tag{
 }
 
 var mkvBlockMore = ebml.Tag{
-	0xee: {
+	BlockAddID: {
 		Name:       "BlockAddID",
 		Definition: "An ID to identify the BlockAdditional level. A value of 1 means the BlockAdditional data is interpreted as additional data passed to the codec with the Block data.",
 		Type:       ebml.Uinteger,
 	},
-	0xa5: {
+	BlockAdditional: {
 		Name:       "BlockAdditional",
 		Definition: "Interpreted by the codec as it wishes (using the BlockAddID).",
 		Type:       ebml.Binary,
@@ -294,7 +547,7 @@ var mkvBlockMore = ebml.Tag{
 }
 
 var mkvSlices = ebml.Tag{
-	0xe8: {
+	TimeSlice: {
 		Name:       "TimeSlice",
 		Definition: "Contains extra time information about the data contained in the Block. Being able to interpret this Element is not REQUIRED for playback.",
 		Type:       ebml.Master, Tag: mkvTimeSlice,
@@ -302,27 +555,27 @@ var mkvSlices = ebml.Tag{
 }
 
 var mkvTimeSlice = ebml.Tag{
-	0xcc: {
+	LaceNumber: {
 		Name:       "LaceNumber",
 		Definition: "The reverse number of the frame in the lace (0 is the last frame, 1 is the next to last, etc). Being able to interpret this Element is not REQUIRED for playback.",
 		Type:       ebml.Uinteger,
 	},
-	0xcd: {
+	FrameNumber: {
 		Name:       "FrameNumber",
 		Definition: "The number of the frame to generate from this lace with this delay (allow you to generate many frames from the same Block/Frame).",
 		Type:       ebml.Uinteger,
 	},
-	0xcb: {
+	BlockAdditionID: {
 		Name:       "BlockAdditionID",
 		Definition: "The ID of the BlockAdditional Element (0 is the main Block).",
 		Type:       ebml.Uinteger,
 	},
-	0xce: {
+	Delay: {
 		Name:       "Delay",
 		Definition: "The (scaled) delay to apply to the Element.",
 		Type:       ebml.Uinteger,
 	},
-	0xcf: {
+	SliceDuration: {
 		Name:       "SliceDuration",
 		Definition: "The (scaled) duration to apply to the Element.",
 		Type:       ebml.Uinteger,
@@ -330,12 +583,12 @@ var mkvTimeSlice = ebml.Tag{
 }
 
 var mkvReferenceFrame = ebml.Tag{
-	0xc9: {
+	ReferenceOffset: {
 		Name:       "ReferenceOffset",
 		Definition: "",
 		Type:       ebml.Uinteger,
 	},
-	0xca: {
+	ReferenceTimestamp: {
 		Name:       "ReferenceTimestamp",
 		Definition: "",
 		Type:       ebml.Uinteger,
@@ -343,7 +596,7 @@ var mkvReferenceFrame = ebml.Tag{
 }
 
 var mkvTracks = ebml.Tag{
-	0xae: {
+	TrackEntry: {
 		Name:       "TrackEntry",
 		Definition: "Describes a track with all Elements.",
 		Type:       ebml.Master, Tag: mkvTrackEntry,
@@ -351,17 +604,17 @@ var mkvTracks = ebml.Tag{
 }
 
 var mkvTrackEntry = ebml.Tag{
-	0xd7: {
+	TrackNumber: {
 		Name:       "TrackNumber",
 		Definition: "The track number as used in the Block Header (using more than 127 tracks is not encouraged, though the design allows an unlimited number).",
 		Type:       ebml.Uinteger,
 	},
-	0x73c5: {
+	TrackUID: {
 		Name:       "TrackUID",
 		Definition: "A unique ID to identify the Track. This SHOULD be kept the same when making a direct stream copy of the Track to another file.",
 		Type:       ebml.Uinteger,
 	},
-	0x83: {
+	TrackType: {
 		Name:       "TrackType",
 		Definition: "A set of track types coded on 8 bits.",
 		Type:       ebml.Uinteger,
@@ -400,182 +653,182 @@ var mkvTrackEntry = ebml.Tag{
 			},
 		},
 	},
-	0xb9: {
+	FlagEnabled: {
 		Name:       "FlagEnabled",
 		Definition: "Set if the track is usable. (1 bit)",
 		Type:       ebml.Uinteger,
 	},
-	0x88: {
+	FlagDefault: {
 		Name:       "FlagDefault",
 		Definition: "Set if that track (audio, video or subs) SHOULD be active if no language found matches the user preference. (1 bit)",
 		Type:       ebml.Uinteger,
 	},
-	0x55aa: {
+	FlagForced: {
 		Name:       "FlagForced",
 		Definition: "Set if that track MUST be active during playback. There can be many forced track for a kind (audio, video or subs), the player SHOULD select the one which language matches the user preference or the default + forced track. Overlay MAY happen between a forced and non-forced track of the same kind. (1 bit)",
 		Type:       ebml.Uinteger,
 	},
-	0x9c: {
+	FlagLacing: {
 		Name:       "FlagLacing",
 		Definition: "Set if the track MAY contain blocks using lacing. (1 bit)",
 		Type:       ebml.Uinteger,
 	},
-	0x6de7: {
+	MinCache: {
 		Name:       "MinCache",
 		Definition: "The minimum number of frames a player SHOULD be able to cache during playback. If set to 0, the reference pseudo-cache system is not used.",
 		Type:       ebml.Uinteger,
 	},
-	0x6df8: {
+	MaxCache: {
 		Name:       "MaxCache",
 		Definition: "The maximum cache size necessary to store referenced frames in and the current frame. 0 means no cache is needed.",
 		Type:       ebml.Uinteger,
 	},
-	0x23e383: {
+	DefaultDuration: {
 		Name:       "DefaultDuration",
 		Definition: "Number of nanoseconds (not scaled via TimestampScale) per frame ('frame' in the Matroska sense -- one Element put into a (Simple)Block).",
 		Type:       ebml.Uinteger,
 	},
-	0x234e7a: {
+	DefaultDecodedFieldDuration: {
 		Name:       "DefaultDecodedFieldDuration",
 		Definition: "The period in nanoseconds (not scaled by TimestampScale) between two successive fields at the output of the decoding process (see )",
 		Type:       ebml.Uinteger,
 	},
-	0x23314f: {
+	TrackTimestampScale: {
 		Name:       "TrackTimestampScale",
 		Definition: "DEPRECATED, DO NOT USE. The scale to apply on this track to work at normal speed in relation with other tracks (mostly used to adjust video speed when the audio length differs).",
 		Type:       ebml.Float,
 	},
-	0x537f: {
+	TrackOffset: {
 		Name:       "TrackOffset",
 		Definition: "A value to add to the Block's Timestamp. This can be used to adjust the playback offset of a track.",
 		Type:       ebml.Integer,
 	},
-	0x55ee: {
+	MaxBlockAdditionID: {
 		Name:       "MaxBlockAdditionID",
 		Definition: "The maximum value of . A value 0 means there is no  for this track.",
 		Type:       ebml.Uinteger,
 	},
-	0x41e4: {
+	BlockAdditionMapping: {
 		Name:       "BlockAdditionMapping",
 		Definition: "Contains elements that describe each value of  found in the Track.",
 		Type:       ebml.Master, Tag: mkvBlockAdditionMapping,
 	},
-	0x536e: {
+	Name: {
 		Name:       "Name",
 		Definition: "A human-readable track name.",
 		Type:       ebml.UTF8,
 	},
-	0x22b59c: {
+	Language: {
 		Name:       "Language",
 		Definition: "Specifies the language of the track in the . This Element MUST be ignored if the LanguageIETF Element is used in the same TrackEntry.",
 		Type:       ebml.String,
 	},
-	0x22b59d: {
+	LanguageIETF: {
 		Name:       "LanguageIETF",
 		Definition: "Specifies the language of the track according to  and using the . If this Element is used, then any Language Elements used in the same TrackEntry MUST be ignored.",
 		Type:       ebml.String,
 	},
-	0x86: {
+	CodecID: {
 		Name:       "CodecID",
 		Definition: "An ID corresponding to the codec, see the  for more info.",
 		Type:       ebml.String,
 	},
-	0x63a2: {
+	CodecPrivate: {
 		Name:       "CodecPrivate",
 		Definition: "Private data only known to the codec.",
 		Type:       ebml.Binary,
 	},
-	0x258688: {
+	CodecName: {
 		Name:       "CodecName",
 		Definition: "A human-readable string specifying the codec.",
 		Type:       ebml.UTF8,
 	},
-	0x7446: {
+	AttachmentLink: {
 		Name:       "AttachmentLink",
 		Definition: "The UID of an attachment that is used by this codec.",
 		Type:       ebml.Uinteger,
 	},
-	0x3a9697: {
+	CodecSettings: {
 		Name:       "CodecSettings",
 		Definition: "A string describing the encoding setting used.",
 		Type:       ebml.UTF8,
 	},
-	0x3b4040: {
+	CodecInfoURL: {
 		Name:       "CodecInfoURL",
 		Definition: "A URL to find information about the codec used.",
 		Type:       ebml.String,
 	},
-	0x26b240: {
+	CodecDownloadURL: {
 		Name:       "CodecDownloadURL",
 		Definition: "A URL to download about the codec used.",
 		Type:       ebml.String,
 	},
-	0xaa: {
+	CodecDecodeAll: {
 		Name:       "CodecDecodeAll",
 		Definition: "The codec can decode potentially damaged data (1 bit).",
 		Type:       ebml.Uinteger,
 	},
-	0x6fab: {
+	TrackOverlay: {
 		Name:       "TrackOverlay",
 		Definition: "Specify that this track is an overlay track for the Track specified (in the u-integer). That means when this track has a gap (see ) the overlay track SHOULD be used instead. The order of multiple TrackOverlay matters, the first one is the one that SHOULD be used. If not found it SHOULD be the second, etc.",
 		Type:       ebml.Uinteger,
 	},
-	0x56aa: {
+	CodecDelay: {
 		Name:       "CodecDelay",
 		Definition: "CodecDelay is The codec-built-in delay in nanoseconds. This value MUST be subtracted from each block timestamp in order to get the actual timestamp. The value SHOULD be small so the muxing of tracks with the same actual timestamp are in the same Cluster.",
 		Type:       ebml.Uinteger,
 	},
-	0x56bb: {
+	SeekPreRoll: {
 		Name:       "SeekPreRoll",
 		Definition: "After a discontinuity, SeekPreRoll is the duration in nanoseconds of the data the decoder MUST decode before the decoded data is valid.",
 		Type:       ebml.Uinteger,
 	},
-	0x6624: {
+	TrackTranslate: {
 		Name:       "TrackTranslate",
 		Definition: "The track identification for the given Chapter Codec.",
 		Type:       ebml.Master, Tag: mkvTrackTranslate,
 	},
-	0xe0: {
+	Video: {
 		Name:       "Video",
 		Definition: "Video settings.",
 		Type:       ebml.Master, Tag: mkvVideo,
 	},
-	0xe1: {
+	Audio: {
 		Name:       "Audio",
 		Definition: "Audio settings.",
 		Type:       ebml.Master, Tag: mkvAudio,
 	},
-	0xe2: {
+	TrackOperation: {
 		Name:       "TrackOperation",
 		Definition: "Operation that needs to be applied on tracks to create this virtual track. For more details  on the subject.",
 		Type:       ebml.Master, Tag: mkvTrackOperation,
 	},
-	0xc0: {
+	TrickTrackUID: {
 		Name:       "TrickTrackUID",
 		Definition: "",
 		Type:       ebml.Uinteger,
 	},
-	0xc1: {
+	TrickTrackSegmentUID: {
 		Name:       "TrickTrackSegmentUID",
 		Definition: "",
 		Type:       ebml.Binary,
 	},
-	0xc6: {
+	TrickTrackFlag: {
 		Name:       "TrickTrackFlag",
 		Definition: "",
 		Type:       ebml.Uinteger,
 	},
-	0xc7: {
+	TrickMasterTrackUID: {
 		Name:       "TrickMasterTrackUID",
 		Definition: "",
 		Type:       ebml.Uinteger,
 	},
-	0xc4: {
+	TrickMasterTrackSegmentUID: {
 		Name:       "TrickMasterTrackSegmentUID",
 		Definition: "",
 		Type:       ebml.Binary,
 	},
-	0x6d80: {
+	ContentEncodings: {
 		Name:       "ContentEncodings",
 		Definition: "Settings for several content encoding mechanisms like compression or encryption.",
 		Type:       ebml.Master, Tag: mkvContentEncodings,
@@ -583,22 +836,22 @@ var mkvTrackEntry = ebml.Tag{
 }
 
 var mkvBlockAdditionMapping = ebml.Tag{
-	0x41f0: {
+	BlockAddIDValue: {
 		Name:       "BlockAddIDValue",
 		Definition: "The  value being described. To keep MaxBlockAdditionID as low as possible, small values SHOULD be used.",
 		Type:       ebml.Uinteger,
 	},
-	0x41a4: {
+	BlockAddIDName: {
 		Name:       "BlockAddIDName",
 		Definition: "A human-friendly name describing the type of BlockAdditional data as defined by the associated Block Additional Mapping.",
 		Type:       ebml.String,
 	},
-	0x41e7: {
+	BlockAddIDType: {
 		Name:       "BlockAddIDType",
 		Definition: "Stores the registered identifer of the Block Additional Mapping to define how the BlockAdditional data should be handled.",
 		Type:       ebml.Uinteger,
 	},
-	0x41ed: {
+	BlockAddIDExtraData: {
 		Name:       "BlockAddIDExtraData",
 		Definition: "Extra binary data that the BlockAddIDType can use to interpret the BlockAdditional data. The intepretation of the binary data depends on the BlockAddIDType value and the corresponding Block Additional Mapping.",
 		Type:       ebml.Binary,
@@ -606,12 +859,12 @@ var mkvBlockAdditionMapping = ebml.Tag{
 }
 
 var mkvTrackTranslate = ebml.Tag{
-	0x66fc: {
+	TrackTranslateEditionUID: {
 		Name:       "TrackTranslateEditionUID",
 		Definition: "Specify an edition UID on which this translation applies. When not specified, it means for all editions found in the Segment.",
 		Type:       ebml.Uinteger,
 	},
-	0x66bf: {
+	TrackTranslateCodec: {
 		Name:       "TrackTranslateCodec",
 		Definition: "The .",
 		Type:       ebml.Uinteger,
@@ -626,7 +879,7 @@ var mkvTrackTranslate = ebml.Tag{
 			},
 		},
 	},
-	0x66a5: {
+	TrackTranslateTrackID: {
 		Name:       "TrackTranslateTrackID",
 		Definition: "The binary value used to represent this track in the chapter codec data. The format depends on the  used.",
 		Type:       ebml.Binary,
@@ -634,7 +887,7 @@ var mkvTrackTranslate = ebml.Tag{
 }
 
 var mkvVideo = ebml.Tag{
-	0x9a: {
+	FlagInterlaced: {
 		Name:       "FlagInterlaced",
 		Definition: "A flag to declare if the video is known to be progressive or interlaced and if applicable to declare details about the interlacement.",
 		Type:       ebml.Uinteger,
@@ -653,7 +906,7 @@ var mkvVideo = ebml.Tag{
 			},
 		},
 	},
-	0x9d: {
+	FieldOrder: {
 		Name:       "FieldOrder",
 		Definition: "Declare the field ordering of the video. If FlagInterlaced is not set to 1, this Element MUST be ignored.",
 		Type:       ebml.Uinteger,
@@ -688,7 +941,7 @@ var mkvVideo = ebml.Tag{
 			},
 		},
 	},
-	0x53b8: {
+	StereoMode: {
 		Name:       "StereoMode",
 		Definition: "Stereo-3D video mode. There are some more details on .",
 		Type:       ebml.Uinteger,
@@ -755,12 +1008,12 @@ var mkvVideo = ebml.Tag{
 			},
 		},
 	},
-	0x53c0: {
+	AlphaMode: {
 		Name:       "AlphaMode",
 		Definition: "Alpha Video Mode. Presence of this Element indicates that the BlockAdditional Element could contain Alpha data.",
 		Type:       ebml.Uinteger,
 	},
-	0x53b9: {
+	OldStereoMode: {
 		Name:       "OldStereoMode",
 		Definition: "DEPRECATED, DO NOT USE. Bogus StereoMode value used in old versions of libmatroska.",
 		Type:       ebml.Uinteger,
@@ -783,47 +1036,47 @@ var mkvVideo = ebml.Tag{
 			},
 		},
 	},
-	0xb0: {
+	PixelWidth: {
 		Name:       "PixelWidth",
 		Definition: "Width of the encoded video frames in pixels.",
 		Type:       ebml.Uinteger,
 	},
-	0xba: {
+	PixelHeight: {
 		Name:       "PixelHeight",
 		Definition: "Height of the encoded video frames in pixels.",
 		Type:       ebml.Uinteger,
 	},
-	0x54aa: {
+	PixelCropBottom: {
 		Name:       "PixelCropBottom",
 		Definition: "The number of video pixels to remove at the bottom of the image.",
 		Type:       ebml.Uinteger,
 	},
-	0x54bb: {
+	PixelCropTop: {
 		Name:       "PixelCropTop",
 		Definition: "The number of video pixels to remove at the top of the image.",
 		Type:       ebml.Uinteger,
 	},
-	0x54cc: {
+	PixelCropLeft: {
 		Name:       "PixelCropLeft",
 		Definition: "The number of video pixels to remove on the left of the image.",
 		Type:       ebml.Uinteger,
 	},
-	0x54dd: {
+	PixelCropRight: {
 		Name:       "PixelCropRight",
 		Definition: "The number of video pixels to remove on the right of the image.",
 		Type:       ebml.Uinteger,
 	},
-	0x54b0: {
+	DisplayWidth: {
 		Name:       "DisplayWidth",
 		Definition: "Width of the video frames to display. Applies to the video frame after cropping (PixelCrop* Elements).",
 		Type:       ebml.Uinteger,
 	},
-	0x54ba: {
+	DisplayHeight: {
 		Name:       "DisplayHeight",
 		Definition: "Height of the video frames to display. Applies to the video frame after cropping (PixelCrop* Elements).",
 		Type:       ebml.Uinteger,
 	},
-	0x54b2: {
+	DisplayUnit: {
 		Name:       "DisplayUnit",
 		Definition: "How DisplayWidth & DisplayHeight are interpreted.",
 		Type:       ebml.Uinteger,
@@ -850,7 +1103,7 @@ var mkvVideo = ebml.Tag{
 			},
 		},
 	},
-	0x54b3: {
+	AspectRatioType: {
 		Name:       "AspectRatioType",
 		Definition: "Specify the possible modifications to the aspect ratio.",
 		Type:       ebml.Uinteger,
@@ -869,27 +1122,27 @@ var mkvVideo = ebml.Tag{
 			},
 		},
 	},
-	0x2eb524: {
+	ColourSpace: {
 		Name:       "ColourSpace",
 		Definition: "Specify the pixel format used for the Track's data as a FourCC. This value is similar in scope to the biCompression value of AVI's BITMAPINFOHEADER.",
 		Type:       ebml.Binary,
 	},
-	0x2fb523: {
+	GammaValue: {
 		Name:       "GammaValue",
 		Definition: "Gamma Value.",
 		Type:       ebml.Float,
 	},
-	0x2383e3: {
+	FrameRate: {
 		Name:       "FrameRate",
 		Definition: "Number of frames per second.  only.",
 		Type:       ebml.Float,
 	},
-	0x55b0: {
+	Colour: {
 		Name:       "Colour",
 		Definition: "Settings describing the colour format.",
 		Type:       ebml.Master, Tag: mkvColour,
 	},
-	0x7670: {
+	Projection: {
 		Name:       "Projection",
 		Definition: "Describes the video projection details. Used to render spherical and VR videos.",
 		Type:       ebml.Master, Tag: mkvProjection,
@@ -897,7 +1150,7 @@ var mkvVideo = ebml.Tag{
 }
 
 var mkvColour = ebml.Tag{
-	0x55b1: {
+	MatrixCoefficients: {
 		Name:       "MatrixCoefficients",
 		Definition: "The Matrix Coefficients of the video used to derive luma and chroma values from red, green, and blue color primaries. For clarity, the value and meanings for MatrixCoefficients are adopted from Table 4 of ISO/IEC 23001-8:2016 or ITU-T H.273.",
 		Type:       ebml.Uinteger,
@@ -964,32 +1217,32 @@ var mkvColour = ebml.Tag{
 			},
 		},
 	},
-	0x55b2: {
+	BitsPerChannel: {
 		Name:       "BitsPerChannel",
 		Definition: "Number of decoded bits per channel. A value of 0 indicates that the BitsPerChannel is unspecified.",
 		Type:       ebml.Uinteger,
 	},
-	0x55b3: {
+	ChromaSubsamplingHorz: {
 		Name:       "ChromaSubsamplingHorz",
 		Definition: "The amount of pixels to remove in the Cr and Cb channels for every pixel not removed horizontally. Example: For video with 4:2:0 chroma subsampling, the ChromaSubsamplingHorz SHOULD be set to 1.",
 		Type:       ebml.Uinteger,
 	},
-	0x55b4: {
+	ChromaSubsamplingVert: {
 		Name:       "ChromaSubsamplingVert",
 		Definition: "The amount of pixels to remove in the Cr and Cb channels for every pixel not removed vertically. Example: For video with 4:2:0 chroma subsampling, the ChromaSubsamplingVert SHOULD be set to 1.",
 		Type:       ebml.Uinteger,
 	},
-	0x55b5: {
+	CbSubsamplingHorz: {
 		Name:       "CbSubsamplingHorz",
 		Definition: "The amount of pixels to remove in the Cb channel for every pixel not removed horizontally. This is additive with ChromaSubsamplingHorz. Example: For video with 4:2:1 chroma subsampling, the ChromaSubsamplingHorz SHOULD be set to 1 and CbSubsamplingHorz SHOULD be set to 1.",
 		Type:       ebml.Uinteger,
 	},
-	0x55b6: {
+	CbSubsamplingVert: {
 		Name:       "CbSubsamplingVert",
 		Definition: "The amount of pixels to remove in the Cb channel for every pixel not removed vertically. This is additive with ChromaSubsamplingVert.",
 		Type:       ebml.Uinteger,
 	},
-	0x55b7: {
+	ChromaSitingHorz: {
 		Name:       "ChromaSitingHorz",
 		Definition: "How chroma is subsampled horizontally.",
 		Type:       ebml.Uinteger,
@@ -1008,7 +1261,7 @@ var mkvColour = ebml.Tag{
 			},
 		},
 	},
-	0x55b8: {
+	ChromaSitingVert: {
 		Name:       "ChromaSitingVert",
 		Definition: "How chroma is subsampled vertically.",
 		Type:       ebml.Uinteger,
@@ -1027,7 +1280,7 @@ var mkvColour = ebml.Tag{
 			},
 		},
 	},
-	0x55b9: {
+	Range: {
 		Name:       "Range",
 		Definition: "Clipping of the color ranges.",
 		Type:       ebml.Uinteger,
@@ -1050,7 +1303,7 @@ var mkvColour = ebml.Tag{
 			},
 		},
 	},
-	0x55ba: {
+	TransferCharacteristics: {
 		Name:       "TransferCharacteristics",
 		Definition: "The transfer characteristics of the video. For clarity, the value and meanings for TransferCharacteristics are adopted from Table 3 of  ISO/IEC 23091-4 or ITU-T H.273.",
 		Type:       ebml.Uinteger,
@@ -1133,7 +1386,7 @@ var mkvColour = ebml.Tag{
 			},
 		},
 	},
-	0x55bb: {
+	Primaries: {
 		Name:       "Primaries",
 		Definition: "The colour primaries of the video. For clarity, the value and meanings for Primaries are adopted from Table 2 of ISO/IEC 23091-4 or ITU-T H.273.",
 		Type:       ebml.Uinteger,
@@ -1196,17 +1449,17 @@ var mkvColour = ebml.Tag{
 			},
 		},
 	},
-	0x55bc: {
+	MaxCLL: {
 		Name:       "MaxCLL",
 		Definition: "Maximum brightness of a single pixel (Maximum Content Light Level) in candelas per square meter (cd/m²).",
 		Type:       ebml.Uinteger,
 	},
-	0x55bd: {
+	MaxFALL: {
 		Name:       "MaxFALL",
 		Definition: "Maximum brightness of a single full frame (Maximum Frame-Average Light Level) in candelas per square meter (cd/m²).",
 		Type:       ebml.Uinteger,
 	},
-	0x55d0: {
+	MasteringMetadata: {
 		Name:       "MasteringMetadata",
 		Definition: "SMPTE 2086 mastering data.",
 		Type:       ebml.Master, Tag: mkvMasteringMetadata,
@@ -1214,52 +1467,52 @@ var mkvColour = ebml.Tag{
 }
 
 var mkvMasteringMetadata = ebml.Tag{
-	0x55d1: {
+	PrimaryRChromaticityX: {
 		Name:       "PrimaryRChromaticityX",
 		Definition: "Red X chromaticity coordinate as defined by CIE 1931.",
 		Type:       ebml.Float,
 	},
-	0x55d2: {
+	PrimaryRChromaticityY: {
 		Name:       "PrimaryRChromaticityY",
 		Definition: "Red Y chromaticity coordinate as defined by CIE 1931.",
 		Type:       ebml.Float,
 	},
-	0x55d3: {
+	PrimaryGChromaticityX: {
 		Name:       "PrimaryGChromaticityX",
 		Definition: "Green X chromaticity coordinate as defined by CIE 1931.",
 		Type:       ebml.Float,
 	},
-	0x55d4: {
+	PrimaryGChromaticityY: {
 		Name:       "PrimaryGChromaticityY",
 		Definition: "Green Y chromaticity coordinate as defined by CIE 1931.",
 		Type:       ebml.Float,
 	},
-	0x55d5: {
+	PrimaryBChromaticityX: {
 		Name:       "PrimaryBChromaticityX",
 		Definition: "Blue X chromaticity coordinate as defined by CIE 1931.",
 		Type:       ebml.Float,
 	},
-	0x55d6: {
+	PrimaryBChromaticityY: {
 		Name:       "PrimaryBChromaticityY",
 		Definition: "Blue Y chromaticity coordinate as defined by CIE 1931.",
 		Type:       ebml.Float,
 	},
-	0x55d7: {
+	WhitePointChromaticityX: {
 		Name:       "WhitePointChromaticityX",
 		Definition: "White X chromaticity coordinate as defined by CIE 1931.",
 		Type:       ebml.Float,
 	},
-	0x55d8: {
+	WhitePointChromaticityY: {
 		Name:       "WhitePointChromaticityY",
 		Definition: "White Y chromaticity coordinate as defined by CIE 1931.",
 		Type:       ebml.Float,
 	},
-	0x55d9: {
+	LuminanceMax: {
 		Name:       "LuminanceMax",
 		Definition: "Maximum luminance. Represented in candelas per square meter (cd/m²).",
 		Type:       ebml.Float,
 	},
-	0x55da: {
+	LuminanceMin: {
 		Name:       "LuminanceMin",
 		Definition: "Minimum luminance. Represented in candelas per square meter (cd/m²).",
 		Type:       ebml.Float,
@@ -1267,7 +1520,7 @@ var mkvMasteringMetadata = ebml.Tag{
 }
 
 var mkvProjection = ebml.Tag{
-	0x7671: {
+	ProjectionType: {
 		Name:       "ProjectionType",
 		Definition: "Describes the projection used for this video track.",
 		Type:       ebml.Uinteger,
@@ -1290,22 +1543,22 @@ var mkvProjection = ebml.Tag{
 			},
 		},
 	},
-	0x7672: {
+	ProjectionPrivate: {
 		Name:       "ProjectionPrivate",
 		Definition: "Private data that only applies to a specific projection.SemanticsIf ProjectionType equals 0 (Rectangular),\n     then this element must not be present.If ProjectionType equals 1 (Equirectangular), then this element must be present and contain the same binary data that would be stored inside\n      an ISOBMFF Equirectangular Projection Box ('equi').If ProjectionType equals 2 (Cubemap), then this element must be present and contain the same binary data that would be stored \n      inside an ISOBMFF Cubemap Projection Box ('cbmp').If ProjectionType equals 3 (Mesh), then this element must be present and contain the same binary data that would be stored inside\n       an ISOBMFF Mesh Projection Box ('mshp').Note: ISOBMFF box size and fourcc fields are not included in the binary data, but the FullBox version and flag fields are. This is to avoid \n       redundant framing information while preserving versioning and semantics between the two container formats.",
 		Type:       ebml.Binary,
 	},
-	0x7673: {
+	ProjectionPoseYaw: {
 		Name:       "ProjectionPoseYaw",
 		Definition: "Specifies a yaw rotation to the projection.SemanticsValue represents a clockwise rotation, in degrees, around the up vector. This rotation must be applied before any ProjectionPosePitch or ProjectionPoseRoll rotations. The value of this field should be in the -180 to 180 degree range.",
 		Type:       ebml.Float,
 	},
-	0x7674: {
+	ProjectionPosePitch: {
 		Name:       "ProjectionPosePitch",
 		Definition: "Specifies a pitch rotation to the projection.SemanticsValue represents a counter-clockwise rotation, in degrees, around the right vector. This rotation must be applied after the ProjectionPoseYaw rotation and before the ProjectionPoseRoll rotation. The value of this field should be in the -90 to 90 degree range.",
 		Type:       ebml.Float,
 	},
-	0x7675: {
+	ProjectionPoseRoll: {
 		Name:       "ProjectionPoseRoll",
 		Definition: "Specifies a roll rotation to the projection.SemanticsValue represents a counter-clockwise rotation, in degrees, around the forward vector. This rotation must be applied after the ProjectionPoseYaw and ProjectionPosePitch rotations. The value of this field should be in the -180 to 180 degree range.",
 		Type:       ebml.Float,
@@ -1313,27 +1566,27 @@ var mkvProjection = ebml.Tag{
 }
 
 var mkvAudio = ebml.Tag{
-	0xb5: {
+	SamplingFrequency: {
 		Name:       "SamplingFrequency",
 		Definition: "Sampling frequency in Hz.",
 		Type:       ebml.Float,
 	},
-	0x78b5: {
+	OutputSamplingFrequency: {
 		Name:       "OutputSamplingFrequency",
 		Definition: "Real output sampling frequency in Hz (used for SBR techniques).",
 		Type:       ebml.Float,
 	},
-	0x9f: {
+	Channels: {
 		Name:       "Channels",
 		Definition: "Numbers of channels in the track.",
 		Type:       ebml.Uinteger,
 	},
-	0x7d7b: {
+	ChannelPositions: {
 		Name:       "ChannelPositions",
 		Definition: "Table of horizontal angles for each successive channel, see .",
 		Type:       ebml.Binary,
 	},
-	0x6264: {
+	BitDepth: {
 		Name:       "BitDepth",
 		Definition: "Bits per sample, mostly used for PCM.",
 		Type:       ebml.Uinteger,
@@ -1341,12 +1594,12 @@ var mkvAudio = ebml.Tag{
 }
 
 var mkvTrackOperation = ebml.Tag{
-	0xe3: {
+	TrackCombinePlanes: {
 		Name:       "TrackCombinePlanes",
 		Definition: "Contains the list of all video plane tracks that need to be combined to create this 3D track",
 		Type:       ebml.Master, Tag: mkvTrackCombinePlanes,
 	},
-	0xe9: {
+	TrackJoinBlocks: {
 		Name:       "TrackJoinBlocks",
 		Definition: "Contains the list of all tracks whose Blocks need to be combined to create this virtual track",
 		Type:       ebml.Master, Tag: mkvTrackJoinBlocks,
@@ -1354,7 +1607,7 @@ var mkvTrackOperation = ebml.Tag{
 }
 
 var mkvTrackCombinePlanes = ebml.Tag{
-	0xe4: {
+	TrackPlane: {
 		Name:       "TrackPlane",
 		Definition: "Contains a video plane track that need to be combined to create this 3D track",
 		Type:       ebml.Master, Tag: mkvTrackPlane,
@@ -1362,12 +1615,12 @@ var mkvTrackCombinePlanes = ebml.Tag{
 }
 
 var mkvTrackPlane = ebml.Tag{
-	0xe5: {
+	TrackPlaneUID: {
 		Name:       "TrackPlaneUID",
 		Definition: "The trackUID number of the track representing the plane.",
 		Type:       ebml.Uinteger,
 	},
-	0xe6: {
+	TrackPlaneType: {
 		Name:       "TrackPlaneType",
 		Definition: "The kind of plane this track corresponds to.",
 		Type:       ebml.Uinteger,
@@ -1389,7 +1642,7 @@ var mkvTrackPlane = ebml.Tag{
 }
 
 var mkvTrackJoinBlocks = ebml.Tag{
-	0xed: {
+	TrackJoinUID: {
 		Name:       "TrackJoinUID",
 		Definition: "The trackUID number of a track whose blocks are used to create this virtual track.",
 		Type:       ebml.Uinteger,
@@ -1397,7 +1650,7 @@ var mkvTrackJoinBlocks = ebml.Tag{
 }
 
 var mkvContentEncodings = ebml.Tag{
-	0x6240: {
+	ContentEncoding: {
 		Name:       "ContentEncoding",
 		Definition: "Settings for one content encoding like compression or encryption.",
 		Type:       ebml.Master, Tag: mkvContentEncoding,
@@ -1405,12 +1658,12 @@ var mkvContentEncodings = ebml.Tag{
 }
 
 var mkvContentEncoding = ebml.Tag{
-	0x5031: {
+	ContentEncodingOrder: {
 		Name:       "ContentEncodingOrder",
 		Definition: "Tells when this modification was used during encoding/muxing starting with 0 and counting upwards. The decoder/demuxer has to start with the highest order number it finds and work its way down. This value has to be unique over all ContentEncodingOrder Elements in the TrackEntry that contains this ContentEncodingOrder element.",
 		Type:       ebml.Uinteger,
 	},
-	0x5032: {
+	ContentEncodingScope: {
 		Name:       "ContentEncodingScope",
 		Definition: "A bit field that describes which Elements have been modified in this way. Values (big endian) can be OR'ed.",
 		Type:       ebml.Uinteger,
@@ -1429,7 +1682,7 @@ var mkvContentEncoding = ebml.Tag{
 			},
 		},
 	},
-	0x5033: {
+	ContentEncodingType: {
 		Name:       "ContentEncodingType",
 		Definition: "A value describing what kind of transformation is applied.",
 		Type:       ebml.Uinteger,
@@ -1444,12 +1697,12 @@ var mkvContentEncoding = ebml.Tag{
 			},
 		},
 	},
-	0x5034: {
+	ContentCompression: {
 		Name:       "ContentCompression",
 		Definition: "Settings describing the compression used. This Element MUST be present if the value of ContentEncodingType is 0 and absent otherwise. Each block MUST be decompressable even if no previous block is available in order not to prevent seeking.",
 		Type:       ebml.Master, Tag: mkvContentCompression,
 	},
-	0x5035: {
+	ContentEncryption: {
 		Name:       "ContentEncryption",
 		Definition: "Settings describing the encryption used. This Element MUST be present if the value of `ContentEncodingType` is 1 (encryption) and MUST be ignored otherwise.",
 		Type:       ebml.Master, Tag: mkvContentEncryption,
@@ -1457,7 +1710,7 @@ var mkvContentEncoding = ebml.Tag{
 }
 
 var mkvContentCompression = ebml.Tag{
-	0x4254: {
+	ContentCompAlgo: {
 		Name:       "ContentCompAlgo",
 		Definition: "The compression algorithm used.",
 		Type:       ebml.Uinteger,
@@ -1480,7 +1733,7 @@ var mkvContentCompression = ebml.Tag{
 			},
 		},
 	},
-	0x4255: {
+	ContentCompSettings: {
 		Name:       "ContentCompSettings",
 		Definition: "Settings that might be needed by the decompressor. For Header Stripping (`ContentCompAlgo`=3), the bytes that were removed from the beginning of each frames of the track.",
 		Type:       ebml.Binary,
@@ -1488,7 +1741,7 @@ var mkvContentCompression = ebml.Tag{
 }
 
 var mkvContentEncryption = ebml.Tag{
-	0x47e1: {
+	ContentEncAlgo: {
 		Name:       "ContentEncAlgo",
 		Definition: "The encryption algorithm used. The value '0' means that the contents have not been encrypted but only signed.",
 		Type:       ebml.Uinteger,
@@ -1519,27 +1772,27 @@ var mkvContentEncryption = ebml.Tag{
 			},
 		},
 	},
-	0x47e2: {
+	ContentEncKeyID: {
 		Name:       "ContentEncKeyID",
 		Definition: "For public key algorithms this is the ID of the public key the the data was encrypted with.",
 		Type:       ebml.Binary,
 	},
-	0x47e7: {
+	ContentEncAESSettings: {
 		Name:       "ContentEncAESSettings",
 		Definition: "Settings describing the encryption algorithm used. If `ContentEncAlgo` != 5 this MUST be ignored.",
 		Type:       ebml.Master, Tag: mkvContentEncAESSettings,
 	},
-	0x47e3: {
+	ContentSignature: {
 		Name:       "ContentSignature",
 		Definition: "A cryptographic signature of the contents.",
 		Type:       ebml.Binary,
 	},
-	0x47e4: {
+	ContentSigKeyID: {
 		Name:       "ContentSigKeyID",
 		Definition: "This is the ID of the private key the data was signed with.",
 		Type:       ebml.Binary,
 	},
-	0x47e5: {
+	ContentSigAlgo: {
 		Name:       "ContentSigAlgo",
 		Definition: "The algorithm used for the signature.",
 		Type:       ebml.Uinteger,
@@ -1554,7 +1807,7 @@ var mkvContentEncryption = ebml.Tag{
 			},
 		},
 	},
-	0x47e6: {
+	ContentSigHashAlgo: {
 		Name:       "ContentSigHashAlgo",
 		Definition: "The hash algorithm used for the signature.",
 		Type:       ebml.Uinteger,
@@ -1576,7 +1829,7 @@ var mkvContentEncryption = ebml.Tag{
 }
 
 var mkvContentEncAESSettings = ebml.Tag{
-	0x47e8: {
+	AESSettingsCipherMode: {
 		Name:       "AESSettingsCipherMode",
 		Definition: "The AES cipher mode used in the encryption.",
 		Type:       ebml.Uinteger,
@@ -1594,7 +1847,7 @@ var mkvContentEncAESSettings = ebml.Tag{
 }
 
 var mkvCues = ebml.Tag{
-	0xbb: {
+	CuePoint: {
 		Name:       "CuePoint",
 		Definition: "Contains all information relative to a seek point in the Segment.",
 		Type:       ebml.Master, Tag: mkvCuePoint,
@@ -1602,12 +1855,12 @@ var mkvCues = ebml.Tag{
 }
 
 var mkvCuePoint = ebml.Tag{
-	0xb3: {
+	CueTime: {
 		Name:       "CueTime",
 		Definition: "Absolute timestamp according to the Segment time base.",
 		Type:       ebml.Uinteger,
 	},
-	0xb7: {
+	CueTrackPositions: {
 		Name:       "CueTrackPositions",
 		Definition: "Contain positions for different tracks corresponding to the timestamp.",
 		Type:       ebml.Master, Tag: mkvCueTrackPositions,
@@ -1615,37 +1868,37 @@ var mkvCuePoint = ebml.Tag{
 }
 
 var mkvCueTrackPositions = ebml.Tag{
-	0xf7: {
+	CueTrack: {
 		Name:       "CueTrack",
 		Definition: "The track for which a position is given.",
 		Type:       ebml.Uinteger,
 	},
-	0xf1: {
+	CueClusterPosition: {
 		Name:       "CueClusterPosition",
 		Definition: "The Segment Position of the Cluster containing the associated Block.",
 		Type:       ebml.Uinteger,
 	},
-	0xf0: {
+	CueRelativePosition: {
 		Name:       "CueRelativePosition",
 		Definition: "The relative position inside the Cluster of the referenced SimpleBlock or BlockGroup with 0 being the first possible position for an Element inside that Cluster.",
 		Type:       ebml.Uinteger,
 	},
-	0xb2: {
+	CueDuration: {
 		Name:       "CueDuration",
 		Definition: "The duration of the block according to the Segment time base. If missing the track's DefaultDuration does not apply and no duration information is available in terms of the cues.",
 		Type:       ebml.Uinteger,
 	},
-	0x5378: {
+	CueBlockNumber: {
 		Name:       "CueBlockNumber",
 		Definition: "Number of the Block in the specified Cluster.",
 		Type:       ebml.Uinteger,
 	},
-	0xea: {
+	CueCodecState: {
 		Name:       "CueCodecState",
 		Definition: "The Segment Position of the Codec State corresponding to this Cue Element. 0 means that the data is taken from the initial Track Entry.",
 		Type:       ebml.Uinteger,
 	},
-	0xdb: {
+	CueReference: {
 		Name:       "CueReference",
 		Definition: "The Clusters containing the referenced Blocks.",
 		Type:       ebml.Master, Tag: mkvCueReference,
@@ -1653,22 +1906,22 @@ var mkvCueTrackPositions = ebml.Tag{
 }
 
 var mkvCueReference = ebml.Tag{
-	0x96: {
+	CueRefTime: {
 		Name:       "CueRefTime",
 		Definition: "Timestamp of the referenced Block.",
 		Type:       ebml.Uinteger,
 	},
-	0x97: {
+	CueRefCluster: {
 		Name:       "CueRefCluster",
 		Definition: "The Segment Position of the Cluster containing the referenced Block.",
 		Type:       ebml.Uinteger,
 	},
-	0x535f: {
+	CueRefNumber: {
 		Name:       "CueRefNumber",
 		Definition: "Number of the referenced Block of Track X in the specified Cluster.",
 		Type:       ebml.Uinteger,
 	},
-	0xeb: {
+	CueRefCodecState: {
 		Name:       "CueRefCodecState",
 		Definition: "The Segment Position of the Codec State corresponding to this referenced Element. 0 means that the data is taken from the initial Track Entry.",
 		Type:       ebml.Uinteger,
@@ -1676,7 +1929,7 @@ var mkvCueReference = ebml.Tag{
 }
 
 var mkvAttachments = ebml.Tag{
-	0x61a7: {
+	AttachedFile: {
 		Name:       "AttachedFile",
 		Definition: "An attached file.",
 		Type:       ebml.Master, Tag: mkvAttachedFile,
@@ -1684,42 +1937,42 @@ var mkvAttachments = ebml.Tag{
 }
 
 var mkvAttachedFile = ebml.Tag{
-	0x467e: {
+	FileDescription: {
 		Name:       "FileDescription",
 		Definition: "A human-friendly name for the attached file.",
 		Type:       ebml.UTF8,
 	},
-	0x466e: {
+	FileName: {
 		Name:       "FileName",
 		Definition: "Filename of the attached file.",
 		Type:       ebml.UTF8,
 	},
-	0x4660: {
+	FileMimeType: {
 		Name:       "FileMimeType",
 		Definition: "MIME type of the file.",
 		Type:       ebml.String,
 	},
-	0x465c: {
+	FileData: {
 		Name:       "FileData",
 		Definition: "The data of the file.",
 		Type:       ebml.Binary,
 	},
-	0x46ae: {
+	FileUID: {
 		Name:       "FileUID",
 		Definition: "Unique ID representing the file, as random as possible.",
 		Type:       ebml.Uinteger,
 	},
-	0x4675: {
+	FileReferral: {
 		Name:       "FileReferral",
 		Definition: "A binary value that a track/codec can refer to when the attachment is needed.",
 		Type:       ebml.Binary,
 	},
-	0x4661: {
+	FileUsedStartTime: {
 		Name:       "FileUsedStartTime",
 		Definition: "",
 		Type:       ebml.Uinteger,
 	},
-	0x4662: {
+	FileUsedEndTime: {
 		Name:       "FileUsedEndTime",
 		Definition: "",
 		Type:       ebml.Uinteger,
@@ -1727,7 +1980,7 @@ var mkvAttachedFile = ebml.Tag{
 }
 
 var mkvChapters = ebml.Tag{
-	0x45b9: {
+	EditionEntry: {
 		Name:       "EditionEntry",
 		Definition: "Contains all information about a Segment edition.",
 		Type:       ebml.Master, Tag: mkvEditionEntry,
@@ -1735,27 +1988,27 @@ var mkvChapters = ebml.Tag{
 }
 
 var mkvEditionEntry = ebml.Tag{
-	0x45bc: {
+	EditionUID: {
 		Name:       "EditionUID",
 		Definition: "A unique ID to identify the edition. It's useful for tagging an edition.",
 		Type:       ebml.Uinteger,
 	},
-	0x45bd: {
+	EditionFlagHidden: {
 		Name:       "EditionFlagHidden",
 		Definition: "If an edition is hidden (1), it SHOULD NOT be available to the user interface (but still to Control Tracks; see ). (1 bit)",
 		Type:       ebml.Uinteger,
 	},
-	0x45db: {
+	EditionFlagDefault: {
 		Name:       "EditionFlagDefault",
 		Definition: "If a flag is set (1) the edition SHOULD be used as the default one. (1 bit)",
 		Type:       ebml.Uinteger,
 	},
-	0x45dd: {
+	EditionFlagOrdered: {
 		Name:       "EditionFlagOrdered",
 		Definition: "Specify if the chapters can be defined multiple times and the order to play them is enforced. (1 bit)",
 		Type:       ebml.Uinteger,
 	},
-	0xb6: {
+	ChapterAtom: {
 		Name:       "ChapterAtom",
 		Definition: "Contains the atom information to use as the chapter atom (apply to all tracks).",
 		Type:       ebml.Master, Tag: mkvChapterAtom,
@@ -1763,62 +2016,62 @@ var mkvEditionEntry = ebml.Tag{
 }
 
 var mkvChapterAtom = ebml.Tag{
-	0x73c4: {
+	ChapterUID: {
 		Name:       "ChapterUID",
 		Definition: "A unique ID to identify the Chapter.",
 		Type:       ebml.Uinteger,
 	},
-	0x5654: {
+	ChapterStringUID: {
 		Name:       "ChapterStringUID",
 		Definition: "A unique string ID to identify the Chapter. Use for .",
 		Type:       ebml.UTF8,
 	},
-	0x91: {
+	ChapterTimeStart: {
 		Name:       "ChapterTimeStart",
 		Definition: "Timestamp of the start of Chapter (not scaled).",
 		Type:       ebml.Uinteger,
 	},
-	0x92: {
+	ChapterTimeEnd: {
 		Name:       "ChapterTimeEnd",
 		Definition: "Timestamp of the end of Chapter (timestamp excluded, not scaled).",
 		Type:       ebml.Uinteger,
 	},
-	0x98: {
+	ChapterFlagHidden: {
 		Name:       "ChapterFlagHidden",
 		Definition: "If a chapter is hidden (1), it SHOULD NOT be available to the user interface (but still to Control Tracks; see ). (1 bit)",
 		Type:       ebml.Uinteger,
 	},
-	0x4598: {
+	ChapterFlagEnabled: {
 		Name:       "ChapterFlagEnabled",
 		Definition: "Specify whether the chapter is enabled. It can be enabled/disabled by a Control Track. When disabled, the movie SHOULD skip all the content between the TimeStart and TimeEnd of this chapter (see ). (1 bit)",
 		Type:       ebml.Uinteger,
 	},
-	0x6e67: {
+	ChapterSegmentUID: {
 		Name:       "ChapterSegmentUID",
 		Definition: "The SegmentUID of another Segment to play during this chapter.",
 		Type:       ebml.Binary,
 	},
-	0x6ebc: {
+	ChapterSegmentEditionUID: {
 		Name:       "ChapterSegmentEditionUID",
 		Definition: "The EditionUID to play from the Segment linked in ChapterSegmentUID. If ChapterSegmentEditionUID is undeclared then no Edition of the linked Segment is used.",
 		Type:       ebml.Uinteger,
 	},
-	0x63c3: {
+	ChapterPhysicalEquiv: {
 		Name:       "ChapterPhysicalEquiv",
 		Definition: "Specify the physical equivalent of this ChapterAtom like \"DVD\" (60) or \"SIDE\" (50), see .",
 		Type:       ebml.Uinteger,
 	},
-	0x8f: {
+	ChapterTrack: {
 		Name:       "ChapterTrack",
 		Definition: "List of tracks on which the chapter applies. If this Element is not present, all tracks apply",
 		Type:       ebml.Master, Tag: mkvChapterTrack,
 	},
-	0x80: {
+	ChapterDisplay: {
 		Name:       "ChapterDisplay",
 		Definition: "Contains all possible strings to use for the chapter display.",
 		Type:       ebml.Master, Tag: mkvChapterDisplay,
 	},
-	0x6944: {
+	ChapProcess: {
 		Name:       "ChapProcess",
 		Definition: "Contains all the commands associated to the Atom.",
 		Type:       ebml.Master, Tag: mkvChapProcess,
@@ -1826,7 +2079,7 @@ var mkvChapterAtom = ebml.Tag{
 }
 
 var mkvChapterTrack = ebml.Tag{
-	0x89: {
+	ChapterTrackUID: {
 		Name:       "ChapterTrackUID",
 		Definition: "UID of the Track to apply this chapter too. In the absence of a control track, choosing this chapter will select the listed Tracks and deselect unlisted tracks. Absence of this Element indicates that the Chapter SHOULD be applied to any currently used Tracks.",
 		Type:       ebml.Uinteger,
@@ -1834,22 +2087,22 @@ var mkvChapterTrack = ebml.Tag{
 }
 
 var mkvChapterDisplay = ebml.Tag{
-	0x85: {
+	ChapString: {
 		Name:       "ChapString",
 		Definition: "Contains the string to use as the chapter atom.",
 		Type:       ebml.UTF8,
 	},
-	0x437c: {
+	ChapLanguage: {
 		Name:       "ChapLanguage",
 		Definition: "The languages corresponding to the string, in the . This Element MUST be ignored if the ChapLanguageIETF Element is used within the same ChapterDisplay Element.",
 		Type:       ebml.String,
 	},
-	0x437d: {
+	ChapLanguageIETF: {
 		Name:       "ChapLanguageIETF",
 		Definition: "Specifies the language used in the ChapString according to  and using the . If this Element is used, then any ChapLanguage Elements used in the same ChapterDisplay MUST be ignored.",
 		Type:       ebml.String,
 	},
-	0x437e: {
+	ChapCountry: {
 		Name:       "ChapCountry",
 		Definition: "The countries corresponding to the string, same 2 octets as in . This Element MUST be ignored if the ChapLanguageIETF Element is used within the same ChapterDisplay Element.",
 		Type:       ebml.String,
@@ -1857,17 +2110,17 @@ var mkvChapterDisplay = ebml.Tag{
 }
 
 var mkvChapProcess = ebml.Tag{
-	0x6955: {
+	ChapProcessCodecID: {
 		Name:       "ChapProcessCodecID",
 		Definition: "Contains the type of the codec used for the processing. A value of 0 means native Matroska processing (to be defined), a value of 1 means the  command set is used. More codec IDs can be added later.",
 		Type:       ebml.Uinteger,
 	},
-	0x450d: {
+	ChapProcessPrivate: {
 		Name:       "ChapProcessPrivate",
 		Definition: "Some optional data attached to the ChapProcessCodecID information. , it is the \"DVD level\" equivalent.",
 		Type:       ebml.Binary,
 	},
-	0x6911: {
+	ChapProcessCommand: {
 		Name:       "ChapProcessCommand",
 		Definition: "Contains all the commands associated to the Atom.",
 		Type:       ebml.Master, Tag: mkvChapProcessCommand,
@@ -1875,7 +2128,7 @@ var mkvChapProcess = ebml.Tag{
 }
 
 var mkvChapProcessCommand = ebml.Tag{
-	0x6922: {
+	ChapProcessTime: {
 		Name:       "ChapProcessTime",
 		Definition: "Defines when the process command SHOULD be handled",
 		Type:       ebml.Uinteger,
@@ -1894,7 +2147,7 @@ var mkvChapProcessCommand = ebml.Tag{
 			},
 		},
 	},
-	0x6933: {
+	ChapProcessData: {
 		Name:       "ChapProcessData",
 		Definition: "Contains the command information. The data SHOULD be interpreted depending on the ChapProcessCodecID value. , the data correspond to the binary DVD cell pre/post commands.",
 		Type:       ebml.Binary,
@@ -1902,7 +2155,7 @@ var mkvChapProcessCommand = ebml.Tag{
 }
 
 var mkvTags = ebml.Tag{
-	0x7373: {
+	Tag: {
 		Name:       "Tag",
 		Definition: "A single metadata descriptor.",
 		Type:       ebml.Master, Tag: mkvTag,
@@ -1910,12 +2163,12 @@ var mkvTags = ebml.Tag{
 }
 
 var mkvTag = ebml.Tag{
-	0x63c0: {
+	Targets: {
 		Name:       "Targets",
 		Definition: "Specifies which other elements the metadata represented by the Tag applies to. If empty or not present, then the Tag describes everything in the Segment.",
 		Type:       ebml.Master, Tag: mkvTargets,
 	},
-	0x67c8: {
+	SimpleTag: {
 		Name:       "SimpleTag",
 		Definition: "Contains general information about the target.",
 		Type:       ebml.Master, Tag: mkvSimpleTag,
@@ -1923,7 +2176,7 @@ var mkvTag = ebml.Tag{
 }
 
 var mkvTargets = ebml.Tag{
-	0x68ca: {
+	TargetTypeValue: {
 		Name:       "TargetTypeValue",
 		Definition: "A number to indicate the logical level of the target.",
 		Type:       ebml.Uinteger,
@@ -1965,7 +2218,7 @@ var mkvTargets = ebml.Tag{
 			},
 		},
 	},
-	0x63ca: {
+	TargetType: {
 		Name:       "TargetType",
 		Definition: "An informational string that can be used to display the logical level of the target like \"ALBUM\", \"TRACK\", \"MOVIE\", \"CHAPTER\", etc (see ).",
 		Type:       ebml.String,
@@ -2056,22 +2309,22 @@ var mkvTargets = ebml.Tag{
 			},
 		},
 	},
-	0x63c5: {
+	TagTrackUID: {
 		Name:       "TagTrackUID",
 		Definition: "A unique ID to identify the Track(s) the tags belong to. If the value is 0 at this level, the tags apply to all tracks in the Segment.",
 		Type:       ebml.Uinteger,
 	},
-	0x63c9: {
+	TagEditionUID: {
 		Name:       "TagEditionUID",
 		Definition: "A unique ID to identify the EditionEntry(s) the tags belong to. If the value is 0 at this level, the tags apply to all editions in the Segment.",
 		Type:       ebml.Uinteger,
 	},
-	0x63c4: {
+	TagChapterUID: {
 		Name:       "TagChapterUID",
 		Definition: "A unique ID to identify the Chapter(s) the tags belong to. If the value is 0 at this level, the tags apply to all chapters in the Segment.",
 		Type:       ebml.Uinteger,
 	},
-	0x63c6: {
+	TagAttachmentUID: {
 		Name:       "TagAttachmentUID",
 		Definition: "A unique ID to identify the Attachment(s) the tags belong to. If the value is 0 at this level, the tags apply to all the attachments in the Segment.",
 		Type:       ebml.Uinteger,
@@ -2079,32 +2332,32 @@ var mkvTargets = ebml.Tag{
 }
 
 var mkvSimpleTag = ebml.Tag{
-	0x45a3: {
+	TagName: {
 		Name:       "TagName",
 		Definition: "The name of the Tag that is going to be stored.",
 		Type:       ebml.UTF8,
 	},
-	0x447a: {
+	TagLanguage: {
 		Name:       "TagLanguage",
 		Definition: "Specifies the language of the tag specified, in the . This Element MUST be ignored if the TagLanguageIETF Element is used within the same SimpleTag Element.",
 		Type:       ebml.String,
 	},
-	0x447b: {
+	TagLanguageIETF: {
 		Name:       "TagLanguageIETF",
 		Definition: "Specifies the language used in the TagString according to  and using the . If this Element is used, then any TagLanguage Elements used in the same SimpleTag MUST be ignored.",
 		Type:       ebml.String,
 	},
-	0x4484: {
+	TagDefault: {
 		Name:       "TagDefault",
 		Definition: "A boolean value to indicate if this is the default/original language to use for the given tag.",
 		Type:       ebml.Uinteger,
 	},
-	0x4487: {
+	TagString: {
 		Name:       "TagString",
 		Definition: "The value of the Tag.",
 		Type:       ebml.UTF8,
 	},
-	0x4485: {
+	TagBinary: {
 		Name:       "TagBinary",
 		Definition: "The values of the Tag if it is binary. Note that this cannot be used in the same SimpleTag as TagString.",
 		Type:       ebml.Binary,

@@ -42,17 +42,29 @@ type Attribute struct {
 
 type Tag map[uint64]Attribute
 
+const (
+	CRC32              = 0xbf
+	Void               = 0xec
+	EBMLVersion        = 0x4286
+	EBMLReadVersion    = 0x42f7
+	EBMLMaxIDLength    = 0x42f2
+	EBMLMaxSizeLength  = 0x42f3
+	DocType            = 0x4282
+	DocTypeVersion     = 0x4287
+	DocTypeReadVersion = 0x4285
+)
+
 var Global = Tag{
-	0xbf: {Name: "CRC-32", Type: Binary},
-	0xec: {Name: "Void", Type: Binary},
+	CRC32: {Name: "CRC-32", Type: Binary},
+	Void:  {Name: "Void", Type: Binary},
 }
 
 var Header = Tag{
-	0x4286: {Name: "EBMLVersion", Type: Uinteger},
-	0x42f7: {Name: "EBMLReadVersion", Type: Uinteger},
-	0x42f2: {Name: "EBMLMaxIDLength", Type: Uinteger},
-	0x42f3: {Name: "EBMLMaxSizeLength", Type: Uinteger},
-	0x4282: {Name: "DocType", Type: String},
-	0x4287: {Name: "DocTypeVersion", Type: Uinteger},
-	0x4285: {Name: "DocTypeReadVersion", Type: Uinteger},
+	EBMLVersion:        {Name: "EBMLVersion", Type: Uinteger},
+	EBMLReadVersion:    {Name: "EBMLReadVersion", Type: Uinteger},
+	EBMLMaxIDLength:    {Name: "EBMLMaxIDLength", Type: Uinteger},
+	EBMLMaxSizeLength:  {Name: "EBMLMaxSizeLength", Type: Uinteger},
+	DocType:            {Name: "DocType", Type: String},
+	DocTypeVersion:     {Name: "DocTypeVersion", Type: Uinteger},
+	DocTypeReadVersion: {Name: "DocTypeReadVersion", Type: Uinteger},
 }

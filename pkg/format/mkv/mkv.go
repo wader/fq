@@ -152,14 +152,6 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 				}
 			}
 
-			const CRC = 0xbf
-			const SimpleBlock = 0xa3
-			const Block = 0xa1
-			const CodecPrivate = 0x63a2
-			const CodecID = 0x86
-			const TrackNumber = 0xd7
-			const TrackEntry = 0xae
-
 			d.FieldStructFn("element", func(d *decode.D) {
 				if tagID == TrackEntry {
 					dc.currentTrack = &track{}

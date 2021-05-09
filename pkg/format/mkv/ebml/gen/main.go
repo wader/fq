@@ -87,6 +87,12 @@ func main() {
 	var es Schema
 	xd.Decode(&es)
 
+	fmt.Println("const (")
+	for _, e := range es.Elements {
+		fmt.Printf("\t%s = %s\n", e.Name, e.ID)
+	}
+	fmt.Println(")")
+
 	for _, e := range es.Elements {
 		var children []Element
 		for _, c := range es.Elements {
@@ -102,7 +108,6 @@ func main() {
 
 		fmt.Printf("var %s%s = ebml.Tag{\n", prefix, e.Name)
 		for _, c := range children {
-			id := strings.ToLower(c.ID[2:])
 			def, defOk := findDefintion(c.Documentations)
 			extra := ""
 			typ := c.Type
@@ -113,7 +118,7 @@ func main() {
 				typ = "UTF8"
 			}
 
-			fmt.Printf("\t0x%s: {\n", id)
+			fmt.Printf("\t%s: {\n", c.Name)
 			fmt.Printf("\t\tName: %q,\n", c.Name)
 			if defOk {
 				fmt.Printf("\t\tDefinition: %q,\n", def)
