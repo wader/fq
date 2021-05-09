@@ -44,7 +44,7 @@ const (
 	ID3_V11            = "id3_v11"
 	ID3_V2             = "id3_v2"
 	JPEG               = "jpeg"
-	MKV                = "mkv"
+	MATROSKA           = "matroska"
 	MP3                = "mp3"
 	MP3_FRAME          = "mp3_frame"
 	MP3_XING           = "mp3_xing"

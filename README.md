@@ -127,7 +127,7 @@ TODO: piping
 |`id3_v11`            |ID3v1.1&nbsp;metadata                                         |<sub></sub>|
 |`id3_v2`             |ID3v2&nbsp;metadata                                           |<sub>`image`</sub>|
 |`jpeg`               |Joint&nbsp;Photographic&nbsp;Experts&nbsp;Group&nbsp;file     |<sub>`exif`, `icc_profile`</sub>|
-|`mkv`                |Matroska&nbsp;file                                            |<sub>`av1_ccr`, `av1_frame`, `flac_frame`, `flac_metadatablock`, `mp3_frame`, `aac_frame`, `mpeg_asc`, `avc_dcr`, `avc_au`, `hevc_dcr`, `hevc_au`, `mpeg_spu`, `mpeg_pes_packet`, `opus_packet`, `vorbis_packet`, `vp8_frame`, `vp9_frame`, `vp9_cfm`</sub>|
+|`matroska`           |Matroska&nbsp;file                                            |<sub>`av1_ccr`, `av1_frame`, `flac_frame`, `flac_metadatablock`, `mp3_frame`, `aac_frame`, `mpeg_asc`, `avc_dcr`, `avc_au`, `hevc_dcr`, `hevc_au`, `mpeg_spu`, `mpeg_pes_packet`, `opus_packet`, `vorbis_packet`, `vp8_frame`, `vp9_frame`, `vp9_cfm`</sub>|
 |`mp3`                |MP3&nbsp;file                                                 |<sub>`id3_v2`, `id3_v1`, `id3_v11`, `apev2`, `mp3_frame`</sub>|
 |`mp3_frame`          |MPEG&nbsp;audio&nbsp;layer&nbsp;3&nbsp;frame                  |<sub>`mp3_xing`</sub>|
 |`mp3_xing`           |Xing&nbsp;header                                              |<sub></sub>|
@@ -156,7 +156,7 @@ TODO: piping
 |`wav`                |WAV&nbsp;file                                                 |<sub>`id3_v2`, `id3_v1`, `id3_v11`</sub>|
 |`webp`               |WebP&nbsp;image                                               |<sub>`vp8_frame`</sub>|
 |`image`              |Group                                                         |<sub>`gif`, `jpeg`, `png`, `tiff`, `webp`</sub>|
-|`probe`              |Group                                                         |<sub>`aac_stream`, `adts`, `bzip2`, `elf`, `flac`, `gif`, `gzip`, `jpeg`, `mkv`, `mp3`, `mp4`, `mpeg_ts`, `ogg`, `png`, `tar`, `tiff`, `wav`, `webp`</sub>|
+|`probe`              |Group                                                         |<sub>`aac_stream`, `adts`, `bzip2`, `elf`, `flac`, `gif`, `gzip`, `jpeg`, `matroska`, `mp3`, `mp4`, `mpeg_ts`, `ogg`, `png`, `tar`, `tiff`, `wav`, `webp`</sub>|
 
 [#]: sh-end
 
