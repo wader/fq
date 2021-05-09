@@ -1,4 +1,6 @@
 
+unknown array, fill in with "unknown", _unknown true?
+
 verbose support hash digest bitbuf? compare files parts
 maybe binary filter "md5", "base64", "string" etc?
 
