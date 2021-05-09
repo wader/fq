@@ -104,11 +104,6 @@ func fieldDecodeVint(d *decode.D, name string, displayFormat decode.DisplayForma
 	})
 }
 
-var matroskaRoot = ebml.Tag{
-	ebml.HeaderID:           {Name: "EBML", Type: ebml.Master, Tag: ebml.Header},
-	ebml_matroska.SegmentID: {Name: "Segment", Type: ebml.Master, Tag: ebml_matroska.Segment},
-}
-
 type track struct {
 	parentD             *decode.D
 	number              int
@@ -286,7 +281,7 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 		d.Invalid("no EBML header found")
 	}
 	dc := &decodeContext{tracks: []*track{}}
-	decodeMaster(d, d.BitsLeft(), matroskaRoot, dc)
+	decodeMaster(d, d.BitsLeft(), ebml_matroska.Root, dc)
 
 	trackNumberToTrack := map[int]*track{}
 	for _, t := range dc.tracks {

@@ -78,10 +78,16 @@ func main() {
 	pkgName := os.Args[2]
 	ebmlPkgPath := os.Args[3]
 	prefix := os.Args[4]
+	root := os.Args[5]
 
 	fmt.Printf("// Code below generated from %s\n", xmlPath)
 	fmt.Printf("package %s\n", pkgName)
 	fmt.Printf("import %q\n", ebmlPkgPath)
+
+	fmt.Printf("var Root = ebml.Tag{\n")
+	fmt.Printf("\tebml.HeaderID: {Name: \"EBML\", Type: ebml.Master, Tag: ebml.Header},\n")
+	fmt.Printf("\t%sID: {Name: \"%s\", Type: ebml.Master, Tag: %s},\n", root, root, root)
+	fmt.Printf("}\n")
 
 	xd := xml.NewDecoder(r)
 	var es Schema
