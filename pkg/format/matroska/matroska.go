@@ -1,8 +1,5 @@
 package matroska
 
-// https://raw.githubusercontent.com/cellar-wg/matroska-specification/aa2144a58b661baf54b99bab41113d66b0f5ff62/ebml_matroska.xml
-//go:generate sh -c "go run ebml/gen/main.go ebml_matroska.xml matroska fq/pkg/format/matroska/ebml matroska | gofmt > ebml_matroska.go"
-
 // https://tools.ietf.org/html/draft-ietf-cellar-ebml-00
 // https://matroska.org/technical/specs/index.html
 // https://www.matroska.org/technical/basics.html
@@ -20,6 +17,7 @@ import (
 	"fq/pkg/decode"
 	"fq/pkg/format"
 	"fq/pkg/format/matroska/ebml"
+	"fq/pkg/format/matroska/ebml_matroska"
 	"fq/pkg/ranges"
 )
 
@@ -107,8 +105,8 @@ func fieldDecodeVint(d *decode.D, name string, displayFormat decode.DisplayForma
 }
 
 var matroskaRoot = ebml.Tag{
-	ebml.HeaderID: {Name: "EBML", Type: ebml.Master, Tag: ebml.Header},
-	SegmentID:     {Name: "Segment", Type: ebml.Master, Tag: matroskaSegment},
+	ebml.HeaderID:           {Name: "EBML", Type: ebml.Master, Tag: ebml.Header},
+	ebml_matroska.SegmentID: {Name: "Segment", Type: ebml.Master, Tag: ebml_matroska.Segment},
 }
 
 type track struct {
@@ -153,7 +151,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 			}
 
 			d.FieldStructFn("element", func(d *decode.D) {
-				if tagID == TrackEntryID {
+				if tagID == ebml_matroska.TrackEntryID {
 					dc.currentTrack = &track{}
 					dc.tracks = append(dc.tracks, dc.currentTrack)
 				}
@@ -191,7 +189,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 						return n, decode.NumberDecimal, ""
 					})
 
-					if dc.currentTrack != nil && tagID == TrackNumberID {
+					if dc.currentTrack != nil && tagID == ebml_matroska.TrackNumberID {
 						dc.currentTrack.number = int(v)
 					}
 				case ebml.Float:
@@ -207,7 +205,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 						return s, ""
 					})
 
-					if dc.currentTrack != nil && tagID == CodecIDID {
+					if dc.currentTrack != nil && tagID == ebml_matroska.CodecIDID {
 						dc.currentTrack.codec = v
 					}
 				case ebml.UTF8:
@@ -238,19 +236,19 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 				case ebml.Binary:
 
 					switch tagID {
-					case SimpleBlockID:
+					case ebml_matroska.SimpleBlockID:
 						dc.simpleBlocks = append(dc.simpleBlocks, simpleBlock{
 							d: d,
 							r: ranges.Range{Start: d.Pos(), Len: int64(tagSize) * 8},
 						})
 						d.SeekRel(int64(tagSize) * 8)
-					case BlockID:
+					case ebml_matroska.BlockID:
 						dc.blocks = append(dc.blocks, simpleBlock{
 							d: d,
 							r: ranges.Range{Start: d.Pos(), Len: int64(tagSize) * 8},
 						})
 						d.SeekRel(int64(tagSize) * 8)
-					case CodecPrivateID:
+					case ebml_matroska.CodecPrivateID:
 						if dc.currentTrack != nil {
 							dc.currentTrack.parentD = d
 							dc.currentTrack.codecPrivatePos = d.Pos()

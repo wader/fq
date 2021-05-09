@@ -3,44 +3,44 @@
 > fq -d mp3 test.mp3 'display({depth: 1})'
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: mp3
 0x000|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|  headers: [1]
-*    |29 bytes more until 0x2c.7                     |                |
+*    |until 0x2c.7 (45)                              |                |
 0x020|                                       ff fb 40|             ..@|  frames: [3]
 0x030|c0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
-*    |580 bytes more until 0x283.7 (end)             |                |
+*    |until 0x283.7 (end) (599)                      |                |
      |                                               |                |  footers: [0]
 > fq -d mp3 test.mp3 'display({depth: 2})'
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: mp3
      |                                               |                |  headers: [1]
 0x000|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|    [0]: id3_v2
-*    |29 bytes more until 0x2c.7                     |                |
+*    |until 0x2c.7 (45)                              |                |
      |                                               |                |  frames: [3]
 0x020|                                       ff fb 40|             ..@|    [0]: mp3_frame
 0x030|c0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
-*    |163 bytes more until 0xe2.7                    |                |
+*    |until 0xe2.7 (182)                             |                |
 0x0e0|         ff fb 50 c4 00 00 0a 2c 43 2e 55 94 80|   ..P....,C.U..|    [1]: mp3_frame
 0x0f0|01 80 93 6b 27 30 80 00 07 aa c3 8e 33 85 d3 64|...k'0......3..d|
-*    |179 bytes more until 0x1b2.7                   |                |
+*    |until 0x1b2.7 (208)                            |                |
 0x1b0|         ff fb 52 c4 04 83 c9 14 39 29 3c c3 00|   ..R.....9)<..|    [2]: mp3_frame
 0x1c0|00 00 00 34 80 00 00 04 11 4b 36 4a 08 83 58 c9|...4.....K6J..X.|
-*    |180 bytes more until 0x283.7 (end)             |                |
+*    |until 0x283.7 (end) (209)                      |                |
      |                                               |                |  footers: [0]
 > fq -d mp3 test.mp3 'display({depth: 1, displaybytes: 8})'
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: mp3
 0x000|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|  headers: [1]
-*    |29 bytes more until 0x2c.7                     |                |
+*    |until 0x2c.7 (45)                              |                |
 0x020|                                       ff fb 40|             ..@|  frames: [3]
 0x030|c0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
-*    |580 bytes more until 0x283.7 (end)             |                |
+*    |until 0x283.7 (end) (599)                      |                |
      |                                               |                |  footers: [0]
 > fq -d mp3 test.mp3 'display({depth: 1, linebytes: 8})'
      |00 01 02 03 04 05 06 07|        |.: mp3
 0x000|49 44 33 04 00 00 00 00|ID3.....|  headers: [1]
 0x008|00 23 54 53 53 45 00 00|.#TSSE..|
-*    |29 bytes more until 0x2c.7|        |
+*    |until 0x2c.7 (45)      |        |
 0x028|               ff fb 40|     ..@|  frames: [3]
 0x030|c0 00 00 00 00 00 00 00|........|
 0x038|00 00 00 00 00 00 00 00|........|
-*    |580 bytes more until 0x283.7 (end)|        |
+*    |until 0x283.7 (end) (599)|        |
      |                       |        |  footers: [0]
 > fq -d mp3 test.mp3 '.frames[0] | verbose({depth: 1, addrbase: 10})'
    |00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15|                |.frames[0]: mp3_frame (frame) 45-226.7 (182)
@@ -50,7 +50,7 @@
 064|00 00                                          |..              |
 064|      49 6e 66 6f 00 00 00 0f 00 00 00 02 00 00|  Info..........|  xing: mp3_xing 66-221.7 (156)
 080|02 57 00 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6|.W..............|
-*  |126 bytes more until 221.7                     |                |
+*  |until 221.7 (156)                              |                |
 208|                                          00 00|              ..|  padding: 0000000000 222-226.7 (5)
 224|00 00 00                                       |...             |
    |                                               |                |  crc_calculated: 827a 227-NA (0)
@@ -62,7 +62,7 @@
 0x40|00 00                                          |..              |
 0x40|      49 6e 66 6f 00 00 00 0f 00 00 00 02 00 00|  Info..........|  xing: mp3_xing 0x42-0xdd.7 (0x9c)
 0x50|02 57 00 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6|.W..............|
-*   |0x7e bytes more until 0xdd.7                   |                |
+*   |until 0xdd.7 (0x9c)                            |                |
 0xd0|                                          00 00|              ..|  padding: 0000000000 0xde-0xe2.7 (0x5)
 0xe0|00 00 00                                       |...             |
     |                                               |                |  crc_calculated: 827a 0xe3-NA (0x0)
