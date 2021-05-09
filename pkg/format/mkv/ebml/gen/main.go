@@ -89,7 +89,7 @@ func main() {
 
 	fmt.Println("const (")
 	for _, e := range es.Elements {
-		fmt.Printf("\t%s = %s\n", e.Name, e.ID)
+		fmt.Printf("\t%sID = %s\n", e.Name, e.ID)
 	}
 	fmt.Println(")")
 
@@ -118,7 +118,7 @@ func main() {
 				typ = "UTF8"
 			}
 
-			fmt.Printf("\t%s: {\n", c.Name)
+			fmt.Printf("\t%sID: {\n", c.Name)
 			fmt.Printf("\t\tName: %q,\n", c.Name)
 			if defOk {
 				fmt.Printf("\t\tDefinition: %q,\n", def)

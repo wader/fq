@@ -107,8 +107,8 @@ func fieldDecodeVint(d *decode.D, name string, displayFormat decode.DisplayForma
 }
 
 var mkvRoot = ebml.Tag{
-	0x1a45dfa3: {Name: "EBML", Type: ebml.Master, Tag: ebml.Header},
-	0x18538067: {Name: "Segment", Type: ebml.Master, Tag: mkvSegment},
+	ebml.HeaderID: {Name: "EBML", Type: ebml.Master, Tag: ebml.Header},
+	SegmentID:     {Name: "Segment", Type: ebml.Master, Tag: mkvSegment},
 }
 
 type track struct {
@@ -153,7 +153,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 			}
 
 			d.FieldStructFn("element", func(d *decode.D) {
-				if tagID == TrackEntry {
+				if tagID == TrackEntryID {
 					dc.currentTrack = &track{}
 					dc.tracks = append(dc.tracks, dc.currentTrack)
 				}
@@ -191,7 +191,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 						return n, decode.NumberDecimal, ""
 					})
 
-					if dc.currentTrack != nil && tagID == TrackNumber {
+					if dc.currentTrack != nil && tagID == TrackNumberID {
 						dc.currentTrack.number = int(v)
 					}
 				case ebml.Float:
@@ -207,7 +207,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 						return s, ""
 					})
 
-					if dc.currentTrack != nil && tagID == CodecID {
+					if dc.currentTrack != nil && tagID == CodecIDID {
 						dc.currentTrack.codec = v
 					}
 				case ebml.UTF8:
@@ -238,19 +238,19 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 				case ebml.Binary:
 
 					switch tagID {
-					case SimpleBlock:
+					case SimpleBlockID:
 						dc.simpleBlocks = append(dc.simpleBlocks, simpleBlock{
 							d: d,
 							r: ranges.Range{Start: d.Pos(), Len: int64(tagSize) * 8},
 						})
 						d.SeekRel(int64(tagSize) * 8)
-					case Block:
+					case BlockID:
 						dc.blocks = append(dc.blocks, simpleBlock{
 							d: d,
 							r: ranges.Range{Start: d.Pos(), Len: int64(tagSize) * 8},
 						})
 						d.SeekRel(int64(tagSize) * 8)
-					case CodecPrivate:
+					case CodecPrivateID:
 						if dc.currentTrack != nil {
 							dc.currentTrack.parentD = d
 							dc.currentTrack.codecPrivatePos = d.Pos()
