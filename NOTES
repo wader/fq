@@ -1,3 +1,6 @@
+FieldValue funcstions? return *Value
+MakeArray?
+
 hexdump uses io.Copy which is byte oritneted
 
 hex: "f" | hex, sub byte hex
