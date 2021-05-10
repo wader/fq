@@ -4,16 +4,16 @@ package mp4
 // FLAC in ISOBMFF https://github.com/xiph/flac/blob/master/doc/isoflac.txt
 // https://www.webmproject.org/vp9/mp4/
 // TODO: validate structure better? trak/stco etc
-// TODO: rename atom -> box?
 // TODO: fmp4, default samples sizes etc
 // TODO: keep track of structure somehow to detect errors
 // TODO: ISO-14496 says mp4 mdat can begin and end with original header/trailer (no used i guess?)
-// TODO: heic decode hevc samples (iloc box?)
 // TODO: more metadata
 // https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/Metadata/Metadata.html#//apple_ref/doc/uid/TP40000939-CH1-SW43
 // TODO: split into mov and mp4 decoder?
+// TODO: split into mp4_box decoder? needs complex in/out args?
 // TODO: fragmented: tracks per fragment? fragment_index in samples?
 // TODO: better probe, find first 2 boxes, should be free,ftyp or mdat?
+// TODO: mime
 
 import (
 	"bytes"
@@ -49,7 +49,6 @@ func init() {
 		Name:        format.MP4,
 		Description: "MPEG-4 file",
 		Groups:      []string{format.PROBE},
-		MIMEs:       []string{"audio/mp4", "video/mp4"},
 		DecodeFn:    mp4Decode,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.AV1_CCR}, Formats: &av1CCRFormat},
@@ -107,7 +106,7 @@ type decodeContext struct {
 	currentMoofOffset int64
 }
 
-func decodeAtom(ctx *decodeContext, d *decode.D) {
+func decodeBox(ctx *decodeContext, d *decode.D) {
 
 	aliases := map[string]string{
 		"styp": "ftyp",
@@ -145,8 +144,8 @@ func decodeAtom(ctx *decodeContext, d *decode.D) {
 			d.FieldU32("current_time")
 			d.FieldU32("next_track_id")
 		},
-		"trak": decodeAtoms,
-		"edts": decodeAtoms,
+		"trak": decodeBoxes,
+		"edts": decodeBoxes,
 		"elst": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
@@ -159,7 +158,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) {
 				i++
 			})
 		},
-		"tref": decodeAtoms,
+		"tref": decodeBoxes,
 		"tkhd": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			// TODO: values
@@ -187,7 +186,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) {
 				// TODO: dup track id?
 			}
 		},
-		"mdia": decodeAtoms,
+		"mdia": decodeBoxes,
 		"mdhd": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			// TODO: values
@@ -221,8 +220,8 @@ func decodeAtom(ctx *decodeContext, d *decode.D) {
 			}
 		},
 
-		"minf": decodeAtoms,
-		"dinf": decodeAtoms,
+		"minf": decodeBoxes,
+		"dinf": decodeBoxes,
 		"dref": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			// TODO: values
@@ -239,7 +238,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) {
 				i++
 			})
 		},
-		"stbl": decodeAtoms,
+		"stbl": decodeBoxes,
 		"stsd": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			// TODO: values
@@ -269,7 +268,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) {
 							d.FieldU32("max_packet_size") // TODO: vendor?
 
 							// "Some sample descriptions terminate with four zero bytes that are not otherwise indicated."
-							// uses decodeAtoms
+							// uses decodeBoxes
 
 							// Timecode sample
 							// TODO: tc64
@@ -297,7 +296,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) {
 									d.FieldU16("packet_size")
 									d.FieldFP32("sample_rate")
 									if d.BitsLeft() > 0 {
-										decodeAtoms(ctx, d)
+										decodeBoxes(ctx, d)
 									}
 								case 1:
 									d.FieldU16("num_audio_channels")
@@ -310,7 +309,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) {
 									d.FieldU32("bytes_per_frame")
 									d.FieldU32("bytes_per_sample")
 									if d.BitsLeft() > 0 {
-										decodeAtoms(ctx, d)
+										decodeBoxes(ctx, d)
 									}
 								case 2:
 									d.FieldU16("always_3")
@@ -327,7 +326,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) {
 									d.FieldU32("const_bytes_per_audio_packet")
 									d.FieldU32("const_lpcm_frames_per_audio_packet")
 									if d.BitsLeft() > 0 {
-										decodeAtoms(ctx, d)
+										decodeBoxes(ctx, d)
 									}
 								default:
 									d.FieldBitBufLen("data", d.BitsLeft())
@@ -350,7 +349,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) {
 									d.FieldS16("color_table_id")
 									// TODO: if 0 decode ctab
 									if d.BitsLeft() > 0 {
-										decodeAtoms(ctx, d)
+										decodeBoxes(ctx, d)
 									}
 								default:
 									d.FieldBitBufLen("data", d.BitsLeft())
@@ -590,18 +589,18 @@ func decodeAtom(ctx *decodeContext, d *decode.D) {
 				i++
 			})
 		},
-		"udta": decodeAtoms,
+		"udta": decodeBoxes,
 		"meta": func(ctx *decodeContext, d *decode.D) {
-			// TODO: meta atom sometimes has a 4 byte unknown field? (flag/version?)
+			// TODO: meta box sometimes has a 4 byte unknown field? (flag/version?)
 			maybeFlags := d.PeekBits(32)
 			if maybeFlags == 0 {
 				// TODO: rename?
 				d.FieldU32("maybe_flags")
 			}
-			decodeAtoms(ctx, d)
+			decodeBoxes(ctx, d)
 		},
-		"ilst":        decodeAtoms,
-		"_apple_list": decodeAtoms,
+		"ilst":        decodeBoxes,
+		"_apple_list": decodeBoxes,
 		"_apple_entry": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
@@ -613,13 +612,13 @@ func decodeAtom(ctx *decodeContext, d *decode.D) {
 			d.FieldU32("reserved")
 			d.FieldUTF8("data", int(d.BitsLeft()/8))
 		},
-		"moov": decodeAtoms,
+		"moov": decodeBoxes,
 		"moof": func(ctx *decodeContext, d *decode.D) {
 			ctx.currentMoofOffset = (d.Pos() / 8) - 8
-			decodeAtoms(ctx, d)
+			decodeBoxes(ctx, d)
 		},
 		// Track Fragment
-		"traf": decodeAtoms,
+		"traf": decodeBoxes,
 		// Movie Fragment Header
 		"mfhd": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
@@ -735,7 +734,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) {
 				d.FieldU32("start_time")
 			}
 		},
-		"mvex": decodeAtoms,
+		"mvex": decodeBoxes,
 		"trex": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
@@ -752,7 +751,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) {
 			d.FieldU1("sample_is_non_sync_sample")
 			d.FieldU16("sample_degradation_priority")
 		},
-		"mfra": decodeAtoms,
+		"mfra": decodeBoxes,
 		"tfra": func(ctx *decodeContext, d *decode.D) {
 			version := d.FieldU8("version")
 			d.FieldU24("flags")
@@ -855,10 +854,10 @@ func decodeAtom(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			_ = d.FieldU16("entry_count")
-			decodeAtoms(ctx, d)
+			decodeBoxes(ctx, d)
 		},
-		"iprp": decodeAtoms,
-		"ipco": decodeAtoms,
+		"iprp": decodeBoxes,
+		"ipco": decodeBoxes,
 		"ID32": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
@@ -917,7 +916,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) {
 				d.FieldBitBufLen("data", int64(dataLen)*8)
 			}
 		},
-		"sinf": decodeAtoms,
+		"sinf": decodeBoxes,
 		"frma": func(ctx *decodeContext, d *decode.D) {
 			d.FieldUTF8("format", 4)
 		},
@@ -930,7 +929,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) {
 				d.FieldUTF8("uri", int(d.BitsLeft())/8)
 			}
 		},
-		"schi": decodeAtoms,
+		"schi": decodeBoxes,
 		"btrt": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU32("decoding_buffer_size")
 			d.FieldU32("max_bitrate")
@@ -969,7 +968,7 @@ func decodeAtom(ctx *decodeContext, d *decode.D) {
 				}
 			})
 		},
-		"wave": decodeAtoms,
+		"wave": decodeBoxes,
 	}
 
 	typeFn := func() (string, string) {
@@ -1029,9 +1028,9 @@ func decodeAtom(ctx *decodeContext, d *decode.D) {
 	}
 }
 
-func decodeAtoms(ctx *decodeContext, d *decode.D) {
+func decodeBoxes(ctx *decodeContext, d *decode.D) {
 	d.FieldStructArrayLoopFn("boxes", "box", func() bool { return d.BitsLeft() >= 8*8 }, func(d *decode.D) {
-		decodeAtom(ctx, d)
+		decodeBox(ctx, d)
 	})
 
 	if d.BitsLeft() > 0 {
@@ -1065,7 +1064,7 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 
 	d.SeekRel(-8 * 8)
 
-	decodeAtoms(ctx, d)
+	decodeBoxes(ctx, d)
 
 	// keep track order stable
 	var sortedTracks []*track

@@ -3,6 +3,7 @@ package jpeg
 // https://www.w3.org/Graphics/JPEG/itu-t81.pdf
 // TODO: warning on junk before marker?
 // TODO: extract photohop to own decoder?
+// TODO: image/jpeg
 
 import (
 	"bytes"
@@ -20,7 +21,6 @@ func init() {
 		Name:        format.JPEG,
 		Description: "Joint Photographic Experts Group file",
 		Groups:      []string{format.PROBE, format.IMAGE},
-		MIMEs:       []string{"image/jpeg"},
 		DecodeFn:    jpegDecode,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.EXIF}, Formats: &exifFormat},

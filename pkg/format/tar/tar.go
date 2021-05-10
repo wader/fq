@@ -2,6 +2,7 @@ package tar
 
 // https://www.gnu.org/software/tar/manual/html_node/Standard.html
 // TODO: extensions?
+// TODO: application/x-tar
 
 import (
 	"bytes"
@@ -19,7 +20,6 @@ func init() {
 		Name:        format.TAR,
 		Description: "Tar archive",
 		Groups:      []string{format.PROBE},
-		MIMEs:       []string{"application/x-tar"},
 		DecodeFn:    tarDecode,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.PROBE}, Formats: &probeFormat},

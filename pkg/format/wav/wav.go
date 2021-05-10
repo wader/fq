@@ -4,6 +4,7 @@ package wav
 // https://github.com/FFmpeg/FFmpeg/blob/master/libavformat/wavdec.c
 // https://tech.ebu.ch/docs/tech/tech3285.pdf
 // http://www-mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html
+// TDOO: audio/wav
 
 import (
 	"fmt"
@@ -20,7 +21,6 @@ func init() {
 		Name:        format.WAV,
 		Description: "WAV file",
 		Groups:      []string{format.PROBE},
-		MIMEs:       []string{"audio/wav"},
 		DecodeFn:    wavDecode,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.ID3_V2}, Formats: &headerFormat},

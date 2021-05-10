@@ -1,6 +1,7 @@
 package webp
 
 // https://developers.google.com/speed/webp/docs/riff_container
+// TODO: image/webp
 
 import (
 	"bytes"
@@ -16,7 +17,6 @@ func init() {
 		Name:        format.WEBP,
 		Description: "WebP image",
 		Groups:      []string{format.PROBE, format.IMAGE},
-		MIMEs:       []string{"image/webp"},
 		DecodeFn:    webpDecode,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.VP8_FRAME}, Formats: &vp8Frame},

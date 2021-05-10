@@ -6,6 +6,7 @@ package gif
 
 // TODO: local color map
 // TODO: bit depth done correct?
+// TDOO: mime mage/gif
 
 import (
 	"bytes"
@@ -19,7 +20,6 @@ func init() {
 		Name:        format.GIF,
 		Description: "Graphics Interchange Format",
 		Groups:      []string{format.PROBE, format.IMAGE},
-		MIMEs:       []string{"image/gif"},
 		DecodeFn:    gifDecode,
 	})
 }

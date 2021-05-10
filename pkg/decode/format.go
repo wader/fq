@@ -9,7 +9,6 @@ type Format struct {
 	Name         string
 	Description  string
 	Groups       []string
-	MIMEs        []string
 	DecodeFn     func(d *D, in interface{}) interface{}
 	Dependencies []Dependency
 }

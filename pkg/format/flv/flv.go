@@ -12,7 +12,6 @@ func init() {
 		Name:        format.FLV,
 		Description: "Flash video",
 		Groups:      []string{format.PROBE},
-		MIMEs:       []string{"video/x-flv"},
 		DecodeFn:    flvDecode,
 	})
 }

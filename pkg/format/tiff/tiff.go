@@ -1,7 +1,7 @@
 package tiff
 
 // https://www.adobe.io/content/dam/udp/en/open/standards/tiff/TIFF6.pdf
-// TODO: location data etc
+// TODO: image/tiff
 
 import (
 	"fq/pkg/decode"
@@ -16,7 +16,6 @@ func init() {
 		Name:        format.TIFF,
 		Description: "Tag Image File Format",
 		Groups:      []string{format.PROBE, format.IMAGE},
-		MIMEs:       []string{"image/tiff"},
 		DecodeFn:    tiffDecode,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.ICC_PROFILE}, Formats: &tiffIccProfile},

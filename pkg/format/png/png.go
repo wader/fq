@@ -4,6 +4,7 @@ package png
 // https://ftp-osl.osuosl.org/pub/libpng/documents/pngext-1.5.0.html
 // https://wiki.mozilla.org/APNG_Specification
 // TODO: color types
+// TODO: image/png
 
 import (
 	"fq/pkg/decode"
@@ -20,7 +21,6 @@ func init() {
 		Name:        format.PNG,
 		Description: "Portable Network Graphics file",
 		Groups:      []string{format.PROBE, format.IMAGE},
-		MIMEs:       []string{"image/png"},
 		DecodeFn:    pngDecode,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.ICC_PROFILE}, Formats: &iccProfileFormat},

@@ -1,7 +1,8 @@
 package mp3
 
 // TODO: vbri
-// TOFO: resync on garbage? between id3v2 and first frame for example
+// TODO: resync on garbage? between id3v2 and first frame for example
+// TODO: mime audio/mpeg
 
 import (
 	"fq/pkg/decode"
@@ -17,7 +18,6 @@ func init() {
 		Name:        format.MP3,
 		Description: "MP3 file",
 		Groups:      []string{format.PROBE},
-		MIMEs:       []string{"audio/mpeg"},
 		DecodeFn:    mp3Decode,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.ID3_V2}, Formats: &headerFormat},

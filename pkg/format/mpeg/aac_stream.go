@@ -1,5 +1,7 @@
 package mpeg
 
+// TODO: mime audio/aac?
+
 import (
 	"fq/pkg/decode"
 	"fq/pkg/format"
@@ -12,7 +14,6 @@ func init() {
 		Name:        format.AAC_STREAM,
 		Description: "Raw audio data transport stream",
 		Groups:      []string{format.PROBE},
-		MIMEs:       []string{"audio/aac"},
 		DecodeFn:    adtsDecode,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.ADTS}, Formats: &aacADTS},

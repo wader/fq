@@ -22,7 +22,6 @@ func init() {
 		Name:        format.BZIP2,
 		Description: "bzip2 compression",
 		Groups:      []string{format.PROBE},
-		MIMEs:       []string{"application/gzip"},
 		DecodeFn:    gzDecode,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.PROBE}, Formats: &probeFormat},

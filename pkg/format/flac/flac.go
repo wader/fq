@@ -1,6 +1,7 @@
 package flac
 
 // TODO: reuse samples buffer
+// TODO: mime audio/x-flac
 
 import (
 	"bytes"
@@ -18,7 +19,6 @@ func init() {
 		Name:        format.FLAC,
 		Description: "Free Lossless Audio Codec file",
 		Groups:      []string{format.PROBE},
-		MIMEs:       []string{"audio/x-flac"},
 		DecodeFn:    flacDecode,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.FLAC_METADATABLOCK}, Formats: &flacMetadatablockFormat},

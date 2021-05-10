@@ -1,6 +1,7 @@
 package ogg
 
 // https://xiph.org/ogg/doc/framing.html
+// TODO: audio/ogg"
 
 import (
 	"bytes"
@@ -18,7 +19,6 @@ func init() {
 		Name:        format.OGG,
 		Description: "OGG file",
 		Groups:      []string{format.PROBE},
-		MIMEs:       []string{"audio/ogg"},
 		DecodeFn:    decodeOgg,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.OGG_PAGE}, Formats: &oggPage},

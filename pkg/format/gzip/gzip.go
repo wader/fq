@@ -3,6 +3,7 @@ package gz
 // https://tools.ietf.org/html/rfc1952
 // TODO: test name, comment etc
 // TODO: verify isize?
+// TODO: mime application/gzip
 
 import (
 	"bytes"
@@ -21,7 +22,6 @@ func init() {
 		Name:        format.GZIP,
 		Description: "gzip compression",
 		Groups:      []string{format.PROBE},
-		MIMEs:       []string{"application/gzip"},
 		DecodeFn:    gzDecode,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.PROBE}, Formats: &probeFormat},
