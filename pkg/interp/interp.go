@@ -335,16 +335,11 @@ func toBufferRange(v interface{}) (bufferRange, error) {
 	case ToBufferRange:
 		return vv.ToBufferRange()
 	default:
-		switch vv := v.(type) {
-		case ToBuffer:
-			bb, err := vv.ToBuffer()
-			if err != nil {
-				return bufferRange{}, err
-			}
-			return bufferRange{bb: bb, r: ranges.Range{Len: bb.Len()}}, nil
-		default:
-			return bufferRange{}, fmt.Errorf("value can't be buffer")
+		bb, err := toBuffer(v)
+		if err != nil {
+			return bufferRange{}, err
 		}
+		return bufferRange{bb: bb, r: ranges.Range{Len: bb.Len()}}, nil
 	}
 }
 

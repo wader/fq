@@ -1,3 +1,6 @@
+hexdump uses io.Copy which is byte oritneted
+
+hex: "f" | hex, sub byte hex
 
 unknown array, fill in with "unknown", _unknown true?
 

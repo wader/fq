@@ -25,3 +25,9 @@ true
   "unsynchronisation": false,
   "unused": 0
 }
+> fq -d mp3 test.mp3 '._unknown'
+false
+> fq -d mp3 test.mp3 '._format'
+"mp3"
+> fq -d mp3 test.mp3 '.headers[0].magic._format'
+null
