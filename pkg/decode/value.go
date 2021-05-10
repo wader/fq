@@ -48,6 +48,8 @@ type Value struct {
 	DisplayFormat DisplayFormat
 	Symbol        string
 	Description   string
+	Format        *Format
+	Unknown       bool
 	Err           error
 }
 

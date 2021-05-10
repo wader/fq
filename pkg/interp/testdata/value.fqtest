@@ -6,7 +6,7 @@
   1
 ]
 > fq -d mp3 test.mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing'
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.frames[0].xing: mp3_xing
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.frames[0].xing: {} (mp3_xing)
 0x40|      49 6e 66 6f                              |  Info          |  header: "Info"
 0x40|                  00 00 00 0f                  |      ....      |  present_flags: {}
 0x40|                              00 00 00 02      |          ....  |  frames: 2

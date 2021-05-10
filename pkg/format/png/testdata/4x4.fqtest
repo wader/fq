@@ -1,10 +1,10 @@
 # convert -size 4x4 "xc:#000" 4x4.png
 /4x4.png:
 > fq -d png 4x4.png verbose
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: png 0x0-0x102.7 (259)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} (png) 0x0-0x102.7 (259)
 0x000|89 50 4e 47 0d 0a 1a 0a                        |.PNG....        |  signature: "\x89PNG\r\n\x1a\n" (Correct) 0x0-0x7.7 (8)
      |                                               |                |  chunks: [9] 0x8-0x102.7 (251)
-     |                                               |                |    [0]: {} (chunk) 0x8-0x20.7 (25)
+     |                                               |                |    [0]: chunk {} 0x8-0x20.7 (25)
 0x000|                        00 00 00 0d            |        ....    |      length: 13 0x8-0xb.7 (4)
 0x000|                                    49 48 44 52|            IHDR|      type: "IHDR" 0xc-0xf.7 (4)
 0x000|                                    49         |            I   |      ancillary: false 0xc.3-0xc.3 (0.1)
@@ -20,7 +20,7 @@
 0x010|                                    00         |            .   |      interlace_method: No interlace (0) 0x1c-0x1c.7 (1)
 0x010|                                       81 8a a3|             ...|      crc: Correct (818aa3d3) 0x1d-0x20.7 (4)
 0x020|d3                                             |.               |
-     |                                               |                |    [1]: {} (chunk) 0x21-0x30.7 (16)
+     |                                               |                |    [1]: chunk {} 0x21-0x30.7 (16)
 0x020|   00 00 00 04                                 | ....           |      length: 4 0x21-0x24.7 (4)
 0x020|               67 41 4d 41                     |     gAMA       |      type: "gAMA" 0x25-0x28.7 (4)
 0x020|               67                              |     g          |      ancillary: false 0x25.3-0x25.3 (0.1)
@@ -30,7 +30,7 @@
 0x020|                           00 00 b1 8f         |         ....   |      value: 45455 0x29-0x2c.7 (4)
 0x020|                                       0b fc 61|             ..a|      crc: Correct (0bfc6105) 0x2d-0x30.7 (4)
 0x030|05                                             |.               |
-     |                                               |                |    [2]: {} (chunk) 0x31-0x5c.7 (44)
+     |                                               |                |    [2]: chunk {} 0x31-0x5c.7 (44)
 0x030|   00 00 00 20                                 | ...            |      length: 32 0x31-0x34.7 (4)
 0x030|               63 48 52 4d                     |     cHRM       |      type: "cHRM" 0x35-0x38.7 (4)
 0x030|               63                              |     c          |      ancillary: false 0x35.3-0x35.3 (0.1)
@@ -48,7 +48,7 @@
 0x050|   00 00 3a 98                                 | ..:.           |      blue_x: 15 0x51-0x54.7 (4)
 0x050|               00 00 17 70                     |     ...p       |      blue_y: 6 0x55-0x58.7 (4)
 0x050|                           9c ba 51 3c         |         ..Q<   |      crc: Correct (9cba513c) 0x59-0x5c.7 (4)
-     |                                               |                |    [3]: {} (chunk) 0x5d-0x6a.7 (14)
+     |                                               |                |    [3]: chunk {} 0x5d-0x6a.7 (14)
 0x050|                                       00 00 00|             ...|      length: 2 0x5d-0x60.7 (4)
 0x060|02                                             |.               |
 0x060|   62 4b 47 44                                 | bKGD           |      type: "bKGD" 0x61-0x64.7 (4)
@@ -58,7 +58,7 @@
 0x060|            44                                 |    D           |      safe_to_copy: false 0x64.3-0x64.3 (0.1)
 0x060|               00 01                           |     ..         |      value: 1 0x65-0x66.7 (2)
 0x060|                     dd 8a 13 a4               |       ....     |      crc: Correct (dd8a13a4) 0x67-0x6a.7 (4)
-     |                                               |                |    [4]: {} (chunk) 0x6b-0x7d.7 (19)
+     |                                               |                |    [4]: chunk {} 0x6b-0x7d.7 (19)
 0x060|                                 00 00 00 07   |           .... |      length: 7 0x6b-0x6e.7 (4)
 0x060|                                             74|               t|      type: "tIME" 0x6f-0x72.7 (4)
 0x070|49 4d 45                                       |IME             |
@@ -68,7 +68,7 @@
 0x070|      45                                       |  E             |      safe_to_copy: false 0x72.3-0x72.3 (0.1)
 0x070|         07 e4 0c 0e 17 38 15                  |   .....8.      |      data: 07e40c0e173815 0x73-0x79.7 (7)
 0x070|                              07 05 84 e3      |          ....  |      crc: Correct (070584e3) 0x7a-0x7d.7 (4)
-     |                                               |                |    [5]: {} (chunk) 0x7e-0x94.7 (23)
+     |                                               |                |    [5]: chunk {} 0x7e-0x94.7 (23)
 0x070|                                          00 00|              ..|      length: 11 0x7e-0x81.7 (4)
 0x080|00 0b                                          |..              |
 0x080|      49 44 41 54                              |  IDAT          |      type: "IDAT" 0x82-0x85.7 (4)
@@ -79,7 +79,7 @@
 0x080|                  08 d7 63 60 80 00 00 00 08 00|      ..c`......|      data: 08d7636080000000080001 0x86-0x90.7 (11)
 0x090|01                                             |.               |
 0x090|   2f 20 dd 31                                 | / .1           |      crc: Correct (2f20dd31) 0x91-0x94.7 (4)
-     |                                               |                |    [6]: {} (chunk) 0x95-0xc5.7 (49)
+     |                                               |                |    [6]: chunk {} 0x95-0xc5.7 (49)
 0x090|               00 00 00 25                     |     ...%       |      length: 37 0x95-0x98.7 (4)
 0x090|                           74 45 58 74         |         tEXt   |      type: "tEXt" 0x99-0x9c.7 (4)
 0x090|                           74                  |         t      |      ancillary: true 0x99.3-0x99.3 (0.1)
@@ -93,7 +93,7 @@
 0x0b0|2d 31 34 54 32 33 3a 35 36 3a 32 31 2b 30 30 3a|-14T23:56:21+00:|
 0x0c0|30 30                                          |00              |
 0x0c0|      8a 67 a4 2e                              |  .g..          |      crc: Correct (8a67a42e) 0xc2-0xc5.7 (4)
-     |                                               |                |    [7]: {} (chunk) 0xc6-0xf6.7 (49)
+     |                                               |                |    [7]: chunk {} 0xc6-0xf6.7 (49)
 0x0c0|                  00 00 00 25                  |      ...%      |      length: 37 0xc6-0xc9.7 (4)
 0x0c0|                              74 45 58 74      |          tEXt  |      type: "tEXt" 0xca-0xcd.7 (4)
 0x0c0|                              74               |          t     |      ancillary: true 0xca.3-0xca.3 (0.1)
@@ -107,7 +107,7 @@
 0x0e0|32 2d 31 34 54 32 33 3a 35 36 3a 32 31 2b 30 30|2-14T23:56:21+00|
 0x0f0|3a 30 30                                       |:00             |
 0x0f0|         fb 3a 1c 92                           |   .:..         |      crc: Correct (fb3a1c92) 0xf3-0xf6.7 (4)
-     |                                               |                |    [8]: {} (chunk) 0xf7-0x102.7 (12)
+     |                                               |                |    [8]: chunk {} 0xf7-0x102.7 (12)
 0x0f0|                     00 00 00 00               |       ....     |      length: 0 0xf7-0xfa.7 (4)
 0x0f0|                                 49 45 4e 44   |           IEND |      type: "IEND" 0xfb-0xfe.7 (4)
 0x0f0|                                 49            |           I    |      ancillary: false 0xfb.3-0xfb.3 (0.1)

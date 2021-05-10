@@ -21,7 +21,7 @@ type funcTypeError struct {
 	typ  string
 }
 
-func (err *funcTypeError) Error() string { return err.name + " cannot be applied to: " + err.typ }
+func (err funcTypeError) Error() string { return err.name + " cannot be applied to: " + err.typ }
 
 type expectedObjectError struct {
 	typ string
@@ -111,6 +111,9 @@ type baseValueObject struct {
 }
 
 func (bv baseValueObject) DisplayName() string {
+	if bv.dv.Format != nil {
+		return bv.dv.Format.Name
+	}
 	if bv.dv.Description != "" {
 		return bv.dv.Description
 	}
@@ -126,7 +129,7 @@ func (bv baseValueObject) ToBufferRange() (bufferRange, error) {
 }
 
 func (bv baseValueObject) ExtValueKeys() []string {
-	return []string{
+	kv := []string{
 		"_type",
 		"_start",
 		"_stop",
@@ -139,7 +142,14 @@ func (bv baseValueObject) ExtValueKeys() []string {
 		"_bits",
 		"_bytes",
 		"_error",
+		"_unknown",
 	}
+
+	if bv.dv.Format != nil {
+		kv = append(kv, "_format")
+	}
+
+	return kv
 }
 
 func (bv baseValueObject) JQValueLength() interface{} {
@@ -193,7 +203,15 @@ func (bv baseValueObject) JQValueProperty(name string) interface{} {
 				return err
 			}
 			return newBifBufObject(bb, 8)
+		case "_format":
+			if bv.dv.Format == nil {
+				return nil
+			}
+			return bv.dv.Format.Name
+		case "_unknown":
+			return bv.dv.Unknown
 		}
+
 		// TODO: error?
 		return nil
 	}

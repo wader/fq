@@ -1,7 +1,7 @@
 # echo test | gzip -N > test.gz
 /test.gz:
 > fq -d gzip test.gz verbose
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: gzip 0x0-0x18.7 (25)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} (gzip) 0x0-0x18.7 (25)
 0x00|1f 8b                                          |..              |  identification: "\x1f\x8b" (Correct) 0x0-0x1.7 (2)
  0x0|74 65 73 74 0a|                                |test.|          |  uncompressed: 746573740a 0x0-0x4.7 (5)
 0x00|      08                                       |  .             |  compression_method: deflate (8) 0x2-0x2.7 (1)

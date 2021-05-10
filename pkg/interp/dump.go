@@ -89,6 +89,9 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 		cfmt(colField, "%s%s%s", deco.Index.F("["), deco.Number.F(strconv.Itoa(v.Index)), deco.Index.F("]"))
 	}
 	cprint(colField, ":")
+	if opts.Verbose && isInArray {
+		cfmt(colField, " %s", v.Name)
+	}
 
 	switch vv := v.V.(type) {
 	case decode.Struct:
@@ -97,8 +100,14 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 		} else {
 			cfmt(colField, " %s", deco.Object.F("{}"))
 		}
+		if v.Format != nil {
+			cfmt(colField, " (%s)", deco.Value.F(v.Format.Name))
+		}
 	case decode.Array:
 		cfmt(colField, " %s%s%s", deco.Index.F("["), deco.Number.F(strconv.Itoa(len(vv))), deco.Index.F("]"))
+		if v.Format != nil {
+			cfmt(colField, " (%s)", deco.Value.F(v.Format.Name))
+		}
 	default:
 		if v.Symbol != "" {
 			cfmt(colField, " %s", deco.Value.F(v.Symbol))
@@ -111,9 +120,6 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 		}
 
 		isSimple = true
-	}
-	if opts.Verbose && isInArray {
-		cfmt(colField, " (%s)", v.Name)
 	}
 
 	if opts.Verbose {

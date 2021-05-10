@@ -130,7 +130,7 @@ func decode(ctx context.Context, name string, bb *bitio.Buffer, formats []*Forma
 	decodeErr := DecodeFormatsError{}
 
 	for _, f := range formats {
-		d := NewDecoder(ctx, name, f.Name, bb, decodeOpts)
+		d := NewDecoder(ctx, name, f, bb, decodeOpts)
 
 		var decodeV interface{}
 
@@ -196,18 +196,18 @@ type D struct {
 }
 
 // TODO: new struct decoder?
-func NewDecoder(ctx context.Context, name string, description string, bb *bitio.Buffer, opts DecodeOptions) *D {
+func NewDecoder(ctx context.Context, name string, format *Format, bb *bitio.Buffer, opts DecodeOptions) *D {
 	cbb := bb.CopyWithContext(ctx)
 
 	return &D{
 		Endian: BigEndian,
 		Value: &Value{
-			Name:        name,
-			Description: description,
-			V:           Struct{},
-			IsRoot:      opts.IsRoot,
-			RootBitBuf:  cbb,
-			Range:       ranges.Range{Start: 0, Len: 0},
+			Name:       name,
+			Format:     format,
+			V:          Struct{},
+			IsRoot:     opts.IsRoot,
+			RootBitBuf: cbb,
+			Range:      ranges.Range{Start: 0, Len: 0},
 		},
 		Options: opts.FormatOptions,
 
@@ -233,9 +233,10 @@ func (d *D) FillGaps(namePrefix string) {
 
 	gaps := ranges.Gaps(ranges.Range{Start: 0, Len: d.Len()}, valueRanges)
 	for i, gap := range gaps {
-		d.FieldBitBufRange(
+		v := d.FieldValueBitBufRange(
 			fmt.Sprintf("%s%d", namePrefix, i), gap.Start, gap.Len,
 		)
+		v.Unknown = true
 	}
 }
 
@@ -575,6 +576,13 @@ func (d *D) FieldBitBufFn(name string, firstBit int64, nBits int64, fn func() (*
 		bb, disp := fn()
 		return &Value{V: bb, Symbol: disp}
 	}).V.(*bitio.Buffer)
+}
+
+func (d *D) FieldValueBitBufFn(name string, firstBit int64, nBits int64, fn func() (*bitio.Buffer, string)) *Value {
+	return d.FieldRangeFn(name, firstBit, nBits, func() *Value {
+		bb, disp := fn()
+		return &Value{V: bb, Symbol: disp}
+	})
 }
 
 func (d *D) FieldBoolMapFn(name string, trueS string, falseS string, fn func() bool) (bool, bool) {
@@ -929,6 +937,12 @@ func (d *D) FieldRootBitBuf(name string, bb *bitio.Buffer) *Value {
 	d.AddChild(v)
 
 	return v
+}
+
+func (d *D) FieldValueBitBufRange(name string, firstBit int64, nBits int64) *Value {
+	return d.FieldValueBitBufFn(name, firstBit, nBits, func() (*bitio.Buffer, string) {
+		return d.BitBufRange(firstBit, nBits), ""
+	})
 }
 
 func (d *D) FieldBitBufRange(name string, firstBit int64, nBits int64) *bitio.Buffer {
