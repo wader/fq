@@ -1,13 +1,11 @@
 package interp
 
 import (
-	"bytes"
 	"fmt"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/ranges"
 	"io"
-	"log"
 	"math/big"
 	"sort"
 	"strings"
@@ -87,16 +85,12 @@ func makeValueObject(dv *decode.Value) valueObjectIf {
 		sv.baseValueObject.vFn = sv.JQValue
 		return sv
 	case *bitio.Buffer:
-		bb := &bytes.Buffer{}
-		// TODO: err
-		io.Copy(bb, vv.Copy())
-		sv := stringValueObject{baseValueObject: baseValueObject{dv: dv, typ: "string"}, vv: bb.String()}
+		sv := stringBufferValueObject{baseValueObject: baseValueObject{dv: dv, typ: "string"}, vv: vv}
 		sv.baseValueObject.vFn = sv.JQValue
 		return sv
 	case nil:
 		return baseValueObject{dv: dv, vFn: func() interface{} { return nil }, typ: "null"}
 	default:
-		log.Printf("dv: %#+v\n", dv)
 		// TODO: error?
 		panic("unreachable")
 	}
@@ -229,12 +223,12 @@ func (bv baseValueObject) JQValueHasKey(key interface{}) interface{} {
 func (bv baseValueObject) JQValueType() string  { return bv.typ }
 func (bv baseValueObject) JQValue() interface{} { return bv.vFn() }
 
+// string
+
 type stringValueObject struct {
 	baseValueObject
 	vv string
 }
-
-// string
 
 func (sv stringValueObject) ToBuffer() (*bitio.Buffer, error) {
 	return bitio.NewBufferFromBytes([]byte(sv.vv), -1), nil
@@ -243,7 +237,6 @@ func (sv stringValueObject) ToBufferRange() (bufferRange, error) {
 	bb := bitio.NewBufferFromBytes([]byte(sv.vv), -1)
 	return bufferRange{bb: bb, r: ranges.Range{Start: 0, Len: bb.Len()}}, nil
 }
-
 func (sv stringValueObject) JQValueLength() interface{} { return len(sv.vv) }
 func (sv stringValueObject) JQValueIndex(index int) interface{} {
 	return fmt.Sprintf("%c", sv.vv[index])
@@ -253,6 +246,50 @@ func (sv stringValueObject) JQValueSlice(start int, end int) interface{} {
 }
 func (sv stringValueObject) JQValue() interface{} {
 	return sv.vv
+}
+
+// string (*bitio.Buffer)
+
+type stringBufferValueObject struct {
+	baseValueObject
+	vv *bitio.Buffer
+}
+
+func (sv stringBufferValueObject) ToBuffer() (*bitio.Buffer, error) {
+	return sv.vv.Copy(), nil
+}
+func (sv stringBufferValueObject) ToBufferRange() (bufferRange, error) {
+	bb := sv.vv.Copy()
+	return bufferRange{bb: sv.vv.Copy(), r: ranges.Range{Start: 0, Len: bb.Len()}}, nil
+}
+func (sv stringBufferValueObject) JQValueLength() interface{} {
+	return int(sv.vv.Len()) / 8
+}
+func (sv stringBufferValueObject) JQValueIndex(index int) interface{} {
+	bb := sv.vv.Copy()
+	bb.SeekAbs(int64(index) * 8)
+	s, err := bb.UTF8(1)
+	if err != nil {
+		return err
+	}
+	return s
+}
+func (sv stringBufferValueObject) JQValueSlice(start int, end int) interface{} {
+	bb := sv.vv.Copy()
+	bb.SeekAbs(int64(start) * 8)
+	s, err := bb.UTF8(end - start)
+	if err != nil {
+		return err
+	}
+	return s
+}
+func (sv stringBufferValueObject) JQValue() interface{} {
+	bb := sv.vv.Copy()
+	s, err := bb.UTF8(int(bb.Len() / 8))
+	if err != nil {
+		return err
+	}
+	return s
 }
 
 // array
