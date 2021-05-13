@@ -115,7 +115,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	var mainDataEnd uint64
 
 	d.FieldStructFn("header", func(d *decode.D) {
-		d.FieldValidateUFn("sync", 0b11111111111, d.U11)
+		d.FieldValidateUFn("sync", 0b111_1111_1111, d.U11)
 
 		// v = 3 means version 2.5
 		mpegVersion = d.FieldUFn("mpeg_version", func() (uint64, decode.DisplayFormat, string) {

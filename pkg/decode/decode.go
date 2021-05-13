@@ -261,11 +261,19 @@ func (d *D) PeekBytes(nBytes int) []byte {
 	return bs
 }
 
-func (d *D) PeekFind(nBits int, v uint8, maxLen int64) int64 {
-	peekBits, err := d.bitBuf.PeekFind(nBits, v, maxLen)
+func (d *D) PeekFind(nBits int, seekBits int64, fn func(v uint64) bool, maxLen int64) int64 {
+	peekBits, err := d.bitBuf.PeekFind(nBits, seekBits, fn, maxLen)
 	if err != nil {
 		panic(ReadError{Err: err, Op: "PeekFind", Size: 0, Pos: d.Pos()})
 	}
+	if peekBits == -1 {
+		panic(ReadError{Err: fmt.Errorf("not found"), Op: "PeekFind", Size: 0, Pos: d.Pos()})
+	}
+	return peekBits
+}
+
+func (d *D) TryPeekFind(nBits int, seekBits int64, fn func(v uint64) bool, maxLen int64) int64 {
+	peekBits, _ := d.bitBuf.PeekFind(nBits, seekBits, fn, maxLen)
 	return peekBits
 }
 
@@ -279,8 +287,10 @@ func (d *D) TryHasBytes(hb []byte) bool {
 }
 
 // PeekFindByte number of bytes to next v
-func (d *D) PeekFindByte(v uint8, maxLen int64) int64 {
-	peekBits, err := d.bitBuf.PeekFind(8, v, maxLen)
+func (d *D) PeekFindByte(findV uint8, maxLen int64) int64 {
+	peekBits, err := d.bitBuf.PeekFind(8, 8, func(v uint64) bool {
+		return uint64(findV) == v
+	}, maxLen*8)
 	if err != nil {
 		panic(ReadError{Err: err, Op: "PeekFindByte", Size: 0, Pos: d.Pos()})
 
@@ -983,7 +993,7 @@ func (d *D) FieldStrNullTerminated(name string) string {
 }
 
 func (d *D) StrNullTerminated() string {
-	c := d.PeekFindByte(0, -1)
+	c := d.PeekFindByte(0, -1) + 1
 	s := d.UTF8(int(c))
 	return s[:len(s)-1]
 }

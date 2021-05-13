@@ -37,8 +37,6 @@ func mp3Decode(d *decode.D, in interface{}) interface{} {
 		}
 	})
 
-	// TODO: find sync
-
 	// seems quite common with junk zeroes between headers and first frame
 	// ffmpeg skips until first frame
 	d.FieldOptionalZeroBytes("unknown_zeros")
@@ -46,6 +44,14 @@ func mp3Decode(d *decode.D, in interface{}) interface{} {
 	validFrames := 0
 	d.FieldArrayFn("frames", func(d *decode.D) {
 		for d.NotEnd() {
+			syncLen := d.TryPeekFind(16, 8, func(v uint64) bool { return v&0b1111_1111_1110_0000 == 0b1111_1111_1110_0000 }, d.BitsLeft())
+			if syncLen == -1 {
+				break
+			}
+			if syncLen > 0 {
+				d.SeekRel(syncLen)
+			}
+
 			if dv, _, _ := d.FieldTryDecode("frame", mp3Frame); dv == nil {
 				break
 			}

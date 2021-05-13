@@ -217,32 +217,43 @@ func (b *Buffer) PeekBytes(nBytes int) ([]byte, error) {
 	return bs, err
 }
 
-// TODO: will return maxLen*nBits if not found
-func (b *Buffer) PeekFind(nBits int, v uint8, maxLen int64) (int64, error) {
+func (b *Buffer) PeekFind(nBits int, seekBits int64, fn func(v uint64) bool, maxLen int64) (int64, error) {
 	start, err := b.br.SeekBits(0, io.SeekCurrent)
 	if err != nil {
 		return 0, err
 	}
 
+	found := false
 	var count int64
 	for {
-		bv, err := b.U(nBits)
+		if maxLen >= 0 && count >= maxLen {
+			break
+		}
+		v, err := b.U(nBits)
 		if err != nil {
 			if _, err := b.br.SeekBits(start, io.SeekStart); err != nil {
 				return 0, err
 			}
 			return 0, err
 		}
-		count++
-		if bv == uint64(v) || count == maxLen {
+		if fn(v) {
+			found = true
 			break
+		}
+		count += seekBits
+		if _, err := b.br.SeekBits(start+count, io.SeekStart); err != nil {
+			return 0, err
 		}
 	}
 	if _, err := b.br.SeekBits(start, io.SeekStart); err != nil {
 		return 0, err
 	}
 
-	return count * int64(nBits), nil
+	if !found {
+		return -1, nil
+	}
+
+	return count, nil
 }
 
 func (b *Buffer) ReadBitsAt(p []byte, nBits int, bitOff int64) (n int, err error) {

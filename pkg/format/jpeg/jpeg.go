@@ -195,7 +195,7 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 				inECD = false
 			} else {
 				d.FieldStructFn("marker", func(d *decode.D) {
-					prefixLen := d.PeekFindByte(0xff, -1)
+					prefixLen := d.PeekFindByte(0xff, -1) + 1
 					d.FieldBytesLen("prefix", int(prefixLen))
 					markerFound := false
 					markerCode := d.FieldUDescFn("code", func() (uint64, decode.DisplayFormat, string, string) {

@@ -10,7 +10,7 @@ Usage: fq [OPTIONS] [FILE] [EXPR]...
                    addrbase=16
                    bytecolors=0-0xff=brightwhite,0=brightblack,32-126:9-13=white
                    color=false
-                   colors=array=white,error=brightred,false=yellow,frame=yellow,index=white,null=brightblack,number=cyan,object=white,objectkey=brightblue,string=green,true=yellow,value=white
+                   colors=array=white,dumpaddr=yellow,dumpheader=yellow+underline,error=brightred,false=yellow,index=white,null=brightblack,number=cyan,object=white,objectkey=brightblue,string=green,true=yellow,value=white
                    depth=0
                    displaybytes=16
                    linebytes=16

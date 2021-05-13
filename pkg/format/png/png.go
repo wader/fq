@@ -100,16 +100,16 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 			case "tEXt":
 				// TODO: latin1
 				keywordLen := int(d.PeekFindByte(0, 80))
-				d.FieldUTF8("keyword", keywordLen-1)
+				d.FieldUTF8("keyword", keywordLen)
 				d.FieldUTF8("null", 1)
-				d.FieldUTF8("text", chunkLength-keywordLen)
+				d.FieldUTF8("text", chunkLength-keywordLen-1)
 			case "zTXt":
 				// TODO: latin1
 				keywordLen := int(d.PeekFindByte(0, 80))
-				d.FieldUTF8("keyword", keywordLen-1)
+				d.FieldUTF8("keyword", keywordLen)
 				d.FieldUTF8("null", 1)
 				compressionMethod, _ := d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8, decode.NumberDecimal)
-				dataLen := (chunkLength - keywordLen - 1) * 8
+				dataLen := (chunkLength - keywordLen + 1) * 8
 
 				switch compressionMethod {
 				case compressionDeflate:
@@ -126,10 +126,10 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 				}
 			case "iCCP":
 				profileNameLen := int(d.PeekFindByte(0, 80))
-				d.FieldUTF8("profile_name", profileNameLen-1)
+				d.FieldUTF8("profile_name", profileNameLen)
 				d.FieldUTF8("null", 1)
 				compressionMethod, _ := d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8, decode.NumberDecimal)
-				dataLen := (chunkLength - profileNameLen - 1) * 8
+				dataLen := (chunkLength - profileNameLen + 1) * 8
 
 				switch compressionMethod {
 				case compressionDeflate:
