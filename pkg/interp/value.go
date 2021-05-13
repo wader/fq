@@ -304,9 +304,9 @@ func (av arrayValueObject) JQValueIndex(index int) interface{} {
 	return makeValueObject(av.vv[index])
 }
 func (av arrayValueObject) JQValueSlice(start int, end int) interface{} {
-	vs := make([]interface{}, len(av.vv))
-	for _, e := range av.vv[start:end] {
-		vs = append(vs, makeValueObject(e))
+	vs := make([]interface{}, end-start)
+	for i, e := range av.vv[start:end] {
+		vs[i] = makeValueObject(e)
 	}
 	return vs
 }
