@@ -25,7 +25,8 @@ func hexdumpRange(bbr bufferRange, w io.Writer, opts Options) error {
 		opts.LineBytes,
 		func(b byte) string { return d.ByteColor(b).Wrap(hexpairwriter.Pair(b)) },
 		func(b byte) string { return d.ByteColor(b).Wrap(asciiwriter.SafeASCII(b)) },
-		func(s string) string { return d.Frame.Wrap(s) },
+		func(s string) string { return d.DumpHeader.Wrap(s) },
+		func(s string) string { return d.DumpAddr.Wrap(s) },
 		d.Column,
 	)
 	defer hw.Close()

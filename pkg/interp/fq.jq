@@ -50,7 +50,8 @@ def color_themes:
 				index: "white",
 				value: "white",
 				error: "brightred",
-				frame: "yellow"
+				dumpheader: "yellow+underline",
+				dumpaddr: "yellow"
 			} | obj_to_csv_kv),
 			bytecolors: "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
 		},
@@ -68,7 +69,8 @@ def color_themes:
 				index: "brightwhite",
 				value: "brightwhite",
 				error: "brightred",
-				frame: "brightyellow"
+				dumpheader: "brightyellow+underline",
+				dumpaddr: "brightyellow"
 			} | obj_to_csv_kv),
 			bytecolors: "0-0xff=brightwhite,0=brightblack,32-126:9-13=brightgreen",
 		}

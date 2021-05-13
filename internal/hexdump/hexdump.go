@@ -17,7 +17,8 @@ type Dumper struct {
 	offset           int64
 	hexFn            func(b byte) string
 	asciiFn          func(b byte) string
-	frameFn          func(s string) string
+	dumpHeaderFn     func(s string) string
+	dumpAddrFn       func(s string) string
 	column           string
 	hasWrittenHeader bool
 }
@@ -28,7 +29,11 @@ type Dumper struct {
 // TODO: replace addrLen with highest address and calc instead
 // TODO: use dump options? config struct?
 func New(w io.Writer, startOffset int64, addrLen int, addrBase int, lineBytes int,
-	hexFn func(b byte) string, asciiFn func(b byte) string, frameFn func(s string) string, column string) *Dumper {
+	hexFn func(b byte) string,
+	asciiFn func(b byte) string,
+	dumpHeaderFn func(s string) string,
+	dumpAddrFn func(s string) string,
+	column string) *Dumper {
 	cw := columnwriter.New(w, []int{addrLen, 1, lineBytes*3 - 1, 1, lineBytes, 1})
 	return &Dumper{
 		addrLen:          addrLen,
@@ -40,7 +45,8 @@ func New(w io.Writer, startOffset int64, addrLen int, addrBase int, lineBytes in
 		offset:           startOffset - startOffset%int64(lineBytes),
 		hexFn:            hexFn,
 		asciiFn:          asciiFn,
-		frameFn:          frameFn,
+		dumpHeaderFn:     dumpHeaderFn,
+		dumpAddrFn:       dumpAddrFn,
 		column:           column,
 		hasWrittenHeader: false,
 	}
@@ -48,7 +54,7 @@ func New(w io.Writer, startOffset int64, addrLen int, addrBase int, lineBytes in
 
 func (d *Dumper) flush() error {
 	if _, err := d.columnW.Columns[0].Write([]byte(
-		d.frameFn(num.PadFormatInt(((d.offset-1)/d.lineBytes)*d.lineBytes, d.addrBase, true, d.addrLen)))); err != nil {
+		d.dumpAddrFn(num.PadFormatInt(((d.offset-1)/d.lineBytes)*d.lineBytes, d.addrBase, true, d.addrLen)))); err != nil {
 		return err
 	}
 	if _, err := d.separatorsW.Write([]byte(d.column)); err != nil {
@@ -66,13 +72,18 @@ func (d *Dumper) Write(p []byte) (n int, err error) {
 			return 0, err
 		}
 		for i := int64(0); i < d.lineBytes; i++ {
-			if _, err := d.columnW.Columns[2].Write([]byte(d.frameFn(num.PadFormatInt(i, d.addrBase, false, 2)))); err != nil {
+			headerSB := &strings.Builder{}
+			if _, err := headerSB.Write([]byte(num.PadFormatInt(i, d.addrBase, false, 2))); err != nil {
 				return 0, err
 			}
 			if i < d.lineBytes-1 {
-				if _, err := d.columnW.Columns[2].Write([]byte(" ")); err != nil {
+				if _, err := headerSB.Write([]byte(" ")); err != nil {
 					return 0, err
 				}
+			}
+
+			if _, err := d.columnW.Columns[2].Write([]byte(d.dumpHeaderFn(headerSB.String()))); err != nil {
+				return 0, err
 			}
 		}
 		if err := d.columnW.Flush(); err != nil {

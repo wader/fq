@@ -72,8 +72,8 @@ func parseCSVStringMap(s string) map[string]string {
 
 var PlainDecorator = Decorator{
 	Column:     "|",
-	ValueColor: func(v *decode.Value) ansi.Color { return ansi.None },
-	ByteColor:  func(b byte) ansi.Color { return ansi.None },
+	ValueColor: func(v *decode.Value) ansi.Code { return ansi.None },
+	ByteColor:  func(b byte) ansi.Code { return ansi.None },
 }
 
 func decoratorFromOptions(opts Options) Decorator {
@@ -97,13 +97,14 @@ func decoratorFromOptions(opts Options) Decorator {
 		d.Object = ansi.FromString(colors["object"])
 
 		d.Index = ansi.FromString(colors["index"])
-
 		d.Value = ansi.FromString(colors["value"])
-		d.Frame = ansi.FromString(colors["frame"])
+
+		d.DumpHeader = ansi.FromString(colors["dumpheader"])
+		d.DumpAddr = ansi.FromString(colors["dumpaddr"])
 
 		d.Error = ansi.FromString(colors["error"])
 
-		d.ValueColor = func(v *decode.Value) ansi.Color {
+		d.ValueColor = func(v *decode.Value) ansi.Code {
 			switch vv := v.V.(type) {
 			case decode.Array:
 				return d.Array
@@ -127,7 +128,7 @@ func decoratorFromOptions(opts Options) Decorator {
 			}
 		}
 		byteDefaultColor := ansi.FromString("")
-		byteColors := map[byte]ansi.Color{}
+		byteColors := map[byte]ansi.Code{}
 		for i := 0; i < 256; i++ {
 			byteColors[byte(i)] = byteDefaultColor
 		}
@@ -139,35 +140,35 @@ func decoratorFromOptions(opts Options) Decorator {
 				}
 			}
 		}
-		d.ByteColor = func(b byte) ansi.Color { return byteColors[b] }
+		d.ByteColor = func(b byte) ansi.Code { return byteColors[b] }
 	} else {
-		d.ValueColor = func(v *decode.Value) ansi.Color { return ansi.None }
-		d.ByteColor = func(b byte) ansi.Color { return ansi.None }
+		d.ValueColor = func(v *decode.Value) ansi.Code { return ansi.None }
+		d.ByteColor = func(b byte) ansi.Code { return ansi.None }
 	}
 
 	return d
 }
 
 type Decorator struct {
-	Null      ansi.Color
-	False     ansi.Color
-	True      ansi.Color
-	Number    ansi.Color
-	String    ansi.Color
-	ObjectKey ansi.Color
-	Array     ansi.Color
-	Object    ansi.Color
+	Null      ansi.Code
+	False     ansi.Code
+	True      ansi.Code
+	Number    ansi.Code
+	String    ansi.Code
+	ObjectKey ansi.Code
+	Array     ansi.Code
+	Object    ansi.Code
 
-	Index ansi.Color
+	Index ansi.Code
+	Value ansi.Code
 
-	Name  ansi.Color
-	Value ansi.Color
-	Frame ansi.Color
+	DumpHeader ansi.Code
+	DumpAddr   ansi.Code
 
-	Error ansi.Color
+	Error ansi.Code
 
-	ValueColor func(v *decode.Value) ansi.Color
-	ByteColor  func(b byte) ansi.Color
+	ValueColor func(v *decode.Value) ansi.Code
+	ByteColor  func(b byte) ansi.Code
 
 	Column string
 }

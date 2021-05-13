@@ -3,117 +3,162 @@ package ansi
 import (
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 )
 
-const FgBlack = "\x1b[30m"
-const FgRed = "\x1b[31m"
-const FgGreen = "\x1b[32m"
-const FgYellow = "\x1b[33m"
-const FgBlue = "\x1b[34m"
-const FgMagenta = "\x1b[35m"
-const FgCyan = "\x1b[36m"
-const FgWhite = "\x1b[37m"
-const FgBrightBlack = "\x1b[90m"
-const FgBrightRed = "\x1b[91m"
-const FgBrightGreen = "\x1b[92m"
-const FgBrightYellow = "\x1b[93m"
-const FgBrightBlue = "\x1b[94m"
-const FgBrightMagenta = "\x1b[95m"
-const FgBrightCyan = "\x1b[96m"
-const FgBrightWhite = "\x1b[97m"
-const BgBlack = "\x1b[40m"
-const BgRed = "\x1b[41m"
-const BgGreen = "\x1b[42m"
-const BgYellow = "\x1b[43m"
-const BgBlue = "\x1b[44m"
-const BgMagenta = "\x1b[45m"
-const BgCyan = "\x1b[46m"
-const BgWhite = "\x1b[47m"
-const BgBrightBlack = "\x1b[100m"
-const BgBrightRed = "\x1b[101m"
-const BgBrightGreen = "\x1b[102m"
-const BgBrightYellow = "\x1b[103m"
-const BgBrightBlue = "\x1b[104m"
-const BgBrightMagenta = "\x1b[105m"
-const BgBrightCyan = "\x1b[106m"
-const BgBrightWhite = "\x1b[107m"
-const Reset = "\x1b[0m"
-
-var Foreground = map[string]string{
-	"black":         FgBlack,
-	"red":           FgRed,
-	"green":         FgGreen,
-	"yellow":        FgYellow,
-	"blue":          FgBlue,
-	"magenta":       FgMagenta,
-	"cyan":          FgCyan,
-	"white":         FgWhite,
-	"brightblack":   FgBrightBlack,
-	"brightred":     FgBrightRed,
-	"brightgreen":   FgBrightGreen,
-	"brightyellow":  FgBrightYellow,
-	"brightblue":    FgBrightBlue,
-	"brightmagenta": FgBrightMagenta,
-	"brightcyan":    FgBrightCyan,
-	"brightwhite":   FgBrightWhite,
+type Code struct {
+	Set         []int
+	Reset       []int
+	SetString   string
+	ResetString string
 }
 
-var Background = map[string]string{
-	"black":         BgBlack,
-	"red":           BgRed,
-	"green":         BgGreen,
-	"yellow":        BgYellow,
-	"blue":          BgBlue,
-	"magenta":       BgMagenta,
-	"cyan":          BgCyan,
-	"white":         BgWhite,
-	"brightblack":   BgBrightBlack,
-	"brightred":     BgBrightRed,
-	"brightgreen":   BgBrightGreen,
-	"brightyellow":  BgBrightYellow,
-	"brightblue":    BgBrightBlue,
-	"brightmagenta": BgBrightMagenta,
-	"brightcyan":    BgBrightCyan,
-	"brightwhite":   BgBrightWhite,
-}
-
-type Color string
-
-var None Color
-
-func FromString(s string) Color {
-	parts := strings.SplitN(s, ":", 2)
-	fg := ""
-	bg := ""
-	if len(parts) > 0 {
-		fg = Foreground[parts[0]]
+func MakeCode(set []int, reset []int) Code {
+	setSB := &strings.Builder{}
+	setSB.WriteString("\x1b[")
+	for i, s := range set {
+		setSB.WriteString(strconv.Itoa(s))
+		if i != len(set)-1 {
+			setSB.WriteString(";")
+		}
 	}
-	if len(parts) > 1 {
-		bg = Foreground[parts[1]]
+	setSB.WriteString("m")
+	resetSB := &strings.Builder{}
+	resetSB.WriteString("\x1b[")
+	for i, s := range reset {
+		resetSB.WriteString(strconv.Itoa(s))
+		if i != len(reset)-1 {
+			resetSB.WriteString(";")
+		}
 	}
-	return Color(fg + bg)
+	resetSB.WriteString("m")
+	return Code{
+		Set:         set,
+		Reset:       reset,
+		SetString:   setSB.String(),
+		ResetString: resetSB.String(),
+	}
 }
 
-func (c Color) Write(w io.Writer, p []byte) (int, error) {
-	if c != "" {
-		if n, err := w.Write([]byte(c)); err != nil {
+func (c Code) Add(a Code) Code {
+	return MakeCode(
+		append(c.Set, a.Set...),
+		append(c.Reset, a.Reset...),
+	)
+}
+
+var Reset = MakeCode([]int{}, []int{})
+
+var Black = MakeCode([]int{30}, []int{39})
+var Red = MakeCode([]int{31}, []int{39})
+var Green = MakeCode([]int{32}, []int{39})
+var Yellow = MakeCode([]int{33}, []int{39})
+var Blue = MakeCode([]int{34}, []int{39})
+var Magenta = MakeCode([]int{35}, []int{39})
+var Cyan = MakeCode([]int{36}, []int{39})
+var White = MakeCode([]int{37}, []int{39})
+var BrightBlack = MakeCode([]int{90}, []int{39})
+var BrightRed = MakeCode([]int{91}, []int{39})
+var BrightGreen = MakeCode([]int{92}, []int{39})
+var BrightYellow = MakeCode([]int{93}, []int{39})
+var BrightBlue = MakeCode([]int{94}, []int{39})
+var BrightMagenta = MakeCode([]int{95}, []int{39})
+var BrightCyan = MakeCode([]int{96}, []int{39})
+var BrightWhite = MakeCode([]int{97}, []int{39})
+var Bgblack = MakeCode([]int{40}, []int{39})
+var Bgred = MakeCode([]int{41}, []int{39})
+var Bggreen = MakeCode([]int{42}, []int{39})
+var Bgyellow = MakeCode([]int{43}, []int{39})
+var Bgblue = MakeCode([]int{44}, []int{39})
+var Bgmagenta = MakeCode([]int{45}, []int{39})
+var Bgcyan = MakeCode([]int{46}, []int{39})
+var Bgwhite = MakeCode([]int{47}, []int{39})
+var BgbrightBlack = MakeCode([]int{100}, []int{39})
+var BgbrightRed = MakeCode([]int{101}, []int{39})
+var BgbrightGreen = MakeCode([]int{102}, []int{39})
+var BgbrightYellow = MakeCode([]int{103}, []int{39})
+var BgbrightBlue = MakeCode([]int{104}, []int{39})
+var BgbrightMagenta = MakeCode([]int{105}, []int{39})
+var BgbrightCyan = MakeCode([]int{106}, []int{39})
+var BgbrightWhite = MakeCode([]int{107}, []int{39})
+var Bold = MakeCode([]int{1}, []int{22})
+var Italic = MakeCode([]int{3}, []int{23})
+var Underline = MakeCode([]int{4}, []int{24})
+var Inverse = MakeCode([]int{7}, []int{27})
+
+var StringToCode = map[string]Code{
+	"black":           Black,
+	"red":             Red,
+	"green":           Green,
+	"yellow":          Yellow,
+	"blue":            Blue,
+	"magenta":         Magenta,
+	"cyan":            Cyan,
+	"white":           White,
+	"brightblack":     BrightBlack,
+	"brightred":       BrightRed,
+	"brightgreen":     BrightGreen,
+	"brightyellow":    BrightYellow,
+	"brightblue":      BrightBlue,
+	"brightmagenta":   BrightMagenta,
+	"brightcyan":      BrightCyan,
+	"brightwhite":     BrightWhite,
+	"bgblack":         Bgblack,
+	"bgred":           Bgred,
+	"bggreen":         Bggreen,
+	"bgyellow":        Bgyellow,
+	"bgblue":          Bgblue,
+	"bgmagenta":       Bgmagenta,
+	"bgcyan":          Bgcyan,
+	"bgwhite":         Bgwhite,
+	"bgbrightblack":   BgbrightBlack,
+	"bgbrightred":     BgbrightRed,
+	"bgbrightgreen":   BgbrightGreen,
+	"bgbrightyellow":  BgbrightYellow,
+	"bgbrightblue":    BgbrightBlue,
+	"bgbrightmagenta": BgbrightMagenta,
+	"bgbrightcyan":    BgbrightCyan,
+	"bgbrightwhite":   BgbrightWhite,
+	"bold":            Bold,
+	"italic":          Italic,
+	"underline":       Underline,
+	"inverse":         Inverse,
+}
+
+var None Code
+
+func FromString(s string) Code {
+	c := Code{}
+	for _, part := range strings.Split(s, "+") {
+		pc, ok := StringToCode[part]
+		if !ok {
+			continue
+		}
+		c = c.Add(pc)
+	}
+	return c
+}
+
+func (c Code) Write(w io.Writer, p []byte) (int, error) {
+	if c.SetString != "" {
+		if n, err := w.Write([]byte(c.SetString)); err != nil {
 			return n, err
 		}
 		if n, err := w.Write(p); err != nil {
 			return n, err
 		}
-		if n, err := w.Write([]byte(Reset)); err != nil {
+		if n, err := w.Write([]byte(c.ResetString)); err != nil {
 			return n, err
 		}
-		return len(c) + len(p) + len(Reset), nil
+		return len(c.SetString) + len(p) + len(c.ResetString), nil
 	}
 	return w.Write(p)
 }
 
-func (c Color) Wrap(s string) string {
-	if c != "" {
-		return string(c) + s + Reset
+func (c Code) Wrap(s string) string {
+	if c.ResetString != "" {
+		return c.SetString + s + c.ResetString
 	}
 	return s
 }
@@ -134,24 +179,24 @@ func (cf colorFormatter) Format(state fmt.State, verb rune) {
 	}
 }
 
-func (c Color) F(s string) fmt.Formatter {
-	if c != "" {
-		return colorFormatter([3]string{string(c), s, Reset})
+func (c Code) F(s string) fmt.Formatter {
+	if c.SetString != "" {
+		return colorFormatter([3]string{c.SetString, s, c.ResetString})
 	}
 	return colorFormatter([3]string{s})
 }
 
 type colorWriter struct {
 	w io.Writer
-	c Color
+	c Code
 }
 
 func (cw colorWriter) Write(p []byte) (int, error) {
 	return cw.c.Write(cw.w, p)
 }
 
-func (c Color) W(w io.Writer) io.Writer {
-	if c != "" {
+func (c Code) W(w io.Writer) io.Writer {
+	if c.SetString != "" {
 		return colorWriter{w: w, c: c}
 	}
 	return w

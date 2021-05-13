@@ -74,12 +74,12 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 	if depth == 0 {
 		switch v.V.(type) {
 		case decode.Struct:
-			cfmt(colHex, "%s", deco.Frame.F(header))
+			cfmt(colHex, "%s", deco.DumpHeader.F(header))
 		case decode.Array:
-			cfmt(colHex, "%s", deco.Frame.F(header))
+			cfmt(colHex, "%s", deco.DumpHeader.F(header))
 		default:
 			columns()
-			cfmt(colHex, "%s", deco.Frame.F(header))
+			cfmt(colHex, "%s", deco.DumpHeader.F(header))
 			cw.Flush()
 		}
 	}
@@ -206,7 +206,7 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 	// has length and is a simple value or a collapsed struct/array
 	if v.Range.Len > 0 && (isSimple || (opts.Depth != 0 && opts.Depth == depth)) {
 		cfmt(colAddr, "%s%s\n",
-			rootIndent, deco.Frame.F(num.PadFormatInt(startLineByte, opts.AddrBase, true, addrWidth)))
+			rootIndent, deco.DumpAddr.F(num.PadFormatInt(startLineByte, opts.AddrBase, true, addrWidth)))
 
 		vBitBuf, err := rootV.RootBitBuf.BitBufRange(startByte*8, displaySizeBits)
 		if err != nil {
@@ -229,7 +229,7 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 		for i := int64(1); i < addrLines; i++ {
 			lineStartByte := startLineByte + int64(i)*int64(opts.LineBytes)
 			columns()
-			cfmt(colAddr, "%s%s\n", rootIndent, deco.Frame.F(num.PadFormatInt(lineStartByte, opts.AddrBase, true, addrWidth)))
+			cfmt(colAddr, "%s%s\n", rootIndent, deco.DumpAddr.F(num.PadFormatInt(lineStartByte, opts.AddrBase, true, addrWidth)))
 		}
 		// TODO: correct? should rethink columnwriter api maybe?
 		lastLineStopByte := startLineByte + int64(addrLines)*int64(opts.LineBytes) - 1
@@ -246,7 +246,7 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 			}
 			columns()
 
-			cfmt(colAddr, "%s%s\n", rootIndent, deco.Frame.F("*"))
+			cfmt(colAddr, "%s%s\n", rootIndent, deco.DumpAddr.F("*"))
 			cprint(colHex, "\n")
 			// TODO: truncate if displaybytes is small?
 			cfmt(colHex, "until %s%s (%s)",

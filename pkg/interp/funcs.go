@@ -523,15 +523,15 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 					return nil
 				},
 				colorjson.Colors{
-					Reset:     []byte(ansi.Reset),
-					Null:      []byte(opts.Decorator.Null),
-					False:     []byte(opts.Decorator.False),
-					True:      []byte(opts.Decorator.True),
-					Number:    []byte(opts.Decorator.Number),
-					String:    []byte(opts.Decorator.String),
-					ObjectKey: []byte(opts.Decorator.ObjectKey),
-					Array:     []byte(opts.Decorator.Array),
-					Object:    []byte(opts.Decorator.Object),
+					Reset:     []byte(ansi.Reset.SetString),
+					Null:      []byte(opts.Decorator.Null.SetString),
+					False:     []byte(opts.Decorator.False.SetString),
+					True:      []byte(opts.Decorator.True.SetString),
+					Number:    []byte(opts.Decorator.Number.SetString),
+					String:    []byte(opts.Decorator.String.SetString),
+					ObjectKey: []byte(opts.Decorator.ObjectKey.SetString),
+					Array:     []byte(opts.Decorator.Array.SetString),
+					Object:    []byte(opts.Decorator.Object.SetString),
 				},
 			).Marshal(v, i.stdout); err != nil {
 				return err

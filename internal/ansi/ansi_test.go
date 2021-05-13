@@ -21,7 +21,7 @@ func Test(t *testing.T) {
 }
 
 func Test2(t *testing.T) {
-	c := ansi.FromString("blue")
+	c := ansi.FromString("blue+underline")
 
 	b := &bytes.Buffer{}
 
@@ -37,9 +37,9 @@ func TestLen(t *testing.T) {
 	}{
 		{"", 0},
 		{"abc", 3},
-		{ansi.FgRed + "a" + "bc" + ansi.Reset + "d", 4},
-		{"a" + ansi.FgRed + "bc" + ansi.Reset + "d", 4},
-		{"a" + ansi.FgRed + "bcd" + ansi.Reset, 4},
+		{ansi.Red.SetString + "a" + "bc" + ansi.Red.ResetString + "d", 4},
+		{"a" + ansi.Red.SetString + "bc" + ansi.Red.ResetString + "d", 4},
+		{"a" + ansi.Red.SetString + "bcd" + ansi.Red.ResetString, 4},
 		{"a│b", 3},
 	}
 	for _, tC := range testCases {

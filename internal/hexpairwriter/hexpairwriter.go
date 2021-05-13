@@ -46,8 +46,9 @@ func New(w io.Writer, width int, startLineOffset int, fn func(b byte) string) *W
 		startLineOffset: startLineOffset,
 		fn:              fn,
 		offset:          0,
-		buf:             make([]byte, width*12+1), // worst case " " or "\n" + width*(XX "+ansi) + "\n"
-		bufOffset:       0,
+		// TODO: ansi length? nicer reusable buffer?
+		buf:       make([]byte, width*200+1), // worst case " " or "\n" + width*(XX "+ansi) + "\n"
+		bufOffset: 0,
 	}
 }
 
