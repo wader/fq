@@ -1,5 +1,11 @@
 
-io.Must* panics
+
+. as $c | paths(select(._format)) | . as $p | $c | getpath($p) | [($p | join(".")), ._format]
+
+
+test basic JSValue things? slice etc
+
+DONE io.Must* panics
 
 FieldValue funcstions? return *Value
 MakeArray?
