@@ -10,8 +10,8 @@ github.com/mattn/go-isatty v0.0.12/go.mod h1:cbi8OIDigv2wuxKPP5vlRcQ1OAZbq2CE4Ky
 github.com/mattn/go-runewidth v0.0.9/go.mod h1:H031xJmbD/WCDINGzjvQ9THkh0rPKHF+m2gUSrubnMI=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/wader/gojq v0.12.1-0.20210514083529-24adb6cd1e04 h1:N45orTLyTXSfEr3VTA8hH+sLHmPJlQqetDVZo3b+oq0=
-github.com/wader/gojq v0.12.1-0.20210514083529-24adb6cd1e04/go.mod h1:mi4PdXSlFllHyByM68JKUrbiArtEdEnNEmjbwxcQKAg=
+github.com/wader/gojq v0.12.1-0.20210514171221-f94c15c8ac13 h1:AXLcLnck20FXkP/N+g9I8C28hNKZvPTS3aX0TRGbEx8=
+github.com/wader/gojq v0.12.1-0.20210514171221-f94c15c8ac13/go.mod h1:mi4PdXSlFllHyByM68JKUrbiArtEdEnNEmjbwxcQKAg=
 github.com/wader/readline v0.0.0-20210306181459-854482684b51 h1:AhfQu0WiukN06dYBt5Qufb6TOKKqbY4PNrPaIMtNlJI=
 github.com/wader/readline v0.0.0-20210306181459-854482684b51/go.mod h1:Isi2INrdEfxWdZpTB9XbWSsubJeTFBkjgJj7hkEjFzM=
 golang.org/x/sys v0.0.0-20180810173357-98c5dad5d1a0/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
