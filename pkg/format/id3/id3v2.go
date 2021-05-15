@@ -311,8 +311,9 @@ func textNull(d *decode.D, encoding int) string {
 		nullLen = n
 	}
 
-	textLen := int(d.PeekFind(int(nullLen*8), 8, func(v uint64) bool { return v == 0 }, -1)/8 + int64(nullLen))
+	textLen := int(d.PeekFind(int(nullLen*8), 8, func(v uint64) bool { return v == 0 }, -1)/8 + int64(nullLen) - 1)
 	text := text(d, encoding, textLen)
+
 	// TODO: field?
 	d.SeekRel(int64(nullLen) * 8)
 
