@@ -7,12 +7,19 @@ import (
 	"fq/pkg/interp"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"os/signal"
 	"path/filepath"
 
 	"github.com/goinsane/readline"
 )
+
+func MaybeLogFile() {
+	if lf := os.Getenv("LOGFILE"); lf != "" {
+		log.SetOutput(func() io.Writer { f, _ := os.Create(lf); return f }())
+	}
+}
 
 type autoCompleterFn func(line []rune, pos int) (newLine [][]rune, length int)
 
@@ -119,7 +126,7 @@ func (o *standardOS) Readline(prompt string, complete func(line string, pos int)
 	return line, nil
 }
 
-func Main(r *decode.Registry) {
+func Main(r *decode.Registry, version string) {
 	sos, err := newStandardOS()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -133,7 +140,7 @@ func Main(r *decode.Registry) {
 		os.Exit(1)
 	}
 
-	if err := i.Main(context.Background(), sos.Stdout()); err != nil {
+	if err := i.Main(context.Background(), sos.Stdout(), version); err != nil {
 		os.Exit(1)
 	}
 }

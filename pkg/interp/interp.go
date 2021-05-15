@@ -6,7 +6,6 @@ import (
 	"embed"
 	"errors"
 	"fmt"
-	"fq"
 	"fq/internal/ctxstack"
 	"fq/internal/num"
 	"fq/pkg/bitio"
@@ -425,7 +424,7 @@ func (i *Interp) Stop() {
 	i.interruptStack.Stop()
 }
 
-func (i *Interp) Main(ctx context.Context, stdout io.Writer) error {
+func (i *Interp) Main(ctx context.Context, stdout io.Writer, version string) error {
 	runMode := ScriptMode
 
 	var args []interface{}
@@ -435,7 +434,7 @@ func (i *Interp) Main(ctx context.Context, stdout io.Writer) error {
 
 	input := map[string]interface{}{
 		"args":    args,
-		"version": fq.Version,
+		"version": version,
 	}
 
 	iter, err := i.EvalFunc(ctx, runMode, input, "main", nil, i.os.Stdout())

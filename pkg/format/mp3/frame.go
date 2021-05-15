@@ -137,17 +137,17 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			case 0b00:
 				return 0, decode.NumberDecimal, "reserved"
 			case 0b01:
-				return 3, decode.NumberDecimal, "Layer III"
+				return 3, decode.NumberDecimal, "Layer 3"
 			case 0b10:
-				return 2, decode.NumberDecimal, "Layer II"
+				return 2, decode.NumberDecimal, "Layer 2"
 			case 0b11:
-				return 1, decode.NumberDecimal, "Layer I"
+				return 1, decode.NumberDecimal, "Layer 1"
 			default:
 				panic("unreachable")
 			}
 		})
-		// [layer][mpeg version]
-		var samplePerFrameIndex = map[uint][4]uint{
+		// [mpeg layer][mpeg version]
+		var samplesPerFrameIndex = map[uint][4]uint{
 			0: [...]uint{0, 0, 0, 0},
 			1: [...]uint{0, 384, 384, 384},
 			2: [...]uint{0, 1152, 1152, 1152},
@@ -155,7 +155,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		}
 		// TODO: synthentic fields somehow?
 		d.FieldUFn("samples_per_frame", func() (uint64, decode.DisplayFormat, string) {
-			return uint64(samplePerFrameIndex[uint(mpegLayer)][uint(mpegVersion)]), decode.NumberDecimal, ""
+			return uint64(samplesPerFrameIndex[uint(mpegLayer)][uint(mpegVersion)]), decode.NumberDecimal, ""
 		})
 		protection, _ := d.FieldBoolMapFn("protection", "Not protected", "Protected by CRC", d.Bool)
 		// note false mean has protection
@@ -185,6 +185,10 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			case 0b1111:
 				return 0, decode.NumberDecimal, "bad"
 			default:
+				i := (mpegVersion-1)*3 + (mpegLayer - 1)
+				if i >= 9 {
+					d.Invalid("Invalid bitrate index")
+				}
 				return uint64(bitRateIndex[uint(u)][(mpegVersion-1)*3+(mpegLayer-1)]) * 1000, decode.NumberDecimal, ""
 			}
 		})
@@ -211,16 +215,16 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldU1("private")
 		channelsIndex, _ := d.FieldStringMapFn("channels", map[uint64]string{
 			0b00: "Stereo",
-			0b01: "Joint Stereo",
+			0b01: "Joint stereo",
 			0b10: "Dual",
 			0b11: "Mono",
 		}, "", d.U2, decode.NumberBinary)
 		isStereo = channelsIndex != 0b11
 		d.FieldStringMapFn("channel_mode", map[uint64]string{
 			0b00: "",
-			0b01: "Intensity Stereo",
-			0b10: "MS Stereo",
-			0b11: "Intensity Stereo,MS Stereo",
+			0b01: "Intensity stereo",
+			0b10: "MS stereo",
+			0b11: "Intensity stereo, ms stereo",
 		}, "", d.U2, decode.NumberBinary)
 		d.FieldU1("copyright")
 		d.FieldU1("original")
@@ -296,7 +300,6 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 						d.FieldU5("table_select2")
 						d.FieldU4("region_address1")
 						d.FieldU3("region_address2")
-
 					}
 
 					d.FieldU1("preflag")

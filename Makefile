@@ -20,15 +20,15 @@ lint:
 
 .PHONY: depgraph.svg
 depgraph.svg:
-	godepgraph -s cmd/fq/main.go | dot -Tsvg -o godepgraph.svg
+	godepgraph -s main.go | dot -Tsvg -o godepgraph.svg
 
 .PHONY: formats.svg
 formats.svg:
-	go run cmd/fq/main.go -rn 'formats | _formats_dot' | dot -Tsvg -o formats.svg
+	go run main.go -rn 'formats | _formats_dot' | dot -Tsvg -o formats.svg
 
 .PHONY: prof
 prof:
-	go build -o fq.prof ./cmd/fq
+	go build -o fq.prof main.go
 	CPUPROFILE=fq.cpu.prof MEMPROFILE=fq.mem.prof ./fq.prof "${ARGS}"
 .PHONY: memprof
 memprof: prof
@@ -43,7 +43,7 @@ README.md: _doc/file.mp3 _doc/file.mp4
 	$(eval REPODIR=$(shell pwd))
 	$(eval TEMPDIR=$(shell mktemp -d))
 	cp -a _doc/* "${TEMPDIR}"
-	go build -o "${TEMPDIR}/fq" cmd/fq/main.go
+	go build -o "${TEMPDIR}/fq" main.go
 	cd "${TEMPDIR}" ; \
 	        cat "${REPODIR}/$@" | PATH="${TEMPDIR}:${PATH}" go run "${REPODIR}/_doc/mdsh.go" > "${TEMPDIR}/$@"
 	mv "${TEMPDIR}/$@" "${REPODIR}/$@"
