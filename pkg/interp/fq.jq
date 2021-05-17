@@ -135,21 +135,24 @@ def prompt:
 	) +
 	"> ";
 
+def eval_debug:
+	. | tojson | print;
+
 def eval_f($e;f):
 	default_options(build_default_options) as $_
-	| try eval($e) | f
+	| try eval($e; "eval_debug") | f
 	  catch (. as $err | ("error: " + $err) | print);
 
 def default_display: display({depth: 1});
 
 def eval_print($e):
-	eval_f($e;default_display);
+	eval_f($e; default_display);
 
 # run read-eval-print-loop
 def repl($opts): #:: a|(Opts) => @
 	def _as_array: if (. | type) != "array" then [.] end;
 	def _read_expr:
-		read(prompt;"complete")
+		read(prompt; "complete")
 		| trim
 		| if . == "" then "." end;
 	def _repl:

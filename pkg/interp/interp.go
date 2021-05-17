@@ -6,6 +6,8 @@ import (
 	"embed"
 	"errors"
 	"fmt"
+	"fq/internal/ansi"
+	"fq/internal/colorjson"
 	"fq/internal/ctxstack"
 	"fq/internal/num"
 	"fq/pkg/bitio"
@@ -376,10 +378,11 @@ const (
 )
 
 type runContext struct {
-	ctx    context.Context
-	stdout Output // TODO: rename?
-	mode   RunMode
-	state  map[string]interface{}
+	ctx     context.Context
+	stdout  Output // TODO: rename?
+	mode    RunMode
+	state   map[string]interface{}
+	debugFn string
 }
 
 type Interp struct {
@@ -438,7 +441,7 @@ func (i *Interp) Main(ctx context.Context, stdout io.Writer, version string) err
 		"version": version,
 	}
 
-	iter, err := i.EvalFunc(ctx, runMode, input, "main", nil, i.os.Stdout())
+	iter, err := i.EvalFunc(ctx, runMode, input, "main", nil, i.os.Stdout(), "")
 	if err != nil {
 		fmt.Fprintln(i.os.Stderr(), err)
 		return err
@@ -458,7 +461,7 @@ func (i *Interp) Main(ctx context.Context, stdout io.Writer, version string) err
 	return nil
 }
 
-func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src string, stdout Output) (gojq.Iter, error) {
+func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src string, stdout Output, debugFn string) (gojq.Iter, error) {
 	var err error
 
 	// TODO: did not work
@@ -481,8 +484,9 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	}
 
 	ni.runContext = runContext{
-		state: newState,
-		mode:  mode,
+		state:   newState,
+		mode:    mode,
+		debugFn: debugFn,
 	}
 
 	// var variableNames []string
@@ -551,12 +555,29 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 			v, ok := iter.Next()
 
 			if dv, ok := v.([2]interface{}); ok {
-				log.Printf("debug: %#+v\n", dv)
+				if ni.debugFn != "" {
+					diter, err := i.EvalFunc(i.ctx, ScriptMode, []interface{}{dv[0], dv[1]}, ni.debugFn, []interface{}{}, i.stdout, "")
+					if err != nil {
+						return err, true
+					}
+					for {
+						v, ok := diter.Next()
+						if err, ok := v.(error); ok {
+							// TODO: how to log?
+							log.Printf("err: %#+v\n", err)
+						}
+						if !ok {
+							break
+						}
+					}
+				} else {
+					// TODO: how to log?
+					fmt.Fprintln(i.os.Stderr(), dv[:]...)
+				}
 				continue
 			}
 
-			_, isErr := v.(error)
-			if !ok || isErr {
+			if !ok {
 				runCtxCancelFn()
 			}
 
@@ -567,7 +588,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	return iterWrapper, nil
 }
 
-func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output) (gojq.Iter, error) {
+func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output, debugFn string) (gojq.Iter, error) {
 	var argsExpr []string
 	for i := range args {
 		argsExpr = append(argsExpr, fmt.Sprintf("$a[%d]", i))
@@ -583,15 +604,15 @@ func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name
 	}
 	// {input: ..., args: [...]} | .args as $a | .input | name[($a[0]; ...)]
 	trampolineExpr := fmt.Sprintf(".args as $a | .input | %s%s", name, argExpr)
-	iter, err := i.Eval(ctx, mode, trampolineInput, trampolineExpr, stdout)
+	iter, err := i.Eval(ctx, mode, trampolineInput, trampolineExpr, stdout, debugFn)
 	if err != nil {
 		return nil, err
 	}
 	return iter, nil
 }
 
-func (i *Interp) EvalFuncValues(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output) ([]interface{}, error) {
-	iter, err := i.EvalFunc(ctx, mode, c, name, args, stdout)
+func (i *Interp) EvalFuncValues(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output, debugFn string) ([]interface{}, error) {
+	iter, err := i.EvalFunc(ctx, mode, c, name, args, stdout, debugFn)
 	if err != nil {
 		return nil, err
 	}
@@ -718,4 +739,34 @@ func (i *Interp) Options(fnOptsV ...interface{}) (Options, error) {
 	opts.Decorator = decoratorFromOptions(opts)
 
 	return opts, nil
+}
+
+func (i *Interp) NewColorJSON() (*colorjson.Encoder, error) {
+	opts, err := i.Options()
+	if err != nil {
+		return nil, err
+	}
+
+	return colorjson.NewEncoder(
+		opts.Color,
+		false,
+		2,
+		func(v interface{}) interface{} {
+			if o, ok := v.(gojq.JQValue); ok {
+				return o.JQValue()
+			}
+			return nil
+		},
+		colorjson.Colors{
+			Reset:     []byte(ansi.Reset.SetString),
+			Null:      []byte(opts.Decorator.Null.SetString),
+			False:     []byte(opts.Decorator.False.SetString),
+			True:      []byte(opts.Decorator.True.SetString),
+			Number:    []byte(opts.Decorator.Number.SetString),
+			String:    []byte(opts.Decorator.String.SetString),
+			ObjectKey: []byte(opts.Decorator.ObjectKey.SetString),
+			Array:     []byte(opts.Decorator.Array.SetString),
+			Object:    []byte(opts.Decorator.Object.SetString),
+		},
+	), nil
 }

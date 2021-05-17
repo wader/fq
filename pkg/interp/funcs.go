@@ -11,8 +11,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"fq/internal/aheadreadseeker"
-	"fq/internal/ansi"
-	"fq/internal/colorjson"
 	"fq/internal/ctxreadseeker"
 	"fq/internal/ioextra"
 	"fq/internal/progressreadseeker"
@@ -37,7 +35,7 @@ func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
 		{[]string{"tty"}, 0, 0, i.tty, nil},
 
 		{[]string{"read"}, 0, 2, i.read, nil},
-		{[]string{"eval"}, 1, 1, nil, i.eval},
+		{[]string{"eval"}, 1, 2, nil, i.eval},
 		{[]string{"print"}, 0, 0, nil, i.print},
 
 		{[]string{"complete_query"}, 0, 0, i.completeQuery, nil},
@@ -248,7 +246,15 @@ func (i *Interp) eval(c interface{}, a []interface{}) gojq.Iter {
 	if !ok {
 		return gojq.NewIter(fmt.Errorf("%v: src is not a string", a[0]))
 	}
-	iter, err := i.Eval(i.ctx, ScriptMode, c, src, i.stdout)
+	debugFn := ""
+	if len(a) >= 2 {
+		debugFn, ok = a[1].(string)
+		if !ok {
+			return gojq.NewIter(fmt.Errorf("%v: debugFn is not a string", a[1]))
+		}
+	}
+
+	iter, err := i.Eval(i.ctx, ScriptMode, c, src, i.stdout, debugFn)
 	if err != nil {
 		return gojq.NewIter(err)
 	}
@@ -514,26 +520,11 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 				return gojq.NewIter()
 			}
 
-			if err := colorjson.NewEncoder(
-				opts.Color, false, 2,
-				func(v interface{}) interface{} {
-					if o, ok := v.(gojq.JQValue); ok {
-						return o.JQValue()
-					}
-					return nil
-				},
-				colorjson.Colors{
-					Reset:     []byte(ansi.Reset.SetString),
-					Null:      []byte(opts.Decorator.Null.SetString),
-					False:     []byte(opts.Decorator.False.SetString),
-					True:      []byte(opts.Decorator.True.SetString),
-					Number:    []byte(opts.Decorator.Number.SetString),
-					String:    []byte(opts.Decorator.String.SetString),
-					ObjectKey: []byte(opts.Decorator.ObjectKey.SetString),
-					Array:     []byte(opts.Decorator.Array.SetString),
-					Object:    []byte(opts.Decorator.Object.SetString),
-				},
-			).Marshal(v, i.stdout); err != nil {
+			cj, err := i.NewColorJSON()
+			if err != nil {
+				return gojq.NewIter(err)
+			}
+			if err := cj.Marshal(v, i.stdout); err != nil {
 				return gojq.NewIter(err)
 			}
 			fmt.Fprintln(i.stdout)
