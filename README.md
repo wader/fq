@@ -1,10 +1,6 @@
 # fq
 
-jq for binary
-
-Tool and framework for querying and exploring binary data.
-
-##
+A tool and framework for querying and exploring binary data.
 
 <sub>
 <pre sh>
@@ -56,7 +52,10 @@ $ fq file.mp4 '[.. | select(.type == "stsd")?.sample_descriptions[].data_format]
 
 ## Install
 
-TODO
+Currently there are no binary releases, but it's quite easy to build fq yourself. Make sure you have go 1.16
+or later and then do
+`go install github.com/wader/fq@latest`
+and the binary should end up at `$GOPATH/bin/fq`.
 
 ## Differences to jq
 
