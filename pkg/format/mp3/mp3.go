@@ -37,10 +37,6 @@ func mp3Decode(d *decode.D, in interface{}) interface{} {
 		}
 	})
 
-	// seems quite common with junk zeroes between headers and first frame
-	// ffmpeg skips until first frame
-	d.FieldOptionalZeroBytes("unknown_zeros")
-
 	validFrames := 0
 	d.FieldArrayFn("frames", func(d *decode.D) {
 		for d.NotEnd() {
