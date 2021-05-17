@@ -12,6 +12,7 @@ import (
 	"fq/pkg/decode"
 	"fq/pkg/ranges"
 	"io"
+	"log"
 	"math/big"
 	"strconv"
 	"strings"
@@ -359,11 +360,11 @@ type Variable struct {
 }
 
 type Function struct {
-	Names     []string
-	MinArity  int
-	MaxArity  int
-	Fn        func(interface{}, []interface{}) interface{}
-	Generator bool
+	Names    []string
+	MinArity int
+	MaxArity int
+	Fn       func(interface{}, []interface{}) interface{}
+	IterFn   func(interface{}, []interface{}) gojq.Iter
 }
 
 type RunMode int
@@ -494,9 +495,9 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	var compilerOpts []gojq.CompilerOption
 	for _, f := range ni.makeFunctions(ni.registry) {
 		for _, n := range f.Names {
-			if f.Generator {
+			if f.IterFn != nil {
 				compilerOpts = append(compilerOpts,
-					gojq.WithIterator(n, f.MinArity, f.MaxArity, f.Fn))
+					gojq.WithIterFunction(n, f.MinArity, f.MaxArity, f.IterFn))
 			} else {
 				compilerOpts = append(compilerOpts,
 					gojq.WithFunction(n, f.MinArity, f.MaxArity, f.Fn))
@@ -546,13 +547,21 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	// iter := gc.RunWithContext(ctx, c, variableValues...)
 
 	iterWrapper := iterFn(func() (interface{}, bool) {
-		v, ok := iter.Next()
-		_, isErr := v.(error)
-		if !ok || isErr {
-			runCtxCancelFn()
-		}
+		for {
+			v, ok := iter.Next()
 
-		return v, ok
+			if dv, ok := v.([2]interface{}); ok {
+				log.Printf("debug: %#+v\n", dv)
+				continue
+			}
+
+			_, isErr := v.(error)
+			if !ok || isErr {
+				runCtxCancelFn()
+			}
+
+			return v, ok
+		}
 	})
 
 	return iterWrapper, nil

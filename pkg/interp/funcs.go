@@ -34,69 +34,69 @@ import (
 // TODO: make it nicer somehow? generate generators? remove from struct?
 func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
 	fs := []Function{
-		{[]string{"tty"}, 0, 0, i.tty, false},
+		{[]string{"tty"}, 0, 0, i.tty, nil},
 
-		{[]string{"read"}, 0, 2, i.read, false},
-		{[]string{"eval"}, 1, 1, i.eval, true},
-		{[]string{"print"}, 0, 0, i.print, true},
+		{[]string{"read"}, 0, 2, i.read, nil},
+		{[]string{"eval"}, 1, 1, nil, i.eval},
+		{[]string{"print"}, 0, 0, nil, i.print},
 
-		{[]string{"complete_query"}, 0, 0, i.completeQuery, false},
-		{[]string{"display_name"}, 0, 0, i.displayName, false},
-		{[]string{"extkeys"}, 0, 0, i._extKeys, false},
-		{[]string{"formats"}, 0, 0, i.formats, false},
+		{[]string{"complete_query"}, 0, 0, i.completeQuery, nil},
+		{[]string{"display_name"}, 0, 0, i.displayName, nil},
+		{[]string{"extkeys"}, 0, 0, i._extKeys, nil},
+		{[]string{"formats"}, 0, 0, i.formats, nil},
 
-		{[]string{"open"}, 0, 1, i._open, false},
-		{[]string{"decode"}, 0, 1, i.makeDecodeFn(registry, registry.MustGroup(format.PROBE)), false},
+		{[]string{"open"}, 0, 1, i._open, nil},
+		{[]string{"decode"}, 0, 1, i.makeDecodeFn(registry, registry.MustGroup(format.PROBE)), nil},
 
-		{[]string{"display", "d"}, 0, 1, i.makeDisplayFn(nil), true},
-		{[]string{"verbose", "v"}, 0, 1, i.makeDisplayFn(map[string]interface{}{"verbose": true}), true},
-		{[]string{"preview", "p"}, 0, 1, i.preview, true},
-		{[]string{"hexdump", "hd", "h"}, 0, 1, i.hexdump, true},
+		{[]string{"display", "d"}, 0, 1, nil, i.makeDisplayFn(nil)},
+		{[]string{"verbose", "v"}, 0, 1, nil, i.makeDisplayFn(map[string]interface{}{"verbose": true})},
+		{[]string{"preview", "p"}, 0, 1, nil, i.preview},
+		{[]string{"hexdump", "hd", "h"}, 0, 1, nil, i.hexdump},
 
-		{[]string{"string"}, 0, 0, i.string_, false},
-		{[]string{"bytes"}, 0, 0, i.bytes, false},
-		{[]string{"bits"}, 0, 0, i.bits, false},
-		{[]string{"tovalue"}, 0, 0, i.tovalue, false},
+		{[]string{"string"}, 0, 0, i.string_, nil},
+		{[]string{"bytes"}, 0, 0, i.bytes, nil},
+		{[]string{"bits"}, 0, 0, i.bits, nil},
+		{[]string{"tovalue"}, 0, 0, i.tovalue, nil},
 
 		{[]string{"hex"}, 0, 0, makeStringBitBufTransformFn(
 			func(r io.Reader) (io.Reader, error) { return hex.NewDecoder(r), nil },
 			func(r io.Writer) (io.Writer, error) { return hex.NewEncoder(r), nil },
-		), false},
+		), nil},
 
 		{[]string{"base64"}, 0, 0, makeStringBitBufTransformFn(
 			func(r io.Reader) (io.Reader, error) { return base64.NewDecoder(base64.StdEncoding, r), nil },
 			func(r io.Writer) (io.Writer, error) { return base64.NewEncoder(base64.StdEncoding, r), nil },
-		), false},
+		), nil},
 		{[]string{"rawbase64"}, 0, 0, makeStringBitBufTransformFn(
 			func(r io.Reader) (io.Reader, error) { return base64.NewDecoder(base64.RawURLEncoding, r), nil },
 			func(r io.Writer) (io.Writer, error) { return base64.NewEncoder(base64.RawURLEncoding, r), nil },
-		), false},
+		), nil},
 
 		{[]string{"urlbase64"}, 0, 0, makeStringBitBufTransformFn(
 			func(r io.Reader) (io.Reader, error) { return base64.NewDecoder(base64.URLEncoding, r), nil },
 			func(r io.Writer) (io.Writer, error) { return base64.NewEncoder(base64.URLEncoding, r), nil },
-		), false},
+		), nil},
 
 		{[]string{"nal_unescape"}, 0, 0, makeBitBufTransformFn(func(r io.Reader) (io.Reader, error) {
 			return &decode.NALUnescapeReader{Reader: r}, nil
-		}), false},
+		}), nil},
 
-		{[]string{"md5"}, 0, 0, makeHashFn(func() (hash.Hash, error) { return md5.New(), nil }), false},
+		{[]string{"md5"}, 0, 0, makeHashFn(func() (hash.Hash, error) { return md5.New(), nil }), nil},
 
-		{[]string{"query_escape"}, 0, 0, i.queryEscape, false},
-		{[]string{"query_unescape"}, 0, 0, i.queryUnescape, false},
-		{[]string{"path_escape"}, 0, 0, i.pathEscape, false},
-		{[]string{"path_unescape"}, 0, 0, i.pathUnescape, false},
-		{[]string{"aes_ctr"}, 1, 2, i.aesCtr, false},
-		{[]string{"json"}, 0, 0, i._json, false},
+		{[]string{"query_escape"}, 0, 0, i.queryEscape, nil},
+		{[]string{"query_unescape"}, 0, 0, i.queryUnescape, nil},
+		{[]string{"path_escape"}, 0, 0, i.pathEscape, nil},
+		{[]string{"path_unescape"}, 0, 0, i.pathUnescape, nil},
+		{[]string{"aes_ctr"}, 1, 2, i.aesCtr, nil},
+		{[]string{"json"}, 0, 0, i._json, nil},
 
-		{[]string{"_state"}, 1, 2, i._state, false},
-		{[]string{"options"}, 0, 0, i.options, false},
+		{[]string{"_state"}, 1, 2, i._state, nil},
+		{[]string{"options"}, 0, 0, i.options, nil},
 
-		{[]string{"find"}, 1, 1, i.find, false},
+		{[]string{"find"}, 1, 1, nil, i.find},
 	}
 	for name, f := range i.registry.Groups {
-		fs = append(fs, Function{[]string{name}, 0, 0, i.makeDecodeFn(registry, f), false})
+		fs = append(fs, Function{[]string{name}, 0, 0, i.makeDecodeFn(registry, f), nil})
 	}
 
 	return fs
@@ -243,24 +243,24 @@ func (i *Interp) read(c interface{}, a []interface{}) interface{} {
 	return src
 }
 
-func (i *Interp) eval(c interface{}, a []interface{}) interface{} {
+func (i *Interp) eval(c interface{}, a []interface{}) gojq.Iter {
 	src, ok := a[0].(string)
 	if !ok {
-		return fmt.Errorf("%v: src is not a string", a[0])
+		return gojq.NewIter(fmt.Errorf("%v: src is not a string", a[0]))
 	}
 	iter, err := i.Eval(i.ctx, ScriptMode, c, src, i.stdout)
 	if err != nil {
-		return err
+		return gojq.NewIter(err)
 	}
 
 	return iter
 }
 
-func (i *Interp) print(c interface{}, a []interface{}) interface{} {
+func (i *Interp) print(c interface{}, a []interface{}) gojq.Iter {
 	if _, err := fmt.Fprintln(i.stdout, c); err != nil {
-		return err
+		return gojq.NewIter(err)
 	}
-	return gojq.EmptyIter{}
+	return gojq.NewIter()
 }
 
 func (i *Interp) completeQuery(c interface{}, a []interface{}) interface{} {
@@ -495,23 +495,23 @@ func (i *Interp) makeDecodeFn(registry *decode.Registry, decodeFormats []*decode
 	}
 }
 
-func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}, a []interface{}) interface{} {
-	return func(c interface{}, a []interface{}) interface{} {
+func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}, a []interface{}) gojq.Iter {
+	return func(c interface{}, a []interface{}) gojq.Iter {
 		opts, err := i.Options(append([]interface{}{fnOpts}, a...)...)
 		if err != nil {
-			return err
+			return gojq.NewIter(err)
 		}
 
 		switch v := c.(type) {
 		case Display:
 			if err := v.Display(i.stdout, opts); err != nil {
-				return err
+				return gojq.NewIter(err)
 			}
-			return []interface{}{}
+			return gojq.NewIter()
 		case nil, bool, float64, int, string, *big.Int, map[string]interface{}, []interface{}, gojq.JQValue:
 			if s, ok := v.(string); ok && opts.RawString {
 				fmt.Fprintln(i.stdout, s)
-				return []interface{}{}
+				return gojq.NewIter()
 			}
 
 			if err := colorjson.NewEncoder(
@@ -534,53 +534,53 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 					Object:    []byte(opts.Decorator.Object.SetString),
 				},
 			).Marshal(v, i.stdout); err != nil {
-				return err
+				return gojq.NewIter(err)
 			}
 			fmt.Fprintln(i.stdout)
 
-			return gojq.EmptyIter{}
+			return gojq.NewIter()
 		case error:
-			return v
+			return gojq.NewIter(v)
 		default:
-			return fmt.Errorf("%+#v: not displayable", c)
+			return gojq.NewIter(fmt.Errorf("%+#v: not displayable", c))
 		}
 	}
 }
 
 // TODO: opts and colors?
-func (i *Interp) preview(c interface{}, a []interface{}) interface{} {
+func (i *Interp) preview(c interface{}, a []interface{}) gojq.Iter {
 	opts, err := i.Options(a...)
 	if err != nil {
-		return err
+		return gojq.NewIter(err)
 	}
 
 	switch v := c.(type) {
 	case Preview:
 		if err := v.Preview(i.stdout, opts); err != nil {
-			return err
+			return gojq.NewIter(err)
 		}
-		return gojq.EmptyIter{}
+		return gojq.NewIter()
 	default:
-		return fmt.Errorf("%v: not previewable", c)
+		return gojq.NewIter(fmt.Errorf("%v: not previewable", c))
 	}
 }
 
-func (i *Interp) hexdump(c interface{}, a []interface{}) interface{} {
+func (i *Interp) hexdump(c interface{}, a []interface{}) gojq.Iter {
 	bbr, err := toBufferRange(c)
 	if err != nil {
-		return err
+		return gojq.NewIter(err)
 	}
 
 	opts, err := i.Options(a...)
 	if err != nil {
-		return err
+		return gojq.NewIter(err)
 	}
 
 	if err := hexdumpRange(bbr, i.stdout, opts); err != nil {
-		return err
+		return gojq.NewIter(err)
 	}
 
-	return gojq.EmptyIter{}
+	return gojq.NewIter()
 }
 
 func (i *Interp) string_(c interface{}, a []interface{}) interface{} {
@@ -766,15 +766,15 @@ func (i *Interp) options(c interface{}, a []interface{}) interface{} {
 	return v
 }
 
-func (i *Interp) find(c interface{}, a []interface{}) interface{} {
+func (i *Interp) find(c interface{}, a []interface{}) gojq.Iter {
 	bb, err := toBuffer(c)
 	if err != nil {
-		return err
+		return gojq.NewIter(err)
 	}
 
 	sbb, err := toBuffer(a[0])
 	if err != nil {
-		return err
+		return gojq.NewIter(err)
 	}
 
 	log.Printf("sbb: %#+v\n", sbb)
@@ -792,11 +792,11 @@ func (i *Interp) find(c interface{}, a []interface{}) interface{} {
 
 	idx := bytes.Index(bbBytes.Bytes(), sbbBytes.Bytes())
 	if idx == -1 {
-		return gojq.EmptyIter{}
+		return gojq.NewIter()
 	}
 
 	bbo := newBifBufObject(bb, 8)
 	// log.Printf("bbo: %#+v\n", bbo)
 
-	return bbo
+	return gojq.NewIter(bbo)
 }

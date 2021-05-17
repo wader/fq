@@ -1,4 +1,8 @@
 
+idv2 utf16 apic p3 doku cana
+
+eval "debug" arg?
+
 DONE id3v2: APIC test
 
 . as $c | paths(select(._format)) | . as $p | $c | getpath($p) | [($p | join(".")), ._format]
