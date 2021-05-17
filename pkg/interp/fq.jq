@@ -136,7 +136,7 @@ def prompt:
 	"> ";
 
 def eval_debug:
-	. | tojson | print;
+	["DEBUG", .] | tojson | print;
 
 def eval_f($e;f):
 	default_options(build_default_options) as $_

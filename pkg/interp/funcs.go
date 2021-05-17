@@ -37,6 +37,8 @@ func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
 		{[]string{"read"}, 0, 2, i.read, nil},
 		{[]string{"eval"}, 1, 2, nil, i.eval},
 		{[]string{"print"}, 0, 0, nil, i.print},
+		{[]string{"printerr"}, 0, 0, nil, i.printerr},
+		{[]string{"debug"}, 0, 0, i.debug, nil},
 
 		{[]string{"complete_query"}, 0, 0, i.completeQuery, nil},
 		{[]string{"display_name"}, 0, 0, i.displayName, nil},
@@ -267,6 +269,38 @@ func (i *Interp) print(c interface{}, a []interface{}) gojq.Iter {
 		return gojq.NewIter(err)
 	}
 	return gojq.NewIter()
+}
+
+func (i *Interp) printerr(c interface{}, a []interface{}) gojq.Iter {
+	if _, err := fmt.Fprintln(i.os.Stderr(), c); err != nil {
+		return gojq.NewIter(err)
+	}
+	return gojq.NewIter()
+}
+
+func (i *Interp) debug(c interface{}, a []interface{}) interface{} {
+
+	if i.debugFn != "" {
+		diter, err := i.EvalFunc(i.ctx, ScriptMode, c, i.debugFn, []interface{}{}, i.stdout, "")
+		if err != nil {
+			return err
+		}
+		for {
+			v, ok := diter.Next()
+			if err, ok := v.(error); ok {
+				// TODO: how to log?
+				log.Printf("err: %#+v\n", err)
+			}
+			if !ok {
+				break
+			}
+		}
+	} else {
+		// TODO: how to log?
+		fmt.Fprintln(i.os.Stderr(), c)
+	}
+
+	return c
 }
 
 func (i *Interp) completeQuery(c interface{}, a []interface{}) interface{} {

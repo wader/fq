@@ -14,7 +14,6 @@ import (
 	"fq/pkg/decode"
 	"fq/pkg/ranges"
 	"io"
-	"log"
 	"math/big"
 	"strconv"
 	"strings"
@@ -551,38 +550,11 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	// iter := gc.RunWithContext(ctx, c, variableValues...)
 
 	iterWrapper := iterFn(func() (interface{}, bool) {
-		for {
-			v, ok := iter.Next()
-
-			if dv, ok := v.([2]interface{}); ok {
-				if ni.debugFn != "" {
-					diter, err := i.EvalFunc(i.ctx, ScriptMode, []interface{}{dv[0], dv[1]}, ni.debugFn, []interface{}{}, i.stdout, "")
-					if err != nil {
-						return err, true
-					}
-					for {
-						v, ok := diter.Next()
-						if err, ok := v.(error); ok {
-							// TODO: how to log?
-							log.Printf("err: %#+v\n", err)
-						}
-						if !ok {
-							break
-						}
-					}
-				} else {
-					// TODO: how to log?
-					fmt.Fprintln(i.os.Stderr(), dv[:]...)
-				}
-				continue
-			}
-
-			if !ok {
-				runCtxCancelFn()
-			}
-
-			return v, ok
+		v, ok := iter.Next()
+		if !ok {
+			runCtxCancelFn()
 		}
+		return v, ok
 	})
 
 	return iterWrapper, nil
