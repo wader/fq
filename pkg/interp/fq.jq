@@ -136,12 +136,12 @@ def prompt:
 	"> ";
 
 def eval_debug:
-	["DEBUG", .] | tojson | print;
+	(["DEBUG", .] | tojson, "\n") | stderr;
 
 def eval_f($e;f):
 	default_options(build_default_options) as $_
 	| try eval($e; "eval_debug") | f
-	  catch (. as $err | ("error: " + $err) | print);
+	  catch (. as $err | ("error: " + $err) | println);
 
 def default_display: display({depth: 1});
 
@@ -253,13 +253,13 @@ def main:
 		}
 	)
 	| if $parsed.version then
-		$version | print
+		$version | println
 	  elif $parsed.formats then
-		_formats_list | print
+		_formats_list | println
 	  elif $parsed.help then
 		"Usage: \($arg0) [OPTIONS] [FILE] [EXPR]...",
 		args_help_text(_opts($version))
-		| print
+		| println
 	  else
 		null
 		# figure out filename and expressions

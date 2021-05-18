@@ -37,7 +37,8 @@ func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
 		{[]string{"read"}, 0, 2, i.read, nil},
 		{[]string{"eval"}, 1, 2, nil, i.eval},
 		{[]string{"print"}, 0, 0, nil, i.print},
-		{[]string{"printerr"}, 0, 0, nil, i.printerr},
+		{[]string{"println"}, 0, 0, nil, i.println},
+		{[]string{"stderr"}, 0, 0, nil, i.stderr},
 		{[]string{"debug"}, 0, 0, i.debug, nil},
 
 		{[]string{"complete_query"}, 0, 0, i.completeQuery, nil},
@@ -265,14 +266,21 @@ func (i *Interp) eval(c interface{}, a []interface{}) gojq.Iter {
 }
 
 func (i *Interp) print(c interface{}, a []interface{}) gojq.Iter {
+	if _, err := fmt.Fprint(i.stdout, c); err != nil {
+		return gojq.NewIter(err)
+	}
+	return gojq.NewIter()
+}
+
+func (i *Interp) println(c interface{}, a []interface{}) gojq.Iter {
 	if _, err := fmt.Fprintln(i.stdout, c); err != nil {
 		return gojq.NewIter(err)
 	}
 	return gojq.NewIter()
 }
 
-func (i *Interp) printerr(c interface{}, a []interface{}) gojq.Iter {
-	if _, err := fmt.Fprintln(i.os.Stderr(), c); err != nil {
+func (i *Interp) stderr(c interface{}, a []interface{}) gojq.Iter {
+	if _, err := fmt.Fprint(i.os.Stderr(), c); err != nil {
 		return gojq.NewIter(err)
 	}
 	return gojq.NewIter()

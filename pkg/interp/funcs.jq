@@ -211,4 +211,4 @@ def help:
     ( builtins[]
 	, "^C interrupt"
 	, "^D exit REPL"
-    ) | print;
+    ) | println;
