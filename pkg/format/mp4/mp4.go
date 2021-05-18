@@ -969,6 +969,100 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 			})
 		},
 		"wave": decodeBoxes,
+		"saiz": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			flags := d.FieldU24("flags")
+			if flags&0b1 != 0 {
+				d.FieldU32("aux_info_type")
+				d.FieldU32("aux_info_type_parameter")
+			}
+			defaultSampleInfoSize := d.FieldU8("default_sample_info_size")
+			sampleCount := d.FieldU32("sample_count")
+			if defaultSampleInfoSize == 0 {
+				d.FieldArrayFn("sample_size_info_table", func(d *decode.D) {
+					for i := uint64(0); i < sampleCount; i++ {
+						d.FieldU8("sample_size")
+					}
+				})
+			}
+		},
+		"sgpd": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+
+			// TODO: version 2?
+
+			d.FieldU32("grouping_type")
+			defaultLength := d.FieldU32("default_length")
+			entryCount := d.FieldU32("entry_count")
+			d.FieldArrayFn("groups", func(d *decode.D) {
+				for i := uint64(0); i < entryCount; i++ {
+					d.FieldBitBufLen("group", int64(defaultLength)*8)
+				}
+			})
+		},
+		"sbgp": func(ctx *decodeContext, d *decode.D) {
+			version := d.FieldU8("version")
+			d.FieldU24("flags")
+
+			d.FieldU32("grouping_type")
+			if version == 1 {
+				d.FieldU32("grouping_type_parameter")
+			}
+			entryCount := d.FieldU32("entry_count")
+			d.FieldArrayFn("entries", func(d *decode.D) {
+				for i := uint64(0); i < entryCount; i++ {
+					d.FieldStructFn("entry", func(d *decode.D) {
+						d.FieldU32("sample_count")
+						d.FieldU32("group_description_index")
+					})
+				}
+			})
+		},
+		"saio": func(ctx *decodeContext, d *decode.D) {
+			version := d.FieldU8("version")
+			flags := d.FieldU24("flags")
+
+			if flags&0b1 != 0 {
+				d.FieldU32("aux_info_type")
+				d.FieldU32("aux_info_type_parameter")
+			}
+			entryCount := d.FieldU32("entry_count")
+			d.FieldArrayFn("entries", func(d *decode.D) {
+				for i := uint64(0); i < entryCount; i++ {
+					if version == 0 {
+						d.FieldU32("offset")
+					} else {
+						d.FieldU64("offset")
+					}
+				}
+			})
+		},
+		"senc": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			flags := d.FieldU24("flags")
+
+			sampleCount := d.FieldU32("sample_count")
+			d.FieldArrayFn("samples", func(d *decode.D) {
+				for i := uint64(0); i < sampleCount; i++ {
+					d.FieldStructFn("sample", func(d *decode.D) {
+						// TODO: IV_size?
+						d.FieldBitBufLen("iv", 8*8)
+						if flags&0b10 != 0 {
+							subSampleCount := d.FieldU32("sub_sample_count")
+							d.FieldArrayFn("subsamples", func(d *decode.D) {
+								for i := uint64(0); i < subSampleCount; i++ {
+									d.FieldStructFn("subsample", func(d *decode.D) {
+										d.FieldU16("bytes_of_clear_data")
+										d.FieldU32("bytes_fo_encrypted_data")
+									})
+								}
+							})
+						}
+					})
+				}
+			})
+		},
 	}
 
 	typeFn := func() (string, string) {

@@ -1,4 +1,10 @@
 
+go run main.go -n 'error'
+panic: cancelled in wrong order
+
+
+
+
 idv2 utf16 apic p3 doku cana
 
 eval "debug" arg?
