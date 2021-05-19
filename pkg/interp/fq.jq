@@ -141,7 +141,7 @@ def eval_debug:
 def eval_f($e;f):
 	default_options(build_default_options) as $_
 	| try eval($e; "eval_debug") | f
-	  catch (. as $err | ("error: " + $err) | println);
+	  catch (. as $err | ("error: " + ($err | tostring)) | println);
 
 def default_display: display({depth: 1});
 

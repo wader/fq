@@ -51,6 +51,10 @@ func (s *Stack) Push(parent context.Context) (context.Context, func()) {
 	s.cancelFns = append(s.cancelFns, stackCtxCancel)
 
 	return stackCtx, func() {
+		if stackCtx.Err() != nil {
+			// already cancelled
+			return
+		}
 		if stackIdx != len(s.cancelFns)-1 {
 			panic("cancelled in wrong order")
 		}

@@ -451,7 +451,6 @@ func (i *Interp) Main(ctx context.Context, stdout io.Writer, version string) err
 			break
 		} else if err, ok := v.(error); ok {
 			fmt.Fprintln(i.os.Stderr(), err)
-			return err
 		} else if d, ok := v.([2]interface{}); ok {
 			fmt.Fprintln(i.os.Stderr(), d[:]...)
 		}
@@ -551,7 +550,8 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 
 	iterWrapper := iterFn(func() (interface{}, bool) {
 		v, ok := iter.Next()
-		if !ok {
+		_, isErr := v.(error)
+		if !ok || isErr {
 			runCtxCancelFn()
 		}
 		return v, ok
@@ -592,9 +592,8 @@ func (i *Interp) EvalFuncValues(ctx context.Context, mode RunMode, c interface{}
 	var vs []interface{}
 	for {
 		v, ok := iter.Next()
-		_, isErr := v.(error)
 		vs = append(vs, v)
-		if !ok || isErr {
+		if !ok {
 			break
 		}
 	}
