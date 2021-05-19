@@ -1,4 +1,8 @@
 
+just "error" hangs
+
+ctrl-d cancelled in wrong order?
+
 go run main.go -n 'error'
 panic: cancelled in wrong order
 
