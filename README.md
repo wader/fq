@@ -195,6 +195,25 @@ TODO
 - REPL tests
 - Refactor *[]decode.Format into something more abstract, group?
 
+### Useful tricks
+
+You can express jq pipelines using CLI arguments:
+```sh
+fq file.flac .metadatablocks[0] d
+```
+Instead of:
+```sh
+fq file.flac '.metadatablocks[0] | d'
+```
+
+You can combine CLI arguments and interactive mode
+```sh
+fq -i file.flac .metadatablocks[0]
+.metadatablocks[0] flac_metadatablock>
+```
+
+
+
 ### Ideas
 
 - Suppose writing decoder in scripting language, jq, js, tango etc?

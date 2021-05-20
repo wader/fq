@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"crypto/md5"
 	"fmt"
+	"fq/internal/num"
 	"fq/pkg/decode"
 	"fq/pkg/format"
 )
@@ -33,6 +34,8 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 	var streamInfo format.FlacMetadatablockStreamInfo
 	var flacFrameIn format.FlacFrameIn
 	var framesNDecodedSamples uint64
+	var streamTotalSamples uint64
+	var streamDecodedSamples uint64
 
 	d.FieldArrayFn("metadatablocks", func(d *decode.D) {
 		for {
@@ -43,10 +46,8 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 			}
 			if flacMetadatablockOut.HasStreamInfo {
 				streamInfo = flacMetadatablockOut.StreamInfo
-				flacFrameIn = format.FlacFrameIn{
-					StreamInfo:   streamInfo,
-					NSamplesLeft: streamInfo.TotalSamplesInStream,
-				}
+				streamTotalSamples = streamInfo.TotalSamplesInStream
+				flacFrameIn = format.FlacFrameIn{StreamInfo: streamInfo}
 			}
 			if flacMetadatablockOut.IsLastBlock {
 				return
@@ -64,12 +65,15 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 				panic(fmt.Sprintf("expected FlacFrameOut got %#+v", v))
 			}
 
-			decode.MustCopy(md5Samples, bytes.NewReader(ffo.SamplesBuf))
-			framesNDecodedSamples += uint64(ffo.NDecodedSamples)
-			// 0 total samples means unknown
-			if streamInfo.TotalSamplesInStream > 0 {
-				flacFrameIn.NSamplesLeft -= ffo.NSteamSamples
+			frameStreamSamplesBuf := ffo.SamplesBuf
+			if streamTotalSamples > 0 {
+				samplesInFrame := num.MinUInt64(streamTotalSamples-streamDecodedSamples, ffo.Samples)
+				frameStreamSamplesBuf = frameStreamSamplesBuf[0 : samplesInFrame*uint64(ffo.Channels*ffo.BitsPerSample/8)]
+				framesNDecodedSamples += ffo.Samples
 			}
+
+			decode.MustCopy(md5Samples, bytes.NewReader(frameStreamSamplesBuf))
+			streamDecodedSamples += uint64(ffo.Samples)
 		}
 	})
 

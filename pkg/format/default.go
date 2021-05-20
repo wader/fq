@@ -96,14 +96,14 @@ type FlacMetadatablockOut struct {
 }
 
 type FlacFrameIn struct {
-	StreamInfo   FlacMetadatablockStreamInfo
-	NSamplesLeft uint64
+	StreamInfo FlacMetadatablockStreamInfo
 }
 
 type FlacFrameOut struct {
-	SamplesBuf      []byte
-	NSteamSamples   uint64
-	NDecodedSamples uint64
+	SamplesBuf    []byte
+	Samples       uint64
+	Channels      int
+	BitsPerSample int
 }
 
 type OggPageOut struct {

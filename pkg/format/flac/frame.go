@@ -4,7 +4,6 @@ package flac
 
 import (
 	"encoding/binary"
-	"fq/internal/num"
 	"fq/pkg/crc"
 	"fq/pkg/decode"
 	"fq/pkg/format"
@@ -602,10 +601,6 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	p := 0
 	le := binary.LittleEndian
 	streamSamples := len(channelSamples[0])
-	// 0 total samples means unknown
-	if inStreamInfo != nil && inStreamInfo.TotalSamplesInStream > 0 {
-		streamSamples = num.MinInt(int(ffi.NSamplesLeft), len(channelSamples[0]))
-	}
 	interleavedSamplesBuf := make([]byte, len(channelSamples)*streamSamples*bytesPerSample)
 
 	// TODO: speedup by using more cache friendly memory layout for samples
@@ -628,8 +623,9 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	}
 
 	return &format.FlacFrameOut{
-		SamplesBuf:      interleavedSamplesBuf,
-		NSteamSamples:   uint64(streamSamples),
-		NDecodedSamples: uint64(len(channelSamples[0])),
+		SamplesBuf:    interleavedSamplesBuf,
+		Samples:       uint64(streamSamples),
+		Channels:      int(channels),
+		BitsPerSample: sampleSize,
 	}
 }
