@@ -315,6 +315,10 @@ func textNull(d *decode.D, encoding int) string {
 	textLen := int(pos + int64(nullLen))
 	text := text(d, encoding, textLen)
 
+	if nullLen > 1 && d.PeekBits(8) == 0 {
+		d.SeekRel(8)
+	}
+
 	return text
 }
 
