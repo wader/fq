@@ -9,6 +9,7 @@ package mp3
 // TODO: some sample decode?
 // TODO: LSF, version 2.5 and 2? other decoder?
 // TODO: mpeg_version int value use desc? same protection etc?
+// TODO: if only layer 3, assert it
 
 import (
 	"fq/pkg/crc"
