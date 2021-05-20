@@ -601,7 +601,13 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	p := 0
 	le := binary.LittleEndian
 	streamSamples := len(channelSamples[0])
-	interleavedSamplesBuf := make([]byte, len(channelSamples)*streamSamples*bytesPerSample)
+
+	interleavedSamplesBuf := ffi.SamplesBuf
+	interleavedSamplesBufLen := len(channelSamples) * streamSamples * bytesPerSample
+	// reuse buffer if possible
+	if interleavedSamplesBuf == nil || len(interleavedSamplesBuf) < interleavedSamplesBufLen {
+		interleavedSamplesBuf = make([]byte, interleavedSamplesBufLen)
+	}
 
 	// TODO: speedup by using more cache friendly memory layout for samples
 	for i := 0; i < streamSamples; i++ {

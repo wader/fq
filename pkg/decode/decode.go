@@ -218,18 +218,32 @@ func NewDecoder(ctx context.Context, name string, format *Format, bb *bitio.Buff
 
 func (d *D) FillGaps(namePrefix string) {
 	// TODO: d.Value is array?
-	var valueRanges []ranges.Range
-	d.Value.WalkPreOrder(func(iv *Value, rootV *Value, depth int, rootDepth int) error {
-		if iv.RootBitBuf != d.Value.RootBitBuf && iv.IsRoot {
-			return ErrWalkSkipChildren
+
+	makeWalkFn := func(fn func(iv *Value)) func(iv *Value, rootV *Value, depth int, rootDepth int) error {
+		return func(iv *Value, rootV *Value, depth int, rootDepth int) error {
+			if iv.RootBitBuf != d.Value.RootBitBuf && iv.IsRoot {
+				return ErrWalkSkipChildren
+			}
+			switch iv.V.(type) {
+			case Struct, Array:
+			default:
+				fn(iv)
+			}
+			return nil
 		}
-		switch iv.V.(type) {
-		case Struct, Array:
-		default:
-			valueRanges = append(valueRanges, iv.Range)
-		}
-		return nil
-	})
+	}
+
+	// TODO: redo this, tries to get rid of slice glow
+	// TODO: gaps things should be done in Framed* funcs
+	// TODO: pre-sorted somehow?
+	n := 0
+	d.Value.WalkPreOrder(makeWalkFn(func(iv *Value) { n++ }))
+	valueRanges := make([]ranges.Range, n)
+	i := 0
+	d.Value.WalkPreOrder(makeWalkFn(func(iv *Value) {
+		valueRanges[i] = iv.Range
+		i++
+	}))
 
 	gaps := ranges.Gaps(ranges.Range{Start: 0, Len: d.Len()}, valueRanges)
 	for i, gap := range gaps {

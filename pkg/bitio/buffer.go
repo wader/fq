@@ -1,5 +1,7 @@
 package bitio
 
+// not concurrency safe as bitsBuf is reused
+
 // TODO:
 // cache pos, len
 // inline for speed?
@@ -34,8 +36,9 @@ type Buffer struct {
 		BitReaderAt
 	}
 
-	bitLen int64 // mostly to cache len
-	ctx    context.Context
+	bitLen  int64 // mostly to cache len
+	ctx     context.Context
+	bitsBuf []byte
 }
 
 // NewBufferFromReadSeeker new Buffer from io.ReadSeeker, start at firstBit with bit length lenBits
@@ -171,8 +174,13 @@ func (b *Buffer) bits(nBits int) (uint64, error) {
 		}
 	}
 	// 64 bits max, 9 byte worse case if not byte aligned
-	var bufArray [9]byte
-	buf := bufArray[:]
+	buf := b.bitsBuf
+	if buf == nil {
+		var bufArray [9]byte
+		b.bitsBuf = bufArray[:]
+		buf = b.bitsBuf
+	}
+
 	_, err := b.br.ReadBits(buf[:], nBits)
 	if err != nil {
 		return 0, err

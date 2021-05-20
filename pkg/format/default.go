@@ -96,6 +96,7 @@ type FlacMetadatablockOut struct {
 }
 
 type FlacFrameIn struct {
+	SamplesBuf []byte
 	StreamInfo FlacMetadatablockStreamInfo
 }
 
