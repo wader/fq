@@ -1,4 +1,4 @@
-package mp3
+package mpeg
 
 // http://mpgedit.org/mpgedit/mpeg_format/MP3Format.html
 // http://www.multiweb.cz/twoinches/MP3inside.htm
