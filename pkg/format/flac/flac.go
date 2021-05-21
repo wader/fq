@@ -60,7 +60,7 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 		for d.NotEnd() {
 			// flac frame might need some fields from stream info to decode
 			_, v := d.FieldDecode("frame", flacFrameFormat, decode.FormatOptions{InArg: flacFrameIn})
-			ffo, ok := v.(*format.FlacFrameOut)
+			ffo, ok := v.(format.FlacFrameOut)
 			if !ok {
 				panic(fmt.Sprintf("expected FlacFrameOut got %#+v", v))
 			}

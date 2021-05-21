@@ -628,7 +628,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		}
 	}
 
-	return &format.FlacFrameOut{
+	return format.FlacFrameOut{
 		SamplesBuf:    interleavedSamplesBuf,
 		Samples:       uint64(streamSamples),
 		Channels:      int(channels),
