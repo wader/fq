@@ -44,7 +44,6 @@ type Value struct {
 	RootBitBuf    *bitio.Buffer
 	IsRoot        bool
 	Name          string
-	MIME          string
 	DisplayFormat DisplayFormat
 	Symbol        string
 	Description   string
