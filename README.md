@@ -61,37 +61,43 @@ go install github.com/wader/fq@latest
 ```
 and the binary should end up at `$GOPATH/bin/fq`.
 
+## Langauge
 
-## Differences to jq
+fq is based on the [jq language](https://stedolan.github.io/jq/) and for basic usage its syntax
+is similar to how object and array access looks in JavaScript or JSON path, `.food[10]` etc.
 
-fq uses a fork of [gojq](https://github.com/itchyny/gojq) that has these additions:
+To get the most out of fq it's recommended to learn more about jq, here are some good starting points:
 
-Language:
+- [jq manual](https://stedolan.github.io/jq/manual/)
+- [jq Cookbook](https://github.com/stedolan/jq/wiki/Cookbook),
+[FAQ](https://github.com/stedolan/jq/wiki/FAQ),
+[Pitfalls](https://github.com/stedolan/jq/wiki/How-to:-Avoid-Pitfalls)
 
-- Hex `0xab`, octal `0o77` and binary `0b101` integer literals
-- Bitwise operations, `band`, `bor`, `bxor`, `bsl`, `bsr`, `bnot`
-- `div` integer division operator
+The most common beginner gotcha is probably jq's use of `;` and `,`. jq uses `;` as argument separator.
+To call `f` with two arguments use `f(a; b)`. If you do `f(a, b)` you will pass a single generator
+expression `a, b` to `f`.
 
-Functions:
+### Differences to jq
+
+- Supports hexdecimal `0xab`, octal `0o77` and binary `0b101` integer literals
+- Has bitwise operations, `band`, `bor`, `bxor`, `bsl`, `bsr`, `bnot`
+- Has `div` integer division operator
+
+### Functions
+
+An addition to the standard library functions from jq fq has these functions:
 
 - `open(path)` open file
-- `decode([name])` decode as named format or try to automatically detect
-- All decoders and groups are available as functions with their name, e.g. `... | mp3_frame`, `image`, `probe`.
-- `repl` nested REPL
-- `d`/`display` show field tree
-- `v`/`verbose` show field tree verbosely
+- `probe` or `decode` try to automatically detect format and decode
+- `mp3`, `matroska`, ..., `decode([name])` try decode as format
+- `d`/`display` display value
+- `v`/`verbose` display value verbosely
 - `p`/`preview` show preview of field tree
-- TODO: more functions
-- TODO: `scope` and `scopedump` functions used to implement REPL completion
-- TODO: Custom object interface used to traverse fq's field tree and to allowing a terse
-syntax for comparing and working with fields, accessing child fields and special properties like `_range`.
-
-TODO: repl
+- `repl` nested REPL
 
 ## How to use
 
 TODO: unknown for gaps
-
 TODO: piping
 
 ## Decoders
@@ -212,8 +218,6 @@ fq -i file.flac .metadatablocks[0]
 .metadatablocks[0] flac_metadatablock>
 ```
 
-
-
 ### Ideas
 
 - Suppose writing decoder in scripting language, jq, js, tango etc?
@@ -224,10 +228,18 @@ then decode as needed later?
 - Some kind of bit vs bytes position notation/type
 - Range/field user annotations
 
-## Thanks
+## Development
+
+- TODO: `scope` and `scopedump` functions used to implement REPL completion
+- TODO: Custom object interface used to traverse fq's field tree and to allowing a terse
+syntax for comparing and working with fields, accessing child fields and special properties like `_range`.
+
+## Thanks and related projects
 
 This project would not be possible without [itchyny](https://github.com/itchyny)'s
-jq implementation [gojq](https://github.com/itchyny/gojq). Also want to thank
-[HexFiend](https://github.com/HexFiend/HexFiend) for inspiration and ideas and
-[stedolan](https://github.com/stedolan) for inventing the [jq](https://github.com/stedolan/jq)
+jq implementation [gojq](https://github.com/itchyny/gojq).
+
+Also want to thank
+- [HexFiend](https://github.com/HexFiend/HexFiend) for inspiration and ideas
+- [stedolan](https://github.com/stedolan) for inventing the [jq](https://github.com/stedolan/jq)
 language.
