@@ -1,3 +1,2 @@
 Dockerfile
-
-#go.mod
+go.mod

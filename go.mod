@@ -5,6 +5,9 @@ go 1.16
 require (
 	github.com/goinsane/readline v1.5.0
 	github.com/itchyny/gojq v0.12.1-0.20210219205417-8d3017ec07d3
+
+	// bump: go-difflib /github.com\/pmezard\/go-difflib v(.*)/ git://github.com/pmezard/go-difflib|^1
+	// bump: go-difflib command go get -d github.com/pmezard/go-difflib@v$LATEST && go mod tidy
 	github.com/pmezard/go-difflib v1.0.0
 )
 

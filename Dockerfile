@@ -1,17 +1,16 @@
 # bump: golang /FROM golang:([\d.]+)/ docker:golang|^1
-FROM golang:1.16.0 AS builder
+FROM golang:1.16.4 AS builder
 
 WORKDIR $GOPATH/src/fq
 COPY go.mod go.sum ./
 RUN go mod download
-COPY version.go .
+COPY Makefile main.go ./
 COPY pkg pkg
 COPY internal internal
-COPY cmd cmd
-RUN go test -v -cover -race ./pkg/format ./pkg/query
-RUN CGO_ENABLED=0 go build -o /fq -ldflags '-extldflags "-static"' ./cmd/fq
+RUN make test fq
+RUN cp fq /fq
 
-FROM scratch
+FROM alpine
 COPY --from=builder /fq /fq
-RUN ["/fq", "-version"]
+RUN ["/fq", "--version"]
 ENTRYPOINT ["/fq"]

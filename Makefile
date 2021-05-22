@@ -1,5 +1,9 @@
 all: test
 
+.PHONY: fq
+fq:
+	CGO_ENABLED=0 go build -o fq -ldflags '-extldflags "-static"' .
+
 .PHONY: test
 test:
 	go test -v -cover -race -coverpkg=./... -coverprofile=cover.out ./pkg/format ./pkg/interp
