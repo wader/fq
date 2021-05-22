@@ -10,7 +10,7 @@ COPY internal internal
 RUN make test fq
 RUN cp fq /fq
 
-FROM alpine
+FROM scratch
 COPY --from=builder /fq /fq
 RUN ["/fq", "--version"]
 ENTRYPOINT ["/fq"]
