@@ -203,19 +203,26 @@ TODO
 
 ### Useful tricks
 
-You can express jq pipelines using CLI arguments:
+#### Run pipelines using CLI arguments
+<pre sh>
+$ fq file.mp3 .frames[0].header.bitrate radix2 
+"1101101011000000"
+</pre>
+instead of:
+<pre sh>
+$ fq file.mp3 '.frames[0].header.bitrate | radix2' 
+"1101101011000000"
+</pre>
+this can also be used with interactive mode
 ```sh
-fq file.flac .metadatablocks[0] d
-```
-Instead of:
-```sh
-fq file.flac '.metadatablocks[0] | d'
+$ fq -i file.flac .metadatablocks[0] 
+.metadatablocks[0] flac_metadatablock> 
 ```
 
-You can combine CLI arguments and interactive mode
+#### Run interactive mode with no input
 ```sh
-fq -i file.flac .metadatablocks[0]
-.metadatablocks[0] flac_metadatablock>
+fq -i
+null>
 ```
 
 ### Ideas
