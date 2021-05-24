@@ -287,14 +287,13 @@ func (i *Interp) stderr(c interface{}, a []interface{}) gojq.Iter {
 }
 
 func (i *Interp) debug(c interface{}, a []interface{}) interface{} {
-
 	if i.debugFn != "" {
-		diter, err := i.EvalFunc(i.ctx, ScriptMode, c, i.debugFn, []interface{}{}, i.stdout, "")
+		di, err := i.EvalFunc(i.ctx, ScriptMode, c, i.debugFn, []interface{}{}, i.stdout, "")
 		if err != nil {
 			return err
 		}
 		for {
-			v, ok := diter.Next()
+			v, ok := di.Next()
 			if err, ok := v.(error); ok {
 				// TODO: how to log?
 				log.Printf("err: %#+v\n", err)

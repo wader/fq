@@ -449,10 +449,13 @@ func (i *Interp) Main(ctx context.Context, stdout io.Writer, version string) err
 		v, ok := iter.Next()
 		if !ok {
 			break
-		} else if err, ok := v.(error); ok {
-			fmt.Fprintln(i.os.Stderr(), err)
-		} else if d, ok := v.([2]interface{}); ok {
-			fmt.Fprintln(i.os.Stderr(), d[:]...)
+		}
+
+		switch v := v.(type) {
+		case error:
+			return v
+		case [2]interface{}:
+			fmt.Fprintln(i.os.Stderr(), v[:]...)
 		}
 	}
 

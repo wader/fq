@@ -176,12 +176,11 @@ func (b *Buffer) bits(nBits int) (uint64, error) {
 	// 64 bits max, 9 byte worse case if not byte aligned
 	buf := b.bitsBuf
 	if buf == nil {
-		var bufArray [9]byte
-		b.bitsBuf = bufArray[:]
+		b.bitsBuf = make([]byte, 9)
 		buf = b.bitsBuf
 	}
 
-	_, err := b.br.ReadBits(buf[:], nBits)
+	_, err := b.br.ReadBits(buf, nBits)
 	if err != nil {
 		return 0, err
 	}

@@ -21,6 +21,10 @@ func MaybeLogFile() {
 	}
 }
 
+type Exiter interface {
+	ExitCode() int
+}
+
 type autoCompleterFn func(line []rune, pos int) (newLine [][]rune, length int)
 
 func (a autoCompleterFn) Do(line []rune, pos int) (newLine [][]rune, length int) {
@@ -141,6 +145,10 @@ func Main(r *decode.Registry, version string) {
 	}
 
 	if err := i.Main(context.Background(), sos.Stdout(), version); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		if ex, ok := err.(Exiter); ok {
+			os.Exit(ex.ExitCode())
+		}
 		os.Exit(1)
 	}
 }
