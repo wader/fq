@@ -1,5 +1,7 @@
 
-just "error" hangs
+ctrl-c output then ctrl-d
+
+DONE just "error" hangs
 
 ctrl-d cancelled in wrong order?
 

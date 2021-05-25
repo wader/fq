@@ -8,6 +8,7 @@ package ctxstack
 
 import (
 	"context"
+	"fmt"
 )
 
 // Stack is a context stack
@@ -47,16 +48,12 @@ func (s *Stack) Stop() {
 // Push creates, pushes and returns new context. Cancel pops it.
 func (s *Stack) Push(parent context.Context) (context.Context, func()) {
 	stackCtx, stackCtxCancel := context.WithCancel(parent)
-	stackIdx := len(s.cancelFns)
 	s.cancelFns = append(s.cancelFns, stackCtxCancel)
+	stackIdx := len(s.cancelFns)
 
 	return stackCtx, func() {
-		if stackCtx.Err() != nil {
-			// already cancelled
-			return
-		}
-		if stackIdx != len(s.cancelFns)-1 {
-			panic("cancelled in wrong order")
+		if stackIdx != len(s.cancelFns) {
+			panic(fmt.Sprintf("cancelled in wrong order %d!=%d", stackIdx, len(s.cancelFns)))
 		}
 		s.cancelFns = s.cancelFns[0 : len(s.cancelFns)-1]
 		stackCtxCancel()

@@ -456,6 +456,9 @@ func (i *Interp) Main(ctx context.Context, stdout io.Writer, version string) err
 			return v
 		case [2]interface{}:
 			fmt.Fprintln(i.os.Stderr(), v[:]...)
+		default:
+			// TODO: can this happen?
+			fmt.Fprintln(i.os.Stderr(), v)
 		}
 	}
 
@@ -554,6 +557,8 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	iterWrapper := iterFn(func() (interface{}, bool) {
 		v, ok := iter.Next()
 		_, isErr := v.(error)
+		// TODO: should we really cancel on error?
+		// gojq ctx cancel will not return ok=false, just canceled error
 		if !ok || isErr {
 			runCtxCancelFn()
 		}
@@ -595,10 +600,10 @@ func (i *Interp) EvalFuncValues(ctx context.Context, mode RunMode, c interface{}
 	var vs []interface{}
 	for {
 		v, ok := iter.Next()
-		vs = append(vs, v)
 		if !ok {
 			break
 		}
+		vs = append(vs, v)
 	}
 
 	return vs, nil
