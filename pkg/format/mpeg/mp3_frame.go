@@ -315,6 +315,11 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		})
 	}
 
+	// avoid integer divide by zero below
+	if sampleRate == 0 {
+		d.Invalid("zero sample rate")
+	}
+
 	calcFrameBytes := int64(144*bitRate/sampleRate + paddingBytes)
 	dataWithPaddingBytes := calcFrameBytes - headerBytes - crcBytes - sideInfoBytes
 
