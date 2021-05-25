@@ -259,7 +259,6 @@ func (i *Interp) eval(c interface{}, a []interface{}) gojq.Iter {
 
 	iter, err := i.Eval(i.ctx, ScriptMode, c, src, i.stdout, debugFn)
 	if err != nil {
-		log.Printf("EVAL err err: %#+v\n", err)
 		return gojq.NewIter(err)
 	}
 
