@@ -1,8 +1,3 @@
-# eval is implemented as an internal function evaluting $e for input and
-# returns an array with all generated values, we then each over the values
-# to make it behave as a normal jq generator.
-# def eval($e): _eval($e)[];
-
 def default_options: _state("default_options");
 def default_options($opts): _state("default_options"; $opts);
 
