@@ -219,6 +219,29 @@ $ fq -i file.flac .metadatablocks[0] 
 .metadatablocks[0] flac_metadatablock> 
 ```
 
+#### appending to array is slow
+
+Try to use `map` or `foreach` instead.
+
+#### Use `print` and `println` to produce more friendly compact output
+
+```
+> [[0,"a"],[1,"b"]]
+[
+  [
+    0,
+    "a"
+  ],
+  [
+    1,
+    "b"
+  ]
+]
+> [[0,"a"],[1,"b"]] | .[] | "\(.[0]): \(.[1])" | println
+0: a
+1: b
+```
+
 #### Run interactive mode with no input
 ```sh
 fq -i

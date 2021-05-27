@@ -8,8 +8,7 @@ toimage?
 flac sample count per frame:
 reduce .frames[] as $f ({a:[],i:0,s:0}; ($f.end_of_header.block_size? // $f.block_size) as $bs | {a: (.a+[[.i,.s]]), i:(.i+1), s:(.s+$bs)} ) | .a
 
-
-reduce .frames[] as $f ({a:[],i:0,s:0}; ($f.end_of_header.block_size? // $f.block_size) as $bs | {a: (.a+[[.i,.s,$f]]), i:(.i+1), s:(.s+$bs)} ) | .a[] | "\(.[0]): \(.[2].end_of_header.frame_number // "NA"): \(.[1])" | println
+foreach .frames[] as $f ({i:0,fs:0}; ($f.end_of_header.block_size? // $f.block_size) as $bs | {i:(.i+1),fs:(.fs+$bs)}; {i:.i,first_sample:.fs,frame:$f}) | "\(.i): \(.frame.end_of_header.frame_number // "NA"): \(.first_sample)" | println
 
 ctrl-c output then ctrl-d
 
