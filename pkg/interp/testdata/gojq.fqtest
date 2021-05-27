@@ -1,0 +1,19 @@
+# TODO: various gojq fq fork regression tests, should probably be move to fork code instead
+> fq -n '{a:1, b: 2} | tostream'
+[
+  [
+    "a"
+  ],
+  1
+]
+[
+  [
+    "b"
+  ],
+  2
+]
+[
+  [
+    "b"
+  ]
+]
