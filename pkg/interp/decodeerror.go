@@ -74,6 +74,14 @@ func (de decodeError) JQValueHasKey(key interface{}) interface{} {
 	return i < 0 || i >= len(de.v.Errs)
 }
 
+func (de decodeError) JQValueToNumber() interface{} {
+	return funcTypeError{name: "tonumber", typ: "decodeError"}
+}
+
+func (de decodeError) JQValueToString() interface{} {
+	return funcTypeError{name: "tostring", typ: "decodeError"}
+}
+
 func (de decodeError) JQValue() interface{} {
 	var ea []interface{}
 	for _, e := range de.v.Errs {
@@ -139,6 +147,14 @@ func (fe formatError) JQValueHasKey(key interface{}) interface{} {
 		}
 	}
 	return false
+}
+
+func (fe formatError) JQValueToNumber() interface{} {
+	return funcTypeError{name: "tonumber", typ: "formatError"}
+}
+
+func (fe formatError) JQValueToString() interface{} {
+	return funcTypeError{name: "tostring", typ: "formatError"}
 }
 
 func (fe formatError) JQValue() interface{} {

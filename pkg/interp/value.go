@@ -1,7 +1,9 @@
 package interp
 
 import (
+	"bytes"
 	"fmt"
+	"fq/internal/colorjson"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/ranges"
@@ -9,6 +11,8 @@ import (
 	"math/big"
 	"sort"
 	"strings"
+
+	"github.com/itchyny/gojq"
 )
 
 // TODO: refactor to use errors from gojq?
@@ -220,7 +224,33 @@ func (bv baseValueObject) JQValueKeys() interface{} {
 func (bv baseValueObject) JQValueHasKey(key interface{}) interface{} {
 	return hasKeyTypeError{l: bv.typ, r: fmt.Sprintf("%v", key)}
 }
-func (bv baseValueObject) JQValueType() string  { return bv.typ }
+func (bv baseValueObject) JQValueType() string { return bv.typ }
+func (bv baseValueObject) JQValueToNumber() interface{} {
+	v := bv.vFn()
+	switch bv.typ {
+	case "number":
+		return v
+	case "string":
+		return gojq.NormalizeNumbers(v.(string))
+	default:
+		return funcTypeError{name: "tonumber", typ: bv.typ}
+	}
+}
+func (bv baseValueObject) JQValueToString() interface{} {
+	v := bv.vFn()
+	switch bv.typ {
+	case "number":
+		b := &bytes.Buffer{}
+		if err := colorjson.NewEncoder(false, false, 0, nil, colorjson.Colors{}).Marshal(v, b); err != nil {
+			return err
+		}
+		return b.String()
+	case "string":
+		return v
+	default:
+		return funcTypeError{name: "tostring", typ: bv.typ}
+	}
+}
 func (bv baseValueObject) JQValue() interface{} { return bv.vFn() }
 
 // string
@@ -243,6 +273,9 @@ func (sv stringValueObject) JQValueIndex(index int) interface{} {
 }
 func (sv stringValueObject) JQValueSlice(start int, end int) interface{} {
 	return sv.vv[start:end]
+}
+func (sv stringValueObject) JQValueToString() interface{} {
+	return sv.JQValue()
 }
 func (sv stringValueObject) JQValue() interface{} {
 	return sv.vv
@@ -282,6 +315,9 @@ func (sv stringBufferValueObject) JQValueSlice(start int, end int) interface{} {
 		return err
 	}
 	return s
+}
+func (sv stringBufferValueObject) JQValueToString() interface{} {
+	return sv.JQValue()
 }
 func (sv stringBufferValueObject) JQValue() interface{} {
 	bb := sv.vv.Copy()

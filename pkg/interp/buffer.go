@@ -112,6 +112,17 @@ func (bo *bufferObject) JQValueKeys() interface{} {
 func (bo *bufferObject) JQValueHasKey(key interface{}) interface{} {
 	return hasKeyTypeError{l: "buffer", r: fmt.Sprintf("%v", key)}
 }
+func (bo *bufferObject) JQValueToNumber() interface{} {
+	buf := &bytes.Buffer{}
+	if _, err := io.Copy(buf, bo.bbr.bb); err != nil {
+		return err
+	}
+	extraBits := uint((8 - bo.bbr.r.Len%8) % 8)
+	return new(big.Int).Rsh(new(big.Int).SetBytes(buf.Bytes()), extraBits)
+}
+func (bo *bufferObject) JQValueToString() interface{} {
+	return bo.JQValue()
+}
 
 func (bo *bufferObject) JQValue() interface{} {
 	buf := &bytes.Buffer{}

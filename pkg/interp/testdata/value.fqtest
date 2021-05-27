@@ -618,3 +618,19 @@ null
 "string"
 "boolean"
 "null"
+> fq -d mp3 test.mp3 '.headers | tostring'
+error: tostring cannot be applied to: array
+> fq -d mp3 test.mp3 '.headers | tonumber'
+error: tonumber cannot be applied to: array
+> fq -d mp3 test.mp3 '.headers[0] | tostring'
+error: tostring cannot be applied to: object
+> fq -d mp3 test.mp3 '.headers[0] | tonumber'
+error: tonumber cannot be applied to: object
+> fq -d mp3 test.mp3 '.headers[0].version | tonumber'
+4
+> fq -d mp3 test.mp3 '.headers[0].version | tostring'
+"4"
+> fq -d mp3 test.mp3 '.headers[0].magic | tonumber'
+error: invalid number: "ID3"
+> fq -d mp3 test.mp3 '.headers[0].magic | tostring'
+"ID3"
