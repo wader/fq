@@ -2,7 +2,7 @@ all: test
 
 .PHONY: fq
 fq:
-	CGO_ENABLED=0 go build -o fq -ldflags '-extldflags "-static"' .
+	go build -buildmode=pie -ldflags '-linkmode external -extldflags "-static-pie"' -trimpath -o fq .
 
 .PHONY: test
 test:
