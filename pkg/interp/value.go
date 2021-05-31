@@ -299,33 +299,42 @@ func (sv stringBufferValueObject) JQValueLength() interface{} {
 	return int(sv.vv.Len()) / 8
 }
 func (sv stringBufferValueObject) JQValueIndex(index int) interface{} {
-	bb := sv.vv.Copy()
-	bb.SeekAbs(int64(index) * 8)
-	s, err := bb.UTF8(1)
-	if err != nil {
-		return err
-	}
-	return s
+	// TODO: bitio
+	return nil
+
+	// bb := sv.vv.Copy()
+	// bb.SeekAbs(int64(index) * 8)
+	// s, err := bb.UTF8(1)
+	// if err != nil {
+	// 	return err
+	// }
+	// return s
 }
 func (sv stringBufferValueObject) JQValueSlice(start int, end int) interface{} {
-	bb := sv.vv.Copy()
-	bb.SeekAbs(int64(start) * 8)
-	s, err := bb.UTF8(end - start)
-	if err != nil {
-		return err
-	}
-	return s
+	// TODO: bitio
+	return nil
+
+	// bb := sv.vv.Copy()
+	// bb.SeekAbs(int64(start) * 8)
+	// s, err := bb.UTF8(end - start)
+	// if err != nil {
+	// 	return err
+	// }
+	// return s
 }
 func (sv stringBufferValueObject) JQValueToString() interface{} {
 	return sv.JQValue()
 }
 func (sv stringBufferValueObject) JQValue() interface{} {
-	bb := sv.vv.Copy()
-	s, err := bb.UTF8(int(bb.Len() / 8))
-	if err != nil {
-		return err
-	}
-	return s
+	// TODO: bitio
+	return nil
+
+	// bb := sv.vv.Copy()
+	// s, err := bb.UTF8(int(bb.Len() / 8))
+	// if err != nil {
+	// 	return err
+	// }
+	// return s
 }
 
 // array

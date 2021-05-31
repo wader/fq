@@ -44,21 +44,25 @@ func (bo *bufferObject) JQValueLength() interface{} {
 	return int(bo.bbr.r.Len / int64(bo.unit))
 }
 func (bo *bufferObject) JQValueIndex(index int) interface{} {
-	pos, err := bo.bbr.bb.Pos()
-	if err != nil {
-		return err
-	}
-	if _, err := bo.bbr.bb.SeekAbs(int64(index) * int64(bo.unit)); err != nil {
-		return err
-	}
-	v, err := bo.bbr.bb.U(bo.unit)
-	if err != nil {
-		return err
-	}
-	if _, err := bo.bbr.bb.SeekAbs(pos); err != nil {
-		return err
-	}
-	return int(v)
+	// TODO: use bitio
+	/*
+		pos, err := bo.bbr.bb.Pos()
+		if err != nil {
+			return err
+		}
+		if _, err := bo.bbr.bb.SeekAbs(int64(index) * int64(bo.unit)); err != nil {
+			return err
+		}
+		v, err := bo.bbr.bb.U(bo.unit)
+		if err != nil {
+			return err
+		}
+		if _, err := bo.bbr.bb.SeekAbs(pos); err != nil {
+			return err
+		}
+		return int(v)
+	*/
+	return nil
 }
 func (bo *bufferObject) JQValueSlice(start int, end int) interface{} {
 	rStart := int64(start * bo.unit)

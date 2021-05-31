@@ -38,14 +38,13 @@ func BitsByteCount(nBits int64) int64 {
 	return n
 }
 
-func ReadAtFull(r BitReaderAt, p []byte, nBits int, bitOff int64) (int, error) {
-	readBitOffset := int64(0)
-	for readBitOffset < int64(nBits) {
-		// log.Printf("bitOffset: %d  nBits %d\n", bitOffset, nBits)
+func readFull(p []byte, nBits int, bitOff int64, fn func(p []byte, nBits int, bitOff int64) (int, error)) (int, error) {
+	readBitOffset := 0
+	for readBitOffset < nBits {
 		byteOffset := int(readBitOffset / 8)
 		byteBitsOffset := readBitOffset % 8
 		partialByteBitsLeft := int((8 - byteBitsOffset) % 8)
-		leftBits := int(int64(nBits) - readBitOffset)
+		leftBits := nBits - readBitOffset
 
 		if partialByteBitsLeft != 0 || leftBits < 8 {
 			readBits := partialByteBitsLeft
@@ -54,30 +53,38 @@ func ReadAtFull(r BitReaderAt, p []byte, nBits int, bitOff int64) (int, error) {
 			}
 
 			var pb [1]byte
-			rBits, err := r.ReadBitsAt(pb[:], readBits, bitOff+readBitOffset)
-			// log.Printf("partial ReadBits: %d -> %d\n", readBits, rBits)
-
-			p[byteOffset] |= pb[0] >> byteBitsOffset
-			readBitOffset += int64(rBits)
+			rBits, err := fn(pb[:], readBits, bitOff+int64(readBitOffset))
+			Write64(uint64(pb[0]>>(8-rBits)), rBits, p, readBitOffset)
+			readBitOffset += rBits
 
 			if err != nil {
-				return int(int64(nBits) - readBitOffset), err
+				return nBits - readBitOffset, err
 			}
 
 			continue
 		}
 
-		rBits, err := r.ReadBitsAt(p[byteOffset:], int(int64(nBits)-readBitOffset), bitOff+readBitOffset)
+		rBits, err := fn(p[byteOffset:], nBits-readBitOffset, bitOff+int64(readBitOffset))
 
-		// log.Printf("aligned ReadBits: %d -> %d\n", nBits-bitOffset, rBits)
-
-		readBitOffset += int64(rBits)
+		readBitOffset += rBits
 		if err != nil {
-			return int(int64(nBits) - readBitOffset), err
+			return nBits - readBitOffset, err
 		}
 	}
 
 	return nBits, nil
+}
+
+func ReadAtFull(r BitReaderAt, p []byte, nBits int, bitOff int64) (int, error) {
+	return readFull(p, nBits, bitOff, func(p []byte, nBits int, bitOff int64) (int, error) {
+		return r.ReadBitsAt(p, nBits, bitOff)
+	})
+}
+
+func ReadFull(r BitReader, p []byte, nBits int) (int, error) {
+	return readFull(p, nBits, 0, func(p []byte, nBits int, bitOff int64) (int, error) {
+		return r.ReadBits(p, nBits)
+	})
 }
 
 // TODO: move?

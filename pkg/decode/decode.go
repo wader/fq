@@ -193,6 +193,8 @@ type D struct {
 
 	ctx    context.Context
 	bitBuf *bitio.Buffer
+
+	bitsBuf []byte
 }
 
 // TODO: new struct decoder?
@@ -260,7 +262,7 @@ func (d *D) Invalid(reason string) {
 }
 
 func (d *D) PeekBits(nBits int) uint64 {
-	n, err := d.bitBuf.PeekBits(nBits)
+	n, err := d.TryPeekBits(nBits)
 	if err != nil {
 		panic(ReadError{Err: err, Op: "PeekBits", Size: int64(nBits), Pos: d.Pos()})
 	}
@@ -276,18 +278,13 @@ func (d *D) PeekBytes(nBytes int) []byte {
 }
 
 func (d *D) PeekFind(nBits int, seekBits int64, fn func(v uint64) bool, maxLen int64) int64 {
-	peekBits, err := d.bitBuf.PeekFind(nBits, seekBits, fn, maxLen)
+	peekBits, err := d.TryPeekFind(nBits, seekBits, fn, maxLen)
 	if err != nil {
 		panic(ReadError{Err: err, Op: "PeekFind", Size: 0, Pos: d.Pos()})
 	}
 	if peekBits == -1 {
 		panic(ReadError{Err: fmt.Errorf("not found"), Op: "PeekFind", Size: 0, Pos: d.Pos()})
 	}
-	return peekBits
-}
-
-func (d *D) TryPeekFind(nBits int, seekBits int64, fn func(v uint64) bool, maxLen int64) int64 {
-	peekBits, _ := d.bitBuf.PeekFind(nBits, seekBits, fn, maxLen)
 	return peekBits
 }
 
@@ -302,7 +299,7 @@ func (d *D) TryHasBytes(hb []byte) bool {
 
 // PeekFindByte number of bytes to next v
 func (d *D) PeekFindByte(findV uint8, maxLen int64) int64 {
-	peekBits, err := d.bitBuf.PeekFind(8, 8, func(v uint64) bool {
+	peekBits, err := d.TryPeekFind(8, 8, func(v uint64) bool {
 		return uint64(findV) == v
 	}, maxLen*8)
 	if err != nil {
@@ -534,6 +531,18 @@ func (d *D) FieldRangeFn(name string, firstBit int64, nBits int64, fn func() *Va
 	return v
 }
 
+func (d *D) TryFieldFn(name string, fn func() (*Value, error)) (*Value, error) {
+	start := d.Pos()
+	v, err := fn()
+	stop := d.Pos()
+	v.Name = name
+	v.RootBitBuf = d.bitBuf
+	v.Range = ranges.Range{Start: start, Len: stop - start}
+	d.AddChild(v)
+
+	return v, err
+}
+
 func (d *D) FieldFn(name string, fn func() *Value) *Value {
 	start := d.Pos()
 	v := fn()
@@ -551,6 +560,17 @@ func (d *D) FieldBoolFn(name string, fn func() (bool, string)) bool {
 		b, d := fn()
 		return &Value{V: b, Symbol: d}
 	}).V.(bool)
+}
+
+func (d *D) TryFieldUFn(name string, fn func() (uint64, DisplayFormat, string)) (uint64, error) {
+	if v, err := d.TryFieldFn(name, func() (*Value, error) {
+		u, fmt, d := fn()
+		return &Value{V: u, DisplayFormat: fmt, Symbol: d}, nil
+	}); err != nil {
+		return 0, err
+	} else {
+		return v.V.(uint64), err
+	}
 }
 
 func (d *D) FieldUFn(name string, fn func() (uint64, DisplayFormat, string)) uint64 {
@@ -718,7 +738,7 @@ func (d *D) FieldValidateUTF8(name string, v string) {
 	pos := d.Pos()
 	s := d.FieldStrFn(name, func() (string, string) {
 		nBytes := len(v)
-		str, err := d.bitBuf.UTF8(nBytes)
+		str, err := d.TryUTF8(nBytes)
 		if err != nil {
 			panic(ReadError{Err: err, Name: name, Op: "FieldValidateUTF8", Size: int64(nBytes) * 8, Pos: d.Pos()})
 		}

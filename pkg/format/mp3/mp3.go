@@ -42,8 +42,8 @@ func mp3Decode(d *decode.D, in interface{}) interface{} {
 	d.FieldArrayFn("frames", func(d *decode.D) {
 		for d.NotEnd() {
 			startFindSync := d.Pos()
-			syncLen := d.TryPeekFind(16, 8, func(v uint64) bool { return v&0b1111_1111_1110_0000 == 0b1111_1111_1110_0000 }, d.BitsLeft())
-			if syncLen == -1 {
+			syncLen, err := d.TryPeekFind(16, 8, func(v uint64) bool { return v&0b1111_1111_1110_0000 == 0b1111_1111_1110_0000 }, d.BitsLeft())
+			if err != nil {
 				break
 			}
 			if syncLen > 0 {
