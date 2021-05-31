@@ -472,7 +472,7 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 		}
 		decodeDoneFn = func() {
 			decodeDone = true
-			// cleanup when done
+			// cleanup when done         100.0%
 			fmt.Fprint(i.os.Stderr(), "\r      \r")
 		}
 		const progressPrecision = 1024
