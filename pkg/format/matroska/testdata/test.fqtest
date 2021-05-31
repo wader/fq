@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i sine -f lavfi -i testsrc -t 10ms test.mkv
 /test.mkv:
-> fq -d matroska test.mkv verbose
+> fq -d matroska /test.mkv verbose
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} (matroska) 0x0-0x1b8b.7 (7052)
       |                                               |                |  elements: [2] 0x0-0x1b8b.7 (7052)
       |                                               |                |    [0]: element {} 0x0-0x27.7 (40)

@@ -1,4 +1,6 @@
 
+error position "^" pointer?
+
 tonumber, tostring add JQValue method
 
 tograph?

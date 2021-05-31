@@ -1,0 +1,4 @@
+/config/init.jq:
+def a: "a";
+> fq -n a
+"a"

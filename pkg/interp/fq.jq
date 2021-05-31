@@ -1,6 +1,8 @@
-include "@builtin/common.jq";
-include "@builtin/args.jq";
-include "@builtin/funcs.jq";
+include "@builtin/common";
+include "@builtin/args";
+include "@builtin/funcs";
+
+include "@config/init?";
 
 # def read: #:: [a]| => string
 # read with no prompt or completion

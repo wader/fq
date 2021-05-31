@@ -1,6 +1,6 @@
 # ffmpeg -y -f lavfi -i sine -ac 2 -t 10ms -f mp3 file && fq file '.frame[1] | bits' > mp3-frame-stereo
 /mp3-frame-stereo:
-> fq -d mp3_frame mp3-frame-stereo verbose
+> fq -d mp3_frame /mp3-frame-stereo verbose
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} (mp3_frame) 0x0-0x1a0.7 (417)
      |                                               |                |  header: {} 0x0-0x3.7 (4)
 0x000|ff fb                                          |..              |    sync: Correct (0x7ff) 0x0-0x1.2 (1.3)

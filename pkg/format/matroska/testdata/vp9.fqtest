@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i testsrc -c:v vp9 -f matroska -t 50ms vp9.mkv
 /vp9.mkv:
-> fq -d matroska vp9.mkv verbose
+> fq -d matroska /vp9.mkv verbose
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} (matroska) 0x0-0x1785.7 (6022)
       |                                               |                |  elements: [2] 0x0-0x1785.7 (6022)
       |                                               |                |    [0]: element {} 0x0-0x27.7 (40)

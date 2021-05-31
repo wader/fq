@@ -1,11 +1,11 @@
 # ffmpeg -f lavfi -i sine -t 10ms test.mp3
 /test.mp3:
-> fq -d mp3 test.mp3 '.frames | group_by(.side_info | {b: .main_data_end}) | map(length)'
+> fq -d mp3 /test.mp3 '.frames | group_by(.side_info | {b: .main_data_end}) | map(length)'
 [
   2,
   1
 ]
-> fq -d mp3 test.mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing'
+> fq -d mp3 /test.mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing'
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.frames[0].xing: {} (mp3_xing)
 0x40|      49 6e 66 6f                              |  Info          |  header: "Info"
 0x40|                  00 00 00 0f                  |      ....      |  present_flags: {}
@@ -127,7 +127,7 @@
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
 0x40|                           0f                  |         .      |.frames[0].xing.present_flags.toc: true
 null
-> fq -d mp3 test.mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing | ._value'
+> fq -d mp3 /test.mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing | ._value'
 {
   "bytes": 599,
   "frames": 2,
@@ -369,7 +369,7 @@ null
 "Info"
 true
 null
-> fq -d mp3 test.mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing | tovalue'
+> fq -d mp3 /test.mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing | tovalue'
 {
   "bytes": 599,
   "frames": 2,
@@ -611,26 +611,26 @@ null
 "Info"
 true
 null
-> fq -d mp3 test.mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing | type'
+> fq -d mp3 /test.mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing | type'
 "object"
 "number"
 "array"
 "string"
 "boolean"
 "null"
-> fq -d mp3 test.mp3 '.headers | tostring'
+> fq -d mp3 /test.mp3 '.headers | tostring'
 error: tostring cannot be applied to: array
-> fq -d mp3 test.mp3 '.headers | tonumber'
+> fq -d mp3 /test.mp3 '.headers | tonumber'
 error: tonumber cannot be applied to: array
-> fq -d mp3 test.mp3 '.headers[0] | tostring'
+> fq -d mp3 /test.mp3 '.headers[0] | tostring'
 error: tostring cannot be applied to: object
-> fq -d mp3 test.mp3 '.headers[0] | tonumber'
+> fq -d mp3 /test.mp3 '.headers[0] | tonumber'
 error: tonumber cannot be applied to: object
-> fq -d mp3 test.mp3 '.headers[0].version | tonumber'
+> fq -d mp3 /test.mp3 '.headers[0].version | tonumber'
 4
-> fq -d mp3 test.mp3 '.headers[0].version | tostring'
+> fq -d mp3 /test.mp3 '.headers[0].version | tostring'
 "4"
-> fq -d mp3 test.mp3 '.headers[0].magic | tonumber'
+> fq -d mp3 /test.mp3 '.headers[0].magic | tonumber'
 error: invalid number: "ID3"
-> fq -d mp3 test.mp3 '.headers[0].magic | tostring'
+> fq -d mp3 /test.mp3 '.headers[0].magic | tostring'
 "ID3"

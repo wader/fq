@@ -57,6 +57,7 @@ func (tcr *testCaseRun) Environ() []string        { return nil }
 func (tcr *testCaseRun) Args() []string {
 	return shquote.Split(tcr.args)
 }
+func (tcr *testCaseRun) ConfigDir() (string, error) { return "/config", nil }
 func (tcr *testCaseRun) Open(name string) (io.ReadSeeker, error) {
 	for _, p := range tcr.testCase.parts {
 		f, ok := p.(*testCaseFile)
@@ -133,9 +134,7 @@ type testCase struct {
 func (tc *testCase) ToActual() string {
 
 	var partsLineSorted []part
-	for _, p := range tc.parts {
-		partsLineSorted = append(partsLineSorted, p)
-	}
+	partsLineSorted = append(partsLineSorted, tc.parts...)
 	sort.Slice(partsLineSorted, func(i, j int) bool {
 		return partsLineSorted[i].Line() < partsLineSorted[j].Line()
 	})
@@ -239,7 +238,7 @@ func parseTestCases(s string) *testCase {
 			comment := n[1:]
 			te.parts = append(te.parts, &testCaseComment{lineNr: section.LineNr, comment: comment})
 		case strings.HasPrefix(n, "/"):
-			name := n[1 : len(n)-1]
+			name := n[0 : len(n)-1]
 			te.parts = append(te.parts, &testCaseFile{lineNr: section.LineNr, name: name, data: []byte(v)})
 		case strings.HasPrefix(n, ">"):
 			replDepth++
@@ -256,7 +255,7 @@ func parseTestCases(s string) *testCase {
 				actualStdoutBuf: &bytes.Buffer{},
 				actualStderrBuf: &bytes.Buffer{},
 			}
-		case strings.Index(n, promptEnd) != -1: // TODO: better
+		case strings.Contains(n, promptEnd): // TODO: better
 			parts := strings.SplitN(n, promptEnd, 2)
 			prompt := parts[0] + promptEnd
 			input := parts[1]
@@ -268,7 +267,7 @@ func parseTestCases(s string) *testCase {
 			})
 
 			// TODO: hack
-			if strings.Index(input, "| repl") != -1 {
+			if strings.Contains(input, "| repl") {
 				replDepth++
 			}
 			if input == "^D" {

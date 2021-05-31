@@ -97,12 +97,19 @@ func (o standardOsOutput) IsTerminal() bool {
 	return readline.IsTerminal(int(os.Stdout.Fd()))
 }
 
-func (*standardOS) Stdin() io.Reader                        { return os.Stdin }
-func (*standardOS) Stdout() interp.Output                   { return standardOsOutput{} }
-func (*standardOS) Stderr() io.Writer                       { return os.Stderr }
-func (o *standardOS) Interrupt() chan struct{}              { return o.interruptChan }
-func (*standardOS) Environ() []string                       { return os.Environ() }
-func (*standardOS) Args() []string                          { return os.Args }
+func (*standardOS) Stdin() io.Reader           { return os.Stdin }
+func (*standardOS) Stdout() interp.Output      { return standardOsOutput{} }
+func (*standardOS) Stderr() io.Writer          { return os.Stderr }
+func (o *standardOS) Interrupt() chan struct{} { return o.interruptChan }
+func (*standardOS) Args() []string             { return os.Args }
+func (*standardOS) Environ() []string          { return os.Environ() }
+func (*standardOS) ConfigDir() (string, error) {
+	p, err := os.UserConfigDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(p, "fq"), nil
+}
 func (*standardOS) Open(name string) (io.ReadSeeker, error) { return os.Open(name) }
 func (o *standardOS) Readline(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error) {
 	if complete != nil {

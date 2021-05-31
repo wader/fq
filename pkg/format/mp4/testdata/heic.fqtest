@@ -1,7 +1,7 @@
 # ffmpeg -f lavfi -i testsrc=size=16x16:r=1 -preset slower -r 1 -t 1s -pix_fmt yuv420p -f hevc heic.hvc
 # MP4Box -add-image heic.hvc -ab heic -new heic.mp4
 /heic.mp4:
-> fq -d mp4 heic.mp4 verbose
+> fq -d mp4 /heic.mp4 verbose
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} (mp4) 0x0-0xb2c.7 (2861)
      |                                               |                |  boxes: [4] 0x0-0xb2c.7 (2861)
      |                                               |                |    [0]: box {} 0x0-0x17.7 (24)

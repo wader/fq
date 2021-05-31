@@ -15,19 +15,17 @@ import (
 	"fq/pkg/ranges"
 	"io"
 	"math/big"
+	"path/filepath"
 	"strconv"
 	"strings"
 
 	"github.com/itchyny/gojq"
 )
 
-const builtinPrefix = "@builtin"
-
 //go:embed *.jq
 var builtinFS embed.FS
 
-//go:embed fq.jq
-var fqJq []byte
+var fqInitSource = `include "@builtin/fq";`
 
 type valueErr struct {
 	v interface{}
@@ -52,42 +50,24 @@ type OS interface {
 	Interrupt() chan struct{}
 	Args() []string
 	Environ() []string
+	ConfigDir() (string, error)
 	// returned io.ReadSeeker can optionally implement io.Closer
 	Open(name string) (io.ReadSeeker, error)
 	Readline(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error)
 }
 
 // TODO: would be nice if gojq had something for this? maybe missing something?
-func offsetToLine(s string, offset int) int {
+func offsetToLineColumn(s string, offset int) (int, int) {
 	co := 0
 	line := 1
 	for {
 		no := strings.Index(s[co:], "\n")
 		if no == -1 || co+no >= offset {
-			return line
+			return line, offset - co
 		}
 		co += no + 1
 		line++
 	}
-}
-
-func queryErrorLine(v error) int {
-	var offset int
-	var content string
-
-	if tokIf, ok := v.(interface{ Token() (string, int) }); ok {
-		_, offset = tokIf.Token()
-	}
-	if qeIf, ok := v.(interface {
-		QueryParseError() (string, string, string, error)
-	}); ok {
-		_, _, content, _ = qeIf.QueryParseError()
-	}
-
-	if offset > 0 && content != "" {
-		return offsetToLine(content, offset)
-	}
-	return 0
 }
 
 // TODO: move
@@ -355,6 +335,26 @@ func toValue(v interface{}) interface{} {
 	}
 }
 
+func queryErrorPosition(v error) string {
+	var offset int
+	var content string
+
+	if tokIf, ok := v.(interface{ Token() (string, int) }); ok {
+		_, offset = tokIf.Token()
+	}
+	if qeIf, ok := v.(interface {
+		QueryParseError() (string, string, string, error)
+	}); ok {
+		_, _, content, _ = qeIf.QueryParseError()
+	}
+
+	if offset > 0 && content != "" {
+		l, c := offsetToLineColumn(content, offset)
+		return fmt.Sprintf(":%d:%d", l, c)
+	}
+	return ""
+}
+
 type Variable struct {
 	Name  string
 	Value interface{}
@@ -377,11 +377,12 @@ const (
 )
 
 type runContext struct {
-	ctx     context.Context
-	stdout  Output // TODO: rename?
-	mode    RunMode
-	state   map[string]interface{}
-	debugFn string
+	ctx          context.Context
+	stdout       Output // TODO: rename?
+	mode         RunMode
+	state        map[string]interface{}
+	debugFn      string
+	includeStack []string
 }
 
 type Interp struct {
@@ -389,9 +390,11 @@ type Interp struct {
 	registry *decode.Registry
 	os       OS
 
-	builtinQueryCache map[string]*gojq.Query
-	includeFqQuery    *gojq.Query
-	interruptStack    *ctxstack.Stack
+	initFqQuery *gojq.Query
+
+	includeCache map[string]*gojq.Query
+
+	interruptStack *ctxstack.Stack
 
 	// new for each run, other values are copied by ref
 	runContext
@@ -405,10 +408,10 @@ func New(os OS, registry *decode.Registry) (*Interp, error) {
 		registry: registry,
 	}
 
-	i.builtinQueryCache = map[string]*gojq.Query{}
-	i.includeFqQuery, err = gojq.Parse(string(fqJq))
+	i.includeCache = map[string]*gojq.Query{}
+	i.initFqQuery, err = gojq.Parse(fqInitSource)
 	if err != nil {
-		return nil, fmt.Errorf("%d: %w", queryErrorLine(err), err)
+		return nil, fmt.Errorf("init%s %w", queryErrorPosition(err), err)
 	}
 	i.interruptStack = ctxstack.New(func(closeCh chan struct{}) {
 		select {
@@ -442,7 +445,6 @@ func (i *Interp) Main(ctx context.Context, stdout io.Writer, version string) err
 
 	iter, err := i.EvalFunc(ctx, runMode, input, "main", nil, i.os.Stdout(), "")
 	if err != nil {
-		fmt.Fprintln(i.os.Stderr(), err)
 		return err
 	}
 	for {
@@ -473,7 +475,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 
 	gq, err := gojq.Parse(src)
 	if err != nil {
-		return nil, fmt.Errorf("%d: %w", queryErrorLine(err), err)
+		return nil, fmt.Errorf("eval%s: %w", queryErrorPosition(err), err)
 	}
 
 	// make copy of interp
@@ -488,9 +490,10 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	}
 
 	ni.runContext = runContext{
-		state:   newState,
-		mode:    mode,
-		debugFn: debugFn,
+		state:        newState,
+		mode:         mode,
+		debugFn:      debugFn,
+		includeStack: []string{"eval"},
 	}
 
 	// var variableNames []string
@@ -516,35 +519,94 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	// compilerOpts = append(compilerOpts, gojq.WithVariables(variableNames))
 	compilerOpts = append(compilerOpts, gojq.WithModuleLoader(loadModule{
 		init: func() ([]*gojq.Query, error) {
-			return []*gojq.Query{i.includeFqQuery}, nil
+			return []*gojq.Query{i.initFqQuery}, nil
 		},
 		load: func(name string) (*gojq.Query, error) {
-			parts := strings.Split(name, "/")
-
-			if len(parts) > 0 && parts[0] == builtinPrefix {
-				name = strings.Join(parts[1:], "/")
-				if q, ok := ni.builtinQueryCache[name]; ok {
-					return q, nil
-				}
-				b, err := builtinFS.ReadFile(name)
-				if err != nil {
-					return nil, err
-				}
-				mq, err := gojq.Parse(string(b))
-				if err != nil {
-					return nil, err
-				}
-				ni.builtinQueryCache[name] = mq
-				return mq, nil
+			if err := ctx.Err(); err != nil {
+				return nil, err
 			}
 
-			return nil, fmt.Errorf("module not found: %q", name)
+			var filename string
+			// suport include "nonexisting?" to ignore include error
+			var isTry bool
+			if strings.HasSuffix(name, "?") {
+				isTry = true
+				filename = name[0 : len(name)-1]
+			} else {
+				filename = name
+			}
+			filename = filename + ".jq"
+
+			pathPrefixes := []struct {
+				prefix string
+				cache  bool
+				fn     func(filename string) (io.Reader, error)
+			}{
+				{
+					"@builtin/", true, func(filename string) (io.Reader, error) {
+						return builtinFS.Open(filename)
+					},
+				},
+				{
+					"@config/", false, func(filename string) (io.Reader, error) {
+						configDir, err := i.os.ConfigDir()
+						if err != nil {
+							return nil, err
+						}
+						return i.os.Open(filepath.Join(configDir, filename))
+					},
+				},
+				{
+					"", false, func(filename string) (io.Reader, error) {
+						return i.os.Open(filename)
+					},
+				},
+			}
+
+			for _, p := range pathPrefixes {
+				if !strings.HasPrefix(filename, p.prefix) {
+					continue
+				}
+
+				if p.cache {
+					if q, ok := ni.includeCache[filename]; ok {
+						return q, nil
+					}
+				}
+
+				filenamePart := strings.TrimPrefix(filename, p.prefix)
+				f, err := p.fn(filenamePart)
+				if err != nil {
+					if !isTry {
+						return nil, err
+					}
+					err = nil
+					f = &bytes.Buffer{}
+				}
+
+				b, err := io.ReadAll(f)
+				if err != nil {
+					return nil, err
+				}
+				q, err := gojq.Parse(string(b))
+				if err != nil {
+					return nil, fmt.Errorf("%s%s: %w", name, queryErrorPosition(err), err)
+				}
+
+				if p.cache {
+					i.includeCache[filename] = q
+				}
+
+				return q, nil
+			}
+
+			panic("unreachable")
 		},
 	}))
 
 	gc, err := gojq.Compile(gq, compilerOpts...)
 	if err != nil {
-		return nil, fmt.Errorf("%d: %w", queryErrorLine(err), err)
+		return nil, fmt.Errorf("eval%s: %w", queryErrorPosition(err), err)
 	}
 
 	runCtx, runCtxCancelFn := i.interruptStack.Push(ctx)
