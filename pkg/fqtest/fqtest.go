@@ -149,7 +149,7 @@ func (tc *testCase) ToActual() string {
 			fmt.Fprintf(sb, ">%s\n", p.args)
 			fmt.Fprint(sb, p.actualStdoutBuf.String())
 		case *testCaseFile:
-			fmt.Fprintf(sb, "/%s:\n", p.name)
+			fmt.Fprintf(sb, "%s:\n", p.name)
 			sb.Write(p.data)
 		default:
 			panic("unreachable")

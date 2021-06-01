@@ -211,7 +211,7 @@ def main:
 			"decode": {
 				short: "-d",
 				long: "--decode",
-				description: "Decoder",
+				description: "Decode format",
 				default: "probe",
 				string: true
 			},
