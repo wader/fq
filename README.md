@@ -82,6 +82,9 @@ expression `a, b` to `f`.
 - Supports hexdecimal `0xab`, octal `0o77` and binary `0b101` integer literals
 - Has bitwise operations, `band`, `bor`, `bxor`, `bsl`, `bsr`, `bnot`
 - Has `div` integer division operator
+- Try include `include "file?";` that don't fail if file is missing
+- Can have keys that are hidden from `keys` and `[]` used for some `_name` proprties like `_bytes`
+- Value can be hybrid array and object at the same time
 
 ### Functions
 

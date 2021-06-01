@@ -1,4 +1,7 @@
 
+
+rename property? JQValueProperty etc JQValueKey(name string)
+
 error position "^" pointer?
 
 tonumber, tostring add JQValue method
