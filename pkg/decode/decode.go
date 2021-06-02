@@ -562,45 +562,6 @@ func (d *D) FieldBoolFn(name string, fn func() (bool, string)) bool {
 	}).V.(bool)
 }
 
-func (d *D) TryFieldUFn(name string, fn func() (uint64, DisplayFormat, string)) (uint64, error) {
-	if v, err := d.TryFieldFn(name, func() (*Value, error) {
-		u, fmt, d := fn()
-		return &Value{V: u, DisplayFormat: fmt, Symbol: d}, nil
-	}); err != nil {
-		return 0, err
-	} else {
-		return v.V.(uint64), err
-	}
-}
-
-func (d *D) FieldUFn(name string, fn func() (uint64, DisplayFormat, string)) uint64 {
-	return d.FieldFn(name, func() *Value {
-		u, fmt, d := fn()
-		return &Value{V: u, DisplayFormat: fmt, Symbol: d}
-	}).V.(uint64)
-}
-
-func (d *D) FieldUDescFn(name string, fn func() (uint64, DisplayFormat, string, string)) uint64 {
-	return d.FieldFn(name, func() *Value {
-		u, fmt, s, d := fn()
-		return &Value{V: u, DisplayFormat: fmt, Symbol: s, Description: d}
-	}).V.(uint64)
-}
-
-func (d *D) FieldSFn(name string, fn func() (int64, DisplayFormat, string)) int64 {
-	return d.FieldFn(name, func() *Value {
-		s, fmt, d := fn()
-		return &Value{V: s, DisplayFormat: fmt, Symbol: d}
-	}).V.(int64)
-}
-
-func (d *D) FieldFloatFn(name string, fn func() (float64, string)) float64 {
-	return d.FieldFn(name, func() *Value {
-		f, d := fn()
-		return &Value{V: f, Symbol: d}
-	}).V.(float64)
-}
-
 func (d *D) FieldStrFn(name string, fn func() (string, string)) string {
 	return d.FieldFn(name, func() *Value {
 		str, desc := fn()

@@ -1,6 +1,6 @@
 package decode
 
-// Generated with decode_readers_gen.go.tmpl
+// Generated with numbers.go.tmpl
 
 // Integer readers
 

@@ -1,13 +1,8 @@
 package decode
 
-//go:generate sh -c "cat decode_readers_gen.go.tmpl | go run ../../_dev/tmpl.go decode_readers_gen.go.json | gofmt > decode_readers_gen.go"
-
 import (
-	"fmt"
 	"fq/pkg/bitio"
 	"io"
-	"math"
-	"strconv"
 )
 
 // TODO: FP64,unsigned/BE/LE? rename SFP32?
@@ -18,74 +13,6 @@ func (d *D) TryUTF8(nBytes int) (string, error) {
 		return "", err
 	}
 	return string(s), nil
-}
-
-func (d *D) TryUnary(s uint64) (uint64, error) {
-	var n uint64
-	for {
-		b, err := d.TryU1()
-		if err != nil {
-			return 0, err
-		}
-		if b != s {
-			break
-		}
-		n++
-	}
-	return n, nil
-}
-
-func (d *D) Unary(s uint64) uint64 {
-	n, err := d.TryUnary(s)
-	if err != nil {
-		panic(ReadError{Err: err, Op: "Unary", Size: 1, Pos: d.Pos()})
-	}
-	return n
-}
-
-func (d *D) TryFPE(nBits int, fBits int64, endian Endian) (float64, error) {
-	n, err := d.Bits(nBits)
-	if err != nil {
-		return 0, err
-	}
-	if endian == LittleEndian {
-		n = bitio.Uint64ReverseBytes(nBits, n)
-	}
-	return float64(n) / float64(uint64(1<<fBits)), nil
-}
-
-func (d *D) FPE(nBits int, fBits int64, endian Endian) float64 {
-	n, err := d.TryFPE(nBits, fBits, endian)
-	if err != nil {
-		panic(ReadError{Err: err, Op: "FPE" + (strconv.Itoa(int(nBits))), Size: int64(nBits), Pos: d.Pos()})
-	}
-	return n
-}
-
-func (d *D) TryFE(nBits int, endian Endian) (float64, error) {
-	n, err := d.Bits(nBits)
-	if err != nil {
-		return 0, err
-	}
-	if endian == LittleEndian {
-		n = bitio.Uint64ReverseBytes(nBits, n)
-	}
-	switch nBits {
-	case 32:
-		return float64(math.Float32frombits(uint32(n))), nil
-	case 64:
-		return float64(math.Float64frombits(uint64(n))), nil
-	default:
-		return 0, fmt.Errorf("unsupported float size %d", nBits)
-	}
-}
-
-func (d *D) FE(nBits int, endian Endian) float64 {
-	n, err := d.TryFE(nBits, endian)
-	if err != nil {
-		panic(ReadError{Err: err, Op: "FE" + (strconv.Itoa(int(nBits))), Size: int64(nBits), Pos: d.Pos()})
-	}
-	return n
 }
 
 // PeekBits peek nBits bits from buffer
@@ -126,55 +53,6 @@ func (d *D) Bits(nBits int) (uint64, error) {
 		return 0, err
 	}
 	return n, nil
-}
-
-// UE reads a nBits bits unsigned integer with byte order endian
-// MSB first
-func (d *D) TryUE(nBits int, endian Endian) (uint64, error) {
-	n, err := d.Bits(nBits)
-	if err != nil {
-		return 0, err
-	}
-	if endian == LittleEndian {
-		n = bitio.Uint64ReverseBytes(nBits, n)
-	}
-
-	return n, nil
-}
-
-func (d *D) UE(nBits int, endian Endian) uint64 {
-	n, err := d.TryUE(nBits, endian)
-	if err != nil {
-		panic(ReadError{Err: err, Op: "UE", Size: int64(nBits), Pos: d.Pos()})
-	}
-	return n
-}
-
-func (d *D) TrySE(nBits int, endian Endian) (int64, error) {
-	n, err := d.Bits(nBits)
-	if err != nil {
-		return 0, err
-	}
-	if endian == LittleEndian {
-		n = bitio.Uint64ReverseBytes(nBits, n)
-	}
-	var s int64
-	if n&(1<<(nBits-1)) > 0 {
-		// two's complement
-		s = -int64((^n & ((1 << nBits) - 1)) + 1)
-	} else {
-		s = int64(n)
-	}
-
-	return s, nil
-}
-
-func (d *D) SE(nBits int, endian Endian) int64 {
-	n, err := d.TrySE(nBits, endian)
-	if err != nil {
-		panic(ReadError{Err: err, Op: "SE", Size: int64(nBits), Pos: d.Pos()})
-	}
-	return n
 }
 
 func (d *D) TryPeekFind(nBits int, seekBits int64, fn func(v uint64) bool, maxLen int64) (int64, error) {
@@ -297,56 +175,6 @@ func (d *D) FieldBool(name string) bool {
 			panic(ReadError{Err: err, Name: name, Op: "FieldBool", Size: 1, Pos: d.Pos()})
 		}
 		return b, ""
-	})
-}
-
-func (d *D) TryFieldUE(name string, nBits int, endian Endian) (uint64, error) {
-	return d.TryFieldUFn(name, func() (uint64, DisplayFormat, string) {
-		n, err := d.TryUE(nBits, endian)
-		if err != nil {
-			panic(ReadError{Err: err, Name: name, Op: "FieldUE" + (strconv.Itoa(int(nBits))), Size: int64(nBits), Pos: d.Pos()})
-		}
-		return n, NumberDecimal, ""
-	})
-}
-
-func (d *D) FieldUE(name string, nBits int, endian Endian) uint64 {
-	return d.FieldUFn(name, func() (uint64, DisplayFormat, string) {
-		n, err := d.TryUE(nBits, endian)
-		if err != nil {
-			panic(ReadError{Err: err, Name: name, Op: "FieldUE" + (strconv.Itoa(int(nBits))), Size: int64(nBits), Pos: d.Pos()})
-		}
-		return n, NumberDecimal, ""
-	})
-}
-
-func (d *D) FieldSE(name string, nBits int, endian Endian) int64 {
-	return d.FieldSFn(name, func() (int64, DisplayFormat, string) {
-		n, err := d.TrySE(nBits, endian)
-		if err != nil {
-			panic(ReadError{Err: err, Name: name, Op: "FieldSE" + (strconv.Itoa(int(nBits))), Size: int64(nBits), Pos: d.Pos()})
-		}
-		return n, NumberDecimal, ""
-	})
-}
-
-func (d *D) FieldFE(name string, nBits int, endian Endian) float64 {
-	return d.FieldFloatFn(name, func() (float64, string) {
-		n, err := d.TryFE(nBits, endian)
-		if err != nil {
-			panic(ReadError{Err: err, Name: name, Op: "FieldFE" + (strconv.Itoa(int(nBits))), Size: int64(nBits), Pos: d.Pos()})
-		}
-		return n, ""
-	})
-}
-
-func (d *D) FieldFPE(name string, nBits int, fBits int64, endian Endian) float64 {
-	return d.FieldFloatFn(name, func() (float64, string) {
-		n, err := d.TryFPE(nBits, fBits, endian)
-		if err != nil {
-			panic(ReadError{Err: err, Name: name, Op: "FieldFPE" + (strconv.Itoa(int(nBits))), Size: int64(nBits), Pos: d.Pos()})
-		}
-		return n, ""
 	})
 }
 
