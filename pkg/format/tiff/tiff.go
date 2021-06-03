@@ -9,7 +9,6 @@ import (
 )
 
 var tiffIccProfile []*decode.Format
-var exifFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
