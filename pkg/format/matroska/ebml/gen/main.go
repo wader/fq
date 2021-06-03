@@ -91,7 +91,9 @@ func main() {
 
 	xd := xml.NewDecoder(r)
 	var es Schema
-	xd.Decode(&es)
+	if err := xd.Decode(&es); err != nil {
+		panic(err)
+	}
 
 	fmt.Println("const (")
 	for _, e := range es.Elements {

@@ -1085,7 +1085,6 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 		})
 		d.FieldStrFn("type", typeFn)
 		dataSize = uint64(d.Len()-d.Pos()) / 8
-		boxSize = dataSize + 8
 	case 1:
 		// 64 bit length
 		d.FieldUFn("size", func() (uint64, decode.DisplayFormat, string) {

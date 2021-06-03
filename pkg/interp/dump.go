@@ -218,12 +218,16 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 		asciiFn := func(b byte) string { return deco.ByteColor(b).Wrap(asciiwriter.SafeASCII(b)) }
 
 		if vBitBuf != nil {
-			io.Copy(
+			if _, err := io.Copy(
 				hexpairwriter.New(cw.Columns[colHex], opts.LineBytes, int(startLineByteOffset), hexpairFn),
-				io.LimitReader(vBitBuf.Copy(), displaySizeBytes))
-			io.Copy(
+				io.LimitReader(vBitBuf.Copy(), displaySizeBytes)); err != nil {
+				return err
+			}
+			if _, err := io.Copy(
 				asciiwriter.New(cw.Columns[colAscii], opts.LineBytes, int(startLineByteOffset), asciiFn),
-				io.LimitReader(vBitBuf.Copy(), displaySizeBytes))
+				io.LimitReader(vBitBuf.Copy(), displaySizeBytes)); err != nil {
+				return err
+			}
 		}
 
 		for i := int64(1); i < addrLines; i++ {

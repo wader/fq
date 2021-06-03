@@ -202,24 +202,6 @@ func toIntZ(v interface{}) int {
 	return n
 }
 
-func toInt64(v interface{}) (int64, error) {
-	switch v := v.(type) {
-	case *big.Int:
-		return v.Int64(), nil
-	case int:
-		return int64(v), nil
-	case float64:
-		return int64(v), nil
-	default:
-		return 0, fmt.Errorf("value is not a number")
-	}
-}
-
-func toInt64Z(v interface{}) int64 {
-	n, _ := toInt64(v)
-	return n
-}
-
 func toString(v interface{}) (string, error) {
 	switch v := v.(type) {
 	case string:

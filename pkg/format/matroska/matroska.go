@@ -93,11 +93,6 @@ func decodeVint(d *decode.D) uint64 {
 	return n & m
 }
 
-func fieldDecodeRawVint(d *decode.D, name string, displayFormat decode.DisplayFormat) uint64 {
-	return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
-		return decodeRawVint(d), displayFormat, ""
-	})
-}
 func fieldDecodeVint(d *decode.D, name string, displayFormat decode.DisplayFormat) uint64 {
 	return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
 		return decodeVint(d), displayFormat, ""
