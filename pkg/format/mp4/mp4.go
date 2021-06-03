@@ -80,21 +80,26 @@ type stsc struct {
 }
 
 type moof struct {
-	offset            int64
-	defaultSampleSize uint32
-	dataOffset        uint32
-	samplesSizes      []uint32
+	offset                        int64
+	defaultSampleSize             uint32
+	defaultSampleDescriptionIndex uint32
+	dataOffset                    uint32
+	samplesSizes                  []uint32
+}
+
+type sampleDescription struct {
+	dataFormat string
 }
 
 type track struct {
-	id         uint32
-	dataFormat string
-	subType    string
-	stco       []uint64 //
-	stsc       []stsc
-	stsz       []uint32
-	decodeOpts []decode.Options
-	objectType int // if data format is "mp4a"
+	id                 uint32
+	sampleDescriptions []sampleDescription
+	subType            string
+	stco               []uint64 //
+	stsc               []stsc
+	stsz               []uint32
+	decodeOpts         []decode.Options
+	objectType         int // if data format is "mp4a"
 
 	moofs       []*moof // for fmp4
 	currentMoof *moof
@@ -252,7 +257,9 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 					dataFormat := d.FieldUTF8("data_format", 4)
 					subType := ""
 					if ctx.currentTrack != nil {
-						ctx.currentTrack.dataFormat = dataFormat
+						ctx.currentTrack.sampleDescriptions = append(ctx.currentTrack.sampleDescriptions, sampleDescription{
+							dataFormat: dataFormat,
+						})
 						subType = ctx.currentTrack.subType
 					}
 
@@ -426,9 +433,10 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 		"esds": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU32("version")
 
+			// TODO: some other way to know how to decode?
 			dataFormat := ""
-			if ctx.currentTrack != nil {
-				dataFormat = ctx.currentTrack.dataFormat
+			if ctx.currentTrack != nil && len(ctx.currentTrack.sampleDescriptions) > 0 {
+				dataFormat = ctx.currentTrack.sampleDescriptions[0].dataFormat
 			}
 
 			switch dataFormat {
@@ -657,7 +665,7 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 				d.FieldU64("base_data_offset")
 			}
 			if sampleDescriptionIndexPresent {
-				d.FieldU32("sample_description_index")
+				m.defaultSampleDescriptionIndex = uint32(d.FieldU32("sample_description_index"))
 			}
 			if defaultSampleDurationPresent {
 				d.FieldU32("default_sample_duration")
@@ -1063,6 +1071,27 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 				}
 			})
 		},
+		"tenc": func(ctx *decodeContext, d *decode.D) {
+			version := d.FieldU8("version")
+			d.FieldU24("flags")
+
+			d.FieldU8("reserved0")
+			switch version {
+			case 0:
+				d.FieldU8("reserved1")
+			default:
+				d.FieldU4("default_crypto_bytes")
+				d.FieldU4("default_skip_bytes")
+			}
+
+			defaultIsEncrypted := d.FieldU8("default_is_encrypted")
+			defaultIVSize := d.FieldU8("default_iv_size")
+			d.FieldBitBufLen("default_kid", 8*16)
+
+			if defaultIsEncrypted != 0 && defaultIVSize == 0 {
+				d.FieldU8("default_constant_iv_size")
+			}
+		},
 	}
 
 	typeFn := func() (string, string) {
@@ -1168,8 +1197,8 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 
 	d.FieldArrayFn("tracks", func(d *decode.D) {
 		for _, t := range sortedTracks {
-			decodeSampleRange := func(d *decode.D, t *track, name string, firstBit int64, nBits int64, opts ...decode.Options) {
-				switch t.dataFormat {
+			decodeSampleRange := func(d *decode.D, t *track, dataFormat string, name string, firstBit int64, nBits int64, opts ...decode.Options) {
+				switch dataFormat {
 				case "fLaC":
 					d.FieldDecodeRange("sample", firstBit, nBits, flacFrameFormat, t.decodeOpts...)
 				case "Opus":
@@ -1211,7 +1240,10 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 			}
 
 			d.FieldStructFn("track", func(d *decode.D) {
-				d.FieldStrFn("data_format", func() (string, string) { return t.dataFormat, "" })
+				// TODO: handle progressive/fragmented mp4 differently somehow?
+				if t.moofs == nil && len(t.sampleDescriptions) > 0 {
+					d.FieldStrFn("data_format", func() (string, string) { return t.sampleDescriptions[0].dataFormat, "" })
+				}
 
 				d.FieldArrayFn("samples", func(d *decode.D) {
 					stscIndex := 0
@@ -1229,8 +1261,12 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 							}
 
 							sampleSize := t.stsz[sampleNr]
+							dataFormat := "unknown"
+							if len(t.sampleDescriptions) > 0 {
+								dataFormat = t.sampleDescriptions[0].dataFormat
+							}
 
-							decodeSampleRange(d, t, "sample", int64(sampleOffset)*8, int64(sampleSize)*8, t.decodeOpts...)
+							decodeSampleRange(d, t, dataFormat, "sample", int64(sampleOffset)*8, int64(sampleSize)*8, t.decodeOpts...)
 
 							// log.Printf("%s %d/%d %d/%d sample=%d/%d chunk=%d size=%d %d-%d\n", t.dataFormat, stscIndex, len(t.stsc), i, stscEntry.samplesPerChunk, sampleNr, len(t.stsz), chunkNr, sampleSize, sampleOffset, sampleOffset+uint64(sampleSize))
 
@@ -1250,7 +1286,17 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 						for _, sz := range m.samplesSizes {
 							// log.Printf("moof sample %s %d-%d\n", t.dataFormat, sampleOffset, int64(sz))
 
-							decodeSampleRange(d, t, "sample", sampleOffset*8, int64(sz)*8, t.decodeOpts...)
+							dataFormat := "unknown"
+							if len(t.sampleDescriptions) > 0 {
+								dataFormat = t.sampleDescriptions[0].dataFormat
+							}
+							if m.defaultSampleDescriptionIndex != 0 && int(m.defaultSampleDescriptionIndex-1) < len(t.sampleDescriptions) {
+								dataFormat = t.sampleDescriptions[m.defaultSampleDescriptionIndex-1].dataFormat
+							}
+
+							// log.Printf("moof %#+v dataFormat: %#+v\n", m, dataFormat)
+
+							decodeSampleRange(d, t, dataFormat, "sample", sampleOffset*8, int64(sz)*8, t.decodeOpts...)
 							sampleOffset += int64(sz)
 						}
 					}
