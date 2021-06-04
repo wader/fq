@@ -577,6 +577,13 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	decode.MustCopy(footerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
 	d.FieldChecksumLen("footer_crc", 16, footerCRC.Sum(nil), decode.BigEndian)
 
+	streamSamples := len(channelSamples[0])
+	for j := 0; j < len(channelSamples); j++ {
+		if streamSamples > len(channelSamples[j]) {
+			d.Invalid(fmt.Sprintf("different amount of samples in channels %d >= %d", streamSamples, len(channelSamples[j])))
+		}
+	}
+
 	// Transform mid/side channels into left, right
 	// mid = (left + right)/2
 	// side = left - right
@@ -604,7 +611,6 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	bytesPerSample := int(sampleSize / 8)
 	p := 0
 	le := binary.LittleEndian
-	streamSamples := len(channelSamples[0])
 
 	interleavedSamplesBuf := ffi.SamplesBuf
 	interleavedSamplesBufLen := len(channelSamples) * streamSamples * bytesPerSample
@@ -616,10 +622,6 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	// TODO: speedup by using more cache friendly memory layout for samples
 	for i := 0; i < streamSamples; i++ {
 		for j := 0; j < len(channelSamples); j++ {
-
-			if i >= len(channelSamples[j]) {
-				continue
-			}
 
 			s := channelSamples[j][i]
 			switch sampleSize {
