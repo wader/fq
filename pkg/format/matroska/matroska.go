@@ -73,7 +73,7 @@ func init() {
 func decodeRawVintWidth(d *decode.D) (uint64, int) {
 	n := d.U8()
 	w := 1
-	for i := 0; (n & (1 << (7 - i))) == 0; i++ {
+	for i := 0; i <= 7 && (n&(1<<(7-i))) == 0; i++ {
 		w++
 	}
 	for i := 1; i < w; i++ {
@@ -157,6 +157,13 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 				// TODO: should also handle garbage between
 				tagSize := fieldDecodeVint(d, "size", decode.NumberDecimal)
 
+				if tagSize > 8 &&
+					(a.Type == ebml.Integer ||
+						a.Type == ebml.Uinteger ||
+						a.Type == ebml.Float) {
+					d.Invalid(fmt.Sprintf("invalid tagSize %d for non-master type", tagSize))
+				}
+
 				switch a.Type {
 				case ebml.Integer:
 					d.FieldSFn("value", func() (int64, decode.DisplayFormat, string) {
@@ -224,7 +231,6 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 					*/
 					d.FieldBitBufLen("value", int64(tagSize)*8)
 				case ebml.Binary:
-
 					switch tagID {
 					case ebml_matroska.SimpleBlockID:
 						dc.simpleBlocks = append(dc.simpleBlocks, simpleBlock{

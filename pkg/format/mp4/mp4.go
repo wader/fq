@@ -1251,6 +1251,10 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 					sampleNr := uint64(0)
 
 					for sampleNr < uint64(len(t.stsz)) {
+						if int(chunkNr) >= len(t.stco) {
+							// TODO: add warning
+							break
+						}
 						stscEntry := t.stsc[stscIndex]
 						sampleOffset := t.stco[chunkNr]
 

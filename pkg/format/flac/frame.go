@@ -612,6 +612,11 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	// TODO: speedup by using more cache friendly memory layout for samples
 	for i := 0; i < streamSamples; i++ {
 		for j := 0; j < len(channelSamples); j++ {
+
+			if i >= len(channelSamples[j]) {
+				continue
+			}
+
 			s := channelSamples[j][i]
 			switch sampleSize {
 			case 8:

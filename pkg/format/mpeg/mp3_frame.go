@@ -124,7 +124,8 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			case 0b00:
 				return 3, decode.NumberDecimal, "MPEG Version 2.5"
 			case 0b01:
-				return 0, decode.NumberDecimal, "reserved"
+				d.Invalid("reserved mpeg version 0")
+				panic("unreachable")
 			case 0b10:
 				return 2, decode.NumberDecimal, "MPEG Version 2"
 			case 0b11:

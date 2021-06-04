@@ -1,4 +1,7 @@
 
+.[]
+displat({depth:1 }) in parent repl takes time
+
 
 rename property? JQValueProperty etc JQValueKey(name string)
 
@@ -23,9 +26,6 @@ ctrl-d cancelled in wrong order?
 
 go run main.go -n 'error'
 panic: cancelled in wrong order
-
-
-
 
 idv2 utf16 apic p3 doku cana
 
