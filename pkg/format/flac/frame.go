@@ -388,6 +388,9 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 				}
 
 				subframeSampleSize := sampleSize - wastedBitsK
+				if subframeSampleSize < 0 {
+					d.Invalid(fmt.Sprintf("negative subframeSampleSize %d", subframeSampleSize))
+				}
 				// if channel is side, add en extra sample bit
 				// https://github.com/xiph/flac/blob/37e675b777d4e0de53ac9ff69e2aea10d92e729c/src/libFLAC/stream_decoder.c#L2040
 				if channelIndex == sideChannelIndex {
