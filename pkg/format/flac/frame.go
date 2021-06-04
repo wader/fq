@@ -4,6 +4,7 @@ package flac
 
 import (
 	"encoding/binary"
+	"fmt"
 	"fq/pkg/crc"
 	"fq/pkg/decode"
 	"fq/pkg/format"
@@ -540,6 +541,9 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 					}))
 					// <5> Quantized linear predictor coefficient shift needed in bits (NOTE: this number is signed two's-complement).
 					shift := d.FieldS5("shift")
+					if shift < 0 {
+						d.Invalid(fmt.Sprintf("negative LPC shift %d", shift))
+					}
 					// <n> Unencoded predictor coefficients (n = qlp coeff precision * lpc order) (NOTE: the coefficients are signed two's-complement).
 					var coeffs []int64
 					d.FieldArrayFn("coefficients", func(d *decode.D) {
