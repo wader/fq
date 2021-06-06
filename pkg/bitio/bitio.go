@@ -30,6 +30,74 @@ type BitReadAtSeeker interface {
 	BitSeeker
 }
 
+type BitWriter interface {
+	WriteBits(p []byte, nBits int) (n int, err error)
+}
+
+type AlignBitWriter struct {
+	W BitWriter
+	N int
+	c int64
+}
+
+func (a *AlignBitWriter) WriteBits(p []byte, nBits int) (n int, err error) {
+	n, err = a.W.WriteBits(p, nBits)
+	a.c += int64(n)
+	return n, err
+}
+
+func (a *AlignBitWriter) Close() error {
+	n := int64(a.N)
+	r := int((n - a.c%n) % n)
+	if r == 0 {
+		return nil
+	}
+	b := make([]byte, a.N/8+1)
+	_, err := a.W.WriteBits(b, r)
+	return err
+}
+
+type AlignBitReader struct {
+	R BitReaderAt
+	N int
+	c int64
+}
+
+func (a *AlignBitReader) ReadBitsAt(p []byte, nBits int, bitOff int64) (n int, err error) {
+	n, err = a.R.ReadBitsAt(p, nBits, bitOff)
+	a.c += int64(n)
+	return n, err
+}
+
+func Copy(dst BitWriter, src BitReader) (n int64, err error) {
+	buf := make([]byte, 32*1024)
+	var written int64
+
+	for {
+		rBits, rErr := src.ReadBits(buf, len(buf)*8)
+		if rBits > 0 {
+			wBits, wErr := dst.WriteBits(buf, rBits)
+			written += int64(wBits)
+			if wErr != nil {
+				err = wErr
+				break
+			}
+			if rBits != wBits {
+				err = io.ErrShortWrite
+				break
+			}
+		}
+		if rErr != nil {
+			if rErr != io.EOF {
+				err = rErr
+			}
+			break
+		}
+	}
+
+	return written, err
+}
+
 func BitsByteCount(nBits int64) int64 {
 	n := nBits / 8
 	if nBits%8 != 0 {
@@ -289,7 +357,11 @@ func NewMultiBitReader(rs []BitReadAtSeeker) (*multiBitReader, error) {
 }
 
 func (m *multiBitReader) ReadBitsAt(p []byte, nBits int, bitOff int64) (n int, err error) {
-	// log.Printf("ReadBitsAt nBits: %#+v\n", nBits)
+	end := m.readerEnds[len(m.readers)-1]
+	if end <= bitOff {
+		return 0, io.EOF
+	}
+
 	prevAtEnd := int64(0)
 	readerAt := m.readers[0]
 	for i, end := range m.readerEnds {
@@ -301,14 +373,12 @@ func (m *multiBitReader) ReadBitsAt(p []byte, nBits int, bitOff int64) (n int, e
 	}
 
 	rBits, err := readerAt.ReadBitsAt(p, nBits, bitOff-prevAtEnd)
+
 	if err == io.EOF {
-		if bitOff+int64(rBits) < m.readerEnds[len(m.readers)-1] {
+		if bitOff+int64(rBits) < end {
 			err = nil
 		}
 	}
-
-	// log.Printf("err: %#+v\n", err)
-	// log.Printf("rBits: %#+v\n", rBits)
 
 	return rBits, err
 }

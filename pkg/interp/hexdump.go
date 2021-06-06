@@ -16,6 +16,8 @@ func hexdumpRange(bbr bufferRange, w io.Writer, opts Options) error {
 		return err
 	}
 
+	br := bitio.NewSectionBitReader(bb, 0, bb.Len())
+
 	d := opts.Decorator
 	hw := hexdump.New(
 		w,
@@ -29,8 +31,11 @@ func hexdumpRange(bbr bufferRange, w io.Writer, opts Options) error {
 		func(s string) string { return d.DumpAddr.Wrap(s) },
 		d.Column,
 	)
+	aw := &bitio.AlignBitWriter{W: hw, N: 8}
+	// TODO: ugly, AlignBitWriter take Closer? some other way?
 	defer hw.Close()
-	if _, err = io.Copy(hw, bb); err != nil {
+	defer aw.Close()
+	if _, err = bitio.Copy(aw, br); err != nil {
 		return err
 	}
 

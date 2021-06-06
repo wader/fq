@@ -3,6 +3,7 @@ package hexdump
 import (
 	"fq/internal/columnwriter"
 	"fq/internal/num"
+	"fq/pkg/bitio"
 	"io"
 	"strings"
 )
@@ -21,6 +22,9 @@ type Dumper struct {
 	dumpAddrFn       func(s string) string
 	column           string
 	hasWrittenHeader bool
+
+	bitsBuf  []byte
+	bitsBufN int
 }
 
 // TODO: something more generic? bin, octal, arbitrary base?
@@ -49,6 +53,7 @@ func New(w io.Writer, startOffset int64, addrLen int, addrBase int, lineBytes in
 		dumpAddrFn:       dumpAddrFn,
 		column:           column,
 		hasWrittenHeader: false,
+		bitsBuf:          make([]byte, 1),
 	}
 }
 
@@ -64,6 +69,49 @@ func (d *Dumper) flush() error {
 		return err
 	}
 	return nil
+}
+
+func (d *Dumper) WriteBits(p []byte, nBits int) (n int, err error) {
+	pos := 0
+	rBits := nBits
+	if d.bitsBufN > 0 {
+		r := num.MinInt(8-d.bitsBufN, nBits)
+		v := bitio.Read64(p, 0, r)
+		bitio.Write64(v, r, d.bitsBuf, d.bitsBufN)
+
+		d.bitsBufN += r
+
+		if d.bitsBufN < 8 {
+			return nBits, nil
+		}
+		if n, err := d.Write(d.bitsBuf); err != nil {
+			return n * 8, err
+		}
+		pos = r
+		rBits -= r
+	}
+
+	for rBits >= 8 {
+		b := [1]byte{0}
+
+		b[0] = byte(bitio.Read64(p, pos, 8))
+		if n, err := d.Write(b[:]); err != nil {
+			return n * 8, err
+		}
+
+		pos += 8
+		rBits -= 8
+
+	}
+
+	if rBits > 0 {
+		d.bitsBuf[0] = byte(bitio.Read64(p, pos, rBits)) << (8 - rBits)
+		d.bitsBufN = rBits
+	} else {
+		d.bitsBufN = 0
+	}
+
+	return nBits, nil
 }
 
 func (d *Dumper) Write(p []byte) (n int, err error) {

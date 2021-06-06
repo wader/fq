@@ -253,8 +253,12 @@ func toBytes(v interface{}) ([]byte, error) {
 	}
 }
 
-// TODO: refactor to return struct?
 func toBuffer(v interface{}) (*bitio.Buffer, error) {
+	return toBufferEx(v, false)
+}
+
+// TODO: refactor to return struct?
+func toBufferEx(v interface{}, inArray bool) (*bitio.Buffer, error) {
 	switch vv := v.(type) {
 	case ToBuffer:
 		return vv.ToBuffer()
@@ -267,11 +271,23 @@ func toBuffer(v interface{}) (*bitio.Buffer, error) {
 		if err != nil {
 			return nil, err
 		}
-		return bitio.NewBufferFromBytes(bi.Bytes(), -1), nil
+
+		if inArray {
+			b := [1]byte{byte(bi.Uint64())}
+			return bitio.NewBufferFromBytes(b[:], -1), nil
+		} else {
+			padBefore := (8 - (bi.BitLen() % 8)) % 8
+			bb, err := bitio.NewBufferFromBytes(bi.Bytes(), -1).BitBufRange(int64(padBefore), int64(bi.BitLen()))
+			if err != nil {
+				return nil, err
+			}
+			return bb, nil
+		}
 	case []interface{}:
 		var rr []bitio.BitReadAtSeeker
+		// TODO: optimize byte array case
 		for _, e := range vv {
-			eBB, eErr := toBuffer(e)
+			eBB, eErr := toBufferEx(e, true)
 			if eErr != nil {
 				return nil, eErr
 			}

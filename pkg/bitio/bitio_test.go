@@ -37,7 +37,7 @@ func TestReader(t *testing.T) {
 	log.Printf("obs: %#+v\n", obs)
 }
 
-func TestCopy(t *testing.T) {
+func TestIOCopy(t *testing.T) {
 
 	br := bitio.NewReaderFromReadSeeker(bytes.NewReader([]byte{0xf0, 0xff, 0xff}))
 	sbr := bitio.NewSectionBitReader(br, 0, 8*3-1)
@@ -82,4 +82,82 @@ func TestMultiBitReader(t *testing.T) {
 
 	log.Printf("obs: %#+v\n", obs)
 
+}
+
+func TestMultiBitReader11(t *testing.T) {
+
+	bb1, bb1Bits := bitio.BytesFromBitString("11111111")
+	br1 := bitio.NewSectionBitReader(bitio.NewReaderFromReadSeeker(bytes.NewReader(bb1)), 0, int64(bb1Bits))
+	bb2, bb2Bits := bitio.BytesFromBitString("11111111")
+	br2 := bitio.NewSectionBitReader(bitio.NewReaderFromReadSeeker(bytes.NewReader(bb2)), 0, int64(bb2Bits))
+
+	mb, _ := bitio.NewMultiBitReader([]bitio.BitReadAtSeeker{br1, br2})
+
+	ob := make([]byte, 2)
+
+	obBits, _ := bitio.ReadAtFull(mb, ob, 11, 0)
+
+	obs := bitio.BitStringFromBytes(ob, obBits)
+
+	log.Printf("obs: %#+v\n", obs)
+
+}
+
+type testBW struct{}
+
+func (testBW) WriteBits(p []byte, nBits int) (n int, err error) {
+	log.Printf("WriteBits p: %#+v nBits=%d\n", len(p), nBits)
+
+	for i := 0; i < nBits; i++ {
+		if bitio.Read64(p, i, 1) != 0 {
+			log.Print("1")
+		} else {
+			log.Print("0")
+		}
+		log.Println()
+	}
+
+	return nBits, nil
+}
+
+func TestCopy(t *testing.T) {
+	bb1, bb1Bits := bitio.BytesFromBitString("101")
+	br1 := bitio.NewSectionBitReader(bitio.NewReaderFromReadSeeker(bytes.NewReader(bb1)), 0, int64(bb1Bits))
+	bb2, bb2Bits := bitio.BytesFromBitString("0001")
+	br2 := bitio.NewSectionBitReader(bitio.NewReaderFromReadSeeker(bytes.NewReader(bb2)), 0, int64(bb2Bits))
+
+	mb, _ := bitio.NewMultiBitReader([]bitio.BitReadAtSeeker{br1, br2})
+
+	n, err := bitio.Copy(testBW{}, mb)
+	log.Printf("n: %#+v\n", n)
+	log.Printf("err: %#+v\n", err)
+}
+
+func TestAlignBitWriter(t *testing.T) {
+	bb1, bb1Bits := bitio.BytesFromBitString("101")
+	br1 := bitio.NewSectionBitReader(bitio.NewReaderFromReadSeeker(bytes.NewReader(bb1)), 0, int64(bb1Bits))
+	bb2, bb2Bits := bitio.BytesFromBitString("0001")
+	br2 := bitio.NewSectionBitReader(bitio.NewReaderFromReadSeeker(bytes.NewReader(bb2)), 0, int64(bb2Bits))
+
+	mb, _ := bitio.NewMultiBitReader([]bitio.BitReadAtSeeker{br1, br2})
+
+	mbEnd, _ := bitio.EndPos(mb)
+
+	alignN := int64(8)
+
+	b := make([]byte, alignN/8+1)
+	bLeft := (alignN - mbEnd%alignN) % alignN
+
+	log.Printf("bLeft: %#+v\n", bLeft)
+
+	mb, _ = bitio.NewMultiBitReader([]bitio.BitReadAtSeeker{mb, bitio.NewBufferFromBytes(b, bLeft)})
+
+	bw := testBW{}
+	// ab := &bitio.AlignBitWriter{N: 8, W: bw}
+
+	n, err := bitio.Copy(bw, mb)
+	// ab.Close()
+
+	log.Printf("n: %#+v\n", n)
+	log.Printf("err: %#+v\n", err)
 }

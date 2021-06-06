@@ -91,7 +91,7 @@ func NewBufferFromBytes(buf []byte, nBits int64) *Buffer {
 		nBits = int64(len(buf)) * 8
 	}
 	return &Buffer{
-		br:     NewReaderFromReadSeeker(bytes.NewReader(buf)),
+		br:     NewSectionBitReader(NewReaderFromReadSeeker(bytes.NewReader(buf)), 0, nBits),
 		bitLen: nBits,
 	}
 }
@@ -199,7 +199,10 @@ func (b *Buffer) Read(p []byte) (n int, err error) {
 // TODO: nBytes -1?
 func (b *Buffer) BytesRange(bitOffset int64, nBytes int) ([]byte, error) {
 	buf := make([]byte, nBytes)
-	_, err := b.br.ReadBitsAt(buf, nBytes*8, bitOffset)
+	n, err := ReadAtFull(b.br, buf, nBytes*8, bitOffset)
+	if n == nBytes*8 {
+		err = nil
+	}
 	return buf, err
 }
 

@@ -2,6 +2,12 @@
 # reconstruct FLAC
 ["fLaC", first(.. | select(._format=="flac_metadatablock")), (.. | select(._format=="flac_frame"))] | bytes
 
+u32le?
+
+# hack to decode as individual box
+# [0,0,0,8+3,"free", "bla"] | mp4_box
+def mp4_box: [0,0,0,16, "ftyp", "isom", 0, 0 , 2 ,0, .] | mp4.boxes[1];
+
 .[]
 displat({depth:1 }) in parent repl takes time
 

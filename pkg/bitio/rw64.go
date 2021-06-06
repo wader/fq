@@ -9,7 +9,7 @@ import (
 // Integer is read most significant bit first.
 func Read64(buf []byte, firstBit int, nBits int) uint64 {
 	if nBits > 64 {
-		panic(fmt.Sprintf("unsupported bit length %d", nBits))
+		panic(fmt.Sprintf("only supports =< 64 bits (%d)", nBits))
 	}
 
 	be := binary.BigEndian
@@ -25,7 +25,7 @@ func Read64(buf []byte, firstBit int, nBits int) uint64 {
 			// BCE: let compiler know the bounds
 			nBuf := buf[bytePos : bytePos+bytesLeft : bytePos+bytesLeft]
 
-			// bitPos and bitsLeft are byte aligned
+			// byteBitPos and bitsLeft are byte aligned
 			// BCE: for some reason -1 helps remove check for some cases
 			switch bytesLeft - 1 {
 			case 0:
@@ -72,7 +72,7 @@ func Read64(buf []byte, firstBit int, nBits int) uint64 {
 					return n
 				}
 			} else {
-				// neither bitPos or bitsLeft byte aligned
+				// neither byteBitPos or bitsLeft byte aligned
 				byteBitsLeft := (8 - byteBitPos) & 0x7
 				if bitsLeft >= byteBitsLeft {
 					n = n<<byteBitsLeft | (uint64(b) & ((1 << byteBitsLeft) - 1))
