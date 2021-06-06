@@ -98,6 +98,13 @@ An addition to the standard library functions from jq fq has these functions:
 - `p`/`preview` show preview of field tree
 - `repl` nested REPL
 
+## Configuration
+
+To add own functions you can use `init.fq` that will be read from
+- `$HOME/Library/Application Support/fq/init.jq` on macOS
+- `$HOME/.config/fq/init.jq` on Linux, BSD etc
+- `%AppData%\fq\init.jq` on Windows (TODO: not tested)
+
 ## How to use
 
 TODO: unknown for gaps
