@@ -1,4 +1,7 @@
 
+# reconstruct FLAC
+["fLaC", first(.. | select(._format=="flac_metadatablock")), (.. | select(._format=="flac_frame"))] | bytes
+
 .[]
 displat({depth:1 }) in parent repl takes time
 
