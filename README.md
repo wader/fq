@@ -79,12 +79,15 @@ expression `a, b` to `f`.
 
 ### Differences to jq
 
+- [gojq's differences to jq](https://github.com/itchyny/gojq#difference-to-jq),
+notable is support for arbitrary-precision integers.
 - Supports hexdecimal `0xab`, octal `0o77` and binary `0b101` integer literals
 - Has bitwise operations, `band`, `bor`, `bxor`, `bsl`, `bsr`, `bnot`
 - Has `div` integer division operator
 - Try include `include "file?";` that don't fail if file is missing
-- Can have keys that are hidden from `keys` and `[]` used for some `_name` proprties like `_bytes`
-- Value can be hybrid array and object at the same time
+- Possible for a value to act as a object with keys even when it's an array, number etc.
+- There can be keys hidden from `keys` and `[]`. Used for, `_format`, `_bytes` etc.
+- Some values do not support to be updated
 
 ### Functions
 
