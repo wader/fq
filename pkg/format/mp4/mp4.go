@@ -157,8 +157,14 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 			numEntries := d.FieldU32("num_entries")
 			var i uint64
 			d.FieldStructArrayLoopFn("table", "entry", func() bool { return i < numEntries }, func(d *decode.D) {
-				d.FieldU32("track_duration")
-				d.FieldU32("media_time")
+				d.FieldS32("track_duration")
+				d.FieldSFn("media_time", func() (int64, decode.DisplayFormat, string) {
+					t := d.S32()
+					if t == -1 {
+						return t, decode.NumberDecimal, "empty"
+					}
+					return t, decode.NumberDecimal, ""
+				})
 				d.FieldFP32("media_rate")
 				i++
 			})
