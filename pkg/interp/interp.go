@@ -54,6 +54,7 @@ type OS interface {
 	// returned io.ReadSeeker can optionally implement io.Closer
 	Open(name string) (io.ReadSeeker, error)
 	Readline(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error)
+	History() ([]string, error)
 }
 
 // TODO: would be nice if gojq had something for this? maybe missing something?

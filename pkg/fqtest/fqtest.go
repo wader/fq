@@ -88,6 +88,7 @@ func (tcr *testCaseRun) Readline(prompt string, complete func(line string, pos i
 
 	return tcrLine.input, nil
 }
+func (tcr *testCaseRun) History() ([]string, error) { return nil, nil }
 
 func (tcr *testCaseRun) ToExpected() string {
 	sb := &strings.Builder{}

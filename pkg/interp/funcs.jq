@@ -192,9 +192,9 @@ def _formats_dot:
 	, "}";
 
 def in_bits_range($p):
-	._type == "field" and (._bits | .start <= $p and $p < .stop);
+	select(scalars and ._start? and ._start <= $p and $p < ._stop);
 def in_bytes_range($p):
-	._type == "field" and (._bytes | .start <= $p and $p < .stop);
+	select(scalars and ._start? and ._start/8 <= $p and $p < ._stop/8);
 
 # TODO: split? can't really switch on type
 def grep(f):

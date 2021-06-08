@@ -45,6 +45,7 @@ func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
 		{[]string{"display_name"}, 0, 0, i.displayName, nil},
 		{[]string{"extkeys"}, 0, 0, i._extKeys, nil},
 		{[]string{"formats"}, 0, 0, i.formats, nil},
+		{[]string{"history"}, 0, 0, i.history, nil},
 
 		{[]string{"open"}, 0, 1, i._open, nil},
 		{[]string{"decode"}, 0, 1, i.makeDecodeFn(registry, registry.MustGroup(format.PROBE)), nil},
@@ -390,6 +391,18 @@ func (i *Interp) formats(c interface{}, a []interface{}) interface{} {
 		vs[f.Name] = vf
 	}
 
+	return vs
+}
+
+func (i *Interp) history(c interface{}, a []interface{}) interface{} {
+	hs, err := i.os.History()
+	if err != nil {
+		return err
+	}
+	var vs []interface{}
+	for _, s := range hs {
+		vs = append(vs, s)
+	}
 	return vs
 }
 

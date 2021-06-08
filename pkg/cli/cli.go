@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"fq/pkg/decode"
@@ -135,6 +136,23 @@ func (o *standardOS) Readline(prompt string, complete func(line string, pos int)
 	}
 
 	return line, nil
+}
+func (o *standardOS) History() ([]string, error) {
+	// TODO: refactor history handling to use internal fs?
+	r, err := os.Open(o.rl.Config.HistoryFile)
+	if err != nil {
+		return nil, err
+	}
+	defer r.Close()
+	var hs []string
+	lineScanner := bufio.NewScanner(r)
+	for lineScanner.Scan() {
+		hs = append(hs, lineScanner.Text())
+	}
+	if err := lineScanner.Err(); err != nil {
+		return nil, err
+	}
+	return hs, nil
 }
 
 func Main(r *decode.Registry, version string) {
