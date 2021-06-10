@@ -171,6 +171,13 @@ def repl($opts): #:: a|(Opts) => @
 # same as repl({})
 def repl: repl({}); #:: a| => @
 
+# TODO: introspect and show doc, reflection somehow?
+def help:
+    ( builtins[]
+	, "^C interrupt"
+	, "^D exit REPL"
+    ) | println;
+
 def main:
 	def _formats_list:
 		[

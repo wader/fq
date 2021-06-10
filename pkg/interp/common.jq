@@ -20,8 +20,6 @@ def trim: capture("^\\s*(?<str>.*?)\\s*$"; "").str;
 # does +1 and [:1] as " "*0 is null
 def rpad($s;$w): . + ($s * ($w+1-length))[1:];
 
-def maybe_each: if (. | type) == "array" then .[] end;
-
 # [{a: 123, ...}, ...]
 # colmap maps something into [col, ...]
 # render maps [{column: 0, string: "coltext", maxwidth: 12}, ..] into a row
