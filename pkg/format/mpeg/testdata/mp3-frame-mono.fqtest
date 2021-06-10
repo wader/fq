@@ -13,7 +13,7 @@
 0x00|      50                                       |  P             |    padding: Not padded (0b0) 0x2.6-0x2.6 (0.1)
 0x00|      50                                       |  P             |    private: 0 0x2.7-0x2.7 (0.1)
 0x00|         c4                                    |   .            |    channels: Mono (0b11) 0x3-0x3.1 (0.2)
-0x00|         c4                                    |   .            |    channel_mode: 0b0 0x3.2-0x3.3 (0.2)
+0x00|         c4                                    |   .            |    channel_mode: None (0b0) 0x3.2-0x3.3 (0.2)
 0x00|         c4                                    |   .            |    copyright: 0 0x3.4-0x3.4 (0.1)
 0x00|         c4                                    |   .            |    original: 1 0x3.5-0x3.5 (0.1)
 0x00|         c4                                    |   .            |    emphasis: None (0b0) 0x3.6-0x3.7 (0.2)

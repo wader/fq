@@ -68,7 +68,7 @@ func init() {
 			{Names: []string{format.VP9_FRAME}, Formats: &vp9FrameFormat},
 			{Names: []string{format.VPX_CCR}, Formats: &vpxCCRFormat},
 			{Names: []string{format.JPEG}, Formats: &jpegFormat},
-			{Names: []string{format.ID3_V2}, Formats: &id3v2Format},
+			{Names: []string{format.ID3V2}, Formats: &id3v2Format},
 			{Names: []string{format.PROTOBUF_WIDEVINE}, Formats: &protoBufWidevineFormat},
 		},
 	})

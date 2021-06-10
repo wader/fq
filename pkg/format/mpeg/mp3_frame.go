@@ -5,6 +5,7 @@ package mpeg
 // https://wiki.hydrogenaud.io/index.php?title=MP3
 // https://www.diva-portal.org/smash/get/diva2:830195/FULLTEXT01.pdf
 // https://hydrogenaud.io/index.php?topic=36445.0
+// https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.118.3056&rep=rep1&type=pdf
 
 // TODO: some sample decode?
 // TODO: LSF, version 2.5 and 2? other decoder?
@@ -223,10 +224,10 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		}, "", d.U2, decode.NumberBinary)
 		isStereo = channelsIndex != 0b11
 		d.FieldStringMapFn("channel_mode", map[uint64]string{
-			0b00: "",
+			0b00: "None",
 			0b01: "Intensity stereo",
 			0b10: "MS stereo",
-			0b11: "Intensity stereo, ms stereo",
+			0b11: "Intensity stereo, MS stereo",
 		}, "", d.U2, decode.NumberBinary)
 		d.FieldU1("copyright")
 		d.FieldU1("original")

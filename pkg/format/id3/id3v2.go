@@ -14,15 +14,15 @@ import (
 	"strings"
 )
 
-var images []*decode.Format
+var imageFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
-		Name:        format.ID3_V2,
+		Name:        format.ID3V2,
 		Description: "ID3v2 metadata",
 		DecodeFn:    id3v2Decode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.IMAGE}, Formats: &images},
+			{Names: []string{format.IMAGE}, Formats: &imageFormat},
 		},
 	})
 }
@@ -471,7 +471,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			fieldTextNull(d, "mime_type", encodingUTF8)
 			d.FieldU8("picture_type") // TODO: table
 			fieldTextNull(d, "description", int(encoding))
-			dv, _, _ := d.FieldTryDecodeLen("picture", d.BitsLeft(), images)
+			dv, _, _ := d.FieldTryDecodeLen("picture", d.BitsLeft(), imageFormat)
 			if dv == nil {
 				d.FieldBitBufLen("picture", d.BitsLeft())
 			}

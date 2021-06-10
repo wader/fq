@@ -3,7 +3,7 @@
 > fq -d mp3 /headerfooter.mp3 verbose
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} (mp3) 0x0-0x25d.7 (606)
      |                                               |                |  headers: [1] 0x0-0x3c.7 (61)
-     |                                               |                |    [0]: header {} (id3_v2) 0x0-0x3c.7 (61)
+     |                                               |                |    [0]: header {} (id3v2) 0x0-0x3c.7 (61)
 0x000|49 44 33                                       |ID3             |      magic: "ID3" (Correct) 0x0-0x2.7 (3)
 0x000|         04                                    |   .            |      version: 4 0x3-0x3.7 (1)
 0x000|            00                                 |    .           |      revision: 0 0x4-0x4.7 (1)
@@ -65,7 +65,7 @@
 0x030|                                             50|               P|        padding: Not padded (0b0) 0x3f.6-0x3f.6 (0.1)
 0x030|                                             50|               P|        private: 0 0x3f.7-0x3f.7 (0.1)
 0x040|c4                                             |.               |        channels: Mono (0b11) 0x40-0x40.1 (0.2)
-0x040|c4                                             |.               |        channel_mode: 0b0 0x40.2-0x40.3 (0.2)
+0x040|c4                                             |.               |        channel_mode: None (0b0) 0x40.2-0x40.3 (0.2)
 0x040|c4                                             |.               |        copyright: 0 0x40.4-0x40.4 (0.1)
 0x040|c4                                             |.               |        original: 1 0x40.5-0x40.5 (0.1)
 0x040|c4                                             |.               |        emphasis: None (0b0) 0x40.6-0x40.7 (0.2)
@@ -124,7 +124,7 @@
 0x100|                                             52|               R|        padding: Padded (0b1) 0x10f.6-0x10f.6 (0.1)
 0x100|                                             52|               R|        private: 0 0x10f.7-0x10f.7 (0.1)
 0x110|c4                                             |.               |        channels: Mono (0b11) 0x110-0x110.1 (0.2)
-0x110|c4                                             |.               |        channel_mode: 0b0 0x110.2-0x110.3 (0.2)
+0x110|c4                                             |.               |        channel_mode: None (0b0) 0x110.2-0x110.3 (0.2)
 0x110|c4                                             |.               |        copyright: 0 0x110.4-0x110.4 (0.1)
 0x110|c4                                             |.               |        original: 1 0x110.5-0x110.5 (0.1)
 0x110|c4                                             |.               |        emphasis: None (0b0) 0x110.6-0x110.7 (0.2)
@@ -174,7 +174,7 @@
 0x1d0|55 55 55 55 55 55 55 55 55 55 55 55 55 55      |UUUUUUUUUUUUUU  |
      |                                               |                |      crc_calculated: ea58 0x1de-NA (0)
      |                                               |                |  footers: [1] 0x1de-0x25d.7 (128)
-     |                                               |                |    [0]: footer {} (id3_v1) 0x1de-0x25d.7 (128)
+     |                                               |                |    [0]: footer {} (id3v1) 0x1de-0x25d.7 (128)
 0x1d0|                                          54 41|              TA|      magic: "TAG" (Correct) 0x1de-0x1e0.7 (3)
 0x1e0|47                                             |G               |
 0x1e0|   74 65 73 74 00 00 00 00 00 00 00 00 00 00 00| test...........|      song_name: "test" 0x1e1-0x1fe.7 (30)

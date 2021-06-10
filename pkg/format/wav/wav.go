@@ -23,8 +23,8 @@ func init() {
 		Groups:      []string{format.PROBE},
 		DecodeFn:    wavDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.ID3_V2}, Formats: &headerFormat},
-			{Names: []string{format.ID3_V1, format.ID3_V11}, Formats: &footerFormat},
+			{Names: []string{format.ID3V2}, Formats: &headerFormat},
+			{Names: []string{format.ID3V1, format.ID3V11}, Formats: &footerFormat},
 		},
 	})
 }
