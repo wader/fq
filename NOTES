@@ -1,4 +1,11 @@
 
+
+DONE bitio endian? unused?
+
+decode split out some encoding things to own package?
+
+context cancel errosr, nicer message?
+
 # reconstruct FLAC
 ["fLaC", first(.. | select(._format=="flac_metadatablock")), (.. | select(._format=="flac_frame"))] | bytes
 

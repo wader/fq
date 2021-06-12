@@ -17,16 +17,6 @@ import (
 	"strings"
 )
 
-// Endian byte order
-type Endian int
-
-const (
-	// BigEndian byte order
-	BigEndian Endian = iota
-	// LittleEndian byte order
-	LittleEndian
-)
-
 // Buffer is a bit buffer
 type Buffer struct {
 	br interface {

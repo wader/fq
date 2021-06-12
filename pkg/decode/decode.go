@@ -74,13 +74,13 @@ func (e ValidateError) Error() string {
 	return fmt.Sprintf("failed to validate at position %s: %s", num.Bits(e.Pos).StringByteBits(16), e.Reason)
 }
 
-type Endian bitio.Endian
+type Endian int
 
-var (
+const (
 	// BigEndian byte order
-	BigEndian Endian = Endian(bitio.BigEndian)
+	BigEndian = iota
 	// LittleEndian byte order
-	LittleEndian Endian = Endian(bitio.LittleEndian)
+	LittleEndian
 )
 
 // just to get some type safety
