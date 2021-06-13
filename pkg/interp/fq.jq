@@ -2,6 +2,7 @@ include "@builtin/common";
 include "@builtin/args";
 include "@builtin/funcs";
 
+# optional user init
 include "@config/init?";
 
 # def read: #:: [a]| => string
@@ -35,7 +36,8 @@ def complete($e):
 		)
 	};
 
-def obj_to_csv_kv: [to_entries[] | [.key, .value] | join("=")] | join(",");
+def obj_to_csv_kv:
+	[to_entries[] | [.key, .value] | join("=")] | join(",");
 
 def color_themes:
 	{
@@ -189,7 +191,7 @@ def main:
 		]
 		| table(
 			.;
-			[.[] as $rc | $rc.string | rpad(" ";$rc.maxwidth)] | join("")
+			[.[] as $rc | $rc.string | rpad(" "; $rc.maxwidth)] | join("")
 		);
 	def _opts($version):
 		{
@@ -250,7 +252,7 @@ def main:
 		};
 	.version as $version
 	| .args[0] as $arg0
-	| args_parse(.args[1:];_opts($version)) as {$parsed, $rest}
+	| args_parse(.args[1:]; _opts($version)) as {$parsed, $rest}
 	# TODO: hack, pass opts some other way
 	| default_options(build_default_options) as $_
 	| push_options(
@@ -274,12 +276,12 @@ def main:
 		  null
 		  # figure out filename and expressions
 		  | ( if $parsed.nullinput then [null, $rest]
-			# make -ni and -i without args act the same
-			elif $parsed.repl and ($rest[0] | not) then [null, $rest]
-			elif $rest[0] then [$rest[0], $rest[1:]]
-			else ["-", $rest]
-			end
-		  ) as [$filename, $exprs]
+			  # make -ni and -i without args act the same
+			  elif $parsed.repl and ($rest[0] | not) then [null, $rest]
+			  elif $rest[0] then [$rest[0], $rest[1:]]
+			  else ["-", []]
+			  end
+		    ) as [$filename, $exprs]
 		  | if $filename then
 			( open($filename)
 			| decode($parsed.decode)
@@ -287,12 +289,12 @@ def main:
 		  end
 		  | if $parsed.file then
 			( (open($parsed.file) | string) as $file_expr
-			| eval_f($file_expr;.)
+			| eval_f($file_expr; .)
 			)
 		  end
 		  # this evaluates and combines all expression in order
-		  | (reduce $exprs[] as $expr ([.];[.[] | eval_f($expr;.)]))[]
+		  | (reduce $exprs[] as $expr ([.]; [.[] | eval_f($expr; .)]))[]
 		  | if $parsed.repl then repl
-		  else default_display end
+			else default_display end
 		catch tostring | halt_error(1)
 	  end;
