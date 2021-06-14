@@ -1,4 +1,17 @@
 
+FAQ:
+  trick with empty?
+  empty.bla
+  d.bla
+
+
+fq summary script?
+  container,
+  sample descriptior
+  decode record
+  packet codec
+
+
 
 TODO: somehow to pass args to decoder? aac object type etc?
 
