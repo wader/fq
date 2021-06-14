@@ -156,7 +156,7 @@ func aacSingleChannelElement(d *decode.D, objectType int) {
 	aacIndividualChannelStream(d, objectType, false, false)
 }
 
-func aacProgramConfigElement(d *decode.D) {
+func aacProgramConfigElement(d *decode.D, ascStartPos int64) {
 	d.FieldU4("element_instance_tag")
 	d.FieldU2("object_type")
 	d.FieldU4("sampling_frequency_index")
@@ -225,9 +225,11 @@ func aacProgramConfigElement(d *decode.D) {
 			})
 		}
 	})
-	d.FieldBitBufLen("byte_alignment", int64(d.ByteAlignBits()))
-	// commentFieldBytes := d.FieldU8("comment_field_bytes")
-	// d.FieldUTF8("comment_field", int(commentFieldBytes))
+
+	byteAlignBits := (8 - ((d.Pos() + ascStartPos) & 0x7)) & 0x7
+	d.FieldBitBufLen("byte_alignment", byteAlignBits)
+	commentFieldBytes := d.FieldU8("comment_field_bytes")
+	d.FieldUTF8("comment_field", int(commentFieldBytes))
 }
 
 func aacDecode(d *decode.D, in interface{}) interface{} {
@@ -235,6 +237,7 @@ func aacDecode(d *decode.D, in interface{}) interface{} {
 	if afi, ok := in.(format.AACFrameIn); ok {
 		objectType = afi.ObjectType
 	}
+	objectType = 2
 
 	// TODO: seems tricky to know length of blocks
 	// TODO: currently break when length is unknown
@@ -271,34 +274,24 @@ func aacDecode(d *decode.D, in interface{}) interface{} {
 							}
 						})
 					})
-
-					if d.ByteAlignBits() > 0 {
-						d.FieldBitBufLen("byte_align", int64(d.ByteAlignBits()))
-					}
-
 				case SCE:
 					aacSingleChannelElement(d, objectType)
-
-					if d.ByteAlignBits() > 0 {
-						d.FieldBitBufLen("byte_align", int64(d.ByteAlignBits()))
-					}
 					seenTerm = true
 
 				case PCE:
-					aacProgramConfigElement(d)
-
+					aacProgramConfigElement(d, 0)
 					seenTerm = true
 
 				default:
-					if d.ByteAlignBits() > 0 {
-						d.FieldBitBufLen("data", int64(d.ByteAlignBits()))
-					}
 					fallthrough
 				case TERM:
 					seenTerm = true
 				}
-
 			})
+		}
+
+		if d.ByteAlignBits() > 0 {
+			d.FieldBitBufLen("byte_align", int64(d.ByteAlignBits()))
 		}
 	})
 
