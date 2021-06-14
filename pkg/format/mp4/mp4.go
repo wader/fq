@@ -440,29 +440,30 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 			d.FieldU32("version")
 
 			// TODO: some other way to know how to decode?
-			dataFormat := ""
-			if ctx.currentTrack != nil && len(ctx.currentTrack.sampleDescriptions) > 0 {
-				dataFormat = ctx.currentTrack.sampleDescriptions[0].dataFormat
+			// TODO: why not always? was there a reason?
+			// dataFormat := ""
+			// if ctx.currentTrack != nil && len(ctx.currentTrack.sampleDescriptions) > 0 {
+			// 	dataFormat = ctx.currentTrack.sampleDescriptions[0].dataFormat
+			// }
+
+			// switch dataFormat {
+			// case "mp4a", "mp4v":
+			_, v := d.FieldDecode("es_descriptor", mpegESFormat)
+			mpegEsOut, ok := v.(format.MpegEsOut)
+			if !ok {
+				d.Invalid(fmt.Sprintf("expected mpegEsOut got %#+v", v))
 			}
 
-			switch dataFormat {
-			case "mp4a", "mp4v":
-				_, v := d.FieldDecode("es_descriptor", mpegESFormat)
-				mpegEsOut, ok := v.(format.MpegEsOut)
-				if !ok {
-					d.Invalid(fmt.Sprintf("expected mpegEsOut got %#+v", v))
-				}
-
-				if ctx.currentTrack != nil && len(mpegEsOut.DecoderConfigs) > 0 {
-					dc := mpegEsOut.DecoderConfigs[0]
-					ctx.currentTrack.objectType = dc.ObjectType
-					ctx.currentTrack.decodeOpts = append(ctx.currentTrack.decodeOpts,
-						decode.FormatOptions{InArg: format.AACFrameIn{ObjectType: dc.ASCObjectType}})
-				}
-
-			default:
-				d.FieldBitBufLen("data", d.BitsLeft())
+			if ctx.currentTrack != nil && len(mpegEsOut.DecoderConfigs) > 0 {
+				dc := mpegEsOut.DecoderConfigs[0]
+				ctx.currentTrack.objectType = dc.ObjectType
+				ctx.currentTrack.decodeOpts = append(ctx.currentTrack.decodeOpts,
+					decode.FormatOptions{InArg: format.AACFrameIn{ObjectType: dc.ASCObjectType}})
 			}
+
+			// default:
+			// 	d.FieldBitBufLen("data", d.BitsLeft())
+			// }
 
 		},
 		"stts": func(ctx *decodeContext, d *decode.D) {
@@ -1054,28 +1055,28 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 		},
 		"senc": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
-			flags := d.FieldU24("flags")
+			d.FieldU24("flags")
 
-			sampleCount := d.FieldU32("sample_count")
-			d.FieldArrayFn("samples", func(d *decode.D) {
-				for i := uint64(0); i < sampleCount; i++ {
-					d.FieldStructFn("sample", func(d *decode.D) {
-						// TODO: IV_size?
-						d.FieldBitBufLen("iv", 8*8)
-						if flags&0b10 != 0 {
-							subSampleCount := d.FieldU32("sub_sample_count")
-							d.FieldArrayFn("subsamples", func(d *decode.D) {
-								for i := uint64(0); i < subSampleCount; i++ {
-									d.FieldStructFn("subsample", func(d *decode.D) {
-										d.FieldU16("bytes_of_clear_data")
-										d.FieldU32("bytes_fo_encrypted_data")
-									})
-								}
-							})
-						}
-					})
-				}
-			})
+			d.FieldU32("sample_count")
+			// d.FieldArrayFn("samples", func(d *decode.D) {
+			// 	for i := uint64(0); i < sampleCount; i++ {
+			// 		d.FieldStructFn("sample", func(d *decode.D) {
+			// 			// TODO: IV_size?
+			// 			d.FieldBitBufLen("iv", 8*8)
+			// 			if flags&0b10 != 0 {
+			// 				subSampleCount := d.FieldU32("sub_sample_count")
+			// 				d.FieldArrayFn("subsamples", func(d *decode.D) {
+			// 					for i := uint64(0); i < subSampleCount; i++ {
+			// 						d.FieldStructFn("subsample", func(d *decode.D) {
+			// 							d.FieldU16("bytes_of_clear_data")
+			// 							d.FieldU32("bytes_fo_encrypted_data")
+			// 						})
+			// 					}
+			// 				})
+			// 			}
+			// 		})
+			// 	}
+			// })
 		},
 		"tenc": func(ctx *decodeContext, d *decode.D) {
 			version := d.FieldU8("version")

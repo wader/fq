@@ -1,5 +1,7 @@
 
 
+TODO: somehow to pass args to decoder? aac object type etc?
+
 DONE bitio endian? unused?
 
 decode split out some encoding things to own package?

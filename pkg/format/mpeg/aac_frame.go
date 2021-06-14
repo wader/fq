@@ -232,12 +232,40 @@ func aacProgramConfigElement(d *decode.D, ascStartPos int64) {
 	d.FieldUTF8("comment_field", int(commentFieldBytes))
 }
 
+func aacFillElement(d *decode.D) {
+	var cnt uint64
+	d.FieldStructFn("cnt", func(d *decode.D) {
+		count := d.FieldU4("count")
+		cnt = count
+		if cnt == 15 {
+			escCount := d.FieldU8("esc_count")
+			cnt += escCount - 1
+		}
+	})
+	d.FieldValueU("payload_length", cnt, "")
+
+	d.FieldStructFn("extension_payload", func(d *decode.D) {
+		d.DecodeLenFn(int64(cnt)*8, func(d *decode.D) {
+
+			extensionType, _ := d.FieldStringMapFn("extension_type", ExtensionPayloadIDNames, "Unknown", d.U4, decode.NumberDecimal)
+
+			// d.FieldU("align4", 2)
+
+			switch extensionType {
+			case FILL:
+				d.FieldU4("fill_nibble")
+				d.FieldBitBufLen("fill_byte", 8*(int64(cnt)-1))
+			}
+		})
+	})
+}
+
 func aacDecode(d *decode.D, in interface{}) interface{} {
 	var objectType int
 	if afi, ok := in.(format.AACFrameIn); ok {
 		objectType = afi.ObjectType
 	}
-	objectType = 2
+	// objectType = 2
 
 	// TODO: seems tricky to know length of blocks
 	// TODO: currently break when length is unknown
@@ -249,31 +277,8 @@ func aacDecode(d *decode.D, in interface{}) interface{} {
 
 				switch se {
 				case FIL:
-					var cnt uint64
-					d.FieldStructFn("cnt", func(d *decode.D) {
-						count := d.FieldU4("count")
-						cnt = count
-						if cnt == 15 {
-							escCount := d.FieldU8("esc_count")
-							cnt += escCount - 1
-						}
-					})
-					d.FieldValueU("payload_length", cnt, "")
+					aacFillElement(d)
 
-					d.FieldStructFn("extension_payload", func(d *decode.D) {
-						d.DecodeLenFn(int64(cnt)*8, func(d *decode.D) {
-
-							extensionType, _ := d.FieldStringMapFn("extension_type", ExtensionPayloadIDNames, "Unknown", d.U4, decode.NumberDecimal)
-
-							// d.FieldU("align4", 2)
-
-							switch extensionType {
-							case FILL:
-								d.FieldU4("fill_nibble")
-								d.FieldBitBufLen("fill_byte", 8*(int64(cnt)-1))
-							}
-						})
-					})
 				case SCE:
 					aacSingleChannelElement(d, objectType)
 					seenTerm = true

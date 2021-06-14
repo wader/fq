@@ -8,6 +8,24 @@ package mpeg
 // https://www.iis.fraunhofer.de/content/dam/iis/de/doc/ame/wp/FraunhoferIIS_Application-Bulletin_AAC-Transport-Formats.pdf
 // https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/aac_adtstoasc_bsf.c
 
+/*
+
+adts_frame() {
+	adts_fixed_header();
+	adts_variable_header();
+	if (number_of_raw_data_blocks_in_frame == 0) {
+		adts_error_check();
+		raw_data_block();
+	} else {
+		adts_header_error_check();
+		for( i = 0; i <= number_of_raw_data_blocks_in_frame; i++ ) {
+			raw_data_block();
+			adts_raw_data_block_error_check();
+		}
+	}
+}
+*/
+
 import (
 	"fq/pkg/decode"
 	"fq/pkg/format"
