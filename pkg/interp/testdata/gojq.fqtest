@@ -1,4 +1,5 @@
 # TODO: various gojq fq fork regression tests, should probably be move to fork code instead
+/test.mp3:
 > fq -n '{a:1, b: 2} | tostream'
 [
   [
@@ -17,3 +18,7 @@
     "b"
   ]
 ]
+> fq -d mp3 /test.mp3 '{(.headers[0].magic): 123}'
+{
+  "ID3": 123
+}
