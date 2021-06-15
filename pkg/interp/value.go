@@ -128,7 +128,6 @@ func (bv baseValueObject) ToBufferRange() (bufferRange, error) {
 
 func (bv baseValueObject) ExtValueKeys() []string {
 	kv := []string{
-		"_type",
 		"_start",
 		"_stop",
 		"_len",
@@ -164,8 +163,6 @@ func (bv baseValueObject) JQValueProperty(name string) interface{} {
 		dv := bv.dv
 
 		switch name {
-		case "_type":
-			return bv.typ
 		case "_start":
 			return big.NewInt(dv.Range.Start)
 		case "_stop":

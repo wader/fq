@@ -2,8 +2,6 @@
 
 Tool, language and decoders for querying and exploring binary data.
 
-## Usage
-
 <sub>
 <pre sh>
 <b># Overview of mp3 file</b> 
@@ -61,6 +59,26 @@ go install github.com/wader/fq@latest
 ```
 and the binary should end up at `$GOPATH/bin/fq`.
 
+## Usage
+
+### Arguments
+
+- TODO: null input
+- TODO: expressions
+
+### Running
+
+- TODO: stdin/stdout
+
+### Interactive REPL
+
+- TODO: tab completion, ctrl-d, ctrl-d, help
+- TODO: nested, nested with generator
+
+### Script
+
+- TODO: #!
+
 ## Langauge
 
 fq is based on the [jq language](https://stedolan.github.io/jq/) and for basic usage its syntax
@@ -91,15 +109,43 @@ notable is support for arbitrary-precision integers.
 
 ### Functions
 
-An addition to the standard library functions from jq fq has these functions:
-
-- `open(path)` open file
+- All standard library functions from jq
+- `open(path)` open file for reading
 - `probe` or `decode` try to automatically detect format and decode
-- `mp3`, `matroska`, ..., `decode([name])` try decode as format
+- `mp3`, `matroska`, ..., `<name>`, `decode([name])` try decode as format
 - `d`/`display` display value
 - `v`/`verbose` display value verbosely
 - `p`/`preview` show preview of field tree
+- `hd`/`hexdump` hexdump value
 - `repl` nested REPL
+
+### Decoded values (TODO: better name?)
+
+When you decode something successfully in fq you will get a value. A value work a bit like
+jq object with special abilities and is used to represent a tree structure of the decoded
+binary data. Each value always has a name, type and a bit range.
+
+A value has these special keys:
+
+- `_name` name of value
+- `_value` jq value of value
+- `_start` bit range start
+- `_stop` bit range stop
+- `_len` bit range length (TODO: rename)
+- `_bits` bits in range as a binary
+- `_bytes` bits in range as binary using byte units
+- `_path` jq path to value
+- `_unknown` value is un-decoded gap
+- `_symbol` symbolic string representation of value (optional)
+- `_description` longer description of value (optional)
+- `_format` name of decoded format (optional)
+- `_error` error message (optional)
+
+- TODO: unknown gaps
+
+### Binary and IO lists
+
+- TODO: similar to erlang io lists, [], binary, string (utf8) and numbers
 
 ## Configuration
 
@@ -107,11 +153,6 @@ To add own functions you can use `init.fq` that will be read from
 - `$HOME/Library/Application Support/fq/init.jq` on macOS
 - `$HOME/.config/fq/init.jq` on Linux, BSD etc
 - `%AppData%\fq\init.jq` on Windows (TODO: not tested)
-
-## How to use
-
-TODO: unknown for gaps
-TODO: piping
 
 ## Decoders
 
@@ -215,6 +256,18 @@ TODO
 - Refactor *[]decode.Format into something more abstract, group?
 
 ### Useful tricks
+
+#### Manual decode
+
+Sometimes fq fails to decode or you know there is valid data buried inside some binary or maybe
+you know the format of some unknown value. Then you can decode manually.
+
+<pre sh>
+# try decode a `mp3_frame` that failed to decode
+$ fq file.mp3 .unknown0 mp3_frame
+# skip first 10 bytes then decode as `mp3_frame`
+$ fq file.mp3 .unknown0._bytes[10:] mp3_frame
+</pre>
 
 #### Run pipelines using CLI arguments
 <pre sh>
