@@ -123,7 +123,7 @@ func completeTrampoline(ctx context.Context, completeFn string, c interface{}, i
 	var prefix string
 	cm, ok := v.(map[string]interface{})
 	if !ok {
-		return nil, pos, fmt.Errorf("%v: compete function return value not an object", cm)
+		return nil, pos, fmt.Errorf("%v: complete function return value not an object", cm)
 	}
 	if namesV, ok := cm["names"].([]interface{}); ok {
 		for _, name := range namesV {
