@@ -161,8 +161,8 @@ To add own functions you can use `init.fq` that will be read from
 |Name                 |Description                                                   |Uses|
 |-                    |-                                                             |-|
 |`aac_frame`          |Advanced&nbsp;Audio&nbsp;Coding&nbsp;frame                    |<sub></sub>|
-|`aac_stream`         |Raw&nbsp;audio&nbsp;data&nbsp;transport&nbsp;stream           |<sub>`adts`</sub>|
-|`adts`               |Audio&nbsp;Data&nbsp;Transport&nbsp;Stream&nbsp;packet        |<sub>`aac_frame`</sub>|
+|`adts`               |Audio&nbsp;Data&nbsp;Transport&nbsp;Stream                    |<sub>`adts_frame`</sub>|
+|`adts_frame`         |Audio&nbsp;Data&nbsp;Transport&nbsp;Stream&nbsp;frame         |<sub>`aac_frame`</sub>|
 |`apev2`              |APEv2&nbsp;metadata&nbsp;tag                                  |<sub>`image`</sub>|
 |`av1_ccr`            |AV1&nbsp;Codec&nbsp;Configuration&nbsp;Record                 |<sub></sub>|
 |`av1_frame`          |AV1&nbsp;frame                                                |<sub>`av1_obu`</sub>|
@@ -220,7 +220,7 @@ To add own functions you can use `init.fq` that will be read from
 |`wav`                |WAV&nbsp;file                                                 |<sub>`id3v2`, `id3v1`, `id3v11`</sub>|
 |`webp`               |WebP&nbsp;image                                               |<sub>`vp8_frame`</sub>|
 |`image`              |Group                                                         |<sub>`gif`, `jpeg`, `png`, `tiff`, `webp`</sub>|
-|`probe`              |Group                                                         |<sub>`aac_stream`, `adts`, `bzip2`, `elf`, `flac`, `gif`, `gzip`, `jpeg`, `matroska`, `mp3`, `mp4`, `mpeg_ts`, `ogg`, `png`, `tar`, `tiff`, `wav`, `webp`</sub>|
+|`probe`              |Group                                                         |<sub>`adts`, `bzip2`, `elf`, `flac`, `gif`, `gzip`, `jpeg`, `matroska`, `mp3`, `mp4`, `mpeg_ts`, `ogg`, `png`, `tar`, `tiff`, `wav`, `webp`</sub>|
 
 [#]: sh-end
 
@@ -262,7 +262,7 @@ TODO
 Sometimes fq fails to decode or you know there is valid data buried inside some binary or maybe
 you know the format of some unknown value. Then you can decode manually.
 
-<pre sh>
+<pre>
 # try decode a `mp3_frame` that failed to decode
 $ fq file.mp3 .unknown0 mp3_frame
 # skip first 10 bytes then decode as `mp3_frame`
