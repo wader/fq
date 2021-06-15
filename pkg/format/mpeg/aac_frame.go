@@ -1,5 +1,7 @@
 package mpeg
 
+// one AAC frame or "raw data block"
+
 // ISO/IEC 13818-7 Part 7: Advanced Audio Coding (AAC)
 // ISO/IEC 14496-3
 
@@ -39,21 +41,21 @@ var SyntaxElementNames = map[uint64]string{
 }
 
 const (
-	FILL          = 0x0
-	FILL_DATA     = 0x1
-	DATA_ELEMENT  = 0x2
-	DYNAMIC_RANGE = 0xb
-	SBR_DATA      = 0xd
-	SBR_DATA_CRC  = 0xe
+	EXT_FILL          = 0x0
+	EXT_FILL_DATA     = 0x1
+	EXT_DATA_ELEMENT  = 0x2
+	EXT_DYNAMIC_RANGE = 0xb
+	EXT_SBR_DATA      = 0xd
+	EXT_SBR_DATA_CRC  = 0xe
 )
 
 var ExtensionPayloadIDNames = map[uint64]string{
-	FILL:          "FILL",
-	FILL_DATA:     "FILL_DATA",
-	DATA_ELEMENT:  "DATA_ELEMENT",
-	DYNAMIC_RANGE: "DYNAMIC_RANGE",
-	SBR_DATA:      "SBR_DATA",
-	SBR_DATA_CRC:  "SBR_DATA_CRC",
+	EXT_FILL:          "EXT_FILL",
+	EXT_FILL_DATA:     "EXT_FILL_DATA",
+	EXT_DATA_ELEMENT:  "EXT_DATA_ELEMENT",
+	EXT_DYNAMIC_RANGE: "EXT_DYNAMIC_RANGE",
+	EXT_SBR_DATA:      "EXT_SBR_DATA",
+	EXT_SBR_DATA_CRC:  "EXT_SBR_DATA_CRC",
 }
 
 const (
@@ -252,7 +254,7 @@ func aacFillElement(d *decode.D) {
 			// d.FieldU("align4", 2)
 
 			switch extensionType {
-			case FILL:
+			case EXT_FILL:
 				d.FieldU4("fill_nibble")
 				d.FieldBitBufLen("fill_byte", 8*(int64(cnt)-1))
 			}
@@ -269,10 +271,10 @@ func aacDecode(d *decode.D, in interface{}) interface{} {
 
 	// TODO: seems tricky to know length of blocks
 	// TODO: currently break when length is unknown
-	d.FieldArrayFn("raw_data_blocks", func(d *decode.D) {
+	d.FieldArrayFn("elements", func(d *decode.D) {
 		seenTerm := false
 		for !seenTerm {
-			d.FieldStructFn("raw_data_block", func(d *decode.D) {
+			d.FieldStructFn("element", func(d *decode.D) {
 				se, _ := d.FieldStringMapFn("syntax_element", SyntaxElementNames, "", d.U3, decode.NumberDecimal)
 
 				switch se {

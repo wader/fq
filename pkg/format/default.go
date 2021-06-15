@@ -22,8 +22,8 @@ const (
 	IMAGE = "image"
 
 	AAC_FRAME          = "aac_frame"
-	AAC_STREAM         = "aac_stream"
 	ADTS               = "adts"
+	ADTS_FRAME         = "adts_frame"
 	APEV2              = "apev2"
 	AV1_CCR            = "av1_ccr"
 	AV1_FRAME          = "av1_frame"
