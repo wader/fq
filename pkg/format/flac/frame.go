@@ -78,261 +78,269 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	}
 
 	frameStart := d.Pos()
-	// <14> 11111111111110
-	d.FieldValidateUFn("sync", 0b11111111111110, d.U14)
 
-	// <1> Reserved
-	// 0 : mandatory value
-	// 1 : reserved for future use
-	d.FieldValidateUFn("reserved0", 0, d.U1)
-
-	// <1> Blocking strategy:
-	// 0 : fixed-blocksize stream; frame header encodes the frame number
-	// 1 : variable-blocksize stream; frame header encodes the sample number
-	blockingStrategy := d.FieldUFn("blocking_strategy", func() (uint64, decode.DisplayFormat, string) {
-		switch d.U1() {
-		case 0:
-			return BlockingStrategyFixed, decode.NumberDecimal, BlockingStrategyNames[BlockingStrategyFixed]
-		default:
-			return BlockingStrategyVariable, decode.NumberDecimal, BlockingStrategyNames[BlockingStrategyVariable]
-		}
-	})
-
-	// <4> Block size in inter-channel samples:
-	// 0000 : reserved
-	// 0001 : 192 samples
-	// 0010-0101 : 576 * (2^(n-2)) samples, i.e. 576/1152/2304/4608
-	// 0110 : get 8 bit (blocksize-1) from end of header
-	// 0111 : get 16 bit (blocksize-1) from end of header
-	// 1000-1111 : 256 * (2^(n-8)) samples, i.e. 256/512/1024/2048/4096/8192/16384/32768
-	var blockSizeBits uint64
-	blockSize := int(d.FieldUFn("block_size", func() (uint64, decode.DisplayFormat, string) {
-		blockSizeBits = d.U4()
-		switch blockSizeBits {
-		case 0b0000:
-			return 0, decode.NumberDecimal, "reserved"
-		case 0b0001:
-			return 192, decode.NumberDecimal, ""
-		case 0b0010, 0b0011, 0b0100, 0b0101:
-			return 576 * (1 << (blockSizeBits - 2)), decode.NumberDecimal, ""
-		case 0b0110:
-			return 0, decode.NumberDecimal, "end of header (8 bit)"
-		case 0b0111:
-			return 0, decode.NumberDecimal, "end of header (16 bit)"
-		default:
-			return 256 * (1 << (blockSizeBits - 8)), decode.NumberDecimal, ""
-		}
-	}))
-
-	// <4> Sample rate:
-	// 0000 : get from STREAMINFO metadata block
-	// 0001 : 88.2kHz
-	// 0010 : 176.4kHz
-	// 0011 : 192kHz
-	// 0100 : 8kHz
-	// 0101 : 16kHz
-	// 0110 : 22.05kHz
-	// 0111 : 24kHz
-	// 1000 : 32kHz
-	// 1001 : 44.1kHz
-	// 1010 : 48kHz
-	// 1011 : 96kHz
-	// 1100 : get 8 bit sample rate (in kHz) from end of header
-	// 1101 : get 16 bit sample rate (in Hz) from end of header
-	// 1110 : get 16 bit sample rate (in tens of Hz) from end of header
-	// 1111 : invalid, to prevent sync-fooling string of 1s
-	var sampleRateBits uint64
-	d.FieldUFn("sample_rate", func() (uint64, decode.DisplayFormat, string) {
-		sampleRateBits = d.U4()
-		switch sampleRateBits {
-		case 0:
-			if inStreamInfo == nil {
-				d.Invalid("streaminfo required for sample rate")
-			}
-			return inStreamInfo.SampleRate, decode.NumberDecimal, "streaminfo"
-		case 0b0001:
-			return 88200, decode.NumberDecimal, ""
-		case 0b0010:
-			return 176000, decode.NumberDecimal, ""
-		case 0b0011:
-			return 19200, decode.NumberDecimal, ""
-		case 0b0100:
-			return 800, decode.NumberDecimal, ""
-		case 0b0101:
-			return 1600, decode.NumberDecimal, ""
-		case 0b0110:
-			return 22050, decode.NumberDecimal, ""
-		case 0b0111:
-			return 44100, decode.NumberDecimal, ""
-		case 0b1000:
-			return 32000, decode.NumberDecimal, ""
-		case 0b1001:
-			return 44100, decode.NumberDecimal, ""
-		case 0b1010:
-			return 48000, decode.NumberDecimal, ""
-		case 0b1011:
-			return 96000, decode.NumberDecimal, ""
-		case 0b1100:
-			return 0, decode.NumberDecimal, "end of header (8 bit*1000)"
-		case 0b1101:
-			return 0, decode.NumberDecimal, "end of header (16 bit)"
-		case 0b1110:
-			return 0, decode.NumberDecimal, "end of header (16 bit*10)"
-		default:
-			return 0, decode.NumberDecimal, "invalid"
-		}
-	})
-
-	// <4> Channel assignment
-	// 0000-0111 : (number of independent channels)-1. Where defined, the channel order follows SMPTE/ITU-R recommendations. The assignments are as follows:
-	// 1 channel: mono
-	// 2 channels: left, right
-	// 3 channels: left, right, center
-	// 4 channels: front left, front right, back left, back right
-	// 5 channels: front left, front right, front center, back/surround left, back/surround right
-	// 6 channels: front left, front right, front center, LFE, back/surround left, back/surround right
-	// 7 channels: front left, front right, front center, LFE, back center, side left, side right
-	// 8 channels: front left, front right, front center, LFE, back left, back right, side left, side right
-	// 1000 : left/side stereo: channel 0 is the left channel, channel 1 is the side(difference) channel
-	// 1001 : right/side stereo: channel 0 is the side(difference) channel, channel 1 is the right channel
-	// 1010 : mid/side stereo: channel 0 is the mid(average) channel, channel 1 is the side(difference) channel
-	// 1011-1111 : reserved
+	var channels uint64
+	sampleSize := 0
+	blockSize := 0
 	channelAssignment := -1
 	sideChannelIndex := -1
-	channels := d.FieldUFn("channel_assignment", func() (uint64, decode.DisplayFormat, string) {
-		ca, si, u, fmt, disp := func() (uint64, int, uint64, decode.DisplayFormat, string) {
-			v := d.U4()
-			switch v {
+
+	d.FieldStructFn("header", func(d *decode.D) {
+		// <14> 11111111111110
+		d.FieldValidateUFn("sync", 0b11111111111110, d.U14)
+
+		// <1> Reserved
+		// 0 : mandatory value
+		// 1 : reserved for future use
+		d.FieldValidateUFn("reserved0", 0, d.U1)
+
+		// <1> Blocking strategy:
+		// 0 : fixed-blocksize stream; frame header encodes the frame number
+		// 1 : variable-blocksize stream; frame header encodes the sample number
+		blockingStrategy := d.FieldUFn("blocking_strategy", func() (uint64, decode.DisplayFormat, string) {
+			switch d.U1() {
 			case 0:
-				return v, -1, 1, decode.NumberDecimal, "mono"
-			case 1:
-				return v, -1, 2, decode.NumberDecimal, "left, right"
-			case 2:
-				return v, -1, 3, decode.NumberDecimal, "left, right, center"
-			case 3:
-				return v, -1, 4, decode.NumberDecimal, "front left, front right, back left, back right"
-			case 4:
-				return v, -1, 5, decode.NumberDecimal, "front left, front right, front center, back/surround left, back/surround right"
-			case 5:
-				return v, -1, 6, decode.NumberDecimal, "front left, front right, front center, LFE, back/surround left, back/surround right"
-			case 6:
-				return v, -1, 7, decode.NumberDecimal, "front left, front right, front center, LFE, back center, side left, side right"
-			case 7:
-				return v, -1, 8, decode.NumberDecimal, "front left, front right, front center, LFE, back left, back right, side left, side right"
-			case 0b1000:
-				sideChannelIndex = 1
-				return v, -1, 2, decode.NumberDecimal, "left/side"
-			case 0b1001:
-				sideChannelIndex = 0
-				return v, -1, 2, decode.NumberDecimal, "side/right"
-			case 0b1010:
-				sideChannelIndex = 1
-				return v, -1, 2, decode.NumberDecimal, "mid/side"
+				return BlockingStrategyFixed, decode.NumberDecimal, BlockingStrategyNames[BlockingStrategyFixed]
 			default:
-				return v, -1, 0, decode.NumberDecimal, "reserved"
+				return BlockingStrategyVariable, decode.NumberDecimal, BlockingStrategyNames[BlockingStrategyVariable]
 			}
-		}()
-		channelAssignment = int(ca)
-		if si != -1 {
-			sideChannelIndex = si
-			d.FieldUFn("side_channel_index", func() (uint64, decode.DisplayFormat, string) {
-				return uint64(sideChannelIndex), decode.NumberDecimal, ""
-			})
-		}
-		return u, fmt, disp
-	})
+		})
 
-	// <3> Sample size in bits:
-	// 000 : get from STREAMINFO metadata block
-	// 001 : 8 bits per sample
-	// 010 : 12 bits per sample
-	// 011 : reserved
-	// 100 : 16 bits per sample
-	// 101 : 20 bits per sample
-	// 110 : 24 bits per sample
-	// 111 : reserved
-	sampleSize := int(d.FieldUFn("sample_size", func() (uint64, decode.DisplayFormat, string) {
-		switch d.U3() {
-		case 0b000:
-			if inStreamInfo == nil {
-				d.Invalid("streaminfo required for bit per sample")
+		// <4> Block size in inter-channel samples:
+		// 0000 : reserved
+		// 0001 : 192 samples
+		// 0010-0101 : 576 * (2^(n-2)) samples, i.e. 576/1152/2304/4608
+		// 0110 : get 8 bit (blocksize-1) from end of header
+		// 0111 : get 16 bit (blocksize-1) from end of header
+		// 1000-1111 : 256 * (2^(n-8)) samples, i.e. 256/512/1024/2048/4096/8192/16384/32768
+		var blockSizeBits uint64
+		blockSize = int(d.FieldUFn("block_size", func() (uint64, decode.DisplayFormat, string) {
+			blockSizeBits = d.U4()
+			switch blockSizeBits {
+			case 0b0000:
+				return 0, decode.NumberDecimal, "reserved"
+			case 0b0001:
+				return 192, decode.NumberDecimal, ""
+			case 0b0010, 0b0011, 0b0100, 0b0101:
+				return 576 * (1 << (blockSizeBits - 2)), decode.NumberDecimal, ""
+			case 0b0110:
+				return 0, decode.NumberDecimal, "end of header (8 bit)"
+			case 0b0111:
+				return 0, decode.NumberDecimal, "end of header (16 bit)"
+			default:
+				return 256 * (1 << (blockSizeBits - 8)), decode.NumberDecimal, ""
 			}
-			return inStreamInfo.BitPerSample, decode.NumberDecimal, "streaminfo"
-		case 0b001:
-			return 8, decode.NumberDecimal, ""
-		case 0b010:
-			return 12, decode.NumberDecimal, ""
-		case 0b011:
-			return 0, decode.NumberDecimal, "reserved"
-		case 0b100:
-			return 16, decode.NumberDecimal, ""
-		case 0b101:
-			return 20, decode.NumberDecimal, ""
-		case 0b110:
-			return 24, decode.NumberDecimal, ""
-		case 0b111:
-			return 0, decode.NumberDecimal, "reserved"
-		}
-		panic("unreachable")
-	}))
+		}))
 
-	// <1> Reserved:
-	// 0 : mandatory value
-	// 1 : reserved for future use
-	d.FieldValidateUFn("reserved1", 0, d.U1)
+		// <4> Sample rate:
+		// 0000 : get from STREAMINFO metadata block
+		// 0001 : 88.2kHz
+		// 0010 : 176.4kHz
+		// 0011 : 192kHz
+		// 0100 : 8kHz
+		// 0101 : 16kHz
+		// 0110 : 22.05kHz
+		// 0111 : 24kHz
+		// 1000 : 32kHz
+		// 1001 : 44.1kHz
+		// 1010 : 48kHz
+		// 1011 : 96kHz
+		// 1100 : get 8 bit sample rate (in kHz) from end of header
+		// 1101 : get 16 bit sample rate (in Hz) from end of header
+		// 1110 : get 16 bit sample rate (in tens of Hz) from end of header
+		// 1111 : invalid, to prevent sync-fooling string of 1s
+		var sampleRateBits uint64
+		d.FieldUFn("sample_rate", func() (uint64, decode.DisplayFormat, string) {
+			sampleRateBits = d.U4()
+			switch sampleRateBits {
+			case 0:
+				if inStreamInfo == nil {
+					d.Invalid("streaminfo required for sample rate")
+				}
+				return inStreamInfo.SampleRate, decode.NumberDecimal, "streaminfo"
+			case 0b0001:
+				return 88200, decode.NumberDecimal, ""
+			case 0b0010:
+				return 176000, decode.NumberDecimal, ""
+			case 0b0011:
+				return 19200, decode.NumberDecimal, ""
+			case 0b0100:
+				return 800, decode.NumberDecimal, ""
+			case 0b0101:
+				return 1600, decode.NumberDecimal, ""
+			case 0b0110:
+				return 22050, decode.NumberDecimal, ""
+			case 0b0111:
+				return 44100, decode.NumberDecimal, ""
+			case 0b1000:
+				return 32000, decode.NumberDecimal, ""
+			case 0b1001:
+				return 44100, decode.NumberDecimal, ""
+			case 0b1010:
+				return 48000, decode.NumberDecimal, ""
+			case 0b1011:
+				return 96000, decode.NumberDecimal, ""
+			case 0b1100:
+				return 0, decode.NumberDecimal, "end of header (8 bit*1000)"
+			case 0b1101:
+				return 0, decode.NumberDecimal, "end of header (16 bit)"
+			case 0b1110:
+				return 0, decode.NumberDecimal, "end of header (16 bit*10)"
+			default:
+				return 0, decode.NumberDecimal, "invalid"
+			}
+		})
 
-	d.FieldStructFn("end_of_header", func(d *decode.D) {
-		// if(variable blocksize)
-		//   <8-56>:"UTF-8" coded sample number (decoded number is 36 bits) [4]
-		// else
-		//   <8-48>:"UTF-8" coded frame number (decoded number is 31 bits) [4]
-		switch blockingStrategy {
-		case BlockingStrategyVariable:
-			d.FieldUFn("sample_number", func() (uint64, decode.DisplayFormat, string) {
-				return utf8Uint(d), decode.NumberDecimal, ""
-			})
-		case BlockingStrategyFixed:
-			d.FieldUFn("frame_number", func() (uint64, decode.DisplayFormat, string) {
-				return utf8Uint(d), decode.NumberDecimal, ""
-			})
-		}
+		// <4> Channel assignment
+		// 0000-0111 : (number of independent channels)-1. Where defined, the channel order follows SMPTE/ITU-R recommendations. The assignments are as follows:
+		// 1 channel: mono
+		// 2 channels: left, right
+		// 3 channels: left, right, center
+		// 4 channels: front left, front right, back left, back right
+		// 5 channels: front left, front right, front center, back/surround left, back/surround right
+		// 6 channels: front left, front right, front center, LFE, back/surround left, back/surround right
+		// 7 channels: front left, front right, front center, LFE, back center, side left, side right
+		// 8 channels: front left, front right, front center, LFE, back left, back right, side left, side right
+		// 1000 : left/side stereo: channel 0 is the left channel, channel 1 is the side(difference) channel
+		// 1001 : right/side stereo: channel 0 is the side(difference) channel, channel 1 is the right channel
+		// 1010 : mid/side stereo: channel 0 is the mid(average) channel, channel 1 is the side(difference) channel
+		// 1011-1111 : reserved
+		channels = d.FieldUFn("channel_assignment", func() (uint64, decode.DisplayFormat, string) {
+			ca, si, u, fmt, disp := func() (uint64, int, uint64, decode.DisplayFormat, string) {
+				v := d.U4()
+				switch v {
+				case 0:
+					return v, -1, 1, decode.NumberDecimal, "mono"
+				case 1:
+					return v, -1, 2, decode.NumberDecimal, "left, right"
+				case 2:
+					return v, -1, 3, decode.NumberDecimal, "left, right, center"
+				case 3:
+					return v, -1, 4, decode.NumberDecimal, "front left, front right, back left, back right"
+				case 4:
+					return v, -1, 5, decode.NumberDecimal, "front left, front right, front center, back/surround left, back/surround right"
+				case 5:
+					return v, -1, 6, decode.NumberDecimal, "front left, front right, front center, LFE, back/surround left, back/surround right"
+				case 6:
+					return v, -1, 7, decode.NumberDecimal, "front left, front right, front center, LFE, back center, side left, side right"
+				case 7:
+					return v, -1, 8, decode.NumberDecimal, "front left, front right, front center, LFE, back left, back right, side left, side right"
+				case 0b1000:
+					sideChannelIndex = 1
+					return v, -1, 2, decode.NumberDecimal, "left/side"
+				case 0b1001:
+					sideChannelIndex = 0
+					return v, -1, 2, decode.NumberDecimal, "side/right"
+				case 0b1010:
+					sideChannelIndex = 1
+					return v, -1, 2, decode.NumberDecimal, "mid/side"
+				default:
+					return v, -1, 0, decode.NumberDecimal, "reserved"
+				}
+			}()
+			channelAssignment = int(ca)
+			if si != -1 {
+				sideChannelIndex = si
+				d.FieldUFn("side_channel_index", func() (uint64, decode.DisplayFormat, string) {
+					return uint64(sideChannelIndex), decode.NumberDecimal, ""
+				})
+			}
+			return u, fmt, disp
+		})
 
-		// if(blocksize bits == 011x)
-		//   8/16 bit (blocksize-1)
-		switch blockSizeBits {
-		case 0b0110:
-			blockSize = int(d.FieldUFn("block_size", func() (uint64, decode.DisplayFormat, string) {
-				return d.U8() + 1, decode.NumberDecimal, ""
-			}))
-		case 0b0111:
-			blockSize = int(d.FieldUFn("block_size", func() (uint64, decode.DisplayFormat, string) {
-				return d.U16() + 1, decode.NumberDecimal, ""
-			}))
-		}
+		// <3> Sample size in bits:
+		// 000 : get from STREAMINFO metadata block
+		// 001 : 8 bits per sample
+		// 010 : 12 bits per sample
+		// 011 : reserved
+		// 100 : 16 bits per sample
+		// 101 : 20 bits per sample
+		// 110 : 24 bits per sample
+		// 111 : reserved
+		sampleSize = int(d.FieldUFn("sample_size", func() (uint64, decode.DisplayFormat, string) {
+			switch d.U3() {
+			case 0b000:
+				if inStreamInfo == nil {
+					d.Invalid("streaminfo required for bit per sample")
+				}
+				return inStreamInfo.BitPerSample, decode.NumberDecimal, "streaminfo"
+			case 0b001:
+				return 8, decode.NumberDecimal, ""
+			case 0b010:
+				return 12, decode.NumberDecimal, ""
+			case 0b011:
+				return 0, decode.NumberDecimal, "reserved"
+			case 0b100:
+				return 16, decode.NumberDecimal, ""
+			case 0b101:
+				return 20, decode.NumberDecimal, ""
+			case 0b110:
+				return 24, decode.NumberDecimal, ""
+			case 0b111:
+				return 0, decode.NumberDecimal, "reserved"
+			}
+			panic("unreachable")
+		}))
 
-		// if(sample rate bits == 11xx)
-		//   8/16 bit sample rate
-		switch sampleRateBits {
-		case 0b1100:
-			d.FieldUFn("sample_rate", func() (uint64, decode.DisplayFormat, string) {
-				return d.U8() * 1000, decode.NumberDecimal, ""
-			})
-		case 0b1101:
-			d.FieldUFn("sample_rate", func() (uint64, decode.DisplayFormat, string) {
-				return d.U16(), decode.NumberDecimal, ""
-			})
-		case 0b1110:
-			d.FieldUFn("sample_rate", func() (uint64, decode.DisplayFormat, string) {
-				return d.U16() * 10, decode.NumberDecimal, ""
-			})
-		case 0b1111:
-			// TODO: reserved?
-		}
+		// <1> Reserved:
+		// 0 : mandatory value
+		// 1 : reserved for future use
+		d.FieldValidateUFn("reserved1", 0, d.U1)
+
+		d.FieldStructFn("end_of_header", func(d *decode.D) {
+			// if(variable blocksize)
+			//   <8-56>:"UTF-8" coded sample number (decoded number is 36 bits) [4]
+			// else
+			//   <8-48>:"UTF-8" coded frame number (decoded number is 31 bits) [4]
+			switch blockingStrategy {
+			case BlockingStrategyVariable:
+				d.FieldUFn("sample_number", func() (uint64, decode.DisplayFormat, string) {
+					return utf8Uint(d), decode.NumberDecimal, ""
+				})
+			case BlockingStrategyFixed:
+				d.FieldUFn("frame_number", func() (uint64, decode.DisplayFormat, string) {
+					return utf8Uint(d), decode.NumberDecimal, ""
+				})
+			}
+
+			// if(blocksize bits == 011x)
+			//   8/16 bit (blocksize-1)
+			switch blockSizeBits {
+			case 0b0110:
+				blockSize = int(d.FieldUFn("block_size", func() (uint64, decode.DisplayFormat, string) {
+					return d.U8() + 1, decode.NumberDecimal, ""
+				}))
+			case 0b0111:
+				blockSize = int(d.FieldUFn("block_size", func() (uint64, decode.DisplayFormat, string) {
+					return d.U16() + 1, decode.NumberDecimal, ""
+				}))
+			}
+
+			// if(sample rate bits == 11xx)
+			//   8/16 bit sample rate
+			switch sampleRateBits {
+			case 0b1100:
+				d.FieldUFn("sample_rate", func() (uint64, decode.DisplayFormat, string) {
+					return d.U8() * 1000, decode.NumberDecimal, ""
+				})
+			case 0b1101:
+				d.FieldUFn("sample_rate", func() (uint64, decode.DisplayFormat, string) {
+					return d.U16(), decode.NumberDecimal, ""
+				})
+			case 0b1110:
+				d.FieldUFn("sample_rate", func() (uint64, decode.DisplayFormat, string) {
+					return d.U16() * 10, decode.NumberDecimal, ""
+				})
+			case 0b1111:
+				// TODO: reserved?
+			}
+		})
+
+		headerCRC := &crc.CRC{Bits: 8, Table: crc.ATM8Table}
+		decode.MustCopy(headerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
+		d.FieldChecksumLen("crc", 8, headerCRC.Sum(nil), decode.BigEndian)
+
 	})
-
-	headerCRC := &crc.CRC{Bits: 8, Table: crc.ATM8Table}
-	decode.MustCopy(headerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
-	d.FieldChecksumLen("crc", 8, headerCRC.Sum(nil), decode.BigEndian)
 
 	var channelSamples [][]int64
 	d.FieldArrayFn("subframes", func(d *decode.D) {
