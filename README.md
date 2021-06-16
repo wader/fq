@@ -195,7 +195,7 @@ To add own functions you can use `init.fq` that will be read from
 |`mp3`                |MP3&nbsp;file                                                 |<sub>`id3v2`, `id3v1`, `id3v11`, `apev2`, `mp3_frame`</sub>|
 |`mp3_frame`          |MPEG&nbsp;audio&nbsp;layer&nbsp;3&nbsp;frame                  |<sub>`mp3_xing`</sub>|
 |`mp3_xing`           |Xing&nbsp;header                                              |<sub></sub>|
-|`mp4`                |MPEG-4&nbsp;file                                              |<sub>`av1_ccr`, `av1_frame`, `flac_frame`, `flac_metadatablock`, `mp3_frame`, `aac_frame`, `avc_dcr`, `avc_au`, `mpeg_es`, `hevc_dcr`, `hevc_au`, `mpeg_pes_packet`, `opus_packet`, `vorbis_packet`, `vp9_frame`, `vpx_ccr`, `jpeg`, `id3v2`, `protobuf_widevine`</sub>|
+|`mp4`                |MPEG-4&nbsp;file                                              |<sub>`av1_ccr`, `av1_frame`, `flac_frame`, `flac_metadatablock`, `mp3_frame`, `aac_frame`, `avc_dcr`, `avc_au`, `mpeg_es`, `hevc_dcr`, `hevc_au`, `mpeg_pes_packet`, `opus_packet`, `vorbis_packet`, `vp9_frame`, `vpx_ccr`, `jpeg`, `id3v2`, `protobuf_widevine`, `image`</sub>|
 |`mpeg_asc`           |MPEG-4&nbsp;Audio&nbsp;Specific&nbsp;Config                   |<sub></sub>|
 |`mpeg_es`            |MPEG&nbsp;Elementary&nbsp;Stream                              |<sub>`mpeg_asc`, `vorbis_packet`</sub>|
 |`mpeg_pes`           |MPEG&nbsp;Packetized&nbsp;elementary&nbsp;stream              |<sub>`mpeg_pes_packet`, `mpeg_spu`</sub>|
