@@ -43,6 +43,7 @@ var vpxCCRFormat []*decode.Format
 var jpegFormat []*decode.Format
 var id3v2Format []*decode.Format
 var protoBufWidevineFormat []*decode.Format
+var imageFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -70,6 +71,7 @@ func init() {
 			{Names: []string{format.JPEG}, Formats: &jpegFormat},
 			{Names: []string{format.ID3V2}, Formats: &id3v2Format},
 			{Names: []string{format.PROTOBUF_WIDEVINE}, Formats: &protoBufWidevineFormat},
+			{Names: []string{format.IMAGE}, Formats: &imageFormat},
 		},
 	})
 }
@@ -106,9 +108,14 @@ type track struct {
 }
 
 type decodeContext struct {
+	path              []string
 	tracks            map[uint32]*track
 	currentTrack      *track
 	currentMoofOffset int64
+}
+
+func isParent(ctx *decodeContext, typ string) bool {
+	return len(ctx.path) >= 2 && ctx.path[len(ctx.path)-2] == typ
 }
 
 func decodeBox(ctx *decodeContext, d *decode.D) {
@@ -625,7 +632,14 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			d.FieldU32("reserved")
-			d.FieldUTF8("data", int(d.BitsLeft()/8))
+			if isParent(ctx, "covr") {
+				dv, _, _ := d.FieldTryDecodeLen("data", d.BitsLeft(), imageFormat)
+				if dv == nil {
+					d.FieldBitBufLen("data", d.BitsLeft())
+				}
+			} else {
+				d.FieldUTF8("data", int(d.BitsLeft()/8))
+			}
 		},
 		"moov": decodeBoxes,
 		"moof": func(ctx *decodeContext, d *decode.D) {
@@ -1099,6 +1113,7 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 				d.FieldU8("default_constant_iv_size")
 			}
 		},
+		"covr": decodeBoxes,
 	}
 
 	typeFn := func() (string, string) {
@@ -1148,6 +1163,8 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 		typ = a
 	}
 
+	ctx.path = append(ctx.path, typ)
+
 	if decodeFn, ok := boxes[typ]; ok {
 		d.DecodeLenFn(int64(dataSize*8), func(d *decode.D) {
 			decodeFn(ctx, d)
@@ -1155,6 +1172,8 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 	} else {
 		d.FieldBitBufLen("data", int64(dataSize*8))
 	}
+
+	ctx.path = ctx.path[0 : len(ctx.path)-1]
 }
 
 func decodeBoxes(ctx *decodeContext, d *decode.D) {
