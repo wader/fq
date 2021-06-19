@@ -1,9 +1,10 @@
 
+mp4_lookup reverse, use _path and figureout tree path?
+
 FAQ:
   trick with empty?
   empty.bla
   d.bla
-
 
 fq summary script?
   container,
@@ -11,7 +12,7 @@ fq summary script?
   decode record
   packet codec
 
-
+u(32), trunc, pad, left/right?
 
 TODO: somehow to pass args to decoder? aac object type etc?
 

@@ -145,12 +145,11 @@ func valuePathDecorated(v *decode.Value, d Decorator) string {
 	for _, p := range valuePath(v) {
 		switch p := p.(type) {
 		case string:
-			parts = append([]string{".", d.ObjectKey.Wrap(p)}, parts...)
+			parts = append(parts, ".", d.ObjectKey.Wrap(p))
 		case int:
 			indexStr := strconv.Itoa(p)
-			parts = append([]string{fmt.Sprintf("%s%s%s", d.Index.F("["), d.Number.F(indexStr), d.Index.F("]"))}, parts...)
+			parts = append(parts, fmt.Sprintf("%s%s%s", d.Index.F("["), d.Number.F(indexStr), d.Index.F("]")))
 		}
-		v = v.Parent
 	}
 
 	if len(parts) == 0 {

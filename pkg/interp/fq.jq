@@ -119,8 +119,8 @@ def prompt:
 				if ._error then "!" else "" end
 		catch ($c | type);
 	def _path_prefix:
-		(._path? // ".")
-		| if . == "." then "" else . + " " end;
+		(._path? // [])
+		| if . == [] then "" else path_to_jqpath + " " end;
 	( options.repllevel
 	  | if . > 1 then ((.-1) * ">") + " "
 	    else "" end
