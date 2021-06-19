@@ -10,7 +10,10 @@ def protobuf_to_value:
 def mp4_box:
 	[0,0,0,16, "ftyp", "isom", 0, 0 , 2 ,0, .] | mp4.boxes;
 
-def _lookup(children; name; p):
+# TODO: generalize?
+def array_tree_path(children; name; p):
+	# add implicit zeros to get first value
+	# ["a", "b", 1] => ["a", 0, "b", 1]
 	def _normalize_path:
 		. as $p
 		| if $p | last | type == "string" then $p+[0] end
@@ -29,12 +32,12 @@ def _lookup(children; name; p):
 		if $n | type == "string" then
 			children | map(select(name==$n))
 		else
-			nth($n)
+			.[$n]
 		end
 	  );
 
 # <mp4 value> | mp4_lookup(.moov.trak[1])
-def mp4_lookup(p): _lookup(.boxes; .type; p);
+def mp4_lookup(p): array_tree_path(.boxes; .type; p);
 
 # <matroska value> | matroska_lookup(.Segment.Tracks[0].TrackEntry[1].CodecID)
-def matroska_lookup(p): _lookup(.elements; .id._symbol; p);
+def matroska_lookup(p): array_tree_path(.elements; .id._symbol; p);

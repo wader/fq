@@ -123,15 +123,31 @@ type ToBufferRange interface {
 	ToBufferRange() (bufferRange, error)
 }
 
-func valuePathDecorated(v *decode.Value, d Decorator) string {
-	var parts []string
+func valuePath(v *decode.Value) []interface{} {
+	var parts []interface{}
 
 	for v.Parent != nil {
 		switch v.Parent.V.(type) {
 		case decode.Struct:
-			parts = append([]string{".", d.ObjectKey.Wrap(v.Name)}, parts...)
+			parts = append([]interface{}{v.Name}, parts...)
 		case decode.Array:
-			indexStr := strconv.Itoa(v.Index)
+			parts = append([]interface{}{v.Index}, parts...)
+		}
+		v = v.Parent
+	}
+
+	return parts
+}
+
+func valuePathDecorated(v *decode.Value, d Decorator) string {
+	var parts []string
+
+	for _, p := range valuePath(v) {
+		switch p := p.(type) {
+		case string:
+			parts = append([]string{".", d.ObjectKey.Wrap(p)}, parts...)
+		case int:
+			indexStr := strconv.Itoa(p)
 			parts = append([]string{fmt.Sprintf("%s%s%s", d.Index.F("["), d.Number.F(indexStr), d.Index.F("]"))}, parts...)
 		}
 		v = v.Parent
@@ -142,11 +158,6 @@ func valuePathDecorated(v *decode.Value, d Decorator) string {
 	}
 
 	return strings.Join(parts, "")
-}
-
-// TODO: jq function somehow? escape keys?
-func valuePath(v *decode.Value) string {
-	return valuePathDecorated(v, PlainDecorator)
 }
 
 type EmptyError interface {
