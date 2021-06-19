@@ -159,10 +159,6 @@ func valuePathDecorated(v *decode.Value, d Decorator) string {
 	return strings.Join(parts, "")
 }
 
-type EmptyError interface {
-	IsEmptyError() bool
-}
-
 type iterFn func() (interface{}, bool)
 
 func (i iterFn) Next() (interface{}, bool) { return i() }
