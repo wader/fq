@@ -48,7 +48,7 @@ var imageFormat []*decode.Format
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.MP4,
-		Description: "MPEG-4 file",
+		Description: "MPEG-4 file and similar",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    mp4Decode,
 		Dependencies: []decode.Dependency{
