@@ -1,5 +1,7 @@
 
-path_to_jqexpr
+move mp4_lookup to mp4.go/mp4.jq
+
+path_to_expr
 
 mp4_lookup reverse, use _path and figureout tree path?
 

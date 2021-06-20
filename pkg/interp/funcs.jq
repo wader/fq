@@ -1,7 +1,7 @@
 
 # TODO: escape for safe key names
 # path ["a", 1, "b"] -> "a[1].b"
-def path_to_jqpath:
+def path_to_expr:
 	map(if type == "number" then "[", ., "]" else ".", . end) | join("");
 
 # convert number to array of bytes

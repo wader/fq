@@ -120,7 +120,7 @@ def prompt:
 		catch ($c | type);
 	def _path_prefix:
 		(._path? // [])
-		| if . == [] then "" else path_to_jqpath + " " end;
+		| if . == [] then "" else path_to_expr + " " end;
 	( options.repllevel
 	  | if . > 1 then ((.-1) * ">") + " "
 	    else "" end
