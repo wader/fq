@@ -255,6 +255,7 @@
       |                                               |                |          rice_partitions: 1 0x2089.7-NA (0)
       |                                               |                |          partitions: [1] 0x2089.7-0x225d.2 (467.4)
       |                                               |                |            [0]: partition {} 0x2089.7-0x225d.2 (467.4)
+      |                                               |                |              count: 433 0x2089.7-NA (0)
 0x2080|                           80 ee               |         ..     |              rice_parameter: 7 0x2089.7-0x208a.2 (0.4)
 0x2080|                              ee e7 63 a9 cc e0|          ..c...|              samples: 773b1d4e670369a8cc612e164a64d239... 0x208a.3-0x225d.2 (467)
 0x2090|6d 35 19 8c 25 c2 c9 4c 9a 47 20 bd ba 36 b3 2f|m5..%..L.G ..6./|

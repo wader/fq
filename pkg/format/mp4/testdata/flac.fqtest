@@ -336,6 +336,7 @@
      |                                               |                |              rice_partitions: 1 0x4e.1-NA (0)
      |                                               |                |              partitions: [1] 0x4e.1-0x284 (566)
      |                                               |                |                [0]: partition {} 0x4e.1-0x284 (566)
+     |                                               |                |                  count: 2199 0x4e.1-NA (0)
 0x040|                                          01   |              . |                  rice_parameter: 0 0x4e.1-0x4e.4 (0.4)
 0x040|                                          01 27|              .'|                  samples: 24e6664f264c9cccce649a670ff324f3... 0x4e.5-0x284 (565.4)
 0x050|33 32 79 32 64 e6 66 73 24 d3 38 7f 99 27 99 3c|32y2d.fs$.8..'.<|

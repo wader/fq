@@ -404,9 +404,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 				if channelIndex == sideChannelIndex {
 					subframeSampleSize++
 				}
-				d.FieldUFn("subframe_sample_size", func() (uint64, decode.DisplayFormat, string) {
-					return uint64(subframeSampleSize), decode.NumberDecimal, ""
-				})
+				d.FieldValueU("subframe_sample_size", uint64(subframeSampleSize), "")
 
 				decodeWarmupSamples := func(n int, sampleSize int) []int64 {
 					var ss []int64
@@ -444,9 +442,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 					partitionOrder := int(d.FieldU4("partition_order"))
 					// There will be 2^order partitions.
 					ricePartitions := 1 << partitionOrder
-					d.FieldUFn("rice_partitions", func() (uint64, decode.DisplayFormat, string) {
-						return uint64(ricePartitions), decode.NumberDecimal, ""
-					})
+					d.FieldValueU("rice_partitions", uint64(ricePartitions), "")
 
 					d.FieldArrayFn("partitions", func(d *decode.D) {
 						for i := 0; i < ricePartitions; i++ {
@@ -471,6 +467,8 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 								} else {
 									count = (blockSize / ricePartitions) - lpcOrder
 								}
+
+								d.FieldValueU("count", uint64(count), "")
 
 								riceParameter := int(d.FieldU("rice_parameter", riceBits))
 								if riceParameter == riceEscape {
