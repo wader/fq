@@ -1114,6 +1114,77 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 			}
 		},
 		"covr": decodeBoxes,
+		"dec3": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU13("data_rate")
+			d.FieldU3("num_ind_sub")
+			d.FieldU2("fscod")
+			d.FieldU5("bsid")
+			d.FieldU5("bsmod")
+			d.FieldU3("acmod")
+			d.FieldU1("lfeon")
+			d.FieldU3("reserved0")
+			numDepSub := d.FieldU4("num_dep_sub")
+			if numDepSub > 0 {
+				d.FieldU9("chan_loc")
+			} else {
+				d.FieldU1("reserved1")
+			}
+
+			if d.BitsLeft() >= 16 {
+				d.FieldU7("reserved2")
+				ec3JocFlag := d.FieldBool("ec3_job_flag")
+				if ec3JocFlag {
+					d.FieldU1("ec3_job_complexity")
+				}
+			}
+		},
+		"dac4": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU3("ac4_dsi_version")
+			bitstreamVersion := d.FieldU7("bitstream_version")
+			d.FieldU1("fs_index")
+			d.FieldU4("frame_rate_index")
+			d.FieldU9("n_presentation")
+
+			if bitstreamVersion > 1 {
+				hasProgramID := d.FieldBool("has_program_id")
+				if hasProgramID {
+					d.FieldU16("short_program_id")
+					hasUuid := d.FieldBool("has_uuid")
+					if hasUuid {
+						d.FieldBitBufLen("uuid", 16*8)
+					}
+				}
+			}
+
+			// if ac4DsiVersion == 1 {
+			// 	d.FieldU2("bit_rate_mode")
+			// 	d.FieldU32("bit_rate")
+			// 	d.FieldU32("bit_rate_precision")
+			// }
+
+			// if ac4DsiVersion == 1 {
+
+			// 	d.FieldArrayFn("presentations", func(d *decode.D) {
+			// 		for i := uint64(0); i < nPresentation; i++ {
+			// 			d.FieldStructFn("presentation", func(d *decode.D) {
+			// 				d.FieldU8("presentation_version")
+			// 				presBytes := d.FieldUFn("pres_bytes", func() (uint64, decode.DisplayFormat, string) {
+			// 					n := d.U8()
+			// 					if n == 0x0ff {
+			// 						n += d.U16()
+			// 					}
+			// 					return n, decode.NumberDecimal, ""
+			// 				})
+			// 				d.FieldBitBufLen("data", int64(presBytes)*8)
+			// 			})
+			// 		}
+			// 	})
+			// }
+
+			if d.BitsLeft() > 0 {
+				d.FieldBitBufLen("data", d.BitsLeft())
+			}
+		},
 	}
 
 	typeFn := func() (string, string) {
