@@ -36,8 +36,33 @@ def array_tree_path(children; name; p):
 		end
 	  );
 
+# TODO: hack
+def expr_to_path:
+	eval("null | path(\(.))");
+
 # <mp4 value> | mp4_lookup(.moov.trak[1])
 def mp4_lookup(p): array_tree_path(.boxes; .type; p);
 
 # <matroska value> | matroska_lookup(.Segment.Tracks[0].TrackEntry[1].CodecID)
 def matroska_lookup(p): array_tree_path(.elements; .id._symbol; p);
+
+def mp4_path($v):
+	[
+	. as $r
+	| $v._path as $p
+	| foreach range(($p | length)/2) as $i (
+		null;
+		null;
+		($r | getpath($p[0:($i+1)*2]).type) as $type
+		| [($r | getpath($p[0:($i+1)*2-1]))[].type][0:$p[($i*2)+1]+1] as $before
+		| [
+			$type,
+			($before | map(select(. == $type)) | length)-1
+		]
+	  )
+	| [ ".", .[0],
+		(.[1] | if . == 0 then empty else "[", ., "]" end)
+	  ]
+	]
+	| flatten
+	| join("");
