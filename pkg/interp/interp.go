@@ -418,9 +418,10 @@ func New(os OS, registry *decode.Registry) (*Interp, error) {
 	if err != nil {
 		return nil, fmt.Errorf("init%s %w", queryErrorPosition(err), err)
 	}
-	i.interruptStack = ctxstack.New(func(closeCh chan struct{}) {
+	// TODO: refactor ctxstack have a CancelTop and return c context to Stop?
+	i.interruptStack = ctxstack.New(func(stopCh chan struct{}) {
 		select {
-		case <-closeCh:
+		case <-stopCh:
 			return
 		case <-os.Interrupt():
 			return
@@ -617,16 +618,12 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	runCtx, runCtxCancelFn := i.interruptStack.Push(ctx)
 	ni.ctx = runCtx
 	ni.stdout = CtxOutput{Output: stdout, Ctx: runCtx}
-
 	iter := gc.RunWithContext(runCtx, c)
-	// iter := gc.RunWithContext(ctx, c, variableValues...)
 
 	iterWrapper := iterFn(func() (interface{}, bool) {
 		v, ok := iter.Next()
-		_, isErr := v.(error)
-		// TODO: should we really cancel on error?
-		// gojq ctx cancel will not return ok=false, just canceled error
-		if !ok || isErr {
+		// gojq ctx cancel will not return ok=false, just cancelled error
+		if !ok {
 			runCtxCancelFn()
 		}
 		return v, ok

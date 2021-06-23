@@ -1,6 +1,6 @@
 // Package ctxstack manages a stack of contexts. When triggerFn returns and closeCh is not closed
-// it will cancel the top context. Stack is popped when returned cancel funcition is called.
-// Cancel functions need to be cancelled in reverse they were pushed.
+// it will cancel the top context. Stack is popped in top first order when returned cancel funcition
+// is called.
 // This can be used to keep track of contexts for nested REPL:s were you only want to cancel
 // the current active "top" REPL.
 // TODO: should New take a parent context?
@@ -8,7 +8,6 @@ package ctxstack
 
 import (
 	"context"
-	"fmt"
 )
 
 // Stack is a context stack
@@ -18,15 +17,15 @@ type Stack struct {
 }
 
 // New context stack
-func New(triggerCh func(closeCh chan struct{})) *Stack {
-	closeCh := make(chan struct{})
-	s := &Stack{closeCh: closeCh}
+func New(triggerCh func(stopCh chan struct{})) *Stack {
+	stopCh := make(chan struct{})
+	s := &Stack{closeCh: stopCh}
 
 	go func() {
 		for {
-			triggerCh(closeCh)
+			triggerCh(stopCh)
 			select {
-			case <-closeCh:
+			case <-stopCh:
 				// stop if closed
 			default:
 				s.cancelFns[len(s.cancelFns)-1]()
@@ -40,16 +39,18 @@ func New(triggerCh func(closeCh chan struct{})) *Stack {
 }
 
 // Stop context stack
-// TODO: should cancel the whole stack? different function?
 func (s *Stack) Stop() {
+	for i := len(s.cancelFns) - 1; i >= 0; i-- {
+		s.cancelFns[i]()
+	}
 	close(s.closeCh)
 }
 
 // Push creates, pushes and returns new context. Cancel pops it.
 func (s *Stack) Push(parent context.Context) (context.Context, func()) {
 	stackCtx, stackCtxCancel := context.WithCancel(parent)
-	s.cancelFns = append(s.cancelFns, stackCtxCancel)
 	stackIdx := len(s.cancelFns)
+	s.cancelFns = append(s.cancelFns, stackCtxCancel)
 	cancelled := false
 
 	return stackCtx, func() {
@@ -58,10 +59,11 @@ func (s *Stack) Push(parent context.Context) (context.Context, func()) {
 		}
 		cancelled = true
 
-		if stackIdx != len(s.cancelFns) {
-			panic(fmt.Sprintf("cancelled in wrong order %d!=%d", stackIdx, len(s.cancelFns)))
+		for i := len(s.cancelFns) - 1; i >= stackIdx; i-- {
+			s.cancelFns[i]()
 		}
-		s.cancelFns = s.cancelFns[0 : len(s.cancelFns)-1]
+		s.cancelFns = s.cancelFns[0:stackIdx]
+
 		stackCtxCancel()
 	}
 }
