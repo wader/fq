@@ -90,3 +90,12 @@ def matroska_path(p): tree_path(.elements; .id._symbol; p);
 #         // $c;
 #     _recurse_foreach(init; .);
 
+# # TODO: split? can't really switch on type
+# def grep(f):
+# 	if f | type == "string" then
+# 		.. | select((._name | contains(f)) or (._value | contains(f)? // false))
+# 	elif f | type == "number" then
+# 		.. | select(._value == f)
+# 	else
+# 		.. | debug | select(f)?
+# 	end;

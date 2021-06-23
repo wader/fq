@@ -190,12 +190,3 @@ def in_bits_range($p):
 def in_bytes_range($p):
 	select(scalars and ._start? and ._start/8 <= $p and $p < ._stop/8);
 
-# TODO: split? can't really switch on type
-def grep(f):
-	if f | type == "string" then
-		.. | select((._name | contains(f)) or (._value | contains(f)? // false))
-	elif f | type == "number" then
-		.. | select(._value == f)
-	else
-		.. | debug | select(f)?
-	end;
