@@ -246,7 +246,7 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 			d.FieldU24("flags")
 			numEntries := d.FieldU32("num_entries")
 			var i uint64
-			d.FieldStructArrayLoopFn("references", "reference", func() bool { return i < numEntries }, func(d *decode.D) {
+			d.FieldStructArrayLoopFn("boxes", "box", func() bool { return i < numEntries }, func(d *decode.D) {
 				size := d.FieldU32("size")
 				d.FieldUTF8("type", 4)
 				d.FieldU8("version")
@@ -263,11 +263,12 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 			d.FieldU24("flags")
 			numEntries := d.FieldU32("num_entries")
 			var i uint64
-			d.FieldArrayLoopFn("sample_descriptions", func() bool { return i < numEntries }, func(d *decode.D) {
-				d.FieldStructFn("sample_description", func(d *decode.D) {
-					// TODO: decode len?
+			// note called "boxes" here instead of "sample_descriptions" and data format is named "type".
+			// this is to make it easier to threat them as normal boxes
+			d.FieldArrayLoopFn("boxes", func() bool { return i < numEntries }, func(d *decode.D) {
+				d.FieldStructFn("box", func(d *decode.D) {
 					size := d.FieldU32("size")
-					dataFormat := d.FieldUTF8("data_format", 4)
+					dataFormat := d.FieldUTF8("type", 4)
 					subType := ""
 					if ctx.currentTrack != nil {
 						ctx.currentTrack.sampleDescriptions = append(ctx.currentTrack.sampleDescriptions, sampleDescription{
