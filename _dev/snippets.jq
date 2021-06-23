@@ -71,3 +71,22 @@ def mp4_path(p): tree_path(.boxes; .type; p);
 # <matroska value> | matroska_path(<matroska value>) [".Segment.Tracks[0]", ...]
 def matroska_path(p): tree_path(.elements; .id._symbol; p);
 
+# def recurse_foreach(init; update; extract):
+#     def _recurse_foreach($state; $c):
+#         (. as $c | ["_recurse_foreach $state", $state] | debug | $c) |
+#         (. as $b | ["_recurse_foreach $c", $c] | debug | $b) |
+#         foreach $c[]? as $e (
+#             $state
+#             ;
+#             (. as $c | ["update $state", $state] | debug | $c) |
+#             (. as $b | ["update $e", $e] | debug | $b) |
+#             null | _recurse_foreach({state: $state, e: $e} | update; $e)
+#             ;
+#             (. as $c | ["extract $state", $state] | debug | $c) |
+#             (. as $b | ["extract $e", $e] | debug | $b) |
+#             {state: $state, e: .} |
+#             extract
+#         )
+#         // $c;
+#     _recurse_foreach(init; .);
+
