@@ -10,6 +10,11 @@ def protobuf_to_value:
 def mp4_box:
 	[0,0,0,16, "ftyp", "isom", 0, 0 , 2 ,0, .] | mp4.boxes;
 
+# TODO: a bit hacky?
+def expr_to_path:
+	if . | type != "string" then error("require string argument") end
+	| eval("null | path(\(.))");
+
 # TODO: generalize?
 def array_tree_path(children; name; p):
 	# add implicit zeros to get first value
@@ -25,8 +30,8 @@ def array_tree_path(children; name; p):
 			end
 		))[0];
 	. as $c
-	| null
-	| path(p)
+	| p
+	| expr_to_path
 	| _normalize_path
 	| reduce .[] as $n ($c;
 		if $n | type == "string" then
@@ -36,28 +41,18 @@ def array_tree_path(children; name; p):
 		end
 	  );
 
-# TODO: hack
-def expr_to_path:
-	eval("null | path(\(.))");
-
-# <mp4 value> | mp4_lookup(.moov.trak[1])
-def mp4_lookup(p): array_tree_path(.boxes; .type; p);
-
-# <matroska value> | matroska_lookup(.Segment.Tracks[0].TrackEntry[1].CodecID)
-def matroska_lookup(p): array_tree_path(.elements; .id._symbol; p);
-
-def mp4_path($v):
+def path_array_tree(name; $v):
 	[
 	. as $r
 	| $v._path as $p
 	| foreach range(($p | length)/2) as $i (
 		null;
 		null;
-		($r | getpath($p[0:($i+1)*2]).type) as $type
-		| [($r | getpath($p[0:($i+1)*2-1]))[].type][0:$p[($i*2)+1]+1] as $before
+		($r | getpath($p[0:($i+1)*2]) | name) as $name
+		| [($r | getpath($p[0:($i+1)*2-1]))[] | name][0:$p[($i*2)+1]+1] as $before
 		| [
-			$type,
-			($before | map(select(. == $type)) | length)-1
+			$name,
+			($before | map(select(. == $name)) | length)-1
 		]
 	  )
 	| [ ".", .[0],
@@ -66,3 +61,13 @@ def mp4_path($v):
 	]
 	| flatten
 	| join("");
+
+# <mp4 value> | mp4_lookup(".moov.trak[1]")
+def mp4_lookup(p): array_tree_path(.boxes; .type; p);
+# <mp4 value> | mp4_path(<mp4 value>)
+def mp4_path(p): path_array_tree(.type; p);
+
+# <matroska value> | matroska_lookup(".Segment.Tracks[0].TrackEntry[1].CodecID")
+def matroska_lookup(p): array_tree_path(.elements; .id._symbol; p);
+# <matroska value> | matroska_path(<matroska value>)
+def matroska_path(p): path_array_tree(.id._symbol; p);
