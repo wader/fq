@@ -42,7 +42,7 @@ $ file file.png 
 file.png: PNG image data, 320 x 240, 8-bit/color RGB, non-interlaced
  
 <b># Codecs in a mp4 file</b> 
-$ fq file.mp4 '[.. | select(.type == "stsd")?.sample_descriptions[].data_format]' 
+$ fq file.mp4 '[.. | select(.type == "stsd")?.boxes[].type]' 
 [
   "avc1",
   "mp4a"
