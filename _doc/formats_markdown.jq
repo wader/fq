@@ -19,7 +19,7 @@ def nbsp: gsub(" ";"&nbsp;");
       | {
         name: ((.key | code) + " "),
         desc: ((.value.description | nbsp) + " "),
-        uses: "<sub>\((((.value.dependencies | flatten | map(code)) | join(", "))? // ""))</sub>"
+        uses: "<sub>\((((.value.dependencies | flatten | map(code)) | join(" "))? // ""))</sub>"
       }
     ),
     ( [ formats
@@ -33,7 +33,7 @@ def nbsp: gsub(" ";"&nbsp;");
       | {
           name: ((.key | code) + " "),
           desc: "Group",
-          uses: "<sub>\(((.value | map(code)) | join(", ")))</sub>"
+          uses: "<sub>\(((.value | map(code)) | join(" ")))</sub>"
       }
     )
 ]
