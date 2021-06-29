@@ -132,7 +132,8 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 			var i int64
 			d.FieldArrayLoopFn("brands", func() bool { return i < numBrands }, func(d *decode.D) {
 				d.FieldStrFn("brand", func() (string, string) {
-					return strings.TrimSpace(d.UTF8(4)), ""
+					s := strings.TrimSpace(d.UTF8(4))
+					return s, brandDescriptions[s]
 				})
 				i++
 			})
@@ -223,7 +224,37 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 			// TODO: values
 			d.FieldU24("flags")
 			d.FieldUTF8("component_type", 4)
-			subType := d.FieldUTF8("component_subtype", 4)
+			subTypeNames := map[string]string{
+				"alis": "Alias Data",
+				"camm": "Camera Metadata",
+				"crsm": "Clock Reference",
+				"data": "Data",
+				"hint": "Hint Track",
+				"ipsm": "IPMP",
+				"m7sm": "MPEG-7 Stream",
+				"mdir": "Metadata",
+				"mdta": "Metadata Tags",
+				"meta": "NRT Metadata",
+				"mjsm": "MPEG-J",
+				"nrtm": "Non-Real Time Metadata",
+				"ocsm": "Object Content",
+				"odsm": "Object Descriptor",
+				"pict": "Picture",
+				"priv": "Private",
+				"psmd": "Panasonic Static Metadata",
+				"sbtl": "Subtitle",
+				"sdsm": "Scene Description",
+				"soun": "Audio Track",
+				"subp": "Subpicture",
+				"text": "Text",
+				"tmcd": "Time Code",
+				"url":  "URL",
+				"vide": "Video Track",
+			}
+			subType := d.FieldStrFn("component_subtype", func() (string, string) {
+				s := strings.TrimSpace(d.UTF8(4))
+				return s, subTypeNames[s]
+			})
 			d.FieldUTF8("component_manufacturer", 4)
 			d.FieldU32("component_flags")
 			d.FieldU32("component_flags_mask")

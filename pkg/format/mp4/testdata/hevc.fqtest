@@ -9,9 +9,9 @@
 0x0000|                        69 73 6f 6d            |        isom    |      major_brand: "isom" 0x8-0xb.7 (4)
 0x0000|                                    00 00 02 00|            ....|      minor_version: 512 0xc-0xf.7 (4)
       |                                               |                |      brands: [3] 0x10-0x1b.7 (12)
-0x0010|69 73 6f 6d                                    |isom            |        [0]: brand "isom" 0x10-0x13.7 (4)
-0x0010|            69 73 6f 32                        |    iso2        |        [1]: brand "iso2" 0x14-0x17.7 (4)
-0x0010|                        6d 70 34 31            |        mp41    |        [2]: brand "mp41" 0x18-0x1b.7 (4)
+0x0010|69 73 6f 6d                                    |isom            |        [0]: brand "isom" (All files based on the ISO Base Media File Format) 0x10-0x13.7 (4)
+0x0010|            69 73 6f 32                        |    iso2        |        [1]: brand "iso2" (All files based on the 2004 edition of the ISO file format) 0x14-0x17.7 (4)
+0x0010|                        6d 70 34 31            |        mp41    |        [2]: brand "mp41" (MP4 version 1) 0x18-0x1b.7 (4)
       |                                               |                |    [1]: box {} 0x1c-0x23.7 (8)
 0x0010|                                    00 00 00 08|            ....|      size: 8 0x1c-0x1f.7 (4)
 0x0020|66 72 65 65                                    |free            |      type: "free" (Free space) 0x20-0x23.7 (4)
@@ -122,7 +122,7 @@
 0x09a0|                                          00 00|              ..|                  flags: 0 0x9ae-0x9b0.7 (3)
 0x09b0|00                                             |.               |
 0x09b0|   00 00 00 00                                 | ....           |                  component_type: "\x00\x00\x00\x00" 0x9b1-0x9b4.7 (4)
-0x09b0|               76 69 64 65                     |     vide       |                  component_subtype: "vide" 0x9b5-0x9b8.7 (4)
+0x09b0|               76 69 64 65                     |     vide       |                  component_subtype: "vide" (Video Track) 0x9b5-0x9b8.7 (4)
 0x09b0|                           00 00 00 00         |         ....   |                  component_manufacturer: "\x00\x00\x00\x00" 0x9b9-0x9bc.7 (4)
 0x09b0|                                       00 00 00|             ...|                  component_flags: 0 0x9bd-0x9c0.7 (4)
 0x09c0|00                                             |.               |
@@ -354,7 +354,7 @@
 0x1450|               00                              |     .          |                  version: 0 0x1455-0x1455.7 (1)
 0x1450|                  00 00 00                     |      ...       |                  flags: 0 0x1456-0x1458.7 (3)
 0x1450|                           00 00 00 00         |         ....   |                  component_type: "\x00\x00\x00\x00" 0x1459-0x145c.7 (4)
-0x1450|                                       6d 64 69|             mdi|                  component_subtype: "mdir" 0x145d-0x1460.7 (4)
+0x1450|                                       6d 64 69|             mdi|                  component_subtype: "mdir" (Metadata) 0x145d-0x1460.7 (4)
 0x1460|72                                             |r               |
 0x1460|   61 70 70 6c                                 | appl           |                  component_manufacturer: "appl" 0x1461-0x1464.7 (4)
 0x1460|               00 00 00 00                     |     ....       |                  component_flags: 0 0x1465-0x1468.7 (4)

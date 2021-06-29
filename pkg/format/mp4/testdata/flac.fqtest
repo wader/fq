@@ -9,9 +9,9 @@
 0x000|                        69 73 6f 6d            |        isom    |      major_brand: "isom" 0x8-0xb.7 (4)
 0x000|                                    00 00 02 00|            ....|      minor_version: 512 0xc-0xf.7 (4)
      |                                               |                |      brands: [3] 0x10-0x1b.7 (12)
-0x010|69 73 6f 6d                                    |isom            |        [0]: brand "isom" 0x10-0x13.7 (4)
-0x010|            69 73 6f 32                        |    iso2        |        [1]: brand "iso2" 0x14-0x17.7 (4)
-0x010|                        6d 70 34 31            |        mp41    |        [2]: brand "mp41" 0x18-0x1b.7 (4)
+0x010|69 73 6f 6d                                    |isom            |        [0]: brand "isom" (All files based on the ISO Base Media File Format) 0x10-0x13.7 (4)
+0x010|            69 73 6f 32                        |    iso2        |        [1]: brand "iso2" (All files based on the 2004 edition of the ISO file format) 0x14-0x17.7 (4)
+0x010|                        6d 70 34 31            |        mp41    |        [2]: brand "mp41" (MP4 version 1) 0x18-0x1b.7 (4)
      |                                               |                |    [1]: box {} 0x1c-0x23.7 (8)
 0x010|                                    00 00 00 08|            ....|      size: 8 0x1c-0x1f.7 (4)
 0x020|66 72 65 65                                    |free            |      type: "free" (Free space) 0x20-0x23.7 (4)
@@ -121,7 +121,7 @@
 0x3b0|                  00                           |      .         |                  version: 0 0x3b6-0x3b6.7 (1)
 0x3b0|                     00 00 00                  |       ...      |                  flags: 0 0x3b7-0x3b9.7 (3)
 0x3b0|                              00 00 00 00      |          ....  |                  component_type: "\x00\x00\x00\x00" 0x3ba-0x3bd.7 (4)
-0x3b0|                                          73 6f|              so|                  component_subtype: "soun" 0x3be-0x3c1.7 (4)
+0x3b0|                                          73 6f|              so|                  component_subtype: "soun" (Audio Track) 0x3be-0x3c1.7 (4)
 0x3c0|75 6e                                          |un              |
 0x3c0|      00 00 00 00                              |  ....          |                  component_manufacturer: "\x00\x00\x00\x00" 0x3c2-0x3c5.7 (4)
 0x3c0|                  00 00 00 00                  |      ....      |                  component_flags: 0 0x3c6-0x3c9.7 (4)
@@ -266,7 +266,7 @@
 0x4f0|                                          00 00|              ..|                  flags: 0 0x4fe-0x500.7 (3)
 0x500|00                                             |.               |
 0x500|   00 00 00 00                                 | ....           |                  component_type: "\x00\x00\x00\x00" 0x501-0x504.7 (4)
-0x500|               6d 64 69 72                     |     mdir       |                  component_subtype: "mdir" 0x505-0x508.7 (4)
+0x500|               6d 64 69 72                     |     mdir       |                  component_subtype: "mdir" (Metadata) 0x505-0x508.7 (4)
 0x500|                           61 70 70 6c         |         appl   |                  component_manufacturer: "appl" 0x509-0x50c.7 (4)
 0x500|                                       00 00 00|             ...|                  component_flags: 0 0x50d-0x510.7 (4)
 0x510|00                                             |.               |
