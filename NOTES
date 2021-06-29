@@ -1,4 +1,6 @@
 
+pager (use $PAGER) in REPL? "... | less" ? but how? 
+
 stsd boxes children mp4a box?
 
 move mp4_lookup to mp4.go/mp4.jq
