@@ -11,6 +11,7 @@ package matroska
 // TODO: value to names (TrackType etc)
 // TODO: lacing
 // TODO: handle garbage (see tcl and example files)
+// TODO: could use md5 here somehow, see flac.go
 
 import (
 	"fmt"
@@ -28,17 +29,19 @@ var flacFrameFormat []*decode.Format
 var flacMetadatablockFormat []*decode.Format
 var mp3FrameFormat []*decode.Format
 var mpegASCFrameFormat []*decode.Format
-var mpegAVCDCRFormat []*decode.Format
 var mpegAVCAUFormat []*decode.Format
+var mpegAVCDCRFormat []*decode.Format
 var mpegHEVCDCRFormat []*decode.Format
 var mpegHEVCSampleFormat []*decode.Format
-var mpegSPUFrameFormat []*decode.Format
 var mpegPESPacketSampleFormat []*decode.Format
+var mpegSPUFrameFormat []*decode.Format
 var opusPacketFrameFormat []*decode.Format
 var vorbisPacketFormat []*decode.Format
 var vp8FrameFormat []*decode.Format
-var vp9FrameFormat []*decode.Format
 var vp9CFMFormat []*decode.Format
+var vp9FrameFormat []*decode.Format
+
+var codecToFormat map[string]*[]*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -47,26 +50,42 @@ func init() {
 		Groups:      []string{format.PROBE},
 		DecodeFn:    matroskaDecode,
 		Dependencies: []decode.Dependency{
+			{Names: []string{format.AAC_FRAME}, Formats: &aacFrameFormat},
 			{Names: []string{format.AV1_CCR}, Formats: &av1CCRFormat},
 			{Names: []string{format.AV1_FRAME}, Formats: &av1FrameFormat},
 			{Names: []string{format.FLAC_FRAME}, Formats: &flacFrameFormat},
 			{Names: []string{format.FLAC_METADATABLOCK}, Formats: &flacMetadatablockFormat},
 			{Names: []string{format.MP3_FRAME}, Formats: &mp3FrameFormat},
-			{Names: []string{format.AAC_FRAME}, Formats: &aacFrameFormat},
 			{Names: []string{format.MPEG_ASC}, Formats: &mpegASCFrameFormat},
-			{Names: []string{format.MPEG_AVC_DCR}, Formats: &mpegAVCDCRFormat},
 			{Names: []string{format.MPEG_AVC_AU}, Formats: &mpegAVCAUFormat},
-			{Names: []string{format.MPEG_HEVC_DCR}, Formats: &mpegHEVCDCRFormat},
+			{Names: []string{format.MPEG_AVC_DCR}, Formats: &mpegAVCDCRFormat},
 			{Names: []string{format.MPEG_HEVC_AU}, Formats: &mpegHEVCSampleFormat},
-			{Names: []string{format.MPEG_SPU}, Formats: &mpegSPUFrameFormat},
+			{Names: []string{format.MPEG_HEVC_DCR}, Formats: &mpegHEVCDCRFormat},
 			{Names: []string{format.MPEG_PES_PACKET}, Formats: &mpegPESPacketSampleFormat},
+			{Names: []string{format.MPEG_SPU}, Formats: &mpegSPUFrameFormat},
 			{Names: []string{format.OPUS_PACKET}, Formats: &opusPacketFrameFormat},
 			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
 			{Names: []string{format.VP8_FRAME}, Formats: &vp8FrameFormat},
-			{Names: []string{format.VP9_FRAME}, Formats: &vp9FrameFormat},
 			{Names: []string{format.VP9_CFM}, Formats: &vp9CFMFormat},
+			{Names: []string{format.VP9_FRAME}, Formats: &vp9FrameFormat},
 		},
 	})
+
+	codecToFormat = map[string]*[]*decode.Format{
+		"A_VORBIS":         &vorbisPacketFormat,
+		"A_MPEG/L3":        &mp3FrameFormat,
+		"A_FLAC":           &flacFrameFormat,
+		"A_AAC":            &aacFrameFormat,
+		"A_OPUS":           &opusPacketFrameFormat,
+		"V_VP8":            &vp8FrameFormat,
+		"V_VP9":            &vp9FrameFormat,
+		"V_AV1":            &av1FrameFormat,
+		"V_VOBSUB":         &mpegSPUFrameFormat,
+		"V_MPEG4/ISO/AVC":  &mpegAVCAUFormat,
+		"V_MPEGH/ISO/HEVC": &mpegHEVCSampleFormat,
+		"V_MPEG2":          &mpegPESPacketSampleFormat,
+		"S_VOBSUB":         &mpegSPUFrameFormat,
+	}
 }
 
 // TODO: smarter?
@@ -108,16 +127,16 @@ type track struct {
 	decodeOpts          []decode.Options
 }
 
-type simpleBlock struct {
-	d *decode.D
-	r ranges.Range
+type block struct {
+	d      *decode.D
+	r      ranges.Range
+	simple bool
 }
 
 type decodeContext struct {
 	currentTrack *track
 	tracks       []*track
-	simpleBlocks []simpleBlock
-	blocks       []simpleBlock
+	blocks       []block
 }
 
 func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext) {
@@ -233,13 +252,14 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 				case ebml.Binary:
 					switch tagID {
 					case ebml_matroska.SimpleBlockID:
-						dc.simpleBlocks = append(dc.simpleBlocks, simpleBlock{
-							d: d,
-							r: ranges.Range{Start: d.Pos(), Len: int64(tagSize) * 8},
+						dc.blocks = append(dc.blocks, block{
+							d:      d,
+							r:      ranges.Range{Start: d.Pos(), Len: int64(tagSize) * 8},
+							simple: true,
 						})
 						d.SeekRel(int64(tagSize) * 8)
 					case ebml_matroska.BlockID:
-						dc.blocks = append(dc.blocks, simpleBlock{
+						dc.blocks = append(dc.blocks, block{
 							d: d,
 							r: ranges.Range{Start: d.Pos(), Len: int64(tagSize) * 8},
 						})
@@ -377,91 +397,38 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 		}
 	}
 
-	for _, s := range dc.simpleBlocks {
-		s.d.DecodeRangeFn(s.r.Start, s.r.Len, func(d *decode.D) {
+	for _, b := range dc.blocks {
+		b.d.DecodeRangeFn(b.r.Start, b.r.Len, func(d *decode.D) {
 			trackNumber := fieldDecodeVint(d, "track_number", decode.NumberDecimal)
 			d.FieldU16("timestamp")
-			d.FieldStructFn("flags", func(d *decode.D) {
-				d.FieldBool("key_frame")
-				d.FieldU3("reserved")
-				d.FieldBool("invisible")
-				d.FieldU2("lacing")
-				d.FieldBool("discardable")
-			})
+			if b.simple {
+				d.FieldStructFn("flags", func(d *decode.D) {
+					d.FieldBool("key_frame")
+					d.FieldU3("reserved")
+					d.FieldBool("invisible")
+					d.FieldU2("lacing")
+					d.FieldBool("discardable")
+				})
+			} else {
+				d.FieldStructFn("flags", func(d *decode.D) {
+					d.FieldU4("reserved")
+					d.FieldBool("invisible")
+					d.FieldU2("lacing")
+					d.FieldBool("not_used")
+				})
+			}
 			// TODO: lacing etc
 
-			codec := ""
-			var decodeOpts []decode.Options
-			t := trackNumberToTrack[int(trackNumber)]
-			if t != nil {
-				codec = t.codec
-				decodeOpts = t.decodeOpts
+			// TODO: fixed/unknown?
+			if t, ok := trackNumberToTrack[int(trackNumber)]; ok {
+				if f, ok := codecToFormat[t.codec]; ok {
+					d.FieldDecode("packet", *f, t.decodeOpts...)
+				}
 			}
 
-			switch codec {
-			case "A_VORBIS":
-				d.FieldDecodeLen("packet", d.BitsLeft(), vorbisPacketFormat)
-			case "A_MPEG/L3":
-				d.FieldDecodeLen("packet", d.BitsLeft(), mp3FrameFormat)
-			case "A_FLAC":
-				d.FieldDecodeLen("packet", d.BitsLeft(), flacFrameFormat, decodeOpts...)
-				// TODO: could use md5 here somehow, see flac.go
-			case "V_VP8":
-				d.FieldDecodeLen("packet", d.BitsLeft(), vp8FrameFormat)
-			case "V_VP9":
-				d.FieldDecodeLen("packet", d.BitsLeft(), vp9FrameFormat)
-			case "V_AV1":
-				d.FieldDecodeLen("packet", d.BitsLeft(), av1FrameFormat)
-			case "V_VOBSUB":
-				d.FieldDecodeLen("packet", d.BitsLeft(), mpegSPUFrameFormat)
-			case "V_MPEG4/ISO/AVC":
-				d.FieldDecodeLen("packet", d.BitsLeft(), mpegAVCAUFormat, decodeOpts...)
-			case "V_MPEGH/ISO/HEVC":
-				d.FieldDecodeLen("packet", d.BitsLeft(), mpegHEVCSampleFormat, decodeOpts...)
-			case "V_MPEG2":
-				// TODO: many samples? maybe should be in es decoder etc?
-				d.FieldDecodeLen("packet", d.BitsLeft(), mpegPESPacketSampleFormat, decodeOpts...)
-			case "A_AAC":
-				d.FieldDecodeLen("packet", d.BitsLeft(), aacFrameFormat)
-			case "A_OPUS":
-				d.FieldDecodeLen("packet", d.BitsLeft(), opusPacketFrameFormat)
-			default:
+			if d.BitsLeft() > 0 {
 				d.FieldBitBufLen("data", d.BitsLeft())
 			}
-
-		})
-	}
-
-	for _, s := range dc.blocks {
-		s.d.DecodeRangeFn(s.r.Start, s.r.Len, func(d *decode.D) {
-			trackNumber := fieldDecodeVint(d, "track_number", decode.NumberDecimal)
-			d.FieldU16("timestamp")
-			d.FieldStructFn("flags", func(d *decode.D) {
-				d.FieldU4("reserved")
-				d.FieldBool("invisible")
-				d.FieldU2("lacing")
-				d.FieldBool("not_used")
-			})
-
-			codec := ""
-			t := trackNumberToTrack[int(trackNumber)]
-			if t != nil {
-				codec = t.codec
-			}
-
-			switch codec {
-			case "S_VOBSUB":
-				d.FieldDecodeLen("packet", d.BitsLeft(), mpegSPUFrameFormat)
-			case "A_OPUS":
-				d.FieldDecodeLen("packet", d.BitsLeft(), opusPacketFrameFormat)
-			case "A_MPEG/L3":
-				d.FieldDecodeLen("packet", d.BitsLeft(), mp3FrameFormat)
-			case "V_AV1":
-				d.FieldDecodeLen("packet", d.BitsLeft(), av1FrameFormat)
-			default:
-				d.FieldBitBufLen("data", d.BitsLeft())
-			}
-
 		})
 	}
 

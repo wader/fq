@@ -317,7 +317,7 @@
 0x0f00|                     e7                        |       .        |              id: Timestamp (0xe7) 0xf07-0xf07.7 (1)
 0x0f00|                        81                     |        .       |              size: 1 0xf08-0xf08.7 (1)
 0x0f00|                           00                  |         .      |              value: 0 0xf09-0xf09.7 (1)
-      |                                               |                |            [2]: element {} 0xf0a-0xf11.7 (8)
+      |                                               |                |            [2]: element {} 0xf0a-0xfc6.7 (189)
 0x0f00|                              a3               |          .     |              id: SimpleBlock (0xa3) 0xf0a-0xf0a.7 (1)
 0x0f00|                                 40 ba         |           @.   |              size: 186 0xf0b-0xf0c.7 (2)
 0x0f00|                                       81      |             .  |              track_number: 1 0xf0d-0xf0d.7 (1)
@@ -330,7 +330,10 @@
 0x0f10|80                                             |.               |                discardable: false 0xf10.7-0xf10.7 (0.1)
       |                                               |                |              packet: {} (vorbis_packet) 0xf11-0xf11.7 (1)
 0x0f10|   be                                          | .              |                packet_type: Audio (0) 0xf11-0xf11.7 (1)
-      |                                               |                |            [3]: element {} 0xfc7-0xfcd.7 (7)
+0x0f10|      b7 f2 81 46 74 15 42 0b 52 08 17 32 8e 43|  ...Ft.B.R..2.C|              data: b7f281467415420b520817328e430865... 0xf12-0xfc6.7 (181)
+0x0f20|08 65 84 84 f6 56 3e d0 88 ae 42 68 41 0a e1 42|.e...V>...BhA..B|
+*     |until 0xfc6.7 (181)                            |                |
+      |                                               |                |            [3]: element {} 0xfc7-0x1018.7 (82)
 0x0fc0|                     a3                        |       .        |              id: SimpleBlock (0xa3) 0xfc7-0xfc7.7 (1)
 0x0fc0|                        d0                     |        .       |              size: 80 0xfc8-0xfc8.7 (1)
 0x0fc0|                           81                  |         .      |              track_number: 1 0xfc9-0xfc9.7 (1)
@@ -343,6 +346,9 @@
 0x0fc0|                                    80         |            .   |                discardable: false 0xfcc.7-0xfcc.7 (0.1)
       |                                               |                |              packet: {} (vorbis_packet) 0xfcd-0xfcd.7 (1)
 0x0fc0|                                       be      |             .  |                packet_type: Audio (0) 0xfcd-0xfcd.7 (1)
+0x0fc0|                                          13 a2|              ..|              data: 13a29b060ab6ff1310ff2562ec8fd9f7... 0xfce-0x1018.7 (75)
+0x0fd0|9b 06 0a b6 ff 13 10 ff 25 62 ec 8f d9 f7 a2 11|........%b......|
+*     |until 0x1018.7 (75)                            |                |
       |                                               |                |            [4]: element {} 0x1019-0x10de.7 (198)
 0x1010|                           a0                  |         .      |              id: BlockGroup (0xa0) 0x1019-0x1019.7 (1)
 0x1010|                              01 00 00 00 00 00|          ......|              size: 189 0x101a-0x1021.7 (8)
@@ -358,9 +364,11 @@
 0x1020|                        00                     |        .       |                    invisible: false 0x1028.4-0x1028.4 (0.1)
 0x1020|                        00                     |        .       |                    lacing: 0 0x1028.5-0x1028.6 (0.2)
 0x1020|                        00                     |        .       |                    not_used: false 0x1028.7-0x1028.7 (0.1)
-0x1020|                           be a7 f2 81 46 bb c2|         ....F..|                  data: bea7f28146bbc248520827b88310ca08... 0x1029-0x10d7.7 (175)
+      |                                               |                |                  packet: {} (vorbis_packet) 0x1029-0x1029.7 (1)
+0x1020|                           be                  |         .      |                    packet_type: Audio (0) 0x1029-0x1029.7 (1)
+0x1020|                              a7 f2 81 46 bb c2|          ...F..|                  data: a7f28146bbc248520827b88310ca08b1... 0x102a-0x10d7.7 (174)
 0x1030|48 52 08 27 b8 83 10 ca 08 b1 a7 f2 81 46 bb c2|HR.'.........F..|
-*     |until 0x10d7.7 (175)                           |                |
+*     |until 0x10d7.7 (174)                           |                |
       |                                               |                |                [1]: element {} 0x10d8-0x10de.7 (7)
 0x10d0|                        75 a2                  |        u.      |                  id: DiscardPadding (0x75a2) 0x10d8-0x10d9.7 (2)
 0x10d0|                              84               |          .     |                  size: 4 0x10da-0x10da.7 (1)
@@ -401,9 +409,3 @@
 0x01b0|                     84 74 9a 59 aa 01 22 cc 40|       .t.Y..".@|  unknown0: 84749a59aa0122cc408681d090950000... 0x1b7-0xe55.7 (3231)
 0x01c0|86 81 d0 90 95 00 00 02 00 00 60 84 22 0c 31 20|..........`.".1 |
 *     |until 0xe55.7 (3231)                           |                |
-0x0f10|      b7 f2 81 46 74 15 42 0b 52 08 17 32 8e 43|  ...Ft.B.R..2.C|  unknown1: b7f281467415420b520817328e430865... 0xf12-0xfc6.7 (181)
-0x0f20|08 65 84 84 f6 56 3e d0 88 ae 42 68 41 0a e1 42|.e...V>...BhA..B|
-*     |until 0xfc6.7 (181)                            |                |
-0x0fc0|                                          13 a2|              ..|  unknown2: 13a29b060ab6ff1310ff2562ec8fd9f7... 0xfce-0x1018.7 (75)
-0x0fd0|9b 06 0a b6 ff 13 10 ff 25 62 ec 8f d9 f7 a2 11|........%b......|
-*     |until 0x1018.7 (75)                            |                |
