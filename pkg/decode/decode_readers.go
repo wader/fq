@@ -15,6 +15,26 @@ func (d *D) TryUTF8(nBytes int) (string, error) {
 	return string(s), nil
 }
 
+// TryUTF8ShortString read pascal short string, max nBytes
+func (d *D) TryUTF8ShortString(nBytes int) (string, error) {
+	l, err := d.TryU8()
+	if err != nil {
+		return "", err
+	}
+
+	n := int(l)
+	if nBytes != -1 {
+		n = nBytes - 1
+	}
+
+	s, err := d.bitBuf.BytesLen(int(n))
+	if err != nil {
+		return "", err
+	}
+
+	return string(s[0:l]), nil
+}
+
 // PeekBits peek nBits bits from buffer
 // TODO: share code?
 func (d *D) TryPeekBits(nBits int) (uint64, error) {
@@ -203,6 +223,17 @@ func (d *D) FieldUTF8(name string, nBytes int) string {
 		str, err := d.TryUTF8(nBytes)
 		if err != nil {
 			panic(ReadError{Err: err, Name: name, Op: "FieldUTF8", Size: int64(nBytes) * 8, Pos: d.Pos()})
+		}
+		return str, ""
+	})
+}
+
+// FieldUTF8ShortString read nBytes utf8 pascal short string and add a field
+func (d *D) FieldUTF8ShortString(name string, nBytes int) string {
+	return d.FieldStrFn(name, func() (string, string) {
+		str, err := d.TryUTF8ShortString(nBytes)
+		if err != nil {
+			panic(ReadError{Err: err, Name: name, Op: "FieldUTF8ShortString", Size: int64(nBytes) * 8, Pos: d.Pos()})
 		}
 		return str, ""
 	})

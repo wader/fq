@@ -176,7 +176,7 @@
 0x0cc0|   00 48 00 00                                 | .H..           |                              vertical_resolution: 72 0xcc1-0xcc4.7 (4)
 0x0cc0|               00 00 00 00                     |     ....       |                              data_size: 0 0xcc5-0xcc8.7 (4)
 0x0cc0|                           00 01               |         ..     |                              frame_count: 1 0xcc9-0xcca.7 (2)
-0x0cc0|                                 00 00 00 00 00|           .....|                              compression_name: "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" 0xccb-0xcea.7 (32)
+0x0cc0|                                 00 00 00 00 00|           .....|                              compressor_name: "" 0xccb-0xcea.7 (32)
 0x0cd0|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
 0x0ce0|00 00 00 00 00 00 00 00 00 00 00               |...........     |
 0x0ce0|                                 00 18         |           ..   |                              depth: 24 0xceb-0xcec.7 (2)

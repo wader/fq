@@ -396,7 +396,7 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 									d.FieldFP32("vertical_resolution")
 									d.FieldU32("data_size")
 									d.FieldU16("frame_count")
-									d.FieldUTF8("compression_name", 32)
+									d.FieldUTF8ShortString("compressor_name", 32)
 									d.FieldU16("depth")
 									d.FieldS16("color_table_id")
 									// TODO: if 0 decode ctab
