@@ -191,11 +191,11 @@ To add own functions you can use `init.fq` that will be read from
 |`id3v11`             |ID3v1.1&nbsp;metadata                                         |<sub></sub>|
 |`id3v2`              |ID3v2&nbsp;metadata                                           |<sub>`image`</sub>|
 |`jpeg`               |Joint&nbsp;Photographic&nbsp;Experts&nbsp;Group&nbsp;file     |<sub>`exif` `icc_profile`</sub>|
-|`matroska`           |Matroska&nbsp;file                                            |<sub>`av1_ccr` `av1_frame` `flac_frame` `flac_metadatablock` `mp3_frame` `aac_frame` `mpeg_asc` `avc_dcr` `avc_au` `hevc_dcr` `hevc_au` `mpeg_spu` `mpeg_pes_packet` `opus_packet` `vorbis_packet` `vp8_frame` `vp9_frame` `vp9_cfm`</sub>|
+|`matroska`           |Matroska&nbsp;file                                            |<sub>`aac_frame` `av1_ccr` `av1_frame` `flac_frame` `flac_metadatablock` `mp3_frame` `mpeg_asc` `avc_au` `avc_dcr` `hevc_au` `hevc_dcr` `mpeg_pes_packet` `mpeg_spu` `opus_packet` `vorbis_packet` `vp8_frame` `vp9_cfm` `vp9_frame`</sub>|
 |`mp3`                |MP3&nbsp;file                                                 |<sub>`id3v2` `id3v1` `id3v11` `apev2` `mp3_frame`</sub>|
 |`mp3_frame`          |MPEG&nbsp;audio&nbsp;layer&nbsp;3&nbsp;frame                  |<sub>`mp3_xing`</sub>|
 |`mp3_xing`           |Xing&nbsp;header                                              |<sub></sub>|
-|`mp4`                |MPEG-4&nbsp;file&nbsp;and&nbsp;similar                        |<sub>`av1_ccr` `av1_frame` `flac_frame` `flac_metadatablock` `mp3_frame` `aac_frame` `avc_dcr` `avc_au` `mpeg_es` `hevc_dcr` `hevc_au` `mpeg_pes_packet` `opus_packet` `vorbis_packet` `vp9_frame` `vpx_ccr` `jpeg` `id3v2` `protobuf_widevine` `image`</sub>|
+|`mp4`                |MPEG-4&nbsp;file&nbsp;and&nbsp;similar                        |<sub>`aac_frame` `av1_ccr` `av1_frame` `flac_frame` `flac_metadatablock` `id3v2` `image` `jpeg` `mp3_frame` `avc_au` `avc_dcr` `mpeg_es` `hevc_au` `hevc_dcr` `mpeg_pes_packet` `opus_packet` `protobuf_widevine` `vorbis_packet` `vp9_frame` `vpx_ccr`</sub>|
 |`mpeg_asc`           |MPEG-4&nbsp;Audio&nbsp;Specific&nbsp;Config                   |<sub></sub>|
 |`mpeg_es`            |MPEG&nbsp;Elementary&nbsp;Stream                              |<sub>`mpeg_asc` `vorbis_packet`</sub>|
 |`mpeg_pes`           |MPEG&nbsp;Packetized&nbsp;elementary&nbsp;stream              |<sub>`mpeg_pes_packet` `mpeg_spu`</sub>|

@@ -29,21 +29,21 @@ var av1CCRFormat []*decode.Format
 var av1FrameFormat []*decode.Format
 var flacFrameFormat []*decode.Format
 var flacMetadatablockFormat []*decode.Format
+var id3v2Format []*decode.Format
+var imageFormat []*decode.Format
+var jpegFormat []*decode.Format
 var mp3FrameFormat []*decode.Format
-var mpegAVCDCRFormat []*decode.Format
 var mpegAVCAUFormat []*decode.Format
+var mpegAVCDCRFormat []*decode.Format
 var mpegESFormat []*decode.Format
 var mpegHEVCDCRFrameFormat []*decode.Format
 var mpegHEVCSampleFormat []*decode.Format
 var mpegPESPacketSampleFormat []*decode.Format
 var opusPacketFrameFormat []*decode.Format
+var protoBufWidevineFormat []*decode.Format
 var vorbisPacketFormat []*decode.Format
 var vp9FrameFormat []*decode.Format
 var vpxCCRFormat []*decode.Format
-var jpegFormat []*decode.Format
-var id3v2Format []*decode.Format
-var protoBufWidevineFormat []*decode.Format
-var imageFormat []*decode.Format
 
 func init() {
 	format.MustRegister(&decode.Format{
@@ -52,26 +52,26 @@ func init() {
 		Groups:      []string{format.PROBE},
 		DecodeFn:    mp4Decode,
 		Dependencies: []decode.Dependency{
+			{Names: []string{format.AAC_FRAME}, Formats: &aacFrameFormat},
 			{Names: []string{format.AV1_CCR}, Formats: &av1CCRFormat},
 			{Names: []string{format.AV1_FRAME}, Formats: &av1FrameFormat},
 			{Names: []string{format.FLAC_FRAME}, Formats: &flacFrameFormat},
 			{Names: []string{format.FLAC_METADATABLOCK}, Formats: &flacMetadatablockFormat},
+			{Names: []string{format.ID3V2}, Formats: &id3v2Format},
+			{Names: []string{format.IMAGE}, Formats: &imageFormat},
+			{Names: []string{format.JPEG}, Formats: &jpegFormat},
 			{Names: []string{format.MP3_FRAME}, Formats: &mp3FrameFormat},
-			{Names: []string{format.AAC_FRAME}, Formats: &aacFrameFormat},
-			{Names: []string{format.MPEG_AVC_DCR}, Formats: &mpegAVCDCRFormat},
 			{Names: []string{format.MPEG_AVC_AU}, Formats: &mpegAVCAUFormat},
+			{Names: []string{format.MPEG_AVC_DCR}, Formats: &mpegAVCDCRFormat},
 			{Names: []string{format.MPEG_ES}, Formats: &mpegESFormat},
-			{Names: []string{format.MPEG_HEVC_DCR}, Formats: &mpegHEVCDCRFrameFormat},
 			{Names: []string{format.MPEG_HEVC_AU}, Formats: &mpegHEVCSampleFormat},
+			{Names: []string{format.MPEG_HEVC_DCR}, Formats: &mpegHEVCDCRFrameFormat},
 			{Names: []string{format.MPEG_PES_PACKET}, Formats: &mpegPESPacketSampleFormat},
 			{Names: []string{format.OPUS_PACKET}, Formats: &opusPacketFrameFormat},
+			{Names: []string{format.PROTOBUF_WIDEVINE}, Formats: &protoBufWidevineFormat},
 			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
 			{Names: []string{format.VP9_FRAME}, Formats: &vp9FrameFormat},
 			{Names: []string{format.VPX_CCR}, Formats: &vpxCCRFormat},
-			{Names: []string{format.JPEG}, Formats: &jpegFormat},
-			{Names: []string{format.ID3V2}, Formats: &id3v2Format},
-			{Names: []string{format.PROTOBUF_WIDEVINE}, Formats: &protoBufWidevineFormat},
-			{Names: []string{format.IMAGE}, Formats: &imageFormat},
 		},
 	})
 }
