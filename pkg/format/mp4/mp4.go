@@ -118,8 +118,23 @@ func isParent(ctx *decodeContext, typ string) bool {
 	return len(ctx.path) >= 2 && ctx.path[len(ctx.path)-2] == typ
 }
 
-func decodeBox(ctx *decodeContext, d *decode.D) {
+func decodeFieldLang(d *decode.D, name string) string {
+	return d.FieldStrFn(name, func() (string, string) {
+		return decodeLang(d), ""
+	})
+}
 
+// ISO 639-2/T language code 3 * 5bit packed uint + 1 zero bit
+func decodeLang(d *decode.D) string {
+	d.U1()
+	return string([]byte{
+		byte(d.U5()) + 0x60,
+		byte(d.U5()) + 0x60,
+		byte(d.U5()) + 0x60},
+	)
+}
+
+func decodeBox(ctx *decodeContext, d *decode.D) {
 	aliases := map[string]string{
 		"styp": "ftyp",
 	}
@@ -215,7 +230,7 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 			d.FieldU32("modification_time")
 			d.FieldU32("time_scale")
 			d.FieldU32("duration")
-			d.FieldU16("language")
+			decodeFieldLang(d, "language")
 			d.FieldU16("quality")
 		},
 
