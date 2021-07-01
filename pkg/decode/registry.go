@@ -3,6 +3,7 @@ package decode
 import (
 	"errors"
 	"fmt"
+	"sort"
 	"sync"
 )
 
@@ -28,8 +29,7 @@ func (r *Registry) register(groupName string, format *Format, single bool) *Form
 		formats = []*Format{}
 	}
 
-	// prepend to allow override
-	r.Groups[groupName] = append([]*Format{format}, formats...)
+	r.Groups[groupName] = append(formats, format)
 
 	return format
 }
@@ -50,6 +50,15 @@ func (r *Registry) resolve() error {
 				*d.Formats = formats
 			}
 		}
+	}
+
+	for _, fs := range r.Groups {
+		sort.Slice(fs, func(i, j int) bool {
+			if fs[i].ProbeWeight == fs[j].ProbeWeight {
+				return fs[i].Name < fs[j].Name
+			}
+			return fs[i].ProbeWeight < fs[j].ProbeWeight
+		})
 	}
 
 	return nil

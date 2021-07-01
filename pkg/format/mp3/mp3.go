@@ -16,6 +16,7 @@ var mp3Frame []*decode.Format
 func init() {
 	format.MustRegister(&decode.Format{
 		Name:        format.MP3,
+		ProbeWeight: 10, // after most others
 		Description: "MP3 file",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    mp3Decode,

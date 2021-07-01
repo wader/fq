@@ -365,8 +365,9 @@ func (i *Interp) formats(c interface{}, a []interface{}) interface{} {
 	vs := map[string]interface{}{}
 	for _, f := range allFormats {
 		vf := map[string]interface{}{
-			"name":        f.Name,
-			"description": f.Description,
+			"name":         f.Name,
+			"description":  f.Description,
+			"probe_weight": f.ProbeWeight,
 		}
 
 		var dependenciesVs []interface{}
