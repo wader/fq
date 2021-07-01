@@ -1,9 +1,9 @@
 package main
 
 import (
+	"fq/format"
+	_ "fq/format/all"
 	"fq/pkg/cli"
-	"fq/pkg/format"
-	_ "fq/pkg/format/all"
 )
 
 var Version = "dev"

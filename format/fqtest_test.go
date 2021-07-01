@@ -1,4 +1,4 @@
-package interp_test
+package format_test
 
 import (
 	_ "fq/format/all"

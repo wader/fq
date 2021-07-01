@@ -1,0 +1,32 @@
+package all
+
+import (
+	//_ "fq/format/flv"
+
+	_ "fq/format/ape"
+	_ "fq/format/av1"
+	_ "fq/format/bzip2"
+	_ "fq/format/dns"
+	_ "fq/format/elf"
+	_ "fq/format/flac"
+	_ "fq/format/gif"
+	_ "fq/format/gzip"
+	_ "fq/format/icc"
+	_ "fq/format/id3"
+	_ "fq/format/jpeg"
+	_ "fq/format/matroska"
+	_ "fq/format/mp3"
+	_ "fq/format/mp4"
+	_ "fq/format/mpeg"
+	_ "fq/format/ogg"
+	_ "fq/format/opus"
+	_ "fq/format/png"
+	_ "fq/format/protobuf"
+	_ "fq/format/raw"
+	_ "fq/format/tar"
+	_ "fq/format/tiff"
+	_ "fq/format/vorbis"
+	_ "fq/format/vpx"
+	_ "fq/format/wav"
+	_ "fq/format/webp"
+)
