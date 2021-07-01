@@ -113,7 +113,7 @@
 0x2a0|                                             00|               .|                  time_scale: 48000 0x2af-0x2b2.7 (4)
 0x2b0|00 bb 80                                       |...             |
 0x2b0|         00 00 09 d8                           |   ....         |                  duration: 2520 0x2b3-0x2b6.7 (4)
-0x2b0|                     55 c4                     |       U.       |                  language: 21956 0x2b7-0x2b8.7 (2)
+0x2b0|                     55 c4                     |       U.       |                  language: "und" 0x2b7-0x2b8.7 (2)
 0x2b0|                           00 00               |         ..     |                  quality: 0 0x2b9-0x2ba.7 (2)
      |                                               |                |                [1]: box {} 0x2bb-0x2e7.7 (45)
 0x2b0|                                 00 00 00 2d   |           ...- |                  size: 45 0x2bb-0x2be.7 (4)

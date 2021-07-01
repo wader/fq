@@ -112,7 +112,7 @@
 0x3a0|00 00                                          |..              |
 0x3a0|      00 00 ac 44                              |  ...D          |                  time_scale: 44100 0x3a2-0x3a5.7 (4)
 0x3a0|                  00 00 08 9d                  |      ....      |                  duration: 2205 0x3a6-0x3a9.7 (4)
-0x3a0|                              55 c4            |          U.    |                  language: 21956 0x3aa-0x3ab.7 (2)
+0x3a0|                              55 c4            |          U.    |                  language: "und" 0x3aa-0x3ab.7 (2)
 0x3a0|                                    00 00      |            ..  |                  quality: 0 0x3ac-0x3ad.7 (2)
      |                                               |                |                [1]: box {} 0x3ae-0x3da.7 (45)
 0x3a0|                                          00 00|              ..|                  size: 45 0x3ae-0x3b1.7 (4)

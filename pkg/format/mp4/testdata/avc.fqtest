@@ -102,7 +102,7 @@
 0x0c00|            00 00 00 00                        |    ....        |                  modification_time: 0 0xc04-0xc07.7 (4)
 0x0c00|                        00 00 32 00            |        ..2.    |                  time_scale: 12800 0xc08-0xc0b.7 (4)
 0x0c00|                                    00 00 02 00|            ....|                  duration: 512 0xc0c-0xc0f.7 (4)
-0x0c10|55 c4                                          |U.              |                  language: 21956 0xc10-0xc11.7 (2)
+0x0c10|55 c4                                          |U.              |                  language: "und" 0xc10-0xc11.7 (2)
 0x0c10|      00 00                                    |  ..            |                  quality: 0 0xc12-0xc13.7 (2)
       |                                               |                |                [1]: box {} 0xc14-0xc40.7 (45)
 0x0c10|            00 00 00 2d                        |    ...-        |                  size: 45 0xc14-0xc17.7 (4)

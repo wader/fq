@@ -114,7 +114,7 @@
 0x02f0|   00 00 00 00                                 | ....           |                  modification_time: 0 0x2f1-0x2f4.7 (4)
 0x02f0|               00 00 ac 44                     |     ...D       |                  time_scale: 44100 0x2f5-0x2f8.7 (4)
 0x02f0|                           00 00 08 c0         |         ....   |                  duration: 2240 0x2f9-0x2fc.7 (4)
-0x02f0|                                       55 c4   |             U. |                  language: 21956 0x2fd-0x2fe.7 (2)
+0x02f0|                                       55 c4   |             U. |                  language: "und" 0x2fd-0x2fe.7 (2)
 0x02f0|                                             00|               .|                  quality: 0 0x2ff-0x300.7 (2)
 0x0300|00                                             |.               |
       |                                               |                |                [1]: box {} 0x301-0x32d.7 (45)
