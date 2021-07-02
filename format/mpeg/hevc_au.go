@@ -10,11 +10,11 @@ var hevcAUNALFormat []*decode.Format
 
 func init() {
 	all.MustRegister(&decode.Format{
-		Name:        format.MPEG_HEVC_AU,
+		Name:        format.HEVC_AU,
 		Description: "H.265/HEVC Access Unit",
 		DecodeFn:    hevcAUDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.MPEG_HEVC_NALU}, Formats: &hevcAUNALFormat},
+			{Names: []string{format.HEVC_NALU}, Formats: &hevcAUNALFormat},
 		},
 	})
 }

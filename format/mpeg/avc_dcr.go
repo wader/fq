@@ -17,11 +17,11 @@ var avcDCRNALFormat []*decode.Format
 
 func init() {
 	all.MustRegister(&decode.Format{
-		Name:        format.MPEG_AVC_DCR,
+		Name:        format.AVC_DCR,
 		Description: "H.264/AVC Decoder Configuration Record",
 		DecodeFn:    avcDcrDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.MPEG_AVC_NALU}, Formats: &avcDCRNALFormat},
+			{Names: []string{format.AVC_NALU}, Formats: &avcDCRNALFormat},
 		},
 	})
 }

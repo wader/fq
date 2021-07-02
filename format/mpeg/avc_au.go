@@ -12,11 +12,11 @@ var avcAUNALFormat []*decode.Format
 
 func init() {
 	all.MustRegister(&decode.Format{
-		Name:        format.MPEG_AVC_AU,
+		Name:        format.AVC_AU,
 		Description: "H.264/AVC Access Unit",
 		DecodeFn:    avcAUDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.MPEG_AVC_NALU}, Formats: &avcAUNALFormat},
+			{Names: []string{format.AVC_NALU}, Formats: &avcAUNALFormat},
 		},
 	})
 }

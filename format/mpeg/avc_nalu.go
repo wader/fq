@@ -16,13 +16,13 @@ var avcSEIFormat []*decode.Format
 
 func init() {
 	all.MustRegister(&decode.Format{
-		Name:        format.MPEG_AVC_NALU,
+		Name:        format.AVC_NALU,
 		Description: "H.264/AVC Network Access Layer Unit",
 		DecodeFn:    avcNALUDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.MPEG_AVC_SPS}, Formats: &avcSPSFormat},
-			{Names: []string{format.MPEG_AVC_PPS}, Formats: &avcPPSFormat},
-			{Names: []string{format.MPEG_AVC_SEI}, Formats: &avcSEIFormat},
+			{Names: []string{format.AVC_SPS}, Formats: &avcSPSFormat},
+			{Names: []string{format.AVC_PPS}, Formats: &avcPPSFormat},
+			{Names: []string{format.AVC_SEI}, Formats: &avcSEIFormat},
 		},
 	})
 }

@@ -8,7 +8,7 @@ import (
 
 func init() {
 	all.MustRegister(&decode.Format{
-		Name:         format.MPEG_HEVC_NALU,
+		Name:         format.HEVC_NALU,
 		Description:  "H.265/HEVC Network Access Layer Unit",
 		DecodeFn:     hevcNALUDecode,
 		Dependencies: []decode.Dependency{},

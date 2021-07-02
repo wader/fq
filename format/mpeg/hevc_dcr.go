@@ -10,11 +10,11 @@ var hevcDCRNALFormat []*decode.Format
 
 func init() {
 	all.MustRegister(&decode.Format{
-		Name:        format.MPEG_HEVC_DCR,
+		Name:        format.HEVC_DCR,
 		Description: "H.265/HEVC Decoder Configuration Record",
 		DecodeFn:    hevcDcrDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.MPEG_HEVC_NALU}, Formats: &hevcDCRNALFormat},
+			{Names: []string{format.HEVC_NALU}, Formats: &hevcDCRNALFormat},
 		},
 	})
 }

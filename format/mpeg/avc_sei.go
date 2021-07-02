@@ -8,7 +8,7 @@ import (
 
 func init() {
 	all.MustRegister(&decode.Format{
-		Name:        format.MPEG_AVC_SEI,
+		Name:        format.AVC_SEI,
 		Description: "H.264/AVC Supplemental Enhancement Information",
 		DecodeFn:    avcSEIDecode,
 	})

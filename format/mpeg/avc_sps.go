@@ -11,7 +11,7 @@ import (
 
 func init() {
 	all.MustRegister(&decode.Format{
-		Name:        format.MPEG_AVC_SPS,
+		Name:        format.AVC_SPS,
 		Description: "H.264/AVC Sequence Parameter Set",
 		DecodeFn:    avcSPSDecode,
 	})

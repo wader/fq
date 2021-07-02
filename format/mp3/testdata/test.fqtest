@@ -137,7 +137,7 @@
 0x050|                                             00|               .|                preflag: 0 0x5f.5-0x5f.5 (0.1)
 0x050|                                             00|               .|                scalefac_scale: 0 0x5f.6-0x5f.6 (0.1)
 0x050|                                             00|               .|                count1table_select: 0 0x5f.7-0x5f.7 (0.1)
-     |                                               |                |      xing: {} (mp3_xing) 0x60-0xfb.7 (156)
+     |                                               |                |      xing: {} (xing) 0x60-0xfb.7 (156)
 0x060|49 6e 66 6f                                    |Info            |        header: "Info" 0x60-0x63.7 (4)
      |                                               |                |        present_flags: {} 0x64-0x67.7 (4)
 0x060|            00 00 00 0f                        |    ....        |          unused: 0 0x64-0x67.3 (3.4)

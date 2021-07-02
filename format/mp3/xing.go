@@ -10,7 +10,7 @@ import (
 
 func init() {
 	all.MustRegister(&decode.Format{
-		Name:        format.MP3_XING,
+		Name:        format.XING,
 		Description: "Xing header",
 		DecodeFn:    xingDecode,
 	})
