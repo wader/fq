@@ -28,7 +28,7 @@ depgraph.svg:
 
 .PHONY: formats.svg
 formats.svg:
-	go run main.go -rn 'formats | _formats_dot' | dot -Tsvg -o formats.svg
+	_dev/formats_dot.jq | dot -Tsvg -o formats.svg
 
 .PHONY: prof
 prof:

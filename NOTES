@@ -1,125 +1,15 @@
 
-pager (use $PAGER) in REPL? "... | less" ? but how? 
 
-stsd boxes children mp4a box?
-
-move mp4_lookup to mp4.go/mp4.jq
-
-path_to_expr
-
-mp4_lookup reverse, use _path and figureout tree path?
-
-FAQ:
-  trick with empty?
-  empty.bla
-  d.bla
-
-fq summary script?
-  container,
-  sample descriptior
-  decode record
-  packet codec
-
-u(32), trunc, pad, left/right?
-
-TODO: somehow to pass args to decoder? aac object type etc?
-
-DONE bitio endian? unused?
-
-decode split out some encoding things to own package?
-
-context cancel errosr, nicer message?
-
-# reconstruct FLAC
-["fLaC", first(.. | select(._format=="flac_metadatablock")), (.. | select(._format=="flac_frame"))] | bytes
-
-u32le?
-
-# hack to decode as individual box
-# [0,0,0,8+3,"free", "bla"] | mp4_box
-def mp4_box: [0,0,0,16, "ftyp", "isom", 0, 0 , 2 ,0, .] | mp4.boxes[1];
-
-.[]
-displat({depth:1 }) in parent repl takes time
-
-
-rename property? JQValueProperty etc JQValueKey(name string)
-
-error position "^" pointer?
-
-tonumber, tostring add JQValue method
-
-tograph?
-
-toimage?
-
-flac sample count per frame:
 reduce .frames[] as $f ({a:[],i:0,s:0}; ($f.end_of_header.block_size? // $f.block_size) as $bs | {a: (.a+[[.i,.s]]), i:(.i+1), s:(.s+$bs)} ) | .a
 
 foreach .frames[] as $f ({i:0,fs:0}; ($f.end_of_header.block_size? // $f.block_size) as $bs | {i:(.i+1),fs:(.fs+$bs)}; {i:.i,first_sample:.fs,frame:$f}) | "\(.i): \(.frame.end_of_header.frame_number // "NA"): \(.first_sample)" | println
 
-ctrl-c output then ctrl-d
-
-DONE just "error" hangs
-
-ctrl-d cancelled in wrong order?
-
-go run main.go -n 'error'
-panic: cancelled in wrong order
-
-idv2 utf16 apic p3 doku cana
-
-eval "debug" arg?
-
-DONE id3v2: APIC test
-
-. as $c | paths(select(._format)) | . as $p | $c | getpath($p) | [($p | join(".")), ._format]
-
-
-test basic JSValue things? slice etc
-
-DONE io.Must* panics
-
-FieldValue funcstions? return *Value
-MakeArray?
-
-hexdump uses io.Copy which is byte oritneted
-
-hex: "f" | hex, sub byte hex
-
-unknown array, fill in with "unknown", _unknown true?
-
-verbose support hash digest bitbuf? compare files parts
-maybe binary filter "md5", "base64", "string" etc?
-
-
-zlib/demux etc, return bitio.Buffer:
-bb := d.FieldDeflateLen("compressed", 10)
-d.FieldDecodeBitBuf("something", bb)
-alt:
-d.FieldDeflateLenFn("compressed", 10, func(bb) {
-  d.FieldDecodeBitBuf("something", bb)
-})
-how to handle ranges in bitbufs?
-
-auto keep track of roots? know if new bifbuf root?
 
 find bytes/pattern? bitbuf range? find in bytes find in value? find("asdsad), find([1,2,3])
 
 bitio.ReadAtFull: ErrUnexpectedEOF, same as io.ReadFull
 
-rework "iolist" thing, toBitBuf return range easy to miss
-
-
-debug print as json
-
 ffmpeg test files archive
-
-gif mpeg_ts dismbgious
-
-DONE group_by -> map([f]) -> toPrimitive needs to recursive?
-
-cancel big json output
 
 pathdiff
 

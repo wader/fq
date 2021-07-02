@@ -1,7 +1,6 @@
 package mpeg
 
 import (
-	"bytes"
 	"fq/format"
 	"fq/format/all/all"
 	"fq/pkg/decode"
@@ -10,6 +9,7 @@ import (
 func init() {
 	all.MustRegister(&decode.Format{
 		Name:        format.MPEG_TS,
+		ProbeWeight: 10, // make sure to be after gif, both start with 0x47
 		Description: "MPEG Transport Stream",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    tsDecode,
@@ -19,11 +19,6 @@ func init() {
 // TODO: ts_packet
 
 func tsDecode(d *decode.D, in interface{}) interface{} {
-	gifHeader := []byte("GIF89a")
-	if d.BitsLeft()*8 >= int64(len(gifHeader)) && bytes.Equal(d.PeekBytes(len(gifHeader)), []byte("GIF89a")) {
-		d.Invalid("looks like GIF")
-	}
-
 	d.FieldValidateUFn("sync", 0x47, d.U8)
 	d.FieldBool("transport_error_indicator")
 	d.FieldBool("payload_unit_start")

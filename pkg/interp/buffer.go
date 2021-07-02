@@ -78,7 +78,7 @@ func (bo *bufferObject) JQValueSlice(start int, end int) interface{} {
 		unit: bo.unit,
 	}
 }
-func (bo *bufferObject) JQValueProperty(name string) interface{} {
+func (bo *bufferObject) JQValueKey(name string) interface{} {
 	switch name {
 	case "size":
 		return new(big.Int).SetInt64(bo.bbr.r.Len / int64(bo.unit))

@@ -44,7 +44,7 @@ func (de decodeError) JQValueIndex(index int) interface{} {
 func (de decodeError) JQValueSlice(start int, end int) interface{} {
 	return nil
 }
-func (de decodeError) JQValueProperty(name string) interface{} {
+func (de decodeError) JQValueKey(name string) interface{} {
 	return fmt.Errorf("can't index array with string")
 }
 func (de decodeError) JQValueEach() interface{} {
@@ -106,7 +106,7 @@ func (fe formatError) JQValueIndex(index int) interface{} {
 func (fe formatError) JQValueSlice(start int, end int) interface{} {
 	return fmt.Errorf("can't slice object")
 }
-func (fe formatError) JQValueProperty(name string) interface{} {
+func (fe formatError) JQValueKey(name string) interface{} {
 	switch name {
 	case "format":
 		return fe.v.Format.Name
@@ -123,9 +123,9 @@ func (fe formatError) JQValueProperty(name string) interface{} {
 }
 func (fe formatError) JQValueEach() interface{} {
 	return [][2]interface{}{
-		{"format", fe.JQValueProperty("format")},
-		{"error", fe.JQValueProperty("error")},
-		{"stacktrace", fe.JQValueProperty("stacktrace")},
+		{"format", fe.JQValueKey("format")},
+		{"error", fe.JQValueKey("error")},
+		{"stacktrace", fe.JQValueKey("stacktrace")},
 	}
 }
 func (fe formatError) JQValueType() string {
@@ -159,8 +159,8 @@ func (fe formatError) JQValueToString() interface{} {
 
 func (fe formatError) JQValue() interface{} {
 	return map[string]interface{}{
-		"format":     fe.JQValueProperty("format"),
-		"error":      fe.JQValueProperty("error"),
-		"stacktrace": fe.JQValueProperty("stacktrace"),
+		"format":     fe.JQValueKey("format"),
+		"error":      fe.JQValueKey("error"),
+		"stacktrace": fe.JQValueKey("stacktrace"),
 	}
 }

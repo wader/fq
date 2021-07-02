@@ -158,7 +158,7 @@ func (bv baseValueObject) JQValueIndex(index int) interface{} {
 func (bv baseValueObject) JQValueSlice(start int, end int) interface{} {
 	return expectedArrayError{typ: bv.typ}
 }
-func (bv baseValueObject) JQValueProperty(name string) interface{} {
+func (bv baseValueObject) JQValueKey(name string) interface{} {
 	if strings.HasPrefix(name, "_") {
 		dv := bv.dv
 
@@ -390,9 +390,9 @@ type structValueObject struct {
 }
 
 func (sv structValueObject) JQValueLength() interface{} { return len(sv.vv) }
-func (sv structValueObject) JQValueProperty(name string) interface{} {
+func (sv structValueObject) JQValueKey(name string) interface{} {
 	if strings.HasPrefix(name, "_") {
-		return sv.baseValueObject.JQValueProperty(name)
+		return sv.baseValueObject.JQValueKey(name)
 	}
 	for _, v := range sv.vv {
 		if v.Name == name {

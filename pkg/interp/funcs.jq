@@ -4,6 +4,11 @@
 def path_to_expr:
 	map(if type == "number" then "[", ., "]" else ".", . end) | join("");
 
+# TODO: don't use eval? should support '.a.b[1]."c.c"' and escapes?
+def expr_to_path:
+	if . | type != "string" then error("require string argument") end
+	| eval("null | path(\(.))");
+
 # convert number to array of bytes
 def number_to_bytes($bits):
 	def _number_to_bytes($d):
@@ -16,7 +21,6 @@ def number_to_bytes($bits):
 	else [_number_to_bytes(1 bsl $bits)] | reverse end;
 def number_to_bytes:
 	number_to_bytes(8);
-
 
 def from_radix($base; $table):
 	split("")
@@ -128,6 +132,7 @@ def i:
 		str: (try ([.] | implode) catch null),
 	};
 
+# produce a/b pairs for diffing values
 def diff($a; $b):
     ($a | type) as $at
     | ($b | type) as $bt
@@ -150,40 +155,6 @@ def diff($a; $b):
       else
         if $a == $b then empty else {a: $a, b: $b} end
       end;
-
-def _formats_dot:
-	def _record($title;$fields):
-		[  "<"
-		, "<table bgcolor=\"paleturquoise\" border=\"0\" cellspacing=\"0\">"
-		, "<tr><td port=\"\($title)\">\($title)</td></tr>"
-		, [$fields|flatten|map("<tr><td align=\"left\" bgcolor=\"lightgrey\" port=\"\(.)\">\(.)</td></tr>")]
-		, "</table>"
-		, ">"
-		] | flatten | join("");
-	"# ... | dot -Tsvg -o formats.svg"
-	, "digraph formats {"
-	, "  concentrate=True"
-	, "  rankdir=TB"
-	, "  graph ["
-	, "  ]"
-	, "  node [shape=\"none\"style=\"\"]"
-	, "  edge [arrowsize=\"0.7\"]"
-	, (.[]
-	  | . as $f
-	  | .dependencies|flatten?|.[]
-	  | "  \"\($f.name)\":\(.) -> \(.)"
-	  )
-	, (.[]
-	  | .name as $name
-	  | .groups[]?
-	  | "  \(.) -> \"\($name)\":\($name)"
-	  )
-	, (to_entries[]
-	  | "  \(.key) [color=\"paleturquoise\", label=\(_record(.key;(.value.dependencies//[])))]")
-	, ([.[].groups[]?] | unique[]
-	  | "  \(.) [shape=\"record\",style=\"rounded,filled\",color=\"palegreen\"]"
-	  )
-	, "}";
 
 def in_bits_range($p):
 	select(scalars and ._start? and ._start <= $p and $p < ._stop);

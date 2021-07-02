@@ -12,6 +12,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/wader/gojq v0.12.1-0.20210615152814-6b798cc8396d h1:FEb77RQ80CI2TVj8xO/qnYPaHieIhPWXERlgacUtwk0=
 github.com/wader/gojq v0.12.1-0.20210615152814-6b798cc8396d/go.mod h1:EQUSKgW/YaOxmXpAwGiowFDO4i2Rmtk5+9dFyeiymAg=
+github.com/wader/gojq v0.12.1-0.20210702151745-86cf8fde981c h1:tQmHJ9knMc6Ho+muAIVZgQRn3Ydp29efHTJfbZuHhEI=
+github.com/wader/gojq v0.12.1-0.20210702151745-86cf8fde981c/go.mod h1:EQUSKgW/YaOxmXpAwGiowFDO4i2Rmtk5+9dFyeiymAg=
 github.com/wader/readline v0.0.0-20210306181459-854482684b51 h1:AhfQu0WiukN06dYBt5Qufb6TOKKqbY4PNrPaIMtNlJI=
 github.com/wader/readline v0.0.0-20210306181459-854482684b51/go.mod h1:Isi2INrdEfxWdZpTB9XbWSsubJeTFBkjgJj7hkEjFzM=
 golang.org/x/sys v0.0.0-20180810173357-98c5dad5d1a0/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=

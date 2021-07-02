@@ -15,6 +15,6 @@ require (
 replace github.com/goinsane/readline => github.com/wader/readline v0.0.0-20210306181459-854482684b51
 
 // go mod edit -replace github.com/itchyny/gojq=github.com/wader/gojq@fq && GOPROXY=direct go mod download github.com/itchyny/gojq && go mod tidy
-replace github.com/itchyny/gojq => github.com/wader/gojq v0.12.1-0.20210615152814-6b798cc8396d
+replace github.com/itchyny/gojq => github.com/wader/gojq v0.12.1-0.20210702151745-86cf8fde981c
 
 // replace github.com/itchyny/gojq => /Users/wader/src/gojq
