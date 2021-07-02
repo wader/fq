@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"fq/format"
 	"fq/format/all/all"
+	"fq/internal/num"
 	"fq/pkg/crc"
 	"fq/pkg/decode"
 	"math/bits"
@@ -482,7 +483,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 										_ = high
 										low := d.U(riceParameter)
 										_ = low
-										rs = append(rs, decode.ZigZag(high<<riceParameter|low))
+										rs = append(rs, num.ZigZag(high<<riceParameter|low))
 									}
 									samplesStop := d.Pos()
 									d.FieldBitBufRange("samples", samplesStart, samplesStop-samplesStart)

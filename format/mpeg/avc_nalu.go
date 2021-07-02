@@ -6,6 +6,7 @@ package mpeg
 import (
 	"fq/format"
 	"fq/format/all/all"
+	"fq/internal/num"
 	"fq/pkg/decode"
 )
 
@@ -51,7 +52,7 @@ func fieldUEV(d *decode.D, name string) uint64 {
 	})
 }
 
-func sEV(d *decode.D) int64 { return decode.ZigZag(expGolomb(d)) }
+func sEV(d *decode.D) int64 { return num.ZigZag(expGolomb(d)) }
 
 func fieldSEV(d *decode.D, name string) int64 {
 	return d.FieldSFn(name, func() (int64, decode.DisplayFormat, string) {

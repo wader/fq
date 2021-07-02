@@ -3,6 +3,7 @@ package protobuf
 import (
 	"fq/format"
 	"fq/format/all/all"
+	"fq/internal/num"
 	"fq/pkg/decode"
 )
 
@@ -78,7 +79,7 @@ func protobufDecodeField(d *decode.D, pbm *format.ProtoBufMessage) {
 
 				switch pbf.Type {
 				case format.ProtoBufTypeInt32, format.ProtoBufTypeInt64:
-					v := decode.ZigZag(value)
+					v := num.ZigZag(value)
 					d.FieldValueS("value", v, "")
 					if len(pbf.Enums) > 0 {
 						d.FieldValueStr("enum", pbf.Enums[uint64(v)], "")
@@ -90,7 +91,7 @@ func protobufDecodeField(d *decode.D, pbm *format.ProtoBufMessage) {
 					}
 				case format.ProtoBufTypeSInt32, format.ProtoBufTypeSInt64:
 					// TODO: correct? 32 different?
-					v := decode.TwosComplement(64, value)
+					v := num.TwosComplement(64, value)
 					d.FieldValueS("value", v, "")
 					if len(pbf.Enums) > 0 {
 						d.FieldValueStr("enum", pbf.Enums[uint64(v)], "")

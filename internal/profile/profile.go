@@ -25,7 +25,6 @@ func Start(cpuProfilePath string, memProfilePath string) func() {
 				}
 			})
 		}
-
 	}
 
 	return func() {
