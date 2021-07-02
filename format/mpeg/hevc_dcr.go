@@ -2,13 +2,14 @@ package mpeg
 
 import (
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/decode"
 )
 
 var hevcDCRNALFormat []*decode.Format
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.MPEG_HEVC_DCR,
 		Description: "H.265/HEVC Decoder Configuration Record",
 		DecodeFn:    hevcDcrDecode,

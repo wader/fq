@@ -7,13 +7,14 @@ package vorbis
 import (
 	"fmt"
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/decode"
 )
 
 var vorbisComment []*decode.Format
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.VORBIS_PACKET,
 		Description: "Vorbis packet",
 		DecodeFn:    vorbisDecode,

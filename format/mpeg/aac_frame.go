@@ -7,11 +7,12 @@ package mpeg
 
 import (
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/decode"
 )
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.AAC_FRAME,
 		Description: "Advanced Audio Coding frame",
 		DecodeFn:    aacDecode,

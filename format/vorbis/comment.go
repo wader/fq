@@ -3,6 +3,7 @@ package vorbis
 import (
 	"encoding/base64"
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"strings"
@@ -11,7 +12,7 @@ import (
 var flacPicture []*decode.Format
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.VORBIS_COMMENT,
 		Description: "Vorbis comment",
 		DecodeFn:    commentDecode,

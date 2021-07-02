@@ -2,15 +2,8 @@ package format
 
 import (
 	"fq/pkg/bitio"
-	"fq/pkg/decode"
 	"fq/pkg/ranges"
 )
-
-var DefaultRegistry = decode.NewRegistry()
-
-func MustRegister(format *decode.Format) *decode.Format {
-	return DefaultRegistry.MustRegister(format)
-}
 
 const (
 	ALL = "all"

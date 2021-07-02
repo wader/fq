@@ -5,12 +5,13 @@ package mpeg
 
 import (
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 )
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.MPEG_PES_PACKET,
 		Description: "MPEG Packetized elementary stream packet",
 		DecodeFn:    pesPacketDecode,

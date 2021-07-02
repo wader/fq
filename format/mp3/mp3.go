@@ -6,6 +6,7 @@ package mp3
 
 import (
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/decode"
 )
 
@@ -14,7 +15,7 @@ var footerFormat []*decode.Format
 var mp3Frame []*decode.Format
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.MP3,
 		ProbeWeight: 10, // after most others
 		Description: "MP3 file",

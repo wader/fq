@@ -6,6 +6,7 @@ package ogg
 import (
 	"bytes"
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 )
@@ -15,7 +16,7 @@ var vorbisPacket []*decode.Format
 var opusPacket []*decode.Format
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.OGG,
 		Description: "OGG file",
 		Groups:      []string{format.PROBE},

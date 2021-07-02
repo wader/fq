@@ -10,6 +10,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"fq/format"
+	"fq/format/all/all"
 	"fq/internal/num"
 	"fq/pkg/decode"
 )
@@ -18,7 +19,7 @@ var flacMetadatablockFormat []*decode.Format
 var flacFrameFormat []*decode.Format
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.FLAC,
 		Description: "Free Lossless Audio Codec file",
 		Groups:      []string{format.PROBE},

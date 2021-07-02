@@ -4,11 +4,12 @@ package mp3
 
 import (
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/decode"
 )
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.MP3_XING,
 		Description: "Xing header",
 		DecodeFn:    xingDecode,

@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"fmt"
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 )
@@ -17,7 +18,7 @@ var exifFormat []*decode.Format
 var iccProfileFormat []*decode.Format
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.JPEG,
 		Description: "Joint Photographic Experts Group file",
 		Groups:      []string{format.PROBE, format.IMAGE},

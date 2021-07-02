@@ -4,11 +4,12 @@ package mpeg
 
 import (
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/decode"
 )
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.MPEG_ASC,
 		Description: "MPEG-4 Audio Specific Config",
 		DecodeFn:    ascDecoder,

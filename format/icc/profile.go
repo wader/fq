@@ -5,11 +5,12 @@ package icc
 
 import (
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/decode"
 )
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.ICC_PROFILE,
 		Description: "International Color Consortium profile",
 		DecodeFn:    iccProfileDecode,

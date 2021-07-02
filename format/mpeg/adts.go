@@ -2,13 +2,14 @@ package mpeg
 
 import (
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/decode"
 )
 
 var adtsFrame []*decode.Format
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.ADTS,
 		Description: "Audio Data Transport Stream",
 		Groups:      []string{format.PROBE},

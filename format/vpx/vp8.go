@@ -4,13 +4,14 @@ package vpx
 
 import (
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/decode"
 )
 
 // TODO: vpx frame?
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.VP8_FRAME,
 		Description: "VP8 frame",
 		DecodeFn:    vp8Decode,

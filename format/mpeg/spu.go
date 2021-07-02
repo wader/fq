@@ -7,12 +7,13 @@ package mpeg
 import (
 	"fmt"
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/decode"
 	"strings"
 )
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.MPEG_SPU,
 		Description: "Sub Picture Unit (DVD subtitle)",
 		DecodeFn:    spuDecode,

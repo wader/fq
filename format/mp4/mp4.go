@@ -17,6 +17,7 @@ package mp4
 
 import (
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/decode"
 	"sort"
 )
@@ -43,7 +44,7 @@ var vp9FrameFormat []*decode.Format
 var vpxCCRFormat []*decode.Format
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.MP4,
 		Description: "MPEG-4 file and similar",
 		Groups:      []string{format.PROBE},

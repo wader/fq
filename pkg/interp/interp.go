@@ -6,6 +6,7 @@ import (
 	"embed"
 	"errors"
 	"fmt"
+	"fq/format/registry"
 	"fq/internal/ansi"
 	"fq/internal/colorjson"
 	"fq/internal/ctxstack"
@@ -392,7 +393,7 @@ type runContext struct {
 
 type Interp struct {
 	// variables map[string]interface{}
-	registry *decode.Registry
+	registry *registry.Registry
 	os       OS
 
 	initFqQuery *gojq.Query
@@ -405,7 +406,7 @@ type Interp struct {
 	runContext
 }
 
-func New(os OS, registry *decode.Registry) (*Interp, error) {
+func New(os OS, registry *registry.Registry) (*Interp, error) {
 	var err error
 
 	i := &Interp{

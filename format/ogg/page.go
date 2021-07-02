@@ -5,12 +5,13 @@ package ogg
 import (
 	"bytes"
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/crc"
 	"fq/pkg/decode"
 )
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.OGG_PAGE,
 		Description: "OGG page",
 		DecodeFn:    pageDecode,

@@ -2,11 +2,12 @@ package mpeg
 
 import (
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/decode"
 )
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.MPEG_AVC_PPS,
 		Description: "H.264/AVC Picture Parameter Set",
 		DecodeFn:    avcPPSDecode,

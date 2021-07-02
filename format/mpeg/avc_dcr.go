@@ -9,13 +9,14 @@ package mpeg
 
 import (
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/decode"
 )
 
 var avcDCRNALFormat []*decode.Format
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.MPEG_AVC_DCR,
 		Description: "H.264/AVC Decoder Configuration Record",
 		DecodeFn:    avcDcrDecode,

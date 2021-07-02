@@ -4,6 +4,7 @@ package vpx
 
 import (
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/decode"
 )
 
@@ -46,7 +47,7 @@ var vp9ColorSpaceNames = map[uint64]string{
 }
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.VP9_FRAME,
 		Description: "VP9 frame",
 		DecodeFn:    vp9Decode,

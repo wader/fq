@@ -6,6 +6,7 @@ package webp
 import (
 	"bytes"
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/decode"
 	"strings"
 )
@@ -13,7 +14,7 @@ import (
 var vp8Frame []*decode.Format
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.WEBP,
 		Description: "WebP image",
 		Groups:      []string{format.PROBE, format.IMAGE},

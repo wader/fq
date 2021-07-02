@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"fq/format"
+	"fq/format/registry"
 	"fq/internal/aheadreadseeker"
 	"fq/internal/ctxreadseeker"
 	"fq/internal/ioextra"
@@ -30,7 +31,7 @@ import (
 )
 
 // TODO: make it nicer somehow? generate generators? remove from struct?
-func (i *Interp) makeFunctions(registry *decode.Registry) []Function {
+func (i *Interp) makeFunctions(registry *registry.Registry) []Function {
 	fs := []Function{
 		{[]string{"tty"}, 0, 0, i.tty, nil},
 
@@ -510,7 +511,7 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 	}
 }
 
-func (i *Interp) makeDecodeFn(registry *decode.Registry, decodeFormats []*decode.Format) func(c interface{}, a []interface{}) interface{} {
+func (i *Interp) makeDecodeFn(registry *registry.Registry, decodeFormats []*decode.Format) func(c interface{}, a []interface{}) interface{} {
 	return func(c interface{}, a []interface{}) interface{} {
 		// TODO: progress hack
 		// would be nice to move progress code into decode but it might be

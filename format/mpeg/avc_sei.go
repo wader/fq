@@ -2,11 +2,12 @@ package mpeg
 
 import (
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/decode"
 )
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.MPEG_AVC_SEI,
 		Description: "H.264/AVC Supplemental Enhancement Information",
 		DecodeFn:    avcSEIDecode,

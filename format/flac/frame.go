@@ -6,13 +6,14 @@ import (
 	"encoding/binary"
 	"fmt"
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/crc"
 	"fq/pkg/decode"
 	"math/bits"
 )
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.FLAC_FRAME,
 		Description: "FLAC frame",
 		DecodeFn:    frameDecode,

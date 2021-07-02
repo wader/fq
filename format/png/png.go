@@ -8,6 +8,7 @@ package png
 
 import (
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/decode"
 	"fq/pkg/ranges"
 	"hash/crc32"
@@ -17,7 +18,7 @@ var iccProfileFormat []*decode.Format
 var exifFormat []*decode.Format
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.PNG,
 		Description: "Portable Network Graphics file",
 		Groups:      []string{format.PROBE, format.IMAGE},

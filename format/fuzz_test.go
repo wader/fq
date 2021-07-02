@@ -6,7 +6,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"fq/format"
+	"format/all"
 	"fq/pkg/interp"
 	"io"
 	"io/ioutil"
@@ -68,7 +68,7 @@ func FuzzFQTests(f *testing.F) {
 
 	f.Fuzz(func(t *testing.T, b []byte) {
 		fz := &fuzzTest{b: b}
-		q, err := interp.New(fz, format.DefaultRegistry)
+		q, err := interp.New(fz, all.Registry)
 		if err != nil {
 			t.Fatal(err)
 		}

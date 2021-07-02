@@ -5,12 +5,13 @@ package dns
 import (
 	"fmt"
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/decode"
 	"strings"
 )
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.DNS,
 		Description: "DNS packet",
 		DecodeFn:    dnsDecode,

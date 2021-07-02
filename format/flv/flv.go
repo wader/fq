@@ -4,11 +4,12 @@ package flv
 
 import (
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/decode"
 )
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.FLV,
 		Description: "Flash video",
 		Groups:      []string{format.PROBE},

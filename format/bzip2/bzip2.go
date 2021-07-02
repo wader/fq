@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"compress/bzip2"
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"hash/crc32"
@@ -18,7 +19,7 @@ import (
 var probeFormat []*decode.Format
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.BZIP2,
 		Description: "bzip2 compression",
 		Groups:      []string{format.PROBE},

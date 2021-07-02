@@ -2,11 +2,12 @@ package mpeg
 
 import (
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/decode"
 )
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:         format.MPEG_HEVC_NALU,
 		Description:  "H.265/HEVC Network Access Layer Unit",
 		DecodeFn:     hevcNALUDecode,

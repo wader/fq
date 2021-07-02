@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"fq/pkg/decode"
+	"fq/format/registry"
 	"fq/pkg/interp"
 	"io"
 	"io/ioutil"
@@ -155,7 +155,7 @@ func (o *standardOS) History() ([]string, error) {
 	return hs, nil
 }
 
-func Main(r *decode.Registry, version string) {
+func Main(r *registry.Registry, version string) {
 	sos, err := newStandardOS()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)

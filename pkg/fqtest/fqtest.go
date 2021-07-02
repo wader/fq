@@ -16,10 +16,10 @@ import (
 	"strings"
 	"testing"
 
+	"fq/format/registry"
 	"fq/internal/deepequal"
 	"fq/internal/shquote"
 	"fq/pkg/bitio"
-	"fq/pkg/decode"
 	"fq/pkg/interp"
 )
 
@@ -341,7 +341,7 @@ func parseTestCases(s string) *testCase {
 // 	deepequal.Error(t, "testcase", expectedTestCase, actualTestCase)
 // }
 
-func testDecodedTestCaseRun(t *testing.T, registry *decode.Registry, tcr *testCaseRun) {
+func testDecodedTestCaseRun(t *testing.T, registry *registry.Registry, tcr *testCaseRun) {
 	q, err := interp.New(tcr, registry)
 	if err != nil {
 		t.Fatal(err)
@@ -359,7 +359,7 @@ func testDecodedTestCaseRun(t *testing.T, registry *decode.Registry, tcr *testCa
 	//deepequal.Error(t, "stderr", te.ExpectedStderr, te.ActualStderrBuf.String())
 }
 
-func TestPath(t *testing.T, registry *decode.Registry) {
+func TestPath(t *testing.T, registry *registry.Registry) {
 	tcs := []*testCase{}
 
 	filepath.Walk(".", func(path string, info os.FileInfo, err error) error {

@@ -1,7 +1,8 @@
 package all
 
 import (
-	//_ "fq/format/flv"
+	// TODO: better name, all/all exist to break import cycle, formats can't import other formats
+	allall "fq/format/all/all"
 
 	_ "fq/format/ape"
 	_ "fq/format/av1"
@@ -30,3 +31,5 @@ import (
 	_ "fq/format/wav"
 	_ "fq/format/webp"
 )
+
+var Registry = allall.Registry

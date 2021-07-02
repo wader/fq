@@ -2,11 +2,12 @@ package av1
 
 import (
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/decode"
 )
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.AV1_OBU,
 		Description: "AV1 Open Bitstream Unit",
 		DecodeFn:    obuDecode,

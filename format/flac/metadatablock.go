@@ -4,6 +4,7 @@ package flac
 
 import (
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/decode"
 	"fq/pkg/ranges"
 )
@@ -12,7 +13,7 @@ var flacPicture []*decode.Format
 var vorbisCommentFormat []*decode.Format
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.FLAC_METADATABLOCK,
 		Description: "FLAC metadatablock",
 		DecodeFn:    metadatablockDecode,

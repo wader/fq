@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"fmt"
 	"fq/format"
+	"fq/format/all/all"
 	"fq/pkg/decode"
 	"io"
 	"strings"
@@ -17,7 +18,7 @@ import (
 var imageFormat []*decode.Format
 
 func init() {
-	format.MustRegister(&decode.Format{
+	all.MustRegister(&decode.Format{
 		Name:        format.ID3V2,
 		Description: "ID3v2 metadata",
 		DecodeFn:    id3v2Decode,
