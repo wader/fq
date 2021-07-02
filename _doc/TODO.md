@@ -27,6 +27,7 @@
 - Cleanup rework cipher functions, `ctr(aes("key"), "iv")` or `cipher(ctr("iv"), aes("key))`?
 - `open` when to close file?
 - Safe mode interpreter?
+- Allow/deny `open` in autocomplete? leaks now?
 
 ### Tests
 
@@ -97,6 +98,7 @@
 - `join` can be exponential, try add with strings faster, use add `["a","b","c"] | add`?
 - `0b` -> `1.7976931348623157e+308` something fishy with bin/hex/... literals change
 - Do something similar to `builtin.go` in gojq to speedup a bit
+- remove `scopedump`?
 
 #### Readline
 

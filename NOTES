@@ -43,36 +43,16 @@ struct("bla";
 
 [1 | scope] empty string in list
 
-gojq ast as json?
-
-watch expr?
-
-
-DONE .frames[-20:-0][].block_size : panic
 
 [.frames[-16:][] | (.end_of_header.block_size._value // .block_size._value)] | add
 
-hex, binary, 
-
 ffmpeg -f lavfi -i sine -ac 2 -c:a flac -strict experimental -f mp4 -t 50ms flac.mp4
 
-
-own FqInterace? function ineterface?
-
-
-repl in jq, expose parse/run?
-
 go run cmd/fq/main.go -n - '["digraph formats {"] + [[formats[] | . as $f | .dependencies | flatten? | .[] | [$f.name, .]] + [formats[] | . as $f | .groups | flatten? | .[] | [., $f.name]] | .[] | join(" -> ")] + ["}"] | join("\n")' | dot -Tsvg -o formats.svg
-
-replace dot function with jq to dot formatting somehow?
-
-Run should know if autocompleting? dont allow open() etc
 
 go run cmd/fq/main.go flac.mkv '"fLaC", (.. | select(._name == "metadatablock" and ._type == "struct")), (.. | select(.packet._description=="flac_frame" ) | .packet) | bits' > bla.flac
 go run cmd/fq/main.go flac.mp4 '"fLaC", (.. | select(._name == "metadatablock" and ._type == "struct")), .tracks[0].samples[] | bits' > bla.flac
 
-
-show error tree? errors?
 
 flac md5 fix
 
