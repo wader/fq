@@ -1,4 +1,4 @@
-package cli
+package profile
 
 import (
 	"log"
@@ -7,13 +7,11 @@ import (
 	"runtime/pprof"
 )
 
-func MaybeProfile() func() {
-	var cpuProfile = os.Getenv("CPUPROFILE")
-	var memProfile = os.Getenv("MEMPROFILE")
+func Start(cpuProfilePath string, memProfilePath string) func() {
 	var deferFns []func()
 
-	if cpuProfile != "" {
-		f, err := os.Create(cpuProfile)
+	if cpuProfilePath != "" {
+		f, err := os.Create(cpuProfilePath)
 		if err != nil {
 			log.Fatal("could not create CPU profile: ", err)
 		}
@@ -35,8 +33,8 @@ func MaybeProfile() func() {
 			fn()
 		}
 
-		if memProfile != "" {
-			f, err := os.Create(memProfile)
+		if memProfilePath != "" {
+			f, err := os.Create(memProfilePath)
 			if err != nil {
 				log.Fatal("could not create memory profile: ", err)
 			}

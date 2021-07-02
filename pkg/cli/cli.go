@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"fq/format/registry"
+	"fq/internal/profile"
 	"fq/pkg/interp"
 	"io"
 	"io/ioutil"
@@ -15,6 +16,10 @@ import (
 
 	"github.com/goinsane/readline"
 )
+
+func MaybeProfile() func() {
+	return profile.Start(os.Getenv("CPUPROFILE"), os.Getenv("MEMPROFILE"))
+}
 
 func MaybeLogFile() {
 	if lf := os.Getenv("LOGFILE"); lf != "" {
