@@ -47,10 +47,10 @@ def tree_path(children; name; $v):
 	if $v | type == "string" then _lookup
 	else _path end;
 
-# <mp4 value> | mp4_path(".moov.trak[1]") -> [box]
-# <mp4 value> | mp4_path(<mp4 value>) -> [".moov.trak"]
+# <mp4 value> | mp4_path(".moov.trak[1]") -> box
+# <mp4 value> | mp4_path(<mp4 value>) -> ".moov.trak"
 def mp4_path(p): tree_path(.boxes; .type; p);
 
-# <matroska value> | matroska_path(".Segment.Tracks[0].TrackEntry[1].CodecID") -> [element]
-# <matroska value> | matroska_path(<matroska value>) [".Segment.Tracks[0]", ...]
+# <matroska value> | matroska_path(".Segment.Tracks[0].TrackEntry[1].CodecID") -> element
+# <matroska value> | matroska_path(<matroska value>) -> ".Segment.Tracks[0]"
 def matroska_path(p): tree_path(.elements; .id._symbol; p);

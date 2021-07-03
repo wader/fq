@@ -2,6 +2,7 @@
 
 #### CLI and REPL
 
+- Ctxstack index cancel wrong order skip?
 - Pager for long output. Configurable? `$PAGER`? only explicit with some kind of syntax? `.. | less` but how?
 - Nicer context cancel message
 - `dump` cancel output of large root value, ex: `.frames`. Problem is dump is done by parent repl. 
