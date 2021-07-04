@@ -17,19 +17,19 @@ def _formats_dot:
 	, "  ]"
 	, "  node [shape=\"none\"style=\"\"]"
 	, "  edge [arrowsize=\"0.7\"]"
-	, (.[]
+	, ( .[]
 	  | . as $f
 	  | .dependencies|flatten?|.[]
 	  | "  \"\($f.name)\":\(.) -> \(.)"
 	  )
-	, (.[]
+	, ( .[]
 	  | .name as $name
 	  | .groups[]?
 	  | "  \(.) -> \"\($name)\":\($name)"
 	  )
-	, (to_entries[]
+	, ( to_entries[]
 	  | "  \(.key) [color=\"paleturquoise\", label=\(_record(.key;(.value.dependencies//[])))]")
-	, ([.[].groups[]?] | unique[]
+	, ( [.[].groups[]?] | unique[]
 	  | "  \(.) [shape=\"record\",style=\"rounded,filled\",color=\"palegreen\"]"
 	  )
 	, "}";

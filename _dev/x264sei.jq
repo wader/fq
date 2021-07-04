@@ -9,13 +9,12 @@
   | string[0:-1]
   | . as $full
   | split("options: ")[1]
-  | ( [
-      .
+  | ( [ .
       | split(" ")[]
       | split("=")
       | {key: .[0], value: .[1]}
       ] | from_entries
-  ) + {
+    ) + {
       full: $full
-  }
+    }
 ) // "No x264 SEI found"

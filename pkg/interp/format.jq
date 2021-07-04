@@ -6,6 +6,7 @@ def tree_path(children; name; $v):
 		def _normalize_path:
 			. as $np
 			| if $np | last | type == "string" then $np+[0] end
+			# state is [path acc, possible pending zero index]
 			| (reduce .[] as $np ([[], []];
 				if $np | type == "string" then
 					[(.[0]+.[1]+[$np]), [0]]
@@ -25,8 +26,7 @@ def tree_path(children; name; $v):
 			end
 		);
 	def _path:
-		[
-		. as $r
+		[ . as $r
 		| $v._path as $p
 		| foreach range(($p | length)/2) as $i (
 			null;
@@ -40,7 +40,7 @@ def tree_path(children; name; $v):
 		)
 		| [ ".", .[0],
 			(.[1] | if . == 0 then empty else "[", ., "]" end)
-		]
+		  ]
 		]
 		| flatten
 		| join("");

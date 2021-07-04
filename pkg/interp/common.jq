@@ -26,9 +26,9 @@ def rpad($s;$w): . + ($s * ($w+1-length))[1:];
 def table(colmap;render):
     def _column_widths:
         [ . as $rs
-          | range($rs[0] | length) as $i
-          | [$rs[] | colmap | (.[$i] | length)]
-          | max
+        | range($rs[0] | length) as $i
+        | [$rs[] | colmap | (.[$i] | length)]
+        | max
         ];
     if (. | length) == 0 then ""
     else
@@ -37,7 +37,7 @@ def table(colmap;render):
       | ( ($rs[]
           | . as $r
           | [ range($r | length) as $i
-              | ($r | colmap | {column: $i, string: .[$i], maxwidth: $cw[$i]})
+            | ($r | colmap | {column: $i, string: .[$i], maxwidth: $cw[$i]})
             ]
           | render
           )

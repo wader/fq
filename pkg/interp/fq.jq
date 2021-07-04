@@ -20,7 +20,7 @@ include "@config/init?";
 
 # TODO: completionMode
 def complete($e):
-	($e | complete_query) as {$type, $query, $prefix}
+	( $e | complete_query) as {$type, $query, $prefix}
 	| {
 		prefix: $prefix,
 		names: (
@@ -293,7 +293,7 @@ def main:
 			| eval_f($file_expr; .)
 			)
 		  end
-		  # this evaluates and combines all expression in order
+		  # this evaluates and combines all expression args in order
 		  | (reduce $exprs[] as $expr ([.]; [.[] | eval_f($expr; .)]))[]
 		  | if $parsed.repl then repl
 			else default_display end

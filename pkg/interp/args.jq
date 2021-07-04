@@ -17,8 +17,8 @@ def args_parse($args;$opts):
 		def _parse_without_arg($new_args;$optname):
 			_parse($new_args;$flagmap;($r|.parsed.[$optname] = true));
 		($args[0] | index("=")) as $assign_i
-		| (if $assign_i then $args[0][0:$assign_i]
-		   else $args[0] end
+		| ( if $assign_i then $args[0][0:$assign_i]
+		    else $args[0] end
 		  ) as $arg
 		| if $arg == null then
 			$r
