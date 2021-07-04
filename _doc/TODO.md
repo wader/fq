@@ -83,6 +83,7 @@
   - `flac` truncated picture, mix sample rate, bitdepth etc?
 - `protobuf` schema?
 - `matroska` crc
+- `mp4` styp segment test
 
 #### Scripts
 
