@@ -4,14 +4,14 @@ package protobuf
 
 import (
 	"fq/format"
-	"fq/format/all/all"
+	"fq/format/registry"
 	"fq/pkg/decode"
 )
 
 var widevineProtoBufFormat []*decode.Format
 
 func init() {
-	all.MustRegister(&decode.Format{
+	registry.MustRegister(&decode.Format{
 		Name:        format.PROTOBUF_WIDEVINE,
 		Description: "Widevine protobuf",
 		DecodeFn:    widevineDecode,

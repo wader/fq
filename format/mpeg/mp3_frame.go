@@ -14,7 +14,7 @@ package mpeg
 
 import (
 	"fq/format"
-	"fq/format/all/all"
+	"fq/format/registry"
 	"fq/pkg/crc"
 	"fq/pkg/decode"
 )
@@ -22,7 +22,7 @@ import (
 var xingHeader []*decode.Format
 
 func init() {
-	all.MustRegister(&decode.Format{
+	registry.MustRegister(&decode.Format{
 		Name:        format.MP3_FRAME,
 		Description: "MPEG audio layer 3 frame",
 		DecodeFn:    frameDecode,

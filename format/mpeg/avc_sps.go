@@ -5,12 +5,12 @@ package mpeg
 
 import (
 	"fq/format"
-	"fq/format/all/all"
+	"fq/format/registry"
 	"fq/pkg/decode"
 )
 
 func init() {
-	all.MustRegister(&decode.Format{
+	registry.MustRegister(&decode.Format{
 		Name:        format.AVC_SPS,
 		Description: "H.264/AVC Sequence Parameter Set",
 		DecodeFn:    avcSPSDecode,

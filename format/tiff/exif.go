@@ -4,14 +4,14 @@ package tiff
 
 import (
 	"fq/format"
-	"fq/format/all/all"
+	"fq/format/registry"
 	"fq/pkg/decode"
 )
 
 // currently just a alias for tiff
 
 func init() {
-	all.MustRegister(&decode.Format{
+	registry.MustRegister(&decode.Format{
 		Name:        format.EXIF,
 		Description: "Exchangeable Image File Format",
 		Groups:      []string{},

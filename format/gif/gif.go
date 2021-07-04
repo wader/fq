@@ -11,13 +11,13 @@ package gif
 import (
 	"bytes"
 	"fq/format"
-	"fq/format/all/all"
+	"fq/format/registry"
 	"fq/pkg/decode"
 	"io"
 )
 
 func init() {
-	all.MustRegister(&decode.Format{
+	registry.MustRegister(&decode.Format{
 		Name:        format.GIF,
 		Description: "Graphics Interchange Format",
 		Groups:      []string{format.PROBE, format.IMAGE},

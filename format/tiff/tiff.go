@@ -5,14 +5,14 @@ package tiff
 
 import (
 	"fq/format"
-	"fq/format/all/all"
+	"fq/format/registry"
 	"fq/pkg/decode"
 )
 
 var tiffIccProfile []*decode.Format
 
 func init() {
-	all.MustRegister(&decode.Format{
+	registry.MustRegister(&decode.Format{
 		Name:        format.TIFF,
 		Description: "Tag Image File Format",
 		Groups:      []string{format.PROBE, format.IMAGE},

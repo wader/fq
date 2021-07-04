@@ -2,12 +2,12 @@ package mpeg
 
 import (
 	"fq/format"
-	"fq/format/all/all"
+	"fq/format/registry"
 	"fq/pkg/decode"
 )
 
 func init() {
-	all.MustRegister(&decode.Format{
+	registry.MustRegister(&decode.Format{
 		Name:        format.MPEG_TS,
 		ProbeWeight: 10, // make sure to be after gif, both start with 0x47
 		Description: "MPEG Transport Stream",

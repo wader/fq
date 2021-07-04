@@ -2,12 +2,12 @@ package id3
 
 import (
 	"fq/format"
-	"fq/format/all/all"
+	"fq/format/registry"
 	"fq/pkg/decode"
 )
 
 func init() {
-	all.MustRegister(&decode.Format{
+	registry.MustRegister(&decode.Format{
 		Name:        format.ID3V11,
 		Description: "ID3v1.1 metadata",
 		DecodeFn:    id3v11Decode,

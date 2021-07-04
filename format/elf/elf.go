@@ -6,7 +6,7 @@ package elf
 
 import (
 	"fq/format"
-	"fq/format/all/all"
+	"fq/format/registry"
 	"fq/pkg/decode"
 	"strings"
 )
@@ -14,7 +14,7 @@ import (
 // TODO: p_type hi/lo
 
 func init() {
-	all.MustRegister(&decode.Format{
+	registry.MustRegister(&decode.Format{
 		Name:        format.ELF,
 		Description: "Executable and Linkable Format",
 		Groups:      []string{format.PROBE},

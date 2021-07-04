@@ -8,7 +8,7 @@ import (
 	"bytes"
 	"fmt"
 	"fq/format"
-	"fq/format/all/all"
+	"fq/format/registry"
 	"fq/pkg/decode"
 	"strconv"
 	"strings"
@@ -17,7 +17,7 @@ import (
 var probeFormat []*decode.Format
 
 func init() {
-	all.MustRegister(&decode.Format{
+	registry.MustRegister(&decode.Format{
 		Name:        format.TAR,
 		Description: "Tar archive",
 		Groups:      []string{format.PROBE},

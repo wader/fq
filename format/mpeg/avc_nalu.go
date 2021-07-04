@@ -5,7 +5,7 @@ package mpeg
 
 import (
 	"fq/format"
-	"fq/format/all/all"
+	"fq/format/registry"
 	"fq/internal/num"
 	"fq/pkg/decode"
 )
@@ -15,7 +15,7 @@ var avcPPSFormat []*decode.Format
 var avcSEIFormat []*decode.Format
 
 func init() {
-	all.MustRegister(&decode.Format{
+	registry.MustRegister(&decode.Format{
 		Name:        format.AVC_NALU,
 		Description: "H.264/AVC Network Access Layer Unit",
 		DecodeFn:    avcNALUDecode,

@@ -1,11 +1,12 @@
 package format_test
 
 import (
-	"fq/format/all"
+	_ "fq/format/all"
+	"fq/format/registry"
 	"fq/pkg/fqtest"
 	"testing"
 )
 
 func TestFQTests(t *testing.T) {
-	fqtest.TestPath(t, all.Registry)
+	fqtest.TestPath(t, registry.Default)
 }

@@ -5,14 +5,14 @@ package opus
 import (
 	"bytes"
 	"fq/format"
-	"fq/format/all/all"
+	"fq/format/registry"
 	"fq/pkg/decode"
 )
 
 var vorbisComment []*decode.Format
 
 func init() {
-	all.MustRegister(&decode.Format{
+	registry.MustRegister(&decode.Format{
 		Name:        format.OPUS_PACKET,
 		Description: "Opus packet",
 		DecodeFn:    opusDecode,

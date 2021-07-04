@@ -6,14 +6,14 @@ package av1
 
 import (
 	"fq/format"
-	"fq/format/all/all"
+	"fq/format/registry"
 	"fq/pkg/decode"
 )
 
 var obuFormat []*decode.Format
 
 func init() {
-	all.MustRegister(&decode.Format{
+	registry.MustRegister(&decode.Format{
 		Name:        format.AV1_FRAME,
 		Description: "AV1 frame",
 		DecodeFn:    frameDecode,

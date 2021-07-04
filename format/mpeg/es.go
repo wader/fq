@@ -3,7 +3,7 @@ package mpeg
 import (
 	"fmt"
 	"fq/format"
-	"fq/format/all/all"
+	"fq/format/registry"
 	"fq/pkg/decode"
 )
 
@@ -11,7 +11,7 @@ var mpegASCFormat []*decode.Format
 var vorbisPacketFormat []*decode.Format
 
 func init() {
-	all.MustRegister(&decode.Format{
+	registry.MustRegister(&decode.Format{
 		Name:        format.MPEG_ES,
 		Description: "MPEG Elementary Stream",
 		DecodeFn:    esDecode,

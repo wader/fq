@@ -7,7 +7,7 @@ package mpeg
 
 import (
 	"fq/format"
-	"fq/format/all/all"
+	"fq/format/registry"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"log"
@@ -17,7 +17,7 @@ var pesPacketFormat []*decode.Format
 var spuFormat []*decode.Format
 
 func init() {
-	all.MustRegister(&decode.Format{
+	registry.MustRegister(&decode.Format{
 		Name:        format.MPEG_PES,
 		Description: "MPEG Packetized elementary stream",
 		DecodeFn:    pesDecode,

@@ -9,7 +9,7 @@ package wav
 import (
 	"fmt"
 	"fq/format"
-	"fq/format/all/all"
+	"fq/format/registry"
 	"fq/pkg/decode"
 	"strings"
 )
@@ -18,7 +18,7 @@ var headerFormat []*decode.Format
 var footerFormat []*decode.Format
 
 func init() {
-	all.MustRegister(&decode.Format{
+	registry.MustRegister(&decode.Format{
 		Name:        format.WAV,
 		Description: "WAV file",
 		Groups:      []string{format.PROBE},

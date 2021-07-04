@@ -2,14 +2,14 @@ package flac
 
 import (
 	"fq/format"
-	"fq/format/all/all"
+	"fq/format/registry"
 	"fq/pkg/decode"
 )
 
 var images []*decode.Format
 
 func init() {
-	all.MustRegister(&decode.Format{
+	registry.MustRegister(&decode.Format{
 		Name:        format.FLAC_PICTURE,
 		Description: "FLAC metadatablock picture",
 		DecodeFn:    pictureDecode,

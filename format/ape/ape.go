@@ -5,14 +5,14 @@ package ape
 
 import (
 	"fq/format"
-	"fq/format/all/all"
+	"fq/format/registry"
 	"fq/pkg/decode"
 )
 
 var imageFormat []*decode.Format
 
 func init() {
-	all.MustRegister(&decode.Format{
+	registry.MustRegister(&decode.Format{
 		Name:        format.APEV2,
 		Description: "APEv2 metadata tag",
 		DecodeFn:    apev2Decode,

@@ -4,12 +4,12 @@ package vpx
 
 import (
 	"fq/format"
-	"fq/format/all/all"
+	"fq/format/registry"
 	"fq/pkg/decode"
 )
 
 func init() {
-	all.MustRegister(&decode.Format{
+	registry.MustRegister(&decode.Format{
 		Name:        format.VP9_CFM,
 		Description: "VP9 Codec Feature Metadata",
 		DecodeFn:    vp9CFMDecode,

@@ -10,14 +10,14 @@ package mpeg
 
 import (
 	"fq/format"
-	"fq/format/all/all"
+	"fq/format/registry"
 	"fq/pkg/decode"
 )
 
 var aacFrameFormat []*decode.Format
 
 func init() {
-	all.MustRegister(&decode.Format{
+	registry.MustRegister(&decode.Format{
 		Name:        format.ADTS_FRAME,
 		Description: "Audio Data Transport Stream frame",
 		DecodeFn:    adtsFrameDecoder,

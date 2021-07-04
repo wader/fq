@@ -16,9 +16,9 @@ package matroska
 import (
 	"fmt"
 	"fq/format"
-	"fq/format/all/all"
 	"fq/format/matroska/ebml"
 	"fq/format/matroska/ebml_matroska"
+	"fq/format/registry"
 	"fq/pkg/decode"
 	"fq/pkg/ranges"
 )
@@ -45,7 +45,7 @@ var vp9FrameFormat []*decode.Format
 var codecToFormat map[string]*[]*decode.Format
 
 func init() {
-	all.MustRegister(&decode.Format{
+	registry.MustRegister(&decode.Format{
 		Name:        format.MATROSKA,
 		Description: "Matroska file",
 		Groups:      []string{format.PROBE},
