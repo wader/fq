@@ -32,8 +32,8 @@
 0x1a0|         6d 76 68 64                           |   mvhd         |          type: "mvhd" (Movie header, overall declarations) 0x1a3-0x1a6.7 (4)
 0x1a0|                     00                        |       .        |          version: 0 0x1a7-0x1a7.7 (1)
 0x1a0|                        00 00 00               |        ...     |          flags: "\x00\x00\x00" 0x1a8-0x1aa.7 (3)
-0x1a0|                                 00 00 00 00   |           .... |          creation_time: 0 0x1ab-0x1ae.7 (4)
-0x1a0|                                             00|               .|          modification_time: 0 0x1af-0x1b2.7 (4)
+0x1a0|                                 00 00 00 00   |           .... |          creation_time: 1904-01-04T00:00:00Z (0) 0x1ab-0x1ae.7 (4)
+0x1a0|                                             00|               .|          modification_time: 1904-01-04T00:00:00Z (0) 0x1af-0x1b2.7 (4)
 0x1b0|00 00 00                                       |...             |
 0x1b0|         00 00 03 e8                           |   ....         |          time_scale: 1000 0x1b3-0x1b6.7 (4)
 0x1b0|                     00 00 00 35               |       ...5     |          duration: 53 0x1b7-0x1ba.7 (4)

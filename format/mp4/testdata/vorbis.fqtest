@@ -33,8 +33,8 @@
 0x01e0|                                       00      |             .  |          version: 0 0x1ed-0x1ed.7 (1)
 0x01e0|                                          00 00|              ..|          flags: "\x00\x00\x00" 0x1ee-0x1f0.7 (3)
 0x01f0|00                                             |.               |
-0x01f0|   00 00 00 00                                 | ....           |          creation_time: 0 0x1f1-0x1f4.7 (4)
-0x01f0|               00 00 00 00                     |     ....       |          modification_time: 0 0x1f5-0x1f8.7 (4)
+0x01f0|   00 00 00 00                                 | ....           |          creation_time: 1904-01-04T00:00:00Z (0) 0x1f1-0x1f4.7 (4)
+0x01f0|               00 00 00 00                     |     ....       |          modification_time: 1904-01-04T00:00:00Z (0) 0x1f5-0x1f8.7 (4)
 0x01f0|                           00 00 03 e8         |         ....   |          time_scale: 1000 0x1f9-0x1fc.7 (4)
 0x01f0|                                       00 00 00|             ...|          duration: 51 0x1fd-0x200.7 (4)
 0x0200|33                                             |3               |

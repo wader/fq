@@ -32,8 +32,8 @@
 0x2a0|68 64                                          |hd              |
 0x2a0|      00                                       |  .             |          version: 0 0x2a2-0x2a2.7 (1)
 0x2a0|         00 00 00                              |   ...          |          flags: "\x00\x00\x00" 0x2a3-0x2a5.7 (3)
-0x2a0|                  00 00 00 00                  |      ....      |          creation_time: 0 0x2a6-0x2a9.7 (4)
-0x2a0|                              00 00 00 00      |          ....  |          modification_time: 0 0x2aa-0x2ad.7 (4)
+0x2a0|                  00 00 00 00                  |      ....      |          creation_time: 1904-01-04T00:00:00Z (0) 0x2a6-0x2a9.7 (4)
+0x2a0|                              00 00 00 00      |          ....  |          modification_time: 1904-01-04T00:00:00Z (0) 0x2aa-0x2ad.7 (4)
 0x2a0|                                          00 00|              ..|          time_scale: 1000 0x2ae-0x2b1.7 (4)
 0x2b0|03 e8                                          |..              |
 0x2b0|      00 00 00 4a                              |  ...J          |          duration: 74 0x2b2-0x2b5.7 (4)

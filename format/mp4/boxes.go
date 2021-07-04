@@ -6,6 +6,7 @@ import (
 	"fq/format"
 	"fq/pkg/decode"
 	"strings"
+	"time"
 )
 
 var boxAliases = map[string]string{
@@ -26,6 +27,21 @@ func decodeLang(d *decode.D) string {
 		byte(d.U5()) + 0x60,
 		byte(d.U5()) + 0x60},
 	)
+}
+
+var quicktimeEpoch = time.Date(1904, time.January, 4, 0, 0, 0, 0, time.UTC)
+
+func decodeFieldTime(d *decode.D, name string) uint64 {
+	return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
+		n, d := decodeTime(d)
+		return n, decode.NumberDecimal, d
+	})
+}
+
+// Quicktime time seconds in January 1, 1904 UTC
+func decodeTime(d *decode.D) (uint64, string) {
+	n := d.U32()
+	return n, quicktimeEpoch.Add(time.Second * time.Duration(n)).Format(time.RFC3339)
 }
 
 func decodeBox(ctx *decodeContext, d *decode.D) {
@@ -125,8 +141,8 @@ func init() {
 		"mvhd": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldUTF8("flags", 3)
-			d.FieldU32("creation_time")
-			d.FieldU32("modification_time")
+			decodeFieldTime(d, "creation_time")
+			decodeFieldTime(d, "modification_time")
 			d.FieldU32("time_scale")
 			d.FieldU32("duration")
 			d.FieldFP32("preferred_rate")
