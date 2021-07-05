@@ -333,9 +333,9 @@ syntax for comparing and working with fields, accessing child fields and special
 ## Thanks and related projects
 
 This project would not be possible without [itchyny](https://github.com/itchyny)'s
-jq implementation [gojq](https://github.com/itchyny/gojq).
+jq implementation [gojq](https://github.com/itchyny/gojq). Also want to thank
+[HexFiend](https://github.com/HexFiend/HexFiend) for inspiration and ideas and [stedolan](https://github.com/stedolan)
+for inventing the [jq](https://github.com/stedolan/jq) language.
 
-Also want to thank
-- [HexFiend](https://github.com/HexFiend/HexFiend) for inspiration and ideas
-- [stedolan](https://github.com/stedolan) for inventing the [jq](https://github.com/stedolan/jq)
-language.
+Similar projects:
+- https://github.com/binspector/binspector
