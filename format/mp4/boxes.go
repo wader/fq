@@ -44,6 +44,20 @@ func decodeTime(d *decode.D) (uint64, string) {
 	return n, quicktimeEpoch.Add(time.Second * time.Duration(n)).Format(time.RFC3339)
 }
 
+func decodeFieldMatrix(d *decode.D, name string) {
+	d.FieldStructFn(name, func(d *decode.D) {
+		d.FieldFP32("a")
+		d.FieldFP32("b")
+		d.FieldFP("u", 32, 30)
+		d.FieldFP32("c")
+		d.FieldFP32("d")
+		d.FieldFP("v", 32, 30)
+		d.FieldFP32("x")
+		d.FieldFP32("y")
+		d.FieldFP("w", 32, 30)
+	})
+}
+
 func decodeBox(ctx *decodeContext, d *decode.D) {
 	typeFn := func() (string, string) {
 		typ := d.UTF8(4)
@@ -148,7 +162,7 @@ func init() {
 			d.FieldFP32("preferred_rate")
 			d.FieldFP16("preferred_volume")
 			d.FieldUTF8("reserved", 10)
-			d.FieldUTF8("matrix_structure", 36)
+			decodeFieldMatrix(d, "matrix_structure")
 			d.FieldU32("preview_time")
 			d.FieldU32("preview_duration")
 			d.FieldU32("poster_time")
@@ -193,7 +207,7 @@ func init() {
 			d.FieldU16("alternate_group")
 			d.FieldFP16("volume")
 			d.FieldU16("reserved3")
-			d.FieldBitBufLen("matrix_structure", 36*8)
+			decodeFieldMatrix(d, "matrix_structure")
 			d.FieldFP32("track_width")
 			d.FieldFP32("track_height")
 
