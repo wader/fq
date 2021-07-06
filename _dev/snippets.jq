@@ -25,6 +25,39 @@ def radix62sp: radix(62; "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQR
 		"V": 57, "W": 58, "X": 59, "Y": 60, "Z": 61
 	});
 
+# "01:09:55.76" -> 4195.76 ->
+# 4195.76 -> "01:09:55.76"
+def duration:
+	def lpad($s; $w): ($s * ($w+1-length))[1:] + .;
+	def _string:
+		split(":")
+		| map(tonumber)
+		| reverse
+		| reduce .[] as $n ({q:1,a:0}; {q:(.q*60), a:(.a+.q*$n)})
+		| .a;
+	def _number:
+		if . == 0 then 0
+		else
+			[
+				( [ (recurse(if . > 0 then . div 60 else empty end) | . % 60)]
+				| reverse
+				| .[1:]
+				| map(tostring | lpad("0"; 2))
+				| join(":")
+				),
+				( .
+				# ugly but can't get trunc to work properly
+				| tostring
+				| split(".")[1] // empty
+				| ".", .
+				)
+			]
+			| join("")
+		end;
+	if . | type == "string" then _string
+	elif . | type == "number" then _number
+	else error("expected string or number") end;
+
 # def recurse_foreach(init; update; extract):
 #     def _recurse_foreach($state; $c):
 #         (. as $c | ["_recurse_foreach $state", $state] | debug | $c) |
