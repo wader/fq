@@ -33,8 +33,11 @@ def duration:
 		split(":")
 		| map(tonumber)
 		| reverse
-		| reduce .[] as $n ({q:1,a:0}; {q:(.q*60), a:(.a+.q*$n)})
-		| .a;
+		| [foreach .[] as $n (0; .+1; pow(60;.-1)*$n)]
+		# sum smallest to largest seem to improve precision
+		| sort
+		| reverse
+		| add;
 	def _number:
 		if . == 0 then 0
 		else
