@@ -2,7 +2,7 @@
 
 #### CLI and REPL
 
-- Ctxstack index cancel wrong order skip?
+- ctxstack index cancel wrong order skip?
 - Pager for long output. Configurable? `$PAGER`? only explicit with some kind of syntax? `.. | less` but how?
 - Nicer context cancel message
 - `dump` cancel output of large root value, ex: `.frames`. Problem is dump is done by parent repl. 
@@ -11,7 +11,11 @@
 - slurp support?
 - Configurable history file/name?
 - Reset color at prompt? context cancel
+
+#### Language
+
 - Variables somehow? global `$VAR`?
+- Cleanup/Make binary buffers make sense.
 
 #### Functions
 
@@ -72,6 +76,7 @@
 - Somehow control/limit nested decoding, depth/exclude/include? `probe({depth:1})` etc? per format skip options?
 - `json` decoder?
 - Can't use range while decoding, not calculated yet
+- Keep track of encoding for values, u16le, utf8, varint etc
 
 #### Formats
 
@@ -84,6 +89,8 @@
 - `protobuf` schema?
 - `matroska` crc
 - `mp4` styp segment test
+- Document maturity/completeness
+- Refactor *[]decode.Format into something more abstract, group?
 
 #### Scripts
 

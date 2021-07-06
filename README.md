@@ -234,26 +234,7 @@ TODO
 
 ### Known issues
 
-- TODO: concat bitbufs?
-- TODO: byte units when outputting
-
-### TODOs
-
-- Function documentation in code, generate md etc
-- Copy/pasteable output, add base prefixes
-- Nested BitBufs, how to show? what about ranges? for example compressed data, demuxed ogg
-- CRC fields, how to update with actual? fix flac
-- Clean up panics, errors, better partial decode
-- bitio.MultiBitReader to save memory
-- Cleanup decoder API, nested bufs, decoders, try decode loop? decodebuf?
-- Save encoding for values, LE, BE, varint etc
-- Cleanup decoders
-- Document decode maturity/completeness
-- Arbitrary base integer literals
-- Make jq functions that change state fail if called more than once? decode etc?
-- REPL push/pop, variables etc?
-- REPL tests
-- Refactor *[]decode.Format into something more abstract, group?
+- TODO
 
 ### Useful tricks
 
