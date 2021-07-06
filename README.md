@@ -232,15 +232,15 @@ TODO
 
 ## Known issues and tricks
 
-See [_dev/usage.md](_dev/usage.md)
+See [_doc/usage.md](_doc/usage.md)
 
 ## TODO and ideas
 
-See [_dev/TODO.md](_dev/TODO.md)
+See [_doc/TODO.md](_doc/TODO.md)
 
 ## Development
 
-See [_dev/dev.md](_dev/dev.md)
+See [_doc/dev.md](_doc/dev.md)
 
 ## Thanks and related projects
 
