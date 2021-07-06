@@ -48,9 +48,9 @@ func (de decodeError) JQValueKey(name string) interface{} {
 	return fmt.Errorf("can't index array with string")
 }
 func (de decodeError) JQValueEach() interface{} {
-	var props [][2]interface{}
+	var props []gojq.PathValue
 	for i, e := range de.v.Errs {
-		props = append(props, [2]interface{}{i, formatError{e}})
+		props = append(props, gojq.PathValue{Path: i, Value: formatError{e}})
 	}
 	return props
 }
@@ -122,10 +122,10 @@ func (fe formatError) JQValueKey(name string) interface{} {
 	return nil
 }
 func (fe formatError) JQValueEach() interface{} {
-	return [][2]interface{}{
-		{"format", fe.JQValueKey("format")},
-		{"error", fe.JQValueKey("error")},
-		{"stacktrace", fe.JQValueKey("stacktrace")},
+	return []gojq.PathValue{
+		{Path: "format", Value: fe.JQValueKey("format")},
+		{Path: "error", Value: fe.JQValueKey("error")},
+		{Path: "stacktrace", Value: fe.JQValueKey("stacktrace")},
 	}
 }
 func (fe formatError) JQValueType() string {

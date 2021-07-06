@@ -353,9 +353,9 @@ func (av arrayValueObject) JQValueSlice(start int, end int) interface{} {
 	return vs
 }
 func (av arrayValueObject) JQValueEach() interface{} {
-	props := make([][2]interface{}, len(av.vv))
+	props := make([]gojq.PathValue, len(av.vv))
 	for i, v := range av.vv {
-		props[i] = [2]interface{}{i, makeValueObject(v)}
+		props[i] = gojq.PathValue{Path: i, Value: makeValueObject(v)}
 	}
 	return props
 }
@@ -402,13 +402,13 @@ func (sv structValueObject) JQValueKey(name string) interface{} {
 	return nil
 }
 func (sv structValueObject) JQValueEach() interface{} {
-	props := make([][2]interface{}, len(sv.vv))
+	props := make([]gojq.PathValue, len(sv.vv))
 	for i, v := range sv.vv {
-		props[i] = [2]interface{}{v.Name, makeValueObject(v)}
+		props[i] = gojq.PathValue{Path: v.Name, Value: makeValueObject(v)}
 	}
 	sort.Slice(props, func(i, j int) bool {
-		iString, _ := props[i][0].(string)
-		jString, _ := props[j][0].(string)
+		iString, _ := props[i].Path.(string)
+		jString, _ := props[j].Path.(string)
 		return iString < jString
 	})
 	return props

@@ -6,7 +6,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"format/all"
+	_ "fq/format/all"
 	"fq/pkg/interp"
 	"io"
 	"io/ioutil"
