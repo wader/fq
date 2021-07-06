@@ -1,6 +1,7 @@
 /test.mp3:
 > fq -h
 Usage: fq [OPTIONS] [FILE] [EXPR]...
+--compact,-c     Compact output
 --decode,-d      Decode format (probe)
 --file,-f        Read script from file
 --formats        Show formats
@@ -33,3 +34,11 @@ null> ^D
 123
 > fq -ni 123
 number> ^D
+> fq -n "[1,2,3]"
+[
+  1,
+  2,
+  3
+]
+> fq -nc "[1,2,3]"
+[1,2,3]

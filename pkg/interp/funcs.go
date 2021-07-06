@@ -576,7 +576,7 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 				return gojq.NewIter()
 			}
 
-			cj, err := i.NewColorJSON()
+			cj, err := i.NewColorJSON(opts)
 			if err != nil {
 				return gojq.NewIter(err)
 			}

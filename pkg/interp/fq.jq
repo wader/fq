@@ -242,6 +242,12 @@ def main:
 				description: "Raw strings",
 				bool: true
 			},
+			"compact": {
+				short: "-c",
+				long: "--compact",
+				description: "Compact output",
+				bool: true
+			},
 			"options": {
 				short: "-o",
 				long: "--option",
@@ -261,6 +267,7 @@ def main:
 		+ {
 			repl: $parsed.repl,
 			rawstring: ($parsed.rawstring == true),
+			compact: ($parsed.compact == true),
 			repllevel: 0,
 		}
 	)

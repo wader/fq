@@ -684,6 +684,7 @@ type Options struct {
 	Raw        bool   `json:"raw"`
 	REPL       bool   `json:"repl"`
 	RawString  bool   `json:"rawstring"`
+	Compact    bool   `json:"compact"`
 
 	LineBytes    int `json:"linebytes"`
 	DisplayBytes int `json:"displaybytes"`
@@ -722,6 +723,9 @@ func mapSetOptions(d *Options, m map[string]interface{}) {
 	}
 	if v, ok := m["rawstring"]; ok {
 		d.RawString = toBoolZ(v)
+	}
+	if v, ok := m["compact"]; ok {
+		d.Compact = toBoolZ(v)
 	}
 
 	if v, ok := m["linebytes"]; ok {
@@ -785,16 +789,16 @@ func (i *Interp) Options(fnOptsV ...interface{}) (Options, error) {
 	return opts, nil
 }
 
-func (i *Interp) NewColorJSON() (*colorjson.Encoder, error) {
-	opts, err := i.Options()
-	if err != nil {
-		return nil, err
+func (i *Interp) NewColorJSON(opts Options) (*colorjson.Encoder, error) {
+	indent := 2
+	if opts.Compact {
+		indent = 0
 	}
 
 	return colorjson.NewEncoder(
 		opts.Color,
 		false,
-		2,
+		indent,
 		func(v interface{}) interface{} {
 			if o, ok := v.(gojq.JQValue); ok {
 				return o.JQValue()
