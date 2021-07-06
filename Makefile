@@ -42,15 +42,19 @@ memprof: prof
 cpuprof: prof
 	go tool pprof -http :5555 fq.prof fq.cpu.prof
 
-.PHONY: README.md
-README.md: _doc/file.mp3 _doc/file.mp4
+.PHONY: doc
+doc:
 	$(eval REPODIR=$(shell pwd))
 	$(eval TEMPDIR=$(shell mktemp -d))
 	cp -a _doc/* "${TEMPDIR}"
 	go build -o "${TEMPDIR}/fq" main.go
-	cd "${TEMPDIR}" ; \
-	        cat "${REPODIR}/$@" | PATH="${TEMPDIR}:${PATH}" go run "${REPODIR}/_doc/mdsh.go" > "${TEMPDIR}/$@"
-	mv "${TEMPDIR}/$@" "${REPODIR}/$@"
+	for f in *.md _doc/*.md ; do \
+		cd "${TEMPDIR}" ; \
+		echo $$f ; \
+		mkdir -p $$(dirname "${TEMPDIR}/$$f") ; \
+		cat "${REPODIR}/$$f" | PATH="${TEMPDIR}:${PATH}" go run "${REPODIR}/_doc/mdsh.go" > "${TEMPDIR}/$$f" ; \
+		mv "${TEMPDIR}/$$f" "${REPODIR}/$$f" ; \
+	done
 	rm -rf "${TEMPDIR}"
 
 _doc/file.mp3: Makefile

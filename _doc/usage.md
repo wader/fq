@@ -1,5 +1,31 @@
 ### Arguments
 
+<pre sh>
+$ fq -h 
+Usage: fq [OPTIONS] [FILE] [EXPR]...
+--compact,-c     Compact output
+--decode,-d      Decode format (probe)
+--file,-f        Read script from file
+--formats        Show formats
+--help,-h        Show help
+-n               Null input
+--option,-o=ARG  Set option, eg: color=true
+                   addrbase=16
+                   bytecolors=0-0xff=brightwhite,0=brightblack,32-126:9-13=white
+                   color=false
+                   colors=array=white,dumpaddr=yellow,dumpheader=yellow+underline,error=brightred,false=yellow,index=white,null=brightblack,number=cyan,object=white,objectkey=brightblue,string=green,true=yellow,value=white
+                   depth=0
+                   displaybytes=16
+                   linebytes=16
+                   raw=true
+                   sizebase=10
+                   unicode=false
+                   verbose=false
+-r               Raw strings
+--repl,-i        Interactive REPL
+--version,-v     Show version (dev)
+</pre>
+
 - TODO: null input
 - TODO: expressions
 
