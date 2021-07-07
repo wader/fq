@@ -82,7 +82,9 @@ func newStandardOS() (*standardOS, error) {
 }
 
 func (o standardOS) Close() error {
-	o.rl.Close()
+	// TODO: only close if is terminal somehow? otherwise reset will write
+	// to stdout and mess up raw output
+	// o.rl.Close()
 	close(o.interruptSignalChan)
 	return nil
 }
