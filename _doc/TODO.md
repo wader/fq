@@ -111,8 +111,9 @@
 
 #### Readline
 
-- Use something else than `github.com/goinsane/readline`?
+- Use something else than `github.com/chzyer/readline`?
 - Fix backspace as start clears whole line bug
+- Undo ctrl+_ would be nice
 
 #### Big things
 

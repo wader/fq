@@ -14,7 +14,7 @@ import (
 	"os/signal"
 	"path/filepath"
 
-	"github.com/goinsane/readline"
+	"github.com/chzyer/readline"
 )
 
 func MaybeProfile() func() {
