@@ -8,7 +8,6 @@ import (
 	"fq/internal/profile"
 	"fq/pkg/interp"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/signal"
@@ -39,6 +38,7 @@ func (a autoCompleterFn) Do(line []rune, pos int) (newLine [][]rune, length int)
 
 type standardOS struct {
 	rl                  *readline.Instance
+	output              interp.Output
 	interruptSignalChan chan os.Signal
 	interruptChan       chan struct{}
 }
@@ -53,9 +53,6 @@ func newStandardOS() (*standardOS, error) {
 	_ = os.MkdirAll(filepath.Dir(historyFile), 0700)
 
 	rl, err := readline.NewEx(&readline.Config{
-		Stdin:             ioutil.NopCloser(os.Stdin),
-		Stdout:            os.Stdin,
-		Stderr:            os.Stderr,
 		HistoryFile:       historyFile,
 		HistorySearchFold: true,
 	})
@@ -80,18 +77,22 @@ func newStandardOS() (*standardOS, error) {
 		rl:                  rl,
 		interruptSignalChan: interruptSignalChan,
 		interruptChan:       interruptChan,
+		output:              standardOsOutput{rl: rl},
 	}, nil
 }
 
 func (o standardOS) Close() error {
+	o.rl.Close()
 	close(o.interruptSignalChan)
 	return nil
 }
 
-type standardOsOutput struct{}
+type standardOsOutput struct {
+	rl *readline.Instance
+}
 
 func (o standardOsOutput) Write(p []byte) (n int, err error) {
-	return os.Stdout.Write(p)
+	return o.rl.Write(p)
 }
 
 func (o standardOsOutput) Size() (int, int) {
@@ -103,9 +104,9 @@ func (o standardOsOutput) IsTerminal() bool {
 	return readline.IsTerminal(int(os.Stdout.Fd()))
 }
 
-func (*standardOS) Stdin() io.Reader           { return os.Stdin }
-func (*standardOS) Stdout() interp.Output      { return standardOsOutput{} }
-func (*standardOS) Stderr() io.Writer          { return os.Stderr }
+func (o *standardOS) Stdin() io.Reader         { return o.rl.Config.Stdin }
+func (o *standardOS) Stdout() interp.Output    { return o.output }
+func (o *standardOS) Stderr() io.Writer        { return o.rl.Stderr() }
 func (o *standardOS) Interrupt() chan struct{} { return o.interruptChan }
 func (*standardOS) Args() []string             { return os.Args }
 func (*standardOS) Environ() []string          { return os.Environ() }
@@ -175,7 +176,7 @@ func Main(r *registry.Registry, version string) {
 	}
 
 	if err := i.Main(context.Background(), sos.Stdout(), version); err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(sos.Stderr(), err)
 		if ex, ok := err.(Exiter); ok {
 			os.Exit(ex.ExitCode())
 		}
