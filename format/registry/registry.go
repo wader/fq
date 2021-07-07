@@ -55,10 +55,10 @@ func (r *Registry) resolve() error {
 
 	for _, fs := range r.Groups {
 		sort.Slice(fs, func(i, j int) bool {
-			if fs[i].ProbeWeight == fs[j].ProbeWeight {
+			if fs[i].ProbeOrder == fs[j].ProbeOrder {
 				return fs[i].Name < fs[j].Name
 			}
-			return fs[i].ProbeWeight < fs[j].ProbeWeight
+			return fs[i].ProbeOrder < fs[j].ProbeOrder
 		})
 	}
 

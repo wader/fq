@@ -9,7 +9,7 @@ import (
 func init() {
 	registry.MustRegister(&decode.Format{
 		Name:        format.MPEG_TS,
-		ProbeWeight: 10, // make sure to be after gif, both start with 0x47
+		ProbeOrder:  10, // make sure to be after gif, both start with 0x47
 		Description: "MPEG Transport Stream",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    tsDecode,

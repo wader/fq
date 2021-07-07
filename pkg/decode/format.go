@@ -7,7 +7,7 @@ type Dependency struct {
 
 type Format struct {
 	Name         string
-	ProbeWeight  int // probe order is from low to hi value then by name
+	ProbeOrder   int // probe order is from low to hi value then by name
 	Description  string
 	Groups       []string
 	DecodeFn     func(d *D, in interface{}) interface{}
