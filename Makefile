@@ -46,19 +46,19 @@ cpuprof: prof
 doc:
 	$(eval REPODIR=$(shell pwd))
 	$(eval TEMPDIR=$(shell mktemp -d))
-	cp -a _doc/* "${TEMPDIR}"
+	cp -a doc/* "${TEMPDIR}"
 	go build -o "${TEMPDIR}/fq" main.go
-	for f in *.md _doc/*.md ; do \
+	for f in *.md doc/*.md ; do \
 		cd "${TEMPDIR}" ; \
 		echo $$f ; \
 		mkdir -p $$(dirname "${TEMPDIR}/$$f") ; \
-		cat "${REPODIR}/$$f" | PATH="${TEMPDIR}:${PATH}" go run "${REPODIR}/_doc/mdsh.go" > "${TEMPDIR}/$$f" ; \
+		cat "${REPODIR}/$$f" | PATH="${TEMPDIR}:${PATH}" go run "${REPODIR}/doc/mdsh.go" > "${TEMPDIR}/$$f" ; \
 		mv "${TEMPDIR}/$$f" "${REPODIR}/$$f" ; \
 	done
 	rm -rf "${TEMPDIR}"
 
-_doc/file.mp3: Makefile
+doc/file.mp3: Makefile
 	ffmpeg -y -f lavfi -i sine -f lavfi -i testsrc -map 0:0 -map 1:0 -t 20ms "$@"
 
-_doc/file.mp4: Makefile
+doc/file.mp4: Makefile
 	ffmpeg -y -f lavfi -i sine -f lavfi -i testsrc -c:a aac -c:v h264 -f mp4 -t 20ms "$@"

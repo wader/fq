@@ -63,15 +63,15 @@ and the binary should end up at `$GOPATH/bin/fq`.
 
 Basic usage is `fq [OPTIONS] [FILE] [EXPR]...`.
 
-For more details and support formats see [usage.md](_doc/usage.md).
+For more details and support formats see [usage.md](doc/usage.md).
 
 ## TODO and ideas
 
-See [TODO.md](_doc/TODO.md)
+See [TODO.md](doc/TODO.md)
 
 ## Development
 
-See [dev.md](_doc/dev.md)
+See [dev.md](doc/dev.md)
 
 ## Thanks and related projects
 
