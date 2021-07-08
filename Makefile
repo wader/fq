@@ -28,7 +28,7 @@ depgraph.svg:
 
 .PHONY: formats.svg
 formats.svg:
-	_dev/formats_dot.jq | dot -Tsvg -o formats.svg
+	dev/formats_dot.jq | dot -Tsvg -o formats.svg
 
 .PHONY: prof
 prof:

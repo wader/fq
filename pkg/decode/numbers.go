@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-//go:generate sh -c "cat numbers.go.tmpl | go run ../../_dev/tmpl.go numbers.go.json | gofmt > numbers_gen.go"
+//go:generate sh -c "cat numbers.go.tmpl | go run ../../dev/tmpl.go numbers.go.json | gofmt > numbers_gen.go"
 
 // UE reads a nBits bits unsigned integer with byte order endian
 // MSB first
