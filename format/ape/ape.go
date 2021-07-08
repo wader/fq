@@ -53,12 +53,15 @@ func apev2Decode(d *decode.D, in interface{}) interface{} {
 				d.FieldUTF8("key", int(keyLen))
 				d.FieldU8("key_terminator")
 				if binaryItem {
-					d.FieldStrNullTerminated("filename")
-					// assume image if binary
-					dv, _, _ := d.FieldTryDecodeLen("value", int64(itemSize-1)*8, imageFormat)
-					if dv == nil {
-						d.FieldBitBufLen("value", int64(itemSize-1)*8)
-					}
+					d.DecodeLenFn(int64(itemSize)*8, func(d *decode.D) {
+						d.FieldStrNullTerminated("filename")
+						// assume image if binary
+						dv, _, _ := d.FieldTryDecode("value", imageFormat)
+						if dv == nil {
+							// TODO: framed and unknown instead?
+							d.FieldBitBufLen("value", d.BitsLeft())
+						}
+					})
 				} else {
 					d.FieldUTF8("value", int(itemSize))
 				}
