@@ -11,8 +11,8 @@ require (
 	github.com/pmezard/go-difflib v1.0.0
 )
 
-// go mod edit -replace github.com/chzyer/readline=github.com/wader/readline@develop-v2 && GOPROXY=direct go mod download github.com/chzyer/readline && go mod tidy
-replace github.com/chzyer/readline => github.com/wader/readline v0.0.0-20210707103744-1d0765b5d796
+// go mod edit -replace github.com/chzyer/readline=github.com/wader/readline@fq && GOPROXY=direct go mod download github.com/chzyer/readline && go mod tidy
+replace github.com/chzyer/readline => github.com/wader/readline v0.0.0-20210708114437-6e459499aaf5
 
 // replace github.com/chzyer/readline => /Users/wader/src/readline
 
