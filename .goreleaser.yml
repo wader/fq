@@ -1,0 +1,56 @@
+project_name: fq
+
+before:
+  hooks:
+    - go mod download
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goarch:
+      - amd64
+      - arm64
+    goos:
+      - linux
+      - windows
+      - darwin
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.Commit}}
+      - -X main.date={{ .CommitDate }}
+      - -X main.builtBy=goreleaser
+checksum:
+  name_template: 'checksums.txt'
+
+archives:
+- files:
+  - none*
+  format_overrides:
+    - goos: windows
+      format: zip
+  replacements:
+    darwin: macos
+
+snapshot:
+  name_template: "{{ .Tag }}-next"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+
+brews:
+  - tap:
+      owner: wader
+      name: homebrew-tap
+    folder: Formula
+    homepage: https://github.com/wader/fq
+    description: jq for binaries
+    license: MIT
+    test: |
+      system "#{bin}/fq -v"
