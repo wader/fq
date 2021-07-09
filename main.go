@@ -6,10 +6,10 @@ import (
 	"fq/pkg/cli"
 )
 
-var Version = "dev"
+var version = "dev"
 
 func main() {
 	defer cli.MaybeProfile()()
 	cli.MaybeLogFile()
-	cli.Main(registry.Default, Version)
+	cli.Main(registry.Default, version)
 }
