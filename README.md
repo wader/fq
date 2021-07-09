@@ -52,9 +52,21 @@ $ fq file.mp4 '[.. | select(.type == "stsd")?.boxes[].type]' 
 
 ## Install
 
-Currently there are no binary releases, but it's quite easy to build fq yourself. Make sure you have go 1.16
-or later and then do:
+Download archive from [releases](https://github.com/wader/fq/releases) page for your
+platform, unarchive and move the executable to `PATH`.
+
+### Homebrew
+
 ```sh
+# install latest release
+brew install wader/tap/fq
+```
+
+### Build from source
+
+Make sure you have go 1.16 or later then do:
+```sh
+# build latest master
 go install github.com/wader/fq@latest
 ```
 and the binary should end up at `$GOPATH/bin/fq`.
