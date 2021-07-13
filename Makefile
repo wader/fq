@@ -42,8 +42,14 @@ memprof: prof
 cpuprof: prof
 	go tool pprof -http :5555 fq.prof fq.cpu.prof
 
+.PHONY: update-gomodreplace
+update-gomodreplace:
+	go mod edit -replace github.com/chzyer/readline=github.com/wader/readline@fq && GOPROXY=direct go mod download github.com/chzyer/readline && go mod tidy
+	go mod edit -replace github.com/itchyny/gojq=github.com/wader/gojq@fq && GOPROXY=direct go mod download github.com/itchyny/gojq && go mod tidy
+
+
 .PHONY: doc
-doc:
+doc: doc/file.mp3 doc/file.mp4
 	$(eval REPODIR=$(shell pwd))
 	$(eval TEMPDIR=$(shell mktemp -d))
 	cp -a doc/* "${TEMPDIR}"

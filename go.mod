@@ -11,12 +11,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.0
 )
 
-// go mod edit -replace github.com/chzyer/readline=github.com/wader/readline@fq && GOPROXY=direct go mod download github.com/chzyer/readline && go mod tidy
 replace github.com/chzyer/readline => github.com/wader/readline v0.0.0-20210708114437-6e459499aaf5
 
-// replace github.com/chzyer/readline => /Users/wader/src/readline
-
-// go mod edit -replace github.com/itchyny/gojq=github.com/wader/gojq@fq && GOPROXY=direct go mod download github.com/itchyny/gojq && go mod tidy
 replace github.com/itchyny/gojq => github.com/wader/gojq v0.12.1-0.20210706153030-3a7dba0d5201
-
-// replace github.com/itchyny/gojq => /Users/wader/src/gojq
