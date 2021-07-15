@@ -20,6 +20,7 @@ var footerFormat []*decode.Format
 func init() {
 	registry.MustRegister(&decode.Format{
 		Name:        format.WAV,
+		ProbeOrder:  10, // after most others (overlap some with webp)
 		Description: "WAV file",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    wavDecode,
