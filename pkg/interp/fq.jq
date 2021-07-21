@@ -259,7 +259,7 @@ def main:
 			},
 		};
 	def _usage($arg0; $version):
-		"Usage: \($arg0) [OPTIONS] [EXPR] [FILE...]",
+		"Usage: \($arg0) [OPTIONS] [FILE] [EXPR...]",
 		args_help_text(_opts($version));
 	.version as $version
 	| .args[0] as $arg0
