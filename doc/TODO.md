@@ -91,6 +91,7 @@
 - `mp4` styp segment test
 - Document maturity/completeness
 - Refactor *[]decode.Format into something more abstract, group?
+- Add `dsf` format
 
 #### Scripts
 
@@ -118,5 +119,6 @@
 #### Big things
 
 - UI, web interface? multiple repl windows? nicer way of showing overlapping fiends in hex etc?
-- jupyter
+- jupyter notebook integration
+- FUSE interface
 - Lazy decode, should work on known sizes? could also save memory be re-decode?
