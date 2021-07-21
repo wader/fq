@@ -258,6 +258,10 @@ def main:
 				help_default: build_default_options
 			},
 		};
+	def _usage($arg0; $version):
+		"Usage: \($arg0) [OPTIONS] [FILE] [EXPR]...",
+		args_help_text(_opts($version))
+		| println;
 	.version as $version
 	| .args[0] as $arg0
 	| args_parse(.args[1:]; _opts($version)) as {$parsed, $rest}
@@ -277,9 +281,7 @@ def main:
 	  elif $parsed.formats then
 		_formats_list | println
 	  elif $parsed.help then
-		"Usage: \($arg0) [OPTIONS] [FILE] [EXPR]...",
-		args_help_text(_opts($version))
-		| println
+		_usage($arg0; $version)
 	  else
 		try
 		  null
