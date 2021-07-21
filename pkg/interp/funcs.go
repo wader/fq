@@ -109,7 +109,8 @@ func (i *Interp) tty(c interface{}, a []interface{}) interface{} {
 	w, h := i.stdout.Size()
 	return map[string]interface{}{
 		"is_terminal": i.stdout.IsTerminal(),
-		"size":        []interface{}{w, h},
+		"width":       w,
+		"height":      h,
 	}
 }
 
