@@ -179,7 +179,8 @@ def help:
     ( builtins[]
 	, "^C interrupt"
 	, "^D exit REPL"
-    ) | println;
+    )
+	| println;
 
 def main:
 	def _formats_list:
