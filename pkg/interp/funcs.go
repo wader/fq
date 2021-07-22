@@ -367,9 +367,9 @@ func (i *Interp) formats(c interface{}, a []interface{}) interface{} {
 	vs := map[string]interface{}{}
 	for _, f := range allFormats {
 		vf := map[string]interface{}{
-			"name":         f.Name,
-			"description":  f.Description,
-			"probe_weight": f.ProbeOrder,
+			"name":        f.Name,
+			"description": f.Description,
+			"probe_order": f.ProbeOrder,
 		}
 
 		var dependenciesVs []interface{}
@@ -458,22 +458,21 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 			return err
 		}
 
-		rs = f
+		rs = ctxreadseeker.New(i.ctx, f)
 	}
 
-	ctxRs := ctxreadseeker.New(i.ctx, rs)
 	// TODO: cleanup? bitbuf have optional close method etc?
 	// TODO: can call ctxRs directory of need to forward close thru aheadreadseeker etc?
 	// if c, ok := rs.(io.Closer); ok {
 	// 	ctxRs.Close()
 	// }
 
-	bEnd, err := ioextra.SeekerEnd(ctxRs)
+	bEnd, err := ioextra.SeekerEnd(rs)
 	if err != nil {
 		return err
 	}
 
-	var progressRs io.ReadSeeker = ctxRs
+	var progressRs io.ReadSeeker = rs
 
 	// TODO: make nicer
 	// we don't want to print any progress things after decode is done
@@ -492,7 +491,7 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 			fmt.Fprint(i.os.Stderr(), "\r      \r")
 		}
 		const progressPrecision = 1024
-		progressRs = progressreadseeker.New(ctxRs, progressPrecision, bEnd, progressFn)
+		progressRs = progressreadseeker.New(rs, progressPrecision, bEnd, progressFn)
 	}
 
 	const cacheReadAheadSize = 512 * 1024
