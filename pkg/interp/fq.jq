@@ -256,7 +256,7 @@ def main:
 			},
 		};
 	def _usage($arg0; $version):
-		"Usage: \($arg0) [OPTIONS] [FILE] [EXPR...]",
+		"Usage: \($arg0) [OPTIONS] [EXPR] [FILE...]",
 		args_help_text(_opts($version));
 	.version as $version
 	| .args[0] as $arg0
@@ -280,28 +280,51 @@ def main:
 		_usage($arg0; $version) | println
 	  else
 		try
-		  null
-		  # figure out filename and expressions
-		  | ( if $parsed.nullinput then [null, $rest]
-			  # make -ni and -i without args act the same
-			  elif $parsed.repl and ($rest[0] | not) then [null, $rest]
-			  elif $rest[0] then [$rest[0], $rest[1:]]
-			  else ["-", []]
-			  end
-		    ) as [$filename, $exprs]
-		  | if $filename then
-			( open($filename)
-			| decode($parsed.decode)
-			)
-		  end
+
+
+    # expr file...
+	# -n expr
+	# -f file expr
+	# -nf scriptfile file
+
+
+	# fq
+	# fq . test.mp3
+	# fq -i
+	# fq -i . test.mp3
+	# fq -n 2+2
+	# fq -n -i
+
+		  # figure out expression and filenames
+
+		  {
+			expr: $rest[0],
+			filenames: $rest[1:],
+		  }
+		  # make -ni and -i without args act the same
+		  | if $parsed.nullinput or ($parsed.repl and ($rest | length) == 0) then
+		     .expr = $rest[0]
+		  	 | .filenames = [null]
+		    end
 		  | if $parsed.file then
-			( (open($parsed.file) | string) as $file_expr
-			| eval_f($file_expr; .)
-			)
-		  end
-		  # this evaluates and combines all expression args in order
-		  | (reduce $exprs[] as $expr ([.]; [.[] | eval_f($expr; .)]))[]
+			 .expr = (open($parsed.file) | string)
+			 | .filenames = $rest
+		    end
+		  | if .filenames == [] then
+			  .filenames = ["-"]
+		    end
+		  | debug
+		  | .inputs =
+		  [ .filenames[] as $filename
+		  # TODO: try decode?
+		  | open($filename)
+		  | decode($parsed.decode)
+		  ]
+		  | debug
+		  | .expr as $expr
+		  | .inputs[]
+		  | eval_f($expr; .)
 		  | if $parsed.repl then repl
-			else default_display end
+		    else default_display end
 		catch tostring | halt_error(1)
 	  end;
