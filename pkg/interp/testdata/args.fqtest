@@ -1,6 +1,6 @@
 /test.mp3:
 > fq -h
-Usage: fq [OPTIONS] [FILE] [EXPR]...
+Usage: fq [OPTIONS] [FILE] [EXPR...]
 --compact,-c     Compact output
 --decode,-d      Decode format (probe)
 --file,-f        Read script from file
