@@ -1,14 +1,3 @@
-
-# TODO: escape for safe key names
-# path ["a", 1, "b"] -> "a[1].b"
-def path_to_expr:
-	map(if type == "number" then "[", ., "]" else ".", . end) | join("");
-
-# TODO: don't use eval? should support '.a.b[1]."c.c"' and escapes?
-def expr_to_path:
-	if . | type != "string" then error("require string argument") end
-	| eval("null | path(\(.))");
-
 # convert number to array of bytes
 def number_to_bytes($bits):
 	def _number_to_bytes($d):
