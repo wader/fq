@@ -431,6 +431,9 @@ func (bbf *bitBufFile) ToBuffer() (*bitio.Buffer, error) {
 // open read file from filesystem
 func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 	var rs io.ReadSeeker
+	var bEnd int64
+	var err error
+
 	opts, err := i.Options()
 	if err != nil {
 		return err
@@ -452,6 +455,7 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 			return err
 		}
 		rs = bytes.NewReader(buf)
+		bEnd = int64(len(buf))
 	} else {
 		f, err := i.os.Open(filename)
 		if err != nil {
@@ -459,6 +463,11 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 		}
 
 		rs = ctxreadseeker.New(i.ctx, f)
+
+		bEnd, err = ioextra.SeekerEnd(rs)
+		if err != nil {
+			return err
+		}
 	}
 
 	// TODO: cleanup? bitbuf have optional close method etc?
@@ -466,11 +475,6 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 	// if c, ok := rs.(io.Closer); ok {
 	// 	ctxRs.Close()
 	// }
-
-	bEnd, err := ioextra.SeekerEnd(rs)
-	if err != nil {
-		return err
-	}
 
 	var progressRs io.ReadSeeker = rs
 
