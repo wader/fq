@@ -383,12 +383,11 @@ const (
 )
 
 type runContext struct {
-	ctx          context.Context
-	stdout       Output // TODO: rename?
-	mode         RunMode
-	state        map[string]interface{}
-	debugFn      string
-	includeStack []string
+	ctx     context.Context
+	stdout  Output // TODO: rename?
+	mode    RunMode
+	state   map[string]interface{}
+	debugFn string
 }
 
 type Interp struct {
@@ -497,10 +496,9 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	}
 
 	ni.runContext = runContext{
-		state:        newState,
-		mode:         mode,
-		debugFn:      debugFn,
-		includeStack: []string{"eval"},
+		state:   newState,
+		mode:    mode,
+		debugFn: debugFn,
 	}
 
 	// var variableNames []string
