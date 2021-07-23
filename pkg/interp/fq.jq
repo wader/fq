@@ -156,15 +156,12 @@ def eval_print($e):
 # run read-eval-print-loop
 def repl($opts): #:: a|(Opts) => @
 	def _as_array: if (. | type) != "array" then [.] end;
-	def _read_expr:
-		read(prompt; "complete")
-		| trim
-		| if . == "" then "." end;
+	def _read_expr: read(prompt; "complete") | trim;
 	def _repl:
 		. as $c
 		| try
 			_read_expr as $e
-			| (.[] | eval_print($e) | empty),
+			| if $e != "" then (.[] | eval_print($e)) else empty end,
 			_repl
 		  catch
 			if . == "interrupt" then $c | _repl
