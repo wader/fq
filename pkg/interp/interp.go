@@ -313,7 +313,7 @@ func toBufferEx(v interface{}, inArray bool) (*bitio.Buffer, error) {
 
 		return bb, nil
 	default:
-		return nil, fmt.Errorf("value can't be buffer")
+		return nil, fmt.Errorf("value can't be a buffer")
 	}
 }
 

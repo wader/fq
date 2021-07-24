@@ -5,19 +5,10 @@ package bitio_test
 import (
 	"fmt"
 	"fq/pkg/bitio"
-	"log"
 	"math/rand"
 	"strings"
 	"testing"
 )
-
-func TestNew(t *testing.T) {
-	bb := bitio.NewBufferFromBytes([]byte{0xf5}, -1)
-	e4, e4n := bb.Bits(3)
-
-	log.Printf("e4: %#+v\n", e4)
-	log.Printf("e4n: %#+v\n", e4n)
-}
 
 func TestBufferBitString(t *testing.T) {
 	testCases := []string{
@@ -93,5 +84,12 @@ func TestBitStringRandom(t *testing.T) {
 
 func TestInvalidBitString(t *testing.T) {
 	// TODO: check panic?
+	defer func() {
+		if err := recover(); err != nil {
+			// nop
+		} else {
+			t.Error("did not panic")
+		}
+	}()
 	bitio.NewBufferFromBitString("01invalid")
 }
