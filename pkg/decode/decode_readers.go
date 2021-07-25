@@ -128,7 +128,7 @@ func (d *D) ZeroPadding(nBits int) bool {
 		}
 		n, err := d.Bits(int(rBits))
 		if err != nil {
-			panic(ReadError{Err: err, Op: "ZeroPadding", Size: int64(rBits), Pos: d.Pos()})
+			panic(IOError{Err: err, Op: "ZeroPadding", Size: int64(rBits), Pos: d.Pos()})
 		}
 		isZero = isZero && n == 0
 		left -= rBits
@@ -183,7 +183,7 @@ func (d *D) TryBool() (bool, error) {
 func (d *D) Bool() bool {
 	b, err := d.TryBool()
 	if err != nil {
-		panic(ReadError{Err: err, Op: "Bool", Size: 1, Pos: d.Pos()})
+		panic(IOError{Err: err, Op: "Bool", Size: 1, Pos: d.Pos()})
 	}
 	return b
 }
@@ -192,7 +192,7 @@ func (d *D) FieldBool(name string) bool {
 	return d.FieldBoolFn(name, func() (bool, string) {
 		b, err := d.TryBool()
 		if err != nil {
-			panic(ReadError{Err: err, Name: name, Op: "FieldBool", Size: 1, Pos: d.Pos()})
+			panic(IOError{Err: err, Name: name, Op: "FieldBool", Size: 1, Pos: d.Pos()})
 		}
 		return b, ""
 	})
@@ -202,7 +202,7 @@ func (d *D) FieldBytesLen(name string, nBytes int) []byte {
 	return d.FieldBytesFn(name, func() ([]byte, string) {
 		bs, err := d.bitBuf.BytesLen(nBytes)
 		if err != nil {
-			panic(ReadError{Err: err, Name: name, Op: "FieldBytesLen", Size: int64(nBytes) * 8, Pos: d.Pos()})
+			panic(IOError{Err: err, Name: name, Op: "FieldBytesLen", Size: int64(nBytes) * 8, Pos: d.Pos()})
 		}
 		return bs, ""
 	})
@@ -212,7 +212,7 @@ func (d *D) FieldBytesLen(name string, nBytes int) []byte {
 func (d *D) UTF8(nBytes int) string {
 	s, err := d.TryUTF8(nBytes)
 	if err != nil {
-		panic(ReadError{Err: err, Op: "UTF8", Size: int64(nBytes) * 8, Pos: d.Pos()})
+		panic(IOError{Err: err, Op: "UTF8", Size: int64(nBytes) * 8, Pos: d.Pos()})
 	}
 	return string(s)
 }
@@ -222,7 +222,7 @@ func (d *D) FieldUTF8(name string, nBytes int) string {
 	return d.FieldStrFn(name, func() (string, string) {
 		str, err := d.TryUTF8(nBytes)
 		if err != nil {
-			panic(ReadError{Err: err, Name: name, Op: "FieldUTF8", Size: int64(nBytes) * 8, Pos: d.Pos()})
+			panic(IOError{Err: err, Name: name, Op: "FieldUTF8", Size: int64(nBytes) * 8, Pos: d.Pos()})
 		}
 		return str, ""
 	})
@@ -233,7 +233,7 @@ func (d *D) FieldUTF8ShortString(name string, nBytes int) string {
 	return d.FieldStrFn(name, func() (string, string) {
 		str, err := d.TryUTF8ShortString(nBytes)
 		if err != nil {
-			panic(ReadError{Err: err, Name: name, Op: "FieldUTF8ShortString", Size: int64(nBytes) * 8, Pos: d.Pos()})
+			panic(IOError{Err: err, Name: name, Op: "FieldUTF8ShortString", Size: int64(nBytes) * 8, Pos: d.Pos()})
 		}
 		return str, ""
 	})

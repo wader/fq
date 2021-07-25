@@ -833,10 +833,10 @@ func (i *Interp) find(c interface{}, a []interface{}) gojq.Iter {
 	// TODO: error, bitio.Copy?
 
 	bbBytes := &bytes.Buffer{}
-	io.Copy(bbBytes, bb)
+	_, _ = io.Copy(bbBytes, bb)
 
 	sbbBytes := &bytes.Buffer{}
-	io.Copy(sbbBytes, sbb)
+	_, _ = io.Copy(sbbBytes, sbb)
 
 	// log.Printf("bbBytes.Bytes(): %#+v\n", bbBytes.Bytes())
 	// log.Printf("sbbBytes.Bytes(): %#+v\n", sbbBytes.Bytes())

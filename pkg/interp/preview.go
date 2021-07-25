@@ -154,7 +154,7 @@ func previewEx(v *decode.Value, n *previewNode, depth int) error {
 
 			err := previewEx(sv, sn, depth+1)
 			if err != nil {
-				return nil
+				return err
 			}
 		}
 	case decode.Array:

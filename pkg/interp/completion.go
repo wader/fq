@@ -132,8 +132,8 @@ func completeTrampoline(ctx context.Context, completeFn string, c interface{}, i
 	} else {
 		return nil, pos, fmt.Errorf("%v: names missing in complete return object", cm)
 	}
-	if prefixV, ok := cm["prefix"].(interface{}); ok {
-		prefix = prefixV.(string)
+	if prefixV, ok := cm["prefix"]; ok {
+		prefix, _ = prefixV.(string)
 	} else {
 		return nil, pos, fmt.Errorf("%v: prefix missing in complete return object", cm)
 	}

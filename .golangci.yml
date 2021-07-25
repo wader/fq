@@ -1,0 +1,27 @@
+linters:
+  enable:
+    - gofmt
+    - nilerr
+    - forcetypeassert
+
+issues:
+  exclude-rules:
+    # has problems with embedding https://gitlab.com/opennota/check#known-limitations
+    - path: pkg/interp/interp.go
+      text: "unused"
+      linters:
+        - structcheck
+    # https://github.com/dominikh/go-tools/issues/167
+    - path: format/matroska/matroska.go
+      text: "S1016"
+      linters:
+        - gosimple
+    - path: format/mp4/boxes.go
+      text: "S1016"
+      linters:
+        - gosimple
+    # is a port of gojq encoder so trying to not deviate too much
+    - path: internal/colorjson/encoder.go
+      text: "is not checked"
+      linters:
+        - errcheck

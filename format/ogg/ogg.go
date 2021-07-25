@@ -81,19 +81,19 @@ func decodeOgg(d *decode.D, in interface{}) interface{} {
 				streams[oggPageOut.StreamSerialNumber] = s
 			}
 
-			if !sFound && !oggPageOut.IsFirstPage {
-				// TODO: not first page and we haven't seen the stream before
-				// log.Println("not first page and we haven't seen the stream before")
-			}
-			hasData := len(s.packetBuf) > 0
-			if oggPageOut.IsContinuedPacket && !hasData {
-				// TODO: continuation but we haven't seen any packet data yet
-				// log.Println("continuation but we haven't seen any packet data yet")
-			}
-			if !oggPageOut.IsFirstPage && s.sequenceNo+1 != oggPageOut.SequenceNo {
-				// TODO: page gap
-				// log.Println("page gap")
-			}
+			// if !sFound && !oggPageOut.IsFirstPage {
+			// 	// TODO: not first page and we haven't seen the stream before
+			// 	// log.Println("not first page and we haven't seen the stream before")
+			// }
+			// hasData := len(s.packetBuf) > 0
+			// if oggPageOut.IsContinuedPacket && !hasData {
+			// 	// TODO: continuation but we haven't seen any packet data yet
+			// 	// log.Println("continuation but we haven't seen any packet data yet")
+			// }
+			// if !oggPageOut.IsFirstPage && s.sequenceNo+1 != oggPageOut.SequenceNo {
+			// 	// TODO: page gap
+			// 	// log.Println("page gap")
+			// }
 
 			for _, ps := range oggPageOut.Segments {
 				if s.packetBuf == nil {
@@ -119,9 +119,11 @@ func decodeOgg(d *decode.D, in interface{}) interface{} {
 
 					switch s.codec {
 					case codecVorbis:
-						s.packetD.FieldTryDecodeBitBuf("packet", bb, vorbisPacket)
+						// TODO: err
+						_, _, _ = s.packetD.FieldTryDecodeBitBuf("packet", bb, vorbisPacket)
 					case codecOpus:
-						s.packetD.FieldTryDecodeBitBuf("packet", bb, opusPacket)
+						// TODO: err
+						_, _, _ = s.packetD.FieldTryDecodeBitBuf("packet", bb, opusPacket)
 					case codecUnknown:
 						s.packetD.FieldBitBuf("packet", bb)
 					}

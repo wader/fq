@@ -585,7 +585,6 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 					if !isTry {
 						return nil, err
 					}
-					err = nil
 					f = &bytes.Buffer{}
 				}
 

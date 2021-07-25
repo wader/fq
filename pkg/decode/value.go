@@ -144,7 +144,7 @@ func (v *Value) Errors() []error {
 }
 
 func (v *Value) postProcess() {
-	v.WalkPostOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
+	if err := v.WalkPostOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
 		switch vv := v.V.(type) {
 		case Struct:
 			first := true
@@ -190,5 +190,7 @@ func (v *Value) postProcess() {
 			// TODO: also sort?
 		}
 		return nil
-	})
+	}); err != nil {
+		panic(err)
+	}
 }

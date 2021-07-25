@@ -66,14 +66,14 @@ const (
 	LONG_STOP_SEQUENCE   = 0x3
 )
 
-var windowSequnceNames = map[uint64]string{
+var windowSequenceNames = map[uint64]string{
 	ONLY_LONG_SEQUENCE:   "ONLY_LONG_SEQUENCE",
 	LONG_START_SEQUENCE:  "LONG_START_SEQUENCE",
 	EIGHT_SHORT_SEQUENCE: "EIGHT_SHORT_SEQUENCE",
 	LONG_STOP_SEQUENCE:   "LONG_STOP_SEQUENCE",
 }
 
-var windowSequnceNumWindows = map[int]int{
+var windowSequenceNumWindows = map[int]int{
 	ONLY_LONG_SEQUENCE:   1,
 	LONG_START_SEQUENCE:  1,
 	EIGHT_SHORT_SEQUENCE: 8,
@@ -88,14 +88,14 @@ func aacLTPData(d *decode.D, objectType int, windowSequence int) {
 		d.FieldU11("ltp_lag")
 		d.FieldU3("ltp_coef")
 
-		//windowSequnceNumWindows[windowSequence]
+		_ = windowSequenceNumWindows[windowSequence]
 
 	}
 }
 
 func aacICSInfo(d *decode.D, objectType int) {
 	d.FieldU1("ics_reserved_bit")
-	windowSequence, _ := d.FieldStringMapFn("window_sequence", windowSequnceNames, "", d.U2, decode.NumberDecimal)
+	windowSequence, _ := d.FieldStringMapFn("window_sequence", windowSequenceNames, "", d.U2, decode.NumberDecimal)
 	d.FieldU1("window_shape")
 	switch windowSequence {
 	case EIGHT_SHORT_SEQUENCE:

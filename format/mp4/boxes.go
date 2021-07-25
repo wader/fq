@@ -211,12 +211,11 @@ func init() {
 			d.FieldFP32("track_width")
 			d.FieldFP32("track_height")
 
+			// TODO: dup track id?
 			if _, ok := ctx.tracks[trackID]; !ok {
 				t := &track{id: trackID}
 				ctx.tracks[trackID] = t
 				ctx.currentTrack = t
-			} else {
-				// TODO: dup track id?
 			}
 		},
 		"mdia": decodeBoxes,

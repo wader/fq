@@ -123,9 +123,8 @@ func avcSPSDecode(d *decode.D, in interface{}) interface{} {
 		fieldUEV(d, "bit_depth_chroma_minus8")
 		d.FieldBool("qpprime_y_zero_transform_bypass_flag")
 		seqScalingMatrixPresentFlag := d.FieldBool("seq_scaling_matrix_present_flag")
-		if seqScalingMatrixPresentFlag {
-			// TODO:
-		}
+		// TODO:
+		_ = seqScalingMatrixPresentFlag
 	}
 
 	fieldUEV(d, "log2_max_frame_num_minus4")

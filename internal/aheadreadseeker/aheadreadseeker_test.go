@@ -46,9 +46,9 @@ func TestNewReadAtCache(t *testing.T) {
 	r := aheadreadseeker.New(rrs, 2)
 
 	b := make([]byte, 1)
-	r.Read(b)
-	r.Read(b)
-	r.Read(b)
+	_, _ = r.Read(b)
+	_, _ = r.Read(b)
+	_, _ = r.Read(b)
 
 	log.Printf("b: %s\n", b)
 

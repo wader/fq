@@ -9,7 +9,7 @@ import (
 func MustCopy(r io.Writer, w io.Reader) int64 {
 	n, err := io.Copy(r, w)
 	if err != nil {
-		panic(ReadError{Err: err, Op: "MustCopy"})
+		panic(IOError{Err: err, Op: "MustCopy"})
 	}
 	return n
 }

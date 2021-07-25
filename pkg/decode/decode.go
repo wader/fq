@@ -43,7 +43,7 @@ func (fe FormatError) Error() string {
 	return fe.Err.Error()
 }
 
-type ReadError struct {
+type IOError struct {
 	Err   error
 	Name  string
 	Op    string
@@ -52,7 +52,7 @@ type ReadError struct {
 	Pos   int64
 }
 
-func (e ReadError) Error() string {
+func (e IOError) Error() string {
 	var prefix string
 	if e.Name != "" {
 		prefix = e.Op + "(" + e.Name + ")"
@@ -63,7 +63,7 @@ func (e ReadError) Error() string {
 	return fmt.Sprintf("%s: failed at position %s (size %s delta %s): %s",
 		prefix, num.Bits(e.Pos).StringByteBits(10), num.Bits(e.Size).StringByteBits(10), num.Bits(e.Delta).StringByteBits(10), e.Err)
 }
-func (e ReadError) Unwrap() error { return e.Err }
+func (e IOError) Unwrap() error { return e.Err }
 
 type ValidateError struct {
 	Reason string
@@ -140,8 +140,8 @@ func decode(ctx context.Context, name string, bb *bitio.Buffer, formats []*Forma
 
 		if !rOk {
 			switch panicV := r.RecoverV.(type) {
-			case ReadError, ValidateError, DecodeFormatsError:
-				panicErr := panicV.(error)
+			case IOError, ValidateError, DecodeFormatsError:
+				panicErr, _ := panicV.(error)
 				formatErr := FormatError{
 					Err:        panicErr,
 					Format:     f,
@@ -160,7 +160,7 @@ func decode(ctx context.Context, name string, bb *bitio.Buffer, formats []*Forma
 		}
 
 		var maxRange ranges.Range
-		d.Value.WalkPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
+		if err := d.Value.WalkPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
 			if d.Value != v && v.IsRoot {
 				return ErrWalkSkipChildren
 			}
@@ -169,7 +169,9 @@ func decode(ctx context.Context, name string, bb *bitio.Buffer, formats []*Forma
 			v.Range.Start += decodeOpts.StartOffset
 			v.RootBitBuf = d.Value.RootBitBuf
 			return nil
-		})
+		}); err != nil {
+			return nil, nil, err
+		}
 
 		d.Value.Range = ranges.Range{Start: decodeOpts.StartOffset, Len: maxRange.Len}
 
@@ -239,10 +241,10 @@ func (d *D) FillGaps(namePrefix string) {
 	// TODO: gaps things should be done in Framed* funcs
 	// TODO: pre-sorted somehow?
 	n := 0
-	d.Value.WalkPreOrder(makeWalkFn(func(iv *Value) { n++ }))
+	_ = d.Value.WalkPreOrder(makeWalkFn(func(iv *Value) { n++ }))
 	valueRanges := make([]ranges.Range, n)
 	i := 0
-	d.Value.WalkPreOrder(makeWalkFn(func(iv *Value) {
+	_ = d.Value.WalkPreOrder(makeWalkFn(func(iv *Value) {
 		valueRanges[i] = iv.Range
 		i++
 	}))
@@ -264,7 +266,7 @@ func (d *D) Invalid(reason string) {
 func (d *D) PeekBits(nBits int) uint64 {
 	n, err := d.TryPeekBits(nBits)
 	if err != nil {
-		panic(ReadError{Err: err, Op: "PeekBits", Size: int64(nBits), Pos: d.Pos()})
+		panic(IOError{Err: err, Op: "PeekBits", Size: int64(nBits), Pos: d.Pos()})
 	}
 	return n
 }
@@ -272,7 +274,7 @@ func (d *D) PeekBits(nBits int) uint64 {
 func (d *D) PeekBytes(nBytes int) []byte {
 	bs, err := d.bitBuf.PeekBytes(nBytes)
 	if err != nil {
-		panic(ReadError{Err: err, Op: "PeekBytes", Size: int64(nBytes) * 8, Pos: d.Pos()})
+		panic(IOError{Err: err, Op: "PeekBytes", Size: int64(nBytes) * 8, Pos: d.Pos()})
 	}
 	return bs
 }
@@ -280,10 +282,10 @@ func (d *D) PeekBytes(nBytes int) []byte {
 func (d *D) PeekFind(nBits int, seekBits int64, fn func(v uint64) bool, maxLen int64) int64 {
 	peekBits, err := d.TryPeekFind(nBits, seekBits, fn, maxLen)
 	if err != nil {
-		panic(ReadError{Err: err, Op: "PeekFind", Size: 0, Pos: d.Pos()})
+		panic(IOError{Err: err, Op: "PeekFind", Size: 0, Pos: d.Pos()})
 	}
 	if peekBits == -1 {
-		panic(ReadError{Err: fmt.Errorf("not found"), Op: "PeekFind", Size: 0, Pos: d.Pos()})
+		panic(IOError{Err: fmt.Errorf("not found"), Op: "PeekFind", Size: 0, Pos: d.Pos()})
 	}
 	return peekBits
 }
@@ -303,7 +305,7 @@ func (d *D) PeekFindByte(findV uint8, maxLen int64) int64 {
 		return uint64(findV) == v
 	}, maxLen*8)
 	if err != nil {
-		panic(ReadError{Err: err, Op: "PeekFindByte", Size: 0, Pos: d.Pos()})
+		panic(IOError{Err: err, Op: "PeekFindByte", Size: 0, Pos: d.Pos()})
 
 	}
 	return peekBits / 8
@@ -312,7 +314,7 @@ func (d *D) PeekFindByte(findV uint8, maxLen int64) int64 {
 func (d *D) BytesRange(firstBit int64, nBytes int) []byte {
 	bs, err := d.bitBuf.BytesRange(firstBit, nBytes)
 	if err != nil {
-		panic(ReadError{Err: err, Op: "BytesRange", Size: int64(nBytes) * 8, Pos: firstBit})
+		panic(IOError{Err: err, Op: "BytesRange", Size: int64(nBytes) * 8, Pos: firstBit})
 	}
 	return bs
 }
@@ -320,7 +322,7 @@ func (d *D) BytesRange(firstBit int64, nBytes int) []byte {
 func (d *D) BytesLen(nBytes int) []byte {
 	bs, err := d.bitBuf.BytesLen(nBytes)
 	if err != nil {
-		panic(ReadError{Err: err, Op: "BytesLen", Size: int64(nBytes) * 8, Pos: d.Pos()})
+		panic(IOError{Err: err, Op: "BytesLen", Size: int64(nBytes) * 8, Pos: d.Pos()})
 	}
 	return bs
 }
@@ -329,7 +331,7 @@ func (d *D) BytesLen(nBytes int) []byte {
 func (d *D) BitBufRange(firstBit int64, nBits int64) *bitio.Buffer {
 	bb, err := d.bitBuf.BitBufRange(firstBit, nBits)
 	if err != nil {
-		panic(ReadError{Err: err, Op: "BitBufRange", Size: nBits, Pos: firstBit})
+		panic(IOError{Err: err, Op: "BitBufRange", Size: nBits, Pos: firstBit})
 	}
 	return bb
 }
@@ -337,7 +339,7 @@ func (d *D) BitBufRange(firstBit int64, nBits int64) *bitio.Buffer {
 func (d *D) BitBufLen(nBits int64) *bitio.Buffer {
 	bs, err := d.bitBuf.BitBufLen(nBits)
 	if err != nil {
-		panic(ReadError{Err: err, Op: "BitBufLen", Size: nBits, Pos: d.Pos()})
+		panic(IOError{Err: err, Op: "BitBufLen", Size: nBits, Pos: d.Pos()})
 	}
 	return bs
 }
@@ -345,7 +347,7 @@ func (d *D) BitBufLen(nBits int64) *bitio.Buffer {
 func (d *D) Pos() int64 {
 	bPos, err := d.bitBuf.Pos()
 	if err != nil {
-		panic(ReadError{Err: err, Op: "Pos", Size: 0, Pos: bPos})
+		panic(IOError{Err: err, Op: "Pos", Size: 0, Pos: bPos})
 	}
 	return bPos
 }
@@ -357,7 +359,7 @@ func (d *D) Len() int64 {
 func (d *D) End() bool {
 	bEnd, err := d.bitBuf.End()
 	if err != nil {
-		panic(ReadError{Err: err, Op: "Len", Size: 0, Pos: d.Pos()})
+		panic(IOError{Err: err, Op: "Len", Size: 0, Pos: d.Pos()})
 	}
 	return bEnd
 }
@@ -367,7 +369,7 @@ func (d *D) NotEnd() bool { return !d.End() }
 func (d *D) BitsLeft() int64 {
 	bBitsLeft, err := d.bitBuf.BitsLeft()
 	if err != nil {
-		panic(ReadError{Err: err, Op: "BitsLeft", Size: 0, Pos: d.Pos()})
+		panic(IOError{Err: err, Op: "BitsLeft", Size: 0, Pos: d.Pos()})
 	}
 	return bBitsLeft
 }
@@ -375,7 +377,7 @@ func (d *D) BitsLeft() int64 {
 func (d *D) ByteAlignBits() int {
 	bByteAlignBits, err := d.bitBuf.ByteAlignBits()
 	if err != nil {
-		panic(ReadError{Err: err, Op: "ByteAlignBits", Size: 0, Pos: d.Pos()})
+		panic(IOError{Err: err, Op: "ByteAlignBits", Size: 0, Pos: d.Pos()})
 	}
 	return bByteAlignBits
 }
@@ -383,7 +385,7 @@ func (d *D) ByteAlignBits() int {
 func (d *D) BytePos() int64 {
 	bBytePos, err := d.bitBuf.BytePos()
 	if err != nil {
-		panic(ReadError{Err: err, Op: "BytePos", Size: 0, Pos: d.Pos()})
+		panic(IOError{Err: err, Op: "BytePos", Size: 0, Pos: d.Pos()})
 	}
 	return bBytePos
 }
@@ -391,7 +393,7 @@ func (d *D) BytePos() int64 {
 func (d *D) SeekRel(deltaBits int64) int64 {
 	pos, err := d.bitBuf.SeekRel(deltaBits)
 	if err != nil {
-		panic(ReadError{Err: err, Op: "SeekRel", Delta: deltaBits, Pos: d.Pos()})
+		panic(IOError{Err: err, Op: "SeekRel", Delta: deltaBits, Pos: d.Pos()})
 	}
 	return pos
 }
@@ -399,7 +401,7 @@ func (d *D) SeekRel(deltaBits int64) int64 {
 func (d *D) SeekAbs(pos int64) int64 {
 	pos, err := d.bitBuf.SeekAbs(pos)
 	if err != nil {
-		panic(ReadError{Err: err, Op: "SeekAbs", Size: pos, Pos: d.Pos()})
+		panic(IOError{Err: err, Op: "SeekAbs", Size: pos, Pos: d.Pos()})
 	}
 	return pos
 }
@@ -701,7 +703,7 @@ func (d *D) FieldValidateUTF8(name string, v string) {
 		nBytes := len(v)
 		str, err := d.TryUTF8(nBytes)
 		if err != nil {
-			panic(ReadError{Err: err, Name: name, Op: "FieldValidateUTF8", Size: int64(nBytes) * 8, Pos: d.Pos()})
+			panic(IOError{Err: err, Name: name, Op: "FieldValidateUTF8", Size: int64(nBytes) * 8, Pos: d.Pos()})
 		}
 		s := "Correct"
 		if str != v {
@@ -774,13 +776,15 @@ func (d *D) DecodeRangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 
 	// TODO: do some kind of DecodeLimitedLen/RangeFn?
 	bb := d.BitBufRange(0, firstBit+nBits)
-	bb.SeekAbs(firstBit)
+	if _, err := bb.SeekAbs(firstBit); err != nil {
+		panic(IOError{Err: err, Op: "SeekAbs", Pos: firstBit})
+	}
 	sd := d.fieldDecoder("", bb, subV)
 
 	fn(sd)
 
 	// TODO: refactor, similar to decode()
-	sd.Value.WalkPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
+	if err := sd.Value.WalkPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
 		if v.IsRoot {
 			return ErrWalkSkipChildren
 		}
@@ -789,7 +793,9 @@ func (d *D) DecodeRangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 		v.RootBitBuf = d.Value.RootBitBuf
 
 		return nil
-	})
+	}); err != nil {
+		panic(err)
+	}
 
 	switch vv := sd.Value.V.(type) {
 	case Struct:

@@ -45,7 +45,7 @@ func main() {
 			log.Fatalf("%s: %s", os.Args[1], err)
 		}
 		defer r.Close()
-		json.NewDecoder(r).Decode(&data)
+		_ = json.NewDecoder(r).Decode(&data)
 	}
 
 	templateBytes, err := ioutil.ReadAll(os.Stdin)

@@ -96,15 +96,11 @@ func ffSum(d *decode.D) uint64 {
 	return s
 }
 
-func fieldFFSum(d *decode.D, name string) uint64 {
-	return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
+func avcSEIDecode(d *decode.D, in interface{}) interface{} {
+	payloadType, _ := d.FieldStringMapFn("payload_type", seiNames, "Unknown", func() uint64 { return ffSum(d) }, decode.NumberDecimal)
+	payloadSize := d.FieldUFn("payload_size", func() (uint64, decode.DisplayFormat, string) {
 		return ffSum(d), decode.NumberDecimal, ""
 	})
-}
-
-func avcSEIDecode(d *decode.D, in interface{}) interface{} {
-	payloadType := fieldFFSum(d, "payload_type")
-	payloadSize := fieldFFSum(d, "payload_size")
 
 	d.DecodeLenFn(int64(payloadSize)*8, func(d *decode.D) {
 		switch payloadType {

@@ -18,6 +18,8 @@ generate: README.md testwrite
 gogenerate:
 	go generate -x ./...
 
+ci: lint test
+
 .PHONY: lint
 lint:
 	golangci-lint run

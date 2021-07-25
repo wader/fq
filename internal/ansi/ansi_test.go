@@ -25,7 +25,7 @@ func Test2(t *testing.T) {
 
 	b := &bytes.Buffer{}
 
-	c.W(b).Write([]byte("bla"))
+	_, _ = c.W(b).Write([]byte("bla"))
 
 	log.Printf("b.String(): %#+v\n", b.String())
 }

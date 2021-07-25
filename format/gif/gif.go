@@ -13,7 +13,6 @@ import (
 	"fq/format"
 	"fq/format/registry"
 	"fq/pkg/decode"
-	"io"
 )
 
 func init() {
@@ -96,7 +95,7 @@ func gifDecode(d *decode.D, in interface{}) interface{} {
 									d.FieldU8("terminator")
 									seenTerminator = true
 								}
-								io.Copy(dataBytes, b.Copy())
+								decode.MustCopy(dataBytes, b.Copy())
 							})
 						}
 					})

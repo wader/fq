@@ -362,7 +362,7 @@ func testDecodedTestCaseRun(t *testing.T, registry *registry.Registry, tcr *test
 func TestPath(t *testing.T, registry *registry.Registry) {
 	tcs := []*testCase{}
 
-	filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
 		if filepath.Ext(path) != ".fqtest" {
 			return nil
 		}
@@ -392,6 +392,9 @@ func TestPath(t *testing.T, registry *registry.Registry) {
 
 		return nil
 	})
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	if v := os.Getenv("WRITE_ACTUAL"); v != "" {
 		for _, tc := range tcs {
