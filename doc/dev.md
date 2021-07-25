@@ -1,5 +1,6 @@
 # Implementation details
 
+- fq uses a gojq fork that can be found at https://github.com/wader/gojq/tree/fq (the "fq" branch)
 - cli readline uses raw mode so blocks ctrl-c to become a SIGINT
 - TODO: `scope` and `scopedump` functions used to implement REPL completion
 - TODO: Custom object interface used to traverse fq's field tree and to allowing a terse

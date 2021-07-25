@@ -73,9 +73,26 @@ and the binary should end up at `$GOPATH/bin/fq`.
 
 ## Usage
 
-Basic usage is `fq [OPTIONS] [FILE] [EXPR]...`.
+Basic usage is:
 
-For more details and support formats see [usage.md](doc/usage.md).
+[fq -h | grep Usage: | sed 's/\(.*\)/<pre>\1<\/pre>/']: sh-start
+
+<pre>Usage: fq [OPTIONS] [FILE] [EXPR...]</pre>
+
+[#]: sh-end
+
+For more usage details see [usage.md](doc/usage.md).
+
+## Supported formats
+
+[./formats_list.jq]: sh-start
+
+aac_frame, adts, adts_frame, apev2, av1_ccr, av1_frame, av1_obu, avc_au, avc_dcr, avc_nalu, avc_pps, avc_sei, avc_sps, bzip2, dns, elf, exif, flac, flac_frame, flac_metadatablock, flac_picture, gif, gzip, hevc_au, hevc_dcr, hevc_nalu, icc_profile, id3v1, id3v11, id3v2, jpeg, matroska, mp3, mp3_frame, mp4, mpeg_asc, mpeg_es, mpeg_pes, mpeg_pes_packet, mpeg_spu, mpeg_ts, ogg, ogg_page, opus_packet, png, protobuf, protobuf_widevine, raw, tar, tiff, vorbis_comment, vorbis_packet, vp8_frame, vp9_cfm, vp9_frame, vpx_ccr, wav, webp, xing
+
+[#]: sh-end
+
+
+For more format details see [usage.md](doc/usage.md).
 
 ## TODO and ideas
 
@@ -93,4 +110,6 @@ jq implementation [gojq](https://github.com/itchyny/gojq). Also want to thank
 for inventing the [jq](https://github.com/stedolan/jq) language.
 
 Similar projects:
+- https://github.com/HexFiend/HexFiend
 - https://github.com/binspector/binspector
+- https://kaitai.io

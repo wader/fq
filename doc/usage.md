@@ -2,7 +2,7 @@
 
 <pre sh>
 $ fq -h 
-Usage: fq [OPTIONS] [FILE] [EXPR]...
+Usage: fq [OPTIONS] [FILE] [EXPR...]
 --compact,-c     Compact output
 --decode,-d      Decode format (probe)
 --file,-f        Read script from file
@@ -119,7 +119,7 @@ To add own functions you can use `init.fq` that will be read from
 
 ## Decoders
 
-[./formats_markdown.jq]: sh-start
+[./formats_table.jq]: sh-start
 
 |Name                 |Description                                                   |Uses|
 |-                    |-                                                             |-|
