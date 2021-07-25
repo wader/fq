@@ -532,7 +532,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 			}
 
 			var filename string
-			// suport include "nonexisting?" to ignore include error
+			// support include "nonexisting?" to ignore include error
 			var isTry bool
 			if strings.HasSuffix(name, "?") {
 				isTry = true

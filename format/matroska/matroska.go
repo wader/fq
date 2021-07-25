@@ -189,7 +189,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 					d.FieldSFn("value", func() (int64, decode.DisplayFormat, string) {
 						n := d.S(int(tagSize) * 8)
 						if len(a.UintegerEnums) > 0 {
-							// TODO: use enum Defintion as description
+							// TODO: use enum Definition as description
 							return n, decode.NumberDecimal, a.IntegerEnums[n].Label
 
 						}
@@ -199,7 +199,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 					v := d.FieldUFn("value", func() (uint64, decode.DisplayFormat, string) {
 						n := d.U(int(tagSize) * 8)
 						if len(a.UintegerEnums) > 0 {
-							// TODO: use enum Defintion as description
+							// TODO: use enum Definition as description
 							return n, decode.NumberDecimal, a.UintegerEnums[n].Label
 
 						}
@@ -215,7 +215,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 					v := d.FieldStrFn("value", func() (string, string) {
 						s := d.UTF8(int(tagSize))
 						if len(a.StringEnums) > 0 {
-							// TODO: use enum Defintion as description
+							// TODO: use enum Definition as description
 							return s, a.StringEnums[s].Label
 
 						}
