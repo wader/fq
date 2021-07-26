@@ -24,6 +24,6 @@ jobs:
       - name: Lint
         uses: golangci/golangci-lint-action@v2
         with:
-          version: ${{ env.GOLANGCILINT_VERSION }}
+          version: v${{ env.GOLANGCILINT_VERSION }}
       - name: Test
         run: make test
