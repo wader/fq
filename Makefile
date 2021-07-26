@@ -2,7 +2,7 @@ all: test
 
 .PHONY: fq
 fq:
-	go build -buildmode=pie -ldflags '-linkmode external -extldflags "-static-pie"' -trimpath -o fq .
+	go build -trimpath -o fq .
 
 .PHONY: test
 test:
