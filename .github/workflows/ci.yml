@@ -7,7 +7,9 @@ on:
   pull_request:
 
 jobs:
-  test:
+  env:
+    GOLANGCILINT_VERSION: 1.41.1
+  ci:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -17,8 +19,10 @@ jobs:
       - name: Setup go
         uses: actions/setup-go@v2
         with:
-          go-version: 1.16
+          go-version: 1.16.6
       - name: Lint
         uses: golangci/golangci-lint-action@v2
+        with:
+          version: ${{ env.GOLANGCILINT_VERSION }}
       - name: Test
         run: make test

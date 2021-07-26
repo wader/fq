@@ -1,2 +1,6 @@
 Dockerfile
 go.mod
+
+workflows-golang /go-version: ([\d.]+)/ git:https://github.com/actions/go-versions.git|/(.*)-.*/$1/|^1
+workflow-golangcilint /GOLANGCILINT_VERSION: ([\d.]+)/ git:https://github.com/golangci/golangci-lint.git|^1
+.github/workflows/*.yml
