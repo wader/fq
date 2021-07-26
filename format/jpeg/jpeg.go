@@ -192,7 +192,7 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 					ecdLen++
 				}
 				d.SeekRel(-ecdLen * 8)
-				d.FieldBitBufLen("entropy_coded_data", int64(ecdLen)*8)
+				d.FieldBitBufLen("entropy_coded_data", ecdLen*8)
 				inECD = false
 			} else {
 				d.FieldStructFn("marker", func(d *decode.D) {

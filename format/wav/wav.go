@@ -116,7 +116,7 @@ var subFormatNames = map[[16]byte]string{
 	{0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}: "IEEE_FLOAT",
 }
 
-func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 {
+func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 { //nolint:unparam
 	chunks := map[string]func(d *decode.D){
 		"RIFF": func(d *decode.D) {
 			d.FieldUTF8("format", 4)

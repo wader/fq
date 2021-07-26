@@ -20,7 +20,7 @@ func New() *Registry {
 	}
 }
 
-func (r *Registry) register(groupName string, format *decode.Format, single bool) *decode.Format {
+func (r *Registry) register(groupName string, format *decode.Format, single bool) *decode.Format { //nolint:unparam
 	formats, ok := r.Groups[groupName]
 	if ok {
 		if !single {

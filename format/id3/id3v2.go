@@ -312,7 +312,7 @@ func textNull(d *decode.D, encoding int) string {
 		nullLen = n
 	}
 
-	pos := d.PeekFind(int(nullLen*8), 8, func(v uint64) bool { return v == 0 }, -1) / 8
+	pos := d.PeekFind(nullLen*8, 8, func(v uint64) bool { return v == 0 }, -1) / 8
 	textLen := int(pos + int64(nullLen))
 	text := text(d, encoding, textLen)
 
@@ -329,13 +329,13 @@ func fieldSyncSafeU32(d *decode.D, name string) uint64 {
 	})
 }
 
-func fieldTextNull(d *decode.D, name string, encoding int) string {
+func fieldTextNull(d *decode.D, name string, encoding int) string { //nolint:unparam
 	return d.FieldStrFn(name, func() (string, string) {
 		return textNull(d, encoding), ""
 	})
 }
 
-func fieldText(d *decode.D, name string, encoding int, nBytes int) string {
+func fieldText(d *decode.D, name string, encoding int, nBytes int) string { //nolint:unparam
 	return d.FieldStrFn(name, func() (string, string) {
 		return text(d, encoding, nBytes), ""
 	})

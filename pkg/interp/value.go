@@ -2,6 +2,7 @@ package interp
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"fq/internal/colorjson"
 	"fq/pkg/bitio"
@@ -81,7 +82,7 @@ func makeValueObject(dv *decode.Value) valueObjectIf {
 		sv.baseValueObject.vFn = sv.JQValue
 		return sv
 	case int64:
-		return baseValueObject{dv: dv, vFn: func() interface{} { return big.NewInt(int64(vv)) }, typ: "number"}
+		return baseValueObject{dv: dv, vFn: func() interface{} { return big.NewInt(vv) }, typ: "number"}
 	case uint64:
 		return baseValueObject{dv: dv, vFn: func() interface{} { return new(big.Int).SetUint64(vv) }, typ: "number"}
 	case []byte:
@@ -180,9 +181,10 @@ func (bv baseValueObject) JQValueKey(name string) interface{} {
 		case "_path":
 			return valuePath(dv)
 		case "_error":
-			switch err := dv.Err.(type) {
-			case decode.FormatError:
-				return formatError{err}
+			var formatErr decode.FormatError
+			if errors.As(dv.Err, &formatErr) {
+				return formatError{formatErr}
+
 			}
 
 			return dv.Err

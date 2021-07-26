@@ -30,7 +30,7 @@ func main() {
 			min := toInt(args[0])
 			max := toInt(args[1])
 			var v []int
-			for i := int(min); i <= int(max); i++ {
+			for i := min; i <= max; i++ {
 				v = append(v, i)
 			}
 

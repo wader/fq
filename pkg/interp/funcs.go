@@ -9,6 +9,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"fq/format"
 	"fq/format/registry"
@@ -232,13 +233,13 @@ func (i *Interp) read(c interface{}, a []interface{}) interface{} {
 		completeCtx, completeCtxCancelFn := context.WithTimeout(i.ctx, 1*time.Second)
 		defer completeCtxCancelFn()
 		// TODO: err
-		names, shared, _ := completeTrampoline(completeCtx, completeFn, c, i, string(line), pos)
+		names, shared, _ := completeTrampoline(completeCtx, completeFn, c, i, line, pos)
 		return names, shared
 	})
 
-	if err == ErrInterrupt {
+	if errors.Is(err, ErrInterrupt) {
 		return valueErr{"interrupt"}
-	} else if err == ErrEOF {
+	} else if errors.Is(err, ErrEOF) {
 		return valueErr{"eof"}
 	} else if err != nil {
 		return err
@@ -550,9 +551,9 @@ func (i *Interp) makeDecodeFn(registry *registry.Registry, decodeFormats []*deco
 
 		dv, _, err := decode.Decode(i.ctx, name, bb, decodeFormats, decode.DecodeOptions{FormatOptions: opts})
 		if dv == nil {
-			switch err := err.(type) {
-			case decode.DecodeFormatsError:
-				return decodeError{err}
+			var decodeFormatsErr decode.DecodeFormatsError
+			if errors.As(err, &decodeFormatsErr) {
+				return decodeError{decodeFormatsErr}
 			}
 			return valueErr{err}
 		}
@@ -645,7 +646,7 @@ func (i *Interp) string_(c interface{}, a []interface{}) interface{} {
 		return err
 	}
 
-	return string(sb.String())
+	return sb.String()
 }
 
 func (i *Interp) bytes(c interface{}, a []interface{}) interface{} {

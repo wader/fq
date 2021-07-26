@@ -2,6 +2,7 @@ package ctxreadseeker_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"fq/internal/ctxreadseeker"
 	"io"
@@ -77,7 +78,7 @@ func TestCancel(t *testing.T) {
 		t.Errorf("expected 0, got %v", cancelActualReadN)
 	}
 
-	if cancelActualReadErr != context.Canceled {
+	if !errors.Is(cancelActualReadErr, context.Canceled) {
 		t.Errorf("expected cancel err, got %v", cancelActualReadErr)
 	}
 

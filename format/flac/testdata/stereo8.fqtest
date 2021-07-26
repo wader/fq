@@ -149,6 +149,7 @@
 0x2610|                                       c9      |             .  |        block_size: 4096 0x261d-0x261d.3 (0.4)
 0x2610|                                       c9      |             .  |        sample_rate: 44100 0x261d.4-0x261d.7 (0.4)
 0x2610|                                          a2   |              . |        channel_assignment: mid/side (2) 0x261e-0x261e.3 (0.4)
+      |                                               |                |        side_channel_index: 1 0x261e.4-NA (0)
 0x2610|                                          a2   |              . |        sample_size: 8 0x261e.4-0x261e.6 (0.3)
 0x2610|                                          a2   |              . |        reserved1: Correct (0x0) 0x261e.7-0x261e.7 (0.1)
       |                                               |                |        end_of_header: {} 0x261f-0x261f.7 (1)

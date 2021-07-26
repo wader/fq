@@ -57,7 +57,7 @@ func bcdU8(d *decode.D) uint64 {
 	return (n>>4)*10 + n&0xf
 }
 
-func fieldBCDU8(d *decode.D, name string) uint64 {
+func fieldBCDU8(d *decode.D, name string) uint64 { //nolint:unparam
 	return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
 		return bcdU8(d), decode.NumberDecimal, ""
 	})

@@ -832,7 +832,7 @@ func (d *D) Decode(formats []*Format, opts ...Options) interface{} {
 		panic("unreachable")
 	}
 
-	if _, err := d.bitBuf.SeekRel(int64(dv.Range.Len)); err != nil {
+	if _, err := d.bitBuf.SeekRel(dv.Range.Len); err != nil {
 		panic(err)
 	}
 
@@ -848,7 +848,7 @@ func (d *D) FieldTryDecode(name string, formats []*Format, opts ...Options) (*Va
 	}
 
 	d.AddChild(dv)
-	if _, err := d.bitBuf.SeekRel(int64(dv.Range.Len)); err != nil {
+	if _, err := d.bitBuf.SeekRel(dv.Range.Len); err != nil {
 		panic(err)
 	}
 
@@ -872,7 +872,7 @@ func (d *D) FieldTryDecodeLen(name string, nBits int64, formats []*Format, opts 
 	}
 
 	d.AddChild(dv)
-	if _, err := d.bitBuf.SeekRel(int64(nBits)); err != nil {
+	if _, err := d.bitBuf.SeekRel(nBits); err != nil {
 		panic(err)
 	}
 

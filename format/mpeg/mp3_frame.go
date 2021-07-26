@@ -357,7 +357,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			followingFrameMainDataPartsBytes = followingFramesBytesLeft
 		}
 
-		d.FieldBitBufLen("other_data", int64(followingFrameMainDataPartsBytes)*8)
+		d.FieldBitBufLen("other_data", followingFrameMainDataPartsBytes*8)
 	}
 
 	crcHash := &crc.CRC{Bits: 16, Current: 0xffff, Table: crc.ANSI16Table}

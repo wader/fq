@@ -380,7 +380,7 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 				d.Invalid(fmt.Sprintf("expected AvcDcrOut got %#+v", v))
 			}
 			t.decodeOpts = append(t.decodeOpts,
-				decode.FormatOptions{InArg: format.AvcIn{LengthSize: avcDcrOut.LengthSize}})
+				decode.FormatOptions{InArg: format.AvcIn{LengthSize: avcDcrOut.LengthSize}}) //nolint:gosimple
 		case "V_MPEGH/ISO/HEVC":
 			_, v := t.parentD.FieldDecodeRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegHEVCDCRFormat)
 			hevcDcrOut, ok := v.(format.HevcDcrOut)
@@ -388,7 +388,7 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 				d.Invalid(fmt.Sprintf("expected HevcDcrOut got %#+v", v))
 			}
 			t.decodeOpts = append(t.decodeOpts,
-				decode.FormatOptions{InArg: format.HevcIn{LengthSize: hevcDcrOut.LengthSize}})
+				decode.FormatOptions{InArg: format.HevcIn{LengthSize: hevcDcrOut.LengthSize}}) //nolint:gosimple
 		case "V_AV1":
 			t.parentD.FieldDecodeRange("value", t.codecPrivatePos, t.codecPrivateTagSize, av1CCRFormat)
 		case "V_VP9":

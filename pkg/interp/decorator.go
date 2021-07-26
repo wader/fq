@@ -33,8 +33,8 @@ func parseCSVRangeMap(s string) []stringRanges {
 		for _, rangeStr := range strings.Split(stringRangesParts[0], ":") {
 			rangeStr = strings.TrimSpace(rangeStr)
 			rangeStrParts := strings.SplitN(rangeStr, "-", 2)
-			start := 0
-			stop := 0
+			var start int
+			var stop int
 
 			if len(rangeStrParts) == 1 {
 				start = atoi(rangeStrParts[0])

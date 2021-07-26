@@ -1,6 +1,7 @@
 package interp
 
 import (
+	"errors"
 	"fmt"
 	"fq/internal/asciiwriter"
 	"fq/internal/columnwriter"
@@ -134,26 +135,29 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 		printErrs = func(depth int, err error) {
 			indent := strings.Repeat("  ", depth)
 
-			switch err := err.(type) {
-			case decode.FormatError:
+			var formatErr decode.FormatError
+			var decodeFormatsErr decode.DecodeFormatsError
+
+			switch {
+			case errors.As(err, &formatErr):
 				columns()
-				cfmt(colField, "%s  %s: %s: %s\n", indent, deco.Error.F("error"), err.Format.Name, err.Err.Error())
+				cfmt(colField, "%s  %s: %s: %s\n", indent, deco.Error.F("error"), formatErr.Format.Name, formatErr.Err.Error())
 
 				if opts.Verbose {
-					for _, f := range err.Stacktrace.Frames() {
+					for _, f := range formatErr.Stacktrace.Frames() {
 						columns()
 						cfmt(colField, "%s    %s\n", indent, f.Function)
 						columns()
 						cfmt(colField, "%s      %s:%d\n", indent, f.File, f.Line)
 					}
 				}
-				switch err.Err.(type) {
-				case decode.DecodeFormatsError:
-					printErrs(depth+1, err.Err)
+				switch {
+				case errors.Is(formatErr.Err, decode.DecodeFormatsError{}):
+					printErrs(depth+1, formatErr.Err)
 				}
-			case decode.DecodeFormatsError:
+			case errors.As(err, &decodeFormatsErr):
 				cfmt(colField, "%s  %s\n", indent, err)
-				for _, e := range err.Errs {
+				for _, e := range decodeFormatsErr.Errs {
 					printErrs(depth+1, e)
 				}
 			default:
@@ -231,12 +235,12 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 		}
 
 		for i := int64(1); i < addrLines; i++ {
-			lineStartByte := startLineByte + int64(i)*int64(opts.LineBytes)
+			lineStartByte := startLineByte + i*int64(opts.LineBytes)
 			columns()
 			cfmt(colAddr, "%s%s\n", rootIndent, deco.DumpAddr.F(num.PadFormatInt(lineStartByte, opts.AddrBase, true, addrWidth)))
 		}
 		// TODO: correct? should rethink columnwriter api maybe?
-		lastLineStopByte := startLineByte + int64(addrLines)*int64(opts.LineBytes) - 1
+		lastLineStopByte := startLineByte + addrLines*int64(opts.LineBytes) - 1
 		if lastDisplayByte == bufferLastByte && lastDisplayByte != lastLineStopByte {
 			// extra "|" in as EOF markers
 			cfmt(colHex, "%s\n", deco.Column)

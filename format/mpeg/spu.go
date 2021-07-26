@@ -66,12 +66,12 @@ func rleValue(d *decode.D) (uint64, uint64, int) {
 	}
 }
 
-func decodeLines(d *decode.D, lines int, width int) []string {
+func decodeLines(d *decode.D, lines int, width int) []string { //nolint:unparam
 	var ls []string
 
 	for i := 0; i < lines; i++ {
 		l := ""
-		for x := 0; x < int(width); {
+		for x := 0; x < width; {
 			n, c, b := rleValue(d)
 			pixel := " "
 			if c != 0 {
@@ -81,7 +81,7 @@ func decodeLines(d *decode.D, lines int, width int) []string {
 			//log.Printf("n=%d c=%d b=%d\n", n, c, b)
 
 			if n == 0 && b == 16 {
-				l += strings.Repeat(pixel, int(width)-len(l))
+				l += strings.Repeat(pixel, width-len(l))
 				break
 			}
 

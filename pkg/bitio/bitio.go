@@ -88,7 +88,7 @@ func Copy(dst BitWriter, src BitReader) (n int64, err error) {
 			}
 		}
 		if rErr != nil {
-			if rErr != io.EOF {
+			if !errors.Is(rErr, io.EOF) {
 				err = rErr
 			}
 			break
@@ -109,9 +109,9 @@ func BitsByteCount(nBits int64) int64 {
 func readFull(p []byte, nBits int, bitOff int64, fn func(p []byte, nBits int, bitOff int64) (int, error)) (int, error) {
 	readBitOffset := 0
 	for readBitOffset < nBits {
-		byteOffset := int(readBitOffset / 8)
+		byteOffset := readBitOffset / 8
 		byteBitsOffset := readBitOffset % 8
-		partialByteBitsLeft := int((8 - byteBitsOffset) % 8)
+		partialByteBitsLeft := (8 - byteBitsOffset) % 8
 		leftBits := nBits - readBitOffset
 
 		if partialByteBitsLeft != 0 || leftBits < 8 {
@@ -205,9 +205,9 @@ func (r *Reader) ReadBitsAt(p []byte, nBits int, bitOffset int64) (int, error) {
 
 	// TODO: nBits should be available
 	readBytes, err := io.ReadFull(r.rs, r.buf[0:wantReadBytes])
-	if err != nil && err != io.ErrUnexpectedEOF {
+	if err != nil && !errors.Is(err, io.ErrUnexpectedEOF) {
 		return 0, err
-	} else if err == io.ErrUnexpectedEOF {
+	} else if errors.Is(err, io.ErrUnexpectedEOF) {
 		nBits = readBytes * 8
 		err = io.EOF
 	}
@@ -217,7 +217,7 @@ func (r *Reader) ReadBitsAt(p []byte, nBits int, bitOffset int64) (int, error) {
 		return nBits, err
 	}
 
-	nBytes := int(nBits / 8)
+	nBytes := nBits / 8
 	restBits := nBits % 8
 
 	// TODO: copy smartness if many bytes
@@ -374,7 +374,7 @@ func (m *multiBitReader) ReadBitsAt(p []byte, nBits int, bitOff int64) (n int, e
 
 	rBits, err := readerAt.ReadBitsAt(p, nBits, bitOff-prevAtEnd)
 
-	if err == io.EOF {
+	if errors.Is(err, io.EOF) {
 		if bitOff+int64(rBits) < end {
 			err = nil
 		}

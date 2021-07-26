@@ -3,6 +3,7 @@ package cli
 import (
 	"bufio"
 	"context"
+	"errors"
 	"fmt"
 	"fq/format/registry"
 	"fq/internal/profile"
@@ -44,7 +45,7 @@ type standardOS struct {
 }
 
 func newStandardOS() (*standardOS, error) {
-	historyFile := ""
+	var historyFile string
 	cacheDir, err := os.UserCacheDir()
 	if err != nil {
 		return nil, err
@@ -135,9 +136,9 @@ func (o *standardOS) Readline(prompt string, complete func(line string, pos int)
 
 	o.rl.SetPrompt(prompt)
 	line, err := o.rl.Readline()
-	if err == readline.ErrInterrupt {
+	if errors.Is(err, readline.ErrInterrupt) {
 		return "", interp.ErrInterrupt
-	} else if err == io.EOF {
+	} else if errors.Is(err, io.EOF) {
 		return "", interp.ErrEOF
 	} else if err != nil {
 		return "", err
@@ -179,7 +180,7 @@ func Main(r *registry.Registry, version string) {
 
 	if err := i.Main(context.Background(), sos.Stdout(), version); err != nil {
 		fmt.Fprintln(sos.Stderr(), err)
-		if ex, ok := err.(Exiter); ok {
+		if ex, ok := err.(Exiter); ok { //nolint:errorlint
 			os.Exit(ex.ExitCode())
 		}
 		os.Exit(1)

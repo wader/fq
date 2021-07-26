@@ -68,10 +68,10 @@ func (v *Value) walk(preOrder bool, fn WalkFn) error {
 
 		if preOrder {
 			err := fn(v, rootV, depth, rootDepth+rootDepthDelta)
-			switch err {
-			case ErrWalkSkipChildren:
+			switch {
+			case errors.Is(err, ErrWalkSkipChildren):
 				return nil
-			case ErrWalkStop:
+			case errors.Is(err, ErrWalkStop):
 				fallthrough
 			default:
 				if err != nil {
@@ -96,10 +96,10 @@ func (v *Value) walk(preOrder bool, fn WalkFn) error {
 		}
 		if !preOrder {
 			err := fn(v, rootV, depth, rootDepth+rootDepthDelta)
-			switch err {
-			case ErrWalkSkipChildren:
+			switch {
+			case errors.Is(err, ErrWalkSkipChildren):
 				return errors.New("can't skip children in post-order")
-			case ErrWalkStop:
+			case errors.Is(err, ErrWalkStop):
 				fallthrough
 			default:
 				if err != nil {
@@ -117,7 +117,7 @@ func (v *Value) walk(preOrder bool, fn WalkFn) error {
 	}
 
 	err := walkFn(v, rootV, 0, 0)
-	if err == ErrWalkStop {
+	if errors.Is(err, ErrWalkStop) {
 		err = nil
 	}
 

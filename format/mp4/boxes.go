@@ -31,7 +31,7 @@ func decodeLang(d *decode.D) string {
 
 var quicktimeEpoch = time.Date(1904, time.January, 4, 0, 0, 0, 0, time.UTC)
 
-func decodeFieldTime(d *decode.D, name string) uint64 {
+func decodeFieldTime(d *decode.D, name string) uint64 { //nolint:unparam
 	return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
 		n, d := decodeTime(d)
 		return n, decode.NumberDecimal, d
@@ -139,7 +139,7 @@ var boxDecoders map[string]func(ctx *decodeContext, d *decode.D)
 
 func init() {
 	boxDecoders = map[string]func(ctx *decodeContext, d *decode.D){
-		"ftyp": func(ctx *decodeContext, d *decode.D) {
+		"ftyp": func(_ *decodeContext, d *decode.D) {
 			d.FieldUTF8("major_brand", 4)
 			d.FieldU32("minor_version")
 			numBrands := d.BitsLeft() / 8 / 4
@@ -152,11 +152,11 @@ func init() {
 				i++
 			})
 		},
-		"mvhd": func(ctx *decodeContext, d *decode.D) {
+		"mvhd": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldUTF8("flags", 3)
-			decodeFieldTime(d, "creation_time")
-			decodeFieldTime(d, "modification_time")
+			_ = decodeFieldTime(d, "creation_time")
+			_ = decodeFieldTime(d, "modification_time")
 			d.FieldU32("time_scale")
 			d.FieldU32("duration")
 			d.FieldFP32("preferred_rate")
@@ -173,7 +173,7 @@ func init() {
 		},
 		"trak": decodeBoxes,
 		"edts": decodeBoxes,
-		"elst": func(ctx *decodeContext, d *decode.D) {
+		"elst": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			numEntries := d.FieldU32("num_entries")
@@ -219,7 +219,7 @@ func init() {
 			}
 		},
 		"mdia": decodeBoxes,
-		"mdhd": func(ctx *decodeContext, d *decode.D) {
+		"mdhd": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
@@ -284,7 +284,7 @@ func init() {
 
 		"minf": decodeBoxes,
 		"dinf": decodeBoxes,
-		"dref": func(ctx *decodeContext, d *decode.D) {
+		"dref": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
@@ -440,7 +440,7 @@ func init() {
 			}
 			if ctx.currentTrack != nil {
 				ctx.currentTrack.decodeOpts = append(ctx.currentTrack.decodeOpts,
-					decode.FormatOptions{InArg: format.AvcIn{LengthSize: avcDcrOut.LengthSize}})
+					decode.FormatOptions{InArg: format.AvcIn{LengthSize: avcDcrOut.LengthSize}}) //nolint:gosimple
 			}
 		},
 		"hvcC": func(ctx *decodeContext, d *decode.D) {
@@ -451,7 +451,7 @@ func init() {
 			}
 			if ctx.currentTrack != nil {
 				ctx.currentTrack.decodeOpts = append(ctx.currentTrack.decodeOpts,
-					decode.FormatOptions{InArg: format.HevcIn{LengthSize: hevcDcrOut.LengthSize}})
+					decode.FormatOptions{InArg: format.HevcIn{LengthSize: hevcDcrOut.LengthSize}}) //nolint:gosimple
 			}
 		},
 		"dfLa": func(ctx *decodeContext, d *decode.D) {
@@ -477,13 +477,13 @@ func init() {
 				}
 			})
 		},
-		"dOps": func(ctx *decodeContext, d *decode.D) {
+		"dOps": func(_ *decodeContext, d *decode.D) {
 			d.FieldDecode("value", opusPacketFrameFormat)
 		},
-		"av1C": func(ctx *decodeContext, d *decode.D) {
+		"av1C": func(_ *decodeContext, d *decode.D) {
 			d.FieldDecode("value", av1CCRFormat)
 		},
-		"vpcC": func(ctx *decodeContext, d *decode.D) {
+		"vpcC": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			d.FieldDecode("value", vpxCCRFormat)
@@ -518,7 +518,7 @@ func init() {
 			// }
 
 		},
-		"stts": func(ctx *decodeContext, d *decode.D) {
+		"stts": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
@@ -588,7 +588,7 @@ func init() {
 				i++
 			})
 		},
-		"stss": func(ctx *decodeContext, d *decode.D) {
+		"stss": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			numEntries := d.FieldU32("num_entries")
@@ -598,7 +598,7 @@ func init() {
 				}
 			})
 		},
-		"sdtp": func(ctx *decodeContext, d *decode.D) {
+		"sdtp": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			// TODO: should be count from stsz
@@ -608,7 +608,7 @@ func init() {
 				}
 			})
 		},
-		"ctts": func(ctx *decodeContext, d *decode.D) {
+		"ctts": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			numEntries := d.FieldU32("num_entries")
@@ -634,7 +634,7 @@ func init() {
 				i++
 			})
 		},
-		"sidx": func(ctx *decodeContext, d *decode.D) {
+		"sidx": func(_ *decodeContext, d *decode.D) {
 			version := d.FieldU8("version")
 			d.FieldU24("flags")
 			d.FieldU32("reference_id")
@@ -668,7 +668,7 @@ func init() {
 		},
 		"ilst":        decodeBoxes,
 		"_apple_list": decodeBoxes,
-		"_apple_entry": func(ctx *decodeContext, d *decode.D) {
+		"_apple_entry": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			d.FieldUTF8("data", int(d.BitsLeft()/8))
@@ -694,7 +694,7 @@ func init() {
 		// Track Fragment
 		"traf": decodeBoxes,
 		// Movie Fragment Header
-		"mfhd": func(ctx *decodeContext, d *decode.D) {
+		"mfhd": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			d.FieldU32("sequence_number")
@@ -799,7 +799,7 @@ func init() {
 				}
 			})
 		},
-		"tfdt": func(ctx *decodeContext, d *decode.D) {
+		"tfdt": func(_ *decodeContext, d *decode.D) {
 			version := d.FieldU8("version")
 			d.FieldU24("flags")
 			if version == 1 {
@@ -809,7 +809,7 @@ func init() {
 			}
 		},
 		"mvex": decodeBoxes,
-		"trex": func(ctx *decodeContext, d *decode.D) {
+		"trex": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			d.FieldU32("track_id")
@@ -826,7 +826,7 @@ func init() {
 			d.FieldU16("sample_degradation_priority")
 		},
 		"mfra": decodeBoxes,
-		"tfra": func(ctx *decodeContext, d *decode.D) {
+		"tfra": func(_ *decodeContext, d *decode.D) {
 			version := d.FieldU8("version")
 			d.FieldU24("flags")
 			d.FieldU26("reserved")
@@ -851,14 +851,14 @@ func init() {
 				}
 			})
 		},
-		"mfro": func(ctx *decodeContext, d *decode.D) {
+		"mfro": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			d.FieldU32("mfra_size")
 		},
 		// TODO: item location
 		// HEIC image
-		"iloc": func(ctx *decodeContext, d *decode.D) {
+		"iloc": func(_ *decodeContext, d *decode.D) {
 			version := d.FieldU8("version")
 			d.FieldU24("flags")
 
@@ -910,7 +910,7 @@ func init() {
 				}
 			})
 		},
-		"infe": func(ctx *decodeContext, d *decode.D) {
+		"infe": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			d.FieldU16("id")
@@ -932,12 +932,12 @@ func init() {
 		},
 		"iprp": decodeBoxes,
 		"ipco": decodeBoxes,
-		"ID32": func(ctx *decodeContext, d *decode.D) {
+		"ID32": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			d.FieldU1("pad")
 			// ISO-639-2/T as 3*5 bit intgers - 0x60
-			d.FieldStrFn("langauge", func() (string, string) {
+			d.FieldStrFn("language", func() (string, string) {
 				s := ""
 				for i := 0; i < 3; i++ {
 					s += fmt.Sprintf("%c", int(d.U5())+0x60)
@@ -946,7 +946,7 @@ func init() {
 			})
 			d.FieldDecode("data", id3v2Format)
 		},
-		"mehd": func(ctx *decodeContext, d *decode.D) {
+		"mehd": func(_ *decodeContext, d *decode.D) {
 			flags := d.FieldU24("flags")
 			if flags&0b1 != 0 {
 				d.FieldU64("fragment_duration")
@@ -954,7 +954,7 @@ func init() {
 				d.FieldU32("fragment_duration")
 			}
 		},
-		"pssh": func(ctx *decodeContext, d *decode.D) {
+		"pssh": func(_ *decodeContext, d *decode.D) {
 			var (
 				systemIDCommon    = [16]byte{0x10, 0x77, 0xef, 0xec, 0xc0, 0xb2, 0x4d, 0x02, 0xac, 0xe3, 0x3c, 0x1e, 0x52, 0xe2, 0xfb, 0x4b}
 				systemIDWidevine  = [16]byte{0xed, 0xef, 0x8b, 0xa9, 0x79, 0xd6, 0x4a, 0xce, 0xa3, 0xc8, 0x27, 0xdc, 0xd5, 0x1d, 0x21, 0xed}
@@ -991,10 +991,10 @@ func init() {
 			}
 		},
 		"sinf": decodeBoxes,
-		"frma": func(ctx *decodeContext, d *decode.D) {
+		"frma": func(_ *decodeContext, d *decode.D) {
 			d.FieldUTF8("format", 4)
 		},
-		"schm": func(ctx *decodeContext, d *decode.D) {
+		"schm": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			d.FieldUTF8("encryption_type", 4)
@@ -1004,16 +1004,16 @@ func init() {
 			}
 		},
 		"schi": decodeBoxes,
-		"btrt": func(ctx *decodeContext, d *decode.D) {
+		"btrt": func(_ *decodeContext, d *decode.D) {
 			d.FieldU32("decoding_buffer_size")
 			d.FieldU32("max_bitrate")
 			d.FieldU32("avg_bitrate")
 		},
-		"pasp": func(ctx *decodeContext, d *decode.D) {
+		"pasp": func(_ *decodeContext, d *decode.D) {
 			d.FieldU32("h_spacing")
 			d.FieldU32("v_spacing")
 		},
-		"uuid": func(ctx *decodeContext, d *decode.D) {
+		"uuid": func(_ *decodeContext, d *decode.D) {
 			var uuidNames = map[[16]byte]string{
 				{0xa5, 0xd4, 0x0b, 0x30, 0xe8, 0x14, 0x11, 0xdd, 0xba, 0x2f, 0x08, 0x00, 0x20, 0x0c, 0x9a, 0x66}: "isml_manifest",
 				{0xbe, 0x7a, 0xcf, 0xcb, 0x97, 0xa9, 0x42, 0xe8, 0x9c, 0x71, 0x99, 0x94, 0x91, 0xe3, 0xaf, 0xac}: "xmp",
@@ -1028,7 +1028,7 @@ func init() {
 			d.FieldStringUUIDMapFn("uuid", uuidNames, "Unknown", func() []byte { return d.BytesLen(16) })
 			d.FieldBitBufLen("data", d.BitsLeft())
 		},
-		"keys": func(ctx *decodeContext, d *decode.D) {
+		"keys": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			entryCount := d.FieldU32("entry_count")
@@ -1043,7 +1043,7 @@ func init() {
 			})
 		},
 		"wave": decodeBoxes,
-		"saiz": func(ctx *decodeContext, d *decode.D) {
+		"saiz": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			flags := d.FieldU24("flags")
 			if flags&0b1 != 0 {
@@ -1060,7 +1060,7 @@ func init() {
 				})
 			}
 		},
-		"sgpd": func(ctx *decodeContext, d *decode.D) {
+		"sgpd": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 
@@ -1075,7 +1075,7 @@ func init() {
 				}
 			})
 		},
-		"sbgp": func(ctx *decodeContext, d *decode.D) {
+		"sbgp": func(_ *decodeContext, d *decode.D) {
 			version := d.FieldU8("version")
 			d.FieldU24("flags")
 
@@ -1093,7 +1093,7 @@ func init() {
 				}
 			})
 		},
-		"saio": func(ctx *decodeContext, d *decode.D) {
+		"saio": func(_ *decodeContext, d *decode.D) {
 			version := d.FieldU8("version")
 			flags := d.FieldU24("flags")
 
@@ -1112,7 +1112,7 @@ func init() {
 				}
 			})
 		},
-		"senc": func(ctx *decodeContext, d *decode.D) {
+		"senc": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 
@@ -1137,7 +1137,7 @@ func init() {
 			// 	}
 			// })
 		},
-		"tenc": func(ctx *decodeContext, d *decode.D) {
+		"tenc": func(_ *decodeContext, d *decode.D) {
 			version := d.FieldU8("version")
 			d.FieldU24("flags")
 
@@ -1159,7 +1159,7 @@ func init() {
 			}
 		},
 		"covr": decodeBoxes,
-		"dec3": func(ctx *decodeContext, d *decode.D) {
+		"dec3": func(_ *decodeContext, d *decode.D) {
 			d.FieldU13("data_rate")
 			d.FieldU3("num_ind_sub")
 			d.FieldU2("fscod")
@@ -1183,7 +1183,7 @@ func init() {
 				}
 			}
 		},
-		"dac4": func(ctx *decodeContext, d *decode.D) {
+		"dac4": func(_ *decodeContext, d *decode.D) {
 			d.FieldU3("ac4_dsi_version")
 			bitstreamVersion := d.FieldU7("bitstream_version")
 			d.FieldU1("fs_index")

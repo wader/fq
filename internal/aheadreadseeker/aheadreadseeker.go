@@ -1,6 +1,7 @@
 package aheadreadseeker
 
 import (
+	"errors"
 	"io"
 )
 
@@ -52,7 +53,7 @@ func (r *Reader) Read(p []byte) (n int, err error) {
 		n, err := io.ReadFull(r.rs, r.cache[0:readBytes])
 		r.cacheOffset = r.offset
 		r.cacheUsed = n
-		if n == 0 || (err != io.ErrUnexpectedEOF && err == io.EOF) {
+		if n == 0 || (!errors.Is(err, io.ErrUnexpectedEOF) && errors.Is(err, io.EOF)) {
 			return 0, err
 		}
 	}

@@ -19,7 +19,7 @@ func BytesFromBitString(s string) ([]byte, int) {
 		if d != 0 && d != 1 {
 			panic(fmt.Sprintf("invalid bit string %q at index %d %q", s, i, s[i]))
 		}
-		buf[i/8] |= byte(d << (7 - i%8))
+		buf[i/8] |= d << (7 - i%8)
 	}
 
 	return buf, len(s)

@@ -54,7 +54,7 @@ func fieldUEV(d *decode.D, name string) uint64 {
 
 func sEV(d *decode.D) int64 { return num.ZigZag(expGolomb(d)) }
 
-func fieldSEV(d *decode.D, name string) int64 {
+func fieldSEV(d *decode.D, name string) int64 { //nolint:unparam
 	return d.FieldSFn(name, func() (int64, decode.DisplayFormat, string) {
 		return sEV(d), decode.NumberDecimal, ""
 	})
@@ -110,7 +110,7 @@ func avcNALUDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldBool("forbidden_zero_bit")
 	d.FieldU2("nal_ref_idc")
 	nalType, _ := d.FieldStringMapFn("nal_unit_type", avcNALNames, "Unknown", d.U5, decode.NumberDecimal)
-	unescapedBb := decode.MustNewBitBufFromReader(decode.NALUnescapeReader{Reader: d.BitBufRange(d.Pos(), int64(d.BitsLeft()))})
+	unescapedBb := decode.MustNewBitBufFromReader(decode.NALUnescapeReader{Reader: d.BitBufRange(d.Pos(), d.BitsLeft())})
 
 	switch nalType {
 	case avcNALCodedSliceNonIDR,

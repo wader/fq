@@ -208,46 +208,45 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		// 1010 : mid/side stereo: channel 0 is the mid(average) channel, channel 1 is the side(difference) channel
 		// 1011-1111 : reserved
 		channels = d.FieldUFn("channel_assignment", func() (uint64, decode.DisplayFormat, string) {
-			ca, si, u, fmt, disp := func() (uint64, int, uint64, decode.DisplayFormat, string) {
+			ca, u, disp := func() (uint64, uint64, string) {
 				v := d.U4()
 				switch v {
 				case 0:
-					return v, -1, 1, decode.NumberDecimal, "mono"
+					return v, 1, "mono"
 				case 1:
-					return v, -1, 2, decode.NumberDecimal, "left, right"
+					return v, 2, "left, right"
 				case 2:
-					return v, -1, 3, decode.NumberDecimal, "left, right, center"
+					return v, 3, "left, right, center"
 				case 3:
-					return v, -1, 4, decode.NumberDecimal, "front left, front right, back left, back right"
+					return v, 4, "front left, front right, back left, back right"
 				case 4:
-					return v, -1, 5, decode.NumberDecimal, "front left, front right, front center, back/surround left, back/surround right"
+					return v, 5, "front left, front right, front center, back/surround left, back/surround right"
 				case 5:
-					return v, -1, 6, decode.NumberDecimal, "front left, front right, front center, LFE, back/surround left, back/surround right"
+					return v, 6, "front left, front right, front center, LFE, back/surround left, back/surround right"
 				case 6:
-					return v, -1, 7, decode.NumberDecimal, "front left, front right, front center, LFE, back center, side left, side right"
+					return v, 7, "front left, front right, front center, LFE, back center, side left, side right"
 				case 7:
-					return v, -1, 8, decode.NumberDecimal, "front left, front right, front center, LFE, back left, back right, side left, side right"
+					return v, 8, "front left, front right, front center, LFE, back left, back right, side left, side right"
 				case 0b1000:
 					sideChannelIndex = 1
-					return v, -1, 2, decode.NumberDecimal, "left/side"
+					return v, 2, "left/side"
 				case 0b1001:
 					sideChannelIndex = 0
-					return v, -1, 2, decode.NumberDecimal, "side/right"
+					return v, 2, "side/right"
 				case 0b1010:
 					sideChannelIndex = 1
-					return v, -1, 2, decode.NumberDecimal, "mid/side"
+					return v, 2, "mid/side"
 				default:
-					return v, -1, 0, decode.NumberDecimal, "reserved"
+					return v, 0, "reserved"
 				}
 			}()
 			channelAssignment = int(ca)
-			if si != -1 {
-				sideChannelIndex = si
+			if sideChannelIndex != -1 {
 				d.FieldUFn("side_channel_index", func() (uint64, decode.DisplayFormat, string) {
 					return uint64(sideChannelIndex), decode.NumberDecimal, ""
 				})
 			}
-			return u, fmt, disp
+			return u, decode.NumberDecimal, disp
 		})
 
 		// <3> Sample size in bits:
@@ -361,29 +360,29 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 				// 1xxxxx : SUBFRAME_LPC, xxxxx=order-1
 				var lpcOrder int
 				subframeType := d.FieldUFn("subframe_type", func() (uint64, decode.DisplayFormat, string) {
-					u, fmt, disp := func() (uint64, decode.DisplayFormat, string) {
+					u, disp := func() (uint64, string) {
 						bits := d.U6()
 						switch bits {
 						case 0b000000:
-							return SubframeConstant, decode.NumberDecimal, SubframeTypeNames[SubframeConstant]
+							return SubframeConstant, SubframeTypeNames[SubframeConstant]
 						case 0b000001:
-							return SubframeVerbatim, decode.NumberDecimal, SubframeTypeNames[SubframeVerbatim]
+							return SubframeVerbatim, SubframeTypeNames[SubframeVerbatim]
 						case 0b001000, 0b001001, 0b001010, 0b001011, 0b001100:
 							lpcOrder = int(bits & 0x7)
-							return SubframeFixed, decode.NumberDecimal, SubframeTypeNames[SubframeFixed]
+							return SubframeFixed, SubframeTypeNames[SubframeFixed]
 						default:
 							if bits&0x20 > 0 {
 								lpcOrder = int((bits & 0x1f) + 1)
 							} else {
-								return 0, decode.NumberDecimal, "reserved"
+								return 0, "reserved"
 							}
-							return SubframeLPC, decode.NumberDecimal, SubframeTypeNames[SubframeLPC]
+							return SubframeLPC, SubframeTypeNames[SubframeLPC]
 						}
 					}()
 					d.FieldUFn("lpc_order", func() (uint64, decode.DisplayFormat, string) {
 						return uint64(lpcOrder), decode.NumberDecimal, ""
 					})
-					return u, fmt, disp
+					return u, decode.NumberDecimal, disp
 				})
 
 				// 'Wasted bits-per-sample' flag:
@@ -393,7 +392,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 				var wastedBitsK int
 				if wastedBitsFlag != 0 {
 					wastedBitsK = int(d.FieldUFn("wasted_bits_k", func() (uint64, decode.DisplayFormat, string) {
-						return uint64(d.Unary(0)) + 1, decode.NumberDecimal, ""
+						return d.Unary(0) + 1, decode.NumberDecimal, ""
 					}))
 				}
 
@@ -619,7 +618,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		// no side channel
 	}
 
-	bytesPerSample := int(sampleSize / 8)
+	bytesPerSample := sampleSize / 8
 	p := 0
 	le := binary.LittleEndian
 

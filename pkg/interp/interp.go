@@ -345,10 +345,10 @@ func queryErrorPosition(v error) string {
 	var offset int
 	var content string
 
-	if tokIf, ok := v.(interface{ Token() (string, int) }); ok {
+	if tokIf, ok := v.(interface{ Token() (string, int) }); ok { //nolint:errorlint
 		_, offset = tokIf.Token()
 	}
-	if qeIf, ok := v.(interface {
+	if qeIf, ok := v.(interface { //nolint:errorlint
 		QueryParseError() (string, string, string, error)
 	}); ok {
 		_, _, content, _ = qeIf.QueryParseError()
@@ -383,7 +383,10 @@ const (
 )
 
 type runContext struct {
-	ctx     context.Context
+	// structcheck has problems with embedding https://gitlab.com/opennota/check#known-limitations
+	//nolint:structcheck
+	ctx context.Context
+	//nolint:structcheck
 	stdout  Output // TODO: rename?
 	mode    RunMode
 	state   map[string]interface{}

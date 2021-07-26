@@ -150,42 +150,42 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 			decodeSampleRange := func(d *decode.D, t *track, dataFormat string, name string, firstBit int64, nBits int64, opts ...decode.Options) {
 				switch dataFormat {
 				case "fLaC":
-					d.FieldDecodeRange("sample", firstBit, nBits, flacFrameFormat, t.decodeOpts...)
+					d.FieldDecodeRange(name, firstBit, nBits, flacFrameFormat, opts...)
 				case "Opus":
-					d.FieldDecodeRange("sample", firstBit, nBits, opusPacketFrameFormat, t.decodeOpts...)
+					d.FieldDecodeRange(name, firstBit, nBits, opusPacketFrameFormat, opts...)
 				case "vp09":
-					d.FieldDecodeRange("sample", firstBit, nBits, vp9FrameFormat, t.decodeOpts...)
+					d.FieldDecodeRange(name, firstBit, nBits, vp9FrameFormat, opts...)
 				case "avc1":
-					d.FieldDecodeRange("sample", firstBit, nBits, mpegAVCAUFormat, t.decodeOpts...)
+					d.FieldDecodeRange(name, firstBit, nBits, mpegAVCAUFormat, opts...)
 				case "hev1":
-					d.FieldDecodeRange("sample", firstBit, nBits, mpegHEVCSampleFormat, t.decodeOpts...)
+					d.FieldDecodeRange(name, firstBit, nBits, mpegHEVCSampleFormat, opts...)
 				case "av01":
-					d.FieldDecodeRange("sample", firstBit, nBits, av1FrameFormat, t.decodeOpts...)
+					d.FieldDecodeRange(name, firstBit, nBits, av1FrameFormat, opts...)
 				case "mp4a":
 					switch t.objectType {
 					case format.MPEGObjectTypeMP3:
-						d.FieldDecodeRange("sample", firstBit, nBits, mp3FrameFormat, t.decodeOpts...)
+						d.FieldDecodeRange(name, firstBit, nBits, mp3FrameFormat, opts...)
 					case format.MPEGObjectTypeAAC:
 						// TODO: MPEGObjectTypeAACLow, Main etc?
-						d.FieldDecodeRange("sample", firstBit, nBits, aacFrameFormat, t.decodeOpts...)
+						d.FieldDecodeRange(name, firstBit, nBits, aacFrameFormat, opts...)
 					case format.MPEGObjectTypeVORBIS:
-						d.FieldDecodeRange("sample", firstBit, nBits, vorbisPacketFormat, t.decodeOpts...)
+						d.FieldDecodeRange(name, firstBit, nBits, vorbisPacketFormat, opts...)
 					default:
-						d.FieldBitBufRange("sample", firstBit, nBits)
+						d.FieldBitBufRange(name, firstBit, nBits)
 					}
 				case "mp4v":
 					switch t.objectType {
 					case format.MPEGObjectTypeMPEG2VideoMain:
-						d.FieldDecodeRange("sample", firstBit, nBits, mpegPESPacketSampleFormat, t.decodeOpts...)
+						d.FieldDecodeRange(name, firstBit, nBits, mpegPESPacketSampleFormat, opts...)
 					case format.MPEGObjectTypeMJPEG:
-						d.FieldDecodeRange("sample", firstBit, nBits, jpegFormat, t.decodeOpts...)
+						d.FieldDecodeRange(name, firstBit, nBits, jpegFormat, opts...)
 					default:
-						d.FieldBitBufRange("sample", firstBit, nBits)
+						d.FieldBitBufRange(name, firstBit, nBits)
 					}
 				case "jpeg":
-					d.FieldDecodeRange("sample", firstBit, nBits, jpegFormat, t.decodeOpts...)
+					d.FieldDecodeRange(name, firstBit, nBits, jpegFormat, opts...)
 				default:
-					d.FieldBitBufRange("sample", firstBit, nBits)
+					d.FieldBitBufRange(name, firstBit, nBits)
 				}
 			}
 

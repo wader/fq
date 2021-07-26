@@ -275,7 +275,7 @@ func (b *Buffer) BitString() (string, error) {
 		var buf [1]byte
 		_, err := ReadFull(b, buf[:], 1)
 		if err != nil {
-			if err != io.EOF {
+			if !errors.Is(err, io.EOF) {
 				return "", err
 			}
 			break

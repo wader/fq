@@ -853,12 +853,12 @@ var BlockAdditionMapping = ebml.Tag{
 	},
 	BlockAddIDTypeID: {
 		Name:       "BlockAddIDType",
-		Definition: "Stores the registered identifer of the Block Additional Mapping to define how the BlockAdditional data should be handled.",
+		Definition: "Stores the registered identifier of the Block Additional Mapping to define how the BlockAdditional data should be handled.",
 		Type:       ebml.Uinteger,
 	},
 	BlockAddIDExtraDataID: {
 		Name:       "BlockAddIDExtraData",
-		Definition: "Extra binary data that the BlockAddIDType can use to interpret the BlockAdditional data. The intepretation of the binary data depends on the BlockAddIDType value and the corresponding Block Additional Mapping.",
+		Definition: "Extra binary data that the BlockAddIDType can use to interpret the BlockAdditional data. The interpretation of the binary data depends on the BlockAddIDType value and the corresponding Block Additional Mapping.",
 		Type:       ebml.Binary,
 	},
 }

@@ -54,7 +54,7 @@ func hevcDcrDecode(d *decode.D, in interface{}) interface{} {
 					for i := uint64(0); i < numNals; i++ {
 						d.FieldStructFn("nal", func(d *decode.D) {
 							nalUnitLength := int64(d.FieldU16("nal_unit_length"))
-							d.FieldDecodeLen("nal", int64(nalUnitLength)*8, hevcDCRNALFormat)
+							d.FieldDecodeLen("nal", nalUnitLength*8, hevcDCRNALFormat)
 						})
 					}
 				})

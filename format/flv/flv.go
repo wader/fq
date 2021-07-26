@@ -85,7 +85,7 @@ func flvDecode(d *decode.D, in interface{}) interface{} {
 		})
 	}
 
-	fieldScriptDataValue := func(d *decode.D, name string) uint64 {
+	fieldScriptDataValue := func(d *decode.D, _ string) uint64 {
 		typ, _ := d.FieldStringMapFn("type", typeNames, "Unknown", d.U8, decode.NumberDecimal)
 		if typ == typeECMAArray {
 			d.FieldU32("ecma_array_length")

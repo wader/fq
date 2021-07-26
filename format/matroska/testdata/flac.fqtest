@@ -317,6 +317,7 @@
 0x250|                     79                        |       y        |                  block_size: end of header (16 bit) (0) 0x257-0x257.3 (0.4)
 0x250|                     79                        |       y        |                  sample_rate: 44100 0x257.4-0x257.7 (0.4)
 0x250|                        88                     |        .       |                  channel_assignment: left/side (2) 0x258-0x258.3 (0.4)
+     |                                               |                |                  side_channel_index: 1 0x258.4-NA (0)
 0x250|                        88                     |        .       |                  sample_size: 16 0x258.4-0x258.6 (0.3)
 0x250|                        88                     |        .       |                  reserved1: Correct (0x0) 0x258.7-0x258.7 (0.1)
      |                                               |                |                  end_of_header: {} 0x259-0x25b.7 (3)

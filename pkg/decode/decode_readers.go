@@ -27,7 +27,7 @@ func (d *D) TryUTF8ShortString(nBytes int) (string, error) {
 		n = nBytes - 1
 	}
 
-	s, err := d.bitBuf.BytesLen(int(n))
+	s, err := d.bitBuf.BytesLen(n)
 	if err != nil {
 		return "", err
 	}
@@ -126,7 +126,7 @@ func (d *D) ZeroPadding(nBits int) bool {
 		if rBits > 64 {
 			rBits = 64
 		}
-		n, err := d.Bits(int(rBits))
+		n, err := d.Bits(rBits)
 		if err != nil {
 			panic(IOError{Err: err, Op: "ZeroPadding", Size: int64(rBits), Pos: d.Pos()})
 		}
@@ -214,7 +214,7 @@ func (d *D) UTF8(nBytes int) string {
 	if err != nil {
 		panic(IOError{Err: err, Op: "UTF8", Size: int64(nBytes) * 8, Pos: d.Pos()})
 	}
-	return string(s)
+	return s
 }
 
 // FieldUTF8 read nBytes utf8 string and add a field

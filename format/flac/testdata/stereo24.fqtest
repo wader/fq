@@ -356,6 +356,7 @@
 0x02a80|   c9                                          | .              |        block_size: 4096 0x2a81-0x2a81.3 (0.4)
 0x02a80|   c9                                          | .              |        sample_rate: 44100 0x2a81.4-0x2a81.7 (0.4)
 0x02a80|      ac                                       |  .             |        channel_assignment: mid/side (2) 0x2a82-0x2a82.3 (0.4)
+       |                                               |                |        side_channel_index: 1 0x2a82.4-NA (0)
 0x02a80|      ac                                       |  .             |        sample_size: 24 0x2a82.4-0x2a82.6 (0.3)
 0x02a80|      ac                                       |  .             |        reserved1: Correct (0x0) 0x2a82.7-0x2a82.7 (0.1)
        |                                               |                |        end_of_header: {} 0x2a83-0x2a83.7 (1)

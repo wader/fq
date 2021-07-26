@@ -330,11 +330,11 @@
     <extension webm="0"/>
   </element>
   <element name="BlockAddIDType" path="\Segment\Tracks\TrackEntry\BlockAdditionMapping\BlockAddIDType" id="0x41E7" type="uinteger" minOccurs="1" maxOccurs="1" minver="4" default="0">
-    <documentation lang="en" purpose="definition">Stores the registered identifer of the Block Additional Mapping to define how the BlockAdditional data should be handled.</documentation>
+    <documentation lang="en" purpose="definition">Stores the registered identifier of the Block Additional Mapping to define how the BlockAdditional data should be handled.</documentation>
     <extension webm="0"/>
   </element>
   <element name="BlockAddIDExtraData" path="\Segment\Tracks\TrackEntry\BlockAdditionMapping\BlockAddIDExtraData" id="0x41ED" type="binary" maxOccurs="1" minver="4">
-    <documentation lang="en" purpose="definition">Extra binary data that the BlockAddIDType can use to interpret the BlockAdditional data. The intepretation of the binary data depends on the BlockAddIDType value and the corresponding Block Additional Mapping.</documentation>
+    <documentation lang="en" purpose="definition">Extra binary data that the BlockAddIDType can use to interpret the BlockAdditional data. The interpretation of the binary data depends on the BlockAddIDType value and the corresponding Block Additional Mapping.</documentation>
     <extension webm="0"/>
   </element>
   <element name="Name" path="\Segment\Tracks\TrackEntry\Name" id="0x536E" type="utf-8" maxOccurs="1">
