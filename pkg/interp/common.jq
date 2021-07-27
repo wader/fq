@@ -1,3 +1,6 @@
+
+# TODO: rename to internal.jq?
+
 def default_options: _eval_state("default_options");
 def default_options($opts): _eval_state("default_options"; $opts);
 
@@ -57,8 +60,6 @@ def table(colmap; render):
 def _parsed_args: _global_state("parsed_args");
 def _parsed_args($v): _global_state("parsed_args"; $v);
 
-# TODO: probe format opt
-# TODO: isempty?
 def input:
   ( _global_state("inputs")
   | if length == 0 then error("break") end
