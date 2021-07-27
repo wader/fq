@@ -1,8 +1,8 @@
-def default_options: _state("default_options");
-def default_options($opts): _state("default_options"; $opts);
+def default_options: _eval_state("default_options");
+def default_options($opts): _eval_state("default_options"; $opts);
 
-def push_options($opts): _state("options_stack"; [$opts] + (_state("options_stack") // []));
-def pop_options: _state("options_stack"; _state("options_stack")[1:]);
+def push_options($opts): _eval_state("options_stack"; [$opts] + (_eval_state("options_stack") // []));
+def pop_options: _eval_state("options_stack"; _eval_state("options_stack")[1:]);
 
 # eval f and finally eval fin even on empty or error
 def finally(f; fin):
@@ -53,3 +53,24 @@ def table(colmap; render):
           )
         )
       end;
+
+
+def _args: _global_state("args");
+def _args($v): _global_state("args"; $v);
+
+# TODO: probe format opt
+# TODO: isempty?
+def input:
+  _global_state("inputs")
+  | if length == 0 then error("break") end
+  | [.[0], .[1:]] as [$h, $t]
+  | _global_state("inputs"; $t)
+  | open($h)
+  | decode(_args.decode);
+
+def inputs:
+  try repeat(input)
+  catch if . == "break" then empty else error end;
+
+def inputs($v): _global_state("inputs"; $v);
+

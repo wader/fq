@@ -382,30 +382,30 @@ const (
 	CompletionMode
 )
 
-type runContext struct {
+type evalContext struct {
 	// structcheck has problems with embedding https://gitlab.com/opennota/check#known-limitations
 	//nolint:structcheck
 	ctx context.Context
 	//nolint:structcheck
-	stdout  Output // TODO: rename?
-	mode    RunMode
+	stdout Output // TODO: rename?
+	mode   RunMode
+	// per eval state
 	state   map[string]interface{}
 	debugFn string
 }
 
 type Interp struct {
 	// variables map[string]interface{}
-	registry *registry.Registry
-	os       OS
-
-	initFqQuery *gojq.Query
-
-	includeCache map[string]*gojq.Query
-
+	registry       *registry.Registry
+	os             OS
+	initFqQuery    *gojq.Query
+	includeCache   map[string]*gojq.Query
 	interruptStack *ctxstack.Stack
+	// global interp state
+	state map[string]interface{}
 
 	// new for each run, other values are copied by ref
-	runContext
+	evalContext
 }
 
 func New(os OS, registry *registry.Registry) (*Interp, error) {
@@ -430,6 +430,7 @@ func New(os OS, registry *registry.Registry) (*Interp, error) {
 			return
 		}
 	})
+	i.state = map[string]interface{}{}
 
 	return i, nil
 }
@@ -492,13 +493,13 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	ni := &ci
 
 	newState := map[string]interface{}{}
-	if i.runContext.state != nil {
-		for k, v := range i.runContext.state {
+	if i.evalContext.state != nil {
+		for k, v := range i.evalContext.state {
 			newState[k] = v
 		}
 	}
 
-	ni.runContext = runContext{
+	ni.evalContext = evalContext{
 		state:   newState,
 		mode:    mode,
 		debugFn: debugFn,
@@ -749,7 +750,7 @@ func mapSetOptions(d *Options, m map[string]interface{}) {
 func (i *Interp) Options(fnOptsV ...interface{}) (Options, error) {
 	var opts Options
 
-	defaultOptsV := i.state["default_options"]
+	defaultOptsV := i.evalContext.state["default_options"]
 	if defaultOptsV == nil {
 		return Options{}, fmt.Errorf("default_options state not set")
 	}
@@ -759,7 +760,7 @@ func (i *Interp) Options(fnOptsV ...interface{}) (Options, error) {
 	}
 	mapSetOptions(&opts, defaultOpts)
 
-	optsStackV := i.state["options_stack"]
+	optsStackV := i.evalContext.state["options_stack"]
 	if optsStackV == nil {
 		return Options{}, fmt.Errorf("options_stack state not set")
 	}

@@ -261,6 +261,7 @@ def main:
 	.version as $version
 	| .args[0] as $arg0
 	| args_parse(.args[1:]; _opts($version)) as {$parsed, $rest}
+	| _args($parsed) as $_
 	# TODO: hack, pass opts some other way
 	| default_options(build_default_options) as $_
 	| push_options(
@@ -304,7 +305,7 @@ def main:
 		  # make -ni and -i without args act the same
 		  | if $parsed.nullinput or ($parsed.repl and ($rest | length) == 0) then
 		     .expr = $rest[0]
-		  	 | .filenames = [null]
+			| .filenames = $rest[1:]
 		    end
 		  | if $parsed.file then
 			 .expr = (open($parsed.file) | string)
@@ -313,16 +314,10 @@ def main:
 		  | if .filenames == [] then
 			  .filenames = ["-"]
 		    end
-		  | debug
-		  | .inputs =
-		  [ .filenames[] as $filename
-		  # TODO: try decode?
-		  | open($filename)
-		  | decode($parsed.decode)
-		  ]
-		  | debug
+		  | inputs(.filenames) as $_ # store inputs
 		  | .expr as $expr
-		  | .inputs[]
+		  | if $parsed.nullinput then null
+		    else inputs end # will iterate inputs
 		  | eval_f($expr; .)
 		  | if $parsed.repl then repl
 		    else default_display end

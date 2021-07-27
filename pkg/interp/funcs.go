@@ -94,7 +94,8 @@ func (i *Interp) makeFunctions(registry *registry.Registry) []Function {
 		{[]string{"aes_ctr"}, 1, 2, i.aesCtr, nil},
 		{[]string{"json"}, 0, 0, i._json, nil},
 
-		{[]string{"_state"}, 1, 2, i._state, nil},
+		{[]string{"_global_state"}, 1, 2, i.makeStateFn(i.state), nil},
+		{[]string{"_eval_state"}, 1, 2, i.makeStateFn(i.evalContext.state), nil},
 		{[]string{"options"}, 0, 0, i.options, nil},
 
 		{[]string{"find"}, 1, 1, nil, i.find},
@@ -785,18 +786,25 @@ func (i *Interp) _json(c interface{}, a []interface{}) interface{} {
 	return vv
 }
 
-func (i *Interp) _state(c interface{}, a []interface{}) interface{} {
-	name, ok := a[0].(string)
-	if !ok {
-		return fmt.Errorf("%v: value is not a string", c)
-	}
+func (i *Interp) makeStateFn(state map[string]interface{}) func(c interface{}, a []interface{}) interface{} {
+	return func(c interface{}, a []interface{}) interface{} {
+		key, ok := a[0].(string)
+		if !ok {
+			return fmt.Errorf("%v: key is not a string", c)
+		}
 
-	s := i.state[name]
-	if len(a) > 1 {
-		i.state[name] = a[1]
-	}
+		v := state[key]
+		if len(a) > 1 {
+			v = a[1]
+			if v == nil {
+				delete(state, key)
+			} else {
+				state[key] = v
+			}
+		}
 
-	return s
+		return v
+	}
 }
 
 func (i *Interp) options(c interface{}, a []interface{}) interface{} {
