@@ -281,42 +281,19 @@ def main:
 		_usage($arg0; $version) | println
 	  else
 		try
-
-
-    # expr file...
-	# -n expr
-	# -f file expr
-	# -nf scriptfile file
-
-
-	# fq
-	# fq . test.mp3
-	# fq -i
-	# fq -i . test.mp3
-	# fq -n 2+2
-	# fq -n -i
-
-		  # figure out expression and filenames
-
 		  {
-			expr: $rest[0],
+			expr: ($rest[0] // "."),
 			filenames: $rest[1:],
 		  }
-		  # make -ni and -i without args act the same
-		  | if $parsed.nullinput or ($parsed.repl and ($rest | length) == 0) then
-		     .expr = $rest[0]
-			| .filenames = $rest[1:]
-		    end
 		  | if $parsed.file then
-			 .expr = (open($parsed.file) | string)
-			 | .filenames = $rest
+				( .expr = (open($parsed.file) | string)
+				| .filenames = $rest
+				)
 		    end
-		  | if .filenames == [] then
-			  .filenames = ["-"]
-		    end
-		  | inputs(.filenames) as $_ # store inputs
 		  | .expr as $expr
-		  | if $parsed.nullinput then null
+		  | .filenames as $filenames
+		  | inputs($filenames) as $_ # store inputs
+		  | if $parsed.nullinput or ($parsed.repl and ($filenames | length) == 0) then null
 		    else inputs end # will iterate inputs
 		  | eval_f($expr; .)
 		  | if $parsed.repl then repl
