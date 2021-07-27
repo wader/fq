@@ -261,7 +261,7 @@ def main:
 	.version as $version
 	| .args[0] as $arg0
 	| args_parse(.args[1:]; _opts($version)) as {$parsed, $rest}
-	| _args($parsed) as $_
+	| _parsed_args($parsed) as $_
 	# TODO: hack, pass opts some other way
 	| default_options(build_default_options) as $_
 	| push_options(
