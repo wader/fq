@@ -110,7 +110,8 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldUTF8("keyword", keywordLen)
 				d.FieldUTF8("null", 1)
 				compressionMethod, _ := d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8, decode.NumberDecimal)
-				dataLen := (chunkLength - keywordLen + 1) * 8
+				// +2 to skip null and compression_method
+				dataLen := (chunkLength - (keywordLen + 2)) * 8
 
 				switch compressionMethod {
 				case compressionDeflate:
@@ -130,7 +131,8 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldUTF8("profile_name", profileNameLen)
 				d.FieldUTF8("null", 1)
 				compressionMethod, _ := d.FieldStringMapFn("compression_method", compressionNames, "unknown", d.U8, decode.NumberDecimal)
-				dataLen := (chunkLength - profileNameLen + 1) * 8
+				// +2 to skip null and compression_method
+				dataLen := (chunkLength - (profileNameLen + 2)) * 8
 
 				switch compressionMethod {
 				case compressionDeflate:
