@@ -22,6 +22,50 @@ func init() {
 	})
 }
 
+const (
+	SHT_NULL          = 0x0
+	SHT_PROGBITS      = 0x1
+	SHT_SYMTAB        = 0x2
+	SHT_STRTAB        = 0x3
+	SHT_RELA          = 0x4
+	SHT_HASH          = 0x5
+	SHT_DYNAMIC       = 0x6
+	SHT_NOTE          = 0x7
+	SHT_NOBITS        = 0x8
+	SHT_REL           = 0x9
+	SHT_SHLIB         = 0x0a
+	SHT_DYNSYM        = 0x0b
+	SHT_INIT_ARRAY    = 0x0e
+	SHT_FINI_ARRAY    = 0x0f
+	SHT_PREINIT_ARRAY = 0x10
+	SHT_GROUP         = 0x11
+	SHT_SYMTAB_SHNDX  = 0x12
+	SHT_NUM           = 0x13
+	SHT_LOOS          = 0x60000000
+)
+
+var shTypeNames = map[uint64]string{
+	SHT_NULL:          "SHT_NULL",
+	SHT_PROGBITS:      "SHT_PROGBITS",
+	SHT_SYMTAB:        "SHT_SYMTAB",
+	SHT_STRTAB:        "SHT_STRTAB",
+	SHT_RELA:          "SHT_RELA",
+	SHT_HASH:          "SHT_HASH",
+	SHT_DYNAMIC:       "SHT_DYNAMIC",
+	SHT_NOTE:          "SHT_NOTE",
+	SHT_NOBITS:        "SHT_NOBITS",
+	SHT_REL:           "SHT_REL",
+	SHT_SHLIB:         "SHT_SHLIB",
+	SHT_DYNSYM:        "SHT_DYNSYM",
+	SHT_INIT_ARRAY:    "SHT_INIT_ARRAY",
+	SHT_FINI_ARRAY:    "SHT_FINI_ARRAY",
+	SHT_PREINIT_ARRAY: "SHT_PREINIT_ARRAY",
+	SHT_GROUP:         "SHT_GROUP",
+	SHT_SYMTAB_SHNDX:  "SHT_SYMTAB_SHNDX",
+	SHT_NUM:           "SHT_NUM",
+	SHT_LOOS:          "SHT_LOOS",
+}
+
 func strIndexNull(idx int, s string) string {
 	if idx > len(s) {
 		return ""
@@ -267,28 +311,6 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 		for i := uint64(0); i < shnum; i++ {
 			d.SeekAbs(int64(shoff*8) + int64(i*shentsize*8))
 
-			shTypeNames := map[uint64]string{
-				0x0:        "SHT_NULL",
-				0x1:        "SHT_PROGBITS",
-				0x2:        "SHT_SYMTAB",
-				0x3:        "SHT_STRTAB",
-				0x4:        "SHT_RELA",
-				0x5:        "SHT_HASH",
-				0x6:        "SHT_DYNAMIC",
-				0x7:        "SHT_NOTE",
-				0x8:        "SHT_NOBITS",
-				0x9:        "SHT_REL",
-				0x0a:       "SHT_SHLIB",
-				0x0b:       "SHT_DYNSYM",
-				0x0e:       "SHT_INIT_ARRAY",
-				0x0f:       "SHT_FINI_ARRAY",
-				0x10:       "SHT_PREINIT_ARRAY",
-				0x11:       "SHT_GROUP",
-				0x12:       "SHT_SYMTAB_SHNDX",
-				0x13:       "SHT_NUM",
-				0x60000000: "SHT_LOOS",
-			}
-
 			shFlags := func(d *decode.D, archBits int) {
 				d.FieldStructFn("sh_flags", func(d *decode.D) {
 					if d.Endian == decode.LittleEndian {
@@ -352,6 +374,7 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 				var offset uint64
 				var size uint64
 				var shname string
+				var typ uint64
 
 				const (
 					DT_NULL     = 0
@@ -411,7 +434,7 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 				switch archBits {
 				case 32:
 					shname = fieldStringStrIndexFn(d, "sh_name", strIndexTable, d.U32)
-					d.FieldStringMapFn("sh_type", shTypeNames, "Unknown", d.U32, decode.NumberHex)
+					typ, _ = d.FieldStringMapFn("sh_type", shTypeNames, "Unknown", d.U32, decode.NumberHex)
 					shFlags(d, archBits)
 					d.FieldU("sh_addr", archBits)
 					offset = d.FieldU("sh_offset", archBits)
@@ -422,7 +445,7 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 					d.FieldU32("sh_entsize")
 				case 64:
 					shname = fieldStringStrIndexFn(d, "sh_name", strIndexTable, d.U32)
-					d.FieldStringMapFn("sh_type", shTypeNames, "Unknown", d.U32, decode.NumberHex)
+					typ, _ = d.FieldStringMapFn("sh_type", shTypeNames, "Unknown", d.U32, decode.NumberHex)
 					shFlags(d, archBits)
 					d.FieldU("sh_addr", archBits)
 					offset = d.FieldU("sh_offset", archBits)
@@ -433,29 +456,32 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 					d.FieldU64("sh_entsize")
 				}
 
-				d.FieldBitBufRange("data", int64(offset*8), int64(size*8))
+				// SHT_NOBITS:
+				// "Identifies a section that occupies no space in the file but otherwise resembles SHT_PROGBITS. Although this section contains no bytes, the sh_offset member contains the conceptual file offset."
+				if typ != SHT_NOBITS {
+					d.FieldBitBufRange("data", int64(offset*8), int64(size*8))
+					d.DecodeRangeFn(int64(offset)*8, int64(size*8), func(d *decode.D) {
+						switch shname {
+						// TODO: PT_DYNAMIC?
+						case ".dynamic":
+							d.FieldArrayFn("dynamic_tags", func(d *decode.D) {
+								for d.NotEnd() {
+									d.FieldStructFn("tag", func(d *decode.D) {
+										tag, _ := d.FieldStringMapFn("tag", dtNames, "Unknown", func() uint64 { return d.U(archBits) }, decode.NumberHex)
+										switch tag {
+										case DT_NEEDED:
+											// TODO: DT_STRTAB
+											fieldStringStrIndexFn(d, "val", strIndexTable, func() uint64 { return d.U(archBits) })
+										default:
+											d.FieldU("d_un", archBits)
+										}
+									})
+								}
+							})
+						}
 
-				d.DecodeRangeFn(int64(offset)*8, int64(size*8), func(d *decode.D) {
-					switch shname {
-					// TODO: PT_DYNAMIC?
-					case ".dynamic":
-						d.FieldArrayFn("dynamic_tags", func(d *decode.D) {
-							for d.NotEnd() {
-								d.FieldStructFn("tag", func(d *decode.D) {
-									tag, _ := d.FieldStringMapFn("tag", dtNames, "Unknown", func() uint64 { return d.U(archBits) }, decode.NumberHex)
-									switch tag {
-									case DT_NEEDED:
-										// TODO: DT_STRTAB
-										fieldStringStrIndexFn(d, "val", strIndexTable, func() uint64 { return d.U(archBits) })
-									default:
-										d.FieldU("d_un", archBits)
-									}
-								})
-							}
-						})
-					}
-
-				})
+					})
+				}
 			})
 		}
 	})
