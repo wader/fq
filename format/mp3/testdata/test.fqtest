@@ -470,4 +470,3 @@
      |                                               |                |  footers: [0] 0x44f-NA (0)
 0x440|                                             61|               a|  unknown0: 61736461 0x44f-0x452.7 (4)
 0x450|73 64 61|                                      |sda|            |
-> fq -d mp3 /test.mp3 .header.frame[0].text._value
