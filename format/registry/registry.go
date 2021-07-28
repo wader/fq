@@ -35,6 +35,15 @@ func (r *Registry) register(groupName string, format *decode.Format, single bool
 	return format
 }
 
+func sortFormats(fs []*decode.Format) {
+	sort.Slice(fs, func(i, j int) bool {
+		if fs[i].ProbeOrder == fs[j].ProbeOrder {
+			return fs[i].Name < fs[j].Name
+		}
+		return fs[i].ProbeOrder < fs[j].ProbeOrder
+	})
+}
+
 func (r *Registry) resolve() error {
 	for _, fs := range r.Groups {
 		for _, f := range fs {
@@ -48,18 +57,14 @@ func (r *Registry) resolve() error {
 					formats = append(formats, df...)
 				}
 
+				sortFormats(formats)
 				*d.Formats = formats
 			}
 		}
 	}
 
 	for _, fs := range r.Groups {
-		sort.Slice(fs, func(i, j int) bool {
-			if fs[i].ProbeOrder == fs[j].ProbeOrder {
-				return fs[i].Name < fs[j].Name
-			}
-			return fs[i].ProbeOrder < fs[j].ProbeOrder
-		})
+		sortFormats(fs)
 	}
 
 	return nil
