@@ -1,3 +1,42 @@
+# TODO: escape for safe key names
+# path ["a", 1, "b"] -> "a[1].b"
+def path_to_expr:
+	map(if type == "number" then "[", ., "]" else ".", . end) | join("");
+
+# TODO: don't use eval? should support '.a.b[1]."c.c"' and escapes?
+def expr_to_path:
+	if . | type != "string" then error("require string argument") end
+	| eval("null | path(\(.))");
+
+def trim: capture("^\\s*(?<str>.*?)\\s*$"; "").str;
+
+# does +1 and [:1] as " "*0 is null
+def rpad($s; $w): . + ($s * ($w+1-length))[1:];
+
+# [{a: 123, ...}, ...]
+# colmap maps something into [col, ...]
+# render maps [{column: 0, string: "coltext", maxwidth: 12}, ..] into a row
+def table(colmap; render):
+    def _column_widths:
+        [ . as $rs
+        | range($rs[0] | length) as $i
+        | [$rs[] | colmap | (.[$i] | length)]
+        | max
+        ];
+    if (. | length) == 0 then ""
+    else
+      _column_widths as $cw
+      | . as $rs
+      | ( ($rs[]
+          | . as $r
+          | [ range($r | length) as $i
+            | ($r | colmap | {column: $i, string: .[$i], maxwidth: $cw[$i]})
+            ]
+          | render
+          )
+        )
+      end;
+
 # convert number to array of bytes
 def number_to_bytes($bits):
 	def _number_to_bytes($d):

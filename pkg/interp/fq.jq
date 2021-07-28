@@ -1,6 +1,6 @@
-include "@builtin/common";
-include "@builtin/args";
+include "@builtin/internal";
 include "@builtin/funcs";
+include "@builtin/args";
 include "@builtin/format";
 
 # optional user init
