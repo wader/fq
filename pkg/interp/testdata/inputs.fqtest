@@ -1,0 +1,43 @@
+/a:
+a
+/b:
+b
+/c:
+c
+> fq -d raw ._description /a /b /c
+"/a"
+"/b"
+"/c"
+> fq -d raw (.,inputs)._description /a /b /c
+"/a"
+"/b"
+"/c"
+> fq -d raw (.,input,input,input)._description /a /b /c
+"/a"
+"/b"
+"/c"
+error: break
+> fq -d raw -n (.,inputs)._description /a /b /c
+null
+"/a"
+"/b"
+"/c"
+> fq -d raw -n inputs._description /a /b /c
+"/a"
+"/b"
+"/c"
+> fq -d raw -n '[inputs._description]' /a /b /c
+[
+  "/a",
+  "/b",
+  "/c"
+]
+> fq -d raw -n (input,input,input,input)._description /a /b /c
+"/a"
+"/b"
+"/c"
+error: break
+> fq -d raw input_filename /a /b /c
+"/a"
+"/b"
+"/c"
