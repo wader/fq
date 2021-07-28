@@ -18,7 +18,7 @@
     "b"
   ]
 ]
-> fq -d mp3 /test.mp3 '{(.headers[0].magic): 123}'
+> fq -d mp3 '{(.headers[0].magic): 123}' /test.mp3
 {
   "ID3": 123
 }

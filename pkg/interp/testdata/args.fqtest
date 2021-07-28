@@ -1,6 +1,8 @@
 /test.mp3:
+> fq
+Usage: fq [OPTIONS] [EXPR] [FILE...]
 > fq -h
-Usage: fq [OPTIONS] [FILE] [EXPR...]
+Usage: fq [OPTIONS] [EXPR] [FILE...]
 --compact,-c     Compact output
 --decode,-d      Decode format (probe)
 --file,-f        Read script from file
@@ -24,10 +26,10 @@ Usage: fq [OPTIONS] [FILE] [EXPR...]
 --version,-v     Show version (dev)
 > fq -i
 null> ^D
-> fq -i /test.mp3
+> fq -i . /test.mp3
 mp3> ^D
 > fq -n
-null
+Usage: fq [OPTIONS] [EXPR] [FILE...]
 > fq -ni
 null> ^D
 > fq -n 123

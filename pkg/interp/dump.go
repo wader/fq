@@ -96,16 +96,18 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 
 	switch vv := v.V.(type) {
 	case decode.Struct:
+		cfmt(colField, " %s", deco.Object.F("{}"))
 		if v.Description != "" {
 			cfmt(colField, " %s", deco.Value.F(v.Description))
-		} else {
-			cfmt(colField, " %s", deco.Object.F("{}"))
 		}
 		if v.Format != nil {
 			cfmt(colField, " (%s)", deco.Value.F(v.Format.Name))
 		}
 	case decode.Array:
 		cfmt(colField, " %s%s%s", deco.Index.F("["), deco.Number.F(strconv.Itoa(len(vv))), deco.Index.F("]"))
+		if v.Description != "" {
+			cfmt(colField, " %s", deco.Value.F(v.Description))
+		}
 		if v.Format != nil {
 			cfmt(colField, " (%s)", deco.Value.F(v.Format.Name))
 		}
@@ -116,6 +118,7 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 		} else {
 			cfmt(colField, " %s", deco.ValueColor(v).F(previewValue(v)))
 		}
+		// TODO: similar to struct/array?
 		if v.Description != "" {
 			cfmt(colField, fmt.Sprintf(" (%s)", deco.Value.F(v.Description)))
 		}

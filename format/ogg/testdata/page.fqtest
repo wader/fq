@@ -1,7 +1,7 @@
 # ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.page[0] | bits' > page
 /page:
-> fq -d ogg_page /page verbose
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} (ogg_page) 0x0-0x39.7 (58)
+> fq -d ogg_page verbose /page
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /page (ogg_page) 0x0-0x39.7 (58)
 0x00|4f 67 67 53                                    |OggS            |  capture_pattern: "OggS" (Correct) 0x0-0x3.7 (4)
 0x00|            00                                 |    .           |  stream_structure_version: Correct (0x0) 0x4-0x4.7 (1)
 0x00|               02                              |     .          |  unused_flags: 0 0x5-0x5.4 (0.5)

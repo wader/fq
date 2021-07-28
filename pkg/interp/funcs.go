@@ -92,7 +92,6 @@ func (i *Interp) makeFunctions(registry *registry.Registry) []Function {
 		{[]string{"path_escape"}, 0, 0, i.pathEscape, nil},
 		{[]string{"path_unescape"}, 0, 0, i.pathUnescape, nil},
 		{[]string{"aes_ctr"}, 1, 2, i.aesCtr, nil},
-		{[]string{"json"}, 0, 0, i._json, nil},
 
 		{[]string{"_global_state"}, 1, 2, i.makeStateFn(i.state), nil},
 		{[]string{"_eval_state"}, 1, 2, i.makeStateFn(i.evalContext.state), nil},
@@ -519,6 +518,8 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 
 func (i *Interp) makeDecodeFn(registry *registry.Registry, decodeFormats []*decode.Format) func(c interface{}, a []interface{}) interface{} {
 	return func(c interface{}, a []interface{}) interface{} {
+		filename := "unnamed"
+
 		// TODO: progress hack
 		// would be nice to move progress code into decode but it might be
 		// tricky to keep track of absolute positions in the underlaying readers
@@ -527,6 +528,7 @@ func (i *Interp) makeDecodeFn(registry *registry.Registry, decodeFormats []*deco
 			if bbf.decodeDoneFn != nil {
 				defer bbf.decodeDoneFn()
 			}
+			filename = bbf.filename
 		}
 
 		bb, err := toBuffer(c)
@@ -537,7 +539,6 @@ func (i *Interp) makeDecodeFn(registry *registry.Registry, decodeFormats []*deco
 		opts := map[string]interface{}{}
 
 		// TODO:
-		name := "unnamed"
 
 		if len(a) >= 1 {
 			formatName, err := toString(a[0])
@@ -550,7 +551,7 @@ func (i *Interp) makeDecodeFn(registry *registry.Registry, decodeFormats []*deco
 			}
 		}
 
-		dv, _, err := decode.Decode(i.ctx, name, bb, decodeFormats, decode.DecodeOptions{FormatOptions: opts})
+		dv, _, err := decode.Decode(i.ctx, "", filename, bb, decodeFormats, decode.DecodeOptions{FormatOptions: opts})
 		if dv == nil {
 			var decodeFormatsErr decode.DecodeFormatsError
 			if errors.As(err, &decodeFormatsErr) {
@@ -765,25 +766,6 @@ func (i *Interp) aesCtr(c interface{}, a []interface{}) interface{} {
 	}
 
 	return buf.Bytes()
-}
-
-func (i *Interp) _json(c interface{}, a []interface{}) interface{} {
-	bb, err := toBuffer(c)
-	if err != nil {
-		return err
-	}
-
-	buf := &bytes.Buffer{}
-	if _, err := io.Copy(buf, bb); err != nil {
-		return err
-	}
-
-	var vv interface{}
-	if err := json.Unmarshal(buf.Bytes(), &vv); err != nil {
-		return err
-	}
-
-	return vv
 }
 
 func (i *Interp) makeStateFn(state map[string]interface{}) func(c interface{}, a []interface{}) interface{} {

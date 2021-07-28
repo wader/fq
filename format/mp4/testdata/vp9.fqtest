@@ -1,7 +1,7 @@
 # ffmpeg -f lavfi -i testsrc -c:v vp9 -t 50ms vp9.mp4
 /vp9.mp4:
-> fq -d mp4 /vp9.mp4 verbose
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} (mp4) 0x0-0x184e.7 (6223)
+> fq -d mp4 verbose /vp9.mp4
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /vp9.mp4 (mp4) 0x0-0x184e.7 (6223)
       |                                               |                |  boxes: [4] 0x0-0x184e.7 (6223)
       |                                               |                |    [0]: box {} 0x0-0x1b.7 (28)
 0x0000|00 00 00 1c                                    |....            |      size: 28 0x0-0x3.7 (4)

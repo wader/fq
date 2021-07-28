@@ -1,6 +1,6 @@
 /mono16.flac:
-> fq -d flac /mono16.flac verbose
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} (flac) 0x0-0x8597.7 (34200)
+> fq -d flac verbose /mono16.flac
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /mono16.flac (flac) 0x0-0x8597.7 (34200)
 0x0000|66 4c 61 43                                    |fLaC            |  magic: "fLaC" (Correct) 0x0-0x3.7 (4)
       |                                               |                |  metadatablocks: [4] 0x4-0x206f.7 (8300)
       |                                               |                |    [0]: metadatablock {} (flac_metadatablock) 0x4-0x29.7 (38)

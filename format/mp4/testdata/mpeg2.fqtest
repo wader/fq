@@ -1,7 +1,7 @@
 # ffmpeg -f lavfi -i testsrc -c:v mpeg2video -f mp4 -t 50ms mpeg2.mp4
 /mpeg2.mp4:
-> fq -d mp4 /mpeg2.mp4 verbose
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} (mp4) 0x0-0x22a8.7 (8873)
+> fq -d mp4 verbose /mpeg2.mp4
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /mpeg2.mp4 (mp4) 0x0-0x22a8.7 (8873)
       |                                               |                |  boxes: [4] 0x0-0x22a8.7 (8873)
       |                                               |                |    [0]: box {} 0x0-0x1b.7 (28)
 0x0000|00 00 00 1c                                    |....            |      size: 28 0x0-0x3.7 (4)

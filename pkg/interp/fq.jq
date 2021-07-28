@@ -256,8 +256,7 @@ def main:
 			},
 		};
 	def _usage($arg0; $version):
-		"Usage: \($arg0) [OPTIONS] [EXPR] [FILE...]",
-		args_help_text(_opts($version));
+		"Usage: \($arg0) [OPTIONS] [EXPR] [FILE...]";
 	.version as $version
 	| .args[0] as $arg0
 	| args_parse(.args[1:]; _opts($version)) as {$parsed, $rest}
@@ -273,12 +272,16 @@ def main:
 			repllevel: 0,
 		}
 	)
-	| if $parsed.version then
+	| if $parsed.help then
+		( _usage($arg0; $version)
+		, args_help_text(_opts($version))
+		) | println
+	  elif $parsed.version then
 		$version | println
 	  elif $parsed.formats then
 		_formats_list | println
-	  elif $parsed.help then
-		_usage($arg0; $version) | println
+	  elif ($rest | length) == 0 and (($parsed.repl | not) and ($parsed.file | not)) then
+	    _usage($arg0; $version) | println
 	  else
 		try
 		  {
