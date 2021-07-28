@@ -284,22 +284,28 @@ def main:
 	    _usage($arg0; $version) | println
 	  else
 		try
-		  {
-			expr: ($rest[0] // "."),
-			filenames: $rest[1:],
-		  }
+		  ( { nullinput: ($parsed.nullinput == true) }
 		  | if $parsed.file then
 				( .expr = (open($parsed.file) | string)
 				| .filenames = $rest
 				)
+			else
+				( .expr = ($rest[0] // ".")
+				| .filenames = $rest[1:]
+				)
 		    end
-		  | .expr as $expr
-		  | .filenames as $filenames
+		  | if $parsed.repl and .filenames == [] then
+				.nullinput = true
+			elif .filenames == [] then
+				.filenames = ["-"]
+		    end
+		  | . as {$expr, $filenames, $nullinput}
 		  | inputs($filenames) as $_ # store inputs
-		  | if $parsed.nullinput or ($parsed.repl and ($filenames | length) == 0) then null
+		  | if $nullinput then null
 		    else inputs end # will iterate inputs
 		  | eval_f($expr; .)
 		  | if $parsed.repl then repl
 		    else default_display end
+		  )
 		catch tostring | halt_error(1)
 	  end;

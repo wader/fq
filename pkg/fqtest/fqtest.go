@@ -15,6 +15,7 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+	"testing/iotest"
 
 	"fq/format/registry"
 	"fq/internal/deepequal"
@@ -49,7 +50,12 @@ type testCaseRun struct {
 
 func (tcr *testCaseRun) Line() int { return tcr.lineNr }
 
-func (tcr *testCaseRun) Stdin() io.Reader         { return nil } // TODO: special file?
+func (tcr *testCaseRun) Stdin() io.Reader {
+	if f, err := tcr.Open("/stdin"); err == nil {
+		return f
+	}
+	return iotest.ErrReader(io.EOF)
+}
 func (tcr *testCaseRun) Stdout() interp.Output    { return testCaseRunOutput{tcr.actualStdoutBuf} }
 func (tcr *testCaseRun) Stderr() io.Writer        { return tcr.actualStderrBuf }
 func (tcr *testCaseRun) Interrupt() chan struct{} { return nil }
