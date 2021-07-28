@@ -1,9 +1,11 @@
 # convert -size 4x4 "xc:#000" 4x4.png
+# pngcrush -ztxt a akeyword atext 4x4.png 4x4out.png
+# mv 4x4out.png 4x4.png
 /4x4.png:
 > fq -d png /4x4.png verbose
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} (png) 0x0-0x102.7 (259)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} (png) 0x0-0x125.7 (294)
 0x000|89 50 4e 47 0d 0a 1a 0a                        |.PNG....        |  signature: "\x89PNG\r\n\x1a\n" (Correct) 0x0-0x7.7 (8)
-     |                                               |                |  chunks: [9] 0x8-0x102.7 (251)
+     |                                               |                |  chunks: [10] 0x8-0x125.7 (286)
      |                                               |                |    [0]: chunk {} 0x8-0x20.7 (25)
 0x000|                        00 00 00 0d            |        ....    |      length: 13 0x8-0xb.7 (4)
 0x000|                                    49 48 44 52|            IHDR|      type: "IHDR" 0xc-0xf.7 (4)
@@ -66,8 +68,8 @@
 0x070|49                                             |I               |      private: false 0x70.3-0x70.3 (0.1)
 0x070|   4d                                          | M              |      reserved: false 0x71.3-0x71.3 (0.1)
 0x070|      45                                       |  E             |      safe_to_copy: false 0x72.3-0x72.3 (0.1)
-0x070|         07 e4 0c 0e 17 38 15                  |   .....8.      |      data: 07e40c0e173815 0x73-0x79.7 (7)
-0x070|                              07 05 84 e3      |          ....  |      crc: Correct (070584e3) 0x7a-0x7d.7 (4)
+0x070|         07 e5 07 1c 08 36 09                  |   .....6.      |      data: 07e5071c083609 0x73-0x79.7 (7)
+0x070|                              dc 61 6c cf      |          .al.  |      crc: Correct (dc616ccf) 0x7a-0x7d.7 (4)
      |                                               |                |    [5]: chunk {} 0x7e-0x94.7 (23)
 0x070|                                          00 00|              ..|      length: 11 0x7e-0x81.7 (4)
 0x080|00 0b                                          |..              |
@@ -76,9 +78,9 @@
 0x080|         44                                    |   D            |      private: false 0x83.3-0x83.3 (0.1)
 0x080|            41                                 |    A           |      reserved: false 0x84.3-0x84.3 (0.1)
 0x080|               54                              |     T          |      safe_to_copy: true 0x85.3-0x85.3 (0.1)
-0x080|                  08 d7 63 60 80 00 00 00 08 00|      ..c`......|      data: 08d7636080000000080001 0x86-0x90.7 (11)
+0x080|                  08 5b 63 60 80 00 00 00 08 00|      .[c`......|      data: 085b636080000000080001 0x86-0x90.7 (11)
 0x090|01                                             |.               |
-0x090|   2f 20 dd 31                                 | / .1           |      crc: Correct (2f20dd31) 0x91-0x94.7 (4)
+0x090|   d3 19 34 be                                 | ..4.           |      crc: Correct (d31934be) 0x91-0x94.7 (4)
      |                                               |                |    [6]: chunk {} 0x95-0xc5.7 (49)
 0x090|               00 00 00 25                     |     ...%       |      length: 37 0x95-0x98.7 (4)
 0x090|                           74 45 58 74         |         tEXt   |      type: "tEXt" 0x99-0x9c.7 (4)
@@ -89,10 +91,10 @@
 0x090|                                       64 61 74|             dat|      keyword: "date:create" 0x9d-0xa7.7 (11)
 0x0a0|65 3a 63 72 65 61 74 65                        |e:create        |
 0x0a0|                        00                     |        .       |      null: "\x00" 0xa8-0xa8.7 (1)
-0x0a0|                           32 30 32 30 2d 31 32|         2020-12|      text: "2020-12-14T23:56:21+00:00" 0xa9-0xc1.7 (25)
-0x0b0|2d 31 34 54 32 33 3a 35 36 3a 32 31 2b 30 30 3a|-14T23:56:21+00:|
+0x0a0|                           32 30 32 31 2d 30 37|         2021-07|      text: "2021-07-28T08:54:09+00:00" 0xa9-0xc1.7 (25)
+0x0b0|2d 32 38 54 30 38 3a 35 34 3a 30 39 2b 30 30 3a|-28T08:54:09+00:|
 0x0c0|30 30                                          |00              |
-0x0c0|      8a 67 a4 2e                              |  .g..          |      crc: Correct (8a67a42e) 0xc2-0xc5.7 (4)
+0x0c0|      41 82 1c 77                              |  A..w          |      crc: Correct (41821c77) 0xc2-0xc5.7 (4)
      |                                               |                |    [7]: chunk {} 0xc6-0xf6.7 (49)
 0x0c0|                  00 00 00 25                  |      ...%      |      length: 37 0xc6-0xc9.7 (4)
 0x0c0|                              74 45 58 74      |          tEXt  |      type: "tEXt" 0xca-0xcd.7 (4)
@@ -103,16 +105,33 @@
 0x0c0|                                          64 61|              da|      keyword: "date:modify" 0xce-0xd8.7 (11)
 0x0d0|74 65 3a 6d 6f 64 69 66 79                     |te:modify       |
 0x0d0|                           00                  |         .      |      null: "\x00" 0xd9-0xd9.7 (1)
-0x0d0|                              32 30 32 30 2d 31|          2020-1|      text: "2020-12-14T23:56:21+00:00" 0xda-0xf2.7 (25)
-0x0e0|32 2d 31 34 54 32 33 3a 35 36 3a 32 31 2b 30 30|2-14T23:56:21+00|
+0x0d0|                              32 30 32 31 2d 30|          2021-0|      text: "2021-07-28T08:54:09+00:00" 0xda-0xf2.7 (25)
+0x0e0|37 2d 32 38 54 30 38 3a 35 34 3a 30 39 2b 30 30|7-28T08:54:09+00|
 0x0f0|3a 30 30                                       |:00             |
-0x0f0|         fb 3a 1c 92                           |   .:..         |      crc: Correct (fb3a1c92) 0xf3-0xf6.7 (4)
-     |                                               |                |    [8]: chunk {} 0xf7-0x102.7 (12)
-0x0f0|                     00 00 00 00               |       ....     |      length: 0 0xf7-0xfa.7 (4)
-0x0f0|                                 49 45 4e 44   |           IEND |      type: "IEND" 0xfb-0xfe.7 (4)
-0x0f0|                                 49            |           I    |      ancillary: false 0xfb.3-0xfb.3 (0.1)
-0x0f0|                                    45         |            E   |      private: false 0xfc.3-0xfc.3 (0.1)
-0x0f0|                                       4e      |             N  |      reserved: false 0xfd.3-0xfd.3 (0.1)
-0x0f0|                                          44   |              D |      safe_to_copy: false 0xfe.3-0xfe.3 (0.1)
-0x0f0|                                             ae|               .|      crc: Correct (ae426082) 0xff-0x102.7 (4)
-0x100|42 60 82|                                      |B`.|            |
+0x0f0|         30 df a4 cb                           |   0...         |      crc: Correct (30dfa4cb) 0xf3-0xf6.7 (4)
+     |                                               |                |    [8]: chunk {} 0xf7-0x119.7 (35)
+0x0f0|                     00 00 00 17               |       ....     |      length: 23 0xf7-0xfa.7 (4)
+0x0f0|                                 7a 54 58 74   |           zTXt |      type: "zTXt" 0xfb-0xfe.7 (4)
+0x0f0|                                 7a            |           z    |      ancillary: true 0xfb.3-0xfb.3 (0.1)
+0x0f0|                                    54         |            T   |      private: true 0xfc.3-0xfc.3 (0.1)
+0x0f0|                                       58      |             X  |      reserved: true 0xfd.3-0xfd.3 (0.1)
+0x0f0|                                          74   |              t |      safe_to_copy: true 0xfe.3-0xfe.3 (0.1)
+0x0f0|                                             61|               a|      keyword: "akeyword" 0xff-0x106.7 (8)
+0x100|6b 65 79 77 6f 72 64                           |keyword         |
+0x100|                     00                        |       .        |      null: "\x00" 0x107-0x107.7 (1)
+0x100|                        00                     |        .       |      compression_method: deflate (0) 0x108-0x108.7 (1)
+     |                                               |                |      data: {} 0x109-0x115.7 (13)
+     |                                               |                |        uncompressed: {} () 0x0-0x4.7 (5)
+ 0x00|61 74 65 78 74|                                |atext|          |          text: "atext" 0x0-0x4.7 (5)
+0x110|                  4c f5 a2 bc                  |      L...      |      crc: Correct (4cf5a2bc) 0x116-0x119.7 (4)
+     |                                               |                |    [9]: chunk {} 0x11a-0x125.7 (12)
+0x110|                              00 00 00 00      |          ....  |      length: 0 0x11a-0x11d.7 (4)
+0x110|                                          49 45|              IE|      type: "IEND" 0x11e-0x121.7 (4)
+0x120|4e 44                                          |ND              |
+0x110|                                          49   |              I |      ancillary: false 0x11e.3-0x11e.3 (0.1)
+0x110|                                             45|               E|      private: false 0x11f.3-0x11f.3 (0.1)
+0x120|4e                                             |N               |      reserved: false 0x120.3-0x120.3 (0.1)
+0x120|   44                                          | D              |      safe_to_copy: false 0x121.3-0x121.3 (0.1)
+0x120|      ae 42 60 82|                             |  .B`.|         |      crc: Correct (ae426082) 0x122-0x125.7 (4)
+0x100|                           08 99 4b 2c 49 ad 28|         ..K,I.(|  unknown0: 08994b2c49ad280100064d0227 0x109-0x115.7 (13)
+0x110|01 00 06 4d 02 27                              |...M.'          |
