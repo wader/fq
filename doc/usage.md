@@ -2,7 +2,7 @@
 
 <pre sh>
 $ fq -h 
-Usage: fq [OPTIONS] [FILE] [EXPR...]
+Usage: fq [OPTIONS] [EXPR] [FILE...]
 --compact,-c     Compact output
 --decode,-d      Decode format (probe)
 --file,-f        Read script from file
@@ -211,22 +211,6 @@ $ fq file.mp3 .unknown0 mp3_frame
 # skip first 10 bytes then decode as `mp3_frame`
 $ fq file.mp3 .unknown0._bytes[10:] mp3_frame
 </pre>
-
-#### Run pipelines using CLI arguments
-<pre sh>
-$ fq file.mp3 .frames[0].header.bitrate radix2 
-"1101101011000000"
-</pre>
-instead of:
-<pre sh>
-$ fq file.mp3 '.frames[0].header.bitrate | radix2' 
-"1101101011000000"
-</pre>
-this can also be used with interactive mode
-```sh
-$ fq -i file.flac .metadatablocks[0] 
-.metadatablocks[0] flac_metadatablock> 
-```
 
 #### appending to array is slow
 
