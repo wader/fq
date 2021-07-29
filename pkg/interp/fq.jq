@@ -1,7 +1,7 @@
 include "@builtin/internal";
 include "@builtin/funcs";
 include "@builtin/args";
-include "@builtin/format";
+include "@format/all";
 
 # optional user init
 include "@config/init?";

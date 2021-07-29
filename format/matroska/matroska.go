@@ -14,6 +14,7 @@ package matroska
 // TODO: could use md5 here somehow, see flac.go
 
 import (
+	"embed"
 	"fmt"
 	"fq/format"
 	"fq/format/matroska/ebml"
@@ -22,6 +23,9 @@ import (
 	"fq/pkg/decode"
 	"fq/pkg/ranges"
 )
+
+//go:embed *.jq
+var matroskaFS embed.FS
 
 var aacFrameFormat []*decode.Format
 var av1CCRFormat []*decode.Format
@@ -70,6 +74,7 @@ func init() {
 			{Names: []string{format.VP9_CFM}, Formats: &vp9CFMFormat},
 			{Names: []string{format.VP9_FRAME}, Formats: &vp9FrameFormat},
 		},
+		FS: matroskaFS,
 	})
 
 	codecToFormat = map[string]*[]*decode.Format{

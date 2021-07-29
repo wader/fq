@@ -552,6 +552,31 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 				fn     func(filename string) (io.Reader, error)
 			}{
 				{
+					"@format/", true, func(filename string) (io.Reader, error) {
+						allFormats := i.registry.MustGroup("all")
+						if filename == "all.jq" {
+							sb := &bytes.Buffer{}
+							for _, f := range allFormats {
+								if f.FS == nil {
+									continue
+								}
+								fmt.Fprintf(sb, "include \"@format/%s\";\n", f.Name)
+							}
+							return bytes.NewReader(sb.Bytes()), nil
+						} else {
+							formatName := strings.TrimRight(filename, ".jq")
+							for _, f := range allFormats {
+								if f.Name != formatName {
+									continue
+								}
+								return f.FS.Open(filename)
+							}
+						}
+
+						return builtinFS.Open(filename)
+					},
+				},
+				{
 					"@builtin/", true, func(filename string) (io.Reader, error) {
 						return builtinFS.Open(filename)
 					},

@@ -104,6 +104,8 @@
         "tfhd",
         "tfra",
         "tmpl",
+        "toimage",
+        "tojvalue",
         "tovalue",
         "traf",
         "trex",

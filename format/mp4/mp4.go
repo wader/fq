@@ -16,11 +16,15 @@ package mp4
 // TODO: mime
 
 import (
+	"embed"
 	"fq/format"
 	"fq/format/registry"
 	"fq/pkg/decode"
 	"sort"
 )
+
+//go:embed *.jq
+var mp4FS embed.FS
 
 var aacFrameFormat []*decode.Format
 var av1CCRFormat []*decode.Format
@@ -71,6 +75,7 @@ func init() {
 			{Names: []string{format.VP9_FRAME}, Formats: &vp9FrameFormat},
 			{Names: []string{format.VPX_CCR}, Formats: &vpxCCRFormat},
 		},
+		FS: mp4FS,
 	})
 }
 

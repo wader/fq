@@ -8,7 +8,6 @@
 - `dump` cancel output of large root value, ex: `.frames`. Problem is dump is done by parent repl. 
 - Error position "^" pointer?
 - options code is very confusing, how to redo and still support per repl options `.. | repl({...})`
-- slurp support?
 - Configurable history file/name?
 - Reset color at prompt? context cancel
 
@@ -20,7 +19,7 @@
 #### Functions
 
 - buffer truncate, left/right pad?
-- `toimage`? can be done i CLI with "\x1b]1337" but maybe something for a UI?
+- `toimage`? can be done in CLI with "\x1b]1337" but maybe something for a UI?
 - `toplot`?
 - `dump` should handle binary, make column code more generic? share with `hexdump`? (bindump also?)
 - `dump` colorize/notify row range discontinuity
@@ -63,6 +62,7 @@
   - More optional things? optional args or return value to modify?
 - nicer "synthetic" values? now zero length
 - Value should have raw, tranlated, symbolic and description? struct of map functions?
+  - If symbolic should resolve to string? would make `.field == "abc"` work instead of now `.field._symbolic`
 - Array as root value, adts, avc_au etc
 - Decode framed/limited? framed adds unknown fields?
 - Add unknown for arrays?

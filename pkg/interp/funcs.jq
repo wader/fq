@@ -13,6 +13,57 @@ def trim: capture("^\\s*(?<str>.*?)\\s*$"; "").str;
 # does +1 and [:1] as " "*0 is null
 def rpad($s; $w): . + ($s * ($w+1-length))[1:];
 
+# helper to build path query/generate functions for tree structures with
+# non-unique children, ex: mp4_path
+def tree_path(children; name; $v):
+	def _lookup:
+		# add implicit zeros to get first value
+		# ["a", "b", 1] => ["a", 0, "b", 1]
+		def _normalize_path:
+			. as $np
+			| if $np | last | type == "string" then $np+[0] end
+			# state is [path acc, possible pending zero index]
+			| (reduce .[] as $np ([[], []];
+				if $np | type == "string" then
+					[(.[0]+.[1]+[$np]), [0]]
+				else
+					[.[0]+[$np], []]
+				end
+			))[0];
+		. as $c
+		| $v
+		| expr_to_path
+		| _normalize_path
+		| reduce .[] as $n ($c;
+			if $n | type == "string" then
+				children | map(select(name==$n))
+			else
+				.[$n]
+			end
+		);
+	def _path:
+		[ . as $r
+		| $v._path as $p
+		| foreach range(($p | length)/2) as $i (
+			null;
+			null;
+			($r | getpath($p[0:($i+1)*2]) | name) as $name
+			| [($r | getpath($p[0:($i+1)*2-1]))[] | name][0:$p[($i*2)+1]+1] as $before
+			| [
+				$name,
+				($before | map(select(. == $name)) | length)-1
+			]
+		)
+		| [ ".", .[0],
+			(.[1] | if . == 0 then empty else "[", ., "]" end)
+		  ]
+		]
+		| flatten
+		| join("");
+	if $v | type == "string" then _lookup
+	else _path end;
+
+
 # [{a: 123, ...}, ...]
 # colmap maps something into [col, ...]
 # render maps [{column: 0, string: "coltext", maxwidth: 12}, ..] into a row
