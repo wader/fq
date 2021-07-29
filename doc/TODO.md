@@ -32,7 +32,8 @@
 - Cleanup rework cipher functions, `ctr(aes("key"), "iv")` or `cipher(ctr("iv"), aes("key))`?
 - `open` when to close file?
 - Safe mode interpreter?
-- Allow/deny `open` in autocomplete? leaks now?
+- Allow/deny `open` in autocomplete
+- `open` leak, file and ctxreadseeker
 
 ### Tests
 

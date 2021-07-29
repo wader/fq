@@ -14,6 +14,8 @@ import (
 	"fq/format"
 	"fq/format/registry"
 	"fq/internal/aheadreadseeker"
+	"fq/internal/ctxreadseeker"
+	"fq/internal/ioextra"
 	"fq/internal/progressreadseeker"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
@@ -462,15 +464,16 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 		return err
 	}
 
+	// TODO: ctxreadseeker might leak
 	if fFI.Mode().IsRegular() {
 		if rs, ok := f.(io.ReadSeeker); ok {
-			fRS = rs
+			fRS = ctxreadseeker.New(i.evalContext.ctx, rs)
 			bEnd = fFI.Size()
 		}
 	}
 
 	if fRS == nil {
-		buf, err := ioutil.ReadAll(f)
+		buf, err := ioutil.ReadAll(ctxreadseeker.New(i.evalContext.ctx, &ioextra.NopSeeker{Reader: f}))
 		if err != nil {
 			return err
 		}
