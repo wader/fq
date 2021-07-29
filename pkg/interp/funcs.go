@@ -14,13 +14,12 @@ import (
 	"fq/format"
 	"fq/format/registry"
 	"fq/internal/aheadreadseeker"
-	"fq/internal/ctxreadseeker"
-	"fq/internal/ioextra"
 	"fq/internal/progressreadseeker"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"hash"
 	"io"
+	"io/fs"
 	"io/ioutil"
 	"log"
 	"math/big"
@@ -107,9 +106,9 @@ func (i *Interp) makeFunctions(registry *registry.Registry) []Function {
 }
 
 func (i *Interp) tty(c interface{}, a []interface{}) interface{} {
-	w, h := i.stdout.Size()
+	w, h := i.evalContext.stdout.Size()
 	return map[string]interface{}{
-		"is_terminal": i.stdout.IsTerminal(),
+		"is_terminal": i.evalContext.stdout.IsTerminal(),
 		"width":       w,
 		"height":      h,
 	}
@@ -230,7 +229,7 @@ func (i *Interp) read(c interface{}, a []interface{}) interface{} {
 	}
 
 	src, err := i.os.Readline(prompt, func(line string, pos int) (newLine []string, shared int) {
-		completeCtx, completeCtxCancelFn := context.WithTimeout(i.ctx, 1*time.Second)
+		completeCtx, completeCtxCancelFn := context.WithTimeout(i.evalContext.ctx, 1*time.Second)
 		defer completeCtxCancelFn()
 		// TODO: err
 		names, shared, _ := completeTrampoline(completeCtx, completeFn, c, i, line, pos)
@@ -261,7 +260,7 @@ func (i *Interp) eval(c interface{}, a []interface{}) gojq.Iter {
 		}
 	}
 
-	iter, err := i.Eval(i.ctx, ScriptMode, c, src, i.stdout, debugFn)
+	iter, err := i.Eval(i.evalContext.ctx, ScriptMode, c, src, i.evalContext.stdout, debugFn)
 	if err != nil {
 		return gojq.NewIter(err)
 	}
@@ -270,14 +269,14 @@ func (i *Interp) eval(c interface{}, a []interface{}) gojq.Iter {
 }
 
 func (i *Interp) print(c interface{}, a []interface{}) gojq.Iter {
-	if _, err := fmt.Fprint(i.stdout, c); err != nil {
+	if _, err := fmt.Fprint(i.evalContext.stdout, c); err != nil {
 		return gojq.NewIter(err)
 	}
 	return gojq.NewIter()
 }
 
 func (i *Interp) println(c interface{}, a []interface{}) gojq.Iter {
-	if _, err := fmt.Fprintln(i.stdout, c); err != nil {
+	if _, err := fmt.Fprintln(i.evalContext.stdout, c); err != nil {
 		return gojq.NewIter(err)
 	}
 	return gojq.NewIter()
@@ -291,8 +290,8 @@ func (i *Interp) stderr(c interface{}, a []interface{}) gojq.Iter {
 }
 
 func (i *Interp) debug(c interface{}, a []interface{}) interface{} {
-	if i.debugFn != "" {
-		di, err := i.EvalFunc(i.ctx, ScriptMode, c, i.debugFn, []interface{}{}, i.stdout, "")
+	if i.evalContext.debugFn != "" {
+		di, err := i.EvalFunc(i.evalContext.ctx, ScriptMode, c, i.evalContext.debugFn, []interface{}{}, i.evalContext.stdout, "")
 		if err != nil {
 			return err
 		}
@@ -431,8 +430,6 @@ func (bbf *bitBufFile) ToBuffer() (*bitio.Buffer, error) {
 // def open($path): #:: [a]|(string) => buffer
 // open read file from filesystem
 func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
-	var rs io.ReadSeeker
-	var bEnd int64
 	var err error
 
 	opts, err := i.Options()
@@ -440,44 +437,46 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 		return err
 	}
 
-	var filename string
+	var path string
 	if len(a) == 1 {
-		var err error
-		filename, err = toString(a[0])
+		path, err = toString(a[0])
 		if err != nil {
-			return fmt.Errorf("%s: %w", filename, err)
+			return fmt.Errorf("%s: %w", path, err)
 		}
 	}
 
-	if filename == "" || filename == "-" {
-		filename = "stdin"
-		buf, err := ioutil.ReadAll(ctxreadseeker.New(i.ctx, &ioextra.NopSeeker{Reader: i.os.Stdin()}))
-		if err != nil {
-			return err
-		}
-		rs = bytes.NewReader(buf)
-		bEnd = int64(len(buf))
+	var bEnd int64
+	var f fs.File
+	if path == "" || path == "-" {
+		f = i.os.Stdin()
 	} else {
-		f, err := i.os.Open(filename)
-		if err != nil {
-			return err
-		}
-
-		rs = ctxreadseeker.New(i.ctx, f)
-
-		bEnd, err = ioextra.SeekerEnd(rs)
+		f, err = i.os.FS().Open(path)
 		if err != nil {
 			return err
 		}
 	}
 
-	// TODO: cleanup? bitbuf have optional close method etc?
-	// TODO: can call ctxRs directory of need to forward close thru aheadreadseeker etc?
-	// if c, ok := rs.(io.Closer); ok {
-	// 	ctxRs.Close()
-	// }
+	var fRS io.ReadSeeker
+	fFI, err := f.Stat()
+	if err != nil {
+		return err
+	}
 
-	var progressRs io.ReadSeeker = rs
+	if fFI.Mode().IsRegular() {
+		if rs, ok := f.(io.ReadSeeker); ok {
+			fRS = rs
+			bEnd = fFI.Size()
+		}
+	}
+
+	if fRS == nil {
+		buf, err := ioutil.ReadAll(f)
+		if err != nil {
+			return err
+		}
+		fRS = bytes.NewReader(buf)
+		bEnd = int64(len(buf))
+	}
 
 	// TODO: make nicer
 	// we don't want to print any progress things after decode is done
@@ -496,11 +495,11 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 			fmt.Fprint(i.os.Stderr(), "\r      \r")
 		}
 		const progressPrecision = 1024
-		progressRs = progressreadseeker.New(rs, progressPrecision, bEnd, progressFn)
+		fRS = progressreadseeker.New(fRS, progressPrecision, bEnd, progressFn)
 	}
 
 	const cacheReadAheadSize = 512 * 1024
-	aheadRs := aheadreadseeker.New(progressRs, cacheReadAheadSize)
+	aheadRs := aheadreadseeker.New(fRS, cacheReadAheadSize)
 
 	// bb -> aheadreadseeker -> progressreadseeker -> ctxreadseeker -> readerseeker
 
@@ -511,7 +510,7 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 
 	return &bitBufFile{
 		bb:           bb,
-		filename:     filename,
+		filename:     path,
 		decodeDoneFn: decodeDoneFn,
 	}
 }
@@ -551,7 +550,7 @@ func (i *Interp) makeDecodeFn(registry *registry.Registry, decodeFormats []*deco
 			}
 		}
 
-		dv, _, err := decode.Decode(i.ctx, "", filename, bb, decodeFormats, decode.DecodeOptions{FormatOptions: opts})
+		dv, _, err := decode.Decode(i.evalContext.ctx, "", filename, bb, decodeFormats, decode.DecodeOptions{FormatOptions: opts})
 		if dv == nil {
 			var decodeFormatsErr decode.DecodeFormatsError
 			if errors.As(err, &decodeFormatsErr) {
@@ -573,13 +572,13 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 
 		switch v := c.(type) {
 		case Display:
-			if err := v.Display(i.stdout, opts); err != nil {
+			if err := v.Display(i.evalContext.stdout, opts); err != nil {
 				return gojq.NewIter(err)
 			}
 			return gojq.NewIter()
 		case nil, bool, float64, int, string, *big.Int, map[string]interface{}, []interface{}, gojq.JQValue:
 			if s, ok := v.(string); ok && opts.RawString {
-				fmt.Fprintln(i.stdout, s)
+				fmt.Fprintln(i.evalContext.stdout, s)
 				return gojq.NewIter()
 			}
 
@@ -587,10 +586,10 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 			if err != nil {
 				return gojq.NewIter(err)
 			}
-			if err := cj.Marshal(v, i.stdout); err != nil {
+			if err := cj.Marshal(v, i.evalContext.stdout); err != nil {
 				return gojq.NewIter(err)
 			}
-			fmt.Fprintln(i.stdout)
+			fmt.Fprintln(i.evalContext.stdout)
 
 			return gojq.NewIter()
 		case error:
@@ -610,7 +609,7 @@ func (i *Interp) preview(c interface{}, a []interface{}) gojq.Iter {
 
 	switch v := c.(type) {
 	case Preview:
-		if err := v.Preview(i.stdout, opts); err != nil {
+		if err := v.Preview(i.evalContext.stdout, opts); err != nil {
 			return gojq.NewIter(err)
 		}
 		return gojq.NewIter()
@@ -630,7 +629,7 @@ func (i *Interp) hexdump(c interface{}, a []interface{}) gojq.Iter {
 		return gojq.NewIter(err)
 	}
 
-	if err := hexdumpRange(bbr, i.stdout, opts); err != nil {
+	if err := hexdumpRange(bbr, i.evalContext.stdout, opts); err != nil {
 		return gojq.NewIter(err)
 	}
 

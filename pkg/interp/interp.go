@@ -15,10 +15,12 @@ import (
 	"fq/pkg/decode"
 	"fq/pkg/ranges"
 	"io"
+	"io/fs"
 	"math/big"
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/itchyny/gojq"
 )
@@ -45,15 +47,15 @@ type Output interface {
 }
 
 type OS interface {
-	Stdin() io.Reader
+	Stdin() fs.File
 	Stdout() Output
 	Stderr() io.Writer
 	Interrupt() chan struct{}
 	Args() []string
 	Environ() []string
 	ConfigDir() (string, error)
-	// returned io.ReadSeeker can optionally implement io.Closer
-	Open(name string) (io.ReadSeeker, error)
+	// returned Open() io.ReadSeeker can optionally implement io.Closer
+	FS() fs.FS
 	Readline(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error)
 	History() ([]string, error)
 }
@@ -71,6 +73,31 @@ func offsetToLineColumn(s string, offset int) (int, int) {
 		line++
 	}
 }
+
+type FixedFileInfo struct {
+	FName    string
+	FSize    int64
+	FMode    fs.FileMode
+	FModTime time.Time
+	FIsDir   bool
+	FSys     interface{}
+}
+
+func (ffi FixedFileInfo) Name() string       { return ffi.FName }
+func (ffi FixedFileInfo) Size() int64        { return ffi.FSize }
+func (ffi FixedFileInfo) Mode() fs.FileMode  { return ffi.FMode }
+func (ffi FixedFileInfo) ModTime() time.Time { return ffi.FModTime }
+func (ffi FixedFileInfo) IsDir() bool        { return ffi.FIsDir }
+func (ffi FixedFileInfo) Sys() interface{}   { return ffi.FSys }
+
+type FileReader struct {
+	R        io.Reader
+	FileInfo FixedFileInfo
+}
+
+func (rf FileReader) Stat() (fs.FileInfo, error) { return rf.FileInfo, nil }
+func (rf FileReader) Read(p []byte) (int, error) { return rf.R.Read(p) }
+func (FileReader) Close() error                  { return nil }
 
 // TODO: move
 type DiscardOutput struct {
@@ -405,7 +432,7 @@ type Interp struct {
 	state map[string]interface{}
 
 	// new for each run, other values are copied by ref
-	evalContext
+	evalContext evalContext
 }
 
 func New(os OS, registry *registry.Registry) (*Interp, error) {
@@ -587,12 +614,12 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 						if err != nil {
 							return nil, err
 						}
-						return i.os.Open(filepath.Join(configDir, filename))
+						return i.os.FS().Open(filepath.Join(configDir, filename))
 					},
 				},
 				{
 					"", false, func(filename string) (io.Reader, error) {
-						return i.os.Open(filename)
+						return i.os.FS().Open(filename)
 					},
 				},
 			}
@@ -643,8 +670,8 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	}
 
 	runCtx, runCtxCancelFn := i.interruptStack.Push(ctx)
-	ni.ctx = runCtx
-	ni.stdout = CtxOutput{Output: stdout, Ctx: runCtx}
+	ni.evalContext.ctx = runCtx
+	ni.evalContext.stdout = CtxOutput{Output: stdout, Ctx: runCtx}
 	iter := gc.RunWithContext(runCtx, c)
 
 	iterWrapper := iterFn(func() (interface{}, bool) {

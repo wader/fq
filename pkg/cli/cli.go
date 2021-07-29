@@ -9,6 +9,7 @@ import (
 	"fq/internal/profile"
 	"fq/pkg/interp"
 	"io"
+	"io/fs"
 	"log"
 	"os"
 	"os/signal"
@@ -39,28 +40,11 @@ func (a autoCompleterFn) Do(line []rune, pos int) (newLine [][]rune, length int)
 
 type standardOS struct {
 	rl                  *readline.Instance
-	output              interp.Output
 	interruptSignalChan chan os.Signal
 	interruptChan       chan struct{}
 }
 
-func newStandardOS() (*standardOS, error) {
-	var historyFile string
-	cacheDir, err := os.UserCacheDir()
-	if err != nil {
-		return nil, err
-	}
-	historyFile = filepath.Join(cacheDir, "fq/history")
-	_ = os.MkdirAll(filepath.Dir(historyFile), 0700)
-
-	rl, err := readline.NewEx(&readline.Config{
-		HistoryFile:       historyFile,
-		HistorySearchFold: true,
-	})
-	if err != nil {
-		return nil, err
-	}
-
+func newStandardOS() *standardOS {
 	interruptChan := make(chan struct{}, 1)
 	interruptSignalChan := make(chan os.Signal, 1)
 	signal.Notify(interruptSignalChan, os.Interrupt)
@@ -75,19 +59,19 @@ func newStandardOS() (*standardOS, error) {
 	}()
 
 	return &standardOS{
-		rl:                  rl,
 		interruptSignalChan: interruptSignalChan,
 		interruptChan:       interruptChan,
-		output:              standardOsOutput{rl: rl},
-	}, nil
+	}
 }
 
-func (o standardOS) Close() error {
-	// TODO: only close if is terminal somehow? otherwise reset will write
-	// to stdout and mess up raw output
-	// o.rl.Close()
-	close(o.interruptSignalChan)
-	return nil
+func (o *standardOS) Stdin() fs.File {
+	return interp.FileReader{
+		R: os.Stdin,
+		FileInfo: interp.FixedFileInfo{
+			FName: "stdin",
+			FMode: fs.ModeIrregular,
+		},
+	}
 }
 
 type standardOsOutput struct {
@@ -95,7 +79,10 @@ type standardOsOutput struct {
 }
 
 func (o standardOsOutput) Write(p []byte) (n int, err error) {
-	return o.rl.Write(p)
+	if o.rl != nil {
+		return o.rl.Write(p)
+	}
+	return os.Stdout.Write(p)
 }
 
 func (o standardOsOutput) Size() (int, int) {
@@ -107,12 +94,16 @@ func (o standardOsOutput) IsTerminal() bool {
 	return readline.IsTerminal(int(os.Stdout.Fd()))
 }
 
-func (o *standardOS) Stdin() io.Reader         { return o.rl.Config.Stdin }
-func (o *standardOS) Stdout() interp.Output    { return o.output }
-func (o *standardOS) Stderr() io.Writer        { return o.rl.Stderr() }
+func (o *standardOS) Stdout() interp.Output { return standardOsOutput{rl: o.rl} }
+
+func (o *standardOS) Stderr() io.Writer { return os.Stderr }
+
 func (o *standardOS) Interrupt() chan struct{} { return o.interruptChan }
-func (*standardOS) Args() []string             { return os.Args }
-func (*standardOS) Environ() []string          { return os.Environ() }
+
+func (*standardOS) Args() []string { return os.Args }
+
+func (*standardOS) Environ() []string { return os.Environ() }
+
 func (*standardOS) ConfigDir() (string, error) {
 	p, err := os.UserConfigDir()
 	if err != nil {
@@ -120,8 +111,34 @@ func (*standardOS) ConfigDir() (string, error) {
 	}
 	return filepath.Join(p, "fq"), nil
 }
-func (*standardOS) Open(name string) (io.ReadSeeker, error) { return os.Open(name) }
+
+type standardOSFS struct{}
+
+func (standardOSFS) Open(name string) (fs.File, error) { return os.Open(name) }
+
+func (*standardOS) FS() fs.FS { return standardOSFS{} }
+
 func (o *standardOS) Readline(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error) {
+	if o.rl == nil {
+		var err error
+
+		var historyFile string
+		cacheDir, err := os.UserCacheDir()
+		if err != nil {
+			return "", err
+		}
+		historyFile = filepath.Join(cacheDir, "fq/history")
+		_ = os.MkdirAll(filepath.Dir(historyFile), 0700)
+
+		o.rl, err = readline.NewEx(&readline.Config{
+			HistoryFile:       historyFile,
+			HistorySearchFold: true,
+		})
+		if err != nil {
+			return "", err
+		}
+	}
+
 	if complete != nil {
 		o.rl.Config.AutoComplete = autoCompleterFn(func(line []rune, pos int) (newLine [][]rune, length int) {
 			names, shared := complete(string(line), pos)
@@ -146,6 +163,7 @@ func (o *standardOS) Readline(prompt string, complete func(line string, pos int)
 
 	return line, nil
 }
+
 func (o *standardOS) History() ([]string, error) {
 	// TODO: refactor history handling to use internal fs?
 	r, err := os.Open(o.rl.Config.HistoryFile)
@@ -164,25 +182,35 @@ func (o *standardOS) History() ([]string, error) {
 	return hs, nil
 }
 
-func Main(r *registry.Registry, version string) {
-	sos, err := newStandardOS()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+func (o *standardOS) Close() error {
+	// only close if is terminal otherwise ansi reset will write
+	// to stdout and mess up raw output
+	if o.rl != nil {
+		o.rl.Close()
 	}
-	defer sos.Close()
-	i, err := interp.New(sos, r)
-	defer i.Stop()
-	if err != nil {
-		fmt.Fprintln(sos.Stderr(), err)
-		os.Exit(1)
-	}
+	close(o.interruptSignalChan)
+	return nil
+}
 
-	if err := i.Main(context.Background(), sos.Stdout(), version); err != nil {
-		fmt.Fprintln(sos.Stderr(), err)
-		if ex, ok := err.(Exiter); ok { //nolint:errorlint
-			os.Exit(ex.ExitCode())
+func Main(r *registry.Registry, version string) {
+	os.Exit(func() int {
+		sos := newStandardOS()
+		defer sos.Close()
+		i, err := interp.New(sos, r)
+		defer i.Stop()
+		if err != nil {
+			fmt.Fprintln(sos.Stderr(), err)
+			return 1
 		}
-		os.Exit(1)
-	}
+
+		if err := i.Main(context.Background(), sos.Stdout(), version); err != nil {
+			fmt.Fprintln(sos.Stderr(), err)
+			if ex, ok := err.(Exiter); ok { //nolint:errorlint
+				return ex.ExitCode()
+			}
+			return 1
+		}
+
+		return 0
+	}())
 }

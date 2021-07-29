@@ -10,6 +10,7 @@
 - options code is very confusing, how to redo and still support per repl options `.. | repl({...})`
 - Configurable history file/name?
 - Reset color at prompt? context cancel
+- Auto complete $variables
 
 #### Language
 
@@ -37,6 +38,7 @@
 
 - WRITE_ACTUAL does not preserve comment order
 - empty file test
+- CLI tests, raw write, colors?
 
 #### Documentation
 

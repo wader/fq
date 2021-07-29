@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"io/fs"
 	"io/ioutil"
 	"log"
 	"os"
@@ -50,33 +51,27 @@ type testCaseRun struct {
 
 func (tcr *testCaseRun) Line() int { return tcr.lineNr }
 
-func (tcr *testCaseRun) Stdin() io.Reader {
-	if f, err := tcr.Open("/stdin"); err == nil {
+func (tcr *testCaseRun) Stdin() fs.File {
+	if f, err := tcr.testCase.Open("/stdin"); err == nil {
 		return f
 	}
-	return iotest.ErrReader(io.EOF)
+	return interp.FileReader{R: iotest.ErrReader(io.EOF)}
 }
-func (tcr *testCaseRun) Stdout() interp.Output    { return testCaseRunOutput{tcr.actualStdoutBuf} }
-func (tcr *testCaseRun) Stderr() io.Writer        { return tcr.actualStderrBuf }
+
+func (tcr *testCaseRun) Stdout() interp.Output { return testCaseRunOutput{tcr.actualStdoutBuf} }
+
+func (tcr *testCaseRun) Stderr() io.Writer { return tcr.actualStderrBuf }
+
 func (tcr *testCaseRun) Interrupt() chan struct{} { return nil }
-func (tcr *testCaseRun) Environ() []string        { return nil }
-func (tcr *testCaseRun) Args() []string {
-	return shquote.Split(tcr.args)
-}
+
+func (tcr *testCaseRun) Environ() []string { return nil }
+
+func (tcr *testCaseRun) Args() []string { return shquote.Split(tcr.args) }
+
 func (tcr *testCaseRun) ConfigDir() (string, error) { return "/config", nil }
-func (tcr *testCaseRun) Open(name string) (io.ReadSeeker, error) {
-	for _, p := range tcr.testCase.parts {
-		f, ok := p.(*testCaseFile)
-		if ok && f.name == name {
-			// if no data assume it's a real file
-			if len(f.data) == 0 {
-				return os.Open(filepath.Join(filepath.Dir(tcr.testCase.path), name))
-			}
-			return io.NewSectionReader(bytes.NewReader(f.data), 0, int64(len(f.data))), nil
-		}
-	}
-	return nil, fmt.Errorf("%s: file not found", name)
-}
+
+func (tcr *testCaseRun) FS() fs.FS { return tcr.testCase }
+
 func (tcr *testCaseRun) Readline(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error) {
 	tcr.actualStdoutBuf.WriteString(prompt)
 	if tcr.readlinesPos > len(tcr.readlines) {
@@ -139,7 +134,6 @@ type testCase struct {
 }
 
 func (tc *testCase) ToActual() string {
-
 	var partsLineSorted []part
 	partsLineSorted = append(partsLineSorted, tc.parts...)
 	sort.Slice(partsLineSorted, func(i, j int) bool {
@@ -164,6 +158,26 @@ func (tc *testCase) ToActual() string {
 	}
 
 	return sb.String()
+}
+
+func (tc *testCase) Open(name string) (fs.File, error) {
+	for _, p := range tc.parts {
+		f, ok := p.(*testCaseFile)
+		if ok && f.name == name {
+			// if no data assume it's a real file
+			if len(f.data) == 0 {
+				return os.Open(filepath.Join(filepath.Dir(tc.path), name))
+			}
+			return interp.FileReader{
+				R: io.NewSectionReader(bytes.NewReader(f.data), 0, int64(len(f.data))),
+				FileInfo: interp.FixedFileInfo{
+					FName: filepath.Base(name),
+					FSize: int64(len(f.data)),
+				},
+			}, nil
+		}
+	}
+	return nil, fmt.Errorf("%s: file not found", name)
 }
 
 type Section struct {
