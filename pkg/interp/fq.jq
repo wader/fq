@@ -112,33 +112,47 @@ def parse_options:
 	}
 	| with_entries(select(.value != null));
 
-def prompt:
+def prompt($iter):
+	def _type_literal:
+		( type
+		| if . == "array" then "[]"
+		  elif . == "object" then "{}"
+		  else .
+		  end
+		);
 	def _type_name_error:
 		. as $c
 		| try
-			(. | display_name) +
-				if ._error then "!" else "" end
-		catch ($c | type);
+			[ display_name
+			, if ._error then "!" else empty end
+			] | join("")
+		catch ($c | _type_literal);
 	def _path_prefix:
 		(._path? // [])
 		| if . == [] then "" else path_to_expr + " " end;
-	( options.repllevel
+	[ (options.repllevel
 	  | if . > 1 then ((.-1) * ">") + " "
-	    else "" end
-	)
-	+ (
-	  if (. | length) == 1 then
-		.[0] | _path_prefix + _type_name_error
+	    else empty end
+	  )
+	, if $iter and length == 0 then
+		"empty"
 	  else
-		[ "["
-		, ((.[0] | _type_name_error)
-		, if (. | length) > 1 then ",..." else "" end)
-		, "]"
-		, "[\(length)]"
-		] | join("")
+	  	( if $iter then .[0] end
+		| if type != "array" then
+		  	_path_prefix + _type_name_error
+		  else
+		  	[ "["
+		  	, if length > 0 then (.[0] | _type_name_error) else empty end
+		  	, if length > 1 then ",..." else empty end
+		  	, "]"
+		  	, "[\(length)]"
+		  	] | join("")
+		  end
+		)
 	  end
-	) +
-	"> ";
+	, if $iter and length > 1 then ", ..." else empty end
+	, "> "
+	] | join("");
 
 def eval_debug:
 	(["DEBUG", .] | tojson, "\n") | stderr;
@@ -154,29 +168,33 @@ def eval_print($e):
 	eval_f($e; default_display);
 
 # run read-eval-print-loop
-def repl($opts): #:: a|(Opts) => @
-	def _as_array: if (. | type) != "array" then [.] end;
-	def _read_expr: read(prompt; "complete") | trim;
+def repl($opts; $iter): #:: a|(Opts) => @
+	def _read_expr: read(prompt($iter); "complete") | trim;
 	def _repl:
 		. as $c
 		| try
 			_read_expr as $e
-			| if $e != "" then (.[] | eval_print($e)) else empty end,
+			| if $e != "" then
+				(if $iter then .[] end | eval_print($e))
+			  else
+				empty
+			  end,
 			_repl
 		  catch
 			if . == "interrupt" then $c | _repl
 			elif . == "eof" then empty
 			else error(.) end;
-	with_options($opts | .repllevel = options.repllevel+1; _as_array | _repl);
+	with_options($opts | .repllevel = options.repllevel+1; _repl);
 # same as repl({})
-def repl: repl({}); #:: a| => @
+def repl($opts): repl($opts; false);
+def repl: repl({}; false); #:: a| => @
 
 # TODO: introspect and show doc, reflection somehow?
 def help:
-    ( builtins[]
+	( builtins[]
 	, "^C interrupt"
 	, "^D exit REPL"
-    )
+	)
 	| println;
 
 def main:
@@ -304,9 +322,8 @@ def main:
 		  | inputs($filenames) as $_ # store inputs
 		  | if $nullinput then null
 		    else inputs end # will iterate inputs
-		  | eval_f($expr; .)
-		  | if $parsed.repl then repl
-		    else default_display end
+		  | if $parsed.repl then [eval_f($expr; .)] | repl({}; true)
+		    else eval_f($expr; .) | default_display end
 		  )
 		catch tostring | halt_error(1)
 	  end;
