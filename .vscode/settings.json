@@ -55,6 +55,7 @@
         "goimports",
         "gojq",
         "golangci",
+        "gosec",
         "gosimple",
         "iinf",
         "iloc",

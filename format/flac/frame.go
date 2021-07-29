@@ -507,7 +507,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 					return samples
 				}
 
-				var samples []int64
+				var samples []int64 //nolint:makezero
 				switch subframeType {
 				case SubframeConstant:
 					samples = make([]int64, blockSize)

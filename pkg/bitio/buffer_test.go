@@ -61,7 +61,7 @@ func TestBufferBitString(t *testing.T) {
 }
 
 func TestBitStringRandom(t *testing.T) {
-	r := rand.New(rand.NewSource(0))
+	r := rand.New(rand.NewSource(0)) //nolint:gosec
 
 	for i := 0; i < 10000; i++ {
 		var ss []string

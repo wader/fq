@@ -112,7 +112,7 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 		deflateR := flate.NewReader(compressedBB)
 		uncompressed := &bytes.Buffer{}
 		crc32W := crc32.NewIEEE()
-		if _, err := io.Copy(io.MultiWriter(uncompressed, crc32W), deflateR); err != nil {
+		if _, err := io.Copy(io.MultiWriter(uncompressed, crc32W), deflateR); err != nil { //nolint:gosec
 			d.Invalid(err.Error())
 		}
 		calculatedCRC32 = crc32W.Sum(nil)

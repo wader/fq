@@ -411,9 +411,7 @@ const (
 
 type evalContext struct {
 	// structcheck has problems with embedding https://gitlab.com/opennota/check#known-limitations
-	//nolint:structcheck
-	ctx context.Context
-	//nolint:structcheck
+	ctx    context.Context
 	stdout Output // TODO: rename?
 	mode   RunMode
 	// per eval state

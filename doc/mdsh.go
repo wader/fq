@@ -35,6 +35,7 @@
 // test
 // [#]: sh-end
 
+//nolint:gosec
 package main
 
 import (

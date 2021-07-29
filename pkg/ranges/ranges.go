@@ -35,8 +35,8 @@ func (r Range) String() string {
 func RangeFromString(s string) Range {
 	ps := strings.Split(s, ":")
 	start, _ := strconv.Atoi(ps[0])
-	len, _ := strconv.Atoi(ps[1])
-	return Range{Start: int64(start), Len: int64(len)}
+	l, _ := strconv.Atoi(ps[1])
+	return Range{Start: int64(start), Len: int64(l)}
 }
 
 func SliceFromString(s string) []Range {

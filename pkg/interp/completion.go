@@ -69,7 +69,7 @@ func transformToCompletionQuery(q *gojq.Query) (*gojq.Query, CompletionType, str
 		}
 	}
 
-	switch q.Term.Type {
+	switch q.Term.Type { //nolint:exhaustive
 	case gojq.TermTypeIdentity:
 		return q, CompletionTypeIndex, ""
 	case gojq.TermTypeIndex:

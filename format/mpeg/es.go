@@ -260,12 +260,12 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, expectedTagID int, fn func(d
 	// TODO: expectedTagID
 
 	tagID, _ := d.FieldStringMapFn("tag_id", odTagNames, "Unknown", d.U8, decode.NumberDecimal)
-	len := fieldESLengthEncoding(d, "length")
+	tagLen := fieldESLengthEncoding(d, "length")
 
 	if fn != nil {
-		d.DecodeLenFn(int64(len)*8, fn)
+		d.DecodeLenFn(int64(tagLen)*8, fn)
 	} else if tagDecoder, ok := odDecoders[tagID]; ok {
-		d.DecodeLenFn(int64(len)*8, tagDecoder)
+		d.DecodeLenFn(int64(tagLen)*8, tagDecoder)
 	} else {
 		d.FieldBitBufLen("data", d.BitsLeft())
 	}

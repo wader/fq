@@ -421,7 +421,7 @@ func TestPath(t *testing.T, registry *registry.Registry) {
 			if !tc.wasTested {
 				continue
 			}
-			if err := ioutil.WriteFile(tc.path, []byte(tc.ToActual()), 0644); err != nil {
+			if err := ioutil.WriteFile(tc.path, []byte(tc.ToActual()), 0644); err != nil { //nolint:gosec
 				t.Error(err)
 			}
 		}

@@ -13,6 +13,13 @@ linters:
     - unconvert
     - unparam
     - wastedassign
+    - makezero
+    - exhaustive
+    - gosec
+    - nolintlint
+    - nakedret
+    - predeclared
+    - tagliatelle
 
 linters-settings:
   misspell:
@@ -21,3 +28,8 @@ linters-settings:
       - rela
       - equalisation
       - synchronisation
+  gosec:
+    excludes:
+      # allow md5
+      - G401
+      - G501
