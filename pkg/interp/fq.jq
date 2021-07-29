@@ -260,13 +260,14 @@ def main:
 	.version as $version
 	| .args[0] as $arg0
 	| args_parse(.args[1:]; _opts($version)) as {$parsed, $rest}
+	# store parsed arguments, .format is used by input
 	| _parsed_args($parsed) as $_
-	# TODO: hack, pass opts some other way
 	| default_options(build_default_options) as $_
+	# TODO: hack, pass opts some other way?
 	| push_options(
 		($parsed.options | parse_options)
 		+ {
-			repl: $parsed.repl,
+			repl: ($parsed.repl == true),
 			rawstring: ($parsed.rawstring == true),
 			compact: ($parsed.compact == true),
 			repllevel: 0,
