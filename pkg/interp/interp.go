@@ -25,7 +25,10 @@ import (
 	"github.com/itchyny/gojq"
 )
 
-//go:embed *.jq
+//go:embed fq.jq
+//go:embed internal.jq
+//go:embed funcs.jq
+//go:embed args.jq
 var builtinFS embed.FS
 
 var fqInitSource = `include "@builtin/fq";`

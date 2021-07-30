@@ -12,7 +12,7 @@ def path_to_expr:
 
 # TODO: don't use eval? should support '.a.b[1]."c.c"' and escapes?
 def expr_to_path:
-  ( if . | type != "string" then error("require string argument") end
+  ( if type != "string" then error("require string argument") end
   | eval("null | path(\(.))")
   );
 

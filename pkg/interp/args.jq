@@ -8,15 +8,15 @@ def args_parse($args; $opts):
           // error("\($value): should be key=value")
           ) as {$key, $value}
           # TODO: validate option name key
-        | _parse($new_args; $flagmap; ($r|.parsed.[$optname][$key] |= $value))
+        | _parse($new_args; $flagmap; ($r|.parsed[$optname][$key] |= $value))
         )
       elif $opt.array then
-        _parse($new_args; $flagmap; ($r|.parsed.[$optname] += [$value]))
+        _parse($new_args; $flagmap; ($r|.parsed[$optname] += [$value]))
       else
-        _parse($new_args; $flagmap; ($r|.parsed.[$optname] = $value))
+        _parse($new_args; $flagmap; ($r|.parsed[$optname] = $value))
       end;
     def _parse_without_arg($new_args; $optname):
-      _parse($new_args; $flagmap; ($r|.parsed.[$optname] = true));
+      _parse($new_args; $flagmap; ($r|.parsed[$optname] = true));
     ( ($args[0] | index("=")) as $assign_i
     | ( if $assign_i then $args[0][0:$assign_i]
         else $args[0]
