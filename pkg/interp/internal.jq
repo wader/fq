@@ -30,8 +30,8 @@ def input:
   );
 
 def inputs:
-    def _inputs:
-        try input, _inputs
+  def _inputs:
+    try input, _inputs
     catch
       if . == "break" then empty
       else
