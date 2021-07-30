@@ -22,14 +22,14 @@ include "@config/init?";
 
 # TODO: completionMode
 def _complete($e):
-  ( ( $e | complete_query) as {$type, $query, $prefix}
+  ( ( $e | _complete_query) as {$type, $query, $prefix}
   | {
       prefix: $prefix,
       names: (
         ( if $type == "function" or $type == "variable" then
             [.[] | eval($query) | scope] | add
           elif $type == "index" then
-            [.[] | eval($query) | keys?, extkeys?] | add
+            [.[] | eval($query) | keys?, _extkeys?] | add
           else
             []
           end
@@ -121,7 +121,7 @@ def _prompt(iter):
   def _type_name_error:
     ( . as $c
     | try
-        ( display_name
+        ( _display_name
         , if ._error then "!" else empty end
         )
       catch ($c | type)

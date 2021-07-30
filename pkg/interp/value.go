@@ -127,7 +127,7 @@ func (bv baseValueObject) ToBufferRange() (bufferRange, error) {
 	return bufferRange{bb: bv.dv.RootBitBuf.Copy(), r: bv.dv.Range}, nil
 }
 
-func (bv baseValueObject) ExtValueKeys() []string {
+func (bv baseValueObject) ExtKeys() []string {
 	kv := []string{
 		"_start",
 		"_stop",
