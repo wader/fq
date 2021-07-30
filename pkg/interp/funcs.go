@@ -50,7 +50,7 @@ func (i *Interp) makeFunctions(registry *registry.Registry) []Function {
 		{[]string{"formats"}, 0, 0, i.formats, nil},
 		{[]string{"history"}, 0, 0, i.history, nil},
 
-		{[]string{"open"}, 0, 1, i._open, nil},
+		{[]string{"open"}, 0, 0, i._open, nil},
 		{[]string{"decode"}, 0, 1, i.makeDecodeFn(registry, registry.MustGroup(format.PROBE)), nil},
 
 		{[]string{"display", "d"}, 0, 1, nil, i.makeDisplayFn(nil)},
@@ -429,8 +429,8 @@ func (bbf *bitBufFile) ToBuffer() (*bitio.Buffer, error) {
 	return bbf.bb.Copy(), nil
 }
 
-// def open($path): #:: [a]|(string) => buffer
-// open read file from filesystem
+// def open: #:: string| => buffer
+// opens a file for reading from filesystem
 func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 	var err error
 
@@ -440,11 +440,9 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 	}
 
 	var path string
-	if len(a) == 1 {
-		path, err = toString(a[0])
-		if err != nil {
-			return fmt.Errorf("%s: %w", path, err)
-		}
+	path, err = toString(c)
+	if err != nil {
+		return fmt.Errorf("%s: %w", path, err)
 	}
 
 	var bEnd int64
@@ -484,7 +482,7 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 	// TODO: make nicer
 	// we don't want to print any progress things after decode is done
 	var decodeDoneFn func()
-	if opts.REPL {
+	if opts.REPL && i.os.Stdout().IsTerminal() {
 		decodeDone := false
 		progressFn := func(r, l int64) {
 			if decodeDone {

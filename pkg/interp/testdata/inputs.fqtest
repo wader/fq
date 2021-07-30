@@ -16,6 +16,7 @@ c
 "/a"
 "/b"
 "/c"
+stderr:
 error: break
 > fq -d raw -n (.,inputs)._description /a /b /c
 null
@@ -36,6 +37,7 @@ null
 "/a"
 "/b"
 "/c"
+stderr:
 error: break
 > fq -d raw input_filename /a /b /c
 "/a"

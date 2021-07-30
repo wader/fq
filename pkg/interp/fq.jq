@@ -223,7 +223,7 @@ def _main:
 				description: "Null input",
 				bool: true
 			},
-			"decode": {
+			"decode_format": {
 				short: "-d",
 				long: "--decode",
 				description: "Decode format",
@@ -294,7 +294,7 @@ def _main:
 		try
 		  ( { nullinput: ($parsed.nullinput == true) }
 		  | if $parsed.file then
-				( .expr = (open($parsed.file) | string)
+				( .expr = ($parsed.file | open | string)
 				| .filenames = $rest
 				)
 			else
@@ -310,9 +310,13 @@ def _main:
 		  | . as {$expr, $filenames, $nullinput}
 		  | inputs($filenames) as $_ # store inputs
 		  | if $nullinput then null
+		  # TODO: exit codes on input error and expr error
 		    else inputs end # will iterate inputs
-		  | if $parsed.repl then [_eval_f($expr; .)] | repl({}; .[])
-		    else _eval_f($expr; .) | _default_display end
+		  | if $parsed.repl then [eval($expr)] | repl({}; .[])
+			else
+				try (eval($expr) | _default_display)
+				catch (. as $err | ("error: ", ($err | tostring), "\n") | stderr)
+			end
 		  )
 		catch tostring | halt_error(1)
 	  end

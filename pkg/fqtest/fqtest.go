@@ -16,7 +16,6 @@ import (
 	"strconv"
 	"strings"
 	"testing"
-	"testing/iotest"
 
 	"fq/format/registry"
 	"fq/internal/deepequal"
@@ -42,7 +41,9 @@ type testCaseRun struct {
 	lineNr          int
 	testCase        *testCase
 	args            string
+	stdin           string
 	expectedStdout  string
+	expectedStderr  string
 	actualStdoutBuf *bytes.Buffer
 	actualStderrBuf *bytes.Buffer
 	readlines       []testCaseReadline
@@ -52,10 +53,7 @@ type testCaseRun struct {
 func (tcr *testCaseRun) Line() int { return tcr.lineNr }
 
 func (tcr *testCaseRun) Stdin() fs.File {
-	if f, err := tcr.testCase.Open("/stdin"); err == nil {
-		return f
-	}
-	return interp.FileReader{R: iotest.ErrReader(io.EOF)}
+	return interp.FileReader{R: bytes.NewBufferString(tcr.stdin)}
 }
 
 func (tcr *testCaseRun) Stdout() interp.Output { return testCaseRunOutput{tcr.actualStdoutBuf} }
@@ -91,7 +89,7 @@ func (tcr *testCaseRun) Readline(prompt string, complete func(line string, pos i
 }
 func (tcr *testCaseRun) History() ([]string, error) { return nil, nil }
 
-func (tcr *testCaseRun) ToExpected() string {
+func (tcr *testCaseRun) ToExpectedStdout() string {
 	sb := &strings.Builder{}
 
 	if len(tcr.readlines) == 0 {
@@ -99,13 +97,17 @@ func (tcr *testCaseRun) ToExpected() string {
 	} else {
 		for _, rl := range tcr.readlines {
 			fmt.Fprintf(sb, "%s%s\n", rl.expectedPrompt, rl.input)
-			if rl.expectedStdout != "" {
-				fmt.Fprint(sb, rl.expectedStdout)
-			}
+			// if rl.expectedStdout != "" {
+			// 	fmt.Fprint(sb, rl.expectedStdout)
+			// }
 		}
 	}
 
 	return sb.String()
+}
+
+func (tcr *testCaseRun) ToExpectedStderr() string {
+	return tcr.expectedStderr
 }
 
 type part interface {
@@ -142,13 +144,20 @@ func (tc *testCase) ToActual() string {
 
 	sb := &strings.Builder{}
 	for _, p := range partsLineSorted {
-
 		switch p := p.(type) {
 		case *testCaseComment:
 			fmt.Fprintf(sb, "#%s\n", p.comment)
 		case *testCaseRun:
 			fmt.Fprintf(sb, ">%s\n", p.args)
 			fmt.Fprint(sb, p.actualStdoutBuf.String())
+			if p.stdin != "" {
+				fmt.Fprint(sb, "stdin:\n")
+				fmt.Fprint(sb, p.stdin)
+			}
+			if p.actualStderrBuf.Len() > 0 {
+				fmt.Fprint(sb, "stderr:\n")
+				fmt.Fprint(sb, p.actualStderrBuf.String())
+			}
 		case *testCaseFile:
 			fmt.Fprintf(sb, "%s:\n", p.name)
 			sb.Write(p.data)
@@ -251,7 +260,7 @@ func parseTestCases(s string) *testCase {
 	replDepth := 0
 
 	// TODO: better section splitter, too much heuristics now
-	for _, section := range SectionParser(regexp.MustCompile(`^#.*$|^/.*:|^> .*|^[a-z].+> .*`), s) {
+	for _, section := range SectionParser(regexp.MustCompile(`^stdin:$|^stderr:$|^#.*$|^/.*:|^> .*|^[a-z].+> .*`), s) {
 		n, v := section.Name, section.Value
 
 		switch {
@@ -276,6 +285,10 @@ func parseTestCases(s string) *testCase {
 				actualStdoutBuf: &bytes.Buffer{},
 				actualStderrBuf: &bytes.Buffer{},
 			}
+		case strings.HasPrefix(n, "stdin"):
+			currentTestRun.stdin = v
+		case strings.HasPrefix(n, "stderr"):
+			currentTestRun.expectedStderr = v
 		case strings.Contains(n, promptEnd): // TODO: better
 			parts := strings.SplitN(n, promptEnd, 2)
 			prompt := parts[0] + promptEnd
@@ -375,8 +388,8 @@ func testDecodedTestCaseRun(t *testing.T, registry *registry.Registry, tcr *test
 
 	// cli.Command{Version: "test", OS: &te}.Run()
 	// deepequal.Error(t, "files", te.ExpectedFiles, te.ActualFiles)
-	deepequal.Error(t, "stdout", tcr.ToExpected(), tcr.actualStdoutBuf.String())
-	//deepequal.Error(t, "stderr", te.ExpectedStderr, te.ActualStderrBuf.String())
+	deepequal.Error(t, "stdout", tcr.ToExpectedStdout(), tcr.actualStdoutBuf.String())
+	deepequal.Error(t, "stderr", tcr.ToExpectedStderr(), tcr.actualStderrBuf.String())
 }
 
 func TestPath(t *testing.T, registry *registry.Registry) {

@@ -31,7 +31,7 @@ false
 "mp3"
 > fq -d mp3 '.headers[0].magic._format' /test.mp3
 null
-/stdin:
-abc
 > fq -d raw '._bytes | string'
 "abc\n"
+stdin:
+abc

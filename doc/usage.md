@@ -73,7 +73,7 @@ notable is support for arbitrary-precision integers.
 ### Functions
 
 - All standard library functions from jq
-- `open(path)` open file for reading
+- `open` open file for reading
 - `probe` or `decode` try to automatically detect format and decode
 - `mp3`, `matroska`, ..., `<name>`, `decode([name])` try decode as format
 - `d`/`display` display value

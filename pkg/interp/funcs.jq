@@ -3,8 +3,7 @@ def help:
 	( builtins[]
 	, "^C interrupt"
 	, "^D exit REPL"
-	)
-	| println;
+	) | println;
 
 # TODO: escape for safe key names
 # path ["a", 1, "b"] -> "a[1].b"
@@ -13,8 +12,9 @@ def path_to_expr:
 
 # TODO: don't use eval? should support '.a.b[1]."c.c"' and escapes?
 def expr_to_path:
-	if . | type != "string" then error("require string argument") end
-	| eval("null | path(\(.))");
+	( if . | type != "string" then error("require string argument") end
+	| eval("null | path(\(.))")
+	);
 
 def trim: capture("^\\s*(?<str>.*?)\\s*$"; "").str;
 
@@ -28,17 +28,18 @@ def tree_path(children; name; $v):
 		# add implicit zeros to get first value
 		# ["a", "b", 1] => ["a", 0, "b", 1]
 		def _normalize_path:
-			. as $np
+			( . as $np
 			| if $np | last | type == "string" then $np+[0] end
 			# state is [path acc, possible pending zero index]
-			| (reduce .[] as $np ([[], []];
+			| ( reduce .[] as $np ([[], []];
 				if $np | type == "string" then
 					[(.[0]+.[1]+[$np]), [0]]
 				else
 					[.[0]+[$np], []]
 				end
-			))[0];
-		. as $c
+			  ))
+			)[0];
+		( . as $c
 		| $v
 		| expr_to_path
 		| _normalize_path
@@ -48,6 +49,7 @@ def tree_path(children; name; $v):
 			else
 				.[$n]
 			end
+		  )
 		);
 	def _path:
 		[ . as $r
@@ -84,7 +86,7 @@ def table(colmap; render):
         ];
     if (. | length) == 0 then ""
     else
-      _column_widths as $cw
+      ( _column_widths as $cw
       | . as $rs
       | ( ($rs[]
           | . as $r
@@ -94,7 +96,8 @@ def table(colmap; render):
           | render
           )
         )
-      end;
+	  )
+    end;
 
 # convert number to array of bytes
 def number_to_bytes($bits):
@@ -110,14 +113,15 @@ def number_to_bytes:
 	number_to_bytes(8);
 
 def from_radix($base; $table):
-	split("")
+	( split("")
 	| reverse
 	| map($table[.])
 	| if . == null then error("invalid char \(.)") end
 	| reduce .[] as $c
 		# state: [power, ans]
 		([1,0]; (.[0] * $base) as $b | [$b, .[1] + (.[0] * $c)])
-	| .[1];
+	| .[1]
+	);
 
 def to_radix($base; $table):
 	if . == 0 then "0"
@@ -190,27 +194,28 @@ def i:
 
 # produce a/b pairs for diffing values
 def diff($a; $b):
-    ( $a | type) as $at
-    | ($b | type) as $bt
-    | if $at != $bt then {a: $a, b: $b}
-      elif ($at == "array" or $at == "object" or $at == "struct") then
-        [ ((($a | keys) + ($b | keys)) | unique)[] as $k
-        | {
-          ($k | tostring): (
-            [($a | has($k)), ($b | has($k))]
-            | if . == [true, true] then diff($a[$k]; $b[$k])
-              elif . == [true, false] then {a: $a[$k]}
-              elif . == [false, true] then {b: $b[$k]}
-              else empty # TODO: can't happen? error?
-              end
-          )
-        }
-        ]
-        | add
-        | if . == null then empty end
-      else
-        if $a == $b then empty else {a: $a, b: $b} end
-      end;
+	( ( $a | type) as $at
+	| ($b | type) as $bt
+	| if $at != $bt then {a: $a, b: $b}
+	  elif ($at == "array" or $at == "object" or $at == "struct") then
+		[ ((($a | keys) + ($b | keys)) | unique)[] as $k
+		| {
+			($k | tostring): (
+				[($a | has($k)), ($b | has($k))]
+				| if . == [true, true] then diff($a[$k]; $b[$k])
+				  elif . == [true, false] then {a: $a[$k]}
+				  elif . == [false, true] then {b: $b[$k]}
+				  else empty # TODO: can't happen? error?
+				  end
+			)
+		  }
+		]
+		| add
+		| if . == null then empty end
+	  else
+		if $a == $b then empty else {a: $a, b: $b} end
+	  end
+	);
 
 def in_bits_range($p):
 	select(scalars and ._start? and ._start <= $p and $p < ._stop);
