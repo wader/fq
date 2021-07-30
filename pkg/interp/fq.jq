@@ -264,7 +264,7 @@ def _main:
 		};
 	def _usage($arg0; $version):
 		"Usage: \($arg0) [OPTIONS] [EXPR] [FILE...]";
-	.version as $version
+	( .version as $version
 	| .args[0] as $arg0
 	| args_parse(.args[1:]; _opts($version)) as {$parsed, $rest}
 	# store parsed arguments, .format is used by input
@@ -279,7 +279,7 @@ def _main:
 			compact: ($parsed.compact == true),
 			repllevel: 0,
 		}
-	)
+	  )
 	| if $parsed.help then
 		( _usage($arg0; $version)
 		, args_help_text(_opts($version))
@@ -315,4 +315,5 @@ def _main:
 		    else _eval_f($expr; .) | _default_display end
 		  )
 		catch tostring | halt_error(1)
-	  end;
+	  end
+	);
