@@ -1,6 +1,8 @@
 include "@builtin/internal";
 include "@builtin/funcs";
 include "@builtin/args";
+
+# will include all per format specific function etc
 include "@format/all";
 
 # optional user init
@@ -19,7 +21,7 @@ include "@config/init?";
 # current line from start to current cursor position. Should return possible completions.
 
 # TODO: completionMode
-def complete($e):
+def _complete($e):
 	( $e | complete_query) as {$type, $query, $prefix}
 	| {
 		prefix: $prefix,
@@ -37,10 +39,10 @@ def complete($e):
 		)
 	};
 
-def obj_to_csv_kv:
+def _obj_to_csv_kv:
 	[to_entries[] | [.key, .value] | join("=")] | join(",");
 
-def color_themes:
+def _color_themes:
 	{
 		default: {
 			colors: ({
@@ -57,7 +59,7 @@ def color_themes:
 				error: "brightred",
 				dumpheader: "yellow+underline",
 				dumpaddr: "yellow"
-			} | obj_to_csv_kv),
+			} | _obj_to_csv_kv),
 			bytecolors: "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
 		},
 		# TODO: more configurable? colors=neon?
@@ -76,12 +78,12 @@ def color_themes:
 				error: "brightred",
 				dumpheader: "brightyellow+underline",
 				dumpaddr: "brightyellow"
-			} | obj_to_csv_kv),
+			} | _obj_to_csv_kv),
 			bytecolors: "0-0xff=brightwhite,0=brightblack,32-126:9-13=brightgreen",
 		}
 	};
 
-def build_default_options:
+def _build_default_options:
 	{
 		depth:        0,
 		verbose:      false,
@@ -92,11 +94,11 @@ def build_default_options:
 		displaybytes: (if tty.is_terminal then [((tty.width div 8) div 2) * 2, 4] | max else 16 end),
 		addrbase:     16,
 		sizebase:     10,
-		colors:       color_themes.default.colors,
-		bytecolors:   color_themes.default.bytecolors,
+		colors:       _color_themes.default.colors,
+		bytecolors:   _color_themes.default.bytecolors,
 	};
 
-def parse_options:
+def _parse_options:
 	{
 			depth:        (.depth | if . then eval(.) else null end),
 			verbose:      (.verbose | if . then eval(.) else null end),
@@ -112,70 +114,65 @@ def parse_options:
 	}
 	| with_entries(select(.value != null));
 
-def prompt($iter):
-	def _type_literal:
-		( type
-		| if . == "array" then "[]"
-		  elif . == "object" then "{}"
-		  else .
-		  end
-		);
+def _prompt(iter):
 	def _type_name_error:
 		. as $c
 		| try
-			[ display_name
+			( display_name
 			, if ._error then "!" else empty end
-			] | join("")
-		catch ($c | _type_literal);
+			)
+		catch ($c | type);
 	def _path_prefix:
 		(._path? // [])
 		| if . == [] then "" else path_to_expr + " " end;
-	[ (options.repllevel
-	  | if . > 1 then ((.-1) * ">") + " "
-	    else empty end
-	  )
-	, if $iter and length == 0 then
-		"empty"
-	  else
-	  	( if $iter then .[0] end
-		| if type != "array" then
-		  	_path_prefix + _type_name_error
-		  else
-		  	[ "["
-		  	, if length > 0 then (.[0] | _type_name_error) else empty end
-		  	, if length > 1 then ",..." else empty end
-		  	, "]"
-		  	, "[\(length)]"
-		  	] | join("")
-		  end
-		)
-	  end
-	, if $iter and length > 1 then ", ..." else empty end
-	, "> "
-	] | join("");
+	def _preview:
+		if type != "array" then
+			_type_name_error
+		else
+			( "["
+			, if length > 0 then (.[0] | _type_name_error) else empty end
+			, if length > 1 then ", ..." else empty end
+			, "]"
+			, "[\(length)]"
+			)
+		end;
+	( [iter]
+	| [ (options.repllevel | if . > 1 then ((.-1) * ">") + " " else empty end)
+      , if length == 0 then
+	  		"empty"
+	    else
+			( .[0]
+			| _path_prefix
+			, _preview
+			)
+		end
+	  , if length > 1 then ", ..." else empty end
+	  , "> "
+	  ]
+	) | join("");
 
-def eval_debug:
+def _eval_debug:
 	(["DEBUG", .] | tojson, "\n") | stderr;
 
-def eval_f($e; f):
-	default_options(build_default_options) as $_
+def _eval_f($e; f):
+	_default_options(_build_default_options) as $_
 	| try eval($e; "eval_debug") | f
 	  catch (. as $err | ("error: " + ($err | tostring)) | println);
 
-def default_display: display({depth: 1});
+def _default_display: display({depth: 1});
 
-def eval_print($e):
-	eval_f($e; default_display);
+def _eval_print($e):
+	_eval_f($e; _default_display);
 
 # run read-eval-print-loop
-def repl($opts; $iter): #:: a|(Opts) => @
-	def _read_expr: read(prompt($iter); "complete") | trim;
+def repl($opts; iter): #:: a|(Opts) => @
+	def _read_expr: read(_prompt(iter); "_complete") | trim;
 	def _repl:
 		. as $c
 		| try
 			_read_expr as $e
 			| if $e != "" then
-				(if $iter then .[] end | eval_print($e))
+				(iter | _eval_print($e))
 			  else
 				empty
 			  end,
@@ -184,20 +181,12 @@ def repl($opts; $iter): #:: a|(Opts) => @
 			if . == "interrupt" then $c | _repl
 			elif . == "eof" then empty
 			else error(.) end;
-	with_options($opts | .repllevel = options.repllevel+1; _repl);
+	_with_options($opts | .repllevel = options.repllevel+1; _repl);
 # same as repl({})
-def repl($opts): repl($opts; false);
-def repl: repl({}; false); #:: a| => @
+def repl($opts): repl($opts; .);
+def repl: repl({}; .); #:: a| => @
 
-# TODO: introspect and show doc, reflection somehow?
-def help:
-	( builtins[]
-	, "^C interrupt"
-	, "^D exit REPL"
-	)
-	| println;
-
-def main:
+def _main:
 	def _formats_list:
 		[
 			["Name:", "Description:"],
@@ -270,7 +259,7 @@ def main:
 				description: "Set option, eg: color=true",
 				object: true,
 				default: {},
-				help_default: build_default_options
+				help_default: _build_default_options
 			},
 		};
 	def _usage($arg0; $version):
@@ -280,10 +269,10 @@ def main:
 	| args_parse(.args[1:]; _opts($version)) as {$parsed, $rest}
 	# store parsed arguments, .format is used by input
 	| _parsed_args($parsed) as $_
-	| default_options(build_default_options) as $_
+	| _default_options(_build_default_options) as $_
 	# TODO: hack, pass opts some other way?
-	| push_options(
-		($parsed.options | parse_options)
+	| _push_options(
+		($parsed.options | _parse_options)
 		+ {
 			repl: ($parsed.repl == true),
 			rawstring: ($parsed.rawstring == true),
@@ -322,8 +311,8 @@ def main:
 		  | inputs($filenames) as $_ # store inputs
 		  | if $nullinput then null
 		    else inputs end # will iterate inputs
-		  | if $parsed.repl then [eval_f($expr; .)] | repl({}; true)
-		    else eval_f($expr; .) | default_display end
+		  | if $parsed.repl then [_eval_f($expr; .)] | repl({}; .[])
+		    else _eval_f($expr; .) | _default_display end
 		  )
 		catch tostring | halt_error(1)
 	  end;

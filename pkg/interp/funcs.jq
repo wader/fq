@@ -1,3 +1,11 @@
+# TODO: introspect and show doc, reflection somehow?
+def help:
+	( builtins[]
+	, "^C interrupt"
+	, "^D exit REPL"
+	)
+	| println;
+
 # TODO: escape for safe key names
 # path ["a", 1, "b"] -> "a[1].b"
 def path_to_expr:

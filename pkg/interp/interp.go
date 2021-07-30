@@ -478,7 +478,7 @@ func (i *Interp) Main(ctx context.Context, stdout io.Writer, version string) err
 		"version": version,
 	}
 
-	iter, err := i.EvalFunc(ctx, runMode, input, "main", nil, i.os.Stdout(), "")
+	iter, err := i.EvalFunc(ctx, runMode, input, "_main", nil, i.os.Stdout(), "")
 	if err != nil {
 		return err
 	}
