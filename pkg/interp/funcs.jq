@@ -90,8 +90,8 @@ def table(colmap; render):
     | ( $rs[]
       | . as $r
       | [ range($r | length) as $i
-      | ($r | colmap | {column: $i, string: .[$i], maxwidth: $cw[$i]})
-      ]
+        | ($r | colmap | {column: $i, string: .[$i], maxwidth: $cw[$i]})
+        ]
       | render
       )
     )

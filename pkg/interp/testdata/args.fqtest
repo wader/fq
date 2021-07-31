@@ -44,3 +44,64 @@ number> ^D
 ]
 > fq -nc "[1,2,3]"
 [1,2,3]
+> fq --formats
+Name:              Description:
+aac_frame          Advanced Audio Coding frame
+adts               Audio Data Transport Stream
+adts_frame         Audio Data Transport Stream frame
+apev2              APEv2 metadata tag
+av1_ccr            AV1 Codec Configuration Record
+av1_frame          AV1 frame
+av1_obu            AV1 Open Bitstream Unit
+avc_au             H.264/AVC Access Unit
+avc_dcr            H.264/AVC Decoder Configuration Record
+avc_nalu           H.264/AVC Network Access Layer Unit
+avc_pps            H.264/AVC Picture Parameter Set
+avc_sei            H.264/AVC Supplemental Enhancement Information
+avc_sps            H.264/AVC Sequence Parameter Set
+bzip2              bzip2 compression
+dns                DNS packet
+elf                Executable and Linkable Format
+exif               Exchangeable Image File Format
+flac               Free Lossless Audio Codec file
+flac_frame         FLAC frame
+flac_metadatablock FLAC metadatablock
+flac_picture       FLAC metadatablock picture
+gif                Graphics Interchange Format
+gzip               gzip compression
+hevc_au            H.265/HEVC Access Unit
+hevc_dcr           H.265/HEVC Decoder Configuration Record
+hevc_nalu          H.265/HEVC Network Access Layer Unit
+icc_profile        International Color Consortium profile
+id3v1              ID3v1 metadata
+id3v11             ID3v1.1 metadata
+id3v2              ID3v2 metadata
+jpeg               Joint Photographic Experts Group file
+matroska           Matroska file
+mp3                MP3 file
+mp3_frame          MPEG audio layer 3 frame
+mp4                MPEG-4 file and similar
+mpeg_asc           MPEG-4 Audio Specific Config
+mpeg_es            MPEG Elementary Stream
+mpeg_pes           MPEG Packetized elementary stream
+mpeg_pes_packet    MPEG Packetized elementary stream packet
+mpeg_spu           Sub Picture Unit (DVD subtitle)
+mpeg_ts            MPEG Transport Stream
+ogg                OGG file
+ogg_page           OGG page
+opus_packet        Opus packet
+png                Portable Network Graphics file
+protobuf           Protobuf
+protobuf_widevine  Widevine protobuf
+raw                Raw bits
+tar                Tar archive
+tiff               Tag Image File Format
+vorbis_comment     Vorbis comment
+vorbis_packet      Vorbis packet
+vp8_frame          VP8 frame
+vp9_cfm            VP9 Codec Feature Metadata
+vp9_frame          VP9 frame
+vpx_ccr            VPX Codec Configuration Record
+wav                WAV file
+webp               WebP image
+xing               Xing header

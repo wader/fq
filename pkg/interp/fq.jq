@@ -203,7 +203,12 @@ def _main:
     ]
     | table(
         .;
-        [.[] as $rc | $rc.string | rpad(" "; $rc.maxwidth)] | join("")
+        map(
+          ( . as $rc
+          | .string
+          | if $rc.column != 1 then rpad(" "; $rc.maxwidth) end
+          )
+        ) | join("")
       );
   def _opts($version):
     {
