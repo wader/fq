@@ -19,7 +19,7 @@ def _formats_dot:
 	, "  edge [arrowsize=\"0.7\"]"
 	, ( .[]
 	  | . as $f
-	  | .dependencies|flatten?|.[]
+	  | .dependencies | flatten? | .[]
 	  | "  \"\($f.name)\":\(.) -> \(.)"
 	  )
 	, ( .[]
