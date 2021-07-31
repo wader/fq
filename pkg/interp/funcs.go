@@ -394,7 +394,6 @@ func (i *Interp) makeStateFn(state map[string]interface{}) func(c interface{}, a
 }
 
 func (i *Interp) formats(c interface{}, a []interface{}) interface{} {
-
 	allFormats := map[string]*decode.Format{}
 
 	for _, fs := range i.registry.Groups {
@@ -591,7 +590,7 @@ func (i *Interp) makeDecodeFn(registry *registry.Registry, decodeFormats []*deco
 			}
 		}
 
-		dv, _, err := decode.Decode(i.evalContext.ctx, "", filename, bb, decodeFormats, decode.DecodeOptions{FormatOptions: opts})
+		dv, _, err := decode.Decode("", filename, bb, decodeFormats, decode.DecodeOptions{FormatOptions: opts})
 		if dv == nil {
 			var decodeFormatsErr decode.DecodeFormatsError
 			if errors.As(err, &decodeFormatsErr) {

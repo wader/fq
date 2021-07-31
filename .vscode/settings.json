@@ -91,6 +91,7 @@
         "println",
         "protobuf",
         "randomised",
+        "recoverfn",
         "rpad",
         "sels",
         "shquote",
