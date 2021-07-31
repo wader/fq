@@ -5,7 +5,7 @@ def _formats_dot:
 		[  "<"
 		, "<table bgcolor=\"paleturquoise\" border=\"0\" cellspacing=\"0\">"
 		, "<tr><td port=\"\($title)\">\($title)</td></tr>"
-		, [$fields|flatten|map("<tr><td align=\"left\" bgcolor=\"lightgrey\" port=\"\(.)\">\(.)</td></tr>")]
+		, [$fields | flatten | map("<tr><td align=\"left\" bgcolor=\"lightgrey\" port=\"\(.)\">\(.)</td></tr>")]
 		, "</table>"
 		, ">"
 		] | flatten | join("");

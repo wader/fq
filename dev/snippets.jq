@@ -3,7 +3,7 @@ def count_by(exp):
 	group_by(exp) | map({(.[0] | exp | tostring): length}) | add;
 
 def protobuf_to_value:
-	.fields | map({(.name|tostring): (.enum // .value)}) | add;
+	.fields | map({(.name | tostring): (.enum // .value)}) | add;
 
 # hack to parse just a box
 # <binary> | mp4_box

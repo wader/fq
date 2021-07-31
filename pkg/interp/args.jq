@@ -8,15 +8,15 @@ def args_parse($args; $opts):
           // error("\($value): should be key=value")
           ) as {$key, $value}
           # TODO: validate option name key
-        | _parse($new_args; $flagmap; ($r|.parsed[$optname][$key] |= $value))
+        | _parse($new_args; $flagmap; ($r | .parsed[$optname][$key] |= $value))
         )
       elif $opt.array then
-        _parse($new_args; $flagmap; ($r|.parsed[$optname] += [$value]))
+        _parse($new_args; $flagmap; ($r | .parsed[$optname] += [$value]))
       else
-        _parse($new_args; $flagmap; ($r|.parsed[$optname] = $value))
+        _parse($new_args; $flagmap; ($r | .parsed[$optname] = $value))
       end;
     def _parse_without_arg($new_args; $optname):
-      _parse($new_args; $flagmap; ($r|.parsed[$optname] = true));
+      _parse($new_args; $flagmap; ($r | .parsed[$optname] = true));
     ( ($args[0] | index("=")) as $assign_i
     | ( if $assign_i then $args[0][0:$assign_i]
         else $args[0]
@@ -59,7 +59,7 @@ def args_parse($args; $opts):
             end
           )
         else
-          _parse($args[1:]; $flagmap; ($r|.rest += [$args[0]]))
+          _parse($args[1:]; $flagmap; ($r | .rest += [$args[0]]))
         end
       end
     );
@@ -90,19 +90,23 @@ def args_help_text($opts):
       ] | map(select(strings)) | join(",")
     ) +
     if .value or .array or .object then "=ARG"
-    else null
+    else ""
     end;
   def _maxoptlen:
-    [$opts[] | (.|_opthelp|length)] | max;
+    [ $opts[]
+    | (_opthelp | length)
+    ] | max;
   ( _maxoptlen as $l
   | $opts
   | to_entries[]
   | (.value | .help_default // .default) as $default
-  | [ "\(.value|_opthelp|rpad(" "; $l))  \(.value.description)"
+  | [ "\(.value | _opthelp | rpad(" "; $l))  \(.value.description)"
     , if $default then
         if .value.object then
-          [ "\n",
-            ([$default | to_entries[] | "\(" "*$l)    \(.key)=\(.value)"] | join("\n"))
+          [ "\n"
+          , ( [$default | to_entries[] | "\(" "*$l)    \(.key)=\(.value)"]
+            | join("\n")
+            )
           ]
         else
           " (\($default))"

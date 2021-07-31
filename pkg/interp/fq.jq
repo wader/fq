@@ -331,6 +331,6 @@ def _main:
             catch (. as $err | ("error: ", ($err | tostring), "\n") | stderr)
           end
         )
-      catch tostring | halt_error(1)
+      catch (tostring | halt_error(1))
     end
   );
