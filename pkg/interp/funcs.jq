@@ -106,7 +106,8 @@ def number_to_bytes($bits):
       empty
     end;
   if . == 0 then [0]
-  else [_number_to_bytes(1 bsl $bits)] | reverse end;
+  else [_number_to_bytes(1 bsl $bits)] | reverse
+  end;
 def number_to_bytes:
   number_to_bytes(8);
 
@@ -141,7 +142,8 @@ def to_radix($base; $table):
 def radix($base; $to_table; $from_table):
   if . | type == "number" then to_radix($base; $to_table)
   elif . | type == "string" then from_radix($base; $from_table)
-  else error("needs to be number of string") end;
+  else error("needs to be number of string")
+  end;
 
 def radix2: radix(2; "01"; {"0": 0, "1": 1});
 def radix8: radix(8; "01234567"; {"0": 0, "1": 1, "2": 2, "3": 3,"4": 4, "5": 5, "6": 6, "7": 7});
@@ -199,23 +201,25 @@ def diff($a; $b):
   ( ( $a | type) as $at
   | ($b | type) as $bt
   | if $at != $bt then {a: $a, b: $b}
-    elif ($at == "array" or $at == "object" or $at == "struct") then
-    [ ((($a | keys) + ($b | keys)) | unique)[] as $k
-    | {
-      ($k | tostring): (
-        [($a | has($k)), ($b | has($k))]
-        | if . == [true, true] then diff($a[$k]; $b[$k])
-          elif . == [true, false] then {a: $a[$k]}
-          elif . == [false, true] then {b: $b[$k]}
-          else empty # TODO: can't happen? error?
-          end
-        )
-      }
-    ]
-    | add
-    | if . == null then empty end
-      else if $a == $b then empty else {a: $a, b: $b} end
-      end
+    elif ($at == "array" or $at == "object") then
+      ( [ ((($a | keys) + ($b | keys)) | unique)[] as $k
+        | {
+          ($k | tostring): (
+            [($a | has($k)), ($b | has($k))]
+            | if . == [true, true] then diff($a[$k]; $b[$k])
+              elif . == [true, false] then {a: $a[$k]}
+              elif . == [false, true] then {b: $b[$k]}
+              else empty # TODO: can't happen? error?
+              end
+            )
+          }
+        ]
+      | add
+      | if . == null then empty end
+      )
+    else
+      if $a == $b then empty else {a: $a, b: $b} end
+    end
   );
 
 def in_bits_range($p):

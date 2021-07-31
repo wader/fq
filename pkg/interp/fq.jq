@@ -318,7 +318,8 @@ def _main:
         | inputs($filenames) as $_ # store inputs
         | if $nullinput then null
           # TODO: exit codes on input error and expr error
-          else inputs end # will iterate inputs
+          else inputs # will iterate inputs
+          end
         | if $parsed.repl then [eval($expr)] | repl({}; .[])
           else
             try (eval($expr) | _default_display)
@@ -326,5 +327,5 @@ def _main:
           end
         )
       catch tostring | halt_error(1)
-      end
+    end
   );
