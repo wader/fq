@@ -10,7 +10,6 @@ package bitio
 
 import (
 	"bytes"
-	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -27,7 +26,6 @@ type Buffer struct {
 	}
 
 	bitLen int64 // mostly to cache len
-	ctx    context.Context
 }
 
 // NewBufferFromReadSeeker new Buffer from io.ReadSeeker, start at firstBit with bit length lenBits
@@ -109,19 +107,13 @@ func (b *Buffer) BitBufRange(firstBitOffset int64, nBits int64) (*Buffer, error)
 	return &Buffer{
 		br:     NewSectionBitReader(b.br, firstBitOffset, nBits),
 		bitLen: nBits,
-		ctx:    b.ctx,
 	}, nil
 }
 
 func (b *Buffer) Copy() *Buffer {
-	return b.CopyWithContext(b.ctx)
-}
-
-func (b *Buffer) CopyWithContext(ctx context.Context) *Buffer {
 	return &Buffer{
 		br:     NewSectionBitReader(b.br, 0, b.bitLen),
 		bitLen: b.bitLen,
-		ctx:    ctx,
 	}
 }
 

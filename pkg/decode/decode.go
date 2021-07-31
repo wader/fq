@@ -201,7 +201,7 @@ type D struct {
 
 // TODO: new struct decoder?
 func NewDecoder(ctx context.Context, name string, description string, format *Format, bb *bitio.Buffer, opts DecodeOptions) *D {
-	cbb := bb.CopyWithContext(ctx)
+	cbb := bb.Copy()
 
 	return &D{
 		Endian: BigEndian,
