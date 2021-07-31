@@ -1,7 +1,8 @@
+//+build ignore
+
 package flv
 
 // TODO: make it useful
-//+build: ignore
 
 // https://www.adobe.com/content/dam/acom/en/devnet/flv/video_file_format_spec_v10.pdf
 
