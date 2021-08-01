@@ -35,3 +35,10 @@ null
 "abc\n"
 stdin:
 abc
+> fq -n "{a: 123, b: []} | debug"
+{
+  "a": 123,
+  "b": []
+}
+stderr:
+["DEBUG",{"a":123,"b":[]}]
