@@ -32,6 +32,7 @@ var av1CCRFormat []*decode.Format
 var av1FrameFormat []*decode.Format
 var flacFrameFormat []*decode.Format
 var flacMetadatablockFormat []*decode.Format
+var imageFormat []*decode.Format
 var mp3FrameFormat []*decode.Format
 var mpegASCFrameFormat []*decode.Format
 var mpegAVCAUFormat []*decode.Format
@@ -58,14 +59,15 @@ func init() {
 			{Names: []string{format.AAC_FRAME}, Formats: &aacFrameFormat},
 			{Names: []string{format.AV1_CCR}, Formats: &av1CCRFormat},
 			{Names: []string{format.AV1_FRAME}, Formats: &av1FrameFormat},
-			{Names: []string{format.FLAC_FRAME}, Formats: &flacFrameFormat},
-			{Names: []string{format.FLAC_METADATABLOCK}, Formats: &flacMetadatablockFormat},
-			{Names: []string{format.MP3_FRAME}, Formats: &mp3FrameFormat},
-			{Names: []string{format.MPEG_ASC}, Formats: &mpegASCFrameFormat},
 			{Names: []string{format.AVC_AU}, Formats: &mpegAVCAUFormat},
 			{Names: []string{format.AVC_DCR}, Formats: &mpegAVCDCRFormat},
+			{Names: []string{format.FLAC_FRAME}, Formats: &flacFrameFormat},
+			{Names: []string{format.FLAC_METADATABLOCK}, Formats: &flacMetadatablockFormat},
 			{Names: []string{format.HEVC_AU}, Formats: &mpegHEVCSampleFormat},
 			{Names: []string{format.HEVC_DCR}, Formats: &mpegHEVCDCRFormat},
+			{Names: []string{format.IMAGE}, Formats: &imageFormat},
+			{Names: []string{format.MP3_FRAME}, Formats: &mp3FrameFormat},
+			{Names: []string{format.MPEG_ASC}, Formats: &mpegASCFrameFormat},
 			{Names: []string{format.MPEG_PES_PACKET}, Formats: &mpegPESPacketSampleFormat},
 			{Names: []string{format.MPEG_SPU}, Formats: &mpegSPUFrameFormat},
 			{Names: []string{format.OPUS_PACKET}, Formats: &opusPacketFrameFormat},
@@ -170,6 +172,11 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 					dc.currentTrack = &track{}
 					dc.tracks = append(dc.tracks, dc.currentTrack)
 				}
+
+				// TODO: add a.Definition as description?
+
+				// TODO: map?
+				d.FieldValueU("type", uint64(a.Type), ebml.TypeNames[a.Type])
 
 				d.FieldUFn("id", func() (uint64, decode.DisplayFormat, string) {
 					n := decodeRawVint(d)
@@ -277,6 +284,8 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 							dc.currentTrack.codecPrivateTagSize = int64(tagSize) * 8
 						}
 						d.SeekRel(int64(tagSize) * 8)
+					case ebml_matroska.FileDataID:
+						d.FieldDecodeLen("value", int64(tagSize)*8, imageFormat)
 					default:
 						d.FieldBitBufLen("value", int64(tagSize)*8)
 						// if tagID == CRC {
