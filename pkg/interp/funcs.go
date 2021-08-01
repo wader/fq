@@ -239,9 +239,9 @@ func (i *Interp) read(c interface{}, a []interface{}) interface{} {
 	})
 
 	if errors.Is(err, ErrInterrupt) {
-		return valueErr{"interrupt"}
+		return valueError{"interrupt"}
 	} else if errors.Is(err, ErrEOF) {
-		return valueErr{"eof"}
+		return valueError{"eof"}
 	} else if err != nil {
 		return err
 	}
@@ -596,7 +596,7 @@ func (i *Interp) makeDecodeFn(registry *registry.Registry, decodeFormats []*deco
 			if errors.As(err, &decodeFormatsErr) {
 				return decodeError{decodeFormatsErr}
 			}
-			return valueErr{err}
+			return valueError{err}
 		}
 
 		return makeValueObject(dv)

@@ -13,8 +13,8 @@ type tf interface {
 }
 
 func testDeepEqual(fn func(format string, args ...interface{}), name string, expected interface{}, actual interface{}) {
-	expectedStr := fmt.Sprintf("%s", expected)
-	actualStr := fmt.Sprintf("%s", actual)
+	expectedStr := fmt.Sprintf("%v", expected)
+	actualStr := fmt.Sprintf("%v", actual)
 
 	if !reflect.DeepEqual(expected, actual) {
 		diff := difflib.UnifiedDiff{

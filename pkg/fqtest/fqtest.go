@@ -38,16 +38,18 @@ func (o testCaseRunOutput) Size() (int, int) { return 120, 25 }
 func (o testCaseRunOutput) IsTerminal() bool { return false }
 
 type testCaseRun struct {
-	lineNr          int
-	testCase        *testCase
-	args            string
-	stdin           string
-	expectedStdout  string
-	expectedStderr  string
-	actualStdoutBuf *bytes.Buffer
-	actualStderrBuf *bytes.Buffer
-	readlines       []testCaseReadline
-	readlinesPos    int
+	lineNr           int
+	testCase         *testCase
+	args             string
+	stdin            string
+	expectedStdout   string
+	expectedStderr   string
+	expectedExitCode int
+	actualStdoutBuf  *bytes.Buffer
+	actualStderrBuf  *bytes.Buffer
+	actualExitCode   int
+	readlines        []testCaseReadline
+	readlinesPos     int
 }
 
 func (tcr *testCaseRun) Line() int { return tcr.lineNr }
@@ -150,6 +152,9 @@ func (tc *testCase) ToActual() string {
 		case *testCaseRun:
 			fmt.Fprintf(sb, ">%s\n", p.args)
 			fmt.Fprint(sb, p.actualStdoutBuf.String())
+			if p.actualExitCode != 0 {
+				fmt.Fprintf(sb, "exitcode: %d\n", p.actualExitCode)
+			}
 			if p.stdin != "" {
 				fmt.Fprint(sb, "stdin:\n")
 				fmt.Fprint(sb, p.stdin)
@@ -260,7 +265,7 @@ func parseTestCases(s string) *testCase {
 	replDepth := 0
 
 	// TODO: better section splitter, too much heuristics now
-	for _, section := range SectionParser(regexp.MustCompile(`^stdin:$|^stderr:$|^#.*$|^/.*:|^> .*|^[a-z].+> .*`), s) {
+	for _, section := range SectionParser(regexp.MustCompile(`^stdin:$|^stderr:$|^exitcode:.*$|^#.*$|^/.*:|^> .*|^[a-z].+> .*`), s) {
 		n, v := section.Name, section.Value
 
 		switch {
@@ -285,6 +290,8 @@ func parseTestCases(s string) *testCase {
 				actualStdoutBuf: &bytes.Buffer{},
 				actualStderrBuf: &bytes.Buffer{},
 			}
+		case strings.HasPrefix(n, "exitcode:"):
+			currentTestRun.expectedExitCode, _ = strconv.Atoi(strings.TrimSpace(strings.TrimPrefix(n, "exitcode:")))
 		case strings.HasPrefix(n, "stdin"):
 			currentTestRun.stdin = v
 		case strings.HasPrefix(n, "stderr"):
@@ -382,12 +389,14 @@ func testDecodedTestCaseRun(t *testing.T, registry *registry.Registry, tcr *test
 
 	err = q.Main(context.Background(), tcr.Stdout(), "dev")
 	if err != nil {
-		// TODO: expect error
-		t.Fatal(err)
+		if ex, ok := err.(interp.Exiter); ok { //nolint:errorlint
+			tcr.actualExitCode = ex.ExitCode()
+		}
 	}
 
 	// cli.Command{Version: "test", OS: &te}.Run()
 	// deepequal.Error(t, "files", te.ExpectedFiles, te.ActualFiles)
+	deepequal.Error(t, "exitcode", tcr.expectedExitCode, tcr.actualExitCode)
 	deepequal.Error(t, "stdout", tcr.ToExpectedStdout(), tcr.actualStdoutBuf.String())
 	deepequal.Error(t, "stderr", tcr.ToExpectedStderr(), tcr.actualStderrBuf.String())
 }

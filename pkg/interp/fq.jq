@@ -20,6 +20,10 @@ include "@config/init?";
 # it will be called with same input as read and a string argument being the
 # current line from start to current cursor position. Should return possible completions.
 
+# same as jq
+def _exit_code_compile_error: 3;
+def _exit_code_input_error: 2;
+
 # TODO: completionMode
 def _complete($e):
   ( ( $e | _complete_query) as {$type, $query, $prefix}
@@ -154,19 +158,42 @@ def _prompt(iter):
     ]
   ) | join("");
 
+# TODO: better way? what about nested eval errors?
+def _eval_is_compile_error: type == "object" and .error != null and .what != null;
+def _eval_compile_error_tostring:
+  [ .what
+  , ": "
+  , if .filename then .filename else "src" end
+  , ":"
+  , .line
+  , ":"
+  , .column
+  , ": "
+  , .error
+  ] | join("");
+
 def _eval_debug:
   (["DEBUG", .] | tojson, "\n") | stderr;
 
-def _eval_f($e; f):
+def _eval($e; f; on_error; on_compile_error):
   ( _default_options(_build_default_options) as $_
-  | try eval($e; "eval_debug") | f
-    catch (. as $err | ("error: " + ($err | tostring)) | println)
+  | try eval($e; "_eval_debug") | f
+    catch
+      if _eval_is_compile_error then on_compile_error
+      else on_error
+      end
   );
 
-def _default_display: display({depth: 1});
+def _print_error: "error: \(.)" | println;
+def _stderr_error: "error: \(.)\n" | stderr;
 
-def _eval_print($e):
-  _eval_f($e; _default_display);
+def _repl_display: display({depth: 1});
+def _repl_on_error:
+  ( if _eval_is_compile_error then _eval_compile_error_tostring end
+  | _print_error
+  );
+def _repl_on_compile_error: _repl_on_error;
+def _repl_eval($e): _eval($e; _repl_display; _repl_on_error; _repl_on_compile_error);
 
 # run read-eval-print-loop
 def repl($opts; iter): #:: a|(Opts) => @
@@ -176,7 +203,7 @@ def repl($opts; iter): #:: a|(Opts) => @
     | try
         ( _read_expr as $e
         | if $e != "" then
-            (iter | _eval_print($e))
+            (iter | _repl_eval($e))
           else
             empty
           end
@@ -192,6 +219,19 @@ def repl($opts; iter): #:: a|(Opts) => @
 # same as repl({})
 def repl($opts): repl($opts; .);
 def repl: repl({}; .); #:: a| => @
+
+def _cli_expr_on_error:
+  ( if _eval_is_compile_error then _eval_compile_error_tostring end
+  | _stderr_error
+  );
+def _cli_expr_on_compile_error:
+  ( _eval_compile_error_tostring
+  | _stderr_error
+  , ("" | halt_error(_exit_code_compile_error))
+  );
+# _cli_expr_eval halts on compile errors
+def _cli_expr_eval($e; f): _eval($e; f; _cli_expr_on_error; _cli_expr_on_compile_error);
+def _cli_expr_eval($e): _eval($e; .; _cli_expr_on_error; _cli_expr_on_compile_error);
 
 def _main:
   def _formats_list:
@@ -303,34 +343,43 @@ def _main:
     elif ($rest | length) == 0 and (($parsed.repl | not) and ($parsed.file | not)) then
       _usage($arg0; $version) | println
     else
-      try
-        ( { nullinput: ($parsed.nullinput == true) }
-        | if $parsed.file then
-            ( .expr = ($parsed.file | open | string)
-            | .filenames = $rest
-            )
-          else
-            ( .expr = ($rest[0] // ".")
-            | .filenames = $rest[1:]
-            )
-          end
-        | if $parsed.repl and .filenames == [] then
-            .nullinput = true
-          elif .filenames == [] then
-            .filenames = ["-"]
-          end
-        | . as {$expr, $filenames, $nullinput}
-        | inputs($filenames) as $_ # store inputs
-        | if $nullinput then null
-          # TODO: exit codes on input error and expr error
-          else inputs # will iterate inputs
-          end
-        | if $parsed.repl then [eval($expr)] | repl({}; .[])
-          else
-            try (eval($expr) | _default_display)
-            catch (. as $err | ("error: ", ($err | tostring), "\n") | stderr)
-          end
-        )
-      catch (tostring | halt_error(1))
+      # use finally as display etc outputs and result in empty
+      finally(
+        try
+          ( { nullinput: ($parsed.nullinput == true) }
+          | if $parsed.file then
+              ( .expr = ($parsed.file | open | string)
+              | .filenames = $rest
+              )
+            else
+              ( .expr = ($rest[0] // ".")
+              | .filenames = $rest[1:]
+              )
+            end
+          | if $parsed.repl and .filenames == [] then
+              .nullinput = true
+            elif .filenames == [] then
+              .filenames = ["-"]
+            end
+          | . as {$expr, $filenames, $nullinput}
+          | inputs($filenames) as $_ # store inputs
+          | if $nullinput then null
+            # TODO: exit codes on input error and expr error
+            else inputs # will iterate inputs
+            end
+          | try
+              if $parsed.repl then [_cli_expr_eval($expr)] | repl({}; .[])
+              else _cli_expr_eval($expr; _repl_display)
+              end
+            catch
+              _stderr_error
+          )
+        catch
+          (tostring | halt_error(1))
+        ;
+        if _input_errors != null then
+          "" | halt_error(_exit_code_input_error)
+        end
+      )
     end
   );

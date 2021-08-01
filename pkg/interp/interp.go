@@ -11,6 +11,7 @@ import (
 	"fq/internal/colorjson"
 	"fq/internal/ctxstack"
 	"fq/internal/num"
+	"fq/internal/pos"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
 	"fq/pkg/ranges"
@@ -33,15 +34,20 @@ var builtinFS embed.FS
 
 var fqInitSource = `include "@builtin/fq";`
 
-type valueErr struct {
+type valueError struct {
 	v interface{}
 }
 
-func (v valueErr) Error() string      { return fmt.Sprintf("error: %v", v.v) }
-func (v valueErr) Value() interface{} { return v.v }
+func (v valueError) Error() string      { return fmt.Sprintf("error: %v", v.v) }
+func (v valueError) Value() interface{} { return v.v }
 
 var ErrEOF = io.EOF
 var ErrInterrupt = errors.New("Interrupt")
+
+// gojq errors can implement this to signal exit code
+type Exiter interface {
+	ExitCode() int
+}
 
 type Output interface {
 	io.Writer
@@ -61,20 +67,6 @@ type OS interface {
 	FS() fs.FS
 	Readline(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error)
 	History() ([]string, error)
-}
-
-// TODO: would be nice if gojq had something for this? maybe missing something?
-func offsetToLineColumn(s string, offset int) (int, int) {
-	co := 0
-	line := 1
-	for {
-		no := strings.Index(s[co:], "\n")
-		if no == -1 || co+no >= offset {
-			return line, offset - co
-		}
-		co += no + 1
-		line++
-	}
 }
 
 type FixedFileInfo struct {
@@ -199,8 +191,8 @@ type loadModule struct {
 	load func(name string) (*gojq.Query, error)
 }
 
-func (l loadModule) LoadModule(name string) (*gojq.Query, error) { return l.load(name) }
 func (l loadModule) LoadInitModules() ([]*gojq.Query, error)     { return l.init() }
+func (l loadModule) LoadModule(name string) (*gojq.Query, error) { return l.load(name) }
 
 func toBool(v interface{}) (bool, error) {
 	switch v := v.(type) {
@@ -371,7 +363,8 @@ func toValue(v interface{}) interface{} {
 	}
 }
 
-func queryErrorPosition(v error) string {
+// TODO: would be nice if gojq had something for this? maybe missing something?
+func queryErrorPosition(v error) pos.Pos {
 	var offset int
 	var content string
 
@@ -384,11 +377,10 @@ func queryErrorPosition(v error) string {
 		_, _, content, _ = qeIf.QueryParseError()
 	}
 
-	if offset > 0 && content != "" {
-		l, c := offsetToLineColumn(content, offset)
-		return fmt.Sprintf(":%d:%d", l, c)
+	if offset >= 0 {
+		return pos.NewFromOffset(content, offset)
 	}
-	return ""
+	return pos.Pos{}
 }
 
 type Variable struct {
@@ -507,13 +499,20 @@ func (i *Interp) Main(ctx context.Context, stdout io.Writer, version string) err
 
 func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src string, stdout Output, debugFn string) (gojq.Iter, error) {
 	var err error
-
 	// TODO: did not work
 	// nq := &(*q)
 
 	gq, err := gojq.Parse(src)
 	if err != nil {
-		return nil, fmt.Errorf("eval%s: %w", queryErrorPosition(err), err)
+		p := queryErrorPosition(err)
+		return nil, valueError{
+			v: map[string]interface{}{
+				"error":  err.Error(),
+				"what":   "parse",
+				"line":   p.Line,
+				"column": p.Column,
+			},
+		}
 	}
 
 	// make copy of interp
@@ -651,7 +650,16 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 				}
 				q, err := gojq.Parse(string(b))
 				if err != nil {
-					return nil, fmt.Errorf("%s%s: %w", name, queryErrorPosition(err), err)
+					p := queryErrorPosition(err)
+					return nil, valueError{
+						v: map[string]interface{}{
+							"filename": filename,
+							"error":    err.Error(),
+							"what":     "parse",
+							"line":     p.Line,
+							"column":   p.Column,
+						},
+					}
 				}
 
 				if p.cache {
@@ -667,7 +675,15 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 
 	gc, err := gojq.Compile(gq, compilerOpts...)
 	if err != nil {
-		return nil, fmt.Errorf("eval%s: %w", queryErrorPosition(err), err)
+		p := queryErrorPosition(err)
+		return nil, valueError{
+			v: map[string]interface{}{
+				"error":  err.Error(),
+				"what":   "compile",
+				"line":   p.Line,
+				"column": p.Column,
+			},
+		}
 	}
 
 	runCtx, runCtxCancelFn := i.interruptStack.Push(ctx)

@@ -43,3 +43,22 @@ error: break
 "/a"
 "/b"
 "/c"
+> fq -d raw input_filename /a /non-existing /c
+"/a"
+"/c"
+exitcode: 2
+stderr:
+error: /non-existing: file not found
+> fq -d raw '(' /a /b /c
+exitcode: 3
+stderr:
+error: parse: src:1:2: unexpected token <EOF>
+> fq -d raw bla /a /b /c
+exitcode: 3
+stderr:
+error: compile: src:1:0: function not defined: bla/0
+> fq -d raw '1+"a"' /a /b /c
+stderr:
+error: cannot add: number (1) and string ("a")
+error: cannot add: number (1) and string ("a")
+error: cannot add: number (1) and string ("a")

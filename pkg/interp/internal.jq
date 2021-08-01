@@ -18,33 +18,35 @@ def _with_options($opts; f):
 def _parsed_args: _global_state("parsed_args");
 def _parsed_args($v): _global_state("parsed_args"; $v);
 
+# next valid input
 def input:
   ( _global_state("inputs")
   | if length == 0 then error("break") end
   | [.[0], .[1:]] as [$h, $t]
-  | _global_state("input_filename"; $h)
   | _global_state("inputs"; $t)
-  | $h
-  | open
-  | decode(_parsed_args.decode_format)
-  );
-
-def inputs:
-  def _inputs:
-    try input, _inputs
+  | _global_state("input_filename"; null) as $_
+  | try
+      ( $h
+      | open
+      | decode(_parsed_args.decode_format)
+      | _global_state("input_filename"; $h) as $_
+      | .
+      )
     catch
-      if . == "break" then empty
-      else
-        ( (. as $err | ("error: ", ($err | tostring), "\n") | stderr)
-        , _inputs
-        )
-      end;
-  _inputs;
-
-def inputs($v):
-  ( _global_state("input_filename"; $v[0])
-  | _global_state("inputs"; $v)
+      ( _global_state("input_errors";
+          (_global_state("input_errors") // {}) + {($h): .}
+        ) as $_
+      | ("error: \(.)\n" | stderr)
+      , input
+      )
   );
+
+# iterate all valid inputs
+def inputs:
+  try repeat(input)
+  catch if . == "break" then empty else error end;
+def inputs($v): _global_state("inputs"; $v);
 
 def input_filename: _global_state("input_filename");
 
+def _input_errors: _global_state("input_errors");
