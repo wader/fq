@@ -104,7 +104,7 @@ def _build_default_options:
     bytecolors:   _color_themes.default.bytecolors,
   };
 
-def _parse_options:
+def _eval_options:
   ( {
       depth:        (.depth | if . then eval(.) else null end),
       verbose:      (.verbose | if . then eval(.) else null end),
@@ -274,6 +274,11 @@ def _main:
         description: "Null input",
         bool: true
       },
+      "slurp": {
+        short: "-s",
+        description: "Read (slurp) all inputs into an array",
+        bool: true
+      },
       "decode_format": {
         short: "-d",
         long: "--decode",
@@ -295,7 +300,7 @@ def _main:
       },
       "rawstring": {
         short: "-r",
-        description: "Raw strings",
+        description: "Output raw strings (without quotes)",
         bool: true
       },
       "compact": {
@@ -317,38 +322,38 @@ def _main:
     "Usage: \($arg0) [OPTIONS] [EXPR] [FILE...]";
   ( .version as $version
   | .args[0] as $arg0
-  | args_parse(.args[1:]; _opts($version)) as {$parsed, $rest}
+  | args_parse(.args[1:]; _opts($version)) as {parsed: $parsed_args, $rest}
   # store parsed arguments, .format is used by input
-  | _parsed_args($parsed) as $_
+  | _parsed_args($parsed_args) as $_
   | _default_options(_build_default_options) as $_
   # TODO: hack, pass opts some other way?
   | _push_options(
-      ( ($parsed.options | _parse_options)
+      ( ($parsed_args.options | _eval_options)
       + {
-          repl: ($parsed.repl == true),
-          rawstring: ($parsed.rawstring == true),
-          compact: ($parsed.compact == true),
+          repl: ($parsed_args.repl == true),
+          rawstring: ($parsed_args.rawstring == true),
+          compact: ($parsed_args.compact == true),
           repllevel: 0,
         }
       )
     )
-  | if $parsed.help then
+  | if $parsed_args.help then
       ( _usage($arg0; $version)
       , args_help_text(_opts($version))
       ) | println
-    elif $parsed.version then
+    elif $parsed_args.version then
       $version | println
-    elif $parsed.formats then
+    elif $parsed_args.formats then
       _formats_list | println
-    elif ($rest | length) == 0 and (($parsed.repl | not) and ($parsed.file | not)) then
+    elif ($rest | length) == 0 and (($parsed_args.repl | not) and ($parsed_args.file | not)) then
       _usage($arg0; $version) | println
     else
       # use finally as display etc outputs and result in empty
       finally(
         try
-          ( { nullinput: ($parsed.nullinput == true) }
-          | if $parsed.file then
-              ( .expr = ($parsed.file | open | string)
+          ( { nullinput: ($parsed_args.nullinput == true) }
+          | if $parsed_args.file then
+              ( .expr = ($parsed_args.file | open | string)
               | .filenames = $rest
               )
             else
@@ -356,7 +361,7 @@ def _main:
               | .filenames = $rest[1:]
               )
             end
-          | if $parsed.repl and .filenames == [] then
+          | if $parsed_args.repl and .filenames == [] then
               .nullinput = true
             elif .filenames == [] then
               .filenames = ["-"]
@@ -364,11 +369,11 @@ def _main:
           | . as {$expr, $filenames, $nullinput}
           | inputs($filenames) as $_ # store inputs
           | if $nullinput then null
-            # TODO: exit codes on input error and expr error
+            elif $parsed_args.slurp then [inputs]
             else inputs # will iterate inputs
             end
           | try
-              if $parsed.repl then [_cli_expr_eval($expr)] | repl({}; .[])
+              if $parsed_args.repl then [_cli_expr_eval($expr)] | repl({}; .[])
               else _cli_expr_eval($expr; _repl_display)
               end
             catch

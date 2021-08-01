@@ -21,8 +21,9 @@ Usage: fq [OPTIONS] [EXPR] [FILE...]
                    sizebase=10
                    unicode=false
                    verbose=false
--r               Raw strings
+-r               Output raw strings (without quotes)
 --repl,-i        Interactive REPL
+-s               Read (slurp) all inputs into an array
 --version,-v     Show version (dev)
 > fq -i
 null> ^D

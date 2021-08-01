@@ -62,3 +62,11 @@ stderr:
 error: cannot add: number (1) and string ("a")
 error: cannot add: number (1) and string ("a")
 error: cannot add: number (1) and string ("a")
+> fq -s -d raw [.[]._description] /a /b /c
+[
+  "/a",
+  "/b",
+  "/c"
+]
+> fq -n -s -d raw . /a /b /c
+null
