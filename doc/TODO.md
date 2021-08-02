@@ -96,6 +96,7 @@
 - Document maturity/completeness
 - Refactor *[]decode.Format into something more abstract, group?
 - Add `dsf` format
+- Make `json` format more normal? is a bit a of a special case now
 
 #### Scripts
 

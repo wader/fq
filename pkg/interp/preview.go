@@ -63,6 +63,8 @@ func previewValue(v *decode.Value) string {
 		}
 	case nil:
 		return "none"
+	case decode.JSON:
+		return "JSON"
 	default:
 		panic("unreachable")
 	}
