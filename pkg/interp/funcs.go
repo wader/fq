@@ -616,18 +616,17 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 			return gojq.NewIter()
 		case nil, bool, float64, int, string, *big.Int, map[string]interface{}, []interface{}, gojq.JQValue:
 			if s, ok := v.(string); ok && opts.RawString {
-				fmt.Fprintln(i.evalContext.stdout, s)
-				return gojq.NewIter()
+				fmt.Fprint(i.evalContext.stdout, s)
+			} else {
+				cj, err := i.NewColorJSON(opts)
+				if err != nil {
+					return gojq.NewIter(err)
+				}
+				if err := cj.Marshal(v, i.evalContext.stdout); err != nil {
+					return gojq.NewIter(err)
+				}
 			}
-
-			cj, err := i.NewColorJSON(opts)
-			if err != nil {
-				return gojq.NewIter(err)
-			}
-			if err := cj.Marshal(v, i.evalContext.stdout); err != nil {
-				return gojq.NewIter(err)
-			}
-			fmt.Fprintln(i.evalContext.stdout)
+			fmt.Fprint(i.evalContext.stdout, opts.JoinString)
 
 			return gojq.NewIter()
 		case error:

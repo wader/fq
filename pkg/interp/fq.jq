@@ -270,6 +270,7 @@ def _main:
       },
       "slurp": {
         short: "-s",
+        long: "--slurp",
         description: "Read (slurp) all inputs into an array",
         bool: true
       },
@@ -292,15 +293,28 @@ def _main:
         description: "Read script from file",
         string: true
       },
-      "rawstring": {
+      "raw_output": {
         short: "-r",
-        description: "Output raw strings (without quotes)",
+        long: "--raw-output",
+        description: "Raw string output (without quotes)",
         bool: true
       },
       "compact": {
         short: "-c",
         long: "--compact",
         description: "Compact output",
+        bool: true
+      },
+      "join_output": {
+        short: "-j",
+        long: "--join-output",
+        description: "No newline between outputs",
+        bool: true
+      },
+      "null_output": {
+        short: "-0",
+        long: "--null-output",
+        description: "Null byte between outputs",
         bool: true
       },
       "options": {
@@ -325,7 +339,17 @@ def _main:
       ( ($parsed_args.options | _eval_options)
       + {
           repl: ($parsed_args.repl == true),
-          rawstring: ($parsed_args.rawstring == true),
+          rawstring: (
+            $parsed_args.raw_output == true
+            or $parsed_args.join_output == true
+            or $parsed_args.null_output == true
+          ),
+          joinstring: (
+            if $parsed_args.join_output == true then ""
+            elif $parsed_args.null_output == true then "\u0000"
+            else "\n"
+            end
+          ),
           compact: ($parsed_args.compact == true),
           repllevel: 0,
         }

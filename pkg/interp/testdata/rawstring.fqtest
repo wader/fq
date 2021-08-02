@@ -1,4 +1,0 @@
-> fq -n '"a b c"'
-"a b c"
-> fq -rn '"a b c"'
-a b c

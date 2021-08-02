@@ -779,6 +779,7 @@ type Options struct {
 	Raw        bool   `json:"raw"`
 	REPL       bool   `json:"repl"`
 	RawString  bool   `json:"rawstring"`
+	JoinString string `json:"joinstring"`
 	Compact    bool   `json:"compact"`
 
 	LineBytes    int `json:"linebytes"`
@@ -818,6 +819,9 @@ func mapSetOptions(d *Options, m map[string]interface{}) {
 	}
 	if v, ok := m["rawstring"]; ok {
 		d.RawString = toBoolZ(v)
+	}
+	if v, ok := m["joinstring"]; ok {
+		d.JoinString = toStringZ(v)
 	}
 	if v, ok := m["compact"]; ok {
 		d.Compact = toBoolZ(v)
