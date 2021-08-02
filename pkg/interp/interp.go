@@ -467,7 +467,7 @@ func New(os OS, registry *registry.Registry) (*Interp, error) {
 	i.includeCache = map[string]*gojq.Query{}
 	i.initFqQuery, err = gojq.Parse(fqInitSource)
 	if err != nil {
-		return nil, fmt.Errorf("init%s %w", queryErrorPosition(err), err)
+		return nil, fmt.Errorf("init:%s: %w", queryErrorPosition(err), err)
 	}
 	// TODO: refactor ctxstack have a CancelTop and return c context to Stop?
 	i.interruptStack = ctxstack.New(func(stopCh chan struct{}) {

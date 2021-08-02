@@ -639,3 +639,4 @@ stderr:
 error: invalid number: "ID3"
 > fq -d mp3 '.headers[0].magic | tostring' /test.mp3
 "ID3"
+> fq -d mp3 tovalue /test.mp3

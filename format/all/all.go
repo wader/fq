@@ -13,6 +13,7 @@ import (
 	_ "fq/format/icc"
 	_ "fq/format/id3"
 	_ "fq/format/jpeg"
+	_ "fq/format/json"
 	_ "fq/format/matroska"
 	_ "fq/format/mp3"
 	_ "fq/format/mp4"

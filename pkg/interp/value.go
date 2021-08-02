@@ -62,7 +62,7 @@ type valueObjectIf interface {
 	ToBuffer
 }
 
-func makeValueObject(dv *decode.Value) valueObjectIf {
+func makeValueObject(dv *decode.Value) interface{} {
 	switch vv := dv.V.(type) {
 	case decode.Array:
 		av := arrayValueObject{baseValueObject: baseValueObject{dv: dv, typ: "array"}, vv: vv}
@@ -92,6 +92,8 @@ func makeValueObject(dv *decode.Value) valueObjectIf {
 		sv := stringBufferValueObject{baseValueObject: baseValueObject{dv: dv, typ: "string"}, vv: vv}
 		sv.baseValueObject.vFn = sv.JQValue
 		return sv
+	case decode.JSON:
+		return vv.V
 	case nil:
 		return baseValueObject{dv: dv, vFn: func() interface{} { return nil }, typ: "null"}
 	default:
@@ -355,7 +357,7 @@ func (av arrayValueObject) JQValueHasKey(key interface{}) interface{} {
 func (av arrayValueObject) JQValue() interface{} {
 	vs := make([]interface{}, len(av.vv))
 	for i, v := range av.vv {
-		vs[i] = makeValueObject(v).JQValue()
+		vs[i] = makeValueObject(v)
 	}
 	return vs
 }
@@ -413,7 +415,7 @@ func (sv structValueObject) JQValueHasKey(key interface{}) interface{} {
 func (sv structValueObject) JQValue() interface{} {
 	vm := make(map[string]interface{}, len(sv.vv))
 	for _, v := range sv.vv {
-		vm[v.Name] = makeValueObject(v).JQValue()
+		vm[v.Name] = makeValueObject(v)
 	}
 	return vm
 }

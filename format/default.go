@@ -14,6 +14,8 @@ const (
 	// TODO: rename PROBE_* something?
 	IMAGE = "image"
 
+	JSON = "json"
+
 	AAC_FRAME          = "aac_frame"
 	ADTS               = "adts"
 	ADTS_FRAME         = "adts_frame"

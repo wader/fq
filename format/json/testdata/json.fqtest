@@ -1,0 +1,27 @@
+/test.json:
+> fq -d json . /test.json
+{
+  "a": 123,
+  "b": [
+    1,
+    2,
+    3
+  ],
+  "c:": "string",
+  "d": null,
+  "e": 123.4
+}
+> fq . /test.json
+{
+  "a": 123,
+  "b": [
+    1,
+    2,
+    3
+  ],
+  "c:": "string",
+  "d": null,
+  "e": 123.4
+}
+> fq .b[1] /test.json
+2

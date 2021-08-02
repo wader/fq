@@ -577,8 +577,6 @@ func (i *Interp) makeDecodeFn(registry *registry.Registry, decodeFormats []*deco
 
 		opts := map[string]interface{}{}
 
-		// TODO:
-
 		if len(a) >= 1 {
 			formatName, err := toString(a[0])
 			if err != nil {

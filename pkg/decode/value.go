@@ -35,10 +35,15 @@ type Struct []*Value
 
 type Array []*Value
 
+// used by json format for decoded JSON value
+type JSON struct {
+	V interface{}
+}
+
 // TODO: encoding? endian, string encoding, compression, etc?
 type Value struct {
 	Parent        *Value
-	V             interface{} // int64, uint64, float64, string, bool, []byte, Array, Struct
+	V             interface{} // int, int64, uint64, float64, string, bool, []byte, *bitio.Buffer, Array, Struct
 	Index         int         // index in parent array/struct
 	Range         ranges.Range
 	RootBitBuf    *bitio.Buffer
