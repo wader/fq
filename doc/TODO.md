@@ -16,6 +16,7 @@
 
 - Variables somehow? global `$VAR`?
 - Cleanup/Make binary buffers make sense.
+- gojq uses golang `int` for slice indexes, might be issue for non-64bit cpus
 
 #### Functions
 

@@ -7,7 +7,6 @@ import (
 	"fq/internal/colorjson"
 	"fq/pkg/bitio"
 	"fq/pkg/decode"
-	"fq/pkg/ranges"
 	"io"
 	"math/big"
 	"sort"
@@ -262,10 +261,6 @@ type stringValueObject struct {
 func (sv stringValueObject) ToBuffer() (*bitio.Buffer, error) {
 	return bitio.NewBufferFromBytes([]byte(sv.vv), -1), nil
 }
-func (sv stringValueObject) ToBufferRange() (bufferRange, error) {
-	bb := bitio.NewBufferFromBytes([]byte(sv.vv), -1)
-	return bufferRange{bb: bb, r: ranges.Range{Start: 0, Len: bb.Len()}}, nil
-}
 func (sv stringValueObject) JQValueLength() interface{} { return len(sv.vv) }
 func (sv stringValueObject) JQValueIndex(index int) interface{} {
 	return fmt.Sprintf("%c", sv.vv[index])
@@ -287,53 +282,34 @@ type stringBufferValueObject struct {
 	vv *bitio.Buffer
 }
 
-func (sv stringBufferValueObject) ToBuffer() (*bitio.Buffer, error) {
-	return sv.vv.Copy(), nil
+func (sbv stringBufferValueObject) ToBuffer() (*bitio.Buffer, error) {
+	return sbv.vv.Copy(), nil
 }
-func (sv stringBufferValueObject) ToBufferRange() (bufferRange, error) {
-	bb := sv.vv.Copy()
-	return bufferRange{bb: sv.vv.Copy(), r: ranges.Range{Start: 0, Len: bb.Len()}}, nil
+func (sbv stringBufferValueObject) JQValueLength() interface{} {
+	return int(sbv.vv.Len()) / 8
 }
-func (sv stringBufferValueObject) JQValueLength() interface{} {
-	return int(sv.vv.Len()) / 8
+func (sbv stringBufferValueObject) JQValueIndex(index int) interface{} {
+	return sbv.JQValueSlice(index, index+1)
 }
-func (sv stringBufferValueObject) JQValueIndex(index int) interface{} {
-	// TODO: bitio
-	return nil
+func (sbv stringBufferValueObject) JQValueSlice(start int, end int) interface{} {
+	bb := sbv.vv.Copy()
+	if start != 0 {
+		if _, err := bb.SeekAbs(int64(start) * 8); err != nil {
+			return err
+		}
+	}
+	b := &bytes.Buffer{}
+	if _, err := io.CopyN(b, bb, int64(end-start)); err != nil {
+		return err
+	}
+	return b.String()
 
-	// bb := sv.vv.Copy()
-	// bb.SeekAbs(int64(index) * 8)
-	// s, err := bb.UTF8(1)
-	// if err != nil {
-	// 	return err
-	// }
-	// return s
 }
-func (sv stringBufferValueObject) JQValueSlice(start int, end int) interface{} {
-	// TODO: bitio
-	return nil
-
-	// bb := sv.vv.Copy()
-	// bb.SeekAbs(int64(start) * 8)
-	// s, err := bb.UTF8(end - start)
-	// if err != nil {
-	// 	return err
-	// }
-	// return s
+func (sbv stringBufferValueObject) JQValueToString() interface{} {
+	return sbv.JQValue()
 }
-func (sv stringBufferValueObject) JQValueToString() interface{} {
-	return sv.JQValue()
-}
-func (sv stringBufferValueObject) JQValue() interface{} {
-	// TODO: bitio
-	return nil
-
-	// bb := sv.vv.Copy()
-	// s, err := bb.UTF8(int(bb.Len() / 8))
-	// if err != nil {
-	// 	return err
-	// }
-	// return s
+func (sbv stringBufferValueObject) JQValue() interface{} {
+	return sbv.JQValueSlice(0, int(sbv.vv.Len())/8)
 }
 
 // array
