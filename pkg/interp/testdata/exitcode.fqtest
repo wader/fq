@@ -1,16 +1,20 @@
 > fq -n '1+"a"'
 stderr:
 error: cannot add: number (1) and string ("a")
-> fq -n 'halt_error(123)'
+> fq -n '"abc" | halt_error(123)'
+exitcode: 123
+stderr:
+error: abc
+> fq -n 'null | halt_error(123)'
 exitcode: 123
 > fq -n invalid
 exitcode: 3
 stderr:
-error: compile: src:1:0: function not defined: invalid/0
+error: src:1:0: function not defined: invalid/0
 > fq -n "("
 exitcode: 3
 stderr:
-error: parse: src:1:2: unexpected token <EOF>
+error: src:1:2: unexpected token <EOF>
 > fq . non-existing
 exitcode: 2
 stderr:

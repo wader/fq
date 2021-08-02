@@ -49,6 +49,11 @@ type Exiter interface {
 	ExitCode() int
 }
 
+// gojq halt_error uses this
+type IsEmptyErrorer interface {
+	IsEmptyError() bool
+}
+
 type Output interface {
 	io.Writer
 	Size() (int, int)
@@ -485,6 +490,11 @@ func (i *Interp) Main(ctx context.Context, stdout io.Writer, version string) err
 
 		switch v := v.(type) {
 		case error:
+			if emptyErr, ok := v.(IsEmptyErrorer); ok && emptyErr.IsEmptyError() { //nolint:errorlint
+				// no output
+			} else {
+				fmt.Fprintln(i.os.Stderr(), v)
+			}
 			return v
 		case [2]interface{}:
 			fmt.Fprintln(i.os.Stderr(), v[:]...)

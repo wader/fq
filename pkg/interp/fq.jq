@@ -161,9 +161,7 @@ def _prompt(iter):
 # TODO: better way? what about nested eval errors?
 def _eval_is_compile_error: type == "object" and .error != null and .what != null;
 def _eval_compile_error_tostring:
-  [ .what
-  , ": "
-  , if .filename then .filename else "src" end
+  [ .filename // "src"
   , ":"
   , .line
   , ":"
@@ -183,9 +181,6 @@ def _eval($e; f; on_error; on_compile_error):
       else on_error
       end
   );
-
-def _print_error: "error: \(.)" | println;
-def _stderr_error: "error: \(.)\n" | stderr;
 
 def _repl_display: display({depth: 1});
 def _repl_on_error:
@@ -226,8 +221,7 @@ def _cli_expr_on_error:
   );
 def _cli_expr_on_compile_error:
   ( _eval_compile_error_tostring
-  | _stderr_error
-  , ("" | halt_error(_exit_code_compile_error))
+  | halt_error(_exit_code_compile_error)
   );
 # _cli_expr_eval halts on compile errors
 def _cli_expr_eval($e; f): _eval($e; f; _cli_expr_on_error; _cli_expr_on_compile_error);
@@ -323,7 +317,7 @@ def _main:
   ( .version as $version
   | .args[0] as $arg0
   | args_parse(.args[1:]; _opts($version)) as {parsed: $parsed_args, $rest}
-  # store parsed arguments, .format is used by input
+  # store parsed arguments, .decode_format is used by input/0
   | _parsed_args($parsed_args) as $_
   | _default_options(_build_default_options) as $_
   # TODO: hack, pass opts some other way?
@@ -350,40 +344,34 @@ def _main:
     else
       # use finally as display etc outputs and result in empty
       finally(
-        try
-          ( { nullinput: ($parsed_args.nullinput == true) }
-          | if $parsed_args.file then
-              ( .expr = ($parsed_args.file | open | string)
-              | .filenames = $rest
-              )
-            else
-              ( .expr = ($rest[0] // ".")
-              | .filenames = $rest[1:]
-              )
-            end
-          | if $parsed_args.repl and .filenames == [] then
-              .nullinput = true
-            elif .filenames == [] then
-              .filenames = ["-"]
-            end
-          | . as {$expr, $filenames, $nullinput}
-          | inputs($filenames) as $_ # store inputs
-          | if $nullinput then null
-            elif $parsed_args.slurp then [inputs]
-            else inputs # will iterate inputs
-            end
-          | try
-              if $parsed_args.repl then [_cli_expr_eval($expr)] | repl({}; .[])
-              else _cli_expr_eval($expr; _repl_display)
-              end
-            catch
-              _stderr_error
-          )
-        catch
-          (tostring | halt_error(1))
+        ( { nullinput: ($parsed_args.nullinput == true) }
+        | if $parsed_args.file then
+            ( .expr = ($parsed_args.file | open | string)
+            | .filenames = $rest
+            )
+          else
+            ( .expr = ($rest[0] // ".")
+            | .filenames = $rest[1:]
+            )
+          end
+        | if $parsed_args.repl and .filenames == [] then
+            .nullinput = true
+          elif .filenames == [] then
+            .filenames = ["-"]
+          end
+        | . as {$expr, $filenames, $nullinput}
+        | inputs($filenames) as $_ # store inputs
+        | if $nullinput then null
+          elif $parsed_args.slurp then [inputs]
+          else inputs # will iterate inputs
+          end
+        | if $parsed_args.repl then [_cli_expr_eval($expr)] | repl({}; .[])
+          else _cli_expr_eval($expr; _repl_display)
+          end
+        )
         ;
         if _input_errors != null then
-          "" | halt_error(_exit_code_input_error)
+          null | halt_error(_exit_code_input_error)
         end
       )
     end

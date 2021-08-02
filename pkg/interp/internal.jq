@@ -6,6 +6,9 @@ def finally(f; fin):
   | .
   );
 
+def _print_error: "error: \(.)" | println;
+def _stderr_error: "error: \(.)\n" | stderr;
+
 def _default_options: _eval_state("default_options");
 def _default_options($opts): _eval_state("default_options"; $opts);
 
@@ -36,7 +39,7 @@ def input:
       ( _global_state("input_errors";
           (_global_state("input_errors") // {}) + {($h): .}
         ) as $_
-      | ("error: \(.)\n" | stderr)
+      | _stderr_error
       , input
       )
   );
