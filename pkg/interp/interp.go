@@ -895,10 +895,10 @@ func (i *Interp) NewColorJSON(opts Options) (*colorjson.Encoder, error) {
 		false,
 		indent,
 		func(v interface{}) interface{} {
-			if o, ok := v.(gojq.JQValue); ok {
-				return o.JQValue()
+			if jv, ok := v.(gojq.JQValue); ok {
+				return jv.JQValue()
 			}
-			return nil
+			panic(fmt.Sprintf("toValue not a JQValue value: %#v", v))
 		},
 		colorjson.Colors{
 			Reset:     []byte(ansi.Reset.SetString),

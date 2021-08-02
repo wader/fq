@@ -107,12 +107,10 @@ func (e *Encoder) encode(v interface{}) {
 	default:
 		if e.valueFn != nil {
 			v = e.valueFn(v)
-		}
-		if v == nil {
+		} else {
 			panic(fmt.Sprintf("invalid value: %#+v", v))
 		}
 		e.encode(v)
-
 	}
 }
 

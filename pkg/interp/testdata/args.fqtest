@@ -78,6 +78,7 @@ id3v1              ID3v1 metadata
 id3v11             ID3v1.1 metadata
 id3v2              ID3v2 metadata
 jpeg               Joint Photographic Experts Group file
+json               JSON
 matroska           Matroska file
 mp3                MP3 file
 mp3_frame          MPEG audio layer 3 frame
