@@ -41,6 +41,29 @@ type valueError struct {
 func (v valueError) Error() string      { return fmt.Sprintf("error: %v", v.v) }
 func (v valueError) Value() interface{} { return v.v }
 
+type compileError struct {
+	err      error
+	what     string
+	filename string
+	pos      pos.Pos
+}
+
+func (ce compileError) Value() interface{} {
+	return map[string]interface{}{
+		"error":  ce.err.Error(),
+		"what":   ce.what,
+		"line":   ce.pos.Line,
+		"column": ce.pos.Column,
+	}
+}
+func (ee compileError) Error() string {
+	filename := ee.filename
+	if filename == "" {
+		filename = "src"
+	}
+	return fmt.Sprintf("%s:%d:%d: %s: %s", filename, ee.pos.Line, ee.pos.Column, ee.what, ee.err.Error())
+}
+
 var ErrEOF = io.EOF
 var ErrInterrupt = errors.New("Interrupt")
 
@@ -480,6 +503,7 @@ func (i *Interp) Main(ctx context.Context, stdout io.Writer, version string) err
 
 	iter, err := i.EvalFunc(ctx, runMode, input, "_main", nil, i.os.Stdout(), "")
 	if err != nil {
+		fmt.Fprintln(i.os.Stderr(), err)
 		return err
 	}
 	for {
@@ -515,13 +539,10 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	gq, err := gojq.Parse(src)
 	if err != nil {
 		p := queryErrorPosition(err)
-		return nil, valueError{
-			v: map[string]interface{}{
-				"error":  err.Error(),
-				"what":   "parse",
-				"line":   p.Line,
-				"column": p.Column,
-			},
+		return nil, compileError{
+			err:  err,
+			what: "parse",
+			pos:  p,
 		}
 	}
 
@@ -661,14 +682,11 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 				q, err := gojq.Parse(string(b))
 				if err != nil {
 					p := queryErrorPosition(err)
-					return nil, valueError{
-						v: map[string]interface{}{
-							"filename": filename,
-							"error":    err.Error(),
-							"what":     "parse",
-							"line":     p.Line,
-							"column":   p.Column,
-						},
+					return nil, compileError{
+						err:      err,
+						what:     "parse",
+						filename: filename,
+						pos:      p,
 					}
 				}
 
@@ -686,13 +704,10 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	gc, err := gojq.Compile(gq, compilerOpts...)
 	if err != nil {
 		p := queryErrorPosition(err)
-		return nil, valueError{
-			v: map[string]interface{}{
-				"error":  err.Error(),
-				"what":   "compile",
-				"line":   p.Line,
-				"column": p.Column,
-			},
+		return nil, compileError{
+			err:  err,
+			what: "compile",
+			pos:  p,
 		}
 	}
 

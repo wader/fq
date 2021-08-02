@@ -199,13 +199,13 @@ def i:
 # produce a/b pairs for diffing values
 def diff($a; $b):
   ( ( $a | type) as $at
-  | ($b | type) as $bt
+  | ( $b | type) as $bt
   | if $at != $bt then {a: $a, b: $b}
     elif ($at == "array" or $at == "object") then
       ( [ ((($a | keys) + ($b | keys)) | unique)[] as $k
         | {
-          ($k | tostring): (
-            [($a | has($k)), ($b | has($k))]
+          ($k | tostring):
+            ( [($a | has($k)), ($b | has($k))]
             | if . == [true, true] then diff($a[$k]; $b[$k])
               elif . == [true, false] then {a: $a[$k]}
               elif . == [false, true] then {b: $b[$k]}
