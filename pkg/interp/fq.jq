@@ -8,16 +8,16 @@ include "@format/all";
 # optional user init
 include "@config/init?";
 
-# def read: #:: [a]| => string
-# read with no prompt or completion
+# def readline: #:: [a]| => string
+# Read a line.
 
-# def read($promp): #:: [a]|(string) => string
-# read with prompt and no completion
+# def readline($prompt): #:: [a]|(string) => string
+# Read a line with prompt.
 
-# def read($promp; $completion): #:: [a]|(string;string) => string
-# First argument is prompt to use.
-# Second argument is name of completion function [a](string) => [string],
-# it will be called with same input as read and a string argument being the
+# def readline($prompt; $completion): #:: [a]|(string;string) => string
+# $prompt is prompt to show.
+# $completion name of completion function [a](string) => [string],
+# it will be called with same input as readline and a string argument being the
 # current line from start to current cursor position. Should return possible completions.
 
 # same as jq
@@ -185,7 +185,7 @@ def _repl_eval($e): _eval($e; _repl_display; _repl_on_error; _repl_on_compile_er
 
 # run read-eval-print-loop
 def repl($opts; iter): #:: a|(Opts) => @
-  def _read_expr: read(_prompt(iter); "_complete") | trim;
+  def _read_expr: readline(_prompt(iter); "_complete") | trim;
   def _repl:
     ( . as $c
     | try

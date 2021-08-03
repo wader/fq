@@ -37,7 +37,7 @@ func (i *Interp) makeFunctions(registry *registry.Registry) []Function {
 	fs := []Function{
 		{[]string{"tty"}, 0, 0, i.tty, nil},
 
-		{[]string{"read"}, 0, 2, i.read, nil},
+		{[]string{"readline"}, 0, 2, i.readline, nil},
 		{[]string{"eval"}, 1, 2, nil, i.eval},
 		{[]string{"print"}, 0, 0, nil, i.print},
 		{[]string{"println"}, 0, 0, nil, i.println},
@@ -212,7 +212,7 @@ func makeHashFn(fn func() (hash.Hash, error)) func(c interface{}, a []interface{
 	}
 }
 
-func (i *Interp) read(c interface{}, a []interface{}) interface{} {
+func (i *Interp) readline(c interface{}, a []interface{}) interface{} {
 	var ok bool
 	completeFn := ""
 	prompt := ""
