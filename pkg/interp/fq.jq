@@ -263,12 +263,13 @@ def _main:
       },
       "formats": {
         long: "--formats",
-        description: "Show formats",
+        description: "Show supported formats",
         bool: true
       },
       "nullinput": {
         short: "-n",
-        description: "Null input",
+        long: "--null-input",
+        description: "Null input (can still use input/0 or inputs/0)",
         bool: true
       },
       "slurp": {
@@ -282,7 +283,7 @@ def _main:
         long: "--decode",
         description: "Decode format",
         default: "probe",
-        string: true
+        string: "NAME"
       },
       "repl": {
         short: "-i",
@@ -294,7 +295,7 @@ def _main:
         short: "-f",
         long: "--file",
         description: "Read script from file",
-        string: true
+        string: "PATH"
       },
       "raw_output": {
         short: "-r",
@@ -324,7 +325,7 @@ def _main:
         short: "-o",
         long: "--option",
         description: "Set option, eg: color=true",
-        object: true,
+        object: "KEY=VALUE,...",
         default: {},
         help_default: _build_default_options
       },

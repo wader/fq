@@ -3,30 +3,30 @@
 Usage: fq [OPTIONS] [EXPR] [FILE...]
 > fq -h
 Usage: fq [OPTIONS] [EXPR] [FILE...]
---compact,-c      Compact output
---decode,-d       Decode format (probe)
---file,-f         Read script from file
---formats         Show formats
---help,-h         Show help
---join-output,-j  No newline between outputs
---null-output,-0  Null byte between outputs
--n                Null input
---option,-o=ARG   Set option, eg: color=true
-                    addrbase=16
-                    bytecolors=0-0xff=brightwhite,0=brightblack,32-126:9-13=white
-                    color=false
-                    colors=array=white,dumpaddr=yellow,dumpheader=yellow+underline,error=brightred,false=yellow,index=white,null=brightblack,number=cyan,object=white,objectkey=brightblue,string=green,true=yellow,value=white
-                    depth=0
-                    displaybytes=16
-                    linebytes=16
-                    raw=true
-                    sizebase=10
-                    unicode=false
-                    verbose=false
---raw-output,-r   Raw string output (without quotes)
---repl,-i         Interactive REPL
---slurp,-s        Read (slurp) all inputs into an array
---version,-v      Show version (dev)
+--compact,-c               Compact output
+--decode,-d=NAME           Decode format (probe)
+--file,-f=PATH             Read script from file
+--formats                  Show supported formats
+--help,-h                  Show help
+--join-output,-j           No newline between outputs
+--null-output,-0           Null byte between outputs
+--null-input,-n            Null input (can still use input/0 or inputs/0)
+--option,-o=KEY=VALUE,...  Set option, eg: color=true
+                             addrbase=16
+                             bytecolors=0-0xff=brightwhite,0=brightblack,32-126:9-13=white
+                             color=false
+                             colors=array=white,dumpaddr=yellow,dumpheader=yellow+underline,error=brightred,false=yellow,index=white,null=brightblack,number=cyan,object=white,objectkey=brightblue,string=green,true=yellow,value=white
+                             depth=0
+                             displaybytes=16
+                             linebytes=16
+                             raw=true
+                             sizebase=10
+                             unicode=false
+                             verbose=false
+--raw-output,-r            Raw string output (without quotes)
+--repl,-i                  Interactive REPL
+--slurp,-s                 Read (slurp) all inputs into an array
+--version,-v               Show version (dev)
 > fq -i
 null> ^D
 > fq -i . /test.mp3

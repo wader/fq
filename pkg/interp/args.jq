@@ -89,9 +89,11 @@ def args_help_text($opts):
       , .short
       ] | map(select(strings)) | join(",")
     ) +
-    if .value or .array or .object then "=ARG"
-    else ""
-    end;
+    ( .string // .array // .object
+    | if . then "=\(.)"
+      else ""
+      end
+    );
   def _maxoptlen:
     [ $opts[]
     | (_opthelp | length)
