@@ -21,6 +21,9 @@ def _with_options($opts; f):
 def _parsed_args: _global_state("parsed_args");
 def _parsed_args($v): _global_state("parsed_args"; $v);
 
+def _cli_last_expr_error: _global_state("cli_last_expr_error");
+def _cli_last_expr_error($v): _global_state("cli_last_expr_error"; $v);
+
 # next valid input
 def input:
   ( _global_state("inputs")
@@ -28,17 +31,26 @@ def input:
   | [.[0], .[1:]] as [$h, $t]
   | _global_state("inputs"; $t)
   | _global_state("input_filename"; null) as $_
+  | $h
   | try
-      ( $h
-      | open
-      | decode(_parsed_args.decode_format)
+      ( open
       | _global_state("input_filename"; $h) as $_
       | .
       )
     catch
-      ( _global_state("input_errors";
-          (_global_state("input_errors") // {}) + {($h): .}
+      ( _global_state("input_io_errors";
+          (_global_state("input_io_errors") // {}) + {($h): .}
         ) as $_
+      | _stderr_error
+      , input
+      )
+  | try
+      decode(_parsed_args.decode_format)
+    catch
+      ( _global_state("input_decode_errors";
+          (_global_state("input_decode_errors") // {}) + {($h): .}
+        ) as $_
+      | "\($h): failed to decode (\(_parsed_args.decode_format)), try -d FORMAT to force"
       | _stderr_error
       , input
       )
@@ -52,4 +64,5 @@ def inputs($v): _global_state("inputs"; $v);
 
 def input_filename: _global_state("input_filename");
 
-def _input_errors: _global_state("input_errors");
+def _input_io_errors: _global_state("input_io_errors");
+def _input_decode_errors: _global_state("input_decode_errors");

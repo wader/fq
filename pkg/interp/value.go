@@ -184,7 +184,7 @@ func (bv baseValueObject) JQValueKey(name string) interface{} {
 		case "_error":
 			var formatErr decode.FormatError
 			if errors.As(dv.Err, &formatErr) {
-				return formatError{formatErr}
+				return formatErr.Value()
 
 			}
 

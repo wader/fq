@@ -1,4 +1,5 @@
 > fq -n '1+"a"'
+exitcode: 5
 stderr:
 error: cannot add: number (1) and string ("a")
 > fq -n '"abc" | halt_error(123)'

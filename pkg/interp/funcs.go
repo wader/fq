@@ -304,12 +304,14 @@ func (i *Interp) debug(c interface{}, a []interface{}) interface{} {
 			}
 			if err, ok := v.(error); ok {
 				// TODO: how to log?
-				log.Printf("err: %#+v\n", err)
+				fmt.Fprintf(i.os.Stderr(), "%v", err)
 			}
 		}
 	} else {
 		// TODO: how to log?
-		fmt.Fprintln(i.os.Stderr(), c)
+		if err := json.NewEncoder(i.os.Stderr()).Encode([]interface{}{"DEBUG", c}); err != nil {
+			return err
+		}
 	}
 
 	return c
@@ -592,8 +594,14 @@ func (i *Interp) makeDecodeFn(registry *registry.Registry, decodeFormats []*deco
 		if dv == nil {
 			var decodeFormatsErr decode.DecodeFormatsError
 			if errors.As(err, &decodeFormatsErr) {
-				return decodeError{decodeFormatsErr}
+				var vs []interface{}
+				for _, fe := range decodeFormatsErr.Errs {
+					vs = append(vs, fe.Value())
+				}
+
+				return valueError{vs}
 			}
+
 			return valueError{err}
 		}
 

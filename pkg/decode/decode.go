@@ -42,6 +42,19 @@ func (fe FormatError) Error() string {
 	return fe.Err.Error()
 }
 
+func (fe FormatError) Value() interface{} {
+	var st []interface{}
+	for _, f := range fe.Stacktrace.Frames() {
+		st = append(st, f.Function)
+	}
+
+	return map[string]interface{}{
+		"format":     fe.Format.Name,
+		"error":      fe.Err.Error(),
+		"stacktrace": st,
+	}
+}
+
 type IOError struct {
 	Err   error
 	Name  string

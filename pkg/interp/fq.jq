@@ -20,9 +20,19 @@ include "@config/init?";
 # it will be called with same input as readline and a string argument being the
 # current line from start to current cursor position. Should return possible completions.
 
-# same as jq
+# try to be same exit codes as jq
+# TODO: jq seems to halt processing inputs on JSON decode error but not IO errors,
+# seems strange.
+# jq '(' <(echo 1) <(echo 2) ; echo $? => 3 and no inputs processed
+# jq '.' missing <(echo 2) ; echo $? => 2 and continues process inputs
+# jq '.' <(echo 'a') <(echo 123) ; echo $? => 4 and stops process inputs
+# jq '.' missing <(echo 'a') <(echo 123) ; echo $? => 2 ???
+# jq '"a"+.' <(echo '"a"') <(echo 1) ; echo $? => 5
+# jq '"a"+.' <(echo 1) <(echo '"a"') ; echo $? => 0
+def _exit_code_input_io_error: 2;
 def _exit_code_compile_error: 3;
-def _exit_code_input_error: 2;
+def _exit_code_input_decode_error: 4;
+def _exit_code_expr_error: 5;
 
 # TODO: completionMode
 def _complete($e):
@@ -209,7 +219,7 @@ def repl($opts): repl($opts; .);
 def repl: repl({}; .); #:: a| => @
 
 def _cli_expr_on_error:
-  ( if _eval_is_compile_error then _eval_compile_error_tostring end
+  ( _cli_last_expr_error(.) as $_
   | _stderr_error
   );
 def _cli_expr_on_compile_error:
@@ -383,13 +393,23 @@ def _main:
           else inputs # will iterate inputs
           end
         | if $parsed_args.repl then [_cli_expr_eval($expr)] | repl({}; .[])
-          else _cli_expr_eval($expr; _repl_display)
+          else
+            ( _cli_last_expr_error(null) as $_
+            | _cli_expr_eval($expr; _repl_display)
+            )
           end
         )
         ;
-        if _input_errors != null then
-          null | halt_error(_exit_code_input_error)
-        end
+        ( if _input_io_errors != null then
+            null | halt_error(_exit_code_input_io_error)
+          end
+        | if _input_decode_errors != null then
+            null | halt_error(_exit_code_input_decode_error)
+          end
+        | if _cli_last_expr_error != null then
+            null | halt_error(_exit_code_expr_error)
+          end
+        )
       )
     end
   );
