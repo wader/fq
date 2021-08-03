@@ -161,14 +161,7 @@ def _prompt(iter):
 # TODO: better way? what about nested eval errors?
 def _eval_is_compile_error: type == "object" and .error != null and .what != null;
 def _eval_compile_error_tostring:
-  [ .filename // "src"
-  , ":"
-  , .line
-  , ":"
-  , .column
-  , ": "
-  , .error
-  ] | join("");
+  "\(.filename // "src"):\(.line):\(.column): \(.error)";
 
 def _eval_debug:
   (["DEBUG", .] | tojson, "\n") | stderr;
