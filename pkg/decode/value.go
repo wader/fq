@@ -35,11 +35,6 @@ type Struct []*Value
 
 type Array []*Value
 
-// used by json format for decoded JSON value
-type JSON struct {
-	V interface{}
-}
-
 // TODO: encoding? endian, string encoding, compression, etc?
 type Value struct {
 	Parent        *Value

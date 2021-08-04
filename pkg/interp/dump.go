@@ -94,8 +94,8 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 		cfmt(colField, " %s", v.Name)
 	}
 
-	switch vv := v.V.(type) {
-	case decode.Struct:
+	switch v.V.(type) {
+	case decode.Struct, map[string]interface{}:
 		cfmt(colField, " %s", deco.Object.F("{}"))
 		if v.Description != "" {
 			cfmt(colField, " %s", deco.Value.F(v.Description))
@@ -103,8 +103,18 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 		if v.Format != nil {
 			cfmt(colField, " (%s)", deco.Value.F(v.Format.Name))
 		}
-	case decode.Array:
-		cfmt(colField, " %s%s%s", deco.Index.F("["), deco.Number.F(strconv.Itoa(len(vv))), deco.Index.F("]"))
+	case decode.Array, []interface{}:
+		var l int
+		switch vv := v.V.(type) {
+		case decode.Array:
+			l = len(vv)
+		case []interface{}:
+			l = len(vv)
+		default:
+			panic("unreachable")
+		}
+
+		cfmt(colField, " %s%s%s", deco.Index.F("["), deco.Number.F(strconv.Itoa(l)), deco.Index.F("]"))
 		if v.Description != "" {
 			cfmt(colField, " %s", deco.Value.F(v.Description))
 		}
@@ -209,6 +219,11 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 	lastDisplayLine := lastDisplayByte / int64(opts.LineBytes)
 
 	columns()
+
+	// log.Printf("v: %#+v\n", v)
+	// log.Printf("isSimple: %#+v\n", isSimple)
+	// log.Printf("opts: %#+v\n", opts)
+	// log.Printf("depth: %#+v\n", depth)
 
 	// has length and is a simple value or a collapsed struct/array
 	if v.Range.Len > 0 && (isSimple || (opts.Depth != 0 && opts.Depth == depth)) {

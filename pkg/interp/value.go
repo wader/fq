@@ -115,43 +115,16 @@ func makeValueObject(dv *decode.Value) interface{} {
 			dv:  dv,
 			jqv: stringBase{stringBufferValueObject{vv}},
 		}
-	case decode.JSON:
-		// TODO: refactor
-		switch v := vv.V.(type) {
-		case float64: // TODO: int etc? interface{} unmarshal only to float64?
-			return decodeValueBase{
-				dv:  dv,
-				jqv: numberBase{numberValue{v}},
-			}
-		case string:
-			return decodeValueBase{
-				dv:  dv,
-				jqv: stringBase{stringValue(v)},
-			}
-		case bool:
-			return decodeValueBase{
-				dv:  dv,
-				jqv: booleanBase{booleanValue(v)},
-			}
-		case nil:
-			return decodeValueBase{
-				dv:  dv,
-				jqv: nullBase{nullValue{}},
-			}
-		case []interface{}:
-			return decodeValueBase{
-				dv:  dv,
-				jqv: arrayBase{arrayValue(v)},
-			}
-		case map[string]interface{}:
-			return decodeValueBase{
-				dv:  dv,
-				jqv: objectBase{objectValue(v)},
-			}
-		default:
-			panic("unreachable")
+	case []interface{}:
+		return decodeValueBase{
+			dv:  dv,
+			jqv: arrayBase{arrayValue(vv)},
 		}
-
+	case map[string]interface{}:
+		return decodeValueBase{
+			dv:  dv,
+			jqv: objectBase{objectValue(vv)},
+		}
 	case nil:
 		return decodeValueBase{
 			dv:  dv,
@@ -667,7 +640,7 @@ func (v arrayValue) JQArrayKeys() interface{} {
 func (v arrayValue) JQArrayHasKey(key int) interface{} {
 	return key >= 0 && key < len(v)
 }
-func (v arrayValue) JQValueToGoJQ() interface{} { return v }
+func (v arrayValue) JQValueToGoJQ() interface{} { return []interface{}(v) }
 
 // object
 
@@ -750,7 +723,7 @@ func (v objectValue) JQObjectHasKey(key string) interface{} {
 	_, ok := v[key]
 	return ok
 }
-func (v objectValue) JQValueToGoJQ() interface{} { return v }
+func (v objectValue) JQValueToGoJQ() interface{} { return map[string]interface{}(v) }
 
 // number
 
@@ -871,11 +844,14 @@ func (v stringValue) JQStringLength() interface{} {
 	return len(v)
 }
 func (v stringValue) JQStringIndex(index int) interface{} {
-	// TODO: funcIndexSlice, string outside should return "" not null
+	// -1 outside after string, -2 outside before string
+	if index < 0 {
+		return ""
+	}
 	return fmt.Sprintf("%c", v[index])
 }
 func (v stringValue) JQStringSlice(start int, end int) interface{} {
-	return v[start:end]
+	return string(v[start:end])
 }
 func (v stringValue) JQStringToNumber() interface{} {
 	return gojq.NormalizeNumbers(string(v))

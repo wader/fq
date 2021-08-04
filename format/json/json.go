@@ -20,12 +20,12 @@ func init() {
 func decodeJSON(d *decode.D, in interface{}) interface{} {
 	bb := d.BitBufLen(d.Len())
 	jd := stdjson.NewDecoder(bb)
-	var v interface{}
-	if err := jd.Decode(&v); err != nil {
+	if err := jd.Decode(&d.Value.V); err != nil {
 		d.Invalid(err.Error())
 	}
-
-	d.Value.V = decode.JSON{V: v}
+	// TODO: root not array/struct how to add unknown gaps?
+	// TODO: ranges not end up correct
+	d.Value.Range.Len = jd.InputOffset() * 8
 
 	return nil
 }

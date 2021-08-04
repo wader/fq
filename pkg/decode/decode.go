@@ -432,7 +432,6 @@ func (d *D) AddChild(v *Value) {
 	case Array:
 		d.Value.V = append(fv, v)
 	}
-
 }
 
 func (d *D) fieldDecoder(name string, bitBuf *bitio.Buffer, v interface{}) *D {

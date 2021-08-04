@@ -63,8 +63,13 @@ func previewValue(v *decode.Value) string {
 		}
 	case nil:
 		return "none"
-	case decode.JSON:
-		return "JSON"
+
+	case []interface{}:
+		// TODO: remove?
+		return "json []"
+	case map[string]interface{}:
+		// TODO: remove?
+		return "json {}"
 	default:
 		panic("unreachable")
 	}

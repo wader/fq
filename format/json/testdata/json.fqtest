@@ -1,6 +1,9 @@
 /test.json:
 /json.gz:
 > fq -d json . /test.json
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
+    |                                               |                |.: {} /test.json (json)
+> fq -d json tovalue /test.json
 {
   "a": 123,
   "b": [
@@ -13,23 +16,14 @@
   "e": 123.4
 }
 > fq . /test.json
-{
-  "a": 123,
-  "b": [
-    1,
-    2,
-    3
-  ],
-  "c:": "string",
-  "d": null,
-  "e": 123.4
-}
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
+    |                                               |                |.: {} /test.json (json)
 > fq .b[1] /test.json
 2
 > fq . /json.gz
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /json.gz (gzip)
 0x00|1f 8b                                          |..              |  identification: "\x1f\x8b" (Correct)
-    |                                               |                |  uncompressed: JSON
+ 0x0|7b 22 61 22 3a 20 31 32 33 7d                  |{"a": 123}      |  uncompressed: {} (json)
 0x00|      08                                       |  .             |  compression_method: deflate (8)
 0x00|         00                                    |   .            |  flags: {}
 0x00|            65 0a 08 61                        |    e..a        |  mtime: 1627916901
@@ -62,6 +56,5 @@
   }
 }
 > fq .uncompressed /json.gz
-{
-  "a": 123
-}
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
+   |                                               |                |.uncompressed: {} (json)
