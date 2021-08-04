@@ -938,26 +938,26 @@ func (v nullBase) JQValueLength() interface{} {
 	return v.JQNullLength()
 }
 func (v nullBase) JQValueIndex(index int) interface{} {
-	return expectedArrayError{typ: "boolean"}
+	return expectedArrayError{typ: "null"}
 }
 func (v nullBase) JQValueSlice(start int, end int) interface{} {
-	return expectedArrayError{typ: "boolean"}
+	return expectedArrayError{typ: "null"}
 }
 func (v nullBase) JQValueKey(name string) interface{} {
-	return expectedObjectError{typ: "boolean"}
+	return expectedObjectError{typ: "null"}
 }
 func (v nullBase) JQValueEach() interface{} {
-	return iteratorError{typ: "boolean"}
+	return iteratorError{typ: "null"}
 }
 func (v nullBase) JQValueKeys() interface{} {
-	return funcTypeError{name: "keys", typ: "boolean"}
+	return funcTypeError{name: "keys", typ: "null"}
 }
 func (v nullBase) JQValueHas(key interface{}) interface{} {
-	return funcTypeError{name: "has", typ: "boolean"}
+	return funcTypeError{name: "has", typ: "null"}
 }
-func (v nullBase) JQValueType() string { return "boolean" }
+func (v nullBase) JQValueType() string { return "null" }
 func (v nullBase) JQValueToNumber() interface{} {
-	return funcTypeError{name: "tonumber", typ: "boolean"}
+	return funcTypeError{name: "tonumber", typ: "null"}
 }
 func (v nullBase) JQValueToString() interface{} {
 	return v.JQNullToString()
