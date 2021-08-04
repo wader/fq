@@ -478,6 +478,10 @@ type arrayValueObject struct {
 
 func (v arrayValueObject) JQArrayLength() interface{} { return len(v.Array) }
 func (v arrayValueObject) JQArrayIndex(index int) interface{} {
+	// -1 outside after string, -2 outside before string
+	if index < 0 {
+		return nil
+	}
 	return makeValueObject(v.Array[index])
 }
 func (v arrayValueObject) JQArraySlice(start int, end int) interface{} {
