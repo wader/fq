@@ -113,7 +113,7 @@ func (bo *bufferObject) JQValueType() string {
 func (bo *bufferObject) JQValueKeys() interface{} {
 	return funcTypeError{name: "keys", typ: "buffer"}
 }
-func (bo *bufferObject) JQValueHasKey(key interface{}) interface{} {
+func (bo *bufferObject) JQValueHas(key interface{}) interface{} {
 	return hasKeyTypeError{l: "buffer", r: fmt.Sprintf("%v", key)}
 }
 func (bo *bufferObject) JQValueToNumber() interface{} {
@@ -125,10 +125,10 @@ func (bo *bufferObject) JQValueToNumber() interface{} {
 	return new(big.Int).Rsh(new(big.Int).SetBytes(buf.Bytes()), extraBits)
 }
 func (bo *bufferObject) JQValueToString() interface{} {
-	return bo.JQValue()
+	return bo.JQValueToGoJQ()
 }
 
-func (bo *bufferObject) JQValue() interface{} {
+func (bo *bufferObject) JQValueToGoJQ() interface{} {
 	buf := &bytes.Buffer{}
 	if _, err := io.Copy(buf, bo.bbr.bb.Copy()); err != nil {
 		return err

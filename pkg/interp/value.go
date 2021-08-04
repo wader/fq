@@ -65,42 +65,234 @@ type valueObjectIf interface {
 func makeValueObject(dv *decode.Value) interface{} {
 	switch vv := dv.V.(type) {
 	case decode.Array:
-		av := arrayValueObject{baseValueObject: baseValueObject{dv: dv, typ: "array"}, vv: vv}
-		av.baseValueObject.vFn = av.JQValue
-		return av
+		return decodeValueBase{
+			dv:  dv,
+			jqv: arrayBase{arrayValueObject{vv}},
+		}
 	case decode.Struct:
-		sv := structValueObject{baseValueObject: baseValueObject{dv: dv, typ: "object"}, vv: vv}
-		sv.baseValueObject.vFn = sv.JQValue
-		return sv
+		return decodeValueBase{
+			dv:  dv,
+			jqv: objectBase{structValueObject{vv}},
+		}
 	case bool:
-		return baseValueObject{dv: dv, vFn: func() interface{} { return vv }, typ: "boolean"}
-	case int, float64:
-		return baseValueObject{dv: dv, vFn: func() interface{} { return vv }, typ: "number"}
-	case string:
-		sv := stringValueObject{baseValueObject: baseValueObject{dv: dv, typ: "string"}, vv: vv}
-		sv.baseValueObject.vFn = sv.JQValue
-		return sv
+		return decodeValueBase{
+			dv:  dv,
+			jqv: booleanBase{booleanValue(vv)},
+		}
+	case int:
+		return decodeValueBase{
+			dv:  dv,
+			jqv: numberBase{numberValue{vv}},
+		}
 	case int64:
-		return baseValueObject{dv: dv, vFn: func() interface{} { return big.NewInt(vv) }, typ: "number"}
+		return decodeValueBase{
+			dv: dv,
+			// TODO: int() instead? on some cpus?
+			jqv: numberBase{numberValue{big.NewInt(vv)}},
+		}
 	case uint64:
-		return baseValueObject{dv: dv, vFn: func() interface{} { return new(big.Int).SetUint64(vv) }, typ: "number"}
+		return decodeValueBase{
+			dv:  dv,
+			jqv: numberBase{numberValue{v: new(big.Int).SetUint64(vv)}},
+		}
+	case float64:
+		return decodeValueBase{
+			dv:  dv,
+			jqv: numberBase{numberValue{vv}},
+		}
+	case string:
+		return decodeValueBase{
+			dv:  dv,
+			jqv: stringBase{stringValue(vv)},
+		}
 	case []byte:
-		sv := stringValueObject{baseValueObject: baseValueObject{dv: dv, typ: "string"}, vv: string(vv)}
-		sv.baseValueObject.vFn = sv.JQValue
-		return sv
+		return decodeValueBase{
+			dv:  dv,
+			jqv: stringBase{stringValue(string(vv))},
+		}
 	case *bitio.Buffer:
-		sv := stringBufferValueObject{baseValueObject: baseValueObject{dv: dv, typ: "string"}, vv: vv}
-		sv.baseValueObject.vFn = sv.JQValue
-		return sv
+		return decodeValueBase{
+			dv:  dv,
+			jqv: stringBase{stringBufferValueObject{vv}},
+		}
 	case decode.JSON:
-		return vv.V
+		// TODO: refactor
+		switch v := vv.V.(type) {
+		case float64: // TODO: int etc? interface{} unmarshal only to float64?
+			return decodeValueBase{
+				dv:  dv,
+				jqv: numberBase{numberValue{v}},
+			}
+		case string:
+			return decodeValueBase{
+				dv:  dv,
+				jqv: stringBase{stringValue(v)},
+			}
+		case bool:
+			return decodeValueBase{
+				dv:  dv,
+				jqv: booleanBase{booleanValue(v)},
+			}
+		case nil:
+			return decodeValueBase{
+				dv:  dv,
+				jqv: nullBase{nullValue{}},
+			}
+		case []interface{}:
+			return decodeValueBase{
+				dv:  dv,
+				jqv: arrayBase{arrayValue(v)},
+			}
+		case map[string]interface{}:
+			return decodeValueBase{
+				dv:  dv,
+				jqv: objectBase{objectValue(v)},
+			}
+		default:
+			panic("unreachable")
+		}
+
 	case nil:
-		return baseValueObject{dv: dv, vFn: func() interface{} { return nil }, typ: "null"}
+		return decodeValueBase{
+			dv:  dv,
+			jqv: nullBase{nullValue{}},
+		}
 	default:
 		// TODO: error?
 		panic("unreachable")
 	}
 }
+
+var _ valueObjectIf = decodeValueBase{}
+
+type decodeValueBase struct {
+	dv  *decode.Value
+	jqv gojq.JQValue // TODO: embed? need to rename interface JQValueToGoJQ() method and interface name collides
+}
+
+func (dvb decodeValueBase) DisplayName() string {
+	if dvb.dv.Format != nil {
+		return dvb.dv.Format.Name
+	}
+	if dvb.dv.Description != "" {
+		return dvb.dv.Description
+	}
+	return ""
+}
+
+func (dvb decodeValueBase) Display(w io.Writer, opts Options) error { return dump(dvb.dv, w, opts) }
+func (dvb decodeValueBase) Preview(w io.Writer, opts Options) error { return preview(dvb.dv, w, opts) }
+func (dvb decodeValueBase) ToBuffer() (*bitio.Buffer, error) {
+	return dvb.dv.RootBitBuf.Copy().BitBufRange(dvb.dv.Range.Start, dvb.dv.Range.Len)
+}
+func (dvb decodeValueBase) ToBufferRange() (bufferRange, error) {
+	return bufferRange{bb: dvb.dv.RootBitBuf.Copy(), r: dvb.dv.Range}, nil
+}
+func (dvb decodeValueBase) ExtKeys() []string {
+	kv := []string{
+		"_start",
+		"_stop",
+		"_len",
+		"_name",
+		"_value",
+		"_symbol",
+		"_description",
+		"_path",
+		"_bits",
+		"_bytes",
+		"_error",
+		"_unknown",
+	}
+
+	if dvb.dv.Format != nil {
+		kv = append(kv, "_format")
+	}
+
+	return kv
+}
+func (dvb decodeValueBase) JQValueLength() interface{} {
+	return dvb.jqv.JQValueLength()
+}
+func (dvb decodeValueBase) JQValueIndex(index int) interface{} {
+	return dvb.jqv.JQValueIndex(index)
+}
+func (dvb decodeValueBase) JQValueSlice(start int, end int) interface{} {
+	return dvb.jqv.JQValueSlice(start, end)
+}
+func (dvb decodeValueBase) JQValueKey(name string) interface{} {
+	if strings.HasPrefix(name, "_") {
+		dv := dvb.dv
+
+		switch name {
+		case "_start":
+			return big.NewInt(dv.Range.Start)
+		case "_stop":
+			return big.NewInt(dv.Range.Stop())
+		case "_len":
+			return big.NewInt(dv.Range.Len)
+		case "_name":
+			return dv.Name
+		case "_value":
+			return dvb.jqv.JQValueToGoJQ()
+		case "_symbol":
+			return dv.Symbol
+		case "_description":
+			return dv.Description
+		case "_path":
+			return valuePath(dv)
+		case "_error":
+			var formatErr decode.FormatError
+			if errors.As(dv.Err, &formatErr) {
+				return formatErr.Value()
+
+			}
+
+			return dv.Err
+		case "_bits":
+			bb, err := dv.RootBitBuf.BitBufRange(dv.Range.Start, dv.Range.Len)
+			if err != nil {
+				return err
+			}
+			return newBifBufObject(bb, 1)
+		case "_bytes":
+			bb, err := dv.RootBitBuf.BitBufRange(dv.Range.Start, dv.Range.Len)
+			if err != nil {
+				return err
+			}
+			return newBifBufObject(bb, 8)
+		case "_format":
+			if dvb.dv.Format == nil {
+				return nil
+			}
+			return dvb.dv.Format.Name
+		case "_unknown":
+			return dvb.dv.Unknown
+		}
+
+		// TODO: error?
+		return nil
+	}
+	return dvb.jqv.JQValueKey(name)
+}
+func (dvb decodeValueBase) JQValueEach() interface{} {
+	return dvb.jqv.JQValueEach()
+}
+func (dvb decodeValueBase) JQValueKeys() interface{} {
+	return dvb.jqv.JQValueKeys()
+}
+func (dvb decodeValueBase) JQValueHas(key interface{}) interface{} {
+	return dvb.jqv.JQValueHas(key)
+}
+func (dvb decodeValueBase) JQValueType() string {
+	return dvb.jqv.JQValueType()
+}
+func (dvb decodeValueBase) JQValueToNumber() interface{} {
+	return dvb.jqv.JQValueToNumber()
+}
+func (dvb decodeValueBase) JQValueToString() interface{} {
+	return dvb.jqv.JQValueToString()
+}
+func (dvb decodeValueBase) JQValueToGoJQ() interface{} { return dvb.jqv.JQValueToGoJQ() }
 
 var _ valueObjectIf = baseValueObject{}
 
@@ -221,7 +413,7 @@ func (bv baseValueObject) JQValueEach() interface{} {
 func (bv baseValueObject) JQValueKeys() interface{} {
 	return funcTypeError{name: "keys", typ: bv.typ}
 }
-func (bv baseValueObject) JQValueHasKey(key interface{}) interface{} {
+func (bv baseValueObject) JQValueHas(key interface{}) interface{} {
 	return hasKeyTypeError{l: bv.typ, r: fmt.Sprintf("%v", key)}
 }
 func (bv baseValueObject) JQValueType() string { return bv.typ }
@@ -251,50 +443,33 @@ func (bv baseValueObject) JQValueToString() interface{} {
 		return funcTypeError{name: "tostring", typ: bv.typ}
 	}
 }
-func (bv baseValueObject) JQValue() interface{} { return bv.vFn() }
+func (bv baseValueObject) JQValueToGoJQ() interface{} { return bv.vFn() }
 
 // string
 
-type stringValueObject struct {
-	baseValueObject
-	vv string
-}
+var _ JQString = stringValueObject{}
 
-func (sv stringValueObject) ToBuffer() (*bitio.Buffer, error) {
-	return bitio.NewBufferFromBytes([]byte(sv.vv), -1), nil
-}
-func (sv stringValueObject) JQValueLength() interface{} { return len(sv.vv) }
-func (sv stringValueObject) JQValueIndex(index int) interface{} {
-	return fmt.Sprintf("%c", sv.vv[index])
-}
-func (sv stringValueObject) JQValueSlice(start int, end int) interface{} {
-	return sv.vv[start:end]
-}
-func (sv stringValueObject) JQValueToString() interface{} {
-	return sv.JQValue()
-}
-func (sv stringValueObject) JQValue() interface{} {
-	return sv.vv
+type stringValueObject struct {
+	stringValue
 }
 
 // string (*bitio.Buffer)
 
+var _ JQString = stringBufferValueObject{}
+
 type stringBufferValueObject struct {
-	baseValueObject
-	vv *bitio.Buffer
+	*bitio.Buffer
 }
 
-func (sbv stringBufferValueObject) ToBuffer() (*bitio.Buffer, error) {
-	return sbv.vv.Copy(), nil
+func (v stringBufferValueObject) JQStringLength() interface{} {
+	return int(v.Buffer.Len()) / 8
 }
-func (sbv stringBufferValueObject) JQValueLength() interface{} {
-	return int(sbv.vv.Len()) / 8
+func (v stringBufferValueObject) JQStringIndex(index int) interface{} {
+	// TODO: funcIndexSlice, string outside should return "" not null
+	return v.JQStringSlice(index, index+1)
 }
-func (sbv stringBufferValueObject) JQValueIndex(index int) interface{} {
-	return sbv.JQValueSlice(index, index+1)
-}
-func (sbv stringBufferValueObject) JQValueSlice(start int, end int) interface{} {
-	bb := sbv.vv.Copy()
+func (v stringBufferValueObject) JQStringSlice(start int, end int) interface{} {
+	bb := v.Buffer.Copy()
 	if start != 0 {
 		if _, err := bb.SeekAbs(int64(start) * 8); err != nil {
 			return err
@@ -305,58 +480,60 @@ func (sbv stringBufferValueObject) JQValueSlice(start int, end int) interface{} 
 		return err
 	}
 	return b.String()
-
 }
-func (sbv stringBufferValueObject) JQValueToString() interface{} {
-	return sbv.JQValue()
+func (v stringBufferValueObject) JQStringToNumber() interface{} {
+	s, ok := v.JQStringToString().(string)
+	if ok {
+		gojq.NormalizeNumbers(s)
+	}
+	return s
 }
-func (sbv stringBufferValueObject) JQValue() interface{} {
-	return sbv.JQValueSlice(0, int(sbv.vv.Len())/8)
+func (v stringBufferValueObject) JQStringToString() interface{} {
+	return v.JQStringSlice(0, int(v.Buffer.Len())/8)
+}
+func (v stringBufferValueObject) JQValueToGoJQ() interface{} {
+	return v.JQStringToString()
 }
 
 // array
 
+var _ JQArray = arrayValueObject{}
+
 type arrayValueObject struct {
-	baseValueObject
-	vv decode.Array
+	decode.Array
 }
 
-func (av arrayValueObject) JQValueLength() interface{} { return len(av.vv) }
-func (av arrayValueObject) JQValueIndex(index int) interface{} {
-	return makeValueObject(av.vv[index])
+func (v arrayValueObject) JQArrayLength() interface{} { return len(v.Array) }
+func (v arrayValueObject) JQArrayIndex(index int) interface{} {
+	return makeValueObject(v.Array[index])
 }
-func (av arrayValueObject) JQValueSlice(start int, end int) interface{} {
+func (v arrayValueObject) JQArraySlice(start int, end int) interface{} {
 	vs := make([]interface{}, end-start)
-	for i, e := range av.vv[start:end] {
+	for i, e := range v.Array[start:end] {
 		vs[i] = makeValueObject(e)
 	}
 	return vs
 }
-func (av arrayValueObject) JQValueEach() interface{} {
-	props := make([]gojq.PathValue, len(av.vv))
-	for i, v := range av.vv {
+func (v arrayValueObject) JQArrayEach() interface{} {
+	props := make([]gojq.PathValue, len(v.Array))
+	for i, v := range v.Array {
 		props[i] = gojq.PathValue{Path: i, Value: makeValueObject(v)}
 	}
 	return props
 }
-func (av arrayValueObject) JQValueKeys() interface{} {
-	vs := make([]interface{}, len(av.vv))
-	for i := range av.vv {
+func (v arrayValueObject) JQArrayKeys() interface{} {
+	vs := make([]interface{}, len(v.Array))
+	for i := range v.Array {
 		vs[i] = i
 	}
 	return vs
 }
-func (av arrayValueObject) JQValueHasKey(key interface{}) interface{} {
-	// TODO: toInt? int64?
-	i, iOk := key.(int)
-	if !iOk {
-		return hasKeyTypeError{l: av.typ, r: fmt.Sprintf("%v", key)}
-	}
-	return i >= 0 && i < len(av.vv)
+func (v arrayValueObject) JQArrayHasKey(index int) interface{} {
+	return index >= 0 && index < len(v.Array)
 }
-func (av arrayValueObject) JQValue() interface{} {
-	vs := make([]interface{}, len(av.vv))
-	for i, v := range av.vv {
+func (v arrayValueObject) JQValueToGoJQ() interface{} {
+	vs := make([]interface{}, len(v.Array))
+	for i, v := range v.Array {
 		vs[i] = makeValueObject(v)
 	}
 	return vs
@@ -364,26 +541,24 @@ func (av arrayValueObject) JQValue() interface{} {
 
 // struct
 
+var _ JQObject = structValueObject{}
+
 type structValueObject struct {
-	baseValueObject
-	vv decode.Struct
+	decode.Struct
 }
 
-func (sv structValueObject) JQValueLength() interface{} { return len(sv.vv) }
-func (sv structValueObject) JQValueKey(name string) interface{} {
-	if strings.HasPrefix(name, "_") {
-		return sv.baseValueObject.JQValueKey(name)
-	}
-	for _, v := range sv.vv {
+func (v structValueObject) JQObjectLength() interface{} { return len(v.Struct) }
+func (v structValueObject) JQObjectKey(name string) interface{} {
+	for _, v := range v.Struct {
 		if v.Name == name {
 			return makeValueObject(v)
 		}
 	}
 	return nil
 }
-func (sv structValueObject) JQValueEach() interface{} {
-	props := make([]gojq.PathValue, len(sv.vv))
-	for i, v := range sv.vv {
+func (v structValueObject) JQObjectEach() interface{} {
+	props := make([]gojq.PathValue, len(v.Struct))
+	for i, v := range v.Struct {
 		props[i] = gojq.PathValue{Path: v.Name, Value: makeValueObject(v)}
 	}
 	sort.Slice(props, func(i, j int) bool {
@@ -393,28 +568,24 @@ func (sv structValueObject) JQValueEach() interface{} {
 	})
 	return props
 }
-func (sv structValueObject) JQValueKeys() interface{} {
-	vs := make([]interface{}, len(sv.vv))
-	for i, v := range sv.vv {
+func (v structValueObject) JQObjectKeys() interface{} {
+	vs := make([]interface{}, len(v.Struct))
+	for i, v := range v.Struct {
 		vs[i] = v.Name
 	}
 	return vs
 }
-func (sv structValueObject) JQValueHasKey(key interface{}) interface{} {
-	s, sOk := key.(string)
-	if !sOk {
-		return hasKeyTypeError{l: sv.typ, r: fmt.Sprintf("%v", key)}
-	}
-	for _, f := range sv.vv {
-		if f.Name == s {
+func (v structValueObject) JQObjectHasKey(key string) interface{} {
+	for _, f := range v.Struct {
+		if f.Name == key {
 			return true
 		}
 	}
 	return false
 }
-func (sv structValueObject) JQValue() interface{} {
-	vm := make(map[string]interface{}, len(sv.vv))
-	for _, v := range sv.vv {
+func (v structValueObject) JQValueToGoJQ() interface{} {
+	vm := make(map[string]interface{}, len(v.Struct))
+	for _, v := range v.Struct {
 		vm[v.Name] = makeValueObject(v)
 	}
 	return vm
@@ -429,39 +600,39 @@ type JQArray interface {
 	JQArrayEach() interface{}
 	JQArrayKeys() interface{}
 	JQArrayHasKey(key int) interface{}
-	JQValue() interface{}
+	JQValueToGoJQ() interface{}
 }
 
 var _ gojq.JQValue = arrayBase{}
 
 type arrayBase struct {
-	v JQArray
+	JQArray
 }
 
 func (v arrayBase) JQValueLength() interface{} {
-	return v.v.JQArrayLength()
+	return v.JQArrayLength()
 }
 func (v arrayBase) JQValueIndex(index int) interface{} {
-	return v.v.JQArrayIndex(index)
+	return v.JQArrayIndex(index)
 }
 func (v arrayBase) JQValueSlice(start int, end int) interface{} {
-	return v.v.JQArraySlice(start, end)
+	return v.JQArraySlice(start, end)
 }
 func (v arrayBase) JQValueKey(name string) interface{} {
 	return expectedObjectError{typ: "array"}
 }
 func (v arrayBase) JQValueEach() interface{} {
-	return v.v.JQArrayEach()
+	return v.JQArrayEach()
 }
 func (v arrayBase) JQValueKeys() interface{} {
-	return v.v.JQArrayKeys()
+	return v.JQArrayKeys()
 }
-func (v arrayBase) JQValueHasKey(key interface{}) interface{} {
+func (v arrayBase) JQValueHas(key interface{}) interface{} {
 	intKey, ok := key.(int)
 	if !ok {
 		return hasKeyTypeError{l: "array", r: fmt.Sprintf("%v", key)}
 	}
-	return v.v.JQArrayHasKey(intKey)
+	return v.JQArrayHasKey(intKey)
 }
 func (v arrayBase) JQValueType() string { return "array" }
 func (v arrayBase) JQValueToNumber() interface{} {
@@ -470,35 +641,33 @@ func (v arrayBase) JQValueToNumber() interface{} {
 func (v arrayBase) JQValueToString() interface{} {
 	return funcTypeError{name: "tostring", typ: "array"}
 }
-func (v arrayBase) JQValue() interface{} { return v.v.JQValue() }
+func (v arrayBase) JQValueToGoJQ() interface{} { return v.JQArray.JQValueToGoJQ() }
 
 var _ JQArray = arrayValue{}
 
-type arrayValue struct {
-	v []interface{}
-}
+type arrayValue []interface{}
 
-func (v arrayValue) JQArrayLength() interface{}                  { return len(v.v) }
-func (v arrayValue) JQArrayIndex(index int) interface{}          { return v.v[index] }
-func (v arrayValue) JQArraySlice(start int, end int) interface{} { return v.v[start:end] }
+func (v arrayValue) JQArrayLength() interface{}                  { return len(v) }
+func (v arrayValue) JQArrayIndex(index int) interface{}          { return v[index] }
+func (v arrayValue) JQArraySlice(start int, end int) interface{} { return v[start:end] }
 func (v arrayValue) JQArrayEach() interface{} {
-	vs := make([]gojq.PathValue, len(v.v))
-	for i, v := range v.v {
+	vs := make([]gojq.PathValue, len(v))
+	for i, v := range v {
 		vs[i] = gojq.PathValue{Path: i, Value: v}
 	}
 	return vs
 }
 func (v arrayValue) JQArrayKeys() interface{} {
-	vs := make([]interface{}, len(v.v))
-	for i := range v.v {
+	vs := make([]interface{}, len(v))
+	for i := range v {
 		vs[i] = i
 	}
 	return vs
 }
 func (v arrayValue) JQArrayHasKey(key int) interface{} {
-	return key >= 0 && key < len(v.v)
+	return key >= 0 && key < len(v)
 }
-func (v arrayValue) JQValue() interface{} { return v.v }
+func (v arrayValue) JQValueToGoJQ() interface{} { return v }
 
 // object
 
@@ -508,17 +677,17 @@ type JQObject interface {
 	JQObjectEach() interface{}
 	JQObjectKeys() interface{}
 	JQObjectHasKey(key string) interface{}
-	JQValue() interface{}
+	JQValueToGoJQ() interface{}
 }
 
 var _ gojq.JQValue = objectBase{}
 
 type objectBase struct {
-	v JQObject
+	JQObject
 }
 
 func (v objectBase) JQValueLength() interface{} {
-	return v.v.JQObjectLength()
+	return v.JQObjectLength()
 }
 func (v objectBase) JQValueIndex(index int) interface{} {
 	return expectedArrayError{typ: "object"}
@@ -527,20 +696,20 @@ func (v objectBase) JQValueSlice(start int, end int) interface{} {
 	return expectedArrayError{typ: "object"}
 }
 func (v objectBase) JQValueKey(name string) interface{} {
-	return v.v.JQObjectKey(name)
+	return v.JQObjectKey(name)
 }
 func (v objectBase) JQValueEach() interface{} {
-	return v.v.JQObjectEach()
+	return v.JQObjectEach()
 }
 func (v objectBase) JQValueKeys() interface{} {
-	return v.v.JQObjectKeys()
+	return v.JQObjectKeys()
 }
-func (v objectBase) JQValueHasKey(key interface{}) interface{} {
+func (v objectBase) JQValueHas(key interface{}) interface{} {
 	stringKey, ok := key.(string)
 	if !ok {
 		return hasKeyTypeError{l: "object", r: fmt.Sprintf("%v", key)}
 	}
-	return v.v.JQObjectHasKey(stringKey)
+	return v.JQObjectHasKey(stringKey)
 }
 func (v objectBase) JQValueType() string { return "object" }
 func (v objectBase) JQValueToNumber() interface{} {
@@ -549,41 +718,39 @@ func (v objectBase) JQValueToNumber() interface{} {
 func (v objectBase) JQValueToString() interface{} {
 	return funcTypeError{name: "tostring", typ: "object"}
 }
-func (v objectBase) JQValue() interface{} { return v.v.JQValue() }
+func (v objectBase) JQValueToGoJQ() interface{} { return v.JQObject.JQValueToGoJQ() }
 
 var _ JQObject = objectValue{}
 
-type objectValue struct {
-	v map[string]interface{}
-}
+type objectValue map[string]interface{}
 
-func (v objectValue) JQObjectLength() interface{} { return len(v.v) }
+func (v objectValue) JQObjectLength() interface{} { return len(v) }
 func (v objectValue) JQObjectKey(name string) interface{} {
-	return v.v[name]
+	return v[name]
 }
 func (v objectValue) JQObjectEach() interface{} {
-	vs := make([]gojq.PathValue, len(v.v))
+	vs := make([]gojq.PathValue, len(v))
 	i := 0
-	for k, v := range v.v {
+	for k, v := range v {
 		vs[i] = gojq.PathValue{Path: k, Value: v}
 		i++
 	}
 	return vs
 }
 func (v objectValue) JQObjectKeys() interface{} {
-	vs := make([]interface{}, len(v.v))
+	vs := make([]interface{}, len(v))
 	i := 0
-	for k := range v.v {
+	for k := range v {
 		vs[i] = k
 		i++
 	}
 	return vs
 }
 func (v objectValue) JQObjectHasKey(key string) interface{} {
-	_, ok := v.v[key]
+	_, ok := v[key]
 	return ok
 }
-func (v objectValue) JQValue() interface{} { return v.v }
+func (v objectValue) JQValueToGoJQ() interface{} { return v }
 
 // number
 
@@ -591,17 +758,17 @@ type JQNumber interface {
 	JQNumberLength() interface{}
 	JQNumberToNumber() interface{}
 	JQNumberToString() interface{}
-	JQValue() interface{}
+	JQValueToGoJQ() interface{}
 }
 
 var _ gojq.JQValue = numberBase{}
 
 type numberBase struct {
-	v JQNumber
+	JQNumber
 }
 
 func (v numberBase) JQValueLength() interface{} {
-	return v.v.JQNumberLength()
+	return v.JQNumberLength()
 }
 func (v numberBase) JQValueIndex(index int) interface{} {
 	return expectedArrayError{typ: "number"}
@@ -618,20 +785,21 @@ func (v numberBase) JQValueEach() interface{} {
 func (v numberBase) JQValueKeys() interface{} {
 	return funcTypeError{name: "keys", typ: "number"}
 }
-func (v numberBase) JQValueHasKey(key interface{}) interface{} {
+func (v numberBase) JQValueHas(key interface{}) interface{} {
 	return funcTypeError{name: "has", typ: "number"}
 }
 func (v numberBase) JQValueType() string { return "number" }
 func (v numberBase) JQValueToNumber() interface{} {
-	return v.v.JQNumberToNumber()
+	return v.JQNumberToNumber()
 }
 func (v numberBase) JQValueToString() interface{} {
-	return v.v.JQNumberToString()
+	return v.JQNumberToString()
 }
-func (v numberBase) JQValue() interface{} { return v.v.JQValue() }
+func (v numberBase) JQValueToGoJQ() interface{} { return v.JQNumber.JQValueToGoJQ() }
 
 var _ JQNumber = numberValue{}
 
+// TODO: per number type?
 type numberValue struct {
 	v interface{}
 }
@@ -646,7 +814,7 @@ func (v numberValue) JQNumberToString() interface{} {
 	}
 	return b.String()
 }
-func (v numberValue) JQValue() interface{} { return v.v }
+func (v numberValue) JQValueToGoJQ() interface{} { return v.v }
 
 // string
 
@@ -656,23 +824,23 @@ type JQString interface {
 	JQStringSlice(start int, end int) interface{}
 	JQStringToNumber() interface{}
 	JQStringToString() interface{}
-	JQValue() interface{}
+	JQValueToGoJQ() interface{}
 }
 
 var _ gojq.JQValue = stringBase{}
 
 type stringBase struct {
-	v JQString
+	JQString
 }
 
 func (v stringBase) JQValueLength() interface{} {
-	return v.v.JQStringLength()
+	return v.JQStringLength()
 }
 func (v stringBase) JQValueIndex(index int) interface{} {
-	return v.v.JQStringIndex(index)
+	return v.JQStringIndex(index)
 }
 func (v stringBase) JQValueSlice(start int, end int) interface{} {
-	return v.v.JQStringSlice(start, end)
+	return v.JQStringSlice(start, end)
 }
 func (v stringBase) JQValueKey(name string) interface{} {
 	return expectedObjectError{typ: "string"}
@@ -683,17 +851,17 @@ func (v stringBase) JQValueEach() interface{} {
 func (v stringBase) JQValueKeys() interface{} {
 	return funcTypeError{name: "keys", typ: "string"}
 }
-func (v stringBase) JQValueHasKey(key interface{}) interface{} {
+func (v stringBase) JQValueHas(key interface{}) interface{} {
 	return funcTypeError{name: "has", typ: "string"}
 }
 func (v stringBase) JQValueType() string { return "string" }
 func (v stringBase) JQValueToNumber() interface{} {
-	return v.v.JQStringToNumber()
+	return v.JQStringToNumber()
 }
 func (v stringBase) JQValueToString() interface{} {
-	return v.v.JQStringToString()
+	return v.JQStringToString()
 }
-func (v stringBase) JQValue() interface{} { return v.v.JQValue() }
+func (v stringBase) JQValueToGoJQ() interface{} { return v.JQString.JQValueToGoJQ() }
 
 var _ JQString = stringValue("")
 
@@ -713,21 +881,21 @@ func (v stringValue) JQStringToNumber() interface{} {
 	return gojq.NormalizeNumbers(string(v))
 }
 func (v stringValue) JQStringToString() interface{} {
-	return v
+	return string(v)
 }
-func (v stringValue) JQValue() interface{} { return v }
+func (v stringValue) JQValueToGoJQ() interface{} { return string(v) }
 
 // boolean
 
 type JQBoolean interface {
 	JQBooleanToString() interface{}
-	JQValue() interface{}
+	JQValueToGoJQ() interface{}
 }
 
 var _ gojq.JQValue = booleanBase{}
 
 type booleanBase struct {
-	v JQBoolean
+	JQBoolean
 }
 
 func (v booleanBase) JQValueLength() interface{} {
@@ -748,7 +916,7 @@ func (v booleanBase) JQValueEach() interface{} {
 func (v booleanBase) JQValueKeys() interface{} {
 	return funcTypeError{name: "keys", typ: "boolean"}
 }
-func (v booleanBase) JQValueHasKey(key interface{}) interface{} {
+func (v booleanBase) JQValueHas(key interface{}) interface{} {
 	return funcTypeError{name: "has", typ: "boolean"}
 }
 func (v booleanBase) JQValueType() string { return "boolean" }
@@ -756,9 +924,9 @@ func (v booleanBase) JQValueToNumber() interface{} {
 	return funcTypeError{name: "tonumber", typ: "boolean"}
 }
 func (v booleanBase) JQValueToString() interface{} {
-	return v.v.JQBooleanToString()
+	return v.JQBooleanToString()
 }
-func (v booleanBase) JQValue() interface{} { return v.v.JQValue() }
+func (v booleanBase) JQValueToGoJQ() interface{} { return v.JQBoolean.JQValueToGoJQ() }
 
 var _ JQBoolean = booleanValue(true)
 
@@ -770,24 +938,24 @@ func (v booleanValue) JQBooleanToString() interface{} {
 	}
 	return "false"
 }
-func (v booleanValue) JQValue() interface{} { return v }
+func (v booleanValue) JQValueToGoJQ() interface{} { return bool(v) }
 
 // null
 
 type JQNull interface {
 	JQNullLength() interface{}
 	JQNullToString() interface{}
-	JQValue() interface{}
+	JQValueToGoJQ() interface{}
 }
 
 var _ gojq.JQValue = nullBase{}
 
 type nullBase struct {
-	v JQNull
+	JQNull
 }
 
 func (v nullBase) JQValueLength() interface{} {
-	return v.v.JQNullLength()
+	return v.JQNullLength()
 }
 func (v nullBase) JQValueIndex(index int) interface{} {
 	return expectedArrayError{typ: "boolean"}
@@ -804,7 +972,7 @@ func (v nullBase) JQValueEach() interface{} {
 func (v nullBase) JQValueKeys() interface{} {
 	return funcTypeError{name: "keys", typ: "boolean"}
 }
-func (v nullBase) JQValueHasKey(key interface{}) interface{} {
+func (v nullBase) JQValueHas(key interface{}) interface{} {
 	return funcTypeError{name: "has", typ: "boolean"}
 }
 func (v nullBase) JQValueType() string { return "boolean" }
@@ -812,9 +980,9 @@ func (v nullBase) JQValueToNumber() interface{} {
 	return funcTypeError{name: "tonumber", typ: "boolean"}
 }
 func (v nullBase) JQValueToString() interface{} {
-	return v.v.JQNullToString()
+	return v.JQNullToString()
 }
-func (v nullBase) JQValue() interface{} { return v.v.JQValue() }
+func (v nullBase) JQValueToGoJQ() interface{} { return v.JQNull.JQValueToGoJQ() }
 
 var _ JQNull = nullValue{}
 
@@ -822,4 +990,4 @@ type nullValue struct{}
 
 func (v nullValue) JQNullLength() interface{}   { return 0 }
 func (v nullValue) JQNullToString() interface{} { return "null" }
-func (v nullValue) JQValue() interface{}        { return nil }
+func (v nullValue) JQValueToGoJQ() interface{}  { return nil }

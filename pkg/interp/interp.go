@@ -383,7 +383,7 @@ func toBufferRange(v interface{}) (bufferRange, error) {
 func toValue(v interface{}) interface{} {
 	switch v := v.(type) {
 	case gojq.JQValue:
-		return v.JQValue()
+		return v.JQValueToGoJQ()
 	case nil, bool, float64, int, string, *big.Int, map[string]interface{}, []interface{}:
 		return v
 	default:
@@ -900,7 +900,7 @@ func (i *Interp) NewColorJSON(opts Options) (*colorjson.Encoder, error) {
 		indent,
 		func(v interface{}) interface{} {
 			if jv, ok := v.(gojq.JQValue); ok {
-				return jv.JQValue()
+				return jv.JQValueToGoJQ()
 			}
 			panic(fmt.Sprintf("toValue not a JQValue value: %#v", v))
 		},
