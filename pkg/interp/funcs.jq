@@ -8,7 +8,10 @@ def help:
 # TODO: escape for safe key names
 # path ["a", 1, "b"] -> "a[1].b"
 def path_to_expr:
-  map(if type == "number" then "[", ., "]" else ".", . end) | join("");
+  if length == 0 then "."
+  else
+    map(if type == "number" then "[", ., "]" else ".", . end) | join("")
+  end;
 
 # TODO: don't use eval? should support '.a.b[1]."c.c"' and escapes?
 def expr_to_path:
