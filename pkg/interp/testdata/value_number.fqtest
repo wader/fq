@@ -1,0 +1,129 @@
+/test.mp3:
+# display
+> fq -d mp3 '.headers[0].version | ., type, length?' /test.mp3
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
+0x0|         04                                    |   .            |.headers[0].version: 4
+"number"
+4
+# index
+> fq -d mp3 '.headers[0].version[0] | ., type, length?' /test.mp3
+exitcode: 5
+stderr:
+error: expected an array but got: number
+> fq -d mp3 '.headers[0].version[-1000] | ., type, length?' /test.mp3
+exitcode: 5
+stderr:
+error: expected an array but got: number
+> fq -d mp3 '.headers[0].version[1000] | ., type, length?' /test.mp3
+exitcode: 5
+stderr:
+error: expected an array but got: number
+# slice
+> fq -d mp3 '.headers[0].version[1:3] | ., type, length?' /test.mp3
+exitcode: 5
+stderr:
+error: expected an array but got: number
+> fq -d mp3 '.headers[0].version[0:-1] | ., type, length?' /test.mp3
+exitcode: 5
+stderr:
+error: expected an array but got: number
+> fq -d mp3 '.headers[0].version[-1000:2000] | ., type, length?' /test.mp3
+exitcode: 5
+stderr:
+error: expected an array but got: number
+# key
+> fq -d mp3 '.headers[0].version["test"] | ., type, length?' /test.mp3
+exitcode: 5
+stderr:
+error: expected an object but got: number
+# each
+> fq -d mp3 '[.headers[0].version[]] | type, length?' /test.mp3
+exitcode: 5
+stderr:
+error: cannot iterate over: number
+# keys
+> fq -d mp3 '.headers[0].version | keys' /test.mp3
+exitcode: 5
+stderr:
+error: keys cannot be applied to: number
+# has
+> fq -d mp3 '.headers[0].version | has("a")' /test.mp3
+exitcode: 5
+stderr:
+error: has cannot be applied to: number
+> fq -d mp3 '.headers[0].version | has(0)' /test.mp3
+exitcode: 5
+stderr:
+error: has cannot be applied to: number
+# type
+> fq -d mp3 '.headers[0].version | type' /test.mp3
+"number"
+# tonumber
+> fq -d mp3 '.headers[0].version | tonumber' /test.mp3
+4
+# tostring
+> fq -d mp3 '.headers[0].version | tostring' /test.mp3
+"4"
+# to gojq
+> fq -d mp3 '.headers[0].version + ""' /test.mp3
+exitcode: 5
+stderr:
+error: cannot add: number (4) and string ("")
+> fq -d mp3 '.headers[0].version + 1' /test.mp3
+5
+# test _keys
+> fq -d mp3 '.headers[0].version._start | ., type, length?' /test.mp3
+24
+"number"
+24
+> fq -d mp3 '.headers[0].version._stop | ., type, length?' /test.mp3
+32
+"number"
+32
+> fq -d mp3 '.headers[0].version._len | ., type, length?' /test.mp3
+8
+"number"
+8
+> fq -d mp3 '.headers[0].version._name | ., type, length?' /test.mp3
+"version"
+"string"
+7
+> fq -d mp3 '.headers[0].version._value | ., type, length?' /test.mp3
+4
+"number"
+4
+> fq -d mp3 '.headers[0].version._symbol | ., type, length?' /test.mp3
+""
+"string"
+0
+> fq -d mp3 '.headers[0].version._description | ., type, length?' /test.mp3
+""
+"string"
+0
+> fq -d mp3 '.headers[0].version._path | ., type, length?' /test.mp3
+[
+  "headers",
+  0,
+  "version"
+]
+"array"
+3
+> fq -d mp3 '.headers[0].version._bits | ., type, length?' /test.mp3
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
+0x0|04                                             |.               |
+<8 bits>
+"buffer"
+8
+> fq -d mp3 '.headers[0].version._bytes | ., type, length?' /test.mp3
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
+0x0|04                                             |.               |
+<1 bytes>
+"buffer"
+1
+> fq -d mp3 '.headers[0].version._error | ., type, length?' /test.mp3
+null
+"null"
+0
+> fq -d mp3 '.headers[0].version._unknown | ., type, length?' /test.mp3
+false
+"boolean"

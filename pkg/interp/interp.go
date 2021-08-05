@@ -770,17 +770,18 @@ func (i *Interp) EvalFuncValues(ctx context.Context, mode RunMode, c interface{}
 }
 
 type Options struct {
-	Depth      int    `json:"depth"`
-	Verbose    bool   `json:"verbose"`
-	Color      bool   `json:"color"`
-	Colors     string `json:"colors"`
-	ByteColors string `json:"bytecolors"`
-	Unicode    bool   `json:"unicode"`
-	Raw        bool   `json:"raw"`
-	REPL       bool   `json:"repl"`
-	RawString  bool   `json:"rawstring"`
-	JoinString string `json:"joinstring"`
-	Compact    bool   `json:"compact"`
+	Depth          int    `json:"depth"`
+	Verbose        bool   `json:"verbose"`
+	DecodeProgress bool   `json:"decodeprogress"`
+	Color          bool   `json:"color"`
+	Colors         string `json:"colors"`
+	ByteColors     string `json:"bytecolors"`
+	Unicode        bool   `json:"unicode"`
+	Raw            bool   `json:"raw"`
+	REPL           bool   `json:"repl"`
+	RawString      bool   `json:"rawstring"`
+	JoinString     string `json:"joinstring"`
+	Compact        bool   `json:"compact"`
 
 	LineBytes    int `json:"linebytes"`
 	DisplayBytes int `json:"displaybytes"`
@@ -798,6 +799,9 @@ func mapSetOptions(d *Options, m map[string]interface{}) {
 	}
 	if v, ok := m["verbose"]; ok {
 		d.Verbose = toBoolZ(v)
+	}
+	if v, ok := m["decodeprogress"]; ok {
+		d.DecodeProgress = toBoolZ(v)
 	}
 	if v, ok := m["color"]; ok {
 		d.Color = toBoolZ(v)

@@ -34,8 +34,8 @@ type testCaseRunOutput struct {
 	io.Writer
 }
 
-func (o testCaseRunOutput) Size() (int, int) { return 120, 25 }
-func (o testCaseRunOutput) IsTerminal() bool { return false }
+func (o testCaseRunOutput) Size() (int, int) { return 130, 25 }
+func (o testCaseRunOutput) IsTerminal() bool { return true }
 
 type testCaseRun struct {
 	lineNr           int
@@ -64,7 +64,11 @@ func (tcr *testCaseRun) Stderr() io.Writer { return tcr.actualStderrBuf }
 
 func (tcr *testCaseRun) Interrupt() chan struct{} { return nil }
 
-func (tcr *testCaseRun) Environ() []string { return nil }
+func (tcr *testCaseRun) Environ() []string {
+	return []string{
+		"NODECODEPROGRESS=1",
+	}
+}
 
 func (tcr *testCaseRun) Args() []string { return shquote.Split(tcr.args) }
 

@@ -3,6 +3,7 @@ package interp
 import (
 	"bytes"
 	"fmt"
+	"fq/internal/gojqextra"
 	"fq/pkg/bitio"
 	"fq/pkg/ranges"
 	"io"
@@ -21,6 +22,8 @@ type bufferObject struct {
 	bbr  bufferRange
 	unit int
 }
+
+// TODO: JQArray
 
 func newBifBufObject(bb *bitio.Buffer, unit int) *bufferObject {
 	return &bufferObject{
@@ -42,6 +45,9 @@ func (*bufferObject) ExtKeys() []string {
 
 func (bo *bufferObject) JQValueLength() interface{} {
 	return int(bo.bbr.r.Len / int64(bo.unit))
+}
+func (bo *bufferObject) JQValueSliceLen() interface{} {
+	return bo.JQValueLength()
 }
 func (bo *bufferObject) JQValueIndex(index int) interface{} {
 	// TODO: use bitio
@@ -111,10 +117,10 @@ func (bo *bufferObject) JQValueType() string {
 	return "buffer"
 }
 func (bo *bufferObject) JQValueKeys() interface{} {
-	return funcTypeError{name: "keys", typ: "buffer"}
+	return gojqextra.FuncTypeError{Name: "keys", Typ: "buffer"}
 }
 func (bo *bufferObject) JQValueHas(key interface{}) interface{} {
-	return hasKeyTypeError{l: "buffer", r: fmt.Sprintf("%v", key)}
+	return gojqextra.HasKeyTypeError{L: "buffer", R: fmt.Sprintf("%v", key)}
 }
 func (bo *bufferObject) JQValueToNumber() interface{} {
 	buf := &bytes.Buffer{}

@@ -523,7 +523,7 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 	// TODO: make nicer
 	// we don't want to print any progress things after decode is done
 	var decodeDoneFn func()
-	if opts.REPL && i.os.Stdout().IsTerminal() {
+	if opts.DecodeProgress && opts.REPL && i.os.Stdout().IsTerminal() {
 		decodeDone := false
 		progressFn := func(r, l int64) {
 			if decodeDone {

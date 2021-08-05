@@ -101,32 +101,35 @@ def _color_themes:
 
 def _build_default_options:
   {
-    depth:        0,
-    verbose:      false,
-    color:        (tty.is_terminal and env.CLICOLOR!=null),
-    unicode:      (tty.is_terminal and env.CLIUNICODE!=null),
-    raw:          (tty.is_terminal | not),
-    linebytes:    (if tty.is_terminal then [((tty.width div 8) div 2) * 2, 4] | max else 16 end),
-    displaybytes: (if tty.is_terminal then [((tty.width div 8) div 2) * 2, 4] | max else 16 end),
-    addrbase:     16,
-    sizebase:     10,
-    colors:       _color_themes.default.colors,
-    bytecolors:   _color_themes.default.bytecolors,
+    depth:          0,
+    verbose:        false,
+    decodeprogress: (env.NODECODEPROGRESS == null),
+    color:          (tty.is_terminal and env.CLICOLOR != null),
+    unicode:        (tty.is_terminal and env.CLIUNICODE != null),
+    raw:            (tty.is_terminal | not),
+    # TODO: div 2 * 2 to get even number, nice or maybe not needed?
+    linebytes:      (if tty.is_terminal then [((tty.width div 8) div 2) * 2, 4] | max else 16 end),
+    displaybytes:   (if tty.is_terminal then [((tty.width div 8) div 2) * 2, 4] | max else 16 end),
+    addrbase:       16,
+    sizebase:       10,
+    colors:         _color_themes.default.colors,
+    bytecolors:     _color_themes.default.bytecolors,
   };
 
 def _eval_options:
   ( {
-      depth:        (.depth | if . then eval(.) else null end),
-      verbose:      (.verbose | if . then eval(.) else null end),
-      color:        (.color | if . then eval(.) else null end),
-      unicode:      (.unicode | if . then eval(.) else null end),
-      raw:          (.raw | if . then eval(.) else null end),
-      linebytes:    (.linebytes | if . then eval(.) else null end),
-      displaybytes: (.displaybytes | if . then eval(.) else null end),
-      addrbase:     (.addrbase | if . then eval(.) else null end),
-      sizebase:     (.sizebase | if . then eval(.) else null end),
-      colors:       .colors,
-      bytecolors:   .bytecolors,
+      depth:          (.depth | if . then eval(.) else null end),
+      verbose:        (.verbose | if . then eval(.) else null end),
+      decodeprogress: (.decodeprogress | if . then eval(.) else null end),
+      color:          (.color | if . then eval(.) else null end),
+      unicode:        (.unicode | if . then eval(.) else null end),
+      raw:            (.raw | if . then eval(.) else null end),
+      linebytes:      (.linebytes | if . then eval(.) else null end),
+      displaybytes:   (.displaybytes | if . then eval(.) else null end),
+      addrbase:       (.addrbase | if . then eval(.) else null end),
+      sizebase:       (.sizebase | if . then eval(.) else null end),
+      colors:         .colors,
+      bytecolors:     .bytecolors,
     }
   | with_entries(select(.value != null))
   );
