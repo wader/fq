@@ -13,5 +13,4 @@ require (
 
 replace github.com/chzyer/readline => github.com/wader/readline v0.0.0-20210708114437-6e459499aaf5
 
-//replace github.com/itchyny/gojq => github.com/wader/gojq v0.12.1-0.20210804145306-18ad5e5c559e
-replace github.com/itchyny/gojq => /Users/wader/src/gojq
+replace github.com/itchyny/gojq => github.com/wader/gojq v0.12.1-0.20210805144145-f0cf6c81e42a
