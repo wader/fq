@@ -14,12 +14,13 @@ import (
 	"github.com/itchyny/gojq"
 )
 
+// TODO: rename
 type valueObjectIf interface {
 	InterpObject
 	ToBuffer
 }
 
-func makeValueObject(dv *decode.Value) interface{} {
+func makeValueObject(dv *decode.Value) valueObjectIf {
 	switch vv := dv.V.(type) {
 	case decode.Array:
 		return decodeValueBase{
@@ -284,7 +285,7 @@ func (v arrayValueObject) JQArrayHasKey(index int) interface{} {
 func (v arrayValueObject) JQValueToGoJQ() interface{} {
 	vs := make([]interface{}, len(v.Array))
 	for i, f := range v.Array {
-		vs[i] = makeValueObject(f)
+		vs[i] = makeValueObject(f).JQValueToGoJQ()
 	}
 	return vs
 }
@@ -336,7 +337,7 @@ func (v structValueObject) JQObjectHasKey(key string) interface{} {
 func (v structValueObject) JQValueToGoJQ() interface{} {
 	vm := make(map[string]interface{}, len(v.Struct))
 	for _, f := range v.Struct {
-		vm[f.Name] = makeValueObject(f)
+		vm[f.Name] = makeValueObject(f).JQValueToGoJQ()
 	}
 	return vm
 }

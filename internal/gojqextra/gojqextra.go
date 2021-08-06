@@ -153,7 +153,7 @@ func (v ObjectBase) JQValueLength() interface{} {
 	return v.JQObjectLength()
 }
 func (v ObjectBase) JQValueSliceLen() interface{} {
-	return v.JQObjectLength()
+	return ExpectedArrayError{Typ: "object"}
 }
 func (v ObjectBase) JQValueIndex(index int) interface{} {
 	return ExpectedArrayError{Typ: "object"}

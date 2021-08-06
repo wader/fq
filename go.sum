@@ -13,8 +13,8 @@ github.com/nbutton23/zxcvbn-go v0.0.0-20210217022336-fa2cb2858354/go.mod h1:KSVJ
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/testify v1.1.4/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXfy6kDkUVs=
-github.com/wader/gojq v0.12.1-0.20210805170123-ec1d61fce577 h1:l2DDrWS7fh4SCDIABraA1p/RKi76BrB2TZ+m22zurko=
-github.com/wader/gojq v0.12.1-0.20210805170123-ec1d61fce577/go.mod h1:EQUSKgW/YaOxmXpAwGiowFDO4i2Rmtk5+9dFyeiymAg=
+github.com/wader/gojq v0.12.1-0.20210806145036-97d626d32453 h1:Tk0jOL1IsKssiUHV4xz/e1xP3xLlWVbM4OHay2r2n9c=
+github.com/wader/gojq v0.12.1-0.20210806145036-97d626d32453/go.mod h1:EQUSKgW/YaOxmXpAwGiowFDO4i2Rmtk5+9dFyeiymAg=
 github.com/wader/readline v0.0.0-20210708114437-6e459499aaf5 h1:lNbk3zDwMc1TaNGWiKrSxCep6R8qqu9CGWBqSFD/9sE=
 github.com/wader/readline v0.0.0-20210708114437-6e459499aaf5/go.mod h1:1n88xxtpWULehIaVFcn5JQJy3RUe/5pvJznoiKWfKng=
 golang.org/x/sys v0.0.0-20200116001909-b77594299b42/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
