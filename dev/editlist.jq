@@ -16,8 +16,7 @@
 #             stsd (sample description)
 #       elst (edit list)
 
-.
-| first(.boxes[] | select(.type == "moov")?)
+( first(.boxes[] | select(.type == "moov")?)
 | first(.boxes[] | select(.type == "mvhd")?) as $mvhd
 | {
     duration: $mvhd.duration,
@@ -47,3 +46,4 @@
       }
     ]
   }
+)
