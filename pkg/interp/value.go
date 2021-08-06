@@ -20,7 +20,7 @@ type valueObjectIf interface {
 	ToBuffer
 }
 
-func makeValueObject(dv *decode.Value) valueObjectIf {
+func makeValueObject(dv *decode.Value) decodeValueBase {
 	switch vv := dv.V.(type) {
 	case decode.Array:
 		return decodeValueBase{

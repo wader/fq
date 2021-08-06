@@ -34,7 +34,7 @@
      |                                               |                |  tag_table: {} 0x80-0xbcf.7 (2896)
 0x080|00 00 00 10                                    |....            |    count: 16 0x80-0x83.7 (4)
      |                                               |                |    table: [16] 0x84-0xbcf.7 (2892)
-     |                                               |                |      [0]: element {} 0x84-0x166.7 (227)
+     |                                               |                |      [0]: element {} 0x84-0x1a6.7 (291)
 0x080|            64 65 73 63                        |    desc        |        signature: "desc" 0x84-0x87.7 (4)
 0x080|                        00 00 01 44            |        ...D    |        offset: 324 0x88-0x8b.7 (4)
 0x080|                                    00 00 00 63|            ...c|        size: 99 0x8c-0x8f.7 (4)
@@ -47,8 +47,10 @@
 0x160|00                                             |.               |
      |                                               |                |        localizable_description: "" 0x161-NA (0)
 0x160|   00 00                                       | ..             |        script_code: 0 0x161-0x162.7 (2)
-0x160|         00 00 00 00                           |   ....         |        macintosh_description_length: 0 0x163-0x166.7 (4)
-     |                                               |                |        macintosh_description: "" 0x167-NA (0)
+0x160|         00                                    |   .            |        macintosh_description_length: 0 0x163-0x163.7 (1)
+0x160|            00 00 00 00 00 00 00 00 00 00 00 00|    ............|        macintosh_description: "" 0x164-0x1a6.7 (67)
+0x170|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
+*    |until 0x1a6.7 (67)                             |                |
      |                                               |                |      [1]: element {} 0x90-0x1bb.7 (300)
 0x090|62 58 59 5a                                    |bXYZ            |        signature: "bXYZ" 0x90-0x93.7 (4)
 0x090|            00 00 01 a8                        |    ....        |        offset: 424 0x94-0x97.7 (4)
@@ -85,7 +87,7 @@
 0x1c0|            00 00 04 00 00 00 00 05 00 0a 00 0f|    ............|        data: 0000040000000005000a000f00140019... 0x1c4-0x9c7.7 (2052)
 0x1d0|00 14 00 19 00 1e 00 23 00 28 00 2d 00 32 00 37|.......#.(.-.2.7|
 *    |until 0x9c7.7 (2052)                           |                |
-     |                                               |                |      [5]: element {} 0xc0-0xa0f.7 (2384)
+     |                                               |                |      [5]: element {} 0xc0-0xa4f.7 (2448)
 0x0c0|64 6d 64 64                                    |dmdd            |        signature: "dmdd" 0xc0-0xc3.7 (4)
 0x0c0|            00 00 09 c8                        |    ....        |        offset: 2504 0xc4-0xc7.7 (4)
 0x0c0|                        00 00 00 88            |        ....    |        size: 136 0xc8-0xcb.7 (4)
@@ -99,8 +101,10 @@
 0xa00|                  00 00 00 00                  |      ....      |        localizable_description_length: 0 0xa06-0xa09.7 (4)
      |                                               |                |        localizable_description: "" 0xa0a-NA (0)
 0xa00|                              00 00            |          ..    |        script_code: 0 0xa0a-0xa0b.7 (2)
-0xa00|                                    00 00 00 00|            ....|        macintosh_description_length: 0 0xa0c-0xa0f.7 (4)
-     |                                               |                |        macintosh_description: "" 0xa10-NA (0)
+0xa00|                                    00         |            .   |        macintosh_description_length: 0 0xa0c-0xa0c.7 (1)
+0xa00|                                       00 00 00|             ...|        macintosh_description: "" 0xa0d-0xa4f.7 (67)
+0xa10|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
+*    |until 0xa4f.7 (67)                             |                |
      |                                               |                |      [6]: element {} 0xcc-0xa63.7 (2456)
 0x0c0|                                    67 58 59 5a|            gXYZ|        signature: "gXYZ" 0xcc-0xcf.7 (4)
 0x0d0|00 00 0a 50                                    |...P            |        offset: 2640 0xd0-0xd3.7 (4)
@@ -152,7 +156,7 @@
 0xac0|            73 69 67 20                        |    sig         |        type: "sig " 0xac4-0xac7.7 (4)
 0xac0|                        00 00 00 00            |        ....    |        reserved: 0 0xac8-0xacb.7 (4)
 0xac0|                                    43 52 54 20|            CRT |        data: 43525420 0xacc-0xacf.7 (4)
-     |                                               |                |      [12]: element {} 0x114-0xb16.7 (2563)
+     |                                               |                |      [12]: element {} 0x114-0xb56.7 (2627)
 0x110|            76 75 65 64                        |    vued        |        signature: "vued" 0x114-0x117.7 (4)
 0x110|                        00 00 0a d0            |        ....    |        offset: 2768 0x118-0x11b.7 (4)
 0x110|                                    00 00 00 87|            ....|        size: 135 0x11c-0x11f.7 (4)
@@ -167,8 +171,10 @@
 0xb10|00                                             |.               |
      |                                               |                |        localizable_description: "" 0xb11-NA (0)
 0xb10|   00 00                                       | ..             |        script_code: 0 0xb11-0xb12.7 (2)
-0xb10|         00 00 00 00                           |   ....         |        macintosh_description_length: 0 0xb13-0xb16.7 (4)
-     |                                               |                |        macintosh_description: "" 0xb17-NA (0)
+0xb10|         00                                    |   .            |        macintosh_description_length: 0 0xb13-0xb13.7 (1)
+0xb10|            00 00 00 00 00 00 00 00 00 00 00 00|    ............|        macintosh_description: "" 0xb14-0xb56.7 (67)
+0xb20|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
+*    |until 0xb56.7 (67)                             |                |
      |                                               |                |      [13]: element {} 0x120-0xb6b.7 (2636)
 0x120|77 74 70 74                                    |wtpt            |        signature: "wtpt" 0x120-0x123.7 (4)
 0x120|            00 00 0b 58                        |    ...X        |        offset: 2904 0x124-0x127.7 (4)
@@ -196,12 +202,6 @@
 0xba0|                                    00 01 0c 44|            ...D|        data: 00010c44000005dffffff32600000794... 0xbac-0xbcf.7 (36)
 0xbb0|00 00 05 df ff ff f3 26 00 00 07 94 00 00 fd 8f|.......&........|
 0xbc0|ff ff fb a1 ff ff fd a2 00 00 03 db 00 00 c0 75|...............u|
-0x160|                     00 00 00 00 00 00 00 00 00|       .........|  unknown0: 00000000000000000000000000000000... 0x167-0x1a7.7 (65)
-0x170|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
-*    |until 0x1a7.7 (65)                             |                |
-0xa10|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|  unknown1: 00000000000000000000000000000000... 0xa10-0xa4f.7 (64)
-*    |until 0xa4f.7 (64)                             |                |
-0xb10|                     00 00 00 00 00 00 00 00 00|       .........|  unknown2: 00000000000000000000000000000000... 0xb17-0xb57.7 (65)
-0xb20|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
-*    |until 0xb57.7 (65)                             |                |
-0xba0|         00                                    |   .            |  unknown3: 00 0xba3-0xba3.7 (1)
+0x1a0|                     00                        |       .        |  unknown0: 00 0x1a7-0x1a7.7 (1)
+0xb50|                     00                        |       .        |  unknown1: 00 0xb57-0xb57.7 (1)
+0xba0|         00                                    |   .            |  unknown2: 00 0xba3-0xba3.7 (1)

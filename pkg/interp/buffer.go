@@ -25,8 +25,8 @@ type bufferObject struct {
 
 // TODO: JQArray
 
-func newBifBufObject(bb *bitio.Buffer, unit int) *bufferObject {
-	return &bufferObject{
+func newBifBufObject(bb *bitio.Buffer, unit int) bufferObject {
+	return bufferObject{
 		bbr:  bufferRange{bb: bb, r: ranges.Range{Start: 0, Len: bb.Len()}},
 		unit: unit,
 	}
@@ -43,13 +43,13 @@ func (*bufferObject) ExtKeys() []string {
 	}
 }
 
-func (bo *bufferObject) JQValueLength() interface{} {
+func (bo bufferObject) JQValueLength() interface{} {
 	return int(bo.bbr.r.Len / int64(bo.unit))
 }
-func (bo *bufferObject) JQValueSliceLen() interface{} {
+func (bo bufferObject) JQValueSliceLen() interface{} {
 	return bo.JQValueLength()
 }
-func (bo *bufferObject) JQValueIndex(index int) interface{} {
+func (bo bufferObject) JQValueIndex(index int) interface{} {
 	// TODO: use bitio
 	/*
 		pos, err := bo.bbr.bb.Pos()
@@ -70,7 +70,7 @@ func (bo *bufferObject) JQValueIndex(index int) interface{} {
 	*/
 	return nil
 }
-func (bo *bufferObject) JQValueSlice(start int, end int) interface{} {
+func (bo bufferObject) JQValueSlice(start int, end int) interface{} {
 	rStart := int64(start * bo.unit)
 	rLen := int64((end - start) * bo.unit)
 
@@ -84,7 +84,7 @@ func (bo *bufferObject) JQValueSlice(start int, end int) interface{} {
 		unit: bo.unit,
 	}
 }
-func (bo *bufferObject) JQValueKey(name string) interface{} {
+func (bo bufferObject) JQValueKey(name string) interface{} {
 	switch name {
 	case "size":
 		return new(big.Int).SetInt64(bo.bbr.r.Len / int64(bo.unit))
@@ -110,19 +110,19 @@ func (bo *bufferObject) JQValueKey(name string) interface{} {
 	}
 	return nil
 }
-func (bo *bufferObject) JQValueEach() interface{} {
+func (bo bufferObject) JQValueEach() interface{} {
 	return nil
 }
-func (bo *bufferObject) JQValueType() string {
+func (bo bufferObject) JQValueType() string {
 	return "buffer"
 }
-func (bo *bufferObject) JQValueKeys() interface{} {
+func (bo bufferObject) JQValueKeys() interface{} {
 	return gojqextra.FuncTypeError{Name: "keys", Typ: "buffer"}
 }
-func (bo *bufferObject) JQValueHas(key interface{}) interface{} {
+func (bo bufferObject) JQValueHas(key interface{}) interface{} {
 	return gojqextra.HasKeyTypeError{L: "buffer", R: fmt.Sprintf("%v", key)}
 }
-func (bo *bufferObject) JQValueToNumber() interface{} {
+func (bo bufferObject) JQValueToNumber() interface{} {
 	buf := &bytes.Buffer{}
 	if _, err := io.Copy(buf, bo.bbr.bb); err != nil {
 		return err
@@ -130,11 +130,11 @@ func (bo *bufferObject) JQValueToNumber() interface{} {
 	extraBits := uint((8 - bo.bbr.r.Len%8) % 8)
 	return new(big.Int).Rsh(new(big.Int).SetBytes(buf.Bytes()), extraBits)
 }
-func (bo *bufferObject) JQValueToString() interface{} {
+func (bo bufferObject) JQValueToString() interface{} {
 	return bo.JQValueToGoJQ()
 }
 
-func (bo *bufferObject) JQValueToGoJQ() interface{} {
+func (bo bufferObject) JQValueToGoJQ() interface{} {
 	buf := &bytes.Buffer{}
 	if _, err := io.Copy(buf, bo.bbr.bb.Copy()); err != nil {
 		return err
@@ -142,7 +142,7 @@ func (bo *bufferObject) JQValueToGoJQ() interface{} {
 	return buf.String()
 }
 
-func (bo *bufferObject) Display(w io.Writer, opts Options) error {
+func (bo bufferObject) Display(w io.Writer, opts Options) error {
 	if opts.Raw {
 		if _, err := io.Copy(w, bo.bbr.bb.Copy()); err != nil {
 			return err
@@ -176,6 +176,6 @@ func (bo *bufferObject) Display(w io.Writer, opts Options) error {
 	return err
 }
 
-func (bo *bufferObject) ToBuffer() (*bitio.Buffer, error) {
+func (bo bufferObject) ToBuffer() (*bitio.Buffer, error) {
 	return bo.bbr.bb, nil
 }

@@ -7,6 +7,7 @@ import (
 	"fq/format"
 	"fq/format/registry"
 	"fq/pkg/decode"
+	"strings"
 )
 
 func init() {
@@ -41,8 +42,10 @@ func descType(d *decode.D) {
 	localDescLen := d.FieldU32("localizable_description_length")
 	d.FieldStrNullTerminatedLen("localizable_description", int(localDescLen))
 	d.FieldU16("script_code")
-	macDescLen := d.FieldU32("macintosh_description_length")
-	d.FieldStrNullTerminatedLen("macintosh_description", int(macDescLen))
+	d.FieldU8("macintosh_description_length")
+	d.FieldStrFn("macintosh_description", func() (string, string) {
+		return strings.Trim(d.UTF8(67), "\x00 "), ""
+	})
 }
 
 var typToDecode = map[string]func(d *decode.D){
