@@ -23,6 +23,12 @@ func decodeJSON(d *decode.D, in interface{}) interface{} {
 	if err := jd.Decode(&d.Value.V); err != nil {
 		d.Invalid(err.Error())
 	}
+	switch d.Value.V.(type) {
+	case map[string]interface{},
+		[]interface{}:
+	default:
+		d.Invalid("root not object or array")
+	}
 	// TODO: root not array/struct how to add unknown gaps?
 	// TODO: ranges not end up correct
 	d.Value.Range.Len = jd.InputOffset() * 8
