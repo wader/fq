@@ -198,8 +198,8 @@ def _repl_eval($e): _eval($e; _repl_display; _repl_on_error; _repl_on_compile_er
 # run read-eval-print-loop
 def repl($opts; iter): #:: a|(Opts) => @
   def _read_expr:
-    ( # both _prompt and _complete want arrays
-    | [iter]
+    # both _prompt and _complete want arrays
+    ( [iter]
     | readline(_prompt(iter); "_complete")
     | trim
     );
