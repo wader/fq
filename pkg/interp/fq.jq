@@ -156,8 +156,7 @@ def _prompt(iter):
       , "[\(length)]"
       )
     end;
-  ( [iter]
-  | [ (options.repllevel | if . > 1 then ((.-1) * ">") + " " else empty end)
+  ( [ (options.repllevel | if . > 1 then ((.-1) * ">") + " " else empty end)
     , if length == 0 then
         "empty"
       else
@@ -198,7 +197,12 @@ def _repl_eval($e): _eval($e; _repl_display; _repl_on_error; _repl_on_compile_er
 
 # run read-eval-print-loop
 def repl($opts; iter): #:: a|(Opts) => @
-  def _read_expr: readline(_prompt(iter); "_complete") | trim;
+  def _read_expr:
+    ( # both _prompt and _complete want arrays
+    | [iter]
+    | readline(_prompt(iter); "_complete")
+    | trim
+    );
   def _repl:
     ( . as $c
     | try
