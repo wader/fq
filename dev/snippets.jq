@@ -1,6 +1,6 @@
-# same as group_by but just counts, grouping exp value will be converted to string
+# same as group_by but counts
 def count_by(exp):
-  group_by(exp) | map({(.[0] | exp | tostring): length}) | add;
+  group_by(exp) | map([(.[0] | exp), length]);
 
 def protobuf_to_value:
   .fields | map({(.name | tostring): (.enum // .value)}) | add;
