@@ -51,7 +51,7 @@ def duration:
         | map(tostring | lpad("0"; 2))
         | join(":")
         )
-        # ugly but float truncation is no accurate enough
+        # ugly but float is not accurate enough
       , ( tostring
         | split(".")[1] // empty
         | ".", .
