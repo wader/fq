@@ -362,8 +362,7 @@ def _main:
     };
   def _usage($arg0; $version):
     "Usage: \($arg0) [OPTIONS] [EXPR] [FILE...]";
-  ( . as {$version, $args}
-  | $args[0] as $arg0
+  ( . as {$version, $args, args: [$arg0]}
   # make sure we don't unintentionally use . to make things clearer
   | null
   | args_parse($args[1:]; _opts($version)) as {parsed: $parsed_args, $rest}
