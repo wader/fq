@@ -58,47 +58,6 @@ def _complete($e):
 def _obj_to_csv_kv:
   [to_entries[] | [.key, .value] | join("=")] | join(",");
 
-def _color_themes:
-  {
-    default: {
-      colors: ({
-        null: "brightblack",
-        false: "yellow",
-        true: "yellow",
-        number: "cyan",
-        string: "green",
-        objectkey: "brightblue",
-        array: "white",
-        object: "white",
-        index: "white",
-        value: "white",
-        error: "brightred",
-        dumpheader: "yellow+underline",
-        dumpaddr: "yellow"
-      } | _obj_to_csv_kv),
-      bytecolors: "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
-    },
-    # TODO: more configurable? colors=neon?
-    neon: {
-      colors: ({
-        null: "brightblack",
-        false: "brightyellow",
-        true: "brightyellow",
-        number: "brightcyan",
-        string: "brightgreen",
-        objectkey: "brightblue",
-        array: "brightwhite",
-        object: "brightwhite",
-        index: "brightwhite",
-        value: "brightwhite",
-        error: "brightred",
-        dumpheader: "brightyellow+underline",
-        dumpaddr: "brightyellow"
-      } | _obj_to_csv_kv),
-      bytecolors: "0-0xff=brightwhite,0=brightblack,32-126:9-13=brightgreen",
-    }
-  };
-
 def _build_default_options:
   {
     depth:          0,
@@ -112,8 +71,24 @@ def _build_default_options:
     displaybytes:   (if tty.is_terminal then [((tty.width div 8) div 2) * 2, 4] | max else 16 end),
     addrbase:       16,
     sizebase:       10,
-    colors:         _color_themes.default.colors,
-    bytecolors:     _color_themes.default.bytecolors,
+    colors: (
+      {
+        null: "brightblack",
+        false: "yellow",
+        true: "yellow",
+        number: "cyan",
+        string: "green",
+        objectkey: "brightblue",
+        array: "white",
+        object: "white",
+        index: "white",
+        value: "white",
+        error: "brightred",
+        dumpheader: "yellow+underline",
+        dumpaddr: "yellow"
+      } | _obj_to_csv_kv
+    ),
+    bytecolors:     "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
   };
 
 def _eval_options:
@@ -128,13 +103,11 @@ def _eval_options:
       displaybytes:   (.displaybytes | if . then eval(.) else null end),
       addrbase:       (.addrbase | if . then eval(.) else null end),
       sizebase:       (.sizebase | if . then eval(.) else null end),
-      colors:         .colors,
-      bytecolors:     .bytecolors,
     }
   | with_entries(select(.value != null))
   );
 
-def _prompt(iter):
+def _prompt:
   def _type_name_error:
     ( . as $c
     | try
@@ -156,7 +129,7 @@ def _prompt(iter):
       , "[\(length)]"
       )
     end;
-  ( [ (options.repllevel | if . > 1 then ((.-1) * ">") + " " else empty end)
+  ( [ (_options_stack | length | if . > 2 then ((.-2) * ">") + " " else empty end)
     , if length == 0 then
         "empty"
       else
@@ -200,7 +173,7 @@ def repl($opts; iter): #:: a|(Opts) => @
   def _read_expr:
     # both _prompt and _complete want arrays
     ( [iter]
-    | readline(_prompt(iter); "_complete")
+    | readline(_prompt; "_complete")
     | trim
     );
   def _repl:
@@ -220,13 +193,19 @@ def repl($opts; iter): #:: a|(Opts) => @
         else error(.)
         end
     );
-  _with_options($opts | .repllevel = options.repllevel+1; _repl);
+  ( _options_stack(. + [$opts]) as $_
+  | finally(
+      _repl;
+      _options_stack(.[:-1])
+    )
+  );
 # same as repl({})
 def repl($opts): repl($opts; .);
 def repl: repl({}; .); #:: a| => @
 
 def _cli_expr_on_error:
-  ( _cli_last_expr_error(.) as $_
+  ( . as $err
+  | _cli_last_expr_error($err) as $_
   | _stderr_error
   );
 def _cli_expr_on_compile_error:
@@ -236,6 +215,50 @@ def _cli_expr_on_compile_error:
 # _cli_expr_eval halts on compile errors
 def _cli_expr_eval($e; f): _eval($e; f; _cli_expr_on_error; _cli_expr_on_compile_error);
 def _cli_expr_eval($e): _eval($e; .; _cli_expr_on_error; _cli_expr_on_compile_error);
+
+# next valid input
+def input:
+  ( _inputs
+  | if length == 0 then error("break") end
+  | [.[0], .[1:]] as [$h, $t]
+  | _inputs($t)
+  | _input_filename(null) as $_
+  | $h
+  | try
+      ( open
+      | _input_filename($h) as $_
+      | .
+      )
+    catch
+      ( . as $err
+      | _input_io_errors(. += {($h): $err}) as $_
+      | $err
+      | _stderr_error
+      , input
+      )
+  | try
+      decode(_parsed_args.decode_format)
+    catch
+      ( . as $err
+      | _input_decode_errors(. += {($h): $err}) as $_
+      | "\($h): failed to decode (\(_parsed_args.decode_format)), try -d FORMAT to force"
+      | _stderr_error
+      , input
+      )
+  );
+
+# iterate all valid inputs
+def inputs:
+  try repeat(input)
+  catch if . == "break" then empty else error end;
+def inputs($v): _inputs($v);
+
+def input_filename: _input_filename;
+
+# . will have additional array of options making priority
+# NOTE: is used by go Options()
+def options:
+  [_default_options] + _options_stack + . | add;
 
 def _main:
   def _formats_list:
@@ -339,15 +362,16 @@ def _main:
     };
   def _usage($arg0; $version):
     "Usage: \($arg0) [OPTIONS] [EXPR] [FILE...]";
-  ( .version as $version
-  | .args[0] as $arg0
-  | args_parse(.args[1:]; _opts($version)) as {parsed: $parsed_args, $rest}
+  ( . as {$version, $args}
+  | $args[0] as $arg0
+  # make sure we don't unintentionally use . to make things clearer
+  | null
+  | args_parse($args[1:]; _opts($version)) as {parsed: $parsed_args, $rest}
   # store parsed arguments, .decode_format is used by input/0
   | _parsed_args($parsed_args) as $_
   | _default_options(_build_default_options) as $_
-  # TODO: hack, pass opts some other way?
-  | _push_options(
-      ( ($parsed_args.options | _eval_options)
+  | _options_stack(
+      [ ($parsed_args.options | _eval_options)
       + {
           repl: ($parsed_args.repl == true),
           rawstring: (
@@ -362,10 +386,9 @@ def _main:
             end
           ),
           compact: ($parsed_args.compact == true),
-          repllevel: 0,
         }
-      )
-    )
+      ]
+    ) as $_
   | if $parsed_args.help then
       ( _usage($arg0; $version)
       , args_help_text(_opts($version))
@@ -375,9 +398,9 @@ def _main:
     elif $parsed_args.formats then
       _formats_list | println
     elif ($rest | length) == 0 and (($parsed_args.repl | not) and ($parsed_args.file | not)) then
-      _usage($arg0; $version) | println
+      ( $parsed_args | _usage($arg0; $version) | println)
     else
-      # use finally as display etc outputs and result in empty
+      # use finally as display etc prints and results in empty
       finally(
         ( { nullinput: ($parsed_args.nullinput == true) }
         | if $parsed_args.file then
@@ -407,7 +430,7 @@ def _main:
             )
           end
         )
-        ;
+        ; # finally
         ( if _input_io_errors != null then
             null | halt_error(_exit_code_input_io_error)
           end

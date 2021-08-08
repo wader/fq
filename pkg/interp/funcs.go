@@ -43,13 +43,11 @@ func (i *Interp) makeFunctions(registry *registry.Registry) []Function {
 		{[]string{"println"}, 0, 0, nil, i.println},
 		{[]string{"stderr"}, 0, 0, nil, i.stderr},
 		{[]string{"debug"}, 0, 0, i.debug, nil},
-		{[]string{"options"}, 0, 0, i.options, nil},
 
 		{[]string{"_complete_query"}, 0, 0, i._completeQuery, nil},
 		{[]string{"_display_name"}, 0, 0, i._displayName, nil},
 		{[]string{"_extkeys"}, 0, 0, i._extKeys, nil},
-		{[]string{"_global_state"}, 1, 2, i.makeStateFn(i.state), nil},
-		{[]string{"_eval_state"}, 1, 2, i.makeStateFn(i.evalContext.state), nil},
+		{[]string{"_global_state"}, 0, 1, i.makeStateFn(i.state), nil},
 
 		{[]string{"formats"}, 0, 0, i.formats, nil},
 		{[]string{"history"}, 0, 0, i.history, nil},
@@ -317,25 +315,6 @@ func (i *Interp) debug(c interface{}, a []interface{}) interface{} {
 	return c
 }
 
-func (i *Interp) options(c interface{}, a []interface{}) interface{} {
-	opts, err := i.Options()
-	if err != nil {
-		return err
-	}
-
-	// TODO: ugly
-	var v map[string]interface{}
-	b := &bytes.Buffer{}
-	if err := json.NewEncoder(b).Encode(&opts); err != nil {
-		return err
-	}
-	if err := json.NewDecoder(b).Decode(&v); err != nil {
-		return err
-	}
-
-	return v
-}
-
 func (i *Interp) _completeQuery(c interface{}, a []interface{}) interface{} {
 	s, ok := c.(string)
 	if !ok {
@@ -374,24 +353,12 @@ func (i *Interp) _extKeys(c interface{}, a []interface{}) interface{} {
 	return nil
 }
 
-func (i *Interp) makeStateFn(state map[string]interface{}) func(c interface{}, a []interface{}) interface{} {
+func (i *Interp) makeStateFn(state *interface{}) func(c interface{}, a []interface{}) interface{} {
 	return func(c interface{}, a []interface{}) interface{} {
-		key, ok := a[0].(string)
-		if !ok {
-			return fmt.Errorf("%v: key is not a string", c)
+		if len(a) > 0 {
+			*state = a[0]
 		}
-
-		v := state[key]
-		if len(a) > 1 {
-			v = a[1]
-			if v == nil {
-				delete(state, key)
-			} else {
-				state[key] = v
-			}
-		}
-
-		return v
+		return *state
 	}
 }
 

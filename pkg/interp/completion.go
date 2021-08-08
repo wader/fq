@@ -113,8 +113,8 @@ func completeTrampoline(ctx context.Context, completeFn string, c interface{}, i
 		return nil, pos, fmt.Errorf("no values")
 	}
 	v := vs[0]
-	if _, ok := v.(error); ok {
-		return nil, pos, err
+	if vErr, ok := v.(error); ok {
+		return nil, pos, vErr
 	}
 
 	// {abc: 123, abd: 123} | complete(".ab") will return {prefix: "ab", names: ["abc", "abd"]}

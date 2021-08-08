@@ -9,60 +9,29 @@ def finally(f; fin):
 def _print_error: "error: \(.)" | println;
 def _stderr_error: "error: \(.)\n" | stderr;
 
-def _default_options: _eval_state("default_options");
-def _default_options($opts): _eval_state("default_options"; $opts);
+def _global_var($k): _global_state[$k];
+def _global_var($k; f): _global_state(_global_state | .[$k] |= f);
 
-def _push_options($opts): _eval_state("options_stack"; [$opts] + (_eval_state("options_stack") // []));
-def _pop_options: _eval_state("options_stack"; _eval_state("options_stack")[1:]);
+def _default_options: _global_var("default_options");
+def _default_options(f): _global_var("default_options"; f);
 
-def _with_options($opts; f):
-  _push_options($opts) as $_ | finally(f; _pop_options);
+def _options_stack: _global_var("options_stack");
+def _options_stack(f): _global_var("options_stack"; f);
 
-def _parsed_args: _global_state("parsed_args");
-def _parsed_args($v): _global_state("parsed_args"; $v);
+def _parsed_args: _global_var("parsed_args");
+def _parsed_args(f): _global_var("parsed_args"; f);
 
-def _cli_last_expr_error: _global_state("cli_last_expr_error");
-def _cli_last_expr_error($v): _global_state("cli_last_expr_error"; $v);
+def _cli_last_expr_error: _global_var("cli_last_expr_error");
+def _cli_last_expr_error(f): _global_var("cli_last_expr_error"; f);
 
-# next valid input
-def input:
-  ( _global_state("inputs")
-  | if length == 0 then error("break") end
-  | [.[0], .[1:]] as [$h, $t]
-  | _global_state("inputs"; $t)
-  | _global_state("input_filename"; null) as $_
-  | $h
-  | try
-      ( open
-      | _global_state("input_filename"; $h) as $_
-      | .
-      )
-    catch
-      ( _global_state("input_io_errors";
-          (_global_state("input_io_errors") // {}) + {($h): .}
-        ) as $_
-      | _stderr_error
-      , input
-      )
-  | try
-      decode(_parsed_args.decode_format)
-    catch
-      ( _global_state("input_decode_errors";
-          (_global_state("input_decode_errors") // {}) + {($h): .}
-        ) as $_
-      | "\($h): failed to decode (\(_parsed_args.decode_format)), try -d FORMAT to force"
-      | _stderr_error
-      , input
-      )
-  );
+def _inputs: _global_var("inputs");
+def _inputs(f): _global_var("inputs"; f);
 
-# iterate all valid inputs
-def inputs:
-  try repeat(input)
-  catch if . == "break" then empty else error end;
-def inputs($v): _global_state("inputs"; $v);
+def _input_filename: _global_var("input_filename");
+def _input_filename(f): _global_var("input_filename"; f);
 
-def input_filename: _global_state("input_filename");
+def _input_io_errors: _global_var("input_io_errors");
+def _input_io_errors(f): _global_var("input_io_errors"; f);
 
-def _input_io_errors: _global_state("input_io_errors");
-def _input_decode_errors: _global_state("input_decode_errors");
+def _input_decode_errors: _global_var("input_decode_errors");
+def _input_decode_errors(f): _global_var("input_decode_errors"; f);

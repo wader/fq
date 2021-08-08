@@ -434,11 +434,9 @@ const (
 
 type evalContext struct {
 	// structcheck has problems with embedding https://gitlab.com/opennota/check#known-limitations
-	ctx    context.Context
-	stdout Output // TODO: rename?
-	mode   RunMode
-	// per eval state
-	state   map[string]interface{}
+	ctx     context.Context
+	stdout  Output // TODO: rename?
+	mode    RunMode
 	debugFn string
 }
 
@@ -449,8 +447,8 @@ type Interp struct {
 	initFqQuery    *gojq.Query
 	includeCache   map[string]*gojq.Query
 	interruptStack *ctxstack.Stack
-	// global interp state
-	state map[string]interface{}
+	// global state, is ref as Interp i cloned per eval
+	state *interface{}
 
 	// new for each run, other values are copied by ref
 	evalContext evalContext
@@ -478,7 +476,7 @@ func New(os OS, registry *registry.Registry) (*Interp, error) {
 			return
 		}
 	})
-	i.state = map[string]interface{}{}
+	i.state = new(interface{})
 
 	return i, nil
 }
@@ -550,15 +548,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	ci := *i
 	ni := &ci
 
-	newState := map[string]interface{}{}
-	if i.evalContext.state != nil {
-		for k, v := range i.evalContext.state {
-			newState[k] = v
-		}
-	}
-
 	ni.evalContext = evalContext{
-		state:   newState,
 		mode:    mode,
 		debugFn: debugFn,
 	}
@@ -731,7 +721,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output, debugFn string) (gojq.Iter, error) {
 	var argsExpr []string
 	for i := range args {
-		argsExpr = append(argsExpr, fmt.Sprintf("$a[%d]", i))
+		argsExpr = append(argsExpr, fmt.Sprintf("$args[%d]", i))
 	}
 	argExpr := ""
 	if len(argsExpr) > 0 {
@@ -742,8 +732,8 @@ func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name
 		"input": c,
 		"args":  args,
 	}
-	// {input: ..., args: [...]} | .args as $a | .input | name[($a[0]; ...)]
-	trampolineExpr := fmt.Sprintf(".args as $a | .input | %s%s", name, argExpr)
+	// {input: ..., args: [...]} | .args as $args | .input | name[($args[0]; ...)]
+	trampolineExpr := fmt.Sprintf(". as {$args} | .input | %s%s", name, argExpr)
 	iter, err := i.Eval(ctx, mode, trampolineInput, trampolineExpr, stdout, debugFn)
 	if err != nil {
 		return nil, err
@@ -850,43 +840,24 @@ func mapSetOptions(d *Options, m map[string]interface{}) {
 }
 
 func (i *Interp) Options(fnOptsV ...interface{}) (Options, error) {
+	vs, err := i.EvalFuncValues(i.evalContext.ctx, ScriptMode, fnOptsV, "options", nil, DiscardOutput{Ctx: i.evalContext.ctx}, "")
+	if err != nil {
+		return Options{}, err
+	}
+	if len(vs) < 1 {
+		return Options{}, fmt.Errorf("no options value")
+	}
+	v := vs[0]
+	if vErr, ok := v.(error); ok {
+		return Options{}, vErr
+	}
+	m, ok := v.(map[string]interface{})
+	if !ok {
+		return Options{}, fmt.Errorf("options value not a map: %v", m)
+	}
+
 	var opts Options
-
-	defaultOptsV := i.evalContext.state["default_options"]
-	if defaultOptsV == nil {
-		return Options{}, fmt.Errorf("default_options state not set")
-	}
-	defaultOpts, ok := defaultOptsV.(map[string]interface{})
-	if !ok {
-		return Options{}, fmt.Errorf("default_options not an object")
-	}
-	mapSetOptions(&opts, defaultOpts)
-
-	optsStackV := i.evalContext.state["options_stack"]
-	if optsStackV == nil {
-		return Options{}, fmt.Errorf("options_stack state not set")
-	}
-	optsStack, ok := optsStackV.([]interface{})
-	if !ok {
-		return Options{}, fmt.Errorf("options_stack is not an array")
-	}
-	for i := len(optsStack) - 1; i >= 0; i-- {
-		ov := optsStack[i]
-		o, ok := ov.(map[string]interface{})
-		if !ok {
-			return Options{}, fmt.Errorf("optsStack[%d] not an object: %v", i, ov)
-		}
-		mapSetOptions(&opts, o)
-	}
-
-	for _, fnOptsV := range fnOptsV {
-		fnOpts, ok := fnOptsV.(map[string]interface{})
-		if !ok {
-			return Options{}, fmt.Errorf("options not an object")
-		}
-		mapSetOptions(&opts, fnOpts)
-	}
-
+	mapSetOptions(&opts, m)
 	opts.Decorator = decoratorFromOptions(opts)
 
 	return opts, nil
