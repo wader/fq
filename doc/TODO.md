@@ -7,7 +7,6 @@
 - Nicer context cancel message
 - `dump` cancel output of large root value, ex: `.frames`. Problem is dump is done by parent repl. 
 - Error position "^" pointer?
-- options code is very confusing, how to redo and still support per repl options `.. | repl({...})`
 - Configurable history file/name?
 - Reset color at prompt? context cancel
 - Auto complete $variables
