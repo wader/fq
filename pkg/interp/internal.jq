@@ -1,7 +1,7 @@
 # eval f and finally eval fin even on empty or error
 def finally(f; fin):
   ( try f // (fin | empty)
-    catch (fin as $_ | error(.))
+    catch (fin as $_ | error)
   | fin as $_
   | .
   );
