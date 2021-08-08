@@ -255,7 +255,7 @@ def inputs($v): _inputs($v);
 
 def input_filename: _input_filename;
 
-# . will have additional array of options making priority
+# . will have additional array of options taking priority
 # NOTE: is used by go Options()
 def options:
   [_default_options] + _options_stack + . | add;
