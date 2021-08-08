@@ -155,7 +155,7 @@ func (dvb decodeValueBase) JQValueKey(name string) interface{} {
 		case "_name":
 			return dv.Name
 		case "_value":
-			return dvb.JQValue.JQValueToGoJQ()
+			return dvb.JQValue
 		case "_symbol":
 			return dv.Symbol
 		case "_description":
@@ -285,7 +285,7 @@ func (v arrayValueObject) JQArrayHasKey(index int) interface{} {
 func (v arrayValueObject) JQValueToGoJQ() interface{} {
 	vs := make([]interface{}, len(v.Array))
 	for i, f := range v.Array {
-		vs[i] = makeValueObject(f).JQValueToGoJQ()
+		vs[i] = makeValueObject(f)
 	}
 	return vs
 }
@@ -337,7 +337,7 @@ func (v structValueObject) JQObjectHasKey(key string) interface{} {
 func (v structValueObject) JQValueToGoJQ() interface{} {
 	vm := make(map[string]interface{}, len(v.Struct))
 	for _, f := range v.Struct {
-		vm[f.Name] = makeValueObject(f).JQValueToGoJQ()
+		vm[f.Name] = makeValueObject(f)
 	}
 	return vm
 }
