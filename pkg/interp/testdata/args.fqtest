@@ -110,3 +110,15 @@ vpx_ccr            VPX Codec Configuration Record
 wav                WAV file
 webp               WebP image
 xing               Xing header
+> fq -X
+exitcode: 2
+stderr:
+error: -X: no such argument
+> fq --X
+exitcode: 2
+stderr:
+error: --X: no such argument
+> fq -.
+exitcode: 2
+stderr:
+error: -.: no such argument
