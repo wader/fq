@@ -8,7 +8,6 @@ import (
 	"fq/pkg/decode"
 	"io"
 	"math/big"
-	"sort"
 	"strings"
 
 	"github.com/itchyny/gojq"
@@ -312,11 +311,6 @@ func (v structValueObject) JQObjectEach() interface{} {
 	for i, f := range v.Struct {
 		props[i] = gojq.PathValue{Path: f.Name, Value: makeValueObject(f)}
 	}
-	sort.Slice(props, func(i, j int) bool {
-		iString, _ := props[i].Path.(string)
-		jString, _ := props[j].Path.(string)
-		return iString < jString
-	})
 	return props
 }
 func (v structValueObject) JQObjectKeys() interface{} {

@@ -1,82 +1,700 @@
+/test.mp3:
 # ffmpeg -f lavfi -i sine -t 10ms test.mp3
 > fq -d mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing' /test.mp3
-exitcode: 2
-stderr:
-error: /test.mp3: file not found
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.frames[0].xing: {} (xing)
+0x40|      49 6e 66 6f                              |  Info          |  header: "Info"
+0x40|                  00 00 00 0f                  |      ....      |  present_flags: {}
+0x40|                              00 00 00 02      |          ....  |  frames: 2
+0x40|                                          00 00|              ..|  bytes: 599
+0x50|02 57                                          |.W              |
+0x50|      00 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6|  ..............|  toc: [100]
+0x60|a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6|................|
+*   |until 0xb5.7 (100)                             |                |
+0xb0|                  00 00 00 00                  |      ....      |  quality: 0
+0xb0|                              4c 61 76 63 35 38|          Lavc58|  lame_extension: {}
+0xc0|2e 39 31 00 00 00 00 00 00 00 00 00 00 00 00 24|.91............$|
+0xd0|05 07 00 00 00 00 00 00 02 57 62 f0 5a 35      |.........Wb.Z5  |
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
+0x40|                              00 00 00 02      |          ....  |.frames[0].xing.frames: 2
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.frames[0].xing.toc: [100]
+0x50|      00                                       |  .             |  [0]: 0
+0x50|         a6                                    |   .            |  [1]: 166
+0x50|            a6                                 |    .           |  [2]: 166
+0x50|               a6                              |     .          |  [3]: 166
+0x50|                  a6                           |      .         |  [4]: 166
+0x50|                     a6                        |       .        |  [5]: 166
+0x50|                        a6                     |        .       |  [6]: 166
+0x50|                           a6                  |         .      |  [7]: 166
+0x50|                              a6               |          .     |  [8]: 166
+0x50|                                 a6            |           .    |  [9]: 166
+0x50|                                    a6         |            .   |  [10]: 166
+0x50|                                       a6      |             .  |  [11]: 166
+0x50|                                          a6   |              . |  [12]: 166
+0x50|                                             a6|               .|  [13]: 166
+0x60|a6                                             |.               |  [14]: 166
+0x60|   a6                                          | .              |  [15]: 166
+0x60|      a6                                       |  .             |  [16]: 166
+0x60|         a6                                    |   .            |  [17]: 166
+0x60|            a6                                 |    .           |  [18]: 166
+0x60|               a6                              |     .          |  [19]: 166
+0x60|                  a6                           |      .         |  [20]: 166
+0x60|                     a6                        |       .        |  [21]: 166
+0x60|                        a6                     |        .       |  [22]: 166
+0x60|                           a6                  |         .      |  [23]: 166
+0x60|                              a6               |          .     |  [24]: 166
+0x60|                                 a6            |           .    |  [25]: 166
+0x60|                                    a6         |            .   |  [26]: 166
+0x60|                                       a6      |             .  |  [27]: 166
+0x60|                                          a6   |              . |  [28]: 166
+0x60|                                             a6|               .|  [29]: 166
+0x70|a6                                             |.               |  [30]: 166
+0x70|   a6                                          | .              |  [31]: 166
+0x70|      a6                                       |  .             |  [32]: 166
+0x70|         a6                                    |   .            |  [33]: 166
+0x70|            a6                                 |    .           |  [34]: 166
+0x70|               a6                              |     .          |  [35]: 166
+0x70|                  a6                           |      .         |  [36]: 166
+0x70|                     a6                        |       .        |  [37]: 166
+0x70|                        a6                     |        .       |  [38]: 166
+0x70|                           a6                  |         .      |  [39]: 166
+0x70|                              a6               |          .     |  [40]: 166
+0x70|                                 a6            |           .    |  [41]: 166
+0x70|                                    a6         |            .   |  [42]: 166
+0x70|                                       a6      |             .  |  [43]: 166
+0x70|                                          a6   |              . |  [44]: 166
+0x70|                                             a6|               .|  [45]: 166
+0x80|a6                                             |.               |  [46]: 166
+0x80|   a6                                          | .              |  [47]: 166
+0x80|      a6                                       |  .             |  [48]: 166
+0x80|         a6                                    |   .            |  [49]: 166
+0x80|            ff                                 |    .           |  [50]: 255
+0x80|               ff                              |     .          |  [51]: 255
+0x80|                  ff                           |      .         |  [52]: 255
+0x80|                     ff                        |       .        |  [53]: 255
+0x80|                        ff                     |        .       |  [54]: 255
+0x80|                           ff                  |         .      |  [55]: 255
+0x80|                              ff               |          .     |  [56]: 255
+0x80|                                 ff            |           .    |  [57]: 255
+0x80|                                    ff         |            .   |  [58]: 255
+0x80|                                       ff      |             .  |  [59]: 255
+0x80|                                          ff   |              . |  [60]: 255
+0x80|                                             ff|               .|  [61]: 255
+0x90|ff                                             |.               |  [62]: 255
+0x90|   ff                                          | .              |  [63]: 255
+0x90|      ff                                       |  .             |  [64]: 255
+0x90|         ff                                    |   .            |  [65]: 255
+0x90|            ff                                 |    .           |  [66]: 255
+0x90|               ff                              |     .          |  [67]: 255
+0x90|                  ff                           |      .         |  [68]: 255
+0x90|                     ff                        |       .        |  [69]: 255
+0x90|                        ff                     |        .       |  [70]: 255
+0x90|                           ff                  |         .      |  [71]: 255
+0x90|                              ff               |          .     |  [72]: 255
+0x90|                                 ff            |           .    |  [73]: 255
+0x90|                                    ff         |            .   |  [74]: 255
+0x90|                                       ff      |             .  |  [75]: 255
+0x90|                                          ff   |              . |  [76]: 255
+0x90|                                             ff|               .|  [77]: 255
+0xa0|ff                                             |.               |  [78]: 255
+0xa0|   ff                                          | .              |  [79]: 255
+0xa0|      ff                                       |  .             |  [80]: 255
+0xa0|         ff                                    |   .            |  [81]: 255
+0xa0|            ff                                 |    .           |  [82]: 255
+0xa0|               ff                              |     .          |  [83]: 255
+0xa0|                  ff                           |      .         |  [84]: 255
+0xa0|                     ff                        |       .        |  [85]: 255
+0xa0|                        ff                     |        .       |  [86]: 255
+0xa0|                           ff                  |         .      |  [87]: 255
+0xa0|                              ff               |          .     |  [88]: 255
+0xa0|                                 ff            |           .    |  [89]: 255
+0xa0|                                    ff         |            .   |  [90]: 255
+0xa0|                                       ff      |             .  |  [91]: 255
+0xa0|                                          ff   |              . |  [92]: 255
+0xa0|                                             ff|               .|  [93]: 255
+0xb0|ff                                             |.               |  [94]: 255
+0xb0|   ff                                          | .              |  [95]: 255
+0xb0|      ff                                       |  .             |  [96]: 255
+0xb0|         ff                                    |   .            |  [97]: 255
+0xb0|            ff                                 |    .           |  [98]: 255
+0xb0|               ff                              |     .          |  [99]: 255
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
+0x40|      49 6e 66 6f                              |  Info          |.frames[0].xing.header: "Info"
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
+0x40|                           0f                  |         .      |.frames[0].xing.present_flags.toc: true
+null
 > fq -d mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing | ._value' /test.mp3
-exitcode: 2
-stderr:
-error: /test.mp3: file not found
+{
+  "bytes": 599,
+  "frames": 2,
+  "header": "Info",
+  "lame_extension": {
+    "abr_vbr": 0,
+    "audiophile_replay_gain": 0,
+    "encoder": "Lavc58.91",
+    "encoder_delay": 576,
+    "encoder_padding": 1287,
+    "lame_ath_type": 0,
+    "lame_flags": 0,
+    "length": 599,
+    "lowpass_filter": 0,
+    "misc": 0,
+    "mp3_gain": 0,
+    "music_crc": 25328,
+    "preset": 0,
+    "radio_replay_gain": 0,
+    "replay_gain_peak": 0,
+    "tag_crc": 23093,
+    "tag_revision": 0,
+    "vbr_method": 0
+  },
+  "present_flags": {
+    "bytes": true,
+    "frames": true,
+    "quality": true,
+    "toc": true,
+    "unused": 0
+  },
+  "quality": 0,
+  "toc": [
+    0,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255
+  ]
+}
+2
+[
+  0,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255
+]
+"Info"
+true
+null
 > fq -d mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing | tovalue' /test.mp3
-exitcode: 2
-stderr:
-error: /test.mp3: file not found
+{
+  "bytes": 599,
+  "frames": 2,
+  "header": "Info",
+  "lame_extension": {
+    "abr_vbr": 0,
+    "audiophile_replay_gain": 0,
+    "encoder": "Lavc58.91",
+    "encoder_delay": 576,
+    "encoder_padding": 1287,
+    "lame_ath_type": 0,
+    "lame_flags": 0,
+    "length": 599,
+    "lowpass_filter": 0,
+    "misc": 0,
+    "mp3_gain": 0,
+    "music_crc": 25328,
+    "preset": 0,
+    "radio_replay_gain": 0,
+    "replay_gain_peak": 0,
+    "tag_crc": 23093,
+    "tag_revision": 0,
+    "vbr_method": 0
+  },
+  "present_flags": {
+    "bytes": true,
+    "frames": true,
+    "quality": true,
+    "toc": true,
+    "unused": 0
+  },
+  "quality": 0,
+  "toc": [
+    0,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    166,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255,
+    255
+  ]
+}
+2
+[
+  0,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  166,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255,
+  255
+]
+"Info"
+true
+null
 > fq -d mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing | type' /test.mp3
-exitcode: 2
-stderr:
-error: /test.mp3: file not found
+"object"
+"number"
+"array"
+"string"
+"boolean"
+"null"
 > fq -d mp3 '.headers | length, type' /test.mp3
-exitcode: 2
-stderr:
-error: /test.mp3: file not found
+1
+"array"
 > fq -d mp3 '.headers | tostring' /test.mp3
-exitcode: 2
+exitcode: 5
 stderr:
-error: /test.mp3: file not found
+error: tostring cannot be applied to: array
 > fq -d mp3 '.headers | tonumber' /test.mp3
-exitcode: 2
+exitcode: 5
 stderr:
-error: /test.mp3: file not found
+error: tonumber cannot be applied to: array
 > fq -d mp3 '.headers[0] | tostring' /test.mp3
-exitcode: 2
+exitcode: 5
 stderr:
-error: /test.mp3: file not found
+error: tostring cannot be applied to: object
 > fq -d mp3 '.headers[0] | tonumber' /test.mp3
-exitcode: 2
+exitcode: 5
 stderr:
-error: /test.mp3: file not found
+error: tonumber cannot be applied to: object
 > fq -d mp3 '.headers[0].version | tonumber' /test.mp3
-exitcode: 2
-stderr:
-error: /test.mp3: file not found
+4
 > fq -d mp3 '.headers[0].version | tostring' /test.mp3
-exitcode: 2
-stderr:
-error: /test.mp3: file not found
+"4"
 > fq -d mp3 '.headers[0].magic | tonumber' /test.mp3
-exitcode: 2
+exitcode: 5
 stderr:
-error: /test.mp3: file not found
+error: invalid number: "ID3"
 > fq -d mp3 '.headers[0].magic | ._value, length, tostring, type' /test.mp3
-exitcode: 2
-stderr:
-error: /test.mp3: file not found
+"ID3"
+3
+"ID3"
+"string"
 > fq -d mp3 '.headers[0].magic[4]' /test.mp3
-exitcode: 2
-stderr:
-error: /test.mp3: file not found
+""
 > fq -d mp3 '.headers[0].magic[4:10]' /test.mp3
-exitcode: 2
-stderr:
-error: /test.mp3: file not found
+""
 > fq -d mp3 '.headers[10]' /test.mp3
-exitcode: 2
-stderr:
-error: /test.mp3: file not found
+null
 > fq -d mp3 '.headers[10:20]' /test.mp3
-exitcode: 2
-stderr:
-error: /test.mp3: file not found
+[]
 > fq -d mp3 '.headers[0].padding | ._value, length, tostring, type' /test.mp3
-exitcode: 2
-stderr:
-error: /test.mp3: file not found
+null
+0
+"null"
+"null"
 > fq -d mp3 '.headers[0].flags.unsynchronisation | ._value, tostring, type' /test.mp3
-exitcode: 2
-stderr:
-error: /test.mp3: file not found
+false
+"false"
+"boolean"
 # regresison null value (padding)
 > fq -d mp3 '.headers[0] | tovalue' /test.mp3
-exitcode: 2
-stderr:
-error: /test.mp3: file not found
+{
+  "flags": {
+    "experimental_indicator": false,
+    "extended_header": false,
+    "unsynchronisation": false,
+    "unused": 0
+  },
+  "frames": [
+    {
+      "flags": {
+        "compression": false,
+        "data_length_indicator": false,
+        "encryption": false,
+        "file_alter_preservation": false,
+        "grouping_identity": false,
+        "read_only": false,
+        "tag_alter_preservation": false,
+        "unsync": false,
+        "unused0": 0,
+        "unused1": 0,
+        "unused2": 0
+      },
+      "id": "TSSE",
+      "size": 15,
+      "text": "Lavf58.45.100",
+      "text_encoding": 3
+    }
+  ],
+  "magic": "ID3",
+  "padding": null,
+  "revision": 0,
+  "size": 35,
+  "version": 4
+}
