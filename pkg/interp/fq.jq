@@ -29,6 +29,7 @@ include "@config/init?";
 # jq '.' missing <(echo 'a') <(echo 123) ; echo $? => 2 ???
 # jq '"a"+.' <(echo '"a"') <(echo 1) ; echo $? => 5
 # jq '"a"+.' <(echo 1) <(echo '"a"') ; echo $? => 0
+def _exit_code_args_error: 2;
 def _exit_code_input_io_error: 2;
 def _exit_code_compile_error: 3;
 def _exit_code_input_decode_error: 4;
@@ -365,7 +366,9 @@ def _main:
   ( . as {$version, $args, args: [$arg0]}
   # make sure we don't unintentionally use . to make things clearer
   | null
-  | args_parse($args[1:]; _opts($version)) as {parsed: $parsed_args, $rest}
+  | ( try args_parse($args[1:]; _opts($version))
+      catch halt_error(_exit_code_args_error)
+    ) as {parsed: $parsed_args, $rest}
   # store parsed arguments, .decode_format is used by input/0
   | _parsed_args($parsed_args) as $_
   | _default_options(_build_default_options) as $_
