@@ -35,7 +35,9 @@ def args_parse($args; $opts):
                 ( $arg[0:2] as $arg
                 | $flagmap[$arg] as $optname
                 | ($opts[$optname]? // null) as $opt
-                | if $opt and $opt.bool then
+                | if $opt == null then
+                    error("\($arg): no such argument")
+                  elif $opt.bool then
                     _parse_without_arg((["-"+$args[0][2:]]+$args[1:]); $optname)
                   else
                     error("\($arg): needs an argument")
