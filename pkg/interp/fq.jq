@@ -325,7 +325,7 @@ def _main:
       "null_input": {
         short: "-n",
         long: "--null-input",
-        description: "Null input (can still use input/0 or inputs/0)",
+        description: "Null input (can still use input/0 and inputs/0)",
         bool: true
       },
       "options": {
