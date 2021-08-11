@@ -280,33 +280,10 @@ def _main:
       );
   def _opts($version):
     {
-      "version": {
-        short: "-v",
-        long: "--version",
-        description: "Show version (\($version))",
-        bool: true
-      },
-      "help": {
-        short: "-h",
-        long: "--help",
-        description: "Show help",
-        bool: true
-      },
-      "formats": {
-        long: "--formats",
-        description: "Show supported formats",
-        bool: true
-      },
-      "nullinput": {
-        short: "-n",
-        long: "--null-input",
-        description: "Null input (can still use input/0 or inputs/0)",
-        bool: true
-      },
-      "slurp": {
-        short: "-s",
-        long: "--slurp",
-        description: "Read (slurp) all inputs into an array",
+      "compact": {
+        short: "-c",
+        long: "--compact",
+        description: "Compact output",
         bool: true
       },
       "decode_format": {
@@ -316,28 +293,21 @@ def _main:
         default: "probe",
         string: "NAME"
       },
-      "repl": {
-        short: "-i",
-        long: "--repl",
-        description: "Interactive REPL",
-        bool: true
-      },
       "file": {
         short: "-f",
         long: "--file",
-        description: "Read script from file",
+        description: "Read EXPR from file",
         string: "PATH"
       },
-      "raw_output": {
-        short: "-r",
-        long: "--raw-output",
-        description: "Raw string output (without quotes)",
+      "formats": {
+        long: "--formats",
+        description: "Show supported formats",
         bool: true
       },
-      "compact": {
-        short: "-c",
-        long: "--compact",
-        description: "Compact output",
+      "help": {
+        short: "-h",
+        long: "--help",
+        description: "Show help",
         bool: true
       },
       "join_output": {
@@ -352,6 +322,12 @@ def _main:
         description: "Null byte between outputs",
         bool: true
       },
+      "null_input": {
+        short: "-n",
+        long: "--null-input",
+        description: "Null input (can still use input/0 or inputs/0)",
+        bool: true
+      },
       "options": {
         short: "-o",
         long: "--option",
@@ -360,9 +336,33 @@ def _main:
         default: {},
         help_default: _build_default_options
       },
+      "raw_output": {
+        short: "-r",
+        long: "--raw-output",
+        description: "Raw string output (without quotes)",
+        bool: true
+      },
+      "repl": {
+        short: "-i",
+        long: "--repl",
+        description: "Interactive REPL",
+        bool: true
+      },
+      "slurp": {
+        short: "-s",
+        long: "--slurp",
+        description: "Read (slurp) all inputs into an array",
+        bool: true
+      },
+      "version": {
+        short: "-v",
+        long: "--version",
+        description: "Show version (\($version))",
+        bool: true
+      },
     };
   def _usage($arg0; $version):
-    "Usage: \($arg0) [OPTIONS] [EXPR] [FILE...]";
+    "Usage: \($arg0) [OPTIONS] [--] [EXPR] [FILE...]";
   ( . as {$version, $args, args: [$arg0]}
   # make sure we don't unintentionally use . to make things clearer
   | null
@@ -404,7 +404,7 @@ def _main:
     else
       # use finally as display etc prints and results in empty
       finally(
-        ( { nullinput: ($parsed_args.nullinput == true) }
+        ( { null_input: ($parsed_args.null_input == true) }
         | if $parsed_args.file then
             ( .expr = ($parsed_args.file | open | string)
             | .filenames = $rest
@@ -415,13 +415,13 @@ def _main:
             )
           end
         | if $parsed_args.repl and .filenames == [] then
-            .nullinput = true
+            .null_input = true
           elif .filenames == [] then
             .filenames = ["-"]
           end
-        | . as {$expr, $filenames, $nullinput}
+        | . as {$expr, $filenames, $null_input}
         | inputs($filenames) as $_ # store inputs
-        | if $nullinput then null
+        | if $null_input then null
           elif $parsed_args.slurp then [inputs]
           else inputs # will iterate inputs
           end
