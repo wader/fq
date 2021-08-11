@@ -162,7 +162,7 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 					d.FieldDecodeRange(name, firstBit, nBits, vp9FrameFormat, opts...)
 				case "avc1":
 					d.FieldDecodeRange(name, firstBit, nBits, mpegAVCAUFormat, opts...)
-				case "hev1":
+				case "hev1", "hvc1":
 					d.FieldDecodeRange(name, firstBit, nBits, mpegHEVCSampleFormat, opts...)
 				case "av01":
 					d.FieldDecodeRange(name, firstBit, nBits, av1FrameFormat, opts...)
