@@ -205,54 +205,62 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, expectedTagID int, fn func(d
 
 			d.FieldStringMapFn("stream_type", streamTypeNames, "Unknown", d.U6, decode.NumberDecimal)
 			d.FieldBool("upstream")
-			specificInfoFlag := d.FieldBool("specific_info_flag")
+			d.FieldBool("specific_info_flag")
 			d.FieldU24("buffer_size_db")
 			d.FieldU32("max_bit_rate")
 			d.FieldU32("avg_bit_rate")
 
-			switch objectType {
-			case format.MPEGObjectTypeAAC:
-				// TODO: only if aac?
-				if specificInfoFlag {
+			// TODO: seems to be optional
+			if d.BitsLeft() > 0 {
+				switch objectType {
+				// TODO: vorbis is special case?
+				case format.MPEGObjectTypeVORBIS:
 					fieldODDecodeTag(d, edc, "decoder_specific_info", -1, func(d *decode.D) {
-						_, v := d.FieldDecode("audio_specific_config", mpegASCFormat)
-						mpegASCout, ok := v.(format.MPEGASCOut)
-						if !ok {
-							panic(fmt.Sprintf("expected MPEGASCOut got %#+v", v))
-						}
-						if edc.currentDecoderConfig != nil {
-							edc.currentDecoderConfig.ASCObjectType = mpegASCout.ObjectType
-						}
-					})
-				}
-			case format.MPEGObjectTypeVORBIS:
-				fieldODDecodeTag(d, edc, "decoder_specific_info", -1, func(d *decode.D) {
-					numPackets := d.FieldU8("num_packets")
-					// TODO: lacing
-					packetLengths := []int64{}
-					// Xiph-style lacing (similar to ogg) of n-1 packets, last is reset of block
-					d.FieldArrayFn("laces", func(d *decode.D) {
-						for i := uint64(0); i < numPackets; i++ {
-							l := d.FieldUFn("lace", func() (uint64, decode.DisplayFormat, string) {
-								var l uint64
-								for {
-									n := d.U8()
-									l += n
-									if n < 255 {
-										return l, decode.NumberDecimal, ""
+						numPackets := d.FieldU8("num_packets")
+						// TODO: lacing
+						packetLengths := []int64{}
+						// Xiph-style lacing (similar to ogg) of n-1 packets, last is reset of block
+						d.FieldArrayFn("laces", func(d *decode.D) {
+							for i := uint64(0); i < numPackets; i++ {
+								l := d.FieldUFn("lace", func() (uint64, decode.DisplayFormat, string) {
+									var l uint64
+									for {
+										n := d.U8()
+										l += n
+										if n < 255 {
+											return l, decode.NumberDecimal, ""
+										}
 									}
-								}
-							})
-							packetLengths = append(packetLengths, int64(l))
-						}
+								})
+								packetLengths = append(packetLengths, int64(l))
+							}
+						})
+						d.FieldArrayFn("packets", func(d *decode.D) {
+							for _, l := range packetLengths {
+								d.FieldDecodeLen("packet", l*8, vorbisPacketFormat)
+							}
+							d.FieldDecodeLen("packet", d.BitsLeft(), vorbisPacketFormat)
+						})
 					})
-					d.FieldArrayFn("packets", func(d *decode.D) {
-						for _, l := range packetLengths {
-							d.FieldDecodeLen("packet", l*8, vorbisPacketFormat)
-						}
-						d.FieldDecodeLen("packet", d.BitsLeft(), vorbisPacketFormat)
-					})
-				})
+				default:
+					switch format.MpegObjectTypeStreamType[objectType] {
+					case format.MPEGStreamTypeAudio:
+						fieldODDecodeTag(d, edc, "decoder_specific_info", -1, func(d *decode.D) {
+							_, v := d.FieldDecode("audio_specific_config", mpegASCFormat)
+							mpegASCout, ok := v.(format.MPEGASCOut)
+							if !ok {
+								panic(fmt.Sprintf("expected MPEGASCOut got %#+v", v))
+							}
+							if edc.currentDecoderConfig != nil {
+								edc.currentDecoderConfig.ASCObjectType = mpegASCout.ObjectType
+							}
+						})
+					case format.MPEGStreamTypeVideo:
+						// TODO:
+					case format.MPEGStreamTypeText:
+						// TODO:
+					}
+				}
 			}
 		},
 	}
