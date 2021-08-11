@@ -63,7 +63,7 @@ func (i *Interp) makeFunctions(registry *registry.Registry) []Function {
 		{[]string{"string"}, 0, 0, i.string_, nil},
 		{[]string{"bytes"}, 0, 0, i.bytes, nil},
 		{[]string{"bits"}, 0, 0, i.bits, nil},
-		{[]string{"tovalue"}, 0, 0, i.tovalue, nil},
+		{[]string{"tovalue"}, 0, 1, i.tovalue, nil},
 
 		{[]string{"hex"}, 0, 0, makeStringBitBufTransformFn(
 			func(r io.Reader) (io.Reader, error) { return hex.NewDecoder(r), nil },
@@ -335,7 +335,7 @@ func (i *Interp) _completeQuery(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) _displayName(c interface{}, a []interface{}) interface{} {
-	qo, ok := c.(InterpObject)
+	qo, ok := c.(InterpValue)
 	if !ok {
 		return fmt.Errorf("%v: value is not query object", c)
 	}
@@ -343,7 +343,7 @@ func (i *Interp) _displayName(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) _extKeys(c interface{}, a []interface{}) interface{} {
-	if v, ok := c.(InterpObject); ok {
+	if v, ok := c.(InterpValue); ok {
 		var vs []interface{}
 		for _, s := range v.ExtKeys() {
 			vs = append(vs, s)
@@ -572,7 +572,7 @@ func (i *Interp) makeDecodeFn(registry *registry.Registry, decodeFormats []*deco
 			return valueError{err}
 		}
 
-		return makeValueObject(dv)
+		return makeDecodeValue(dv)
 	}
 }
 
@@ -679,7 +679,11 @@ func (i *Interp) bits(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) tovalue(c interface{}, a []interface{}) interface{} {
-	v, _ := toValue(i, c)
+	opts, err := i.Options(append([]interface{}{}, a...)...)
+	if err != nil {
+		return err
+	}
+	v, _ := toValue(opts, c)
 	return v
 }
 

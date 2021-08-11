@@ -3,7 +3,10 @@ package interp
 import (
 	"bytes"
 	"context"
+	"crypto/md5"
 	"embed"
+	"encoding/base64"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"fq/format/registry"
@@ -151,7 +154,7 @@ func (o CtxOutput) Write(p []byte) (n int, err error) {
 	return o.Output.Write(p)
 }
 
-type InterpObject interface {
+type InterpValue interface {
 	gojq.JQValue
 
 	DisplayName() string
@@ -175,7 +178,7 @@ type ToBufferRange interface {
 }
 
 type JQValueEx interface {
-	JQValueToGoJQEx(i *Interp) interface{}
+	JQValueToGoJQEx(opts Options) interface{}
 }
 
 func valuePath(v *decode.Value) []interface{} {
@@ -384,10 +387,10 @@ func toBufferRange(v interface{}) (bufferRange, error) {
 	}
 }
 
-func toValue(i *Interp, v interface{}) (interface{}, bool) {
+func toValue(opts Options, v interface{}) (interface{}, bool) {
 	switch v := v.(type) {
 	case JQValueEx:
-		return v.JQValueToGoJQEx(i), true
+		return v.JQValueToGoJQEx(opts), true
 	case gojq.JQValue:
 		return v.JQValueToGoJQ(), true
 	case nil, bool, float64, int, string, *big.Int, map[string]interface{}, []interface{}:
@@ -766,27 +769,27 @@ func (i *Interp) EvalFuncValues(ctx context.Context, mode RunMode, c interface{}
 }
 
 type Options struct {
-	Depth          int    `json:"depth"`
-	Verbose        bool   `json:"verbose"`
-	DecodeProgress bool   `json:"decodeprogress"`
-	Color          bool   `json:"color"`
-	Colors         string `json:"colors"`
-	ByteColors     string `json:"bytecolors"`
-	Unicode        bool   `json:"unicode"`
-	Raw            bool   `json:"raw"`
-	REPL           bool   `json:"repl"`
-	RawString      bool   `json:"rawstring"`
-	JoinString     string `json:"joinstring"`
-	Compact        bool   `json:"compact"`
+	Depth          int
+	Verbose        bool
+	DecodeProgress bool
+	Color          bool
+	Colors         string
+	ByteColors     string
+	Unicode        bool
+	Raw            bool
+	REPL           bool
+	RawString      bool
+	JoinString     string
+	Compact        bool
+	BitsFormat     string
 
-	LineBytes    int `json:"linebytes"`
-	DisplayBytes int `json:"displaybytes"`
-	AddrBase     int `json:"addrbase"`
-	SizeBase     int `json:"sizebase"`
+	LineBytes    int
+	DisplayBytes int
+	AddrBase     int
+	SizeBase     int
 
-	REPLLevel int `json:"repllevel"`
-
-	Decorator Decorator `json:"-"`
+	Decorator    Decorator `json:"-"`
+	BitsFormatFn func(bb *bitio.Buffer) (interface{}, error)
 }
 
 func mapSetOptions(d *Options, m map[string]interface{}) {
@@ -826,6 +829,9 @@ func mapSetOptions(d *Options, m map[string]interface{}) {
 	if v, ok := m["compact"]; ok {
 		d.Compact = toBoolZ(v)
 	}
+	if v, ok := m["bitsformat"]; ok {
+		d.BitsFormat = toStringZ(v)
+	}
 
 	if v, ok := m["linebytes"]; ok {
 		d.LineBytes = num.MaxInt(0, toIntZ(v))
@@ -839,14 +845,63 @@ func mapSetOptions(d *Options, m map[string]interface{}) {
 	if v, ok := m["sizebase"]; ok {
 		d.SizeBase = num.ClampInt(2, 36, toIntZ(v))
 	}
+}
 
-	if v, ok := m["repllevel"]; ok {
-		d.REPLLevel = toIntZ(v)
+func bitsFormatFnFromOptions(opts Options) func(bb *bitio.Buffer) (interface{}, error) {
+	switch opts.BitsFormat {
+	case "md5":
+		return func(bb *bitio.Buffer) (interface{}, error) {
+			d := md5.New()
+			if _, err := io.Copy(d, bb); err != nil {
+				return "", err
+			}
+			return hex.EncodeToString(d.Sum(nil)), nil
+		}
+	case "base64":
+		return func(bb *bitio.Buffer) (interface{}, error) {
+			b := &bytes.Buffer{}
+			e := base64.NewEncoder(base64.StdEncoding, b)
+			if _, err := io.Copy(e, bb); err != nil {
+				return "", err
+			}
+			e.Close()
+			return b.String(), nil
+		}
+	case "truncate":
+		// TODO: configure
+		return func(bb *bitio.Buffer) (interface{}, error) {
+			b := &bytes.Buffer{}
+			if _, err := io.Copy(b, io.LimitReader(bb, 1024)); err != nil {
+				return "", err
+			}
+			return b.String(), nil
+		}
+	case "string":
+		return func(bb *bitio.Buffer) (interface{}, error) {
+			b := &bytes.Buffer{}
+			if _, err := io.Copy(b, bb); err != nil {
+				return "", err
+			}
+			return b.String(), nil
+		}
+	case "snippet":
+		fallthrough
+	default:
+		return func(bb *bitio.Buffer) (interface{}, error) {
+			b := &bytes.Buffer{}
+			e := base64.NewEncoder(base64.StdEncoding, b)
+			if _, err := io.Copy(e, io.LimitReader(bb, 256)); err != nil {
+				return "", err
+			}
+			e.Close()
+			return fmt.Sprintf("<%s>%s", num.Bits(bb.Len()).StringByteBits(opts.SizeBase), b.String()), nil
+		}
 	}
+
 }
 
 func (i *Interp) Options(fnOptsV ...interface{}) (Options, error) {
-	vs, err := i.EvalFuncValues(i.evalContext.ctx, ScriptMode, fnOptsV, "options", nil, DiscardOutput{Ctx: i.evalContext.ctx}, "")
+	vs, err := i.EvalFuncValues(i.evalContext.ctx, ScriptMode, nil, "options", []interface{}{fnOptsV}, DiscardOutput{Ctx: i.evalContext.ctx}, "")
 	if err != nil {
 		return Options{}, err
 	}
@@ -865,6 +920,7 @@ func (i *Interp) Options(fnOptsV ...interface{}) (Options, error) {
 	var opts Options
 	mapSetOptions(&opts, m)
 	opts.Decorator = decoratorFromOptions(opts)
+	opts.BitsFormatFn = bitsFormatFnFromOptions(opts)
 
 	return opts, nil
 }
@@ -880,7 +936,7 @@ func (i *Interp) NewColorJSON(opts Options) (*colorjson.Encoder, error) {
 		false,
 		indent,
 		func(v interface{}) interface{} {
-			if v, ok := toValue(i, v); ok {
+			if v, ok := toValue(opts, v); ok {
 				return v
 			}
 			panic(fmt.Sprintf("toValue not a JQValue value: %#v", v))

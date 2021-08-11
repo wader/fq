@@ -23,8 +23,8 @@ func (err expectedExtkeyError) Error() string {
 }
 
 // TODO: rename
-type valueObjectIf interface {
-	InterpObject
+type valueIf interface {
+	InterpValue
 	ToBuffer
 }
 
@@ -35,61 +35,61 @@ func valueUnderscoreKey(name string, a, b func(name string) interface{}) interfa
 	return b(name)
 }
 
-func makeValueObject(dv *decode.Value) valueObjectIf {
+func makeDecodeValue(dv *decode.Value) valueIf {
 	switch vv := dv.V.(type) {
 	case decode.Array:
-		return NewArrayValueObject(dv, vv)
+		return NewArrayDecodeValue(dv, vv)
 	case decode.Struct:
-		return NewStructValueObject(dv, vv)
+		return NewStructDecodeValue(dv, vv)
 	case *bitio.Buffer:
 		return NewStringBufferValueObject(dv, vv)
 	case bool:
-		return valueObject{
+		return decodeValue{
 			JQValue:         gojqextra.Boolean(vv),
 			decodeValueBase: decodeValueBase{dv},
 		}
 	case int:
-		return valueObject{
+		return decodeValue{
 			JQValue:         gojqextra.Number{V: vv},
 			decodeValueBase: decodeValueBase{dv},
 		}
 	case int64:
-		return valueObject{
+		return decodeValue{
 			JQValue:         gojqextra.Number{V: big.NewInt(vv)},
 			decodeValueBase: decodeValueBase{dv},
 		}
 	case uint64:
-		return valueObject{
+		return decodeValue{
 			JQValue:         gojqextra.Number{V: new(big.Int).SetUint64(vv)},
 			decodeValueBase: decodeValueBase{dv},
 		}
 	case float64:
-		return valueObject{
+		return decodeValue{
 			JQValue:         gojqextra.Number{V: vv},
 			decodeValueBase: decodeValueBase{dv},
 		}
 	case string:
-		return valueObject{
+		return decodeValue{
 			JQValue:         gojqextra.String(vv),
 			decodeValueBase: decodeValueBase{dv},
 		}
 	case []byte:
-		return valueObject{
+		return decodeValue{
 			JQValue:         gojqextra.String(string(vv)),
 			decodeValueBase: decodeValueBase{dv},
 		}
 	case []interface{}:
-		return valueObject{
+		return decodeValue{
 			JQValue:         gojqextra.Array(vv),
 			decodeValueBase: decodeValueBase{dv},
 		}
 	case map[string]interface{}:
-		return valueObject{
+		return decodeValue{
 			JQValue:         gojqextra.Object(vv),
 			decodeValueBase: decodeValueBase{dv},
 		}
 	case nil:
-		return valueObject{
+		return decodeValue{
 			JQValue:         gojqextra.Null{},
 			decodeValueBase: decodeValueBase{dv},
 		}
@@ -193,52 +193,50 @@ func (dvb decodeValueBase) JQValueKey(name string) interface{} {
 	return expectedExtkeyError{Key: name}
 }
 
-// string (*bitio.Buffer)
+var _ valueIf = decodeValue{}
 
-var _ valueObjectIf = valueObject{}
-
-type valueObject struct {
+type decodeValue struct {
 	gojq.JQValue
 	decodeValueBase
 }
 
-func (v valueObject) JQValueKey(name string) interface{} {
+func (v decodeValue) JQValueKey(name string) interface{} {
 	return valueUnderscoreKey(name, v.decodeValueBase.JQValueKey, v.JQValue.JQValueKey)
 }
 
 // string (*bitio.Buffer)
 
-var _ valueObjectIf = stringBufferValueObject2{}
+var _ valueIf = bufferDecodeValue{}
 
-type stringBufferValueObject2 struct {
+type bufferDecodeValue struct {
 	gojqextra.Base
 	decodeValueBase
 	*bitio.Buffer
 }
 
-func NewStringBufferValueObject(dv *decode.Value, bb *bitio.Buffer) stringBufferValueObject2 {
-	return stringBufferValueObject2{
+func NewStringBufferValueObject(dv *decode.Value, bb *bitio.Buffer) bufferDecodeValue {
+	return bufferDecodeValue{
 		decodeValueBase: decodeValueBase{dv},
 		Base:            gojqextra.Base{Typ: "string"},
 		Buffer:          bb,
 	}
 }
 
-func (v stringBufferValueObject2) JQValueKey(name string) interface{} {
+func (v bufferDecodeValue) JQValueKey(name string) interface{} {
 	return valueUnderscoreKey(name, v.decodeValueBase.JQValueKey, v.Base.JQValueKey)
 }
 
-func (v stringBufferValueObject2) JQValueLength() interface{} {
+func (v bufferDecodeValue) JQValueLength() interface{} {
 	return int(v.Buffer.Len()) / 8
 }
-func (v stringBufferValueObject2) JQValueIndex(index int) interface{} {
+func (v bufferDecodeValue) JQValueIndex(index int) interface{} {
 	if index < 0 {
 		return ""
 	}
 	// TODO: funcIndexSlice, string outside should return "" not null
 	return v.JQValueSlice(index, index+1)
 }
-func (v stringBufferValueObject2) JQValueSlice(start int, end int) interface{} {
+func (v bufferDecodeValue) JQValueSlice(start int, end int) interface{} {
 	bb := v.Buffer.Copy()
 	if start != 0 {
 		if _, err := bb.SeekAbs(int64(start) * 8); err != nil {
@@ -251,136 +249,140 @@ func (v stringBufferValueObject2) JQValueSlice(start int, end int) interface{} {
 	}
 	return b.String()
 }
-func (v stringBufferValueObject2) JQValueToNumber() interface{} {
+func (v bufferDecodeValue) JQValueToNumber() interface{} {
 	s, ok := v.JQValueToString().(string)
 	if ok {
 		gojq.NormalizeNumbers(s)
 	}
 	return s
 }
-func (v stringBufferValueObject2) JQValueToString() interface{} {
+func (v bufferDecodeValue) JQValueToString() interface{} {
 	return v.JQValueSlice(0, int(v.Buffer.Len())/8)
 }
-func (v stringBufferValueObject2) JQValueToGoJQ() interface{} {
+func (v bufferDecodeValue) JQValueToGoJQ() interface{} {
 	return v.JQValueToString()
 }
-func (v stringBufferValueObject2) JQValueToGoJQEx(i *Interp) interface{} {
-	return v.JQValueToGoJQ()
+func (v bufferDecodeValue) JQValueToGoJQEx(opts Options) interface{} {
+	s, err := opts.BitsFormatFn(v.Buffer.Copy())
+	if err != nil {
+		return err
+	}
+	return s
 }
 
 // decode value array
 
-var _ valueObjectIf = arrayValueObject{}
+var _ valueIf = arrayDecodeValue{}
 
-type arrayValueObject struct {
+type arrayDecodeValue struct {
 	gojqextra.Base
 	decodeValueBase
 	decode.Array
 }
 
-func NewArrayValueObject(dv *decode.Value, a decode.Array) arrayValueObject {
-	return arrayValueObject{
+func NewArrayDecodeValue(dv *decode.Value, a decode.Array) arrayDecodeValue {
+	return arrayDecodeValue{
 		decodeValueBase: decodeValueBase{dv},
 		Base:            gojqextra.Base{Typ: "array"},
 		Array:           a,
 	}
 }
 
-func (v arrayValueObject) JQValueKey(name string) interface{} {
+func (v arrayDecodeValue) JQValueKey(name string) interface{} {
 	return valueUnderscoreKey(name, v.decodeValueBase.JQValueKey, v.Base.JQValueKey)
 }
-func (v arrayValueObject) JQValueSliceLen() interface{} { return len(v.Array) }
-func (v arrayValueObject) JQValueLength() interface{}   { return len(v.Array) }
-func (v arrayValueObject) JQValueIndex(index int) interface{} {
+func (v arrayDecodeValue) JQValueSliceLen() interface{} { return len(v.Array) }
+func (v arrayDecodeValue) JQValueLength() interface{}   { return len(v.Array) }
+func (v arrayDecodeValue) JQValueIndex(index int) interface{} {
 	// -1 outside after string, -2 outside before string
 	if index < 0 {
 		return nil
 	}
-	return makeValueObject(v.Array[index])
+	return makeDecodeValue(v.Array[index])
 }
-func (v arrayValueObject) JQValueSlice(start int, end int) interface{} {
+func (v arrayDecodeValue) JQValueSlice(start int, end int) interface{} {
 	vs := make([]interface{}, end-start)
 	for i, e := range v.Array[start:end] {
-		vs[i] = makeValueObject(e)
+		vs[i] = makeDecodeValue(e)
 	}
 	return vs
 }
-func (v arrayValueObject) JQValueEach() interface{} {
+func (v arrayDecodeValue) JQValueEach() interface{} {
 	props := make([]gojq.PathValue, len(v.Array))
 	for i, f := range v.Array {
-		props[i] = gojq.PathValue{Path: i, Value: makeValueObject(f)}
+		props[i] = gojq.PathValue{Path: i, Value: makeDecodeValue(f)}
 	}
 	return props
 }
-func (v arrayValueObject) JQValueKeys() interface{} {
+func (v arrayDecodeValue) JQValueKeys() interface{} {
 	vs := make([]interface{}, len(v.Array))
 	for i := range v.Array {
 		vs[i] = i
 	}
 	return vs
 }
-func (v arrayValueObject) JQValueHas(key interface{}) interface{} {
+func (v arrayDecodeValue) JQValueHas(key interface{}) interface{} {
 	intKey, ok := key.(int)
 	if !ok {
 		return gojqextra.HasKeyTypeError{L: "array", R: fmt.Sprintf("%v", key)}
 	}
 	return intKey >= 0 && intKey < len(v.Array)
 }
-func (v arrayValueObject) JQValueToGoJQ() interface{} {
+func (v arrayDecodeValue) JQValueToGoJQ() interface{} {
 	vs := make([]interface{}, len(v.Array))
 	for i, f := range v.Array {
-		vs[i] = makeValueObject(f)
+		vs[i] = makeDecodeValue(f)
 	}
 	return vs
 }
 
 // decode value struct
 
-var _ valueObjectIf = structValueObject{}
+var _ valueIf = structDecodeValue{}
 
-type structValueObject struct {
+type structDecodeValue struct {
 	gojqextra.Base
 	decodeValueBase
 	decode.Struct
 }
 
-func NewStructValueObject(dv *decode.Value, s decode.Struct) structValueObject {
-	return structValueObject{
+func NewStructDecodeValue(dv *decode.Value, s decode.Struct) structDecodeValue {
+	return structDecodeValue{
 		decodeValueBase: decodeValueBase{dv},
 		Base:            gojqextra.Base{Typ: "object"},
 		Struct:          s,
 	}
 }
 
-func (v structValueObject) JQValueLength() interface{}   { return len(v.Struct) }
-func (v structValueObject) JQValueSliceLen() interface{} { return len(v.Struct) }
-func (v structValueObject) JQValueKey(name string) interface{} {
+func (v structDecodeValue) JQValueLength() interface{}   { return len(v.Struct) }
+func (v structDecodeValue) JQValueSliceLen() interface{} { return len(v.Struct) }
+func (v structDecodeValue) JQValueKey(name string) interface{} {
 	if strings.HasPrefix(name, "_") {
 		return v.decodeValueBase.JQValueKey(name)
 	}
 
 	for _, f := range v.Struct {
 		if f.Name == name {
-			return makeValueObject(f)
+			return makeDecodeValue(f)
 		}
 	}
 	return nil
 }
-func (v structValueObject) JQValueEach() interface{} {
+func (v structDecodeValue) JQValueEach() interface{} {
 	props := make([]gojq.PathValue, len(v.Struct))
 	for i, f := range v.Struct {
-		props[i] = gojq.PathValue{Path: f.Name, Value: makeValueObject(f)}
+		props[i] = gojq.PathValue{Path: f.Name, Value: makeDecodeValue(f)}
 	}
 	return props
 }
-func (v structValueObject) JQValueKeys() interface{} {
+func (v structDecodeValue) JQValueKeys() interface{} {
 	vs := make([]interface{}, len(v.Struct))
 	for i, f := range v.Struct {
 		vs[i] = f.Name
 	}
 	return vs
 }
-func (v structValueObject) JQValueHas(key interface{}) interface{} {
+func (v structDecodeValue) JQValueHas(key interface{}) interface{} {
 	stringKey, ok := key.(string)
 	if !ok {
 		return gojqextra.HasKeyTypeError{L: "object", R: fmt.Sprintf("%v", key)}
@@ -392,10 +394,10 @@ func (v structValueObject) JQValueHas(key interface{}) interface{} {
 	}
 	return false
 }
-func (v structValueObject) JQValueToGoJQ() interface{} {
+func (v structDecodeValue) JQValueToGoJQ() interface{} {
 	vm := make(map[string]interface{}, len(v.Struct))
 	for _, f := range v.Struct {
-		vm[f.Name] = makeValueObject(f)
+		vm[f.Name] = makeDecodeValue(f)
 	}
 	return vm
 }
