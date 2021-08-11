@@ -1,22 +1,10 @@
 # ffmpeg -f lavfi -i sine -t 10ms test.mp3
 /test.mp3:
-> fq -d mp3 '.headers[0].magic._value' /test.mp3
-"ID3"
 > fq -d mp3 '.headers[0].magic == "ID3"' /test.mp3
 true
-> fq -d mp3 '.headers[0].magic._value == "ID3"' /test.mp3
-true
-> fq -d mp3 '.headers[0].version._value' /test.mp3
-4
 > fq -d mp3 '.headers[0].version == 4' /test.mp3
 true
-> fq -d mp3 '.headers[0].version._value == 4' /test.mp3
-true
-> fq -d mp3 '.frames[0].header.protection._value' /test.mp3
-true
 > fq -d mp3 '.frames[0].header.protection == true' /test.mp3
-true
-> fq -d mp3 '.frames[0].header.protection._value == true' /test.mp3
 true
 > fq -d mp3 '.headers[0].flags + {}' /test.mp3
 {

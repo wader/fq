@@ -1,9 +1,45 @@
 /test.mp3:
 # display
-> fq -d mp3 '.headers | ., type, length?' /test.mp3
+> fq -d mp3 '.headers | ., tovalue, type, length?' /test.mp3
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.headers: [1]
 0x00|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|  [0]: {} (id3v2)
 *   |until 0x2c.7 (45)                              |                |
+[
+  {
+    "flags": {
+      "experimental_indicator": false,
+      "extended_header": false,
+      "unsynchronisation": false,
+      "unused": 0
+    },
+    "frames": [
+      {
+        "flags": {
+          "compression": false,
+          "data_length_indicator": false,
+          "encryption": false,
+          "file_alter_preservation": false,
+          "grouping_identity": false,
+          "read_only": false,
+          "tag_alter_preservation": false,
+          "unsync": false,
+          "unused0": 0,
+          "unused1": 0,
+          "unused2": 0
+        },
+        "id": "TSSE",
+        "size": 15,
+        "text": "Lavf58.45.100",
+        "text_encoding": 3
+      }
+    ],
+    "magic": "ID3",
+    "padding": null,
+    "revision": 0,
+    "size": 35,
+    "version": 4
+  }
+]
 "array"
 1
 # index
@@ -80,7 +116,7 @@ null
 > fq -d mp3 '.headers["test"] | ., type, length?' /test.mp3
 exitcode: 5
 stderr:
-error: expected an object but got: array
+error: expected an object with key "test" but got: array
 # each
 > fq -d mp3 '[.headers[]] | type, length?' /test.mp3
 "array"
@@ -136,45 +172,6 @@ error: cannot add: array ([{"flags":{"experimental_ ...]) and number (1)
 "headers"
 "string"
 7
-> fq -d mp3 '.headers._value | ., type, length?' /test.mp3
-[
-  {
-    "flags": {
-      "experimental_indicator": false,
-      "extended_header": false,
-      "unsynchronisation": false,
-      "unused": 0
-    },
-    "frames": [
-      {
-        "flags": {
-          "compression": false,
-          "data_length_indicator": false,
-          "encryption": false,
-          "file_alter_preservation": false,
-          "grouping_identity": false,
-          "read_only": false,
-          "tag_alter_preservation": false,
-          "unsync": false,
-          "unused0": 0,
-          "unused1": 0,
-          "unused2": 0
-        },
-        "id": "TSSE",
-        "size": 15,
-        "text": "Lavf58.45.100",
-        "text_encoding": 3
-      }
-    ],
-    "magic": "ID3",
-    "padding": null,
-    "revision": 0,
-    "size": 35,
-    "version": 4
-  }
-]
-"array"
-1
 > fq -d mp3 '.headers._symbol | ., type, length?' /test.mp3
 ""
 "string"

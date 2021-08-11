@@ -1,6 +1,6 @@
 /test.mp3:
 # display
-> fq -d mp3 'EXPR | ., type, length?' /test.mp3
+> fq -d mp3 'EXPR | ., tovalue, type, length?' /test.mp3
 # index
 > fq -d mp3 'EXPR[0] | ., type, length?' /test.mp3
 > fq -d mp3 'EXPR[-1000] | ., type, length?' /test.mp3
@@ -32,7 +32,6 @@
 > fq -d mp3 'EXPR._stop | ., type, length?' /test.mp3
 > fq -d mp3 'EXPR._len | ., type, length?' /test.mp3
 > fq -d mp3 'EXPR._name | ., type, length?' /test.mp3
-> fq -d mp3 'EXPR._value | ., type, length?' /test.mp3
 > fq -d mp3 'EXPR._symbol | ., type, length?' /test.mp3
 > fq -d mp3 'EXPR._description | ., type, length?' /test.mp3
 > fq -d mp3 'EXPR._path | ., type, length?' /test.mp3

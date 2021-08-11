@@ -174,6 +174,10 @@ type ToBufferRange interface {
 	ToBufferRange() (bufferRange, error)
 }
 
+type JQValueEx interface {
+	JQValueToGoJQEx(i *Interp) interface{}
+}
+
 func valuePath(v *decode.Value) []interface{} {
 	var parts []interface{}
 
@@ -380,14 +384,16 @@ func toBufferRange(v interface{}) (bufferRange, error) {
 	}
 }
 
-func toValue(v interface{}) interface{} {
+func toValue(i *Interp, v interface{}) (interface{}, bool) {
 	switch v := v.(type) {
+	case JQValueEx:
+		return v.JQValueToGoJQEx(i), true
 	case gojq.JQValue:
-		return v.JQValueToGoJQ()
+		return v.JQValueToGoJQ(), true
 	case nil, bool, float64, int, string, *big.Int, map[string]interface{}, []interface{}:
-		return v
+		return v, true
 	default:
-		return nil
+		return nil, false
 	}
 }
 
@@ -874,8 +880,8 @@ func (i *Interp) NewColorJSON(opts Options) (*colorjson.Encoder, error) {
 		false,
 		indent,
 		func(v interface{}) interface{} {
-			if jv, ok := v.(gojq.JQValue); ok {
-				return jv.JQValueToGoJQ()
+			if v, ok := toValue(i, v); ok {
+				return v
 			}
 			panic(fmt.Sprintf("toValue not a JQValue value: %#v", v))
 		},
