@@ -206,6 +206,52 @@ var MpegObjectTypeNames = map[uint64]string{
 	MPEGObjectTypeNONE:              "MPEGObjectTypeNONE",
 }
 
+const (
+	MPEGStreamTypeUnknown = iota
+	MPEGStreamTypeVideo
+	MPEGStreamTypeAudio
+	MPEGStreamTypeText
+)
+
+var MpegObjectTypeStreamType = map[uint64]int{
+	MPEGObjectTypeMOV_TEXT:          MPEGStreamTypeText,
+	MPEGObjectTypeMPEG4:             MPEGStreamTypeVideo,
+	MPEGObjectTypeH264:              MPEGStreamTypeVideo,
+	MPEGObjectTypeHEVC:              MPEGStreamTypeVideo,
+	MPEGObjectTypeAAC:               MPEGStreamTypeAudio,
+	MPEGObjectTypeMPEG2VideoMain:    MPEGStreamTypeVideo,
+	MPEGObjectTypeMPEG2VideoSimple:  MPEGStreamTypeVideo,
+	MPEGObjectTypeMPEG2VideoSNR:     MPEGStreamTypeVideo,
+	MPEGObjectTypeMPEG2VideoSpatial: MPEGStreamTypeVideo,
+	MPEGObjectTypeMPEG2VideoHigh:    MPEGStreamTypeVideo,
+	MPEGObjectTypeMPEG2Video422:     MPEGStreamTypeVideo,
+	MPEGObjectTypeAACMain:           MPEGStreamTypeAudio,
+	MPEGObjectTypeAACLow:            MPEGStreamTypeAudio,
+	MPEGObjectTypeAACSSR:            MPEGStreamTypeAudio,
+	MPEGObjectTypeMP32MP3:           MPEGStreamTypeAudio,
+	MPEGObjectTypeMPEG1VIDEO:        MPEGStreamTypeVideo,
+	MPEGObjectTypeMP3:               MPEGStreamTypeAudio,
+	MPEGObjectTypeMJPEG:             MPEGStreamTypeVideo,
+	MPEGObjectTypePNG:               MPEGStreamTypeVideo,
+	MPEGObjectTypeJPEG2000:          MPEGStreamTypeVideo,
+	MPEGObjectTypeVC1:               MPEGStreamTypeVideo,
+	MPEGObjectTypeDIRAC:             MPEGStreamTypeVideo,
+	MPEGObjectTypeAC3:               MPEGStreamTypeAudio,
+	MPEGObjectTypeEAC3:              MPEGStreamTypeAudio,
+	MPEGObjectTypeDTS:               MPEGStreamTypeAudio,
+	MPEGObjectTypeOPUS:              MPEGStreamTypeAudio,
+	MPEGObjectTypeVP9:               MPEGStreamTypeAudio,
+	MPEGObjectTypeFLAC:              MPEGStreamTypeAudio,
+	MPEGObjectTypeTSCC2:             MPEGStreamTypeVideo,
+	MPEGObjectTypeEVRC:              MPEGStreamTypeAudio,
+	MPEGObjectTypeVORBIS:            MPEGStreamTypeAudio,
+	MPEGObjectTypeDVDSubtitle:       MPEGStreamTypeText,
+	MPEGObjectTypeQCELP:             MPEGStreamTypeAudio,
+	MPEGObjectTypeMPEG4SYSTEMS1:     MPEGStreamTypeUnknown,
+	MPEGObjectTypeMPEG4SYSTEMS2:     MPEGStreamTypeUnknown,
+	MPEGObjectTypeNONE:              MPEGStreamTypeUnknown,
+}
+
 type MpegDecoderConfig struct {
 	ObjectType    int
 	ASCObjectType int
