@@ -679,7 +679,8 @@ func (i *Interp) bits(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) tovalue(c interface{}, a []interface{}) interface{} {
-	return toValue(c)
+	v, _ := toValue(i, c)
+	return v
 }
 
 // func (i *Interp) md5(c interface{}, a []interface{}) interface{} {

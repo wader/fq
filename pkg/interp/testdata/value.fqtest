@@ -122,7 +122,7 @@
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
 0x40|                           0f                  |         .      |.frames[0].xing.present_flags.toc: true
 null
-> fq -d mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing | ._value' /test.mp3
+> fq -d mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing | tovalue' /test.mp3
 {
   "bytes": 599,
   "frames": 2,
@@ -640,7 +640,7 @@ error: tonumber cannot be applied to: object
 exitcode: 5
 stderr:
 error: invalid number: "ID3"
-> fq -d mp3 '.headers[0].magic | ._value, length, tostring, type' /test.mp3
+> fq -d mp3 '.headers[0].magic | tovalue, length, tostring, type' /test.mp3
 "ID3"
 3
 "ID3"
@@ -653,12 +653,12 @@ error: invalid number: "ID3"
 null
 > fq -d mp3 '.headers[10:20]' /test.mp3
 []
-> fq -d mp3 '.headers[0].padding | ._value, length, tostring, type' /test.mp3
+> fq -d mp3 '.headers[0].padding | tovalue, length, tostring, type' /test.mp3
 null
 0
 "null"
 "null"
-> fq -d mp3 '.headers[0].flags.unsynchronisation | ._value, tostring, type' /test.mp3
+> fq -d mp3 '.headers[0].flags.unsynchronisation | tovalue, tostring, type' /test.mp3
 false
 "false"
 "boolean"

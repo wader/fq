@@ -84,9 +84,9 @@ def duration:
 # # TODO: split? can't really switch on type
 # def grep(f):
 # 	if f | type == "string" then
-# 		.. | select((._name | contains(f)) or (._value | contains(f)? // false))
+# 		.. | select((._name | contains(f)) or (contains(f)? // false))
 # 	elif f | type == "number" then
-# 		.. | select(._value == f)
+# 		.. | select(. == f)
 # 	else
 # 		.. | debug | select(f)?
 # 	end;

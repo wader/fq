@@ -1,7 +1,7 @@
 /test.jq:
 123
 /test2.jq:
-.headers[0].magic._value
+.headers[0].magic | tovalue
 /test.mp3:
 > fq -n -f /test.jq
 123
