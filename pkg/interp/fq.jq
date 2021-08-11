@@ -63,7 +63,7 @@ def _build_default_options:
   {
     depth:          0,
     verbose:        false,
-    decodeprogress: (env.NODECODEPROGRESS == null),
+    bitsformat:     "snippet",
     color:          (tty.is_terminal and env.CLICOLOR != null),
     unicode:        (tty.is_terminal and env.CLIUNICODE != null),
     raw:            (tty.is_terminal | not),
@@ -90,11 +90,13 @@ def _build_default_options:
       } | _obj_to_csv_kv
     ),
     bytecolors:     "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
+    decodeprogress: (env.NODECODEPROGRESS == null),
   };
 
 def _eval_options:
   ( {
       depth:          (.depth | if . then eval(.) else null end),
+      bitsformat:     .bitsformat,
       verbose:        (.verbose | if . then eval(.) else null end),
       decodeprogress: (.decodeprogress | if . then eval(.) else null end),
       color:          (.color | if . then eval(.) else null end),
@@ -258,8 +260,9 @@ def input_filename: _input_filename;
 
 # . will have additional array of options taking priority
 # NOTE: is used by go Options()
-def options:
-  [_default_options] + _options_stack + . | add;
+def options($opts):
+  [_default_options] + _options_stack + $opts | add;
+def options: options([{}]);
 
 def _main:
   def _formats_list:

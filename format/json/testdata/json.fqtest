@@ -35,9 +35,9 @@
 0x10|                                 0b 00 00 00|  |           ....||  isize: 11
 > fq tovalue /json.gz
 {
-  "compressed": "\ufffdVJT\ufffdR042\ufffd\ufffd\u0002\u0000",
+  "compressed": "<13>q1ZKVLJSMDQyruUCAA==",
   "compression_method": 8,
-  "crc32": "\ufffdҬ ",
+  "crc32": "<4>nNKsIA==",
   "extra_flags": 0,
   "flags": {
     "comment": false,

@@ -15,7 +15,7 @@ type bufferRange struct {
 	r  ranges.Range
 }
 
-var _ InterpObject = (*bufferObject)(nil)
+var _ InterpValue = (*bufferObject)(nil)
 var _ ToBuffer = (*bufferObject)(nil)
 
 type bufferObject struct {
