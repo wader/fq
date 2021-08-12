@@ -1,8 +1,12 @@
 package mp4
 
+// Tries to decode both ISOBMFF and quicktime
+// Uses naming from ISOBMFF when possible
+// ISO/IEC 14496-12
 // Quicktime file format https://developer.apple.com/standards/qtff-2001.pdf
 // FLAC in ISOBMFF https://github.com/xiph/flac/blob/master/doc/isoflac.txt
 // https://www.webmproject.org/vp9/mp4/
+
 // TODO: validate structure better? trak/stco etc
 // TODO: fmp4, default samples sizes etc
 // TODO: keep track of structure somehow to detect errors
