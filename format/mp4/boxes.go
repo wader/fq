@@ -838,6 +838,7 @@ func init() {
 		"tfra": func(_ *decodeContext, d *decode.D) {
 			version := d.FieldU8("version")
 			d.FieldU24("flags")
+			d.FieldU32("track_id")
 			d.FieldU26("reserved")
 			lengthSizeOfTrafNum := d.FieldU2("length_size_of_traf_num")
 			sampleLengthSizeOfTrunNum := d.FieldU2("sample_length_size_of_trun_num")
