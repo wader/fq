@@ -77,7 +77,7 @@ Basic usage is:
 
 [fq -h | grep Usage: | sed 's/\(.*\)/<pre>\1<\/pre>/']: sh-start
 
-<pre>Usage: fq [OPTIONS] [EXPR] [FILE...]</pre>
+<pre>Usage: fq [OPTIONS] [--] [EXPR] [FILE...]</pre>
 
 [#]: sh-end
 

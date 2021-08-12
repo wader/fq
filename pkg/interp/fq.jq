@@ -365,7 +365,12 @@ def _main:
       },
     };
   def _usage($arg0; $version):
-    "Usage: \($arg0) [OPTIONS] [--] [EXPR] [FILE...]";
+    ( "fq - jq for binary"
+    , "Tool, language and decoders for querying and exploring binary data."
+    , "For more information see https://github.com/wader/fq"
+    , ""
+    , "Usage: \($arg0) [OPTIONS] [--] [EXPR] [FILE...]"
+    );
   ( . as {$version, $args, args: [$arg0]}
   # make sure we don't unintentionally use . to make things clearer
   | null
@@ -426,26 +431,27 @@ def _main:
         | inputs($filenames) as $_ # store inputs
         | if $null_input then null
           elif $parsed_args.slurp then [inputs]
-          else inputs # will iterate inputs
+          else inputs
           end
-        | if $parsed_args.repl then [_cli_expr_eval($expr)] | repl({}; .[])
-          else
-            ( _cli_last_expr_error(null) as $_
-            | _cli_expr_eval($expr; _repl_display)
-            )
-          end
-        )
-        ; # finally
-        ( if _input_io_errors != null then
-            null | halt_error(_exit_code_input_io_error)
-          end
-        | if _input_decode_errors != null then
-            null | halt_error(_exit_code_input_decode_error)
-          end
-        | if _cli_last_expr_error != null then
-            null | halt_error(_exit_code_expr_error)
-          end
-        )
+          # will iterate zero or more inputs
+          | if $parsed_args.repl then [_cli_expr_eval($expr)] | repl({}; .[])
+            else
+              ( _cli_last_expr_error(null) as $_
+              | _cli_expr_eval($expr; _repl_display)
+              )
+            end
+          )
+          ; # finally
+          ( if _input_io_errors != null then
+              null | halt_error(_exit_code_input_io_error)
+            end
+          | if _input_decode_errors != null then
+              null | halt_error(_exit_code_input_decode_error)
+            end
+          | if _cli_last_expr_error != null then
+              null | halt_error(_exit_code_expr_error)
+            end
+          )
       )
     end
   );

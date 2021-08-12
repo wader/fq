@@ -2,17 +2,22 @@
 
 <pre sh>
 $ fq -h 
-Usage: fq [OPTIONS] [EXPR] [FILE...]
+fq - jq for binary
+Tool, language and decoders for querying and exploring binary data.
+For more information see https://github.com/wader/fq
+
+Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 --compact,-c               Compact output
 --decode,-d=NAME           Decode format (probe)
---file,-f=PATH             Read script from file
+--file,-f=PATH             Read EXPR from file
 --formats                  Show supported formats
 --help,-h                  Show help
 --join-output,-j           No newline between outputs
+--null-input,-n            Null input (can still use input/0 and inputs/0)
 --null-output,-0           Null byte between outputs
---null-input,-n            Null input (can still use input/0 or inputs/0)
 --option,-o=KEY=VALUE,...  Set option, eg: color=true
                              addrbase=16
+                             bitsformat=snippet
                              bytecolors=0-0xff=brightwhite,0=brightblack,32-126:9-13=white
                              color=false
                              colors=array=white,dumpaddr=yellow,dumpheader=yellow+underline,error=brightred,false=yellow,index=white,null=brightblack,number=cyan,object=white,objectkey=brightblue,string=green,true=yellow,value=white
