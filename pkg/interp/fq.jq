@@ -440,18 +440,18 @@ def _main:
               | _cli_expr_eval($expr; _repl_display)
               )
             end
-          )
-          ; # finally
-          ( if _input_io_errors != null then
-              null | halt_error(_exit_code_input_io_error)
-            end
-          | if _input_decode_errors != null then
-              null | halt_error(_exit_code_input_decode_error)
-            end
-          | if _cli_last_expr_error != null then
-              null | halt_error(_exit_code_expr_error)
-            end
-          )
+        )
+        ; # finally
+        ( if _input_io_errors != null then
+            null | halt_error(_exit_code_input_io_error)
+          end
+        | if _input_decode_errors != null then
+            null | halt_error(_exit_code_input_decode_error)
+          end
+        | if _cli_last_expr_error != null then
+            null | halt_error(_exit_code_expr_error)
+          end
+        )
       )
     end
   );
