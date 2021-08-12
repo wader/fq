@@ -174,14 +174,19 @@ func init() {
 		"trak": decodeBoxes,
 		"edts": decodeBoxes,
 		"elst": func(_ *decodeContext, d *decode.D) {
-			d.FieldU8("version")
+			version := d.FieldU8("version")
 			d.FieldU24("flags")
-			numEntries := d.FieldU32("num_entries")
+			entryCount := d.FieldU32("entry_count")
 			var i uint64
-			d.FieldStructArrayLoopFn("table", "entry", func() bool { return i < numEntries }, func(d *decode.D) {
-				d.FieldS32("track_duration")
+			d.FieldStructArrayLoopFn("entries", "entry", func() bool { return i < entryCount }, func(d *decode.D) {
+				d.FieldS32("segment_duration")
 				d.FieldSFn("media_time", func() (int64, decode.DisplayFormat, string) {
-					t := d.S32()
+					var t int64
+					if version == 0 {
+						t = d.S32()
+					} else {
+						t = d.S64()
+					}
 					if t == -1 {
 						return t, decode.NumberDecimal, "empty"
 					}
@@ -288,9 +293,9 @@ func init() {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
-			numEntries := d.FieldU32("num_entries")
+			entryCount := d.FieldU32("entry_count")
 			var i uint64
-			d.FieldStructArrayLoopFn("boxes", "box", func() bool { return i < numEntries }, func(d *decode.D) {
+			d.FieldStructArrayLoopFn("boxes", "box", func() bool { return i < entryCount }, func(d *decode.D) {
 				size := d.FieldU32("size")
 				d.FieldUTF8("type", 4)
 				d.FieldU8("version")
@@ -305,11 +310,11 @@ func init() {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
-			numEntries := d.FieldU32("num_entries")
+			entryCount := d.FieldU32("entry_count")
 			var i uint64
 			// note called "boxes" here instead of "sample_descriptions" and data format is named "type".
 			// this is to make it easier to threat them as normal boxes
-			d.FieldArrayLoopFn("boxes", func() bool { return i < numEntries }, func(d *decode.D) {
+			d.FieldArrayLoopFn("boxes", func() bool { return i < entryCount }, func(d *decode.D) {
 				d.FieldStructFn("box", func(d *decode.D) {
 					size := d.FieldU32("size")
 					dataFormat := d.FieldUTF8("type", 4)
@@ -522,11 +527,11 @@ func init() {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
-			numEntries := d.FieldU32("num_entries")
+			numEntries := d.FieldU32("entry_count")
 			var i uint64
-			d.FieldStructArrayLoopFn("table", "entry", func() bool { return i < numEntries }, func(d *decode.D) {
+			d.FieldStructArrayLoopFn("entries", "entry", func() bool { return i < numEntries }, func(d *decode.D) {
 				d.FieldU32("count")
-				d.FieldU32("duration")
+				d.FieldU32("delta")
 				i++
 			})
 		},
@@ -534,9 +539,9 @@ func init() {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
-			numEntries := d.FieldU32("num_entries")
+			entryCount := d.FieldU32("entry_count")
 			var i uint64
-			d.FieldStructArrayLoopFn("table", "entry", func() bool { return i < numEntries }, func(d *decode.D) {
+			d.FieldStructArrayLoopFn("entries", "entry", func() bool { return i < entryCount }, func(d *decode.D) {
 				firstChunk := uint32(d.FieldU32("first_chunk"))
 				samplesPerChunk := uint32(d.FieldU32("samples_per_chunk"))
 				d.FieldU32("sample_description_id")
@@ -556,10 +561,10 @@ func init() {
 			d.FieldU24("flags")
 			// TODO: bytes_per_sample from audio stsd?
 			sampleSize := d.FieldU32("sample_size")
-			numEntries := d.FieldU32("num_entries")
+			entryCount := d.FieldU32("entry_count")
 			if sampleSize == 0 {
 				var i uint64
-				d.FieldArrayLoopFn("table", func() bool { return i < numEntries }, func(d *decode.D) {
+				d.FieldArrayLoopFn("entries", func() bool { return i < entryCount }, func(d *decode.D) {
 					size := uint32(d.FieldU32("size"))
 					if ctx.currentTrack != nil {
 						ctx.currentTrack.stsz = append(ctx.currentTrack.stsz, size)
@@ -568,7 +573,7 @@ func init() {
 				})
 			} else {
 				if ctx.currentTrack != nil {
-					for i := uint64(0); i < numEntries; i++ {
+					for i := uint64(0); i < entryCount; i++ {
 						ctx.currentTrack.stsz = append(ctx.currentTrack.stsz, uint32(sampleSize))
 					}
 				}
@@ -578,12 +583,12 @@ func init() {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
-			numEntries := d.FieldU32("num_entries")
+			entryCount := d.FieldU32("entry_count")
 			var i uint64
-			d.FieldArrayLoopFn("table", func() bool { return i < numEntries }, func(d *decode.D) {
-				offset := d.FieldU32("offset")
+			d.FieldArrayLoopFn("entries", func() bool { return i < entryCount }, func(d *decode.D) {
+				chunkOffset := d.FieldU32("chunk_offset")
 				if ctx.currentTrack != nil {
-					ctx.currentTrack.stco = append(ctx.currentTrack.stco, offset)
+					ctx.currentTrack.stco = append(ctx.currentTrack.stco, chunkOffset)
 				}
 				i++
 			})
@@ -591,10 +596,10 @@ func init() {
 		"stss": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
-			numEntries := d.FieldU32("num_entries")
+			entryCount := d.FieldU32("entry_count")
 			d.FieldArrayFn("entries", func(d *decode.D) {
-				for i := uint64(0); i < numEntries; i++ {
-					d.FieldU32("entry")
+				for i := uint64(0); i < entryCount; i++ {
+					d.FieldU32("sample_number")
 				}
 			})
 		},
@@ -602,6 +607,7 @@ func init() {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			// TODO: should be count from stsz
+			// TODO: can we know size here or do we need to defer decoding somehow?
 			d.FieldArrayFn("entries", func(d *decode.D) {
 				for d.NotEnd() {
 					d.FieldU8("entry")
@@ -611,11 +617,11 @@ func init() {
 		"ctts": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
-			numEntries := d.FieldU32("num_entries")
+			entryCount := d.FieldU32("entry_count")
 			var i uint64
-			d.FieldStructArrayLoopFn("table", "entry", func() bool { return i < numEntries }, func(d *decode.D) {
+			d.FieldStructArrayLoopFn("entries", "entry", func() bool { return i < entryCount }, func(d *decode.D) {
 				d.FieldU32("sample_count")
-				d.FieldU32("composition_offset")
+				d.FieldU32("sample_offset")
 				i++
 			})
 		},
@@ -624,9 +630,9 @@ func init() {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
-			numEntries := d.FieldU32("num_entries")
+			entryCount := d.FieldU32("entry_count")
 			var i uint64
-			d.FieldArrayLoopFn("table", func() bool { return i < numEntries }, func(d *decode.D) {
+			d.FieldArrayLoopFn("entries", func() bool { return i < entryCount }, func(d *decode.D) {
 				offset := d.FieldU64("offset")
 				if ctx.currentTrack != nil {
 					ctx.currentTrack.stco = append(ctx.currentTrack.stco, offset)
@@ -647,12 +653,15 @@ func init() {
 				d.FieldU64("offset")
 			}
 			d.FieldU16("reserved")
-			numEntries := d.FieldU16("num_entries")
+			numEntries := d.FieldU16("entry_count")
 			var i uint64
-			d.FieldStructArrayLoopFn("index_table", "entry", func() bool { return i < numEntries }, func(d *decode.D) {
-				d.FieldU32("size")
+			d.FieldStructArrayLoopFn("entries", "entry", func() bool { return i < numEntries }, func(d *decode.D) {
+				d.FieldU1("reference_type")
+				d.FieldU31("size")
 				d.FieldU32("duration")
-				d.FieldU32("sap_flags")
+				d.FieldU1("starts_with_sap")
+				d.FieldU3("sap_type")
+				d.FieldU28("sap_delta_time")
 				i++
 			})
 		},
@@ -833,9 +842,9 @@ func init() {
 			lengthSizeOfTrafNum := d.FieldU2("length_size_of_traf_num")
 			sampleLengthSizeOfTrunNum := d.FieldU2("sample_length_size_of_trun_num")
 			lengthSizeOfSampleNum := d.FieldU2("length_size_of_sample_num")
-			numEntries := d.FieldU32("num_entries")
+			entryCount := d.FieldU32("entry_count")
 			d.FieldArrayFn("entries", func(d *decode.D) {
-				for i := uint64(0); i < numEntries; i++ {
+				for i := uint64(0); i < entryCount; i++ {
 					d.FieldStructFn("entry", func(d *decode.D) {
 						if version == 1 {
 							d.FieldU64("time")
