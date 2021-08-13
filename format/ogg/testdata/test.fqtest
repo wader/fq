@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i sine -t 50ms test.ogg
 /test.ogg:
-> fq -d ogg verbose /test.ogg
+$ fq -d ogg verbose /test.ogg
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /test.ogg (ogg) 0x0-0xe45.7 (3654)
       |                                               |                |  pages: [3] 0x0-0xe45.7 (3654)
       |                                               |                |    [0]: page {} (ogg_page) 0x0-0x39.7 (58)

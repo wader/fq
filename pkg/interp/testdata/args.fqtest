@@ -1,11 +1,11 @@
 /test.mp3:
-> fq
+$ fq
 fq - jq for binary
 Tool, language and decoders for querying and exploring binary data.
 For more information see https://github.com/wader/fq
 
 Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
-> fq -h
+$ fq -h
 fq - jq for binary
 Tool, language and decoders for querying and exploring binary data.
 For more information see https://github.com/wader/fq
@@ -37,31 +37,31 @@ Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 --repl,-i                  Interactive REPL
 --slurp,-s                 Read (slurp) all inputs into an array
 --version,-v               Show version (dev)
-> fq -i
+$ fq -i
 null> ^D
-> fq -i . /test.mp3
+$ fq -i . /test.mp3
 mp3> ^D
-> fq -n
+$ fq -n
 fq - jq for binary
 Tool, language and decoders for querying and exploring binary data.
 For more information see https://github.com/wader/fq
 
 Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
-> fq -ni
+$ fq -ni
 null> ^D
-> fq -n 123
+$ fq -n 123
 123
-> fq -ni 123
+$ fq -ni 123
 number> ^D
-> fq -n "[1,2,3]"
+$ fq -n "[1,2,3]"
 [
   1,
   2,
   3
 ]
-> fq -nc "[1,2,3]"
+$ fq -nc "[1,2,3]"
 [1,2,3]
-> fq --formats
+$ fq --formats
 Name:              Description:
 aac_frame          Advanced Audio Coding frame
 adts               Audio Data Transport Stream
@@ -123,15 +123,15 @@ vpx_ccr            VPX Codec Configuration Record
 wav                WAV file
 webp               WebP image
 xing               Xing header
-> fq -X
+$ fq -X
 exitcode: 2
 stderr:
 error: -X: no such argument
-> fq --X
+$ fq --X
 exitcode: 2
 stderr:
 error: --X: no such argument
-> fq -.
+$ fq -.
 exitcode: 2
 stderr:
 error: -.: no such argument

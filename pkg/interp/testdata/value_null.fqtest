@@ -1,103 +1,103 @@
 /test.mp3:
 # display
-> fq -d mp3 '.headers[0].padding | ., tovalue, type, length?' /test.mp3
+$ fq -d mp3 '.headers[0].padding | ., tovalue, type, length?' /test.mp3
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
 0x20|         00 00 00 00 00 00 00 00 00 00         |   ..........   |.headers[0].padding: Correct (none) (zero padding)
 null
 "null"
 0
 # index
-> fq -d mp3 '.headers[0].padding[0] | ., type, length?' /test.mp3
+$ fq -d mp3 '.headers[0].padding[0] | ., type, length?' /test.mp3
 exitcode: 5
 stderr:
 error: expected an array but got: null
-> fq -d mp3 '.headers[0].padding[-1000] | ., type, length?' /test.mp3
+$ fq -d mp3 '.headers[0].padding[-1000] | ., type, length?' /test.mp3
 exitcode: 5
 stderr:
 error: expected an array but got: null
-> fq -d mp3 '.headers[0].padding[1000] | ., type, length?' /test.mp3
+$ fq -d mp3 '.headers[0].padding[1000] | ., type, length?' /test.mp3
 exitcode: 5
 stderr:
 error: expected an array but got: null
 # slice
-> fq -d mp3 '.headers[0].padding[1:3] | ., type, length?' /test.mp3
+$ fq -d mp3 '.headers[0].padding[1:3] | ., type, length?' /test.mp3
 exitcode: 5
 stderr:
 error: expected an array but got: null
-> fq -d mp3 '.headers[0].padding[0:-1] | ., type, length?' /test.mp3
+$ fq -d mp3 '.headers[0].padding[0:-1] | ., type, length?' /test.mp3
 exitcode: 5
 stderr:
 error: expected an array but got: null
-> fq -d mp3 '.headers[0].padding[-1000:2000] | ., type, length?' /test.mp3
+$ fq -d mp3 '.headers[0].padding[-1000:2000] | ., type, length?' /test.mp3
 exitcode: 5
 stderr:
 error: expected an array but got: null
 # key
-> fq -d mp3 '.headers[0].padding["test"] | ., type, length?' /test.mp3
+$ fq -d mp3 '.headers[0].padding["test"] | ., type, length?' /test.mp3
 exitcode: 5
 stderr:
 error: expected an object but got: null
 # each
-> fq -d mp3 '[.headers[0].padding[]] | type, length?' /test.mp3
+$ fq -d mp3 '[.headers[0].padding[]] | type, length?' /test.mp3
 exitcode: 5
 stderr:
 error: cannot iterate over: null
 # keys
-> fq -d mp3 '.headers[0].padding | keys' /test.mp3
+$ fq -d mp3 '.headers[0].padding | keys' /test.mp3
 exitcode: 5
 stderr:
 error: keys cannot be applied to: null
 # has
-> fq -d mp3 '.headers[0].padding | has("a")' /test.mp3
+$ fq -d mp3 '.headers[0].padding | has("a")' /test.mp3
 exitcode: 5
 stderr:
 error: has cannot be applied to: null
-> fq -d mp3 '.headers[0].padding | has(0)' /test.mp3
+$ fq -d mp3 '.headers[0].padding | has(0)' /test.mp3
 exitcode: 5
 stderr:
 error: has cannot be applied to: null
 # type
-> fq -d mp3 '.headers[0].padding | type' /test.mp3
+$ fq -d mp3 '.headers[0].padding | type' /test.mp3
 "null"
 # tonumber
-> fq -d mp3 '.headers[0].padding | tonumber' /test.mp3
+$ fq -d mp3 '.headers[0].padding | tonumber' /test.mp3
 exitcode: 5
 stderr:
 error: tonumber cannot be applied to: null
 # tostring
-> fq -d mp3 '.headers[0].padding | tostring' /test.mp3
+$ fq -d mp3 '.headers[0].padding | tostring' /test.mp3
 "null"
 # to gojq
-> fq -d mp3 '.headers[0].padding + ""' /test.mp3
+$ fq -d mp3 '.headers[0].padding + ""' /test.mp3
 ""
-> fq -d mp3 '.headers[0].padding + 1' /test.mp3
+$ fq -d mp3 '.headers[0].padding + 1' /test.mp3
 1
 # test _keys
-> fq -d mp3 '.headers[0].padding._start | ., type, length?' /test.mp3
+$ fq -d mp3 '.headers[0].padding._start | ., type, length?' /test.mp3
 280
 "number"
 280
-> fq -d mp3 '.headers[0].padding._stop | ., type, length?' /test.mp3
+$ fq -d mp3 '.headers[0].padding._stop | ., type, length?' /test.mp3
 360
 "number"
 360
-> fq -d mp3 '.headers[0].padding._len | ., type, length?' /test.mp3
+$ fq -d mp3 '.headers[0].padding._len | ., type, length?' /test.mp3
 80
 "number"
 80
-> fq -d mp3 '.headers[0].padding._name | ., type, length?' /test.mp3
+$ fq -d mp3 '.headers[0].padding._name | ., type, length?' /test.mp3
 "padding"
 "string"
 7
-> fq -d mp3 '.headers[0].padding._symbol | ., type, length?' /test.mp3
+$ fq -d mp3 '.headers[0].padding._symbol | ., type, length?' /test.mp3
 "Correct"
 "string"
 7
-> fq -d mp3 '.headers[0].padding._description | ., type, length?' /test.mp3
+$ fq -d mp3 '.headers[0].padding._description | ., type, length?' /test.mp3
 "zero padding"
 "string"
 12
-> fq -d mp3 '.headers[0].padding._path | ., type, length?' /test.mp3
+$ fq -d mp3 '.headers[0].padding._path | ., type, length?' /test.mp3
 [
   "headers",
   0,
@@ -105,22 +105,22 @@ error: tonumber cannot be applied to: null
 ]
 "array"
 3
-> fq -d mp3 '.headers[0].padding._bits | ., type, length?' /test.mp3
+$ fq -d mp3 '.headers[0].padding._bits | ., type, length?' /test.mp3
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
 0x0|00 00 00 00 00 00 00 00 00 00                  |..........      |
 <80 bits>
 "buffer"
 80
-> fq -d mp3 '.headers[0].padding._bytes | ., type, length?' /test.mp3
+$ fq -d mp3 '.headers[0].padding._bytes | ., type, length?' /test.mp3
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
 0x0|00 00 00 00 00 00 00 00 00 00                  |..........      |
 <10 bytes>
 "buffer"
 10
-> fq -d mp3 '.headers[0].padding._error | ., type, length?' /test.mp3
+$ fq -d mp3 '.headers[0].padding._error | ., type, length?' /test.mp3
 null
 "null"
 0
-> fq -d mp3 '.headers[0].padding._unknown | ., type, length?' /test.mp3
+$ fq -d mp3 '.headers[0].padding._unknown | ., type, length?' /test.mp3
 false
 "boolean"

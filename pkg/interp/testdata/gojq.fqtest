@@ -1,6 +1,6 @@
 # TODO: various gojq fq fork regression tests, should probably be move to fork code instead
 /test.mp3:
-> fq -n '{a:1, b: 2} | tostream'
+$ fq -n '{a:1, b: 2} | tostream'
 [
   [
     "a"
@@ -18,22 +18,22 @@
     "b"
   ]
 ]
-> fq -d mp3 '{(.headers[0].magic): 123}' /test.mp3
+$ fq -d mp3 '{(.headers[0].magic): 123}' /test.mp3
 {
   "ID3": 123
 }
-> fq -d mp3 '{(.headers[0].magic): 123}' /test.mp3
+$ fq -d mp3 '{(.headers[0].magic): 123}' /test.mp3
 {
   "ID3": 123
 }
 /test.mp3:
-> fq -d mp3 '.frames | group_by(.side_info | {b: .main_data_end}) | map(length)' /test.mp3
+$ fq -d mp3 '.frames | group_by(.side_info | {b: .main_data_end}) | map(length)' /test.mp3
 [
   2,
   1
 ]
 /test.mp3:
-> fq -d mp3 '.frames | map(.header) | group_by(.bitrate)' /test.mp3
+$ fq -d mp3 '.frames | map(.header) | group_by(.bitrate)' /test.mp3
 [
   [
     {
@@ -88,7 +88,7 @@
     }
   ]
 ]
-> fq -d mp3 '.frames | map(.header) | sort_by(.bitrate)' /test.mp3
+$ fq -d mp3 '.frames | map(.header) | sort_by(.bitrate)' /test.mp3
 [
   {
     "bitrate": 56000,
@@ -139,7 +139,7 @@
     "sync": 2047
   }
 ]
-> fq -d mp3 '.frames | map(.header) | sort_by(.bitrate)[0]' /test.mp3
+$ fq -d mp3 '.frames | map(.header) | sort_by(.bitrate)[0]' /test.mp3
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.frames[0].header: {}
 0x20|                                       ff fb   |             .. |  sync: Correct (0x7ff)
 0x20|                                          fb   |              . |  mpeg_version: MPEG Version 1 (1)
@@ -155,7 +155,7 @@
 0x30|c0                                             |.               |  copyright: 0
 0x30|c0                                             |.               |  original: 0
 0x30|c0                                             |.               |  emphasis: None (0b0)
-> fq -d mp3 '.frames | map(.header) | min_by(.bitrate)' /test.mp3
+$ fq -d mp3 '.frames | map(.header) | min_by(.bitrate)' /test.mp3
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.frames[0].header: {}
 0x20|                                       ff fb   |             .. |  sync: Correct (0x7ff)
 0x20|                                          fb   |              . |  mpeg_version: MPEG Version 1 (1)
@@ -171,7 +171,7 @@
 0x30|c0                                             |.               |  copyright: 0
 0x30|c0                                             |.               |  original: 0
 0x30|c0                                             |.               |  emphasis: None (0b0)
-> fq -d mp3 '.frames | map(.header) | max_by(.bitrate)' /test.mp3
+$ fq -d mp3 '.frames | map(.header) | max_by(.bitrate)' /test.mp3
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.frames[2].header: {}
 0x1b0|         ff fb                                 |   ..           |  sync: Correct (0x7ff)
 0x1b0|            fb                                 |    .           |  mpeg_version: MPEG Version 1 (1)
@@ -187,7 +187,7 @@
 0x1b0|                  c4                           |      .         |  copyright: 0
 0x1b0|                  c4                           |      .         |  original: 1
 0x1b0|                  c4                           |      .         |  emphasis: None (0b0)
-> fq -d mp3 '.frames[0] | . + .header | keys, .bitrate' /test.mp3
+$ fq -d mp3 '.frames[0] | . + .header | keys, .bitrate' /test.mp3
 [
   "bitrate",
   "channel_mode",
@@ -210,7 +210,7 @@
 ]
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
 0x20|                                             40|               @|.frames[0].header.bitrate: 56000
-> fq -d mp3 '[.frames[0] | ., .header] | add | keys, .bitrate' /test.mp3
+$ fq -d mp3 '[.frames[0] | ., .header] | add | keys, .bitrate' /test.mp3
 [
   "bitrate",
   "channel_mode",

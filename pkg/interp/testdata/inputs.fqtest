@@ -4,76 +4,76 @@ a
 b
 /c:
 c
-> fq -d raw ._description /a /b /c
+$ fq -d raw ._description /a /b /c
 "/a"
 "/b"
 "/c"
-> fq -d raw (.,inputs)._description /a /b /c
+$ fq -d raw (.,inputs)._description /a /b /c
 "/a"
 "/b"
 "/c"
-> fq -d raw (.,input,input,input)._description /a /b /c
+$ fq -d raw (.,input,input,input)._description /a /b /c
 "/a"
 "/b"
 "/c"
 exitcode: 5
 stderr:
 error: break
-> fq -d raw -n (.,inputs)._description /a /b /c
+$ fq -d raw -n (.,inputs)._description /a /b /c
 null
 "/a"
 "/b"
 "/c"
-> fq -d raw -n inputs._description /a /b /c
+$ fq -d raw -n inputs._description /a /b /c
 "/a"
 "/b"
 "/c"
-> fq -d raw -n '[inputs._description]' /a /b /c
+$ fq -d raw -n '[inputs._description]' /a /b /c
 [
   "/a",
   "/b",
   "/c"
 ]
-> fq -d raw -n (input,input,input,input)._description /a /b /c
+$ fq -d raw -n (input,input,input,input)._description /a /b /c
 "/a"
 "/b"
 "/c"
 exitcode: 5
 stderr:
 error: break
-> fq -d raw input_filename /a /b /c
+$ fq -d raw input_filename /a /b /c
 "/a"
 "/b"
 "/c"
-> fq -d raw input_filename /a /non-existing /c
+$ fq -d raw input_filename /a /non-existing /c
 "/a"
 "/c"
 exitcode: 2
 stderr:
 error: /non-existing: file not found
-> fq -d raw '(' /a /b /c
+$ fq -d raw '(' /a /b /c
 exitcode: 3
 stderr:
 error: src:1:2: unexpected token <EOF>
-> fq -d raw bla /a /b /c
+$ fq -d raw bla /a /b /c
 exitcode: 3
 stderr:
 error: src:1:0: function not defined: bla/0
-> fq -d raw '1+"a"' /a /b /c
+$ fq -d raw '1+"a"' /a /b /c
 exitcode: 5
 stderr:
 error: cannot add: number (1) and string ("a")
 error: cannot add: number (1) and string ("a")
 error: cannot add: number (1) and string ("a")
-> fq -s -d raw [.[]._description] /a /b /c
+$ fq -s -d raw [.[]._description] /a /b /c
 [
   "/a",
   "/b",
   "/c"
 ]
-> fq -n -s -d raw . /a /b /c
+$ fq -n -s -d raw . /a /b /c
 null
-> fq . /a
+$ fq . /a
 exitcode: 4
 stderr:
 error: /a: failed to decode (probe), try -d FORMAT to force

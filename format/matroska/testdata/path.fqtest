@@ -1,10 +1,10 @@
 /avc.mkv:
-> fq -d matroska 'matroska_path(".Segment.Tracks[0].TrackEntry[0].CodecID")' /avc.mkv
+$ fq -d matroska 'matroska_path(".Segment.Tracks[0].TrackEntry[0].CodecID")' /avc.mkv
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.elements[1].elements[3].elements[1].elements[4]: {}
      |                                               |                |  type: string (3)
 0x150|      86                                       |  .             |  id: CodecID (0x86)
 0x150|         8f                                    |   .            |  size: 15
 0x150|            56 5f 4d 50 45 47 34 2f 49 53 4f 2f|    V_MPEG4/ISO/|  value: "V_MPEG4/ISO/AVC"
 0x160|41 56 43                                       |AVC             |
-> fq -d matroska 'matroska_path(matroska_path(".Segment.Tracks[0].TrackEntry[0].CodecID"))' /avc.mkv
+$ fq -d matroska 'matroska_path(matroska_path(".Segment.Tracks[0].TrackEntry[0].CodecID"))' /avc.mkv
 ".Segment.Tracks.TrackEntry.CodecID"
