@@ -150,6 +150,9 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 				panic("unreachable")
 			}
 		})
+		if mpegLayer != 3 {
+			d.Invalid("Not layer 3")
+		}
 		// [mpeg layer][mpeg version]
 		var samplesPerFrameIndex = map[uint][4]uint{
 			0: [...]uint{0, 0, 0, 0},
