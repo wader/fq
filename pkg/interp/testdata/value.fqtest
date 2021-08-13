@@ -1,6 +1,6 @@
 /test.mp3:
 # ffmpeg -f lavfi -i sine -t 10ms test.mp3
-> fq -d mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing' /test.mp3
+$ fq -d mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing' /test.mp3
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.frames[0].xing: {} (xing)
 0x40|      49 6e 66 6f                              |  Info          |  header: "Info"
 0x40|                  00 00 00 0f                  |      ....      |  present_flags: {}
@@ -122,7 +122,7 @@
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
 0x40|                           0f                  |         .      |.frames[0].xing.present_flags.toc: true
 null
-> fq -d mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing | tovalue' /test.mp3
+$ fq -d mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing | tovalue' /test.mp3
 {
   "bytes": 599,
   "frames": 2,
@@ -364,7 +364,7 @@ null
 "Info"
 true
 null
-> fq -d mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing | tovalue' /test.mp3
+$ fq -d mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing | tovalue' /test.mp3
 {
   "bytes": 599,
   "frames": 2,
@@ -606,64 +606,64 @@ null
 "Info"
 true
 null
-> fq -d mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing | type' /test.mp3
+$ fq -d mp3 '.frames[0].xing | ., .frames, .toc, .header, .present_flags.toc, .missing | type' /test.mp3
 "object"
 "number"
 "array"
 "string"
 "boolean"
 "null"
-> fq -d mp3 '.headers | length, type' /test.mp3
+$ fq -d mp3 '.headers | length, type' /test.mp3
 1
 "array"
-> fq -d mp3 '.headers | tostring' /test.mp3
+$ fq -d mp3 '.headers | tostring' /test.mp3
 exitcode: 5
 stderr:
 error: tostring cannot be applied to: array
-> fq -d mp3 '.headers | tonumber' /test.mp3
+$ fq -d mp3 '.headers | tonumber' /test.mp3
 exitcode: 5
 stderr:
 error: tonumber cannot be applied to: array
-> fq -d mp3 '.headers[0] | tostring' /test.mp3
+$ fq -d mp3 '.headers[0] | tostring' /test.mp3
 exitcode: 5
 stderr:
 error: tostring cannot be applied to: object
-> fq -d mp3 '.headers[0] | tonumber' /test.mp3
+$ fq -d mp3 '.headers[0] | tonumber' /test.mp3
 exitcode: 5
 stderr:
 error: tonumber cannot be applied to: object
-> fq -d mp3 '.headers[0].version | tonumber' /test.mp3
+$ fq -d mp3 '.headers[0].version | tonumber' /test.mp3
 4
-> fq -d mp3 '.headers[0].version | tostring' /test.mp3
+$ fq -d mp3 '.headers[0].version | tostring' /test.mp3
 "4"
-> fq -d mp3 '.headers[0].magic | tonumber' /test.mp3
+$ fq -d mp3 '.headers[0].magic | tonumber' /test.mp3
 exitcode: 5
 stderr:
 error: invalid number: "ID3"
-> fq -d mp3 '.headers[0].magic | tovalue, length, tostring, type' /test.mp3
+$ fq -d mp3 '.headers[0].magic | tovalue, length, tostring, type' /test.mp3
 "ID3"
 3
 "ID3"
 "string"
-> fq -d mp3 '.headers[0].magic[4]' /test.mp3
+$ fq -d mp3 '.headers[0].magic[4]' /test.mp3
 ""
-> fq -d mp3 '.headers[0].magic[4:10]' /test.mp3
+$ fq -d mp3 '.headers[0].magic[4:10]' /test.mp3
 ""
-> fq -d mp3 '.headers[10]' /test.mp3
+$ fq -d mp3 '.headers[10]' /test.mp3
 null
-> fq -d mp3 '.headers[10:20]' /test.mp3
+$ fq -d mp3 '.headers[10:20]' /test.mp3
 []
-> fq -d mp3 '.headers[0].padding | tovalue, length, tostring, type' /test.mp3
+$ fq -d mp3 '.headers[0].padding | tovalue, length, tostring, type' /test.mp3
 null
 0
 "null"
 "null"
-> fq -d mp3 '.headers[0].flags.unsynchronisation | tovalue, tostring, type' /test.mp3
+$ fq -d mp3 '.headers[0].flags.unsynchronisation | tovalue, tostring, type' /test.mp3
 false
 "false"
 "boolean"
 # regresison null value (padding)
-> fq -d mp3 '.headers[0] | tovalue' /test.mp3
+$ fq -d mp3 '.headers[0] | tovalue' /test.mp3
 {
   "flags": {
     "experimental_indicator": false,
@@ -699,7 +699,7 @@ false
   "version": 4
 }
 # test each in decoded order
-> fq -d mp3 '.headers[0][]' /test.mp3
+$ fq -d mp3 '.headers[0][]' /test.mp3
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
 0x0|49 44 33                                       |ID3             |.headers[0].magic: "ID3" (Correct)
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |

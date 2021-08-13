@@ -1,0 +1,36 @@
+/test.mp3:
+$ fq -i
+null> he\t
+help
+hevc_au
+hevc_dcr
+hevc_nalu
+hex
+hexdump
+null> {aa: 123, ab: "a"} | .a\t
+aa
+ab
+null> {aa: 123, ab: "a"} | repl
+> object> .a\t
+aa
+ab
+> object> ^D
+null> ^D
+$ fq -i . /test.mp3
+mp3> .f\t
+footers
+frames
+mp3> ._\t
+_bits
+_bytes
+_description
+_error
+_format
+_len
+_name
+_path
+_start
+_stop
+_symbol
+_unknown
+mp3> ^D

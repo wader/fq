@@ -1,6 +1,6 @@
 # convert -size 4x4 "xc:#000" 4x4.webp
 /4x4.webp:
-> fq -d webp verbose /4x4.webp
+$ fq -d webp verbose /4x4.webp
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /4x4.webp (webp) 0x0-0x2b.7 (44)
 0x00|52 49 46 46                                    |RIFF            |  riff_id: "RIFF" (Correct) 0x0-0x3.7 (4)
 0x00|            24 00 00 00                        |    $...        |  riff_length: 36 0x4-0x7.7 (4)

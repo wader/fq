@@ -33,7 +33,7 @@ a:
 
 func TestUnescape(t *testing.T) {
 
-	s := fqtest.Unescape(`asd \b123213 asd \xffcb sdfd `)
-	log.Printf("s: %#+v\n", s)
+	s := fqtest.Unescape(`asd\n\r\t \0b11110000 asd \0xffcb sdfd `)
+	log.Printf("s: %v\n", []byte(s))
 
 }

@@ -1,6 +1,6 @@
 # ffmpeg -y -f lavfi -i sine -ac 2 -t 10ms -f mp3 temp.mp3 && fq temp.mp3 '.frame[0].xing | bits' > xing
 /xing:
-> fq -d xing verbose /xing
+$ fq -d xing verbose /xing
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /xing (xing) 0x0-0x9b.7 (156)
 0x00|49 6e 66 6f                                    |Info            |  header: "Info" 0x0-0x3.7 (4)
     |                                               |                |  present_flags: {} 0x4-0x7.7 (4)

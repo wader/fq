@@ -1,36 +1,36 @@
 # ffmpeg -f lavfi -i sine -t 10ms test.mp3
 /test.mp3:
-> fq -d mp3 '.headers[0].magic == "ID3"' /test.mp3
+$ fq -d mp3 '.headers[0].magic == "ID3"' /test.mp3
 true
-> fq -d mp3 '.headers[0].version == 4' /test.mp3
+$ fq -d mp3 '.headers[0].version == 4' /test.mp3
 true
-> fq -d mp3 '.frames[0].header.protection == true' /test.mp3
+$ fq -d mp3 '.frames[0].header.protection == true' /test.mp3
 true
-> fq -d mp3 '.headers[0].flags + {}' /test.mp3
+$ fq -d mp3 '.headers[0].flags + {}' /test.mp3
 {
   "experimental_indicator": false,
   "extended_header": false,
   "unsynchronisation": false,
   "unused": 0
 }
-> fq -d mp3 '._unknown' /test.mp3
+$ fq -d mp3 '._unknown' /test.mp3
 false
-> fq -d mp3 '._format' /test.mp3
+$ fq -d mp3 '._format' /test.mp3
 "mp3"
-> fq -d mp3 '.headers[0].magic._format' /test.mp3
+$ fq -d mp3 '.headers[0].magic._format' /test.mp3
 null
-> fq -d raw '._bytes | string'
+$ fq -d raw '._bytes | string'
 "abc\n"
 stdin:
 abc
-> fq -n "{a: 123, b: []} | debug"
+$ fq -n "{a: 123, b: []} | debug"
 {
   "a": 123,
   "b": []
 }
 stderr:
 ["DEBUG",{"a":123,"b":[]}]
-> fq -n options
+$ fq -n options
 {
   "addrbase": 16,
   "bitsformat": "snippet",

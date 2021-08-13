@@ -8,7 +8,6 @@ import (
 	"io"
 	"io/fs"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -78,20 +77,35 @@ func (tcr *testCaseRun) FS() fs.FS { return tcr.testCase }
 
 func (tcr *testCaseRun) Readline(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error) {
 	tcr.actualStdoutBuf.WriteString(prompt)
-	if tcr.readlinesPos > len(tcr.readlines) {
+	if tcr.readlinesPos >= len(tcr.readlines) {
 		return "", io.EOF
 	}
 
-	tcrLine := tcr.readlines[tcr.readlinesPos]
+	lineRaw := tcr.readlines[tcr.readlinesPos].input
+	line := Unescape(lineRaw)
 	tcr.readlinesPos++
 
-	tcr.actualStdoutBuf.WriteString(tcrLine.input + "\n")
+	if strings.HasSuffix(line, "\t") {
+		tcr.actualStdoutBuf.WriteString(lineRaw + "\n")
 
-	if tcrLine.input == "^D" {
+		l := len(line) - 1
+		newLine, shared := complete(line[0:l], l)
+		// TODO: shared
+		_ = shared
+		for _, nl := range newLine {
+			tcr.actualStdoutBuf.WriteString(nl + "\n")
+		}
+
+		return "", nil
+	}
+
+	tcr.actualStdoutBuf.WriteString(lineRaw + "\n")
+
+	if line == "^D" {
 		return "", io.EOF
 	}
 
-	return tcrLine.input, nil
+	return line, nil
 }
 func (tcr *testCaseRun) History() ([]string, error) { return nil, nil }
 
@@ -103,9 +117,9 @@ func (tcr *testCaseRun) ToExpectedStdout() string {
 	} else {
 		for _, rl := range tcr.readlines {
 			fmt.Fprintf(sb, "%s%s\n", rl.expectedPrompt, rl.input)
-			// if rl.expectedStdout != "" {
-			// 	fmt.Fprint(sb, rl.expectedStdout)
-			// }
+			if rl.expectedStdout != "" {
+				fmt.Fprint(sb, rl.expectedStdout)
+			}
 		}
 	}
 
@@ -154,7 +168,7 @@ func (tc *testCase) ToActual() string {
 		case *testCaseComment:
 			fmt.Fprintf(sb, "#%s\n", p.comment)
 		case *testCaseRun:
-			fmt.Fprintf(sb, ">%s\n", p.args)
+			fmt.Fprintf(sb, "$%s\n", p.args)
 			fmt.Fprint(sb, p.actualStdoutBuf.String())
 			if p.actualExitCode != 0 {
 				fmt.Fprintf(sb, "exitcode: %d\n", p.actualExitCode)
@@ -204,17 +218,24 @@ type Section struct {
 	Value  string
 }
 
-var unescapeRe = regexp.MustCompile(`\\(?:b[01]+|x[0-f]+)`)
+var unescapeRe = regexp.MustCompile(`\\(?:t|b|n|r|0(?:b[01]{8}|x[0-f]{2}))`)
 
 func Unescape(s string) string {
 	return unescapeRe.ReplaceAllStringFunc(s, func(r string) string {
-		log.Printf("r: %s\n", r)
 		switch {
-		case r[1] == 'b':
-			b, _ := bitio.BytesFromBitString(r[2:])
+		case r == `\n`:
+			return "\n"
+		case r == `\r`:
+			return "\r"
+		case r == `\t`:
+			return "\t"
+		case r == `\b`:
+			return "\b"
+		case strings.HasPrefix(r, `\0b`):
+			b, _ := bitio.BytesFromBitString(r[3:])
 			return string(b)
-		case r[1] == 'x':
-			b, _ := hex.DecodeString(r[2:])
+		case strings.HasPrefix(r, `\0x`):
+			b, _ := hex.DecodeString(r[3:])
 			return string(b)
 		default:
 			return r
@@ -269,7 +290,7 @@ func parseTestCases(s string) *testCase {
 	replDepth := 0
 
 	// TODO: better section splitter, too much heuristics now
-	for _, section := range SectionParser(regexp.MustCompile(`^stdin:$|^stderr:$|^exitcode:.*$|^#.*$|^/.*:|^> .*|^[a-z].+> .*`), s) {
+	for _, section := range SectionParser(regexp.MustCompile(`^\$ .*$|^stdin:$|^stderr:$|^exitcode:.*$|^#.*$|^/.*:|^(?:>* )?[a-z\d]+> .*$`), s) {
 		n, v := section.Name, section.Value
 
 		switch {
@@ -279,7 +300,7 @@ func parseTestCases(s string) *testCase {
 		case strings.HasPrefix(n, "/"):
 			name := n[0 : len(n)-1]
 			te.parts = append(te.parts, &testCaseFile{lineNr: section.LineNr, name: name, data: []byte(v)})
-		case strings.HasPrefix(n, ">"):
+		case strings.HasPrefix(n, "$"):
 			replDepth++
 
 			if currentTestRun != nil {
@@ -289,7 +310,7 @@ func parseTestCases(s string) *testCase {
 			currentTestRun = &testCaseRun{
 				lineNr:          section.LineNr,
 				testCase:        te,
-				args:            strings.TrimPrefix(n, ">"),
+				args:            strings.TrimPrefix(n, "$"),
 				expectedStdout:  v,
 				actualStdoutBuf: &bytes.Buffer{},
 				actualStderrBuf: &bytes.Buffer{},
@@ -301,9 +322,10 @@ func parseTestCases(s string) *testCase {
 		case strings.HasPrefix(n, "stderr"):
 			currentTestRun.expectedStderr = v
 		case strings.Contains(n, promptEnd): // TODO: better
-			parts := strings.SplitN(n, promptEnd, 2)
-			prompt := parts[0] + promptEnd
-			input := parts[1]
+			i := strings.LastIndex(n, promptEnd)
+
+			prompt := n[0:i] + promptEnd
+			input := n[i+2:]
 
 			currentTestRun.readlines = append(currentTestRun.readlines, testCaseReadline{
 				input:          input,

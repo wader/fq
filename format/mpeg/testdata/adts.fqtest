@@ -1,6 +1,6 @@
 # ffmpeg -y -f lavfi -i sine -ac 2 -t 40ms -f adts adts
 /adts:
-> fq -d adts verbose /adts
+$ fq -d adts verbose /adts
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /adts (adts) 0x0-0x406.7 (1031)
      |                                               |                |  frames: [3] 0x0-0x406.7 (1031)
      |                                               |                |    [0]: frame {} (adts_frame) 0x0-0x153.7 (340)

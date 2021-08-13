@@ -1,6 +1,6 @@
 # ffmpeg -y -v trace -f lavfi -i testsrc -c:v librav1e -t 50ms av1.mp4
 /av1.mp4:
-> fq -d mp4 verbose /av1.mp4
+$ fq -d mp4 verbose /av1.mp4
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /av1.mp4 (mp4) 0x0-0x14b1.7 (5298)
       |                                               |                |  boxes: [4] 0x0-0x14b1.7 (5298)
       |                                               |                |    [0]: box {} 0x0-0x1b.7 (28)

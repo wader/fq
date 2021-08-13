@@ -1,22 +1,22 @@
-> fq -n '1+"a"'
+$ fq -n '1+"a"'
 exitcode: 5
 stderr:
 error: cannot add: number (1) and string ("a")
-> fq -n '"abc" | halt_error(123)'
+$ fq -n '"abc" | halt_error(123)'
 exitcode: 123
 stderr:
 error: abc
-> fq -n 'null | halt_error(123)'
+$ fq -n 'null | halt_error(123)'
 exitcode: 123
-> fq -n invalid
+$ fq -n invalid
 exitcode: 3
 stderr:
 error: src:1:0: function not defined: invalid/0
-> fq -n "("
+$ fq -n "("
 exitcode: 3
 stderr:
 error: src:1:2: unexpected token <EOF>
-> fq . non-existing
+$ fq . non-existing
 exitcode: 2
 stderr:
 error: non-existing: file not found
