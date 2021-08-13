@@ -442,13 +442,13 @@ def _main:
             end
         )
         ; # finally
-        ( if _input_io_errors != null then
+        ( if _input_io_errors then
             null | halt_error(_exit_code_input_io_error)
           end
-        | if _input_decode_errors != null then
+        | if _input_decode_errors then
             null | halt_error(_exit_code_input_decode_error)
           end
-        | if _cli_last_expr_error != null then
+        | if _cli_last_expr_error then
             null | halt_error(_exit_code_expr_error)
           end
         )
