@@ -1,9 +1,5 @@
 /test.mp3:
 $ fq
-fq - jq for binary
-Tool, language and decoders for querying and exploring binary data.
-For more information see https://github.com/wader/fq
-
 Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 $ fq -h
 fq - jq for binary
@@ -42,10 +38,6 @@ null> ^D
 $ fq -i . /test.mp3
 mp3> ^D
 $ fq -n
-fq - jq for binary
-Tool, language and decoders for querying and exploring binary data.
-For more information see https://github.com/wader/fq
-
 Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 $ fq -ni
 null> ^D

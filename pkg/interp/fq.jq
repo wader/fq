@@ -365,12 +365,7 @@ def _main:
       },
     };
   def _usage($arg0; $version):
-    ( "fq - jq for binary"
-    , "Tool, language and decoders for querying and exploring binary data."
-    , "For more information see https://github.com/wader/fq"
-    , ""
-    , "Usage: \($arg0) [OPTIONS] [--] [EXPR] [FILE...]"
-    );
+    "Usage: \($arg0) [OPTIONS] [--] [EXPR] [FILE...]";
   ( . as {$version, $args, args: [$arg0]}
   # make sure we don't unintentionally use . to make things clearer
   | null
@@ -400,7 +395,11 @@ def _main:
       ]
     ) as $_
   | if $parsed_args.help then
-      ( _usage($arg0; $version)
+      ( "fq - jq for binary"
+      , "Tool, language and decoders for querying and exploring binary data."
+      , "For more information see https://github.com/wader/fq"
+      , ""
+      , _usage($arg0; $version)
       , args_help_text(_opts($version))
       ) | println
     elif $parsed_args.version then
