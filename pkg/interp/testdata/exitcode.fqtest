@@ -1,3 +1,7 @@
+$ fq
+exitcode: 2
+stderr:
+Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 $ fq -n '1+"a"'
 exitcode: 5
 stderr:
