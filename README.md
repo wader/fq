@@ -1,6 +1,6 @@
 # fq
 
-Tool, language and decoders for querying and exploring binary data.
+Tool, language and decoders for exploring binary data.
 
 <sub>
 <pre sh>

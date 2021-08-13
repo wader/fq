@@ -364,6 +364,11 @@ def _main:
         bool: true
       },
     };
+  def _info:
+    ( "fq - jq for binary"
+    , "Tool, language and decoders for exploring binary data."
+    , "For more information see https://github.com/wader/fq"
+    );
   def _usage($arg0; $version):
     "Usage: \($arg0) [OPTIONS] [--] [EXPR] [FILE...]";
   ( . as {$version, $args, args: [$arg0]}
@@ -395,9 +400,7 @@ def _main:
       ]
     ) as $_
   | if $parsed_args.help then
-      ( "fq - jq for binary"
-      , "Tool, language and decoders for querying and exploring binary data."
-      , "For more information see https://github.com/wader/fq"
+      ( _info
       , ""
       , _usage($arg0; $version)
       , args_help_text(_opts($version))
@@ -407,7 +410,9 @@ def _main:
     elif $parsed_args.formats then
       _formats_list | println
     elif ($rest | length) == 0 and (($parsed_args.repl | not) and ($parsed_args.file | not)) then
-      ( $parsed_args | _usage($arg0; $version) | println)
+      ( (( _usage($arg0; $version), "\n") | stderr)
+      , null | halt_error(_exit_code_args_error)
+      )
     else
       # use finally as display etc prints and results in empty
       finally(
