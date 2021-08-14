@@ -10,6 +10,8 @@
 - Configurable history file/name?
 - Reset color at prompt? context cancel
 - Auto complete $variables
+- Auto complete keys that need escaping, now just filtered out
+- Auto complete add "." just one and is object
 
 #### Language
 
@@ -41,7 +43,6 @@
 - empty file test
 - CLI tests, raw write, colors?
 - Interactive tests
-- Completion tests
 
 #### Documentation
 

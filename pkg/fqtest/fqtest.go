@@ -290,7 +290,7 @@ func parseTestCases(s string) *testCase {
 	replDepth := 0
 
 	// TODO: better section splitter, too much heuristics now
-	for _, section := range SectionParser(regexp.MustCompile(`^\$ .*$|^stdin:$|^stderr:$|^exitcode:.*$|^#.*$|^/.*:|^(?:>* )?[a-z\d]+> .*$`), s) {
+	for _, section := range SectionParser(regexp.MustCompile(`^\$ .*$|^stdin:$|^stderr:$|^exitcode:.*$|^#.*$|^/.*:|^(?:>+ )?[a-z\d]+(?:, \.\.\.)?> .*$`), s) {
 		n, v := section.Name, section.Value
 
 		switch {

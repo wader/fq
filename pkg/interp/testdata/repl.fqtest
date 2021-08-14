@@ -1,0 +1,26 @@
+$ fq -i
+null> 1+1
+2
+null> (
+error: src:1:2: unexpected token <EOF>
+null> abc
+error: src:1:0: function not defined: abc/0
+null> 1+"a"
+error: cannot add: number (1) and string ("a")
+null> 1 | repl
+> number> .+1
+2
+> number> ^D
+null> [1,2,3] | repl({}; .[])
+> number, ...> .
+1
+2
+3
+> number, ...> ^D
+null> [] | repl({}; .[])
+> empty> 1
+> empty> ^D
+null> ^D
+$ fq -i 'empty'
+empty> 1
+empty> ^D
