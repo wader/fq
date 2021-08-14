@@ -29,13 +29,13 @@ import (
 	"github.com/itchyny/gojq"
 )
 
-//go:embed fq.jq
+//go:embed interp.jq
 //go:embed internal.jq
 //go:embed funcs.jq
 //go:embed args.jq
 var builtinFS embed.FS
 
-var fqInitSource = `include "@builtin/fq";`
+var initSource = `include "@builtin/interp";`
 
 type valueError struct {
 	v interface{}
@@ -471,7 +471,7 @@ func New(os OS, registry *registry.Registry) (*Interp, error) {
 	}
 
 	i.includeCache = map[string]*gojq.Query{}
-	i.initFqQuery, err = gojq.Parse(fqInitSource)
+	i.initFqQuery, err = gojq.Parse(initSource)
 	if err != nil {
 		return nil, fmt.Errorf("init:%s: %w", queryErrorPosition(err), err)
 	}
@@ -793,7 +793,7 @@ type Options struct {
 	AddrBase     int
 	SizeBase     int
 
-	Decorator    Decorator `json:"-"`
+	Decorator    Decorator
 	BitsFormatFn func(bb *bitio.Buffer) (interface{}, error)
 }
 
