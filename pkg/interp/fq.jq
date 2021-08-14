@@ -36,6 +36,8 @@ def _exit_code_input_decode_error: 4;
 def _exit_code_expr_error: 5;
 
 # TODO: completionMode
+# TODO: return escaped identifier, not sure current readline implementation supports
+# completions that needs to change previous input, ex: .a\t -> ."a \" b" etc
 def _complete($e):
   ( ( $e | _complete_query) as {$type, $query, $prefix}
   | {
@@ -48,7 +50,7 @@ def _complete($e):
           else
             []
           end
-        | map(select(strings and startswith($prefix)))
+        | map(select(strings and _is_ident and startswith($prefix)))
         | unique
         | sort
         )
@@ -151,9 +153,6 @@ def _eval_is_compile_error: type == "object" and .error != null and .what != nul
 def _eval_compile_error_tostring:
   "\(.filename // "src"):\(.line):\(.column): \(.error)";
 
-def _eval_debug:
-  (["DEBUG", .] | tojson, "\n") | stderr;
-
 def _eval($e; f; on_error; on_compile_error):
   ( _default_options(_build_default_options) as $_
   | try eval($e; "_eval_debug") | f
@@ -166,7 +165,7 @@ def _eval($e; f; on_error; on_compile_error):
 def _repl_display: display({depth: 1});
 def _repl_on_error:
   ( if _eval_is_compile_error then _eval_compile_error_tostring end
-  | _print_error
+  | (_error_str | println)
   );
 def _repl_on_compile_error: _repl_on_error;
 def _repl_eval($e): _eval($e; _repl_display; _repl_on_error; _repl_on_compile_error);
@@ -209,7 +208,7 @@ def repl: repl({}; .); #:: a| => @
 def _cli_expr_on_error:
   ( . as $err
   | _cli_last_expr_error($err) as $_
-  | _stderr_error
+  | (_error_str | _errorln)
   );
 def _cli_expr_on_compile_error:
   ( _eval_compile_error_tostring
@@ -221,10 +220,10 @@ def _cli_expr_eval($e): _eval($e; .; _cli_expr_on_error; _cli_expr_on_compile_er
 
 # next valid input
 def input:
-  ( _inputs
+  ( _input_filenames
   | if length == 0 then error("break") end
   | [.[0], .[1:]] as [$h, $t]
-  | _inputs($t)
+  | _input_filenames($t)
   | _input_filename(null) as $_
   | $h
   | try
@@ -236,7 +235,7 @@ def input:
       ( . as $err
       | _input_io_errors(. += {($h): $err}) as $_
       | $err
-      | _stderr_error
+      | (_error_str | _errorln)
       , input
       )
   | try
@@ -245,7 +244,7 @@ def input:
       ( . as $err
       | _input_decode_errors(. += {($h): $err}) as $_
       | "\($h): failed to decode (\(_parsed_args.decode_format)), try -d FORMAT to force"
-      | _stderr_error
+      | (_error_str | _errorln)
       , input
       )
   );
@@ -254,7 +253,6 @@ def input:
 def inputs:
   try repeat(input)
   catch if . == "break" then empty else error end;
-def inputs($v): _inputs($v);
 
 def input_filename: _input_filename;
 
@@ -318,6 +316,13 @@ def _main:
         long: "--join-output",
         description: "No newline between outputs",
         bool: true
+      },
+      # TODO: multiple paths
+      "include_path": {
+        short: "-L",
+        long: "--include-path",
+        description: "Include search path",
+        string: "PATH"
       },
       "null_output": {
         short: "-0",
@@ -432,7 +437,10 @@ def _main:
             .filenames = ["-"]
           end
         | . as {$expr, $filenames, $null_input}
-        | inputs($filenames) as $_ # store inputs
+        | _include_paths([
+            $parsed_args.include_path // empty
+          ]) as $_
+        | _input_filenames($filenames) as $_ # store inputs
         | if $null_input then null
           elif $parsed_args.slurp then [inputs]
           else inputs

@@ -1,0 +1,8 @@
+/library/a.jq:
+def a: "a";
+$ fq -L /library -n 'include "a"; a'
+"a"
+$ fq -L /wrong -n 'include "a"; a'
+exitcode: 3
+stderr:
+error: src:1:0: open a.jq: file does not exist

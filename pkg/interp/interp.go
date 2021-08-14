@@ -443,10 +443,9 @@ const (
 
 type evalContext struct {
 	// structcheck has problems with embedding https://gitlab.com/opennota/check#known-limitations
-	ctx     context.Context
-	stdout  Output // TODO: rename?
-	mode    RunMode
-	debugFn string
+	ctx    context.Context
+	stdout Output // TODO: rename?
+	mode   RunMode
 }
 
 type Interp struct {
@@ -508,7 +507,7 @@ func (i *Interp) Main(ctx context.Context, stdout io.Writer, version string) err
 		"version": version,
 	}
 
-	iter, err := i.EvalFunc(ctx, runMode, input, "_main", nil, i.os.Stdout(), "")
+	iter, err := i.EvalFunc(ctx, runMode, input, "_main", nil, i.os.Stdout())
 	if err != nil {
 		fmt.Fprintln(i.os.Stderr(), err)
 		return err
@@ -538,7 +537,7 @@ func (i *Interp) Main(ctx context.Context, stdout io.Writer, version string) err
 	return nil
 }
 
-func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src string, stdout Output, debugFn string) (gojq.Iter, error) {
+func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src string, stdout Output) (gojq.Iter, error) {
 	var err error
 	// TODO: did not work
 	// nq := &(*q)
@@ -558,8 +557,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	ni := &ci
 
 	ni.evalContext = evalContext{
-		mode:    mode,
-		debugFn: debugFn,
+		mode: mode,
 	}
 
 	// var variableNames []string
@@ -612,6 +610,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 					"@format/", true, func(filename string) (io.Reader, error) {
 						allFormats := i.registry.MustGroup("all")
 						if filename == "all.jq" {
+							// special case, a file that include all other format files
 							sb := &bytes.Buffer{}
 							for _, f := range allFormats {
 								if f.FS == nil {
@@ -649,7 +648,13 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 				},
 				{
 					"", false, func(filename string) (io.Reader, error) {
-						return i.os.FS().Open(filename)
+						// TODO: jq $ORIGIN
+						for _, path := range append([]string{"./"}, i.includePaths()...) {
+							if f, err := i.os.FS().Open(filepath.Join(path, filename)); err == nil {
+								return f, nil
+							}
+						}
+						return nil, &fs.PathError{Op: "open", Path: filename, Err: fs.ErrNotExist}
 					},
 				},
 			}
@@ -727,7 +732,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	return iterWrapper, nil
 }
 
-func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output, debugFn string) (gojq.Iter, error) {
+func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output) (gojq.Iter, error) {
 	var argsExpr []string
 	for i := range args {
 		argsExpr = append(argsExpr, fmt.Sprintf("$args[%d]", i))
@@ -743,15 +748,15 @@ func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name
 	}
 	// {input: ..., args: [...]} | .args as $args | .input | name[($args[0]; ...)]
 	trampolineExpr := fmt.Sprintf(". as {$args} | .input | %s%s", name, argExpr)
-	iter, err := i.Eval(ctx, mode, trampolineInput, trampolineExpr, stdout, debugFn)
+	iter, err := i.Eval(ctx, mode, trampolineInput, trampolineExpr, stdout)
 	if err != nil {
 		return nil, err
 	}
 	return iter, nil
 }
 
-func (i *Interp) EvalFuncValues(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output, debugFn string) ([]interface{}, error) {
-	iter, err := i.EvalFunc(ctx, mode, c, name, args, stdout, debugFn)
+func (i *Interp) EvalFuncValues(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output) ([]interface{}, error) {
+	iter, err := i.EvalFunc(ctx, mode, c, name, args, stdout)
 	if err != nil {
 		return nil, err
 	}
@@ -897,11 +902,30 @@ func bitsFormatFnFromOptions(opts Options) func(bb *bitio.Buffer) (interface{}, 
 			return fmt.Sprintf("<%s>%s", num.Bits(bb.Len()).StringByteBits(opts.SizeBase), b.String()), nil
 		}
 	}
+}
 
+func (i *Interp) lookupState(key string) interface{} {
+	if i.state == nil {
+		return nil
+	}
+	m, ok := (*i.state).(map[string]interface{})
+	if !ok {
+		return nil
+	}
+	return m[key]
+}
+
+func (i *Interp) includePaths() []string {
+	pathsAny, _ := i.lookupState("include_paths").([]interface{})
+	var paths []string
+	for _, pathAny := range pathsAny {
+		paths = append(paths, pathAny.(string))
+	}
+	return paths
 }
 
 func (i *Interp) Options(fnOptsV ...interface{}) (Options, error) {
-	vs, err := i.EvalFuncValues(i.evalContext.ctx, ScriptMode, nil, "options", []interface{}{fnOptsV}, DiscardOutput{Ctx: i.evalContext.ctx}, "")
+	vs, err := i.EvalFuncValues(i.evalContext.ctx, ScriptMode, nil, "options", []interface{}{fnOptsV}, DiscardOutput{Ctx: i.evalContext.ctx})
 	if err != nil {
 		return Options{}, err
 	}

@@ -8,7 +8,6 @@ import (
 	"crypto/md5"
 	"encoding/base64"
 	"encoding/hex"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"fq/format"
@@ -39,10 +38,8 @@ func (i *Interp) makeFunctions(registry *registry.Registry) []Function {
 
 		{[]string{"readline"}, 0, 2, i.readline, nil},
 		{[]string{"eval"}, 1, 2, nil, i.eval},
-		{[]string{"print"}, 0, 0, nil, i.print},
-		{[]string{"println"}, 0, 0, nil, i.println},
+		{[]string{"stdout"}, 0, 0, nil, i.stdout},
 		{[]string{"stderr"}, 0, 0, nil, i.stderr},
-		{[]string{"debug"}, 0, 0, i.debug, nil},
 
 		{[]string{"_complete_query"}, 0, 0, i._completeQuery, nil},
 		{[]string{"_display_name"}, 0, 0, i._displayName, nil},
@@ -252,15 +249,8 @@ func (i *Interp) eval(c interface{}, a []interface{}) gojq.Iter {
 	if !ok {
 		return gojq.NewIter(fmt.Errorf("%v: src is not a string", a[0]))
 	}
-	debugFn := ""
-	if len(a) >= 2 {
-		debugFn, ok = a[1].(string)
-		if !ok {
-			return gojq.NewIter(fmt.Errorf("%v: debugFn is not a string", a[1]))
-		}
-	}
 
-	iter, err := i.Eval(i.evalContext.ctx, ScriptMode, c, src, i.evalContext.stdout, debugFn)
+	iter, err := i.Eval(i.evalContext.ctx, ScriptMode, c, src, i.evalContext.stdout)
 	if err != nil {
 		return gojq.NewIter(err)
 	}
@@ -268,15 +258,8 @@ func (i *Interp) eval(c interface{}, a []interface{}) gojq.Iter {
 	return iter
 }
 
-func (i *Interp) print(c interface{}, a []interface{}) gojq.Iter {
-	if _, err := fmt.Fprint(i.evalContext.stdout, c); err != nil {
-		return gojq.NewIter(err)
-	}
-	return gojq.NewIter()
-}
-
-func (i *Interp) println(c interface{}, a []interface{}) gojq.Iter {
-	if _, err := fmt.Fprintln(i.evalContext.stdout, c); err != nil {
+func (i *Interp) stdout(c interface{}, a []interface{}) gojq.Iter {
+	if _, err := fmt.Fprint(i.os.Stdout(), c); err != nil {
 		return gojq.NewIter(err)
 	}
 	return gojq.NewIter()
@@ -287,32 +270,6 @@ func (i *Interp) stderr(c interface{}, a []interface{}) gojq.Iter {
 		return gojq.NewIter(err)
 	}
 	return gojq.NewIter()
-}
-
-func (i *Interp) debug(c interface{}, a []interface{}) interface{} {
-	if i.evalContext.debugFn != "" {
-		di, err := i.EvalFunc(i.evalContext.ctx, ScriptMode, c, i.evalContext.debugFn, []interface{}{}, i.evalContext.stdout, "")
-		if err != nil {
-			return err
-		}
-		for {
-			v, ok := di.Next()
-			if !ok {
-				break
-			}
-			if err, ok := v.(error); ok {
-				// TODO: how to log?
-				fmt.Fprintf(i.os.Stderr(), "%v", err)
-			}
-		}
-	} else {
-		// TODO: how to log?
-		if err := json.NewEncoder(i.os.Stderr()).Encode([]interface{}{"DEBUG", c}); err != nil {
-			return err
-		}
-	}
-
-	return c
 }
 
 func (i *Interp) _completeQuery(c interface{}, a []interface{}) interface{} {

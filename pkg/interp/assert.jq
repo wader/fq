@@ -1,9 +1,9 @@
-def assert($name; $a; $b):
-  ( if $a == $b then "PASS \($name)\n"
+def assert($name; $expected; $actual):
+  ( if $expected == $actual then
+      "PASS \($name)\n" | stderr
     else
-      ( "FAIL \($name) \($a) != \($b)\n"
+      ( "FAIL \($name): expected \($expected) got \($actual)\n" | stderr
       , (null | halt_error(1))
       )
     end
-  , empty
   );

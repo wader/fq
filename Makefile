@@ -17,7 +17,7 @@ testwrite: test
 jqtest:
 	@for f in $$(find . -name "*_test.jq"); do \
 		echo $$f ; \
-		jq -L "$$(dirname $$f)" -f "$$f" -n -r ; \
+		go run main.go -L "$$(dirname $$f)" -f "$$f" -n -r ; \
 	done
 
 .PHONY: doc

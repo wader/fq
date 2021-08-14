@@ -5,13 +5,34 @@ def help:
   , "^D exit REPL"
   ) | println;
 
+# valid jq identifer, start with alpha or underscore then zero or more alpha, num or underscore
+def _is_ident: test("^[a-zA-Z_][a-zA-Z_0-9]*$");
+# escape " and \
+def _escape_ident: gsub("(?<g>[\\\\\"])"; "\\\(.g)");
+
 # TODO: escape for safe key names
 # path ["a", 1, "b"] -> "a[1].b"
 def path_to_expr:
-  if length == 0 then "."
-  else
-    map(if type == "number" then "[", ., "]" else ".", . end) | join("")
-  end;
+  ( if length == 0 or (.[0] | type) != "string" then
+      [""] + .
+    end
+  | map(
+      if type == "number" then "[", ., "]"
+      else
+        ( "."
+        , # empty (special case for leading index or empty path) or key
+          if . == "" or _is_ident then .
+          else
+            ( "\""
+            , _escape_ident
+            , "\""
+            )
+          end
+        )
+      end
+    )
+  | join("")
+  );
 
 # TODO: don't use eval? should support '.a.b[1]."c.c"' and escapes?
 def expr_to_path:
