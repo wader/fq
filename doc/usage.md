@@ -3,7 +3,7 @@
 <pre sh>
 $ fq -h 
 fq - jq for binary
-Tool, language and decoders for querying and exploring binary data.
+Tool, language and decoders for exploring binary data.
 For more information see https://github.com/wader/fq
 
 Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
@@ -12,6 +12,7 @@ Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 --file,-f=PATH             Read EXPR from file
 --formats                  Show supported formats
 --help,-h                  Show help
+--include-path,-L=PATH     Include search path
 --join-output,-j           No newline between outputs
 --null-input,-n            Null input (can still use input/0 and inputs/0)
 --null-output,-0           Null byte between outputs
