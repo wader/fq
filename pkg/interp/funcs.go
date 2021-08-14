@@ -37,7 +37,7 @@ func (i *Interp) makeFunctions(registry *registry.Registry) []Function {
 		{[]string{"tty"}, 0, 0, i.tty, nil},
 
 		{[]string{"readline"}, 0, 2, i.readline, nil},
-		{[]string{"eval"}, 1, 2, nil, i.eval},
+		{[]string{"eval"}, 1, 1, nil, i.eval},
 		{[]string{"stdout"}, 0, 0, nil, i.stdout},
 		{[]string{"stderr"}, 0, 0, nil, i.stderr},
 

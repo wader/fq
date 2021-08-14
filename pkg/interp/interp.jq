@@ -155,7 +155,7 @@ def _eval_compile_error_tostring:
 
 def _eval($e; f; on_error; on_compile_error):
   ( _default_options(_build_default_options) as $_
-  | try eval($e; "_eval_debug") | f
+  | try eval($e) | f
     catch
       if _eval_is_compile_error then on_compile_error
       else on_error
