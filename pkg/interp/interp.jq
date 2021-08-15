@@ -256,6 +256,16 @@ def inputs:
 
 def input_filename: _input_filename;
 
+def var: _variables;
+def var($k):
+  ( . as $c
+  | if ($k | _is_ident | not) then error("invalid variable name \"\($k)\"") end
+  | _variables(
+      .[$k] |= ($c | if . == null then empty end)
+    )
+  | empty
+  );
+
 # . will have additional array of options taking priority
 # NOTE: is used by go Options()
 def options($opts):
