@@ -1,105 +1,80 @@
 /test.mp3:
-# display
-$ fq -d mp3 '.headers[0].magic | ., tovalue, type, length?' /test.mp3
+$ fq -i -d mp3 . /test.mp3
+mp3> .headers[0].magic | ., tovalue, type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
 0x0|49 44 33                                       |ID3             |.headers[0].magic: "ID3" (Correct)
 "ID3"
 "string"
 3
-# index
-$ fq -d mp3 '.headers[0].magic[0] | ., type, length?' /test.mp3
+mp3> .headers[0].magic[0] | ., type, length?
 "I"
 "string"
 1
-$ fq -d mp3 '.headers[0].magic[-1000] | ., type, length?' /test.mp3
+mp3> .headers[0].magic[-1000] | ., type, length?
 ""
 "string"
 0
-$ fq -d mp3 '.headers[0].magic[1000] | ., type, length?' /test.mp3
+mp3> .headers[0].magic[1000] | ., type, length?
 ""
 "string"
 0
-# slice
-$ fq -d mp3 '.headers[0].magic[1:3] | ., type, length?' /test.mp3
+mp3> .headers[0].magic[1:3] | ., type, length?
 "D3"
 "string"
 2
-$ fq -d mp3 '.headers[0].magic[0:-1] | ., type, length?' /test.mp3
+mp3> .headers[0].magic[0:-1] | ., type, length?
 "ID"
 "string"
 2
-$ fq -d mp3 '.headers[0].magic[-1000:2000] | ., type, length?' /test.mp3
+mp3> .headers[0].magic[-1000:2000] | ., type, length?
 "ID3"
 "string"
 3
-# key
-$ fq -d mp3 '.headers[0].magic["test"] | ., type, length?' /test.mp3
-exitcode: 5
-stderr:
+mp3> .headers[0].magic["test"] | ., type, length?
 error: expected an object but got: string
-# each
-$ fq -d mp3 '[.headers[0].magic[]] | type, length?' /test.mp3
-exitcode: 5
-stderr:
+mp3> [.headers[0].magic[]] | type, length?
 error: cannot iterate over: string
-# keys
-$ fq -d mp3 '.headers[0].magic | keys' /test.mp3
-exitcode: 5
-stderr:
+mp3> .headers[0].magic | keys
 error: keys cannot be applied to: string
-# has
-$ fq -d mp3 '.headers[0].magic | has("a")' /test.mp3
-exitcode: 5
-stderr:
+mp3> .headers[0].magic | has("a")
 error: has cannot be applied to: string
-$ fq -d mp3 '.headers[0].magic | has(0)' /test.mp3
-exitcode: 5
-stderr:
+mp3> .headers[0].magic | has(0)
 error: has cannot be applied to: string
-# type
-$ fq -d mp3 '.headers[0].magic | type' /test.mp3
+mp3> .headers[0].magic | type
 "string"
-# tonumber
-$ fq -d mp3 '.headers[0].magic | tonumber' /test.mp3
-exitcode: 5
-stderr:
+mp3> .headers[0].magic | tonumber
 error: invalid number: "ID3"
-# tostring
-$ fq -d mp3 '.headers[0].magic | tostring' /test.mp3
+mp3> .headers[0].magic | tostring
 "ID3"
-# to gojq
-$ fq -d mp3 '.headers[0].magic + ""' /test.mp3
+mp3> .headers[0].magic + ""
 "ID3"
-$ fq -d mp3 '.headers[0].magic + 1' /test.mp3
-exitcode: 5
-stderr:
+mp3> .headers[0].magic + 1
 error: cannot add: string ("ID3") and number (1)
-# test _keys
-$ fq -d mp3 '.headers[0].magic._start | ., type, length?' /test.mp3
+mp3> .headers[0].magic._start | ., type, length?
 0
 "number"
 0
-$ fq -d mp3 '.headers[0].magic._stop | ., type, length?' /test.mp3
+mp3> .headers[0].magic._stop | ., type, length?
 24
 "number"
 24
-$ fq -d mp3 '.headers[0].magic._len | ., type, length?' /test.mp3
+mp3> .headers[0].magic._len | ., type, length?
 24
 "number"
 24
-$ fq -d mp3 '.headers[0].magic._name | ., type, length?' /test.mp3
+mp3> .headers[0].magic._name | ., type, length?
 "magic"
 "string"
 5
-$ fq -d mp3 '.headers[0].magic._symbol | ., type, length?' /test.mp3
+mp3> .headers[0].magic._symbol | ., type, length?
 ""
 "string"
 0
-$ fq -d mp3 '.headers[0].magic._description | ., type, length?' /test.mp3
+mp3> .headers[0].magic._description | ., type, length?
 "Correct"
 "string"
 7
-$ fq -d mp3 '.headers[0].magic._path | ., type, length?' /test.mp3
+mp3> .headers[0].magic._path | ., type, length?
 [
   "headers",
   0,
@@ -107,22 +82,39 @@ $ fq -d mp3 '.headers[0].magic._path | ., type, length?' /test.mp3
 ]
 "array"
 3
-$ fq -d mp3 '.headers[0].magic._bits | ., type, length?' /test.mp3
+mp3> .headers[0].magic._bits | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
 0x0|49 44 33                                       |ID3             |
 <24 bits>
 "buffer"
 24
-$ fq -d mp3 '.headers[0].magic._bytes | ., type, length?' /test.mp3
+mp3> .headers[0].magic._bytes | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
 0x0|49 44 33                                       |ID3             |
 <3 bytes>
 "buffer"
 3
-$ fq -d mp3 '.headers[0].magic._error | ., type, length?' /test.mp3
+mp3> .headers[0].magic._error | ., type, length?
 null
 "null"
 0
-$ fq -d mp3 '.headers[0].magic._unknown | ., type, length?' /test.mp3
+mp3> .headers[0].magic._unknown | ., type, length?
 false
 "boolean"
+mp3> .headers[0].magic.a = 1
+error: expected an object but got: string
+mp3> .headers[0].magic[0] = 1
+error: expected an array with index 0 but got: string
+mp3> .headers[0].magic.a |= empty
+error: expected an object but got: string
+mp3> .headers[0].magic[0] |= empty
+error: expected an array with index 0 but got: string
+mp3> .headers[0].magic | setpath(["a"]; 1)
+error: expected an object with key "a" but got: string
+mp3> .headers[0].magic | setpath([0]; 1)
+error: expected an array with index 0 but got: string
+mp3> .headers[0].magic | delpaths([["a"]])
+error: expected an object with key "a" but got: string
+mp3> .headers[0].magic | delpaths([[0]])
+error: expected an array with index 0 but got: string
+mp3> ^D

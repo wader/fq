@@ -1,6 +1,6 @@
 /test.mp3:
-# display
-$ fq -d mp3 '.headers[0].flags | ., tovalue, type, length?' /test.mp3
+$ fq -i -d mp3 . /test.mp3
+mp3> .headers[0].flags | ., tovalue, type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.headers[0].flags: {}
 0x0|               00                              |     .          |  unsynchronisation: false
 0x0|               00                              |     .          |  extended_header: false
@@ -14,104 +14,71 @@ $ fq -d mp3 '.headers[0].flags | ., tovalue, type, length?' /test.mp3
 }
 "object"
 4
-# index
-$ fq -d mp3 '.headers[0].flags[0] | ., type, length?' /test.mp3
-exitcode: 5
-stderr:
+mp3> .headers[0].flags[0] | ., type, length?
 error: expected an array with index 0 but got: object
-$ fq -d mp3 '.headers[0].flags[-1000] | ., type, length?' /test.mp3
-exitcode: 5
-stderr:
+mp3> .headers[0].flags[-1000] | ., type, length?
 error: expected an array with index -2 but got: object
-$ fq -d mp3 '.headers[0].flags[1000] | ., type, length?' /test.mp3
-exitcode: 5
-stderr:
+mp3> .headers[0].flags[1000] | ., type, length?
 error: expected an array with index -1 but got: object
-# slice
-$ fq -d mp3 '.headers[0].flags[1:3] | ., type, length?' /test.mp3
-exitcode: 5
-stderr:
+mp3> .headers[0].flags[1:3] | ., type, length?
 error: expected an array but got: object
-$ fq -d mp3 '.headers[0].flags[0:-1] | ., type, length?' /test.mp3
-exitcode: 5
-stderr:
+mp3> .headers[0].flags[0:-1] | ., type, length?
 error: expected an array but got: object
-$ fq -d mp3 '.headers[0].flags[-1000:2000] | ., type, length?' /test.mp3
-exitcode: 5
-stderr:
+mp3> .headers[0].flags[-1000:2000] | ., type, length?
 error: expected an array but got: object
-# key
-$ fq -d mp3 '.headers[0].flags["test"] | ., type, length?' /test.mp3
+mp3> .headers[0].flags["test"] | ., type, length?
 null
 "null"
 0
-# each
-$ fq -d mp3 '[.headers[0].flags[]] | type, length?' /test.mp3
+mp3> [.headers[0].flags[]] | type, length?
 "array"
 4
-# keys
-$ fq -d mp3 '.headers[0].flags | keys' /test.mp3
+mp3> .headers[0].flags | keys
 [
   "unsynchronisation",
   "extended_header",
   "experimental_indicator",
   "unused"
 ]
-# has
-$ fq -d mp3 '.headers[0].flags | has("a")' /test.mp3
+mp3> .headers[0].flags | has("a")
 false
-$ fq -d mp3 '.headers[0].flags | has(0)' /test.mp3
-exitcode: 5
-stderr:
+mp3> .headers[0].flags | has(0)
 error: cannot check whether object has a key: 0
-# type
-$ fq -d mp3 '.headers[0].flags | type' /test.mp3
+mp3> .headers[0].flags | type
 "object"
-# tonumber
-$ fq -d mp3 '.headers[0].flags | tonumber' /test.mp3
-exitcode: 5
-stderr:
+mp3> .headers[0].flags | tonumber
 error: tonumber cannot be applied to: object
-# tostring
-$ fq -d mp3 '.headers[0].flags | tostring' /test.mp3
-exitcode: 5
-stderr:
+mp3> .headers[0].flags | tostring
 error: tostring cannot be applied to: object
-# to gojq
-$ fq -d mp3 '.headers[0].flags + ""' /test.mp3
-exitcode: 5
-stderr:
+mp3> .headers[0].flags + ""
 error: cannot add: object ({"experimental_indicator" ...}) and string ("")
-$ fq -d mp3 '.headers[0].flags + 1' /test.mp3
-exitcode: 5
-stderr:
+mp3> .headers[0].flags + 1
 error: cannot add: object ({"experimental_indicator" ...}) and number (1)
-# test _keys
-$ fq -d mp3 '.headers[0].flags._start | ., type, length?' /test.mp3
+mp3> .headers[0].flags._start | ., type, length?
 40
 "number"
 40
-$ fq -d mp3 '.headers[0].flags._stop | ., type, length?' /test.mp3
+mp3> .headers[0].flags._stop | ., type, length?
 48
 "number"
 48
-$ fq -d mp3 '.headers[0].flags._len | ., type, length?' /test.mp3
+mp3> .headers[0].flags._len | ., type, length?
 8
 "number"
 8
-$ fq -d mp3 '.headers[0].flags._name | ., type, length?' /test.mp3
+mp3> .headers[0].flags._name | ., type, length?
 "flags"
 "string"
 5
-$ fq -d mp3 '.headers[0].flags._symbol | ., type, length?' /test.mp3
+mp3> .headers[0].flags._symbol | ., type, length?
 ""
 "string"
 0
-$ fq -d mp3 '.headers[0].flags._description | ., type, length?' /test.mp3
+mp3> .headers[0].flags._description | ., type, length?
 ""
 "string"
 0
-$ fq -d mp3 '.headers[0].flags._path | ., type, length?' /test.mp3
+mp3> .headers[0].flags._path | ., type, length?
 [
   "headers",
   0,
@@ -119,22 +86,39 @@ $ fq -d mp3 '.headers[0].flags._path | ., type, length?' /test.mp3
 ]
 "array"
 3
-$ fq -d mp3 '.headers[0].flags._bits | ., type, length?' /test.mp3
+mp3> .headers[0].flags._bits | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
 0x0|00                                             |.               |
 <8 bits>
 "buffer"
 8
-$ fq -d mp3 '.headers[0].flags._bytes | ., type, length?' /test.mp3
+mp3> .headers[0].flags._bytes | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
 0x0|00                                             |.               |
 <1 bytes>
 "buffer"
 1
-$ fq -d mp3 '.headers[0].flags._error | ., type, length?' /test.mp3
+mp3> .headers[0].flags._error | ., type, length?
 null
 "null"
 0
-$ fq -d mp3 '.headers[0].flags._unknown | ., type, length?' /test.mp3
+mp3> .headers[0].flags._unknown | ., type, length?
 false
 "boolean"
+mp3> .headers[0].flags.a = 1
+error: cannot update key a for object
+mp3> .headers[0].flags[0] = 1
+error: expected an array with index 0 but got: object
+mp3> .headers[0].flags.a |= empty
+error: cannot update key a for object
+mp3> .headers[0].flags[0] |= empty
+error: expected an array with index 0 but got: object
+mp3> .headers[0].flags | setpath(["a"]; 1)
+error: cannot update key a for object
+mp3> .headers[0].flags | setpath([0]; 1)
+error: cannot update key 0 for object
+mp3> .headers[0].flags | delpaths([["a"]])
+error: cannot update key a for object
+mp3> .headers[0].flags | delpaths([[0]])
+error: cannot update key 0 for object
+mp3> ^D

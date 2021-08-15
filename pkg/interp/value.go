@@ -22,6 +22,15 @@ func (err expectedExtkeyError) Error() string {
 	return "expected a extkey but got: " + err.Key
 }
 
+type notUpdateableError struct {
+	Typ string
+	Key string
+}
+
+func (err notUpdateableError) Error() string {
+	return fmt.Sprintf("cannot update key %s for %s", err.Key, err.Typ)
+}
+
 // TODO: rename
 type valueIf interface {
 	InterpValue
@@ -249,6 +258,9 @@ func (v bufferDecodeValue) JQValueSlice(start int, end int) interface{} {
 	}
 	return b.String()
 }
+func (v bufferDecodeValue) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
+	return notUpdateableError{Key: fmt.Sprintf("%v", key), Typ: "string"}
+}
 func (v bufferDecodeValue) JQValueToNumber() interface{} {
 	s, ok := v.JQValueToString().(string)
 	if ok {
@@ -306,6 +318,9 @@ func (v arrayDecodeValue) JQValueSlice(start int, end int) interface{} {
 		vs[i] = makeDecodeValue(e)
 	}
 	return vs
+}
+func (v arrayDecodeValue) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
+	return notUpdateableError{Key: fmt.Sprintf("%v", key), Typ: "array"}
 }
 func (v arrayDecodeValue) JQValueEach() interface{} {
 	props := make([]gojq.PathValue, len(v.Array))
@@ -367,6 +382,9 @@ func (v structDecodeValue) JQValueKey(name string) interface{} {
 		}
 	}
 	return nil
+}
+func (v structDecodeValue) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
+	return notUpdateableError{Key: fmt.Sprintf("%v", key), Typ: "object"}
 }
 func (v structDecodeValue) JQValueEach() interface{} {
 	props := make([]gojq.PathValue, len(v.Struct))

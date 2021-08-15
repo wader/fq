@@ -1,0 +1,39 @@
+/test.mp3:
+$ CMD
+PROMPT> EXPR | ., tovalue, type, length?
+PROMPT> EXPR[0] | ., type, length?
+PROMPT> EXPR[-1000] | ., type, length?
+PROMPT> EXPR[1000] | ., type, length?
+PROMPT> EXPR[1:3] | ., type, length?
+PROMPT> EXPR[0:-1] | ., type, length?
+PROMPT> EXPR[-1000:2000] | ., type, length?
+PROMPT> EXPR["test"] | ., type, length?
+PROMPT> [EXPR[]] | type, length?
+PROMPT> EXPR | keys
+PROMPT> EXPR | has("a")
+PROMPT> EXPR | has(0)
+PROMPT> EXPR | type
+PROMPT> EXPR | tonumber
+PROMPT> EXPR | tostring
+PROMPT> EXPR + ""
+PROMPT> EXPR + 1
+PROMPT> EXPR._start | ., type, length?
+PROMPT> EXPR._stop | ., type, length?
+PROMPT> EXPR._len | ., type, length?
+PROMPT> EXPR._name | ., type, length?
+PROMPT> EXPR._symbol | ., type, length?
+PROMPT> EXPR._description | ., type, length?
+PROMPT> EXPR._path | ., type, length?
+PROMPT> EXPR._bits | ., type, length?
+PROMPT> EXPR._bytes | ., type, length?
+PROMPT> EXPR._error | ., type, length?
+PROMPT> EXPR._unknown | ., type, length?
+PROMPT> EXPR.a = 1
+PROMPT> EXPR[0] = 1
+PROMPT> EXPR.a |= empty
+PROMPT> EXPR[0] |= empty
+PROMPT> EXPR | setpath(["a"]; 1)
+PROMPT> EXPR | setpath([0]; 1)
+PROMPT> EXPR | delpaths([["a"]])
+PROMPT> EXPR | delpaths([[0]])
+PROMPT> ^D
