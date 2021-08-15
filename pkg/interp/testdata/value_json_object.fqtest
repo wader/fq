@@ -1,0 +1,111 @@
+/test.mp3:
+$ fq -i -n '"{}" | json'
+json> (.) | ., tovalue, type, length?
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
+   |                                               |                |.: {} unnamed (json)
+{}
+"object"
+0
+json> (.)[0] | ., type, length?
+error: expected an array but got: object
+json> (.)[-1000] | ., type, length?
+error: expected an array but got: object
+json> (.)[1000] | ., type, length?
+error: expected an array but got: object
+json> (.)[1:3] | ., type, length?
+error: expected an array but got: object
+json> (.)[0:-1] | ., type, length?
+error: expected an array but got: object
+json> (.)[-1000:2000] | ., type, length?
+error: expected an array but got: object
+json> (.)["test"] | ., type, length?
+null
+"null"
+0
+json> [(.)[]] | type, length?
+"array"
+0
+json> (.) | keys
+[]
+json> (.) | has("a")
+false
+json> (.) | has(0)
+error: cannot check whether object has a key: 0
+json> (.) | type
+"object"
+json> (.) | tonumber
+error: tonumber cannot be applied to: object
+json> (.) | tostring
+error: tostring cannot be applied to: object
+json> (.) + ""
+error: cannot add: object ({}) and string ("")
+json> (.) + 1
+error: cannot add: object ({}) and number (1)
+json> (.)._start | ., type, length?
+0
+"number"
+0
+json> (.)._stop | ., type, length?
+16
+"number"
+16
+json> (.)._len | ., type, length?
+16
+"number"
+16
+json> (.)._name | ., type, length?
+""
+"string"
+0
+json> (.)._symbol | ., type, length?
+""
+"string"
+0
+json> (.)._description | ., type, length?
+"unnamed"
+"string"
+7
+json> (.)._path | ., type, length?
+[]
+"array"
+0
+json> (.)._bits | ., type, length?
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
+0x0|7b 7d                                          |{}              |
+<16 bits>
+"buffer"
+16
+json> (.)._bytes | ., type, length?
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
+0x0|7b 7d                                          |{}              |
+<2 bytes>
+"buffer"
+2
+json> (.)._error | ., type, length?
+null
+"null"
+0
+json> (.)._unknown | ., type, length?
+false
+"boolean"
+json> (.).a = 1
+{
+  "a": 1
+}
+json> (.)[0] = 1
+error: expected an array but got: object
+json> (.).a |= empty
+{}
+json> (.)[0] |= empty
+error: expected an array but got: object
+json> (.) | setpath(["a"]; 1)
+{
+  "a": 1
+}
+json> (.) | setpath([0]; 1)
+error: cannot check whether object has a key: 0
+json> (.) | delpaths([["a"]])
+{}
+json> (.) | delpaths([[0]])
+error: cannot check whether object has a key: 0
+json> ^D

@@ -142,6 +142,10 @@ func (bo bufferObject) JQValueToGoJQ() interface{} {
 	return buf.String()
 }
 
+func (bo bufferObject) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
+	return notUpdateableError{Key: fmt.Sprintf("%v", key), Typ: "buffer"}
+}
+
 func (bo bufferObject) Display(w io.Writer, opts Options) error {
 	if opts.Raw {
 		if _, err := io.Copy(w, bo.bbr.bb.Copy()); err != nil {
