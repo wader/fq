@@ -45,3 +45,6 @@ def _input_io_errors(f): _global_var("input_io_errors"; f);
 
 def _input_decode_errors: _global_var("input_decode_errors");
 def _input_decode_errors(f): _global_var("input_decode_errors"; f);
+
+def _variables: _global_var("variables");
+def _variables(f): _global_var("variables"; f);

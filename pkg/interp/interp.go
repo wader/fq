@@ -560,12 +560,12 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 		mode: mode,
 	}
 
-	// var variableNames []string
-	// var variableValues []interface{}
-	// for k, v := range ni.variables {
-	// 	variableNames = append(variableNames, k)
-	// 	variableValues = append(variableValues, v)
-	// }
+	var variableNames []string
+	var variableValues []interface{}
+	for k, v := range i.variables() {
+		variableNames = append(variableNames, "$"+k)
+		variableValues = append(variableValues, v)
+	}
 
 	var compilerOpts []gojq.CompilerOption
 	for _, f := range ni.makeFunctions(ni.registry) {
@@ -580,7 +580,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 		}
 	}
 	compilerOpts = append(compilerOpts, gojq.WithEnvironLoader(ni.os.Environ))
-	// compilerOpts = append(compilerOpts, gojq.WithVariables(variableNames))
+	compilerOpts = append(compilerOpts, gojq.WithVariables(variableNames))
 	compilerOpts = append(compilerOpts, gojq.WithModuleLoader(loadModule{
 		init: func() ([]*gojq.Query, error) {
 			return []*gojq.Query{i.initFqQuery}, nil
@@ -718,7 +718,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	runCtx, runCtxCancelFn := i.interruptStack.Push(ctx)
 	ni.evalContext.ctx = runCtx
 	ni.evalContext.stdout = CtxOutput{Output: stdout, Ctx: runCtx}
-	iter := gc.RunWithContext(runCtx, c)
+	iter := gc.RunWithContext(runCtx, c, variableValues...)
 
 	iterWrapper := iterFn(func() (interface{}, bool) {
 		v, ok := iter.Next()
@@ -922,6 +922,11 @@ func (i *Interp) includePaths() []string {
 		paths = append(paths, pathAny.(string))
 	}
 	return paths
+}
+
+func (i *Interp) variables() map[string]interface{} {
+	variablesAny, _ := i.lookupState("variables").(map[string]interface{})
+	return variablesAny
 }
 
 func (i *Interp) Options(fnOptsV ...interface{}) (Options, error) {
