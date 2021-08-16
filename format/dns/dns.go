@@ -98,7 +98,7 @@ var rcodeNames = map[uint64]string{
 	5: "Refused",
 }
 
-func fieldDecodeLabel(d *decode.D, name string) {
+func FieldFormatLabel(d *decode.D, name string) {
 	var endPos int64
 	const maxJumps = 1000
 	jumpCount := 0
@@ -139,11 +139,11 @@ func fieldDecodeLabel(d *decode.D, name string) {
 	}
 }
 
-func fieldDecodeRR(d *decode.D, count uint64, name string, structName string) {
+func FieldFormatRR(d *decode.D, count uint64, name string, structName string) {
 	d.FieldArrayFn(name, func(d *decode.D) {
 		for i := uint64(0); i < count; i++ {
 			d.FieldStructFn(structName, func(d *decode.D) {
-				fieldDecodeLabel(d, "name")
+				FieldFormatLabel(d, "name")
 				typ, _ := d.FieldStringMapFn("type", typeNames, "Unknown", d.U16, decode.NumberDecimal)
 				d.FieldStringRangeMapFn("class", classNames, "Unknown", d.U16, decode.NumberDecimal)
 				d.FieldU32("ttl")
@@ -152,7 +152,7 @@ func fieldDecodeRR(d *decode.D, count uint64, name string, structName string) {
 
 				switch typ {
 				case typeCNAME:
-					fieldDecodeLabel(d, "cname")
+					FieldFormatLabel(d, "cname")
 				default:
 					d.FieldUTF8("rddata", int(rdLength))
 				}
@@ -183,16 +183,16 @@ func dnsDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldArrayFn("questions", func(d *decode.D) {
 		for i := uint64(0); i < qdCount; i++ {
 			d.FieldStructFn("question", func(d *decode.D) {
-				fieldDecodeLabel(d, "name")
+				FieldFormatLabel(d, "name")
 				d.FieldStringMapFn("type", typeNames, "Unknown", d.U16, decode.NumberDecimal)
 				d.FieldStringRangeMapFn("class", classNames, "Unknown", d.U16, decode.NumberDecimal)
 			})
 		}
 	})
 
-	fieldDecodeRR(d, anCount, "answers", "answer")
-	fieldDecodeRR(d, nsCount, "nameservers", "nameserver")
-	fieldDecodeRR(d, arCount, "additionals", "additional")
+	FieldFormatRR(d, anCount, "answers", "answer")
+	FieldFormatRR(d, nsCount, "nameservers", "nameserver")
+	FieldFormatRR(d, arCount, "additionals", "additional")
 
 	return nil
 }

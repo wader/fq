@@ -31,7 +31,7 @@ func avcAUDecode(d *decode.D, in interface{}) interface{} {
 		for d.NotEnd() {
 			d.FieldStructFn("nalu", func(d *decode.D) {
 				l := d.FieldU("length", int(avcIn.LengthSize)*8)
-				d.FieldDecodeLen("nalu", int64(l)*8, avcNALUFormat)
+				d.FieldFormatLen("nalu", int64(l)*8, avcNALUFormat)
 			})
 		}
 	})

@@ -138,7 +138,7 @@ func decodeIfd(d *decode.D, s *strips, tagNames map[uint64]string) int64 {
 							case typ == UNDEFINED:
 								switch tag {
 								case InterColorProfile:
-									d.FieldDecodeRange("icc", int64(valueByteOffset)*8, int64(valueByteSize)*8, tiffIccProfile)
+									d.FieldFormatRange("icc", int64(valueByteOffset)*8, int64(valueByteSize)*8, tiffIccProfile)
 								default:
 									// log.Printf("tag: %#+v\n", tag)
 									// log.Printf("valueByteSize: %#+v\n", valueByteSize)

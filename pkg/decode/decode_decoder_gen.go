@@ -2,74 +2,74 @@
 
 package decode
 
-func (d *D) FieldDecodeLen(nBits int) float64 {
+func (d *D) FieldFormatLen(nBits int) float64 {
 	return 0
 }
 
-func (d *D) FieldDecodeRange(nBits int) float64 {
+func (d *D) FieldFormatRange(nBits int) float64 {
 	return 0
 }
 
-func (d *D) FieldDecodeBitBuf(nBits int) float64 {
+func (d *D) FieldFormatBitBuf(nBits int) float64 {
 	return 0
 }
 
-func (d *D) FieldDecodeLimitedLen(nBits int) float64 {
+func (d *D) FieldFormatLimitedLen(nBits int) float64 {
 	return 0
 }
 
-func (d *D) FieldDecodeLimitedRange(nBits int) float64 {
+func (d *D) FieldFormatLimitedRange(nBits int) float64 {
 	return 0
 }
 
-func (d *D) FieldDecodeLimitedBitBuf(nBits int) float64 {
+func (d *D) FieldFormatLimitedBitBuf(nBits int) float64 {
 	return 0
 }
 
-func (d *D) FieldDecodeFixedLen(nBits int) float64 {
+func (d *D) FieldFormatFixedLen(nBits int) float64 {
 	return 0
 }
 
-func (d *D) FieldDecodeFixedRange(nBits int) float64 {
+func (d *D) FieldFormatFixedRange(nBits int) float64 {
 	return 0
 }
 
-func (d *D) FieldDecodeFixedBitBuf(nBits int) float64 {
+func (d *D) FieldFormatFixedBitBuf(nBits int) float64 {
 	return 0
 }
 
-func (d *D) FieldDecodeTryLen(nBits int) float64 {
+func (d *D) FieldFormatTryLen(nBits int) float64 {
 	return 0
 }
 
-func (d *D) FieldDecodeTryRange(nBits int) float64 {
+func (d *D) FieldFormatTryRange(nBits int) float64 {
 	return 0
 }
 
-func (d *D) FieldDecodeTryBitBuf(nBits int) float64 {
+func (d *D) FieldFormatTryBitBuf(nBits int) float64 {
 	return 0
 }
 
-func (d *D) FieldDecodeTryLimitedLen(nBits int) float64 {
+func (d *D) FieldFormatTryLimitedLen(nBits int) float64 {
 	return 0
 }
 
-func (d *D) FieldDecodeTryLimitedRange(nBits int) float64 {
+func (d *D) FieldFormatTryLimitedRange(nBits int) float64 {
 	return 0
 }
 
-func (d *D) FieldDecodeTryLimitedBitBuf(nBits int) float64 {
+func (d *D) FieldFormatTryLimitedBitBuf(nBits int) float64 {
 	return 0
 }
 
-func (d *D) FieldDecodeTryFixedLen(nBits int) float64 {
+func (d *D) FieldFormatTryFixedLen(nBits int) float64 {
 	return 0
 }
 
-func (d *D) FieldDecodeTryFixedRange(nBits int) float64 {
+func (d *D) FieldFormatTryFixedRange(nBits int) float64 {
 	return 0
 }
 
-func (d *D) FieldDecodeTryFixedBitBuf(nBits int) float64 {
+func (d *D) FieldFormatTryFixedBitBuf(nBits int) float64 {
 	return 0
 }

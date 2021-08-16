@@ -438,7 +438,7 @@ func init() {
 			})
 		},
 		"avcC": func(ctx *decodeContext, d *decode.D) {
-			_, v := d.FieldDecode("value", mpegAVCDCRFormat)
+			_, v := d.FieldFormat("value", mpegAVCDCRFormat)
 			avcDcrOut, ok := v.(format.AvcDcrOut)
 			if !ok {
 				d.Invalid(fmt.Sprintf("expected AvcDcrOut got %#+v", v))
@@ -449,7 +449,7 @@ func init() {
 			}
 		},
 		"hvcC": func(ctx *decodeContext, d *decode.D) {
-			_, v := d.FieldDecode("value", mpegHEVCDCRFrameFormat)
+			_, v := d.FieldFormat("value", mpegHEVCDCRFrameFormat)
 			hevcDcrOut, ok := v.(format.HevcDcrOut)
 			if !ok {
 				d.Invalid(fmt.Sprintf("expected HevcDcrOut got %#+v", v))
@@ -465,7 +465,7 @@ func init() {
 			d.FieldU24("flags")
 			d.FieldArrayFn("metadatablocks", func(d *decode.D) {
 				for {
-					_, v := d.FieldDecode("metadatablock", flacMetadatablockFormat)
+					_, v := d.FieldFormat("metadatablock", flacMetadatablockFormat)
 					flacMetadatablockOut, ok := v.(format.FlacMetadatablockOut)
 					if !ok {
 						d.Invalid(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
@@ -483,15 +483,15 @@ func init() {
 			})
 		},
 		"dOps": func(_ *decodeContext, d *decode.D) {
-			d.FieldDecode("value", opusPacketFrameFormat)
+			d.FieldFormat("value", opusPacketFrameFormat)
 		},
 		"av1C": func(_ *decodeContext, d *decode.D) {
-			d.FieldDecode("value", av1CCRFormat)
+			d.FieldFormat("value", av1CCRFormat)
 		},
 		"vpcC": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
-			d.FieldDecode("value", vpxCCRFormat)
+			d.FieldFormat("value", vpxCCRFormat)
 		},
 		"esds": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU32("version")
@@ -505,7 +505,7 @@ func init() {
 
 			// switch dataFormat {
 			// case "mp4a", "mp4v":
-			_, v := d.FieldDecode("es_descriptor", mpegESFormat)
+			_, v := d.FieldFormat("es_descriptor", mpegESFormat)
 			mpegEsOut, ok := v.(format.MpegEsOut)
 			if !ok {
 				d.Invalid(fmt.Sprintf("expected mpegEsOut got %#+v", v))
@@ -687,7 +687,7 @@ func init() {
 			d.FieldU24("flags")
 			d.FieldU32("reserved")
 			if isParent(ctx, "covr") {
-				dv, _, _ := d.FieldTryDecodeLen("data", d.BitsLeft(), imageFormat)
+				dv, _, _ := d.FieldTryFormatLen("data", d.BitsLeft(), imageFormat)
 				if dv == nil {
 					d.FieldBitBufLen("data", d.BitsLeft())
 				}
@@ -954,7 +954,7 @@ func init() {
 				}
 				return s, ""
 			})
-			d.FieldDecode("data", id3v2Format)
+			d.FieldFormat("data", id3v2Format)
 		},
 		"mehd": func(_ *decodeContext, d *decode.D) {
 			flags := d.FieldU24("flags")
@@ -993,7 +993,7 @@ func init() {
 
 			switch {
 			case bytes.Equal(systemID, systemIDWidevine[:]):
-				d.FieldDecodeLen("data", int64(dataLen)*8, protoBufWidevineFormat)
+				d.FieldFormatLen("data", int64(dataLen)*8, protoBufWidevineFormat)
 			case systemID == nil:
 				fallthrough
 			default:

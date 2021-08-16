@@ -308,7 +308,7 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 								d.FieldBitBufLen("data", int64(xThumbnail*yThumbnail)*3*8)
 							case markerCode == APP1 && d.TryHasBytes(app1ExifPrefix):
 								d.FieldUTF8("exif_prefix", len(app1ExifPrefix))
-								d.FieldDecodeLen("exif", d.BitsLeft(), exifFormat)
+								d.FieldFormatLen("exif", d.BitsLeft(), exifFormat)
 							case markerCode == APP1 && d.TryHasBytes(extendedXMPPrefix):
 								d.FieldStructFn("extended_xmp_chunk", func(d *decode.D) {
 									d.FieldUTF8("signature", len(extendedXMPPrefix))
@@ -328,7 +328,7 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 								// TODO: support multimarker?
 								d.FieldU8("cur_marker")
 								d.FieldU8("num_markers")
-								d.FieldDecodeLen("icc_profile", d.BitsLeft(), iccProfileFormat)
+								d.FieldFormatLen("icc_profile", d.BitsLeft(), iccProfileFormat)
 							case markerCode == APP13 && d.TryHasBytes(app13PhotoshopPrefix):
 								d.FieldUTF8("identifier", len(app13PhotoshopPrefix))
 								signature := d.FieldUTF8("signature", 4)

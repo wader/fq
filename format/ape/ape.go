@@ -56,7 +56,7 @@ func apev2Decode(d *decode.D, in interface{}) interface{} {
 					d.DecodeLenFn(int64(itemSize)*8, func(d *decode.D) {
 						d.FieldStrNullTerminated("filename")
 						// assume image if binary
-						dv, _, _ := d.FieldTryDecode("value", imageFormat)
+						dv, _, _ := d.FieldTryFormat("value", imageFormat)
 						if dv == nil {
 							// TODO: framed and unknown instead?
 							d.FieldBitBufLen("value", d.BitsLeft())

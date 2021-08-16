@@ -127,11 +127,11 @@ func avcNALUDecode(d *decode.D, in interface{}) interface{} {
 			// TODO: if ( separate_colour_plane_flag from SPS ) colour_plane_id; frame_num
 		})
 	case avcNALSupplementalEnhancementInformation:
-		d.FieldDecodeBitBuf("sei", unescapedBb, avcSEIFormat)
+		d.FieldFormatBitBuf("sei", unescapedBb, avcSEIFormat)
 	case avcNALSequenceParameterSet:
-		d.FieldDecodeBitBuf("sps", unescapedBb, avcSPSFormat)
+		d.FieldFormatBitBuf("sps", unescapedBb, avcSPSFormat)
 	case avcNALPictureParameterSet:
-		d.FieldDecodeBitBuf("pps", unescapedBb, avcPPSFormat)
+		d.FieldFormatBitBuf("pps", unescapedBb, avcPPSFormat)
 	}
 	d.FieldBitBufLen("data", d.BitsLeft())
 

@@ -105,7 +105,7 @@ func gifDecode(d *decode.D, in interface{}) interface{} {
 					// TODO: need a FieldStructBitBuf or something
 					// switch functionCode {
 					// case extensionGraphicalControl:
-					// 	d.FieldDecodeBitBuf(
+					// 	d.FieldFormatBitBuf(
 					// 		"graphics_control",
 					// 		bitio.NewBufferFromBytes(dataBytes.Bytes(), -1),
 					// 	)
