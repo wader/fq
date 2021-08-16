@@ -7,6 +7,16 @@ hevc_dcr
 hevc_nalu
 hex
 hexdump
+null> _is_ide\t
+_is_ident
+null> {aa: 123} | var("test")
+null> $\t
+$ENV
+$test
+null> $test.a\t
+aa
+null> {bb: 123} as $aa | $aa.b\t
+bb
 null> {aa: 123, ab: "a"} | .a\t
 aa
 ab

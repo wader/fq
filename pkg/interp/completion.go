@@ -67,6 +67,11 @@ func transformToCompletionQuery(q *gojq.Query) (*gojq.Query, CompletionType, str
 			last.Bind.Body = r
 			return q, ct, prefix
 		}
+		if last.Index != nil && last.Index.Name != "" {
+			prefix := last.Index.Name
+			last.Index = nil
+			return q, CompletionTypeIndex, prefix
+		}
 	}
 
 	switch q.Term.Type { //nolint:exhaustive
