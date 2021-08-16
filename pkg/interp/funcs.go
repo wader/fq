@@ -208,20 +208,20 @@ func makeHashFn(fn func() (hash.Hash, error)) func(c interface{}, a []interface{
 }
 
 func (i *Interp) readline(c interface{}, a []interface{}) interface{} {
-	var ok bool
+	var err error
 	completeFn := ""
 	prompt := ""
 
 	if len(a) > 0 {
-		prompt, ok = a[0].(string)
-		if !ok {
-			return fmt.Errorf("%v: prompt is not a string", a[1])
+		prompt, err = toString(a[0])
+		if err != nil {
+			return fmt.Errorf("prompt: %w", err)
 		}
 	}
 	if len(a) > 1 {
-		completeFn, ok = a[1].(string)
-		if !ok {
-			return fmt.Errorf("%v: complete function name is not a string", a[0])
+		completeFn, err = toString(a[1])
+		if err != nil {
+			return fmt.Errorf("complete function: %w", err)
 		}
 	}
 
@@ -245,9 +245,9 @@ func (i *Interp) readline(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) eval(c interface{}, a []interface{}) gojq.Iter {
-	src, ok := a[0].(string)
-	if !ok {
-		return gojq.NewIter(fmt.Errorf("%v: src is not a string", a[0]))
+	src, err := toString(a[0])
+	if err != nil {
+		return gojq.NewIter(fmt.Errorf("src: %w", err))
 	}
 
 	iter, err := i.Eval(i.evalContext.ctx, ScriptMode, c, src, i.evalContext.stdout)

@@ -39,6 +39,7 @@ def _exit_code_expr_error: 5;
 # TODO: return escaped identifier, not sure current readline implementation supports
 # completions that needs to change previous input, ex: .a\t -> ."a \" b" etc
 def _complete($e):
+  def _is_internal: startswith("_") or startswith("$_");
   ( ( $e | _complete_query) as {$type, $query, $prefix}
   | {
       prefix: $prefix,
@@ -50,7 +51,15 @@ def _complete($e):
           else
             []
           end
-        | map(select(strings and _is_ident and startswith($prefix)))
+        | ($prefix | _is_internal) as  $prefix_is_internal
+        | map(
+            select(
+              strings and
+              (_is_ident or $type == "variable") and
+              ((_is_internal | not) or $prefix_is_internal or $type == "index") and
+              startswith($prefix)
+            )
+          )
         | unique
         | sort
         )

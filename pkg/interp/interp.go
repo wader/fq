@@ -271,6 +271,8 @@ func toString(v interface{}) (string, error) {
 	switch v := v.(type) {
 	case string:
 		return v, nil
+	case gojq.JQValue:
+		return toString(v.JQValueToGoJQ())
 	default:
 		b, err := toBytes(v)
 		if err != nil {
@@ -735,7 +737,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output) (gojq.Iter, error) {
 	var argsExpr []string
 	for i := range args {
-		argsExpr = append(argsExpr, fmt.Sprintf("$args[%d]", i))
+		argsExpr = append(argsExpr, fmt.Sprintf("$_args[%d]", i))
 	}
 	argExpr := ""
 	if len(argsExpr) > 0 {
@@ -746,8 +748,9 @@ func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name
 		"input": c,
 		"args":  args,
 	}
-	// {input: ..., args: [...]} | .args as $args | .input | name[($args[0]; ...)]
-	trampolineExpr := fmt.Sprintf(". as {$args} | .input | %s%s", name, argExpr)
+	/// _args to mark variable as internal and hide it from completion
+	// {input: ..., args: [...]} | .args as {args: $_args} | .input | name[($_args[0]; ...)]
+	trampolineExpr := fmt.Sprintf(". as {args: $_args} | .input | %s%s", name, argExpr)
 	iter, err := i.Eval(ctx, mode, trampolineInput, trampolineExpr, stdout)
 	if err != nil {
 		return nil, err
