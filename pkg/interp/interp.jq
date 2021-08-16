@@ -257,14 +257,14 @@ def inputs:
 def input_filename: _input_filename;
 
 def var: _variables;
-def var($k):
+def var($k; f):
   ( . as $c
-  | if ($k | _is_ident | not) then error("invalid variable name \"\($k)\"") end
-  | _variables(
-      .[$k] |= ($c | if . == null then empty end)
-    )
+  | if ($k | _is_ident | not) then error("invalid variable name: \($k)") end
+  | _variables(.[$k] |= f)
   | empty
   );
+def var($k): . as $c | var($k; $c);
+
 
 # . will have additional array of options taking priority
 # NOTE: is used by go Options()

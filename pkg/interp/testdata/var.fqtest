@@ -17,7 +17,7 @@ null> var
 }
 null> $a
 "aa"
-null> null | var("a")
+null> var("a"; empty)
 null> $a
 error: src:1:0: variable not defined: $a
 null> var
@@ -28,11 +28,13 @@ null> . | repl
 > null> $bb
 "bb"
 > null> ^D
-null> null | var("bb")
+null> var("bb"; empty)
 null> var
 {}
 null> 123 | var("a b")
-error: invalid variable name "a b"
+error: invalid variable name: a b
+null> 123 | var(null)
+error: invalid variable name: null
 null> ^D
 $ fq -d mp3 -i . /test.mp3
 mp3> .frames[0] | var("f")

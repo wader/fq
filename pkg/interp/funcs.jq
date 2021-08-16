@@ -6,7 +6,7 @@ def help:
   ) | println;
 
 # valid jq identifer, start with alpha or underscore then zero or more alpha, num or underscore
-def _is_ident: test("^[a-zA-Z_][a-zA-Z_0-9]*$");
+def _is_ident: type == "string" and test("^[a-zA-Z_][a-zA-Z_0-9]*$");
 # escape " and \
 def _escape_ident: gsub("(?<g>[\\\\\"])"; "\\\(.g)");
 
