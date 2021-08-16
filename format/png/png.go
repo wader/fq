@@ -116,7 +116,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 				switch compressionMethod {
 				case compressionDeflate:
 					dd := d.FieldStructFn("data", func(d *decode.D) {
-						d.FieldDecodeZlibLen("uncompressed", int64(dataLen), decode.FormatFn(func(d *decode.D, in interface{}) interface{} {
+						d.FieldFormatZlibLen("uncompressed", int64(dataLen), decode.FormatFn(func(d *decode.D, in interface{}) interface{} {
 							d.FieldUTF8("text", int(d.BitsLeft()/8))
 							return nil
 						}))
@@ -137,7 +137,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 				switch compressionMethod {
 				case compressionDeflate:
 					dd := d.FieldStructFn("data", func(d *decode.D) {
-						d.FieldDecodeZlibLen("uncompressed", int64(dataLen), iccProfileFormat)
+						d.FieldFormatZlibLen("uncompressed", int64(dataLen), iccProfileFormat)
 					})
 					dd.Value.Range = ranges.Range{Start: d.Pos() - int64(dataLen), Len: int64(dataLen)}
 				default:
@@ -162,7 +162,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldFloatFn("blue_x", df)
 				d.FieldFloatFn("blue_y", df)
 			case "eXIf":
-				d.FieldDecodeLen("exif", int64(chunkLength)*8, exifFormat)
+				d.FieldFormatLen("exif", int64(chunkLength)*8, exifFormat)
 			case "acTL":
 				d.FieldU32("num_frames")
 				d.FieldU32("num_plays")

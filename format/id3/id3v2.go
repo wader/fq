@@ -472,7 +472,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			fieldTextNull(d, "mime_type", encodingUTF8)
 			d.FieldU8("picture_type") // TODO: table
 			fieldTextNull(d, "description", int(encoding))
-			dv, _, _ := d.FieldTryDecodeLen("picture", d.BitsLeft(), imageFormat)
+			dv, _, _ := d.FieldTryFormatLen("picture", d.BitsLeft(), imageFormat)
 			if dv == nil {
 				d.FieldBitBufLen("picture", d.BitsLeft())
 			}
@@ -561,7 +561,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// TODO: DecodeFn
 		// TODO: unknown after frame decode
 		unsyncedBb := decode.MustNewBitBufFromReader(unsyncReader{Reader: d.BitBufRange(d.Pos(), int64(dataSize)*8)})
-		d.FieldDecodeBitBuf("unsync", unsyncedBb, decode.FormatFn(func(d *decode.D, in interface{}) interface{} {
+		d.FieldFormatBitBuf("unsync", unsyncedBb, decode.FormatFn(func(d *decode.D, in interface{}) interface{} {
 			if fn, ok := frames[idNormalized]; ok {
 				fn(d)
 			} else {

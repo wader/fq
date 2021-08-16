@@ -41,7 +41,7 @@ func widevineDecode(d *decode.D, in interface{}) interface{} {
 		}},
 	}
 
-	d.Decode(widevineProtoBufFormat, decode.FormatOptions{InArg: format.ProtoBufIn{Message: widewinePb}})
+	d.Format(widevineProtoBufFormat, decode.FormatOptions{InArg: format.ProtoBufIn{Message: widewinePb}})
 
 	return nil
 }

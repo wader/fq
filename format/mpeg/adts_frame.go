@@ -99,7 +99,7 @@ func adtsFrameDecoder(d *decode.D, in interface{}) interface{} {
 
 	d.FieldArrayFn("raw_data_blocks", func(d *decode.D) {
 		for i := uint64(0); i < numberOfRDBs; i++ {
-			d.FieldDecodeLen("raw_data_block", int64(dataLength)*8, aacFrameFormat, decode.FormatOptions{
+			d.FieldFormatLen("raw_data_block", int64(dataLength)*8, aacFrameFormat, decode.FormatOptions{
 				InArg: format.AACFrameIn{ObjectType: int(objectType)}},
 			)
 		}

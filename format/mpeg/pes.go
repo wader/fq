@@ -47,7 +47,7 @@ func pesDecode(d *decode.D, in interface{}) interface{} {
 
 	d.FieldArrayFn("packets", func(d *decode.D) {
 		for d.NotEnd() {
-			dv, v, err := d.FieldTryDecode("packet", pesPacketFormat)
+			dv, v, err := d.FieldTryFormat("packet", pesPacketFormat)
 			if dv == nil || err != nil {
 				log.Printf("errs[0]: %#+v\n", err)
 				break
@@ -70,7 +70,7 @@ func pesDecode(d *decode.D, in interface{}) interface{} {
 
 				// TODO: is this how spu end is signalled?
 				if s.l == len(s.b) {
-					spuD.FieldDecodeBitBuf("spu", bitio.NewBufferFromBytes(s.b, -1), spuFormat)
+					spuD.FieldFormatBitBuf("spu", bitio.NewBufferFromBytes(s.b, -1), spuFormat)
 					s.b = nil
 					s.l = 0
 				}

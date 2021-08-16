@@ -120,7 +120,7 @@ func decodeVint(d *decode.D) uint64 {
 	return n & m
 }
 
-func fieldDecodeVint(d *decode.D, name string, displayFormat decode.DisplayFormat) uint64 {
+func FieldFormatVint(d *decode.D, name string, displayFormat decode.DisplayFormat) uint64 {
 	return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
 		return decodeVint(d), displayFormat, ""
 	})
@@ -187,7 +187,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 				//    The end of a Master-element with unknown size is determined by the beginning of the next
 				//    element that is not a valid sub-element of that Master-element
 				// TODO: should also handle garbage between
-				tagSize := fieldDecodeVint(d, "size", decode.NumberDecimal)
+				tagSize := FieldFormatVint(d, "size", decode.NumberDecimal)
 
 				if tagSize > 8 &&
 					(a.Type == ebml.Integer ||
@@ -285,7 +285,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 						}
 						d.SeekRel(int64(tagSize) * 8)
 					case ebml_matroska.FileDataID:
-						d.FieldDecodeLen("value", int64(tagSize)*8, imageFormat)
+						d.FieldFormatLen("value", int64(tagSize)*8, imageFormat)
 					default:
 						d.FieldBitBufLen("value", int64(tagSize)*8)
 						// if tagID == CRC {
@@ -330,7 +330,7 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 			continue
 		}
 
-		// TODO: refactor, one DecodeRangeFn or refactor to add FieldDecodeRangeFn?
+		// TODO: refactor, one DecodeRangeFn or refactor to add FieldFormatRangeFn?
 
 		switch t.codec {
 		case "A_VORBIS":
@@ -356,22 +356,22 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 				})
 				d.FieldArrayFn("packets", func(d *decode.D) {
 					for _, l := range packetLengths {
-						d.FieldDecodeLen("packet", l*8, vorbisPacketFormat)
+						d.FieldFormatLen("packet", l*8, vorbisPacketFormat)
 					}
-					d.FieldDecodeLen("packet", d.BitsLeft(), vorbisPacketFormat)
+					d.FieldFormatLen("packet", d.BitsLeft(), vorbisPacketFormat)
 				})
 			})
 		case "A_AAC":
-			t.parentD.FieldDecodeRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegASCFrameFormat)
+			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegASCFrameFormat)
 		case "A_OPUS":
-			t.parentD.FieldDecodeRange("value", t.codecPrivatePos, t.codecPrivateTagSize, opusPacketFrameFormat)
+			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, opusPacketFrameFormat)
 		case "A_FLAC":
 			t.parentD.DecodeRangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
 				d.FieldStructFn("value", func(d *decode.D) {
 					d.FieldValidateUTF8("magic", "fLaC")
 					d.FieldArrayFn("metadatablocks", func(d *decode.D) {
 						for {
-							_, v := d.FieldDecode("metadatablock", flacMetadatablockFormat)
+							_, v := d.FieldFormat("metadatablock", flacMetadatablockFormat)
 							flacMetadatablockOut, ok := v.(format.FlacMetadatablockOut)
 							if !ok {
 								d.Invalid(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
@@ -388,7 +388,7 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 				})
 			})
 		case "V_MPEG4/ISO/AVC":
-			_, v := t.parentD.FieldDecodeRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegAVCDCRFormat)
+			_, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegAVCDCRFormat)
 			avcDcrOut, ok := v.(format.AvcDcrOut)
 			if !ok {
 				d.Invalid(fmt.Sprintf("expected AvcDcrOut got %#+v", v))
@@ -396,7 +396,7 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 			t.decodeOpts = append(t.decodeOpts,
 				decode.FormatOptions{InArg: format.AvcIn{LengthSize: avcDcrOut.LengthSize}}) //nolint:gosimple
 		case "V_MPEGH/ISO/HEVC":
-			_, v := t.parentD.FieldDecodeRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegHEVCDCRFormat)
+			_, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegHEVCDCRFormat)
 			hevcDcrOut, ok := v.(format.HevcDcrOut)
 			if !ok {
 				d.Invalid(fmt.Sprintf("expected HevcDcrOut got %#+v", v))
@@ -404,9 +404,9 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 			t.decodeOpts = append(t.decodeOpts,
 				decode.FormatOptions{InArg: format.HevcIn{LengthSize: hevcDcrOut.LengthSize}}) //nolint:gosimple
 		case "V_AV1":
-			t.parentD.FieldDecodeRange("value", t.codecPrivatePos, t.codecPrivateTagSize, av1CCRFormat)
+			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, av1CCRFormat)
 		case "V_VP9":
-			t.parentD.FieldDecodeRange("value", t.codecPrivatePos, t.codecPrivateTagSize, vp9CFMFormat)
+			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, vp9CFMFormat)
 		default:
 			t.parentD.FieldBitBufRange("value", t.codecPrivatePos, t.codecPrivateTagSize)
 		}
@@ -414,7 +414,7 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 
 	for _, b := range dc.blocks {
 		b.d.DecodeRangeFn(b.r.Start, b.r.Len, func(d *decode.D) {
-			trackNumber := fieldDecodeVint(d, "track_number", decode.NumberDecimal)
+			trackNumber := FieldFormatVint(d, "track_number", decode.NumberDecimal)
 			d.FieldU16("timestamp")
 			if b.simple {
 				d.FieldStructFn("flags", func(d *decode.D) {
@@ -437,7 +437,7 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 			// TODO: fixed/unknown?
 			if t, ok := trackNumberToTrack[int(trackNumber)]; ok {
 				if f, ok := codecToFormat[t.codec]; ok {
-					d.FieldDecode("packet", *f, t.decodeOpts...)
+					d.FieldFormat("packet", *f, t.decodeOpts...)
 				}
 			}
 

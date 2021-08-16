@@ -29,7 +29,7 @@ func hevcAUDecode(d *decode.D, in interface{}) interface{} {
 		for d.NotEnd() {
 			d.FieldStructFn("nalu", func(d *decode.D) {
 				l := d.FieldU("length", int(hevcIn.LengthSize)*8)
-				d.FieldDecodeLen("nalu", int64(l)*8, hevcAUNALFormat)
+				d.FieldFormatLen("nalu", int64(l)*8, hevcAUNALFormat)
 			})
 		}
 	})

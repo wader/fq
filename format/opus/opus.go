@@ -48,7 +48,7 @@ func opusDecode(d *decode.D, in interface{}) interface{} {
 	case bytes.Equal(prefix, []byte("OpusTags")):
 		d.FieldValueStr("type", "tags", "")
 		d.FieldUTF8("prefix", 8)
-		d.FieldDecode("comment", vorbisComment)
+		d.FieldFormat("comment", vorbisComment)
 	default:
 		d.FieldValueStr("type", "audio", "")
 		d.FieldStructFn("toc", func(d *decode.D) {

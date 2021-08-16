@@ -39,7 +39,7 @@ func commentDecode(d *decode.D, in interface{}) interface{} {
 				bs, err := base64.StdEncoding.DecodeString(v)
 				if err == nil {
 					bb := bitio.NewBufferFromBytes(bs, -1)
-					d.FieldDecodeBitBuf("picture", bb, flacPicture)
+					d.FieldFormatBitBuf("picture", bb, flacPicture)
 				} else {
 					panic(err)
 				}

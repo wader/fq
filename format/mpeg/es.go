@@ -237,16 +237,16 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, expectedTagID int, fn func(d
 						})
 						d.FieldArrayFn("packets", func(d *decode.D) {
 							for _, l := range packetLengths {
-								d.FieldDecodeLen("packet", l*8, vorbisPacketFormat)
+								d.FieldFormatLen("packet", l*8, vorbisPacketFormat)
 							}
-							d.FieldDecodeLen("packet", d.BitsLeft(), vorbisPacketFormat)
+							d.FieldFormatLen("packet", d.BitsLeft(), vorbisPacketFormat)
 						})
 					})
 				default:
 					switch format.MpegObjectTypeStreamType[objectType] {
 					case format.MPEGStreamTypeAudio:
 						fieldODDecodeTag(d, edc, "decoder_specific_info", -1, func(d *decode.D) {
-							_, v := d.FieldDecode("audio_specific_config", mpegASCFormat)
+							_, v := d.FieldFormat("audio_specific_config", mpegASCFormat)
 							mpegASCout, ok := v.(format.MPEGASCOut)
 							if !ok {
 								panic(fmt.Sprintf("expected MPEGASCOut got %#+v", v))

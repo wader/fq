@@ -57,7 +57,7 @@ func webpDecode(d *decode.D, in interface{}) interface{} {
 		case bytes.Equal(p, []byte("VP8 ")):
 			d.FieldStructFn("image", func(d *decode.D) {
 				decodeChunk(d, "VP8", func(d *decode.D) {
-					d.Decode(vp8Frame)
+					d.Format(vp8Frame)
 				})
 			})
 		case bytes.Equal(p, []byte("VP8L")):

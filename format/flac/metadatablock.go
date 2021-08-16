@@ -83,9 +83,9 @@ func metadatablockDecode(d *decode.D, in interface{}) interface{} {
 		}
 		mb.HasStreamInfo = true
 	case MetadataBlockVorbisComment:
-		d.FieldDecodeLen("comment", int64(length*8), vorbisCommentFormat)
+		d.FieldFormatLen("comment", int64(length*8), vorbisCommentFormat)
 	case MetadataBlockPicture:
-		d.FieldDecodeLen("picture", int64(length*8), flacPicture)
+		d.FieldFormatLen("picture", int64(length*8), flacPicture)
 	case MetadataBlockSeektable:
 		seektableCount := length / 18
 		d.FieldArrayFn("seekpoints", func(d *decode.D) {
