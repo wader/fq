@@ -4,12 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"fq/internal/ctxreadseeker"
 	"io"
 	"reflect"
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/wader/fq/internal/ctxreadseeker"
 )
 
 type rwcRecorder struct {

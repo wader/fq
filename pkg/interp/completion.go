@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/itchyny/gojq"
+	"github.com/wader/gojq"
 )
 
 type CompletionType string

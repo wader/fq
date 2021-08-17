@@ -3,9 +3,9 @@ package protobuf
 // TODO: move? make collection on known protobuf messages?
 
 import (
-	"fq/format"
-	"fq/format/registry"
-	"fq/pkg/decode"
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/decode"
 )
 
 var widevineProtoBufFormat []*decode.Format

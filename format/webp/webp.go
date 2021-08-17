@@ -5,10 +5,11 @@ package webp
 
 import (
 	"bytes"
-	"fq/format"
-	"fq/format/registry"
-	"fq/pkg/decode"
 	"strings"
+
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/decode"
 )
 
 var vp8Frame []*decode.Format

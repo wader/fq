@@ -2,11 +2,12 @@ package vorbis
 
 import (
 	"encoding/base64"
-	"fq/format"
-	"fq/format/registry"
-	"fq/pkg/bitio"
-	"fq/pkg/decode"
 	"strings"
+
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/bitio"
+	"github.com/wader/fq/pkg/decode"
 )
 
 var flacPicture []*decode.Format

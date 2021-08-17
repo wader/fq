@@ -6,7 +6,7 @@ import (
 	"log"
 	"testing"
 
-	"fq/pkg/bitio"
+	"github.com/wader/fq/pkg/bitio"
 )
 
 type shortBitReader struct {

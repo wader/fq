@@ -8,10 +8,11 @@ package jpeg
 import (
 	"bytes"
 	"fmt"
-	"fq/format"
-	"fq/format/registry"
-	"fq/pkg/bitio"
-	"fq/pkg/decode"
+
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/bitio"
+	"github.com/wader/fq/pkg/decode"
 )
 
 var exifFormat []*decode.Format

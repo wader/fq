@@ -1,9 +1,10 @@
 package shquote_test
 
 import (
-	"fq/internal/shquote"
 	"reflect"
 	"testing"
+
+	"github.com/wader/fq/internal/shquote"
 )
 
 func TestSplit(t *testing.T) {

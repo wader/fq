@@ -13,10 +13,10 @@ package mpeg
 // TODO: if only layer 3, assert it
 
 import (
-	"fq/format"
-	"fq/format/registry"
-	"fq/pkg/crc"
-	"fq/pkg/decode"
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/crc"
+	"github.com/wader/fq/pkg/decode"
 )
 
 var xingHeader []*decode.Format

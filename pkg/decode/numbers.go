@@ -2,9 +2,10 @@ package decode
 
 import (
 	"fmt"
-	"fq/pkg/bitio"
 	"math"
 	"strconv"
+
+	"github.com/wader/fq/pkg/bitio"
 )
 
 //go:generate sh -c "cat numbers.go.tmpl | go run ../../dev/tmpl.go numbers.go.json | gofmt > numbers_gen.go"

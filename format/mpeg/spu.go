@@ -6,10 +6,11 @@ package mpeg
 
 import (
 	"fmt"
-	"fq/format"
-	"fq/format/registry"
-	"fq/pkg/decode"
 	"strings"
+
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/decode"
 )
 
 func init() {

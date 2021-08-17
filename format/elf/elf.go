@@ -5,10 +5,11 @@ package elf
 // https://github.com/torvalds/linux/blob/master/include/uapi/linux/elf.h
 
 import (
-	"fq/format"
-	"fq/format/registry"
-	"fq/pkg/decode"
 	"strings"
+
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/decode"
 )
 
 // TODO: p_type hi/lo

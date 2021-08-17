@@ -7,11 +7,12 @@ package png
 // TODO: image/png
 
 import (
-	"fq/format"
-	"fq/format/registry"
-	"fq/pkg/decode"
-	"fq/pkg/ranges"
 	"hash/crc32"
+
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/ranges"
 )
 
 var iccProfileFormat []*decode.Format

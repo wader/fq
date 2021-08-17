@@ -2,9 +2,10 @@ package columnwriter
 
 import (
 	"bytes"
-	"fq/internal/ansi"
 	"io"
 	"strings"
+
+	"github.com/wader/fq/internal/ansi"
 )
 
 type Column struct {

@@ -1,8 +1,9 @@
 package decode
 
 import (
-	"fq/pkg/bitio"
 	"io"
+
+	"github.com/wader/fq/pkg/bitio"
 )
 
 // TODO: FP64,unsigned/BE/LE? rename SFP32?

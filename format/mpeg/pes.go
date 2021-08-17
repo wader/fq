@@ -6,11 +6,12 @@ package mpeg
 // http://dvdnav.mplayerhq.hu/dvdinfo/mpeghdrs.html
 
 import (
-	"fq/format"
-	"fq/format/registry"
-	"fq/pkg/bitio"
-	"fq/pkg/decode"
 	"log"
+
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/bitio"
+	"github.com/wader/fq/pkg/decode"
 )
 
 var pesPacketFormat []*decode.Format

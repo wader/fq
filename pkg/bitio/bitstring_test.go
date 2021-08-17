@@ -1,8 +1,9 @@
 package bitio_test
 
 import (
-	"fq/pkg/bitio"
 	"testing"
+
+	"github.com/wader/fq/pkg/bitio"
 )
 
 func TestBitString(t *testing.T) {

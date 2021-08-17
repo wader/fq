@@ -3,9 +3,10 @@ package registry
 import (
 	"errors"
 	"fmt"
-	"fq/pkg/decode"
 	"sort"
 	"sync"
+
+	"github.com/wader/fq/pkg/decode"
 )
 
 type Registry struct {

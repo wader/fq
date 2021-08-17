@@ -3,9 +3,9 @@ package mpeg
 // ISO/IEC 14496-15, 5.3.3.1.2 Syntax
 
 import (
-	"fq/format"
-	"fq/format/registry"
-	"fq/pkg/decode"
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/decode"
 )
 
 var avcNALUFormat []*decode.Format

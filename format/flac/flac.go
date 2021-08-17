@@ -9,10 +9,11 @@ import (
 	"bytes"
 	"crypto/md5"
 	"fmt"
-	"fq/format"
-	"fq/format/registry"
-	"fq/internal/num"
-	"fq/pkg/decode"
+
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/internal/num"
+	"github.com/wader/fq/pkg/decode"
 )
 
 var flacMetadatablockFormat []*decode.Format

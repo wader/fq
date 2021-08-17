@@ -21,10 +21,11 @@ package mp4
 
 import (
 	"embed"
-	"fq/format"
-	"fq/format/registry"
-	"fq/pkg/decode"
 	"sort"
+
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/decode"
 )
 
 //go:embed *.jq

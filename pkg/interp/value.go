@@ -4,14 +4,15 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"fq/internal/gojqextra"
-	"fq/pkg/bitio"
-	"fq/pkg/decode"
 	"io"
 	"math/big"
 	"strings"
 
-	"github.com/itchyny/gojq"
+	"github.com/wader/fq/internal/gojqextra"
+	"github.com/wader/fq/pkg/bitio"
+	"github.com/wader/fq/pkg/decode"
+
+	"github.com/wader/gojq"
 )
 
 type expectedExtkeyError struct {

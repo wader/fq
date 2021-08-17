@@ -7,11 +7,12 @@ package tar
 import (
 	"bytes"
 	"fmt"
-	"fq/format"
-	"fq/format/registry"
-	"fq/pkg/decode"
 	"strconv"
 	"strings"
+
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/decode"
 )
 
 var probeFormat []*decode.Format

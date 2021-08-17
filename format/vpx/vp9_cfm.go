@@ -3,9 +3,9 @@ package vpx
 // https://www.webmproject.org/docs/container/#vp9-codec-feature-metadata-codecprivate
 
 import (
-	"fq/format"
-	"fq/format/registry"
-	"fq/pkg/decode"
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/decode"
 )
 
 func init() {

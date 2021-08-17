@@ -10,9 +10,10 @@ package gif
 
 import (
 	"bytes"
-	"fq/format"
-	"fq/format/registry"
-	"fq/pkg/decode"
+
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/decode"
 )
 
 func init() {

@@ -1,9 +1,10 @@
 package recoverfn_test
 
 import (
-	"fq/internal/recoverfn"
 	"reflect"
 	"testing"
+
+	"github.com/wader/fq/internal/recoverfn"
 )
 
 func test1() {
@@ -43,13 +44,13 @@ func TestPanic(t *testing.T) {
 		t.Errorf("expected len(frames) %v, got %v", actualFramesLen, actualFramesLen)
 	}
 
-	expectedFrame0Function := "fq/internal/recoverfn_test.test1"
+	expectedFrame0Function := "github.com/wader/fq/internal/recoverfn_test.test1"
 	actualFrame0Function := frames[0].Function
 	if !reflect.DeepEqual(expectedFrame0Function, actualFrame0Function) {
 		t.Errorf("expected frames[0].Function %v, got %v", expectedFrame0Function, actualFrame0Function)
 	}
 
-	expectedFrame1Function := "fq/internal/recoverfn_test.test2"
+	expectedFrame1Function := "github.com/wader/fq/internal/recoverfn_test.test2"
 	actualFrame1Function := frames[1].Function
 	if !reflect.DeepEqual(expectedFrame1Function, actualFrame1Function) {
 		t.Errorf("expected frames[1].Function %v, got %v", expectedFrame1Function, actualFrame1Function)

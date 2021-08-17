@@ -4,10 +4,11 @@ package bitio_test
 
 import (
 	"fmt"
-	"fq/pkg/bitio"
 	"math/rand"
 	"strings"
 	"testing"
+
+	"github.com/wader/fq/pkg/bitio"
 )
 
 func TestBufferBitString(t *testing.T) {

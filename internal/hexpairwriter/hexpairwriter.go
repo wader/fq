@@ -3,9 +3,10 @@ package hexpairwriter
 // TODO: generalize and rename? make buffer more flexible
 
 import (
-	"fq/internal/num"
-	"fq/pkg/bitio"
 	"io"
+
+	"github.com/wader/fq/internal/num"
+	"github.com/wader/fq/pkg/bitio"
 )
 
 type Writer struct {

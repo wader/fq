@@ -5,9 +5,9 @@ package av1
 // "The OBUs in the Block follow the [Low Overhead Bitstream Format syntax]. They MUST have the [obu_has_size_field] set to 1 except for the last OBU in the frame, for which [obu_has_size_field] MAY be set to 0, in which case it is assumed to fill the remainder of the frame."
 
 import (
-	"fq/format"
-	"fq/format/registry"
-	"fq/pkg/decode"
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/decode"
 )
 
 var obuFormat []*decode.Format
