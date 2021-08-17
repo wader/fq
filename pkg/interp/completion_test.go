@@ -1,8 +1,9 @@
 package interp_test
 
 import (
-	"fq/pkg/interp"
 	"testing"
+
+	"github.com/wader/fq/pkg/interp"
 )
 
 func TestBuildCompletionQuery(t *testing.T) {

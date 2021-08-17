@@ -7,9 +7,9 @@ package flv
 // https://www.adobe.com/content/dam/acom/en/devnet/flv/video_file_format_spec_v10.pdf
 
 import (
-	"fq/format"
-	"fq/format/registry"
-	"fq/pkg/decode"
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/decode"
 )
 
 func init() {

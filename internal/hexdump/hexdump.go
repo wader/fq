@@ -1,11 +1,12 @@
 package hexdump
 
 import (
-	"fq/internal/columnwriter"
-	"fq/internal/num"
-	"fq/pkg/bitio"
 	"io"
 	"strings"
+
+	"github.com/wader/fq/internal/columnwriter"
+	"github.com/wader/fq/internal/num"
+	"github.com/wader/fq/pkg/bitio"
 )
 
 type Dumper struct {

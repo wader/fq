@@ -6,9 +6,9 @@ package hexdump_test
 import (
 	"bytes"
 	"fmt"
-	"fq/internal/asciiwriter"
-	"fq/internal/hexdump"
-	"fq/internal/hexpairwriter"
+	"github.com/wader/fq/internal/asciiwriter"
+	"github.com/wader/fq/internal/hexdump"
+	"github.com/wader/fq/internal/hexpairwriter"
 	"testing"
 )
 

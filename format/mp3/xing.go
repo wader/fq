@@ -3,9 +3,9 @@ package mp3
 // https://www.codeproject.com/Articles/8295/MPEG-Audio-Frame-Header
 
 import (
-	"fq/format"
-	"fq/format/registry"
-	"fq/pkg/decode"
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/decode"
 )
 
 func init() {

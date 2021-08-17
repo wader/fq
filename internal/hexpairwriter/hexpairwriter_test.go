@@ -2,9 +2,10 @@ package hexpairwriter_test
 
 import (
 	"bytes"
-	"fq/internal/hexpairwriter"
 	"log"
 	"testing"
+
+	"github.com/wader/fq/internal/hexpairwriter"
 )
 
 func TestWrite(t *testing.T) {

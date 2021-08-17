@@ -3,13 +3,14 @@ package interp
 import (
 	"encoding/hex"
 	"fmt"
-	"fq/internal/num"
-	"fq/pkg/bitio"
-	"fq/pkg/decode"
 	"io"
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/wader/fq/internal/num"
+	"github.com/wader/fq/pkg/bitio"
+	"github.com/wader/fq/pkg/decode"
 )
 
 type previewNode struct {

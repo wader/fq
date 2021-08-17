@@ -3,11 +3,12 @@ package interp
 import (
 	"bytes"
 	"fmt"
-	"fq/internal/gojqextra"
-	"fq/pkg/bitio"
-	"fq/pkg/ranges"
 	"io"
 	"math/big"
+
+	"github.com/wader/fq/internal/gojqextra"
+	"github.com/wader/fq/pkg/bitio"
+	"github.com/wader/fq/pkg/ranges"
 )
 
 type bufferRange struct {

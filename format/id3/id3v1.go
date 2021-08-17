@@ -1,10 +1,11 @@
 package id3
 
 import (
-	"fq/format"
-	"fq/format/registry"
-	"fq/pkg/decode"
 	"strings"
+
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/decode"
 )
 
 // TODO: trim strings?

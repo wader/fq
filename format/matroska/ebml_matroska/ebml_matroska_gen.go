@@ -1,7 +1,7 @@
 // Code below generated from ebml_matroska.xml
 package ebml_matroska
 
-import "fq/format/matroska/ebml"
+import "github.com/wader/fq/format/matroska/ebml"
 
 var Root = ebml.Tag{
 	ebml.HeaderID: {Name: "EBML", Type: ebml.Master, Tag: ebml.Header},

@@ -2,9 +2,10 @@ package asciiwriter_test
 
 import (
 	"bytes"
-	"fq/internal/asciiwriter"
 	"log"
 	"testing"
+
+	"github.com/wader/fq/internal/asciiwriter"
 )
 
 func TestWrite(t *testing.T) {

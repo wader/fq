@@ -10,14 +10,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"fq/format"
-	"fq/format/registry"
-	"fq/internal/aheadreadseeker"
-	"fq/internal/ctxreadseeker"
-	"fq/internal/ioextra"
-	"fq/internal/progressreadseeker"
-	"fq/pkg/bitio"
-	"fq/pkg/decode"
 	"hash"
 	"io"
 	"io/fs"
@@ -28,7 +20,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/itchyny/gojq"
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/internal/aheadreadseeker"
+	"github.com/wader/fq/internal/ctxreadseeker"
+	"github.com/wader/fq/internal/ioextra"
+	"github.com/wader/fq/internal/progressreadseeker"
+	"github.com/wader/fq/pkg/bitio"
+	"github.com/wader/fq/pkg/decode"
+
+	"github.com/wader/gojq"
 )
 
 // TODO: make it nicer somehow? generate generators? remove from struct?

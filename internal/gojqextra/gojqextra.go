@@ -4,9 +4,10 @@ package gojqextra
 import (
 	"bytes"
 	"fmt"
-	"fq/internal/colorjson"
 
-	"github.com/itchyny/gojq"
+	"github.com/wader/fq/internal/colorjson"
+
+	"github.com/wader/gojq"
 )
 
 // TODO: refactor to use errors from gojq?

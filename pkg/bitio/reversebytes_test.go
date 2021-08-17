@@ -3,8 +3,9 @@ package bitio_test
 import (
 	"bytes"
 	"fmt"
-	"fq/pkg/bitio"
 	"testing"
+
+	"github.com/wader/fq/pkg/bitio"
 )
 
 func TestReverseBytes(t *testing.T) {

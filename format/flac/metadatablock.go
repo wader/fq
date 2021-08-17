@@ -3,10 +3,10 @@ package flac
 // TODO: 24 bit picture length truncate warning
 
 import (
-	"fq/format"
-	"fq/format/registry"
-	"fq/pkg/decode"
-	"fq/pkg/ranges"
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/ranges"
 )
 
 var flacPicture []*decode.Format

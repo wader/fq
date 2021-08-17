@@ -8,12 +8,13 @@ package gz
 import (
 	"bytes"
 	"compress/flate"
-	"fq/format"
-	"fq/format/registry"
-	"fq/pkg/bitio"
-	"fq/pkg/decode"
 	"hash/crc32"
 	"io"
+
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/bitio"
+	"github.com/wader/fq/pkg/decode"
 )
 
 var probeFormat []*decode.Format

@@ -5,9 +5,9 @@ package mp3
 // TODO: mime audio/mpeg
 
 import (
-	"fq/format"
-	"fq/format/registry"
-	"fq/pkg/decode"
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/decode"
 )
 
 var headerFormat []*decode.Format

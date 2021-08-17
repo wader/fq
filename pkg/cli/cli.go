@@ -5,9 +5,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"fq/format/registry"
-	"fq/internal/profile"
-	"fq/pkg/interp"
 	"io"
 	"io/fs"
 	"log"
@@ -15,7 +12,11 @@ import (
 	"os/signal"
 	"path/filepath"
 
-	"github.com/chzyer/readline"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/internal/profile"
+	"github.com/wader/fq/pkg/interp"
+
+	"github.com/wader/readline"
 )
 
 func MaybeProfile() func() {
@@ -123,7 +124,7 @@ func (o *standardOS) Readline(prompt string, complete func(line string, pos int)
 		if err != nil {
 			return "", err
 		}
-		historyFile = filepath.Join(cacheDir, "fq/history")
+		historyFile = filepath.Join(cacheDir, "github.com/wader/fq/history")
 		_ = os.MkdirAll(filepath.Dir(historyFile), 0700)
 
 		o.rl, err = readline.NewEx(&readline.Config{

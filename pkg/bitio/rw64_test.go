@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
-	"fq/pkg/bitio"
 	"testing"
+
+	"github.com/wader/fq/pkg/bitio"
 )
 
 func TestRead64(t *testing.T) {

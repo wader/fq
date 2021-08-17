@@ -9,9 +9,9 @@ package mpeg
 // https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/aac_adtstoasc_bsf.c
 
 import (
-	"fq/format"
-	"fq/format/registry"
-	"fq/pkg/decode"
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/decode"
 )
 
 var aacFrameFormat []*decode.Format

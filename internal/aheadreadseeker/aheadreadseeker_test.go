@@ -2,10 +2,11 @@ package aheadreadseeker_test
 
 import (
 	"bytes"
-	"fq/internal/aheadreadseeker"
 	"io"
 	"log"
 	"testing"
+
+	"github.com/wader/fq/internal/aheadreadseeker"
 )
 
 type readRecord struct {

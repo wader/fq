@@ -2,10 +2,11 @@ package num
 
 import (
 	"fmt"
-	"fq/pkg/ranges"
 	"math"
 	"strconv"
 	"strings"
+
+	"github.com/wader/fq/pkg/ranges"
 )
 
 var BasePrefixMap = map[int]string{

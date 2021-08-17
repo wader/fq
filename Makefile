@@ -70,6 +70,7 @@ cpuprof: prof
 	go tool pprof -http :5555 fq.prof fq.cpu.prof
 
 .PHONY: update-gomodreplace
-update-gomodreplace:
-	go mod edit -replace github.com/chzyer/readline=github.com/wader/readline@fq && GOPROXY=direct go mod download github.com/chzyer/readline && go mod tidy
-	go mod edit -replace github.com/itchyny/gojq=github.com/wader/gojq@fq && GOPROXY=direct go mod download github.com/itchyny/gojq && go mod tidy
+update-gomod:
+	GOPROXY=direct go get -d github.com/wader/readline@fq
+	GOPROXY=direct go get -d github.com/wader/gojq@fq
+	go mod tidy

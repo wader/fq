@@ -3,15 +3,16 @@ package interp
 import (
 	"errors"
 	"fmt"
-	"fq/internal/asciiwriter"
-	"fq/internal/columnwriter"
-	"fq/internal/hexpairwriter"
-	"fq/internal/num"
-	"fq/pkg/bitio"
-	"fq/pkg/decode"
 	"io"
 	"strconv"
 	"strings"
+
+	"github.com/wader/fq/internal/asciiwriter"
+	"github.com/wader/fq/internal/columnwriter"
+	"github.com/wader/fq/internal/hexpairwriter"
+	"github.com/wader/fq/internal/num"
+	"github.com/wader/fq/pkg/bitio"
+	"github.com/wader/fq/pkg/decode"
 )
 
 // 0   12      34    56

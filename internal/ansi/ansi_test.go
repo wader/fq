@@ -3,9 +3,10 @@ package ansi_test
 import (
 	"bytes"
 	"fmt"
-	"fq/internal/ansi"
 	"log"
 	"testing"
+
+	"github.com/wader/fq/internal/ansi"
 )
 
 func Test(t *testing.T) {

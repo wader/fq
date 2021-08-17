@@ -2,8 +2,9 @@ package deepequal_test
 
 import (
 	"fmt"
-	"fq/internal/deepequal"
 	"testing"
+
+	"github.com/wader/fq/internal/deepequal"
 )
 
 type tfFn func(format string, args ...interface{})

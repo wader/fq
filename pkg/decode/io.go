@@ -2,8 +2,9 @@ package decode
 
 import (
 	"bytes"
-	"fq/pkg/bitio"
 	"io"
+
+	"github.com/wader/fq/pkg/bitio"
 )
 
 func MustCopy(r io.Writer, w io.Reader) int64 {

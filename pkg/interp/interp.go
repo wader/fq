@@ -9,15 +9,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"fq/format/registry"
-	"fq/internal/ansi"
-	"fq/internal/colorjson"
-	"fq/internal/ctxstack"
-	"fq/internal/num"
-	"fq/internal/pos"
-	"fq/pkg/bitio"
-	"fq/pkg/decode"
-	"fq/pkg/ranges"
 	"io"
 	"io/fs"
 	"math/big"
@@ -26,7 +17,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/itchyny/gojq"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/internal/ansi"
+	"github.com/wader/fq/internal/colorjson"
+	"github.com/wader/fq/internal/ctxstack"
+	"github.com/wader/fq/internal/num"
+	"github.com/wader/fq/internal/pos"
+	"github.com/wader/fq/pkg/bitio"
+	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/ranges"
+
+	"github.com/wader/gojq"
 )
 
 //go:embed interp.jq

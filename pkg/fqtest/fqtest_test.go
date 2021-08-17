@@ -1,11 +1,12 @@
 package fqtest_test
 
 import (
-	"fq/internal/deepequal"
-	"fq/pkg/fqtest"
 	"log"
 	"regexp"
 	"testing"
+
+	"github.com/wader/fq/internal/deepequal"
+	"github.com/wader/fq/pkg/fqtest"
 )
 
 func TestSectionParser(t *testing.T) {

@@ -2,9 +2,10 @@ package ranges_test
 
 import (
 	"fmt"
-	"fq/pkg/ranges"
 	"reflect"
 	"testing"
+
+	"github.com/wader/fq/pkg/ranges"
 )
 
 func TestRangeGaps(t *testing.T) {

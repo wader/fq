@@ -1,10 +1,11 @@
 package interp_test
 
 import (
-	_ "fq/format/all"
-	"fq/format/registry"
-	"fq/pkg/fqtest"
 	"testing"
+
+	_ "github.com/wader/fq/format/all"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/fqtest"
 )
 
 func TestFQTests(t *testing.T) {

@@ -16,11 +16,11 @@ import (
 	"strings"
 	"testing"
 
-	"fq/format/registry"
-	"fq/internal/deepequal"
-	"fq/internal/shquote"
-	"fq/pkg/bitio"
-	"fq/pkg/interp"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/internal/deepequal"
+	"github.com/wader/fq/internal/shquote"
+	"github.com/wader/fq/pkg/bitio"
+	"github.com/wader/fq/pkg/interp"
 )
 
 type testCaseReadline struct {

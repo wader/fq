@@ -2,9 +2,10 @@ package columnwriter_test
 
 import (
 	"fmt"
-	"fq/internal/columnwriter"
 	"os"
 	"testing"
+
+	"github.com/wader/fq/internal/columnwriter"
 )
 
 func TestColumnWriter(t *testing.T) {

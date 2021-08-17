@@ -1,12 +1,13 @@
 package interp
 
 import (
-	"fq/internal/asciiwriter"
-	"fq/internal/hexdump"
-	"fq/internal/hexpairwriter"
-	"fq/internal/num"
-	"fq/pkg/bitio"
 	"io"
+
+	"github.com/wader/fq/internal/asciiwriter"
+	"github.com/wader/fq/internal/hexdump"
+	"github.com/wader/fq/internal/hexpairwriter"
+	"github.com/wader/fq/internal/num"
+	"github.com/wader/fq/pkg/bitio"
 )
 
 func hexdumpRange(bbr bufferRange, w io.Writer, opts Options) error {

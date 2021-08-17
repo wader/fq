@@ -16,12 +16,13 @@ package matroska
 import (
 	"embed"
 	"fmt"
-	"fq/format"
-	"fq/format/matroska/ebml"
-	"fq/format/matroska/ebml_matroska"
-	"fq/format/registry"
-	"fq/pkg/decode"
-	"fq/pkg/ranges"
+
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/matroska/ebml"
+	"github.com/wader/fq/format/matroska/ebml_matroska"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/ranges"
 )
 
 //go:embed *.jq

@@ -7,12 +7,13 @@ import (
 	"compress/zlib"
 	"encoding/hex"
 	"fmt"
-	"fq/internal/num"
-	"fq/internal/recoverfn"
-	"fq/pkg/bitio"
-	"fq/pkg/ranges"
 	"io/ioutil"
 	"strings"
+
+	"github.com/wader/fq/internal/num"
+	"github.com/wader/fq/internal/recoverfn"
+	"github.com/wader/fq/pkg/bitio"
+	"github.com/wader/fq/pkg/ranges"
 )
 
 type DecodeFormatsError struct {

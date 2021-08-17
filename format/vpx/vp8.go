@@ -3,9 +3,9 @@ package vpx
 // https://tools.ietf.org/html/rfc6386
 
 import (
-	"fq/format"
-	"fq/format/registry"
-	"fq/pkg/decode"
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/decode"
 )
 
 // TODO: vpx frame?

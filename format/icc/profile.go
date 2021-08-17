@@ -4,10 +4,11 @@ package icc
 // https://www.color.org/icc32.pdf
 
 import (
-	"fq/format"
-	"fq/format/registry"
-	"fq/pkg/decode"
 	"strings"
+
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/decode"
 )
 
 func init() {

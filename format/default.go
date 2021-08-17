@@ -1,8 +1,8 @@
 package format
 
 import (
-	"fq/pkg/bitio"
-	"fq/pkg/ranges"
+	"github.com/wader/fq/pkg/bitio"
+	"github.com/wader/fq/pkg/ranges"
 )
 
 const (

@@ -8,11 +8,12 @@ package id3
 import (
 	"bytes"
 	"fmt"
-	"fq/format"
-	"fq/format/registry"
-	"fq/pkg/decode"
 	"io"
 	"strings"
+
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/decode"
 )
 
 var imageFormat []*decode.Format

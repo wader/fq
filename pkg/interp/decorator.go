@@ -1,10 +1,11 @@
 package interp
 
 import (
-	"fq/internal/ansi"
-	"fq/pkg/decode"
 	"strconv"
 	"strings"
+
+	"github.com/wader/fq/internal/ansi"
+	"github.com/wader/fq/pkg/decode"
 )
 
 type stringRanges struct {

@@ -3,10 +3,11 @@ package mp4
 import (
 	"bytes"
 	"fmt"
-	"fq/format"
-	"fq/pkg/decode"
 	"strings"
 	"time"
+
+	"github.com/wader/fq/format"
+	"github.com/wader/fq/pkg/decode"
 )
 
 var boxAliases = map[string]string{
