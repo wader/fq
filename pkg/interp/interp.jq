@@ -38,34 +38,41 @@ def _exit_code_expr_error: 5;
 # TODO: completionMode
 # TODO: return escaped identifier, not sure current readline implementation supports
 # completions that needs to change previous input, ex: .a\t -> ."a \" b" etc
-def _complete($e):
+def _complete($e; $pos):
   def _is_internal: startswith("_") or startswith("$_");
-  ( ( $e | _complete_query) as {$type, $query, $prefix}
-  | {
-      prefix: $prefix,
-      names: (
-        ( if $type == "function" or $type == "variable" then
-            [.[] | eval($query) | scope] | add
-          elif $type == "index" then
-            [.[] | eval($query) | keys?, _extkeys?] | add
-          else
-            []
-          end
-        | ($prefix | _is_internal) as  $prefix_is_internal
-        | map(
-            select(
-              strings and
-              (_is_ident or $type == "variable") and
-              ((_is_internal | not) or $prefix_is_internal or $type == "index") and
-              startswith($prefix)
+  # only complete if at end of there is a whitespace for now
+  if ($e[$pos] | . == "" or . == " ") then
+    ( ( $e[0:$pos] | _complete_query) as {$type, $query, $prefix}
+    | {
+        prefix: $prefix,
+        names: (
+          ( if $type == "function" or $type == "variable" then
+              [.[] | eval($query) | scope] | add
+            elif $type == "index" then
+              [.[] | eval($query) | keys?, _extkeys?] | add
+            else
+              []
+            end
+          | ($prefix | _is_internal) as  $prefix_is_internal
+          | map(
+              select(
+                strings and
+                (_is_ident or $type == "variable") and
+                ((_is_internal | not) or $prefix_is_internal or $type == "index") and
+                startswith($prefix)
+              )
             )
+          | unique
+          | sort
           )
-        | unique
-        | sort
         )
-      )
-    }
-  );
+      }
+    )
+  else
+    {prefix: "", names: []}
+  end;
+  # for convenience when testing
+def _complete($e): _complete($e; $e | length);
 
 def _obj_to_csv_kv:
   [to_entries[] | [.key, .value] | join("=")] | join(",");
