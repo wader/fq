@@ -15,11 +15,12 @@ const (
 	CompletionTypeFunc  CompletionType = "function"
 	CompletionTypeVar   CompletionType = "variable"
 	CompletionTypeNone  CompletionType = "none"
+	CompletionTypeError CompletionType = "error"
 )
 
 func BuildCompletionQuery(src string) (*gojq.Query, CompletionType, string) {
 	if src == "" {
-		return nil, CompletionTypeNone, ""
+		return nil, CompletionTypeError, ""
 	}
 
 	// HACK: if ending with "." or "$" append a test index that we remove later
@@ -32,7 +33,7 @@ func BuildCompletionQuery(src string) (*gojq.Query, CompletionType, string) {
 
 	q, err := gojq.Parse(src + probePrefix)
 	if err != nil {
-		return nil, CompletionTypeNone, ""
+		return nil, CompletionTypeError, ""
 	}
 
 	cq, ct, prefix := transformToCompletionQuery(q)
@@ -40,7 +41,37 @@ func BuildCompletionQuery(src string) (*gojq.Query, CompletionType, string) {
 		prefix = strings.TrimSuffix(prefix, probePrefix)
 	}
 
-	return cq, ct, prefix
+	if ct == CompletionTypeNone {
+		return cq, ct, ""
+	}
+
+	// [.[] | cq | add]
+	return &gojq.Query{
+		Left: &gojq.Query{
+			Term: &gojq.Term{
+				Type: gojq.TermTypeArray,
+				Array: &gojq.Array{
+					Query: &gojq.Query{
+						Left: &gojq.Query{
+							Term: &gojq.Term{
+								Type:       gojq.TermTypeIdentity,
+								SuffixList: []*gojq.Suffix{{Iter: true}},
+							},
+						},
+						Op:    gojq.OpPipe,
+						Right: cq,
+					},
+				},
+			},
+		},
+		Op: gojq.OpPipe,
+		Right: &gojq.Query{
+			Term: &gojq.Term{
+				Type: gojq.TermTypeFunc,
+				Func: &gojq.Func{Name: "add"},
+			},
+		},
+	}, ct, prefix
 }
 
 // find the right most term that is completeable
@@ -54,6 +85,23 @@ func transformToCompletionQuery(q *gojq.Query) (*gojq.Query, CompletionType, str
 		}
 		q.Right = r
 		return q, ct, prefix
+	}
+
+	keysFuncName := func(name string) string {
+		if strings.HasPrefix(name, "_") {
+			return "_extkeys"
+		}
+		return "keys"
+	}
+
+	optFunc := func(name string) *gojq.Query {
+		return &gojq.Query{
+			Term: &gojq.Term{
+				Type:       gojq.TermTypeFunc,
+				Func:       &gojq.Func{Name: name},
+				SuffixList: []*gojq.Suffix{{Optional: true}},
+			},
+		}
 	}
 
 	// ... as ...
@@ -70,40 +118,56 @@ func transformToCompletionQuery(q *gojq.Query) (*gojq.Query, CompletionType, str
 		if last.Index != nil && last.Index.Name != "" {
 			prefix := last.Index.Name
 			last.Index = nil
-			return q, CompletionTypeIndex, prefix
+			return &gojq.Query{
+				Left:  q,
+				Op:    gojq.OpPipe,
+				Right: optFunc(keysFuncName(prefix)),
+			}, CompletionTypeIndex, prefix
 		}
 	}
 
 	switch q.Term.Type { //nolint:exhaustive
 	case gojq.TermTypeIdentity:
-		return q, CompletionTypeIndex, ""
+		return &gojq.Query{
+			Left:  q,
+			Op:    gojq.OpPipe,
+			Right: optFunc(keysFuncName("")),
+		}, CompletionTypeIndex, ""
 	case gojq.TermTypeIndex:
 		if len(q.Term.SuffixList) == 0 {
 			if q.Term.Index.Start == nil {
-				return &gojq.Query{Term: &gojq.Term{Type: gojq.TermTypeIdentity}}, CompletionTypeIndex, q.Term.Index.Name
+				return &gojq.Query{
+					Left:  &gojq.Query{Term: &gojq.Term{Type: gojq.TermTypeIdentity}},
+					Op:    gojq.OpPipe,
+					Right: optFunc(keysFuncName(q.Term.Index.Name)),
+				}, CompletionTypeIndex, q.Term.Index.Name
 			}
-			return nil, CompletionTypeNone, ""
+			return q, CompletionTypeNone, ""
 		}
 
 		last := q.Term.SuffixList[len(q.Term.SuffixList)-1]
 		if last.Index != nil && last.Index.Start == nil {
 			q.Term.SuffixList = q.Term.SuffixList[0 : len(q.Term.SuffixList)-1]
-			return q, CompletionTypeIndex, last.Index.Name
+			return &gojq.Query{
+				Left:  q,
+				Op:    gojq.OpPipe,
+				Right: optFunc(keysFuncName(last.Index.Name)),
+			}, CompletionTypeIndex, last.Index.Name
 		}
 
-		return nil, CompletionTypeNone, ""
+		return q, CompletionTypeNone, ""
 	case gojq.TermTypeFunc:
 		if len(q.Term.SuffixList) == 0 {
 			if strings.HasPrefix(q.Term.Func.Name, "$") {
-				return &gojq.Query{Term: &gojq.Term{Type: gojq.TermTypeIdentity}}, CompletionTypeVar, q.Term.Func.Name
+				return optFunc("scope"), CompletionTypeVar, q.Term.Func.Name
 			} else {
-				return &gojq.Query{Term: &gojq.Term{Type: gojq.TermTypeIdentity}}, CompletionTypeFunc, q.Term.Func.Name
+				return optFunc("scope"), CompletionTypeFunc, q.Term.Func.Name
 			}
 		}
 
-		return nil, CompletionTypeNone, ""
+		return q, CompletionTypeNone, ""
 	default:
-		return nil, CompletionTypeNone, ""
+		return q, CompletionTypeNone, ""
 
 	}
 }
