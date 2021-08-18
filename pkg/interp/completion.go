@@ -109,8 +109,7 @@ func transformToCompletionQuery(q *gojq.Query) (*gojq.Query, CompletionType, str
 }
 
 func completeTrampoline(ctx context.Context, completeFn string, c interface{}, i *Interp, line string, pos int) (newLine []string, shared int, err error) {
-	lineStr := line[0:pos]
-	vs, err := i.EvalFuncValues(ctx, CompletionMode, c, completeFn, []interface{}{lineStr}, DiscardOutput{Ctx: ctx})
+	vs, err := i.EvalFuncValues(ctx, CompletionMode, c, completeFn, []interface{}{line, pos}, DiscardOutput{Ctx: ctx})
 	if err != nil {
 		return nil, pos, err
 	}
@@ -122,7 +121,7 @@ func completeTrampoline(ctx context.Context, completeFn string, c interface{}, i
 		return nil, pos, vErr
 	}
 
-	// {abc: 123, abd: 123} | complete(".ab") will return {prefix: "ab", names: ["abc", "abd"]}
+	// {abc: 123, abd: 123} | complete(".ab"; 3) will return {prefix: "ab", names: ["abc", "abd"]}
 
 	var names []string
 	var prefix string
