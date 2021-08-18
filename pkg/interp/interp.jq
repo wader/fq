@@ -169,9 +169,9 @@ def _eval_is_compile_error: type == "object" and .error != null and .what != nul
 def _eval_compile_error_tostring:
   "\(.filename // "src"):\(.line):\(.column): \(.error)";
 
-def _eval($e; f; on_error; on_compile_error):
+def _eval($e; $filename; f; on_error; on_compile_error):
   ( _default_options(_build_default_options) as $_
-  | try eval($e) | f
+  | try eval($e; $filename) | f
     catch
       if _eval_is_compile_error then on_compile_error
       else on_error
@@ -184,7 +184,7 @@ def _repl_on_error:
   | (_error_str | println)
   );
 def _repl_on_compile_error: _repl_on_error;
-def _repl_eval($e): _eval($e; _repl_display; _repl_on_error; _repl_on_compile_error);
+def _repl_eval($e): _eval($e; "repl"; _repl_display; _repl_on_error; _repl_on_compile_error);
 
 # run read-eval-print-loop
 def repl($opts; iter): #:: a|(Opts) => @
@@ -231,8 +231,8 @@ def _cli_expr_on_compile_error:
   | halt_error(_exit_code_compile_error)
   );
 # _cli_expr_eval halts on compile errors
-def _cli_expr_eval($e; f): _eval($e; f; _cli_expr_on_error; _cli_expr_on_compile_error);
-def _cli_expr_eval($e): _eval($e; .; _cli_expr_on_error; _cli_expr_on_compile_error);
+def _cli_expr_eval($e; $filename; f): _eval($e; $filename; f; _cli_expr_on_error; _cli_expr_on_compile_error);
+def _cli_expr_eval($e; $filename): _eval($e; $filename; .; _cli_expr_on_error; _cli_expr_on_compile_error);
 
 # next valid input
 def input:
@@ -450,10 +450,12 @@ def _main:
         ( { null_input: ($parsed_args.null_input == true) }
         | if $parsed_args.file then
             ( .expr = ($parsed_args.file | open | string)
+            | .expr_filename = $parsed_args.file
             | .filenames = $rest
             )
           else
             ( .expr = ($rest[0] // ".")
+            | .expr_filename = "arg"
             | .filenames = $rest[1:]
             )
           end
@@ -462,7 +464,7 @@ def _main:
           elif .filenames == [] then
             .filenames = ["-"]
           end
-        | . as {$expr, $filenames, $null_input}
+        | . as {$expr, $expr_filename, $filenames, $null_input}
         | _include_paths([
             $parsed_args.include_path // empty
           ]) as $_
@@ -472,10 +474,10 @@ def _main:
           else inputs
           end
           # will iterate zero or more inputs
-          | if $parsed_args.repl then [_cli_expr_eval($expr)] | repl({}; .[])
+          | if $parsed_args.repl then [_cli_expr_eval($expr; $expr_filename)] | repl({}; .[])
             else
               ( _cli_last_expr_error(null) as $_
-              | _cli_expr_eval($expr; _repl_display)
+              | _cli_expr_eval($expr; $expr_filename; _repl_display)
               )
             end
         )

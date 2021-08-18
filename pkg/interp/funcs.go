@@ -38,7 +38,7 @@ func (i *Interp) makeFunctions(registry *registry.Registry) []Function {
 		{[]string{"tty"}, 0, 0, i.tty, nil},
 
 		{[]string{"readline"}, 0, 2, i.readline, nil},
-		{[]string{"eval"}, 1, 1, nil, i.eval},
+		{[]string{"eval"}, 1, 2, nil, i.eval},
 		{[]string{"stdout"}, 0, 0, nil, i.stdout},
 		{[]string{"stderr"}, 0, 0, nil, i.stderr},
 
@@ -246,12 +246,20 @@ func (i *Interp) readline(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) eval(c interface{}, a []interface{}) gojq.Iter {
+	var err error
 	src, err := toString(a[0])
 	if err != nil {
 		return gojq.NewIter(fmt.Errorf("src: %w", err))
 	}
+	var filenameHint string
+	if len(a) >= 2 {
+		filenameHint, err = toString(a[1])
+		if err != nil {
+			return gojq.NewIter(fmt.Errorf("filename hint: %w", err))
+		}
+	}
 
-	iter, err := i.Eval(i.evalContext.ctx, ScriptMode, c, src, i.evalContext.stdout)
+	iter, err := i.Eval(i.evalContext.ctx, ScriptMode, c, src, filenameHint, i.evalContext.stdout)
 	if err != nil {
 		return gojq.NewIter(err)
 	}
