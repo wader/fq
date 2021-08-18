@@ -35,43 +35,59 @@ def _exit_code_compile_error: 3;
 def _exit_code_input_decode_error: 4;
 def _exit_code_expr_error: 5;
 
+# TODO: refactor this
 # TODO: completionMode
 # TODO: return escaped identifier, not sure current readline implementation supports
 # completions that needs to change previous input, ex: .a\t -> ."a \" b" etc
-def _complete($e; $pos):
+def _complete($e; $cursor_pos):
   def _is_internal: startswith("_") or startswith("$_");
+  def _query_index_or_key($q):
+    ( ([.[] | eval($q) | type]) as $n
+    | if ($n | all(. == "object")) then "."
+      elif ($n | all(. == "array")) then "[]"
+      else null
+      end
+    );
   # only complete if at end of there is a whitespace for now
-  if ($e[$pos] | . == "" or . == " ") then
-    ( ( $e[0:$pos] | _complete_query) as {$type, $query, $prefix}
+  if ($e[$cursor_pos] | . == "" or . == " ") then
+    ( . as $c
+    | ( $e[0:$cursor_pos] | _complete_query) as {$type, $query, $prefix}
     | {
         prefix: $prefix,
         names: (
-          ( if $type == "function" or $type == "variable" then
-              [.[] | eval($query) | scope] | add
-            elif $type == "index" then
-              [.[] | eval($query) | keys?, _extkeys?] | add
-            else
-              []
-            end
-          | ($prefix | _is_internal) as  $prefix_is_internal
-          | map(
-              select(
-                strings and
-                (_is_ident or $type == "variable") and
-                ((_is_internal | not) or $prefix_is_internal or $type == "index") and
-                startswith($prefix)
-              )
+          if $type == "none" then
+            ( $c
+            | _query_index_or_key($query)
+            | if . then [.] else [] end
             )
-          | unique
-          | sort
-          )
+          else
+            ( $c
+            | eval($query)
+            | ($prefix | _is_internal) as  $prefix_is_internal
+            | map(
+                select(
+                  strings and
+                  (_is_ident or $type == "variable") and
+                  ((_is_internal | not) or $prefix_is_internal or $type == "index") and
+                  startswith($prefix)
+                )
+              )
+            | unique
+            | sort
+            | if length == 1 and .[0] == $prefix then
+                ( $c
+                | _query_index_or_key($e)
+                | if . then [$prefix+.] else [$prefix] end
+                )
+              end
+            )
+          end
         )
       }
     )
   else
     {prefix: "", names: []}
   end;
-  # for convenience when testing
 def _complete($e): _complete($e; $e | length);
 
 def _obj_to_csv_kv:
