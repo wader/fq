@@ -7,7 +7,7 @@ on:
   pull_request:
 
 env:
-  GOLANGCILINT_VERSION: 1.41.1
+  GOLANGCILINT_VERSION: 1.42.0
 
 jobs:
   ci:
@@ -20,7 +20,7 @@ jobs:
       - name: Setup go
         uses: actions/setup-go@v2
         with:
-          go-version: 1.16.6
+          go-version: 1.17.0
       - name: Lint
         uses: golangci/golangci-lint-action@v2
         with:
