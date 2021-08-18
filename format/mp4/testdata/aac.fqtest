@@ -72,8 +72,8 @@ $ fq -d mp4 verbose /aac.mp4
 0x310|      74 6b 68 64                              |  tkhd          |              type: "tkhd" (Track header, overall information about the track) 0x312-0x315.7 (4)
 0x310|                  00                           |      .         |              version: 0 0x316-0x316.7 (1)
 0x310|                     00 00 03                  |       ...      |              flags: 3 0x317-0x319.7 (3)
-0x310|                              00 00 00 00      |          ....  |              creation_time: 0 0x31a-0x31d.7 (4)
-0x310|                                          00 00|              ..|              modification_time: 0 0x31e-0x321.7 (4)
+0x310|                              00 00 00 00      |          ....  |              creation_time: 1904-01-04T00:00:00Z (0) 0x31a-0x31d.7 (4)
+0x310|                                          00 00|              ..|              modification_time: 1904-01-04T00:00:00Z (0) 0x31e-0x321.7 (4)
 0x320|00 00                                          |..              |
 0x320|      00 00 00 01                              |  ....          |              track_id: 1 0x322-0x325.7 (4)
 0x320|                  00 00 00 00                  |      ....      |              reserved1: 0 0x326-0x329.7 (4)
@@ -127,8 +127,8 @@ $ fq -d mp4 verbose /aac.mp4
 0x390|                                          00   |              . |                  version: 0 0x39e-0x39e.7 (1)
 0x390|                                             00|               .|                  flags: 0 0x39f-0x3a1.7 (3)
 0x3a0|00 00                                          |..              |
-0x3a0|      00 00 00 00                              |  ....          |                  creation_time: 0 0x3a2-0x3a5.7 (4)
-0x3a0|                  00 00 00 00                  |      ....      |                  modification_time: 0 0x3a6-0x3a9.7 (4)
+0x3a0|      00 00 00 00                              |  ....          |                  creation_time: 1904-01-04T00:00:00Z (0) 0x3a2-0x3a5.7 (4)
+0x3a0|                  00 00 00 00                  |      ....      |                  modification_time: 1904-01-04T00:00:00Z (0) 0x3a6-0x3a9.7 (4)
 0x3a0|                              00 00 ac 44      |          ...D  |                  time_scale: 44100 0x3aa-0x3ad.7 (4)
 0x3a0|                                          00 00|              ..|                  duration: 3229 0x3ae-0x3b1.7 (4)
 0x3b0|0c 9d                                          |..              |

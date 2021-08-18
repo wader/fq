@@ -73,8 +73,8 @@ $ fq -d mp4 verbose /mp3.mp4
 0x320|68 64                                          |hd              |
 0x320|      00                                       |  .             |              version: 0 0x322-0x322.7 (1)
 0x320|         00 00 03                              |   ...          |              flags: 3 0x323-0x325.7 (3)
-0x320|                  00 00 00 00                  |      ....      |              creation_time: 0 0x326-0x329.7 (4)
-0x320|                              00 00 00 00      |          ....  |              modification_time: 0 0x32a-0x32d.7 (4)
+0x320|                  00 00 00 00                  |      ....      |              creation_time: 1904-01-04T00:00:00Z (0) 0x326-0x329.7 (4)
+0x320|                              00 00 00 00      |          ....  |              modification_time: 1904-01-04T00:00:00Z (0) 0x32a-0x32d.7 (4)
 0x320|                                          00 00|              ..|              track_id: 1 0x32e-0x331.7 (4)
 0x330|00 01                                          |..              |
 0x330|      00 00 00 00                              |  ....          |              reserved1: 0 0x332-0x335.7 (4)
@@ -127,9 +127,9 @@ $ fq -d mp4 verbose /mp3.mp4
 0x3a0|                  6d 64 68 64                  |      mdhd      |                  type: "mdhd" (Media header, overall information about the media) 0x3a6-0x3a9.7 (4)
 0x3a0|                              00               |          .     |                  version: 0 0x3aa-0x3aa.7 (1)
 0x3a0|                                 00 00 00      |           ...  |                  flags: 0 0x3ab-0x3ad.7 (3)
-0x3a0|                                          00 00|              ..|                  creation_time: 0 0x3ae-0x3b1.7 (4)
+0x3a0|                                          00 00|              ..|                  creation_time: 1904-01-04T00:00:00Z (0) 0x3ae-0x3b1.7 (4)
 0x3b0|00 00                                          |..              |
-0x3b0|      00 00 00 00                              |  ....          |                  modification_time: 0 0x3b2-0x3b5.7 (4)
+0x3b0|      00 00 00 00                              |  ....          |                  modification_time: 1904-01-04T00:00:00Z (0) 0x3b2-0x3b5.7 (4)
 0x3b0|                  00 00 ac 44                  |      ...D      |                  time_scale: 44100 0x3b6-0x3b9.7 (4)
 0x3b0|                              00 00 0c ee      |          ....  |                  duration: 3310 0x3ba-0x3bd.7 (4)
 0x3b0|                                          55 c4|              U.|                  language: "und" 0x3be-0x3bf.7 (2)

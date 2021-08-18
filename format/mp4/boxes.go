@@ -202,8 +202,8 @@ func init() {
 			d.FieldU8("version")
 			// TODO: values
 			d.FieldU24("flags")
-			d.FieldU32("creation_time")
-			d.FieldU32("modification_time")
+			_ = decodeFieldTime(d, "creation_time")
+			_ = decodeFieldTime(d, "modification_time")
 			trackID := uint32(d.FieldU32("track_id"))
 			d.FieldU32("reserved1")
 			d.FieldU32("duration")
@@ -230,8 +230,8 @@ func init() {
 			// TODO: values
 			d.FieldU24("flags")
 			// TODO: timestamps
-			d.FieldU32("creation_time")
-			d.FieldU32("modification_time")
+			_ = decodeFieldTime(d, "creation_time")
+			_ = decodeFieldTime(d, "modification_time")
 			d.FieldU32("time_scale")
 			d.FieldU32("duration")
 			decodeFieldLang(d, "language")
