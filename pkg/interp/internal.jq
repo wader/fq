@@ -4,6 +4,7 @@ def debug:
   ( ((["DEBUG", .] | tojson), "\n" | stderr)
   , .
   );
+ def debug(f): . as $c | f | debug | $c;
 
 # eval f and finally eval fin even on empty or error
 def finally(f; fin):

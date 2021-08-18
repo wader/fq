@@ -83,6 +83,12 @@ notable is support for arbitrary-precision integers.
 ### Functions
 
 - All standard library functions from jq
+  - `chunk/1`, `chunk_by/1` like `group` but groups consecutively on condition.
+  - `count_by` like `group_by` but counts groups lengths.
+  - `debug/1` like `debug/0` but uses arg to produce debug message. `{a: 123} | debug({a}) | ...`.
+  - `path_to_expr` from `["key", 1]` to `".key[1]"`.
+  - `expr_to_path` from `".key[1]"` to `["key", 1]`.
+  - `diff/2` produce diff object between two values.
 - `open` open file for reading
 - `probe` or `decode` try to automatically detect format and decode
 - `mp3`, `matroska`, ..., `<name>`, `decode([name])` try decode as format
