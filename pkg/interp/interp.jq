@@ -486,10 +486,11 @@ def _main:
           ]) as $_
         | _input_filenames($filenames) as $_ # store inputs
         | if $parsed_args.repl then
-            ( if $null_input then [null]
-              elif $parsed_args.slurp then [[inputs]]
-              else [inputs]
-              end
+            ( [ if $null_input then null
+                elif $parsed_args.slurp then [inputs]
+                else inputs
+                end
+              ]
             | ( [.[] | _cli_expr_eval($expr; $expr_filename)]
               | repl({}; .[])
               )
