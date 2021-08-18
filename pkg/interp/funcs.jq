@@ -45,6 +45,43 @@ def trim: capture("^\\s*(?<str>.*?)\\s*$"; "").str;
 # does +1 and [:1] as " "*0 is null
 def rpad($s; $w): . + ($s * ($w+1-length))[1:];
 
+# like `group` but groups consecutively on condition
+def chunk_by(f):
+  ( . as $a
+  | length as $l
+  | if $l == 0 then []
+    else
+      ( [ foreach $a[] as $v (
+            {cf: ($a[0] | f), index: 0, start: 0, extract: null};
+            ( ($v | f) as $vf
+            | (.index == 0 or (.cf == $vf)) as $equal
+            | if $equal then
+                ( .extract = null
+                )
+              else
+                ( .cf = $vf
+                | .extract = [.start, .index]
+                | .start = .index
+                )
+              end
+            | .index += 1
+            );
+            ( if .extract then .extract else empty end
+            , if .index == $l then [.start, .index] else empty end
+            )
+          )
+        ]
+      | map($a[.[0]:.[1]])
+      )
+    end
+  );
+# [1, 2, 2, 3] => [[1], [2, 2], [3]
+def chunk: chunk_by(.);
+
+# same as group_by but counts
+def count_by(exp):
+  group_by(exp) | map([(.[0] | exp), length]);
+
 # helper to build path query/generate functions for tree structures with
 # non-unique children, ex: mp4_path
 def tree_path(children; name; $v):
