@@ -469,17 +469,26 @@ def _main:
             $parsed_args.include_path // empty
           ]) as $_
         | _input_filenames($filenames) as $_ # store inputs
-        | if $null_input then null
-          elif $parsed_args.slurp then [inputs]
-          else inputs
-          end
-          # will iterate zero or more inputs
-          | if $parsed_args.repl then [_cli_expr_eval($expr; $expr_filename)] | repl({}; .[])
-            else
-              ( _cli_last_expr_error(null) as $_
-              | _cli_expr_eval($expr; $expr_filename; _repl_display)
+        | if $parsed_args.repl then
+            ( if $null_input then [null]
+              elif $parsed_args.slurp then [[inputs]]
+              else [inputs]
+              end
+            | ( [.[] | _cli_expr_eval($expr; $expr_filename)]
+              | repl({}; .[])
               )
-            end
+            )
+          else
+            ( if $null_input then null
+              elif $parsed_args.slurp then [inputs]
+              else inputs
+              end
+              # iterate inputs
+              | ( _cli_last_expr_error(null) as $_
+                | _cli_expr_eval($expr; $expr_filename; _repl_display)
+                )
+            )
+          end
         )
         ; # finally
         ( if _input_io_errors then

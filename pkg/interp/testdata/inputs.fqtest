@@ -77,3 +77,15 @@ $ fq . /a
 exitcode: 4
 stderr:
 error: /a: failed to decode (probe), try -d FORMAT to force
+$ fq -i -d raw . /a /b /c
+raw, ...> ._format
+"raw"
+"raw"
+"raw"
+raw, ...> ^D
+$ fq -i -s -d raw . /a /b /c
+[raw, ...][3]> .[]._format
+"raw"
+"raw"
+"raw"
+[raw, ...][3]> ^D
