@@ -19,7 +19,7 @@ null> $a
 "aa"
 null> var("a"; empty)
 null> $a
-error: src:1:0: variable not defined: $a
+error: repl:1:0: variable not defined: $a
 null> var
 {
   "bb": "bb"

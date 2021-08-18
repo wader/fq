@@ -54,10 +54,11 @@ type compileError struct {
 
 func (ce compileError) Value() interface{} {
 	return map[string]interface{}{
-		"error":  ce.err.Error(),
-		"what":   ce.what,
-		"line":   ce.pos.Line,
-		"column": ce.pos.Column,
+		"error":    ce.err.Error(),
+		"what":     ce.what,
+		"filename": ce.filename,
+		"line":     ce.pos.Line,
+		"column":   ce.pos.Column,
 	}
 }
 func (ee compileError) Error() string {
@@ -540,7 +541,7 @@ func (i *Interp) Main(ctx context.Context, stdout io.Writer, version string) err
 	return nil
 }
 
-func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src string, stdout Output) (gojq.Iter, error) {
+func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src string, filename string, stdout Output) (gojq.Iter, error) {
 	var err error
 	// TODO: did not work
 	// nq := &(*q)
@@ -549,9 +550,10 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	if err != nil {
 		p := queryErrorPosition(err)
 		return nil, compileError{
-			err:  err,
-			what: "parse",
-			pos:  p,
+			err:      err,
+			what:     "parse",
+			filename: filename,
+			pos:      p,
 		}
 	}
 
@@ -692,7 +694,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 					return nil, compileError{
 						err:      err,
 						what:     "parse",
-						filename: filename,
+						filename: filenamePart,
 						pos:      p,
 					}
 				}
@@ -712,9 +714,10 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	if err != nil {
 		p := queryErrorPosition(err)
 		return nil, compileError{
-			err:  err,
-			what: "compile",
-			pos:  p,
+			err:      err,
+			what:     "compile",
+			filename: filename,
+			pos:      p,
 		}
 	}
 
@@ -752,7 +755,7 @@ func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name
 	/// _args to mark variable as internal and hide it from completion
 	// {input: ..., args: [...]} | .args as {args: $_args} | .input | name[($_args[0]; ...)]
 	trampolineExpr := fmt.Sprintf(". as {args: $_args} | .input | %s%s", name, argExpr)
-	iter, err := i.Eval(ctx, mode, trampolineInput, trampolineExpr, stdout)
+	iter, err := i.Eval(ctx, mode, trampolineInput, trampolineExpr, "", stdout)
 	if err != nil {
 		return nil, err
 	}

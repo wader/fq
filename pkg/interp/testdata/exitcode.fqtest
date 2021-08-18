@@ -15,11 +15,11 @@ exitcode: 123
 $ fq -n invalid
 exitcode: 3
 stderr:
-error: src:1:0: function not defined: invalid/0
+error: arg:1:0: function not defined: invalid/0
 $ fq -n "("
 exitcode: 3
 stderr:
-error: src:1:2: unexpected token <EOF>
+error: arg:1:2: unexpected token <EOF>
 $ fq . non-existing
 exitcode: 2
 stderr:
