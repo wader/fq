@@ -75,7 +75,7 @@ def chunk_by(f):
       )
     end
   );
-# [1, 2, 2, 3] => [[1], [2, 2], [3]
+# [1, 2, 2, 3] => [[1], [2, 2], [3]]
 def chunk: chunk_by(.);
 
 # same as group_by but counts
