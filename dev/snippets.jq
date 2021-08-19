@@ -12,6 +12,18 @@ def flac_dump:
   , (.. | select(._format == "flac_frame"))
   ] | bits;
 
+def urldecode:
+  gsub(
+    "%(?<c>..)";
+    ( .c
+    | ascii_downcase
+    | explode
+    | map(.-48 | if .>=49 then .-39 else . end)
+    | [.[0]*16+.[1]]
+    | implode
+    )
+  );
+
 def radix62sp: radix(62; "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"; {
     "0": 0, "1": 1, "2": 2, "3": 3,"4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9,
     "a": 10, "b": 11, "c": 12, "d": 13, "e": 14, "f": 15, "g": 16,
