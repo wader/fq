@@ -34,7 +34,7 @@ $ fq -d icc_profile verbose /sRGB2014.icc
      |                                               |                |  tag_table: {} 0x80-0xbcf.7 (2896)
 0x080|00 00 00 10                                    |....            |    count: 16 0x80-0x83.7 (4)
      |                                               |                |    table: [16] 0x84-0xbcf.7 (2892)
-     |                                               |                |      [0]: element {} 0x84-0x1a9.7 (294)
+     |                                               |                |      [0]: element {} 0x84-0x1a7.7 (292)
 0x080|            64 65 73 63                        |    desc        |        signature: "desc" 0x84-0x87.7 (4)
 0x080|                        00 00 01 44            |        ...D    |        offset: 324 0x88-0x8b.7 (4)
 0x080|                                    00 00 00 63|            ...c|        size: 99 0x8c-0x8f.7 (4)
@@ -51,7 +51,7 @@ $ fq -d icc_profile verbose /sRGB2014.icc
 0x160|            00 00 00 00 00 00 00 00 00 00 00 00|    ............|        macintosh_description: "" 0x164-0x1a6.7 (67)
 0x170|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
 *    |until 0x1a6.7 (67)                             |                |
-0x1a0|                     00 58 59                  |       .XY      |        alignment: 005859 0x1a7-0x1a9.7 (3)
+0x1a0|                     00                        |       .        |        alignment: 00 0x1a7-0x1a7.7 (1)
      |                                               |                |      [1]: element {} 0x90-0x1bb.7 (300)
 0x090|62 58 59 5a                                    |bXYZ            |        signature: "bXYZ" 0x90-0x93.7 (4)
 0x090|            00 00 01 a8                        |    ....        |        offset: 424 0x94-0x97.7 (4)
@@ -157,7 +157,7 @@ $ fq -d icc_profile verbose /sRGB2014.icc
 0xac0|            73 69 67 20                        |    sig         |        type: "sig " 0xac4-0xac7.7 (4)
 0xac0|                        00 00 00 00            |        ....    |        reserved: 0 0xac8-0xacb.7 (4)
 0xac0|                                    43 52 54 20|            CRT |        data: 43525420 0xacc-0xacf.7 (4)
-     |                                               |                |      [12]: element {} 0x114-0xb59.7 (2630)
+     |                                               |                |      [12]: element {} 0x114-0xb57.7 (2628)
 0x110|            76 75 65 64                        |    vued        |        signature: "vued" 0x114-0x117.7 (4)
 0x110|                        00 00 0a d0            |        ....    |        offset: 2768 0x118-0x11b.7 (4)
 0x110|                                    00 00 00 87|            ....|        size: 135 0x11c-0x11f.7 (4)
@@ -176,7 +176,7 @@ $ fq -d icc_profile verbose /sRGB2014.icc
 0xb10|            00 00 00 00 00 00 00 00 00 00 00 00|    ............|        macintosh_description: "" 0xb14-0xb56.7 (67)
 0xb20|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
 *    |until 0xb56.7 (67)                             |                |
-0xb50|                     00 58 59                  |       .XY      |        alignment: 005859 0xb57-0xb59.7 (3)
+0xb50|                     00                        |       .        |        alignment: 00 0xb57-0xb57.7 (1)
      |                                               |                |      [13]: element {} 0x120-0xb6b.7 (2636)
 0x120|77 74 70 74                                    |wtpt            |        signature: "wtpt" 0x120-0x123.7 (4)
 0x120|            00 00 0b 58                        |    ...X        |        offset: 2904 0x124-0x127.7 (4)
@@ -186,7 +186,7 @@ $ fq -d icc_profile verbose /sRGB2014.icc
 0xb60|00 00 f6 d6                                    |....            |        X: 0.964202880859375 0xb60-0xb63.7 (4)
 0xb60|            00 01 00 00                        |    ....        |        Y: 1 0xb64-0xb67.7 (4)
 0xb60|                        00 00 d3 2d            |        ...-    |        Z: 0.8249053955078125 0xb68-0xb6b.7 (4)
-     |                                               |                |      [14]: element {} 0x12c-0xba5.7 (2682)
+     |                                               |                |      [14]: element {} 0x12c-0xba3.7 (2680)
 0x120|                                    63 70 72 74|            cprt|        signature: "cprt" 0x12c-0x12f.7 (4)
 0x130|00 00 0b 6c                                    |...l            |        offset: 2924 0x130-0x133.7 (4)
 0x130|            00 00 00 37                        |    ...7        |        size: 55 0x134-0x137.7 (4)
@@ -195,7 +195,7 @@ $ fq -d icc_profile verbose /sRGB2014.icc
 0xb70|            43 6f 70 79 72 69 67 68 74 20 49 6e|    Copyright In|        text: "Copyright International Color Consortium, 2015" 0xb74-0xba2.7 (47)
 0xb80|74 65 72 6e 61 74 69 6f 6e 61 6c 20 43 6f 6c 6f|ternational Colo|
 *    |until 0xba2.7 (47)                             |                |
-0xba0|         00 73 66                              |   .sf          |        alignment: 007366 0xba3-0xba5.7 (3)
+0xba0|         00                                    |   .            |        alignment: 00 0xba3-0xba3.7 (1)
      |                                               |                |      [15]: element {} 0x138-0xbcf.7 (2712)
 0x130|                        63 68 61 64            |        chad    |        signature: "chad" 0x138-0x13b.7 (4)
 0x130|                                    00 00 0b a4|            ....|        offset: 2980 0x13c-0x13f.7 (4)
