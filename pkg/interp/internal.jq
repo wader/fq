@@ -7,12 +7,16 @@ def debug:
  def debug(f): . as $c | f | debug | $c;
 
 # eval f and finally eval fin even on empty or error
-def finally(f; fin):
+def _finally(f; fin):
   ( try f // (fin | empty)
     catch (fin as $_ | error)
   | fin as $_
   | .
   );
+
+def _repeat_break(f):
+  try repeat(f)
+  catch if . == "break" then empty else error end;
 
 def _error_str: "error: \(.)";
 def _errorln: ., "\n" | stderr;

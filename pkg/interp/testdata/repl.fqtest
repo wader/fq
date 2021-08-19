@@ -11,13 +11,17 @@ null> 1 | repl
 > number> .+1
 2
 > number> ^D
-null> [1,2,3] | repl({}; .[])
+null> 1 | 2 | repl
+> number> .+1
+3
+> number> ^D
+null> 1,2,3 | repl
 > number, [3]> .
 1
 2
 3
 > number, [3]> ^D
-null> [[1,2,3]] | repl({}; .[])
+null> [1,2,3] | repl
 > [number, ...][3]> .
 [
   1,
@@ -25,16 +29,27 @@ null> [[1,2,3]] | repl({}; .[])
   3
 ]
 > [number, ...][3]> ^D
-null> [[1]] | repl({}; .[])
+null> [1] | repl
 > [number]> .
 [
   1
 ]
 > [number]> ^D
-null> [] | repl({}; .[])
-> empty> 1
-> empty> ^D
+null> [] | repl
+> []> ^D
 null> ^D
 $ fq -i 'empty'
 empty> 1
 empty> ^D
+$ fq -i 1,2,3
+number, [3]> .*2
+2
+4
+6
+number, [3]> ^D
+$ fq -i '[1,2,3]'
+[number, ...][3]> repl({compact: true})
+> [number, ...][3]> tovalue
+[1,2,3]
+> [number, ...][3]> ^D
+[number, ...][3]> ^D
