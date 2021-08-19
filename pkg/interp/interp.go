@@ -34,6 +34,7 @@ import (
 //go:embed internal.jq
 //go:embed funcs.jq
 //go:embed args.jq
+//go:embed query.jq
 var builtinFS embed.FS
 
 var initSource = `include "@builtin/interp";`

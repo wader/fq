@@ -8,6 +8,7 @@ import (
 	"crypto/md5"
 	"encoding/base64"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"hash"
@@ -40,6 +41,9 @@ func (i *Interp) makeFunctions(registry *registry.Registry) []Function {
 		{[]string{"stdin"}, 0, 0, nil, i.makeStdioFn(i.os.Stdin())},
 		{[]string{"stdout"}, 0, 0, nil, i.makeStdioFn(i.os.Stdout())},
 		{[]string{"stderr"}, 0, 0, nil, i.makeStdioFn(i.os.Stderr())},
+
+		{[]string{"_query_fromstring"}, 0, 0, i.queryFromString, nil},
+		{[]string{"_query_tostring"}, 0, 0, i.queryToString, nil},
 
 		{[]string{"_complete_query"}, 0, 0, i._completeQuery, nil},
 		{[]string{"_display_name"}, 0, 0, i._displayName, nil},
@@ -278,6 +282,48 @@ func (i *Interp) makeStdioFn(t Terminal) func(c interface{}, a []interface{}) go
 
 		return gojq.NewIter(fmt.Errorf("%v: it not writeable", c))
 	}
+}
+
+func (i *Interp) queryFromString(c interface{}, a []interface{}) interface{} {
+	s, err := toString(c)
+	if err != nil {
+		return err
+	}
+	q, err := gojq.Parse(s)
+	if err != nil {
+		p := queryErrorPosition(s, err)
+		return compileError{
+			err:  err,
+			what: "parse",
+			pos:  p,
+		}
+	}
+	b, err := json.Marshal(q)
+	if err != nil {
+		return err
+	}
+
+	var v interface{}
+	if err := json.Unmarshal(b, &v); err != nil {
+		return err
+	}
+
+	return v
+
+}
+
+func (i *Interp) queryToString(c interface{}, a []interface{}) interface{} {
+	b, err := json.Marshal(c)
+	if err != nil {
+		return err
+	}
+
+	var q gojq.Query
+	if err := json.Unmarshal(b, &q); err != nil {
+		return err
+	}
+
+	return q.String()
 }
 
 func (i *Interp) _completeQuery(c interface{}, a []interface{}) interface{} {

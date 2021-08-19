@@ -1,12 +1,14 @@
 include "internal";
 include "funcs";
 include "args";
+include "query";
 
 # will include all per format specific function etc
 include "@format/all";
 
 # optional user init
 include "@config/init?";
+
 
 # def readline: #:: [a]| => string
 # Read a line.
@@ -272,39 +274,59 @@ def _repl_on_compile_error: _repl_on_error;
 def _repl_eval($e): _eval($e; "repl"; _repl_display; _repl_on_error; _repl_on_compile_error);
 
 # run read-eval-print-loop
-def repl($opts; iter): #:: a|(Opts) => @
+def _repl($opts): #:: a|(Opts) => @
   def _read_expr:
     # both _prompt and _complete want arrays
-    ( [iter]
+    ( . as $c
     | readline(_prompt; "_complete")
-    | trim
+    | if trim == "" then
+        $c | _read_expr
+      end
     );
-  def _repl:
+
+  def _repl_loop:
     ( . as $c
     | try
-        ( _read_expr as $e
-        | if $e != "" then
-            (iter | _repl_eval($e))
+        ( _read_expr as $expr
+        # TODO: catch error here?
+        | $expr
+        | try _query_fromstring
+          # TODO: nicer way to set filename
+          catch (. | .filename = "repl")
+        | if _query_pipe_last | _query_is_func("repl") then
+            ( _query_slurp_wrap(_query_func_rename("_repl_iter"))
+            | _query_tostring as $wrap_expr
+            | $c
+            | _repl_eval($wrap_expr)
+            )
           else
-            empty
+            ( $c
+            | .[]
+            | _repl_eval($expr)
+            )
           end
-        , _repl
         )
       catch
-        if . == "interrupt" then $c | _repl
-        elif . == "eof" then empty
+        if . == "interrupt" then empty
+        elif . == "eof" then error("break")
+        elif _eval_is_compile_error then _repl_on_error
         else error(.)
         end
     );
   ( _options_stack(. + [$opts]) as $_
-  | finally(
-      _repl;
+  | _finally(
+      _repeat_break(_repl_loop);
       _options_stack(.[:-1])
     )
   );
-# same as repl({})
-def repl($opts): repl($opts; .);
-def repl: repl({}; .); #:: a| => @
+
+def _repl_iter($opts): _repl($opts);
+def _repl_iter: _repl({});
+
+# just gives error, call appearing last will be renamed to _repl_iter
+def repl($_): error("repl must be last");
+def repl: error("repl must be last");
+
 
 def _cli_expr_on_error:
   ( . as $err
@@ -318,10 +340,6 @@ def _cli_expr_on_compile_error:
 # _cli_expr_eval halts on compile errors
 def _cli_expr_eval($e; $filename; f): _eval($e; $filename; f; _cli_expr_on_error; _cli_expr_on_compile_error);
 def _cli_expr_eval($e; $filename): _eval($e; $filename; .; _cli_expr_on_error; _cli_expr_on_compile_error);
-
-def _repeat_break(f):
-  try repeat(f)
-  catch if . == "break" then empty else error end;
 
 # next valid input
 def input:
@@ -644,8 +662,8 @@ def _main:
       , null | halt_error(_exit_code_args_error)
       )
     else
-      # use finally as display etc prints and results in empty
-      finally(
+      # use _finally as display etc prints and results in empty
+      _finally(
         ( _include_paths([
             $opts.include_path // empty
           ]) as $_
@@ -661,16 +679,14 @@ def _main:
               );
             if $opts.repl then
               ( [_inputs]
-              | ( [.[] | _cli_expr_eval($opts.expr; $opts.expr_eval_path)]
-                | repl({}; .[])
-                )
+              | map(_cli_expr_eval($opts.expr; $opts.expr_eval_path))
+              | _repl({})
               )
             else
               ( _inputs
               # iterate all inputs
-              | ( _cli_last_expr_error(null) as $_
-                | _cli_expr_eval($opts.expr; $opts.expr_eval_path; _repl_display)
-                )
+              | _cli_last_expr_error(null) as $_
+              | _cli_expr_eval($opts.expr; $opts.expr_eval_path; _repl_display)
               )
             end
           )
