@@ -89,6 +89,8 @@ func iccProfileDecode(d *decode.D, in interface{}) interface{} {
 	   100..127 28 bytes reserved for future expansion - must be set to zeros
 	*/
 
+	startByteOffset := d.Pos() / 8
+
 	// TODO: PokeU32()?
 	size := d.U32()
 	d.SeekRel(-4 * 8)
@@ -144,6 +146,15 @@ func iccProfileDecode(d *decode.D, in interface{}) interface{} {
 								d.FieldBitBufLen("data", int64(size-4-4)*8)
 							}
 						})
+
+						// "All tag data is required to start on a 4-byte boundary (relative to the start of the profile data stream)"
+						// we can't add this at the start of the element as we don't know how big the previous element in the stream
+						// was. instead add alignment after if offset+size does not align and we're not at the last tag
+						paddingBytes := ((int64(offset) - startByteOffset + int64(size)) % 4) % 4
+						if i < tagCount-1 && paddingBytes != 0 {
+							paddingStart := int64(offset) + int64(size)
+							d.FieldBitBufRange("alignment", paddingStart*8, paddingBytes*8)
+						}
 					})
 				}
 			})
