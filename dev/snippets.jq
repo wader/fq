@@ -14,10 +14,11 @@ def flac_dump:
 
 def urldecode:
   gsub(
-    "%(?<c>..)";
+    "%(?<c>[a-fA-F0-9]{2})";
     ( .c
     | ascii_downcase
     | explode
+    # "0"-"9" or "a"-"f"
     | map(.-48 | if .>=49 then .-39 else . end)
     | [.[0]*16+.[1]]
     | implode
