@@ -5,6 +5,8 @@ def help:
   , "^D exit REPL"
   ) | println;
 
+def format: ._format? // null;
+
 # valid jq identifer, start with alpha or underscore then zero or more alpha, num or underscore
 def _is_ident: type == "string" and test("^[a-zA-Z_][a-zA-Z_0-9]*$");
 # escape " and \
