@@ -18,7 +18,7 @@ def _error_str: "error: \(.)";
 def _errorln: ., "\n" | stderr;
 
 def _global_var($k): _global_state[$k];
-def _global_var($k; f): _global_state(_global_state | .[$k] |= f);
+def _global_var($k; f): _global_state(_global_state | .[$k] |= f) | .[$k];
 
 def _include_paths: _global_var("include_paths");
 def _include_paths(f): _global_var("include_paths"; f);
