@@ -1,4 +1,4 @@
-// +build gofuzzbeta
+//go:build gofuzzbeta
 
 package format_test
 

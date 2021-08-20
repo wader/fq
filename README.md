@@ -64,9 +64,9 @@ brew install wader/tap/fq
 
 ### Build from source
 
-Make sure you have go 1.16 or later then do:
+Make sure you have go 1.17 or later and then do:
 ```sh
-# build latest master
+# build and install latest master
 go install github.com/wader/fq@latest
 ```
 and the binary should end up at `$GOPATH/bin/fq`.
