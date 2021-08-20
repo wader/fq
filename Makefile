@@ -47,11 +47,12 @@ gogenerate:
 
 .PHONY: lint
 lint:
-	golangci-lint run
+# bump: make-golangcilint /golangci-lint@v([\d.]+)/ git:https://github.com/golangci/golangci-lint.git|^1
+	go run github.com/golangci/golangci-lint/cmd/golangci-lint@v1.42.0 run
 
 .PHONY: depgraph.svg
 depgraph.svg:
-	godepgraph -s main.go | dot -Tsvg -o godepgraph.svg
+	go run github.com/kisielk/godepgraph@latest github.com/wader/fq | dot -Tsvg -o godepgraph.svg
 
 .PHONY: formats.svg
 formats.svg:
