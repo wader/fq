@@ -4,7 +4,7 @@ FROM golang:1.17.0 AS base
 # docker build --target dev -t fq-dev - < Dockerfile && docker run --rm -ti -v "$PWD:/$PWD" -w "$PWD" fq-dev
 FROM base AS dev
 
-# bump: golangcilint /GOLANGCILINT_VERSION=([\d.]+)/ git:https://github.com/golangci/golangci-lint.git|^1
+# bump: golangci-lint /GOLANGCILINT_VERSION=([\d.]+)/ git:https://github.com/golangci/golangci-lint.git|^1
 ARG GOLANGCILINT_VERSION=1.42.0
 RUN \
     curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | \

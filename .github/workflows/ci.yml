@@ -6,7 +6,7 @@ on:
       - "master"
   pull_request:
 
-# bump: workflow-golangcilint /GOLANGCILINT_VERSION: ([\d.]+)/ git:https://github.com/golangci/golangci-lint.git|^1
+# bump: ci-golangci-lint /GOLANGCILINT_VERSION: ([\d.]+)/ git:https://github.com/golangci/golangci-lint.git|^1
 env:
   GOLANGCILINT_VERSION: 1.42.0
 
@@ -21,7 +21,7 @@ jobs:
       - name: Setup go
         uses: actions/setup-go@v2
         with:
-          # bump: workflows-golang /go-version: ([\d.]+)/ git:https://github.com/actions/go-versions.git|/(.*)-.*/$1/|^1
+          # bump: ci-golang /go-version: ([\d.]+)/ git:https://github.com/actions/go-versions.git|/(.*)-.*/$1/|^1
           go-version: 1.17.0
       - name: Lint
         uses: golangci/golangci-lint-action@v2
