@@ -1,4 +1,4 @@
 Dockerfile
 Makefile
 go.mod
-.github/workflows/*.yml
+.github/workflows/ci.yml

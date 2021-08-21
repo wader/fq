@@ -1,0 +1,15 @@
+name: 'Automatic version updates'
+on:
+  schedule:
+    # minute hour dom month dow (UTC)
+    - cron: '0 16 * * *'
+  # enable manual trigger of version updates
+  workflow_dispatch:
+jobs:
+  version_update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: wader/bump/action/go@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.BUMP_TOKEN }}
