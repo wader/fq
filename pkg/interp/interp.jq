@@ -412,7 +412,7 @@ def _main:
       },
     };
   def _info:
-    ( "fq - jq for binary"
+    ( "fq - jq for files"
     , "Tool, language and decoders for exploring binary data."
     , "For more information see https://github.com/wader/fq"
     );
