@@ -1,17 +1,23 @@
 all: test
 
 .PHONY: fq
+fq: VERSION=$(shell git describe --all --long --dirty || echo nogit)
 fq:
-	go build -ldflags "-X main.version=$$(git describe --all --long --dirty || echo nogit)" -trimpath -o fq .
+	go build -ldflags "-X main.version=${VERSION}" -trimpath -o fq .
 
 .PHONY: test
+# figure out all go pakges with test files
+test: PKGS=$(shell find . -name "*_test.go" | xargs -n 1 dirname | sort | uniq)
 test: jqtest
-	go test -cover -race -coverpkg=./... -coverprofile=cover.out ./...
-	go tool cover -html=cover.out -o cover.out.html
-	cat cover.out.html | grep '<option value="file' | sed -E 's/.*>(.*) \((.*)%\)<.*/\2 \1/' | sort -rn
-	rm -f cover.out cover.out.html
+	go test ${COVER} ${PKGS}
+
 testwrite: export WRITE_ACTUAL=1
 testwrite: test
+
+cover: COVER=-cover -race -coverpkg=./... -coverprofile=cover.out
+cover: test
+	go tool cover -html=cover.out -o cover.out.html
+	cat cover.out.html | grep '<option value="file' | sed -E 's/.*>(.*) \((.*)%\)<.*/\2 \1/' | sort -rn
 
 .PHONY: jqtest
 jqtest:
