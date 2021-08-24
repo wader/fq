@@ -102,8 +102,8 @@ def _build_default_options:
     unicode:        (tty.is_terminal and env.CLIUNICODE != null),
     raw:            (tty.is_terminal | not),
     # TODO: div 2 * 2 to get even number, nice or maybe not needed?
-    linebytes:      (if tty.is_terminal then [((tty.width div 8) div 2) * 2, 4] | max else 16 end),
-    displaybytes:   (if tty.is_terminal then [((tty.width div 8) div 2) * 2, 4] | max else 16 end),
+    linebytes:      (if tty.is_terminal then [intdiv(intdiv(tty.width; 8); 2) * 2, 4] | max else 16 end),
+    displaybytes:   (if tty.is_terminal then [intdiv(intdiv(tty.width; 8); 2) * 2, 4] | max else 16 end),
     addrbase:       16,
     sizebase:       10,
     colors: (
