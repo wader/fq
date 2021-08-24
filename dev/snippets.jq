@@ -54,7 +54,7 @@ def duration:
   def _number:
     if . == 0 then 0
     else
-      [ ( [ (recurse(if . > 0 then . div 60 else empty end) | . % 60)]
+      [ ( [ (recurse(if . > 0 then intdiv(.; 60) else empty end) | . % 60)]
         | reverse
         | .[1:]
         | map(tostring | lpad("0"; 2))

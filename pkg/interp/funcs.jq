@@ -7,6 +7,10 @@ def help:
 
 def format: ._format? // null;
 
+# integer division
+# inspried by https://github.com/itchyny/gojq/issues/63#issuecomment-765066351
+def intdiv($a; $b): ($a - ($a % $b)) / $b;
+
 # valid jq identifer, start with alpha or underscore then zero or more alpha, num or underscore
 def _is_ident: type == "string" and test("^[a-zA-Z_][a-zA-Z_0-9]*$");
 # escape " and \
@@ -164,7 +168,7 @@ def table(colmap; render):
 def number_to_bytes($bits):
   def _number_to_bytes($d):
     if . > 0 then
-      . % $d, (. div $d | _number_to_bytes($d))
+      . % $d, (intdiv(.; $d) | _number_to_bytes($d))
     else
       empty
     end;
@@ -191,7 +195,7 @@ def from_radix($base; $table):
 def to_radix($base; $table):
   if . == 0 then "0"
   else
-    ( [ recurse(if . > 0 then . div $base else empty end) | . % $base]
+    ( [ recurse(if . > 0 then intdiv(.; $base) else empty end) | . % $base]
     | reverse
     | .[1:]
     | if $base <= ($table | length) then
