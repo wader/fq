@@ -166,6 +166,8 @@ def table(colmap; render):
 
 # convert number to array of bytes
 def number_to_bytes($bits):
+  # TODO: figure out a saner way to force int
+  def _to_int: (. % (. + 1));
   def _number_to_bytes($d):
     if . > 0 then
       . % $d, (intdiv(.; $d) | _number_to_bytes($d))
@@ -173,7 +175,7 @@ def number_to_bytes($bits):
       empty
     end;
   if . == 0 then [0]
-  else [_number_to_bytes(1 bsl $bits)] | reverse
+  else [_number_to_bytes(pow(2; $bits) | _to_int)] | reverse
   end;
 def number_to_bytes:
   number_to_bytes(8);
