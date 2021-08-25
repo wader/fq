@@ -24,8 +24,11 @@ func MaybeProfile() func() {
 }
 
 func MaybeLogFile() {
+	// used during dev to redirect log to file, useful when debugging repl etc
 	if lf := os.Getenv("LOGFILE"); lf != "" {
-		log.SetOutput(func() io.Writer { f, _ := os.Create(lf); return f }())
+		if f, err := os.Create(lf); err == nil {
+			log.SetOutput(f)
+		}
 	}
 }
 
