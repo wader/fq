@@ -70,32 +70,3 @@ def duration:
   if . | type == "string" then _string
   elif . | type == "number" then _number
   else error("expected string or number") end;
-
-# def recurse_foreach(init; update; extract):
-#     def _recurse_foreach($state; $c):
-#         (. as $c | ["_recurse_foreach $state", $state] | debug | $c) |
-#         (. as $b | ["_recurse_foreach $c", $c] | debug | $b) |
-#         foreach $c[]? as $e (
-#             $state
-#             ;
-#             (. as $c | ["update $state", $state] | debug | $c) |
-#             (. as $b | ["update $e", $e] | debug | $b) |
-#             null | _recurse_foreach({state: $state, e: $e} | update; $e)
-#             ;
-#             (. as $c | ["extract $state", $state] | debug | $c) |
-#             (. as $b | ["extract $e", $e] | debug | $b) |
-#             {state: $state, e: .} |
-#             extract
-#         )
-#         // $c;
-#     _recurse_foreach(init; .);
-
-# # TODO: split? can't really switch on type
-# def grep(f):
-# 	if f | type == "string" then
-# 		.. | select((._name | contains(f)) or (contains(f)? // false))
-# 	elif f | type == "number" then
-# 		.. | select(. == f)
-# 	else
-# 		.. | debug | select(f)?
-# 	end;
