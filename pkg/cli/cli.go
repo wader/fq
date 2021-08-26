@@ -75,12 +75,12 @@ func (o *standardOS) Stdin() fs.File {
 }
 
 type standardOsOutput struct {
-	rl *readline.Instance
+	os *standardOS
 }
 
 func (o standardOsOutput) Write(p []byte) (n int, err error) {
-	if o.rl != nil {
-		return o.rl.Write(p)
+	if o.os.rl != nil {
+		return o.os.rl.Write(p)
 	}
 	return os.Stdout.Write(p)
 }
@@ -94,7 +94,7 @@ func (o standardOsOutput) IsTerminal() bool {
 	return readline.IsTerminal(int(os.Stdout.Fd()))
 }
 
-func (o *standardOS) Stdout() interp.Output { return standardOsOutput{rl: o.rl} }
+func (o *standardOS) Stdout() interp.Output { return standardOsOutput{os: o} }
 
 func (o *standardOS) Stderr() io.Writer { return os.Stderr }
 
