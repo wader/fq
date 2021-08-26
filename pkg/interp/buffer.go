@@ -148,7 +148,7 @@ func (bo bufferObject) JQValueUpdate(key interface{}, u interface{}, delpath boo
 }
 
 func (bo bufferObject) Display(w io.Writer, opts Options) error {
-	if opts.Raw {
+	if opts.RawOutput {
 		if _, err := io.Copy(w, bo.bbr.bb.Copy()); err != nil {
 			return err
 		}

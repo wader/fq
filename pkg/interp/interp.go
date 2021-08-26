@@ -498,7 +498,7 @@ func (i *Interp) Stop() {
 	i.interruptStack.Stop()
 }
 
-func (i *Interp) Main(ctx context.Context, stdout io.Writer, version string) error {
+func (i *Interp) Main(ctx context.Context, stdout Output, version string) error {
 	runMode := ScriptMode
 
 	var args []interface{}
@@ -511,7 +511,7 @@ func (i *Interp) Main(ctx context.Context, stdout io.Writer, version string) err
 		"version": version,
 	}
 
-	iter, err := i.EvalFunc(ctx, runMode, input, "_main", nil, i.os.Stdout())
+	iter, err := i.EvalFunc(ctx, runMode, input, "_main", nil, stdout)
 	if err != nil {
 		fmt.Fprintln(i.os.Stderr(), err)
 		return err
@@ -788,7 +788,7 @@ type Options struct {
 	Colors         string
 	ByteColors     string
 	Unicode        bool
-	Raw            bool
+	RawOutput      bool
 	REPL           bool
 	RawString      bool
 	JoinString     string
@@ -811,7 +811,7 @@ func mapSetOptions(d *Options, m map[string]interface{}) {
 	if v, ok := m["verbose"]; ok {
 		d.Verbose = toBoolZ(v)
 	}
-	if v, ok := m["decodeprogress"]; ok {
+	if v, ok := m["decode_progress"]; ok {
 		d.DecodeProgress = toBoolZ(v)
 	}
 	if v, ok := m["color"]; ok {
@@ -826,16 +826,16 @@ func mapSetOptions(d *Options, m map[string]interface{}) {
 	if v, ok := m["unicode"]; ok {
 		d.Unicode = toBoolZ(v)
 	}
-	if v, ok := m["raw"]; ok {
-		d.Raw = toBoolZ(v)
+	if v, ok := m["raw_output"]; ok {
+		d.RawOutput = toBoolZ(v)
 	}
 	if v, ok := m["repl"]; ok {
 		d.REPL = toBoolZ(v)
 	}
-	if v, ok := m["rawstring"]; ok {
+	if v, ok := m["raw_string"]; ok {
 		d.RawString = toBoolZ(v)
 	}
-	if v, ok := m["joinstring"]; ok {
+	if v, ok := m["join_string"]; ok {
 		d.JoinString = toStringZ(v)
 	}
 	if v, ok := m["compact"]; ok {

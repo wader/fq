@@ -35,6 +35,101 @@ def _exit_code_compile_error: 3;
 def _exit_code_input_decode_error: 4;
 def _exit_code_expr_error: 5;
 
+
+# . will have additional array of options taking priority
+# NOTE: is called from go *interp.Interp Options()
+def options($opts):
+  [_default_options] + _options_stack + $opts | add;
+def options: options([{}]);
+
+def _obj_to_csv_kv:
+  [to_entries[] | [.key, .value] | join("=")] | join(",");
+
+def _build_default_options:
+  {
+    addrbase:       16,
+    bitsformat:     "snippet",
+    bytecolors:     "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
+    color:          (tty.is_terminal and env.CLICOLOR != null),
+    colors: (
+      {
+        null: "brightblack",
+        false: "yellow",
+        true: "yellow",
+        number: "cyan",
+        string: "green",
+        objectkey: "brightblue",
+        array: "white",
+        object: "white",
+        index: "white",
+        value: "white",
+        error: "brightred",
+        dumpheader: "yellow+underline",
+        dumpaddr: "yellow"
+      } | _obj_to_csv_kv
+    ),
+    compact:         false,
+    decode_progress: (env.NODECODEPROGRESS == null),
+    depth:           0,
+    # TODO: intdiv 2 * 2 to get even number, nice or maybe not needed?
+    displaybytes:    (if tty.is_terminal then [intdiv(intdiv(tty.width; 8); 2) * 2, 4] | max else 16 end),
+    expr_file:       null,
+    include_path:    null,
+    join_string:     "\n",
+    linebytes:       (if tty.is_terminal then [intdiv(intdiv(tty.width; 8); 2) * 2, 4] | max else 16 end),
+    null_input:      false,
+    raw_output:      (tty.is_terminal | not),
+    raw_string:      false,
+    repl:            false,
+    sizebase:        10,
+    slurp:           false,
+    unicode:         (tty.is_terminal and env.CLIUNICODE != null),
+    verbose:         false,
+  };
+
+def _toboolean:
+  try
+    if . == "true" then true
+    elif . == "false" then false
+    else tonumber != 0
+    end
+  catch
+    null;
+
+def _tonumber:
+  try tonumber catch null;
+
+def _tostring:
+  if . != null then "\"\(.)\"" | fromjson end;
+
+def _to_options:
+  ( {
+      addrbase:        (.addrbase | _tonumber),
+      bitsformat:      (.bitsformat | _tostring),
+      bytecolors:      (.bytecolors | _tostring),
+      color:           (.color | _toboolean),
+      colors:          (.colors | _tostring),
+      compact:         (.compact | _toboolean),
+      decode_progress: (.decode_progress | _toboolean),
+      depth:           (.depth | _tonumber),
+      displaybytes:    (.displaybytes | _tonumber),
+      expr_file:       (.expr_file | _tostring),
+      include_path:    (.include_path | _tostring),
+      join_string:     (.join_string | _tostring),
+      linebytes:       (.linebytes | _tonumber),
+      null_input:      (.null_input | _toboolean),
+      raw_output:      (.raw_output | _toboolean),
+      raw_string:      (.raw_string | _toboolean),
+      repl:            (.repl | _toboolean),
+      sizebase:        (.sizebase | _tonumber),
+      slurp:           (.slurp | _toboolean),
+      unicode:         (.unicode | _toboolean),
+      verbose:         (.verbose | _toboolean),
+    }
+  | with_entries(select(.value != null))
+  );
+
+
 # TODO: refactor this
 # TODO: completionMode
 # TODO: return escaped identifier, not sure current readline implementation supports
@@ -90,59 +185,6 @@ def _complete($e; $cursor_pos):
   end;
 def _complete($e): _complete($e; $e | length);
 
-def _obj_to_csv_kv:
-  [to_entries[] | [.key, .value] | join("=")] | join(",");
-
-def _build_default_options:
-  {
-    depth:          0,
-    verbose:        false,
-    bitsformat:     "snippet",
-    color:          (tty.is_terminal and env.CLICOLOR != null),
-    unicode:        (tty.is_terminal and env.CLIUNICODE != null),
-    raw:            (tty.is_terminal | not),
-    # TODO: div 2 * 2 to get even number, nice or maybe not needed?
-    linebytes:      (if tty.is_terminal then [intdiv(intdiv(tty.width; 8); 2) * 2, 4] | max else 16 end),
-    displaybytes:   (if tty.is_terminal then [intdiv(intdiv(tty.width; 8); 2) * 2, 4] | max else 16 end),
-    addrbase:       16,
-    sizebase:       10,
-    colors: (
-      {
-        null: "brightblack",
-        false: "yellow",
-        true: "yellow",
-        number: "cyan",
-        string: "green",
-        objectkey: "brightblue",
-        array: "white",
-        object: "white",
-        index: "white",
-        value: "white",
-        error: "brightred",
-        dumpheader: "yellow+underline",
-        dumpaddr: "yellow"
-      } | _obj_to_csv_kv
-    ),
-    bytecolors:     "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
-    decodeprogress: (env.NODECODEPROGRESS == null),
-  };
-
-def _eval_options:
-  ( {
-      depth:          (.depth | if . then eval(.) else null end),
-      bitsformat:     .bitsformat,
-      verbose:        (.verbose | if . then eval(.) else null end),
-      decodeprogress: (.decodeprogress | if . then eval(.) else null end),
-      color:          (.color | if . then eval(.) else null end),
-      unicode:        (.unicode | if . then eval(.) else null end),
-      raw:            (.raw | if . then eval(.) else null end),
-      linebytes:      (.linebytes | if . then eval(.) else null end),
-      displaybytes:   (.displaybytes | if . then eval(.) else null end),
-      addrbase:       (.addrbase | if . then eval(.) else null end),
-      sizebase:       (.sizebase | if . then eval(.) else null end),
-    }
-  | with_entries(select(.value != null))
-  );
 
 def _prompt:
   def _type_name_error:
@@ -179,6 +221,7 @@ def _prompt:
     , "> "
     ]
   ) | join("");
+
 
 # TODO: better way? what about nested eval errors?
 def _eval_is_compile_error: type == "object" and .error != null and .what != null;
@@ -250,6 +293,7 @@ def _cli_expr_on_compile_error:
 def _cli_expr_eval($e; $filename; f): _eval($e; $filename; f; _cli_expr_on_error; _cli_expr_on_compile_error);
 def _cli_expr_eval($e; $filename): _eval($e; $filename; .; _cli_expr_on_error; _cli_expr_on_compile_error);
 
+
 # next valid input
 def input:
   ( _input_filenames
@@ -298,12 +342,6 @@ def var($k; f):
 def var($k): . as $c | var($k; $c);
 
 
-# . will have additional array of options taking priority
-# NOTE: is used by go Options()
-def options($opts):
-  [_default_options] + _options_stack + $opts | add;
-def options: options([{}]);
-
 def _main:
   def _formats_list:
     [ ["Name:", "Description:"]
@@ -336,7 +374,7 @@ def _main:
         default: "probe",
         string: "NAME"
       },
-      "file": {
+      "expr_file": {
         short: "-f",
         long: "--file",
         description: "Read EXPR from file",
@@ -382,12 +420,14 @@ def _main:
         short: "-o",
         long: "--option",
         description: "Set option, eg: color=true",
-        object: "KEY=VALUE,...",
+        object: "KEY=VALUE",
         default: {},
         help_default: _build_default_options
       },
-      "raw_output": {
+      "raw_string": {
         short: "-r",
+        # for jq compat, is called raw string internally, raw output is
+        # if we can output raw bytes or not
         long: "--raw-output",
         description: "Raw string output (without quotes)",
         bool: true
@@ -411,7 +451,7 @@ def _main:
         bool: true
       },
     };
-  def _info:
+  def _banner:
     ( "fq - jq for files"
     , "Tool, language and decoders for exploring binary data."
     , "For more information see https://github.com/wader/fq"
@@ -428,26 +468,34 @@ def _main:
   | _parsed_args($parsed_args) as $_
   | _default_options(_build_default_options) as $_
   | _options_stack(
-      [ ($parsed_args.options | _eval_options)
-      + {
-          repl: ($parsed_args.repl == true),
-          rawstring: (
-            $parsed_args.raw_output == true
-            or $parsed_args.join_output == true
-            or $parsed_args.null_output == true
-          ),
-          joinstring: (
-            if $parsed_args.join_output == true then ""
-            elif $parsed_args.null_output == true then "\u0000"
-            else "\n"
+      [ ($parsed_args.options | _to_options)
+      + ({
+          compact: $parsed_args.compact,
+          expr_file: $parsed_args.expr_file,
+          join_string: (
+            if $parsed_args.join_output then ""
+            elif $parsed_args.null_output then "\u0000"
+            else null
             end
           ),
-          compact: ($parsed_args.compact == true),
-        }
+          include_path: $parsed_args.include_path,
+          null_input: $parsed_args.null_input,
+          repl: $parsed_args.repl,
+          raw_string: (
+            if $parsed_args.raw_string
+              or $parsed_args.join_output
+              or $parsed_args.null_output
+            then true
+            else null
+            end
+          ),
+          slurp: $parsed_args.slurp
+        } | with_entries(select(.value != null)))
       ]
     ) as $_
+  | options as $opts
   | if $parsed_args.help then
-      ( _info
+      ( _banner
       , ""
       , _usage($arg0; $version)
       , args_help_text(_opts($version))
@@ -456,17 +504,17 @@ def _main:
       $version | println
     elif $parsed_args.formats then
       _formats_list | println
-    elif ($rest | length) == 0 and (($parsed_args.repl | not) and ($parsed_args.file | not)) then
+    elif ($rest | length) == 0 and (($opts.repl | not) and ($opts.expr_file | not)) then
       ( (( _usage($arg0; $version), "\n") | stderr)
       , null | halt_error(_exit_code_args_error)
       )
     else
       # use finally as display etc prints and results in empty
       finally(
-        ( { null_input: ($parsed_args.null_input == true) }
-        | if $parsed_args.file then
-            ( .expr = ($parsed_args.file | open | string)
-            | .expr_filename = $parsed_args.file
+        ( { null_input: ($opts.null_input == true) }
+        | if $opts.expr_file then
+            ( .expr = ($opts.expr_file | open | string)
+            | .expr_filename = $opts.expr_file
             | .filenames = $rest
             )
           else
@@ -475,19 +523,19 @@ def _main:
             | .filenames = $rest[1:]
             )
           end
-        | if $parsed_args.repl and .filenames == [] then
+        | if $opts.repl and .filenames == [] then
             .null_input = true
           elif .filenames == [] then
             .filenames = ["-"]
           end
         | . as {$expr, $expr_filename, $filenames, $null_input}
         | _include_paths([
-            $parsed_args.include_path // empty
+            $opts.include_path // empty
           ]) as $_
         | _input_filenames($filenames) as $_ # store inputs
-        | if $parsed_args.repl then
+        | if $opts.repl then
             ( [ if $null_input then null
-                elif $parsed_args.slurp then [inputs]
+                elif $opts.slurp then [inputs]
                 else inputs
                 end
               ]
@@ -497,7 +545,7 @@ def _main:
             )
           else
             ( if $null_input then null
-              elif $parsed_args.slurp then [inputs]
+              elif $opts.slurp then [inputs]
               else inputs
               end
               # iterate inputs
