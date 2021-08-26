@@ -127,7 +127,7 @@ func (o *standardOS) Readline(prompt string, complete func(line string, pos int)
 		if err != nil {
 			return "", err
 		}
-		historyFile = filepath.Join(cacheDir, "github.com/wader/fq/history")
+		historyFile = filepath.Join(cacheDir, "fq/history")
 		_ = os.MkdirAll(filepath.Dir(historyFile), 0700)
 
 		o.rl, err = readline.NewEx(&readline.Config{
