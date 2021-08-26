@@ -92,7 +92,7 @@ def args_help_text($opts):
       ] | map(select(strings)) | join(",")
     ) +
     ( .string // .array // .object
-    | if . then "=\(.)"
+    | if . then " \(.)"
       else ""
       end
     );
@@ -100,6 +100,11 @@ def args_help_text($opts):
     [ $opts[]
     | (_opthelp | length)
     ] | max;
+  def _obj_value:
+      if . == null then ""
+      elif (. | type) == "string" then tojson | .[1:-1]
+      else .
+      end;
   ( _maxoptlen as $l
   | $opts
   | to_entries[]
@@ -108,7 +113,7 @@ def args_help_text($opts):
     , if $default then
         if .value.object then
           [ "\n"
-          , ( [$default | to_entries[] | "\(" "*$l)    \(.key)=\(.value)"]
+          , ( [$default | to_entries[] | "\(" "*$l)    \(.key)=\(.value | _obj_value)"]
             | join("\n")
             )
           ]

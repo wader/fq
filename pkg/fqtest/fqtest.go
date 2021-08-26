@@ -169,7 +169,11 @@ func (tc *testCase) ToActual() string {
 			fmt.Fprintf(sb, "#%s\n", p.comment)
 		case *testCaseRun:
 			fmt.Fprintf(sb, "$%s\n", p.args)
-			fmt.Fprint(sb, p.actualStdoutBuf.String())
+			s := p.actualStdoutBuf.String()
+			fmt.Fprint(sb, s)
+			if !strings.HasSuffix(s, "\n") {
+				fmt.Fprint(sb, "\\\n")
+			}
 			if p.actualExitCode != 0 {
 				fmt.Fprintf(sb, "exitcode: %d\n", p.actualExitCode)
 			}
@@ -308,6 +312,9 @@ func parseTestCases(s string) *testCase {
 			if currentTestRun != nil {
 				te.parts = append(te.parts, currentTestRun)
 			}
+
+			// escaped newline
+			v = strings.TrimSuffix(v, "\\\n")
 
 			currentTestRun = &testCaseRun{
 				lineNr:          section.LineNr,

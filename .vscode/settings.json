@@ -116,6 +116,7 @@
         "tfra",
         "tmpl",
         "toimage",
+        "tojson",
         "tojvalue",
         "tovalue",
         "traf",
