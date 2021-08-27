@@ -89,6 +89,20 @@ def count_by(exp):
   group_by(exp) | map([(.[0] | exp), length]);
 def count: count_by(.);
 
+# array of result of applying f on all consecutive pairs
+def delta_by(f):
+  ( . as $a
+  | if length < 1 then []
+    else
+      [ range(length-1) as $i
+      | {a: $a[$i], b: $a[$i+1]}
+      | f
+      ]
+    end
+  );
+# array of minus between all consecutive pairs
+def delta: delta_by(.b - .a);
+
 # helper to build path query/generate functions for tree structures with
 # non-unique children, ex: mp4_path
 def tree_path(children; name; $v):
