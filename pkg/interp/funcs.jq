@@ -87,6 +87,7 @@ def chunk: chunk_by(.);
 # same as group_by but counts
 def count_by(exp):
   group_by(exp) | map([(.[0] | exp), length]);
+def count: count_by(.);
 
 # helper to build path query/generate functions for tree structures with
 # non-unique children, ex: mp4_path
@@ -211,7 +212,7 @@ def to_radix($base; $table):
 def radix($base; $to_table; $from_table):
   if . | type == "number" then to_radix($base; $to_table)
   elif . | type == "string" then from_radix($base; $from_table)
-  else error("needs to be number of string")
+  else error("needs to be number or string")
   end;
 
 def radix2: radix(2; "01"; {"0": 0, "1": 1});
