@@ -1,5 +1,6 @@
 /test.mp3:
 $ fq
+\
 exitcode: 2
 stderr:
 Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
@@ -16,7 +17,7 @@ Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 --help,-h               Show help
 --include-path,-L PATH  Include search path
 --join-output,-j        No newline between outputs
---null-input,-n         Null input (can still use input/0 and inputs/0)
+--null-input,-n         Null input (use input/0 and inputs/0 to read input)
 --null-output,-0        Null byte between outputs
 --option,-o KEY=VALUE   Set option, eg: color=true
                           addrbase=16
@@ -49,6 +50,7 @@ null> ^D
 $ fq -i . /test.mp3
 mp3> ^D
 $ fq -n
+\
 exitcode: 2
 stderr:
 Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
@@ -129,14 +131,17 @@ wav                WAV file
 webp               WebP image
 xing               Xing header
 $ fq -X
+\
 exitcode: 2
 stderr:
 error: -X: no such argument
 $ fq --X
+\
 exitcode: 2
 stderr:
 error: --X: no such argument
 $ fq -.
+\
 exitcode: 2
 stderr:
 error: -.: no such argument

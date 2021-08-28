@@ -14,7 +14,7 @@ Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 --help,-h               Show help
 --include-path,-L PATH  Include search path
 --join-output,-j        No newline between outputs
---null-input,-n         Null input (can still use input/0 and inputs/0)
+--null-input,-n         Null input (use input/0 and inputs/0 to read input)
 --null-output,-0        Null byte between outputs
 --option,-o KEY=VALUE   Set option, eg: color=true
                           addrbase=16

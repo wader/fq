@@ -1,10 +1,3 @@
-# TODO: introspect and show doc, reflection somehow?
-def help:
-  ( builtins[]
-  , "^C interrupt"
-  , "^D exit REPL"
-  ) | println;
-
 def format: ._format? // null;
 
 # integer division
