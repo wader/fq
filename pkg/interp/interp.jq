@@ -198,7 +198,7 @@ def _prompt:
   def _path_prefix:
     (._path? // []) | if . == [] then "" else path_to_expr + " " end;
   def _preview:
-    if (._format? // false) or type != "array" then
+    if format != null or type != "array" then
       _type_name_error
     else
       ( "["
