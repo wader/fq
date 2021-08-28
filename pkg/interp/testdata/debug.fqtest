@@ -1,0 +1,15 @@
+$ fq -i
+null> {a: 123, b: []} | debug
+{
+  "a": 123,
+  "b": []
+}
+null> {a: 123, b: []} | debug({a})
+{
+  "a": 123,
+  "b": []
+}
+null> ^D
+stderr:
+["DEBUG",{"a":123,"b":[]}]
+["DEBUG",{"a":123}]

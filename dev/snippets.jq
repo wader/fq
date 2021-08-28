@@ -8,8 +8,8 @@ def mp4_box:
 
 def flac_dump:
   [ "fLaC"
-  , first(.. | select(._format == "flac_metadatablock"))
-  , (.. | select(._format == "flac_frame"))
+  , first(.. | select(format == "flac_metadatablock"))
+  , (.. | select(format == "flac_frame"))
   ] | tobits;
 
 def urldecode:
@@ -37,7 +37,7 @@ def radix62sp: radix(62; "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQR
     "V": 57, "W": 58, "X": 59, "Y": 60, "Z": 61
   });
 
-# "01:09:55.76" -> 4195.76 ->
+# "01:09:55.76" -> 4195.76
 # 4195.76 -> "01:09:55.76"
 def duration:
   def lpad($s; $w): ($s * ($w+1-length))[1:] + .;

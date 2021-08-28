@@ -1,3 +1,27 @@
+$ fq -n options
+{
+  "addrbase": 16,
+  "bitsformat": "snippet",
+  "bytecolors": "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
+  "color": false,
+  "colors": "array=white,dumpaddr=yellow,dumpheader=yellow+underline,error=brightred,false=yellow,index=white,null=brightblack,number=cyan,object=white,objectkey=brightblue,string=green,true=yellow,value=white",
+  "compact": false,
+  "decode_progress": false,
+  "depth": 0,
+  "displaybytes": 16,
+  "expr_file": null,
+  "include_path": null,
+  "join_string": "\n",
+  "linebytes": 16,
+  "null_input": true,
+  "raw_output": false,
+  "raw_string": false,
+  "repl": false,
+  "sizebase": 10,
+  "slurp": false,
+  "unicode": false,
+  "verbose": false
+}
 $ fq -o addrbase=10 -n options.addrbase
 10
 $ fq -o addrbase=true -n options.addrbase
