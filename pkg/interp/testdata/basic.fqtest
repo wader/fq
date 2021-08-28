@@ -1,56 +1,32 @@
 # ffmpeg -f lavfi -i sine -t 10ms test.mp3
 /test.mp3:
-$ fq -d mp3 '.headers[0].magic == "ID3"' /test.mp3
+$ fq -i . /test.mp3
+mp3> .headers[0].magic == "ID3"
 true
-$ fq -d mp3 '.headers[0].version == 4' /test.mp3
+mp3> .headers[0].version == 4
 true
-$ fq -d mp3 '.frames[0].header.protection == true' /test.mp3
+mp3> .frames[0].header.protection == true
 true
-$ fq -d mp3 '.headers[0].flags + {}' /test.mp3
+mp3> .headers[0].flags + {}
 {
   "experimental_indicator": false,
   "extended_header": false,
   "unsynchronisation": false,
   "unused": 0
 }
-$ fq -d mp3 '._unknown' /test.mp3
+mp3> ._unknown
 false
-$ fq -d mp3 '._format' /test.mp3
+mp3> format
 "mp3"
-$ fq -d mp3 '.headers[0].magic._format' /test.mp3
+mp3> .headers[0].magic | format
 null
-$ fq -d raw '._bytes | tostring'
-"abc\n"
+mp3> ._format
+"mp3"
+mp3> .headers[0].magic._format
+null
+mp3> ^D
+$ fq -d raw .
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} - (raw)
+0x0|61 62 63 0a|                                   |abc.|           |  unknown0: 6162630a
 stdin:
 abc
-$ fq -n "{a: 123, b: []} | debug"
-{
-  "a": 123,
-  "b": []
-}
-stderr:
-["DEBUG",{"a":123,"b":[]}]
-$ fq -n options
-{
-  "addrbase": 16,
-  "bitsformat": "snippet",
-  "bytecolors": "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
-  "color": false,
-  "colors": "array=white,dumpaddr=yellow,dumpheader=yellow+underline,error=brightred,false=yellow,index=white,null=brightblack,number=cyan,object=white,objectkey=brightblue,string=green,true=yellow,value=white",
-  "compact": false,
-  "decode_progress": false,
-  "depth": 0,
-  "displaybytes": 16,
-  "expr_file": null,
-  "include_path": null,
-  "join_string": "\n",
-  "linebytes": 16,
-  "null_input": true,
-  "raw_output": false,
-  "raw_string": false,
-  "repl": false,
-  "sizebase": 10,
-  "slurp": false,
-  "unicode": false,
-  "verbose": false
-}

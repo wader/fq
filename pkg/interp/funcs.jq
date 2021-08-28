@@ -1,4 +1,8 @@
-def format: ._format? // null;
+
+def format:
+  if type == "object" then ._format
+  else ._format? // null
+  end;
 
 # integer division
 # inspried by https://github.com/itchyny/gojq/issues/63#issuecomment-765066351
@@ -224,7 +228,7 @@ def radix($base; $to_table; $from_table):
 
 def radix2: radix(2; "01"; {"0": 0, "1": 1});
 def radix8: radix(8; "01234567"; {"0": 0, "1": 1, "2": 2, "3": 3,"4": 4, "5": 5, "6": 6, "7": 7});
-def radix16:radix(16; "0123456789abcdef"; {
+def radix16: radix(16; "0123456789abcdef"; {
     "0": 0, "1": 1, "2": 2, "3": 3,"4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9,
     "a": 10, "b": 11, "c": 12, "d": 13, "e": 14, "f": 15
   });
@@ -263,8 +267,7 @@ def radix64: radix(64; "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123
     "+": 62, "/": 63
   });
 
-# like iprint
-def i:
+def iprint:
   {
     bin: "0b\(radix2)",
     oct: "0o\(radix8)",

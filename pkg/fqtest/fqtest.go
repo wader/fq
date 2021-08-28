@@ -352,11 +352,6 @@ func parseTestCases(s string) *testCase {
 				replDepth--
 			}
 
-			if replDepth == 0 {
-				te.parts = append(te.parts, currentTestRun)
-				currentTestRun = nil
-			}
-
 		default:
 			panic(fmt.Sprintf("%d: unexpected section %q %q", section.LineNr, n, v))
 		}
