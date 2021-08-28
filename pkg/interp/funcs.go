@@ -17,7 +17,6 @@ import (
 	"log"
 	"math/big"
 	"net/url"
-	"strings"
 	"time"
 
 	"github.com/wader/fq/format"
@@ -611,20 +610,6 @@ func (i *Interp) hexdump(c interface{}, a []interface{}) gojq.Iter {
 	}
 
 	return gojq.NewIter()
-}
-
-func (i *Interp) string_(c interface{}, a []interface{}) interface{} {
-	bb, err := toBuffer(c)
-	if err != nil {
-		return err
-	}
-
-	sb := &strings.Builder{}
-	if _, err := io.Copy(sb, bb); err != nil {
-		return err
-	}
-
-	return sb.String()
 }
 
 func (i *Interp) bytes(c interface{}, a []interface{}) interface{} {

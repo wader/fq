@@ -34,4 +34,3 @@ linters-settings:
       - G401
       - G501
   unused:
-    go: "1.17"
