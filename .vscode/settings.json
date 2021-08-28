@@ -115,6 +115,8 @@
         "tfhd",
         "tfra",
         "tmpl",
+        "toboolean",
+        "tobytes",
         "toimage",
         "tojson",
         "tojvalue",

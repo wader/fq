@@ -341,6 +341,12 @@ def var($k; f):
   );
 def var($k): . as $c | var($k; $c);
 
+# TODO: introspect and show doc, reflection somehow?
+def help:
+  ( builtins[]
+  , "^C interrupt"
+  , "^D exit REPL"
+  ) | println;
 
 def _main:
   def _formats_list:
@@ -413,7 +419,7 @@ def _main:
       "null_input": {
         short: "-n",
         long: "--null-input",
-        description: "Null input (can still use input/0 and inputs/0)",
+        description: "Null input (use input/0 and inputs/0 to read input)",
         bool: true
       },
       "options": {
