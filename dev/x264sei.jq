@@ -6,7 +6,7 @@
 ( ..
   | select(._format == "avc_sei" and .uuid._symbol == "x264")
   | .data
-  | string[0:-1]
+  | tostring[0:-1]
   | . as $full
   | split("options: ")[1]
   | ( [ .

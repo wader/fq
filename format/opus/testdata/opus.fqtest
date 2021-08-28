@@ -1,5 +1,5 @@
 # ffmpeg -y -f lavfi -i sine -t 10ms -ac 2 -metadata artist=bla -c:a libopus opus.ogg
-# fq opus.ogg '.stream[0].packet[1] | bits' > opus-tags
+# fq opus.ogg '.stream[0].packet[1] | tobits' > opus-tags
 /opus-audio:
 $ fq -d opus_packet verbose /opus-audio
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /opus-audio (opus_packet) 0x0-0x1b5.7 (438)

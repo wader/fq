@@ -58,9 +58,8 @@ func (i *Interp) makeFunctions(registry *registry.Registry) []Function {
 		{[]string{"preview", "p"}, 0, 1, nil, i.preview},
 		{[]string{"hexdump", "hd", "h"}, 0, 1, nil, i.hexdump},
 
-		{[]string{"string"}, 0, 0, i.string_, nil},
-		{[]string{"bytes"}, 0, 0, i.bytes, nil},
-		{[]string{"bits"}, 0, 0, i.bits, nil},
+		{[]string{"tobytes"}, 0, 0, i.bytes, nil},
+		{[]string{"tobits"}, 0, 0, i.bits, nil},
 		{[]string{"tovalue"}, 0, 1, i.tovalue, nil},
 
 		{[]string{"hex"}, 0, 0, makeStringBitBufTransformFn(
