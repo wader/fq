@@ -19,7 +19,7 @@ $ fq -d mp3 '._format' /test.mp3
 "mp3"
 $ fq -d mp3 '.headers[0].magic._format' /test.mp3
 null
-$ fq -d raw '._bytes | string'
+$ fq -d raw '._bytes | tostring'
 "abc\n"
 stdin:
 abc

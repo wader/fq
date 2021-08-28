@@ -513,7 +513,7 @@ def _main:
       finally(
         ( { null_input: ($opts.null_input == true) }
         | if $opts.expr_file then
-            ( .expr = ($opts.expr_file | open | string)
+            ( .expr = ($opts.expr_file | open | tobytes | tostring)
             | .expr_filename = $opts.expr_file
             | .filenames = $rest
             )

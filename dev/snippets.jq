@@ -10,7 +10,7 @@ def flac_dump:
   [ "fLaC"
   , first(.. | select(._format == "flac_metadatablock"))
   , (.. | select(._format == "flac_frame"))
-  ] | bits;
+  ] | tobits;
 
 def urldecode:
   gsub(
