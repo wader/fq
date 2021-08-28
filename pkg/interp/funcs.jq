@@ -1,9 +1,3 @@
-
-def format:
-  if type == "object" then ._format
-  else ._format? // null
-  end;
-
 # integer division
 # inspried by https://github.com/itchyny/gojq/issues/63#issuecomment-765066351
 def intdiv($a; $b): ($a - ($a % $b)) / $b;

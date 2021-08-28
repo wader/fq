@@ -52,6 +52,7 @@ func (i *Interp) makeFunctions(registry *registry.Registry) []Function {
 		{[]string{"open"}, 0, 0, i._open, nil},
 		{[]string{"decode"}, 0, 1, i.makeDecodeFn(registry, registry.MustGroup(format.PROBE)), nil},
 
+		{[]string{"format"}, 0, 0, i.format, nil},
 		{[]string{"display", "d"}, 0, 1, nil, i.makeDisplayFn(nil)},
 		{[]string{"verbose", "v"}, 0, 1, nil, i.makeDisplayFn(map[string]interface{}{"verbose": true})},
 		{[]string{"preview", "p"}, 0, 1, nil, i.preview},
@@ -538,6 +539,18 @@ func (i *Interp) makeDecodeFn(registry *registry.Registry, decodeFormats []*deco
 
 		return makeDecodeValue(dv)
 	}
+}
+
+func (i *Interp) format(c interface{}, a []interface{}) interface{} {
+	cj, ok := c.(gojq.JQValue)
+	if !ok {
+		return nil
+	}
+	f, ok := cj.JQValueKey("_format").(string)
+	if !ok {
+		return nil
+	}
+	return f
 }
 
 func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}, a []interface{}) gojq.Iter {
