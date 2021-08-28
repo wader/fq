@@ -170,9 +170,11 @@ func (tc *testCase) ToActual() string {
 		case *testCaseRun:
 			fmt.Fprintf(sb, "$%s\n", p.args)
 			s := p.actualStdoutBuf.String()
-			fmt.Fprint(sb, s)
-			if !strings.HasSuffix(s, "\n") {
-				fmt.Fprint(sb, "\\\n")
+			if s != "" {
+				fmt.Fprint(sb, s)
+				if !strings.HasSuffix(s, "\n") {
+					fmt.Fprint(sb, "\\\n")
+				}
 			}
 			if p.actualExitCode != 0 {
 				fmt.Fprintf(sb, "exitcode: %d\n", p.actualExitCode)
