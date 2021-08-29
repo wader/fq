@@ -1,21 +1,26 @@
 ### TODO and ideas
 
+#### CLI
+
+- `--arg`, `--argjson` support
+- `--args` support
+- Reset color at prompt? context cancel
+
 #### CLI and REPL
 
-- ctxstack index cancel wrong order skip?
+- ctxstack index cancel wrong order, should just skip?
 - Pager for long output. Configurable? `$PAGER`? only explicit with some kind of syntax? `.. | less` but how?
 - Nicer context cancel message
 - `dump` cancel output of large root value, ex: `.frames`. Problem is dump is done by parent repl. 
 - Error position "^" pointer?
 - Configurable history file/name?
-- Reset color at prompt? context cancel
 - Auto complete $variables
 - Auto complete keys that need escaping, now just filtered out
 - Auto complete add "." just one and is object
 
 #### Language
 
-- Variables somehow? global `$VAR`?
+- Nicer variables somehow? `... | var($VAR)`? make slurp and rewrite `$var` to `$var[]`?
 - Cleanup/Make binary buffers make sense.
 - gojq uses golang `int` for slice indexes, might be issue for non-64bit cpus
 
@@ -69,10 +74,10 @@
 
 #### Decode
 
-- Store original filename somewhere? root description?
+- Store original filename somewhere? description for now
 - Nicer DSL
   - More optional things? optional args or return value to modify?
-- nicer "synthetic" values? now zero length
+- Nicer "synthetic" values? now zero length
 - Value should have raw, tranlated, symbolic and description? struct of map functions?
   - If symbolic should resolve to string? would make `.field == "abc"` work instead of now `.field._symbolic`
 - Array as root value, adts, avc_au etc
@@ -86,14 +91,12 @@
 - Decoder in jq
   - Use jq array/object syntax and pass around decode context, collect fields and build tree
 - Somehow control/limit nested decoding, depth/exclude/include? `probe({depth:1})` etc? per format skip options?
-- `json` decoder?
 - Can't use range while decoding, not calculated yet
 - Keep track of encoding for values, u16le, utf8, varint etc
 
 #### Formats
 
 - Pass argument to format
-- Move format helpers like `mp4_path` to mp4 format code?
 - Value decoder in jq `u(32)`, `u32`?
 - Warnings and errors
   - `mp4` sample counts
@@ -115,9 +118,7 @@
 
 #### gojq
 
-- `JQValue` tests
 - Common errors with gojq? re-implemented now
-- `JQValue` update/assign function in interface, proper or just one to return error for now
 - `join` can be exponential, try add with strings faster, use add `["a","b","c"] | add`?
 - `0b` -> `1.7976931348623157e+308` something fishy with bin/hex/... literals change
 - Do something similar to `builtin.go` in gojq to speedup a bit
