@@ -440,12 +440,11 @@ const (
 type evalContext struct {
 	// structcheck has problems with embedding https://gitlab.com/opennota/check#known-limitations
 	ctx    context.Context
-	stdout Output // TODO: rename?
+	stdout Output
 	mode   RunMode
 }
 
 type Interp struct {
-	// variables map[string]interface{}
 	registry       *registry.Registry
 	os             OS
 	initFqQuery    *gojq.Query
@@ -454,7 +453,7 @@ type Interp struct {
 	// global state, is ref as Interp i cloned per eval
 	state *interface{}
 
-	// new for each run, other values are copied by ref
+	// new for each run, other values are copied by value
 	evalContext evalContext
 }
 
@@ -534,10 +533,6 @@ func (i *Interp) Main(ctx context.Context, stdout Output, version string) error 
 }
 
 func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src string, filename string, stdout Output) (gojq.Iter, error) {
-	var err error
-	// TODO: did not work
-	// nq := &(*q)
-
 	gq, err := gojq.Parse(src)
 	if err != nil {
 		p := queryErrorPosition(src, err)
@@ -690,6 +685,23 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 						filename: filenamePart,
 						pos:      p,
 					}
+				}
+
+				// TODO: some better way of handling relative includes that
+				// works with @builtin etc
+				basePath := filepath.Dir(name)
+				for _, i := range q.Imports {
+					rewritePath := func(base, path string) string {
+						if strings.HasPrefix(i.IncludePath, "@") {
+							return path
+						}
+						if filepath.IsAbs(i.IncludePath) {
+							return path
+						}
+						return filepath.Join(base, path)
+					}
+					i.IncludePath = rewritePath(basePath, i.IncludePath)
+					i.ImportPath = rewritePath(basePath, i.ImportPath)
 				}
 
 				if p.cache {
