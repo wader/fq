@@ -404,22 +404,14 @@ func toValue(opts Options, v interface{}) (interface{}, bool) {
 	}
 }
 
-// TODO: would be nice if gojq had something for this? maybe missing something?
-func queryErrorPosition(v error) pos.Pos {
+func queryErrorPosition(src string, v error) pos.Pos {
 	var offset int
-	var content string
 
 	if tokIf, ok := v.(interface{ Token() (string, int) }); ok { //nolint:errorlint
 		_, offset = tokIf.Token()
 	}
-	if qeIf, ok := v.(interface { //nolint:errorlint
-		QueryParseError() (string, string, string, error)
-	}); ok {
-		_, _, content, _ = qeIf.QueryParseError()
-	}
-
 	if offset >= 0 {
-		return pos.NewFromOffset(content, offset)
+		return pos.NewFromOffset(src, offset)
 	}
 	return pos.Pos{}
 }
@@ -477,7 +469,7 @@ func New(os OS, registry *registry.Registry) (*Interp, error) {
 	i.includeCache = map[string]*gojq.Query{}
 	i.initFqQuery, err = gojq.Parse(initSource)
 	if err != nil {
-		return nil, fmt.Errorf("init:%s: %w", queryErrorPosition(err), err)
+		return nil, fmt.Errorf("init:%s: %w", queryErrorPosition(initSource, err), err)
 	}
 	// TODO: refactor ctxstack have a CancelTop and return c context to Stop?
 	i.interruptStack = ctxstack.New(func(stopCh chan struct{}) {
@@ -548,7 +540,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 
 	gq, err := gojq.Parse(src)
 	if err != nil {
-		p := queryErrorPosition(err)
+		p := queryErrorPosition(src, err)
 		return nil, compileError{
 			err:      err,
 			what:     "parse",
@@ -688,9 +680,10 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 				if err != nil {
 					return nil, err
 				}
-				q, err := gojq.Parse(string(b))
+				s := string(b)
+				q, err := gojq.Parse(s)
 				if err != nil {
-					p := queryErrorPosition(err)
+					p := queryErrorPosition(s, err)
 					return nil, compileError{
 						err:      err,
 						what:     "parse",
@@ -712,7 +705,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 
 	gc, err := gojq.Compile(gq, compilerOpts...)
 	if err != nil {
-		p := queryErrorPosition(err)
+		p := queryErrorPosition(src, err)
 		return nil, compileError{
 			err:      err,
 			what:     "compile",
