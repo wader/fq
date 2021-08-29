@@ -1,6 +1,6 @@
-include "@builtin/internal";
-include "@builtin/funcs";
-include "@builtin/args";
+include "internal";
+include "funcs";
+include "args";
 
 # will include all per format specific function etc
 include "@format/all";
