@@ -54,7 +54,8 @@ func (i *Interp) makeFunctions(registry *registry.Registry) []Function {
 
 		{[]string{"format"}, 0, 0, i.format, nil},
 		{[]string{"display", "d"}, 0, 1, nil, i.makeDisplayFn(nil)},
-		{[]string{"verbose", "v"}, 0, 1, nil, i.makeDisplayFn(map[string]interface{}{"verbose": true})},
+		{[]string{"full", "f"}, 0, 1, nil, i.makeDisplayFn(map[string]interface{}{"arraytruncate": 0})},
+		{[]string{"verbose", "v"}, 0, 1, nil, i.makeDisplayFn(map[string]interface{}{"arraytruncate": 0, "verbose": true})},
 		{[]string{"preview", "p"}, 0, 1, nil, i.preview},
 		{[]string{"hexdump", "hd", "h"}, 0, 1, nil, i.hexdump},
 

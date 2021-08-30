@@ -56,6 +56,7 @@ type Value struct {
 type WalkFn func(v *Value, rootV *Value, depth int, rootDepth int) error
 
 var ErrWalkSkipChildren = errors.New("skip children")
+var ErrWalkBreak = errors.New("break")
 var ErrWalkStop = errors.New("stop")
 
 func (v *Value) walk(preOrder bool, fn WalkFn) error {
@@ -85,12 +86,18 @@ func (v *Value) walk(preOrder bool, fn WalkFn) error {
 		case Struct:
 			for _, wv := range v {
 				if err := walkFn(wv, rootV, depth+1, rootDepth+rootDepthDelta); err != nil {
+					if errors.Is(err, ErrWalkBreak) {
+						break
+					}
 					return err
 				}
 			}
 		case Array:
 			for _, wv := range v {
 				if err := walkFn(wv, rootV, depth+1, rootDepth+rootDepthDelta); err != nil {
+					if errors.Is(err, ErrWalkBreak) {
+						break
+					}
 					return err
 				}
 			}

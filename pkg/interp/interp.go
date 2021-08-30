@@ -787,6 +787,7 @@ func (i *Interp) EvalFuncValues(ctx context.Context, mode RunMode, c interface{}
 
 type Options struct {
 	Depth          int
+	ArrayTruncate  int
 	Verbose        bool
 	DecodeProgress bool
 	Color          bool
@@ -812,6 +813,9 @@ type Options struct {
 func mapSetOptions(d *Options, m map[string]interface{}) {
 	if v, ok := m["depth"]; ok {
 		d.Depth = num.MaxInt(0, toIntZ(v))
+	}
+	if v, ok := m["arraytruncate"]; ok {
+		d.ArrayTruncate = num.MaxInt(0, toIntZ(v))
 	}
 	if v, ok := m["verbose"]; ok {
 		d.Verbose = toBoolZ(v)
