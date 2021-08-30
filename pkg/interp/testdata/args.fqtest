@@ -20,6 +20,7 @@ Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 --null-output,-0        Null byte between outputs
 --option,-o KEY=VALUE   Set option, eg: color=true
                           addrbase=16
+                          arraytruncate=50
                           bitsformat=snippet
                           bytecolors=0-0xff=brightwhite,0=brightblack,32-126:9-13=white
                           color=false

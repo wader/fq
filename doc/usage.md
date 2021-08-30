@@ -18,6 +18,7 @@ Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 --null-output,-0        Null byte between outputs
 --option,-o KEY=VALUE   Set option, eg: color=true
                           addrbase=16
+                          arraytruncate=50
                           bitsformat=snippet
                           bytecolors=0-0xff=brightwhite,0=brightblack,32-126:9-13=white
                           color=false
@@ -100,8 +101,9 @@ notable is support for arbitrary-precision integers.
 - `open` open file for reading
 - `probe` or `decode` try to automatically detect format and decode
 - `mp3`, `matroska`, ..., `<name>`, `decode([name])` try decode as format
-- `d`/`display` display value
-- `v`/`verbose` display value verbosely
+- `d`/`display` display value and truncate long arrays
+- `f`/`full` display value and don't truncate arrays
+- `v`/`verbose` display value verbosely and don't truncate array
 - `p`/`preview` show preview of field tree
 - `hd`/`hexdump` hexdump value
 - `repl` nested REPL

@@ -1,6 +1,7 @@
 $ fq -n options
 {
   "addrbase": 16,
+  "arraytruncate": 50,
   "bitsformat": "snippet",
   "bytecolors": "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
   "color": false,
@@ -26,6 +27,10 @@ $ fq -o addrbase=10 -n options.addrbase
 10
 $ fq -o addrbase=true -n options.addrbase
 16
+$ fq -o arraytruncate=10 -n options.arraytruncate
+10
+$ fq -o arraytruncate=true -n options.arraytruncate
+50
 $ fq -o bitsformat=base64 -n options.bitsformat
 "base64"
 $ fq -o bytecolors=0-0xff=red -n options.bytecolors

@@ -52,8 +52,12 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 	}
 
 	isInArray := false
+	inArrayLen := 0
 	if v.Parent != nil {
-		_, isInArray = v.Parent.V.(decode.Array)
+		if da, ok := v.Parent.V.(decode.Array); ok {
+			isInArray = true
+			inArrayLen = len(da)
+		}
 	}
 
 	nameV := v
@@ -86,6 +90,19 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 		}
 	}
 
+	if opts.ArrayTruncate != 0 && depth != 0 && isInArray && v.Index >= opts.ArrayTruncate {
+		columns()
+		cfmt(colField, "%s%s%s:%s%s: ...",
+			indent,
+			deco.Index.F("["),
+			deco.Number.F(strconv.Itoa(v.Index)),
+			deco.Number.F(strconv.Itoa(inArrayLen-1)),
+			deco.Index.F("]"),
+		)
+		cw.Flush()
+		return decode.ErrWalkBreak
+	}
+
 	cfmt(colField, "%s%s", indent, name)
 	if isInArray {
 		cfmt(colField, "%s%s%s", deco.Index.F("["), deco.Number.F(strconv.Itoa(v.Index)), deco.Index.F("]"))
@@ -95,6 +112,8 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 		cfmt(colField, " %s", v.Name)
 	}
 
+	// TODO: cleanup map[string]interface{} []interface{} or json format
+	// dump should use some internal interface instead?
 	switch v.V.(type) {
 	case decode.Struct, map[string]interface{}:
 		cfmt(colField, " %s", deco.Object.F("{}"))

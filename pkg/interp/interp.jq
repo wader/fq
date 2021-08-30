@@ -48,6 +48,7 @@ def _obj_to_csv_kv:
 def _build_default_options:
   {
     addrbase:       16,
+    arraytruncate:  50,
     bitsformat:     "snippet",
     bytecolors:     "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
     color:          (tty.is_terminal and env.CLICOLOR != null),
@@ -105,6 +106,7 @@ def _tostring:
 def _to_options:
   ( {
       addrbase:        (.addrbase | _tonumber),
+      arraytruncate:   (.arraytruncate | _tonumber),
       bitsformat:      (.bitsformat | _tostring),
       bytecolors:      (.bytecolors | _tostring),
       color:           (.color | _toboolean),
