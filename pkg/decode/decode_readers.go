@@ -76,24 +76,25 @@ func (d *D) Bits(nBits int) (uint64, error) {
 	return n, nil
 }
 
-func (d *D) TryPeekFind(nBits int, seekBits int64, fn func(v uint64) bool, maxLen int64) (int64, error) {
+func (d *D) TryPeekFind(nBits int, seekBits int64, fn func(v uint64) bool, maxLen int64) (int64, uint64, error) {
 	start, err := d.bitBuf.SeekBits(0, io.SeekCurrent)
 	if err != nil {
-		return 0, err
+		return 0, 0, err
 	}
 
 	found := false
 	var count int64
+	var v uint64
 	for {
 		if maxLen >= 0 && count >= maxLen {
 			break
 		}
-		v, err := d.TryU(nBits)
+		v, err = d.TryU(nBits)
 		if err != nil {
 			if _, err := d.bitBuf.SeekBits(start, io.SeekStart); err != nil {
-				return 0, err
+				return 0, 0, err
 			}
-			return 0, err
+			return 0, 0, err
 		}
 		if fn(v) {
 			found = true
@@ -101,18 +102,18 @@ func (d *D) TryPeekFind(nBits int, seekBits int64, fn func(v uint64) bool, maxLe
 		}
 		count += seekBits
 		if _, err := d.bitBuf.SeekBits(start+count, io.SeekStart); err != nil {
-			return 0, err
+			return 0, 0, err
 		}
 	}
 	if _, err := d.bitBuf.SeekBits(start, io.SeekStart); err != nil {
-		return 0, err
+		return 0, 0, err
 	}
 
 	if !found {
-		return -1, nil
+		return -1, 0, nil
 	}
 
-	return count, nil
+	return count, v, nil
 }
 
 func (d *D) ZeroPadding(nBits int) bool {

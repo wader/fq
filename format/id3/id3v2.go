@@ -313,7 +313,8 @@ func textNull(d *decode.D, encoding int) string {
 		nullLen = n
 	}
 
-	pos := d.PeekFind(nullLen*8, 8, func(v uint64) bool { return v == 0 }, -1) / 8
+	offset, _ := d.PeekFind(nullLen*8, 8, func(v uint64) bool { return v == 0 }, -1)
+	pos := offset / 8
 	textLen := int(pos + int64(nullLen))
 	text := text(d, encoding, textLen)
 

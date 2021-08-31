@@ -105,6 +105,7 @@ matroska           Matroska file
 mp3                MP3 file
 mp3_frame          MPEG audio layer 3 frame
 mp4                MPEG-4 file and similar
+mpeg_annexb        H.264/AVC Annex B
 mpeg_asc           MPEG-4 Audio Specific Config
 mpeg_es            MPEG Elementary Stream
 mpeg_pes           MPEG Packetized elementary stream

@@ -54,6 +54,7 @@ const (
 	HEVC_AU            = "hevc_au"
 	HEVC_NALU          = "hevc_nalu"
 	HEVC_DCR           = "hevc_dcr"
+	MPEG_ANNEXB        = "mpeg_annexb"
 	MPEG_ES            = "mpeg_es"
 	MPEG_PES           = "mpeg_pes"
 	MPEG_PES_PACKET    = "mpeg_pes_packet"
