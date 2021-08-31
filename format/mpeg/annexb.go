@@ -1,24 +1,8 @@
 package mpeg
 
 import (
-	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
 )
-
-var annexBAVCNALUFormat []*decode.Format
-
-func init() {
-	registry.MustRegister(&decode.Format{
-		Name:        format.MPEG_ANNEXB,
-		Description: "H.264/AVC Annex B",
-		Groups:      []string{format.PROBE},
-		DecodeFn:    annexBDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.AVC_NALU}, Formats: &annexBAVCNALUFormat},
-		},
-	})
-}
 
 func annexBFindStartCode(d *decode.D) (int64, int64, error) {
 	offset, v, err := d.TryPeekFind(32, 8, func(v uint64) bool {
@@ -38,7 +22,7 @@ func annexBDecodeStartCodeLen(v uint64) int64 {
 	}
 }
 
-func annexBDecode(d *decode.D, in interface{}) interface{} {
+func annexBDecode(d *decode.D, _ interface{}, format []*decode.Format) interface{} {
 	currentOffset, currentPrefixLen, err := annexBFindStartCode(d)
 	// TODO: really restrict to 0?
 	if err != nil || currentOffset != 0 {
@@ -56,7 +40,7 @@ func annexBDecode(d *decode.D, in interface{}) interface{} {
 			}
 
 			naluLen := nextOffset
-			d.FieldFormatLen("nalu", naluLen, avcNALUFormat)
+			d.FieldFormatLen("nalu", naluLen, format)
 
 			currentPrefixLen = nextPrefixLen
 		}

@@ -156,6 +156,7 @@ To add own functions you can use `init.fq` that will be read from
 |`av1_ccr`            |AV1&nbsp;Codec&nbsp;Configuration&nbsp;Record                 |<sub></sub>|
 |`av1_frame`          |AV1&nbsp;frame                                                |<sub>`av1_obu`</sub>|
 |`av1_obu`            |AV1&nbsp;Open&nbsp;Bitstream&nbsp;Unit                        |<sub></sub>|
+|`avc_annexb`         |H.264/AVC&nbsp;Annex&nbsp;B                                   |<sub>`avc_nalu`</sub>|
 |`avc_au`             |H.264/AVC&nbsp;Access&nbsp;Unit                               |<sub>`avc_nalu`</sub>|
 |`avc_dcr`            |H.264/AVC&nbsp;Decoder&nbsp;Configuration&nbsp;Record         |<sub>`avc_nalu`</sub>|
 |`avc_nalu`           |H.264/AVC&nbsp;Network&nbsp;Access&nbsp;Layer&nbsp;Unit       |<sub>`avc_sps` `avc_pps` `avc_sei`</sub>|
@@ -172,6 +173,7 @@ To add own functions you can use `init.fq` that will be read from
 |`flac_picture`       |FLAC&nbsp;metadatablock&nbsp;picture                          |<sub>`image`</sub>|
 |`gif`                |Graphics&nbsp;Interchange&nbsp;Format                         |<sub></sub>|
 |`gzip`               |gzip&nbsp;compression                                         |<sub>`probe`</sub>|
+|`hevc_annexb`        |H.265/HEVC&nbsp;Annex&nbsp;B                                  |<sub>`hevc_nalu`</sub>|
 |`hevc_au`            |H.265/HEVC&nbsp;Access&nbsp;Unit                              |<sub>`hevc_nalu`</sub>|
 |`hevc_dcr`           |H.265/HEVC&nbsp;Decoder&nbsp;Configuration&nbsp;Record        |<sub>`hevc_nalu`</sub>|
 |`hevc_nalu`          |H.265/HEVC&nbsp;Network&nbsp;Access&nbsp;Layer&nbsp;Unit      |<sub></sub>|
@@ -185,7 +187,6 @@ To add own functions you can use `init.fq` that will be read from
 |`mp3`                |MP3&nbsp;file                                                 |<sub>`id3v2` `id3v1` `id3v11` `apev2` `mp3_frame`</sub>|
 |`mp3_frame`          |MPEG&nbsp;audio&nbsp;layer&nbsp;3&nbsp;frame                  |<sub>`xing`</sub>|
 |`mp4`                |MPEG-4&nbsp;file&nbsp;and&nbsp;similar                        |<sub>`aac_frame` `av1_ccr` `av1_frame` `flac_frame` `flac_metadatablock` `id3v2` `image` `jpeg` `mp3_frame` `avc_au` `avc_dcr` `mpeg_es` `hevc_au` `hevc_dcr` `mpeg_pes_packet` `opus_packet` `protobuf_widevine` `vorbis_packet` `vp9_frame` `vpx_ccr`</sub>|
-|`mpeg_annexb`        |H.264/AVC&nbsp;Annex&nbsp;B                                   |<sub>`avc_nalu`</sub>|
 |`mpeg_asc`           |MPEG-4&nbsp;Audio&nbsp;Specific&nbsp;Config                   |<sub></sub>|
 |`mpeg_es`            |MPEG&nbsp;Elementary&nbsp;Stream                              |<sub>`mpeg_asc` `vorbis_packet`</sub>|
 |`mpeg_pes`           |MPEG&nbsp;Packetized&nbsp;elementary&nbsp;stream              |<sub>`mpeg_pes_packet` `mpeg_spu`</sub>|
@@ -211,7 +212,7 @@ To add own functions you can use `init.fq` that will be read from
 |`webp`               |WebP&nbsp;image                                               |<sub>`vp8_frame`</sub>|
 |`xing`               |Xing&nbsp;header                                              |<sub></sub>|
 |`image`              |Group                                                         |<sub>`gif` `jpeg` `png` `tiff` `webp`</sub>|
-|`probe`              |Group                                                         |<sub>`adts` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `matroska` `mp3` `mp4` `mpeg_annexb` `mpeg_ts` `ogg` `png` `tar` `tiff` `wav` `webp`</sub>|
+|`probe`              |Group                                                         |<sub>`adts` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `png` `tar` `tiff` `wav` `webp`</sub>|
 
 [#]: sh-end
 
