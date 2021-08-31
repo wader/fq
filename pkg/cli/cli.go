@@ -13,17 +13,12 @@ import (
 	"path/filepath"
 
 	"github.com/wader/fq/format/registry"
-	"github.com/wader/fq/internal/profile"
 	"github.com/wader/fq/pkg/interp"
 
 	"github.com/wader/readline"
 )
 
-func MaybeProfile() func() {
-	return profile.Start(os.Getenv("CPUPROFILE"), os.Getenv("MEMPROFILE"))
-}
-
-func MaybeLogFile() {
+func maybeLogFile() {
 	// used during dev to redirect log to file, useful when debugging repl etc
 	if lf := os.Getenv("LOGFILE"); lf != "" {
 		if f, err := os.Create(lf); err == nil {
@@ -194,6 +189,9 @@ func (o *standardOS) Close() error {
 
 func Main(r *registry.Registry, version string) {
 	os.Exit(func() int {
+		defer maybeProfile()()
+		maybeLogFile()
+
 		sos := newStandardOS()
 		defer sos.Close()
 		i, err := interp.New(sos, r)
