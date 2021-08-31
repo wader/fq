@@ -64,10 +64,12 @@ depgraph.svg:
 formats.svg:
 	dev/formats_dot.jq | dot -Tsvg -o formats.svg
 
+# make memprof ARGS=". test.mp3"
+# make cpuprof ARGS=". test.mp3"
 .PHONY: prof
 prof:
-	go build -o fq.prof main.go
-	CPUPROFILE=fq.cpu.prof MEMPROFILE=fq.mem.prof ./fq.prof "${ARGS}"
+	go build -tags profile -o fq.prof main.go
+	CPUPROFILE=fq.cpu.prof MEMPROFILE=fq.mem.prof ./fq.prof ${ARGS}
 .PHONY: memprof
 memprof: prof
 	go tool pprof -http :5555 fq.prof fq.mem.prof

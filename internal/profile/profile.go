@@ -26,13 +26,8 @@ func Start(cpuProfilePath string, memProfilePath string) func() {
 			})
 		}
 	}
-
-	return func() {
-		for _, fn := range deferFns {
-			fn()
-		}
-
-		if memProfilePath != "" {
+	if memProfilePath != "" {
+		deferFns = append(deferFns, func() {
 			f, err := os.Create(memProfilePath)
 			if err != nil {
 				log.Fatal("could not create memory profile: ", err)
@@ -45,6 +40,12 @@ func Start(cpuProfilePath string, memProfilePath string) func() {
 					log.Fatal("could not close memory profile: ", err)
 				}
 			}
+		})
+	}
+
+	return func() {
+		for _, fn := range deferFns {
+			fn()
 		}
 	}
 }
