@@ -76,6 +76,7 @@ apev2              APEv2 metadata tag
 av1_ccr            AV1 Codec Configuration Record
 av1_frame          AV1 frame
 av1_obu            AV1 Open Bitstream Unit
+avc_annexb         H.264/AVC Annex B
 avc_au             H.264/AVC Access Unit
 avc_dcr            H.264/AVC Decoder Configuration Record
 avc_nalu           H.264/AVC Network Access Layer Unit
@@ -92,6 +93,7 @@ flac_metadatablock FLAC metadatablock
 flac_picture       FLAC metadatablock picture
 gif                Graphics Interchange Format
 gzip               gzip compression
+hevc_annexb        H.265/HEVC Annex B
 hevc_au            H.265/HEVC Access Unit
 hevc_dcr           H.265/HEVC Decoder Configuration Record
 hevc_nalu          H.265/HEVC Network Access Layer Unit
@@ -105,7 +107,6 @@ matroska           Matroska file
 mp3                MP3 file
 mp3_frame          MPEG audio layer 3 frame
 mp4                MPEG-4 file and similar
-mpeg_annexb        H.264/AVC Annex B
 mpeg_asc           MPEG-4 Audio Specific Config
 mpeg_es            MPEG Elementary Stream
 mpeg_pes           MPEG Packetized elementary stream
