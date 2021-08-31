@@ -306,7 +306,7 @@ $ fq -d matroska verbose /avc.mkv
  0x010|               2c|                             |     ,|         |                            rbsp_trailing_bits: 80 0x15.5-0x15.7 (0.3)
 0x0180|                           67                  |         g      |                          forbidden_zero_bit: false 0x189-0x189 (0.1)
 0x0180|                           67                  |         g      |                          nal_ref_idc: 3 0x189.1-0x189.2 (0.2)
-0x0180|                           67                  |         g      |                          nal_unit_type: Sequence parameter set (7) 0x189.3-0x189.7 (0.5)
+0x0180|                           67                  |         g      |                          nal_unit_type: SPS (7) (Sequence parameter set) 0x189.3-0x189.7 (0.5)
 0x0180|                              f4 00 0d 91 9b 28|          .....(|                          data: f4000d919b28283f6022000003000200... 0x18a-0x1a1.7 (24)
 0x0190|28 3f 60 22 00 00 03 00 02 00 00 03 00 64 1e 28|(?`".........d.(|
 0x01a0|53 2c                                          |S,              |
@@ -337,7 +337,7 @@ $ fq -d matroska verbose /avc.mkv
  0x000|            44|                                |    D|          |                            rbsp_trailing_bits: 80 0x4.5-0x4.7 (0.3)
 0x01a0|               68                              |     h          |                          forbidden_zero_bit: false 0x1a5-0x1a5 (0.1)
 0x01a0|               68                              |     h          |                          nal_ref_idc: 3 0x1a5.1-0x1a5.2 (0.2)
-0x01a0|               68                              |     h          |                          nal_unit_type: Picture parameter set (8) 0x1a5.3-0x1a5.7 (0.5)
+0x01a0|               68                              |     h          |                          nal_unit_type: PPS (8) (Picture parameter set) 0x1a5.3-0x1a5.7 (0.5)
 0x01a0|                  eb e3 c4 48 44               |      ...HD     |                          data: ebe3c44844 0x1a6-0x1aa.7 (5)
 0x01a0|                                 ff f8 f8 00   |           .... |                    data: fff8f800 0x1ab-0x1ae.7 (4)
       |                                               |                |        [4]: element {} 0x1af-0x254.7 (166)
@@ -472,7 +472,7 @@ $ fq -d matroska verbose /avc.mkv
  0x2a0|                                 80|           |           .|   |                        rbsp_trailing_bits: 80 0x2ab-0x2ab.7 (1)
 0x0260|                                             06|               .|                      forbidden_zero_bit: false 0x26f-0x26f (0.1)
 0x0260|                                             06|               .|                      nal_ref_idc: 0 0x26f.1-0x26f.2 (0.2)
-0x0260|                                             06|               .|                      nal_unit_type: Supplemental enhancement information (SEI) (6) 0x26f.3-0x26f.7 (0.5)
+0x0260|                                             06|               .|                      nal_unit_type: SEI (6) (Supplemental enhancement information) 0x26f.3-0x26f.7 (0.5)
 0x0270|05 ff ff a9 dc 45 e9 bd e6 d9 48 b7 96 2c d8 20|.....E....H..,. |                      data: 05ffffa9dc45e9bde6d948b7962cd820... 0x270-0x51b.7 (684)
 *     |until 0x51b.7 (684)                            |                |
       |                                               |                |                  [1]: nalu {} 0x51c-0xd2a.7 (2063)
@@ -480,7 +480,7 @@ $ fq -d matroska verbose /avc.mkv
       |                                               |                |                    nalu: {} (avc_nalu) 0x520-0xd2a.7 (2059)
 0x0520|65                                             |e               |                      forbidden_zero_bit: false 0x520-0x520 (0.1)
 0x0520|65                                             |e               |                      nal_ref_idc: 3 0x520.1-0x520.2 (0.2)
-0x0520|65                                             |e               |                      nal_unit_type: Coded slice of an IDR picture (5) 0x520.3-0x520.7 (0.5)
+0x0520|65                                             |e               |                      nal_unit_type: IDR_SLICE (5) (Coded slice of an IDR picture) 0x520.3-0x520.7 (0.5)
       |                                               |                |                      slice_header: {} 0x521-0x522 (1.1)
 0x0520|   88                                          | .              |                        first_mb_in_slice: 0 0x521-0x521 (0.1)
 0x0520|   88                                          | .              |                        slice_type: I (7) 0x521.1-0x521.7 (0.7)

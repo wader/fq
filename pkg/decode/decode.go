@@ -627,6 +627,25 @@ func (d *D) FieldStringMapFn(name string, sm map[uint64]string, def string, fn f
 	}), ok
 }
 
+type Symbol struct {
+	Name   string
+	Desc   string
+	Format DisplayFormat
+}
+
+func (d *D) FieldSymbolMapFn(name string, sm map[uint64]Symbol, ds Symbol, fn func() uint64) (uint64, bool) {
+	var ok bool
+	return d.FieldUSymbolFn(name, func() (uint64, Symbol) {
+		n := fn()
+		var s Symbol
+		s, ok = sm[n]
+		if !ok {
+			s = ds
+		}
+		return n, s
+	}), ok
+}
+
 func (d *D) FieldStringRangeMapFn(name string, rm map[[2]uint64]string, def string, fn func() uint64, df DisplayFormat) (uint64, bool) {
 	var ok bool
 	return d.FieldUFn(name, func() (uint64, DisplayFormat, string) {

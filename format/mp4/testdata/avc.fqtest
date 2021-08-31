@@ -266,7 +266,7 @@ $ fq -d mp4 verbose /avc.mp4
  0x010|               2c|                             |     ,|         |                                            rbsp_trailing_bits: 80 0x15.5-0x15.7 (0.3)
 0x0cf0|                                             67|               g|                                          forbidden_zero_bit: false 0xcff-0xcff (0.1)
 0x0cf0|                                             67|               g|                                          nal_ref_idc: 3 0xcff.1-0xcff.2 (0.2)
-0x0cf0|                                             67|               g|                                          nal_unit_type: Sequence parameter set (7) 0xcff.3-0xcff.7 (0.5)
+0x0cf0|                                             67|               g|                                          nal_unit_type: SPS (7) (Sequence parameter set) 0xcff.3-0xcff.7 (0.5)
 0x0d00|f4 00 0d 91 9b 28 28 3f 60 22 00 00 03 00 02 00|.....((?`"......|                                          data: f4000d919b28283f6022000003000200... 0xd00-0xd17.7 (24)
 0x0d10|00 03 00 64 1e 28 53 2c                        |...d.(S,        |
 0x0d10|                        01                     |        .       |                                    num_of_picture_parameter_sets: 1 0xd18-0xd18.7 (1)
@@ -296,7 +296,7 @@ $ fq -d mp4 verbose /avc.mp4
  0x000|            44|                                |    D|          |                                            rbsp_trailing_bits: 80 0x4.5-0x4.7 (0.3)
 0x0d10|                                 68            |           h    |                                          forbidden_zero_bit: false 0xd1b-0xd1b (0.1)
 0x0d10|                                 68            |           h    |                                          nal_ref_idc: 3 0xd1b.1-0xd1b.2 (0.2)
-0x0d10|                                 68            |           h    |                                          nal_unit_type: Picture parameter set (8) 0xd1b.3-0xd1b.7 (0.5)
+0x0d10|                                 68            |           h    |                                          nal_unit_type: PPS (8) (Picture parameter set) 0xd1b.3-0xd1b.7 (0.5)
 0x0d10|                                    eb e3 c4 48|            ...H|                                          data: ebe3c44844 0xd1c-0xd20.7 (5)
 0x0d20|44                                             |D               |
 0x0d20|   ff f8 f8 00                                 | ....           |                                    data: fff8f800 0xd21-0xd24.7 (4)
@@ -408,7 +408,7 @@ $ fq -d mp4 verbose /avc.mp4
  0x2a0|                                 80|           |           .|   |                  rbsp_trailing_bits: 80 0x2ab-0x2ab.7 (1)
 0x0030|            06                                 |    .           |                forbidden_zero_bit: false 0x34-0x34 (0.1)
 0x0030|            06                                 |    .           |                nal_ref_idc: 0 0x34.1-0x34.2 (0.2)
-0x0030|            06                                 |    .           |                nal_unit_type: Supplemental enhancement information (SEI) (6) 0x34.3-0x34.7 (0.5)
+0x0030|            06                                 |    .           |                nal_unit_type: SEI (6) (Supplemental enhancement information) 0x34.3-0x34.7 (0.5)
 0x0030|               05 ff ff a9 dc 45 e9 bd e6 d9 48|     .....E....H|                data: 05ffffa9dc45e9bde6d948b7962cd820... 0x35-0x2e0.7 (684)
 0x0040|b7 96 2c d8 20 d9 23 ee ef 78 32 36 34 20 2d 20|..,. .#..x264 - |
 *     |until 0x2e0.7 (684)                            |                |
@@ -417,7 +417,7 @@ $ fq -d mp4 verbose /avc.mp4
       |                                               |                |              nalu: {} (avc_nalu) 0x2e5-0xaef.7 (2059)
 0x02e0|               65                              |     e          |                forbidden_zero_bit: false 0x2e5-0x2e5 (0.1)
 0x02e0|               65                              |     e          |                nal_ref_idc: 3 0x2e5.1-0x2e5.2 (0.2)
-0x02e0|               65                              |     e          |                nal_unit_type: Coded slice of an IDR picture (5) 0x2e5.3-0x2e5.7 (0.5)
+0x02e0|               65                              |     e          |                nal_unit_type: IDR_SLICE (5) (Coded slice of an IDR picture) 0x2e5.3-0x2e5.7 (0.5)
       |                                               |                |                slice_header: {} 0x2e6-0x2e7 (1.1)
 0x02e0|                  88                           |      .         |                  first_mb_in_slice: 0 0x2e6-0x2e6 (0.1)
 0x02e0|                  88                           |      .         |                  slice_type: I (7) 0x2e6.1-0x2e6.7 (0.7)

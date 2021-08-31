@@ -73,24 +73,24 @@ const (
 	avcNALCodedSliceExtension                = 20
 )
 
-var avcNALNames = map[uint64]string{
-	1:                                        "Coded slice of a non-IDR picture",
-	2:                                        "Coded slice data partition A",
-	3:                                        "Coded slice data partition B",
-	4:                                        "Coded slice data partition C",
-	5:                                        "Coded slice of an IDR picture",
-	avcNALSupplementalEnhancementInformation: "Supplemental enhancement information (SEI)",
-	avcNALSequenceParameterSet:               "Sequence parameter set",
-	avcNALPictureParameterSet:                "Picture parameter set",
-	9:                                        "Access unit delimiter",
-	10:                                       "End of sequence",
-	11:                                       "End of stream",
-	12:                                       "Filler data",
-	13:                                       "Sequence parameter set extension",
-	14:                                       "Prefix NAL unit",
-	15:                                       "Subset sequence parameter set",
-	19:                                       "Coded slice of an auxiliary coded picture without partitioning",
-	20:                                       "Coded slice extension",
+var avcNALNames = map[uint64]decode.Symbol{
+	1:                                        {Name: "SLICE", Desc: "Coded slice of a non-IDR picture"},
+	2:                                        {Name: "DPA", Desc: "Coded slice data partition A"},
+	3:                                        {Name: "DPB", Desc: "Coded slice data partition B"},
+	4:                                        {Name: "DPC", Desc: "Coded slice data partition C"},
+	5:                                        {Name: "IDR_SLICE", Desc: "Coded slice of an IDR picture"},
+	avcNALSupplementalEnhancementInformation: {Name: "SEI", Desc: "Supplemental enhancement information"},
+	avcNALSequenceParameterSet:               {Name: "SPS", Desc: "Sequence parameter set"},
+	avcNALPictureParameterSet:                {Name: "PPS", Desc: "Picture parameter set"},
+	9:                                        {Name: "AUD", Desc: "Access unit delimiter"},
+	10:                                       {Name: "EOSEQ", Desc: "End of sequence"},
+	11:                                       {Name: "EOS", Desc: "End of stream"},
+	12:                                       {Name: "FILLER", Desc: "Filler data"},
+	13:                                       {Name: "SPS_EXT", Desc: "Sequence parameter set extension"},
+	14:                                       {Name: "PREFIX", Desc: "Prefix NAL unit"},
+	15:                                       {Name: "SUB_SPS", Desc: "Subset sequence parameter set"},
+	19:                                       {Name: "AUX_SLICE", Desc: "Coded slice of an auxiliary coded picture without partitioning"},
+	20:                                       {Name: "EXTEN_SLICE", Desc: "Coded slice extension"},
 }
 
 var sliceNames = map[uint64]string{
@@ -109,7 +109,7 @@ var sliceNames = map[uint64]string{
 func avcNALUDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldBool("forbidden_zero_bit")
 	d.FieldU2("nal_ref_idc")
-	nalType, _ := d.FieldStringMapFn("nal_unit_type", avcNALNames, "Unknown", d.U5, decode.NumberDecimal)
+	nalType, _ := d.FieldSymbolMapFn("nal_unit_type", avcNALNames, decode.Symbol{Desc: "Unknown"}, d.U5)
 	unescapedBb := decode.MustNewBitBufFromReader(decode.NALUnescapeReader{Reader: d.BitBufRange(d.Pos(), d.BitsLeft())})
 
 	switch nalType {
