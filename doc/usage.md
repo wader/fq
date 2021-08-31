@@ -185,6 +185,7 @@ To add own functions you can use `init.fq` that will be read from
 |`mp3`                |MP3&nbsp;file                                                 |<sub>`id3v2` `id3v1` `id3v11` `apev2` `mp3_frame`</sub>|
 |`mp3_frame`          |MPEG&nbsp;audio&nbsp;layer&nbsp;3&nbsp;frame                  |<sub>`xing`</sub>|
 |`mp4`                |MPEG-4&nbsp;file&nbsp;and&nbsp;similar                        |<sub>`aac_frame` `av1_ccr` `av1_frame` `flac_frame` `flac_metadatablock` `id3v2` `image` `jpeg` `mp3_frame` `avc_au` `avc_dcr` `mpeg_es` `hevc_au` `hevc_dcr` `mpeg_pes_packet` `opus_packet` `protobuf_widevine` `vorbis_packet` `vp9_frame` `vpx_ccr`</sub>|
+|`mpeg_annexb`        |H.264/AVC&nbsp;Annex&nbsp;B                                   |<sub>`avc_nalu`</sub>|
 |`mpeg_asc`           |MPEG-4&nbsp;Audio&nbsp;Specific&nbsp;Config                   |<sub></sub>|
 |`mpeg_es`            |MPEG&nbsp;Elementary&nbsp;Stream                              |<sub>`mpeg_asc` `vorbis_packet`</sub>|
 |`mpeg_pes`           |MPEG&nbsp;Packetized&nbsp;elementary&nbsp;stream              |<sub>`mpeg_pes_packet` `mpeg_spu`</sub>|
@@ -210,7 +211,7 @@ To add own functions you can use `init.fq` that will be read from
 |`webp`               |WebP&nbsp;image                                               |<sub>`vp8_frame`</sub>|
 |`xing`               |Xing&nbsp;header                                              |<sub></sub>|
 |`image`              |Group                                                         |<sub>`gif` `jpeg` `png` `tiff` `webp`</sub>|
-|`probe`              |Group                                                         |<sub>`adts` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `png` `tar` `tiff` `wav` `webp`</sub>|
+|`probe`              |Group                                                         |<sub>`adts` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `matroska` `mp3` `mp4` `mpeg_annexb` `mpeg_ts` `ogg` `png` `tar` `tiff` `wav` `webp`</sub>|
 
 [#]: sh-end
 
