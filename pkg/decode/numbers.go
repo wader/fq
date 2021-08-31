@@ -145,10 +145,10 @@ func (d *D) FieldUFn(name string, fn func() (uint64, DisplayFormat, string)) uin
 	}).V.(uint64)
 }
 
-func (d *D) FieldUDescFn(name string, fn func() (uint64, DisplayFormat, string, string)) uint64 {
+func (d *D) FieldUSymbolFn(name string, fn func() (uint64, Symbol)) uint64 {
 	return d.FieldFn(name, func() *Value {
-		u, fmt, s, d := fn()
-		return &Value{V: u, DisplayFormat: fmt, Symbol: s, Description: d}
+		u, s := fn()
+		return &Value{V: u, DisplayFormat: s.Format, Symbol: s.Name, Description: s.Desc}
 	}).V.(uint64)
 }
 

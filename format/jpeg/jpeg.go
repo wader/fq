@@ -31,11 +31,6 @@ func init() {
 	})
 }
 
-type marker struct {
-	symbol      string
-	description string // TODO: use as description later
-}
-
 const (
 	SOF0  = 0xc0
 	SOF1  = 0xc1
@@ -103,71 +98,71 @@ const (
 	TEM   = 0x01
 )
 
-var markers = map[uint]marker{
-	SOF0:  {"SOF0", "Baseline DCT"},
-	SOF1:  {"SOF1", "Extended sequential DCT"},
-	SOF2:  {"SOF2", "Progressive DCT"},
-	SOF3:  {"SOF3", "Lossless (sequential)"},
-	SOF5:  {"SOF5", "Differential sequential DCT"},
-	SOF6:  {"SOF6", "Differential progressive DCT"},
-	SOF7:  {"SOF7", "Differential lossless (sequential)"},
-	JPG:   {"JPG", "Reserved for JPEG extensions"},
-	SOF9:  {"SOF9", "Extended sequential DCT"},
-	SOF10: {"SOF10", "Progressive DCT"},
-	SOF11: {"SOF11", "Lossless (sequential)"},
-	SOF13: {"SOF13", "Differential sequential DCT"},
-	SOF14: {"SOF14", "Differential progressive DCT"},
-	SOF15: {"SOF15", "Differential lossless (sequential)"},
-	DHT:   {"DHT", "Define Huffman table(s)"},
-	DAC:   {"DAC", "Define arithmetic coding conditioning(s)"},
-	RST0:  {"RST0", "Restart with modulo 8 count 0"},
-	RST1:  {"RST1", "Restart with modulo 8 count 1"},
-	RST2:  {"RST2", "Restart with modulo 8 count 2"},
-	RST3:  {"RST3", "Restart with modulo 8 count 3"},
-	RST4:  {"RST4", "Restart with modulo 8 count 4"},
-	RST5:  {"RST5", "Restart with modulo 8 count 5"},
-	RST6:  {"RST6", "Restart with modulo 8 count 6"},
-	RST7:  {"RST7", "Restart with modulo 8 count 7"},
-	SOI:   {"SOI", "Start of image"},
-	EOI:   {"EOI", "End of image true"},
-	SOS:   {"SOS", "Start of scan"},
-	DQT:   {"DQT", "Define quantization table(s)"},
-	DNL:   {"DNL", "Define number of lines"},
-	DRI:   {"DRI", "Define restart interval"},
-	DHP:   {"DHP", "Define hierarchical progression"},
-	EXP:   {"EXP", "Expand reference component(s)"},
-	APP0:  {"APP0", "Reserved for application segments"},
-	APP1:  {"APP1", "Reserved for application segments"},
-	APP2:  {"APP2", "Reserved for application segments"},
-	APP3:  {"APP3", "Reserved for application segments"},
-	APP4:  {"APP4", "Reserved for application segments"},
-	APP5:  {"APP5", "Reserved for application segments"},
-	APP6:  {"APP6", "Reserved for application segments"},
-	APP7:  {"APP7", "Reserved for application segments"},
-	APP8:  {"APP8", "Reserved for application segments"},
-	APP9:  {"APP9", "Reserved for application segments"},
-	APP10: {"APP10", "Reserved for application segments"},
-	APP11: {"APP11", "Reserved for application segments"},
-	APP12: {"APP12", "Reserved for application segments"},
-	APP13: {"APP13", "Reserved for application segments"},
-	APP14: {"APP14", "Reserved for application segments"},
-	APP15: {"APP15", "Reserved for application segments"},
-	JPG0:  {"JPG0", "Reserved for JPEG extensions"},
-	JPG1:  {"JPG1", "Reserved for JPEG extensions"},
-	JPG2:  {"JPG2", "Reserved for JPEG extensions"},
-	JPG3:  {"JPG3", "Reserved for JPEG extensions"},
-	JPG4:  {"JPG4", "Reserved for JPEG extensions"},
-	JPG5:  {"JPG5", "Reserved for JPEG extensions"},
-	JPG6:  {"JPG6", "Reserved for JPEG extensions"},
-	JPG7:  {"JPG7", "Reserved for JPEG extensions"},
-	JPG8:  {"JPG8", "Reserved for JPEG extensions"},
-	JPG9:  {"JPG9", "Reserved for JPEG extensions"},
-	JPG10: {"JPG10", "Reserved for JPEG extensions"},
-	JPG11: {"JPG11", "Reserved for JPEG extensions"},
-	JPG12: {"JPG12", "Reserved for JPEG extensions"},
-	JPG13: {"JPG13", "Reserved for JPEG extensions"},
-	COM:   {"COM", "Comment"},
-	TEM:   {"TEM", "For temporary private use in arithmetic coding"},
+var markers = map[uint64]decode.Symbol{
+	SOF0:  {Name: "SOF0", Desc: "Baseline DCT"},
+	SOF1:  {Name: "SOF1", Desc: "Extended sequential DCT"},
+	SOF2:  {Name: "SOF2", Desc: "Progressive DCT"},
+	SOF3:  {Name: "SOF3", Desc: "Lossless (sequential)"},
+	SOF5:  {Name: "SOF5", Desc: "Differential sequential DCT"},
+	SOF6:  {Name: "SOF6", Desc: "Differential progressive DCT"},
+	SOF7:  {Name: "SOF7", Desc: "Differential lossless (sequential)"},
+	JPG:   {Name: "JPG", Desc: "Reserved for JPEG extensions"},
+	SOF9:  {Name: "SOF9", Desc: "Extended sequential DCT"},
+	SOF10: {Name: "SOF10", Desc: "Progressive DCT"},
+	SOF11: {Name: "SOF11", Desc: "Lossless (sequential)"},
+	SOF13: {Name: "SOF13", Desc: "Differential sequential DCT"},
+	SOF14: {Name: "SOF14", Desc: "Differential progressive DCT"},
+	SOF15: {Name: "SOF15", Desc: "Differential lossless (sequential)"},
+	DHT:   {Name: "DHT", Desc: "Define Huffman table(s)"},
+	DAC:   {Name: "DAC", Desc: "Define arithmetic coding conditioning(s)"},
+	RST0:  {Name: "RST0", Desc: "Restart with modulo 8 count 0"},
+	RST1:  {Name: "RST1", Desc: "Restart with modulo 8 count 1"},
+	RST2:  {Name: "RST2", Desc: "Restart with modulo 8 count 2"},
+	RST3:  {Name: "RST3", Desc: "Restart with modulo 8 count 3"},
+	RST4:  {Name: "RST4", Desc: "Restart with modulo 8 count 4"},
+	RST5:  {Name: "RST5", Desc: "Restart with modulo 8 count 5"},
+	RST6:  {Name: "RST6", Desc: "Restart with modulo 8 count 6"},
+	RST7:  {Name: "RST7", Desc: "Restart with modulo 8 count 7"},
+	SOI:   {Name: "SOI", Desc: "Start of image"},
+	EOI:   {Name: "EOI", Desc: "End of image true"},
+	SOS:   {Name: "SOS", Desc: "Start of scan"},
+	DQT:   {Name: "DQT", Desc: "Define quantization table(s)"},
+	DNL:   {Name: "DNL", Desc: "Define number of lines"},
+	DRI:   {Name: "DRI", Desc: "Define restart interval"},
+	DHP:   {Name: "DHP", Desc: "Define hierarchical progression"},
+	EXP:   {Name: "EXP", Desc: "Expand reference component(s)"},
+	APP0:  {Name: "APP0", Desc: "Reserved for application segments"},
+	APP1:  {Name: "APP1", Desc: "Reserved for application segments"},
+	APP2:  {Name: "APP2", Desc: "Reserved for application segments"},
+	APP3:  {Name: "APP3", Desc: "Reserved for application segments"},
+	APP4:  {Name: "APP4", Desc: "Reserved for application segments"},
+	APP5:  {Name: "APP5", Desc: "Reserved for application segments"},
+	APP6:  {Name: "APP6", Desc: "Reserved for application segments"},
+	APP7:  {Name: "APP7", Desc: "Reserved for application segments"},
+	APP8:  {Name: "APP8", Desc: "Reserved for application segments"},
+	APP9:  {Name: "APP9", Desc: "Reserved for application segments"},
+	APP10: {Name: "APP10", Desc: "Reserved for application segments"},
+	APP11: {Name: "APP11", Desc: "Reserved for application segments"},
+	APP12: {Name: "APP12", Desc: "Reserved for application segments"},
+	APP13: {Name: "APP13", Desc: "Reserved for application segments"},
+	APP14: {Name: "APP14", Desc: "Reserved for application segments"},
+	APP15: {Name: "APP15", Desc: "Reserved for application segments"},
+	JPG0:  {Name: "JPG0", Desc: "Reserved for JPEG extensions"},
+	JPG1:  {Name: "JPG1", Desc: "Reserved for JPEG extensions"},
+	JPG2:  {Name: "JPG2", Desc: "Reserved for JPEG extensions"},
+	JPG3:  {Name: "JPG3", Desc: "Reserved for JPEG extensions"},
+	JPG4:  {Name: "JPG4", Desc: "Reserved for JPEG extensions"},
+	JPG5:  {Name: "JPG5", Desc: "Reserved for JPEG extensions"},
+	JPG6:  {Name: "JPG6", Desc: "Reserved for JPEG extensions"},
+	JPG7:  {Name: "JPG7", Desc: "Reserved for JPEG extensions"},
+	JPG8:  {Name: "JPG8", Desc: "Reserved for JPEG extensions"},
+	JPG9:  {Name: "JPG9", Desc: "Reserved for JPEG extensions"},
+	JPG10: {Name: "JPG10", Desc: "Reserved for JPEG extensions"},
+	JPG11: {Name: "JPG11", Desc: "Reserved for JPEG extensions"},
+	JPG12: {Name: "JPG12", Desc: "Reserved for JPEG extensions"},
+	JPG13: {Name: "JPG13", Desc: "Reserved for JPEG extensions"},
+	COM:   {Name: "COM", Desc: "Comment"},
+	TEM:   {Name: "TEM", Desc: "For temporary private use in arithmetic coding"},
 }
 
 func jpegDecode(d *decode.D, in interface{}) interface{} {
@@ -199,15 +194,8 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldStructFn("marker", func(d *decode.D) {
 					prefixLen := d.PeekFindByte(0xff, -1) + 1
 					d.FieldBytesLen("prefix", int(prefixLen))
-					markerFound := false
-					markerCode := d.FieldUDescFn("code", func() (uint64, decode.DisplayFormat, string, string) {
-						n := uint(d.U8())
-						if m, ok := markers[n]; ok {
-							markerFound = true
-							return uint64(n), decode.NumberDecimal, m.symbol, m.description
-						}
-						return uint64(n), decode.NumberDecimal, "RES", "Reset"
-					})
+					markerCode, markerFound := d.FieldSymbolMapFn(
+						"code", markers, decode.Symbol{Name: "RES", Desc: "Reset"}, d.U8)
 
 					// RST*, SOI, EOI, TEM does not have a length field. All others have a
 					// 2 byte length read as "Lf", "Ls" etc or in the default case as "length".

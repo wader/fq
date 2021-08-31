@@ -58,7 +58,7 @@ $ fq -d mpeg_annexb verbose /mpeg_annexb.h264
  0x010|               2c|                             |     ,|         |        rbsp_trailing_bits: 80 0x15.5-0x15.7 (0.3)
 0x0000|            67                                 |    g           |      forbidden_zero_bit: false 0x4-0x4 (0.1)
 0x0000|            67                                 |    g           |      nal_ref_idc: 3 0x4.1-0x4.2 (0.2)
-0x0000|            67                                 |    g           |      nal_unit_type: Sequence parameter set (7) 0x4.3-0x4.7 (0.5)
+0x0000|            67                                 |    g           |      nal_unit_type: SPS (7) (Sequence parameter set) 0x4.3-0x4.7 (0.5)
 0x0000|               f4 00 0d 91 9b 28 28 3f 60 22 00|     .....((?`".|      data: f4000d919b28283f6022000003000200... 0x5-0x1c.7 (24)
 0x0010|00 03 00 02 00 00 03 00 64 1e 28 53 2c         |........d.(S,   |
 0x0010|                                       00 00 00|             ...|    [2]: start_code 00000001 0x1d-0x20.7 (4)
@@ -86,7 +86,7 @@ $ fq -d mpeg_annexb verbose /mpeg_annexb.h264
  0x000|            44|                                |    D|          |        rbsp_trailing_bits: 80 0x4.5-0x4.7 (0.3)
 0x0020|   68                                          | h              |      forbidden_zero_bit: false 0x21-0x21 (0.1)
 0x0020|   68                                          | h              |      nal_ref_idc: 3 0x21.1-0x21.2 (0.2)
-0x0020|   68                                          | h              |      nal_unit_type: Picture parameter set (8) 0x21.3-0x21.7 (0.5)
+0x0020|   68                                          | h              |      nal_unit_type: PPS (8) (Picture parameter set) 0x21.3-0x21.7 (0.5)
 0x0020|      eb e3 c4 48 44                           |  ...HD         |      data: ebe3c44844 0x22-0x26.7 (5)
 0x0020|                     00 00 01                  |       ...      |    [4]: start_code 000001 0x27-0x29.7 (3)
       |                                               |                |    [5]: nalu {} (avc_nalu) 0x2a-0x2d6.7 (685)
@@ -101,7 +101,7 @@ $ fq -d mpeg_annexb verbose /mpeg_annexb.h264
  0x2a0|                                 80|           |           .|   |        rbsp_trailing_bits: 80 0x2ab-0x2ab.7 (1)
 0x0020|                              06               |          .     |      forbidden_zero_bit: false 0x2a-0x2a (0.1)
 0x0020|                              06               |          .     |      nal_ref_idc: 0 0x2a.1-0x2a.2 (0.2)
-0x0020|                              06               |          .     |      nal_unit_type: Supplemental enhancement information (SEI) (6) 0x2a.3-0x2a.7 (0.5)
+0x0020|                              06               |          .     |      nal_unit_type: SEI (6) (Supplemental enhancement information) 0x2a.3-0x2a.7 (0.5)
 0x0020|                                 05 ff ff a9 dc|           .....|      data: 05ffffa9dc45e9bde6d948b7962cd820... 0x2b-0x2d6.7 (684)
 0x0030|45 e9 bd e6 d9 48 b7 96 2c d8 20 d9 23 ee ef 78|E....H..,. .#..x|
 *     |until 0x2d6.7 (684)                            |                |
@@ -109,7 +109,7 @@ $ fq -d mpeg_annexb verbose /mpeg_annexb.h264
       |                                               |                |    [7]: nalu {} (avc_nalu) 0x2da-0xae4.7 (2059)
 0x02d0|                              65               |          e     |      forbidden_zero_bit: false 0x2da-0x2da (0.1)
 0x02d0|                              65               |          e     |      nal_ref_idc: 3 0x2da.1-0x2da.2 (0.2)
-0x02d0|                              65               |          e     |      nal_unit_type: Coded slice of an IDR picture (5) 0x2da.3-0x2da.7 (0.5)
+0x02d0|                              65               |          e     |      nal_unit_type: IDR_SLICE (5) (Coded slice of an IDR picture) 0x2da.3-0x2da.7 (0.5)
       |                                               |                |      slice_header: {} 0x2db-0x2dc (1.1)
 0x02d0|                                 88            |           .    |        first_mb_in_slice: 0 0x2db-0x2db (0.1)
 0x02d0|                                 88            |           .    |        slice_type: I (7) 0x2db.1-0x2db.7 (0.7)
