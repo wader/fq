@@ -1,3 +1,4 @@
+# TODO: test for jq -R . <(echo -ne 'a\nb') <(echo c) produces "a" and "bc"
 /a:
 a
 b
@@ -9,6 +10,10 @@ $ fq -R . /a /c
 "c"
 $ fq -Rs . /a /c
 "a\nb\nc\n"
+$ fq -nRs input /a /c
+"a\nb\nc\n"
+$ fq -nRs inputs /a /c
+"a\nb\nc\n"
 $ fq -R
 "a"
 "b"
@@ -17,7 +22,33 @@ stdin:
 a
 b
 c
+$ fq -nR input
+"a"
+stdin:
+a
+b
+c
+$ fq -nR inputs
+"a"
+"b"
+"c"
+stdin:
+a
+b
+c
 $ fq -Rs
+"a\nb\nc\n"
+stdin:
+a
+b
+c
+$ fq -nRs input
+"a\nb\nc\n"
+stdin:
+a
+b
+c
+$ fq -nRs inputs
 "a\nb\nc\n"
 stdin:
 a

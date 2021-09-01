@@ -20,10 +20,10 @@ Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 --null-output,-0        Null byte between outputs
 --option,-o KEY=VALUE   Set option, eg: color=true
 --options               Show all options
+--raw-input,-R          Read raw input strings (don't decode)
 --raw-output,-r         Raw string output (without quotes)
 --repl,-i               Interactive REPL
 --slurp,-s              Read (slurp) all inputs into an array
---raw-input,-R          Read raw input strings (don't decode)
 --version,-v            Show version (dev)
 $ fq -i
 null> ^D
@@ -120,10 +120,16 @@ $ fq --options
   "color": false,
   "colors": "array=white,dumpaddr=yellow,dumpheader=yellow+underline,error=brightred,false=yellow,index=white,null=brightblack,number=cyan,object=white,objectkey=brightblue,string=green,true=yellow,value=white",
   "compact": false,
+  "decode_format": "probe",
   "decode_progress": false,
   "depth": 0,
   "displaybytes": 16,
+  "expr": ".",
+  "expr_eval_path": "arg",
   "expr_file": null,
+  "filenames": [
+    "-"
+  ],
   "include_path": null,
   "join_string": "\n",
   "linebytes": 16,
@@ -131,6 +137,9 @@ $ fq --options
   "raw_output": false,
   "raw_string": false,
   "repl": false,
+  "show_formats": false,
+  "show_help": false,
+  "show_options": true,
   "sizebase": 10,
   "slurp": false,
   "string_input": false,

@@ -119,6 +119,7 @@
         "tfhd",
         "tfra",
         "tmpl",
+        "toarray",
         "toboolean",
         "tobytes",
         "toimage",

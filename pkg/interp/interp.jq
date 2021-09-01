@@ -71,11 +71,15 @@ def _build_default_options:
         } | _obj_to_csv_kv
       ),
       compact:         false,
+      decode_format:   "probe",
       decode_progress: (env.NODECODEPROGRESS == null),
       depth:           0,
       # TODO: intdiv 2 * 2 to get even number, nice or maybe not needed?
       displaybytes:    (if $stdout.is_terminal then [intdiv(intdiv($stdout.width; 8); 2) * 2, 4] | max else 16 end),
+      expr:            ".",
       expr_file:       null,
+      expr_eval_path:  "arg",
+      filenames:       ["-"],
       include_path:    null,
       join_string:     "\n",
       linebytes:       (if $stdout.is_terminal then [intdiv(intdiv($stdout.width; 8); 2) * 2, 4] | max else 16 end),
@@ -84,6 +88,9 @@ def _build_default_options:
       raw_string:      false,
       repl:            false,
       sizebase:        10,
+      show_formats:    false,
+      show_help:       false,
+      show_options:    false,
       slurp:           false,
       string_input:    false,
       unicode:         ($stdout.is_terminal and env.CLIUNICODE != null),
@@ -106,6 +113,13 @@ def _tonumber:
 def _tostring:
   if . != null then "\"\(.)\"" | fromjson end;
 
+def _toarray:
+  if . != null then
+    ( fromjson
+    | if type != "array" then null end
+    )
+  end;
+
 def _to_options:
   ( {
       addrbase:        (.addrbase | _tonumber),
@@ -115,10 +129,13 @@ def _to_options:
       color:           (.color | _toboolean),
       colors:          (.colors | _tostring),
       compact:         (.compact | _toboolean),
+      decode_format:   (.decode_format | _tostring),
       decode_progress: (.decode_progress | _toboolean),
       depth:           (.depth | _tonumber),
       displaybytes:    (.displaybytes | _tonumber),
+      expr:            (.expr | _tostring),
       expr_file:       (.expr_file | _tostring),
+      filename:        (.filenames | _toarray),
       include_path:    (.include_path | _tostring),
       join_string:     (.join_string | _tostring),
       linebytes:       (.linebytes | _tonumber),
@@ -127,6 +144,9 @@ def _to_options:
       raw_string:      (.raw_string | _toboolean),
       repl:            (.repl | _toboolean),
       sizebase:        (.sizebase | _tonumber),
+      show_formats:    (.show_formats | _toboolean),
+      show_help:       (.show_help | _toboolean),
+      show_options:    (.show_options | _toboolean),
       slurp:           (.slurp | _toboolean),
       string_input:    (.string_input | _toboolean),
       unicode:         (.unicode | _toboolean),
@@ -299,44 +319,101 @@ def _cli_expr_on_compile_error:
 def _cli_expr_eval($e; $filename; f): _eval($e; $filename; f; _cli_expr_on_error; _cli_expr_on_compile_error);
 def _cli_expr_eval($e; $filename): _eval($e; $filename; .; _cli_expr_on_error; _cli_expr_on_compile_error);
 
+def _repeat_break(f):
+  try repeat(f)
+  catch if . == "break" then empty else error end;
 
 # next valid input
 def input:
-  ( _input_filenames
-  | if length == 0 then error("break") end
-  | [.[0], .[1:]] as [$h, $t]
-  | _input_filenames($t)
-  | _input_filename(null) as $_
-  | $h
-  | try
-      ( open
-      | _input_filename($h) as $_
-      | .
+  def _input($opts; f):
+    ( _input_filenames
+    | if length == 0 then error("break") end
+    | [.[0], .[1:]] as [$h, $t]
+    | _input_filenames($t)
+    | _input_filename(null) as $_
+    | $h
+    | try
+        ( open
+        | _input_filename($h) as $_
+        | .
+        )
+      catch
+        ( . as $err
+        | _input_io_errors(. += {($h): $err}) as $_
+        | $err
+        | (_error_str | _errorln)
+        , _input($opts; f)
+        )
+    | try f
+      catch
+        ( . as $err
+        | _input_decode_errors(. += {($h): $err}) as $_
+        | "\($h): failed to decode (\($opts.decode_format)), try -d FORMAT to force"
+        | (_error_str | _errorln)
+        , _input($opts; f)
+        )
+    );
+  # TODO: don't rebuild options each time
+  ( options as $opts
+  | if $opts.string_input then
+      ( _input_strings_lines
+      | if . then
+          if length == 0 then error("break")
+          else
+            ( [.[0], .[1:]] as [$h, $t]
+            | _input_strings_lines($t)
+            | $h
+            )
+          end
+        else
+          ( [_repeat_break(_input($opts; tobytes | tostring))]
+          | join("") as $all
+          | if $opts.slurp then
+              # jq --raw-input combined with --slurp reads all inputs into a string
+              # make next input break
+              ( _input_strings_lines([]) as $_
+              | $all
+              )
+            else
+              # TODO: different line endings?
+              # jq strips last newline, "a\nb" and "a\nb\n" behaves the same
+              # also jq -R . <(echo -ne 'a\nb') <(echo c) produces "a" and "bc"
+              ( _input_strings_lines(
+                  ( $all
+                  | rtrimstr("\n")
+                  | split("\n")
+                  )
+                ) as $_
+              | input
+              )
+            end
+          )
+        end
       )
-    catch
-      ( . as $err
-      | _input_io_errors(. += {($h): $err}) as $_
-      | $err
-      | (_error_str | _errorln)
-      , input
-      )
-  | try
-      if _parsed_args.string_input then (tobytes | tostring)
-      else decode(_parsed_args.decode_format)
-      end
-    catch
-      ( . as $err
-      | _input_decode_errors(. += {($h): $err}) as $_
-      | "\($h): failed to decode (\(_parsed_args.decode_format)), try -d FORMAT to force"
-      | (_error_str | _errorln)
-      , input
-      )
+    else _input($opts; decode($opts.decode_format))
+    end
   );
 
 # iterate all valid inputs
-def inputs:
-  try repeat(input)
-  catch if . == "break" then empty else error end;
+def inputs: _repeat_break(input);
+
+def _inputs:
+  ( options as $opts
+  | if $opts.null_input then null
+    elif $opts.string_input then inputs
+    #   ( [inputs]
+    #   | join("")
+    #   | if $opts.slurp then .
+    #     else
+    #       ( rtrimstr("\n")
+    #       | split("\n")[]
+    #       )
+    #     end
+    #   )
+    elif $opts.slurp then [inputs]
+    else inputs
+    end
+  );
 
 def input_filename: _input_filename;
 
@@ -384,8 +461,7 @@ def _main:
       "decode_format": {
         short: "-d",
         long: "--decode",
-        description: "Decode format",
-        default: "probe",
+        description: "Decode format (probe)",
         string: "NAME"
       },
       "expr_file": {
@@ -394,12 +470,12 @@ def _main:
         description: "Read EXPR from file",
         string: "PATH"
       },
-      "formats": {
+      "show_formats": {
         long: "--formats",
         description: "Show supported formats",
         bool: true
       },
-      "help": {
+      "show_help": {
         short: "-h",
         long: "--help",
         description: "Show help",
@@ -436,7 +512,7 @@ def _main:
         description: "Set option, eg: color=true",
         object: "KEY=VALUE",
       },
-      "options": {
+      "show_options": {
         long: "--options",
         description: "Show all options",
         bool: true
@@ -467,7 +543,7 @@ def _main:
         description: "Read (slurp) all inputs into an array",
         bool: true
       },
-      "version": {
+      "show_version": {
         short: "-v",
         long: "--version",
         description: "Show version (\($version))",
@@ -488,48 +564,70 @@ def _main:
   | ( try args_parse($args[1:]; _opts($version))
       catch halt_error(_exit_code_args_error)
     ) as {parsed: $parsed_args, $rest}
-  # store parsed arguments, .decode_format is used by input/0
-  | _parsed_args($parsed_args) as $_
   | _default_options(_build_default_options) as $_
+  # combine --args and -o key=value args
+  | ( ($parsed_args.option | _to_options)
+    + $parsed_args
+    ) as $args_opts
   | _options_stack(
-      [ ($parsed_args.option | _to_options)
-      + ({
-          compact: $parsed_args.compact,
-          expr_file: $parsed_args.expr_file,
-          join_string: (
-            if $parsed_args.join_output then ""
-            elif $parsed_args.null_output then "\u0000"
-            else null
-            end
-          ),
-          include_path: $parsed_args.include_path,
-          null_input: $parsed_args.null_input,
-          repl: $parsed_args.repl,
-          raw_string: (
-            if $parsed_args.raw_string
-              or $parsed_args.join_output
-              or $parsed_args.null_output
-            then true
-            else null
-            end
-          ),
-          slurp: $parsed_args.slurp,
-          string_input: $parsed_args.string_input
-        } | with_entries(select(.value != null)))
+      [ $args_opts
+      + ( {
+            expr: (
+              ( $args_opts.expr_file
+              | if . then
+                  try (open | tobytes | tostring)
+                  catch halt_error(_exit_code_args_error)
+                else $rest[0] // null
+                end
+              )
+            ),
+            filenames: (
+              ( if $args_opts.expr_file then $rest
+                else $rest[1:]
+                end
+              | if . == [] then null end
+              )
+            ),
+            join_string: (
+              if $args_opts.join_output then ""
+              elif $args_opts.null_output then "\u0000"
+              else null
+              end
+            ),
+            null_input: (
+              ( if $args_opts.expr_file then $rest
+                else $rest[1:]
+                end
+              | if . == [] and $args_opts.repl then true
+                else null
+                end
+              )
+            ),
+            raw_string: (
+              if $args_opts.raw_string
+                or $args_opts.join_output
+                or $args_opts.null_output
+              then true
+              else null
+              end
+            )
+          }
+        | with_entries(select(.value != null))
+        )
       ]
     ) as $_
   | options as $opts
-  | if $parsed_args.help then
+  | if $opts.show_help then
       ( _banner
       , ""
       , _usage($arg0; $version)
       , args_help_text(_opts($version))
       ) | println
-    elif $parsed_args.version then
+    elif $opts.show_version then
       $version | println
-    elif $parsed_args.formats then
+    elif $opts.show_formats then
       _formats_list | println
-    elif $parsed_args.options then
+    elif $opts.show_options then
       $opts | display
     elif
       ( ($rest | length) == 0 and
@@ -543,64 +641,24 @@ def _main:
     else
       # use finally as display etc prints and results in empty
       finally(
-        ( { null_input: ($opts.null_input == true) }
-        | if $opts.expr_file then
-            ( .expr = ($opts.expr_file | open | tobytes | tostring)
-            | .expr_filename = $opts.expr_file
-            | .filenames = $rest
-            )
-          else
-            ( .expr = ($rest[0] // ".")
-            | .expr_filename = "arg"
-            | .filenames = $rest[1:]
-            )
-          end
-        | if $opts.repl and .filenames == [] then
-            .null_input = true
-          elif .filenames == [] then
-            .filenames = ["-"]
-          end
-        | . as {$expr, $expr_filename, $filenames, $null_input}
-        | _include_paths([
+        ( _include_paths([
             $opts.include_path // empty
           ]) as $_
-        | _input_filenames($filenames) as $_ # store inputs
-        | ( def _inputs:
-              if $null_input then null
-              elif $opts.string_input then
-                ( [inputs]
-                | join("")
-                | if $opts.slurp then
-                    # jq --raw-input combined with --slurp reads all inputs into a string
-                    .
-                  else
-                    # TODO: different line endings?
-                    # jq strips last newline, "a\nb" and "a\nb\n" behaves the same
-                    # also jq -R . <(echo -ne 'a\nb') <(echo c) produces "a" and "bc"
-                    ( rtrimstr("\n")
-                    | split("\n")[]
-                    )
-                  end
-                )
-              elif $opts.slurp then [inputs]
-              else inputs
-              end;
-
-            if $opts.repl then
-              ( [_inputs]
-              | ( [.[] | _cli_expr_eval($expr; $expr_filename)]
-                | repl({}; .[])
-                )
+        | _input_filenames($opts.filenames) as $_ # store inputs
+        | if $opts.repl then
+            ( [_inputs]
+            | ( [.[] | _cli_expr_eval($opts.expr; $opts.expr_eval_path)]
+              | repl({}; .[])
               )
-            else
-              ( _inputs
-              # iterate all inputs
-              | ( _cli_last_expr_error(null) as $_
-                | _cli_expr_eval($expr; $expr_filename; _repl_display)
-                )
+            )
+          else
+            ( _inputs
+            # iterate all inputs
+            | ( _cli_last_expr_error(null) as $_
+              | _cli_expr_eval($opts.expr; $opts.expr_eval_path; _repl_display)
               )
-            end
-          )
+            )
+          end
         )
         ; # finally
         ( if _input_io_errors then

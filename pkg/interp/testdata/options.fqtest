@@ -7,10 +7,16 @@ $ fq -n options
   "color": false,
   "colors": "array=white,dumpaddr=yellow,dumpheader=yellow+underline,error=brightred,false=yellow,index=white,null=brightblack,number=cyan,object=white,objectkey=brightblue,string=green,true=yellow,value=white",
   "compact": false,
+  "decode_format": "probe",
   "decode_progress": false,
   "depth": 0,
   "displaybytes": 16,
+  "expr": "options",
+  "expr_eval_path": "arg",
   "expr_file": null,
+  "filenames": [
+    "-"
+  ],
   "include_path": null,
   "join_string": "\n",
   "linebytes": 16,
@@ -18,6 +24,9 @@ $ fq -n options
   "raw_output": false,
   "raw_string": false,
   "repl": false,
+  "show_formats": false,
+  "show_help": false,
+  "show_options": false,
   "sizebase": 10,
   "slurp": false,
   "string_input": false,
@@ -59,7 +68,7 @@ $ fq -o displaybytes=10 -n options.displaybytes
 $ fq -o displaybytes=true -n options.displaybytes
 16
 $ fq -o expr_file=test.jq -n options.expr_file
-exitcode: 5
+exitcode: 2
 stderr:
 error: test.jq: file not found
 $ fq -o include_path=path -n options.include_path

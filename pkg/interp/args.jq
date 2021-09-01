@@ -107,7 +107,9 @@ def args_help_text($opts):
       end;
   ( _maxoptlen as $l
   | $opts
-  | to_entries[]
+  | to_entries
+  | sort_by(.value.long)
+  | .[]
   | (.value | .help_default // .default) as $default
   | [ "\(.value | _opthelp | rpad(" "; $l))  \(.value.description)"
     , if $default then
