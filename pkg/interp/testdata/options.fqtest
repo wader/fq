@@ -20,6 +20,7 @@ $ fq -n options
   "repl": false,
   "sizebase": 10,
   "slurp": false,
+  "string_input": false,
   "unicode": false,
   "verbose": false
 }

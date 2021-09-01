@@ -82,16 +82,25 @@ type IsEmptyErrorer interface {
 	IsEmptyError() bool
 }
 
-type Output interface {
-	io.Writer
+type Terminal interface {
 	Size() (int, int)
 	IsTerminal() bool
 }
 
+type Input interface {
+	fs.File
+	Terminal
+}
+
+type Output interface {
+	io.Writer
+	Terminal
+}
+
 type OS interface {
-	Stdin() fs.File
+	Stdin() Input
 	Stdout() Output
-	Stderr() io.Writer
+	Stderr() Output
 	Interrupt() chan struct{}
 	Args() []string
 	Environ() []string
@@ -143,7 +152,7 @@ func (o DiscardOutput) Write(p []byte) (n int, err error) {
 }
 
 type CtxOutput struct {
-	Output
+	io.Writer
 	Ctx context.Context
 }
 
@@ -153,7 +162,7 @@ func (o CtxOutput) Write(p []byte) (n int, err error) {
 			return 0, err
 		}
 	}
-	return o.Output.Write(p)
+	return o.Writer.Write(p)
 }
 
 type InterpValue interface {
@@ -440,7 +449,7 @@ const (
 type evalContext struct {
 	// structcheck has problems with embedding https://gitlab.com/opennota/check#known-limitations
 	ctx    context.Context
-	stdout Output
+	output io.Writer
 	mode   RunMode
 }
 
@@ -532,7 +541,7 @@ func (i *Interp) Main(ctx context.Context, stdout Output, version string) error 
 	return nil
 }
 
-func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src string, filename string, stdout Output) (gojq.Iter, error) {
+func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src string, filename string, output io.Writer) (gojq.Iter, error) {
 	gq, err := gojq.Parse(src)
 	if err != nil {
 		p := queryErrorPosition(src, err)
@@ -728,7 +737,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 
 	runCtx, runCtxCancelFn := i.interruptStack.Push(ctx)
 	ni.evalContext.ctx = runCtx
-	ni.evalContext.stdout = CtxOutput{Output: stdout, Ctx: runCtx}
+	ni.evalContext.output = CtxOutput{Writer: output, Ctx: runCtx}
 	iter := gc.RunWithContext(runCtx, c, variableValues...)
 
 	iterWrapper := iterFn(func() (interface{}, bool) {
@@ -743,7 +752,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	return iterWrapper, nil
 }
 
-func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output) (gojq.Iter, error) {
+func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, output Output) (gojq.Iter, error) {
 	var argsExpr []string
 	for i := range args {
 		argsExpr = append(argsExpr, fmt.Sprintf("$_args[%d]", i))
@@ -760,15 +769,15 @@ func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name
 	/// _args to mark variable as internal and hide it from completion
 	// {input: ..., args: [...]} | .args as {args: $_args} | .input | name[($_args[0]; ...)]
 	trampolineExpr := fmt.Sprintf(". as {args: $_args} | .input | %s%s", name, argExpr)
-	iter, err := i.Eval(ctx, mode, trampolineInput, trampolineExpr, "", stdout)
+	iter, err := i.Eval(ctx, mode, trampolineInput, trampolineExpr, "", output)
 	if err != nil {
 		return nil, err
 	}
 	return iter, nil
 }
 
-func (i *Interp) EvalFuncValues(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, stdout Output) ([]interface{}, error) {
-	iter, err := i.EvalFunc(ctx, mode, c, name, args, stdout)
+func (i *Interp) EvalFuncValues(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, output Output) ([]interface{}, error) {
+	iter, err := i.EvalFunc(ctx, mode, c, name, args, output)
 	if err != nil {
 		return nil, err
 	}

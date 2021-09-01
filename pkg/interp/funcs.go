@@ -23,6 +23,7 @@ import (
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/internal/aheadreadseeker"
 	"github.com/wader/fq/internal/ctxreadseeker"
+	"github.com/wader/fq/internal/gojqextra"
 	"github.com/wader/fq/internal/ioextra"
 	"github.com/wader/fq/internal/progressreadseeker"
 	"github.com/wader/fq/pkg/bitio"
@@ -34,12 +35,11 @@ import (
 // TODO: make it nicer somehow? generate generators? remove from struct?
 func (i *Interp) makeFunctions(registry *registry.Registry) []Function {
 	fs := []Function{
-		{[]string{"tty"}, 0, 0, i.tty, nil},
-
 		{[]string{"readline"}, 0, 2, i.readline, nil},
 		{[]string{"eval"}, 1, 2, nil, i.eval},
-		{[]string{"stdout"}, 0, 0, nil, i.stdout},
-		{[]string{"stderr"}, 0, 0, nil, i.stderr},
+		{[]string{"stdin"}, 0, 0, nil, i.makeStdioFn(i.os.Stdin())},
+		{[]string{"stdout"}, 0, 0, nil, i.makeStdioFn(i.os.Stdout())},
+		{[]string{"stderr"}, 0, 0, nil, i.makeStdioFn(i.os.Stderr())},
 
 		{[]string{"_complete_query"}, 0, 0, i._completeQuery, nil},
 		{[]string{"_display_name"}, 0, 0, i._displayName, nil},
@@ -101,15 +101,6 @@ func (i *Interp) makeFunctions(registry *registry.Registry) []Function {
 	}
 
 	return fs
-}
-
-func (i *Interp) tty(c interface{}, a []interface{}) interface{} {
-	w, h := i.evalContext.stdout.Size()
-	return map[string]interface{}{
-		"is_terminal": i.evalContext.stdout.IsTerminal(),
-		"width":       w,
-		"height":      h,
-	}
 }
 
 // transform byte string <-> buffer using fn:s
@@ -259,7 +250,7 @@ func (i *Interp) eval(c interface{}, a []interface{}) gojq.Iter {
 		}
 	}
 
-	iter, err := i.Eval(i.evalContext.ctx, ScriptMode, c, src, filenameHint, i.evalContext.stdout)
+	iter, err := i.Eval(i.evalContext.ctx, ScriptMode, c, src, filenameHint, i.evalContext.output)
 	if err != nil {
 		return gojq.NewIter(err)
 	}
@@ -267,18 +258,26 @@ func (i *Interp) eval(c interface{}, a []interface{}) gojq.Iter {
 	return iter
 }
 
-func (i *Interp) stdout(c interface{}, a []interface{}) gojq.Iter {
-	if _, err := fmt.Fprint(i.os.Stdout(), c); err != nil {
-		return gojq.NewIter(err)
-	}
-	return gojq.NewIter()
-}
+func (i *Interp) makeStdioFn(t Terminal) func(c interface{}, a []interface{}) gojq.Iter {
+	return func(c interface{}, a []interface{}) gojq.Iter {
+		if c == nil {
+			w, h := t.Size()
+			return gojq.NewIter(map[string]interface{}{
+				"is_terminal": t.IsTerminal(),
+				"width":       w,
+				"height":      h,
+			})
+		}
 
-func (i *Interp) stderr(c interface{}, a []interface{}) gojq.Iter {
-	if _, err := fmt.Fprint(i.os.Stderr(), c); err != nil {
-		return gojq.NewIter(err)
+		if w, ok := t.(io.Writer); ok {
+			if _, err := fmt.Fprint(w, c); err != nil {
+				return gojq.NewIter(err)
+			}
+			return gojq.NewIter()
+		}
+
+		return gojq.NewIter(fmt.Errorf("%v: it not writeable", c))
 	}
-	return gojq.NewIter()
 }
 
 func (i *Interp) _completeQuery(c interface{}, a []interface{}) interface{} {
@@ -386,6 +385,8 @@ func (i *Interp) history(c interface{}, a []interface{}) interface{} {
 }
 
 type bitBufFile struct {
+	gojq.JQValue
+
 	bb       *bitio.Buffer
 	filename string
 
@@ -395,7 +396,7 @@ type bitBufFile struct {
 var _ ToBuffer = (*bitBufFile)(nil)
 
 func (bbf *bitBufFile) Display(w io.Writer, opts Options) error {
-	_, err := fmt.Fprintf(w, "<%s>\n", bbf.filename)
+	_, err := fmt.Fprintln(w, bbf.JQValue.JQValueToString())
 	return err
 }
 
@@ -484,6 +485,7 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 	}
 
 	return &bitBufFile{
+		JQValue:      gojqextra.String(fmt.Sprintf("<bitBufFile %s>", path)),
 		bb:           bb,
 		filename:     path,
 		decodeDoneFn: decodeDoneFn,
@@ -563,23 +565,23 @@ func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}
 
 		switch v := c.(type) {
 		case Display:
-			if err := v.Display(i.evalContext.stdout, opts); err != nil {
+			if err := v.Display(i.evalContext.output, opts); err != nil {
 				return gojq.NewIter(err)
 			}
 			return gojq.NewIter()
 		case nil, bool, float64, int, string, *big.Int, map[string]interface{}, []interface{}, gojq.JQValue:
 			if s, ok := v.(string); ok && opts.RawString {
-				fmt.Fprint(i.evalContext.stdout, s)
+				fmt.Fprint(i.evalContext.output, s)
 			} else {
 				cj, err := i.NewColorJSON(opts)
 				if err != nil {
 					return gojq.NewIter(err)
 				}
-				if err := cj.Marshal(v, i.evalContext.stdout); err != nil {
+				if err := cj.Marshal(v, i.evalContext.output); err != nil {
 					return gojq.NewIter(err)
 				}
 			}
-			fmt.Fprint(i.evalContext.stdout, opts.JoinString)
+			fmt.Fprint(i.evalContext.output, opts.JoinString)
 
 			return gojq.NewIter()
 		case error:
@@ -599,7 +601,7 @@ func (i *Interp) preview(c interface{}, a []interface{}) gojq.Iter {
 
 	switch v := c.(type) {
 	case Preview:
-		if err := v.Preview(i.evalContext.stdout, opts); err != nil {
+		if err := v.Preview(i.evalContext.output, opts); err != nil {
 			return gojq.NewIter(err)
 		}
 		return gojq.NewIter()
@@ -619,7 +621,7 @@ func (i *Interp) hexdump(c interface{}, a []interface{}) gojq.Iter {
 		return gojq.NewIter(err)
 	}
 
-	if err := hexdumpRange(bbr, i.evalContext.stdout, opts); err != nil {
+	if err := hexdumpRange(bbr, i.evalContext.output, opts); err != nil {
 		return gojq.NewIter(err)
 	}
 
