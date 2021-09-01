@@ -86,9 +86,13 @@ $ fq -o sizebase=10 -n options.sizebase
 10
 $ fq -o sizebase=aaa -n options.sizebase
 10
-$ fq -o slurp=10 -n options.slurp
+$ fq -o slurp=true -n options.slurp
 true
 $ fq -o slurp=aaa -n options.slurp
+false
+$ fq -o string_input=true -n options.string_input
+true
+$ fq -o string_input=aaa -n options.string_input
 false
 $ fq -o unicode=true -n options.unicode
 true
