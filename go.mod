@@ -8,12 +8,12 @@ require (
 	github.com/pmezard/go-difflib v1.0.0
 
 	// fork of github.com/itchyny/gojq
-	github.com/wader/gojq v0.12.1-0.20210829105258-55e2b13fae52
+	github.com/wader/gojq v0.12.1-0.20210901131446-3ca1ed24eed9
 	// fork of github.com/chzyer/readline
 	github.com/wader/readline v0.0.0-20210817095433-c868eb04b8b2
 )
 
 require (
 	github.com/itchyny/timefmt-go v0.1.3 // indirect
-	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect
+	golang.org/x/sys v0.0.0-20210831042530-f4d43177bf5e // indirect
 )
