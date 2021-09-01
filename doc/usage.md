@@ -8,7 +8,7 @@ For more information see https://github.com/wader/fq
 
 Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 --compact,-c            Compact output
---decode,-d NAME        Decode format (probe)
+--decode,-d NAME        Decode format (default probe)
 --file,-f PATH          Read EXPR from file
 --formats               Show supported formats
 --help,-h               Show help
@@ -18,10 +18,10 @@ Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 --null-output,-0        Null byte between outputs
 --option,-o KEY=VALUE   Set option, eg: color=true
 --options               Show all options
+--raw-input,-R          Read raw input strings (don't decode)
 --raw-output,-r         Raw string output (without quotes)
 --repl,-i               Interactive REPL
 --slurp,-s              Read (slurp) all inputs into an array
---raw-input,-R          Read raw input strings (don't decode)
 --version,-v            Show version (dev)
 </pre>
 
