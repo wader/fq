@@ -8,7 +8,7 @@ For more information see https://github.com/wader/fq
 
 Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 --compact,-c            Compact output
---decode,-d NAME        Decode format (default probe)
+--decode,-d NAME        Decode format (probe)
 --file,-f PATH          Read EXPR from file
 --formats               Show supported formats
 --help,-h               Show help

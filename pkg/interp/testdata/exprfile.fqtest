@@ -2,6 +2,8 @@
 123
 /test2.jq:
 .headers[0].magic | tovalue
+/err.jq:
+asdad)
 /test.mp3:
 $ fq -n -f /test.jq
 123
@@ -9,3 +11,7 @@ $ fq -n -f /test.jq
 123
 $ fq -f /test2.jq /test.mp3
 "ID3"
+$ fq -nf /err.jq
+exitcode: 3
+stderr:
+error: /err.jq:1:6: unexpected token ")"

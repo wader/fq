@@ -581,6 +581,7 @@ def _main:
                 end
               )
             ),
+            expr_eval_path: $args_opts.expr_file,
             filenames: (
               ( if $args_opts.expr_file then $rest
                 else $rest[1:]
