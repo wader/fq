@@ -422,3 +422,9 @@ mp3> .frames[0].xing | d, f, v
 0xd0|                              62 f0            |          b.    |    music_crc: 25328 0xda-0xdb.7 (2)
 0xd0|                                    5a 35      |            Z5  |    tag_crc: 23093 0xdc-0xdd.7 (2)
 mp3> ^D
+$ fq -n '"broken" | mp3 | d'
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} unnamed (mp3)
+   |                                               |                |  error: mp3: failed to validate at position 0x0: no frames found
+   |                                               |                |  headers: [0]
+   |                                               |                |  frames: [0]
+0x0|62 72 6f 6b 65 6e|                             |broken|         |  unknown0: 62726f6b656e
