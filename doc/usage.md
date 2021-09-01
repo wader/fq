@@ -37,11 +37,13 @@ Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
                           repl=false
                           sizebase=10
                           slurp=false
+                          string_input=false
                           unicode=false
                           verbose=false
 --raw-output,-r         Raw string output (without quotes)
 --repl,-i               Interactive REPL
 --slurp,-s              Read (slurp) all inputs into an array
+--raw-input,-R          Read raw input strings (don't decode)
 --version,-v            Show version (dev)
 </pre>
 

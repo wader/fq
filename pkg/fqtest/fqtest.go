@@ -29,12 +29,20 @@ type testCaseReadline struct {
 	expectedStdout string
 }
 
+type testCaseRunInput struct {
+	interp.FileReader
+	isTerminal bool
+}
+
+func (testCaseRunInput) Size() (int, int)   { return 130, 25 }
+func (i testCaseRunInput) IsTerminal() bool { return i.isTerminal }
+
 type testCaseRunOutput struct {
 	io.Writer
 }
 
-func (o testCaseRunOutput) Size() (int, int) { return 130, 25 }
-func (o testCaseRunOutput) IsTerminal() bool { return true }
+func (testCaseRunOutput) Size() (int, int) { return 130, 25 }
+func (testCaseRunOutput) IsTerminal() bool { return true }
 
 type testCaseRun struct {
 	lineNr           int
@@ -53,13 +61,18 @@ type testCaseRun struct {
 
 func (tcr *testCaseRun) Line() int { return tcr.lineNr }
 
-func (tcr *testCaseRun) Stdin() fs.File {
-	return interp.FileReader{R: bytes.NewBufferString(tcr.stdin)}
+func (tcr *testCaseRun) Stdin() interp.Input {
+	return testCaseRunInput{
+		FileReader: interp.FileReader{
+			R: bytes.NewBufferString(tcr.stdin),
+		},
+		isTerminal: tcr.stdin == "",
+	}
 }
 
 func (tcr *testCaseRun) Stdout() interp.Output { return testCaseRunOutput{tcr.actualStdoutBuf} }
 
-func (tcr *testCaseRun) Stderr() io.Writer { return tcr.actualStderrBuf }
+func (tcr *testCaseRun) Stderr() interp.Output { return testCaseRunOutput{tcr.actualStderrBuf} }
 
 func (tcr *testCaseRun) Interrupt() chan struct{} { return nil }
 

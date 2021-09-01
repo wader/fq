@@ -46,47 +46,50 @@ def _obj_to_csv_kv:
   [to_entries[] | [.key, .value] | join("=")] | join(",");
 
 def _build_default_options:
-  {
-    addrbase:       16,
-    arraytruncate:  50,
-    bitsformat:     "snippet",
-    bytecolors:     "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
-    color:          (tty.is_terminal and env.CLICOLOR != null),
-    colors: (
-      {
-        null: "brightblack",
-        false: "yellow",
-        true: "yellow",
-        number: "cyan",
-        string: "green",
-        objectkey: "brightblue",
-        array: "white",
-        object: "white",
-        index: "white",
-        value: "white",
-        error: "brightred",
-        dumpheader: "yellow+underline",
-        dumpaddr: "yellow"
-      } | _obj_to_csv_kv
-    ),
-    compact:         false,
-    decode_progress: (env.NODECODEPROGRESS == null),
-    depth:           0,
-    # TODO: intdiv 2 * 2 to get even number, nice or maybe not needed?
-    displaybytes:    (if tty.is_terminal then [intdiv(intdiv(tty.width; 8); 2) * 2, 4] | max else 16 end),
-    expr_file:       null,
-    include_path:    null,
-    join_string:     "\n",
-    linebytes:       (if tty.is_terminal then [intdiv(intdiv(tty.width; 8); 2) * 2, 4] | max else 16 end),
-    null_input:      false,
-    raw_output:      (tty.is_terminal | not),
-    raw_string:      false,
-    repl:            false,
-    sizebase:        10,
-    slurp:           false,
-    unicode:         (tty.is_terminal and env.CLIUNICODE != null),
-    verbose:         false,
-  };
+  ( (null | stdout) as $stdout
+  | {
+      addrbase:       16,
+      arraytruncate:  50,
+      bitsformat:     "snippet",
+      bytecolors:     "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
+      color:          ($stdout.is_terminal and env.CLICOLOR != null),
+      colors: (
+        {
+          null: "brightblack",
+          false: "yellow",
+          true: "yellow",
+          number: "cyan",
+          string: "green",
+          objectkey: "brightblue",
+          array: "white",
+          object: "white",
+          index: "white",
+          value: "white",
+          error: "brightred",
+          dumpheader: "yellow+underline",
+          dumpaddr: "yellow"
+        } | _obj_to_csv_kv
+      ),
+      compact:         false,
+      decode_progress: (env.NODECODEPROGRESS == null),
+      depth:           0,
+      # TODO: intdiv 2 * 2 to get even number, nice or maybe not needed?
+      displaybytes:    (if $stdout.is_terminal then [intdiv(intdiv($stdout.width; 8); 2) * 2, 4] | max else 16 end),
+      expr_file:       null,
+      include_path:    null,
+      join_string:     "\n",
+      linebytes:       (if $stdout.is_terminal then [intdiv(intdiv($stdout.width; 8); 2) * 2, 4] | max else 16 end),
+      null_input:      false,
+      raw_output:      ($stdout.is_terminal | not),
+      raw_string:      false,
+      repl:            false,
+      sizebase:        10,
+      slurp:           false,
+      string_input:    false,
+      unicode:         ($stdout.is_terminal and env.CLIUNICODE != null),
+      verbose:         false,
+    }
+  );
 
 def _toboolean:
   try
@@ -125,6 +128,7 @@ def _to_options:
       repl:            (.repl | _toboolean),
       sizebase:        (.sizebase | _tonumber),
       slurp:           (.slurp | _toboolean),
+      string_input:    (.string_input | _toboolean),
       unicode:         (.unicode | _toboolean),
       verbose:         (.verbose | _toboolean),
     }
@@ -317,7 +321,9 @@ def input:
       , input
       )
   | try
-      decode(_parsed_args.decode_format)
+      if _parsed_args.string_input then (tobytes | tostring)
+      else decode(_parsed_args.decode_format)
+      end
     catch
       ( . as $err
       | _input_decode_errors(. += {($h): $err}) as $_
@@ -432,10 +438,16 @@ def _main:
         default: {},
         help_default: _build_default_options
       },
+      "string_input": {
+        short: "-R",
+        long: "--raw-input",
+        description: "Read raw input strings (don't decode)",
+        bool: true
+      },
       "raw_string": {
         short: "-r",
-        # for jq compat, is called raw string internally, raw output is
-        # if we can output raw bytes or not
+        # for jq compat, is called raw string internally, "raw output" is if
+        # we can output raw bytes or not
         long: "--raw-output",
         description: "Raw string output (without quotes)",
         bool: true
@@ -467,6 +479,7 @@ def _main:
   def _usage($arg0; $version):
     "Usage: \($arg0) [OPTIONS] [--] [EXPR] [FILE...]";
   ( . as {$version, $args, args: [$arg0]}
+  | (null | [stdin, stdout]) as [$stdin, $stdout]
   # make sure we don't unintentionally use . to make things clearer
   | null
   | ( try args_parse($args[1:]; _opts($version))
@@ -497,7 +510,8 @@ def _main:
             else null
             end
           ),
-          slurp: $parsed_args.slurp
+          slurp: $parsed_args.slurp,
+          string_input: $parsed_args.string_input
         } | with_entries(select(.value != null)))
       ]
     ) as $_
@@ -512,7 +526,12 @@ def _main:
       $version | println
     elif $parsed_args.formats then
       _formats_list | println
-    elif ($rest | length) == 0 and (($opts.repl | not) and ($opts.expr_file | not)) then
+    elif
+      ( ($rest | length) == 0 and
+        ($opts.repl | not) and
+        ($opts.expr_file | not) and
+        $stdin.is_terminal and $stdout.is_terminal
+      ) then
       ( (( _usage($arg0; $version), "\n") | stderr)
       , null | halt_error(_exit_code_args_error)
       )
@@ -541,27 +560,42 @@ def _main:
             $opts.include_path // empty
           ]) as $_
         | _input_filenames($filenames) as $_ # store inputs
-        | if $opts.repl then
-            ( [ if $null_input then null
-                elif $opts.slurp then [inputs]
-                else inputs
-                end
-              ]
-            | ( [.[] | _cli_expr_eval($expr; $expr_filename)]
-              | repl({}; .[])
-              )
-            )
-          else
-            ( if $null_input then null
+        | ( def _inputs:
+              if $null_input then null
+              elif $opts.string_input then
+                ( [inputs]
+                | join("")
+                | if $opts.slurp then
+                    # jq --raw-input combined with --slurp reads all inputs into a string
+                    .
+                  else
+                    # TODO: different line endings?
+                    # jq strips last newline, "a\nb" and "a\nb\n" behaves the same
+                    # also jq -R . <(echo -ne 'a\nb') <(echo c) produces "a" and "bc"
+                    ( rtrimstr("\n")
+                    | split("\n")[]
+                    )
+                  end
+                )
               elif $opts.slurp then [inputs]
               else inputs
-              end
-              # iterate inputs
+              end;
+
+            if $opts.repl then
+              ( [_inputs]
+              | ( [.[] | _cli_expr_eval($expr; $expr_filename)]
+                | repl({}; .[])
+                )
+              )
+            else
+              ( _inputs
+              # iterate all inputs
               | ( _cli_last_expr_error(null) as $_
                 | _cli_expr_eval($expr; $expr_filename; _repl_display)
                 )
-            )
-          end
+              )
+            end
+          )
         )
         ; # finally
         ( if _input_io_errors then

@@ -33,13 +33,13 @@ func (a autoCompleterFn) Do(line []rune, pos int) (newLine [][]rune, length int)
 	return a(line, pos)
 }
 
-type standardOS struct {
+type stdOS struct {
 	rl                  *readline.Instance
 	interruptSignalChan chan os.Signal
 	interruptChan       chan struct{}
 }
 
-func newStandardOS() *standardOS {
+func newStandardOS() *stdOS {
 	interruptChan := make(chan struct{}, 1)
 	interruptSignalChan := make(chan os.Signal, 1)
 	signal.Notify(interruptSignalChan, os.Interrupt)
@@ -53,53 +53,74 @@ func newStandardOS() *standardOS {
 		}
 	}()
 
-	return &standardOS{
+	return &stdOS{
 		interruptSignalChan: interruptSignalChan,
 		interruptChan:       interruptChan,
 	}
 }
 
-func (o *standardOS) Stdin() fs.File {
-	return interp.FileReader{
-		R: os.Stdin,
-		FileInfo: interp.FixedFileInfo{
-			FName: "stdin",
-			FMode: fs.ModeIrregular,
+type fdTerminal uintptr
+
+func (fd fdTerminal) Size() (int, int) {
+	w, h, _ := readline.GetSize(int(fd))
+	return w, h
+}
+func (fd fdTerminal) IsTerminal() bool {
+	return readline.IsTerminal(int(fd))
+}
+
+type stdinInput struct {
+	fdTerminal
+	fs.File
+}
+
+func (o *stdOS) Stdin() interp.Input {
+	return stdinInput{
+		fdTerminal: fdTerminal(os.Stdin.Fd()),
+		File: interp.FileReader{
+			R: os.Stdin,
+			FileInfo: interp.FixedFileInfo{
+				FName: "stdin",
+				FMode: fs.ModeIrregular,
+			},
 		},
 	}
 }
 
-type standardOsOutput struct {
-	os *standardOS
+type stdoutOutput struct {
+	fdTerminal
+	os *stdOS
 }
 
-func (o standardOsOutput) Write(p []byte) (n int, err error) {
+func (o stdoutOutput) Write(p []byte) (n int, err error) {
+	// Let write go thru readline if it has been used. This to have ansi color emulation
+	// on windows thru readlins:s stdout rewriter
+	// TODO: check if tty instead? else only color when repl
 	if o.os.rl != nil {
 		return o.os.rl.Write(p)
 	}
 	return os.Stdout.Write(p)
 }
 
-func (o standardOsOutput) Size() (int, int) {
-	w, h, _ := readline.GetSize(int(os.Stdout.Fd()))
-	return w, h
+func (o *stdOS) Stdout() interp.Output {
+	return stdoutOutput{fdTerminal: fdTerminal(os.Stdout.Fd()), os: o}
 }
 
-func (o standardOsOutput) IsTerminal() bool {
-	return readline.IsTerminal(int(os.Stdout.Fd()))
+type stderrOutput struct {
+	fdTerminal
 }
 
-func (o *standardOS) Stdout() interp.Output { return standardOsOutput{os: o} }
+func (o stderrOutput) Write(p []byte) (n int, err error) { return os.Stderr.Write(p) }
 
-func (o *standardOS) Stderr() io.Writer { return os.Stderr }
+func (o *stdOS) Stderr() interp.Output { return stderrOutput{fdTerminal: fdTerminal(os.Stderr.Fd())} }
 
-func (o *standardOS) Interrupt() chan struct{} { return o.interruptChan }
+func (o *stdOS) Interrupt() chan struct{} { return o.interruptChan }
 
-func (*standardOS) Args() []string { return os.Args }
+func (*stdOS) Args() []string { return os.Args }
 
-func (*standardOS) Environ() []string { return os.Environ() }
+func (*stdOS) Environ() []string { return os.Environ() }
 
-func (*standardOS) ConfigDir() (string, error) {
+func (*stdOS) ConfigDir() (string, error) {
 	p, err := os.UserConfigDir()
 	if err != nil {
 		return "", err
@@ -107,13 +128,13 @@ func (*standardOS) ConfigDir() (string, error) {
 	return filepath.Join(p, "fq"), nil
 }
 
-type standardOSFS struct{}
+type stdOSFS struct{}
 
-func (standardOSFS) Open(name string) (fs.File, error) { return os.Open(name) }
+func (stdOSFS) Open(name string) (fs.File, error) { return os.Open(name) }
 
-func (*standardOS) FS() fs.FS { return standardOSFS{} }
+func (*stdOS) FS() fs.FS { return stdOSFS{} }
 
-func (o *standardOS) Readline(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error) {
+func (o *stdOS) Readline(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error) {
 	if o.rl == nil {
 		var err error
 
@@ -159,7 +180,7 @@ func (o *standardOS) Readline(prompt string, complete func(line string, pos int)
 	return line, nil
 }
 
-func (o *standardOS) History() ([]string, error) {
+func (o *stdOS) History() ([]string, error) {
 	// TODO: refactor history handling to use internal fs?
 	r, err := os.Open(o.rl.Config.HistoryFile)
 	if err != nil {
@@ -177,7 +198,7 @@ func (o *standardOS) History() ([]string, error) {
 	return hs, nil
 }
 
-func (o *standardOS) Close() error {
+func (o *stdOS) Close() error {
 	// only close if is terminal otherwise ansi reset will write
 	// to stdout and mess up raw output
 	if o.rl != nil {

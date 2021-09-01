@@ -1,0 +1,25 @@
+/a:
+a
+b
+/c:
+c
+$ fq -R . /a /c
+"a"
+"b"
+"c"
+$ fq -Rs . /a /c
+"a\nb\nc\n"
+$ fq -R
+"a"
+"b"
+"c"
+stdin:
+a
+b
+c
+$ fq -Rs
+"a\nb\nc\n"
+stdin:
+a
+b
+c
