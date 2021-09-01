@@ -430,13 +430,16 @@ def _main:
         description: "Null input (use input/0 and inputs/0 to read input)",
         bool: true
       },
-      "options": {
+      "option": {
         short: "-o",
         long: "--option",
         description: "Set option, eg: color=true",
         object: "KEY=VALUE",
-        default: {},
-        help_default: _build_default_options
+      },
+      "options": {
+        long: "--options",
+        description: "Show all options",
+        bool: true
       },
       "string_input": {
         short: "-R",
@@ -489,7 +492,7 @@ def _main:
   | _parsed_args($parsed_args) as $_
   | _default_options(_build_default_options) as $_
   | _options_stack(
-      [ ($parsed_args.options | _to_options)
+      [ ($parsed_args.option | _to_options)
       + ({
           compact: $parsed_args.compact,
           expr_file: $parsed_args.expr_file,
@@ -526,6 +529,8 @@ def _main:
       $version | println
     elif $parsed_args.formats then
       _formats_list | println
+    elif $parsed_args.options then
+      $opts | display
     elif
       ( ($rest | length) == 0 and
         ($opts.repl | not) and
