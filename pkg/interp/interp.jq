@@ -231,7 +231,7 @@ def _prompt:
       , if length > 0 then (.[0] | _type_name_error) else empty end
       , if length > 1 then ", ..." else empty end
       , "]"
-      , "[\(length)]"
+      , if length > 1 then "[\(length)]" else empty end
       )
     end;
   ( [ (_options_stack | length | if . > 2 then ((.-2) * ">") + " " else empty end)
@@ -243,7 +243,7 @@ def _prompt:
         , _preview
         )
       end
-    , if length > 1 then ", ..." else empty end
+    , if length > 1 then ", [\(length)]" else empty end
     , "> "
     ]
   ) | join("");
