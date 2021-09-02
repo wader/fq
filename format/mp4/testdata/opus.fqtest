@@ -299,8 +299,8 @@ $ fq -d mp4 verbose /opus.mp4
 0x420|                        00 00 00 00            |        ....    |                          reserved: 0 0x428-0x42b.7 (4)
 0x420|                                    4c 61 76 66|            Lavf|                          data: "Lavf58.45.100" 0x42c-0x438.7 (13)
 0x430|35 38 2e 34 35 2e 31 30 30|                    |58.45.100|      |
-     |                                               |                |  tracks: [1] 0x2c-0x438.7 (1037)
-     |                                               |                |    [0]: track {} 0x2c-0x438.7 (1037)
+     |                                               |                |  tracks: [1] 0x2c-0x196.7 (363)
+     |                                               |                |    [0]: track {} 0x2c-0x196.7 (363)
      |                                               |                |      samples: [3] 0x2c-0x196.7 (363)
      |                                               |                |        [0]: sample {} (opus_packet) 0x2c-0xa4.7 (121)
      |                                               |                |          type: "audio" 0x2c-NA (0)
@@ -350,4 +350,3 @@ $ fq -d mp4 verbose /opus.mp4
 0x110|                                             18|               .|            data: 1802cc495727d4a383e95333fe456233... 0x11f-0x196.7 (120)
 0x120|02 cc 49 57 27 d4 a3 83 e9 53 33 fe 45 62 33 33|..IW'....S3.Eb33|
 *    |until 0x196.7 (120)                            |                |
-     |                                               |                |      data_format: "Opus" 0x439-NA (0)

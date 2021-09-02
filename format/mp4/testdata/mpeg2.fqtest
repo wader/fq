@@ -331,8 +331,8 @@ $ fq -d mp4 verbose /mpeg2.mp4
 0x2290|                        00 00 00 00            |        ....    |                          reserved: 0 0x2298-0x229b.7 (4)
 0x2290|                                    4c 61 76 66|            Lavf|                          data: "Lavf58.45.100" 0x229c-0x22a8.7 (13)
 0x22a0|35 38 2e 34 35 2e 31 30 30|                    |58.45.100|      |
-      |                                               |                |  tracks: [1] 0x2c-0x22a8.7 (8829)
-      |                                               |                |    [0]: track {} 0x2c-0x22a8.7 (8829)
+      |                                               |                |  tracks: [1] 0x2c-0x37.7 (12)
+      |                                               |                |    [0]: track {} 0x2c-0x37.7 (12)
       |                                               |                |      samples: [1] 0x2c-0x37.7 (12)
       |                                               |                |        [0]: sample {} (mpeg_pes_packet) 0x2c-0x37.7 (12)
 0x0020|                                    00 00 01   |            ... |          prefix: Correct (0x1) 0x2c-0x2e.7 (3)
@@ -347,4 +347,3 @@ $ fq -d mp4 verbose /mpeg2.mp4
 0x0030|                     18                        |       .        |          constrained_parameters_flag: 0 0x37.5-0x37.5 (0.1)
 0x0030|                     18                        |       .        |          load_intra_quantizer_matrix: false 0x37.6-0x37.6 (0.1)
 0x0030|                     18                        |       .        |          load_non_intra_quantizer_matrix: false 0x37.7-0x37.7 (0.1)
-      |                                               |                |      data_format: "mp4v" 0x22a9-NA (0)

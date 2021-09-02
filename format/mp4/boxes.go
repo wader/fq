@@ -770,7 +770,7 @@ func init() {
 			dataOffsetPresent := false
 			d.FieldStructFn("flags", func(d *decode.D) {
 				d.FieldU12("unused0")
-				sampleCompositionTimeOffsetsPresent = d.FieldBool("sample_composition_time_sffsets_present")
+				sampleCompositionTimeOffsetsPresent = d.FieldBool("sample_composition_time_offsets_present")
 				sampleFlagsPresent = d.FieldBool("sample_flags_present")
 				sampleSizePresent = d.FieldBool("sample_size_present")
 				sampleDurationPresent = d.FieldBool("sample_duration_present")
@@ -1004,8 +1004,14 @@ func init() {
 			}
 		},
 		"sinf": decodeBoxes,
-		"frma": func(_ *decodeContext, d *decode.D) {
-			d.FieldUTF8("format", 4)
+		"frma": func(ctx *decodeContext, d *decode.D) {
+			format := d.FieldUTF8("format", 4)
+
+			// set to original data format
+			// TODO: how to handle multiple descriptors? track current?
+			if ctx.currentTrack != nil && len(ctx.currentTrack.sampleDescriptions) > 0 {
+				ctx.currentTrack.sampleDescriptions[0].originalFormat = format
+			}
 		},
 		"schm": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
