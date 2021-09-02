@@ -16,6 +16,32 @@ func (d *D) TryUTF8(nBytes int) (string, error) {
 	return string(s), nil
 }
 
+func (d *D) TryUTF16BE(nBytes int) (string, error) {
+	b, err := d.bitBuf.BytesLen(nBytes)
+	// TODO: len check
+	rs := make([]rune, len(b)/2)
+	for i := 0; i < len(b)/2; i++ {
+		rs[i] = rune(uint(b[i*2])<<8 + uint(b[i*2+1]))
+	}
+	if err != nil {
+		return "", err
+	}
+	return string(rs), nil
+}
+
+func (d *D) TryUTF16LE(nBytes int) (string, error) {
+	b, err := d.bitBuf.BytesLen(nBytes)
+	// TODO: len check
+	rs := make([]rune, len(b)/2)
+	for i := 0; i < len(b)/2; i++ {
+		rs[i] = rune(uint(b[i*2]) | uint(b[i*2+1])<<8)
+	}
+	if err != nil {
+		return "", err
+	}
+	return string(rs), nil
+}
+
 // TryUTF8ShortString read pascal short string, max nBytes
 func (d *D) TryUTF8ShortString(nBytes int) (string, error) {
 	l, err := d.TryU8()
@@ -219,12 +245,52 @@ func (d *D) UTF8(nBytes int) string {
 	return s
 }
 
+// UTF16BE read nBytes utf16be string
+func (d *D) UTF16BE(nBytes int) string {
+	s, err := d.TryUTF16BE(nBytes)
+	if err != nil {
+		panic(IOError{Err: err, Op: "UTF16BE", Size: int64(nBytes) * 8, Pos: d.Pos()})
+	}
+	return s
+}
+
+// UTF16LE read nBytes utf16le string
+func (d *D) UTF16LE(nBytes int) string {
+	s, err := d.TryUTF16LE(nBytes)
+	if err != nil {
+		panic(IOError{Err: err, Op: "UTF16LE", Size: int64(nBytes) * 8, Pos: d.Pos()})
+	}
+	return s
+}
+
 // FieldUTF8 read nBytes utf8 string and add a field
 func (d *D) FieldUTF8(name string, nBytes int) string {
 	return d.FieldStrFn(name, func() (string, string) {
 		str, err := d.TryUTF8(nBytes)
 		if err != nil {
 			panic(IOError{Err: err, Name: name, Op: "FieldUTF8", Size: int64(nBytes) * 8, Pos: d.Pos()})
+		}
+		return str, ""
+	})
+}
+
+// FieldUTF16BE read nBytes utf16be string and add a field
+func (d *D) FieldUTF16BE(name string, nBytes int) string {
+	return d.FieldStrFn(name, func() (string, string) {
+		str, err := d.TryUTF16BE(nBytes)
+		if err != nil {
+			panic(IOError{Err: err, Name: name, Op: "FieldUTF16BE", Size: int64(nBytes) * 8, Pos: d.Pos()})
+		}
+		return str, ""
+	})
+}
+
+// FieldUTF16LE read nBytes utf16le string and add a field
+func (d *D) FieldUTF16LE(name string, nBytes int) string {
+	return d.FieldStrFn(name, func() (string, string) {
+		str, err := d.TryUTF16LE(nBytes)
+		if err != nil {
+			panic(IOError{Err: err, Name: name, Op: "FieldUTF16LE", Size: int64(nBytes) * 8, Pos: d.Pos()})
 		}
 		return str, ""
 	})

@@ -67,6 +67,7 @@ const (
 	PNG                = "png"
 	PROTOBUF           = "protobuf"
 	PROTOBUF_WIDEVINE  = "protobuf_widevine"
+	PSSH_PLAYREADY     = "pssh_playready"
 	TAR                = "tar"
 	TIFF               = "tiff"
 	VORBIS_COMMENT     = "vorbis_comment"

@@ -99,6 +99,7 @@ opus_packet        Opus packet
 png                Portable Network Graphics file
 protobuf           Protobuf
 protobuf_widevine  Widevine protobuf
+pssh_playready     PlayReady PSSH
 raw                Raw bits
 tar                Tar archive
 tiff               Tag Image File Format

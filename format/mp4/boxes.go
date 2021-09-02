@@ -995,6 +995,8 @@ func init() {
 			switch {
 			case bytes.Equal(systemID, systemIDWidevine[:]):
 				d.FieldFormatLen("data", int64(dataLen)*8, protoBufWidevineFormat)
+			case bytes.Equal(systemID, systemIDPlayReady[:]):
+				d.FieldFormatLen("data", int64(dataLen)*8, psshPlayreadyFormat)
 			case systemID == nil:
 				fallthrough
 			default:
