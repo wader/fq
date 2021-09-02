@@ -397,8 +397,8 @@ $ fq -d mp4 verbose /hevc.mp4
 0x1480|                              00 00 00 00      |          ....  |                          reserved: 0 0x148a-0x148d.7 (4)
 0x1480|                                          4c 61|              La|                          data: "Lavf58.45.100" 0x148e-0x149a.7 (13)
 0x1490|76 66 35 38 2e 34 35 2e 31 30 30|              |vf58.45.100|    |
-      |                                               |                |  tracks: [1] 0x2c-0x149a.7 (5231)
-      |                                               |                |    [0]: track {} 0x2c-0x149a.7 (5231)
+      |                                               |                |  tracks: [1] 0x2c-0x880.7 (2133)
+      |                                               |                |    [0]: track {} 0x2c-0x880.7 (2133)
       |                                               |                |      samples: [1] 0x2c-0x880.7 (2133)
       |                                               |                |        [0]: sample {} (hevc_au) 0x2c-0x880.7 (2133)
       |                                               |                |          access_unit: [1] 0x2c-0x880.7 (2133)
@@ -412,4 +412,3 @@ $ fq -d mp4 verbose /hevc.mp4
 0x0030|      af 1d 20 aa 55 b7 88 a0 62 7f ff fa 2c 46|  .. .U...b...,F|                data: af1d20aa55b788a0627ffffa2c46fda9... 0x32-0x880.7 (2127)
 0x0040|fd a9 78 83 ff fb 75 6c 0b 3f ff 94 ce 7f aa fe|..x...ul.?......|
 *     |until 0x880.7 (2127)                           |                |
-      |                                               |                |      data_format: "hev1" 0x149b-NA (0)

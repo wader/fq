@@ -321,8 +321,8 @@ $ fq -d mp4 verbose /mp3.mp4
 0x550|            00 00 00 00                        |    ....        |                          reserved: 0 0x554-0x557.7 (4)
 0x550|                        4c 61 76 66 35 38 2e 34|        Lavf58.4|                          data: "Lavf58.45.100" 0x558-0x564.7 (13)
 0x560|35 2e 31 30 30|                                |5.100|          |
-     |                                               |                |  tracks: [1] 0x2c-0x564.7 (1337)
-     |                                               |                |    [0]: track {} 0x2c-0x564.7 (1337)
+     |                                               |                |  tracks: [1] 0x2c-0x29d.7 (626)
+     |                                               |                |    [0]: track {} 0x2c-0x29d.7 (626)
      |                                               |                |      samples: [3] 0x2c-0x29d.7 (626)
      |                                               |                |        [0]: sample {} (mp3_frame) 0x2c-0xfb.7 (208)
      |                                               |                |          header: {} 0x2c-0x2f.7 (4)
@@ -516,4 +516,3 @@ $ fq -d mp4 verbose /mp3.mp4
 0x280|         4c 41 4d 45 33 2e 31 30 30 aa aa aa aa|   LAME3.100....|          other_data: 4c414d45332e313030aaaaaaaaaaaaaa... 0x283-0x29d.7 (27)
 0x290|aa aa aa aa aa aa aa aa aa aa aa aa aa aa      |..............  |
      |                                               |                |          crc_calculated: c36b 0x29e-NA (0)
-     |                                               |                |      data_format: "mp4a" 0x565-NA (0)

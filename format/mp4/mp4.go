@@ -100,7 +100,8 @@ type moof struct {
 }
 
 type sampleDescription struct {
-	dataFormat string
+	dataFormat     string
+	originalFormat string
 }
 
 type track struct {
@@ -203,8 +204,14 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 
 			d.FieldStructFn("track", func(d *decode.D) {
 				// TODO: handle progressive/fragmented mp4 differently somehow?
-				if t.moofs == nil && len(t.sampleDescriptions) > 0 {
-					d.FieldStrFn("data_format", func() (string, string) { return t.sampleDescriptions[0].dataFormat, "" })
+
+				trackSdDataFormat := "unknown"
+				if len(t.sampleDescriptions) > 0 {
+					sd := t.sampleDescriptions[0]
+					trackSdDataFormat = sd.dataFormat
+					if sd.originalFormat != "" {
+						trackSdDataFormat = sd.originalFormat
+					}
 				}
 
 				d.FieldArrayFn("samples", func(d *decode.D) {
@@ -231,12 +238,7 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 							}
 
 							sampleSize := t.stsz[sampleNr]
-							dataFormat := "unknown"
-							if len(t.sampleDescriptions) > 0 {
-								dataFormat = t.sampleDescriptions[0].dataFormat
-							}
-
-							decodeSampleRange(d, t, dataFormat, "sample", int64(sampleOffset)*8, int64(sampleSize)*8, t.decodeOpts...)
+							decodeSampleRange(d, t, trackSdDataFormat, "sample", int64(sampleOffset)*8, int64(sampleSize)*8, t.decodeOpts...)
 
 							// log.Printf("%s %d/%d %d/%d sample=%d/%d chunk=%d size=%d %d-%d\n", t.dataFormat, stscIndex, len(t.stsc), i, stscEntry.samplesPerChunk, sampleNr, len(t.stsz), chunkNr, sampleSize, sampleOffset, sampleOffset+uint64(sampleSize))
 
@@ -256,12 +258,13 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 						for _, sz := range m.samplesSizes {
 							// log.Printf("moof sample %s %d-%d\n", t.dataFormat, sampleOffset, int64(sz))
 
-							dataFormat := "unknown"
-							if len(t.sampleDescriptions) > 0 {
-								dataFormat = t.sampleDescriptions[0].dataFormat
-							}
+							dataFormat := trackSdDataFormat
 							if m.defaultSampleDescriptionIndex != 0 && int(m.defaultSampleDescriptionIndex-1) < len(t.sampleDescriptions) {
-								dataFormat = t.sampleDescriptions[m.defaultSampleDescriptionIndex-1].dataFormat
+								sd := t.sampleDescriptions[m.defaultSampleDescriptionIndex-1]
+								dataFormat = sd.dataFormat
+								if sd.originalFormat != "" {
+									dataFormat = sd.originalFormat
+								}
 							}
 
 							// log.Printf("moof %#+v dataFormat: %#+v\n", m, dataFormat)

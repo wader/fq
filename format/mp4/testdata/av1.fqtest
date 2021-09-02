@@ -301,8 +301,8 @@ $ fq -d mp4 verbose /av1.mp4
 0x14a0|   00 00 00 00                                 | ....           |                          reserved: 0 0x14a1-0x14a4.7 (4)
 0x14a0|               4c 61 76 66 35 38 2e 34 35 2e 31|     Lavf58.45.1|                          data: "Lavf58.45.100" 0x14a5-0x14b1.7 (13)
 0x14b0|30 30|                                         |00|             |
-      |                                               |                |  tracks: [1] 0x2c-0x14b1.7 (5254)
-      |                                               |                |    [0]: track {} 0x2c-0x14b1.7 (5254)
+      |                                               |                |  tracks: [1] 0x2c-0x11bf.7 (4500)
+      |                                               |                |    [0]: track {} 0x2c-0x11bf.7 (4500)
       |                                               |                |      samples: [1] 0x2c-0x11bf.7 (4500)
       |                                               |                |        [0]: sample {} (av1_frame) 0x2c-0x11bf.7 (4500)
       |                                               |                |          frame: [3] 0x2c-0x11bf.7 (4500)
@@ -336,4 +336,3 @@ $ fq -d mp4 verbose /av1.mp4
 0x0040|                                          f0 22|              ."|              size: 4464 0x4e-0x4f.7 (2)
 0x0050|f6 0a 4f ae f3 fe ec e7 30 4f 3f 13 9c 75 c9 6a|..O.....0O?..u.j|              data: f60a4faef3feece7304f3f139c75c96a... 0x50-0x11bf.7 (4464)
 *     |until 0x11bf.7 (4464)                          |                |
-      |                                               |                |      data_format: "av01" 0x14b2-NA (0)

@@ -389,8 +389,8 @@ $ fq -d mp4 verbose /avc.mp4
 0x0de0|      00 00 00 00                              |  ....          |                          reserved: 0 0xde2-0xde5.7 (4)
 0x0de0|                  4c 61 76 66 35 38 2e 34 35 2e|      Lavf58.45.|                          data: "Lavf58.45.100" 0xde6-0xdf2.7 (13)
 0x0df0|31 30 30|                                      |100|            |
-      |                                               |                |  tracks: [1] 0x30-0xdf2.7 (3523)
-      |                                               |                |    [0]: track {} 0x30-0xdf2.7 (3523)
+      |                                               |                |  tracks: [1] 0x30-0xaef.7 (2752)
+      |                                               |                |    [0]: track {} 0x30-0xaef.7 (2752)
       |                                               |                |      samples: [1] 0x30-0xaef.7 (2752)
       |                                               |                |        [0]: sample {} (avc_au) 0x30-0xaef.7 (2752)
       |                                               |                |          access_unit: [2] 0x30-0xaef.7 (2752)
@@ -425,4 +425,3 @@ $ fq -d mp4 verbose /avc.mp4
 0x02e0|                     84 00 2b ff fe f5 db f3 2c|       ..+.....,|                data: 080057fffdebb7e65958ccce7bffda76... 0x2e7.1-0xaef.7 (2056.7)
 0x02f0|ac 66 67 3d ff ed 3b 60 00 21 74 ff c0 cf 1f fc|.fg=..;`.!t.....|
 *     |until 0xaef.7 (2057)                           |                |
-      |                                               |                |      data_format: "avc1" 0xdf3-NA (0)
