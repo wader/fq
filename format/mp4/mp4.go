@@ -48,6 +48,7 @@ var mpegHEVCSampleFormat []*decode.Format
 var mpegPESPacketSampleFormat []*decode.Format
 var opusPacketFrameFormat []*decode.Format
 var protoBufWidevineFormat []*decode.Format
+var psshPlayreadyFormat []*decode.Format
 var vorbisPacketFormat []*decode.Format
 var vp9FrameFormat []*decode.Format
 var vpxCCRFormat []*decode.Format
@@ -76,6 +77,7 @@ func init() {
 			{Names: []string{format.MPEG_PES_PACKET}, Formats: &mpegPESPacketSampleFormat},
 			{Names: []string{format.OPUS_PACKET}, Formats: &opusPacketFrameFormat},
 			{Names: []string{format.PROTOBUF_WIDEVINE}, Formats: &protoBufWidevineFormat},
+			{Names: []string{format.PSSH_PLAYREADY}, Formats: &psshPlayreadyFormat},
 			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
 			{Names: []string{format.VP9_FRAME}, Formats: &vp9FrameFormat},
 			{Names: []string{format.VPX_CCR}, Formats: &vpxCCRFormat},
