@@ -12,11 +12,25 @@ null> 1 | repl
 2
 > number> ^D
 null> [1,2,3] | repl({}; .[])
-> number, ...> .
+> number, [3]> .
 1
 2
 3
-> number, ...> ^D
+> number, [3]> ^D
+null> [[1,2,3]] | repl({}; .[])
+> [number, ...][3]> .
+[
+  1,
+  2,
+  3
+]
+> [number, ...][3]> ^D
+null> [[1]] | repl({}; .[])
+> [number]> .
+[
+  1
+]
+> [number]> ^D
 null> [] | repl({}; .[])
 > empty> 1
 > empty> ^D
