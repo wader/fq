@@ -23,6 +23,8 @@ import (
 	"github.com/wader/fq/pkg/interp"
 )
 
+var writeActual = os.Getenv("WRITE_ACTUAL") != ""
+
 type testCaseReadline struct {
 	input          string
 	expectedPrompt string
@@ -377,55 +379,6 @@ func parseTestCases(s string) *testCase {
 	return te
 }
 
-// func TestParseTestCase(t *testing.T) {
-// 	actualTestCase := parseTestCases(`
-// /a:
-// input content a
-// $ a b
-// /a:
-// expected content a
-// >stdout:
-// expected stdout
-// >stderr:
-// expected stderr
-// ---
-// /a2:
-// input content a2
-// $ a2 b2
-// /a2:
-// expected content a2
-// >stdout:
-// expected stdout2
-// >stderr:
-// expected stderr2
-// `[1:])
-
-// 	expectedTestCase := []testCase{
-// 		{
-// 			RunArgs:         []string{"a", "b"},
-// 			Files:           map[string]string{"a": "input content a\n"},
-// 			ExpectedFiles:   map[string]string{"a": "expected content a\n"},
-// 			ExpectedStdout:  "expected stdout\n",
-// 			ExpectedStderr:  "expected stderr\n",
-// 			ActualStdoutBuf: &bytes.Buffer{},
-// 			ActualStderrBuf: &bytes.Buffer{},
-// 			ActualFiles:     map[string]string{},
-// 		},
-// 		{
-// 			RunArgs:         []string{"a2", "b2"},
-// 			Files:           map[string]string{"a2": "input content a2\n"},
-// 			ExpectedFiles:   map[string]string{"a2": "expected content a2\n"},
-// 			ExpectedStdout:  "expected stdout2\n",
-// 			ExpectedStderr:  "expected stderr2\n",
-// 			ActualStdoutBuf: &bytes.Buffer{},
-// 			ActualStderrBuf: &bytes.Buffer{},
-// 			ActualFiles:     map[string]string{},
-// 		},
-// 	}
-
-// 	deepequal.Error(t, "testcase", expectedTestCase, actualTestCase)
-// }
-
 func testDecodedTestCaseRun(t *testing.T, registry *registry.Registry, tcr *testCaseRun) {
 	q, err := interp.New(tcr, registry)
 	if err != nil {
@@ -439,8 +392,10 @@ func testDecodedTestCaseRun(t *testing.T, registry *registry.Registry, tcr *test
 		}
 	}
 
-	// cli.Command{Version: "test", OS: &te}.Run()
-	// deepequal.Error(t, "files", te.ExpectedFiles, te.ActualFiles)
+	if writeActual {
+		return
+	}
+
 	deepequal.Error(t, "exitcode", tcr.expectedExitCode, tcr.actualExitCode)
 	deepequal.Error(t, "stdout", tcr.ToExpectedStdout(), tcr.actualStdoutBuf.String())
 	deepequal.Error(t, "stderr", tcr.ToExpectedStderr(), tcr.actualStderrBuf.String())
@@ -483,7 +438,7 @@ func TestPath(t *testing.T, registry *registry.Registry) {
 		t.Fatal(err)
 	}
 
-	if v := os.Getenv("WRITE_ACTUAL"); v != "" {
+	if writeActual {
 		for _, tc := range tcs {
 			if !tc.wasTested {
 				continue
