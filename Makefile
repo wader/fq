@@ -9,10 +9,13 @@ fq:
 # figure out all go pakges with test files
 test: PKGS=$(shell find . -name "*_test.go" | xargs -n 1 dirname | sort | uniq)
 test: jqtest
-	go test ${COVER} ${PKGS}
+	go test ${VERBOSE} ${COVER} ${PKGS}
 
 testwrite: export WRITE_ACTUAL=1
 testwrite: test
+
+testv: export VERBOSE=-v
+testv: test
 
 cover: COVER=-cover -race -coverpkg=./... -coverprofile=cover.out
 cover: test
