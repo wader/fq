@@ -156,7 +156,13 @@ $ fq -d mp4 verbose /hevc.mp4
 0x09d0|                              00 00 00 14      |          ....  |                      size: 20 0x9da-0x9dd.7 (4)
 0x09d0|                                          76 6d|              vm|                      type: "vmhd" (Video media header, overall information (video track only)) 0x9de-0x9e1.7 (4)
 0x09e0|68 64                                          |hd              |
-0x09e0|      00 00 00 01 00 00 00 00 00 00 00 00      |  ............  |                      data: 000000010000000000000000 0x9e2-0x9ed.7 (12)
+0x09e0|      00                                       |  .             |                      version: 0 0x9e2-0x9e2.7 (1)
+0x09e0|         00 00 01                              |   ...          |                      flags: 1 0x9e3-0x9e5.7 (3)
+0x09e0|                  00 00                        |      ..        |                      graphicsmode: 0 0x9e6-0x9e7.7 (2)
+      |                                               |                |                      opcolor: [3] 0x9e8-0x9ed.7 (6)
+0x09e0|                        00 00                  |        ..      |                        [0]: value 0 0x9e8-0x9e9.7 (2)
+0x09e0|                              00 00            |          ..    |                        [1]: value 0 0x9ea-0x9eb.7 (2)
+0x09e0|                                    00 00      |            ..  |                        [2]: value 0 0x9ec-0x9ed.7 (2)
       |                                               |                |                    [1]: box {} 0x9ee-0xa11.7 (36)
 0x09e0|                                          00 00|              ..|                      size: 36 0x9ee-0x9f1.7 (4)
 0x09f0|00 24                                          |.$              |

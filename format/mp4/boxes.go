@@ -237,7 +237,16 @@ func init() {
 			decodeFieldLang(d, "language")
 			d.FieldU16("quality")
 		},
-
+		"vmhd": func(_ *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+			d.FieldU16("graphicsmode")
+			d.FieldArrayFn("opcolor", func(d *decode.D) {
+				d.FieldU16("value")
+				d.FieldU16("value")
+				d.FieldU16("value")
+			})
+		},
 		"hdlr": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			// TODO: values
@@ -608,10 +617,20 @@ func init() {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			// TODO: should be count from stsz
-			// TODO: can we know size here or do we need to defer decoding somehow?
+			// TODO: can we know count here or do we need to defer decoding somehow?
 			d.FieldArrayFn("entries", func(d *decode.D) {
 				for d.NotEnd() {
-					d.FieldU8("entry")
+					d.FieldStructFn("entry", func(d *decode.D) {
+						d.FieldU2("reserved")
+						values := map[uint64]string{
+							0: "unknown",
+							1: "yes",
+							2: "no",
+						}
+						d.FieldStringMapFn("sample_depends_on", values, "reserved", d.U2, decode.NumberDecimal)
+						d.FieldStringMapFn("sample_is_depended_on", values, "reserved", d.U2, decode.NumberDecimal)
+						d.FieldStringMapFn("sample_has_redundancy", values, "reserved", d.U2, decode.NumberDecimal)
+					})
 				}
 			})
 		},
@@ -958,6 +977,7 @@ func init() {
 			d.FieldFormat("data", id3v2Format)
 		},
 		"mehd": func(_ *decodeContext, d *decode.D) {
+			d.FieldU8("version")
 			flags := d.FieldU24("flags")
 			if flags&0b1 != 0 {
 				d.FieldU64("fragment_duration")
@@ -1080,17 +1100,26 @@ func init() {
 			}
 		},
 		"sgpd": func(_ *decodeContext, d *decode.D) {
-			d.FieldU8("version")
+			version := d.FieldU8("version")
 			d.FieldU24("flags")
-
-			// TODO: version 2?
-
 			d.FieldU32("grouping_type")
-			defaultLength := d.FieldU32("default_length")
+			var defaultLength uint64
+			if version == 1 {
+				defaultLength = d.FieldU32("default_length")
+			}
+			if version >= 2 {
+				d.FieldU32("default_sample_description_index")
+			}
 			entryCount := d.FieldU32("entry_count")
 			d.FieldArrayFn("groups", func(d *decode.D) {
 				for i := uint64(0); i < entryCount; i++ {
-					d.FieldBitBufLen("group", int64(defaultLength)*8)
+					entryLen := defaultLength
+					if version == 1 {
+						if defaultLength == 0 {
+							entryLen = d.FieldU32("descriptor_length")
+						}
+					}
+					d.FieldBitBufLen("group", int64(entryLen)*8)
 				}
 			})
 		},

@@ -138,7 +138,13 @@ $ fq -d mp4 verbose /avc.mp4
 0x0c40|                           00 00 00 14         |         ....   |                      size: 20 0xc49-0xc4c.7 (4)
 0x0c40|                                       76 6d 68|             vmh|                      type: "vmhd" (Video media header, overall information (video track only)) 0xc4d-0xc50.7 (4)
 0x0c50|64                                             |d               |
-0x0c50|   00 00 00 01 00 00 00 00 00 00 00 00         | ............   |                      data: 000000010000000000000000 0xc51-0xc5c.7 (12)
+0x0c50|   00                                          | .              |                      version: 0 0xc51-0xc51.7 (1)
+0x0c50|      00 00 01                                 |  ...           |                      flags: 1 0xc52-0xc54.7 (3)
+0x0c50|               00 00                           |     ..         |                      graphicsmode: 0 0xc55-0xc56.7 (2)
+      |                                               |                |                      opcolor: [3] 0xc57-0xc5c.7 (6)
+0x0c50|                     00 00                     |       ..       |                        [0]: value 0 0xc57-0xc58.7 (2)
+0x0c50|                           00 00               |         ..     |                        [1]: value 0 0xc59-0xc5a.7 (2)
+0x0c50|                                 00 00         |           ..   |                        [2]: value 0 0xc5b-0xc5c.7 (2)
       |                                               |                |                    [1]: box {} 0xc5d-0xc80.7 (36)
 0x0c50|                                       00 00 00|             ...|                      size: 36 0xc5d-0xc60.7 (4)
 0x0c60|24                                             |$               |

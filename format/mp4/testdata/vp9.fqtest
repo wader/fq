@@ -137,7 +137,13 @@ $ fq -d mp4 verbose /vp9.mp4
 0x16b0|                                       00 00 00|             ...|                      size: 20 0x16bd-0x16c0.7 (4)
 0x16c0|14                                             |.               |
 0x16c0|   76 6d 68 64                                 | vmhd           |                      type: "vmhd" (Video media header, overall information (video track only)) 0x16c1-0x16c4.7 (4)
-0x16c0|               00 00 00 01 00 00 00 00 00 00 00|     ...........|                      data: 000000010000000000000000 0x16c5-0x16d0.7 (12)
+0x16c0|               00                              |     .          |                      version: 0 0x16c5-0x16c5.7 (1)
+0x16c0|                  00 00 01                     |      ...       |                      flags: 1 0x16c6-0x16c8.7 (3)
+0x16c0|                           00 00               |         ..     |                      graphicsmode: 0 0x16c9-0x16ca.7 (2)
+      |                                               |                |                      opcolor: [3] 0x16cb-0x16d0.7 (6)
+0x16c0|                                 00 00         |           ..   |                        [0]: value 0 0x16cb-0x16cc.7 (2)
+0x16c0|                                       00 00   |             .. |                        [1]: value 0 0x16cd-0x16ce.7 (2)
+0x16c0|                                             00|               .|                        [2]: value 0 0x16cf-0x16d0.7 (2)
 0x16d0|00                                             |.               |
       |                                               |                |                    [1]: box {} 0x16d1-0x16f4.7 (36)
 0x16d0|   00 00 00 24                                 | ...$           |                      size: 36 0x16d1-0x16d4.7 (4)

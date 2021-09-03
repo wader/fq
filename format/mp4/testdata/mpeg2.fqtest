@@ -154,8 +154,14 @@ $ fq -d mp4 verbose /mpeg2.mp4
 0x20f0|                                             00|               .|                      size: 20 0x20ff-0x2102.7 (4)
 0x2100|00 00 14                                       |...             |
 0x2100|         76 6d 68 64                           |   vmhd         |                      type: "vmhd" (Video media header, overall information (video track only)) 0x2103-0x2106.7 (4)
-0x2100|                     00 00 00 01 00 00 00 00 00|       .........|                      data: 000000010000000000000000 0x2107-0x2112.7 (12)
-0x2110|00 00 00                                       |...             |
+0x2100|                     00                        |       .        |                      version: 0 0x2107-0x2107.7 (1)
+0x2100|                        00 00 01               |        ...     |                      flags: 1 0x2108-0x210a.7 (3)
+0x2100|                                 00 00         |           ..   |                      graphicsmode: 0 0x210b-0x210c.7 (2)
+      |                                               |                |                      opcolor: [3] 0x210d-0x2112.7 (6)
+0x2100|                                       00 00   |             .. |                        [0]: value 0 0x210d-0x210e.7 (2)
+0x2100|                                             00|               .|                        [1]: value 0 0x210f-0x2110.7 (2)
+0x2110|00                                             |.               |
+0x2110|   00 00                                       | ..             |                        [2]: value 0 0x2111-0x2112.7 (2)
       |                                               |                |                    [1]: box {} 0x2113-0x2136.7 (36)
 0x2110|         00 00 00 24                           |   ...$         |                      size: 36 0x2113-0x2116.7 (4)
 0x2110|                     64 69 6e 66               |       dinf     |                      type: "dinf" (Data information box, container) 0x2117-0x211a.7 (4)
