@@ -355,9 +355,13 @@ def input:
     );
   # TODO: don't rebuild options each time
   ( options as $opts
+  # TODO: refactor into def
+  # this is a bit strange as jq for --raw-string can return string instead
+  # with data from multiple inputs
   | if $opts.string_input then
       ( _input_strings_lines
       | if . then
+          # we're already iterating lines
           if length == 0 then error("break")
           else
             ( [.[0], .[1:]] as [$h, $t]
@@ -646,20 +650,30 @@ def _main:
             $opts.include_path // empty
           ]) as $_
         | _input_filenames($opts.filenames) as $_ # store inputs
-        | if $opts.repl then
-            ( [_inputs]
-            | ( [.[] | _cli_expr_eval($opts.expr; $opts.expr_eval_path)]
-              | repl({}; .[])
+        | ( def _inputs:
+              ( if $opts.null_input then null
+                # note jq --slurp --raw-string is special, will be just
+                # a string not an array
+                elif $opts.string_input then inputs
+                elif $opts.slurp then [inputs]
+                else inputs
+                end
+              );
+            if $opts.repl then
+              ( [_inputs]
+              | ( [.[] | _cli_expr_eval($opts.expr; $opts.expr_eval_path)]
+                | repl({}; .[])
+                )
               )
-            )
-          else
-            ( _inputs
-            # iterate all inputs
-            | ( _cli_last_expr_error(null) as $_
-              | _cli_expr_eval($opts.expr; $opts.expr_eval_path; _repl_display)
+            else
+              ( _inputs
+              # iterate all inputs
+              | ( _cli_last_expr_error(null) as $_
+                | _cli_expr_eval($opts.expr; $opts.expr_eval_path; _repl_display)
+                )
               )
-            )
-          end
+            end
+          )
         )
         ; # finally
         ( if _input_io_errors then
