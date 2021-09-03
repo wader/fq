@@ -16,7 +16,10 @@ def _finally(f; fin):
 
 def _repeat_break(f):
   try repeat(f)
-  catch if . == "break" then empty else error end;
+  catch
+    if . == "break" then empty
+    else error
+    end;
 
 def _error_str: "error: \(.)";
 def _errorln: ., "\n" | stderr;

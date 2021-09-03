@@ -23,7 +23,7 @@ def recurse_depth(f; cond):
     }
   )
 ]
-| chunk_by(.norm_path)
+| streaks_by(.norm_path)
 | map(.[0] + {count: length})
 | .[]
 | [ if .depth > 0 then "  "*.depth else empty end

@@ -419,24 +419,6 @@ def input:
 # iterate all valid inputs
 def inputs: _repeat_break(input);
 
-def _inputs:
-  ( options as $opts
-  | if $opts.null_input then null
-    elif $opts.string_input then inputs
-    #   ( [inputs]
-    #   | join("")
-    #   | if $opts.slurp then .
-    #     else
-    #       ( rtrimstr("\n")
-    #       | split("\n")[]
-    #       )
-    #     end
-    #   )
-    elif $opts.slurp then [inputs]
-    else inputs
-    end
-  );
-
 def input_filename: _input_filename;
 
 def var: _variables;
@@ -450,17 +432,18 @@ def var($k): . as $c | var($k; $c);
 
 # TODO: introspect and show doc, reflection somehow?
 def help:
-  ( builtins[]
-  , "^C interrupt"
-  , "^D exit REPL"
+  ( "Type jq expression to evaluate"
+  , "\\t       Auto completion"
+  , "Up/Down  History"
+  , "^C       Interrupt execution"
+  , "^D       Exit REPL"
   ) | println;
 
 def _main:
   def _formats_list:
-    [ ["Name:", "Description:"]
-    , ( formats
+    [ ( formats
       | to_entries[]
-      | [(.key+" "), .value.description]
+      | [(.key+"  "), .value.description]
       )
     ]
     | table(
