@@ -298,11 +298,12 @@ func (i *Interp) queryFromString(c interface{}, a []interface{}) interface{} {
 			pos:  p,
 		}
 	}
+
+	// TODO: use mapstruct?
 	b, err := json.Marshal(q)
 	if err != nil {
 		return err
 	}
-
 	var v interface{}
 	if err := json.Unmarshal(b, &v); err != nil {
 		return err

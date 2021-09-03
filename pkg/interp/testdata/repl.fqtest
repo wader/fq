@@ -21,6 +21,11 @@ null> 1,2,3 | repl
 2
 3
 > number, [3]> ^D
+null> def f: 1; f,f | repl
+> number, [2]> .
+1
+1
+> number, [2]> ^D
 null> [1,2,3] | repl
 > [number, ...][3]> .
 [
