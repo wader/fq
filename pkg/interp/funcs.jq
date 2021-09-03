@@ -42,8 +42,8 @@ def trim: capture("^\\s*(?<str>.*?)\\s*$"; "").str;
 # does +1 and [:1] as " "*0 is null
 def rpad($s; $w): . + ($s * ($w+1-length))[1:];
 
-# like `group` but groups consecutively on condition
-def chunk_by(f):
+# like group but groups streaks based on condition
+def streaks_by(f):
   ( . as $a
   | length as $l
   | if $l == 0 then []
@@ -73,9 +73,9 @@ def chunk_by(f):
     end
   );
 # [1, 2, 2, 3] => [[1], [2, 2], [3]]
-def chunk: chunk_by(.);
+def streaks: streaks_by(.);
 
-# same as group_by but counts
+# same as group_by but counts, array or pairs with [value, count]
 def count_by(exp):
   group_by(exp) | map([(.[0] | exp), length]);
 def count: count_by(.);
