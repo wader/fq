@@ -53,9 +53,10 @@ To get the most out of fq it's recommended to learn more about jq, here are some
 [FAQ](https://github.com/stedolan/jq/wiki/FAQ),
 [Pitfalls](https://github.com/stedolan/jq/wiki/How-to:-Avoid-Pitfalls)
 
-The most common beginner gotcha is probably jq's use of `;` and `,`. jq uses `;` as argument separator.
-To call `f` with two arguments use `f(a; b)`. If you do `f(a, b)` you will pass a single generator
-expression `a, b` to `f`.
+The most common beginner gotcha is probably jq's use of `;` and `,`. jq uses `;` as argument separator
+and `,` as output separator.
+To call `f` with two arguments use `f(a; b)`. If you do `f(a, b)` you pass a single
+argument `a, b` to `f`.
 
 ### Differences to jq
 
@@ -63,7 +64,6 @@ expression `a, b` to `f`.
 notable is support for arbitrary-precision integers.
 - Supports hexdecimal `0xab`, octal `0o77` and binary `0b101` integer literals
 - Has bitwise operations, `band`, `bor`, `bxor`, `bsl`, `bsr`, `bnot`
-- Has `div` integer division operator
 - Try include `include "file?";` that don't fail if file is missing
 - Possible for a value to act as a object with keys even when it's an array, number etc.
 - There can be keys hidden from `keys` and `[]`. Used for, `_format`, `_bytes` etc.
@@ -88,7 +88,7 @@ notable is support for arbitrary-precision integers.
 - `v`/`verbose` display value verbosely and don't truncate array
 - `p`/`preview` show preview of field tree
 - `hd`/`hexdump` hexdump value
-- `repl` nested REPL, must be last. `1 | repl` or iterable `1, 2, 3 | repl`.
+- `repl` nested REPL, must be last in a pipeline. `1 | repl` or "slurp" multiple outputs `1, 2, 3 | repl`.
 
 ### Decoded values (TODO: better name?)
 
@@ -224,7 +224,12 @@ $ fq file.mp3 .unknown0 mp3_frame
 $ fq file.mp3 .unknown0._bytes[10:] mp3_frame
 </pre>
 
-#### appending to array is slow
+### Pass `.` as input and argument
+
+This won't work as expected `.a | f(.b)` as `.` is `.a` when evaluating the arguments.
+Instead do `. as $c | .a | f($c.b)`.
+
+#### Appending to array is slow
 
 Try to use `map` or `foreach` instead.
 
