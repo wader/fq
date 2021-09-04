@@ -1,3 +1,18 @@
+
+
+def display($opts): _display($opts);
+def display: _display({});
+def d($opts): _display($opts);
+def d: _display({});
+def full($opts): _display({arraytruncate: 0} + $opts);
+def full: full({});
+def f($opts): full($opts);
+def f: full;
+def verbose($opts): _display({verbose: true, arraytruncate: 0} + $opts);
+def verbose: verbose({});
+def v($opts): verbose($opts);
+def v: verbose;
+
 # integer division
 # inspried by https://github.com/itchyny/gojq/issues/63#issuecomment-765066351
 def intdiv($a; $b): ($a - ($a % $b)) / $b;
