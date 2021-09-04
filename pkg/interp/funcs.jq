@@ -94,6 +94,21 @@ def delta_by(f):
 # array of minus between all consecutive pairs
 def delta: delta_by(.b - .a);
 
+# split array or string into even chunks, except maybe the last
+def chunk($size):
+  if length == 0 then []
+  else
+    [ ( range(
+          ( (length / $size)
+          | ceil
+          | if . == 0 then 1 end
+          )
+        ) as $i
+      | .[$i * $size:($i + 1) * $size]
+      )
+    ]
+  end;
+
 # helper to build path query/generate functions for tree structures with
 # non-unique children, ex: mp4_path
 def tree_path(children; name; $v):

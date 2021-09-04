@@ -79,6 +79,7 @@ notable is support for arbitrary-precision integers.
   - `expr_to_path` from `".key[1]"` to `["key", 1]`.
   - `diff/2` produce diff object between two values.
   - `delta`, `delta_by/1`, array with difference between all consecutive pairs.
+  - `chunk/1`, split array or string into even chunks
 - `open` open file for reading
 - `probe` or `decode` probe format and decode
 - `mp3`, `matroska`, ..., `<name>`, `decode([name])` force decode as format
