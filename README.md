@@ -37,7 +37,7 @@ $ fq '.headers[].frames[] | select(.id == "APIC").picture.chunks[] | select(.typ
 }
  
 <b># Extract PNG file</b> 
-$ fq '.headers[].frames[] | select(.id == "APIC")?.picture._bits' file.mp3 > file.png 
+$ fq '.headers[].frames[] | select(.id == "APIC")?.picture | tobits' file.mp3 > file.png 
 $ file file.png 
 file.png: PNG image data, 320 x 240, 8-bit/color RGB, non-interlaced
  
