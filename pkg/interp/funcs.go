@@ -57,9 +57,7 @@ func (i *Interp) makeFunctions(registry *registry.Registry) []Function {
 		{[]string{"decode"}, 0, 1, i.makeDecodeFn(registry, registry.MustGroup(format.PROBE)), nil},
 
 		{[]string{"format"}, 0, 0, i.format, nil},
-		{[]string{"display", "d"}, 0, 1, nil, i.makeDisplayFn(nil)},
-		{[]string{"full", "f"}, 0, 1, nil, i.makeDisplayFn(map[string]interface{}{"arraytruncate": 0})},
-		{[]string{"verbose", "v"}, 0, 1, nil, i.makeDisplayFn(map[string]interface{}{"arraytruncate": 0, "verbose": true})},
+		{[]string{"_display"}, 1, 1, nil, i.display},
 		{[]string{"preview", "p"}, 0, 1, nil, i.preview},
 		{[]string{"hexdump", "hd", "h"}, 0, 1, nil, i.hexdump},
 
@@ -603,39 +601,37 @@ func (i *Interp) format(c interface{}, a []interface{}) interface{} {
 	return f
 }
 
-func (i *Interp) makeDisplayFn(fnOpts map[string]interface{}) func(c interface{}, a []interface{}) gojq.Iter {
-	return func(c interface{}, a []interface{}) gojq.Iter {
-		opts, err := i.Options(append([]interface{}{fnOpts}, a...)...)
-		if err != nil {
+func (i *Interp) display(c interface{}, a []interface{}) gojq.Iter {
+	opts, err := i.Options(a...)
+	if err != nil {
+		return gojq.NewIter(err)
+	}
+
+	switch v := c.(type) {
+	case Display:
+		if err := v.Display(i.evalContext.output, opts); err != nil {
 			return gojq.NewIter(err)
 		}
-
-		switch v := c.(type) {
-		case Display:
-			if err := v.Display(i.evalContext.output, opts); err != nil {
+		return gojq.NewIter()
+	case nil, bool, float64, int, string, *big.Int, map[string]interface{}, []interface{}, gojq.JQValue:
+		if s, ok := v.(string); ok && opts.RawString {
+			fmt.Fprint(i.evalContext.output, s)
+		} else {
+			cj, err := i.NewColorJSON(opts)
+			if err != nil {
 				return gojq.NewIter(err)
 			}
-			return gojq.NewIter()
-		case nil, bool, float64, int, string, *big.Int, map[string]interface{}, []interface{}, gojq.JQValue:
-			if s, ok := v.(string); ok && opts.RawString {
-				fmt.Fprint(i.evalContext.output, s)
-			} else {
-				cj, err := i.NewColorJSON(opts)
-				if err != nil {
-					return gojq.NewIter(err)
-				}
-				if err := cj.Marshal(v, i.evalContext.output); err != nil {
-					return gojq.NewIter(err)
-				}
+			if err := cj.Marshal(v, i.evalContext.output); err != nil {
+				return gojq.NewIter(err)
 			}
-			fmt.Fprint(i.evalContext.output, opts.JoinString)
-
-			return gojq.NewIter()
-		case error:
-			return gojq.NewIter(v)
-		default:
-			return gojq.NewIter(fmt.Errorf("%+#v: not displayable", c))
 		}
+		fmt.Fprint(i.evalContext.output, opts.JoinString)
+
+		return gojq.NewIter()
+	case error:
+		return gojq.NewIter(v)
+	default:
+		return gojq.NewIter(fmt.Errorf("%+#v: not displayable", c))
 	}
 }
 
