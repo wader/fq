@@ -20,8 +20,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/internal/aheadreadseeker"
 	"github.com/wader/fq/internal/ctxreadseeker"
 	"github.com/wader/fq/internal/gojqextra"
@@ -34,7 +32,7 @@ import (
 )
 
 // TODO: make it nicer somehow? generate generators? remove from struct?
-func (i *Interp) makeFunctions(registry *registry.Registry) []Function {
+func (i *Interp) makeFunctions() []Function {
 	fs := []Function{
 		{[]string{"readline"}, 0, 2, i.readline, nil},
 		{[]string{"eval"}, 1, 2, nil, i.eval},
@@ -54,10 +52,10 @@ func (i *Interp) makeFunctions(registry *registry.Registry) []Function {
 		{[]string{"history"}, 0, 0, i.history, nil},
 
 		{[]string{"open"}, 0, 0, i._open, nil},
-		{[]string{"decode"}, 0, 1, i.makeDecodeFn(registry, registry.MustGroup(format.PROBE)), nil},
+		{[]string{"_decode"}, 2, 2, i._decode, nil},
 
 		{[]string{"format"}, 0, 0, i.format, nil},
-		{[]string{"_display"}, 1, 1, nil, i.display},
+		{[]string{"_display"}, 1, 1, nil, i._display},
 		{[]string{"preview", "p"}, 0, 1, nil, i.preview},
 		{[]string{"hexdump", "hd", "h"}, 0, 1, nil, i.hexdump},
 
@@ -97,9 +95,6 @@ func (i *Interp) makeFunctions(registry *registry.Registry) []Function {
 		{[]string{"aes_ctr"}, 1, 2, i.aesCtr, nil},
 
 		{[]string{"find"}, 1, 1, nil, i.find},
-	}
-	for name, f := range i.registry.Groups {
-		fs = append(fs, Function{[]string{name}, 0, 0, i.makeDecodeFn(registry, f), nil})
 	}
 
 	return fs
@@ -537,56 +532,52 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 	}
 }
 
-func (i *Interp) makeDecodeFn(registry *registry.Registry, decodeFormats []*decode.Format) func(c interface{}, a []interface{}) interface{} {
-	return func(c interface{}, a []interface{}) interface{} {
-		filename := "unnamed"
+func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
+	filename := "unnamed"
 
-		// TODO: progress hack
-		// would be nice to move progress code into decode but it might be
-		// tricky to keep track of absolute positions in the underlaying readers
-		// when it uses BitBuf slices, maybe only in Pos()?
-		if bbf, ok := c.(*bitBufFile); ok {
-			if bbf.decodeDoneFn != nil {
-				defer bbf.decodeDoneFn()
-			}
-			filename = bbf.filename
+	// TODO: progress hack
+	// would be nice to move progress code into decode but it might be
+	// tricky to keep track of absolute positions in the underlaying readers
+	// when it uses BitBuf slices, maybe only in Pos()?
+	if bbf, ok := c.(*bitBufFile); ok {
+		if bbf.decodeDoneFn != nil {
+			defer bbf.decodeDoneFn()
 		}
-
-		bb, err := toBuffer(c)
-		if err != nil {
-			return err
-		}
-
-		opts := map[string]interface{}{}
-
-		if len(a) >= 1 {
-			formatName, err := toString(a[0])
-			if err != nil {
-				return fmt.Errorf("%s: %w", formatName, err)
-			}
-			decodeFormats, err = registry.Group(formatName)
-			if err != nil {
-				return fmt.Errorf("%s: %w", formatName, err)
-			}
-		}
-
-		dv, _, err := decode.Decode("", filename, bb, decodeFormats, decode.DecodeOptions{FormatOptions: opts})
-		if dv == nil {
-			var decodeFormatsErr decode.DecodeFormatsError
-			if errors.As(err, &decodeFormatsErr) {
-				var vs []interface{}
-				for _, fe := range decodeFormatsErr.Errs {
-					vs = append(vs, fe.Value())
-				}
-
-				return valueError{vs}
-			}
-
-			return valueError{err}
-		}
-
-		return makeDecodeValue(dv)
+		filename = bbf.filename
 	}
+
+	bb, err := toBuffer(c)
+	if err != nil {
+		return err
+	}
+
+	opts := map[string]interface{}{}
+
+	formatName, err := toString(a[0])
+	if err != nil {
+		return fmt.Errorf("%s: %w", formatName, err)
+	}
+	decodeFormats, err := i.registry.Group(formatName)
+	if err != nil {
+		return fmt.Errorf("%s: %w", formatName, err)
+	}
+
+	dv, _, err := decode.Decode("", filename, bb, decodeFormats, decode.DecodeOptions{FormatOptions: opts})
+	if dv == nil {
+		var decodeFormatsErr decode.DecodeFormatsError
+		if errors.As(err, &decodeFormatsErr) {
+			var vs []interface{}
+			for _, fe := range decodeFormatsErr.Errs {
+				vs = append(vs, fe.Value())
+			}
+
+			return valueError{vs}
+		}
+
+		return valueError{err}
+	}
+
+	return makeDecodeValue(dv)
 }
 
 func (i *Interp) format(c interface{}, a []interface{}) interface{} {
@@ -601,7 +592,7 @@ func (i *Interp) format(c interface{}, a []interface{}) interface{} {
 	return f
 }
 
-func (i *Interp) display(c interface{}, a []interface{}) gojq.Iter {
+func (i *Interp) _display(c interface{}, a []interface{}) gojq.Iter {
 	opts, err := i.Options(a...)
 	if err != nil {
 		return gojq.NewIter(err)

@@ -570,7 +570,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	}
 
 	var compilerOpts []gojq.CompilerOption
-	for _, f := range ni.makeFunctions(ni.registry) {
+	for _, f := range ni.makeFunctions() {
 		for _, n := range f.Names {
 			if f.IterFn != nil {
 				compilerOpts = append(compilerOpts,
@@ -619,6 +619,18 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 									continue
 								}
 								fmt.Fprintf(sb, "include \"@format/%s\";\n", f.Name)
+							}
+							return bytes.NewReader(sb.Bytes()), nil
+						} else if filename == "decode.jq" {
+							sb := &bytes.Buffer{}
+							fmt.Fprintf(sb, "def decode($name; $opts): _decode($name; $opts);\n")
+							fmt.Fprintf(sb, "def decode($name): _decode($name; {});\n")
+							fmt.Fprintf(sb, "def decode: _decode(\"probe\"; {});\n")
+							for name := range i.registry.Groups {
+								fmt.Fprintf(sb, ""+
+									"def %[1]s($opts): _decode(%[1]q; $opts);\n"+
+									"def %[1]s: _decode(%[1]q; {});\n",
+									name)
 							}
 							return bytes.NewReader(sb.Bytes()), nil
 						} else {

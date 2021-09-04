@@ -4,6 +4,7 @@ include "args";
 include "query";
 
 # will include all per format specific function etc
+include "@format/decode";
 include "@format/all";
 
 # optional user init
