@@ -4,6 +4,7 @@ import (
 	"io"
 
 	"github.com/wader/fq/pkg/bitio"
+	"golang.org/x/text/encoding/unicode"
 )
 
 // TODO: FP64,unsigned/BE/LE? rename SFP32?
@@ -18,28 +19,19 @@ func (d *D) TryUTF8(nBytes int) (string, error) {
 
 func (d *D) TryUTF16BE(nBytes int) (string, error) {
 	b, err := d.bitBuf.BytesLen(nBytes)
-	// TODO: len check
-	rs := make([]rune, len(b)/2)
-	for i := 0; i < len(b)/2; i++ {
-		rs[i] = rune(uint(b[i*2])<<8 + uint(b[i*2+1]))
-	}
 	if err != nil {
 		return "", err
 	}
-	return string(rs), nil
+	return unicode.UTF16(unicode.BigEndian, unicode.IgnoreBOM).NewDecoder().String(string(b))
 }
 
 func (d *D) TryUTF16LE(nBytes int) (string, error) {
 	b, err := d.bitBuf.BytesLen(nBytes)
 	// TODO: len check
-	rs := make([]rune, len(b)/2)
-	for i := 0; i < len(b)/2; i++ {
-		rs[i] = rune(uint(b[i*2]) | uint(b[i*2+1])<<8)
-	}
 	if err != nil {
 		return "", err
 	}
-	return string(rs), nil
+	return unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM).NewDecoder().String(string(b))
 }
 
 // TryUTF8ShortString read pascal short string, max nBytes

@@ -6,7 +6,6 @@ package id3
 // https://id3.org/id3v2-chapters-1.0
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"strings"
@@ -14,6 +13,9 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"golang.org/x/text/encoding"
+	"golang.org/x/text/encoding/charmap"
+	"golang.org/x/text/encoding/unicode"
 )
 
 var imageFormat []*decode.Format
@@ -237,54 +239,30 @@ var encodingNames = map[uint64]string{
 	encodingUTF8:      "UTF-8",
 }
 
-var encodingLen = map[uint64]int{
+var encodingLen = map[uint64]int64{
 	encodingISO8859_1: 1,
 	encodingUTF16:     2,
 	encodingUTF16BE:   2,
 	encodingUTF8:      1,
 }
 
-var encodingToUTF8 = map[int]func(b []byte) string{
-	encodingISO8859_1: func(b []byte) string {
-		rs := make([]rune, len(b))
-		for i, r := range b {
-			rs[i] = rune(r)
-		}
-		return string(rs)
-	},
-	encodingUTF16: func(b []byte) string {
-		beBOM := []byte("\xfe\xff")
-		leBOM := []byte("\xff\xfe")
-		var rs []rune
-		switch {
-		case bytes.HasPrefix(b, leBOM):
-			// strip BOM
-			b = b[2:]
-			rs = make([]rune, len(b)/2)
-			for i := 0; i < len(b)/2; i++ {
-				rs[i] = rune(uint(b[i*2]) | uint(b[i*2+1])<<8)
-			}
-		case bytes.HasPrefix(b, beBOM):
-			b = b[2:]
-			fallthrough
-		default:
-			rs = make([]rune, len(b)/2)
-			for i := 0; i < len(b)/2; i++ {
-				rs[i] = rune(uint(b[i*2])<<8 | uint(b[i*2+1]))
-			}
-		}
-		return string(rs)
-	},
-	encodingUTF16BE: func(b []byte) string {
-		rs := make([]rune, len(b)/2)
-		for i := 0; i < len(b)/2; i++ {
-			rs[i] = rune(uint(b[i*2])<<8 + uint(b[i*2+1]))
-		}
-		return string(rs)
-	},
-	encodingUTF8: func(b []byte) string {
-		return string(b)
-	},
+func decodeToString(e int, b []byte) string {
+	var enc encoding.Encoding
+
+	switch e {
+	case encodingISO8859_1:
+		enc = charmap.ISO8859_1
+	case encodingUTF16:
+		enc = unicode.UTF16(unicode.LittleEndian, unicode.UseBOM)
+	case encodingUTF16BE:
+		enc = unicode.UTF16(unicode.BigEndian, unicode.IgnoreBOM)
+	default:
+		enc = unicode.UTF8
+	}
+
+	// TODO: try decode?
+	s, _ := enc.NewDecoder().String(string(b))
+	return s
 }
 
 func syncSafeU32(d *decode.D) uint64 {
@@ -300,11 +278,7 @@ func syncSafeU32(d *decode.D) uint64 {
 }
 
 func text(d *decode.D, encoding int, nBytes int) string {
-	encodingFn := encodingToUTF8[encodingUTF8]
-	if fn, ok := encodingToUTF8[encoding]; ok {
-		encodingFn = fn
-	}
-	return strings.TrimRight(encodingFn(d.BytesLen(nBytes)), "\x00")
+	return strings.TrimRight(decodeToString(encoding, d.BytesLen(nBytes)), "\x00")
 }
 
 func textNull(d *decode.D, encoding int) string {
@@ -313,11 +287,17 @@ func textNull(d *decode.D, encoding int) string {
 		nullLen = n
 	}
 
-	offset, _ := d.PeekFind(nullLen*8, 8, func(v uint64) bool { return v == 0 }, -1)
-	pos := offset / 8
-	textLen := int(pos + int64(nullLen))
-	text := text(d, encoding, textLen)
+	offset, _ := d.PeekFind(
+		int(nullLen)*8,
+		nullLen*8,
+		func(v uint64) bool { return v == 0 },
+		-1,
+	)
+	offsetBytes := offset / 8
+	text := text(d, encoding, int(offsetBytes))
 
+	d.SeekRel(nullLen * 8)
+	// seems sometimes utf16 etc has en exta null byte
 	if nullLen > 1 && d.PeekBits(8) == 0 {
 		d.SeekRel(8)
 	}
