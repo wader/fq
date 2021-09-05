@@ -16,7 +16,7 @@ def recurse_depth(f; cond):
 
 [ ( recurse_depth(
       .[]?;
-      ._format
+      format
     )
   | . + {
       norm_path: (.value._path | map(if type == "number" then "index" end)),
@@ -27,7 +27,7 @@ def recurse_depth(f; cond):
 | map(.[0] + {count: length})
 | .[]
 | [ if .depth > 0 then "  "*.depth else empty end
-  , (.value._format + if .count > 1 then "*\(.count) " else " " end)
+  , ((.value | format) + if .count > 1 then "*\(.count) " else " " end)
   , (.value._path | path_to_expr)
   ]
 | join("")

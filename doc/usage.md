@@ -206,11 +206,17 @@ TODO: format graph?
 TODO
 
 
-### Useful tricks
+### Known issues and useful tricks
+
+#### Run interactive mode with no input
+```sh
+fq -i
+null>
+```
 
 #### `.. | select(...)` fails with `expected an ... but got: ...`
 
-Try add `select(...)?` the select expression assumes it will get and object etc.
+Try add `select(...)?` to catch type errors in the select expression.
 
 #### Manual decode
 
@@ -229,9 +235,9 @@ $ fq file.mp3 .unknown0._bytes[10:] mp3_frame
 This won't work as expected `.a | f(.b)` as `.` is `.a` when evaluating the arguments.
 Instead do `. as $c | .a | f($c.b)`.
 
-#### Appending to array is slow
+#### Building array is slow
 
-Try to use `map` or `foreach` instead.
+Try to use `map` or `foreach` to avoid rebuilding the whole array for each append.
 
 #### Use `print` and `println` to produce more friendly compact output
 
@@ -252,8 +258,7 @@ Try to use `map` or `foreach` instead.
 1: b
 ```
 
-#### Run interactive mode with no input
-```sh
-fq -i
-null>
-```
+### `repl` argument using function or variable causes `variable not defined`
+
+`true as $verbose | repl({verbose: $verbose})` will currently fail as `repl` is
+implemented by rewriting the query to  `map(true as $verbose | .) | repl({verbose: $verbose})`.

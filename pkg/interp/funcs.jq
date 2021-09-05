@@ -1,5 +1,3 @@
-
-
 def display($opts): _display($opts);
 def display: _display({});
 def d($opts): _display($opts);
@@ -17,7 +15,7 @@ def v: verbose;
 # inspried by https://github.com/itchyny/gojq/issues/63#issuecomment-765066351
 def intdiv($a; $b): ($a - ($a % $b)) / $b;
 
-# valid jq identifer, start with alpha or underscore then zero or more alpha, num or underscore
+# valid jq identifier, start with alpha or underscore then zero or more alpha, num or underscore
 def _is_ident: type == "string" and test("^[a-zA-Z_][a-zA-Z_0-9]*$");
 # escape " and \
 def _escape_ident: gsub("(?<g>[\\\\\"])"; "\\\(.g)");
