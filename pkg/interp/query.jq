@@ -32,6 +32,20 @@ def _query_iter:
     }
   };
 
+def _query_func($name; $args):
+  {
+    "term": {
+      "func": {
+        "args": $args,
+        "name": $name
+      },
+      "type": "TermTypeFunc"
+    }
+  };
+
+def _query_func($name):
+  _query_func($name; null);
+
 def _query_is_func(name):
   .term.func.name == name;
 
@@ -65,17 +79,15 @@ def _query_transform_last(f):
     end;
   _f;
 
-# <filter...> | <slurp_func> -> [.[] | <filter...> | .] | (<slurp_func> | f)
+# <filter...> | <slurp_func> -> map(<filter...> | .) | (<slurp_func> | f)
 def _query_slurp_wrap(f):
+  # save and move directives to new root query
   ( . as {$meta, $imports}
-  # move directives new root query
   | del(.meta)
   | del(.imports)
   | _query_pipe_last as $lq
   | _query_transform_last(_query_ident) as $pipe
-  | _query_iter
-  | _query_pipe($pipe)
-  | _query_array
+  | _query_func("map"; [$pipe])
   | _query_pipe($lq | f)
   | .meta = $meta
   | .imports = $imports
