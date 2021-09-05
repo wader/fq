@@ -460,7 +460,7 @@ def _main:
     {
       "compact": {
         short: "-c",
-        long: "--compact",
+        long: "--compact-output",
         description: "Compact output",
         bool: true
       },
@@ -472,7 +472,7 @@ def _main:
       },
       "expr_file": {
         short: "-f",
-        long: "--file",
+        long: "--from-file",
         description: "Read EXPR from file",
         string: "PATH"
       },

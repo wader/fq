@@ -11,6 +11,8 @@ $ fq -n -f /test.jq
 123
 $ fq -f /test2.jq /test.mp3
 "ID3"
+$ fq --from-file /test2.jq /test.mp3
+"ID3"
 $ fq -nf /err.jq
 exitcode: 3
 stderr:

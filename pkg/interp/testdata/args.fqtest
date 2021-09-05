@@ -9,10 +9,10 @@ Tool, language and decoders for exploring binary data.
 For more information see https://github.com/wader/fq
 
 Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
---compact,-c            Compact output
+--compact-output,-c     Compact output
 --decode,-d NAME        Decode format (probe)
---file,-f PATH          Read EXPR from file
 --formats               Show supported formats
+--from-file,-f PATH     Read EXPR from file
 --help,-h               Show help
 --include-path,-L PATH  Include search path
 --join-output,-j        No newline between outputs
