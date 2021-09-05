@@ -503,6 +503,8 @@ def _main:
       "null_output": {
         short: "-0",
         long: "--null-output",
+        # for jq compatibility
+        aliases: ["--nul-output"],
         description: "Null byte between outputs",
         bool: true
       },

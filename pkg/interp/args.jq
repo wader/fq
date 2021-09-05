@@ -70,8 +70,12 @@ def args_parse($args; $opts):
     ( $opts
     | to_entries
     | map(
-        ( ({(.value.short): .key}? // {})
-        + ({(.value.long): .key}? // {})
+        ( . as $opt
+        | [.value.short // empty] +
+          [.value.long // empty] +
+          (.value.aliases // [])
+        | map({key: ., value: $opt.key})
+        | from_entries
         )
       )
     | add
