@@ -498,7 +498,7 @@ def _main:
         short: "-L",
         long: "--include-path",
         description: "Include search path",
-        string: "PATH"
+        array: "PATH"
       },
       "null_output": {
         short: "-0",
@@ -650,9 +650,7 @@ def _main:
     else
       # use _finally as display etc prints and results in empty
       _finally(
-        ( _include_paths([
-            $opts.include_path // empty
-          ]) as $_
+        ( _include_paths($opts.include_path) as $_
         | _input_filenames($opts.filenames) as $_ # store inputs
         | ( def _inputs:
               ( if $opts.null_input then null
