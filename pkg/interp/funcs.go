@@ -214,13 +214,16 @@ func (i *Interp) readline(c interface{}, a []interface{}) interface{} {
 		}
 	}
 
-	src, err := i.os.Readline(prompt, func(line string, pos int) (newLine []string, shared int) {
-		completeCtx, completeCtxCancelFn := context.WithTimeout(i.evalContext.ctx, 1*time.Second)
-		defer completeCtxCancelFn()
-		// TODO: err
-		names, shared, _ := completeTrampoline(completeCtx, completeFn, c, i, line, pos)
-		return names, shared
-	})
+	src, err := i.os.Readline(
+		prompt,
+		func(line string, pos int) (newLine []string, shared int) {
+			completeCtx, completeCtxCancelFn := context.WithTimeout(i.evalContext.ctx, 1*time.Second)
+			defer completeCtxCancelFn()
+			// TODO: err
+			names, shared, _ := completeTrampoline(completeCtx, completeFn, c, i, line, pos)
+			return names, shared
+		},
+	)
 
 	if errors.Is(err, ErrInterrupt) {
 		return valueError{"interrupt"}

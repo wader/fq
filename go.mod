@@ -11,6 +11,10 @@ require (
 	github.com/wader/gojq v0.12.1-0.20210903162226-412e6dd62f26
 	// fork of github.com/chzyer/readline
 	github.com/wader/readline v0.0.0-20210817095433-c868eb04b8b2
+
+	// bump: golang/text /golang\.org\/x\/text v(.*)/ git://github.com/golang/text|^0
+	// bump: golang/text command go get -d golang.org/x/text@v$LATEST && go mod tidy
+	golang.org/x/text v0.3.7
 )
 
 require (
