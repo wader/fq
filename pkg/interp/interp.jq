@@ -172,7 +172,7 @@ def _complete($e; $cursor_pos):
       else null
       end
     );
-  # only complete if at end of there is a whitespace for now
+  # only complete if at end or there is a whitespace for now
   if ($e[$cursor_pos] | . == "" or . == " ") then
     ( . as $c
     | ( $e[0:$cursor_pos] | _complete_query) as {$type, $query, $prefix}

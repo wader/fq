@@ -623,10 +623,11 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 							return bytes.NewReader(sb.Bytes()), nil
 						} else if filename == "decode.jq" {
 							sb := &bytes.Buffer{}
-							fmt.Fprintf(sb, "def decode($name; $opts): _decode($name; $opts);\n")
-							fmt.Fprintf(sb, "def decode($name): _decode($name; {});\n")
-							fmt.Fprintf(sb, "def decode: _decode(\"probe\"; {});\n")
 							for name := range i.registry.Groups {
+								// TODO: nicer way to skip all which also would override builtin all/*
+								if name == "all" {
+									continue
+								}
 								fmt.Fprintf(sb, ""+
 									"def %[1]s($opts): _decode(%[1]q; $opts);\n"+
 									"def %[1]s: _decode(%[1]q; {});\n",

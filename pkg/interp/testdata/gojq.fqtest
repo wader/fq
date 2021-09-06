@@ -1,5 +1,7 @@
 # TODO: various gojq fq fork regression tests, should probably be move to fork code instead
 /test.mp3:
+$ fq -n '[true] | all'
+true
 $ fq -n '{a:1, b: 2} | tostream'
 [
   [

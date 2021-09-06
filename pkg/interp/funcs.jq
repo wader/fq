@@ -11,6 +11,10 @@ def verbose: verbose({});
 def v($opts): verbose($opts);
 def v: verbose;
 
+def decode($name; $opts): _decode($name; $opts);
+def decode($name): _decode($name; {});
+def decode: _decode("probe"; {});
+
 # integer division
 # inspried by https://github.com/itchyny/gojq/issues/63#issuecomment-765066351
 def intdiv($a; $b): ($a - ($a % $b)) / $b;
