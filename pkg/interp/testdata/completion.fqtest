@@ -21,6 +21,9 @@ bb
 null> {aa: 123, ab: "a"} | .a\t
 aa
 ab
+null> {a: {aa: 123, ab: "a"}} | .a.a\t
+aa
+ab
 null> {aa: 123, ab: "a"} | repl
 > object> .a\t
 aa

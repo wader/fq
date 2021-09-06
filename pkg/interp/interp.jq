@@ -164,12 +164,44 @@ def _to_options:
   | with_entries(select(.value != null))
   );
 
+# TODO: currently only make sense to allow keywords start  start a term or directive
+def _complete_keywords:
+  [
+    "and",
+    #"as",
+    #"break",
+    #"catch",
+    "def",
+    #"elif",
+    #"else",
+    #"end",
+    "false",
+    "foreach",
+    "if",
+    "import",
+    "include",
+    "label",
+    "module",
+    "null",
+    "or",
+    "reduce",
+    #"then",
+    "true",
+    "try"
+  ];
 
+def _complete_scope:
+  [scope[], _complete_keywords[]];
+
+# TODO: handle variables via ast walk?
 # TODO: refactor this
 # TODO: completionMode
 # TODO: return escaped identifier, not sure current readline implementation supports
+# modifying "previous" characters if quoting is needed
 # completions that needs to change previous input, ex: .a\t -> ."a \" b" etc
-def _complete($e; $cursor_pos):
+def _complete($line; $cursor_pos):
+  # TODO: reverse this? word or non-ident char?
+  def _is_separator: . as $c | " .;[]()|=" | contains($c);
   def _is_internal: startswith("_") or startswith("$_");
   def _query_index_or_key($q):
     ( ([.[] | eval($q) | type]) as $n
@@ -179,25 +211,38 @@ def _complete($e; $cursor_pos):
       end
     );
   # only complete if at end or there is a whitespace for now
-  if ($e[$cursor_pos] | . == "" or . == " ") then
+  if ($line[$cursor_pos] | . == "" or _is_separator) then
     ( . as $c
-    | ( $e[0:$cursor_pos] | _complete_query) as {$type, $query, $prefix}
+    | $line[0:$cursor_pos]
+    | . as $line_query
+    # expr -> map(partial-expr | . | f?) | add
+    # TODO: move map/add logic to here?
+    | _query_completion(
+        if .type | . == "func" or . == "var" then "_complete_scope"
+        elif .type == "index" then
+          if (.prefix | startswith("_")) then "_extkeys"
+          else "keys"
+          end
+        else error("unreachable")
+        end
+      ) as {$type, $query, $prefix}
     | {
         prefix: $prefix,
         names: (
           if $type == "none" then
             ( $c
-            | _query_index_or_key($query)
+            | _query_index_or_key($line_query)
             | if . then [.] else [] end
             )
           else
             ( $c
             | eval($query)
-            | ($prefix | _is_internal) as  $prefix_is_internal
+            | ($prefix | _is_internal) as $prefix_is_internal
             | map(
                 select(
                   strings and
-                  (_is_ident or $type == "variable") and
+                  # TODO: var type really needed? just func?
+                  (_is_ident or $type == "var") and
                   ((_is_internal | not) or $prefix_is_internal or $type == "index") and
                   startswith($prefix)
                 )
@@ -206,7 +251,7 @@ def _complete($e; $cursor_pos):
             | sort
             | if length == 1 and .[0] == $prefix then
                 ( $c
-                | _query_index_or_key($e)
+                | _query_index_or_key($line_query)
                 | if . then [$prefix+.] else [$prefix] end
                 )
               end
@@ -218,7 +263,7 @@ def _complete($e; $cursor_pos):
   else
     {prefix: "", names: []}
   end;
-def _complete($e): _complete($e; $e | length);
+def _complete($line): _complete($line; $line | length);
 
 
 def _prompt:
@@ -263,9 +308,9 @@ def _eval_is_compile_error: type == "object" and .error != null and .what != nul
 def _eval_compile_error_tostring:
   "\(.filename // "src"):\(.line):\(.column): \(.error)";
 
-def _eval($e; $filename; f; on_error; on_compile_error):
+def _eval($expr; $filename; f; on_error; on_compile_error):
   ( _default_options(_build_default_options) as $_
-  | try eval($e; $filename) | f
+  | try eval($expr; $filename) | f
     catch
       if _eval_is_compile_error then on_compile_error
       else on_error
@@ -278,7 +323,7 @@ def _repl_on_error:
   | (_error_str | println)
   );
 def _repl_on_compile_error: _repl_on_error;
-def _repl_eval($e): _eval($e; "repl"; _repl_display; _repl_on_error; _repl_on_compile_error);
+def _repl_eval($expr): _eval($expr; "repl"; _repl_display; _repl_on_error; _repl_on_compile_error);
 
 # run read-eval-print-loop
 def _repl($opts): #:: a|(Opts) => @
@@ -294,11 +339,10 @@ def _repl($opts): #:: a|(Opts) => @
   def _repl_loop:
     ( . as $c
     | try
-        ( _read_expr as $expr
-        # TODO: catch error here?
-        | $expr
+        ( _read_expr
+        | . as $expr
         | try _query_fromstring
-          # TODO: nicer way to set filename
+          # TODO: nicer way to set filename for error message
           catch (. | .filename = "repl")
         | if _query_pipe_last | _query_is_func("repl") then
             ( _query_slurp_wrap(_query_func_rename("_repl_iter"))
@@ -348,10 +392,10 @@ def _cli_expr_on_compile_error:
   | halt_error(_exit_code_compile_error)
   );
 # _cli_expr_eval halts on compile errors
-def _cli_expr_eval($e; $filename; f):
-  _eval($e; $filename; f; _cli_expr_on_error; _cli_expr_on_compile_error);
-def _cli_expr_eval($e; $filename):
-  _eval($e; $filename; .; _cli_expr_on_error; _cli_expr_on_compile_error);
+def _cli_expr_eval($expr; $filename; f):
+  _eval($expr; $filename; f; _cli_expr_on_error; _cli_expr_on_compile_error);
+def _cli_expr_eval($expr; $filename):
+  _eval($expr; $filename; .; _cli_expr_on_error; _cli_expr_on_compile_error);
 
 
 # TODO: introspect and show doc, reflection somehow?
@@ -619,7 +663,7 @@ def _main:
   | (null | [stdin, stdout]) as [$stdin, $stdout]
   # make sure we don't unintentionally use . to make things clearer
   | null
-  | ( try args_parse($args[1:]; _opts($version))
+  | ( try _args_parse($args[1:]; _opts($version))
       catch halt_error(_exit_code_args_error)
     ) as {parsed: $parsed_args, $rest}
   | _build_default_options as $default_opts

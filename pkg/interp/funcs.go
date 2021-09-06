@@ -43,7 +43,6 @@ func (i *Interp) makeFunctions() []Function {
 		{[]string{"_query_fromstring"}, 0, 0, i.queryFromString, nil},
 		{[]string{"_query_tostring"}, 0, 0, i.queryToString, nil},
 
-		{[]string{"_complete_query"}, 0, 0, i._completeQuery, nil},
 		{[]string{"_display_name"}, 0, 0, i._displayName, nil},
 		{[]string{"_extkeys"}, 0, 0, i._extKeys, nil},
 		{[]string{"_global_state"}, 0, 1, i.makeStateFn(i.state), nil},
@@ -219,8 +218,55 @@ func (i *Interp) readline(c interface{}, a []interface{}) interface{} {
 		func(line string, pos int) (newLine []string, shared int) {
 			completeCtx, completeCtxCancelFn := context.WithTimeout(i.evalContext.ctx, 1*time.Second)
 			defer completeCtxCancelFn()
-			// TODO: err
-			names, shared, _ := completeTrampoline(completeCtx, completeFn, c, i, line, pos)
+
+			names, shared, err := func() (newLine []string, shared int, err error) {
+				vs, err := i.EvalFuncValues(
+					completeCtx, CompletionMode, c, completeFn, []interface{}{line, pos}, DiscardOutput{Ctx: completeCtx},
+				)
+				if err != nil {
+					return nil, pos, err
+				}
+				if len(vs) < 1 {
+					return nil, pos, fmt.Errorf("no values")
+				}
+				v := vs[0]
+				if vErr, ok := v.(error); ok {
+					return nil, pos, vErr
+				}
+
+				// {abc: 123, abd: 123} | complete(".ab"; 3) will return {prefix: "ab", names: ["abc", "abd"]}
+
+				var names []string
+				var prefix string
+				cm, ok := v.(map[string]interface{})
+				if !ok {
+					return nil, pos, fmt.Errorf("%v: complete function return value not an object", cm)
+				}
+				if namesV, ok := cm["names"].([]interface{}); ok {
+					for _, name := range namesV {
+						names = append(names, name.(string))
+					}
+				} else {
+					return nil, pos, fmt.Errorf("%v: names missing in complete return object", cm)
+				}
+				if prefixV, ok := cm["prefix"]; ok {
+					prefix, _ = prefixV.(string)
+				} else {
+					return nil, pos, fmt.Errorf("%v: prefix missing in complete return object", cm)
+				}
+
+				if len(names) == 0 {
+					return nil, pos, nil
+				}
+
+				sharedLen := len(prefix)
+
+				return names, sharedLen, nil
+			}()
+
+			// TODO: how to report err?
+			_ = err
+
 			return names, shared
 		},
 	)
@@ -321,25 +367,6 @@ func (i *Interp) queryToString(c interface{}, a []interface{}) interface{} {
 	}
 
 	return q.String()
-}
-
-func (i *Interp) _completeQuery(c interface{}, a []interface{}) interface{} {
-	s, ok := c.(string)
-	if !ok {
-		return fmt.Errorf("%v: value is not a string", c)
-	}
-
-	gq, typ, prefix := BuildCompletionQuery(s)
-	queryStr := ""
-	if gq != nil {
-		queryStr = gq.String()
-	}
-
-	return map[string]interface{}{
-		"query":  queryStr,
-		"type":   string(typ),
-		"prefix": prefix,
-	}
 }
 
 func (i *Interp) _displayName(c interface{}, a []interface{}) interface{} {

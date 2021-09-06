@@ -1,5 +1,5 @@
 # TODO: refactor this mess
-def args_parse($args; $opts):
+def _args_parse($args; $opts):
   def _parse($args; $flagmap; $r):
     def _parse_with_arg($new_args; $optname; $value; $opt):
       if $opt.object then
