@@ -24,6 +24,15 @@ const (
 	colField = 6
 )
 
+func isCompound(v *decode.Value) bool {
+	switch v.V.(type) {
+	case decode.Struct, decode.Array:
+		return true
+	default:
+		return false
+	}
+}
+
 func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.Value, rootDepth int, addrWidth int, opts Options) error {
 	deco := opts.Decorator
 	// no error check as we write into buffering column
@@ -74,8 +83,6 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 
 	rootIndent := strings.Repeat(" ", rootDepth)
 	indent := strings.Repeat("  ", depth)
-
-	isSimple := false
 
 	if depth == 0 {
 		switch v.V.(type) {
@@ -152,8 +159,6 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 		if v.Description != "" {
 			cfmt(colField, fmt.Sprintf(" (%s)", deco.Value.F(v.Description)))
 		}
-
-		isSimple = true
 	}
 
 	if opts.Verbose {
@@ -245,8 +250,8 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 	// log.Printf("opts: %#+v\n", opts)
 	// log.Printf("depth: %#+v\n", depth)
 
-	// has length and is a simple value or a collapsed struct/array
-	if v.Range.Len > 0 && (isSimple || (opts.Depth != 0 && opts.Depth == depth)) {
+	// has length and is not compound or a collapsed struct/array (max depth)
+	if v.Range.Len > 0 && (!isCompound(v) || (opts.Depth != 0 && opts.Depth == depth)) {
 		cfmt(colAddr, "%s%s\n",
 			rootIndent, deco.DumpAddr.F(num.PadFormatInt(startLineByte, opts.AddrBase, true, addrWidth)))
 
