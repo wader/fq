@@ -44,4 +44,8 @@ _start
 _stop
 _symbol
 _unknown
+mp3> .frames\t
+frames[]
+mp3> .frames[]\t
+.
 mp3> ^D

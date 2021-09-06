@@ -25,8 +25,8 @@ func vpxCCRDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldU8("colour_primaries")
 	d.FieldU8("transfer_characteristics")
 	d.FieldU8("matrix_coefficients")
-	_ = d.FieldU16("codec_intialization_data_size")
-	// d.FieldBitBufLen("codec_intialization_data", int64(initDataSize)*8)
+	_ = d.FieldU16("codec_initialization_data_size")
+	// d.FieldBitBufLen("codec_initialization_data", int64(initDataSize)*8)
 
 	return nil
 }
