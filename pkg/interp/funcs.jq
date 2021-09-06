@@ -15,9 +15,17 @@ def decode($name; $opts): _decode($name; $opts);
 def decode($name): _decode($name; {});
 def decode: _decode("probe"; {});
 
+
+# TODO: figure out a saner way to force int
+def _to_int: (. % (. + 1));
+
 # integer division
 # inspried by https://github.com/itchyny/gojq/issues/63#issuecomment-765066351
-def intdiv($a; $b): ($a - ($a % $b)) / $b;
+def intdiv($a; $b):
+  ( ($a | _to_int) as $a
+  | ($b | _to_int) as $b
+  | ($a - ($a % $b)) / $b
+  );
 
 # valid jq identifier, start with alpha or underscore then zero or more alpha, num or underscore
 def _is_ident: type == "string" and test("^[a-zA-Z_][a-zA-Z_0-9]*$");
@@ -204,8 +212,6 @@ def table(colmap; render):
 
 # convert number to array of bytes
 def number_to_bytes($bits):
-  # TODO: figure out a saner way to force int
-  def _to_int: (. % (. + 1));
   def _number_to_bytes($d):
     if . > 0 then
       . % $d, (intdiv(.; $d) | _number_to_bytes($d))
