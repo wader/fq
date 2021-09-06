@@ -1,6 +1,8 @@
 $ fq -n options
 {
   "addrbase": 16,
+  "arg": [],
+  "argjson": [],
   "arraytruncate": 50,
   "bitsformat": "snippet",
   "bytecolors": "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
@@ -23,6 +25,7 @@ $ fq -n options
   "null_input": true,
   "raw_output": false,
   "raw_string": false,
+  "rawfile": [],
   "repl": false,
   "show_formats": false,
   "show_help": false,
