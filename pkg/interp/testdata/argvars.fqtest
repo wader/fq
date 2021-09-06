@@ -1,0 +1,49 @@
+/a.json:
+aaa
+/b.json:
+bbb
+/test.mp3:
+$ fq -i -n --rawfile filea /a.json --rawfile fileb /b.json --arg arga aa --arg argb bb --argjson argjsona 123 --argjson argjsonb '[true,123,{},"abc"]' --decode-file decodefilea /test.mp3 --decode-file decodefileb /test.mp3
+null> $filea
+"aaa\n"
+null> $fileb
+"bbb\n"
+null> $arga
+"aa"
+null> $argb
+"bb"
+null> $argjsona
+123
+null> $argjsonb
+[
+  true,
+  123,
+  {},
+  "abc"
+]
+null> $decodefileb | format
+"mp3"
+null> $decodefileb | format
+"mp3"
+null> ^D
+$ fq -n --rawfile filea /nonexisting
+exitcode: 2
+stderr:
+error: /nonexisting: file not found
+$ fq -n --decode-file filea /nonexisting
+exitcode: 2
+stderr:
+error: /nonexisting: file not found
+$ fq -n -d mp4 --decode-file filea /test.mp3 '$filea'
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /test.mp3 (mp4)
+     |                                               |                |  error: mp4: failed to validate at position 0x8: no styp, ftyp, free or moov box found
+0x000|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|  unknown0: 49443304000000000023545353450000...
+*    |until 0x283.7 (end) (644)                      |                |
+$ fq -n --argjson a '(' '$a'
+exitcode: 5
+stderr:
+error: --argjson a: invalid character '(' looking for beginning of value
+$ fq -n --argjson a
+exitcode: 2
+stderr:
+error: --argjson: needs two argument
