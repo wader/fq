@@ -240,7 +240,14 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 							sampleSize := t.stsz[sampleNr]
 							decodeSampleRange(d, t, trackSdDataFormat, "sample", int64(sampleOffset)*8, int64(sampleSize)*8, t.decodeOpts...)
 
-							// log.Printf("%s %d/%d %d/%d sample=%d/%d chunk=%d size=%d %d-%d\n", t.dataFormat, stscIndex, len(t.stsc), i, stscEntry.samplesPerChunk, sampleNr, len(t.stsz), chunkNr, sampleSize, sampleOffset, sampleOffset+uint64(sampleSize))
+							// log.Printf("%s %d/%d %d/%d sample=%d/%d chunk=%d size=%d %d-%d\n",
+							// 	trackSdDataFormat, stscIndex, len(t.stsc),
+							// 	i, stscEntry.samplesPerChunk,
+							// 	sampleNr, len(t.stsz),
+							// 	chunkNr,
+							// 	sampleSize,
+							// 	sampleOffset,
+							// 	sampleOffset+uint64(sampleSize))
 
 							sampleOffset += uint64(sampleSize)
 							sampleNr++
