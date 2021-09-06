@@ -210,19 +210,19 @@ TODO: format graph?
 TODO
 
 
-### Known issues and useful tricks
+## Known issues and useful tricks
 
-#### Run interactive mode with no input
+### Run interactive mode with no input
 ```sh
 fq -i
 null>
 ```
 
-#### `.. | select(...)` fails with `expected an ... but got: ...`
+### `.. | select(...)` fails with `expected an ... but got: ...`
 
 Try add `select(...)?` to catch type errors in the select expression.
 
-#### Manual decode
+### Manual decode
 
 Sometimes fq fails to decode or you know there is valid data buried inside some binary or maybe
 you know the format of some unknown value. Then you can decode manually.
@@ -239,11 +239,11 @@ $ fq file.mp3 .unknown0._bytes[10:] mp3_frame
 This won't work as expected `.a | f(.b)` as `.` is `.a` when evaluating the arguments.
 Instead do `. as $c | .a | f($c.b)`.
 
-#### Building array is slow
+### Building array is slow
 
 Try to use `map` or `foreach` to avoid rebuilding the whole array for each append.
 
-#### Use `print` and `println` to produce more friendly compact output
+### Use `print` and `println` to produce more friendly compact output
 
 ```
 > [[0,"a"],[1,"b"]]
@@ -266,3 +266,7 @@ Try to use `map` or `foreach` to avoid rebuilding the whole array for each appen
 
 `true as $verbose | repl({verbose: $verbose})` will currently fail as `repl` is
 implemented by rewriting the query to  `map(true as $verbose | .) | repl({verbose: $verbose})`.
+
+### `error` produces no output
+
+`null | error` behaves as `empty`.

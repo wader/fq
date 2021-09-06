@@ -780,7 +780,7 @@ func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name
 		"input": c,
 		"args":  args,
 	}
-	/// _args to mark variable as internal and hide it from completion
+	// _args to mark variable as internal and hide it from completion
 	// {input: ..., args: [...]} | .args as {args: $_args} | .input | name[($_args[0]; ...)]
 	trampolineExpr := fmt.Sprintf(". as {args: $_args} | .input | %s%s", name, argExpr)
 	iter, err := i.Eval(ctx, mode, trampolineInput, trampolineExpr, "", output)

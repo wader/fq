@@ -11,11 +11,11 @@ include "args";
         string: true
       }
     },
-    expected: {   
+    expected: {
       "parsed": {
         "a": "123"
       },
       "rest": ["b"]
     }
   }
-][] | assert(.name; args_parse(.args; .opts); .expected)
+][] | assert(.name; _args_parse(.args; .opts); .expected)
