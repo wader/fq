@@ -12,6 +12,8 @@ def args_parse($args; $opts):
         )
       elif $opt.array then
         _parse($new_args; $flagmap; ($r | .parsed[$optname] += [$value]))
+      elif $opt.pairs then
+        _parse($new_args; $flagmap; ($r | .parsed[$optname] += [$value]))
       else
         _parse($new_args; $flagmap; ($r | .parsed[$optname] = $value))
       end;
@@ -55,6 +57,12 @@ def args_parse($args; $opts):
               else
                 _parse_with_arg($args[2:]; $optname; $args[1]; $opt)
               end
+            elif $opt.pairs then
+              if ($args | length) > 2 then
+                _parse_with_arg($args[3:]; $optname; [$args[1], $args[2]]; $opt)
+              else
+                error("\($arg): needs two argument")
+              end
             else
               if $assign_i then error("\($arg): takes no argument")
               else _parse_without_arg($args[1:]; $optname)
@@ -96,7 +104,7 @@ def args_help_text($opts):
       , .short
       ] | map(select(strings)) | join(",")
     ) +
-    ( .string // .array // .object
+    ( .string // .array // .object // .pairs
     | if . then " \(.)"
       else ""
       end

@@ -7,10 +7,12 @@ Tool, language and decoders for exploring binary data.
 For more information see https://github.com/wader/fq
 
 Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
---compact,-c            Compact output
+--arg NAME VALUE        Set variable $NAME to string VALUE
+--argjson NAME JSON     Set variable $NAME to JSON
+--compact-output,-c     Compact output
 --decode,-d NAME        Decode format (probe)
---file,-f PATH          Read EXPR from file
 --formats               Show supported formats
+--from-file,-f PATH     Read EXPR from file
 --help,-h               Show help
 --include-path,-L PATH  Include search path
 --join-output,-j        No newline between outputs
@@ -20,6 +22,7 @@ Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 --options               Show all options
 --raw-input,-R          Read raw input strings (don't decode)
 --raw-output,-r         Raw string output (without quotes)
+--rawfile NAME PATH     Set variable $NAME to string content of file
 --repl,-i               Interactive REPL
 --slurp,-s              Read (slurp) all inputs into an array
 --version,-v            Show version (dev)

@@ -3,25 +3,12 @@ include "funcs";
 include "args";
 include "query";
 
-# will include all per format specific function etc
+# generated decode functions per format
 include "@format/decode";
+# include per format specific functions
 include "@format/all";
-
 # optional user init
 include "@config/init?";
-
-
-# def readline: #:: [a]| => string
-# Read a line.
-
-# def readline($prompt): #:: [a]|(string) => string
-# Read a line with prompt.
-
-# def readline($prompt; $completion): #:: [a]|(string;string) => string
-# $prompt is prompt to show.
-# $completion name of completion function [a](string) => [string],
-# it will be called with same input as readline and a string argument being the
-# current line from start to current cursor position. Should return possible completions.
 
 # try to be same exit codes as jq
 # TODO: jq seems to halt processing inputs on JSON decode error but not IO errors,
@@ -52,6 +39,8 @@ def _build_default_options:
   ( (null | stdout) as $stdout
   | {
       addrbase:       16,
+      arg:            [],
+      argjson:        [],
       arraytruncate:  50,
       bitsformat:     "snippet",
       bytecolors:     "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
@@ -87,6 +76,7 @@ def _build_default_options:
       join_string:     "\n",
       linebytes:       (if $stdout.is_terminal then [intdiv(intdiv($stdout.width; 8); 2) * 2, 4] | max else 16 end),
       null_input:      false,
+      rawfile:         [],
       raw_output:      ($stdout.is_terminal | not),
       raw_string:      false,
       repl:            false,
@@ -114,18 +104,31 @@ def _tonumber:
   try tonumber catch null;
 
 def _tostring:
-  if . != null then "\"\(.)\"" | fromjson end;
-
-def _toarray:
   if . != null then
-    ( fromjson
-    | if type != "array" then null end
+    ( "\"\(.)\""
+    | try
+        ( fromjson
+        | if type != "string" then error end
+        )
+      catch null
     )
   end;
+
+def _toarray(f):
+  try
+    ( fromjson
+    | if type == "array" and (all(f) | not) then null end
+    )
+  catch null;
+
+def _is_string_pair:
+  type == "array" and length == 2 and all(type == "string");
 
 def _to_options:
   ( {
       addrbase:        (.addrbase | _tonumber),
+      arg:             (.arg | _toarray(_is_string_pair)),
+      argjson:         (.argjson | _toarray(_is_string_pair)),
       arraytruncate:   (.arraytruncate | _tonumber),
       bitsformat:      (.bitsformat | _tostring),
       bytecolors:      (.bytecolors | _tostring),
@@ -138,11 +141,12 @@ def _to_options:
       displaybytes:    (.displaybytes | _tonumber),
       expr:            (.expr | _tostring),
       expr_file:       (.expr_file | _tostring),
-      filename:        (.filenames | _toarray),
+      filename:        (.filenames | _toarray(type == "string")),
       include_path:    (.include_path | _tostring),
       join_string:     (.join_string | _tostring),
       linebytes:       (.linebytes | _tonumber),
       null_input:      (.null_input | _toboolean),
+      rawfile:         (.rawfile| _toarray(_is_string_pair)),
       raw_output:      (.raw_output | _toboolean),
       raw_string:      (.raw_string | _toboolean),
       repl:            (.repl | _toboolean),
@@ -458,6 +462,16 @@ def _main:
       );
   def _opts($version):
     {
+      "arg": {
+        long: "--arg",
+        description: "Set variable $NAME to string VALUE",
+        pairs: "NAME VALUE"
+      },
+      "argjson": {
+        long: "--argjson",
+        description: "Set variable $NAME to JSON",
+        pairs: "NAME JSON"
+      },
       "compact": {
         short: "-c",
         long: "--compact-output",
@@ -531,6 +545,11 @@ def _main:
         description: "Read raw input strings (don't decode)",
         bool: true
       },
+      "rawfile": {
+        long: "--rawfile",
+        description: "Set variable $NAME to string content of file",
+        pairs: "NAME PATH"
+      },
       "raw_string": {
         short: "-r",
         # for jq compat, is called raw string internally, "raw output" is if
@@ -580,6 +599,18 @@ def _main:
   | _options_stack(
       [ $args_opts
       + ( {
+            argjson: (
+              ( $args_opts.argjson
+              | if . then map(
+                    ( . as $a
+                    | .[1] |=
+                        try fromjson
+                        catch error("--argjson \($a[0]): \(.)")
+                    )
+                  )
+                end
+              )
+            ),
             expr: (
               ( $args_opts.expr_file
               | if . then
@@ -609,6 +640,17 @@ def _main:
                 end
               | if . == [] and $args_opts.repl then true
                 else null
+                end
+              )
+            ),
+            rawfile: (
+              ( $args_opts.rawfile
+              | if . then
+                  ( map(.[1] |=
+                      try (open | tobytes | tostring)
+                      catch halt_error(_exit_code_args_error)
+                    )
+                  )
                 end
               )
             ),
@@ -652,6 +694,14 @@ def _main:
       _finally(
         ( _include_paths($opts.include_path) as $_
         | _input_filenames($opts.filenames) as $_ # store inputs
+        | _variables(
+            ( $opts.arg +
+              $opts.argjson +
+              $opts.rawfile
+            | map({key: .[0], value: .[1]})
+            | from_entries
+            )
+          )
         | ( def _inputs:
               ( if $opts.null_input then null
                 # note jq --slurp --raw-string is special, will be just
