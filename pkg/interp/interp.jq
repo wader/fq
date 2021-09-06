@@ -63,6 +63,7 @@ def _build_default_options:
         } | _obj_to_csv_kv
       ),
       compact:         false,
+      decode_file:      [],
       decode_format:   "probe",
       decode_progress: (env.NODECODEPROGRESS == null),
       depth:           0,
@@ -135,6 +136,7 @@ def _to_options:
       color:           (.color | _toboolean),
       colors:          (.colors | _tostring),
       compact:         (.compact | _toboolean),
+      decode_file:     (.decode_file | _toarray(type == "string")),
       decode_format:   (.decode_format | _tostring),
       decode_progress: (.decode_progress | _toboolean),
       depth:           (.depth | _tonumber),
@@ -270,7 +272,7 @@ def _eval($e; $filename; f; on_error; on_compile_error):
       end
   );
 
-def _repl_display: display({depth: 1});
+def _repl_display: _display({depth: 1});
 def _repl_on_error:
   ( if _eval_is_compile_error then _eval_compile_error_tostring end
   | (_error_str | println)
@@ -343,8 +345,37 @@ def _cli_expr_on_compile_error:
   | halt_error(_exit_code_compile_error)
   );
 # _cli_expr_eval halts on compile errors
-def _cli_expr_eval($e; $filename; f): _eval($e; $filename; f; _cli_expr_on_error; _cli_expr_on_compile_error);
-def _cli_expr_eval($e; $filename): _eval($e; $filename; .; _cli_expr_on_error; _cli_expr_on_compile_error);
+def _cli_expr_eval($e; $filename; f):
+  _eval($e; $filename; f; _cli_expr_on_error; _cli_expr_on_compile_error);
+def _cli_expr_eval($e; $filename):
+  _eval($e; $filename; .; _cli_expr_on_error; _cli_expr_on_compile_error);
+
+
+# TODO: introspect and show doc, reflection somehow?
+def help:
+  ( "Type jq expression to evaluate"
+  , "\\t       Auto completion"
+  , "Up/Down  History"
+  , "^C       Interrupt execution"
+  , "^D       Exit REPL"
+  ) | println;
+
+def display($opts): _display($opts);
+def display: _display({});
+def d($opts): _display($opts);
+def d: _display({});
+def full($opts): _display({arraytruncate: 0} + $opts);
+def full: full({});
+def f($opts): full($opts);
+def f: full;
+def verbose($opts): _display({verbose: true, arraytruncate: 0} + $opts);
+def verbose: verbose({});
+def v($opts): verbose($opts);
+def v: verbose;
+
+def decode($name; $opts): _decode($name; $opts);
+def decode($name): _decode($name; {});
+def decode: _decode(options.decode_format; {});
 
 # next valid input
 def input:
@@ -435,14 +466,6 @@ def var($k; f):
   );
 def var($k): . as $c | var($k; $c);
 
-# TODO: introspect and show doc, reflection somehow?
-def help:
-  ( "Type jq expression to evaluate"
-  , "\\t       Auto completion"
-  , "Up/Down  History"
-  , "^C       Interrupt execution"
-  , "^D       Exit REPL"
-  ) | println;
 
 def _main:
   def _formats_list:
@@ -483,6 +506,11 @@ def _main:
         long: "--decode",
         description: "Decode format (probe)",
         string: "NAME"
+      },
+      "decode_file": {
+        long: "--decode-file",
+        description: "Set variable $NAME to decode of file",
+        pairs: "NAME PATH"
       },
       "expr_file": {
         short: "-f",
@@ -591,9 +619,11 @@ def _main:
   | ( try args_parse($args[1:]; _opts($version))
       catch halt_error(_exit_code_args_error)
     ) as {parsed: $parsed_args, $rest}
-  | _default_options(_build_default_options) as $_
+  | _build_default_options as $default_opts
+  | _default_options($default_opts) as $_
   # combine --args and -o key=value args
-  | ( ($parsed_args.option | _to_options)
+  | ( $default_opts
+    + ($parsed_args.option | _to_options)
     + $parsed_args
     ) as $args_opts
   | _options_stack(
@@ -611,7 +641,20 @@ def _main:
                 end
               )
             ),
+            decode_file: (
+              ( $args_opts.decode_file
+              | if . then
+                  ( map(.[1] |=
+                      try (open | decode($args_opts.decode_format))
+                      catch halt_error(_exit_code_args_error)
+                    )
+                  )
+                end
+              )
+            ),
             expr: (
+              # if -f was used, all rest non-args are filenames
+              # otherwise first is expr rest is filesnames
               ( $args_opts.expr_file
               | if . then
                   try (open | tobytes | tostring)
@@ -692,12 +735,14 @@ def _main:
     else
       # use _finally as display etc prints and results in empty
       _finally(
+        # store some globals
         ( _include_paths($opts.include_path) as $_
-        | _input_filenames($opts.filenames) as $_ # store inputs
+        | _input_filenames($opts.filenames) as $_
         | _variables(
             ( $opts.arg +
               $opts.argjson +
-              $opts.rawfile
+              $opts.rawfile +
+              $opts.decode_file
             | map({key: .[0], value: .[1]})
             | from_entries
             )

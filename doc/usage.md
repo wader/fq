@@ -7,25 +7,26 @@ Tool, language and decoders for exploring binary data.
 For more information see https://github.com/wader/fq
 
 Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
---arg NAME VALUE        Set variable $NAME to string VALUE
---argjson NAME JSON     Set variable $NAME to JSON
---compact-output,-c     Compact output
---decode,-d NAME        Decode format (probe)
---formats               Show supported formats
---from-file,-f PATH     Read EXPR from file
---help,-h               Show help
---include-path,-L PATH  Include search path
---join-output,-j        No newline between outputs
---null-input,-n         Null input (use input/0 and inputs/0 to read input)
---null-output,-0        Null byte between outputs
---option,-o KEY=VALUE   Set option, eg: color=true
---options               Show all options
---raw-input,-R          Read raw input strings (don't decode)
---raw-output,-r         Raw string output (without quotes)
---rawfile NAME PATH     Set variable $NAME to string content of file
---repl,-i               Interactive REPL
---slurp,-s              Read (slurp) all inputs into an array
---version,-v            Show version (dev)
+--arg NAME VALUE         Set variable $NAME to string VALUE
+--argjson NAME JSON      Set variable $NAME to JSON
+--compact-output,-c      Compact output
+--decode,-d NAME         Decode format (probe)
+--decode-file NAME PATH  Set variable $NAME to decode of file
+--formats                Show supported formats
+--from-file,-f PATH      Read EXPR from file
+--help,-h                Show help
+--include-path,-L PATH   Include search path
+--join-output,-j         No newline between outputs
+--null-input,-n          Null input (use input/0 and inputs/0 to read input)
+--null-output,-0         Null byte between outputs
+--option,-o KEY=VALUE    Set option, eg: color=true
+--options                Show all options
+--raw-input,-R           Read raw input strings (don't decode)
+--raw-output,-r          Raw string output (without quotes)
+--rawfile NAME PATH      Set variable $NAME to string content of file
+--repl,-i                Interactive REPL
+--slurp,-s               Read (slurp) all inputs into an array
+--version,-v             Show version (dev)
 </pre>
 
 - TODO: null input

@@ -1,21 +1,3 @@
-def display($opts): _display($opts);
-def display: _display({});
-def d($opts): _display($opts);
-def d: _display({});
-def full($opts): _display({arraytruncate: 0} + $opts);
-def full: full({});
-def f($opts): full($opts);
-def f: full;
-def verbose($opts): _display({verbose: true, arraytruncate: 0} + $opts);
-def verbose: verbose({});
-def v($opts): verbose($opts);
-def v: verbose;
-
-def decode($name; $opts): _decode($name; $opts);
-def decode($name): _decode($name; {});
-def decode: _decode("probe"; {});
-
-
 # TODO: figure out a saner way to force int
 def _to_int: (. % (. + 1));
 
