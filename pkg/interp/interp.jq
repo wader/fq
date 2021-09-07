@@ -331,8 +331,11 @@ def _repl_iter($opts): _repl($opts);
 def _repl_iter: _repl({});
 
 # just gives error, call appearing last will be renamed to _repl_iter
-def repl($_): error("repl must be last");
-def repl: error("repl must be last");
+def repl($_):
+  if options.repl then error("repl must be last")
+  else error("repl can't be used in non-repl mode")
+  end;
+def repl: repl(null);
 
 
 def _cli_expr_on_error:
