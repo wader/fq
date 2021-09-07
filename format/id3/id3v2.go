@@ -368,7 +368,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			d.FieldU5("unused0")
 
 			d.FieldBool("compression")
-			// TODO: read encruption byte, skip decode of frame data?
+			// TODO: read encryption byte, skip decode of frame data?
 			d.FieldBool("encryption")
 			d.FieldBool("grouping_identity")
 
@@ -399,7 +399,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			d.FieldU2("unused2")
 
 			d.FieldBool("compression")
-			// TODO: read encruption byte, skip decode of frame data?
+			// TODO: read encryption byte, skip decode of frame data?
 			d.FieldBool("encryption")
 			unsyncFlag = d.FieldBool("unsync")
 			dataLenFlag = d.FieldBool("data_length_indicator")
@@ -577,11 +577,10 @@ func decodeFrames(d *decode.D, version int, size uint64) {
 				size -= decodeFrame(d, version)
 			})
 		}
-
 	})
 
 	if size > 0 {
-		d.FieldValidateZeroPadding("padding", int(size)*8)
+		d.FieldZeroPadding("padding", int(size)*8)
 	}
 }
 

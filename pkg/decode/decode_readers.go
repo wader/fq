@@ -175,7 +175,7 @@ func (d *D) FieldOptionalZeroBytes(name string) int64 {
 	})
 }
 
-func (d *D) FieldValidateZeroPadding(name string, nBits int) {
+func (d *D) fieldZeroPadding(name string, nBits int, panicOnNonZero bool) {
 	pos := d.Pos()
 	var isZero bool
 	d.FieldFn(name, func() *Value {
@@ -184,11 +184,20 @@ func (d *D) FieldValidateZeroPadding(name string, nBits int) {
 		if !isZero {
 			s = "Incorrect"
 		}
+		// TODO: proper warnings
 		return &Value{Symbol: s, Description: "zero padding"}
 	})
-	if !isZero {
+	if panicOnNonZero && !isZero {
 		panic(ValidateError{Reason: "expected zero padding", Pos: pos})
 	}
+}
+
+func (d *D) FieldValidateZeroPadding(name string, nBits int) {
+	d.fieldZeroPadding(name, nBits, true)
+}
+
+func (d *D) FieldZeroPadding(name string, nBits int) {
+	d.fieldZeroPadding(name, nBits, false)
 }
 
 // Bool reads one bit as a boolean
