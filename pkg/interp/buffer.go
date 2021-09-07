@@ -80,7 +80,7 @@ func (bo bufferObject) JQValueSlice(start int, end int) interface{} {
 		return err
 	}
 
-	return &bufferObject{
+	return bufferObject{
 		bbr:  bufferRange{bb: rbb, r: ranges.Range{Start: 0, Len: rLen}},
 		unit: bo.unit,
 	}
@@ -102,12 +102,12 @@ func (bo bufferObject) JQValueKey(name string) interface{} {
 		if bo.unit == 1 {
 			return bo
 		}
-		return &bufferObject{bbr: bo.bbr, unit: 1}
+		return bufferObject{bbr: bo.bbr, unit: 1}
 	case "bytes":
 		if bo.unit == 8 {
 			return bo
 		}
-		return &bufferObject{bbr: bo.bbr, unit: 8}
+		return bufferObject{bbr: bo.bbr, unit: 8}
 	}
 	return nil
 }
