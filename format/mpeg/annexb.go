@@ -5,9 +5,9 @@ import (
 )
 
 func annexBFindStartCode(d *decode.D) (int64, int64, error) {
-	offset, v, err := d.TryPeekFind(32, 8, func(v uint64) bool {
+	offset, v, err := d.TryPeekFind(32, 8, -1, func(v uint64) bool {
 		return annexBDecodeStartCodeLen(v) > 0
-	}, d.BitsLeft())
+	})
 	return offset, annexBDecodeStartCodeLen(v), err
 }
 

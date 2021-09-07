@@ -94,7 +94,7 @@ func (d *D) Bits(nBits int) (uint64, error) {
 	return n, nil
 }
 
-func (d *D) TryPeekFind(nBits int, seekBits int64, fn func(v uint64) bool, maxLen int64) (int64, uint64, error) {
+func (d *D) TryPeekFind(nBits int, seekBits int64, maxLen int64, fn func(v uint64) bool) (int64, uint64, error) {
 	start, err := d.bitBuf.SeekBits(0, io.SeekCurrent)
 	if err != nil {
 		return 0, 0, err
