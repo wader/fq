@@ -631,11 +631,15 @@ def _main:
       + ( {
             argjson: (
               ( $args_opts.argjson
-              | if . then map(
+              | if . then
+                  map(
                     ( . as $a
                     | .[1] |=
-                        try fromjson
-                        catch error("--argjson \($a[0]): \(.)")
+                      try fromjson
+                      catch
+                        ( "--argjson \($a[0]): \(.)"
+                        | halt_error(_exit_code_args_error)
+                        )
                     )
                   )
                 end
@@ -644,9 +648,14 @@ def _main:
             decode_file: (
               ( $args_opts.decode_file
               | if . then
-                  ( map(.[1] |=
+                  map(
+                    ( . as $a
+                    | .[1] |=
                       try (open | decode($args_opts.decode_format))
-                      catch halt_error(_exit_code_args_error)
+                      catch
+                        ( "--decode-file \($a[0]): \(.)"
+                        | halt_error(_exit_code_args_error)
+                        )
                     )
                   )
                 end
