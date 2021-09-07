@@ -58,3 +58,7 @@ $ fq -i '[1,2,3]'
 [1,2,3]
 > [number, ...][3]> ^D
 [number, ...][3]> ^D
+$ fq -n repl
+exitcode: 5
+stderr:
+error: repl can't be used in non-repl mode
