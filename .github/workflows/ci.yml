@@ -8,7 +8,7 @@ on:
 
 # bump: ci-golangci-lint /GOLANGCILINT_VERSION: ([\d.]+)/ git:https://github.com/golangci/golangci-lint.git|^1
 env:
-  GOLANGCILINT_VERSION: 1.42.0
+  GOLANGCILINT_VERSION: 1.42.1
 
 jobs:
   ci:
