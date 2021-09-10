@@ -138,12 +138,11 @@ func (rf FileReader) Read(p []byte) (int, error) { return rf.R.Read(p) }
 func (FileReader) Close() error                  { return nil }
 
 // TODO: move
-type DiscardOutput struct {
-	Output
+type DiscardCtxWriter struct {
 	Ctx context.Context
 }
 
-func (o DiscardOutput) Write(p []byte) (n int, err error) {
+func (o DiscardCtxWriter) Write(p []byte) (n int, err error) {
 	if o.Ctx != nil {
 		if err := o.Ctx.Err(); err != nil {
 			return 0, err
@@ -152,12 +151,12 @@ func (o DiscardOutput) Write(p []byte) (n int, err error) {
 	return n, nil
 }
 
-type CtxOutput struct {
+type CtxWriter struct {
 	io.Writer
 	Ctx context.Context
 }
 
-func (o CtxOutput) Write(p []byte) (n int, err error) {
+func (o CtxWriter) Write(p []byte) (n int, err error) {
 	if o.Ctx != nil {
 		if err := o.Ctx.Err(); err != nil {
 			return 0, err
@@ -499,7 +498,7 @@ func (i *Interp) Stop() {
 	i.interruptStack.Stop()
 }
 
-func (i *Interp) Main(ctx context.Context, stdout Output, version string) error {
+func (i *Interp) Main(ctx context.Context, output Output, version string) error {
 	runMode := ScriptMode
 
 	var args []interface{}
@@ -512,7 +511,7 @@ func (i *Interp) Main(ctx context.Context, stdout Output, version string) error 
 		"version": version,
 	}
 
-	iter, err := i.EvalFunc(ctx, runMode, input, "_main", nil, stdout)
+	iter, err := i.EvalFunc(ctx, runMode, input, "_main", nil, output)
 	if err != nil {
 		fmt.Fprintln(i.os.Stderr(), err)
 		return err
@@ -751,7 +750,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 
 	runCtx, runCtxCancelFn := i.interruptStack.Push(ctx)
 	ni.evalContext.ctx = runCtx
-	ni.evalContext.output = CtxOutput{Writer: output, Ctx: runCtx}
+	ni.evalContext.output = CtxWriter{Writer: output, Ctx: runCtx}
 	iter := gc.RunWithContext(runCtx, c, variableValues...)
 
 	iterWrapper := iterFn(func() (interface{}, bool) {
@@ -766,7 +765,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	return iterWrapper, nil
 }
 
-func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, output Output) (gojq.Iter, error) {
+func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, output io.Writer) (gojq.Iter, error) {
 	var argsExpr []string
 	for i := range args {
 		argsExpr = append(argsExpr, fmt.Sprintf("$_args[%d]", i))
@@ -790,7 +789,7 @@ func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name
 	return iter, nil
 }
 
-func (i *Interp) EvalFuncValues(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, output Output) ([]interface{}, error) {
+func (i *Interp) EvalFuncValues(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, output io.Writer) ([]interface{}, error) {
 	iter, err := i.EvalFunc(ctx, mode, c, name, args, output)
 	if err != nil {
 		return nil, err
@@ -969,7 +968,7 @@ func (i *Interp) variables() map[string]interface{} {
 }
 
 func (i *Interp) Options(fnOptsV ...interface{}) (Options, error) {
-	vs, err := i.EvalFuncValues(i.evalContext.ctx, ScriptMode, nil, "options", []interface{}{fnOptsV}, DiscardOutput{Ctx: i.evalContext.ctx})
+	vs, err := i.EvalFuncValues(i.evalContext.ctx, ScriptMode, nil, "options", []interface{}{fnOptsV}, DiscardCtxWriter{Ctx: i.evalContext.ctx})
 	if err != nil {
 		return Options{}, err
 	}

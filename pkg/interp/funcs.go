@@ -221,7 +221,7 @@ func (i *Interp) readline(c interface{}, a []interface{}) interface{} {
 
 			names, shared, err := func() (newLine []string, shared int, err error) {
 				vs, err := i.EvalFuncValues(
-					completeCtx, CompletionMode, c, completeFn, []interface{}{line, pos}, DiscardOutput{Ctx: completeCtx},
+					completeCtx, CompletionMode, c, completeFn, []interface{}{line, pos}, DiscardCtxWriter{Ctx: completeCtx},
 				)
 				if err != nil {
 					return nil, pos, err
