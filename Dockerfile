@@ -1,5 +1,5 @@
 # bump: golang /FROM golang:([\d.]+)/ docker:golang|^1
-FROM golang:1.17.0 AS base
+FROM golang:1.17.1 AS base
 
 # docker build --target dev -t fq-dev - < Dockerfile && docker run --rm -ti -v "$PWD:/$PWD" -w "$PWD" fq-dev
 FROM base AS dev
