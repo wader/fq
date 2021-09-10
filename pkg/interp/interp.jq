@@ -582,7 +582,6 @@ def _main:
         description: "No newline between outputs",
         bool: true
       },
-      # TODO: multiple paths
       "include_path": {
         short: "-L",
         long: "--include-path",
