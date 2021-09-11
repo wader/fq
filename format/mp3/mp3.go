@@ -1,7 +1,6 @@
 package mp3
 
 // TODO: vbri
-// TODO: resync on garbage? between id3v2 and first frame for example
 // TODO: mime audio/mpeg
 
 import (
