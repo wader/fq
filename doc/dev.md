@@ -3,8 +3,7 @@
 - fq uses a gojq fork that can be found at https://github.com/wader/gojq/tree/fq (the "fq" branch)
 - cli readline uses raw mode so blocks ctrl-c to become a SIGINT
 - TODO: `scope` and `scopedump` functions used to implement REPL completion
-- TODO: Custom object interface used to traverse fq's field tree and to allowing a terse
-syntax for comparing and working with fields, accessing child fields and special properties like `_range`.
+- TODO: Custom object interface used to traverse fq's field tree and to allowing a terse syntax for comparing and working with fields, accessing child fields and special properties like `_range`.
 
 ## Decoder implementation help
 
@@ -26,7 +25,7 @@ decoder code be a bit ugly over producing a tree that is hard to understand.
 
 Send `log` package output and stderr to a file that can be `tail -f`:ed:
 ```sh
-LOGFILE=/tmp/log go run main.go ... 2>/tmp/log
+LOGFILE=/tmp/log go run main.go ... 2>>/tmp/log
 ```
 
 gojq execution debug:

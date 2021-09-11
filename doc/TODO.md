@@ -2,7 +2,6 @@
 
 #### CLI
 
-- `--arg`, `--argjson` support
 - `--args` support
 - Reset color at prompt? context cancel
 
@@ -11,12 +10,13 @@
 - ctxstack index cancel wrong order, should just skip?
 - Pager for long output. Configurable? `$PAGER`? only explicit with some kind of syntax? `.. | less` but how?
 - Nicer context cancel message
-- `dump` cancel output of large root value, ex: `.frames`. Problem is dump is done by parent repl. 
+- `dump` cancel output of large root value, ex: `.frames`. Problem is dump is done by parent repl.
 - Error position "^" pointer?
 - Configurable history file/name?
 - Auto complete $variables
 - Auto complete keys that need escaping, now just filtered out
 - Auto complete add "." just one and is object
+- Use JQ_COLORS but extended to allow name= also?
 
 #### Language
 
