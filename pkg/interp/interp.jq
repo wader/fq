@@ -377,7 +377,7 @@ def _repl_iter: _repl({});
 # just gives error, call appearing last will be renamed to _repl_iter
 def repl($_):
   if options.repl then error("repl must be last")
-  else error("repl can't be used in non-repl mode")
+  else error("repl can only be be used from repl")
   end;
 def repl: repl(null);
 
@@ -401,10 +401,11 @@ def _cli_expr_eval($expr; $filename):
 # TODO: introspect and show doc, reflection somehow?
 def help:
   ( "Type jq expression to evaluate"
-  , "\\t       Auto completion"
-  , "Up/Down  History"
-  , "^C       Interrupt execution"
-  , "^D       Exit REPL"
+  , "\\t          Auto completion"
+  , "Up/Down     History"
+  , "^C          Interrupt execution"
+  , "... | repl  Start a new REPL"
+  , "^D          Exit REPL"
   ) | println;
 
 def display($opts): _display($opts);

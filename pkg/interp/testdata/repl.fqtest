@@ -61,4 +61,4 @@ $ fq -i '[1,2,3]'
 $ fq -n repl
 exitcode: 5
 stderr:
-error: repl can't be used in non-repl mode
+error: repl can only be be used from repl
