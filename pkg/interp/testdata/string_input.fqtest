@@ -54,3 +54,12 @@ stdin:
 a
 b
 c
+$ fq -R . missing
+exitcode: 2
+stderr:
+error: missing: file not found
+$ fq -Rs . missing
+""
+exitcode: 2
+stderr:
+error: missing: file not found

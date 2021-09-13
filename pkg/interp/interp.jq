@@ -473,25 +473,30 @@ def input:
           end
         else
           ( [_repeat_break(_input($opts; tobytes | tostring))]
-          | join("") as $all
+          | . as $chunks
           | if $opts.slurp then
               # jq --raw-input combined with --slurp reads all inputs into a string
               # make next input break
               ( _input_strings_lines([]) as $_
-              | $all
+              | $chunks
+              | join("")
               )
             else
               # TODO: different line endings?
               # jq strips last newline, "a\nb" and "a\nb\n" behaves the same
               # also jq -R . <(echo -ne 'a\nb') <(echo c) produces "a" and "bc"
-              ( _input_strings_lines(
-                  ( $all
-                  | rtrimstr("\n")
-                  | split("\n")
-                  )
-                ) as $_
-              | input
-              )
+              if ($chunks | length) > 0 then
+                ( _input_strings_lines(
+                    ( $chunks
+                    | join("")
+                    | rtrimstr("\n")
+                    | split("\n")
+                    )
+                  ) as $_
+                | input
+                )
+              else error("break")
+              end
             end
           )
         end
