@@ -42,11 +42,11 @@ func mp3Decode(d *decode.D, in interface{}) interface{} {
 		}
 	})
 
+	lastValidEnd := int64(0)
 	validFrames := 0
-	foundInvalid := false
+	decodeFailures := 0
 	d.FieldArrayFn("frames", func(d *decode.D) {
 		for d.NotEnd() {
-			startFindSync := d.Pos()
 			syncLen, _, err := d.TryPeekFind(16, 8, -1, func(v uint64) bool {
 				return (v&0b1111_1111_1110_0000 == 0b1111_1111_1110_0000 && // sync header
 					v&0b0000_0000_0001_1000 != 0b0000_0000_0000_1000 && // not reserved mpeg version
@@ -60,17 +60,20 @@ func mp3Decode(d *decode.D, in interface{}) interface{} {
 			}
 
 			if dv, _, _ := d.FieldTryFormat("frame", mp3Frame); dv == nil {
-				foundInvalid = true
-				d.SeekAbs(startFindSync)
-				break
+				decodeFailures++
+				d.SeekRel(8)
+				continue
 			}
+			lastValidEnd = d.Pos()
 			validFrames++
 		}
 	})
 	// TODO: better validate
-	if validFrames == 0 || (validFrames < 2 && foundInvalid) {
+	if validFrames == 0 || (validFrames < 2 && decodeFailures > 0) {
 		d.Invalid("no frames found")
 	}
+
+	d.SeekAbs(lastValidEnd)
 
 	d.FieldArrayFn("footers", func(d *decode.D) {
 		for d.NotEnd() {
