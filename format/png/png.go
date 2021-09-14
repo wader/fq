@@ -189,7 +189,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 		})
 
 		chunkCRC := crc32.NewIEEE()
-		decode.MustCopy(chunkCRC, d.BitBufRange(crcStartPos, d.Pos()-crcStartPos))
+		decode.MustCopy(d, chunkCRC, d.BitBufRange(crcStartPos, d.Pos()-crcStartPos))
 		d.FieldChecksumLen("crc", 32, chunkCRC.Sum(nil), decode.BigEndian)
 	})
 

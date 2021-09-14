@@ -71,7 +71,7 @@ func hevcNALUDecode(d *decode.D, in interface{}) interface{} {
 	nalType, _ := d.FieldStringMapFn("nal_unit_type", hevcNALNames, "Unknown", d.U6, decode.NumberDecimal)
 	d.FieldU6("nuh_layer_id")
 	d.FieldU3("nuh_temporal_id_plus1")
-	unescapedBb := decode.MustNewBitBufFromReader(decode.NALUnescapeReader{Reader: d.BitBufRange(d.Pos(), d.BitsLeft())})
+	unescapedBb := decode.MustNewBitBufFromReader(d, decode.NALUnescapeReader{Reader: d.BitBufRange(d.Pos(), d.BitsLeft())})
 
 	_ = unescapedBb
 	_ = nalType

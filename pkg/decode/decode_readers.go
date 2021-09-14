@@ -71,12 +71,7 @@ func (d *D) TryPeekBits(nBits int) (uint64, error) {
 // Bits reads nBits bits from buffer
 func (d *D) bits(nBits int) (uint64, error) {
 	// 64 bits max, 9 byte worse case if not byte aligned
-	buf := d.bitsBuf
-	if buf == nil {
-		d.bitsBuf = make([]byte, 9)
-		buf = d.bitsBuf
-	}
-
+	buf := d.AllocReadBuf(9)
 	_, err := bitio.ReadFull(d.bitBuf, buf, nBits)
 	if err != nil {
 		return 0, err

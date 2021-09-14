@@ -7,18 +7,24 @@ import (
 	"github.com/wader/fq/pkg/bitio"
 )
 
-func MustCopy(r io.Writer, w io.Reader) int64 {
-	n, err := io.Copy(r, w)
+func Copy(d *D, r io.Writer, w io.Reader) (int64, error) {
+	// TODO: what size?
+	buf := d.AllocReadBuf(64 * 1024)
+	return io.CopyBuffer(r, w, buf)
+}
+
+func MustCopy(d *D, r io.Writer, w io.Reader) int64 {
+	n, err := Copy(d, r, w)
 	if err != nil {
-		panic(IOError{Err: err, Op: "MustCopy"})
+		panic(IOError{Err: err, Op: "MustCopyBuffer"})
 	}
 	return n
 }
 
-func MustNewBitBufFromReader(r io.Reader) *bitio.Buffer {
-	buf := &bytes.Buffer{}
-	MustCopy(buf, r)
-	return bitio.NewBufferFromBytes(buf.Bytes(), -1)
+func MustNewBitBufFromReader(d *D, r io.Reader) *bitio.Buffer {
+	b := &bytes.Buffer{}
+	MustCopy(d, b, r)
+	return bitio.NewBufferFromBytes(b.Bytes(), -1)
 }
 
 // TODO: move?

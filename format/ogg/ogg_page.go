@@ -48,9 +48,9 @@ func pageDecode(d *decode.D, in interface{}) interface{} {
 
 	pageChecksum := d.FieldMustRemove("page_checksum")
 	pageCRC := &crc.CRC{Bits: 32, Table: crc.Poly04c11db7Table}
-	decode.MustCopy(pageCRC, d.BitBufRange(startPos, pageChecksum.Range.Start-startPos))                 // header before checksum
-	decode.MustCopy(pageCRC, bytes.NewReader([]byte{0, 0, 0, 0}))                                        // zero checksum bits
-	decode.MustCopy(pageCRC, d.BitBufRange(pageChecksum.Range.Stop(), endPos-pageChecksum.Range.Stop())) // rest of page
+	decode.MustCopy(d, pageCRC, d.BitBufRange(startPos, pageChecksum.Range.Start-startPos))                 // header before checksum
+	decode.MustCopy(d, pageCRC, bytes.NewReader([]byte{0, 0, 0, 0}))                                        // zero checksum bits
+	decode.MustCopy(d, pageCRC, d.BitBufRange(pageChecksum.Range.Stop(), endPos-pageChecksum.Range.Stop())) // rest of page
 	d.FieldChecksumRange("page_checksum", pageChecksum.Range.Start, pageChecksum.Range.Len, pageCRC.Sum(nil), decode.LittleEndian)
 
 	return p

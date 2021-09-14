@@ -95,7 +95,7 @@ func gifDecode(d *decode.D, in interface{}) interface{} {
 									d.FieldU8("terminator")
 									seenTerminator = true
 								}
-								decode.MustCopy(dataBytes, b.Copy())
+								decode.MustCopy(d, dataBytes, b.Copy())
 							})
 						}
 					})

@@ -337,12 +337,13 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		})
 
 		headerCRC := &crc.CRC{Bits: 8, Table: crc.ATM8Table}
-		decode.MustCopy(headerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
+		decode.MustCopy(d, headerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
 		d.FieldChecksumLen("crc", 8, headerCRC.Sum(nil), decode.BigEndian)
 
 	})
 
 	var channelSamples [][]int64
+	rs := make([]int64, 0, blockSize)
 	d.FieldArrayFn("subframes", func(d *decode.D) {
 		for channelIndex := 0; channelIndex < int(channels); channelIndex++ {
 			d.FieldStructFn("subframe", func(d *decode.D) {
@@ -418,7 +419,8 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 
 				decodeResiduals := func() []int64 {
 					// is less than blockSize
-					rs := make([]int64, 0, blockSize)
+					// reset array
+					rs = rs[:0]
 
 					// <2> Residual coding method:
 					// 00 : partitioned Rice coding with 4-bit Rice parameter; RESIDUAL_CODING_METHOD_PARTITIONED_RICE follows
@@ -583,7 +585,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldValidateUFn("byte_align", 0, func() uint64 { return d.U(d.ByteAlignBits()) })
 	// <16> CRC-16 (polynomial = x^16 + x^15 + x^2 + x^0, initialized with 0) of everything before the crc, back to and including the frame header sync code
 	footerCRC := &crc.CRC{Bits: 16, Table: crc.ANSI16Table}
-	decode.MustCopy(footerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
+	decode.MustCopy(d, footerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
 	d.FieldChecksumLen("footer_crc", 16, footerCRC.Sum(nil), decode.BigEndian)
 
 	streamSamples := len(channelSamples[0])
@@ -623,6 +625,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 
 	interleavedSamplesBuf := ffi.SamplesBuf
 	interleavedSamplesBufLen := len(channelSamples) * streamSamples * bytesPerSample
+	// TODO: decode read buffer?
 	// reuse buffer if possible
 	if interleavedSamplesBuf == nil || len(interleavedSamplesBuf) < interleavedSamplesBufLen {
 		interleavedSamplesBuf = make([]byte, interleavedSamplesBufLen)

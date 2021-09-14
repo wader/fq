@@ -109,7 +109,7 @@ func avcNALUDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldBool("forbidden_zero_bit")
 	d.FieldU2("nal_ref_idc")
 	nalType, _ := d.FieldSymbolMapFn("nal_unit_type", avcNALNames, decode.Symbol{Desc: "Unknown"}, d.U5)
-	unescapedBb := decode.MustNewBitBufFromReader(decode.NALUnescapeReader{Reader: d.BitBufRange(d.Pos(), d.BitsLeft())})
+	unescapedBb := decode.MustNewBitBufFromReader(d, decode.NALUnescapeReader{Reader: d.BitBufRange(d.Pos(), d.BitsLeft())})
 
 	switch nalType {
 	case avcNALCodedSliceNonIDR,

@@ -560,7 +560,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 	if unsyncFlag {
 		// TODO: DecodeFn
 		// TODO: unknown after frame decode
-		unsyncedBb := decode.MustNewBitBufFromReader(unsyncReader{Reader: d.BitBufRange(d.Pos(), int64(dataSize)*8)})
+		unsyncedBb := decode.MustNewBitBufFromReader(d, unsyncReader{Reader: d.BitBufRange(d.Pos(), int64(dataSize)*8)})
 		d.FieldFormatBitBuf("unsync", unsyncedBb, decode.FormatFn(func(d *decode.D, in interface{}) interface{} {
 			if fn, ok := frames[idNormalized]; ok {
 				fn(d)
