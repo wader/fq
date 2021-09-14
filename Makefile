@@ -8,7 +8,7 @@ fq:
 .PHONY: test
 # figure out all go pakges with test files
 test: PKGS=$(shell find . -name "*_test.go" | xargs -n 1 dirname | sort | uniq)
-test: jqtest
+test: testjq
 	go test ${VERBOSE} ${COVER} ${PKGS}
 
 testwrite: export WRITE_ACTUAL=1
@@ -22,8 +22,8 @@ cover: test
 	go tool cover -html=cover.out -o cover.out.html
 	cat cover.out.html | grep '<option value="file' | sed -E 's/.*>(.*) \((.*)%\)<.*/\2 \1/' | sort -rn
 
-.PHONY: jqtest
-jqtest:
+.PHONY: testjq
+testjq:
 	@for f in $$(find . -name "*_test.jq"); do \
 		echo $$f ; \
 		go run main.go -L "$$(dirname $$f)" -f "$$f" -n -r ; \
