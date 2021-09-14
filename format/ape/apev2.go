@@ -1,7 +1,6 @@
 package ape
 
 // http://wiki.hydrogenaud.io/index.php?title=APE_Tags_Header
-// TODO: havent been tested after refactor
 
 import (
 	"github.com/wader/fq/format"
