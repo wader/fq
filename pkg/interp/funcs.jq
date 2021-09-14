@@ -317,7 +317,7 @@ def diff($a; $b):
   );
 
 def in_bits_range($p):
-  select(scalars and ._start? and ._start <= $p and $p < ._stop);
+  select(._start <= $p and $p < ._stop);
 def in_bytes_range($p):
-  select(scalars and ._start? and ._start/8 <= $p and $p < ._stop/8);
+  select(._start/8 <= $p and $p < ._stop/8);
 
