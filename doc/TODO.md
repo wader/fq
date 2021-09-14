@@ -93,6 +93,7 @@
 - Somehow control/limit nested decoding, depth/exclude/include? `probe({depth:1})` etc? per format skip options?
 - Can't use range while decoding, not calculated yet
 - Keep track of encoding for values, u16le, utf8, varint etc
+- Option to ignore range checks, decode until read error instead. Ex: mp4 with truncated mdat.
 
 #### Formats
 
