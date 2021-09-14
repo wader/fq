@@ -29,9 +29,6 @@ Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 --version,-v             Show version (dev)
 </pre>
 
-- TODO: null input
-- TODO: expressions
-
 ### Running
 
 - TODO: stdin/stdout
@@ -61,6 +58,10 @@ The most common beginner gotcha is probably jq's use of `;` and `,`. jq uses `;`
 and `,` as output separator.
 To call `f` with two arguments use `f(a; b)`. If you do `f(a, b)` you pass a single
 argument `a, b` to `f`.
+
+### Basics
+
+TODO
 
 ### Differences to jq
 
