@@ -447,7 +447,7 @@ func (d *D) AddChild(v *Value) {
 	}
 }
 
-func (d *D) FieldFormatr(name string, bitBuf *bitio.Buffer, v interface{}) *D {
+func (d *D) FieldDecoder(name string, bitBuf *bitio.Buffer, v interface{}) *D {
 	return &D{
 		Endian: d.Endian,
 		Value: &Value{
@@ -507,7 +507,7 @@ func (d *D) FieldMustGet(name string) *Value {
 }
 
 func (d *D) FieldArray(name string) *D {
-	cd := d.FieldFormatr(name, d.bitBuf, Array{})
+	cd := d.FieldDecoder(name, d.bitBuf, Array{})
 	d.AddChild(cd.Value)
 	return cd
 }
@@ -519,7 +519,7 @@ func (d *D) FieldArrayFn(name string, fn func(d *D)) *D {
 }
 
 func (d *D) FieldStruct(name string) *D {
-	cd := d.FieldFormatr(name, d.bitBuf, Struct{})
+	cd := d.FieldDecoder(name, d.bitBuf, Struct{})
 	d.AddChild(cd.Value)
 	return cd
 }
@@ -821,7 +821,7 @@ func (d *D) DecodeRangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 	if _, err := bb.SeekAbs(firstBit); err != nil {
 		panic(IOError{Err: err, Op: "SeekAbs", Pos: firstBit})
 	}
-	sd := d.FieldFormatr("", bb, subV)
+	sd := d.FieldDecoder("", bb, subV)
 
 	fn(sd)
 
