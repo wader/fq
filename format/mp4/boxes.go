@@ -95,6 +95,11 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 		dataSize = boxSize - 8
 	}
 
+	// TODO: add truncate to size option?
+	// if dataSize > uint64(d.BitsLeft()/8) {
+	// 	dataSize = uint64(d.BitsLeft() / 8)
+	// }
+
 	// TODO: not sure about this
 	switch {
 	case typ == "\xa9too":
