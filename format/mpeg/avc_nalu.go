@@ -51,7 +51,10 @@ func fieldUEV(d *decode.D, name string) uint64 {
 	})
 }
 
-func sEV(d *decode.D) int64 { return num.ZigZag(expGolomb(d)) }
+func sEV(d *decode.D) int64 {
+	v := expGolomb(d) + 1
+	return num.ZigZag(v) - -int64(v&1)
+}
 
 func fieldSEV(d *decode.D, name string) int64 { //nolint:unparam
 	return d.FieldSFn(name, func() (int64, decode.DisplayFormat, string) {
