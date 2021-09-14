@@ -1,7 +1,6 @@
 package mpeg
 
 // TODO: unescape configurable? merge with AVC_NAL? merge with HEVC?
-// TODO: naming
 
 import (
 	"github.com/wader/fq/format"

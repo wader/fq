@@ -6,7 +6,6 @@ package gif
 
 // TODO: local color map
 // TODO: bit depth done correct?
-// TDOO: mime mage/gif
 
 import (
 	"bytes"

@@ -2,7 +2,6 @@ package tar
 
 // https://www.gnu.org/software/tar/manual/html_node/Standard.html
 // TODO: extensions?
-// TODO: application/x-tar
 
 import (
 	"bytes"

@@ -4,7 +4,6 @@ package png
 // https://ftp-osl.osuosl.org/pub/libpng/documents/pngext-1.5.0.html
 // https://wiki.mozilla.org/APNG_Specification
 // TODO: color types
-// TODO: image/png
 
 import (
 	"hash/crc32"

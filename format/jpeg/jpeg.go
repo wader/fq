@@ -3,7 +3,6 @@ package jpeg
 // https://www.w3.org/Graphics/JPEG/itu-t81.pdf
 // TODO: warning on junk before marker?
 // TODO: extract photohop to own decoder?
-// TODO: image/jpeg
 
 import (
 	"bytes"

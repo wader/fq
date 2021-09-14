@@ -3,7 +3,6 @@ package gz
 // https://tools.ietf.org/html/rfc1952
 // TODO: test name, comment etc
 // TODO: verify isize?
-// TODO: mime application/gzip
 
 import (
 	"bytes"

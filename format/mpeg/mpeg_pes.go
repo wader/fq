@@ -1,7 +1,6 @@
 package mpeg
 
 // TODO: probeable?
-// TODO: add ts
 
 // http://dvdnav.mplayerhq.hu/dvdinfo/mpeghdrs.html
 

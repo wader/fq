@@ -1,7 +1,5 @@
 package flac
 
-// TODO: reuse samples buffer. pass in buf?
-
 import (
 	"encoding/binary"
 	"fmt"

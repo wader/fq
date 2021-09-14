@@ -1,7 +1,6 @@
 package webp
 
 // https://developers.google.com/speed/webp/docs/riff_container
-// TODO: image/webp
 
 import (
 	"bytes"

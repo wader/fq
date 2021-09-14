@@ -1,4 +1,4 @@
-// Package all imports all standard formats
+// Package all imports and registers all formats in the default registry
 package all
 
 import (

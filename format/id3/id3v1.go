@@ -8,7 +8,6 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-// TODO: trim strings?
 // TODO: comment 28 long, zero byte, track number
 
 func init() {

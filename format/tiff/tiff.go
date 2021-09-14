@@ -1,7 +1,6 @@
 package tiff
 
 // https://www.adobe.io/content/dam/udp/en/open/standards/tiff/TIFF6.pdf
-// TODO: image/tiff
 
 import (
 	"github.com/wader/fq/format"

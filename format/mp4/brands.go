@@ -1,6 +1,6 @@
 package mp4
 
-// from
+// from:
 // https://cconcolato.github.io/mp4ra/filetype.html
 // https://exiftool.org/TagNames/QuickTime.html
 var brandDescriptions = map[string]string{

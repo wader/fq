@@ -1,5 +1,7 @@
 package mp4
 
+// TODO: flags?
+
 import (
 	"bytes"
 	"fmt"
@@ -205,7 +207,6 @@ func init() {
 		"tref": decodeBoxes,
 		"tkhd": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
-			// TODO: values
 			d.FieldU24("flags")
 			_ = decodeFieldTime(d, "creation_time")
 			_ = decodeFieldTime(d, "modification_time")
@@ -214,7 +215,6 @@ func init() {
 			d.FieldU32("duration")
 			d.FieldBitBufLen("reserved2", 8*8)
 			d.FieldU16("layer")
-			// TODO: values
 			d.FieldU16("alternate_group")
 			d.FieldFP16("volume")
 			d.FieldU16("reserved3")
@@ -232,7 +232,6 @@ func init() {
 		"mdia": decodeBoxes,
 		"mdhd": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
-			// TODO: values
 			d.FieldU24("flags")
 			// TODO: timestamps
 			_ = decodeFieldTime(d, "creation_time")
@@ -254,7 +253,6 @@ func init() {
 		},
 		"hdlr": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
-			// TODO: values
 			d.FieldU24("flags")
 			d.FieldUTF8("component_type", 4)
 			subTypeNames := map[string]string{
@@ -306,7 +304,6 @@ func init() {
 		"dinf": decodeBoxes,
 		"dref": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
-			// TODO: values
 			d.FieldU24("flags")
 			entryCount := d.FieldU32("entry_count")
 			var i uint64
@@ -323,7 +320,6 @@ func init() {
 		"stbl": decodeBoxes,
 		"stsd": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
-			// TODO: values
 			d.FieldU24("flags")
 			entryCount := d.FieldU32("entry_count")
 			var i uint64
@@ -350,24 +346,7 @@ func init() {
 
 							version := d.FieldU16("version")
 							d.FieldU16("revision_level")
-							d.FieldU32("max_packet_size") // TODO: vendor?
-
-							// "Some sample descriptions terminate with four zero bytes that are not otherwise indicated."
-							// uses decodeBoxes
-
-							// Timecode sample
-							// TODO: tc64
-							// d.DecodeRangeFn(firstBit, nBits, func(d *decode.D) {
-							// 	d.FieldStructFn("sample", func(d *decode.D) {
-							// 		d.FieldU32("reserved0")
-							// 		d.FieldBitBufLen("data", d.BitsLeft())
-							// 		// d.FieldU32("flags")
-							// 		// d.FieldS32("timescale")
-							// 		// d.FieldS32("frame_duration")
-							// 		// d.FieldS32("num_frames")
-							// 		// d.FieldU8("reserved1")
-							// 	})
-							// })
+							d.FieldU32("max_packet_size") // TODO: vendor for some subtype?
 
 							switch subType {
 							case "soun":
@@ -476,7 +455,6 @@ func init() {
 		},
 		"dfLa": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
-			// TODO: values
 			d.FieldU24("flags")
 			d.FieldArrayFn("metadatablocks", func(d *decode.D) {
 				for {
@@ -511,15 +489,6 @@ func init() {
 		"esds": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU32("version")
 
-			// TODO: some other way to know how to decode?
-			// TODO: why not always? was there a reason?
-			// dataFormat := ""
-			// if ctx.currentTrack != nil && len(ctx.currentTrack.sampleDescriptions) > 0 {
-			// 	dataFormat = ctx.currentTrack.sampleDescriptions[0].dataFormat
-			// }
-
-			// switch dataFormat {
-			// case "mp4a", "mp4v":
 			_, v := d.FieldFormat("es_descriptor", mpegESFormat)
 			mpegEsOut, ok := v.(format.MpegEsOut)
 			if !ok {
@@ -532,15 +501,9 @@ func init() {
 				ctx.currentTrack.decodeOpts = append(ctx.currentTrack.decodeOpts,
 					decode.FormatOptions{InArg: format.AACFrameIn{ObjectType: dc.ASCObjectType}})
 			}
-
-			// default:
-			// 	d.FieldBitBufLen("data", d.BitsLeft())
-			// }
-
 		},
 		"stts": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
-			// TODO: values
 			d.FieldU24("flags")
 			numEntries := d.FieldU32("entry_count")
 			var i uint64
@@ -552,7 +515,6 @@ func init() {
 		},
 		"stsc": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
-			// TODO: values
 			d.FieldU24("flags")
 			entryCount := d.FieldU32("entry_count")
 			var i uint64
@@ -572,7 +534,6 @@ func init() {
 		},
 		"stsz": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
-			// TODO: values
 			d.FieldU24("flags")
 			// TODO: bytes_per_sample from audio stsd?
 			sampleSize := d.FieldU32("sample_size")
@@ -596,7 +557,6 @@ func init() {
 		},
 		"stco": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
-			// TODO: values
 			d.FieldU24("flags")
 			entryCount := d.FieldU32("entry_count")
 			var i uint64
@@ -653,7 +613,6 @@ func init() {
 		// TODO: refactor: merge with stco?
 		"co64": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
-			// TODO: values
 			d.FieldU24("flags")
 			entryCount := d.FieldU32("entry_count")
 			var i uint64
@@ -971,7 +930,7 @@ func init() {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			d.FieldU1("pad")
-			// ISO-639-2/T as 3*5 bit intgers - 0x60
+			// ISO-639-2/T as 3*5 bit integers - 0x60
 			d.FieldStrFn("language", func() (string, string) {
 				s := ""
 				for i := 0; i < 3; i++ {
@@ -1170,25 +1129,7 @@ func init() {
 			d.FieldU24("flags")
 
 			d.FieldU32("sample_count")
-			// d.FieldArrayFn("samples", func(d *decode.D) {
-			// 	for i := uint64(0); i < sampleCount; i++ {
-			// 		d.FieldStructFn("sample", func(d *decode.D) {
-			// 			// TODO: IV_size?
-			// 			d.FieldBitBufLen("iv", 8*8)
-			// 			if flags&0b10 != 0 {
-			// 				subSampleCount := d.FieldU32("sub_sample_count")
-			// 				d.FieldArrayFn("subsamples", func(d *decode.D) {
-			// 					for i := uint64(0); i < subSampleCount; i++ {
-			// 						d.FieldStructFn("subsample", func(d *decode.D) {
-			// 							d.FieldU16("bytes_of_clear_data")
-			// 							d.FieldU32("bytes_fo_encrypted_data")
-			// 						})
-			// 					}
-			// 				})
-			// 			}
-			// 		})
-			// 	}
-			// })
+			// TODO need iv size here
 		},
 		"tenc": func(_ *decodeContext, d *decode.D) {
 			version := d.FieldU8("version")

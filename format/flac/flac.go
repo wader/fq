@@ -2,9 +2,6 @@ package flac
 
 // https://xiph.org/flac/format.html
 
-// TODO: reuse samples buffer
-// TODO: mime audio/x-flac
-
 import (
 	"bytes"
 	"crypto/md5"

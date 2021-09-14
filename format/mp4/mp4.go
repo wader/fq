@@ -1,23 +1,19 @@
 package mp4
 
-// Tries to decode both ISOBMFF and quicktime
+// Tries to decode ISOBMFF quicktime mov
 // Uses naming from ISOBMFF when possible
 // ISO/IEC 14496-12
 // Quicktime file format https://developer.apple.com/standards/qtff-2001.pdf
 // FLAC in ISOBMFF https://github.com/xiph/flac/blob/master/doc/isoflac.txt
-// https://www.webmproject.org/vp9/mp4/
+// vp9 in ISOBMFF https://www.webmproject.org/vp9/mp4/
+// https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/Metadata/Metadata.html#//apple_ref/doc/uid/TP40000939-CH1-SW43
 
 // TODO: validate structure better? trak/stco etc
-// TODO: fmp4, default samples sizes etc
 // TODO: keep track of structure somehow to detect errors
-// TODO: ISO-14496 says mp4 mdat can begin and end with original header/trailer (no used i guess?)
-// TODO: more metadata
-// https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/Metadata/Metadata.html#//apple_ref/doc/uid/TP40000939-CH1-SW43
+// TODO: ISO-14496 says mp4 mdat can begin and end with original header/trailer (no used?)
 // TODO: split into mov and mp4 decoder?
 // TODO: split into mp4_box decoder? needs complex in/out args?
-// TODO: fragmented: tracks per fragment? fragment_index in samples?
 // TODO: better probe, find first 2 boxes, should be free,ftyp or mdat?
-// TODO: mime
 
 import (
 	"embed"

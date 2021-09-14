@@ -1,7 +1,6 @@
 package ogg
 
 // https://xiph.org/ogg/doc/framing.html
-// TODO: audio/ogg"
 
 import (
 	"bytes"
@@ -101,7 +100,6 @@ func decodeOgg(d *decode.D, in interface{}) interface{} {
 					s.firstBit = d.Pos()
 				}
 
-				// TODO: decoder buffer api that panics?
 				psBytes := ps.Len() / 8
 
 				// TODO: cleanup

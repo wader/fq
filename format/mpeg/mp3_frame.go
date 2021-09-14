@@ -91,13 +91,6 @@ func init() {
 // 	15: {4, 3},
 // }
 
-// func huffmanDecode(d *decode.D, table []int) {
-// 	i := 0
-// 	for table[i] < 0 {
-
-// 	}
-// }
-
 var blockTypeNames = map[uint64]string{
 	0: "reserved",
 	1: "start block",

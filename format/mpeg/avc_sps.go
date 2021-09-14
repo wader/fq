@@ -1,8 +1,5 @@
 package mpeg
 
-// ISO/IEC 14496-15 AVC file format, 5.3.3.1.2 Syntax
-// ISO_IEC_14496-10 AVC
-
 import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"

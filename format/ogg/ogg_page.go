@@ -1,7 +1,5 @@
 package ogg
 
-// https://xiph.org/ogg/doc/framing.html
-
 import (
 	"bytes"
 
