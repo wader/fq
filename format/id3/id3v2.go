@@ -459,6 +459,24 @@ func decodeFrame(d *decode.D, version int) uint64 {
 				d.FieldBitBufLen("picture", d.BitsLeft())
 			}
 		},
+
+		// <Header for 'General encapsulated object', ID: "GEOB">
+		// Text encoding          $xx
+		// MIME type              <text string> $00
+		// Filename               <text string according to encoding> $00 (00)
+		// Content description    <text string according to encoding> $00 (00)
+		// Encapsulated object    <binary data>
+		"GEOB": func(d *decode.D) {
+			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8, decode.NumberDecimal)
+			fieldTextNull(d, "mime_type", encodingUTF8)
+			fieldTextNull(d, "filename", int(encoding))
+			fieldTextNull(d, "description", int(encoding))
+			dv, _, _ := d.FieldTryFormatLen("picture", d.BitsLeft(), imageFormat)
+			if dv == nil {
+				d.FieldBitBufLen("picture", d.BitsLeft())
+			}
+		},
+
 		// Unsynced lyrics/text "ULT"
 		// Frame size           $xx xx xx
 		// Text encoding        $xx
