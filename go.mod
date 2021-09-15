@@ -8,7 +8,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.0
 
 	// fork of github.com/itchyny/gojq
-	github.com/wader/gojq v0.12.1-0.20210914125041-9eeeec0df5fe
+	github.com/wader/gojq v0.12.1-0.20210915224505-36925d096b12
 	// fork of github.com/chzyer/readline
 	github.com/wader/readline v0.0.0-20210817095433-c868eb04b8b2
 
