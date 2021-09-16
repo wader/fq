@@ -33,7 +33,7 @@ func isCompound(v *decode.Value) bool {
 	}
 }
 
-func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.Value, rootDepth int, addrWidth int, opts Options) error {
+func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, rootV *decode.Value, rootDepth int, addrWidth int, opts Options) error {
 	deco := opts.Decorator
 	// no error check as we write into buffering column
 	// we check for err later for Flush()
@@ -265,14 +265,16 @@ func dumpEx(v *decode.Value, cw *columnwriter.Writer, depth int, rootV *decode.V
 		asciiFn := func(b byte) string { return deco.ByteColor(b).Wrap(asciiwriter.SafeASCII(b)) }
 
 		if vBitBuf != nil {
-			if _, err := io.Copy(
+			if _, err := io.CopyBuffer(
 				hexpairwriter.New(cw.Columns[colHex], opts.LineBytes, int(startLineByteOffset), hexpairFn),
-				io.LimitReader(vBitBuf.Copy(), displaySizeBytes)); err != nil {
+				io.LimitReader(vBitBuf.Copy(), displaySizeBytes),
+				buf); err != nil {
 				return err
 			}
-			if _, err := io.Copy(
+			if _, err := io.CopyBuffer(
 				asciiwriter.New(cw.Columns[colAscii], opts.LineBytes, int(startLineByteOffset), asciiFn),
-				io.LimitReader(vBitBuf.Copy(), displaySizeBytes)); err != nil {
+				io.LimitReader(vBitBuf.Copy(), displaySizeBytes),
+				buf); err != nil {
 				return err
 			}
 		}
@@ -340,8 +342,9 @@ func dump(v *decode.Value, w io.Writer, opts Options) error {
 	}))
 
 	cw := columnwriter.New(w, []int{maxAddrIndentWidth, 1, opts.LineBytes*3 - 1, 1, opts.LineBytes, 1, -1})
+	buf := make([]byte, 32*1024)
 
 	return v.WalkPreOrder(makeWalkFn(func(v *decode.Value, rootV *decode.Value, depth int, rootDepth int) error {
-		return dumpEx(v, cw, depth, rootV, rootDepth, maxAddrIndentWidth-rootDepth, opts)
+		return dumpEx(v, buf, cw, depth, rootV, rootDepth, maxAddrIndentWidth-rootDepth, opts)
 	}))
 }

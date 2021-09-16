@@ -69,8 +69,11 @@ func (a *AlignBitReader) ReadBitsAt(p []byte, nBits int, bitOff int64) (n int, e
 	return n, err
 }
 
-func Copy(dst BitWriter, src BitReader) (n int64, err error) {
-	buf := make([]byte, 32*1024)
+func CopyBuffer(dst BitWriter, src BitReader, buf []byte) (n int64, err error) {
+	// same default size as io.Copy
+	if buf == nil {
+		buf = make([]byte, 32*1024)
+	}
 	var written int64
 
 	for {
@@ -96,6 +99,10 @@ func Copy(dst BitWriter, src BitReader) (n int64, err error) {
 	}
 
 	return written, err
+}
+
+func Copy(dst BitWriter, src BitReader) (n int64, err error) {
+	return CopyBuffer(dst, src, nil)
 }
 
 func BitsByteCount(nBits int64) int64 {

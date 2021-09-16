@@ -241,11 +241,11 @@ func NewDecoder(ctx context.Context, name string, description string, format *Fo
 	}
 }
 
-func (d *D) AllocReadBuf(n int) []byte {
+func (d *D) SharedReadBuf(n int) []byte {
 	if d.readBuf == nil {
 		d.readBuf = new([]byte)
 	}
-	if cap(*d.readBuf) < n {
+	if len(*d.readBuf) < n {
 		*d.readBuf = make([]byte, n)
 	}
 	return *d.readBuf

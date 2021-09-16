@@ -717,19 +717,6 @@ func (i *Interp) tovalue(c interface{}, a []interface{}) interface{} {
 	return v
 }
 
-// func (i *Interp) md5(c interface{}, a []interface{}) interface{} {
-// 	bb, _, err := toBuffer(c)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	if _, err := io.Copy(md5, bb); err != nil {
-// 		return err
-// 	}
-
-// 	return md5.Sum(nil)
-// }
-
 func (i *Interp) queryEscape(c interface{}, a []interface{}) interface{} {
 	s, err := toString(c)
 	if err != nil {

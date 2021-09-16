@@ -8,8 +8,8 @@ import (
 )
 
 func Copy(d *D, r io.Writer, w io.Reader) (int64, error) {
-	// TODO: what size?
-	buf := d.AllocReadBuf(64 * 1024)
+	// TODO: what size? now same as io.Copy
+	buf := d.SharedReadBuf(32 * 1024)
 	return io.CopyBuffer(r, w, buf)
 }
 
