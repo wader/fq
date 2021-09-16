@@ -563,7 +563,7 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
-	filename := "unnamed"
+	filename := ""
 
 	// TODO: progress hack
 	// would be nice to move progress code into decode but it might be

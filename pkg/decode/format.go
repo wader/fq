@@ -13,6 +13,8 @@ type Format struct {
 	Description  string
 	Groups       []string
 	DecodeFn     func(d *D, in interface{}) interface{}
+	RootV        interface{}
+	RootName     string
 	Dependencies []Dependency
 	FS           fs.FS
 }

@@ -17,6 +17,8 @@ func init() {
 		Name:        format.AV1_FRAME,
 		Description: "AV1 frame",
 		DecodeFn:    frameDecode,
+		RootV:       decode.Array{},
+		RootName:    "frame",
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.AV1_OBU}, Formats: &obuFormat},
 		},
@@ -24,11 +26,9 @@ func init() {
 }
 
 func frameDecode(d *decode.D, in interface{}) interface{} {
-	d.FieldArrayFn("frame", func(d *decode.D) {
-		for d.NotEnd() {
-			d.FieldFormat("obu", obuFormat, nil)
-		}
-	})
+	for d.NotEnd() {
+		d.FieldFormat("obu", obuFormat, nil)
+	}
 
 	return nil
 }

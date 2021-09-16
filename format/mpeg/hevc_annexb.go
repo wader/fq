@@ -15,6 +15,8 @@ func init() {
 		DecodeFn: func(d *decode.D, in interface{}) interface{} {
 			return annexBDecode(d, in, annexBHEVCNALUFormat)
 		},
+		RootV:    decode.Array{},
+		RootName: "stream",
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.HEVC_NALU}, Formats: &annexBHEVCNALUFormat},
 		},

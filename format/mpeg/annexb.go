@@ -29,22 +29,19 @@ func annexBDecode(d *decode.D, _ interface{}, format []*decode.Format) interface
 		d.Invalid("could not find start code (first)")
 	}
 
-	// TODO: root array
-	d.FieldArrayFn("nalus", func(d *decode.D) {
-		for d.NotEnd() {
-			d.FieldBitBufLen("start_code", currentPrefixLen)
+	for d.NotEnd() {
+		d.FieldBitBufLen("start_code", currentPrefixLen)
 
-			nextOffset, nextPrefixLen, err := annexBFindStartCode(d)
-			if err != nil {
-				nextOffset = d.Len() - d.Pos()
-			}
-
-			naluLen := nextOffset
-			d.FieldFormatLen("nalu", naluLen, format, nil)
-
-			currentPrefixLen = nextPrefixLen
+		nextOffset, nextPrefixLen, err := annexBFindStartCode(d)
+		if err != nil {
+			nextOffset = d.Len() - d.Pos()
 		}
-	})
+
+		naluLen := nextOffset
+		d.FieldFormatLen("nalu", naluLen, format, nil)
+
+		currentPrefixLen = nextPrefixLen
+	}
 
 	return nil
 }

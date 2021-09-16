@@ -14,6 +14,8 @@ func init() {
 		Description: "Audio Data Transport Stream",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    adtsDecoder,
+		RootV:       decode.Array{},
+		RootName:    "frames",
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.ADTS_FRAME}, Formats: &adtsFrame},
 		},
@@ -22,14 +24,12 @@ func init() {
 
 func adtsDecoder(d *decode.D, in interface{}) interface{} {
 	validFrames := 0
-	d.FieldArrayFn("frames", func(d *decode.D) {
-		for !d.End() {
-			if dv, _, _ := d.FieldTryFormat("frame", adtsFrame, nil); dv == nil {
-				break
-			}
-			validFrames++
+	for !d.End() {
+		if dv, _, _ := d.FieldTryFormat("frame", adtsFrame, nil); dv == nil {
+			break
 		}
-	})
+		validFrames++
+	}
 
 	if validFrames == 0 {
 		d.Invalid("no valid frames")

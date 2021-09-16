@@ -16,6 +16,8 @@ func init() {
 		Name:        format.AAC_FRAME,
 		Description: "Advanced Audio Coding frame",
 		DecodeFn:    aacDecode,
+		RootV:       decode.Array{},
+		RootName:    "elements",
 	})
 }
 
@@ -272,36 +274,34 @@ func aacDecode(d *decode.D, in interface{}) interface{} {
 
 	// TODO: seems tricky to know length of blocks
 	// TODO: currently break when length is unknown
-	d.FieldArrayFn("elements", func(d *decode.D) {
-		seenTerm := false
-		for !seenTerm {
-			d.FieldStructFn("element", func(d *decode.D) {
-				se, _ := d.FieldStringMapFn("syntax_element", SyntaxElementNames, "", d.U3, decode.NumberDecimal)
+	seenTerm := false
+	for !seenTerm {
+		d.FieldStructFn("element", func(d *decode.D) {
+			se, _ := d.FieldStringMapFn("syntax_element", SyntaxElementNames, "", d.U3, decode.NumberDecimal)
 
-				switch se {
-				case FIL:
-					aacFillElement(d)
+			switch se {
+			case FIL:
+				aacFillElement(d)
 
-				case SCE:
-					aacSingleChannelElement(d, objectType)
-					seenTerm = true
+			case SCE:
+				aacSingleChannelElement(d, objectType)
+				seenTerm = true
 
-				case PCE:
-					aacProgramConfigElement(d, 0)
-					seenTerm = true
+			case PCE:
+				aacProgramConfigElement(d, 0)
+				seenTerm = true
 
-				default:
-					fallthrough
-				case TERM:
-					seenTerm = true
-				}
-			})
-		}
+			default:
+				fallthrough
+			case TERM:
+				seenTerm = true
+			}
+		})
+	}
 
-		if d.ByteAlignBits() > 0 {
-			d.FieldBitBufLen("byte_align", int64(d.ByteAlignBits()))
-		}
-	})
+	if d.ByteAlignBits() > 0 {
+		d.FieldBitBufLen("byte_align", int64(d.ByteAlignBits()))
+	}
 
 	d.FieldBitBufLen("data", d.BitsLeft())
 

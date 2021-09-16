@@ -13,6 +13,8 @@ func init() {
 		Name:        format.HEVC_AU,
 		Description: "H.265/HEVC Access Unit",
 		DecodeFn:    hevcAUDecode,
+		RootV:       decode.Array{},
+		RootName:    "access_unit",
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.HEVC_NALU}, Formats: &hevcAUNALFormat},
 		},
@@ -25,14 +27,12 @@ func hevcAUDecode(d *decode.D, in interface{}) interface{} {
 		d.Invalid("hevcIn required")
 	}
 
-	d.FieldArrayFn("access_unit", func(d *decode.D) {
-		for d.NotEnd() {
-			d.FieldStructFn("nalu", func(d *decode.D) {
-				l := d.FieldU("length", int(hevcIn.LengthSize)*8)
-				d.FieldFormatLen("nalu", int64(l)*8, hevcAUNALFormat, nil)
-			})
-		}
-	})
+	for d.NotEnd() {
+		d.FieldStructFn("nalu", func(d *decode.D) {
+			l := d.FieldU("length", int(hevcIn.LengthSize)*8)
+			d.FieldFormatLen("nalu", int64(l)*8, hevcAUNALFormat, nil)
+		})
+	}
 
 	return nil
 }

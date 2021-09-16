@@ -15,6 +15,8 @@ func init() {
 		Name:        format.AVC_AU,
 		Description: "H.264/AVC Access Unit",
 		DecodeFn:    avcAUDecode,
+		RootV:       decode.Array{},
+		RootName:    "access_unit",
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.AVC_NALU}, Formats: &avcNALUFormat},
 		},
@@ -27,14 +29,12 @@ func avcAUDecode(d *decode.D, in interface{}) interface{} {
 		d.Invalid("avcIn required")
 	}
 
-	d.FieldArrayFn("access_unit", func(d *decode.D) {
-		for d.NotEnd() {
-			d.FieldStructFn("nalu", func(d *decode.D) {
-				l := d.FieldU("length", int(avcIn.LengthSize)*8)
-				d.FieldFormatLen("nalu", int64(l)*8, avcNALUFormat, nil)
-			})
-		}
-	})
+	for d.NotEnd() {
+		d.FieldStructFn("nalu", func(d *decode.D) {
+			l := d.FieldU("length", int(avcIn.LengthSize)*8)
+			d.FieldFormatLen("nalu", int64(l)*8, avcNALUFormat, nil)
+		})
+	}
 
 	return nil
 }

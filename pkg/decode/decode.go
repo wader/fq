@@ -205,14 +205,23 @@ type D struct {
 func NewDecoder(ctx context.Context, format *Format, bb *bitio.Buffer, opts DecodeOptions) *D {
 	cbb := bb.Copy()
 
+	name := format.RootName
+	if opts.Name != "" {
+		name = opts.Name
+	}
+	rootV := format.RootV
+	if rootV == nil {
+		rootV = Struct{}
+	}
+
 	return &D{
 		Ctx:    ctx,
 		Endian: BigEndian,
 		Value: &Value{
-			Name:        opts.Name,
+			Name:        name,
 			Description: opts.Description,
 			Format:      format,
-			V:           Struct{},
+			V:           rootV,
 			IsRoot:      opts.IsRoot,
 			RootBitBuf:  cbb,
 			Range:       ranges.Range{Start: 0, Len: 0},

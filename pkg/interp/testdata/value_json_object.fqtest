@@ -2,7 +2,7 @@
 $ fq -i -n '"{}" | json'
 json> (.) | ., tovalue, type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
-0x0|7b 7d|                                         |{}|             |.: {} unnamed (json)
+0x0|7b 7d|                                         |{}|             |.: {} (json)
 {}
 "object"
 0
@@ -62,9 +62,9 @@ json> (.)._symbol | ., type, length?
 "string"
 0
 json> (.)._description | ., type, length?
-"unnamed"
+""
 "string"
-7
+0
 json> (.)._path | ., type, length?
 []
 "array"
