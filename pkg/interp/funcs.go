@@ -592,7 +592,7 @@ func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
 		return fmt.Errorf("%s: %w", formatName, err)
 	}
 
-	dv, _, err := decode.Decode("", filename, bb, decodeFormats, decode.DecodeOptions{FormatOptions: opts})
+	dv, _, err := decode.Decode(i.evalContext.ctx, "", filename, bb, decodeFormats, decode.DecodeOptions{FormatOptions: opts})
 	if dv == nil {
 		var decodeFormatsErr decode.DecodeFormatsError
 		if errors.As(err, &decodeFormatsErr) {
