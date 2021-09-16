@@ -1,7 +1,7 @@
 # ffmpeg -y -f lavfi -i testsrc -t 10ms -f h264 avc_annexb
 /avc_annexb:
 $ fq -d avc_annexb verbose /avc_annexb
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: [8] /avc_annexb (avc_annexb) 0x0-0xae4.7 (2789)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: [8] /avc_annexb (avc_annexb) 0x0-0xae4.7 (2789)
 0x0000|00 00 00 01                                    |....            |  [0]: start_code 00000001 0x0-0x3.7 (4)
       |                                               |                |  [1]: nalu {} (avc_nalu) 0x4-0x1c.7 (25)
       |                                               |                |    sps: {} (avc_sps) 0x0-0x15.7 (22)

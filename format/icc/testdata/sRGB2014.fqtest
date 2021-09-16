@@ -1,7 +1,7 @@
 # sRGB2014.icc is from https://www.color.org/srgbprofiles.xalter
 /sRGB2014.icc:
 $ fq -d icc_profile verbose /sRGB2014.icc
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /sRGB2014.icc (icc_profile) 0x0-0xbcf.7 (3024)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /sRGB2014.icc (icc_profile) 0x0-0xbcf.7 (3024)
      |                                               |                |  header: {} 0x0-0x7f.7 (128)
 0x000|00 00 0b d0                                    |....            |    size: 3024 0x0-0x3.7 (4)
 0x000|            00 00 00 00                        |    ....        |    cmm_type_signature: "\x00\x00\x00\x00" 0x4-0x7.7 (4)

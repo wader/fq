@@ -1,7 +1,7 @@
 # fq '"aaaa", .frames[0], "bbbb", .frames[0], "ccccc" | tobytes' test.mp3 > unknown.mp3
 /unknown.mp3:
 $ fq -d mp3 . /unknown.mp3
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /unknown.mp3 (mp3)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /unknown.mp3 (mp3)
      |                                               |                |  headers: [0]
 0x000|61 61 61 61                                    |aaaa            |  unknown0: 61616161
 0x000|            ff fb 90 64 00 00 02 6b 0b ce 9d 60|    ...d...k...`|  frames: [2]

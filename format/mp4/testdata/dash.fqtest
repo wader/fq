@@ -6,7 +6,7 @@
 /dash_video_init.mp4:
 /dash_video_1.m4s:
 $ fq -d mp4 verbose /dash_audio_init.mp4
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /dash_audio_init.mp4 (mp4) 0x0-0x32f.7 (816)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /dash_audio_init.mp4 (mp4) 0x0-0x32f.7 (816)
      |                                               |                |  boxes: [2] 0x0-0x32f.7 (816)
      |                                               |                |    [0]: box {} 0x0-0x1f.7 (32)
 0x000|00 00 00 20                                    |...             |      size: 32 0x0-0x3.7 (4)
@@ -351,7 +351,7 @@ $ fq -d mp4 verbose /dash_audio_init.mp4
      |                                               |                |    [0]: track {} 0x330-NA (0)
      |                                               |                |      samples: [0] 0x330-NA (0)
 $ fq -d mp4 verbose /dash_audio_1.m4s
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /dash_audio_1.m4s (mp4) 0x0-0x4eb.7 (1260)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /dash_audio_1.m4s (mp4) 0x0-0x4eb.7 (1260)
      |                                               |                |  boxes: [4] 0x0-0x4eb.7 (1260)
      |                                               |                |    [0]: box {} 0x0-0x1f.7 (32)
 0x000|00 00 00 20                                    |...             |      size: 32 0x0-0x3.7 (4)
@@ -473,7 +473,7 @@ $ fq -d mp4 verbose /dash_audio_1.m4s
 *    |until 0x4eb.7 (end) (1008)                     |                |
      |                                               |                |  tracks: [0] 0x4ec-NA (0)
 $ fq -d mp4 verbose /dash_video_init.mp4
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /dash_video_init.mp4 (mp4) 0x0-0x332.7 (819)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /dash_video_init.mp4 (mp4) 0x0-0x332.7 (819)
      |                                               |                |  boxes: [2] 0x0-0x332.7 (819)
      |                                               |                |    [0]: box {} 0x0-0x23.7 (36)
 0x000|00 00 00 24                                    |...$            |      size: 36 0x0-0x3.7 (4)
@@ -867,7 +867,7 @@ $ fq -d mp4 verbose /dash_video_init.mp4
      |                                               |                |    [0]: track {} 0x333-NA (0)
      |                                               |                |      samples: [0] 0x333-NA (0)
 $ fq -d mp4 verbose /dash_video_1.m4s
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /dash_video_1.m4s (mp4) 0x0-0x1fd0.7 (8145)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /dash_video_1.m4s (mp4) 0x0-0x1fd0.7 (8145)
       |                                               |                |  boxes: [4] 0x0-0x1fd0.7 (8145)
       |                                               |                |    [0]: box {} 0x0-0x23.7 (36)
 0x0000|00 00 00 24                                    |...$            |      size: 36 0x0-0x3.7 (4)

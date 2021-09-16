@@ -6,7 +6,7 @@ Tool, language and decoders for exploring binary data.
 <pre sh>
 <b># Overview of mp3 file</b> 
 $ fq . file.mp3 
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} file.mp3 (mp3)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} file.mp3 (mp3)
 0x000|49 44 33 04 00 00 00 00 15 39 54 53 53 45 00 00|ID3......9TSSE..|  headers: [1]
 *    |until 0xac2.7 (2755)                           |                |
 0xac0|         ff fb 40 c0 00 00 00 00 00 00 00 00 00|   ..@..........|  frames: [3]
@@ -16,7 +16,7 @@ $ fq . file.mp3 
  
 <b># Show ID3v2 APIC frame</b> 
 $ fq '.headers[].frames[] | select(.id == "APIC")' file.mp3 
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.headers[0].frames[1]: {}
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.headers[0].frames[1]: {}
 0x020|         41 50 49 43                           |   APIC         |  id: "APIC" (Attached picture)
 0x020|                     00 00 15 0c               |       ....     |  size: 2700
 0x020|                                 00 00         |           ..   |  flags: {}

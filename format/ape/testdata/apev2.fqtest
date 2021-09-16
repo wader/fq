@@ -3,7 +3,7 @@
 # fq '.footers[0] | tobytes' test.mp3 > apev2
 /apev2:
 $ fq -d apev2 verbose /apev2
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /apev2 (apev2) 0x0-0xad.7 (174)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /apev2 (apev2) 0x0-0xad.7 (174)
     |                                               |                |  header: {} 0x0-0x1f.7 (32)
 0x00|41 50 45 54 41 47 45 58                        |APETAGEX        |    preamble: "APETAGEX" (Correct) 0x0-0x7.7 (8)
 0x00|                        d0 07 00 00            |        ....    |    version: 2000 0x8-0xb.7 (4)

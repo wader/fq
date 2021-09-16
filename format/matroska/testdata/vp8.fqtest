@@ -1,7 +1,7 @@
 # ffmpeg -f lavfi -i testsrc -c:v vp8 -f matroska -t 50ms vp8.mkv
 /vp8.mkv:
 $ fq -d matroska verbose /vp8.mkv
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /vp8.mkv (matroska) 0x0-0x148b.7 (5260)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /vp8.mkv (matroska) 0x0-0x148b.7 (5260)
       |                                               |                |  elements: [2] 0x0-0x148b.7 (5260)
       |                                               |                |    [0]: element {} 0x0-0x27.7 (40)
       |                                               |                |      type: master (7) 0x0-NA (0)

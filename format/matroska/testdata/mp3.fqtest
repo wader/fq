@@ -1,7 +1,7 @@
 # ffmpeg -f lavfi -i sine -c:a mp3 -f matroska -t 50ms mp3.mkv
 /mp3.mkv:
 $ fq -d matroska verbose /mp3.mkv
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /mp3.mkv (matroska) 0x0-0x4db.7 (1244)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /mp3.mkv (matroska) 0x0-0x4db.7 (1244)
      |                                               |                |  elements: [2] 0x0-0x4db.7 (1244)
      |                                               |                |    [0]: element {} 0x0-0x27.7 (40)
      |                                               |                |      type: master (7) 0x0-NA (0)

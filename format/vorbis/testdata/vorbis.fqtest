@@ -1,7 +1,7 @@
 # ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.steam[0].packet[0] | tobits' > vorbis-identifcation
 /vorbis-identifcation:
 $ fq -d vorbis_packet verbose /vorbis-identifcation
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /vorbis-identifcation (vorbis_packet) 0x0-0x1d.7 (30)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /vorbis-identifcation (vorbis_packet) 0x0-0x1d.7 (30)
 0x00|01                                             |.               |  packet_type: Identification (1) 0x0-0x0.7 (1)
 0x00|   76 6f 72 62 69 73                           | vorbis         |  magic: "vorbis" (Correct) 0x1-0x6.7 (6)
 0x00|                     00 00 00 00               |       ....     |  vorbis_version: Correct (0x0) 0x7-0xa.7 (4)
@@ -17,7 +17,7 @@ $ fq -d vorbis_packet verbose /vorbis-identifcation
 # ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.packet[1] | tobits' > vorbis-comment
 /vorbis-comment:
 $ fq -d vorbis_packet verbose /vorbis-comment
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /vorbis-comment (vorbis_packet) 0x0-0x3f.7 (64)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /vorbis-comment (vorbis_packet) 0x0-0x3f.7 (64)
 0x00|03                                             |.               |  packet_type: Comment (3) 0x0-0x0.7 (1)
 0x00|   76 6f 72 62 69 73                           | vorbis         |  magic: "vorbis" (Correct) 0x1-0x6.7 (6)
     |                                               |                |  comment: {} (vorbis_comment) 0x7-0x3e.7 (56)
@@ -35,7 +35,7 @@ $ fq -d vorbis_packet verbose /vorbis-comment
 # ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.packet[2] | tobits' > vorbis-setup
 /vorbis-setup:
 $ fq -d vorbis_packet verbose /vorbis-setup
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /vorbis-setup (vorbis_packet) 0x0-0xc74.7 (3189)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /vorbis-setup (vorbis_packet) 0x0-0xc74.7 (3189)
 0x000|05                                             |.               |  packet_type: Setup (5) 0x0-0x0.7 (1)
 0x000|   76 6f 72 62 69 73                           | vorbis         |  magic: "vorbis" (Correct) 0x1-0x6.7 (6)
 0x000|                     22                        |       "        |  vorbis_codebook_count: 35 0x7-0x7.7 (1)
@@ -47,7 +47,7 @@ $ fq -d vorbis_packet verbose /vorbis-setup
 # ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.packet[3] | tobits' > vorbis-audio
 /vorbis-audio:
 $ fq -d vorbis_packet verbose /vorbis-audio
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /vorbis-audio (vorbis_packet) 0x0-0x20.7 (33)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /vorbis-audio (vorbis_packet) 0x0-0x20.7 (33)
 0x00|54                                             |T               |  packet_type: Audio (0) 0x0-0x0.7 (1)
 0x00|   dd cb ce aa 5e d8 7f 2d 01 42 00 a0 dd 71 77| ....^..-.B...qw|  unknown0: ddcbceaa5ed87f2d014200a0dd71778b... 0x1-0x20.7 (32)
 0x10|8b ed cd 37 df 7c 33 3a 0c c3 30 0c c3 30 d4 50|...7.|3:..0..0.P|

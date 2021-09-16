@@ -1,7 +1,7 @@
 # ffmpeg -f lavfi -i sine -t 10ms -ac 2 -f wav pipe:1 > end-of-file.wav
 /end-of-file.wav:
 $ fq -d wav verbose /end-of-file.wav
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /end-of-file.wav (wav) 0x0-0x731.7 (1842)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /end-of-file.wav (wav) 0x0-0x731.7 (1842)
 0x000|52 49 46 46                                    |RIFF            |  id: "RIFF" 0x0-0x3.7 (4)
 0x000|            ff ff ff ff                        |    ....        |  size: rest of file (0xffffffff) 0x4-0x7.7 (4)
 0x000|                        57 41 56 45            |        WAVE    |  format: "WAVE" 0x8-0xb.7 (4)

@@ -2,7 +2,7 @@
 # MP4Box -add-image heic.hvc -ab heic -new heic.mp4
 /heic.mp4:
 $ fq -d mp4 verbose /heic.mp4
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |.: {} /heic.mp4 (mp4) 0x0-0xb2c.7 (2861)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /heic.mp4 (mp4) 0x0-0xb2c.7 (2861)
      |                                               |                |  boxes: [4] 0x0-0xb2c.7 (2861)
      |                                               |                |    [0]: box {} 0x0-0x17.7 (24)
 0x000|00 00 00 18                                    |....            |      size: 24 0x0-0x3.7 (4)

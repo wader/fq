@@ -50,13 +50,16 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 		cprint(5, deco.Column, "\n")
 	}
 
-	var header string
+	var hexHeader string
+	var asciiHeader string
 	if depth == 0 {
 		for i := 0; i < opts.LineBytes; i++ {
-			header += num.PadFormatInt(int64(i), opts.AddrBase, false, 2)
+			s := num.PadFormatInt(int64(i), opts.AddrBase, false, 2)
+			hexHeader += s
 			if i < opts.LineBytes-1 {
-				header += " "
+				hexHeader += " "
 			}
+			asciiHeader += s[len(s)-1:]
 		}
 	}
 
@@ -85,14 +88,12 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 	indent := strings.Repeat("  ", depth)
 
 	if depth == 0 {
-		switch v.V.(type) {
-		case decode.Struct:
-			cfmt(colHex, "%s", deco.DumpHeader.F(header))
-		case decode.Array:
-			cfmt(colHex, "%s", deco.DumpHeader.F(header))
-		default:
+		if !isCompound(v) {
 			columns()
-			cfmt(colHex, "%s", deco.DumpHeader.F(header))
+		}
+		cfmt(colHex, "%s", deco.DumpHeader.F(hexHeader))
+		cfmt(colAscii, "%s", deco.DumpHeader.F(asciiHeader))
+		if !isCompound(v) {
 			cw.Flush()
 		}
 	}
