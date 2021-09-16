@@ -432,25 +432,23 @@ func init() {
 			})
 		},
 		"avcC": func(ctx *decodeContext, d *decode.D) {
-			_, v := d.FieldFormat("value", mpegAVCDCRFormat)
+			_, v := d.FieldFormat("value", mpegAVCDCRFormat, nil)
 			avcDcrOut, ok := v.(format.AvcDcrOut)
 			if !ok {
 				d.Invalid(fmt.Sprintf("expected AvcDcrOut got %#+v", v))
 			}
 			if ctx.currentTrack != nil {
-				ctx.currentTrack.decodeOpts = append(ctx.currentTrack.decodeOpts,
-					decode.FormatOptions{InArg: format.AvcIn{LengthSize: avcDcrOut.LengthSize}}) //nolint:gosimple
+				ctx.currentTrack.formatInArg = format.AvcIn{LengthSize: avcDcrOut.LengthSize} //nolint:gosimple
 			}
 		},
 		"hvcC": func(ctx *decodeContext, d *decode.D) {
-			_, v := d.FieldFormat("value", mpegHEVCDCRFrameFormat)
+			_, v := d.FieldFormat("value", mpegHEVCDCRFrameFormat, nil)
 			hevcDcrOut, ok := v.(format.HevcDcrOut)
 			if !ok {
 				d.Invalid(fmt.Sprintf("expected HevcDcrOut got %#+v", v))
 			}
 			if ctx.currentTrack != nil {
-				ctx.currentTrack.decodeOpts = append(ctx.currentTrack.decodeOpts,
-					decode.FormatOptions{InArg: format.HevcIn{LengthSize: hevcDcrOut.LengthSize}}) //nolint:gosimple
+				ctx.currentTrack.formatInArg = format.HevcIn{LengthSize: hevcDcrOut.LengthSize} //nolint:gosimple
 			}
 		},
 		"dfLa": func(ctx *decodeContext, d *decode.D) {
@@ -458,15 +456,14 @@ func init() {
 			d.FieldU24("flags")
 			d.FieldArrayFn("metadatablocks", func(d *decode.D) {
 				for {
-					_, v := d.FieldFormat("metadatablock", flacMetadatablockFormat)
+					_, v := d.FieldFormat("metadatablock", flacMetadatablockFormat, nil)
 					flacMetadatablockOut, ok := v.(format.FlacMetadatablockOut)
 					if !ok {
 						d.Invalid(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
 					}
 					if flacMetadatablockOut.HasStreamInfo {
 						if ctx.currentTrack != nil {
-							ctx.currentTrack.decodeOpts = append(ctx.currentTrack.decodeOpts,
-								decode.FormatOptions{InArg: format.FlacFrameIn{StreamInfo: flacMetadatablockOut.StreamInfo}})
+							ctx.currentTrack.formatInArg = format.FlacFrameIn{StreamInfo: flacMetadatablockOut.StreamInfo}
 						}
 					}
 					if flacMetadatablockOut.IsLastBlock {
@@ -476,20 +473,20 @@ func init() {
 			})
 		},
 		"dOps": func(_ *decodeContext, d *decode.D) {
-			d.FieldFormat("value", opusPacketFrameFormat)
+			d.FieldFormat("value", opusPacketFrameFormat, nil)
 		},
 		"av1C": func(_ *decodeContext, d *decode.D) {
-			d.FieldFormat("value", av1CCRFormat)
+			d.FieldFormat("value", av1CCRFormat, nil)
 		},
 		"vpcC": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
-			d.FieldFormat("value", vpxCCRFormat)
+			d.FieldFormat("value", vpxCCRFormat, nil)
 		},
 		"esds": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU32("version")
 
-			_, v := d.FieldFormat("es_descriptor", mpegESFormat)
+			_, v := d.FieldFormat("es_descriptor", mpegESFormat, nil)
 			mpegEsOut, ok := v.(format.MpegEsOut)
 			if !ok {
 				d.Invalid(fmt.Sprintf("expected mpegEsOut got %#+v", v))
@@ -498,8 +495,7 @@ func init() {
 			if ctx.currentTrack != nil && len(mpegEsOut.DecoderConfigs) > 0 {
 				dc := mpegEsOut.DecoderConfigs[0]
 				ctx.currentTrack.objectType = dc.ObjectType
-				ctx.currentTrack.decodeOpts = append(ctx.currentTrack.decodeOpts,
-					decode.FormatOptions{InArg: format.AACFrameIn{ObjectType: dc.ASCObjectType}})
+				ctx.currentTrack.formatInArg = format.AACFrameIn{ObjectType: dc.ASCObjectType}
 			}
 		},
 		"stts": func(_ *decodeContext, d *decode.D) {
@@ -671,7 +667,7 @@ func init() {
 			d.FieldU24("flags")
 			d.FieldU32("reserved")
 			if isParent(ctx, "covr") {
-				dv, _, _ := d.FieldTryFormatLen("data", d.BitsLeft(), imageFormat)
+				dv, _, _ := d.FieldTryFormatLen("data", d.BitsLeft(), imageFormat, nil)
 				if dv == nil {
 					d.FieldBitBufLen("data", d.BitsLeft())
 				}
@@ -938,7 +934,7 @@ func init() {
 				}
 				return s, ""
 			})
-			d.FieldFormat("data", id3v2Format)
+			d.FieldFormat("data", id3v2Format, nil)
 		},
 		"mehd": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
@@ -978,9 +974,9 @@ func init() {
 
 			switch {
 			case bytes.Equal(systemID, systemIDWidevine[:]):
-				d.FieldFormatLen("data", int64(dataLen)*8, protoBufWidevineFormat)
+				d.FieldFormatLen("data", int64(dataLen)*8, protoBufWidevineFormat, nil)
 			case bytes.Equal(systemID, systemIDPlayReady[:]):
-				d.FieldFormatLen("data", int64(dataLen)*8, psshPlayreadyFormat)
+				d.FieldFormatLen("data", int64(dataLen)*8, psshPlayreadyFormat, nil)
 			case systemID == nil:
 				fallthrough
 			default:

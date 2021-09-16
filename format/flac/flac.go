@@ -40,7 +40,7 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 
 	d.FieldArrayFn("metadatablocks", func(d *decode.D) {
 		for {
-			_, v := d.FieldFormat("metadatablock", flacMetadatablockFormat)
+			_, v := d.FieldFormat("metadatablock", flacMetadatablockFormat, nil)
 			flacMetadatablockOut, ok := v.(format.FlacMetadatablockOut)
 			if !ok {
 				panic(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
@@ -60,7 +60,7 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldArrayFn("frames", func(d *decode.D) {
 		for d.NotEnd() {
 			// flac frame might need some fields from stream info to decode
-			_, v := d.FieldFormat("frame", flacFrameFormat, decode.FormatOptions{InArg: flacFrameIn})
+			_, v := d.FieldFormat("frame", flacFrameFormat, flacFrameIn)
 			ffo, ok := v.(format.FlacFrameOut)
 			if !ok {
 				panic(fmt.Sprintf("expected FlacFrameOut got %#+v", v))

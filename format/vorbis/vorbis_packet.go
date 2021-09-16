@@ -119,7 +119,7 @@ func vorbisDecode(d *decode.D, in interface{}) interface{} {
 		// }
 
 	case packetTypeComment:
-		d.FieldFormat("comment", vorbisComment)
+		d.FieldFormat("comment", vorbisComment, nil)
 
 		// note this uses vorbis bitpacking convention, bits are added LSB first per byte
 		d.FieldValidateZeroPadding("padding0", 7)

@@ -110,7 +110,7 @@ func avcDcrParameterSet(d *decode.D, numParamSets uint64) {
 	for i := uint64(0); i < numParamSets; i++ {
 		d.FieldStructFn("set", func(d *decode.D) {
 			paramSetLen := d.FieldU16("length")
-			d.FieldFormatLen("nal", int64(paramSetLen)*8, avcDCRNALFormat)
+			d.FieldFormatLen("nal", int64(paramSetLen)*8, avcDCRNALFormat, nil)
 		})
 	}
 }

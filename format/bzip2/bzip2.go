@@ -96,7 +96,7 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 	}
 	// calculatedCRC32 := crc32W.Sum(nil)
 	uncompressedBB := bitio.NewBufferFromBytes(uncompressed.Bytes(), -1)
-	dv, _, _ := d.FieldTryFormatBitBuf("uncompressed", uncompressedBB, probeFormat)
+	dv, _, _ := d.FieldTryFormatBitBuf("uncompressed", uncompressedBB, probeFormat, nil)
 	if dv == nil {
 		d.FieldRootBitBuf("uncompressed", uncompressedBB)
 	}

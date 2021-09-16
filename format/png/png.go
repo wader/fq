@@ -162,7 +162,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldFloatFn("blue_x", df)
 				d.FieldFloatFn("blue_y", df)
 			case "eXIf":
-				d.FieldFormatLen("exif", int64(chunkLength)*8, exifFormat)
+				d.FieldFormatLen("exif", int64(chunkLength)*8, exifFormat, nil)
 			case "acTL":
 				d.FieldU32("num_frames")
 				d.FieldU32("num_plays")

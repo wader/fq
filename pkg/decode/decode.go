@@ -112,47 +112,28 @@ type DecodeOptions struct {
 
 func (DecodeOptions) decodeOptions() {}
 
-type FormatOptions struct {
-	InArg interface{}
-}
-
-func (FormatOptions) decodeOptions() {}
-
 // Decode try decode formats and return first success and all other decoder errors
-func Decode(ctx context.Context, bb *bitio.Buffer, formats []*Format, opts ...Options) (*Value, interface{}, error) {
-	opts = append(opts, DecodeOptions{IsRoot: true})
+func Decode(ctx context.Context, bb *bitio.Buffer, formats []*Format, opts DecodeOptions) (*Value, interface{}, error) {
+	opts.IsRoot = true
 	return decode(ctx, bb, formats, opts)
 }
 
-func decode(ctx context.Context, bb *bitio.Buffer, formats []*Format, opts []Options) (*Value, interface{}, error) {
+func decode(ctx context.Context, bb *bitio.Buffer, formats []*Format, opts DecodeOptions) (*Value, interface{}, error) {
 	if formats == nil {
 		panic("formats is nil, failed to register format?")
 	}
 
 	var forceOne = len(formats) == 1
 
-	var decodeOpts DecodeOptions
-	var formatOpts FormatOptions
-	for _, opts := range opts {
-		switch opt := opts.(type) {
-		case DecodeOptions:
-			decodeOpts = opt
-		case FormatOptions:
-			formatOpts = opt
-		default:
-			panic(fmt.Sprintf("unknown decode option %#+v", opts))
-		}
-	}
-
 	decodeErr := DecodeFormatsError{}
 
 	for _, f := range formats {
-		d := NewDecoder(ctx, f, bb, decodeOpts)
+		d := NewDecoder(ctx, f, bb, opts)
 
 		var decodeV interface{}
 
 		r, rOk := recoverfn.Run(func() {
-			decodeV = f.DecodeFn(d, formatOpts.InArg)
+			decodeV = f.DecodeFn(d, opts.FormatInArg)
 		})
 
 		if ctx != nil && ctx.Err() != nil {
@@ -187,16 +168,16 @@ func decode(ctx context.Context, bb *bitio.Buffer, formats []*Format, opts []Opt
 			}
 
 			maxRange = ranges.MinMax(maxRange, v.Range)
-			v.Range.Start += decodeOpts.StartOffset
+			v.Range.Start += opts.StartOffset
 			v.RootBitBuf = d.Value.RootBitBuf
 			return nil
 		}); err != nil {
 			return nil, nil, err
 		}
 
-		d.Value.Range = ranges.Range{Start: decodeOpts.StartOffset, Len: maxRange.Len}
+		d.Value.Range = ranges.Range{Start: opts.StartOffset, Len: maxRange.Len}
 
-		if decodeOpts.IsRoot {
+		if opts.IsRoot {
 			d.FillGaps("unknown")
 
 			// sort and set ranges for struct and arrays
@@ -863,10 +844,14 @@ func (d *D) DecodeRangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 	}
 }
 
-func (d *D) Format(formats []*Format, opts ...Options) interface{} {
+func (d *D) Format(formats []*Format, inArg interface{}) interface{} {
 	bb := d.BitBufRange(d.Pos(), d.BitsLeft())
-	opts = append(opts, DecodeOptions{ReadBuf: d.readBuf, IsRoot: false, StartOffset: d.Pos()})
-	dv, v, err := decode(d.Ctx, bb, formats, opts)
+	dv, v, err := decode(d.Ctx, bb, formats, DecodeOptions{
+		ReadBuf:     d.readBuf,
+		IsRoot:      false,
+		StartOffset: d.Pos(),
+		FormatInArg: inArg,
+	})
 	if dv == nil || dv.Errors() != nil {
 		panic(err)
 	}
@@ -891,10 +876,15 @@ func (d *D) Format(formats []*Format, opts ...Options) interface{} {
 	return v
 }
 
-func (d *D) FieldTryFormat(name string, formats []*Format, opts ...Options) (*Value, interface{}, error) {
+func (d *D) FieldTryFormat(name string, formats []*Format, inArg interface{}) (*Value, interface{}, error) {
 	bb := d.BitBufRange(d.Pos(), d.BitsLeft())
-	opts = append(opts, DecodeOptions{Name: name, ReadBuf: d.readBuf, IsRoot: false, StartOffset: d.Pos()})
-	dv, v, err := decode(d.Ctx, bb, formats, opts)
+	dv, v, err := decode(d.Ctx, bb, formats, DecodeOptions{
+		Name:        name,
+		ReadBuf:     d.readBuf,
+		IsRoot:      false,
+		StartOffset: d.Pos(),
+		FormatInArg: inArg,
+	})
 	if dv == nil || dv.Errors() != nil {
 		return nil, nil, err
 	}
@@ -907,18 +897,23 @@ func (d *D) FieldTryFormat(name string, formats []*Format, opts ...Options) (*Va
 	return dv, v, err
 }
 
-func (d *D) FieldFormat(name string, formats []*Format, opts ...Options) (*Value, interface{}) {
-	dv, v, err := d.FieldTryFormat(name, formats, opts...)
+func (d *D) FieldFormat(name string, formats []*Format, inArg interface{}) (*Value, interface{}) {
+	dv, v, err := d.FieldTryFormat(name, formats, inArg)
 	if dv == nil || dv.Errors() != nil {
 		panic(err)
 	}
 	return dv, v
 }
 
-func (d *D) FieldTryFormatLen(name string, nBits int64, formats []*Format, opts ...Options) (*Value, interface{}, error) {
+func (d *D) FieldTryFormatLen(name string, nBits int64, formats []*Format, inArg interface{}) (*Value, interface{}, error) {
 	bb := d.BitBufRange(d.Pos(), nBits)
-	opts = append(opts, DecodeOptions{Name: name, ReadBuf: d.readBuf, IsRoot: false, StartOffset: d.Pos()})
-	dv, v, err := decode(d.Ctx, bb, formats, opts)
+	dv, v, err := decode(d.Ctx, bb, formats, DecodeOptions{
+		Name:        name,
+		ReadBuf:     d.readBuf,
+		IsRoot:      false,
+		StartOffset: d.Pos(),
+		FormatInArg: inArg,
+	})
 	if dv == nil || dv.Errors() != nil {
 		return nil, nil, err
 	}
@@ -931,8 +926,8 @@ func (d *D) FieldTryFormatLen(name string, nBits int64, formats []*Format, opts 
 	return dv, v, err
 }
 
-func (d *D) FieldFormatLen(name string, nBits int64, formats []*Format, opts ...Options) (*Value, interface{}) {
-	dv, v, err := d.FieldTryFormatLen(name, nBits, formats, opts...)
+func (d *D) FieldFormatLen(name string, nBits int64, formats []*Format, inArg interface{}) (*Value, interface{}) {
+	dv, v, err := d.FieldTryFormatLen(name, nBits, formats, inArg)
 	if dv == nil || dv.Errors() != nil {
 		panic(err)
 	}
@@ -940,10 +935,15 @@ func (d *D) FieldFormatLen(name string, nBits int64, formats []*Format, opts ...
 }
 
 // TODO: return decooder?
-func (d *D) FieldTryFormatRange(name string, firstBit int64, nBits int64, formats []*Format, opts ...Options) (*Value, interface{}, error) {
+func (d *D) FieldTryFormatRange(name string, firstBit int64, nBits int64, formats []*Format, inArg interface{}) (*Value, interface{}, error) {
 	bb := d.BitBufRange(firstBit, nBits)
-	opts = append(opts, DecodeOptions{Name: name, ReadBuf: d.readBuf, IsRoot: false, StartOffset: firstBit})
-	dv, v, err := decode(d.Ctx, bb, formats, opts)
+	dv, v, err := decode(d.Ctx, bb, formats, DecodeOptions{
+		Name:        name,
+		ReadBuf:     d.readBuf,
+		IsRoot:      false,
+		StartOffset: firstBit,
+		FormatInArg: inArg,
+	})
 	if dv == nil || dv.Errors() != nil {
 		return nil, nil, err
 	}
@@ -953,8 +953,8 @@ func (d *D) FieldTryFormatRange(name string, firstBit int64, nBits int64, format
 	return dv, v, err
 }
 
-func (d *D) FieldFormatRange(name string, firstBit int64, nBits int64, formats []*Format, opts ...Options) (*Value, interface{}) {
-	dv, v, err := d.FieldTryFormatRange(name, firstBit, nBits, formats, opts...)
+func (d *D) FieldFormatRange(name string, firstBit int64, nBits int64, formats []*Format, inArg interface{}) (*Value, interface{}) {
+	dv, v, err := d.FieldTryFormatRange(name, firstBit, nBits, formats, inArg)
 	if dv == nil || dv.Errors() != nil {
 		panic(err)
 	}
@@ -962,9 +962,13 @@ func (d *D) FieldFormatRange(name string, firstBit int64, nBits int64, formats [
 	return dv, v
 }
 
-func (d *D) FieldTryFormatBitBuf(name string, bb *bitio.Buffer, formats []*Format, opts ...Options) (*Value, interface{}, error) {
-	opts = append(opts, DecodeOptions{Name: name, ReadBuf: d.readBuf, IsRoot: true})
-	dv, v, err := decode(d.Ctx, bb, formats, opts)
+func (d *D) FieldTryFormatBitBuf(name string, bb *bitio.Buffer, formats []*Format, inArg interface{}) (*Value, interface{}, error) {
+	dv, v, err := decode(d.Ctx, bb, formats, DecodeOptions{
+		Name:        name,
+		ReadBuf:     d.readBuf,
+		IsRoot:      true,
+		FormatInArg: inArg,
+	})
 	if dv == nil || dv.Errors() != nil {
 		return nil, nil, err
 	}
@@ -974,8 +978,8 @@ func (d *D) FieldTryFormatBitBuf(name string, bb *bitio.Buffer, formats []*Forma
 	return dv, v, err
 }
 
-func (d *D) FieldFormatBitBuf(name string, bb *bitio.Buffer, formats []*Format, opts ...Options) (*Value, interface{}) {
-	dv, v, err := d.FieldTryFormatBitBuf(name, bb, formats, opts...)
+func (d *D) FieldFormatBitBuf(name string, bb *bitio.Buffer, formats []*Format, inArg interface{}) (*Value, interface{}) {
+	dv, v, err := d.FieldTryFormatBitBuf(name, bb, formats, inArg)
 	if dv == nil || dv.Errors() != nil {
 		panic(err)
 	}
@@ -1036,7 +1040,7 @@ func (d *D) FieldFormatZlibLen(name string, nBits int64, formats []*Format) (*Va
 	}
 	zbb := bitio.NewBufferFromBytes(zd, -1)
 
-	return d.FieldFormatBitBuf(name, zbb, formats)
+	return d.FieldFormatBitBuf(name, zbb, formats, nil)
 }
 
 func (d *D) FieldStrNullTerminated(name string) string {

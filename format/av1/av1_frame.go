@@ -26,7 +26,7 @@ func init() {
 func frameDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldArrayFn("frame", func(d *decode.D) {
 		for d.NotEnd() {
-			d.FieldFormat("obu", obuFormat)
+			d.FieldFormat("obu", obuFormat, nil)
 		}
 	})
 

@@ -107,7 +107,7 @@ type track struct {
 	stco               []uint64 //
 	stsc               []stsc
 	stsz               []uint32
-	decodeOpts         []decode.Options
+	formatInArg        interface{}
 	objectType         int // if data format is "mp4a"
 
 	moofs       []*moof // for fmp4
@@ -156,43 +156,43 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 
 	d.FieldArrayFn("tracks", func(d *decode.D) {
 		for _, t := range sortedTracks {
-			decodeSampleRange := func(d *decode.D, t *track, dataFormat string, name string, firstBit int64, nBits int64, opts ...decode.Options) {
+			decodeSampleRange := func(d *decode.D, t *track, dataFormat string, name string, firstBit int64, nBits int64, inArg interface{}) {
 				switch dataFormat {
 				case "fLaC":
-					d.FieldFormatRange(name, firstBit, nBits, flacFrameFormat, opts...)
+					d.FieldFormatRange(name, firstBit, nBits, flacFrameFormat, inArg)
 				case "Opus":
-					d.FieldFormatRange(name, firstBit, nBits, opusPacketFrameFormat, opts...)
+					d.FieldFormatRange(name, firstBit, nBits, opusPacketFrameFormat, inArg)
 				case "vp09":
-					d.FieldFormatRange(name, firstBit, nBits, vp9FrameFormat, opts...)
+					d.FieldFormatRange(name, firstBit, nBits, vp9FrameFormat, inArg)
 				case "avc1":
-					d.FieldFormatRange(name, firstBit, nBits, mpegAVCAUFormat, opts...)
+					d.FieldFormatRange(name, firstBit, nBits, mpegAVCAUFormat, inArg)
 				case "hev1", "hvc1":
-					d.FieldFormatRange(name, firstBit, nBits, mpegHEVCSampleFormat, opts...)
+					d.FieldFormatRange(name, firstBit, nBits, mpegHEVCSampleFormat, inArg)
 				case "av01":
-					d.FieldFormatRange(name, firstBit, nBits, av1FrameFormat, opts...)
+					d.FieldFormatRange(name, firstBit, nBits, av1FrameFormat, inArg)
 				case "mp4a":
 					switch t.objectType {
 					case format.MPEGObjectTypeMP3:
-						d.FieldFormatRange(name, firstBit, nBits, mp3FrameFormat, opts...)
+						d.FieldFormatRange(name, firstBit, nBits, mp3FrameFormat, inArg)
 					case format.MPEGObjectTypeAAC:
 						// TODO: MPEGObjectTypeAACLow, Main etc?
-						d.FieldFormatRange(name, firstBit, nBits, aacFrameFormat, opts...)
+						d.FieldFormatRange(name, firstBit, nBits, aacFrameFormat, inArg)
 					case format.MPEGObjectTypeVORBIS:
-						d.FieldFormatRange(name, firstBit, nBits, vorbisPacketFormat, opts...)
+						d.FieldFormatRange(name, firstBit, nBits, vorbisPacketFormat, inArg)
 					default:
 						d.FieldBitBufRange(name, firstBit, nBits)
 					}
 				case "mp4v":
 					switch t.objectType {
 					case format.MPEGObjectTypeMPEG2VideoMain:
-						d.FieldFormatRange(name, firstBit, nBits, mpegPESPacketSampleFormat, opts...)
+						d.FieldFormatRange(name, firstBit, nBits, mpegPESPacketSampleFormat, inArg)
 					case format.MPEGObjectTypeMJPEG:
-						d.FieldFormatRange(name, firstBit, nBits, jpegFormat, opts...)
+						d.FieldFormatRange(name, firstBit, nBits, jpegFormat, inArg)
 					default:
 						d.FieldBitBufRange(name, firstBit, nBits)
 					}
 				case "jpeg":
-					d.FieldFormatRange(name, firstBit, nBits, jpegFormat, opts...)
+					d.FieldFormatRange(name, firstBit, nBits, jpegFormat, inArg)
 				default:
 					d.FieldBitBufRange(name, firstBit, nBits)
 				}
@@ -234,7 +234,7 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 							}
 
 							sampleSize := t.stsz[sampleNr]
-							decodeSampleRange(d, t, trackSdDataFormat, "sample", int64(sampleOffset)*8, int64(sampleSize)*8, t.decodeOpts...)
+							decodeSampleRange(d, t, trackSdDataFormat, "sample", int64(sampleOffset)*8, int64(sampleSize)*8, t.formatInArg)
 
 							// log.Printf("%s %d/%d %d/%d sample=%d/%d chunk=%d size=%d %d-%d\n",
 							// 	trackSdDataFormat, stscIndex, len(t.stsc),
@@ -272,7 +272,7 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 
 							// log.Printf("moof %#+v dataFormat: %#+v\n", m, dataFormat)
 
-							decodeSampleRange(d, t, dataFormat, "sample", sampleOffset*8, int64(sz)*8, t.decodeOpts...)
+							decodeSampleRange(d, t, dataFormat, "sample", sampleOffset*8, int64(sz)*8, t.formatInArg)
 							sampleOffset += int64(sz)
 						}
 					}

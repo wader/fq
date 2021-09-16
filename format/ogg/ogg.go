@@ -57,7 +57,7 @@ func decodeOgg(d *decode.D, in interface{}) interface{} {
 
 	d.FieldArrayFn("pages", func(d *decode.D) {
 		for !d.End() {
-			_, dv, _ := d.FieldTryFormat("page", oggPage)
+			_, dv, _ := d.FieldTryFormat("page", oggPage, nil)
 			if dv == nil {
 				break
 			}
@@ -119,10 +119,10 @@ func decodeOgg(d *decode.D, in interface{}) interface{} {
 					switch s.codec {
 					case codecVorbis:
 						// TODO: err
-						_, _, _ = s.packetD.FieldTryFormatBitBuf("packet", bb, vorbisPacket)
+						_, _, _ = s.packetD.FieldTryFormatBitBuf("packet", bb, vorbisPacket, nil)
 					case codecOpus:
 						// TODO: err
-						_, _, _ = s.packetD.FieldTryFormatBitBuf("packet", bb, opusPacket)
+						_, _, _ = s.packetD.FieldTryFormatBitBuf("packet", bb, opusPacket, nil)
 					case codecUnknown:
 						s.packetD.FieldBitBuf("packet", bb)
 					}

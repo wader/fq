@@ -454,7 +454,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			fieldTextNull(d, "mime_type", encodingUTF8)
 			d.FieldU8("picture_type") // TODO: table
 			fieldTextNull(d, "description", int(encoding))
-			dv, _, _ := d.FieldTryFormatLen("picture", d.BitsLeft(), imageFormat)
+			dv, _, _ := d.FieldTryFormatLen("picture", d.BitsLeft(), imageFormat, nil)
 			if dv == nil {
 				d.FieldBitBufLen("picture", d.BitsLeft())
 			}
@@ -471,9 +471,9 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			fieldTextNull(d, "mime_type", encodingUTF8)
 			fieldTextNull(d, "filename", int(encoding))
 			fieldTextNull(d, "description", int(encoding))
-			dv, _, _ := d.FieldTryFormatLen("picture", d.BitsLeft(), imageFormat)
+			dv, _, _ := d.FieldTryFormatLen("data", d.BitsLeft(), imageFormat, nil)
 			if dv == nil {
-				d.FieldBitBufLen("picture", d.BitsLeft())
+				d.FieldBitBufLen("data", d.BitsLeft())
 			}
 		},
 
@@ -569,7 +569,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			}
 
 			return nil
-		}))
+		}), nil)
 		d.FieldBitBufLen("data", int64(dataSize*8))
 	} else {
 		if fn, ok := frames[idNormalized]; ok {

@@ -133,7 +133,7 @@ type track struct {
 	codec               string
 	codecPrivatePos     int64
 	codecPrivateTagSize int64
-	decodeOpts          []decode.Options
+	formatInArg         interface{}
 }
 
 type block struct {
@@ -286,7 +286,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 						}
 						d.SeekRel(int64(tagSize) * 8)
 					case ebml_matroska.FileDataID:
-						d.FieldFormatLen("value", int64(tagSize)*8, imageFormat)
+						d.FieldFormatLen("value", int64(tagSize)*8, imageFormat, nil)
 					default:
 						d.FieldBitBufLen("value", int64(tagSize)*8)
 						// if tagID == CRC {
@@ -357,29 +357,28 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 				})
 				d.FieldArrayFn("packets", func(d *decode.D) {
 					for _, l := range packetLengths {
-						d.FieldFormatLen("packet", l*8, vorbisPacketFormat)
+						d.FieldFormatLen("packet", l*8, vorbisPacketFormat, nil)
 					}
-					d.FieldFormatLen("packet", d.BitsLeft(), vorbisPacketFormat)
+					d.FieldFormatLen("packet", d.BitsLeft(), vorbisPacketFormat, nil)
 				})
 			})
 		case "A_AAC":
-			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegASCFrameFormat)
+			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegASCFrameFormat, nil)
 		case "A_OPUS":
-			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, opusPacketFrameFormat)
+			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, opusPacketFrameFormat, nil)
 		case "A_FLAC":
 			t.parentD.DecodeRangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
 				d.FieldStructFn("value", func(d *decode.D) {
 					d.FieldValidateUTF8("magic", "fLaC")
 					d.FieldArrayFn("metadatablocks", func(d *decode.D) {
 						for {
-							_, v := d.FieldFormat("metadatablock", flacMetadatablockFormat)
+							_, v := d.FieldFormat("metadatablock", flacMetadatablockFormat, nil)
 							flacMetadatablockOut, ok := v.(format.FlacMetadatablockOut)
 							if !ok {
 								d.Invalid(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
 							}
 							if flacMetadatablockOut.HasStreamInfo {
-								t.decodeOpts = append(t.decodeOpts,
-									decode.FormatOptions{InArg: format.FlacFrameIn{StreamInfo: flacMetadatablockOut.StreamInfo}})
+								t.formatInArg = format.FlacFrameIn{StreamInfo: flacMetadatablockOut.StreamInfo}
 							}
 							if flacMetadatablockOut.IsLastBlock {
 								return
@@ -389,25 +388,23 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 				})
 			})
 		case "V_MPEG4/ISO/AVC":
-			_, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegAVCDCRFormat)
+			_, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegAVCDCRFormat, nil)
 			avcDcrOut, ok := v.(format.AvcDcrOut)
 			if !ok {
 				d.Invalid(fmt.Sprintf("expected AvcDcrOut got %#+v", v))
 			}
-			t.decodeOpts = append(t.decodeOpts,
-				decode.FormatOptions{InArg: format.AvcIn{LengthSize: avcDcrOut.LengthSize}}) //nolint:gosimple
+			t.formatInArg = format.AvcIn{LengthSize: avcDcrOut.LengthSize} //nolint:gosimple
 		case "V_MPEGH/ISO/HEVC":
-			_, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegHEVCDCRFormat)
+			_, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegHEVCDCRFormat, nil)
 			hevcDcrOut, ok := v.(format.HevcDcrOut)
 			if !ok {
 				d.Invalid(fmt.Sprintf("expected HevcDcrOut got %#+v", v))
 			}
-			t.decodeOpts = append(t.decodeOpts,
-				decode.FormatOptions{InArg: format.HevcIn{LengthSize: hevcDcrOut.LengthSize}}) //nolint:gosimple
+			t.formatInArg = format.HevcIn{LengthSize: hevcDcrOut.LengthSize} //nolint:gosimple
 		case "V_AV1":
-			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, av1CCRFormat)
+			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, av1CCRFormat, nil)
 		case "V_VP9":
-			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, vp9CFMFormat)
+			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, vp9CFMFormat, nil)
 		default:
 			t.parentD.FieldBitBufRange("value", t.codecPrivatePos, t.codecPrivateTagSize)
 		}
@@ -438,7 +435,7 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 			// TODO: fixed/unknown?
 			if t, ok := trackNumberToTrack[int(trackNumber)]; ok {
 				if f, ok := codecToFormat[t.codec]; ok {
-					d.FieldFormat("packet", *f, t.decodeOpts...)
+					d.FieldFormat("packet", *f, t.formatInArg)
 				}
 			}
 

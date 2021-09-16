@@ -196,11 +196,11 @@ func decodeChunks(d *decode.D, stringData bool) {
 
 func wavDecode(d *decode.D, in interface{}) interface{} {
 	// there are wav files in the wild with id3v2 header id3v1 footer
-	_, _, _ = d.FieldTryFormat("header", headerFormat)
+	_, _, _ = d.FieldTryFormat("header", headerFormat, nil)
 
 	decodeChunk(d, "RIFF", false)
 
-	_, _, _ = d.FieldTryFormat("footer", footerFormat)
+	_, _, _ = d.FieldTryFormat("footer", footerFormat, nil)
 
 	return nil
 }
