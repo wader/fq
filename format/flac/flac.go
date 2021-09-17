@@ -23,7 +23,7 @@ func init() {
 		Groups:      []string{format.PROBE},
 		DecodeFn:    flacDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.FLAC_METADATABLOCK}, Formats: &flacMetadatablockFormat},
+			{Names: []string{format.FLAC_METADATABLOCKS}, Formats: &flacMetadatablockFormat},
 			{Names: []string{format.FLAC_FRAME}, Formats: &flacFrameFormat},
 		},
 	})
@@ -38,23 +38,16 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 	var streamTotalSamples uint64
 	var streamDecodedSamples uint64
 
-	d.FieldArrayFn("metadatablocks", func(d *decode.D) {
-		for {
-			_, v := d.FieldFormat("metadatablock", flacMetadatablockFormat, nil)
-			flacMetadatablockOut, ok := v.(format.FlacMetadatablockOut)
-			if !ok {
-				panic(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
-			}
-			if flacMetadatablockOut.HasStreamInfo {
-				streamInfo = flacMetadatablockOut.StreamInfo
-				streamTotalSamples = streamInfo.TotalSamplesInStream
-				flacFrameIn = format.FlacFrameIn{StreamInfo: streamInfo}
-			}
-			if flacMetadatablockOut.IsLastBlock {
-				return
-			}
-		}
-	})
+	_, v := d.FieldFormat("metadatablocks", flacMetadatablockFormat, nil)
+	flacMetadatablockOut, ok := v.(format.FlacMetadatablocksOut)
+	if !ok {
+		panic(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
+	}
+	if flacMetadatablockOut.HasStreamInfo {
+		streamInfo = flacMetadatablockOut.StreamInfo
+		streamTotalSamples = streamInfo.TotalSamplesInStream
+		flacFrameIn = format.FlacFrameIn{StreamInfo: streamInfo}
+	}
 
 	md5Samples := md5.New()
 	d.FieldArrayFn("frames", func(d *decode.D) {

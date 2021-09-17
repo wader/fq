@@ -32,7 +32,7 @@ var aacFrameFormat []*decode.Format
 var av1CCRFormat []*decode.Format
 var av1FrameFormat []*decode.Format
 var flacFrameFormat []*decode.Format
-var flacMetadatablockFormat []*decode.Format
+var flacMetadatablocksFormat []*decode.Format
 var imageFormat []*decode.Format
 var mp3FrameFormat []*decode.Format
 var mpegASCFrameFormat []*decode.Format
@@ -63,7 +63,7 @@ func init() {
 			{Names: []string{format.AVC_AU}, Formats: &mpegAVCAUFormat},
 			{Names: []string{format.AVC_DCR}, Formats: &mpegAVCDCRFormat},
 			{Names: []string{format.FLAC_FRAME}, Formats: &flacFrameFormat},
-			{Names: []string{format.FLAC_METADATABLOCK}, Formats: &flacMetadatablockFormat},
+			{Names: []string{format.FLAC_METADATABLOCKS}, Formats: &flacMetadatablocksFormat},
 			{Names: []string{format.HEVC_AU}, Formats: &mpegHEVCSampleFormat},
 			{Names: []string{format.HEVC_DCR}, Formats: &mpegHEVCDCRFormat},
 			{Names: []string{format.IMAGE}, Formats: &imageFormat},
@@ -370,21 +370,14 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 			t.parentD.DecodeRangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
 				d.FieldStructFn("value", func(d *decode.D) {
 					d.FieldValidateUTF8("magic", "fLaC")
-					d.FieldArrayFn("metadatablocks", func(d *decode.D) {
-						for {
-							_, v := d.FieldFormat("metadatablock", flacMetadatablockFormat, nil)
-							flacMetadatablockOut, ok := v.(format.FlacMetadatablockOut)
-							if !ok {
-								d.Invalid(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
-							}
-							if flacMetadatablockOut.HasStreamInfo {
-								t.formatInArg = format.FlacFrameIn{StreamInfo: flacMetadatablockOut.StreamInfo}
-							}
-							if flacMetadatablockOut.IsLastBlock {
-								return
-							}
-						}
-					})
+					_, v := d.FieldFormat("metadatablocks", flacMetadatablocksFormat, nil)
+					flacMetadatablockOut, ok := v.(format.FlacMetadatablocksOut)
+					if !ok {
+						d.Invalid(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
+					}
+					if flacMetadatablockOut.HasStreamInfo {
+						t.formatInArg = format.FlacFrameIn{StreamInfo: flacMetadatablockOut.StreamInfo}
+					}
 				})
 			})
 		case "V_MPEG4/ISO/AVC":

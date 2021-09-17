@@ -8,7 +8,7 @@ def mp4_box:
 
 def flac_dump:
   [ "fLaC"
-  , first(.. | select(format == "flac_metadatablock"))
+  , first(.. | select(format == "flac_metadatablocks"))
   , (.. | select(format == "flac_frame"))
   ] | tobits;
 

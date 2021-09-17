@@ -454,23 +454,16 @@ func init() {
 		"dfLa": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
-			d.FieldArrayFn("metadatablocks", func(d *decode.D) {
-				for {
-					_, v := d.FieldFormat("metadatablock", flacMetadatablockFormat, nil)
-					flacMetadatablockOut, ok := v.(format.FlacMetadatablockOut)
-					if !ok {
-						d.Invalid(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
-					}
-					if flacMetadatablockOut.HasStreamInfo {
-						if ctx.currentTrack != nil {
-							ctx.currentTrack.formatInArg = format.FlacFrameIn{StreamInfo: flacMetadatablockOut.StreamInfo}
-						}
-					}
-					if flacMetadatablockOut.IsLastBlock {
-						return
-					}
+			_, v := d.FieldFormat("metadatablocks", flacMetadatablocksFormat, nil)
+			flacMetadatablockOut, ok := v.(format.FlacMetadatablocksOut)
+			if !ok {
+				d.Invalid(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
+			}
+			if flacMetadatablockOut.HasStreamInfo {
+				if ctx.currentTrack != nil {
+					ctx.currentTrack.formatInArg = format.FlacFrameIn{StreamInfo: flacMetadatablockOut.StreamInfo}
 				}
-			})
+			}
 		},
 		"dOps": func(_ *decodeContext, d *decode.D) {
 			d.FieldFormat("value", opusPacketFrameFormat, nil)

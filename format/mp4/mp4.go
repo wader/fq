@@ -31,7 +31,7 @@ var aacFrameFormat []*decode.Format
 var av1CCRFormat []*decode.Format
 var av1FrameFormat []*decode.Format
 var flacFrameFormat []*decode.Format
-var flacMetadatablockFormat []*decode.Format
+var flacMetadatablocksFormat []*decode.Format
 var id3v2Format []*decode.Format
 var imageFormat []*decode.Format
 var jpegFormat []*decode.Format
@@ -60,7 +60,7 @@ func init() {
 			{Names: []string{format.AV1_CCR}, Formats: &av1CCRFormat},
 			{Names: []string{format.AV1_FRAME}, Formats: &av1FrameFormat},
 			{Names: []string{format.FLAC_FRAME}, Formats: &flacFrameFormat},
-			{Names: []string{format.FLAC_METADATABLOCK}, Formats: &flacMetadatablockFormat},
+			{Names: []string{format.FLAC_METADATABLOCKS}, Formats: &flacMetadatablocksFormat},
 			{Names: []string{format.ID3V2}, Formats: &id3v2Format},
 			{Names: []string{format.IMAGE}, Formats: &imageFormat},
 			{Names: []string{format.JPEG}, Formats: &jpegFormat},
