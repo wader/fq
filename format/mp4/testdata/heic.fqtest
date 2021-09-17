@@ -85,7 +85,7 @@ $ fq -d mp4 verbose /heic.mp4
      |                                               |                |                [2]: box {} 0xd0-0x144.7 (117)
 0x0d0|00 00 00 75                                    |...u            |                  size: 117 0xd0-0xd3.7 (4)
 0x0d0|            68 76 63 43                        |    hvcC        |                  type: "hvcC" 0xd4-0xd7.7 (4)
-     |                                               |                |                  value: {} (hevc_dcr) 0xd8-0x144.7 (109)
+     |                                               |                |                  descriptor: {} (hevc_dcr) 0xd8-0x144.7 (109)
 0x0d0|                        01                     |        .       |                    configuration_version: 1 0xd8-0xd8.7 (1)
 0x0d0|                           01                  |         .      |                    general_profile_space: 0 0xd9-0xd9.1 (0.2)
 0x0d0|                           01                  |         .      |                    general_tier_flag: 0 0xd9.2-0xd9.2 (0.1)

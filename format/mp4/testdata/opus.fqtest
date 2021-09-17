@@ -200,7 +200,7 @@ $ fq -d mp4 verbose /opus.mp4
      |                                               |                |                                [0]: box {} 0x360-0x372.7 (19)
 0x360|00 00 00 13                                    |....            |                                  size: 19 0x360-0x363.7 (4)
 0x360|            64 4f 70 73                        |    dOps        |                                  type: "dOps" 0x364-0x367.7 (4)
-     |                                               |                |                                  value: {} (opus_packet) 0x368-0x372.7 (11)
+     |                                               |                |                                  descriptor: {} (opus_packet) 0x368-0x372.7 (11)
      |                                               |                |                                    type: "audio" 0x368-NA (0)
      |                                               |                |                                    toc: {} 0x368-0x372.7 (11)
      |                                               |                |                                      config: {} 0x368-0x368.4 (0.5)

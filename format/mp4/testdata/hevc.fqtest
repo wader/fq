@@ -223,7 +223,7 @@ $ fq -d mp4 verbose /hevc.mp4
       |                                               |                |                                [0]: box {} 0xa80-0x13c2.7 (2371)
 0x0a80|00 00 09 43                                    |...C            |                                  size: 2371 0xa80-0xa83.7 (4)
 0x0a80|            68 76 63 43                        |    hvcC        |                                  type: "hvcC" 0xa84-0xa87.7 (4)
-      |                                               |                |                                  value: {} (hevc_dcr) 0xa88-0x13c2.7 (2363)
+      |                                               |                |                                  descriptor: {} (hevc_dcr) 0xa88-0x13c2.7 (2363)
 0x0a80|                        01                     |        .       |                                    configuration_version: 1 0xa88-0xa88.7 (1)
 0x0a80|                           04                  |         .      |                                    general_profile_space: 0 0xa89-0xa89.1 (0.2)
 0x0a80|                           04                  |         .      |                                    general_tier_flag: 0 0xa89.2-0xa89.2 (0.1)

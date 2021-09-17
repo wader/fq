@@ -209,7 +209,7 @@ $ fq -d mp4 verbose /aac.mp4
 0x450|                                             65|               e|                                  type: "esds" (Elementary stream descriptor) 0x45f-0x462.7 (4)
 0x460|73 64 73                                       |sds             |
 0x460|         00 00 00 00                           |   ....         |                                  version: 0 0x463-0x466.7 (4)
-     |                                               |                |                                  es_descriptor: {} (mpeg_es) 0x467-0x490.7 (42)
+     |                                               |                |                                  descriptor: {} (mpeg_es) 0x467-0x490.7 (42)
 0x460|                     03                        |       .        |                                    tag_id: ES_DescrTag (3) 0x467-0x467.7 (1)
 0x460|                        80 80 80 25            |        ...%    |                                    length: 37 0x468-0x46b.7 (4)
 0x460|                                    00 01      |            ..  |                                    es_id: 1 0x46c-0x46d.7 (2)

@@ -207,7 +207,7 @@ $ fq -d mp4 verbose /vp9.mp4
 0x1760|                     76 70 63 43               |       vpcC     |                                  type: "vpcC" 0x1767-0x176a.7 (4)
 0x1760|                                 01            |           .    |                                  version: 1 0x176b-0x176b.7 (1)
 0x1760|                                    00 00 00   |            ... |                                  flags: 0 0x176c-0x176e.7 (3)
-      |                                               |                |                                  value: {} (vpx_ccr) 0x176f-0x1776.7 (8)
+      |                                               |                |                                  descriptor: {} (vpx_ccr) 0x176f-0x1776.7 (8)
 0x1760|                                             01|               .|                                    profile: 1 0x176f-0x176f.7 (1)
 0x1770|14                                             |.               |                                    level: Level 2 (20) 0x1770-0x1770.7 (1)
 0x1770|   86                                          | .              |                                    bit_depth: 8 0x1771-0x1771.3 (0.4)

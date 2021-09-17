@@ -206,7 +206,7 @@ $ fq -d mp4 verbose /avc.mp4
 0x0ce0|                                             00|               .|                                  size: 54 0xcef-0xcf2.7 (4)
 0x0cf0|00 00 36                                       |..6             |
 0x0cf0|         61 76 63 43                           |   avcC         |                                  type: "avcC" 0xcf3-0xcf6.7 (4)
-      |                                               |                |                                  value: {} (avc_dcr) 0xcf7-0xd24.7 (46)
+      |                                               |                |                                  descriptor: {} (avc_dcr) 0xcf7-0xd24.7 (46)
 0x0cf0|                     01                        |       .        |                                    configuration_version: 1 0xcf7-0xcf7.7 (1)
 0x0cf0|                        f4                     |        .       |                                    profile_indication: High 4:4:4 Predictive Profile (244) 0xcf8-0xcf8.7 (1)
 0x0cf0|                           00                  |         .      |                                    profile_compatibility: 0 0xcf9-0xcf9.7 (1)

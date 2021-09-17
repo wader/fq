@@ -210,7 +210,7 @@ $ fq -d mp4 verbose /mp3.mp4
 0x460|                                 65 73 64 73   |           esds |                                  type: "esds" (Elementary stream descriptor) 0x46b-0x46e.7 (4)
 0x460|                                             00|               .|                                  version: 0 0x46f-0x472.7 (4)
 0x470|00 00 00                                       |...             |
-     |                                               |                |                                  es_descriptor: {} (mpeg_es) 0x473-0x492.7 (32)
+     |                                               |                |                                  descriptor: {} (mpeg_es) 0x473-0x492.7 (32)
 0x470|         03                                    |   .            |                                    tag_id: ES_DescrTag (3) 0x473-0x473.7 (1)
 0x470|            80 80 80 1b                        |    ....        |                                    length: 27 0x474-0x477.7 (4)
 0x470|                        00 01                  |        ..      |                                    es_id: 1 0x478-0x479.7 (2)

@@ -432,7 +432,7 @@ func init() {
 			})
 		},
 		"avcC": func(ctx *decodeContext, d *decode.D) {
-			_, v := d.FieldFormat("value", mpegAVCDCRFormat, nil)
+			_, v := d.FieldFormat("descriptor", mpegAVCDCRFormat, nil)
 			avcDcrOut, ok := v.(format.AvcDcrOut)
 			if !ok {
 				d.Invalid(fmt.Sprintf("expected AvcDcrOut got %#+v", v))
@@ -442,7 +442,7 @@ func init() {
 			}
 		},
 		"hvcC": func(ctx *decodeContext, d *decode.D) {
-			_, v := d.FieldFormat("value", mpegHEVCDCRFrameFormat, nil)
+			_, v := d.FieldFormat("descriptor", mpegHEVCDCRFrameFormat, nil)
 			hevcDcrOut, ok := v.(format.HevcDcrOut)
 			if !ok {
 				d.Invalid(fmt.Sprintf("expected HevcDcrOut got %#+v", v))
@@ -454,7 +454,7 @@ func init() {
 		"dfLa": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
-			_, v := d.FieldFormat("metadatablocks", flacMetadatablocksFormat, nil)
+			_, v := d.FieldFormat("descriptor", flacMetadatablocksFormat, nil)
 			flacMetadatablockOut, ok := v.(format.FlacMetadatablocksOut)
 			if !ok {
 				d.Invalid(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
@@ -466,20 +466,20 @@ func init() {
 			}
 		},
 		"dOps": func(_ *decodeContext, d *decode.D) {
-			d.FieldFormat("value", opusPacketFrameFormat, nil)
+			d.FieldFormat("descriptor", opusPacketFrameFormat, nil)
 		},
 		"av1C": func(_ *decodeContext, d *decode.D) {
-			d.FieldFormat("value", av1CCRFormat, nil)
+			d.FieldFormat("descriptor", av1CCRFormat, nil)
 		},
 		"vpcC": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
-			d.FieldFormat("value", vpxCCRFormat, nil)
+			d.FieldFormat("descriptor", vpxCCRFormat, nil)
 		},
 		"esds": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU32("version")
 
-			_, v := d.FieldFormat("es_descriptor", mpegESFormat, nil)
+			_, v := d.FieldFormat("descriptor", mpegESFormat, nil)
 			mpegEsOut, ok := v.(format.MpegEsOut)
 			if !ok {
 				d.Invalid(fmt.Sprintf("expected mpegEsOut got %#+v", v))

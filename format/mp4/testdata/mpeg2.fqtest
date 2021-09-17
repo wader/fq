@@ -224,7 +224,7 @@ $ fq -d mp4 verbose /mpeg2.mp4
 0x21a0|                           65 73 64 73         |         esds   |                                  type: "esds" (Elementary stream descriptor) 0x21a9-0x21ac.7 (4)
 0x21a0|                                       00 00 00|             ...|                                  version: 0 0x21ad-0x21b0.7 (4)
 0x21b0|00                                             |.               |
-      |                                               |                |                                  es_descriptor: {} (mpeg_es) 0x21b1-0x21d0.7 (32)
+      |                                               |                |                                  descriptor: {} (mpeg_es) 0x21b1-0x21d0.7 (32)
 0x21b0|   03                                          | .              |                                    tag_id: ES_DescrTag (3) 0x21b1-0x21b1.7 (1)
 0x21b0|      80 80 80 1b                              |  ....          |                                    length: 27 0x21b2-0x21b5.7 (4)
 0x21b0|                  00 01                        |      ..        |                                    es_id: 1 0x21b6-0x21b7.7 (2)

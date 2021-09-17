@@ -182,7 +182,7 @@ $ fq -d mp4 verbose /fragmented.mp4
 0x01f0|                                             00|               .|                                  size: 49 0x1ff-0x202.7 (4)
 0x0200|00 00 31                                       |..1             |
 0x0200|         61 76 63 43                           |   avcC         |                                  type: "avcC" 0x203-0x206.7 (4)
-      |                                               |                |                                  value: {} (avc_dcr) 0x207-0x22f.7 (41)
+      |                                               |                |                                  descriptor: {} (avc_dcr) 0x207-0x22f.7 (41)
 0x0200|                     01                        |       .        |                                    configuration_version: 1 0x207-0x207.7 (1)
 0x0200|                        f4                     |        .       |                                    profile_indication: High 4:4:4 Predictive Profile (244) 0x208-0x208.7 (1)
 0x0200|                           10                  |         .      |                                    profile_compatibility: 16 0x209-0x209.7 (1)
@@ -428,7 +428,7 @@ $ fq -d mp4 verbose /fragmented.mp4
 0x03b0|                           65 73 64 73         |         esds   |                                  type: "esds" (Elementary stream descriptor) 0x3b9-0x3bc.7 (4)
 0x03b0|                                       00 00 00|             ...|                                  version: 0 0x3bd-0x3c0.7 (4)
 0x03c0|00                                             |.               |
-      |                                               |                |                                  es_descriptor: {} (mpeg_es) 0x3c1-0x3ea.7 (42)
+      |                                               |                |                                  descriptor: {} (mpeg_es) 0x3c1-0x3ea.7 (42)
 0x03c0|   03                                          | .              |                                    tag_id: ES_DescrTag (3) 0x3c1-0x3c1.7 (1)
 0x03c0|      80 80 80 25                              |  ...%          |                                    length: 37 0x3c2-0x3c5.7 (4)
 0x03c0|                  00 02                        |      ..        |                                    es_id: 2 0x3c6-0x3c7.7 (2)

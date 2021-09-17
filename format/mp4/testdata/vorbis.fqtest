@@ -209,7 +209,7 @@ $ fq -d mp4 verbose /vorbis.mp4
 0x03a0|                              65 73 64 73      |          esds  |                                  type: "esds" (Elementary stream descriptor) 0x3aa-0x3ad.7 (4)
 0x03a0|                                          00 00|              ..|                                  version: 0 0x3ae-0x3b1.7 (4)
 0x03b0|00 00                                          |..              |
-      |                                               |                |                                  es_descriptor: {} (mpeg_es) 0x3b2-0x10b6.7 (3333)
+      |                                               |                |                                  descriptor: {} (mpeg_es) 0x3b2-0x10b6.7 (3333)
 0x03b0|      03                                       |  .             |                                    tag_id: ES_DescrTag (3) 0x3b2-0x3b2.7 (1)
 0x03b0|         80 80 9a 00                           |   ....         |                                    length: 3328 0x3b3-0x3b6.7 (4)
 0x03b0|                     00 01                     |       ..       |                                    es_id: 1 0x3b7-0x3b8.7 (2)

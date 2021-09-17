@@ -206,7 +206,7 @@ $ fq -d mp4 verbose /av1.mp4
 0x13b0|                                             00|               .|                                  size: 27 0x13bf-0x13c2.7 (4)
 0x13c0|00 00 1b                                       |...             |
 0x13c0|         61 76 31 43                           |   av1C         |                                  type: "av1C" 0x13c3-0x13c6.7 (4)
-      |                                               |                |                                  value: {} (av1_ccr) 0x13c7-0x13d9.7 (19)
+      |                                               |                |                                  descriptor: {} (av1_ccr) 0x13c7-0x13d9.7 (19)
 0x13c0|                     81                        |       .        |                                    marker: 1 0x13c7-0x13c7 (0.1)
 0x13c0|                     81                        |       .        |                                    version: 1 0x13c7.1-0x13c7.7 (0.7)
 0x13c0|                        3f                     |        ?       |                                    seq_profile: 1 0x13c8-0x13c8.2 (0.3)
