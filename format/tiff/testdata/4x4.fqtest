@@ -56,7 +56,7 @@ $ fq -d tiff verbose /4x4.tiff
 0x050|00 00                                          |..              |
 0x050|      ba 00 00 00                              |  ....          |          value_offset: 186 0x52-0x55.7 (4)
      |                                               |                |          values: [1] 0xba-0xc2.7 (9)
-0x0b0|                              34 78 34 2e 74 69|          4x4.ti|            [0]: value "4x4.tiff\x00" 0xba-0xc2.7 (9)
+0x0b0|                              34 78 34 2e 74 69|          4x4.ti|            [0]: value "4x4.tiff" 0xba-0xc2.7 (9)
 0x0c0|66 66 00                                       |ff.             |
      |                                               |                |        [6]: entry {} 0x56-0x61.7 (12)
 0x050|                  11 01                        |      ..        |          tag: StripOffsets (0x111) 0x56-0x57.7 (2)

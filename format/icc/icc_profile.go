@@ -4,8 +4,6 @@ package icc
 // https://www.color.org/icc32.pdf
 
 import (
-	"strings"
-
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/internal/num"
@@ -45,9 +43,7 @@ func descType(d *decode.D) {
 	d.FieldStrNullTerminatedLen("localizable_description", int(localDescLen))
 	d.FieldU16("script_code")
 	d.FieldU8("macintosh_description_length")
-	d.FieldStrFn("macintosh_description", func() (string, string) {
-		return strings.Trim(d.UTF8(67), "\x00 "), ""
-	})
+	d.FieldUTF8Null("macintosh_description", 67)
 }
 
 var typToDecode = map[string]func(d *decode.D){
@@ -97,13 +93,13 @@ func iccProfileDecode(d *decode.D, in interface{}) interface{} {
 	d.DecodeLenFn(int64(size)*8, func(d *decode.D) {
 		d.FieldStructFn("header", func(d *decode.D) {
 			d.FieldU32("size")
-			d.FieldUTF8("cmm_type_signature", 4)
+			d.FieldUTF8Null("cmm_type_signature", 4)
 			fieldBCDU8(d, "version_major")
 			fieldBCDU8(d, "version_minor")
 			d.FieldU16("version_reserved")
-			d.FieldUTF8("device_class_signature", 4)
-			d.FieldUTF8("color_space", 4)
-			d.FieldUTF8("connection_space", 4)
+			d.FieldUTF8Null("device_class_signature", 4)
+			d.FieldUTF8Null("color_space", 4)
+			d.FieldUTF8Null("connection_space", 4)
 			d.FieldStructFn("timestamp", func(d *decode.D) {
 				d.FieldU16("year")
 				d.FieldU16("month")
@@ -113,16 +109,16 @@ func iccProfileDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldU16("seconds")
 
 			})
-			d.FieldUTF8("file_signature", 4)
-			d.FieldUTF8("primary_platform", 4)
+			d.FieldUTF8Null("file_signature", 4)
+			d.FieldUTF8Null("primary_platform", 4)
 			d.FieldU32("flags")
-			d.FieldUTF8("device_manufacturer", 4)
-			d.FieldUTF8("device_model", 4)
-			d.FieldUTF8("device_attribute", 8)
-			d.FieldUTF8("render_intent", 4)
-			d.FieldUTF8("xyz_illuminant", 12)
-			d.FieldUTF8("profile_creator_signature", 4)
-			d.FieldUTF8("profile_id", 16)
+			d.FieldUTF8Null("device_manufacturer", 4)
+			d.FieldUTF8Null("device_model", 4)
+			d.FieldUTF8Null("device_attribute", 8)
+			d.FieldUTF8Null("render_intent", 4)
+			d.FieldUTF8Null("xyz_illuminant", 12)
+			d.FieldUTF8Null("profile_creator_signature", 4)
+			d.FieldUTF8Null("profile_id", 16)
 			d.FieldValidateZeroPadding("reserved", 28*8)
 		})
 
@@ -131,12 +127,12 @@ func iccProfileDecode(d *decode.D, in interface{}) interface{} {
 			d.FieldArrayFn("table", func(d *decode.D) {
 				for i := uint64(0); i < tagCount; i++ {
 					d.FieldStructFn("element", func(d *decode.D) {
-						d.FieldUTF8("signature", 4)
+						d.FieldUTF8Null("signature", 4)
 						offset := d.FieldU32("offset")
 						size := d.FieldU32("size")
 
 						d.DecodeRangeFn(int64(offset)*8, int64(size)*8, func(d *decode.D) {
-							typ := d.FieldUTF8("type", 4)
+							typ := d.FieldUTF8Null("type", 4)
 							d.FieldU32("reserved")
 
 							if fn, ok := typToDecode[typ]; ok {

@@ -31,7 +31,7 @@ $ fq -d mp4 verbose /vorbis.mp4
 0x01e0|               00 00 00 6c                     |     ...l       |          size: 108 0x1e5-0x1e8.7 (4)
 0x01e0|                           6d 76 68 64         |         mvhd   |          type: "mvhd" (Movie header, overall declarations) 0x1e9-0x1ec.7 (4)
 0x01e0|                                       00      |             .  |          version: 0 0x1ed-0x1ed.7 (1)
-0x01e0|                                          00 00|              ..|          flags: "\x00\x00\x00" 0x1ee-0x1f0.7 (3)
+0x01e0|                                          00 00|              ..|          flags: 0 0x1ee-0x1f0.7 (3)
 0x01f0|00                                             |.               |
 0x01f0|   00 00 00 00                                 | ....           |          creation_time: 1904-01-04T00:00:00Z (0) 0x1f1-0x1f4.7 (4)
 0x01f0|               00 00 00 00                     |     ....       |          modification_time: 1904-01-04T00:00:00Z (0) 0x1f5-0x1f8.7 (4)
@@ -140,14 +140,14 @@ $ fq -d mp4 verbose /vorbis.mp4
 0x0300|               68 64 6c 72                     |     hdlr       |                  type: "hdlr" (Handler, declares the media (handler) type) 0x305-0x308.7 (4)
 0x0300|                           00                  |         .      |                  version: 0 0x309-0x309.7 (1)
 0x0300|                              00 00 00         |          ...   |                  flags: 0 0x30a-0x30c.7 (3)
-0x0300|                                       00 00 00|             ...|                  component_type: "\x00\x00\x00\x00" 0x30d-0x310.7 (4)
+0x0300|                                       00 00 00|             ...|                  component_type: "" 0x30d-0x310.7 (4)
 0x0310|00                                             |.               |
 0x0310|   73 6f 75 6e                                 | soun           |                  component_subtype: "soun" (Audio Track) 0x311-0x314.7 (4)
-0x0310|               00 00 00 00                     |     ....       |                  component_manufacturer: "\x00\x00\x00\x00" 0x315-0x318.7 (4)
+0x0310|               00 00 00 00                     |     ....       |                  component_manufacturer: "" 0x315-0x318.7 (4)
 0x0310|                           00 00 00 00         |         ....   |                  component_flags: 0 0x319-0x31c.7 (4)
 0x0310|                                       00 00 00|             ...|                  component_flags_mask: 0 0x31d-0x320.7 (4)
 0x0320|00                                             |.               |
-0x0320|   53 6f 75 6e 64 48 61 6e 64 6c 65 72 00      | SoundHandler.  |                  component_name: "SoundHandler\x00" 0x321-0x32d.7 (13)
+0x0320|   53 6f 75 6e 64 48 61 6e 64 6c 65 72 00      | SoundHandler.  |                  component_name: "SoundHandler" 0x321-0x32d.7 (13)
       |                                               |                |                [2]: box {} 0x32e-0x1126.7 (3577)
 0x0320|                                          00 00|              ..|                  size: 3577 0x32e-0x331.7 (4)
 0x0330|0d f9                                          |..              |
@@ -336,13 +336,13 @@ $ fq -d mp4 verbose /vorbis.mp4
 0x1140|64 6c 72                                       |dlr             |
 0x1140|         00                                    |   .            |                  version: 0 0x1143-0x1143.7 (1)
 0x1140|            00 00 00                           |    ...         |                  flags: 0 0x1144-0x1146.7 (3)
-0x1140|                     00 00 00 00               |       ....     |                  component_type: "\x00\x00\x00\x00" 0x1147-0x114a.7 (4)
+0x1140|                     00 00 00 00               |       ....     |                  component_type: "" 0x1147-0x114a.7 (4)
 0x1140|                                 6d 64 69 72   |           mdir |                  component_subtype: "mdir" (Metadata) 0x114b-0x114e.7 (4)
 0x1140|                                             61|               a|                  component_manufacturer: "appl" 0x114f-0x1152.7 (4)
 0x1150|70 70 6c                                       |ppl             |
 0x1150|         00 00 00 00                           |   ....         |                  component_flags: 0 0x1153-0x1156.7 (4)
 0x1150|                     00 00 00 00               |       ....     |                  component_flags_mask: 0 0x1157-0x115a.7 (4)
-0x1150|                                 00            |           .    |                  component_name: "\x00" 0x115b-0x115b.7 (1)
+0x1150|                                 00            |           .    |                  component_name: "" 0x115b-0x115b.7 (1)
       |                                               |                |                [1]: box {} 0x115c-0x1188.7 (45)
 0x1150|                                    00 00 00 2d|            ...-|                  size: 45 0x115c-0x115f.7 (4)
 0x1160|69 6c 73 74                                    |ilst            |                  type: "ilst" 0x1160-0x1163.7 (4)

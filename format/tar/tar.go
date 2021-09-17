@@ -29,19 +29,14 @@ func init() {
 }
 
 func tarDecode(d *decode.D, in interface{}) interface{} {
-	str := func(nBytes int) string {
-		s := d.UTF8(nBytes)
-		ts := strings.Trim(s, " \x00")
-		return ts
-	}
 	fieldStr := func(d *decode.D, name string, nBytes int) string {
 		return d.FieldStrFn(name, func() (string, string) {
-			return str(nBytes), ""
+			return d.UTF8Fn(nBytes, func(s string) string { return strings.Trim(s, " \x00") }), ""
 		})
 	}
 	fieldNumStr := func(d *decode.D, name string, nBytes int) uint64 {
 		return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
-			ts := strings.TrimLeft(str(nBytes), "0 \x00")
+			ts := strings.TrimLeft(d.UTF8(nBytes), "0 \x00")
 			if ts == "" {
 				return 0, decode.NumberDecimal, ts
 			}

@@ -31,7 +31,7 @@ $ fq -d mp4 verbose /mpeg2.mp4
 0x1fb0|00 6c                                          |.l              |
 0x1fb0|      6d 76 68 64                              |  mvhd          |          type: "mvhd" (Movie header, overall declarations) 0x1fb2-0x1fb5.7 (4)
 0x1fb0|                  00                           |      .         |          version: 0 0x1fb6-0x1fb6.7 (1)
-0x1fb0|                     00 00 00                  |       ...      |          flags: "\x00\x00\x00" 0x1fb7-0x1fb9.7 (3)
+0x1fb0|                     00 00 00                  |       ...      |          flags: 0 0x1fb7-0x1fb9.7 (3)
 0x1fb0|                              00 00 00 00      |          ....  |          creation_time: 1904-01-04T00:00:00Z (0) 0x1fba-0x1fbd.7 (4)
 0x1fb0|                                          00 00|              ..|          modification_time: 1904-01-04T00:00:00Z (0) 0x1fbe-0x1fc1.7 (4)
 0x1fc0|00 00                                          |..              |
@@ -138,13 +138,13 @@ $ fq -d mp4 verbose /mpeg2.mp4
 0x20d0|6c 72                                          |lr              |
 0x20d0|      00                                       |  .             |                  version: 0 0x20d2-0x20d2.7 (1)
 0x20d0|         00 00 00                              |   ...          |                  flags: 0 0x20d3-0x20d5.7 (3)
-0x20d0|                  00 00 00 00                  |      ....      |                  component_type: "\x00\x00\x00\x00" 0x20d6-0x20d9.7 (4)
+0x20d0|                  00 00 00 00                  |      ....      |                  component_type: "" 0x20d6-0x20d9.7 (4)
 0x20d0|                              76 69 64 65      |          vide  |                  component_subtype: "vide" (Video Track) 0x20da-0x20dd.7 (4)
-0x20d0|                                          00 00|              ..|                  component_manufacturer: "\x00\x00\x00\x00" 0x20de-0x20e1.7 (4)
+0x20d0|                                          00 00|              ..|                  component_manufacturer: "" 0x20de-0x20e1.7 (4)
 0x20e0|00 00                                          |..              |
 0x20e0|      00 00 00 00                              |  ....          |                  component_flags: 0 0x20e2-0x20e5.7 (4)
 0x20e0|                  00 00 00 00                  |      ....      |                  component_flags_mask: 0 0x20e6-0x20e9.7 (4)
-0x20e0|                              56 69 64 65 6f 48|          VideoH|                  component_name: "VideoHandler\x00" 0x20ea-0x20f6.7 (13)
+0x20e0|                              56 69 64 65 6f 48|          VideoH|                  component_name: "VideoHandler" 0x20ea-0x20f6.7 (13)
 0x20f0|61 6e 64 6c 65 72 00                           |andler.         |
       |                                               |                |                [2]: box {} 0x20f7-0x2246.7 (336)
 0x20f0|                     00 00 01 50               |       ...P     |                  size: 336 0x20f7-0x20fa.7 (4)
@@ -314,13 +314,13 @@ $ fq -d mp4 verbose /mpeg2.mp4
 0x2260|64 6c 72                                       |dlr             |
 0x2260|         00                                    |   .            |                  version: 0 0x2263-0x2263.7 (1)
 0x2260|            00 00 00                           |    ...         |                  flags: 0 0x2264-0x2266.7 (3)
-0x2260|                     00 00 00 00               |       ....     |                  component_type: "\x00\x00\x00\x00" 0x2267-0x226a.7 (4)
+0x2260|                     00 00 00 00               |       ....     |                  component_type: "" 0x2267-0x226a.7 (4)
 0x2260|                                 6d 64 69 72   |           mdir |                  component_subtype: "mdir" (Metadata) 0x226b-0x226e.7 (4)
 0x2260|                                             61|               a|                  component_manufacturer: "appl" 0x226f-0x2272.7 (4)
 0x2270|70 70 6c                                       |ppl             |
 0x2270|         00 00 00 00                           |   ....         |                  component_flags: 0 0x2273-0x2276.7 (4)
 0x2270|                     00 00 00 00               |       ....     |                  component_flags_mask: 0 0x2277-0x227a.7 (4)
-0x2270|                                 00            |           .    |                  component_name: "\x00" 0x227b-0x227b.7 (1)
+0x2270|                                 00            |           .    |                  component_name: "" 0x227b-0x227b.7 (1)
       |                                               |                |                [1]: box {} 0x227c-0x22a8.7 (45)
 0x2270|                                    00 00 00 2d|            ...-|                  size: 45 0x227c-0x227f.7 (4)
 0x2280|69 6c 73 74                                    |ilst            |                  type: "ilst" 0x2280-0x2283.7 (4)

@@ -145,7 +145,7 @@ func decodeIfd(d *decode.D, s *strips, tagNames map[uint64]string) int64 {
 								}
 							case typ == ASCII:
 								d.DecodeRangeFn(int64(valueByteOffset*8), int64(valueByteSize*8), func(d *decode.D) {
-									d.FieldUTF8("value", int(valueByteSize))
+									d.FieldUTF8Null("value", int(valueByteSize))
 								})
 							case typ == BYTE:
 								d.FieldBitBufRange("value", int64(valueByteOffset*8), int64(valueByteSize*8))

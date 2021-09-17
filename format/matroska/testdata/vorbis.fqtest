@@ -363,7 +363,7 @@ $ fq -d matroska verbose /vorbis.mkv
       |                                               |                |                      type: UTF8 (4) 0xee4-NA (0)
 0x0ee0|            44 87                              |    D.          |                      id: TagString (0x4487) 0xee4-0xee5.7 (2)
 0x0ee0|                  94                           |      .         |                      size: 20 0xee6-0xee6.7 (1)
-0x0ee0|                     30 30 3a 30 30 3a 30 30 2e|       00:00:00.|                      value: "00:00:00.050000000\x00\x00" 0xee7-0xefa.7 (20)
+0x0ee0|                     30 30 3a 30 30 3a 30 30 2e|       00:00:00.|                      value: "00:00:00.050000000" 0xee7-0xefa.7 (20)
 0x0ef0|30 35 30 30 30 30 30 30 30 00 00               |050000000..     |
       |                                               |                |        [5]: element {} 0xefb-0x10de.7 (484)
       |                                               |                |          type: master (7) 0xefb-NA (0)

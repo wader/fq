@@ -1,8 +1,6 @@
 package id3
 
 import (
-	"strings"
-
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
@@ -18,12 +16,6 @@ func init() {
 	})
 }
 
-func field(d *decode.D, name string, nBytes int) {
-	d.FieldStrFn(name, func() (string, string) {
-		return strings.Trim(d.UTF8(nBytes), "\x00 "), ""
-	})
-}
-
 // Decode ID3v1 tag
 func id3v1Decode(d *decode.D, in interface{}) interface{} {
 	d.ValidateAtLeastBitsLeft(128 * 8)
@@ -31,11 +23,11 @@ func id3v1Decode(d *decode.D, in interface{}) interface{} {
 	if d.PeekBits(8) == uint64('+') {
 		d.Invalid("looks like id3v11")
 	}
-	field(d, "song_name", 30)
-	field(d, "artist", 30)
-	field(d, "album_name", 30)
-	field(d, "year", 4)
-	field(d, "comment", 30)
+	d.FieldUTF8Null("song_name", 30)
+	d.FieldUTF8Null("artist", 30)
+	d.FieldUTF8Null("album_name", 30)
+	d.FieldUTF8Null("year", 4)
+	d.FieldUTF8Null("comment", 30)
 	// from https://en.wikipedia.org/wiki/List_of_ID3v1_Genres
 	d.FieldStringMapFn("genre", map[uint64]string{
 		0:   "Blues",

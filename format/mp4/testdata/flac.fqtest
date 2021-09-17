@@ -31,7 +31,7 @@ $ fq -d mp4 verbose /flac.mp4
 0x290|      00 00 00 6c                              |  ...l          |          size: 108 0x292-0x295.7 (4)
 0x290|                  6d 76 68 64                  |      mvhd      |          type: "mvhd" (Movie header, overall declarations) 0x296-0x299.7 (4)
 0x290|                              00               |          .     |          version: 0 0x29a-0x29a.7 (1)
-0x290|                                 00 00 00      |           ...  |          flags: "\x00\x00\x00" 0x29b-0x29d.7 (3)
+0x290|                                 00 00 00      |           ...  |          flags: 0 0x29b-0x29d.7 (3)
 0x290|                                          00 00|              ..|          creation_time: 1904-01-04T00:00:00Z (0) 0x29e-0x2a1.7 (4)
 0x2a0|00 00                                          |..              |
 0x2a0|      00 00 00 00                              |  ....          |          modification_time: 1904-01-04T00:00:00Z (0) 0x2a2-0x2a5.7 (4)
@@ -139,13 +139,13 @@ $ fq -d mp4 verbose /flac.mp4
 0x3b0|      68 64 6c 72                              |  hdlr          |                  type: "hdlr" (Handler, declares the media (handler) type) 0x3b2-0x3b5.7 (4)
 0x3b0|                  00                           |      .         |                  version: 0 0x3b6-0x3b6.7 (1)
 0x3b0|                     00 00 00                  |       ...      |                  flags: 0 0x3b7-0x3b9.7 (3)
-0x3b0|                              00 00 00 00      |          ....  |                  component_type: "\x00\x00\x00\x00" 0x3ba-0x3bd.7 (4)
+0x3b0|                              00 00 00 00      |          ....  |                  component_type: "" 0x3ba-0x3bd.7 (4)
 0x3b0|                                          73 6f|              so|                  component_subtype: "soun" (Audio Track) 0x3be-0x3c1.7 (4)
 0x3c0|75 6e                                          |un              |
-0x3c0|      00 00 00 00                              |  ....          |                  component_manufacturer: "\x00\x00\x00\x00" 0x3c2-0x3c5.7 (4)
+0x3c0|      00 00 00 00                              |  ....          |                  component_manufacturer: "" 0x3c2-0x3c5.7 (4)
 0x3c0|                  00 00 00 00                  |      ....      |                  component_flags: 0 0x3c6-0x3c9.7 (4)
 0x3c0|                              00 00 00 00      |          ....  |                  component_flags_mask: 0 0x3ca-0x3cd.7 (4)
-0x3c0|                                          53 6f|              So|                  component_name: "SoundHandler\x00" 0x3ce-0x3da.7 (13)
+0x3c0|                                          53 6f|              So|                  component_name: "SoundHandler" 0x3ce-0x3da.7 (13)
 0x3d0|75 6e 64 48 61 6e 64 6c 65 72 00               |undHandler.     |
      |                                               |                |                [2]: box {} 0x3db-0x4e0.7 (262)
 0x3d0|                                 00 00 01 06   |           .... |                  size: 262 0x3db-0x3de.7 (4)
@@ -284,13 +284,13 @@ $ fq -d mp4 verbose /flac.mp4
 0x4f0|                                       00      |             .  |                  version: 0 0x4fd-0x4fd.7 (1)
 0x4f0|                                          00 00|              ..|                  flags: 0 0x4fe-0x500.7 (3)
 0x500|00                                             |.               |
-0x500|   00 00 00 00                                 | ....           |                  component_type: "\x00\x00\x00\x00" 0x501-0x504.7 (4)
+0x500|   00 00 00 00                                 | ....           |                  component_type: "" 0x501-0x504.7 (4)
 0x500|               6d 64 69 72                     |     mdir       |                  component_subtype: "mdir" (Metadata) 0x505-0x508.7 (4)
 0x500|                           61 70 70 6c         |         appl   |                  component_manufacturer: "appl" 0x509-0x50c.7 (4)
 0x500|                                       00 00 00|             ...|                  component_flags: 0 0x50d-0x510.7 (4)
 0x510|00                                             |.               |
 0x510|   00 00 00 00                                 | ....           |                  component_flags_mask: 0 0x511-0x514.7 (4)
-0x510|               00                              |     .          |                  component_name: "\x00" 0x515-0x515.7 (1)
+0x510|               00                              |     .          |                  component_name: "" 0x515-0x515.7 (1)
      |                                               |                |                [1]: box {} 0x516-0x542.7 (45)
 0x510|                  00 00 00 2d                  |      ...-      |                  size: 45 0x516-0x519.7 (4)
 0x510|                              69 6c 73 74      |          ilst  |                  type: "ilst" 0x51a-0x51d.7 (4)

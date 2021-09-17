@@ -2,6 +2,7 @@ package decode
 
 import (
 	"io"
+	"strings"
 
 	"github.com/wader/fq/pkg/bitio"
 	"golang.org/x/text/encoding/unicode"
@@ -9,12 +10,16 @@ import (
 
 // TODO: FP64,unsigned/BE/LE? rename SFP32?
 
-func (d *D) TryUTF8(nBytes int) (string, error) {
+func (d *D) TryUTF8Fn(nBytes int, fn func(s string) string) (string, error) {
 	s, err := d.bitBuf.BytesLen(nBytes)
 	if err != nil {
 		return "", err
 	}
-	return string(s), nil
+	return fn(string(s)), nil
+}
+
+func (d *D) TryUTF8(nBytes int) (string, error) {
+	return d.TryUTF8Fn(nBytes, func(s string) string { return s })
 }
 
 func (d *D) TryUTF16BE(nBytes int) (string, error) {
@@ -232,13 +237,17 @@ func (d *D) FieldBytesLen(name string, nBytes int) []byte {
 	})
 }
 
-// UTF8 read nBytes utf8 string
-func (d *D) UTF8(nBytes int) string {
-	s, err := d.TryUTF8(nBytes)
+// UTF8Fn read nBytes utf8 string and transform it using fn
+func (d *D) UTF8Fn(nBytes int, fn func(s string) string) string {
+	s, err := d.TryUTF8Fn(nBytes, fn)
 	if err != nil {
 		panic(IOError{Err: err, Op: "UTF8", Size: int64(nBytes) * 8, Pos: d.Pos()})
 	}
 	return s
+}
+
+func (d *D) UTF8(nBytes int) string {
+	return d.UTF8Fn(nBytes, func(s string) string { return s })
 }
 
 // UTF16BE read nBytes utf16be string
@@ -260,14 +269,22 @@ func (d *D) UTF16LE(nBytes int) string {
 }
 
 // FieldUTF8 read nBytes utf8 string and add a field
-func (d *D) FieldUTF8(name string, nBytes int) string {
+func (d *D) FieldUTF8Fn(name string, nBytes int, fn func(s string) string) string {
 	return d.FieldStrFn(name, func() (string, string) {
-		str, err := d.TryUTF8(nBytes)
+		str, err := d.TryUTF8Fn(nBytes, fn)
 		if err != nil {
 			panic(IOError{Err: err, Name: name, Op: "FieldUTF8", Size: int64(nBytes) * 8, Pos: d.Pos()})
 		}
 		return str, ""
 	})
+}
+
+func (d *D) FieldUTF8Null(name string, nBytes int) string {
+	return d.FieldUTF8Fn(name, nBytes, func(s string) string { return strings.TrimRight(s, "\x00") })
+}
+
+func (d *D) FieldUTF8(name string, nBytes int) string {
+	return d.FieldUTF8Fn(name, nBytes, func(s string) string { return s })
 }
 
 // FieldUTF16BE read nBytes utf16be string and add a field

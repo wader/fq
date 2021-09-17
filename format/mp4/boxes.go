@@ -162,7 +162,7 @@ func init() {
 		},
 		"mvhd": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
-			d.FieldUTF8("flags", 3)
+			d.FieldU24("flags")
 			_ = decodeFieldTime(d, "creation_time")
 			_ = decodeFieldTime(d, "modification_time")
 			d.FieldU32("time_scale")
@@ -254,7 +254,7 @@ func init() {
 		"hdlr": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
-			d.FieldUTF8("component_type", 4)
+			d.FieldUTF8Null("component_type", 4)
 			subTypeNames := map[string]string{
 				"alis": "Alias Data",
 				"camm": "Camera Metadata",
@@ -286,10 +286,10 @@ func init() {
 				s := strings.TrimSpace(d.UTF8(4))
 				return s, subTypeNames[s]
 			})
-			d.FieldUTF8("component_manufacturer", 4)
+			d.FieldUTF8Null("component_manufacturer", 4)
 			d.FieldU32("component_flags")
 			d.FieldU32("component_flags_mask")
-			d.FieldUTF8("component_name", int(d.BitsLeft()/8))
+			d.FieldUTF8Null("component_name", int(d.BitsLeft()/8))
 
 			if ctx.currentTrack != nil {
 				// component_type seems to be all zero sometimes so can't look for "mhlr"

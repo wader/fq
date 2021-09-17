@@ -31,7 +31,7 @@ $ fq -d mp4 verbose /hevc.mp4
 0x0880|                                       6d 76 68|             mvh|          type: "mvhd" (Movie header, overall declarations) 0x88d-0x890.7 (4)
 0x0890|64                                             |d               |
 0x0890|   00                                          | .              |          version: 0 0x891-0x891.7 (1)
-0x0890|      00 00 00                                 |  ...           |          flags: "\x00\x00\x00" 0x892-0x894.7 (3)
+0x0890|      00 00 00                                 |  ...           |          flags: 0 0x892-0x894.7 (3)
 0x0890|               00 00 00 00                     |     ....       |          creation_time: 1904-01-04T00:00:00Z (0) 0x895-0x898.7 (4)
 0x0890|                           00 00 00 00         |         ....   |          modification_time: 1904-01-04T00:00:00Z (0) 0x899-0x89c.7 (4)
 0x0890|                                       00 00 03|             ...|          time_scale: 1000 0x89d-0x8a0.7 (4)
@@ -140,13 +140,13 @@ $ fq -d mp4 verbose /hevc.mp4
 0x09a0|                                       00      |             .  |                  version: 0 0x9ad-0x9ad.7 (1)
 0x09a0|                                          00 00|              ..|                  flags: 0 0x9ae-0x9b0.7 (3)
 0x09b0|00                                             |.               |
-0x09b0|   00 00 00 00                                 | ....           |                  component_type: "\x00\x00\x00\x00" 0x9b1-0x9b4.7 (4)
+0x09b0|   00 00 00 00                                 | ....           |                  component_type: "" 0x9b1-0x9b4.7 (4)
 0x09b0|               76 69 64 65                     |     vide       |                  component_subtype: "vide" (Video Track) 0x9b5-0x9b8.7 (4)
-0x09b0|                           00 00 00 00         |         ....   |                  component_manufacturer: "\x00\x00\x00\x00" 0x9b9-0x9bc.7 (4)
+0x09b0|                           00 00 00 00         |         ....   |                  component_manufacturer: "" 0x9b9-0x9bc.7 (4)
 0x09b0|                                       00 00 00|             ...|                  component_flags: 0 0x9bd-0x9c0.7 (4)
 0x09c0|00                                             |.               |
 0x09c0|   00 00 00 00                                 | ....           |                  component_flags_mask: 0 0x9c1-0x9c4.7 (4)
-0x09c0|               56 69 64 65 6f 48 61 6e 64 6c 65|     VideoHandle|                  component_name: "VideoHandler\x00" 0x9c5-0x9d1.7 (13)
+0x09c0|               56 69 64 65 6f 48 61 6e 64 6c 65|     VideoHandle|                  component_name: "VideoHandler" 0x9c5-0x9d1.7 (13)
 0x09d0|72 00                                          |r.              |
       |                                               |                |                [2]: box {} 0x9d2-0x1438.7 (2663)
 0x09d0|      00 00 0a 67                              |  ...g          |                  size: 2663 0x9d2-0x9d5.7 (4)
@@ -378,13 +378,13 @@ $ fq -d mp4 verbose /hevc.mp4
 0x1450|   68 64 6c 72                                 | hdlr           |                  type: "hdlr" (Handler, declares the media (handler) type) 0x1451-0x1454.7 (4)
 0x1450|               00                              |     .          |                  version: 0 0x1455-0x1455.7 (1)
 0x1450|                  00 00 00                     |      ...       |                  flags: 0 0x1456-0x1458.7 (3)
-0x1450|                           00 00 00 00         |         ....   |                  component_type: "\x00\x00\x00\x00" 0x1459-0x145c.7 (4)
+0x1450|                           00 00 00 00         |         ....   |                  component_type: "" 0x1459-0x145c.7 (4)
 0x1450|                                       6d 64 69|             mdi|                  component_subtype: "mdir" (Metadata) 0x145d-0x1460.7 (4)
 0x1460|72                                             |r               |
 0x1460|   61 70 70 6c                                 | appl           |                  component_manufacturer: "appl" 0x1461-0x1464.7 (4)
 0x1460|               00 00 00 00                     |     ....       |                  component_flags: 0 0x1465-0x1468.7 (4)
 0x1460|                           00 00 00 00         |         ....   |                  component_flags_mask: 0 0x1469-0x146c.7 (4)
-0x1460|                                       00      |             .  |                  component_name: "\x00" 0x146d-0x146d.7 (1)
+0x1460|                                       00      |             .  |                  component_name: "" 0x146d-0x146d.7 (1)
       |                                               |                |                [1]: box {} 0x146e-0x149a.7 (45)
 0x1460|                                          00 00|              ..|                  size: 45 0x146e-0x1471.7 (4)
 0x1470|00 2d                                          |.-              |
