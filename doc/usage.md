@@ -44,12 +44,13 @@ Use Ctrl-C to exits REPL, Ctrl-C to interrupt current evaluation.
 <pre sh>
 $ fq -h 
 fq - jq for files
-Tool, language and decoders for exploring binary data.
+Tool, language and format decoders for exploring binary data.
 For more information see https://github.com/wader/fq
 
 Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 --arg NAME VALUE         Set variable $NAME to string VALUE
 --argjson NAME JSON      Set variable $NAME to JSON
+--color-output,-C        Force color output
 --compact-output,-c      Compact output
 --decode,-d NAME         Decode format (probe)
 --decode-file NAME PATH  Set variable $NAME to decode of file
@@ -58,6 +59,7 @@ Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 --help,-h                Show help
 --include-path,-L PATH   Include search path
 --join-output,-j         No newline between outputs
+--monochrome-output,-M   Force monochrome output
 --null-input,-n          Null input (use input/0 and inputs/0 to read input)
 --null-output,-0         Null byte between outputs
 --option,-o KEY=VALUE    Set option, eg: color=true

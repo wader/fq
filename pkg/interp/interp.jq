@@ -44,7 +44,7 @@ def _build_default_options:
       arraytruncate:  50,
       bitsformat:     "snippet",
       bytecolors:     "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
-      color:          ($stdout.is_terminal and env.CLICOLOR != null),
+      color:          ($stdout.is_terminal and (env.NO_COLOR | . == null or . == "")),
       colors: (
         {
           null: "brightblack",
@@ -65,7 +65,7 @@ def _build_default_options:
       compact:         false,
       decode_file:      [],
       decode_format:   "probe",
-      decode_progress: (env.NODECODEPROGRESS == null),
+      decode_progress: (env.NO_DECODE_PROGRESS == null),
       depth:           0,
       # TODO: intdiv 2 * 2 to get even number, nice or maybe not needed?
       displaybytes:    (if $stdout.is_terminal then [intdiv(intdiv($stdout.width; 8); 2) * 2, 4] | max else 16 end),
@@ -554,6 +554,12 @@ def _main:
         description: "Compact output",
         bool: true
       },
+      "color_output": {
+        short: "-C",
+        long: "--color-output",
+        description: "Force color output",
+        bool: true
+      },
       "decode_format": {
         short: "-d",
         long: "--decode",
@@ -608,6 +614,12 @@ def _main:
         description: "Null input (use input/0 and inputs/0 to read input)",
         bool: true
       },
+      "monochrome_output": {
+        short: "-M",
+        long: "--monochrome-output",
+        description: "Force monochrome output",
+        bool: true
+      },
       "option": {
         short: "-o",
         long: "--option",
@@ -659,7 +671,7 @@ def _main:
     };
   def _banner:
     ( "fq - jq for files"
-    , "Tool, language and decoders for exploring binary data."
+    , "Tool, language and format decoders for exploring binary data."
     , "For more information see https://github.com/wader/fq"
     );
   def _usage($arg0; $version):
@@ -675,8 +687,8 @@ def _main:
   | _default_options($default_opts) as $_
   # combine --args and -o key=value args
   | ( $default_opts
-    + ($parsed_args.option | _to_options)
     + $parsed_args
+    + ($parsed_args.option | _to_options)
     ) as $args_opts
   | _options_stack(
       [ $args_opts
@@ -696,6 +708,11 @@ def _main:
                   )
                 end
               )
+            ),
+            color: (
+              if $args_opts.monochrome_output == true then false
+              elif $args_opts.color_output == true then true
+              end
             ),
             decode_file: (
               ( $args_opts.decode_file

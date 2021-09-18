@@ -80,7 +80,8 @@ func (tcr *testCaseRun) Interrupt() chan struct{} { return nil }
 
 func (tcr *testCaseRun) Environ() []string {
 	return []string{
-		"NODECODEPROGRESS=1",
+		"NO_COLOR=1",
+		"NO_DECODE_PROGRESS=1",
 	}
 }
 
