@@ -25,6 +25,9 @@ func TestSplit(t *testing.T) {
 		{`a'b'"c"`, []string{`abc`}},
 		{`a"b"c`, []string{`abc`}},
 		{`a'b'c`, []string{`abc`}},
+		{`AB=dc abc`, []string{`AB=dc`, `abc`}},
+		{`AB="d c" abc`, []string{`AB=d c`, `abc`}},
+		{`AA="a a" BB=b abc`, []string{`AA=a a`, `BB=b`, `abc`}},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.input, func(t *testing.T) {

@@ -1,4 +1,7 @@
-# TODO: $ NO_COLOR= fq -n 123
+$ _STDOUT_ISTERMINAL=0 NO_COLOR= fq -n 123
+123
+$ _STDOUT_ISTERMINAL=1 NO_COLOR= fq -n 123
+[36m123[m
 $ fq -Cn 123
 [36m123[m
 $ fq --color-output -n 123
@@ -6,4 +9,6 @@ $ fq --color-output -n 123
 $ fq -Mn 123
 123
 $ fq --monochrome-output -n 123
+123
+$ NO_COLOR=1 fq -n 123
 123

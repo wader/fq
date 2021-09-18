@@ -34,22 +34,29 @@ type testCaseReadline struct {
 type testCaseRunInput struct {
 	interp.FileReader
 	isTerminal bool
+	width      int
+	height     int
 }
 
-func (testCaseRunInput) Size() (int, int)   { return 130, 25 }
+func (i testCaseRunInput) Size() (int, int) { return i.width, i.height }
 func (i testCaseRunInput) IsTerminal() bool { return i.isTerminal }
 
 type testCaseRunOutput struct {
 	io.Writer
+	isTerminal bool
+	width      int
+	height     int
 }
 
-func (testCaseRunOutput) Size() (int, int) { return 130, 25 }
-func (testCaseRunOutput) IsTerminal() bool { return true }
+func (o testCaseRunOutput) Size() (int, int) { return o.width, o.height }
+func (o testCaseRunOutput) IsTerminal() bool { return o.isTerminal }
 
 type testCaseRun struct {
 	lineNr           int
 	testCase         *testCase
-	args             string
+	command          string
+	env              []string
+	args             []string
 	stdin            string
 	expectedStdout   string
 	expectedStderr   string
@@ -63,29 +70,73 @@ type testCaseRun struct {
 
 func (tcr *testCaseRun) Line() int { return tcr.lineNr }
 
+func (tcr *testCaseRun) getEnv(name string) string {
+	for _, kv := range tcr.Environ() {
+		if strings.HasPrefix(kv, name+"=") {
+			return kv[len(name)+1:]
+		}
+	}
+	return ""
+}
+
+func (tcr *testCaseRun) getEnvInt(name string) int {
+	n, _ := strconv.Atoi(tcr.getEnv(name))
+	return n
+}
+
 func (tcr *testCaseRun) Stdin() interp.Input {
 	return testCaseRunInput{
 		FileReader: interp.FileReader{
 			R: bytes.NewBufferString(tcr.stdin),
 		},
 		isTerminal: tcr.stdin == "",
+		width:      tcr.getEnvInt("_STDIN_WIDTH"),
+		height:     tcr.getEnvInt("_STDIN_HEIGHT"),
 	}
 }
 
-func (tcr *testCaseRun) Stdout() interp.Output { return testCaseRunOutput{tcr.actualStdoutBuf} }
+func (tcr *testCaseRun) Stdout() interp.Output {
+	return testCaseRunOutput{
+		Writer:     tcr.actualStdoutBuf,
+		isTerminal: tcr.getEnvInt("_STDOUT_ISTERMINAL") != 0,
+		width:      tcr.getEnvInt("_STDOUT_WIDTH"),
+		height:     tcr.getEnvInt("_STDOUT_HEIGHT"),
+	}
+}
 
-func (tcr *testCaseRun) Stderr() interp.Output { return testCaseRunOutput{tcr.actualStderrBuf} }
+func (tcr *testCaseRun) Stderr() interp.Output {
+	return testCaseRunOutput{Writer: tcr.actualStderrBuf}
+}
 
 func (tcr *testCaseRun) Interrupt() chan struct{} { return nil }
 
 func (tcr *testCaseRun) Environ() []string {
-	return []string{
-		"NO_COLOR=1",
-		"NO_DECODE_PROGRESS=1",
+	envm := make(map[string]string)
+	for _, kv := range append(
+		[]string{
+			"_STDIN_WIDTH=135",
+			"_STDIN_HEIGHT=25",
+			"_STDOUT_WIDTH=135",
+			"_STDOUT_HEIGHT=25",
+			"_STDOUT_ISTERMINAL=1",
+			"NO_COLOR=1",
+			"NO_DECODE_PROGRESS=1",
+		},
+		tcr.env...,
+	) {
+		if i := strings.IndexByte(kv, '='); i > 0 {
+			envm[kv[:i]] = kv[i+1:]
+		}
 	}
+	var env []string
+	for k, v := range envm {
+		env = append(env, k+"="+v)
+	}
+
+	return env
 }
 
-func (tcr *testCaseRun) Args() []string { return shquote.Split(tcr.args) }
+func (tcr *testCaseRun) Args() []string { return tcr.args }
 
 func (tcr *testCaseRun) ConfigDir() (string, error) { return "/config", nil }
 
@@ -184,7 +235,7 @@ func (tc *testCase) ToActual() string {
 		case *testCaseComment:
 			fmt.Fprintf(sb, "#%s\n", p.comment)
 		case *testCaseRun:
-			fmt.Fprintf(sb, "$%s\n", p.args)
+			fmt.Fprintf(sb, "$%s\n", p.command)
 			s := p.actualStdoutBuf.String()
 			if s != "" {
 				fmt.Fprint(sb, s)
@@ -334,10 +385,25 @@ func parseTestCases(s string) *testCase {
 			// escaped newline
 			v = strings.TrimSuffix(v, "\\\n")
 
+			var env []string
+			var args []string
+			command := strings.TrimPrefix(n, "$")
+			commandParts := shquote.Split(command)
+			for i, p := range commandParts {
+				if strings.Contains(p, "=") {
+					env = append(env, p)
+					continue
+				}
+				args = commandParts[i:]
+				break
+			}
+
 			currentTestRun = &testCaseRun{
 				lineNr:          section.LineNr,
 				testCase:        te,
-				args:            strings.TrimPrefix(n, "$"),
+				command:         command,
+				env:             env,
+				args:            args,
 				expectedStdout:  v,
 				actualStdoutBuf: &bytes.Buffer{},
 				actualStderrBuf: &bytes.Buffer{},
@@ -426,7 +492,7 @@ func TestPath(t *testing.T, registry *registry.Registry) {
 					continue
 				}
 
-				t.Run(strconv.Itoa(tcr.lineNr)+":"+tcr.args, func(t *testing.T) {
+				t.Run(strconv.Itoa(tcr.lineNr)+":"+tcr.command, func(t *testing.T) {
 					testDecodedTestCaseRun(t, registry, tcr)
 					tc.wasTested = true
 				})
