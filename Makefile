@@ -1,7 +1,7 @@
 all: test
 
 .PHONY: fq
-fq: VERSION=$(shell git describe --all --long --dirty || echo nogit)
+fq: VERSION=$(shell git describe --all --long --dirty 2>/dev/null || echo nogit)
 fq:
 	go build -ldflags "-X main.version=${VERSION}" -trimpath -o fq .
 
