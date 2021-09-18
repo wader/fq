@@ -35,18 +35,7 @@ testcli:
 
 .PHONY: doc
 doc: doc/file.mp3 doc/file.mp4
-	$(eval REPODIR=$(shell pwd))
-	$(eval TEMPDIR=$(shell mktemp -d))
-	@cp -a doc/* "${TEMPDIR}"
-	@go build -o "${TEMPDIR}/fq" main.go
-	@for f in *.md doc/*.md ; do \
-		cd "${TEMPDIR}" ; \
-		echo $$f ; \
-		mkdir -p $$(dirname "${TEMPDIR}/$$f") ; \
-		cat "${REPODIR}/$$f" | PATH="${TEMPDIR}:${PATH}" go run "${REPODIR}/doc/mdsh.go" > "${TEMPDIR}/$$f" ; \
-		mv "${TEMPDIR}/$$f" "${REPODIR}/$$f" ; \
-	done
-	@rm -rf "${TEMPDIR}"
+	@doc/mdsh.sh *.md doc/*.md
 
 doc/file.mp3: Makefile
 	ffmpeg -y -f lavfi -i sine -f lavfi -i testsrc -map 0:0 -map 1:0 -t 20ms "$@"
