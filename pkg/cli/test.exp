@@ -1,6 +1,7 @@
 #!/usr/bin/env expect
 # TODO: move this script somehwere else
 # TODO: run without NODECODEPROGRESS
+# TODO: test interrupt?
 
 log_user 1
 set timeout 1

@@ -8,7 +8,7 @@ fq:
 .PHONY: test
 # figure out all go pakges with test files
 test: PKGS=$(shell find . -name "*_test.go" | xargs -n 1 dirname | sort | uniq)
-test: testjq testfqbin
+test: testjq testcli
 	go test ${VERBOSE} ${COVER} ${PKGS}
 
 testwrite: export WRITE_ACTUAL=1
@@ -29,9 +29,9 @@ testjq:
 		go run main.go -L "$$(dirname $$f)" -f "$$f" -n -r ; \
 	done
 
-.PHONY: testfqbin
-testfqbin:
-	dev/fqbin-test.sh
+.PHONY: testcli
+testcli:
+	@pkg/cli/test.sh pkg/cli/test.exp
 
 .PHONY: doc
 doc: doc/file.mp3 doc/file.mp4

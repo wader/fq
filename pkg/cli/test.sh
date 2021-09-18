@@ -1,17 +1,17 @@
 #!/bin/sh
+set -eu
 
 if which expect >/dev/null 2>&1; then
     TEMPDIR=$(mktemp -d)
     go build -o "${TEMPDIR}/fq" main.go
-    PATH="${TEMPDIR}:${PATH}" expect dev/fqbin-test.exp >"${TEMPDIR}/fq.log"
-    EXIT="$?"
-    if [ $EXIT != "0" ]; then
+    PATH="${TEMPDIR}:${PATH}" expect "$1" >"${TEMPDIR}/fq.log" && FAIL=0 || FAIL=1
+    if [ $FAIL = "1" ]; then
         cat "${TEMPDIR}/fq.log"
     fi
     rm -rf "${TEMPDIR}"
-    if [ $EXIT != "0" ]; then
+    if [ $FAIL = "1" ]; then
         exit 1
     fi
 else
-    echo "fq-test.sh: skip as expect is not installed"
+    echo "skip as expect is not installed"
 fi
