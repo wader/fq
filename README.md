@@ -14,41 +14,42 @@ $ fq . file.mp3 
 *    |until 0xd19.7 (end) (599)                      |                |
      |                                               |                |  footers: [0]
  
-<b># Show ID3v2 APIC frame</b> 
-$ fq '.headers[].frames[] | select(.id == "APIC")' file.mp3 
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.headers[0].frames[1]: {}
-0x020|         41 50 49 43                           |   APIC         |  id: "APIC" (Attached picture)
-0x020|                     00 00 15 0c               |       ....     |  size: 2700
-0x020|                                 00 00         |           ..   |  flags: {}
-0x020|                                       03      |             .  |  text_encoding: UTF-8 (3)
-0x020|                                          69 6d|              im|  mime_type: "image/png"
-0x030|61 67 65 2f 70 6e 67 00                        |age/png.        |
-0x030|                        00                     |        .       |  picture_type: 0
-0x030|                           00                  |         .      |  description: ""
-0x030|                              89 50 4e 47 0d 0a|          .PNG..|  picture: {} (png)
-0x040|1a 0a 00 00 00 0d 49 48 44 52 00 00 01 40 00 00|......IHDR...@..|
-*    |until 0xab8.7 (2687)                           |                |
+<b># Show ID3v2 tag in mp3 file</b> 
+$ fq '.headers[0]' file.mp3 
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.headers[0]: {} (id3v2)
+0x000|49 44 33                                       |ID3             |  magic: "ID3" (Correct)
+0x000|         04                                    |   .            |  version: 4
+0x000|            00                                 |    .           |  revision: 0
+0x000|               00                              |     .          |  flags: {}
+0x000|                  00 00 15 39                  |      ...9      |  size: 2745
+0x000|                              54 53 53 45 00 00|          TSSE..|  frames: [2]
+0x010|00 0f 00 00 03 4c 61 76 66 35 38 2e 37 36 2e 31|.....Lavf58.76.1|
+*    |until 0xab8.7 (2735)                           |                |
+0xab0|                           00 00 00 00 00 00 00|         .......|  padding: Correct (none) (zero padding)
+0xac0|00 00 00                                       |...             |
  
-<b># Resolution of embedded PNG file</b> 
-$ fq '.headers[].frames[] | select(.id == "APIC").picture.chunks[] | select(.type == "IHDR") | {width, height}' file.mp3 
+<b># Resolution of ID3v2 cover art</b> 
+$ fq '.headers[0].frames[] | select(.id == "APIC").picture.chunks[] | select(.type == "IHDR") | {width, height}' file.mp3 
 {
   "height": 240,
   "width": 320
 }
  
-<b># Extract PNG file</b> 
+<b># Extract image file</b> 
 $ fq '.headers[].frames[] | select(.id == "APIC")?.picture | tobits' file.mp3 > file.png 
 $ file file.png 
 file.png: PNG image data, 320 x 240, 8-bit/color RGB, non-interlaced
  
-<b># Codecs in a mp4 file</b> 
-$ fq '[.. | select(.type == "stsd")?.boxes[].type]' file.mp4 
-[
-  "avc1",
-  "mp4a"
-]
 </pre>
 </sub>
+
+## Goals
+
+- Make structured binary data accessible using the jq language.
+- Nested format decoding and bit-oriented decoding.
+- Quick cli tool that tries to mimic jq as much as possible.
+
+**NOTE** fq is early in development and many things are missing, broken or do not make sense. This also means there is much opportunity to help out!
 
 ## Install
 

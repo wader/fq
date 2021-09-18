@@ -1,3 +1,42 @@
+### Basic usage
+
+fq tries to behave the same as jq as much as possible, so you can do:
+```sh
+fq . test.mp3
+fq < test.mp3
+fq . < test.mp3
+fq . *.png *.jpg
+```
+
+### Interactive REPL
+
+fq has an interactive REPL with auto completion and nested REPL support:
+
+```sh
+# start REPL with null input
+fq -i
+# same as
+fq -ni
+# start REPL with one file as input
+fq -i . test.mp3
+```
+
+In the REPL you will see a prompt indicating current input and you can type jq expression to evaluate.
+
+```sh
+# basic arithmetics
+mp3> 1+1
+2
+# "." is the identity function, returns current input, the mp3 file.
+mp3> .
+# access the first frame in the mp3 file
+mp3> .frames[0]
+# start a new REPl with first frame as input
+mp3> .frames[0] | repl
+```
+
+Use Ctrl-C exits REPL. Ctrl-C interupts current evaluation.
+
 ### Arguments
 
 <pre sh>
@@ -32,11 +71,6 @@ Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 ### Running
 
 - TODO: stdin/stdout
-
-### Interactive REPL
-
-- TODO: tab completion, ctrl-d, ctrl-d, help
-- TODO: nested, nested with generator
 
 ### Script
 
