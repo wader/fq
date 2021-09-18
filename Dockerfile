@@ -1,5 +1,11 @@
 # bump: golang /FROM golang:([\d.]+)/ docker:golang|^1
-FROM golang:1.17.1 AS base
+FROM golang:1.17.1-bullseye AS base
+
+# expect is used to test cli
+RUN \
+    apt-get update -q && \
+    apt-get install --no-install-recommends -qy \
+    expect
 
 # docker build --target dev -t fq-dev - < Dockerfile && docker run --rm -ti -v "$PWD:/$PWD" -w "$PWD" fq-dev
 FROM base AS dev
@@ -18,6 +24,7 @@ RUN go mod download
 COPY Makefile main.go ./
 COPY pkg pkg
 COPY internal internal
+COPY format format
 RUN make test fq
 RUN cp fq /fq
 
