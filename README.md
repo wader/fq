@@ -1,6 +1,6 @@
 # fq
 
-Tool, language and decoders for exploring binary data.
+Tool, language and format decoders for exploring binary data.
 
 <sub>
 <pre sh>
@@ -45,11 +45,13 @@ file.png: PNG image data, 320 x 240, 8-bit/color RGB, non-interlaced
 
 ## Goals
 
-- Make structured binary data accessible using the jq language.
-- Nested format decoding and bit-oriented decoding.
-- Quick cli tool that tries to mimic jq as much as possible.
+- Make structured binary data accessible.
+- Nested formats and bit-oriented decoding.
+- Quick CLI tool that mimics jq as much as possible.
+- Do bits and bytes transformation and conversions.
+- Programmer's calculator.
 
-**NOTE** fq is early in development and many things are missing, broken or do not make sense. This also means there is much opportunity to help out!
+**NOTE:** fq is early in development and many things are missing, broken or do not make sense. That also means there is a great opportunity to help out.
 
 ## Install
 

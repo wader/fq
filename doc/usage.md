@@ -1,29 +1,31 @@
 ### Basic usage
 
-fq tries to behave the same as jq as much as possible, so you can do:
-```sh
-fq . test.mp3
-fq < test.mp3
-fq . < test.mp3
+fq tries to behave the same way as jq as much as possible, so you can do:
+```
+fq . file.mp3
+fq < file.mp3
+fq . < file.mp3
 fq . *.png *.jpg
+fq '.frames[0]' file.mp3
 ```
 
 ### Interactive REPL
 
-fq has an interactive REPL with auto completion and nested REPL support:
+fq has an interactive [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop)
+with auto completion and nested REPL support:
 
-```sh
+```
 # start REPL with null input
 fq -i
 # same as
 fq -ni
 # start REPL with one file as input
-fq -i . test.mp3
+fq -i . file.mp3
 ```
 
 In the REPL you will see a prompt indicating current input and you can type jq expression to evaluate.
 
-```sh
+```
 # basic arithmetics
 mp3> 1+1
 2
@@ -35,7 +37,7 @@ mp3> .frames[0]
 mp3> .frames[0] | repl
 ```
 
-Use Ctrl-C exits REPL. Ctrl-C interupts current evaluation.
+Use Ctrl-C to exits REPL, Ctrl-C to interrupt current evaluation.
 
 ### Arguments
 
@@ -164,7 +166,7 @@ To add own functions you can use `init.fq` that will be read from
 - `$HOME/.config/fq/init.jq` on Linux, BSD etc
 - `%AppData%\fq\init.jq` on Windows (TODO: not tested)
 
-## Decoders
+## Formats
 
 [./formats_table.jq]: sh-start
 
