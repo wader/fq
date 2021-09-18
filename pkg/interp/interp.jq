@@ -330,7 +330,7 @@ def _repl($opts): #:: a|(Opts) => @
   def _read_expr:
     # both _prompt and _complete want arrays
     ( . as $c
-    | readline(_prompt; "_complete")
+    | _readline(_prompt; "_complete")
     | if trim == "" then
         $c | _read_expr
       end
@@ -345,7 +345,7 @@ def _repl($opts): #:: a|(Opts) => @
           # TODO: nicer way to set filename for error message
           catch (. | .filename = "repl")
         | if _query_pipe_last | _query_is_func("repl") then
-            ( _query_slurp_wrap(_query_func_rename("_repl_iter"))
+            ( _query_slurp_wrap(_query_func_rename("_repl_slurp"))
             | _query_tostring as $wrap_expr
             | $c
             | _repl_eval($wrap_expr)
@@ -361,7 +361,7 @@ def _repl($opts): #:: a|(Opts) => @
         if . == "interrupt" then empty
         elif . == "eof" then error("break")
         elif _eval_is_compile_error then _repl_on_error
-        else error(.)
+        else error
         end
     );
   ( _options_stack(. + [$opts]) as $_
@@ -371,13 +371,13 @@ def _repl($opts): #:: a|(Opts) => @
     )
   );
 
-def _repl_iter($opts): _repl($opts);
-def _repl_iter: _repl({});
+def _repl_slurp($opts): _repl($opts);
+def _repl_slurp: _repl({});
 
-# just gives error, call appearing last will be renamed to _repl_iter
+# just gives error, call appearing last will be renamed to _repl_slurp
 def repl($_):
   if options.repl then error("repl must be last")
-  else error("repl can only be be used from repl")
+  else error("repl can only be used from interactive repl")
   end;
 def repl: repl(null);
 

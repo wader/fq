@@ -34,7 +34,7 @@ import (
 // TODO: make it nicer somehow? generate generators? remove from struct?
 func (i *Interp) makeFunctions() []Function {
 	fs := []Function{
-		{[]string{"readline"}, 0, 2, i.readline, nil},
+		{[]string{"_readline"}, 0, 2, i.readline, nil},
 		{[]string{"eval"}, 1, 2, nil, i.eval},
 		{[]string{"stdin"}, 0, 0, nil, i.makeStdioFn(i.os.Stdin())},
 		{[]string{"stdout"}, 0, 0, nil, i.makeStdioFn(i.os.Stdout())},
