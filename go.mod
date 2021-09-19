@@ -7,9 +7,9 @@ require (
 	// bump: go-difflib command go get -d github.com/pmezard/go-difflib@v$LATEST && go mod tidy
 	github.com/pmezard/go-difflib v1.0.0
 
-	// fork of github.com/itchyny/gojq
-	github.com/wader/gojq v0.12.1-0.20210915224505-36925d096b12
-	// fork of github.com/chzyer/readline
+	// fork of github.com/itchyny/gojq, see github.com/wader/gojq fq branch
+	github.com/wader/gojq v0.0.0-20210919094030-2b1ed6ff82b3
+	// fork of github.com/chzyer/readline, see github.com/wader/readkine fq branch
 	github.com/wader/readline v0.0.0-20210817095433-c868eb04b8b2
 
 	// bump: golang/text /golang\.org\/x\/text v(.*)/ git://github.com/golang/text|^0
