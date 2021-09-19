@@ -7,6 +7,7 @@
 - Unknown field filling is currently only done on root, should be done per "framed" decode.
 - Sub buffers range is broken, could have a different size in parent (ex: compressed).
 - Symbolic values should be more intuitive, should not need to use ._symbol.
+- `echo '{} {} {}' | jq` vs `echo '{} {} {}' | fq` works differently. fq currently decodes one root format and might add unknown fields etc. Maybe should work differently for `json` format?
 
 ### TODO and ideas
 
