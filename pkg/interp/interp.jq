@@ -536,7 +536,7 @@ def _main:
           )
         ) | join("")
       );
-  def _opts($version):
+  def _opts:
     {
       "arg": {
         long: "--arg",
@@ -665,7 +665,7 @@ def _main:
       "show_version": {
         short: "-v",
         long: "--version",
-        description: "Show version (\($version))",
+        description: "Show version",
         bool: true
       },
     };
@@ -674,13 +674,13 @@ def _main:
     , "Tool, language and format decoders for exploring binary data."
     , "For more information see https://github.com/wader/fq"
     );
-  def _usage($arg0; $version):
+  def _usage($arg0):
     "Usage: \($arg0) [OPTIONS] [--] [EXPR] [FILE...]";
   ( . as {$version, $args, args: [$arg0]}
   | (null | [stdin, stdout]) as [$stdin, $stdout]
   # make sure we don't unintentionally use . to make things clearer
   | null
-  | ( try _args_parse($args[1:]; _opts($version))
+  | ( try _args_parse($args[1:]; _opts)
       catch halt_error(_exit_code_args_error)
     ) as {parsed: $parsed_args, $rest}
   | _build_default_options as $default_opts
@@ -792,8 +792,8 @@ def _main:
   | if $opts.show_help then
       ( _banner
       , ""
-      , _usage($arg0; $version)
-      , args_help_text(_opts($version))
+      , _usage($arg0)
+      , args_help_text(_opts)
       ) | println
     elif $opts.show_version then
       $version | println
@@ -807,7 +807,7 @@ def _main:
         ($opts.expr_file | not) and
         $stdin.is_terminal and $stdout.is_terminal
       ) then
-      ( (( _usage($arg0; $version), "\n") | stderr)
+      ( (( _usage($arg0), "\n") | stderr)
       , null | halt_error(_exit_code_args_error)
       )
     else

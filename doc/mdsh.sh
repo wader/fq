@@ -1,12 +1,15 @@
 #!/bin/sh
 set -eu
 
+FQ="$1"
+shift
+
 REPODIR=$(pwd)
 TEMPDIR=$(mktemp -d)
 cp -a doc/* "${TEMPDIR}"
-go build -o "${TEMPDIR}/fq" main.go
+cp "$FQ" "${TEMPDIR}/fq"
+cd "${TEMPDIR}"
 for f in "$@"; do
-    cd "${TEMPDIR}"
     echo "Generate $f"
     mkdir -p "$(dirname "${TEMPDIR}/$f")"
     PATH="${TEMPDIR}:${PATH}" go run "${REPODIR}/doc/mdsh.go" >"${TEMPDIR}/$f" <"${REPODIR}/$f"

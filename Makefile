@@ -23,23 +23,20 @@ cover: test
 	cat cover.out.html | grep '<option value="file' | sed -E 's/.*>(.*) \((.*)%\)<.*/\2 \1/' | sort -rn
 
 .PHONY: testjq
-testjq:
-	@for f in $$(find . -name "*_test.jq"); do \
-		echo $$f ; \
-		go run main.go -L "$$(dirname $$f)" -f "$$f" -n -r ; \
-	done
+testjq: fq
+	@dev/testjq.sh ./fq pkg/interp/*_test.jq
 
 .PHONY: testcli
-testcli:
-	@pkg/cli/test.sh pkg/cli/test.exp
+testcli: fq
+	@pkg/cli/test.sh ./fq pkg/cli/test.exp
 
 .PHONY: doc
-doc: doc/file.mp3 doc/file.mp4 doc/formats.svg
-	@doc/mdsh.sh *.md doc/*.md
+doc: fq doc/file.mp3 doc/file.mp4 doc/formats.svg
+	@doc/mdsh.sh ./fq *.md doc/*.md
 
 .PHONY: doc/formats.svg
-doc/formats.svg:
-	doc/formats_diagram.jq | dot -Tsvg -o doc/formats.svg
+doc/formats.svg: fq
+	./fq -rnf doc/formats_diagram.jq | dot -Tsvg -o doc/formats.svg
 
 doc/file.mp3: Makefile
 	ffmpeg -y -f lavfi -i sine -f lavfi -i testsrc -map 0:0 -map 1:0 -t 20ms "$@"
