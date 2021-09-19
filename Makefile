@@ -34,8 +34,12 @@ testcli:
 	@pkg/cli/test.sh pkg/cli/test.exp
 
 .PHONY: doc
-doc: doc/file.mp3 doc/file.mp4
+doc: doc/file.mp3 doc/file.mp4 doc/formats.svg
 	@doc/mdsh.sh *.md doc/*.md
+
+.PHONY: doc/formats.svg
+doc/formats.svg:
+	doc/formats_diagram.jq | dot -Tsvg -o doc/formats.svg
 
 doc/file.mp3: Makefile
 	ffmpeg -y -f lavfi -i sine -f lavfi -i testsrc -map 0:0 -map 1:0 -t 20ms "$@"
@@ -55,10 +59,6 @@ lint:
 .PHONY: depgraph.svg
 depgraph.svg:
 	go run github.com/kisielk/godepgraph@latest github.com/wader/fq | dot -Tsvg -o godepgraph.svg
-
-.PHONY: formats.svg
-formats.svg:
-	dev/formats_dot.jq | dot -Tsvg -o formats.svg
 
 # make memprof ARGS=". test.mp3"
 # make cpuprof ARGS=". test.mp3"

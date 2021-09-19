@@ -48,7 +48,7 @@ file.png: PNG image data, 320 x 240, 8-bit/color RGB, non-interlaced
 - Make structured binary data accessible.
 - Nested formats and bit-oriented decoding.
 - Quick CLI tool that mimics jq as much as possible.
-- Do bits and bytes transformation and conversions.
+- Do bit and byte transformations and conversions.
 - Programmer's calculator.
 
 **NOTE:** fq is early in development and many things are missing, broken or do not make sense. That also means there is a great opportunity to help out.
@@ -67,12 +67,24 @@ brew install wader/tap/fq
 
 ### Build from source
 
-Make sure you have go 1.17 or later and then do:
+Make sure you have go 1.17 or later installed.
+
+To install directly from git repository do:
 ```sh
-# build and install latest master
+# build and install latest release
 go install github.com/wader/fq@latest
+# or build and install latest master
+go install github.com/wader/fq@master
+# copy binary to $PATH if needed
+cp "$(go env GOPATH)/bin/fq" /usr/local/bin
 ```
-and the binary should end up at `$GOPATH/bin/fq`.
+
+To build and run tests from source directory:
+```sh
+make test fq
+# copy binary to $PATH if needed
+cp fq /usr/local/bin
+```
 
 ## Usage
 
@@ -94,8 +106,7 @@ aac_frame, adts, adts_frame, apev2, av1_ccr, av1_frame, av1_obu, avc_annexb, avc
 
 [#]: sh-end
 
-
-For more format details see [usage.md](doc/usage.md).
+See [formats](doc/formats.md) for more details.
 
 ## TODO and ideas
 
