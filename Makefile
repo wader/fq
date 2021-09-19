@@ -3,7 +3,7 @@ all: test
 .PHONY: fq
 fq: VERSION=$(shell git describe --all --long --dirty 2>/dev/null || echo nogit)
 fq:
-	CGO_ENABLED=0 go build -ldflags "-X main.version=${VERSION}" -trimpath -o fq .
+	CGO_ENABLED=0 go build -ldflags "-s -w -X main.version=${VERSION}" -trimpath -o fq .
 
 .PHONY: test
 # figure out all go pakges with test files
