@@ -15,6 +15,7 @@ if which expect >/dev/null 2>&1; then
     if [ $FAIL = "1" ]; then
         exit 1
     fi
+    echo "$0"
 else
-    echo "skip as expect is not installed"
+    echo "$0: skip as expect is not installed"
 fi
