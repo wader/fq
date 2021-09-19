@@ -6,6 +6,7 @@ package png
 // TODO: color types
 
 import (
+	"compress/zlib"
 	"hash/crc32"
 
 	"github.com/wader/fq/format"
@@ -116,7 +117,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 				switch compressionMethod {
 				case compressionDeflate:
 					dd := d.FieldStructFn("data", func(d *decode.D) {
-						d.FieldFormatZlibLen("uncompressed", int64(dataLen), decode.FormatFn(func(d *decode.D, in interface{}) interface{} {
+						d.FieldFormatReaderLen("uncompressed", int64(dataLen), zlib.NewReader, decode.FormatFn(func(d *decode.D, in interface{}) interface{} {
 							d.FieldUTF8("text", int(d.BitsLeft()/8))
 							return nil
 						}))
@@ -137,7 +138,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 				switch compressionMethod {
 				case compressionDeflate:
 					dd := d.FieldStructFn("data", func(d *decode.D) {
-						d.FieldFormatZlibLen("uncompressed", int64(dataLen), iccProfileFormat)
+						d.FieldFormatReaderLen("uncompressed", int64(dataLen), zlib.NewReader, iccProfileFormat)
 					})
 					dd.Value.Range = ranges.Range{Start: d.Pos() - int64(dataLen), Len: int64(dataLen)}
 				default:

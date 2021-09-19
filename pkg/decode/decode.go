@@ -4,10 +4,10 @@ package decode
 
 import (
 	"bytes"
-	"compress/zlib"
 	"context"
 	"encoding/hex"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"strings"
 
@@ -1034,12 +1034,12 @@ func (d *D) FieldBitBufLen(name string, nBits int64) *bitio.Buffer {
 }
 
 // TODO: range?
-func (d *D) FieldFormatZlibLen(name string, nBits int64, formats []*Format) (*Value, interface{}) {
+func (d *D) FieldFormatReaderLen(name string, nBits int64, fn func(r io.Reader) (io.ReadCloser, error), formats []*Format) (*Value, interface{}) {
 	bb, err := d.bitBuf.BitBufLen(nBits)
 	if err != nil {
 		panic(err)
 	}
-	zr, err := zlib.NewReader(bb)
+	zr, err := fn(bb)
 	if err != nil {
 		panic(err)
 	}
