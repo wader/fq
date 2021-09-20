@@ -421,9 +421,43 @@ def verbose: verbose({});
 def v($opts): verbose($opts);
 def v: verbose;
 
-def decode($name; $opts): _decode($name; $opts);
-def decode($name): _decode($name; {});
-def decode: _decode(options.decode_format; {});
+# null input means done, otherwise {approx_read_bytes: 123, total_size: 123}
+# TODO: decode provide even more detailed progress, post-process sort etc?
+def _decode_progress:
+  # _input_filenames is remaning files to read
+  ( (_input_filenames | length) as $inputs_len
+  | ( options.filenames | length) as $filenames_len
+  # TODO: ANSI clear line and return, make constants
+  | "\u001b[2K\r"
+  , if . != null then
+      ( if $filenames_len > 1 then
+          "\($filenames_len - $inputs_len)/\($filenames_len) \(_input_filename) "
+        else empty
+        end
+      , "\((.approx_read_bytes / .total_size * 100 | _numbertostring(1)))%"
+      )
+    else empty
+    end
+  | stderr
+  );
+
+def decode($name; $opts):
+  ( options as $opts
+  | (null | stdout) as $stdout
+  | _decode(
+      $name;
+      $opts + {
+        _progress: (
+          if $opts.decode_progress and $opts.repl and $stdout.is_terminal then
+            "_decode_progress"
+          else null
+          end
+        )
+      }
+    )
+  );
+def decode($name): decode($name; {});
+def decode: decode(options.decode_format; {});
 
 # next valid input
 def input:

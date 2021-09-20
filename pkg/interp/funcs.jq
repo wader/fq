@@ -14,6 +14,16 @@ def _is_ident: type == "string" and test("^[a-zA-Z_][a-zA-Z_0-9]*$");
 # escape " and \
 def _escape_ident: gsub("(?<g>[\\\\\"])"; "\\\(.g)");
 
+# format number with fixed number of decimals
+def _numbertostring($decimals):
+  ( . as $n
+  | [ (. % (. + 1)) # truncate to integer
+    , "."
+    , foreach range($decimals) as $_ (1; . * 10; ($n * .) % 10)
+    ]
+  | join("")
+  );
+
 # TODO: escape for safe key names
 # path ["a", 1, "b"] -> "a[1].b"
 def path_to_expr:

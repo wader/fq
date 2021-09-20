@@ -460,7 +460,7 @@ type bitBufFile struct {
 	bb       *bitio.Buffer
 	filename string
 
-	decodeDoneFn func()
+	progressFn progressreadseeker.ProgressFn
 }
 
 var _ ToBuffer = (*bitBufFile)(nil)
@@ -476,13 +476,9 @@ func (bbf *bitBufFile) ToBuffer() (*bitio.Buffer, error) {
 
 // def open: #:: string| => buffer
 // opens a file for reading from filesystem
+// TODO: when to close? when bb loses all refs? need to use finalizer somehow?
 func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 	var err error
-
-	opts, err := i.Options()
-	if err != nil {
-		return err
-	}
 
 	var path string
 	path, err = toString(c)
@@ -504,6 +500,7 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 	var fRS io.ReadSeeker
 	fFI, err := f.Stat()
 	if err != nil {
+		f.Close()
 		return err
 	}
 
@@ -516,72 +513,91 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 	}
 
 	if fRS == nil {
-		buf, err := ioutil.ReadAll(ctxreadseeker.New(i.evalContext.ctx, &ioextra.NopSeeker{Reader: f}))
+		buf, err := ioutil.ReadAll(ctxreadseeker.New(i.evalContext.ctx, &ioextra.ReadErrSeeker{Reader: f}))
 		if err != nil {
+			f.Close()
 			return err
 		}
 		fRS = bytes.NewReader(buf)
 		bEnd = int64(len(buf))
 	}
 
-	// TODO: make nicer
-	// we don't want to print any progress things after decode is done
-	var decodeDoneFn func()
-	if opts.DecodeProgress && opts.REPL && i.os.Stdout().IsTerminal() {
-		decodeDone := false
-		progressFn := func(r, l int64) {
-			if decodeDone {
-				return
-			}
-			fmt.Fprintf(i.os.Stderr(), "\r%.1f%%", (float64(r)/float64(l))*100)
-		}
-		decodeDoneFn = func() {
-			decodeDone = true
-			// cleanup when done         100.0%
-			fmt.Fprint(i.os.Stderr(), "\r      \r")
-		}
-		const progressPrecision = 1024
-		fRS = progressreadseeker.New(fRS, progressPrecision, bEnd, progressFn)
+	bbf := &bitBufFile{
+		JQValue:  gojqextra.String(fmt.Sprintf("<bitBufFile %s>", path)),
+		filename: path,
 	}
+
+	const progressPrecision = 1024
+	fRS = progressreadseeker.New(fRS, progressPrecision, bEnd,
+		func(approxReadBytes int64, totalSize int64) {
+			// progressFn is assign by decode etc
+			if bbf.progressFn != nil {
+				bbf.progressFn(approxReadBytes, totalSize)
+			}
+		},
+	)
 
 	const cacheReadAheadSize = 512 * 1024
 	aheadRs := aheadreadseeker.New(fRS, cacheReadAheadSize)
 
 	// bb -> aheadreadseeker -> progressreadseeker -> ctxreadseeker -> readerseeker
 
-	bb, err := bitio.NewBufferFromReadSeeker(aheadRs)
+	bbf.bb, err = bitio.NewBufferFromReadSeeker(aheadRs)
 	if err != nil {
 		return err
 	}
 
-	return &bitBufFile{
-		JQValue:      gojqextra.String(fmt.Sprintf("<bitBufFile %s>", path)),
-		bb:           bb,
-		filename:     path,
-		decodeDoneFn: decodeDoneFn,
-	}
+	return bbf
 }
 
 func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
 	filename := ""
 
+	opts := map[string]interface{}{}
+	if m, ok := a[1].(map[string]interface{}); ok {
+		opts = m
+	}
+
+	// TODO: structmap
+	var progress string
+	if progressV, ok := opts["_progress"]; ok {
+		progress, _ = progressV.(string)
+	}
+
 	// TODO: progress hack
-	// would be nice to move progress code into decode but it might be
+	// would be nice to move all progress code into decode but it might be
 	// tricky to keep track of absolute positions in the underlaying readers
 	// when it uses BitBuf slices, maybe only in Pos()?
 	if bbf, ok := c.(*bitBufFile); ok {
-		if bbf.decodeDoneFn != nil {
-			defer bbf.decodeDoneFn()
-		}
 		filename = bbf.filename
+
+		if progress != "" {
+			evalProgress := func(c interface{}) {
+				_, _ = i.EvalFuncValues(
+					i.evalContext.ctx,
+					CompletionMode,
+					c,
+					progress,
+					nil,
+					DiscardCtxWriter{Ctx: i.evalContext.ctx},
+				)
+			}
+			bbf.progressFn = func(approxReadBytes, totalSize int64) {
+				evalProgress(
+					map[string]interface{}{
+						"approx_read_bytes": approxReadBytes,
+						"total_size":        totalSize,
+					},
+				)
+			}
+			defer evalProgress(nil)
+		}
 	}
 
 	bb, err := toBuffer(c)
 	if err != nil {
 		return err
 	}
-
-	opts := map[string]interface{}{}
 
 	formatName, err := toString(a[0])
 	if err != nil {

@@ -73,7 +73,7 @@ Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 --rawfile NAME PATH      Set variable $NAME to string content of file
 --repl,-i                Interactive REPL
 --slurp,-s               Read (slurp) all inputs into an array
---version,-v             Show version (heads/master-0-g242525f-dirty)
+--version,-v             Show version
 </pre>
 
 ### Running
