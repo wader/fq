@@ -6,7 +6,7 @@ $ fq -d mp3_frame verbose /mp3-frame-stereo
 0x000|ff fb                                          |..              |    sync: Correct (0x7ff) 0x0-0x1.2 (1.3)
 0x000|   fb                                          | .              |    mpeg_version: MPEG Version 1 (1) 0x1.3-0x1.4 (0.2)
 0x000|   fb                                          | .              |    layer: Layer 3 (3) 0x1.5-0x1.6 (0.2)
-     |                                               |                |    samples_per_frame: 1152 0x1.7-NA (0)
+     |                                               |                |    sample_count: 1152 0x1.7-NA (0)
 0x000|   fb                                          | .              |    protection: Not protected (true) 0x1.7-0x1.7 (0.1)
 0x000|      90                                       |  .             |    bitrate: 128000 0x2-0x2.3 (0.4)
 0x000|      90                                       |  .             |    sample_rate: 44100 0x2.4-0x2.5 (0.2)

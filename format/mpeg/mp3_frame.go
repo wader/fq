@@ -147,15 +147,15 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			d.Invalid("Not layer 3")
 		}
 		// [mpeg layer][mpeg version]
-		var samplesPerFrameIndex = map[uint][4]uint{
+		var samplesFrameIndex = map[uint][4]uint{
 			0: [...]uint{0, 0, 0, 0},
 			1: [...]uint{0, 384, 384, 384},
 			2: [...]uint{0, 1152, 1152, 1152},
 			3: [...]uint{0, 1152, 576, 576},
 		}
 		// TODO: synthentic fields somehow?
-		d.FieldUFn("samples_per_frame", func() (uint64, decode.DisplayFormat, string) {
-			return uint64(samplesPerFrameIndex[uint(mpegLayer)][uint(mpegVersion)]), decode.NumberDecimal, ""
+		d.FieldUFn("sample_count", func() (uint64, decode.DisplayFormat, string) {
+			return uint64(samplesFrameIndex[uint(mpegLayer)][uint(mpegVersion)]), decode.NumberDecimal, ""
 		})
 		protection, _ := d.FieldBoolMapFn("protection", "Not protected", "Protected by CRC", d.Bool)
 		// note false mean has protection
