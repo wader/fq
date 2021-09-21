@@ -2,11 +2,8 @@ include "internal";
 include "funcs";
 include "args";
 include "query";
-
-# generated decode functions per format
-include "@format/decode";
-# include per format specific functions
-include "@format/all";
+# generated decode functions per format and format helpers
+include "formats";
 # optional user init
 include "@config/init?";
 
@@ -420,6 +417,9 @@ def verbose($opts): _display({verbose: true, arraytruncate: 0} + $opts);
 def verbose: verbose({});
 def v($opts): verbose($opts);
 def v: verbose;
+
+def formats:
+  _registry.formats;
 
 # null input means done, otherwise {approx_read_bytes: 123, total_size: 123}
 # TODO: decode provide even more detailed progress, post-process sort etc?

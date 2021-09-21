@@ -78,7 +78,7 @@ func init() {
 			{Names: []string{format.VP9_FRAME}, Formats: &vp9FrameFormat},
 			{Names: []string{format.VPX_CCR}, Formats: &vpxCCRFormat},
 		},
-		FS: mp4FS,
+		Files: mp4FS,
 	})
 }
 

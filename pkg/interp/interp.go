@@ -35,6 +35,7 @@ import (
 //go:embed funcs.jq
 //go:embed args.jq
 //go:embed query.jq
+//go:embed formats.jq
 var builtinFS embed.FS
 
 var initSource = `include "@builtin/interp";`
@@ -541,14 +542,14 @@ func (i *Interp) Main(ctx context.Context, output Output, version string) error 
 	return nil
 }
 
-func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src string, filename string, output io.Writer) (gojq.Iter, error) {
+func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src string, srcFilename string, output io.Writer) (gojq.Iter, error) {
 	gq, err := gojq.Parse(src)
 	if err != nil {
 		p := queryErrorPosition(src, err)
 		return nil, compileError{
 			err:      err,
 			what:     "parse",
-			filename: filename,
+			filename: srcFilename,
 			pos:      p,
 		}
 	}
@@ -568,18 +569,20 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 		variableValues = append(variableValues, v)
 	}
 
-	var compilerOpts []gojq.CompilerOption
+	var funcCompilerOpts []gojq.CompilerOption
 	for _, f := range ni.makeFunctions() {
 		for _, n := range f.Names {
 			if f.IterFn != nil {
-				compilerOpts = append(compilerOpts,
+				funcCompilerOpts = append(funcCompilerOpts,
 					gojq.WithIterFunction(n, f.MinArity, f.MaxArity, f.IterFn))
 			} else {
-				compilerOpts = append(compilerOpts,
+				funcCompilerOpts = append(funcCompilerOpts,
 					gojq.WithFunction(n, f.MinArity, f.MaxArity, f.Fn))
 			}
 		}
 	}
+
+	compilerOpts := append([]gojq.CompilerOption{}, funcCompilerOpts...)
 	compilerOpts = append(compilerOpts, gojq.WithEnvironLoader(ni.os.Environ))
 	compilerOpts = append(compilerOpts, gojq.WithVariables(variableNames))
 	compilerOpts = append(compilerOpts, gojq.WithModuleLoader(loadModule{
@@ -587,6 +590,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 			return []*gojq.Query{i.initFqQuery}, nil
 		},
 		load: func(name string) (*gojq.Query, error) {
+			// log.Printf("name: %#+v\n", name)
 			if err := ctx.Err(); err != nil {
 				return nil, err
 			}
@@ -607,45 +611,6 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 				cache  bool
 				fn     func(filename string) (io.Reader, error)
 			}{
-				{
-					"@format/", true, func(filename string) (io.Reader, error) {
-						allFormats := i.registry.MustGroup("all")
-						if filename == "all.jq" {
-							// special case, a file that include all other format files
-							sb := &bytes.Buffer{}
-							for _, f := range allFormats {
-								if f.FS == nil {
-									continue
-								}
-								fmt.Fprintf(sb, "include \"@format/%s\";\n", f.Name)
-							}
-							return bytes.NewReader(sb.Bytes()), nil
-						} else if filename == "decode.jq" {
-							sb := &bytes.Buffer{}
-							for name := range i.registry.Groups {
-								// TODO: nicer way to skip all which also would override builtin all/*
-								if name == "all" {
-									continue
-								}
-								fmt.Fprintf(sb, ""+
-									"def %[1]s($opts): _decode(%[1]q; $opts);\n"+
-									"def %[1]s: _decode(%[1]q; {});\n",
-									name)
-							}
-							return bytes.NewReader(sb.Bytes()), nil
-						} else {
-							formatName := strings.TrimRight(filename, ".jq")
-							for _, f := range allFormats {
-								if f.Name != formatName {
-									continue
-								}
-								return f.FS.Open(filename)
-							}
-						}
-
-						return builtinFS.Open(filename)
-					},
-				},
 				{
 					"@builtin/", true, func(filename string) (io.Reader, error) {
 						return builtinFS.Open(filename)
@@ -709,6 +674,43 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 					}
 				}
 
+				// not identity body means it returns something, threat as dynamic include
+				if q.Term.Type != gojq.TermTypeIdentity {
+					gc, err := gojq.Compile(q, funcCompilerOpts...)
+					if err != nil {
+						return nil, err
+					}
+					iter := gc.RunWithContext(context.Background(), nil)
+					var vs []interface{}
+					for {
+						v, ok := iter.Next()
+						if !ok {
+							break
+						}
+						if err, ok := v.(error); ok {
+							return nil, err
+						}
+						vs = append(vs, v)
+					}
+					if len(vs) != 1 {
+						return nil, fmt.Errorf("dynamic include: must output one string, got: %#v", vs)
+					}
+					s, sOk := vs[0].(string)
+					if !sOk {
+						return nil, fmt.Errorf("dynamic include: must be string, got %#v", s)
+					}
+					q, err = gojq.Parse(s)
+					if err != nil {
+						p := queryErrorPosition(s, err)
+						return nil, compileError{
+							err:      err,
+							what:     "parse",
+							filename: filenamePart,
+							pos:      p,
+						}
+					}
+				}
+
 				// TODO: some better way of handling relative includes that
 				// works with @builtin etc
 				basePath := filepath.Dir(name)
@@ -743,7 +745,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 		return nil, compileError{
 			err:      err,
 			what:     "compile",
-			filename: filename,
+			filename: srcFilename,
 			pos:      p,
 		}
 	}

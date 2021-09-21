@@ -47,7 +47,7 @@ func (i *Interp) makeFunctions() []Function {
 		{[]string{"_extkeys"}, 0, 0, i._extKeys, nil},
 		{[]string{"_global_state"}, 0, 1, i.makeStateFn(i.state), nil},
 
-		{[]string{"formats"}, 0, 0, i.formats, nil},
+		{[]string{"_registry"}, 0, 0, i._registry, nil},
 		{[]string{"history"}, 0, 0, i.history, nil},
 
 		{[]string{"open"}, 0, 0, i._open, nil},
@@ -397,24 +397,32 @@ func (i *Interp) makeStateFn(state *interface{}) func(c interface{}, a []interfa
 	}
 }
 
-func (i *Interp) formats(c interface{}, a []interface{}) interface{} {
-	allFormats := map[string]*decode.Format{}
+func (i *Interp) _registry(c interface{}, a []interface{}) interface{} {
+	uniqueFormats := map[string]*decode.Format{}
 
-	for _, fs := range i.registry.Groups {
+	groups := map[string]interface{}{}
+	formats := map[string]interface{}{}
+
+	for fsName, fs := range i.registry.Groups {
+		var group []interface{}
+
 		for _, f := range fs {
-			if _, ok := allFormats[f.Name]; ok {
+			group = append(group, f.Name)
+			if _, ok := uniqueFormats[f.Name]; ok {
 				continue
 			}
-			allFormats[f.Name] = f
+			uniqueFormats[f.Name] = f
 		}
+
+		groups[fsName] = group
 	}
 
-	vs := map[string]interface{}{}
-	for _, f := range allFormats {
+	for _, f := range uniqueFormats {
 		vf := map[string]interface{}{
 			"name":        f.Name,
 			"description": f.Description,
 			"probe_order": f.ProbeOrder,
+			"root_name":   f.RootName,
 		}
 
 		var dependenciesVs []interface{}
@@ -436,10 +444,36 @@ func (i *Interp) formats(c interface{}, a []interface{}) interface{} {
 			vf["groups"] = groupsVs
 		}
 
-		vs[f.Name] = vf
+		if f.Files != nil {
+			files := map[string]interface{}{}
+
+			entries, err := f.Files.ReadDir(".")
+			if err != nil {
+				return err
+			}
+
+			for _, e := range entries {
+				f, err := f.Files.Open(e.Name())
+				if err != nil {
+					return err
+				}
+				b, err := ioutil.ReadAll(f)
+				if err != nil {
+					return err
+				}
+				files[e.Name()] = string(b)
+			}
+
+			vf["files"] = files
+		}
+
+		formats[f.Name] = vf
 	}
 
-	return vs
+	return map[string]interface{}{
+		"groups":  groups,
+		"formats": formats,
+	}
 }
 
 func (i *Interp) history(c interface{}, a []interface{}) interface{} {

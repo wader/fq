@@ -77,7 +77,7 @@ func init() {
 			{Names: []string{format.VP9_CFM}, Formats: &vp9CFMFormat},
 			{Names: []string{format.VP9_FRAME}, Formats: &vp9FrameFormat},
 		},
-		FS: matroskaFS,
+		Files: matroskaFS,
 	})
 
 	codecToFormat = map[string]*[]*decode.Format{

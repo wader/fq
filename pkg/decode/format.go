@@ -16,7 +16,7 @@ type Format struct {
 	RootV        interface{}
 	RootName     string
 	Dependencies []Dependency
-	FS           fs.FS
+	Files        fs.ReadDirFS
 }
 
 func FormatFn(d func(d *D, in interface{}) interface{}) []*Format {
