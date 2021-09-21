@@ -20,6 +20,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/mitchellh/mapstructure"
 	"github.com/wader/fq/internal/aheadreadseeker"
 	"github.com/wader/fq/internal/ctxreadseeker"
 	"github.com/wader/fq/internal/gojqextra"
@@ -196,8 +197,12 @@ func makeHashFn(fn func() (hash.Hash, error)) func(c interface{}, a []interface{
 }
 
 func (i *Interp) readline(c interface{}, a []interface{}) interface{} {
+	var opts struct {
+		Complete string  `mapstructure:"complete"`
+		Timeout  float64 `mapstructure:"timeout"`
+	}
+
 	var err error
-	completeFn := ""
 	prompt := ""
 
 	if len(a) > 0 {
@@ -207,21 +212,22 @@ func (i *Interp) readline(c interface{}, a []interface{}) interface{} {
 		}
 	}
 	if len(a) > 1 {
-		completeFn, err = toString(a[1])
-		if err != nil {
-			return fmt.Errorf("complete function: %w", err)
-		}
+		_ = mapstructure.Decode(a[1], &opts)
 	}
 
 	src, err := i.os.Readline(
 		prompt,
 		func(line string, pos int) (newLine []string, shared int) {
-			completeCtx, completeCtxCancelFn := context.WithTimeout(i.evalContext.ctx, 1*time.Second)
-			defer completeCtxCancelFn()
+			completeCtx := i.evalContext.ctx
+			if opts.Timeout > 0 {
+				var completeCtxCancelFn context.CancelFunc
+				completeCtx, completeCtxCancelFn = context.WithTimeout(i.evalContext.ctx, time.Duration(opts.Timeout*float64(time.Second)))
+				defer completeCtxCancelFn()
+			}
 
 			names, shared, err := func() (newLine []string, shared int, err error) {
 				vs, err := i.EvalFuncValues(
-					completeCtx, CompletionMode, c, completeFn, []interface{}{line, pos}, DiscardCtxWriter{Ctx: completeCtx},
+					completeCtx, c, opts.Complete, []interface{}{line, pos}, DiscardCtxWriter{Ctx: completeCtx},
 				)
 				if err != nil {
 					return nil, pos, err
@@ -236,32 +242,19 @@ func (i *Interp) readline(c interface{}, a []interface{}) interface{} {
 
 				// {abc: 123, abd: 123} | complete(".ab"; 3) will return {prefix: "ab", names: ["abc", "abd"]}
 
-				var names []string
-				var prefix string
-				cm, ok := v.(map[string]interface{})
-				if !ok {
-					return nil, pos, fmt.Errorf("%v: complete function return value not an object", cm)
-				}
-				if namesV, ok := cm["names"].([]interface{}); ok {
-					for _, name := range namesV {
-						names = append(names, name.(string))
-					}
-				} else {
-					return nil, pos, fmt.Errorf("%v: names missing in complete return object", cm)
-				}
-				if prefixV, ok := cm["prefix"]; ok {
-					prefix, _ = prefixV.(string)
-				} else {
-					return nil, pos, fmt.Errorf("%v: prefix missing in complete return object", cm)
+				var result struct {
+					Names  []string `mapstructure:"names"`
+					Prefix string   `mapstructure:"prefix"`
 				}
 
-				if len(names) == 0 {
+				_ = mapstructure.Decode(v, &result)
+				if len(result.Names) == 0 {
 					return nil, pos, nil
 				}
 
-				sharedLen := len(prefix)
+				sharedLen := len(result.Prefix)
 
-				return names, sharedLen, nil
+				return result.Names, sharedLen, nil
 			}()
 
 			// TODO: how to report err?
@@ -296,7 +289,7 @@ func (i *Interp) eval(c interface{}, a []interface{}) gojq.Iter {
 		}
 	}
 
-	iter, err := i.Eval(i.evalContext.ctx, ScriptMode, c, src, filenameHint, i.evalContext.output)
+	iter, err := i.Eval(i.evalContext.ctx, c, src, filenameHint, i.evalContext.output)
 	if err != nil {
 		return gojq.NewIter(err)
 	}
@@ -585,33 +578,26 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
-	filename := ""
-
-	opts := map[string]interface{}{}
-	if m, ok := a[1].(map[string]interface{}); ok {
-		opts = m
+	var opts struct {
+		Filename string                 `mapstructure:"filename"`
+		Progress string                 `mapstructure:"_progress"`
+		Remain   map[string]interface{} `mapstructure:",remain"`
 	}
-
-	// TODO: structmap
-	var progress string
-	if progressV, ok := opts["_progress"]; ok {
-		progress, _ = progressV.(string)
-	}
+	_ = mapstructure.Decode(a[1], &opts)
 
 	// TODO: progress hack
 	// would be nice to move all progress code into decode but it might be
 	// tricky to keep track of absolute positions in the underlaying readers
 	// when it uses BitBuf slices, maybe only in Pos()?
 	if bbf, ok := c.(*bitBufFile); ok {
-		filename = bbf.filename
+		opts.Filename = bbf.filename
 
-		if progress != "" {
+		if opts.Progress != "" {
 			evalProgress := func(c interface{}) {
 				_, _ = i.EvalFuncValues(
 					i.evalContext.ctx,
-					CompletionMode,
 					c,
-					progress,
+					opts.Progress,
 					nil,
 					DiscardCtxWriter{Ctx: i.evalContext.ctx},
 				)
@@ -644,8 +630,8 @@ func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
 
 	dv, _, err := decode.Decode(i.evalContext.ctx, bb, decodeFormats,
 		decode.DecodeOptions{
-			Description:   filename,
-			FormatOptions: opts,
+			Description:   opts.Filename,
+			FormatOptions: opts.Remain,
 		},
 	)
 	if dv == nil {

@@ -17,6 +17,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mitchellh/mapstructure"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/internal/ansi"
 	"github.com/wader/fq/internal/colorjson"
@@ -241,44 +242,6 @@ type loadModule struct {
 func (l loadModule) LoadInitModules() ([]*gojq.Query, error)     { return l.init() }
 func (l loadModule) LoadModule(name string) (*gojq.Query, error) { return l.load(name) }
 
-func toBool(v interface{}) (bool, error) {
-	switch v := v.(type) {
-	case bool:
-		return v, nil
-	case *big.Int:
-		return v.Int64() != 0, nil
-	case int:
-		return v != 0, nil
-	case float64:
-		return v != 0, nil
-	default:
-		return false, fmt.Errorf("value is not a number")
-	}
-}
-
-func toBoolZ(v interface{}) bool {
-	b, _ := toBool(v)
-	return b
-}
-
-func toInt(v interface{}) (int, error) {
-	switch v := v.(type) {
-	case *big.Int:
-		return int(v.Int64()), nil
-	case int:
-		return v, nil
-	case float64:
-		return int(v), nil
-	default:
-		return 0, fmt.Errorf("value is not a number")
-	}
-}
-
-func toIntZ(v interface{}) int {
-	n, _ := toInt(v)
-	return n
-}
-
 func toString(v interface{}) (string, error) {
 	switch v := v.(type) {
 	case string:
@@ -293,11 +256,6 @@ func toString(v interface{}) (string, error) {
 
 		return string(b), nil
 	}
-}
-
-func toStringZ(v interface{}) string {
-	s, _ := toString(v)
-	return s
 }
 
 func toBigInt(v interface{}) (*big.Int, error) {
@@ -451,7 +409,6 @@ type evalContext struct {
 	// structcheck has problems with embedding https://gitlab.com/opennota/check#known-limitations
 	ctx    context.Context
 	output io.Writer
-	mode   RunMode
 }
 
 type Interp struct {
@@ -500,8 +457,6 @@ func (i *Interp) Stop() {
 }
 
 func (i *Interp) Main(ctx context.Context, output Output, version string) error {
-	runMode := ScriptMode
-
 	var args []interface{}
 	for _, a := range i.os.Args() {
 		args = append(args, a)
@@ -512,7 +467,7 @@ func (i *Interp) Main(ctx context.Context, output Output, version string) error 
 		"version": version,
 	}
 
-	iter, err := i.EvalFunc(ctx, runMode, input, "_main", nil, output)
+	iter, err := i.EvalFunc(ctx, input, "_main", nil, output)
 	if err != nil {
 		fmt.Fprintln(i.os.Stderr(), err)
 		return err
@@ -542,7 +497,7 @@ func (i *Interp) Main(ctx context.Context, output Output, version string) error 
 	return nil
 }
 
-func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src string, srcFilename string, output io.Writer) (gojq.Iter, error) {
+func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilename string, output io.Writer) (gojq.Iter, error) {
 	gq, err := gojq.Parse(src)
 	if err != nil {
 		p := queryErrorPosition(src, err)
@@ -557,10 +512,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	// make copy of interp
 	ci := *i
 	ni := &ci
-
-	ni.evalContext = evalContext{
-		mode: mode,
-	}
+	ni.evalContext = evalContext{}
 
 	var variableNames []string
 	var variableValues []interface{}
@@ -767,7 +719,7 @@ func (i *Interp) Eval(ctx context.Context, mode RunMode, c interface{}, src stri
 	return iterWrapper, nil
 }
 
-func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, output io.Writer) (gojq.Iter, error) {
+func (i *Interp) EvalFunc(ctx context.Context, c interface{}, name string, args []interface{}, output io.Writer) (gojq.Iter, error) {
 	var argsExpr []string
 	for i := range args {
 		argsExpr = append(argsExpr, fmt.Sprintf("$_args[%d]", i))
@@ -784,15 +736,15 @@ func (i *Interp) EvalFunc(ctx context.Context, mode RunMode, c interface{}, name
 	// _args to mark variable as internal and hide it from completion
 	// {input: ..., args: [...]} | .args as {args: $_args} | .input | name[($_args[0]; ...)]
 	trampolineExpr := fmt.Sprintf(". as {args: $_args} | .input | %s%s", name, argExpr)
-	iter, err := i.Eval(ctx, mode, trampolineInput, trampolineExpr, "", output)
+	iter, err := i.Eval(ctx, trampolineInput, trampolineExpr, "", output)
 	if err != nil {
 		return nil, err
 	}
 	return iter, nil
 }
 
-func (i *Interp) EvalFuncValues(ctx context.Context, mode RunMode, c interface{}, name string, args []interface{}, output io.Writer) ([]interface{}, error) {
-	iter, err := i.EvalFunc(ctx, mode, c, name, args, output)
+func (i *Interp) EvalFuncValues(ctx context.Context, c interface{}, name string, args []interface{}, output io.Writer) ([]interface{}, error) {
+	iter, err := i.EvalFunc(ctx, c, name, args, output)
 	if err != nil {
 		return nil, err
 	}
@@ -810,86 +762,27 @@ func (i *Interp) EvalFuncValues(ctx context.Context, mode RunMode, c interface{}
 }
 
 type Options struct {
-	Depth          int
-	ArrayTruncate  int
-	Verbose        bool
-	DecodeProgress bool
-	Color          bool
-	Colors         string
-	ByteColors     string
-	Unicode        bool
-	RawOutput      bool
-	REPL           bool
-	RawString      bool
-	JoinString     string
-	Compact        bool
-	BitsFormat     string
-
-	LineBytes    int
-	DisplayBytes int
-	AddrBase     int
-	SizeBase     int
+	Depth          int    `mapstructure:"depth"`
+	ArrayTruncate  int    `mapstructure:"array_truncate"`
+	Verbose        bool   `mapstructure:"verbose"`
+	DecodeProgress bool   `mapstructure:"decode_progress"`
+	Color          bool   `mapstructure:"color"`
+	Colors         string `mapstructure:"colors"`
+	ByteColors     string `mapstructure:"byte_colors"`
+	Unicode        bool   `mapstructure:"unicode"`
+	RawOutput      bool   `mapstructure:"raw_output"`
+	REPL           bool   `mapstructure:"repl"`
+	RawString      bool   `mapstructure:"raw_string"`
+	JoinString     string `mapstructure:"join_string"`
+	Compact        bool   `mapstructure:"compact"`
+	BitsFormat     string `mapstructure:"bits_format"`
+	LineBytes      int    `mapstructure:"line_bytes"`
+	DisplayBytes   int    `mapstructure:"display_bytes"`
+	AddrBase       int    `mapstructure:"addrbase"`
+	SizeBase       int    `mapstructure:"sizebase"`
 
 	Decorator    Decorator
 	BitsFormatFn func(bb *bitio.Buffer) (interface{}, error)
-}
-
-func mapSetOptions(d *Options, m map[string]interface{}) {
-	if v, ok := m["depth"]; ok {
-		d.Depth = num.MaxInt(0, toIntZ(v))
-	}
-	if v, ok := m["array_truncate"]; ok {
-		d.ArrayTruncate = num.MaxInt(0, toIntZ(v))
-	}
-	if v, ok := m["verbose"]; ok {
-		d.Verbose = toBoolZ(v)
-	}
-	if v, ok := m["decode_progress"]; ok {
-		d.DecodeProgress = toBoolZ(v)
-	}
-	if v, ok := m["color"]; ok {
-		d.Color = toBoolZ(v)
-	}
-	if v, ok := m["colors"]; ok {
-		d.Colors = toStringZ(v)
-	}
-	if v, ok := m["byte_colors"]; ok {
-		d.ByteColors = toStringZ(v)
-	}
-	if v, ok := m["unicode"]; ok {
-		d.Unicode = toBoolZ(v)
-	}
-	if v, ok := m["raw_output"]; ok {
-		d.RawOutput = toBoolZ(v)
-	}
-	if v, ok := m["repl"]; ok {
-		d.REPL = toBoolZ(v)
-	}
-	if v, ok := m["raw_string"]; ok {
-		d.RawString = toBoolZ(v)
-	}
-	if v, ok := m["join_string"]; ok {
-		d.JoinString = toStringZ(v)
-	}
-	if v, ok := m["compact"]; ok {
-		d.Compact = toBoolZ(v)
-	}
-	if v, ok := m["bits_format"]; ok {
-		d.BitsFormat = toStringZ(v)
-	}
-
-	if v, ok := m["line_bytes"]; ok {
-		d.LineBytes = num.MaxInt(0, toIntZ(v))
-	}
-	if v, ok := m["display_bytes"]; ok {
-		d.DisplayBytes = num.MaxInt(0, toIntZ(v))
-	}
-	if v, ok := m["addrbase"]; ok {
-		d.AddrBase = num.ClampInt(2, 36, toIntZ(v))
-	}
-	if v, ok := m["sizebase"]; ok {
-		d.SizeBase = num.ClampInt(2, 36, toIntZ(v))
-	}
 }
 
 func bitsFormatFnFromOptions(opts Options) func(bb *bitio.Buffer) (interface{}, error) {
@@ -970,7 +863,7 @@ func (i *Interp) variables() map[string]interface{} {
 }
 
 func (i *Interp) Options(fnOptsV ...interface{}) (Options, error) {
-	vs, err := i.EvalFuncValues(i.evalContext.ctx, ScriptMode, nil, "options", []interface{}{fnOptsV}, DiscardCtxWriter{Ctx: i.evalContext.ctx})
+	vs, err := i.EvalFuncValues(i.evalContext.ctx, nil, "options", []interface{}{fnOptsV}, DiscardCtxWriter{Ctx: i.evalContext.ctx})
 	if err != nil {
 		return Options{}, err
 	}
@@ -987,7 +880,13 @@ func (i *Interp) Options(fnOptsV ...interface{}) (Options, error) {
 	}
 
 	var opts Options
-	mapSetOptions(&opts, m)
+	_ = mapstructure.Decode(m, &opts)
+	opts.Depth = num.MaxInt(0, opts.Depth)
+	opts.ArrayTruncate = num.MaxInt(0, opts.ArrayTruncate)
+	opts.AddrBase = num.ClampInt(2, 36, opts.AddrBase)
+	opts.SizeBase = num.ClampInt(2, 36, opts.SizeBase)
+	opts.LineBytes = num.MaxInt(0, opts.LineBytes)
+	opts.DisplayBytes = num.MaxInt(0, opts.DisplayBytes)
 	opts.Decorator = decoratorFromOptions(opts)
 	opts.BitsFormatFn = bitsFormatFnFromOptions(opts)
 

@@ -327,7 +327,7 @@ def _repl($opts): #:: a|(Opts) => @
   def _read_expr:
     # both _prompt and _complete want arrays
     ( . as $c
-    | _readline(_prompt; "_complete")
+    | _readline(_prompt; {complete: "_complete", timeout: 0.5})
     | if trim == "" then
         $c | _read_expr
       end
