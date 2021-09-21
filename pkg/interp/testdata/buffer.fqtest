@@ -36,7 +36,7 @@ $ fq -d mp3 '.frames[]._bits[0:12] | tonumber' /test.mp3
 4095
 $ fq -d mp3 '.headers[0].magic._bits[0:24] | tostring' /test.mp3
 "ID3"
-$ fq -d mp3 '.frames[0].padding | ("", "md5", "base64", "snippet") as $f | tovalue({bitsformat: $f})' /test.mp3
+$ fq -d mp3 '.frames[0].padding | ("", "md5", "base64", "snippet") as $f | tovalue({bits_format: $f})' /test.mp3
 "<5>AAAAAAA="
 "ca9c491ac66b2c62500882e93f3719a8"
 "AAAAAAA="

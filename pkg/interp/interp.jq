@@ -38,9 +38,9 @@ def _build_default_options:
       addrbase:       16,
       arg:            [],
       argjson:        [],
-      arraytruncate:  50,
-      bitsformat:     "snippet",
-      bytecolors:     "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
+      array_truncate: 50,
+      bits_format:    "snippet",
+      byte_colors:    "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
       color:          ($stdout.is_terminal and (env.NO_COLOR | . == null or . == "")),
       colors: (
         {
@@ -65,14 +65,14 @@ def _build_default_options:
       decode_progress: (env.NO_DECODE_PROGRESS == null),
       depth:           0,
       # TODO: intdiv 2 * 2 to get even number, nice or maybe not needed?
-      displaybytes:    (if $stdout.is_terminal then [intdiv(intdiv($stdout.width; 8); 2) * 2, 4] | max else 16 end),
+      display_bytes:   (if $stdout.is_terminal then [intdiv(intdiv($stdout.width; 8); 2) * 2, 4] | max else 16 end),
       expr:            ".",
       expr_file:       null,
       expr_eval_path:  "arg",
       filenames:       ["-"],
       include_path:    null,
       join_string:     "\n",
-      linebytes:       (if $stdout.is_terminal then [intdiv(intdiv($stdout.width; 8); 2) * 2, 4] | max else 16 end),
+      line_bytes:      (if $stdout.is_terminal then [intdiv(intdiv($stdout.width; 8); 2) * 2, 4] | max else 16 end),
       null_input:      false,
       rawfile:         [],
       raw_output:      ($stdout.is_terminal | not),
@@ -127,9 +127,9 @@ def _to_options:
       addrbase:        (.addrbase | _tonumber),
       arg:             (.arg | _toarray(_is_string_pair)),
       argjson:         (.argjson | _toarray(_is_string_pair)),
-      arraytruncate:   (.arraytruncate | _tonumber),
-      bitsformat:      (.bitsformat | _tostring),
-      bytecolors:      (.bytecolors | _tostring),
+      array_truncate:  (.array_truncate | _tonumber),
+      bits_format:     (.bits_format | _tostring),
+      byte_colors:     (.byte_colors | _tostring),
       color:           (.color | _toboolean),
       colors:          (.colors | _tostring),
       compact:         (.compact | _toboolean),
@@ -137,13 +137,13 @@ def _to_options:
       decode_format:   (.decode_format | _tostring),
       decode_progress: (.decode_progress | _toboolean),
       depth:           (.depth | _tonumber),
-      displaybytes:    (.displaybytes | _tonumber),
+      display_bytes:   (.display_bytes | _tonumber),
       expr:            (.expr | _tostring),
       expr_file:       (.expr_file | _tostring),
       filename:        (.filenames | _toarray(type == "string")),
       include_path:    (.include_path | _tostring),
       join_string:     (.join_string | _tostring),
-      linebytes:       (.linebytes | _tonumber),
+      line_bytes:      (.line_bytes | _tonumber),
       null_input:      (.null_input | _toboolean),
       rawfile:         (.rawfile| _toarray(_is_string_pair)),
       raw_output:      (.raw_output | _toboolean),
@@ -409,11 +409,11 @@ def display($opts): _display($opts);
 def display: _display({});
 def d($opts): _display($opts);
 def d: _display({});
-def full($opts): _display({arraytruncate: 0} + $opts);
+def full($opts): _display({array_truncate: 0} + $opts);
 def full: full({});
 def f($opts): full($opts);
 def f: full;
-def verbose($opts): _display({verbose: true, arraytruncate: 0} + $opts);
+def verbose($opts): _display({verbose: true, array_truncate: 0} + $opts);
 def verbose: verbose({});
 def v($opts): verbose($opts);
 def v: verbose;

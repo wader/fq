@@ -302,7 +302,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 
 			cfmt(colAddr, "%s%s\n", rootIndent, deco.DumpAddr.F("*"))
 			cprint(colHex, "\n")
-			// TODO: truncate if displaybytes is small?
+			// TODO: truncate if display_bytes is small?
 			cfmt(colHex, "until %s%s (%s)",
 				num.Bits(stopBit).StringByteBits(opts.AddrBase),
 				isEnd,

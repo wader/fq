@@ -3,9 +3,9 @@ $ fq -n options
   "addrbase": 16,
   "arg": [],
   "argjson": [],
-  "arraytruncate": 50,
-  "bitsformat": "snippet",
-  "bytecolors": "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
+  "array_truncate": 50,
+  "bits_format": "snippet",
+  "byte_colors": "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
   "color": false,
   "colors": "array=white,dumpaddr=yellow,dumpheader=yellow+underline,error=brightred,false=yellow,index=white,null=brightblack,number=cyan,object=white,objectkey=brightblue,string=green,true=yellow,value=white",
   "compact": false,
@@ -13,7 +13,7 @@ $ fq -n options
   "decode_format": "probe",
   "decode_progress": false,
   "depth": 0,
-  "displaybytes": 16,
+  "display_bytes": 16,
   "expr": "options",
   "expr_eval_path": "arg",
   "expr_file": null,
@@ -22,7 +22,7 @@ $ fq -n options
   ],
   "include_path": null,
   "join_string": "\n",
-  "linebytes": 16,
+  "line_bytes": 16,
   "null_input": true,
   "raw_output": false,
   "raw_string": false,
@@ -41,13 +41,13 @@ $ fq -o addrbase=10 -n options.addrbase
 10
 $ fq -o addrbase=true -n options.addrbase
 16
-$ fq -o arraytruncate=10 -n options.arraytruncate
+$ fq -o array_truncate=10 -n options.array_truncate
 10
-$ fq -o arraytruncate=true -n options.arraytruncate
+$ fq -o array_truncate=true -n options.array_truncate
 50
-$ fq -o bitsformat=base64 -n options.bitsformat
+$ fq -o bits_format=base64 -n options.bits_format
 "base64"
-$ fq -o bytecolors=0-0xff=red -n options.bytecolors
+$ fq -o byte_colors=0-0xff=red -n options.byte_colors
 "0-0xff=red"
 $ fq -o color=10 -n options.color
 [33mtrue[m
@@ -67,9 +67,9 @@ $ fq -o depth=10 -n options.depth
 10
 $ fq -o depth=true -n options.depth
 0
-$ fq -o displaybytes=10 -n options.displaybytes
+$ fq -o display_bytes=10 -n options.display_bytes
 10
-$ fq -o displaybytes=true -n options.displaybytes
+$ fq -o display_bytes=true -n options.display_bytes
 16
 $ fq -o expr_file=test.jq -n options.expr_file
 exitcode: 2
@@ -79,7 +79,7 @@ $ fq -o include_path=path -n options.include_path
 "path"
 $ fq -o join_string=aaa\n -n options.join_string
 "aaa\n"aaa
-$ fq -o linebytes=true -n options.linebytes
+$ fq -o line_bytes=true -n options.line_bytes
 16
 $ fq -o null_input=true -n options.null_input
 true

@@ -838,7 +838,7 @@ func mapSetOptions(d *Options, m map[string]interface{}) {
 	if v, ok := m["depth"]; ok {
 		d.Depth = num.MaxInt(0, toIntZ(v))
 	}
-	if v, ok := m["arraytruncate"]; ok {
+	if v, ok := m["array_truncate"]; ok {
 		d.ArrayTruncate = num.MaxInt(0, toIntZ(v))
 	}
 	if v, ok := m["verbose"]; ok {
@@ -853,7 +853,7 @@ func mapSetOptions(d *Options, m map[string]interface{}) {
 	if v, ok := m["colors"]; ok {
 		d.Colors = toStringZ(v)
 	}
-	if v, ok := m["bytecolors"]; ok {
+	if v, ok := m["byte_colors"]; ok {
 		d.ByteColors = toStringZ(v)
 	}
 	if v, ok := m["unicode"]; ok {
@@ -874,14 +874,14 @@ func mapSetOptions(d *Options, m map[string]interface{}) {
 	if v, ok := m["compact"]; ok {
 		d.Compact = toBoolZ(v)
 	}
-	if v, ok := m["bitsformat"]; ok {
+	if v, ok := m["bits_format"]; ok {
 		d.BitsFormat = toStringZ(v)
 	}
 
-	if v, ok := m["linebytes"]; ok {
+	if v, ok := m["line_bytes"]; ok {
 		d.LineBytes = num.MaxInt(0, toIntZ(v))
 	}
-	if v, ok := m["displaybytes"]; ok {
+	if v, ok := m["display_bytes"]; ok {
 		d.DisplayBytes = num.MaxInt(0, toIntZ(v))
 	}
 	if v, ok := m["addrbase"]; ok {

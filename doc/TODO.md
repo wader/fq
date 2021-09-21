@@ -3,7 +3,7 @@
 - `format/0` overlap with jq builtin `format/1`. What to rename it to? `decode_format`?
 - repl expression returning a value that produced lots of output can't be interrupted. This is becaus ctrl-C currently only interrupts the evaluation of the expression, outputted value is printed (`display`) by parent.
 - Auto complete of non-global variables is broken. `scope` is broken for variables.
-- `tovalue({bitsformat: "base64"})` only affect root value.
+- `tovalue({bits_format: "base64"})` only affect root value.
 - Unknown field filling is currently only done on root, should be done per "framed" decode.
 - Sub buffers range is broken, could have a different size in parent (ex: compressed).
 - Symbolic values should be more intuitive, should not need to use ._symbol.
