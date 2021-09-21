@@ -421,14 +421,20 @@ def v: verbose;
 def formats:
   _registry.formats;
 
+def _esc: "\u001b";
+def _ansi:
+  {
+    clear_line: "\(_esc)[2K",
+  };
+
 # null input means done, otherwise {approx_read_bytes: 123, total_size: 123}
 # TODO: decode provide even more detailed progress, post-process sort etc?
 def _decode_progress:
   # _input_filenames is remaning files to read
   ( (_input_filenames | length) as $inputs_len
   | ( options.filenames | length) as $filenames_len
-  # TODO: ANSI clear line and return, make constants
-  | "\u001b[2K\r"
+  | _ansi.clear_line
+  , "\r"
   , if . != null then
       ( if $filenames_len > 1 then
           "\($filenames_len - $inputs_len)/\($filenames_len) \(_input_filename) "
