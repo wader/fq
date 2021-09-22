@@ -4,109 +4,154 @@ import (
 	"strings"
 )
 
-func Split(s string) []string {
+type Token struct {
+	Start     int
+	End       int
+	Str       string
+	Separator bool
+}
+
+func Parse(s string) []Token {
 	type splitState int
 	const (
-		Word splitState = iota
-		SingleQuote
-		DoubleQuote
-		DoubleQuoteEscape
+		whitespace splitState = iota
+		escape
+		word
+		singleQuote
+		doubleQuote
+		doubleQuoteEscape
 	)
-	type word string
-	type singleQuote string
-	type doubleQuote string
-	type delim struct{}
-	var tokens []interface{}
+	var tokens []Token
 
 	sb := &strings.Builder{}
-	ss := Word
-	for _, r := range s {
+	ss := whitespace
+	start := 0
+	for i, r := range s {
 		switch ss {
-		case DoubleQuoteEscape:
+		case escape:
+			sb.WriteRune(r)
+			ss = word
+			continue
+		case doubleQuoteEscape:
 			if r != '"' {
 				sb.WriteRune('\\')
 			}
 			sb.WriteRune(r)
-			ss = DoubleQuote
+			ss = doubleQuote
 			continue
 		}
 
 		switch r {
 		case '\'':
 			switch ss {
-			case Word:
-				tokens = append(tokens, word(sb.String()))
+			case whitespace:
+				ss = singleQuote
+				start = i
+			case word:
+				tokens = append(tokens, Token{Start: start, End: i, Str: sb.String()})
 				sb.Reset()
-				ss = SingleQuote
-			case SingleQuote:
-				tokens = append(tokens, singleQuote(sb.String()))
+				ss = singleQuote
+				start = i
+			case singleQuote:
+				tokens = append(tokens, Token{Start: start, End: i, Str: sb.String()})
 				sb.Reset()
-				ss = Word
+				ss = whitespace
+				start = i
 			default:
 				sb.WriteRune(r)
 			}
 		case '"':
 			switch ss {
-			case Word:
-				tokens = append(tokens, word(sb.String()))
+			case whitespace:
+				ss = doubleQuote
+				start = i
+			case word:
+				tokens = append(tokens, Token{Start: start, End: i, Str: sb.String()})
 				sb.Reset()
-				ss = DoubleQuote
-			case DoubleQuote:
-				tokens = append(tokens, doubleQuote(sb.String()))
+				ss = doubleQuote
+				start = i
+			case doubleQuote:
+				tokens = append(tokens, Token{Start: start, End: i, Str: sb.String()})
 				sb.Reset()
-				ss = Word
+				ss = whitespace
+				start = i
 			default:
 				sb.WriteRune(r)
 			}
 		case '\\':
 			switch ss {
-			case DoubleQuote:
-				ss = DoubleQuoteEscape
+			case whitespace, word:
+				ss = escape
+				start = i
+			case doubleQuote:
+				ss = doubleQuoteEscape
+				start = i
 			default:
 				sb.WriteRune(r)
 			}
 		case ' ':
 			switch ss {
-			case Word:
-				tokens = append(tokens, word(sb.String()))
+			case whitespace:
+				tokens = append(tokens, Token{Separator: true})
+			case word:
+				tokens = append(tokens, Token{Start: start, End: i, Str: sb.String()})
+				tokens = append(tokens, Token{Separator: true})
 				sb.Reset()
-				tokens = append(tokens, delim{})
+				ss = whitespace
+				start = i
 			default:
 				sb.WriteRune(r)
 			}
 		default:
+			switch ss {
+			case whitespace:
+				ss = word
+				start = i
+			}
 			sb.WriteRune(r)
 		}
 	}
 	if sb.Len() > 0 {
 		switch ss {
-		case Word:
-			tokens = append(tokens, word(sb.String()))
-		case SingleQuote:
-			tokens = append(tokens, singleQuote(sb.String()))
-		case DoubleQuote:
-			tokens = append(tokens, doubleQuote(sb.String()))
+		case word, singleQuote, doubleQuote:
+			tokens = append(tokens, Token{Start: start, End: len(s), Str: sb.String()})
 		}
 	}
-	tokens = append(tokens, delim{})
+	tokens = append(tokens, Token{Separator: true})
 
-	var as []string
-	sb.Reset()
+	var filtered []Token
+	prevSep := true
 	for _, t := range tokens {
-		switch tt := t.(type) {
-		case doubleQuote:
-			sb.WriteString(string(tt))
-		case singleQuote:
-			sb.WriteString(string(tt))
-		case word:
-			sb.WriteString(string(tt))
-		case delim:
-			if sb.Len() > 0 {
-				as = append(as, sb.String())
-				sb.Reset()
-			}
+		if prevSep && t.Separator {
+			prevSep = true
+			continue
+		}
+		prevSep = t.Separator
+		filtered = append(filtered, t)
+	}
+	if len(filtered) > 0 && filtered[len(filtered)-1].Separator {
+		filtered = filtered[0 : len(filtered)-1]
+	}
+
+	return filtered
+}
+
+func Split(s string) []string {
+	var ss []string
+	sb := &strings.Builder{}
+
+	sb.Reset()
+	for _, t := range Parse(s) {
+		sb.WriteString(t.Str)
+		if t.Separator && sb.Len() > 0 {
+			ss = append(ss, sb.String())
+			sb.Reset()
 		}
 	}
 
-	return as
+	if sb.Len() > 0 {
+		ss = append(ss, sb.String())
+	}
+
+	return ss
 }

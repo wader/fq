@@ -26,6 +26,8 @@ import (
 var writeActual = os.Getenv("WRITE_ACTUAL") != ""
 
 type testCaseReadline struct {
+	expr           string
+	env            []string
 	input          string
 	expectedPrompt string
 	expectedStdout string
@@ -66,6 +68,7 @@ type testCaseRun struct {
 	actualExitCode   int
 	readlines        []testCaseReadline
 	readlinesPos     int
+	readlineEnv      []string
 }
 
 func (tcr *testCaseRun) Line() int { return tcr.lineNr }
@@ -111,24 +114,26 @@ func (tcr *testCaseRun) Stderr() interp.Output {
 func (tcr *testCaseRun) Interrupt() chan struct{} { return nil }
 
 func (tcr *testCaseRun) Environ() []string {
+	env := []string{
+		"_STDIN_WIDTH=135",
+		"_STDIN_HEIGHT=25",
+		"_STDOUT_WIDTH=135",
+		"_STDOUT_HEIGHT=25",
+		"_STDOUT_ISTERMINAL=1",
+		"NO_COLOR=1",
+		"NO_DECODE_PROGRESS=1",
+	}
+	env = append(env, tcr.env...)
+	env = append(env, tcr.readlineEnv...)
+
 	envm := make(map[string]string)
-	for _, kv := range append(
-		[]string{
-			"_STDIN_WIDTH=135",
-			"_STDIN_HEIGHT=25",
-			"_STDOUT_WIDTH=135",
-			"_STDOUT_HEIGHT=25",
-			"_STDOUT_ISTERMINAL=1",
-			"NO_COLOR=1",
-			"NO_DECODE_PROGRESS=1",
-		},
-		tcr.env...,
-	) {
+	for _, kv := range env {
 		if i := strings.IndexByte(kv, '='); i > 0 {
 			envm[kv[:i]] = kv[i+1:]
 		}
 	}
-	var env []string
+
+	env = []string{}
 	for k, v := range envm {
 		env = append(env, k+"="+v)
 	}
@@ -148,8 +153,10 @@ func (tcr *testCaseRun) Readline(prompt string, complete func(line string, pos i
 		return "", io.EOF
 	}
 
+	expr := tcr.readlines[tcr.readlinesPos].expr
 	lineRaw := tcr.readlines[tcr.readlinesPos].input
 	line := Unescape(lineRaw)
+	tcr.readlineEnv = tcr.readlines[tcr.readlinesPos].env
 	tcr.readlinesPos++
 
 	if strings.HasSuffix(line, "\t") {
@@ -166,7 +173,7 @@ func (tcr *testCaseRun) Readline(prompt string, complete func(line string, pos i
 		return "", nil
 	}
 
-	tcr.actualStdoutBuf.WriteString(lineRaw + "\n")
+	tcr.actualStdoutBuf.WriteString(expr + "\n")
 
 	if line == "^D" {
 		return "", io.EOF
@@ -183,7 +190,7 @@ func (tcr *testCaseRun) ToExpectedStdout() string {
 		fmt.Fprint(sb, tcr.expectedStdout)
 	} else {
 		for _, rl := range tcr.readlines {
-			fmt.Fprintf(sb, "%s%s\n", rl.expectedPrompt, rl.input)
+			fmt.Fprintf(sb, "%s%s\n", rl.expectedPrompt, rl.expr)
 			if rl.expectedStdout != "" {
 				fmt.Fprint(sb, rl.expectedStdout)
 			}
@@ -355,6 +362,39 @@ func SectionParser(re *regexp.Regexp, s string) []Section {
 	return sections
 }
 
+var kvRe = regexp.MustCompile(`^[A-Z_]+=`)
+
+func parseCommand(s string) (env []string, args []string) {
+	parts := shquote.Split(s)
+	for i, p := range parts {
+		if kvRe.MatchString(p) {
+			env = append(env, p)
+			continue
+		}
+		args = parts[i:]
+		break
+	}
+
+	return env, args
+}
+
+func parseInput(s string) (env []string, input string) {
+	tokens := shquote.Parse(s)
+	l := 0
+	for _, t := range tokens {
+		if t.Separator {
+			continue
+		}
+		if kvRe.MatchString(t.Str) {
+			env = append(env, t.Str)
+			l = t.End
+			continue
+		}
+		break
+	}
+	return env, s[l:]
+}
+
 func parseTestCases(s string) *testCase {
 	te := &testCase{}
 	te.parts = []part{}
@@ -384,19 +424,8 @@ func parseTestCases(s string) *testCase {
 
 			// escaped newline
 			v = strings.TrimSuffix(v, "\\\n")
-
-			var env []string
-			var args []string
 			command := strings.TrimPrefix(n, "$")
-			commandParts := shquote.Split(command)
-			for i, p := range commandParts {
-				if strings.Contains(p, "=") {
-					env = append(env, p)
-					continue
-				}
-				args = commandParts[i:]
-				break
-			}
+			env, args := parseCommand(command)
 
 			currentTestRun = &testCaseRun{
 				lineNr:          section.LineNr,
@@ -418,19 +447,22 @@ func parseTestCases(s string) *testCase {
 			i := strings.LastIndex(n, promptEnd)
 
 			prompt := n[0:i] + promptEnd
-			input := n[i+2:]
+			expr := n[i+2:]
+			env, input := parseInput(expr)
 
 			currentTestRun.readlines = append(currentTestRun.readlines, testCaseReadline{
+				expr:           expr,
+				env:            env,
 				input:          input,
 				expectedPrompt: prompt,
 				expectedStdout: v,
 			})
 
 			// TODO: hack
-			if strings.Contains(input, "| repl") {
+			if strings.Contains(expr, "| repl") {
 				replDepth++
 			}
-			if input == "^D" {
+			if expr == "^D" {
 				replDepth--
 			}
 

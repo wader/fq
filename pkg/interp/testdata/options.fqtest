@@ -77,7 +77,7 @@ stderr:
 error: test.jq: file not found
 $ fq -o include_path=path -n options.include_path
 "path"
-$ fq -o join_string=aaa\n -n options.join_string
+$ fq -o 'join_string=aaa\n' -n options.join_string
 "aaa\n"aaa
 $ fq -o line_bytes=true -n options.line_bytes
 16
@@ -115,3 +115,35 @@ $ fq -o verbose=true -n options.verbose
 true
 $ fq -o verbose=aaa -n options.verbose
 false
+$ fq -n "options | {display_bytes, line_bytes}"
+{
+  "display_bytes": 16,
+  "line_bytes": 16
+}
+$ _STDOUT_ISTERMINAL= fq -n  "options | {display_bytes, line_bytes}"
+{
+  "display_bytes": 16,
+  "line_bytes": 16
+}
+$ _STDOUT_WIDTH=160 _STDOUT_HEIGHT=40 fq -n  "options | {display_bytes, line_bytes}"
+{
+  "display_bytes": 20,
+  "line_bytes": 20
+}
+$ _STDOUT_ISTERMINAL= _STDOUT_WIDTH=160 _STDOUT_HEIGHT=40 fq -n  "options | {display_bytes, line_bytes}"
+{
+  "display_bytes": 16,
+  "line_bytes": 16
+}
+$ fq -in
+null> options | {display_bytes, line_bytes}
+{
+  "display_bytes": 16,
+  "line_bytes": 16
+}
+null> _STDOUT_WIDTH=160 _STDOUT_HEIGHT=40 options | {display_bytes, line_bytes}
+{
+  "display_bytes": 20,
+  "line_bytes": 20
+}
+null> ^D

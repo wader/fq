@@ -23,16 +23,10 @@ def _exit_code_input_decode_error: 4;
 def _exit_code_expr_error: 5;
 
 
-# . will have additional array of options taking priority
-# NOTE: is called from go *interp.Interp Options()
-def options($opts):
-  [_default_options] + _options_stack + $opts | add;
-def options: options([{}]);
-
 def _obj_to_csv_kv:
   [to_entries[] | [.key, .value] | join("=")] | join(",");
 
-def _build_default_options:
+def _build_default_fixed_options:
   ( (null | stdout) as $stdout
   | {
       addrbase:       16,
@@ -64,15 +58,12 @@ def _build_default_options:
       decode_format:   "probe",
       decode_progress: (env.NO_DECODE_PROGRESS == null),
       depth:           0,
-      # TODO: intdiv 2 * 2 to get even number, nice or maybe not needed?
-      display_bytes:   (if $stdout.is_terminal then [intdiv(intdiv($stdout.width; 8); 2) * 2, 4] | max else 16 end),
       expr:            ".",
       expr_file:       null,
       expr_eval_path:  "arg",
       filenames:       ["-"],
       include_path:    null,
       join_string:     "\n",
-      line_bytes:      (if $stdout.is_terminal then [intdiv(intdiv($stdout.width; 8); 2) * 2, 4] | max else 16 end),
       null_input:      false,
       rawfile:         [],
       raw_output:      ($stdout.is_terminal | not),
@@ -86,6 +77,15 @@ def _build_default_options:
       string_input:    false,
       unicode:         ($stdout.is_terminal and env.CLIUNICODE != null),
       verbose:         false,
+    }
+  );
+
+def _build_default_dynamic_options:
+  ( (null | stdout) as $stdout
+  | {
+      # TODO: intdiv 2 * 2 to get even number, nice or maybe not needed?
+      display_bytes:   (if $stdout.is_terminal then [intdiv(intdiv($stdout.width; 8); 2) * 2, 4] | max else 16 end),
+      line_bytes:      (if $stdout.is_terminal then [intdiv(intdiv($stdout.width; 8); 2) * 2, 4] | max else 16 end),
     }
   );
 
@@ -160,6 +160,12 @@ def _to_options:
     }
   | with_entries(select(.value != null))
   );
+
+# . will have additional array of options taking priority
+# NOTE: is called from go *interp.Interp Options()
+def options($opts):
+  [_build_default_dynamic_options] + _options_stack + $opts | add;
+def options: options([{}]);
 
 # TODO: currently only make sense to allow keywords start  start a term or directive
 def _complete_keywords:
@@ -306,8 +312,7 @@ def _eval_compile_error_tostring:
   "\(.filename // "src"):\(.line):\(.column): \(.error)";
 
 def _eval($expr; $filename; f; on_error; on_compile_error):
-  ( _default_options(_build_default_options) as $_
-  | try eval($expr; $filename) | f
+  ( try eval($expr; $filename) | f
     catch
       if _eval_is_compile_error then on_compile_error
       else on_error
@@ -723,10 +728,9 @@ def _main:
   | ( try _args_parse($args[1:]; _opts)
       catch halt_error(_exit_code_args_error)
     ) as {parsed: $parsed_args, $rest}
-  | _build_default_options as $default_opts
-  | _default_options($default_opts) as $_
+  | _build_default_fixed_options as $default_fixed_opts
   # combine --args and -o key=value args
-  | ( $default_opts
+  | ( $default_fixed_opts
     + $parsed_args
     + ($parsed_args.option | _to_options)
     ) as $args_opts

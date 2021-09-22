@@ -30,9 +30,6 @@ def _global_var($k; f): _global_state(_global_state | .[$k] |= f) | .[$k];
 def _include_paths: _global_var("include_paths");
 def _include_paths(f): _global_var("include_paths"; f);
 
-def _default_options: _global_var("default_options");
-def _default_options(f): _global_var("default_options"; f);
-
 def _options_stack: _global_var("options_stack");
 def _options_stack(f): _global_var("options_stack"; f);
 
