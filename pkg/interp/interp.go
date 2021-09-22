@@ -33,9 +33,11 @@ import (
 
 //go:embed interp.jq
 //go:embed internal.jq
+//go:embed options.jq
 //go:embed funcs.jq
 //go:embed args.jq
 //go:embed query.jq
+//go:embed repl.jq
 //go:embed formats.jq
 var builtinFS embed.FS
 

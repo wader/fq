@@ -1,11 +1,3 @@
-def print: stdout;
-def println: ., "\n" | stdout;
-def debug:
-  ( ((["DEBUG", .] | tojson), "\n" | stderr)
-  , .
-  );
- def debug(f): . as $c | f | debug | $c;
-
 # eval f and finally eval fin even on empty or error
 def _finally(f; fin):
   ( try f // (fin | empty)
@@ -14,12 +6,27 @@ def _finally(f; fin):
   | .
   );
 
+# TODO: figure out a saner way to force int
+def _to_int: (. % (. + 1));
+
 def _repeat_break(f):
   try repeat(f)
   catch
     if . == "break" then empty
     else error
     end;
+
+# TODO: better way? what about nested eval errors?
+def _eval_is_compile_error: type == "object" and .error != null and .what != null;
+def _eval_compile_error_tostring:
+  "\(.filename // "src"):\(.line):\(.column): \(.error)";
+def _eval($expr; $filename; f; on_error; on_compile_error):
+  ( try eval($expr; $filename) | f
+    catch
+      if _eval_is_compile_error then on_compile_error
+      else on_error
+      end
+  );
 
 def _error_str: "error: \(.)";
 def _errorln: ., "\n" | stderr;

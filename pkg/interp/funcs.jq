@@ -1,5 +1,36 @@
-# TODO: figure out a saner way to force int
-def _to_int: (. % (. + 1));
+def print: stdout;
+def println: ., "\n" | stdout;
+def debug:
+  ( ((["DEBUG", .] | tojson), "\n" | stderr)
+  , .
+  );
+def debug(f): . as $c | f | debug | $c;
+
+# TODO: introspect and show doc, reflection somehow?
+def help:
+  ( "Type jq expression to evaluate"
+  , "\\t          Auto completion"
+  , "Up/Down     History"
+  , "^C          Interrupt execution"
+  , "... | repl  Start a new REPL"
+  , "^D          Exit REPL"
+  ) | println;
+
+def display($opts): _display($opts);
+def display: _display({});
+def d($opts): _display($opts);
+def d: _display({});
+def full($opts): _display({array_truncate: 0} + $opts);
+def full: full({});
+def f($opts): full($opts);
+def f: full;
+def verbose($opts): _display({verbose: true, array_truncate: 0} + $opts);
+def verbose: verbose({});
+def v($opts): verbose($opts);
+def v: verbose;
+
+def formats:
+  _registry.formats;
 
 # integer division
 # inspried by https://github.com/itchyny/gojq/issues/63#issuecomment-765066351
@@ -8,6 +39,12 @@ def intdiv($a; $b):
   | ($b | _to_int) as $b
   | ($a - ($a % $b)) / $b
   );
+
+def _esc: "\u001b";
+def _ansi:
+  {
+    clear_line: "\(_esc)[2K",
+  };
 
 # valid jq identifier, start with alpha or underscore then zero or more alpha, num or underscore
 def _is_ident: type == "string" and test("^[a-zA-Z_][a-zA-Z_0-9]*$");
