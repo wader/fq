@@ -146,14 +146,14 @@ def _repl_eval($expr): _eval($expr; "repl"; _repl_display; _repl_on_error; _repl
 # run read-eval-print-loop
 def _repl($opts): #:: a|(Opts) => @
   def _read_expr:
-    # both _prompt and _complete want arrays
-    ( . as $c
-    | _readline(_prompt; {complete: "_complete", timeout: 0.5})
-    | if trim == "" then
-        $c | _read_expr
-      end
+    _repeat_break(
+      # both _prompt and _complete want input arrays
+      ( _readline(_prompt; {complete: "_complete", timeout: 0.5})
+      | if trim == "" then empty
+        else (., error("break"))
+        end
+      )
     );
-
   def _repl_loop:
     ( . as $c
     | try
