@@ -142,6 +142,10 @@ notable is support for arbitrary-precision integers.
   - `format_root/0` return root value of format for value
   - `parent/0` return parent value
   - `parents/0` output parents of value
+  - `grep/1`, `grep/2` recursively match value and buffer
+  - `vgrep/1`, `vgrep/2` recursively match value
+  - `bgrep/1`, `bgrep/2` recursively match buffer
+  - `fgrep/1`, `fgrep/2` recursively match field name
 - `open` open file for reading
 - `probe` or `decode` probe format and decode
 - `mp3`, `matroska`, ..., `<name>`, `decode([name])` force decode as format

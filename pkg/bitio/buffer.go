@@ -1,13 +1,5 @@
 package bitio
 
-// not concurrency safe as bitsBuf is reused
-
-// TODO:
-// cache pos, len
-// inline for speed?
-// F -> FLT?
-// UTF16/UTF32
-
 import (
 	"bytes"
 	"errors"
@@ -20,6 +12,7 @@ import (
 type Buffer struct {
 	br interface {
 		io.Reader // both Reader and SectionBitReader implement io.Reader
+		io.Seeker
 		BitReadSeeker
 		BitReader
 		BitReaderAt
@@ -51,6 +44,7 @@ func NewBufferFromReadSeeker(rs io.ReadSeeker) (*Buffer, error) {
 
 func NewBufferFromBitReadSeeker(br interface {
 	io.Reader
+	io.Seeker
 	BitReadSeeker
 	BitReaderAt
 }) (*Buffer, error) {
@@ -173,6 +167,10 @@ func (b *Buffer) SeekBits(bitOffset int64, whence int) (int64, error) {
 
 func (b *Buffer) Read(p []byte) (n int, err error) {
 	return b.br.Read(p)
+}
+
+func (b *Buffer) Seek(offset int64, whence int) (int64, error) {
+	return b.br.Seek(offset, whence)
 }
 
 // BytesRange reads nBytes bytes starting bit position start

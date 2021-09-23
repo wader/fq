@@ -21,6 +21,7 @@ def display: _display({});
 def d($opts): _display($opts);
 def d: _display({});
 def full($opts): _display({array_truncate: 0} + $opts);
+# TODO: rename, gets mixed up with f args often
 def full: full({});
 def f($opts): full($opts);
 def f: full;

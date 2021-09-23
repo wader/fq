@@ -33,9 +33,11 @@ func (err notUpdateableError) Error() string {
 }
 
 // TODO: rename
-type valueIf interface {
+type DecodeValue interface {
 	Value
 	ToBufferView
+
+	DecodeValue() *decode.Value
 }
 
 func valueKey(name string, a, b func(name string) interface{}) interface{} {
@@ -55,7 +57,7 @@ func valueHas(key interface{}, a func(name string) interface{}, b func(key inter
 	return b(key)
 }
 
-func makeDecodeValue(dv *decode.Value) valueIf {
+func makeDecodeValue(dv *decode.Value) DecodeValue {
 	switch vv := dv.V.(type) {
 	case decode.Array:
 		return NewArrayDecodeValue(dv, vv)
@@ -113,7 +115,6 @@ func makeDecodeValue(dv *decode.Value) valueIf {
 			JQValue:         gojqextra.Null{},
 			decodeValueBase: decodeValueBase{dv},
 		}
-
 	default:
 		panic("unreachable")
 	}
@@ -121,6 +122,10 @@ func makeDecodeValue(dv *decode.Value) valueIf {
 
 type decodeValueBase struct {
 	dv *decode.Value
+}
+
+func (dvb decodeValueBase) DecodeValue() *decode.Value {
+	return dvb.dv
 }
 
 func (dvb decodeValueBase) DisplayName() string {
@@ -226,7 +231,7 @@ func (dvb decodeValueBase) JQValueKey(name string) interface{} {
 	return expectedExtkeyError{Key: name}
 }
 
-var _ valueIf = decodeValue{}
+var _ DecodeValue = decodeValue{}
 
 type decodeValue struct {
 	gojq.JQValue
@@ -242,7 +247,8 @@ func (v decodeValue) JQValueHas(key interface{}) interface{} {
 
 // string (*bitio.Buffer)
 
-var _ valueIf = BufferDecodeValue{}
+var _ DecodeValue = BufferDecodeValue{}
+var _ JQValueEx = BufferDecodeValue{}
 
 type BufferDecodeValue struct {
 	gojqextra.Base
@@ -300,8 +306,8 @@ func (v BufferDecodeValue) JQValueToString() interface{} {
 func (v BufferDecodeValue) JQValueToGoJQ() interface{} {
 	return v.JQValueToString()
 }
-func (v BufferDecodeValue) JQValueToGoJQEx(opts Options) interface{} {
-	s, err := opts.BitsFormatFn(v.Buffer.Copy())
+func (v BufferDecodeValue) JQValueToGoJQEx(optsFn func() Options) interface{} {
+	s, err := optsFn().BitsFormatFn(v.Buffer.Copy())
 	if err != nil {
 		return err
 	}
@@ -310,7 +316,7 @@ func (v BufferDecodeValue) JQValueToGoJQEx(opts Options) interface{} {
 
 // decode value array
 
-var _ valueIf = ArrayDecodeValue{}
+var _ DecodeValue = ArrayDecodeValue{}
 
 type ArrayDecodeValue struct {
 	gojqextra.Base
@@ -384,7 +390,7 @@ func (v ArrayDecodeValue) JQValueToGoJQ() interface{} {
 
 // decode value struct
 
-var _ valueIf = StructDecodeValue{}
+var _ DecodeValue = StructDecodeValue{}
 
 type StructDecodeValue struct {
 	gojqextra.Base

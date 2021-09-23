@@ -1,5 +1,6 @@
 include "internal";
 include "funcs";
+include "grep";
 include "options";
 include "args";
 include "repl";

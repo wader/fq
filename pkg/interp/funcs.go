@@ -15,9 +15,9 @@ import (
 	"io"
 	"io/fs"
 	"io/ioutil"
-	"log"
 	"math/big"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/mitchellh/mapstructure"
@@ -28,6 +28,7 @@ import (
 	"github.com/wader/fq/internal/progressreadseeker"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/ranges"
 
 	"github.com/wader/gojq"
 )
@@ -53,6 +54,7 @@ func (i *Interp) makeFunctions() []Function {
 
 		{[]string{"open"}, 0, 0, i._open, nil},
 		{[]string{"_decode"}, 2, 2, i._decode, nil},
+		{[]string{"_is_decode_value"}, 0, 0, i._isDecodeValue, nil},
 
 		{[]string{"format"}, 0, 0, i.format, nil},
 		{[]string{"_display"}, 1, 1, nil, i._display},
@@ -93,7 +95,7 @@ func (i *Interp) makeFunctions() []Function {
 		{[]string{"path_unescape"}, 0, 0, i.pathUnescape, nil},
 		{[]string{"aes_ctr"}, 1, 2, i.aesCtr, nil},
 
-		{[]string{"find"}, 1, 1, nil, i.find},
+		{[]string{"find"}, 1, 2, nil, i.find},
 	}
 
 	return fs
@@ -650,6 +652,11 @@ func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
 	return makeDecodeValue(dv)
 }
 
+func (i *Interp) _isDecodeValue(c interface{}, a []interface{}) interface{} {
+	_, ok := c.(DecodeValue)
+	return ok
+}
+
 func (i *Interp) format(c interface{}, a []interface{}) interface{} {
 	cj, ok := c.(gojq.JQValue)
 	if !ok {
@@ -663,10 +670,7 @@ func (i *Interp) format(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) _display(c interface{}, a []interface{}) gojq.Iter {
-	opts, err := i.Options(a...)
-	if err != nil {
-		return gojq.NewIter(err)
-	}
+	opts := i.OptionsEx(a...)
 
 	switch v := c.(type) {
 	case Display:
@@ -713,11 +717,10 @@ func (i *Interp) toBits(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) toValue(c interface{}, a []interface{}) interface{} {
-	opts, err := i.Options(append([]interface{}{}, a...)...)
-	if err != nil {
-		return err
-	}
-	v, _ := toValue(opts, c)
+	v, _ := toValue(
+		func() Options { return i.OptionsEx(append([]interface{}{}, a...)...) },
+		c,
+	)
 	return v
 }
 
@@ -806,45 +809,81 @@ func (i *Interp) aesCtr(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) find(c interface{}, a []interface{}) gojq.Iter {
-	bb, err := toBuffer(c)
+	var ok bool
+
+	bv, err := toBufferView(c)
 	if err != nil {
 		return gojq.NewIter(err)
 	}
 
-	sbb, err := toBuffer(a[0])
+	var re string
+	re, ok = a[0].(string)
+	if !ok {
+		return gojq.NewIter(gojqextra.FuncTypeError{Name: "find", Typ: "string"})
+	}
+
+	var flags string
+	if len(a) > 1 {
+		flags, ok = a[1].(string)
+		if !ok {
+			return gojq.NewIter(gojqextra.FuncTypeError{Name: "find", Typ: "string"})
+		}
+	}
+
+	// TODO: err to string
+	// TODO: extract to regexpextra? "all" FindReaderSubmatchIndex that can iter?
+	sre, err := gojqextra.CompileRegexp(re, "gimb", flags)
 	if err != nil {
 		return gojq.NewIter(err)
 	}
 
-	log.Printf("sbb: %#+v\n", sbb)
-
-	// TODO: error, bitio.Copy?
-
-	bbBytes := &bytes.Buffer{}
-	_, _ = io.Copy(bbBytes, bb)
-
-	sbbBytes := &bytes.Buffer{}
-	_, _ = io.Copy(sbbBytes, sbb)
-
-	// log.Printf("bbBytes.Bytes(): %#+v\n", bbBytes.Bytes())
-	// log.Printf("sbbBytes.Bytes(): %#+v\n", sbbBytes.Bytes())
-
-	idx := bytes.Index(bbBytes.Bytes(), sbbBytes.Bytes())
-	if idx == -1 {
-		return gojq.NewIter()
+	bb, err := bv.toBuffer()
+	if err != nil {
+		return gojq.NewIter(err)
 	}
 
-	bbo := bufferViewFromBuffer(bb, 8)
-	// log.Printf("bbo: %#+v\n", bbo)
+	var rr interface {
+		io.RuneReader
+		io.Seeker
+	}
+	if strings.Contains(flags, "b") {
+		// byte mode, read each byte as a rune
+		rr = ioextra.ByteRuneReader{RS: bb}
+	} else {
+		rr = ioextra.RuneReadSeeker{RS: bb}
+	}
 
-	return gojq.NewIter(bbo)
+	var off int64
+	return iterFn(func() (interface{}, bool) {
+		_, err = rr.Seek(off, io.SeekStart)
+		if err != nil {
+			return err, false
+		}
+
+		// TODO: groups
+		l := sre.FindReaderSubmatchIndex(rr)
+		if l == nil {
+			return nil, false
+		}
+
+		matchBitOff := (off + int64(l[0])) * 8
+		bbo := BufferView{
+			bb: bv.bb,
+			r: ranges.Range{
+				Start: bv.r.Start + matchBitOff,
+				Len:   bb.Len() - matchBitOff,
+			},
+			unit: 8,
+		}
+
+		off = off + int64(l[1])
+
+		return bbo, true
+	})
 }
 
 func (i *Interp) _hexdump(c interface{}, a []interface{}) gojq.Iter {
-	opts, err := i.Options(a...)
-	if err != nil {
-		return gojq.NewIter(err)
-	}
+	opts := i.OptionsEx(a...)
 	bv, err := toBufferView(c)
 	if err != nil {
 		return gojq.NewIter(err)

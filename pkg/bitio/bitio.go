@@ -1,8 +1,5 @@
 package bitio
 
-// TODO: should return int64?
-// TODO: document len(p)/nBits, should be +1 for when not aligned
-
 import (
 	"errors"
 	"io"
@@ -346,8 +343,8 @@ func (r *SectionBitReader) Read(p []byte) (n int, err error) {
 }
 
 func (r *SectionBitReader) Seek(offset int64, whence int) (int64, error) {
-	seekBytePos, err := r.SeekBits(offset*8, whence)
-	return seekBytePos * 8, err
+	seekBitsPos, err := r.SeekBits(offset*8, whence)
+	return seekBitsPos / 8, err
 }
 
 // TODO: smart, track index?
@@ -442,4 +439,9 @@ func (m *MultiBitReader) Read(p []byte) (n int, err error) {
 	}
 
 	return int(BitsByteCount(int64(n))), nil
+}
+
+func (m *MultiBitReader) Seek(offset int64, whence int) (int64, error) {
+	seekBitsPos, err := m.SeekBits(offset*8, whence)
+	return seekBitsPos / 8, err
 }

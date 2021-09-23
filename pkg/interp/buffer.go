@@ -61,6 +61,7 @@ func (bv BufferView) JQValueLength() interface{} {
 func (bv BufferView) JQValueSliceLen() interface{} {
 	return bv.JQValueLength()
 }
+
 func (bv BufferView) JQValueIndex(index int) interface{} {
 	if index < 0 {
 		return ""

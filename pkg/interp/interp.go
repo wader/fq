@@ -32,8 +32,9 @@ import (
 
 //go:embed interp.jq
 //go:embed internal.jq
-//go:embed options.jq
 //go:embed funcs.jq
+//go:embed grep.jq
+//go:embed options.jq
 //go:embed args.jq
 //go:embed query.jq
 //go:embed repl.jq
@@ -184,7 +185,7 @@ type ToBufferView interface {
 }
 
 type JQValueEx interface {
-	JQValueToGoJQEx(opts Options) interface{}
+	JQValueToGoJQEx(optsFn func() Options) interface{}
 }
 
 func valuePath(v *decode.Value) []interface{} {
@@ -356,10 +357,11 @@ func toBufferView(v interface{}) (BufferView, error) {
 	}
 }
 
-func toValue(opts Options, v interface{}) (interface{}, bool) {
+// optsFn is a function as toValue is used by tovalue/0 so needs to be fast
+func toValue(optsFn func() Options, v interface{}) (interface{}, bool) {
 	switch v := v.(type) {
 	case JQValueEx:
-		return v.JQValueToGoJQEx(opts), true
+		return v.JQValueToGoJQEx(optsFn), true
 	case gojq.JQValue:
 		return v.JQValueToGoJQ(), true
 	case nil, bool, float64, int, string, *big.Int, map[string]interface{}, []interface{}:
@@ -859,26 +861,30 @@ func (i *Interp) variables() map[string]interface{} {
 	return variablesAny
 }
 
-func (i *Interp) Options(fnOptsV ...interface{}) (Options, error) {
-	vs, err := i.EvalFuncValues(i.evalContext.ctx, nil, "options", []interface{}{fnOptsV}, DiscardCtxWriter{Ctx: i.evalContext.ctx})
-	if err != nil {
-		return Options{}, err
-	}
-	if len(vs) < 1 {
-		return Options{}, fmt.Errorf("no options value")
-	}
-	v := vs[0]
-	if vErr, ok := v.(error); ok {
-		return Options{}, vErr
-	}
-	m, ok := v.(map[string]interface{})
-	if !ok {
-		return Options{}, fmt.Errorf("options value not a map: %v", m)
-	}
+func (i *Interp) OptionsEx(fnOptsV ...interface{}) Options {
+	opts := func() Options {
+		vs, err := i.EvalFuncValues(i.evalContext.ctx, nil, "options", []interface{}{fnOptsV}, DiscardCtxWriter{Ctx: i.evalContext.ctx})
+		if err != nil {
+			return Options{}
+		}
+		if len(vs) < 1 {
+			return Options{}
+		}
+		v := vs[0]
+		if _, ok := v.(error); ok {
+			return Options{}
+		}
+		m, ok := v.(map[string]interface{})
+		if !ok {
+			return Options{}
+		}
+		var opts Options
+		_ = mapstructure.Decode(m, &opts)
+		opts.Depth = num.MaxInt(0, opts.Depth)
 
-	var opts Options
-	_ = mapstructure.Decode(m, &opts)
-	opts.Depth = num.MaxInt(0, opts.Depth)
+		return opts
+	}()
+
 	opts.ArrayTruncate = num.MaxInt(0, opts.ArrayTruncate)
 	opts.AddrBase = num.ClampInt(2, 36, opts.AddrBase)
 	opts.SizeBase = num.ClampInt(2, 36, opts.SizeBase)
@@ -887,7 +893,11 @@ func (i *Interp) Options(fnOptsV ...interface{}) (Options, error) {
 	opts.Decorator = decoratorFromOptions(opts)
 	opts.BitsFormatFn = bitsFormatFnFromOptions(opts)
 
-	return opts, nil
+	return opts
+}
+
+func (i *Interp) Options() Options {
+	return i.OptionsEx(nil)
 }
 
 func (i *Interp) NewColorJSON(opts Options) (*colorjson.Encoder, error) {
@@ -901,7 +911,7 @@ func (i *Interp) NewColorJSON(opts Options) (*colorjson.Encoder, error) {
 		false,
 		indent,
 		func(v interface{}) interface{} {
-			if v, ok := toValue(opts, v); ok {
+			if v, ok := toValue(func() Options { return opts }, v); ok {
 				return v
 			}
 			panic(fmt.Sprintf("toValue not a JQValue value: %#v", v))
