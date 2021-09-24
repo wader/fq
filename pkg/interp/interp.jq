@@ -2,7 +2,6 @@ include "internal";
 include "funcs";
 include "options";
 include "args";
-include "query";
 include "repl";
 # generated decode functions per format and format helpers
 include "formats";

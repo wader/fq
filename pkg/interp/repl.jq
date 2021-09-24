@@ -1,3 +1,5 @@
+include "query";
+
 # TODO: currently only make sense to allow keywords start  start a term or directive
 def _complete_keywords:
   [

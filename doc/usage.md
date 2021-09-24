@@ -1,4 +1,4 @@
-### Basic usage
+## Basic usage
 
 fq tries to behave the same way as jq as much as possible, so you can do:
 ```
@@ -9,7 +9,7 @@ fq . *.png *.jpg
 fq '.frames[0]' file.mp3
 ```
 
-### Interactive REPL
+## Interactive REPL
 
 fq has an interactive [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop)
 with auto completion and nested REPL support:
@@ -33,17 +33,44 @@ mp3> 1+1
 mp3> .
 # access the first frame in the mp3 file
 mp3> .frames[0]
-# start a new REPl with first frame as input
+# start a new nested REPl with first frame as input
 mp3> .frames[0] | repl
+# prompt shows "path" to current input and that it's an mp3_frame.
+# do Ctrl-D to exit REPL
+> .frames[0] mp3_frame> ^D
+# do Ctrl-D to exit to shell
+mp3> ^D
+$
 ```
 
-Use Ctrl-C to exits REPL, Ctrl-C to interrupt current evaluation.
+Use Ctrl-D to exits, Ctrl-C to interrupt current evaluation.
+
+## The jq langauge
+
+fq is based on the [jq language](https://stedolan.github.io/jq/) and for basic usage its syntax
+is similar to how object and array access looks in JavaScript or JSON path, `.food[10]` etc.
+
+To get the most out of fq it's recommended to learn more about jq, here are some good starting points:
+
+- [jq manual](https://stedolan.github.io/jq/manual/)
+- jq wiki pages
+[jq Language Description](https://github.com/stedolan/jq/wiki/jq-Language-Description),
+[jq wiki page Cookbook](https://github.com/stedolan/jq/wiki/Cookbook),
+[FAQ](https://github.com/stedolan/jq/wiki/FAQ) and
+[Pitfalls](https://github.com/stedolan/jq/wiki/How-to:-Avoid-Pitfalls)
+
+The most common beginner gotcha is probably jq's use of `;` and `,`. jq uses `;` as argument separator
+and `,` as output separator.
+To call a function `f` with two arguments use `f(1; 2)`. If you do `f(1, 2)` you pass a single
+argument `1, 2` (a lambda expression that output `1` and then output `2`) to `f`.
 
 ## Support formats
 
 See [formats](formats.md)
 
-### Arguments
+## Arguments
+
+TODO: examples, stdin/stdout
 
 <pre sh>
 $ fq -h 
@@ -76,49 +103,31 @@ Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 --version,-v             Show version
 </pre>
 
-### Running
+## Use as script interpreter
 
-- TODO: stdin/stdout
+fq can be used as a scrip interpreter:
 
-### Script
+`mp3_duration.jq`:
+```jq
+#!/usr/bin/env fq -d mp3 -rf
+[.frames[].header | .sample_count / .sample_rate] | add
+```
 
-- TODO: #!
-
-## Langauge
-
-fq is based on the [jq language](https://stedolan.github.io/jq/) and for basic usage its syntax
-is similar to how object and array access looks in JavaScript or JSON path, `.food[10]` etc.
-
-To get the most out of fq it's recommended to learn more about jq, here are some good starting points:
-
-- [jq manual](https://stedolan.github.io/jq/manual/)
-- [jq Cookbook](https://github.com/stedolan/jq/wiki/Cookbook),
-[FAQ](https://github.com/stedolan/jq/wiki/FAQ),
-[Pitfalls](https://github.com/stedolan/jq/wiki/How-to:-Avoid-Pitfalls)
-
-The most common beginner gotcha is probably jq's use of `;` and `,`. jq uses `;` as argument separator
-and `,` as output separator.
-To call `f` with two arguments use `f(a; b)`. If you do `f(a, b)` you pass a single
-argument `a, b` to `f`.
-
-### Basics
-
-TODO
-
-### Differences to jq
+## Differences to jq
 
 - [gojq's differences to jq](https://github.com/itchyny/gojq#difference-to-jq),
 notable is support for arbitrary-precision integers.
-- Supports hexdecimal `0xab`, octal `0o77` and binary `0b101` integer literals
-- Has bitwise operations, `band`, `bor`, `bxor`, `bsl`, `bsr`, `bnot`
-- Try include `include "file?";` that don't fail if file is missing
-- Possible for a value to act as a object with keys even when it's an array, number etc.
+- Supports hexdecimal `0xab`, octal `0o77` and binary `0b101` integer literals.
+- Has bitwise operations, `band`, `bor`, `bxor`, `bsl`, `bsr`, `bnot`.
+- Try include `include "file?";` that don't fail if file is missing.
+- Some values can act as a object with keys even when it's an array, number etc.
 - There can be keys hidden from `keys` and `[]`. Used for, `_format`, `_bytes` etc.
-- Some values do not support to be updated
+- Some values are readonly and can't be updated.
 
-### Functions
+## Functions
 
 - All standard library functions from jq
+- Add a few new functions:
   - `streaks/0`, `streaks_by/1` like `group` but groups streaks based on condition.
   - `count`, `count_by/1` like `group` but counts groups lengths.
   - `debug/1` like `debug/0` but uses arg to produce debug message. `{a: 123} | debug({a}) | ...`.
@@ -135,12 +144,12 @@ notable is support for arbitrary-precision integers.
 - `v`/`verbose` display value verbosely and don't truncate array
 - `p`/`preview` show preview of field tree
 - `hd`/`hexdump` hexdump value
-- `repl` nested REPL, must be last in a pipeline. `1 | repl` or "slurp" multiple outputs `1, 2, 3 | repl`.
+- `repl` nested REPL, must be last in a pipeline. `1 | repl`, can "slurp" multiple outputs `1, 2, 3 | repl`.
 
-### Decoded values (TODO: better name?)
+## Decoded values (TODO: better name?)
 
-When you decode something successfully in fq you will get a value. A value work a bit like
-jq object with special abilities and is used to represent a tree structure of the decoded
+When you decode something you will get a decode value. A decode values work like
+normal jq values but has special abilities and is used to represent a tree structure of the decoded
 binary data. Each value always has a name, type and a bit range.
 
 A value has these special keys:
@@ -161,7 +170,7 @@ A value has these special keys:
 
 - TODO: unknown gaps
 
-### Binary and IO lists
+## Binary and IO lists
 
 - TODO: similar to erlang io lists, [], binary, string (utf8) and numbers
 
@@ -185,9 +194,9 @@ fq -i
 null>
 ```
 
-### `.. | select(...)` fails with `expected an ... but got: ...`
+### `select` fails with `expected an ... but got: ...`
 
-Try add `select(...)?` to catch type errors in the select expression.
+Try add `select(...)?` to catch and ignore type errors in the select expression.
 
 ### Manual decode
 
@@ -201,10 +210,10 @@ $ fq file.mp3 .unknown0 mp3_frame
 $ fq file.mp3 .unknown0._bytes[10:] mp3_frame
 </pre>
 
-### Pass `.` as input and argument
+### Use `.` as input and in a positional argument
 
-This won't work as expected `.a | f(.b)` as `.` is `.a` when evaluating the arguments.
-Instead do `. as $c | .a | f($c.b)`.
+The expression `.a | f(.b)` might not work as expected. `.` is `.a` when evaluating the arguments so
+the positional argument will end up being `.a.b`. Instead do `. as $c | .a | f($c.b)`.
 
 ### Building array is slow
 
