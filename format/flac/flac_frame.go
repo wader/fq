@@ -60,7 +60,7 @@ func utf8Uint(d *decode.D) uint64 {
 		// nop
 	case 1:
 		// TODO: error
-		panic("invalid UTF8Uint")
+		d.Invalid("invalid UTF8Uint")
 	default:
 		n = n & ((1 << (8 - c - 1)) - 1)
 		for i := 1; i < c; i++ {
@@ -247,6 +247,9 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			}
 			return u, decode.NumberDecimal, disp
 		})
+		if channels == 0 {
+			d.Invalid("unknown number of channels")
+		}
 
 		// <3> Sample size in bits:
 		// 000 : get from STREAMINFO metadata block
