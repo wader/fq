@@ -1,4 +1,4 @@
-all: test
+all: test fq
 
 .PHONY: fq
 fq: VERSION=$(shell git describe --all --long --dirty 2>/dev/null || echo nogit)
@@ -6,21 +6,17 @@ fq:
 	CGO_ENABLED=0 go build -ldflags "-s -w -X main.version=${VERSION}" -trimpath -o fq .
 
 .PHONY: test
+test: testgo testjq testcli
+
+.PHONY: testgo
 # figure out all go pakges with test files
-test: PKGS=$(shell find . -name "*_test.go" | xargs -n 1 dirname | sort | uniq)
-test: testjq testcli
+testgo: PKGS=$(shell find . -name "*_test.go" | xargs -n 1 dirname | sort | uniq)
+testgo:
 	go test ${VERBOSE} ${COVER} ${PKGS}
 
-testv: export VERBOSE=-v
-testv: test
-
-actual: export WRITE_ACTUAL=1
-actual: test
-
-cover: COVER=-cover -race -coverpkg=./... -coverprofile=cover.out
-cover: test
-	go tool cover -html=cover.out -o cover.out.html
-	cat cover.out.html | grep '<option value="file' | sed -E 's/.*>(.*) \((.*)%\)<.*/\2 \1/' | sort -rn
+.PHONY: testgov
+testgov: export VERBOSE=-v
+testgov: testgo
 
 .PHONY: testjq
 testjq: fq
@@ -29,6 +25,14 @@ testjq: fq
 .PHONY: testcli
 testcli: fq
 	@pkg/cli/test.sh ./fq pkg/cli/test.exp
+
+actual: export WRITE_ACTUAL=1
+actual: testgo
+
+cover: COVER=-cover -race -coverpkg=./... -coverprofile=cover.out
+cover: test
+	go tool cover -html=cover.out -o cover.out.html
+	cat cover.out.html | grep '<option value="file' | sed -E 's/.*>(.*) \((.*)%\)<.*/\2 \1/' | sort -rn
 
 .PHONY: doc
 doc: fq doc/file.mp3 doc/file.mp4 doc/formats.svg

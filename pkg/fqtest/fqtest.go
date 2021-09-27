@@ -399,12 +399,12 @@ func parseTestCases(s string) *testCase {
 	te := &testCase{}
 	te.parts = []part{}
 	var currentTestRun *testCaseRun
-	const promptEnd = "> "
+	const promptEnd = ">"
 	replDepth := 0
 
 	// TODO: better section splitter, too much heuristics now
 	for _, section := range SectionParser(regexp.MustCompile(
-		`^\$ .*$|^stdin:$|^stderr:$|^exitcode:.*$|^#.*$|^/.*:|^[^|]+> .*$`,
+		`^\$ .*$|^stdin:$|^stderr:$|^exitcode:.*$|^#.*$|^/.*:|^[^<:|]+>.*$`,
 	), s) {
 		n, v := section.Name, section.Value
 
@@ -446,8 +446,8 @@ func parseTestCases(s string) *testCase {
 		case strings.Contains(n, promptEnd): // TODO: better
 			i := strings.LastIndex(n, promptEnd)
 
-			prompt := n[0:i] + promptEnd
-			expr := n[i+2:]
+			prompt := n[0:i] + promptEnd + " "
+			expr := strings.TrimSpace(n[i+1:])
 			env, input := parseInput(expr)
 
 			currentTestRun.readlines = append(currentTestRun.readlines, testCaseReadline{

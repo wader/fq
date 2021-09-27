@@ -76,12 +76,14 @@ mp3> .headers[0].version._bits | ., type, length?
 <8 bits>
 "buffer"
 8
+mp3> 
 mp3> .headers[0].version._bytes | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
 0x0|04                                             |.               |
 <1 bytes>
 "buffer"
 1
+mp3> 
 mp3> .headers[0].version._error | ., type, length?
 null
 "null"

@@ -169,12 +169,14 @@ mp3> .headers._bits | ., type, length?
 <360 bits>
 "buffer"
 360
+mp3> 
 mp3> .headers._bytes | ., type, length?
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
 0x00|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|
 <45 bytes>
 "buffer"
 45
+mp3> 
 mp3> .headers._error | ., type, length?
 null
 "null"
