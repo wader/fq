@@ -23,6 +23,7 @@ func init() {
 	})
 }
 
+//nolint:revive
 const (
 	SHT_NULL          = 0x0
 	SHT_PROGBITS      = 0x1
@@ -377,6 +378,7 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 				var shname string
 				var typ uint64
 
+				//nolint:revive
 				const (
 					DT_NULL     = 0
 					DT_NEEDED   = 1

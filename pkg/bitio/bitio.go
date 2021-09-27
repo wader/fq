@@ -343,13 +343,13 @@ func (r *SectionBitReader) Seek(offset int64, whence int) (int64, error) {
 }
 
 // TODO: smart, track index?
-type multiBitReader struct {
+type MultiBitReader struct {
 	pos        int64
 	readers    []BitReadAtSeeker
 	readerEnds []int64
 }
 
-func NewMultiBitReader(rs []BitReadAtSeeker) (*multiBitReader, error) {
+func NewMultiBitReader(rs []BitReadAtSeeker) (*MultiBitReader, error) {
 	readerEnds := make([]int64, len(rs))
 	var esSum int64
 	for i, r := range rs {
@@ -360,10 +360,10 @@ func NewMultiBitReader(rs []BitReadAtSeeker) (*multiBitReader, error) {
 		esSum += e
 		readerEnds[i] = esSum
 	}
-	return &multiBitReader{readers: rs, readerEnds: readerEnds}, nil
+	return &MultiBitReader{readers: rs, readerEnds: readerEnds}, nil
 }
 
-func (m *multiBitReader) ReadBitsAt(p []byte, nBits int, bitOff int64) (n int, err error) {
+func (m *MultiBitReader) ReadBitsAt(p []byte, nBits int, bitOff int64) (n int, err error) {
 	end := m.readerEnds[len(m.readers)-1]
 	if end <= bitOff {
 		return 0, io.EOF
@@ -390,13 +390,13 @@ func (m *multiBitReader) ReadBitsAt(p []byte, nBits int, bitOff int64) (n int, e
 	return rBits, err
 }
 
-func (m *multiBitReader) ReadBits(p []byte, nBits int) (n int, err error) {
+func (m *MultiBitReader) ReadBits(p []byte, nBits int) (n int, err error) {
 	n, err = m.ReadBitsAt(p, nBits, m.pos)
 	m.pos += int64(n)
 	return n, err
 }
 
-func (m *multiBitReader) SeekBits(bitOff int64, whence int) (int64, error) {
+func (m *MultiBitReader) SeekBits(bitOff int64, whence int) (int64, error) {
 	var p int64
 	end := m.readerEnds[len(m.readerEnds)-1]
 
@@ -419,7 +419,7 @@ func (m *multiBitReader) SeekBits(bitOff int64, whence int) (int64, error) {
 	return p, nil
 }
 
-func (m *multiBitReader) Read(p []byte) (n int, err error) {
+func (m *MultiBitReader) Read(p []byte) (n int, err error) {
 	n, err = m.ReadBitsAt(p, len(p)*8, m.pos)
 	m.pos += int64(n)
 

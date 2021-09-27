@@ -14,6 +14,7 @@ func init() {
 	})
 }
 
+//nolint:revive
 const (
 	OBU_SEQUENCE_HEADER        = 1
 	OBU_TEMPORAL_DELIMITER     = 2

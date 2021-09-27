@@ -95,11 +95,11 @@ func (r *Registry) Group(name string) ([]*decode.Format, error) {
 }
 
 func (r *Registry) MustGroup(name string) []*decode.Format {
-	if g, err := r.Group(name); err == nil {
+	g, err := r.Group(name)
+	if err == nil {
 		return g
-	} else {
-		panic(err)
 	}
+	panic(err)
 }
 
 func (r *Registry) MustAll() []*decode.Format {

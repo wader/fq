@@ -363,7 +363,7 @@ func (i *Interp) queryToString(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) _displayName(c interface{}, a []interface{}) interface{} {
-	qo, ok := c.(InterpValue)
+	qo, ok := c.(Value)
 	if !ok {
 		return fmt.Errorf("%v: value is not query object", c)
 	}
@@ -371,7 +371,7 @@ func (i *Interp) _displayName(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) _extKeys(c interface{}, a []interface{}) interface{} {
-	if v, ok := c.(InterpValue); ok {
+	if v, ok := c.(Value); ok {
 		var vs []interface{}
 		for _, s := range v.ExtKeys() {
 			vs = append(vs, s)
@@ -629,13 +629,13 @@ func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
 	}
 
 	dv, _, err := decode.Decode(i.evalContext.ctx, bb, decodeFormats,
-		decode.DecodeOptions{
+		decode.Options{
 			Description:   opts.Filename,
 			FormatOptions: opts.Remain,
 		},
 	)
 	if dv == nil {
-		var decodeFormatsErr decode.DecodeFormatsError
+		var decodeFormatsErr decode.FormatsError
 		if errors.As(err, &decodeFormatsErr) {
 			var vs []interface{}
 			for _, fe := range decodeFormatsErr.Errs {

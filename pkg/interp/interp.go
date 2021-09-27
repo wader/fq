@@ -66,12 +66,12 @@ func (ce compileError) Value() interface{} {
 		"column":   ce.pos.Column,
 	}
 }
-func (ee compileError) Error() string {
-	filename := ee.filename
+func (ce compileError) Error() string {
+	filename := ce.filename
 	if filename == "" {
 		filename = "src"
 	}
-	return fmt.Sprintf("%s:%d:%d: %s: %s", filename, ee.pos.Line, ee.pos.Column, ee.what, ee.err.Error())
+	return fmt.Sprintf("%s:%d:%d: %s: %s", filename, ce.pos.Line, ce.pos.Column, ce.what, ce.err.Error())
 }
 
 var ErrEOF = io.EOF
@@ -169,7 +169,7 @@ func (o CtxWriter) Write(p []byte) (n int, err error) {
 	return o.Writer.Write(p)
 }
 
-type InterpValue interface {
+type Value interface {
 	gojq.JQValue
 
 	DisplayName() string
@@ -313,14 +313,14 @@ func toBufferEx(v interface{}, inArray bool) (*bitio.Buffer, error) {
 		if inArray {
 			b := [1]byte{byte(bi.Uint64())}
 			return bitio.NewBufferFromBytes(b[:], -1), nil
-		} else {
-			padBefore := (8 - (bi.BitLen() % 8)) % 8
-			bb, err := bitio.NewBufferFromBytes(bi.Bytes(), -1).BitBufRange(int64(padBefore), int64(bi.BitLen()))
-			if err != nil {
-				return nil, err
-			}
-			return bb, nil
 		}
+
+		padBefore := (8 - (bi.BitLen() % 8)) % 8
+		bb, err := bitio.NewBufferFromBytes(bi.Bytes(), -1).BitBufRange(int64(padBefore), int64(bi.BitLen()))
+		if err != nil {
+			return nil, err
+		}
+		return bb, nil
 	case []interface{}:
 		var rr []bitio.BitReadAtSeeker
 		// TODO: optimize byte array case

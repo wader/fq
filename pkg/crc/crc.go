@@ -12,7 +12,7 @@ func MakeTable(poly int, bits int) Table {
 
 	for i := 0; i < 256; i++ {
 		// note sure about -8 for > 16 bit crc
-		var crc uint = uint(i << (bits - 8))
+		crc := uint(i << (bits - 8))
 		for j := 0; j < 8; j++ {
 			if crc&(1<<(bits-1)) != 0 {
 				crc = ((crc << 1) ^ uint(poly)) & mask

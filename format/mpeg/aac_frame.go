@@ -43,6 +43,7 @@ var SyntaxElementNames = map[uint64]string{
 	TERM: "TERM",
 }
 
+//nolint:revive
 const (
 	EXT_FILL          = 0x0
 	EXT_FILL_DATA     = 0x1
@@ -61,6 +62,7 @@ var ExtensionPayloadIDNames = map[uint64]string{
 	EXT_SBR_DATA_CRC:  "EXT_SBR_DATA_CRC",
 }
 
+//nolint:revive
 const (
 	ONLY_LONG_SEQUENCE   = 0x0
 	LONG_START_SEQUENCE  = 0x1

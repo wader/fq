@@ -5,6 +5,7 @@ import (
 	"github.com/wader/fq/pkg/ranges"
 )
 
+//nolint:revive
 const (
 	ALL = "all"
 
@@ -130,6 +131,7 @@ type HevcDcrOut struct {
 }
 
 // based on ffmpeg libavformat/isom.c ff_mp4_obj_type
+//nolint:revive
 const (
 	MPEGObjectTypeMOV_TEXT          = 0x08
 	MPEGObjectTypeMPEG4             = 0x20
@@ -320,6 +322,7 @@ type ProtoBufIn struct {
 	Message ProtoBufMessage
 }
 
+//nolint:revive
 const (
 	MPEGAudioObjectTypeMain      = 1
 	MPEGAudioObjectTypeLC        = 2

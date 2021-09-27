@@ -34,7 +34,7 @@ func (err notUpdateableError) Error() string {
 
 // TODO: rename
 type valueIf interface {
-	InterpValue
+	Value
 	ToBuffer
 }
 
@@ -216,37 +216,37 @@ func (v decodeValue) JQValueKey(name string) interface{} {
 
 // string (*bitio.Buffer)
 
-var _ valueIf = bufferDecodeValue{}
+var _ valueIf = BufferDecodeValue{}
 
-type bufferDecodeValue struct {
+type BufferDecodeValue struct {
 	gojqextra.Base
 	decodeValueBase
 	*bitio.Buffer
 }
 
-func NewStringBufferValueObject(dv *decode.Value, bb *bitio.Buffer) bufferDecodeValue {
-	return bufferDecodeValue{
+func NewStringBufferValueObject(dv *decode.Value, bb *bitio.Buffer) BufferDecodeValue {
+	return BufferDecodeValue{
 		decodeValueBase: decodeValueBase{dv},
 		Base:            gojqextra.Base{Typ: "string"},
 		Buffer:          bb,
 	}
 }
 
-func (v bufferDecodeValue) JQValueKey(name string) interface{} {
+func (v BufferDecodeValue) JQValueKey(name string) interface{} {
 	return valueUnderscoreKey(name, v.decodeValueBase.JQValueKey, v.Base.JQValueKey)
 }
 
-func (v bufferDecodeValue) JQValueLength() interface{} {
+func (v BufferDecodeValue) JQValueLength() interface{} {
 	return int(v.Buffer.Len()) / 8
 }
-func (v bufferDecodeValue) JQValueIndex(index int) interface{} {
+func (v BufferDecodeValue) JQValueIndex(index int) interface{} {
 	if index < 0 {
 		return ""
 	}
 	// TODO: funcIndexSlice, string outside should return "" not null
 	return v.JQValueSlice(index, index+1)
 }
-func (v bufferDecodeValue) JQValueSlice(start int, end int) interface{} {
+func (v BufferDecodeValue) JQValueSlice(start int, end int) interface{} {
 	bb := v.Buffer.Copy()
 	if start != 0 {
 		if _, err := bb.SeekAbs(int64(start) * 8); err != nil {
@@ -259,23 +259,23 @@ func (v bufferDecodeValue) JQValueSlice(start int, end int) interface{} {
 	}
 	return b.String()
 }
-func (v bufferDecodeValue) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
+func (v BufferDecodeValue) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
 	return notUpdateableError{Key: fmt.Sprintf("%v", key), Typ: "string"}
 }
-func (v bufferDecodeValue) JQValueToNumber() interface{} {
+func (v BufferDecodeValue) JQValueToNumber() interface{} {
 	s, ok := v.JQValueToString().(string)
 	if ok {
 		gojq.NormalizeNumbers(s)
 	}
 	return s
 }
-func (v bufferDecodeValue) JQValueToString() interface{} {
+func (v BufferDecodeValue) JQValueToString() interface{} {
 	return v.JQValueSlice(0, int(v.Buffer.Len())/8)
 }
-func (v bufferDecodeValue) JQValueToGoJQ() interface{} {
+func (v BufferDecodeValue) JQValueToGoJQ() interface{} {
 	return v.JQValueToString()
 }
-func (v bufferDecodeValue) JQValueToGoJQEx(opts Options) interface{} {
+func (v BufferDecodeValue) JQValueToGoJQEx(opts Options) interface{} {
 	s, err := opts.BitsFormatFn(v.Buffer.Copy())
 	if err != nil {
 		return err
@@ -285,66 +285,66 @@ func (v bufferDecodeValue) JQValueToGoJQEx(opts Options) interface{} {
 
 // decode value array
 
-var _ valueIf = arrayDecodeValue{}
+var _ valueIf = ArrayDecodeValue{}
 
-type arrayDecodeValue struct {
+type ArrayDecodeValue struct {
 	gojqextra.Base
 	decodeValueBase
 	decode.Array
 }
 
-func NewArrayDecodeValue(dv *decode.Value, a decode.Array) arrayDecodeValue {
-	return arrayDecodeValue{
+func NewArrayDecodeValue(dv *decode.Value, a decode.Array) ArrayDecodeValue {
+	return ArrayDecodeValue{
 		decodeValueBase: decodeValueBase{dv},
 		Base:            gojqextra.Base{Typ: "array"},
 		Array:           a,
 	}
 }
 
-func (v arrayDecodeValue) JQValueKey(name string) interface{} {
+func (v ArrayDecodeValue) JQValueKey(name string) interface{} {
 	return valueUnderscoreKey(name, v.decodeValueBase.JQValueKey, v.Base.JQValueKey)
 }
-func (v arrayDecodeValue) JQValueSliceLen() interface{} { return len(v.Array) }
-func (v arrayDecodeValue) JQValueLength() interface{}   { return len(v.Array) }
-func (v arrayDecodeValue) JQValueIndex(index int) interface{} {
+func (v ArrayDecodeValue) JQValueSliceLen() interface{} { return len(v.Array) }
+func (v ArrayDecodeValue) JQValueLength() interface{}   { return len(v.Array) }
+func (v ArrayDecodeValue) JQValueIndex(index int) interface{} {
 	// -1 outside after string, -2 outside before string
 	if index < 0 {
 		return nil
 	}
 	return makeDecodeValue(v.Array[index])
 }
-func (v arrayDecodeValue) JQValueSlice(start int, end int) interface{} {
+func (v ArrayDecodeValue) JQValueSlice(start int, end int) interface{} {
 	vs := make([]interface{}, end-start)
 	for i, e := range v.Array[start:end] {
 		vs[i] = makeDecodeValue(e)
 	}
 	return vs
 }
-func (v arrayDecodeValue) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
+func (v ArrayDecodeValue) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
 	return notUpdateableError{Key: fmt.Sprintf("%v", key), Typ: "array"}
 }
-func (v arrayDecodeValue) JQValueEach() interface{} {
+func (v ArrayDecodeValue) JQValueEach() interface{} {
 	props := make([]gojq.PathValue, len(v.Array))
 	for i, f := range v.Array {
 		props[i] = gojq.PathValue{Path: i, Value: makeDecodeValue(f)}
 	}
 	return props
 }
-func (v arrayDecodeValue) JQValueKeys() interface{} {
+func (v ArrayDecodeValue) JQValueKeys() interface{} {
 	vs := make([]interface{}, len(v.Array))
 	for i := range v.Array {
 		vs[i] = i
 	}
 	return vs
 }
-func (v arrayDecodeValue) JQValueHas(key interface{}) interface{} {
+func (v ArrayDecodeValue) JQValueHas(key interface{}) interface{} {
 	intKey, ok := key.(int)
 	if !ok {
 		return gojqextra.HasKeyTypeError{L: "array", R: fmt.Sprintf("%v", key)}
 	}
 	return intKey >= 0 && intKey < len(v.Array)
 }
-func (v arrayDecodeValue) JQValueToGoJQ() interface{} {
+func (v ArrayDecodeValue) JQValueToGoJQ() interface{} {
 	vs := make([]interface{}, len(v.Array))
 	for i, f := range v.Array {
 		vs[i] = makeDecodeValue(f)
@@ -354,25 +354,25 @@ func (v arrayDecodeValue) JQValueToGoJQ() interface{} {
 
 // decode value struct
 
-var _ valueIf = structDecodeValue{}
+var _ valueIf = StructDecodeValue{}
 
-type structDecodeValue struct {
+type StructDecodeValue struct {
 	gojqextra.Base
 	decodeValueBase
 	decode.Struct
 }
 
-func NewStructDecodeValue(dv *decode.Value, s decode.Struct) structDecodeValue {
-	return structDecodeValue{
+func NewStructDecodeValue(dv *decode.Value, s decode.Struct) StructDecodeValue {
+	return StructDecodeValue{
 		decodeValueBase: decodeValueBase{dv},
 		Base:            gojqextra.Base{Typ: "object"},
 		Struct:          s,
 	}
 }
 
-func (v structDecodeValue) JQValueLength() interface{}   { return len(v.Struct) }
-func (v structDecodeValue) JQValueSliceLen() interface{} { return len(v.Struct) }
-func (v structDecodeValue) JQValueKey(name string) interface{} {
+func (v StructDecodeValue) JQValueLength() interface{}   { return len(v.Struct) }
+func (v StructDecodeValue) JQValueSliceLen() interface{} { return len(v.Struct) }
+func (v StructDecodeValue) JQValueKey(name string) interface{} {
 	if strings.HasPrefix(name, "_") {
 		return v.decodeValueBase.JQValueKey(name)
 	}
@@ -384,24 +384,24 @@ func (v structDecodeValue) JQValueKey(name string) interface{} {
 	}
 	return nil
 }
-func (v structDecodeValue) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
+func (v StructDecodeValue) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
 	return notUpdateableError{Key: fmt.Sprintf("%v", key), Typ: "object"}
 }
-func (v structDecodeValue) JQValueEach() interface{} {
+func (v StructDecodeValue) JQValueEach() interface{} {
 	props := make([]gojq.PathValue, len(v.Struct))
 	for i, f := range v.Struct {
 		props[i] = gojq.PathValue{Path: f.Name, Value: makeDecodeValue(f)}
 	}
 	return props
 }
-func (v structDecodeValue) JQValueKeys() interface{} {
+func (v StructDecodeValue) JQValueKeys() interface{} {
 	vs := make([]interface{}, len(v.Struct))
 	for i, f := range v.Struct {
 		vs[i] = f.Name
 	}
 	return vs
 }
-func (v structDecodeValue) JQValueHas(key interface{}) interface{} {
+func (v StructDecodeValue) JQValueHas(key interface{}) interface{} {
 	stringKey, ok := key.(string)
 	if !ok {
 		return gojqextra.HasKeyTypeError{L: "object", R: fmt.Sprintf("%v", key)}
@@ -413,7 +413,7 @@ func (v structDecodeValue) JQValueHas(key interface{}) interface{} {
 	}
 	return false
 }
-func (v structDecodeValue) JQValueToGoJQ() interface{} {
+func (v StructDecodeValue) JQValueToGoJQ() interface{} {
 	vm := make(map[string]interface{}, len(v.Struct))
 	for _, f := range v.Struct {
 		vm[f.Name] = makeDecodeValue(f)

@@ -1177,8 +1177,8 @@ func init() {
 				hasProgramID := d.FieldBool("has_program_id")
 				if hasProgramID {
 					d.FieldU16("short_program_id")
-					hasUuid := d.FieldBool("has_uuid")
-					if hasUuid {
+					hasUUID := d.FieldBool("has_uuid")
+					if hasUUID {
 						d.FieldBitBufLen("uuid", 16*8)
 					}
 				}

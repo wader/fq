@@ -24,6 +24,7 @@ var vp9FeatureIDNames = map[uint64]string{
 	vp9FeatureChromaSubsampling: "Chroma Subsampling",
 }
 
+//nolint:revive
 const (
 	CS_UNKNOWN   = 0
 	CS_BT_601    = 1

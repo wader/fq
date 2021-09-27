@@ -30,9 +30,8 @@ func previewValue(v *decode.Value) string {
 	case bool:
 		if vv {
 			return "true"
-		} else {
-			return "false"
 		}
+		return "false"
 	case int64:
 		// TODO: DisplayFormat is weird
 		return num.PadFormatInt(vv, decode.DisplayFormatToBase(v.DisplayFormat), true, 0)
@@ -44,24 +43,21 @@ func previewValue(v *decode.Value) string {
 	case string:
 		if len(vv) > 50 {
 			return fmt.Sprintf("%q", vv[0:50]) + "..."
-		} else {
-			return fmt.Sprintf("%q", vv)
 		}
+		return fmt.Sprintf("%q", vv)
 	case []byte:
 		if len(vv) > 16 {
 			return hex.EncodeToString(vv[0:16]) + "..."
-		} else {
-			return hex.EncodeToString(vv)
 		}
+		return hex.EncodeToString(vv)
 	case *bitio.Buffer:
 		vvLen := vv.Len()
 		if vvLen > 16*8 {
 			bs, _ := vv.BytesRange(0, 16)
 			return hex.EncodeToString(bs) + "..."
-		} else {
-			bs, _ := vv.BytesRange(0, int(bitio.BitsByteCount(vvLen)))
-			return hex.EncodeToString(bs)
 		}
+		bs, _ := vv.BytesRange(0, int(bitio.BitsByteCount(vvLen)))
+		return hex.EncodeToString(bs)
 	case nil:
 		return "none"
 

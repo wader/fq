@@ -56,33 +56,33 @@ func Read64(buf []byte, firstBit int, nBits int) uint64 {
 			}
 			// done
 			return n
-		} else {
-			b := buf[bytePos]
+		}
 
-			if byteBitPos == 0 {
-				// bitPos is byte aligned but not bitsLeft
-				if bitsLeft >= 8 {
-					// TODO: more cases left >= 16 etc
-					n = n<<8 | uint64(b)
-					bitPos += 8
-					bitsLeft -= 8
-				} else {
-					n = n<<bitsLeft | (uint64(b) >> (8 - bitsLeft))
-					// done
-					return n
-				}
+		b := buf[bytePos]
+
+		if byteBitPos == 0 {
+			// bitPos is byte aligned but not bitsLeft
+			if bitsLeft >= 8 {
+				// TODO: more cases left >= 16 etc
+				n = n<<8 | uint64(b)
+				bitPos += 8
+				bitsLeft -= 8
 			} else {
-				// neither byteBitPos or bitsLeft byte aligned
-				byteBitsLeft := (8 - byteBitPos) & 0x7
-				if bitsLeft >= byteBitsLeft {
-					n = n<<byteBitsLeft | (uint64(b) & ((1 << byteBitsLeft) - 1))
-					bitPos += byteBitsLeft
-					bitsLeft -= byteBitsLeft
-				} else {
-					n = n<<bitsLeft | (uint64(b)&((1<<byteBitsLeft)-1))>>(byteBitsLeft-bitsLeft)
-					// done
-					return n
-				}
+				n = n<<bitsLeft | (uint64(b) >> (8 - bitsLeft))
+				// done
+				return n
+			}
+		} else {
+			// neither byteBitPos or bitsLeft byte aligned
+			byteBitsLeft := (8 - byteBitPos) & 0x7
+			if bitsLeft >= byteBitsLeft {
+				n = n<<byteBitsLeft | (uint64(b) & ((1 << byteBitsLeft) - 1))
+				bitPos += byteBitsLeft
+				bitsLeft -= byteBitsLeft
+			} else {
+				n = n<<bitsLeft | (uint64(b)&((1<<byteBitsLeft)-1))>>(byteBitsLeft-bitsLeft)
+				// done
+				return n
 			}
 		}
 	}
@@ -134,37 +134,37 @@ func Write64(v uint64, nBits int, buf []byte, firstBit int) {
 			}
 			// done
 			return
-		} else {
-			b := buf[bytePos]
+		}
 
-			if byteBitPos == 0 {
-				// byteBitPos is byte aligned but not bitsLeft
-				if bitsLeft >= 8 {
-					// TODO: more cases left >= 16 etc
-					buf[bytePos] = byte(v >> (bitsLeft - 8))
-					bitPos += 8
-					bitsLeft -= 8
-				} else {
-					extraBits := 8 - bitsLeft
-					buf[bytePos] = byte(v)<<extraBits | b&((1<<extraBits)-1)
-					// done
-					return
-				}
+		b := buf[bytePos]
+
+		if byteBitPos == 0 {
+			// byteBitPos is byte aligned but not bitsLeft
+			if bitsLeft >= 8 {
+				// TODO: more cases left >= 16 etc
+				buf[bytePos] = byte(v >> (bitsLeft - 8))
+				bitPos += 8
+				bitsLeft -= 8
 			} else {
-				// neither byteBitPos or bitsLeft byte aligned
-				byteBitsLeft := (8 - byteBitPos) & 0x7
-				if bitsLeft >= byteBitsLeft {
-					bMask := byte((1<<byteBitPos)-1) << (8 - byteBitPos)
-					buf[bytePos] = b&bMask | byte(v>>(bitsLeft-byteBitsLeft))
-					bitPos += byteBitsLeft
-					bitsLeft -= byteBitsLeft
-				} else {
-					extraBits := byteBitsLeft - bitsLeft
-					bMask := byte(((1<<byteBitPos)-1)<<(8-byteBitPos) | ((1 << extraBits) - 1))
-					buf[bytePos] = b&bMask | byte(v)<<extraBits
-					// done
-					return
-				}
+				extraBits := 8 - bitsLeft
+				buf[bytePos] = byte(v)<<extraBits | b&((1<<extraBits)-1)
+				// done
+				return
+			}
+		} else {
+			// neither byteBitPos or bitsLeft byte aligned
+			byteBitsLeft := (8 - byteBitPos) & 0x7
+			if bitsLeft >= byteBitsLeft {
+				bMask := byte((1<<byteBitPos)-1) << (8 - byteBitPos)
+				buf[bytePos] = b&bMask | byte(v>>(bitsLeft-byteBitsLeft))
+				bitPos += byteBitsLeft
+				bitsLeft -= byteBitsLeft
+			} else {
+				extraBits := byteBitsLeft - bitsLeft
+				bMask := byte(((1<<byteBitPos)-1)<<(8-byteBitPos) | ((1 << extraBits) - 1))
+				buf[bytePos] = b&bMask | byte(v)<<extraBits
+				// done
+				return
 			}
 		}
 	}

@@ -128,14 +128,14 @@ func (d *D) FE(nBits int, endian Endian) float64 {
 }
 
 func (d *D) TryFieldUFn(name string, fn func() (uint64, DisplayFormat, string)) (uint64, error) {
-	if v, err := d.TryFieldFn(name, func() (*Value, error) {
+	v, err := d.TryFieldFn(name, func() (*Value, error) {
 		u, fmt, d := fn()
 		return &Value{V: u, DisplayFormat: fmt, Symbol: d}, nil
-	}); err != nil {
+	})
+	if err != nil {
 		return 0, err
-	} else {
-		return v.V.(uint64), err
 	}
+	return v.V.(uint64), err
 }
 
 func (d *D) FieldUFn(name string, fn func() (uint64, DisplayFormat, string)) uint64 {

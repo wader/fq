@@ -1,3 +1,4 @@
+//nolint:revive
 package mpeg
 
 import (

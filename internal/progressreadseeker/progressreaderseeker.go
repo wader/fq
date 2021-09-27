@@ -6,7 +6,7 @@ import (
 
 type ProgressFn func(approxReadBytes int64, totalSize int64)
 
-type progressReaderSeeker struct {
+type ProgressReaderSeeker struct {
 	rs                  io.ReadSeeker
 	pos                 int64
 	totalSize           int64
@@ -16,12 +16,12 @@ type progressReaderSeeker struct {
 	progressFn          ProgressFn
 }
 
-func New(rs io.ReadSeeker, precision int64, totalSize int64, fn ProgressFn) *progressReaderSeeker {
+func New(rs io.ReadSeeker, precision int64, totalSize int64, fn ProgressFn) *ProgressReaderSeeker {
 	partitionSize := totalSize / precision
 	if totalSize%precision != 0 {
 		partitionSize++
 	}
-	return &progressReaderSeeker{
+	return &ProgressReaderSeeker{
 		rs:            rs,
 		totalSize:     totalSize,
 		partitionSize: partitionSize,
@@ -30,7 +30,7 @@ func New(rs io.ReadSeeker, precision int64, totalSize int64, fn ProgressFn) *pro
 	}
 }
 
-func (prs *progressReaderSeeker) Read(p []byte) (n int, err error) {
+func (prs *ProgressReaderSeeker) Read(p []byte) (n int, err error) {
 	n, err = prs.rs.Read(p)
 	newPos := prs.pos + int64(n)
 	lastPartitionsReadCount := prs.partitionsReadCount
@@ -59,7 +59,7 @@ func (prs *progressReaderSeeker) Read(p []byte) (n int, err error) {
 	return n, err
 }
 
-func (prs *progressReaderSeeker) Seek(offset int64, whence int) (int64, error) {
+func (prs *ProgressReaderSeeker) Seek(offset int64, whence int) (int64, error) {
 	pos, err := prs.rs.Seek(offset, whence)
 	prs.pos = pos
 	return pos, err

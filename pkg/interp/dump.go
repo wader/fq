@@ -20,7 +20,7 @@ import (
 const (
 	colAddr  = 0
 	colHex   = 2
-	colAscii = 4
+	colASCII = 4
 	colField = 6
 )
 
@@ -92,7 +92,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 			columns()
 		}
 		cfmt(colHex, "%s", deco.DumpHeader.F(hexHeader))
-		cfmt(colAscii, "%s", deco.DumpHeader.F(asciiHeader))
+		cfmt(colASCII, "%s", deco.DumpHeader.F(asciiHeader))
 		if !isCompound(v) {
 			cw.Flush()
 		}
@@ -175,7 +175,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 			indent := strings.Repeat("  ", depth)
 
 			var formatErr decode.FormatError
-			var decodeFormatsErr decode.DecodeFormatsError
+			var decodeFormatsErr decode.FormatsError
 
 			switch {
 			case errors.As(err, &formatErr):
@@ -191,7 +191,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 					}
 				}
 				switch {
-				case errors.Is(formatErr.Err, decode.DecodeFormatsError{}):
+				case errors.Is(formatErr.Err, decode.FormatsError{}):
 					printErrs(depth+1, formatErr.Err)
 				}
 			case errors.As(err, &decodeFormatsErr):
@@ -273,7 +273,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 				return err
 			}
 			if _, err := io.CopyBuffer(
-				asciiwriter.New(cw.Columns[colAscii], opts.LineBytes, int(startLineByteOffset), asciiFn),
+				asciiwriter.New(cw.Columns[colASCII], opts.LineBytes, int(startLineByteOffset), asciiFn),
 				io.LimitReader(vBitBuf.Copy(), displaySizeBytes),
 				buf); err != nil {
 				return err
@@ -290,7 +290,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 		if lastDisplayByte == bufferLastByte && lastDisplayByte != lastLineStopByte {
 			// extra "|" in as EOF markers
 			cfmt(colHex, "%s\n", deco.Column)
-			cfmt(colAscii, "%s\n", deco.Column)
+			cfmt(colASCII, "%s\n", deco.Column)
 		}
 
 		if stopByte != lastDisplayByte {

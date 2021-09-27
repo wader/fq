@@ -17,11 +17,11 @@ import (
 	"github.com/wader/fq/pkg/ranges"
 )
 
-type DecodeFormatsError struct {
+type FormatsError struct {
 	Errs []FormatError
 }
 
-func (de DecodeFormatsError) Error() string {
+func (de FormatsError) Error() string {
 	var errs []string
 	for _, err := range de.Errs {
 		errs = append(errs, err.Error())
@@ -97,10 +97,7 @@ const (
 	LittleEndian
 )
 
-// just to get some type safety
-type Options interface{ decodeOptions() }
-
-type DecodeOptions struct {
+type Options struct {
 	Name          string
 	Description   string
 	IsRoot        bool
@@ -110,22 +107,20 @@ type DecodeOptions struct {
 	ReadBuf       *[]byte
 }
 
-func (DecodeOptions) decodeOptions() {}
-
 // Decode try decode formats and return first success and all other decoder errors
-func Decode(ctx context.Context, bb *bitio.Buffer, formats []*Format, opts DecodeOptions) (*Value, interface{}, error) {
+func Decode(ctx context.Context, bb *bitio.Buffer, formats []*Format, opts Options) (*Value, interface{}, error) {
 	opts.IsRoot = true
 	return decode(ctx, bb, formats, opts)
 }
 
-func decode(ctx context.Context, bb *bitio.Buffer, formats []*Format, opts DecodeOptions) (*Value, interface{}, error) {
+func decode(ctx context.Context, bb *bitio.Buffer, formats []*Format, opts Options) (*Value, interface{}, error) {
 	if formats == nil {
 		panic("formats is nil, failed to register format?")
 	}
 
 	var forceOne = len(formats) == 1
 
-	decodeErr := DecodeFormatsError{}
+	decodeErr := FormatsError{}
 
 	for _, f := range formats {
 		d := NewDecoder(ctx, f, bb, opts)
@@ -142,7 +137,7 @@ func decode(ctx context.Context, bb *bitio.Buffer, formats []*Format, opts Decod
 
 		if !rOk {
 			switch panicV := r.RecoverV.(type) {
-			case IOError, ValidateError, DecodeFormatsError:
+			case IOError, ValidateError, FormatsError:
 				panicErr, _ := panicV.(error)
 				formatErr := FormatError{
 					Err:        panicErr,
@@ -202,7 +197,7 @@ type D struct {
 }
 
 // TODO: new struct decoder?
-func NewDecoder(ctx context.Context, format *Format, bb *bitio.Buffer, opts DecodeOptions) *D {
+func NewDecoder(ctx context.Context, format *Format, bb *bitio.Buffer, opts Options) *D {
 	cbb := bb.Copy()
 
 	name := format.RootName
@@ -855,7 +850,7 @@ func (d *D) DecodeRangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 
 func (d *D) Format(formats []*Format, inArg interface{}) interface{} {
 	bb := d.BitBufRange(d.Pos(), d.BitsLeft())
-	dv, v, err := decode(d.Ctx, bb, formats, DecodeOptions{
+	dv, v, err := decode(d.Ctx, bb, formats, Options{
 		ReadBuf:     d.readBuf,
 		IsRoot:      false,
 		StartOffset: d.Pos(),
@@ -887,7 +882,7 @@ func (d *D) Format(formats []*Format, inArg interface{}) interface{} {
 
 func (d *D) FieldTryFormat(name string, formats []*Format, inArg interface{}) (*Value, interface{}, error) {
 	bb := d.BitBufRange(d.Pos(), d.BitsLeft())
-	dv, v, err := decode(d.Ctx, bb, formats, DecodeOptions{
+	dv, v, err := decode(d.Ctx, bb, formats, Options{
 		Name:        name,
 		ReadBuf:     d.readBuf,
 		IsRoot:      false,
@@ -916,7 +911,7 @@ func (d *D) FieldFormat(name string, formats []*Format, inArg interface{}) (*Val
 
 func (d *D) FieldTryFormatLen(name string, nBits int64, formats []*Format, inArg interface{}) (*Value, interface{}, error) {
 	bb := d.BitBufRange(d.Pos(), nBits)
-	dv, v, err := decode(d.Ctx, bb, formats, DecodeOptions{
+	dv, v, err := decode(d.Ctx, bb, formats, Options{
 		Name:        name,
 		ReadBuf:     d.readBuf,
 		IsRoot:      false,
@@ -946,7 +941,7 @@ func (d *D) FieldFormatLen(name string, nBits int64, formats []*Format, inArg in
 // TODO: return decooder?
 func (d *D) FieldTryFormatRange(name string, firstBit int64, nBits int64, formats []*Format, inArg interface{}) (*Value, interface{}, error) {
 	bb := d.BitBufRange(firstBit, nBits)
-	dv, v, err := decode(d.Ctx, bb, formats, DecodeOptions{
+	dv, v, err := decode(d.Ctx, bb, formats, Options{
 		Name:        name,
 		ReadBuf:     d.readBuf,
 		IsRoot:      false,
@@ -972,7 +967,7 @@ func (d *D) FieldFormatRange(name string, firstBit int64, nBits int64, formats [
 }
 
 func (d *D) FieldTryFormatBitBuf(name string, bb *bitio.Buffer, formats []*Format, inArg interface{}) (*Value, interface{}, error) {
-	dv, v, err := decode(d.Ctx, bb, formats, DecodeOptions{
+	dv, v, err := decode(d.Ctx, bb, formats, Options{
 		Name:        name,
 		ReadBuf:     d.readBuf,
 		IsRoot:      true,
