@@ -67,9 +67,6 @@
 - Generate from source
 - `-n`, `inputs/0` and `input/0` behavior. Same as jq.
 - Mention `empty.something`?
-- `repl` behavior
-  - `1,2,3 | repl` will start 3 repl:s
-  - Behave same as CLi expres: iterate over all inputs `[1,2,3] | repl({}; .[])`
 - Known issus and confusing things
   - Symbolic number has to use `._symbol` for now. For example matroska ids are number ID:s that have symbolic string names.
 - Use https://github.com/fadado/JBOL/blob/master/doc/JQ-Distilled.md notation
