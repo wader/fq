@@ -119,10 +119,7 @@ func (v *Value) walk(preOrder bool, fn WalkFn) error {
 	}
 
 	// figure out root value for v as it might not be a root itself
-	rootV := v
-	for rootV != nil && !rootV.IsRoot {
-		rootV = rootV.Parent
-	}
+	rootV := v.BufferRoot()
 
 	err := walkFn(v, rootV, 0, 0)
 	if errors.Is(err, ErrWalkStop) {
@@ -131,6 +128,25 @@ func (v *Value) walk(preOrder bool, fn WalkFn) error {
 
 	return err
 }
+
+func (v *Value) root(findSubRoot bool, findFormatRoot bool) *Value {
+	rootV := v
+	for rootV.Parent != nil {
+		if findSubRoot && rootV.IsRoot {
+			break
+		}
+		if findFormatRoot && rootV.Format != nil {
+			break
+		}
+
+		rootV = rootV.Parent
+	}
+	return rootV
+}
+
+func (v *Value) Root() *Value       { return v.root(false, false) }
+func (v *Value) BufferRoot() *Value { return v.root(true, false) }
+func (v *Value) FormatRoot() *Value { return v.root(true, true) }
 
 func (v *Value) WalkPreOrder(fn WalkFn) error {
 	return v.walk(true, fn)

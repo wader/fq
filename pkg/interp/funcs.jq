@@ -29,6 +29,23 @@ def verbose: verbose({});
 def v($opts): verbose($opts);
 def v: verbose;
 
+def root: _decode_value(._root);
+def buffer_root: _decode_value(._buffer_root);
+def format_root: _decode_value(._format_root);
+def parent: _decode_value(._parent);
+def parents:
+  # TODO: refactor, _while_break?
+  ( _decode_value(._parent)
+  | if . == null then empty
+    else
+      _recurse_break(
+        ( ._parent
+        | if . == null then error("break") end
+        )
+      )
+    end
+  );
+
 def formats:
   _registry.formats;
 

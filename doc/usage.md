@@ -127,7 +127,7 @@ notable is support for arbitrary-precision integers.
 ## Functions
 
 - All standard library functions from jq
-- Add a few new functions:
+- Adds a few new general functions:
   - `streaks/0`, `streaks_by/1` like `group` but groups streaks based on condition.
   - `count`, `count_by/1` like `group` but counts groups lengths.
   - `debug/1` like `debug/0` but uses arg to produce debug message. `{a: 123} | debug({a}) | ...`.
@@ -136,6 +136,12 @@ notable is support for arbitrary-precision integers.
   - `diff/2` produce diff object between two values.
   - `delta`, `delta_by/1`, array with difference between all consecutive pairs.
   - `chunk/1`, split array or string into even chunks
+- Adds some decode value specific functions:
+  - `root/0` return tree root for value
+  - `buffer_root/0` return root value of buffer for value
+  - `format_root/0` return root value of format for value
+  - `parent/0` return parent value
+  - `parents/0` output parents of value
 - `open` open file for reading
 - `probe` or `decode` probe format and decode
 - `mp3`, `matroska`, ..., `<name>`, `decode([name])` force decode as format

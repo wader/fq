@@ -147,6 +147,10 @@ func (dvb decodeValueBase) ExtKeys() []string {
 		"_stop",
 		"_len",
 		"_name",
+		"_root",
+		"_buffer_root",
+		"_format_root",
+		"_parent",
 		"_symbol",
 		"_description",
 		"_path",
@@ -175,6 +179,19 @@ func (dvb decodeValueBase) JQValueKey(name string) interface{} {
 		return big.NewInt(dv.Range.Len)
 	case "_name":
 		return dv.Name
+	case "_root":
+		return makeDecodeValue(dv.Root())
+	case "_buffer_root":
+		// TODO: rename?
+		return makeDecodeValue(dv.BufferRoot())
+	case "_format_root":
+		// TODO: rename?
+		return makeDecodeValue(dv.FormatRoot())
+	case "_parent":
+		if dv.Parent == nil {
+			return nil
+		}
+		return makeDecodeValue(dv.Parent)
 	case "_symbol":
 		return dv.Symbol
 	case "_description":

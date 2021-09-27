@@ -16,6 +16,14 @@ def _repeat_break(f):
     else error
     end;
 
+def _recurse_break(f):
+  try recurse(f)
+  catch
+    if . == "break" then empty
+    else error
+    end;
+
+
 # TODO: better way? what about nested eval errors?
 def _eval_is_compile_error: type == "object" and .error != null and .what != null;
 def _eval_compile_error_tostring:
@@ -26,6 +34,18 @@ def _eval($expr; $filename; f; on_error; on_compile_error):
       if _eval_is_compile_error then on_compile_error
       else on_error
       end
+  );
+
+# TODO: error value preview
+def _expected_decode_value:
+  error("expected a decode value but got: \(. | type) (\(. | tostring))");
+# TODO: helper? _is_decode_value?
+def _decode_value(f):
+  ( . as $c
+  | try has("._root")
+    catch ($c | _expected_decode_value)
+  | $c
+  | f
   );
 
 def _error_str: "error: \(.)";
