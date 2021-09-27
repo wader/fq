@@ -59,9 +59,9 @@ func (i *Interp) makeFunctions() []Function {
 		{[]string{"preview", "p"}, 0, 1, nil, i.preview},
 		{[]string{"hexdump", "hd", "h"}, 0, 1, nil, i.hexdump},
 
-		{[]string{"tobytes"}, 0, 0, i.bytes, nil},
-		{[]string{"tobits"}, 0, 0, i.bits, nil},
-		{[]string{"tovalue"}, 0, 1, i.tovalue, nil},
+		{[]string{"tobytes"}, 0, 0, i.toBytes, nil},
+		{[]string{"tobits"}, 0, 0, i.toBits, nil},
+		{[]string{"tovalue"}, 0, 1, i.toValue, nil},
 
 		{[]string{"hex"}, 0, 0, makeStringBitBufTransformFn(
 			func(r io.Reader) (io.Reader, error) { return hex.NewDecoder(r), nil },
@@ -733,7 +733,7 @@ func (i *Interp) hexdump(c interface{}, a []interface{}) gojq.Iter {
 	return gojq.NewIter()
 }
 
-func (i *Interp) bytes(c interface{}, a []interface{}) interface{} {
+func (i *Interp) toBytes(c interface{}, a []interface{}) interface{} {
 	bb, err := toBuffer(c)
 	if err != nil {
 		return err
@@ -741,7 +741,7 @@ func (i *Interp) bytes(c interface{}, a []interface{}) interface{} {
 	return newBifBufObject(bb, 8)
 }
 
-func (i *Interp) bits(c interface{}, a []interface{}) interface{} {
+func (i *Interp) toBits(c interface{}, a []interface{}) interface{} {
 	bb, err := toBuffer(c)
 	if err != nil {
 		return err
@@ -749,7 +749,7 @@ func (i *Interp) bits(c interface{}, a []interface{}) interface{} {
 	return newBifBufObject(bb, 1)
 }
 
-func (i *Interp) tovalue(c interface{}, a []interface{}) interface{} {
+func (i *Interp) toValue(c interface{}, a []interface{}) interface{} {
 	opts, err := i.Options(append([]interface{}{}, a...)...)
 	if err != nil {
 		return err
