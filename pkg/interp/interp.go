@@ -188,8 +188,8 @@ type ToBuffer interface {
 	ToBuffer() (*bitio.Buffer, error)
 }
 
-type ToBufferRange interface {
-	ToBufferRange() (bufferRange, error)
+type ToBufferView interface {
+	ToBufferView() (BufferView, error)
 }
 
 type JQValueEx interface {
@@ -348,16 +348,16 @@ func toBufferEx(v interface{}, inArray bool) (*bitio.Buffer, error) {
 	}
 }
 
-func toBufferRange(v interface{}) (bufferRange, error) {
+func toBufferView(v interface{}) (BufferView, error) {
 	switch vv := v.(type) {
-	case ToBufferRange:
-		return vv.ToBufferRange()
+	case ToBufferView:
+		return vv.ToBufferView()
 	default:
 		bb, err := toBuffer(v)
 		if err != nil {
-			return bufferRange{}, err
+			return BufferView{}, err
 		}
-		return bufferRange{bb: bb, r: ranges.Range{Len: bb.Len()}}, nil
+		return BufferView{bb: bb, r: ranges.Range{Len: bb.Len()}, unit: 8}, nil
 	}
 }
 

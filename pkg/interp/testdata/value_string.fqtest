@@ -83,16 +83,14 @@ mp3> .headers[0].magic._path | ., type, length?
 "array"
 3
 mp3> .headers[0].magic._bits | ., type, length?
-   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
-0x0|49 44 33                                       |ID3             |
-<24 bits>
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|49 44 33|                                      |ID3|            |.: none (24 bits)
 "buffer"
 24
 mp3> 
 mp3> .headers[0].magic._bytes | ., type, length?
-   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
-0x0|49 44 33                                       |ID3             |
-<3 bytes>
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|49 44 33|                                      |ID3|            |.: none (3 bytes)
 "buffer"
 3
 mp3> 

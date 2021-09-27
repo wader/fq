@@ -71,16 +71,14 @@ mp3> .headers[0].flags.unsynchronisation._path | ., type, length?
 "array"
 4
 mp3> .headers[0].flags.unsynchronisation._bits | ., type, length?
-   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
-0x0|00                                             |.               |
-<1 bits>
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|00|                                            |.|              |.: none (1 bits)
 "buffer"
 1
 mp3> 
 mp3> .headers[0].flags.unsynchronisation._bytes | ., type, length?
-   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
-0x0|00                                             |.               |
-<0 bytes>
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|00|                                            |.|              |.: none (0 bytes)
 "buffer"
 0
 mp3> 

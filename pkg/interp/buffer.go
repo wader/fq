@@ -8,6 +8,7 @@ import (
 
 	"github.com/wader/fq/internal/gojqextra"
 	"github.com/wader/fq/pkg/bitio"
+	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/ranges"
 )
 
@@ -16,25 +17,27 @@ type bufferRange struct {
 	r  ranges.Range
 }
 
-var _ Value = (*bufferObject)(nil)
-var _ ToBuffer = (*bufferObject)(nil)
+var _ Value = (*BufferView)(nil)
+var _ ToBuffer = (*BufferView)(nil)
 
-type bufferObject struct {
-	bbr  bufferRange
+type BufferView struct {
+	bb   *bitio.Buffer
+	r    ranges.Range
 	unit int
 }
 
 // TODO: JQArray
 
-func newBifBufObject(bb *bitio.Buffer, unit int) bufferObject {
-	return bufferObject{
-		bbr:  bufferRange{bb: bb, r: ranges.Range{Start: 0, Len: bb.Len()}},
+func newBifBufObject(bb *bitio.Buffer, unit int) BufferView {
+	return BufferView{
+		bb:   bb,
+		r:    ranges.Range{Start: 0, Len: bb.Len()},
 		unit: unit,
 	}
 }
 
-func (*bufferObject) DisplayName() string { return "buffer" }
-func (*bufferObject) ExtKeys() []string {
+func (*BufferView) DisplayName() string { return "buffer" }
+func (*BufferView) ExtKeys() []string {
 	return []string{
 		"size",
 		"start",
@@ -44,13 +47,13 @@ func (*bufferObject) ExtKeys() []string {
 	}
 }
 
-func (bo bufferObject) JQValueLength() interface{} {
-	return int(bo.bbr.r.Len / int64(bo.unit))
+func (bo BufferView) JQValueLength() interface{} {
+	return int(bo.r.Len / int64(bo.unit))
 }
-func (bo bufferObject) JQValueSliceLen() interface{} {
+func (bo BufferView) JQValueSliceLen() interface{} {
 	return bo.JQValueLength()
 }
-func (bo bufferObject) JQValueIndex(index int) interface{} {
+func (bo BufferView) JQValueIndex(index int) interface{} {
 	// TODO: use bitio
 	/*
 		pos, err := bo.bbr.bb.Pos()
@@ -71,28 +74,24 @@ func (bo bufferObject) JQValueIndex(index int) interface{} {
 	*/
 	return nil
 }
-func (bo bufferObject) JQValueSlice(start int, end int) interface{} {
+func (bo BufferView) JQValueSlice(start int, end int) interface{} {
 	rStart := int64(start * bo.unit)
 	rLen := int64((end - start) * bo.unit)
 
-	rbb, err := bo.bbr.bb.BitBufRange(rStart, rLen)
-	if err != nil {
-		return err
-	}
-
-	return bufferObject{
-		bbr:  bufferRange{bb: rbb, r: ranges.Range{Start: 0, Len: rLen}},
+	return BufferView{
+		bb:   bo.bb,
+		r:    ranges.Range{Start: bo.r.Start + rStart, Len: rLen},
 		unit: bo.unit,
 	}
 }
-func (bo bufferObject) JQValueKey(name string) interface{} {
+func (bo BufferView) JQValueKey(name string) interface{} {
 	switch name {
 	case "size":
-		return new(big.Int).SetInt64(bo.bbr.r.Len / int64(bo.unit))
+		return new(big.Int).SetInt64(bo.r.Len / int64(bo.unit))
 	case "start":
-		return new(big.Int).SetInt64(bo.bbr.r.Start / int64(bo.unit))
+		return new(big.Int).SetInt64(bo.r.Start / int64(bo.unit))
 	case "stop":
-		stop := bo.bbr.r.Stop()
+		stop := bo.r.Stop()
 		stopUnits := stop / int64(bo.unit)
 		if stop%int64(bo.unit) != 0 {
 			stopUnits++
@@ -102,71 +101,69 @@ func (bo bufferObject) JQValueKey(name string) interface{} {
 		if bo.unit == 1 {
 			return bo
 		}
-		return bufferObject{bbr: bo.bbr, unit: 1}
+		return BufferView{bb: bo.bb, r: bo.r, unit: 1}
 	case "bytes":
 		if bo.unit == 8 {
 			return bo
 		}
-		return bufferObject{bbr: bo.bbr, unit: 8}
+		return BufferView{bb: bo.bb, r: bo.r, unit: 8}
 	}
 	return nil
 }
-func (bo bufferObject) JQValueEach() interface{} {
+func (bo BufferView) JQValueEach() interface{} {
 	return nil
 }
-func (bo bufferObject) JQValueType() string {
+func (bo BufferView) JQValueType() string {
 	return "buffer"
 }
-func (bo bufferObject) JQValueKeys() interface{} {
+func (bo BufferView) JQValueKeys() interface{} {
 	return gojqextra.FuncTypeError{Name: "keys", Typ: "buffer"}
 }
-func (bo bufferObject) JQValueHas(key interface{}) interface{} {
+func (bo BufferView) JQValueHas(key interface{}) interface{} {
 	return gojqextra.HasKeyTypeError{L: "buffer", R: fmt.Sprintf("%v", key)}
 }
-func (bo bufferObject) JQValueToNumber() interface{} {
-	buf := &bytes.Buffer{}
-	if _, err := io.Copy(buf, bo.bbr.bb); err != nil {
+func (bo BufferView) JQValueToNumber() interface{} {
+	bb, err := bo.ToBuffer()
+	if err != nil {
 		return err
 	}
-	extraBits := uint((8 - bo.bbr.r.Len%8) % 8)
+	buf := &bytes.Buffer{}
+	if _, err := io.Copy(buf, bb.Copy()); err != nil {
+		return err
+	}
+	extraBits := uint((8 - bo.r.Len%8) % 8)
 	return new(big.Int).Rsh(new(big.Int).SetBytes(buf.Bytes()), extraBits)
 }
-func (bo bufferObject) JQValueToString() interface{} {
+func (bo BufferView) JQValueToString() interface{} {
 	return bo.JQValueToGoJQ()
 }
 
-func (bo bufferObject) JQValueToGoJQ() interface{} {
+func (bo BufferView) JQValueToGoJQ() interface{} {
+	bb, err := bo.ToBuffer()
+	if err != nil {
+		return err
+	}
 	buf := &bytes.Buffer{}
-	if _, err := io.Copy(buf, bo.bbr.bb.Copy()); err != nil {
+	if _, err := io.Copy(buf, bb.Copy()); err != nil {
 		return err
 	}
 	return buf.String()
 }
 
-func (bo bufferObject) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
+func (bo BufferView) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
 	return notUpdateableError{Key: fmt.Sprintf("%v", key), Typ: "buffer"}
 }
 
-func (bo bufferObject) Display(w io.Writer, opts Options) error {
+func (bo BufferView) Display(w io.Writer, opts Options) error {
 	if opts.RawOutput {
-		if _, err := io.Copy(w, bo.bbr.bb.Copy()); err != nil {
-			return err
-		}
-		return nil
-	}
-
-	bbr := bo.bbr
-	if bbr.r.Len/8 > int64(opts.DisplayBytes) {
-		bbr.r.Len = int64(opts.DisplayBytes) * 8
-		bb, err := bbr.bb.BitBufRange(bbr.r.Start, bbr.r.Len)
+		bb, err := bo.ToBuffer()
 		if err != nil {
 			return err
 		}
-		bbr.bb = bb
-	}
-
-	if err := hexdumpRange(bbr, w, opts); err != nil {
-		return err
+		if _, err := io.Copy(w, bb.Copy()); err != nil {
+			return err
+		}
+		return nil
 	}
 
 	unitNames := map[int]string{
@@ -177,10 +174,19 @@ func (bo bufferObject) Display(w io.Writer, opts Options) error {
 	if unitName == "" {
 		unitName = "units"
 	}
-	_, err := fmt.Fprintf(w, "<%d %s>\n", bo.bbr.r.Len/int64(bo.unit), unitName)
-	return err
+
+	// TODO: hack
+	return dump(
+		&decode.Value{
+			Range:       bo.r,
+			RootBitBuf:  bo.bb.Copy(),
+			Description: fmt.Sprintf("%d %s", bo.r.Len/int64(bo.unit), unitName),
+		},
+		w,
+		opts,
+	)
 }
 
-func (bo bufferObject) ToBuffer() (*bitio.Buffer, error) {
-	return bo.bbr.bb, nil
+func (bo BufferView) ToBuffer() (*bitio.Buffer, error) {
+	return bo.bb.BitBufRange(bo.r.Start, bo.r.Len)
 }

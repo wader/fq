@@ -71,16 +71,14 @@ mp3> .headers[0].padding._path | ., type, length?
 "array"
 3
 mp3> .headers[0].padding._bits | ., type, length?
-   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
-0x0|00 00 00 00 00 00 00 00 00 00                  |..........      |
-<80 bits>
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|00 00 00 00 00 00 00 00 00 00|                 |..........|     |.: none (80 bits)
 "buffer"
 80
 mp3> 
 mp3> .headers[0].padding._bytes | ., type, length?
-   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
-0x0|00 00 00 00 00 00 00 00 00 00                  |..........      |
-<10 bytes>
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|00 00 00 00 00 00 00 00 00 00|                 |..........|     |.: none (10 bytes)
 "buffer"
 10
 mp3> 

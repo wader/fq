@@ -138,8 +138,8 @@ func (dvb decodeValueBase) Preview(w io.Writer, opts Options) error { return pre
 func (dvb decodeValueBase) ToBuffer() (*bitio.Buffer, error) {
 	return dvb.dv.RootBitBuf.Copy().BitBufRange(dvb.dv.Range.Start, dvb.dv.Range.Len)
 }
-func (dvb decodeValueBase) ToBufferRange() (bufferRange, error) {
-	return bufferRange{bb: dvb.dv.RootBitBuf.Copy(), r: dvb.dv.Range}, nil
+func (dvb decodeValueBase) ToBufferView() (BufferView, error) {
+	return BufferView{bb: dvb.dv.RootBitBuf.Copy(), r: dvb.dv.Range, unit: 8}, nil
 }
 func (dvb decodeValueBase) ExtKeys() []string {
 	kv := []string{

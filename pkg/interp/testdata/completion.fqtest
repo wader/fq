@@ -36,13 +36,17 @@ footers
 frames
 mp3> ._\t
 _bits
+_buffer_root
 _bytes
 _description
 _error
 _format
+_format_root
 _len
 _name
+_parent
 _path
+_root
 _start
 _stop
 _symbol

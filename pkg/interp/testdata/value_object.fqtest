@@ -87,16 +87,14 @@ mp3> .headers[0].flags._path | ., type, length?
 "array"
 3
 mp3> .headers[0].flags._bits | ., type, length?
-   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
-0x0|00                                             |.               |
-<8 bits>
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|00|                                            |.|              |.: none (8 bits)
 "buffer"
 8
 mp3> 
 mp3> .headers[0].flags._bytes | ., type, length?
-   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
-0x0|00                                             |.               |
-<1 bytes>
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|00|                                            |.|              |.: none (1 bytes)
 "buffer"
 1
 mp3> 

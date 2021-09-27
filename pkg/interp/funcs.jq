@@ -28,6 +28,10 @@ def verbose($opts): _display({verbose: true, array_truncate: 0} + $opts);
 def verbose: verbose({});
 def v($opts): verbose($opts);
 def v: verbose;
+def hexdump($opts): _display({display_bytes: 0} + $opts);
+def hexdump: _display({display_bytes: 0});
+def hd($opts): hexdump($opts);
+def hd: hexdump;
 
 def root: _decode_value(._root);
 def buffer_root: _decode_value(._buffer_root);

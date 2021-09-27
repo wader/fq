@@ -164,16 +164,16 @@ mp3> .headers._path | ., type, length?
 "array"
 1
 mp3> .headers._bits | ., type, length?
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
-0x00|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|
-<360 bits>
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x00|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|.: none (360 bits)
+*   |until 0x2c.7 (end) (45)                        |                |
 "buffer"
 360
 mp3> 
 mp3> .headers._bytes | ., type, length?
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|                |
-0x00|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|
-<45 bytes>
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x00|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|.: none (45 bytes)
+*   |until 0x2c.7 (end) (45)                        |                |
 "buffer"
 45
 mp3> 

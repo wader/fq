@@ -57,7 +57,6 @@ func (i *Interp) makeFunctions() []Function {
 		{[]string{"format"}, 0, 0, i.format, nil},
 		{[]string{"_display"}, 1, 1, nil, i._display},
 		{[]string{"preview", "p"}, 0, 1, nil, i.preview},
-		{[]string{"hexdump", "hd", "h"}, 0, 1, nil, i.hexdump},
 
 		{[]string{"tobytes"}, 0, 0, i.toBytes, nil},
 		{[]string{"tobits"}, 0, 0, i.toBits, nil},
@@ -713,24 +712,6 @@ func (i *Interp) preview(c interface{}, a []interface{}) gojq.Iter {
 	default:
 		return gojq.NewIter(fmt.Errorf("%v: not previewable", c))
 	}
-}
-
-func (i *Interp) hexdump(c interface{}, a []interface{}) gojq.Iter {
-	bbr, err := toBufferRange(c)
-	if err != nil {
-		return gojq.NewIter(err)
-	}
-
-	opts, err := i.Options(a...)
-	if err != nil {
-		return gojq.NewIter(err)
-	}
-
-	if err := hexdumpRange(bbr, i.evalContext.output, opts); err != nil {
-		return gojq.NewIter(err)
-	}
-
-	return gojq.NewIter()
 }
 
 func (i *Interp) toBytes(c interface{}, a []interface{}) interface{} {
