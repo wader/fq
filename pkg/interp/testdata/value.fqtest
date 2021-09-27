@@ -28,3 +28,128 @@ $ fq -d mp3 '.headers[0][]' /test.mp3
 0x20|30 30 00                                       |00.             |
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x20|         00 00 00 00 00 00 00 00 00 00         |   ..........   |.headers[0].padding: Correct (none) (zero padding)
+# TODO: proper buffer_root test
+$ fq -d mp3 -i . /test.mp3
+mp3> . | (root, buffer_root, format_root, parent | ._path | path_to_expr), [parents | ._path | path_to_expr]
+"."
+"."
+"."
+"."
+[]
+mp3> .frames[0].side_info.granules[1] | (root, buffer_root, format_root, parent | ._path | path_to_expr), [parents | ._path | path_to_expr]
+"."
+"."
+".frames[0]"
+".frames[0].side_info.granules"
+[
+  ".frames[0].side_info.granules",
+  ".frames[0].side_info",
+  ".frames[0]",
+  ".frames",
+  "."
+]
+mp3> 123 | root
+error: expected a decode value but got: number (123)
+mp3> 123 | buffer_root
+error: expected a decode value but got: number (123)
+mp3> 123 | format_root
+error: expected a decode value but got: number (123)
+mp3> 123 | parent
+error: expected a decode value but got: number (123)
+mp3> 123 | parents
+error: expected a decode value but got: number (123)
+mp3> ^D
+$ fq -d mp3 -i . /test.mp3
+mp3> has("_start")
+true
+mp3> has("_stop")
+true
+mp3> has("_len")
+true
+mp3> has("_name")
+true
+mp3> has("_root")
+true
+mp3> has("_buffer_root")
+true
+mp3> has("_format_root")
+true
+mp3> has("_parent")
+true
+mp3> has("_symbol")
+true
+mp3> has("_description")
+true
+mp3> has("_path")
+true
+mp3> has("_bits")
+true
+mp3> has("_bytes")
+true
+mp3> has("_error")
+true
+mp3> has("_unknown")
+true
+mp3> has("_format")
+true
+mp3> has("_abc")
+error: expected a extkey but got: _abc
+mp3> ^D
+$ fq -d mp3 -i . /test.mp3
+mp3> ._start
+0
+mp3> ._stop
+5152
+mp3> ._len
+5152
+mp3> ._name
+""
+mp3> ._root
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /test.mp3 (mp3)
+0x000|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|  headers: [1]
+*    |until 0x2c.7 (45)                              |                |
+0x020|                                       ff fb 40|             ..@|  frames: [3]
+0x030|c0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
+*    |until 0x283.7 (end) (599)                      |                |
+     |                                               |                |  footers: [0]
+mp3> ._buffer_root
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /test.mp3 (mp3)
+0x000|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|  headers: [1]
+*    |until 0x2c.7 (45)                              |                |
+0x020|                                       ff fb 40|             ..@|  frames: [3]
+0x030|c0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
+*    |until 0x283.7 (end) (599)                      |                |
+     |                                               |                |  footers: [0]
+mp3> ._format_root
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /test.mp3 (mp3)
+0x000|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|  headers: [1]
+*    |until 0x2c.7 (45)                              |                |
+0x020|                                       ff fb 40|             ..@|  frames: [3]
+0x030|c0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
+*    |until 0x283.7 (end) (599)                      |                |
+     |                                               |                |  footers: [0]
+mp3> ._parent
+null
+mp3> ._symbol
+""
+mp3> ._description
+"/test.mp3"
+mp3> ._path
+[]
+mp3> ._bits
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x000|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|.: none (5152 bits)
+*    |until 0x283.7 (end) (644)                      |                |
+mp3> ._bytes
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x000|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|.: none (644 bytes)
+*    |until 0x283.7 (end) (644)                      |                |
+mp3> ._error
+null
+mp3> ._unknown
+false
+mp3> ._format
+"mp3"
+mp3> ._abc
+error: expected a extkey but got: _abc
+mp3> ^D

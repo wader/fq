@@ -38,11 +38,21 @@ type valueIf interface {
 	ToBuffer
 }
 
-func valueUnderscoreKey(name string, a, b func(name string) interface{}) interface{} {
+func valueKey(name string, a, b func(name string) interface{}) interface{} {
 	if strings.HasPrefix(name, "_") {
 		return a(name)
 	}
 	return b(name)
+}
+func valueHas(key interface{}, a func(name string) interface{}, b func(key interface{}) interface{}) interface{} {
+	stringKey, ok := key.(string)
+	if ok && strings.HasPrefix(stringKey, "_") {
+		if err, ok := a(stringKey).(error); ok {
+			return err
+		}
+		return true
+	}
+	return b(key)
 }
 
 func makeDecodeValue(dv *decode.Value) valueIf {
@@ -211,7 +221,10 @@ type decodeValue struct {
 }
 
 func (v decodeValue) JQValueKey(name string) interface{} {
-	return valueUnderscoreKey(name, v.decodeValueBase.JQValueKey, v.JQValue.JQValueKey)
+	return valueKey(name, v.decodeValueBase.JQValueKey, v.JQValue.JQValueKey)
+}
+func (v decodeValue) JQValueHas(key interface{}) interface{} {
+	return valueHas(key, v.decodeValueBase.JQValueKey, v.JQValue.JQValueHas)
 }
 
 // string (*bitio.Buffer)
@@ -233,9 +246,11 @@ func NewStringBufferValueObject(dv *decode.Value, bb *bitio.Buffer) BufferDecode
 }
 
 func (v BufferDecodeValue) JQValueKey(name string) interface{} {
-	return valueUnderscoreKey(name, v.decodeValueBase.JQValueKey, v.Base.JQValueKey)
+	return valueKey(name, v.decodeValueBase.JQValueKey, v.Base.JQValueKey)
 }
-
+func (v BufferDecodeValue) JQValueHas(key interface{}) interface{} {
+	return valueHas(key, v.decodeValueBase.JQValueKey, v.Base.JQValueHas)
+}
 func (v BufferDecodeValue) JQValueLength() interface{} {
 	return int(v.Buffer.Len()) / 8
 }
@@ -302,7 +317,7 @@ func NewArrayDecodeValue(dv *decode.Value, a decode.Array) ArrayDecodeValue {
 }
 
 func (v ArrayDecodeValue) JQValueKey(name string) interface{} {
-	return valueUnderscoreKey(name, v.decodeValueBase.JQValueKey, v.Base.JQValueKey)
+	return valueKey(name, v.decodeValueBase.JQValueKey, v.Base.JQValueKey)
 }
 func (v ArrayDecodeValue) JQValueSliceLen() interface{} { return len(v.Array) }
 func (v ArrayDecodeValue) JQValueLength() interface{}   { return len(v.Array) }
@@ -338,11 +353,16 @@ func (v ArrayDecodeValue) JQValueKeys() interface{} {
 	return vs
 }
 func (v ArrayDecodeValue) JQValueHas(key interface{}) interface{} {
-	intKey, ok := key.(int)
-	if !ok {
-		return gojqextra.HasKeyTypeError{L: "array", R: fmt.Sprintf("%v", key)}
-	}
-	return intKey >= 0 && intKey < len(v.Array)
+	return valueHas(
+		key,
+		v.decodeValueBase.JQValueKey,
+		func(key interface{}) interface{} {
+			intKey, ok := key.(int)
+			if !ok {
+				return gojqextra.HasKeyTypeError{L: "array", R: fmt.Sprintf("%v", key)}
+			}
+			return intKey >= 0 && intKey < len(v.Array)
+		})
 }
 func (v ArrayDecodeValue) JQValueToGoJQ() interface{} {
 	vs := make([]interface{}, len(v.Array))
@@ -402,16 +422,22 @@ func (v StructDecodeValue) JQValueKeys() interface{} {
 	return vs
 }
 func (v StructDecodeValue) JQValueHas(key interface{}) interface{} {
-	stringKey, ok := key.(string)
-	if !ok {
-		return gojqextra.HasKeyTypeError{L: "object", R: fmt.Sprintf("%v", key)}
-	}
-	for _, f := range v.Struct {
-		if f.Name == stringKey {
-			return true
-		}
-	}
-	return false
+	return valueHas(
+		key,
+		v.decodeValueBase.JQValueKey,
+		func(key interface{}) interface{} {
+			stringKey, ok := key.(string)
+			if !ok {
+				return gojqextra.HasKeyTypeError{L: "object", R: fmt.Sprintf("%v", key)}
+			}
+			for _, f := range v.Struct {
+				if f.Name == stringKey {
+					return true
+				}
+			}
+			return false
+		},
+	)
 }
 func (v StructDecodeValue) JQValueToGoJQ() interface{} {
 	vm := make(map[string]interface{}, len(v.Struct))
