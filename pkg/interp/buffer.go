@@ -12,11 +12,6 @@ import (
 	"github.com/wader/fq/pkg/ranges"
 )
 
-type bufferRange struct {
-	bb *bitio.Buffer
-	r  ranges.Range
-}
-
 var _ Value = (*BufferView)(nil)
 var _ ToBuffer = (*BufferView)(nil)
 

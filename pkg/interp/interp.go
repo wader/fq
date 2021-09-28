@@ -26,7 +26,6 @@ import (
 	"github.com/wader/fq/internal/pos"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
-	"github.com/wader/fq/pkg/ranges"
 
 	"github.com/wader/gojq"
 )
@@ -345,19 +344,6 @@ func toBufferEx(v interface{}, inArray bool) (*bitio.Buffer, error) {
 		return bb, nil
 	default:
 		return nil, fmt.Errorf("value can't be a buffer")
-	}
-}
-
-func toBufferView(v interface{}) (BufferView, error) {
-	switch vv := v.(type) {
-	case ToBufferView:
-		return vv.ToBufferView()
-	default:
-		bb, err := toBuffer(v)
-		if err != nil {
-			return BufferView{}, err
-		}
-		return BufferView{bb: bb, r: ranges.Range{Len: bb.Len()}, unit: 8}, nil
 	}
 }
 
