@@ -12,6 +12,7 @@ import (
 type Registry struct {
 	Groups      map[string][]*decode.Format
 	resolveOnce sync.Once
+	resolved    bool
 }
 
 func New() *Registry {
@@ -22,6 +23,11 @@ func New() *Registry {
 }
 
 func (r *Registry) register(groupName string, format *decode.Format, single bool) *decode.Format { //nolint:unparam
+	if r.resolved {
+		// for now can't change after resolved
+		panic("registry already resolved")
+	}
+
 	formats, ok := r.Groups[groupName]
 	if ok {
 		if !single {
@@ -32,6 +38,16 @@ func (r *Registry) register(groupName string, format *decode.Format, single bool
 	}
 
 	r.Groups[groupName] = append(formats, format)
+
+	return format
+}
+
+func (r *Registry) MustRegister(format *decode.Format) *decode.Format {
+	r.register(format.Name, format, false)
+	for _, g := range format.Groups {
+		r.register(g, format, true)
+	}
+	r.register("all", format, true)
 
 	return format
 }
@@ -68,17 +84,9 @@ func (r *Registry) resolve() error {
 		sortFormats(fs)
 	}
 
+	r.resolved = true
+
 	return nil
-}
-
-func (r *Registry) MustRegister(format *decode.Format) *decode.Format {
-	r.register(format.Name, format, false)
-	for _, g := range format.Groups {
-		r.register(g, format, true)
-	}
-	r.register("all", format, true)
-
-	return format
 }
 
 func (r *Registry) Group(name string) ([]*decode.Format, error) {
