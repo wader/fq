@@ -1,0 +1,21 @@
+$ fq -n _registry.groups.probe
+[
+  "adts",
+  "bzip2",
+  "elf",
+  "flac",
+  "gif",
+  "gzip",
+  "jpeg",
+  "matroska",
+  "mp4",
+  "ogg",
+  "png",
+  "tar",
+  "tiff",
+  "webp",
+  "mpeg_ts",
+  "wav",
+  "mp3",
+  "json"
+]

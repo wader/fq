@@ -395,10 +395,10 @@ func (i *Interp) _registry(c interface{}, a []interface{}) interface{} {
 	groups := map[string]interface{}{}
 	formats := map[string]interface{}{}
 
-	for fsName, fs := range i.registry.Groups {
+	for fsName := range i.registry.Groups {
 		var group []interface{}
 
-		for _, f := range fs {
+		for _, f := range i.registry.MustGroup(fsName) {
 			group = append(group, f.Name)
 			if _, ok := uniqueFormats[f.Name]; ok {
 				continue
