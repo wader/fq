@@ -26,9 +26,11 @@ testjq: fq
 testcli: fq
 	@pkg/cli/test.sh ./fq pkg/cli/test.exp
 
+.PHONY: actual
 actual: export WRITE_ACTUAL=1
 actual: testgo
 
+.PHONY: cover
 cover: COVER=-cover -race -coverpkg=./... -coverprofile=cover.out
 cover: test
 	go tool cover -html=cover.out -o cover.out.html
