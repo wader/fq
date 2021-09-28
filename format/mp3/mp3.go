@@ -16,7 +16,7 @@ var mp3Frame []*decode.Format
 func init() {
 	registry.MustRegister(&decode.Format{
 		Name:        format.MP3,
-		ProbeOrder:  10, // after most others (overlap some with other formats)
+		ProbeOrder:  20, // after most others (silent samples and jpeg header can look like mp3 sync)
 		Description: "MP3 file",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    mp3Decode,
