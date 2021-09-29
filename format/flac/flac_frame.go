@@ -55,17 +55,20 @@ func utf8Uint(d *decode.D) uint64 {
 	n := d.U8()
 	// leading ones, bit negate and count zeroes
 	c := bits.LeadingZeros8(^uint8(n))
+	// 0b0xxxxxxx 1 byte
+	// 0b110xxxxx 2 byte
+	// 0b1110xxxx 3 byte
+	// 0b11110xxx 4 byte
 	switch c {
 	case 0:
 		// nop
-	case 1:
-		// TODO: error
-		d.Invalid("invalid UTF8Uint")
-	default:
+	case 2, 3, 4:
 		n = n & ((1 << (8 - c - 1)) - 1)
 		for i := 1; i < c; i++ {
 			n = n<<6 | d.U8()&0x3f
 		}
+	default:
+		d.Invalid("invalid UTF8Uint")
 	}
 	return n
 }
