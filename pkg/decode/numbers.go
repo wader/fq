@@ -37,6 +37,9 @@ func (d *D) TrySE(nBits int, endian Endian) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
+	if nBits == 0 {
+		return 0, nil
+	}
 	if endian == LittleEndian {
 		n = bitio.Uint64ReverseBytes(nBits, n)
 	}

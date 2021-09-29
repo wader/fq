@@ -8,8 +8,8 @@ import (
 // Read64 read nBits bits large unsigned integer from buf starting from firstBit.
 // Integer is read most significant bit first.
 func Read64(buf []byte, firstBit int, nBits int) uint64 {
-	if nBits > 64 {
-		panic(fmt.Sprintf("only supports =< 64 bits (%d)", nBits))
+	if nBits < 0 || nBits > 64 {
+		panic(fmt.Sprintf("nBits must be 0-64 (%d)", nBits))
 	}
 
 	be := binary.BigEndian
@@ -91,8 +91,8 @@ func Read64(buf []byte, firstBit int, nBits int) uint64 {
 }
 
 func Write64(v uint64, nBits int, buf []byte, firstBit int) {
-	if nBits > 64 {
-		panic(fmt.Sprintf("only supports =< 64 bits (%d)", nBits))
+	if nBits < 0 || nBits > 64 {
+		panic(fmt.Sprintf("nBits must be 0-64 (%d)", nBits))
 	}
 
 	be := binary.BigEndian
