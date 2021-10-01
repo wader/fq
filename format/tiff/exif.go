@@ -1,6 +1,7 @@
 package tiff
 
 // https://exiftool.org/TagNames/EXIF.html
+// TODO: JPEGInterchangeFormat/JPEGInterchangeFormatLength, seem to just after the exif tag usually?
 
 import (
 	"github.com/wader/fq/format"
