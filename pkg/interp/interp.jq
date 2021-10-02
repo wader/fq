@@ -138,7 +138,7 @@ def input:
           )
         end
       )
-    else _input($opts; decode($opts.decode_format))
+    else _input($opts; decode)
     end
   );
 
