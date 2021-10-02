@@ -52,6 +52,8 @@
 - Safe mode interpreter?
 - Allow/deny `open` in autocomplete
 - `open` leak, file and ctxreadseeker
+- Summary tree with format specific summaries for each format, sample count etc etc?
+- List all unique paths in some compact form?
 
 ### Tests
 
@@ -120,7 +122,6 @@
 
 #### Scripts
 
-- Summary script, tree with format specific summaries like codec, sample count etc etc?
 - Probe tool with common field names
 - MIME codec encode/decoder "avc1.PPCCLL" etc https://tools.ietf.org/html/rfc6381#section-3.3
 - Validate scripts for mp4, matroska

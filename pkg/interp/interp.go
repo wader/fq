@@ -179,10 +179,6 @@ type Display interface {
 	Display(w io.Writer, opts Options) error
 }
 
-type Preview interface {
-	Preview(w io.Writer, opts Options) error
-}
-
 type ToBuffer interface {
 	ToBuffer() (*bitio.Buffer, error)
 }

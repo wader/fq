@@ -56,7 +56,6 @@ func (i *Interp) makeFunctions() []Function {
 
 		{[]string{"format"}, 0, 0, i.format, nil},
 		{[]string{"_display"}, 1, 1, nil, i._display},
-		{[]string{"preview", "p"}, 0, 1, nil, i.preview},
 
 		{[]string{"tobytes"}, 0, 0, i.toBytes, nil},
 		{[]string{"tobits"}, 0, 0, i.toBits, nil},
@@ -693,24 +692,6 @@ func (i *Interp) _display(c interface{}, a []interface{}) gojq.Iter {
 		return gojq.NewIter(v)
 	default:
 		return gojq.NewIter(fmt.Errorf("%+#v: not displayable", c))
-	}
-}
-
-// TODO: opts and colors?
-func (i *Interp) preview(c interface{}, a []interface{}) gojq.Iter {
-	opts, err := i.Options(a...)
-	if err != nil {
-		return gojq.NewIter(err)
-	}
-
-	switch v := c.(type) {
-	case Preview:
-		if err := v.Preview(i.evalContext.output, opts); err != nil {
-			return gojq.NewIter(err)
-		}
-		return gojq.NewIter()
-	default:
-		return gojq.NewIter(fmt.Errorf("%v: not previewable", c))
 	}
 }
 

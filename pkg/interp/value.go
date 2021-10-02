@@ -134,7 +134,6 @@ func (dvb decodeValueBase) DisplayName() string {
 }
 
 func (dvb decodeValueBase) Display(w io.Writer, opts Options) error { return dump(dvb.dv, w, opts) }
-func (dvb decodeValueBase) Preview(w io.Writer, opts Options) error { return preview(dvb.dv, w, opts) }
 func (dvb decodeValueBase) ToBuffer() (*bitio.Buffer, error) {
 	return dvb.dv.RootBitBuf.Copy().BitBufRange(dvb.dv.Range.Start, dvb.dv.Range.Len)
 }
