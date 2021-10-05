@@ -2,11 +2,11 @@
 /test.mp3:
 $ fq -d mp3 '._bits[0:(16+8)*8] | hexdump' /test.mp3
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x00|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|.: none (192 bits)
+0x00|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|.: none 0x0-0x17.7 (24)
 0x10|00 0f 00 00 03 4c 61 76                        |.....Lav        |
 $ fq -d mp3 '.frames[1].header.layer | hexdump' /test.mp3
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0xe0|            fb                                 |    .           |.frames[1].header.layer: Layer 3 (3)
+0xe0|            fb                                 |    .           |.: none 0xe4.5-0xe4.6 (0.2)
 $ fq -d mp3 '.frames[1].header.layer._bytes | hexdump' /test.mp3
-   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|40|                                            |@|              |.: none (0 bytes)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0xe0|            fb                                 |    .           |.: none 0xe4.5-0xe4.6 (0.2)

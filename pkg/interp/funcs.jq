@@ -28,8 +28,8 @@ def verbose($opts): _display({verbose: true, array_truncate: 0} + $opts);
 def verbose: verbose({});
 def v($opts): verbose($opts);
 def v: verbose;
-def hexdump($opts): _display({display_bytes: 0} + $opts);
-def hexdump: _display({display_bytes: 0});
+def hexdump($opts): _hexdump({display_bytes: 0} + $opts);
+def hexdump: _hexdump({display_bytes: 0});
 def hd($opts): hexdump($opts);
 def hd: hexdump;
 

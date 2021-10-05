@@ -8,12 +8,11 @@ import (
 
 	"github.com/wader/fq/internal/gojqextra"
 	"github.com/wader/fq/pkg/bitio"
-	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/ranges"
 )
 
-var _ Value = (*BufferView)(nil)
-var _ ToBuffer = (*BufferView)(nil)
+var _ Value = BufferView{}
+var _ ToBufferView = BufferView{}
 
 type BufferView struct {
 	bb   *bitio.Buffer
@@ -21,9 +20,7 @@ type BufferView struct {
 	unit int
 }
 
-// TODO: JQArray
-
-func newBifBufObject(bb *bitio.Buffer, unit int) BufferView {
+func bufferViewFromBuffer(bb *bitio.Buffer, unit int) BufferView {
 	return BufferView{
 		bb:   bb,
 		r:    ranges.Range{Start: 0, Len: bb.Len()},
@@ -31,8 +28,20 @@ func newBifBufObject(bb *bitio.Buffer, unit int) BufferView {
 	}
 }
 
-func (*BufferView) DisplayName() string { return "buffer" }
-func (*BufferView) ExtKeys() []string {
+func (bv BufferView) toBytesBuffer(r ranges.Range) (*bytes.Buffer, error) {
+	bb, err := bv.bb.BitBufRange(r.Start, r.Len)
+	if err != nil {
+		return nil, err
+	}
+	buf := &bytes.Buffer{}
+	if _, err := io.Copy(buf, bb.Copy()); err != nil {
+		return nil, err
+	}
+	return buf, nil
+}
+
+func (BufferView) DisplayName() string { return "buffer" }
+func (BufferView) ExtKeys() []string {
 	return []string{
 		"size",
 		"start",
@@ -42,116 +51,100 @@ func (*BufferView) ExtKeys() []string {
 	}
 }
 
-func (bo BufferView) JQValueLength() interface{} {
-	return int(bo.r.Len / int64(bo.unit))
+func (bv BufferView) ToBufferView() (BufferView, error) {
+	return bv, nil
 }
-func (bo BufferView) JQValueSliceLen() interface{} {
-	return bo.JQValueLength()
+
+func (bv BufferView) JQValueLength() interface{} {
+	return int(bv.r.Len / int64(bv.unit))
 }
-func (bo BufferView) JQValueIndex(index int) interface{} {
-	// TODO: use bitio
-	/*
-		pos, err := bo.bbr.bb.Pos()
-		if err != nil {
-			return err
-		}
-		if _, err := bo.bbr.bb.SeekAbs(int64(index) * int64(bo.unit)); err != nil {
-			return err
-		}
-		v, err := bo.bbr.bb.U(bo.unit)
-		if err != nil {
-			return err
-		}
-		if _, err := bo.bbr.bb.SeekAbs(pos); err != nil {
-			return err
-		}
-		return int(v)
-	*/
-	return nil
+func (bv BufferView) JQValueSliceLen() interface{} {
+	return bv.JQValueLength()
 }
-func (bo BufferView) JQValueSlice(start int, end int) interface{} {
-	rStart := int64(start * bo.unit)
-	rLen := int64((end - start) * bo.unit)
+func (bv BufferView) JQValueIndex(index int) interface{} {
+	if index < 0 {
+		return ""
+	}
+	buf, err := bv.toBytesBuffer(ranges.Range{Start: bv.r.Start + int64(index*bv.unit), Len: int64(bv.unit)})
+	if err != nil {
+		return err
+	}
+	s := buf.String()
+	return s[0:1]
+}
+func (bv BufferView) JQValueSlice(start int, end int) interface{} {
+	rStart := int64(start * bv.unit)
+	rLen := int64((end - start) * bv.unit)
 
 	return BufferView{
-		bb:   bo.bb,
-		r:    ranges.Range{Start: bo.r.Start + rStart, Len: rLen},
-		unit: bo.unit,
+		bb:   bv.bb,
+		r:    ranges.Range{Start: bv.r.Start + rStart, Len: rLen},
+		unit: bv.unit,
 	}
 }
-func (bo BufferView) JQValueKey(name string) interface{} {
+func (bv BufferView) JQValueKey(name string) interface{} {
 	switch name {
 	case "size":
-		return new(big.Int).SetInt64(bo.r.Len / int64(bo.unit))
+		return new(big.Int).SetInt64(bv.r.Len / int64(bv.unit))
 	case "start":
-		return new(big.Int).SetInt64(bo.r.Start / int64(bo.unit))
+		return new(big.Int).SetInt64(bv.r.Start / int64(bv.unit))
 	case "stop":
-		stop := bo.r.Stop()
-		stopUnits := stop / int64(bo.unit)
-		if stop%int64(bo.unit) != 0 {
+		stop := bv.r.Stop()
+		stopUnits := stop / int64(bv.unit)
+		if stop%int64(bv.unit) != 0 {
 			stopUnits++
 		}
 		return new(big.Int).SetInt64(stopUnits)
 	case "bits":
-		if bo.unit == 1 {
-			return bo
+		if bv.unit == 1 {
+			return bv
 		}
-		return BufferView{bb: bo.bb, r: bo.r, unit: 1}
+		return BufferView{bb: bv.bb, r: bv.r, unit: 1}
 	case "bytes":
-		if bo.unit == 8 {
-			return bo
+		if bv.unit == 8 {
+			return bv
 		}
-		return BufferView{bb: bo.bb, r: bo.r, unit: 8}
+		return BufferView{bb: bv.bb, r: bv.r, unit: 8}
 	}
 	return nil
 }
-func (bo BufferView) JQValueEach() interface{} {
+func (bv BufferView) JQValueEach() interface{} {
 	return nil
 }
-func (bo BufferView) JQValueType() string {
+func (bv BufferView) JQValueType() string {
 	return "buffer"
 }
-func (bo BufferView) JQValueKeys() interface{} {
+func (bv BufferView) JQValueKeys() interface{} {
 	return gojqextra.FuncTypeError{Name: "keys", Typ: "buffer"}
 }
-func (bo BufferView) JQValueHas(key interface{}) interface{} {
+func (bv BufferView) JQValueHas(key interface{}) interface{} {
 	return gojqextra.HasKeyTypeError{L: "buffer", R: fmt.Sprintf("%v", key)}
 }
-func (bo BufferView) JQValueToNumber() interface{} {
-	bb, err := bo.ToBuffer()
+func (bv BufferView) JQValueToNumber() interface{} {
+	buf, err := bv.toBytesBuffer(bv.r)
 	if err != nil {
 		return err
 	}
-	buf := &bytes.Buffer{}
-	if _, err := io.Copy(buf, bb.Copy()); err != nil {
-		return err
-	}
-	extraBits := uint((8 - bo.r.Len%8) % 8)
+	extraBits := uint((8 - bv.r.Len%8) % 8)
 	return new(big.Int).Rsh(new(big.Int).SetBytes(buf.Bytes()), extraBits)
 }
-func (bo BufferView) JQValueToString() interface{} {
-	return bo.JQValueToGoJQ()
+func (bv BufferView) JQValueToString() interface{} {
+	return bv.JQValueToGoJQ()
 }
-
-func (bo BufferView) JQValueToGoJQ() interface{} {
-	bb, err := bo.ToBuffer()
+func (bv BufferView) JQValueToGoJQ() interface{} {
+	buf, err := bv.toBytesBuffer(bv.r)
 	if err != nil {
-		return err
-	}
-	buf := &bytes.Buffer{}
-	if _, err := io.Copy(buf, bb.Copy()); err != nil {
 		return err
 	}
 	return buf.String()
 }
-
-func (bo BufferView) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
+func (bv BufferView) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
 	return notUpdateableError{Key: fmt.Sprintf("%v", key), Typ: "buffer"}
 }
 
-func (bo BufferView) Display(w io.Writer, opts Options) error {
+func (bv BufferView) Display(w io.Writer, opts Options) error {
 	if opts.RawOutput {
-		bb, err := bo.ToBuffer()
+		bb, err := bv.toBuffer()
 		if err != nil {
 			return err
 		}
@@ -161,27 +154,9 @@ func (bo BufferView) Display(w io.Writer, opts Options) error {
 		return nil
 	}
 
-	unitNames := map[int]string{
-		1: "bits",
-		8: "bytes",
-	}
-	unitName := unitNames[bo.unit]
-	if unitName == "" {
-		unitName = "units"
-	}
-
-	// TODO: hack
-	return dump(
-		&decode.Value{
-			Range:       bo.r,
-			RootBitBuf:  bo.bb.Copy(),
-			Description: fmt.Sprintf("%d %s", bo.r.Len/int64(bo.unit), unitName),
-		},
-		w,
-		opts,
-	)
+	return hexdump(w, bv, opts)
 }
 
-func (bo BufferView) ToBuffer() (*bitio.Buffer, error) {
-	return bo.bb.BitBufRange(bo.r.Start, bo.r.Len)
+func (bv BufferView) toBuffer() (*bitio.Buffer, error) {
+	return bv.bb.BitBufRange(bv.r.Start, bv.r.Len)
 }

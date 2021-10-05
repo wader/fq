@@ -349,3 +349,16 @@ func dump(v *decode.Value, w io.Writer, opts Options) error {
 		return dumpEx(v, buf, cw, depth, rootV, rootDepth, maxAddrIndentWidth-rootDepth, opts)
 	}))
 }
+
+func hexdump(w io.Writer, bv BufferView, opts Options) error {
+	// TODO: hack
+	opts.Verbose = true
+	return dump(
+		&decode.Value{
+			Range:      bv.r,
+			RootBitBuf: bv.bb.Copy(),
+		},
+		w,
+		opts,
+	)
+}

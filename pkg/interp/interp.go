@@ -179,10 +179,6 @@ type Display interface {
 	Display(w io.Writer, opts Options) error
 }
 
-type ToBuffer interface {
-	ToBuffer() (*bitio.Buffer, error)
-}
-
 type ToBufferView interface {
 	ToBufferView() (BufferView, error)
 }
@@ -293,8 +289,12 @@ func toBuffer(v interface{}) (*bitio.Buffer, error) {
 // TODO: refactor to return struct?
 func toBufferEx(v interface{}, inArray bool) (*bitio.Buffer, error) {
 	switch vv := v.(type) {
-	case ToBuffer:
-		return vv.ToBuffer()
+	case ToBufferView:
+		bv, err := vv.ToBufferView()
+		if err != nil {
+			return nil, err
+		}
+		return bv.bb.BitBufRange(bv.r.Start, bv.r.Len)
 	case string:
 		return bitio.NewBufferFromBytes([]byte(vv), -1), nil
 	case []byte:
@@ -340,6 +340,19 @@ func toBufferEx(v interface{}, inArray bool) (*bitio.Buffer, error) {
 		return bb, nil
 	default:
 		return nil, fmt.Errorf("value can't be a buffer")
+	}
+}
+
+func toBufferView(v interface{}) (BufferView, error) {
+	switch vv := v.(type) {
+	case ToBufferView:
+		return vv.ToBufferView()
+	default:
+		bb, err := toBuffer(v)
+		if err != nil {
+			return BufferView{}, err
+		}
+		return bufferViewFromBuffer(bb, 8), nil
 	}
 }
 

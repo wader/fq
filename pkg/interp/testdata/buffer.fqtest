@@ -1,37 +1,35 @@
 /test.mp3:
 $ fq -d mp3 '.headers[0].magic._bits[8:16] | hd' /test.mp3
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|   44                                          | D              |.: none (8 bits)
+0x0|   44                                          | D              |.: none 0x1-0x1.7 (1)
 $ fq -d mp3 '.headers[0].magic._bits | [.[8:16], .[0:8]] | hd' /test.mp3
-[
-  "D",
-  "I"
-]
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|44 49|                                         |DI|             |.: none 0x0-0x1.7 (2)
 $ fq -d mp3 '.headers[0].magic._bits | [.[8:16], .[0:8]] | tobits | hd' /test.mp3
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|44 49|                                         |DI|             |.: none (16 bits)
+0x0|44 49|                                         |DI|             |.: none 0x0-0x1.7 (2)
 $ fq -d mp3 '.headers[0].magic._bits | [.[8:16], .[0:8]] | tobytes | hd' /test.mp3
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|44 49|                                         |DI|             |.: none (2 bytes)
+0x0|44 49|                                         |DI|             |.: none 0x0-0x1.7 (2)
 $ fq -n '"12" | tobytes | hd'
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|31 32|                                         |12|             |.: none (2 bytes)
+0x0|31 32|                                         |12|             |.: none 0x0-0x1.7 (2)
 $ fq -n '"12" | tobits | hd'
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|31 32|                                         |12|             |.: none (16 bits)
+0x0|31 32|                                         |12|             |.: none 0x0-0x1.7 (2)
 $ fq -n '["12", "3"] | tobytes | hd'
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|31 32 33|                                      |123|            |.: none (3 bytes)
+0x0|31 32 33|                                      |123|            |.: none 0x0-0x2.7 (3)
 $ fq -n '["12", "3"] | tobits  | hd'
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|31 32 33|                                      |123|            |.: none (24 bits)
+0x0|31 32 33|                                      |123|            |.: none 0x0-0x2.7 (3)
 $ fq -n '[("11" | hex), ("22" | hex)] | tobits  | hd'
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|11 22|                                         |."|             |.: none (16 bits)
+0x0|11 22|                                         |."|             |.: none 0x0-0x1.7 (2)
 # TODO: bug, hexdump uses io.Copy which is byte oritneted
 $ fq -n '[("12" | hex | .bits[4:]), ("34" | hex | .bits[0:4])] | tobits  | hd'
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|20|                                            | |              |.: none (8 bits)
+0x0|20|                                            | |              |.: none 0x0-0x0.7 (1)
 $ fq -d mp3 '.frames[]._bits[0:12] | tonumber' /test.mp3
 4095
 4095

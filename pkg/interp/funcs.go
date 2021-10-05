@@ -56,6 +56,7 @@ func (i *Interp) makeFunctions() []Function {
 
 		{[]string{"format"}, 0, 0, i.format, nil},
 		{[]string{"_display"}, 1, 1, nil, i._display},
+		{[]string{"_hexdump"}, 1, 1, nil, i._hexdump},
 
 		{[]string{"tobytes"}, 0, 0, i.toBytes, nil},
 		{[]string{"tobits"}, 0, 0, i.toBits, nil},
@@ -122,7 +123,7 @@ func makeStringBitBufTransformFn(
 			}
 			outBB := bitio.NewBufferFromBytes(buf.Bytes(), -1)
 
-			return newBifBufObject(outBB, 8)
+			return bufferViewFromBuffer(outBB, 8)
 		default:
 			bb, err := toBuffer(c)
 			if err != nil {
@@ -168,7 +169,7 @@ func makeBitBufTransformFn(fn func(r io.Reader) (io.Reader, error)) func(c inter
 
 		outBB := bitio.NewBufferFromBytes(outBuf.Bytes(), -1)
 
-		return newBifBufObject(outBB, 8)
+		return bufferViewFromBuffer(outBB, 8)
 	}
 }
 
@@ -190,7 +191,7 @@ func makeHashFn(fn func() (hash.Hash, error)) func(c interface{}, a []interface{
 
 		outBB := bitio.NewBufferFromBytes(h.Sum(nil), -1)
 
-		return newBifBufObject(outBB, 8)
+		return bufferViewFromBuffer(outBB, 8)
 	}
 }
 
@@ -488,15 +489,15 @@ type bitBufFile struct {
 	progressFn progressreadseeker.ProgressFn
 }
 
-var _ ToBuffer = (*bitBufFile)(nil)
+var _ ToBufferView = (*bitBufFile)(nil)
 
 func (bbf *bitBufFile) Display(w io.Writer, opts Options) error {
 	_, err := fmt.Fprintln(w, bbf.JQValue.JQValueToString())
 	return err
 }
 
-func (bbf *bitBufFile) ToBuffer() (*bitio.Buffer, error) {
-	return bbf.bb.Copy(), nil
+func (bbf *bitBufFile) ToBufferView() (BufferView, error) {
+	return bufferViewFromBuffer(bbf.bb, 8), nil
 }
 
 // def open: #:: string| => buffer
@@ -700,7 +701,7 @@ func (i *Interp) toBytes(c interface{}, a []interface{}) interface{} {
 	if err != nil {
 		return err
 	}
-	return newBifBufObject(bb, 8)
+	return bufferViewFromBuffer(bb, 8)
 }
 
 func (i *Interp) toBits(c interface{}, a []interface{}) interface{} {
@@ -708,7 +709,7 @@ func (i *Interp) toBits(c interface{}, a []interface{}) interface{} {
 	if err != nil {
 		return err
 	}
-	return newBifBufObject(bb, 1)
+	return bufferViewFromBuffer(bb, 1)
 }
 
 func (i *Interp) toValue(c interface{}, a []interface{}) interface{} {
@@ -833,8 +834,24 @@ func (i *Interp) find(c interface{}, a []interface{}) gojq.Iter {
 		return gojq.NewIter()
 	}
 
-	bbo := newBifBufObject(bb, 8)
+	bbo := bufferViewFromBuffer(bb, 8)
 	// log.Printf("bbo: %#+v\n", bbo)
 
 	return gojq.NewIter(bbo)
+}
+
+func (i *Interp) _hexdump(c interface{}, a []interface{}) gojq.Iter {
+	opts, err := i.Options(a...)
+	if err != nil {
+		return gojq.NewIter(err)
+	}
+	bv, err := toBufferView(c)
+	if err != nil {
+		return gojq.NewIter(err)
+	}
+	if err := hexdump(i.evalContext.output, bv, opts); err != nil {
+		return gojq.NewIter(err)
+	}
+
+	return gojq.NewIter()
 }

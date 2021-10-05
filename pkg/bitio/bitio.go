@@ -372,7 +372,10 @@ func NewMultiBitReader(rs []BitReadAtSeeker) (*MultiBitReader, error) {
 }
 
 func (m *MultiBitReader) ReadBitsAt(p []byte, nBits int, bitOff int64) (n int, err error) {
-	end := m.readerEnds[len(m.readers)-1]
+	var end int64
+	if len(m.readers) > 0 {
+		end = m.readerEnds[len(m.readers)-1]
+	}
 	if end <= bitOff {
 		return 0, io.EOF
 	}
@@ -406,7 +409,10 @@ func (m *MultiBitReader) ReadBits(p []byte, nBits int) (n int, err error) {
 
 func (m *MultiBitReader) SeekBits(bitOff int64, whence int) (int64, error) {
 	var p int64
-	end := m.readerEnds[len(m.readerEnds)-1]
+	var end int64
+	if len(m.readers) > 0 {
+		end = m.readerEnds[len(m.readers)-1]
+	}
 
 	switch whence {
 	case io.SeekStart:
@@ -430,9 +436,6 @@ func (m *MultiBitReader) SeekBits(bitOff int64, whence int) (int64, error) {
 func (m *MultiBitReader) Read(p []byte) (n int, err error) {
 	n, err = m.ReadBitsAt(p, len(p)*8, m.pos)
 	m.pos += int64(n)
-
-	// log.Printf("n: %#+v\n", n)
-	// log.Printf("err: %#+v\n", err)
 
 	if err != nil {
 		return int(BitsByteCount(int64(n))), err

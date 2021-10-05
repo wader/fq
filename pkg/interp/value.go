@@ -1,7 +1,6 @@
 package interp
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"io"
@@ -11,6 +10,7 @@ import (
 	"github.com/wader/fq/internal/gojqextra"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/ranges"
 
 	"github.com/wader/gojq"
 )
@@ -35,7 +35,7 @@ func (err notUpdateableError) Error() string {
 // TODO: rename
 type valueIf interface {
 	Value
-	ToBuffer
+	ToBufferView
 }
 
 func valueKey(name string, a, b func(name string) interface{}) interface{} {
@@ -134,11 +134,8 @@ func (dvb decodeValueBase) DisplayName() string {
 }
 
 func (dvb decodeValueBase) Display(w io.Writer, opts Options) error { return dump(dvb.dv, w, opts) }
-func (dvb decodeValueBase) ToBuffer() (*bitio.Buffer, error) {
-	return dvb.dv.RootBitBuf.Copy().BitBufRange(dvb.dv.Range.Start, dvb.dv.Range.Len)
-}
 func (dvb decodeValueBase) ToBufferView() (BufferView, error) {
-	return BufferView{bb: dvb.dv.RootBitBuf.Copy(), r: dvb.dv.Range, unit: 8}, nil
+	return BufferView{bb: dvb.dv.RootBitBuf, r: dvb.dv.Range, unit: 8}, nil
 }
 func (dvb decodeValueBase) ExtKeys() []string {
 	kv := []string{
@@ -206,17 +203,17 @@ func (dvb decodeValueBase) JQValueKey(name string) interface{} {
 
 		return dv.Err
 	case "_bits":
-		bb, err := dv.RootBitBuf.BitBufRange(dv.Range.Start, dv.Range.Len)
-		if err != nil {
-			return err
+		return BufferView{
+			bb:   dv.RootBitBuf,
+			r:    dv.Range,
+			unit: 1,
 		}
-		return newBifBufObject(bb, 1)
 	case "_bytes":
-		bb, err := dv.RootBitBuf.BitBufRange(dv.Range.Start, dv.Range.Len)
-		if err != nil {
-			return err
+		return BufferView{
+			bb:   dv.RootBitBuf,
+			r:    dv.Range,
+			unit: 8,
 		}
-		return newBifBufObject(bb, 8)
 	case "_format":
 		if dvb.dv.Format == nil {
 			return nil
@@ -278,17 +275,14 @@ func (v BufferDecodeValue) JQValueIndex(index int) interface{} {
 	return v.JQValueSlice(index, index+1)
 }
 func (v BufferDecodeValue) JQValueSlice(start int, end int) interface{} {
-	bb := v.Buffer.Copy()
-	if start != 0 {
-		if _, err := bb.SeekAbs(int64(start) * 8); err != nil {
-			return err
-		}
+	rStart := int64(start * 8)
+	rLen := int64((end - start) * 8)
+
+	return BufferView{
+		bb:   v.Buffer,
+		r:    ranges.Range{Start: rStart, Len: rLen},
+		unit: 8,
 	}
-	b := &bytes.Buffer{}
-	if _, err := io.CopyN(b, bb, int64(end-start)); err != nil {
-		return err
-	}
-	return b.String()
 }
 func (v BufferDecodeValue) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
 	return notUpdateableError{Key: fmt.Sprintf("%v", key), Typ: "string"}
