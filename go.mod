@@ -3,11 +3,11 @@ module github.com/wader/fq
 go 1.17
 
 require (
-	// bump: mapstructure /github.com\/mitchellh\/mapstructure v(.*)/ git://github.com/mitchellh/mapstructure|^1
-	// bump: mapstructure command go get -d github.com/mitchellh/mapstructure@v$LATEST && go mod tidy
+	// bump: gomod-mapstructure /github.com\/mitchellh\/mapstructure v(.*)/ git://github.com/mitchellh/mapstructure|^1
+	// bump: gomod-mapstructure command go get -d github.com/mitchellh/mapstructure@v$LATEST && go mod tidy
 	github.com/mitchellh/mapstructure v1.4.2
-	// bump: go-difflib /github.com\/pmezard\/go-difflib v(.*)/ git://github.com/pmezard/go-difflib|^1
-	// bump: go-difflib command go get -d github.com/pmezard/go-difflib@v$LATEST && go mod tidy
+	// bump: gomod-go-difflib /github.com\/pmezard\/go-difflib v(.*)/ git://github.com/pmezard/go-difflib|^1
+	// bump: gomod-go-difflib command go get -d github.com/pmezard/go-difflib@v$LATEST && go mod tidy
 	github.com/pmezard/go-difflib v1.0.0
 
 	// fork of github.com/itchyny/gojq, see github.com/wader/gojq fq branch
@@ -15,8 +15,8 @@ require (
 	// fork of github.com/chzyer/readline, see github.com/wader/readline fq branch
 	github.com/wader/readline v0.0.0-20210920124728-5a81f7707bac
 
-	// bump: golang/text /golang\.org\/x\/text v(.*)/ git://github.com/golang/text|^0
-	// bump: golang/text command go get -d golang.org/x/text@v$LATEST && go mod tidy
+	// bump: gomod-golang/text /golang\.org\/x\/text v(.*)/ git://github.com/golang/text|^0
+	// bump: gomod-golang/text command go get -d golang.org/x/text@v$LATEST && go mod tidy
 	golang.org/x/text v0.3.7
 )
 
