@@ -40,32 +40,32 @@ $ fq -d flac verbose /picture_seek_gain.flac
       |                                               |                |        user_comments: [6] 0x59-0x12e.7 (214)
       |                                               |                |          [0]: user_comment {} 0x59-0x71.7 (25)
 0x0050|                           15 00 00 00         |         ....   |            length: 21 0x59-0x5c.7 (4)
-0x0050|                                       65 6e 63|             enc|            vendor: "encoder=Lavf58.45.100" 0x5d-0x71.7 (21)
+0x0050|                                       65 6e 63|             enc|            comment: "encoder=Lavf58.45.100" 0x5d-0x71.7 (21)
 0x0060|6f 64 65 72 3d 4c 61 76 66 35 38 2e 34 35 2e 31|oder=Lavf58.45.1|
 0x0070|30 30                                          |00              |
       |                                               |                |          [1]: user_comment {} 0x72-0x9a.7 (41)
 0x0070|      25 00 00 00                              |  %...          |            length: 37 0x72-0x75.7 (4)
-0x0070|                  52 45 50 4c 41 59 47 41 49 4e|      REPLAYGAIN|            vendor: "REPLAYGAIN_REFERENCE_LOUDNESS=89.0 dB" 0x76-0x9a.7 (37)
+0x0070|                  52 45 50 4c 41 59 47 41 49 4e|      REPLAYGAIN|            comment: "REPLAYGAIN_REFERENCE_LOUDNESS=89.0 dB" 0x76-0x9a.7 (37)
 0x0080|5f 52 45 46 45 52 45 4e 43 45 5f 4c 4f 55 44 4e|_REFERENCE_LOUDN|
 0x0090|45 53 53 3d 38 39 2e 30 20 64 42               |ESS=89.0 dB     |
       |                                               |                |          [2]: user_comment {} 0x9b-0xc0.7 (38)
 0x0090|                                 22 00 00 00   |           "... |            length: 34 0x9b-0x9e.7 (4)
-0x0090|                                             52|               R|            vendor: "REPLAYGAIN_TRACK_GAIN=-24601.00 dB" 0x9f-0xc0.7 (34)
+0x0090|                                             52|               R|            comment: "REPLAYGAIN_TRACK_GAIN=-24601.00 dB" 0x9f-0xc0.7 (34)
 0x00a0|45 50 4c 41 59 47 41 49 4e 5f 54 52 41 43 4b 5f|EPLAYGAIN_TRACK_|
 *     |until 0xc0.7 (34)                              |                |
       |                                               |                |          [3]: user_comment {} 0xc1-0xe4.7 (36)
 0x00c0|   20 00 00 00                                 |  ...           |            length: 32 0xc1-0xc4.7 (4)
-0x00c0|               52 45 50 4c 41 59 47 41 49 4e 5f|     REPLAYGAIN_|            vendor: "REPLAYGAIN_TRACK_PEAK=0.12496948" 0xc5-0xe4.7 (32)
+0x00c0|               52 45 50 4c 41 59 47 41 49 4e 5f|     REPLAYGAIN_|            comment: "REPLAYGAIN_TRACK_PEAK=0.12496948" 0xc5-0xe4.7 (32)
 0x00d0|54 52 41 43 4b 5f 50 45 41 4b 3d 30 2e 31 32 34|TRACK_PEAK=0.124|
 0x00e0|39 36 39 34 38                                 |96948           |
       |                                               |                |          [4]: user_comment {} 0xe5-0x10a.7 (38)
 0x00e0|               22 00 00 00                     |     "...       |            length: 34 0xe5-0xe8.7 (4)
-0x00e0|                           52 45 50 4c 41 59 47|         REPLAYG|            vendor: "REPLAYGAIN_ALBUM_GAIN=-24601.00 dB" 0xe9-0x10a.7 (34)
+0x00e0|                           52 45 50 4c 41 59 47|         REPLAYG|            comment: "REPLAYGAIN_ALBUM_GAIN=-24601.00 dB" 0xe9-0x10a.7 (34)
 0x00f0|41 49 4e 5f 41 4c 42 55 4d 5f 47 41 49 4e 3d 2d|AIN_ALBUM_GAIN=-|
 0x0100|32 34 36 30 31 2e 30 30 20 64 42               |24601.00 dB     |
       |                                               |                |          [5]: user_comment {} 0x10b-0x12e.7 (36)
 0x0100|                                 20 00 00 00   |            ... |            length: 32 0x10b-0x10e.7 (4)
-0x0100|                                             52|               R|            vendor: "REPLAYGAIN_ALBUM_PEAK=0.12496948" 0x10f-0x12e.7 (32)
+0x0100|                                             52|               R|            comment: "REPLAYGAIN_ALBUM_PEAK=0.12496948" 0x10f-0x12e.7 (32)
 0x0110|45 50 4c 41 59 47 41 49 4e 5f 41 4c 42 55 4d 5f|EPLAYGAIN_ALBUM_|
 0x0120|50 45 41 4b 3d 30 2e 31 32 34 39 36 39 34 38   |PEAK=0.12496948 |
       |                                               |                |    [3]: metadatablock {} 0x12f-0x25e.7 (304)

@@ -30,7 +30,7 @@ func commentDecode(d *decode.D, in interface{}) interface{} {
 	i := uint64(0)
 	d.FieldStructArrayLoopFn("user_comments", "user_comment", func() bool { return i < userCommentListLength }, func(d *decode.D) {
 		userCommentLength := d.FieldU32LE("length")
-		userComment := d.FieldUTF8("vendor", int(userCommentLength))
+		userComment := d.FieldUTF8("comment", int(userCommentLength))
 		pairParts := strings.SplitN(userComment, "=", 2)
 		if len(pairParts) == 2 {
 			k, v := strings.ToUpper(pairParts[0]), pairParts[1]

@@ -43,9 +43,9 @@ $ fq -d opus_packet verbose /opus-tags
     |                                               |                |      [0]: user_comment {} 0x1d-0x3d.7 (33)
 0x10|                                       1d 00 00|             ...|        length: 29 0x1d-0x20.7 (4)
 0x20|00                                             |.               |
-0x20|   65 6e 63 6f 64 65 72 3d 4c 61 76 63 35 38 2e| encoder=Lavc58.|        vendor: "encoder=Lavc58.91.100 libopus" 0x21-0x3d.7 (29)
+0x20|   65 6e 63 6f 64 65 72 3d 4c 61 76 63 35 38 2e| encoder=Lavc58.|        comment: "encoder=Lavc58.91.100 libopus" 0x21-0x3d.7 (29)
 0x30|39 31 2e 31 30 30 20 6c 69 62 6f 70 75 73      |91.100 libopus  |
     |                                               |                |      [1]: user_comment {} 0x3e-0x4b.7 (14)
 0x30|                                          0a 00|              ..|        length: 10 0x3e-0x41.7 (4)
 0x40|00 00                                          |..              |
-0x40|      61 72 74 69 73 74 3d 62 6c 61|           |  artist=bla|   |        vendor: "artist=bla" 0x42-0x4b.7 (10)
+0x40|      61 72 74 69 73 74 3d 62 6c 61|           |  artist=bla|   |        comment: "artist=bla" 0x42-0x4b.7 (10)

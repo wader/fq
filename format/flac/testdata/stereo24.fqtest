@@ -41,7 +41,7 @@ $ fq -d flac verbose /stereo24.flac
        |                                               |                |        user_comments: [1] 0x6c-0x97.7 (44)
        |                                               |                |          [0]: user_comment {} 0x6c-0x97.7 (44)
 0x00060|                                    28 00 00 00|            (...|            length: 40 0x6c-0x6f.7 (4)
-0x00070|57 41 56 45 46 4f 52 4d 41 54 45 58 54 45 4e 53|WAVEFORMATEXTENS|            vendor: "WAVEFORMATEXTENSIBLE_CHANNEL_MASK=0x0003" 0x70-0x97.7 (40)
+0x00070|57 41 56 45 46 4f 52 4d 41 54 45 58 54 45 4e 53|WAVEFORMATEXTENS|            comment: "WAVEFORMATEXTENSIBLE_CHANNEL_MASK=0x0003" 0x70-0x97.7 (40)
 *      |until 0x97.7 (40)                              |                |
        |                                               |                |    [3]: metadatablock {} 0x98-0x209b.7 (8196)
 0x00090|                        81                     |        .       |      last_block: true 0x98-0x98 (0.1)
