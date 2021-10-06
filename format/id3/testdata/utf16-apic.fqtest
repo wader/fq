@@ -2,7 +2,6 @@
 # convert -size 4x4 "xc:#000" 4x4.png
 # eyeD3 --encoding=utf16 --add-image=4x4.png:OTHER:test test.mp3
 # fq test.mp3 .headers[0]._bits > utf16-apic
-/utf16-apic:
 $ fq -d id3v2 verbose /utf16-apic
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /utf16-apic (id3v2) 0x0-0x255.7 (598)
 0x000|49 44 33                                       |ID3             |  magic: "ID3" (Correct) 0x0-0x2.7 (3)

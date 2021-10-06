@@ -57,9 +57,9 @@ c
 $ fq -R . missing
 exitcode: 2
 stderr:
-error: missing: file not found
+error: open testdata/missing: no such file or directory
 $ fq -Rs . missing
 ""
 exitcode: 2
 stderr:
-error: missing: file not found
+error: open testdata/missing: no such file or directory

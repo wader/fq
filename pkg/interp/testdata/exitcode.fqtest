@@ -23,4 +23,4 @@ error: arg:1:2: unexpected token <EOF>
 $ fq . non-existing
 exitcode: 2
 stderr:
-error: non-existing: file not found
+error: open testdata/non-existing: no such file or directory

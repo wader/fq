@@ -1,4 +1,3 @@
-/test.mp3:
 $ fq -ni
 null> 123 | var("a")
 null> "bb" | var("bb")

@@ -1,10 +1,6 @@
 # ffmpeg -f lavfi -i sine -f lavfi -i testsrc -g 1 -c:a aac -c:v h264 -f mp4 -t 100ms dash_in.mp4
 # packager 'in=dash_in.mp4,stream=audio,init_segment=dash_audio_init.mp4,segment_template=dash_audio_$Number$.m4s
 # packager 'in=dash_in.mp4,stream=video,init_segment=dash_video_init.mp4,segment_template=dash_video_$Number$.m4s'
-/dash_audio_init.mp4:
-/dash_audio_1.m4s:
-/dash_video_init.mp4:
-/dash_video_1.m4s:
 $ fq -d mp4 verbose /dash_audio_init.mp4
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /dash_audio_init.mp4 (mp4) 0x0-0x32f.7 (816)
      |                                               |                |  boxes: [2] 0x0-0x32f.7 (816)

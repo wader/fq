@@ -1,5 +1,4 @@
 # ffmpeg -y -f lavfi -i sine -ac 1 -t 10ms -f mp3 file && fq file '.frame[1] | tobits' > mp3-frame-mono
-/mp3-frame-mono:
 $ fq -d mp3_frame verbose /mp3-frame-mono
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /mp3-frame-mono (mp3_frame) 0x0-0xcf.7 (208)
     |                                               |                |  header: {} 0x0-0x3.7 (4)

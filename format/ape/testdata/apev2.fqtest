@@ -1,7 +1,6 @@
 # ffmpeg -f lavfi -i sine -ac 2 -t 10ms -f mp3 test.mp3
 # mp3gain test.mp3
 # fq '.footers[0] | tobytes' test.mp3 > apev2
-/apev2:
 $ fq -d apev2 verbose /apev2
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /apev2 (apev2) 0x0-0xad.7 (174)
     |                                               |                |  header: {} 0x0-0x1f.7 (32)

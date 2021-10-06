@@ -74,7 +74,7 @@ $ fq -o display_bytes=true -n options.display_bytes
 $ fq -o expr_file=test.jq -n options.expr_file
 exitcode: 2
 stderr:
-error: test.jq: file not found
+error: open testdata/test.jq: no such file or directory
 $ fq -o include_path=path -n options.include_path
 "path"
 $ fq -o 'join_string=aaa\n' -n options.join_string

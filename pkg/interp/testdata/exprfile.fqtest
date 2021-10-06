@@ -4,7 +4,6 @@
 .headers[0].magic | tovalue
 /err.jq:
 asdad)
-/test.mp3:
 $ fq -n -f /test.jq
 123
 /test.jq:

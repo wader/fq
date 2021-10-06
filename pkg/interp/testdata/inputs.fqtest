@@ -50,7 +50,7 @@ $ fq -d raw input_filename /a /non-existing /c
 "/c"
 exitcode: 2
 stderr:
-error: /non-existing: file not found
+error: open testdata/non-existing: no such file or directory
 $ fq -d raw '(' /a /b /c
 exitcode: 3
 stderr:

@@ -1,4 +1,4 @@
-package fqtest_test
+package script_test
 
 import (
 	"log"
@@ -6,11 +6,11 @@ import (
 	"testing"
 
 	"github.com/wader/fq/internal/deepequal"
-	"github.com/wader/fq/pkg/fqtest"
+	"github.com/wader/fq/internal/script"
 )
 
 func TestSectionParser(t *testing.T) {
-	actualSections := fqtest.SectionParser(
+	actualSections := script.SectionParser(
 		regexp.MustCompile(`^(?:(a:)|(b:))$`),
 		`
 a:
@@ -22,7 +22,7 @@ c
 a:
 `[1:])
 
-	expectedSections := []fqtest.Section{
+	expectedSections := []script.Section{
 		{LineNr: 1, Name: "a:", Value: "c\nc\n"},
 		{LineNr: 4, Name: "b:", Value: ""},
 		{LineNr: 5, Name: "a:", Value: "c\n"},
@@ -34,7 +34,7 @@ a:
 
 func TestUnescape(t *testing.T) {
 
-	s := fqtest.Unescape(`asd\n\r\t \0b11110000 asd \0xffcb sdfd `)
+	s := script.Unescape(`asd\n\r\t \0b11110000 asd \0xffcb sdfd `)
 	log.Printf("s: %v\n", []byte(s))
 
 }

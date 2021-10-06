@@ -1,5 +1,4 @@
 # TODO: various gojq fq fork regression tests, should probably be move to fork code instead
-/test.mp3:
 $ fq -n '[true] | all'
 true
 $ fq -n '{a:1, b: 2} | tostream'
@@ -28,13 +27,11 @@ $ fq -d mp3 '{(.headers[0].magic): 123}' /test.mp3
 {
   "ID3": 123
 }
-/test.mp3:
 $ fq -d mp3 '.frames | group_by(.side_info | {b: .main_data_end}) | map(length)' /test.mp3
 [
   2,
   1
 ]
-/test.mp3:
 $ fq -d mp3 '.frames | map(.header) | group_by(.bitrate)' /test.mp3
 [
   [
