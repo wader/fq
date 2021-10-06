@@ -6,7 +6,7 @@ all: test fq
 .PHONY: fq
 fq: VERSION=$(shell git describe --all --long --dirty 2>/dev/null || echo nogit)
 fq:
-	CGO_ENABLED=0 go build -o fq -ldflags "${GO_BUILD_LDFLAGS} -X main.version=${VERSION}" "${GO_BUILD_FLAGS}" .
+	CGO_ENABLED=0 go build -o fq -ldflags "${GO_BUILD_LDFLAGS} -X main.version=${VERSION}" ${GO_BUILD_FLAGS} .
 
 .PHONY: test
 test: testgo testjq testcli
