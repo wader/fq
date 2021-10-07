@@ -36,17 +36,17 @@ def _eval($expr; $filename; f; on_error; on_compile_error):
       end
   );
 
+def _is_decode_value:
+  try has("_root") catch false;
+
 # TODO: error value preview
 def _expected_decode_value:
   error("expected a decode value but got: \(. | type) (\(. | tostring))");
 # TODO: helper? _is_decode_value?
 def _decode_value(f):
-  ( . as $c
-  | try has("._root")
-    catch ($c | _expected_decode_value)
-  | $c
-  | f
-  );
+  if _is_decode_value then f
+  else _expected_decode_value
+  end;
 
 def _error_str: "error: \(.)";
 def _errorln: ., "\n" | stderr;

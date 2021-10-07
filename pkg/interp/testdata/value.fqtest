@@ -35,6 +35,16 @@ mp3> . | (root, buffer_root, format_root, parent | ._path | path_to_expr), [pare
 "."
 "."
 []
+mp3> .headers[0].magic | (root, buffer_root, format_root, parent | ._path | path_to_expr), [parents | ._path | path_to_expr]
+"."
+"."
+".headers[0]"
+".headers[0]"
+[
+  ".headers[0]",
+  ".headers",
+  "."
+]
 mp3> .frames[0].side_info.granules[1] | (root, buffer_root, format_root, parent | ._path | path_to_expr), [parents | ._path | path_to_expr]
 "."
 "."
@@ -59,40 +69,128 @@ mp3> 123 | parents
 error: expected a decode value but got: number (123)
 mp3> ^D
 $ fq -d mp3 -i . /test.mp3
-mp3> has("_start")
+mp3> . as $c | ("headers", 0, "abc") as $n | $n, try ($c | has($n)) catch .
+"headers"
 true
-mp3> has("_stop")
+0
+"cannot check whether object has a key: 0"
+"abc"
+false
+mp3> .headers as $c | (0, "abc") as $n | $n, try ($c | has($n)) catch .
+0
 true
-mp3> has("_len")
+"abc"
+"cannot check whether array has a key: abc"
+mp3> .headers[0].magic as $c | (0, "abc") as $n | $n, try ($c | has($n)) catch .
+0
+"has cannot be applied to: string"
+"abc"
+"has cannot be applied to: string"
+mp3> . as $c | ("_start", "_stop", "_len", "_name", "_root", "_buffer_root", "_format_root", "_parent", "_symbol", "_description", "_path", "_bits", "_bytes", "_error", "_unknown", "_format", "_abc") as $n | $n, try ($c | has($n)) catch .
+"_start"
 true
-mp3> has("_name")
+"_stop"
 true
-mp3> has("_root")
+"_len"
 true
-mp3> has("_buffer_root")
+"_name"
 true
-mp3> has("_format_root")
+"_root"
 true
-mp3> has("_parent")
+"_buffer_root"
 true
-mp3> has("_symbol")
+"_format_root"
 true
-mp3> has("_description")
+"_parent"
 true
-mp3> has("_path")
+"_symbol"
 true
-mp3> has("_bits")
+"_description"
 true
-mp3> has("_bytes")
+"_path"
 true
-mp3> has("_error")
+"_bits"
 true
-mp3> has("_unknown")
+"_bytes"
 true
-mp3> has("_format")
+"_error"
 true
-mp3> has("_abc")
-error: expected a extkey but got: _abc
+"_unknown"
+true
+"_format"
+true
+"_abc"
+"expected a extkey but got: _abc"
+mp3> .headers as $c | ("_start", "_stop", "_len", "_name", "_root", "_buffer_root", "_format_root", "_parent", "_symbol", "_description", "_path", "_bits", "_bytes", "_error", "_unknown", "_format", "_abc") as $n | $n, try ($c | has($n)) catch .
+"_start"
+true
+"_stop"
+true
+"_len"
+true
+"_name"
+true
+"_root"
+true
+"_buffer_root"
+true
+"_format_root"
+true
+"_parent"
+true
+"_symbol"
+true
+"_description"
+true
+"_path"
+true
+"_bits"
+true
+"_bytes"
+true
+"_error"
+true
+"_unknown"
+true
+"_format"
+true
+"_abc"
+"expected a extkey but got: _abc"
+mp3> .headers[0].magic as $c | ("_start", "_stop", "_len", "_name", "_root", "_buffer_root", "_format_root", "_parent", "_symbol", "_description", "_path", "_bits", "_bytes", "_error", "_unknown", "_format", "_abc") as $n | $n, try ($c | has($n)) catch .
+"_start"
+true
+"_stop"
+true
+"_len"
+true
+"_name"
+true
+"_root"
+true
+"_buffer_root"
+true
+"_format_root"
+true
+"_parent"
+true
+"_symbol"
+true
+"_description"
+true
+"_path"
+true
+"_bits"
+true
+"_bytes"
+true
+"_error"
+true
+"_unknown"
+true
+"_format"
+true
+"_abc"
+"expected a extkey but got: _abc"
 mp3> ^D
 $ fq -d mp3 -i . /test.mp3
 mp3> ._start
