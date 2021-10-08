@@ -11,7 +11,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.0
 
 	// fork of github.com/itchyny/gojq, see github.com/wader/gojq fq branch
-	github.com/wader/gojq v0.12.1-0.20211002095356-5f036ee71f5e
+	github.com/wader/gojq v0.12.1-0.20211008152607-953e908b8c34
 	// fork of github.com/chzyer/readline, see github.com/wader/readline fq branch
 	github.com/wader/readline v0.0.0-20210920124728-5a81f7707bac
 
