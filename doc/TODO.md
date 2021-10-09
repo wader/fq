@@ -137,8 +137,8 @@
 #### Readline
 
 - Use something else than `github.com/chzyer/readline`?
-- Fix backspace as start clears whole line bug
-- Undo ctrl+_ would be nice
+- Fixes for readline
+  - Undo (ctrl+-) normal readline bahave differently for backspace (history for each character)
 
 #### Big things
 
