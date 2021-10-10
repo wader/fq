@@ -2,46 +2,7 @@
 
 Tool, language and format decoders for exploring binary data.
 
-<sub>
-<pre sh>
-<b># Overview of mp3 file</b> 
-$ fq . file.mp3 
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} file.mp3 (mp3)
-0x000|49 44 33 04 00 00 00 00 15 39 54 53 53 45 00 00|ID3......9TSSE..|  headers: [1]
-*    |until 0xac2.7 (2755)                           |                |
-0xac0|         ff fb 40 c0 00 00 00 00 00 00 00 00 00|   ..@..........|  frames: [3]
-0xad0|00 00 00 00 00 00 00 00 49 6e 66 6f 00 00 00 0f|........Info....|
-*    |until 0xd19.7 (end) (599)                      |                |
-     |                                               |                |  footers: [0]
- 
-<b># Show ID3v2 tag in mp3 file</b> 
-$ fq '.headers[0]' file.mp3 
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.headers[0]: {} (id3v2)
-0x000|49 44 33                                       |ID3             |  magic: "ID3" (Correct)
-0x000|         04                                    |   .            |  version: 4
-0x000|            00                                 |    .           |  revision: 0
-0x000|               00                              |     .          |  flags: {}
-0x000|                  00 00 15 39                  |      ...9      |  size: 2745
-0x000|                              54 53 53 45 00 00|          TSSE..|  frames: [2]
-0x010|00 0f 00 00 03 4c 61 76 66 35 38 2e 37 36 2e 31|.....Lavf58.76.1|
-*    |until 0xab8.7 (2735)                           |                |
-0xab0|                           00 00 00 00 00 00 00|         .......|  padding: Correct (none) (zero padding)
-0xac0|00 00 00                                       |...             |
- 
-<b># Resolution of ID3v2 cover art</b> 
-$ fq '.headers[0].frames[] | select(.id == "APIC").picture.chunks[] | select(.type == "IHDR") | {width, height}' file.mp3 
-{
-  "height": 240,
-  "width": 320
-}
- 
-<b># Extract image file</b> 
-$ fq '.headers[].frames[] | select(.id == "APIC")?.picture | tobits' file.mp3 > file.png 
-$ file file.png 
-file.png: PNG image data, 320 x 240, 8-bit/color RGB, non-interlaced
- 
-</pre>
-</sub>
+![fq demo](doc/demo.svg)
 
 ## Goals
 
