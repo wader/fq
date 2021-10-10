@@ -8,7 +8,7 @@ c() {
 
 s() {
     echo "\$ $1"
-    sh -c "${1/fq/$FQ -C}"
+    sh -c "${1/fq/$FQ -o unicode=true -C}"
 }
 
 c "Overview of mp3"
