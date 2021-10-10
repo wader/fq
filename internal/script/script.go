@@ -62,6 +62,7 @@ type CaseRun struct {
 	Readlines        []CaseReadline
 	ReadlinesPos     int
 	ReadlineEnv      []string
+	WasRun           bool
 }
 
 func (cr *CaseRun) Line() int { return cr.LineNr }
@@ -236,23 +237,41 @@ func (c *Case) ToActual() string {
 			fmt.Fprintf(sb, "#%s\n", p.comment)
 		case *CaseRun:
 			fmt.Fprintf(sb, "$%s\n", p.Command)
-			s := p.ActualStdoutBuf.String()
+			var s string
+			if p.WasRun {
+				s = p.ActualStdoutBuf.String()
+			} else {
+				s = p.ToExpectedStdout()
+			}
 			if s != "" {
 				fmt.Fprint(sb, s)
 				if !strings.HasSuffix(s, "\n") {
 					fmt.Fprint(sb, "\\\n")
 				}
 			}
-			if p.ActualExitCode != 0 {
-				fmt.Fprintf(sb, "exitcode: %d\n", p.ActualExitCode)
+			if p.WasRun {
+				if p.ActualExitCode != 0 {
+					fmt.Fprintf(sb, "exitcode: %d\n", p.ActualExitCode)
+				}
+			} else {
+				if p.ExpectedExitCode != 0 {
+					fmt.Fprintf(sb, "exitcode: %d\n", p.ExpectedExitCode)
+				}
 			}
 			if p.StdinInitial != "" {
 				fmt.Fprint(sb, "stdin:\n")
 				fmt.Fprint(sb, p.StdinInitial)
 			}
-			if p.ActualStderrBuf.Len() > 0 {
-				fmt.Fprint(sb, "stderr:\n")
-				fmt.Fprint(sb, p.ActualStderrBuf.String())
+			if p.WasRun {
+				if p.ActualStderrBuf.Len() > 0 {
+					fmt.Fprint(sb, "stderr:\n")
+					fmt.Fprint(sb, p.ActualStderrBuf.String())
+				}
+			} else {
+				if p.ExpectedStderr != "" {
+					fmt.Fprint(sb, "stderr:\n")
+					fmt.Fprint(sb, p.ExpectedStderr)
+				}
 			}
 		case *caseFile:
 			fmt.Fprintf(sb, "%s:\n", p.name)
