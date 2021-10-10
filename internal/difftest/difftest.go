@@ -3,7 +3,6 @@ package difftest
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -105,7 +104,7 @@ func TestWithOptions(t *testing.T, opts Options) {
 	func() {
 		t.Helper()
 
-		// done i two steps as it seems hard to mark some functions inside filepath.Walk as test helpers
+		// done in two steps as it seems hard to mark some functions inside filepath.Walk as test helpers
 		var paths []string
 		if err := filepath.Walk(opts.Path, func(path string, info os.FileInfo, err error) error {
 			t.Helper()
@@ -142,7 +141,6 @@ func TestWithOptions(t *testing.T, opts Options) {
 				expectedOutput, expectedOutputErr := ioutil.ReadFile(outputPath)
 				if opts.WriteOutput {
 					if expectedOutputErr == nil && string(expectedOutput) == output {
-						log.Println("skip")
 						return
 					}
 
@@ -155,6 +153,7 @@ func TestWithOptions(t *testing.T, opts Options) {
 				if expectedOutputErr != nil {
 					t.Fatal(expectedOutputErr)
 				}
+
 				ErrorEx(t, opts.ColorDiff, string(expectedOutput), output)
 			})
 		}
