@@ -146,6 +146,7 @@ notable is support for arbitrary-precision integers.
   - `vgrep/1`, `vgrep/2` recursively match value
   - `bgrep/1`, `bgrep/2` recursively match buffer
   - `fgrep/1`, `fgrep/2` recursively match field name
+  - `find/1`, `find/2` match in buffer and output match buffers
 - `open` open file for reading
 - `probe` or `decode` probe format and decode
 - `mp3`, `matroska`, ..., `<name>`, `decode([name])` force decode as format
