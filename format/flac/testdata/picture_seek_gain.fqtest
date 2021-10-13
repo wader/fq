@@ -72,7 +72,7 @@ $ fq -d flac verbose /picture_seek_gain.flac
 0x0120|                                             06|               .|      type: Picture (6) 0x12f.1-0x12f.7 (0.7)
 0x0130|00 01 2c                                       |..,             |      length: 300 0x130-0x132.7 (3)
       |                                               |                |      picture: {} (flac_picture) 0x133-0x25e.7 (300)
-0x0130|         00 00 00 03                           |   ....         |        picture_type: 3 0x133-0x136.7 (4)
+0x0130|         00 00 00 03                           |   ....         |        picture_type: Cover (front) (3) 0x133-0x136.7 (4)
 0x0130|                     00 00 00 09               |       ....     |        mime_length: 9 0x137-0x13a.7 (4)
 0x0130|                                 69 6d 61 67 65|           image|        mime: "image/png" 0x13b-0x143.7 (9)
 0x0140|2f 70 6e 67                                    |/png            |
