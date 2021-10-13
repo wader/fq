@@ -1,6 +1,7 @@
 package flac
 
 // TODO: 24 bit picture length truncate warning
+// TODO: Cuesheet
 
 import (
 	"github.com/wader/fq/format"
@@ -110,7 +111,11 @@ func metadatablocskDecode(d *decode.D, in interface{}) interface{} {
 					}
 				})
 			default:
-				d.FieldBitBufLen("data", int64(length*8))
+				if typ < 127 {
+					d.FieldBitBufLen("data", int64(length*8))
+				} else {
+					d.Invalid("invalid block type")
+				}
 			}
 		})
 	}
