@@ -142,16 +142,22 @@ notable is support for arbitrary-precision integers.
   - `format_root/0` return root value of format for value
   - `parent/0` return parent value
   - `parents/0` output parents of value
-  - `find` and `grep` all take 1 or 2 arguments. First is a scalar to match, where a string is
-  treated as a regexp. A buffer will be matches exact bytes. Second argument is regexp
-  flags with addition to "b" which will treat each byte in the input buffer as a rune, this
+  - All `find` and `grep` functions take 1 or 2 arguments. First is a scalar to match, where a string is
+  treated as a regexp. A buffer scalar will be matches exact bytes. Second argument are regexp
+  flags with addition that "b" will treat each byte in the input buffer as a code point, this
   makes it possible to match exact bytes, ex: `find("\u00ff"; b")` will match the byte `0xff` and not
-  the UTF-8 codepoint `0xff`.
+  the UTF-8 encoded codepoint for 255.
     - `find/1`, `find/2` match in buffer and output match buffers
     - `grep/1`, `grep/2` recursively match value and buffer
     - `vgrep/1`, `vgrep/2` recursively match value
     - `bgrep/1`, `bgrep/2` recursively match buffer
     - `fgrep/1`, `fgrep/2` recursively match field name
+  - Buffers:
+    - `tobits` - Transform input into a bits buffer not preserving source range, will start at zero.
+    - `tobitsrange` - Transform input into a bits buffer preserving source range if possible.
+    - `tobytes` - Transform input into a bytes buffer not preserving source range, will start at zero.
+    - `tobytesrange` - Transform input into a byte buffer preserving source range if possible.
+    - `buffer[start:end]`, `buffer[:end]`, `buffer[start:]` - Create a sub buffer from start to end in buffer units preserving source range.
 - `open` open file for reading
 - `probe` or `decode` probe format and decode
 - `mp3`, `matroska`, ..., `<name>`, `decode([name])` force decode as format

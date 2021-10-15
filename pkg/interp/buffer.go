@@ -116,7 +116,7 @@ func (bv BufferView) JQValueType() string {
 	return "buffer"
 }
 func (bv BufferView) JQValueKeys() interface{} {
-	return gojqextra.FuncTypeError{Name: "keys", Typ: "buffer"}
+	return gojqextra.FuncTypeNameError{Name: "keys", Typ: "buffer"}
 }
 func (bv BufferView) JQValueHas(key interface{}) interface{} {
 	return gojqextra.HasKeyTypeError{L: "buffer", R: fmt.Sprintf("%v", key)}

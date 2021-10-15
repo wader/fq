@@ -23,15 +23,6 @@ func expectedArrayOrObject(key interface{}, typ string) error {
 	}
 }
 
-type NonUpdatableTypeError struct {
-	Typ string
-	Key string
-}
-
-func (err NonUpdatableTypeError) Error() string {
-	return fmt.Sprintf("update key %v cannot be applied to: %s", err.Key, err.Typ)
-}
-
 // array
 
 var _ gojq.JQValue = Array{}
@@ -86,7 +77,8 @@ func (v Array) JQValueUpdate(key interface{}, u interface{}, delpath bool) inter
 		if delpath {
 			return v
 		}
-		return FuncTypeError{Name: "setpath", Typ: "number"}
+		// TODO: wrong error?
+		return FuncTypeNameError{Name: "setpath", Typ: "number"}
 	} else if intKey < 0 {
 		intKey += len(v)
 	}
@@ -111,10 +103,10 @@ func (v Array) JQValueHas(key interface{}) interface{} {
 }
 func (v Array) JQValueType() string { return "array" }
 func (v Array) JQValueToNumber() interface{} {
-	return FuncTypeError{Name: "tonumber", Typ: "array"}
+	return FuncTypeNameError{Name: "tonumber", Typ: "array"}
 }
 func (v Array) JQValueToString() interface{} {
-	return FuncTypeError{Name: "tostring", Typ: "array"}
+	return FuncTypeNameError{Name: "tostring", Typ: "array"}
 }
 func (v Array) JQValueToGoJQ() interface{} { return []interface{}(v) }
 
@@ -177,10 +169,10 @@ func (v Object) JQValueHas(key interface{}) interface{} {
 }
 func (v Object) JQValueType() string { return "object" }
 func (v Object) JQValueToNumber() interface{} {
-	return FuncTypeError{Name: "tonumber", Typ: "object"}
+	return FuncTypeNameError{Name: "tonumber", Typ: "object"}
 }
 func (v Object) JQValueToString() interface{} {
-	return FuncTypeError{Name: "tostring", Typ: "object"}
+	return FuncTypeNameError{Name: "tostring", Typ: "object"}
 }
 func (v Object) JQValueToGoJQ() interface{} { return map[string]interface{}(v) }
 
@@ -203,9 +195,9 @@ func (v Number) JQValueUpdate(key interface{}, u interface{}, delpath bool) inte
 	return expectedArrayOrObject(key, "number")
 }
 func (v Number) JQValueEach() interface{} { return IteratorError{Typ: "number"} }
-func (v Number) JQValueKeys() interface{} { return FuncTypeError{Name: "keys", Typ: "number"} }
+func (v Number) JQValueKeys() interface{} { return FuncTypeNameError{Name: "keys", Typ: "number"} }
 func (v Number) JQValueHas(key interface{}) interface{} {
-	return FuncTypeError{Name: "has", Typ: "number"}
+	return FuncTypeNameError{Name: "has", Typ: "number"}
 }
 func (v Number) JQValueType() string          { return "number" }
 func (v Number) JQValueToNumber() interface{} { return v.V }
@@ -240,9 +232,9 @@ func (v String) JQValueUpdate(key interface{}, u interface{}, delpath bool) inte
 	return expectedArrayOrObject(key, "string")
 }
 func (v String) JQValueEach() interface{} { return IteratorError{Typ: "string"} }
-func (v String) JQValueKeys() interface{} { return FuncTypeError{Name: "keys", Typ: "string"} }
+func (v String) JQValueKeys() interface{} { return FuncTypeNameError{Name: "keys", Typ: "string"} }
 func (v String) JQValueHas(key interface{}) interface{} {
-	return FuncTypeError{Name: "has", Typ: "string"}
+	return FuncTypeNameError{Name: "has", Typ: "string"}
 }
 func (v String) JQValueType() string          { return "string" }
 func (v String) JQValueToNumber() interface{} { return gojq.NormalizeNumbers(string(v)) }
@@ -255,7 +247,9 @@ var _ gojq.JQValue = Boolean(true)
 
 type Boolean bool
 
-func (v Boolean) JQValueLength() interface{}         { return FuncTypeError{Name: "length", Typ: "boolean"} }
+func (v Boolean) JQValueLength() interface{} {
+	return FuncTypeNameError{Name: "length", Typ: "boolean"}
+}
 func (v Boolean) JQValueSliceLen() interface{}       { return ExpectedArrayError{Typ: "boolean"} }
 func (v Boolean) JQValueIndex(index int) interface{} { return ExpectedArrayError{Typ: "boolean"} }
 func (v Boolean) JQValueSlice(start int, end int) interface{} {
@@ -266,13 +260,13 @@ func (v Boolean) JQValueUpdate(key interface{}, u interface{}, delpath bool) int
 	return expectedArrayOrObject(key, "boolean")
 }
 func (v Boolean) JQValueEach() interface{} { return IteratorError{Typ: "boolean"} }
-func (v Boolean) JQValueKeys() interface{} { return FuncTypeError{Name: "keys", Typ: "boolean"} }
+func (v Boolean) JQValueKeys() interface{} { return FuncTypeNameError{Name: "keys", Typ: "boolean"} }
 func (v Boolean) JQValueHas(key interface{}) interface{} {
-	return FuncTypeError{Name: "has", Typ: "boolean"}
+	return FuncTypeNameError{Name: "has", Typ: "boolean"}
 }
 func (v Boolean) JQValueType() string { return "boolean" }
 func (v Boolean) JQValueToNumber() interface{} {
-	return FuncTypeError{Name: "tonumber", Typ: "boolean"}
+	return FuncTypeNameError{Name: "tonumber", Typ: "boolean"}
 }
 func (v Boolean) JQValueToString() interface{} {
 	if v {
@@ -296,13 +290,15 @@ func (v Null) JQValueKey(name string) interface{}          { return ExpectedObje
 func (v Null) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
 	return expectedArrayOrObject(key, "null")
 }
-func (v Null) JQValueEach() interface{}               { return IteratorError{Typ: "null"} }
-func (v Null) JQValueKeys() interface{}               { return FuncTypeError{Name: "keys", Typ: "null"} }
-func (v Null) JQValueHas(key interface{}) interface{} { return FuncTypeError{Name: "has", Typ: "null"} }
-func (v Null) JQValueType() string                    { return "null" }
-func (v Null) JQValueToNumber() interface{}           { return FuncTypeError{Name: "tonumber", Typ: "null"} }
-func (v Null) JQValueToString() interface{}           { return "null" }
-func (v Null) JQValueToGoJQ() interface{}             { return nil }
+func (v Null) JQValueEach() interface{} { return IteratorError{Typ: "null"} }
+func (v Null) JQValueKeys() interface{} { return FuncTypeNameError{Name: "keys", Typ: "null"} }
+func (v Null) JQValueHas(key interface{}) interface{} {
+	return FuncTypeNameError{Name: "has", Typ: "null"}
+}
+func (v Null) JQValueType() string          { return "null" }
+func (v Null) JQValueToNumber() interface{} { return FuncTypeNameError{Name: "tonumber", Typ: "null"} }
+func (v Null) JQValueToString() interface{} { return "null" }
+func (v Null) JQValueToGoJQ() interface{}   { return nil }
 
 // Base
 
@@ -325,11 +321,11 @@ func (v Base) JQValueUpdate(key interface{}, u interface{}, delpath bool) interf
 	return expectedArrayOrObject(key, v.Typ)
 }
 func (v Base) JQValueEach() interface{} { return IteratorError{Typ: v.Typ} }
-func (v Base) JQValueKeys() interface{} { return FuncTypeError{Name: "keys", Typ: v.Typ} }
+func (v Base) JQValueKeys() interface{} { return FuncTypeNameError{Name: "keys", Typ: v.Typ} }
 func (v Base) JQValueHas(key interface{}) interface{} {
 	return HasKeyTypeError{L: "array", R: fmt.Sprintf("%v", key)}
 }
 func (v Base) JQValueType() string          { return v.Typ }
-func (v Base) JQValueToNumber() interface{} { return FuncTypeError{Name: "tonumber", Typ: v.Typ} }
-func (v Base) JQValueToString() interface{} { return FuncTypeError{Name: "tostring", Typ: v.Typ} }
+func (v Base) JQValueToNumber() interface{} { return FuncTypeNameError{Name: "tonumber", Typ: v.Typ} }
+func (v Base) JQValueToString() interface{} { return FuncTypeNameError{Name: "tostring", Typ: v.Typ} }
 func (v Base) JQValueToGoJQ() interface{}   { return nil }

@@ -60,8 +60,8 @@ func (i *Interp) makeFunctions() []Function {
 		{[]string{"_display"}, 1, 1, nil, i._display},
 		{[]string{"_hexdump"}, 1, 1, nil, i._hexdump},
 
-		{[]string{"tobytes"}, 0, 0, i.toBytes, nil},
-		{[]string{"tobits"}, 0, 0, i.toBits, nil},
+		{[]string{"_tobitsrange"}, 0, 2, i._toBitsRange, nil},
+
 		{[]string{"tovalue"}, 0, 1, i.toValue, nil},
 
 		{[]string{"hex"}, 0, 0, makeStringBitBufTransformFn(
@@ -700,20 +700,44 @@ func (i *Interp) _display(c interface{}, a []interface{}) gojq.Iter {
 	}
 }
 
-func (i *Interp) toBytes(c interface{}, a []interface{}) interface{} {
-	bb, err := toBuffer(c)
-	if err != nil {
-		return err
-	}
-	return bufferViewFromBuffer(bb, 8)
-}
+// note is used to implement tobytes*/0 also
+func (i *Interp) _toBitsRange(c interface{}, a []interface{}) interface{} {
+	var unit int
+	var r bool
+	var ok bool
 
-func (i *Interp) toBits(c interface{}, a []interface{}) interface{} {
-	bb, err := toBuffer(c)
+	if len(a) >= 1 {
+		unit, ok = gojqextra.ToInt(a[0])
+		if !ok {
+			return gojqextra.FuncTypeError{Name: "_tobitsrange", V: a[0]}
+		}
+	} else {
+		unit = 1
+	}
+
+	if len(a) >= 2 {
+		r, ok = gojqextra.ToBoolean(a[1])
+		if !ok {
+			return gojqextra.FuncTypeError{Name: "_tobitsrange", V: a[1]}
+		}
+	} else {
+		r = true
+	}
+
+	// TODO: unit > 8?
+
+	bv, err := toBufferView(c)
 	if err != nil {
 		return err
 	}
-	return bufferViewFromBuffer(bb, 1)
+	bv.unit = unit
+
+	if !r {
+		bb, _ := bv.toBuffer()
+		return bufferViewFromBuffer(bb, unit)
+	}
+
+	return bv
 }
 
 func (i *Interp) toValue(c interface{}, a []interface{}) interface{} {
@@ -838,7 +862,7 @@ func (i *Interp) find(c interface{}, a []interface{}) gojq.Iter {
 	if len(a) > 1 {
 		flags, ok = a[1].(string)
 		if !ok {
-			return gojq.NewIter(gojqextra.FuncTypeError{Name: "find", Typ: "string"})
+			return gojq.NewIter(gojqextra.FuncTypeNameError{Name: "find", Typ: "string"})
 		}
 	}
 

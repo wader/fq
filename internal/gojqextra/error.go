@@ -1,17 +1,40 @@
 package gojqextra
 
-import "fmt"
+import (
+	"fmt"
+	"math/big"
 
-// many of these based on errors form gojq
+	"github.com/wader/gojq"
+)
+
+// many of these based on errors from gojq
 // TODO: refactor to use errors from gojq?
 // TODO: preview from gojq?
 
+type NonUpdatableTypeError struct {
+	Typ string
+	Key string
+}
+
+func (err NonUpdatableTypeError) Error() string {
+	return fmt.Sprintf("update key %v cannot be applied to: %s", err.Key, err.Typ)
+}
+
 type FuncTypeError struct {
+	Name string
+	V    interface{}
+}
+
+func (err FuncTypeError) Error() string { return err.Name + " cannot be applied to: " + typeof(err.V) }
+
+type FuncTypeNameError struct {
 	Name string
 	Typ  string
 }
 
-func (err FuncTypeError) Error() string { return err.Name + " cannot be applied to: " + err.Typ }
+func (err FuncTypeNameError) Error() string {
+	return err.Name + " cannot be applied to: " + err.Typ
+}
 
 type ExpectedObjectError struct {
 	Typ string
@@ -69,4 +92,25 @@ type ArrayIndexTooLargeError struct {
 
 func (err *ArrayIndexTooLargeError) Error() string {
 	return fmt.Sprintf("array index too large: %v", err.V)
+}
+
+func typeof(v interface{}) string {
+	switch v := v.(type) {
+	case nil:
+		return "null"
+	case bool:
+		return "boolean"
+	case int, float64, *big.Int:
+		return "number"
+	case string:
+		return "string"
+	case []interface{}:
+		return "array"
+	case map[string]interface{}:
+		return "object"
+	case gojq.JQValue:
+		return fmt.Sprintf("JQValue(%s)", v.JQValueType())
+	default:
+		panic(fmt.Sprintf("invalid value: %v", v))
+	}
 }
