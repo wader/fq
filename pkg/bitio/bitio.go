@@ -105,6 +105,7 @@ func Copy(dst BitWriter, src BitReader) (n int64, err error) {
 	return CopyBuffer(dst, src, nil)
 }
 
+// BitsByteCount returns smallest amount of bytes to fit nBits bits
 func BitsByteCount(nBits int64) int64 {
 	n := nBits / 8
 	if nBits%8 != 0 {

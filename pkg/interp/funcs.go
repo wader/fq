@@ -817,12 +817,24 @@ func (i *Interp) find(c interface{}, a []interface{}) gojq.Iter {
 	}
 
 	var re string
-	re, ok = a[0].(string)
-	if !ok {
-		return gojq.NewIter(gojqextra.FuncTypeError{Name: "find", Typ: "string"})
+	var flags string
+
+	switch a0 := a[0].(type) {
+	case string:
+		re = a0
+	default:
+		reBuf, err := toBytes(a0)
+		if err != nil {
+			return gojq.NewIter(err)
+		}
+		var reRs []rune
+		for _, b := range reBuf {
+			reRs = append(reRs, rune(b))
+		}
+		flags = "b"
+		re = string(reRs)
 	}
 
-	var flags string
 	if len(a) > 1 {
 		flags, ok = a[1].(string)
 		if !ok {

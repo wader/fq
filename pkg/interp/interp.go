@@ -267,6 +267,7 @@ func toBigInt(v interface{}) (*big.Int, error) {
 
 func toBytes(v interface{}) ([]byte, error) {
 	switch v := v.(type) {
+	// TODO: remove?
 	case []byte:
 		return v, nil
 	default:
@@ -307,10 +308,15 @@ func toBufferEx(v interface{}, inArray bool) (*bitio.Buffer, error) {
 		}
 
 		if inArray {
-			b := [1]byte{byte(bi.Uint64())}
+			if bi.Cmp(big.NewInt(255)) > 0 || bi.Cmp(big.NewInt(0)) < 0 {
+				return nil, fmt.Errorf("buffer byte list must be bytes (0-255) got %v", bi)
+			}
+			n := bi.Uint64()
+			b := [1]byte{byte(n)}
 			return bitio.NewBufferFromBytes(b[:], -1), nil
 		}
 
+		// TODO: how should this work? "0xf | tobytes" 4bits or 8bits? now 4
 		padBefore := (8 - (bi.BitLen() % 8)) % 8
 		bb, err := bitio.NewBufferFromBytes(bi.Bytes(), -1).BitBufRange(int64(padBefore), int64(bi.BitLen()))
 		if err != nil {
@@ -319,7 +325,7 @@ func toBufferEx(v interface{}, inArray bool) (*bitio.Buffer, error) {
 		return bb, nil
 	case []interface{}:
 		var rr []bitio.BitReadAtSeeker
-		// TODO: optimize byte array case
+		// TODO: optimize byte array case, flatten into one slice
 		for _, e := range vv {
 			eBB, eErr := toBufferEx(e, true)
 			if eErr != nil {
