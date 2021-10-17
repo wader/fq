@@ -841,7 +841,7 @@ func (i *Interp) find(c interface{}, a []interface{}) gojq.Iter {
 	}
 
 	var re string
-	var flags string
+	var byteRunes bool
 
 	switch a0 := a[0].(type) {
 	case string:
@@ -855,15 +855,20 @@ func (i *Interp) find(c interface{}, a []interface{}) gojq.Iter {
 		for _, b := range reBuf {
 			reRs = append(reRs, rune(b))
 		}
-		flags = "b"
+		byteRunes = true
 		re = string(reRs)
 	}
 
+	var flags string
 	if len(a) > 1 {
 		flags, ok = a[1].(string)
 		if !ok {
 			return gojq.NewIter(gojqextra.FuncTypeNameError{Name: "find", Typ: "string"})
 		}
+	}
+
+	if strings.Contains(flags, "b") {
+		byteRunes = true
 	}
 
 	// TODO: err to string
@@ -885,7 +890,7 @@ func (i *Interp) find(c interface{}, a []interface{}) gojq.Iter {
 	// raw bytes regexp matching is a bit tricky, what we do is to read each byte as a codepoint (ByteRuneReader)
 	// and then we can use UTF-8 encoded codepoint to match a raw byte. So for example \u00ff (encoded as 0xc3 0xbf)
 	// will match the byte \0xff
-	if strings.Contains(flags, "b") {
+	if byteRunes {
 		// byte mode, read each byte as a rune
 		rr = ioextra.ByteRuneReader{RS: bb}
 	} else {
