@@ -882,6 +882,9 @@ func (i *Interp) find(c interface{}, a []interface{}) gojq.Iter {
 		io.RuneReader
 		io.Seeker
 	}
+	// raw bytes regexp matching is a bit tricky, what we do is to read each byte as a codepoint (ByteRuneReader)
+	// and then we can use UTF-8 encoded codepoint to match a raw byte. So for example \u00ff (encoded as 0xc3 0xbf)
+	// will match the byte \0xff
 	if strings.Contains(flags, "b") {
 		// byte mode, read each byte as a rune
 		rr = ioextra.ByteRuneReader{RS: bb}
