@@ -93,8 +93,7 @@ Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 --monochrome-output,-M   Force monochrome output
 --null-input,-n          Null input (use input/0 and inputs/0 to read input)
 --null-output,-0         Null byte between outputs
---option,-o KEY=VALUE    Set option, eg: color=true
---options                Show all options
+--option,-o KEY=VALUE    Set option, eg: color=true (use options/0 to see all options)
 --raw-input,-R           Read raw input strings (don't decode)
 --raw-output,-r          Raw string output (without quotes)
 --rawfile NAME PATH      Set variable $NAME to string content of file

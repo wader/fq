@@ -277,13 +277,8 @@ def _main:
       "option": {
         short: "-o",
         long: "--option",
-        description: "Set option, eg: color=true",
+        description: "Set option, eg: color=true (use options/0 to see all options)",
         object: "KEY=VALUE",
-      },
-      "show_options": {
-        long: "--options",
-        description: "Show all options",
-        bool: true
       },
       "string_input": {
         short: "-R",
@@ -452,8 +447,6 @@ def _main:
       $version | println
     elif $opts.show_formats then
       _formats_list | println
-    elif $opts.show_options then
-      $opts | display
     elif
       ( ($rest | length) == 0 and
         ($opts.repl | not) and

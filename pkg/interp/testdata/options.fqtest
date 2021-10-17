@@ -30,7 +30,6 @@ $ fq -n options
   "repl": false,
   "show_formats": false,
   "show_help": false,
-  "show_options": false,
   "sizebase": 10,
   "slurp": false,
   "string_input": false,

@@ -22,8 +22,7 @@ Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 --monochrome-output,-M   Force monochrome output
 --null-input,-n          Null input (use input/0 and inputs/0 to read input)
 --null-output,-0         Null byte between outputs
---option,-o KEY=VALUE    Set option, eg: color=true
---options                Show all options
+--option,-o KEY=VALUE    Set option, eg: color=true (use options/0 to see all options)
 --raw-input,-R           Read raw input strings (don't decode)
 --raw-output,-r          Raw string output (without quotes)
 --rawfile NAME PATH      Set variable $NAME to string content of file
@@ -116,45 +115,6 @@ vpx_ccr              VPX Codec Configuration Record
 wav                  WAV file
 webp                 WebP image
 xing                 Xing header
-$ fq --options
-{
-  "addrbase": 16,
-  "arg": [],
-  "argjson": [],
-  "array_truncate": 50,
-  "bits_format": "snippet",
-  "byte_colors": "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
-  "color": false,
-  "colors": "array=white,dumpaddr=yellow,dumpheader=yellow+underline,error=brightred,false=yellow,index=white,null=brightblack,number=cyan,object=white,objectkey=brightblue,string=green,true=yellow,value=white",
-  "compact": false,
-  "decode_file": [],
-  "decode_format": "probe",
-  "decode_progress": false,
-  "depth": 0,
-  "display_bytes": 16,
-  "expr": ".",
-  "expr_eval_path": "arg",
-  "expr_file": null,
-  "filenames": [
-    "-"
-  ],
-  "include_path": null,
-  "join_string": "\n",
-  "line_bytes": 16,
-  "null_input": false,
-  "raw_output": false,
-  "raw_string": false,
-  "rawfile": [],
-  "repl": false,
-  "show_formats": false,
-  "show_help": false,
-  "show_options": true,
-  "sizebase": 10,
-  "slurp": false,
-  "string_input": false,
-  "unicode": false,
-  "verbose": false
-}
 $ fq -X
 exitcode: 2
 stderr:
