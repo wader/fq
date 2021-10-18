@@ -42,8 +42,7 @@ func (ft *fuzzTest) Readline(prompt string, complete func(line string, pos int) 
 	return "", io.EOF
 }
 
-func FuzzFQTests(f *testing.F) {
-
+func FuzzFormats(f *testing.F) {
 	filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
 		if filepath.Ext(path) == ".fqtest" {
 			return nil
