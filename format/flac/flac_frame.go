@@ -622,10 +622,12 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			channelSamples[1][i] = (m - s) >> 1
 		}
 	default:
-		// no side channel
+		// not stereo or no side channel
 	}
 
-	bytesPerSample := sampleSize / 8
+	outSampleSize := sampleSize + (sampleSize % 8)
+
+	bytesPerSample := outSampleSize / 8
 	p := 0
 	le := binary.LittleEndian
 
@@ -642,7 +644,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		for j := 0; j < len(channelSamples); j++ {
 
 			s := channelSamples[j][i]
-			switch sampleSize {
+			switch outSampleSize {
 			case 8:
 				interleavedSamplesBuf[p] = byte(s)
 			case 16:
@@ -661,6 +663,6 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		SamplesBuf:    interleavedSamplesBuf,
 		Samples:       uint64(streamSamples),
 		Channels:      int(channels),
-		BitsPerSample: sampleSize,
+		BitsPerSample: outSampleSize,
 	}
 }
