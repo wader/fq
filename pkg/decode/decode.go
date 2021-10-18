@@ -727,23 +727,29 @@ func (d *D) FieldValidateUTF8Fn(name string, v string, fn func() string) {
 	}
 }
 
-func (d *D) FieldValidateUTF8(name string, v string) {
+func (d *D) FieldValidateUTF8Any(name string, nBytes int, vs []string) {
 	pos := d.Pos()
+	found := false
 	s := d.FieldStrFn(name, func() (string, string) {
-		nBytes := len(v)
 		str, err := d.TryUTF8(nBytes)
 		if err != nil {
 			panic(IOError{Err: err, Name: name, Op: "FieldValidateUTF8", Size: int64(nBytes) * 8, Pos: d.Pos()})
 		}
-		s := "Correct"
-		if str != v {
-			s = "Incorrect"
+		for _, v := range vs {
+			if v == str {
+				found = true
+				return str, "Correct"
+			}
 		}
-		return str, s
+		return str, "Incorrect"
 	})
-	if s != v {
-		panic(ValidateError{Reason: fmt.Sprintf("expected %s found %s", v, s), Pos: pos})
+	if !found {
+		panic(ValidateError{Reason: fmt.Sprintf("expected any of %v found %s", vs, s), Pos: pos})
 	}
+}
+
+func (d *D) FieldValidateUTF8(name string, v string) {
+	d.FieldValidateUTF8Any(name, len(v), []string{v})
 }
 
 func (d *D) ValidateAtLeastBitsLeft(nBits int64) {

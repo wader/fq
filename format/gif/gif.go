@@ -53,7 +53,8 @@ func fieldColorMap(d *decode.D, name string, bitDepth int) {
 func gifDecode(d *decode.D, in interface{}) interface{} {
 	d.Endian = decode.LittleEndian
 
-	d.FieldValidateUTF8("header", "GIF89a")
+	d.FieldValidateUTF8Any("header", 6, []string{"GIF87a", "GIF89a"})
+
 	d.FieldU16("width")
 	d.FieldU16("height")
 	gcpFollows := d.FieldBool("gcp_follows")
