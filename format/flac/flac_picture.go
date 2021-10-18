@@ -56,7 +56,9 @@ func pictureDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldU32("color_depth")
 	d.FieldU32("number_of_index_colors")
 	pictureLen := d.FieldU32("picture_length")
-	d.FieldFormatLen("picture_data", int64(pictureLen)*8, images, nil)
+	if dv, _, _ := d.FieldTryFormatLen("picture_data", int64(pictureLen)*8, images, nil); dv == nil {
+		d.FieldBitBufLen("picture_data", int64(pictureLen)*8)
+	}
 
 	return nil
 }

@@ -67,7 +67,7 @@
 |`wav`                 |WAV&nbsp;file                                                 |<sub>`id3v2` `id3v1` `id3v11`</sub>|
 |`webp`                |WebP&nbsp;image                                               |<sub>`vp8_frame`</sub>|
 |`xing`                |Xing&nbsp;header                                              |<sub></sub>|
-|`image`               |Group                                                         |<sub>`gif` `jpeg` `png` `tiff` `webp`</sub>|
+|`image`               |Group                                                         |<sub>`gif` `jpeg` `mp4` `png` `tiff` `webp`</sub>|
 |`probe`               |Group                                                         |<sub>`adts` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `png` `tar` `tiff` `wav` `webp`</sub>|
 
 [#]: sh-end
