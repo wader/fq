@@ -157,11 +157,7 @@ func decode(ctx context.Context, bb *bitio.Buffer, formats []*Format, opts Optio
 		}
 
 		var maxRange ranges.Range
-		if err := d.Value.WalkPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
-			if d.Value != v && v.IsRoot {
-				return ErrWalkSkipChildren
-			}
-
+		if err := d.Value.WalkRootPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
 			maxRange = ranges.MinMax(maxRange, v.Range)
 			v.Range.Start += opts.StartOffset
 			v.RootBitBuf = d.Value.RootBitBuf
@@ -243,9 +239,6 @@ func (d *D) FillGaps(namePrefix string) {
 
 	makeWalkFn := func(fn func(iv *Value)) func(iv *Value, rootV *Value, depth int, rootDepth int) error {
 		return func(iv *Value, rootV *Value, depth int, rootDepth int) error {
-			if iv.RootBitBuf != d.Value.RootBitBuf && iv.IsRoot {
-				return ErrWalkSkipChildren
-			}
 			switch iv.V.(type) {
 			case Struct, Array:
 			default:
@@ -259,10 +252,10 @@ func (d *D) FillGaps(namePrefix string) {
 	// TODO: gaps things should be done in Framed* funcs
 	// TODO: pre-sorted somehow?
 	n := 0
-	_ = d.Value.WalkPreOrder(makeWalkFn(func(iv *Value) { n++ }))
+	_ = d.Value.WalkRootPreOrder(makeWalkFn(func(iv *Value) { n++ }))
 	valueRanges := make([]ranges.Range, n)
 	i := 0
-	_ = d.Value.WalkPreOrder(makeWalkFn(func(iv *Value) {
+	_ = d.Value.WalkRootPreOrder(makeWalkFn(func(iv *Value) {
 		valueRanges[i] = iv.Range
 		i++
 	}))
@@ -821,11 +814,7 @@ func (d *D) DecodeRangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 	fn(sd)
 
 	// TODO: refactor, similar to decode()
-	if err := sd.Value.WalkPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
-		if v.IsRoot {
-			return ErrWalkSkipChildren
-		}
-
+	if err := sd.Value.WalkRootPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
 		//v.Range.Start += firstBit
 		v.RootBitBuf = d.Value.RootBitBuf
 

@@ -59,17 +59,28 @@ var ErrWalkSkipChildren = errors.New("skip children")
 var ErrWalkBreak = errors.New("break")
 var ErrWalkStop = errors.New("stop")
 
-func (v *Value) walk(preOrder bool, fn WalkFn) error {
+type WalkOpts struct {
+	PreOrder bool
+	OneRoot  bool
+	Fn       WalkFn
+}
+
+func (v *Value) Walk(opts WalkOpts) error {
 	var walkFn WalkFn
-	walkFn = func(v *Value, rootV *Value, depth int, rootDepth int) error {
+
+	walkFn = func(wv *Value, rootV *Value, depth int, rootDepth int) error {
+		if opts.OneRoot && wv != v && wv.IsRoot {
+			return nil
+		}
+
 		rootDepthDelta := 0
-		if v.IsRoot {
-			rootV = v
+		if wv.IsRoot {
+			rootV = wv
 			rootDepthDelta = 1
 		}
 
-		if preOrder {
-			err := fn(v, rootV, depth, rootDepth+rootDepthDelta)
+		if opts.PreOrder {
+			err := opts.Fn(wv, rootV, depth, rootDepth+rootDepthDelta)
 			switch {
 			case errors.Is(err, ErrWalkSkipChildren):
 				return nil
@@ -82,7 +93,7 @@ func (v *Value) walk(preOrder bool, fn WalkFn) error {
 			}
 		}
 
-		switch v := v.V.(type) {
+		switch v := wv.V.(type) {
 		case Struct:
 			for _, wv := range v {
 				if err := walkFn(wv, rootV, depth+1, rootDepth+rootDepthDelta); err != nil {
@@ -102,8 +113,8 @@ func (v *Value) walk(preOrder bool, fn WalkFn) error {
 				}
 			}
 		}
-		if !preOrder {
-			err := fn(v, rootV, depth, rootDepth+rootDepthDelta)
+		if !opts.PreOrder {
+			err := opts.Fn(wv, rootV, depth, rootDepth+rootDepthDelta)
 			switch {
 			case errors.Is(err, ErrWalkSkipChildren):
 				return errors.New("can't skip children in post-order")
@@ -129,6 +140,36 @@ func (v *Value) walk(preOrder bool, fn WalkFn) error {
 	return err
 }
 
+func (v *Value) WalkPreOrder(fn WalkFn) error {
+	return v.Walk(WalkOpts{
+		PreOrder: true,
+		Fn:       fn,
+	})
+}
+
+func (v *Value) WalkPostOrder(fn WalkFn) error {
+	return v.Walk(WalkOpts{
+		PreOrder: false,
+		Fn:       fn,
+	})
+}
+
+func (v *Value) WalkRootPreOrder(fn WalkFn) error {
+	return v.Walk(WalkOpts{
+		PreOrder: true,
+		OneRoot:  true,
+		Fn:       fn,
+	})
+}
+
+func (v *Value) WalkRootPostOrder(fn WalkFn) error {
+	return v.Walk(WalkOpts{
+		PreOrder: false,
+		OneRoot:  true,
+		Fn:       fn,
+	})
+}
+
 func (v *Value) root(findSubRoot bool, findFormatRoot bool) *Value {
 	rootV := v
 	for rootV.Parent != nil {
@@ -147,14 +188,6 @@ func (v *Value) root(findSubRoot bool, findFormatRoot bool) *Value {
 func (v *Value) Root() *Value       { return v.root(false, false) }
 func (v *Value) BufferRoot() *Value { return v.root(true, false) }
 func (v *Value) FormatRoot() *Value { return v.root(true, true) }
-
-func (v *Value) WalkPreOrder(fn WalkFn) error {
-	return v.walk(true, fn)
-}
-
-func (v *Value) WalkPostOrder(fn WalkFn) error {
-	return v.walk(false, fn)
-}
 
 func (v *Value) Errors() []error {
 	var errs []error
