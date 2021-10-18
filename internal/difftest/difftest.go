@@ -1,11 +1,20 @@
+// Package difftest implement test based on serialized string output
+//
+// User provides a function that gets a input string. It returns a output string
+// based on the input somehow and a output path to file with content to compare it
+// to or to write to if in write mode.
+// If there is a difference test will fail with a diff.
+//
+// Test inputs are read from files matching Pattern from Path.
+//
+// Note that output path can be the same as input which useful if the function
+// implements some kind of transcript that includes both input and output.
 package difftest
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"reflect"
 	"strings"
 	"testing"
 
@@ -32,68 +41,72 @@ type Options struct {
 	Fn          Fn
 }
 
-func testDeepEqual(t tf, color bool, fn func(format string, args ...interface{}), expected interface{}, actual interface{}) {
+func testDeepEqual(t tf, color bool, printfFn func(format string, args ...interface{}), expected string, actual string) {
 	t.Helper()
 
-	expectedStr := fmt.Sprintf("%v", expected)
-	actualStr := fmt.Sprintf("%v", actual)
-
-	if !reflect.DeepEqual(expected, actual) {
-		diff := difflib.UnifiedDiff{
-			A:        difflib.SplitLines(expectedStr),
-			B:        difflib.SplitLines(actualStr),
-			FromFile: "expected",
-			ToFile:   "actual",
-			Context:  3,
-		}
-		uDiff, err := difflib.GetUnifiedDiffString(diff)
-
-		if color {
-			lines := strings.Split(uDiff, "\n")
-			var coloredLines []string
-			seenAt := false
-			for _, l := range lines {
-				if len(l) == 0 {
-					continue
-				}
-				switch {
-				case seenAt && l[0] == '+':
-					coloredLines = append(coloredLines, green+l+reset)
-				case seenAt && l[0] == '-':
-					coloredLines = append(coloredLines, red+l+reset)
-				default:
-					if l[0] == '@' {
-						seenAt = true
-					}
-					coloredLines = append(coloredLines, l)
-				}
-			}
-			uDiff = strings.Join(coloredLines, "\n")
-		}
-
-		if err != nil {
-			panic(err)
-		}
-		fn("\n" + uDiff)
+	diff := difflib.UnifiedDiff{
+		A:        difflib.SplitLines(expected),
+		B:        difflib.SplitLines(actual),
+		FromFile: "expected",
+		ToFile:   "actual",
+		Context:  3,
 	}
+	uDiff, err := difflib.GetUnifiedDiffString(diff)
+	if err != nil {
+		t.Fatalf("%s", err)
+	}
+	if uDiff == "" {
+		return
+	}
+
+	if color {
+		lines := strings.Split(uDiff, "\n")
+		var coloredLines []string
+		// diff looks like this:
+		// --- expected
+		// +++ actual
+		// @@ -5,7 +5,7 @@
+		// -            a
+		// +            b
+		seenAt := false
+		for _, l := range lines {
+			if len(l) == 0 {
+				continue
+			}
+			switch {
+			case seenAt && l[0] == '+':
+				coloredLines = append(coloredLines, green+l+reset)
+			case seenAt && l[0] == '-':
+				coloredLines = append(coloredLines, red+l+reset)
+			default:
+				if l[0] == '@' {
+					seenAt = true
+				}
+				coloredLines = append(coloredLines, l)
+			}
+		}
+		uDiff = strings.Join(coloredLines, "\n")
+	}
+
+	printfFn("%s", "\n"+uDiff)
 }
 
-func ErrorEx(t tf, color bool, expected interface{}, actual interface{}) {
+func ErrorEx(t tf, color bool, expected string, actual string) {
 	t.Helper()
 	testDeepEqual(t, color, t.Errorf, expected, actual)
 }
 
-func Error(t tf, expected interface{}, actual interface{}) {
+func Error(t tf, expected string, actual string) {
 	t.Helper()
 	testDeepEqual(t, false, t.Errorf, expected, actual)
 }
 
-func FatalEx(t tf, color bool, expected interface{}, actual interface{}) {
+func FatalEx(t tf, color bool, expected string, actual string) {
 	t.Helper()
 	testDeepEqual(t, color, t.Fatalf, expected, actual)
 }
 
-func Fatal(t tf, expected interface{}, actual interface{}) {
+func Fatal(t tf, expected string, actual string) {
 	t.Helper()
 	testDeepEqual(t, false, t.Fatalf, expected, actual)
 }

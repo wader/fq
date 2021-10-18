@@ -148,7 +148,7 @@ func (d *D) ZeroPadding(nBits int) bool {
 		}
 		n, err := d.Bits(rBits)
 		if err != nil {
-			panic(IOError{Err: err, Op: "ZeroPadding", Size: int64(rBits), Pos: d.Pos()})
+			panic(IOError{Err: err, Op: "ZeroPadding", ReadSize: int64(rBits), Pos: d.Pos()})
 		}
 		isZero = isZero && n == 0
 		left -= rBits
@@ -212,7 +212,7 @@ func (d *D) TryBool() (bool, error) {
 func (d *D) Bool() bool {
 	b, err := d.TryBool()
 	if err != nil {
-		panic(IOError{Err: err, Op: "Bool", Size: 1, Pos: d.Pos()})
+		panic(IOError{Err: err, Op: "Bool", ReadSize: 1, Pos: d.Pos()})
 	}
 	return b
 }
@@ -221,7 +221,7 @@ func (d *D) FieldBool(name string) bool {
 	return d.FieldBoolFn(name, func() (bool, string) {
 		b, err := d.TryBool()
 		if err != nil {
-			panic(IOError{Err: err, Name: name, Op: "FieldBool", Size: 1, Pos: d.Pos()})
+			panic(IOError{Err: err, Name: name, Op: "FieldBool", ReadSize: 1, Pos: d.Pos()})
 		}
 		return b, ""
 	})
@@ -231,7 +231,7 @@ func (d *D) FieldBytesLen(name string, nBytes int) []byte {
 	return d.FieldBytesFn(name, func() ([]byte, string) {
 		bs, err := d.bitBuf.BytesLen(nBytes)
 		if err != nil {
-			panic(IOError{Err: err, Name: name, Op: "FieldBytesLen", Size: int64(nBytes) * 8, Pos: d.Pos()})
+			panic(IOError{Err: err, Name: name, Op: "FieldBytesLen", ReadSize: int64(nBytes) * 8, Pos: d.Pos()})
 		}
 		return bs, ""
 	})
@@ -241,7 +241,7 @@ func (d *D) FieldBytesLen(name string, nBytes int) []byte {
 func (d *D) UTF8Fn(nBytes int, fn func(s string) string) string {
 	s, err := d.TryUTF8Fn(nBytes, fn)
 	if err != nil {
-		panic(IOError{Err: err, Op: "UTF8", Size: int64(nBytes) * 8, Pos: d.Pos()})
+		panic(IOError{Err: err, Op: "UTF8", ReadSize: int64(nBytes) * 8, Pos: d.Pos()})
 	}
 	return s
 }
@@ -254,7 +254,7 @@ func (d *D) UTF8(nBytes int) string {
 func (d *D) UTF16BE(nBytes int) string {
 	s, err := d.TryUTF16BE(nBytes)
 	if err != nil {
-		panic(IOError{Err: err, Op: "UTF16BE", Size: int64(nBytes) * 8, Pos: d.Pos()})
+		panic(IOError{Err: err, Op: "UTF16BE", ReadSize: int64(nBytes) * 8, Pos: d.Pos()})
 	}
 	return s
 }
@@ -263,7 +263,7 @@ func (d *D) UTF16BE(nBytes int) string {
 func (d *D) UTF16LE(nBytes int) string {
 	s, err := d.TryUTF16LE(nBytes)
 	if err != nil {
-		panic(IOError{Err: err, Op: "UTF16LE", Size: int64(nBytes) * 8, Pos: d.Pos()})
+		panic(IOError{Err: err, Op: "UTF16LE", ReadSize: int64(nBytes) * 8, Pos: d.Pos()})
 	}
 	return s
 }
@@ -273,7 +273,7 @@ func (d *D) FieldUTF8Fn(name string, nBytes int, fn func(s string) string) strin
 	return d.FieldStrFn(name, func() (string, string) {
 		str, err := d.TryUTF8Fn(nBytes, fn)
 		if err != nil {
-			panic(IOError{Err: err, Name: name, Op: "FieldUTF8", Size: int64(nBytes) * 8, Pos: d.Pos()})
+			panic(IOError{Err: err, Name: name, Op: "FieldUTF8", ReadSize: int64(nBytes) * 8, Pos: d.Pos()})
 		}
 		return str, ""
 	})
@@ -292,7 +292,7 @@ func (d *D) FieldUTF16BE(name string, nBytes int) string {
 	return d.FieldStrFn(name, func() (string, string) {
 		str, err := d.TryUTF16BE(nBytes)
 		if err != nil {
-			panic(IOError{Err: err, Name: name, Op: "FieldUTF16BE", Size: int64(nBytes) * 8, Pos: d.Pos()})
+			panic(IOError{Err: err, Name: name, Op: "FieldUTF16BE", ReadSize: int64(nBytes) * 8, Pos: d.Pos()})
 		}
 		return str, ""
 	})
@@ -303,7 +303,7 @@ func (d *D) FieldUTF16LE(name string, nBytes int) string {
 	return d.FieldStrFn(name, func() (string, string) {
 		str, err := d.TryUTF16LE(nBytes)
 		if err != nil {
-			panic(IOError{Err: err, Name: name, Op: "FieldUTF16LE", Size: int64(nBytes) * 8, Pos: d.Pos()})
+			panic(IOError{Err: err, Name: name, Op: "FieldUTF16LE", ReadSize: int64(nBytes) * 8, Pos: d.Pos()})
 		}
 		return str, ""
 	})
@@ -314,7 +314,7 @@ func (d *D) FieldUTF8ShortString(name string, nBytes int) string {
 	return d.FieldStrFn(name, func() (string, string) {
 		str, err := d.TryUTF8ShortString(nBytes)
 		if err != nil {
-			panic(IOError{Err: err, Name: name, Op: "FieldUTF8ShortString", Size: int64(nBytes) * 8, Pos: d.Pos()})
+			panic(IOError{Err: err, Name: name, Op: "FieldUTF8ShortString", ReadSize: int64(nBytes) * 8, Pos: d.Pos()})
 		}
 		return str, ""
 	})

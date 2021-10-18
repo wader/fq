@@ -28,9 +28,9 @@ type Range struct {
 
 func (r Range) Stop() int64 { return r.Start + r.Len }
 
-func (r Range) String() string {
-	return fmt.Sprintf("%d:%d", r.Start, r.Len)
-}
+func (r Range) String() string { return fmt.Sprintf("%d:%d", r.Start, r.Len) }
+
+func (r Range) IsZero() bool { return r.Start == 0 && r.Len == 0 }
 
 func RangeFromString(s string) Range {
 	ps := strings.Split(s, ":")

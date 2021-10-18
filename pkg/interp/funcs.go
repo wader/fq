@@ -615,7 +615,7 @@ func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
 		}
 	}
 
-	bb, err := toBuffer(c)
+	bv, err := toBufferView(c)
 	if err != nil {
 		return err
 	}
@@ -629,8 +629,11 @@ func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
 		return fmt.Errorf("%s: %w", formatName, err)
 	}
 
-	dv, _, err := decode.Decode(i.evalContext.ctx, bb, decodeFormats,
+	dv, _, err := decode.Decode(i.evalContext.ctx, bv.bb, decodeFormats,
 		decode.Options{
+			IsRoot:        true,
+			FillGaps:      true,
+			Range:         bv.r,
 			Description:   opts.Filename,
 			FormatOptions: opts.Remain,
 		},
