@@ -57,7 +57,7 @@ func valueHas(key interface{}, a func(name string) interface{}, b func(key inter
 	return b(key)
 }
 
-func makeDecodeValue(dv *decode.Value) DecodeValue {
+func makeDecodeValue(dv *decode.Value) interface{} {
 	switch vv := dv.V.(type) {
 	case decode.Array:
 		return NewArrayDecodeValue(dv, vv)
@@ -96,10 +96,8 @@ func makeDecodeValue(dv *decode.Value) DecodeValue {
 			decodeValueBase: decodeValueBase{dv},
 		}
 	case []byte:
-		return decodeValue{
-			JQValue:         gojqextra.String(string(vv)),
-			decodeValueBase: decodeValueBase{dv},
-		}
+		// TODO: not sure about this
+		return bufferViewFromBuffer(bitio.NewBufferFromBytes(vv, -1), 8)
 	case []interface{}:
 		return decodeValue{
 			JQValue:         gojqextra.Array(vv),
