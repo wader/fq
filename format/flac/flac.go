@@ -1,6 +1,10 @@
 package flac
 
 // https://xiph.org/flac/format.html
+// https://wiki.hydrogenaud.io/index.php?title=FLAC_decoder_testbench
+// TODO:
+// 16 - Part 6 of Ladybug Castle (partition order 8 with escape codes)
+// 32 - Part 5 of The Four of Us Are Dying (partition order 8 with escape codes)
 
 import (
 	"bytes"
@@ -59,12 +63,12 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 				panic(fmt.Sprintf("expected FlacFrameOut got %#+v", v))
 			}
 
-			frameStreamSamplesBuf := ffo.SamplesBuf
+			samplesInFrame := ffo.Samples
 			if streamTotalSamples > 0 {
-				samplesInFrame := num.MinUInt64(streamTotalSamples-streamDecodedSamples, ffo.Samples)
-				frameStreamSamplesBuf = frameStreamSamplesBuf[0 : samplesInFrame*uint64(ffo.Channels*ffo.BitsPerSample/8)]
-				framesNDecodedSamples += ffo.Samples
+				samplesInFrame = num.MinUInt64(streamTotalSamples-streamDecodedSamples, ffo.Samples)
 			}
+			frameStreamSamplesBuf := ffo.SamplesBuf[0 : samplesInFrame*uint64(ffo.Channels*ffo.BitsPerSample/8)]
+			framesNDecodedSamples += ffo.Samples
 
 			decode.MustCopy(d, md5Samples, bytes.NewReader(frameStreamSamplesBuf))
 			streamDecodedSamples += ffo.Samples
