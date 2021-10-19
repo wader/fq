@@ -64,14 +64,16 @@ func (bv BufferView) JQValueSliceLen() interface{} {
 
 func (bv BufferView) JQValueIndex(index int) interface{} {
 	if index < 0 {
-		return ""
+		return nil
 	}
+
 	buf, err := bv.toBytesBuffer(ranges.Range{Start: bv.r.Start + int64(index*bv.unit), Len: int64(bv.unit)})
 	if err != nil {
 		return err
 	}
-	s := buf.String()
-	return s[0:1]
+
+	extraBits := uint((8 - bv.r.Len%8) % 8)
+	return new(big.Int).Rsh(new(big.Int).SetBytes(buf.Bytes()), extraBits)
 }
 func (bv BufferView) JQValueSlice(start int, end int) interface{} {
 	rStart := int64(start * bv.unit)

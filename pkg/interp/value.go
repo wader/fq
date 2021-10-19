@@ -1,6 +1,7 @@
 package interp
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"io"
@@ -10,7 +11,6 @@ import (
 	"github.com/wader/fq/internal/gojqextra"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
-	"github.com/wader/fq/pkg/ranges"
 
 	"github.com/wader/gojq"
 )
@@ -64,7 +64,17 @@ func makeDecodeValue(dv *decode.Value) interface{} {
 	case decode.Struct:
 		return NewStructDecodeValue(dv, vv)
 	case *bitio.Buffer:
-		return NewStringBufferValueObject(dv, vv)
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, vv.Copy()); err != nil {
+			return err
+		}
+		// TODO: split *bitio.Buffer into just marker (bit range in root bitbuf)
+		// or *bitio.Buffer if actually other bitbuf
+		return decodeValue{
+			JQValue:         gojqextra.String(buf.String()),
+			decodeValueBase: decodeValueBase{dv},
+			bitsFormat:      true,
+		}
 	case bool:
 		return decodeValue{
 			JQValue:         gojqextra.Boolean(vv),
@@ -97,6 +107,7 @@ func makeDecodeValue(dv *decode.Value) interface{} {
 		}
 	case []byte:
 		// TODO: not sure about this
+		// TODO: only synthentic value without range?
 		return bufferViewFromBuffer(bitio.NewBufferFromBytes(vv, -1), 8)
 	case []interface{}:
 		return decodeValue{
@@ -234,6 +245,7 @@ var _ DecodeValue = decodeValue{}
 type decodeValue struct {
 	gojq.JQValue
 	decodeValueBase
+	bitsFormat bool
 }
 
 func (v decodeValue) JQValueKey(name string) interface{} {
@@ -242,70 +254,21 @@ func (v decodeValue) JQValueKey(name string) interface{} {
 func (v decodeValue) JQValueHas(key interface{}) interface{} {
 	return valueHas(key, v.decodeValueBase.JQValueKey, v.JQValue.JQValueHas)
 }
-
-// string (*bitio.Buffer)
-
-var _ DecodeValue = BufferDecodeValue{}
-var _ JQValueEx = BufferDecodeValue{}
-
-type BufferDecodeValue struct {
-	gojqextra.Base
-	decodeValueBase
-	*bitio.Buffer
-}
-
-func NewStringBufferValueObject(dv *decode.Value, bb *bitio.Buffer) BufferDecodeValue {
-	return BufferDecodeValue{
-		decodeValueBase: decodeValueBase{dv},
-		Base:            gojqextra.Base{Typ: "string"},
-		Buffer:          bb,
+func (v decodeValue) JQValueToGoJQEx(optsFn func() Options) interface{} {
+	if !v.bitsFormat {
+		return v.JQValueToGoJQ()
 	}
-}
 
-func (v BufferDecodeValue) JQValueKey(name string) interface{} {
-	return valueKey(name, v.decodeValueBase.JQValueKey, v.Base.JQValueKey)
-}
-func (v BufferDecodeValue) JQValueHas(key interface{}) interface{} {
-	return valueHas(key, v.decodeValueBase.JQValueKey, v.Base.JQValueHas)
-}
-func (v BufferDecodeValue) JQValueLength() interface{} {
-	return int(v.Buffer.Len()) / 8
-}
-func (v BufferDecodeValue) JQValueIndex(index int) interface{} {
-	if index < 0 {
-		return ""
+	bv, err := v.decodeValueBase.ToBufferView()
+	if err != nil {
+		return err
 	}
-	// TODO: funcIndexSlice, string outside should return "" not null
-	return v.JQValueSlice(index, index+1)
-}
-func (v BufferDecodeValue) JQValueSlice(start int, end int) interface{} {
-	rStart := int64(start * 8)
-	rLen := int64((end - start) * 8)
+	bb, err := bv.toBuffer()
+	if err != nil {
+		return err
+	}
 
-	return BufferView{
-		bb:   v.Buffer,
-		r:    ranges.Range{Start: rStart, Len: rLen},
-		unit: 8,
-	}
-}
-func (v BufferDecodeValue) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
-	return notUpdateableError{Key: fmt.Sprintf("%v", key), Typ: "string"}
-}
-func (v BufferDecodeValue) JQValueToNumber() interface{} {
-	s, ok := v.JQValueToString().(string)
-	if ok {
-		gojq.NormalizeNumbers(s)
-	}
-	return s
-}
-func (v BufferDecodeValue) JQValueToString() interface{} {
-	return v.JQValueSlice(0, int(v.Buffer.Len())/8)
-}
-func (v BufferDecodeValue) JQValueToGoJQ() interface{} {
-	return v.JQValueToString()
-}
-func (v BufferDecodeValue) JQValueToGoJQEx(optsFn func() Options) interface{} {
-	s, err := optsFn().BitsFormatFn(v.Buffer.Copy())
+	s, err := optsFn().BitsFormatFn(bb.Copy())
 	if err != nil {
 		return err
 	}

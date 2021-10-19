@@ -37,7 +37,7 @@ $ fq tovalue /json.gz
 {
   "compressed": "<13>q1ZKVLJSMDQyruUCAA==",
   "compression_method": 8,
-  "crc32": "<4>nNKsIA==",
+  "crc32": "<4>IKzSnA==",
   "extra_flags": 0,
   "flags": {
     "comment": false,
@@ -47,7 +47,7 @@ $ fq tovalue /json.gz
     "reserved": 0,
     "text": false
   },
-  "identification": "\u001f\ufffd",
+  "identification": "\u001f�",
   "isize": 11,
   "mtime": 1627916901,
   "os": 3,

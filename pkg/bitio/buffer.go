@@ -95,9 +95,6 @@ func (b *Buffer) BitBufRange(firstBitOffset int64, nBits int64) (*Buffer, error)
 	if firstBitOffset+nBits > b.bitLen {
 		return nil, errors.New("outside buffer")
 	}
-	if nBits < 0 {
-		nBits = b.bitLen - firstBitOffset
-	}
 	return &Buffer{
 		br:     NewSectionBitReader(b.br, firstBitOffset, nBits),
 		bitLen: nBits,

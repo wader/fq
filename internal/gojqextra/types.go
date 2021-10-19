@@ -215,7 +215,7 @@ func (v Number) JQValueToGoJQ() interface{} { return v.V }
 
 var _ gojq.JQValue = String("")
 
-type String string
+type String []rune
 
 func (v String) JQValueLength() interface{}   { return len(v) }
 func (v String) JQValueSliceLen() interface{} { return len(v) }
