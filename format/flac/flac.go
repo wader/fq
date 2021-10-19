@@ -74,11 +74,6 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 		}
 	})
 
-	_ = streamInfo
-	// if streamInfo.D != nil {
-	// 	md5Value := streamInfo.D.FieldGet("md5")
-	// 	d.FieldChecksumRange("md5_calculated", md5Value.Range.Start, md5Value.Range.Len, md5Samples.Sum(nil), decode.BigEndian)
-	// }
 	d.FieldValueBytes("md5_calculated", md5Samples.Sum(nil), "")
 	d.FieldValueU("decoded_samples", framesNDecodedSamples, "")
 
