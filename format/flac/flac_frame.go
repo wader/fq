@@ -349,7 +349,6 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	})
 
 	var channelSamples [][]int64
-	rs := make([]int64, 0, blockSize)
 	d.FieldArrayFn("subframes", func(d *decode.D) {
 		for channelIndex := 0; channelIndex < int(channels); channelIndex++ {
 			d.FieldStructFn("subframe", func(d *decode.D) {
@@ -413,20 +412,16 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 				}
 				d.FieldValueU("subframe_sample_size", uint64(subframeSampleSize), "")
 
-				decodeWarmupSamples := func(n int, sampleSize int) []int64 {
-					var ss []int64
+				decodeWarmupSamples := func(samples []int64, n int, sampleSize int) {
 					d.FieldArrayFn("warmup_samples", func(d *decode.D) {
 						for i := 0; i < n; i++ {
-							ss = append(ss, d.FieldS("value", sampleSize))
+							samples[i] = d.FieldS("value", sampleSize)
 						}
 					})
-					return ss
 				}
 
-				decodeResiduals := func() []int64 {
-					// is less than blockSize
-					// reset array
-					rs = rs[:0]
+				decodeResiduals := func(samples []int64) {
+					n := 0
 
 					// <2> Residual coding method:
 					// 00 : partitioned Rice coding with 4-bit Rice parameter; RESIDUAL_CODING_METHOD_PARTITIONED_RICE follows
@@ -435,14 +430,15 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 					var riceEscape int
 					riceBits := int(d.FieldUFn("residual_coding_method", func() (uint64, decode.DisplayFormat, string) {
 						switch d.U2() {
-						case 0:
-							riceEscape = 15
+						case 0b00:
+							riceEscape = 0b1111
 							return 4, decode.NumberDecimal, "rice"
-						case 1:
-							riceEscape = 31
+						case 0b01:
+							riceEscape = 0b11111
 							return 5, decode.NumberDecimal, "rice2"
 						default:
-							return 0, decode.NumberDecimal, "reserved"
+							d.Invalid("unknown residual_coding_method")
+							return 0, 0, ""
 						}
 					}))
 
@@ -481,7 +477,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 								riceParameter := int(d.FieldU("rice_parameter", riceBits))
 								if riceParameter == riceEscape {
 									escapeSampleSize := int(d.FieldU5("escape_sample_size"))
-									d.FieldBitBufLen("samples", int64(count*escapeSampleSize*8))
+									d.FieldBitBufLen("samples", int64(count*escapeSampleSize))
 								} else {
 									samplesStart := d.Pos()
 									for j := 0; j < count; j++ {
@@ -489,7 +485,8 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 										_ = high
 										low := d.U(riceParameter)
 										_ = low
-										rs = append(rs, num.ZigZag(high<<riceParameter|low))
+										samples[n] = num.ZigZag(high<<riceParameter | low)
+										n++
 									}
 									samplesStop := d.Pos()
 									d.FieldBitBufRange("samples", samplesStart, samplesStop-samplesStart)
@@ -497,11 +494,10 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 							})
 						}
 					})
-					return rs
 				}
 
 				// modifies input samples slice and returns it
-				decodeLPC := func(lpcOrder int, samples []int64, coeffs []int64, shift int64) []int64 {
+				decodeLPC := func(lpcOrder int, samples []int64, coeffs []int64, shift int64) {
 					for i := lpcOrder; i < len(samples); i++ {
 						r := int64(0)
 						for j := 0; j < len(coeffs); j++ {
@@ -511,10 +507,9 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 						}
 						samples[i] = samples[i] + (r >> shift)
 					}
-					return samples
 				}
 
-				var samples []int64 //nolint:makezero
+				var samples []int64
 				switch subframeType {
 				case SubframeConstant:
 					samples = make([]int64, blockSize)
@@ -532,10 +527,12 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 						samples[i] = d.S(subframeSampleSize)
 					}
 				case SubframeFixed:
+					samples = make([]int64, blockSize)
+
 					// <n> Unencoded warm-up samples (n = frame's bits-per-sample * predictor order).
-					warmupSamples := decodeWarmupSamples(lpcOrder, subframeSampleSize)
+					decodeWarmupSamples(samples, lpcOrder, subframeSampleSize)
 					// Encoded residual
-					residuals := decodeResiduals()
+					decodeResiduals(samples[lpcOrder:])
 					// http://www.hpl.hp.com/techreports/1999/HPL-1999-144.pdf
 					fixedCoeffs := [][]int64{
 						{},
@@ -545,13 +542,12 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 						{4, -6, 4, -1},
 					}
 					coeffs := fixedCoeffs[lpcOrder]
-					samples = make([]int64, 0, blockSize)
-					samples = append(samples, warmupSamples...)
-					samples = append(samples, residuals...)
-					samples = decodeLPC(lpcOrder, samples, coeffs, 0)
+					decodeLPC(lpcOrder, samples, coeffs, 0)
 				case SubframeLPC:
+					samples = make([]int64, blockSize)
+
 					// <n> Unencoded warm-up samples (n = frame's bits-per-sample * lpc order).
-					warmupSamples := decodeWarmupSamples(lpcOrder, subframeSampleSize)
+					decodeWarmupSamples(samples, lpcOrder, subframeSampleSize)
 					// <4> (Quantized linear predictor coefficients' precision in bits)-1 (1111 = invalid).
 					precision := int(d.FieldUFn("precision", func() (uint64, decode.DisplayFormat, string) {
 						return d.U4() + 1, decode.NumberDecimal, ""
@@ -569,11 +565,8 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 						}
 					})
 					// Encoded residual
-					residuals := decodeResiduals()
-					samples = make([]int64, 0, blockSize)
-					samples = append(samples, warmupSamples...)
-					samples = append(samples, residuals...)
-					samples = decodeLPC(lpcOrder, samples, coeffs, shift)
+					decodeResiduals(samples[lpcOrder:])
+					decodeLPC(lpcOrder, samples, coeffs, shift)
 				}
 
 				if wastedBitsK != 0 {
@@ -597,7 +590,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	streamSamples := len(channelSamples[0])
 	for j := 0; j < len(channelSamples); j++ {
 		if streamSamples > len(channelSamples[j]) {
-			d.Invalid(fmt.Sprintf("different amount of samples in channels %d >= %d", streamSamples, len(channelSamples[j])))
+			d.Invalid(fmt.Sprintf("different amount of samples in channels %d != %d", streamSamples, len(channelSamples[j])))
 		}
 	}
 
