@@ -66,10 +66,10 @@ func (d *D) FieldF{{$bits}}{{$e.short}}(name string) float64 { return d.FieldFE(
 
 {{ range $e :=$.endians }}
 
-// FP{{$e.short}} read a nBits {{$e.desc}} fBits fraction bits fixed-point number 
+// FP{{$e.short}} read a nBits {{$e.desc}} fBits fraction bits fixed-point number
 func (d *D) FP{{$e.short}}(nBits int, fBits int64) float64 { return d.FPE(nBits, fBits, {{$e.var}}) }
 
-// TryFP{{$e.short}} try read a nBits {{$e.desc}} fBits fraction bits fixed-point number 
+// TryFP{{$e.short}} try read a nBits {{$e.desc}} fBits fraction bits fixed-point number
 func (d *D) TryFP{{$e.short}}(nBits int, fBits int64) (float64, error) { return d.TryFPE(nBits, fBits, {{$e.var}}) }
 
 {{- range $fp := $.fpbits }}

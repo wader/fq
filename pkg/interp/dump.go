@@ -350,7 +350,7 @@ func dump(v *decode.Value, w io.Writer, opts Options) error {
 	}))
 }
 
-func hexdump(w io.Writer, bv BufferView, opts Options) error {
+func hexdump(w io.Writer, bv BufferRange, opts Options) error {
 	// TODO: hack
 	opts.Verbose = true
 	return dump(

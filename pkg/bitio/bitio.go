@@ -34,41 +34,6 @@ type BitWriter interface {
 	WriteBits(p []byte, nBits int) (n int, err error)
 }
 
-type AlignBitWriter struct {
-	W BitWriter
-	N int
-	c int64
-}
-
-func (a *AlignBitWriter) WriteBits(p []byte, nBits int) (n int, err error) {
-	n, err = a.W.WriteBits(p, nBits)
-	a.c += int64(n)
-	return n, err
-}
-
-func (a *AlignBitWriter) Close() error {
-	n := int64(a.N)
-	r := int((n - a.c%n) % n)
-	if r == 0 {
-		return nil
-	}
-	b := make([]byte, a.N/8+1)
-	_, err := a.W.WriteBits(b, r)
-	return err
-}
-
-type AlignBitReader struct {
-	R BitReaderAt
-	N int
-	c int64
-}
-
-func (a *AlignBitReader) ReadBitsAt(p []byte, nBits int, bitOff int64) (n int, err error) {
-	n, err = a.R.ReadBitsAt(p, nBits, bitOff)
-	a.c += int64(n)
-	return n, err
-}
-
 func CopyBuffer(dst BitWriter, src BitReader, buf []byte) (n int64, err error) {
 	// same default size as io.Copy
 	if buf == nil {

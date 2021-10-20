@@ -148,8 +148,8 @@ func (dvb decodeValueBase) DisplayName() string {
 }
 
 func (dvb decodeValueBase) Display(w io.Writer, opts Options) error { return dump(dvb.dv, w, opts) }
-func (dvb decodeValueBase) ToBufferView() (BufferView, error) {
-	return BufferView{bb: dvb.dv.RootBitBuf, r: dvb.dv.Range, unit: 8}, nil
+func (dvb decodeValueBase) ToBufferView() (BufferRange, error) {
+	return BufferRange{bb: dvb.dv.RootBitBuf, r: dvb.dv.Range, unit: 8}, nil
 }
 func (dvb decodeValueBase) ExtKeys() []string {
 	kv := []string{
@@ -217,13 +217,13 @@ func (dvb decodeValueBase) JQValueKey(name string) interface{} {
 
 		return dv.Err
 	case "_bits":
-		return BufferView{
+		return BufferRange{
 			bb:   dv.RootBitBuf,
 			r:    dv.Range,
 			unit: 1,
 		}
 	case "_bytes":
-		return BufferView{
+		return BufferRange{
 			bb:   dv.RootBitBuf,
 			r:    dv.Range,
 			unit: 8,

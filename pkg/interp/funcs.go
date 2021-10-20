@@ -498,7 +498,7 @@ func (bbf *bitBufFile) Display(w io.Writer, opts Options) error {
 	return err
 }
 
-func (bbf *bitBufFile) ToBufferView() (BufferView, error) {
+func (bbf *bitBufFile) ToBufferView() (BufferRange, error) {
 	return bufferViewFromBuffer(bbf.bb, 8), nil
 }
 
@@ -914,7 +914,7 @@ func (i *Interp) _bitsMatch(c interface{}, a []interface{}) gojq.Iter {
 		}
 
 		matchBitOff := (off + int64(l[0])) * 8
-		bbo := BufferView{
+		bbo := BufferRange{
 			bb: bv.bb,
 			r: ranges.Range{
 				Start: bv.r.Start + matchBitOff,
