@@ -141,12 +141,12 @@ notable is support for arbitrary-precision integers.
   - `format_root/0` return root value of format for value
   - `parent/0` return parent value
   - `parents/0` output parents of value
-  - All `find` and `grep` functions take 1 or 2 arguments. First is a scalar to match, where a string is
+  - All `match` and `grep` functions take 1 or 2 arguments. First is a scalar to match, where a string is
   treated as a regexp. A buffer scalar will be matches exact bytes. Second argument are regexp
   flags with addition that "b" will treat each byte in the input buffer as a code point, this
-  makes it possible to match exact bytes, ex: `find("\u00ff"; b")` will match the byte `0xff` and not
+  makes it possible to match exact bytes, ex: `match("\u00ff"; b")` will match the byte `0xff` and not
   the UTF-8 encoded codepoint for 255.
-    - `find/1`, `find/2` match in buffer and output match buffers
+    - `match/1`, `match/2` overloaded to support buffers. Match in buffer and output match buffers
     - `grep/1`, `grep/2` recursively match value and buffer
     - `vgrep/1`, `vgrep/2` recursively match value
     - `bgrep/1`, `bgrep/2` recursively match buffer

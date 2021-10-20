@@ -95,7 +95,7 @@ func (i *Interp) makeFunctions() []Function {
 		{[]string{"path_unescape"}, 0, 0, i.pathUnescape, nil},
 		{[]string{"aes_ctr"}, 1, 2, i.aesCtr, nil},
 
-		{[]string{"find"}, 1, 2, nil, i.find},
+		{[]string{"_bits_match"}, 1, 2, nil, i._bitsMatch},
 	}
 
 	return fs
@@ -835,7 +835,7 @@ func (i *Interp) aesCtr(c interface{}, a []interface{}) interface{} {
 	return buf.Bytes()
 }
 
-func (i *Interp) find(c interface{}, a []interface{}) gojq.Iter {
+func (i *Interp) _bitsMatch(c interface{}, a []interface{}) gojq.Iter {
 	var ok bool
 
 	bv, err := toBufferView(c)

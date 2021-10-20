@@ -56,22 +56,22 @@ mp3> bgrep(44100, "ID", "^ID3$", "^ID.?$", "Info", "magic", "\u00ff", [0x49, 0x4
 mp3> "64ff65ff66" | hex | bgrep("\u00ff"; "b")
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|64 ff 65 ff 66|                                |d.e.f|          |.: none 0x0-0x4.7 (5)
-mp3> "64ff65ff66" | hex | find("\u00ff"; "b")
+mp3> "64ff65ff66" | hex | match("\u00ff"; "b")
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|   ff 65 ff 66|                                | .e.f|          |.: none 0x1-0x4.7 (4)
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|         ff 66|                                |   .f|          |.: none 0x3-0x4.7 (2)
-mp3> "aöaöa" | find("ö")
+mp3> "aöaöa" | tobytes | match("ö")
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|   c3 b6 61 c3 b6 61|                          | ..a..a|        |.: none 0x1-0x6.7 (6)
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|            c3 b6 61|                          |    ..a|        |.: none 0x4-0x6.7 (3)
-mp3> "aöaöa" | find("\u00c3"; "b")
+mp3> "aöaöa" | tobytes | match("\u00c3"; "b")
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|   c3 b6 61 c3 b6 61|                          | ..a..a|        |.: none 0x1-0x6.7 (6)
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|            c3 b6 61|                          |    ..a|        |.: none 0x4-0x6.7 (3)
-mp3> "aöaöa" | find([0xc3])
+mp3> "aöaöa" | tobytes | match([0xc3])
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|   c3 b6 61 c3 b6 61|                          | ..a..a|        |.: none 0x1-0x6.7 (6)
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|

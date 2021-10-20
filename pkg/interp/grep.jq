@@ -32,7 +32,7 @@ def vgrep($v; $flags):
 def vgrep($v): vgrep($v; "");
 
 def _buf_grep_any_cond($v; $flags):
-  (isempty(find($v; $flags)) | not)? // false;
+  (isempty(tobytesrange | match($v; $flags)) | not)? // false;
 def bgrep($v; $flags):
   _grep(
     $v;
