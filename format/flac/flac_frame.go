@@ -413,6 +413,10 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldValueU("subframe_sample_size", uint64(subframeSampleSize), "")
 
 				decodeWarmupSamples := func(samples []int64, n int, sampleSize int) {
+					if len(samples) < n {
+						d.Invalid("decodeWarmupSamples outside block size")
+					}
+
 					d.FieldArrayFn("warmup_samples", func(d *decode.D) {
 						for i := 0; i < n; i++ {
 							samples[i] = d.FieldS("value", sampleSize)
@@ -421,6 +425,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 				}
 
 				decodeResiduals := func(samples []int64) {
+					samplesLen := len(samples)
 					n := 0
 
 					// <2> Residual coding method:
@@ -475,6 +480,11 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 								d.FieldValueU("count", uint64(count), "")
 
 								riceParameter := int(d.FieldU("rice_parameter", riceBits))
+
+								if samplesLen < n+count {
+									d.Invalid("decodeResiduals outside block size")
+								}
+
 								if riceParameter == riceEscape {
 									escapeSampleSize := int(d.FieldU5("escape_sample_size"))
 									d.FieldBitBufLen("samples", int64(count*escapeSampleSize))
