@@ -24,6 +24,8 @@ null> 1,2,3 | repl
 2
 3
 > number, [3]> ^D
+null> (1 | raw | .unknown0), 1 | repl
+> .unknown0, [2]> ^D
 null> def f: 1; f,f | repl
 > number, [2]> .
 1

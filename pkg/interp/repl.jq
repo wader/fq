@@ -111,7 +111,7 @@ def _prompt:
       catch ($c | type)
     );
   def _path_prefix:
-    (._path? // []) | if . == [] then "" else path_to_expr + " " end;
+    (._path? // []) | if . == [] then "" else path_to_expr end;
   def _preview:
     if format != null or type != "array" then
       _type_name_error
