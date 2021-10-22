@@ -362,6 +362,7 @@ def radix64: radix(64; "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123
     "+": 62, "/": 63
   });
 
+# TODO: rename keys and add more, ascii/utf8/utf16/codepoint name?, le/be, signed/unsigned?
 def iprint:
   {
     bin: "0b\(radix2)",
