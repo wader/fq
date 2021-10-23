@@ -1,13 +1,18 @@
-### Known issues
+### Known bugs to fix
 
+- Framed (add unknown in gaps) decode should be on struct level not format?
+- Refactor decode.Value into interfaces(s) and impl per type?
+- Symbolic values for all types, and how to make it nice and intuitive in jq expressions.
+  - Ex matroska id, decoded value (tonumber?), symbolic name (tovalue/tostring?)
+  - Ex frequency mapping, decoded value (tonumber?), symbolic hz (tovalue/tonumber?)
+  - Confusing with tovalue is symblic but tonumber/tostring return non-symbolic?
+- `tovalue({bits_format: "base64"})` only affect root value.
+- Sub buffers range is broken, could have a different size in parent (ex: compressed).
+
+- Auto complete of non-global variables is broken. `scope` is broken for variables.
+- `echo '{} {} {}' | jq` vs `echo '{} {} {}' | fq` works differently. fq currently decodes one root format and might add unknown fields etc. Maybe should work differently for `json` format?
 - `format/0` overlap with jq builtin `format/1`. What to rename it to? `decode_format`?
 - repl expression returning a value that produced lots of output can't be interrupted. This is becaus ctrl-C currently only interrupts the evaluation of the expression, outputted value is printed (`display`) by parent.
-- Auto complete of non-global variables is broken. `scope` is broken for variables.
-- `tovalue({bits_format: "base64"})` only affect root value.
-- Unknown field filling is currently only done on root, should be done per "framed" decode.
-- Sub buffers range is broken, could have a different size in parent (ex: compressed).
-- Symbolic values should be more intuitive, should not need to use ._symbol. (how to get the "raw" number/string? tonumber? tostring? weird?)
-- `echo '{} {} {}' | jq` vs `echo '{} {} {}' | fq` works differently. fq currently decodes one root format and might add unknown fields etc. Maybe should work differently for `json` format?
 
 ### TODO and ideas
 
@@ -42,11 +47,7 @@
 - `toplot`?
 - `dump` should handle binary, make column code more generic? share with `hexdump`? (bindump also?)
 - `dump` colorize/notify row range discontinuity
-- `dump` truncate long arrays in output unless verbose? `dd`?
 - `hexdump` etc should handle binary non byte aligned data
-- `tojvalue` handle binary somehow, base64 string, truncate? md5 digest etc? configurable? `{binarystring: "md5"}`
-- Function to search in binary data, regexp?
-- `grep` like function somehow?
 - Cleanup rework cipher functions, `ctr(aes("key"), "iv")` or `cipher(ctr("iv"), aes("key))`?
 - `open` when to close file?
 - Safe mode interpreter?
@@ -57,7 +58,7 @@
 
 ### Tests
 
-- WRITE_ACTUAL does not preserve comment order
+- WRITE_ACTUAL does not preserve comment order for readlines
 - empty file test
 - CLI tests, raw write, colors?
 - Interactive tests
@@ -69,8 +70,6 @@
 - Generate from source
 - `-n`, `inputs/0` and `input/0` behavior. Same as jq.
 - Mention `empty.something`?
-- Known issus and confusing things
-  - Symbolic number has to use `._symbol` for now. For example matroska ids are number ID:s that have symbolic string names.
 - Use https://github.com/fadado/JBOL/blob/master/doc/JQ-Distilled.md notation
 - Decoder write guide
   - Endian inherited per buffer, reset on new buffer
@@ -81,6 +80,8 @@
   - Try keep code as declarative as possible
   - Split into multiple sub formats if possible
   - See the decoded tree as user interface but still has to represent the actual bit structure
+  - Is format probeable
+  - Can new formats added be added to other formats
 
 #### Decode
 
@@ -91,8 +92,6 @@
 - Value should have raw, tranlated, symbolic and description? struct of map functions?
   - If symbolic should resolve to string? would make `.field == "abc"` work instead of now `.field._symbolic`
 - Array as root value, adts, avc_au etc
-- Decode framed/limited? framed adds unknown fields?
-- Add unknown for arrays?
 - Cleanup and rethink nested buffers (zip, muxed like ogg)
   - Root of nested buffer, what range?
 - `dump` has some bug not showing buffer "nesting" level in the address column
@@ -129,7 +128,6 @@
 #### gojq
 
 - Common errors with gojq? re-implemented now
-- `join` can be exponential, try add with strings faster, use add `["a","b","c"] | add`?
 - `0b` -> `1.7976931348623157e+308` something fishy with bin/hex/... literals change
 - Do something similar to `builtin.go` in gojq to speedup a bit
 - remove `scopedump`?
