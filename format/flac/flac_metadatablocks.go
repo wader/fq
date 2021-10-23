@@ -110,12 +110,11 @@ func metadatablocskDecode(d *decode.D, in interface{}) interface{} {
 						})
 					}
 				})
+			case MetadataBlockApplication:
+				d.FieldUTF8("id", 4)
+				d.FieldBitBufLen("data", int64((length-4)*8))
 			default:
-				if typ < 127 {
-					d.FieldBitBufLen("data", int64(length*8))
-				} else {
-					d.Invalid("invalid block type")
-				}
+				d.FieldBitBufLen("data", int64(length*8))
 			}
 		})
 	}
