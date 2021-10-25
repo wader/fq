@@ -611,7 +611,11 @@ func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
 					},
 				)
 			}
-			defer evalProgress(nil)
+			// when done decoding, tell progress function were done and disable it
+			defer func() {
+				bbf.progressFn = nil
+				evalProgress(nil)
+			}()
 		}
 	}
 
