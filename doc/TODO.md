@@ -55,6 +55,7 @@
 - `open` leak, file and ctxreadseeker
 - Summary tree with format specific summaries for each format, sample count etc etc?
 - List all unique paths in some compact form?
+- Make buffer work with `test` and `capture`?
 
 ### Tests
 
