@@ -565,16 +565,15 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilenam
 
 			pathPrefixes := []struct {
 				prefix string
-				cache  bool
-				fn     func(filename string) (io.Reader, error)
+				fn     func(filename string) (io.ReadCloser, error)
 			}{
 				{
-					"@builtin/", true, func(filename string) (io.Reader, error) {
+					"@builtin/", func(filename string) (io.ReadCloser, error) {
 						return builtinFS.Open(filename)
 					},
 				},
 				{
-					"@config/", false, func(filename string) (io.Reader, error) {
+					"@config/", func(filename string) (io.ReadCloser, error) {
 						configDir, err := i.os.ConfigDir()
 						if err != nil {
 							return nil, err
@@ -583,7 +582,7 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilenam
 					},
 				},
 				{
-					"", false, func(filename string) (io.Reader, error) {
+					"", func(filename string) (io.ReadCloser, error) {
 						// TODO: jq $ORIGIN
 
 						if filepath.IsAbs(filename) {
@@ -606,10 +605,8 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilenam
 					continue
 				}
 
-				if p.cache {
-					if q, ok := ni.includeCache[filename]; ok {
-						return q, nil
-					}
+				if q, ok := ni.includeCache[filename]; ok {
+					return q, nil
 				}
 
 				filenamePart := strings.TrimPrefix(filename, p.prefix)
@@ -618,8 +615,9 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilenam
 					if !isTry {
 						return nil, err
 					}
-					f = &bytes.Buffer{}
+					f = io.NopCloser(&bytes.Buffer{})
 				}
+				defer f.Close()
 
 				b, err := io.ReadAll(f)
 				if err != nil {
@@ -691,9 +689,7 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilenam
 					i.ImportPath = rewritePath(basePath, i.ImportPath)
 				}
 
-				if p.cache {
-					i.includeCache[filename] = q
-				}
+				i.includeCache[filename] = q
 
 				return q, nil
 			}
