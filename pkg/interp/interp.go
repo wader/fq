@@ -585,11 +585,17 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilenam
 				{
 					"", false, func(filename string) (io.Reader, error) {
 						// TODO: jq $ORIGIN
+
+						if filepath.IsAbs(filename) {
+							return i.os.FS().Open(filename)
+						}
+
 						for _, path := range append([]string{"./"}, i.includePaths()...) {
 							if f, err := i.os.FS().Open(filepath.Join(path, filename)); err == nil {
 								return f, nil
 							}
 						}
+
 						return nil, &fs.PathError{Op: "open", Path: filename, Err: fs.ErrNotExist}
 					},
 				},

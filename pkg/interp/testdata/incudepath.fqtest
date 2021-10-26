@@ -6,6 +6,8 @@ $ fq --include-path /library -n 'include "a"; a'
 "a"
 $ fq -L /wrong -L /library -n 'include "a"; a'
 "a"
+$ fq -n 'include "/library/a"; a'
+"a"
 $ fq -L /wrong -n 'include "a"; a'
 exitcode: 3
 stderr:
