@@ -105,7 +105,9 @@ def _prompt:
   def _type_name_error:
     ( . as $c
     | try
-        ( _display_name
+        ( ( _display_name
+          | if . != "" then " " + . end
+          )
         , if ._error then "!" else empty end
         )
       catch ($c | type)
