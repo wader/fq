@@ -15,7 +15,7 @@ test: testgo testjq testcli
 # figure out all go pakges with test files
 testgo: PKGS=$(shell find . -name "*_test.go" | xargs -n 1 dirname | sort | uniq)
 testgo:
-	go test ${VERBOSE} ${COVER} ${PKGS}
+	go test -race ${VERBOSE} ${COVER} ${PKGS}
 
 .PHONY: testgov
 testgov: export VERBOSE=-v
@@ -34,7 +34,7 @@ actual: export WRITE_ACTUAL=1
 actual: testgo
 
 .PHONY: cover
-cover: COVER=-cover -race -coverpkg=./... -coverprofile=cover.out
+cover: COVER=-cover -coverpkg=./... -coverprofile=cover.out
 cover: test
 	go tool cover -html=cover.out -o cover.out.html
 	cat cover.out.html | grep '<option value="file' | sed -E 's/.*>(.*) \((.*)%\)<.*/\2 \1/' | sort -rn
