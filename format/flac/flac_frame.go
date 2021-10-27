@@ -75,7 +75,7 @@ func utf8Uint(d *decode.D) uint64 {
 
 // in argument is an optional FlacFrameIn struct with stream info
 func frameDecode(d *decode.D, in interface{}) interface{} {
-	var inStreamInfo *format.FlacMetadatablockStreamInfo
+	var inStreamInfo *format.FlacStreamInfo
 	ffi, ok := in.(format.FlacFrameIn)
 	if ok {
 		inStreamInfo = &ffi.StreamInfo

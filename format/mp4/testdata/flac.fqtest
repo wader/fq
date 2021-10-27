@@ -210,7 +210,7 @@ $ fq -d mp4 verbose /flac.mp4
 0x450|                                 00            |           .    |                                  version: 0 0x45b-0x45b.7 (1)
 0x450|                                    00 00 00   |            ... |                                  flags: 0 0x45c-0x45e.7 (3)
      |                                               |                |                                  descriptor: [1] (flac_metadatablocks) 0x45f-0x484.7 (38)
-     |                                               |                |                                    [0]: metadatablock {} 0x45f-0x484.7 (38)
+     |                                               |                |                                    [0]: metadatablock {} (flac_metadatablock) 0x45f-0x484.7 (38)
 0x450|                                             80|               .|                                      last_block: true 0x45f-0x45f (0.1)
 0x450|                                             80|               .|                                      type: Streaminfo (0) 0x45f.1-0x45f.7 (0.7)
 0x460|00 00 22                                       |.."             |                                      length: 34 0x460-0x462.7 (3)

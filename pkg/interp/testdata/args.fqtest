@@ -72,8 +72,10 @@ elf                  Executable and Linkable Format
 exif                 Exchangeable Image File Format
 flac                 Free Lossless Audio Codec file
 flac_frame           FLAC frame
+flac_metadatablock   FLAC metadatablock
 flac_metadatablocks  FLAC metadatablocks
 flac_picture         FLAC metadatablock picture
+flac_streaminfo      FLAC streaminfo
 gif                  Graphics Interchange Format
 gzip                 gzip compression
 hevc_annexb          H.265/HEVC Annex B

@@ -450,7 +450,7 @@ func (d *D) FieldDecoder(name string, bitBuf *bitio.Buffer, v interface{}) *D {
 			Name:       name,
 			V:          v,
 			Range:      ranges.Range{Start: d.Pos(), Len: 0},
-			RootBitBuf: d.bitBuf,
+			RootBitBuf: bitBuf,
 		},
 		Options: d.Options,
 
@@ -995,13 +995,6 @@ func (d *D) FieldFormatBitBuf(name string, bb *bitio.Buffer, formats []*Format, 
 }
 
 // TODO: rethink this
-func (d *D) FieldBitBuf(name string, bb *bitio.Buffer) *bitio.Buffer {
-	return d.FieldBitBufFn(name, d.Pos(), 0, func() (*bitio.Buffer, string) {
-		return bb, ""
-	})
-}
-
-// TODO: rethink this
 func (d *D) FieldRootBitBuf(name string, bb *bitio.Buffer) *Value {
 	v := &Value{}
 	v.V = bb
@@ -1012,6 +1005,15 @@ func (d *D) FieldRootBitBuf(name string, bb *bitio.Buffer) *Value {
 	d.AddChild(v)
 
 	return v
+}
+
+func (d *D) FieldStructRootBitBufFn(name string, bb *bitio.Buffer, fn func(d *D)) *Value {
+	cd := d.FieldDecoder(name, bb, Struct{})
+	cd.Value.IsRoot = true
+	d.AddChild(cd.Value)
+	fn(cd)
+
+	return cd.Value
 }
 
 func (d *D) FieldValueBitBufRange(name string, firstBit int64, nBits int64) *Value {

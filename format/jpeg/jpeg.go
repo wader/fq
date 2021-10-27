@@ -343,11 +343,7 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 	}
 
 	if extendedXMP != nil {
-		bb := bitio.NewBufferFromBytes(extendedXMP, -1)
-		// TODO: bit pos, better bitbhuf api?
-		d.FieldBitBufFn("extended_xmp", 0, int64(len(extendedXMP))*8, func() (*bitio.Buffer, string) {
-			return bb, ""
-		})
+		d.FieldRootBitBuf("extended_xmp", bitio.NewBufferFromBytes(extendedXMP, -1))
 	}
 
 	return nil

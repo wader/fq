@@ -2,7 +2,7 @@ $ fq -d flac verbose /picture_seek_gain.flac
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /picture_seek_gain.flac (flac) 0x0-0x225f.7 (8800)
 0x0000|66 4c 61 43                                    |fLaC            |  magic: "fLaC" (Correct) 0x0-0x3.7 (4)
       |                                               |                |  metadatablocks: [5] (flac_metadatablocks) 0x4-0x205f.7 (8284)
-      |                                               |                |    [0]: metadatablock {} 0x4-0x29.7 (38)
+      |                                               |                |    [0]: metadatablock {} (flac_metadatablock) 0x4-0x29.7 (38)
 0x0000|            00                                 |    .           |      last_block: false 0x4-0x4 (0.1)
 0x0000|            00                                 |    .           |      type: Streaminfo (0) 0x4.1-0x4.7 (0.7)
 0x0000|               00 00 22                        |     .."        |      length: 34 0x5-0x7.7 (3)
@@ -17,7 +17,7 @@ $ fq -d flac verbose /picture_seek_gain.flac
 0x0010|               f0 00 00 01 b9                  |     .....      |      total_samples_in_stream: 441 0x15.4-0x19.7 (4.4)
 0x0010|                              89 88 7b 80 f8 10|          ..{...|      md5: 89887b80f810285b45f6c4ecc72c977e 0x1a-0x29.7 (16)
 0x0020|28 5b 45 f6 c4 ec c7 2c 97 7e                  |([E....,.~      |
-      |                                               |                |    [1]: metadatablock {} 0x2a-0x3f.7 (22)
+      |                                               |                |    [1]: metadatablock {} (flac_metadatablock) 0x2a-0x3f.7 (22)
 0x0020|                              03               |          .     |      last_block: false 0x2a-0x2a (0.1)
 0x0020|                              03               |          .     |      type: Seektable (3) 0x2a.1-0x2a.7 (0.7)
 0x0020|                                 00 00 12      |           ...  |      length: 18 0x2b-0x2d.7 (3)
@@ -27,7 +27,7 @@ $ fq -d flac verbose /picture_seek_gain.flac
 0x0030|00 00 00 00 00 00                              |......          |
 0x0030|                  00 00 00 00 00 00 00 00      |      ........  |          offset: 0 0x36-0x3d.7 (8)
 0x0030|                                          01 b9|              ..|          number_of_samples: 441 0x3e-0x3f.7 (2)
-      |                                               |                |    [2]: metadatablock {} 0x40-0x12e.7 (239)
+      |                                               |                |    [2]: metadatablock {} (flac_metadatablock) 0x40-0x12e.7 (239)
 0x0040|04                                             |.               |      last_block: false 0x40-0x40 (0.1)
 0x0040|04                                             |.               |      type: Vorbis comment (4) 0x40.1-0x40.7 (0.7)
 0x0040|   00 00 eb                                    | ...            |      length: 235 0x41-0x43.7 (3)
@@ -67,7 +67,7 @@ $ fq -d flac verbose /picture_seek_gain.flac
 0x0100|                                             52|               R|            comment: "REPLAYGAIN_ALBUM_PEAK=0.12496948" 0x10f-0x12e.7 (32)
 0x0110|45 50 4c 41 59 47 41 49 4e 5f 41 4c 42 55 4d 5f|EPLAYGAIN_ALBUM_|
 0x0120|50 45 41 4b 3d 30 2e 31 32 34 39 36 39 34 38   |PEAK=0.12496948 |
-      |                                               |                |    [3]: metadatablock {} 0x12f-0x25e.7 (304)
+      |                                               |                |    [3]: metadatablock {} (flac_metadatablock) 0x12f-0x25e.7 (304)
 0x0120|                                             06|               .|      last_block: false 0x12f-0x12f (0.1)
 0x0120|                                             06|               .|      type: Picture (6) 0x12f.1-0x12f.7 (0.7)
 0x0130|00 01 2c                                       |..,             |      length: 300 0x130-0x132.7 (3)
@@ -198,7 +198,7 @@ $ fq -d flac verbose /picture_seek_gain.flac
 0x0250|                           4e                  |         N      |              reserved: false 0x259.3-0x259.3 (0.1)
 0x0250|                              44               |          D     |              safe_to_copy: false 0x25a.3-0x25a.3 (0.1)
 0x0250|                                 ae 42 60 82   |           .B`. |              crc: Correct (ae426082) 0x25b-0x25e.7 (4)
-      |                                               |                |    [4]: metadatablock {} 0x25f-0x205f.7 (7681)
+      |                                               |                |    [4]: metadatablock {} (flac_metadatablock) 0x25f-0x205f.7 (7681)
 0x0250|                                             81|               .|      last_block: true 0x25f-0x25f (0.1)
 0x0250|                                             81|               .|      type: Padding (1) 0x25f.1-0x25f.7 (0.7)
 0x0260|00 1d fd                                       |...             |      length: 7677 0x260-0x262.7 (3)

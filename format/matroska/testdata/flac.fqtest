@@ -241,7 +241,7 @@ $ fq -d matroska verbose /flac.mkv
      |                                               |                |                  value: {} 0x172-0x19b.7 (42)
 0x170|      66 4c 61 43                              |  fLaC          |                    magic: "fLaC" (Correct) 0x172-0x175.7 (4)
      |                                               |                |                    metadatablocks: [1] (flac_metadatablocks) 0x176-0x19b.7 (38)
-     |                                               |                |                      [0]: metadatablock {} 0x176-0x19b.7 (38)
+     |                                               |                |                      [0]: metadatablock {} (flac_metadatablock) 0x176-0x19b.7 (38)
 0x170|                  80                           |      .         |                        last_block: true 0x176-0x176 (0.1)
 0x170|                  80                           |      .         |                        type: Streaminfo (0) 0x176.1-0x176.7 (0.7)
 0x170|                     00 00 22                  |       .."      |                        length: 34 0x177-0x179.7 (3)

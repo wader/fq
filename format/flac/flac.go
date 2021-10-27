@@ -36,7 +36,7 @@ func init() {
 func flacDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldValidateUTF8("magic", "fLaC")
 
-	var streamInfo format.FlacMetadatablockStreamInfo
+	var streamInfo format.FlacStreamInfo
 	var flacFrameIn format.FlacFrameIn
 	var framesNDecodedSamples uint64
 	var streamTotalSamples uint64

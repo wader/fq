@@ -2,7 +2,6 @@ package format
 
 import (
 	"github.com/wader/fq/pkg/bitio"
-	"github.com/wader/fq/pkg/ranges"
 )
 
 //nolint:revive
@@ -30,7 +29,9 @@ const (
 	EXIF                = "exif"
 	FLAC                = "flac"
 	FLAC_FRAME          = "flac_frame"
+	FLAC_METADATABLOCK  = "flac_metadatablock"
 	FLAC_METADATABLOCKS = "flac_metadatablocks"
+	FLAC_STREAMINFO     = "flac_streaminfo"
 	FLAC_PICTURE        = "flac_picture"
 	FLV                 = "flv" // TODO:
 	GIF                 = "gif"
@@ -83,21 +84,36 @@ const (
 
 // below are data types used to communicate between formats <FormatName>In/Out
 
+type FlacStreamInfo struct {
+	SampleRate           uint64
+	BitPerSample         uint64
+	TotalSamplesInStream uint64
+}
+
+type FlacStreaminfoOut struct {
+	StreamInfo FlacStreamInfo
+}
+
 type FlacMetadatablockStreamInfo struct {
 	SampleRate           uint64
 	BitPerSample         uint64
 	TotalSamplesInStream uint64
-	MD5Range             ranges.Range
+}
+
+type FlacMetadatablockOut struct {
+	IsLastBlock   bool
+	HasStreamInfo bool
+	StreamInfo    FlacStreamInfo
 }
 
 type FlacMetadatablocksOut struct {
 	HasStreamInfo bool
-	StreamInfo    FlacMetadatablockStreamInfo
+	StreamInfo    FlacStreamInfo
 }
 
 type FlacFrameIn struct {
 	SamplesBuf []byte
-	StreamInfo FlacMetadatablockStreamInfo
+	StreamInfo FlacStreamInfo
 }
 
 type FlacFrameOut struct {

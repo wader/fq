@@ -24,8 +24,10 @@
 |`exif`                |Exchangeable&nbsp;Image&nbsp;File&nbsp;Format                 |<sub></sub>|
 |`flac`                |Free&nbsp;Lossless&nbsp;Audio&nbsp;Codec&nbsp;file            |<sub>`flac_metadatablocks` `flac_frame`</sub>|
 |`flac_frame`          |FLAC&nbsp;frame                                               |<sub></sub>|
-|`flac_metadatablocks` |FLAC&nbsp;metadatablocks                                      |<sub>`flac_picture` `vorbis_comment`</sub>|
+|`flac_metadatablock`  |FLAC&nbsp;metadatablock                                       |<sub>`flac_streaminfo` `flac_picture` `vorbis_comment`</sub>|
+|`flac_metadatablocks` |FLAC&nbsp;metadatablocks                                      |<sub>`flac_metadatablock`</sub>|
 |`flac_picture`        |FLAC&nbsp;metadatablock&nbsp;picture                          |<sub>`image`</sub>|
+|`flac_streaminfo`     |FLAC&nbsp;streaminfo                                          |<sub></sub>|
 |`gif`                 |Graphics&nbsp;Interchange&nbsp;Format                         |<sub></sub>|
 |`gzip`                |gzip&nbsp;compression                                         |<sub>`probe`</sub>|
 |`hevc_annexb`         |H.265/HEVC&nbsp;Annex&nbsp;B                                  |<sub>`hevc_nalu`</sub>|
@@ -48,7 +50,7 @@
 |`mpeg_pes_packet`     |MPEG&nbsp;Packetized&nbsp;elementary&nbsp;stream&nbsp;packet  |<sub></sub>|
 |`mpeg_spu`            |Sub&nbsp;Picture&nbsp;Unit&nbsp;(DVD&nbsp;subtitle)           |<sub></sub>|
 |`mpeg_ts`             |MPEG&nbsp;Transport&nbsp;Stream                               |<sub></sub>|
-|`ogg`                 |OGG&nbsp;file                                                 |<sub>`ogg_page` `vorbis_packet` `opus_packet`</sub>|
+|`ogg`                 |OGG&nbsp;file                                                 |<sub>`ogg_page` `vorbis_packet` `vorbis_comment` `opus_packet` `flac_metadatablock` `flac_frame`</sub>|
 |`ogg_page`            |OGG&nbsp;page                                                 |<sub></sub>|
 |`opus_packet`         |Opus&nbsp;packet                                              |<sub>`vorbis_comment`</sub>|
 |`png`                 |Portable&nbsp;Network&nbsp;Graphics&nbsp;file                 |<sub>`icc_profile` `exif`</sub>|

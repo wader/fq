@@ -2,7 +2,7 @@ $ fq -d flac verbose /stereo16.flac
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /stereo16.flac (flac) 0x0-0xc54b.7 (50508)
 0x0000|66 4c 61 43                                    |fLaC            |  magic: "fLaC" (Correct) 0x0-0x3.7 (4)
       |                                               |                |  metadatablocks: [4] (flac_metadatablocks) 0x4-0x206f.7 (8300)
-      |                                               |                |    [0]: metadatablock {} 0x4-0x29.7 (38)
+      |                                               |                |    [0]: metadatablock {} (flac_metadatablock) 0x4-0x29.7 (38)
 0x0000|            00                                 |    .           |      last_block: false 0x4-0x4 (0.1)
 0x0000|            00                                 |    .           |      type: Streaminfo (0) 0x4.1-0x4.7 (0.7)
 0x0000|               00 00 22                        |     .."        |      length: 34 0x5-0x7.7 (3)
@@ -17,7 +17,7 @@ $ fq -d flac verbose /stereo16.flac
 0x0010|               f0 00 00 56 22                  |     ...V"      |      total_samples_in_stream: 22050 0x15.4-0x19.7 (4.4)
 0x0010|                              5a 00 c8 73 b8 0b|          Z..s..|      md5: 5a00c873b80b8f6294d14fe75b14a7d3 0x1a-0x29.7 (16)
 0x0020|8f 62 94 d1 4f e7 5b 14 a7 d3                  |.b..O.[...      |
-      |                                               |                |    [1]: metadatablock {} 0x2a-0x3f.7 (22)
+      |                                               |                |    [1]: metadatablock {} (flac_metadatablock) 0x2a-0x3f.7 (22)
 0x0020|                              03               |          .     |      last_block: false 0x2a-0x2a (0.1)
 0x0020|                              03               |          .     |      type: Seektable (3) 0x2a.1-0x2a.7 (0.7)
 0x0020|                                 00 00 12      |           ...  |      length: 18 0x2b-0x2d.7 (3)
@@ -27,7 +27,7 @@ $ fq -d flac verbose /stereo16.flac
 0x0030|00 00 00 00 00 00                              |......          |
 0x0030|                  00 00 00 00 00 00 00 00      |      ........  |          offset: 0 0x36-0x3d.7 (8)
 0x0030|                                          10 00|              ..|          number_of_samples: 4096 0x3e-0x3f.7 (2)
-      |                                               |                |    [2]: metadatablock {} 0x40-0x6b.7 (44)
+      |                                               |                |    [2]: metadatablock {} (flac_metadatablock) 0x40-0x6b.7 (44)
 0x0040|04                                             |.               |      last_block: false 0x40-0x40 (0.1)
 0x0040|04                                             |.               |      type: Vorbis comment (4) 0x40.1-0x40.7 (0.7)
 0x0040|   00 00 28                                    | ..(            |      length: 40 0x41-0x43.7 (3)
@@ -38,7 +38,7 @@ $ fq -d flac verbose /stereo16.flac
 0x0060|32 30 31 39 30 38 30 34                        |20190804        |
 0x0060|                        00 00 00 00            |        ....    |        user_comment_list_length: 0 0x68-0x6b.7 (4)
       |                                               |                |        user_comments: [0] 0x6c-NA (0)
-      |                                               |                |    [3]: metadatablock {} 0x6c-0x206f.7 (8196)
+      |                                               |                |    [3]: metadatablock {} (flac_metadatablock) 0x6c-0x206f.7 (8196)
 0x0060|                                    81         |            .   |      last_block: true 0x6c-0x6c (0.1)
 0x0060|                                    81         |            .   |      type: Padding (1) 0x6c.1-0x6c.7 (0.7)
 0x0060|                                       00 20 00|             . .|      length: 8192 0x6d-0x6f.7 (3)
