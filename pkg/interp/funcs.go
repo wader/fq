@@ -45,7 +45,6 @@ func (i *Interp) makeFunctions() []Function {
 		{[]string{"_query_fromstring"}, 0, 0, i.queryFromString, nil},
 		{[]string{"_query_tostring"}, 0, 0, i.queryToString, nil},
 
-		{[]string{"_display_name"}, 0, 0, i._displayName, nil},
 		{[]string{"_extkeys"}, 0, 0, i._extKeys, nil},
 		{[]string{"_global_state"}, 0, 1, i.makeStateFn(i.state), nil},
 
@@ -361,14 +360,6 @@ func (i *Interp) queryToString(c interface{}, a []interface{}) interface{} {
 	}
 
 	return q.String()
-}
-
-func (i *Interp) _displayName(c interface{}, a []interface{}) interface{} {
-	qo, ok := c.(Value)
-	if !ok {
-		return fmt.Errorf("%v: value is not query object", c)
-	}
-	return qo.DisplayName()
 }
 
 func (i *Interp) _extKeys(c interface{}, a []interface{}) interface{} {

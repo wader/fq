@@ -146,5 +146,7 @@
     "editor.formatOnSave": true,
     "cSpell.allowCompoundWords": true,
     "cSpell.enabled": true,
-    "files.trimTrailingWhitespace": true,
+    "[plaintext]": {
+        "files.trimTrailingWhitespace": false,
+    },
 }

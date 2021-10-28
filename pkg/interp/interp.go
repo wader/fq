@@ -172,7 +172,6 @@ func (o CtxWriter) Write(p []byte) (n int, err error) {
 type Value interface {
 	gojq.JQValue
 
-	DisplayName() string
 	ExtKeys() []string
 }
 

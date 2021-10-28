@@ -101,43 +101,57 @@ def _complete($line; $cursor_pos):
   end;
 def _complete($line): _complete($line; $line | length);
 
+# empty input []
+# >* empty>
+# single input [v]
+# >* VALUE_PATH VALUE_PREVIEW>
+# multiple inputs [v,...]
+# >* VALUE_PATH VALUE_PREVIEW, ...[#]>
+# single/multi inputs where first input is array [[v,...], ...]
+# >* [VALUE_PATH VALUE_PREVIEW, ...][#], ...[#]>
 def _prompt:
-  def _type_name_error:
-    ( . as $c
-    | try
-        ( ( _display_name
-          | if . != "" then " " + . end
+  def _repl_level:
+    (_options_stack | length | if . > 2 then ((.-2) * ">") else empty end);
+  def _value_path:
+    (._path? // []) | if . == [] then empty else path_to_expr end;
+  def _value_preview($depth):
+    if $depth == 0 and format == null and type == "array" then
+      [ "["
+      , if length == 0 then empty
+        else
+          ( (.[0] | _value_preview(1))
+          , if length > 1  then ", ..." else empty end
           )
-        , if ._error then "!" else empty end
-        )
-      catch ($c | type)
-    );
-  def _path_prefix:
-    (._path? // []) | if . == [] then "" else path_to_expr end;
-  def _preview:
-    if format != null or type != "array" then
-      _type_name_error
-    else
-      ( "["
-      , if length > 0 then (.[0] | _type_name_error) else empty end
-      , if length > 1 then ", ..." else empty end
+        end
       , "]"
       , if length > 1 then "[\(length)]" else empty end
+      ] | join("")
+    else
+      ( . as $c
+      | format
+      | if . != null then
+          ( .
+          + if $c._error then "!" else "" end
+          )
+        else
+          ($c | type)
+        end
       )
     end;
-  ( [ (_options_stack | length | if . > 2 then ((.-2) * ">") + " " else empty end)
-    , if length == 0 then
-        "empty"
-      else
-        ( .[0]
-        | _path_prefix
-        , _preview
-        )
-      end
-    , if length > 1 then ", [\(length)]" else empty end
-    , "> "
-    ]
-  ) | join("");
+  def _value:
+    [ _value_path
+    , _value_preview(0)
+    ] | join(" ");
+  def _values:
+    if length == 0 then "empty"
+    else
+      [ (.[0] | _value)
+      , if length > 1 then ", ...[\(length)]" else empty end
+      ] | join("")
+    end;
+  [ _repl_level
+  , _values
+  ] | join(" ") + "> ";
 
 def _repl_display: _display({depth: 1});
 def _repl_on_error:

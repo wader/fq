@@ -137,16 +137,6 @@ func (dvb decodeValueBase) DecodeValue() *decode.Value {
 	return dvb.dv
 }
 
-func (dvb decodeValueBase) DisplayName() string {
-	if dvb.dv.Format != nil {
-		return dvb.dv.Format.Name
-	}
-	if dvb.dv.Description != "" {
-		return dvb.dv.Description
-	}
-	return ""
-}
-
 func (dvb decodeValueBase) Display(w io.Writer, opts Options) error { return dump(dvb.dv, w, opts) }
 func (dvb decodeValueBase) ToBufferView() (BufferRange, error) {
 	return BufferRange{bb: dvb.dv.RootBitBuf, r: dvb.dv.Range, unit: 8}, nil

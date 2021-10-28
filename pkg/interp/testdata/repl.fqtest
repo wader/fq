@@ -19,18 +19,18 @@ null> 1 | 2 | repl
 3
 > number> ^D
 null> 1,2,3 | repl
-> number, [3]> .
+> number, ...[3]> .
 1
 2
 3
-> number, [3]> ^D
+> number, ...[3]> ^D
 null> (1 | raw | .unknown0), 1 | repl
-> .unknown0, [2]> ^D
+> .unknown0 string, ...[2]> ^D
 null> def f: 1; f,f | repl
-> number, [2]> .
+> number, ...[2]> .
 1
 1
-> number, [2]> ^D
+> number, ...[2]> ^D
 null> [1,2,3] | repl
 > [number, ...][3]> .
 [
@@ -52,11 +52,11 @@ $ fq -i 'empty'
 empty> 1
 empty> ^D
 $ fq -i 1,2,3
-number, [3]> .*2
+number, ...[3]> .*2
 2
 4
 6
-number, [3]> ^D
+number, ...[3]> ^D
 $ fq -i '[1,2,3]'
 [number, ...][3]> repl({compact: true})
 > [number, ...][3]> tovalue
@@ -66,9 +66,13 @@ $ fq -i '[1,2,3]'
 $ fq -i -d mp3 '.headers[0]' /test.mp3
 .headers[0] id3v2> ^D
 $ fq -i -d mp3 . /test.mp3
- mp3> .headers[0] | repl
+mp3> .headers[0] | repl
 > .headers[0] id3v2> ^D
- mp3> ^D
+mp3> ^D
+$ fq -i -d json . /test.mp3
+json!> ^D
+$ fq -i -n '"[]" | json'
+json> ^D
 $ fq -n repl
 exitcode: 5
 stderr:

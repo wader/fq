@@ -40,7 +40,6 @@ func (bv BufferRange) toBytesBuffer(r ranges.Range) (*bytes.Buffer, error) {
 	return buf, nil
 }
 
-func (BufferRange) DisplayName() string { return "buffer" }
 func (BufferRange) ExtKeys() []string {
 	return []string{
 		"size",
