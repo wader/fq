@@ -358,7 +358,7 @@ func toBufferView(v interface{}) (BufferRange, error) {
 		if err != nil {
 			return BufferRange{}, err
 		}
-		return bufferViewFromBuffer(bb, 8), nil
+		return newBufferRangeFromBuffer(bb, 8), nil
 	}
 }
 
@@ -546,7 +546,6 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilenam
 			return []*gojq.Query{i.initFqQuery}, nil
 		},
 		load: func(name string) (*gojq.Query, error) {
-			// log.Printf("name: %#+v\n", name)
 			if err := ctx.Err(); err != nil {
 				return nil, err
 			}

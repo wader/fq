@@ -108,7 +108,7 @@ func makeDecodeValue(dv *decode.Value) interface{} {
 	case []byte:
 		// TODO: not sure about this
 		// TODO: only synthentic value without range?
-		return bufferViewFromBuffer(bitio.NewBufferFromBytes(vv, -1), 8)
+		return newBufferRangeFromBuffer(bitio.NewBufferFromBytes(vv, -1), 8)
 	case []interface{}:
 		return decodeValue{
 			JQValue:         gojqextra.Array(vv),

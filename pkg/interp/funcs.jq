@@ -16,6 +16,45 @@ def help:
   , "^D          Exit REPL"
   ) | println;
 
+# null input means done, otherwise {approx_read_bytes: 123, total_size: 123}
+# TODO: decode provide even more detailed progress, post-process sort etc?
+def _decode_progress:
+  # _input_filenames is remaning files to read
+  ( (_input_filenames | length) as $inputs_len
+  | ( options.filenames | length) as $filenames_len
+  | _ansi.clear_line
+  , "\r"
+  , if . != null then
+      ( if $filenames_len > 1 then
+          "\($filenames_len - $inputs_len)/\($filenames_len) \(_input_filename) "
+        else empty
+        end
+      , "\((.approx_read_bytes / .total_size * 100 | _numbertostring(1)))%"
+      )
+    else empty
+    end
+  | stderr
+  );
+
+def decode($name; $opts):
+  ( options as $opts
+  | (null | stdout) as $stdout
+  | _decode(
+      $name;
+      $opts + {
+        _progress: (
+          if $opts.decode_progress and $opts.repl and $stdout.is_terminal then
+            "_decode_progress"
+          else null
+          end
+        )
+      }
+    )
+  );
+def decode($name): decode($name; {});
+def decode: decode(options.decode_format; {});
+
+
 def display($opts): _display($opts);
 def display: _display({});
 def d($opts): _display($opts);
@@ -66,34 +105,7 @@ def match($regex; $flags): if _is_buffer then _bits_match($regex; $flags) else _
 def formats:
   _registry.formats;
 
-# integer division
-# inspried by https://github.com/itchyny/gojq/issues/63#issuecomment-765066351
-def intdiv($a; $b):
-  ( ($a | _to_int) as $a
-  | ($b | _to_int) as $b
-  | ($a - ($a % $b)) / $b
-  );
-
-def _esc: "\u001b";
-def _ansi:
-  {
-    clear_line: "\(_esc)[2K",
-  };
-
-# valid jq identifier, start with alpha or underscore then zero or more alpha, num or underscore
-def _is_ident: type == "string" and test("^[a-zA-Z_][a-zA-Z_0-9]*$");
-# escape " and \
-def _escape_ident: gsub("(?<g>[\\\\\"])"; "\\\(.g)");
-
-# format number with fixed number of decimals
-def _numbertostring($decimals):
-  ( . as $n
-  | [ (. % (. + 1)) # truncate to integer
-    , "."
-    , foreach range($decimals) as $_ (1; . * 10; ($n * .) % 10)
-    ]
-  | join("")
-  );
+def intdiv(a; b): _intdiv(a; b);
 
 # TODO: escape for safe key names
 # path ["a", 1, "b"] -> "a[1].b"

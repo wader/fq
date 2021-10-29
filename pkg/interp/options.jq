@@ -58,8 +58,8 @@ def _build_default_dynamic_options:
   ( (null | stdout) as $stdout
   | {
       # TODO: intdiv 2 * 2 to get even number, nice or maybe not needed?
-      display_bytes:   (if $stdout.is_terminal then [intdiv(intdiv($stdout.width; 8); 2) * 2, 4] | max else 16 end),
-      line_bytes:      (if $stdout.is_terminal then [intdiv(intdiv($stdout.width; 8); 2) * 2, 4] | max else 16 end),
+      display_bytes:   (if $stdout.is_terminal then [_intdiv(_intdiv($stdout.width; 8); 2) * 2, 4] | max else 16 end),
+      line_bytes:      (if $stdout.is_terminal then [_intdiv(_intdiv($stdout.width; 8); 2) * 2, 4] | max else 16 end),
     }
   );
 

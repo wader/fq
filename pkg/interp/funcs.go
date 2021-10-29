@@ -124,7 +124,7 @@ func makeStringBitBufTransformFn(
 			}
 			outBB := bitio.NewBufferFromBytes(buf.Bytes(), -1)
 
-			return bufferViewFromBuffer(outBB, 8)
+			return newBufferRangeFromBuffer(outBB, 8)
 		default:
 			bb, err := toBuffer(c)
 			if err != nil {
@@ -170,7 +170,7 @@ func makeBitBufTransformFn(fn func(r io.Reader) (io.Reader, error)) func(c inter
 
 		outBB := bitio.NewBufferFromBytes(outBuf.Bytes(), -1)
 
-		return bufferViewFromBuffer(outBB, 8)
+		return newBufferRangeFromBuffer(outBB, 8)
 	}
 }
 
@@ -192,7 +192,7 @@ func makeHashFn(fn func() (hash.Hash, error)) func(c interface{}, a []interface{
 
 		outBB := bitio.NewBufferFromBytes(h.Sum(nil), -1)
 
-		return bufferViewFromBuffer(outBB, 8)
+		return newBufferRangeFromBuffer(outBB, 8)
 	}
 }
 
@@ -473,24 +473,21 @@ func (i *Interp) history(c interface{}, a []interface{}) interface{} {
 	return vs
 }
 
-type bitBufFile struct {
-	gojq.JQValue
-
-	bb       *bitio.Buffer
-	filename string
-
+type openFile struct {
+	BufferRange
+	filename   string
 	progressFn progressreadseeker.ProgressFn
 }
 
-var _ ToBufferView = (*bitBufFile)(nil)
+var _ ToBufferView = (*openFile)(nil)
 
-func (bbf *bitBufFile) Display(w io.Writer, opts Options) error {
-	_, err := fmt.Fprintln(w, bbf.JQValue.JQValueToString())
+func (of *openFile) Display(w io.Writer, opts Options) error {
+	_, err := fmt.Fprintf(w, "<openFile %q>\n", of.filename)
 	return err
 }
 
-func (bbf *bitBufFile) ToBufferView() (BufferRange, error) {
-	return bufferViewFromBuffer(bbf.bb, 8), nil
+func (of *openFile) ToBufferView() (BufferRange, error) {
+	return newBufferRangeFromBuffer(of.bb, 8), nil
 }
 
 // def open: #:: string| => buffer
@@ -541,8 +538,7 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 		bEnd = int64(len(buf))
 	}
 
-	bbf := &bitBufFile{
-		JQValue:  gojqextra.String(fmt.Sprintf("<bitBufFile %s>", path)),
+	bbf := &openFile{
 		filename: path,
 	}
 
@@ -581,7 +577,7 @@ func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
 	// would be nice to move all progress code into decode but it might be
 	// tricky to keep track of absolute positions in the underlaying readers
 	// when it uses BitBuf slices, maybe only in Pos()?
-	if bbf, ok := c.(*bitBufFile); ok {
+	if bbf, ok := c.(*openFile); ok {
 		opts.Filename = bbf.filename
 
 		if opts.Progress != "" {
@@ -732,7 +728,7 @@ func (i *Interp) _toBitsRange(c interface{}, a []interface{}) interface{} {
 
 	if !r {
 		bb, _ := bv.toBuffer()
-		return bufferViewFromBuffer(bb, unit)
+		return newBufferRangeFromBuffer(bb, unit)
 	}
 
 	return bv

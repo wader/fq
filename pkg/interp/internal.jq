@@ -45,6 +45,35 @@ def _finally(f; fin):
 # TODO: figure out a saner way to force int
 def _to_int: (. % (. + 1));
 
+# integer division
+# inspried by https://github.com/itchyny/gojq/issues/63#issuecomment-765066351
+def _intdiv($a; $b):
+  ( ($a | _to_int) as $a
+  | ($b | _to_int) as $b
+  | ($a - ($a % $b)) / $b
+  );
+
+def _esc: "\u001b";
+def _ansi:
+  {
+    clear_line: "\(_esc)[2K",
+  };
+
+# valid jq identifier, start with alpha or underscore then zero or more alpha, num or underscore
+def _is_ident: type == "string" and test("^[a-zA-Z_][a-zA-Z_0-9]*$");
+# escape " and \
+def _escape_ident: gsub("(?<g>[\\\\\"])"; "\\\(.g)");
+
+# format number with fixed number of decimals
+def _numbertostring($decimals):
+  ( . as $n
+  | [ (. % (. + 1)) # truncate to integer
+    , "."
+    , foreach range($decimals) as $_ (1; . * 10; ($n * .) % 10)
+    ]
+  | join("")
+  );
+
 def _repeat_break(f):
   try repeat(f)
   catch

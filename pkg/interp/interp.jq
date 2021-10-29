@@ -1,7 +1,7 @@
 include "internal";
+include "options";
 include "funcs";
 include "grep";
-include "options";
 include "args";
 include "repl";
 # generated decode functions per format and format helpers
@@ -23,45 +23,6 @@ def _exit_code_input_io_error: 2;
 def _exit_code_compile_error: 3;
 def _exit_code_input_decode_error: 4;
 def _exit_code_expr_error: 5;
-
-
-# null input means done, otherwise {approx_read_bytes: 123, total_size: 123}
-# TODO: decode provide even more detailed progress, post-process sort etc?
-def _decode_progress:
-  # _input_filenames is remaning files to read
-  ( (_input_filenames | length) as $inputs_len
-  | ( options.filenames | length) as $filenames_len
-  | _ansi.clear_line
-  , "\r"
-  , if . != null then
-      ( if $filenames_len > 1 then
-          "\($filenames_len - $inputs_len)/\($filenames_len) \(_input_filename) "
-        else empty
-        end
-      , "\((.approx_read_bytes / .total_size * 100 | _numbertostring(1)))%"
-      )
-    else empty
-    end
-  | stderr
-  );
-
-def decode($name; $opts):
-  ( options as $opts
-  | (null | stdout) as $stdout
-  | _decode(
-      $name;
-      $opts + {
-        _progress: (
-          if $opts.decode_progress and $opts.repl and $stdout.is_terminal then
-            "_decode_progress"
-          else null
-          end
-        )
-      }
-    )
-  );
-def decode($name): decode($name; {});
-def decode: decode(options.decode_format; {});
 
 # next valid input
 def input:

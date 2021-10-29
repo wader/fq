@@ -20,7 +20,7 @@ type BufferRange struct {
 	unit int
 }
 
-func bufferViewFromBuffer(bb *bitio.Buffer, unit int) BufferRange {
+func newBufferRangeFromBuffer(bb *bitio.Buffer, unit int) BufferRange {
 	return BufferRange{
 		bb:   bb,
 		r:    ranges.Range{Start: 0, Len: bb.Len()},

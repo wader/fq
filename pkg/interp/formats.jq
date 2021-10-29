@@ -4,8 +4,8 @@
     | to_entries[]
     # TODO: nicer way to skip "all" which also would override builtin all/*
     | select(.key != "all")
-    | "def \(.key)($opts): _decode(\(.key | tojson); $opts);"
-    , "def \(.key): _decode(\(.key | tojson); {});"
+    | "def \(.key)($opts): decode(\(.key | tojson); $opts);"
+    , "def \(.key): decode(\(.key | tojson); {});"
     )
   , ( _registry.formats[]
     | select(.files)

@@ -1,8 +1,5 @@
 package flac
 
-// TODO: 24 bit picture length truncate warning
-// TODO: Cuesheet
-
 import (
 	"fmt"
 
