@@ -34,8 +34,10 @@ To install directly from git repository do:
 ```sh
 # build and install latest release
 go install github.com/wader/fq@latest
+
 # or build and install latest master
 go install github.com/wader/fq@master
+
 # copy binary to $PATH if needed
 cp "$(go env GOPATH)/bin/fq" /usr/local/bin
 ```
@@ -49,15 +51,7 @@ cp fq /usr/local/bin
 
 ## Usage
 
-Basic usage is:
-
-[fq -h | grep Usage: | sed 's/\(.*\)/<pre>\1<\/pre>/']: sh-start
-
-<pre>Usage: fq [OPTIONS] [--] [EXPR] [FILE...]</pre>
-
-[#]: sh-end
-
-For more usage details see [usage.md](doc/usage.md).
+Basic usage is `fq . file`. For more details see [usage.md](doc/usage.md).
 
 ## Supported formats
 

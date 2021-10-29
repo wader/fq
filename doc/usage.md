@@ -16,29 +16,33 @@ with auto completion and nested REPL support:
 
 ```
 # start REPL with null input
-fq -i
+$ fq -i
+null>
 # same as
-fq -ni
+$ fq -ni
+null>
 # start REPL with one file as input
-fq -i . file.mp3
+$ fq -i . file.mp3
+mp3>
 ```
 
 In the REPL you will see a prompt indicating current input and you can type jq expression to evaluate.
 
 ```
+$ fq -i . file.mp3
 # basic arithmetics
 mp3> 1+1
 2
-# "." is the identity function, returns current input, the mp3 file.
+# "." is the identity function which just returns current input, the mp3 file.
 mp3> .
 # access the first frame in the mp3 file
 mp3> .frames[0]
-# start a new nested REPl with first frame as input
+# start a new nested REPL with first frame as input
 mp3> .frames[0] | repl
 # prompt shows "path" to current input and that it's an mp3_frame.
-# do Ctrl-D to exit REPL
+# Ctrl-D to exit REPL
 > .frames[0] mp3_frame> ^D
-# do Ctrl-D to exit to shell
+# Ctrl-D to exit to shell
 mp3> ^D
 $
 ```
@@ -144,7 +148,7 @@ notable is support for arbitrary-precision integers.
   - All `match` and `grep` functions take 1 or 2 arguments. First is a scalar to match, where a string is
   treated as a regexp. A buffer scalar will be matches exact bytes. Second argument are regexp
   flags with addition that "b" will treat each byte in the input buffer as a code point, this
-  makes it possible to match exact bytes, ex: `match("\u00ff"; b")` will match the byte `0xff` and not
+  makes it possible to match exact bytes, ex: `match("\u00ff"; "b")` will match the byte `0xff` and not
   the UTF-8 encoded codepoint for 255.
     - `match/1`, `match/2` overloaded to support buffers. Match in buffer and output match buffers
     - `grep/1`, `grep/2` recursively match value and buffer
@@ -226,9 +230,9 @@ you know the format of some unknown value. Then you can decode manually.
 
 <pre>
 # try decode a `mp3_frame` that failed to decode
-$ fq file.mp3 .unknown0 mp3_frame
+$ fq -d mp3 '.unknown0 | mp3_frame' file.mp3
 # skip first 10 bytes then decode as `mp3_frame`
-$ fq file.mp3 .unknown0._bytes[10:] mp3_frame
+$ fq -d raw 'tobytes[10:] | mp3_frame' file.mp3
 </pre>
 
 ### Use `.` as input and in a positional argument
