@@ -114,63 +114,61 @@ func Fatal(t tf, expected string, actual string) {
 func TestWithOptions(t *testing.T, opts Options) {
 	t.Helper()
 
-	func() {
+	t.Helper()
+
+	// done in two steps as it seems hard to mark some functions inside filepath.Walk as test helpers
+	var paths []string
+	if err := filepath.Walk(opts.Path, func(path string, info os.FileInfo, err error) error {
 		t.Helper()
 
-		// done in two steps as it seems hard to mark some functions inside filepath.Walk as test helpers
-		var paths []string
-		if err := filepath.Walk(opts.Path, func(path string, info os.FileInfo, err error) error {
-			t.Helper()
-
-			if err != nil {
-				return err
-			}
-			match, err := filepath.Match(filepath.Join(filepath.Dir(path), opts.Pattern), path)
-			if err != nil {
-				return err
-			} else if !match {
-				return nil
-			}
-
-			paths = append(paths, path)
+		if err != nil {
+			return err
+		}
+		match, err := filepath.Match(filepath.Join(filepath.Dir(path), opts.Pattern), path)
+		if err != nil {
+			return err
+		} else if !match {
 			return nil
-		}); err != nil {
-			t.Fatal(err)
 		}
 
-		for _, p := range paths {
-			t.Run(p, func(t *testing.T) {
-				t.Helper()
-				input, err := ioutil.ReadFile(p)
-				if err != nil {
-					t.Fatal(err)
-				}
+		paths = append(paths, path)
+		return nil
+	}); err != nil {
+		t.Fatal(err)
+	}
 
-				outputPath, output, err := opts.Fn(t, p, string(input))
-				if err != nil {
-					t.Fatal(err)
-				}
+	for _, p := range paths {
+		t.Run(p, func(t *testing.T) {
+			t.Helper()
+			input, err := ioutil.ReadFile(p)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-				expectedOutput, expectedOutputErr := ioutil.ReadFile(outputPath)
-				if opts.WriteOutput {
-					if expectedOutputErr == nil && string(expectedOutput) == output {
-						return
-					}
+			outputPath, output, err := opts.Fn(t, p, string(input))
+			if err != nil {
+				t.Fatal(err)
+			}
 
-					if err := ioutil.WriteFile(outputPath, []byte(output), 0644); err != nil { //nolint:gosec
-						t.Fatal(err)
-					}
+			expectedOutput, expectedOutputErr := ioutil.ReadFile(outputPath)
+			if opts.WriteOutput {
+				if expectedOutputErr == nil && string(expectedOutput) == output {
 					return
 				}
 
-				if expectedOutputErr != nil {
-					t.Fatal(expectedOutputErr)
+				if err := ioutil.WriteFile(outputPath, []byte(output), 0644); err != nil { //nolint:gosec
+					t.Fatal(err)
 				}
+				return
+			}
 
-				ErrorEx(t, opts.ColorDiff, string(expectedOutput), output)
-			})
-		}
-	}()
+			if expectedOutputErr != nil {
+				t.Fatal(expectedOutputErr)
+			}
+
+			ErrorEx(t, opts.ColorDiff, string(expectedOutput), output)
+		})
+	}
 }
 
 func Test(t *testing.T, pattern string, fn Fn) {
