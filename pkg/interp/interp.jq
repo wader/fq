@@ -402,6 +402,7 @@ def _main:
       ( _banner
       , ""
       , _usage($arg0)
+      , ""
       , args_help_text(_opts)
       ) | println
     elif $opts.show_version then

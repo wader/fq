@@ -83,6 +83,7 @@ Tool, language and format decoders for exploring binary data.
 For more information see https://github.com/wader/fq
 
 Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
+
 --arg NAME VALUE         Set variable $NAME to string VALUE
 --argjson NAME JSON      Set variable $NAME to JSON
 --color-output,-C        Force color output
