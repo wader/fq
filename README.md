@@ -6,9 +6,9 @@ Tool, language and format decoders for exploring binary data.
 
 ## Goals
 
-- Make structured binary data accessible.
+- Make binary formats accessible any queryable.
 - Nested formats and bit-oriented decoding.
-- Quick CLI tool that mimics jq as much as possible.
+- Quick and comfortable CLI tool.
 - Do bit and byte transformations and conversions.
 - Programmer's calculator.
 
