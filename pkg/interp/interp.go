@@ -871,31 +871,11 @@ func (i *Interp) variables() map[string]interface{} {
 	return variablesAny
 }
 
-func (i *Interp) OptionsEx(fnOptsV ...interface{}) Options {
-	opts := func() Options {
-		vs, err := i.EvalFuncValues(i.evalContext.ctx, nil, "options", []interface{}{fnOptsV}, DiscardCtxWriter{Ctx: i.evalContext.ctx})
-		if err != nil {
-			return Options{}
-		}
-		if len(vs) < 1 {
-			return Options{}
-		}
-		v := vs[0]
-		if _, ok := v.(error); ok {
-			return Options{}
-		}
-		m, ok := v.(map[string]interface{})
-		if !ok {
-			return Options{}
-		}
-		var opts Options
-		_ = mapstructure.Decode(m, &opts)
-		opts.Depth = num.MaxInt(0, opts.Depth)
-
-		return opts
-	}()
-
+func (i *Interp) Options(v interface{}) Options {
+	var opts Options
+	_ = mapstructure.Decode(v, &opts)
 	opts.ArrayTruncate = num.MaxInt(0, opts.ArrayTruncate)
+	opts.Depth = num.MaxInt(0, opts.Depth)
 	opts.AddrBase = num.ClampInt(2, 36, opts.AddrBase)
 	opts.SizeBase = num.ClampInt(2, 36, opts.SizeBase)
 	opts.LineBytes = num.MaxInt(0, opts.LineBytes)
@@ -904,10 +884,6 @@ func (i *Interp) OptionsEx(fnOptsV ...interface{}) Options {
 	opts.BitsFormatFn = bitsFormatFnFromOptions(opts)
 
 	return opts
-}
-
-func (i *Interp) Options() Options {
-	return i.OptionsEx(nil)
 }
 
 func (i *Interp) NewColorJSON(opts Options) (*colorjson.Encoder, error) {

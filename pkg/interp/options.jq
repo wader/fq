@@ -135,8 +135,6 @@ def _to_options:
   | with_entries(select(.value != null))
   );
 
-# . will have additional array of options taking priority
-# NOTE: is called from go *interp.Interp Options()
 def options($opts):
-  [_build_default_dynamic_options] + _options_stack + $opts | add;
-def options: options([{}]);
+  [_build_default_dynamic_options] + _options_stack + [$opts] | add;
+def options: options({});

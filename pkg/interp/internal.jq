@@ -34,7 +34,9 @@ def _input_decode_errors(f): _global_var("input_decode_errors"; f);
 def _variables: _global_var("variables");
 def _variables(f): _global_var("variables"; f);
 
-# eval f and finally eval fin even on empty or error
+# eval f and finally eval fin even on empty or error.
+# note that if f outputs more than one value fin will be called
+# for each value.
 def _finally(f; fin):
   ( try f // (fin | empty)
     catch (fin as $_ | error)
@@ -99,15 +101,6 @@ def _eval($expr; $filename; f; on_error; on_compile_error):
     if _eval_is_compile_error then on_compile_error
     else on_error
     end;
-
-# TODO: remove one symbolic value is done properly?
-def _tovalue:
-  ( if _is_decode_value then
-      ( ._symbol as $s
-      | if $s != "" then $s end
-      )
-    end
-  );
 
 def _is_scalar:
   type |. != "array" and . != "object";

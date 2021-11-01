@@ -1,3 +1,12 @@
+# TODO: remove once symbolic value is done properly
+def _grep_tovalue:
+  ( if _is_decode_value then
+      ( ._symbol as $s
+      | if $s != "" then $s end
+      )
+    end
+  );
+
 def _grep($v; filter_cond; string_cond; other_cond):
   if $v | type == "string" then
     ( ..
@@ -10,14 +19,14 @@ def _grep($v; filter_cond; string_cond; other_cond):
   end;
 
 def _value_grep_string_cond($v; $flags):
-  ( _tovalue
+  ( _grep_tovalue
   | if type == "string" then test($v; $flags)
     else false
     end
   )? // false;
 
 def _value_grep_other_cond($v; $flags):
-  ( _tovalue
+  ( _grep_tovalue
   | . == $v
   )? // false;
 

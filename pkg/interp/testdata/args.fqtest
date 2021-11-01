@@ -118,7 +118,6 @@ vpx_ccr              VPX Codec Configuration Record
 wav                  WAV file
 webp                 WebP image
 xing                 Xing header
-zip                  ZIP archive
 $ fq -X
 exitcode: 2
 stderr:

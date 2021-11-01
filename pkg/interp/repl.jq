@@ -153,16 +153,29 @@ def _prompt:
   , _values
   ] | join(" ") + "> ";
 
-def _repl_display: _display({depth: 1});
+# _repl_display takes a opts arg to make it possible for repl_eval to
+# just call options/0 once per eval even if it was multiple outputs
+def _repl_display_opts: options({depth: 1});
+def _repl_display($opts): _display($opts);
+def _repl_display: _display(_repl_display_opts);
 def _repl_on_error:
   ( if _eval_is_compile_error then _eval_compile_error_tostring
-    # was interrupte by user, just ignore
+    # was interrupted by user, just ignore
     elif _is_context_canceled_error then empty
     end
   | (_error_str | println)
   );
 def _repl_on_compile_error: _repl_on_error;
-def _repl_eval($expr): _eval($expr; "repl"; _repl_display; _repl_on_error; _repl_on_compile_error);
+def _repl_eval($expr):
+  ( _repl_display_opts as $opts
+  | _eval(
+      $expr;
+      "repl";
+      _repl_display($opts);
+      _repl_on_error;
+      _repl_on_compile_error
+    )
+  );
 
 # run read-eval-print-loop
 def _repl($opts): #:: a|(Opts) => @

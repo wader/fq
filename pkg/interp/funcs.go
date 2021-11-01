@@ -61,7 +61,7 @@ func (i *Interp) makeFunctions() []Function {
 
 		{[]string{"_tobitsrange"}, 0, 2, i._toBitsRange, nil},
 
-		{[]string{"tovalue"}, 0, 1, i.toValue, nil},
+		{[]string{"_tovalue"}, 1, 1, i._toValue, nil},
 
 		{[]string{"hex"}, 0, 0, makeStringBitBufTransformFn(
 			func(r io.Reader) (io.Reader, error) { return hex.NewDecoder(r), nil },
@@ -664,7 +664,7 @@ func (i *Interp) format(c interface{}, a []interface{}) interface{} {
 }
 
 func (i *Interp) _display(c interface{}, a []interface{}) gojq.Iter {
-	opts := i.OptionsEx(a...)
+	opts := i.Options(a[0])
 
 	switch v := c.(type) {
 	case Display:
@@ -734,9 +734,9 @@ func (i *Interp) _toBitsRange(c interface{}, a []interface{}) interface{} {
 	return bv
 }
 
-func (i *Interp) toValue(c interface{}, a []interface{}) interface{} {
+func (i *Interp) _toValue(c interface{}, a []interface{}) interface{} {
 	v, _ := toValue(
-		func() Options { return i.OptionsEx(append([]interface{}{}, a...)...) },
+		func() Options { return i.Options(a[0]) },
 		c,
 	)
 	return v
@@ -921,7 +921,7 @@ func (i *Interp) _bitsMatch(c interface{}, a []interface{}) gojq.Iter {
 }
 
 func (i *Interp) _hexdump(c interface{}, a []interface{}) gojq.Iter {
-	opts := i.OptionsEx(a...)
+	opts := i.Options(a[0])
 	bv, err := toBufferView(c)
 	if err != nil {
 		return gojq.NewIter(err)

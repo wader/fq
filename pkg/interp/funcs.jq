@@ -54,22 +54,26 @@ def decode($name; $opts):
 def decode($name): decode($name; {});
 def decode: decode(options.decode_format; {});
 
+def tovalue($opts): _tovalue(options($opts));
+def tovalue: _tovalue({});
 
-def display($opts): _display($opts);
-def display: _display({});
-def d($opts): _display($opts);
-def d: _display({});
-def full($opts): _display({array_truncate: 0} + $opts);
+def display($opts): _display(options($opts));
+def display: display({});
+def d($opts): display($opts);
+def d: display({});
+
+def full($opts): display({array_truncate: 0} + $opts);
 # TODO: rename, gets mixed up with f args often
 def full: full({});
 def f($opts): full($opts);
 def f: full;
-def verbose($opts): _display({verbose: true, array_truncate: 0} + $opts);
+def verbose($opts): display({verbose: true, array_truncate: 0} + $opts);
 def verbose: verbose({});
 def v($opts): verbose($opts);
 def v: verbose;
-def hexdump($opts): _hexdump({display_bytes: 0} + $opts);
-def hexdump: _hexdump({display_bytes: 0});
+
+def hexdump($opts): _hexdump(options({display_bytes: 0} + $opts));
+def hexdump: hexdump({display_bytes: 0});
 def hd($opts): hexdump($opts);
 def hd: hexdump;
 
