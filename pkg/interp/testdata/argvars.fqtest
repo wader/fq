@@ -2,7 +2,7 @@
 aaa
 /b.json:
 bbb
-$ fq -i -n --rawfile filea /a.json --rawfile fileb /b.json --arg arga aa --arg argb bb --argjson argjsona 123 --argjson argjsonb '[true,123,{},"abc"]' --decode-file decodefilea /test.mp3 --decode-file decodefileb /test.mp3
+$ fq -i -n --raw-file filea /a.json --raw-file fileb /b.json --arg arga aa --arg argb bb --argjson argjsona 123 --argjson argjsonb '[true,123,{},"abc"]' --decode-file decodefilea /test.mp3 --decode-file decodefileb /test.mp3
 null> $filea
 "aaa\n"
 null> $fileb
@@ -25,7 +25,7 @@ null> $decodefileb | format
 null> $decodefileb | format
 "mp3"
 null> ^D
-$ fq -n --rawfile filea /nonexisting
+$ fq -n --raw-file filea /nonexisting
 exitcode: 2
 stderr:
 error: open testdata/nonexisting: no such file or directory

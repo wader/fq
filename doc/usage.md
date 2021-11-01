@@ -99,9 +99,9 @@ Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 --null-input,-n          Null input (use input/0 and inputs/0 to read input)
 --null-output,-0         Null byte between outputs
 --option,-o KEY=VALUE    Set option, eg: color=true (use options/0 to see all options)
+--raw-file NAME PATH     Set variable $NAME to string content of file
 --raw-input,-R           Read raw input strings (don't decode)
 --raw-output,-r          Raw string output (without quotes)
---rawfile NAME PATH      Set variable $NAME to string content of file
 --repl,-i                Interactive REPL
 --slurp,-s               Read (slurp) all inputs into an array
 --version,-v             Show version

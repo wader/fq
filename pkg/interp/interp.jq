@@ -97,9 +97,8 @@ def input:
     );
   # TODO: don't rebuild options each time
   ( options as $opts
-  # TODO: refactor into def
-  # this is a bit strange as jq for --raw-string can return string instead
-  # with data from multiple inputs
+  # this is a bit strange as jq for --raw-input can return one string
+  # instead of iterating lines
   | if $opts.string_input then _input_string($opts)
     else _input($opts; decode)
     end
@@ -248,8 +247,10 @@ def _main:
         description: "Read raw input strings (don't decode)",
         bool: true
       },
-      "rawfile": {
-        long: "--rawfile",
+      "raw_file": {
+        long: "--raw-file",
+        # for jq compatibility
+        aliases: ["--raw-file"],
         description: "Set variable $NAME to string content of file",
         pairs: "NAME PATH"
       },
@@ -374,8 +375,8 @@ def _main:
                 end
               )
             ),
-            rawfile: (
-              ( $args_opts.rawfile
+            raw_file: (
+              ( $args_opts.raw_file
               | if . then
                   ( map(.[1] |=
                       try (open | tobytes | tostring)
@@ -428,7 +429,7 @@ def _main:
         | _variables(
             ( $opts.arg +
               $opts.argjson +
-              $opts.rawfile +
+              $opts.raw_file +
               $opts.decode_file
             | map({key: .[0], value: .[1]})
             | from_entries
@@ -436,8 +437,8 @@ def _main:
           )
         | ( def _inputs:
               ( if $opts.null_input then null
-                # note jq --slurp --raw-string is special, will be just
-                # a string not an array
+                # note that jq --slurp --raw-input (string_input) is special, will concat
+                # all files into one string instead of iterating lines
                 elif $opts.string_input then inputs
                 elif $opts.slurp then [inputs]
                 else inputs
