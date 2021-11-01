@@ -11,82 +11,10 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/wader/fq/internal/num"
 	"github.com/wader/fq/internal/recoverfn"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/ranges"
 )
-
-type FormatsError struct {
-	Errs []FormatError
-}
-
-func (de FormatsError) Error() string {
-	var errs []string
-	for _, err := range de.Errs {
-		errs = append(errs, err.Error())
-	}
-	return strings.Join(errs, ", ")
-}
-
-type FormatError struct {
-	Err        error
-	Format     *Format
-	Stacktrace recoverfn.Raw
-}
-
-func (fe FormatError) Error() string {
-	// var fns []string
-	// for _, f := range fe.Stacktrace.Frames() {
-	// 	fns = append(fns, fmt.Sprintf("%s:%d:%s", f.File, f.Line, f.Function))
-	// }
-
-	return fe.Err.Error()
-}
-
-func (fe FormatError) Value() interface{} {
-	var st []interface{}
-	for _, f := range fe.Stacktrace.Frames() {
-		st = append(st, f.Function)
-	}
-
-	return map[string]interface{}{
-		"format":     fe.Format.Name,
-		"error":      fe.Err.Error(),
-		"stacktrace": st,
-	}
-}
-
-type IOError struct {
-	Err      error
-	Name     string
-	Op       string
-	ReadSize int64
-	SeekPos  int64
-	Pos      int64
-}
-
-func (e IOError) Error() string {
-	var prefix string
-	if e.Name != "" {
-		prefix = e.Op + "(" + e.Name + ")"
-	} else {
-		prefix = e.Op
-	}
-
-	return fmt.Sprintf("%s: failed at position %s (read size %s seek pos %s): %s",
-		prefix, num.Bits(e.Pos).StringByteBits(10), num.Bits(e.ReadSize).StringByteBits(10), num.Bits(e.SeekPos).StringByteBits(10), e.Err)
-}
-func (e IOError) Unwrap() error { return e.Err }
-
-type ValidateError struct {
-	Reason string
-	Pos    int64
-}
-
-func (e ValidateError) Error() string {
-	return fmt.Sprintf("failed to validate at position %s: %s", num.Bits(e.Pos).StringByteBits(16), e.Reason)
-}
 
 type Endian int
 
@@ -144,9 +72,8 @@ func decode(ctx context.Context, bb *bitio.Buffer, formats []*Format, opts Optio
 		}
 
 		if !rOk {
-			switch panicV := r.RecoverV.(type) {
-			case IOError, ValidateError, FormatsError:
-				panicErr, _ := panicV.(error)
+			if re, ok := r.RecoverV.(RecoverableErrorer); ok && re.IsRecoverableError() {
+				panicErr, _ := re.(error)
 				formatErr := FormatError{
 					Err:        panicErr,
 					Format:     f,
@@ -159,7 +86,7 @@ func decode(ctx context.Context, bb *bitio.Buffer, formats []*Format, opts Optio
 				if !forceOne {
 					continue
 				}
-			default:
+			} else {
 				r.RePanic()
 			}
 		}
@@ -720,18 +647,24 @@ func (d *D) FieldValidateUFn(name string, v uint64, fn func() uint64) {
 	}
 }
 
-func (d *D) FieldValidateUTF8Fn(name string, v string, fn func() string) {
+func (d *D) ValidateUTF8Any(name string, nBytes int, vs []string) {
 	pos := d.Pos()
+	found := false
 	s := d.FieldStrFn(name, func() (string, string) {
-		str := fn()
-		s := "Correct"
-		if str != v {
-			s = "Incorrect"
+		str, err := d.TryUTF8(nBytes)
+		if err != nil {
+			panic(IOError{Err: err, Name: name, Op: "FieldValidateUTF8", ReadSize: int64(nBytes) * 8, Pos: d.Pos()})
 		}
-		return str, s
+		for _, v := range vs {
+			if v == str {
+				found = true
+				return str, "Correct"
+			}
+		}
+		return str, "Incorrect"
 	})
-	if s != v {
-		panic(ValidateError{Pos: pos})
+	if !found {
+		panic(ValidateError{Reason: fmt.Sprintf("expected any of %q found %q", vs, s), Pos: pos})
 	}
 }
 
@@ -752,7 +685,7 @@ func (d *D) FieldValidateUTF8Any(name string, nBytes int, vs []string) {
 		return str, "Incorrect"
 	})
 	if !found {
-		panic(ValidateError{Reason: fmt.Sprintf("expected any of %v found %s", vs, s), Pos: pos})
+		panic(ValidateError{Reason: fmt.Sprintf("expected any of %q found %q", vs, s), Pos: pos})
 	}
 }
 
