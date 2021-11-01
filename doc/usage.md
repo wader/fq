@@ -78,7 +78,7 @@ TODO: examples, stdin/stdout
 
 <pre sh>
 $ fq -h 
-fq - jq for files
+fq - jq for binary formats
 Tool, language and format decoders for exploring binary data.
 For more information see https://github.com/wader/fq
 
