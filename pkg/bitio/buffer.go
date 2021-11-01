@@ -166,6 +166,13 @@ func (b *Buffer) Read(p []byte) (n int, err error) {
 	return b.br.Read(p)
 }
 
+// required by some decompressors (like deflate) to not do own buffering
+func (b *Buffer) ReadByte() (byte, error) {
+	var rb [1]byte
+	_, err := b.br.Read(rb[:])
+	return rb[0], err
+}
+
 func (b *Buffer) Seek(offset int64, whence int) (int64, error) {
 	return b.br.Seek(offset, whence)
 }

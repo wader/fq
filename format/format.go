@@ -80,6 +80,7 @@ const (
 	VPX_CCR             = "vpx_ccr"
 	WAV                 = "wav"
 	WEBP                = "webp"
+	ZIP                 = "zip"
 )
 
 // below are data types used to communicate between formats <FormatName>In/Out

@@ -30,4 +30,5 @@ import (
 	_ "github.com/wader/fq/format/vpx"
 	_ "github.com/wader/fq/format/wav"
 	_ "github.com/wader/fq/format/webp"
+	_ "github.com/wader/fq/format/zip"
 )
