@@ -155,7 +155,10 @@ def _prompt:
 
 def _repl_display: _display({depth: 1});
 def _repl_on_error:
-  ( if _eval_is_compile_error then _eval_compile_error_tostring end
+  ( if _eval_is_compile_error then _eval_compile_error_tostring
+    # was interrupte by user, just ignore
+    elif _is_context_canceled_error then empty
+    end
   | (_error_str | println)
   );
 def _repl_on_compile_error: _repl_on_error;

@@ -105,7 +105,7 @@ func (cr *CaseRun) Stderr() interp.Output {
 	return CaseRunOutput{Writer: cr.ActualStderrBuf}
 }
 
-func (cr *CaseRun) Interrupt() chan struct{} { return nil }
+func (cr *CaseRun) InterruptChan() chan struct{} { return nil }
 
 func (cr *CaseRun) Environ() []string {
 	env := []string{

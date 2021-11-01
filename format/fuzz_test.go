@@ -26,11 +26,11 @@ type fuzzTestOutput struct {
 func (o fuzzTestOutput) Size() (int, int) { return 120, 25 }
 func (o fuzzTestOutput) IsTerminal() bool { return false }
 
-func (ft *fuzzTest) Stdin() io.Reader         { return bytes.NewBuffer(ft.b) } // TODO: special file?
-func (ft *fuzzTest) Stdout() interp.Output    { return fuzzTestOutput{os.Stdout} }
-func (ft *fuzzTest) Stderr() io.Writer        { return os.Stderr }
-func (ft *fuzzTest) Interrupt() chan struct{} { return nil }
-func (ft *fuzzTest) Environ() []string        { return nil }
+func (ft *fuzzTest) Stdin() io.Reader             { return bytes.NewBuffer(ft.b) } // TODO: special file?
+func (ft *fuzzTest) Stdout() interp.Output        { return fuzzTestOutput{os.Stdout} }
+func (ft *fuzzTest) Stderr() io.Writer            { return os.Stderr }
+func (ft *fuzzTest) InterruptChan() chan struct{} { return nil }
+func (ft *fuzzTest) Environ() []string            { return nil }
 func (ft *fuzzTest) Args() []string {
 	return []string{}
 }

@@ -106,7 +106,7 @@ type OS interface {
 	Stdin() Input
 	Stdout() Output
 	Stderr() Output
-	Interrupt() chan struct{}
+	InterruptChan() chan struct{}
 	Args() []string
 	Environ() []string
 	ConfigDir() (string, error)
@@ -446,7 +446,7 @@ func New(os OS, registry *registry.Registry) (*Interp, error) {
 		select {
 		case <-stopCh:
 			return
-		case <-os.Interrupt():
+		case <-os.InterruptChan():
 			return
 		}
 	})
@@ -486,6 +486,10 @@ func (i *Interp) Main(ctx context.Context, output Output, version string) error 
 		case error:
 			if emptyErr, ok := v.(IsEmptyErrorer); ok && emptyErr.IsEmptyError() { //nolint:errorlint
 				// no output
+			} else if errors.Is(v, context.Canceled) {
+				// ignore context cancel here for now, which means user somehow interrupted the interpreter
+				// TODO: handle this inside interp.jq instead but then we probably have to do nested
+				// eval and or also use different contexts for the interpreter and reading/decoding
 			} else {
 				fmt.Fprintln(i.os.Stderr(), v)
 			}

@@ -121,5 +121,7 @@ def _decode_value(f):
   else _expected_decode_value
   end;
 
+def _is_context_canceled_error: . == "context canceled";
+
 def _error_str: "error: \(.)";
 def _errorln: ., "\n" | stderr;

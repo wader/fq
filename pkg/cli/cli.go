@@ -34,9 +34,8 @@ func (a autoCompleterFn) Do(line []rune, pos int) (newLine [][]rune, length int)
 }
 
 type stdOS struct {
-	rl                  *readline.Instance
-	interruptSignalChan chan os.Signal
-	interruptChan       chan struct{}
+	rl            *readline.Instance
+	interruptChan chan struct{}
 }
 
 func newStandardOS() *stdOS {
@@ -44,7 +43,10 @@ func newStandardOS() *stdOS {
 	interruptSignalChan := make(chan os.Signal, 1)
 	signal.Notify(interruptSignalChan, os.Interrupt)
 	go func() {
-		defer signal.Stop(interruptSignalChan)
+		defer func() {
+			signal.Stop(interruptSignalChan)
+			close(interruptSignalChan)
+		}()
 		for range interruptSignalChan {
 			select {
 			case interruptChan <- struct{}{}:
@@ -54,8 +56,7 @@ func newStandardOS() *stdOS {
 	}()
 
 	return &stdOS{
-		interruptSignalChan: interruptSignalChan,
-		interruptChan:       interruptChan,
+		interruptChan: interruptChan,
 	}
 }
 
@@ -114,7 +115,7 @@ func (o stderrOutput) Write(p []byte) (n int, err error) { return os.Stderr.Writ
 
 func (o *stdOS) Stderr() interp.Output { return stderrOutput{fdTerminal: fdTerminal(os.Stderr.Fd())} }
 
-func (o *stdOS) Interrupt() chan struct{} { return o.interruptChan }
+func (o *stdOS) InterruptChan() chan struct{} { return o.interruptChan }
 
 func (*stdOS) Args() []string { return os.Args }
 
@@ -204,7 +205,7 @@ func (o *stdOS) Close() error {
 	if o.rl != nil {
 		o.rl.Close()
 	}
-	close(o.interruptSignalChan)
+	close(o.interruptChan)
 	return nil
 }
 

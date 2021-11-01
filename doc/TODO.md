@@ -13,6 +13,7 @@
 - `echo '{} {} {}' | jq` vs `echo '{} {} {}' | fq` works differently. fq currently decodes one root format and might add unknown fields etc. Maybe should work differently for `json` format?
 - `format/0` overlap with jq builtin `format/1`. What to rename it to? `decode_format`?
 - repl expression returning a value that produced lots of output can't be interrupted. This is becaus ctrl-C currently only interrupts the evaluation of the expression, outputted value is printed (`display`) by parent.
+- Rework cli/repl user interrupt (context cancel via ctrl-c), see comment in Interp.Main
 
 ### TODO and ideas
 
