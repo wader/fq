@@ -421,7 +421,7 @@ def _main:
       , null | halt_error(_exit_code_args_error)
       )
     else
-      # use _finally as display etc prints and results in empty
+      # use _finally as display etc prints and outputs empty
       _finally(
         # store some globals
         ( _include_paths($opts.include_path) as $_
@@ -435,6 +435,11 @@ def _main:
             | from_entries
             )
           )
+        # for inputs a, b, c:
+        # repl:       [a,b,c] | repl
+        # repl slurp: [[a, b, c]] | repl
+        # cli         a, b, c | expr
+        # cli slurp   [a ,b c] | expr
         | ( def _inputs:
               ( if $opts.null_input then null
                 # note that jq --slurp --raw-input (string_input) is special, will concat
