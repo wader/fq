@@ -54,52 +54,53 @@ def input:
         , _input($opts; f)
         )
     );
+  def _input_string($opts):
+    ( _input_strings_lines
+    | if . then
+        # we're already iterating lines
+        if length == 0 then error("break")
+        else
+          ( [.[0], .[1:]] as [$h, $t]
+          | _input_strings_lines($t)
+          | $h
+          )
+        end
+      else
+        ( [_repeat_break(_input($opts; tobytes | tostring))]
+        | . as $chunks
+        | if $opts.slurp then
+            # jq --raw-input combined with --slurp reads all inputs into a string
+            # make next input break
+            ( _input_strings_lines([]) as $_
+            | $chunks
+            | join("")
+            )
+          else
+            # TODO: different line endings?
+            # jq strips last newline, "a\nb" and "a\nb\n" behaves the same
+            # also jq -R . <(echo -ne 'a\nb') <(echo c) produces "a" and "bc"
+            if ($chunks | length) > 0 then
+              ( _input_strings_lines(
+                  ( $chunks
+                  | join("")
+                  | rtrimstr("\n")
+                  | split("\n")
+                  )
+                ) as $_
+              | input
+              )
+            else error("break")
+            end
+          end
+        )
+      end
+    );
   # TODO: don't rebuild options each time
   ( options as $opts
   # TODO: refactor into def
   # this is a bit strange as jq for --raw-string can return string instead
   # with data from multiple inputs
-  | if $opts.string_input then
-      ( _input_strings_lines
-      | if . then
-          # we're already iterating lines
-          if length == 0 then error("break")
-          else
-            ( [.[0], .[1:]] as [$h, $t]
-            | _input_strings_lines($t)
-            | $h
-            )
-          end
-        else
-          ( [_repeat_break(_input($opts; tobytes | tostring))]
-          | . as $chunks
-          | if $opts.slurp then
-              # jq --raw-input combined with --slurp reads all inputs into a string
-              # make next input break
-              ( _input_strings_lines([]) as $_
-              | $chunks
-              | join("")
-              )
-            else
-              # TODO: different line endings?
-              # jq strips last newline, "a\nb" and "a\nb\n" behaves the same
-              # also jq -R . <(echo -ne 'a\nb') <(echo c) produces "a" and "bc"
-              if ($chunks | length) > 0 then
-                ( _input_strings_lines(
-                    ( $chunks
-                    | join("")
-                    | rtrimstr("\n")
-                    | split("\n")
-                    )
-                  ) as $_
-                | input
-                )
-              else error("break")
-              end
-            end
-          )
-        end
-      )
+  | if $opts.string_input then _input_string($opts)
     else _input($opts; decode)
     end
   );
