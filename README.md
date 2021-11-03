@@ -6,13 +6,17 @@ Tool, language and format decoders for exploring binary data.
 
 ## Goals
 
-- Make binary formats accessible any queryable.
+- Make binary formats accessible and queryable.
 - Nested formats and bit-oriented decoding.
 - Quick and comfortable CLI tool.
-- Do bit and byte transformations and conversions.
+- Bit and byte transformations and conversions.
 - Programmer's calculator.
 
 **NOTE:** fq is early in development and many things are missing, broken or do not make sense. That also means there is a great opportunity to help out.
+
+## Usage
+
+Basic usage is: `fq . file`. For details see [usage.md](doc/usage.md).
 
 ## Install
 
@@ -49,10 +53,6 @@ make test fq
 cp fq /usr/local/bin
 ```
 
-## Usage
-
-Basic usage is `fq . file`. For more details see [usage.md](doc/usage.md).
-
 ## Supported formats
 
 [./formats_list.jq]: sh-start
@@ -61,15 +61,15 @@ aac_frame, adts, adts_frame, apev2, av1_ccr, av1_frame, av1_obu, avc_annexb, avc
 
 [#]: sh-end
 
-See [formats](doc/formats.md) for more details.
+For details see [formats.md](doc/formats.md).
 
 ## TODO and ideas
 
-See [TODO.md](doc/TODO.md)
+See [TODO.md](doc/TODO.md).
 
 ## Development
 
-See [dev.md](doc/dev.md)
+See [dev.md](doc/dev.md).
 
 ## Thanks and related projects
 
