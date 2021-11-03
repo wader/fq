@@ -394,7 +394,7 @@ type Variable struct {
 }
 
 type Function struct {
-	Names    []string
+	Name     string
 	MinArity int
 	MaxArity int
 	Fn       func(interface{}, []interface{}) interface{}
@@ -531,14 +531,12 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilenam
 
 	var funcCompilerOpts []gojq.CompilerOption
 	for _, f := range ni.makeFunctions() {
-		for _, n := range f.Names {
-			if f.IterFn != nil {
-				funcCompilerOpts = append(funcCompilerOpts,
-					gojq.WithIterFunction(n, f.MinArity, f.MaxArity, f.IterFn))
-			} else {
-				funcCompilerOpts = append(funcCompilerOpts,
-					gojq.WithFunction(n, f.MinArity, f.MaxArity, f.Fn))
-			}
+		if f.IterFn != nil {
+			funcCompilerOpts = append(funcCompilerOpts,
+				gojq.WithIterFunction(f.Name, f.MinArity, f.MaxArity, f.IterFn))
+		} else {
+			funcCompilerOpts = append(funcCompilerOpts,
+				gojq.WithFunction(f.Name, f.MinArity, f.MaxArity, f.Fn))
 		}
 	}
 

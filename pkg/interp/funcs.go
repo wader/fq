@@ -36,64 +36,64 @@ import (
 // TODO: make it nicer somehow? generate generators? remove from struct?
 func (i *Interp) makeFunctions() []Function {
 	fs := []Function{
-		{[]string{"_readline"}, 0, 2, i.readline, nil},
-		{[]string{"eval"}, 1, 2, nil, i.eval},
-		{[]string{"stdin"}, 0, 0, nil, i.makeStdioFn(i.os.Stdin())},
-		{[]string{"stdout"}, 0, 0, nil, i.makeStdioFn(i.os.Stdout())},
-		{[]string{"stderr"}, 0, 0, nil, i.makeStdioFn(i.os.Stderr())},
+		{"_readline", 0, 2, i.readline, nil},
+		{"eval", 1, 2, nil, i.eval},
+		{"stdin", 0, 0, nil, i.makeStdioFn(i.os.Stdin())},
+		{"stdout", 0, 0, nil, i.makeStdioFn(i.os.Stdout())},
+		{"stderr", 0, 0, nil, i.makeStdioFn(i.os.Stderr())},
 
-		{[]string{"_query_fromstring"}, 0, 0, i.queryFromString, nil},
-		{[]string{"_query_tostring"}, 0, 0, i.queryToString, nil},
+		{"_query_fromstring", 0, 0, i.queryFromString, nil},
+		{"_query_tostring", 0, 0, i.queryToString, nil},
 
-		{[]string{"_extkeys"}, 0, 0, i._extKeys, nil},
-		{[]string{"_global_state"}, 0, 1, i.makeStateFn(i.state), nil},
+		{"_extkeys", 0, 0, i._extKeys, nil},
+		{"_global_state", 0, 1, i.makeStateFn(i.state), nil},
 
-		{[]string{"_registry"}, 0, 0, i._registry, nil},
-		{[]string{"history"}, 0, 0, i.history, nil},
+		{"_registry", 0, 0, i._registry, nil},
+		{"history", 0, 0, i.history, nil},
 
-		{[]string{"open"}, 0, 0, i._open, nil},
-		{[]string{"_decode"}, 2, 2, i._decode, nil},
-		{[]string{"_is_decode_value"}, 0, 0, i._isDecodeValue, nil},
+		{"open", 0, 0, i._open, nil},
+		{"_decode", 2, 2, i._decode, nil},
+		{"_is_decode_value", 0, 0, i._isDecodeValue, nil},
 
-		{[]string{"_display"}, 1, 1, nil, i._display},
-		{[]string{"_hexdump"}, 1, 1, nil, i._hexdump},
+		{"_display", 1, 1, nil, i._display},
+		{"_hexdump", 1, 1, nil, i._hexdump},
 
-		{[]string{"_tobitsrange"}, 0, 2, i._toBitsRange, nil},
+		{"_tobitsrange", 0, 2, i._toBitsRange, nil},
 
-		{[]string{"_tovalue"}, 1, 1, i._toValue, nil},
+		{"_tovalue", 1, 1, i._toValue, nil},
 
-		{[]string{"hex"}, 0, 0, makeStringBitBufTransformFn(
+		{"hex", 0, 0, makeStringBitBufTransformFn(
 			func(r io.Reader) (io.Reader, error) { return hex.NewDecoder(r), nil },
 			func(r io.Writer) (io.Writer, error) { return hex.NewEncoder(r), nil },
 		), nil},
 
-		{[]string{"base64"}, 0, 0, makeStringBitBufTransformFn(
+		{"base64", 0, 0, makeStringBitBufTransformFn(
 			func(r io.Reader) (io.Reader, error) { return base64.NewDecoder(base64.StdEncoding, r), nil },
 			func(r io.Writer) (io.Writer, error) { return base64.NewEncoder(base64.StdEncoding, r), nil },
 		), nil},
-		{[]string{"rawbase64"}, 0, 0, makeStringBitBufTransformFn(
+		{"rawbase64", 0, 0, makeStringBitBufTransformFn(
 			func(r io.Reader) (io.Reader, error) { return base64.NewDecoder(base64.RawURLEncoding, r), nil },
 			func(r io.Writer) (io.Writer, error) { return base64.NewEncoder(base64.RawURLEncoding, r), nil },
 		), nil},
 
-		{[]string{"urlbase64"}, 0, 0, makeStringBitBufTransformFn(
+		{"urlbase64", 0, 0, makeStringBitBufTransformFn(
 			func(r io.Reader) (io.Reader, error) { return base64.NewDecoder(base64.URLEncoding, r), nil },
 			func(r io.Writer) (io.Writer, error) { return base64.NewEncoder(base64.URLEncoding, r), nil },
 		), nil},
 
-		{[]string{"nal_unescape"}, 0, 0, makeBitBufTransformFn(func(r io.Reader) (io.Reader, error) {
+		{"nal_unescape", 0, 0, makeBitBufTransformFn(func(r io.Reader) (io.Reader, error) {
 			return &decode.NALUnescapeReader{Reader: r}, nil
 		}), nil},
 
-		{[]string{"md5"}, 0, 0, makeHashFn(func() (hash.Hash, error) { return md5.New(), nil }), nil},
+		{"md5", 0, 0, makeHashFn(func() (hash.Hash, error) { return md5.New(), nil }), nil},
 
-		{[]string{"query_escape"}, 0, 0, i.queryEscape, nil},
-		{[]string{"query_unescape"}, 0, 0, i.queryUnescape, nil},
-		{[]string{"path_escape"}, 0, 0, i.pathEscape, nil},
-		{[]string{"path_unescape"}, 0, 0, i.pathUnescape, nil},
-		{[]string{"aes_ctr"}, 1, 2, i.aesCtr, nil},
+		{"query_escape", 0, 0, i.queryEscape, nil},
+		{"query_unescape", 0, 0, i.queryUnescape, nil},
+		{"path_escape", 0, 0, i.pathEscape, nil},
+		{"path_unescape", 0, 0, i.pathUnescape, nil},
+		{"aes_ctr", 1, 2, i.aesCtr, nil},
 
-		{[]string{"_bits_match"}, 1, 2, nil, i._bitsMatch},
+		{"_bits_match", 1, 2, nil, i._bitsMatch},
 	}
 
 	return fs
