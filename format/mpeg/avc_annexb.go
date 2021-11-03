@@ -15,8 +15,8 @@ func init() {
 		DecodeFn: func(d *decode.D, in interface{}) interface{} {
 			return annexBDecode(d, in, annexBAVCNALUFormat)
 		},
-		RootV:    decode.Array{},
-		RootName: "stream",
+		RootArray: true,
+		RootName:  "stream",
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.AVC_NALU}, Formats: &annexBAVCNALUFormat},
 		},

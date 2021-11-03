@@ -14,7 +14,7 @@ func init() {
 		Description: "Audio Data Transport Stream",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    adtsDecoder,
-		RootV:       decode.Array{},
+		RootArray:   true,
 		RootName:    "frames",
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.ADTS_FRAME}, Formats: &adtsFrame},

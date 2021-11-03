@@ -13,7 +13,7 @@ func init() {
 		Name:        format.HEVC_AU,
 		Description: "H.265/HEVC Access Unit",
 		DecodeFn:    hevcAUDecode,
-		RootV:       decode.Array{},
+		RootArray:   true,
 		RootName:    "access_unit",
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.HEVC_NALU}, Formats: &hevcAUNALFormat},

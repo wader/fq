@@ -125,3 +125,48 @@ func bigToFloat(x *big.Int) float64 {
 	}
 	return math.Inf(x.Sign())
 }
+
+func ToGoJQValue(v interface{}) (interface{}, bool) {
+	switch vv := v.(type) {
+	case nil:
+		return vv, true
+	case bool:
+		return vv, true
+	case int:
+		return vv, true
+	case int64:
+		return big.NewInt(vv), true
+	case uint64:
+		return new(big.Int).SetUint64(vv), true
+	case float64:
+		return vv, true
+	case *big.Int:
+		return vv, true
+	case string:
+		return vv, true
+	case gojq.JQValue:
+		return ToGoJQValue(vv.JQValueToGoJQ())
+	case []interface{}:
+		vvs := make([]interface{}, len(vv))
+		for i, v := range vv {
+			v, ok := ToGoJQValue(v)
+			if !ok {
+				return nil, false
+			}
+			vvs[i] = v
+		}
+		return vvs, true
+	case map[string]interface{}:
+		vvs := make(map[string]interface{}, len(vv))
+		for k, v := range vv {
+			v, ok := ToGoJQValue(v)
+			if !ok {
+				return nil, false
+			}
+			vvs[k] = v
+		}
+		return vvs, true
+	default:
+		return nil, false
+	}
+}

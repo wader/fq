@@ -13,7 +13,7 @@ func init() {
 		Name:        format.VP9_CFM,
 		Description: "VP9 Codec Feature Metadata",
 		DecodeFn:    vp9CFMDecode,
-		RootV:       decode.Array{},
+		RootArray:   true,
 		RootName:    "features",
 	})
 }

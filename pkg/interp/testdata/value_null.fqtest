@@ -53,7 +53,7 @@ mp3> .headers[0].padding._name | ., type, length?
 "padding"
 "string"
 7
-mp3> .headers[0].padding._symbol | ., type, length?
+mp3> .headers[0].padding._sym | ., type, length?
 "Correct"
 "string"
 7

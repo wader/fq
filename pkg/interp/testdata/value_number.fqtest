@@ -53,7 +53,7 @@ mp3> .headers[0].version._name | ., type, length?
 "version"
 "string"
 7
-mp3> .headers[0].version._symbol | ., type, length?
+mp3> .headers[0].version._sym | ., type, length?
 ""
 "string"
 0

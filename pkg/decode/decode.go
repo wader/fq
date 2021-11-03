@@ -81,7 +81,12 @@ func decode(ctx context.Context, bb *bitio.Buffer, formats []*Format, opts Optio
 				}
 				decodeErr.Errs = append(decodeErr.Errs, formatErr)
 
-				d.Value.Err = formatErr
+				switch vv := d.Value.V.(type) {
+				case Compound:
+					// TODO: hack, changes V
+					vv.Err = formatErr
+					d.Value.V = vv
+				}
 
 				if !forceOne {
 					continue
@@ -136,22 +141,22 @@ func newDecoder(ctx context.Context, format *Format, bb *bitio.Buffer, opts Opti
 	if opts.Name != "" {
 		name = opts.Name
 	}
-	rootV := format.RootV
-	if rootV == nil {
-		rootV = Struct{}
+	rootV := Compound{
+		IsArray:     format.RootArray,
+		Children:    new([]*Value),
+		Description: opts.Description,
+		Format:      format,
 	}
 
 	return &D{
 		Ctx:    ctx,
 		Endian: BigEndian,
 		Value: &Value{
-			Name:        name,
-			Description: opts.Description,
-			Format:      format,
-			V:           rootV,
-			IsRoot:      opts.IsRoot,
-			RootBitBuf:  bb,
-			Range:       ranges.Range{Start: 0, Len: 0},
+			Name:       name,
+			V:          rootV,
+			RootBitBuf: bb,
+			Range:      ranges.Range{Start: 0, Len: 0},
+			IsRoot:     opts.IsRoot,
 		},
 		Options: opts.FormatOptions,
 
@@ -176,7 +181,7 @@ func (d *D) FillGaps(r ranges.Range, namePrefix string) {
 	makeWalkFn := func(fn func(iv *Value)) func(iv *Value, rootV *Value, depth int, rootDepth int) error {
 		return func(iv *Value, rootV *Value, depth int, rootDepth int) error {
 			switch iv.V.(type) {
-			case Struct, Array:
+			case Compound:
 			default:
 				fn(iv)
 			}
@@ -200,7 +205,10 @@ func (d *D) FillGaps(r ranges.Range, namePrefix string) {
 		v := d.FieldValueBitBufRange(
 			fmt.Sprintf("%s%d", namePrefix, i), gap.Start, gap.Len,
 		)
-		v.Unknown = true
+		// TODO: hack
+		s, _ := v.V.(Scalar)
+		s.Unknown = true
+		v.V = s
 	}
 }
 
@@ -356,16 +364,16 @@ func (d *D) AddChild(v *Value) {
 	v.Parent = d.Value
 
 	switch fv := d.Value.V.(type) {
-	case Struct:
-		for _, ff := range fv {
-			if ff.Name == v.Name {
-				d.Invalid(fmt.Sprintf("%s already exist in struct %s", v.Name, d.Value.Name))
+	case Compound:
+		if !fv.IsArray {
+			for _, ff := range *fv.Children {
+				if ff.Name == v.Name {
+					d.Invalid(fmt.Sprintf("%s already exist in struct %s", v.Name, d.Value.Name))
+				}
 			}
 		}
-		d.Value.V = append(fv, v)
-		return
-	case Array:
-		d.Value.V = append(fv, v)
+		*fv.Children = append(*fv.Children, v)
+
 	}
 }
 
@@ -388,10 +396,11 @@ func (d *D) FieldDecoder(name string, bitBuf *bitio.Buffer, v interface{}) *D {
 
 func (d *D) FieldRemove(name string) *Value {
 	switch fv := d.Value.V.(type) {
-	case Struct:
-		for fi, ff := range fv {
+	case Compound:
+		for fi, ff := range *fv.Children {
 			if ff.Name == name {
-				d.Value.V = append(fv[0:fi], fv[fi+1:]...)
+				*fv.Children = append((*fv.Children)[0:fi], (*fv.Children)[fi+1:]...)
+				d.Value.V = fv
 				return ff
 			}
 		}
@@ -410,8 +419,8 @@ func (d *D) FieldMustRemove(name string) *Value {
 
 func (d *D) FieldGet(name string) *Value {
 	switch fv := d.Value.V.(type) {
-	case Struct:
-		for _, ff := range fv {
+	case Compound:
+		for _, ff := range *fv.Children {
 			if ff.Name == name {
 				return ff
 			}
@@ -430,7 +439,7 @@ func (d *D) FieldMustGet(name string) *Value {
 }
 
 func (d *D) FieldArray(name string) *D {
-	cd := d.FieldDecoder(name, d.bitBuf, Array{})
+	cd := d.FieldDecoder(name, d.bitBuf, Compound{IsArray: true, Children: new([]*Value)})
 	d.AddChild(cd.Value)
 	return cd
 }
@@ -442,7 +451,7 @@ func (d *D) FieldArrayFn(name string, fn func(d *D)) *D {
 }
 
 func (d *D) FieldStruct(name string) *D {
-	cd := d.FieldDecoder(name, d.bitBuf, Struct{})
+	cd := d.FieldDecoder(name, d.bitBuf, Compound{Children: new([]*Value)})
 	d.AddChild(cd.Value)
 	return cd
 }
@@ -505,36 +514,36 @@ func (d *D) FieldFn(name string, fn func() *Value) *Value {
 
 func (d *D) FieldBoolFn(name string, fn func() (bool, string)) bool {
 	return d.FieldFn(name, func() *Value {
-		b, d := fn()
-		return &Value{V: b, Symbol: d}
-	}).V.(bool)
+		b, s := fn()
+		return &Value{V: Scalar{Actual: b, Sym: s}}
+	}).V.(Scalar).Actual.(bool)
 }
 
 func (d *D) FieldStrFn(name string, fn func() (string, string)) string {
 	return d.FieldFn(name, func() *Value {
 		str, desc := fn()
-		return &Value{V: str, Description: desc}
-	}).V.(string)
+		return &Value{V: Scalar{Actual: str, Description: desc}}
+	}).V.(Scalar).Actual.(string)
 }
 
 func (d *D) FieldBytesFn(name string, fn func() ([]byte, string)) []byte {
 	return d.FieldFn(name, func() *Value {
-		bs, disp := fn()
-		return &Value{V: bs, Symbol: disp}
-	}).V.([]byte)
+		bs, s := fn()
+		return &Value{V: Scalar{Actual: bs, Sym: s}}
+	}).V.(Scalar).Actual.([]byte)
 }
 
 func (d *D) FieldBitBufFn(name string, firstBit int64, nBits int64, fn func() (*bitio.Buffer, string)) *bitio.Buffer {
 	return d.FieldRangeFn(name, firstBit, nBits, func() *Value {
-		bb, disp := fn()
-		return &Value{V: bb, Symbol: disp}
-	}).V.(*bitio.Buffer)
+		bb, s := fn()
+		return &Value{V: Scalar{Actual: bb, Sym: s}}
+	}).V.(Scalar).Actual.(*bitio.Buffer)
 }
 
 func (d *D) FieldValueBitBufFn(name string, firstBit int64, nBits int64, fn func() (*bitio.Buffer, string)) *Value {
 	return d.FieldRangeFn(name, firstBit, nBits, func() *Value {
-		bb, disp := fn()
-		return &Value{V: bb, Symbol: disp}
+		bb, s := fn()
+		return &Value{V: Scalar{Actual: bb, Sym: s}}
 	})
 }
 
@@ -620,10 +629,10 @@ func (d *D) FieldChecksumRange(name string, firstBit int64, nBits int64, calcula
 		}
 
 		if bytes.Equal(expected, calculated) {
-			return &Value{V: expectedBB.Copy(), Symbol: "Correct"}
+			return &Value{V: Scalar{Actual: expectedBB.Copy(), Sym: "Correct"}}
 		}
 
-		return &Value{V: expectedBB.Copy(), Symbol: fmt.Sprintf("Incorrect (calculated %s)", hex.EncodeToString(calculated))}
+		return &Value{V: Scalar{Actual: expectedBB.Copy(), Sym: fmt.Sprintf("Incorrect (calculated %s)", hex.EncodeToString(calculated))}}
 	})
 }
 
@@ -742,11 +751,9 @@ func (d *D) DecodeLenFn(nBits int64, fn func(d *D)) {
 
 func (d *D) DecodeRangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 	var subV interface{}
-	switch d.Value.V.(type) {
-	case Struct:
-		subV = Struct{}
-	case Array:
-		subV = Array{}
+	switch vv := d.Value.V.(type) {
+	case Compound:
+		subV = Compound{IsArray: vv.IsArray, Children: new([]*Value)}
 	default:
 		panic("unreachable")
 	}
@@ -771,12 +778,8 @@ func (d *D) DecodeRangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 	}
 
 	switch vv := sd.Value.V.(type) {
-	case Struct:
-		for _, f := range vv {
-			d.AddChild(f)
-		}
-	case Array:
-		for _, f := range vv {
+	case Compound:
+		for _, f := range *vv.Children {
 			d.AddChild(f)
 		}
 	default:
@@ -797,12 +800,8 @@ func (d *D) Format(formats []*Format, inArg interface{}) interface{} {
 	}
 
 	switch vv := dv.V.(type) {
-	case Struct:
-		for _, f := range vv {
-			d.AddChild(f)
-		}
-	case Array:
-		for _, f := range vv {
+	case Compound:
+		for _, f := range *vv.Children {
 			d.AddChild(f)
 		}
 	default:
@@ -930,10 +929,10 @@ func (d *D) FieldFormatBitBuf(name string, bb *bitio.Buffer, formats []*Format, 
 // TODO: rethink this
 func (d *D) FieldRootBitBuf(name string, bb *bitio.Buffer) *Value {
 	v := &Value{}
-	v.V = bb
+	v.V = Scalar{Actual: bb}
 	v.Name = name
-	v.IsRoot = true
 	v.RootBitBuf = bb
+	v.IsRoot = true
 	v.Range = ranges.Range{Start: 0, Len: bb.Len()}
 	d.AddChild(v)
 
@@ -941,7 +940,7 @@ func (d *D) FieldRootBitBuf(name string, bb *bitio.Buffer) *Value {
 }
 
 func (d *D) FieldStructRootBitBufFn(name string, bb *bitio.Buffer, fn func(d *D)) *Value {
-	cd := d.FieldDecoder(name, bb, Struct{})
+	cd := d.FieldDecoder(name, bb, Compound{Children: new([]*Value)})
 	cd.Value.IsRoot = true
 	d.AddChild(cd.Value)
 	fn(cd)

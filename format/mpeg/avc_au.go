@@ -15,7 +15,7 @@ func init() {
 		Name:        format.AVC_AU,
 		Description: "H.264/AVC Access Unit",
 		DecodeFn:    avcAUDecode,
-		RootV:       decode.Array{},
+		RootArray:   true,
 		RootName:    "access_unit",
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.AVC_NALU}, Formats: &avcNALUFormat},

@@ -79,11 +79,12 @@ func strIndexNull(idx int, s string) string {
 	return s[idx : idx+i]
 }
 
+// TODO: rewrite
 func fieldStringStrIndexFn(d *decode.D, name string, strTable string, fn func() uint64) string {
 	return d.FieldFn(name, func() *decode.Value {
 		idx := fn()
-		return &decode.Value{V: idx, Symbol: strIndexNull(int(idx), strTable)}
-	}).Symbol
+		return &decode.Value{V: decode.Scalar{Actual: idx, Sym: strIndexNull(int(idx), strTable)}}
+	}).V.(decode.Scalar).Sym.(string)
 }
 
 func elfDecode(d *decode.D, in interface{}) interface{} {

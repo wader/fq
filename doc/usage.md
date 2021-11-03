@@ -146,6 +146,9 @@ notable is support for arbitrary-precision integers.
   - `format_root/0` return root value of format for value
   - `parent/0` return parent value
   - `parents/0` output parents of value
+  - `tovalue/0`, `tovalue/1` symbolic value if available otherwise actual value
+  - `tosym/0` symbolic value (mapped etc)
+  - `toactual/1` actual value (decoded etc)
   - All `match` and `grep` functions take 1 or 2 arguments. First is a scalar to match, where a string is
   treated as a regexp. A buffer scalar will be matches exact bytes. Second argument are regexp
   flags with addition that "b" will treat each byte in the input buffer as a code point, this

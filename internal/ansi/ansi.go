@@ -163,27 +163,25 @@ func (c Code) Wrap(s string) string {
 	return s
 }
 
-type colorFormatter [3]string
+type colorFormatter [3]interface{}
 
 func (cf colorFormatter) Format(state fmt.State, verb rune) {
 	switch verb {
 	case 's':
-		switch len(cf) {
-		case 1:
-			fmt.Fprint(state, cf[0])
-		case 3:
-			fmt.Fprint(state, cf[0], cf[1], cf[2])
-		default:
-			panic("unreachable")
+		for _, s := range cf {
+			if s == nil {
+				continue
+			}
+			fmt.Fprint(state, s)
 		}
 	}
 }
 
-func (c Code) F(s string) fmt.Formatter {
+func (c Code) F(s interface{}) fmt.Formatter {
 	if c.SetString != "" {
-		return colorFormatter([3]string{c.SetString, s, c.ResetString})
+		return colorFormatter([3]interface{}{c.SetString, s, c.ResetString})
 	}
-	return colorFormatter([3]string{s})
+	return colorFormatter([3]interface{}{s})
 }
 
 type colorWriter struct {

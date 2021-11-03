@@ -16,7 +16,7 @@ func init() {
 		Name:        format.AAC_FRAME,
 		Description: "Advanced Audio Coding frame",
 		DecodeFn:    aacDecode,
-		RootV:       decode.Array{},
+		RootArray:   true,
 		RootName:    "elements",
 	})
 }

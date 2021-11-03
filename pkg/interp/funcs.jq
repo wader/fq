@@ -57,6 +57,10 @@ def decode: decode(options.decode_format; {});
 def tovalue($opts): _tovalue(options($opts));
 def tovalue: _tovalue({});
 
+def tosym: _decode_value(._sym);
+
+def toactual: _decode_value(._actual);
+
 def display($opts): _display(options($opts));
 def display: display({});
 def d($opts): display($opts);
@@ -239,7 +243,7 @@ def tree_path(children; name; $v):
     | _normalize_path
     | reduce .[] as $n ($c;
         if $n | type == "string" then
-          children | map(select(name==$n))
+          children | map(select(name == $n))
         else
           .[$n]
         end

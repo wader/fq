@@ -17,7 +17,7 @@ func init() {
 		Name:        format.AV1_FRAME,
 		Description: "AV1 frame",
 		DecodeFn:    frameDecode,
-		RootV:       decode.Array{},
+		RootArray:   true,
 		RootName:    "frame",
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.AV1_OBU}, Formats: &obuFormat},

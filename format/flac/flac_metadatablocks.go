@@ -15,7 +15,7 @@ func init() {
 		Name:        format.FLAC_METADATABLOCKS,
 		Description: "FLAC metadatablocks",
 		DecodeFn:    metadatablocksDecode,
-		RootV:       decode.Array{},
+		RootArray:   true,
 		RootName:    "metadatablocks",
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.FLAC_METADATABLOCK}, Formats: &flacMetadatablockForamt},

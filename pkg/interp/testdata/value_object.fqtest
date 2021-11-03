@@ -69,7 +69,7 @@ mp3> .headers[0].flags._name | ., type, length?
 "flags"
 "string"
 5
-mp3> .headers[0].flags._symbol | ., type, length?
+mp3> .headers[0].flags._sym | ., type, length?
 ""
 "string"
 0

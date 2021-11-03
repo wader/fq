@@ -32,25 +32,50 @@ func DisplayFormatToBase(fmt DisplayFormat) int {
 	}
 }
 
-type Struct []*Value
+type Compound struct {
+	IsArray  bool
+	Children *[]*Value
 
-type Array []*Value
+	Description string
+	Format      *Format
+	Err         error
+}
+
+// type Array []*Value
+
+type Scalar struct {
+	Actual        interface{} // int, int64, uint64, float64, string, bool, []byte, *bitio.Buffer
+	Sym           interface{}
+	Description   string
+	DisplayFormat DisplayFormat
+	//Encoding    string
+	Unknown bool
+}
+
+func (s Scalar) Value() interface{} {
+	// TODO: fix decoders sym ""
+	switch ss := s.Sym.(type) {
+	case string:
+		if ss != "" {
+			return ss
+		}
+		return s.Actual
+	case nil:
+		return s.Actual
+	default:
+		return ss
+	}
+}
 
 // TODO: encoding? endian, string encoding, compression, etc?
 type Value struct {
-	Parent        *Value
-	V             interface{} // int, int64, uint64, float64, string, bool, []byte, *bitio.Buffer, Array, Struct
-	Index         int         // index in parent array/struct
-	Range         ranges.Range
-	RootBitBuf    *bitio.Buffer
-	IsRoot        bool
-	Name          string
-	DisplayFormat DisplayFormat
-	Symbol        string
-	Description   string
-	Format        *Format
-	Unknown       bool
-	Err           error
+	Parent     *Value
+	Name       string
+	V          interface{} // Scalar, Array, Struct
+	Index      int         // index in parent array/struct
+	Range      ranges.Range
+	RootBitBuf *bitio.Buffer
+	IsRoot     bool // TODO: rework?
 }
 
 type WalkFn func(v *Value, rootV *Value, depth int, rootDepth int) error
@@ -93,18 +118,9 @@ func (v *Value) Walk(opts WalkOpts) error {
 			}
 		}
 
-		switch v := wv.V.(type) {
-		case Struct:
-			for _, wv := range v {
-				if err := walkFn(wv, rootV, depth+1, rootDepth+rootDepthDelta); err != nil {
-					if errors.Is(err, ErrWalkBreak) {
-						break
-					}
-					return err
-				}
-			}
-		case Array:
-			for _, wv := range v {
+		switch wvv := wv.V.(type) {
+		case Compound:
+			for _, wv := range *wvv.Children {
 				if err := walkFn(wv, rootV, depth+1, rootDepth+rootDepthDelta); err != nil {
 					if errors.Is(err, ErrWalkBreak) {
 						break
@@ -113,6 +129,7 @@ func (v *Value) Walk(opts WalkOpts) error {
 				}
 			}
 		}
+
 		if !opts.PreOrder {
 			err := opts.Fn(wv, rootV, depth, rootDepth+rootDepthDelta)
 			switch {
@@ -176,8 +193,12 @@ func (v *Value) root(findSubRoot bool, findFormatRoot bool) *Value {
 		if findSubRoot && rootV.IsRoot {
 			break
 		}
-		if findFormatRoot && rootV.Format != nil {
-			break
+		if findFormatRoot {
+			if c, ok := rootV.V.(Compound); ok {
+				if c.Format != nil {
+					break
+				}
+			}
 		}
 
 		rootV = rootV.Parent
@@ -192,8 +213,11 @@ func (v *Value) FormatRoot() *Value { return v.root(true, true) }
 func (v *Value) Errors() []error {
 	var errs []error
 	_ = v.WalkPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
-		if v.Err != nil {
-			errs = append(errs, v.Err)
+		switch vv := rootV.V.(type) {
+		case Compound:
+			if vv.Err != nil {
+				errs = append(errs, vv.Err)
+			}
 		}
 		return nil
 	})
@@ -203,9 +227,9 @@ func (v *Value) Errors() []error {
 func (v *Value) postProcess() {
 	if err := v.WalkPostOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
 		switch vv := v.V.(type) {
-		case Struct:
+		case Compound:
 			first := true
-			for _, f := range vv {
+			for _, f := range *vv.Children {
 				if f.IsRoot {
 					continue
 				}
@@ -218,33 +242,14 @@ func (v *Value) postProcess() {
 				}
 			}
 
-			sort.Slice(vv, func(i, j int) bool {
-				return vv[i].Range.Start < vv[j].Range.Start
+			// TODO: really sort array?
+			sort.Slice(*vv.Children, func(i, j int) bool {
+				return (*vv.Children)[i].Range.Start < (*vv.Children)[j].Range.Start
 			})
 
-			for i, f := range vv {
+			for i, f := range *vv.Children {
 				f.Index = i
 			}
-		case Array:
-			first := true
-			for _, f := range vv {
-				if f.IsRoot {
-					continue
-				}
-
-				if first {
-					v.Range = f.Range
-					first = false
-				} else {
-					v.Range = ranges.MinMax(v.Range, f.Range)
-				}
-			}
-
-			for i, f := range vv {
-				f.Index = i
-			}
-
-			// TODO: also sort?
 		}
 		return nil
 	}); err != nil {

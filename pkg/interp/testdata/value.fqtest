@@ -86,7 +86,7 @@ mp3> .headers[0].magic as $c | (0, "abc") as $n | $n, try ($c | has($n)) catch .
 "has cannot be applied to: string"
 "abc"
 "has cannot be applied to: string"
-mp3> . as $c | ("_start", "_stop", "_len", "_name", "_root", "_buffer_root", "_format_root", "_parent", "_symbol", "_description", "_path", "_bits", "_bytes", "_error", "_unknown", "_format", "_abc") as $n | $n, try ($c | has($n)) catch .
+mp3> . as $c | ("_start", "_stop", "_len", "_name", "_root", "_buffer_root", "_format_root", "_parent", "_sym", "_description", "_path", "_bits", "_bytes", "_error", "_unknown", "_format", "_abc") as $n | $n, try ($c | has($n)) catch .
 "_start"
 true
 "_stop"
@@ -103,7 +103,7 @@ true
 true
 "_parent"
 true
-"_symbol"
+"_sym"
 true
 "_description"
 true
@@ -121,7 +121,7 @@ true
 true
 "_abc"
 "expected a extkey but got: _abc"
-mp3> .headers as $c | ("_start", "_stop", "_len", "_name", "_root", "_buffer_root", "_format_root", "_parent", "_symbol", "_description", "_path", "_bits", "_bytes", "_error", "_unknown", "_format", "_abc") as $n | $n, try ($c | has($n)) catch .
+mp3> .headers as $c | ("_start", "_stop", "_len", "_name", "_root", "_buffer_root", "_format_root", "_parent", "_sym", "_description", "_path", "_bits", "_bytes", "_error", "_unknown", "_format", "_abc") as $n | $n, try ($c | has($n)) catch .
 "_start"
 true
 "_stop"
@@ -138,7 +138,7 @@ true
 true
 "_parent"
 true
-"_symbol"
+"_sym"
 true
 "_description"
 true
@@ -156,7 +156,7 @@ true
 true
 "_abc"
 "expected a extkey but got: _abc"
-mp3> .headers[0].magic as $c | ("_start", "_stop", "_len", "_name", "_root", "_buffer_root", "_format_root", "_parent", "_symbol", "_description", "_path", "_bits", "_bytes", "_error", "_unknown", "_format", "_abc") as $n | $n, try ($c | has($n)) catch .
+mp3> .headers[0].magic as $c | ("_start", "_stop", "_len", "_name", "_root", "_buffer_root", "_format_root", "_parent", "_sym", "_description", "_path", "_bits", "_bytes", "_error", "_unknown", "_format", "_abc") as $n | $n, try ($c | has($n)) catch .
 "_start"
 true
 "_stop"
@@ -173,7 +173,7 @@ true
 true
 "_parent"
 true
-"_symbol"
+"_sym"
 true
 "_description"
 true
@@ -227,7 +227,7 @@ mp3> ._format_root
      |                                               |                |  footers: [0]
 mp3> ._parent
 null
-mp3> ._symbol
+mp3> ._sym
 ""
 mp3> ._description
 "/test.mp3"

@@ -26,7 +26,7 @@ const (
 
 func isCompound(v *decode.Value) bool {
 	switch v.V.(type) {
-	case decode.Struct, decode.Array:
+	case decode.Compound:
 		return true
 	default:
 		return false
@@ -66,9 +66,9 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 	isInArray := false
 	inArrayLen := 0
 	if v.Parent != nil {
-		if da, ok := v.Parent.V.(decode.Array); ok {
-			isInArray = true
-			inArrayLen = len(da)
+		if dc, ok := v.Parent.V.(decode.Compound); ok {
+			isInArray = dc.IsArray
+			inArrayLen = len(*dc.Children)
 		}
 	}
 
@@ -120,46 +120,58 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 		cfmt(colField, " %s", v.Name)
 	}
 
+	var valueErr error
+
 	// TODO: cleanup map[string]interface{} []interface{} or json format
 	// dump should use some internal interface instead?
-	switch v.V.(type) {
-	case decode.Struct, map[string]interface{}:
-		cfmt(colField, " %s", deco.Object.F("{}"))
-		if v.Description != "" {
-			cfmt(colField, " %s", deco.Value.F(v.Description))
+	switch vv := v.V.(type) {
+	case decode.Compound:
+		if vv.IsArray {
+			cfmt(colField, " %s%s%s", deco.Index.F("["), deco.Number.F(strconv.Itoa(len(*vv.Children))), deco.Index.F("]"))
+		} else {
+			cfmt(colField, " %s", deco.Object.F("{}"))
 		}
-		if v.Format != nil {
-			cfmt(colField, " (%s)", deco.Value.F(v.Format.Name))
+		if vv.Description != "" {
+			cfmt(colField, " %s", deco.Value.F(vv.Description))
 		}
-	case decode.Array, []interface{}:
-		var l int
-		switch vv := v.V.(type) {
-		case decode.Array:
-			l = len(vv)
-		case []interface{}:
-			l = len(vv)
-		default:
-			panic("unreachable")
+		if vv.Format != nil {
+			cfmt(colField, " (%s)", deco.Value.F(vv.Format.Name))
 		}
 
-		cfmt(colField, " %s%s%s", deco.Index.F("["), deco.Number.F(strconv.Itoa(l)), deco.Index.F("]"))
-		if v.Description != "" {
-			cfmt(colField, " %s", deco.Value.F(v.Description))
-		}
-		if v.Format != nil {
-			cfmt(colField, " (%s)", deco.Value.F(v.Format.Name))
+		valueErr = vv.Err
+	case decode.Scalar:
+		// TODO: rethink scalar array/struct (json format)
+		switch av := vv.Actual.(type) {
+		case map[string]interface{}:
+			cfmt(colField, " %s (%s)", deco.Object.F("{}"), deco.Value.F("json"))
+		case []interface{}:
+			cfmt(colField, " %s%s%s (%s)", deco.Index.F("["), deco.Number.F(strconv.Itoa(len(av))), deco.Index.F("]"), deco.Value.F("json"))
+		default:
+			// TODO: hack
+			var sym interface{}
+			switch ss := vv.Sym.(type) {
+			case string:
+				if ss != "" {
+					sym = ss
+				}
+			case nil:
+			default:
+				sym = ss
+			}
+
+			cfmt(colField, " %s", deco.ValueColor(v).F(previewValue(vv.Value(), vv.DisplayFormat)))
+
+			if sym != nil {
+				cfmt(colField, " (%s)", deco.ValueColor(v).F(previewValue(vv.Actual, vv.DisplayFormat)))
+			}
+
+			// TODO: similar to struct/array?
+			if vv.Description != "" {
+				cfmt(colField, fmt.Sprintf(" (%s)", deco.Value.F(vv.Description)))
+			}
 		}
 	default:
-		if v.Symbol != "" {
-			cfmt(colField, " %s", deco.Value.F(v.Symbol))
-			cfmt(colField, " (%s)", deco.ValueColor(v).F(previewValue(v)))
-		} else {
-			cfmt(colField, " %s", deco.ValueColor(v).F(previewValue(v)))
-		}
-		// TODO: similar to struct/array?
-		if v.Description != "" {
-			cfmt(colField, fmt.Sprintf(" (%s)", deco.Value.F(v.Description)))
-		}
+		panic("unreachable")
 	}
 
 	if opts.Verbose {
@@ -169,7 +181,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 
 	cprint(colField, "\n")
 
-	if v.Err != nil {
+	if valueErr != nil {
 		var printErrs func(depth int, err error)
 		printErrs = func(depth int, err error) {
 			indent := strings.Repeat("  ", depth)
@@ -201,11 +213,11 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 				}
 			default:
 				columns()
-				cfmt(colField, "%s!%s\n", indent, deco.Error.F(v.Err.Error()))
+				cfmt(colField, "%s!%s\n", indent, deco.Error.F(err.Error()))
 			}
 		}
 
-		printErrs(depth, v.Err)
+		printErrs(depth, valueErr)
 	}
 
 	bufferLastBit := rootV.RootBitBuf.Len() - 1
@@ -355,6 +367,8 @@ func hexdump(w io.Writer, bv BufferRange, opts Options) error {
 	opts.Verbose = true
 	return dump(
 		&decode.Value{
+			// TODO: hack
+			V:          decode.Scalar{},
 			Range:      bv.r,
 			RootBitBuf: bv.bb.Copy(),
 		},

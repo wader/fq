@@ -148,7 +148,7 @@ mp3> .headers._name | ., type, length?
 "headers"
 "string"
 7
-mp3> .headers._symbol | ., type, length?
+mp3> .headers._sym | ., type, length?
 ""
 "string"
 0

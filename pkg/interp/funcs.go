@@ -412,6 +412,7 @@ func (i *Interp) _registry(c interface{}, a []interface{}) interface{} {
 			"description": f.Description,
 			"probe_order": f.ProbeOrder,
 			"root_name":   f.RootName,
+			"root_array":  f.RootArray,
 		}
 
 		var dependenciesVs []interface{}
@@ -623,12 +624,12 @@ func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
 	if err != nil {
 		return fmt.Errorf("%s: %w", formatName, err)
 	}
-	decodeFormats, err := i.registry.Group(formatName)
+	decodeFormat, err := i.registry.Group(formatName)
 	if err != nil {
 		return fmt.Errorf("%s: %w", formatName, err)
 	}
 
-	dv, _, err := decode.Decode(i.evalContext.ctx, bv.bb, decodeFormats,
+	dv, _, err := decode.Decode(i.evalContext.ctx, bv.bb, decodeFormat,
 		decode.Options{
 			IsRoot:        true,
 			FillGaps:      true,

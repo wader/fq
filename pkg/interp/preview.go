@@ -10,12 +10,8 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-func previewValue(v *decode.Value) string {
-	switch vv := v.V.(type) {
-	case decode.Array:
-		return "[]"
-	case decode.Struct:
-		return v.Description
+func previewValue(v interface{}, df decode.DisplayFormat) string {
+	switch vv := v.(type) {
 	case bool:
 		if vv {
 			return "true"
@@ -23,9 +19,9 @@ func previewValue(v *decode.Value) string {
 		return "false"
 	case int64:
 		// TODO: DisplayFormat is weird
-		return num.PadFormatInt(vv, decode.DisplayFormatToBase(v.DisplayFormat), true, 0)
+		return num.PadFormatInt(vv, decode.DisplayFormatToBase(df), true, 0)
 	case uint64:
-		return num.PadFormatUint(vv, decode.DisplayFormatToBase(v.DisplayFormat), true, 0)
+		return num.PadFormatUint(vv, decode.DisplayFormatToBase(df), true, 0)
 	case float64:
 		// TODO: float32? better truncated to significant digits?
 		return strconv.FormatFloat(vv, 'g', -1, 64)

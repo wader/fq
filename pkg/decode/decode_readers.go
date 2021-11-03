@@ -185,7 +185,7 @@ func (d *D) fieldZeroPadding(name string, nBits int, panicOnNonZero bool) {
 			s = "Incorrect"
 		}
 		// TODO: proper warnings
-		return &Value{Symbol: s, Description: "zero padding"}
+		return &Value{V: Scalar{Sym: s, Description: "zero padding"}}
 	})
 	if panicOnNonZero && !isZero {
 		panic(ValidateError{Reason: "expected zero padding", Pos: pos})

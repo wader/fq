@@ -164,11 +164,13 @@ func valuePath(v *decode.Value) []interface{} {
 	var parts []interface{}
 
 	for v.Parent != nil {
-		switch v.Parent.V.(type) {
-		case decode.Struct:
-			parts = append([]interface{}{v.Name}, parts...)
-		case decode.Array:
-			parts = append([]interface{}{v.Index}, parts...)
+		switch vv := v.Parent.V.(type) {
+		case decode.Compound:
+			if vv.IsArray {
+				parts = append([]interface{}{v.Index}, parts...)
+			} else {
+				parts = append([]interface{}{v.Name}, parts...)
+			}
 		}
 		v = v.Parent
 	}
@@ -332,20 +334,6 @@ func toBufferView(v interface{}) (BufferRange, error) {
 			return BufferRange{}, err
 		}
 		return newBufferRangeFromBuffer(bb, 8), nil
-	}
-}
-
-// optsFn is a function as toValue is used by tovalue/0 so needs to be fast
-func toValue(optsFn func() Options, v interface{}) (interface{}, bool) {
-	switch v := v.(type) {
-	case JQValueEx:
-		return v.JQValueToGoJQEx(optsFn), true
-	case gojq.JQValue:
-		return v.JQValueToGoJQ(), true
-	case nil, bool, float64, int, string, *big.Int, map[string]interface{}, []interface{}:
-		return v, true
-	default:
-		return nil, false
 	}
 }
 

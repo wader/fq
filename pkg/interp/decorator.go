@@ -107,25 +107,30 @@ func decoratorFromOptions(opts Options) Decorator {
 
 		d.ValueColor = func(v *decode.Value) ansi.Code {
 			switch vv := v.V.(type) {
-			case decode.Array:
-				return d.Array
-			case decode.Struct:
-				return d.Object
-			case bool:
-				if vv {
-					return d.True
+			case decode.Compound:
+				if vv.IsArray {
+					return d.Array
 				}
-				return d.False
-			case string:
-				return d.String
-			case nil:
-				return d.Null
-			case int, float64, int64, uint64:
-				// TODO: clean up number types
-				return d.Number
+				return d.Object
+			case decode.Scalar:
+				switch vv := vv.Value().(type) {
+				case bool:
+					if vv {
+						return d.True
+					}
+					return d.False
+				case string:
+					return d.String
+				case nil:
+					return d.Null
+				case int, float64, int64, uint64:
+					// TODO: clean up number types
+					return d.Number
+				default:
+					return d.Value
+				}
 			default:
-				// TODO: error?
-				return d.Value
+				panic("unreachable")
 			}
 		}
 		byteDefaultColor := ansi.FromString("")

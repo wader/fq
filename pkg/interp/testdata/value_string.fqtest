@@ -65,7 +65,7 @@ mp3> .headers[0].magic._name | ., type, length?
 "magic"
 "string"
 5
-mp3> .headers[0].magic._symbol | ., type, length?
+mp3> .headers[0].magic._sym | ., type, length?
 ""
 "string"
 0

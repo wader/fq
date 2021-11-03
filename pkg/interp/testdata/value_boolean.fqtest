@@ -52,7 +52,7 @@ mp3> .headers[0].flags.unsynchronisation._name | ., type, length?
 "unsynchronisation"
 "string"
 17
-mp3> .headers[0].flags.unsynchronisation._symbol | ., type, length?
+mp3> .headers[0].flags.unsynchronisation._sym | ., type, length?
 ""
 "string"
 0

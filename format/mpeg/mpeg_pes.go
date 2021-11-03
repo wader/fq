@@ -21,7 +21,7 @@ func init() {
 		Name:        format.MPEG_PES,
 		Description: "MPEG Packetized elementary stream",
 		DecodeFn:    pesDecode,
-		RootV:       decode.Array{},
+		RootArray:   true,
 		RootName:    "packets",
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.MPEG_PES_PACKET}, Formats: &pesPacketFormat},
