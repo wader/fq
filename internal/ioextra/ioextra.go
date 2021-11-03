@@ -1,6 +1,7 @@
 package ioextra
 
 import (
+	"context"
 	"errors"
 	"io"
 )
@@ -25,4 +26,31 @@ type ReadErrSeeker struct{ io.Reader }
 
 func (r *ReadErrSeeker) Seek(offset int64, whence int) (int64, error) {
 	return 0, errors.New("seek")
+}
+
+type CtxWriter struct {
+	io.Writer
+	Ctx context.Context
+}
+
+func (o CtxWriter) Write(p []byte) (n int, err error) {
+	if o.Ctx != nil {
+		if err := o.Ctx.Err(); err != nil {
+			return 0, err
+		}
+	}
+	return o.Writer.Write(p)
+}
+
+type DiscardCtxWriter struct {
+	Ctx context.Context
+}
+
+func (o DiscardCtxWriter) Write(p []byte) (n int, err error) {
+	if o.Ctx != nil {
+		if err := o.Ctx.Err(); err != nil {
+			return 0, err
+		}
+	}
+	return n, nil
 }

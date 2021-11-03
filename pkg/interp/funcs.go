@@ -225,8 +225,13 @@ func (i *Interp) readline(c interface{}, a []interface{}) interface{} {
 			}
 
 			names, shared, err := func() (newLine []string, shared int, err error) {
+				// c | opts.Complete(line; pos)
 				vs, err := i.EvalFuncValues(
-					completeCtx, c, opts.Complete, []interface{}{line, pos}, DiscardCtxWriter{Ctx: completeCtx},
+					completeCtx,
+					c,
+					opts.Complete,
+					[]interface{}{line, pos},
+					ioextra.DiscardCtxWriter{Ctx: completeCtx},
 				)
 				if err != nil {
 					return nil, pos, err
@@ -519,7 +524,10 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 		return err
 	}
 
-	// TODO: ctxreadseeker might leak
+	// ctxreadseeker is used to make sure any io calls can be canceled
+	// TODO: ctxreadseeker might leak if the underlaying call hangs forever
+
+	// a regular file should be seekable but fallback below to read whole file if not
 	if fFI.Mode().IsRegular() {
 		if rs, ok := f.(io.ReadSeeker); ok {
 			fRS = ctxreadseeker.New(i.evalContext.ctx, rs)
@@ -554,7 +562,7 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 	const cacheReadAheadSize = 512 * 1024
 	aheadRs := aheadreadseeker.New(fRS, cacheReadAheadSize)
 
-	// bb -> aheadreadseeker -> progressreadseeker -> ctxreadseeker -> readerseeker
+	// bitio.Buffer -> aheadreadseeker -> progressreadseeker -> ctxreadseeker -> readseeker
 
 	bbf.bb, err = bitio.NewBufferFromReadSeeker(aheadRs)
 	if err != nil {
@@ -581,12 +589,13 @@ func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
 
 		if opts.Progress != "" {
 			evalProgress := func(c interface{}) {
+				// {approx_read_bytes: 123, total_size: 123} | opts.Progress
 				_, _ = i.EvalFuncValues(
 					i.evalContext.ctx,
 					c,
 					opts.Progress,
 					nil,
-					DiscardCtxWriter{Ctx: i.evalContext.ctx},
+					ioextra.DiscardCtxWriter{Ctx: i.evalContext.ctx},
 				)
 			}
 			bbf.progressFn = func(approxReadBytes, totalSize int64) {

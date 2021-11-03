@@ -6,8 +6,9 @@ import (
 	"unicode/utf8"
 )
 
-// ByteRuneReader reads each by as a runes from a io.ReadSeeker
-// ex: when used with regexp \u00ff code point will match byte 0xff and not the utf-8 encoded version of 0xff
+// ByteRuneReader reads each byte as a rune from a io.ReadSeeker
+// ex: when used with regexp \u00ff code point will match byte 0xff and not the
+// utf-8 encoded version of 0xff
 type ByteRuneReader struct {
 	RS io.ReadSeeker
 }
@@ -46,7 +47,7 @@ func utf8Bytes(b byte) int {
 	}
 }
 
-// RuneReadSeeker reads runs from a io.ReadSeeker
+// RuneReadSeeker reads rune from a io.ReadSeeker
 func (brr RuneReadSeeker) ReadRune() (r rune, size int, err error) {
 	var b [utf8.UTFMax]byte
 

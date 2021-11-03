@@ -96,7 +96,7 @@ def _eval_compile_error_tostring:
   "\(.filename // "src"):\(.line):\(.column): \(.error)";
 def _eval($expr; $filename; f; on_error; on_compile_error):
   try
-      eval($expr; $filename) | f
+    eval($expr; $filename) | f
   catch
     if _eval_is_compile_error then on_compile_error
     else on_error

@@ -22,6 +22,7 @@ import (
 	"github.com/wader/fq/internal/ansi"
 	"github.com/wader/fq/internal/colorjson"
 	"github.com/wader/fq/internal/ctxstack"
+	"github.com/wader/fq/internal/ioextra"
 	"github.com/wader/fq/internal/num"
 	"github.com/wader/fq/internal/pos"
 	"github.com/wader/fq/pkg/bitio"
@@ -110,7 +111,7 @@ type OS interface {
 	Args() []string
 	Environ() []string
 	ConfigDir() (string, error)
-	// returned Open() io.ReadSeeker can optionally implement io.Closer
+	// FS.File returned by FS().Open() can optionally implement io.Seeker
 	FS() fs.FS
 	Readline(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error)
 	History() ([]string, error)
@@ -140,34 +141,6 @@ type FileReader struct {
 func (rf FileReader) Stat() (fs.FileInfo, error) { return rf.FileInfo, nil }
 func (rf FileReader) Read(p []byte) (int, error) { return rf.R.Read(p) }
 func (FileReader) Close() error                  { return nil }
-
-// TODO: move
-type DiscardCtxWriter struct {
-	Ctx context.Context
-}
-
-func (o DiscardCtxWriter) Write(p []byte) (n int, err error) {
-	if o.Ctx != nil {
-		if err := o.Ctx.Err(); err != nil {
-			return 0, err
-		}
-	}
-	return n, nil
-}
-
-type CtxWriter struct {
-	io.Writer
-	Ctx context.Context
-}
-
-func (o CtxWriter) Write(p []byte) (n int, err error) {
-	if o.Ctx != nil {
-		if err := o.Ctx.Err(); err != nil {
-			return 0, err
-		}
-	}
-	return o.Writer.Write(p)
-}
 
 type Value interface {
 	gojq.JQValue
@@ -711,7 +684,7 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilenam
 
 	runCtx, runCtxCancelFn := i.interruptStack.Push(ctx)
 	ni.evalContext.ctx = runCtx
-	ni.evalContext.output = CtxWriter{Writer: output, Ctx: runCtx}
+	ni.evalContext.output = ioextra.CtxWriter{Writer: output, Ctx: runCtx}
 	iter := gc.RunWithContext(runCtx, c, variableValues...)
 
 	iterWrapper := iterFn(func() (interface{}, bool) {
