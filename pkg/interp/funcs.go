@@ -55,7 +55,6 @@ func (i *Interp) makeFunctions() []Function {
 		{[]string{"_decode"}, 2, 2, i._decode, nil},
 		{[]string{"_is_decode_value"}, 0, 0, i._isDecodeValue, nil},
 
-		{[]string{"format"}, 0, 0, i.format, nil},
 		{[]string{"_display"}, 1, 1, nil, i._display},
 		{[]string{"_hexdump"}, 1, 1, nil, i._hexdump},
 
@@ -649,18 +648,6 @@ func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
 func (i *Interp) _isDecodeValue(c interface{}, a []interface{}) interface{} {
 	_, ok := c.(DecodeValue)
 	return ok
-}
-
-func (i *Interp) format(c interface{}, a []interface{}) interface{} {
-	cj, ok := c.(gojq.JQValue)
-	if !ok {
-		return nil
-	}
-	f, ok := cj.JQValueKey("_format").(string)
-	if !ok {
-		return nil
-	}
-	return f
 }
 
 func (i *Interp) _display(c interface{}, a []interface{}) gojq.Iter {

@@ -77,6 +77,8 @@ def hexdump: hexdump({display_bytes: 0});
 def hd($opts): hexdump($opts);
 def hd: hexdump;
 
+def format: _decode_value(._format; null);
+
 def root: _decode_value(._root);
 def buffer_root: _decode_value(._buffer_root);
 def format_root: _decode_value(._format_root);

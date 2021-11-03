@@ -109,10 +109,11 @@ def _is_scalar:
 def _expected_decode_value:
   error("expected a decode value but got: \(. | type) (\(. | tostring))");
 # TODO: helper? _is_decode_value?
-def _decode_value(f):
+def _decode_value(f; ef):
   if _is_decode_value then f
-  else _expected_decode_value
+  else ef
   end;
+def _decode_value(f): _decode_value(f; _expected_decode_value);
 
 def _is_context_canceled_error: . == "context canceled";
 
