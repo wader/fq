@@ -38,7 +38,7 @@ const (
 	MetadataBlockPicture       = 6
 )
 
-var metadataBlockNames = map[uint]string{
+var metadataBlockNames = decode.UToStr{
 	MetadataBlockStreaminfo:    "Streaminfo",
 	MetadataBlockPadding:       "Padding",
 	MetadataBlockApplication:   "Application",
@@ -53,14 +53,7 @@ func metadatablockDecode(d *decode.D, in interface{}) interface{} {
 	var streamInfo format.FlacStreamInfo
 
 	isLastBlock := d.FieldBool("last_block")
-	typ := d.FieldUFn("type", func() (uint64, decode.DisplayFormat, string) {
-		t := d.U7()
-		name := "Unknown"
-		if s, ok := metadataBlockNames[uint(t)]; ok {
-			name = s
-		}
-		return t, decode.NumberDecimal, name
-	})
+	typ := d.FieldU7("type", d.MapUToStr(metadataBlockNames))
 	length := d.FieldU24("length")
 
 	switch typ {
@@ -77,17 +70,12 @@ func metadatablockDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldFormatLen("picture", int64(length*8), flacPicture, nil)
 	case MetadataBlockSeektable:
 		seektableCount := length / 18
-		d.FieldArrayFn("seekpoints", func(d *decode.D) {
+		d.FieldArray("seekpoints", func(d *decode.D) {
 			for i := uint64(0); i < seektableCount; i++ {
-				d.FieldStructFn("seekpoint", func(d *decode.D) {
-					d.FieldUFn("sample_number", func() (uint64, decode.DisplayFormat, string) {
-						n := d.U64()
-						d := ""
-						if n == 0xffffffffffffffff {
-							d = "Placeholder"
-						}
-						return n, decode.NumberDecimal, d
-					})
+				d.FieldStruct("seekpoint", func(d *decode.D) {
+					d.FieldU64("sample_number", d.MapUToScalar(decode.UToScalar{
+						0xffff_ffff_ffff_ffff: {Description: "Placeholder"},
+					}))
 					d.FieldU64("offset")
 					d.FieldU16("number_of_samples")
 				})
@@ -95,9 +83,9 @@ func metadatablockDecode(d *decode.D, in interface{}) interface{} {
 		})
 	case MetadataBlockApplication:
 		d.FieldUTF8("id", 4)
-		d.FieldBitBufLen("data", int64((length-4)*8))
+		d.FieldRawLen("data", int64((length-4)*8))
 	default:
-		d.FieldBitBufLen("data", int64(length*8))
+		d.FieldRawLen("data", int64(length*8))
 	}
 
 	return format.FlacMetadatablockOut{

@@ -88,6 +88,7 @@ type FlacStreamInfo struct {
 	SampleRate           uint64
 	BitPerSample         uint64
 	TotalSamplesInStream uint64
+	MD5                  []byte
 }
 
 type FlacStreaminfoOut struct {

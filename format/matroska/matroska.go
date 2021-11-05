@@ -121,12 +121,6 @@ func decodeVint(d *decode.D) uint64 {
 	return n & m
 }
 
-func FieldFormatVint(d *decode.D, name string, displayFormat decode.DisplayFormat) uint64 {
-	return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
-		return decodeVint(d), displayFormat, ""
-	})
-}
-
 type track struct {
 	parentD             *decode.D
 	number              int
@@ -151,44 +145,39 @@ type decodeContext struct {
 func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext) {
 	tagEndBit := d.Pos() + bitsLimit
 
-	d.FieldArrayFn("elements", func(d *decode.D) {
+	d.FieldArray("elements", func(d *decode.D) {
 		// var crcD *decode.D
 		// var crcStart int64
 
 		for d.Pos() < tagEndBit && d.NotEnd() {
-			startPos := d.Pos()
-			tagID := decodeRawVint(d)
-			d.SeekAbs(startPos)
+			d.FieldStruct("element", func(d *decode.D) {
+				var a ebml.Attribute
 
-			a, ok := tag[tagID]
-			if !ok {
-				a, ok = ebml.Global[tagID]
-				if !ok {
-					d.Invalid(fmt.Sprintf("unknown id %d", tagID))
-				}
-			}
+				tagID := d.FieldUFn("id", decodeRawVint, func(s decode.Scalar) (decode.Scalar, error) {
+					n := s.ActualU()
+					var ok bool
+					a, ok = tag[n]
+					if !ok {
+						a, ok = ebml.Global[n]
+						if !ok {
+							d.Invalid(fmt.Sprintf("unknown id %d", n))
+						}
+					}
+					return decode.Scalar{Actual: n, DisplayFormat: decode.NumberHex, Sym: a.Name, Description: a.Definition}, nil
+				})
+				d.FieldValueU("type", uint64(a.Type), d.Sym(ebml.TypeNames[a.Type]))
 
-			d.FieldStructFn("element", func(d *decode.D) {
 				if tagID == ebml_matroska.TrackEntryID {
 					dc.currentTrack = &track{}
 					dc.tracks = append(dc.tracks, dc.currentTrack)
 				}
 
-				// TODO: add a.Definition as description?
-
-				// TODO: map?
-				d.FieldValueU("type", uint64(a.Type), ebml.TypeNames[a.Type])
-
-				d.FieldUFn("id", func() (uint64, decode.DisplayFormat, string) {
-					n := decodeRawVint(d)
-					return n, decode.NumberHex, a.Name
-				})
 				// tagSize could be 0xffffffffffffff which means "unknown" size, then we will read until eof
 				// TODO: should read until unknown id:
 				//    The end of a Master-element with unknown size is determined by the beginning of the next
 				//    element that is not a valid sub-element of that Master-element
 				// TODO: should also handle garbage between
-				tagSize := FieldFormatVint(d, "size", decode.NumberDecimal)
+				tagSize := d.FieldUFn("size", decodeVint)
 
 				if tagSize > 8 &&
 					(a.Type == ebml.Integer ||
@@ -199,24 +188,25 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 
 				switch a.Type {
 				case ebml.Integer:
-					d.FieldSFn("value", func() (int64, decode.DisplayFormat, string) {
-						n := d.S(int(tagSize) * 8)
-						if len(a.UintegerEnums) > 0 {
-							// TODO: use enum Definition as description
-							return n, decode.NumberDecimal, a.IntegerEnums[n].Label
-
+					d.FieldU("value", int(tagSize)*8, func(s decode.Scalar) (decode.Scalar, error) {
+						if a.IntegerEnums != nil {
+							if e, ok := a.IntegerEnums[s.ActualS()]; ok {
+								s.Sym = e.Label
+								s.Description = e.Definition
+							}
 						}
-						return n, decode.NumberDecimal, ""
+						return s, nil
 					})
-				case ebml.Uinteger:
-					v := d.FieldUFn("value", func() (uint64, decode.DisplayFormat, string) {
-						n := d.U(int(tagSize) * 8)
-						if len(a.UintegerEnums) > 0 {
-							// TODO: use enum Definition as description
-							return n, decode.NumberDecimal, a.UintegerEnums[n].Label
 
+				case ebml.Uinteger:
+					v := d.FieldU("value", int(tagSize)*8, func(s decode.Scalar) (decode.Scalar, error) {
+						if a.UintegerEnums != nil {
+							if e, ok := a.UintegerEnums[s.ActualU()]; ok {
+								s.Sym = e.Label
+								s.Description = e.Definition
+							}
 						}
-						return n, decode.NumberDecimal, ""
+						return s, nil
 					})
 
 					if dc.currentTrack != nil && tagID == ebml_matroska.TrackNumberID {
@@ -225,21 +215,21 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 				case ebml.Float:
 					d.FieldF("value", int(tagSize)*8)
 				case ebml.String:
-					v := d.FieldStrFn("value", func() (string, string) {
-						s := d.UTF8(int(tagSize))
-						if len(a.StringEnums) > 0 {
-							// TODO: use enum Definition as description
-							return s, a.StringEnums[s].Label
-
+					v := d.FieldUTF8("value", int(tagSize), func(s decode.Scalar) (decode.Scalar, error) {
+						if a.StringEnums != nil {
+							if e, ok := a.StringEnums[s.ActualStr()]; ok {
+								s.Sym = e.Label
+								s.Description = e.Definition
+							}
 						}
-						return s, ""
+						return s, nil
 					})
 
 					if dc.currentTrack != nil && tagID == ebml_matroska.CodecIDID {
 						dc.currentTrack.codec = v
 					}
 				case ebml.UTF8:
-					d.FieldUTF8Null("value", int(tagSize))
+					d.FieldUTF8NullTerminatedLen("value", int(tagSize))
 				case ebml.Date:
 					// TODO:
 					/*
@@ -262,7 +252,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 						    entry $label "[clock format $s] ${frac}s" $size [expr [pos]-$size]
 						}
 					*/
-					d.FieldBitBufLen("value", int64(tagSize)*8)
+					d.FieldRawLen("value", int64(tagSize)*8)
 				case ebml.Binary:
 					switch tagID {
 					case ebml_matroska.SimpleBlockID:
@@ -288,7 +278,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 					case ebml_matroska.FileDataID:
 						d.FieldFormatLen("value", int64(tagSize)*8, imageFormat, nil)
 					default:
-						d.FieldBitBufLen("value", int64(tagSize)*8)
+						d.FieldRawLen("value", int64(tagSize)*8)
 						// if tagID == CRC {
 						// 	crcD = d
 						// 	crcStart = d.Pos()
@@ -335,27 +325,27 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 
 		switch t.codec {
 		case "A_VORBIS":
-			t.parentD.DecodeRangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
+			t.parentD.RangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
 				numPackets := d.FieldU8("num_packets")
 				// TODO: lacing
 				packetLengths := []int64{}
 				// Xiph-style lacing (similar to ogg) of n-1 packets, last is reset of block
-				d.FieldArrayFn("laces", func(d *decode.D) {
+				d.FieldArray("laces", func(d *decode.D) {
 					for i := uint64(0); i < numPackets; i++ {
-						l := d.FieldUFn("lace", func() (uint64, decode.DisplayFormat, string) {
+						l := d.FieldUFn("lace", func(d *decode.D) uint64 {
 							var l uint64
 							for {
 								n := d.U8()
 								l += n
 								if n < 255 {
-									return l, decode.NumberDecimal, ""
+									return l
 								}
 							}
 						})
 						packetLengths = append(packetLengths, int64(l))
 					}
 				})
-				d.FieldArrayFn("packets", func(d *decode.D) {
+				d.FieldArray("packets", func(d *decode.D) {
 					for _, l := range packetLengths {
 						d.FieldFormatLen("packet", l*8, vorbisPacketFormat, nil)
 					}
@@ -367,9 +357,9 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 		case "A_OPUS":
 			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, opusPacketFrameFormat, nil)
 		case "A_FLAC":
-			t.parentD.DecodeRangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
-				d.FieldStructFn("value", func(d *decode.D) {
-					d.FieldValidateUTF8("magic", "fLaC")
+			t.parentD.RangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
+				d.FieldStruct("value", func(d *decode.D) {
+					d.FieldUTF8("magic", 4, d.AssertStr("fLaC"))
 					_, v := d.FieldFormat("metadatablocks", flacMetadatablocksFormat, nil)
 					flacMetadatablockOut, ok := v.(format.FlacMetadatablocksOut)
 					if !ok {
@@ -399,16 +389,18 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 		case "V_VP9":
 			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, vp9CFMFormat, nil)
 		default:
-			t.parentD.FieldBitBufRange("value", t.codecPrivatePos, t.codecPrivateTagSize)
+			t.parentD.RangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
+				d.FieldRawLen("value", d.BitsLeft())
+			})
 		}
 	}
 
 	for _, b := range dc.blocks {
-		b.d.DecodeRangeFn(b.r.Start, b.r.Len, func(d *decode.D) {
-			trackNumber := FieldFormatVint(d, "track_number", decode.NumberDecimal)
+		b.d.RangeFn(b.r.Start, b.r.Len, func(d *decode.D) {
+			trackNumber := d.FieldUFn("track_number", decodeVint)
 			d.FieldU16("timestamp")
 			if b.simple {
-				d.FieldStructFn("flags", func(d *decode.D) {
+				d.FieldStruct("flags", func(d *decode.D) {
 					d.FieldBool("key_frame")
 					d.FieldU3("reserved")
 					d.FieldBool("invisible")
@@ -416,7 +408,7 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 					d.FieldBool("discardable")
 				})
 			} else {
-				d.FieldStructFn("flags", func(d *decode.D) {
+				d.FieldStruct("flags", func(d *decode.D) {
 					d.FieldU4("reserved")
 					d.FieldBool("invisible")
 					d.FieldU2("lacing")
@@ -433,7 +425,7 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 			}
 
 			if d.BitsLeft() > 0 {
-				d.FieldBitBufLen("data", d.BitsLeft())
+				d.FieldRawLen("data", d.BitsLeft())
 			}
 		})
 	}

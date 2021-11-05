@@ -28,7 +28,7 @@ func commentDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldUTF8("vendor", int(vendorLen))
 	userCommentListLength := d.FieldU32LE("user_comment_list_length")
 	i := uint64(0)
-	d.FieldStructArrayLoopFn("user_comments", "user_comment", func() bool { return i < userCommentListLength }, func(d *decode.D) {
+	d.FieldStructArrayLoop("user_comments", "user_comment", func() bool { return i < userCommentListLength }, func(d *decode.D) {
 		userCommentLength := d.FieldU32LE("length")
 		userComment := d.FieldUTF8("comment", int(userCommentLength))
 		pairParts := strings.SplitN(userComment, "=", 2)

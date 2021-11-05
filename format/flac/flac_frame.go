@@ -21,11 +21,11 @@ func init() {
 }
 
 const (
-	BlockingStrategyFixed = iota
-	BlockingStrategyVariable
+	BlockingStrategyFixed    = 0
+	BlockingStrategyVariable = 1
 )
 
-var BlockingStrategyNames = map[uint]string{
+var BlockingStrategyNames = decode.UToStr{
 	BlockingStrategyFixed:    "Fixed",
 	BlockingStrategyVariable: "Variable",
 }
@@ -49,6 +49,16 @@ const (
 	ChannelSideRight = 0b1001
 	ChannelMidSide   = 0b1010
 )
+
+const (
+	ResidualCodingMethodRice  = 0b00
+	ResidualCodingMethodRice2 = 0b01
+)
+
+var ResidualCodingMethodMap = decode.UToScalar{
+	ResidualCodingMethodRice:  decode.Scalar{Sym: uint64(4), Description: "rice"},
+	ResidualCodingMethodRice2: decode.Scalar{Sym: uint64(5), Description: "rice2"},
+}
 
 // TODO: generic enough?
 func utf8Uint(d *decode.D) uint64 {
@@ -89,26 +99,19 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	channelAssignment := -1
 	sideChannelIndex := -1
 
-	d.FieldStructFn("header", func(d *decode.D) {
+	d.FieldStruct("header", func(d *decode.D) {
 		// <14> 11111111111110
-		d.FieldValidateUFn("sync", 0b11111111111110, d.U14)
+		d.FieldU14("sync", d.AssertU(0b11111111111110), d.Bin)
 
 		// <1> Reserved
 		// 0 : mandatory value
 		// 1 : reserved for future use
-		d.FieldValidateUFn("reserved0", 0, d.U1)
+		d.FieldU1("reserved0", d.AssertU(0))
 
 		// <1> Blocking strategy:
 		// 0 : fixed-blocksize stream; frame header encodes the frame number
 		// 1 : variable-blocksize stream; frame header encodes the sample number
-		blockingStrategy := d.FieldUFn("blocking_strategy", func() (uint64, decode.DisplayFormat, string) {
-			switch d.U1() {
-			case 0:
-				return BlockingStrategyFixed, decode.NumberDecimal, BlockingStrategyNames[BlockingStrategyFixed]
-			default:
-				return BlockingStrategyVariable, decode.NumberDecimal, BlockingStrategyNames[BlockingStrategyVariable]
-			}
-		})
+		blockingStrategy := d.FieldU1("blocking_strategy", d.MapUToStr(BlockingStrategyNames))
 
 		// <4> Block size in inter-channel samples:
 		// 0000 : reserved
@@ -118,23 +121,25 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		// 0111 : get 16 bit (blocksize-1) from end of header
 		// 1000-1111 : 256 * (2^(n-8)) samples, i.e. 256/512/1024/2048/4096/8192/16384/32768
 		var blockSizeBits uint64
-		blockSize = int(d.FieldUFn("block_size", func() (uint64, decode.DisplayFormat, string) {
+		d.FieldUScalarFn("block_size", func(d *decode.D) decode.Scalar {
 			blockSizeBits = d.U4()
+			s := decode.Scalar{Actual: blockSizeBits}
 			switch blockSizeBits {
 			case 0b0000:
-				return 0, decode.NumberDecimal, "reserved"
+				s.Description = "reserved"
 			case 0b0001:
-				return 192, decode.NumberDecimal, ""
+				blockSize = 192
 			case 0b0010, 0b0011, 0b0100, 0b0101:
-				return 576 * (1 << (blockSizeBits - 2)), decode.NumberDecimal, ""
+				blockSize = 576 * (1 << (blockSizeBits - 2))
 			case 0b0110:
-				return 0, decode.NumberDecimal, "end of header (8 bit)"
+				s.Description = "end of header (8 bit)"
 			case 0b0111:
-				return 0, decode.NumberDecimal, "end of header (16 bit)"
+				s.Description = "end of header (16 bit)"
 			default:
-				return 256 * (1 << (blockSizeBits - 8)), decode.NumberDecimal, ""
+				blockSize = 256 * (1 << (blockSizeBits - 8))
 			}
-		}))
+			return s
+		})
 
 		// <4> Sample rate:
 		// 0000 : get from STREAMINFO metadata block
@@ -154,44 +159,44 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		// 1110 : get 16 bit sample rate (in tens of Hz) from end of header
 		// 1111 : invalid, to prevent sync-fooling string of 1s
 		var sampleRateBits uint64
-		d.FieldUFn("sample_rate", func() (uint64, decode.DisplayFormat, string) {
+		d.FieldUScalarFn("sample_rate", func(d *decode.D) decode.Scalar {
 			sampleRateBits = d.U4()
 			switch sampleRateBits {
 			case 0:
 				if inStreamInfo == nil {
 					d.Invalid("streaminfo required for sample rate")
 				}
-				return inStreamInfo.SampleRate, decode.NumberDecimal, "streaminfo"
+				return decode.Scalar{Actual: sampleRateBits, Sym: inStreamInfo.SampleRate, Description: "streaminfo"}
 			case 0b0001:
-				return 88200, decode.NumberDecimal, ""
+				return decode.Scalar{Actual: sampleRateBits, Sym: 88200}
 			case 0b0010:
-				return 176000, decode.NumberDecimal, ""
+				return decode.Scalar{Actual: sampleRateBits, Sym: 176000}
 			case 0b0011:
-				return 19200, decode.NumberDecimal, ""
+				return decode.Scalar{Actual: sampleRateBits, Sym: 19200}
 			case 0b0100:
-				return 800, decode.NumberDecimal, ""
+				return decode.Scalar{Actual: sampleRateBits, Sym: 800}
 			case 0b0101:
-				return 1600, decode.NumberDecimal, ""
+				return decode.Scalar{Actual: sampleRateBits, Sym: 1600}
 			case 0b0110:
-				return 22050, decode.NumberDecimal, ""
+				return decode.Scalar{Actual: sampleRateBits, Sym: 22050}
 			case 0b0111:
-				return 44100, decode.NumberDecimal, ""
+				return decode.Scalar{Actual: sampleRateBits, Sym: 44100}
 			case 0b1000:
-				return 32000, decode.NumberDecimal, ""
+				return decode.Scalar{Actual: sampleRateBits, Sym: 32000}
 			case 0b1001:
-				return 44100, decode.NumberDecimal, ""
+				return decode.Scalar{Actual: sampleRateBits, Sym: 44100}
 			case 0b1010:
-				return 48000, decode.NumberDecimal, ""
+				return decode.Scalar{Actual: sampleRateBits, Sym: 48000}
 			case 0b1011:
-				return 96000, decode.NumberDecimal, ""
+				return decode.Scalar{Actual: sampleRateBits, Sym: 96000}
 			case 0b1100:
-				return 0, decode.NumberDecimal, "end of header (8 bit*1000)"
+				return decode.Scalar{Actual: sampleRateBits, Description: "end of header (8 bit*1000)"}
 			case 0b1101:
-				return 0, decode.NumberDecimal, "end of header (16 bit)"
+				return decode.Scalar{Actual: sampleRateBits, Description: "end of header (16 bit)"}
 			case 0b1110:
-				return 0, decode.NumberDecimal, "end of header (16 bit*10)"
+				return decode.Scalar{Actual: sampleRateBits, Description: "end of header (16 bit*10)"}
 			default:
-				return 0, decode.NumberDecimal, "invalid"
+				return decode.Scalar{Actual: sampleRateBits, Description: "invalid"}
 			}
 		})
 
@@ -209,8 +214,9 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		// 1001 : right/side stereo: channel 0 is the side(difference) channel, channel 1 is the right channel
 		// 1010 : mid/side stereo: channel 0 is the mid(average) channel, channel 1 is the side(difference) channel
 		// 1011-1111 : reserved
-		channels = d.FieldUFn("channel_assignment", func() (uint64, decode.DisplayFormat, string) {
-			ca, u, disp := func() (uint64, uint64, string) {
+		// TODO: extract to tables and cleanup
+		d.FieldUScalarFn("channel_assignment", func(d *decode.D) decode.Scalar {
+			v, ch, desc := func() (uint64, uint64, string) {
 				v := d.U4()
 				switch v {
 				case 0:
@@ -242,13 +248,12 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 					return v, 0, "reserved"
 				}
 			}()
-			channelAssignment = int(ca)
+			channels = ch
+			channelAssignment = int(v)
 			if sideChannelIndex != -1 {
-				d.FieldUFn("side_channel_index", func() (uint64, decode.DisplayFormat, string) {
-					return uint64(sideChannelIndex), decode.NumberDecimal, ""
-				})
+				d.FieldUFn("side_channel_index", func(d *decode.D) uint64 { return uint64(sideChannelIndex) })
 			}
-			return u, decode.NumberDecimal, disp
+			return decode.Scalar{Actual: v, Sym: ch, Description: desc}
 		})
 		if channels == 0 {
 			d.Invalid("unknown number of channels")
@@ -263,80 +268,70 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		// 101 : 20 bits per sample
 		// 110 : 24 bits per sample
 		// 111 : reserved
-		sampleSize = int(d.FieldUFn("sample_size", func() (uint64, decode.DisplayFormat, string) {
-			switch d.U3() {
+		d.FieldUScalarFn("sample_size", func(d *decode.D) decode.Scalar {
+			sampleSizeBits := d.U3()
+			s := decode.Scalar{Actual: sampleSizeBits}
+			switch sampleSizeBits {
 			case 0b000:
 				if inStreamInfo == nil {
 					d.Invalid("streaminfo required for bit per sample")
 				}
-				return inStreamInfo.BitPerSample, decode.NumberDecimal, "streaminfo"
+				sampleSize = int(inStreamInfo.BitPerSample)
+				s.Description = "streaminfo"
 			case 0b001:
-				return 8, decode.NumberDecimal, ""
+				sampleSize = 8
 			case 0b010:
-				return 12, decode.NumberDecimal, ""
+				sampleSize = 12
 			case 0b011:
-				return 0, decode.NumberDecimal, "reserved"
+				s.Description = "reserved"
 			case 0b100:
-				return 16, decode.NumberDecimal, ""
+				sampleSize = 16
 			case 0b101:
-				return 20, decode.NumberDecimal, ""
+				sampleSize = 20
 			case 0b110:
-				return 24, decode.NumberDecimal, ""
+				sampleSize = 24
 			case 0b111:
-				return 0, decode.NumberDecimal, "reserved"
+				s.Description = "reserved"
 			}
-			panic("unreachable")
-		}))
+			s.Sym = sampleSize
+			return s
+		})
 
 		// <1> Reserved:
 		// 0 : mandatory value
 		// 1 : reserved for future use
-		d.FieldValidateUFn("reserved1", 0, d.U1)
+		d.FieldU1("reserved1", d.AssertU(0))
 
-		d.FieldStructFn("end_of_header", func(d *decode.D) {
+		d.FieldStruct("end_of_header", func(d *decode.D) {
 			// if(variable blocksize)
 			//   <8-56>:"UTF-8" coded sample number (decoded number is 36 bits) [4]
 			// else
 			//   <8-48>:"UTF-8" coded frame number (decoded number is 31 bits) [4]
 			switch blockingStrategy {
 			case BlockingStrategyVariable:
-				d.FieldUFn("sample_number", func() (uint64, decode.DisplayFormat, string) {
-					return utf8Uint(d), decode.NumberDecimal, ""
-				})
+				d.FieldUFn("sample_number", utf8Uint)
 			case BlockingStrategyFixed:
-				d.FieldUFn("frame_number", func() (uint64, decode.DisplayFormat, string) {
-					return utf8Uint(d), decode.NumberDecimal, ""
-				})
+				d.FieldUFn("frame_number", utf8Uint)
 			}
 
 			// if(blocksize bits == 011x)
 			//   8/16 bit (blocksize-1)
 			switch blockSizeBits {
 			case 0b0110:
-				blockSize = int(d.FieldUFn("block_size", func() (uint64, decode.DisplayFormat, string) {
-					return d.U8() + 1, decode.NumberDecimal, ""
-				}))
+				blockSize = int(d.FieldU8("block_size", d.UAdd(1)))
 			case 0b0111:
-				blockSize = int(d.FieldUFn("block_size", func() (uint64, decode.DisplayFormat, string) {
-					return d.U16() + 1, decode.NumberDecimal, ""
-				}))
+				blockSize = int(d.FieldU16("block_size", d.UAdd(1)))
 			}
 
 			// if(sample rate bits == 11xx)
 			//   8/16 bit sample rate
 			switch sampleRateBits {
 			case 0b1100:
-				d.FieldUFn("sample_rate", func() (uint64, decode.DisplayFormat, string) {
-					return d.U8() * 1000, decode.NumberDecimal, ""
-				})
+				d.FieldUFn("sample_rate", func(d *decode.D) uint64 { return d.U8() * 1000 })
 			case 0b1101:
-				d.FieldUFn("sample_rate", func() (uint64, decode.DisplayFormat, string) {
-					return d.U16(), decode.NumberDecimal, ""
-				})
+				d.FieldUFn("sample_rate", func(d *decode.D) uint64 { return d.U16() })
 			case 0b1110:
-				d.FieldUFn("sample_rate", func() (uint64, decode.DisplayFormat, string) {
-					return d.U16() * 10, decode.NumberDecimal, ""
-				})
+				d.FieldUFn("sample_rate", func(d *decode.D) uint64 { return d.U16() * 10 })
 			case 0b1111:
 				// TODO: reserved?
 			}
@@ -344,16 +339,15 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 
 		headerCRC := &crc.CRC{Bits: 8, Table: crc.ATM8Table}
 		decode.MustCopy(d, headerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
-		d.FieldChecksumLen("crc", 8, headerCRC.Sum(nil), decode.BigEndian)
-
+		d.FieldRawLen("crc", 8, d.ValidateRaw(headerCRC.Sum(nil)), d.RawHex)
 	})
 
 	var channelSamples [][]int64
-	d.FieldArrayFn("subframes", func(d *decode.D) {
+	d.FieldArray("subframes", func(d *decode.D) {
 		for channelIndex := 0; channelIndex < int(channels); channelIndex++ {
-			d.FieldStructFn("subframe", func(d *decode.D) {
+			d.FieldStruct("subframe", func(d *decode.D) {
 				// <1> Zero bit padding, to prevent sync-fooling string of 1s
-				d.FieldValidateUFn("zero_bit", 0, d.U1)
+				d.FieldU1("zero_bit", d.AssertU(0))
 
 				// <6> Subframe type:
 				// 000000 : SUBFRAME_CONSTANT
@@ -364,8 +358,8 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 				// 01xxxx : reserved
 				// 1xxxxx : SUBFRAME_LPC, xxxxx=order-1
 				var lpcOrder int
-				subframeType := d.FieldUFn("subframe_type", func() (uint64, decode.DisplayFormat, string) {
-					u, disp := func() (uint64, string) {
+				subframeType := d.FieldUScalarFn("subframe_type", func(d *decode.D) decode.Scalar {
+					u, sym := func() (uint64, string) {
 						bits := d.U6()
 						switch bits {
 						case 0b000000:
@@ -384,10 +378,9 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 							return SubframeLPC, SubframeTypeNames[SubframeLPC]
 						}
 					}()
-					d.FieldUFn("lpc_order", func() (uint64, decode.DisplayFormat, string) {
-						return uint64(lpcOrder), decode.NumberDecimal, ""
-					})
-					return u, decode.NumberDecimal, disp
+					d.FieldValueU("lpc_order", uint64(lpcOrder))
+					// TODO: actual wrong for LPC/fixed?
+					return decode.Scalar{Actual: u, Sym: sym}
 				})
 
 				// 'Wasted bits-per-sample' flag:
@@ -396,9 +389,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 				wastedBitsFlag := d.FieldU1("wasted_bits_flag")
 				var wastedBitsK int
 				if wastedBitsFlag != 0 {
-					wastedBitsK = int(d.FieldUFn("wasted_bits_k", func() (uint64, decode.DisplayFormat, string) {
-						return d.Unary(0) + 1, decode.NumberDecimal, ""
-					}))
+					wastedBitsK = int(d.FieldUnary("wasted_bits_k", 0, d.UAdd(1)))
 				}
 
 				subframeSampleSize := sampleSize - wastedBitsK
@@ -410,14 +401,14 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 				if channelIndex == sideChannelIndex {
 					subframeSampleSize++
 				}
-				d.FieldValueU("subframe_sample_size", uint64(subframeSampleSize), "")
+				d.FieldValueU("subframe_sample_size", uint64(subframeSampleSize))
 
 				decodeWarmupSamples := func(samples []int64, n int, sampleSize int) {
 					if len(samples) < n {
 						d.Invalid("decodeWarmupSamples outside block size")
 					}
 
-					d.FieldArrayFn("warmup_samples", func(d *decode.D) {
+					d.FieldArray("warmup_samples", func(d *decode.D) {
 						for i := 0; i < n; i++ {
 							samples[i] = d.FieldS("value", sampleSize)
 						}
@@ -433,29 +424,29 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 					// 01 : partitioned Rice coding with 5-bit Rice parameter; RESIDUAL_CODING_METHOD_PARTITIONED_RICE2 follows
 					// 10-11 : reserved
 					var riceEscape int
-					riceBits := int(d.FieldUFn("residual_coding_method", func() (uint64, decode.DisplayFormat, string) {
-						switch d.U2() {
-						case 0b00:
-							riceEscape = 0b1111
-							return 4, decode.NumberDecimal, "rice"
-						case 0b01:
-							riceEscape = 0b11111
-							return 5, decode.NumberDecimal, "rice2"
-						default:
-							d.Invalid("unknown residual_coding_method")
-							return 0, 0, ""
-						}
+					var riceBits int
+					residualCodingMethod := d.FieldU2("residual_coding_method", d.MapUToScalar(decode.UToScalar{
+						0b00: decode.Scalar{Sym: uint64(4), Description: "rice"},
+						0b01: decode.Scalar{Sym: uint64(5), Description: "rice2"},
 					}))
+					switch residualCodingMethod {
+					case ResidualCodingMethodRice:
+						riceEscape = 0b1111
+						riceBits = 4
+					case ResidualCodingMethodRice2:
+						riceEscape = 0b11111
+						riceBits = 5
+					}
 
 					// <4> Partition order.
 					partitionOrder := int(d.FieldU4("partition_order"))
 					// There will be 2^order partitions.
 					ricePartitions := 1 << partitionOrder
-					d.FieldValueU("rice_partitions", uint64(ricePartitions), "")
+					d.FieldValueU("rice_partitions", uint64(ricePartitions))
 
-					d.FieldArrayFn("partitions", func(d *decode.D) {
+					d.FieldArray("partitions", func(d *decode.D) {
 						for i := 0; i < ricePartitions; i++ {
-							d.FieldStructFn("partition", func(d *decode.D) {
+							d.FieldStruct("partition", func(d *decode.D) {
 								// Encoding parameter:
 								// <4(+5)> Encoding parameter:
 								// 0000-1110 : Rice parameter.
@@ -477,7 +468,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 									count = (blockSize / ricePartitions) - lpcOrder
 								}
 
-								d.FieldValueU("count", uint64(count), "")
+								d.FieldValueU("count", uint64(count))
 
 								riceParameter := int(d.FieldU("rice_parameter", riceBits))
 
@@ -487,7 +478,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 
 								if riceParameter == riceEscape {
 									escapeSampleSize := int(d.FieldU5("escape_sample_size"))
-									d.FieldBitBufLen("samples", int64(count*escapeSampleSize))
+									d.FieldRawLen("samples", int64(count*escapeSampleSize))
 								} else {
 									samplesStart := d.Pos()
 									for j := 0; j < count; j++ {
@@ -499,7 +490,9 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 										n++
 									}
 									samplesStop := d.Pos()
-									d.FieldBitBufRange("samples", samplesStart, samplesStop-samplesStart)
+									d.RangeFn(samplesStart, samplesStop-samplesStart, func(d *decode.D) {
+										d.FieldRawLen("samples", d.BitsLeft())
+									})
 								}
 							})
 						}
@@ -532,7 +525,10 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 					samples = make([]int64, blockSize)
 					// <n*i> Unencoded subblock; n = frame's bits-per-sample, i = frame's blocksize.
 					// TODO: refactor into some kind of FieldBitBufLenFn?
-					d.FieldBitBufRange("samples", d.Pos(), int64(blockSize*subframeSampleSize))
+					d.RangeFn(d.Pos(), int64(blockSize*subframeSampleSize), func(d *decode.D) {
+						d.FieldRawLen("samples", d.BitsLeft())
+					})
+
 					for i := 0; i < blockSize; i++ {
 						samples[i] = d.S(subframeSampleSize)
 					}
@@ -559,9 +555,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 					// <n> Unencoded warm-up samples (n = frame's bits-per-sample * lpc order).
 					decodeWarmupSamples(samples, lpcOrder, subframeSampleSize)
 					// <4> (Quantized linear predictor coefficients' precision in bits)-1 (1111 = invalid).
-					precision := int(d.FieldUFn("precision", func() (uint64, decode.DisplayFormat, string) {
-						return d.U4() + 1, decode.NumberDecimal, ""
-					}))
+					precision := int(d.FieldU4("precision", d.UAdd(1)))
 					// <5> Quantized linear predictor coefficient shift needed in bits (NOTE: this number is signed two's-complement).
 					shift := d.FieldS5("shift")
 					if shift < 0 {
@@ -569,7 +563,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 					}
 					// <n> Unencoded predictor coefficients (n = qlp coeff precision * lpc order) (NOTE: the coefficients are signed two's-complement).
 					var coeffs []int64
-					d.FieldArrayFn("coefficients", func(d *decode.D) {
+					d.FieldArray("coefficients", func(d *decode.D) {
 						for i := 0; i < lpcOrder; i++ {
 							coeffs = append(coeffs, d.FieldS("value", precision))
 						}
@@ -591,11 +585,11 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	})
 
 	// <?> Zero-padding to byte alignment.
-	d.FieldValidateUFn("byte_align", 0, func() uint64 { return d.U(d.ByteAlignBits()) })
+	d.FieldU("byte_align", d.ByteAlignBits(), d.AssertU(0))
 	// <16> CRC-16 (polynomial = x^16 + x^15 + x^2 + x^0, initialized with 0) of everything before the crc, back to and including the frame header sync code
 	footerCRC := &crc.CRC{Bits: 16, Table: crc.ANSI16Table}
 	decode.MustCopy(d, footerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
-	d.FieldChecksumLen("footer_crc", 16, footerCRC.Sum(nil), decode.BigEndian)
+	d.FieldRawLen("footer_crc", 16, d.ValidateRaw(footerCRC.Sum(nil)), d.RawHex)
 
 	streamSamples := len(channelSamples[0])
 	for j := 0; j < len(channelSamples); j++ {

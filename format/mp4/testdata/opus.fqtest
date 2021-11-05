@@ -14,11 +14,11 @@ $ fq -d mp4 verbose /opus.mp4
      |                                               |                |    [1]: box {} 0x1c-0x23.7 (8)
 0x010|                                    00 00 00 08|            ....|      size: 8 0x1c-0x1f.7 (4)
 0x020|66 72 65 65                                    |free            |      type: "free" (Free space) 0x20-0x23.7 (4)
-     |                                               |                |      data:  0x24-NA (0)
+     |                                               |                |      data: raw bits 0x24-NA (0)
      |                                               |                |    [2]: box {} 0x24-0x196.7 (371)
 0x020|            00 00 01 73                        |    ...s        |      size: 371 0x24-0x27.7 (4)
 0x020|                        6d 64 61 74            |        mdat    |      type: "mdat" (Media data container) 0x28-0x2b.7 (4)
-0x020|                                    f8 22 28 75|            ."(u|      data: f822287568a8dd59431bff52f316f148... 0x2c-0x196.7 (363)
+0x020|                                    f8 22 28 75|            ."(u|      data: raw bits 0x2c-0x196.7 (363)
 0x030|68 a8 dd 59 43 1b ff 52 f3 16 f1 48 28 77 86 10|h..YC..R...H(w..|
 *    |until 0x196.7 (363)                            |                |
      |                                               |                |    [3]: box {} 0x197-0x438.7 (674)
@@ -78,7 +78,7 @@ $ fq -d mp4 verbose /opus.mp4
 0x220|                                 00 00 00 00   |           .... |              reserved1: 0 0x22b-0x22e.7 (4)
 0x220|                                             00|               .|              duration: 53 0x22f-0x232.7 (4)
 0x230|00 00 35                                       |..5             |
-0x230|         00 00 00 00 00 00 00 00               |   ........     |              reserved2: 0000000000000000 0x233-0x23a.7 (8)
+0x230|         00 00 00 00 00 00 00 00               |   ........     |              reserved2: raw bits 0x233-0x23a.7 (8)
 0x230|                                 00 00         |           ..   |              layer: 0 0x23b-0x23c.7 (2)
 0x230|                                       00 01   |             .. |              alternate_group: 1 0x23d-0x23e.7 (2)
 0x230|                                             01|               .|              volume: 1 0x23f-0x240.7 (2)
@@ -153,7 +153,7 @@ $ fq -d mp4 verbose /opus.mp4
      |                                               |                |                    [0]: box {} 0x2f0-0x2ff.7 (16)
 0x2f0|00 00 00 10                                    |....            |                      size: 16 0x2f0-0x2f3.7 (4)
 0x2f0|            73 6d 68 64                        |    smhd        |                      type: "smhd" (Sound media header, overall information (sound track only)) 0x2f4-0x2f7.7 (4)
-0x2f0|                        00 00 00 00 00 00 00 00|        ........|                      data: 0000000000000000 0x2f8-0x2ff.7 (8)
+0x2f0|                        00 00 00 00 00 00 00 00|        ........|                      data: raw bits 0x2f8-0x2ff.7 (8)
      |                                               |                |                    [1]: box {} 0x300-0x323.7 (36)
 0x300|00 00 00 24                                    |...$            |                      size: 36 0x300-0x303.7 (4)
 0x300|            64 69 6e 66                        |    dinf        |                      type: "dinf" (Data information box, container) 0x304-0x307.7 (4)
@@ -170,7 +170,7 @@ $ fq -d mp4 verbose /opus.mp4
 0x310|                                    75 72 6c 20|            url |                              type: "url " 0x31c-0x31f.7 (4)
 0x320|00                                             |.               |                              version: 0 0x320-0x320.7 (1)
 0x320|   00 00 01                                    | ...            |                              flags: 1 0x321-0x323.7 (3)
-     |                                               |                |                              data:  0x324-NA (0)
+     |                                               |                |                              data: raw bits 0x324-NA (0)
      |                                               |                |                    [2]: box {} 0x324-0x3d6.7 (179)
 0x320|            00 00 00 b3                        |    ....        |                      size: 179 0x324-0x327.7 (4)
 0x320|                        73 74 62 6c            |        stbl    |                      type: "stbl" (Sample table box, container for the time/space map) 0x328-0x32b.7 (4)
@@ -185,7 +185,7 @@ $ fq -d mp4 verbose /opus.mp4
      |                                               |                |                            [0]: box {} 0x33c-0x372.7 (55)
 0x330|                                    00 00 00 37|            ...7|                              size: 55 0x33c-0x33f.7 (4)
 0x340|4f 70 75 73                                    |Opus            |                              type: "Opus" 0x340-0x343.7 (4)
-0x340|            00 00 00 00 00 00                  |    ......      |                              reserved: 000000000000 0x344-0x349.7 (6)
+0x340|            00 00 00 00 00 00                  |    ......      |                              reserved: raw bits 0x344-0x349.7 (6)
 0x340|                              00 01            |          ..    |                              data_reference_index: 1 0x34a-0x34b.7 (2)
 0x340|                                    00 00      |            ..  |                              version: 0 0x34c-0x34d.7 (2)
 0x340|                                          00 00|              ..|                              revision_level: 0 0x34e-0x34f.7 (2)
@@ -212,7 +212,7 @@ $ fq -d mp4 verbose /opus.mp4
 0x360|                        00                     |        .       |                                        config: 0 0x368.6-0x368.7 (0.2)
      |                                               |                |                                        frames: 1 0x369-NA (0)
      |                                               |                |                                        mode: "1 frame" 0x369-NA (0)
-0x360|                           01 00 78 00 00 bb 80|         ..x....|                                      data: 0100780000bb80000000 0x369-0x372.7 (10)
+0x360|                           01 00 78 00 00 bb 80|         ..x....|                                      data: raw bits 0x369-0x372.7 (10)
 0x370|00 00 00                                       |...             |
      |                                               |                |                        [1]: box {} 0x373-0x392.7 (32)
 0x370|         00 00 00 20                           |   ...          |                          size: 32 0x373-0x376.7 (4)
@@ -288,7 +288,7 @@ $ fq -d mp4 verbose /opus.mp4
      |                                               |                |                  boxes: [1] 0x414-0x438.7 (37)
      |                                               |                |                    [0]: box {} 0x414-0x438.7 (37)
 0x410|            00 00 00 25                        |    ...%        |                      size: 37 0x414-0x417.7 (4)
-0x410|                        a9 74 6f 6f            |        .too    |                      type: "\xa9too" 0x418-0x41b.7 (4)
+0x410|                        a9 74 6f 6f            |        .too    |                      type: "�too" 0x418-0x41b.7 (4)
      |                                               |                |                      boxes: [1] 0x41c-0x438.7 (29)
      |                                               |                |                        [0]: box {} 0x41c-0x438.7 (29)
 0x410|                                    00 00 00 1d|            ....|                          size: 29 0x41c-0x41f.7 (4)
@@ -314,7 +314,7 @@ $ fq -d mp4 verbose /opus.mp4
 0x020|                                    f8         |            .   |              config: 0 0x2c.6-0x2c.7 (0.2)
      |                                               |                |              frames: 1 0x2d-NA (0)
      |                                               |                |              mode: "1 frame" 0x2d-NA (0)
-0x020|                                       22 28 75|             "(u|            data: 22287568a8dd59431bff52f316f14828... 0x2d-0xa4.7 (120)
+0x020|                                       22 28 75|             "(u|            data: raw bits 0x2d-0xa4.7 (120)
 0x030|68 a8 dd 59 43 1b ff 52 f3 16 f1 48 28 77 86 10|h..YC..R...H(w..|
 *    |until 0xa4.7 (120)                             |                |
      |                                               |                |        [1]: sample {} (opus_packet) 0xa5-0x11d.7 (121)
@@ -330,7 +330,7 @@ $ fq -d mp4 verbose /opus.mp4
 0x0a0|               f8                              |     .          |              config: 0 0xa5.6-0xa5.7 (0.2)
      |                                               |                |              frames: 1 0xa6-NA (0)
      |                                               |                |              mode: "1 frame" 0xa6-NA (0)
-0x0a0|                  72 47 b1 0e a7 fd 3d f8 50 12|      rG....=.P.|            data: 7247b10ea7fd3df850126b43421f6c7a... 0xa6-0x11d.7 (120)
+0x0a0|                  72 47 b1 0e a7 fd 3d f8 50 12|      rG....=.P.|            data: raw bits 0xa6-0x11d.7 (120)
 0x0b0|6b 43 42 1f 6c 7a 79 fd 55 31 51 77 1e 83 00 6c|kCB.lzy.U1Qw...l|
 *    |until 0x11d.7 (120)                            |                |
      |                                               |                |        [2]: sample {} (opus_packet) 0x11e-0x196.7 (121)
@@ -346,6 +346,6 @@ $ fq -d mp4 verbose /opus.mp4
 0x110|                                          f8   |              . |              config: 0 0x11e.6-0x11e.7 (0.2)
      |                                               |                |              frames: 1 0x11f-NA (0)
      |                                               |                |              mode: "1 frame" 0x11f-NA (0)
-0x110|                                             18|               .|            data: 1802cc495727d4a383e95333fe456233... 0x11f-0x196.7 (120)
+0x110|                                             18|               .|            data: raw bits 0x11f-0x196.7 (120)
 0x120|02 cc 49 57 27 d4 a3 83 e9 53 33 fe 45 62 33 33|..IW'....S3.Eb33|
 *    |until 0x196.7 (120)                            |                |

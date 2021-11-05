@@ -57,10 +57,14 @@ def decode: decode(options.decode_format; {});
 
 def tovalue($opts): _tovalue(options($opts));
 def tovalue: _tovalue({});
-
-def tosym: _decode_value(._sym);
-
 def toactual: _decode_value(._actual);
+def tosym: _decode_value(._sym);
+def todescription: _decode_value(._description);
+
+def tobitsrange: _tobitsrange;
+def tobytesrange: _tobitsrange(8);
+def tobits: _tobitsrange(1; false);
+def tobytes: _tobitsrange(8; false);
 
 def display($opts): _display(options($opts));
 def display: display({});
@@ -100,11 +104,6 @@ def parents:
       )
     end
   );
-
-def tobitsrange: _tobitsrange;
-def tobytesrange: _tobitsrange(8);
-def tobits: _tobitsrange(1; false);
-def tobytes: _tobitsrange(8; false);
 
 # overload match to support buffers
 def _orig_match($val): match($val);

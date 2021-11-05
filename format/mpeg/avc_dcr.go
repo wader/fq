@@ -24,7 +24,7 @@ func init() {
 	})
 }
 
-var avcProfileNames = map[uint64]string{
+var avcProfileNames = decode.UToStr{
 	// 66: "Constrained Baseline Profile", // (CBP, 66 with constraint set 1)
 	66:  "Baseline Profile",
 	88:  "Extended Profile",
@@ -47,7 +47,7 @@ var avcProfileNames = map[uint64]string{
 }
 
 // TODO: 1b contraint flag 1?
-var avcLevelNames = map[uint64]string{
+var avcLevelNames = decode.UToStr{
 	10: "1",
 	//10:  "1b"
 	11: "1.1",
@@ -108,7 +108,7 @@ var avcLevelNames = map[uint64]string{
 
 func avcDcrParameterSet(d *decode.D, numParamSets uint64) {
 	for i := uint64(0); i < numParamSets; i++ {
-		d.FieldStructFn("set", func(d *decode.D) {
+		d.FieldStruct("set", func(d *decode.D) {
 			paramSetLen := d.FieldU16("length")
 			d.FieldFormatLen("nal", int64(paramSetLen)*8, avcDCRNALFormat, nil)
 		})
@@ -117,23 +117,23 @@ func avcDcrParameterSet(d *decode.D, numParamSets uint64) {
 
 func avcDcrDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldU8("configuration_version")
-	d.FieldStringMapFn("profile_indication", avcProfileNames, "Unknown", d.U8, decode.NumberDecimal)
+	d.FieldU8("profile_indication", d.MapUToStr(avcProfileNames))
 	d.FieldU8("profile_compatibility")
-	d.FieldStringMapFn("level_indication", avcLevelNames, "Unknown", d.U8, decode.NumberDecimal)
+	d.FieldU8("level_indication", d.MapUToStr(avcLevelNames))
 	d.FieldU6("reserved0")
 	lengthSizeMinusOne := d.FieldU2("length_size_minus_one")
 	d.FieldU3("reserved1")
 	numSeqParamSets := d.FieldU5("num_of_sequence_parameter_sets")
-	d.FieldArrayFn("sequence_parameter_sets", func(d *decode.D) {
+	d.FieldArray("sequence_parameter_sets", func(d *decode.D) {
 		avcDcrParameterSet(d, numSeqParamSets)
 	})
 	numPicParamSets := d.FieldU8("num_of_picture_parameter_sets")
-	d.FieldArrayFn("picture_parameter_sets", func(d *decode.D) {
+	d.FieldArray("picture_parameter_sets", func(d *decode.D) {
 		avcDcrParameterSet(d, numPicParamSets)
 	})
 
 	if d.BitsLeft() > 0 {
-		d.FieldBitBufLen("data", d.BitsLeft())
+		d.FieldRawLen("data", d.BitsLeft())
 	}
 
 	// TODO:
@@ -153,11 +153,11 @@ func avcDcrDecode(d *decode.D, in interface{}) interface{} {
 	// 	d.FieldU5("reserved4")
 	// 	d.FieldU3("bit_depth_chroma_minus8")
 	// 	numSeqParamSetExt := d.FieldU5("num_of_sequence_parameter_set_ext")
-	// 	d.FieldArrayFn("parameter_set_exts", func(d *decode.D) {
+	// 	d.FieldArray("parameter_set_exts", func(d *decode.D) {
 	// 		for i := uint64(0); i < numSeqParamSetExt; i++ {
-	// 			d.FieldStructFn("parameter_set_ext", func(d *decode.D) {
+	// 			d.FieldStruct("parameter_set_ext", func(d *decode.D) {
 	// 				paramSetLen := d.FieldU16("length")
-	// 				d.FieldBitBufLen("set", int64(paramSetLen)*8)
+	// 				d.FieldRawLen("set", int64(paramSetLen)*8)
 	// 			})
 	// 		}
 	// 	})

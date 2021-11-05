@@ -1,7 +1,7 @@
 # ffmpeg -f lavfi -i sine -t 0s -id3v2_version 4 -f mp3 pipe:1 > id3v24
 $ fq -d id3v2 verbose /id3v24
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /id3v24 (id3v2) 0x0-0x2c.7 (45)
-0x00|49 44 33                                       |ID3             |  magic: "ID3" (Correct) 0x0-0x2.7 (3)
+0x00|49 44 33                                       |ID3             |  magic: "ID3" (valid) 0x0-0x2.7 (3)
 0x00|         04                                    |   .            |  version: 4 0x3-0x3.7 (1)
 0x00|            00                                 |    .           |  revision: 0 0x4-0x4.7 (1)
     |                                               |                |  flags: {} 0x5-0x5.7 (1)
@@ -30,4 +30,4 @@ $ fq -d id3v2 verbose /id3v24
 0x10|            03                                 |    .           |      text_encoding: "UTF-8" (3) 0x14-0x14.7 (1)
 0x10|               4c 61 76 66 35 38 2e 34 35 2e 31|     Lavf58.45.1|      text: "Lavf58.45.100" 0x15-0x22.7 (14)
 0x20|30 30 00                                       |00.             |
-0x20|         00 00 00 00 00 00 00 00 00 00|        |   ..........|  |  padding: "Correct" (none) (zero padding) 0x23-0x2c.7 (10)
+0x20|         00 00 00 00 00 00 00 00 00 00|        |   ..........|  |  padding: raw bits (all zero) 0x23-0x2c.7 (10)

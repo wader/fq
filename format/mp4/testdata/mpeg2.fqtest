@@ -14,11 +14,11 @@ $ fq -d mp4 verbose /mpeg2.mp4
       |                                               |                |    [1]: box {} 0x1c-0x23.7 (8)
 0x0010|                                    00 00 00 08|            ....|      size: 8 0x1c-0x1f.7 (4)
 0x0020|66 72 65 65                                    |free            |      type: "free" (Free space) 0x20-0x23.7 (4)
-      |                                               |                |      data:  0x24-NA (0)
+      |                                               |                |      data: raw bits 0x24-NA (0)
       |                                               |                |    [2]: box {} 0x24-0x1fa5.7 (8066)
 0x0020|            00 00 1f 82                        |    ....        |      size: 8066 0x24-0x27.7 (4)
 0x0020|                        6d 64 61 74            |        mdat    |      type: "mdat" (Media data container) 0x28-0x2b.7 (4)
-0x0020|                                    00 00 01 b3|            ....|      data: 000001b31400f023ffffe018000001b5... 0x2c-0x1fa5.7 (8058)
+0x0020|                                    00 00 01 b3|            ....|      data: raw bits 0x2c-0x1fa5.7 (8058)
 0x0030|14 00 f0 23 ff ff e0 18 00 00 01 b5 14 8a 00 01|...#............|
 *     |until 0x1fa5.7 (8058)                          |                |
       |                                               |                |    [3]: box {} 0x1fa6-0x22a8.7 (771)
@@ -77,7 +77,7 @@ $ fq -d mp4 verbose /mpeg2.mp4
 0x2030|                              00 00 00 00      |          ....  |              reserved1: 0 0x203a-0x203d.7 (4)
 0x2030|                                          00 00|              ..|              duration: 40 0x203e-0x2041.7 (4)
 0x2040|00 28                                          |.(              |
-0x2040|      00 00 00 00 00 00 00 00                  |  ........      |              reserved2: 0000000000000000 0x2042-0x2049.7 (8)
+0x2040|      00 00 00 00 00 00 00 00                  |  ........      |              reserved2: raw bits 0x2042-0x2049.7 (8)
 0x2040|                              00 00            |          ..    |              layer: 0 0x204a-0x204b.7 (2)
 0x2040|                                    00 00      |            ..  |              alternate_group: 0 0x204c-0x204d.7 (2)
 0x2040|                                          00 00|              ..|              volume: 0 0x204e-0x204f.7 (2)
@@ -179,7 +179,7 @@ $ fq -d mp4 verbose /mpeg2.mp4
 0x2130|72 6c 20                                       |rl              |
 0x2130|         00                                    |   .            |                              version: 0 0x2133-0x2133.7 (1)
 0x2130|            00 00 01                           |    ...         |                              flags: 1 0x2134-0x2136.7 (3)
-      |                                               |                |                              data:  0x2137-NA (0)
+      |                                               |                |                              data: raw bits 0x2137-NA (0)
       |                                               |                |                    [2]: box {} 0x2137-0x2246.7 (272)
 0x2130|                     00 00 01 10               |       ....     |                      size: 272 0x2137-0x213a.7 (4)
 0x2130|                                 73 74 62 6c   |           stbl |                      type: "stbl" (Sample table box, container for the time/space map) 0x213b-0x213e.7 (4)
@@ -196,7 +196,7 @@ $ fq -d mp4 verbose /mpeg2.mp4
 0x2140|                                             00|               .|                              size: 156 0x214f-0x2152.7 (4)
 0x2150|00 00 9c                                       |...             |
 0x2150|         6d 70 34 76                           |   mp4v         |                              type: "mp4v" 0x2153-0x2156.7 (4)
-0x2150|                     00 00 00 00 00 00         |       ......   |                              reserved: 000000000000 0x2157-0x215c.7 (6)
+0x2150|                     00 00 00 00 00 00         |       ......   |                              reserved: raw bits 0x2157-0x215c.7 (6)
 0x2150|                                       00 01   |             .. |                              data_reference_index: 1 0x215d-0x215e.7 (2)
 0x2150|                                             00|               .|                              version: 0 0x215f-0x2160.7 (2)
 0x2160|00                                             |.               |
@@ -244,11 +244,11 @@ $ fq -d mp4 verbose /mpeg2.mp4
       |                                               |                |                                    sl_config_descr: {} 0x21cb-0x21d0.7 (6)
 0x21c0|                                 06            |           .    |                                      tag_id: "SLConfigDescrTag" (6) 0x21cb-0x21cb.7 (1)
 0x21c0|                                    80 80 80 01|            ....|                                      length: 1 0x21cc-0x21cf.7 (4)
-0x21d0|02                                             |.               |                                      data: 02 0x21d0-0x21d0.7 (1)
+0x21d0|02                                             |.               |                                      data: raw bits 0x21d0-0x21d0.7 (1)
       |                                               |                |                                [1]: box {} 0x21d1-0x21da.7 (10)
 0x21d0|   00 00 00 0a                                 | ....           |                                  size: 10 0x21d1-0x21d4.7 (4)
 0x21d0|               66 69 65 6c                     |     fiel       |                                  type: "fiel" (Video field order) 0x21d5-0x21d8.7 (4)
-0x21d0|                           01 00               |         ..     |                                  data: 0100 0x21d9-0x21da.7 (2)
+0x21d0|                           01 00               |         ..     |                                  data: raw bits 0x21d9-0x21da.7 (2)
       |                                               |                |                                [2]: box {} 0x21db-0x21ea.7 (16)
 0x21d0|                                 00 00 00 10   |           .... |                                  size: 16 0x21db-0x21de.7 (4)
 0x21d0|                                             70|               p|                                  type: "pasp" (Pixel aspect ratio) 0x21df-0x21e2.7 (4)
@@ -326,7 +326,7 @@ $ fq -d mp4 verbose /mpeg2.mp4
       |                                               |                |                  boxes: [1] 0x2284-0x22a8.7 (37)
       |                                               |                |                    [0]: box {} 0x2284-0x22a8.7 (37)
 0x2280|            00 00 00 25                        |    ...%        |                      size: 37 0x2284-0x2287.7 (4)
-0x2280|                        a9 74 6f 6f            |        .too    |                      type: "\xa9too" 0x2288-0x228b.7 (4)
+0x2280|                        a9 74 6f 6f            |        .too    |                      type: "�too" 0x2288-0x228b.7 (4)
       |                                               |                |                      boxes: [1] 0x228c-0x22a8.7 (29)
       |                                               |                |                        [0]: box {} 0x228c-0x22a8.7 (29)
 0x2280|                                    00 00 00 1d|            ....|                          size: 29 0x228c-0x228f.7 (4)
@@ -340,8 +340,8 @@ $ fq -d mp4 verbose /mpeg2.mp4
       |                                               |                |    [0]: track {} 0x2c-0x1fa5.7 (8058)
       |                                               |                |      samples: [1] 0x2c-0x1fa5.7 (8058)
       |                                               |                |        [0]: sample {} (mpeg_pes_packet) 0x2c-0x1fa5.7 (8058)
-0x0020|                                    00 00 01   |            ... |          prefix: "Correct" (0x1) 0x2c-0x2e.7 (3)
-0x0020|                                             b3|               .|          start_code: "SequenceHeader" (179) 0x2f-0x2f.7 (1)
+0x0020|                                    00 00 01   |            ... |          prefix: 0b1 (valid) 0x2c-0x2e.7 (3)
+0x0020|                                             b3|               .|          start_code: "SequenceHeader" (0xb3) 0x2f-0x2f.7 (1)
 0x0030|14 00                                          |..              |          horizontal_size: 320 0x30-0x31.3 (1.4)
 0x0030|   00 f0                                       | ..             |          vertical_size: 240 0x31.4-0x32.7 (1.4)
 0x0030|         23                                    |   #            |          aspect_ratio: 2 0x33-0x33.3 (0.4)
@@ -352,6 +352,6 @@ $ fq -d mp4 verbose /mpeg2.mp4
 0x0030|                     18                        |       .        |          constrained_parameters_flag: 0 0x37.5-0x37.5 (0.1)
 0x0030|                     18                        |       .        |          load_intra_quantizer_matrix: false 0x37.6-0x37.6 (0.1)
 0x0030|                     18                        |       .        |          load_non_intra_quantizer_matrix: false 0x37.7-0x37.7 (0.1)
-0x0030|                        00 00 01 b5 14 8a 00 01|        ........|          unknown0: 000001b5148a00010000000001b80008... 0x38-0x1fa5.7 (8046)
+0x0030|                        00 00 01 b5 14 8a 00 01|        ........|          unknown0: raw bits 0x38-0x1fa5.7 (8046)
 0x0040|00 00 00 00 01 b8 00 08 00 40 00 00 01 00 00 0f|.........@......|
 *     |until 0x1fa5.7 (8046)                          |                |

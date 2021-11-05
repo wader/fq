@@ -2,11 +2,11 @@
 
 fq tries to behave the same way as jq as much as possible, so you can do:
 ```
-fq . file.mp3
-fq < file.mp3
-fq . < file.mp3
-fq . *.png *.jpg
-fq '.frames[0]' file.mp3
+fq . doc/file.mp3
+fq < doc/file.mp3
+fq . < doc/file.mp3
+fq . doc/*.png doc/*.mp3
+fq '.frames[0]' doc/file.mp3
 ```
 
 ## Interactive REPL
@@ -22,17 +22,23 @@ null>
 $ fq -ni
 null>
 # start REPL with one file as input
-$ fq -i . file.mp3
+$ fq -i . doc/file.mp3
 mp3>
 ```
 
 In the REPL you will see a prompt indicating current input and you can type jq expression to evaluate.
 
 ```
-$ fq -i . file.mp3
-# basic arithmetics
+$ fq -i . doc/file.mp3
+# basic arithmetics and jq expressions
 mp3> 1+1
 2
+mp3> 1, 2, 3 | . * 2
+2
+4
+6
+mp3> [1, 2, 3] | add
+6
 # "." is the identity function which just returns current input, the mp3 file.
 mp3> .
 # access the first frame in the mp3 file
@@ -43,6 +49,20 @@ mp3> .frames[0] | repl
 # Ctrl-D to exit REPL
 > .frames[0] mp3_frame> ^D
 # Ctrl-D to exit to shell
+# "jq" value of layer in first frame
+mp3> .frames[0].header.layer | tovalue
+3
+mp3> .frames[0].header.layer * 2
+6
+# symbolic value, same as "jq" value
+mp3> .frames[0].header.layer | tosym
+3
+# actual underlaying decoded value
+mp3> .frames[0].header.layer | toactual
+1
+# description of value
+mp3> .frames[0].header.layer | todescription
+"MPEG Layer 3"
 mp3> ^D
 $
 ```
@@ -147,8 +167,9 @@ notable is support for arbitrary-precision integers.
   - `parent/0` return parent value
   - `parents/0` output parents of value
   - `tovalue/0`, `tovalue/1` symbolic value if available otherwise actual value
+  - `toactual/0` actual value (decoded etc)
   - `tosym/0` symbolic value (mapped etc)
-  - `toactual/1` actual value (decoded etc)
+  - `todescription/0` description of value
   - All `match` and `grep` functions take 1 or 2 arguments. First is a scalar to match, where a string is
   treated as a regexp. A buffer scalar will be matches exact bytes. Second argument are regexp
   flags with addition that "b" will treat each byte in the input buffer as a code point, this

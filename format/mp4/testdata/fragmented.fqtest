@@ -61,7 +61,7 @@ $ fq -d mp4 verbose /fragmented.mp4
 0x00b0|            00 00 00 01                        |    ....        |              track_id: 1 0xb4-0xb7.7 (4)
 0x00b0|                        00 00 00 00            |        ....    |              reserved1: 0 0xb8-0xbb.7 (4)
 0x00b0|                                    00 00 00 00|            ....|              duration: 0 0xbc-0xbf.7 (4)
-0x00c0|00 00 00 00 00 00 00 00                        |........        |              reserved2: 0000000000000000 0xc0-0xc7.7 (8)
+0x00c0|00 00 00 00 00 00 00 00                        |........        |              reserved2: raw bits 0xc0-0xc7.7 (8)
 0x00c0|                        00 00                  |        ..      |              layer: 0 0xc8-0xc9.7 (2)
 0x00c0|                              00 00            |          ..    |              alternate_group: 0 0xca-0xcb.7 (2)
 0x00c0|                                    00 00      |            ..  |              volume: 0 0xcc-0xcd.7 (2)
@@ -139,7 +139,7 @@ $ fq -d mp4 verbose /fragmented.mp4
 0x0180|                                       00      |             .  |                              version: 0 0x18d-0x18d.7 (1)
 0x0180|                                          00 00|              ..|                              flags: 1 0x18e-0x190.7 (3)
 0x0190|01                                             |.               |
-      |                                               |                |                              data:  0x191-NA (0)
+      |                                               |                |                              data: raw bits 0x191-NA (0)
       |                                               |                |                    [2]: box {} 0x191-0x283.7 (243)
 0x0190|   00 00 00 f3                                 | ....           |                      size: 243 0x191-0x194.7 (4)
 0x0190|               73 74 62 6c                     |     stbl       |                      type: "stbl" (Sample table box, container for the time/space map) 0x195-0x198.7 (4)
@@ -156,7 +156,7 @@ $ fq -d mp4 verbose /fragmented.mp4
 0x01a0|                           00 00 00 97         |         ....   |                              size: 151 0x1a9-0x1ac.7 (4)
 0x01a0|                                       61 76 63|             avc|                              type: "avc1" 0x1ad-0x1b0.7 (4)
 0x01b0|31                                             |1               |
-0x01b0|   00 00 00 00 00 00                           | ......         |                              reserved: 000000000000 0x1b1-0x1b6.7 (6)
+0x01b0|   00 00 00 00 00 00                           | ......         |                              reserved: raw bits 0x1b1-0x1b6.7 (6)
 0x01b0|                     00 01                     |       ..       |                              data_reference_index: 1 0x1b7-0x1b8.7 (2)
 0x01b0|                           00 00               |         ..     |                              version: 0 0x1b9-0x1ba.7 (2)
 0x01b0|                                 00 00         |           ..   |                              revision_level: 0 0x1bb-0x1bc.7 (2)
@@ -236,11 +236,11 @@ $ fq -d mp4 verbose /fragmented.mp4
  0x010|   81|                                         | .|             |                                              vcl_hrd_parameters_present_flag: false 0x11.4-0x11.4 (0.1)
  0x010|   81|                                         | .|             |                                              pic_struct_present_flag: false 0x11.5-0x11.5 (0.1)
  0x010|   81|                                         | .|             |                                              bitstream_restriction_flag: false 0x11.6-0x11.6 (0.1)
- 0x010|   81|                                         | .|             |                                            rbsp_trailing_bits: 80 0x11.7-0x11.7 (0.1)
+ 0x010|   81|                                         | .|             |                                            rbsp_trailing_bits: raw bits 0x11.7-0x11.7 (0.1)
 0x0200|                                             67|               g|                                          forbidden_zero_bit: false 0x20f-0x20f (0.1)
 0x0200|                                             67|               g|                                          nal_ref_idc: 3 0x20f.1-0x20f.2 (0.2)
 0x0200|                                             67|               g|                                          nal_unit_type: "SPS" (7) (Sequence parameter set) 0x20f.3-0x20f.7 (0.5)
-0x0210|f4 10 0d 91 97 05 07 ec 04 40 00 00 03 00 40 00|.........@....@.|                                          data: f4100d91970507ec0440000003004000... 0x210-0x222.7 (19)
+0x0210|f4 10 0d 91 97 05 07 ec 04 40 00 00 03 00 40 00|.........@....@.|                                          data: raw bits 0x210-0x222.7 (19)
 0x0220|00 0c 81                                       |...             |
 0x0220|         01                                    |   .            |                                    num_of_picture_parameter_sets: 1 0x223-0x223.7 (1)
       |                                               |                |                                    picture_parameter_sets: [1] 0x224-0x22b.7 (8)
@@ -266,12 +266,12 @@ $ fq -d mp4 verbose /fragmented.mp4
  0x000|         21                                    |   !            |                                            transform_8x8_mode_flag: true 0x3.2-0x3.2 (0.1)
  0x000|         21                                    |   !            |                                            pic_scaling_matrix_present_flag: false 0x3.3-0x3.3 (0.1)
  0x000|         21 10|                                |   !.|          |                                            second_chroma_qp_index_offset: 4 0x3.4-0x4.2 (0.7)
- 0x000|            10|                                |    .|          |                                            rbsp_trailing_bits: 80 0x4.3-0x4.7 (0.5)
+ 0x000|            10|                                |    .|          |                                            rbsp_trailing_bits: raw bits 0x4.3-0x4.7 (0.5)
 0x0220|                  68                           |      h         |                                          forbidden_zero_bit: false 0x226-0x226 (0.1)
 0x0220|                  68                           |      h         |                                          nal_ref_idc: 3 0x226.1-0x226.2 (0.2)
 0x0220|                  68                           |      h         |                                          nal_unit_type: "PPS" (8) (Picture parameter set) 0x226.3-0x226.7 (0.5)
-0x0220|                     ee 0f 11 21 10            |       ...!.    |                                          data: ee0f112110 0x227-0x22b.7 (5)
-0x0220|                                    ff f8 f8 00|            ....|                                    data: fff8f800 0x22c-0x22f.7 (4)
+0x0220|                     ee 0f 11 21 10            |       ...!.    |                                          data: raw bits 0x227-0x22b.7 (5)
+0x0220|                                    ff f8 f8 00|            ....|                                    data: raw bits 0x22c-0x22f.7 (4)
       |                                               |                |                                [1]: box {} 0x230-0x23f.7 (16)
 0x0230|00 00 00 10                                    |....            |                                  size: 16 0x230-0x233.7 (4)
 0x0230|            70 61 73 70                        |    pasp        |                                  type: "pasp" (Pixel aspect ratio) 0x234-0x237.7 (4)
@@ -320,7 +320,7 @@ $ fq -d mp4 verbose /fragmented.mp4
 0x02a0|00 00 00 02                                    |....            |              track_id: 2 0x2a0-0x2a3.7 (4)
 0x02a0|            00 00 00 00                        |    ....        |              reserved1: 0 0x2a4-0x2a7.7 (4)
 0x02a0|                        00 00 00 00            |        ....    |              duration: 0 0x2a8-0x2ab.7 (4)
-0x02a0|                                    00 00 00 00|            ....|              reserved2: 0000000000000000 0x2ac-0x2b3.7 (8)
+0x02a0|                                    00 00 00 00|            ....|              reserved2: raw bits 0x2ac-0x2b3.7 (8)
 0x02b0|00 00 00 00                                    |....            |
 0x02b0|            00 00                              |    ..          |              layer: 0 0x2b4-0x2b5.7 (2)
 0x02b0|                  00 01                        |      ..        |              alternate_group: 1 0x2b6-0x2b7.7 (2)
@@ -372,7 +372,7 @@ $ fq -d mp4 verbose /fragmented.mp4
       |                                               |                |                    [0]: box {} 0x345-0x354.7 (16)
 0x0340|               00 00 00 10                     |     ....       |                      size: 16 0x345-0x348.7 (4)
 0x0340|                           73 6d 68 64         |         smhd   |                      type: "smhd" (Sound media header, overall information (sound track only)) 0x349-0x34c.7 (4)
-0x0340|                                       00 00 00|             ...|                      data: 0000000000000000 0x34d-0x354.7 (8)
+0x0340|                                       00 00 00|             ...|                      data: raw bits 0x34d-0x354.7 (8)
 0x0350|00 00 00 00 00                                 |.....           |
       |                                               |                |                    [1]: box {} 0x355-0x378.7 (36)
 0x0350|               00 00 00 24                     |     ...$       |                      size: 36 0x355-0x358.7 (4)
@@ -392,7 +392,7 @@ $ fq -d mp4 verbose /fragmented.mp4
 0x0370|   75 72 6c 20                                 | url            |                              type: "url " 0x371-0x374.7 (4)
 0x0370|               00                              |     .          |                              version: 0 0x375-0x375.7 (1)
 0x0370|                  00 00 01                     |      ...       |                              flags: 1 0x376-0x378.7 (3)
-      |                                               |                |                              data:  0x379-NA (0)
+      |                                               |                |                              data: raw bits 0x379-NA (0)
       |                                               |                |                    [2]: box {} 0x379-0x442.7 (202)
 0x0370|                           00 00 00 ca         |         ....   |                      size: 202 0x379-0x37c.7 (4)
 0x0370|                                       73 74 62|             stb|                      type: "stbl" (Sample table box, container for the time/space map) 0x37d-0x380.7 (4)
@@ -409,7 +409,7 @@ $ fq -d mp4 verbose /fragmented.mp4
       |                                               |                |                            [0]: box {} 0x391-0x3fe.7 (110)
 0x0390|   00 00 00 6e                                 | ...n           |                              size: 110 0x391-0x394.7 (4)
 0x0390|               6d 70 34 61                     |     mp4a       |                              type: "mp4a" 0x395-0x398.7 (4)
-0x0390|                           00 00 00 00 00 00   |         ...... |                              reserved: 000000000000 0x399-0x39e.7 (6)
+0x0390|                           00 00 00 00 00 00   |         ...... |                              reserved: raw bits 0x399-0x39e.7 (6)
 0x0390|                                             00|               .|                              data_reference_index: 1 0x39f-0x3a0.7 (2)
 0x03a0|01                                             |.               |
 0x03a0|   00 00                                       | ..             |                              version: 0 0x3a1-0x3a2.7 (2)
@@ -450,13 +450,13 @@ $ fq -d mp4 verbose /fragmented.mp4
 0x03d0|                                    80 80 80 05|            ....|                                        length: 5 0x3dc-0x3df.7 (4)
       |                                               |                |                                        audio_specific_config: {} (mpeg_asc) 0x3e0-0x3e4.7 (5)
 0x03e0|12                                             |.               |                                          object_type: "AAC LC (Low Complexity)" (2) 0x3e0-0x3e0.4 (0.5)
-0x03e0|12 08                                          |..              |                                          frequency_index: 44100 0x3e0.5-0x3e1 (0.4)
-0x03e0|   08                                          | .              |                                          channel_configuration: "channel: front-center" (1) 0x3e1.1-0x3e1.4 (0.4)
-0x03e0|   08 56 e5 00                                 | .V..           |                                          var_aot_or_byte_align: 0adca000 0x3e1.5-0x3e4.7 (3.3)
+0x03e0|12 08                                          |..              |                                          sampling_frequency: 44100 (4) 0x3e0.5-0x3e1 (0.4)
+0x03e0|   08                                          | .              |                                          channel_configuration: "front-center" (1) 0x3e1.1-0x3e1.4 (0.4)
+0x03e0|   08 56 e5 00                                 | .V..           |                                          var_aot_or_byte_align: raw bits 0x3e1.5-0x3e4.7 (3.3)
       |                                               |                |                                    sl_config_descr: {} 0x3e5-0x3ea.7 (6)
 0x03e0|               06                              |     .          |                                      tag_id: "SLConfigDescrTag" (6) 0x3e5-0x3e5.7 (1)
 0x03e0|                  80 80 80 01                  |      ....      |                                      length: 1 0x3e6-0x3e9.7 (4)
-0x03e0|                              02               |          .     |                                      data: 02 0x3ea-0x3ea.7 (1)
+0x03e0|                              02               |          .     |                                      data: raw bits 0x3ea-0x3ea.7 (1)
       |                                               |                |                                [1]: box {} 0x3eb-0x3fe.7 (20)
 0x03e0|                                 00 00 00 14   |           .... |                                  size: 20 0x3eb-0x3ee.7 (4)
 0x03e0|                                             62|               b|                                  type: "btrt" (Bitrate) 0x3ef-0x3f2.7 (4)
@@ -569,7 +569,7 @@ $ fq -d mp4 verbose /fragmented.mp4
       |                                               |                |                  boxes: [1] 0x4c8-0x4ec.7 (37)
       |                                               |                |                    [0]: box {} 0x4c8-0x4ec.7 (37)
 0x04c0|                        00 00 00 25            |        ...%    |                      size: 37 0x4c8-0x4cb.7 (4)
-0x04c0|                                    a9 74 6f 6f|            .too|                      type: "\xa9too" 0x4cc-0x4cf.7 (4)
+0x04c0|                                    a9 74 6f 6f|            .too|                      type: "�too" 0x4cc-0x4cf.7 (4)
       |                                               |                |                      boxes: [1] 0x4d0-0x4ec.7 (29)
       |                                               |                |                        [0]: box {} 0x4d0-0x4ec.7 (29)
 0x04d0|00 00 00 1d                                    |....            |                          size: 29 0x4d0-0x4d3.7 (4)
@@ -779,7 +779,7 @@ $ fq -d mp4 verbose /fragmented.mp4
       |                                               |                |    [5]: box {} 0x655-0x1647.7 (4083)
 0x0650|               00 00 0f f3                     |     ....       |      size: 4083 0x655-0x658.7 (4)
 0x0650|                           6d 64 61 74         |         mdat   |      type: "mdat" (Media data container) 0x659-0x65c.7 (4)
-0x0650|                                       00 00 02|             ...|      data: 0000025d0605ffff59dc45e9bde6d948... 0x65d-0x1647.7 (4075)
+0x0650|                                       00 00 02|             ...|      data: raw bits 0x65d-0x1647.7 (4075)
 0x0660|5d 06 05 ff ff 59 dc 45 e9 bd e6 d9 48 b7 96 2c|]....Y.E....H..,|
 *     |until 0x1647.7 (4075)                          |                |
       |                                               |                |    [6]: box {} 0x1648-0x1713.7 (204)
@@ -893,7 +893,7 @@ $ fq -d mp4 verbose /fragmented.mp4
       |                                               |                |    [7]: box {} 0x1714-0x2168.7 (2645)
 0x1710|            00 00 0a 55                        |    ...U        |      size: 2645 0x1714-0x1717.7 (4)
 0x1710|                        6d 64 61 74            |        mdat    |      type: "mdat" (Media data container) 0x1718-0x171b.7 (4)
-0x1710|                                    00 00 08 c6|            ....|      data: 000008c6658882033ffef686f814d853... 0x171c-0x2168.7 (2637)
+0x1710|                                    00 00 08 c6|            ....|      data: raw bits 0x171c-0x2168.7 (2637)
 0x1720|65 88 82 03 3f fe f6 86 f8 14 d8 53 23 af ff f2|e...?......S#...|
 *     |until 0x2168.7 (2637)                          |                |
       |                                               |                |    [8]: box {} 0x2169-0x222c.7 (196)
@@ -1017,7 +1017,7 @@ $ fq -d mp4 verbose /fragmented.mp4
 0x2220|                                       00 00 08|             ...|      size: 2253 0x222d-0x2230.7 (4)
 0x2230|cd                                             |.               |
 0x2230|   6d 64 61 74                                 | mdat           |      type: "mdat" (Media data container) 0x2231-0x2234.7 (4)
-0x2230|               00 00 08 bc 65 88 84 0c ff fe f6|     ....e......|      data: 000008bc6588840cfffef686f814d853... 0x2235-0x2af9.7 (2245)
+0x2230|               00 00 08 bc 65 88 84 0c ff fe f6|     ....e......|      data: raw bits 0x2235-0x2af9.7 (2245)
 0x2240|86 f8 14 d8 53 23 af ff f2 50 06 7f 30 02 17 55|....S#...P..0..U|
 *     |until 0x2af9.7 (2245)                          |                |
       |                                               |                |    [10]: box {} 0x2afa-0x2bb3.7 (186)
@@ -1109,16 +1109,16 @@ $ fq -d mp4 verbose /fragmented.mp4
       |                                               |                |              sei: {} (avc_sei) 0x0-0x25b.7 (604)
  0x000|05                                             |.               |                payload_type: "user_data_unregistered" (5) 0x0-0x0.7 (1)
  0x000|   ff ff 59                                    | ..Y            |                payload_size: 599 0x1-0x3.7 (3)
- 0x000|            dc 45 e9 bd e6 d9 48 b7 96 2c d8 20|    .E....H..,. |                uuid: "x264" (dc45e9bde6d948b7962cd820d923eeef) 0x4-0x13.7 (16)
+ 0x000|            dc 45 e9 bd e6 d9 48 b7 96 2c d8 20|    .E....H..,. |                uuid: raw bits 0x4-0x13.7 (16)
  0x010|d9 23 ee ef                                    |.#..            |
- 0x010|            78 32 36 34 20 2d 20 63 6f 72 65 20|    x264 - core |                data: 78323634202d20636f72652031363120... 0x14-0x25a.7 (583)
+ 0x010|            78 32 36 34 20 2d 20 63 6f 72 65 20|    x264 - core |                data: raw bits 0x14-0x25a.7 (583)
  0x020|31 36 31 20 72 33 30 33 39 20 35 34 34 63 36 31|161 r3039 544c61|
  *    |until 0x25a.7 (583)                            |                |
- 0x250|                                 80|           |           .|   |                rbsp_trailing_bits: 80 0x25b-0x25b.7 (1)
+ 0x250|                                 80|           |           .|   |                rbsp_trailing_bits: raw bits 0x25b-0x25b.7 (1)
 0x0660|   06                                          | .              |              forbidden_zero_bit: false 0x661-0x661 (0.1)
 0x0660|   06                                          | .              |              nal_ref_idc: 0 0x661.1-0x661.2 (0.2)
 0x0660|   06                                          | .              |              nal_unit_type: "SEI" (6) (Supplemental enhancement information) 0x661.3-0x661.7 (0.5)
-0x0660|      05 ff ff 59 dc 45 e9 bd e6 d9 48 b7 96 2c|  ...Y.E....H..,|              data: 05ffff59dc45e9bde6d948b7962cd820... 0x662-0x8bd.7 (604)
+0x0660|      05 ff ff 59 dc 45 e9 bd e6 d9 48 b7 96 2c|  ...Y.E....H..,|              data: raw bits 0x662-0x8bd.7 (604)
 0x0670|d8 20 d9 23 ee ef 78 32 36 34 20 2d 20 63 6f 72|. .#..x264 - cor|
 *     |until 0x8bd.7 (604)                            |                |
       |                                               |                |          [1]: nalu {} 0x8be-0x13df.7 (2850)
@@ -1132,7 +1132,7 @@ $ fq -d mp4 verbose /fragmented.mp4
 0x08c0|         88                                    |   .            |                first_mb_in_slice: 0 0x8c3-0x8c3 (0.1)
 0x08c0|         88                                    |   .            |                slice_type: "I" (7) 0x8c3.1-0x8c3.7 (0.7)
 0x08c0|            84                                 |    .           |                pic_parameter_set_id: 0 0x8c4-0x8c4 (0.1)
-0x08c0|            84 04 bf fe f7 84 7e 05 37 0c ac ff|    ......~.7...|              data: 08097ffdef08fc0a6e1959ffd50ffa9f... 0x8c4.1-0x13df.7 (2843.7)
+0x08c0|            84 04 bf fe f7 84 7e 05 37 0c ac ff|    ......~.7...|              data: raw bits 0x8c4.1-0x13df.7 (2843.7)
 0x08d0|ea 87 fd 4f 9c 30 95 e0 00 43 0f 7b 8a bb 37 cd|...O.0...C.{..7.|
 *     |until 0x13df.7 (2844)                          |                |
       |                                               |                |        [1]: sample [1] (avc_au) 0x171c-0x1fe5.7 (2250)
@@ -1146,7 +1146,7 @@ $ fq -d mp4 verbose /fragmented.mp4
 0x1720|   88                                          | .              |                first_mb_in_slice: 0 0x1721-0x1721 (0.1)
 0x1720|   88                                          | .              |                slice_type: "I" (7) 0x1721.1-0x1721.7 (0.7)
 0x1720|      82                                       |  .             |                pic_parameter_set_id: 0 0x1722-0x1722 (0.1)
-0x1720|      82 03 3f fe f6 86 f8 14 d8 53 23 af ff f2|  ..?......S#...|              data: 04067ffded0df029b0a6475fffe4a00c... 0x1722.1-0x1fe5.7 (2243.7)
+0x1720|      82 03 3f fe f6 86 f8 14 d8 53 23 af ff f2|  ..?......S#...|              data: raw bits 0x1722.1-0x1fe5.7 (2243.7)
 0x1730|50 06 7f 30 02 17 55 d4 5a 6f db ca e6 60 1d 51|P..0..U.Zo...`.Q|
 *     |until 0x1fe5.7 (2244)                          |                |
       |                                               |                |        [2]: sample [1] (avc_au) 0x2235-0x2af4.7 (2240)
@@ -1160,7 +1160,7 @@ $ fq -d mp4 verbose /fragmented.mp4
 0x2230|                              88               |          .     |                first_mb_in_slice: 0 0x223a-0x223a (0.1)
 0x2230|                              88               |          .     |                slice_type: "I" (7) 0x223a.1-0x223a.7 (0.7)
 0x2230|                                 84            |           .    |                pic_parameter_set_id: 0 0x223b-0x223b (0.1)
-0x2230|                                 84 0c ff fe f6|           .....|              data: 0819fffded0df029b0a6475fffe4a00c... 0x223b.1-0x2af4.7 (2233.7)
+0x2230|                                 84 0c ff fe f6|           .....|              data: raw bits 0x223b.1-0x2af4.7 (2233.7)
 0x2240|86 f8 14 d8 53 23 af ff f2 50 06 7f 30 02 17 55|....S#...P..0..U|
 *     |until 0x2af4.7 (2234)                          |                |
       |                                               |                |    [1]: track {} 0x13e0-0x2af9.7 (5914)
@@ -1175,7 +1175,7 @@ $ fq -d mp4 verbose /fragmented.mp4
       |                                               |                |            extension_payload: {} 0x13e1.7-0x13f1.6 (16)
 0x13e0|   04 00                                       | ..             |              extension_type: "EXT_FILL" (0) 0x13e1.7-0x13e2.2 (0.4)
 0x13e0|      00                                       |  .             |              fill_nibble: 0 0x13e2.3-0x13e2.6 (0.4)
-0x13e0|      00 4c 61 76 63 35 38 2e 31 33 34 2e 31 30|  .Lavc58.134.10|              fill_byte: 2630bb319a9c1718999a1718981800 0x13e2.7-0x13f1.6 (15)
+0x13e0|      00 4c 61 76 63 35 38 2e 31 33 34 2e 31 30|  .Lavc58.134.10|              fill_byte: raw bits 0x13e2.7-0x13f1.6 (15)
 0x13f0|30 00                                          |0.              |
       |                                               |                |          [1]: element {} 0x13f1.7-0x13f5 (3.2)
 0x13f0|   00 02                                       | ..             |            syntax_element: "SCE" (0) 0x13f1.7-0x13f2.1 (0.3)
@@ -1187,8 +1187,8 @@ $ fq -d mp4 verbose /fragmented.mp4
 0x13f0|            ab                                 |    .           |              window_shape: 0 0x13f4.1-0x13f4.1 (0.1)
 0x13f0|            ab                                 |    .           |              max_sfb: 43 0x13f4.2-0x13f4.7 (0.6)
 0x13f0|               59                              |     Y          |              predictor_data_present: false 0x13f5-0x13f5 (0.1)
-0x13f0|               59                              |     Y          |          [2]: byte_align b2 0x13f5.1-0x13f5.7 (0.7)
-0x13f0|                  a9 8c 72 50 8b 4c aa de 1d 71|      ..rP.L...q|          [3]: data a98c72508b4caade1d71725c88420810... 0x13f6-0x14ad.7 (184)
+0x13f0|               59                              |     Y          |          [2]: byte_align raw bits 0x13f5.1-0x13f5.7 (0.7)
+0x13f0|                  a9 8c 72 50 8b 4c aa de 1d 71|      ..rP.L...q|          [3]: data raw bits 0x13f6-0x14ad.7 (184)
 0x1400|72 5c 88 42 08 10 0e 80 0c d5 9f 71 6c 47 12 cb|r\.B.......qlG..|
 *     |until 0x14ad.7 (184)                           |                |
       |                                               |                |        [1]: sample [3] (aac_frame) 0x14ae-0x1587.7 (218)
@@ -1202,8 +1202,8 @@ $ fq -d mp4 verbose /fragmented.mp4
 0x14b0|98                                             |.               |              window_shape: 0 0x14b0.2-0x14b0.2 (0.1)
 0x14b0|98                                             |.               |              max_sfb: 12 0x14b0.3-0x14b0.6 (0.4)
 0x14b0|98 da                                          |..              |              scale_factor_grouping: 54 0x14b0.7-0x14b1.5 (0.7)
-0x14b0|   da                                          | .              |          [1]: byte_align 80 0x14b1.6-0x14b1.7 (0.2)
-0x14b0|      d8 3d d6 93 80 76 db 22 13 6a 38 46 1c 9c|  .=...v.".j8F..|          [2]: data d83dd6938076db22136a38461c9c5eae... 0x14b2-0x1587.7 (214)
+0x14b0|   da                                          | .              |          [1]: byte_align raw bits 0x14b1.6-0x14b1.7 (0.2)
+0x14b0|      d8 3d d6 93 80 76 db 22 13 6a 38 46 1c 9c|  .=...v.".j8F..|          [2]: data raw bits 0x14b2-0x1587.7 (214)
 0x14c0|5e ae 85 f1 ab d5 ff 4d 7b 0f 3e 6d 4f fc 5f c3|^......M{.>mO._.|
 *     |until 0x1587.7 (214)                           |                |
       |                                               |                |        [2]: sample [3] (aac_frame) 0x1588-0x1647.7 (192)
@@ -1217,8 +1217,8 @@ $ fq -d mp4 verbose /fragmented.mp4
 0x1580|                              f5               |          .     |              window_shape: 1 0x158a.2-0x158a.2 (0.1)
 0x1580|                              f5 ad            |          ..    |              max_sfb: 43 0x158a.3-0x158b (0.6)
 0x1580|                                 ad            |           .    |              predictor_data_present: false 0x158b.1-0x158b.1 (0.1)
-0x1580|                                 ad            |           .    |          [1]: byte_align b4 0x158b.2-0x158b.7 (0.6)
-0x1580|                                    0d 12 60 98|            ..`.|          [2]: data 0d126098005e7b675534924892240504... 0x158c-0x1647.7 (188)
+0x1580|                                 ad            |           .    |          [1]: byte_align raw bits 0x158b.2-0x158b.7 (0.6)
+0x1580|                                    0d 12 60 98|            ..`.|          [2]: data raw bits 0x158c-0x1647.7 (188)
 0x1590|00 5e 7b 67 55 34 92 48 92 24 05 04 08 5d b4 ee|.^{gU4.H.$...]..|
 *     |until 0x1647.7 (188)                           |                |
       |                                               |                |        [3]: sample [3] (aac_frame) 0x1fe6-0x20a7.7 (194)
@@ -1232,8 +1232,8 @@ $ fq -d mp4 verbose /fragmented.mp4
 0x1fe0|                        55                     |        U       |              window_shape: 0 0x1fe8.2-0x1fe8.2 (0.1)
 0x1fe0|                        55 ad                  |        U.      |              max_sfb: 43 0x1fe8.3-0x1fe9 (0.6)
 0x1fe0|                           ad                  |         .      |              predictor_data_present: false 0x1fe9.1-0x1fe9.1 (0.1)
-0x1fe0|                           ad                  |         .      |          [1]: byte_align b4 0x1fe9.2-0x1fe9.7 (0.6)
-0x1fe0|                              4c f4 38 a3 42 22|          L.8.B"|          [2]: data 4cf438a34222000eb3db7e726aea4b49... 0x1fea-0x20a7.7 (190)
+0x1fe0|                           ad                  |         .      |          [1]: byte_align raw bits 0x1fe9.2-0x1fe9.7 (0.6)
+0x1fe0|                              4c f4 38 a3 42 22|          L.8.B"|          [2]: data raw bits 0x1fea-0x20a7.7 (190)
 0x1ff0|00 0e b3 db 7e 72 6a ea 4b 49 00 14 71 4c 0e c8|....~rj.KI..qL..|
 *     |until 0x20a7.7 (190)                           |                |
       |                                               |                |        [4]: sample [3] (aac_frame) 0x20a8-0x2168.7 (193)
@@ -1247,8 +1247,8 @@ $ fq -d mp4 verbose /fragmented.mp4
 0x20a0|                              99               |          .     |              window_shape: 0 0x20aa.2-0x20aa.2 (0.1)
 0x20a0|                              99               |          .     |              max_sfb: 12 0x20aa.3-0x20aa.6 (0.4)
 0x20a0|                              99 b2            |          ..    |              scale_factor_grouping: 108 0x20aa.7-0x20ab.5 (0.7)
-0x20a0|                                 b2            |           .    |          [1]: byte_align 80 0x20ab.6-0x20ab.7 (0.2)
-0x20a0|                                    d2 30 e2 d2|            .0..|          [2]: data d230e2d24666ecd781e803cf1edc159f... 0x20ac-0x2168.7 (189)
+0x20a0|                                 b2            |           .    |          [1]: byte_align raw bits 0x20ab.6-0x20ab.7 (0.2)
+0x20a0|                                    d2 30 e2 d2|            .0..|          [2]: data raw bits 0x20ac-0x2168.7 (189)
 0x20b0|46 66 ec d7 81 e8 03 cf 1e dc 15 9f dc 71 af 6f|Ff...........q.o|
 *     |until 0x2168.7 (189)                           |                |
       |                                               |                |        [5]: sample [3] (aac_frame) 0x2af5-0x2af9.7 (5)
@@ -1262,5 +1262,5 @@ $ fq -d mp4 verbose /fragmented.mp4
 0x2af0|                     81                        |       .        |              window_shape: 0 0x2af7.2-0x2af7.2 (0.1)
 0x2af0|                     81                        |       .        |              max_sfb: 0 0x2af7.3-0x2af7.6 (0.4)
 0x2af0|                     81 b4                     |       ..       |              scale_factor_grouping: 109 0x2af7.7-0x2af8.5 (0.7)
-0x2af0|                        b4                     |        .       |          [1]: byte_align 00 0x2af8.6-0x2af8.7 (0.2)
-0x2af0|                           70                  |         p      |          [2]: data 70 0x2af9-0x2af9.7 (1)
+0x2af0|                        b4                     |        .       |          [1]: byte_align raw bits 0x2af8.6-0x2af8.7 (0.2)
+0x2af0|                           70                  |         p      |          [2]: data raw bits 0x2af9-0x2af9.7 (1)

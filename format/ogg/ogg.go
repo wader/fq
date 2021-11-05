@@ -64,7 +64,7 @@ func decodeOgg(d *decode.D, in interface{}) interface{} {
 	streams := map[uint32]*stream{}
 	streamsD := d.FieldArray("streams")
 
-	d.FieldArrayFn("pages", func(d *decode.D) {
+	d.FieldArray("pages", func(d *decode.D) {
 		for !d.End() {
 			_, dv, _ := d.FieldTryFormat("page", oggPageFormat, nil)
 			if dv == nil {
@@ -78,8 +78,8 @@ func decodeOgg(d *decode.D, in interface{}) interface{} {
 			s, sFound := streams[oggPageOut.StreamSerialNumber]
 			if !sFound {
 				var packetsD *decode.D
-				streamsD.FieldStructFn("stream", func(d *decode.D) {
-					d.FieldValueU("serial_number", uint64(oggPageOut.StreamSerialNumber), "")
+				streamsD.FieldStruct("stream", func(d *decode.D) {
+					d.FieldValueU("serial_number", uint64(oggPageOut.StreamSerialNumber))
 					packetsD = d.FieldArray("packets")
 				})
 				s = &stream{

@@ -91,11 +91,52 @@ func init() {
 // 	15: {4, 3},
 // }
 
-var blockTypeNames = map[uint64]string{
+var blockTypeNames = decode.UToStr{
 	0: "reserved",
 	1: "start block",
 	2: "3 short windows",
 	3: "end",
+}
+
+const (
+	mpegVersion1  = 0b11
+	mpegVersion2  = 0b10
+	mpegVersion25 = 0b00
+)
+
+var mpegVersionNames = decode.UToScalar{
+	mpegVersion1:  {Sym: "1", Description: "MPEG Version 1"},
+	mpegVersion2:  {Sym: "2", Description: "MPEG Version 2"},
+	mpegVersion25: {Sym: "2.5", Description: "MPEG Version 2.5"},
+}
+
+var mpegVersionN = map[uint64]uint64{
+	mpegVersion25: 3,
+	mpegVersion2:  2,
+	mpegVersion1:  1,
+}
+
+const (
+	mpegLayer1 = 0b11
+	mpegLayer2 = 0b10
+	mpegLayer3 = 0b01
+)
+
+var mpegLayerNames = decode.UToScalar{
+	mpegLayer1: {Sym: 1, Description: "MPEG Layer 1"},
+	mpegLayer2: {Sym: 2, Description: "MPEG Layer 2"},
+	mpegLayer3: {Sym: 3, Description: "MPEG Layer 3"},
+}
+
+var mpegLayerN = map[uint64]uint64{
+	mpegLayer3: 3,
+	mpegLayer2: 2,
+	mpegLayer1: 1,
+}
+
+var protectionNames = decode.BoolToScalar{
+	true:  {Description: "No CRC"},
+	false: {Description: "Has CRC"},
 }
 
 func frameDecode(d *decode.D, in interface{}) interface{} {
@@ -104,46 +145,25 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	var isStereo bool
 	var paddingBytes uint64
 	var crcBytes int64
-	var mpegVersion uint64
-	var mpegLayer uint64
+	var mpegVersionNr uint64
+	var mpegLayerNr uint64
 	var bitRate uint64
 	var sampleRate uint64
 	var mainDataEnd uint64
+	var crcValue *decode.Value
 
-	d.FieldStructFn("header", func(d *decode.D) {
-		d.FieldValidateUFn("sync", 0b111_1111_1111, d.U11)
+	d.FieldStruct("header", func(d *decode.D) {
+		d.FieldU11("sync", d.AssertU(0b111_1111_1111), d.Bin)
 
 		// v = 3 means version 2.5
-		mpegVersion = d.FieldUFn("mpeg_version", func() (uint64, decode.DisplayFormat, string) {
-			switch d.U2() {
-			case 0b00:
-				return 3, decode.NumberDecimal, "MPEG Version 2.5"
-			case 0b01:
-				d.Invalid("reserved mpeg version 0")
-				panic("unreachable")
-			case 0b10:
-				return 2, decode.NumberDecimal, "MPEG Version 2"
-			case 0b11:
-				return 1, decode.NumberDecimal, "MPEG Version 1"
-			default:
-				panic("unreachable")
-			}
-		})
-		mpegLayer = d.FieldUFn("layer", func() (uint64, decode.DisplayFormat, string) {
-			switch d.U2() {
-			case 0b00:
-				return 0, decode.NumberDecimal, "reserved"
-			case 0b01:
-				return 3, decode.NumberDecimal, "Layer 3"
-			case 0b10:
-				return 2, decode.NumberDecimal, "Layer 2"
-			case 0b11:
-				return 1, decode.NumberDecimal, "Layer 1"
-			default:
-				panic("unreachable")
-			}
-		})
-		if mpegLayer != 3 {
+		mpegVersion := d.FieldU2("mpeg_version", d.MapUToScalar(mpegVersionNames))
+		mpegVersionNr = mpegVersionN[mpegVersion]
+		if mpegVersionNr == 0 {
+			d.Invalid("Unsupported mpeg version")
+		}
+		mpegLayer := d.FieldU2("layer", d.MapUToScalar(mpegLayerNames))
+		mpegLayerNr = mpegLayerN[mpegLayer]
+		if mpegLayerNr != 3 {
 			d.Invalid("Not layer 3")
 		}
 		// [mpeg layer][mpeg version]
@@ -154,10 +174,10 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			3: [...]uint{0, 1152, 576, 576},
 		}
 		// TODO: synthentic fields somehow?
-		d.FieldUFn("sample_count", func() (uint64, decode.DisplayFormat, string) {
-			return uint64(samplesFrameIndex[uint(mpegLayer)][uint(mpegVersion)]), decode.NumberDecimal, ""
+		d.FieldUFn("sample_count", func(d *decode.D) uint64 {
+			return uint64(samplesFrameIndex[uint(mpegLayerNr)][uint(mpegVersionNr)])
 		})
-		protection, _ := d.FieldBoolMapFn("protection", "Not protected", "Protected by CRC", d.Bool)
+		protection := d.FieldBool("protection_absent", d.MapBoolToScalar(protectionNames))
 		// note false mean has protection
 		hasCRC := !protection
 		// V1,L1 V1,L2 V1,L3  V2,L1 V2,L2 V2,L3  V2.5,L1 V2.5,L2 V2.5,L3
@@ -177,19 +197,22 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			0b1101: [...]uint{416, 320, 256, 224, 144, 144, 224, 144, 144},
 			0b1110: [...]uint{448, 384, 320, 256, 160, 160, 256, 160, 160},
 		}
-		bitRate = d.FieldUFn("bitrate", func() (uint64, decode.DisplayFormat, string) {
+		// TODO: FieldU4
+		d.FieldUScalarFn("bitrate", func(d *decode.D) decode.Scalar {
 			u := d.U4()
 			switch u {
 			case 0b0000:
-				return 0, decode.NumberDecimal, "free"
+				return decode.Scalar{Actual: u, Description: "free"}
 			case 0b1111:
-				return 0, decode.NumberDecimal, "bad"
+				// TODO: bad?
+				return decode.Scalar{Actual: u, Description: "bad"}
 			default:
-				i := (mpegVersion-1)*3 + (mpegLayer - 1)
+				i := (mpegVersionNr-1)*3 + (mpegLayerNr - 1)
 				if i >= 9 {
 					d.Invalid("Invalid bitrate index")
 				}
-				return uint64(bitRateIndex[uint(u)][(mpegVersion-1)*3+(mpegLayer-1)]) * 1000, decode.NumberDecimal, ""
+				bitRate = uint64(bitRateIndex[uint(u)][(mpegVersionNr-1)*3+(mpegLayerNr-1)]) * 1000
+				return decode.Scalar{Actual: u, Sym: bitRate}
 			}
 		})
 		// MPEG1 MPEG2 MPEG2.5
@@ -198,44 +221,47 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			0b01: [...]uint{48000, 24000, 12000},
 			0b10: [...]uint{32000, 16000, 8000},
 		}
-		sampleRate = d.FieldUFn("sample_rate", func() (uint64, decode.DisplayFormat, string) {
+		// TODO: FieldU2
+		d.FieldUScalarFn("sample_rate", func(d *decode.D) decode.Scalar {
 			u := d.U2()
 			switch u {
 			case 0b11:
-				return 0, decode.NumberDecimal, "reserved"
+				return decode.Scalar{Actual: u, Description: "reserved"}
 			default:
-				return uint64(sampleRateIndex[uint(u)][mpegVersion-1]), decode.NumberDecimal, ""
+				sampleRate = uint64(sampleRateIndex[uint(u)][mpegVersionNr-1])
+				return decode.Scalar{Actual: u, Sym: sampleRate}
 			}
 		})
 
-		paddingBytes, _ = d.FieldStringMapFn("padding", map[uint64]string{
+		paddingBytes = d.FieldU1("padding", d.MapUToStr(decode.UToStr{
 			0: "Not padded",
 			1: "Padded",
-		}, "", d.U1, decode.NumberBinary)
+		}), d.Bin)
 		d.FieldU1("private")
-		channelsIndex, _ := d.FieldStringMapFn("channels", map[uint64]string{
+		channelsIndex := d.FieldU2("channels", d.MapUToStr(decode.UToStr{
 			0b00: "Stereo",
 			0b01: "Joint stereo",
 			0b10: "Dual",
 			0b11: "Mono",
-		}, "", d.U2, decode.NumberBinary)
+		}), d.Bin)
 		isStereo = channelsIndex != 0b11
-		d.FieldStringMapFn("channel_mode", map[uint64]string{
+		d.FieldU2("channel_mode", d.MapUToStr(decode.UToStr{
 			0b00: "None",
 			0b01: "Intensity stereo",
 			0b10: "MS stereo",
 			0b11: "Intensity stereo, MS stereo",
-		}, "", d.U2, decode.NumberBinary)
+		}), d.Bin)
 		d.FieldU1("copyright")
 		d.FieldU1("original")
-		d.FieldStringMapFn("emphasis", map[uint64]string{
+		d.FieldU2("emphasis", d.MapUToStr(decode.UToStr{
 			0b00: "None",
 			0b01: "50/15",
 			0b10: "reserved",
 			0b11: "CCIT J.17",
-		}, "", d.U2, decode.NumberBinary)
+		}), d.Bin)
 		if hasCRC {
-			d.FieldBitBufLen("crc", 16)
+			d.FieldRawLen("crc", 16, d.RawHex)
+			crcValue = d.FieldGet("crc")
 			crcBytes = 2
 		}
 	})
@@ -255,13 +281,13 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		false: {0, 17, 9, 9},   // mono
 		true:  {0, 32, 17, 17}, // stereo
 	}
-	if mpegLayer == 3 {
-		sideInfoBytes = sideInfoIndex[isStereo][int(mpegVersion)]
+	if mpegLayerNr == 3 {
+		sideInfoBytes = sideInfoIndex[isStereo][int(mpegVersionNr)]
 	}
 
 	// d.DecodeLenFn(dataLen*8, func(d *decode.D) {
 	if sideInfoBytes != 0 {
-		d.FieldStructFn("side_info", func(d *decode.D) {
+		d.FieldStruct("side_info", func(d *decode.D) {
 			mainDataEnd = d.FieldU9("main_data_end")
 			if isStereo {
 				d.FieldU3("private_bits")
@@ -276,9 +302,9 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			// TODO: mpeg_version 2 use 1, otherwise 2
 			granuleCount := 2
 			granuleNr := 0
-			d.FieldStructArrayLoopFn("granules", "granule", func() bool { return granuleNr < granuleCount }, func(d *decode.D) {
+			d.FieldStructArrayLoop("granules", "granule", func() bool { return granuleNr < granuleCount }, func(d *decode.D) {
 				channelNr := 0
-				d.FieldStructArrayLoopFn("channels", "channel", func() bool { return channelNr < channelCount }, func(d *decode.D) {
+				d.FieldStructArrayLoop("channels", "channel", func() bool { return channelNr < channelCount }, func(d *decode.D) {
 					// TODO: tables and interpret values a bit
 					d.FieldU12("part2_3_length")
 					d.FieldU9("big_values")
@@ -287,7 +313,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 					blocksplitFlag := d.FieldU1("blocksplit_flag")
 
 					if blocksplitFlag == 1 {
-						d.FieldStringMapFn("block_type", blockTypeNames, "unknown", d.U2, decode.NumberDecimal)
+						d.FieldU2("block_type", d.MapUToStr(blockTypeNames))
 						d.FieldU1("switch_point")
 						d.FieldU5("table_select0")
 						d.FieldU5("table_select1")
@@ -324,7 +350,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	if dv, _, _ := d.FieldTryFormat("xing", xingHeader, nil); dv != nil {
 		// TODO: allow shorter?
 		paddingBytes := dataWithPaddingBytes - dv.Range.Len/8
-		d.FieldBitBufLen("padding", paddingBytes*8)
+		d.FieldRawLen("padding", paddingBytes*8)
 	} else {
 		frameMainDataPartBytes := dataWithPaddingBytes - int64(mainDataEnd) - int64(paddingBytes)
 		followingFrameMainDataPartsBytes := int64(mainDataEnd)
@@ -336,12 +362,12 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		}
 
 		if frameMainDataPartBytes > 0 {
-			d.FieldBitBufLen("data", frameMainDataPartBytes*8)
+			d.FieldRawLen("data", frameMainDataPartBytes*8)
 		}
 
 		// TODO: correct? part of main data or not? part of next main data?
 		if paddingBytes > 0 {
-			d.FieldBitBufLen("padding_byte", int64(paddingBytes)*8)
+			d.FieldRawLen("padding_byte", int64(paddingBytes)*8)
 		}
 
 		// TODO: better naming, main data does not always follow side info
@@ -353,20 +379,18 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			followingFrameMainDataPartsBytes = followingFramesBytesLeft
 		}
 
-		d.FieldBitBufLen("other_data", followingFrameMainDataPartsBytes*8)
+		d.FieldRawLen("other_data", followingFrameMainDataPartsBytes*8)
 	}
 
 	crcHash := &crc.CRC{Bits: 16, Current: 0xffff, Table: crc.ANSI16Table}
 	// 2 bytes after sync and some other fields + all of side info
 	decode.MustCopy(d, crcHash, d.BitBufRange(2*8, 2*8))
 	decode.MustCopy(d, crcHash, d.BitBufRange(6*8, sideInfoBytes*8))
-	crcValue := d.FieldGet("crc")
+
 	if crcValue != nil {
-		d.FieldRemove("crc")
-		d.FieldChecksumRange("crc", crcValue.Range.Start, crcValue.Range.Len, crcHash.Sum(nil), decode.BigEndian)
-	} else {
-		d.FieldValueBytes("crc_calculated", crcHash.Sum(nil), "")
+		_ = crcValue.ScalarFn(d.ValidateRaw(crcHash.Sum(nil)))
 	}
+	d.FieldValueRaw("crc_calculated", crcHash.Sum(nil), d.RawHex)
 
 	return nil
 }

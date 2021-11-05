@@ -1,5 +1,8 @@
 package decode
 
+// TODO: Encoding, u16le, varint etc, encode?
+// TODO: Value/Compound interface? can have per type and save memory
+
 import (
 	"errors"
 	"sort"
@@ -41,33 +44,21 @@ type Compound struct {
 	Err         error
 }
 
-// type Array []*Value
-
 type Scalar struct {
 	Actual        interface{} // int, int64, uint64, float64, string, bool, []byte, *bitio.Buffer
 	Sym           interface{}
 	Description   string
 	DisplayFormat DisplayFormat
-	//Encoding    string
-	Unknown bool
+	Unknown       bool
 }
 
 func (s Scalar) Value() interface{} {
-	// TODO: fix decoders sym ""
-	switch ss := s.Sym.(type) {
-	case string:
-		if ss != "" {
-			return ss
-		}
-		return s.Actual
-	case nil:
-		return s.Actual
-	default:
-		return ss
+	if s.Sym != nil {
+		return s.Sym
 	}
+	return s.Actual
 }
 
-// TODO: encoding? endian, string encoding, compression, etc?
 type Value struct {
 	Parent     *Value
 	Name       string
@@ -255,4 +246,20 @@ func (v *Value) postProcess() {
 	}); err != nil {
 		panic(err)
 	}
+}
+
+func (v *Value) ScalarFn(sfns ...ScalarFn) error {
+	var err error
+	s, ok := v.V.(Scalar)
+	if !ok {
+		panic("not a scalar value")
+	}
+	for _, sfn := range sfns {
+		s, err = sfn(s)
+		if err != nil {
+			break
+		}
+	}
+	v.V = s
+	return err
 }

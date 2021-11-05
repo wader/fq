@@ -31,40 +31,40 @@ func vp8Decode(d *decode.D, in interface{}) interface{} {
 		3: {"None", "None"},
 	}
 
-	d.FieldStructFn("tag", func(d *decode.D) {
+	d.FieldStruct("tag", func(d *decode.D) {
 		// first_part_size is not contiguous bits
 		firstPartSize0 := d.FieldU3("first_part_size0")
 		d.FieldU1("show_frame")
 		version := d.FieldU3("version")
-		keyFrameV, _ := d.FieldBoolMapFn("frame_type", "non_key_frame", "key_frame", d.Bool)
+		keyFrameV := d.FieldBool("frame_type", d.MapBoolToStr(decode.BoolToStr{true: "non_key_frame", false: "key_frame"}))
 		firstPartSize1 := d.FieldU16LE("first_part_size1")
 
 		firstPartSize := firstPartSize0 | firstPartSize1<<3
-		d.FieldValueU("first_part_size", firstPartSize, "")
+		d.FieldValueU("first_part_size", firstPartSize)
 
 		isKeyFrame = !keyFrameV
 		if v, ok := versions[version]; ok {
-			d.FieldValueStr("reconstruction", v.reconstruction, "")
-			d.FieldValueStr("loop", v.loop, "")
+			d.FieldValueStr("reconstruction", v.reconstruction)
+			d.FieldValueStr("loop", v.loop)
 		}
 	})
 
 	if isKeyFrame {
-		d.FieldValidateUFn("start_code", 0x9d012a, d.U24)
+		d.FieldU24("start_code", d.ValidateU(0x9d012a), d.Hex)
 
 		// width and height are not contiguous bits
 		width0 := d.FieldU8("width0")
 		d.FieldU2("horizontal_scale")
 		width1 := d.FieldU6("width1")
-		d.FieldValueU("width", width0|width1<<8, "")
+		d.FieldValueU("width", width0|width1<<8)
 
 		height0 := d.FieldU8("height0")
 		d.FieldU2("vertical_scale")
 		height1 := d.FieldU6("height1")
-		d.FieldValueU("height", height0|height1<<8, "")
+		d.FieldValueU("height", height0|height1<<8)
 	}
 
-	d.FieldBitBufLen("data", d.BitsLeft())
+	d.FieldRawLen("data", d.BitsLeft())
 
 	return nil
 }

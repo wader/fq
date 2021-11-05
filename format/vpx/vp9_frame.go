@@ -17,7 +17,7 @@ const (
 	vp9FeatureChromaSubsampling = 4
 )
 
-var vp9FeatureIDNames = map[uint64]string{
+var vp9FeatureIDNames = decode.UToStr{
 	vp9FeatureProfile:           "Profile",
 	vp9FeatureLevel:             "Level",
 	vp9FeatureBitDepth:          "Bit Depth",
@@ -36,7 +36,7 @@ const (
 	CS_RGB       = 7
 )
 
-var vp9ColorSpaceNames = map[uint64]string{
+var vp9ColorSpaceNames = decode.UToStr{
 	CS_UNKNOWN:   "CS_UNKNOWN",
 	CS_BT_601:    "CS_BT_601",
 	CS_BT_709:    "CS_BT_709",
@@ -71,8 +71,9 @@ func vp9DecodeColorConfig(d *decode.D, profile int) {
 			bitDepth = 10
 		}
 	}
-	d.FieldValueU("bit_depth", uint64(bitDepth), "")
-	colorSpace, colorSpaceOk := d.FieldStringMapFn("color_space", vp9ColorSpaceNames, "Unknown", d.U3, decode.NumberDecimal)
+	d.FieldValueU("bit_depth", uint64(bitDepth))
+	colorSpace := d.FieldU3("color_space", d.MapUToStr(vp9ColorSpaceNames))
+	_, colorSpaceOk := vp9ColorSpaceNames[colorSpace]
 	if !colorSpaceOk || colorSpace != CS_RGB {
 		d.FieldU1("color_range")
 		if profile == 1 || profile == 3 {
@@ -80,22 +81,22 @@ func vp9DecodeColorConfig(d *decode.D, profile int) {
 			d.FieldU1("subsampling_y")
 			d.FieldU1("reserved_zero")
 		} else {
-			d.FieldValueU("subsampling_x", 1, "")
-			d.FieldValueU("subsampling_y", 1, "")
+			d.FieldValueU("subsampling_x", 1)
+			d.FieldValueU("subsampling_y", 1)
 		}
 	} else {
-		d.FieldValueU("color_range", 1, "")
+		d.FieldValueU("color_range", 1)
 		if profile == 1 || profile == 3 {
-			d.FieldValueU("subsampling_x", 0, "")
-			d.FieldValueU("subsampling_y", 0, "")
+			d.FieldValueU("subsampling_x", 0)
+			d.FieldValueU("subsampling_y", 0)
 			d.FieldU1("reserved_zero")
 		}
 	}
 }
 
 func vp9DecodeFrameSize(d *decode.D) {
-	d.FieldUFn("frame_width", func() (uint64, decode.DisplayFormat, string) { return d.U16() + 1, decode.NumberDecimal, "" })
-	d.FieldUFn("frame_height", func() (uint64, decode.DisplayFormat, string) { return d.U16() + 1, decode.NumberDecimal, "" })
+	d.FieldUFn("frame_width", func(d *decode.D) uint64 { return d.U16() + 1 })
+	d.FieldUFn("frame_height", func(d *decode.D) uint64 { return d.U16() + 1 })
 }
 
 func vp9Decode(d *decode.D, in interface{}) interface{} {
@@ -106,7 +107,7 @@ func vp9Decode(d *decode.D, in interface{}) interface{} {
 	profileLowBit := d.FieldU1("profile_low_bit")
 	profileHighBit := d.FieldU1("profile_high_bit")
 	profile := int(profileHighBit<<1 + profileLowBit)
-	d.FieldValueU("profile", uint64(profile), "")
+	d.FieldValueU("profile", uint64(profile))
 	if profile == 3 {
 		d.FieldU1("reserved_zero")
 	}
@@ -116,7 +117,7 @@ func vp9Decode(d *decode.D, in interface{}) interface{} {
 		return nil
 	}
 
-	frameType, _ := d.FieldBoolMapFn("frame_type", "non_key_frame", "key_frame", d.Bool)
+	frameType := d.FieldBool("frame_type", d.MapBoolToStr(decode.BoolToStr{true: "non_key_frame", false: "key_frame"}))
 	d.FieldU1("show_frame")
 	d.FieldU1("error_resilient_mode")
 
@@ -127,7 +128,7 @@ func vp9Decode(d *decode.D, in interface{}) interface{} {
 		vp9DecodeFrameSize(d)
 	}
 
-	d.FieldBitBufLen("data", d.BitsLeft())
+	d.FieldRawLen("data", d.BitsLeft())
 
 	return nil
 }

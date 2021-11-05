@@ -15,18 +15,18 @@ func init() {
 }
 
 func id3v11Decode(d *decode.D, in interface{}) interface{} {
-	d.ValidateAtLeastBitsLeft(128 * 8)
-	d.FieldValidateUTF8("magic", "TAG+")
+	d.AssertAtLeastBitsLeft(128 * 8)
+	d.FieldUTF8("magic", 4, d.AssertStr("TAG+"))
 	d.FieldUTF8("title", 60)
 	d.FieldUTF8("artist", 60)
 	d.FieldUTF8("album", 60)
-	d.FieldStringMapFn("speed", map[uint64]string{
+	d.FieldU8("speed", d.MapUToStr(decode.UToStr{
 		0: "unset",
 		1: "slow",
 		2: "medium",
 		3: "fast",
 		4: "hardcore",
-	}, "Unknown", d.U8, decode.NumberDecimal)
+	}))
 	d.FieldUTF8("genre", 30)
 	d.FieldUTF8("start", 6)
 	d.FieldUTF8("stop", 6)

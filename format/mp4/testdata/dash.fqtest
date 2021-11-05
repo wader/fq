@@ -72,7 +72,7 @@ $ fq -d mp4 verbose /dash_audio_init.mp4
 0x0c0|                                    15         |            .   |              pad: 0 0xcc-0xcc (0.1)
 0x0c0|                                    15 c7      |            ..  |              language: "eng" 0xcc.1-0xcd.7 (1.7)
      |                                               |                |              data: {} (id3v2) 0xce-0x11a.7 (77)
-0x0c0|                                          49 44|              ID|                magic: "ID3" (Correct) 0xce-0xd0.7 (3)
+0x0c0|                                          49 44|              ID|                magic: "ID3" (valid) 0xce-0xd0.7 (3)
 0x0d0|33                                             |3               |
 0x0d0|   04                                          | .              |                version: 4 0xd1-0xd1.7 (1)
 0x0d0|      00                                       |  .             |                revision: 0 0xd2-0xd2.7 (1)
@@ -101,7 +101,7 @@ $ fq -d mp4 verbose /dash_audio_init.mp4
 0x0e0|      68 74 74 70 73 3a 2f 2f 67 69 74 68 75 62|  https://github|                    owner: "https://github.com/google/shaka-packager" 0xe2-0x10a.7 (41)
 0x0f0|2e 63 6f 6d 2f 67 6f 6f 67 6c 65 2f 73 68 61 6b|.com/google/shak|
 0x100|61 2d 70 61 63 6b 61 67 65 72 00               |a-packager.     |
-0x100|                                 64 64 39 38 37|           dd987|                    data: 64643938373030372d72656c65617365 0x10b-0x11a.7 (16)
+0x100|                                 64 64 39 38 37|           dd987|                    data: raw bits 0x10b-0x11a.7 (16)
 0x110|30 30 37 2d 72 65 6c 65 61 73 65               |007-release     |
      |                                               |                |        [2]: box {} 0x11b-0x2f7.7 (477)
 0x110|                                 00 00 01 dd   |           .... |          size: 477 0x11b-0x11e.7 (4)
@@ -120,7 +120,7 @@ $ fq -d mp4 verbose /dash_audio_init.mp4
 0x130|                                 00 00 00 00   |           .... |              reserved1: 0 0x13b-0x13e.7 (4)
 0x130|                                             00|               .|              duration: 0 0x13f-0x142.7 (4)
 0x140|00 00 00                                       |...             |
-0x140|         00 00 00 00 00 00 00 00               |   ........     |              reserved2: 0000000000000000 0x143-0x14a.7 (8)
+0x140|         00 00 00 00 00 00 00 00               |   ........     |              reserved2: raw bits 0x143-0x14a.7 (8)
 0x140|                                 00 00         |           ..   |              layer: 0 0x14b-0x14c.7 (2)
 0x140|                                       00 00   |             .. |              alternate_group: 0 0x14d-0x14e.7 (2)
 0x140|                                             01|               .|              volume: 1 0x14f-0x150.7 (2)
@@ -190,7 +190,7 @@ $ fq -d mp4 verbose /dash_audio_init.mp4
 0x1f0|                        75 72 6c 20            |        url     |                              type: "url " 0x1f8-0x1fb.7 (4)
 0x1f0|                                    00         |            .   |                              version: 0 0x1fc-0x1fc.7 (1)
 0x1f0|                                       00 00 01|             ...|                              flags: 1 0x1fd-0x1ff.7 (3)
-     |                                               |                |                              data:  0x200-NA (0)
+     |                                               |                |                              data: raw bits 0x200-NA (0)
      |                                               |                |                    [1]: box {} 0x200-0x2c3.7 (196)
 0x200|00 00 00 c4                                    |....            |                      size: 196 0x200-0x203.7 (4)
 0x200|            73 74 62 6c                        |    stbl        |                      type: "stbl" (Sample table box, container for the time/space map) 0x204-0x207.7 (4)
@@ -205,7 +205,7 @@ $ fq -d mp4 verbose /dash_audio_init.mp4
      |                                               |                |                            [0]: box {} 0x218-0x265.7 (78)
 0x210|                        00 00 00 4e            |        ...N    |                              size: 78 0x218-0x21b.7 (4)
 0x210|                                    6d 70 34 61|            mp4a|                              type: "mp4a" 0x21c-0x21f.7 (4)
-0x220|00 00 00 00 00 00                              |......          |                              reserved: 000000000000 0x220-0x225.7 (6)
+0x220|00 00 00 00 00 00                              |......          |                              reserved: raw bits 0x220-0x225.7 (6)
 0x220|                  00 01                        |      ..        |                              data_reference_index: 1 0x226-0x227.7 (2)
 0x220|                        00 00                  |        ..      |                              version: 0 0x228-0x229.7 (2)
 0x220|                              00 00            |          ..    |                              revision_level: 0 0x22a-0x22b.7 (2)
@@ -243,14 +243,14 @@ $ fq -d mp4 verbose /dash_audio_init.mp4
 0x250|                                       05      |             .  |                                        length: 5 0x25d-0x25d.7 (1)
      |                                               |                |                                        audio_specific_config: {} (mpeg_asc) 0x25e-0x262.7 (5)
 0x250|                                          12   |              . |                                          object_type: "AAC LC (Low Complexity)" (2) 0x25e-0x25e.4 (0.5)
-0x250|                                          12 08|              ..|                                          frequency_index: 44100 0x25e.5-0x25f (0.4)
-0x250|                                             08|               .|                                          channel_configuration: "channel: front-center" (1) 0x25f.1-0x25f.4 (0.4)
-0x250|                                             08|               .|                                          var_aot_or_byte_align: 0adca000 0x25f.5-0x262.7 (3.3)
+0x250|                                          12 08|              ..|                                          sampling_frequency: 44100 (4) 0x25e.5-0x25f (0.4)
+0x250|                                             08|               .|                                          channel_configuration: "front-center" (1) 0x25f.1-0x25f.4 (0.4)
+0x250|                                             08|               .|                                          var_aot_or_byte_align: raw bits 0x25f.5-0x262.7 (3.3)
 0x260|56 e5 00                                       |V..             |
      |                                               |                |                                    sl_config_descr: {} 0x263-0x265.7 (3)
 0x260|         06                                    |   .            |                                      tag_id: "SLConfigDescrTag" (6) 0x263-0x263.7 (1)
 0x260|            01                                 |    .           |                                      length: 1 0x264-0x264.7 (1)
-0x260|               02                              |     .          |                                      data: 02 0x265-0x265.7 (1)
+0x260|               02                              |     .          |                                      data: raw bits 0x265-0x265.7 (1)
      |                                               |                |                        [1]: box {} 0x266-0x275.7 (16)
 0x260|                  00 00 00 10                  |      ....      |                          size: 16 0x266-0x269.7 (4)
 0x260|                              73 74 74 73      |          stts  |                          type: "stts" (Sample time-to-sample) 0x26a-0x26d.7 (4)
@@ -295,11 +295,11 @@ $ fq -d mp4 verbose /dash_audio_init.mp4
 0x2b0|                                          00 00|              ..|                          entry_count: 1 0x2be-0x2c1.7 (4)
 0x2c0|00 01                                          |..              |
      |                                               |                |                          groups: [1] 0x2c2-0x2c3.7 (2)
-0x2c0|      ff ff                                    |  ..            |                            [0]: group ffff 0x2c2-0x2c3.7 (2)
+0x2c0|      ff ff                                    |  ..            |                            [0]: group raw bits 0x2c2-0x2c3.7 (2)
      |                                               |                |                    [2]: box {} 0x2c4-0x2d3.7 (16)
 0x2c0|            00 00 00 10                        |    ....        |                      size: 16 0x2c4-0x2c7.7 (4)
 0x2c0|                        73 6d 68 64            |        smhd    |                      type: "smhd" (Sound media header, overall information (sound track only)) 0x2c8-0x2cb.7 (4)
-0x2c0|                                    00 00 00 00|            ....|                      data: 0000000000000000 0x2cc-0x2d3.7 (8)
+0x2c0|                                    00 00 00 00|            ....|                      data: raw bits 0x2cc-0x2d3.7 (8)
 0x2d0|00 00 00 00                                    |....            |
      |                                               |                |            [2]: box {} 0x2d4-0x2f7.7 (36)
 0x2d0|            00 00 00 24                        |    ...$        |              size: 36 0x2d4-0x2d7.7 (4)
@@ -464,7 +464,7 @@ $ fq -d mp4 verbose /dash_audio_1.m4s
      |                                               |                |    [3]: box {} 0xf4-0x4eb.7 (1016)
 0x0f0|            00 00 03 f8                        |    ....        |      size: 1016 0xf4-0xf7.7 (4)
 0x0f0|                        6d 64 61 74            |        mdat    |      type: "mdat" (Media data container) 0xf8-0xfb.7 (4)
-0x0f0|                                    de 04 00 4c|            ...L|      data: de04004c61766335382e3133342e3130... 0xfc-0x4eb.7 (1008)
+0x0f0|                                    de 04 00 4c|            ...L|      data: raw bits 0xfc-0x4eb.7 (1008)
 0x100|61 76 63 35 38 2e 31 33 34 2e 31 30 30 00 02 5c|avc58.134.100..\|
 *    |until 0x4eb.7 (end) (1008)                     |                |
      |                                               |                |  tracks: [0] 0x4ec-NA (0)
@@ -540,7 +540,7 @@ $ fq -d mp4 verbose /dash_video_init.mp4
 0x0d0|15                                             |.               |              pad: 0 0xd0-0xd0 (0.1)
 0x0d0|15 c7                                          |..              |              language: "eng" 0xd0.1-0xd1.7 (1.7)
      |                                               |                |              data: {} (id3v2) 0xd2-0x11e.7 (77)
-0x0d0|      49 44 33                                 |  ID3           |                magic: "ID3" (Correct) 0xd2-0xd4.7 (3)
+0x0d0|      49 44 33                                 |  ID3           |                magic: "ID3" (valid) 0xd2-0xd4.7 (3)
 0x0d0|               04                              |     .          |                version: 4 0xd5-0xd5.7 (1)
 0x0d0|                  00                           |      .         |                revision: 0 0xd6-0xd6.7 (1)
      |                                               |                |                flags: {} 0xd7-0xd7.7 (1)
@@ -568,7 +568,7 @@ $ fq -d mp4 verbose /dash_video_init.mp4
 0x0e0|                  68 74 74 70 73 3a 2f 2f 67 69|      https://gi|                    owner: "https://github.com/google/shaka-packager" 0xe6-0x10e.7 (41)
 0x0f0|74 68 75 62 2e 63 6f 6d 2f 67 6f 6f 67 6c 65 2f|thub.com/google/|
 0x100|73 68 61 6b 61 2d 70 61 63 6b 61 67 65 72 00   |shaka-packager. |
-0x100|                                             64|               d|                    data: 64643938373030372d72656c65617365 0x10f-0x11e.7 (16)
+0x100|                                             64|               d|                    data: raw bits 0x10f-0x11e.7 (16)
 0x110|64 39 38 37 30 30 37 2d 72 65 6c 65 61 73 65   |d987007-release |
      |                                               |                |        [2]: box {} 0x11f-0x2fa.7 (476)
 0x110|                                             00|               .|          size: 476 0x11f-0x122.7 (4)
@@ -586,7 +586,7 @@ $ fq -d mp4 verbose /dash_video_init.mp4
 0x130|                                             00|               .|              reserved1: 0 0x13f-0x142.7 (4)
 0x140|00 00 00                                       |...             |
 0x140|         00 00 00 00                           |   ....         |              duration: 0 0x143-0x146.7 (4)
-0x140|                     00 00 00 00 00 00 00 00   |       ........ |              reserved2: 0000000000000000 0x147-0x14e.7 (8)
+0x140|                     00 00 00 00 00 00 00 00   |       ........ |              reserved2: raw bits 0x147-0x14e.7 (8)
 0x140|                                             00|               .|              layer: 0 0x14f-0x150.7 (2)
 0x150|00                                             |.               |
 0x150|   00 00                                       | ..             |              alternate_group: 0 0x151-0x152.7 (2)
@@ -658,7 +658,7 @@ $ fq -d mp4 verbose /dash_video_init.mp4
 0x1f0|                                    75 72 6c 20|            url |                              type: "url " 0x1fc-0x1ff.7 (4)
 0x200|00                                             |.               |                              version: 0 0x200-0x200.7 (1)
 0x200|   00 00 01                                    | ...            |                              flags: 1 0x201-0x203.7 (3)
-     |                                               |                |                              data:  0x204-NA (0)
+     |                                               |                |                              data: raw bits 0x204-NA (0)
      |                                               |                |                    [1]: box {} 0x204-0x2e6.7 (227)
 0x200|            00 00 00 e3                        |    ....        |                      size: 227 0x204-0x207.7 (4)
 0x200|                        73 74 62 6c            |        stbl    |                      type: "stbl" (Sample table box, container for the time/space map) 0x208-0x20b.7 (4)
@@ -673,7 +673,7 @@ $ fq -d mp4 verbose /dash_video_init.mp4
      |                                               |                |                            [0]: box {} 0x21c-0x2a2.7 (135)
 0x210|                                    00 00 00 87|            ....|                              size: 135 0x21c-0x21f.7 (4)
 0x220|61 76 63 31                                    |avc1            |                              type: "avc1" 0x220-0x223.7 (4)
-0x220|            00 00 00 00 00 00                  |    ......      |                              reserved: 000000000000 0x224-0x229.7 (6)
+0x220|            00 00 00 00 00 00                  |    ......      |                              reserved: raw bits 0x224-0x229.7 (6)
 0x220|                              00 01            |          ..    |                              data_reference_index: 1 0x22a-0x22b.7 (2)
 0x220|                                    00 00      |            ..  |                              version: 0 0x22c-0x22d.7 (2)
 0x220|                                          00 00|              ..|                              revision_level: 0 0x22e-0x22f.7 (2)
@@ -750,11 +750,11 @@ $ fq -d mp4 verbose /dash_video_init.mp4
  0x10|   81|                                         | .|             |                                              vcl_hrd_parameters_present_flag: false 0x11.4-0x11.4 (0.1)
  0x10|   81|                                         | .|             |                                              pic_struct_present_flag: false 0x11.5-0x11.5 (0.1)
  0x10|   81|                                         | .|             |                                              bitstream_restriction_flag: false 0x11.6-0x11.6 (0.1)
- 0x10|   81|                                         | .|             |                                            rbsp_trailing_bits: 80 0x11.7-0x11.7 (0.1)
+ 0x10|   81|                                         | .|             |                                            rbsp_trailing_bits: raw bits 0x11.7-0x11.7 (0.1)
 0x280|      67                                       |  g             |                                          forbidden_zero_bit: false 0x282-0x282 (0.1)
 0x280|      67                                       |  g             |                                          nal_ref_idc: 3 0x282.1-0x282.2 (0.2)
 0x280|      67                                       |  g             |                                          nal_unit_type: "SPS" (7) (Sequence parameter set) 0x282.3-0x282.7 (0.5)
-0x280|         f4 10 0d 91 97 05 07 ec 04 40 00 00 03|   .........@...|                                          data: f4100d91970507ec0440000003004000... 0x283-0x295.7 (19)
+0x280|         f4 10 0d 91 97 05 07 ec 04 40 00 00 03|   .........@...|                                          data: raw bits 0x283-0x295.7 (19)
 0x290|00 40 00 00 0c 81                              |.@....          |
 0x290|                  01                           |      .         |                                    num_of_picture_parameter_sets: 1 0x296-0x296.7 (1)
      |                                               |                |                                    picture_parameter_sets: [1] 0x297-0x29e.7 (8)
@@ -780,12 +780,12 @@ $ fq -d mp4 verbose /dash_video_init.mp4
  0x00|         21                                    |   !            |                                            transform_8x8_mode_flag: true 0x3.2-0x3.2 (0.1)
  0x00|         21                                    |   !            |                                            pic_scaling_matrix_present_flag: false 0x3.3-0x3.3 (0.1)
  0x00|         21 10|                                |   !.|          |                                            second_chroma_qp_index_offset: 4 0x3.4-0x4.2 (0.7)
- 0x00|            10|                                |    .|          |                                            rbsp_trailing_bits: 80 0x4.3-0x4.7 (0.5)
+ 0x00|            10|                                |    .|          |                                            rbsp_trailing_bits: raw bits 0x4.3-0x4.7 (0.5)
 0x290|                           68                  |         h      |                                          forbidden_zero_bit: false 0x299-0x299 (0.1)
 0x290|                           68                  |         h      |                                          nal_ref_idc: 3 0x299.1-0x299.2 (0.2)
 0x290|                           68                  |         h      |                                          nal_unit_type: "PPS" (8) (Picture parameter set) 0x299.3-0x299.7 (0.5)
-0x290|                              ee 0f 11 21 10   |          ...!. |                                          data: ee0f112110 0x29a-0x29e.7 (5)
-0x290|                                             ff|               .|                                    data: fff8f800 0x29f-0x2a2.7 (4)
+0x290|                              ee 0f 11 21 10   |          ...!. |                                          data: raw bits 0x29a-0x29e.7 (5)
+0x290|                                             ff|               .|                                    data: raw bits 0x29f-0x2a2.7 (4)
 0x2a0|f8 f8 00                                       |...             |
      |                                               |                |                        [1]: box {} 0x2a3-0x2b2.7 (16)
 0x2a0|         00 00 00 10                           |   ....         |                          size: 16 0x2a3-0x2a6.7 (4)
@@ -959,7 +959,7 @@ $ fq -d mp4 verbose /dash_video_1.m4s
       |                                               |                |    [3]: box {} 0xbc-0x1fd0.7 (7957)
 0x00b0|                                    00 00 1f 15|            ....|      size: 7957 0xbc-0xbf.7 (4)
 0x00c0|6d 64 61 74                                    |mdat            |      type: "mdat" (Media data container) 0xc0-0xc3.7 (4)
-0x00c0|            00 00 02 5d 06 05 ff ff 59 dc 45 e9|    ...]....Y.E.|      data: 0000025d0605ffff59dc45e9bde6d948... 0xc4-0x1fd0.7 (7949)
+0x00c0|            00 00 02 5d 06 05 ff ff 59 dc 45 e9|    ...]....Y.E.|      data: raw bits 0xc4-0x1fd0.7 (7949)
 0x00d0|bd e6 d9 48 b7 96 2c d8 20 d9 23 ee ef 78 32 36|...H..,. .#..x26|
 *     |until 0x1fd0.7 (end) (7949)                    |                |
       |                                               |                |  tracks: [0] 0x1fd1-NA (0)

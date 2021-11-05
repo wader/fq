@@ -17,6 +17,9 @@ func previewValue(v interface{}, df decode.DisplayFormat) string {
 			return "true"
 		}
 		return "false"
+	case int:
+		// TODO: DisplayFormat is weird
+		return num.PadFormatInt(int64(vv), decode.DisplayFormatToBase(df), true, 0)
 	case int64:
 		// TODO: DisplayFormat is weird
 		return num.PadFormatInt(vv, decode.DisplayFormatToBase(df), true, 0)
@@ -36,15 +39,7 @@ func previewValue(v interface{}, df decode.DisplayFormat) string {
 		}
 		return hex.EncodeToString(vv)
 	case *bitio.Buffer:
-		vvLen := vv.Len()
-		if vvLen > 16*8 {
-			bs, _ := vv.BytesRange(0, 16)
-			return hex.EncodeToString(bs) + "..."
-		}
-		bs, _ := vv.BytesRange(0, int(bitio.BitsByteCount(vvLen)))
-		return hex.EncodeToString(bs)
-	case nil:
-		return "none"
+		return "raw bits"
 	default:
 		panic("unreachable")
 	}

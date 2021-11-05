@@ -147,22 +147,10 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 		case []interface{}:
 			cfmt(colField, " %s%s%s (%s)", deco.Index.F("["), deco.Number.F(strconv.Itoa(len(av))), deco.Index.F("]"), deco.Value.F("json"))
 		default:
-			// TODO: hack
-			var sym interface{}
-			switch ss := vv.Sym.(type) {
-			case string:
-				if ss != "" {
-					sym = ss
-				}
-			case nil:
-			default:
-				sym = ss
-			}
+			cfmt(colField, " %s", deco.ValueColor(vv.Value()).F(previewValue(vv.Value(), vv.DisplayFormat)))
 
-			cfmt(colField, " %s", deco.ValueColor(v).F(previewValue(vv.Value(), vv.DisplayFormat)))
-
-			if sym != nil {
-				cfmt(colField, " (%s)", deco.ValueColor(v).F(previewValue(vv.Actual, vv.DisplayFormat)))
+			if vv.Sym != nil {
+				cfmt(colField, " (%s)", deco.ValueColor(vv.Actual).F(previewValue(vv.Actual, vv.DisplayFormat)))
 			}
 
 			// TODO: similar to struct/array?
@@ -257,11 +245,6 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 	lastDisplayLine := lastDisplayByte / int64(opts.LineBytes)
 
 	columns()
-
-	// log.Printf("v: %#+v\n", v)
-	// log.Printf("isSimple: %#+v\n", isSimple)
-	// log.Printf("opts: %#+v\n", opts)
-	// log.Printf("depth: %#+v\n", depth)
 
 	// has length and is not compound or a collapsed struct/array (max depth)
 	if v.Range.Len > 0 && (!isCompound(v) || (opts.Depth != 0 && opts.Depth == depth)) {
@@ -363,12 +346,16 @@ func dump(v *decode.Value, w io.Writer, opts Options) error {
 }
 
 func hexdump(w io.Writer, bv BufferRange, opts Options) error {
+	bb, err := bv.toBuffer()
+	if err != nil {
+		return err
+	}
 	// TODO: hack
 	opts.Verbose = true
 	return dump(
 		&decode.Value{
 			// TODO: hack
-			V:          decode.Scalar{},
+			V:          decode.Scalar{Actual: bb},
 			Range:      bv.r,
 			RootBitBuf: bv.bb.Copy(),
 		},

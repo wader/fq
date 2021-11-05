@@ -31,165 +31,164 @@ func init() {
 	})
 }
 
-var idDescriptions = map[string]string{
-	"CHAP": "Chapter",
-	"CTOC": "Table of contents",
-
-	"AENC": "Audio encryption",
-	"APIC": "Attached picture",
-	"ASPI": "Audio seek point index",
-	"COMM": "Comments",
-	"COMR": "Commercial frame",
-	"ENCR": "Encryption method registration",
-	"EQU2": "Equalisation (2)",
-	"EQUA": "Equalization",
-	"ETCO": "Event timing codes",
-	"GEOB": "General encapsulated object",
-	"GRID": "Group identification registration",
-	"IPLS": "Involved people list",
-	"LINK": "Linked information",
-	"MCDI": "Music CD identifier",
-	"MLLT": "MPEG location lookup table",
-	"OWNE": "Ownership frame",
-	"PCNT": "Play counter",
-	"POPM": "Popularimeter",
-	"POSS": "Position synchronisation frame",
-	"PRIV": "Private frame",
-	"RBUF": "Recommended buffer size",
-	"RVA2": "Relative volume adjustment (2)",
-	"RVAD": "Relative volume adjustment",
-	"RVRB": "Reverb",
-	"SEEK": "Seek frame",
-	"SIGN": "Signature frame",
-	"SYLT": "Synchronized lyric/text",
-	"SYTC": "Synchronized tempo codes",
-	"TALB": "Album/Movie/Show title",
-	"TBPM": "BPM (beats per minute)",
-	"TCOM": "Composer",
-	"TCON": "Content type",
-	"TCOP": "Copyright message",
-	"TDAT": "Date",
-	"TDEN": "Encoding time",
-	"TDLY": "Playlist delay",
-	"TDOR": "Original release time",
-	"TDRC": "Recording time",
-	"TDRL": "Release time",
-	"TDTG": "Tagging time",
-	"TENC": "Encoded by",
-	"TEXT": "Lyricist/Text writer",
-	"TFLT": "File type",
-	"TIME": "Time",
-	"TIPL": "Involved people list",
-	"TIT1": "Content group description",
-	"TIT2": "Title/songname/content description",
-	"TIT3": "Subtitle/Description refinement",
-	"TKEY": "Initial key",
-	"TLAN": "Language(s)",
-	"TLEN": "Length",
-	"TMCL": "Musician credits list",
-	"TMED": "Media type",
-	"TMOO": "Mood",
-	"TOAL": "Original album/movie/show title",
-	"TOFN": "Original filename",
-	"TOLY": "Original lyricist(s)/text writer(s)",
-	"TOPE": "Original artist(s)/performer(s)",
-	"TORY": "Original release year",
-	"TOWN": "File owner/licensee",
-	"TPE1": "Lead performer(s)/Soloist(s)",
-	"TPE2": "Band/orchestra/accompaniment",
-	"TPE3": "Conductor/performer refinement",
-	"TPE4": "Interpreted, remixed, or otherwise modified by",
-	"TPOS": "Part of a set",
-	"TPRO": "Produced notice",
-	"TPUB": "Publisher",
-	"TRCK": "Track number/Position in set",
-	"TRDA": "Recording dates",
-	"TRSN": "Internet radio station name",
-	"TRSO": "Internet radio station owner",
-	"TSIZ": "Size",
-	"TSOA": "Album sort order",
-	"TSOP": "Performer sort order",
-	"TSOT": "Title sort order",
-	"TSRC": "ISRC (international standard recording code)",
-	"TSSE": "Software/Hardware and settings used for encoding",
-	"TSST": "Set subtitle",
-	"TXXX": "User defined text information frame",
-	"TYER": "Year",
-	"UFID": "Unique file identifier",
-	"USER": "Terms of use",
-	"USLT": "Unsychronized lyric/text transcription",
-	"WCOM": "Commercial information",
-	"WCOP": "Copyright/Legal information",
-	"WOAF": "Official audio file webpage",
-	"WOAR": "Official artist/performer webpage",
-	"WOAS": "Official audio source webpage",
-	"WORS": "Official Internet radio station homepage",
-	"WPAY": "Payment",
-	"WPUB": "Publishers official webpage",
-	"WXXX": "User defined URL link frame",
-	"BUF":  "Recommended buffer size",
-	"CNT":  "Play counter",
-	"COM":  "Comments",
-	"CRA":  "Audio encryption",
-	"CRM":  "Encrypted meta frame",
-	"ETC":  "Event timing codes",
-	"EQU":  "Equalization",
-	"GEO":  "General encapsulated object",
-	"IPL":  "Involved people list",
-	"LNK":  "Linked information",
-	"MCI":  "Music CD Identifier",
-	"MLL":  "MPEG location lookup table",
-	"PIC":  "Attached picture",
-	"POP":  "Popularimeter",
-	"REV":  "Reverb",
-	"RVA":  "Relative volume adjustment",
-	"SLT":  "Synchronized lyric/text",
-	"STC":  "Synced tempo codes",
-	"TAL":  "Album/Movie/Show title",
-	"TBP":  "BPM (Beats Per Minute)",
-	"TCM":  "Composer",
-	"TCO":  "Content type",
-	"TCR":  "Copyright message",
-	"TDA":  "Date",
-	"TDY":  "Playlist delay",
-	"TEN":  "Encoded by",
-	"TFT":  "File type",
-	"TIM":  "Time",
-	"TKE":  "Initial key",
-	"TLA":  "Language(s)",
-	"TLE":  "Length",
-	"TMT":  "Media type",
-	"TOA":  "Original artist(s)/performer(s)",
-	"TOF":  "Original filename",
-	"TOL":  "Original Lyricist(s)/text writer(s)",
-	"TOR":  "Original release year",
-	"TOT":  "Original album/Movie/Show title",
-	"TP1":  "Lead artist(s)/Lead performer(s)/Soloist(s)/Performing group",
-	"TP2":  "Band/Orchestra/Accompaniment",
-	"TP3":  "Conductor/Performer refinement",
-	"TP4":  "Interpreted, remixed, or otherwise modified by",
-	"TPA":  "Part of a set",
-	"TPB":  "Publisher",
-	"TRC":  "ISRC (International Standard Recording Code)",
-	"TRD":  "Recording dates",
-	"TRK":  "Track number/Position in set",
-	"TSI":  "Size",
-	"TSS":  "Software/hardware and settings used for encoding",
-	"TT1":  "Content group description",
-	"TT2":  "Title/Songname/Content description",
-	"TT3":  "Subtitle/Description refinement",
-	"TXT":  "Lyricist/text writer",
-	"TXX":  "User defined text information frame",
-	"TYE":  "Year",
-	"UFI":  "Unique file identifier",
-	"ULT":  "Unsychronized lyric/text transcription",
-	"WAF":  "Official audio file webpage",
-	"WAR":  "Official artist/performer webpage",
-	"WAS":  "Official audio source webpage",
-	"WCM":  "Commercial information",
-	"WCP":  "Copyright/Legal information",
-	"WPB":  "Publishers official webpage",
-	"WXX":  "User defined URL link frame",
+var idDescriptions = decode.StrToScalar{
+	"BUF":  {Description: "Recommended buffer size"},
+	"CNT":  {Description: "Play counter"},
+	"COM":  {Description: "Comments"},
+	"CRA":  {Description: "Audio encryption"},
+	"CRM":  {Description: "Encrypted meta frame"},
+	"EQU":  {Description: "Equalization"},
+	"ETC":  {Description: "Event timing codes"},
+	"GEO":  {Description: "General encapsulated object"},
+	"IPL":  {Description: "Involved people list"},
+	"LNK":  {Description: "Linked information"},
+	"MCI":  {Description: "Music CD Identifier"},
+	"MLL":  {Description: "MPEG location lookup table"},
+	"PIC":  {Description: "Attached picture"},
+	"POP":  {Description: "Popularimeter"},
+	"REV":  {Description: "Reverb"},
+	"RVA":  {Description: "Relative volume adjustment"},
+	"SLT":  {Description: "Synchronized lyric/text"},
+	"STC":  {Description: "Synced tempo codes"},
+	"TAL":  {Description: "Album/Movie/Show title"},
+	"TBP":  {Description: "BPM (Beats Per Minute)"},
+	"TCM":  {Description: "Composer"},
+	"TCO":  {Description: "Content type"},
+	"TCR":  {Description: "Copyright message"},
+	"TDA":  {Description: "Date"},
+	"TDY":  {Description: "Playlist delay"},
+	"TEN":  {Description: "Encoded by"},
+	"TFT":  {Description: "File type"},
+	"TIM":  {Description: "Time"},
+	"TKE":  {Description: "Initial key"},
+	"TLA":  {Description: "Language(s)"},
+	"TLE":  {Description: "Length"},
+	"TMT":  {Description: "Media type"},
+	"TOA":  {Description: "Original artist(s)/performer(s)"},
+	"TOF":  {Description: "Original filename"},
+	"TOL":  {Description: "Original Lyricist(s)/text writer(s)"},
+	"TOR":  {Description: "Original release year"},
+	"TOT":  {Description: "Original album/Movie/Show title"},
+	"TP1":  {Description: "Lead artist(s)/Lead performer(s)/Soloist(s)/Performing group"},
+	"TP2":  {Description: "Band/Orchestra/Accompaniment"},
+	"TP3":  {Description: "Conductor/Performer refinement"},
+	"TP4":  {Description: "Interpreted, remixed, or otherwise modified by"},
+	"TPA":  {Description: "Part of a set"},
+	"TPB":  {Description: "Publisher"},
+	"TRC":  {Description: "ISRC (International Standard Recording Code)"},
+	"TRD":  {Description: "Recording dates"},
+	"TRK":  {Description: "Track number/Position in set"},
+	"TSI":  {Description: "Size"},
+	"TSS":  {Description: "Software/hardware and settings used for encoding"},
+	"TT1":  {Description: "Content group description"},
+	"TT2":  {Description: "Title/Songname/Content description"},
+	"TT3":  {Description: "Subtitle/Description refinement"},
+	"TXT":  {Description: "Lyricist/text writer"},
+	"TXX":  {Description: "User defined text information frame"},
+	"TYE":  {Description: "Year"},
+	"UFI":  {Description: "Unique file identifier"},
+	"ULT":  {Description: "Unsychronized lyric/text transcription"},
+	"WAF":  {Description: "Official audio file webpage"},
+	"WAR":  {Description: "Official artist/performer webpage"},
+	"WAS":  {Description: "Official audio source webpage"},
+	"WCM":  {Description: "Commercial information"},
+	"WCP":  {Description: "Copyright/Legal information"},
+	"WPB":  {Description: "Publishers official webpage"},
+	"WXX":  {Description: "User defined URL link frame"},
+	"AENC": {Description: "Audio encryption"},
+	"APIC": {Description: "Attached picture"},
+	"ASPI": {Description: "Audio seek point index"},
+	"CHAP": {Description: "Chapter"},
+	"COMM": {Description: "Comments"},
+	"COMR": {Description: "Commercial frame"},
+	"CTOC": {Description: "Table of contents"},
+	"ENCR": {Description: "Encryption method registration"},
+	"EQU2": {Description: "Equalisation (2)"},
+	"EQUA": {Description: "Equalization"},
+	"ETCO": {Description: "Event timing codes"},
+	"GEOB": {Description: "General encapsulated object"},
+	"GRID": {Description: "Group identification registration"},
+	"IPLS": {Description: "Involved people list"},
+	"LINK": {Description: "Linked information"},
+	"MCDI": {Description: "Music CD identifier"},
+	"MLLT": {Description: "MPEG location lookup table"},
+	"OWNE": {Description: "Ownership frame"},
+	"PCNT": {Description: "Play counter"},
+	"POPM": {Description: "Popularimeter"},
+	"POSS": {Description: "Position synchronisation frame"},
+	"PRIV": {Description: "Private frame"},
+	"RBUF": {Description: "Recommended buffer size"},
+	"RVA2": {Description: "Relative volume adjustment (2)"},
+	"RVAD": {Description: "Relative volume adjustment"},
+	"RVRB": {Description: "Reverb"},
+	"SEEK": {Description: "Seek frame"},
+	"SIGN": {Description: "Signature frame"},
+	"SYLT": {Description: "Synchronized lyric/text"},
+	"SYTC": {Description: "Synchronized tempo codes"},
+	"TALB": {Description: "Album/Movie/Show title"},
+	"TBPM": {Description: "BPM (beats per minute)"},
+	"TCOM": {Description: "Composer"},
+	"TCON": {Description: "Content type"},
+	"TCOP": {Description: "Copyright message"},
+	"TDAT": {Description: "Date"},
+	"TDEN": {Description: "Encoding time"},
+	"TDLY": {Description: "Playlist delay"},
+	"TDOR": {Description: "Original release time"},
+	"TDRC": {Description: "Recording time"},
+	"TDRL": {Description: "Release time"},
+	"TDTG": {Description: "Tagging time"},
+	"TENC": {Description: "Encoded by"},
+	"TEXT": {Description: "Lyricist/Text writer"},
+	"TFLT": {Description: "File type"},
+	"TIME": {Description: "Time"},
+	"TIPL": {Description: "Involved people list"},
+	"TIT1": {Description: "Content group description"},
+	"TIT2": {Description: "Title/songname/content description"},
+	"TIT3": {Description: "Subtitle/Description refinement"},
+	"TKEY": {Description: "Initial key"},
+	"TLAN": {Description: "Language(s)"},
+	"TLEN": {Description: "Length"},
+	"TMCL": {Description: "Musician credits list"},
+	"TMED": {Description: "Media type"},
+	"TMOO": {Description: "Mood"},
+	"TOAL": {Description: "Original album/movie/show title"},
+	"TOFN": {Description: "Original filename"},
+	"TOLY": {Description: "Original lyricist(s)/text writer(s)"},
+	"TOPE": {Description: "Original artist(s)/performer(s)"},
+	"TORY": {Description: "Original release year"},
+	"TOWN": {Description: "File owner/licensee"},
+	"TPE1": {Description: "Lead performer(s)/Soloist(s)"},
+	"TPE2": {Description: "Band/orchestra/accompaniment"},
+	"TPE3": {Description: "Conductor/performer refinement"},
+	"TPE4": {Description: "Interpreted, remixed, or otherwise modified by"},
+	"TPOS": {Description: "Part of a set"},
+	"TPRO": {Description: "Produced notice"},
+	"TPUB": {Description: "Publisher"},
+	"TRCK": {Description: "Track number/Position in set"},
+	"TRDA": {Description: "Recording dates"},
+	"TRSN": {Description: "Internet radio station name"},
+	"TRSO": {Description: "Internet radio station owner"},
+	"TSIZ": {Description: "Size"},
+	"TSOA": {Description: "Album sort order"},
+	"TSOP": {Description: "Performer sort order"},
+	"TSOT": {Description: "Title sort order"},
+	"TSRC": {Description: "ISRC (international standard recording code)"},
+	"TSSE": {Description: "Software/Hardware and settings used for encoding"},
+	"TSST": {Description: "Set subtitle"},
+	"TXXX": {Description: "User defined text information frame"},
+	"TYER": {Description: "Year"},
+	"UFID": {Description: "Unique file identifier"},
+	"USER": {Description: "Terms of use"},
+	"USLT": {Description: "Unsychronized lyric/text transcription"},
+	"WCOM": {Description: "Commercial information"},
+	"WCOP": {Description: "Copyright/Legal information"},
+	"WOAF": {Description: "Official audio file webpage"},
+	"WOAR": {Description: "Official artist/performer webpage"},
+	"WOAS": {Description: "Official audio source webpage"},
+	"WORS": {Description: "Official Internet radio station homepage"},
+	"WPAY": {Description: "Payment"},
+	"WPUB": {Description: "Publishers official webpage"},
+	"WXXX": {Description: "User defined URL link frame"},
 }
 
 // id3v2 MPEG/AAC unsynchronisation reader
@@ -232,7 +231,7 @@ const (
 // $02 UTF-16BE [UTF-16] encoded Unicode [UNICODE] without BOM.
 //     Terminated with $00 00.
 // $03 UTF-8 [UTF-8] encoded Unicode [UNICODE]. Terminated with $00.
-var encodingNames = map[uint64]string{
+var encodingNames = decode.UToStr{
 	encodingISO8859_1: "ISO-8859-1",
 	encodingUTF16:     "UTF-16",
 	encodingUTF16BE:   "UTF-16BE",
@@ -265,7 +264,7 @@ func decodeToString(e int, b []byte) string {
 	return s
 }
 
-func syncSafeU32(d *decode.D) uint64 {
+func decodeSyncSafeU32(d *decode.D) uint64 {
 	u := d.U32()
 	// syncsafe integer is a number encoded
 	// with 8th bit in each byte set to zero
@@ -277,89 +276,60 @@ func syncSafeU32(d *decode.D) uint64 {
 		((u & 0x0000007f) >> 0))
 }
 
-func text(d *decode.D, encoding int, nBytes int) string {
-	return strings.TrimRight(decodeToString(encoding, d.BytesLen(nBytes)), "\x00")
-}
-
-func textNull(d *decode.D, encoding int) string {
-	nullLen := encodingLen[encodingUTF8]
-	if n, ok := encodingLen[uint64(encoding)]; ok {
-		nullLen = n
+func textFn(encoding int, nBytes int) func(d *decode.D) string {
+	return func(d *decode.D) string {
+		return strings.TrimRight(decodeToString(encoding, d.BytesLen(nBytes)), "\x00")
 	}
+}
 
-	offset, _ := d.PeekFind(
-		int(nullLen)*8,
-		nullLen*8,
-		func(v uint64) bool { return v == 0 },
-		-1,
-	)
-	offsetBytes := offset / 8
-	text := text(d, encoding, int(offsetBytes))
+func textNullFn(encoding int) func(d *decode.D) string {
+	return func(d *decode.D) string {
+		nullLen := encodingLen[encodingUTF8]
+		if n, ok := encodingLen[uint64(encoding)]; ok {
+			nullLen = n
+		}
 
-	d.SeekRel(nullLen * 8)
-	// seems sometimes utf16 etc has en exta null byte
-	if nullLen > 1 && d.PeekBits(8) == 0 {
-		d.SeekRel(8)
+		offset, _ := d.PeekFind(
+			int(nullLen)*8,
+			nullLen*8,
+			func(v uint64) bool { return v == 0 },
+			-1,
+		)
+		offsetBytes := offset / 8
+		text := textFn(encoding, int(offsetBytes))(d)
+
+		d.SeekRel(nullLen * 8)
+		// seems sometimes utf16 etc has en exta null byte
+		if nullLen > 1 && d.PeekBits(8) == 0 {
+			d.SeekRel(8)
+		}
+
+		return text
 	}
-
-	return text
-}
-
-func fieldSyncSafeU32(d *decode.D, name string) uint64 {
-	return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
-		return syncSafeU32(d), decode.NumberDecimal, ""
-	})
-}
-
-func fieldTextNull(d *decode.D, name string, encoding int) string { //nolint:unparam
-	return d.FieldStrFn(name, func() (string, string) {
-		return textNull(d, encoding), ""
-	})
-}
-
-func fieldText(d *decode.D, name string, encoding int, nBytes int) string { //nolint:unparam
-	return d.FieldStrFn(name, func() (string, string) {
-		return text(d, encoding, nBytes), ""
-	})
 }
 
 func decodeFrame(d *decode.D, version int) uint64 {
 	var id string
-
-	switch version {
-	case 2:
-		id = d.UTF8(3)
-		d.SeekRel(-3 * 8)
-	case 3, 4:
-		id = d.UTF8(4)
-		d.SeekRel(-4 * 8)
-	}
-
 	var size uint64
 	var dataSize uint64
 	// TODO: global tag unsync?
 	unsyncFlag := false
 
-	idDescription := ""
-	if d, ok := idDescriptions[id]; ok {
-		idDescription = d
-	}
-
 	switch version {
 	case 2:
 		// Frame ID   "XXX"
 		// Frame size $xx xx xx
-		d.FieldStrFn("id", func() (string, string) { return d.UTF8(3), idDescription })
+		id = d.FieldUTF8("id", 3, d.MapStrToScalar(idDescriptions))
 		dataSize = d.FieldU24("size")
 		size = dataSize + 6
 	case 3:
 		// Frame ID   $xx xx xx xx  (four characters)
 		// Size       $xx xx xx xx
 		// Flags      $xx xx
-		d.FieldStrFn("id", func() (string, string) { return d.UTF8(4), idDescription })
+		id = d.FieldUTF8("id", 4, d.MapStrToScalar(idDescriptions))
 		dataSize = d.FieldU32("size")
 
-		d.FieldStructFn("flags", func(d *decode.D) {
+		d.FieldStruct("flags", func(d *decode.D) {
 			// %abc00000 %ijk00000
 			d.FieldBool("tag_alter_preservation")
 			d.FieldBool("file_alter_preservation")
@@ -380,12 +350,12 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Frame ID      $xx xx xx xx  (four characters)
 		// Size      4 * %0xxxxxxx  (synchsafe integer)
 		// Flags         $xx xx
-		d.FieldStrFn("id", func() (string, string) { return d.UTF8(4), idDescription })
-		dataSize = fieldSyncSafeU32(d, "size")
+		id = d.FieldUTF8("id", 4, d.MapStrToScalar(idDescriptions))
+		dataSize = d.FieldUFn("size", decodeSyncSafeU32)
 		var headerLen uint64 = 10
 
 		dataLenFlag := false
-		d.FieldStructFn("flags", func(d *decode.D) {
+		d.FieldStruct("flags", func(d *decode.D) {
 			// %0abc0000 %0h00kmnp
 			d.FieldU1("unused0")
 			d.FieldBool("tag_alter_preservation")
@@ -406,7 +376,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		})
 
 		if dataLenFlag {
-			fieldSyncSafeU32(d, "data_length_indicator")
+			d.FieldUFn("data_length_indicator", decodeSyncSafeU32)
 			dataSize -= 4
 			headerLen += 4
 		}
@@ -425,7 +395,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// End offset      $xx xx xx xx
 		// <Optional embedded sub-frames>
 		"CHAP": func(d *decode.D) {
-			fieldTextNull(d, "element_id", encodingUTF8)
+			d.FieldStrFn("element_id", textNullFn(encodingUTF8))
 			d.FieldU32("start_time")
 			d.FieldU32("end_time")
 			d.FieldU32("start_offset")
@@ -433,12 +403,12 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			decodeFrames(d, version, uint64(d.BitsLeft()/8))
 		},
 		"CTOC": func(d *decode.D) {
-			fieldTextNull(d, "element_id", encodingUTF8)
+			d.FieldStrFn("element_id", textNullFn(encodingUTF8))
 			d.FieldU8("ctoc_flags")
 			entryCount := d.FieldU8("entry_count")
-			d.FieldArrayFn("entries", func(d *decode.D) {
+			d.FieldArray("entries", func(d *decode.D) {
 				for i := uint64(0); i < entryCount; i++ {
-					fieldTextNull(d, "entry", encodingUTF8)
+					d.FieldStrFn("entry", textNullFn(encodingUTF8))
 				}
 			})
 		},
@@ -450,13 +420,13 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Description        <text string according to encoding> $00 (00)
 		// Picture data       <binary data>
 		"APIC": func(d *decode.D) {
-			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8, decode.NumberDecimal)
-			fieldTextNull(d, "mime_type", encodingUTF8)
+			encoding := d.FieldU8("text_encoding", d.MapUToStr(encodingNames))
+			d.FieldStrFn("mime_type", textNullFn(encodingUTF8))
 			d.FieldU8("picture_type") // TODO: table
-			fieldTextNull(d, "description", int(encoding))
+			d.FieldStrFn("description", textNullFn(int(encoding)))
 			dv, _, _ := d.FieldTryFormatLen("picture", d.BitsLeft(), imageFormat, nil)
 			if dv == nil {
-				d.FieldBitBufLen("picture", d.BitsLeft())
+				d.FieldRawLen("picture", d.BitsLeft())
 			}
 		},
 
@@ -467,13 +437,13 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Content description    <text string according to encoding> $00 (00)
 		// Encapsulated object    <binary data>
 		"GEOB": func(d *decode.D) {
-			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8, decode.NumberDecimal)
-			fieldTextNull(d, "mime_type", encodingUTF8)
-			fieldTextNull(d, "filename", int(encoding))
-			fieldTextNull(d, "description", int(encoding))
+			encoding := d.FieldU8("text_encoding", d.MapUToStr(encodingNames))
+			d.FieldStrFn("mime_type", textNullFn(encodingUTF8))
+			d.FieldStrFn("filename", textNullFn(int(encoding)))
+			d.FieldStrFn("description", textNullFn(int(encoding)))
 			dv, _, _ := d.FieldTryFormatLen("data", d.BitsLeft(), imageFormat, nil)
 			if dv == nil {
-				d.FieldBitBufLen("data", d.BitsLeft())
+				d.FieldRawLen("data", d.BitsLeft())
 			}
 		},
 
@@ -503,10 +473,10 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Short content descrip. <text string according to encoding> $00 (00)
 		// The actual text        <full text string according to encoding>
 		"COMM": func(d *decode.D) {
-			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8, decode.NumberDecimal)
+			encoding := d.FieldU8("text_encoding", d.MapUToStr(encodingNames))
 			d.FieldUTF8("language", 3)
-			fieldTextNull(d, "description", int(encoding))
-			fieldText(d, "value", int(encoding), int(d.BitsLeft()/8))
+			d.FieldStrFn("description", textNullFn(int(encoding)))
+			d.FieldStrFn("value", textFn(int(encoding), int(d.BitsLeft()/8)))
 		},
 		// Text information identifier  "T00" - "TZZ" , excluding "TXX",
 		//                             described in 4.2.2.
@@ -519,8 +489,8 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Text encoding                $xx
 		// Information                  <text string(s) according to encoding>
 		"T000": func(d *decode.D) {
-			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8, decode.NumberDecimal)
-			fieldText(d, "text", int(encoding), int(d.BitsLeft()/8))
+			encoding := d.FieldU8("text_encoding", d.MapUToStr(encodingNames))
+			d.FieldStrFn("text", textFn(int(encoding), int(d.BitsLeft()/8)))
 		},
 		// User defined...   "TXX"
 		// Frame size        $xx xx xx
@@ -533,17 +503,17 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Description       <text string according to encoding> $00 (00)
 		// Value             <text string according to encoding>
 		"TXXX": func(d *decode.D) {
-			encoding, _ := d.FieldStringMapFn("text_encoding", encodingNames, "unknown", d.U8, decode.NumberDecimal)
-			fieldTextNull(d, "description", int(encoding))
-			fieldText(d, "value", int(encoding), int(d.BitsLeft()/8))
+			encoding := d.FieldU8("text_encoding", d.MapUToStr(encodingNames))
+			d.FieldStrFn("description", textNullFn(int(encoding)))
+			d.FieldStrFn("value", textFn(int(encoding), int(d.BitsLeft()/8)))
 		},
 		// <Header for 'Private frame', ID: "PRIV">
 		// Owner identifier      <text string> $00
 		// The private data      <binary data>
 		"PRIV": func(d *decode.D) {
 			// TODO: is default ISO8859-1?
-			fieldTextNull(d, "owner", int(encodingISO8859_1))
-			d.FieldBitBufLen("data", d.BitsLeft())
+			d.FieldStrFn("owner", textNullFn(int(encodingISO8859_1)))
+			d.FieldRawLen("data", d.BitsLeft())
 		},
 	}
 
@@ -565,19 +535,19 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			if fn, ok := frames[idNormalized]; ok {
 				fn(d)
 			} else {
-				d.FieldBitBufLen("data", d.BitsLeft())
+				d.FieldRawLen("data", d.BitsLeft())
 			}
 
 			return nil
 		}), nil)
-		d.FieldBitBufLen("data", int64(dataSize*8))
+		d.FieldRawLen("data", int64(dataSize*8))
 	} else {
 		if fn, ok := frames[idNormalized]; ok {
-			d.DecodeLenFn(int64(dataSize)*8, func(d *decode.D) {
+			d.LenFn(int64(dataSize)*8, func(d *decode.D) {
 				fn(d)
 			})
 		} else {
-			d.FieldBitBufLen("data", int64(dataSize*8))
+			d.FieldRawLen("data", int64(dataSize*8))
 		}
 	}
 
@@ -585,26 +555,26 @@ func decodeFrame(d *decode.D, version int) uint64 {
 }
 
 func decodeFrames(d *decode.D, version int, size uint64) {
-	d.FieldArrayFn("frames", func(d *decode.D) {
+	d.FieldArray("frames", func(d *decode.D) {
 		for size > 0 {
 			if d.PeekBits(8) == 0 {
 				return
 			}
 
-			d.FieldStructFn("frame", func(d *decode.D) {
+			d.FieldStruct("frame", func(d *decode.D) {
 				size -= decodeFrame(d, version)
 			})
 		}
 	})
 
 	if size > 0 {
-		d.FieldZeroPadding("padding", int(size)*8)
+		d.FieldRawLen("padding", int64(size*8), d.BitBufIsZero)
 	}
 }
 
 func id3v2Decode(d *decode.D, in interface{}) interface{} {
-	d.ValidateAtLeastBitsLeft(4 * 8)
-	d.FieldValidateUTF8("magic", "ID3")
+	d.AssertAtLeastBitsLeft(4 * 8)
+	d.FieldUTF8("magic", 3, d.ValidateStr("ID3"))
 	version := int(d.FieldU8("version"))
 	versionValid := version == 2 || version == 3 || version == 4
 	if !versionValid {
@@ -613,29 +583,25 @@ func id3v2Decode(d *decode.D, in interface{}) interface{} {
 
 	d.FieldU8("revision")
 	var extendedHeader bool
-	d.FieldStructFn("flags", func(d *decode.D) {
+	d.FieldStruct("flags", func(d *decode.D) {
 		d.FieldBool("unsynchronisation")
 		extendedHeader = d.FieldBool("extended_header")
 		d.FieldBool("experimental_indicator")
 		d.FieldU5("unused")
 	})
-	size := d.FieldUFn("size", func() (uint64, decode.DisplayFormat, string) {
-		return syncSafeU32(d), decode.NumberDecimal, ""
-	})
+	size := d.FieldUFn("size", decodeSyncSafeU32)
 
 	var extHeaderSize uint64
 	if extendedHeader {
-		d.FieldStructFn("extended_header", func(d *decode.D) {
+		d.FieldStruct("extended_header", func(d *decode.D) {
 			switch version {
 			case 3:
 				extHeaderSize = d.FieldU32("size")
-				d.FieldBitBufLen("data", int64(extHeaderSize)*8)
+				d.FieldRawLen("data", int64(extHeaderSize)*8)
 			case 4:
-				extHeaderSize = d.FieldUFn("size", func() (uint64, decode.DisplayFormat, string) {
-					return syncSafeU32(d), decode.NumberDecimal, ""
-				})
+				extHeaderSize = d.FieldUFn("size", decodeSyncSafeU32)
 				// in v4 synchsafe integer includes itself
-				d.FieldBitBufLen("data", (int64(extHeaderSize)-4)*8)
+				d.FieldRawLen("data", (int64(extHeaderSize)-4)*8)
 			}
 		})
 	}

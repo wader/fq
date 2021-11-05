@@ -1,5 +1,7 @@
 package format
 
+import "github.com/wader/fq/pkg/decode"
+
 // based on ffmpeg libavformat/isom.c ff_mp4_obj_type
 //nolint:revive
 const (
@@ -41,7 +43,7 @@ const (
 	MPEGObjectTypeNONE              = 0
 )
 
-var MpegObjectTypeNames = map[uint64]string{
+var MpegObjectTypeNames = decode.UToStr{
 	MPEGObjectTypeMOV_TEXT:          "MPEGObjectTypeMOV_TEXT",
 	MPEGObjectTypeMPEG4:             "MPEGObjectTypeMPEG4",
 	MPEGObjectTypeH264:              "MPEGObjectTypeH264",
@@ -154,7 +156,7 @@ const (
 	ProtoBufTypeFloat
 )
 
-var ProtoBufTypeNames = map[uint64]string{
+var ProtoBufTypeNames = decode.UToStr{
 	ProtoBufTypeInt32:          "Int32",
 	ProtoBufTypeInt64:          "Int64",
 	ProtoBufTypeUInt32:         "UInt32",
@@ -194,7 +196,7 @@ const (
 	MPEGAudioObjectTypeER_AAC_LD = 23
 )
 
-var MPEGAudioObjectTypeNames = map[uint64]string{
+var MPEGAudioObjectTypeNames = decode.UToStr{
 	0:                            "Null",
 	MPEGAudioObjectTypeMain:      "AAC Main",
 	MPEGAudioObjectTypeLC:        "AAC LC (Low Complexity)",

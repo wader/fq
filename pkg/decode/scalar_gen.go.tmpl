@@ -1,0 +1,170 @@
+package decode
+
+import (
+	"errors"
+	"fmt"
+
+	"github.com/wader/fq/pkg/bitio"
+)
+
+{{- range $name, $t := $.types }}
+	// Type {{$name}}
+
+	func (s Scalar) Actual{{$name}}() {{$t.go_type}} {
+		v, ok := s.Actual.({{$t.go_type}})
+		if !ok {
+			panic(fmt.Sprintf("failed to type assert s.Actual %v as {{$t.go_type}}", s.Actual))
+		}
+		return v
+	}
+	func (s Scalar) Sym{{$name}}() {{$t.go_type}} {
+		v, ok := s.Sym.({{$t.go_type}})
+		if !ok {
+			panic(fmt.Sprintf("failed to type assert s.Sym %v as {{$t.go_type}}", s.Sym))
+		}
+		return v
+	}
+
+	func (d *D) Field{{$name}}ScalarFn(name string, fn func(d *D) Scalar, sfns ...ScalarFn) {{$t.go_type}} {
+		v, err := d.TryFieldScalar(name, func(_ Scalar) (Scalar, error) { return fn(d), nil }, sfns...)
+		if err != nil {
+			panic(IOError{Err: err, Name: name, Op: "{{$name}}", Pos: d.Pos()})
+		}
+		return v.Actual{{$name}}()
+	}
+	func (d *D) Field{{$name}}Fn(name string, fn func(d *D) {{$t.go_type}}, sfns ...ScalarFn) {{$t.go_type}} {
+		return d.Field{{$name}}ScalarFn(name, func(d *D) Scalar { return Scalar{Actual: fn(d) } }, sfns...)
+	}
+	func (d *D) TryField{{$name}}ScalarFn(name string, fn func(d *D) (Scalar, error), sfns ...ScalarFn) ({{$t.go_type}}, error) {
+		v, err := d.TryFieldScalar(name, func(_ Scalar) (Scalar, error) { return fn(d) }, sfns...)
+		if err != nil {
+			return {{$t.zero}}, err
+		}
+		return v.Actual{{$name}}(), err
+	}
+	func (d *D) TryField{{$name}}Fn(name string, fn func(d *D) ({{$t.go_type}}, error), sfns ...ScalarFn) ({{$t.go_type}}, error) {
+		return d.TryField{{$name}}ScalarFn(name, func(d *D) (Scalar, error) {
+			v, err := fn(d)
+			return Scalar{Actual: v}, err
+		}, sfns...)
+	}
+{{end}}
+
+{{- range $name, $t := $.types }}
+	{{- if $t.compare}}
+		// Validate/Assert {{$name}}
+		func (d *D) assert{{$name}}(assert bool, vs ...{{$t.go_type}}) func(s Scalar) (Scalar, error) {
+			return func(s Scalar) (Scalar, error) {
+				// TODO: check type assert?
+				a, ok := s.Actual.({{$t.go_type}})
+				if !ok {
+					panic(fmt.Sprintf("failed to type assert s.Actual %v as {{$t.go_type}}", s.Actual))
+				}
+				for _, b := range vs {
+					if {{$t.compare}} {
+						s.Description = "valid"
+						return s, nil
+					}
+				}
+				s.Description = "invalid"
+				if assert {
+					return s, errors.New("failed to validate {{$name}}")
+				}
+				return s, nil
+			}
+		}
+
+		func (d *D) Assert{{$name}}(vs ...{{$t.go_type}}) func(s Scalar) (Scalar, error) {
+			return d.assert{{$name}}(true, vs...)
+		}
+		func (d *D) Validate{{$name}}(vs ...{{$t.go_type}}) func(s Scalar) (Scalar, error) {
+			return d.assert{{$name}}(false, vs...)
+		}
+	{{- end}}
+{{- end}}
+
+{{- range $from_name, $from := $.types }}
+	{{- if ne $from.map_from false}}
+		// Map {{$from_name}} -> Scalar
+
+		type {{$from_name}}ToScalar map[{{$from.go_type}}]Scalar
+
+		func (d *D) Map{{$from_name}}ToScalar(m {{$from_name}}ToScalar) func(s Scalar) (Scalar, error) {
+			return func(s Scalar) (Scalar, error) {
+				a := s.Actual{{$from_name}}()
+				if ns, ok := m[a]; ok {
+					ns.Actual = a
+					s = ns
+				}
+				return s, nil
+			}
+		}
+
+		{{- range $to_name, $to := $.types }}
+			{{- if ne $to.map_to false}}
+				// Map {{$from_name}} -> {{$to_name}}
+
+				type {{$from_name}}To{{$to_name}} map[{{$from.go_type}}]{{$to.go_type}}
+
+				func (d *D) Map{{$from_name}}To{{$to_name}}(m {{$from_name}}To{{$to_name}}) func(s Scalar) (Scalar, error) {
+					return func(s Scalar) (Scalar, error) {
+						if t, ok := m[s.Actual{{$from_name}}()]; ok {
+							s.Sym = t
+						}
+						return s, nil
+					}
+				}
+			{{- end}}
+		{{- end}}
+	{{- end}}
+{{- end}}
+
+{{- range $r := $.readers }}
+	{{- $t := index $.types $r.type }}
+
+	{{- range $v := $r.variants }}
+		// Reader {{$r.name}}{{$v.name}}
+
+		func (d *D) Try{{$r.name}}{{$v.name}}({{$v.param}}) ({{$t.go_type}}, error) { return {{$v.call}} }
+
+		func (d *D) Scalar{{$r.name}}{{$v.name}}({{$v.param}}) func(Scalar) (Scalar, error) {
+			return func(s Scalar) (Scalar, error) {
+				v, err := {{$v.call}}
+				s.Actual = v
+				return s, err
+			}
+		}
+
+		func (d *D) {{$r.name}}{{$v.name}}({{$v.param}}) {{$t.go_type}} {
+			v, err := {{$v.call}}
+			if err != nil {
+				panic(IOError{Err: err, Op: "{{$r.name}}{{$v.name}}", Pos: d.Pos()})
+			}
+			return v
+		}
+
+		func (d *D) TryField{{$r.name}}{{$v.name}}(name string{{if $v.param}}, {{$v.param}}{{end}}, sfns ...ScalarFn) ({{$t.go_type}}, error) {
+			{{- if $v.param}}
+				v, err := d.TryFieldScalar(name, d.Scalar{{$r.name}}{{$v.name}}({{$v.args}}), sfns...)
+				if err != nil {
+					return {{$t.zero}}, err
+				}
+				return v.Actual{{$r.type}}(), err
+			{{- else}}
+				return d.TryField{{$r.type}}Fn(name, (*D).Try{{$r.name}}{{$v.name}}, sfns...)
+			{{- end}}
+		}
+
+		func (d *D) Field{{$r.name}}{{$v.name}}(name string{{if $v.param}}, {{$v.param}}{{end}}, sfns ...ScalarFn) {{$t.go_type}} {
+			{{- if $v.param}}
+				v, err := d.TryField{{$r.name}}{{$v.name}}(name{{if $v.args}}, {{$v.args}}{{end}}, sfns...)
+				if err != nil {
+					panic(IOError{Err: err, Name: name, Op: "{{$r.name}}{{$v.name}}", Pos: d.Pos()})
+				}
+				return v
+			{{- else}}
+				return d.Field{{$r.type}}Fn(name, (*D).{{$r.name}}{{$v.name}}, sfns...)
+			{{- end}}
+		}
+	{{- end}}
+{{- end}}

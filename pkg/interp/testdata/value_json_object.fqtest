@@ -70,13 +70,13 @@ json> (.)._path | ., type, length?
 0
 json> (.)._bits | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|7b 7d|                                         |{}|             |.: none 0x0-0x1.7 (2)
+0x0|7b 7d|                                         |{}|             |.: raw bits 0x0-0x1.7 (2)
 "buffer"
 16
 json> 
 json> (.)._bytes | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|7b 7d|                                         |{}|             |.: none 0x0-0x1.7 (2)
+0x0|7b 7d|                                         |{}|             |.: raw bits 0x0-0x1.7 (2)
 "buffer"
 2
 json> 

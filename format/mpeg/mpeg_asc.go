@@ -35,38 +35,38 @@ var frequencyIndexHz = map[uint64]int{
 	0xf: -1,
 }
 
-var channelConfigurationNames = map[uint64]string{
-	0: "Defined in AOT Specifc Config",
-	1: "channel: front-center",
-	2: "channels: front-left, front-right",
-	3: "channels: front-center, front-left, front-right",
-	4: "channels: front-center, front-left, front-right, back-center",
-	5: "channels: front-center, front-left, front-right, back-left, back-right",
-	6: "channels: front-center, front-left, front-right, back-left, back-right, LFE-channel",
-	7: "channels: front-center, front-left, front-right, side-left, side-right, back-left, back-right, LFE-channel",
+var channelConfigurationNames = decode.UToStr{
+	0: "defined in AOT Specifc Config",
+	1: "front-center",
+	2: "front-left, front-right",
+	3: "front-center, front-left, front-right",
+	4: "front-center, front-left, front-right, back-center",
+	5: "front-center, front-left, front-right, back-left, back-right",
+	6: "front-center, front-left, front-right, back-left, back-right, LFE-channel",
+	7: "front-center, front-left, front-right, side-left, side-right, back-left, back-right, LFE-channel",
 }
 
 func ascDecoder(d *decode.D, in interface{}) interface{} {
-	objectType, _ := d.FieldStringMapFn("object_type", format.MPEGAudioObjectTypeNames, "Unknown", func() uint64 {
+	objectType := d.FieldUFn("object_type", func(d *decode.D) uint64 {
 		n := d.U5()
 		if n == 31 {
 			n = 32 + d.U6()
 		}
 		return n
-	}, decode.NumberDecimal)
-	d.FieldUFn("frequency_index", func() (uint64, decode.DisplayFormat, string) {
+	}, d.MapUToStr(format.MPEGAudioObjectTypeNames))
+	d.FieldUScalarFn("sampling_frequency", func(d *decode.D) decode.Scalar {
 		v := d.U4()
 		if v == 15 {
-			return d.U24(), decode.NumberDecimal, ""
+			return decode.Scalar{Actual: d.U24()}
 		}
 		if f, ok := frequencyIndexHz[v]; ok {
-			return uint64(f), decode.NumberDecimal, ""
+			return decode.Scalar{Actual: v, Sym: f}
 		}
-		return 0, decode.NumberDecimal, "Invalid"
+		return decode.Scalar{Description: "invalid"}
 	})
-	d.FieldStringMapFn("channel_configuration", channelConfigurationNames, "Reserved", d.U4, decode.NumberDecimal)
+	d.FieldU4("channel_configuration", d.MapUToStr(channelConfigurationNames))
 	// TODO: GASpecificConfig etc
-	d.FieldBitBufLen("var_aot_or_byte_align", d.BitsLeft())
+	d.FieldRawLen("var_aot_or_byte_align", d.BitsLeft())
 
 	return format.MPEGASCOut{ObjectType: int(objectType)}
 }

@@ -1,0 +1,24 @@
+# echo test | bzip2 > test.bz2
+$ fq -d bzip2 verbose /test.bz2
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /test.bz2 (bzip2) 0x0-0x2c.7 (45)
+0x00|42 5a                                          |BZ              |  magic: "BZ" (valid) 0x0-0x1.7 (2)
+ 0x0|74 65 73 74 0a|                                |test.|          |  uncompressed: raw bits 0x0-0x4.7 (5)
+0x00|      68                                       |  h             |  version: 104 0x2-0x2.7 (1)
+0x00|         39                                    |   9            |  hundred_k_blocksize: 57 0x3-0x3.7 (1)
+    |                                               |                |  block: {} 0x4-0x1c.7 (25)
+0x00|            31 41 59 26 53 59                  |    1AY&SY      |    compressed_magic: 0x314159265359 (valid) 0x4-0x9.7 (6)
+0x00|                              cc c3 71 d4      |          ..q.  |    crc: 3435360724 0xa-0xd.7 (4)
+0x00|                                          00   |              . |    randomised: 0 0xe-0xe (0.1)
+0x00|                                          00 00|              ..|    origptr: 4 0xe.1-0x11 (3)
+0x10|02 41                                          |.A              |
+0x10|   41 80 00                                    | A..            |    syncmapl1: 33536 0x11.1-0x13 (2)
+0x10|         00 10 02 00 0c 00 20                  |   ......       |    syncmapl2: raw bits 0x13.1-0x19 (6)
+0x10|                           20                  |                |    num_trees: 2 0x19.1-0x19.3 (0.3)
+0x10|                           20 00 21            |          .!    |    num_sels: 1 0x19.4-0x1b.2 (1.7)
+    |                                               |                |    selector_list: [1] 0x1b.3-0x1b.3 (0.1)
+0x10|                                 21            |           !    |      [0]: selector 0 0x1b.3-0x1b.3 (0.1)
+    |                                               |                |    trees: [2] 0x1b.4-0x1c.7 (1.4)
+0x10|                                 21 9a         |           !.   |      [0]: tree 3 0x1b.4-0x1c.1 (0.6)
+0x10|                                    9a         |            .   |      [1]: tree 13 0x1c.2-0x1c.7 (0.6)
+0x10|                                       68 33 4d|             h3M|  unknown0: raw bits 0x1d-0x2c.7 (16)
+0x20|19 97 8b b9 22 9c 28 48 66 61 b8 ea 00|        |....".(Hfa...|  |

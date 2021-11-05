@@ -4,7 +4,8 @@ package wav
 // https://github.com/FFmpeg/FFmpeg/blob/master/libavformat/wavdec.c
 // https://tech.ebu.ch/docs/tech/tech3285.pdf
 // http://www-mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html
-// TDOO: audio/wav
+// TODO: audio/wav
+// TODO: default little endian
 
 import (
 	"fmt"
@@ -37,7 +38,7 @@ const (
 )
 
 // transformed from ffmpeg libavformat/riff.c
-var audioFormatName = map[uint64]string{
+var audioFormatName = decode.UToStr{
 	0x0001: "PCM",
 	0x0002: "ADPCM_MS",
 	0x0003: "PCM_FLOAT",
@@ -112,9 +113,14 @@ var audioFormatName = map[uint64]string{
 	formatExtensible: "Extensible",
 }
 
-var subFormatNames = map[[16]byte]string{
-	{0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}: "PCM",
-	{0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}: "IEEE_FLOAT",
+var (
+	subFormatPCMBytes  = [16]byte{0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}
+	subFormatIEEEFloat = [16]byte{0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}
+)
+
+var subFormatNames = decode.BytesToScalar{
+	{Bytes: subFormatPCMBytes[:], Scalar: decode.Scalar{Sym: "PCM"}},
+	{Bytes: subFormatIEEEFloat[:], Scalar: decode.Scalar{Sym: "IEEE_FLOAT"}},
 }
 
 func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 { //nolint:unparam
@@ -124,7 +130,7 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 { /
 			decodeChunks(d, false)
 		},
 		"fmt": func(d *decode.D) {
-			audioFormat, _ := d.FieldStringMapFn("audio_format", audioFormatName, "Unknown", d.U16LE, decode.NumberDecimal)
+			audioFormat := d.FieldU16LE("audio_format", d.MapUToStr(audioFormatName))
 			d.FieldU16LE("num_channels")
 			d.FieldU32LE("sample_rate")
 			d.FieldU32LE("byte_rate")
@@ -135,11 +141,11 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 { /
 				d.FieldU16LE("extension_size")
 				d.FieldU16LE("valid_bits_per_sample")
 				d.FieldU32LE("channel_mask")
-				d.FieldStringUUIDMapFn("sub_format", subFormatNames, "Unknown", func() []byte { return d.BytesLen(16) })
+				d.FieldRawLen("sub_format", 16*8, d.MapRawToScalar(subFormatNames))
 			}
 		},
 		"data": func(d *decode.D) {
-			d.FieldBitBufLen("samples", d.BitsLeft())
+			d.FieldRawLen("samples", d.BitsLeft())
 		},
 		"LIST": func(d *decode.D) {
 			d.FieldUTF8("list_type", 4)
@@ -150,19 +156,19 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 { /
 		},
 	}
 
-	trimChunkID := d.FieldStrFn("id", func() (string, string) {
-		return strings.TrimSpace(d.UTF8(4)), ""
+	trimChunkID := d.FieldStrFn("id", func(d *decode.D) string {
+		return strings.TrimSpace(d.UTF8(4))
 	})
 	if expectedChunkID != "" && trimChunkID != expectedChunkID {
 		d.Invalid(fmt.Sprintf("expected chunk id %q found %q", expectedChunkID, trimChunkID))
 	}
 	const restOfFileLen = 0xffffffff
-	chunkLen := int64(d.FieldUFn("size", func() (uint64, decode.DisplayFormat, string) {
+	chunkLen := int64(d.FieldUScalarFn("size", func(d *decode.D) decode.Scalar {
 		l := d.U32LE()
 		if l == restOfFileLen {
-			return l, decode.NumberHex, "rest of file"
+			return decode.Scalar{Actual: l, DisplayFormat: decode.NumberHex, Sym: "rest of file"}
 		}
-		return l, decode.NumberDecimal, ""
+		return decode.Scalar{Actual: l, DisplayFormat: decode.NumberDecimal}
 	}))
 
 	if chunkLen == restOfFileLen {
@@ -170,24 +176,24 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 { /
 	}
 
 	if fn, ok := chunks[trimChunkID]; ok {
-		d.DecodeLenFn(chunkLen*8, fn)
+		d.LenFn(chunkLen*8, fn)
 	} else {
 		if stringData {
-			d.FieldUTF8Fn("data", int(chunkLen), func(s string) string { return strings.Trim(s, " \x00") })
+			d.FieldUTF8("data", int(chunkLen), d.Trim(" \x00"))
 		} else {
-			d.FieldBitBufLen("data", chunkLen*8)
+			d.FieldRawLen("data", chunkLen*8)
 		}
 	}
 
 	if chunkLen%2 != 0 {
-		d.FieldBitBufLen("align", 8)
+		d.FieldRawLen("align", 8)
 	}
 
 	return chunkLen + 8
 }
 
 func decodeChunks(d *decode.D, stringData bool) {
-	d.FieldStructArrayLoopFn("chunks", "chunk", d.NotEnd, func(d *decode.D) {
+	d.FieldStructArrayLoop("chunks", "chunk", d.NotEnd, func(d *decode.D) {
 		decodeChunk(d, "", stringData)
 	})
 }

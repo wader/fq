@@ -4,12 +4,12 @@
 $ fq -d apev2 verbose /apev2
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /apev2 (apev2) 0x0-0xad.7 (174)
     |                                               |                |  header: {} 0x0-0x1f.7 (32)
-0x00|41 50 45 54 41 47 45 58                        |APETAGEX        |    preamble: "APETAGEX" (Correct) 0x0-0x7.7 (8)
+0x00|41 50 45 54 41 47 45 58                        |APETAGEX        |    preamble: "APETAGEX" (valid) 0x0-0x7.7 (8)
 0x00|                        d0 07 00 00            |        ....    |    version: 2000 0x8-0xb.7 (4)
 0x00|                                    8e 00 00 00|            ....|    tag_size: 142 0xc-0xf.7 (4)
 0x10|03 00 00 00                                    |....            |    item_count: 3 0x10-0x13.7 (4)
 0x10|            00 00 00 a0                        |    ....        |    flags: 2684354560 0x14-0x17.7 (4)
-0x10|                        00 00 00 00 00 00 00 00|        ........|    reserved: "Correct" (none) (zero padding) 0x18-0x1f.7 (8)
+0x10|                        00 00 00 00 00 00 00 00|        ........|    reserved: raw bits (all zero) 0x18-0x1f.7 (8)
     |                                               |                |  tags: [3] 0x20-0x8d.7 (110)
     |                                               |                |    [0]: tag {} 0x20-0x3d.7 (30)
 0x20|07 00 00 00                                    |....            |      item_size: 7 0x20-0x23.7 (4)
@@ -44,11 +44,11 @@ $ fq -d apev2 verbose /apev2
 0x80|               00                              |     .          |      key_terminator: 0 0x85-0x85.7 (1)
 0x80|                  30 2e 30 38 34 36 36 35      |      0.084665  |      value: "0.084665" 0x86-0x8d.7 (8)
     |                                               |                |  footer: {} 0x8e-0xad.7 (32)
-0x80|                                          41 50|              AP|    preamble: "APETAGEX" (Correct) 0x8e-0x95.7 (8)
+0x80|                                          41 50|              AP|    preamble: "APETAGEX" (valid) 0x8e-0x95.7 (8)
 0x90|45 54 41 47 45 58                              |ETAGEX          |
 0x90|                  d0 07 00 00                  |      ....      |    version: 2000 0x96-0x99.7 (4)
 0x90|                              8e 00 00 00      |          ....  |    tag_size: 142 0x9a-0x9d.7 (4)
 0x90|                                          03 00|              ..|    item_count: 3 0x9e-0xa1.7 (4)
 0xa0|00 00                                          |..              |
 0xa0|      00 00 00 80                              |  ....          |    flags: 2147483648 0xa2-0xa5.7 (4)
-0xa0|                  00 00 00 00 00 00 00 00|     |      ........| |    reserved: "Correct" (none) (zero padding) 0xa6-0xad.7 (8)
+0xa0|                  00 00 00 00 00 00 00 00|     |      ........| |    reserved: raw bits (all zero) 0xa6-0xad.7 (8)

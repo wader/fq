@@ -15,7 +15,7 @@ func init() {
 	})
 }
 
-var hevcNALNames = map[uint64]string{
+var hevcNALNames = decode.UToStr{
 	0:  "TRAIL_N",
 	1:  "TRAIL_R",
 	2:  "TSA_N",
@@ -68,7 +68,7 @@ var hevcNALNames = map[uint64]string{
 
 func hevcNALUDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldBool("forbidden_zero_bit")
-	nalType, _ := d.FieldStringMapFn("nal_unit_type", hevcNALNames, "Unknown", d.U6, decode.NumberDecimal)
+	nalType := d.FieldU6("nal_unit_type", d.MapUToStr(hevcNALNames))
 	d.FieldU6("nuh_layer_id")
 	d.FieldU3("nuh_temporal_id_plus1")
 	unescapedBb := decode.MustNewBitBufFromReader(d, decode.NALUnescapeReader{Reader: d.BitBufRange(d.Pos(), d.BitsLeft())})
@@ -76,7 +76,7 @@ func hevcNALUDecode(d *decode.D, in interface{}) interface{} {
 	_ = unescapedBb
 	_ = nalType
 
-	d.FieldBitBufLen("data", d.BitsLeft())
+	d.FieldRawLen("data", d.BitsLeft())
 
 	return nil
 }

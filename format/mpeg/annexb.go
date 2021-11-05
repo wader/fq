@@ -30,7 +30,7 @@ func annexBDecode(d *decode.D, _ interface{}, format []*decode.Format) interface
 	}
 
 	for d.NotEnd() {
-		d.FieldBitBufLen("start_code", currentPrefixLen)
+		d.FieldRawLen("start_code", currentPrefixLen)
 
 		nextOffset, nextPrefixLen, err := annexBFindStartCode(d)
 		if err != nil {

@@ -27,7 +27,7 @@ const (
 	scriptDataObject = 18
 )
 
-var tagTypeNames = map[uint64]string{
+var tagTypeNames = decode.UToStr{
 	audioData:        "audioData",
 	videoData:        "videoData",
 	scriptDataObject: "scriptDataObject",
@@ -49,7 +49,7 @@ const (
 	typeLongString  = 12
 )
 
-var typeNames = map[uint64]string{
+var typeNames = decode.UToStr{
 	typeNumber:      "Number",
 	typeBoolean:     "Boolean",
 	typeString:      "String",
@@ -70,27 +70,27 @@ func flvDecode(d *decode.D, in interface{}) interface{} {
 	var fieldScriptDataVariable func(d *decode.D, name string)
 
 	fieldScriptDataString := func(d *decode.D, name string) {
-		d.FieldStrFn(name, func() (string, string) {
+		d.FieldStrFn(name, func(d *decode.D) string {
 			l := d.U16()
-			return d.UTF8(int(l)), ""
+			return d.UTF8(int(l))
 		})
 	}
 	fieldScriptDataStringLong := func(d *decode.D, name string) {
-		d.FieldStrFn(name, func() (string, string) {
+		d.FieldStrFn(name, func(d *decode.D) string {
 			l := d.U32()
-			return d.UTF8(int(l)), ""
+			return d.UTF8(int(l))
 		})
 	}
 
 	fieldScriptDataVariable = func(d *decode.D, name string) {
-		d.FieldStructFn(name, func(d *decode.D) {
+		d.FieldStruct(name, func(d *decode.D) {
 			fieldScriptDataString(d, "name")
 			fieldScriptDataString(d, "data")
 		})
 	}
 
 	fieldScriptDataValue := func(d *decode.D, _ string) uint64 {
-		typ, _ := d.FieldStringMapFn("type", typeNames, "Unknown", d.U8, decode.NumberDecimal)
+		typ := d.FieldU8("type", d.MapUToStr(typeNames))
 		if typ == typeECMAArray {
 			d.FieldU32("ecma_array_length")
 		}
@@ -111,7 +111,7 @@ func flvDecode(d *decode.D, in interface{}) interface{} {
 		case typeReference:
 			d.FieldU16("reference")
 		case typeECMAArray:
-			d.FieldArrayFn("array", func(d *decode.D) {
+			d.FieldArray("array", func(d *decode.D) {
 				for {
 					if d.PeekBits(24) == typeObjectEnd { // variableEnd?
 						d.FieldU24("end")
@@ -140,27 +140,27 @@ func flvDecode(d *decode.D, in interface{}) interface{} {
 	}
 
 	fieldScriptDataObject = func() {
-		d.FieldStructFn("object", func(d *decode.D) {
+		d.FieldStruct("object", func(d *decode.D) {
 			fieldScriptDataString(d, "name")
 			fieldScriptDataValue(d, "data")
 		})
 	}
 
-	d.FieldValidateUTF8("signature", "FLV")
+	d.FieldUTF8("signature", 3, d.AssertStr("FLV"))
 	d.FieldU8("version")
-	d.FieldValidateUFn("type_flags_reserved", 0, d.U5)
+	d.FieldU5("type_flags_reserved", d.AssertU(0))
 	d.FieldU1("type_flags_audio")
-	d.FieldValidateUFn("type_flags_reserved", 0, d.U1)
+	d.FieldU1("type_flags_reserved", d.AssertU(0))
 	d.FieldU1("type_flags_video")
 	dataOffset := d.FieldU32("data_offset")
 
 	d.SeekAbs(int64(dataOffset) * 8)
 
-	d.FieldArrayFn("tags", func(d *decode.D) {
+	d.FieldArray("tags", func(d *decode.D) {
 		for !d.End() {
-			d.FieldStructFn("tag", func(d *decode.D) {
+			d.FieldStruct("tag", func(d *decode.D) {
 				d.FieldU32("previous_tag_size")
-				tagType, _ := d.FieldStringMapFn("tag_type", tagTypeNames, "unknown", d.U8, decode.NumberDecimal)
+				tagType := d.FieldU8("tag_type", d.MapUToStr(tagTypeNames))
 				dataSize := d.FieldU24("data_size")
 				d.FieldU24("timestamp")
 				d.FieldU8("timestamp_extended")

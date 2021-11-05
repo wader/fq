@@ -1,11 +1,12 @@
 package interp
 
 import (
+	"log"
 	"strconv"
 	"strings"
 
 	"github.com/wader/fq/internal/ansi"
-	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/bitio"
 )
 
 type stringRanges struct {
@@ -73,7 +74,7 @@ func parseCSVStringMap(s string) map[string]string {
 
 var PlainDecorator = Decorator{
 	Column:     "|",
-	ValueColor: func(v *decode.Value) ansi.Code { return ansi.None },
+	ValueColor: func(v interface{}) ansi.Code { return ansi.None },
 	ByteColor:  func(b byte) ansi.Code { return ansi.None },
 }
 
@@ -105,31 +106,22 @@ func decoratorFromOptions(opts Options) Decorator {
 
 		d.Error = ansi.FromString(colors["error"])
 
-		d.ValueColor = func(v *decode.Value) ansi.Code {
-			switch vv := v.V.(type) {
-			case decode.Compound:
-				if vv.IsArray {
-					return d.Array
+		d.ValueColor = func(v interface{}) ansi.Code {
+			switch vv := v.(type) {
+			case bool:
+				if vv {
+					return d.True
 				}
-				return d.Object
-			case decode.Scalar:
-				switch vv := vv.Value().(type) {
-				case bool:
-					if vv {
-						return d.True
-					}
-					return d.False
-				case string:
-					return d.String
-				case nil:
-					return d.Null
-				case int, float64, int64, uint64:
-					// TODO: clean up number types
-					return d.Number
-				default:
-					return d.Value
-				}
+				return d.False
+			case string, *bitio.Buffer:
+				return d.String
+			case nil:
+				return d.Null
+			case int, float64, int64, uint64:
+				// TODO: clean up number types
+				return d.Number
 			default:
+				log.Printf("v: %#+v\n", v)
 				panic("unreachable")
 			}
 		}
@@ -148,7 +140,7 @@ func decoratorFromOptions(opts Options) Decorator {
 		}
 		d.ByteColor = func(b byte) ansi.Code { return byteColors[b] }
 	} else {
-		d.ValueColor = func(v *decode.Value) ansi.Code { return ansi.None }
+		d.ValueColor = func(v interface{}) ansi.Code { return ansi.None }
 		d.ByteColor = func(b byte) ansi.Code { return ansi.None }
 	}
 
@@ -173,7 +165,7 @@ type Decorator struct {
 
 	Error ansi.Code
 
-	ValueColor func(v *decode.Value) ansi.Code
+	ValueColor func(v interface{}) ansi.Code
 	ByteColor  func(b byte) ansi.Code
 
 	Column string

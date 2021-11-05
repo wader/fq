@@ -34,7 +34,7 @@ const (
 	CHG_COLCON = 0x07
 )
 
-var commandNames = map[uint64]string{
+var commandNames = decode.UToStr{
 	CMD_END:    "CMD_END",
 	FSTA_DSP:   "FSTA_DSP",
 	STA_DSP:    "STA_DSP",
@@ -107,11 +107,11 @@ func spuDecode(d *decode.D, in interface{}) interface{} {
 	dcsqtOffset := d.FieldU16("dcsqt_offset")
 
 	d.SeekAbs(int64(dcsqtOffset) * 8)
-	d.FieldArrayFn("dcsqt", func(d *decode.D) {
+	d.FieldArray("dcsqt", func(d *decode.D) {
 		lastDCSQ := false
 
 		for !lastDCSQ {
-			d.FieldStructFn("dcsq", func(d *decode.D) {
+			d.FieldStruct("dcsq", func(d *decode.D) {
 				dcsqStart := uint64(d.Pos() / 8)
 				d.FieldU16("delay")
 				offset := d.FieldU16("offset")
@@ -125,11 +125,11 @@ func spuDecode(d *decode.D, in interface{}) interface{} {
 				var width uint64
 				var height uint64
 
-				d.FieldArrayFn("commands", func(d *decode.D) {
+				d.FieldArray("commands", func(d *decode.D) {
 					seenEnd := false
 					for !seenEnd {
-						d.FieldStructFn("command", func(d *decode.D) {
-							cmd, _ := d.FieldStringMapFn("type", commandNames, "Unknown", d.U8, decode.NumberDecimal)
+						d.FieldStruct("command", func(d *decode.D) {
+							cmd := d.FieldU8("type", d.MapUToStr(commandNames))
 							switch cmd {
 							case CMD_END:
 								seenEnd = true
@@ -162,7 +162,7 @@ func spuDecode(d *decode.D, in interface{}) interface{} {
 							case CHG_COLCON:
 								size := d.FieldU16("size")
 								// TODO
-								d.FieldBitBufLen("data", int64(size)*8)
+								d.FieldRawLen("data", int64(size)*8)
 							}
 						})
 					}
@@ -175,12 +175,16 @@ func spuDecode(d *decode.D, in interface{}) interface{} {
 				if pxdTFOffset != 0 {
 					d.SeekAbs(pxdTFOffset)
 					/*tLines*/ _ = decodeLines(d, halfHeight, int(width))
-					d.FieldBitBufRange("top_pixels", pxdTFOffset, d.Pos()-pxdTFOffset)
+					d.RangeFn(pxdTFOffset, d.Pos()-pxdTFOffset, func(d *decode.D) {
+						d.FieldRawLen("top_pixels", d.BitsLeft())
+					})
 				}
 				if pxdBFOffset != 0 {
 					d.SeekAbs(pxdBFOffset)
 					/*bLines*/ _ = decodeLines(d, halfHeight, int(width))
-					d.FieldBitBufRange("bottom_pixels", pxdBFOffset, d.Pos()-pxdBFOffset)
+					d.RangeFn(pxdBFOffset, d.Pos()-pxdBFOffset, func(d *decode.D) {
+						d.FieldRawLen("bottom_pixels", d.BitsLeft())
+					})
 
 				}
 

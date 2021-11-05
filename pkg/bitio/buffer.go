@@ -190,6 +190,17 @@ func (b *Buffer) BytesLen(nBytes int) ([]byte, error) {
 	return buf, err
 }
 
+// Bytes all bytes
+func (b *Buffer) Bytes() ([]byte, error) {
+	nBytes := int(b.bitLen) / 8
+	if b.bitLen%8 != 0 {
+		nBytes++
+	}
+	buf := make([]byte, nBytes)
+	_, err := ReadAtFull(b, buf, int(b.bitLen), 0)
+	return buf, err
+}
+
 // End is true if current position is at the end
 func (b *Buffer) End() (bool, error) {
 	bPos, err := b.Pos()

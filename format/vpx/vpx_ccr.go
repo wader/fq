@@ -18,15 +18,15 @@ func init() {
 
 func vpxCCRDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldU8("profile")
-	d.FieldStringMapFn("level", vpxLevelNames, "Unknown", d.U8, decode.NumberDecimal)
+	d.FieldU8("level", d.MapUToStr(vpxLevelNames))
 	d.FieldU4("bit_depth")
-	d.FieldStringMapFn("chroma_subsampling", vpxChromeSubsamplingNames, "Unknown", d.U3, decode.NumberDecimal)
+	d.FieldU3("chroma_subsampling", d.MapUToStr(vpxChromeSubsamplingNames))
 	d.FieldU1("video_full_range_flag")
 	d.FieldU8("colour_primaries")
 	d.FieldU8("transfer_characteristics")
 	d.FieldU8("matrix_coefficients")
 	_ = d.FieldU16("codec_initialization_data_size")
-	// d.FieldBitBufLen("codec_initialization_data", int64(initDataSize)*8)
+	// d.FieldRawLen("codec_initialization_data", int64(initDataSize)*8)
 
 	return nil
 }

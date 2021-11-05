@@ -1,7 +1,7 @@
 # ffmpeg -y -f lavfi -i testsrc -t 10ms -f h264 avc_annexb
 $ fq -d avc_annexb verbose /avc_annexb
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: [8] /avc_annexb (avc_annexb) 0x0-0xae4.7 (2789)
-0x0000|00 00 00 01                                    |....            |  [0]: start_code 00000001 0x0-0x3.7 (4)
+0x0000|00 00 00 01                                    |....            |  [0]: start_code raw bits 0x0-0x3.7 (4)
       |                                               |                |  [1]: nalu {} (avc_nalu) 0x4-0x1c.7 (25)
       |                                               |                |    sps: {} (avc_sps) 0x0-0x15.7 (22)
  0x000|f4                                             |.               |      profile_idc: "High 4:4:4 Predictive Profile" (244) 0x0-0x0.7 (1)
@@ -53,13 +53,13 @@ $ fq -d avc_annexb verbose /avc_annexb
  0x010|         28 53                                 |   (S           |        log2_max_mv_length_vertical: 9 0x13.6-0x14.4 (0.7)
  0x010|            53                                 |    S           |        max_num_reorder_frames: 2 0x14.5-0x14.7 (0.3)
  0x010|               2c|                             |     ,|         |        max_dec_frame_buffering: 4 0x15-0x15.4 (0.5)
- 0x010|               2c|                             |     ,|         |      rbsp_trailing_bits: 80 0x15.5-0x15.7 (0.3)
+ 0x010|               2c|                             |     ,|         |      rbsp_trailing_bits: raw bits 0x15.5-0x15.7 (0.3)
 0x0000|            67                                 |    g           |    forbidden_zero_bit: false 0x4-0x4 (0.1)
 0x0000|            67                                 |    g           |    nal_ref_idc: 3 0x4.1-0x4.2 (0.2)
 0x0000|            67                                 |    g           |    nal_unit_type: "SPS" (7) (Sequence parameter set) 0x4.3-0x4.7 (0.5)
-0x0000|               f4 00 0d 91 9b 28 28 3f 60 22 00|     .....((?`".|    data: f4000d919b28283f6022000003000200... 0x5-0x1c.7 (24)
+0x0000|               f4 00 0d 91 9b 28 28 3f 60 22 00|     .....((?`".|    data: raw bits 0x5-0x1c.7 (24)
 0x0010|00 03 00 02 00 00 03 00 64 1e 28 53 2c         |........d.(S,   |
-0x0010|                                       00 00 00|             ...|  [2]: start_code 00000001 0x1d-0x20.7 (4)
+0x0010|                                       00 00 00|             ...|  [2]: start_code raw bits 0x1d-0x20.7 (4)
 0x0020|01                                             |.               |
       |                                               |                |  [3]: nalu {} (avc_nalu) 0x21-0x26.7 (6)
       |                                               |                |    pps: {} (avc_pps) 0x0-0x4.7 (5)
@@ -81,29 +81,29 @@ $ fq -d avc_annexb verbose /avc_annexb
  0x000|         48                                    |   H            |      transform_8x8_mode_flag: true 0x3.4-0x3.4 (0.1)
  0x000|         48                                    |   H            |      pic_scaling_matrix_present_flag: false 0x3.5-0x3.5 (0.1)
  0x000|         48 44|                                |   HD|          |      second_chroma_qp_index_offset: 4 0x3.6-0x4.4 (0.7)
- 0x000|            44|                                |    D|          |      rbsp_trailing_bits: 80 0x4.5-0x4.7 (0.3)
+ 0x000|            44|                                |    D|          |      rbsp_trailing_bits: raw bits 0x4.5-0x4.7 (0.3)
 0x0020|   68                                          | h              |    forbidden_zero_bit: false 0x21-0x21 (0.1)
 0x0020|   68                                          | h              |    nal_ref_idc: 3 0x21.1-0x21.2 (0.2)
 0x0020|   68                                          | h              |    nal_unit_type: "PPS" (8) (Picture parameter set) 0x21.3-0x21.7 (0.5)
-0x0020|      eb e3 c4 48 44                           |  ...HD         |    data: ebe3c44844 0x22-0x26.7 (5)
-0x0020|                     00 00 01                  |       ...      |  [4]: start_code 000001 0x27-0x29.7 (3)
+0x0020|      eb e3 c4 48 44                           |  ...HD         |    data: raw bits 0x22-0x26.7 (5)
+0x0020|                     00 00 01                  |       ...      |  [4]: start_code raw bits 0x27-0x29.7 (3)
       |                                               |                |  [5]: nalu {} (avc_nalu) 0x2a-0x2d6.7 (685)
       |                                               |                |    sei: {} (avc_sei) 0x0-0x2ab.7 (684)
  0x000|05                                             |.               |      payload_type: "user_data_unregistered" (5) 0x0-0x0.7 (1)
  0x000|   ff ff a9                                    | ...            |      payload_size: 679 0x1-0x3.7 (3)
- 0x000|            dc 45 e9 bd e6 d9 48 b7 96 2c d8 20|    .E....H..,. |      uuid: "x264" (dc45e9bde6d948b7962cd820d923eeef) 0x4-0x13.7 (16)
+ 0x000|            dc 45 e9 bd e6 d9 48 b7 96 2c d8 20|    .E....H..,. |      uuid: raw bits 0x4-0x13.7 (16)
  0x010|d9 23 ee ef                                    |.#..            |
- 0x010|            78 32 36 34 20 2d 20 63 6f 72 65 20|    x264 - core |      data: 78323634202d20636f72652031363120... 0x14-0x2aa.7 (663)
+ 0x010|            78 32 36 34 20 2d 20 63 6f 72 65 20|    x264 - core |      data: raw bits 0x14-0x2aa.7 (663)
  0x020|31 36 31 20 72 33 30 33 39 20 35 34 34 63 36 31|161 r3039 544c61|
  *    |until 0x2aa.7 (663)                            |                |
- 0x2a0|                                 80|           |           .|   |      rbsp_trailing_bits: 80 0x2ab-0x2ab.7 (1)
+ 0x2a0|                                 80|           |           .|   |      rbsp_trailing_bits: raw bits 0x2ab-0x2ab.7 (1)
 0x0020|                              06               |          .     |    forbidden_zero_bit: false 0x2a-0x2a (0.1)
 0x0020|                              06               |          .     |    nal_ref_idc: 0 0x2a.1-0x2a.2 (0.2)
 0x0020|                              06               |          .     |    nal_unit_type: "SEI" (6) (Supplemental enhancement information) 0x2a.3-0x2a.7 (0.5)
-0x0020|                                 05 ff ff a9 dc|           .....|    data: 05ffffa9dc45e9bde6d948b7962cd820... 0x2b-0x2d6.7 (684)
+0x0020|                                 05 ff ff a9 dc|           .....|    data: raw bits 0x2b-0x2d6.7 (684)
 0x0030|45 e9 bd e6 d9 48 b7 96 2c d8 20 d9 23 ee ef 78|E....H..,. .#..x|
 *     |until 0x2d6.7 (684)                            |                |
-0x02d0|                     00 00 01                  |       ...      |  [6]: start_code 000001 0x2d7-0x2d9.7 (3)
+0x02d0|                     00 00 01                  |       ...      |  [6]: start_code raw bits 0x2d7-0x2d9.7 (3)
       |                                               |                |  [7]: nalu {} (avc_nalu) 0x2da-0xae4.7 (2059)
 0x02d0|                              65               |          e     |    forbidden_zero_bit: false 0x2da-0x2da (0.1)
 0x02d0|                              65               |          e     |    nal_ref_idc: 3 0x2da.1-0x2da.2 (0.2)
@@ -112,6 +112,6 @@ $ fq -d avc_annexb verbose /avc_annexb
 0x02d0|                                 88            |           .    |      first_mb_in_slice: 0 0x2db-0x2db (0.1)
 0x02d0|                                 88            |           .    |      slice_type: "I" (7) 0x2db.1-0x2db.7 (0.7)
 0x02d0|                                    84         |            .   |      pic_parameter_set_id: 0 0x2dc-0x2dc (0.1)
-0x02d0|                                    84 00 2b ff|            ..+.|    data: 080057fffdebb7e65958ccce7bffda76... 0x2dc.1-0xae4.7 (2056.7)
+0x02d0|                                    84 00 2b ff|            ..+.|    data: raw bits 0x2dc.1-0xae4.7 (2056.7)
 0x02e0|fe f5 db f3 2c ac 66 67 3d ff ed 3b 60 00 21 74|....,.fg=..;`.!t|
 *     |until 0xae4.7 (end) (2057)                     |                |

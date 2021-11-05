@@ -5,7 +5,6 @@ package mp4
 import (
 	"bytes"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/wader/fq/format"
@@ -16,10 +15,68 @@ var boxAliases = map[string]string{
 	"styp": "ftyp",
 }
 
-func decodeFieldLang(d *decode.D, name string) string {
-	return d.FieldStrFn(name, func() (string, string) {
-		return decodeLang(d), ""
-	})
+const (
+	boxSizeRestOfFile   = 0
+	boxSizeUse64bitSize = 1
+)
+
+var boxSizeNames = decode.UToScalar{
+	boxSizeRestOfFile:   decode.Scalar{Description: "Rest of file"},
+	boxSizeUse64bitSize: decode.Scalar{Description: "Use 64 bit size"},
+}
+
+var mediaTimeNames = decode.SToScalar{
+	-1: {Description: "empty"},
+}
+
+var subTypeNames = decode.StrToScalar{
+	"alis": {Description: "Alias Data"},
+	"camm": {Description: "Camera Metadata"},
+	"crsm": {Description: "Clock Reference"},
+	"data": {Description: "Data"},
+	"hint": {Description: "Hint Track"},
+	"ipsm": {Description: "IPMP"},
+	"m7sm": {Description: "MPEG-7 Stream"},
+	"mdir": {Description: "Metadata"},
+	"mdta": {Description: "Metadata Tags"},
+	"meta": {Description: "NRT Metadata"},
+	"mjsm": {Description: "MPEG-J"},
+	"nrtm": {Description: "Non-Real Time Metadata"},
+	"ocsm": {Description: "Object Content"},
+	"odsm": {Description: "Object Descriptor"},
+	"pict": {Description: "Picture"},
+	"priv": {Description: "Private"},
+	"psmd": {Description: "Panasonic Static Metadata"},
+	"sbtl": {Description: "Subtitle"},
+	"sdsm": {Description: "Scene Description"},
+	"soun": {Description: "Audio Track"},
+	"subp": {Description: "Subpicture"},
+	"text": {Description: "Text"},
+	"tmcd": {Description: "Time Code"},
+	"url ": {Description: "URL"},
+	"vide": {Description: "Video Track"},
+}
+
+var (
+	uuidIsmlManifestBytes = [16]byte{0xa5, 0xd4, 0x0b, 0x30, 0xe8, 0x14, 0x11, 0xdd, 0xba, 0x2f, 0x08, 0x00, 0x20, 0x0c, 0x9a, 0x66}
+	uuidXmpBytes          = [16]byte{0xbe, 0x7a, 0xcf, 0xcb, 0x97, 0xa9, 0x42, 0xe8, 0x9c, 0x71, 0x99, 0x94, 0x91, 0xe3, 0xaf, 0xac}
+	uuidSphericalBytes    = [16]byte{0xff, 0xcc, 0x82, 0x63, 0xf8, 0x55, 0x4a, 0x93, 0x88, 0x14, 0x58, 0x7a, 0x02, 0x52, 0x1f, 0xdd}
+	uuidPspUsmtBytes      = [16]byte{0x55, 0x53, 0x4d, 0x54, 0x21, 0xd2, 0x4f, 0xce, 0xbb, 0x88, 0x69, 0x5c, 0xfa, 0xc9, 0xc7, 0x40}
+	uuidTfxdBytes         = [16]byte{0x6d, 0x1d, 0x9b, 0x05, 0x42, 0xd5, 0x44, 0xe6, 0x80, 0xe2, 0x14, 0x1d, 0xaf, 0xf7, 0x57, 0xb2}
+	uuidTfrfBytes         = [16]byte{0xd4, 0x80, 0x7e, 0xf2, 0xca, 0x39, 0x46, 0x95, 0x8e, 0x54, 0x26, 0xcb, 0x9e, 0x46, 0xa7, 0x9f}
+	uuidProfBytes         = [16]byte{0x50, 0x52, 0x4f, 0x46, 0x21, 0xd2, 0x4f, 0xce, 0xbb, 0x88, 0x69, 0x5c, 0xfa, 0xc9, 0xc7, 0x40}
+	uuidIpodBytes         = [16]byte{0x6b, 0x68, 0x40, 0xf2, 0x5f, 0x24, 0x4f, 0xc5, 0xba, 0x39, 0xa5, 0x1b, 0xcf, 0x03, 0x23, 0xf3}
+)
+
+var uuidNames = decode.BytesToScalar{
+	{Bytes: uuidIsmlManifestBytes[:], Scalar: decode.Scalar{Sym: "isml_manifest"}},
+	{Bytes: uuidXmpBytes[:], Scalar: decode.Scalar{Sym: "xmp"}},
+	{Bytes: uuidSphericalBytes[:], Scalar: decode.Scalar{Sym: "spherical"}},
+	{Bytes: uuidPspUsmtBytes[:], Scalar: decode.Scalar{Sym: "psp_usmt"}},
+	{Bytes: uuidTfxdBytes[:], Scalar: decode.Scalar{Sym: "tfxd"}},
+	{Bytes: uuidTfrfBytes[:], Scalar: decode.Scalar{Sym: "tfrf"}},
+	{Bytes: uuidProfBytes[:], Scalar: decode.Scalar{Sym: "prof"}},
+	{Bytes: uuidIpodBytes[:], Scalar: decode.Scalar{Sym: "ipod"}},
 }
 
 // ISO 639-2/T language code 3 * 5bit packed uint + 1 zero bit
@@ -32,23 +89,20 @@ func decodeLang(d *decode.D) string {
 	)
 }
 
-var quicktimeEpoch = time.Date(1904, time.January, 4, 0, 0, 0, 0, time.UTC)
-
-func decodeFieldTime(d *decode.D, name string) uint64 { //nolint:unparam
-	return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
-		n, d := decodeTime(d)
-		return n, decode.NumberDecimal, d
-	})
-}
-
 // Quicktime time seconds in January 1, 1904 UTC
-func decodeTime(d *decode.D) (uint64, string) {
-	n := d.U32()
-	return n, quicktimeEpoch.Add(time.Second * time.Duration(n)).Format(time.RFC3339)
+var quicktimeEpochDate = time.Date(1904, time.January, 4, 0, 0, 0, 0, time.UTC)
+
+func quicktimeEpoch(s decode.Scalar) (decode.Scalar, error) {
+	uv, ok := s.Actual.(uint64)
+	if !ok {
+		return s, nil
+	}
+	s.Sym = quicktimeEpochDate.Add(time.Second * time.Duration(uv)).Format(time.RFC3339)
+	return s, nil
 }
 
 func decodeFieldMatrix(d *decode.D, name string) {
-	d.FieldStructFn(name, func(d *decode.D) {
+	d.FieldStruct(name, func(d *decode.D) {
 		d.FieldFP32("a")
 		d.FieldFP32("b")
 		d.FieldFP("u", 32, 30)
@@ -62,38 +116,18 @@ func decodeFieldMatrix(d *decode.D, name string) {
 }
 
 func decodeBox(ctx *decodeContext, d *decode.D) {
-	typeFn := func() (string, string) {
-		typ := d.UTF8(4)
-		return typ, boxDescriptions[typ]
-	}
-
-	boxSize := d.U32()
-	typ := d.UTF8(4)
-	d.SeekRel(-8 * 8)
-
+	var typ string
 	var dataSize uint64
 
+	boxSize := d.FieldU32("size", d.MapUToScalar(boxSizeNames))
+	typ = d.FieldUTF8("type", 4, d.MapStrToScalar(boxDescriptions))
+
 	switch boxSize {
-	case 0:
-		// reset of file
-		// TODO: FieldU32 with display?
-		d.FieldUFn("size", func() (uint64, decode.DisplayFormat, string) {
-			return d.U32(), decode.NumberDecimal, "Rest of file"
-		})
-		d.FieldStrFn("type", typeFn)
+	case boxSizeRestOfFile:
 		dataSize = uint64(d.Len()-d.Pos()) / 8
-	case 1:
-		// 64 bit length
-		d.FieldUFn("size", func() (uint64, decode.DisplayFormat, string) {
-			return d.U32(), decode.NumberDecimal, "Use 64 bit size"
-		})
-		d.FieldStrFn("type", typeFn)
-		// TODO: 64 bit size zero is rest of file also?
-		boxSize = d.FieldU64("size64")
+	case boxSizeUse64bitSize:
 		dataSize = boxSize - 16
 	default:
-		d.FieldU32("size")
-		d.FieldStrFn("type", typeFn)
 		dataSize = boxSize - 8
 	}
 
@@ -104,7 +138,7 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 
 	// TODO: not sure about this
 	switch {
-	case typ == "\xa9too":
+	case typ == "�too":
 		typ = "_apple_list"
 	case typ[0] == 0xa9:
 		typ = "_apple_entry"
@@ -117,18 +151,18 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 	ctx.path = append(ctx.path, typ)
 
 	if decodeFn, ok := boxDecoders[typ]; ok {
-		d.DecodeLenFn(int64(dataSize*8), func(d *decode.D) {
+		d.LenFn(int64(dataSize*8), func(d *decode.D) {
 			decodeFn(ctx, d)
 		})
 	} else {
-		d.FieldBitBufLen("data", int64(dataSize*8))
+		d.FieldRawLen("data", int64(dataSize*8))
 	}
 
 	ctx.path = ctx.path[0 : len(ctx.path)-1]
 }
 
 func decodeBoxes(ctx *decodeContext, d *decode.D) {
-	d.FieldStructArrayLoopFn("boxes", "box", func() bool { return d.BitsLeft() >= 8*8 }, func(d *decode.D) {
+	d.FieldStructArrayLoop("boxes", "box", func() bool { return d.BitsLeft() >= 8*8 }, func(d *decode.D) {
 		decodeBox(ctx, d)
 	})
 
@@ -138,7 +172,7 @@ func decodeBoxes(ctx *decodeContext, d *decode.D) {
 			d.FieldU32("zero_terminator")
 		}
 		if d.BitsLeft() > 0 {
-			d.FieldBitBufLen("padding", d.BitsLeft())
+			d.FieldRawLen("padding", d.BitsLeft())
 		}
 	}
 }
@@ -152,19 +186,16 @@ func init() {
 			d.FieldU32("minor_version")
 			numBrands := d.BitsLeft() / 8 / 4
 			var i int64
-			d.FieldArrayLoopFn("brands", func() bool { return i < numBrands }, func(d *decode.D) {
-				d.FieldStrFn("brand", func() (string, string) {
-					s := strings.TrimSpace(d.UTF8(4))
-					return s, brandDescriptions[s]
-				})
+			d.FieldArrayLoop("brands", func() bool { return i < numBrands }, func(d *decode.D) {
+				d.FieldUTF8("brand", 4, d.MapStrToScalar(brandDescriptions), d.TrimSpace)
 				i++
 			})
 		},
 		"mvhd": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
-			_ = decodeFieldTime(d, "creation_time")
-			_ = decodeFieldTime(d, "modification_time")
+			d.FieldU32("creation_time", quicktimeEpoch)
+			d.FieldU32("modification_time", quicktimeEpoch)
 			d.FieldU32("time_scale")
 			d.FieldU32("duration")
 			d.FieldFP32("preferred_rate")
@@ -186,20 +217,17 @@ func init() {
 			d.FieldU24("flags")
 			entryCount := d.FieldU32("entry_count")
 			var i uint64
-			d.FieldStructArrayLoopFn("entries", "entry", func() bool { return i < entryCount }, func(d *decode.D) {
+			d.FieldStructArrayLoop("entries", "entry", func() bool { return i < entryCount }, func(d *decode.D) {
 				d.FieldS32("segment_duration")
-				d.FieldSFn("media_time", func() (int64, decode.DisplayFormat, string) {
+				d.FieldSFn("media_time", func(d *decode.D) int64 {
 					var t int64
 					if version == 0 {
 						t = d.S32()
 					} else {
 						t = d.S64()
 					}
-					if t == -1 {
-						return t, decode.NumberDecimal, "empty"
-					}
-					return t, decode.NumberDecimal, ""
-				})
+					return t
+				}, d.MapSToScalar(mediaTimeNames))
 				d.FieldFP32("media_rate")
 				i++
 			})
@@ -208,12 +236,12 @@ func init() {
 		"tkhd": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
-			_ = decodeFieldTime(d, "creation_time")
-			_ = decodeFieldTime(d, "modification_time")
+			d.FieldU32("creation_time", quicktimeEpoch)
+			d.FieldU32("modification_time", quicktimeEpoch)
 			trackID := uint32(d.FieldU32("track_id"))
 			d.FieldU32("reserved1")
 			d.FieldU32("duration")
-			d.FieldBitBufLen("reserved2", 8*8)
+			d.FieldRawLen("reserved2", 8*8)
 			d.FieldU16("layer")
 			d.FieldU16("alternate_group")
 			d.FieldFP16("volume")
@@ -234,18 +262,18 @@ func init() {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			// TODO: timestamps
-			_ = decodeFieldTime(d, "creation_time")
-			_ = decodeFieldTime(d, "modification_time")
+			d.FieldU32("creation_time", quicktimeEpoch)
+			d.FieldU32("modification_time", quicktimeEpoch)
 			d.FieldU32("time_scale")
 			d.FieldU32("duration")
-			decodeFieldLang(d, "language")
+			d.FieldStrFn("language", decodeLang)
 			d.FieldU16("quality")
 		},
 		"vmhd": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			d.FieldU16("graphicsmode")
-			d.FieldArrayFn("opcolor", func(d *decode.D) {
+			d.FieldArray("opcolor", func(d *decode.D) {
 				d.FieldU16("value")
 				d.FieldU16("value")
 				d.FieldU16("value")
@@ -254,42 +282,12 @@ func init() {
 		"hdlr": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
-			d.FieldUTF8Null("component_type", 4)
-			subTypeNames := map[string]string{
-				"alis": "Alias Data",
-				"camm": "Camera Metadata",
-				"crsm": "Clock Reference",
-				"data": "Data",
-				"hint": "Hint Track",
-				"ipsm": "IPMP",
-				"m7sm": "MPEG-7 Stream",
-				"mdir": "Metadata",
-				"mdta": "Metadata Tags",
-				"meta": "NRT Metadata",
-				"mjsm": "MPEG-J",
-				"nrtm": "Non-Real Time Metadata",
-				"ocsm": "Object Content",
-				"odsm": "Object Descriptor",
-				"pict": "Picture",
-				"priv": "Private",
-				"psmd": "Panasonic Static Metadata",
-				"sbtl": "Subtitle",
-				"sdsm": "Scene Description",
-				"soun": "Audio Track",
-				"subp": "Subpicture",
-				"text": "Text",
-				"tmcd": "Time Code",
-				"url":  "URL",
-				"vide": "Video Track",
-			}
-			subType := d.FieldStrFn("component_subtype", func() (string, string) {
-				s := strings.TrimSpace(d.UTF8(4))
-				return s, subTypeNames[s]
-			})
-			d.FieldUTF8Null("component_manufacturer", 4)
+			d.FieldUTF8NullTerminatedLen("component_type", 4)
+			subType := d.FieldUTF8("component_subtype", 4, d.MapStrToScalar(subTypeNames), d.TrimSpace)
+			d.FieldUTF8NullTerminatedLen("component_manufacturer", 4)
 			d.FieldU32("component_flags")
 			d.FieldU32("component_flags_mask")
-			d.FieldUTF8Null("component_name", int(d.BitsLeft()/8))
+			d.FieldUTF8NullTerminatedLen("component_name", int(d.BitsLeft()/8))
 
 			if ctx.currentTrack != nil {
 				// component_type seems to be all zero sometimes so can't look for "mhlr"
@@ -307,13 +305,13 @@ func init() {
 			d.FieldU24("flags")
 			entryCount := d.FieldU32("entry_count")
 			var i uint64
-			d.FieldStructArrayLoopFn("boxes", "box", func() bool { return i < entryCount }, func(d *decode.D) {
+			d.FieldStructArrayLoop("boxes", "box", func() bool { return i < entryCount }, func(d *decode.D) {
 				size := d.FieldU32("size")
 				d.FieldUTF8("type", 4)
 				d.FieldU8("version")
 				d.FieldU24("flags")
 				dataSize := size - 12
-				d.FieldBitBufLen("data", int64(dataSize*8))
+				d.FieldRawLen("data", int64(dataSize*8))
 				i++
 			})
 		},
@@ -325,8 +323,8 @@ func init() {
 			var i uint64
 			// note called "boxes" here instead of "sample_descriptions" and data format is named "type".
 			// this is to make it easier to threat them as normal boxes
-			d.FieldArrayLoopFn("boxes", func() bool { return i < entryCount }, func(d *decode.D) {
-				d.FieldStructFn("box", func(d *decode.D) {
+			d.FieldArrayLoop("boxes", func() bool { return i < entryCount }, func(d *decode.D) {
+				d.FieldStruct("box", func(d *decode.D) {
 					size := d.FieldU32("size")
 					dataFormat := d.FieldUTF8("type", 4)
 					subType := ""
@@ -337,8 +335,8 @@ func init() {
 						subType = ctx.currentTrack.subType
 					}
 
-					d.DecodeLenFn(int64(size-8)*8, func(d *decode.D) {
-						d.FieldBytesLen("reserved", 6)
+					d.LenFn(int64(size-8)*8, func(d *decode.D) {
+						d.FieldRawLen("reserved", 6*8)
 						d.FieldU16("data_reference_index")
 
 						switch subType {
@@ -393,7 +391,7 @@ func init() {
 										decodeBoxes(ctx, d)
 									}
 								default:
-									d.FieldBitBufLen("data", d.BitsLeft())
+									d.FieldRawLen("data", d.BitsLeft())
 								}
 							case "vide":
 								// VideoSampleEntry
@@ -416,14 +414,14 @@ func init() {
 										decodeBoxes(ctx, d)
 									}
 								default:
-									d.FieldBitBufLen("data", d.BitsLeft())
+									d.FieldRawLen("data", d.BitsLeft())
 								}
 								// case "hint": TODO: Hint entry
 							default:
-								d.FieldBitBufLen("data", d.BitsLeft())
+								d.FieldRawLen("data", d.BitsLeft())
 							}
 						default:
-							d.FieldBitBufLen("data", d.BitsLeft())
+							d.FieldRawLen("data", d.BitsLeft())
 						}
 
 					})
@@ -496,7 +494,7 @@ func init() {
 			d.FieldU24("flags")
 			numEntries := d.FieldU32("entry_count")
 			var i uint64
-			d.FieldStructArrayLoopFn("entries", "entry", func() bool { return i < numEntries }, func(d *decode.D) {
+			d.FieldStructArrayLoop("entries", "entry", func() bool { return i < numEntries }, func(d *decode.D) {
 				d.FieldU32("count")
 				d.FieldU32("delta")
 				i++
@@ -507,7 +505,7 @@ func init() {
 			d.FieldU24("flags")
 			entryCount := d.FieldU32("entry_count")
 			var i uint64
-			d.FieldStructArrayLoopFn("entries", "entry", func() bool { return i < entryCount }, func(d *decode.D) {
+			d.FieldStructArrayLoop("entries", "entry", func() bool { return i < entryCount }, func(d *decode.D) {
 				firstChunk := uint32(d.FieldU32("first_chunk"))
 				samplesPerChunk := uint32(d.FieldU32("samples_per_chunk"))
 				d.FieldU32("sample_description_id")
@@ -529,7 +527,7 @@ func init() {
 			entryCount := d.FieldU32("entry_count")
 			if sampleSize == 0 {
 				var i uint64
-				d.FieldArrayLoopFn("entries", func() bool { return i < entryCount }, func(d *decode.D) {
+				d.FieldArrayLoop("entries", func() bool { return i < entryCount }, func(d *decode.D) {
 					size := uint32(d.FieldU32("size"))
 					if ctx.currentTrack != nil {
 						ctx.currentTrack.stsz = append(ctx.currentTrack.stsz, size)
@@ -549,7 +547,7 @@ func init() {
 			d.FieldU24("flags")
 			entryCount := d.FieldU32("entry_count")
 			var i uint64
-			d.FieldArrayLoopFn("entries", func() bool { return i < entryCount }, func(d *decode.D) {
+			d.FieldArrayLoop("entries", func() bool { return i < entryCount }, func(d *decode.D) {
 				chunkOffset := d.FieldU32("chunk_offset")
 				if ctx.currentTrack != nil {
 					ctx.currentTrack.stco = append(ctx.currentTrack.stco, chunkOffset)
@@ -561,7 +559,7 @@ func init() {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			entryCount := d.FieldU32("entry_count")
-			d.FieldArrayFn("entries", func(d *decode.D) {
+			d.FieldArray("entries", func(d *decode.D) {
 				for i := uint64(0); i < entryCount; i++ {
 					d.FieldU32("sample_number")
 				}
@@ -572,18 +570,18 @@ func init() {
 			d.FieldU24("flags")
 			// TODO: should be count from stsz
 			// TODO: can we know count here or do we need to defer decoding somehow?
-			d.FieldArrayFn("entries", func(d *decode.D) {
+			d.FieldArray("entries", func(d *decode.D) {
 				for d.NotEnd() {
-					d.FieldStructFn("entry", func(d *decode.D) {
+					d.FieldStruct("entry", func(d *decode.D) {
 						d.FieldU2("reserved")
-						values := map[uint64]string{
+						values := decode.UToStr{
 							0: "unknown",
 							1: "yes",
 							2: "no",
 						}
-						d.FieldStringMapFn("sample_depends_on", values, "reserved", d.U2, decode.NumberDecimal)
-						d.FieldStringMapFn("sample_is_depended_on", values, "reserved", d.U2, decode.NumberDecimal)
-						d.FieldStringMapFn("sample_has_redundancy", values, "reserved", d.U2, decode.NumberDecimal)
+						d.FieldU2("sample_depends_on", d.MapUToStr(values))
+						d.FieldU2("sample_is_depended_on", d.MapUToStr(values))
+						d.FieldU2("sample_has_redundancy", d.MapUToStr(values))
 					})
 				}
 			})
@@ -593,7 +591,7 @@ func init() {
 			d.FieldU24("flags")
 			entryCount := d.FieldU32("entry_count")
 			var i uint64
-			d.FieldStructArrayLoopFn("entries", "entry", func() bool { return i < entryCount }, func(d *decode.D) {
+			d.FieldStructArrayLoop("entries", "entry", func() bool { return i < entryCount }, func(d *decode.D) {
 				d.FieldU32("sample_count")
 				d.FieldU32("sample_offset")
 				i++
@@ -605,7 +603,7 @@ func init() {
 			d.FieldU24("flags")
 			entryCount := d.FieldU32("entry_count")
 			var i uint64
-			d.FieldArrayLoopFn("entries", func() bool { return i < entryCount }, func(d *decode.D) {
+			d.FieldArrayLoop("entries", func() bool { return i < entryCount }, func(d *decode.D) {
 				offset := d.FieldU64("offset")
 				if ctx.currentTrack != nil {
 					ctx.currentTrack.stco = append(ctx.currentTrack.stco, offset)
@@ -628,7 +626,7 @@ func init() {
 			d.FieldU16("reserved")
 			numEntries := d.FieldU16("entry_count")
 			var i uint64
-			d.FieldStructArrayLoopFn("entries", "entry", func() bool { return i < numEntries }, func(d *decode.D) {
+			d.FieldStructArrayLoop("entries", "entry", func() bool { return i < numEntries }, func(d *decode.D) {
 				d.FieldU1("reference_type")
 				d.FieldU31("size")
 				d.FieldU32("duration")
@@ -662,7 +660,7 @@ func init() {
 			if isParent(ctx, "covr") {
 				dv, _, _ := d.FieldTryFormatLen("data", d.BitsLeft(), imageFormat, nil)
 				if dv == nil {
-					d.FieldBitBufLen("data", d.BitsLeft())
+					d.FieldRawLen("data", d.BitsLeft())
 				}
 			} else {
 				d.FieldUTF8("data", int(d.BitsLeft()/8))
@@ -689,7 +687,7 @@ func init() {
 			defaultSampleDurationPresent := false
 			defaultSampleSizePresent := false
 			defaultSampleFlagsPresent := false
-			d.FieldStructFn("flags", func(d *decode.D) {
+			d.FieldStruct("flags", func(d *decode.D) {
 				d.FieldU7("unused0")
 				d.FieldBool("duration_is_empty")
 				d.FieldU10("unused1")
@@ -740,7 +738,7 @@ func init() {
 			sampleDurationPresent := false
 			firstSampleFlagsPresent := false
 			dataOffsetPresent := false
-			d.FieldStructFn("flags", func(d *decode.D) {
+			d.FieldStruct("flags", func(d *decode.D) {
 				d.FieldU12("unused0")
 				sampleCompositionTimeOffsetsPresent = d.FieldBool("sample_composition_time_offsets_present")
 				sampleFlagsPresent = d.FieldBool("sample_flags_present")
@@ -759,10 +757,10 @@ func init() {
 				d.FieldU32("first_sample_flags")
 			}
 
-			d.FieldArrayFn("samples", func(d *decode.D) {
+			d.FieldArray("samples", func(d *decode.D) {
 				for i := uint64(0); i < sampleCount; i++ {
 					sampleSize := m.defaultSampleSize
-					d.FieldStructFn("sample", func(d *decode.D) {
+					d.FieldStruct("sample", func(d *decode.D) {
 						if sampleDurationPresent {
 							d.FieldU32("sample_duration")
 						}
@@ -817,9 +815,9 @@ func init() {
 			sampleLengthSizeOfTrunNum := d.FieldU2("sample_length_size_of_trun_num")
 			lengthSizeOfSampleNum := d.FieldU2("length_size_of_sample_num")
 			entryCount := d.FieldU32("entry_count")
-			d.FieldArrayFn("entries", func(d *decode.D) {
+			d.FieldArray("entries", func(d *decode.D) {
 				for i := uint64(0); i < entryCount; i++ {
-					d.FieldStructFn("entry", func(d *decode.D) {
+					d.FieldStruct("entry", func(d *decode.D) {
 						if version == 1 {
 							d.FieldU64("time")
 							d.FieldU64("moof_offset")
@@ -861,9 +859,9 @@ func init() {
 			} else {
 				itemCount = d.FieldU32("item_count")
 			}
-			d.FieldArrayFn("items", func(d *decode.D) {
+			d.FieldArray("items", func(d *decode.D) {
 				for i := uint64(0); i < itemCount; i++ {
-					d.FieldStructFn("item", func(d *decode.D) {
+					d.FieldStruct("item", func(d *decode.D) {
 						switch version {
 						case 0, 1:
 							d.FieldU16("id")
@@ -878,9 +876,9 @@ func init() {
 						d.FieldU16("data_reference_index")
 						d.FieldU("base_offset", int(baseOffsetSize)*8)
 						extentCount := d.FieldU16("extent_count")
-						d.FieldArrayFn("extends", func(d *decode.D) {
+						d.FieldArray("extends", func(d *decode.D) {
 							for i := uint64(0); i < extentCount; i++ {
-								d.FieldStructFn("extent", func(d *decode.D) {
+								d.FieldStruct("extent", func(d *decode.D) {
 									if (version == 1 || version == 2) && indexSize > 0 {
 										d.FieldU("index", int(offsetSize)*8)
 									}
@@ -898,13 +896,13 @@ func init() {
 			d.FieldU24("flags")
 			d.FieldU16("id")
 			d.FieldU16("protection_index")
-			d.FieldStrNullTerminated("item_name")
+			d.FieldUTF8NullTerminated("item_name")
 			// TODO: really optional? seems so
 			if d.NotEnd() {
-				d.FieldStrNullTerminated("content_type")
+				d.FieldUTF8NullTerminated("content_type")
 			}
 			if d.NotEnd() {
-				d.FieldStrNullTerminated("content_encoding")
+				d.FieldUTF8NullTerminated("content_encoding")
 			}
 		},
 		"iinf": func(ctx *decodeContext, d *decode.D) {
@@ -920,12 +918,12 @@ func init() {
 			d.FieldU24("flags")
 			d.FieldU1("pad")
 			// ISO-639-2/T as 3*5 bit integers - 0x60
-			d.FieldStrFn("language", func() (string, string) {
+			d.FieldStrFn("language", func(d *decode.D) string {
 				s := ""
 				for i := 0; i < 3; i++ {
 					s += fmt.Sprintf("%c", int(d.U5())+0x60)
 				}
-				return s, ""
+				return s
 			})
 			d.FieldFormat("data", id3v2Format, nil)
 		},
@@ -944,22 +942,27 @@ func init() {
 				systemIDWidevine  = [16]byte{0xed, 0xef, 0x8b, 0xa9, 0x79, 0xd6, 0x4a, 0xce, 0xa3, 0xc8, 0x27, 0xdc, 0xd5, 0x1d, 0x21, 0xed}
 				systemIDPlayReady = [16]byte{0x9a, 0x04, 0xf0, 0x79, 0x98, 0x40, 0x42, 0x86, 0xab, 0x92, 0xe6, 0x5b, 0xe0, 0x88, 0x5f, 0x95}
 			)
-			systemIDNames := map[[16]byte]string{
-				systemIDCommon:    "Common",
-				systemIDWidevine:  "Widevine",
-				systemIDPlayReady: "PlayReady",
+			systemIDNames := decode.BytesToScalar{
+				{Bytes: systemIDCommon[:], Scalar: decode.Scalar{Sym: "Common"}},
+				{Bytes: systemIDWidevine[:], Scalar: decode.Scalar{Sym: "Widevine"}},
+				{Bytes: systemIDPlayReady[:], Scalar: decode.Scalar{Sym: "PlayReady"}},
 			}
 
 			version := d.FieldU8("version")
 			d.FieldU24("flags")
-			systemID, _ := d.FieldStringUUIDMapFn("system_id", systemIDNames, "Unknown", func() []byte { return d.BytesLen(16) })
+			systemIDBB := d.FieldRawLen("system_id", 6*8, d.MapRawToScalar(systemIDNames))
+			// TODO: make nicer
+			systemID, err := systemIDBB.Bytes()
+			if err != nil {
+				d.IOPanic(err)
+			}
 			switch version {
 			case 0:
 			case 1:
 				kidCount := d.FieldU32("kid_count")
-				d.FieldArrayFn("kids", func(d *decode.D) {
+				d.FieldArray("kids", func(d *decode.D) {
 					for i := uint64(0); i < kidCount; i++ {
-						d.FieldBitBufLen("kid", 16*8)
+						d.FieldRawLen("kid", 16*8)
 					}
 				})
 			}
@@ -973,7 +976,7 @@ func init() {
 			case systemID == nil:
 				fallthrough
 			default:
-				d.FieldBitBufLen("data", int64(dataLen)*8)
+				d.FieldRawLen("data", int64(dataLen)*8)
 			}
 		},
 		"sinf": decodeBoxes,
@@ -1006,27 +1009,16 @@ func init() {
 			d.FieldU32("v_spacing")
 		},
 		"uuid": func(_ *decodeContext, d *decode.D) {
-			var uuidNames = map[[16]byte]string{
-				{0xa5, 0xd4, 0x0b, 0x30, 0xe8, 0x14, 0x11, 0xdd, 0xba, 0x2f, 0x08, 0x00, 0x20, 0x0c, 0x9a, 0x66}: "isml_manifest",
-				{0xbe, 0x7a, 0xcf, 0xcb, 0x97, 0xa9, 0x42, 0xe8, 0x9c, 0x71, 0x99, 0x94, 0x91, 0xe3, 0xaf, 0xac}: "xmp",
-				{0xff, 0xcc, 0x82, 0x63, 0xf8, 0x55, 0x4a, 0x93, 0x88, 0x14, 0x58, 0x7a, 0x02, 0x52, 0x1f, 0xdd}: "spherical",
-				{0x55, 0x53, 0x4d, 0x54, 0x21, 0xd2, 0x4f, 0xce, 0xbb, 0x88, 0x69, 0x5c, 0xfa, 0xc9, 0xc7, 0x40}: "psp_usmt",
-				{0x6d, 0x1d, 0x9b, 0x05, 0x42, 0xd5, 0x44, 0xe6, 0x80, 0xe2, 0x14, 0x1d, 0xaf, 0xf7, 0x57, 0xb2}: "tfxd",
-				{0xd4, 0x80, 0x7e, 0xf2, 0xca, 0x39, 0x46, 0x95, 0x8e, 0x54, 0x26, 0xcb, 0x9e, 0x46, 0xa7, 0x9f}: "tfrf",
-				{0x50, 0x52, 0x4f, 0x46, 0x21, 0xd2, 0x4f, 0xce, 0xbb, 0x88, 0x69, 0x5c, 0xfa, 0xc9, 0xc7, 0x40}: "prof",
-				{0x6b, 0x68, 0x40, 0xf2, 0x5f, 0x24, 0x4f, 0xc5, 0xba, 0x39, 0xa5, 0x1b, 0xcf, 0x03, 0x23, 0xf3}: "ipod",
-			}
-
-			d.FieldStringUUIDMapFn("uuid", uuidNames, "Unknown", func() []byte { return d.BytesLen(16) })
-			d.FieldBitBufLen("data", d.BitsLeft())
+			d.FieldRawLen("uuid", 16*8, d.RawUUID, d.MapRawToScalar(uuidNames))
+			d.FieldRawLen("data", d.BitsLeft())
 		},
 		"keys": func(_ *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			entryCount := d.FieldU32("entry_count")
-			d.FieldArrayFn("entries", func(d *decode.D) {
+			d.FieldArray("entries", func(d *decode.D) {
 				for i := uint64(0); i < entryCount; i++ {
-					d.FieldStructFn("entry", func(d *decode.D) {
+					d.FieldStruct("entry", func(d *decode.D) {
 						keySize := d.FieldU32("key_size")
 						d.FieldUTF8("key_namespace", 4)
 						d.FieldUTF8("key_name", int(keySize)-8)
@@ -1045,7 +1037,7 @@ func init() {
 			defaultSampleInfoSize := d.FieldU8("default_sample_info_size")
 			sampleCount := d.FieldU32("sample_count")
 			if defaultSampleInfoSize == 0 {
-				d.FieldArrayFn("sample_size_info_table", func(d *decode.D) {
+				d.FieldArray("sample_size_info_table", func(d *decode.D) {
 					for i := uint64(0); i < sampleCount; i++ {
 						d.FieldU8("sample_size")
 					}
@@ -1064,7 +1056,7 @@ func init() {
 				d.FieldU32("default_sample_description_index")
 			}
 			entryCount := d.FieldU32("entry_count")
-			d.FieldArrayFn("groups", func(d *decode.D) {
+			d.FieldArray("groups", func(d *decode.D) {
 				for i := uint64(0); i < entryCount; i++ {
 					entryLen := defaultLength
 					if version == 1 {
@@ -1072,7 +1064,7 @@ func init() {
 							entryLen = d.FieldU32("descriptor_length")
 						}
 					}
-					d.FieldBitBufLen("group", int64(entryLen)*8)
+					d.FieldRawLen("group", int64(entryLen)*8)
 				}
 			})
 		},
@@ -1085,9 +1077,9 @@ func init() {
 				d.FieldU32("grouping_type_parameter")
 			}
 			entryCount := d.FieldU32("entry_count")
-			d.FieldArrayFn("entries", func(d *decode.D) {
+			d.FieldArray("entries", func(d *decode.D) {
 				for i := uint64(0); i < entryCount; i++ {
-					d.FieldStructFn("entry", func(d *decode.D) {
+					d.FieldStruct("entry", func(d *decode.D) {
 						d.FieldU32("sample_count")
 						d.FieldU32("group_description_index")
 					})
@@ -1103,7 +1095,7 @@ func init() {
 				d.FieldU32("aux_info_type_parameter")
 			}
 			entryCount := d.FieldU32("entry_count")
-			d.FieldArrayFn("entries", func(d *decode.D) {
+			d.FieldArray("entries", func(d *decode.D) {
 				for i := uint64(0); i < entryCount; i++ {
 					if version == 0 {
 						d.FieldU32("offset")
@@ -1135,7 +1127,7 @@ func init() {
 
 			defaultIsEncrypted := d.FieldU8("default_is_encrypted")
 			defaultIVSize := d.FieldU8("default_iv_size")
-			d.FieldBitBufLen("default_kid", 8*16)
+			d.FieldRawLen("default_kid", 8*16)
 
 			if defaultIsEncrypted != 0 && defaultIVSize == 0 {
 				d.FieldU8("default_constant_iv_size")
@@ -1179,7 +1171,7 @@ func init() {
 					d.FieldU16("short_program_id")
 					hasUUID := d.FieldBool("has_uuid")
 					if hasUUID {
-						d.FieldBitBufLen("uuid", 16*8)
+						d.FieldRawLen("uuid", 16*8)
 					}
 				}
 			}
@@ -1192,9 +1184,9 @@ func init() {
 
 			// if ac4DsiVersion == 1 {
 
-			// 	d.FieldArrayFn("presentations", func(d *decode.D) {
+			// 	d.FieldArray("presentations", func(d *decode.D) {
 			// 		for i := uint64(0); i < nPresentation; i++ {
-			// 			d.FieldStructFn("presentation", func(d *decode.D) {
+			// 			d.FieldStruct("presentation", func(d *decode.D) {
 			// 				d.FieldU8("presentation_version")
 			// 				presBytes := d.FieldUFn("pres_bytes", func() (uint64, decode.DisplayFormat, string) {
 			// 					n := d.U8()
@@ -1203,14 +1195,14 @@ func init() {
 			// 					}
 			// 					return n, decode.NumberDecimal, ""
 			// 				})
-			// 				d.FieldBitBufLen("data", int64(presBytes)*8)
+			// 				d.FieldRawLen("data", int64(presBytes)*8)
 			// 			})
 			// 		}
 			// 	})
 			// }
 
 			if d.BitsLeft() > 0 {
-				d.FieldBitBufLen("data", d.BitsLeft())
+				d.FieldRawLen("data", d.BitsLeft())
 			}
 		},
 	}

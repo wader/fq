@@ -46,7 +46,7 @@ mp3> $f
 0x40|      49 6e 66 6f 00 00 00 0f 00 00 00 02 00 00|  Info..........|  xing: {} (xing)
 0x50|02 57 00 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6|.W..............|
 *   |until 0xdd.7 (156)                             |                |
-0xd0|                                          00 00|              ..|  padding: 0000000000
+0xd0|                                          00 00|              ..|  padding: raw bits
 0xe0|00 00 00                                       |...             |
-    |                                               |                |  crc_calculated: 827a
+    |                                               |                |  crc_calculated: "827a" (raw bits)
 mp3> ^D

@@ -1,5 +1,6 @@
 // TODO: fix tests
-//+build ignore
+//go:build ignore
+// +build ignore
 
 package hexdump_test
 

@@ -19,7 +19,7 @@ func init() {
 // TODO: ts_packet
 
 func tsDecode(d *decode.D, in interface{}) interface{} {
-	d.FieldValidateUFn("sync", 0x47, d.U8)
+	d.FieldU8("sync", d.AssertU(0x47), d.Hex)
 	d.FieldBool("transport_error_indicator")
 	d.FieldBool("payload_unit_start")
 	d.FieldBool("transport_priority")

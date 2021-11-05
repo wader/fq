@@ -41,8 +41,8 @@ func avcVuiParameters(d *decode.D) {
 	}
 	chromaLocInfoPresentFlag := d.FieldBool("chroma_loc_info_present_flag")
 	if chromaLocInfoPresentFlag {
-		fieldUEV(d, "chroma_sample_loc_type_top_field")
-		fieldUEV(d, "chroma_sample_loc_type_bottom_field")
+		d.FieldUFn("chroma_sample_loc_type_top_field", uEV)
+		d.FieldUFn("chroma_sample_loc_type_bottom_field", uEV)
 	}
 
 	timingInfoPresentFlag := d.FieldBool("timing_info_present_flag")
@@ -54,11 +54,11 @@ func avcVuiParameters(d *decode.D) {
 	}
 	nalHrdParametersPresentFlag := d.FieldBool("nal_hrd_parameters_present_flag")
 	if nalHrdParametersPresentFlag {
-		d.FieldStructFn("nal_hrd_parameters", avcHdrParameters)
+		d.FieldStruct("nal_hrd_parameters", avcHdrParameters)
 	}
 	vclHrdParametersPresentFlag := d.FieldBool("vcl_hrd_parameters_present_flag")
 	if vclHrdParametersPresentFlag {
-		d.FieldStructFn("vcl_hrd_parameters", avcHdrParameters)
+		d.FieldStruct("vcl_hrd_parameters", avcHdrParameters)
 	}
 	if nalHrdParametersPresentFlag || vclHrdParametersPresentFlag {
 		d.FieldBool("low_delay_hrd_flag")
@@ -67,25 +67,25 @@ func avcVuiParameters(d *decode.D) {
 	bitstreamRestrictionFlag := d.FieldBool("bitstream_restriction_flag")
 	if bitstreamRestrictionFlag {
 		d.FieldBool("motion_vectors_over_pic_boundaries_flag")
-		fieldUEV(d, "max_bytes_per_pic_denom")
-		fieldUEV(d, "max_bits_per_mb_denom")
-		fieldUEV(d, "log2_max_mv_length_horizontal")
-		fieldUEV(d, "log2_max_mv_length_vertical")
-		fieldUEV(d, "max_num_reorder_frames")
-		fieldUEV(d, "max_dec_frame_buffering")
+		d.FieldUFn("max_bytes_per_pic_denom", uEV)
+		d.FieldUFn("max_bits_per_mb_denom", uEV)
+		d.FieldUFn("log2_max_mv_length_horizontal", uEV)
+		d.FieldUFn("log2_max_mv_length_vertical", uEV)
+		d.FieldUFn("max_num_reorder_frames", uEV)
+		d.FieldUFn("max_dec_frame_buffering", uEV)
 	}
 }
 
 func avcHdrParameters(d *decode.D) {
-	cpbCntMinus1 := fieldUEV(d, "cpb_cnt_minus1")
+	cpbCntMinus1 := d.FieldUFn("cpb_cnt_minus1", uEV)
 	_ = cpbCntMinus1
 	d.FieldU4("bit_rate_scale")
 	d.FieldU4("cpb_size_scale")
-	d.FieldArrayFn("sched_sels", func(d *decode.D) {
+	d.FieldArray("sched_sels", func(d *decode.D) {
 		for i := uint64(0); i <= cpbCntMinus1; i++ {
-			d.FieldStructFn("sched_sel", func(d *decode.D) {
-				fieldUEV(d, "bit_rate_value_minus1")
-				fieldUEV(d, "cpb_size_value_minus1")
+			d.FieldStruct("sched_sel", func(d *decode.D) {
+				d.FieldUFn("bit_rate_value_minus1", uEV)
+				d.FieldUFn("cpb_size_value_minus1", uEV)
 				d.FieldBool("cbr_flag")
 			})
 		}
@@ -97,7 +97,7 @@ func avcHdrParameters(d *decode.D) {
 }
 
 func avcSPSDecode(d *decode.D, in interface{}) interface{} {
-	profileIdc, _ := d.FieldStringMapFn("profile_idc", avcProfileNames, "Unknown", d.U8, decode.NumberDecimal)
+	profileIdc := d.FieldU8("profile_idc", d.MapUToStr(avcProfileNames))
 	d.FieldBool("constraint_set0_flag")
 	d.FieldBool("constraint_set1_flag")
 	d.FieldBool("constraint_set2_flag")
@@ -105,46 +105,46 @@ func avcSPSDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldBool("constraint_set4_flag")
 	d.FieldBool("constraint_set5_flag")
 	d.FieldU2("reserved_zero_2bits")
-	d.FieldStringMapFn("level_idc", avcLevelNames, "Unknown", d.U8, decode.NumberDecimal)
-	fieldUEV(d, "seq_parameter_set_id")
+	d.FieldU8("level_idc", d.MapUToStr(avcLevelNames))
+	d.FieldUFn("seq_parameter_set_id", uEV)
 
 	switch profileIdc {
 	// TODO: ffmpeg has some more (legacy values?)
 	case 100, 110, 122, 244, 44, 83, 86, 118, 128, 138, 139, 134, 135:
-		chromaFormatIdc := fieldUEV(d, "chroma_format_idc")
+		chromaFormatIdc := d.FieldUFn("chroma_format_idc", uEV)
 		if chromaFormatIdc == 3 {
 			d.FieldBool("separate_colour_plane_flag")
 		}
 
-		fieldUEV(d, "bit_depth_luma_minus8")
-		fieldUEV(d, "bit_depth_chroma_minus8")
+		d.FieldUFn("bit_depth_luma_minus8", uEV)
+		d.FieldUFn("bit_depth_chroma_minus8", uEV)
 		d.FieldBool("qpprime_y_zero_transform_bypass_flag")
 		seqScalingMatrixPresentFlag := d.FieldBool("seq_scaling_matrix_present_flag")
 		// TODO:
 		_ = seqScalingMatrixPresentFlag
 	}
 
-	fieldUEV(d, "log2_max_frame_num_minus4")
+	d.FieldUFn("log2_max_frame_num_minus4", uEV)
 
-	picOrderCntType := fieldUEV(d, "pic_order_cnt_type")
+	picOrderCntType := d.FieldUFn("pic_order_cnt_type", uEV)
 	if picOrderCntType == 0 {
-		fieldUEV(d, "log2_max_pic_order_cnt_lsb_minus4")
+		d.FieldUFn("log2_max_pic_order_cnt_lsb_minus4", uEV)
 	} else if picOrderCntType == 1 {
 		d.FieldBool("delta_pic_order_always_zero_flag")
-		fieldSEV(d, "offset_for_non_ref_pic")
-		fieldSEV(d, "offset_for_top_to_bottom_field")
-		numRefFramesInPicOrderCntCycle := fieldUEV(d, "num_ref_frames_in_pic_order_cnt_cycle")
-		d.FieldArrayFn("offset_for_ref_frames", func(d *decode.D) {
+		d.FieldSFn("offset_for_non_ref_pic", sEV)
+		d.FieldSFn("offset_for_top_to_bottom_field", sEV)
+		numRefFramesInPicOrderCntCycle := d.FieldUFn("num_ref_frames_in_pic_order_cnt_cycle", uEV)
+		d.FieldArray("offset_for_ref_frames", func(d *decode.D) {
 			for i := uint64(0); i < numRefFramesInPicOrderCntCycle; i++ {
 				sEV(d)
 			}
 		})
 	}
 
-	fieldUEV(d, "max_num_ref_frames")
+	d.FieldUFn("max_num_ref_frames", uEV)
 	d.FieldBool("gaps_in_frame_num_value_allowed_flag")
-	fieldUEV(d, "pic_width_in_mbs_minus1")
-	fieldUEV(d, "pic_height_in_map_units_minus1")
+	d.FieldUFn("pic_width_in_mbs_minus1", uEV)
+	d.FieldUFn("pic_height_in_map_units_minus1", uEV)
 	frameMbsOnlyFlag := d.FieldBool("frame_mbs_only_flag")
 	if !frameMbsOnlyFlag {
 		d.FieldBool("mb_adaptive_frame_field_flag")
@@ -152,17 +152,17 @@ func avcSPSDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldBool("direct_8x8_inference_flag")
 	frameCroppingFlag := d.FieldBool("frame_cropping_flag")
 	if frameCroppingFlag {
-		fieldUEV(d, "frame_crop_left_offset")
-		fieldUEV(d, "frame_crop_right_offset")
-		fieldUEV(d, "frame_crop_top_offset")
-		fieldUEV(d, "frame_crop_bottom_offset")
+		d.FieldUFn("frame_crop_left_offset", uEV)
+		d.FieldUFn("frame_crop_right_offset", uEV)
+		d.FieldUFn("frame_crop_top_offset", uEV)
+		d.FieldUFn("frame_crop_bottom_offset", uEV)
 	}
 	vuiParametersPresentFlag := d.FieldBool("vui_parameters_present_flag")
 	if vuiParametersPresentFlag {
-		d.FieldStructFn("vui_parameters", avcVuiParameters)
+		d.FieldStruct("vui_parameters", avcVuiParameters)
 	}
 
-	d.FieldBitBufLen("rbsp_trailing_bits", d.BitsLeft())
+	d.FieldRawLen("rbsp_trailing_bits", d.BitsLeft())
 
 	return nil
 }

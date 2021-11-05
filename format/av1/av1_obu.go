@@ -27,7 +27,7 @@ const (
 	OBU_PADDING                = 15
 )
 
-var obuTypeNames = map[uint64]string{
+var obuTypeNames = decode.UToStr{
 	OBU_SEQUENCE_HEADER:        "OBU_SEQUENCE_HEADER",
 	OBU_TEMPORAL_DELIMITER:     "OBU_TEMPORAL_DELIMITER",
 	OBU_FRAME_HEADER:           "OBU_FRAME_HEADER",
@@ -39,7 +39,7 @@ var obuTypeNames = map[uint64]string{
 	OBU_PADDING:                "OBU_PADDING",
 }
 
-func leb128(d *decode.D) uint64 {
+func decodeLeb128(d *decode.D) uint64 {
 	var v uint64
 	for i := 0; i < 8; i++ {
 		b := d.U8()
@@ -51,21 +51,15 @@ func leb128(d *decode.D) uint64 {
 	return v
 }
 
-func fieldLeb128(d *decode.D, name string) uint64 {
-	return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
-		return leb128(d), decode.NumberDecimal, ""
-	})
-}
-
 func obuDecode(d *decode.D, in interface{}) interface{} {
 	var obuType uint64
 	var obuSize int64
 	hasExtension := false
 	hasSizeField := false
 
-	d.FieldStructFn("header", func(d *decode.D) {
+	d.FieldStruct("header", func(d *decode.D) {
 		d.FieldU1("forbidden_bit")
-		obuType, _ = d.FieldStringMapFn("type", obuTypeNames, "Reserved", d.U4, decode.NumberDecimal)
+		obuType = d.FieldU4("type", d.MapUToStr(obuTypeNames))
 		hasExtension = d.FieldBool("extension_flag")
 		hasSizeField = d.FieldBool("has_size_field")
 		d.FieldU1("reserved_1bit")
@@ -77,7 +71,7 @@ func obuDecode(d *decode.D, in interface{}) interface{} {
 	})
 
 	if hasSizeField {
-		obuSize = int64(fieldLeb128(d, "size"))
+		obuSize = int64(d.FieldUFn("size", decodeLeb128))
 	} else {
 		obuSize = d.BitsLeft() / 8
 		if hasExtension {
@@ -88,7 +82,7 @@ func obuDecode(d *decode.D, in interface{}) interface{} {
 	_ = obuType
 
 	if d.BitsLeft() > 0 {
-		d.FieldBitBufLen("data", obuSize*8)
+		d.FieldRawLen("data", obuSize*8)
 	}
 
 	return nil

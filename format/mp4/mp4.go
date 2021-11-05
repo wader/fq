@@ -134,7 +134,7 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 	}
 
 	// TODO: nicer, validate functions without field?
-	d.ValidateAtLeastBytesLeft(16)
+	d.AssertLeastBytesLeft(16)
 	size := d.U32()
 	if size < 8 {
 		d.Invalid("first box size too small < 8")
@@ -157,7 +157,7 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 	}
 	sort.Slice(sortedTracks, func(i, j int) bool { return sortedTracks[i].id < sortedTracks[j].id })
 
-	d.FieldArrayFn("tracks", func(d *decode.D) {
+	d.FieldArray("tracks", func(d *decode.D) {
 		for _, t := range sortedTracks {
 			decodeSampleRange := func(d *decode.D, t *track, dataFormat string, name string, firstBit int64, nBits int64, inArg interface{}) {
 				switch dataFormat {
@@ -183,7 +183,9 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 					case format.MPEGObjectTypeVORBIS:
 						d.FieldFormatRange(name, firstBit, nBits, vorbisPacketFormat, inArg)
 					default:
-						d.FieldBitBufRange(name, firstBit, nBits)
+						d.RangeFn(firstBit, nBits, func(d *decode.D) {
+							d.FieldRawLen(name, d.BitsLeft())
+						})
 					}
 				case "mp4v":
 					switch t.objectType {
@@ -192,16 +194,20 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 					case format.MPEGObjectTypeMJPEG:
 						d.FieldFormatRange(name, firstBit, nBits, jpegFormat, inArg)
 					default:
-						d.FieldBitBufRange(name, firstBit, nBits)
+						d.RangeFn(firstBit, nBits, func(d *decode.D) {
+							d.FieldRawLen(name, d.BitsLeft())
+						})
 					}
 				case "jpeg":
 					d.FieldFormatRange(name, firstBit, nBits, jpegFormat, inArg)
 				default:
-					d.FieldBitBufRange(name, firstBit, nBits)
+					d.RangeFn(firstBit, nBits, func(d *decode.D) {
+						d.FieldRawLen(name, d.BitsLeft())
+					})
 				}
 			}
 
-			d.FieldStructFn("track", func(d *decode.D) {
+			d.FieldStruct("track", func(d *decode.D) {
 				// TODO: handle progressive/fragmented mp4 differently somehow?
 
 				trackSdDataFormat := "unknown"
@@ -213,7 +219,7 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 					}
 				}
 
-				d.FieldArrayFn("samples", func(d *decode.D) {
+				d.FieldArray("samples", func(d *decode.D) {
 					stscIndex := 0
 					chunkNr := uint32(0)
 					sampleNr := uint64(0)

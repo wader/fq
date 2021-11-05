@@ -1,12 +1,12 @@
 # gm convert -size 4x4 'xc:#000' 4x4.tiff
 $ fq -d tiff verbose /4x4.tiff
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /4x4.tiff (tiff) 0x0-0x107.7 (264)
+0x000|49 49 2a 00                                    |II*.            |  endian: "little-edian" (0x49492a00) 0x0-0x3.7 (4)
 0x000|49 49                                          |II              |  order: "II" 0x0-0x1.7 (2)
-0x000|49 49 2a 00                                    |II*.            |  endian: "little-endian" (0x49492a00) 0x0-0x3.7 (4)
-0x000|      2a 00                                    |  *.            |  integer_42: 10752 0x2-0x3.7 (2)
+0x000|      2a 00                                    |  *.            |  integer_42: 42 0x2-0x3.7 (2)
 0x000|            0c 00 00 00                        |    ....        |  first_ifd: 12 0x4-0x7.7 (4)
      |                                               |                |  strips: [1] 0x8-0xb.7 (4)
-0x000|                        f0 f0 f0 f0            |        ....    |    [0]: strip f0f0f0f0 0x8-0xb.7 (4)
+0x000|                        f0 f0 f0 f0            |        ....    |    [0]: strip raw bits 0x8-0xb.7 (4)
      |                                               |                |  ifds: [1] 0xc-0x107.7 (252)
      |                                               |                |    [0]: ifd {} 0xc-0x107.7 (252)
 0x000|                                    0e 00      |            ..  |      number_of_field: 14 0xc-0xd.7 (2)
@@ -122,4 +122,4 @@ $ fq -d tiff verbose /4x4.tiff
      |                                               |                |          values: [1] 0xb2-0xb3.7 (2)
 0x0b0|      01 00                                    |  ..            |            [0]: value 1 0xb2-0xb3.7 (2)
 0x0b0|                  00 00 00 00                  |      ....      |      next_ifd: 0 0xb6-0xb9.7 (4)
-0x0c0|         00                                    |   .            |  unknown0: 00 0xc3-0xc3.7 (1)
+0x0c0|         00                                    |   .            |  unknown0: raw bits 0xc3-0xc3.7 (1)

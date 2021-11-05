@@ -8,7 +8,7 @@ import (
 
 var images []*decode.Format
 
-var pictureTypeNames = map[uint64]string{
+var pictureTypeNames = decode.UToStr{
 	0:  "Other",
 	1:  "32x32 pixels 'file icon' (PNG only)",
 	2:  "Other file icon",
@@ -48,7 +48,7 @@ func pictureDecode(d *decode.D, in interface{}) interface{} {
 		l := d.FieldU32(name + "_length")
 		return d.FieldUTF8(name, int(l))
 	}
-	d.FieldStringMapFn("picture_type", pictureTypeNames, "Unknown", d.U32, decode.NumberDecimal)
+	d.FieldU32("picture_type", d.MapUToStr(pictureTypeNames))
 	lenStr("mime")
 	lenStr("description")
 	d.FieldU32("width")
@@ -57,7 +57,7 @@ func pictureDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldU32("number_of_index_colors")
 	pictureLen := d.FieldU32("picture_length")
 	if dv, _, _ := d.FieldTryFormatLen("picture_data", int64(pictureLen)*8, images, nil); dv == nil {
-		d.FieldBitBufLen("picture_data", int64(pictureLen)*8)
+		d.FieldRawLen("picture_data", int64(pictureLen)*8)
 	}
 
 	return nil

@@ -18,7 +18,7 @@ const (
 	avcSEIUserDataUnregistered = 5
 )
 
-var seiNames = map[uint64]string{
+var seiNames = decode.UToStr{
 	0:                          "buffering_period",
 	1:                          "pic_timing",
 	2:                          "pan_scan_rect",
@@ -79,8 +79,12 @@ var seiNames = map[uint64]string{
 	181:                        "alternative_depth_info",
 }
 
-var userDataUnregisteredNames = map[[16]byte]string{
-	{0xdc, 0x45, 0xe9, 0xbd, 0xe6, 0xd9, 0x48, 0xb7, 0x96, 0x2c, 0xd8, 0x20, 0xd9, 0x23, 0xee, 0xef}: "x264",
+var (
+	x264Bytes = [16]byte{0xdc, 0x45, 0xe9, 0xbd, 0xe6, 0xd9, 0x48, 0xb7, 0x96, 0x2c, 0xd8, 0x20, 0xd9, 0x23, 0xee, 0xef}
+)
+
+var userDataUnregisteredNames = decode.BytesToScalar{
+	{Bytes: x264Bytes[:], Scalar: decode.Scalar{Sym: "x264"}},
 }
 
 // sum bytes until < 0xff
@@ -97,22 +101,18 @@ func ffSum(d *decode.D) uint64 {
 }
 
 func avcSEIDecode(d *decode.D, in interface{}) interface{} {
-	payloadType, _ := d.FieldStringMapFn("payload_type", seiNames, "Unknown", func() uint64 { return ffSum(d) }, decode.NumberDecimal)
-	payloadSize := d.FieldUFn("payload_size", func() (uint64, decode.DisplayFormat, string) {
-		return ffSum(d), decode.NumberDecimal, ""
-	})
+	payloadType := d.FieldUFn("payload_type", func(d *decode.D) uint64 { return ffSum(d) }, d.MapUToStr(seiNames))
+	payloadSize := d.FieldUFn("payload_size", func(d *decode.D) uint64 { return ffSum(d) })
 
-	d.DecodeLenFn(int64(payloadSize)*8, func(d *decode.D) {
+	d.LenFn(int64(payloadSize)*8, func(d *decode.D) {
 		switch payloadType {
 		case avcSEIUserDataUnregistered:
-			d.FieldStringUUIDMapFn("uuid", userDataUnregisteredNames, "Unknown", func() []byte { return d.BytesLen(16) })
-			d.FieldBytesLen("data", int(d.BitsLeft()/8))
-		default:
-			d.FieldBitBufLen("data", d.BitsLeft())
+			d.FieldRawLen("uuid", 16*8, d.MapRawToScalar(userDataUnregisteredNames))
 		}
+		d.FieldRawLen("data", d.BitsLeft())
 	})
 
-	d.FieldBitBufLen("rbsp_trailing_bits", d.BitsLeft())
+	d.FieldRawLen("rbsp_trailing_bits", d.BitsLeft())
 
 	return nil
 }

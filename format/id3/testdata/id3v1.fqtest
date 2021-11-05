@@ -1,7 +1,7 @@
 # ffmpeg -f lavfi -i sine -t 10ms -write_id3v1 1 -metadata title=test -f mp3 pipe:1 | fq - '.footers[0]._bytes' > id3v1
 $ fq -d id3v1 verbose /id3v1
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /id3v1 (id3v1) 0x0-0x7f.7 (128)
-0x00|54 41 47                                       |TAG             |  magic: "TAG" (Correct) 0x0-0x2.7 (3)
+0x00|54 41 47                                       |TAG             |  magic: "TAG" (valid) 0x0-0x2.7 (3)
 0x00|         74 65 73 74 00 00 00 00 00 00 00 00 00|   test.........|  song_name: "test" 0x3-0x20.7 (30)
 0x10|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
 0x20|00                                             |.               |
@@ -14,4 +14,4 @@ $ fq -d id3v1 verbose /id3v1
 0x60|00                                             |.               |
 0x60|   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00| ...............|  comment: "" 0x61-0x7e.7 (30)
 0x70|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00   |............... |
-0x70|                                             ff|               .|  genre: "Unknown" (255) 0x7f-0x7f.7 (1)
+0x70|                                             ff|               .|  genre: 255 0x7f-0x7f.7 (1)

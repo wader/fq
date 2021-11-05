@@ -14,7 +14,7 @@ $ fq -d opus_packet verbose /opus-audio
 0x000|fc                                             |.               |      config: 0 0x0.6-0x0.7 (0.2)
      |                                               |                |      frames: 1 0x1-NA (0)
      |                                               |                |      mode: "1 frame" 0x1-NA (0)
-0x000|   70 5b f3 71 54 45 4a c7 79 14 ea d1 59 61 85| p[.qTEJ.y...Ya.|    data: 705bf37154454ac77914ead1596185c8... 0x1-0x1b5.7 (437)
+0x000|   70 5b f3 71 54 45 4a c7 79 14 ea d1 59 61 85| p[.qTEJ.y...Ya.|    data: raw bits 0x1-0x1b5.7 (437)
 0x010|c8 c2 56 2c a6 b7 6e 98 00 9b 34 cb 23 1d 98 b7|..V,..n...4.#...|
 *    |until 0x1b5.7 (end) (437)                      |                |
 $ fq -d opus_packet verbose /opus-head

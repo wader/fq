@@ -26,24 +26,24 @@ func apev2Decode(d *decode.D, in interface{}) interface{} {
 
 	headerFooterFn := func(d *decode.D, name string) uint64 {
 		var tagCount uint64
-		d.FieldStructFn(name, func(d *decode.D) {
-			d.FieldValidateUTF8("preamble", "APETAGEX")
+		d.FieldStruct(name, func(d *decode.D) {
+			d.FieldUTF8("preamble", 8, d.AssertStr("APETAGEX"))
 			d.FieldU32("version")
 			d.FieldU32("tag_size")
 			tagCount = d.FieldU32("item_count")
 			d.FieldU32("flags")
-			d.FieldValidateZeroPadding("reserved", 64)
+			d.FieldRawLen("reserved", 64, d.BitBufIsZero)
 		})
 		return tagCount
 	}
 
 	tagCount := headerFooterFn(d, "header")
-	d.FieldArrayFn("tags", func(d *decode.D) {
+	d.FieldArray("tags", func(d *decode.D) {
 		for i := uint64(0); i < tagCount; i++ {
-			d.FieldStructFn("tag", func(d *decode.D) {
+			d.FieldStruct("tag", func(d *decode.D) {
 				itemSize := d.FieldU32("item_size")
 				var binaryItem bool
-				d.FieldStructFn("item_flags", func(d *decode.D) {
+				d.FieldStruct("item_flags", func(d *decode.D) {
 					d.FieldU6("unused0")
 					binaryItem = d.FieldBool("binary")
 					d.FieldU25("unused1")
@@ -52,13 +52,13 @@ func apev2Decode(d *decode.D, in interface{}) interface{} {
 				d.FieldUTF8("key", int(keyLen))
 				d.FieldU8("key_terminator")
 				if binaryItem {
-					d.DecodeLenFn(int64(itemSize)*8, func(d *decode.D) {
-						d.FieldStrNullTerminated("filename")
+					d.LenFn(int64(itemSize)*8, func(d *decode.D) {
+						d.FieldUTF8NullTerminated("filename")
 						// assume image if binary
 						dv, _, _ := d.FieldTryFormat("value", imageFormat, nil)
 						if dv == nil {
 							// TODO: framed and unknown instead?
-							d.FieldBitBufLen("value", d.BitsLeft())
+							d.FieldRawLen("value", d.BitsLeft())
 						}
 					})
 				} else {

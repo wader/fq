@@ -14,11 +14,11 @@ $ fq -d mp4 verbose /hevc.mp4
       |                                               |                |    [1]: box {} 0x1c-0x23.7 (8)
 0x0010|                                    00 00 00 08|            ....|      size: 8 0x1c-0x1f.7 (4)
 0x0020|66 72 65 65                                    |free            |      type: "free" (Free space) 0x20-0x23.7 (4)
-      |                                               |                |      data:  0x24-NA (0)
+      |                                               |                |      data: raw bits 0x24-NA (0)
       |                                               |                |    [2]: box {} 0x24-0x880.7 (2141)
 0x0020|            00 00 08 5d                        |    ...]        |      size: 2141 0x24-0x27.7 (4)
 0x0020|                        6d 64 61 74            |        mdat    |      type: "mdat" (Media data container) 0x28-0x2b.7 (4)
-0x0020|                                    00 00 08 51|            ...Q|      data: 000008512801af1d20aa55b788a0627f... 0x2c-0x880.7 (2133)
+0x0020|                                    00 00 08 51|            ...Q|      data: raw bits 0x2c-0x880.7 (2133)
 0x0030|28 01 af 1d 20 aa 55 b7 88 a0 62 7f ff fa 2c 46|(... .U...b...,F|
 *     |until 0x880.7 (2133)                           |                |
       |                                               |                |    [3]: box {} 0x881-0x149a.7 (3098)
@@ -77,7 +77,7 @@ $ fq -d mp4 verbose /hevc.mp4
 0x0910|   00 00 00 01                                 | ....           |              track_id: 1 0x911-0x914.7 (4)
 0x0910|               00 00 00 00                     |     ....       |              reserved1: 0 0x915-0x918.7 (4)
 0x0910|                           00 00 00 28         |         ...(   |              duration: 40 0x919-0x91c.7 (4)
-0x0910|                                       00 00 00|             ...|              reserved2: 0000000000000000 0x91d-0x924.7 (8)
+0x0910|                                       00 00 00|             ...|              reserved2: raw bits 0x91d-0x924.7 (8)
 0x0920|00 00 00 00 00                                 |.....           |
 0x0920|               00 00                           |     ..         |              layer: 0 0x925-0x926.7 (2)
 0x0920|                     00 00                     |       ..       |              alternate_group: 0 0x927-0x928.7 (2)
@@ -181,7 +181,7 @@ $ fq -d mp4 verbose /hevc.mp4
 0x0a00|                                          00   |              . |                              version: 0 0xa0e-0xa0e.7 (1)
 0x0a00|                                             00|               .|                              flags: 1 0xa0f-0xa11.7 (3)
 0x0a10|00 01                                          |..              |
-      |                                               |                |                              data:  0xa12-NA (0)
+      |                                               |                |                              data: raw bits 0xa12-NA (0)
       |                                               |                |                    [2]: box {} 0xa12-0x1438.7 (2599)
 0x0a10|      00 00 0a 27                              |  ...'          |                      size: 2599 0xa12-0xa15.7 (4)
 0x0a10|                  73 74 62 6c                  |      stbl      |                      type: "stbl" (Sample table box, container for the time/space map) 0xa16-0xa19.7 (4)
@@ -198,7 +198,7 @@ $ fq -d mp4 verbose /hevc.mp4
 0x0a20|                              00 00 09 b3      |          ....  |                              size: 2483 0xa2a-0xa2d.7 (4)
 0x0a20|                                          68 65|              he|                              type: "hev1" 0xa2e-0xa31.7 (4)
 0x0a30|76 31                                          |v1              |
-0x0a30|      00 00 00 00 00 00                        |  ......        |                              reserved: 000000000000 0xa32-0xa37.7 (6)
+0x0a30|      00 00 00 00 00 00                        |  ......        |                              reserved: raw bits 0xa32-0xa37.7 (6)
 0x0a30|                        00 01                  |        ..      |                              data_reference_index: 1 0xa38-0xa39.7 (2)
 0x0a30|                              00 00            |          ..    |                              version: 0 0xa3a-0xa3b.7 (2)
 0x0a30|                                    00 00      |            ..  |                              revision_level: 0 0xa3c-0xa3d.7 (2)
@@ -261,7 +261,7 @@ $ fq -d mp4 verbose /hevc.mp4
 0x0aa0|            40                                 |    @           |                                              nal_unit_type: "VPS_NUT" (32) 0xaa4.1-0xaa4.6 (0.6)
 0x0aa0|            40 01                              |    @.          |                                              nuh_layer_id: 0 0xaa4.7-0xaa5.4 (0.6)
 0x0aa0|               01                              |     .          |                                              nuh_temporal_id_plus1: 1 0xaa5.5-0xaa5.7 (0.3)
-0x0aa0|                  0c 01 ff ff 04 08 00 00 03 00|      ..........|                                              data: 0c01ffff0408000003009e0800000300... 0xaa6-0xaba.7 (21)
+0x0aa0|                  0c 01 ff ff 04 08 00 00 03 00|      ..........|                                              data: raw bits 0xaa6-0xaba.7 (21)
 0x0ab0|9e 08 00 00 03 00 00 3c 95 98 09               |.......<...     |
       |                                               |                |                                      [1]: array {} 0xabb-0xaea.7 (48)
 0x0ab0|                                 21            |           !    |                                        array_completeness: 0 0xabb-0xabb (0.1)
@@ -276,7 +276,7 @@ $ fq -d mp4 verbose /hevc.mp4
 0x0ac0|42                                             |B               |                                              nal_unit_type: "SPS_NUT" (33) 0xac0.1-0xac0.6 (0.6)
 0x0ac0|42 01                                          |B.              |                                              nuh_layer_id: 0 0xac0.7-0xac1.4 (0.6)
 0x0ac0|   01                                          | .              |                                              nuh_temporal_id_plus1: 1 0xac1.5-0xac1.7 (0.3)
-0x0ac0|      01 04 08 00 00 03 00 9e 08 00 00 03 00 00|  ..............|                                              data: 010408000003009e0800000300003c90... 0xac2-0xaea.7 (41)
+0x0ac0|      01 04 08 00 00 03 00 9e 08 00 00 03 00 00|  ..............|                                              data: raw bits 0xac2-0xaea.7 (41)
 0x0ad0|3c 90 01 41 01 e2 cb 2b 34 92 65 78 0b 50 20 20|<..A...+4.ex.P  |
 0x0ae0|00 40 00 00 03 00 40 00 00 06 42               |.@....@...B     |
       |                                               |                |                                      [2]: array {} 0xaeb-0xaf7.7 (13)
@@ -292,7 +292,7 @@ $ fq -d mp4 verbose /hevc.mp4
 0x0af0|44                                             |D               |                                              nal_unit_type: "PPS_NUT" (34) 0xaf0.1-0xaf0.6 (0.6)
 0x0af0|44 01                                          |D.              |                                              nuh_layer_id: 0 0xaf0.7-0xaf1.4 (0.6)
 0x0af0|   01                                          | .              |                                              nuh_temporal_id_plus1: 1 0xaf1.5-0xaf1.7 (0.3)
-0x0af0|      c1 72 86 0c 46 24                        |  .r..F$        |                                              data: c172860c4624 0xaf2-0xaf7.7 (6)
+0x0af0|      c1 72 86 0c 46 24                        |  .r..F$        |                                              data: raw bits 0xaf2-0xaf7.7 (6)
       |                                               |                |                                      [3]: array {} 0xaf8-0x13c2.7 (2251)
 0x0af0|                        27                     |        '       |                                        array_completeness: 0 0xaf8-0xaf8 (0.1)
 0x0af0|                        27                     |        '       |                                        reserved0: 0 0xaf8.1-0xaf8.1 (0.1)
@@ -306,13 +306,13 @@ $ fq -d mp4 verbose /hevc.mp4
 0x0af0|                                       4e      |             N  |                                              nal_unit_type: "PREFIX_SEI_NUT" (39) 0xafd.1-0xafd.6 (0.6)
 0x0af0|                                       4e 01   |             N. |                                              nuh_layer_id: 0 0xafd.7-0xafe.4 (0.6)
 0x0af0|                                          01   |              . |                                              nuh_temporal_id_plus1: 1 0xafe.5-0xafe.7 (0.3)
-0x0af0|                                             05|               .|                                              data: 05ffffffffffffffffc12ca2de09b517... 0xaff-0x13c2.7 (2244)
+0x0af0|                                             05|               .|                                              data: raw bits 0xaff-0x13c2.7 (2244)
 0x0b00|ff ff ff ff ff ff ff ff c1 2c a2 de 09 b5 17 47|.........,.....G|
 *     |until 0x13c2.7 (2244)                          |                |
       |                                               |                |                                [1]: box {} 0x13c3-0x13cc.7 (10)
 0x13c0|         00 00 00 0a                           |   ....         |                                  size: 10 0x13c3-0x13c6.7 (4)
 0x13c0|                     66 69 65 6c               |       fiel     |                                  type: "fiel" (Video field order) 0x13c7-0x13ca.7 (4)
-0x13c0|                                 01 00         |           ..   |                                  data: 0100 0x13cb-0x13cc.7 (2)
+0x13c0|                                 01 00         |           ..   |                                  data: raw bits 0x13cb-0x13cc.7 (2)
       |                                               |                |                                [2]: box {} 0x13cd-0x13dc.7 (16)
 0x13c0|                                       00 00 00|             ...|                                  size: 16 0x13cd-0x13d0.7 (4)
 0x13d0|10                                             |.               |
@@ -391,7 +391,7 @@ $ fq -d mp4 verbose /hevc.mp4
       |                                               |                |                  boxes: [1] 0x1476-0x149a.7 (37)
       |                                               |                |                    [0]: box {} 0x1476-0x149a.7 (37)
 0x1470|                  00 00 00 25                  |      ...%      |                      size: 37 0x1476-0x1479.7 (4)
-0x1470|                              a9 74 6f 6f      |          .too  |                      type: "\xa9too" 0x147a-0x147d.7 (4)
+0x1470|                              a9 74 6f 6f      |          .too  |                      type: "�too" 0x147a-0x147d.7 (4)
       |                                               |                |                      boxes: [1] 0x147e-0x149a.7 (29)
       |                                               |                |                        [0]: box {} 0x147e-0x149a.7 (29)
 0x1470|                                          00 00|              ..|                          size: 29 0x147e-0x1481.7 (4)
@@ -413,6 +413,6 @@ $ fq -d mp4 verbose /hevc.mp4
 0x0030|28                                             |(               |              nal_unit_type: "IDR_N_LP" (20) 0x30.1-0x30.6 (0.6)
 0x0030|28 01                                          |(.              |              nuh_layer_id: 0 0x30.7-0x31.4 (0.6)
 0x0030|   01                                          | .              |              nuh_temporal_id_plus1: 1 0x31.5-0x31.7 (0.3)
-0x0030|      af 1d 20 aa 55 b7 88 a0 62 7f ff fa 2c 46|  .. .U...b...,F|              data: af1d20aa55b788a0627ffffa2c46fda9... 0x32-0x880.7 (2127)
+0x0030|      af 1d 20 aa 55 b7 88 a0 62 7f ff fa 2c 46|  .. .U...b...,F|              data: raw bits 0x32-0x880.7 (2127)
 0x0040|fd a9 78 83 ff fb 75 6c 0b 3f ff 94 ce 7f aa fe|..x...ul.?......|
 *     |until 0x880.7 (2127)                           |                |

@@ -34,21 +34,21 @@ func init() {
 func gzDecode(d *decode.D, in interface{}) interface{} {
 	// moreStreams := true
 
-	// d.FieldArrayFn("streams", func(d *decode.D) {
+	// d.FieldArray("streams", func(d *decode.D) {
 	// 	for moreStreams {
-	// d.FieldStructFn("stream", func(d *decode.D) {
+	// d.FieldStruct("stream", func(d *decode.D) {
 
-	d.FieldValidateUTF8("magic", "BZ")
+	d.FieldUTF8("magic", 2, d.AssertStr("BZ"))
 	d.FieldU8("version")
 	d.FieldU8("hundred_k_blocksize")
 
-	d.FieldStructFn("block", func(d *decode.D) {
+	d.FieldStruct("block", func(d *decode.D) {
 		const blockHeaderMagic = 0x31_41_59_26_53_59
 		// if d.PeekBits(48) != blockHeaderMagic {
 		// 	moreStreams = false
 		// 	return
 		// }
-		d.FieldValidateUFn("compressed_magic", blockHeaderMagic, d.U48)
+		d.FieldU48("compressed_magic", d.AssertU(blockHeaderMagic), d.Hex)
 		d.FieldU32("crc")
 		d.FieldU1("randomised")
 		d.FieldU24("origptr")
@@ -61,27 +61,27 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 				ranges++
 			}
 		}
-		d.FieldBitBufLen("syncmapl2", int64(ranges)*16)
+		d.FieldRawLen("syncmapl2", int64(ranges)*16)
 		numTrees := d.FieldU3("num_trees")
 		selectorsUsed := d.FieldU15("num_sels")
 		selectorsI := uint64(0)
-		d.FieldArrayLoopFn("selector_list", func() bool { return selectorsI < selectorsUsed }, func(d *decode.D) {
+		d.FieldArrayLoop("selector_list", func() bool { return selectorsI < selectorsUsed }, func(d *decode.D) {
 			d.FieldU1("selector")
 			selectorsI++
 		})
 		treesI := uint64(0)
-		d.FieldArrayLoopFn("trees", func() bool { return treesI < numTrees }, func(d *decode.D) {
-			d.FieldUFn("tree", func() (uint64, decode.DisplayFormat, string) {
+		d.FieldArrayLoop("trees", func() bool { return treesI < numTrees }, func(d *decode.D) {
+			d.FieldUFn("tree", func(d *decode.D) uint64 {
 				l := d.U5()
 				if !d.Bool() {
-					return l, decode.NumberDecimal, ""
+					return l
 				}
 				if d.Bool() {
 					l--
 				} else {
 					l++
 				}
-				return l, decode.NumberDecimal, ""
+				return l
 			})
 			treesI++
 		})

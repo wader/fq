@@ -43,16 +43,16 @@ func hevcDcrDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldU1("temporal_id_nested")
 	lengthSizeMinusOne := d.FieldU2("length_size_minus_one")
 	numArrays := d.FieldU8("num_of_arrays")
-	d.FieldArrayFn("arrays", func(d *decode.D) {
+	d.FieldArray("arrays", func(d *decode.D) {
 		for i := uint64(0); i < numArrays; i++ {
-			d.FieldStructFn("array", func(d *decode.D) {
+			d.FieldStruct("array", func(d *decode.D) {
 				d.FieldU1("array_completeness")
 				d.FieldU1("reserved0")
-				d.FieldStringMapFn("nal_unit_type", hevcNALNames, "Unknown", d.U6, decode.NumberDecimal)
+				d.FieldU6("nal_unit_type", d.MapUToStr(hevcNALNames))
 				numNals := d.FieldU16("num_nalus")
-				d.FieldArrayFn("nals", func(d *decode.D) {
+				d.FieldArray("nals", func(d *decode.D) {
 					for i := uint64(0); i < numNals; i++ {
-						d.FieldStructFn("nal", func(d *decode.D) {
+						d.FieldStruct("nal", func(d *decode.D) {
 							nalUnitLength := int64(d.FieldU16("nal_unit_length"))
 							d.FieldFormatLen("nal", nalUnitLength*8, hevcDCRNALFormat, nil)
 						})

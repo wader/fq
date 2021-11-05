@@ -25,6 +25,11 @@ func init() {
 const littleEndian = 0x49492a00 // "II*\0"
 const bigEndian = 0x4d4d002a    // "MM\0*"
 
+var endianNames = decode.UToStr{
+	littleEndian: "little-edian",
+	bigEndian:    "big-endian",
+}
+
 const (
 	BYTE      = 1
 	ASCII     = 2
@@ -36,7 +41,7 @@ const (
 	SRATIONAL = 10
 )
 
-var typeNames = map[uint64]string{
+var typeNames = decode.UToStr{
 	BYTE:      "BYTE",
 	ASCII:     "ASCII",
 	SHORT:     "SHORT",
@@ -61,26 +66,22 @@ var typeByteSize = map[uint64]uint64{
 
 func fieldRational(d *decode.D, name string) float64 {
 	var v float64
-	d.FieldStructFn(name, func(d *decode.D) {
+	d.FieldStruct(name, func(d *decode.D) {
 		numerator := d.FieldU32("numerator")
 		denominator := d.FieldU32("denominator")
 		v := float64(numerator) / float64(denominator)
-		d.FieldFloatFn("float", func() (float64, string) {
-			return v, ""
-		})
+		d.FieldValueFloat("float", v)
 	})
 	return v
 }
 
 func fieldSRational(d *decode.D, name string) float64 {
 	var v float64
-	d.FieldStructFn(name, func(d *decode.D) {
+	d.FieldStruct(name, func(d *decode.D) {
 		numerator := d.FieldS32("numerator")
 		denominator := d.FieldS32("denominator")
 		v := float64(numerator) / float64(denominator)
-		d.FieldFloatFn("float", func() (float64, string) {
-			return v, ""
-		})
+		d.FieldValueFloat("float", v)
 	})
 	return v
 }
@@ -93,18 +94,18 @@ type strips struct {
 func decodeIfd(d *decode.D, s *strips, tagNames map[uint64]string) int64 {
 	var nextIfdOffset int64
 
-	d.FieldStructFn("ifd", func(d *decode.D) {
+	d.FieldStruct("ifd", func(d *decode.D) {
 		numberOfFields := d.FieldU16("number_of_field")
-		d.FieldArrayFn("entries", func(d *decode.D) {
+		d.FieldArray("entries", func(d *decode.D) {
 			for i := uint64(0); i < numberOfFields; i++ {
-				d.FieldStructFn("entry", func(d *decode.D) {
-					tag, _ := d.FieldStringMapFn("tag", tagNames, "unknown", d.U16, decode.NumberHex)
-					typ, typOk := d.FieldStringMapFn("type", typeNames, "unknown", d.U16, decode.NumberDecimal)
+				d.FieldStruct("entry", func(d *decode.D) {
+					tag := d.FieldU16("tag", d.MapUToStr(tagNames), d.Hex)
+					typ := d.FieldU16("type", d.MapUToStr(typeNames))
 					count := d.FieldU32("count")
 					// TODO: short values stored in valueOffset directly?
 					valueOrByteOffset := d.FieldU32("value_offset")
 
-					if !typOk {
+					if _, ok := typeNames[typ]; !ok {
 						return
 					}
 
@@ -132,7 +133,7 @@ func decodeIfd(d *decode.D, s *strips, tagNames map[uint64]string) int64 {
 						d.SeekAbs(pos)
 					default:
 
-						d.FieldArrayFn("values", func(d *decode.D) {
+						d.FieldArray("values", func(d *decode.D) {
 							switch {
 							case typ == UNDEFINED:
 								switch tag {
@@ -141,18 +142,22 @@ func decodeIfd(d *decode.D, s *strips, tagNames map[uint64]string) int64 {
 								default:
 									// log.Printf("tag: %#+v\n", tag)
 									// log.Printf("valueByteSize: %#+v\n", valueByteSize)
-									d.FieldBitBufRange("value", int64(valueByteOffset)*8, int64(valueByteSize)*8)
+									d.RangeFn(int64(valueByteOffset*8), int64(valueByteSize*8), func(d *decode.D) {
+										d.FieldRawLen("value", d.BitsLeft())
+									})
 								}
 							case typ == ASCII:
-								d.DecodeRangeFn(int64(valueByteOffset*8), int64(valueByteSize*8), func(d *decode.D) {
-									d.FieldUTF8Null("value", int(valueByteSize))
+								d.RangeFn(int64(valueByteOffset*8), int64(valueByteSize*8), func(d *decode.D) {
+									d.FieldUTF8NullTerminatedLen("value", int(valueByteSize))
 								})
 							case typ == BYTE:
-								d.FieldBitBufRange("value", int64(valueByteOffset*8), int64(valueByteSize*8))
+								d.RangeFn(int64(valueByteOffset*8), int64(valueByteSize*8), func(d *decode.D) {
+									d.FieldRawLen("value", d.BitsLeft())
+								})
 							default:
 								// log.Printf("valueOffset: %d\n", valueByteOffset)
 								// log.Printf("valueSize: %d\n", valueByteSize)
-								d.DecodeRangeFn(int64(valueByteOffset*8), int64(valueByteSize*8), func(d *decode.D) {
+								d.RangeFn(int64(valueByteOffset*8), int64(valueByteSize*8), func(d *decode.D) {
 									for i := uint64(0); i < count; i++ {
 										switch typ {
 										// TODO: only some typ?
@@ -183,7 +188,7 @@ func decodeIfd(d *decode.D, s *strips, tagNames map[uint64]string) int64 {
 										case SRATIONAL:
 											fieldSRational(d, "value")
 										default:
-											panic("unknown type")
+											d.Invalid("unknown type")
 										}
 									}
 								})
@@ -201,39 +206,27 @@ func decodeIfd(d *decode.D, s *strips, tagNames map[uint64]string) int64 {
 }
 
 func tiffDecode(d *decode.D, in interface{}) interface{} {
-	switch d.PeekBits(32) {
-	case littleEndian, bigEndian:
-		d.Endian = decode.BigEndian
-	default:
-		d.Invalid("unknown endian")
-	}
-
-	endian := d.FieldUFn("endian", func() (uint64, decode.DisplayFormat, string) {
-		endian := d.U32()
-		d.SeekRel(-4 * 8)
-		d.FieldUTF8("order", 2)
-		// TODO: validate?
-		d.FieldU16("integer_42")
-		switch endian {
-		case littleEndian:
-			return endian, decode.NumberHex, "little-endian"
-		case bigEndian:
-			return endian, decode.NumberHex, "big-endian"
-		}
-		return endian, decode.NumberDecimal, "unknown"
-	})
+	endian := d.FieldU32("endian", d.MapUToStr(endianNames), d.Hex)
 
 	switch endian {
 	case littleEndian:
 		d.Endian = decode.LittleEndian
 	case bigEndian:
 		d.Endian = decode.BigEndian
+	default:
+		d.Invalid("unknown endian")
 	}
+
+	d.SeekRel(-4 * 8)
+
+	d.FieldUTF8("order", 2)
+	// TODO: validate?
+	d.FieldU16("integer_42")
 
 	ifdOffset := int64(d.FieldU32("first_ifd"))
 	s := &strips{}
 
-	d.FieldArrayFn("ifds", func(d *decode.D) {
+	d.FieldArray("ifds", func(d *decode.D) {
 		// TODO: inf loop?
 		for ifdOffset != 0 {
 			d.SeekAbs(ifdOffset * 8)
@@ -244,9 +237,11 @@ func tiffDecode(d *decode.D, in interface{}) interface{} {
 	if len(s.offsets) != len(s.byteCounts) {
 		// TODO: warning
 	} else {
-		d.FieldArrayFn("strips", func(d *decode.D) {
+		d.FieldArray("strips", func(d *decode.D) {
 			for i := 0; i < len(s.offsets); i++ {
-				d.FieldBitBufRange("strip", s.offsets[i], s.byteCounts[i])
+				d.RangeFn(s.offsets[i], s.byteCounts[i], func(d *decode.D) {
+					d.FieldRawLen("strip", d.BitsLeft())
+				})
 			}
 		})
 	}

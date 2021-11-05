@@ -30,45 +30,45 @@ type subStreamPacket struct {
 	bb     *bitio.Buffer
 }
 
-var startAndStreamNames = map[[2]uint64]string{
-	{0x00, 0x00}: "Picture",
-	{0x01, 0xaf}: "Slice",
-	{0xb0, 0xb1}: "Reserved",
-	{0xb2, 0xb2}: "User data",
-	{0xb3, 0xb3}: "SequenceHeader",
-	{0xb4, 0xb4}: "SequenceError",
-	{0xb5, 0xb5}: "Extension",
-	{0xb6, 0xb6}: "Reserved",
-	{0xb7, 0xb7}: "SequenceEnd",
-	{0xb8, 0xb8}: "GroupOfPictures",
-	{0xb9, 0xb9}: "ProgramEnd",
-	{0xba, 0xba}: "PackHeader",
-	{0xbb, 0xbb}: "SystemHeader",
-	{0xbc, 0xbc}: "ProgramStreamMap",
-	{0xbd, 0xbd}: "PrivateStream1",
-	{0xbe, 0xbe}: "PaddingStream",
-	{0xbf, 0xbf}: "PrivateStream2",
-	{0xc0, 0xdf}: "MPEG1OrMPEG2AudioStream",
-	{0xe0, 0xef}: "MPEG1OrMPEG2VideoStream",
-	{0xf0, 0xf0}: "ECMStream",
-	{0xf1, 0xf1}: "EMMStream",
-	{0xf2, 0xf2}: "ITU-T Rec. H.222.0 | ISO/IEC 13818-1 Annex A or ISO/IEC 13818-6_DSMCC_stream",
-	{0xf3, 0xf3}: "ISO/IEC_13522_stream",
-	{0xf4, 0xf4}: "ITU-T Rec. H.222.1 type A",
-	{0xf5, 0xf5}: "ITU-T Rec. H.222.1 type B",
-	{0xf6, 0xf6}: "ITU-T Rec. H.222.1 type C",
-	{0xf7, 0xf7}: "ITU-T Rec. H.222.1 type D",
-	{0xf8, 0xf8}: "ITU-T Rec. H.222.1 type E",
-	{0xf9, 0xf9}: "Ancillary_stream",
-	{0xfa, 0xfe}: "Reserved",
-	{0xff, 0xff}: "Program Stream Directory",
+var startAndStreamNames = map[[2]uint64]decode.Scalar{
+	{0x00, 0x00}: {Sym: "Picture"},
+	{0x01, 0xaf}: {Sym: "Slice"},
+	{0xb0, 0xb1}: {Sym: "Reserved"},
+	{0xb2, 0xb2}: {Sym: "User data"},
+	{0xb3, 0xb3}: {Sym: "SequenceHeader"},
+	{0xb4, 0xb4}: {Sym: "SequenceError"},
+	{0xb5, 0xb5}: {Sym: "Extension"},
+	{0xb6, 0xb6}: {Sym: "Reserved"},
+	{0xb7, 0xb7}: {Sym: "SequenceEnd"},
+	{0xb8, 0xb8}: {Sym: "GroupOfPictures"},
+	{0xb9, 0xb9}: {Sym: "ProgramEnd"},
+	{0xba, 0xba}: {Sym: "PackHeader"},
+	{0xbb, 0xbb}: {Sym: "SystemHeader"},
+	{0xbc, 0xbc}: {Sym: "ProgramStreamMap"},
+	{0xbd, 0xbd}: {Sym: "PrivateStream1"},
+	{0xbe, 0xbe}: {Sym: "PaddingStream"},
+	{0xbf, 0xbf}: {Sym: "PrivateStream2"},
+	{0xc0, 0xdf}: {Sym: "MPEG1OrMPEG2AudioStream"},
+	{0xe0, 0xef}: {Sym: "MPEG1OrMPEG2VideoStream"},
+	{0xf0, 0xf0}: {Sym: "ECMStream"},
+	{0xf1, 0xf1}: {Sym: "EMMStream"},
+	{0xf2, 0xf2}: {Sym: "ITU-T Rec. H.222.0 | ISO/IEC 13818-1 Annex A or ISO/IEC 13818-6_DSMCC_stream"},
+	{0xf3, 0xf3}: {Sym: "ISO/IEC_13522_stream"},
+	{0xf4, 0xf4}: {Sym: "ITU-T Rec. H.222.1 type A"},
+	{0xf5, 0xf5}: {Sym: "ITU-T Rec. H.222.1 type B"},
+	{0xf6, 0xf6}: {Sym: "ITU-T Rec. H.222.1 type C"},
+	{0xf7, 0xf7}: {Sym: "ITU-T Rec. H.222.1 type D"},
+	{0xf8, 0xf8}: {Sym: "ITU-T Rec. H.222.1 type E"},
+	{0xf9, 0xf9}: {Sym: "Ancillary_stream"},
+	{0xfa, 0xfe}: {Sym: "Reserved"},
+	{0xff, 0xff}: {Sym: "Program Stream Directory"},
 }
 
 func pesPacketDecode(d *decode.D, in interface{}) interface{} {
 	var v interface{}
 
-	d.FieldValidateUFn("prefix", 0b0000_0000_0000_0000_0000_0001, d.U24)
-	startCode, _ := d.FieldStringRangeMapFn("start_code", startAndStreamNames, "Unknown", d.U8, decode.NumberHex)
+	d.FieldU24("prefix", d.AssertU(0b0000_0000_0000_0000_0000_0001), d.Bin)
+	startCode := d.FieldU8("start_code", d.MapURangeToScalar(startAndStreamNames), d.Hex)
 
 	switch {
 	case startCode == sequenceHeader:
@@ -83,16 +83,16 @@ func pesPacketDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldU1("constrained_parameters_flag")
 		loadIntraQuantizerMatrix := d.FieldBool("load_intra_quantizer_matrix")
 		if loadIntraQuantizerMatrix {
-			d.FieldBitBufLen("intra_quantizer_matrix", 8*64)
+			d.FieldRawLen("intra_quantizer_matrix", 8*64)
 
 		}
 		loadNonIntraQuantizerMatrix := d.FieldBool("load_non_intra_quantizer_matrix")
 		if loadNonIntraQuantizerMatrix {
-			d.FieldBitBufLen("non_intra_quantizer_matrix", 8*64)
+			d.FieldRawLen("non_intra_quantizer_matrix", 8*64)
 
 		}
 	case startCode == packHeader:
-		d.FieldStructFn("scr", func(d *decode.D) {
+		d.FieldStruct("scr", func(d *decode.D) {
 			d.FieldU2("skip0")
 			scr0 := d.FieldU3("scr0")
 			d.FieldU1("skip1")
@@ -103,14 +103,14 @@ func pesPacketDecode(d *decode.D, in interface{}) interface{} {
 			d.FieldU9("scr_ext")
 			d.FieldU1("skip4")
 			scr := scr0<<30 | scr1<<15 | scr2
-			d.FieldValueU("scr", scr, "")
+			d.FieldValueU("scr", scr)
 		})
 		d.FieldU22("mux_rate")
 		d.FieldU2("skip0")
 		d.FieldU5("reserved")
 		packStuffingLength := d.FieldU3("pack_stuffing_length")
 		if packStuffingLength > 0 {
-			d.FieldBitBufLen("stuffing", int64(packStuffingLength*8))
+			d.FieldRawLen("stuffing", int64(packStuffingLength*8))
 		}
 	case startCode == systemHeader:
 		d.FieldU16("length")
@@ -126,9 +126,9 @@ func pesPacketDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldU5("video_bound")
 		d.FieldU1("packet_rate_restriction_flag")
 		d.FieldU7("reserved")
-		d.FieldArrayFn("stream_bound_entries", func(d *decode.D) {
+		d.FieldArray("stream_bound_entries", func(d *decode.D) {
 			for d.PeekBits(1) == 1 {
-				d.FieldStructFn("stream_bound_entry", func(d *decode.D) {
+				d.FieldStruct("stream_bound_entry", func(d *decode.D) {
 					d.FieldU8("stream_id")
 					d.FieldU2("skip0")
 					d.FieldU1("pstd_buffer_bound_scale")
@@ -147,7 +147,7 @@ func pesPacketDecode(d *decode.D, in interface{}) interface{} {
 		var extensionLength uint64
 		if hasExtension {
 			extensionLength = 3
-			d.FieldStructFn("extension", func(d *decode.D) {
+			d.FieldStruct("extension", func(d *decode.D) {
 				d.FieldU2("skip0")
 				d.FieldU2("scramble_control")
 				d.FieldU1("priority")
@@ -164,17 +164,17 @@ func pesPacketDecode(d *decode.D, in interface{}) interface{} {
 				headerDataLength = d.FieldU8("header_data_length")
 			})
 			// TODO:
-			d.FieldBitBufLen("header_data", int64(headerDataLength)*8)
+			d.FieldRawLen("header_data", int64(headerDataLength)*8)
 		}
 
 		dataLen := int64(length-headerDataLength-extensionLength) * 8
 
 		switch startCode {
 		case privateStream1:
-			d.FieldStructFn("data", func(d *decode.D) {
-				d.DecodeLenFn(dataLen, func(d *decode.D) {
+			d.FieldStruct("data", func(d *decode.D) {
+				d.LenFn(dataLen, func(d *decode.D) {
 					substreamNumber := d.FieldU8("substream")
-					substreamBB := d.FieldBitBufLen("data", dataLen-8)
+					substreamBB := d.FieldRawLen("data", dataLen-8)
 
 					v = subStreamPacket{
 						number: int(substreamNumber),
@@ -183,10 +183,10 @@ func pesPacketDecode(d *decode.D, in interface{}) interface{} {
 				})
 			})
 		default:
-			d.FieldBitBufLen("data", dataLen)
+			d.FieldRawLen("data", dataLen)
 		}
 	default:
-		d.FieldBitBufLen("data", d.BitsLeft())
+		d.FieldRawLen("data", d.BitsLeft())
 	}
 
 	return v

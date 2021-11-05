@@ -72,7 +72,7 @@ const (
 	Forbidden1                          = 0xFF
 )
 
-var odTagNames = map[uint64]string{
+var odTagNames = decode.UToStr{
 	Forbidden0:                          "Forbidden",
 	ObjectDescrTag:                      "ObjectDescrTag",
 	InitialObjectDescrTag:               "InitialObjectDescrTag",
@@ -135,7 +135,7 @@ const (
 	IPMPToolStream          = 0x0B
 )
 
-var streamTypeNames = map[uint64]string{
+var streamTypeNames = decode.UToStr{
 	Forbidden:               "Forbidden",
 	ObjectDescriptorStream:  "ObjectDescriptorStream",
 	ClockReferenceStream:    "ClockReferenceStream",
@@ -160,14 +160,8 @@ func esLengthEncoding(d *decode.D) uint64 {
 	return v
 }
 
-func fieldESLengthEncoding(d *decode.D, name string) uint64 {
-	return d.FieldUFn(name, func() (uint64, decode.DisplayFormat, string) {
-		return esLengthEncoding(d), decode.NumberDecimal, ""
-	})
-}
-
 func fieldODDecodeTag(d *decode.D, edc *esDecodeContext, name string, expectedTagID int, fn func(d *decode.D)) { //nolint:unparam
-	d.FieldStructFn(name, func(d *decode.D) {
+	d.FieldStruct(name, func(d *decode.D) {
 		odDecodeTag(d, edc, expectedTagID, fn)
 	})
 }
@@ -199,13 +193,13 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, expectedTagID int, fn func(d
 			fieldODDecodeTag(d, edc, "sl_config_descr", -1, nil)
 		},
 		DecoderConfigDescrTag: func(d *decode.D) {
-			objectType, _ := d.FieldStringMapFn("object_type_indication", format.MpegObjectTypeNames, "Unknown", d.U8, decode.NumberDecimal)
+			objectType := d.FieldU8("object_type_indication", d.MapUToStr(format.MpegObjectTypeNames))
 			edc.decoderConfigs = append(edc.decoderConfigs, format.MpegDecoderConfig{
 				ObjectType: int(objectType),
 			})
 			edc.currentDecoderConfig = &edc.decoderConfigs[len(edc.decoderConfigs)-1]
 
-			d.FieldStringMapFn("stream_type", streamTypeNames, "Unknown", d.U6, decode.NumberDecimal)
+			d.FieldU6("stream_type", d.MapUToStr(streamTypeNames))
 			d.FieldBool("upstream")
 			d.FieldBool("specific_info_flag")
 			d.FieldU24("buffer_size_db")
@@ -222,22 +216,22 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, expectedTagID int, fn func(d
 						// TODO: lacing
 						packetLengths := []int64{}
 						// Xiph-style lacing (similar to ogg) of n-1 packets, last is reset of block
-						d.FieldArrayFn("laces", func(d *decode.D) {
+						d.FieldArray("laces", func(d *decode.D) {
 							for i := uint64(0); i < numPackets; i++ {
-								l := d.FieldUFn("lace", func() (uint64, decode.DisplayFormat, string) {
+								l := d.FieldUFn("lace", func(d *decode.D) uint64 {
 									var l uint64
 									for {
 										n := d.U8()
 										l += n
 										if n < 255 {
-											return l, decode.NumberDecimal, ""
+											return l
 										}
 									}
 								})
 								packetLengths = append(packetLengths, int64(l))
 							}
 						})
-						d.FieldArrayFn("packets", func(d *decode.D) {
+						d.FieldArray("packets", func(d *decode.D) {
 							for _, l := range packetLengths {
 								d.FieldFormatLen("packet", l*8, vorbisPacketFormat, nil)
 							}
@@ -269,15 +263,15 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, expectedTagID int, fn func(d
 
 	// TODO: expectedTagID
 
-	tagID, _ := d.FieldStringMapFn("tag_id", odTagNames, "Unknown", d.U8, decode.NumberDecimal)
-	tagLen := fieldESLengthEncoding(d, "length")
+	tagID := d.FieldU8("tag_id", d.MapUToStr(odTagNames))
+	tagLen := d.FieldUFn("length", esLengthEncoding)
 
 	if fn != nil {
-		d.DecodeLenFn(int64(tagLen)*8, fn)
+		d.LenFn(int64(tagLen)*8, fn)
 	} else if tagDecoder, ok := odDecoders[tagID]; ok {
-		d.DecodeLenFn(int64(tagLen)*8, tagDecoder)
+		d.LenFn(int64(tagLen)*8, tagDecoder)
 	} else {
-		d.FieldBitBufLen("data", d.BitsLeft())
+		d.FieldRawLen("data", d.BitsLeft())
 	}
 }
 

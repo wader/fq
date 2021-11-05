@@ -22,23 +22,23 @@ $ fq .b[1] /test.json
 2
 $ fq . /json.gz
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /json.gz (gzip)
-0x00|1f 8b                                          |..              |  identification: "\x1f\x8b" (Correct)
+0x00|1f 8b                                          |..              |  identification: raw bits (valid)
  0x0|7b 22 61 22 3a 20 31 32 33 7d                  |{"a": 123}      |  uncompressed: {} (json)
 0x00|      08                                       |  .             |  compression_method: "deflate" (8)
 0x00|         00                                    |   .            |  flags: {}
 0x00|            65 0a 08 61                        |    e..a        |  mtime: 1627916901
-0x00|                        00                     |        .       |  extra_flags: "unknown" (0)
+0x00|                        00                     |        .       |  extra_flags: 0
 0x00|                           03                  |         .      |  os: "Unix" (3)
-0x00|                              ab 56 4a 54 b2 52|          .VJT.R|  compressed: ab564a54b252303432aee50200
+0x00|                              ab 56 4a 54 b2 52|          .VJT.R|  compressed: raw bits
 0x10|30 34 32 ae e5 02 00                           |042....         |
-0x10|                     20 ac d2 9c               |        ...     |  crc32: "Correct" (9cd2ac20)
+0x10|                     20 ac d2 9c               |        ...     |  crc32: "20acd29c" (raw bits) (valid)
 0x10|                                 0b 00 00 00|  |           ....||  isize: 11
 $ fq tovalue /json.gz
 {
   "compressed": "<13>q1ZKVLJSMDQyruUCAA==",
   "compression_method": "deflate",
-  "crc32": "Correct",
-  "extra_flags": "unknown",
+  "crc32": "20acd29c",
+  "extra_flags": 0,
   "flags": {
     "comment": false,
     "extra": false,
@@ -47,7 +47,7 @@ $ fq tovalue /json.gz
     "reserved": 0,
     "text": false
   },
-  "identification": "\u001f�",
+  "identification": "<2>H4s=",
   "isize": 11,
   "mtime": 1627916901,
   "os": "Unix",

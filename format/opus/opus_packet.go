@@ -30,7 +30,7 @@ func opusDecode(d *decode.D, in interface{}) interface{} {
 	}
 	switch {
 	case bytes.Equal(prefix, []byte("OpusHead")):
-		d.FieldValueStr("type", "head", "")
+		d.FieldValueStr("type", "head")
 		d.FieldUTF8("prefix", 8)
 		d.FieldU8("version")
 		channelCount := d.FieldU8("channel_count")
@@ -42,18 +42,18 @@ func opusDecode(d *decode.D, in interface{}) interface{} {
 			d.FieldU8("stream_count")
 			d.FieldU8("coupled_count")
 			i := uint64(0)
-			d.FieldArrayLoopFn("channel_mappings", func() bool { return i < channelCount }, func(d *decode.D) {
+			d.FieldArrayLoop("channel_mappings", func() bool { return i < channelCount }, func(d *decode.D) {
 				d.FieldU8("channel_mapping")
 			})
 		}
 	case bytes.Equal(prefix, []byte("OpusTags")):
-		d.FieldValueStr("type", "tags", "")
+		d.FieldValueStr("type", "tags")
 		d.FieldUTF8("prefix", 8)
 		d.FieldFormat("comment", vorbisComment, nil)
 	default:
-		d.FieldValueStr("type", "audio", "")
-		d.FieldStructFn("toc", func(d *decode.D) {
-			d.FieldStructFn("config", func(d *decode.D) {
+		d.FieldValueStr("type", "audio")
+		d.FieldStruct("toc", func(d *decode.D) {
+			d.FieldStruct("config", func(d *decode.D) {
 				configurations := map[uint64]struct {
 					mode      string
 					bandwidth string
@@ -94,12 +94,12 @@ func opusDecode(d *decode.D, in interface{}) interface{} {
 				}
 				n := d.FieldU5("config")
 				config := configurations[n]
-				d.FieldValueStr("mode", config.mode, "")
-				d.FieldValueStr("bandwidth", config.bandwidth, "")
-				d.FieldValueFloat("frame_size", config.frameSize, "")
+				d.FieldValueStr("mode", config.mode)
+				d.FieldValueStr("bandwidth", config.bandwidth)
+				d.FieldValueFloat("frame_size", config.frameSize)
 			})
 			d.FieldBool("stereo")
-			d.FieldStructFn("frames_per_packet", func(d *decode.D) {
+			d.FieldStruct("frames_per_packet", func(d *decode.D) {
 				framesPerPacketConfigs := map[uint64]struct {
 					frames uint64
 					mode   string
@@ -111,10 +111,10 @@ func opusDecode(d *decode.D, in interface{}) interface{} {
 				}
 				n := d.FieldU2("config")
 				config := framesPerPacketConfigs[n]
-				d.FieldValueU("frames", config.frames, "")
-				d.FieldValueStr("mode", config.mode, "")
+				d.FieldValueU("frames", config.frames)
+				d.FieldValueStr("mode", config.mode)
 			})
-			d.FieldBitBufLen("data", d.BitsLeft())
+			d.FieldRawLen("data", d.BitsLeft())
 		})
 	}
 

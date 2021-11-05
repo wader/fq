@@ -18,18 +18,18 @@ func init() {
 
 // Decode ID3v1 tag
 func id3v1Decode(d *decode.D, in interface{}) interface{} {
-	d.ValidateAtLeastBitsLeft(128 * 8)
-	d.FieldValidateUTF8("magic", "TAG")
+	d.AssertAtLeastBitsLeft(128 * 8)
+	d.FieldUTF8("magic", 3, d.AssertStr("TAG"))
 	if d.PeekBits(8) == uint64('+') {
 		d.Invalid("looks like id3v11")
 	}
-	d.FieldUTF8Null("song_name", 30)
-	d.FieldUTF8Null("artist", 30)
-	d.FieldUTF8Null("album_name", 30)
-	d.FieldUTF8Null("year", 4)
-	d.FieldUTF8Null("comment", 30)
+	d.FieldUTF8NullTerminatedLen("song_name", 30)
+	d.FieldUTF8NullTerminatedLen("artist", 30)
+	d.FieldUTF8NullTerminatedLen("album_name", 30)
+	d.FieldUTF8NullTerminatedLen("year", 4)
+	d.FieldUTF8NullTerminatedLen("comment", 30)
 	// from https://en.wikipedia.org/wiki/List_of_ID3v1_Genres
-	d.FieldStringMapFn("genre", map[uint64]string{
+	d.FieldU8("genre", d.MapUToStr(decode.UToStr{
 		0:   "Blues",
 		1:   "Classic Rock",
 		2:   "Country",
@@ -222,7 +222,7 @@ func id3v1Decode(d *decode.D, in interface{}) interface{} {
 		189: "Dubstep",
 		190: "Garage Rock",
 		191: "Psybient",
-	}, "Unknown", d.U8, decode.NumberDecimal)
+	}))
 
 	return nil
 }

@@ -19,7 +19,7 @@ func init() {
 }
 
 func decodeJSON(d *decode.D, in interface{}) interface{} {
-	bb := d.BitBufLen(d.Len())
+	bb := d.RawLen(d.Len())
 	jd := stdjson.NewDecoder(bb)
 	var s decode.Scalar
 	if err := jd.Decode(&s.Actual); err != nil {

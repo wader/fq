@@ -31,7 +31,7 @@ func xingDecode(d *decode.D, in interface{}) interface{} {
 	tocPresent := false
 	bytesPresent := false
 	framesPresent := false
-	d.FieldStructFn("present_flags", func(d *decode.D) {
+	d.FieldStruct("present_flags", func(d *decode.D) {
 		d.FieldU("unused", 28)
 		qualityPresent = d.FieldBool("quality")
 		tocPresent = d.FieldBool("toc")
@@ -46,7 +46,7 @@ func xingDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldU32BE("bytes")
 	}
 	if tocPresent {
-		d.FieldArrayFn("toc", func(d *decode.D) {
+		d.FieldArray("toc", func(d *decode.D) {
 			for i := 0; i < 100; i++ {
 				d.FieldU8("entry")
 			}
@@ -57,7 +57,7 @@ func xingDecode(d *decode.D, in interface{}) interface{} {
 	}
 
 	if hasLameExtension {
-		d.FieldStructFn("lame_extension", func(d *decode.D) {
+		d.FieldStruct("lame_extension", func(d *decode.D) {
 			d.FieldUTF8("encoder", 9)
 			d.FieldU4("tag_revision")
 			d.FieldU4("vbr_method")

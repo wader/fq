@@ -34,7 +34,7 @@ func init() {
 
 func mp3Decode(d *decode.D, in interface{}) interface{} {
 	// there are mp3s files in the wild with multiple headers, two id3v2 tags etc
-	d.FieldArrayFn("headers", func(d *decode.D) {
+	d.FieldArray("headers", func(d *decode.D) {
 		for d.NotEnd() {
 			if dv, _, _ := d.FieldTryFormat("header", headerFormat, nil); dv == nil {
 				return
@@ -45,7 +45,7 @@ func mp3Decode(d *decode.D, in interface{}) interface{} {
 	lastValidEnd := int64(0)
 	validFrames := 0
 	decodeFailures := 0
-	d.FieldArrayFn("frames", func(d *decode.D) {
+	d.FieldArray("frames", func(d *decode.D) {
 		for d.NotEnd() {
 			syncLen, _, err := d.TryPeekFind(16, 8, -1, func(v uint64) bool {
 				return (v&0b1111_1111_1110_0000 == 0b1111_1111_1110_0000 && // sync header
@@ -75,7 +75,7 @@ func mp3Decode(d *decode.D, in interface{}) interface{} {
 
 	d.SeekAbs(lastValidEnd)
 
-	d.FieldArrayFn("footers", func(d *decode.D) {
+	d.FieldArray("footers", func(d *decode.D) {
 		for d.NotEnd() {
 			if dv, _, _ := d.FieldTryFormat("footer", footerFormat, nil); dv == nil {
 				return

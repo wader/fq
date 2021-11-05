@@ -32,7 +32,7 @@ const (
 	TERM = 0b111
 )
 
-var SyntaxElementNames = map[uint64]string{
+var syntaxElementNames = decode.UToStr{
 	SCE:  "SCE",
 	CPE:  "CPE",
 	CCE:  "CCE",
@@ -53,7 +53,7 @@ const (
 	EXT_SBR_DATA_CRC  = 0xe
 )
 
-var ExtensionPayloadIDNames = map[uint64]string{
+var extensionPayloadIDNames = decode.UToStr{
 	EXT_FILL:          "EXT_FILL",
 	EXT_FILL_DATA:     "EXT_FILL_DATA",
 	EXT_DATA_ELEMENT:  "EXT_DATA_ELEMENT",
@@ -70,7 +70,7 @@ const (
 	LONG_STOP_SEQUENCE   = 0x3
 )
 
-var windowSequenceNames = map[uint64]string{
+var windowSequenceNames = decode.UToStr{
 	ONLY_LONG_SEQUENCE:   "ONLY_LONG_SEQUENCE",
 	LONG_START_SEQUENCE:  "LONG_START_SEQUENCE",
 	EIGHT_SHORT_SEQUENCE: "EIGHT_SHORT_SEQUENCE",
@@ -99,7 +99,7 @@ func aacLTPData(d *decode.D, objectType int, windowSequence int) {
 
 func aacICSInfo(d *decode.D, objectType int) {
 	d.FieldU1("ics_reserved_bit")
-	windowSequence, _ := d.FieldStringMapFn("window_sequence", windowSequenceNames, "", d.U2, decode.NumberDecimal)
+	windowSequence := d.FieldU2("window_sequence", d.MapUToStr(windowSequenceNames))
 	d.FieldU1("window_shape")
 	switch windowSequence {
 	case EIGHT_SHORT_SEQUENCE:
@@ -118,7 +118,7 @@ func aacICSInfo(d *decode.D, objectType int) {
 				d.FieldU5("predictor_reset_group_number")
 				// TODO: min(max_sfb, PRED_SFB_MAX)
 				// TODO: array?
-				d.FieldBitBufLen("prediction_used", int64(maxSFB))
+				d.FieldRawLen("prediction_used", int64(maxSFB))
 			default:
 				ltpDataPresent := d.FieldBool("ltp_data_present")
 				if ltpDataPresent {
@@ -152,7 +152,7 @@ func aacICSInfo(d *decode.D, objectType int) {
 func aacIndividualChannelStream(d *decode.D, objectType int, commonWindow bool, scaleFlag bool) {
 	d.FieldU8("global_gain")
 	if !commonWindow && !scaleFlag {
-		d.FieldStructFn("ics_info", func(d *decode.D) {
+		d.FieldStruct("ics_info", func(d *decode.D) {
 			aacICSInfo(d, objectType)
 		})
 	}
@@ -186,47 +186,47 @@ func aacProgramConfigElement(d *decode.D, ascStartPos int64) {
 		d.FieldU2("matrix_mixdown_idx")
 		d.FieldBool("pseudo_surround_enable")
 	}
-	d.FieldArrayFn("front_channel_elements", func(d *decode.D) {
+	d.FieldArray("front_channel_elements", func(d *decode.D) {
 		for i := uint64(0); i < numFrontChannelElements; i++ {
-			d.FieldStructFn("front_channel_element", func(d *decode.D) {
+			d.FieldStruct("front_channel_element", func(d *decode.D) {
 				d.FieldBool("is_cpe")
 				d.FieldU4("tag_select")
 			})
 		}
 	})
-	d.FieldArrayFn("side_channel_elements", func(d *decode.D) {
+	d.FieldArray("side_channel_elements", func(d *decode.D) {
 		for i := uint64(0); i < numSideChannelElements; i++ {
-			d.FieldStructFn("side_channel_element", func(d *decode.D) {
+			d.FieldStruct("side_channel_element", func(d *decode.D) {
 				d.FieldBool("is_cpe")
 				d.FieldU4("tag_select")
 			})
 		}
 	})
-	d.FieldArrayFn("back_channel_elements", func(d *decode.D) {
+	d.FieldArray("back_channel_elements", func(d *decode.D) {
 		for i := uint64(0); i < numBackChannelElements; i++ {
-			d.FieldStructFn("back_channel_element", func(d *decode.D) {
+			d.FieldStruct("back_channel_element", func(d *decode.D) {
 				d.FieldBool("is_cpe")
 				d.FieldU4("tag_select")
 			})
 		}
 	})
-	d.FieldArrayFn("lfe_channel_elements", func(d *decode.D) {
+	d.FieldArray("lfe_channel_elements", func(d *decode.D) {
 		for i := uint64(0); i < numLfeChannelElements; i++ {
-			d.FieldStructFn("lfe_channel_element", func(d *decode.D) {
+			d.FieldStruct("lfe_channel_element", func(d *decode.D) {
 				d.FieldU4("tag_select")
 			})
 		}
 	})
-	d.FieldArrayFn("assoc_data_elements", func(d *decode.D) {
+	d.FieldArray("assoc_data_elements", func(d *decode.D) {
 		for i := uint64(0); i < numAssocDataElements; i++ {
-			d.FieldStructFn("assoc_data_element", func(d *decode.D) {
+			d.FieldStruct("assoc_data_element", func(d *decode.D) {
 				d.FieldU4("tag_select")
 			})
 		}
 	})
-	d.FieldArrayFn("valid_cc_elements", func(d *decode.D) {
+	d.FieldArray("valid_cc_elements", func(d *decode.D) {
 		for i := uint64(0); i < numValidCcElements; i++ {
-			d.FieldStructFn("valid_cc_element", func(d *decode.D) {
+			d.FieldStruct("valid_cc_element", func(d *decode.D) {
 				d.FieldU1("cc_element_is_ind_sw")
 				d.FieldU4("valid_cc_element_tag_select")
 			})
@@ -234,14 +234,14 @@ func aacProgramConfigElement(d *decode.D, ascStartPos int64) {
 	})
 
 	byteAlignBits := (8 - ((d.Pos() + ascStartPos) & 0x7)) & 0x7
-	d.FieldBitBufLen("byte_alignment", byteAlignBits)
+	d.FieldRawLen("byte_alignment", byteAlignBits)
 	commentFieldBytes := d.FieldU8("comment_field_bytes")
 	d.FieldUTF8("comment_field", int(commentFieldBytes))
 }
 
 func aacFillElement(d *decode.D) {
 	var cnt uint64
-	d.FieldStructFn("cnt", func(d *decode.D) {
+	d.FieldStruct("cnt", func(d *decode.D) {
 		count := d.FieldU4("count")
 		cnt = count
 		if cnt == 15 {
@@ -249,19 +249,19 @@ func aacFillElement(d *decode.D) {
 			cnt += escCount - 1
 		}
 	})
-	d.FieldValueU("payload_length", cnt, "")
+	d.FieldValueU("payload_length", cnt)
 
-	d.FieldStructFn("extension_payload", func(d *decode.D) {
-		d.DecodeLenFn(int64(cnt)*8, func(d *decode.D) {
+	d.FieldStruct("extension_payload", func(d *decode.D) {
+		d.LenFn(int64(cnt)*8, func(d *decode.D) {
 
-			extensionType, _ := d.FieldStringMapFn("extension_type", ExtensionPayloadIDNames, "Unknown", d.U4, decode.NumberDecimal)
+			extensionType := d.FieldU4("extension_type", d.MapUToStr(extensionPayloadIDNames))
 
 			// d.FieldU("align4", 2)
 
 			switch extensionType {
 			case EXT_FILL:
 				d.FieldU4("fill_nibble")
-				d.FieldBitBufLen("fill_byte", 8*(int64(cnt)-1))
+				d.FieldRawLen("fill_byte", 8*(int64(cnt)-1))
 			}
 		})
 	})
@@ -278,8 +278,8 @@ func aacDecode(d *decode.D, in interface{}) interface{} {
 	// TODO: currently break when length is unknown
 	seenTerm := false
 	for !seenTerm {
-		d.FieldStructFn("element", func(d *decode.D) {
-			se, _ := d.FieldStringMapFn("syntax_element", SyntaxElementNames, "", d.U3, decode.NumberDecimal)
+		d.FieldStruct("element", func(d *decode.D) {
+			se := d.FieldU3("syntax_element", d.MapUToStr(syntaxElementNames))
 
 			switch se {
 			case FIL:
@@ -302,10 +302,10 @@ func aacDecode(d *decode.D, in interface{}) interface{} {
 	}
 
 	if d.ByteAlignBits() > 0 {
-		d.FieldBitBufLen("byte_align", int64(d.ByteAlignBits()))
+		d.FieldRawLen("byte_align", int64(d.ByteAlignBits()))
 	}
 
-	d.FieldBitBufLen("data", d.BitsLeft())
+	d.FieldRawLen("data", d.BitsLeft())
 
 	return nil
 }

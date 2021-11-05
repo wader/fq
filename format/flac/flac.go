@@ -34,7 +34,7 @@ func init() {
 }
 
 func flacDecode(d *decode.D, in interface{}) interface{} {
-	d.FieldValidateUTF8("magic", "fLaC")
+	d.FieldUTF8("magic", 4, d.AssertStr("fLaC"))
 
 	var streamInfo format.FlacStreamInfo
 	var flacFrameIn format.FlacFrameIn
@@ -54,7 +54,7 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 	}
 
 	md5Samples := md5.New()
-	d.FieldArrayFn("frames", func(d *decode.D) {
+	d.FieldArray("frames", func(d *decode.D) {
 		for d.NotEnd() {
 			// flac frame might need some fields from stream info to decode
 			_, v := d.FieldFormat("frame", flacFrameFormat, flacFrameIn)
@@ -78,8 +78,8 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 		}
 	})
 
-	d.FieldValueBytes("md5_calculated", md5Samples.Sum(nil), "")
-	d.FieldValueU("decoded_samples", framesNDecodedSamples, "")
+	d.FieldValueRaw("md5_calculated", md5Samples.Sum(nil), d.ValidateRaw(streamInfo.MD5), d.RawHex)
+	d.FieldValueU("decoded_samples", framesNDecodedSamples)
 
 	return nil
 }

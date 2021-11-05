@@ -17,7 +17,7 @@ func TestPath(t *testing.T, registry *registry.Registry) {
 	difftest.TestWithOptions(t, difftest.Options{
 		Path:        ".",
 		Pattern:     "*.fqtest",
-		ColorDiff:   os.Getenv("TEST_COLOR") != "",
+		ColorDiff:   os.Getenv("DIFF_COLOR") != "",
 		WriteOutput: os.Getenv("WRITE_ACTUAL") != "",
 		Fn: func(t *testing.T, path, input string) (string, string, error) {
 			b, err := ioutil.ReadFile(path)

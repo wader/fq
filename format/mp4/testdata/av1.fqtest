@@ -14,11 +14,11 @@ $ fq -d mp4 verbose /av1.mp4
       |                                               |                |    [1]: box {} 0x1c-0x23.7 (8)
 0x0010|                                    00 00 00 08|            ....|      size: 8 0x1c-0x1f.7 (4)
 0x0020|66 72 65 65                                    |free            |      type: "free" (Free space) 0x20-0x23.7 (4)
-      |                                               |                |      data:  0x24-NA (0)
+      |                                               |                |      data: raw bits 0x24-NA (0)
       |                                               |                |    [2]: box {} 0x24-0x11bf.7 (4508)
 0x0020|            00 00 11 9c                        |    ....        |      size: 4508 0x24-0x27.7 (4)
 0x0020|                        6d 64 61 74            |        mdat    |      type: "mdat" (Media data container) 0x28-0x2b.7 (4)
-0x0020|                                    0a 0d 20 00|            .. .|      data: 0a0d200000fa1e7fde210ad02020251a... 0x2c-0x11bf.7 (4500)
+0x0020|                                    0a 0d 20 00|            .. .|      data: raw bits 0x2c-0x11bf.7 (4500)
 0x0030|00 fa 1e 7f de 21 0a d0 20 20 25 1a 10 10 02 27|.....!..  %....'|
 *     |until 0x11bf.7 (4500)                          |                |
       |                                               |                |    [3]: box {} 0x11c0-0x14b1.7 (754)
@@ -69,7 +69,7 @@ $ fq -d mp4 verbose /av1.mp4
 0x1250|00 00 00 01                                    |....            |              track_id: 1 0x1250-0x1253.7 (4)
 0x1250|            00 00 00 00                        |    ....        |              reserved1: 0 0x1254-0x1257.7 (4)
 0x1250|                        00 00 00 28            |        ...(    |              duration: 40 0x1258-0x125b.7 (4)
-0x1250|                                    00 00 00 00|            ....|              reserved2: 0000000000000000 0x125c-0x1263.7 (8)
+0x1250|                                    00 00 00 00|            ....|              reserved2: raw bits 0x125c-0x1263.7 (8)
 0x1260|00 00 00 00                                    |....            |
 0x1260|            00 00                              |    ..          |              layer: 0 0x1264-0x1265.7 (2)
 0x1260|                  00 00                        |      ..        |              alternate_group: 0 0x1266-0x1267.7 (2)
@@ -163,7 +163,7 @@ $ fq -d mp4 verbose /av1.mp4
 0x1340|                                       00      |             .  |                              version: 0 0x134d-0x134d.7 (1)
 0x1340|                                          00 00|              ..|                              flags: 1 0x134e-0x1350.7 (3)
 0x1350|01                                             |.               |
-      |                                               |                |                              data:  0x1351-NA (0)
+      |                                               |                |                              data: raw bits 0x1351-NA (0)
       |                                               |                |                    [2]: box {} 0x1351-0x144f.7 (255)
 0x1350|   00 00 00 ff                                 | ....           |                      size: 255 0x1351-0x1354.7 (4)
 0x1350|               73 74 62 6c                     |     stbl       |                      type: "stbl" (Sample table box, container for the time/space map) 0x1355-0x1358.7 (4)
@@ -180,7 +180,7 @@ $ fq -d mp4 verbose /av1.mp4
 0x1360|                           00 00 00 8b         |         ....   |                              size: 139 0x1369-0x136c.7 (4)
 0x1360|                                       61 76 30|             av0|                              type: "av01" 0x136d-0x1370.7 (4)
 0x1370|31                                             |1               |
-0x1370|   00 00 00 00 00 00                           | ......         |                              reserved: 000000000000 0x1371-0x1376.7 (6)
+0x1370|   00 00 00 00 00 00                           | ......         |                              reserved: raw bits 0x1371-0x1376.7 (6)
 0x1370|                     00 01                     |       ..       |                              data_reference_index: 1 0x1377-0x1378.7 (2)
 0x1370|                           00 00               |         ..     |                              version: 0 0x1379-0x137a.7 (2)
 0x1370|                                 00 00         |           ..   |                              revision_level: 0 0x137b-0x137c.7 (2)
@@ -220,13 +220,13 @@ $ fq -d mp4 verbose /av1.mp4
 0x13c0|                              00               |          .     |                                    reserved = 0: 0 0x13ca-0x13ca.2 (0.3)
 0x13c0|                              00               |          .     |                                    initial_presentation_delay_present: false 0x13ca.3-0x13ca.3 (0.1)
 0x13c0|                              00               |          .     |                                    reserved: 0 0x13ca.4-0x13ca.7 (0.4)
-0x13c0|                                 0a 0d 20 00 00|           .. ..|                                    config_obus: 0a0d200000fa1e7fde210ad0202025 0x13cb-0x13d9.7 (15)
+0x13c0|                                 0a 0d 20 00 00|           .. ..|                                    config_obus: raw bits 0x13cb-0x13d9.7 (15)
 0x13d0|fa 1e 7f de 21 0a d0 20 20 25                  |....!..  %      |
       |                                               |                |                                [1]: box {} 0x13da-0x13e3.7 (10)
 0x13d0|                              00 00 00 0a      |          ....  |                                  size: 10 0x13da-0x13dd.7 (4)
 0x13d0|                                          66 69|              fi|                                  type: "fiel" (Video field order) 0x13de-0x13e1.7 (4)
 0x13e0|65 6c                                          |el              |
-0x13e0|      01 00                                    |  ..            |                                  data: 0100 0x13e2-0x13e3.7 (2)
+0x13e0|      01 00                                    |  ..            |                                  data: raw bits 0x13e2-0x13e3.7 (2)
       |                                               |                |                                [2]: box {} 0x13e4-0x13f3.7 (16)
 0x13e0|            00 00 00 10                        |    ....        |                                  size: 16 0x13e4-0x13e7.7 (4)
 0x13e0|                        70 61 73 70            |        pasp    |                                  type: "pasp" (Pixel aspect ratio) 0x13e8-0x13eb.7 (4)
@@ -295,7 +295,7 @@ $ fq -d mp4 verbose /av1.mp4
       |                                               |                |                    [0]: box {} 0x148d-0x14b1.7 (37)
 0x1480|                                       00 00 00|             ...|                      size: 37 0x148d-0x1490.7 (4)
 0x1490|25                                             |%               |
-0x1490|   a9 74 6f 6f                                 | .too           |                      type: "\xa9too" 0x1491-0x1494.7 (4)
+0x1490|   a9 74 6f 6f                                 | .too           |                      type: "�too" 0x1491-0x1494.7 (4)
       |                                               |                |                      boxes: [1] 0x1495-0x14b1.7 (29)
       |                                               |                |                        [0]: box {} 0x1495-0x14b1.7 (29)
 0x1490|               00 00 00 1d                     |     ....       |                          size: 29 0x1495-0x1498.7 (4)
@@ -318,7 +318,7 @@ $ fq -d mp4 verbose /av1.mp4
 0x0020|                                    0a         |            .   |              has_size_field: true 0x2c.6-0x2c.6 (0.1)
 0x0020|                                    0a         |            .   |              reserved_1bit: 0 0x2c.7-0x2c.7 (0.1)
 0x0020|                                       0d      |             .  |            size: 13 0x2d-0x2d.7 (1)
-0x0020|                                          20 00|               .|            data: 200000fa1e7fde210ad0202025 0x2e-0x3a.7 (13)
+0x0020|                                          20 00|               .|            data: raw bits 0x2e-0x3a.7 (13)
 0x0030|00 fa 1e 7f de 21 0a d0 20 20 25               |.....!..  %     |
       |                                               |                |          [1]: obu {} (av1_obu) 0x3b-0x4c.7 (18)
       |                                               |                |            header: {} 0x3b-0x3b.7 (1)
@@ -328,7 +328,7 @@ $ fq -d mp4 verbose /av1.mp4
 0x0030|                                 1a            |           .    |              has_size_field: true 0x3b.6-0x3b.6 (0.1)
 0x0030|                                 1a            |           .    |              reserved_1bit: 0 0x3b.7-0x3b.7 (0.1)
 0x0030|                                    10         |            .   |            size: 16 0x3c-0x3c.7 (1)
-0x0030|                                       10 02 27|             ..'|            data: 100227c8e9e6643fc1f8a49820822a60 0x3d-0x4c.7 (16)
+0x0030|                                       10 02 27|             ..'|            data: raw bits 0x3d-0x4c.7 (16)
 0x0040|c8 e9 e6 64 3f c1 f8 a4 98 20 82 2a 60         |...d?.... .*`   |
       |                                               |                |          [2]: obu {} (av1_obu) 0x4d-0x11bf.7 (4467)
       |                                               |                |            header: {} 0x4d-0x4d.7 (1)
@@ -338,5 +338,5 @@ $ fq -d mp4 verbose /av1.mp4
 0x0040|                                       22      |             "  |              has_size_field: true 0x4d.6-0x4d.6 (0.1)
 0x0040|                                       22      |             "  |              reserved_1bit: 0 0x4d.7-0x4d.7 (0.1)
 0x0040|                                          f0 22|              ."|            size: 4464 0x4e-0x4f.7 (2)
-0x0050|f6 0a 4f ae f3 fe ec e7 30 4f 3f 13 9c 75 c9 6a|..O.....0O?..u.j|            data: f60a4faef3feece7304f3f139c75c96a... 0x50-0x11bf.7 (4464)
+0x0050|f6 0a 4f ae f3 fe ec e7 30 4f 3f 13 9c 75 c9 6a|..O.....0O?..u.j|            data: raw bits 0x50-0x11bf.7 (4464)
 *     |until 0x11bf.7 (4464)                          |                |

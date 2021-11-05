@@ -38,7 +38,7 @@ func ccrDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldU4("reserved")
 	}
 	if d.BitsLeft() > 0 {
-		d.FieldBitBufLen("config_obus", d.BitsLeft())
+		d.FieldRawLen("config_obus", d.BitsLeft())
 	}
 
 	return nil

@@ -75,7 +75,7 @@ $ fq -d mp4 verbose /heic.mp4
      |                                               |                |                [0]: box {} 0xac-0xbf.7 (20)
 0x0a0|                                    00 00 00 14|            ....|                  size: 20 0xac-0xaf.7 (4)
 0x0b0|69 73 70 65                                    |ispe            |                  type: "ispe" 0xb0-0xb3.7 (4)
-0x0b0|            00 00 00 00 00 00 00 10 00 00 00 10|    ............|                  data: 000000000000001000000010 0xb4-0xbf.7 (12)
+0x0b0|            00 00 00 00 00 00 00 10 00 00 00 10|    ............|                  data: raw bits 0xb4-0xbf.7 (12)
      |                                               |                |                [1]: box {} 0xc0-0xcf.7 (16)
 0x0c0|00 00 00 10                                    |....            |                  size: 16 0xc0-0xc3.7 (4)
 0x0c0|            70 61 73 70                        |    pasp        |                  type: "pasp" (Pixel aspect ratio) 0xc4-0xc7.7 (4)
@@ -123,7 +123,7 @@ $ fq -d mp4 verbose /heic.mp4
 0x0f0|            40                                 |    @           |                              nal_unit_type: "VPS_NUT" (32) 0xf4.1-0xf4.6 (0.6)
 0x0f0|            40 01                              |    @.          |                              nuh_layer_id: 0 0xf4.7-0xf5.4 (0.6)
 0x0f0|               01                              |     .          |                              nuh_temporal_id_plus1: 1 0xf5.5-0xf5.7 (0.3)
-0x0f0|                  0c 01 ff ff 01 60 00 00 03 00|      .....`....|                              data: 0c01ffff016000000300900000030000... 0xf6-0x10c.7 (23)
+0x0f0|                  0c 01 ff ff 01 60 00 00 03 00|      .....`....|                              data: raw bits 0xf6-0x10c.7 (23)
 0x100|90 00 00 03 00 00 03 00 1e 99 8a 02 40         |............@   |
      |                                               |                |                      [1]: array {} 0x10d-0x139.7 (45)
 0x100|                                       a1      |             .  |                        array_completeness: 1 0x10d-0x10d (0.1)
@@ -138,7 +138,7 @@ $ fq -d mp4 verbose /heic.mp4
 0x110|      42                                       |  B             |                              nal_unit_type: "SPS_NUT" (33) 0x112.1-0x112.6 (0.6)
 0x110|      42 01                                    |  B.            |                              nuh_layer_id: 0 0x112.7-0x113.4 (0.6)
 0x110|         01                                    |   .            |                              nuh_temporal_id_plus1: 1 0x113.5-0x113.7 (0.3)
-0x110|            01 01 60 00 00 03 00 90 00 00 03 00|    ..`.........|                              data: 0101600000030090000003000003001e... 0x114-0x139.7 (38)
+0x110|            01 01 60 00 00 03 00 90 00 00 03 00|    ..`.........|                              data: raw bits 0x114-0x139.7 (38)
 0x120|00 03 00 1e a0 88 45 96 66 2a ad b6 bc 05 a0 20|......E.f*..... |
 0x130|00 00 03 00 20 00 00 03 00 21                  |.... ....!      |
      |                                               |                |                      [2]: array {} 0x13a-0x144.7 (11)
@@ -155,27 +155,27 @@ $ fq -d mp4 verbose /heic.mp4
 0x130|                                             44|               D|                              nuh_layer_id: 0 0x13f.7-0x140.4 (0.6)
 0x140|01                                             |.               |
 0x140|01                                             |.               |                              nuh_temporal_id_plus1: 1 0x140.5-0x140.7 (0.3)
-0x140|   c1 73 d8 89                                 | .s..           |                              data: c173d889 0x141-0x144.7 (4)
+0x140|   c1 73 d8 89                                 | .s..           |                              data: raw bits 0x141-0x144.7 (4)
      |                                               |                |                [3]: box {} 0x145-0x154.7 (16)
 0x140|               00 00 00 10                     |     ....       |                  size: 16 0x145-0x148.7 (4)
 0x140|                           70 69 78 69         |         pixi   |                  type: "pixi" 0x149-0x14c.7 (4)
-0x140|                                       00 00 00|             ...|                  data: 0000000003080808 0x14d-0x154.7 (8)
+0x140|                                       00 00 00|             ...|                  data: raw bits 0x14d-0x154.7 (8)
 0x150|00 03 08 08 08                                 |.....           |
      |                                               |                |            [1]: box {} 0x155-0x16b.7 (23)
 0x150|               00 00 00 17                     |     ....       |              size: 23 0x155-0x158.7 (4)
 0x150|                           69 70 6d 61         |         ipma   |              type: "ipma" (ItemPropertyAssociation) 0x159-0x15c.7 (4)
-0x150|                                       00 00 00|             ...|              data: 000000000000000100010401028384 0x15d-0x16b.7 (15)
+0x150|                                       00 00 00|             ...|              data: raw bits 0x15d-0x16b.7 (15)
 0x160|00 00 00 00 01 00 01 04 01 02 83 84            |............    |
      |                                               |                |    [2]: box {} 0x16c-0xaf2.7 (2439)
 0x160|                                    00 00 09 87|            ....|      size: 2439 0x16c-0x16f.7 (4)
 0x170|6d 64 61 74                                    |mdat            |      type: "mdat" (Media data container) 0x170-0x173.7 (4)
-0x170|            00 00 08 b9 4e 01 05 ff ff ff ff ff|    ....N.......|      data: 000008b94e0105ffffffffffffffffb4... 0x174-0xaf2.7 (2431)
+0x170|            00 00 08 b9 4e 01 05 ff ff ff ff ff|    ....N.......|      data: raw bits 0x174-0xaf2.7 (2431)
 0x180|ff ff ff b4 2c a2 de 09 b5 17 47 db bb 55 a4 fe|....,.....G..U..|
 *    |until 0xaf2.7 (2431)                           |                |
      |                                               |                |    [3]: box {} 0xaf3-0xb2c.7 (58)
 0xaf0|         00 00 00 3a                           |   ...:         |      size: 58 0xaf3-0xaf6.7 (4)
 0xaf0|                     66 72 65 65               |       free     |      type: "free" (Free space) 0xaf7-0xafa.7 (4)
-0xaf0|                                 49 73 6f 4d 65|           IsoMe|      data: 49736f4d656469612046696c65205072... 0xafb-0xb2c.7 (50)
+0xaf0|                                 49 73 6f 4d 65|           IsoMe|      data: raw bits 0xafb-0xb2c.7 (50)
 0xb00|64 69 61 20 46 69 6c 65 20 50 72 6f 64 75 63 65|dia File Produce|
 *    |until 0xb2c.7 (end) (50)                       |                |
      |                                               |                |  tracks: [0] 0xb2d-NA (0)

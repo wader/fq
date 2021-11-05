@@ -54,8 +54,8 @@ mp3> .headers[0].version._name | ., type, length?
 "string"
 7
 mp3> .headers[0].version._sym | ., type, length?
-""
-"string"
+null
+"null"
 0
 mp3> .headers[0].version._description | ., type, length?
 ""
@@ -71,13 +71,13 @@ mp3> .headers[0].version._path | ., type, length?
 3
 mp3> .headers[0].version._bits | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|         04                                    |   .            |.: none 0x3-0x3.7 (1)
+0x0|         04                                    |   .            |.: raw bits 0x3-0x3.7 (1)
 "buffer"
 8
 mp3> 
 mp3> .headers[0].version._bytes | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|         04                                    |   .            |.: none 0x3-0x3.7 (1)
+0x0|         04                                    |   .            |.: raw bits 0x3-0x3.7 (1)
 "buffer"
 1
 mp3> 

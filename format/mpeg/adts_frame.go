@@ -23,6 +23,11 @@ func init() {
 	})
 }
 
+var protectionAbsentNames = decode.BoolToScalar{
+	true:  {Description: "No CRC"},
+	false: {Description: "Has CRC"},
+}
+
 func adtsFrameDecoder(d *decode.D, in interface{}) interface{} {
 	/*
 	   adts_frame() {
@@ -58,25 +63,24 @@ func adtsFrameDecoder(d *decode.D, in interface{}) interface{} {
 	// P	2	Number of AAC frames (RDBs) in ADTS frame minus 1, for maximum compatibility always use 1 AAC frame per ADTS frame
 	// Q	16	CRC if protection absent is 0
 
-	d.FieldValidateUFn("syncword", 0b1111_1111_1111, d.U12)
-	d.FieldStringMapFn("mpeg_version", map[uint64]string{0: "MPEG-4", 1: "MPEG2- AAC"}, "Unknown", d.U1, decode.NumberDecimal)
-	d.FieldValidateUFn("layer", 0, d.U2)
-	protectionAbsent := d.FieldBoolFn("protection_absent", func() (bool, string) { return d.Bool(), "" })
-	objectType, _ := d.FieldStringMapFn("profile", format.MPEGAudioObjectTypeNames, "Unknown", func() uint64 {
-		return d.U2() + 1
-	}, decode.NumberDecimal)
-	d.FieldUFn("sampling_frequency_index", func() (uint64, decode.DisplayFormat, string) {
+	d.FieldU12("syncword", d.AssertU(0b1111_1111_1111), d.Bin)
+	d.FieldU1("mpeg_version", d.MapUToStr(decode.UToStr{0: "MPEG-4", 1: "MPEG2- AAC"}))
+	d.FieldU2("layer", d.AssertU(0))
+	protectionAbsent := d.FieldBool("protection_absent", d.MapBoolToScalar(protectionAbsentNames))
+	// TODO: better sym names
+	objectType := d.FieldUFn("profile", func(d *decode.D) uint64 { return d.U2() + 1 }, d.MapUToStr(format.MPEGAudioObjectTypeNames))
+	d.FieldUScalarFn("sampling_frequency", func(d *decode.D) decode.Scalar {
 		v := d.U4()
 		if v == 15 {
-			return d.U24(), decode.NumberDecimal, ""
+			return decode.Scalar{Actual: d.U24()}
 		}
 		if f, ok := frequencyIndexHz[v]; ok {
-			return uint64(f), decode.NumberDecimal, ""
+			return decode.Scalar{Actual: v, Sym: f}
 		}
-		return 0, decode.NumberDecimal, "Invalid"
+		return decode.Scalar{Description: "invalid"}
 	})
 	d.FieldU1("private_bit")
-	d.FieldStringMapFn("channel_configuration", channelConfigurationNames, "Reserved", d.U3, decode.NumberDecimal)
+	d.FieldU3("channel_configuration", d.MapUToStr(channelConfigurationNames))
 	d.FieldU1("originality")
 	d.FieldU1("home")
 	d.FieldU1("copyrighted")
@@ -88,12 +92,12 @@ func adtsFrameDecoder(d *decode.D, in interface{}) interface{} {
 		dataLength -= 2
 	}
 	d.FieldU11("buffer_fullness")
-	numberOfRDBs := d.FieldUFn("number_of_rdbs", func() (uint64, decode.DisplayFormat, string) { return d.U2() + 1, decode.NumberDecimal, "" })
+	numberOfRDBs := d.FieldUFn("number_of_rdbs", func(d *decode.D) uint64 { return d.U2() + 1 })
 	if !protectionAbsent {
 		d.FieldU16("crc")
 	}
 
-	d.FieldArrayFn("raw_data_blocks", func(d *decode.D) {
+	d.FieldArray("raw_data_blocks", func(d *decode.D) {
 		for i := uint64(0); i < numberOfRDBs; i++ {
 			d.FieldFormatLen("raw_data_block", int64(dataLength)*8, aacFrameFormat, format.AACFrameIn{ObjectType: int(objectType)})
 		}

@@ -14,11 +14,11 @@ $ fq -d mp4 verbose /aac.mp4
      |                                               |                |    [1]: box {} 0x1c-0x23.7 (8)
 0x010|                                    00 00 00 08|            ....|      size: 8 0x1c-0x1f.7 (4)
 0x020|66 72 65 65                                    |free            |      type: "free" (Free space) 0x20-0x23.7 (4)
-     |                                               |                |      data:  0x24-NA (0)
+     |                                               |                |      data: raw bits 0x24-NA (0)
      |                                               |                |    [2]: box {} 0x24-0x291.7 (622)
 0x020|            00 00 02 6e                        |    ...n        |      size: 622 0x24-0x27.7 (4)
 0x020|                        6d 64 61 74            |        mdat    |      type: "mdat" (Media data container) 0x28-0x2b.7 (4)
-0x020|                                    de 02 00 4c|            ...L|      data: de02004c61766335382e39312e313030... 0x2c-0x291.7 (614)
+0x020|                                    de 02 00 4c|            ...L|      data: raw bits 0x2c-0x291.7 (614)
 0x030|61 76 63 35 38 2e 39 31 2e 31 30 30 00 02 5c ab|avc58.91.100..\.|
 *    |until 0x291.7 (614)                            |                |
      |                                               |                |    [3]: box {} 0x292-0x59c.7 (779)
@@ -77,7 +77,7 @@ $ fq -d mp4 verbose /aac.mp4
 0x320|      00 00 00 01                              |  ....          |              track_id: 1 0x322-0x325.7 (4)
 0x320|                  00 00 00 00                  |      ....      |              reserved1: 0 0x326-0x329.7 (4)
 0x320|                              00 00 00 4a      |          ...J  |              duration: 74 0x32a-0x32d.7 (4)
-0x320|                                          00 00|              ..|              reserved2: 0000000000000000 0x32e-0x335.7 (8)
+0x320|                                          00 00|              ..|              reserved2: raw bits 0x32e-0x335.7 (8)
 0x330|00 00 00 00 00 00                              |......          |
 0x330|                  00 00                        |      ..        |              layer: 0 0x336-0x337.7 (2)
 0x330|                        00 01                  |        ..      |              alternate_group: 1 0x338-0x339.7 (2)
@@ -155,7 +155,7 @@ $ fq -d mp4 verbose /aac.mp4
 0x3e0|                                 00 00 00 10   |           .... |                      size: 16 0x3eb-0x3ee.7 (4)
 0x3e0|                                             73|               s|                      type: "smhd" (Sound media header, overall information (sound track only)) 0x3ef-0x3f2.7 (4)
 0x3f0|6d 68 64                                       |mhd             |
-0x3f0|         00 00 00 00 00 00 00 00               |   ........     |                      data: 0000000000000000 0x3f3-0x3fa.7 (8)
+0x3f0|         00 00 00 00 00 00 00 00               |   ........     |                      data: raw bits 0x3f3-0x3fa.7 (8)
      |                                               |                |                    [1]: box {} 0x3fb-0x41e.7 (36)
 0x3f0|                                 00 00 00 24   |           ...$ |                      size: 36 0x3fb-0x3fe.7 (4)
 0x3f0|                                             64|               d|                      type: "dinf" (Data information box, container) 0x3ff-0x402.7 (4)
@@ -174,7 +174,7 @@ $ fq -d mp4 verbose /aac.mp4
 0x410|                     75 72 6c 20               |       url      |                              type: "url " 0x417-0x41a.7 (4)
 0x410|                                 00            |           .    |                              version: 0 0x41b-0x41b.7 (1)
 0x410|                                    00 00 01   |            ... |                              flags: 1 0x41c-0x41e.7 (3)
-     |                                               |                |                              data:  0x41f-NA (0)
+     |                                               |                |                              data: raw bits 0x41f-NA (0)
      |                                               |                |                    [2]: box {} 0x41f-0x53a.7 (284)
 0x410|                                             00|               .|                      size: 284 0x41f-0x422.7 (4)
 0x420|00 01 1c                                       |...             |
@@ -190,7 +190,7 @@ $ fq -d mp4 verbose /aac.mp4
      |                                               |                |                            [0]: box {} 0x437-0x490.7 (90)
 0x430|                     00 00 00 5a               |       ...Z     |                              size: 90 0x437-0x43a.7 (4)
 0x430|                                 6d 70 34 61   |           mp4a |                              type: "mp4a" 0x43b-0x43e.7 (4)
-0x430|                                             00|               .|                              reserved: 000000000000 0x43f-0x444.7 (6)
+0x430|                                             00|               .|                              reserved: raw bits 0x43f-0x444.7 (6)
 0x440|00 00 00 00 00                                 |.....           |
 0x440|               00 01                           |     ..         |                              data_reference_index: 1 0x445-0x446.7 (2)
 0x440|                     00 00                     |       ..       |                              version: 0 0x447-0x448.7 (2)
@@ -232,13 +232,13 @@ $ fq -d mp4 verbose /aac.mp4
 0x480|      80 80 80 05                              |  ....          |                                        length: 5 0x482-0x485.7 (4)
      |                                               |                |                                        audio_specific_config: {} (mpeg_asc) 0x486-0x48a.7 (5)
 0x480|                  12                           |      .         |                                          object_type: "AAC LC (Low Complexity)" (2) 0x486-0x486.4 (0.5)
-0x480|                  12 08                        |      ..        |                                          frequency_index: 44100 0x486.5-0x487 (0.4)
-0x480|                     08                        |       .        |                                          channel_configuration: "channel: front-center" (1) 0x487.1-0x487.4 (0.4)
-0x480|                     08 56 e5 00               |       .V..     |                                          var_aot_or_byte_align: 0adca000 0x487.5-0x48a.7 (3.3)
+0x480|                  12 08                        |      ..        |                                          sampling_frequency: 44100 (4) 0x486.5-0x487 (0.4)
+0x480|                     08                        |       .        |                                          channel_configuration: "front-center" (1) 0x487.1-0x487.4 (0.4)
+0x480|                     08 56 e5 00               |       .V..     |                                          var_aot_or_byte_align: raw bits 0x487.5-0x48a.7 (3.3)
      |                                               |                |                                    sl_config_descr: {} 0x48b-0x490.7 (6)
 0x480|                                 06            |           .    |                                      tag_id: "SLConfigDescrTag" (6) 0x48b-0x48b.7 (1)
 0x480|                                    80 80 80 01|            ....|                                      length: 1 0x48c-0x48f.7 (4)
-0x490|02                                             |.               |                                      data: 02 0x490-0x490.7 (1)
+0x490|02                                             |.               |                                      data: raw bits 0x490-0x490.7 (1)
      |                                               |                |                        [1]: box {} 0x491-0x4b0.7 (32)
 0x490|   00 00 00 20                                 | ...            |                          size: 32 0x491-0x494.7 (4)
 0x490|               73 74 74 73                     |     stts       |                          type: "stts" (Sample time-to-sample) 0x495-0x498.7 (4)
@@ -300,7 +300,7 @@ $ fq -d mp4 verbose /aac.mp4
 0x510|               00 00 00 02                     |     ....       |                          default_length: 2 0x515-0x518.7 (4)
 0x510|                           00 00 00 01         |         ....   |                          entry_count: 1 0x519-0x51c.7 (4)
      |                                               |                |                          groups: [1] 0x51d-0x51e.7 (2)
-0x510|                                       ff ff   |             .. |                            [0]: group ffff 0x51d-0x51e.7 (2)
+0x510|                                       ff ff   |             .. |                            [0]: group raw bits 0x51d-0x51e.7 (2)
      |                                               |                |                        [6]: box {} 0x51f-0x53a.7 (28)
 0x510|                                             00|               .|                          size: 28 0x51f-0x522.7 (4)
 0x520|00 00 1c                                       |...             |
@@ -343,7 +343,7 @@ $ fq -d mp4 verbose /aac.mp4
      |                                               |                |                  boxes: [1] 0x578-0x59c.7 (37)
      |                                               |                |                    [0]: box {} 0x578-0x59c.7 (37)
 0x570|                        00 00 00 25            |        ...%    |                      size: 37 0x578-0x57b.7 (4)
-0x570|                                    a9 74 6f 6f|            .too|                      type: "\xa9too" 0x57c-0x57f.7 (4)
+0x570|                                    a9 74 6f 6f|            .too|                      type: "�too" 0x57c-0x57f.7 (4)
      |                                               |                |                      boxes: [1] 0x580-0x59c.7 (29)
      |                                               |                |                        [0]: box {} 0x580-0x59c.7 (29)
 0x580|00 00 00 1d                                    |....            |                          size: 29 0x580-0x583.7 (4)
@@ -365,7 +365,7 @@ $ fq -d mp4 verbose /aac.mp4
      |                                               |                |            extension_payload: {} 0x2d.7-0x3c.6 (15)
 0x020|                                       02 00   |             .. |              extension_type: "EXT_FILL" (0) 0x2d.7-0x2e.2 (0.4)
 0x020|                                          00   |              . |              fill_nibble: 0 0x2e.3-0x2e.6 (0.4)
-0x020|                                          00 4c|              .L|              fill_byte: 2630bb319a9c171c989718981800 0x2e.7-0x3c.6 (14)
+0x020|                                          00 4c|              .L|              fill_byte: raw bits 0x2e.7-0x3c.6 (14)
 0x030|61 76 63 35 38 2e 39 31 2e 31 30 30 00         |avc58.91.100.   |
      |                                               |                |          [1]: element {} 0x3c.7-0x40 (3.2)
 0x030|                                    00 02      |            ..  |            syntax_element: "SCE" (0) 0x3c.7-0x3d.1 (0.3)
@@ -377,8 +377,8 @@ $ fq -d mp4 verbose /aac.mp4
 0x030|                                             ab|               .|              window_shape: 0 0x3f.1-0x3f.1 (0.1)
 0x030|                                             ab|               .|              max_sfb: 43 0x3f.2-0x3f.7 (0.6)
 0x040|59                                             |Y               |              predictor_data_present: false 0x40-0x40 (0.1)
-0x040|59                                             |Y               |          [2]: byte_align b2 0x40.1-0x40.7 (0.7)
-0x040|   a9 8c 72 50 8b 4c aa de 1d 71 72 5c 88 42 08| ..rP.L...qr\.B.|          [3]: data a98c72508b4caade1d71725c88420810... 0x41-0xf8.7 (184)
+0x040|59                                             |Y               |          [2]: byte_align raw bits 0x40.1-0x40.7 (0.7)
+0x040|   a9 8c 72 50 8b 4c aa de 1d 71 72 5c 88 42 08| ..rP.L...qr\.B.|          [3]: data raw bits 0x41-0xf8.7 (184)
 0x050|10 0e 80 0c d5 9f 71 6c 47 12 cb b6 16 71 ec 69|......qlG....q.i|
 *    |until 0xf8.7 (184)                             |                |
      |                                               |                |        [1]: sample [3] (aac_frame) 0xf9-0x1d2.7 (218)
@@ -392,8 +392,8 @@ $ fq -d mp4 verbose /aac.mp4
 0x0f0|                                 98            |           .    |              window_shape: 0 0xfb.2-0xfb.2 (0.1)
 0x0f0|                                 98            |           .    |              max_sfb: 12 0xfb.3-0xfb.6 (0.4)
 0x0f0|                                 98 da         |           ..   |              scale_factor_grouping: 54 0xfb.7-0xfc.5 (0.7)
-0x0f0|                                    da         |            .   |          [1]: byte_align 80 0xfc.6-0xfc.7 (0.2)
-0x0f0|                                       d8 3d d6|             .=.|          [2]: data d83dd6938076db22136a38461c9c5eae... 0xfd-0x1d2.7 (214)
+0x0f0|                                    da         |            .   |          [1]: byte_align raw bits 0xfc.6-0xfc.7 (0.2)
+0x0f0|                                       d8 3d d6|             .=.|          [2]: data raw bits 0xfd-0x1d2.7 (214)
 0x100|93 80 76 db 22 13 6a 38 46 1c 9c 5e ae 85 f1 ab|..v.".j8F..^....|
 *    |until 0x1d2.7 (214)                            |                |
      |                                               |                |        [2]: sample [3] (aac_frame) 0x1d3-0x28c.7 (186)
@@ -407,8 +407,8 @@ $ fq -d mp4 verbose /aac.mp4
 0x1d0|               99                              |     .          |              window_shape: 0 0x1d5.2-0x1d5.2 (0.1)
 0x1d0|               99                              |     .          |              max_sfb: 12 0x1d5.3-0x1d5.6 (0.4)
 0x1d0|               99 a6                           |     ..         |              scale_factor_grouping: 105 0x1d5.7-0x1d6.5 (0.7)
-0x1d0|                  a6                           |      .         |          [1]: byte_align 80 0x1d6.6-0x1d6.7 (0.2)
-0x1d0|                     d3 21 41 ad 34 86 c8 cd 9a|       .!A.4....|          [2]: data d32141ad3486c8cd9af03d04a1e75f1d... 0x1d7-0x28c.7 (182)
+0x1d0|                  a6                           |      .         |          [1]: byte_align raw bits 0x1d6.6-0x1d6.7 (0.2)
+0x1d0|                     d3 21 41 ad 34 86 c8 cd 9a|       .!A.4....|          [2]: data raw bits 0x1d7-0x28c.7 (182)
 0x1e0|f0 3d 04 a1 e7 5f 1d 0c ff 81 d6 bd bc da b0 65|.=..._.........e|
 *    |until 0x28c.7 (182)                            |                |
      |                                               |                |        [3]: sample [3] (aac_frame) 0x28d-0x291.7 (5)
@@ -423,5 +423,5 @@ $ fq -d mp4 verbose /aac.mp4
 0x280|                                             81|               .|              max_sfb: 0 0x28f.3-0x28f.6 (0.4)
 0x280|                                             81|               .|              scale_factor_grouping: 109 0x28f.7-0x290.5 (0.7)
 0x290|b4                                             |.               |
-0x290|b4                                             |.               |          [1]: byte_align 00 0x290.6-0x290.7 (0.2)
-0x290|   70                                          | p              |          [2]: data 70 0x291-0x291.7 (1)
+0x290|b4                                             |.               |          [1]: byte_align raw bits 0x290.6-0x290.7 (0.2)
+0x290|   70                                          | p              |          [2]: data raw bits 0x291-0x291.7 (1)

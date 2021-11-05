@@ -4,7 +4,6 @@ package webp
 
 import (
 	"bytes"
-	"strings"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
@@ -26,42 +25,40 @@ func init() {
 }
 
 func decodeChunk(d *decode.D, expectedChunkID string, fn func(d *decode.D)) bool { //nolint:unparam
-	trimChunkID := d.FieldStrFn("id", func() (string, string) {
-		return strings.TrimSpace(d.UTF8(4)), ""
-	})
+	trimChunkID := d.FieldUTF8("id", 4, d.TrimSpace)
 	if expectedChunkID != "" && trimChunkID != expectedChunkID {
 		return false
 	}
 	chunkLen := int64(d.FieldU32LE("size"))
 
 	if fn != nil {
-		d.DecodeLenFn(chunkLen*8, fn)
+		d.LenFn(chunkLen*8, fn)
 	} else {
-		d.FieldBitBufLen("data", chunkLen*8)
+		d.FieldRawLen("data", chunkLen*8)
 	}
 
 	return true
 }
 
 func webpDecode(d *decode.D, in interface{}) interface{} {
-	d.FieldValidateUTF8("riff_id", "RIFF")
+	d.FieldUTF8("riff_id", 4, d.AssertStr("RIFF"))
 	riffLength := d.FieldU32LE("riff_length")
-	d.FieldValidateUTF8("webp_id", "WEBP")
+	d.FieldUTF8("webp_id", 4, d.AssertStr("WEBP"))
 
-	d.DecodeLenFn(int64(riffLength-4)*8, func(d *decode.D) {
+	d.LenFn(int64(riffLength-4)*8, func(d *decode.D) {
 		p := d.PeekBytes(4)
 
 		// TODO: VP8X
 
 		switch {
 		case bytes.Equal(p, []byte("VP8 ")):
-			d.FieldStructFn("image", func(d *decode.D) {
+			d.FieldStruct("image", func(d *decode.D) {
 				decodeChunk(d, "VP8", func(d *decode.D) {
 					d.Format(vp8Frame, nil)
 				})
 			})
 		case bytes.Equal(p, []byte("VP8L")):
-			d.FieldStructFn("image", func(d *decode.D) {
+			d.FieldStruct("image", func(d *decode.D) {
 				decodeChunk(d, "VP8L", func(d *decode.D) {
 					// TODO
 				})

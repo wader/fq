@@ -262,7 +262,6 @@ func toBuffer(v interface{}) (*bitio.Buffer, error) {
 	return toBufferEx(v, false)
 }
 
-// TODO: refactor to return struct?
 func toBufferEx(v interface{}, inArray bool) (*bitio.Buffer, error) {
 	switch vv := v.(type) {
 	case ToBufferView:
@@ -291,7 +290,8 @@ func toBufferEx(v interface{}, inArray bool) (*bitio.Buffer, error) {
 		}
 
 		// TODO: how should this work? "0xf | tobytes" 4bits or 8bits? now 4
-		padBefore := (8 - (bi.BitLen() % 8)) % 8
+		//padBefore := (8 - (bi.BitLen() % 8)) % 8
+		padBefore := 0
 		bb, err := bitio.NewBufferFromBytes(bi.Bytes(), -1).BitBufRange(int64(padBefore), int64(bi.BitLen()))
 		if err != nil {
 			return nil, err

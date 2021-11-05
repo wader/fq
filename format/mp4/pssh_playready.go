@@ -19,7 +19,7 @@ const (
 	recordTypeLicenseStore           = 2
 )
 
-var recordTypeNames = map[uint64]string{
+var recordTypeNames = decode.UToStr{
 	recordTypeRightsManagementHeader: "Rights management header",
 	recordTypeLicenseStore:           "License store",
 }
@@ -30,14 +30,14 @@ func playreadyPsshDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldU32("size")
 	count := d.FieldU16("count")
 	i := uint64(0)
-	d.FieldStructArrayLoopFn("records", "record", func() bool { return i < count }, func(d *decode.D) {
-		recordType, _ := d.FieldStringMapFn("type", recordTypeNames, "Unknown", d.U16, decode.NumberDecimal)
+	d.FieldStructArrayLoop("records", "record", func() bool { return i < count }, func(d *decode.D) {
+		recordType := d.FieldU16("type", d.MapUToStr(recordTypeNames))
 		recordLen := d.FieldU16("len")
 		switch recordType {
 		case recordTypeRightsManagementHeader, recordTypeLicenseStore:
 			d.FieldUTF16LE("xml", int(recordLen))
 		default:
-			d.FieldBitBufLen("data", int64(recordLen)*8)
+			d.FieldRawLen("data", int64(recordLen)*8)
 		}
 		i++
 	})

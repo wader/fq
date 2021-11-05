@@ -3,8 +3,8 @@ $ fq -d ogg verbose /opus.ogg
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /opus.ogg (ogg) 0x0-0x3b0.7 (945)
       |                                               |                |  pages: [3] 0x0-0x3b0.7 (945)
       |                                               |                |    [0]: page {} (ogg_page) 0x0-0x2e.7 (47)
-0x0000|4f 67 67 53                                    |OggS            |      capture_pattern: "OggS" (Correct) 0x0-0x3.7 (4)
-0x0000|            00                                 |    .           |      stream_structure_version: "Correct" (0x0) 0x4-0x4.7 (1)
+0x0000|4f 67 67 53                                    |OggS            |      capture_pattern: "OggS" (valid) 0x0-0x3.7 (4)
+0x0000|            00                                 |    .           |      stream_structure_version: 0 (valid) 0x4-0x4.7 (1)
 0x0000|               02                              |     .          |      unused_flags: 0 0x5-0x5.4 (0.5)
 0x0000|               02                              |     .          |      last_page: false 0x5.5-0x5.5 (0.1)
 0x0000|               02                              |     .          |      first_page: true 0x5.6-0x5.6 (0.1)
@@ -13,17 +13,17 @@ $ fq -d ogg verbose /opus.ogg
 0x0000|                                          47 20|              G |      stream_serial_number: 1949835335 0xe-0x11.7 (4)
 0x0010|38 74                                          |8t              |
 0x0010|      00 00 00 00                              |  ....          |      page_sequence_no: 0 0x12-0x15.7 (4)
-0x0010|                  f6 b1 cb 8b                  |      ....      |      page_checksum: "Correct" (8bcbb1f6) 0x16-0x19.7 (4)
+0x0010|                  f6 b1 cb 8b                  |      ....      |      page_checksum: "8bcbb1f6" (raw bits) (valid) 0x16-0x19.7 (4)
 0x0010|                              01               |          .     |      page_segments: 1 0x1a-0x1a.7 (1)
       |                                               |                |      segment_table: [1] 0x1b-0x1b.7 (1)
 0x0010|                                 13            |           .    |        [0]: segment_size 19 0x1b-0x1b.7 (1)
       |                                               |                |      segments: [1] 0x1c-0x2e.7 (19)
-0x0010|                                    4f 70 75 73|            Opus|        [0]: segment 4f707573486561640101380180bb0000... 0x1c-0x2e.7 (19)
+0x0010|                                    4f 70 75 73|            Opus|        [0]: segment raw bits 0x1c-0x2e.7 (19)
 0x0020|48 65 61 64 01 01 38 01 80 bb 00 00 00 00 00   |Head..8........ |
       |                                               |                |    [1]: page {} (ogg_page) 0x2f-0x89.7 (91)
-0x0020|                                             4f|               O|      capture_pattern: "OggS" (Correct) 0x2f-0x32.7 (4)
+0x0020|                                             4f|               O|      capture_pattern: "OggS" (valid) 0x2f-0x32.7 (4)
 0x0030|67 67 53                                       |ggS             |
-0x0030|         00                                    |   .            |      stream_structure_version: "Correct" (0x0) 0x33-0x33.7 (1)
+0x0030|         00                                    |   .            |      stream_structure_version: 0 (valid) 0x33-0x33.7 (1)
 0x0030|            00                                 |    .           |      unused_flags: 0 0x34-0x34.4 (0.5)
 0x0030|            00                                 |    .           |      last_page: false 0x34.5-0x34.5 (0.1)
 0x0030|            00                                 |    .           |      first_page: false 0x34.6-0x34.6 (0.1)
@@ -32,17 +32,17 @@ $ fq -d ogg verbose /opus.ogg
 0x0030|                                       47 20 38|             G 8|      stream_serial_number: 1949835335 0x3d-0x40.7 (4)
 0x0040|74                                             |t               |
 0x0040|   01 00 00 00                                 | ....           |      page_sequence_no: 1 0x41-0x44.7 (4)
-0x0040|               97 6c ad c0                     |     .l..       |      page_checksum: "Correct" (c0ad6c97) 0x45-0x48.7 (4)
+0x0040|               97 6c ad c0                     |     .l..       |      page_checksum: "c0ad6c97" (raw bits) (valid) 0x45-0x48.7 (4)
 0x0040|                           01                  |         .      |      page_segments: 1 0x49-0x49.7 (1)
       |                                               |                |      segment_table: [1] 0x4a-0x4a.7 (1)
 0x0040|                              3f               |          ?     |        [0]: segment_size 63 0x4a-0x4a.7 (1)
       |                                               |                |      segments: [1] 0x4b-0x89.7 (63)
-0x0040|                                 4f 70 75 73 54|           OpusT|        [0]: segment 4f707573546167730d0000004c617666... 0x4b-0x89.7 (63)
+0x0040|                                 4f 70 75 73 54|           OpusT|        [0]: segment raw bits 0x4b-0x89.7 (63)
 0x0050|61 67 73 0d 00 00 00 4c 61 76 66 35 38 2e 37 36|ags....Lavf58.76|
 *     |until 0x89.7 (63)                              |                |
       |                                               |                |    [2]: page {} (ogg_page) 0x8a-0x3b0.7 (807)
-0x0080|                              4f 67 67 53      |          OggS  |      capture_pattern: "OggS" (Correct) 0x8a-0x8d.7 (4)
-0x0080|                                          00   |              . |      stream_structure_version: "Correct" (0x0) 0x8e-0x8e.7 (1)
+0x0080|                              4f 67 67 53      |          OggS  |      capture_pattern: "OggS" (valid) 0x8a-0x8d.7 (4)
+0x0080|                                          00   |              . |      stream_structure_version: 0 (valid) 0x8e-0x8e.7 (1)
 0x0080|                                             04|               .|      unused_flags: 0 0x8f-0x8f.4 (0.5)
 0x0080|                                             04|               .|      last_page: true 0x8f.5-0x8f.5 (0.1)
 0x0080|                                             04|               .|      first_page: false 0x8f.6-0x8f.6 (0.1)
@@ -50,7 +50,7 @@ $ fq -d ogg verbose /opus.ogg
 0x0090|98 0a 00 00 00 00 00 00                        |........        |      absolute_granule_position: 2712 0x90-0x97.7 (8)
 0x0090|                        47 20 38 74            |        G 8t    |      stream_serial_number: 1949835335 0x98-0x9b.7 (4)
 0x0090|                                    02 00 00 00|            ....|      page_sequence_no: 2 0x9c-0x9f.7 (4)
-0x00a0|e9 35 fc 5b                                    |.5.[            |      page_checksum: "Correct" (5bfc35e9) 0xa0-0xa3.7 (4)
+0x00a0|e9 35 fc 5b                                    |.5.[            |      page_checksum: "5bfc35e9" (raw bits) (valid) 0xa0-0xa3.7 (4)
 0x00a0|            05                                 |    .           |      page_segments: 5 0xa4-0xa4.7 (1)
       |                                               |                |      segment_table: [5] 0xa5-0xa9.7 (5)
 0x00a0|               ff                              |     .          |        [0]: segment_size 255 0xa5-0xa5.7 (1)
@@ -59,19 +59,19 @@ $ fq -d ogg verbose /opus.ogg
 0x00a0|                        ff                     |        .       |        [3]: segment_size 255 0xa8-0xa8.7 (1)
 0x00a0|                           3c                  |         <      |        [4]: segment_size 60 0xa9-0xa9.7 (1)
       |                                               |                |      segments: [5] 0xaa-0x3b0.7 (775)
-0x00a0|                              f8 b4 af ca aa e5|          ......|        [0]: segment f8b4afcaaae5b5b0a61cb17ae9fe3ad0... 0xaa-0x1a8.7 (255)
+0x00a0|                              f8 b4 af ca aa e5|          ......|        [0]: segment raw bits 0xaa-0x1a8.7 (255)
 0x00b0|b5 b0 a6 1c b1 7a e9 fe 3a d0 06 85 51 4c e9 29|.....z..:...QL.)|
 *     |until 0x1a8.7 (255)                            |                |
-0x01a0|                           01 76 27 bd cd 58 7f|         .v'..X.|        [1]: segment 017627bdcd587fc49943d2c50e2e7c37... 0x1a9-0x1d5.7 (45)
+0x01a0|                           01 76 27 bd cd 58 7f|         .v'..X.|        [1]: segment raw bits 0x1a9-0x1d5.7 (45)
 0x01b0|c4 99 43 d2 c5 0e 2e 7c 37 cd 37 e0 94 5b 20 5b|..C....|7.7..[ [|
 *     |until 0x1d5.7 (45)                             |                |
-0x01d0|                  f8 b1 72 9a 6a 33 7d 6f 9d d8|      ..r.j3}o..|        [2]: segment f8b1729a6a337d6f9dd86dd7fbc5f3d9... 0x1d6-0x275.7 (160)
+0x01d0|                  f8 b1 72 9a 6a 33 7d 6f 9d d8|      ..r.j3}o..|        [2]: segment raw bits 0x1d6-0x275.7 (160)
 0x01e0|6d d7 fb c5 f3 d9 31 eb 29 39 95 09 9a de b2 79|m.....1.)9.....y|
 *     |until 0x275.7 (160)                            |                |
-0x0270|                  f8 b4 ef 60 f5 8c 7a 50 f2 b5|      ...`..zP..|        [3]: segment f8b4ef60f58c7a50f2b59166508848f2... 0x276-0x374.7 (255)
+0x0270|                  f8 b4 ef 60 f5 8c 7a 50 f2 b5|      ...`..zP..|        [3]: segment raw bits 0x276-0x374.7 (255)
 0x0280|91 66 50 88 48 f2 6c 1d f3 e0 c6 20 5d b4 bf b8|.fP.H.l.... ]...|
 *     |until 0x374.7 (255)                            |                |
-0x0370|               c3 f9 91 7c d6 41 c9 4d 38 47 db|     ...|.A.M8G.|        [4]: segment c3f9917cd641c94d3847db0bdc29f95a... 0x375-0x3b0.7 (60)
+0x0370|               c3 f9 91 7c d6 41 c9 4d 38 47 db|     ...|.A.M8G.|        [4]: segment raw bits 0x375-0x3b0.7 (60)
 0x0380|0b dc 29 f9 5a 19 ec a3 53 f2 fe 3c a2 75 a2 72|..).Z...S..<.u.r|
 *     |until 0x3b0.7 (end) (60)                       |                |
       |                                               |                |  streams: [1] 0x2f-NA (0)
@@ -114,7 +114,7 @@ $ fq -d ogg verbose /opus.ogg
  0x000|f8                                             |.               |              config: 0 0x0.6-0x0.7 (0.2)
       |                                               |                |              frames: 1 0x1-NA (0)
       |                                               |                |              mode: "1 frame" 0x1-NA (0)
- 0x000|   b4 af ca aa e5 b5 b0 a6 1c b1 7a e9 fe 3a d0| ..........z..:.|            data: b4afcaaae5b5b0a61cb17ae9fe3ad006... 0x1-0x12b.7 (299)
+ 0x000|   b4 af ca aa e5 b5 b0 a6 1c b1 7a e9 fe 3a d0| ..........z..:.|            data: raw bits 0x1-0x12b.7 (299)
  0x010|06 85 51 4c e9 29 01 cf 97 74 f4 80 4d 5b 0b 4a|..QL.)...t..M[.J|
  *    |until 0x12b.7 (end) (299)                      |                |
       |                                               |                |        [3]: packet {} (opus_packet) 0x0-0x9f.7 (160)
@@ -130,7 +130,7 @@ $ fq -d ogg verbose /opus.ogg
  0x000|f8                                             |.               |              config: 0 0x0.6-0x0.7 (0.2)
       |                                               |                |              frames: 1 0x1-NA (0)
       |                                               |                |              mode: "1 frame" 0x1-NA (0)
- 0x000|   b1 72 9a 6a 33 7d 6f 9d d8 6d d7 fb c5 f3 d9| .r.j3}o..m.....|            data: b1729a6a337d6f9dd86dd7fbc5f3d931... 0x1-0x9f.7 (159)
+ 0x000|   b1 72 9a 6a 33 7d 6f 9d d8 6d d7 fb c5 f3 d9| .r.j3}o..m.....|            data: raw bits 0x1-0x9f.7 (159)
  0x010|31 eb 29 39 95 09 9a de b2 79 ef 2b 26 f1 ed fa|1.)9.....y.+&...|
  *    |until 0x9f.7 (end) (159)                       |                |
       |                                               |                |        [4]: packet {} (opus_packet) 0x0-0x13a.7 (315)
@@ -146,6 +146,6 @@ $ fq -d ogg verbose /opus.ogg
  0x000|f8                                             |.               |              config: 0 0x0.6-0x0.7 (0.2)
       |                                               |                |              frames: 1 0x1-NA (0)
       |                                               |                |              mode: "1 frame" 0x1-NA (0)
- 0x000|   b4 ef 60 f5 8c 7a 50 f2 b5 91 66 50 88 48 f2| ..`..zP...fP.H.|            data: b4ef60f58c7a50f2b59166508848f26c... 0x1-0x13a.7 (314)
+ 0x000|   b4 ef 60 f5 8c 7a 50 f2 b5 91 66 50 88 48 f2| ..`..zP...fP.H.|            data: raw bits 0x1-0x13a.7 (314)
  0x010|6c 1d f3 e0 c6 20 5d b4 bf b8 28 54 9a c2 be 26|l.... ]...(T...&|
  *    |until 0x13a.7 (end) (314)                      |                |

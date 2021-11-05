@@ -14,11 +14,11 @@ $ fq -d mp4 verbose /vp9.mp4
       |                                               |                |    [1]: box {} 0x1c-0x23.7 (8)
 0x0010|                                    00 00 00 08|            ....|      size: 8 0x1c-0x1f.7 (4)
 0x0020|66 72 65 65                                    |free            |      type: "free" (Free space) 0x20-0x23.7 (4)
-      |                                               |                |      data:  0x24-NA (0)
+      |                                               |                |      data: raw bits 0x24-NA (0)
       |                                               |                |    [2]: box {} 0x24-0x1563.7 (5440)
 0x0020|            00 00 15 40                        |    ...@        |      size: 5440 0x24-0x27.7 (4)
 0x0020|                        6d 64 61 74            |        mdat    |      type: "mdat" (Media data container) 0x28-0x2b.7 (4)
-0x0020|                                    a2 49 83 42|            .I.B|      data: a2498342e013f00ef60a38241c184a00... 0x2c-0x1563.7 (5432)
+0x0020|                                    a2 49 83 42|            .I.B|      data: raw bits 0x2c-0x1563.7 (5432)
 0x0030|e0 13 f0 0e f6 0a 38 24 1c 18 4a 00 0b 70 7f d9|......8$..J..p..|
 *     |until 0x1563.7 (5432)                          |                |
       |                                               |                |    [3]: box {} 0x1564-0x184e.7 (747)
@@ -69,7 +69,7 @@ $ fq -d mp4 verbose /vp9.mp4
 0x15f0|            00 00 00 01                        |    ....        |              track_id: 1 0x15f4-0x15f7.7 (4)
 0x15f0|                        00 00 00 00            |        ....    |              reserved1: 0 0x15f8-0x15fb.7 (4)
 0x15f0|                                    00 00 00 28|            ...(|              duration: 40 0x15fc-0x15ff.7 (4)
-0x1600|00 00 00 00 00 00 00 00                        |........        |              reserved2: 0000000000000000 0x1600-0x1607.7 (8)
+0x1600|00 00 00 00 00 00 00 00                        |........        |              reserved2: raw bits 0x1600-0x1607.7 (8)
 0x1600|                        00 00                  |        ..      |              layer: 0 0x1608-0x1609.7 (2)
 0x1600|                              00 00            |          ..    |              alternate_group: 0 0x160a-0x160b.7 (2)
 0x1600|                                    00 00      |            ..  |              volume: 0 0x160c-0x160d.7 (2)
@@ -162,7 +162,7 @@ $ fq -d mp4 verbose /vp9.mp4
 0x16f0|20                                             |                |
 0x16f0|   00                                          | .              |                              version: 0 0x16f1-0x16f1.7 (1)
 0x16f0|      00 00 01                                 |  ...           |                              flags: 1 0x16f2-0x16f4.7 (3)
-      |                                               |                |                              data:  0x16f5-NA (0)
+      |                                               |                |                              data: raw bits 0x16f5-NA (0)
       |                                               |                |                    [2]: box {} 0x16f5-0x17ec.7 (248)
 0x16f0|               00 00 00 f8                     |     ....       |                      size: 248 0x16f5-0x16f8.7 (4)
 0x16f0|                           73 74 62 6c         |         stbl   |                      type: "stbl" (Sample table box, container for the time/space map) 0x16f9-0x16fc.7 (4)
@@ -179,7 +179,7 @@ $ fq -d mp4 verbose /vp9.mp4
 0x1700|                                       00 00 00|             ...|                              size: 132 0x170d-0x1710.7 (4)
 0x1710|84                                             |.               |
 0x1710|   76 70 30 39                                 | vp09           |                              type: "vp09" 0x1711-0x1714.7 (4)
-0x1710|               00 00 00 00 00 00               |     ......     |                              reserved: 000000000000 0x1715-0x171a.7 (6)
+0x1710|               00 00 00 00 00 00               |     ......     |                              reserved: raw bits 0x1715-0x171a.7 (6)
 0x1710|                                 00 01         |           ..   |                              data_reference_index: 1 0x171b-0x171c.7 (2)
 0x1710|                                       00 00   |             .. |                              version: 0 0x171d-0x171e.7 (2)
 0x1710|                                             00|               .|                              revision_level: 0 0x171f-0x1720.7 (2)
@@ -219,7 +219,7 @@ $ fq -d mp4 verbose /vp9.mp4
       |                                               |                |                                [1]: box {} 0x1777-0x1780.7 (10)
 0x1770|                     00 00 00 0a               |       ....     |                                  size: 10 0x1777-0x177a.7 (4)
 0x1770|                                 66 69 65 6c   |           fiel |                                  type: "fiel" (Video field order) 0x177b-0x177e.7 (4)
-0x1770|                                             01|               .|                                  data: 0100 0x177f-0x1780.7 (2)
+0x1770|                                             01|               .|                                  data: raw bits 0x177f-0x1780.7 (2)
 0x1780|00                                             |.               |
       |                                               |                |                                [2]: box {} 0x1781-0x1790.7 (16)
 0x1780|   00 00 00 10                                 | ....           |                                  size: 16 0x1781-0x1784.7 (4)
@@ -298,7 +298,7 @@ $ fq -d mp4 verbose /vp9.mp4
       |                                               |                |                  boxes: [1] 0x182a-0x184e.7 (37)
       |                                               |                |                    [0]: box {} 0x182a-0x184e.7 (37)
 0x1820|                              00 00 00 25      |          ...%  |                      size: 37 0x182a-0x182d.7 (4)
-0x1820|                                          a9 74|              .t|                      type: "\xa9too" 0x182e-0x1831.7 (4)
+0x1820|                                          a9 74|              .t|                      type: "�too" 0x182e-0x1831.7 (4)
 0x1830|6f 6f                                          |oo              |
       |                                               |                |                      boxes: [1] 0x1832-0x184e.7 (29)
       |                                               |                |                        [0]: box {} 0x1832-0x184e.7 (29)
@@ -332,6 +332,6 @@ $ fq -d mp4 verbose /vp9.mp4
 0x0030|e0                                             |.               |          reserved_zero: 0 0x30.3-0x30.3 (0.1)
 0x0030|e0 13 f0                                       |...             |          frame_width: 320 0x30.4-0x32.3 (2)
 0x0030|      f0 0e f6                                 |  ...           |          frame_height: 240 0x32.4-0x34.3 (2)
-0x0030|            f6 0a 38 24 1c 18 4a 00 0b 70 7f d9|    ..8$..J..p..|          data: 60a38241c184a000b707fd9f9be8fe77... 0x34.4-0x1563.7 (5423.4)
+0x0030|            f6 0a 38 24 1c 18 4a 00 0b 70 7f d9|    ..8$..J..p..|          data: raw bits 0x34.4-0x1563.7 (5423.4)
 0x0040|f9 be 8f e7 71 ff 5f 97 ef c3 f9 7e 37 b0 7e ad|....q._....~7.~.|
 *     |until 0x1563.7 (5424)                          |                |
