@@ -28,7 +28,7 @@ $ fq -d icc_profile verbose /sRGB2014.icc
 0x050|00 00 00 00                                    |....            |    profile_creator_signature: "" 0x50-0x53.7 (4)
 0x050|            3d 0e b2 de ae 93 97 be 9b 67 26 ce|    =........g&.|    profile_id: "=\x0e\xb2ޮ\x93\x97\xbe\x9bg&Ό\nC\xce" 0x54-0x63.7 (16)
 0x060|8c 0a 43 ce                                    |..C.            |
-0x060|            00 00 00 00 00 00 00 00 00 00 00 00|    ............|    reserved: Correct (none) (zero padding) 0x64-0x7f.7 (28)
+0x060|            00 00 00 00 00 00 00 00 00 00 00 00|    ............|    reserved: "Correct" (none) (zero padding) 0x64-0x7f.7 (28)
 0x070|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
      |                                               |                |  tag_table: {} 0x80-0xbcf.7 (2896)
 0x080|00 00 00 10                                    |....            |    count: 16 0x80-0x83.7 (4)

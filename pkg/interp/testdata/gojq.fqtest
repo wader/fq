@@ -37,53 +37,53 @@ $ fq -d mp3 '.frames | map(.header) | group_by(.bitrate)' /test.mp3
   [
     {
       "bitrate": 56000,
-      "channel_mode": 0,
-      "channels": 3,
+      "channel_mode": "None",
+      "channels": "Mono",
       "copyright": 0,
-      "emphasis": 0,
-      "layer": 3,
-      "mpeg_version": 1,
+      "emphasis": "None",
+      "layer": "Layer 3",
+      "mpeg_version": "MPEG Version 1",
       "original": 0,
-      "padding": 0,
+      "padding": "Not padded",
       "private": 0,
-      "protection": true,
+      "protection": "Not protected",
       "sample_count": 1152,
       "sample_rate": 44100,
-      "sync": 2047
+      "sync": "Correct"
     }
   ],
   [
     {
       "bitrate": 64000,
-      "channel_mode": 0,
-      "channels": 3,
+      "channel_mode": "None",
+      "channels": "Mono",
       "copyright": 0,
-      "emphasis": 0,
-      "layer": 3,
-      "mpeg_version": 1,
+      "emphasis": "None",
+      "layer": "Layer 3",
+      "mpeg_version": "MPEG Version 1",
       "original": 1,
-      "padding": 0,
+      "padding": "Not padded",
       "private": 0,
-      "protection": true,
+      "protection": "Not protected",
       "sample_count": 1152,
       "sample_rate": 44100,
-      "sync": 2047
+      "sync": "Correct"
     },
     {
       "bitrate": 64000,
-      "channel_mode": 0,
-      "channels": 3,
+      "channel_mode": "None",
+      "channels": "Mono",
       "copyright": 0,
-      "emphasis": 0,
-      "layer": 3,
-      "mpeg_version": 1,
+      "emphasis": "None",
+      "layer": "Layer 3",
+      "mpeg_version": "MPEG Version 1",
       "original": 1,
-      "padding": 1,
+      "padding": "Padded",
       "private": 0,
-      "protection": true,
+      "protection": "Not protected",
       "sample_count": 1152,
       "sample_rate": 44100,
-      "sync": 2047
+      "sync": "Correct"
     }
   ]
 ]
@@ -91,101 +91,101 @@ $ fq -d mp3 '.frames | map(.header) | sort_by(.bitrate)' /test.mp3
 [
   {
     "bitrate": 56000,
-    "channel_mode": 0,
-    "channels": 3,
+    "channel_mode": "None",
+    "channels": "Mono",
     "copyright": 0,
-    "emphasis": 0,
-    "layer": 3,
-    "mpeg_version": 1,
+    "emphasis": "None",
+    "layer": "Layer 3",
+    "mpeg_version": "MPEG Version 1",
     "original": 0,
-    "padding": 0,
+    "padding": "Not padded",
     "private": 0,
-    "protection": true,
+    "protection": "Not protected",
     "sample_count": 1152,
     "sample_rate": 44100,
-    "sync": 2047
+    "sync": "Correct"
   },
   {
     "bitrate": 64000,
-    "channel_mode": 0,
-    "channels": 3,
+    "channel_mode": "None",
+    "channels": "Mono",
     "copyright": 0,
-    "emphasis": 0,
-    "layer": 3,
-    "mpeg_version": 1,
+    "emphasis": "None",
+    "layer": "Layer 3",
+    "mpeg_version": "MPEG Version 1",
     "original": 1,
-    "padding": 0,
+    "padding": "Not padded",
     "private": 0,
-    "protection": true,
+    "protection": "Not protected",
     "sample_count": 1152,
     "sample_rate": 44100,
-    "sync": 2047
+    "sync": "Correct"
   },
   {
     "bitrate": 64000,
-    "channel_mode": 0,
-    "channels": 3,
+    "channel_mode": "None",
+    "channels": "Mono",
     "copyright": 0,
-    "emphasis": 0,
-    "layer": 3,
-    "mpeg_version": 1,
+    "emphasis": "None",
+    "layer": "Layer 3",
+    "mpeg_version": "MPEG Version 1",
     "original": 1,
-    "padding": 1,
+    "padding": "Padded",
     "private": 0,
-    "protection": true,
+    "protection": "Not protected",
     "sample_count": 1152,
     "sample_rate": 44100,
-    "sync": 2047
+    "sync": "Correct"
   }
 ]
 $ fq -d mp3 '.frames | map(.header) | sort_by(.bitrate)[0]' /test.mp3
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].header: {}
-0x20|                                       ff fb   |             .. |  sync: Correct (0x7ff)
-0x20|                                          fb   |              . |  mpeg_version: MPEG Version 1 (1)
-0x20|                                          fb   |              . |  layer: Layer 3 (3)
+0x20|                                       ff fb   |             .. |  sync: "Correct" (0x7ff)
+0x20|                                          fb   |              . |  mpeg_version: "MPEG Version 1" (1)
+0x20|                                          fb   |              . |  layer: "Layer 3" (3)
     |                                               |                |  sample_count: 1152
-0x20|                                          fb   |              . |  protection: Not protected (true)
+0x20|                                          fb   |              . |  protection: "Not protected" (true)
 0x20|                                             40|               @|  bitrate: 56000
 0x20|                                             40|               @|  sample_rate: 44100
-0x20|                                             40|               @|  padding: Not padded (0b0)
+0x20|                                             40|               @|  padding: "Not padded" (0b0)
 0x20|                                             40|               @|  private: 0
-0x30|c0                                             |.               |  channels: Mono (0b11)
-0x30|c0                                             |.               |  channel_mode: None (0b0)
+0x30|c0                                             |.               |  channels: "Mono" (0b11)
+0x30|c0                                             |.               |  channel_mode: "None" (0b0)
 0x30|c0                                             |.               |  copyright: 0
 0x30|c0                                             |.               |  original: 0
-0x30|c0                                             |.               |  emphasis: None (0b0)
+0x30|c0                                             |.               |  emphasis: "None" (0b0)
 $ fq -d mp3 '.frames | map(.header) | min_by(.bitrate)' /test.mp3
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].header: {}
-0x20|                                       ff fb   |             .. |  sync: Correct (0x7ff)
-0x20|                                          fb   |              . |  mpeg_version: MPEG Version 1 (1)
-0x20|                                          fb   |              . |  layer: Layer 3 (3)
+0x20|                                       ff fb   |             .. |  sync: "Correct" (0x7ff)
+0x20|                                          fb   |              . |  mpeg_version: "MPEG Version 1" (1)
+0x20|                                          fb   |              . |  layer: "Layer 3" (3)
     |                                               |                |  sample_count: 1152
-0x20|                                          fb   |              . |  protection: Not protected (true)
+0x20|                                          fb   |              . |  protection: "Not protected" (true)
 0x20|                                             40|               @|  bitrate: 56000
 0x20|                                             40|               @|  sample_rate: 44100
-0x20|                                             40|               @|  padding: Not padded (0b0)
+0x20|                                             40|               @|  padding: "Not padded" (0b0)
 0x20|                                             40|               @|  private: 0
-0x30|c0                                             |.               |  channels: Mono (0b11)
-0x30|c0                                             |.               |  channel_mode: None (0b0)
+0x30|c0                                             |.               |  channels: "Mono" (0b11)
+0x30|c0                                             |.               |  channel_mode: "None" (0b0)
 0x30|c0                                             |.               |  copyright: 0
 0x30|c0                                             |.               |  original: 0
-0x30|c0                                             |.               |  emphasis: None (0b0)
+0x30|c0                                             |.               |  emphasis: "None" (0b0)
 $ fq -d mp3 '.frames | map(.header) | max_by(.bitrate)' /test.mp3
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[2].header: {}
-0x1b0|         ff fb                                 |   ..           |  sync: Correct (0x7ff)
-0x1b0|            fb                                 |    .           |  mpeg_version: MPEG Version 1 (1)
-0x1b0|            fb                                 |    .           |  layer: Layer 3 (3)
+0x1b0|         ff fb                                 |   ..           |  sync: "Correct" (0x7ff)
+0x1b0|            fb                                 |    .           |  mpeg_version: "MPEG Version 1" (1)
+0x1b0|            fb                                 |    .           |  layer: "Layer 3" (3)
      |                                               |                |  sample_count: 1152
-0x1b0|            fb                                 |    .           |  protection: Not protected (true)
+0x1b0|            fb                                 |    .           |  protection: "Not protected" (true)
 0x1b0|               52                              |     R          |  bitrate: 64000
 0x1b0|               52                              |     R          |  sample_rate: 44100
-0x1b0|               52                              |     R          |  padding: Padded (0b1)
+0x1b0|               52                              |     R          |  padding: "Padded" (0b1)
 0x1b0|               52                              |     R          |  private: 0
-0x1b0|                  c4                           |      .         |  channels: Mono (0b11)
-0x1b0|                  c4                           |      .         |  channel_mode: None (0b0)
+0x1b0|                  c4                           |      .         |  channels: "Mono" (0b11)
+0x1b0|                  c4                           |      .         |  channel_mode: "None" (0b0)
 0x1b0|                  c4                           |      .         |  copyright: 0
 0x1b0|                  c4                           |      .         |  original: 1
-0x1b0|                  c4                           |      .         |  emphasis: None (0b0)
+0x1b0|                  c4                           |      .         |  emphasis: "None" (0b0)
 $ fq -d mp3 '.frames[0] | . + .header | keys, .bitrate' /test.mp3
 [
   "bitrate",

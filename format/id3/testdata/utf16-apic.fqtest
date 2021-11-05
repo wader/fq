@@ -30,7 +30,7 @@ $ fq -d id3v2 verbose /utf16-apic
 0x010|         00                                    |   .            |        encryption: false 0x13.5-0x13.5 (0.1)
 0x010|         00                                    |   .            |        unsync: false 0x13.6-0x13.6 (0.1)
 0x010|         00                                    |   .            |        data_length_indicator: false 0x13.7-0x13.7 (0.1)
-0x010|            01                                 |    .           |      text_encoding: UTF-16 (1) 0x14-0x14.7 (1)
+0x010|            01                                 |    .           |      text_encoding: "UTF-16" (1) 0x14-0x14.7 (1)
 0x010|               69 6d 61 67 65 2f 70 6e 67 00   |     image/png. |      mime_type: "image/png" 0x15-0x1e.7 (10)
 0x010|                                             00|               .|      picture_type: 0 0x1f-0x1f.7 (1)
 0x020|ff fe 74 00 65 00 73 00 74 00 00 00            |..t.e.s.t...    |      description: "test" 0x20-0x2b.7 (12)
@@ -49,10 +49,10 @@ $ fq -d id3v2 verbose /utf16-apic
 0x040|00 00 00 04                                    |....            |            height: 4 0x40-0x43.7 (4)
 0x040|            01                                 |    .           |            bit_depth: 1 0x44-0x44.7 (1)
 0x040|               00                              |     .          |            color_type: 0 0x45-0x45.7 (1)
-0x040|                  00                           |      .         |            compression_method: deflate (0) 0x46-0x46.7 (1)
-0x040|                     00                        |       .        |            filter_method: Adaptive filtering (0) 0x47-0x47.7 (1)
-0x040|                        00                     |        .       |            interlace_method: No interlace (0) 0x48-0x48.7 (1)
-0x040|                           81 8a a3 d3         |         ....   |            crc: Correct (818aa3d3) 0x49-0x4c.7 (4)
+0x040|                  00                           |      .         |            compression_method: "deflate" (0) 0x46-0x46.7 (1)
+0x040|                     00                        |       .        |            filter_method: "Adaptive filtering" (0) 0x47-0x47.7 (1)
+0x040|                        00                     |        .       |            interlace_method: "No interlace" (0) 0x48-0x48.7 (1)
+0x040|                           81 8a a3 d3         |         ....   |            crc: "Correct" (818aa3d3) 0x49-0x4c.7 (4)
      |                                               |                |          [1]: chunk {} 0x4d-0x5c.7 (16)
 0x040|                                       00 00 00|             ...|            length: 4 0x4d-0x50.7 (4)
 0x050|04                                             |.               |
@@ -62,7 +62,7 @@ $ fq -d id3v2 verbose /utf16-apic
 0x050|         4d                                    |   M            |            reserved: false 0x53.3-0x53.3 (0.1)
 0x050|            41                                 |    A           |            safe_to_copy: false 0x54.3-0x54.3 (0.1)
 0x050|               00 00 b1 8f                     |     ....       |            value: 45455 0x55-0x58.7 (4)
-0x050|                           0b fc 61 05         |         ..a.   |            crc: Correct (0bfc6105) 0x59-0x5c.7 (4)
+0x050|                           0b fc 61 05         |         ..a.   |            crc: "Correct" (0bfc6105) 0x59-0x5c.7 (4)
      |                                               |                |          [2]: chunk {} 0x5d-0x88.7 (44)
 0x050|                                       00 00 00|             ...|            length: 32 0x5d-0x60.7 (4)
 0x060|20                                             |                |
@@ -81,7 +81,7 @@ $ fq -d id3v2 verbose /utf16-apic
 0x070|                                       00 00 3a|             ..:|            blue_x: 15 0x7d-0x80.7 (4)
 0x080|98                                             |.               |
 0x080|   00 00 17 70                                 | ...p           |            blue_y: 6 0x81-0x84.7 (4)
-0x080|               9c ba 51 3c                     |     ..Q<       |            crc: Correct (9cba513c) 0x85-0x88.7 (4)
+0x080|               9c ba 51 3c                     |     ..Q<       |            crc: "Correct" (9cba513c) 0x85-0x88.7 (4)
      |                                               |                |          [3]: chunk {} 0x89-0x96.7 (14)
 0x080|                           00 00 00 02         |         ....   |            length: 2 0x89-0x8c.7 (4)
 0x080|                                       62 4b 47|             bKG|            type: "bKGD" 0x8d-0x90.7 (4)
@@ -91,7 +91,7 @@ $ fq -d id3v2 verbose /utf16-apic
 0x080|                                             47|               G|            reserved: false 0x8f.3-0x8f.3 (0.1)
 0x090|44                                             |D               |            safe_to_copy: false 0x90.3-0x90.3 (0.1)
 0x090|   00 01                                       | ..             |            value: 1 0x91-0x92.7 (2)
-0x090|         dd 8a 13 a4                           |   ....         |            crc: Correct (dd8a13a4) 0x93-0x96.7 (4)
+0x090|         dd 8a 13 a4                           |   ....         |            crc: "Correct" (dd8a13a4) 0x93-0x96.7 (4)
      |                                               |                |          [4]: chunk {} 0x97-0xa9.7 (19)
 0x090|                     00 00 00 07               |       ....     |            length: 7 0x97-0x9a.7 (4)
 0x090|                                 74 49 4d 45   |           tIME |            type: "tIME" 0x9b-0x9e.7 (4)
@@ -101,7 +101,7 @@ $ fq -d id3v2 verbose /utf16-apic
 0x090|                                          45   |              E |            safe_to_copy: false 0x9e.3-0x9e.3 (0.1)
 0x090|                                             07|               .|            data: 07e50514143524 0x9f-0xa5.7 (7)
 0x0a0|e5 05 14 14 35 24                              |....5$          |
-0x0a0|                  18 db 42 e2                  |      ..B.      |            crc: Correct (18db42e2) 0xa6-0xa9.7 (4)
+0x0a0|                  18 db 42 e2                  |      ..B.      |            crc: "Correct" (18db42e2) 0xa6-0xa9.7 (4)
      |                                               |                |          [5]: chunk {} 0xaa-0xc0.7 (23)
 0x0a0|                              00 00 00 0b      |          ....  |            length: 11 0xaa-0xad.7 (4)
 0x0a0|                                          49 44|              ID|            type: "IDAT" 0xae-0xb1.7 (4)
@@ -111,7 +111,7 @@ $ fq -d id3v2 verbose /utf16-apic
 0x0b0|41                                             |A               |            reserved: false 0xb0.3-0xb0.3 (0.1)
 0x0b0|   54                                          | T              |            safe_to_copy: true 0xb1.3-0xb1.3 (0.1)
 0x0b0|      08 d7 63 60 80 00 00 00 08 00 01         |  ..c`.......   |            data: 08d7636080000000080001 0xb2-0xbc.7 (11)
-0x0b0|                                       2f 20 dd|             / .|            crc: Correct (2f20dd31) 0xbd-0xc0.7 (4)
+0x0b0|                                       2f 20 dd|             / .|            crc: "Correct" (2f20dd31) 0xbd-0xc0.7 (4)
 0x0c0|31                                             |1               |
      |                                               |                |          [6]: chunk {} 0xc1-0xf1.7 (49)
 0x0c0|   00 00 00 25                                 | ...%           |            length: 37 0xc1-0xc4.7 (4)
@@ -125,7 +125,7 @@ $ fq -d id3v2 verbose /utf16-apic
 0x0d0|            00                                 |    .           |            null: "\x00" 0xd4-0xd4.7 (1)
 0x0d0|               32 30 32 31 2d 30 35 2d 32 30 54|     2021-05-20T|            text: "2021-05-20T20:53:36+00:00" 0xd5-0xed.7 (25)
 0x0e0|32 30 3a 35 33 3a 33 36 2b 30 30 3a 30 30      |20:53:36+00:00  |
-0x0e0|                                          67 53|              gS|            crc: Correct (6753fe7a) 0xee-0xf1.7 (4)
+0x0e0|                                          67 53|              gS|            crc: "Correct" (6753fe7a) 0xee-0xf1.7 (4)
 0x0f0|fe 7a                                          |.z              |
      |                                               |                |          [7]: chunk {} 0xf2-0x122.7 (49)
 0x0f0|      00 00 00 25                              |  ...%          |            length: 37 0xf2-0xf5.7 (4)
@@ -139,7 +139,7 @@ $ fq -d id3v2 verbose /utf16-apic
 0x100|               00                              |     .          |            null: "\x00" 0x105-0x105.7 (1)
 0x100|                  32 30 32 31 2d 30 35 2d 32 30|      2021-05-20|            text: "2021-05-20T20:53:36+00:00" 0x106-0x11e.7 (25)
 0x110|54 32 30 3a 35 33 3a 33 36 2b 30 30 3a 30 30   |T20:53:36+00:00 |
-0x110|                                             16|               .|            crc: Correct (160e46c6) 0x11f-0x122.7 (4)
+0x110|                                             16|               .|            crc: "Correct" (160e46c6) 0x11f-0x122.7 (4)
 0x120|0e 46 c6                                       |.F.             |
      |                                               |                |          [8]: chunk {} 0x123-0x12e.7 (12)
 0x120|         00 00 00 00                           |   ....         |            length: 0 0x123-0x126.7 (4)
@@ -148,7 +148,7 @@ $ fq -d id3v2 verbose /utf16-apic
 0x120|                        45                     |        E       |            private: false 0x128.3-0x128.3 (0.1)
 0x120|                           4e                  |         N      |            reserved: false 0x129.3-0x129.3 (0.1)
 0x120|                              44               |          D     |            safe_to_copy: false 0x12a.3-0x12a.3 (0.1)
-0x120|                                 ae 42 60 82   |           .B`. |            crc: Correct (ae426082) 0x12b-0x12e.7 (4)
+0x120|                                 ae 42 60 82   |           .B`. |            crc: "Correct" (ae426082) 0x12b-0x12e.7 (4)
      |                                               |                |    [1]: frame {} 0x12f-0x155.7 (39)
 0x120|                                             54|               T|      id: "TSSE" (Software/Hardware and settings used for encoding) 0x12f-0x132.7 (4)
 0x130|53 53 45                                       |SSE             |
@@ -165,10 +165,10 @@ $ fq -d id3v2 verbose /utf16-apic
 0x130|                        00                     |        .       |        encryption: false 0x138.5-0x138.5 (0.1)
 0x130|                        00                     |        .       |        unsync: false 0x138.6-0x138.6 (0.1)
 0x130|                        00                     |        .       |        data_length_indicator: false 0x138.7-0x138.7 (0.1)
-0x130|                           01                  |         .      |      text_encoding: UTF-16 (1) 0x139-0x139.7 (1)
+0x130|                           01                  |         .      |      text_encoding: "UTF-16" (1) 0x139-0x139.7 (1)
 0x130|                              ff fe 4c 00 61 00|          ..L.a.|      text: "Lavf58.76.100" 0x13a-0x155.7 (28)
 0x140|76 00 66 00 35 00 38 00 2e 00 37 00 36 00 2e 00|v.f.5.8...7.6...|
 0x150|31 00 30 00 30 00                              |1.0.0.          |
-0x150|                  00 00 00 00 00 00 00 00 00 00|      ..........|  padding: Correct (none) (zero padding) 0x156-0x255.7 (256)
+0x150|                  00 00 00 00 00 00 00 00 00 00|      ..........|  padding: "Correct" (none) (zero padding) 0x156-0x255.7 (256)
 0x160|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
 *    |until 0x255.7 (end) (256)                      |                |

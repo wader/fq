@@ -1,6 +1,6 @@
 $ fq -d json . /test.json
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x00|7b 0a 20 20 20 20 22 61 22 3a 20 31 32 33 2c 0a|{.    "a": 123,.|.: {} /test.json (json)
+0x00|7b 0a 20 20 20 20 22 61 22 3a 20 31 32 33 2c 0a|{.    "a": 123,.|.: {} (json)
 *   |until 0x74.7 (end) (117)                       |                |
 $ fq -d json tovalue /test.json
 {
@@ -16,7 +16,7 @@ $ fq -d json tovalue /test.json
 }
 $ fq . /test.json
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x00|7b 0a 20 20 20 20 22 61 22 3a 20 31 32 33 2c 0a|{.    "a": 123,.|.: {} /test.json (json)
+0x00|7b 0a 20 20 20 20 22 61 22 3a 20 31 32 33 2c 0a|{.    "a": 123,.|.: {} (json)
 *   |until 0x74.7 (end) (117)                       |                |
 $ fq .b[1] /test.json
 2
@@ -24,21 +24,21 @@ $ fq . /json.gz
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /json.gz (gzip)
 0x00|1f 8b                                          |..              |  identification: "\x1f\x8b" (Correct)
  0x0|7b 22 61 22 3a 20 31 32 33 7d                  |{"a": 123}      |  uncompressed: {} (json)
-0x00|      08                                       |  .             |  compression_method: deflate (8)
+0x00|      08                                       |  .             |  compression_method: "deflate" (8)
 0x00|         00                                    |   .            |  flags: {}
 0x00|            65 0a 08 61                        |    e..a        |  mtime: 1627916901
-0x00|                        00                     |        .       |  extra_flags: unknown (0)
-0x00|                           03                  |         .      |  os: Unix (3)
+0x00|                        00                     |        .       |  extra_flags: "unknown" (0)
+0x00|                           03                  |         .      |  os: "Unix" (3)
 0x00|                              ab 56 4a 54 b2 52|          .VJT.R|  compressed: ab564a54b252303432aee50200
 0x10|30 34 32 ae e5 02 00                           |042....         |
-0x10|                     20 ac d2 9c               |        ...     |  crc32: Correct (9cd2ac20)
+0x10|                     20 ac d2 9c               |        ...     |  crc32: "Correct" (9cd2ac20)
 0x10|                                 0b 00 00 00|  |           ....||  isize: 11
 $ fq tovalue /json.gz
 {
   "compressed": "<13>q1ZKVLJSMDQyruUCAA==",
-  "compression_method": 8,
-  "crc32": "<4>IKzSnA==",
-  "extra_flags": 0,
+  "compression_method": "deflate",
+  "crc32": "Correct",
+  "extra_flags": "unknown",
   "flags": {
     "comment": false,
     "extra": false,
@@ -50,7 +50,7 @@ $ fq tovalue /json.gz
   "identification": "\u001f�",
   "isize": 11,
   "mtime": 1627916901,
-  "os": 3,
+  "os": "Unix",
   "uncompressed": {
     "a": 123
   }

@@ -67,8 +67,8 @@ json> (.)._name | ., type, length?
 "string"
 0
 json> (.)._sym | ., type, length?
-""
-"string"
+null
+"null"
 0
 json> (.)._description | ., type, length?
 ""

@@ -66,8 +66,8 @@ mp3> .headers[0].magic._name | ., type, length?
 "string"
 5
 mp3> .headers[0].magic._sym | ., type, length?
-""
-"string"
+null
+"null"
 0
 mp3> .headers[0].magic._description | ., type, length?
 "Correct"

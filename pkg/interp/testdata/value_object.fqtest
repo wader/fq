@@ -70,8 +70,8 @@ mp3> .headers[0].flags._name | ., type, length?
 "string"
 5
 mp3> .headers[0].flags._sym | ., type, length?
-""
-"string"
+null
+"null"
 0
 mp3> .headers[0].flags._description | ., type, length?
 ""

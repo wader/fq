@@ -29,11 +29,11 @@ mp3> .headers | ., tovalue, type, length?
         "id": "TSSE",
         "size": 15,
         "text": "Lavf58.45.100",
-        "text_encoding": 3
+        "text_encoding": "UTF-8"
       }
     ],
     "magic": "ID3",
-    "padding": null,
+    "padding": "Correct",
     "revision": 0,
     "size": 35,
     "version": 4
@@ -51,7 +51,7 @@ mp3> .headers[0] | ., type, length?
 0x00|                              54 53 53 45 00 00|          TSSE..|  frames: [1]
 0x10|00 0f 00 00 03 4c 61 76 66 35 38 2e 34 35 2e 31|.....Lavf58.45.1|
 0x20|30 30 00                                       |00.             |
-0x20|         00 00 00 00 00 00 00 00 00 00         |   ..........   |  padding: Correct (none) (zero padding)
+0x20|         00 00 00 00 00 00 00 00 00 00         |   ..........   |  padding: "Correct" (none) (zero padding)
 "object"
 7
 mp3> .headers[-1000] | ., type, length?
@@ -97,11 +97,11 @@ mp3> .headers[-1000:2000] | ., type, length?
         "id": "TSSE",
         "size": 15,
         "text": "Lavf58.45.100",
-        "text_encoding": 3
+        "text_encoding": "UTF-8"
       }
     ],
     "magic": "ID3",
-    "padding": null,
+    "padding": "Correct",
     "revision": 0,
     "size": 35,
     "version": 4
@@ -149,8 +149,8 @@ mp3> .headers._name | ., type, length?
 "string"
 7
 mp3> .headers._sym | ., type, length?
-""
-"string"
+null
+"null"
 0
 mp3> .headers._description | ., type, length?
 ""

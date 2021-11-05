@@ -5,7 +5,7 @@ true
 mp3> .headers[0].version == 4
 true
 mp3> .frames[0].header.protection == true
-true
+false
 mp3> .headers[0].flags + {}
 {
   "experimental_indicator": false,
