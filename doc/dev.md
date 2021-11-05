@@ -32,3 +32,31 @@ gojq execution debug:
 ```sh
 GOJQ_DEBUG=1 go run -tags debug main.go ...
 ```
+
+## From start to decoded value
+
+```
+main:main()
+    cli.Main(default registry)
+        interp.New(registry, std os interp implementation)
+        interp.(*Interp).Main()
+            interp.jq _main/0:
+                args.jq _args_parse/2
+                populate filenames for input/0
+                interp.jq inputs/0
+                    foreach valid input/0 output
+                        interp.jq open
+                            funcs.go _open
+                        interp.jq decode
+                            funcs.go _decode
+                                decode.go Decode(...)
+                                    ...
+                        interp.jq eval expr
+                            funcs.go _eval
+                        interp.jq display
+                            funcs.go _display
+                                for interp.(decodeValueBase).Display()
+                                    dump.go
+                                        print tree
+                                empty output
+```
