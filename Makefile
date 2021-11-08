@@ -23,7 +23,7 @@ testgov: testgo
 
 .PHONY: testjq
 testjq: fq
-	@dev/testjq.sh ./fq pkg/interp/*_test.jq
+	@pkg/interp/testjq.sh ./fq pkg/interp/*_test.jq
 
 .PHONY: testcli
 testcli: fq

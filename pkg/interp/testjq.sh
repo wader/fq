@@ -1,4 +1,5 @@
 #!/bin/sh
+# help script to run jq tests
 set -eu
 
 FQ="$1"
