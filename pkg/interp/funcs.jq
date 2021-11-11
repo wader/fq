@@ -36,12 +36,13 @@ def _decode_progress:
   | stderr
   );
 
-def decode($name; $opts):
+def decode($name; $decode_opts):
   ( options as $opts
   | (null | stdout) as $stdout
   | _decode(
       $name;
-      $opts + {
+      $opts +
+      $decode_opts + {
         _progress: (
           if $opts.decode_progress and $opts.repl and $stdout.is_terminal then
             "_decode_progress"
