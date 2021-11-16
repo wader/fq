@@ -8,12 +8,24 @@ import (
 	"math/big"
 	"strings"
 
+	"github.com/mitchellh/mapstructure"
 	"github.com/wader/fq/internal/gojqextra"
+	"github.com/wader/fq/internal/ioextra"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 
 	"github.com/wader/gojq"
 )
+
+func init() {
+	functionRegisterFns = append(functionRegisterFns, func(i *Interp) []Function {
+		return []Function{
+			{"_decode", 2, 2, i._decode, nil},
+			{"_is_decode_value", 0, 0, i._isDecodeValue, nil},
+			{"_tovalue", 1, 1, i._toValue, nil},
+		}
+	})
+}
 
 type expectedExtkeyError struct {
 	Key string
@@ -39,6 +51,101 @@ type DecodeValue interface {
 	ToBufferView
 
 	DecodeValue() *decode.Value
+}
+
+func (i *Interp) _toValue(c interface{}, a []interface{}) interface{} {
+	v, _ := toValue(
+		func() Options { return i.Options(a[0]) },
+		c,
+	)
+	return v
+}
+
+func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
+	var opts struct {
+		Filename string                 `mapstructure:"filename"`
+		Progress string                 `mapstructure:"_progress"`
+		Remain   map[string]interface{} `mapstructure:",remain"`
+	}
+	_ = mapstructure.Decode(a[1], &opts)
+
+	// TODO: progress hack
+	// would be nice to move all progress code into decode but it might be
+	// tricky to keep track of absolute positions in the underlaying readers
+	// when it uses BitBuf slices, maybe only in Pos()?
+	if bbf, ok := c.(*openFile); ok {
+		opts.Filename = bbf.filename
+
+		if opts.Progress != "" {
+			evalProgress := func(c interface{}) {
+				// {approx_read_bytes: 123, total_size: 123} | opts.Progress
+				_, _ = i.EvalFuncValues(
+					i.evalContext.ctx,
+					c,
+					opts.Progress,
+					nil,
+					ioextra.DiscardCtxWriter{Ctx: i.evalContext.ctx},
+				)
+			}
+			bbf.progressFn = func(approxReadBytes, totalSize int64) {
+				evalProgress(
+					map[string]interface{}{
+						"approx_read_bytes": approxReadBytes,
+						"total_size":        totalSize,
+					},
+				)
+			}
+			// when done decoding, tell progress function were done and disable it
+			defer func() {
+				bbf.progressFn = nil
+				evalProgress(nil)
+			}()
+		}
+	}
+
+	bv, err := toBufferView(c)
+	if err != nil {
+		return err
+	}
+
+	formatName, err := toString(a[0])
+	if err != nil {
+		return fmt.Errorf("%s: %w", formatName, err)
+	}
+	decodeFormat, err := i.registry.Group(formatName)
+	if err != nil {
+		return fmt.Errorf("%s: %w", formatName, err)
+	}
+
+	dv, _, err := decode.Decode(i.evalContext.ctx, bv.bb, decodeFormat,
+		decode.Options{
+			IsRoot:        true,
+			FillGaps:      true,
+			Range:         bv.r,
+			Description:   opts.Filename,
+			FormatOptions: opts.Remain,
+		},
+	)
+	if dv == nil {
+		var decodeFormatsErr decode.FormatsError
+		if errors.As(err, &decodeFormatsErr) {
+			var vs []interface{}
+			for _, fe := range decodeFormatsErr.Errs {
+				vs = append(vs, fe.Value())
+			}
+
+			return valueError{vs}
+		}
+
+		return valueError{err}
+	}
+
+	return makeDecodeValue(dv)
+}
+
+func (i *Interp) _isDecodeValue(c interface{}, a []interface{}) interface{} {
+	_, ok := c.(DecodeValue)
+	return ok
 }
 
 func valueKey(name string, a, b func(name string) interface{}) interface{} {

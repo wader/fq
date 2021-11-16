@@ -44,6 +44,25 @@ var builtinFS embed.FS
 
 var initSource = `include "@builtin/interp";`
 
+var functionRegisterFns []func(i *Interp) []Function
+
+func init() {
+	functionRegisterFns = append(functionRegisterFns, func(i *Interp) []Function {
+		return []Function{
+			{"_readline", 0, 2, i.readline, nil},
+			{"eval", 1, 2, nil, i.eval},
+			{"stdin", 0, 0, nil, i.makeStdioFn(i.os.Stdin())},
+			{"stdout", 0, 0, nil, i.makeStdioFn(i.os.Stdout())},
+			{"stderr", 0, 0, nil, i.makeStdioFn(i.os.Stderr())},
+			{"_extkeys", 0, 0, i._extKeys, nil},
+			{"_global_state", 0, 1, i.makeStateFn(i.state), nil},
+			{"_registry", 0, 0, i._registry, nil},
+			{"history", 0, 0, i.history, nil},
+			{"_display", 1, 1, nil, i._display},
+		}
+	})
+}
+
 type valueError struct {
 	v interface{}
 }
@@ -371,7 +390,6 @@ const (
 )
 
 type evalContext struct {
-	// structcheck has problems with embedding https://gitlab.com/opennota/check#known-limitations
 	ctx    context.Context
 	output io.Writer
 }
@@ -466,6 +484,197 @@ func (i *Interp) Main(ctx context.Context, output Output, version string) error 
 	return nil
 }
 
+func (i *Interp) readline(c interface{}, a []interface{}) interface{} {
+	var opts struct {
+		Complete string  `mapstructure:"complete"`
+		Timeout  float64 `mapstructure:"timeout"`
+	}
+
+	var err error
+	prompt := ""
+
+	if len(a) > 0 {
+		prompt, err = toString(a[0])
+		if err != nil {
+			return fmt.Errorf("prompt: %w", err)
+		}
+	}
+	if len(a) > 1 {
+		_ = mapstructure.Decode(a[1], &opts)
+	}
+
+	src, err := i.os.Readline(
+		prompt,
+		func(line string, pos int) (newLine []string, shared int) {
+			completeCtx := i.evalContext.ctx
+			if opts.Timeout > 0 {
+				var completeCtxCancelFn context.CancelFunc
+				completeCtx, completeCtxCancelFn = context.WithTimeout(i.evalContext.ctx, time.Duration(opts.Timeout*float64(time.Second)))
+				defer completeCtxCancelFn()
+			}
+
+			names, shared, err := func() (newLine []string, shared int, err error) {
+				// c | opts.Complete(line; pos)
+				vs, err := i.EvalFuncValues(
+					completeCtx,
+					c,
+					opts.Complete,
+					[]interface{}{line, pos},
+					ioextra.DiscardCtxWriter{Ctx: completeCtx},
+				)
+				if err != nil {
+					return nil, pos, err
+				}
+				if len(vs) < 1 {
+					return nil, pos, fmt.Errorf("no values")
+				}
+				v := vs[0]
+				if vErr, ok := v.(error); ok {
+					return nil, pos, vErr
+				}
+
+				// {abc: 123, abd: 123} | complete(".ab"; 3) will return {prefix: "ab", names: ["abc", "abd"]}
+
+				var result struct {
+					Names  []string `mapstructure:"names"`
+					Prefix string   `mapstructure:"prefix"`
+				}
+
+				_ = mapstructure.Decode(v, &result)
+				if len(result.Names) == 0 {
+					return nil, pos, nil
+				}
+
+				sharedLen := len(result.Prefix)
+
+				return result.Names, sharedLen, nil
+			}()
+
+			// TODO: how to report err?
+			_ = err
+
+			return names, shared
+		},
+	)
+
+	if errors.Is(err, ErrInterrupt) {
+		return valueError{"interrupt"}
+	} else if errors.Is(err, ErrEOF) {
+		return valueError{"eof"}
+	} else if err != nil {
+		return err
+	}
+
+	return src
+}
+
+func (i *Interp) eval(c interface{}, a []interface{}) gojq.Iter {
+	var err error
+	src, err := toString(a[0])
+	if err != nil {
+		return gojq.NewIter(fmt.Errorf("src: %w", err))
+	}
+	var filenameHint string
+	if len(a) >= 2 {
+		filenameHint, err = toString(a[1])
+		if err != nil {
+			return gojq.NewIter(fmt.Errorf("filename hint: %w", err))
+		}
+	}
+
+	iter, err := i.Eval(i.evalContext.ctx, c, src, filenameHint, i.evalContext.output)
+	if err != nil {
+		return gojq.NewIter(err)
+	}
+
+	return iter
+}
+
+func (i *Interp) _extKeys(c interface{}, a []interface{}) interface{} {
+	if v, ok := c.(Value); ok {
+		var vs []interface{}
+		for _, s := range v.ExtKeys() {
+			vs = append(vs, s)
+		}
+		return vs
+	}
+	return nil
+}
+
+func (i *Interp) makeStateFn(state *interface{}) func(c interface{}, a []interface{}) interface{} {
+	return func(c interface{}, a []interface{}) interface{} {
+		if len(a) > 0 {
+			*state = a[0]
+		}
+		return *state
+	}
+}
+
+func (i *Interp) makeStdioFn(t Terminal) func(c interface{}, a []interface{}) gojq.Iter {
+	return func(c interface{}, a []interface{}) gojq.Iter {
+		if c == nil {
+			w, h := t.Size()
+			return gojq.NewIter(map[string]interface{}{
+				"is_terminal": t.IsTerminal(),
+				"width":       w,
+				"height":      h,
+			})
+		}
+
+		if w, ok := t.(io.Writer); ok {
+			if _, err := fmt.Fprint(w, c); err != nil {
+				return gojq.NewIter(err)
+			}
+			return gojq.NewIter()
+		}
+
+		return gojq.NewIter(fmt.Errorf("%v: it not writeable", c))
+	}
+}
+
+func (i *Interp) history(c interface{}, a []interface{}) interface{} {
+	hs, err := i.os.History()
+	if err != nil {
+		return err
+	}
+	var vs []interface{}
+	for _, s := range hs {
+		vs = append(vs, s)
+	}
+	return vs
+}
+
+func (i *Interp) _display(c interface{}, a []interface{}) gojq.Iter {
+	opts := i.Options(a[0])
+
+	switch v := c.(type) {
+	case Display:
+		if err := v.Display(i.evalContext.output, opts); err != nil {
+			return gojq.NewIter(err)
+		}
+		return gojq.NewIter()
+	case nil, bool, float64, int, string, *big.Int, map[string]interface{}, []interface{}, gojq.JQValue:
+		if s, ok := v.(string); ok && opts.RawString {
+			fmt.Fprint(i.evalContext.output, s)
+		} else {
+			cj, err := i.NewColorJSON(opts)
+			if err != nil {
+				return gojq.NewIter(err)
+			}
+			if err := cj.Marshal(v, i.evalContext.output); err != nil {
+				return gojq.NewIter(err)
+			}
+		}
+		fmt.Fprint(i.evalContext.output, opts.JoinString)
+
+		return gojq.NewIter()
+	case error:
+		return gojq.NewIter(v)
+	default:
+		return gojq.NewIter(fmt.Errorf("%+#v: not displayable", c))
+	}
+}
+
 func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilename string, output io.Writer) (gojq.Iter, error) {
 	gq, err := gojq.Parse(src)
 	if err != nil {
@@ -478,7 +687,7 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilenam
 		}
 	}
 
-	// make copy of interp
+	// make copy of interp and give it its own eval context
 	ci := *i
 	ni := &ci
 	ni.evalContext = evalContext{}
@@ -491,13 +700,15 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilenam
 	}
 
 	var funcCompilerOpts []gojq.CompilerOption
-	for _, f := range ni.makeFunctions() {
-		if f.IterFn != nil {
-			funcCompilerOpts = append(funcCompilerOpts,
-				gojq.WithIterFunction(f.Name, f.MinArity, f.MaxArity, f.IterFn))
-		} else {
-			funcCompilerOpts = append(funcCompilerOpts,
-				gojq.WithFunction(f.Name, f.MinArity, f.MaxArity, f.Fn))
+	for _, frFn := range functionRegisterFns {
+		for _, f := range frFn(ni) {
+			if f.IterFn != nil {
+				funcCompilerOpts = append(funcCompilerOpts,
+					gojq.WithIterFunction(f.Name, f.MinArity, f.MaxArity, f.IterFn))
+			} else {
+				funcCompilerOpts = append(funcCompilerOpts,
+					gojq.WithFunction(f.Name, f.MinArity, f.MaxArity, f.Fn))
+			}
 		}
 	}
 

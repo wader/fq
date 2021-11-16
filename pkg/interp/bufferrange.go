@@ -4,12 +4,162 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"io/fs"
+	"io/ioutil"
 	"math/big"
 
+	"github.com/wader/fq/internal/aheadreadseeker"
+	"github.com/wader/fq/internal/ctxreadseeker"
 	"github.com/wader/fq/internal/gojqextra"
+	"github.com/wader/fq/internal/ioextra"
+	"github.com/wader/fq/internal/progressreadseeker"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/ranges"
 )
+
+func init() {
+	functionRegisterFns = append(functionRegisterFns, func(i *Interp) []Function {
+		return []Function{
+			{"_tobitsrange", 0, 2, i._toBitsRange, nil},
+			{"open", 0, 0, i._open, nil},
+		}
+	})
+}
+
+// note is used to implement tobytes*/0 also
+func (i *Interp) _toBitsRange(c interface{}, a []interface{}) interface{} {
+	var unit int
+	var r bool
+	var ok bool
+
+	if len(a) >= 1 {
+		unit, ok = gojqextra.ToInt(a[0])
+		if !ok {
+			return gojqextra.FuncTypeError{Name: "_tobitsrange", V: a[0]}
+		}
+	} else {
+		unit = 1
+	}
+
+	if len(a) >= 2 {
+		r, ok = gojqextra.ToBoolean(a[1])
+		if !ok {
+			return gojqextra.FuncTypeError{Name: "_tobitsrange", V: a[1]}
+		}
+	} else {
+		r = true
+	}
+
+	// TODO: unit > 8?
+
+	bv, err := toBufferView(c)
+	if err != nil {
+		return err
+	}
+	bv.unit = unit
+
+	if !r {
+		bb, _ := bv.toBuffer()
+		return newBufferRangeFromBuffer(bb, unit)
+	}
+
+	return bv
+}
+
+type openFile struct {
+	BufferRange
+	filename   string
+	progressFn progressreadseeker.ProgressFn
+}
+
+var _ ToBufferView = (*openFile)(nil)
+
+func (of *openFile) Display(w io.Writer, opts Options) error {
+	_, err := fmt.Fprintf(w, "<openFile %q>\n", of.filename)
+	return err
+}
+
+func (of *openFile) ToBufferView() (BufferRange, error) {
+	return newBufferRangeFromBuffer(of.bb, 8), nil
+}
+
+// def open: #:: string| => buffer
+// opens a file for reading from filesystem
+// TODO: when to close? when bb loses all refs? need to use finalizer somehow?
+func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
+	var err error
+
+	var path string
+	path, err = toString(c)
+	if err != nil {
+		return fmt.Errorf("%s: %w", path, err)
+	}
+
+	var bEnd int64
+	var f fs.File
+	if path == "" || path == "-" {
+		f = i.os.Stdin()
+	} else {
+		f, err = i.os.FS().Open(path)
+		if err != nil {
+			return err
+		}
+	}
+
+	var fRS io.ReadSeeker
+	fFI, err := f.Stat()
+	if err != nil {
+		f.Close()
+		return err
+	}
+
+	// ctxreadseeker is used to make sure any io calls can be canceled
+	// TODO: ctxreadseeker might leak if the underlaying call hangs forever
+
+	// a regular file should be seekable but fallback below to read whole file if not
+	if fFI.Mode().IsRegular() {
+		if rs, ok := f.(io.ReadSeeker); ok {
+			fRS = ctxreadseeker.New(i.evalContext.ctx, rs)
+			bEnd = fFI.Size()
+		}
+	}
+
+	if fRS == nil {
+		buf, err := ioutil.ReadAll(ctxreadseeker.New(i.evalContext.ctx, &ioextra.ReadErrSeeker{Reader: f}))
+		if err != nil {
+			f.Close()
+			return err
+		}
+		fRS = bytes.NewReader(buf)
+		bEnd = int64(len(buf))
+	}
+
+	bbf := &openFile{
+		filename: path,
+	}
+
+	const progressPrecision = 1024
+	fRS = progressreadseeker.New(fRS, progressPrecision, bEnd,
+		func(approxReadBytes int64, totalSize int64) {
+			// progressFn is assign by decode etc
+			if bbf.progressFn != nil {
+				bbf.progressFn(approxReadBytes, totalSize)
+			}
+		},
+	)
+
+	const cacheReadAheadSize = 512 * 1024
+	aheadRs := aheadreadseeker.New(fRS, cacheReadAheadSize)
+
+	// bitio.Buffer -> aheadreadseeker -> progressreadseeker -> ctxreadseeker -> readseeker
+
+	bbf.bb, err = bitio.NewBufferFromReadSeeker(aheadRs)
+	if err != nil {
+		return err
+	}
+
+	return bbf
+}
 
 var _ Value = BufferRange{}
 var _ ToBufferView = BufferRange{}
