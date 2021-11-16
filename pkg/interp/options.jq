@@ -1,7 +1,7 @@
 def _obj_to_csv_kv:
   [to_entries[] | [.key, .value] | join("=")] | join(",");
 
-def _build_default_fixed_options:
+def _opt_build_default_fixed:
   ( (null | stdout) as $stdout
   | {
       addrbase:       16,
@@ -54,7 +54,7 @@ def _build_default_fixed_options:
     }
   );
 
-def _build_default_dynamic_options:
+def _opt_default_dynamic:
   ( (null | stdout) as $stdout
   | {
       # TODO: intdiv 2 * 2 to get even number, nice or maybe not needed?
@@ -64,7 +64,7 @@ def _build_default_dynamic_options:
   );
 
 # these _to* function do a bit for fuzzy string to type conversions
-def _toboolean:
+def _opt_toboolean:
   try
     if . == "true" then true
     elif . == "false" then false
@@ -73,10 +73,10 @@ def _toboolean:
   catch
     null;
 
-def _tonumber:
+def _opt_tonumber:
   try tonumber catch null;
 
-def _tostring:
+def _opt_tostring:
   if . != null then
     ( "\"\(.)\""
     | try
@@ -87,54 +87,185 @@ def _tostring:
     )
   end;
 
-def _toarray(f):
+def _opt_toarray(f):
   try
     ( fromjson
     | if type == "array" and (all(f) | not) then null end
     )
   catch null;
 
-def _is_string_pair:
+def _opt_is_string_pair:
   type == "array" and length == 2 and all(type == "string");
 
-def _to_options:
+def _opt_cli_arg_options:
   ( {
-      addrbase:        (.addrbase | _tonumber),
-      arg:             (.arg | _toarray(_is_string_pair)),
-      argjson:         (.argjson | _toarray(_is_string_pair)),
-      array_truncate:  (.array_truncate | _tonumber),
-      bits_format:     (.bits_format | _tostring),
-      byte_colors:     (.byte_colors | _tostring),
-      color:           (.color | _toboolean),
-      colors:          (.colors | _tostring),
-      compact:         (.compact | _toboolean),
-      decode_file:     (.decode_file | _toarray(type == "string")),
-      decode_format:   (.decode_format | _tostring),
-      decode_progress: (.decode_progress | _toboolean),
-      depth:           (.depth | _tonumber),
-      display_bytes:   (.display_bytes | _tonumber),
-      expr:            (.expr | _tostring),
-      expr_file:       (.expr_file | _tostring),
-      filename:        (.filenames | _toarray(type == "string")),
-      include_path:    (.include_path | _tostring),
-      join_string:     (.join_string | _tostring),
-      line_bytes:      (.line_bytes | _tonumber),
-      null_input:      (.null_input | _toboolean),
-      raw_file:        (.raw_file| _toarray(_is_string_pair)),
-      raw_output:      (.raw_output | _toboolean),
-      raw_string:      (.raw_string | _toboolean),
-      repl:            (.repl | _toboolean),
-      sizebase:        (.sizebase | _tonumber),
-      show_formats:    (.show_formats | _toboolean),
-      show_help:       (.show_help | _toboolean),
-      slurp:           (.slurp | _toboolean),
-      string_input:    (.string_input | _toboolean),
-      unicode:         (.unicode | _toboolean),
-      verbose:         (.verbose | _toboolean),
+      addrbase:        (.addrbase | _opt_tonumber),
+      arg:             (.arg | _opt_toarray(_opt_is_string_pair)),
+      argjson:         (.argjson | _opt_toarray(_opt_is_string_pair)),
+      array_truncate:  (.array_truncate | _opt_tonumber),
+      bits_format:     (.bits_format | _opt_tostring),
+      byte_colors:     (.byte_colors | _opt_tostring),
+      color:           (.color | _opt_toboolean),
+      colors:          (.colors | _opt_tostring),
+      compact:         (.compact | _opt_toboolean),
+      decode_file:     (.decode_file | _opt_toarray(type == "string")),
+      decode_format:   (.decode_format | _opt_tostring),
+      decode_progress: (.decode_progress | _opt_toboolean),
+      depth:           (.depth | _opt_tonumber),
+      display_bytes:   (.display_bytes | _opt_tonumber),
+      expr:            (.expr | _opt_tostring),
+      expr_file:       (.expr_file | _opt_tostring),
+      filename:        (.filenames | _opt_toarray(type == "string")),
+      include_path:    (.include_path | _opt_tostring),
+      join_string:     (.join_string | _opt_tostring),
+      line_bytes:      (.line_bytes | _opt_tonumber),
+      null_input:      (.null_input | _opt_toboolean),
+      raw_file:        (.raw_file| _opt_toarray(_opt_is_string_pair)),
+      raw_output:      (.raw_output | _opt_toboolean),
+      raw_string:      (.raw_string | _opt_toboolean),
+      repl:            (.repl | _opt_toboolean),
+      sizebase:        (.sizebase | _opt_tonumber),
+      show_formats:    (.show_formats | _opt_toboolean),
+      show_help:       (.show_help | _opt_toboolean),
+      slurp:           (.slurp | _opt_toboolean),
+      string_input:    (.string_input | _opt_toboolean),
+      unicode:         (.unicode | _opt_toboolean),
+      verbose:         (.verbose | _opt_toboolean),
     }
   | with_entries(select(.value != null))
   );
 
+def _opt_cli_opts:
+  {
+    "arg": {
+      long: "--arg",
+      description: "Set variable $NAME to string VALUE",
+      pairs: "NAME VALUE"
+    },
+    "argjson": {
+      long: "--argjson",
+      description: "Set variable $NAME to JSON",
+      pairs: "NAME JSON"
+    },
+    "compact": {
+      short: "-c",
+      long: "--compact-output",
+      description: "Compact output",
+      bool: true
+    },
+    "color_output": {
+      short: "-C",
+      long: "--color-output",
+      description: "Force color output",
+      bool: true
+    },
+    "decode_format": {
+      short: "-d",
+      long: "--decode",
+      description: "Force decode format (probe)",
+      string: "NAME"
+    },
+    "decode_file": {
+      long: "--decode-file",
+      description: "Set variable $NAME to decode of file",
+      pairs: "NAME PATH"
+    },
+    "expr_file": {
+      short: "-f",
+      long: "--from-file",
+      description: "Read EXPR from file",
+      string: "PATH"
+    },
+    "show_formats": {
+      long: "--formats",
+      description: "Show supported formats",
+      bool: true
+    },
+    "show_help": {
+      short: "-h",
+      long: "--help",
+      description: "Show help",
+      bool: true
+    },
+    "join_output": {
+      short: "-j",
+      long: "--join-output",
+      description: "No newline between outputs",
+      bool: true
+    },
+    "include_path": {
+      short: "-L",
+      long: "--include-path",
+      description: "Include search path",
+      array: "PATH"
+    },
+    "null_output": {
+      short: "-0",
+      long: "--null-output",
+      # for jq compatibility
+      aliases: ["--nul-output"],
+      description: "Null byte between outputs",
+      bool: true
+    },
+    "null_input": {
+      short: "-n",
+      long: "--null-input",
+      description: "Null input (use input/0 and inputs/0 to read input)",
+      bool: true
+    },
+    "monochrome_output": {
+      short: "-M",
+      long: "--monochrome-output",
+      description: "Force monochrome output",
+      bool: true
+    },
+    "option": {
+      short: "-o",
+      long: "--option",
+      description: "Set option, eg: color=true (use options/0 to see all options)",
+      object: "KEY=VALUE",
+    },
+    "string_input": {
+      short: "-R",
+      long: "--raw-input",
+      description: "Read raw input strings (don't decode)",
+      bool: true
+    },
+    "raw_file": {
+      long: "--raw-file",
+      # for jq compatibility
+      aliases: ["--raw-file"],
+      description: "Set variable $NAME to string content of file",
+      pairs: "NAME PATH"
+    },
+    "raw_string": {
+      short: "-r",
+      # for jq compat, is called raw string internally, "raw output" is if
+      # we can output raw bytes or not
+      long: "--raw-output",
+      description: "Raw string output (without quotes)",
+      bool: true
+    },
+    "repl": {
+      short: "-i",
+      long: "--repl",
+      description: "Interactive REPL",
+      bool: true
+    },
+    "slurp": {
+      short: "-s",
+      long: "--slurp",
+      description: "Read (slurp) all inputs into an array",
+      bool: true
+    },
+    "show_version": {
+      short: "-v",
+      long: "--version",
+      description: "Show version",
+      bool: true
+    },
+  };
+
 def options($opts):
-  [_build_default_dynamic_options] + _options_stack + [$opts] | add;
+  [_opt_default_dynamic] + _options_stack + [$opts] | add;
 def options: options({});

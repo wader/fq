@@ -151,136 +151,6 @@ def _main:
           )
         ) | join("")
       );
-  def _opts:
-    {
-      "arg": {
-        long: "--arg",
-        description: "Set variable $NAME to string VALUE",
-        pairs: "NAME VALUE"
-      },
-      "argjson": {
-        long: "--argjson",
-        description: "Set variable $NAME to JSON",
-        pairs: "NAME JSON"
-      },
-      "compact": {
-        short: "-c",
-        long: "--compact-output",
-        description: "Compact output",
-        bool: true
-      },
-      "color_output": {
-        short: "-C",
-        long: "--color-output",
-        description: "Force color output",
-        bool: true
-      },
-      "decode_format": {
-        short: "-d",
-        long: "--decode",
-        description: "Force decode format (probe)",
-        string: "NAME"
-      },
-      "decode_file": {
-        long: "--decode-file",
-        description: "Set variable $NAME to decode of file",
-        pairs: "NAME PATH"
-      },
-      "expr_file": {
-        short: "-f",
-        long: "--from-file",
-        description: "Read EXPR from file",
-        string: "PATH"
-      },
-      "show_formats": {
-        long: "--formats",
-        description: "Show supported formats",
-        bool: true
-      },
-      "show_help": {
-        short: "-h",
-        long: "--help",
-        description: "Show help",
-        bool: true
-      },
-      "join_output": {
-        short: "-j",
-        long: "--join-output",
-        description: "No newline between outputs",
-        bool: true
-      },
-      "include_path": {
-        short: "-L",
-        long: "--include-path",
-        description: "Include search path",
-        array: "PATH"
-      },
-      "null_output": {
-        short: "-0",
-        long: "--null-output",
-        # for jq compatibility
-        aliases: ["--nul-output"],
-        description: "Null byte between outputs",
-        bool: true
-      },
-      "null_input": {
-        short: "-n",
-        long: "--null-input",
-        description: "Null input (use input/0 and inputs/0 to read input)",
-        bool: true
-      },
-      "monochrome_output": {
-        short: "-M",
-        long: "--monochrome-output",
-        description: "Force monochrome output",
-        bool: true
-      },
-      "option": {
-        short: "-o",
-        long: "--option",
-        description: "Set option, eg: color=true (use options/0 to see all options)",
-        object: "KEY=VALUE",
-      },
-      "string_input": {
-        short: "-R",
-        long: "--raw-input",
-        description: "Read raw input strings (don't decode)",
-        bool: true
-      },
-      "raw_file": {
-        long: "--raw-file",
-        # for jq compatibility
-        aliases: ["--raw-file"],
-        description: "Set variable $NAME to string content of file",
-        pairs: "NAME PATH"
-      },
-      "raw_string": {
-        short: "-r",
-        # for jq compat, is called raw string internally, "raw output" is if
-        # we can output raw bytes or not
-        long: "--raw-output",
-        description: "Raw string output (without quotes)",
-        bool: true
-      },
-      "repl": {
-        short: "-i",
-        long: "--repl",
-        description: "Interactive REPL",
-        bool: true
-      },
-      "slurp": {
-        short: "-s",
-        long: "--slurp",
-        description: "Read (slurp) all inputs into an array",
-        bool: true
-      },
-      "show_version": {
-        short: "-v",
-        long: "--version",
-        description: "Show version",
-        bool: true
-      },
-    };
   def _banner:
     ( "fq - jq for binary formats"
     , "Tool, language and format decoders for exploring binary data."
@@ -292,20 +162,21 @@ def _main:
   | (null | [stdin, stdout]) as [$stdin, $stdout]
   # make sure we don't unintentionally use . to make things clearer
   | null
-  | ( try _args_parse($args[1:]; _opts)
+  | ( try _args_parse($args[1:]; _opt_cli_opts)
       catch halt_error(_exit_code_args_error)
     ) as {parsed: $parsed_args, $rest}
-  | _build_default_fixed_options as $default_fixed_opts
-  # combine --args and -o key=value args
+  | _opt_build_default_fixed as $default_fixed_opts
+  # combine default fixed opt, --args opts and -o key=value opts
   | ( $default_fixed_opts
     + $parsed_args
-    + ($parsed_args.option | _to_options)
-    ) as $args_opts
+    + ($parsed_args.option | _opt_cli_arg_options)
+    ) as $combined_opts
+  # "eval" options
   | _options_stack(
-      [ $args_opts
+      [ $combined_opts
       + ( {
             argjson: (
-              ( $args_opts.argjson
+              ( $combined_opts.argjson
               | if . then
                   map(
                     ( . as $a
@@ -321,17 +192,18 @@ def _main:
               )
             ),
             color: (
-              if $args_opts.monochrome_output == true then false
-              elif $args_opts.color_output == true then true
+              if $combined_opts.monochrome_output == true then false
+              elif $combined_opts.color_output == true then true
               end
             ),
             decode_file: (
-              ( $args_opts.decode_file
+              ( $combined_opts.decode_file
               | if . then
+                  # [[name, path], ...] pairs
                   map(
                     ( . as $a
                     | .[1] |=
-                      try (open | decode($args_opts.decode_format))
+                      try (open | decode($combined_opts.decode_format))
                       catch
                         ( "--decode-file \($a[0]): \(.)"
                         | halt_error(_exit_code_args_error)
@@ -344,7 +216,7 @@ def _main:
             expr: (
               # if -f was used, all rest non-args are filenames
               # otherwise first is expr rest is filesnames
-              ( $args_opts.expr_file
+              ( $combined_opts.expr_file
               | if . then
                   try (open | tobytes | tostring)
                   catch halt_error(_exit_code_args_error)
@@ -352,31 +224,31 @@ def _main:
                 end
               )
             ),
-            expr_eval_path: $args_opts.expr_file,
+            expr_eval_path: $combined_opts.expr_file,
             filenames: (
-              ( if $args_opts.expr_file then $rest
+              ( if $combined_opts.expr_file then $rest
                 else $rest[1:]
                 end
               | if . == [] then null end
               )
             ),
             join_string: (
-              if $args_opts.join_output then ""
-              elif $args_opts.null_output then "\u0000"
+              if $combined_opts.join_output then ""
+              elif $combined_opts.null_output then "\u0000"
               else null
               end
             ),
             null_input: (
-              ( if $args_opts.expr_file then $rest
+              ( if $combined_opts.expr_file then $rest
                 else $rest[1:]
                 end
-              | if . == [] and $args_opts.repl then true
+              | if . == [] and $combined_opts.repl then true
                 else null
                 end
               )
             ),
             raw_file: (
-              ( $args_opts.raw_file
+              ( $combined_opts.raw_file
               | if . then
                   ( map(.[1] |=
                       try (open | tobytes | tostring)
@@ -387,9 +259,9 @@ def _main:
               )
             ),
             raw_string: (
-              if $args_opts.raw_string
-                or $args_opts.join_output
-                or $args_opts.null_output
+              if $combined_opts.raw_string
+                or $combined_opts.join_output
+                or $combined_opts.null_output
               then true
               else null
               end
@@ -405,7 +277,7 @@ def _main:
       , ""
       , _usage($arg0)
       , ""
-      , args_help_text(_opts)
+      , args_help_text(_opt_cli_opts)
       ) | println
     elif $opts.show_version then
       $version | println
