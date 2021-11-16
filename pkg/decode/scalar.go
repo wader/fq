@@ -226,10 +226,9 @@ func (d *D) BitBufValidateIsZero(s Scalar) (Scalar, error) {
 }
 
 // TODO: generate?
-func (d *D) assertRaw(assert bool, bss ...[]byte) func(s Scalar) (Scalar, error) {
+func (d *D) assertBitBuf(assert bool, bss ...[]byte) func(s Scalar) (Scalar, error) {
 	return func(s Scalar) (Scalar, error) {
-		// TODO: check type assert?
-		ab, err := s.Actual.(*bitio.Buffer).Bytes()
+		ab, err := s.ActualBitBuf().Bytes()
 		if err != nil {
 			return s, err
 		}
@@ -240,18 +239,18 @@ func (d *D) assertRaw(assert bool, bss ...[]byte) func(s Scalar) (Scalar, error)
 			}
 		}
 		s.Description = "invalid"
-		if assert {
+		if assert && !d.Options.Force {
 			return s, errors.New("failed to validate raw")
 		}
 		return s, nil
 	}
 }
 
-func (d *D) AssertRaw(bss ...[]byte) func(s Scalar) (Scalar, error) {
-	return d.assertRaw(true, bss...)
+func (d *D) AssertBitBuf(bss ...[]byte) func(s Scalar) (Scalar, error) {
+	return d.assertBitBuf(true, bss...)
 }
-func (d *D) ValidateRaw(bss ...[]byte) func(s Scalar) (Scalar, error) {
-	return d.assertRaw(false, bss...)
+func (d *D) ValidateBitBuf(bss ...[]byte) func(s Scalar) (Scalar, error) {
+	return d.assertBitBuf(false, bss...)
 }
 
 func (d *D) TryFieldValue(name string, fn func() (*Value, error)) (*Value, error) {

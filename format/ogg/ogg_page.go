@@ -51,7 +51,7 @@ func pageDecode(d *decode.D, in interface{}) interface{} {
 	decode.MustCopy(d, pageCRC, d.BitBufRange(startPos, pageChecksumValue.Range.Start-startPos))                      // header before checksum
 	decode.MustCopy(d, pageCRC, bytes.NewReader([]byte{0, 0, 0, 0}))                                                  // zero checksum bits
 	decode.MustCopy(d, pageCRC, d.BitBufRange(pageChecksumValue.Range.Stop(), endPos-pageChecksumValue.Range.Stop())) // rest of page
-	_ = pageChecksumValue.ScalarFn(d.ValidateRaw(bitio.ReverseBytes(pageCRC.Sum(nil))))
+	_ = pageChecksumValue.ScalarFn(d.ValidateBitBuf(bitio.ReverseBytes(pageCRC.Sum(nil))))
 
 	return p
 }

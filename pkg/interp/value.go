@@ -64,6 +64,7 @@ func (i *Interp) _toValue(c interface{}, a []interface{}) interface{} {
 func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
 	var opts struct {
 		Filename string                 `mapstructure:"filename"`
+		Force    bool                   `mapstructure:"force"`
 		Progress string                 `mapstructure:"_progress"`
 		Remain   map[string]interface{} `mapstructure:",remain"`
 	}
@@ -121,6 +122,7 @@ func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
 		decode.Options{
 			IsRoot:        true,
 			FillGaps:      true,
+			Force:         opts.Force,
 			Range:         bv.r,
 			Description:   opts.Filename,
 			FormatOptions: opts.Remain,

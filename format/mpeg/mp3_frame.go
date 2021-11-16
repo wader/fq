@@ -388,7 +388,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	decode.MustCopy(d, crcHash, d.BitBufRange(6*8, sideInfoBytes*8))
 
 	if crcValue != nil {
-		_ = crcValue.ScalarFn(d.ValidateRaw(crcHash.Sum(nil)))
+		_ = crcValue.ScalarFn(d.ValidateBitBuf(crcHash.Sum(nil)))
 	}
 	d.FieldValueRaw("crc_calculated", crcHash.Sum(nil), d.RawHex)
 

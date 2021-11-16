@@ -42,14 +42,15 @@ def decode($name; $decode_opts):
   | _decode(
       $name;
       $opts +
-      $decode_opts + {
+      {
         _progress: (
           if $opts.decode_progress and $opts.repl and $stdout.is_terminal then
             "_decode_progress"
           else null
           end
-        )
-      }
+        ),
+      } +
+      $decode_opts
     )
   );
 def decode($name): decode($name; {});

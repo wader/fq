@@ -24,6 +24,7 @@ const (
 type Options struct {
 	Name          string
 	Description   string
+	Force         bool
 	FillGaps      bool
 	IsRoot        bool
 	Range         ranges.Range // if zero use whole buffer
@@ -38,20 +39,19 @@ func Decode(ctx context.Context, bb *bitio.Buffer, formats []*Format, opts Optio
 }
 
 func decode(ctx context.Context, bb *bitio.Buffer, formats []*Format, opts Options) (*Value, interface{}, error) {
-	if opts.Range.IsZero() {
-		opts.Range = ranges.Range{Len: bb.Len()}
+	decodeRange := opts.Range
+	if decodeRange.IsZero() {
+		decodeRange = ranges.Range{Len: bb.Len()}
 	}
 
 	if formats == nil {
 		panic("formats is nil, failed to register format?")
 	}
 
-	var forceOne = len(formats) == 1
-
 	decodeErr := FormatsError{}
 
 	for _, f := range formats {
-		cbb, err := bb.BitBufRange(opts.Range.Start, opts.Range.Len)
+		cbb, err := bb.BitBufRange(decodeRange.Start, decodeRange.Len)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -84,7 +84,7 @@ func decode(ctx context.Context, bb *bitio.Buffer, formats []*Format, opts Optio
 					d.Value.V = vv
 				}
 
-				if !forceOne {
+				if len(formats) != 1 {
 					continue
 				}
 			} else {
@@ -94,20 +94,20 @@ func decode(ctx context.Context, bb *bitio.Buffer, formats []*Format, opts Optio
 
 		// TODO: maybe move to Format* funcs?
 		if opts.FillGaps {
-			d.FillGaps(ranges.Range{Start: 0, Len: opts.Range.Len}, "unknown")
+			d.FillGaps(ranges.Range{Start: 0, Len: decodeRange.Len}, "unknown")
 		}
 
 		var minMaxRange ranges.Range
 		if err := d.Value.WalkRootPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
 			minMaxRange = ranges.MinMax(minMaxRange, v.Range)
-			v.Range.Start += opts.Range.Start
+			v.Range.Start += decodeRange.Start
 			v.RootBitBuf = bb
 			return nil
 		}); err != nil {
 			return nil, nil, err
 		}
 
-		d.Value.Range = ranges.Range{Start: opts.Range.Start, Len: minMaxRange.Len}
+		d.Value.Range = ranges.Range{Start: decodeRange.Start, Len: minMaxRange.Len}
 
 		if opts.IsRoot {
 			d.Value.postProcess()
@@ -123,7 +123,7 @@ type D struct {
 	Ctx     context.Context
 	Endian  Endian
 	Value   *Value
-	Options map[string]interface{}
+	Options Options
 
 	bitBuf *bitio.Buffer
 
@@ -154,7 +154,7 @@ func newDecoder(ctx context.Context, format *Format, bb *bitio.Buffer, opts Opti
 			Range:      ranges.Range{Start: 0, Len: 0},
 			IsRoot:     opts.IsRoot,
 		},
-		Options: opts.FormatOptions,
+		Options: opts,
 
 		bitBuf:  bb,
 		readBuf: opts.ReadBuf,
@@ -217,7 +217,9 @@ func (d *D) FillGaps(r ranges.Range, namePrefix string) {
 
 // Invalid stops decode with a reason
 func (d *D) Invalid(reason string) {
-	panic(ValidateError{Reason: reason, Pos: d.Pos()})
+	if !d.Options.Force {
+		panic(ValidateError{Reason: reason, Pos: d.Pos()})
+	}
 }
 
 func (d *D) IOPanic(err error) {
@@ -556,6 +558,9 @@ func (d *D) FieldRangeFn(name string, firstBit int64, nBits int64, fn func() *Va
 }
 
 func (d *D) AssertAtLeastBitsLeft(nBits int64) {
+	if d.Options.Force {
+		return
+	}
 	bl := d.BitsLeft()
 	if bl < nBits {
 		// TODO:
@@ -564,6 +569,9 @@ func (d *D) AssertAtLeastBitsLeft(nBits int64) {
 }
 
 func (d *D) AssertLeastBytesLeft(nBytes int64) {
+	if d.Options.Force {
+		return
+	}
 	bl := d.BitsLeft()
 	if bl < nBytes*8 {
 		// TODO:
@@ -641,11 +649,12 @@ func (d *D) RangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 
 func (d *D) Format(formats []*Format, inArg interface{}) interface{} {
 	dv, v, err := decode(d.Ctx, d.bitBuf, formats, Options{
-		ReadBuf:     d.readBuf,
+		Force:       d.Options.Force,
 		FillGaps:    false,
 		IsRoot:      false,
 		Range:       ranges.Range{Start: d.Pos(), Len: d.BitsLeft()},
 		FormatInArg: inArg,
+		ReadBuf:     d.readBuf,
 	})
 	if dv == nil || dv.Errors() != nil {
 		panic(err)
@@ -670,11 +679,12 @@ func (d *D) Format(formats []*Format, inArg interface{}) interface{} {
 func (d *D) FieldTryFormat(name string, formats []*Format, inArg interface{}) (*Value, interface{}, error) {
 	dv, v, err := decode(d.Ctx, d.bitBuf, formats, Options{
 		Name:        name,
-		ReadBuf:     d.readBuf,
+		Force:       d.Options.Force,
 		FillGaps:    false,
 		IsRoot:      false,
 		Range:       ranges.Range{Start: d.Pos(), Len: d.BitsLeft()},
 		FormatInArg: inArg,
+		ReadBuf:     d.readBuf,
 	})
 	if dv == nil || dv.Errors() != nil {
 		return nil, nil, err
@@ -699,11 +709,12 @@ func (d *D) FieldFormat(name string, formats []*Format, inArg interface{}) (*Val
 func (d *D) FieldTryFormatLen(name string, nBits int64, formats []*Format, inArg interface{}) (*Value, interface{}, error) {
 	dv, v, err := decode(d.Ctx, d.bitBuf, formats, Options{
 		Name:        name,
-		ReadBuf:     d.readBuf,
+		Force:       d.Options.Force,
 		FillGaps:    true,
 		IsRoot:      false,
 		Range:       ranges.Range{Start: d.Pos(), Len: nBits},
 		FormatInArg: inArg,
+		ReadBuf:     d.readBuf,
 	})
 	if dv == nil || dv.Errors() != nil {
 		return nil, nil, err
@@ -729,11 +740,12 @@ func (d *D) FieldFormatLen(name string, nBits int64, formats []*Format, inArg in
 func (d *D) FieldTryFormatRange(name string, firstBit int64, nBits int64, formats []*Format, inArg interface{}) (*Value, interface{}, error) {
 	dv, v, err := decode(d.Ctx, d.bitBuf, formats, Options{
 		Name:        name,
-		ReadBuf:     d.readBuf,
+		Force:       d.Options.Force,
 		FillGaps:    true,
 		IsRoot:      false,
 		Range:       ranges.Range{Start: firstBit, Len: nBits},
 		FormatInArg: inArg,
+		ReadBuf:     d.readBuf,
 	})
 	if dv == nil || dv.Errors() != nil {
 		return nil, nil, err
@@ -756,10 +768,11 @@ func (d *D) FieldFormatRange(name string, firstBit int64, nBits int64, formats [
 func (d *D) FieldTryFormatBitBuf(name string, bb *bitio.Buffer, formats []*Format, inArg interface{}) (*Value, interface{}, error) {
 	dv, v, err := decode(d.Ctx, bb, formats, Options{
 		Name:        name,
-		ReadBuf:     d.readBuf,
+		Force:       d.Options.Force,
 		FillGaps:    true,
 		IsRoot:      true,
 		FormatInArg: inArg,
+		ReadBuf:     d.readBuf,
 	})
 	if dv == nil || dv.Errors() != nil {
 		return nil, nil, err

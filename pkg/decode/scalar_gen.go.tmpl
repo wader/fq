@@ -55,11 +55,7 @@ import (
 		// Validate/Assert {{$name}}
 		func (d *D) assert{{$name}}(assert bool, vs ...{{$t.go_type}}) func(s Scalar) (Scalar, error) {
 			return func(s Scalar) (Scalar, error) {
-				// TODO: check type assert?
-				a, ok := s.Actual.({{$t.go_type}})
-				if !ok {
-					panic(fmt.Sprintf("failed to type assert s.Actual %v as {{$t.go_type}}", s.Actual))
-				}
+				a := s.Actual{{$name}}()
 				for _, b := range vs {
 					if {{$t.compare}} {
 						s.Description = "valid"
@@ -67,8 +63,8 @@ import (
 					}
 				}
 				s.Description = "invalid"
-				if assert {
-					return s, errors.New("failed to validate {{$name}}")
+				if assert && !d.Options.Force {
+					return s, errors.New("failed to assert {{$name}}")
 				}
 				return s, nil
 			}

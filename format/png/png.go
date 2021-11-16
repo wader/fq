@@ -64,7 +64,7 @@ var blendOpNames = decode.UToStr{
 func pngDecode(d *decode.D, in interface{}) interface{} {
 	iEndFound := false
 
-	d.FieldRawLen("signature", 8*8, d.AssertRaw([]byte("\x89PNG\r\n\x1a\n")))
+	d.FieldRawLen("signature", 8*8, d.AssertBitBuf([]byte("\x89PNG\r\n\x1a\n")))
 	d.FieldStructArrayLoop("chunks", "chunk", func() bool { return d.NotEnd() && !iEndFound }, func(d *decode.D) {
 		chunkLength := int(d.FieldU32("length"))
 		crcStartPos := d.Pos()
@@ -192,7 +192,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 
 		chunkCRC := crc32.NewIEEE()
 		decode.MustCopy(d, chunkCRC, d.BitBufRange(crcStartPos, d.Pos()-crcStartPos))
-		d.FieldRawLen("crc", 32, d.ValidateRaw(chunkCRC.Sum(nil)), d.RawHex)
+		d.FieldRawLen("crc", 32, d.ValidateBitBuf(chunkCRC.Sum(nil)), d.RawHex)
 	})
 
 	return nil

@@ -192,7 +192,7 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 			} else {
 				d.FieldStruct("marker", func(d *decode.D) {
 					prefixLen := d.PeekFindByte(0xff, -1) + 1
-					d.FieldRawLen("prefix", prefixLen*8, d.AssertRaw([]byte{0xff}))
+					d.FieldRawLen("prefix", prefixLen*8, d.AssertBitBuf([]byte{0xff}))
 					markerCode := d.FieldU8("code", d.MapUToScalar(markers))
 					_, markerFound := markers[markerCode]
 

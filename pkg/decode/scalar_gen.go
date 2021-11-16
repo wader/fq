@@ -256,11 +256,7 @@ func (d *D) TryFieldUFn(name string, fn func(d *D) (uint64, error), sfns ...Scal
 // Validate/Assert Bool
 func (d *D) assertBool(assert bool, vs ...bool) func(s Scalar) (Scalar, error) {
 	return func(s Scalar) (Scalar, error) {
-		// TODO: check type assert?
-		a, ok := s.Actual.(bool)
-		if !ok {
-			panic(fmt.Sprintf("failed to type assert s.Actual %v as bool", s.Actual))
-		}
+		a := s.ActualBool()
 		for _, b := range vs {
 			if a == b {
 				s.Description = "valid"
@@ -268,8 +264,8 @@ func (d *D) assertBool(assert bool, vs ...bool) func(s Scalar) (Scalar, error) {
 			}
 		}
 		s.Description = "invalid"
-		if assert {
-			return s, errors.New("failed to validate Bool")
+		if assert && !d.Options.Force {
+			return s, errors.New("failed to assert Bool")
 		}
 		return s, nil
 	}
@@ -285,11 +281,7 @@ func (d *D) ValidateBool(vs ...bool) func(s Scalar) (Scalar, error) {
 // Validate/Assert F
 func (d *D) assertF(assert bool, vs ...float64) func(s Scalar) (Scalar, error) {
 	return func(s Scalar) (Scalar, error) {
-		// TODO: check type assert?
-		a, ok := s.Actual.(float64)
-		if !ok {
-			panic(fmt.Sprintf("failed to type assert s.Actual %v as float64", s.Actual))
-		}
+		a := s.ActualF()
 		for _, b := range vs {
 			if a == b {
 				s.Description = "valid"
@@ -297,8 +289,8 @@ func (d *D) assertF(assert bool, vs ...float64) func(s Scalar) (Scalar, error) {
 			}
 		}
 		s.Description = "invalid"
-		if assert {
-			return s, errors.New("failed to validate F")
+		if assert && !d.Options.Force {
+			return s, errors.New("failed to assert F")
 		}
 		return s, nil
 	}
@@ -314,11 +306,7 @@ func (d *D) ValidateF(vs ...float64) func(s Scalar) (Scalar, error) {
 // Validate/Assert S
 func (d *D) assertS(assert bool, vs ...int64) func(s Scalar) (Scalar, error) {
 	return func(s Scalar) (Scalar, error) {
-		// TODO: check type assert?
-		a, ok := s.Actual.(int64)
-		if !ok {
-			panic(fmt.Sprintf("failed to type assert s.Actual %v as int64", s.Actual))
-		}
+		a := s.ActualS()
 		for _, b := range vs {
 			if a == b {
 				s.Description = "valid"
@@ -326,8 +314,8 @@ func (d *D) assertS(assert bool, vs ...int64) func(s Scalar) (Scalar, error) {
 			}
 		}
 		s.Description = "invalid"
-		if assert {
-			return s, errors.New("failed to validate S")
+		if assert && !d.Options.Force {
+			return s, errors.New("failed to assert S")
 		}
 		return s, nil
 	}
@@ -343,11 +331,7 @@ func (d *D) ValidateS(vs ...int64) func(s Scalar) (Scalar, error) {
 // Validate/Assert Str
 func (d *D) assertStr(assert bool, vs ...string) func(s Scalar) (Scalar, error) {
 	return func(s Scalar) (Scalar, error) {
-		// TODO: check type assert?
-		a, ok := s.Actual.(string)
-		if !ok {
-			panic(fmt.Sprintf("failed to type assert s.Actual %v as string", s.Actual))
-		}
+		a := s.ActualStr()
 		for _, b := range vs {
 			if a == b {
 				s.Description = "valid"
@@ -355,8 +339,8 @@ func (d *D) assertStr(assert bool, vs ...string) func(s Scalar) (Scalar, error) 
 			}
 		}
 		s.Description = "invalid"
-		if assert {
-			return s, errors.New("failed to validate Str")
+		if assert && !d.Options.Force {
+			return s, errors.New("failed to assert Str")
 		}
 		return s, nil
 	}
@@ -372,11 +356,7 @@ func (d *D) ValidateStr(vs ...string) func(s Scalar) (Scalar, error) {
 // Validate/Assert U
 func (d *D) assertU(assert bool, vs ...uint64) func(s Scalar) (Scalar, error) {
 	return func(s Scalar) (Scalar, error) {
-		// TODO: check type assert?
-		a, ok := s.Actual.(uint64)
-		if !ok {
-			panic(fmt.Sprintf("failed to type assert s.Actual %v as uint64", s.Actual))
-		}
+		a := s.ActualU()
 		for _, b := range vs {
 			if a == b {
 				s.Description = "valid"
@@ -384,8 +364,8 @@ func (d *D) assertU(assert bool, vs ...uint64) func(s Scalar) (Scalar, error) {
 			}
 		}
 		s.Description = "invalid"
-		if assert {
-			return s, errors.New("failed to validate U")
+		if assert && !d.Options.Force {
+			return s, errors.New("failed to assert U")
 		}
 		return s, nil
 	}

@@ -59,7 +59,7 @@ var deflateExtraFlagsNames = decode.UToStr{
 }
 
 func gzDecode(d *decode.D, in interface{}) interface{} {
-	d.FieldRawLen("identification", 2*8, d.AssertRaw([]byte("\x1f\x8b")))
+	d.FieldRawLen("identification", 2*8, d.AssertBitBuf([]byte("\x1f\x8b")))
 	compressionMethod := d.FieldU8("compression_method", d.MapUToStr(compressionMethodNames))
 	hasHeaderCRC := false
 	hasExtra := false
@@ -117,7 +117,7 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldRawLen("compressed", compressedLen)
 	}
 
-	d.FieldRawLen("crc32", 32, d.ValidateRaw(bitio.ReverseBytes(crc32W.Sum(nil))), d.RawHex)
+	d.FieldRawLen("crc32", 32, d.ValidateBitBuf(bitio.ReverseBytes(crc32W.Sum(nil))), d.RawHex)
 	d.FieldU32LE("isize")
 
 	return nil

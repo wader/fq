@@ -162,7 +162,7 @@ def _opt_cli_opts:
     "decode_format": {
       short: "-d",
       long: "--decode",
-      description: "Force decode format (probe)",
+      description: "Decode format (probe)",
       string: "NAME"
     },
     "decode_file": {

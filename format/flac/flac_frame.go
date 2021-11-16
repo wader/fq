@@ -339,7 +339,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 
 		headerCRC := &crc.CRC{Bits: 8, Table: crc.ATM8Table}
 		decode.MustCopy(d, headerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
-		d.FieldRawLen("crc", 8, d.ValidateRaw(headerCRC.Sum(nil)), d.RawHex)
+		d.FieldRawLen("crc", 8, d.ValidateBitBuf(headerCRC.Sum(nil)), d.RawHex)
 	})
 
 	var channelSamples [][]int64
@@ -589,7 +589,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	// <16> CRC-16 (polynomial = x^16 + x^15 + x^2 + x^0, initialized with 0) of everything before the crc, back to and including the frame header sync code
 	footerCRC := &crc.CRC{Bits: 16, Table: crc.ANSI16Table}
 	decode.MustCopy(d, footerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
-	d.FieldRawLen("footer_crc", 16, d.ValidateRaw(footerCRC.Sum(nil)), d.RawHex)
+	d.FieldRawLen("footer_crc", 16, d.ValidateBitBuf(footerCRC.Sum(nil)), d.RawHex)
 
 	streamSamples := len(channelSamples[0])
 	for j := 0; j < len(channelSamples); j++ {

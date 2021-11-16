@@ -78,7 +78,7 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 		}
 	})
 
-	d.FieldValueRaw("md5_calculated", md5Samples.Sum(nil), d.ValidateRaw(streamInfo.MD5), d.RawHex)
+	d.FieldValueRaw("md5_calculated", md5Samples.Sum(nil), d.ValidateBitBuf(streamInfo.MD5), d.RawHex)
 	d.FieldValueU("decoded_samples", framesNDecodedSamples)
 
 	return nil

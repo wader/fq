@@ -131,7 +131,7 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 	var endian uint64
 
 	d.FieldStruct("ident", func(d *decode.D) {
-		d.FieldRawLen("magic", 4*8, d.AssertRaw([]byte("\x7fELF")))
+		d.FieldRawLen("magic", 4*8, d.AssertBitBuf([]byte("\x7fELF")))
 		archBits = int(d.FieldU8("class", d.MapUToU(classBits)))
 		endian = d.FieldU8("data", d.MapUToStr(endianNames))
 		d.FieldU8("version")

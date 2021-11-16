@@ -108,7 +108,7 @@ Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 --argjson NAME JSON      Set variable $NAME to JSON
 --color-output,-C        Force color output
 --compact-output,-c      Compact output
---decode,-d NAME         Force decode format (probe)
+--decode,-d NAME         Decode format (probe)
 --decode-file NAME PATH  Set variable $NAME to decode of file
 --formats                Show supported formats
 --from-file,-f PATH      Read EXPR from file
@@ -153,12 +153,12 @@ notable is support for arbitrary-precision integers.
 - All standard library functions from jq
 - Adds a few new general functions:
   - `streaks/0`, `streaks_by/1` like `group` but groups streaks based on condition.
-  - `count`, `count_by/1` like `group` but counts groups lengths.
+  - `count/0`, `count_by/1` like `group` but counts groups lengths.
   - `debug/1` like `debug/0` but uses arg to produce debug message. `{a: 123} | debug({a}) | ...`.
-  - `path_to_expr` from `["key", 1]` to `".key[1]"`.
-  - `expr_to_path` from `".key[1]"` to `["key", 1]`.
+  - `path_to_expr/0` from `["key", 1]` to `".key[1]"`.
+  - `expr_to_path/0` from `".key[1]"` to `["key", 1]`.
   - `diff/2` produce diff object between two values.
-  - `delta`, `delta_by/1`, array with difference between all consecutive pairs.
+  - `delta/0`, `delta_by/1`, array with difference between all consecutive pairs.
   - `chunk/1`, split array or string into even chunks
 - Adds some decode value specific functions:
   - `root/0` return tree root for value
@@ -181,20 +181,25 @@ notable is support for arbitrary-precision integers.
     - `bgrep/1`, `bgrep/2` recursively match buffer
     - `fgrep/1`, `fgrep/2` recursively match field name
   - Buffers:
-    - `tobits` - Transform input into a bits buffer not preserving source range, will start at zero.
-    - `tobitsrange` - Transform input into a bits buffer preserving source range if possible.
-    - `tobytes` - Transform input into a bytes buffer not preserving source range, will start at zero.
-    - `tobytesrange` - Transform input into a byte buffer preserving source range if possible.
+    - `tobits/0` - Transform input into a bits buffer not preserving source range, will start at zero.
+    - `tobitsrange/0` - Transform input into a bits buffer preserving source range if possible.
+    - `tobytes/0` - Transform input into a bytes buffer not preserving source range, will start at zero.
+    - `tobytesrange/0` - Transform input into a byte buffer preserving source range if possible.
     - `buffer[start:end]`, `buffer[:end]`, `buffer[start:]` - Create a sub buffer from start to end in buffer units preserving source range.
 - `open` open file for reading
-- `probe` or `decode` probe format and decode
-- `mp3`, `matroska`, ..., `<name>`, `decode([name])` force decode as format
-- `d`/`display` display value and truncate long arrays
-- `f`/`full` display value and don't truncate arrays
-- `v`/`verbose` display value verbosely and don't truncate array
-- `p`/`preview` show preview of field tree
-- `hd`/`hexdump` hexdump value
-- `repl` nested REPL, must be last in a pipeline. `1 | repl`, can "slurp" multiple outputs `1, 2, 3 | repl`.
+- All decode function takes a optional option argument. The only option currently is `force` to ignore decoder asserts.
+For example to decode as mp3 and ignore assets do `mp3({force: true})` or `decode("mp3"; {force: true})`, from command line
+you currently have to do `fq -d raw 'mp3({force: true})' file`.
+- `decode/0`, `decode/1`, `decode/2` decode format
+- `probe/0`, `probe/1` probe and decode format
+- `mp3/0`, `mp3/1`, ..., `<name>/0`, `<name>/1` same as `decode(<name>)/1`, `decode(<name>; <opts>)/2`  decode as format
+
+- `d/0`/`display/0` display value and truncate long arrays
+- `f/0`/`full/0` display value and don't truncate arrays
+- `v/0`/`verbose/0` display value verbosely and don't truncate array
+- `p/0`/`preview/0` show preview of field tree
+- `hd/0`/`hexdump/0` hexdump value
+- `repl/0` nested REPL, must be last in a pipeline. `1 | repl`, can "slurp" multiple outputs `1, 2, 3 | repl`.
 
 ## Decoded values (TODO: better name?)
 
