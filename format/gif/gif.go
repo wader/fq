@@ -142,6 +142,8 @@ func gifDecode(d *decode.D, in interface{}) interface{} {
 						}
 					})
 				})
+			default:
+				d.Fatal("unknown block")
 			}
 		}
 	})

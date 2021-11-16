@@ -430,20 +430,20 @@ func init() {
 			})
 		},
 		"avcC": func(ctx *decodeContext, d *decode.D) {
-			_, v := d.FieldFormat("descriptor", mpegAVCDCRFormat, nil)
-			avcDcrOut, ok := v.(format.AvcDcrOut)
-			if !ok {
-				d.Invalid(fmt.Sprintf("expected AvcDcrOut got %#+v", v))
+			v, dv := d.FieldFormat("descriptor", mpegAVCDCRFormat, nil)
+			avcDcrOut, ok := dv.(format.AvcDcrOut)
+			if v != nil && !ok {
+				panic(fmt.Sprintf("expected AvcDcrOut got %#+v", v))
 			}
 			if ctx.currentTrack != nil {
 				ctx.currentTrack.formatInArg = format.AvcIn{LengthSize: avcDcrOut.LengthSize} //nolint:gosimple
 			}
 		},
 		"hvcC": func(ctx *decodeContext, d *decode.D) {
-			_, v := d.FieldFormat("descriptor", mpegHEVCDCRFrameFormat, nil)
-			hevcDcrOut, ok := v.(format.HevcDcrOut)
-			if !ok {
-				d.Invalid(fmt.Sprintf("expected HevcDcrOut got %#+v", v))
+			v, dv := d.FieldFormat("descriptor", mpegHEVCDCRFrameFormat, nil)
+			hevcDcrOut, ok := dv.(format.HevcDcrOut)
+			if v != nil && !ok {
+				panic(fmt.Sprintf("expected HevcDcrOut got %#+v", v))
 			}
 			if ctx.currentTrack != nil {
 				ctx.currentTrack.formatInArg = format.HevcIn{LengthSize: hevcDcrOut.LengthSize} //nolint:gosimple
@@ -452,10 +452,10 @@ func init() {
 		"dfLa": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
-			_, v := d.FieldFormat("descriptor", flacMetadatablocksFormat, nil)
-			flacMetadatablockOut, ok := v.(format.FlacMetadatablocksOut)
-			if !ok {
-				d.Invalid(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
+			v, dv := d.FieldFormat("descriptor", flacMetadatablocksFormat, nil)
+			flacMetadatablockOut, ok := dv.(format.FlacMetadatablocksOut)
+			if v != nil && !ok {
+				panic(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
 			}
 			if flacMetadatablockOut.HasStreamInfo {
 				if ctx.currentTrack != nil {
@@ -477,10 +477,10 @@ func init() {
 		"esds": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU32("version")
 
-			_, v := d.FieldFormat("descriptor", mpegESFormat, nil)
-			mpegEsOut, ok := v.(format.MpegEsOut)
-			if !ok {
-				d.Invalid(fmt.Sprintf("expected mpegEsOut got %#+v", v))
+			v, dv := d.FieldFormat("descriptor", mpegESFormat, nil)
+			mpegEsOut, ok := dv.(format.MpegEsOut)
+			if v != nil && !ok {
+				panic(fmt.Sprintf("expected mpegEsOut got %#+v", v))
 			}
 
 			if ctx.currentTrack != nil && len(mpegEsOut.DecoderConfigs) > 0 {

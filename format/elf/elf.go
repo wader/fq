@@ -146,7 +146,7 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 	case BIG_ENDIAN:
 		d.Endian = decode.BigEndian
 	default:
-		d.Invalid("unknown endian")
+		d.Fatal("unknown endian")
 	}
 
 	// TODO: hex functions?

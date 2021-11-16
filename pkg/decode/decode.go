@@ -53,7 +53,7 @@ func decode(ctx context.Context, bb *bitio.Buffer, formats []*Format, opts Optio
 	for _, f := range formats {
 		cbb, err := bb.BitBufRange(decodeRange.Start, decodeRange.Len)
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, IOError{Err: err, Op: "BitBufRange", ReadSize: decodeRange.Len, Pos: decodeRange.Start}
 		}
 
 		d := newDecoder(ctx, f, cbb, opts)
@@ -215,11 +215,16 @@ func (d *D) FillGaps(r ranges.Range, namePrefix string) {
 	}
 }
 
-// Invalid stops decode with a reason
-func (d *D) Invalid(reason string) {
+// Error stops decode with a reason unless forced
+func (d *D) Error(reason string) {
 	if !d.Options.Force {
 		panic(ValidateError{Reason: reason, Pos: d.Pos()})
 	}
+}
+
+// Fatal stops decode with a reason regardless of forced
+func (d *D) Fatal(reason string) {
+	panic(ValidateError{Reason: reason, Pos: d.Pos()})
 }
 
 func (d *D) IOPanic(err error) {
@@ -444,7 +449,7 @@ func (d *D) AddChild(v *Value) {
 		if !fv.IsArray {
 			for _, ff := range *fv.Children {
 				if ff.Name == v.Name {
-					d.Invalid(fmt.Sprintf("%q already exist in struct %s", v.Name, d.Value.Name))
+					d.Fatal(fmt.Sprintf("%q already exist in struct %s", v.Name, d.Value.Name))
 				}
 			}
 		}

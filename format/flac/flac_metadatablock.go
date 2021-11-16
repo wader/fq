@@ -60,7 +60,7 @@ func metadatablockDecode(d *decode.D, in interface{}) interface{} {
 	case MetadataBlockStreaminfo:
 		flacStreaminfoOut, ok := d.Format(flacStreaminfoFormat, nil).(format.FlacStreaminfoOut)
 		if !ok {
-			d.Invalid(fmt.Sprintf("expected FlacStreaminfoOut, got %#+v", flacStreaminfoOut))
+			panic(fmt.Sprintf("expected FlacStreaminfoOut, got %#+v", flacStreaminfoOut))
 		}
 		hasStreamInfo = true
 		streamInfo = flacStreaminfoOut.StreamInfo

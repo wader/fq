@@ -147,10 +147,10 @@ func decodeOgg(d *decode.D, in interface{}) interface{} {
 								d.FieldU8("minor")
 								d.FieldU16("header_packets")
 								d.FieldUTF8("flac_signature", 4)
-								_, flacMetadatablockOutAny := d.FieldFormat("metadatablock", flacMetadatablockFormat, nil)
-								flacMetadatablockOut, ok := flacMetadatablockOutAny.(format.FlacMetadatablockOut)
-								if !ok {
-									d.Invalid(fmt.Sprintf("expected FlacMetadatablockOut, got %#+v", flacMetadatablockOut))
+								v, dv := d.FieldFormat("metadatablock", flacMetadatablockFormat, nil)
+								flacMetadatablockOut, ok := dv.(format.FlacMetadatablockOut)
+								if v != nil && !ok {
+									panic(fmt.Sprintf("expected FlacMetadatablockOut, got %#+v", flacMetadatablockOut))
 								}
 								s.flacStreamInfo = flacMetadatablockOut.StreamInfo
 							})
@@ -179,7 +179,7 @@ func decodeOgg(d *decode.D, in interface{}) interface{} {
 	})
 
 	if validPages == 0 {
-		d.Invalid("no pages found")
+		d.Fatal("no pages found")
 	}
 
 	return nil

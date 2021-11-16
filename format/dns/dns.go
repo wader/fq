@@ -143,7 +143,7 @@ func fieldFormatLabel(d *decode.D, name string) {
 						}
 						jumpCount++
 						if jumpCount > maxJumps {
-							d.Invalid(fmt.Sprintf("label has more than %d jumps", maxJumps))
+							d.Fatal(fmt.Sprintf("label has more than %d jumps", maxJumps))
 						}
 						d.SeekAbs(int64(pointer) * 8)
 					}

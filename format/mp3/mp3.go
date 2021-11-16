@@ -70,7 +70,7 @@ func mp3Decode(d *decode.D, in interface{}) interface{} {
 	})
 	// TODO: better validate
 	if validFrames == 0 || (validFrames < 2 && decodeFailures > 0) {
-		d.Invalid("no frames found")
+		d.Error("no frames found")
 	}
 
 	d.SeekAbs(lastValidEnd)

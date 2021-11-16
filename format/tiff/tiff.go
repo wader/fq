@@ -188,7 +188,7 @@ func decodeIfd(d *decode.D, s *strips, tagNames map[uint64]string) int64 {
 										case SRATIONAL:
 											fieldSRational(d, "value")
 										default:
-											d.Invalid("unknown type")
+											d.Error("unknown type")
 										}
 									}
 								})
@@ -214,7 +214,7 @@ func tiffDecode(d *decode.D, in interface{}) interface{} {
 	case bigEndian:
 		d.Endian = decode.BigEndian
 	default:
-		d.Invalid("unknown endian")
+		d.Fatal("unknown endian")
 	}
 
 	d.SeekRel(-4 * 8)

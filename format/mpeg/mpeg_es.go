@@ -242,9 +242,9 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, expectedTagID int, fn func(d
 					switch format.MpegObjectTypeStreamType[objectType] {
 					case format.MPEGStreamTypeAudio:
 						fieldODDecodeTag(d, edc, "decoder_specific_info", -1, func(d *decode.D) {
-							_, v := d.FieldFormat("audio_specific_config", mpegASCFormat, nil)
-							mpegASCout, ok := v.(format.MPEGASCOut)
-							if !ok {
+							v, dv := d.FieldFormat("audio_specific_config", mpegASCFormat, nil)
+							mpegASCout, ok := dv.(format.MPEGASCOut)
+							if v != nil && !ok {
 								panic(fmt.Sprintf("expected MPEGASCOut got %#+v", v))
 							}
 							if edc.currentDecoderConfig != nil {

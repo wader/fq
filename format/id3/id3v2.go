@@ -382,6 +382,9 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		}
 
 		size = dataSize + headerLen
+	default:
+		// can't know size
+		d.Fatal("unknown version")
 	}
 
 	// note frame function run inside a SubLenFn so they can use BitLefts and
@@ -523,7 +526,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		idNormalized = "COMM"
 	case id == "TXX", id == "TXXX":
 		idNormalized = "TXXX"
-	case id[0] == 'T':
+	case len(id) > 0 && id[0] == 'T':
 		idNormalized = "T000"
 	}
 
@@ -578,7 +581,7 @@ func id3v2Decode(d *decode.D, in interface{}) interface{} {
 	version := int(d.FieldU8("version"))
 	versionValid := version == 2 || version == 3 || version == 4
 	if !versionValid {
-		d.Invalid(fmt.Sprintf("unsupported version %d", version))
+		d.Fatal(fmt.Sprintf("unsupported version %d", version))
 	}
 
 	d.FieldU8("revision")

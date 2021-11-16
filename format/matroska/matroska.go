@@ -160,7 +160,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 					if !ok {
 						a, ok = ebml.Global[n]
 						if !ok {
-							d.Invalid(fmt.Sprintf("unknown id %d", n))
+							d.Fatal(fmt.Sprintf("unknown id %d", n))
 						}
 					}
 					return decode.Scalar{Actual: n, DisplayFormat: decode.NumberHex, Sym: a.Name, Description: a.Definition}, nil
@@ -183,7 +183,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 					(a.Type == ebml.Integer ||
 						a.Type == ebml.Uinteger ||
 						a.Type == ebml.Float) {
-					d.Invalid(fmt.Sprintf("invalid tagSize %d for non-master type", tagSize))
+					d.Fatal(fmt.Sprintf("invalid tagSize %d for non-master type", tagSize))
 				}
 
 				switch a.Type {
@@ -305,7 +305,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 func matroskaDecode(d *decode.D, in interface{}) interface{} {
 	ebmlHeaderID := uint64(0x1a45dfa3)
 	if d.PeekBits(32) != ebmlHeaderID {
-		d.Invalid("no EBML header found")
+		d.Error("no EBML header found")
 	}
 	dc := &decodeContext{tracks: []*track{}}
 	decodeMaster(d, d.BitsLeft(), ebml_matroska.Root, dc)
@@ -360,10 +360,10 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 			t.parentD.RangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
 				d.FieldStruct("value", func(d *decode.D) {
 					d.FieldUTF8("magic", 4, d.AssertStr("fLaC"))
-					_, v := d.FieldFormat("metadatablocks", flacMetadatablocksFormat, nil)
-					flacMetadatablockOut, ok := v.(format.FlacMetadatablocksOut)
-					if !ok {
-						d.Invalid(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
+					v, dv := d.FieldFormat("metadatablocks", flacMetadatablocksFormat, nil)
+					flacMetadatablockOut, ok := dv.(format.FlacMetadatablocksOut)
+					if v != nil && !ok {
+						panic(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
 					}
 					if flacMetadatablockOut.HasStreamInfo {
 						t.formatInArg = format.FlacFrameIn{StreamInfo: flacMetadatablockOut.StreamInfo}
@@ -371,17 +371,17 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 				})
 			})
 		case "V_MPEG4/ISO/AVC":
-			_, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegAVCDCRFormat, nil)
-			avcDcrOut, ok := v.(format.AvcDcrOut)
-			if !ok {
-				d.Invalid(fmt.Sprintf("expected AvcDcrOut got %#+v", v))
+			v, dv := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegAVCDCRFormat, nil)
+			avcDcrOut, ok := dv.(format.AvcDcrOut)
+			if v != nil && !ok {
+				panic(fmt.Sprintf("expected AvcDcrOut got %#+v", v))
 			}
 			t.formatInArg = format.AvcIn{LengthSize: avcDcrOut.LengthSize} //nolint:gosimple
 		case "V_MPEGH/ISO/HEVC":
-			_, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegHEVCDCRFormat, nil)
-			hevcDcrOut, ok := v.(format.HevcDcrOut)
-			if !ok {
-				d.Invalid(fmt.Sprintf("expected HevcDcrOut got %#+v", v))
+			v, dv := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegHEVCDCRFormat, nil)
+			hevcDcrOut, ok := dv.(format.HevcDcrOut)
+			if v != nil && !ok {
+				panic(fmt.Sprintf("expected HevcDcrOut got %#+v", v))
 			}
 			t.formatInArg = format.HevcIn{LengthSize: hevcDcrOut.LengthSize} //nolint:gosimple
 		case "V_AV1":

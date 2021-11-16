@@ -92,7 +92,7 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 	uncompressed := &bytes.Buffer{}
 	crc32W := crc32.NewIEEE()
 	if _, err := decode.Copy(d, io.MultiWriter(uncompressed, crc32W), deflateR); err != nil {
-		d.Invalid(err.Error())
+		d.Fatal(err.Error())
 	}
 	// calculatedCRC32 := crc32W.Sum(nil)
 	uncompressedBB := bitio.NewBufferFromBytes(uncompressed.Bytes(), -1)

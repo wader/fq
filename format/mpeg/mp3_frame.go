@@ -159,12 +159,13 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		mpegVersion := d.FieldU2("mpeg_version", d.MapUToScalar(mpegVersionNames))
 		mpegVersionNr = mpegVersionN[mpegVersion]
 		if mpegVersionNr == 0 {
-			d.Invalid("Unsupported mpeg version")
+			d.Error("Unsupported mpeg version")
 		}
 		mpegLayer := d.FieldU2("layer", d.MapUToScalar(mpegLayerNames))
 		mpegLayerNr = mpegLayerN[mpegLayer]
 		if mpegLayerNr != 3 {
-			d.Invalid("Not layer 3")
+			d.Error("Not layer 3")
+			mpegLayerNr = 3
 		}
 		// [mpeg layer][mpeg version]
 		var samplesFrameIndex = map[uint][4]uint{
@@ -209,7 +210,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			default:
 				i := (mpegVersionNr-1)*3 + (mpegLayerNr - 1)
 				if i >= 9 {
-					d.Invalid("Invalid bitrate index")
+					d.Fatal("Invalid bitrate index")
 				}
 				bitRate = uint64(bitRateIndex[uint(u)][(mpegVersionNr-1)*3+(mpegLayerNr-1)]) * 1000
 				return decode.Scalar{Actual: u, Sym: bitRate}
@@ -341,7 +342,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	}
 
 	if sampleRate == 0 {
-		d.Invalid("zero sample rate")
+		d.Error("zero sample rate")
 	}
 
 	calcFrameBytes := int64(144*bitRate/sampleRate + paddingBytes)

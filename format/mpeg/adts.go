@@ -32,7 +32,7 @@ func adtsDecoder(d *decode.D, in interface{}) interface{} {
 	}
 
 	if validFrames == 0 {
-		d.Invalid("no valid frames")
+		d.Fatal("no valid frames")
 	}
 
 	return nil

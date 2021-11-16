@@ -90,3 +90,10 @@ update-gomod:
 	GOPROXY=direct go get -d github.com/wader/readline@fq
 	GOPROXY=direct go get -d github.com/wader/gojq@fq
 	go mod tidy
+
+# TODO: as decode recovers panic and "repanics" unrecoverable errors this is a bit hacky at the moment
+# fuzz code is not suppose to print to stderr so log to file
+.PHONY: fuzz
+fuzz:
+# in other terminal: tail -f /tmp/repanic
+	REPANIC_LOG=/tmp/repanic gotip test -tags fuzz -v -fuzz=Fuzz ./format/

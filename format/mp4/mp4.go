@@ -137,13 +137,13 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 	d.AssertLeastBytesLeft(16)
 	size := d.U32()
 	if size < 8 {
-		d.Invalid("first box size too small < 8")
+		d.Fatal("first box size too small < 8")
 	}
 	firstType := d.UTF8(4)
 	switch firstType {
 	case "styp", "ftyp", "free", "moov":
 	default:
-		d.Invalid("no styp, ftyp, free or moov box found")
+		d.Error("no styp, ftyp, free or moov box found")
 	}
 
 	d.SeekRel(-8 * 8)

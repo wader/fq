@@ -26,7 +26,7 @@ func annexBDecode(d *decode.D, _ interface{}, format []*decode.Format) interface
 	currentOffset, currentPrefixLen, err := annexBFindStartCode(d)
 	// TODO: really restrict to 0?
 	if err != nil || currentOffset != 0 {
-		d.Invalid("could not find start code (first)")
+		d.Error("could not find start code (first)")
 	}
 
 	for d.NotEnd() {

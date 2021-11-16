@@ -24,7 +24,7 @@ func init() {
 func hevcAUDecode(d *decode.D, in interface{}) interface{} {
 	hevcIn, ok := in.(format.HevcIn)
 	if !ok {
-		d.Invalid("hevcIn required")
+		d.Error("hevcIn required")
 	}
 
 	for d.NotEnd() {

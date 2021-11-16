@@ -160,7 +160,7 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 { /
 		return strings.TrimSpace(d.UTF8(4))
 	})
 	if expectedChunkID != "" && trimChunkID != expectedChunkID {
-		d.Invalid(fmt.Sprintf("expected chunk id %q found %q", expectedChunkID, trimChunkID))
+		d.Error(fmt.Sprintf("expected chunk id %q found %q", expectedChunkID, trimChunkID))
 	}
 	const restOfFileLen = 0xffffffff
 	chunkLen := int64(d.FieldUScalarFn("size", func(d *decode.D) decode.Scalar {

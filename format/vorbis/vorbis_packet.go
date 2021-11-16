@@ -59,7 +59,7 @@ func vorbisDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldUTF8("magic", 6, d.AssertStr("vorbis"))
 	case packetTypeAudio:
 	default:
-		d.Invalid(fmt.Sprintf("unknown packet type %d", packetType))
+		d.Fatal(fmt.Sprintf("unknown packet type %d", packetType))
 	}
 
 	switch packetType {

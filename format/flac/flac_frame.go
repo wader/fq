@@ -78,7 +78,7 @@ func utf8Uint(d *decode.D) uint64 {
 			n = n<<6 | d.U8()&0x3f
 		}
 	default:
-		d.Invalid("invalid UTF8Uint")
+		d.Error("invalid UTF8Uint")
 	}
 	return n
 }
@@ -164,7 +164,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			switch sampleRateBits {
 			case 0:
 				if inStreamInfo == nil {
-					d.Invalid("streaminfo required for sample rate")
+					d.Fatal("streaminfo required for sample rate")
 				}
 				return decode.Scalar{Actual: sampleRateBits, Sym: inStreamInfo.SampleRate, Description: "streaminfo"}
 			case 0b0001:
@@ -256,7 +256,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			return decode.Scalar{Actual: v, Sym: ch, Description: desc}
 		})
 		if channels == 0 {
-			d.Invalid("unknown number of channels")
+			d.Fatal("unknown number of channels")
 		}
 
 		// <3> Sample size in bits:
@@ -274,7 +274,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			switch sampleSizeBits {
 			case 0b000:
 				if inStreamInfo == nil {
-					d.Invalid("streaminfo required for bit per sample")
+					d.Fatal("streaminfo required for bit per sample")
 				}
 				sampleSize = int(inStreamInfo.BitPerSample)
 				s.Description = "streaminfo"
@@ -394,7 +394,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 
 				subframeSampleSize := sampleSize - wastedBitsK
 				if subframeSampleSize < 0 {
-					d.Invalid(fmt.Sprintf("negative subframeSampleSize %d", subframeSampleSize))
+					d.Fatal(fmt.Sprintf("negative subframeSampleSize %d", subframeSampleSize))
 				}
 				// if channel is side, add en extra sample bit
 				// https://github.com/xiph/flac/blob/37e675b777d4e0de53ac9ff69e2aea10d92e729c/src/libFLAC/stream_decoder.c#L2040
@@ -405,7 +405,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 
 				decodeWarmupSamples := func(samples []int64, n int, sampleSize int) {
 					if len(samples) < n {
-						d.Invalid("decodeWarmupSamples outside block size")
+						d.Fatal("decodeWarmupSamples outside block size")
 					}
 
 					d.FieldArray("warmup_samples", func(d *decode.D) {
@@ -473,7 +473,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 								riceParameter := int(d.FieldU("rice_parameter", riceBits))
 
 								if samplesLen < n+count {
-									d.Invalid("decodeResiduals outside block size")
+									d.Fatal("decodeResiduals outside block size")
 								}
 
 								if riceParameter == riceEscape {
@@ -559,7 +559,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 					// <5> Quantized linear predictor coefficient shift needed in bits (NOTE: this number is signed two's-complement).
 					shift := d.FieldS5("shift")
 					if shift < 0 {
-						d.Invalid(fmt.Sprintf("negative LPC shift %d", shift))
+						d.Fatal(fmt.Sprintf("negative LPC shift %d", shift))
 					}
 					// <n> Unencoded predictor coefficients (n = qlp coeff precision * lpc order) (NOTE: the coefficients are signed two's-complement).
 					var coeffs []int64
@@ -594,7 +594,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	streamSamples := len(channelSamples[0])
 	for j := 0; j < len(channelSamples); j++ {
 		if streamSamples > len(channelSamples[j]) {
-			d.Invalid(fmt.Sprintf("different amount of samples in channels %d != %d", streamSamples, len(channelSamples[j])))
+			d.Fatal(fmt.Sprintf("different amount of samples in channels %d != %d", streamSamples, len(channelSamples[j])))
 		}
 	}
 

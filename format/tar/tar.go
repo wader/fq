@@ -43,7 +43,7 @@ func tarDecode(d *decode.D, in interface{}) interface{} {
 				var err error
 				n, err = strconv.ParseUint(ts, 8, 64)
 				if err != nil {
-					d.Invalid(fmt.Sprintf("failed to parse %s number %s: %s", name, ts, err))
+					d.Error(fmt.Sprintf("failed to parse %s number %s: %s", name, ts, err))
 				}
 			}
 			return decode.Scalar{Actual: a, Sym: n}, nil
@@ -76,7 +76,7 @@ func tarDecode(d *decode.D, in interface{}) interface{} {
 				fieldStr(d, "linkname", 100)
 				magic := fieldStr(d, "magic", 6)
 				if magic != "ustar" {
-					d.Invalid(fmt.Sprintf("invalid magic %s", magic))
+					d.Error(fmt.Sprintf("invalid magic %s", magic))
 				}
 				fieldNumStr(d, "version", 2)
 				fieldStr(d, "uname", 32)
@@ -104,7 +104,7 @@ func tarDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldRawLen("end_marker", 512*2*8)
 
 	if !foundEndMarker {
-		d.Invalid("no files found")
+		d.Error("no files found")
 	}
 
 	return nil

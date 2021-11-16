@@ -29,6 +29,7 @@ var protectionAbsentNames = decode.BoolToScalar{
 }
 
 func adtsFrameDecoder(d *decode.D, in interface{}) interface{} {
+
 	/*
 	   adts_frame() {
 	   	adts_fixed_header();
@@ -67,6 +68,7 @@ func adtsFrameDecoder(d *decode.D, in interface{}) interface{} {
 	d.FieldU1("mpeg_version", d.MapUToStr(decode.UToStr{0: "MPEG-4", 1: "MPEG2- AAC"}))
 	d.FieldU2("layer", d.AssertU(0))
 	protectionAbsent := d.FieldBool("protection_absent", d.MapBoolToScalar(protectionAbsentNames))
+
 	// TODO: better sym names
 	objectType := d.FieldUFn("profile", func(d *decode.D) uint64 { return d.U2() + 1 }, d.MapUToStr(format.MPEGAudioObjectTypeNames))
 	d.FieldUScalarFn("sampling_frequency", func(d *decode.D) decode.Scalar {
@@ -86,20 +88,25 @@ func adtsFrameDecoder(d *decode.D, in interface{}) interface{} {
 	d.FieldU1("copyrighted")
 	d.FieldU1("copyright")
 	frameLength := d.FieldU13("frame_length")
-	dataLength := frameLength - 7
+	dataLength := int64(frameLength - 7)
 	if !protectionAbsent {
 		// TODO: multuple RDBs CRCs
 		dataLength -= 2
 	}
+
 	d.FieldU11("buffer_fullness")
 	numberOfRDBs := d.FieldUFn("number_of_rdbs", func(d *decode.D) uint64 { return d.U2() + 1 })
 	if !protectionAbsent {
 		d.FieldU16("crc")
 	}
 
+	if dataLength < 0 {
+		d.Fatal("dataLength < 0")
+	}
+
 	d.FieldArray("raw_data_blocks", func(d *decode.D) {
 		for i := uint64(0); i < numberOfRDBs; i++ {
-			d.FieldFormatLen("raw_data_block", int64(dataLength)*8, aacFrameFormat, format.AACFrameIn{ObjectType: int(objectType)})
+			d.FieldFormatLen("raw_data_block", dataLength*8, aacFrameFormat, format.AACFrameIn{ObjectType: int(objectType)})
 		}
 	})
 

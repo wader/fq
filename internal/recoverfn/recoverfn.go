@@ -2,6 +2,7 @@ package recoverfn
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"runtime"
 )
@@ -82,10 +83,19 @@ func (r Raw) Frames() []runtime.Frame {
 }
 
 func (r Raw) RePanic() {
-	fmt.Fprintf(os.Stderr, "repanic: %v\n", r.RecoverV)
+	var o io.Writer
+	o = os.Stderr
+	if p := os.Getenv("REPANIC_LOG"); p != "" {
+		if f, err := os.Create(p); err == nil {
+			o = f
+			defer f.Close()
+		}
+	}
+
+	fmt.Fprintf(o, "repanic: %v\n", r.RecoverV)
 	for _, f := range r.frames(0, 0, 0) {
-		fmt.Fprintf(os.Stderr, "%s\n", f.Function)
-		fmt.Fprintf(os.Stderr, "\t%s:%d\n", f.File, f.Line)
+		fmt.Fprintf(o, "%s\n", f.Function)
+		fmt.Fprintf(o, "\t%s:%d\n", f.File, f.Line)
 	}
 	panic(r.RecoverV)
 }
