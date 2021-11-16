@@ -1,3 +1,4 @@
+// Code below generated from scalar_gen.go.tmpl
 package decode
 
 import (
