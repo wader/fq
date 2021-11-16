@@ -178,7 +178,7 @@ def _main:
       "decode_format": {
         short: "-d",
         long: "--decode",
-        description: "Decode format (probe)",
+        description: "Force decode format (probe)",
         string: "NAME"
       },
       "decode_file": {

@@ -13,7 +13,7 @@ Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 --argjson NAME JSON      Set variable $NAME to JSON
 --color-output,-C        Force color output
 --compact-output,-c      Compact output
---decode,-d NAME         Decode format (probe)
+--decode,-d NAME         Force decode format (probe)
 --decode-file NAME PATH  Set variable $NAME to decode of file
 --formats                Show supported formats
 --from-file,-f PATH      Read EXPR from file
