@@ -328,7 +328,7 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 								switch signature {
 								case "8BIM":
 									// TODO: description?
-									d.FieldU16("block", d.MapUToStr(psImageResourceBlockNames))
+									d.FieldU16("block", d.MapUToScalar(psImageResourceBlockNames))
 									d.FieldRawLen("data", d.BitsLeft())
 								default:
 								}

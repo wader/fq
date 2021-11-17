@@ -388,7 +388,7 @@ func (d *D) tryText(nBytes int, e encoding.Encoding) (string, error) {
 // read length prefixed text (ex pascal short string)
 // lBits length prefix
 // fixedBytes if != -1 read nBytes but trim to length
-func (d *D) tryLenPrefixedText(lenBits int, fixedBytes int, e encoding.Encoding) (string, error) {
+func (d *D) tryTextLenPrefixed(lenBits int, fixedBytes int, e encoding.Encoding) (string, error) {
 	p := d.Pos()
 	l, err := d.bits(lenBits)
 	if err != nil {
@@ -412,7 +412,7 @@ func (d *D) tryLenPrefixedText(lenBits int, fixedBytes int, e encoding.Encoding)
 	return e.NewDecoder().String(string(bs[0:l]))
 }
 
-func (d *D) tryNullTerminatedText(nullBytes int, e encoding.Encoding) (string, error) {
+func (d *D) tryTextNull(nullBytes int, e encoding.Encoding) (string, error) {
 	p := d.Pos()
 	peekBits, _, err := d.TryPeekFind(nullBytes*8, 8, -1, func(v uint64) bool { return v == 0 })
 	if err != nil {
@@ -428,7 +428,7 @@ func (d *D) tryNullTerminatedText(nullBytes int, e encoding.Encoding) (string, e
 	return e.NewDecoder().String(string(bs[0 : n-nullBytes]))
 }
 
-func (d *D) tryNullTerminatedLenText(fixedBytes int, e encoding.Encoding) (string, error) {
+func (d *D) tryTextNullLen(fixedBytes int, e encoding.Encoding) (string, error) {
 	bs, err := d.bitBuf.BytesLen(fixedBytes)
 	if err != nil {
 		return "", err

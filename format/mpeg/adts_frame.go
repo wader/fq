@@ -65,12 +65,12 @@ func adtsFrameDecoder(d *decode.D, in interface{}) interface{} {
 	// Q	16	CRC if protection absent is 0
 
 	d.FieldU12("syncword", d.AssertU(0b1111_1111_1111), d.Bin)
-	d.FieldU1("mpeg_version", d.MapUToStr(decode.UToStr{0: "MPEG-4", 1: "MPEG2- AAC"}))
+	d.FieldU1("mpeg_version", d.MapUToStrSym(decode.UToStr{0: "MPEG-4", 1: "MPEG2- AAC"}))
 	d.FieldU2("layer", d.AssertU(0))
 	protectionAbsent := d.FieldBool("protection_absent", d.MapBoolToScalar(protectionAbsentNames))
 
 	// TODO: better sym names
-	objectType := d.FieldUFn("profile", func(d *decode.D) uint64 { return d.U2() + 1 }, d.MapUToStr(format.MPEGAudioObjectTypeNames))
+	objectType := d.FieldUFn("profile", func(d *decode.D) uint64 { return d.U2() + 1 }, d.MapUToStrSym(format.MPEGAudioObjectTypeNames))
 	d.FieldUScalarFn("sampling_frequency", func(d *decode.D) decode.Scalar {
 		v := d.U4()
 		if v == 15 {
@@ -82,7 +82,7 @@ func adtsFrameDecoder(d *decode.D, in interface{}) interface{} {
 		return decode.Scalar{Description: "invalid"}
 	})
 	d.FieldU1("private_bit")
-	d.FieldU3("channel_configuration", d.MapUToStr(channelConfigurationNames))
+	d.FieldU3("channel_configuration", d.MapUToStrSym(channelConfigurationNames))
 	d.FieldU1("originality")
 	d.FieldU1("home")
 	d.FieldU1("copyrighted")

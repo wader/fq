@@ -170,7 +170,7 @@ func fieldFormatRR(d *decode.D, count uint64, name string, structName string) {
 		for i := uint64(0); i < count; i++ {
 			d.FieldStruct(structName, func(d *decode.D) {
 				fieldFormatLabel(d, "name")
-				typ := d.FieldU16("type", d.MapUToStr(typeNames))
+				typ := d.FieldU16("type", d.MapUToStrSym(typeNames))
 				class := d.FieldU16("class", d.MapURangeToScalar(classNames))
 				d.FieldU32("ttl")
 				// TODO: pointer?
@@ -194,11 +194,11 @@ func fieldFormatRR(d *decode.D, count uint64, name string, structName string) {
 func dnsDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldStruct("header", func(d *decode.D) {
 		d.FieldU16("id")
-		d.FieldBool("query", d.MapBoolToStr(decode.BoolToStr{
+		d.FieldBool("query", d.MapBoolToStrSym(decode.BoolToStr{
 			true:  "Query",
 			false: "Response",
 		}))
-		d.FieldU4("opcode", d.MapUToStr(decode.UToStr{
+		d.FieldU4("opcode", d.MapUToStrSym(decode.UToStr{
 			0: "Query",
 			1: "IQuery",
 			2: "Status",
@@ -222,7 +222,7 @@ func dnsDecode(d *decode.D, in interface{}) interface{} {
 		for i := uint64(0); i < qdCount; i++ {
 			d.FieldStruct("question", func(d *decode.D) {
 				fieldFormatLabel(d, "name")
-				d.FieldU16("type", d.MapUToStr(typeNames))
+				d.FieldU16("type", d.MapUToStrSym(typeNames))
 				d.FieldU16("class", d.MapURangeToScalar(classNames))
 			})
 		}

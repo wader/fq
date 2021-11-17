@@ -92,11 +92,11 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldU32("height")
 				d.FieldU8("bit_depth")
 				d.FieldU8("color_type")
-				d.FieldU8("compression_method", d.MapUToStr(compressionNames))
-				d.FieldU8("filter_method", d.MapUToStr(decode.UToStr{
+				d.FieldU8("compression_method", d.MapUToStrSym(compressionNames))
+				d.FieldU8("filter_method", d.MapUToStrSym(decode.UToStr{
 					0: "Adaptive filtering",
 				}))
-				d.FieldU8("interlace_method", d.MapUToStr(decode.UToStr{
+				d.FieldU8("interlace_method", d.MapUToStrSym(decode.UToStr{
 					0: "No interlace",
 					1: "Adam7 interlace",
 				}))
@@ -111,7 +111,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 				keywordLen := int(d.PeekFindByte(0, 80))
 				d.FieldUTF8("keyword", keywordLen)
 				d.FieldUTF8("null", 1)
-				compressionMethod := d.FieldU8("compression_method", d.MapUToStr(compressionNames))
+				compressionMethod := d.FieldU8("compression_method", d.MapUToStrSym(compressionNames))
 				// +2 to skip null and compression_method
 				dataLen := (chunkLength - (keywordLen + 2)) * 8
 
@@ -132,7 +132,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 				profileNameLen := int(d.PeekFindByte(0, 80))
 				d.FieldUTF8("profile_name", profileNameLen)
 				d.FieldUTF8("null", 1)
-				compressionMethod := d.FieldU8("compression_method", d.MapUToStr(compressionNames))
+				compressionMethod := d.FieldU8("compression_method", d.MapUToStrSym(compressionNames))
 				// +2 to skip null and compression_method
 				dataLen := (chunkLength - (profileNameLen + 2)) * 8
 
@@ -176,8 +176,8 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldU32("y_offset")
 				d.FieldU16("delay_num")
 				d.FieldU16("delay_sep")
-				d.FieldU8("dispose_op", d.MapUToStr(disposeOpNames))
-				d.FieldU8("blend_op", d.MapUToStr(blendOpNames))
+				d.FieldU8("dispose_op", d.MapUToStrSym(disposeOpNames))
+				d.FieldU8("blend_op", d.MapUToStrSym(blendOpNames))
 			case "fdAT":
 				d.FieldU32("sequence_number")
 				d.FieldRawLen("data", int64(chunkLength-4)*8)

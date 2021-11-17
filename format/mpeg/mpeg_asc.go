@@ -53,7 +53,7 @@ func ascDecoder(d *decode.D, in interface{}) interface{} {
 			n = 32 + d.U6()
 		}
 		return n
-	}, d.MapUToStr(format.MPEGAudioObjectTypeNames))
+	}, d.MapUToStrSym(format.MPEGAudioObjectTypeNames))
 	d.FieldUScalarFn("sampling_frequency", func(d *decode.D) decode.Scalar {
 		v := d.U4()
 		if v == 15 {
@@ -64,7 +64,7 @@ func ascDecoder(d *decode.D, in interface{}) interface{} {
 		}
 		return decode.Scalar{Description: "invalid"}
 	})
-	d.FieldU4("channel_configuration", d.MapUToStr(channelConfigurationNames))
+	d.FieldU4("channel_configuration", d.MapUToStrSym(channelConfigurationNames))
 	// TODO: GASpecificConfig etc
 	d.FieldRawLen("var_aot_or_byte_align", d.BitsLeft())
 

@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strconv"
+	"strings"
 	"text/template"
 )
 
@@ -17,6 +19,17 @@ func toInt(v interface{}) int {
 		return v
 	default:
 		return 0
+	}
+}
+
+func toString(v interface{}) string {
+	switch v := v.(type) {
+	case string:
+		return v
+	case int:
+		return strconv.Itoa(v)
+	default:
+		return ""
 	}
 }
 
@@ -35,6 +48,17 @@ func main() {
 			}
 
 			return v, nil
+		},
+		"replace": func(args ...interface{}) (interface{}, error) {
+			if len(args) < 3 {
+				return nil, errors.New("need tmpl, old and new argument")
+			}
+
+			s := toString(args[0])
+			o := toString(args[1])
+			n := toString(args[2])
+
+			return strings.Replace(s, o, n, -1), nil
 		},
 	}
 

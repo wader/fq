@@ -25,7 +25,7 @@ func xyzType(d *decode.D) {
 }
 
 func textType(d *decode.D) {
-	d.FieldUTF8NullTerminatedLen("text", int(d.BitsLeft()/8))
+	d.FieldUTF8NullFixedLen("text", int(d.BitsLeft()/8))
 }
 
 func paraType(d *decode.D) {
@@ -37,13 +37,13 @@ func paraType(d *decode.D) {
 
 func descType(d *decode.D) {
 	descLen := d.FieldU32("description_length")
-	d.FieldUTF8NullTerminatedLen("description", int(descLen))
+	d.FieldUTF8NullFixedLen("description", int(descLen))
 	d.FieldU32("language_code")
 	localDescLen := d.FieldU32("localizable_description_length")
-	d.FieldUTF8NullTerminatedLen("localizable_description", int(localDescLen))
+	d.FieldUTF8NullFixedLen("localizable_description", int(localDescLen))
 	d.FieldU16("script_code")
 	d.FieldU8("macintosh_description_length")
-	d.FieldUTF8NullTerminatedLen("macintosh_description", 67)
+	d.FieldUTF8NullFixedLen("macintosh_description", 67)
 }
 
 var typToDecode = map[string]func(d *decode.D){
@@ -87,13 +87,13 @@ func iccProfileDecode(d *decode.D, in interface{}) interface{} {
 	d.LenFn(int64(size)*8, func(d *decode.D) {
 		d.FieldStruct("header", func(d *decode.D) {
 			d.FieldU32("size")
-			d.FieldUTF8NullTerminatedLen("cmm_type_signature", 4)
+			d.FieldUTF8NullFixedLen("cmm_type_signature", 4)
 			d.FieldUFn("version_major", decodeBCDU8)
 			d.FieldUFn("version_minor", decodeBCDU8)
 			d.FieldU16("version_reserved")
-			d.FieldUTF8NullTerminatedLen("device_class_signature", 4)
-			d.FieldUTF8NullTerminatedLen("color_space", 4)
-			d.FieldUTF8NullTerminatedLen("connection_space", 4)
+			d.FieldUTF8NullFixedLen("device_class_signature", 4)
+			d.FieldUTF8NullFixedLen("color_space", 4)
+			d.FieldUTF8NullFixedLen("connection_space", 4)
 			d.FieldStruct("timestamp", func(d *decode.D) {
 				d.FieldU16("year")
 				d.FieldU16("month")
@@ -103,16 +103,16 @@ func iccProfileDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldU16("seconds")
 
 			})
-			d.FieldUTF8NullTerminatedLen("file_signature", 4)
-			d.FieldUTF8NullTerminatedLen("primary_platform", 4)
+			d.FieldUTF8NullFixedLen("file_signature", 4)
+			d.FieldUTF8NullFixedLen("primary_platform", 4)
 			d.FieldU32("flags")
-			d.FieldUTF8NullTerminatedLen("device_manufacturer", 4)
-			d.FieldUTF8NullTerminatedLen("device_model", 4)
-			d.FieldUTF8NullTerminatedLen("device_attribute", 8)
-			d.FieldUTF8NullTerminatedLen("render_intent", 4)
-			d.FieldUTF8NullTerminatedLen("xyz_illuminant", 12)
-			d.FieldUTF8NullTerminatedLen("profile_creator_signature", 4)
-			d.FieldUTF8NullTerminatedLen("profile_id", 16)
+			d.FieldUTF8NullFixedLen("device_manufacturer", 4)
+			d.FieldUTF8NullFixedLen("device_model", 4)
+			d.FieldUTF8NullFixedLen("device_attribute", 8)
+			d.FieldUTF8NullFixedLen("render_intent", 4)
+			d.FieldUTF8NullFixedLen("xyz_illuminant", 12)
+			d.FieldUTF8NullFixedLen("profile_creator_signature", 4)
+			d.FieldUTF8NullFixedLen("profile_id", 16)
 			d.FieldRawLen("reserved", 28*8, d.BitBufIsZero)
 		})
 
@@ -121,12 +121,12 @@ func iccProfileDecode(d *decode.D, in interface{}) interface{} {
 			d.FieldArray("table", func(d *decode.D) {
 				for i := uint64(0); i < tagCount; i++ {
 					d.FieldStruct("element", func(d *decode.D) {
-						d.FieldUTF8NullTerminatedLen("signature", 4)
+						d.FieldUTF8NullFixedLen("signature", 4)
 						offset := d.FieldU32("offset")
 						size := d.FieldU32("size")
 
 						d.RangeFn(int64(offset)*8, int64(size)*8, func(d *decode.D) {
-							typ := d.FieldUTF8NullTerminatedLen("type", 4)
+							typ := d.FieldUTF8NullFixedLen("type", 4)
 							d.FieldU32("reserved")
 
 							if fn, ok := typToDecode[typ]; ok {

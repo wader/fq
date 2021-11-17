@@ -193,13 +193,13 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, expectedTagID int, fn func(d
 			fieldODDecodeTag(d, edc, "sl_config_descr", -1, nil)
 		},
 		DecoderConfigDescrTag: func(d *decode.D) {
-			objectType := d.FieldU8("object_type_indication", d.MapUToStr(format.MpegObjectTypeNames))
+			objectType := d.FieldU8("object_type_indication", d.MapUToStrSym(format.MpegObjectTypeNames))
 			edc.decoderConfigs = append(edc.decoderConfigs, format.MpegDecoderConfig{
 				ObjectType: int(objectType),
 			})
 			edc.currentDecoderConfig = &edc.decoderConfigs[len(edc.decoderConfigs)-1]
 
-			d.FieldU6("stream_type", d.MapUToStr(streamTypeNames))
+			d.FieldU6("stream_type", d.MapUToStrSym(streamTypeNames))
 			d.FieldBool("upstream")
 			d.FieldBool("specific_info_flag")
 			d.FieldU24("buffer_size_db")
@@ -263,7 +263,7 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, expectedTagID int, fn func(d
 
 	// TODO: expectedTagID
 
-	tagID := d.FieldU8("tag_id", d.MapUToStr(odTagNames))
+	tagID := d.FieldU8("tag_id", d.MapUToStrSym(odTagNames))
 	tagLen := d.FieldUFn("length", esLengthEncoding)
 
 	if fn != nil {

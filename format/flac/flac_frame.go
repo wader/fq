@@ -111,7 +111,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		// <1> Blocking strategy:
 		// 0 : fixed-blocksize stream; frame header encodes the frame number
 		// 1 : variable-blocksize stream; frame header encodes the sample number
-		blockingStrategy := d.FieldU1("blocking_strategy", d.MapUToStr(BlockingStrategyNames))
+		blockingStrategy := d.FieldU1("blocking_strategy", d.MapUToStrSym(BlockingStrategyNames))
 
 		// <4> Block size in inter-channel samples:
 		// 0000 : reserved

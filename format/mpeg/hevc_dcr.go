@@ -48,7 +48,7 @@ func hevcDcrDecode(d *decode.D, in interface{}) interface{} {
 			d.FieldStruct("array", func(d *decode.D) {
 				d.FieldU1("array_completeness")
 				d.FieldU1("reserved0")
-				d.FieldU6("nal_unit_type", d.MapUToStr(hevcNALNames))
+				d.FieldU6("nal_unit_type", d.MapUToStrSym(hevcNALNames))
 				numNals := d.FieldU16("num_nalus")
 				d.FieldArray("nals", func(d *decode.D) {
 					for i := uint64(0); i < numNals; i++ {

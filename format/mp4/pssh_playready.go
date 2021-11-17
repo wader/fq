@@ -31,7 +31,7 @@ func playreadyPsshDecode(d *decode.D, in interface{}) interface{} {
 	count := d.FieldU16("count")
 	i := uint64(0)
 	d.FieldStructArrayLoop("records", "record", func() bool { return i < count }, func(d *decode.D) {
-		recordType := d.FieldU16("type", d.MapUToStr(recordTypeNames))
+		recordType := d.FieldU16("type", d.MapUToStrSym(recordTypeNames))
 		recordLen := d.FieldU16("len")
 		switch recordType {
 		case recordTypeRightsManagementHeader, recordTypeLicenseStore:

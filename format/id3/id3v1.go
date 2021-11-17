@@ -23,13 +23,13 @@ func id3v1Decode(d *decode.D, in interface{}) interface{} {
 	if d.PeekBits(8) == uint64('+') {
 		d.Error("looks like id3v11")
 	}
-	d.FieldUTF8NullTerminatedLen("song_name", 30)
-	d.FieldUTF8NullTerminatedLen("artist", 30)
-	d.FieldUTF8NullTerminatedLen("album_name", 30)
-	d.FieldUTF8NullTerminatedLen("year", 4)
-	d.FieldUTF8NullTerminatedLen("comment", 30)
+	d.FieldUTF8NullFixedLen("song_name", 30)
+	d.FieldUTF8NullFixedLen("artist", 30)
+	d.FieldUTF8NullFixedLen("album_name", 30)
+	d.FieldUTF8NullFixedLen("year", 4)
+	d.FieldUTF8NullFixedLen("comment", 30)
 	// from https://en.wikipedia.org/wiki/List_of_ID3v1_Genres
-	d.FieldU8("genre", d.MapUToStr(decode.UToStr{
+	d.FieldU8("genre", d.MapUToStrSym(decode.UToStr{
 		0:   "Blues",
 		1:   "Classic Rock",
 		2:   "Country",

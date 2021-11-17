@@ -36,7 +36,7 @@ func vp8Decode(d *decode.D, in interface{}) interface{} {
 		firstPartSize0 := d.FieldU3("first_part_size0")
 		d.FieldU1("show_frame")
 		version := d.FieldU3("version")
-		keyFrameV := d.FieldBool("frame_type", d.MapBoolToStr(decode.BoolToStr{true: "non_key_frame", false: "key_frame"}))
+		keyFrameV := d.FieldBool("frame_type", d.MapBoolToStrSym(decode.BoolToStr{true: "non_key_frame", false: "key_frame"}))
 		firstPartSize1 := d.FieldU16LE("first_part_size1")
 
 		firstPartSize := firstPartSize0 | firstPartSize1<<3

@@ -282,12 +282,12 @@ func init() {
 		"hdlr": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
-			d.FieldUTF8NullTerminatedLen("component_type", 4)
+			d.FieldUTF8NullFixedLen("component_type", 4)
 			subType := d.FieldUTF8("component_subtype", 4, d.MapStrToScalar(subTypeNames), d.TrimSpace)
-			d.FieldUTF8NullTerminatedLen("component_manufacturer", 4)
+			d.FieldUTF8NullFixedLen("component_manufacturer", 4)
 			d.FieldU32("component_flags")
 			d.FieldU32("component_flags_mask")
-			d.FieldUTF8NullTerminatedLen("component_name", int(d.BitsLeft()/8))
+			d.FieldUTF8NullFixedLen("component_name", int(d.BitsLeft()/8))
 
 			if ctx.currentTrack != nil {
 				// component_type seems to be all zero sometimes so can't look for "mhlr"
@@ -406,7 +406,7 @@ func init() {
 									d.FieldFP32("vertical_resolution")
 									d.FieldU32("data_size")
 									d.FieldU16("frame_count")
-									d.FieldUTF8ShortString("compressor_name", 32)
+									d.FieldUTF8ShortStringFixedLen("compressor_name", 32)
 									d.FieldU16("depth")
 									d.FieldS16("color_table_id")
 									// TODO: if 0 decode ctab
@@ -579,9 +579,9 @@ func init() {
 							1: "yes",
 							2: "no",
 						}
-						d.FieldU2("sample_depends_on", d.MapUToStr(values))
-						d.FieldU2("sample_is_depended_on", d.MapUToStr(values))
-						d.FieldU2("sample_has_redundancy", d.MapUToStr(values))
+						d.FieldU2("sample_depends_on", d.MapUToStrSym(values))
+						d.FieldU2("sample_is_depended_on", d.MapUToStrSym(values))
+						d.FieldU2("sample_has_redundancy", d.MapUToStrSym(values))
 					})
 				}
 			})
@@ -896,13 +896,13 @@ func init() {
 			d.FieldU24("flags")
 			d.FieldU16("id")
 			d.FieldU16("protection_index")
-			d.FieldUTF8NullTerminated("item_name")
+			d.FieldUTF8Null("item_name")
 			// TODO: really optional? seems so
 			if d.NotEnd() {
-				d.FieldUTF8NullTerminated("content_type")
+				d.FieldUTF8Null("content_type")
 			}
 			if d.NotEnd() {
-				d.FieldUTF8NullTerminated("content_encoding")
+				d.FieldUTF8Null("content_encoding")
 			}
 		},
 		"iinf": func(ctx *decodeContext, d *decode.D) {

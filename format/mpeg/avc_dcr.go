@@ -117,9 +117,9 @@ func avcDcrParameterSet(d *decode.D, numParamSets uint64) {
 
 func avcDcrDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldU8("configuration_version")
-	d.FieldU8("profile_indication", d.MapUToStr(avcProfileNames))
+	d.FieldU8("profile_indication", d.MapUToStrSym(avcProfileNames))
 	d.FieldU8("profile_compatibility")
-	d.FieldU8("level_indication", d.MapUToStr(avcLevelNames))
+	d.FieldU8("level_indication", d.MapUToStrSym(avcLevelNames))
 	d.FieldU6("reserved0")
 	lengthSizeMinusOne := d.FieldU2("length_size_minus_one")
 	d.FieldU3("reserved1")

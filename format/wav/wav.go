@@ -130,7 +130,7 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 { /
 			decodeChunks(d, false)
 		},
 		"fmt": func(d *decode.D) {
-			audioFormat := d.FieldU16LE("audio_format", d.MapUToStr(audioFormatName))
+			audioFormat := d.FieldU16LE("audio_format", d.MapUToStrSym(audioFormatName))
 			d.FieldU16LE("num_channels")
 			d.FieldU32LE("sample_rate")
 			d.FieldU32LE("byte_rate")

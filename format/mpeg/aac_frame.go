@@ -99,7 +99,7 @@ func aacLTPData(d *decode.D, objectType int, windowSequence int) {
 
 func aacICSInfo(d *decode.D, objectType int) {
 	d.FieldU1("ics_reserved_bit")
-	windowSequence := d.FieldU2("window_sequence", d.MapUToStr(windowSequenceNames))
+	windowSequence := d.FieldU2("window_sequence", d.MapUToStrSym(windowSequenceNames))
 	d.FieldU1("window_shape")
 	switch windowSequence {
 	case EIGHT_SHORT_SEQUENCE:
@@ -254,7 +254,7 @@ func aacFillElement(d *decode.D) {
 	d.FieldStruct("extension_payload", func(d *decode.D) {
 		d.LenFn(int64(cnt)*8, func(d *decode.D) {
 
-			extensionType := d.FieldU4("extension_type", d.MapUToStr(extensionPayloadIDNames))
+			extensionType := d.FieldU4("extension_type", d.MapUToStrSym(extensionPayloadIDNames))
 
 			// d.FieldU("align4", 2)
 
@@ -279,7 +279,7 @@ func aacDecode(d *decode.D, in interface{}) interface{} {
 	seenTerm := false
 	for !seenTerm {
 		d.FieldStruct("element", func(d *decode.D) {
-			se := d.FieldU3("syntax_element", d.MapUToStr(syntaxElementNames))
+			se := d.FieldU3("syntax_element", d.MapUToStrSym(syntaxElementNames))
 
 			switch se {
 			case FIL:

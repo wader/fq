@@ -112,7 +112,7 @@ func avcNALUDecode(d *decode.D, in interface{}) interface{} {
 		avcNALCodedSliceExtension:
 		d.FieldStruct("slice_header", func(d *decode.D) {
 			d.FieldUFn("first_mb_in_slice", uEV)
-			d.FieldUFn("slice_type", uEV, d.MapUToStr(sliceNames))
+			d.FieldUFn("slice_type", uEV, d.MapUToStrSym(sliceNames))
 			d.FieldUFn("pic_parameter_set_id", uEV)
 			// TODO: if ( separate_colour_plane_flag from SPS ) colour_plane_id; frame_num
 		})

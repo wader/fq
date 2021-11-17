@@ -72,7 +72,7 @@ func vp9DecodeColorConfig(d *decode.D, profile int) {
 		}
 	}
 	d.FieldValueU("bit_depth", uint64(bitDepth))
-	colorSpace := d.FieldU3("color_space", d.MapUToStr(vp9ColorSpaceNames))
+	colorSpace := d.FieldU3("color_space", d.MapUToStrSym(vp9ColorSpaceNames))
 	_, colorSpaceOk := vp9ColorSpaceNames[colorSpace]
 	if !colorSpaceOk || colorSpace != CS_RGB {
 		d.FieldU1("color_range")
@@ -117,7 +117,7 @@ func vp9Decode(d *decode.D, in interface{}) interface{} {
 		return nil
 	}
 
-	frameType := d.FieldBool("frame_type", d.MapBoolToStr(decode.BoolToStr{true: "non_key_frame", false: "key_frame"}))
+	frameType := d.FieldBool("frame_type", d.MapBoolToStrSym(decode.BoolToStr{true: "non_key_frame", false: "key_frame"}))
 	d.FieldU1("show_frame")
 	d.FieldU1("error_resilient_mode")
 

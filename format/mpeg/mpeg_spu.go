@@ -129,7 +129,7 @@ func spuDecode(d *decode.D, in interface{}) interface{} {
 					seenEnd := false
 					for !seenEnd {
 						d.FieldStruct("command", func(d *decode.D) {
-							cmd := d.FieldU8("type", d.MapUToStr(commandNames))
+							cmd := d.FieldU8("type", d.MapUToStrSym(commandNames))
 							switch cmd {
 							case CMD_END:
 								seenEnd = true

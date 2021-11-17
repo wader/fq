@@ -53,7 +53,7 @@ func metadatablockDecode(d *decode.D, in interface{}) interface{} {
 	var streamInfo format.FlacStreamInfo
 
 	isLastBlock := d.FieldBool("last_block")
-	typ := d.FieldU7("type", d.MapUToStr(metadataBlockNames))
+	typ := d.FieldU7("type", d.MapUToStrSym(metadataBlockNames))
 	length := d.FieldU24("length")
 
 	switch typ {

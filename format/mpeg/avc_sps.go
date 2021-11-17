@@ -97,7 +97,7 @@ func avcHdrParameters(d *decode.D) {
 }
 
 func avcSPSDecode(d *decode.D, in interface{}) interface{} {
-	profileIdc := d.FieldU8("profile_idc", d.MapUToStr(avcProfileNames))
+	profileIdc := d.FieldU8("profile_idc", d.MapUToStrSym(avcProfileNames))
 	d.FieldBool("constraint_set0_flag")
 	d.FieldBool("constraint_set1_flag")
 	d.FieldBool("constraint_set2_flag")
@@ -105,7 +105,7 @@ func avcSPSDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldBool("constraint_set4_flag")
 	d.FieldBool("constraint_set5_flag")
 	d.FieldU2("reserved_zero_2bits")
-	d.FieldU8("level_idc", d.MapUToStr(avcLevelNames))
+	d.FieldU8("level_idc", d.MapUToStrSym(avcLevelNames))
 	d.FieldUFn("seq_parameter_set_id", uEV)
 
 	switch profileIdc {

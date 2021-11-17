@@ -99,8 +99,8 @@ func decodeIfd(d *decode.D, s *strips, tagNames map[uint64]string) int64 {
 		d.FieldArray("entries", func(d *decode.D) {
 			for i := uint64(0); i < numberOfFields; i++ {
 				d.FieldStruct("entry", func(d *decode.D) {
-					tag := d.FieldU16("tag", d.MapUToStr(tagNames), d.Hex)
-					typ := d.FieldU16("type", d.MapUToStr(typeNames))
+					tag := d.FieldU16("tag", d.MapUToStrSym(tagNames), d.Hex)
+					typ := d.FieldU16("type", d.MapUToStrSym(typeNames))
 					count := d.FieldU32("count")
 					// TODO: short values stored in valueOffset directly?
 					valueOrByteOffset := d.FieldU32("value_offset")
@@ -148,7 +148,7 @@ func decodeIfd(d *decode.D, s *strips, tagNames map[uint64]string) int64 {
 								}
 							case typ == ASCII:
 								d.RangeFn(int64(valueByteOffset*8), int64(valueByteSize*8), func(d *decode.D) {
-									d.FieldUTF8NullTerminatedLen("value", int(valueByteSize))
+									d.FieldUTF8NullFixedLen("value", int(valueByteSize))
 								})
 							case typ == BYTE:
 								d.RangeFn(int64(valueByteOffset*8), int64(valueByteSize*8), func(d *decode.D) {
@@ -206,7 +206,7 @@ func decodeIfd(d *decode.D, s *strips, tagNames map[uint64]string) int64 {
 }
 
 func tiffDecode(d *decode.D, in interface{}) interface{} {
-	endian := d.FieldU32("endian", d.MapUToStr(endianNames), d.Hex)
+	endian := d.FieldU32("endian", d.MapUToStrSym(endianNames), d.Hex)
 
 	switch endian {
 	case littleEndian:

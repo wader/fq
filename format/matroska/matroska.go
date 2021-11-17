@@ -229,7 +229,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 						dc.currentTrack.codec = v
 					}
 				case ebml.UTF8:
-					d.FieldUTF8NullTerminatedLen("value", int(tagSize))
+					d.FieldUTF8NullFixedLen("value", int(tagSize))
 				case ebml.Date:
 					// TODO:
 					/*

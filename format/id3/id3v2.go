@@ -423,7 +423,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Description        <text string according to encoding> $00 (00)
 		// Picture data       <binary data>
 		"APIC": func(d *decode.D) {
-			encoding := d.FieldU8("text_encoding", d.MapUToStr(encodingNames))
+			encoding := d.FieldU8("text_encoding", d.MapUToStrSym(encodingNames))
 			d.FieldStrFn("mime_type", textNullFn(encodingUTF8))
 			d.FieldU8("picture_type") // TODO: table
 			d.FieldStrFn("description", textNullFn(int(encoding)))
@@ -440,7 +440,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Content description    <text string according to encoding> $00 (00)
 		// Encapsulated object    <binary data>
 		"GEOB": func(d *decode.D) {
-			encoding := d.FieldU8("text_encoding", d.MapUToStr(encodingNames))
+			encoding := d.FieldU8("text_encoding", d.MapUToStrSym(encodingNames))
 			d.FieldStrFn("mime_type", textNullFn(encodingUTF8))
 			d.FieldStrFn("filename", textNullFn(int(encoding)))
 			d.FieldStrFn("description", textNullFn(int(encoding)))
@@ -476,7 +476,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Short content descrip. <text string according to encoding> $00 (00)
 		// The actual text        <full text string according to encoding>
 		"COMM": func(d *decode.D) {
-			encoding := d.FieldU8("text_encoding", d.MapUToStr(encodingNames))
+			encoding := d.FieldU8("text_encoding", d.MapUToStrSym(encodingNames))
 			d.FieldUTF8("language", 3)
 			d.FieldStrFn("description", textNullFn(int(encoding)))
 			d.FieldStrFn("value", textFn(int(encoding), int(d.BitsLeft()/8)))
@@ -492,7 +492,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Text encoding                $xx
 		// Information                  <text string(s) according to encoding>
 		"T000": func(d *decode.D) {
-			encoding := d.FieldU8("text_encoding", d.MapUToStr(encodingNames))
+			encoding := d.FieldU8("text_encoding", d.MapUToStrSym(encodingNames))
 			d.FieldStrFn("text", textFn(int(encoding), int(d.BitsLeft()/8)))
 		},
 		// User defined...   "TXX"
@@ -506,7 +506,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Description       <text string according to encoding> $00 (00)
 		// Value             <text string according to encoding>
 		"TXXX": func(d *decode.D) {
-			encoding := d.FieldU8("text_encoding", d.MapUToStr(encodingNames))
+			encoding := d.FieldU8("text_encoding", d.MapUToStrSym(encodingNames))
 			d.FieldStrFn("description", textNullFn(int(encoding)))
 			d.FieldStrFn("value", textFn(int(encoding), int(d.BitsLeft()/8)))
 		},

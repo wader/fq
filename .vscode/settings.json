@@ -156,4 +156,5 @@
     "[plaintext]": {
         "files.trimTrailingWhitespace": false,
     },
+    "fracturedjsonvsc.MaxInlineLength": 160,
 }

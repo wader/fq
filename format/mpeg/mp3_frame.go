@@ -234,19 +234,19 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			}
 		})
 
-		paddingBytes = d.FieldU1("padding", d.MapUToStr(decode.UToStr{
+		paddingBytes = d.FieldU1("padding", d.MapUToStrSym(decode.UToStr{
 			0: "Not padded",
 			1: "Padded",
 		}), d.Bin)
 		d.FieldU1("private")
-		channelsIndex := d.FieldU2("channels", d.MapUToStr(decode.UToStr{
+		channelsIndex := d.FieldU2("channels", d.MapUToStrSym(decode.UToStr{
 			0b00: "Stereo",
 			0b01: "Joint stereo",
 			0b10: "Dual",
 			0b11: "Mono",
 		}), d.Bin)
 		isStereo = channelsIndex != 0b11
-		d.FieldU2("channel_mode", d.MapUToStr(decode.UToStr{
+		d.FieldU2("channel_mode", d.MapUToStrSym(decode.UToStr{
 			0b00: "None",
 			0b01: "Intensity stereo",
 			0b10: "MS stereo",
@@ -254,7 +254,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		}), d.Bin)
 		d.FieldU1("copyright")
 		d.FieldU1("original")
-		d.FieldU2("emphasis", d.MapUToStr(decode.UToStr{
+		d.FieldU2("emphasis", d.MapUToStrSym(decode.UToStr{
 			0b00: "None",
 			0b01: "50/15",
 			0b10: "reserved",
@@ -314,7 +314,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 					blocksplitFlag := d.FieldU1("blocksplit_flag")
 
 					if blocksplitFlag == 1 {
-						d.FieldU2("block_type", d.MapUToStr(blockTypeNames))
+						d.FieldU2("block_type", d.MapUToStrSym(blockTypeNames))
 						d.FieldU1("switch_point")
 						d.FieldU5("table_select0")
 						d.FieldU5("table_select1")

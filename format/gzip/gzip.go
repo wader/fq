@@ -60,7 +60,7 @@ var deflateExtraFlagsNames = decode.UToStr{
 
 func gzDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldRawLen("identification", 2*8, d.AssertBitBuf([]byte("\x1f\x8b")))
-	compressionMethod := d.FieldU8("compression_method", d.MapUToStr(compressionMethodNames))
+	compressionMethod := d.FieldU8("compression_method", d.MapUToStrSym(compressionMethodNames))
 	hasHeaderCRC := false
 	hasExtra := false
 	hasName := false
@@ -76,21 +76,21 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldU32LE("mtime") // TODO: unix time
 	switch compressionMethod {
 	case delfateMethod:
-		d.FieldU8("extra_flags", d.MapUToStr(deflateExtraFlagsNames))
+		d.FieldU8("extra_flags", d.MapUToStrSym(deflateExtraFlagsNames))
 	default:
 		d.FieldU8("extra_flags")
 	}
-	d.FieldU8("os", d.MapUToStr(osNames))
+	d.FieldU8("os", d.MapUToStrSym(osNames))
 	if hasExtra {
 		// TODO:
 		xLen := d.FieldU16("xlen")
 		d.FieldRawLen("extra_fields", int64(xLen*8))
 	}
 	if hasName {
-		d.FieldUTF8NullTerminated("name")
+		d.FieldUTF8Null("name")
 	}
 	if hasComment {
-		d.FieldUTF8NullTerminated("comment")
+		d.FieldUTF8Null("comment")
 	}
 	if hasHeaderCRC {
 		// TODO: validate

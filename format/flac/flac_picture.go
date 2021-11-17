@@ -48,7 +48,7 @@ func pictureDecode(d *decode.D, in interface{}) interface{} {
 		l := d.FieldU32(name + "_length")
 		return d.FieldUTF8(name, int(l))
 	}
-	d.FieldU32("picture_type", d.MapUToStr(pictureTypeNames))
+	d.FieldU32("picture_type", d.MapUToStrSym(pictureTypeNames))
 	lenStr("mime")
 	lenStr("description")
 	d.FieldU32("width")

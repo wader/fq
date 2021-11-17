@@ -20,7 +20,7 @@ func id3v11Decode(d *decode.D, in interface{}) interface{} {
 	d.FieldUTF8("title", 60)
 	d.FieldUTF8("artist", 60)
 	d.FieldUTF8("album", 60)
-	d.FieldU8("speed", d.MapUToStr(decode.UToStr{
+	d.FieldU8("speed", d.MapUToStrSym(decode.UToStr{
 		0: "unset",
 		1: "slow",
 		2: "medium",

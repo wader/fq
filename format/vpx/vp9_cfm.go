@@ -21,18 +21,18 @@ func init() {
 func vp9CFMDecode(d *decode.D, in interface{}) interface{} {
 	for d.NotEnd() {
 		d.FieldStruct("feature", func(d *decode.D) {
-			id := d.FieldU8("id", d.MapUToStr(vp9FeatureIDNames))
+			id := d.FieldU8("id", d.MapUToStrSym(vp9FeatureIDNames))
 			l := d.FieldU8("length")
 			d.LenFn(int64(l)*8, func(d *decode.D) {
 				switch id {
 				case vp9FeatureProfile:
 					d.FieldU8("profile")
 				case vp9FeatureLevel:
-					d.FieldU8("level", d.MapUToStr(vpxLevelNames))
+					d.FieldU8("level", d.MapUToStrSym(vpxLevelNames))
 				case vp9FeatureBitDepth:
 					d.FieldU8("bit_depth")
 				case vp9FeatureChromaSubsampling:
-					d.FieldU8("chroma_subsampling", d.MapUToStr(vpxChromeSubsamplingNames))
+					d.FieldU8("chroma_subsampling", d.MapUToStrSym(vpxChromeSubsamplingNames))
 				default:
 					d.FieldRawLen("data", d.BitsLeft())
 				}
