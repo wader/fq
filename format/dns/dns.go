@@ -1,6 +1,7 @@
 package dns
 
-// TODO: https://github.com/Forescout/namewreck/blob/main/rfc/draft-dashevskyi-dnsrr-antipatterns-00.txt
+// https://datatracker.ietf.org/doc/html/rfc1035
+// https://github.com/Forescout/namewreck/blob/main/rfc/draft-dashevskyi-dnsrr-antipatterns-00.txt
 
 import (
 	"net"
@@ -115,17 +116,17 @@ var rcodeNames = decode.UToScalar{
 	21: {Sym: "BADALG", Description: "Algorithm not supported"},       // RFC 2930
 }
 
-func decodeINAStr(d *decode.D) string {
+func decodeAStr(d *decode.D) string {
 	return net.IP(d.BytesLen(4)).String()
 }
 
-func decodeINAAAAStr(d *decode.D) string {
+func decodeAAAAStr(d *decode.D) string {
 	return net.IP(d.BytesLen(16)).String()
 }
 
 func fieldFormatLabel(d *decode.D, name string) {
 	var endPos int64
-	const maxJumps = 1000
+	const maxJumps = 100
 	jumpCount := 0
 
 	d.FieldStruct(name, func(d *decode.D) {
@@ -172,16 +173,15 @@ func fieldFormatRR(d *decode.D, count uint64, name string, structName string) {
 				typ := d.FieldU16("type", d.MapUToStrSym(typeNames))
 				class := d.FieldU16("class", d.MapURangeToScalar(classNames))
 				d.FieldU32("ttl")
-				// TODO: pointer?
 				rdLength := d.FieldU16("rdlength")
 
 				switch {
 				case typ == typeCNAME:
 					fieldFormatLabel(d, "cname")
-				case typ == typeA && class == classIN:
-					d.FieldStrFn("address", decodeINAStr)
-				case typ == typeAAAA && class == classIN:
-					d.FieldStrFn("address", decodeINAAAAStr)
+				case class == classIN && typ == typeA:
+					d.FieldStrFn("address", decodeAStr)
+				case class == classIN && typ == typeAAAA:
+					d.FieldStrFn("address", decodeAAAAStr)
 				default:
 					d.FieldUTF8("rdata", int(rdLength))
 				}
