@@ -128,10 +128,7 @@ func (d *D) MapURangeToScalar(rm map[[2]uint64]Scalar) func(s Scalar) (Scalar, e
 
 func (d *D) MapSRangeToScalar(rm map[[2]int64]Scalar) func(s Scalar) (Scalar, error) {
 	return func(s Scalar) (Scalar, error) {
-		n, ok := s.Actual.(int64)
-		if !ok {
-			return s, nil
-		}
+		n := s.ActualS()
 		for r, rs := range rm {
 			if n >= r[0] && n <= r[1] {
 				ns := rs
@@ -151,8 +148,7 @@ type BytesToScalar []struct {
 
 func (d *D) MapRawToScalar(btss BytesToScalar) func(s Scalar) (Scalar, error) {
 	return func(s Scalar) (Scalar, error) {
-		// TODO: check type assert?
-		ab, err := s.Actual.(*bitio.Buffer).Bytes()
+		ab, err := s.ActualBitBuf().Bytes()
 		if err != nil {
 			return s, err
 		}
@@ -160,6 +156,7 @@ func (d *D) MapRawToScalar(btss BytesToScalar) func(s Scalar) (Scalar, error) {
 			if bytes.Equal(ab, bs.Bytes) {
 				ns := bs.Scalar
 				ns.Actual = s.Actual
+				s = ns
 				break
 			}
 		}
@@ -388,6 +385,7 @@ func (d *D) tryText(nBytes int, e encoding.Encoding) (string, error) {
 // read length prefixed text (ex pascal short string)
 // lBits length prefix
 // fixedBytes if != -1 read nBytes but trim to length
+//nolint:unparam
 func (d *D) tryTextLenPrefixed(lenBits int, fixedBytes int, e encoding.Encoding) (string, error) {
 	p := d.Pos()
 	l, err := d.bits(lenBits)

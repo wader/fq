@@ -1109,7 +1109,7 @@ $ fq -d mp4 verbose /fragmented.mp4
       |                                               |                |              sei: {} (avc_sei) 0x0-0x25b.7 (604)
  0x000|05                                             |.               |                payload_type: "user_data_unregistered" (5) 0x0-0x0.7 (1)
  0x000|   ff ff 59                                    | ..Y            |                payload_size: 599 0x1-0x3.7 (3)
- 0x000|            dc 45 e9 bd e6 d9 48 b7 96 2c d8 20|    .E....H..,. |                uuid: raw bits 0x4-0x13.7 (16)
+ 0x000|            dc 45 e9 bd e6 d9 48 b7 96 2c d8 20|    .E....H..,. |                uuid: "x264" (raw bits) 0x4-0x13.7 (16)
  0x010|d9 23 ee ef                                    |.#..            |
  0x010|            78 32 36 34 20 2d 20 63 6f 72 65 20|    x264 - core |                data: raw bits 0x14-0x25a.7 (583)
  0x020|31 36 31 20 72 33 30 33 39 20 35 34 34 63 36 31|161 r3039 544c61|
