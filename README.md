@@ -16,7 +16,9 @@ Tool, language and format decoders for exploring binary data.
 
 ## Usage
 
-Basic usage is: `fq . file`. For details see [usage.md](doc/usage.md).
+Basic usage is: `fq . file`.
+
+For details see [usage.md](doc/usage.md)
 
 ## Install
 
@@ -61,15 +63,15 @@ aac_frame, adts, adts_frame, apev2, av1_ccr, av1_frame, av1_obu, avc_annexb, avc
 
 [#]: sh-end
 
-For details see [formats.md](doc/formats.md).
+For details see [formats.md](doc/formats.md)
 
 ## TODO and ideas
 
-See [TODO.md](doc/TODO.md).
+See [TODO.md](doc/TODO.md)
 
 ## Development
 
-See [dev.md](doc/dev.md).
+See [dev.md](doc/dev.md)
 
 ## Thanks and related projects
 
