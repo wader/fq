@@ -18,7 +18,6 @@ import (
 	"time"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/internal/ansi"
 	"github.com/wader/fq/internal/colorjson"
 	"github.com/wader/fq/internal/ctxstack"
@@ -27,6 +26,7 @@ import (
 	"github.com/wader/fq/internal/pos"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/decode/registry"
 
 	"github.com/wader/gojq"
 )

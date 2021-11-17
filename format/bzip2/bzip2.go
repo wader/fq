@@ -17,16 +17,16 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var probeFormat []*decode.Format
+var probeGroup decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.BZIP2,
 		Description: "bzip2 compression",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    gzDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.PROBE}, Formats: &probeFormat},
+			{Names: []string{format.PROBE}, Group: &probeGroup},
 		},
 	})
 }
@@ -96,7 +96,7 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 	}
 	// calculatedCRC32 := crc32W.Sum(nil)
 	uncompressedBB := bitio.NewBufferFromBytes(uncompressed.Bytes(), -1)
-	dv, _, _ := d.FieldTryFormatBitBuf("uncompressed", uncompressedBB, probeFormat, nil)
+	dv, _, _ := d.FieldTryFormatBitBuf("uncompressed", uncompressedBB, probeGroup, nil)
 	if dv == nil {
 		d.FieldRootBitBuf("uncompressed", uncompressedBB)
 	}

@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:         format.HEVC_NALU,
 		Description:  "H.265/HEVC Network Access Layer Unit",
 		DecodeFn:     hevcNALUDecode,

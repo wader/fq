@@ -11,7 +11,7 @@ import (
 )
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.OGG_PAGE,
 		Description: "OGG page",
 		DecodeFn:    pageDecode,

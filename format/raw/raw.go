@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.RAW,
 		Description: "Raw bits",
 		DecodeFn:    func(d *decode.D, in interface{}) interface{} { return nil },

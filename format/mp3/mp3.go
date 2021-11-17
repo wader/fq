@@ -9,25 +9,25 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var headerFormat []*decode.Format
-var footerFormat []*decode.Format
-var mp3Frame []*decode.Format
+var headerFormat decode.Group
+var footerFormat decode.Group
+var mp3Frame decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.MP3,
 		ProbeOrder:  20, // after most others (silent samples and jpeg header can look like mp3 sync)
 		Description: "MP3 file",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    mp3Decode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.ID3V2}, Formats: &headerFormat},
+			{Names: []string{format.ID3V2}, Group: &headerFormat},
 			{Names: []string{
 				format.ID3V1,
 				format.ID3V11,
 				format.APEV2,
-			}, Formats: &footerFormat},
-			{Names: []string{format.MP3_FRAME}, Formats: &mp3Frame},
+			}, Group: &footerFormat},
+			{Names: []string{format.MP3_FRAME}, Group: &mp3Frame},
 		},
 	})
 }

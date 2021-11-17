@@ -15,18 +15,18 @@ import (
 	"github.com/wader/fq/pkg/ranges"
 )
 
-var iccProfileFormat []*decode.Format
-var exifFormat []*decode.Format
+var iccProfileFormat decode.Group
+var exifFormat decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.PNG,
 		Description: "Portable Network Graphics file",
 		Groups:      []string{format.PROBE, format.IMAGE},
 		DecodeFn:    pngDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.ICC_PROFILE}, Formats: &iccProfileFormat},
-			{Names: []string{format.EXIF}, Formats: &exifFormat},
+			{Names: []string{format.ICC_PROFILE}, Group: &iccProfileFormat},
+			{Names: []string{format.EXIF}, Group: &exifFormat},
 		},
 	})
 }

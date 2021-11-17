@@ -9,7 +9,7 @@ import (
 )
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.JSON,
 		Description: "JSON",
 		ProbeOrder:  100, // last

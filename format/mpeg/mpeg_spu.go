@@ -14,7 +14,7 @@ import (
 )
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.MPEG_SPU,
 		Description: "Sub Picture Unit (DVD subtitle)",
 		DecodeFn:    spuDecode,

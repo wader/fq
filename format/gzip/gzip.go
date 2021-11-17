@@ -16,16 +16,16 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var probeFormat []*decode.Format
+var probeFormat decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.GZIP,
 		Description: "gzip compression",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    gzDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.PROBE}, Formats: &probeFormat},
+			{Names: []string{format.PROBE}, Group: &probeFormat},
 		},
 	})
 }

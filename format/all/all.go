@@ -1,4 +1,4 @@
-// Package all imports and registers all formats in the default registry
+// Package all registers all builtin formats with the default registry
 //nolint:revive
 package all
 

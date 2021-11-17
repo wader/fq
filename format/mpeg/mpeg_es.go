@@ -9,17 +9,17 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var mpegASCFormat []*decode.Format
-var vorbisPacketFormat []*decode.Format
+var mpegASCFormat decode.Group
+var vorbisPacketFormat decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.MPEG_ES,
 		Description: "MPEG Elementary Stream",
 		DecodeFn:    esDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.MPEG_ASC}, Formats: &mpegASCFormat},
-			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
+			{Names: []string{format.MPEG_ASC}, Group: &mpegASCFormat},
+			{Names: []string{format.VORBIS_PACKET}, Group: &vorbisPacketFormat},
 		},
 	})
 }

@@ -6,7 +6,7 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var images []*decode.Format
+var images decode.Group
 
 var pictureTypeNames = decode.UToStr{
 	0:  "Other",
@@ -33,12 +33,12 @@ var pictureTypeNames = decode.UToStr{
 }
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.FLAC_PICTURE,
 		Description: "FLAC metadatablock picture",
 		DecodeFn:    pictureDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.IMAGE}, Formats: &images},
+			{Names: []string{format.IMAGE}, Group: &images},
 		},
 	})
 }

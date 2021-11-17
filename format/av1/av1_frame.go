@@ -10,17 +10,17 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var obuFormat []*decode.Format
+var obuFormat decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.AV1_FRAME,
 		Description: "AV1 frame",
 		DecodeFn:    frameDecode,
 		RootArray:   true,
 		RootName:    "frame",
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.AV1_OBU}, Formats: &obuFormat},
+			{Names: []string{format.AV1_OBU}, Group: &obuFormat},
 		},
 	})
 }

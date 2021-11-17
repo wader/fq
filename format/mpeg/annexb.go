@@ -22,7 +22,7 @@ func annexBDecodeStartCodeLen(v uint64) int64 {
 	}
 }
 
-func annexBDecode(d *decode.D, _ interface{}, format []*decode.Format) interface{} {
+func annexBDecode(d *decode.D, _ interface{}, format decode.Group) interface{} {
 	currentOffset, currentPrefixLen, err := annexBFindStartCode(d)
 	// TODO: really restrict to 0?
 	if err != nil || currentOffset != 0 {

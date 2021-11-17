@@ -10,15 +10,15 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var aacFrameFormat []*decode.Format
+var aacFrameFormat decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.ADTS_FRAME,
 		Description: "Audio Data Transport Stream frame",
 		DecodeFn:    adtsFrameDecoder,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.AAC_FRAME}, Formats: &aacFrameFormat},
+			{Names: []string{format.AAC_FRAME}, Group: &aacFrameFormat},
 		},
 	})
 }

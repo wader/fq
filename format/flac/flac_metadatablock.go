@@ -11,19 +11,19 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var flacStreaminfoFormat []*decode.Format
-var flacPicture []*decode.Format
-var vorbisCommentFormat []*decode.Format
+var flacStreaminfoFormat decode.Group
+var flacPicture decode.Group
+var vorbisCommentFormat decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.FLAC_METADATABLOCK,
 		Description: "FLAC metadatablock",
 		DecodeFn:    metadatablockDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.FLAC_STREAMINFO}, Formats: &flacStreaminfoFormat},
-			{Names: []string{format.FLAC_PICTURE}, Formats: &flacPicture},
-			{Names: []string{format.VORBIS_COMMENT}, Formats: &vorbisCommentFormat},
+			{Names: []string{format.FLAC_STREAMINFO}, Group: &flacStreaminfoFormat},
+			{Names: []string{format.FLAC_PICTURE}, Group: &flacPicture},
+			{Names: []string{format.VORBIS_COMMENT}, Group: &vorbisCommentFormat},
 		},
 	})
 }

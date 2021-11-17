@@ -9,7 +9,7 @@ import (
 )
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.VP9_CFM,
 		Description: "VP9 Codec Feature Metadata",
 		DecodeFn:    vp9CFMDecode,

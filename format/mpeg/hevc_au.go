@@ -6,17 +6,17 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var hevcAUNALFormat []*decode.Format
+var hevcAUNALFormat decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.HEVC_AU,
 		Description: "H.265/HEVC Access Unit",
 		DecodeFn:    hevcAUDecode,
 		RootArray:   true,
 		RootName:    "access_unit",
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.HEVC_NALU}, Formats: &hevcAUNALFormat},
+			{Names: []string{format.HEVC_NALU}, Group: &hevcAUNALFormat},
 		},
 	})
 }

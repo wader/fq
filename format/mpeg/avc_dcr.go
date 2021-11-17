@@ -11,15 +11,15 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var avcDCRNALFormat []*decode.Format
+var avcDCRNALFormat decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.AVC_DCR,
 		Description: "H.264/AVC Decoder Configuration Record",
 		DecodeFn:    avcDcrDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.AVC_NALU}, Formats: &avcDCRNALFormat},
+			{Names: []string{format.AVC_NALU}, Group: &avcDCRNALFormat},
 		},
 	})
 }

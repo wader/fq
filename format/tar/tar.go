@@ -13,16 +13,16 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var probeFormat []*decode.Format
+var probeFormat decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.TAR,
 		Description: "Tar archive",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    tarDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.PROBE}, Formats: &probeFormat},
+			{Names: []string{format.PROBE}, Group: &probeFormat},
 		},
 	})
 }

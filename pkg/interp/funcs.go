@@ -155,7 +155,7 @@ func makeHashFn(fn func() (hash.Hash, error)) func(c interface{}, a []interface{
 }
 
 func (i *Interp) _registry(c interface{}, a []interface{}) interface{} {
-	uniqueFormats := map[string]*decode.Format{}
+	uniqueFormats := map[string]decode.Format{}
 
 	groups := map[string]interface{}{}
 	formats := map[string]interface{}{}

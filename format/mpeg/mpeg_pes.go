@@ -13,19 +13,19 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var pesPacketFormat []*decode.Format
-var spuFormat []*decode.Format
+var pesPacketFormat decode.Group
+var spuFormat decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.MPEG_PES,
 		Description: "MPEG Packetized elementary stream",
 		DecodeFn:    pesDecode,
 		RootArray:   true,
 		RootName:    "packets",
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.MPEG_PES_PACKET}, Formats: &pesPacketFormat},
-			{Names: []string{format.MPEG_SPU}, Formats: &spuFormat},
+			{Names: []string{format.MPEG_PES_PACKET}, Group: &pesPacketFormat},
+			{Names: []string{format.MPEG_SPU}, Group: &spuFormat},
 		},
 	})
 }

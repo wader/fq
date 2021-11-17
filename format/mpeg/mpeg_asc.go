@@ -9,7 +9,7 @@ import (
 )
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.MPEG_ASC,
 		Description: "MPEG-4 Audio Specific Config",
 		DecodeFn:    ascDecoder,

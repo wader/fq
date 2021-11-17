@@ -2,7 +2,7 @@
 
 [./formats_table.jq]: sh-start
 
-|Name                  |Description                                                   |Uses|
+|Name                  |Description                                                   |Dependencies|
 |-                     |-                                                             |-|
 |`aac_frame`           |Advanced&nbsp;Audio&nbsp;Coding&nbsp;frame                    |<sub></sub>|
 |`adts`                |Audio&nbsp;Data&nbsp;Transport&nbsp;Stream                    |<sub>`adts_frame`</sub>|

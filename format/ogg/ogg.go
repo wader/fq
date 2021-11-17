@@ -12,26 +12,26 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var oggPageFormat []*decode.Format
-var vorbisPacketFormat []*decode.Format
-var vorbisCommentFormat []*decode.Format
-var opusPacketFormat []*decode.Format
-var flacMetadatablockFormat []*decode.Format
-var flacFrameFormat []*decode.Format
+var oggPageFormat decode.Group
+var vorbisPacketFormat decode.Group
+var vorbisCommentFormat decode.Group
+var opusPacketFormat decode.Group
+var flacMetadatablockFormat decode.Group
+var flacFrameFormat decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.OGG,
 		Description: "OGG file",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    decodeOgg,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.OGG_PAGE}, Formats: &oggPageFormat},
-			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
-			{Names: []string{format.VORBIS_COMMENT}, Formats: &vorbisCommentFormat},
-			{Names: []string{format.OPUS_PACKET}, Formats: &opusPacketFormat},
-			{Names: []string{format.FLAC_METADATABLOCK}, Formats: &flacMetadatablockFormat},
-			{Names: []string{format.FLAC_FRAME}, Formats: &flacFrameFormat},
+			{Names: []string{format.OGG_PAGE}, Group: &oggPageFormat},
+			{Names: []string{format.VORBIS_PACKET}, Group: &vorbisPacketFormat},
+			{Names: []string{format.VORBIS_COMMENT}, Group: &vorbisCommentFormat},
+			{Names: []string{format.OPUS_PACKET}, Group: &opusPacketFormat},
+			{Names: []string{format.FLAC_METADATABLOCK}, Group: &flacMetadatablockFormat},
+			{Names: []string{format.FLAC_FRAME}, Group: &flacFrameFormat},
 		},
 	})
 }

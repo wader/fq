@@ -8,7 +8,7 @@ import (
 )
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.PROTOBUF,
 		Description: "Protobuf",
 		DecodeFn:    protobufDecode,

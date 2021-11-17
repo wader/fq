@@ -11,7 +11,7 @@ import (
 )
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.MPEG_PES_PACKET,
 		Description: "MPEG Packetized elementary stream packet",
 		DecodeFn:    pesPacketDecode,

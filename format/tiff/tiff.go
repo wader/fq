@@ -8,16 +8,16 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var tiffIccProfile []*decode.Format
+var tiffIccProfile decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.TIFF,
 		Description: "Tag Image File Format",
 		Groups:      []string{format.PROBE, format.IMAGE},
 		DecodeFn:    tiffDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.ICC_PROFILE}, Formats: &tiffIccProfile},
+			{Names: []string{format.ICC_PROFILE}, Group: &tiffIccProfile},
 		},
 	})
 }

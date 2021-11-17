@@ -6,10 +6,10 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var annexBAVCNALUFormat []*decode.Format
+var annexBAVCNALUFormat decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.AVC_ANNEXB,
 		Description: "H.264/AVC Annex B",
 		DecodeFn: func(d *decode.D, in interface{}) interface{} {
@@ -18,7 +18,7 @@ func init() {
 		RootArray: true,
 		RootName:  "stream",
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.AVC_NALU}, Formats: &annexBAVCNALUFormat},
+			{Names: []string{format.AVC_NALU}, Group: &annexBAVCNALUFormat},
 		},
 	})
 }

@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.AAC_FRAME,
 		Description: "Advanced Audio Coding frame",
 		DecodeFn:    aacDecode,

@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.AV1_OBU,
 		Description: "AV1 Open Bitstream Unit",
 		DecodeFn:    obuDecode,

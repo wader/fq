@@ -10,16 +10,16 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var vp8Frame []*decode.Format
+var vp8Frame decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.WEBP,
 		Description: "WebP image",
 		Groups:      []string{format.PROBE, format.IMAGE},
 		DecodeFn:    webpDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.VP8_FRAME}, Formats: &vp8Frame},
+			{Names: []string{format.VP8_FRAME}, Group: &vp8Frame},
 		},
 	})
 }

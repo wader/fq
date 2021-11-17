@@ -11,7 +11,7 @@ import (
 // TODO: vpx frame?
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.VP8_FRAME,
 		Description: "VP8 frame",
 		DecodeFn:    vp8Decode,

@@ -6,10 +6,10 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var adtsFrame []*decode.Format
+var adtsFrame decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.ADTS,
 		Description: "Audio Data Transport Stream",
 		Groups:      []string{format.PROBE},
@@ -17,7 +17,7 @@ func init() {
 		RootArray:   true,
 		RootName:    "frames",
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.ADTS_FRAME}, Formats: &adtsFrame},
+			{Names: []string{format.ADTS_FRAME}, Group: &adtsFrame},
 		},
 	})
 }

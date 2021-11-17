@@ -16,7 +16,7 @@ import (
 )
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.GIF,
 		Description: "Graphics Interchange Format",
 		Groups:      []string{format.PROBE, format.IMAGE},

@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.FLAC_FRAME,
 		Description: "FLAC frame",
 		DecodeFn:    frameDecode,

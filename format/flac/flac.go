@@ -17,18 +17,18 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var flacMetadatablockFormat []*decode.Format
-var flacFrameFormat []*decode.Format
+var flacMetadatablockFormat decode.Group
+var flacFrameFormat decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.FLAC,
 		Description: "Free Lossless Audio Codec file",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    flacDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.FLAC_METADATABLOCKS}, Formats: &flacMetadatablockFormat},
-			{Names: []string{format.FLAC_FRAME}, Formats: &flacFrameFormat},
+			{Names: []string{format.FLAC_METADATABLOCKS}, Group: &flacMetadatablockFormat},
+			{Names: []string{format.FLAC_FRAME}, Group: &flacFrameFormat},
 		},
 	})
 }

@@ -2,9 +2,11 @@ package decode
 
 import "io/fs"
 
+type Group []Format
+
 type Dependency struct {
-	Names   []string
-	Formats *[]*Format // TODO: rename to outFormats to make it clear it's used to assign?
+	Names []string
+	Group *Group
 }
 
 type Format struct {
@@ -19,8 +21,8 @@ type Format struct {
 	Files        fs.ReadDirFS
 }
 
-func FormatFn(d func(d *D, in interface{}) interface{}) []*Format {
-	return []*Format{{
+func FormatFn(d func(d *D, in interface{}) interface{}) Group {
+	return Group{{
 		DecodeFn: d,
 	}}
 }

@@ -16,19 +16,19 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var headerFormat []*decode.Format
-var footerFormat []*decode.Format
+var headerFormat decode.Group
+var footerFormat decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.WAV,
 		ProbeOrder:  10, // after most others (overlap some with webp)
 		Description: "WAV file",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    wavDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.ID3V2}, Formats: &headerFormat},
-			{Names: []string{format.ID3V1, format.ID3V11}, Formats: &footerFormat},
+			{Names: []string{format.ID3V2}, Group: &headerFormat},
+			{Names: []string{format.ID3V1, format.ID3V11}, Group: &footerFormat},
 		},
 	})
 }

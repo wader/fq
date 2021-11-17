@@ -9,7 +9,7 @@ import (
 )
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.VPX_CCR,
 		Description: "VPX Codec Configuration Record",
 		DecodeFn:    vpxCCRDecode,

@@ -19,15 +19,15 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var xingHeader []*decode.Format
+var xingHeader decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.MP3_FRAME,
 		Description: "MPEG audio layer 3 frame",
 		DecodeFn:    frameDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.XING}, Formats: &xingHeader},
+			{Names: []string{format.XING}, Group: &xingHeader},
 		},
 	})
 }

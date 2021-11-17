@@ -6,7 +6,7 @@ def nbsp: gsub(" "; "&nbsp;");
 [ {
     name: "Name",
     desc: "Description",
-    uses: "Uses"
+    uses: "Dependencies"
   },
   {
     name: "-",

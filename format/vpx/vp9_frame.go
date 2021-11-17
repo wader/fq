@@ -48,7 +48,7 @@ var vp9ColorSpaceNames = decode.UToStr{
 }
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.VP9_FRAME,
 		Description: "VP9 frame",
 		DecodeFn:    vp9Decode,

@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.AVC_PPS,
 		Description: "H.264/AVC Picture Parameter Set",
 		DecodeFn:    avcPPSDecode,

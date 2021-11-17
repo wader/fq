@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.PSSH_PLAYREADY,
 		Description: "PlayReady PSSH",
 		DecodeFn:    playreadyPsshDecode,

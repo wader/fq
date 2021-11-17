@@ -9,7 +9,7 @@ import (
 )
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.XING,
 		Description: "Xing header",
 		DecodeFn:    xingDecode,

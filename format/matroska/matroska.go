@@ -28,59 +28,59 @@ import (
 //go:embed *.jq
 var matroskaFS embed.FS
 
-var aacFrameFormat []*decode.Format
-var av1CCRFormat []*decode.Format
-var av1FrameFormat []*decode.Format
-var flacFrameFormat []*decode.Format
-var flacMetadatablocksFormat []*decode.Format
-var imageFormat []*decode.Format
-var mp3FrameFormat []*decode.Format
-var mpegASCFrameFormat []*decode.Format
-var mpegAVCAUFormat []*decode.Format
-var mpegAVCDCRFormat []*decode.Format
-var mpegHEVCDCRFormat []*decode.Format
-var mpegHEVCSampleFormat []*decode.Format
-var mpegPESPacketSampleFormat []*decode.Format
-var mpegSPUFrameFormat []*decode.Format
-var opusPacketFrameFormat []*decode.Format
-var vorbisPacketFormat []*decode.Format
-var vp8FrameFormat []*decode.Format
-var vp9CFMFormat []*decode.Format
-var vp9FrameFormat []*decode.Format
+var aacFrameFormat decode.Group
+var av1CCRFormat decode.Group
+var av1FrameFormat decode.Group
+var flacFrameFormat decode.Group
+var flacMetadatablocksFormat decode.Group
+var imageFormat decode.Group
+var mp3FrameFormat decode.Group
+var mpegASCFrameFormat decode.Group
+var mpegAVCAUFormat decode.Group
+var mpegAVCDCRFormat decode.Group
+var mpegHEVCDCRFormat decode.Group
+var mpegHEVCSampleFormat decode.Group
+var mpegPESPacketSampleFormat decode.Group
+var mpegSPUFrameFormat decode.Group
+var opusPacketFrameFormat decode.Group
+var vorbisPacketFormat decode.Group
+var vp8FrameFormat decode.Group
+var vp9CFMFormat decode.Group
+var vp9FrameFormat decode.Group
 
-var codecToFormat map[string]*[]*decode.Format
+var codecToFormat map[string]*decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.MATROSKA,
 		Description: "Matroska file",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    matroskaDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.AAC_FRAME}, Formats: &aacFrameFormat},
-			{Names: []string{format.AV1_CCR}, Formats: &av1CCRFormat},
-			{Names: []string{format.AV1_FRAME}, Formats: &av1FrameFormat},
-			{Names: []string{format.AVC_AU}, Formats: &mpegAVCAUFormat},
-			{Names: []string{format.AVC_DCR}, Formats: &mpegAVCDCRFormat},
-			{Names: []string{format.FLAC_FRAME}, Formats: &flacFrameFormat},
-			{Names: []string{format.FLAC_METADATABLOCKS}, Formats: &flacMetadatablocksFormat},
-			{Names: []string{format.HEVC_AU}, Formats: &mpegHEVCSampleFormat},
-			{Names: []string{format.HEVC_DCR}, Formats: &mpegHEVCDCRFormat},
-			{Names: []string{format.IMAGE}, Formats: &imageFormat},
-			{Names: []string{format.MP3_FRAME}, Formats: &mp3FrameFormat},
-			{Names: []string{format.MPEG_ASC}, Formats: &mpegASCFrameFormat},
-			{Names: []string{format.MPEG_PES_PACKET}, Formats: &mpegPESPacketSampleFormat},
-			{Names: []string{format.MPEG_SPU}, Formats: &mpegSPUFrameFormat},
-			{Names: []string{format.OPUS_PACKET}, Formats: &opusPacketFrameFormat},
-			{Names: []string{format.VORBIS_PACKET}, Formats: &vorbisPacketFormat},
-			{Names: []string{format.VP8_FRAME}, Formats: &vp8FrameFormat},
-			{Names: []string{format.VP9_CFM}, Formats: &vp9CFMFormat},
-			{Names: []string{format.VP9_FRAME}, Formats: &vp9FrameFormat},
+			{Names: []string{format.AAC_FRAME}, Group: &aacFrameFormat},
+			{Names: []string{format.AV1_CCR}, Group: &av1CCRFormat},
+			{Names: []string{format.AV1_FRAME}, Group: &av1FrameFormat},
+			{Names: []string{format.AVC_AU}, Group: &mpegAVCAUFormat},
+			{Names: []string{format.AVC_DCR}, Group: &mpegAVCDCRFormat},
+			{Names: []string{format.FLAC_FRAME}, Group: &flacFrameFormat},
+			{Names: []string{format.FLAC_METADATABLOCKS}, Group: &flacMetadatablocksFormat},
+			{Names: []string{format.HEVC_AU}, Group: &mpegHEVCSampleFormat},
+			{Names: []string{format.HEVC_DCR}, Group: &mpegHEVCDCRFormat},
+			{Names: []string{format.IMAGE}, Group: &imageFormat},
+			{Names: []string{format.MP3_FRAME}, Group: &mp3FrameFormat},
+			{Names: []string{format.MPEG_ASC}, Group: &mpegASCFrameFormat},
+			{Names: []string{format.MPEG_PES_PACKET}, Group: &mpegPESPacketSampleFormat},
+			{Names: []string{format.MPEG_SPU}, Group: &mpegSPUFrameFormat},
+			{Names: []string{format.OPUS_PACKET}, Group: &opusPacketFrameFormat},
+			{Names: []string{format.VORBIS_PACKET}, Group: &vorbisPacketFormat},
+			{Names: []string{format.VP8_FRAME}, Group: &vp8FrameFormat},
+			{Names: []string{format.VP9_CFM}, Group: &vp9CFMFormat},
+			{Names: []string{format.VP9_FRAME}, Group: &vp9FrameFormat},
 		},
 		Files: matroskaFS,
 	})
 
-	codecToFormat = map[string]*[]*decode.Format{
+	codecToFormat = map[string]*decode.Group{
 		"A_VORBIS":         &vorbisPacketFormat,
 		"A_MPEG/L3":        &mp3FrameFormat,
 		"A_FLAC":           &flacFrameFormat,

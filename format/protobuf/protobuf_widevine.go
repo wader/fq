@@ -8,15 +8,15 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var widevineProtoBufFormat []*decode.Format
+var widevineProtoBufFormat decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.PROTOBUF_WIDEVINE,
 		Description: "Widevine protobuf",
 		DecodeFn:    widevineDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.PROTOBUF}, Formats: &widevineProtoBufFormat},
+			{Names: []string{format.PROTOBUF}, Group: &widevineProtoBufFormat},
 		},
 	})
 }

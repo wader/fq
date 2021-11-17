@@ -12,7 +12,7 @@ import (
 // currently just a alias for tiff
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.EXIF,
 		Description: "Exchangeable Image File Format",
 		Groups:      []string{},

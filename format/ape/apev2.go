@@ -8,15 +8,15 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var imageFormat []*decode.Format
+var imageFormat decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.APEV2,
 		Description: "APEv2 metadata tag",
 		DecodeFn:    apev2Decode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.IMAGE}, Formats: &imageFormat},
+			{Names: []string{format.IMAGE}, Group: &imageFormat},
 		},
 	})
 }

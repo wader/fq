@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.MPEG_TS,
 		ProbeOrder:  10, // make sure to be after gif, both start with 0x47
 		Description: "MPEG Transport Stream",

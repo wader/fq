@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.ID3V11,
 		Description: "ID3v1.1 metadata",
 		DecodeFn:    id3v11Decode,

@@ -12,7 +12,7 @@ import (
 	"os/signal"
 	"path/filepath"
 
-	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/decode/registry"
 	"github.com/wader/fq/pkg/interp"
 
 	"github.com/wader/readline"

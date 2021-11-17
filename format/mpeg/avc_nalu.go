@@ -9,19 +9,19 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var avcSPSFormat []*decode.Format
-var avcPPSFormat []*decode.Format
-var avcSEIFormat []*decode.Format
+var avcSPSFormat decode.Group
+var avcPPSFormat decode.Group
+var avcSEIFormat decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.AVC_NALU,
 		Description: "H.264/AVC Network Access Layer Unit",
 		DecodeFn:    avcNALUDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.AVC_SPS}, Formats: &avcSPSFormat},
-			{Names: []string{format.AVC_PPS}, Formats: &avcPPSFormat},
-			{Names: []string{format.AVC_SEI}, Formats: &avcSEIFormat},
+			{Names: []string{format.AVC_SPS}, Group: &avcSPSFormat},
+			{Names: []string{format.AVC_PPS}, Group: &avcPPSFormat},
+			{Names: []string{format.AVC_SEI}, Group: &avcSEIFormat},
 		},
 	})
 }

@@ -10,15 +10,15 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var flacPicture []*decode.Format
+var flacPicture decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.VORBIS_COMMENT,
 		Description: "Vorbis comment",
 		DecodeFn:    commentDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.FLAC_PICTURE}, Formats: &flacPicture},
+			{Names: []string{format.FLAC_PICTURE}, Group: &flacPicture},
 		},
 	})
 }

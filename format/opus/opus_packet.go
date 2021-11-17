@@ -10,15 +10,15 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var vorbisComment []*decode.Format
+var vorbisComment decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.OPUS_PACKET,
 		Description: "Opus packet",
 		DecodeFn:    opusDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.VORBIS_COMMENT}, Formats: &vorbisComment},
+			{Names: []string{format.VORBIS_COMMENT}, Group: &vorbisComment},
 		},
 	})
 }

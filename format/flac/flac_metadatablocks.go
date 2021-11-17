@@ -8,17 +8,17 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var flacMetadatablockForamt []*decode.Format
+var flacMetadatablockForamt decode.Group
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.FLAC_METADATABLOCKS,
 		Description: "FLAC metadatablocks",
 		DecodeFn:    metadatablocksDecode,
 		RootArray:   true,
 		RootName:    "metadatablocks",
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.FLAC_METADATABLOCK}, Formats: &flacMetadatablockForamt},
+			{Names: []string{format.FLAC_METADATABLOCK}, Group: &flacMetadatablockForamt},
 		},
 	})
 }

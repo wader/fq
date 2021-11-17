@@ -11,7 +11,7 @@ import (
 )
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.ICC_PROFILE,
 		Description: "International Color Consortium profile",
 		DecodeFn:    iccProfileDecode,

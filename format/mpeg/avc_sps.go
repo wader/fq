@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.AVC_SPS,
 		Description: "H.264/AVC Sequence Parameter Set",
 		DecodeFn:    avcSPSDecode,

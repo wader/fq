@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.AVC_SEI,
 		Description: "H.264/AVC Supplemental Enhancement Information",
 		DecodeFn:    avcSEIDecode,

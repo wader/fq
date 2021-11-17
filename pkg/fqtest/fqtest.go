@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/internal/difftest"
 	"github.com/wader/fq/internal/script"
+	"github.com/wader/fq/pkg/decode/registry"
 	"github.com/wader/fq/pkg/interp"
 )
 

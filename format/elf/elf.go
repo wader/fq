@@ -15,7 +15,7 @@ import (
 // TODO: p_type hi/lo
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.ELF,
 		Description: "Executable and Linkable Format",
 		Groups:      []string{format.PROBE},

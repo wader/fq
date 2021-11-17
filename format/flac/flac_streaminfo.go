@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	registry.MustRegister(&decode.Format{
+	registry.MustRegister(decode.Format{
 		Name:        format.FLAC_STREAMINFO,
 		Description: "FLAC streaminfo",
 		DecodeFn:    streaminfoDecode,
