@@ -40,7 +40,7 @@ func pesDecode(d *decode.D, in interface{}) interface{} {
 
 	prefix := d.PeekBits(24)
 	if prefix != 0b0000_0000_0000_0000_0000_0001 {
-		d.Error("no pes prefix found")
+		d.Errorf("no pes prefix found")
 	}
 
 	i := 0

@@ -101,7 +101,7 @@ func adtsFrameDecoder(d *decode.D, in interface{}) interface{} {
 	}
 
 	if dataLength < 0 {
-		d.Fatal("dataLength < 0")
+		d.Fatalf("dataLength < 0")
 	}
 
 	d.FieldArray("raw_data_blocks", func(d *decode.D) {

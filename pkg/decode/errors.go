@@ -78,13 +78,13 @@ func (e IOError) Unwrap() error { return e.Err }
 
 func (IOError) IsRecoverableError() bool { return true }
 
-type ValidateError struct {
+type DecoderError struct {
 	Reason string
 	Pos    int64
 }
 
-func (e ValidateError) Error() string {
+func (e DecoderError) Error() string {
 	return fmt.Sprintf("failed to validate at position %s: %s", num.Bits(e.Pos).StringByteBits(16), e.Reason)
 }
 
-func (ValidateError) IsRecoverableError() bool { return true }
+func (DecoderError) IsRecoverableError() bool { return true }

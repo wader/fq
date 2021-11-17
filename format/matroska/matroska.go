@@ -160,7 +160,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 					if !ok {
 						a, ok = ebml.Global[n]
 						if !ok {
-							d.Fatal(fmt.Sprintf("unknown id %d", n))
+							d.Fatalf("unknown id %d", n)
 						}
 					}
 					return decode.Scalar{Actual: n, DisplayFormat: decode.NumberHex, Sym: a.Name, Description: a.Definition}, nil
@@ -183,7 +183,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 					(a.Type == ebml.Integer ||
 						a.Type == ebml.Uinteger ||
 						a.Type == ebml.Float) {
-					d.Fatal(fmt.Sprintf("invalid tagSize %d for non-master type", tagSize))
+					d.Fatalf("invalid tagSize %d for non-master type", tagSize)
 				}
 
 				switch a.Type {
@@ -305,7 +305,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 func matroskaDecode(d *decode.D, in interface{}) interface{} {
 	ebmlHeaderID := uint64(0x1a45dfa3)
 	if d.PeekBits(32) != ebmlHeaderID {
-		d.Error("no EBML header found")
+		d.Errorf("no EBML header found")
 	}
 	dc := &decodeContext{tracks: []*track{}}
 	decodeMaster(d, d.BitsLeft(), ebml_matroska.Root, dc)

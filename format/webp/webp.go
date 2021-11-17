@@ -64,7 +64,7 @@ func webpDecode(d *decode.D, in interface{}) interface{} {
 				})
 			})
 		default:
-			d.Fatal("could not find VP8 or VP8L chunk")
+			d.Fatalf("could not find VP8 or VP8L chunk")
 		}
 	})
 

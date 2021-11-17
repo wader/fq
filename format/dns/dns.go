@@ -3,7 +3,6 @@ package dns
 // TODO: https://github.com/Forescout/namewreck/blob/main/rfc/draft-dashevskyi-dnsrr-antipatterns-00.txt
 
 import (
-	"fmt"
 	"net"
 	"strings"
 
@@ -143,7 +142,7 @@ func fieldFormatLabel(d *decode.D, name string) {
 						}
 						jumpCount++
 						if jumpCount > maxJumps {
-							d.Fatal(fmt.Sprintf("label has more than %d jumps", maxJumps))
+							d.Fatalf("label has more than %d jumps", maxJumps)
 						}
 						d.SeekAbs(int64(pointer) * 8)
 					}

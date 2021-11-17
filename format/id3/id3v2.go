@@ -6,7 +6,6 @@ package id3
 // https://id3.org/id3v2-chapters-1.0
 
 import (
-	"fmt"
 	"io"
 	"strings"
 
@@ -384,7 +383,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		size = dataSize + headerLen
 	default:
 		// can't know size
-		d.Fatal("unknown version")
+		d.Fatalf("unknown version")
 	}
 
 	// note frame function run inside a SubLenFn so they can use BitLefts and
@@ -581,7 +580,7 @@ func id3v2Decode(d *decode.D, in interface{}) interface{} {
 	version := int(d.FieldU8("version"))
 	versionValid := version == 2 || version == 3 || version == 4
 	if !versionValid {
-		d.Fatal(fmt.Sprintf("unsupported version %d", version))
+		d.Fatalf("unsupported version %d", version)
 	}
 
 	d.FieldU8("revision")

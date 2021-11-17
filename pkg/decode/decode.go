@@ -215,16 +215,16 @@ func (d *D) FillGaps(r ranges.Range, namePrefix string) {
 	}
 }
 
-// Error stops decode with a reason unless forced
-func (d *D) Error(reason string) {
+// Errorf stops decode with a reason unless forced
+func (d *D) Errorf(format string, a ...interface{}) {
 	if !d.Options.Force {
-		panic(ValidateError{Reason: reason, Pos: d.Pos()})
+		panic(DecoderError{Reason: format, Pos: d.Pos()})
 	}
 }
 
-// Fatal stops decode with a reason regardless of forced
-func (d *D) Fatal(reason string) {
-	panic(ValidateError{Reason: reason, Pos: d.Pos()})
+// Fatalf stops decode with a reason regardless of forced
+func (d *D) Fatalf(format string, a ...interface{}) {
+	panic(DecoderError{Reason: format, Pos: d.Pos()})
 }
 
 func (d *D) IOPanic(err error) {
@@ -449,7 +449,7 @@ func (d *D) AddChild(v *Value) {
 		if !fv.IsArray {
 			for _, ff := range *fv.Children {
 				if ff.Name == v.Name {
-					d.Fatal(fmt.Sprintf("%q already exist in struct %s", v.Name, d.Value.Name))
+					d.Fatalf("%q already exist in struct %s", v.Name, d.Value.Name)
 				}
 			}
 		}
@@ -569,7 +569,7 @@ func (d *D) AssertAtLeastBitsLeft(nBits int64) {
 	bl := d.BitsLeft()
 	if bl < nBits {
 		// TODO:
-		panic(ValidateError{Reason: fmt.Sprintf("expected bits left %d, found %d", nBits, bl), Pos: d.Pos()})
+		panic(DecoderError{Reason: fmt.Sprintf("expected bits left %d, found %d", nBits, bl), Pos: d.Pos()})
 	}
 }
 
@@ -580,7 +580,7 @@ func (d *D) AssertLeastBytesLeft(nBytes int64) {
 	bl := d.BitsLeft()
 	if bl < nBytes*8 {
 		// TODO:
-		panic(ValidateError{Reason: fmt.Sprintf("expected bytes left %d, found %d bits", nBytes, bl), Pos: d.Pos()})
+		panic(DecoderError{Reason: fmt.Sprintf("expected bytes left %d, found %d bits", nBytes, bl), Pos: d.Pos()})
 	}
 }
 

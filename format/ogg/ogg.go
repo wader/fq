@@ -179,7 +179,7 @@ func decodeOgg(d *decode.D, in interface{}) interface{} {
 	})
 
 	if validPages == 0 {
-		d.Fatal("no pages found")
+		d.Fatalf("no pages found")
 	}
 
 	return nil

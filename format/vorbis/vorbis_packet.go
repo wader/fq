@@ -5,8 +5,6 @@ package vorbis
 // TODO: end padding? byte align?
 
 import (
-	"fmt"
-
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
@@ -59,7 +57,7 @@ func vorbisDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldUTF8("magic", 6, d.AssertStr("vorbis"))
 	case packetTypeAudio:
 	default:
-		d.Fatal(fmt.Sprintf("unknown packet type %d", packetType))
+		d.Fatalf("unknown packet type %d", packetType)
 	}
 
 	switch packetType {

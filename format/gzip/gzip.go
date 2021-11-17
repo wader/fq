@@ -106,7 +106,7 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 		deflateR := flate.NewReader(compressedBB)
 		uncompressed := &bytes.Buffer{}
 		if _, err := decode.Copy(d, io.MultiWriter(uncompressed, crc32W), deflateR); err != nil {
-			d.Fatal(err.Error())
+			d.Fatalf(err.Error())
 		}
 		uncompressedBB := bitio.NewBufferFromBytes(uncompressed.Bytes(), -1)
 		dv, _, _ := d.FieldTryFormatBitBuf("uncompressed", uncompressedBB, probeFormat, nil)

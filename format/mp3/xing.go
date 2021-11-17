@@ -24,7 +24,7 @@ func xingDecode(d *decode.D, in interface{}) interface{} {
 	case "Info":
 		hasLameExtension = true
 	default:
-		d.Error("no xing header found")
+		d.Errorf("no xing header found")
 	}
 
 	qualityPresent := false

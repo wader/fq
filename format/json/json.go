@@ -23,13 +23,13 @@ func decodeJSON(d *decode.D, in interface{}) interface{} {
 	jd := stdjson.NewDecoder(bb)
 	var s decode.Scalar
 	if err := jd.Decode(&s.Actual); err != nil {
-		d.Fatal(err.Error())
+		d.Fatalf(err.Error())
 	}
 	switch s.Actual.(type) {
 	case map[string]interface{},
 		[]interface{}:
 	default:
-		d.Fatal("root not object or array")
+		d.Fatalf("root not object or array")
 	}
 	// TODO: root not array/struct how to add unknown gaps?
 	// TODO: ranges not end up correct

@@ -6,7 +6,6 @@ package jpeg
 
 import (
 	"bytes"
-	"fmt"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
@@ -167,7 +166,7 @@ var markers = decode.UToScalar{
 func jpegDecode(d *decode.D, in interface{}) interface{} {
 	d.AssertLeastBytesLeft(2)
 	if !bytes.Equal(d.PeekBytes(2), []byte{0xff, SOI}) {
-		d.Error("no SOI marker")
+		d.Errorf("no SOI marker")
 	}
 
 	var extendedXMP []byte
@@ -268,7 +267,7 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 						eoiMarkerFound = true
 					default:
 						if !markerFound {
-							d.Error(fmt.Sprintf("unknown marker %x", markerCode))
+							d.Errorf("unknown marker %x", markerCode)
 						}
 
 						markerLen := d.FieldU16("length")
@@ -308,7 +307,7 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 									// TODO: redo this? multi reader?
 									chunkBytes, err := chunk.Bytes()
 									if err != nil {
-										d.Fatal(fmt.Sprintf("failed to read xmp chunk: %s", err))
+										d.Fatalf("failed to read xmp chunk: %s", err)
 									}
 
 									if extendedXMP == nil {
@@ -344,7 +343,7 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 	})
 
 	if !soiMarkerFound {
-		d.Error("no SOI marker found")
+		d.Errorf("no SOI marker found")
 	}
 
 	if extendedXMP != nil {

@@ -5,7 +5,6 @@ package tar
 
 import (
 	"bytes"
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -43,7 +42,7 @@ func tarDecode(d *decode.D, in interface{}) interface{} {
 				var err error
 				n, err = strconv.ParseUint(ts, 8, 64)
 				if err != nil {
-					d.Error(fmt.Sprintf("failed to parse %s number %s: %s", name, ts, err))
+					d.Errorf("failed to parse %s number %s: %s", name, ts, err)
 				}
 			}
 			return decode.Scalar{Actual: a, Sym: n}, nil
@@ -76,7 +75,7 @@ func tarDecode(d *decode.D, in interface{}) interface{} {
 				fieldStr(d, "linkname", 100)
 				magic := fieldStr(d, "magic", 6)
 				if magic != "ustar" {
-					d.Error(fmt.Sprintf("invalid magic %s", magic))
+					d.Errorf("invalid magic %s", magic)
 				}
 				fieldNumStr(d, "version", 2)
 				fieldStr(d, "uname", 32)
@@ -104,7 +103,7 @@ func tarDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldRawLen("end_marker", 512*2*8)
 
 	if !foundEndMarker {
-		d.Error("no files found")
+		d.Errorf("no files found")
 	}
 
 	return nil
