@@ -12,7 +12,6 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
-	"github.com/wader/fq/pkg/ranges"
 )
 
 var iccProfileFormat decode.Group
@@ -101,49 +100,39 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 					1: "Adam7 interlace",
 				}))
 			case "tEXt":
-				// TODO: latin1
-				keywordLen := int(d.PeekFindByte(0, 80))
-				d.FieldUTF8("keyword", keywordLen)
-				d.FieldUTF8("null", 1)
-				d.FieldUTF8("text", chunkLength-keywordLen-1)
+				d.FieldUTF8Null("keyword")
+				d.FieldUTF8("text", int(d.BitsLeft())/8)
 			case "zTXt":
-				// TODO: latin1
-				keywordLen := int(d.PeekFindByte(0, 80))
-				d.FieldUTF8("keyword", keywordLen)
-				d.FieldUTF8("null", 1)
+				d.FieldUTF8Null("keyword")
 				compressionMethod := d.FieldU8("compression_method", d.MapUToStrSym(compressionNames))
-				// +2 to skip null and compression_method
-				dataLen := (chunkLength - (keywordLen + 2)) * 8
+				dataLen := d.BitsLeft()
+
+				// TODO: make nicer
+				d.FieldRawLen("compressed", dataLen)
+				d.SeekRel(-dataLen)
 
 				switch compressionMethod {
 				case compressionDeflate:
-					dd := d.FieldStruct("data", func(d *decode.D) {
-						d.FieldFormatReaderLen("uncompressed", int64(dataLen), zlib.NewReader, decode.FormatFn(func(d *decode.D, in interface{}) interface{} {
-							d.FieldUTF8("text", int(d.BitsLeft()/8))
-							return nil
-						}))
-					})
-					// TODO: depends on isRoot in postProcess
-					dd.Value.Range = ranges.Range{Start: d.Pos() - int64(dataLen), Len: int64(dataLen)}
+					d.FieldFormatReaderLen("uncompressed", int64(dataLen), zlib.NewReader, decode.FormatFn(func(d *decode.D, in interface{}) interface{} {
+						d.FieldUTF8("text", int(d.BitsLeft()/8))
+						return nil
+					}))
 				default:
-					d.FieldRawLen("data", int64(dataLen))
+					d.FieldRawLen("data", dataLen)
 				}
 			case "iCCP":
-				profileNameLen := int(d.PeekFindByte(0, 80))
-				d.FieldUTF8("profile_name", profileNameLen)
-				d.FieldUTF8("null", 1)
+				d.FieldUTF8Null("profile_name")
 				compressionMethod := d.FieldU8("compression_method", d.MapUToStrSym(compressionNames))
-				// +2 to skip null and compression_method
-				dataLen := (chunkLength - (profileNameLen + 2)) * 8
+				dataLen := d.BitsLeft()
+
+				d.FieldRawLen("compressed", dataLen)
+				d.SeekRel(-dataLen)
 
 				switch compressionMethod {
 				case compressionDeflate:
-					dd := d.FieldStruct("data", func(d *decode.D) {
-						d.FieldFormatReaderLen("uncompressed", int64(dataLen), zlib.NewReader, iccProfileFormat)
-					})
-					dd.Value.Range = ranges.Range{Start: d.Pos() - int64(dataLen), Len: int64(dataLen)}
+					d.FieldFormatReaderLen("uncompressed", dataLen, zlib.NewReader, iccProfileFormat)
 				default:
-					d.FieldRawLen("data", int64(dataLen))
+					d.FieldRawLen("data", dataLen)
 				}
 			case "pHYs":
 				d.FieldU32("x_pixels_per_unit")

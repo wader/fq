@@ -162,9 +162,11 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 		panic("unreachable")
 	}
 
+	innerRange := v.InnerRange()
+
 	if opts.Verbose {
 		cfmt(colField, " %s (%s)",
-			num.BitRange(v.Range).StringByteBits(opts.AddrBase), num.Bits(v.Range.Len).StringByteBits(opts.SizeBase))
+			num.BitRange(innerRange).StringByteBits(opts.AddrBase), num.Bits(innerRange.Len).StringByteBits(opts.SizeBase))
 	}
 
 	cprint(colField, "\n")
@@ -209,9 +211,9 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 	}
 
 	bufferLastBit := rootV.RootBitBuf.Len() - 1
-	startBit := v.Range.Start
-	stopBit := v.Range.Stop() - 1
-	sizeBits := v.Range.Len
+	startBit := innerRange.Start
+	stopBit := innerRange.Stop() - 1
+	sizeBits := innerRange.Len
 	lastDisplayBit := stopBit
 
 	if opts.DisplayBytes > 0 && sizeBits > int64(opts.DisplayBytes)*8 {
@@ -247,7 +249,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 	columns()
 
 	// has length and is not compound or a collapsed struct/array (max depth)
-	if v.Range.Len > 0 && (!isCompound(v) || (opts.Depth != 0 && opts.Depth == depth)) {
+	if innerRange.Len > 0 && (!isCompound(v) || (opts.Depth != 0 && opts.Depth == depth)) {
 		cfmt(colAddr, "%s%s\n",
 			rootIndent, deco.DumpAddr.F(num.PadFormatInt(startLineByte, opts.AddrBase, true, addrWidth)))
 
@@ -332,7 +334,7 @@ func dump(v *decode.Value, w io.Writer, opts Options) error {
 	_ = v.WalkPreOrder(makeWalkFn(func(v *decode.Value, rootV *decode.Value, depth int, rootDepth int) error {
 		maxAddrIndentWidth = num.MaxInt(
 			maxAddrIndentWidth,
-			rootDepth+num.DigitsInBase(bitio.BitsByteCount(v.Range.Stop()), true, opts.AddrBase),
+			rootDepth+num.DigitsInBase(bitio.BitsByteCount(v.InnerRange().Stop()), true, opts.AddrBase),
 		)
 		return nil
 	}))

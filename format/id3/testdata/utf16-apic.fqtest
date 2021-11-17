@@ -120,9 +120,8 @@ $ fq -d id3v2 verbose /utf16-apic
 0x0c0|                  45                           |      E         |            private: false 0xc6.3-0xc6.3 (0.1)
 0x0c0|                     58                        |       X        |            reserved: true 0xc7.3-0xc7.3 (0.1)
 0x0c0|                        74                     |        t       |            safe_to_copy: true 0xc8.3-0xc8.3 (0.1)
-0x0c0|                           64 61 74 65 3a 63 72|         date:cr|            keyword: "date:create" 0xc9-0xd3.7 (11)
-0x0d0|65 61 74 65                                    |eate            |
-0x0d0|            00                                 |    .           |            null: "\x00" 0xd4-0xd4.7 (1)
+0x0c0|                           64 61 74 65 3a 63 72|         date:cr|            keyword: "date:create" 0xc9-0xd4.7 (12)
+0x0d0|65 61 74 65 00                                 |eate.           |
 0x0d0|               32 30 32 31 2d 30 35 2d 32 30 54|     2021-05-20T|            text: "2021-05-20T20:53:36+00:00" 0xd5-0xed.7 (25)
 0x0e0|32 30 3a 35 33 3a 33 36 2b 30 30 3a 30 30      |20:53:36+00:00  |
 0x0e0|                                          67 53|              gS|            crc: "6753fe7a" (raw bits) (valid) 0xee-0xf1.7 (4)
@@ -134,9 +133,8 @@ $ fq -d id3v2 verbose /utf16-apic
 0x0f0|                     45                        |       E        |            private: false 0xf7.3-0xf7.3 (0.1)
 0x0f0|                        58                     |        X       |            reserved: true 0xf8.3-0xf8.3 (0.1)
 0x0f0|                           74                  |         t      |            safe_to_copy: true 0xf9.3-0xf9.3 (0.1)
-0x0f0|                              64 61 74 65 3a 6d|          date:m|            keyword: "date:modify" 0xfa-0x104.7 (11)
-0x100|6f 64 69 66 79                                 |odify           |
-0x100|               00                              |     .          |            null: "\x00" 0x105-0x105.7 (1)
+0x0f0|                              64 61 74 65 3a 6d|          date:m|            keyword: "date:modify" 0xfa-0x105.7 (12)
+0x100|6f 64 69 66 79 00                              |odify.          |
 0x100|                  32 30 32 31 2d 30 35 2d 32 30|      2021-05-20|            text: "2021-05-20T20:53:36+00:00" 0x106-0x11e.7 (25)
 0x110|54 32 30 3a 35 33 3a 33 36 2b 30 30 3a 30 30   |T20:53:36+00:00 |
 0x110|                                             16|               .|            crc: "160e46c6" (raw bits) (valid) 0x11f-0x122.7 (4)

@@ -24,14 +24,17 @@ func init() {
 		Name:        format.BZIP2,
 		Description: "bzip2 compression",
 		Groups:      []string{format.PROBE},
-		DecodeFn:    gzDecode,
+		DecodeFn:    bzip2Decode,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.PROBE}, Group: &probeGroup},
 		},
 	})
 }
 
-func gzDecode(d *decode.D, in interface{}) interface{} {
+const blockMagic = 0x31_41_59_26_53_59
+const footerMagic = 0x17_72_45_38_50_90
+
+func bzip2Decode(d *decode.D, in interface{}) interface{} {
 	// moreStreams := true
 
 	// d.FieldArray("streams", func(d *decode.D) {
@@ -43,13 +46,12 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldU8("hundred_k_blocksize")
 
 	d.FieldStruct("block", func(d *decode.D) {
-		const blockHeaderMagic = 0x31_41_59_26_53_59
 		// if d.PeekBits(48) != blockHeaderMagic {
 		// 	moreStreams = false
 		// 	return
 		// }
-		d.FieldU48("compressed_magic", d.AssertU(blockHeaderMagic), d.Hex)
-		d.FieldU32("crc")
+		d.FieldU48("magic", d.AssertU(blockMagic), d.Hex)
+		d.FieldU32("crc", d.Hex)
 		d.FieldU1("randomised")
 		d.FieldU24("origptr")
 		d.FieldU16("syncmapl1")
@@ -87,11 +89,13 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 		})
 	})
 
+	compressedStart := d.Pos()
+
 	compressedBB := d.BitBufRange(0, d.Len())
 	deflateR := bzip2.NewReader(compressedBB)
 	uncompressed := &bytes.Buffer{}
 	crc32W := crc32.NewIEEE()
-	if _, err := decode.Copy(d, io.MultiWriter(uncompressed, crc32W), deflateR); err != nil {
+	if _, err := d.Copy(io.MultiWriter(uncompressed, crc32W), deflateR); err != nil {
 		d.Fatalf(err.Error())
 	}
 	// calculatedCRC32 := crc32W.Sum(nil)
@@ -101,16 +105,32 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldRootBitBuf("uncompressed", uncompressedBB)
 	}
 
-	// if calculatedCRC32 != nil {
-	// 	d.FieldChecksumLen("crc32", 32, calculatedCRC32, decode.LittleEndian)
-	// } else {
-	// 	d.FieldU32LE("crc32")
-	// }
+	p, err := compressedBB.Pos()
+	if err != nil {
+		d.IOPanic((err))
+	}
 
-	// d.FieldU48("footer_magic")
-	// d.FieldU32("crc")
-	// byte align padding
-	// })
+	// TODO: compressedSize is a horrible hack for now
+	// "It is important to note that none of the fields within a StreamBlock or StreamFooter are necessarily byte-aligned"
+	const footerByteSize = 10
+	compressedSize := (p - compressedStart) - footerByteSize*8
+	for i := 0; i < 8; i++ {
+		d.SeekAbs(compressedStart + compressedSize)
+		if d.PeekBits(48) == footerMagic {
+			break
+		}
+		compressedSize--
+	}
+	d.SeekAbs(compressedStart)
+
+	d.FieldRawLen("compressed", compressedSize)
+
+	d.FieldStruct("footer", func(d *decode.D) {
+		d.FieldU48("magic", d.AssertU(footerMagic), d.Hex)
+		// TODO: crc of block crcs
+		d.FieldU32("crc", d.Hex)
+		d.FieldRawLen("padding", int64(d.ByteAlignBits()))
+	})
 
 	// 		moreStreams = false
 

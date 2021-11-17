@@ -215,8 +215,15 @@ func (v *Value) Errors() []error {
 	return errs
 }
 
+func (v *Value) InnerRange() ranges.Range {
+	if v.IsRoot {
+		return ranges.Range{Start: 0, Len: v.Range.Len}
+	}
+	return v.Range
+}
+
 func (v *Value) postProcess() {
-	if err := v.WalkPostOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
+	if err := v.WalkRootPostOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
 		switch vv := v.V.(type) {
 		case Compound:
 			first := true

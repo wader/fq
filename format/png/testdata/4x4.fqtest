@@ -87,9 +87,8 @@ $ fq -d png verbose /4x4.png
 0x090|                              45               |          E     |      private: false 0x9a.3-0x9a.3 (0.1)
 0x090|                                 58            |           X    |      reserved: true 0x9b.3-0x9b.3 (0.1)
 0x090|                                    74         |            t   |      safe_to_copy: true 0x9c.3-0x9c.3 (0.1)
-0x090|                                       64 61 74|             dat|      keyword: "date:create" 0x9d-0xa7.7 (11)
-0x0a0|65 3a 63 72 65 61 74 65                        |e:create        |
-0x0a0|                        00                     |        .       |      null: "\x00" 0xa8-0xa8.7 (1)
+0x090|                                       64 61 74|             dat|      keyword: "date:create" 0x9d-0xa8.7 (12)
+0x0a0|65 3a 63 72 65 61 74 65 00                     |e:create.       |
 0x0a0|                           32 30 32 31 2d 30 37|         2021-07|      text: "2021-07-28T08:54:09+00:00" 0xa9-0xc1.7 (25)
 0x0b0|2d 32 38 54 30 38 3a 35 34 3a 30 39 2b 30 30 3a|-28T08:54:09+00:|
 0x0c0|30 30                                          |00              |
@@ -101,9 +100,8 @@ $ fq -d png verbose /4x4.png
 0x0c0|                                 45            |           E    |      private: false 0xcb.3-0xcb.3 (0.1)
 0x0c0|                                    58         |            X   |      reserved: true 0xcc.3-0xcc.3 (0.1)
 0x0c0|                                       74      |             t  |      safe_to_copy: true 0xcd.3-0xcd.3 (0.1)
-0x0c0|                                          64 61|              da|      keyword: "date:modify" 0xce-0xd8.7 (11)
-0x0d0|74 65 3a 6d 6f 64 69 66 79                     |te:modify       |
-0x0d0|                           00                  |         .      |      null: "\x00" 0xd9-0xd9.7 (1)
+0x0c0|                                          64 61|              da|      keyword: "date:modify" 0xce-0xd9.7 (12)
+0x0d0|74 65 3a 6d 6f 64 69 66 79 00                  |te:modify.      |
 0x0d0|                              32 30 32 31 2d 30|          2021-0|      text: "2021-07-28T08:54:09+00:00" 0xda-0xf2.7 (25)
 0x0e0|37 2d 32 38 54 30 38 3a 35 34 3a 30 39 2b 30 30|7-28T08:54:09+00|
 0x0f0|3a 30 30                                       |:00             |
@@ -115,13 +113,13 @@ $ fq -d png verbose /4x4.png
 0x0f0|                                    54         |            T   |      private: true 0xfc.3-0xfc.3 (0.1)
 0x0f0|                                       58      |             X  |      reserved: true 0xfd.3-0xfd.3 (0.1)
 0x0f0|                                          74   |              t |      safe_to_copy: true 0xfe.3-0xfe.3 (0.1)
-0x0f0|                                             61|               a|      keyword: "akeyword" 0xff-0x106.7 (8)
-0x100|6b 65 79 77 6f 72 64                           |keyword         |
-0x100|                     00                        |       .        |      null: "\x00" 0x107-0x107.7 (1)
+0x0f0|                                             61|               a|      keyword: "akeyword" 0xff-0x107.7 (9)
+0x100|6b 65 79 77 6f 72 64 00                        |keyword.        |
 0x100|                        00                     |        .       |      compression_method: "deflate" (0) 0x108-0x108.7 (1)
-     |                                               |                |      data: {} 0x109-0x115.7 (13)
-     |                                               |                |        uncompressed: {} () 0x0-0x4.7 (5)
- 0x00|61 74 65 78 74|                                |atext|          |          text: "atext" 0x0-0x4.7 (5)
+0x100|                           08 99 4b 2c 49 ad 28|         ..K,I.(|      compressed: raw bits 0x109-0x115.7 (13)
+0x110|01 00 06 4d 02 27                              |...M.'          |
+     |                                               |                |      uncompressed: {} () 0x0-0x4.7 (5)
+ 0x00|61 74 65 78 74|                                |atext|          |        text: "atext" 0x0-0x4.7 (5)
 0x110|                  4c f5 a2 bc                  |      L...      |      crc: "4cf5a2bc" (raw bits) (valid) 0x116-0x119.7 (4)
      |                                               |                |    [9]: chunk {} 0x11a-0x125.7 (12)
 0x110|                              00 00 00 00      |          ....  |      length: 0 0x11a-0x11d.7 (4)
@@ -132,5 +130,3 @@ $ fq -d png verbose /4x4.png
 0x120|4e                                             |N               |      reserved: false 0x120.3-0x120.3 (0.1)
 0x120|   44                                          | D              |      safe_to_copy: false 0x121.3-0x121.3 (0.1)
 0x120|      ae 42 60 82|                             |  .B`.|         |      crc: "ae426082" (raw bits) (valid) 0x122-0x125.7 (4)
-0x100|                           08 99 4b 2c 49 ad 28|         ..K,I.(|  unknown0: raw bits 0x109-0x115.7 (13)
-0x110|01 00 06 4d 02 27                              |...M.'          |

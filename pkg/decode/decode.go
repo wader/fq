@@ -161,6 +161,29 @@ func newDecoder(ctx context.Context, format Format, bb *bitio.Buffer, opts Optio
 	}
 }
 
+func (d *D) FieldDecoder(name string, bitBuf *bitio.Buffer, v interface{}) *D {
+	return &D{
+		Ctx:    d.Ctx,
+		Endian: d.Endian,
+		Value: &Value{
+			Name:       name,
+			V:          v,
+			Range:      ranges.Range{Start: d.Pos(), Len: 0},
+			RootBitBuf: bitBuf,
+		},
+		Options: d.Options,
+
+		bitBuf:  bitBuf,
+		readBuf: d.readBuf,
+	}
+}
+
+func (d *D) Copy(r io.Writer, w io.Reader) (int64, error) {
+	// TODO: what size? now same as io.Copy
+	buf := d.SharedReadBuf(32 * 1024)
+	return io.CopyBuffer(r, w, buf)
+}
+
 func (d *D) SharedReadBuf(n int) []byte {
 	if d.readBuf == nil {
 		d.readBuf = new([]byte)
@@ -454,23 +477,6 @@ func (d *D) AddChild(v *Value) {
 			}
 		}
 		*fv.Children = append(*fv.Children, v)
-	}
-}
-
-func (d *D) FieldDecoder(name string, bitBuf *bitio.Buffer, v interface{}) *D {
-	return &D{
-		Ctx:    d.Ctx,
-		Endian: d.Endian,
-		Value: &Value{
-			Name:       name,
-			V:          v,
-			Range:      ranges.Range{Start: d.Pos(), Len: 0},
-			RootBitBuf: bitBuf,
-		},
-		Options: d.Options,
-
-		bitBuf:  bitBuf,
-		readBuf: d.readBuf,
 	}
 }
 
@@ -783,6 +789,10 @@ func (d *D) FieldTryFormatBitBuf(name string, bb *bitio.Buffer, group Group, inA
 		return nil, nil, err
 	}
 
+	dv.Range.Start = d.Pos()
+
+	// log.Printf("FieldTryFormatBitBuf dv.Range: %#+v\n", dv.Range)
+
 	d.AddChild(dv)
 
 	return dv, v, err
@@ -793,6 +803,7 @@ func (d *D) FieldFormatBitBuf(name string, bb *bitio.Buffer, group Group, inArg 
 	if dv == nil || dv.Errors() != nil {
 		panic(err)
 	}
+
 	return dv, v
 }
 
@@ -803,7 +814,7 @@ func (d *D) FieldRootBitBuf(name string, bb *bitio.Buffer) *Value {
 	v.Name = name
 	v.RootBitBuf = bb
 	v.IsRoot = true
-	v.Range = ranges.Range{Start: 0, Len: bb.Len()}
+	v.Range = ranges.Range{Start: d.Pos(), Len: bb.Len()}
 	d.AddChild(v)
 
 	return v
@@ -814,6 +825,8 @@ func (d *D) FieldStructRootBitBufFn(name string, bb *bitio.Buffer, fn func(d *D)
 	cd.Value.IsRoot = true
 	d.AddChild(cd.Value)
 	fn(cd)
+
+	cd.Value.postProcess()
 
 	return cd.Value
 }
