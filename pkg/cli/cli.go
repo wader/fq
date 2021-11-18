@@ -12,8 +12,8 @@ import (
 	"os/signal"
 	"path/filepath"
 
-	"github.com/wader/fq/pkg/decode/registry"
 	"github.com/wader/fq/pkg/interp"
+	"github.com/wader/fq/pkg/registry"
 
 	"github.com/wader/readline"
 )

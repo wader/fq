@@ -26,7 +26,7 @@ import (
 	"github.com/wader/fq/internal/pos"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
-	"github.com/wader/fq/pkg/decode/registry"
+	"github.com/wader/fq/pkg/registry"
 
 	"github.com/wader/gojq"
 )

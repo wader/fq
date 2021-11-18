@@ -2,7 +2,7 @@ package registry
 
 import (
 	"github.com/wader/fq/pkg/decode"
-	"github.com/wader/fq/pkg/decode/registry"
+	"github.com/wader/fq/pkg/registry"
 )
 
 // Default global registry that all builtin formats register with
