@@ -18,24 +18,24 @@ func init() {
 	})
 }
 
-func xyzType(d *decode.D) {
+func xyzType(_ int64, d *decode.D) {
 	d.FieldFP32("X")
 	d.FieldFP32("Y")
 	d.FieldFP32("Z")
 }
 
-func textType(d *decode.D) {
+func textType(_ int64, d *decode.D) {
 	d.FieldUTF8NullFixedLen("text", int(d.BitsLeft()/8))
 }
 
-func paraType(d *decode.D) {
+func paraType(_ int64, d *decode.D) {
 	d.FieldU32("reserved0")
 	d.FieldU16("function_type")
 	d.FieldU16("reserved1")
 	d.FieldRawLen("parameters", d.BitsLeft())
 }
 
-func descType(d *decode.D) {
+func descType(_ int64, d *decode.D) {
 	descLen := d.FieldU32("description_length")
 	d.FieldUTF8NullFixedLen("description", int(descLen))
 	d.FieldU32("language_code")
@@ -46,11 +46,30 @@ func descType(d *decode.D) {
 	d.FieldUTF8NullFixedLen("macintosh_description", 67)
 }
 
-var typToDecode = map[string]func(d *decode.D){
+func multiLocalizedUnicodeType(tagStart int64, d *decode.D) {
+	numberOfNames := d.FieldU32("number_of_names")
+	d.FieldArray("names", func(d *decode.D) {
+		for i := uint64(0); i < numberOfNames; i++ {
+			d.FieldStruct("name", func(d *decode.D) {
+				d.FieldU32("record_size")
+				d.FieldUTF8("language_code", 2)
+				d.FieldUTF8("country_code", 2)
+				nameLength := d.FieldU32("name_length")
+				nameOffset := d.FieldU32("name_offset")
+				d.RangeFn(tagStart+int64(nameOffset*8), int64(nameLength*8), func(d *decode.D) {
+					d.FieldUTF16BE("value", int(nameLength))
+				})
+			})
+		}
+	})
+}
+
+var typeToDecode = map[string]func(tagStart int64, d *decode.D){
 	"XYZ ": xyzType,
 	"text": textType,
 	"para": paraType,
 	"desc": descType,
+	"mluc": multiLocalizedUnicodeType,
 }
 
 func decodeBCDU8(d *decode.D) uint64 {
@@ -126,11 +145,12 @@ func iccProfileDecode(d *decode.D, in interface{}) interface{} {
 						size := d.FieldU32("size")
 
 						d.RangeFn(int64(offset)*8, int64(size)*8, func(d *decode.D) {
+							tagStart := d.Pos()
 							typ := d.FieldUTF8NullFixedLen("type", 4)
 							d.FieldU32("reserved")
 
-							if fn, ok := typToDecode[typ]; ok {
-								d.LenFn(int64(size-4-4)*8, fn)
+							if fn, ok := typeToDecode[typ]; ok {
+								fn(tagStart, d)
 							} else {
 								d.FieldRawLen("data", int64(size-4-4)*8)
 							}
