@@ -1,31 +1,8 @@
 package decode
 
 import (
-	"bytes"
 	"io"
-
-	"github.com/wader/fq/pkg/bitio"
 )
-
-func Copy(d *D, r io.Writer, w io.Reader) (int64, error) {
-	// TODO: what size? now same as io.Copy
-	buf := d.SharedReadBuf(32 * 1024)
-	return io.CopyBuffer(r, w, buf)
-}
-
-func MustCopy(d *D, r io.Writer, w io.Reader) int64 {
-	n, err := Copy(d, r, w)
-	if err != nil {
-		panic(IOError{Err: err, Op: "MustCopyBuffer"})
-	}
-	return n
-}
-
-func MustNewBitBufFromReader(d *D, r io.Reader) *bitio.Buffer {
-	b := &bytes.Buffer{}
-	MustCopy(d, b, r)
-	return bitio.NewBufferFromBytes(b.Bytes(), -1)
-}
 
 // TODO: move?
 // TODO: make generic replace reader? share with id3v2 unsync?

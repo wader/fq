@@ -184,6 +184,20 @@ func (d *D) Copy(r io.Writer, w io.Reader) (int64, error) {
 	return io.CopyBuffer(r, w, buf)
 }
 
+func (d *D) MustCopy(r io.Writer, w io.Reader) int64 {
+	n, err := d.Copy(r, w)
+	if err != nil {
+		panic(IOError{Err: err, Op: "MustCopyBuffer"})
+	}
+	return n
+}
+
+func (d *D) MustNewBitBufFromReader(r io.Reader) *bitio.Buffer {
+	b := &bytes.Buffer{}
+	d.MustCopy(b, r)
+	return bitio.NewBufferFromBytes(b.Bytes(), -1)
+}
+
 func (d *D) SharedReadBuf(n int) []byte {
 	if d.readBuf == nil {
 		d.readBuf = new([]byte)

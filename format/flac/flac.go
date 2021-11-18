@@ -70,7 +70,7 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 			frameStreamSamplesBuf := ffo.SamplesBuf[0 : samplesInFrame*uint64(ffo.Channels*ffo.BitsPerSample/8)]
 			framesNDecodedSamples += ffo.Samples
 
-			decode.MustCopy(d, md5Samples, bytes.NewReader(frameStreamSamplesBuf))
+			d.MustCopy(md5Samples, bytes.NewReader(frameStreamSamplesBuf))
 			streamDecodedSamples += ffo.Samples
 
 			// reuse buffer if possible

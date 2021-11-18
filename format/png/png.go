@@ -113,7 +113,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 
 				switch compressionMethod {
 				case compressionDeflate:
-					d.FieldFormatReaderLen("uncompressed", int64(dataLen), zlib.NewReader, decode.FormatFn(func(d *decode.D, in interface{}) interface{} {
+					d.FieldFormatReaderLen("uncompressed", dataLen, zlib.NewReader, decode.FormatFn(func(d *decode.D, in interface{}) interface{} {
 						d.FieldUTF8("text", int(d.BitsLeft()/8))
 						return nil
 					}))
@@ -180,7 +180,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 		})
 
 		chunkCRC := crc32.NewIEEE()
-		decode.MustCopy(d, chunkCRC, d.BitBufRange(crcStartPos, d.Pos()-crcStartPos))
+		d.MustCopy(chunkCRC, d.BitBufRange(crcStartPos, d.Pos()-crcStartPos))
 		d.FieldRawLen("crc", 32, d.ValidateBitBuf(chunkCRC.Sum(nil)), d.RawHex)
 	})
 

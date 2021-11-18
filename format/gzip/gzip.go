@@ -105,7 +105,7 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 	case delfateMethod:
 		deflateR := flate.NewReader(compressedBB)
 		uncompressed := &bytes.Buffer{}
-		if _, err := decode.Copy(d, io.MultiWriter(uncompressed, crc32W), deflateR); err != nil {
+		if _, err := d.Copy(io.MultiWriter(uncompressed, crc32W), deflateR); err != nil {
 			d.Fatalf(err.Error())
 		}
 		uncompressedBB := bitio.NewBufferFromBytes(uncompressed.Bytes(), -1)
