@@ -153,7 +153,7 @@ def _main:
       );
   def _banner:
     ( "fq - jq for binary formats"
-    , "Tool, language and format decoders for exploring binary data."
+    , "Tool, language and decoders for exploring binary data."
     , "For more information see https://github.com/wader/fq"
     );
   def _usage($arg0):

@@ -1,6 +1,6 @@
 # fq
 
-Tool, language and format decoders for exploring binary data.
+Tool, language and decoders for exploring binary data.
 
 ![fq demo](doc/demo.svg)
 
@@ -75,7 +75,7 @@ See [dev.md](doc/dev.md)
 
 ## Thanks and related projects
 
-This project would not be possible without [itchyny](https://github.com/itchyny)'s
+This project would not have been possible without [itchyny](https://github.com/itchyny)'s
 jq implementation [gojq](https://github.com/itchyny/gojq). Also want to thank
 [HexFiend](https://github.com/HexFiend/HexFiend) for inspiration and ideas and [stedolan](https://github.com/stedolan)
 for inventing the [jq](https://github.com/stedolan/jq) language.
