@@ -165,3 +165,12 @@ type MPEGASCOut struct {
 type AACFrameIn struct {
 	ObjectType int
 }
+
+type MP3FrameOut struct {
+	MPEGVersion      int
+	ProtectionAbsent bool
+	BitRate          int
+	SampleRate       int
+	ChannelsIndex    int
+	ChannelModeIndex int
+}

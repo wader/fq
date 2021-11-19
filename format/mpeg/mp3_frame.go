@@ -147,8 +147,11 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	var crcBytes int64
 	var mpegVersionNr uint64
 	var mpegLayerNr uint64
+	var protectionAbsent bool
 	var bitRate uint64
 	var sampleRate uint64
+	var channelsIndex uint64
+	var channelModeIndex uint64
 	var mainDataEnd uint64
 	var crcValue *decode.Value
 
@@ -239,14 +242,14 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			1: "Padded",
 		}), d.Bin)
 		d.FieldU1("private")
-		channelsIndex := d.FieldU2("channels", d.MapUToStrSym(decode.UToStr{
+		channelsIndex = d.FieldU2("channels", d.MapUToStrSym(decode.UToStr{
 			0b00: "Stereo",
 			0b01: "Joint stereo",
 			0b10: "Dual",
 			0b11: "Mono",
 		}), d.Bin)
 		isStereo = channelsIndex != 0b11
-		d.FieldU2("channel_mode", d.MapUToStrSym(decode.UToStr{
+		channelModeIndex = d.FieldU2("channel_mode", d.MapUToStrSym(decode.UToStr{
 			0b00: "None",
 			0b01: "Intensity stereo",
 			0b10: "MS stereo",
@@ -393,5 +396,12 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	}
 	d.FieldValueRaw("crc_calculated", crcHash.Sum(nil), d.RawHex)
 
-	return nil
+	return format.MP3FrameOut{
+		MPEGVersion:      int(mpegVersionNr),
+		ProtectionAbsent: protectionAbsent,
+		BitRate:          int(bitRate),
+		SampleRate:       int(sampleRate),
+		ChannelsIndex:    int(channelModeIndex),
+		ChannelModeIndex: int(channelModeIndex),
+	}
 }

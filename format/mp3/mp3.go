@@ -1,9 +1,10 @@
 package mp3
 
 // TODO: vbri
-// TODO: mime audio/mpeg
 
 import (
+	"fmt"
+
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
@@ -33,6 +34,17 @@ func init() {
 }
 
 func mp3Decode(d *decode.D, in interface{}) interface{} {
+	// things in a mp3 stream usually have few unique combinations of.
+	// does not include bitrate on purpose
+	type headerConfig struct {
+		MPEGVersion      int
+		ProtectionAbsent bool
+		SampleRate       int
+		ChannelsIndex    int
+		ChannelModeIndex int
+	}
+	uniqueHeaderConfigs := map[headerConfig]struct{}{}
+
 	// there are mp3s files in the wild with multiple headers, two id3v2 tags etc
 	d.FieldArray("headers", func(d *decode.D) {
 		for d.NotEnd() {
@@ -59,16 +71,33 @@ func mp3Decode(d *decode.D, in interface{}) interface{} {
 				d.SeekRel(syncLen)
 			}
 
-			if dv, _, _ := d.FieldTryFormat("frame", mp3Frame, nil); dv == nil {
+			dv, v, _ := d.FieldTryFormat("frame", mp3Frame, nil)
+			if dv == nil {
 				decodeFailures++
 				d.SeekRel(8)
 				continue
 			}
+			mfo, ok := v.(format.MP3FrameOut)
+			if !ok {
+				panic(fmt.Sprintf("expected MP3FrameOut got %#+v", v))
+			}
+			uniqueHeaderConfigs[headerConfig{
+				MPEGVersion:      mfo.MPEGVersion,
+				ProtectionAbsent: mfo.ProtectionAbsent,
+				SampleRate:       mfo.SampleRate,
+				ChannelsIndex:    mfo.ChannelsIndex,
+				ChannelModeIndex: mfo.ChannelModeIndex,
+			}] = struct{}{}
+
 			lastValidEnd = d.Pos()
 			validFrames++
+
+			if len(uniqueHeaderConfigs) > 5 {
+				d.Errorf("too many unique header configurations")
+			}
 		}
 	})
-	// TODO: better validate
+
 	if validFrames == 0 || (validFrames < 2 && decodeFailures > 0) {
 		d.Errorf("no frames found")
 	}
