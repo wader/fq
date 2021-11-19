@@ -6,6 +6,18 @@ def protobuf_to_value:
 def mp4_box:
   [0, 0, 0, 16, "ftyp", "isom", 0, 0 , 2 , 0, .] | mp4.boxes;
 
+# converted from https://github.com/FFmpeg/FFmpeg/blob/870bfe16a12bf09dca3a4ae27ef6f81a2de80c40/libavutil/display.c av_display_rotation_get
+def mp4_matrix_structure_rotation:
+  ( .a as $s0
+  | .c as $s3
+  | .b as $s1
+  | .d as $s4
+  | ($s0*$s0 + $s3*$s3 | sqrt) as $scale0
+  | ($s1*$s1 + $s4*$s4 | sqrt) as $scale1
+  | atan2($s1/$scale1; $s0 / $scale0) * 180 / 3.14159265359
+  | -round
+  );
+
 def flac_dump:
   [ "fLaC"
   , first(.. | select(format == "flac_metadatablocks"))
