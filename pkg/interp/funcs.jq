@@ -6,67 +6,6 @@ def debug:
   );
 def debug(f): . as $c | f | debug | $c;
 
-# TODO: introspect and show doc, reflection somehow?
-def help:
-  ( "Type jq expression to evaluate"
-  , "\\t          Auto completion"
-  , "Up/Down     History"
-  , "^C          Interrupt execution"
-  , "... | repl  Start a new REPL"
-  , "^D          Exit REPL"
-  ) | println;
-
-# null input means done, otherwise {approx_read_bytes: 123, total_size: 123}
-# TODO: decode provide even more detailed progress, post-process sort etc?
-def _decode_progress:
-  # _input_filenames is remaning files to read
-  ( (_input_filenames | length) as $inputs_len
-  | ( options.filenames | length) as $filenames_len
-  | _ansi.clear_line
-  , "\r"
-  , if . != null then
-      ( if $filenames_len > 1 then
-          "\($filenames_len - $inputs_len)/\($filenames_len) \(_input_filename) "
-        else empty
-        end
-      , "\((.approx_read_bytes / .total_size * 100 | _numbertostring(1)))%"
-      )
-    else empty
-    end
-  | stderr
-  );
-
-def decode($name; $decode_opts):
-  ( options as $opts
-  | (null | stdout) as $stdout
-  | _decode(
-      $name;
-      $opts +
-      {
-        _progress: (
-          if $opts.decode_progress and $opts.repl and $stdout.is_terminal then
-            "_decode_progress"
-          else null
-          end
-        ),
-      } +
-      $decode_opts
-    )
-  );
-def decode($name): decode($name; {});
-def decode: decode(options.decode_format; {});
-
-def tovalue($opts): _tovalue(options($opts));
-def tovalue: _tovalue({});
-def toactual: _decode_value(._actual);
-def tosym: _decode_value(._sym);
-def todescription: _decode_value(._description);
-
-def tobitsrange: _tobitsrange;
-def tobytesrange: _tobitsrange(8);
-def tobits: _tobitsrange(1; false);
-def tobytes: _tobitsrange(8; false);
-
 def display($opts): _display(options($opts));
 def display: display({});
 def d($opts): display($opts);
@@ -86,25 +25,6 @@ def hexdump($opts): _hexdump(options({display_bytes: 0} + $opts));
 def hexdump: hexdump({display_bytes: 0});
 def hd($opts): hexdump($opts);
 def hd: hexdump;
-
-def format: _decode_value(._format; null);
-
-def root: _decode_value(._root);
-def buffer_root: _decode_value(._buffer_root);
-def format_root: _decode_value(._format_root);
-def parent: _decode_value(._parent);
-def parents:
-  # TODO: refactor, _while_break?
-  ( _decode_value(._parent)
-  | if . == null then empty
-    else
-      _recurse_break(
-        ( ._parent
-        | if . == null then error("break") end
-        )
-      )
-    end
-  );
 
 # overload match to support buffers
 def _orig_match($val): match($val);
@@ -420,9 +340,3 @@ def diff($a; $b):
       if $a == $b then empty else {a: $a, b: $b} end
     end
   );
-
-def in_bits_range($p):
-  select(._start <= $p and $p < ._stop);
-def in_bytes_range($p):
-  select(._start/8 <= $p and $p < ._stop/8);
-

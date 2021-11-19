@@ -57,8 +57,8 @@ null
 "null"
 0
 mp3> .headers[0].flags.unsynchronisation._description | ., type, length?
-""
-"string"
+null
+"null"
 0
 mp3> .headers[0].flags.unsynchronisation._path | ., type, length?
 [

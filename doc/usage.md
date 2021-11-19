@@ -161,11 +161,12 @@ notable is support for arbitrary-precision integers.
   - `delta/0`, `delta_by/1`, array with difference between all consecutive pairs.
   - `chunk/1`, split array or string into even chunks
 - Adds some decode value specific functions:
-  - `root/0` return tree root for value
-  - `buffer_root/0` return root value of buffer for value
-  - `format_root/0` return root value of format for value
-  - `parent/0` return parent value
+  - `root/0` tree root for value
+  - `buffer_root/0` root value of buffer for value
+  - `format_root/0` root value of format for value
+  - `parent/0` parent value
   - `parents/0` output parents of value
+  - `topath/0` path of value. Use `path_to_expr` to get a string representation.
   - `tovalue/0`, `tovalue/1` symbolic value if available otherwise actual value
   - `toactual/0` actual value (decoded etc)
   - `tosym/0` symbolic value (mapped etc)

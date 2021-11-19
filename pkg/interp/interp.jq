@@ -1,5 +1,7 @@
 include "internal";
 include "options";
+include "value";
+include "bufferrange";
 include "funcs";
 include "grep";
 include "args";

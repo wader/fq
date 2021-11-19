@@ -350,8 +350,14 @@ func (dvb decodeValueBase) JQValueKey(name string) interface{} {
 	case "_description":
 		switch vv := dv.V.(type) {
 		case decode.Compound:
+			if vv.Description == "" {
+				return nil
+			}
 			return vv.Description
 		case decode.Scalar:
+			if vv.Description == "" {
+				return nil
+			}
 			return vv.Description
 		default:
 			return nil

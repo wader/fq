@@ -33,9 +33,11 @@ import (
 
 //go:embed interp.jq
 //go:embed internal.jq
+//go:embed options.jq
+//go:embed value.jq
+//go:embed bufferrange.jq
 //go:embed funcs.jq
 //go:embed grep.jq
-//go:embed options.jq
 //go:embed args.jq
 //go:embed query.jq
 //go:embed repl.jq

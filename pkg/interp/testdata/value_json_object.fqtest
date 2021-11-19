@@ -61,8 +61,8 @@ null
 "null"
 0
 json> (.)._description | ., type, length?
-""
-"string"
+null
+"null"
 0
 json> (.)._path | ., type, length?
 []
