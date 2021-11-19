@@ -4,37 +4,37 @@ a
 b
 /c:
 c
-$ fq -d raw ._description /a /b /c
+$ fq -d raw todescription /a /b /c
 "/a"
 "/b"
 "/c"
-$ fq -d raw (.,inputs)._description /a /b /c
+$ fq -d raw '(.,inputs) | todescription' /a /b /c
 "/a"
 "/b"
 "/c"
-$ fq -d raw (.,input,input,input)._description /a /b /c
+$ fq -d raw '(.,input,input,input) | try todescription catch .' /a /b /c
 "/a"
 "/b"
 "/c"
 exitcode: 5
 stderr:
 error: break
-$ fq -d raw -n (.,inputs)._description /a /b /c
-null
+$ fq -d raw -n '(.,inputs) | try todescription catch .' /a /b /c
+"expected a decode value but got: null (null)"
 "/a"
 "/b"
 "/c"
-$ fq -d raw -n inputs._description /a /b /c
+$ fq -d raw -n 'inputs | try todescription catch .' /a /b /c
 "/a"
 "/b"
 "/c"
-$ fq -d raw -n '[inputs._description]' /a /b /c
+$ fq -d raw -n '[inputs | try todescription catch .]' /a /b /c
 [
   "/a",
   "/b",
   "/c"
 ]
-$ fq -d raw -n (input,input,input,input)._description /a /b /c
+$ fq -d raw -n '(input,input,input,input) | todescription' /a /b /c
 "/a"
 "/b"
 "/c"
@@ -65,7 +65,7 @@ stderr:
 error: cannot add: number (1) and string ("a")
 error: cannot add: number (1) and string ("a")
 error: cannot add: number (1) and string ("a")
-$ fq -s -d raw [.[]._description] /a /b /c
+$ fq -s -d raw '[.[] | todescription]' /a /b /c
 [
   "/a",
   "/b",

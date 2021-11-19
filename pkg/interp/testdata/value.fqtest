@@ -241,7 +241,7 @@ mp3> ._parent
 null
 mp3> ._sym
 null
-mp3> ._description
+mp3> todescription
 "/test.mp3"
 mp3> topath
 []
