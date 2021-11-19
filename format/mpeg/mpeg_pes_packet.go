@@ -137,7 +137,6 @@ func pesPacketDecode(d *decode.D, in interface{}) interface{} {
 			}
 		})
 	case startCode >= 0xbd:
-		//log.Printf("startCode: %#+v\n", startCode)
 		length := d.FieldU16("length")
 		// 0xbd-0xbd // Privatestream1
 		// 0xc0-0xdf // MPEG1OrMPEG2AudioStream

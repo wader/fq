@@ -23,11 +23,14 @@ func init() {
 		DecodeFn:    mp3Decode,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.ID3V2}, Group: &headerFormat},
-			{Names: []string{
-				format.ID3V1,
-				format.ID3V11,
-				format.APEV2,
-			}, Group: &footerFormat},
+			{
+				Names: []string{
+					format.ID3V1,
+					format.ID3V11,
+					format.APEV2,
+				},
+				Group: &footerFormat,
+			},
 			{Names: []string{format.MP3_FRAME}, Group: &mp3Frame},
 		},
 	})

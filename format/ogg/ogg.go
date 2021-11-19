@@ -147,9 +147,9 @@ func decodeOgg(d *decode.D, in interface{}) interface{} {
 								d.FieldU8("minor")
 								d.FieldU16("header_packets")
 								d.FieldUTF8("flac_signature", 4)
-								v, dv := d.FieldFormat("metadatablock", flacMetadatablockFormat, nil)
-								flacMetadatablockOut, ok := dv.(format.FlacMetadatablockOut)
-								if v != nil && !ok {
+								dv, v := d.FieldFormat("metadatablock", flacMetadatablockFormat, nil)
+								flacMetadatablockOut, ok := v.(format.FlacMetadatablockOut)
+								if dv != nil && !ok {
 									panic(fmt.Sprintf("expected FlacMetadatablockOut, got %#+v", flacMetadatablockOut))
 								}
 								s.flacStreamInfo = flacMetadatablockOut.StreamInfo
@@ -158,8 +158,6 @@ func decodeOgg(d *decode.D, in interface{}) interface{} {
 							s.packetD.FieldFormatBitBuf("packet", bb, flacFrameFormat, nil)
 						default:
 							s.packetD.FieldFormatBitBuf("packet", bb, flacMetadatablockFormat, nil)
-
-							//d.Format(flacFrame, nil)
 						}
 					case codecUnknown:
 						s.packetD.FieldRootBitBuf("packet", bb)

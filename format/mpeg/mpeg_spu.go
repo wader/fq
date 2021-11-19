@@ -49,6 +49,7 @@ var commandNames = decode.UToStr{
 func rleValue(d *decode.D) (uint64, uint64, int) {
 	p := uint(d.PeekBits(8))
 
+	// match zero prefix
 	switch {
 	case p&0b1111_1100 == 0:
 		// 000000nnnnnnnncc
@@ -80,17 +81,12 @@ func decodeLines(d *decode.D, lines int, width int) []string { //nolint:unparam
 				pixel = fmt.Sprintf("%d", c)
 			}
 
-			//log.Printf("n=%d c=%d b=%d\n", n, c, b)
-
 			if n == 0 && b == 16 {
 				l += strings.Repeat(pixel, width-len(l))
 				break
 			}
 
 			x += int(n)
-
-			//log.Printf("n: %d c %d b %d\n", n, c, b)
-			// l += strings.Repeat(pixel, int(n))
 		}
 		if d.ByteAlignBits() > 0 {
 			d.U(d.ByteAlignBits())
