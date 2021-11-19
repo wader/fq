@@ -76,14 +76,14 @@
                 {
                     "name": "",
                     "args": "nBits, fBits",
-                    "params": "nBits int, fBits int64",
+                    "params": "nBits int, fBits int",
                     "call": "d.tryFPE(nBits, fBits, d.Endian)",
                     "doc": "nBits fixed-point number in current endian"
                 },
                 {
                     "name": "E",
                     "args": "nBits, fBits, endian",
-                    "params": "nBits int, fBits int64, endian Endian",
+                    "params": "nBits int, fBits int, endian Endian",
                     "call": "d.tryFPE(nBits, fBits, endian)",
                     "doc": "nBits fixed-point number in specified endian"
                 },

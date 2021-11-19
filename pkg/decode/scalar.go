@@ -358,7 +358,7 @@ func (d *D) tryFE(nBits int, endian Endian) (float64, error) {
 	}
 }
 
-func (d *D) tryFPE(nBits int, fBits int64, endian Endian) (float64, error) {
+func (d *D) tryFPE(nBits int, fBits int, endian Endian) (float64, error) {
 	n, err := d.bits(nBits)
 	if err != nil {
 		return 0, err

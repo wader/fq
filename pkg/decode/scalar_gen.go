@@ -12798,9 +12798,9 @@ func (d *D) FieldF64BE(name string, sfns ...ScalarFn) float64 {
 // Reader FP
 
 // TryFP tries to read nBits fixed-point number in current endian
-func (d *D) TryFP(nBits int, fBits int64) (float64, error) { return d.tryFPE(nBits, fBits, d.Endian) }
+func (d *D) TryFP(nBits int, fBits int) (float64, error) { return d.tryFPE(nBits, fBits, d.Endian) }
 
-func (d *D) ScalarFP(nBits int, fBits int64) func(Scalar) (Scalar, error) {
+func (d *D) ScalarFP(nBits int, fBits int) func(Scalar) (Scalar, error) {
 	return func(s Scalar) (Scalar, error) {
 		v, err := d.tryFPE(nBits, fBits, d.Endian)
 		s.Actual = v
@@ -12809,7 +12809,7 @@ func (d *D) ScalarFP(nBits int, fBits int64) func(Scalar) (Scalar, error) {
 }
 
 // FP reads nBits fixed-point number in current endian
-func (d *D) FP(nBits int, fBits int64) float64 {
+func (d *D) FP(nBits int, fBits int) float64 {
 	v, err := d.tryFPE(nBits, fBits, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "FP", Pos: d.Pos()})
@@ -12818,7 +12818,7 @@ func (d *D) FP(nBits int, fBits int64) float64 {
 }
 
 // TryFieldFP tries to add a field and read nBits fixed-point number in current endian
-func (d *D) TryFieldFP(name string, nBits int, fBits int64, sfns ...ScalarFn) (float64, error) {
+func (d *D) TryFieldFP(name string, nBits int, fBits int, sfns ...ScalarFn) (float64, error) {
 	v, err := d.TryFieldScalar(name, d.ScalarFP(nBits, fBits), sfns...)
 	if err != nil {
 		return 0, err
@@ -12827,7 +12827,7 @@ func (d *D) TryFieldFP(name string, nBits int, fBits int64, sfns ...ScalarFn) (f
 }
 
 // FieldFP adds a field and reads nBits fixed-point number in current endian
-func (d *D) FieldFP(name string, nBits int, fBits int64, sfns ...ScalarFn) float64 {
+func (d *D) FieldFP(name string, nBits int, fBits int, sfns ...ScalarFn) float64 {
 	v, err := d.TryFieldFP(name, nBits, fBits, sfns...)
 	if err != nil {
 		panic(IOError{Err: err, Name: name, Op: "FP", Pos: d.Pos()})
@@ -12838,11 +12838,11 @@ func (d *D) FieldFP(name string, nBits int, fBits int64, sfns ...ScalarFn) float
 // Reader FPE
 
 // TryFPE tries to read nBits fixed-point number in specified endian
-func (d *D) TryFPE(nBits int, fBits int64, endian Endian) (float64, error) {
+func (d *D) TryFPE(nBits int, fBits int, endian Endian) (float64, error) {
 	return d.tryFPE(nBits, fBits, endian)
 }
 
-func (d *D) ScalarFPE(nBits int, fBits int64, endian Endian) func(Scalar) (Scalar, error) {
+func (d *D) ScalarFPE(nBits int, fBits int, endian Endian) func(Scalar) (Scalar, error) {
 	return func(s Scalar) (Scalar, error) {
 		v, err := d.tryFPE(nBits, fBits, endian)
 		s.Actual = v
@@ -12851,7 +12851,7 @@ func (d *D) ScalarFPE(nBits int, fBits int64, endian Endian) func(Scalar) (Scala
 }
 
 // FPE reads nBits fixed-point number in specified endian
-func (d *D) FPE(nBits int, fBits int64, endian Endian) float64 {
+func (d *D) FPE(nBits int, fBits int, endian Endian) float64 {
 	v, err := d.tryFPE(nBits, fBits, endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "FPE", Pos: d.Pos()})
@@ -12860,7 +12860,7 @@ func (d *D) FPE(nBits int, fBits int64, endian Endian) float64 {
 }
 
 // TryFieldFPE tries to add a field and read nBits fixed-point number in specified endian
-func (d *D) TryFieldFPE(name string, nBits int, fBits int64, endian Endian, sfns ...ScalarFn) (float64, error) {
+func (d *D) TryFieldFPE(name string, nBits int, fBits int, endian Endian, sfns ...ScalarFn) (float64, error) {
 	v, err := d.TryFieldScalar(name, d.ScalarFPE(nBits, fBits, endian), sfns...)
 	if err != nil {
 		return 0, err
@@ -12869,7 +12869,7 @@ func (d *D) TryFieldFPE(name string, nBits int, fBits int64, endian Endian, sfns
 }
 
 // FieldFPE adds a field and reads nBits fixed-point number in specified endian
-func (d *D) FieldFPE(name string, nBits int, fBits int64, endian Endian, sfns ...ScalarFn) float64 {
+func (d *D) FieldFPE(name string, nBits int, fBits int, endian Endian, sfns ...ScalarFn) float64 {
 	v, err := d.TryFieldFPE(name, nBits, fBits, endian, sfns...)
 	if err != nil {
 		panic(IOError{Err: err, Name: name, Op: "FPE", Pos: d.Pos()})

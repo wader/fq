@@ -274,6 +274,7 @@ func init() {
 			d.FieldU24("flags")
 			d.FieldU16("graphicsmode")
 			d.FieldArray("opcolor", func(d *decode.D) {
+				// TODO: is FP16?
 				d.FieldU16("value")
 				d.FieldU16("value")
 				d.FieldU16("value")
@@ -1204,6 +1205,35 @@ func init() {
 			if d.BitsLeft() > 0 {
 				d.FieldRawLen("data", d.BitsLeft())
 			}
+		},
+		"tapt": decodeBoxes,
+		"clef": func(_ *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+			d.FieldFP32("width")
+			d.FieldFP32("height")
+		},
+		"prof": func(_ *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+			d.FieldFP32("width")
+			d.FieldFP32("height")
+		},
+		"enof": func(_ *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+			d.FieldFP32("width")
+			d.FieldFP32("height")
+		},
+		"clap": func(_ *decodeContext, d *decode.D) {
+			d.FieldU32("aperture_width_n")
+			d.FieldU32("aperture_width_d")
+			d.FieldU32("aperture_height_n")
+			d.FieldU32("aperture_height_d")
+			d.FieldU32("horiz_off_n")
+			d.FieldU32("horiz_off_d")
+			d.FieldU32("vert_off_n")
+			d.FieldU32("vert_off_d")
 		},
 	}
 }
