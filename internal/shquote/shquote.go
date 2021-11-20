@@ -140,7 +140,6 @@ func Split(s string) []string {
 	var ss []string
 	sb := &strings.Builder{}
 
-	sb.Reset()
 	for _, t := range Parse(s) {
 		sb.WriteString(t.Str)
 		if t.Separator && sb.Len() > 0 {
