@@ -14,7 +14,6 @@ import (
 
 var oggPageFormat decode.Group
 var vorbisPacketFormat decode.Group
-var vorbisCommentFormat decode.Group
 var opusPacketFormat decode.Group
 var flacMetadatablockFormat decode.Group
 var flacFrameFormat decode.Group
@@ -28,7 +27,6 @@ func init() {
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.OGG_PAGE}, Group: &oggPageFormat},
 			{Names: []string{format.VORBIS_PACKET}, Group: &vorbisPacketFormat},
-			{Names: []string{format.VORBIS_COMMENT}, Group: &vorbisCommentFormat},
 			{Names: []string{format.OPUS_PACKET}, Group: &opusPacketFormat},
 			{Names: []string{format.FLAC_METADATABLOCK}, Group: &flacMetadatablockFormat},
 			{Names: []string{format.FLAC_FRAME}, Group: &flacFrameFormat},
@@ -126,10 +124,14 @@ func decodeOgg(d *decode.D, in interface{}) interface{} {
 					switch s.codec {
 					case codecVorbis:
 						// TODO: err
-						_, _, _ = s.packetD.FieldTryFormatBitBuf("packet", bb, vorbisPacketFormat, nil)
+						if _, _, err := s.packetD.TryFieldFormatBitBuf("packet", bb, vorbisPacketFormat, nil); err != nil {
+							s.packetD.FieldRootBitBuf("packet", bb)
+						}
 					case codecOpus:
 						// TODO: err
-						_, _, _ = s.packetD.FieldTryFormatBitBuf("packet", bb, opusPacketFormat, nil)
+						if _, _, err := s.packetD.TryFieldFormatBitBuf("packet", bb, opusPacketFormat, nil); err != nil {
+							s.packetD.FieldRootBitBuf("packet", bb)
+						}
 					case codecFlac:
 						var firstByte byte
 						bs, err := bb.PeekBytes(1)

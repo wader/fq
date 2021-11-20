@@ -269,7 +269,7 @@ func (dvb decodeValueBase) DecodeValue() *decode.Value {
 
 func (dvb decodeValueBase) Display(w io.Writer, opts Options) error { return dump(dvb.dv, w, opts) }
 func (dvb decodeValueBase) ToBufferView() (BufferRange, error) {
-	return BufferRange{bb: dvb.dv.RootBitBuf, r: dvb.dv.Range, unit: 8}, nil
+	return BufferRange{bb: dvb.dv.RootBitBuf, r: dvb.dv.InnerRange(), unit: 8}, nil
 }
 func (dvb decodeValueBase) ExtKeys() []string {
 	kv := []string{

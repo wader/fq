@@ -113,7 +113,11 @@ func decode(ctx context.Context, bb *bitio.Buffer, group Group, opts Options) (*
 			d.Value.postProcess()
 		}
 
-		return d.Value, decodeV, formatsErr
+		if len(formatsErr.Errs) > 0 {
+			return d.Value, decodeV, formatsErr
+		}
+
+		return d.Value, decodeV, nil
 	}
 
 	return nil, nil, formatsErr
@@ -255,13 +259,13 @@ func (d *D) FillGaps(r ranges.Range, namePrefix string) {
 // Errorf stops decode with a reason unless forced
 func (d *D) Errorf(format string, a ...interface{}) {
 	if !d.Options.Force {
-		panic(DecoderError{Reason: format, Pos: d.Pos()})
+		panic(DecoderError{Reason: fmt.Sprintf(format, a...), Pos: d.Pos()})
 	}
 }
 
 // Fatalf stops decode with a reason regardless of forced
 func (d *D) Fatalf(format string, a ...interface{}) {
-	panic(DecoderError{Reason: format, Pos: d.Pos()})
+	panic(DecoderError{Reason: fmt.Sprintf(format, a...), Pos: d.Pos()})
 }
 
 func (d *D) IOPanic(err error) {
@@ -798,7 +802,7 @@ func (d *D) FieldFormatRange(name string, firstBit int64, nBits int64, group Gro
 	return dv, v
 }
 
-func (d *D) FieldTryFormatBitBuf(name string, bb *bitio.Buffer, group Group, inArg interface{}) (*Value, interface{}, error) {
+func (d *D) TryFieldFormatBitBuf(name string, bb *bitio.Buffer, group Group, inArg interface{}) (*Value, interface{}, error) {
 	dv, v, err := decode(d.Ctx, bb, group, Options{
 		Name:        name,
 		Force:       d.Options.Force,
@@ -821,7 +825,7 @@ func (d *D) FieldTryFormatBitBuf(name string, bb *bitio.Buffer, group Group, inA
 }
 
 func (d *D) FieldFormatBitBuf(name string, bb *bitio.Buffer, group Group, inArg interface{}) (*Value, interface{}) {
-	dv, v, err := d.FieldTryFormatBitBuf(name, bb, group, inArg)
+	dv, v, err := d.TryFieldFormatBitBuf(name, bb, group, inArg)
 	if dv == nil || dv.Errors() != nil {
 		panic(err)
 	}
@@ -870,4 +874,36 @@ func (d *D) FieldFormatReaderLen(name string, nBits int64, fn func(r io.Reader) 
 	zbb := bitio.NewBufferFromBytes(zd, -1)
 
 	return d.FieldFormatBitBuf(name, zbb, group, nil)
+}
+
+func (d *D) TryFieldReaderRangeFormat(name string, startBit int64, nBits int64, fn func(r io.Reader) io.Reader, group Group, inArg interface{}) (int64, *bitio.Buffer, *Value, interface{}, error) {
+	bitLen := nBits
+	if bitLen == -1 {
+		bitLen = d.BitsLeft()
+	}
+	bb, err := d.bitBuf.BitBufRange(startBit, bitLen)
+	if err != nil {
+		return 0, nil, nil, nil, err
+	}
+	r := fn(bb)
+	// TODO: check if io.Closer?
+	rb, err := ioutil.ReadAll(r)
+	if err != nil {
+		return 0, nil, nil, nil, err
+	}
+	cz, err := bb.Pos()
+	rbb := bitio.NewBufferFromBytes(rb, -1)
+	if err != nil {
+		return 0, nil, nil, nil, err
+	}
+	dv, v, err := d.TryFieldFormatBitBuf(name, rbb, group, inArg)
+	return cz, rbb, dv, v, err
+}
+
+func (d *D) FieldReaderRangeFormat(name string, startBit int64, nBits int64, fn func(r io.Reader) io.Reader, group Group, inArg interface{}) (int64, *bitio.Buffer, *Value, interface{}) {
+	cz, rbb, dv, v, err := d.TryFieldReaderRangeFormat(name, startBit, nBits, fn, group, inArg)
+	if err != nil {
+		d.IOPanic(err)
+	}
+	return cz, rbb, dv, v
 }

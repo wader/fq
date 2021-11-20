@@ -6,11 +6,11 @@ package zip
 import (
 	"bytes"
 	"compress/flate"
+	"errors"
 	"io"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
-	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 )
 
@@ -252,7 +252,7 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldStruct("last_modification_date", fieldMSDOSTime)
 				d.FieldStruct("last_modification_time", fieldMSDOSDate)
 				d.FieldU32("crc32_uncompressed", d.Hex)
-				compressedSize := d.FieldU32("compressed_size")
+				compressedSizeBytes := d.FieldU32("compressed_size")
 				d.FieldU32("uncompressed_size")
 				fileNameLength := d.FieldU16("file_name_length")
 				extraFieldLength := d.FieldU16("extra_field_length")
@@ -268,57 +268,43 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 						}
 					})
 				})
+				compressedSize := int64(compressedSizeBytes) * 8
+				compressedStart := d.Pos()
 
-				compressedLimit := int64(compressedSize) * 8
+				compressedLimit := compressedSize
 				if compressedLimit == 0 {
 					compressedLimit = d.BitsLeft()
 				}
 
-				compressedStart := d.Pos()
-
-				d.LenFn(compressedLimit, func(d *decode.D) {
-					if compressionMethod == compressionMethodNone {
-						d.FieldRawLen("uncompressed", int64(compressedSize)*8)
-						return
-					}
-
-					var decompressR io.Reader
-					compressedBB := d.BitBufRange(d.Pos(), d.BitsLeft())
+				if compressionMethod == compressionMethodNone {
+					d.FieldRawLen("uncompressed", compressedSize)
+				} else {
+					var rFn func(r io.Reader) io.Reader
 					switch compressionMethod {
 					case compressionMethodDeflated:
 						// *bitio.Buffer implements io.ByteReader so hat deflate don't do own
 						// buffering and might read more than needed messing up knowing compressed size
-						decompressR = flate.NewReader(compressedBB)
+						rFn = func(r io.Reader) io.Reader { return flate.NewReader(r) }
 					}
 
-					if decompressR != nil {
-						uncompressed := &bytes.Buffer{}
-						if _, err := d.Copy(uncompressed, decompressR); err != nil {
-							d.IOPanic(err)
-						}
-						uncompressedBB := bitio.NewBufferFromBytes(uncompressed.Bytes(), -1)
-						dv, _, _ := d.FieldTryFormatBitBuf("uncompressed", uncompressedBB, probeFormat, nil)
-						if dv == nil {
+					if rFn != nil {
+						readCompressedSize, uncompressedBB, dv, _, err := d.TryFieldReaderRangeFormat("uncompressed", d.Pos(), compressedLimit, rFn, probeFormat, nil)
+						if dv == nil && errors.As(err, &decode.FormatsError{}) {
 							d.FieldRootBitBuf("uncompressed", uncompressedBB)
 						}
-
-						// no compressed size, is a streaming zip, figure out size by checking what
-						// position compressed buffer ended at
 						if compressedSize == 0 {
-							pos, err := compressedBB.Pos()
-							if err != nil {
-								d.IOPanic(err)
-							}
-							compressedSize = uint64(pos) / 8
+							compressedSize = readCompressedSize
+						}
+						d.FieldRawLen("compressed", compressedSize)
+
+					} else {
+						if compressedSize != 0 {
+							d.FieldRawLen("compressed", compressedSize)
 						}
 					}
+				}
 
-					if compressedSize != 0 {
-						d.FieldRawLen("compressed", int64(compressedSize)*8)
-					}
-				})
-
-				d.SeekAbs(compressedStart + int64(compressedSize*8))
+				d.SeekAbs(compressedStart + compressedSize)
 
 				if hasDataDescriptor {
 					d.FieldStruct("data_indicator", func(d *decode.D) {

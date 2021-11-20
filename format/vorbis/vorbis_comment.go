@@ -2,11 +2,12 @@ package vorbis
 
 import (
 	"encoding/base64"
+	"errors"
+	"io"
 	"strings"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
-	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 )
 
@@ -30,20 +31,22 @@ func commentDecode(d *decode.D, in interface{}) interface{} {
 	i := uint64(0)
 	d.FieldStructArrayLoop("user_comments", "user_comment", func() bool { return i < userCommentListLength }, func(d *decode.D) {
 		userCommentLength := d.FieldU32LE("length")
+		userCommentStart := d.Pos()
 		userComment := d.FieldUTF8("comment", int(userCommentLength))
-		pairParts := strings.SplitN(userComment, "=", 2)
-		if len(pairParts) == 2 {
-			k, v := strings.ToUpper(pairParts[0]), pairParts[1]
-			var metadataBlockPicture = "METADATA_BLOCK_PICTURE"
-			if k == metadataBlockPicture {
-				// METADATA_BLOCK_PICTURE=<base64-flac-picture-metadatablock>
-				bs, err := base64.StdEncoding.DecodeString(v)
-				if err == nil {
-					bb := bitio.NewBufferFromBytes(bs, -1)
-					d.FieldFormatBitBuf("picture", bb, flacPicture, nil)
-				} else {
-					panic(err)
-				}
+		var metadataBlockPicturePreix = "METADATA_BLOCK_PICTURE="
+		var metadataBlockPicturePrefixLower = "metadata_block_picture="
+
+		if strings.HasPrefix(userComment, metadataBlockPicturePreix) ||
+			strings.HasPrefix(userComment, metadataBlockPicturePrefixLower) {
+
+			base64Offset := int64(len(metadataBlockPicturePreix)) * 8
+			base64Len := int64(len(userComment))*8 - base64Offset
+
+			rFn := func(r io.Reader) io.Reader { return base64.NewDecoder(base64.StdEncoding, r) }
+
+			_, uncompressedBB, dv, _, err := d.TryFieldReaderRangeFormat("picture", userCommentStart+base64Offset, base64Len, rFn, flacPicture, nil)
+			if dv == nil && errors.As(err, &decode.FormatsError{}) {
+				d.FieldRootBitBuf("picture", uncompressedBB)
 			}
 		}
 		i++

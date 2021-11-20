@@ -84,7 +84,7 @@ type DecoderError struct {
 }
 
 func (e DecoderError) Error() string {
-	return fmt.Sprintf("failed to validate at position %s: %s", num.Bits(e.Pos).StringByteBits(16), e.Reason)
+	return fmt.Sprintf("error at position %s: %s", num.Bits(e.Pos).StringByteBits(16), e.Reason)
 }
 
 func (DecoderError) IsRecoverableError() bool { return true }

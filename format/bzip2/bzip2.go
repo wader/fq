@@ -6,14 +6,11 @@ package bzip2
 // TODO: empty file, no streams
 
 import (
-	"bytes"
 	"compress/bzip2"
-	"hash/crc32"
-	"io"
+	"errors"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
-	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 )
 
@@ -91,29 +88,22 @@ func bzip2Decode(d *decode.D, in interface{}) interface{} {
 
 	compressedStart := d.Pos()
 
-	compressedBB := d.BitBufRange(0, d.Len())
-	deflateR := bzip2.NewReader(compressedBB)
-	uncompressed := &bytes.Buffer{}
-	crc32W := crc32.NewIEEE()
-	if _, err := d.Copy(io.MultiWriter(uncompressed, crc32W), deflateR); err != nil {
-		d.Fatalf(err.Error())
-	}
-	// calculatedCRC32 := crc32W.Sum(nil)
-	uncompressedBB := bitio.NewBufferFromBytes(uncompressed.Bytes(), -1)
-	dv, _, _ := d.FieldTryFormatBitBuf("uncompressed", uncompressedBB, probeGroup, nil)
-	if dv == nil {
+	readCompressedSize, uncompressedBB, dv, _, err := d.TryFieldReaderRangeFormat("uncompressed", 0, d.Len(), bzip2.NewReader, probeGroup, nil)
+	if dv == nil && errors.As(err, &decode.FormatsError{}) {
 		d.FieldRootBitBuf("uncompressed", uncompressedBB)
 	}
 
-	p, err := compressedBB.Pos()
-	if err != nil {
-		d.IOPanic((err))
-	}
+	// uncompressed := &bytes.Buffer{}
+	// crc32W := crc32.NewIEEE()
+	// if _, err := d.Copy(io.MultiWriter(uncompressed, crc32W), deflateR); err != nil {
+	// 	d.Fatalf(err.Error())
+	// }
+	// // calculatedCRC32 := crc32W.Sum(nil)
 
-	// TODO: compressedSize is a horrible hack for now
+	// HACK: bzip2.NewReader will read from start of whole buffer and then we figure out compressedSize ourself
 	// "It is important to note that none of the fields within a StreamBlock or StreamFooter are necessarily byte-aligned"
 	const footerByteSize = 10
-	compressedSize := (p - compressedStart) - footerByteSize*8
+	compressedSize := (readCompressedSize - compressedStart) - footerByteSize*8
 	for i := 0; i < 8; i++ {
 		d.SeekAbs(compressedStart + compressedSize)
 		if d.PeekBits(48) == footerMagic {

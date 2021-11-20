@@ -13,8 +13,8 @@ $ fq -d gzip verbose /test.gz
 0x00|            41 02 ea 5f                        |    A.._        |  mtime: 1609171521 0x4-0x7.7 (4)
 0x00|                        00                     |        .       |  extra_flags: 0 0x8-0x8.7 (1)
 0x00|                           03                  |         .      |  os: "Unix" (3) 0x9-0x9.7 (1)
+ 0x0|74 65 73 74 0a|                                |test.|          |  uncompressed: raw bits 0x0-0x4.7 (5)
 0x00|                              2b 49 2d 2e e1 02|          +I-...|  compressed: raw bits 0xa-0x10.7 (7)
 0x10|00                                             |.               |
- 0x0|74 65 73 74 0a|                                |test.|          |  uncompressed: raw bits 0x0-0x4.7 (5)
 0x10|   c6 35 b9 3b                                 | .5.;           |  crc32: "c635b93b" (raw bits) (valid) 0x11-0x14.7 (4)
 0x10|               05 00 00 00|                    |     ....|      |  isize: 5 0x15-0x18.7 (4)

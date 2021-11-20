@@ -5,8 +5,8 @@ package gz
 // TODO: verify isize?
 
 import (
-	"bytes"
 	"compress/flate"
+	"errors"
 	"hash/crc32"
 	"io"
 
@@ -97,26 +97,24 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldRawLen("header_crc", 16, d.RawHex)
 	}
 
-	compressedLen := d.BitsLeft() - ((4 + 4) * 8) // len-(crc32+isize)
-	compressedBB := d.FieldRawLen("compressed", compressedLen)
-	crc32W := crc32.NewIEEE()
-
+	var rFn func(r io.Reader) io.Reader
 	switch compressionMethod {
 	case delfateMethod:
-		deflateR := flate.NewReader(compressedBB)
-		uncompressed := &bytes.Buffer{}
-		if _, err := d.Copy(io.MultiWriter(uncompressed, crc32W), deflateR); err != nil {
-			d.Fatalf(err.Error())
-		}
-		uncompressedBB := bitio.NewBufferFromBytes(uncompressed.Bytes(), -1)
-		dv, _, _ := d.FieldTryFormatBitBuf("uncompressed", uncompressedBB, probeFormat, nil)
-		if dv == nil {
-			d.FieldRootBitBuf("uncompressed", uncompressedBB)
-		}
-	default:
-		d.FieldRawLen("compressed", compressedLen)
+		// *bitio.Buffer implements io.ByteReader so hat deflate don't do own
+		// buffering and might read more than needed messing up knowing compressed size
+		rFn = func(r io.Reader) io.Reader { return flate.NewReader(r) }
 	}
 
+	readCompressedSize, uncompressedBB, dv, _, err := d.TryFieldReaderRangeFormat("uncompressed", d.Pos(), d.BitsLeft(), rFn, probeFormat, nil)
+	if dv == nil && errors.As(err, &decode.FormatsError{}) {
+		d.FieldRootBitBuf("uncompressed", uncompressedBB)
+	}
+	d.FieldRawLen("compressed", readCompressedSize)
+
+	crc32W := crc32.NewIEEE()
+	if _, err := io.Copy(crc32W, uncompressedBB.Copy()); err != nil {
+		d.IOPanic(err)
+	}
 	d.FieldRawLen("crc32", 32, d.ValidateBitBuf(bitio.ReverseBytes(crc32W.Sum(nil))), d.RawHex)
 	d.FieldU32LE("isize")
 
