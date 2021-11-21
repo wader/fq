@@ -6,13 +6,13 @@ package gz
 
 import (
 	"compress/flate"
+	"encoding/binary"
 	"errors"
 	"hash/crc32"
 	"io"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
-	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 )
 
@@ -115,7 +115,7 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 	if _, err := io.Copy(crc32W, uncompressedBB.Copy()); err != nil {
 		d.IOPanic(err)
 	}
-	d.FieldRawLen("crc32", 32, d.ValidateBitBuf(bitio.ReverseBytes(crc32W.Sum(nil))), d.RawHex)
+	d.FieldU32("crc32", d.ValidateU(uint64(binary.LittleEndian.Uint32(crc32W.Sum(nil)))), d.Hex)
 	d.FieldU32LE("isize")
 
 	return nil

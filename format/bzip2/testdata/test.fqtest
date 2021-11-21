@@ -6,7 +6,7 @@ $ fq -d bzip2 verbose /test.bz2
 0x00|         39                                    |   9            |  hundred_k_blocksize: 57 0x3-0x3.7 (1)
     |                                               |                |  block: {} 0x4-0x1c.7 (25)
 0x00|            31 41 59 26 53 59                  |    1AY&SY      |    magic: 0x314159265359 (valid) 0x4-0x9.7 (6)
-0x00|                              cc c3 71 d4      |          ..q.  |    crc: 0xccc371d4 0xa-0xd.7 (4)
+0x00|                              cc c3 71 d4      |          ..q.  |    crc: 0xccc371d4 (valid) 0xa-0xd.7 (4)
 0x00|                                          00   |              . |    randomised: 0 0xe-0xe (0.1)
 0x00|                                          00 00|              ..|    origptr: 4 0xe.1-0x11 (3)
 0x10|02 41                                          |.A              |
@@ -24,5 +24,5 @@ $ fq -d bzip2 verbose /test.bz2
 0x20|19 97 8b                                       |...             |
     |                                               |                |  footer: {} 0x22.1-0x2c.7 (10.7)
 0x20|      8b b9 22 9c 28 48 66                     |  ..".(Hf       |    magic: 0x177245385090 (valid) 0x22.1-0x28 (6)
-0x20|                        66 61 b8 ea 00|        |        fa...|  |    crc: 0xccc371d4 0x28.1-0x2c (4)
+0x20|                        66 61 b8 ea 00|        |        fa...|  |    crc: 0xccc371d4 (valid) 0x28.1-0x2c (4)
 0x20|                                    00|        |            .|  |    padding: raw bits 0x2c.1-0x2c.7 (0.7)

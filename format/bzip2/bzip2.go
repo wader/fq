@@ -7,7 +7,11 @@ package bzip2
 
 import (
 	"compress/bzip2"
+	"encoding/binary"
 	"errors"
+	"hash/crc32"
+	"io"
+	"math/bits"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
@@ -31,12 +35,27 @@ func init() {
 const blockMagic = 0x31_41_59_26_53_59
 const footerMagic = 0x17_72_45_38_50_90
 
+type bitFlipReader struct {
+	r io.Reader
+}
+
+func (bfr bitFlipReader) Read(p []byte) (n int, err error) {
+	n, err = bfr.r.Read(p)
+	for i := 0; i < n; i++ {
+		p[i] = bits.Reverse8(p[i])
+	}
+	return n, err
+}
+
 func bzip2Decode(d *decode.D, in interface{}) interface{} {
 	// moreStreams := true
 
 	// d.FieldArray("streams", func(d *decode.D) {
 	// 	for moreStreams {
 	// d.FieldStruct("stream", func(d *decode.D) {
+
+	var blockCRCValue *decode.Value
+	var streamCRCN uint32
 
 	d.FieldUTF8("magic", 2, d.AssertStr("BZ"))
 	d.FieldU8("version")
@@ -49,6 +68,7 @@ func bzip2Decode(d *decode.D, in interface{}) interface{} {
 		// }
 		d.FieldU48("magic", d.AssertU(blockMagic), d.Hex)
 		d.FieldU32("crc", d.Hex)
+		blockCRCValue = d.FieldGet("crc")
 		d.FieldU1("randomised")
 		d.FieldU24("origptr")
 		d.FieldU16("syncmapl1")
@@ -93,12 +113,13 @@ func bzip2Decode(d *decode.D, in interface{}) interface{} {
 		d.FieldRootBitBuf("uncompressed", uncompressedBB)
 	}
 
-	// uncompressed := &bytes.Buffer{}
-	// crc32W := crc32.NewIEEE()
-	// if _, err := d.Copy(io.MultiWriter(uncompressed, crc32W), deflateR); err != nil {
-	// 	d.Fatalf(err.Error())
-	// }
-	// // calculatedCRC32 := crc32W.Sum(nil)
+	blockCRC32W := crc32.NewIEEE()
+	if _, err := d.Copy(blockCRC32W, bitFlipReader{uncompressedBB.Copy()}); err != nil {
+		d.IOPanic(err)
+	}
+	blockCRC32N := bits.Reverse32(binary.BigEndian.Uint32(blockCRC32W.Sum(nil)))
+	_ = blockCRCValue.TryScalarFn(d.ValidateU(uint64(blockCRC32N)))
+	streamCRCN = blockCRC32N ^ ((streamCRCN << 1) | (streamCRCN >> 31))
 
 	// HACK: bzip2.NewReader will read from start of whole buffer and then we figure out compressedSize ourself
 	// "It is important to note that none of the fields within a StreamBlock or StreamFooter are necessarily byte-aligned"
@@ -118,12 +139,11 @@ func bzip2Decode(d *decode.D, in interface{}) interface{} {
 	d.FieldStruct("footer", func(d *decode.D) {
 		d.FieldU48("magic", d.AssertU(footerMagic), d.Hex)
 		// TODO: crc of block crcs
-		d.FieldU32("crc", d.Hex)
+		d.FieldU32("crc", d.Hex, d.ValidateU(uint64(streamCRCN)))
 		d.FieldRawLen("padding", int64(d.ByteAlignBits()))
 	})
 
 	// 		moreStreams = false
-
 	// 	}
 	// })
 

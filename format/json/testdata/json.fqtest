@@ -31,13 +31,13 @@ $ fq . /json.gz
  0x0|7b 22 61 22 3a 20 31 32 33 7d                  |{"a": 123}      |  uncompressed: {} (json)
 0x00|                              ab 56 4a 54 b2 52|          .VJT.R|  compressed: raw bits
 0x10|30 34 32 ae e5 02 00                           |042....         |
-0x10|                     20 ac d2 9c               |        ...     |  crc32: "20acd29c" (raw bits) (valid)
+0x10|                     20 ac d2 9c               |        ...     |  crc32: 0x20acd29c (valid)
 0x10|                                 0b 00 00 00|  |           ....||  isize: 11
 $ fq tovalue /json.gz
 {
   "compressed": "<13>q1ZKVLJSMDQyruUCAA==",
   "compression_method": "deflate",
-  "crc32": "20acd29c",
+  "crc32": 548197020,
   "extra_flags": 0,
   "flags": {
     "comment": false,
