@@ -8,15 +8,18 @@ import (
 	"strings"
 )
 
+type br interface {
+	io.Reader // both Reader and SectionBitReader implement io.Reader
+	io.Seeker
+	BitReadSeeker
+	BitReader
+	BitReaderAt
+}
+
 // Buffer is a bit buffer
 type Buffer struct {
-	br interface {
-		io.Reader // both Reader and SectionBitReader implement io.Reader
-		io.Seeker
-		BitReadSeeker
-		BitReader
-		BitReaderAt
-	}
+	// embed to forward to underlaying reader
+	br
 
 	bitLen int64 // mostly to cache len
 }
@@ -42,12 +45,7 @@ func NewBufferFromReadSeeker(rs io.ReadSeeker) (*Buffer, error) {
 	}, nil
 }
 
-func NewBufferFromBitReadSeeker(br interface {
-	io.Reader
-	io.Seeker
-	BitReadSeeker
-	BitReaderAt
-}) (*Buffer, error) {
+func NewBufferFromBitReadSeeker(br br) (*Buffer, error) {
 	bPos, err := br.SeekBits(0, io.SeekCurrent)
 	if err != nil {
 		return nil, err
@@ -151,31 +149,11 @@ func (b *Buffer) PeekBytes(nBytes int) ([]byte, error) {
 	return bs, err
 }
 
-func (b *Buffer) ReadBits(p []byte, nBits int) (n int, err error) {
-	return b.br.ReadBits(p, nBits)
-}
-
-func (b *Buffer) ReadBitsAt(p []byte, nBits int, bitOff int64) (n int, err error) {
-	return b.br.ReadBitsAt(p, nBits, bitOff)
-}
-
-func (b *Buffer) SeekBits(bitOffset int64, whence int) (int64, error) {
-	return b.br.SeekBits(bitOffset, whence)
-}
-
-func (b *Buffer) Read(p []byte) (n int, err error) {
-	return b.br.Read(p)
-}
-
 // required by some decompressors (like deflate) to not do own buffering
 func (b *Buffer) ReadByte() (byte, error) {
 	var rb [1]byte
 	_, err := b.br.Read(rb[:])
 	return rb[0], err
-}
-
-func (b *Buffer) Seek(offset int64, whence int) (int64, error) {
-	return b.br.Seek(offset, whence)
 }
 
 // BytesRange reads nBytes bytes starting bit position start
