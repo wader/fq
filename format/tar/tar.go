@@ -35,8 +35,8 @@ func tarDecode(d *decode.D, in interface{}) interface{} {
 		// TODO: some kind of FieldUScalarFn func that returns sym value?
 		var n uint64
 		d.FieldScalar(name, func(_ decode.Scalar) (decode.Scalar, error) {
-			a := d.UTF8(nBytes)
-			ts := strings.Trim(a, "0 \x00")
+			a := d.UTF8NullFixedLen(nBytes)
+			ts := strings.Trim(a, " ")
 			n = uint64(0)
 			if ts != "" {
 				var err error
