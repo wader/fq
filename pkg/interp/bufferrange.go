@@ -184,7 +184,7 @@ func (bv BufferRange) toBytesBuffer(r ranges.Range) (*bytes.Buffer, error) {
 		return nil, err
 	}
 	buf := &bytes.Buffer{}
-	if _, err := io.Copy(buf, bb.Copy()); err != nil {
+	if _, err := io.Copy(buf, bb.Clone()); err != nil {
 		return nil, err
 	}
 	return buf, nil
@@ -300,7 +300,7 @@ func (bv BufferRange) Display(w io.Writer, opts Options) error {
 		if err != nil {
 			return err
 		}
-		if _, err := io.Copy(w, bb.Copy()); err != nil {
+		if _, err := io.Copy(w, bb.Clone()); err != nil {
 			return err
 		}
 		return nil

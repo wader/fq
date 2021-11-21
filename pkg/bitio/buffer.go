@@ -101,7 +101,8 @@ func (b *Buffer) BitBufRange(firstBitOffset int64, nBits int64) (*Buffer, error)
 	}, nil
 }
 
-func (b *Buffer) Copy() *Buffer {
+// Clone buffer and reset position to zero
+func (b *Buffer) Clone() *Buffer {
 	return &Buffer{
 		br:     NewSectionBitReader(b.br, 0, b.bitLen),
 		bitLen: b.bitLen,

@@ -112,7 +112,7 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldRawLen("compressed", readCompressedSize)
 
 	crc32W := crc32.NewIEEE()
-	if _, err := io.Copy(crc32W, uncompressedBB.Copy()); err != nil {
+	if _, err := io.Copy(crc32W, uncompressedBB.Clone()); err != nil {
 		d.IOPanic(err)
 	}
 	d.FieldU32("crc32", d.ValidateU(uint64(binary.LittleEndian.Uint32(crc32W.Sum(nil)))), d.Hex)

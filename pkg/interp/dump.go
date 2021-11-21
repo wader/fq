@@ -265,13 +265,13 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 		if vBitBuf != nil {
 			if _, err := io.CopyBuffer(
 				hexpairwriter.New(cw.Columns[colHex], opts.LineBytes, int(startLineByteOffset), hexpairFn),
-				io.LimitReader(vBitBuf.Copy(), displaySizeBytes),
+				io.LimitReader(vBitBuf.Clone(), displaySizeBytes),
 				buf); err != nil {
 				return err
 			}
 			if _, err := io.CopyBuffer(
 				asciiwriter.New(cw.Columns[colASCII], opts.LineBytes, int(startLineByteOffset), asciiFn),
-				io.LimitReader(vBitBuf.Copy(), displaySizeBytes),
+				io.LimitReader(vBitBuf.Clone(), displaySizeBytes),
 				buf); err != nil {
 				return err
 			}
@@ -359,7 +359,7 @@ func hexdump(w io.Writer, bv BufferRange, opts Options) error {
 			// TODO: hack
 			V:          decode.Scalar{Actual: bb},
 			Range:      bv.r,
-			RootBitBuf: bv.bb.Copy(),
+			RootBitBuf: bv.bb.Clone(),
 		},
 		w,
 		opts,

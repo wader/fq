@@ -114,7 +114,7 @@ func bzip2Decode(d *decode.D, in interface{}) interface{} {
 	}
 
 	blockCRC32W := crc32.NewIEEE()
-	if _, err := d.Copy(blockCRC32W, bitFlipReader{uncompressedBB.Copy()}); err != nil {
+	if _, err := d.Copy(blockCRC32W, bitFlipReader{uncompressedBB.Clone()}); err != nil {
 		d.IOPanic(err)
 	}
 	blockCRC32N := bits.Reverse32(binary.BigEndian.Uint32(blockCRC32W.Sum(nil)))

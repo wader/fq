@@ -191,14 +191,19 @@ func makeDecodeValue(dv *decode.Value) interface{} {
 	case decode.Scalar:
 		switch vv := vv.Value().(type) {
 		case *bitio.Buffer:
-			buf := &bytes.Buffer{}
-			if _, err := io.Copy(buf, vv.Copy()); err != nil {
-				return err
-			}
-			// TODO: split *bitio.Buffer into just marker (bit range in root bitbuf)
-			// or *bitio.Buffer if actually other bitbuf
+			// is lazy so that in situations where the decode value is only used to
+			// create another buffer we don't have to read and create a string, ex:
+			// .unknown0 | tobytes[1:] | ...
 			return decodeValue{
-				JQValue:         gojqextra.String(buf.String()),
+				JQValue: &gojqextra.LazyString{
+					Fn: func() ([]rune, error) {
+						buf := &bytes.Buffer{}
+						if _, err := io.Copy(buf, vv.Clone()); err != nil {
+							return nil, err
+						}
+						return []rune(buf.String()), nil
+					},
+				},
 				decodeValueBase: decodeValueBase{dv},
 				bitsFormat:      true,
 			}
@@ -446,7 +451,7 @@ func (v decodeValue) JQValueToGoJQEx(optsFn func() Options) interface{} {
 		return err
 	}
 
-	s, err := optsFn().BitsFormatFn(bb.Copy())
+	s, err := optsFn().BitsFormatFn(bb.Clone())
 	if err != nil {
 		return err
 	}
