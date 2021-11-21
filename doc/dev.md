@@ -60,3 +60,25 @@ main:main()
                                         print tree
                                 empty output
 ```
+
+## bitio and other io packages
+
+```
+*os.File, *bytes.Buffer
+^
+ctxreadseeker.Reader defers blocking io operations to a goroutine to make them cancellable
+^
+progressreadseeker.Reader approximates how much of a file has been read
+^
+aheadreadseeker.Reader does readahead caching
+^
+| (io.ReadSeeker interface)
+|
+bitio.Reader (implements bitio.Bit* interfaces)
+^
+| (bitio.Bit* interfaces)
+|
+bitio.Buffer convenience wrapper to read bytes from bit reader, create section readers etc
+SectionBitReader
+MultiBitReader
+```

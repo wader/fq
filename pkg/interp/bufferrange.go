@@ -151,7 +151,7 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 	const cacheReadAheadSize = 512 * 1024
 	aheadRs := aheadreadseeker.New(fRS, cacheReadAheadSize)
 
-	// bitio.Buffer -> aheadreadseeker -> progressreadseeker -> ctxreadseeker -> readseeker
+	// bitio.Buffer -> (bitio.Reader) -> aheadreadseeker -> progressreadseeker -> ctxreadseeker -> readseeker
 
 	bbf.bb, err = bitio.NewBufferFromReadSeeker(aheadRs)
 	if err != nil {
