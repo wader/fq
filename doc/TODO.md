@@ -2,13 +2,7 @@
 
 - Framed (add unknown in gaps) decode should be on struct level not format?
 - Refactor decode.Value into interfaces(s) and impl per type?
-- Symbolic values for all types, and how to make it nice and intuitive in jq expressions.
-  - Ex matroska id, decoded value (tonumber?), symbolic name (tovalue/tostring?)
-  - Ex frequency mapping, decoded value (tonumber?), symbolic hz (tovalue/tonumber?)
-  - Confusing with tovalue is symblic but tonumber/tostring return non-symbolic?
 - `tovalue({bits_format: "base64"})` only affect root value.
-- Sub buffers range is broken, could have a different size in parent (ex: compressed).
-
 - Auto complete of non-global variables is broken. `scope` is broken for variables.
 - `echo '{} {} {}' | jq` vs `echo '{} {} {}' | fq` works differently. fq currently decodes one root format and might add unknown fields etc. Maybe should work differently for `json` format?
 - `format/0` overlap with jq builtin `format/1`. What to rename it to? `decode_format`?
@@ -27,7 +21,6 @@
 
 - ctxstack index cancel wrong order, should just skip?
 - Pager for long output. Configurable? `$PAGER`? only explicit with some kind of syntax? `.. | less` but how?
-- Nicer context cancel message
 - `dump` cancel output of large root value, ex: `.frames`. Problem is dump is done by parent repl.
 - Error position "^" pointer?
 - Configurable history file/name?
@@ -68,14 +61,13 @@
 
 #### Documentation
 
-- Nicer README, repl example (generate somehow)
 - `help("topic")`?
 - Generate from source
 - `-n`, `inputs/0` and `input/0` behavior. Same as jq.
 - Mention `empty.something`?
 - Use https://github.com/fadado/JBOL/blob/master/doc/JQ-Distilled.md notation
 - Decoder write guide
-  - Endian inherited per buffer, reset on new buffer
+  - Endian inherited in one buffer, reset to big endian on new buffer
   - Invalid on zero length input, assert one valid frame etc
   - Try validate input to make it not ambiguous with other decoders
   - Try to not seek and read at end while validating or early, will break progress indicator if not
@@ -83,21 +75,19 @@
   - Try keep code as declarative as possible
   - Split into multiple sub formats if possible
   - See the decoded tree as user interface but still has to represent the actual bit structure
+  - Balance details/usability
+  - Validate/Assert
+  - Error/Fatal/panic
   - Is format probeable
-  - Can new formats added be added to other formats
+  - Can new formats be added to other formats
 
 #### Decode
 
+- Use interfaces to save memory, "Value V" interface so can have U, Str, etc implementations?
+- Array of "decorations" sym, display format?
 - Store original filename somewhere? description for now
-- Nicer DSL
-  - More optional things? optional args or return value to modify?
 - Nicer "synthetic" values? now zero length
-- Value should have raw, tranlated, symbolic and description? struct of map functions?
-  - If symbolic should resolve to string? would make `.field == "abc"` work instead of now `.field._symbolic`
-- Array as root value, adts, avc_au etc
 - Cleanup and rethink nested buffers (zip, muxed like ogg)
-  - Root of nested buffer, what range?
-- `dump` has some bug not showing buffer "nesting" level in the address column
 - Endian bitfield helper (elf etc)
 - Cleanup checksums, should just be fields and add warning if mismatch?
 - Decoder in jq
@@ -118,7 +108,6 @@
 - `matroska` crc
 - `mp4` styp segment test
 - Document maturity/completeness
-- Refactor *[]decode.Format into something more abstract, group?
 - Add `dsf` format
 - Make `json` format more normal? is a bit a of a special case now
 
@@ -143,7 +132,7 @@
 
 #### Big things
 
-- UI, web interface? multiple repl windows? nicer way of showing overlapping fiends in hex etc?
+- UI, web interface? tree interface, multiple repl windows? nicer way of showing overlapping fiends in hex etc?
 - jupyter notebook integration
 - FUSE interface
 - Lazy decode, should work on known sizes? could also save memory be re-decode?
