@@ -550,22 +550,26 @@ func (d *D) FieldMustGet(name string) *Value {
 	panic(fmt.Sprintf("%s not found in struct %s", name, d.Value.Name))
 }
 
-func (d *D) FieldArray(name string, fns ...func(d *D)) *D {
+func (d *D) FieldArray(name string, fn func(d *D), sfns ...ScalarFn) *D {
 	cd := d.FieldDecoder(name, d.bitBuf, Compound{IsArray: true, Children: new([]*Value)})
 	d.AddChild(cd.Value)
-	for _, fn := range fns {
-		fn(cd)
-	}
+	fn(cd)
 	return cd
 }
 
-func (d *D) FieldStruct(name string, fns ...func(d *D)) *D {
+func (d *D) FieldArrayValue(name string) *D {
+	return d.FieldArray(name, func(d *D) {})
+}
+
+func (d *D) FieldStruct(name string, fn func(d *D)) *D {
 	cd := d.FieldDecoder(name, d.bitBuf, Compound{Children: new([]*Value)})
 	d.AddChild(cd.Value)
-	for _, fn := range fns {
-		fn(cd)
-	}
+	fn(cd)
 	return cd
+}
+
+func (d *D) FieldStructValue(name string) *D {
+	return d.FieldStruct(name, func(d *D) {})
 }
 
 func (d *D) FieldStructArrayLoop(name string, structName string, condFn func() bool, fn func(d *D)) *D {
@@ -817,8 +821,6 @@ func (d *D) TryFieldFormatBitBuf(name string, bb *bitio.Buffer, group Group, inA
 
 	dv.Range.Start = d.Pos()
 
-	// log.Printf("FieldTryFormatBitBuf dv.Range: %#+v\n", dv.Range)
-
 	d.AddChild(dv)
 
 	return dv, v, err
@@ -897,6 +899,7 @@ func (d *D) TryFieldReaderRangeFormat(name string, startBit int64, nBits int64, 
 		return 0, nil, nil, nil, err
 	}
 	dv, v, err := d.TryFieldFormatBitBuf(name, rbb, group, inArg)
+
 	return cz, rbb, dv, v, err
 }
 

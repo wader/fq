@@ -60,7 +60,7 @@ type stream struct {
 func decodeOgg(d *decode.D, in interface{}) interface{} {
 	validPages := 0
 	streams := map[uint32]*stream{}
-	streamsD := d.FieldArray("streams")
+	streamsD := d.FieldArrayValue("streams")
 
 	d.FieldArray("pages", func(d *decode.D) {
 		for !d.End() {
@@ -78,7 +78,7 @@ func decodeOgg(d *decode.D, in interface{}) interface{} {
 				var packetsD *decode.D
 				streamsD.FieldStruct("stream", func(d *decode.D) {
 					d.FieldValueU("serial_number", uint64(oggPageOut.StreamSerialNumber))
-					packetsD = d.FieldArray("packets")
+					packetsD = d.FieldArrayValue("packets")
 				})
 				s = &stream{
 					sequenceNo: oggPageOut.SequenceNo,

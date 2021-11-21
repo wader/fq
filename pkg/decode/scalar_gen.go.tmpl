@@ -29,6 +29,15 @@ import (
 		return v
 	}
 
+	// TryField{{$name}}ScalarFn tries to add a field, calls scalar functions and returns actual value as a {{$name}}
+	func (d *D) TryField{{$name}}ScalarFn(name string, fn func(d *D) (Scalar, error), sfns ...ScalarFn) ({{$t.go_type}}, error) {
+		v, err := d.TryFieldScalar(name, func(_ Scalar) (Scalar, error) { return fn(d) }, sfns...)
+		if err != nil {
+			return {{$t.zero}}, err
+		}
+		return v.Actual{{$name}}(), err
+	}
+
 	// Field{{$name}}ScalarFn adds a field, calls scalar functions and returns actual value as a {{$name}}
 	func (d *D) Field{{$name}}ScalarFn(name string, fn func(d *D) Scalar, sfns ...ScalarFn) {{$t.go_type}} {
 		v, err := d.TryFieldScalar(name, func(_ Scalar) (Scalar, error) { return fn(d), nil }, sfns...)
@@ -43,21 +52,29 @@ import (
 		return d.Field{{$name}}ScalarFn(name, func(d *D) Scalar { return Scalar{Actual: fn(d) } }, sfns...)
 	}
 
-	// TryField{{$name}}ScalarFn tries to add a field, calls scalar functions and returns actual value as a {{$name}}
-	func (d *D) TryField{{$name}}ScalarFn(name string, fn func(d *D) (Scalar, error), sfns ...ScalarFn) ({{$t.go_type}}, error) {
-		v, err := d.TryFieldScalar(name, func(_ Scalar) (Scalar, error) { return fn(d) }, sfns...)
-		if err != nil {
-			return {{$t.zero}}, err
-		}
-		return v.Actual{{$name}}(), err
-	}
-
 	// TryField{{$name}}Fn tries to add a field, calls {{$t.go_type}} decode function and returns actual value as a {{$name}}
 	func (d *D) TryField{{$name}}Fn(name string, fn func(d *D) ({{$t.go_type}}, error), sfns ...ScalarFn) ({{$t.go_type}}, error) {
 		return d.TryField{{$name}}ScalarFn(name, func(d *D) (Scalar, error) {
 			v, err := fn(d)
 			return Scalar{Actual: v}, err
 		}, sfns...)
+	}
+
+	// TryFieldScalar{{$name}}Fn tries to add a field, calls {{$t.go_type}} decode function and returns scalar
+	func (d *D) TryFieldScalar{{$name}}Fn(name string, fn func(d *D) ({{$t.go_type}}, error), sfns ...ScalarFn) (Scalar, error) {
+		return d.TryFieldScalar(name, func(_ Scalar) (Scalar, error) {
+			v, err := fn(d)
+			return Scalar{Actual: v}, err
+		}, sfns...)
+	}
+
+	// FieldScalar{{$name}}Fn tries to add a field, calls {{$t.go_type}} decode function and returns scalar
+	func (d *D) FieldScalar{{$name}}Fn(name string, fn func(d *D) {{$t.go_type}}, sfns ...ScalarFn) Scalar {
+		v, err := d.TryFieldScalar{{$name}}Fn(name, func(d *D) ({{$t.go_type}}, error) { return fn(d), nil }, sfns...)
+		if err != nil {
+			panic(IOError{Err: err, Name: name, Op: "{{$name}}", Pos: d.Pos()})
+		}
+		return v
 	}
 {{end}}
 
@@ -149,14 +166,6 @@ import (
 			// Try{{$r.name}}{{replace $v.name "$n" $n}} tries to read {{replace $v.doc "$n" $n}}
 			func (d *D) Try{{$r.name}}{{replace $v.name "$n" $n}}({{$v.params}}) ({{$t.go_type}}, error) { return {{replace $v.call "$n" $n}} }
 
-			func (d *D) Scalar{{$r.name}}{{replace $v.name "$n" $n}}({{$v.params}}) func(Scalar) (Scalar, error) {
-				return func(s Scalar) (Scalar, error) {
-					v, err := {{replace $v.call "$n" $n}}
-					s.Actual = v
-					return s, err
-				}
-			}
-
 			// {{$r.name}}{{replace $v.name "$n" $n}} reads {{replace $v.doc "$n" $n}}
 			func (d *D) {{$r.name}}{{replace $v.name "$n" $n}}({{$v.params}}) {{$t.go_type}} {
 				v, err := {{replace $v.call "$n" $n}}
@@ -169,7 +178,11 @@ import (
 			// TryField{{$r.name}}{{replace $v.name "$n" $n}} tries to add a field and read {{replace $v.doc "$n" $n}}
 			func (d *D) TryField{{$r.name}}{{replace $v.name "$n" $n}}(name string{{if $v.params}}, {{$v.params}}{{end}}, sfns ...ScalarFn) ({{$t.go_type}}, error) {
 				{{- if $v.params}}
-					v, err := d.TryFieldScalar(name, d.Scalar{{$r.name}}{{replace $v.name "$n" $n}}({{$v.args}}), sfns...)
+					v, err := d.TryFieldScalar(name, func(s Scalar) (Scalar, error) {
+						v, err := {{replace $v.call "$n" $n}}
+						s.Actual = v
+						return s, err
+					}, sfns...)
 					if err != nil {
 						return {{$t.zero}}, err
 					}

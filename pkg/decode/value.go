@@ -255,7 +255,7 @@ func (v *Value) postProcess() {
 	}
 }
 
-func (v *Value) ScalarFn(sfns ...ScalarFn) error {
+func (v *Value) TryScalarFn(sfns ...ScalarFn) error {
 	var err error
 	s, ok := v.V.(Scalar)
 	if !ok {

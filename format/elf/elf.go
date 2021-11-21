@@ -39,6 +39,12 @@ var classBits = decode.UToU{
 	2: 64,
 }
 
+//nolint:revive
+const (
+	CLASS_32 = 1
+	CLASS_64 = 2
+)
+
 var osABINames = decode.UToStr{
 	0:   "Sysv",
 	1:   "HPUX",
@@ -127,12 +133,13 @@ func mapStrTable(table string) func(decode.Scalar) (decode.Scalar, error) {
 func elfDecode(d *decode.D, in interface{}) interface{} {
 	d.AssertAtLeastBitsLeft(128 * 8)
 
+	var class uint64
 	var archBits int
 	var endian uint64
 
 	d.FieldStruct("ident", func(d *decode.D) {
 		d.FieldRawLen("magic", 4*8, d.AssertBitBuf([]byte("\x7fELF")))
-		archBits = int(d.FieldU8("class", d.MapUToUSym(classBits)))
+		class = d.FieldU8("class", d.MapUToUSym(classBits))
 		endian = d.FieldU8("data", d.MapUToStrSym(endianNames))
 		d.FieldU8("version")
 		d.FieldU8("os_abi", d.MapUToStrSym(osABINames))
@@ -140,13 +147,22 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldRawLen("pad", 7*8, d.BitBufIsZero)
 	})
 
+	switch class {
+	case CLASS_32:
+		archBits = 32
+	case CLASS_64:
+		archBits = 64
+	default:
+		d.Fatalf("unknown class %d", class)
+	}
+
 	switch endian {
 	case LITTLE_ENDIAN:
 		d.Endian = decode.LittleEndian
 	case BIG_ENDIAN:
 		d.Endian = decode.BigEndian
 	default:
-		d.Fatalf("unknown endian")
+		d.Fatalf("unknown endian %d", endian)
 	}
 
 	// TODO: hex functions?
@@ -235,6 +251,8 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 	if shstrndx != 0 {
 		var strTableOffset uint64
 		var strTableSize uint64
+		// log.Printf("int64((shoff+shstrndx*shentsize)*8): %#+v\n", int64((shoff+shstrndx*shentsize)*8))
+		// log.Printf("int64(shentsize*8),: %#+v\n", int64(shentsize*8))
 		d.RangeFn(int64((shoff+shstrndx*shentsize)*8), int64(shentsize*8), func(d *decode.D) {
 			d.SeekRel(32)
 			d.SeekRel(32)
@@ -446,7 +464,7 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 
 				switch archBits {
 				case 32:
-					shname = d.FieldScalar("sh_name", d.ScalarU32(), mapStrTable(strIndexTable)).SymStr()
+					shname = d.FieldScalarUFn("sh_name", (*decode.D).U32, mapStrTable(strIndexTable)).SymStr()
 					typ = d.FieldU32("sh_type", d.MapUToStrSym(shTypeNames), d.Hex)
 					shFlags(d, archBits)
 					d.FieldU("sh_addr", archBits)
@@ -457,7 +475,7 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 					d.FieldU32("sh_addralign")
 					d.FieldU32("sh_entsize")
 				case 64:
-					shname = d.FieldScalar("sh_name", d.ScalarU32(), mapStrTable(strIndexTable)).SymStr()
+					shname = d.FieldScalarUFn("sh_name", (*decode.D).U32, mapStrTable(strIndexTable)).SymStr()
 					typ = d.FieldU32("sh_type", d.MapUToStrSym(shTypeNames), d.Hex)
 					shFlags(d, archBits)
 					d.FieldU("sh_addr", archBits)
