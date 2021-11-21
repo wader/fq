@@ -14,6 +14,10 @@ var headerFormat decode.Group
 var footerFormat decode.Group
 var mp3Frame decode.Group
 
+// TODO: format options default
+const maxUniqueHeaderConfigs = 5
+const maxSyncSeek = 64 * 1024 * 8
+
 func init() {
 	registry.MustRegister(decode.Format{
 		Name:        format.MP3,
@@ -62,12 +66,12 @@ func mp3Decode(d *decode.D, in interface{}) interface{} {
 	decodeFailures := 0
 	d.FieldArray("frames", func(d *decode.D) {
 		for d.NotEnd() {
-			syncLen, _, err := d.TryPeekFind(16, 8, -1, func(v uint64) bool {
+			syncLen, _, err := d.TryPeekFind(16, 8, maxSyncSeek, func(v uint64) bool {
 				return (v&0b1111_1111_1110_0000 == 0b1111_1111_1110_0000 && // sync header
 					v&0b0000_0000_0001_1000 != 0b0000_0000_0000_1000 && // not reserved mpeg version
 					v&0b0000_0000_0000_0110 == 0b0000_0000_0000_0010) // layer 3
 			})
-			if err != nil {
+			if err != nil || syncLen < 0 {
 				break
 			}
 			if syncLen > 0 {
@@ -95,7 +99,7 @@ func mp3Decode(d *decode.D, in interface{}) interface{} {
 			lastValidEnd = d.Pos()
 			validFrames++
 
-			if len(uniqueHeaderConfigs) > 5 {
+			if len(uniqueHeaderConfigs) >= maxUniqueHeaderConfigs {
 				d.Errorf("too many unique header configurations")
 			}
 		}
