@@ -38,6 +38,10 @@ func apev2Decode(d *decode.D, in interface{}) interface{} {
 	}
 
 	tagCount := headerFooterFn(d, "header")
+	if tagCount > 1000 {
+		d.Fatalf("too many tags %d", tagCount)
+	}
+
 	d.FieldArray("tags", func(d *decode.D) {
 		for i := uint64(0); i < tagCount; i++ {
 			d.FieldStruct("tag", func(d *decode.D) {
