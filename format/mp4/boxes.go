@@ -1235,5 +1235,11 @@ func init() {
 			d.FieldU32("vert_off_n")
 			d.FieldU32("vert_off_d")
 		},
+		"smhd": func(_ *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+			d.FieldFP16("balance")
+			d.FieldU16("reserved")
+		},
 	}
 }
