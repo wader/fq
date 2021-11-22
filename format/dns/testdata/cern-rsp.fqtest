@@ -2,7 +2,7 @@ $ fq -d dns verbose /cern-rsp
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /cern-rsp (dns) 0x0-0x4f.7 (80)
     |                                               |                |  header: {} 0x0-0x3.7 (4)
 0x00|71 02                                          |q.              |    id: 28930 0x0-0x1.7 (2)
-0x00|      81                                       |  .             |    query: "Query" (true) 0x2-0x2 (0.1)
+0x00|      81                                       |  .             |    qr: "response" (1) 0x2-0x2 (0.1)
 0x00|      81                                       |  .             |    opcode: "Query" (0) 0x2.1-0x2.4 (0.4)
 0x00|      81                                       |  .             |    authoritative_answer: false 0x2.5-0x2.5 (0.1)
 0x00|      81                                       |  .             |    truncation: false 0x2.6-0x2.6 (0.1)

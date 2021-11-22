@@ -458,6 +458,14 @@ func (d *D) BitsLeft() int64 {
 	return bBitsLeft
 }
 
+func (d *D) AlignBits(nBits int) int {
+	bByteAlignBits, err := d.bitBuf.AlignBits(nBits)
+	if err != nil {
+		panic(IOError{Err: err, Op: "AlignBits", ReadSize: 0, Pos: d.Pos()})
+	}
+	return bByteAlignBits
+}
+
 func (d *D) ByteAlignBits() int {
 	bByteAlignBits, err := d.bitBuf.ByteAlignBits()
 	if err != nil {

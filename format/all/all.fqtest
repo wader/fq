@@ -10,6 +10,8 @@ $ fq -n _registry.groups.probe
   "matroska",
   "mp4",
   "ogg",
+  "pcap",
+  "pcapng",
   "png",
   "tar",
   "tiff",

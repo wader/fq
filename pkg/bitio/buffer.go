@@ -205,13 +205,18 @@ func (b *Buffer) BitsLeft() (int64, error) {
 	return b.bitLen - bPos, nil
 }
 
-// ByteAlignBits number of bits to next byte align
-func (b *Buffer) ByteAlignBits() (int, error) {
+// AlignBits number of bits to next nBits align
+func (b *Buffer) AlignBits(nBits int) (int, error) {
 	bPos, err := b.Pos()
 	if err != nil {
 		return 0, err
 	}
-	return int((8 - (bPos & 0x7)) & 0x7), nil
+	return int((int64(nBits) - (bPos % int64(nBits))) % int64(nBits)), nil
+}
+
+// ByteAlignBits number of bits to next byte align
+func (b *Buffer) ByteAlignBits() (int, error) {
+	return b.AlignBits(8)
 }
 
 // BytePos byte position of current bit position

@@ -21,6 +21,7 @@
 |`bzip2`               |bzip2&nbsp;compression                                        |<sub>`probe`</sub>|
 |`dns`                 |DNS&nbsp;packet                                               |<sub></sub>|
 |`elf`                 |Executable&nbsp;and&nbsp;Linkable&nbsp;Format                 |<sub></sub>|
+|`ether8023`           |Ethernet&nbsp;802.3                                           |<sub>`ipv4`</sub>|
 |`exif`                |Exchangeable&nbsp;Image&nbsp;File&nbsp;Format                 |<sub></sub>|
 |`flac`                |Free&nbsp;Lossless&nbsp;Audio&nbsp;Codec&nbsp;file            |<sub>`flac_metadatablocks` `flac_frame`</sub>|
 |`flac_frame`          |FLAC&nbsp;frame                                               |<sub></sub>|
@@ -38,6 +39,7 @@
 |`id3v1`               |ID3v1&nbsp;metadata                                           |<sub></sub>|
 |`id3v11`              |ID3v1.1&nbsp;metadata                                         |<sub></sub>|
 |`id3v2`               |ID3v2&nbsp;metadata                                           |<sub>`image`</sub>|
+|`ipv4`                |Internet&nbsp;protocol&nbsp;v4                                |<sub>`udp` `tcp`</sub>|
 |`jpeg`                |Joint&nbsp;Photographic&nbsp;Experts&nbsp;Group&nbsp;file     |<sub>`exif` `icc_profile`</sub>|
 |`json`                |JSON                                                          |<sub></sub>|
 |`matroska`            |Matroska&nbsp;file                                            |<sub>`aac_frame` `av1_ccr` `av1_frame` `avc_au` `avc_dcr` `flac_frame` `flac_metadatablocks` `hevc_au` `hevc_dcr` `image` `mp3_frame` `mpeg_asc` `mpeg_pes_packet` `mpeg_spu` `opus_packet` `vorbis_packet` `vp8_frame` `vp9_cfm` `vp9_frame`</sub>|
@@ -53,13 +55,17 @@
 |`ogg`                 |OGG&nbsp;file                                                 |<sub>`ogg_page` `vorbis_packet` `opus_packet` `flac_metadatablock` `flac_frame`</sub>|
 |`ogg_page`            |OGG&nbsp;page                                                 |<sub></sub>|
 |`opus_packet`         |Opus&nbsp;packet                                              |<sub>`vorbis_comment`</sub>|
+|`pcap`                |PCAP&nbsp;packet&nbsp;capture                                 |<sub>`ether8023`</sub>|
+|`pcapng`              |PCAPNG&nbsp;packet&nbsp;capture                               |<sub>`ether8023`</sub>|
 |`png`                 |Portable&nbsp;Network&nbsp;Graphics&nbsp;file                 |<sub>`icc_profile` `exif`</sub>|
 |`protobuf`            |Protobuf                                                      |<sub></sub>|
 |`protobuf_widevine`   |Widevine&nbsp;protobuf                                        |<sub>`protobuf`</sub>|
 |`pssh_playready`      |PlayReady&nbsp;PSSH                                           |<sub></sub>|
 |`raw`                 |Raw&nbsp;bits                                                 |<sub></sub>|
 |`tar`                 |Tar&nbsp;archive                                              |<sub>`probe`</sub>|
+|`tcp`                 |Transmission&nbsp;Control&nbsp;Protocol                       |<sub></sub>|
 |`tiff`                |Tag&nbsp;Image&nbsp;File&nbsp;Format                          |<sub>`icc_profile`</sub>|
+|`udp`                 |User&nbsp;datagram&nbsp;protocol                              |<sub>`dns`</sub>|
 |`vorbis_comment`      |Vorbis&nbsp;comment                                           |<sub>`flac_picture`</sub>|
 |`vorbis_packet`       |Vorbis&nbsp;packet                                            |<sub>`vorbis_comment`</sub>|
 |`vp8_frame`           |VP8&nbsp;frame                                                |<sub></sub>|
@@ -71,7 +77,7 @@
 |`xing`                |Xing&nbsp;header                                              |<sub></sub>|
 |`zip`                 |ZIP&nbsp;archive                                              |<sub>`probe`</sub>|
 |`image`               |Group                                                         |<sub>`gif` `jpeg` `mp4` `png` `tiff` `webp`</sub>|
-|`probe`               |Group                                                         |<sub>`adts` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `png` `tar` `tiff` `wav` `webp` `zip`</sub>|
+|`probe`               |Group                                                         |<sub>`adts` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `wav` `webp` `zip`</sub>|
 
 [#]: sh-end
 

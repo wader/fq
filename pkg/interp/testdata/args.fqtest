@@ -70,6 +70,7 @@ avc_sps              H.264/AVC Sequence Parameter Set
 bzip2                bzip2 compression
 dns                  DNS packet
 elf                  Executable and Linkable Format
+ether8023            Ethernet 802.3
 exif                 Exchangeable Image File Format
 flac                 Free Lossless Audio Codec file
 flac_frame           FLAC frame
@@ -87,6 +88,7 @@ icc_profile          International Color Consortium profile
 id3v1                ID3v1 metadata
 id3v11               ID3v1.1 metadata
 id3v2                ID3v2 metadata
+ipv4                 Internet protocol v4
 jpeg                 Joint Photographic Experts Group file
 json                 JSON
 matroska             Matroska file
@@ -102,13 +104,17 @@ mpeg_ts              MPEG Transport Stream
 ogg                  OGG file
 ogg_page             OGG page
 opus_packet          Opus packet
+pcap                 PCAP packet capture
+pcapng               PCAPNG packet capture
 png                  Portable Network Graphics file
 protobuf             Protobuf
 protobuf_widevine    Widevine protobuf
 pssh_playready       PlayReady PSSH
 raw                  Raw bits
 tar                  Tar archive
+tcp                  Transmission Control Protocol
 tiff                 Tag Image File Format
+udp                  User datagram protocol
 vorbis_comment       Vorbis comment
 vorbis_packet        Vorbis packet
 vp8_frame            VP8 frame

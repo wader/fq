@@ -40,8 +40,12 @@ var classNames = map[[2]uint64]decode.Scalar{
 
 const (
 	typeA     = 1
-	typeAAAA  = 28
+	typeNS    = 2
 	typeCNAME = 5
+	typeSOA   = 6
+	typePTR   = 12
+	typeTXT   = 16
+	typeAAAA  = 28
 )
 
 var typeNames = decode.UToStr{
@@ -70,24 +74,24 @@ var typeNames = decode.UToStr{
 	29:        "LOC",
 	15:        "MX",
 	35:        "NAPTR",
-	2:         "NS",
+	typeNS:    "NS",
 	47:        "NSEC",
 	50:        "NSEC3",
 	51:        "NSEC3PARAM",
 	61:        "OPENPGPKEY",
-	12:        "PTR",
+	typePTR:   "PTR",
 	46:        "RRSIG",
 	17:        "RP",
 	24:        "SIG",
 	53:        "SMIMEA",
-	6:         "SOA",
+	typeSOA:   "SOA",
 	33:        "SRV",
 	44:        "SSHFP",
 	32768:     "TA",
 	249:       "TKEY",
 	52:        "TLSA",
 	250:       "TSIG",
-	16:        "TXT",
+	typeTXT:   "TXT",
 	256:       "URI",
 	63:        "ZONEMD",
 	64:        "SVCB",
@@ -124,7 +128,7 @@ func decodeAAAAStr(d *decode.D) string {
 	return net.IP(d.BytesLen(16)).String()
 }
 
-func fieldFormatLabel(d *decode.D, name string) {
+func fieldDecodeLabel(d *decode.D, name string) {
 	var endPos int64
 	const maxJumps = 100
 	jumpCount := 0
@@ -165,26 +169,51 @@ func fieldFormatLabel(d *decode.D, name string) {
 	}
 }
 
-func fieldFormatRR(d *decode.D, count uint64, name string, structName string) {
+func dnsDecodeRR(d *decode.D, count uint64, name string, structName string) {
 	d.FieldArray(name, func(d *decode.D) {
 		for i := uint64(0); i < count; i++ {
 			d.FieldStruct(structName, func(d *decode.D) {
-				fieldFormatLabel(d, "name")
+				fieldDecodeLabel(d, "name")
 				typ := d.FieldU16("type", d.MapUToStrSym(typeNames))
 				class := d.FieldU16("class", d.MapURangeToScalar(classNames))
 				d.FieldU32("ttl")
 				rdLength := d.FieldU16("rdlength")
 
-				switch {
-				case typ == typeCNAME:
-					fieldFormatLabel(d, "cname")
-				case class == classIN && typ == typeA:
-					d.FieldStrFn("address", decodeAStr)
-				case class == classIN && typ == typeAAAA:
-					d.FieldStrFn("address", decodeAAAAStr)
-				default:
-					d.FieldUTF8("rdata", int(rdLength))
-				}
+				d.LenFn(int64(rdLength)*8, func(d *decode.D) {
+					// TODO: all only for classIN?
+					switch {
+					case class == classIN && typ == typeA:
+						d.FieldStrFn("address", decodeAStr)
+					case typ == typeNS:
+						fieldDecodeLabel(d, "ns")
+					case typ == typeCNAME:
+						fieldDecodeLabel(d, "cname")
+					case typ == typeSOA:
+						fieldDecodeLabel(d, "mname")
+						fieldDecodeLabel(d, "rname")
+						d.FieldU32("serial")
+						d.FieldU32("refresh")
+						d.FieldU32("retry")
+						d.FieldU32("expire")
+						d.FieldU32("minimum")
+					case typ == typePTR:
+						fieldDecodeLabel(d, "ptr")
+					case typ == typeTXT:
+						var ss []string
+						d.FieldStruct("txt", func(d *decode.D) {
+							d.FieldArray("strings", func(d *decode.D) {
+								for !d.End() {
+									ss = append(ss, d.FieldUTF8ShortString("string"))
+								}
+							})
+							d.FieldValueStr("value", strings.Join(ss, ""))
+						})
+					case class == classIN && typ == typeAAAA:
+						d.FieldStrFn("address", decodeAAAAStr)
+					default:
+						d.FieldUTF8("rdata", int(rdLength))
+					}
+				})
 			})
 		}
 	})
@@ -193,9 +222,9 @@ func fieldFormatRR(d *decode.D, count uint64, name string, structName string) {
 func dnsDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldStruct("header", func(d *decode.D) {
 		d.FieldU16("id")
-		d.FieldBool("query", d.MapBoolToStrSym(decode.BoolToStr{
-			true:  "Query",
-			false: "Response",
+		d.FieldU1("qr", d.MapUToStrSym(decode.UToStr{
+			0: "query",
+			1: "response",
 		}))
 		d.FieldU4("opcode", d.MapUToStrSym(decode.UToStr{
 			0: "Query",
@@ -220,16 +249,16 @@ func dnsDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldArray("questions", func(d *decode.D) {
 		for i := uint64(0); i < qdCount; i++ {
 			d.FieldStruct("question", func(d *decode.D) {
-				fieldFormatLabel(d, "name")
+				fieldDecodeLabel(d, "name")
 				d.FieldU16("type", d.MapUToStrSym(typeNames))
 				d.FieldU16("class", d.MapURangeToScalar(classNames))
 			})
 		}
 	})
 
-	fieldFormatRR(d, anCount, "answers", "answer")
-	fieldFormatRR(d, nsCount, "nameservers", "nameserver")
-	fieldFormatRR(d, arCount, "additionals", "additional")
+	dnsDecodeRR(d, anCount, "answers", "answer")
+	dnsDecodeRR(d, nsCount, "nameservers", "nameserver")
+	dnsDecodeRR(d, arCount, "additionals", "additional")
 
 	return nil
 }
