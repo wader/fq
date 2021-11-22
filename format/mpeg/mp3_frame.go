@@ -345,7 +345,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	}
 
 	if sampleRate == 0 {
-		d.Errorf("zero sample rate")
+		d.Fatalf("zero sample rate")
 	}
 
 	calcFrameBytes := int64(144*bitRate/sampleRate + paddingBytes)

@@ -241,66 +241,6 @@ func (v String) JQValueToNumber() interface{} { return gojq.NormalizeNumbers(str
 func (v String) JQValueToString() interface{} { return string(v) }
 func (v String) JQValueToGoJQ() interface{}   { return string(v) }
 
-// lazy string
-
-var _ gojq.JQValue = &LazyString{}
-
-type LazyString struct {
-	Fn     func() ([]rune, error)
-	called bool
-	rs     []rune
-}
-
-func (v *LazyString) wrap(fn func(rs []rune) interface{}) interface{} {
-	if !v.called {
-		rs, err := v.Fn()
-		if err != nil {
-			return err
-		}
-		v.called = true
-		v.rs = rs
-	}
-	return fn(v.rs)
-}
-
-func (v *LazyString) JQValueLength() interface{} {
-	return v.wrap(func(rs []rune) interface{} { return len(rs) })
-}
-func (v *LazyString) JQValueSliceLen() interface{} {
-	return v.wrap(func(rs []rune) interface{} { return len(rs) })
-}
-func (v *LazyString) JQValueIndex(index int) interface{} {
-	// -1 outside after string, -2 outside before string
-	if index < 0 {
-		return ""
-	}
-	return v.wrap(func(rs []rune) interface{} { return fmt.Sprintf("%c", rs[index]) })
-}
-func (v *LazyString) JQValueSlice(start int, end int) interface{} {
-	return v.wrap(func(rs []rune) interface{} { return string(rs[start:end]) })
-
-}
-func (v *LazyString) JQValueKey(name string) interface{} { return ExpectedObjectError{Typ: "string"} }
-func (v *LazyString) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
-	return expectedArrayOrObject(key, "string")
-}
-func (v *LazyString) JQValueEach() interface{} { return IteratorError{Typ: "string"} }
-func (v *LazyString) JQValueKeys() interface{} { return FuncTypeNameError{Name: "keys", Typ: "string"} }
-func (v *LazyString) JQValueHas(key interface{}) interface{} {
-	return FuncTypeNameError{Name: "has", Typ: "string"}
-}
-func (v *LazyString) JQValueType() string { return "string" }
-func (v *LazyString) JQValueToNumber() interface{} {
-	return v.wrap(func(rs []rune) interface{} { return gojq.NormalizeNumbers(string(rs)) })
-
-}
-func (v *LazyString) JQValueToString() interface{} {
-	return v.wrap(func(rs []rune) interface{} { return string(rs) })
-}
-func (v *LazyString) JQValueToGoJQ() interface{} {
-	return v.wrap(func(rs []rune) interface{} { return string(rs) })
-}
-
 // boolean
 
 var _ gojq.JQValue = Boolean(true)
@@ -389,3 +329,74 @@ func (v Base) JQValueType() string          { return v.Typ }
 func (v Base) JQValueToNumber() interface{} { return FuncTypeNameError{Name: "tonumber", Typ: v.Typ} }
 func (v Base) JQValueToString() interface{} { return FuncTypeNameError{Name: "tostring", Typ: v.Typ} }
 func (v Base) JQValueToGoJQ() interface{}   { return nil }
+
+// lazy
+
+var _ gojq.JQValue = &Lazy{}
+
+type Lazy struct {
+	Fn     func() (gojq.JQValue, error)
+	called bool
+	err    error
+	jv     gojq.JQValue
+}
+
+func (v *Lazy) v() (gojq.JQValue, error) {
+	if !v.called {
+		v.jv, v.err = v.Fn()
+		v.called = true
+	}
+	return v.jv, v.err
+}
+
+func (v *Lazy) f(fn func(jv gojq.JQValue) interface{}) interface{} {
+	jv, err := v.v()
+	if err != nil {
+		return err
+	}
+	return fn(jv)
+}
+
+func (v *Lazy) JQValueLength() interface{} {
+	return v.f(func(jv gojq.JQValue) interface{} { return jv.JQValueLength() })
+}
+func (v *Lazy) JQValueSliceLen() interface{} {
+	return v.f(func(jv gojq.JQValue) interface{} { return jv.JQValueSliceLen() })
+}
+func (v *Lazy) JQValueIndex(index int) interface{} {
+	return v.f(func(jv gojq.JQValue) interface{} { return jv.JQValueIndex(index) })
+}
+func (v *Lazy) JQValueSlice(start int, end int) interface{} {
+	return v.f(func(jv gojq.JQValue) interface{} { return jv.JQValueSlice(start, end) })
+}
+func (v *Lazy) JQValueKey(name string) interface{} {
+	return v.f(func(jv gojq.JQValue) interface{} { return jv.JQValueKey(name) })
+}
+func (v *Lazy) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
+	return v.f(func(jv gojq.JQValue) interface{} { return jv.JQValueUpdate(key, u, delpath) })
+}
+func (v *Lazy) JQValueEach() interface{} {
+	return v.f(func(jv gojq.JQValue) interface{} { return jv.JQValueEach() })
+}
+func (v *Lazy) JQValueKeys() interface{} {
+	return v.f(func(jv gojq.JQValue) interface{} { return jv.JQValueKeys() })
+}
+func (v *Lazy) JQValueHas(key interface{}) interface{} {
+	return v.f(func(jv gojq.JQValue) interface{} { return jv.JQValueHas(key) })
+}
+func (v *Lazy) JQValueType() string {
+	jv, err := v.v()
+	if err != nil {
+		return "error"
+	}
+	return jv.JQValueType()
+}
+func (v *Lazy) JQValueToNumber() interface{} {
+	return v.f(func(jv gojq.JQValue) interface{} { return jv.JQValueToNumber() })
+}
+func (v *Lazy) JQValueToString() interface{} {
+	return v.f(func(jv gojq.JQValue) interface{} { return jv.JQValueToString() })
+}
+func (v *Lazy) JQValueToGoJQ() interface{} {
+	return v.f(func(jv gojq.JQValue) interface{} { return jv.JQValueToGoJQ() })
+}

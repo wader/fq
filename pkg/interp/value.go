@@ -195,13 +195,13 @@ func makeDecodeValue(dv *decode.Value) interface{} {
 			// create another buffer we don't have to read and create a string, ex:
 			// .unknown0 | tobytes[1:] | ...
 			return decodeValue{
-				JQValue: &gojqextra.LazyString{
-					Fn: func() ([]rune, error) {
+				JQValue: &gojqextra.Lazy{
+					Fn: func() (gojq.JQValue, error) {
 						buf := &bytes.Buffer{}
 						if _, err := io.Copy(buf, vv.Clone()); err != nil {
 							return nil, err
 						}
-						return []rune(buf.String()), nil
+						return gojqextra.String([]rune(buf.String())), nil
 					},
 				},
 				decodeValueBase: decodeValueBase{dv},
