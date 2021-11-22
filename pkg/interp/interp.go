@@ -262,9 +262,6 @@ func toBigInt(v interface{}) (*big.Int, error) {
 
 func toBytes(v interface{}) ([]byte, error) {
 	switch v := v.(type) {
-	// TODO: remove?
-	case []byte:
-		return v, nil
 	default:
 		bb, err := toBuffer(v)
 		if err != nil {
@@ -293,8 +290,6 @@ func toBufferEx(v interface{}, inArray bool) (*bitio.Buffer, error) {
 		return bv.bb.BitBufRange(bv.r.Start, bv.r.Len)
 	case string:
 		return bitio.NewBufferFromBytes([]byte(vv), -1), nil
-	case []byte:
-		return bitio.NewBufferFromBytes(vv, -1), nil
 	case int, float64, *big.Int:
 		bi, err := toBigInt(v)
 		if err != nil {

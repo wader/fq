@@ -1,7 +1,6 @@
 package interp
 
 import (
-	"encoding/hex"
 	"fmt"
 	"strconv"
 
@@ -33,11 +32,6 @@ func previewValue(v interface{}, df decode.DisplayFormat) string {
 			return fmt.Sprintf("%q", vv[0:50]) + "..."
 		}
 		return fmt.Sprintf("%q", vv)
-	case []byte:
-		if len(vv) > 16 {
-			return hex.EncodeToString(vv[0:16]) + "..."
-		}
-		return hex.EncodeToString(vv)
 	case *bitio.Buffer:
 		return "raw bits"
 	default:
