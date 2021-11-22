@@ -99,6 +99,7 @@
 
 #### Formats
 
+- Network protocols, pcap?
 - Pass argument to format
 - Value decoder in jq `u(32)`, `u32`?
 - Warnings and errors

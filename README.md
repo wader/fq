@@ -4,6 +4,12 @@ Tool, language and decoders for exploring binary data.
 
 ![fq demo](doc/demo.svg)
 
+In most cases it works the same way of jq but instead of reading JSON it reads binary formats into
+a JSON compatbile structure. Also each value knows from which bit ranges it comes from, can have
+symbolic interprestations and knows how to be presented in a useful way.
+
+**NOTE:** fq is early in development and many things are missing, broken or do not make sense. That also means there is a great opportunity to help out.
+
 ## Goals
 
 - Make binary formats accessible and queryable.
@@ -11,8 +17,6 @@ Tool, language and decoders for exploring binary data.
 - Quick and comfortable CLI tool.
 - Bit and byte transformations and conversions.
 - Programmer's calculator.
-
-**NOTE:** fq is early in development and many things are missing, broken or do not make sense. That also means there is a great opportunity to help out.
 
 ## Usage
 

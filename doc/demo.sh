@@ -11,16 +11,16 @@ s() {
     sh -c "${1/fq/$FQ -o unicode=true -C}"
 }
 
-c "Overview of mp3"
+c "Overview of mp3 file"
 s "fq . file.mp3"
 echo
-c "Show ID3v2 tag in mp3 file"
+c "Show ID3v2 tag inside mp3 file"
 s "fq '.headers[0]' file.mp3"
 echo
-c "Resolution of ID3v2 cover art"
+c "Resolution of embedded PNG cover art"
 s "fq '.headers[0].frames[] | select(.id == \"APIC\").picture.chunks[] | select(.type == \"IHDR\") | {width, height}' file.mp3"
 echo
-c "Extract image file"
+c "Extract PNG file"
 s "fq '.headers[].frames[] | select(.id == \"APIC\")?.picture | tobits' file.mp3 >file.png"
 s "file file.png"
 rm -f file.png
