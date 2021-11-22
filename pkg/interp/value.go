@@ -111,11 +111,11 @@ func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
 
 	formatName, err := toString(a[0])
 	if err != nil {
-		return fmt.Errorf("%s: %w", formatName, err)
+		return err
 	}
 	decodeFormat, err := i.registry.Group(formatName)
 	if err != nil {
-		return fmt.Errorf("%s: %w", formatName, err)
+		return err
 	}
 
 	dv, _, err := decode.Decode(i.evalContext.ctx, bv.bb, decodeFormat,

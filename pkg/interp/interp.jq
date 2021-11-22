@@ -51,7 +51,12 @@ def input:
       catch
         ( . as $err
         | _input_decode_errors(. += {($h): $err}) as $_
-        | "\($h): failed to decode (\($opts.decode_format)), try -d FORMAT to force"
+        | [ "\($h): \($opts.decode_format)"
+          , if $err | type == "string" then ": \($err)"
+            # TODO: if not string assume decode itself failed for now
+            else ": failed to decode (try -d FORMAT)"
+            end
+          ] | join("")
         | (_error_str | _errorln)
         , _input($opts; f)
         )

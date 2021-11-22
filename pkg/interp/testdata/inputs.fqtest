@@ -76,7 +76,7 @@ null
 $ fq . /a
 exitcode: 4
 stderr:
-error: /a: failed to decode (probe), try -d FORMAT to force
+error: /a: probe: failed to decode (try -d FORMAT)
 $ fq -i -d raw . /a /b /c
 raw, ...[3]> ._format
 "raw"
