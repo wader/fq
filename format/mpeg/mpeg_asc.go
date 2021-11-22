@@ -35,15 +35,15 @@ var frequencyIndexHz = map[uint64]int{
 	0xf: -1,
 }
 
-var channelConfigurationNames = decode.UToStr{
-	0: "defined in AOT Specifc Config",
-	1: "front-center",
-	2: "front-left, front-right",
-	3: "front-center, front-left, front-right",
-	4: "front-center, front-left, front-right, back-center",
-	5: "front-center, front-left, front-right, back-left, back-right",
-	6: "front-center, front-left, front-right, back-left, back-right, LFE-channel",
-	7: "front-center, front-left, front-right, side-left, side-right, back-left, back-right, LFE-channel",
+var channelConfigurationNames = decode.UToScalar{
+	0: {Description: "defined in AOT Specifc Config"},
+	1: {Description: "front-center"},
+	2: {Description: "front-left, front-right"},
+	3: {Description: "front-center, front-left, front-right"},
+	4: {Description: "front-center, front-left, front-right, back-center"},
+	5: {Description: "front-center, front-left, front-right, back-left, back-right"},
+	6: {Description: "front-center, front-left, front-right, back-left, back-right, LFE-channel"},
+	7: {Description: "front-center, front-left, front-right, side-left, side-right, back-left, back-right, LFE-channel"},
 }
 
 func ascDecoder(d *decode.D, in interface{}) interface{} {
@@ -53,7 +53,7 @@ func ascDecoder(d *decode.D, in interface{}) interface{} {
 			n = 32 + d.U6()
 		}
 		return n
-	}, d.MapUToStrSym(format.MPEGAudioObjectTypeNames))
+	}, d.MapUToScalar(format.MPEGAudioObjectTypeNames))
 	d.FieldUScalarFn("sampling_frequency", func(d *decode.D) decode.Scalar {
 		v := d.U4()
 		if v == 15 {
@@ -64,7 +64,7 @@ func ascDecoder(d *decode.D, in interface{}) interface{} {
 		}
 		return decode.Scalar{Description: "invalid"}
 	})
-	d.FieldU4("channel_configuration", d.MapUToStrSym(channelConfigurationNames))
+	d.FieldU4("channel_configuration", d.MapUToScalar(channelConfigurationNames))
 	// TODO: GASpecificConfig etc
 	d.FieldRawLen("var_aot_or_byte_align", d.BitsLeft())
 

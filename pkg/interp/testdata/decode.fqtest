@@ -69,12 +69,10 @@ $ fq -d raw 'png({force: true}) | d' /test.mp3
 0x000|                                             00|               .|      safe_to_copy: false
 0x010|00 0f 00 00 03 4c 61 76 66 35 38 2e 34 35 2e 31|.....Lavf58.45.1|  unknown0: raw bits
 *    |until 0x283.7 (end) (628)                      |                |
-$ fq -i -d aaa . /test.mp3
-empty> \
-empty> \
+$ fq -d bbb . /test.mp3
 exitcode: 4
 stderr:
-error: /test.mp3: aaa: format group not found
+error: /test.mp3: bbb: format group not found
 $ fq -n '"aaa" | decode("aaa")'
 exitcode: 5
 stderr:

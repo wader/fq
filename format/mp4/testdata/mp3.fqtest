@@ -154,8 +154,10 @@ $ fq -d mp4 verbose /mp3.mp4
      |                                               |                |                    [0]: box {} 0x3f7-0x406.7 (16)
 0x3f0|                     00 00 00 10               |       ....     |                      size: 16 0x3f7-0x3fa.7 (4)
 0x3f0|                                 73 6d 68 64   |           smhd |                      type: "smhd" (Sound media header, overall information (sound track only)) 0x3fb-0x3fe.7 (4)
-0x3f0|                                             00|               .|                      data: raw bits 0x3ff-0x406.7 (8)
-0x400|00 00 00 00 00 00 00                           |.......         |
+0x3f0|                                             00|               .|                      version: 0 0x3ff-0x3ff.7 (1)
+0x400|00 00 00                                       |...             |                      flags: 0 0x400-0x402.7 (3)
+0x400|         00 00                                 |   ..           |                      balance: 0 0x403-0x404.7 (2)
+0x400|               00 00                           |     ..         |                      reserved: 0 0x405-0x406.7 (2)
      |                                               |                |                    [1]: box {} 0x407-0x42a.7 (36)
 0x400|                     00 00 00 24               |       ...$     |                      size: 36 0x407-0x40a.7 (4)
 0x400|                                 64 69 6e 66   |           dinf |                      type: "dinf" (Data information box, container) 0x40b-0x40e.7 (4)

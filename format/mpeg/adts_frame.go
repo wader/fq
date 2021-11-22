@@ -69,8 +69,7 @@ func adtsFrameDecoder(d *decode.D, in interface{}) interface{} {
 	d.FieldU2("layer", d.AssertU(0))
 	protectionAbsent := d.FieldBool("protection_absent", d.MapBoolToScalar(protectionAbsentNames))
 
-	// TODO: better sym names
-	objectType := d.FieldUFn("profile", func(d *decode.D) uint64 { return d.U2() + 1 }, d.MapUToStrSym(format.MPEGAudioObjectTypeNames))
+	objectType := d.FieldU2("profile", d.UAdd(1), d.MapUToScalar(format.MPEGAudioObjectTypeNames))
 	d.FieldUScalarFn("sampling_frequency", func(d *decode.D) decode.Scalar {
 		v := d.U4()
 		if v == 15 {
@@ -82,7 +81,7 @@ func adtsFrameDecoder(d *decode.D, in interface{}) interface{} {
 		return decode.Scalar{Description: "invalid"}
 	})
 	d.FieldU1("private_bit")
-	d.FieldU3("channel_configuration", d.MapUToStrSym(channelConfigurationNames))
+	d.FieldU3("channel_configuration", d.MapUToScalar(channelConfigurationNames))
 	d.FieldU1("originality")
 	d.FieldU1("home")
 	d.FieldU1("copyrighted")
@@ -95,7 +94,7 @@ func adtsFrameDecoder(d *decode.D, in interface{}) interface{} {
 	}
 
 	d.FieldU11("buffer_fullness")
-	numberOfRDBs := d.FieldUFn("number_of_rdbs", func(d *decode.D) uint64 { return d.U2() + 1 })
+	numberOfRDBs := d.FieldU2("number_of_rdbs", d.UAdd(1))
 	if !protectionAbsent {
 		d.FieldU16("crc")
 	}

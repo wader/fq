@@ -154,8 +154,11 @@ $ fq -d mp4 verbose /flac.mp4
      |                                               |                |                    [0]: box {} 0x3e3-0x3f2.7 (16)
 0x3e0|         00 00 00 10                           |   ....         |                      size: 16 0x3e3-0x3e6.7 (4)
 0x3e0|                     73 6d 68 64               |       smhd     |                      type: "smhd" (Sound media header, overall information (sound track only)) 0x3e7-0x3ea.7 (4)
-0x3e0|                                 00 00 00 00 00|           .....|                      data: raw bits 0x3eb-0x3f2.7 (8)
-0x3f0|00 00 00                                       |...             |
+0x3e0|                                 00            |           .    |                      version: 0 0x3eb-0x3eb.7 (1)
+0x3e0|                                    00 00 00   |            ... |                      flags: 0 0x3ec-0x3ee.7 (3)
+0x3e0|                                             00|               .|                      balance: 0 0x3ef-0x3f0.7 (2)
+0x3f0|00                                             |.               |
+0x3f0|   00 00                                       | ..             |                      reserved: 0 0x3f1-0x3f2.7 (2)
      |                                               |                |                    [1]: box {} 0x3f3-0x416.7 (36)
 0x3f0|         00 00 00 24                           |   ...$         |                      size: 36 0x3f3-0x3f6.7 (4)
 0x3f0|                     64 69 6e 66               |       dinf     |                      type: "dinf" (Data information box, container) 0x3f7-0x3fa.7 (4)

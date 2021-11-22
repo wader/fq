@@ -155,8 +155,11 @@ $ fq -d mp4 verbose /vorbis.mp4
       |                                               |                |                    [0]: box {} 0x336-0x345.7 (16)
 0x0330|                  00 00 00 10                  |      ....      |                      size: 16 0x336-0x339.7 (4)
 0x0330|                              73 6d 68 64      |          smhd  |                      type: "smhd" (Sound media header, overall information (sound track only)) 0x33a-0x33d.7 (4)
-0x0330|                                          00 00|              ..|                      data: raw bits 0x33e-0x345.7 (8)
-0x0340|00 00 00 00 00 00                              |......          |
+0x0330|                                          00   |              . |                      version: 0 0x33e-0x33e.7 (1)
+0x0330|                                             00|               .|                      flags: 0 0x33f-0x341.7 (3)
+0x0340|00 00                                          |..              |
+0x0340|      00 00                                    |  ..            |                      balance: 0 0x342-0x343.7 (2)
+0x0340|            00 00                              |    ..          |                      reserved: 0 0x344-0x345.7 (2)
       |                                               |                |                    [1]: box {} 0x346-0x369.7 (36)
 0x0340|                  00 00 00 24                  |      ...$      |                      size: 36 0x346-0x349.7 (4)
 0x0340|                              64 69 6e 66      |          dinf  |                      type: "dinf" (Data information box, container) 0x34a-0x34d.7 (4)
