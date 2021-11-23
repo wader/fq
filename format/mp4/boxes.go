@@ -126,6 +126,7 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 	case boxSizeRestOfFile:
 		dataSize = uint64(d.Len()-d.Pos()) / 8
 	case boxSizeUse64bitSize:
+		boxSize = d.FieldU64("size64")
 		dataSize = boxSize - 16
 	default:
 		dataSize = boxSize - 8
