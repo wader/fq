@@ -137,6 +137,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			default:
 				blockSize = 256 * (1 << (blockSizeBits - 8))
 			}
+			s.Sym = blockSize
 			return s
 		})
 

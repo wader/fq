@@ -6,7 +6,7 @@ $ fq -d flac_frame verbose /frame
 0x000|ff f8                                          |..              |    sync: 0b11111111111110 (valid) 0x0-0x1.5 (1.6)
 0x000|   f8                                          | .              |    reserved0: 0 (valid) 0x1.6-0x1.6 (0.1)
 0x000|   f8                                          | .              |    blocking_strategy: "Fixed" (0) 0x1.7-0x1.7 (0.1)
-0x000|      79                                       |  y             |    block_size: 7 (end of header (16 bit)) 0x2-0x2.3 (0.4)
+0x000|      79                                       |  y             |    block_size: 0 (7) (end of header (16 bit)) 0x2-0x2.3 (0.4)
 0x000|      79                                       |  y             |    sample_rate: 44100 (9) 0x2.4-0x2.7 (0.4)
 0x000|         08                                    |   .            |    channel_assignment: 1 (0) (mono) 0x3-0x3.3 (0.4)
 0x000|         08                                    |   .            |    sample_size: 16 (4) 0x3.4-0x3.6 (0.3)
