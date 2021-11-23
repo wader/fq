@@ -3,7 +3,6 @@ package png
 // http://www.libpng.org/pub/png/spec/1.2/PNG-Contents.html
 // https://ftp-osl.osuosl.org/pub/libpng/documents/pngext-1.5.0.html
 // https://wiki.mozilla.org/APNG_Specification
-// TODO: color types
 
 import (
 	"compress/zlib"
@@ -45,9 +44,9 @@ const (
 )
 
 var disposeOpNames = decode.UToStr{
-	disposeOpNone:       "None",
-	disposeOpBackground: "Background",
-	disposeOpPrevious:   "Previous",
+	disposeOpNone:       "none",
+	disposeOpBackground: "background",
+	disposeOpPrevious:   "previous",
 }
 
 const (
@@ -56,16 +55,33 @@ const (
 )
 
 var blendOpNames = decode.UToStr{
-	blendOpNone:       "Source",
-	blendOpBackground: "Over",
+	blendOpNone:       "source",
+	blendOpBackground: "over",
+}
+
+const (
+	colorTypeGrayscale          = 0
+	colorTypeRGB                = 2
+	colorTypePalette            = 3
+	colorTypeGrayscaleWithAlpha = 4
+	colorTypeRGBA               = 6
+)
+
+var colorTypeMap = decode.UToScalar{
+	colorTypeGrayscale:          {Sym: "g", Description: "Grayscale"},
+	colorTypeRGB:                {Sym: "rgb", Description: "RGB"},
+	colorTypePalette:            {Sym: "p", Description: "Palette"},
+	colorTypeGrayscaleWithAlpha: {Sym: "ga", Description: "Grayscale with alpha"},
+	colorTypeRGBA:               {Sym: "rgba", Description: "RGBA"},
 }
 
 func pngDecode(d *decode.D, in interface{}) interface{} {
 	iEndFound := false
+	var colorType uint64
 
 	d.FieldRawLen("signature", 8*8, d.AssertBitBuf([]byte("\x89PNG\r\n\x1a\n")))
 	d.FieldStructArrayLoop("chunks", "chunk", func() bool { return d.NotEnd() && !iEndFound }, func(d *decode.D) {
-		chunkLength := int(d.FieldU32("length"))
+		chunkLength := d.FieldU32("length")
 		crcStartPos := d.Pos()
 		// TODO: this is a bit weird, use struct?
 		chunkType := d.FieldStrFn("type", func(d *decode.D) string {
@@ -90,7 +106,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldU32("width")
 				d.FieldU32("height")
 				d.FieldU8("bit_depth")
-				d.FieldU8("color_type")
+				colorType = d.FieldU8("color_type", d.MapUToScalar(colorTypeMap))
 				d.FieldU8("compression_method", d.MapUToStrSym(compressionNames))
 				d.FieldU8("filter_method", d.MapUToStrSym(decode.UToStr{
 					0: "Adaptive filtering",
@@ -139,7 +155,16 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldU32("y_pixels_per_unit")
 				d.FieldU8("unit")
 			case "bKGD":
-				d.FieldU16("value")
+				switch colorType {
+				case colorTypePalette:
+					d.FieldU8("index")
+				case colorTypeGrayscale, colorTypeGrayscaleWithAlpha:
+					d.FieldU16("gray")
+				case colorTypeRGB, colorTypeRGBA:
+					d.FieldU16("r")
+					d.FieldU16("g")
+					d.FieldU16("b")
+				}
 			case "gAMA":
 				d.FieldU32("value")
 			case "cHRM":
@@ -153,7 +178,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldFFn("blue_x", df)
 				d.FieldFFn("blue_y", df)
 			case "eXIf":
-				d.FieldFormatLen("exif", int64(chunkLength)*8, exifFormat, nil)
+				d.FieldFormatLen("exif", d.BitsLeft(), exifFormat, nil)
 			case "acTL":
 				d.FieldU32("num_frames")
 				d.FieldU32("num_plays")
@@ -169,12 +194,12 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldU8("blend_op", d.MapUToStrSym(blendOpNames))
 			case "fdAT":
 				d.FieldU32("sequence_number")
-				d.FieldRawLen("data", int64(chunkLength-4)*8)
+				d.FieldRawLen("data", d.BitsLeft()-32)
 			default:
 				if chunkType == "IEND" {
 					iEndFound = true
 				} else {
-					d.FieldRawLen("data", int64(chunkLength)*8)
+					d.FieldRawLen("data", d.BitsLeft())
 				}
 			}
 		})

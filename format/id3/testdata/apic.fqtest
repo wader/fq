@@ -66,7 +66,7 @@ $ fq -d id3v2 verbose /apic
 0x40|                                          00 00|              ..|            height: 4 0x4e-0x51.7 (4)
 0x50|00 04                                          |..              |
 0x50|      08                                       |  .             |            bit_depth: 8 0x52-0x52.7 (1)
-0x50|         02                                    |   .            |            color_type: 2 0x53-0x53.7 (1)
+0x50|         02                                    |   .            |            color_type: "rgb" (2) (RGB) 0x53-0x53.7 (1)
 0x50|            00                                 |    .           |            compression_method: "deflate" (0) 0x54-0x54.7 (1)
 0x50|               00                              |     .          |            filter_method: "Adaptive filtering" (0) 0x55-0x55.7 (1)
 0x50|                  00                           |      .         |            interlace_method: "No interlace" (0) 0x56-0x56.7 (1)

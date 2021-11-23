@@ -319,7 +319,7 @@ $ fq -d mp4 verbose /flac.mp4
 0x020|                                    ff f8      |            ..  |            sync: 0b11111111111110 (valid) 0x2c-0x2d.5 (1.6)
 0x020|                                       f8      |             .  |            reserved0: 0 (valid) 0x2d.6-0x2d.6 (0.1)
 0x020|                                       f8      |             .  |            blocking_strategy: "Fixed" (0) 0x2d.7-0x2d.7 (0.1)
-0x020|                                          79   |              y |            block_size: 7 (end of header (16 bit)) 0x2e-0x2e.3 (0.4)
+0x020|                                          79   |              y |            block_size: 0 (7) (end of header (16 bit)) 0x2e-0x2e.3 (0.4)
 0x020|                                          79   |              y |            sample_rate: 44100 (9) 0x2e.4-0x2e.7 (0.4)
 0x020|                                             88|               .|            channel_assignment: 2 (8) (left/side) 0x2f-0x2f.3 (0.4)
      |                                               |                |            side_channel_index: 1 0x2f.4-NA (0)
