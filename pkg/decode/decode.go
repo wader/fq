@@ -878,6 +878,7 @@ func (d *D) FieldFormatReaderLen(name string, nBits int64, fn func(r io.Reader) 
 	return d.FieldFormatBitBuf(name, zbb, group, nil)
 }
 
+// TODO: too mant return values
 func (d *D) TryFieldReaderRangeFormat(name string, startBit int64, nBits int64, fn func(r io.Reader) io.Reader, group Group, inArg interface{}) (int64, *bitio.Buffer, *Value, interface{}, error) {
 	bitLen := nBits
 	if bitLen == -1 {

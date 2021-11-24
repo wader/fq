@@ -6,7 +6,6 @@ package gz
 
 import (
 	"compress/flate"
-	"errors"
 	"hash/crc32"
 	"io"
 
@@ -106,18 +105,19 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 		rFn = func(r io.Reader) io.Reader { return flate.NewReader(r) }
 	}
 
-	readCompressedSize, uncompressedBB, dv, _, err := d.TryFieldReaderRangeFormat("uncompressed", d.Pos(), d.BitsLeft(), rFn, probeFormat, nil)
-	if dv == nil && errors.As(err, &decode.FormatsError{}) {
-		d.FieldRootBitBuf("uncompressed", uncompressedBB)
+	readCompressedSize, uncompressedBB, dv, _, _ := d.TryFieldReaderRangeFormat("uncompressed", d.Pos(), d.BitsLeft(), rFn, probeFormat, nil)
+	if uncompressedBB != nil {
+		if dv == nil {
+			d.FieldRootBitBuf("uncompressed", uncompressedBB)
+		}
+		d.FieldRawLen("compressed", readCompressedSize)
+		crc32W := crc32.NewIEEE()
+		if _, err := io.Copy(crc32W, uncompressedBB.Clone()); err != nil {
+			d.IOPanic(err)
+		}
+		d.FieldU32("crc32", d.ValidateUBytes(crc32W.Sum(nil)), d.Hex)
+		d.FieldU32("isize")
 	}
-	d.FieldRawLen("compressed", readCompressedSize)
-
-	crc32W := crc32.NewIEEE()
-	if _, err := io.Copy(crc32W, uncompressedBB.Clone()); err != nil {
-		d.IOPanic(err)
-	}
-	d.FieldU32("crc32", d.ValidateUBytes(crc32W.Sum(nil)), d.Hex)
-	d.FieldU32("isize")
 
 	return nil
 }

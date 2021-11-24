@@ -2,7 +2,6 @@ package vorbis
 
 import (
 	"encoding/base64"
-	"errors"
 	"io"
 	"strings"
 
@@ -44,8 +43,8 @@ func commentDecode(d *decode.D, in interface{}) interface{} {
 
 			rFn := func(r io.Reader) io.Reader { return base64.NewDecoder(base64.StdEncoding, r) }
 
-			_, uncompressedBB, dv, _, err := d.TryFieldReaderRangeFormat("picture", userCommentStart+base64Offset, base64Len, rFn, flacPicture, nil)
-			if dv == nil && errors.As(err, &decode.FormatsError{}) {
+			_, uncompressedBB, dv, _, _ := d.TryFieldReaderRangeFormat("picture", userCommentStart+base64Offset, base64Len, rFn, flacPicture, nil)
+			if dv == nil && uncompressedBB != nil {
 				d.FieldRootBitBuf("picture", uncompressedBB)
 			}
 		}

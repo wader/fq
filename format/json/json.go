@@ -8,6 +8,11 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
+// TODO: should read multiple json values or just one?
+// TODO: root not array/struct how to add unknown gaps?
+// TODO: ranges not end up correct
+// TODO: use jd.InputOffset() * 8?
+
 func init() {
 	registry.MustRegister(decode.Format{
 		Name:        format.JSON,
@@ -31,10 +36,9 @@ func decodeJSON(d *decode.D, in interface{}) interface{} {
 	default:
 		d.Fatalf("root not object or array")
 	}
-	// TODO: root not array/struct how to add unknown gaps?
-	// TODO: ranges not end up correct
+
 	d.Value.V = s
-	d.Value.Range.Len = jd.InputOffset() * 8
+	d.Value.Range.Len = d.Len()
 
 	return nil
 }

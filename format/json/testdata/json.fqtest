@@ -28,7 +28,7 @@ $ fq . /json.gz
 0x00|            65 0a 08 61                        |    e..a        |  mtime: 1627916901
 0x00|                        00                     |        .       |  extra_flags: 0
 0x00|                           03                  |         .      |  os: "Unix" (3)
- 0x0|7b 22 61 22 3a 20 31 32 33 7d                  |{"a": 123}      |  uncompressed: {} (json)
+ 0x0|7b 22 61 22 3a 20 31 32 33 7d 0a|              |{"a": 123}.|    |  uncompressed: {} (json)
 0x00|                              ab 56 4a 54 b2 52|          .VJT.R|  compressed: raw bits
 0x10|30 34 32 ae e5 02 00                           |042....         |
 0x10|                     20 ac d2 9c               |        ...     |  crc32: 0x9cd2ac20 (valid)
@@ -57,4 +57,4 @@ $ fq tovalue /json.gz
 }
 $ fq .uncompressed /json.gz
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|7b 22 61 22 3a 20 31 32 33 7d                  |{"a": 123}      |.uncompressed: {} (json)
+0x0|7b 22 61 22 3a 20 31 32 33 7d 0a|              |{"a": 123}.|    |.uncompressed: {} (json)

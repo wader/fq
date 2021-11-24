@@ -6,7 +6,6 @@ package zip
 import (
 	"bytes"
 	"compress/flate"
-	"errors"
 	"io"
 
 	"github.com/wader/fq/format"
@@ -290,8 +289,8 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 					}
 
 					if rFn != nil {
-						readCompressedSize, uncompressedBB, dv, _, err := d.TryFieldReaderRangeFormat("uncompressed", d.Pos(), compressedLimit, rFn, probeFormat, nil)
-						if dv == nil && errors.As(err, &decode.FormatsError{}) {
+						readCompressedSize, uncompressedBB, dv, _, _ := d.TryFieldReaderRangeFormat("uncompressed", d.Pos(), compressedLimit, rFn, probeFormat, nil)
+						if dv == nil && uncompressedBB != nil {
 							d.FieldRootBitBuf("uncompressed", uncompressedBB)
 						}
 						if compressedSize == 0 {

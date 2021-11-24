@@ -8,7 +8,6 @@ package bzip2
 import (
 	"compress/bzip2"
 	"encoding/binary"
-	"errors"
 	"hash/crc32"
 	"io"
 	"math/bits"
@@ -108,40 +107,42 @@ func bzip2Decode(d *decode.D, in interface{}) interface{} {
 
 	compressedStart := d.Pos()
 
-	readCompressedSize, uncompressedBB, dv, _, err := d.TryFieldReaderRangeFormat("uncompressed", 0, d.Len(), bzip2.NewReader, probeGroup, nil)
-	if dv == nil && errors.As(err, &decode.FormatsError{}) {
-		d.FieldRootBitBuf("uncompressed", uncompressedBB)
-	}
-
-	blockCRC32W := crc32.NewIEEE()
-	if _, err := d.Copy(blockCRC32W, bitFlipReader{uncompressedBB.Clone()}); err != nil {
-		d.IOPanic(err)
-	}
-	blockCRC32N := bits.Reverse32(binary.BigEndian.Uint32(blockCRC32W.Sum(nil)))
-	_ = blockCRCValue.TryScalarFn(d.ValidateU(uint64(blockCRC32N)))
-	streamCRCN = blockCRC32N ^ ((streamCRCN << 1) | (streamCRCN >> 31))
-
-	// HACK: bzip2.NewReader will read from start of whole buffer and then we figure out compressedSize ourself
-	// "It is important to note that none of the fields within a StreamBlock or StreamFooter are necessarily byte-aligned"
-	const footerByteSize = 10
-	compressedSize := (readCompressedSize - compressedStart) - footerByteSize*8
-	for i := 0; i < 8; i++ {
-		d.SeekAbs(compressedStart + compressedSize)
-		if d.PeekBits(48) == footerMagic {
-			break
+	readCompressedSize, uncompressedBB, dv, _, _ := d.TryFieldReaderRangeFormat("uncompressed", 0, d.Len(), bzip2.NewReader, probeGroup, nil)
+	if uncompressedBB != nil {
+		if dv == nil {
+			d.FieldRootBitBuf("uncompressed", uncompressedBB)
 		}
-		compressedSize--
+
+		blockCRC32W := crc32.NewIEEE()
+		if _, err := d.Copy(blockCRC32W, bitFlipReader{uncompressedBB.Clone()}); err != nil {
+			d.IOPanic(err)
+		}
+		blockCRC32N := bits.Reverse32(binary.BigEndian.Uint32(blockCRC32W.Sum(nil)))
+		_ = blockCRCValue.TryScalarFn(d.ValidateU(uint64(blockCRC32N)))
+		streamCRCN = blockCRC32N ^ ((streamCRCN << 1) | (streamCRCN >> 31))
+
+		// HACK: bzip2.NewReader will read from start of whole buffer and then we figure out compressedSize ourself
+		// "It is important to note that none of the fields within a StreamBlock or StreamFooter are necessarily byte-aligned"
+		const footerByteSize = 10
+		compressedSize := (readCompressedSize - compressedStart) - footerByteSize*8
+		for i := 0; i < 8; i++ {
+			d.SeekAbs(compressedStart + compressedSize)
+			if d.PeekBits(48) == footerMagic {
+				break
+			}
+			compressedSize--
+		}
+		d.SeekAbs(compressedStart)
+
+		d.FieldRawLen("compressed", compressedSize)
+
+		d.FieldStruct("footer", func(d *decode.D) {
+			d.FieldU48("magic", d.AssertU(footerMagic), d.Hex)
+			// TODO: crc of block crcs
+			d.FieldU32("crc", d.Hex, d.ValidateU(uint64(streamCRCN)))
+			d.FieldRawLen("padding", int64(d.ByteAlignBits()))
+		})
 	}
-	d.SeekAbs(compressedStart)
-
-	d.FieldRawLen("compressed", compressedSize)
-
-	d.FieldStruct("footer", func(d *decode.D) {
-		d.FieldU48("magic", d.AssertU(footerMagic), d.Hex)
-		// TODO: crc of block crcs
-		d.FieldU32("crc", d.Hex, d.ValidateU(uint64(streamCRCN)))
-		d.FieldRawLen("padding", int64(d.ByteAlignBits()))
-	})
 
 	// 		moreStreams = false
 	// 	}
