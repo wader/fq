@@ -19,7 +19,7 @@ $ fq -d png verbose /4x4.png
 0x010|                              00               |          .     |      compression_method: "deflate" (0) 0x1a-0x1a.7 (1)
 0x010|                                 00            |           .    |      filter_method: "Adaptive filtering" (0) 0x1b-0x1b.7 (1)
 0x010|                                    00         |            .   |      interlace_method: "No interlace" (0) 0x1c-0x1c.7 (1)
-0x010|                                       81 8a a3|             ...|      crc: "818aa3d3" (raw bits) (valid) 0x1d-0x20.7 (4)
+0x010|                                       81 8a a3|             ...|      crc: 0x818aa3d3 (valid) 0x1d-0x20.7 (4)
 0x020|d3                                             |.               |
      |                                               |                |    [1]: chunk {} 0x21-0x30.7 (16)
 0x020|   00 00 00 04                                 | ....           |      length: 4 0x21-0x24.7 (4)
@@ -29,7 +29,7 @@ $ fq -d png verbose /4x4.png
 0x020|                     4d                        |       M        |      reserved: false 0x27.3-0x27.3 (0.1)
 0x020|                        41                     |        A       |      safe_to_copy: false 0x28.3-0x28.3 (0.1)
 0x020|                           00 00 b1 8f         |         ....   |      value: 45455 0x29-0x2c.7 (4)
-0x020|                                       0b fc 61|             ..a|      crc: "0bfc6105" (raw bits) (valid) 0x2d-0x30.7 (4)
+0x020|                                       0b fc 61|             ..a|      crc: 0xbfc6105 (valid) 0x2d-0x30.7 (4)
 0x030|05                                             |.               |
      |                                               |                |    [2]: chunk {} 0x31-0x5c.7 (44)
 0x030|   00 00 00 20                                 | ...            |      length: 32 0x31-0x34.7 (4)
@@ -48,7 +48,7 @@ $ fq -d png verbose /4x4.png
 0x050|60                                             |`               |
 0x050|   00 00 3a 98                                 | ..:.           |      blue_x: 15 0x51-0x54.7 (4)
 0x050|               00 00 17 70                     |     ...p       |      blue_y: 6 0x55-0x58.7 (4)
-0x050|                           9c ba 51 3c         |         ..Q<   |      crc: "9cba513c" (raw bits) (valid) 0x59-0x5c.7 (4)
+0x050|                           9c ba 51 3c         |         ..Q<   |      crc: 0x9cba513c (valid) 0x59-0x5c.7 (4)
      |                                               |                |    [3]: chunk {} 0x5d-0x6a.7 (14)
 0x050|                                       00 00 00|             ...|      length: 2 0x5d-0x60.7 (4)
 0x060|02                                             |.               |
@@ -58,7 +58,7 @@ $ fq -d png verbose /4x4.png
 0x060|         47                                    |   G            |      reserved: false 0x63.3-0x63.3 (0.1)
 0x060|            44                                 |    D           |      safe_to_copy: false 0x64.3-0x64.3 (0.1)
 0x060|               00 01                           |     ..         |      gray: 1 0x65-0x66.7 (2)
-0x060|                     dd 8a 13 a4               |       ....     |      crc: "dd8a13a4" (raw bits) (valid) 0x67-0x6a.7 (4)
+0x060|                     dd 8a 13 a4               |       ....     |      crc: 0xdd8a13a4 (valid) 0x67-0x6a.7 (4)
      |                                               |                |    [4]: chunk {} 0x6b-0x7d.7 (19)
 0x060|                                 00 00 00 07   |           .... |      length: 7 0x6b-0x6e.7 (4)
 0x060|                                             74|               t|      type: "tIME" 0x6f-0x72.7 (4)
@@ -68,7 +68,7 @@ $ fq -d png verbose /4x4.png
 0x070|   4d                                          | M              |      reserved: false 0x71.3-0x71.3 (0.1)
 0x070|      45                                       |  E             |      safe_to_copy: false 0x72.3-0x72.3 (0.1)
 0x070|         07 e5 07 1c 08 36 09                  |   .....6.      |      data: raw bits 0x73-0x79.7 (7)
-0x070|                              dc 61 6c cf      |          .al.  |      crc: "dc616ccf" (raw bits) (valid) 0x7a-0x7d.7 (4)
+0x070|                              dc 61 6c cf      |          .al.  |      crc: 0xdc616ccf (valid) 0x7a-0x7d.7 (4)
      |                                               |                |    [5]: chunk {} 0x7e-0x94.7 (23)
 0x070|                                          00 00|              ..|      length: 11 0x7e-0x81.7 (4)
 0x080|00 0b                                          |..              |
@@ -79,7 +79,7 @@ $ fq -d png verbose /4x4.png
 0x080|               54                              |     T          |      safe_to_copy: true 0x85.3-0x85.3 (0.1)
 0x080|                  08 5b 63 60 80 00 00 00 08 00|      .[c`......|      data: raw bits 0x86-0x90.7 (11)
 0x090|01                                             |.               |
-0x090|   d3 19 34 be                                 | ..4.           |      crc: "d31934be" (raw bits) (valid) 0x91-0x94.7 (4)
+0x090|   d3 19 34 be                                 | ..4.           |      crc: 0xd31934be (valid) 0x91-0x94.7 (4)
      |                                               |                |    [6]: chunk {} 0x95-0xc5.7 (49)
 0x090|               00 00 00 25                     |     ...%       |      length: 37 0x95-0x98.7 (4)
 0x090|                           74 45 58 74         |         tEXt   |      type: "tEXt" 0x99-0x9c.7 (4)
@@ -92,7 +92,7 @@ $ fq -d png verbose /4x4.png
 0x0a0|                           32 30 32 31 2d 30 37|         2021-07|      text: "2021-07-28T08:54:09+00:00" 0xa9-0xc1.7 (25)
 0x0b0|2d 32 38 54 30 38 3a 35 34 3a 30 39 2b 30 30 3a|-28T08:54:09+00:|
 0x0c0|30 30                                          |00              |
-0x0c0|      41 82 1c 77                              |  A..w          |      crc: "41821c77" (raw bits) (valid) 0xc2-0xc5.7 (4)
+0x0c0|      41 82 1c 77                              |  A..w          |      crc: 0x41821c77 (valid) 0xc2-0xc5.7 (4)
      |                                               |                |    [7]: chunk {} 0xc6-0xf6.7 (49)
 0x0c0|                  00 00 00 25                  |      ...%      |      length: 37 0xc6-0xc9.7 (4)
 0x0c0|                              74 45 58 74      |          tEXt  |      type: "tEXt" 0xca-0xcd.7 (4)
@@ -105,7 +105,7 @@ $ fq -d png verbose /4x4.png
 0x0d0|                              32 30 32 31 2d 30|          2021-0|      text: "2021-07-28T08:54:09+00:00" 0xda-0xf2.7 (25)
 0x0e0|37 2d 32 38 54 30 38 3a 35 34 3a 30 39 2b 30 30|7-28T08:54:09+00|
 0x0f0|3a 30 30                                       |:00             |
-0x0f0|         30 df a4 cb                           |   0...         |      crc: "30dfa4cb" (raw bits) (valid) 0xf3-0xf6.7 (4)
+0x0f0|         30 df a4 cb                           |   0...         |      crc: 0x30dfa4cb (valid) 0xf3-0xf6.7 (4)
      |                                               |                |    [8]: chunk {} 0xf7-0x119.7 (35)
 0x0f0|                     00 00 00 17               |       ....     |      length: 23 0xf7-0xfa.7 (4)
 0x0f0|                                 7a 54 58 74   |           zTXt |      type: "zTXt" 0xfb-0xfe.7 (4)
@@ -120,7 +120,7 @@ $ fq -d png verbose /4x4.png
 0x110|01 00 06 4d 02 27                              |...M.'          |
      |                                               |                |      uncompressed: {} () 0x0-0x4.7 (5)
  0x00|61 74 65 78 74|                                |atext|          |        text: "atext" 0x0-0x4.7 (5)
-0x110|                  4c f5 a2 bc                  |      L...      |      crc: "4cf5a2bc" (raw bits) (valid) 0x116-0x119.7 (4)
+0x110|                  4c f5 a2 bc                  |      L...      |      crc: 0x4cf5a2bc (valid) 0x116-0x119.7 (4)
      |                                               |                |    [9]: chunk {} 0x11a-0x125.7 (12)
 0x110|                              00 00 00 00      |          ....  |      length: 0 0x11a-0x11d.7 (4)
 0x110|                                          49 45|              IE|      type: "IEND" 0x11e-0x121.7 (4)
@@ -129,4 +129,4 @@ $ fq -d png verbose /4x4.png
 0x110|                                             45|               E|      private: false 0x11f.3-0x11f.3 (0.1)
 0x120|4e                                             |N               |      reserved: false 0x120.3-0x120.3 (0.1)
 0x120|   44                                          | D              |      safe_to_copy: false 0x121.3-0x121.3 (0.1)
-0x120|      ae 42 60 82|                             |  .B`.|         |      crc: "ae426082" (raw bits) (valid) 0x122-0x125.7 (4)
+0x120|      ae 42 60 82|                             |  .B`.|         |      crc: 0xae426082 (valid) 0x122-0x125.7 (4)

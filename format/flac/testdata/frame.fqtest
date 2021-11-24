@@ -14,7 +14,7 @@ $ fq -d flac_frame verbose /frame
      |                                               |                |    end_of_header: {} 0x4-0x6.7 (3)
 0x000|            00                                 |    .           |      frame_number: 0 0x4-0x4.7 (1)
 0x000|               01 b8                           |     ..         |      block_size: 441 0x5-0x6.7 (2)
-0x000|                     55                        |       U        |    crc: "55" (raw bits) (valid) 0x7-0x7.7 (1)
+0x000|                     55                        |       U        |    crc: 0x55 (valid) 0x7-0x7.7 (1)
      |                                               |                |  subframes: [1] 0x8-0x1fd.2 (501.3)
      |                                               |                |    [0]: subframe {} 0x8-0x1fd.2 (501.3)
 0x000|                        4e                     |        N       |      zero_bit: 0 (valid) 0x8-0x8 (0.1)

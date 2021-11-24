@@ -101,7 +101,7 @@ $ fq -d flac verbose /picture_seek_gain.flac
 0x0170|                  00                           |      .         |              compression_method: "deflate" (0) 0x176-0x176.7 (1)
 0x0170|                     00                        |       .        |              filter_method: "Adaptive filtering" (0) 0x177-0x177.7 (1)
 0x0170|                        00                     |        .       |              interlace_method: "No interlace" (0) 0x178-0x178.7 (1)
-0x0170|                           81 8a a3 d3         |         ....   |              crc: "818aa3d3" (raw bits) (valid) 0x179-0x17c.7 (4)
+0x0170|                           81 8a a3 d3         |         ....   |              crc: 0x818aa3d3 (valid) 0x179-0x17c.7 (4)
       |                                               |                |            [1]: chunk {} 0x17d-0x18c.7 (16)
 0x0170|                                       00 00 00|             ...|              length: 4 0x17d-0x180.7 (4)
 0x0180|04                                             |.               |
@@ -111,7 +111,7 @@ $ fq -d flac verbose /picture_seek_gain.flac
 0x0180|         4d                                    |   M            |              reserved: false 0x183.3-0x183.3 (0.1)
 0x0180|            41                                 |    A           |              safe_to_copy: false 0x184.3-0x184.3 (0.1)
 0x0180|               00 00 b1 8f                     |     ....       |              value: 45455 0x185-0x188.7 (4)
-0x0180|                           0b fc 61 05         |         ..a.   |              crc: "0bfc6105" (raw bits) (valid) 0x189-0x18c.7 (4)
+0x0180|                           0b fc 61 05         |         ..a.   |              crc: 0xbfc6105 (valid) 0x189-0x18c.7 (4)
       |                                               |                |            [2]: chunk {} 0x18d-0x1b8.7 (44)
 0x0180|                                       00 00 00|             ...|              length: 32 0x18d-0x190.7 (4)
 0x0190|20                                             |                |
@@ -130,7 +130,7 @@ $ fq -d flac verbose /picture_seek_gain.flac
 0x01a0|                                       00 00 3a|             ..:|              blue_x: 15 0x1ad-0x1b0.7 (4)
 0x01b0|98                                             |.               |
 0x01b0|   00 00 17 70                                 | ...p           |              blue_y: 6 0x1b1-0x1b4.7 (4)
-0x01b0|               9c ba 51 3c                     |     ..Q<       |              crc: "9cba513c" (raw bits) (valid) 0x1b5-0x1b8.7 (4)
+0x01b0|               9c ba 51 3c                     |     ..Q<       |              crc: 0x9cba513c (valid) 0x1b5-0x1b8.7 (4)
       |                                               |                |            [3]: chunk {} 0x1b9-0x1c6.7 (14)
 0x01b0|                           00 00 00 02         |         ....   |              length: 2 0x1b9-0x1bc.7 (4)
 0x01b0|                                       62 4b 47|             bKG|              type: "bKGD" 0x1bd-0x1c0.7 (4)
@@ -140,7 +140,7 @@ $ fq -d flac verbose /picture_seek_gain.flac
 0x01b0|                                             47|               G|              reserved: false 0x1bf.3-0x1bf.3 (0.1)
 0x01c0|44                                             |D               |              safe_to_copy: false 0x1c0.3-0x1c0.3 (0.1)
 0x01c0|   00 01                                       | ..             |              gray: 1 0x1c1-0x1c2.7 (2)
-0x01c0|         dd 8a 13 a4                           |   ....         |              crc: "dd8a13a4" (raw bits) (valid) 0x1c3-0x1c6.7 (4)
+0x01c0|         dd 8a 13 a4                           |   ....         |              crc: 0xdd8a13a4 (valid) 0x1c3-0x1c6.7 (4)
       |                                               |                |            [4]: chunk {} 0x1c7-0x1d9.7 (19)
 0x01c0|                     00 00 00 07               |       ....     |              length: 7 0x1c7-0x1ca.7 (4)
 0x01c0|                                 74 49 4d 45   |           tIME |              type: "tIME" 0x1cb-0x1ce.7 (4)
@@ -150,7 +150,7 @@ $ fq -d flac verbose /picture_seek_gain.flac
 0x01c0|                                          45   |              E |              safe_to_copy: false 0x1ce.3-0x1ce.3 (0.1)
 0x01c0|                                             07|               .|              data: raw bits 0x1cf-0x1d5.7 (7)
 0x01d0|e5 02 1b 16 3b 1c                              |....;.          |
-0x01d0|                  47 9d cf da                  |      G...      |              crc: "479dcfda" (raw bits) (valid) 0x1d6-0x1d9.7 (4)
+0x01d0|                  47 9d cf da                  |      G...      |              crc: 0x479dcfda (valid) 0x1d6-0x1d9.7 (4)
       |                                               |                |            [5]: chunk {} 0x1da-0x1f0.7 (23)
 0x01d0|                              00 00 00 0b      |          ....  |              length: 11 0x1da-0x1dd.7 (4)
 0x01d0|                                          49 44|              ID|              type: "IDAT" 0x1de-0x1e1.7 (4)
@@ -160,7 +160,7 @@ $ fq -d flac verbose /picture_seek_gain.flac
 0x01e0|41                                             |A               |              reserved: false 0x1e0.3-0x1e0.3 (0.1)
 0x01e0|   54                                          | T              |              safe_to_copy: true 0x1e1.3-0x1e1.3 (0.1)
 0x01e0|      08 d7 63 60 80 00 00 00 08 00 01         |  ..c`.......   |              data: raw bits 0x1e2-0x1ec.7 (11)
-0x01e0|                                       2f 20 dd|             / .|              crc: "2f20dd31" (raw bits) (valid) 0x1ed-0x1f0.7 (4)
+0x01e0|                                       2f 20 dd|             / .|              crc: 0x2f20dd31 (valid) 0x1ed-0x1f0.7 (4)
 0x01f0|31                                             |1               |
       |                                               |                |            [6]: chunk {} 0x1f1-0x221.7 (49)
 0x01f0|   00 00 00 25                                 | ...%           |              length: 37 0x1f1-0x1f4.7 (4)
@@ -173,7 +173,7 @@ $ fq -d flac verbose /picture_seek_gain.flac
 0x0200|65 61 74 65 00                                 |eate.           |
 0x0200|               32 30 32 31 2d 30 32 2d 32 37 54|     2021-02-27T|              text: "2021-02-27T22:59:28+00:00" 0x205-0x21d.7 (25)
 0x0210|32 32 3a 35 39 3a 32 38 2b 30 30 3a 30 30      |22:59:28+00:00  |
-0x0210|                                          3b 7f|              ;.|              crc: "3b7fd305" (raw bits) (valid) 0x21e-0x221.7 (4)
+0x0210|                                          3b 7f|              ;.|              crc: 0x3b7fd305 (valid) 0x21e-0x221.7 (4)
 0x0220|d3 05                                          |..              |
       |                                               |                |            [7]: chunk {} 0x222-0x252.7 (49)
 0x0220|      00 00 00 25                              |  ...%          |              length: 37 0x222-0x225.7 (4)
@@ -186,7 +186,7 @@ $ fq -d flac verbose /picture_seek_gain.flac
 0x0230|6f 64 69 66 79 00                              |odify.          |
 0x0230|                  32 30 32 31 2d 30 32 2d 32 37|      2021-02-27|              text: "2021-02-27T22:59:28+00:00" 0x236-0x24e.7 (25)
 0x0240|54 32 32 3a 35 39 3a 32 38 2b 30 30 3a 30 30   |T22:59:28+00:00 |
-0x0240|                                             4a|               J|              crc: "4a226bb9" (raw bits) (valid) 0x24f-0x252.7 (4)
+0x0240|                                             4a|               J|              crc: 0x4a226bb9 (valid) 0x24f-0x252.7 (4)
 0x0250|22 6b b9                                       |"k.             |
       |                                               |                |            [8]: chunk {} 0x253-0x25e.7 (12)
 0x0250|         00 00 00 00                           |   ....         |              length: 0 0x253-0x256.7 (4)
@@ -195,7 +195,7 @@ $ fq -d flac verbose /picture_seek_gain.flac
 0x0250|                        45                     |        E       |              private: false 0x258.3-0x258.3 (0.1)
 0x0250|                           4e                  |         N      |              reserved: false 0x259.3-0x259.3 (0.1)
 0x0250|                              44               |          D     |              safe_to_copy: false 0x25a.3-0x25a.3 (0.1)
-0x0250|                                 ae 42 60 82   |           .B`. |              crc: "ae426082" (raw bits) (valid) 0x25b-0x25e.7 (4)
+0x0250|                                 ae 42 60 82   |           .B`. |              crc: 0xae426082 (valid) 0x25b-0x25e.7 (4)
       |                                               |                |    [4]: metadatablock {} (flac_metadatablock) 0x25f-0x205f.7 (7681)
 0x0250|                                             81|               .|      last_block: true 0x25f-0x25f (0.1)
 0x0250|                                             81|               .|      type: "Padding" (1) 0x25f.1-0x25f.7 (0.7)
@@ -217,7 +217,7 @@ $ fq -d flac verbose /picture_seek_gain.flac
       |                                               |                |        end_of_header: {} 0x2064-0x2066.7 (3)
 0x2060|            00                                 |    .           |          frame_number: 0 0x2064-0x2064.7 (1)
 0x2060|               01 b8                           |     ..         |          block_size: 441 0x2065-0x2066.7 (2)
-0x2060|                     55                        |       U        |        crc: "55" (raw bits) (valid) 0x2067-0x2067.7 (1)
+0x2060|                     55                        |       U        |        crc: 0x55 (valid) 0x2067-0x2067.7 (1)
       |                                               |                |      subframes: [1] 0x2068-0x225d.2 (501.3)
       |                                               |                |        [0]: subframe {} 0x2068-0x225d.2 (501.3)
 0x2060|                        4e                     |        N       |          zero_bit: 0 (valid) 0x2068-0x2068 (0.1)

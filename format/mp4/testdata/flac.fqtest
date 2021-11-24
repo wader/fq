@@ -328,7 +328,7 @@ $ fq -d mp4 verbose /flac.mp4
      |                                               |                |            end_of_header: {} 0x30-0x32.7 (3)
 0x030|00                                             |.               |              frame_number: 0 0x30-0x30.7 (1)
 0x030|   08 9c                                       | ..             |              block_size: 2205 0x31-0x32.7 (2)
-0x030|         25                                    |   %            |            crc: "25" (raw bits) (valid) 0x33-0x33.7 (1)
+0x030|         25                                    |   %            |            crc: 0x25 (valid) 0x33-0x33.7 (1)
      |                                               |                |          subframes: [2] 0x34-0x287.1 (595.2)
      |                                               |                |            [0]: subframe {} 0x34-0x284 (592.1)
 0x030|            4a                                 |    J           |              zero_bit: 0 (valid) 0x34-0x34 (0.1)

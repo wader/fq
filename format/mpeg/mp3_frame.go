@@ -264,7 +264,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			0b11: "CCIT J.17",
 		}), d.Bin)
 		if hasCRC {
-			d.FieldRawLen("crc", 16, d.RawHex)
+			d.FieldU16("crc", d.Hex)
 			crcValue = d.FieldGet("crc")
 			crcBytes = 2
 		}
@@ -392,7 +392,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	d.MustCopy(crcHash, d.BitBufRange(6*8, sideInfoBytes*8))
 
 	if crcValue != nil {
-		_ = crcValue.TryScalarFn(d.ValidateBitBuf(crcHash.Sum(nil)))
+		_ = crcValue.TryScalarFn(d.ValidateUBytes(crcHash.Sum(nil)))
 	}
 	d.FieldValueRaw("crc_calculated", crcHash.Sum(nil), d.RawHex)
 

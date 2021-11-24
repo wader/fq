@@ -7,6 +7,7 @@ package decode
 
 import (
 	"bytes"
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"math"
@@ -248,6 +249,66 @@ func (d *D) AssertBitBuf(bss ...[]byte) func(s Scalar) (Scalar, error) {
 }
 func (d *D) ValidateBitBuf(bss ...[]byte) func(s Scalar) (Scalar, error) {
 	return d.assertBitBuf(false, bss...)
+}
+
+func (d *D) assertUBytes(assert bool, endian Endian, bss ...[]byte) func(s Scalar) (Scalar, error) {
+	var bo binary.ByteOrder
+	switch endian {
+	case LittleEndian:
+		bo = binary.BigEndian
+	case BigEndian:
+		bo = binary.BigEndian
+	default:
+		panic("invalid endian")
+	}
+
+	return func(s Scalar) (Scalar, error) {
+		au := s.ActualU()
+		for _, bs := range bss {
+			var bu uint64
+			switch len(bs) {
+			case 1:
+				bu = uint64(bs[0])
+			case 2:
+				bu = uint64(bo.Uint16(bs))
+			case 4:
+				bu = uint64(bo.Uint32(bs))
+			case 8:
+				bu = bo.Uint64(bs)
+			default:
+				panic("invalid bs length")
+			}
+
+			if au == bu {
+				s.Description = "valid"
+				return s, nil
+			}
+		}
+		s.Description = "invalid"
+		if assert && !d.Options.Force {
+			return s, errors.New("failed to validate raw")
+		}
+		return s, nil
+	}
+}
+
+func (d *D) AssertUBytes(bss ...[]byte) func(s Scalar) (Scalar, error) {
+	return d.assertUBytes(true, d.Endian, bss...)
+}
+func (d *D) ValidateUBytes(bss ...[]byte) func(s Scalar) (Scalar, error) {
+	return d.assertUBytes(false, d.Endian, bss...)
+}
+func (d *D) AssertULEBytes(bss ...[]byte) func(s Scalar) (Scalar, error) {
+	return d.assertUBytes(true, LittleEndian, bss...)
+}
+func (d *D) ValidateULEBytes(bss ...[]byte) func(s Scalar) (Scalar, error) {
+	return d.assertUBytes(false, LittleEndian, bss...)
+}
+func (d *D) AssertUBEBytes(bss ...[]byte) func(s Scalar) (Scalar, error) {
+	return d.assertUBytes(true, BigEndian, bss...)
+}
+func (d *D) ValidateUBEBytes(bss ...[]byte) func(s Scalar) (Scalar, error) {
+	return d.assertUBytes(false, BigEndian, bss...)
 }
 
 func (d *D) TryFieldValue(name string, fn func() (*Value, error)) (*Value, error) {

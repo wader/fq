@@ -6,7 +6,6 @@ package gz
 
 import (
 	"compress/flate"
-	"encoding/binary"
 	"errors"
 	"hash/crc32"
 	"io"
@@ -59,6 +58,8 @@ var deflateExtraFlagsNames = decode.UToStr{
 }
 
 func gzDecode(d *decode.D, in interface{}) interface{} {
+	d.Endian = decode.LittleEndian
+
 	d.FieldRawLen("identification", 2*8, d.AssertBitBuf([]byte("\x1f\x8b")))
 	compressionMethod := d.FieldU8("compression_method", d.MapUToStrSym(compressionMethodNames))
 	hasHeaderCRC := false
@@ -73,7 +74,7 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 		hasComment = d.FieldBool("comment")
 		d.FieldU3("reserved")
 	})
-	d.FieldU32LE("mtime") // TODO: unix time
+	d.FieldU32("mtime") // TODO: unix time
 	switch compressionMethod {
 	case delfateMethod:
 		d.FieldU8("extra_flags", d.MapUToStrSym(deflateExtraFlagsNames))
@@ -115,8 +116,8 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 	if _, err := io.Copy(crc32W, uncompressedBB.Clone()); err != nil {
 		d.IOPanic(err)
 	}
-	d.FieldU32("crc32", d.ValidateU(uint64(binary.LittleEndian.Uint32(crc32W.Sum(nil)))), d.Hex)
-	d.FieldU32LE("isize")
+	d.FieldU32("crc32", d.ValidateUBytes(crc32W.Sum(nil)), d.Hex)
+	d.FieldU32("isize")
 
 	return nil
 }

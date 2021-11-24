@@ -206,7 +206,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 
 		chunkCRC := crc32.NewIEEE()
 		d.MustCopy(chunkCRC, d.BitBufRange(crcStartPos, d.Pos()-crcStartPos))
-		d.FieldRawLen("crc", 32, d.ValidateBitBuf(chunkCRC.Sum(nil)), d.RawHex)
+		d.FieldU32("crc", d.ValidateUBytes(chunkCRC.Sum(nil)), d.Hex)
 	})
 
 	return nil

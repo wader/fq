@@ -339,7 +339,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 
 		headerCRC := &crc.CRC{Bits: 8, Table: crc.ATM8Table}
 		d.MustCopy(headerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
-		d.FieldRawLen("crc", 8, d.ValidateBitBuf(headerCRC.Sum(nil)), d.RawHex)
+		d.FieldU8("crc", d.ValidateUBytes(headerCRC.Sum(nil)), d.Hex)
 	})
 
 	var channelSamples [][]int64

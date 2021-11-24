@@ -387,7 +387,7 @@ $ fq -d matroska verbose /flac.mkv
      |                                               |                |                  end_of_header: {} 0x259-0x25b.7 (3)
 0x250|                           00                  |         .      |                    frame_number: 0 0x259-0x259.7 (1)
 0x250|                              08 9c            |          ..    |                    block_size: 2205 0x25a-0x25b.7 (2)
-0x250|                                    25         |            %   |                  crc: "25" (raw bits) (valid) 0x25c-0x25c.7 (1)
+0x250|                                    25         |            %   |                  crc: 0x25 (valid) 0x25c-0x25c.7 (1)
      |                                               |                |                subframes: [2] 0x25d-0x4b0.1 (595.2)
      |                                               |                |                  [0]: subframe {} 0x25d-0x4ad (592.1)
 0x250|                                       4a      |             J  |                    zero_bit: 0 (valid) 0x25d-0x25d (0.1)
