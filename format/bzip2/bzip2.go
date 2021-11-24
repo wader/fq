@@ -114,9 +114,7 @@ func bzip2Decode(d *decode.D, in interface{}) interface{} {
 		}
 
 		blockCRC32W := crc32.NewIEEE()
-		if _, err := d.Copy(blockCRC32W, bitFlipReader{uncompressedBB.Clone()}); err != nil {
-			d.IOPanic(err)
-		}
+		d.MustCopy(blockCRC32W, bitFlipReader{uncompressedBB.Clone()})
 		blockCRC32N := bits.Reverse32(binary.BigEndian.Uint32(blockCRC32W.Sum(nil)))
 		_ = blockCRCValue.TryScalarFn(d.ValidateU(uint64(blockCRC32N)))
 		streamCRCN = blockCRC32N ^ ((streamCRCN << 1) | (streamCRCN >> 31))

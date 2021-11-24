@@ -69,8 +69,9 @@ avc_sei              H.264/AVC Supplemental Enhancement Information
 avc_sps              H.264/AVC Sequence Parameter Set
 bzip2                bzip2 compression
 dns                  DNS packet
+dns_tcp              DNS packet (TCP)
 elf                  Executable and Linkable Format
-ether8023            Ethernet 802.3
+ether8023_frame      Ethernet 802.3 frame
 exif                 Exchangeable Image File Format
 flac                 Free Lossless Audio Codec file
 flac_frame           FLAC frame
@@ -85,10 +86,11 @@ hevc_au              H.265/HEVC Access Unit
 hevc_dcr             H.265/HEVC Decoder Configuration Record
 hevc_nalu            H.265/HEVC Network Access Layer Unit
 icc_profile          International Color Consortium profile
+icmp                 Internet Control Message Protocol
 id3v1                ID3v1 metadata
 id3v11               ID3v1.1 metadata
 id3v2                ID3v2 metadata
-ipv4                 Internet protocol v4
+ipv4_packet          Internet protocol v4 packet
 jpeg                 Joint Photographic Experts Group file
 json                 JSON
 matroska             Matroska file
@@ -111,10 +113,12 @@ protobuf             Protobuf
 protobuf_widevine    Widevine protobuf
 pssh_playready       PlayReady PSSH
 raw                  Raw bits
+sll2_packet          Linux cooked capture encapsulation v2
+sll_packet           Linux cooked capture encapsulation
 tar                  Tar archive
-tcp                  Transmission Control Protocol
+tcp_segment          Transmission control protocol segment
 tiff                 Tag Image File Format
-udp                  User datagram protocol
+udp_datagram         User datagram protocol
 vorbis_comment       Vorbis comment
 vorbis_packet        Vorbis packet
 vp8_frame            VP8 frame

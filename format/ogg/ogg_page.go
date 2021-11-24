@@ -5,7 +5,7 @@ import (
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
-	"github.com/wader/fq/pkg/crc"
+	"github.com/wader/fq/pkg/checksum"
 	"github.com/wader/fq/pkg/decode"
 )
 
@@ -48,7 +48,7 @@ func pageDecode(d *decode.D, in interface{}) interface{} {
 	endPos := d.Pos()
 
 	pageChecksumValue := d.FieldGet("crc")
-	pageCRC := &crc.CRC{Bits: 32, Table: crc.Poly04c11db7Table}
+	pageCRC := &checksum.CRC{Bits: 32, Table: checksum.Poly04c11db7Table}
 	d.MustCopy(pageCRC, d.BitBufRange(startPos, pageChecksumValue.Range.Start-startPos))                      // header before checksum
 	d.MustCopy(pageCRC, bytes.NewReader([]byte{0, 0, 0, 0}))                                                  // zero checksum bits
 	d.MustCopy(pageCRC, d.BitBufRange(pageChecksumValue.Range.Stop(), endPos-pageChecksumValue.Range.Stop())) // rest of page

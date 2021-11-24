@@ -16,7 +16,11 @@ func init() {
 	registry.MustRegister(decode.Format{
 		Name:        format.DNS,
 		Description: "DNS packet",
-		DecodeFn:    dnsDecode,
+		Groups: []string{
+			format.TCP_STREAM,
+			format.UDP_PAYLOAD,
+		},
+		DecodeFn: dnsUDPDecode,
 	})
 }
 
@@ -111,7 +115,7 @@ var rcodeNames = decode.UToScalar{
 	9:  {Sym: "NotAuth", Description: "Server Not Authoritative for zone"},          // RFC 2136
 	10: {Sym: "NotZone", Description: "Name not contained in zone"},                 // RFC 2136
 	// collision in RFCs
-	// 16: {Sym: "BADVERS", Description: "Bad OPT Version"},                            // RFC 2671
+	// 16: {Sym: "BADVERS", Description: "Bad OPT Version"},           // RFC 2671
 	16: {Sym: "BADSIG", Description: "TSIG Signature Failure"},        // RFC 2845
 	17: {Sym: "BADKEY", Description: "Key not recognized"},            // RFC 2845
 	18: {Sym: "BADTIME", Description: "Signature out of time window"}, // RFC 2845
@@ -128,7 +132,7 @@ func decodeAAAAStr(d *decode.D) string {
 	return net.IP(d.BytesLen(16)).String()
 }
 
-func fieldDecodeLabel(d *decode.D, name string) {
+func fieldDecodeLabel(d *decode.D, pointerOffset int64, name string) {
 	var endPos int64
 	const maxJumps = 100
 	jumpCount := 0
@@ -149,7 +153,7 @@ func fieldDecodeLabel(d *decode.D, name string) {
 						if jumpCount > maxJumps {
 							d.Fatalf("label has more than %d jumps", maxJumps)
 						}
-						d.SeekAbs(int64(pointer) * 8)
+						d.SeekAbs(int64(pointer)*8 + pointerOffset)
 					}
 
 					l := d.FieldU8("length")
@@ -169,58 +173,64 @@ func fieldDecodeLabel(d *decode.D, name string) {
 	}
 }
 
-func dnsDecodeRR(d *decode.D, count uint64, name string, structName string) {
+func dnsDecodeRR(d *decode.D, pointerOffset int64, resp bool, count uint64, name string, structName string) {
 	d.FieldArray(name, func(d *decode.D) {
 		for i := uint64(0); i < count; i++ {
 			d.FieldStruct(structName, func(d *decode.D) {
-				fieldDecodeLabel(d, "name")
+				fieldDecodeLabel(d, pointerOffset, "name")
 				typ := d.FieldU16("type", d.MapUToStrSym(typeNames))
 				class := d.FieldU16("class", d.MapURangeToScalar(classNames))
-				d.FieldU32("ttl")
-				rdLength := d.FieldU16("rdlength")
-
-				d.LenFn(int64(rdLength)*8, func(d *decode.D) {
-					// TODO: all only for classIN?
-					switch {
-					case class == classIN && typ == typeA:
-						d.FieldStrFn("address", decodeAStr)
-					case typ == typeNS:
-						fieldDecodeLabel(d, "ns")
-					case typ == typeCNAME:
-						fieldDecodeLabel(d, "cname")
-					case typ == typeSOA:
-						fieldDecodeLabel(d, "mname")
-						fieldDecodeLabel(d, "rname")
-						d.FieldU32("serial")
-						d.FieldU32("refresh")
-						d.FieldU32("retry")
-						d.FieldU32("expire")
-						d.FieldU32("minimum")
-					case typ == typePTR:
-						fieldDecodeLabel(d, "ptr")
-					case typ == typeTXT:
-						var ss []string
-						d.FieldStruct("txt", func(d *decode.D) {
-							d.FieldArray("strings", func(d *decode.D) {
-								for !d.End() {
-									ss = append(ss, d.FieldUTF8ShortString("string"))
-								}
+				if resp {
+					d.FieldU32("ttl")
+					rdLength := d.FieldU16("rdlength")
+					d.LenFn(int64(rdLength)*8, func(d *decode.D) {
+						// TODO: all only for classIN?
+						switch {
+						case class == classIN && typ == typeA:
+							d.FieldStrFn("address", decodeAStr)
+						case typ == typeNS:
+							fieldDecodeLabel(d, pointerOffset, "ns")
+						case typ == typeCNAME:
+							fieldDecodeLabel(d, pointerOffset, "cname")
+						case typ == typeSOA:
+							fieldDecodeLabel(d, pointerOffset, "mname")
+							fieldDecodeLabel(d, pointerOffset, "rname")
+							d.FieldU32("serial")
+							d.FieldU32("refresh")
+							d.FieldU32("retry")
+							d.FieldU32("expire")
+							d.FieldU32("minimum")
+						case typ == typePTR:
+							fieldDecodeLabel(d, pointerOffset, "ptr")
+						case typ == typeTXT:
+							var ss []string
+							d.FieldStruct("txt", func(d *decode.D) {
+								d.FieldArray("strings", func(d *decode.D) {
+									for !d.End() {
+										ss = append(ss, d.FieldUTF8ShortString("string"))
+									}
+								})
+								d.FieldValueStr("value", strings.Join(ss, ""))
 							})
-							d.FieldValueStr("value", strings.Join(ss, ""))
-						})
-					case class == classIN && typ == typeAAAA:
-						d.FieldStrFn("address", decodeAAAAStr)
-					default:
-						d.FieldUTF8("rdata", int(rdLength))
-					}
-				})
+						case class == classIN && typ == typeAAAA:
+							d.FieldStrFn("address", decodeAAAAStr)
+						default:
+							d.FieldUTF8("rdata", int(rdLength))
+						}
+					})
+				}
 			})
 		}
 	})
 }
 
-func dnsDecode(d *decode.D, in interface{}) interface{} {
+func dnsDecode(d *decode.D, isTCP bool) interface{} {
+	pointerOffset := int64(0)
 	d.FieldStruct("header", func(d *decode.D) {
+		if isTCP {
+			pointerOffset = 16
+			d.FieldU16("length")
+		}
 		d.FieldU16("id")
 		d.FieldU1("qr", d.MapUToStrSym(decode.UToStr{
 			0: "query",
@@ -245,20 +255,27 @@ func dnsDecode(d *decode.D, in interface{}) interface{} {
 	anCount := d.FieldU16("an_count")
 	nsCount := d.FieldU16("ns_count")
 	arCount := d.FieldU16("ar_count")
-
-	d.FieldArray("questions", func(d *decode.D) {
-		for i := uint64(0); i < qdCount; i++ {
-			d.FieldStruct("question", func(d *decode.D) {
-				fieldDecodeLabel(d, "name")
-				d.FieldU16("type", d.MapUToStrSym(typeNames))
-				d.FieldU16("class", d.MapURangeToScalar(classNames))
-			})
-		}
-	})
-
-	dnsDecodeRR(d, anCount, "answers", "answer")
-	dnsDecodeRR(d, nsCount, "nameservers", "nameserver")
-	dnsDecodeRR(d, arCount, "additionals", "additional")
+	dnsDecodeRR(d, pointerOffset, false, qdCount, "questions", "question")
+	dnsDecodeRR(d, pointerOffset, true, anCount, "answers", "answer")
+	dnsDecodeRR(d, pointerOffset, true, nsCount, "nameservers", "nameserver")
+	dnsDecodeRR(d, pointerOffset, true, arCount, "additionals", "additional")
 
 	return nil
+}
+
+func dnsUDPDecode(d *decode.D, in interface{}) interface{} {
+	if tsi, ok := in.(format.TCPStreamIn); ok {
+		if tsi.DestinationPort == format.TCPPortDomain || tsi.SourcePort == format.TCPPortDomain {
+			return dnsDecode(d, true)
+		}
+		d.Fatalf("wrong port")
+	}
+	if udi, ok := in.(format.UDPDatagramIn); ok {
+		if udi.DestinationPort == format.UDPPortDomain || udi.SourcePort == format.UDPPortDomain ||
+			udi.DestinationPort == format.UDPPortMDNS || udi.SourcePort == format.UDPPortMDNS {
+			return dnsDecode(d, false)
+		}
+		d.Fatalf("wrong port")
+	}
+	return dnsDecode(d, false)
 }

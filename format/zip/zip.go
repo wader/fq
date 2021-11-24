@@ -276,7 +276,7 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 				}
 
 				if compressionMethod == compressionMethodNone {
-					if dv, _, _ := d.FieldTryFormatLen("uncompressed", compressedSize, probeFormat, nil); dv == nil {
+					if dv, _, _ := d.TryFieldFormatLen("uncompressed", compressedSize, probeFormat, nil); dv == nil {
 						d.FieldRawLen("uncompressed", compressedSize)
 					}
 				} else {

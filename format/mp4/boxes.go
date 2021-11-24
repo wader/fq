@@ -660,7 +660,7 @@ func init() {
 			d.FieldU24("flags")
 			d.FieldU32("reserved")
 			if isParent(ctx, "covr") {
-				dv, _, _ := d.FieldTryFormatLen("data", d.BitsLeft(), imageFormat, nil)
+				dv, _, _ := d.TryFieldFormatLen("data", d.BitsLeft(), imageFormat, nil)
 				if dv == nil {
 					d.FieldRawLen("data", d.BitsLeft())
 				}
@@ -956,7 +956,7 @@ func init() {
 			// TODO: make nicer
 			systemID, err := systemIDBB.Bytes()
 			if err != nil {
-				d.IOPanic(err)
+				d.IOPanic(err, "systemIDBB.Bytes")
 			}
 			switch version {
 			case 0:

@@ -182,7 +182,7 @@ def _repl($opts): #:: a|(Opts) => @
   def _read_expr:
     _repeat_break(
       # both _prompt and _complete want input arrays
-      ( _readline(_prompt; {complete: "_complete", timeout: 0.5})
+      ( _readline(_prompt; {complete: "_complete", timeout: 1})
       | if trim == "" then empty
         else (., error("break"))
         end

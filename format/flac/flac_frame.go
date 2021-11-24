@@ -7,7 +7,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/internal/num"
-	"github.com/wader/fq/pkg/crc"
+	"github.com/wader/fq/pkg/checksum"
 	"github.com/wader/fq/pkg/decode"
 )
 
@@ -337,7 +337,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			}
 		})
 
-		headerCRC := &crc.CRC{Bits: 8, Table: crc.ATM8Table}
+		headerCRC := &checksum.CRC{Bits: 8, Table: checksum.ATM8Table}
 		d.MustCopy(headerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
 		d.FieldU8("crc", d.ValidateUBytes(headerCRC.Sum(nil)), d.Hex)
 	})
@@ -587,7 +587,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	// <?> Zero-padding to byte alignment.
 	d.FieldU("byte_align", d.ByteAlignBits(), d.AssertU(0))
 	// <16> CRC-16 (polynomial = x^16 + x^15 + x^2 + x^0, initialized with 0) of everything before the crc, back to and including the frame header sync code
-	footerCRC := &crc.CRC{Bits: 16, Table: crc.ANSI16Table}
+	footerCRC := &checksum.CRC{Bits: 16, Table: checksum.ANSI16Table}
 	d.MustCopy(footerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
 	d.FieldRawLen("footer_crc", 16, d.ValidateBitBuf(footerCRC.Sum(nil)), d.RawHex)
 

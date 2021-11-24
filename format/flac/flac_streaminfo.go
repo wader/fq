@@ -28,7 +28,7 @@ func streaminfoDecode(d *decode.D, in interface{}) interface{} {
 	md5BB := d.FieldRawLen("md5", 16*8, d.RawHex)
 	md5b, err := md5BB.Bytes()
 	if err != nil {
-		d.IOPanic(err)
+		d.IOPanic(err, "md5BB.Bytes")
 	}
 
 	return format.FlacStreaminfoOut{

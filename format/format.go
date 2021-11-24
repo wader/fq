@@ -8,13 +8,23 @@ import (
 const (
 	ALL = "all"
 
-	PROBE = "probe"
-	RAW   = "raw"
+	PROBE       = "probe"
+	IMAGE       = "image"
+	TCP_STREAM  = "tcp_stream"
+	UDP_PAYLOAD = "udp_payload"
 
-	// TODO: rename PROBE_* something?
-	IMAGE = "image"
-
+	RAW  = "raw"
 	JSON = "json"
+
+	DNS             = "dns"
+	DNS_TCP         = "dns_tcp"
+	ETHER8023_FRAME = "ether8023_frame"
+	SLL_PACKET      = "sll_packet"
+	SLL2_PACKET     = "sll2_packet"
+	IPV4_PACKET     = "ipv4_packet"
+	UDP_DATAGRAM    = "udp_datagram"
+	TCP_SEGMENT     = "tcp_segment"
+	ICMP            = "icmp"
 
 	AAC_FRAME           = "aac_frame"
 	ADTS                = "adts"
@@ -24,12 +34,7 @@ const (
 	AV1_FRAME           = "av1_frame"
 	AV1_OBU             = "av1_obu"
 	BZIP2               = "bzip2"
-	DNS                 = "dns"
 	ELF                 = "elf"
-	ETHER8023           = "ether8023"
-	IPV4                = "ipv4"
-	UDP                 = "udp"
-	TCP                 = "tcp"
 	EXIF                = "exif"
 	FLAC                = "flac"
 	FLAC_FRAME          = "flac_frame"
@@ -184,4 +189,14 @@ type MP3FrameOut struct {
 	SampleRate       int
 	ChannelsIndex    int
 	ChannelModeIndex int
+}
+
+type UDPDatagramIn struct {
+	SourcePort      int
+	DestinationPort int
+}
+
+type TCPStreamIn struct {
+	SourcePort      int
+	DestinationPort int
 }

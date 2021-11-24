@@ -18,7 +18,7 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var flacMetadatablockFormat decode.Group
+var flacMetadatablocksFormat decode.Group
 var flacFrameFormat decode.Group
 
 func init() {
@@ -28,7 +28,7 @@ func init() {
 		Groups:      []string{format.PROBE},
 		DecodeFn:    flacDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.FLAC_METADATABLOCKS}, Group: &flacMetadatablockFormat},
+			{Names: []string{format.FLAC_METADATABLOCKS}, Group: &flacMetadatablocksFormat},
 			{Names: []string{format.FLAC_FRAME}, Group: &flacFrameFormat},
 		},
 	})
@@ -43,7 +43,7 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 	var streamTotalSamples uint64
 	var streamDecodedSamples uint64
 
-	_, v := d.FieldFormat("metadatablocks", flacMetadatablockFormat, nil)
+	_, v := d.FieldFormat("metadatablocks", flacMetadatablocksFormat, nil)
 	flacMetadatablockOut, ok := v.(format.FlacMetadatablocksOut)
 	if !ok {
 		panic(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))

@@ -1,6 +1,8 @@
-package crc
+package checksum
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // TODO: lazy make table?
 

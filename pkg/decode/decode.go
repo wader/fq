@@ -191,7 +191,7 @@ func (d *D) Copy(r io.Writer, w io.Reader) (int64, error) {
 func (d *D) MustCopy(r io.Writer, w io.Reader) int64 {
 	n, err := d.Copy(r, w)
 	if err != nil {
-		panic(IOError{Err: err, Op: "MustCopyBuffer"})
+		d.IOPanic(err, "MustCopy")
 	}
 	return n
 }
@@ -268,8 +268,8 @@ func (d *D) Fatalf(format string, a ...interface{}) {
 	panic(DecoderError{Reason: fmt.Sprintf(format, a...), Pos: d.Pos()})
 }
 
-func (d *D) IOPanic(err error) {
-	panic(IOError{Err: err, Pos: d.Pos()})
+func (d *D) IOPanic(err error, op string) {
+	panic(IOError{Err: err, Pos: d.Pos(), Op: op})
 }
 
 // Bits reads nBits bits from buffer
@@ -755,7 +755,7 @@ func (d *D) FieldFormat(name string, group Group, inArg interface{}) (*Value, in
 	return dv, v
 }
 
-func (d *D) FieldTryFormatLen(name string, nBits int64, group Group, inArg interface{}) (*Value, interface{}, error) {
+func (d *D) TryFieldFormatLen(name string, nBits int64, group Group, inArg interface{}) (*Value, interface{}, error) {
 	dv, v, err := decode(d.Ctx, d.bitBuf, group, Options{
 		Name:        name,
 		Force:       d.Options.Force,
@@ -778,7 +778,7 @@ func (d *D) FieldTryFormatLen(name string, nBits int64, group Group, inArg inter
 }
 
 func (d *D) FieldFormatLen(name string, nBits int64, group Group, inArg interface{}) (*Value, interface{}) {
-	dv, v, err := d.FieldTryFormatLen(name, nBits, group, inArg)
+	dv, v, err := d.TryFieldFormatLen(name, nBits, group, inArg)
 	if dv == nil || dv.Errors() != nil {
 		panic(err)
 	}
@@ -915,7 +915,7 @@ func (d *D) TryFieldReaderRangeFormat(name string, startBit int64, nBits int64, 
 func (d *D) FieldReaderRangeFormat(name string, startBit int64, nBits int64, fn func(r io.Reader) io.Reader, group Group, inArg interface{}) (int64, *bitio.Buffer, *Value, interface{}) {
 	cz, rbb, dv, v, err := d.TryFieldReaderRangeFormat(name, startBit, nBits, fn, group, inArg)
 	if err != nil {
-		d.IOPanic(err)
+		d.IOPanic(err, "TryFieldReaderRangeFormat")
 	}
 	return cz, rbb, dv, v
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-var flacMetadatablockForamt decode.Group
+var flacMetadatablockFormat decode.Group
 
 func init() {
 	registry.MustRegister(decode.Format{
@@ -18,7 +18,7 @@ func init() {
 		RootArray:   true,
 		RootName:    "metadatablocks",
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.FLAC_METADATABLOCK}, Group: &flacMetadatablockForamt},
+			{Names: []string{format.FLAC_METADATABLOCK}, Group: &flacMetadatablockFormat},
 		},
 	})
 }
@@ -28,7 +28,7 @@ func metadatablocksDecode(d *decode.D, in interface{}) interface{} {
 
 	isLastBlock := false
 	for !isLastBlock {
-		dv, v := d.FieldFormat("metadatablock", flacMetadatablockForamt, nil)
+		dv, v := d.FieldFormat("metadatablock", flacMetadatablockFormat, nil)
 		flacMetadatablockOut, ok := v.(format.FlacMetadatablockOut)
 		if dv != nil && !ok {
 			panic(fmt.Sprintf("expected FlacMetadatablocksOut, got %#+v", flacMetadatablockOut))

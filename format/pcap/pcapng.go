@@ -7,11 +7,16 @@ import (
 	"net"
 
 	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/inet/flowsdecoder"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
 )
 
 var pcapngEther8023Format decode.Group
+var pcapngSLLPacketFormat decode.Group
+var pcapngSLL2PacketFormat decode.Group
+var pcapngTCPStreamFormat decode.Group
+var pcapngIPvPacket4Format decode.Group
 
 func init() {
 	registry.MustRegister(decode.Format{
@@ -20,7 +25,11 @@ func init() {
 		RootArray:   true,
 		Groups:      []string{format.PROBE},
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.ETHER8023}, Group: &pcapngEther8023Format},
+			{Names: []string{format.ETHER8023_FRAME}, Group: &pcapngEther8023Format},
+			{Names: []string{format.SLL_PACKET}, Group: &pcapngSLLPacketFormat},
+			{Names: []string{format.SLL2_PACKET}, Group: &pcapngSLL2PacketFormat},
+			{Names: []string{format.TCP_STREAM}, Group: &pcapngTCPStreamFormat},
+			{Names: []string{format.IPV4_PACKET}, Group: &pcapngIPvPacket4Format},
 		},
 		DecodeFn: decodePcapng,
 	})
@@ -179,11 +188,6 @@ var nameResolutionRecordMap = decode.UToStr{
 	nameResolutionRecordIpv6: "ipv6",
 }
 
-type decodeContext struct {
-	sectionHeaderFound bool
-	interfaceTypes     map[int]int
-}
-
 func decoodeOptions(d *decode.D, opts decode.UToScalar) {
 	if d.BitsLeft() < 32 {
 		return
@@ -213,7 +217,7 @@ func mapUToIPv4Sym(s decode.Scalar) (decode.Scalar, error) {
 
 var blockFns = map[uint64]func(d *decode.D, dc *decodeContext){
 	blockTypeInterfaceDescription: func(d *decode.D, dc *decodeContext) {
-		typ := d.FieldU16("link_type", d.MapUToScalar(linkTypeMap))
+		typ := d.FieldU16("link_type", d.MapUToScalar(format.LinkTypeMap))
 		d.FieldU16("reserved")
 		d.FieldU32("snap_len")
 		d.FieldArray("options", func(d *decode.D) { decoodeOptions(d, interfaceDescriptionOptionsMap) })
@@ -227,7 +231,18 @@ var blockFns = map[uint64]func(d *decode.D, dc *decodeContext){
 		capturedLength := d.FieldU32("capture_packet_length")
 		originalLength := d.FieldU32("original_packet_length")
 
-		if g, ok := linkToFormat[dc.interfaceTypes[int(interfaceID)]]; ok {
+		bs, err := d.BitBufRange(d.Pos(), int64(originalLength)*8).Bytes()
+		if err != nil {
+			d.IOPanic(err, "d.BitBufRange")
+		}
+
+		linkType := dc.interfaceTypes[int(interfaceID)]
+
+		if fn, ok := linkToDecodeFn[linkType]; ok {
+			fn(dc.flowDecoder, bs)
+		}
+
+		if g, ok := linkToFormat[linkType]; ok {
 			d.FieldFormatLen("packet", int64(originalLength)*8, *g, nil)
 		} else {
 			d.FieldRawLen("packet", int64(originalLength)*8)
@@ -335,17 +350,30 @@ func decodeSection(d *decode.D, dc *decodeContext) {
 	})
 }
 
+type decodeContext struct {
+	sectionHeaderFound bool
+	interfaceTypes     map[int]int
+	flowDecoder        *flowsdecoder.Decoder
+}
+
 func decodePcapng(d *decode.D, in interface{}) interface{} {
 	sectionHeaders := 0
 	for !d.End() {
+
+		fd := flowsdecoder.New()
 		dc := decodeContext{
 			interfaceTypes: map[int]int{},
+			flowDecoder:    fd,
 		}
+
 		d.FieldStruct("section", func(d *decode.D) {
 			decodeSection(d, &dc)
+			fd.Flush()
+			fieldFlows(d, dc.flowDecoder, pcapngTCPStreamFormat, pcapngIPvPacket4Format)
 		})
 		if dc.sectionHeaderFound {
 			sectionHeaders++
+
 		}
 	}
 

@@ -15,7 +15,7 @@ package mpeg
 import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
-	"github.com/wader/fq/pkg/crc"
+	"github.com/wader/fq/pkg/checksum"
 	"github.com/wader/fq/pkg/decode"
 )
 
@@ -386,7 +386,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldRawLen("other_data", followingFrameMainDataPartsBytes*8)
 	}
 
-	crcHash := &crc.CRC{Bits: 16, Current: 0xffff, Table: crc.ANSI16Table}
+	crcHash := &checksum.CRC{Bits: 16, Current: 0xffff, Table: checksum.ANSI16Table}
 	// 2 bytes after sync and some other fields + all of side info
 	d.MustCopy(crcHash, d.BitBufRange(2*8, 2*8))
 	d.MustCopy(crcHash, d.BitBufRange(6*8, sideInfoBytes*8))

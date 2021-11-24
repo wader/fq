@@ -1,6 +1,6 @@
-# fq 'first(.. | select(format=="udp")) | tobytes' many_interfaces.pcapng > udp
-$ fq -d udp verbose /udp
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /udp (udp) 0x0-0x8f.7 (144)
+# fq 'first(.. | select(format=="udp")) | tobytes' many_interfaces.pcapng > udp_datagram
+$ fq -d udp_datagram verbose /udp_datagram
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /udp_datagram (udp_datagram) 0x0-0x8f.7 (144)
 0x00|44 5c                                          |D\              |  source_port: 17500 0x0-0x1.7 (2)
 0x00|      44 5c                                    |  D\            |  destination_port: 17500 0x2-0x3.7 (2)
 0x00|            00 90                              |    ..          |  length: 144 0x4-0x5.7 (2)

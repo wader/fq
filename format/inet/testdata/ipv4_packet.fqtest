@@ -1,6 +1,6 @@
-# fq 'first(.. | select(format=="ipv4")) | tobytes' many_interfaces.pcapng > ipv4
-$ fq -d ipv4 verbose /ipv4
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /ipv4 (ipv4) 0x0-0x3e3.7 (996)
+# fq 'first(.. | select(format=="ipv4")) | tobytes' many_interfaces.pcapng > ipv4_packet
+$ fq -d ipv4_packet verbose /ipv4_packet
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /ipv4_packet (ipv4_packet) 0x0-0x3e3.7 (996)
 0x000|45                                             |E               |  version: 4 0x0-0x0.3 (0.4)
 0x000|45                                             |E               |  ihl: 5 0x0.4-0x0.7 (0.4)
 0x000|   00                                          | .              |  dscp: 0 0x1-0x1.5 (0.6)
@@ -12,8 +12,8 @@ $ fq -d ipv4 verbose /ipv4
 0x000|                  20                           |                |  more_fragments: true 0x6.2-0x6.2 (0.1)
 0x000|                  20 00                        |       .        |  fragment_offset: 0 0x6.3-0x7.7 (1.5)
 0x000|                        40                     |        @       |  ttl: 64 0x8-0x8.7 (1)
-0x000|                           01                  |         .      |  protocol: "icmp" (1) (internet control message protocol) 0x9-0x9.7 (1)
-0x000|                              9b 44            |          .D    |  header_checksum: 0x9b44 0xa-0xb.7 (2)
+0x000|                           01                  |         .      |  protocol: "icmp" (1) (Internet control message protocol) 0x9-0x9.7 (1)
+0x000|                              9b 44            |          .D    |  header_checksum: 0x9b44 (valid) 0xa-0xb.7 (2)
 0x000|                                    02 01 01 02|            ....|  source_ip: "2.1.1.2" (0x2010102) 0xc-0xf.7 (4)
 0x010|02 01 01 01                                    |....            |  destination_ip: "2.1.1.1" (0x2010101) 0x10-0x13.7 (4)
 0x010|            08 00 4d 71 13 c2 00 01 14 2b d2 59|    ..Mq.....+.Y|  data: raw bits 0x14-0x3e3.7 (976)
