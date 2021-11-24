@@ -14,6 +14,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/internal/num"
+	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 )
 
@@ -78,7 +79,8 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 		}
 	})
 
-	d.FieldValueRaw("md5_calculated", md5Samples.Sum(nil), d.ValidateBitBuf(streamInfo.MD5), d.RawHex)
+	md5CalcValue := d.FieldRootBitBuf("md5_calculated", bitio.NewBufferFromBytes(md5Samples.Sum(nil), -1))
+	_ = md5CalcValue.TryScalarFn(d.ValidateBitBuf(streamInfo.MD5), d.RawHex)
 	d.FieldValueU("decoded_samples", framesNDecodedSamples)
 
 	return nil

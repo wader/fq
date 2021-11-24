@@ -731,5 +731,5 @@ $ fq -d flac verbose /mono24.flac
 *     |until 0xbcc8 (4620)                            |                |
 0xbcc0|                        80                     |        .       |      byte_align: 0 (valid) 0xbcc8.1-0xbcc8.7 (0.7)
 0xbcc0|                           0a ac|              |         ..|    |      footer_crc: "0aac" (raw bits) (valid) 0xbcc9-0xbcca.7 (2)
-      |                                               |                |  md5_calculated: "732eb03653c4c7d237fda4f06a16db0e" (raw bits) (valid) 0xbccb-NA (0)
+ 0x000|73 2e b0 36 53 c4 c7 d2 37 fd a4 f0 6a 16 db 0e|s..6S...7...j...|  md5_calculated: "732eb03653c4c7d237fda4f06a16db0e" (raw bits) (valid) 0x0-0xf.7 (16)
       |                                               |                |  decoded_samples: 22050 0xbccb-NA (0)
