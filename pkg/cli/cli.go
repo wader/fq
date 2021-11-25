@@ -35,27 +35,42 @@ func (a autoCompleterFn) Do(line []rune, pos int) (newLine [][]rune, length int)
 
 type stdOS struct {
 	rl            *readline.Instance
+	closeChan     chan struct{}
 	interruptChan chan struct{}
 }
 
 func newStandardOS() *stdOS {
+	closeChan := make(chan struct{})
 	interruptChan := make(chan struct{}, 1)
-	interruptSignalChan := make(chan os.Signal, 1)
-	signal.Notify(interruptSignalChan, os.Interrupt)
+
+	// this more or less converts a os signal chan to just a struct{} chan that
+	// ignores signals if forwarding it would block, also this makes sure interp
+	// does not know about os.
 	go func() {
+		interruptSignalChan := make(chan os.Signal, 1)
+		signal.Notify(interruptSignalChan, os.Interrupt)
 		defer func() {
 			signal.Stop(interruptSignalChan)
 			close(interruptSignalChan)
+			close(interruptChan)
 		}()
-		for range interruptSignalChan {
+
+		for {
 			select {
-			case interruptChan <- struct{}{}:
-			default:
+			case <-interruptSignalChan:
+				// ignore if interruptChan is full
+				select {
+				case interruptChan <- struct{}{}:
+				default:
+				}
+			case <-closeChan:
+				return
 			}
 		}
 	}()
 
 	return &stdOS{
+		closeChan:     closeChan,
 		interruptChan: interruptChan,
 	}
 }
@@ -205,7 +220,7 @@ func (o *stdOS) Close() error {
 	if o.rl != nil {
 		o.rl.Close()
 	}
-	close(o.interruptChan)
+	close(o.closeChan)
 	return nil
 }
 
