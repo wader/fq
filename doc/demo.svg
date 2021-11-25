@@ -4,7 +4,7 @@
         text {
             dominant-baseline: text-before-edge;
             white-space: pre;
-            font: 14px Monaco, Lucida Console, Courier;
+            font: 14px monospace;
             fill: #bbbbbb;
         }
         .u { text-decoration: underline; }
