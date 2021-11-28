@@ -22,9 +22,9 @@ func vpxCCRDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldU4("bit_depth")
 	d.FieldU3("chroma_subsampling", d.MapUToStrSym(vpxChromeSubsamplingNames))
 	d.FieldU1("video_full_range_flag")
-	d.FieldU8("colour_primaries")
-	d.FieldU8("transfer_characteristics")
-	d.FieldU8("matrix_coefficients")
+	d.FieldU8("colour_primaries", d.MapUToScalar(format.ISO_23091_2_ColourPrimariesMap))
+	d.FieldU8("transfer_characteristics", d.MapUToScalar(format.ISO_23091_2_TransferCharacteristicMap))
+	d.FieldU8("matrix_coefficients", d.MapUToScalar(format.ISO_23091_2_MatrixCoefficients))
 	_ = d.FieldU16("codec_initialization_data_size")
 	// d.FieldRawLen("codec_initialization_data", int64(initDataSize)*8)
 
