@@ -27,19 +27,19 @@ func avcPPSDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldUFn("seq_parameter_set_id", uEV)
 	d.FieldBool("entropy_coding_mode_flag")
 	d.FieldBool("bottom_field_pic_order_in_frame_present_flag")
-	numSliceGroupsMinus1 := d.FieldUFn("num_slice_groups_minus1", uEV)
-	if numSliceGroupsMinus1 > 0 {
+	numSliceGroups := d.FieldUFn("num_slice_groups", uEV, d.UAdd(1))
+	if numSliceGroups > 1 {
 		sliceGroupMapType := d.FieldUFn("slice_group_map_type", uEV)
 		switch sliceGroupMapType {
 		case 0:
 			d.FieldArray("slice_groups", func(d *decode.D) {
-				for i := uint64(0); i <= numSliceGroupsMinus1; i++ {
+				for i := uint64(0); i < numSliceGroups; i++ {
 					d.FieldUFn("slice_group", uEV)
 				}
 			})
 		case 2:
 			d.FieldArray("slice_groups", func(d *decode.D) {
-				for i := uint64(0); i <= numSliceGroupsMinus1; i++ {
+				for i := uint64(0); i < numSliceGroups; i++ {
 					d.FieldStruct("slice_group", func(d *decode.D) {
 						d.FieldUFn("top_left", uEV)
 						d.FieldUFn("bottom_right", uEV)
@@ -48,16 +48,16 @@ func avcPPSDecode(d *decode.D, in interface{}) interface{} {
 			})
 		case 3, 4, 5:
 			d.FieldArray("slice_groups", func(d *decode.D) {
-				for i := uint64(0); i <= numSliceGroupsMinus1; i++ {
+				for i := uint64(0); i < numSliceGroups; i++ {
 					d.FieldStruct("slice_group", func(d *decode.D) {
 						d.FieldBool("change_direction_flag")
-						d.FieldUFn("change_rate_minus1", uEV)
+						d.FieldUFn("change_rate", uEV, d.UAdd(1))
 					})
 				}
 			})
 		case 6:
-			picSizeInMapUnitsMinus1 := d.FieldUFn("pic_size_in_map_units_minus1", uEV)
-			for i := uint64(0); i <= picSizeInMapUnitsMinus1; i++ {
+			picSizeInMapUnits := d.FieldUFn("pic_size_in_map_units", uEV, d.UAdd(1))
+			for i := uint64(0); i < picSizeInMapUnits; i++ {
 				d.FieldStruct("slice_group", func(d *decode.D) {
 					d.FieldBool("id")
 				})
@@ -65,12 +65,12 @@ func avcPPSDecode(d *decode.D, in interface{}) interface{} {
 		}
 	}
 
-	d.FieldUFn("num_ref_idx_l0_default_active_minus1", uEV)
-	d.FieldUFn("num_ref_idx_l1_default_active_minus1", uEV)
+	d.FieldUFn("num_ref_idx_l0_default_active", uEV, d.UAdd(1))
+	d.FieldUFn("num_ref_idx_l1_default_active", uEV, d.UAdd(1))
 	d.FieldBool("weighted_pred_flag")
 	d.FieldU2("weighted_bipred_idc")
-	d.FieldSFn("pic_init_qp_minus26", sEV) /* relative to 26 */
-	d.FieldSFn("pic_init_qs_minus26", sEV) /* relative to 26 */
+	d.FieldSFn("pic_init_qp", sEV, d.SAdd(26))
+	d.FieldSFn("pic_init_qs", sEV, d.SAdd(26))
 	d.FieldSFn("chroma_qp_index_offset", sEV)
 	d.FieldBool("deblocking_filter_control_present_flag")
 	d.FieldBool("constrained_intra_pred_flag")

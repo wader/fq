@@ -34,14 +34,14 @@ func hevcDcrDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldU6("reserved2")
 	d.FieldU2("chroma_format_idc")
 	d.FieldU5("reserved3")
-	d.FieldU3("bit_depth_luma_minus8")
+	d.FieldU3("bit_depth_luma", d.UAdd(8))
 	d.FieldU5("reserved4")
-	d.FieldU3("bit_depth_chroma_minus8")
+	d.FieldU3("bit_depth_chroma", d.UAdd(8))
 	d.FieldU16("avg_frame_rate")
 	d.FieldU2("constant_frame_rate")
 	d.FieldU3("num_temporal_layers")
 	d.FieldU1("temporal_id_nested")
-	lengthSizeMinusOne := d.FieldU2("length_size_minus_one")
+	lengthSize := d.FieldU2("length_size", d.UAdd(1))
 	numArrays := d.FieldU8("num_of_arrays")
 	d.FieldArray("arrays", func(d *decode.D) {
 		for i := uint64(0); i < numArrays; i++ {
@@ -62,5 +62,5 @@ func hevcDcrDecode(d *decode.D, in interface{}) interface{} {
 		}
 	})
 
-	return format.HevcDcrOut{LengthSize: lengthSizeMinusOne + 1}
+	return format.HevcDcrOut{LengthSize: lengthSize}
 }

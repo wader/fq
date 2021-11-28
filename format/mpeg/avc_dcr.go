@@ -121,7 +121,7 @@ func avcDcrDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldU8("profile_compatibility")
 	d.FieldU8("level_indication", d.MapUToStrSym(avcLevelNames))
 	d.FieldU6("reserved0")
-	lengthSizeMinusOne := d.FieldU2("length_size_minus_one")
+	lengthSize := d.FieldU2("length_size", d.UAdd(1))
 	d.FieldU3("reserved1")
 	numSeqParamSets := d.FieldU5("num_of_sequence_parameter_sets")
 	d.FieldArray("sequence_parameter_sets", func(d *decode.D) {
@@ -144,24 +144,5 @@ func avcDcrDecode(d *decode.D, in interface{}) interface{} {
 	// TODO: something wrong here, seen files with profileIdc = 100 with no bytes after picture_parameter_sets
 	// https://github.com/FFmpeg/FFmpeg/blob/069d2b4a50a6eb2f925f36884e6b9bd9a1e54670/libavcodec/h264_ps.c#L333
 
-	// switch profileIdc {
-	// case 100, 110, 122, 144:
-	// 	d.FieldU6("reserved2")
-	// 	d.FieldU6("chroma_format")
-	// 	d.FieldU4("reserved3")
-	// 	d.FieldU3("bit_depth_luma_minus8")
-	// 	d.FieldU5("reserved4")
-	// 	d.FieldU3("bit_depth_chroma_minus8")
-	// 	numSeqParamSetExt := d.FieldU5("num_of_sequence_parameter_set_ext")
-	// 	d.FieldArray("parameter_set_exts", func(d *decode.D) {
-	// 		for i := uint64(0); i < numSeqParamSetExt; i++ {
-	// 			d.FieldStruct("parameter_set_ext", func(d *decode.D) {
-	// 				paramSetLen := d.FieldU16("length")
-	// 				d.FieldRawLen("set", int64(paramSetLen)*8)
-	// 			})
-	// 		}
-	// 	})
-	// }
-
-	return format.AvcDcrOut{LengthSize: lengthSizeMinusOne + 1}
+	return format.AvcDcrOut{LengthSize: lengthSize}
 }

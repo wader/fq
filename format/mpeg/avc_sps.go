@@ -14,10 +14,41 @@ func init() {
 	})
 }
 
+var avcVideoFormatMap = decode.UToStr{
+	0: "component",
+	1: "pal",
+	2: "ntsc",
+	3: "secam",
+	4: "mac",
+	5: "unspecified",
+	6: "reserved",
+	7: "reserved",
+}
+
+var avcAspectRatioIdcMap = decode.UToStr{
+	0:  "unspecified",
+	1:  "1:1",
+	2:  "12:11",
+	3:  "10:11",
+	4:  "16:11",
+	5:  "40:33",
+	6:  "24:11",
+	7:  "20:11",
+	8:  "32:11",
+	9:  "80:33",
+	10: "18:11",
+	11: "15:11",
+	12: "64:33",
+	13: "160:99",
+	14: "4:3",
+	15: "3:2",
+	16: "2:1",
+}
+
 func avcVuiParameters(d *decode.D) {
 	aspectRatioInfoPresentFlag := d.FieldBool("aspect_ratio_info_present_flag")
 	if aspectRatioInfoPresentFlag {
-		aspectRatioIdc := d.FieldU8("aspect_ratio_idc")
+		aspectRatioIdc := d.FieldU8("aspect_ratio_idc", d.MapUToStrSym(avcAspectRatioIdcMap))
 		const extendedSAR = 255
 		if aspectRatioIdc == extendedSAR {
 			d.FieldU16("width")
@@ -30,13 +61,13 @@ func avcVuiParameters(d *decode.D) {
 	}
 	videoSignalTypePresentFlag := d.FieldBool("video_signal_type_present_flag")
 	if videoSignalTypePresentFlag {
-		d.FieldU3("video_format")
+		d.FieldU3("video_format", d.MapUToStrSym(avcVideoFormatMap))
 		d.FieldBool("video_full_range_flag")
 		colourDescriptionPresentFlag := d.FieldBool("colour_description_present_flag")
 		if colourDescriptionPresentFlag {
-			d.FieldU8("colour_primaries")
-			d.FieldU8("transfer_characteristics")
-			d.FieldU8("matrix_coefficients")
+			d.FieldU8("colour_primaries", d.MapUToScalar(format.ISO_23091_2_ColourPrimariesMap))
+			d.FieldU8("transfer_characteristics", d.MapUToScalar(format.ISO_23091_2_TransferCharacteristicMap))
+			d.FieldU8("matrix_coefficients", d.MapUToScalar(format.ISO_23091_2_MatrixCoefficients))
 		}
 	}
 	chromaLocInfoPresentFlag := d.FieldBool("chroma_loc_info_present_flag")
@@ -77,22 +108,21 @@ func avcVuiParameters(d *decode.D) {
 }
 
 func avcHdrParameters(d *decode.D) {
-	cpbCntMinus1 := d.FieldUFn("cpb_cnt_minus1", uEV)
-	_ = cpbCntMinus1
+	cpbCnt := d.FieldUFn("cpb_cnt", uEV, d.UAdd(1))
 	d.FieldU4("bit_rate_scale")
 	d.FieldU4("cpb_size_scale")
 	d.FieldArray("sched_sels", func(d *decode.D) {
-		for i := uint64(0); i <= cpbCntMinus1; i++ {
+		for i := uint64(0); i < cpbCnt; i++ {
 			d.FieldStruct("sched_sel", func(d *decode.D) {
-				d.FieldUFn("bit_rate_value_minus1", uEV)
-				d.FieldUFn("cpb_size_value_minus1", uEV)
+				d.FieldUFn("bit_rate_value", uEV, d.UAdd(1))
+				d.FieldUFn("cpb_size_value", uEV, d.UAdd(1))
 				d.FieldBool("cbr_flag")
 			})
 		}
 	})
-	d.FieldU5("initial_cpb_removal_delay_length_minus1")
-	d.FieldU5("cpb_removal_delay_length_minus1")
-	d.FieldU5("dpb_output_delay_length_minus1")
+	d.FieldU5("initial_cpb_removal_delay_length", d.UAdd(1))
+	d.FieldU5("cpb_removal_delay_length", d.UAdd(1))
+	d.FieldU5("dpb_output_delay_length", d.UAdd(1))
 	d.FieldU5("time_offset_length")
 }
 
@@ -116,19 +146,19 @@ func avcSPSDecode(d *decode.D, in interface{}) interface{} {
 			d.FieldBool("separate_colour_plane_flag")
 		}
 
-		d.FieldUFn("bit_depth_luma_minus8", uEV)
-		d.FieldUFn("bit_depth_chroma_minus8", uEV)
+		d.FieldUFn("bit_depth_luma", uEV, d.UAdd(8))
+		d.FieldUFn("bit_depth_chroma", uEV, d.UAdd(8))
 		d.FieldBool("qpprime_y_zero_transform_bypass_flag")
 		seqScalingMatrixPresentFlag := d.FieldBool("seq_scaling_matrix_present_flag")
 		// TODO:
 		_ = seqScalingMatrixPresentFlag
 	}
 
-	d.FieldUFn("log2_max_frame_num_minus4", uEV)
+	d.FieldUFn("log2_max_frame_num", uEV, d.UAdd(4))
 
 	picOrderCntType := d.FieldUFn("pic_order_cnt_type", uEV)
 	if picOrderCntType == 0 {
-		d.FieldUFn("log2_max_pic_order_cnt_lsb_minus4", uEV)
+		d.FieldUFn("log2_max_pic_order_cnt_lsb", uEV, d.UAdd(4))
 	} else if picOrderCntType == 1 {
 		d.FieldBool("delta_pic_order_always_zero_flag")
 		d.FieldSFn("offset_for_non_ref_pic", sEV)
@@ -143,8 +173,8 @@ func avcSPSDecode(d *decode.D, in interface{}) interface{} {
 
 	d.FieldUFn("max_num_ref_frames", uEV)
 	d.FieldBool("gaps_in_frame_num_value_allowed_flag")
-	d.FieldUFn("pic_width_in_mbs_minus1", uEV)
-	d.FieldUFn("pic_height_in_map_units_minus1", uEV)
+	d.FieldUFn("pic_width_in_mbs", uEV, d.UAdd(1))
+	d.FieldUFn("pic_height_in_map_units", uEV, d.UAdd(1))
 	frameMbsOnlyFlag := d.FieldBool("frame_mbs_only_flag")
 	if !frameMbsOnlyFlag {
 		d.FieldBool("mb_adaptive_frame_field_flag")

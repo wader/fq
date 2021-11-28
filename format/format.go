@@ -160,6 +160,11 @@ type ProtoBufIn struct {
 	Message ProtoBufMessage
 }
 
+type MpegDecoderConfig struct {
+	ObjectType    int
+	ASCObjectType int
+}
+
 type MpegEsOut struct {
 	DecoderConfigs []MpegDecoderConfig
 }

@@ -42,10 +42,15 @@ func (d *D) Description(desc string) func(s Scalar) (Scalar, error) {
 
 func (d *D) UAdd(n int) func(s Scalar) (Scalar, error) {
 	return func(s Scalar) (Scalar, error) {
-		if v, ok := s.Actual.(uint64); ok {
-			// TODO: use math.Add/Sub?
-			s.Actual = uint64(int64(v) + int64(n))
-		}
+		// TODO: use math.Add/Sub?
+		s.Actual = uint64(int64(s.ActualU()) + int64(n))
+		return s, nil
+	}
+}
+
+func (d *D) SAdd(n int) func(s Scalar) (Scalar, error) {
+	return func(s Scalar) (Scalar, error) {
+		s.Actual = s.ActualS() + int64(n)
 		return s, nil
 	}
 }
@@ -53,17 +58,13 @@ func (d *D) UAdd(n int) func(s Scalar) (Scalar, error) {
 // TODO: nicer api?
 func (d *D) Trim(cutset string) func(s Scalar) (Scalar, error) {
 	return func(s Scalar) (Scalar, error) {
-		if v, ok := s.Actual.(string); ok {
-			s.Actual = strings.Trim(v, cutset)
-		}
+		s.Actual = strings.Trim(s.ActualStr(), cutset)
 		return s, nil
 	}
 }
 
 func (d *D) TrimSpace(s Scalar) (Scalar, error) {
-	if v, ok := s.Actual.(string); ok {
-		s.Actual = strings.TrimSpace(v)
-	}
+	s.Actual = strings.TrimSpace(s.ActualStr())
 	return s, nil
 }
 
