@@ -7,6 +7,7 @@ import (
 	"io"
 	"math/big"
 	"strings"
+	"time"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/wader/fq/internal/gojqextra"
@@ -88,7 +89,14 @@ func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
 					ioextra.DiscardCtxWriter{Ctx: i.evalContext.ctx},
 				)
 			}
+			lastProgress := time.Now()
 			bbf.progressFn = func(approxReadBytes, totalSize int64) {
+				// make sure to not call too often as it's quite expensive
+				n := time.Now()
+				if n.Sub(lastProgress) < 200*time.Millisecond {
+					return
+				}
+				lastProgress = n
 				evalProgress(
 					map[string]interface{}{
 						"approx_read_bytes": approxReadBytes,
