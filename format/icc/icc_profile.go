@@ -48,18 +48,22 @@ func descType(_ int64, d *decode.D) {
 
 func multiLocalizedUnicodeType(tagStart int64, d *decode.D) {
 	numberOfNames := d.FieldU32("number_of_names")
+	recordSize := d.FieldU32("record_size")
 	d.FieldArray("names", func(d *decode.D) {
 		for i := uint64(0); i < numberOfNames; i++ {
 			d.FieldStruct("name", func(d *decode.D) {
-				d.FieldU32("record_size")
 				d.FieldUTF8("language_code", 2)
 				d.FieldUTF8("country_code", 2)
 				nameLength := d.FieldU32("name_length")
 				nameOffset := d.FieldU32("name_offset")
-				d.RangeFn(tagStart+int64(nameOffset*8), int64(nameLength*8), func(d *decode.D) {
+				d.RangeFn(tagStart+int64(nameOffset)*8, int64(nameLength)*8, func(d *decode.D) {
 					d.FieldUTF16BE("value", int(nameLength))
 				})
 			})
+			recordPadding := int64(recordSize) - 2 - 2 - 4 - 4
+			if recordPadding > 0 {
+				d.FieldRawLen("padding", recordPadding)
+			}
 		}
 	})
 }
