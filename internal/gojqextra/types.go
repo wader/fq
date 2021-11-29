@@ -335,7 +335,10 @@ func (v Base) JQValueToGoJQ() interface{}   { return nil }
 var _ gojq.JQValue = &Lazy{}
 
 type Lazy struct {
-	Fn     func() (gojq.JQValue, error)
+	Type     string
+	IsScalar bool
+	Fn       func() (gojq.JQValue, error)
+
 	called bool
 	err    error
 	jv     gojq.JQValue
@@ -370,27 +373,33 @@ func (v *Lazy) JQValueSlice(start int, end int) interface{} {
 	return v.f(func(jv gojq.JQValue) interface{} { return jv.JQValueSlice(start, end) })
 }
 func (v *Lazy) JQValueKey(name string) interface{} {
+	if v.IsScalar {
+		return ExpectedObjectWithKeyError{Typ: v.Type, Key: name}
+	}
 	return v.f(func(jv gojq.JQValue) interface{} { return jv.JQValueKey(name) })
 }
 func (v *Lazy) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
+	if v.IsScalar {
+		return expectedArrayOrObject(key, v.Type)
+	}
 	return v.f(func(jv gojq.JQValue) interface{} { return jv.JQValueUpdate(key, u, delpath) })
 }
 func (v *Lazy) JQValueEach() interface{} {
+	if v.IsScalar {
+		return IteratorError{Typ: v.Type}
+	}
 	return v.f(func(jv gojq.JQValue) interface{} { return jv.JQValueEach() })
 }
 func (v *Lazy) JQValueKeys() interface{} {
+	if v.IsScalar {
+		return FuncTypeNameError{Name: "keys", Typ: "string"}
+	}
 	return v.f(func(jv gojq.JQValue) interface{} { return jv.JQValueKeys() })
 }
 func (v *Lazy) JQValueHas(key interface{}) interface{} {
 	return v.f(func(jv gojq.JQValue) interface{} { return jv.JQValueHas(key) })
 }
-func (v *Lazy) JQValueType() string {
-	jv, err := v.v()
-	if err != nil {
-		return "error"
-	}
-	return jv.JQValueType()
-}
+func (v *Lazy) JQValueType() string { return v.Type }
 func (v *Lazy) JQValueToNumber() interface{} {
 	return v.f(func(jv gojq.JQValue) interface{} { return jv.JQValueToNumber() })
 }

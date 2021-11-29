@@ -204,6 +204,8 @@ func makeDecodeValue(dv *decode.Value) interface{} {
 			// .unknown0 | tobytes[1:] | ...
 			return decodeValue{
 				JQValue: &gojqextra.Lazy{
+					Type:     "string",
+					IsScalar: true,
 					Fn: func() (gojq.JQValue, error) {
 						buf := &bytes.Buffer{}
 						if _, err := io.Copy(buf, vv.Clone()); err != nil {
