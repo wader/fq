@@ -47,6 +47,13 @@ var vp9ColorSpaceNames = decode.UToStr{
 	CS_RGB:       "CS_RGB",
 }
 
+var vp9ProfilesMap = decode.UToScalar{
+	0: {Description: "8 bit/sample, chroma subsampling: 4:2:0"},
+	1: {Description: "8 bit, chroma subsampling: 4:2:2, 4:4:0, 4:4:4"},
+	2: {Description: "10–12 bit, chroma subsampling: 4:2:0"},
+	3: {Description: "10–12 bit, chroma subsampling: 4:2:2, 4:4:0, 4:4:4"},
+}
+
 func init() {
 	registry.MustRegister(decode.Format{
 		Name:        format.VP9_FRAME,
@@ -79,7 +86,7 @@ func vp9DecodeColorConfig(d *decode.D, profile int) {
 		if profile == 1 || profile == 3 {
 			d.FieldU1("subsampling_x")
 			d.FieldU1("subsampling_y")
-			d.FieldU1("reserved_zero")
+			d.FieldU1("reserved_zero1")
 		} else {
 			d.FieldValueU("subsampling_x", 1)
 			d.FieldValueU("subsampling_y", 1)
@@ -89,7 +96,7 @@ func vp9DecodeColorConfig(d *decode.D, profile int) {
 		if profile == 1 || profile == 3 {
 			d.FieldValueU("subsampling_x", 0)
 			d.FieldValueU("subsampling_y", 0)
-			d.FieldU1("reserved_zero")
+			d.FieldU1("reserved_zero2")
 		}
 	}
 }
@@ -107,9 +114,9 @@ func vp9Decode(d *decode.D, in interface{}) interface{} {
 	profileLowBit := d.FieldU1("profile_low_bit")
 	profileHighBit := d.FieldU1("profile_high_bit")
 	profile := int(profileHighBit<<1 + profileLowBit)
-	d.FieldValueU("profile", uint64(profile))
+	d.FieldValueU("profile", uint64(profile), d.MapUToScalar(vp9ProfilesMap))
 	if profile == 3 {
-		d.FieldU1("reserved_zero")
+		d.FieldU1("reserved_zero0")
 	}
 	showExistingFrame := d.FieldBool("show_existing_frame")
 	if showExistingFrame {
