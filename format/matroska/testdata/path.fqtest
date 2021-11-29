@@ -5,5 +5,15 @@ $ fq -d matroska 'matroska_path(".Segment.Tracks[0].TrackEntry[0].CodecID")' /av
 0x150|         8f                                    |   .            |  size: 15
 0x150|            56 5f 4d 50 45 47 34 2f 49 53 4f 2f|    V_MPEG4/ISO/|  value: "V_MPEG4/ISO/AVC"
 0x160|41 56 43                                       |AVC             |
+$ fq -d matroska 'matroska_path(".Segment.Tracks[0].TrackEntry[0].CodecID") | matroska_path' /avc.mkv
+".Segment.Tracks.TrackEntry.CodecID"
 $ fq -d matroska 'matroska_path(matroska_path(".Segment.Tracks[0].TrackEntry[0].CodecID"))' /avc.mkv
 ".Segment.Tracks.TrackEntry.CodecID"
+$ fq -n '"a" | raw | matroska_path(".Segment")'
+exitcode: 5
+stderr:
+error: not matroska format
+$ fq -n '1 | matroska_path(".Segment")'
+exitcode: 5
+stderr:
+error: expected a decode value but got: number (1)
