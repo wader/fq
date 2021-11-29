@@ -97,6 +97,7 @@
         "OSFS",
         "Packetized",
         "pcap",
+        "pcapng",
         "pmezard",
         "println",
         "protobuf",

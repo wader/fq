@@ -1,12 +1,12 @@
 ### Known bugs to fix
 
+- Value errors, can only be accessed with `._error`.
 - Framed (add unknown in gaps) decode should be on struct level not format?
-- Refactor decode.Value into interfaces(s) and impl per type?
 - `tovalue({bits_format: "base64"})` only affect root value.
 - Auto complete of non-global variables is broken. `scope` is broken for variables.
 - `echo '{} {} {}' | jq` vs `echo '{} {} {}' | fq` works differently. fq currently decodes one root format and might add unknown fields etc. Maybe should work differently for `json` format?
 - `format/0` overlap with jq builtin `format/1`. What to rename it to? `decode_format`?
-- repl expression returning a value that produced lots of output can't be interrupted. This is becaus ctrl-C currently only interrupts the evaluation of the expression, outputted value is printed (`display`) by parent.
+- repl expression returning a value that produced lots of output can't be interrupted. This is becaus ctrl-c currently only interrupts the eval interpreter, outputted value is printed (`display`) by parent interpreter.
 - Rework cli/repl user interrupt (context cancel via ctrl-c), see comment in Interp.Main
 - Optimize `Interp.Options` calls, now called per display. Cache per eval? needs to handle nested evals.
 
@@ -99,7 +99,6 @@
 
 #### Formats
 
-- Network protocols, pcap?
 - Pass argument to format
 - Value decoder in jq `u(32)`, `u32`?
 - Warnings and errors

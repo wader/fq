@@ -1,14 +1,15 @@
 # fq
 
-Tool, language and decoders for exploring binary data.
+Tool, language and decoders for inspecting binary data.
 
 ![fq demo](doc/demo.svg)
 
-In most cases it works the same way of jq but instead of reading JSON it reads binary formats into
-a JSON compatbile structure. Also each value knows from which bit ranges it comes from, can have
-symbolic interprestations and knows how to be presented in a useful way.
+In most cases fq works the same way as jq but instead of reading JSON it reads binary data.
+The result is a JSON compatbile structures where each each value knows from which bit ranges
+it comes from, can have symbolic interprestations and know how to be presented in useful ways.
 
-**NOTE:** fq is early in development and many things are missing, broken or do not make sense. That also means there is a great opportunity to help out.
+**NOTE:** fq is early in development and many things are missing, broken or do not make sense.
+That also means there is a great opportunity to help out.
 
 ## Goals
 
@@ -27,7 +28,7 @@ For details see [usage.md](doc/usage.md)
 ## Install
 
 Download archive from [releases](https://github.com/wader/fq/releases) page for your
-platform, unarchive and move the executable to `PATH`.
+platform, unarchive it and move the executable to `PATH` etc.
 
 ### Homebrew
 
@@ -80,7 +81,7 @@ See [dev.md](doc/dev.md)
 ## Thanks and related projects
 
 This project would not have been possible without [itchyny](https://github.com/itchyny)'s
-jq implementation [gojq](https://github.com/itchyny/gojq). Also want to thank
+jq implementation [gojq](https://github.com/itchyny/gojq). I also want to thank
 [HexFiend](https://github.com/HexFiend/HexFiend) for inspiration and ideas and [stedolan](https://github.com/stedolan)
 for inventing the [jq](https://github.com/stedolan/jq) language.
 
