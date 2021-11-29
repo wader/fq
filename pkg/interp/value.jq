@@ -1,3 +1,13 @@
+# TODO: error value preview
+def _expected_decode_value:
+  error("expected a decode value but got: \(. | type) (\(. | tostring))");
+# TODO: helper? _is_decode_value?
+def _decode_value(f; ef):
+  if _is_decode_value then f
+  else ef
+  end;
+def _decode_value(f): _decode_value(f; _expected_decode_value);
+
 # null input means done, otherwise {approx_read_bytes: 123, total_size: 123}
 # TODO: decode provide even more detailed progress, post-process sort etc?
 def _decode_progress:

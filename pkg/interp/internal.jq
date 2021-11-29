@@ -105,16 +105,6 @@ def _eval($expr; $filename; f; on_error; on_compile_error):
 def _is_scalar:
   type |. != "array" and . != "object";
 
-# TODO: error value preview
-def _expected_decode_value:
-  error("expected a decode value but got: \(. | type) (\(. | tostring))");
-# TODO: helper? _is_decode_value?
-def _decode_value(f; ef):
-  if _is_decode_value then f
-  else ef
-  end;
-def _decode_value(f): _decode_value(f; _expected_decode_value);
-
 def _is_context_canceled_error: . == "context canceled";
 
 def _error_str: "error: \(.)";
