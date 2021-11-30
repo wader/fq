@@ -18,7 +18,7 @@ $ fq -n options
   "expr_eval_path": "arg",
   "expr_file": null,
   "filenames": [
-    "-"
+    null
   ],
   "include_path": null,
   "join_string": "\n",
@@ -58,6 +58,8 @@ $ fq -o compact=true -n options.compact
 true
 $ fq -o compact=aaa -n options.compact
 false
+$ fq -n -o 'decode_file=[["a", "/test.mp3"]]' '$a | format'
+"mp3"
 $ fq -o decode_progress=false -n options.decode_progress
 false
 $ fq -o decode_progress=aaa -n options.decode_progress
@@ -70,10 +72,14 @@ $ fq -o display_bytes=10 -n options.display_bytes
 10
 $ fq -o display_bytes=true -n options.display_bytes
 16
+$ fq -n -o expr=123
+123
 $ fq -o expr_file=test.jq -n options.expr_file
 exitcode: 2
 stderr:
 error: open testdata/test.jq: no such file or directory
+$ fq -o 'filenames=["/test.mp3"]' format
+"mp3"
 $ fq -o include_path=path -n options.include_path
 "path"
 $ fq -o 'join_string=aaa\n' -n options.join_string

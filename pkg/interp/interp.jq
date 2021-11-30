@@ -36,8 +36,9 @@ def input:
     | _input_filename(null) as $_
     | $h
     | try
+        # null input here means stdin
         ( open
-        | _input_filename($h) as $_
+        | _input_filename($h // "<stdin>") as $_
         | .
         )
       catch
@@ -233,10 +234,12 @@ def _main:
             ),
             expr_eval_path: $combined_opts.expr_file,
             filenames: (
-              ( if $combined_opts.expr_file then $rest
+              ( if $combined_opts.filenames then $combined_opts.filenames
+                elif $combined_opts.expr_file then $rest
                 else $rest[1:]
                 end
-              | if . == [] then null end
+              # null means stdin
+              | if . == [] then [null] end
               )
             ),
             join_string: (
@@ -291,10 +294,12 @@ def _main:
     elif $opts.show_formats then
       _formats_list | println
     elif
-      ( ($rest | length) == 0 and
+      ( $opts.filenames == [null] and
+        $opts.null_input == false and
         ($opts.repl | not) and
         ($opts.expr_file | not) and
-        $stdin.is_terminal and $stdout.is_terminal
+        $stdin.is_terminal and
+        $stdout.is_terminal
       ) then
       ( (( _usage($arg0), "\n") | stderr)
       , null | halt_error(_exit_code_args_error)

@@ -35,9 +35,7 @@ null> ^D
 $ fq -i . /test.mp3
 mp3> ^D
 $ fq -n
-exitcode: 2
-stderr:
-Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
+null
 $ fq -ni
 null> ^D
 $ fq -n 123

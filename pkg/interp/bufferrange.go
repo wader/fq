@@ -88,25 +88,27 @@ func (of *openFile) ToBufferView() (BufferRange, error) {
 // TODO: when to close? when bb loses all refs? need to use finalizer somehow?
 func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 	var err error
-
-	var path string
-	path, err = toString(c)
-	if err != nil {
-		return fmt.Errorf("%s: %w", path, err)
-	}
-
-	var bEnd int64
 	var f fs.File
-	if path == "" || path == "-" {
+	var path string
+
+	switch c.(type) {
+	case nil:
+		path = "<stdin>"
 		f = i.os.Stdin()
-	} else {
+	default:
+		path, err = toString(c)
+		if err != nil {
+			return fmt.Errorf("%s: %w", path, err)
+		}
 		f, err = i.os.FS().Open(path)
 		if err != nil {
 			return err
 		}
 	}
 
+	var bEnd int64
 	var fRS io.ReadSeeker
+
 	fFI, err := f.Stat()
 	if err != nil {
 		f.Close()

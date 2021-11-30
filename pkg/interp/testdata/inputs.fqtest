@@ -41,6 +41,10 @@ $ fq -d raw -n '(input,input,input,input) | todescription' /a /b /c
 exitcode: 5
 stderr:
 error: break
+$ fq -d raw input_filename
+"<stdin>"
+stdin:
+test
 $ fq -d raw input_filename /a /b /c
 "/a"
 "/b"

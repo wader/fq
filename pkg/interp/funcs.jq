@@ -1,11 +1,3 @@
-def print: stdout;
-def println: ., "\n" | stdout;
-def debug:
-  ( ((["DEBUG", .] | tojson), "\n" | stderr)
-  , .
-  );
-def debug(f): . as $c | f | debug | $c;
-
 def display($opts): _display(options($opts));
 def display: display({});
 def d($opts): display($opts);

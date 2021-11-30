@@ -1,3 +1,12 @@
+# is here to be defined as early as possible to allow debugging
+def print: stdout;
+def println: ., "\n" | stdout;
+def debug:
+  ( ((["DEBUG", .] | tojson), "\n" | stderr)
+  , .
+  );
+def debug(f): . as $c | f | debug | $c;
+
 def _global_var($k): _global_state[$k];
 def _global_var($k; f): _global_state(_global_state | .[$k] |= f) | .[$k];
 
