@@ -49,7 +49,7 @@ func (err notUpdateableError) Error() string {
 // used by _isDecodeValue
 type DecodeValue interface {
 	Value
-	ToBufferView
+	ToBuffer
 
 	DecodeValue() *decode.Value
 }
@@ -112,7 +112,7 @@ func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
 		}
 	}
 
-	bv, err := toBufferView(c)
+	bv, err := toBuffer(c)
 	if err != nil {
 		return err
 	}
@@ -279,8 +279,8 @@ func (dvb decodeValueBase) DecodeValue() *decode.Value {
 }
 
 func (dvb decodeValueBase) Display(w io.Writer, opts Options) error { return dump(dvb.dv, w, opts) }
-func (dvb decodeValueBase) ToBufferView() (BufferRange, error) {
-	return BufferRange{bb: dvb.dv.RootBitBuf, r: dvb.dv.InnerRange(), unit: 8}, nil
+func (dvb decodeValueBase) ToBuffer() (Buffer, error) {
+	return Buffer{bb: dvb.dv.RootBitBuf, r: dvb.dv.InnerRange(), unit: 8}, nil
 }
 func (dvb decodeValueBase) ExtKeys() []string {
 	kv := []string{
@@ -388,13 +388,13 @@ func (dvb decodeValueBase) JQValueKey(name string) interface{} {
 			return nil
 		}
 	case "_bits":
-		return BufferRange{
+		return Buffer{
 			bb:   dv.RootBitBuf,
 			r:    dv.Range,
 			unit: 1,
 		}
 	case "_bytes":
-		return BufferRange{
+		return Buffer{
 			bb:   dv.RootBitBuf,
 			r:    dv.Range,
 			unit: 8,
@@ -448,7 +448,7 @@ func (v decodeValue) JQValueToGoJQEx(optsFn func() Options) interface{} {
 		return v.JQValueToGoJQ()
 	}
 
-	bv, err := v.decodeValueBase.ToBufferView()
+	bv, err := v.decodeValueBase.ToBuffer()
 	if err != nil {
 		return err
 	}

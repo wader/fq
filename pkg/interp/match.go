@@ -13,15 +13,15 @@ import (
 func init() {
 	functionRegisterFns = append(functionRegisterFns, func(i *Interp) []Function {
 		return []Function{
-			{"_bits_match", 1, 2, nil, i._bitsMatch},
+			{"_match_buffer", 1, 2, nil, i._bufferMatch},
 		}
 	})
 }
 
-func (i *Interp) _bitsMatch(c interface{}, a []interface{}) gojq.Iter {
+func (i *Interp) _bufferMatch(c interface{}, a []interface{}) gojq.Iter {
 	var ok bool
 
-	bv, err := toBufferView(c)
+	bv, err := toBuffer(c)
 	if err != nil {
 		return gojq.NewIter(err)
 	}
@@ -97,7 +97,7 @@ func (i *Interp) _bitsMatch(c interface{}, a []interface{}) gojq.Iter {
 		}
 
 		matchBitOff := (off + int64(l[0])) * 8
-		bbo := BufferRange{
+		bbo := Buffer{
 			bb: bv.bb,
 			r: ranges.Range{
 				Start: bv.r.Start + matchBitOff,

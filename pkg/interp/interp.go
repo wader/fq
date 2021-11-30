@@ -35,8 +35,9 @@ import (
 //go:embed interp.jq
 //go:embed internal.jq
 //go:embed options.jq
+//go:embed match.jq
 //go:embed value.jq
-//go:embed bufferrange.jq
+//go:embed buffer.jq
 //go:embed funcs.jq
 //go:embed grep.jq
 //go:embed args.jq
@@ -174,10 +175,6 @@ type Display interface {
 	Display(w io.Writer, opts Options) error
 }
 
-type ToBufferView interface {
-	ToBufferView() (BufferRange, error)
-}
-
 type JQValueEx interface {
 	JQValueToGoJQEx(optsFn func() Options) interface{}
 }
@@ -264,7 +261,7 @@ func toBigInt(v interface{}) (*big.Int, error) {
 func toBytes(v interface{}) ([]byte, error) {
 	switch v := v.(type) {
 	default:
-		bb, err := toBuffer(v)
+		bb, err := toBitBuf(v)
 		if err != nil {
 			return nil, fmt.Errorf("value is not bytes")
 		}
@@ -274,83 +271,6 @@ func toBytes(v interface{}) ([]byte, error) {
 		}
 
 		return buf.Bytes(), nil
-	}
-}
-
-func toBuffer(v interface{}) (*bitio.Buffer, error) {
-	return toBufferEx(v, false)
-}
-
-func toBufferEx(v interface{}, inArray bool) (*bitio.Buffer, error) {
-	switch vv := v.(type) {
-	case ToBufferView:
-		bv, err := vv.ToBufferView()
-		if err != nil {
-			return nil, err
-		}
-		return bv.bb.BitBufRange(bv.r.Start, bv.r.Len)
-	case string:
-		return bitio.NewBufferFromBytes([]byte(vv), -1), nil
-	case int, float64, *big.Int:
-		bi, err := toBigInt(v)
-		if err != nil {
-			return nil, err
-		}
-
-		if inArray {
-			if bi.Cmp(big.NewInt(255)) > 0 || bi.Cmp(big.NewInt(0)) < 0 {
-				return nil, fmt.Errorf("buffer byte list must be bytes (0-255) got %v", bi)
-			}
-			n := bi.Uint64()
-			b := [1]byte{byte(n)}
-			return bitio.NewBufferFromBytes(b[:], -1), nil
-		}
-
-		// TODO: how should this work? "0xf | tobytes" 4bits or 8bits? now 4
-		//padBefore := (8 - (bi.BitLen() % 8)) % 8
-		padBefore := 0
-		bb, err := bitio.NewBufferFromBytes(bi.Bytes(), -1).BitBufRange(int64(padBefore), int64(bi.BitLen()))
-		if err != nil {
-			return nil, err
-		}
-		return bb, nil
-	case []interface{}:
-		var rr []bitio.BitReadAtSeeker
-		// TODO: optimize byte array case, flatten into one slice
-		for _, e := range vv {
-			eBB, eErr := toBufferEx(e, true)
-			if eErr != nil {
-				return nil, eErr
-			}
-			rr = append(rr, eBB)
-		}
-
-		mb, err := bitio.NewMultiBitReader(rr)
-		if err != nil {
-			return nil, err
-		}
-
-		bb, err := bitio.NewBufferFromBitReadSeeker(mb)
-		if err != nil {
-			return nil, err
-		}
-
-		return bb, nil
-	default:
-		return nil, fmt.Errorf("value can't be a buffer")
-	}
-}
-
-func toBufferView(v interface{}) (BufferRange, error) {
-	switch vv := v.(type) {
-	case ToBufferView:
-		return vv.ToBufferView()
-	default:
-		bb, err := toBuffer(v)
-		if err != nil {
-			return BufferRange{}, err
-		}
-		return newBufferRangeFromBuffer(bb, 8), nil
 	}
 }
 

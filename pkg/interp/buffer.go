@@ -21,9 +21,96 @@ func init() {
 	functionRegisterFns = append(functionRegisterFns, func(i *Interp) []Function {
 		return []Function{
 			{"_tobitsrange", 0, 2, i._toBitsRange, nil},
+			{"_is_buffer", 0, 0, i._isBuffer, nil},
 			{"open", 0, 0, i._open, nil},
 		}
 	})
+}
+
+type ToBuffer interface {
+	ToBuffer() (Buffer, error)
+}
+
+func toBitBuf(v interface{}) (*bitio.Buffer, error) {
+	return toBitBufEx(v, false)
+}
+
+func toBitBufEx(v interface{}, inArray bool) (*bitio.Buffer, error) {
+	switch vv := v.(type) {
+	case ToBuffer:
+		bv, err := vv.ToBuffer()
+		if err != nil {
+			return nil, err
+		}
+		return bv.bb.BitBufRange(bv.r.Start, bv.r.Len)
+	case string:
+		return bitio.NewBufferFromBytes([]byte(vv), -1), nil
+	case int, float64, *big.Int:
+		bi, err := toBigInt(v)
+		if err != nil {
+			return nil, err
+		}
+
+		if inArray {
+			if bi.Cmp(big.NewInt(255)) > 0 || bi.Cmp(big.NewInt(0)) < 0 {
+				return nil, fmt.Errorf("buffer byte list must be bytes (0-255) got %v", bi)
+			}
+			n := bi.Uint64()
+			b := [1]byte{byte(n)}
+			return bitio.NewBufferFromBytes(b[:], -1), nil
+		}
+
+		// TODO: how should this work? "0xf | tobytes" 4bits or 8bits? now 4
+		//padBefore := (8 - (bi.BitLen() % 8)) % 8
+		padBefore := 0
+		bb, err := bitio.NewBufferFromBytes(bi.Bytes(), -1).BitBufRange(int64(padBefore), int64(bi.BitLen()))
+		if err != nil {
+			return nil, err
+		}
+		return bb, nil
+	case []interface{}:
+		var rr []bitio.BitReadAtSeeker
+		// TODO: optimize byte array case, flatten into one slice
+		for _, e := range vv {
+			eBB, eErr := toBitBufEx(e, true)
+			if eErr != nil {
+				return nil, eErr
+			}
+			rr = append(rr, eBB)
+		}
+
+		mb, err := bitio.NewMultiBitReader(rr)
+		if err != nil {
+			return nil, err
+		}
+
+		bb, err := bitio.NewBufferFromBitReadSeeker(mb)
+		if err != nil {
+			return nil, err
+		}
+
+		return bb, nil
+	default:
+		return nil, fmt.Errorf("value can't be a buffer")
+	}
+}
+
+func toBuffer(v interface{}) (Buffer, error) {
+	switch vv := v.(type) {
+	case ToBuffer:
+		return vv.ToBuffer()
+	default:
+		bb, err := toBitBuf(v)
+		if err != nil {
+			return Buffer{}, err
+		}
+		return newBufferFromBuffer(bb, 8), nil
+	}
+}
+
+func (i *Interp) _isBuffer(c interface{}, a []interface{}) interface{} {
+	_, ok := c.(ToBuffer)
+	return ok
 }
 
 // note is used to implement tobytes*/0 also
@@ -52,7 +139,7 @@ func (i *Interp) _toBitsRange(c interface{}, a []interface{}) interface{} {
 
 	// TODO: unit > 8?
 
-	bv, err := toBufferView(c)
+	bv, err := toBuffer(c)
 	if err != nil {
 		return err
 	}
@@ -60,27 +147,27 @@ func (i *Interp) _toBitsRange(c interface{}, a []interface{}) interface{} {
 
 	if !r {
 		bb, _ := bv.toBuffer()
-		return newBufferRangeFromBuffer(bb, unit)
+		return newBufferFromBuffer(bb, unit)
 	}
 
 	return bv
 }
 
 type openFile struct {
-	BufferRange
+	Buffer
 	filename   string
 	progressFn progressreadseeker.ProgressFn
 }
 
-var _ ToBufferView = (*openFile)(nil)
+var _ ToBuffer = (*openFile)(nil)
 
 func (of *openFile) Display(w io.Writer, opts Options) error {
 	_, err := fmt.Fprintf(w, "<openFile %q>\n", of.filename)
 	return err
 }
 
-func (of *openFile) ToBufferView() (BufferRange, error) {
-	return newBufferRangeFromBuffer(of.bb, 8), nil
+func (of *openFile) ToBuffer() (Buffer, error) {
+	return newBufferFromBuffer(of.bb, 8), nil
 }
 
 // def open: #:: string| => buffer
@@ -163,24 +250,24 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 	return bbf
 }
 
-var _ Value = BufferRange{}
-var _ ToBufferView = BufferRange{}
+var _ Value = Buffer{}
+var _ ToBuffer = Buffer{}
 
-type BufferRange struct {
+type Buffer struct {
 	bb   *bitio.Buffer
 	r    ranges.Range
 	unit int
 }
 
-func newBufferRangeFromBuffer(bb *bitio.Buffer, unit int) BufferRange {
-	return BufferRange{
+func newBufferFromBuffer(bb *bitio.Buffer, unit int) Buffer {
+	return Buffer{
 		bb:   bb,
 		r:    ranges.Range{Start: 0, Len: bb.Len()},
 		unit: unit,
 	}
 }
 
-func (bv BufferRange) toBytesBuffer(r ranges.Range) (*bytes.Buffer, error) {
+func (bv Buffer) toBytesBuffer(r ranges.Range) (*bytes.Buffer, error) {
 	bb, err := bv.bb.BitBufRange(r.Start, r.Len)
 	if err != nil {
 		return nil, err
@@ -192,7 +279,7 @@ func (bv BufferRange) toBytesBuffer(r ranges.Range) (*bytes.Buffer, error) {
 	return buf, nil
 }
 
-func (BufferRange) ExtKeys() []string {
+func (Buffer) ExtKeys() []string {
 	return []string{
 		"size",
 		"start",
@@ -202,18 +289,18 @@ func (BufferRange) ExtKeys() []string {
 	}
 }
 
-func (bv BufferRange) ToBufferView() (BufferRange, error) {
+func (bv Buffer) ToBuffer() (Buffer, error) {
 	return bv, nil
 }
 
-func (bv BufferRange) JQValueLength() interface{} {
+func (bv Buffer) JQValueLength() interface{} {
 	return int(bv.r.Len / int64(bv.unit))
 }
-func (bv BufferRange) JQValueSliceLen() interface{} {
+func (bv Buffer) JQValueSliceLen() interface{} {
 	return bv.JQValueLength()
 }
 
-func (bv BufferRange) JQValueIndex(index int) interface{} {
+func (bv Buffer) JQValueIndex(index int) interface{} {
 	if index < 0 {
 		return nil
 	}
@@ -226,17 +313,17 @@ func (bv BufferRange) JQValueIndex(index int) interface{} {
 	extraBits := uint((8 - bv.r.Len%8) % 8)
 	return new(big.Int).Rsh(new(big.Int).SetBytes(buf.Bytes()), extraBits)
 }
-func (bv BufferRange) JQValueSlice(start int, end int) interface{} {
+func (bv Buffer) JQValueSlice(start int, end int) interface{} {
 	rStart := int64(start * bv.unit)
 	rLen := int64((end - start) * bv.unit)
 
-	return BufferRange{
+	return Buffer{
 		bb:   bv.bb,
 		r:    ranges.Range{Start: bv.r.Start + rStart, Len: rLen},
 		unit: bv.unit,
 	}
 }
-func (bv BufferRange) JQValueKey(name string) interface{} {
+func (bv Buffer) JQValueKey(name string) interface{} {
 	switch name {
 	case "size":
 		return new(big.Int).SetInt64(bv.r.Len / int64(bv.unit))
@@ -253,28 +340,28 @@ func (bv BufferRange) JQValueKey(name string) interface{} {
 		if bv.unit == 1 {
 			return bv
 		}
-		return BufferRange{bb: bv.bb, r: bv.r, unit: 1}
+		return Buffer{bb: bv.bb, r: bv.r, unit: 1}
 	case "bytes":
 		if bv.unit == 8 {
 			return bv
 		}
-		return BufferRange{bb: bv.bb, r: bv.r, unit: 8}
+		return Buffer{bb: bv.bb, r: bv.r, unit: 8}
 	}
 	return nil
 }
-func (bv BufferRange) JQValueEach() interface{} {
+func (bv Buffer) JQValueEach() interface{} {
 	return nil
 }
-func (bv BufferRange) JQValueType() string {
+func (bv Buffer) JQValueType() string {
 	return "buffer"
 }
-func (bv BufferRange) JQValueKeys() interface{} {
+func (bv Buffer) JQValueKeys() interface{} {
 	return gojqextra.FuncTypeNameError{Name: "keys", Typ: "buffer"}
 }
-func (bv BufferRange) JQValueHas(key interface{}) interface{} {
+func (bv Buffer) JQValueHas(key interface{}) interface{} {
 	return gojqextra.HasKeyTypeError{L: "buffer", R: fmt.Sprintf("%v", key)}
 }
-func (bv BufferRange) JQValueToNumber() interface{} {
+func (bv Buffer) JQValueToNumber() interface{} {
 	buf, err := bv.toBytesBuffer(bv.r)
 	if err != nil {
 		return err
@@ -282,21 +369,21 @@ func (bv BufferRange) JQValueToNumber() interface{} {
 	extraBits := uint((8 - bv.r.Len%8) % 8)
 	return new(big.Int).Rsh(new(big.Int).SetBytes(buf.Bytes()), extraBits)
 }
-func (bv BufferRange) JQValueToString() interface{} {
+func (bv Buffer) JQValueToString() interface{} {
 	return bv.JQValueToGoJQ()
 }
-func (bv BufferRange) JQValueToGoJQ() interface{} {
+func (bv Buffer) JQValueToGoJQ() interface{} {
 	buf, err := bv.toBytesBuffer(bv.r)
 	if err != nil {
 		return err
 	}
 	return buf.String()
 }
-func (bv BufferRange) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
+func (bv Buffer) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
 	return notUpdateableError{Key: fmt.Sprintf("%v", key), Typ: "buffer"}
 }
 
-func (bv BufferRange) Display(w io.Writer, opts Options) error {
+func (bv Buffer) Display(w io.Writer, opts Options) error {
 	if opts.RawOutput {
 		bb, err := bv.toBuffer()
 		if err != nil {
@@ -311,6 +398,6 @@ func (bv BufferRange) Display(w io.Writer, opts Options) error {
 	return hexdump(w, bv, opts)
 }
 
-func (bv BufferRange) toBuffer() (*bitio.Buffer, error) {
+func (bv Buffer) toBuffer() (*bitio.Buffer, error) {
 	return bv.bb.BitBufRange(bv.r.Start, bv.r.Len)
 }

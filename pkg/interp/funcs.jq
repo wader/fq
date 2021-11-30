@@ -18,13 +18,6 @@ def hexdump: hexdump({display_bytes: 0});
 def hd($opts): hexdump($opts);
 def hd: hexdump;
 
-# overload match to support buffers
-def _orig_match($val): match($val);
-def _orig_match($regex; $flags): match($regex; $flags);
-def _is_buffer: type == "buffer";
-def match($val): if _is_buffer then _bits_match($val) else _orig_match($val) end;
-def match($regex; $flags): if _is_buffer then _bits_match($regex; $flags) else _orig_match($regex; $flags) end;
-
 def formats:
   _registry.formats;
 

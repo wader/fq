@@ -343,7 +343,7 @@ func dump(v *decode.Value, w io.Writer, opts Options) error {
 	}))
 }
 
-func hexdump(w io.Writer, bv BufferRange, opts Options) error {
+func hexdump(w io.Writer, bv Buffer, opts Options) error {
 	bb, err := bv.toBuffer()
 	if err != nil {
 		return err

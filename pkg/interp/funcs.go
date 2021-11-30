@@ -65,7 +65,7 @@ func makeStringBitBufTransformFn(
 	return func(c interface{}, a []interface{}) interface{} {
 		switch c := c.(type) {
 		case string:
-			bb, err := toBuffer(c)
+			bb, err := toBitBuf(c)
 			if err != nil {
 				return err
 			}
@@ -81,9 +81,9 @@ func makeStringBitBufTransformFn(
 			}
 			outBB := bitio.NewBufferFromBytes(buf.Bytes(), -1)
 
-			return newBufferRangeFromBuffer(outBB, 8)
+			return newBufferFromBuffer(outBB, 8)
 		default:
-			bb, err := toBuffer(c)
+			bb, err := toBitBuf(c)
 			if err != nil {
 				return err
 			}
@@ -110,7 +110,7 @@ func makeStringBitBufTransformFn(
 // transform to buffer using fn
 func makeBitBufTransformFn(fn func(r io.Reader) (io.Reader, error)) func(c interface{}, a []interface{}) interface{} {
 	return func(c interface{}, a []interface{}) interface{} {
-		inBB, err := toBuffer(c)
+		inBB, err := toBitBuf(c)
 		if err != nil {
 			return err
 		}
@@ -127,14 +127,14 @@ func makeBitBufTransformFn(fn func(r io.Reader) (io.Reader, error)) func(c inter
 
 		outBB := bitio.NewBufferFromBytes(outBuf.Bytes(), -1)
 
-		return newBufferRangeFromBuffer(outBB, 8)
+		return newBufferFromBuffer(outBB, 8)
 	}
 }
 
 // transform to buffer using fn
 func makeHashFn(fn func() (hash.Hash, error)) func(c interface{}, a []interface{}) interface{} {
 	return func(c interface{}, a []interface{}) interface{} {
-		inBB, err := toBuffer(c)
+		inBB, err := toBitBuf(c)
 		if err != nil {
 			return err
 		}
@@ -149,7 +149,7 @@ func makeHashFn(fn func() (hash.Hash, error)) func(c interface{}, a []interface{
 
 		outBB := bitio.NewBufferFromBytes(h.Sum(nil), -1)
 
-		return newBufferRangeFromBuffer(outBB, 8)
+		return newBufferFromBuffer(outBB, 8)
 	}
 }
 
@@ -223,7 +223,7 @@ func (i *Interp) aesCtr(c interface{}, a []interface{}) interface{} {
 		ivBytes = make([]byte, block.BlockSize())
 	}
 
-	bb, err := toBuffer(c)
+	bb, err := toBitBuf(c)
 	if err != nil {
 		return err
 	}
@@ -234,12 +234,12 @@ func (i *Interp) aesCtr(c interface{}, a []interface{}) interface{} {
 		return err
 	}
 
-	return newBufferRangeFromBuffer(bitio.NewBufferFromBytes(buf.Bytes(), -1), 8)
+	return newBufferFromBuffer(bitio.NewBufferFromBytes(buf.Bytes(), -1), 8)
 }
 
 func (i *Interp) _hexdump(c interface{}, a []interface{}) gojq.Iter {
 	opts := i.Options(a[0])
-	bv, err := toBufferView(c)
+	bv, err := toBuffer(c)
 	if err != nil {
 		return gojq.NewIter(err)
 	}

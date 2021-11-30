@@ -1,7 +1,8 @@
 include "internal";
 include "options";
+include "match";
 include "value";
-include "bufferrange";
+include "buffer";
 include "funcs";
 include "grep";
 include "args";
