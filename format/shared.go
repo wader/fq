@@ -2,8 +2,6 @@ package format
 
 import "github.com/wader/fq/pkg/decode"
 
-type ProtoBufType int
-
 const (
 	ProtoBufTypeInt32 = iota
 	ProtoBufTypeInt64
