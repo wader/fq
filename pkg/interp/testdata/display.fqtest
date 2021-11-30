@@ -427,3 +427,4 @@ $ fq -n '"broken" | mp3 | d'
    |                                               |                |  headers: [0]
    |                                               |                |  frames: [0]
 0x0|62 72 6f 6b 65 6e|                             |broken|         |  unknown0: raw bits
+# TODO: add root depth test

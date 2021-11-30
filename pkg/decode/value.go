@@ -90,7 +90,8 @@ func (v *Value) Walk(opts WalkOpts) error {
 		}
 
 		rootDepthDelta := 0
-		if wv.IsRoot {
+		// only count switching to a new root
+		if wv.IsRoot && wv != rootV {
 			rootV = wv
 			rootDepthDelta = 1
 		}

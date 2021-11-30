@@ -322,10 +322,6 @@ func dump(v *decode.Value, w io.Writer, opts Options) error {
 			if opts.Depth != 0 && depth > opts.Depth {
 				return decode.ErrWalkSkipChildren
 			}
-			// skip first root level
-			if rootDepth > 0 {
-				rootDepth--
-			}
 
 			return fn(v, rootV, depth, rootDepth)
 		}
