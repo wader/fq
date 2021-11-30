@@ -1,9 +1,5 @@
 package format
 
-import (
-	"github.com/wader/fq/pkg/bitio"
-)
-
 //nolint:revive
 const (
 	ALL = "all"
@@ -142,7 +138,7 @@ type OggPageOut struct {
 	IsContinuedPacket  bool
 	StreamSerialNumber uint32
 	SequenceNo         uint32
-	Segments           []*bitio.Buffer // TODO: bitio.Reader (bitio.MultiReader internally?)
+	Segments           [][]byte
 }
 
 type AvcIn struct {

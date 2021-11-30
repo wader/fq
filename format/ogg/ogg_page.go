@@ -42,7 +42,11 @@ func pageDecode(d *decode.D, in interface{}) interface{} {
 	})
 	d.FieldArray("segments", func(d *decode.D) {
 		for _, ss := range segmentTable {
-			p.Segments = append(p.Segments, d.FieldRawLen("segment", int64(ss)*8))
+			bs, err := d.FieldRawLen("segment", int64(ss)*8).Bytes()
+			if err != nil {
+				d.IOPanic(err, "d.BitBufRange segment")
+			}
+			p.Segments = append(p.Segments, bs)
 		}
 	})
 	endPos := d.Pos()

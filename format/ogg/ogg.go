@@ -102,13 +102,9 @@ func decodeOgg(d *decode.D, in interface{}) interface{} {
 			// 	// log.Println("page gap")
 			// }
 
-			for _, ps := range oggPageOut.Segments {
-				psBytes := ps.Len() / 8
-
-				// TODO: cleanup
-				b, _ := ps.BytesRange(0, int(psBytes))
-				s.packetBuf = append(s.packetBuf, b...)
-				if psBytes < 255 { // TODO: list range maps of demuxed packets?
+			for _, bs := range oggPageOut.Segments {
+				s.packetBuf = append(s.packetBuf, bs...)
+				if len(bs) < 255 {
 					bb := bitio.NewBufferFromBytes(s.packetBuf, -1)
 
 					if s.codec == codecUnknown {
