@@ -234,7 +234,7 @@ func (i *Interp) aesCtr(c interface{}, a []interface{}) interface{} {
 		return err
 	}
 
-	return buf.Bytes()
+	return newBufferRangeFromBuffer(bitio.NewBufferFromBytes(buf.Bytes(), -1), 8)
 }
 
 func (i *Interp) _hexdump(c interface{}, a []interface{}) gojq.Iter {
