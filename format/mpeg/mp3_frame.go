@@ -351,7 +351,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	calcFrameBytes := int64(144*bitRate/sampleRate + paddingBytes)
 	dataWithPaddingBytes := calcFrameBytes - headerBytes - crcBytes - sideInfoBytes
 
-	if dv, _, _ := d.FieldTryFormat("xing", xingHeader, nil); dv != nil {
+	if dv, _, _ := d.TryFieldFormat("xing", xingHeader, nil); dv != nil {
 		// TODO: allow shorter?
 		paddingBytes := dataWithPaddingBytes - dv.Range.Len/8
 		d.FieldRawLen("padding", paddingBytes*8)

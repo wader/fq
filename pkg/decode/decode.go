@@ -725,7 +725,7 @@ func (d *D) Format(group Group, inArg interface{}) interface{} {
 	return v
 }
 
-func (d *D) FieldTryFormat(name string, group Group, inArg interface{}) (*Value, interface{}, error) {
+func (d *D) TryFieldFormat(name string, group Group, inArg interface{}) (*Value, interface{}, error) {
 	dv, v, err := decode(d.Ctx, d.bitBuf, group, Options{
 		Name:        name,
 		Force:       d.Options.Force,
@@ -748,7 +748,7 @@ func (d *D) FieldTryFormat(name string, group Group, inArg interface{}) (*Value,
 }
 
 func (d *D) FieldFormat(name string, group Group, inArg interface{}) (*Value, interface{}) {
-	dv, v, err := d.FieldTryFormat(name, group, inArg)
+	dv, v, err := d.TryFieldFormat(name, group, inArg)
 	if dv == nil || dv.Errors() != nil {
 		panic(err)
 	}
@@ -786,7 +786,7 @@ func (d *D) FieldFormatLen(name string, nBits int64, group Group, inArg interfac
 }
 
 // TODO: return decooder?
-func (d *D) FieldTryFormatRange(name string, firstBit int64, nBits int64, group Group, inArg interface{}) (*Value, interface{}, error) {
+func (d *D) TryFieldFormatRange(name string, firstBit int64, nBits int64, group Group, inArg interface{}) (*Value, interface{}, error) {
 	dv, v, err := decode(d.Ctx, d.bitBuf, group, Options{
 		Name:        name,
 		Force:       d.Options.Force,
@@ -806,7 +806,7 @@ func (d *D) FieldTryFormatRange(name string, firstBit int64, nBits int64, group 
 }
 
 func (d *D) FieldFormatRange(name string, firstBit int64, nBits int64, group Group, inArg interface{}) (*Value, interface{}) {
-	dv, v, err := d.FieldTryFormatRange(name, firstBit, nBits, group, inArg)
+	dv, v, err := d.TryFieldFormatRange(name, firstBit, nBits, group, inArg)
 	if dv == nil || dv.Errors() != nil {
 		panic(err)
 	}

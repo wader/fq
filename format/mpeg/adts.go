@@ -25,7 +25,7 @@ func init() {
 func adtsDecoder(d *decode.D, in interface{}) interface{} {
 	validFrames := 0
 	for !d.End() {
-		if dv, _, _ := d.FieldTryFormat("frame", adtsFrame, nil); dv == nil {
+		if dv, _, _ := d.TryFieldFormat("frame", adtsFrame, nil); dv == nil {
 			break
 		}
 		validFrames++

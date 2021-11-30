@@ -64,7 +64,7 @@ func decodeOgg(d *decode.D, in interface{}) interface{} {
 
 	d.FieldArray("pages", func(d *decode.D) {
 		for !d.End() {
-			_, dv, _ := d.FieldTryFormat("page", oggPageFormat, nil)
+			_, dv, _ := d.TryFieldFormat("page", oggPageFormat, nil)
 			if dv == nil {
 				break
 			}

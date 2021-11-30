@@ -48,7 +48,7 @@ func pesDecode(d *decode.D, in interface{}) interface{} {
 	spuD := d.FieldArrayValue("spus")
 
 	for d.NotEnd() {
-		dv, v, err := d.FieldTryFormat("packet", pesPacketFormat, nil)
+		dv, v, err := d.TryFieldFormat("packet", pesPacketFormat, nil)
 		if dv == nil || err != nil {
 			log.Printf("errs[0]: %#+v\n", err)
 			break
