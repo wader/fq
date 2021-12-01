@@ -137,6 +137,7 @@ const (
 	MPEGAudioObjectTypeSBR       = 5
 	MPEGAudioObjectTypeER_AAC_LD = 23
 	MPEGAudioObjectTypePS        = 29
+	MPEGAudioObjectTypeUSAC      = 42
 )
 
 var MPEGAudioObjectTypeNames = scalar.UintMap{
@@ -182,7 +183,7 @@ var MPEGAudioObjectTypeNames = scalar.UintMap{
 	39:                           {Sym: "er_aac_eld", Description: "ER AAC ELD Enhanced Low Delay"},
 	40:                           {Sym: "smr_simple", Description: "Symbolic Music Representation Simple"},
 	41:                           {Sym: "smr_main", Description: "Symbolic Music Representation Main"},
-	42:                           {Sym: "usac_no_sbr", Description: "Unified Speech and Audio Coding (no SBR)"},
+	MPEGAudioObjectTypeUSAC:      {Sym: "usac", Description: "Unified Speech and Audio Coding"},
 	43:                           {Sym: "saoc", Description: "Spatial Audio Object Coding"},
 	44:                           {Sym: "ld_mpeg_surround", Description: "LD MPEG Surround"},
 	45:                           {Sym: "usac", Description: "USAC"},

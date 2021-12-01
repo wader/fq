@@ -9,11 +9,16 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
+var mpegAscMpegUSACCFormat decode.Group
+
 func init() {
 	interp.RegisterFormat(decode.Format{
 		Name:        format.MPEG_ASC,
 		Description: "MPEG-4 Audio Specific Config",
 		DecodeFn:    ascDecoder,
+		Dependencies: []decode.Dependency{
+			{Names: []string{format.MPEG_USACC}, Group: &mpegAscMpegUSACCFormat},
+		},
 	})
 }
 
@@ -49,7 +54,14 @@ func ascDecoder(d *decode.D) any {
 	d.FieldUintFn("sampling_frequency", decodeEscapeValueAbsFn(4, 24, 0), frequencyIndexHzMap)
 	d.FieldU4("channel_configuration", channelConfigurationNames)
 	// TODO: GASpecificConfig etc
-	d.FieldRawLen("var_aot_or_byte_align", d.BitsLeft())
+
+	switch objectType {
+	case format.MPEGAudioObjectTypeUSAC:
+		d.FieldFormat("usac_config", mpegAscMpegUSACCFormat, nil)
+	default:
+		// TODO: GASpecificConfig etc
+		d.FieldRawLen("var_aot_or_byte_align", d.BitsLeft())
+	}
 
 	return format.MPEGASCOut{ObjectType: int(objectType)}
 }
