@@ -13,6 +13,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
@@ -31,7 +32,7 @@ const (
 	extensionApplication      = 0xff
 )
 
-var extensionNames = decode.UToStr{
+var extensionNames = scalar.UToSymStr{
 	extensionPlainText:        "PlainText",
 	extensionGraphicalControl: "GraphicalControl",
 	extensionComment:          "Comment",
@@ -77,7 +78,7 @@ func gifDecode(d *decode.D, in interface{}) interface{} {
 			case 0x21: /* "!" */
 				d.FieldStruct("extension_block", func(d *decode.D) {
 					d.FieldU8("introducer")
-					functionCode := d.FieldU8("function_code", d.MapUToStrSym(extensionNames), d.Hex)
+					functionCode := d.FieldU8("function_code", extensionNames, scalar.Hex)
 
 					dataBytes := &bytes.Buffer{}
 

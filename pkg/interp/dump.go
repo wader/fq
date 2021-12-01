@@ -13,6 +13,7 @@ import (
 	"github.com/wader/fq/internal/num"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 // 0   12      34    56
@@ -139,7 +140,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 		}
 
 		valueErr = vv.Err
-	case decode.Scalar:
+	case scalar.S:
 		// TODO: rethink scalar array/struct (json format)
 		switch av := vv.Actual.(type) {
 		case map[string]interface{}:
@@ -353,7 +354,7 @@ func hexdump(w io.Writer, bv Buffer, opts Options) error {
 	return dump(
 		&decode.Value{
 			// TODO: hack
-			V:          decode.Scalar{Actual: bb},
+			V:          scalar.S{Actual: bb},
 			Range:      bv.r,
 			RootBitBuf: bv.bb.Clone(),
 		},

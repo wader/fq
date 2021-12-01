@@ -8,6 +8,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 var vp8Frame decode.Group
@@ -25,7 +26,7 @@ func init() {
 }
 
 func decodeChunk(d *decode.D, expectedChunkID string, fn func(d *decode.D)) bool { //nolint:unparam
-	trimChunkID := d.FieldUTF8("id", 4, d.TrimSpace)
+	trimChunkID := d.FieldUTF8("id", 4, scalar.TrimSpace)
 	if expectedChunkID != "" && trimChunkID != expectedChunkID {
 		return false
 	}

@@ -4,6 +4,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 // TODO: comment 28 long, zero byte, track number
@@ -29,7 +30,7 @@ func id3v1Decode(d *decode.D, in interface{}) interface{} {
 	d.FieldUTF8NullFixedLen("year", 4)
 	d.FieldUTF8NullFixedLen("comment", 30)
 	// from https://en.wikipedia.org/wiki/List_of_ID3v1_Genres
-	d.FieldU8("genre", d.MapUToStrSym(decode.UToStr{
+	d.FieldU8("genre", scalar.UToSymStr{
 		0:   "Blues",
 		1:   "Classic Rock",
 		2:   "Country",
@@ -222,7 +223,7 @@ func id3v1Decode(d *decode.D, in interface{}) interface{} {
 		189: "Dubstep",
 		190: "Garage Rock",
 		191: "Psybient",
-	}))
+	})
 
 	return nil
 }

@@ -4,6 +4,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
@@ -15,7 +16,7 @@ func init() {
 }
 
 // based on https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol
-var icmpTypeMap = decode.UToScalar{
+var icmpTypeMap = scalar.UToScalar{
 	0:  {Sym: "echo_reply", Description: "Echo reply"},
 	3:  {Sym: "unreachable", Description: "Destination network unreachable"},
 	4:  {Sym: "source_quench", Description: "Source quench (congestion control)"},
@@ -48,7 +49,7 @@ var icmpTypeMap = decode.UToScalar{
 	43: {Sym: "extended_echo_reply", Description: "No Error"},
 }
 
-var icmpCodeMapMap = map[uint64]decode.UToScalar{
+var icmpCodeMapMap = map[uint64]scalar.UToScalar{
 	3: {
 		1:  {Description: "Destination host unreachable"},
 		2:  {Description: "Destination protocol unreachable"},
@@ -90,19 +91,9 @@ var icmpCodeMapMap = map[uint64]decode.UToScalar{
 	},
 }
 
-func mapUMapUToScalar(u uint64, mm map[uint64]decode.UToScalar, fn func(m decode.UToScalar) func(s decode.Scalar) (decode.Scalar, error)) func(s decode.Scalar) (decode.Scalar, error) {
-	return func(s decode.Scalar) (decode.Scalar, error) {
-		m, ok := mm[u]
-		if !ok {
-			return s, nil
-		}
-		return fn(m)(s)
-	}
-}
-
 func decodeICMP(d *decode.D, in interface{}) interface{} {
-	typ := d.FieldU8("type", d.MapUToScalar(icmpTypeMap))
-	d.FieldU8("code", mapUMapUToScalar(typ, icmpCodeMapMap, d.MapUToScalar))
+	typ := d.FieldU8("type", icmpTypeMap)
+	d.FieldU8("code", icmpCodeMapMap[typ])
 	d.FieldU16("checksum")
 	d.FieldRawLen("content", d.BitsLeft())
 

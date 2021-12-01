@@ -10,6 +10,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
@@ -28,7 +29,7 @@ const (
 	classIN = 1
 )
 
-var classNames = map[[2]uint64]decode.Scalar{
+var classNames = scalar.URangeToScalar{
 	{0x0000, 0x0000}:   {Sym: "Reserved", Description: "Reserved"},
 	{classIN, classIN}: {Sym: "IN", Description: "Internet"},
 	{0x0002, 0x0002}:   {Sym: "Unassigned", Description: "Unassigned"},
@@ -52,7 +53,7 @@ const (
 	typeAAAA  = 28
 )
 
-var typeNames = decode.UToStr{
+var typeNames = scalar.UToSymStr{
 	typeA:     "A",
 	typeAAAA:  "AAAA",
 	18:        "AFSDB",
@@ -102,7 +103,7 @@ var typeNames = decode.UToStr{
 	65:        "HTTPS",
 }
 
-var rcodeNames = decode.UToScalar{
+var rcodeNames = scalar.UToScalar{
 	0:  {Sym: "NoError", Description: "No error"},
 	1:  {Sym: "FormErr", Description: "Format error"},
 	2:  {Sym: "ServFail", Description: "Server failure"},
@@ -178,8 +179,8 @@ func dnsDecodeRR(d *decode.D, pointerOffset int64, resp bool, count uint64, name
 		for i := uint64(0); i < count; i++ {
 			d.FieldStruct(structName, func(d *decode.D) {
 				fieldDecodeLabel(d, pointerOffset, "name")
-				typ := d.FieldU16("type", d.MapUToStrSym(typeNames))
-				class := d.FieldU16("class", d.MapURangeToScalar(classNames))
+				typ := d.FieldU16("type", typeNames)
+				class := d.FieldU16("class", classNames)
 				if resp {
 					d.FieldU32("ttl")
 					rdLength := d.FieldU16("rdlength")
@@ -232,23 +233,23 @@ func dnsDecode(d *decode.D, isTCP bool) interface{} {
 			d.FieldU16("length")
 		}
 		d.FieldU16("id")
-		d.FieldU1("qr", d.MapUToStrSym(decode.UToStr{
+		d.FieldU1("qr", scalar.UToSymStr{
 			0: "query",
 			1: "response",
-		}))
-		d.FieldU4("opcode", d.MapUToStrSym(decode.UToStr{
+		})
+		d.FieldU4("opcode", scalar.UToSymStr{
 			0: "Query",
 			1: "IQuery",
 			2: "Status",
 			4: "Notify", // RFC 1996
 			5: "Update", // RFC 2136
-		}))
+		})
 		d.FieldBool("authoritative_answer")
 		d.FieldBool("truncation")
 		d.FieldBool("recursion_desired")
 		d.FieldBool("recursion_available")
 		d.FieldU3("z")
-		d.FieldU4("rcode", d.MapUToScalar(rcodeNames))
+		d.FieldU4("rcode", rcodeNames)
 	})
 
 	qdCount := d.FieldU16("qd_count")

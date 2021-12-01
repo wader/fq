@@ -6,6 +6,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 var widevineProtoBufFormat decode.Group
@@ -23,7 +24,7 @@ func init() {
 
 func widevineDecode(d *decode.D, in interface{}) interface{} {
 	widewinePb := format.ProtoBufMessage{
-		1: {Type: format.ProtoBufTypeEnum, Name: "algorithm", Enums: decode.UToStr{
+		1: {Type: format.ProtoBufTypeEnum, Name: "algorithm", Enums: scalar.UToSymStr{
 			0: "UNENCRYPTED",
 			1: "AESCTR",
 		}},
@@ -33,7 +34,7 @@ func widevineDecode(d *decode.D, in interface{}) interface{} {
 		6: {Type: format.ProtoBufTypeString, Name: "policy"},
 		7: {Type: format.ProtoBufTypeUInt32, Name: "crypto_period_index"},
 		8: {Type: format.ProtoBufTypeBytes, Name: "grouped_license"},
-		9: {Type: format.ProtoBufTypeUInt32, Name: "protection_scheme", Enums: decode.UToStr{
+		9: {Type: format.ProtoBufTypeUInt32, Name: "protection_scheme", Enums: scalar.UToSymStr{
 			1667591779: "cenc",
 			1667392305: "cbc1",
 			1667591795: "cens",

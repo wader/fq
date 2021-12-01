@@ -14,6 +14,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 var headerFormat decode.Group
@@ -38,7 +39,7 @@ const (
 )
 
 // transformed from ffmpeg libavformat/riff.c
-var audioFormatName = decode.UToStr{
+var audioFormatName = scalar.UToSymStr{
 	0x0001: "PCM",
 	0x0002: "ADPCM_MS",
 	0x0003: "PCM_FLOAT",
@@ -118,9 +119,9 @@ var (
 	subFormatIEEEFloat = [16]byte{0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}
 )
 
-var subFormatNames = decode.BytesToScalar{
-	{Bytes: subFormatPCMBytes[:], Scalar: decode.Scalar{Sym: "PCM"}},
-	{Bytes: subFormatIEEEFloat[:], Scalar: decode.Scalar{Sym: "IEEE_FLOAT"}},
+var subFormatNames = scalar.BytesToScalar{
+	{Bytes: subFormatPCMBytes[:], Scalar: scalar.S{Sym: "PCM"}},
+	{Bytes: subFormatIEEEFloat[:], Scalar: scalar.S{Sym: "IEEE_FLOAT"}},
 }
 
 func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 { //nolint:unparam
@@ -130,7 +131,7 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 { /
 			decodeChunks(d, false)
 		},
 		"fmt": func(d *decode.D) {
-			audioFormat := d.FieldU16LE("audio_format", d.MapUToStrSym(audioFormatName))
+			audioFormat := d.FieldU16LE("audio_format", audioFormatName)
 			d.FieldU16LE("num_channels")
 			d.FieldU32LE("sample_rate")
 			d.FieldU32LE("byte_rate")
@@ -141,7 +142,7 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 { /
 				d.FieldU16LE("extension_size")
 				d.FieldU16LE("valid_bits_per_sample")
 				d.FieldU32LE("channel_mask")
-				d.FieldRawLen("sub_format", 16*8, d.MapRawToScalar(subFormatNames))
+				d.FieldRawLen("sub_format", 16*8, subFormatNames)
 			}
 		},
 		"data": func(d *decode.D) {
@@ -163,12 +164,12 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 { /
 		d.Errorf(fmt.Sprintf("expected chunk id %q found %q", expectedChunkID, trimChunkID))
 	}
 	const restOfFileLen = 0xffffffff
-	chunkLen := int64(d.FieldUScalarFn("size", func(d *decode.D) decode.Scalar {
+	chunkLen := int64(d.FieldUScalarFn("size", func(d *decode.D) scalar.S {
 		l := d.U32LE()
 		if l == restOfFileLen {
-			return decode.Scalar{Actual: l, DisplayFormat: decode.NumberHex, Sym: "rest of file"}
+			return scalar.S{Actual: l, DisplayFormat: scalar.NumberHex, Sym: "rest of file"}
 		}
-		return decode.Scalar{Actual: l, DisplayFormat: decode.NumberDecimal}
+		return scalar.S{Actual: l, DisplayFormat: scalar.NumberDecimal}
 	}))
 
 	if chunkLen == restOfFileLen {
@@ -179,7 +180,7 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 { /
 		d.LenFn(chunkLen*8, fn)
 	} else {
 		if stringData {
-			d.FieldUTF8("data", int(chunkLen), d.Trim(" \x00"))
+			d.FieldUTF8("data", int(chunkLen), scalar.Trim(" \x00"))
 		} else {
 			d.FieldRawLen("data", chunkLen*8)
 		}

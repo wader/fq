@@ -9,31 +9,8 @@ import (
 
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/ranges"
+	"github.com/wader/fq/pkg/scalar"
 )
-
-type DisplayFormat int
-
-const (
-	NumberDecimal DisplayFormat = iota
-	NumberBinary
-	NumberOctal
-	NumberHex
-)
-
-func DisplayFormatToBase(fmt DisplayFormat) int {
-	switch fmt {
-	case NumberDecimal:
-		return 10
-	case NumberBinary:
-		return 2
-	case NumberOctal:
-		return 8
-	case NumberHex:
-		return 16
-	default:
-		return 0
-	}
-}
 
 type Compound struct {
 	IsArray  bool
@@ -42,21 +19,6 @@ type Compound struct {
 	Description string
 	Format      *Format
 	Err         error
-}
-
-type Scalar struct {
-	Actual        interface{} // int, int64, uint64, float64, string, bool, []byte, *bitio.Buffer
-	Sym           interface{}
-	Description   string
-	DisplayFormat DisplayFormat
-	Unknown       bool
-}
-
-func (s Scalar) Value() interface{} {
-	if s.Sym != nil {
-		return s.Sym
-	}
-	return s.Actual
 }
 
 type Value struct {
@@ -256,14 +218,14 @@ func (v *Value) postProcess() {
 	}
 }
 
-func (v *Value) TryScalarFn(sfns ...ScalarFn) error {
+func (v *Value) TryScalarFn(sms ...scalar.Mapper) error {
 	var err error
-	s, ok := v.V.(Scalar)
+	s, ok := v.V.(scalar.S)
 	if !ok {
 		panic("not a scalar value")
 	}
-	for _, sfn := range sfns {
-		s, err = sfn(s)
+	for _, sm := range sms {
+		s, err = sm.MapScalar(s)
 		if err != nil {
 			break
 		}

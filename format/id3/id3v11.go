@@ -4,6 +4,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
@@ -20,13 +21,13 @@ func id3v11Decode(d *decode.D, in interface{}) interface{} {
 	d.FieldUTF8("title", 60)
 	d.FieldUTF8("artist", 60)
 	d.FieldUTF8("album", 60)
-	d.FieldU8("speed", d.MapUToStrSym(decode.UToStr{
+	d.FieldU8("speed", scalar.UToSymStr{
 		0: "unset",
 		1: "slow",
 		2: "medium",
 		3: "fast",
 		4: "hardcore",
-	}))
+	})
 	d.FieldUTF8("genre", 30)
 	d.FieldUTF8("start", 6)
 	d.FieldUTF8("stop", 6)

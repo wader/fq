@@ -7,6 +7,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 var mpegASCFormat decode.Group
@@ -72,7 +73,7 @@ const (
 	Forbidden1                          = 0xFF
 )
 
-var odTagNames = decode.UToStr{
+var odTagNames = scalar.UToSymStr{
 	Forbidden0:                          "Forbidden",
 	ObjectDescrTag:                      "ObjectDescrTag",
 	InitialObjectDescrTag:               "InitialObjectDescrTag",
@@ -135,7 +136,7 @@ const (
 	IPMPToolStream          = 0x0B
 )
 
-var streamTypeNames = decode.UToStr{
+var streamTypeNames = scalar.UToSymStr{
 	Forbidden:               "Forbidden",
 	ObjectDescriptorStream:  "ObjectDescriptorStream",
 	ClockReferenceStream:    "ClockReferenceStream",
@@ -193,13 +194,13 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, expectedTagID int, fn func(d
 			fieldODDecodeTag(d, edc, "sl_config_descr", -1, nil)
 		},
 		DecoderConfigDescrTag: func(d *decode.D) {
-			objectType := d.FieldU8("object_type_indication", d.MapUToStrSym(format.MpegObjectTypeNames))
+			objectType := d.FieldU8("object_type_indication", format.MpegObjectTypeNames)
 			edc.decoderConfigs = append(edc.decoderConfigs, format.MpegDecoderConfig{
 				ObjectType: int(objectType),
 			})
 			edc.currentDecoderConfig = &edc.decoderConfigs[len(edc.decoderConfigs)-1]
 
-			d.FieldU6("stream_type", d.MapUToStrSym(streamTypeNames))
+			d.FieldU6("stream_type", streamTypeNames)
 			d.FieldBool("upstream")
 			d.FieldBool("specific_info_flag")
 			d.FieldU24("buffer_size_db")
@@ -263,7 +264,7 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, expectedTagID int, fn func(d
 
 	// TODO: expectedTagID
 
-	tagID := d.FieldU8("tag_id", d.MapUToStrSym(odTagNames))
+	tagID := d.FieldU8("tag_id", odTagNames)
 	tagLen := d.FieldUFn("length", esLengthEncoding)
 
 	if fn != nil {

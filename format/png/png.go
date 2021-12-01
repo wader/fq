@@ -11,6 +11,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 var iccProfileFormat decode.Group
@@ -33,7 +34,7 @@ const (
 	compressionDeflate = 0
 )
 
-var compressionNames = decode.UToStr{
+var compressionNames = scalar.UToSymStr{
 	compressionDeflate: "deflate",
 }
 
@@ -43,7 +44,7 @@ const (
 	disposeOpPrevious   = 2
 )
 
-var disposeOpNames = decode.UToStr{
+var disposeOpNames = scalar.UToSymStr{
 	disposeOpNone:       "none",
 	disposeOpBackground: "background",
 	disposeOpPrevious:   "previous",
@@ -54,7 +55,7 @@ const (
 	blendOpBackground = 1
 )
 
-var blendOpNames = decode.UToStr{
+var blendOpNames = scalar.UToSymStr{
 	blendOpNone:       "source",
 	blendOpBackground: "over",
 }
@@ -67,7 +68,7 @@ const (
 	colorTypeRGBA               = 6
 )
 
-var colorTypeMap = decode.UToScalar{
+var colorTypeMap = scalar.UToScalar{
 	colorTypeGrayscale:          {Sym: "g", Description: "Grayscale"},
 	colorTypeRGB:                {Sym: "rgb", Description: "RGB"},
 	colorTypePalette:            {Sym: "p", Description: "Palette"},
@@ -106,21 +107,21 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldU32("width")
 				d.FieldU32("height")
 				d.FieldU8("bit_depth")
-				colorType = d.FieldU8("color_type", d.MapUToScalar(colorTypeMap))
-				d.FieldU8("compression_method", d.MapUToStrSym(compressionNames))
-				d.FieldU8("filter_method", d.MapUToStrSym(decode.UToStr{
+				colorType = d.FieldU8("color_type", colorTypeMap)
+				d.FieldU8("compression_method", compressionNames)
+				d.FieldU8("filter_method", scalar.UToSymStr{
 					0: "Adaptive filtering",
-				}))
-				d.FieldU8("interlace_method", d.MapUToStrSym(decode.UToStr{
+				})
+				d.FieldU8("interlace_method", scalar.UToSymStr{
 					0: "No interlace",
 					1: "Adam7 interlace",
-				}))
+				})
 			case "tEXt":
 				d.FieldUTF8Null("keyword")
 				d.FieldUTF8("text", int(d.BitsLeft())/8)
 			case "zTXt":
 				d.FieldUTF8Null("keyword")
-				compressionMethod := d.FieldU8("compression_method", d.MapUToStrSym(compressionNames))
+				compressionMethod := d.FieldU8("compression_method", compressionNames)
 				dataLen := d.BitsLeft()
 
 				// TODO: make nicer
@@ -138,7 +139,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 				}
 			case "iCCP":
 				d.FieldUTF8Null("profile_name")
-				compressionMethod := d.FieldU8("compression_method", d.MapUToStrSym(compressionNames))
+				compressionMethod := d.FieldU8("compression_method", compressionNames)
 				dataLen := d.BitsLeft()
 
 				d.FieldRawLen("compressed", dataLen)
@@ -190,8 +191,8 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldU32("y_offset")
 				d.FieldU16("delay_num")
 				d.FieldU16("delay_sep")
-				d.FieldU8("dispose_op", d.MapUToStrSym(disposeOpNames))
-				d.FieldU8("blend_op", d.MapUToStrSym(blendOpNames))
+				d.FieldU8("dispose_op", disposeOpNames)
+				d.FieldU8("blend_op", blendOpNames)
 			case "fdAT":
 				d.FieldU32("sequence_number")
 				d.FieldRawLen("data", d.BitsLeft()-32)
@@ -206,7 +207,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 
 		chunkCRC := crc32.NewIEEE()
 		d.MustCopy(chunkCRC, d.BitBufRange(crcStartPos, d.Pos()-crcStartPos))
-		d.FieldU32("crc", d.ValidateUBytes(chunkCRC.Sum(nil)), d.Hex)
+		d.FieldU32("crc", d.ValidateUBytes(chunkCRC.Sum(nil)), scalar.Hex)
 	})
 
 	return nil

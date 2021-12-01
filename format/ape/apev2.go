@@ -32,7 +32,7 @@ func apev2Decode(d *decode.D, in interface{}) interface{} {
 			d.FieldU32("tag_size")
 			tagCount = d.FieldU32("item_count")
 			d.FieldU32("flags")
-			d.FieldRawLen("reserved", 64, d.BitBufIsZero)
+			d.FieldRawLen("reserved", 64, d.BitBufIsZero())
 		})
 		return tagCount
 	}

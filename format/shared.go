@@ -1,6 +1,6 @@
 package format
 
-import "github.com/wader/fq/pkg/decode"
+import "github.com/wader/fq/pkg/scalar"
 
 const (
 	ProtoBufTypeInt32 = iota
@@ -23,7 +23,7 @@ const (
 	ProtoBufTypeFloat
 )
 
-var ProtoBufTypeNames = decode.UToStr{
+var ProtoBufTypeNames = scalar.UToSymStr{
 	ProtoBufTypeInt32:          "Int32",
 	ProtoBufTypeInt64:          "Int64",
 	ProtoBufTypeUInt32:         "UInt32",

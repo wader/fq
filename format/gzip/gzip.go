@@ -12,6 +12,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 var probeFormat decode.Group
@@ -30,11 +31,11 @@ func init() {
 
 const delfateMethod = 8
 
-var compressionMethodNames = decode.UToStr{
+var compressionMethodNames = scalar.UToSymStr{
 	delfateMethod: "deflate",
 }
 
-var osNames = decode.UToStr{
+var osNames = scalar.UToSymStr{
 	0:  "FAT filesystem (MS-DOS, OS/2, NT/Win32)",
 	1:  "Amiga",
 	2:  "VMS (or OpenVMS)",
@@ -51,7 +52,7 @@ var osNames = decode.UToStr{
 	13: " Acorn RISCOS",
 }
 
-var deflateExtraFlagsNames = decode.UToStr{
+var deflateExtraFlagsNames = scalar.UToSymStr{
 	2: "slow",
 	4: "fast",
 }
@@ -60,7 +61,7 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 	d.Endian = decode.LittleEndian
 
 	d.FieldRawLen("identification", 2*8, d.AssertBitBuf([]byte("\x1f\x8b")))
-	compressionMethod := d.FieldU8("compression_method", d.MapUToStrSym(compressionMethodNames))
+	compressionMethod := d.FieldU8("compression_method", compressionMethodNames)
 	hasHeaderCRC := false
 	hasExtra := false
 	hasName := false
@@ -76,11 +77,11 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldU32("mtime") // TODO: unix time
 	switch compressionMethod {
 	case delfateMethod:
-		d.FieldU8("extra_flags", d.MapUToStrSym(deflateExtraFlagsNames))
+		d.FieldU8("extra_flags", deflateExtraFlagsNames)
 	default:
 		d.FieldU8("extra_flags")
 	}
-	d.FieldU8("os", d.MapUToStrSym(osNames))
+	d.FieldU8("os", osNames)
 	if hasExtra {
 		// TODO:
 		xLen := d.FieldU16("xlen")
@@ -94,7 +95,7 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 	}
 	if hasHeaderCRC {
 		// TODO: validate
-		d.FieldRawLen("header_crc", 16, d.RawHex)
+		d.FieldRawLen("header_crc", 16, scalar.RawHex)
 	}
 
 	var rFn func(r io.Reader) io.Reader
@@ -113,7 +114,7 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldRawLen("compressed", readCompressedSize)
 		crc32W := crc32.NewIEEE()
 		d.MustCopy(crc32W, uncompressedBB.Clone())
-		d.FieldU32("crc32", d.ValidateUBytes(crc32W.Sum(nil)), d.Hex)
+		d.FieldU32("crc32", d.ValidateUBytes(crc32W.Sum(nil)), scalar.Hex)
 		d.FieldU32("isize")
 	}
 

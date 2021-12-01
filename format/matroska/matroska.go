@@ -23,6 +23,7 @@ import (
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/ranges"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 //go:embed *.jq
@@ -153,7 +154,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 			d.FieldStruct("element", func(d *decode.D) {
 				var a ebml.Attribute
 
-				tagID := d.FieldUFn("id", decodeRawVint, func(s decode.Scalar) (decode.Scalar, error) {
+				tagID := d.FieldUFn("id", decodeRawVint, scalar.Fn(func(s scalar.S) (scalar.S, error) {
 					n := s.ActualU()
 					var ok bool
 					a, ok = tag[n]
@@ -163,9 +164,9 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 							d.Fatalf("unknown id %d", n)
 						}
 					}
-					return decode.Scalar{Actual: n, DisplayFormat: decode.NumberHex, Sym: a.Name, Description: a.Definition}, nil
-				})
-				d.FieldValueU("type", uint64(a.Type), d.Sym(ebml.TypeNames[a.Type]))
+					return scalar.S{Actual: n, DisplayFormat: scalar.NumberHex, Sym: a.Name, Description: a.Definition}, nil
+				}))
+				d.FieldValueU("type", uint64(a.Type), scalar.Sym(ebml.TypeNames[a.Type]))
 
 				if tagID == ebml_matroska.TrackEntryID {
 					dc.currentTrack = &track{}
@@ -188,7 +189,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 
 				switch a.Type {
 				case ebml.Integer:
-					d.FieldU("value", int(tagSize)*8, func(s decode.Scalar) (decode.Scalar, error) {
+					d.FieldU("value", int(tagSize)*8, scalar.Fn(func(s scalar.S) (scalar.S, error) {
 						if a.IntegerEnums != nil {
 							if e, ok := a.IntegerEnums[s.ActualS()]; ok {
 								s.Sym = e.Label
@@ -196,10 +197,10 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 							}
 						}
 						return s, nil
-					})
+					}))
 
 				case ebml.Uinteger:
-					v := d.FieldU("value", int(tagSize)*8, func(s decode.Scalar) (decode.Scalar, error) {
+					v := d.FieldU("value", int(tagSize)*8, scalar.Fn(func(s scalar.S) (scalar.S, error) {
 						if a.UintegerEnums != nil {
 							if e, ok := a.UintegerEnums[s.ActualU()]; ok {
 								s.Sym = e.Label
@@ -207,7 +208,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 							}
 						}
 						return s, nil
-					})
+					}))
 
 					if dc.currentTrack != nil && tagID == ebml_matroska.TrackNumberID {
 						dc.currentTrack.number = int(v)
@@ -215,7 +216,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 				case ebml.Float:
 					d.FieldF("value", int(tagSize)*8)
 				case ebml.String:
-					v := d.FieldUTF8("value", int(tagSize), func(s decode.Scalar) (decode.Scalar, error) {
+					v := d.FieldUTF8("value", int(tagSize), scalar.Fn(func(s scalar.S) (scalar.S, error) {
 						if a.StringEnums != nil {
 							if e, ok := a.StringEnums[s.ActualStr()]; ok {
 								s.Sym = e.Label
@@ -223,7 +224,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 							}
 						}
 						return s, nil
-					})
+					}))
 
 					if dc.currentTrack != nil && tagID == ebml_matroska.CodecIDID {
 						dc.currentTrack.codec = v

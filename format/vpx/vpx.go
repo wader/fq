@@ -1,8 +1,8 @@
 package vpx
 
-import "github.com/wader/fq/pkg/decode"
+import "github.com/wader/fq/pkg/scalar"
 
-var vpxLevelNames = decode.UToStr{
+var vpxLevelNames = scalar.UToSymStr{
 	10: "Level 1",
 	11: "Level 1.1",
 	20: "Level 2",
@@ -19,7 +19,7 @@ var vpxLevelNames = decode.UToStr{
 	62: "Level 6.2",
 }
 
-var vpxChromeSubsamplingNames = decode.UToStr{
+var vpxChromeSubsamplingNames = scalar.UToSymStr{
 	0: "4:2:0 vertical",
 	1: "4:2:0 colocated with luma (0,0)",
 	2: "4:2:2",

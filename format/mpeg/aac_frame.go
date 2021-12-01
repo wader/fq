@@ -9,6 +9,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
@@ -32,7 +33,7 @@ const (
 	TERM = 0b111
 )
 
-var syntaxElementNames = decode.UToStr{
+var syntaxElementNames = scalar.UToSymStr{
 	SCE:  "SCE",
 	CPE:  "CPE",
 	CCE:  "CCE",
@@ -53,7 +54,7 @@ const (
 	EXT_SBR_DATA_CRC  = 0xe
 )
 
-var extensionPayloadIDNames = decode.UToStr{
+var extensionPayloadIDNames = scalar.UToSymStr{
 	EXT_FILL:          "EXT_FILL",
 	EXT_FILL_DATA:     "EXT_FILL_DATA",
 	EXT_DATA_ELEMENT:  "EXT_DATA_ELEMENT",
@@ -70,7 +71,7 @@ const (
 	LONG_STOP_SEQUENCE   = 0x3
 )
 
-var windowSequenceNames = decode.UToStr{
+var windowSequenceNames = scalar.UToSymStr{
 	ONLY_LONG_SEQUENCE:   "ONLY_LONG_SEQUENCE",
 	LONG_START_SEQUENCE:  "LONG_START_SEQUENCE",
 	EIGHT_SHORT_SEQUENCE: "EIGHT_SHORT_SEQUENCE",
@@ -99,7 +100,7 @@ func aacLTPData(d *decode.D, objectType int, windowSequence int) {
 
 func aacICSInfo(d *decode.D, objectType int) {
 	d.FieldU1("ics_reserved_bit")
-	windowSequence := d.FieldU2("window_sequence", d.MapUToStrSym(windowSequenceNames))
+	windowSequence := d.FieldU2("window_sequence", windowSequenceNames)
 	d.FieldU1("window_shape")
 	switch windowSequence {
 	case EIGHT_SHORT_SEQUENCE:
@@ -254,7 +255,7 @@ func aacFillElement(d *decode.D) {
 	d.FieldStruct("extension_payload", func(d *decode.D) {
 		d.LenFn(int64(cnt)*8, func(d *decode.D) {
 
-			extensionType := d.FieldU4("extension_type", d.MapUToStrSym(extensionPayloadIDNames))
+			extensionType := d.FieldU4("extension_type", extensionPayloadIDNames)
 
 			// d.FieldU("align4", 2)
 
@@ -279,7 +280,7 @@ func aacDecode(d *decode.D, in interface{}) interface{} {
 	seenTerm := false
 	for !seenTerm {
 		d.FieldStruct("element", func(d *decode.D) {
-			se := d.FieldU3("syntax_element", d.MapUToStrSym(syntaxElementNames))
+			se := d.FieldU3("syntax_element", syntaxElementNames)
 
 			switch se {
 			case FIL:

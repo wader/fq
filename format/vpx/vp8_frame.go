@@ -6,6 +6,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 // TODO: vpx frame?
@@ -36,7 +37,7 @@ func vp8Decode(d *decode.D, in interface{}) interface{} {
 		firstPartSize0 := d.FieldU3("first_part_size0")
 		d.FieldU1("show_frame")
 		version := d.FieldU3("version")
-		keyFrameV := d.FieldBool("frame_type", d.MapBoolToStrSym(decode.BoolToStr{true: "non_key_frame", false: "key_frame"}))
+		keyFrameV := d.FieldBool("frame_type", scalar.BoolToSymStr{true: "non_key_frame", false: "key_frame"})
 		firstPartSize1 := d.FieldU16LE("first_part_size1")
 
 		firstPartSize := firstPartSize0 | firstPartSize1<<3
@@ -50,7 +51,7 @@ func vp8Decode(d *decode.D, in interface{}) interface{} {
 	})
 
 	if isKeyFrame {
-		d.FieldU24("start_code", d.ValidateU(0x9d012a), d.Hex)
+		d.FieldU24("start_code", d.ValidateU(0x9d012a), scalar.Hex)
 
 		// width and height are not contiguous bits
 		width0 := d.FieldU8("width0")

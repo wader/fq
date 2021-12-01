@@ -10,6 +10,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
@@ -27,7 +28,7 @@ const (
 	scriptDataObject = 18
 )
 
-var tagTypeNames = decode.UToStr{
+var tagTypeNames = scalar.UToSymStr{
 	audioData:        "audioData",
 	videoData:        "videoData",
 	scriptDataObject: "scriptDataObject",
@@ -49,7 +50,7 @@ const (
 	typeLongString  = 12
 )
 
-var typeNames = decode.UToStr{
+var typeNames = scalar.UToSymStr{
 	typeNumber:      "Number",
 	typeBoolean:     "Boolean",
 	typeString:      "String",
@@ -90,7 +91,7 @@ func flvDecode(d *decode.D, in interface{}) interface{} {
 	}
 
 	fieldScriptDataValue := func(d *decode.D, _ string) uint64 {
-		typ := d.FieldU8("type", d.MapUToStrSym(typeNames))
+		typ := d.FieldU8("type", typeNames)
 		if typ == typeECMAArray {
 			d.FieldU32("ecma_array_length")
 		}
@@ -160,7 +161,7 @@ func flvDecode(d *decode.D, in interface{}) interface{} {
 		for !d.End() {
 			d.FieldStruct("tag", func(d *decode.D) {
 				d.FieldU32("previous_tag_size")
-				tagType := d.FieldU8("tag_type", d.MapUToStrSym(tagTypeNames))
+				tagType := d.FieldU8("tag_type", tagTypeNames)
 				dataSize := d.FieldU24("data_size")
 				d.FieldU24("timestamp")
 				d.FieldU8("timestamp_extended")

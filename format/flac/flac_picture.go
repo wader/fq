@@ -4,11 +4,12 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 var images decode.Group
 
-var pictureTypeNames = decode.UToStr{
+var pictureTypeNames = scalar.UToSymStr{
 	0:  "Other",
 	1:  "32x32 pixels 'file icon' (PNG only)",
 	2:  "Other file icon",
@@ -48,7 +49,7 @@ func pictureDecode(d *decode.D, in interface{}) interface{} {
 		l := d.FieldU32(name + "_length")
 		return d.FieldUTF8(name, int(l))
 	}
-	d.FieldU32("picture_type", d.MapUToStrSym(pictureTypeNames))
+	d.FieldU32("picture_type", pictureTypeNames)
 	lenStr("mime")
 	lenStr("description")
 	d.FieldU32("width")

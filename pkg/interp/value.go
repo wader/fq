@@ -14,6 +14,7 @@ import (
 	"github.com/wader/fq/internal/ioextra"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 
 	"github.com/wader/gojq"
 )
@@ -196,7 +197,7 @@ func makeDecodeValue(dv *decode.Value) interface{} {
 			return NewArrayDecodeValue(dv, vv)
 		}
 		return NewStructDecodeValue(dv, vv)
-	case decode.Scalar:
+	case scalar.S:
 		switch vv := vv.Value().(type) {
 		case *bitio.Buffer:
 			// is lazy so that in situations where the decode value is only used to
@@ -338,7 +339,7 @@ func (dvb decodeValueBase) JQValueKey(name string) interface{} {
 		return makeDecodeValue(dv.Parent)
 	case "_actual":
 		switch vv := dv.V.(type) {
-		case decode.Scalar:
+		case scalar.S:
 			jv, ok := gojqextra.ToGoJQValue(vv.Actual)
 			if !ok {
 				return fmt.Errorf("can't convert actual value jq value %#+v", vv.Actual)
@@ -349,7 +350,7 @@ func (dvb decodeValueBase) JQValueKey(name string) interface{} {
 		}
 	case "_sym":
 		switch vv := dv.V.(type) {
-		case decode.Scalar:
+		case scalar.S:
 			jv, ok := gojqextra.ToGoJQValue(vv.Sym)
 			if !ok {
 				return fmt.Errorf("can't convert sym value jq value %#+v", vv.Actual)
@@ -365,7 +366,7 @@ func (dvb decodeValueBase) JQValueKey(name string) interface{} {
 				return nil
 			}
 			return vv.Description
-		case decode.Scalar:
+		case scalar.S:
 			if vv.Description == "" {
 				return nil
 			}
@@ -406,7 +407,7 @@ func (dvb decodeValueBase) JQValueKey(name string) interface{} {
 				return vv.Format.Name
 			}
 			return nil
-		case decode.Scalar:
+		case scalar.S:
 			// TODO: hack, Scalar interface?
 			switch vv.Actual.(type) {
 			case map[string]interface{}, []interface{}:
@@ -419,7 +420,7 @@ func (dvb decodeValueBase) JQValueKey(name string) interface{} {
 		}
 	case "_unknown":
 		switch vv := dv.V.(type) {
-		case decode.Scalar:
+		case scalar.S:
 			return vv.Unknown
 		default:
 			return false

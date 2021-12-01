@@ -4,6 +4,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
@@ -19,7 +20,7 @@ const (
 	recordTypeLicenseStore           = 2
 )
 
-var recordTypeNames = decode.UToStr{
+var recordTypeNames = scalar.UToSymStr{
 	recordTypeRightsManagementHeader: "Rights management header",
 	recordTypeLicenseStore:           "License store",
 }
@@ -31,7 +32,7 @@ func playreadyPsshDecode(d *decode.D, in interface{}) interface{} {
 	count := d.FieldU16("count")
 	i := uint64(0)
 	d.FieldStructArrayLoop("records", "record", func() bool { return i < count }, func(d *decode.D) {
-		recordType := d.FieldU16("type", d.MapUToStrSym(recordTypeNames))
+		recordType := d.FieldU16("type", recordTypeNames)
 		recordLen := d.FieldU16("len")
 		switch recordType {
 		case recordTypeRightsManagementHeader, recordTypeLicenseStore:

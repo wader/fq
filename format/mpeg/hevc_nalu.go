@@ -4,6 +4,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
@@ -15,7 +16,7 @@ func init() {
 	})
 }
 
-var hevcNALNames = decode.UToStr{
+var hevcNALNames = scalar.UToSymStr{
 	0:  "TRAIL_N",
 	1:  "TRAIL_R",
 	2:  "TSA_N",
@@ -68,7 +69,7 @@ var hevcNALNames = decode.UToStr{
 
 func hevcNALUDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldBool("forbidden_zero_bit")
-	nalType := d.FieldU6("nal_unit_type", d.MapUToStrSym(hevcNALNames))
+	nalType := d.FieldU6("nal_unit_type", hevcNALNames)
 	d.FieldU6("nuh_layer_id")
 	d.FieldU3("nuh_temporal_id_plus1")
 	unescapedBb := d.MustNewBitBufFromReader(decode.NALUnescapeReader{Reader: d.BitBufRange(d.Pos(), d.BitsLeft())})

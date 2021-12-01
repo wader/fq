@@ -6,6 +6,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
@@ -35,7 +36,7 @@ var frequencyIndexHz = map[uint64]int{
 	0xf: -1,
 }
 
-var channelConfigurationNames = decode.UToScalar{
+var channelConfigurationNames = scalar.UToScalar{
 	0: {Description: "defined in AOT Specifc Config"},
 	1: {Description: "front-center"},
 	2: {Description: "front-left, front-right"},
@@ -53,18 +54,18 @@ func ascDecoder(d *decode.D, in interface{}) interface{} {
 			n = 32 + d.U6()
 		}
 		return n
-	}, d.MapUToScalar(format.MPEGAudioObjectTypeNames))
-	d.FieldUScalarFn("sampling_frequency", func(d *decode.D) decode.Scalar {
+	}, format.MPEGAudioObjectTypeNames)
+	d.FieldUScalarFn("sampling_frequency", func(d *decode.D) scalar.S {
 		v := d.U4()
 		if v == 15 {
-			return decode.Scalar{Actual: d.U24()}
+			return scalar.S{Actual: d.U24()}
 		}
 		if f, ok := frequencyIndexHz[v]; ok {
-			return decode.Scalar{Actual: v, Sym: f}
+			return scalar.S{Actual: v, Sym: f}
 		}
-		return decode.Scalar{Description: "invalid"}
+		return scalar.S{Description: "invalid"}
 	})
-	d.FieldU4("channel_configuration", d.MapUToScalar(channelConfigurationNames))
+	d.FieldU4("channel_configuration", channelConfigurationNames)
 	// TODO: GASpecificConfig etc
 	d.FieldRawLen("var_aot_or_byte_align", d.BitsLeft())
 

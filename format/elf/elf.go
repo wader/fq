@@ -10,6 +10,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 // TODO: p_type hi/lo
@@ -29,12 +30,12 @@ const (
 	BIG_ENDIAN    = 2
 )
 
-var endianNames = decode.UToStr{
+var endianNames = scalar.UToSymStr{
 	LITTLE_ENDIAN: "little-endian",
 	BIG_ENDIAN:    "big-endian",
 }
 
-var classBits = decode.UToU{
+var classBits = scalar.UToSymU{
 	1: 32,
 	2: 64,
 }
@@ -45,7 +46,7 @@ const (
 	CLASS_64 = 2
 )
 
-var osABINames = decode.UToStr{
+var osABINames = scalar.UToSymStr{
 	0:   "Sysv",
 	1:   "HPUX",
 	2:   "NetBSD",
@@ -86,7 +87,7 @@ const (
 	SHT_LOOS          = 0x60000000
 )
 
-var shTypeNames = decode.UToStr{
+var shTypeNames = scalar.UToSymStr{
 	SHT_NULL:          "SHT_NULL",
 	SHT_PROGBITS:      "SHT_PROGBITS",
 	SHT_SYMTAB:        "SHT_SYMTAB",
@@ -119,15 +120,15 @@ func strIndexNull(idx int, s string) string {
 	return s[idx : idx+i]
 }
 
-func mapStrTable(table string) func(decode.Scalar) (decode.Scalar, error) {
-	return func(s decode.Scalar) (decode.Scalar, error) {
-		uv, ok := s.Actual.(uint64)
-		if !ok {
-			return s, nil
-		}
-		s.Sym = strIndexNull(int(uv), table)
+type strTable string
+
+func (m strTable) MapScalar(s scalar.S) (scalar.S, error) {
+	uv, ok := s.Actual.(uint64)
+	if !ok {
 		return s, nil
 	}
+	s.Sym = strIndexNull(int(uv), string(m))
+	return s, nil
 }
 
 func elfDecode(d *decode.D, in interface{}) interface{} {
@@ -139,12 +140,12 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 
 	d.FieldStruct("ident", func(d *decode.D) {
 		d.FieldRawLen("magic", 4*8, d.AssertBitBuf([]byte("\x7fELF")))
-		class = d.FieldU8("class", d.MapUToUSym(classBits))
-		endian = d.FieldU8("data", d.MapUToStrSym(endianNames))
+		class = d.FieldU8("class", classBits)
+		endian = d.FieldU8("data", endianNames)
 		d.FieldU8("version")
-		d.FieldU8("os_abi", d.MapUToStrSym(osABINames))
+		d.FieldU8("os_abi", osABINames)
 		d.FieldU8("abi_version")
-		d.FieldRawLen("pad", 7*8, d.BitBufIsZero)
+		d.FieldRawLen("pad", 7*8, d.BitBufIsZero())
 	})
 
 	switch class {
@@ -167,7 +168,7 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 
 	// TODO: hex functions?
 
-	d.FieldU16("type", d.MapUToStrSym(decode.UToStr{
+	d.FieldU16("type", scalar.UToSymStr{
 		0x00:   "None",
 		0x01:   "Rel",
 		0x02:   "Exec",
@@ -177,9 +178,9 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 		0xfeff: "Hios",
 		0xff00: "Loproc",
 		0xffff: "Hiproc",
-	}), d.Hex)
+	}, scalar.Hex)
 
-	d.FieldU16("machine", d.MapUToStrSym(decode.UToStr{
+	d.FieldU16("machine", scalar.UToSymStr{
 		0x00:  "No specific instruction set",
 		0x01:  "AT&T WE 32100",
 		0x02:  "SPARC",
@@ -230,7 +231,7 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 		0xf3:  "RISC-V",
 		0xf7:  "Berkeley Packet Filter",
 		0x101: "WDC 65C816",
-	}), d.Hex)
+	}, scalar.Hex)
 
 	d.FieldU32("version")
 	d.FieldU("entry", archBits)
@@ -271,7 +272,7 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 		for i := uint64(0); i < phnum; i++ {
 			d.SeekAbs(int64(phoff*8) + int64(i*phsize*8))
 
-			pTypeNames := decode.UToStr{
+			pTypeNames := scalar.UToSymStr{
 				0x00000000: "PT_NULL",
 				0x00000001: "PT_LOAD",
 				0x00000002: "PT_DYNAMIC",
@@ -309,7 +310,7 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 
 				switch archBits {
 				case 32:
-					d.FieldUFn("p_type", func(d *decode.D) uint64 { return d.U32() & 0xf }, d.MapUToStrSym(pTypeNames))
+					d.FieldUFn("p_type", func(d *decode.D) uint64 { return d.U32() & 0xf }, pTypeNames)
 					offset = d.FieldU("p_offset", archBits)
 					d.FieldU("p_vaddr", archBits)
 					d.FieldU("p_paddr", archBits)
@@ -318,7 +319,7 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 					pFlags(d)
 					d.FieldU32("p_align")
 				case 64:
-					d.FieldUFn("p_type", func(d *decode.D) uint64 { return d.U32() & 0xf }, d.MapUToStrSym(pTypeNames))
+					d.FieldUFn("p_type", func(d *decode.D) uint64 { return d.U32() & 0xf }, pTypeNames)
 					pFlags(d)
 					offset = d.FieldU("p_offset", archBits)
 					d.FieldU("p_vaddr", archBits)
@@ -434,7 +435,7 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 					DT_JMPREL   = 23
 					DT_ENCODING = 32
 				)
-				var dtNames = decode.UToStr{
+				var dtNames = scalar.UToSymStr{
 					DT_NULL:     "DT_NULL",
 					DT_NEEDED:   "DT_NEEDED",
 					DT_PLTRELSZ: "DT_PLTRELSZ",
@@ -464,8 +465,8 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 
 				switch archBits {
 				case 32:
-					shname = d.FieldScalarUFn("sh_name", (*decode.D).U32, mapStrTable(strIndexTable)).SymStr()
-					typ = d.FieldU32("sh_type", d.MapUToStrSym(shTypeNames), d.Hex)
+					shname = d.FieldScalarUFn("sh_name", (*decode.D).U32, strTable(strIndexTable)).SymStr()
+					typ = d.FieldU32("sh_type", shTypeNames, scalar.Hex)
 					shFlags(d, archBits)
 					d.FieldU("sh_addr", archBits)
 					offset = d.FieldU("sh_offset", archBits)
@@ -475,8 +476,8 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 					d.FieldU32("sh_addralign")
 					d.FieldU32("sh_entsize")
 				case 64:
-					shname = d.FieldScalarUFn("sh_name", (*decode.D).U32, mapStrTable(strIndexTable)).SymStr()
-					typ = d.FieldU32("sh_type", d.MapUToStrSym(shTypeNames), d.Hex)
+					shname = d.FieldScalarUFn("sh_name", (*decode.D).U32, strTable(strIndexTable)).SymStr()
+					typ = d.FieldU32("sh_type", shTypeNames, scalar.Hex)
 					shFlags(d, archBits)
 					d.FieldU("sh_addr", archBits)
 					offset = d.FieldU("sh_offset", archBits)
@@ -501,7 +502,7 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 							d.FieldArray("dynamic_tags", func(d *decode.D) {
 								for d.NotEnd() {
 									d.FieldStruct("tag", func(d *decode.D) {
-										tag := d.FieldUFn("tag", func(d *decode.D) uint64 { return d.U(archBits) }, d.MapUToStrSym(dtNames), d.Hex)
+										tag := d.FieldUFn("tag", func(d *decode.D) uint64 { return d.U(archBits) }, dtNames, scalar.Hex)
 										switch tag {
 										case DT_NEEDED:
 											// TODO: DT_STRTAB

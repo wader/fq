@@ -5,6 +5,7 @@ import (
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/internal/num"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
@@ -22,7 +23,7 @@ const (
 	wireType32Bit           = 5
 )
 
-var wireTypeNames = decode.UToStr{
+var wireTypeNames = scalar.UToSymStr{
 	0: "Varint",
 	1: "64-bit",
 	2: "Length-delimited",
@@ -48,7 +49,7 @@ func protobufDecodeField(d *decode.D, pbm *format.ProtoBufMessage) {
 		fieldNumber := keyN >> 3
 		wireType := keyN & 0x7
 		d.FieldValueU("field_number", fieldNumber)
-		d.FieldValueU("wire_type", wireType, d.Sym(wireTypeNames[wireType]))
+		d.FieldValueU("wire_type", wireType, scalar.Sym(wireTypeNames[wireType]))
 
 		var value uint64
 		var length uint64

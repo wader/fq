@@ -1,6 +1,6 @@
 package format
 
-import "github.com/wader/fq/pkg/decode"
+import "github.com/wader/fq/pkg/scalar"
 
 // from https://www.tcpdump.org/linktypes.html
 // TODO cleanup
@@ -139,7 +139,7 @@ const (
 	LinkTypeETW                        = 290
 )
 
-var LinkTypeMap = decode.UToScalar{
+var LinkTypeMap = scalar.UToScalar{
 	LinkTypeNULL:                       {Sym: "null", Description: `BSD loopback encapsulation`},
 	LinkTypeETHERNET:                   {Sym: "ethernet", Description: `IEEE 802.3 Ethernet`},
 	LinkTypeAX25:                       {Sym: "ax25", Description: `AX.25 packet, with nothing preceding it`},
@@ -279,7 +279,7 @@ const (
 
 // from https://en.wikipedia.org/wiki/EtherType
 // TODO: cleanup
-var EtherTypeMap = decode.UToScalar{
+var EtherTypeMap = scalar.UToScalar{
 	EtherTypeIPv4: {Sym: "ipv4", Description: `Internet Protocol version 4`},
 	0x0806:        {Sym: "arp", Description: `Address Resolution Protocol`},
 	0x0842:        {Sym: "wake", Description: `Wake-on-LAN[9]`},
@@ -347,7 +347,7 @@ const (
 	IPv4ProtocolUDP  = 17
 )
 
-var IPv4ProtocolMap = decode.UToScalar{
+var IPv4ProtocolMap = scalar.UToScalar{
 	0:                {Sym: "ip", Description: "Internet protocol, pseudo protocol number"},
 	IPv4ProtocolICMP: {Sym: "icmp", Description: "Internet control message protocol"},
 	IPv4ProtocolIGMP: {Sym: "igmp", Description: "Internet group management protocol"},
@@ -495,7 +495,7 @@ const (
 	UDPPortMDNS   = 5353
 )
 
-var UDPPortMap = decode.UToScalar{
+var UDPPortMap = scalar.UToScalar{
 	1:             {Sym: "tcpmux", Description: "TCP Port Service Multiplexer"},
 	2:             {Sym: "compressnet", Description: "Management Utility"},
 	3:             {Sym: "compressnet", Description: "Compression Process"},
@@ -1182,7 +1182,7 @@ const (
 	TCPPortDomain = 53
 )
 
-var TCPPortMap = decode.UToScalar{
+var TCPPortMap = scalar.UToScalar{
 	1:             {Sym: "tcpmux", Description: "TCP Port Service Multiplexer"},
 	2:             {Sym: "compressnet", Description: "Management Utility"},
 	3:             {Sym: "compressnet", Description: "Compression Process"},

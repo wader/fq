@@ -4,6 +4,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
@@ -18,7 +19,7 @@ const (
 	avcSEIUserDataUnregistered = 5
 )
 
-var seiNames = decode.UToStr{
+var seiNames = scalar.UToSymStr{
 	0:                          "buffering_period",
 	1:                          "pic_timing",
 	2:                          "pan_scan_rect",
@@ -83,8 +84,8 @@ var (
 	x264Bytes = [16]byte{0xdc, 0x45, 0xe9, 0xbd, 0xe6, 0xd9, 0x48, 0xb7, 0x96, 0x2c, 0xd8, 0x20, 0xd9, 0x23, 0xee, 0xef}
 )
 
-var userDataUnregisteredNames = decode.BytesToScalar{
-	{Bytes: x264Bytes[:], Scalar: decode.Scalar{Sym: "x264"}},
+var userDataUnregisteredNames = scalar.BytesToScalar{
+	{Bytes: x264Bytes[:], Scalar: scalar.S{Sym: "x264"}},
 }
 
 // sum bytes until < 0xff
@@ -101,13 +102,13 @@ func ffSum(d *decode.D) uint64 {
 }
 
 func avcSEIDecode(d *decode.D, in interface{}) interface{} {
-	payloadType := d.FieldUFn("payload_type", func(d *decode.D) uint64 { return ffSum(d) }, d.MapUToStrSym(seiNames))
+	payloadType := d.FieldUFn("payload_type", func(d *decode.D) uint64 { return ffSum(d) }, seiNames)
 	payloadSize := d.FieldUFn("payload_size", func(d *decode.D) uint64 { return ffSum(d) })
 
 	d.LenFn(int64(payloadSize)*8, func(d *decode.D) {
 		switch payloadType {
 		case avcSEIUserDataUnregistered:
-			d.FieldRawLen("uuid", 16*8, d.MapRawToScalar(userDataUnregisteredNames))
+			d.FieldRawLen("uuid", 16*8, userDataUnregisteredNames)
 		}
 		d.FieldRawLen("data", d.BitsLeft())
 	})

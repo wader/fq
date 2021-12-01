@@ -1,10 +1,10 @@
 package mp4
 
-import "github.com/wader/fq/pkg/decode"
+import "github.com/wader/fq/pkg/scalar"
 
 // based on https://github.com/HexFiend/HexFiend/blob/master/templates/Media/MOV.tcl
 
-var boxDescriptions = decode.StrToScalar{
+var boxDescriptions = scalar.StrToScalar{
 	"ainf": {Description: "Asset information to identify, license and play"},
 	"albm": {Description: "Album title and track number for media"},
 	"alou": {Description: "Album loudness base"},

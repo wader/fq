@@ -7,6 +7,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 var sllPacket2Ether8023Format decode.Group
@@ -27,11 +28,11 @@ var sllPacket2FrameTypeFormat = map[uint64]*decode.Group{
 }
 
 func decodeSLL2(d *decode.D, in interface{}) interface{} {
-	protcolType := d.FieldU16("protocol_type", d.MapUToScalar(format.EtherTypeMap), d.Hex)
+	protcolType := d.FieldU16("protocol_type", format.EtherTypeMap, scalar.Hex)
 	d.FieldU16("reserved")
 	d.FieldU32("interface_index")
-	arpHdrType := d.FieldU16("arphdr_type", d.MapUToScalar(arpHdrTypeMAp))
-	d.FieldU8("packet_type", d.MapUToScalar(sllPacketTypeMap))
+	arpHdrType := d.FieldU16("arphdr_type", arpHdrTypeMAp)
+	d.FieldU8("packet_type", sllPacketTypeMap)
 	addressLength := d.FieldU8("link_address_length")
 	d.FieldU("link_address", int(addressLength)*8)
 	addressDiff := 8 - addressLength
@@ -42,7 +43,7 @@ func decodeSLL2(d *decode.D, in interface{}) interface{} {
 	// TODO: handle other arphdr types
 	switch arpHdrType {
 	case arpHdrTypeLoopback, arpHdrTypeEther:
-		_ = d.FieldMustGet("link_address").TryScalarFn(mapUToEtherSym, d.Hex)
+		_ = d.FieldMustGet("link_address").TryScalarFn(mapUToEtherSym, scalar.Hex)
 		if g, ok := sllPacket2FrameTypeFormat[protcolType]; ok {
 			d.FieldFormatLen("data", d.BitsLeft(), *g, nil)
 		} else {

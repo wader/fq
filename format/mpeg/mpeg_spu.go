@@ -11,6 +11,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
@@ -34,7 +35,7 @@ const (
 	CHG_COLCON = 0x07
 )
 
-var commandNames = decode.UToStr{
+var commandNames = scalar.UToSymStr{
 	CMD_END:    "CMD_END",
 	FSTA_DSP:   "FSTA_DSP",
 	STA_DSP:    "STA_DSP",
@@ -125,7 +126,7 @@ func spuDecode(d *decode.D, in interface{}) interface{} {
 					seenEnd := false
 					for !seenEnd {
 						d.FieldStruct("command", func(d *decode.D) {
-							cmd := d.FieldU8("type", d.MapUToStrSym(commandNames))
+							cmd := d.FieldU8("type", commandNames)
 							switch cmd {
 							case CMD_END:
 								seenEnd = true

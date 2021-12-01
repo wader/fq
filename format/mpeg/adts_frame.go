@@ -8,6 +8,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 var aacFrameFormat decode.Group
@@ -23,7 +24,7 @@ func init() {
 	})
 }
 
-var protectionAbsentNames = decode.BoolToScalar{
+var protectionAbsentNames = scalar.BoolToScalar{
 	true:  {Description: "No CRC"},
 	false: {Description: "Has CRC"},
 }
@@ -64,24 +65,24 @@ func adtsFrameDecoder(d *decode.D, in interface{}) interface{} {
 	// P	2	Number of AAC frames (RDBs) in ADTS frame minus 1, for maximum compatibility always use 1 AAC frame per ADTS frame
 	// Q	16	CRC if protection absent is 0
 
-	d.FieldU12("syncword", d.AssertU(0b1111_1111_1111), d.Bin)
-	d.FieldU1("mpeg_version", d.MapUToStrSym(decode.UToStr{0: "MPEG-4", 1: "MPEG2- AAC"}))
+	d.FieldU12("syncword", d.AssertU(0b1111_1111_1111), scalar.Bin)
+	d.FieldU1("mpeg_version", scalar.UToSymStr{0: "MPEG-4", 1: "MPEG2- AAC"})
 	d.FieldU2("layer", d.AssertU(0))
-	protectionAbsent := d.FieldBool("protection_absent", d.MapBoolToScalar(protectionAbsentNames))
+	protectionAbsent := d.FieldBool("protection_absent", protectionAbsentNames)
 
-	objectType := d.FieldU2("profile", d.UAdd(1), d.MapUToScalar(format.MPEGAudioObjectTypeNames))
-	d.FieldUScalarFn("sampling_frequency", func(d *decode.D) decode.Scalar {
+	objectType := d.FieldU2("profile", scalar.UAdd(1), format.MPEGAudioObjectTypeNames)
+	d.FieldUScalarFn("sampling_frequency", func(d *decode.D) scalar.S {
 		v := d.U4()
 		if v == 15 {
-			return decode.Scalar{Actual: d.U24()}
+			return scalar.S{Actual: d.U24()}
 		}
 		if f, ok := frequencyIndexHz[v]; ok {
-			return decode.Scalar{Actual: v, Sym: f}
+			return scalar.S{Actual: v, Sym: f}
 		}
-		return decode.Scalar{Description: "invalid"}
+		return scalar.S{Description: "invalid"}
 	})
 	d.FieldU1("private_bit")
-	d.FieldU3("channel_configuration", d.MapUToScalar(channelConfigurationNames))
+	d.FieldU3("channel_configuration", channelConfigurationNames)
 	d.FieldU1("originality")
 	d.FieldU1("home")
 	d.FieldU1("copyrighted")
@@ -94,7 +95,7 @@ func adtsFrameDecoder(d *decode.D, in interface{}) interface{} {
 	}
 
 	d.FieldU11("buffer_fullness")
-	numberOfRDBs := d.FieldU2("number_of_rdbs", d.UAdd(1))
+	numberOfRDBs := d.FieldU2("number_of_rdbs", scalar.UAdd(1))
 	if !protectionAbsent {
 		d.FieldU16("crc")
 	}

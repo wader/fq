@@ -7,6 +7,7 @@ import (
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/internal/num"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 var avcSPSFormat decode.Group
@@ -63,7 +64,7 @@ const (
 	avcNALCodedSliceExtension                = 20
 )
 
-var avcNALNames = decode.UToScalar{
+var avcNALNames = scalar.UToScalar{
 	1:                                        {Sym: "SLICE", Description: "Coded slice of a non-IDR picture"},
 	2:                                        {Sym: "DPA", Description: "Coded slice data partition A"},
 	3:                                        {Sym: "DPB", Description: "Coded slice data partition B"},
@@ -83,7 +84,7 @@ var avcNALNames = decode.UToScalar{
 	20:                                       {Sym: "EXTEN_SLICE", Description: "Coded slice extension"},
 }
 
-var sliceNames = decode.UToStr{
+var sliceNames = scalar.UToSymStr{
 	0: "P",
 	1: "B",
 	2: "I",
@@ -99,7 +100,7 @@ var sliceNames = decode.UToStr{
 func avcNALUDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldBool("forbidden_zero_bit")
 	d.FieldU2("nal_ref_idc")
-	nalType := d.FieldU5("nal_unit_type", d.MapUToScalar(avcNALNames))
+	nalType := d.FieldU5("nal_unit_type", avcNALNames)
 	unescapedBb := d.MustNewBitBufFromReader(decode.NALUnescapeReader{Reader: d.BitBufRange(d.Pos(), d.BitsLeft())})
 
 	switch nalType {
@@ -112,7 +113,7 @@ func avcNALUDecode(d *decode.D, in interface{}) interface{} {
 		avcNALCodedSliceExtension:
 		d.FieldStruct("slice_header", func(d *decode.D) {
 			d.FieldUFn("first_mb_in_slice", uEV)
-			d.FieldUFn("slice_type", uEV, d.MapUToStrSym(sliceNames))
+			d.FieldUFn("slice_type", uEV, sliceNames)
 			d.FieldUFn("pic_parameter_set_id", uEV)
 			// TODO: if ( separate_colour_plane_flag from SPS ) colour_plane_id; frame_num
 		})

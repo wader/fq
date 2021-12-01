@@ -7,6 +7,7 @@ import (
 	"github.com/wader/fq/format/inet/flowsdecoder"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 var pcapEther8023Format decode.Group
@@ -20,7 +21,7 @@ const (
 	littleEndian = 0xd4c3b2a1
 )
 
-var endianMap = decode.UToStr{
+var endianMap = scalar.UToSymStr{
 	bigEndian:    "big_endian",
 	littleEndian: "little_endian",
 }
@@ -42,7 +43,7 @@ func init() {
 }
 
 func decodePcap(d *decode.D, in interface{}) interface{} {
-	endian := d.FieldU32("magic", d.AssertU(bigEndian, littleEndian), d.MapUToStrSym(endianMap), d.Hex)
+	endian := d.FieldU32("magic", d.AssertU(bigEndian, littleEndian), endianMap, scalar.Hex)
 	switch endian {
 	case bigEndian:
 		d.Endian = decode.BigEndian
@@ -56,7 +57,7 @@ func decodePcap(d *decode.D, in interface{}) interface{} {
 	d.FieldS32("thiszone")
 	d.FieldU32("sigfigs")
 	d.FieldU32("snaplen")
-	linkType := int(d.FieldU32("network", d.MapUToScalar(format.LinkTypeMap)))
+	linkType := int(d.FieldU32("network", format.LinkTypeMap))
 
 	fd := flowsdecoder.New()
 

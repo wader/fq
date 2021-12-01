@@ -8,6 +8,7 @@ import (
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
@@ -30,7 +31,7 @@ type subStreamPacket struct {
 	bb     *bitio.Buffer
 }
 
-var startAndStreamNames = map[[2]uint64]decode.Scalar{
+var startAndStreamNames = scalar.URangeToScalar{
 	{0x00, 0x00}: {Sym: "Picture"},
 	{0x01, 0xaf}: {Sym: "Slice"},
 	{0xb0, 0xb1}: {Sym: "Reserved"},
@@ -67,8 +68,8 @@ var startAndStreamNames = map[[2]uint64]decode.Scalar{
 func pesPacketDecode(d *decode.D, in interface{}) interface{} {
 	var v interface{}
 
-	d.FieldU24("prefix", d.AssertU(0b0000_0000_0000_0000_0000_0001), d.Bin)
-	startCode := d.FieldU8("start_code", d.MapURangeToScalar(startAndStreamNames), d.Hex)
+	d.FieldU24("prefix", d.AssertU(0b0000_0000_0000_0000_0000_0001), scalar.Bin)
+	startCode := d.FieldU8("start_code", startAndStreamNames, scalar.Hex)
 
 	switch {
 	case startCode == sequenceHeader:

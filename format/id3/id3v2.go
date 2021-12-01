@@ -12,6 +12,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/charmap"
 	"golang.org/x/text/encoding/unicode"
@@ -30,7 +31,7 @@ func init() {
 	})
 }
 
-var idDescriptions = decode.StrToScalar{
+var idDescriptions = scalar.StrToScalar{
 	"BUF":  {Description: "Recommended buffer size"},
 	"CNT":  {Description: "Play counter"},
 	"COM":  {Description: "Comments"},
@@ -230,7 +231,7 @@ const (
 // $02 UTF-16BE [UTF-16] encoded Unicode [UNICODE] without BOM.
 //     Terminated with $00 00.
 // $03 UTF-8 [UTF-8] encoded Unicode [UNICODE]. Terminated with $00.
-var encodingNames = decode.UToStr{
+var encodingNames = scalar.UToSymStr{
 	encodingISO8859_1: "ISO-8859-1",
 	encodingUTF16:     "UTF-16",
 	encodingUTF16BE:   "UTF-16BE",
@@ -318,14 +319,14 @@ func decodeFrame(d *decode.D, version int) uint64 {
 	case 2:
 		// Frame ID   "XXX"
 		// Frame size $xx xx xx
-		id = d.FieldUTF8("id", 3, d.MapStrToScalar(idDescriptions))
+		id = d.FieldUTF8("id", 3, idDescriptions)
 		dataSize = d.FieldU24("size")
 		size = dataSize + 6
 	case 3:
 		// Frame ID   $xx xx xx xx  (four characters)
 		// Size       $xx xx xx xx
 		// Flags      $xx xx
-		id = d.FieldUTF8("id", 4, d.MapStrToScalar(idDescriptions))
+		id = d.FieldUTF8("id", 4, idDescriptions)
 		dataSize = d.FieldU32("size")
 
 		d.FieldStruct("flags", func(d *decode.D) {
@@ -349,7 +350,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Frame ID      $xx xx xx xx  (four characters)
 		// Size      4 * %0xxxxxxx  (synchsafe integer)
 		// Flags         $xx xx
-		id = d.FieldUTF8("id", 4, d.MapStrToScalar(idDescriptions))
+		id = d.FieldUTF8("id", 4, idDescriptions)
 		dataSize = d.FieldUFn("size", decodeSyncSafeU32)
 		var headerLen uint64 = 10
 
@@ -422,7 +423,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Description        <text string according to encoding> $00 (00)
 		// Picture data       <binary data>
 		"APIC": func(d *decode.D) {
-			encoding := d.FieldU8("text_encoding", d.MapUToStrSym(encodingNames))
+			encoding := d.FieldU8("text_encoding", encodingNames)
 			d.FieldStrFn("mime_type", textNullFn(encodingUTF8))
 			d.FieldU8("picture_type") // TODO: table
 			d.FieldStrFn("description", textNullFn(int(encoding)))
@@ -439,7 +440,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Content description    <text string according to encoding> $00 (00)
 		// Encapsulated object    <binary data>
 		"GEOB": func(d *decode.D) {
-			encoding := d.FieldU8("text_encoding", d.MapUToStrSym(encodingNames))
+			encoding := d.FieldU8("text_encoding", encodingNames)
 			d.FieldStrFn("mime_type", textNullFn(encodingUTF8))
 			d.FieldStrFn("filename", textNullFn(int(encoding)))
 			d.FieldStrFn("description", textNullFn(int(encoding)))
@@ -475,7 +476,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Short content descrip. <text string according to encoding> $00 (00)
 		// The actual text        <full text string according to encoding>
 		"COMM": func(d *decode.D) {
-			encoding := d.FieldU8("text_encoding", d.MapUToStrSym(encodingNames))
+			encoding := d.FieldU8("text_encoding", encodingNames)
 			d.FieldUTF8("language", 3)
 			d.FieldStrFn("description", textNullFn(int(encoding)))
 			d.FieldStrFn("value", textFn(int(encoding), int(d.BitsLeft()/8)))
@@ -491,7 +492,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Text encoding                $xx
 		// Information                  <text string(s) according to encoding>
 		"T000": func(d *decode.D) {
-			encoding := d.FieldU8("text_encoding", d.MapUToStrSym(encodingNames))
+			encoding := d.FieldU8("text_encoding", encodingNames)
 			d.FieldStrFn("text", textFn(int(encoding), int(d.BitsLeft()/8)))
 		},
 		// User defined...   "TXX"
@@ -505,7 +506,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Description       <text string according to encoding> $00 (00)
 		// Value             <text string according to encoding>
 		"TXXX": func(d *decode.D) {
-			encoding := d.FieldU8("text_encoding", d.MapUToStrSym(encodingNames))
+			encoding := d.FieldU8("text_encoding", encodingNames)
 			d.FieldStrFn("description", textNullFn(int(encoding)))
 			d.FieldStrFn("value", textFn(int(encoding), int(d.BitsLeft()/8)))
 		},
@@ -570,7 +571,7 @@ func decodeFrames(d *decode.D, version int, size uint64) {
 	})
 
 	if size > 0 {
-		d.FieldRawLen("padding", int64(size*8), d.BitBufIsZero)
+		d.FieldRawLen("padding", int64(size*8), d.BitBufIsZero())
 	}
 }
 

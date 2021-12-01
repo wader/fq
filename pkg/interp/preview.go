@@ -6,10 +6,10 @@ import (
 
 	"github.com/wader/fq/internal/num"
 	"github.com/wader/fq/pkg/bitio"
-	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
-func previewValue(v interface{}, df decode.DisplayFormat) string {
+func previewValue(v interface{}, df scalar.DisplayFormat) string {
 	switch vv := v.(type) {
 	case bool:
 		if vv {
@@ -18,12 +18,12 @@ func previewValue(v interface{}, df decode.DisplayFormat) string {
 		return "false"
 	case int:
 		// TODO: DisplayFormat is weird
-		return num.PadFormatInt(int64(vv), decode.DisplayFormatToBase(df), true, 0)
+		return num.PadFormatInt(int64(vv), df.FormatBase(), true, 0)
 	case int64:
 		// TODO: DisplayFormat is weird
-		return num.PadFormatInt(vv, decode.DisplayFormatToBase(df), true, 0)
+		return num.PadFormatInt(vv, df.FormatBase(), true, 0)
 	case uint64:
-		return num.PadFormatUint(vv, decode.DisplayFormatToBase(df), true, 0)
+		return num.PadFormatUint(vv, df.FormatBase(), true, 0)
 	case float64:
 		// TODO: float32? better truncated to significant digits?
 		return strconv.FormatFloat(vv, 'g', -1, 64)

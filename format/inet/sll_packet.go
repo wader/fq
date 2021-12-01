@@ -7,6 +7,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 var sllPacketEther8023Format decode.Group
@@ -26,7 +27,7 @@ var sllPacketFrameTypeFormat = map[uint64]*decode.Group{
 	format.EtherTypeIPv4: &ether8023FrameIPv4Format,
 }
 
-var sllPacketTypeMap = decode.UToScalar{
+var sllPacketTypeMap = scalar.UToScalar{
 	0: {Sym: "to_us", Description: "Sent to us"},
 	1: {Sym: "broadcast", Description: "Broadcast by somebody else"},
 	2: {Sym: "multicast", Description: "Multicast by somebody else"},
@@ -40,7 +41,7 @@ const (
 )
 
 // based on https://github.com/torvalds/linux/blob/master/include/uapi/linux/if_arp.h
-var arpHdrTypeMAp = decode.UToScalar{
+var arpHdrTypeMAp = scalar.UToScalar{
 	0:                  {Sym: "netrom", Description: `from KA9Q: NET/ROM pseudo`},
 	arpHdrTypeEther:    {Sym: "ether", Description: `Ethernet 10Mbps`},
 	2:                  {Sym: "eether", Description: `Experimental Ethernet`},
@@ -111,8 +112,8 @@ var arpHdrTypeMAp = decode.UToScalar{
 }
 
 func decodeSLL(d *decode.D, in interface{}) interface{} {
-	d.FieldU16("packet_type", d.MapUToScalar(sllPacketTypeMap))
-	arpHdrType := d.FieldU16("arphdr_type", d.MapUToScalar(arpHdrTypeMAp))
+	d.FieldU16("packet_type", sllPacketTypeMap)
+	arpHdrType := d.FieldU16("arphdr_type", arpHdrTypeMAp)
 	addressLength := d.FieldU16("link_address_length")
 	d.FieldU("link_address", int(addressLength)*8)
 	addressDiff := 8 - addressLength
@@ -123,8 +124,8 @@ func decodeSLL(d *decode.D, in interface{}) interface{} {
 	// TODO: handle other arphdr types
 	switch arpHdrType {
 	case arpHdrTypeLoopback, arpHdrTypeEther:
-		_ = d.FieldMustGet("link_address").TryScalarFn(mapUToEtherSym, d.Hex)
-		protcolType := d.FieldU16("protocol_type", d.MapUToScalar(format.EtherTypeMap), d.Hex)
+		_ = d.FieldMustGet("link_address").TryScalarFn(mapUToEtherSym, scalar.Hex)
+		protcolType := d.FieldU16("protocol_type", format.EtherTypeMap, scalar.Hex)
 		if g, ok := sllPacketFrameTypeFormat[protcolType]; ok {
 			d.FieldFormatLen("data", d.BitsLeft(), *g, nil)
 		} else {

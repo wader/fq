@@ -6,6 +6,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 var tiffIccProfile decode.Group
@@ -25,7 +26,7 @@ func init() {
 const littleEndian = 0x49492a00 // "II*\0"
 const bigEndian = 0x4d4d002a    // "MM\0*"
 
-var endianNames = decode.UToStr{
+var endianNames = scalar.UToSymStr{
 	littleEndian: "little-edian",
 	bigEndian:    "big-endian",
 }
@@ -41,7 +42,7 @@ const (
 	SRATIONAL = 10
 )
 
-var typeNames = decode.UToStr{
+var typeNames = scalar.UToSymStr{
 	BYTE:      "BYTE",
 	ASCII:     "ASCII",
 	SHORT:     "SHORT",
@@ -91,7 +92,7 @@ type strips struct {
 	byteCounts []int64
 }
 
-func decodeIfd(d *decode.D, s *strips, tagNames map[uint64]string) int64 {
+func decodeIfd(d *decode.D, s *strips, tagNames scalar.UToSymStr) int64 {
 	var nextIfdOffset int64
 
 	d.FieldStruct("ifd", func(d *decode.D) {
@@ -99,8 +100,8 @@ func decodeIfd(d *decode.D, s *strips, tagNames map[uint64]string) int64 {
 		d.FieldArray("entries", func(d *decode.D) {
 			for i := uint64(0); i < numberOfFields; i++ {
 				d.FieldStruct("entry", func(d *decode.D) {
-					tag := d.FieldU16("tag", d.MapUToStrSym(tagNames), d.Hex)
-					typ := d.FieldU16("type", d.MapUToStrSym(typeNames))
+					tag := d.FieldU16("tag", tagNames, scalar.Hex)
+					typ := d.FieldU16("type", typeNames)
 					count := d.FieldU32("count")
 					// TODO: short values stored in valueOffset directly?
 					valueOrByteOffset := d.FieldU32("value_offset")
@@ -206,7 +207,7 @@ func decodeIfd(d *decode.D, s *strips, tagNames map[uint64]string) int64 {
 }
 
 func tiffDecode(d *decode.D, in interface{}) interface{} {
-	endian := d.FieldU32("endian", d.MapUToStrSym(endianNames), d.Hex)
+	endian := d.FieldU32("endian", endianNames, scalar.Hex)
 
 	switch endian {
 	case littleEndian:

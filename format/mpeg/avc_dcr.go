@@ -9,6 +9,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 var avcDCRNALFormat decode.Group
@@ -24,7 +25,7 @@ func init() {
 	})
 }
 
-var avcProfileNames = decode.UToStr{
+var avcProfileNames = scalar.UToSymStr{
 	// 66: "Constrained Baseline Profile", // (CBP, 66 with constraint set 1)
 	66:  "Baseline Profile",
 	88:  "Extended Profile",
@@ -47,7 +48,7 @@ var avcProfileNames = decode.UToStr{
 }
 
 // TODO: 1b contraint flag 1?
-var avcLevelNames = decode.UToStr{
+var avcLevelNames = scalar.UToSymStr{
 	10: "1",
 	//10:  "1b"
 	11: "1.1",
@@ -117,11 +118,11 @@ func avcDcrParameterSet(d *decode.D, numParamSets uint64) {
 
 func avcDcrDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldU8("configuration_version")
-	d.FieldU8("profile_indication", d.MapUToStrSym(avcProfileNames))
+	d.FieldU8("profile_indication", avcProfileNames)
 	d.FieldU8("profile_compatibility")
-	d.FieldU8("level_indication", d.MapUToStrSym(avcLevelNames))
+	d.FieldU8("level_indication", avcLevelNames)
 	d.FieldU6("reserved0")
-	lengthSize := d.FieldU2("length_size", d.UAdd(1))
+	lengthSize := d.FieldU2("length_size", scalar.UAdd(1))
 	d.FieldU3("reserved1")
 	numSeqParamSets := d.FieldU5("num_of_sequence_parameter_sets")
 	d.FieldArray("sequence_parameter_sets", func(d *decode.D) {

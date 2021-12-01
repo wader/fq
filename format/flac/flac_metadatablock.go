@@ -9,6 +9,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 var flacStreaminfoFormat decode.Group
@@ -38,7 +39,7 @@ const (
 	MetadataBlockPicture       = 6
 )
 
-var metadataBlockNames = decode.UToStr{
+var metadataBlockNames = scalar.UToSymStr{
 	MetadataBlockStreaminfo:    "Streaminfo",
 	MetadataBlockPadding:       "Padding",
 	MetadataBlockApplication:   "Application",
@@ -53,7 +54,7 @@ func metadatablockDecode(d *decode.D, in interface{}) interface{} {
 	var streamInfo format.FlacStreamInfo
 
 	isLastBlock := d.FieldBool("last_block")
-	typ := d.FieldU7("type", d.MapUToStrSym(metadataBlockNames))
+	typ := d.FieldU7("type", metadataBlockNames)
 	length := d.FieldU24("length")
 
 	switch typ {
@@ -73,9 +74,9 @@ func metadatablockDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldArray("seekpoints", func(d *decode.D) {
 			for i := uint64(0); i < seektableCount; i++ {
 				d.FieldStruct("seekpoint", func(d *decode.D) {
-					d.FieldU64("sample_number", d.MapUToScalar(decode.UToScalar{
+					d.FieldU64("sample_number", scalar.UToScalar{
 						0xffff_ffff_ffff_ffff: {Description: "Placeholder"},
-					}))
+					})
 					d.FieldU64("offset")
 					d.FieldU16("number_of_samples")
 				})

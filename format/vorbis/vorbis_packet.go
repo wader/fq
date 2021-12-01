@@ -8,6 +8,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 var vorbisComment decode.Group
@@ -38,7 +39,7 @@ var packetTypeNames = map[uint]string{
 }
 
 func vorbisDecode(d *decode.D, in interface{}) interface{} {
-	packetType := d.FieldUScalarFn("packet_type", func(d *decode.D) decode.Scalar {
+	packetType := d.FieldUScalarFn("packet_type", func(d *decode.D) scalar.S {
 		packetTypeName := "unknown"
 		t := d.U8()
 		// 4.2.1. Common header decode
@@ -49,7 +50,7 @@ func vorbisDecode(d *decode.D, in interface{}) interface{} {
 		if n, ok := packetTypeNames[uint(t)]; ok {
 			packetTypeName = n
 		}
-		return decode.Scalar{Actual: t, Sym: packetTypeName}
+		return scalar.S{Actual: t, Sym: packetTypeName}
 	})
 
 	switch packetType {
@@ -83,11 +84,11 @@ func vorbisDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldUFn("blocksize_0", func(d *decode.D) uint64 { return 1 << d.U4() })
 		// TODO: warning if blocksize0 > blocksize1
 		// TODO: warning if not 64-8192
-		d.FieldRawLen("padding0", 7, d.BitBufIsZero)
+		d.FieldRawLen("padding0", 7, d.BitBufIsZero())
 		d.FieldU1("framing_flag", d.ValidateU(1))
 	case packetTypeSetup:
 		d.FieldUFn("vorbis_codebook_count", func(d *decode.D) uint64 { return d.U8() + 1 })
-		d.FieldU24LE("codecooke_sync", d.ValidateU(0x564342), d.Hex)
+		d.FieldU24LE("codecooke_sync", d.ValidateU(0x564342), scalar.Hex)
 		d.FieldU16LE("codebook_dimensions")
 		d.FieldU24LE("codebook_entries")
 
@@ -114,7 +115,7 @@ func vorbisDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldFormat("comment", vorbisComment, nil)
 
 		// note this uses vorbis bitpacking convention, bits are added LSB first per byte
-		d.FieldRawLen("padding0", 7, d.BitBufIsZero)
+		d.FieldRawLen("padding0", 7, d.BitBufIsZero())
 		d.FieldU1("frame_bit", d.ValidateU(1))
 	}
 

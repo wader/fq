@@ -11,6 +11,7 @@ import (
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 var exifFormat decode.Group
@@ -96,7 +97,7 @@ const (
 	TEM   = 0x01
 )
 
-var markers = decode.UToScalar{
+var markers = scalar.UToScalar{
 	SOF0:  {Sym: "SOF0", Description: "Baseline DCT"},
 	SOF1:  {Sym: "SOF1", Description: "Extended sequential DCT"},
 	SOF2:  {Sym: "SOF2", Description: "Progressive DCT"},
@@ -192,7 +193,7 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldStruct("marker", func(d *decode.D) {
 					prefixLen := d.PeekFindByte(0xff, -1) + 1
 					d.FieldRawLen("prefix", prefixLen*8, d.AssertBitBuf([]byte{0xff}))
-					markerCode := d.FieldU8("code", d.MapUToScalar(markers))
+					markerCode := d.FieldU8("code", markers)
 					_, markerFound := markers[markerCode]
 
 					// RST*, SOI, EOI, TEM does not have a length field. All others have a
@@ -327,7 +328,7 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 								switch signature {
 								case "8BIM":
 									// TODO: description?
-									d.FieldU16("block", d.MapUToScalar(psImageResourceBlockNames))
+									d.FieldU16("block", psImageResourceBlockNames)
 									d.FieldRawLen("data", d.BitsLeft())
 								default:
 								}

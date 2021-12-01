@@ -4,6 +4,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 var udpDatagramFormat decode.Group
@@ -20,10 +21,10 @@ func init() {
 }
 
 func decodeUDP(d *decode.D, in interface{}) interface{} {
-	soucePort := d.FieldU16("source_port", d.MapUToScalar(format.UDPPortMap))
-	destPort := d.FieldU16("destination_port", d.MapUToScalar(format.UDPPortMap))
+	soucePort := d.FieldU16("source_port", format.UDPPortMap)
+	destPort := d.FieldU16("destination_port", format.UDPPortMap)
 	length := d.FieldU16("length")
-	d.FieldU16("checksum", d.Hex)
+	d.FieldU16("checksum", scalar.Hex)
 
 	dataLen := int64(length-8) * 8
 	if dv, _, _ := d.TryFieldFormatLen("data", dataLen, udpDatagramFormat, format.UDPDatagramIn{

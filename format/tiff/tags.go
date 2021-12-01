@@ -1,7 +1,7 @@
 //nolint:revive
 package tiff
 
-import "github.com/wader/fq/pkg/decode"
+import "github.com/wader/fq/pkg/scalar"
 
 const (
 	NewSubfileType               = 0x00fe
@@ -365,7 +365,7 @@ const (
 	PaletteHistogram = 0x5113
 )
 
-var tiffTagNames = decode.UToStr{
+var tiffTagNames = scalar.UToSymStr{
 	NewSubfileType:               "NewSubfileType",
 	SubfileType:                  "SubfileType",
 	ImageWidth:                   "ImageWidth",
@@ -761,7 +761,7 @@ const (
 	GPSHPositioningError = 0x001f
 )
 
-var gpsInfoTagNames = decode.UToStr{
+var gpsInfoTagNames = scalar.UToSymStr{
 	GPSVersionID:         "GPSVersionID",
 	GPSLatitudeRef:       "GPSLatitudeRef",
 	GPSLatitude:          "GPSLatitude",

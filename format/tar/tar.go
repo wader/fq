@@ -11,6 +11,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 var probeFormat decode.Group
@@ -29,12 +30,12 @@ func init() {
 
 func tarDecode(d *decode.D, in interface{}) interface{} {
 	fieldStr := func(d *decode.D, name string, nBytes int) string {
-		return d.FieldUTF8(name, nBytes, d.Trim(" \x00"))
+		return d.FieldUTF8(name, nBytes, scalar.Trim(" \x00"))
 	}
 	fieldNumStr := func(d *decode.D, name string, nBytes int) uint64 {
 		// TODO: some kind of FieldUScalarFn func that returns sym value?
 		var n uint64
-		d.FieldScalar(name, func(_ decode.Scalar) (decode.Scalar, error) {
+		d.FieldScalar(name, func(_ scalar.S) (scalar.S, error) {
 			a := d.UTF8NullFixedLen(nBytes)
 			ts := strings.Trim(a, " ")
 			n = uint64(0)
@@ -45,7 +46,7 @@ func tarDecode(d *decode.D, in interface{}) interface{} {
 					d.Errorf("failed to parse %s number %s: %s", name, ts, err)
 				}
 			}
-			return decode.Scalar{Actual: a, Sym: n}, nil
+			return scalar.S{Actual: a, Sym: n}, nil
 		})
 		return n
 	}
@@ -53,7 +54,7 @@ func tarDecode(d *decode.D, in interface{}) interface{} {
 		const blockBits = 512 * 8
 		blockPadding := (blockBits - (d.Pos() % blockBits)) % blockBits
 		if blockPadding > 0 {
-			d.FieldRawLen(name, blockPadding, d.BitBufIsZero)
+			d.FieldRawLen(name, blockPadding, d.BitBufIsZero())
 		}
 	}
 

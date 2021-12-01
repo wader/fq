@@ -4,6 +4,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
@@ -19,7 +20,7 @@ func init() {
 // TODO: ts_packet
 
 func tsDecode(d *decode.D, in interface{}) interface{} {
-	d.FieldU8("sync", d.AssertU(0x47), d.Hex)
+	d.FieldU8("sync", d.AssertU(0x47), scalar.Hex)
 	d.FieldBool("transport_error_indicator")
 	d.FieldBool("payload_unit_start")
 	d.FieldBool("transport_priority")

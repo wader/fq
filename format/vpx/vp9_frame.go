@@ -6,6 +6,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 // TODO: vpx frame?
@@ -17,7 +18,7 @@ const (
 	vp9FeatureChromaSubsampling = 4
 )
 
-var vp9FeatureIDNames = decode.UToStr{
+var vp9FeatureIDNames = scalar.UToSymStr{
 	vp9FeatureProfile:           "Profile",
 	vp9FeatureLevel:             "Level",
 	vp9FeatureBitDepth:          "Bit Depth",
@@ -36,7 +37,7 @@ const (
 	CS_RGB       = 7
 )
 
-var vp9ColorSpaceNames = decode.UToStr{
+var vp9ColorSpaceNames = scalar.UToSymStr{
 	CS_UNKNOWN:   "CS_UNKNOWN",
 	CS_BT_601:    "CS_BT_601",
 	CS_BT_709:    "CS_BT_709",
@@ -47,7 +48,7 @@ var vp9ColorSpaceNames = decode.UToStr{
 	CS_RGB:       "CS_RGB",
 }
 
-var vp9ProfilesMap = decode.UToScalar{
+var vp9ProfilesMap = scalar.UToScalar{
 	0: {Description: "8 bit/sample, chroma subsampling: 4:2:0"},
 	1: {Description: "8 bit, chroma subsampling: 4:2:2, 4:4:0, 4:4:4"},
 	2: {Description: "10–12 bit, chroma subsampling: 4:2:0"},
@@ -79,7 +80,7 @@ func vp9DecodeColorConfig(d *decode.D, profile int) {
 		}
 	}
 	d.FieldValueU("bit_depth", uint64(bitDepth))
-	colorSpace := d.FieldU3("color_space", d.MapUToStrSym(vp9ColorSpaceNames))
+	colorSpace := d.FieldU3("color_space", vp9ColorSpaceNames)
 	_, colorSpaceOk := vp9ColorSpaceNames[colorSpace]
 	if !colorSpaceOk || colorSpace != CS_RGB {
 		d.FieldU1("color_range")
@@ -114,7 +115,7 @@ func vp9Decode(d *decode.D, in interface{}) interface{} {
 	profileLowBit := d.FieldU1("profile_low_bit")
 	profileHighBit := d.FieldU1("profile_high_bit")
 	profile := int(profileHighBit<<1 + profileLowBit)
-	d.FieldValueU("profile", uint64(profile), d.MapUToScalar(vp9ProfilesMap))
+	d.FieldValueU("profile", uint64(profile), vp9ProfilesMap)
 	if profile == 3 {
 		d.FieldU1("reserved_zero0")
 	}
@@ -124,7 +125,7 @@ func vp9Decode(d *decode.D, in interface{}) interface{} {
 		return nil
 	}
 
-	frameType := d.FieldBool("frame_type", d.MapBoolToStrSym(decode.BoolToStr{true: "non_key_frame", false: "key_frame"}))
+	frameType := d.FieldBool("frame_type", scalar.BoolToSymStr{true: "non_key_frame", false: "key_frame"})
 	d.FieldU1("show_frame")
 	d.FieldU1("error_resilient_mode")
 

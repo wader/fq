@@ -1,9 +1,9 @@
 package jpeg
 
-import "github.com/wader/fq/pkg/decode"
+import "github.com/wader/fq/pkg/scalar"
 
 // based on https://www.adobe.com/devnet-apps/photoshop/fileformatashtml
-var psImageResourceBlockNames = decode.UToScalar{
+var psImageResourceBlockNames = scalar.UToScalar{
 	0x03E8: {Description: `Contains five 2-byte values: number of channels, rows, columns, depth, and mode`},
 	0x03E9: {Description: `Macintosh print manager print info record`},
 	0x03EA: {Description: `Macintosh page format information. No longer read by Photoshop. (Obsolete)`},

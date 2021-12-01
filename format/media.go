@@ -1,6 +1,8 @@
 package format
 
-import "github.com/wader/fq/pkg/decode"
+import (
+	"github.com/wader/fq/pkg/scalar"
+)
 
 // based on ffmpeg libavformat/isom.c ff_mp4_obj_type
 //nolint:revive
@@ -43,7 +45,7 @@ const (
 	MPEGObjectTypeNONE              = 0
 )
 
-var MpegObjectTypeNames = decode.UToStr{
+var MpegObjectTypeNames = scalar.UToSymStr{
 	MPEGObjectTypeMOV_TEXT:          "MPEGObjectTypeMOV_TEXT",
 	MPEGObjectTypeMPEG4:             "MPEGObjectTypeMPEG4",
 	MPEGObjectTypeH264:              "MPEGObjectTypeH264",
@@ -138,7 +140,7 @@ const (
 	MPEGAudioObjectTypeER_AAC_LD = 23
 )
 
-var MPEGAudioObjectTypeNames = decode.UToScalar{
+var MPEGAudioObjectTypeNames = scalar.UToScalar{
 	0:                            {Sym: "mull", Description: "Null"},
 	MPEGAudioObjectTypeMain:      {Sym: "aac_main", Description: "AAC Main"},
 	MPEGAudioObjectTypeLC:        {Sym: "aac_lc", Description: "AAC Low Complexity)"},
@@ -189,7 +191,7 @@ var MPEGAudioObjectTypeNames = decode.UToScalar{
 
 // based on ffmpeg/libavutil/pixfmt.h
 //nolint:revive
-var ISO_23091_2_ColourPrimariesMap = decode.UToScalar{
+var ISO_23091_2_ColourPrimariesMap = scalar.UToScalar{
 	1:  {Sym: "bt709", Description: "ITU-R BT1361 / IEC 61966-2-4 / SMPTE RP 177 Annex B"},
 	2:  {Sym: "unspecified", Description: "Unspecified"},
 	3:  {Sym: "reserved", Description: "Reserved"},
@@ -206,7 +208,7 @@ var ISO_23091_2_ColourPrimariesMap = decode.UToScalar{
 }
 
 //nolint:revive
-var ISO_23091_2_TransferCharacteristicMap = decode.UToScalar{
+var ISO_23091_2_TransferCharacteristicMap = scalar.UToScalar{
 	1:  {Sym: "bt709", Description: "ITU-R BT1361"},
 	2:  {Sym: "unspecified", Description: "Unspecified"},
 	3:  {Sym: "reserved", Description: "Reserved"},
@@ -228,7 +230,7 @@ var ISO_23091_2_TransferCharacteristicMap = decode.UToScalar{
 }
 
 //nolint:revive
-var ISO_23091_2_MatrixCoefficients = decode.UToScalar{
+var ISO_23091_2_MatrixCoefficients = scalar.UToScalar{
 	0:  {Sym: "rgb", Description: "GBR, IEC 61966-2-1 (sRGB), YZX and ST 428-1"},
 	1:  {Sym: "bt709", Description: "ITU-R BT1361 / IEC 61966-2-4 xvYCC709 / derived in SMPTE RP 177 Annex B"},
 	2:  {Sym: "unspecified", Description: "Unspecified"},

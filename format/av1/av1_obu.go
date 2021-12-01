@@ -4,6 +4,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
@@ -27,7 +28,7 @@ const (
 	OBU_PADDING                = 15
 )
 
-var obuTypeNames = decode.UToStr{
+var obuTypeNames = scalar.UToSymStr{
 	OBU_SEQUENCE_HEADER:        "OBU_SEQUENCE_HEADER",
 	OBU_TEMPORAL_DELIMITER:     "OBU_TEMPORAL_DELIMITER",
 	OBU_FRAME_HEADER:           "OBU_FRAME_HEADER",
@@ -59,7 +60,7 @@ func obuDecode(d *decode.D, in interface{}) interface{} {
 
 	d.FieldStruct("header", func(d *decode.D) {
 		d.FieldU1("forbidden_bit")
-		obuType = d.FieldU4("type", d.MapUToStrSym(obuTypeNames))
+		obuType = d.FieldU4("type", obuTypeNames)
 		hasExtension = d.FieldBool("extension_flag")
 		hasSizeField = d.FieldBool("has_size_field")
 		d.FieldU1("reserved_1bit")

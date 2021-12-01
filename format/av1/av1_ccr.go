@@ -8,6 +8,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
@@ -33,7 +34,7 @@ func ccrDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldU3("reserved = 0")
 	initalPreDelay := d.FieldBool("initial_presentation_delay_present")
 	if initalPreDelay {
-		d.FieldU4("initial_presentation_delay", d.UAdd(1))
+		d.FieldU4("initial_presentation_delay", scalar.UAdd(1))
 	} else {
 		d.FieldU4("reserved")
 	}

@@ -11,6 +11,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 var probeFormat decode.Group
@@ -45,7 +46,7 @@ const (
 	compressionMethodPPMd                      = 98
 )
 
-var compressionMethodMap = decode.UToStr{
+var compressionMethodMap = scalar.UToSymStr{
 	compressionMethodNone:                      "None",
 	compressionMethodShrunk:                    "Shrunk",
 	compressionMethodReducedCompressionFactor1: "ReducedCompressionFactor1",
@@ -71,7 +72,7 @@ var (
 	dataIndicatorSignature          = []byte("PK\x07\x08")
 )
 
-var headerIDMap = decode.UToScalar{
+var headerIDMap = scalar.UToScalar{
 	0x0001: {Description: "ZIP64 extended information extra field"},
 	0x0007: {Description: "AV Info"},
 	0x0009: {Description: "OS/2 extended attributes"},
@@ -188,10 +189,10 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 						d.FieldBool("language_encoding")
 						d.FieldU3("unused1")
 					})
-					d.FieldU16("compression_method", d.MapUToStrSym(compressionMethodMap))
+					d.FieldU16("compression_method", compressionMethodMap)
 					d.FieldStruct("last_modification_date", fieldMSDOSTime)
 					d.FieldStruct("last_modification_time", fieldMSDOSDate)
-					d.FieldU32("crc32_uncompressed", d.Hex)
+					d.FieldU32("crc32_uncompressed", scalar.Hex)
 					d.FieldU32("compressed_size")
 					d.FieldU32("uncompressed_size")
 					fileNameLength := d.FieldU16("file_name_length")
@@ -206,7 +207,7 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 						d.LenFn(int64(extraFieldLength)*8, func(d *decode.D) {
 							for !d.End() {
 								d.FieldStruct("extra_field", func(d *decode.D) {
-									d.FieldU16("header_id", d.MapUToScalar(headerIDMap), d.Hex)
+									d.FieldU16("header_id", headerIDMap, scalar.Hex)
 									dataSize := d.FieldU16("data_size")
 									d.FieldRawLen("data", int64(dataSize)*8)
 								})
@@ -247,10 +248,10 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 					d.FieldBool("language_encoding")
 					d.FieldU3("unused1")
 				})
-				compressionMethod := d.FieldU16("compression_method", d.MapUToStrSym(compressionMethodMap))
+				compressionMethod := d.FieldU16("compression_method", compressionMethodMap)
 				d.FieldStruct("last_modification_date", fieldMSDOSTime)
 				d.FieldStruct("last_modification_time", fieldMSDOSDate)
-				d.FieldU32("crc32_uncompressed", d.Hex)
+				d.FieldU32("crc32_uncompressed", scalar.Hex)
 				compressedSizeBytes := d.FieldU32("compressed_size")
 				d.FieldU32("uncompressed_size")
 				fileNameLength := d.FieldU16("file_name_length")
@@ -260,7 +261,7 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 					d.LenFn(int64(extraFieldLength)*8, func(d *decode.D) {
 						for !d.End() {
 							d.FieldStruct("extra_field", func(d *decode.D) {
-								d.FieldU16("header_id", d.MapUToScalar(headerIDMap), d.Hex)
+								d.FieldU16("header_id", headerIDMap, scalar.Hex)
 								dataSize := d.FieldU16("data_size")
 								d.FieldRawLen("data", int64(dataSize)*8)
 							})
@@ -312,7 +313,7 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 						if bytes.Equal(d.PeekBytes(4), dataIndicatorSignature) {
 							d.FieldRawLen("signature", 4*8, d.ValidateBitBuf(dataIndicatorSignature))
 						}
-						d.FieldU32("crc32_uncompressed", d.Hex)
+						d.FieldU32("crc32_uncompressed", scalar.Hex)
 						d.FieldU32("compressed_size")
 						d.FieldU32("uncompressed_size")
 					})

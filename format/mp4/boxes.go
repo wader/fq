@@ -9,6 +9,7 @@ import (
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 var boxAliases = map[string]string{
@@ -20,16 +21,16 @@ const (
 	boxSizeUse64bitSize = 1
 )
 
-var boxSizeNames = decode.UToScalar{
-	boxSizeRestOfFile:   decode.Scalar{Description: "Rest of file"},
-	boxSizeUse64bitSize: decode.Scalar{Description: "Use 64 bit size"},
+var boxSizeNames = scalar.UToScalar{
+	boxSizeRestOfFile:   scalar.S{Description: "Rest of file"},
+	boxSizeUse64bitSize: scalar.S{Description: "Use 64 bit size"},
 }
 
-var mediaTimeNames = decode.SToScalar{
+var mediaTimeNames = scalar.SToScalar{
 	-1: {Description: "empty"},
 }
 
-var subTypeNames = decode.StrToScalar{
+var subTypeNames = scalar.StrToScalar{
 	"alis": {Description: "Alias Data"},
 	"camm": {Description: "Camera Metadata"},
 	"crsm": {Description: "Clock Reference"},
@@ -68,15 +69,15 @@ var (
 	uuidIpodBytes         = [16]byte{0x6b, 0x68, 0x40, 0xf2, 0x5f, 0x24, 0x4f, 0xc5, 0xba, 0x39, 0xa5, 0x1b, 0xcf, 0x03, 0x23, 0xf3}
 )
 
-var uuidNames = decode.BytesToScalar{
-	{Bytes: uuidIsmlManifestBytes[:], Scalar: decode.Scalar{Sym: "isml_manifest"}},
-	{Bytes: uuidXmpBytes[:], Scalar: decode.Scalar{Sym: "xmp"}},
-	{Bytes: uuidSphericalBytes[:], Scalar: decode.Scalar{Sym: "spherical"}},
-	{Bytes: uuidPspUsmtBytes[:], Scalar: decode.Scalar{Sym: "psp_usmt"}},
-	{Bytes: uuidTfxdBytes[:], Scalar: decode.Scalar{Sym: "tfxd"}},
-	{Bytes: uuidTfrfBytes[:], Scalar: decode.Scalar{Sym: "tfrf"}},
-	{Bytes: uuidProfBytes[:], Scalar: decode.Scalar{Sym: "prof"}},
-	{Bytes: uuidIpodBytes[:], Scalar: decode.Scalar{Sym: "ipod"}},
+var uuidNames = scalar.BytesToScalar{
+	{Bytes: uuidIsmlManifestBytes[:], Scalar: scalar.S{Sym: "isml_manifest"}},
+	{Bytes: uuidXmpBytes[:], Scalar: scalar.S{Sym: "xmp"}},
+	{Bytes: uuidSphericalBytes[:], Scalar: scalar.S{Sym: "spherical"}},
+	{Bytes: uuidPspUsmtBytes[:], Scalar: scalar.S{Sym: "psp_usmt"}},
+	{Bytes: uuidTfxdBytes[:], Scalar: scalar.S{Sym: "tfxd"}},
+	{Bytes: uuidTfrfBytes[:], Scalar: scalar.S{Sym: "tfrf"}},
+	{Bytes: uuidProfBytes[:], Scalar: scalar.S{Sym: "prof"}},
+	{Bytes: uuidIpodBytes[:], Scalar: scalar.S{Sym: "ipod"}},
 }
 
 // ISO 639-2/T language code 3 * 5bit packed uint + 1 zero bit
@@ -92,14 +93,14 @@ func decodeLang(d *decode.D) string {
 // Quicktime time seconds in January 1, 1904 UTC
 var quicktimeEpochDate = time.Date(1904, time.January, 4, 0, 0, 0, 0, time.UTC)
 
-func quicktimeEpoch(s decode.Scalar) (decode.Scalar, error) {
+var quicktimeEpoch = scalar.Fn(func(s scalar.S) (scalar.S, error) {
 	uv, ok := s.Actual.(uint64)
 	if !ok {
 		return s, nil
 	}
 	s.Sym = quicktimeEpochDate.Add(time.Second * time.Duration(uv)).Format(time.RFC3339)
 	return s, nil
-}
+})
 
 func decodeFieldMatrix(d *decode.D, name string) {
 	d.FieldStruct(name, func(d *decode.D) {
@@ -119,8 +120,8 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 	var typ string
 	var dataSize uint64
 
-	boxSize := d.FieldU32("size", d.MapUToScalar(boxSizeNames))
-	typ = d.FieldUTF8("type", 4, d.MapStrToScalar(boxDescriptions))
+	boxSize := d.FieldU32("size", boxSizeNames)
+	typ = d.FieldUTF8("type", 4, boxDescriptions)
 
 	switch boxSize {
 	case boxSizeRestOfFile:
@@ -188,7 +189,7 @@ func init() {
 			numBrands := d.BitsLeft() / 8 / 4
 			var i int64
 			d.FieldArrayLoop("brands", func() bool { return i < numBrands }, func(d *decode.D) {
-				d.FieldUTF8("brand", 4, d.MapStrToScalar(brandDescriptions), d.TrimSpace)
+				d.FieldUTF8("brand", 4, brandDescriptions, scalar.TrimSpace)
 				i++
 			})
 		},
@@ -228,7 +229,7 @@ func init() {
 						t = d.S64()
 					}
 					return t
-				}, d.MapSToScalar(mediaTimeNames))
+				}, mediaTimeNames)
 				d.FieldFP32("media_rate")
 				i++
 			})
@@ -285,7 +286,7 @@ func init() {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			d.FieldUTF8NullFixedLen("component_type", 4)
-			subType := d.FieldUTF8("component_subtype", 4, d.MapStrToScalar(subTypeNames), d.TrimSpace)
+			subType := d.FieldUTF8("component_subtype", 4, subTypeNames, scalar.TrimSpace)
 			d.FieldUTF8NullFixedLen("component_manufacturer", 4)
 			d.FieldU32("component_flags")
 			d.FieldU32("component_flags_mask")
@@ -576,14 +577,14 @@ func init() {
 				for d.NotEnd() {
 					d.FieldStruct("entry", func(d *decode.D) {
 						d.FieldU2("reserved")
-						values := decode.UToStr{
+						values := scalar.UToSymStr{
 							0: "unknown",
 							1: "yes",
 							2: "no",
 						}
-						d.FieldU2("sample_depends_on", d.MapUToStrSym(values))
-						d.FieldU2("sample_is_depended_on", d.MapUToStrSym(values))
-						d.FieldU2("sample_has_redundancy", d.MapUToStrSym(values))
+						d.FieldU2("sample_depends_on", values)
+						d.FieldU2("sample_is_depended_on", values)
+						d.FieldU2("sample_has_redundancy", values)
 					})
 				}
 			})
@@ -944,15 +945,15 @@ func init() {
 				systemIDWidevine  = [16]byte{0xed, 0xef, 0x8b, 0xa9, 0x79, 0xd6, 0x4a, 0xce, 0xa3, 0xc8, 0x27, 0xdc, 0xd5, 0x1d, 0x21, 0xed}
 				systemIDPlayReady = [16]byte{0x9a, 0x04, 0xf0, 0x79, 0x98, 0x40, 0x42, 0x86, 0xab, 0x92, 0xe6, 0x5b, 0xe0, 0x88, 0x5f, 0x95}
 			)
-			systemIDNames := decode.BytesToScalar{
-				{Bytes: systemIDCommon[:], Scalar: decode.Scalar{Sym: "Common"}},
-				{Bytes: systemIDWidevine[:], Scalar: decode.Scalar{Sym: "Widevine"}},
-				{Bytes: systemIDPlayReady[:], Scalar: decode.Scalar{Sym: "PlayReady"}},
+			systemIDNames := scalar.BytesToScalar{
+				{Bytes: systemIDCommon[:], Scalar: scalar.S{Sym: "Common"}},
+				{Bytes: systemIDWidevine[:], Scalar: scalar.S{Sym: "Widevine"}},
+				{Bytes: systemIDPlayReady[:], Scalar: scalar.S{Sym: "PlayReady"}},
 			}
 
 			version := d.FieldU8("version")
 			d.FieldU24("flags")
-			systemIDBB := d.FieldRawLen("system_id", 6*8, d.MapRawToScalar(systemIDNames))
+			systemIDBB := d.FieldRawLen("system_id", 6*8, systemIDNames)
 			// TODO: make nicer
 			systemID, err := systemIDBB.Bytes()
 			if err != nil {
@@ -1011,7 +1012,7 @@ func init() {
 			d.FieldU32("v_spacing")
 		},
 		"uuid": func(_ *decodeContext, d *decode.D) {
-			d.FieldRawLen("uuid", 16*8, d.RawUUID, d.MapRawToScalar(uuidNames))
+			d.FieldRawLen("uuid", 16*8, scalar.RawUUID, uuidNames)
 			d.FieldRawLen("data", d.BitsLeft())
 		},
 		"keys": func(_ *decodeContext, d *decode.D) {

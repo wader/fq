@@ -9,6 +9,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 var ether8023FrameIPv4Format decode.Group
@@ -29,17 +30,17 @@ var ether8023FrameTypeFormat = map[uint64]*decode.Group{
 }
 
 // TODO: move to shared?
-func mapUToEtherSym(s decode.Scalar) (decode.Scalar, error) {
+var mapUToEtherSym = scalar.Fn(func(s scalar.S) (scalar.S, error) {
 	var b [8]byte
 	binary.BigEndian.PutUint64(b[:], s.ActualU())
 	s.Sym = fmt.Sprintf("%.2x:%.2x:%.2x:%.2x:%.2x:%.2x", b[2], b[3], b[4], b[5], b[6], b[7])
 	return s, nil
-}
+})
 
 func decodeEthernet(d *decode.D, in interface{}) interface{} {
-	d.FieldU("destination", 48, mapUToEtherSym, d.Hex)
-	d.FieldU("source", 48, mapUToEtherSym, d.Hex)
-	etherType := d.FieldU16("ether_type", d.MapUToScalar(format.EtherTypeMap), d.Hex)
+	d.FieldU("destination", 48, mapUToEtherSym, scalar.Hex)
+	d.FieldU("source", 48, mapUToEtherSym, scalar.Hex)
+	etherType := d.FieldU16("ether_type", format.EtherTypeMap, scalar.Hex)
 	if g, ok := ether8023FrameTypeFormat[etherType]; ok {
 		d.FieldFormatLen("packet", d.BitsLeft(), *g, nil)
 	} else {

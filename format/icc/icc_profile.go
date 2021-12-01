@@ -136,7 +136,7 @@ func iccProfileDecode(d *decode.D, in interface{}) interface{} {
 			d.FieldUTF8NullFixedLen("xyz_illuminant", 12)
 			d.FieldUTF8NullFixedLen("profile_creator_signature", 4)
 			d.FieldUTF8NullFixedLen("profile_id", 16)
-			d.FieldRawLen("reserved", 28*8, d.BitBufIsZero)
+			d.FieldRawLen("reserved", 28*8, d.BitBufIsZero())
 		})
 
 		d.FieldStruct("tag_table", func(d *decode.D) {
