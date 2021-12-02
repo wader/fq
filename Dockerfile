@@ -11,6 +11,7 @@ RUN \
 FROM base AS dev
 
 # bump: docker-golangci-lint /GOLANGCILINT_VERSION=([\d.]+)/ git:https://github.com/golangci/golangci-lint.git|^1
+# bump: docker-golangci-lint link "Release notes" https://github.com/golangci/golangci-lint/releases/tag/v$LATEST
 ARG GOLANGCILINT_VERSION=1.43.0
 RUN \
     curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | \
