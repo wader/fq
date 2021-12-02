@@ -380,7 +380,7 @@ func (bv Buffer) JQValueToGoJQ() interface{} {
 	return buf.String()
 }
 func (bv Buffer) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
-	return notUpdateableError{Key: fmt.Sprintf("%v", key), Typ: "buffer"}
+	return gojqextra.NonUpdatableTypeError{Key: fmt.Sprintf("%v", key), Typ: "buffer"}
 }
 
 func (bv Buffer) Display(w io.Writer, opts Options) error {

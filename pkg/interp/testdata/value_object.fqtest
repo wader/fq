@@ -105,19 +105,19 @@ mp3> .headers[0].flags._unknown | ., type, length?
 false
 "boolean"
 mp3> .headers[0].flags.a = 1
-error: cannot update key a for object
+error: update key a cannot be applied to: object
 mp3> .headers[0].flags[0] = 1
 error: expected an array with index 0 but got: object
 mp3> .headers[0].flags.a |= empty
-error: cannot update key a for object
+error: update key a cannot be applied to: object
 mp3> .headers[0].flags[0] |= empty
 error: expected an array with index 0 but got: object
 mp3> .headers[0].flags | setpath(["a"]; 1)
-error: cannot update key a for object
+error: update key a cannot be applied to: object
 mp3> .headers[0].flags | setpath([0]; 1)
-error: cannot update key 0 for object
+error: update key 0 cannot be applied to: object
 mp3> .headers[0].flags | delpaths([["a"]])
-error: cannot update key a for object
+error: update key a cannot be applied to: object
 mp3> .headers[0].flags | delpaths([[0]])
-error: cannot update key 0 for object
+error: update key 0 cannot be applied to: object
 mp3> ^D

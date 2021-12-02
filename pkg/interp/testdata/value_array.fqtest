@@ -184,19 +184,19 @@ mp3> .headers._unknown | ., type, length?
 false
 "boolean"
 mp3> .headers.a = 1
-error: cannot update key a for array
+error: update key a cannot be applied to: array
 mp3> .headers[0] = 1
-error: cannot update key 0 for array
+error: update key 0 cannot be applied to: array
 mp3> .headers.a |= empty
 error: expected an object with key "a" but got: array
 mp3> .headers[0] |= empty
-error: cannot update key 0 for array
+error: update key 0 cannot be applied to: array
 mp3> .headers | setpath(["a"]; 1)
-error: cannot update key a for array
+error: update key a cannot be applied to: array
 mp3> .headers | setpath([0]; 1)
-error: cannot update key 0 for array
+error: update key 0 cannot be applied to: array
 mp3> .headers | delpaths([["a"]])
-error: cannot update key a for array
+error: update key a cannot be applied to: array
 mp3> .headers | delpaths([[0]])
-error: cannot update key 0 for array
+error: update key 0 cannot be applied to: array
 mp3> ^D

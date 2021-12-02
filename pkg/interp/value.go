@@ -37,15 +37,6 @@ func (err expectedExtkeyError) Error() string {
 	return "expected a extkey but got: " + err.Key
 }
 
-type notUpdateableError struct {
-	Typ string
-	Key string
-}
-
-func (err notUpdateableError) Error() string {
-	return fmt.Sprintf("cannot update key %s for %s", err.Key, err.Typ)
-}
-
 // TODO: redo/rename
 // used by _isDecodeValue
 type DecodeValue interface {
@@ -503,7 +494,7 @@ func (v ArrayDecodeValue) JQValueSlice(start int, end int) interface{} {
 	return vs
 }
 func (v ArrayDecodeValue) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
-	return notUpdateableError{Key: fmt.Sprintf("%v", key), Typ: "array"}
+	return gojqextra.NonUpdatableTypeError{Key: fmt.Sprintf("%v", key), Typ: "array"}
 }
 func (v ArrayDecodeValue) JQValueEach() interface{} {
 	props := make([]gojq.PathValue, len(*v.Compound.Children))
@@ -572,7 +563,7 @@ func (v StructDecodeValue) JQValueKey(name string) interface{} {
 	return nil
 }
 func (v StructDecodeValue) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
-	return notUpdateableError{Key: fmt.Sprintf("%v", key), Typ: "object"}
+	return gojqextra.NonUpdatableTypeError{Key: fmt.Sprintf("%v", key), Typ: "object"}
 }
 func (v StructDecodeValue) JQValueEach() interface{} {
 	props := make([]gojq.PathValue, len(*v.Compound.Children))
