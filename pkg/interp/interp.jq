@@ -1,7 +1,7 @@
 include "internal";
 include "options";
 include "match";
-include "value";
+include "decode";
 include "buffer";
 include "funcs";
 include "grep";
