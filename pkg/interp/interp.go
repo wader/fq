@@ -184,7 +184,7 @@ func valuePath(v *decode.Value) []interface{} {
 
 	for v.Parent != nil {
 		switch vv := v.Parent.V.(type) {
-		case decode.Compound:
+		case *decode.Compound:
 			if vv.IsArray {
 				parts = append([]interface{}{v.Index}, parts...)
 			} else {

@@ -81,7 +81,7 @@ func decode(ctx context.Context, bb *bitio.Buffer, group Group, opts Options) (*
 				formatsErr.Errs = append(formatsErr.Errs, formatErr)
 
 				switch vv := d.Value.V.(type) {
-				case Compound:
+				case *Compound:
 					// TODO: hack, changes V
 					vv.Err = formatErr
 					d.Value.V = vv
@@ -144,9 +144,9 @@ func newDecoder(ctx context.Context, format Format, bb *bitio.Buffer, opts Optio
 	if opts.Name != "" {
 		name = opts.Name
 	}
-	rootV := Compound{
+	rootV := &Compound{
 		IsArray:     format.RootArray,
-		Children:    new([]*Value),
+		Children:    nil,
 		Description: opts.Description,
 		Format:      &format,
 	}
@@ -219,7 +219,7 @@ func (d *D) FillGaps(r ranges.Range, namePrefix string) {
 	makeWalkFn := func(fn func(iv *Value)) func(iv *Value, rootV *Value, depth int, rootDepth int) error {
 		return func(iv *Value, rootV *Value, depth int, rootDepth int) error {
 			switch iv.V.(type) {
-			case Compound:
+			case *Compound:
 			default:
 				fn(iv)
 			}
@@ -247,7 +247,7 @@ func (d *D) FillGaps(r ranges.Range, namePrefix string) {
 
 		v := &Value{
 			Name: fmt.Sprintf("%s%d", namePrefix, i),
-			V: scalar.S{
+			V: &scalar.S{
 				Actual:  bb,
 				Unknown: true,
 			},
@@ -505,45 +505,22 @@ func (d *D) AddChild(v *Value) {
 	v.Parent = d.Value
 
 	switch fv := d.Value.V.(type) {
-	case Compound:
+	case *Compound:
 		if !fv.IsArray {
-			for _, ff := range *fv.Children {
+			for _, ff := range fv.Children {
 				if ff.Name == v.Name {
 					d.Fatalf("%q already exist in struct %s", v.Name, d.Value.Name)
 				}
 			}
 		}
-		*fv.Children = append(*fv.Children, v)
+		fv.Children = append(fv.Children, v)
 	}
-}
-
-func (d *D) FieldRemove(name string) *Value {
-	switch fv := d.Value.V.(type) {
-	case Compound:
-		for fi, ff := range *fv.Children {
-			if ff.Name == name {
-				*fv.Children = append((*fv.Children)[0:fi], (*fv.Children)[fi+1:]...)
-				d.Value.V = fv
-				return ff
-			}
-		}
-		panic(fmt.Sprintf("%s not found in struct %s", name, d.Value.Name))
-	default:
-		panic(fmt.Sprintf("%s is not a struct", d.Value.Name))
-	}
-}
-
-func (d *D) FieldMustRemove(name string) *Value {
-	if v := d.FieldRemove(name); v != nil {
-		return v
-	}
-	panic(fmt.Sprintf("%s not found in struct %s", name, d.Value.Name))
 }
 
 func (d *D) FieldGet(name string) *Value {
 	switch fv := d.Value.V.(type) {
-	case Compound:
-		for _, ff := range *fv.Children {
+	case *Compound:
+		for _, ff := range fv.Children {
 			if ff.Name == name {
 				return ff
 			}
@@ -562,7 +539,7 @@ func (d *D) FieldMustGet(name string) *Value {
 }
 
 func (d *D) FieldArray(name string, fn func(d *D), sms ...scalar.Mapper) *D {
-	cd := d.FieldDecoder(name, d.bitBuf, Compound{IsArray: true, Children: new([]*Value)})
+	cd := d.FieldDecoder(name, d.bitBuf, &Compound{IsArray: true})
 	d.AddChild(cd.Value)
 	fn(cd)
 	return cd
@@ -573,7 +550,7 @@ func (d *D) FieldArrayValue(name string) *D {
 }
 
 func (d *D) FieldStruct(name string, fn func(d *D)) *D {
-	cd := d.FieldDecoder(name, d.bitBuf, Compound{Children: new([]*Value)})
+	cd := d.FieldDecoder(name, d.bitBuf, &Compound{})
 	d.AddChild(cd.Value)
 	fn(cd)
 	return cd
@@ -666,8 +643,8 @@ func (d *D) LenFn(nBits int64, fn func(d *D)) {
 func (d *D) RangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 	var subV interface{}
 	switch vv := d.Value.V.(type) {
-	case Compound:
-		subV = Compound{IsArray: vv.IsArray, Children: new([]*Value)}
+	case *Compound:
+		subV = &Compound{IsArray: vv.IsArray}
 	default:
 		panic("unreachable")
 	}
@@ -692,8 +669,8 @@ func (d *D) RangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 	}
 
 	switch vv := sd.Value.V.(type) {
-	case Compound:
-		for _, f := range *vv.Children {
+	case *Compound:
+		for _, f := range vv.Children {
 			d.AddChild(f)
 		}
 	default:
@@ -715,8 +692,8 @@ func (d *D) Format(group Group, inArg interface{}) interface{} {
 	}
 
 	switch vv := dv.V.(type) {
-	case Compound:
-		for _, f := range *vv.Children {
+	case *Compound:
+		for _, f := range vv.Children {
 			d.AddChild(f)
 		}
 	default:
@@ -851,7 +828,7 @@ func (d *D) FieldFormatBitBuf(name string, bb *bitio.Buffer, group Group, inArg 
 // TODO: rethink this
 func (d *D) FieldRootBitBuf(name string, bb *bitio.Buffer) *Value {
 	v := &Value{}
-	v.V = scalar.S{Actual: bb}
+	v.V = &scalar.S{Actual: bb}
 	v.Name = name
 	v.RootBitBuf = bb
 	v.IsRoot = true
@@ -862,7 +839,7 @@ func (d *D) FieldRootBitBuf(name string, bb *bitio.Buffer) *Value {
 }
 
 func (d *D) FieldStructRootBitBufFn(name string, bb *bitio.Buffer, fn func(d *D)) *Value {
-	cd := d.FieldDecoder(name, bb, Compound{Children: new([]*Value)})
+	cd := d.FieldDecoder(name, bb, &Compound{})
 	cd.Value.IsRoot = true
 	d.AddChild(cd.Value)
 	fn(cd)
@@ -949,30 +926,47 @@ func (d *D) FieldValue(name string, fn func() *Value) *Value {
 }
 
 // looks a bit weird to force at least one ScalarFn arg
-func (d *D) TryFieldScalar(name string, sfn scalar.Fn, sms ...scalar.Mapper) (scalar.S, error) {
+func (d *D) TryFieldScalar(name string, sfn scalar.Fn, sms ...scalar.Mapper) (*scalar.S, error) {
 	v, err := d.TryFieldValue(name, func() (*Value, error) {
 		s, err := sfn(scalar.S{})
 		if err != nil {
-			return &Value{V: s}, err
+			return &Value{V: &s}, err
 		}
 		for _, sm := range sms {
 			s, err = sm.MapScalar(s)
 			if err != nil {
-				return &Value{V: s}, err
+				return &Value{V: &s}, err
 			}
 		}
-		return &Value{V: s}, nil
+		return &Value{V: &s}, nil
 	})
 	if err != nil {
-		return scalar.S{}, err
+		return &scalar.S{}, err
 	}
-	return v.V.(scalar.S), nil
+	return v.V.(*scalar.S), nil
 }
 
-func (d *D) FieldScalar(name string, sfn scalar.Fn, sms ...scalar.Mapper) scalar.S {
+func (d *D) FieldScalar(name string, sfn scalar.Fn, sms ...scalar.Mapper) *scalar.S {
 	v, err := d.TryFieldScalar(name, sfn, sms...)
 	if err != nil {
 		panic(err)
 	}
 	return v
+}
+
+func (v *Value) TryScalarFn(sms ...scalar.Mapper) error {
+	var err error
+	sr, ok := v.V.(*scalar.S)
+	if !ok {
+		panic("not a scalar value")
+	}
+	s := *sr
+	for _, sm := range sms {
+		s, err = sm.MapScalar(s)
+		if err != nil {
+			break
+		}
+	}
+	v.V = &s
+	return err
 }

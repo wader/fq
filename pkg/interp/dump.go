@@ -27,7 +27,7 @@ const (
 
 func isCompound(v *decode.Value) bool {
 	switch v.V.(type) {
-	case decode.Compound:
+	case *decode.Compound:
 		return true
 	default:
 		return false
@@ -67,9 +67,9 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 	isInArray := false
 	inArrayLen := 0
 	if v.Parent != nil {
-		if dc, ok := v.Parent.V.(decode.Compound); ok {
+		if dc, ok := v.Parent.V.(*decode.Compound); ok {
 			isInArray = dc.IsArray
-			inArrayLen = len(*dc.Children)
+			inArrayLen = len(dc.Children)
 		}
 	}
 
@@ -126,9 +126,9 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 	// TODO: cleanup map[string]interface{} []interface{} or json format
 	// dump should use some internal interface instead?
 	switch vv := v.V.(type) {
-	case decode.Compound:
+	case *decode.Compound:
 		if vv.IsArray {
-			cfmt(colField, " %s%s%s", deco.Index.F("["), deco.Number.F(strconv.Itoa(len(*vv.Children))), deco.Index.F("]"))
+			cfmt(colField, " %s%s%s", deco.Index.F("["), deco.Number.F(strconv.Itoa(len(vv.Children))), deco.Index.F("]"))
 		} else {
 			cfmt(colField, " %s", deco.Object.F("{}"))
 		}
@@ -140,7 +140,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 		}
 
 		valueErr = vv.Err
-	case scalar.S:
+	case *scalar.S:
 		// TODO: rethink scalar array/struct (json format)
 		switch av := vv.Actual.(type) {
 		case map[string]interface{}:
@@ -160,7 +160,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 			}
 		}
 	default:
-		panic("unreachable")
+		panic(fmt.Sprintf("unreachable vv %#+v", vv))
 	}
 
 	innerRange := v.InnerRange()
@@ -354,7 +354,7 @@ func hexdump(w io.Writer, bv Buffer, opts Options) error {
 	return dump(
 		&decode.Value{
 			// TODO: hack
-			V:          scalar.S{Actual: bb},
+			V:          &scalar.S{Actual: bb},
 			Range:      bv.r,
 			RootBitBuf: bv.bb.Clone(),
 		},

@@ -42,7 +42,7 @@ func (d *D) TryFieldBitBufFn(name string, fn func(d *D) (*bitio.Buffer, error), 
 }
 
 // TryFieldScalarBitBufFn tries to add a field, calls *bitio.Buffer decode function and returns scalar
-func (d *D) TryFieldScalarBitBufFn(name string, fn func(d *D) (*bitio.Buffer, error), sms ...scalar.Mapper) (scalar.S, error) {
+func (d *D) TryFieldScalarBitBufFn(name string, fn func(d *D) (*bitio.Buffer, error), sms ...scalar.Mapper) (*scalar.S, error) {
 	return d.TryFieldScalar(name, func(_ scalar.S) (scalar.S, error) {
 		v, err := fn(d)
 		return scalar.S{Actual: v}, err
@@ -50,7 +50,7 @@ func (d *D) TryFieldScalarBitBufFn(name string, fn func(d *D) (*bitio.Buffer, er
 }
 
 // FieldScalarBitBufFn tries to add a field, calls *bitio.Buffer decode function and returns scalar
-func (d *D) FieldScalarBitBufFn(name string, fn func(d *D) *bitio.Buffer, sms ...scalar.Mapper) scalar.S {
+func (d *D) FieldScalarBitBufFn(name string, fn func(d *D) *bitio.Buffer, sms ...scalar.Mapper) *scalar.S {
 	v, err := d.TryFieldScalarBitBufFn(name, func(d *D) (*bitio.Buffer, error) { return fn(d), nil }, sms...)
 	if err != nil {
 		panic(IOError{Err: err, Name: name, Op: "BitBuf", Pos: d.Pos()})
@@ -92,7 +92,7 @@ func (d *D) TryFieldBoolFn(name string, fn func(d *D) (bool, error), sms ...scal
 }
 
 // TryFieldScalarBoolFn tries to add a field, calls bool decode function and returns scalar
-func (d *D) TryFieldScalarBoolFn(name string, fn func(d *D) (bool, error), sms ...scalar.Mapper) (scalar.S, error) {
+func (d *D) TryFieldScalarBoolFn(name string, fn func(d *D) (bool, error), sms ...scalar.Mapper) (*scalar.S, error) {
 	return d.TryFieldScalar(name, func(_ scalar.S) (scalar.S, error) {
 		v, err := fn(d)
 		return scalar.S{Actual: v}, err
@@ -100,7 +100,7 @@ func (d *D) TryFieldScalarBoolFn(name string, fn func(d *D) (bool, error), sms .
 }
 
 // FieldScalarBoolFn tries to add a field, calls bool decode function and returns scalar
-func (d *D) FieldScalarBoolFn(name string, fn func(d *D) bool, sms ...scalar.Mapper) scalar.S {
+func (d *D) FieldScalarBoolFn(name string, fn func(d *D) bool, sms ...scalar.Mapper) *scalar.S {
 	v, err := d.TryFieldScalarBoolFn(name, func(d *D) (bool, error) { return fn(d), nil }, sms...)
 	if err != nil {
 		panic(IOError{Err: err, Name: name, Op: "Bool", Pos: d.Pos()})
@@ -142,7 +142,7 @@ func (d *D) TryFieldFFn(name string, fn func(d *D) (float64, error), sms ...scal
 }
 
 // TryFieldScalarFFn tries to add a field, calls float64 decode function and returns scalar
-func (d *D) TryFieldScalarFFn(name string, fn func(d *D) (float64, error), sms ...scalar.Mapper) (scalar.S, error) {
+func (d *D) TryFieldScalarFFn(name string, fn func(d *D) (float64, error), sms ...scalar.Mapper) (*scalar.S, error) {
 	return d.TryFieldScalar(name, func(_ scalar.S) (scalar.S, error) {
 		v, err := fn(d)
 		return scalar.S{Actual: v}, err
@@ -150,7 +150,7 @@ func (d *D) TryFieldScalarFFn(name string, fn func(d *D) (float64, error), sms .
 }
 
 // FieldScalarFFn tries to add a field, calls float64 decode function and returns scalar
-func (d *D) FieldScalarFFn(name string, fn func(d *D) float64, sms ...scalar.Mapper) scalar.S {
+func (d *D) FieldScalarFFn(name string, fn func(d *D) float64, sms ...scalar.Mapper) *scalar.S {
 	v, err := d.TryFieldScalarFFn(name, func(d *D) (float64, error) { return fn(d), nil }, sms...)
 	if err != nil {
 		panic(IOError{Err: err, Name: name, Op: "F", Pos: d.Pos()})
@@ -192,7 +192,7 @@ func (d *D) TryFieldSFn(name string, fn func(d *D) (int64, error), sms ...scalar
 }
 
 // TryFieldScalarSFn tries to add a field, calls int64 decode function and returns scalar
-func (d *D) TryFieldScalarSFn(name string, fn func(d *D) (int64, error), sms ...scalar.Mapper) (scalar.S, error) {
+func (d *D) TryFieldScalarSFn(name string, fn func(d *D) (int64, error), sms ...scalar.Mapper) (*scalar.S, error) {
 	return d.TryFieldScalar(name, func(_ scalar.S) (scalar.S, error) {
 		v, err := fn(d)
 		return scalar.S{Actual: v}, err
@@ -200,7 +200,7 @@ func (d *D) TryFieldScalarSFn(name string, fn func(d *D) (int64, error), sms ...
 }
 
 // FieldScalarSFn tries to add a field, calls int64 decode function and returns scalar
-func (d *D) FieldScalarSFn(name string, fn func(d *D) int64, sms ...scalar.Mapper) scalar.S {
+func (d *D) FieldScalarSFn(name string, fn func(d *D) int64, sms ...scalar.Mapper) *scalar.S {
 	v, err := d.TryFieldScalarSFn(name, func(d *D) (int64, error) { return fn(d), nil }, sms...)
 	if err != nil {
 		panic(IOError{Err: err, Name: name, Op: "S", Pos: d.Pos()})
@@ -242,7 +242,7 @@ func (d *D) TryFieldStrFn(name string, fn func(d *D) (string, error), sms ...sca
 }
 
 // TryFieldScalarStrFn tries to add a field, calls string decode function and returns scalar
-func (d *D) TryFieldScalarStrFn(name string, fn func(d *D) (string, error), sms ...scalar.Mapper) (scalar.S, error) {
+func (d *D) TryFieldScalarStrFn(name string, fn func(d *D) (string, error), sms ...scalar.Mapper) (*scalar.S, error) {
 	return d.TryFieldScalar(name, func(_ scalar.S) (scalar.S, error) {
 		v, err := fn(d)
 		return scalar.S{Actual: v}, err
@@ -250,7 +250,7 @@ func (d *D) TryFieldScalarStrFn(name string, fn func(d *D) (string, error), sms 
 }
 
 // FieldScalarStrFn tries to add a field, calls string decode function and returns scalar
-func (d *D) FieldScalarStrFn(name string, fn func(d *D) string, sms ...scalar.Mapper) scalar.S {
+func (d *D) FieldScalarStrFn(name string, fn func(d *D) string, sms ...scalar.Mapper) *scalar.S {
 	v, err := d.TryFieldScalarStrFn(name, func(d *D) (string, error) { return fn(d), nil }, sms...)
 	if err != nil {
 		panic(IOError{Err: err, Name: name, Op: "Str", Pos: d.Pos()})
@@ -292,7 +292,7 @@ func (d *D) TryFieldUFn(name string, fn func(d *D) (uint64, error), sms ...scala
 }
 
 // TryFieldScalarUFn tries to add a field, calls uint64 decode function and returns scalar
-func (d *D) TryFieldScalarUFn(name string, fn func(d *D) (uint64, error), sms ...scalar.Mapper) (scalar.S, error) {
+func (d *D) TryFieldScalarUFn(name string, fn func(d *D) (uint64, error), sms ...scalar.Mapper) (*scalar.S, error) {
 	return d.TryFieldScalar(name, func(_ scalar.S) (scalar.S, error) {
 		v, err := fn(d)
 		return scalar.S{Actual: v}, err
@@ -300,7 +300,7 @@ func (d *D) TryFieldScalarUFn(name string, fn func(d *D) (uint64, error), sms ..
 }
 
 // FieldScalarUFn tries to add a field, calls uint64 decode function and returns scalar
-func (d *D) FieldScalarUFn(name string, fn func(d *D) uint64, sms ...scalar.Mapper) scalar.S {
+func (d *D) FieldScalarUFn(name string, fn func(d *D) uint64, sms ...scalar.Mapper) *scalar.S {
 	v, err := d.TryFieldScalarUFn(name, func(d *D) (uint64, error) { return fn(d), nil }, sms...)
 	if err != nil {
 		panic(IOError{Err: err, Name: name, Op: "U", Pos: d.Pos()})

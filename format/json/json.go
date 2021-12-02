@@ -38,7 +38,7 @@ func decodeJSON(d *decode.D, in interface{}) interface{} {
 		d.Fatalf("root not object or array")
 	}
 
-	d.Value.V = s
+	d.Value.V = &s
 	d.Value.Range.Len = d.Len()
 
 	return nil

@@ -183,12 +183,12 @@ func toValue(optsFn func() Options, v interface{}) (interface{}, bool) {
 
 func makeDecodeValue(dv *decode.Value) interface{} {
 	switch vv := dv.V.(type) {
-	case decode.Compound:
+	case *decode.Compound:
 		if vv.IsArray {
 			return NewArrayDecodeValue(dv, vv)
 		}
 		return NewStructDecodeValue(dv, vv)
-	case scalar.S:
+	case *scalar.S:
 		switch vv := vv.Value().(type) {
 		case *bitio.Buffer:
 			// is lazy so that in situations where the decode value is only used to
@@ -255,10 +255,10 @@ func makeDecodeValue(dv *decode.Value) interface{} {
 				decodeValueBase: decodeValueBase{dv},
 			}
 		default:
-			panic("unreachable")
+			panic(fmt.Sprintf("unreachable vv %#+v", vv))
 		}
 	default:
-		panic("unreachable")
+		panic(fmt.Sprintf("unreachable dv %#+v", dv))
 	}
 }
 
@@ -293,7 +293,7 @@ func (dvb decodeValueBase) ExtKeys() []string {
 		"_unknown",
 	}
 
-	if _, ok := dvb.dv.V.(decode.Compound); ok {
+	if _, ok := dvb.dv.V.(*decode.Compound); ok {
 		kv = append(kv,
 			"_error",
 			"_format",
@@ -330,7 +330,7 @@ func (dvb decodeValueBase) JQValueKey(name string) interface{} {
 		return makeDecodeValue(dv.Parent)
 	case "_actual":
 		switch vv := dv.V.(type) {
-		case scalar.S:
+		case *scalar.S:
 			jv, ok := gojqextra.ToGoJQValue(vv.Actual)
 			if !ok {
 				return fmt.Errorf("can't convert actual value jq value %#+v", vv.Actual)
@@ -341,7 +341,7 @@ func (dvb decodeValueBase) JQValueKey(name string) interface{} {
 		}
 	case "_sym":
 		switch vv := dv.V.(type) {
-		case scalar.S:
+		case *scalar.S:
 			jv, ok := gojqextra.ToGoJQValue(vv.Sym)
 			if !ok {
 				return fmt.Errorf("can't convert sym value jq value %#+v", vv.Actual)
@@ -352,12 +352,12 @@ func (dvb decodeValueBase) JQValueKey(name string) interface{} {
 		}
 	case "_description":
 		switch vv := dv.V.(type) {
-		case decode.Compound:
+		case *decode.Compound:
 			if vv.Description == "" {
 				return nil
 			}
 			return vv.Description
-		case scalar.S:
+		case *scalar.S:
 			if vv.Description == "" {
 				return nil
 			}
@@ -369,7 +369,7 @@ func (dvb decodeValueBase) JQValueKey(name string) interface{} {
 		return valuePath(dv)
 	case "_error":
 		switch vv := dv.V.(type) {
-		case decode.Compound:
+		case *decode.Compound:
 			var formatErr decode.FormatError
 			if errors.As(vv.Err, &formatErr) {
 				return formatErr.Value()
@@ -393,12 +393,12 @@ func (dvb decodeValueBase) JQValueKey(name string) interface{} {
 		}
 	case "_format":
 		switch vv := dv.V.(type) {
-		case decode.Compound:
+		case *decode.Compound:
 			if vv.Format != nil {
 				return vv.Format.Name
 			}
 			return nil
-		case scalar.S:
+		case *scalar.S:
 			// TODO: hack, Scalar interface?
 			switch vv.Actual.(type) {
 			case map[string]interface{}, []interface{}:
@@ -411,7 +411,7 @@ func (dvb decodeValueBase) JQValueKey(name string) interface{} {
 		}
 	case "_unknown":
 		switch vv := dv.V.(type) {
-		case scalar.S:
+		case *scalar.S:
 			return vv.Unknown
 		default:
 			return false
@@ -463,32 +463,32 @@ var _ DecodeValue = ArrayDecodeValue{}
 type ArrayDecodeValue struct {
 	gojqextra.Base
 	decodeValueBase
-	decode.Compound
+	*decode.Compound
 }
 
-func NewArrayDecodeValue(dv *decode.Value, a decode.Compound) ArrayDecodeValue {
+func NewArrayDecodeValue(dv *decode.Value, c *decode.Compound) ArrayDecodeValue {
 	return ArrayDecodeValue{
 		decodeValueBase: decodeValueBase{dv},
 		Base:            gojqextra.Base{Typ: "array"},
-		Compound:        a,
+		Compound:        c,
 	}
 }
 
 func (v ArrayDecodeValue) JQValueKey(name string) interface{} {
 	return valueKey(name, v.decodeValueBase.JQValueKey, v.Base.JQValueKey)
 }
-func (v ArrayDecodeValue) JQValueSliceLen() interface{} { return len(*v.Compound.Children) }
-func (v ArrayDecodeValue) JQValueLength() interface{}   { return len(*v.Compound.Children) }
+func (v ArrayDecodeValue) JQValueSliceLen() interface{} { return len(v.Compound.Children) }
+func (v ArrayDecodeValue) JQValueLength() interface{}   { return len(v.Compound.Children) }
 func (v ArrayDecodeValue) JQValueIndex(index int) interface{} {
 	// -1 outside after string, -2 outside before string
 	if index < 0 {
 		return nil
 	}
-	return makeDecodeValue((*v.Compound.Children)[index])
+	return makeDecodeValue((v.Compound.Children)[index])
 }
 func (v ArrayDecodeValue) JQValueSlice(start int, end int) interface{} {
 	vs := make([]interface{}, end-start)
-	for i, e := range (*v.Compound.Children)[start:end] {
+	for i, e := range (v.Compound.Children)[start:end] {
 		vs[i] = makeDecodeValue(e)
 	}
 	return vs
@@ -497,15 +497,15 @@ func (v ArrayDecodeValue) JQValueUpdate(key interface{}, u interface{}, delpath 
 	return gojqextra.NonUpdatableTypeError{Key: fmt.Sprintf("%v", key), Typ: "array"}
 }
 func (v ArrayDecodeValue) JQValueEach() interface{} {
-	props := make([]gojq.PathValue, len(*v.Compound.Children))
-	for i, f := range *v.Compound.Children {
+	props := make([]gojq.PathValue, len(v.Compound.Children))
+	for i, f := range v.Compound.Children {
 		props[i] = gojq.PathValue{Path: i, Value: makeDecodeValue(f)}
 	}
 	return props
 }
 func (v ArrayDecodeValue) JQValueKeys() interface{} {
-	vs := make([]interface{}, len(*v.Compound.Children))
-	for i := range *v.Compound.Children {
+	vs := make([]interface{}, len(v.Compound.Children))
+	for i := range v.Compound.Children {
 		vs[i] = i
 	}
 	return vs
@@ -519,12 +519,12 @@ func (v ArrayDecodeValue) JQValueHas(key interface{}) interface{} {
 			if !ok {
 				return gojqextra.HasKeyTypeError{L: "array", R: fmt.Sprintf("%v", key)}
 			}
-			return intKey >= 0 && intKey < len(*v.Compound.Children)
+			return intKey >= 0 && intKey < len(v.Compound.Children)
 		})
 }
 func (v ArrayDecodeValue) JQValueToGoJQ() interface{} {
-	vs := make([]interface{}, len(*v.Compound.Children))
-	for i, f := range *v.Compound.Children {
+	vs := make([]interface{}, len(v.Compound.Children))
+	for i, f := range v.Compound.Children {
 		vs[i] = makeDecodeValue(f)
 	}
 	return vs
@@ -537,25 +537,25 @@ var _ DecodeValue = StructDecodeValue{}
 type StructDecodeValue struct {
 	gojqextra.Base
 	decodeValueBase
-	decode.Compound
+	*decode.Compound
 }
 
-func NewStructDecodeValue(dv *decode.Value, s decode.Compound) StructDecodeValue {
+func NewStructDecodeValue(dv *decode.Value, c *decode.Compound) StructDecodeValue {
 	return StructDecodeValue{
 		decodeValueBase: decodeValueBase{dv},
 		Base:            gojqextra.Base{Typ: "object"},
-		Compound:        s,
+		Compound:        c,
 	}
 }
 
-func (v StructDecodeValue) JQValueLength() interface{}   { return len(*v.Compound.Children) }
-func (v StructDecodeValue) JQValueSliceLen() interface{} { return len(*v.Compound.Children) }
+func (v StructDecodeValue) JQValueLength() interface{}   { return len(v.Compound.Children) }
+func (v StructDecodeValue) JQValueSliceLen() interface{} { return len(v.Compound.Children) }
 func (v StructDecodeValue) JQValueKey(name string) interface{} {
 	if strings.HasPrefix(name, "_") {
 		return v.decodeValueBase.JQValueKey(name)
 	}
 
-	for _, f := range *v.Compound.Children {
+	for _, f := range v.Compound.Children {
 		if f.Name == name {
 			return makeDecodeValue(f)
 		}
@@ -566,15 +566,15 @@ func (v StructDecodeValue) JQValueUpdate(key interface{}, u interface{}, delpath
 	return gojqextra.NonUpdatableTypeError{Key: fmt.Sprintf("%v", key), Typ: "object"}
 }
 func (v StructDecodeValue) JQValueEach() interface{} {
-	props := make([]gojq.PathValue, len(*v.Compound.Children))
-	for i, f := range *v.Compound.Children {
+	props := make([]gojq.PathValue, len(v.Compound.Children))
+	for i, f := range v.Compound.Children {
 		props[i] = gojq.PathValue{Path: f.Name, Value: makeDecodeValue(f)}
 	}
 	return props
 }
 func (v StructDecodeValue) JQValueKeys() interface{} {
-	vs := make([]interface{}, len(*v.Compound.Children))
-	for i, f := range *v.Compound.Children {
+	vs := make([]interface{}, len(v.Compound.Children))
+	for i, f := range v.Compound.Children {
 		vs[i] = f.Name
 	}
 	return vs
@@ -588,7 +588,7 @@ func (v StructDecodeValue) JQValueHas(key interface{}) interface{} {
 			if !ok {
 				return gojqextra.HasKeyTypeError{L: "object", R: fmt.Sprintf("%v", key)}
 			}
-			for _, f := range *v.Compound.Children {
+			for _, f := range v.Compound.Children {
 				if f.Name == stringKey {
 					return true
 				}
@@ -598,8 +598,8 @@ func (v StructDecodeValue) JQValueHas(key interface{}) interface{} {
 	)
 }
 func (v StructDecodeValue) JQValueToGoJQ() interface{} {
-	vm := make(map[string]interface{}, len(*v.Compound.Children))
-	for _, f := range *v.Compound.Children {
+	vm := make(map[string]interface{}, len(v.Compound.Children))
+	for _, f := range v.Compound.Children {
 		vm[f.Name] = makeDecodeValue(f)
 	}
 	return vm

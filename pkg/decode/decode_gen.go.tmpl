@@ -43,7 +43,7 @@ import (
 	}
 
 	// TryFieldScalar{{$name}}Fn tries to add a field, calls {{$t.go_type}} decode function and returns scalar
-	func (d *D) TryFieldScalar{{$name}}Fn(name string, fn func(d *D) ({{$t.go_type}}, error), sms ...scalar.Mapper) (scalar.S, error) {
+	func (d *D) TryFieldScalar{{$name}}Fn(name string, fn func(d *D) ({{$t.go_type}}, error), sms ...scalar.Mapper) (*scalar.S, error) {
 		return d.TryFieldScalar(name, func(_ scalar.S) (scalar.S, error) {
 			v, err := fn(d)
 			return scalar.S{Actual: v}, err
@@ -51,7 +51,7 @@ import (
 	}
 
 	// FieldScalar{{$name}}Fn tries to add a field, calls {{$t.go_type}} decode function and returns scalar
-	func (d *D) FieldScalar{{$name}}Fn(name string, fn func(d *D) {{$t.go_type}}, sms ...scalar.Mapper) scalar.S {
+	func (d *D) FieldScalar{{$name}}Fn(name string, fn func(d *D) {{$t.go_type}}, sms ...scalar.Mapper) *scalar.S {
 		v, err := d.TryFieldScalar{{$name}}Fn(name, func(d *D) ({{$t.go_type}}, error) { return fn(d), nil }, sms...)
 		if err != nil {
 			panic(IOError{Err: err, Name: name, Op: "{{$name}}", Pos: d.Pos()})

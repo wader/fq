@@ -9,12 +9,11 @@ import (
 
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/ranges"
-	"github.com/wader/fq/pkg/scalar"
 )
 
 type Compound struct {
 	IsArray  bool
-	Children *[]*Value
+	Children []*Value
 
 	Description string
 	Format      *Format
@@ -24,7 +23,7 @@ type Compound struct {
 type Value struct {
 	Parent     *Value
 	Name       string
-	V          interface{} // Scalar, Array, Struct
+	V          interface{} // scalar.S or Compound (array/struct)
 	Index      int         // index in parent array/struct
 	Range      ranges.Range
 	RootBitBuf *bitio.Buffer
@@ -73,8 +72,8 @@ func (v *Value) Walk(opts WalkOpts) error {
 		}
 
 		switch wvv := wv.V.(type) {
-		case Compound:
-			for _, wv := range *wvv.Children {
+		case *Compound:
+			for _, wv := range wvv.Children {
 				if err := walkFn(wv, rootV, depth+1, rootDepth+rootDepthDelta); err != nil {
 					if errors.Is(err, ErrWalkBreak) {
 						break
@@ -148,7 +147,7 @@ func (v *Value) root(findSubRoot bool, findFormatRoot bool) *Value {
 			break
 		}
 		if findFormatRoot {
-			if c, ok := rootV.V.(Compound); ok {
+			if c, ok := rootV.V.(*Compound); ok {
 				if c.Format != nil {
 					break
 				}
@@ -168,7 +167,7 @@ func (v *Value) Errors() []error {
 	var errs []error
 	_ = v.WalkPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
 		switch vv := rootV.V.(type) {
-		case Compound:
+		case *Compound:
 			if vv.Err != nil {
 				errs = append(errs, vv.Err)
 			}
@@ -188,9 +187,9 @@ func (v *Value) InnerRange() ranges.Range {
 func (v *Value) postProcess() {
 	if err := v.WalkRootPostOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
 		switch vv := v.V.(type) {
-		case Compound:
+		case *Compound:
 			first := true
-			for _, f := range *vv.Children {
+			for _, f := range vv.Children {
 				if f.IsRoot {
 					continue
 				}
@@ -204,11 +203,11 @@ func (v *Value) postProcess() {
 			}
 
 			// TODO: really sort array?
-			sort.Slice(*vv.Children, func(i, j int) bool {
-				return (*vv.Children)[i].Range.Start < (*vv.Children)[j].Range.Start
+			sort.Slice(vv.Children, func(i, j int) bool {
+				return (vv.Children)[i].Range.Start < (vv.Children)[j].Range.Start
 			})
 
-			for i, f := range *vv.Children {
+			for i, f := range vv.Children {
 				f.Index = i
 			}
 		}
@@ -216,20 +215,4 @@ func (v *Value) postProcess() {
 	}); err != nil {
 		panic(err)
 	}
-}
-
-func (v *Value) TryScalarFn(sms ...scalar.Mapper) error {
-	var err error
-	s, ok := v.V.(scalar.S)
-	if !ok {
-		panic("not a scalar value")
-	}
-	for _, sm := range sms {
-		s, err = sm.MapScalar(s)
-		if err != nil {
-			break
-		}
-	}
-	v.V = s
-	return err
 }
