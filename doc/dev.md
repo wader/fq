@@ -25,12 +25,12 @@ decoder code be a bit ugly over producing a tree that is hard to understand.
 
 Send `log` package output and stderr to a file that can be `tail -f`:ed:
 ```sh
-LOGFILE=/tmp/log go run main.go ... 2>>/tmp/log
+LOGFILE=/tmp/log go run fq.go ... 2>>/tmp/log
 ```
 
 gojq execution debug:
 ```sh
-GOJQ_DEBUG=1 go run -tags debug main.go ...
+GOJQ_DEBUG=1 go run -tags debug fq.go ...
 ```
 
 ## From start to decoded value
