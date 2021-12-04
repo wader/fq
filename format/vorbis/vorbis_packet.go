@@ -39,6 +39,8 @@ var packetTypeNames = map[uint]string{
 }
 
 func vorbisDecode(d *decode.D, in interface{}) interface{} {
+	d.Endian = decode.LittleEndian
+
 	packetType := d.FieldUScalarFn("packet_type", func(d *decode.D) scalar.S {
 		packetTypeName := "unknown"
 		t := d.U8()
@@ -73,12 +75,12 @@ func vorbisDecode(d *decode.D, in interface{}) interface{} {
 		// 7   7) [blocksize_0] = 2 exponent (read 4 bits as unsigned integer)
 		// 8   8) [blocksize_1] = 2 exponent (read 4 bits as unsigned integer)
 		// 9   9) [framing_flag] = read one bit
-		d.FieldU32LE("vorbis_version", d.ValidateU(0))
+		d.FieldU32("vorbis_version", d.ValidateU(0))
 		d.FieldU8("audio_channels")
-		d.FieldU32LE("audio_sample_rate")
-		d.FieldU32LE("bitrate_maximum")
-		d.FieldU32LE("bitrate_nominal")
-		d.FieldU32LE("bitrate_minimum")
+		d.FieldU32("audio_sample_rate")
+		d.FieldU32("bitrate_maximum")
+		d.FieldU32("bitrate_nominal")
+		d.FieldU32("bitrate_minimum")
 		// TODO: code/comment about 2.1.4. coding bits into byte sequences
 		d.FieldUFn("blocksize_1", func(d *decode.D) uint64 { return 1 << d.U4() })
 		d.FieldUFn("blocksize_0", func(d *decode.D) uint64 { return 1 << d.U4() })
@@ -88,9 +90,9 @@ func vorbisDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldU1("framing_flag", d.ValidateU(1))
 	case packetTypeSetup:
 		d.FieldUFn("vorbis_codebook_count", func(d *decode.D) uint64 { return d.U8() + 1 })
-		d.FieldU24LE("codecooke_sync", d.ValidateU(0x564342), scalar.Hex)
-		d.FieldU16LE("codebook_dimensions")
-		d.FieldU24LE("codebook_entries")
+		d.FieldU24("codecooke_sync", d.ValidateU(0x564342), scalar.Hex)
+		d.FieldU16("codebook_dimensions")
+		d.FieldU24("codebook_entries")
 
 		// d.SeekRel(7)
 		// ordered := d.FieldBool("ordered")
