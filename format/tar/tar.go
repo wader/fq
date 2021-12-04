@@ -29,69 +29,59 @@ func init() {
 }
 
 func tarDecode(d *decode.D, in interface{}) interface{} {
-	fieldStr := func(d *decode.D, name string, nBytes int) string {
-		return d.FieldUTF8(name, nBytes, scalar.Trim(" \x00"))
-	}
-	fieldNumStr := func(d *decode.D, name string, nBytes int) uint64 {
-		// TODO: some kind of FieldUScalarFn func that returns sym value?
-		var n uint64
-		d.FieldScalar(name, func(_ scalar.S) (scalar.S, error) {
-			a := d.UTF8NullFixedLen(nBytes)
-			ts := strings.Trim(a, " ")
-			n = uint64(0)
-			if ts != "" {
-				var err error
-				n, err = strconv.ParseUint(ts, 8, 64)
-				if err != nil {
-					d.Errorf("failed to parse %s number %s: %s", name, ts, err)
-				}
+	const blockBytes = 512
+	const blockBits = blockBytes * 8
+
+	mapTrimSpaceNull := scalar.Trim(" \x00")
+	mapOctStrToSymU := scalar.Fn(func(s scalar.S) (scalar.S, error) {
+		ts := strings.Trim(s.ActualStr(), " ")
+		if ts != "" {
+			n, err := strconv.ParseUint(ts, 8, 64)
+			if err != nil {
+				return s, err
 			}
-			return scalar.S{Actual: a, Sym: n}, nil
-		})
-		return n
-	}
-	fieldBlockPadding := func(d *decode.D, name string) {
-		const blockBits = 512 * 8
-		blockPadding := (blockBits - (d.Pos() % blockBits)) % blockBits
-		if blockPadding > 0 {
-			d.FieldRawLen(name, blockPadding, d.BitBufIsZero())
+			s.Sym = n
 		}
+		return s, nil
+	})
+	blockPadding := func(d *decode.D) int64 {
+		return (blockBits - (d.Pos() % blockBits)) % blockBits
 	}
 
 	// 512*2 zero bytes
-	endMarker := [512 * 2]byte{}
+	endMarker := [blockBytes * 2]byte{}
 	foundEndMarker := false
 
 	d.FieldArray("files", func(d *decode.D) {
 		for !d.End() {
 			d.FieldStruct("file", func(d *decode.D) {
-				fieldStr(d, "name", 100)
-				fieldNumStr(d, "mode", 8)
-				fieldNumStr(d, "uid", 8)
-				fieldNumStr(d, "gid", 8)
-				size := fieldNumStr(d, "size", 12)
-				fieldNumStr(d, "mtime", 12)
-				fieldNumStr(d, "chksum", 8)
-				fieldStr(d, "typeflag", 1)
-				fieldStr(d, "linkname", 100)
-				magic := fieldStr(d, "magic", 6)
+				d.FieldUTF8("name", 100, mapTrimSpaceNull)
+				d.FieldUTF8NullFixedLen("mode", 8, mapOctStrToSymU)
+				d.FieldUTF8NullFixedLen("uid", 8, mapOctStrToSymU)
+				d.FieldUTF8NullFixedLen("gid", 8, mapOctStrToSymU)
+				size := d.FieldScalarUTF8NullFixedLen("size", 12, mapOctStrToSymU).SymU()
+				d.FieldUTF8NullFixedLen("mtime", 12, mapOctStrToSymU)
+				d.FieldUTF8NullFixedLen("chksum", 8, mapOctStrToSymU)
+				d.FieldUTF8("typeflag", 1, mapTrimSpaceNull)
+				d.FieldUTF8("linkname", 100, mapTrimSpaceNull)
+				magic := d.FieldUTF8("magic", 6, mapTrimSpaceNull)
 				if magic != "ustar" {
 					d.Errorf("invalid magic %s", magic)
 				}
-				fieldNumStr(d, "version", 2)
-				fieldStr(d, "uname", 32)
-				fieldStr(d, "gname", 32)
-				fieldNumStr(d, "devmajor", 8)
-				fieldNumStr(d, "devminor", 8)
-				fieldStr(d, "prefix", 155)
-				fieldBlockPadding(d, "header_block_padding")
-				if size > 0 {
-					dv, _, _ := d.TryFieldFormatLen("data", int64(size)*8, probeFormat, nil)
-					if dv == nil {
-						d.FieldRawLen("data", int64(size)*8)
-					}
+				d.FieldUTF8NullFixedLen("version", 2, mapOctStrToSymU)
+				d.FieldUTF8("uname", 32, mapTrimSpaceNull)
+				d.FieldUTF8("gname", 32, mapTrimSpaceNull)
+				d.FieldUTF8NullFixedLen("devmajor", 8, mapOctStrToSymU)
+				d.FieldUTF8NullFixedLen("devminor", 8, mapOctStrToSymU)
+				d.FieldUTF8("prefix", 155, mapTrimSpaceNull)
+				d.FieldRawLen("header_block_padding", blockPadding(d), d.BitBufIsZero())
+
+				dv, _, _ := d.TryFieldFormatLen("data", int64(size)*8, probeFormat, nil)
+				if dv == nil {
+					d.FieldRawLen("data", int64(size)*8)
 				}
-				fieldBlockPadding(d, "data_block_padding")
+
+				d.FieldRawLen("data_block_padding", blockPadding(d), d.BitBufIsZero())
 			})
 
 			bs := d.PeekBytes(512 * 2)
