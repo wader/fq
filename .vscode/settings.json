@@ -158,5 +158,8 @@
     "[plaintext]": {
         "files.trimTrailingWhitespace": false,
     },
+    "[jq]": {
+        "editor.tabSize": 2,
+    },
     "fracturedjsonvsc.MaxInlineLength": 160,
 }
