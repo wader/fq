@@ -610,27 +610,27 @@ func (d *D) AssertLeastBytesLeft(nBytes int64) {
 
 // TODO: rethink
 func (d *D) FieldValueU(name string, a uint64, sms ...scalar.Mapper) {
-	d.FieldScalar(name, func(_ scalar.S) (scalar.S, error) { return scalar.S{Actual: a}, nil }, sms...)
+	d.FieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return scalar.S{Actual: a}, nil }, sms...)
 }
 
 func (d *D) FieldValueS(name string, a int64, sms ...scalar.Mapper) {
-	d.FieldScalar(name, func(_ scalar.S) (scalar.S, error) { return scalar.S{Actual: a}, nil }, sms...)
+	d.FieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return scalar.S{Actual: a}, nil }, sms...)
 }
 
 func (d *D) FieldValueBool(name string, a bool, sms ...scalar.Mapper) {
-	d.FieldScalar(name, func(_ scalar.S) (scalar.S, error) { return scalar.S{Actual: a}, nil }, sms...)
+	d.FieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return scalar.S{Actual: a}, nil }, sms...)
 }
 
 func (d *D) FieldValueFloat(name string, a float64, sms ...scalar.Mapper) {
-	d.FieldScalar(name, func(_ scalar.S) (scalar.S, error) { return scalar.S{Actual: a}, nil }, sms...)
+	d.FieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return scalar.S{Actual: a}, nil }, sms...)
 }
 
 func (d *D) FieldValueStr(name string, a string, sms ...scalar.Mapper) {
-	d.FieldScalar(name, func(_ scalar.S) (scalar.S, error) { return scalar.S{Actual: a}, nil }, sms...)
+	d.FieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return scalar.S{Actual: a}, nil }, sms...)
 }
 
 func (d *D) FieldValueRaw(name string, a []byte, sms ...scalar.Mapper) {
-	d.FieldScalar(name, func(_ scalar.S) (scalar.S, error) {
+	d.FieldScalarFn(name, func(_ scalar.S) (scalar.S, error) {
 		return scalar.S{Actual: bitio.NewBufferFromBytes(a, -1)}, nil
 	}, sms...)
 }
@@ -926,7 +926,7 @@ func (d *D) FieldValue(name string, fn func() *Value) *Value {
 }
 
 // looks a bit weird to force at least one ScalarFn arg
-func (d *D) TryFieldScalar(name string, sfn scalar.Fn, sms ...scalar.Mapper) (*scalar.S, error) {
+func (d *D) TryFieldScalarFn(name string, sfn scalar.Fn, sms ...scalar.Mapper) (*scalar.S, error) {
 	v, err := d.TryFieldValue(name, func() (*Value, error) {
 		s, err := sfn(scalar.S{})
 		if err != nil {
@@ -946,8 +946,8 @@ func (d *D) TryFieldScalar(name string, sfn scalar.Fn, sms ...scalar.Mapper) (*s
 	return v.V.(*scalar.S), nil
 }
 
-func (d *D) FieldScalar(name string, sfn scalar.Fn, sms ...scalar.Mapper) *scalar.S {
-	v, err := d.TryFieldScalar(name, sfn, sms...)
+func (d *D) FieldScalarFn(name string, sfn scalar.Fn, sms ...scalar.Mapper) *scalar.S {
+	v, err := d.TryFieldScalarFn(name, sfn, sms...)
 	if err != nil {
 		panic(err)
 	}
