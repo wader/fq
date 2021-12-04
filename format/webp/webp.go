@@ -30,7 +30,7 @@ func decodeChunk(d *decode.D, expectedChunkID string, fn func(d *decode.D)) bool
 	if expectedChunkID != "" && trimChunkID != expectedChunkID {
 		return false
 	}
-	chunkLen := int64(d.FieldU32LE("size"))
+	chunkLen := int64(d.FieldU32("size"))
 
 	if fn != nil {
 		d.LenFn(chunkLen*8, fn)
@@ -42,8 +42,10 @@ func decodeChunk(d *decode.D, expectedChunkID string, fn func(d *decode.D)) bool
 }
 
 func webpDecode(d *decode.D, in interface{}) interface{} {
+	d.Endian = decode.LittleEndian
+
 	d.FieldUTF8("riff_id", 4, d.AssertStr("RIFF"))
-	riffLength := d.FieldU32LE("riff_length")
+	riffLength := d.FieldU32("riff_length")
 	d.FieldUTF8("webp_id", 4, d.AssertStr("WEBP"))
 
 	d.LenFn(int64(riffLength-4)*8, func(d *decode.D) {
