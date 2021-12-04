@@ -83,7 +83,7 @@ $ fq -d ogg verbose /opus.ogg
  0x000|4f 70 75 73 48 65 61 64                        |OpusHead        |          prefix: "OpusHead" 0x0-0x7.7 (8)
  0x000|                        01                     |        .       |          version: 1 0x8-0x8.7 (1)
  0x000|                           01                  |         .      |          channel_count: 1 0x9-0x9.7 (1)
- 0x000|                              38 01            |          8.    |          pre_skip: 14337 0xa-0xb.7 (2)
+ 0x000|                              38 01            |          8.    |          pre_skip: 312 0xa-0xb.7 (2)
  0x000|                                    80 bb 00 00|            ....|          sample_rate: 48000 0xc-0xf.7 (4)
  0x010|00 00                                          |..              |          output_gain: 0 0x10-0x11.7 (2)
  0x010|      00|                                      |  .|            |          map_family: 0 0x12-0x12.7 (1)

@@ -24,6 +24,8 @@ func init() {
 }
 
 func opusDecode(d *decode.D, in interface{}) interface{} {
+	d.Endian = decode.LittleEndian
+
 	var prefix []byte
 	if d.BitsLeft() >= 8*8 {
 		prefix = d.PeekBytes(8)
@@ -35,8 +37,8 @@ func opusDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldU8("version")
 		channelCount := d.FieldU8("channel_count")
 		d.FieldU16("pre_skip")
-		d.FieldU32LE("sample_rate")
-		d.FieldU16LE("output_gain")
+		d.FieldU32("sample_rate")
+		d.FieldU16("output_gain")
 		mapFamily := d.FieldU8("map_family")
 		if mapFamily != 0 {
 			d.FieldU8("stream_count")

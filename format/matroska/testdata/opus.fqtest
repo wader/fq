@@ -254,7 +254,7 @@ $ fq -d matroska verbose /opus.mkv
 0x180|70 75 73 48 65 61 64                           |pusHead         |
 0x180|                     01                        |       .        |                    version: 1 0x187-0x187.7 (1)
 0x180|                        01                     |        .       |                    channel_count: 1 0x188-0x188.7 (1)
-0x180|                           78 00               |         x.     |                    pre_skip: 30720 0x189-0x18a.7 (2)
+0x180|                           78 00               |         x.     |                    pre_skip: 120 0x189-0x18a.7 (2)
 0x180|                                 80 bb 00 00   |           .... |                    sample_rate: 48000 0x18b-0x18e.7 (4)
 0x180|                                             00|               .|                    output_gain: 0 0x18f-0x190.7 (2)
 0x190|00                                             |.               |
