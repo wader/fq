@@ -125,23 +125,25 @@ var subFormatNames = scalar.BytesToScalar{
 }
 
 func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 { //nolint:unparam
+	d.Endian = decode.LittleEndian
+
 	chunks := map[string]func(d *decode.D){
 		"RIFF": func(d *decode.D) {
 			d.FieldUTF8("format", 4)
 			decodeChunks(d, false)
 		},
 		"fmt": func(d *decode.D) {
-			audioFormat := d.FieldU16LE("audio_format", audioFormatName)
-			d.FieldU16LE("num_channels")
-			d.FieldU32LE("sample_rate")
-			d.FieldU32LE("byte_rate")
-			d.FieldU16LE("block_align")
-			d.FieldU16LE("bits_per_sample")
+			audioFormat := d.FieldU16("audio_format", audioFormatName)
+			d.FieldU16("num_channels")
+			d.FieldU32("sample_rate")
+			d.FieldU32("byte_rate")
+			d.FieldU16("block_align")
+			d.FieldU16("bits_per_sample")
 
 			if audioFormat == formatExtensible && d.BitsLeft() > 0 {
-				d.FieldU16LE("extension_size")
-				d.FieldU16LE("valid_bits_per_sample")
-				d.FieldU32LE("channel_mask")
+				d.FieldU16("extension_size")
+				d.FieldU16("valid_bits_per_sample")
+				d.FieldU32("channel_mask")
 				d.FieldRawLen("sub_format", 16*8, subFormatNames)
 			}
 		},
@@ -153,7 +155,7 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 { /
 			decodeChunks(d, true)
 		},
 		"fact": func(d *decode.D) {
-			d.FieldU32LE("sample_length")
+			d.FieldU32("sample_length")
 		},
 	}
 
@@ -165,7 +167,7 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 { /
 	}
 	const restOfFileLen = 0xffffffff
 	chunkLen := int64(d.FieldUScalarFn("size", func(d *decode.D) scalar.S {
-		l := d.U32LE()
+		l := d.U32()
 		if l == restOfFileLen {
 			return scalar.S{Actual: l, DisplayFormat: scalar.NumberHex, Sym: "rest of file"}
 		}
