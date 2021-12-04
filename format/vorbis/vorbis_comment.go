@@ -24,12 +24,14 @@ func init() {
 }
 
 func commentDecode(d *decode.D, in interface{}) interface{} {
-	vendorLen := d.FieldU32LE("vendor_length")
+	d.Endian = decode.LittleEndian
+
+	vendorLen := d.FieldU32("vendor_length")
 	d.FieldUTF8("vendor", int(vendorLen))
-	userCommentListLength := d.FieldU32LE("user_comment_list_length")
+	userCommentListLength := d.FieldU32("user_comment_list_length")
 	i := uint64(0)
 	d.FieldStructArrayLoop("user_comments", "user_comment", func() bool { return i < userCommentListLength }, func(d *decode.D) {
-		userCommentLength := d.FieldU32LE("length")
+		userCommentLength := d.FieldU32("length")
 		userCommentStart := d.Pos()
 		userComment := d.FieldUTF8("comment", int(userCommentLength))
 		var metadataBlockPicturePreix = "METADATA_BLOCK_PICTURE="
@@ -40,12 +42,14 @@ func commentDecode(d *decode.D, in interface{}) interface{} {
 
 			base64Offset := int64(len(metadataBlockPicturePreix)) * 8
 			base64Len := int64(len(userComment))*8 - base64Offset
-
-			rFn := func(r io.Reader) io.Reader { return base64.NewDecoder(base64.StdEncoding, r) }
-
-			_, uncompressedBB, dv, _, _ := d.TryFieldReaderRangeFormat("picture", userCommentStart+base64Offset, base64Len, rFn, flacPicture, nil)
-			if dv == nil && uncompressedBB != nil {
-				d.FieldRootBitBuf("picture", uncompressedBB)
+			_, base64BB, dv, _, _ := d.TryFieldReaderRangeFormat(
+				"picture",
+				userCommentStart+base64Offset, base64Len,
+				func(r io.Reader) io.Reader { return base64.NewDecoder(base64.StdEncoding, r) },
+				flacPicture, nil,
+			)
+			if dv == nil && base64BB != nil {
+				d.FieldRootBitBuf("picture", base64BB)
 			}
 		}
 		i++
