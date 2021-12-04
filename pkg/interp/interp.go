@@ -35,9 +35,9 @@ import (
 //go:embed interp.jq
 //go:embed internal.jq
 //go:embed options.jq
-//go:embed match.jq
-//go:embed decode.jq
 //go:embed buffer.jq
+//go:embed decode.jq
+//go:embed match.jq
 //go:embed funcs.jq
 //go:embed grep.jq
 //go:embed args.jq

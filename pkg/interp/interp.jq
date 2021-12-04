@@ -1,8 +1,8 @@
 include "internal";
 include "options";
-include "match";
-include "decode";
 include "buffer";
+include "decode";
+include "match";
 include "funcs";
 include "grep";
 include "args";
@@ -162,7 +162,7 @@ def _main:
       );
   def _banner:
     ( "fq - jq for binary formats"
-    , "Tool, language and decoders for exploring binary data."
+    , "Tool, language and decoders for inspecting binary data."
     , "For more information see https://github.com/wader/fq"
     );
   def _usage($arg0):

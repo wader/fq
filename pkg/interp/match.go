@@ -2,6 +2,7 @@ package interp
 
 import (
 	"io"
+	"regexp"
 	"strings"
 
 	"github.com/wader/fq/internal/gojqextra"
@@ -42,7 +43,8 @@ func (i *Interp) _bufferMatch(c interface{}, a []interface{}) gojq.Iter {
 			reRs = append(reRs, rune(b))
 		}
 		byteRunes = true
-		re = string(reRs)
+		// escape paratheses runes etc
+		re = regexp.QuoteMeta(string(reRs))
 	}
 
 	var flags string
