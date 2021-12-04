@@ -9,6 +9,7 @@
 - repl expression returning a value that produced lots of output can't be interrupted. This is becaus ctrl-c currently only interrupts the eval interpreter, outputted value is printed (`display`) by parent interpreter.
 - Rework cli/repl user interrupt (context cancel via ctrl-c), see comment in Interp.Main
 - Optimize `Interp.Options` calls, now called per display. Cache per eval? needs to handle nested evals.
+- `<array decode value>[{start: ...: end: ...}]` syntax a bit broken.
 
 ### TODO and ideas
 
@@ -66,20 +67,6 @@
 - `-n`, `inputs/0` and `input/0` behavior. Same as jq.
 - Mention `empty.something`?
 - Use https://github.com/fadado/JBOL/blob/master/doc/JQ-Distilled.md notation
-- Decoder write guide
-  - Endian inherited in one buffer, reset to big endian on new buffer
-  - Invalid on zero length input, assert one valid frame etc
-  - Try validate input to make it not ambiguous with other decoders
-  - Try to not seek and read at end while validating or early, will break progress indicator if not
-  - Split bit flags etc into a field with subfields for each bit
-  - Try keep code as declarative as possible
-  - Split into multiple sub formats if possible
-  - See the decoded tree as user interface but still has to represent the actual bit structure
-  - Balance details/usability
-  - Validate/Assert
-  - Error/Fatal/panic
-  - Is format probeable
-  - Can new formats be added to other formats
 
 #### Decode
 
@@ -110,6 +97,8 @@
 - Document maturity/completeness
 - Add `dsf` format
 - Make `json` format more normal? is a bit a of a special case now
+- exif in mp4 (heif/heic):<br>
+`. as $r | grep("iloc") | parent.items[] | select(.id == (first($r | grep("exif";"i")) | parent.id)).extends[0] as $e | $r | tobytes[$e.offset+10:$e.offset+$e.length] | exif`
 
 #### Scripts
 
@@ -132,6 +121,7 @@
 
 #### Big things
 
+- fq play website?
 - UI, web interface? tree interface, multiple repl windows? nicer way of showing overlapping fiends in hex etc?
 - jupyter notebook integration
 - FUSE interface

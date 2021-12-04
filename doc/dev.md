@@ -2,28 +2,41 @@
 
 - fq uses a gojq fork that can be found at https://github.com/wader/gojq/tree/fq (the "fq" branch)
 - cli readline uses raw mode so blocks ctrl-c to become a SIGINT
-- TODO: `scope` and `scopedump` functions used to implement REPL completion
-- TODO: Custom object interface used to traverse fq's field tree and to allowing a terse syntax for comparing and working with fields, accessing child fields and special properties like `_range`.
 
 ## Decoder implementation help
 
 - Main goal in the end is to produce a tree that is user-friendly and easy to work with.
-So there are always excepts to these rules and sometimes it might be better to let the
-decoder code be a bit ugly over producing a tree that is hard to understand.
+Prefer a nice and easy to use tree over nice decoder implementation.
+- Use same names, symbols, constant number base etc as in specification.
+- Decode only ranges you know what it is. If possible let "parent" decide what to do with unknown
+bits by using `*Decode*Len/Range/Limit` funcitions.
+- Try to no decode too much as one value.
+A length encoded int could be two fields, but maybe a length prefixed string should be one.
+Flags can be struct with bit-fields.
+- Map as many value as possible to more usage symbolic values.
+- Endian inherited inside one format decoder, defaults to big endian for new format decoder
+- Make sure zero length or no frames etc found fails decoding
+- Try validate input to make it non-ambiguous with other decoders
+- Try keep decoder code as declarative as possible
+- Split into multiple sub formats if possible. Makes it possible to use them separately.
+- Validate/Assert
+- Error/Fatal/panic
+- Is format probeable or not?
+- Can new formats be added to other formats
 
-- Try use same names, symbols, constant number base etc as in specification
+## Tests
 
-- TODO: Decode only what you know. If possible let "parent" decide what to do with unknown bits by using `*Decode*Len/Range/Limit`  funcitions
-
-- Use sub decoders if possible for frames, metadata etc. You can pass data between them. Also makes it possible to call them separately
-
-- Try to no decode to much as one field or value. A length encoded int could be two fields, a flags byte can be struct with bit fields.
-
-- Try to have add symbols for all named constants.
+Write new actual output:
+```sh
+make actual # write all actual outputs
+WRITE_ACTUAL=1 go run -run ... # write only specific tests
+```
 
 ## Debug
 
-Send `log` package output and stderr to a file that can be `tail -f`:ed:
+Split debug and normal output even when using repl:
+
+Write `log` package output and stderr to a file that can be `tail -f`:ed in another terminal:
 ```sh
 LOGFILE=/tmp/log go run fq.go ... 2>>/tmp/log
 ```
@@ -31,6 +44,12 @@ LOGFILE=/tmp/log go run fq.go ... 2>>/tmp/log
 gojq execution debug:
 ```sh
 GOJQ_DEBUG=1 go run -tags debug fq.go ...
+```
+
+Memory and CPU profile (will open a browser):
+```sh
+make memprof ARGS=". file"
+make cpuprof ARGS=". test.mp3"
 ```
 
 ## From start to decoded value
@@ -81,4 +100,10 @@ bitio.Reader (implements bitio.Bit* interfaces)
 bitio.Buffer convenience wrapper to read bytes from bit reader, create section readers etc
 SectionBitReader
 MultiBitReader
+```
+
+## jq oddities
+
+```
+jq -n '[1,2,3,4] | .[null:], .[null:2], .[2:null], .[:null]'
 ```
