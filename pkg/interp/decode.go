@@ -274,6 +274,7 @@ func (dvb decodeValueBase) Display(w io.Writer, opts Options) error { return dum
 func (dvb decodeValueBase) ToBuffer() (Buffer, error) {
 	return Buffer{bb: dvb.dv.RootBitBuf, r: dvb.dv.InnerRange(), unit: 8}, nil
 }
+func (decodeValueBase) ExtType() string { return "decode_value" }
 func (dvb decodeValueBase) ExtKeys() []string {
 	kv := []string{
 		"_start",

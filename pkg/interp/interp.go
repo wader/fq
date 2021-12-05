@@ -59,6 +59,7 @@ func init() {
 			{"stdout", 0, 0, nil, i.makeStdioFn(i.os.Stdout())},
 			{"stderr", 0, 0, nil, i.makeStdioFn(i.os.Stderr())},
 			{"_extkeys", 0, 0, i._extKeys, nil},
+			{"_exttype", 0, 0, i._extType, nil},
 			{"_global_state", 0, 1, i.makeStateFn(i.state), nil},
 			{"_registry", 0, 0, i._registry, nil},
 			{"history", 0, 0, i.history, nil},
@@ -168,6 +169,7 @@ func (FileReader) Close() error                  { return nil }
 type Value interface {
 	gojq.JQValue
 
+	ExtType() string
 	ExtKeys() []string
 }
 
@@ -515,6 +517,13 @@ func (i *Interp) _extKeys(c interface{}, a []interface{}) interface{} {
 			vs = append(vs, s)
 		}
 		return vs
+	}
+	return nil
+}
+
+func (i *Interp) _extType(c interface{}, a []interface{}) interface{} {
+	if v, ok := c.(Value); ok {
+		return v.ExtType()
 	}
 	return nil
 }
