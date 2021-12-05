@@ -1,4 +1,5 @@
 # is here to be defined as early as possible to allow debugging
+# TODO: move to builtin.jq etc?
 def print: stdout;
 def println: ., "\n" | stdout;
 def debug:

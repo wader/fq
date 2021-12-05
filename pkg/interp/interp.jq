@@ -27,6 +27,18 @@ def _exit_code_compile_error: 3;
 def _exit_code_input_decode_error: 4;
 def _exit_code_expr_error: 5;
 
+def d($opts): display($opts);
+def d: display({});
+def full($opts): display({array_truncate: 0} + $opts);
+# TODO: rename, gets mixed up with f args often
+def full: full({});
+def f($opts): full($opts);
+def f: full;
+def verbose($opts): display({verbose: true, array_truncate: 0} + $opts);
+def verbose: verbose({});
+def v($opts): verbose($opts);
+def v: verbose;
+
 # next valid input
 def input:
   def _input($opts; f):

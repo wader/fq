@@ -1,17 +1,18 @@
-def display($opts): _display(options($opts));
+def display($opts):
+  ( options($opts) as $opts
+  | if _can_display then _display($opts)
+    else
+      ( if type == "string" and $opts.raw_string then (tostring | stdout)
+        else _print_color_json($opts)
+        end
+      , ( $opts.join_string
+        | if . then stdout else empty end
+        )
+      )
+    end
+  | error("unreachable")
+  );
 def display: display({});
-def d($opts): display($opts);
-def d: display({});
-
-def full($opts): display({array_truncate: 0} + $opts);
-# TODO: rename, gets mixed up with f args often
-def full: full({});
-def f($opts): full($opts);
-def f: full;
-def verbose($opts): display({verbose: true, array_truncate: 0} + $opts);
-def verbose: verbose({});
-def v($opts): verbose($opts);
-def v: verbose;
 
 def hexdump($opts): _hexdump(options({display_bytes: 0} + $opts));
 def hexdump: hexdump({display_bytes: 0});

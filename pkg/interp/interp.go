@@ -64,6 +64,8 @@ func init() {
 			{"_registry", 0, 0, i._registry, nil},
 			{"history", 0, 0, i.history, nil},
 			{"_display", 1, 1, nil, i._display},
+			{"_can_display", 0, 0, i._canDisplay, nil},
+			{"_print_color_json", 0, 1, nil, i._printColorJSON},
 		}
 	})
 }
@@ -660,26 +662,28 @@ func (i *Interp) _display(c interface{}, a []interface{}) gojq.Iter {
 			return gojq.NewIter(err)
 		}
 		return gojq.NewIter()
-	case nil, bool, float64, int, string, *big.Int, map[string]interface{}, []interface{}, gojq.JQValue:
-		if s, ok := v.(string); ok && opts.RawString {
-			fmt.Fprint(i.evalContext.output, s)
-		} else {
-			cj, err := i.NewColorJSON(opts)
-			if err != nil {
-				return gojq.NewIter(err)
-			}
-			if err := cj.Marshal(v, i.evalContext.output); err != nil {
-				return gojq.NewIter(err)
-			}
-		}
-		fmt.Fprint(i.evalContext.output, opts.JoinString)
-
-		return gojq.NewIter()
-	case error:
-		return gojq.NewIter(v)
 	default:
 		return gojq.NewIter(fmt.Errorf("%+#v: not displayable", c))
 	}
+}
+
+func (i *Interp) _printColorJSON(c interface{}, a []interface{}) gojq.Iter {
+	opts := i.Options(a[0])
+
+	cj, err := i.NewColorJSON(opts)
+	if err != nil {
+		return gojq.NewIter(err)
+	}
+	if err := cj.Marshal(c, i.evalContext.output); err != nil {
+		return gojq.NewIter(err)
+	}
+
+	return gojq.NewIter()
+}
+
+func (i *Interp) _canDisplay(c interface{}, a []interface{}) interface{} {
+	_, ok := c.(Display)
+	return ok
 }
 
 func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilename string, output io.Writer) (gojq.Iter, error) {

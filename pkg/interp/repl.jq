@@ -156,8 +156,8 @@ def _prompt:
 # _repl_display takes a opts arg to make it possible for repl_eval to
 # just call options/0 once per eval even if it was multiple outputs
 def _repl_display_opts: options({depth: 1});
-def _repl_display($opts): _display($opts);
-def _repl_display: _display(_repl_display_opts);
+def _repl_display($opts): display($opts);
+def _repl_display: display(_repl_display_opts);
 def _repl_on_error:
   ( if _eval_is_compile_error then _eval_compile_error_tostring
     # was interrupted by user, just ignore
