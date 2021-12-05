@@ -5,8 +5,8 @@ Tool, language and decoders for inspecting binary data.
 ![fq demo](doc/demo.svg)
 
 In most cases fq works the same way as jq but instead of reading JSON it reads binary data.
-The result is a JSON compatbile structures where each value knows from which bit ranges
-it comes from, can have a symbolic interpretation and know how to be presented in useful ways.
+The result is a JSON compatbile structures where each value has a bit range, symbolic
+interpretations and know how to be presented in a useful way.
 
 **NOTE:** fq is early in development and many things are missing, broken or do not make sense.
 That also means there is a great opportunity to help out.
