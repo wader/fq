@@ -48,7 +48,7 @@ func tarDecode(d *decode.D, in interface{}) interface{} {
 		return (blockBits - (d.Pos() % blockBits)) % blockBits
 	}
 
-	// 512*2 zero bytes
+	// end marker is 512*2 zero bytes
 	endMarker := [blockBytes * 2]byte{}
 	foundEndMarker := false
 
@@ -88,14 +88,14 @@ func tarDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldRawLen("data_block_padding", blockPadding(d), d.BitBufIsZero())
 			})
 
-			bs := d.PeekBytes(512 * 2)
+			bs := d.PeekBytes(blockBytes * 2)
 			if bytes.Equal(bs, endMarker[:]) {
 				foundEndMarker = true
 				break
 			}
 		}
 	})
-	d.FieldRawLen("end_marker", 512*2*8)
+	d.FieldRawLen("end_marker", int64(len(endMarker))*8)
 
 	if !foundEndMarker {
 		d.Errorf("no files found")
