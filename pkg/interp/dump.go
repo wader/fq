@@ -148,10 +148,11 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 		case []interface{}:
 			cfmt(colField, " %s%s%s (%s)", deco.Index.F("["), deco.Number.F(strconv.Itoa(len(av))), deco.Index.F("]"), deco.Value.F("json"))
 		default:
-			cfmt(colField, " %s", deco.ValueColor(vv.Value()).F(previewValue(vv.Value(), vv.DisplayFormat)))
-
-			if vv.Sym != nil {
-				cfmt(colField, " (%s)", deco.ValueColor(vv.Actual).F(previewValue(vv.Actual, vv.DisplayFormat)))
+			if vv.Sym == nil {
+				cfmt(colField, " %s", deco.ValueColor(vv.Actual).F(previewValue(vv.Actual, vv.ActualDisplay)))
+			} else {
+				cfmt(colField, " %s", deco.ValueColor(vv.Actual).F(previewValue(vv.Sym, vv.SymDisplay)))
+				cfmt(colField, " (%s)", deco.ValueColor(vv.Actual).F(previewValue(vv.Actual, vv.ActualDisplay)))
 			}
 
 			// TODO: similar to struct/array?

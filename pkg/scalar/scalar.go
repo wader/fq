@@ -41,9 +41,10 @@ func (df DisplayFormat) FormatBase() int {
 
 type S struct {
 	Actual        interface{} // int, int64, uint64, float64, string, bool, []byte, *bitio.Buffer
+	ActualDisplay DisplayFormat
 	Sym           interface{}
+	SymDisplay    DisplayFormat
 	Description   string
-	DisplayFormat DisplayFormat
 	Unknown       bool
 }
 
@@ -64,10 +65,15 @@ func (fn Fn) MapScalar(s S) (S, error) {
 	return fn(s)
 }
 
-var Bin = Fn(func(s S) (S, error) { s.DisplayFormat = NumberBinary; return s, nil })
-var Oct = Fn(func(s S) (S, error) { s.DisplayFormat = NumberOctal; return s, nil })
-var Dec = Fn(func(s S) (S, error) { s.DisplayFormat = NumberDecimal; return s, nil })
-var Hex = Fn(func(s S) (S, error) { s.DisplayFormat = NumberHex; return s, nil })
+var Bin = Fn(func(s S) (S, error) { s.ActualDisplay = NumberBinary; return s, nil })
+var Oct = Fn(func(s S) (S, error) { s.ActualDisplay = NumberOctal; return s, nil })
+var Dec = Fn(func(s S) (S, error) { s.ActualDisplay = NumberDecimal; return s, nil })
+var Hex = Fn(func(s S) (S, error) { s.ActualDisplay = NumberHex; return s, nil })
+
+var SymBin = Fn(func(s S) (S, error) { s.SymDisplay = NumberBinary; return s, nil })
+var SymOct = Fn(func(s S) (S, error) { s.SymDisplay = NumberOctal; return s, nil })
+var SymDec = Fn(func(s S) (S, error) { s.SymDisplay = NumberDecimal; return s, nil })
+var SymHex = Fn(func(s S) (S, error) { s.SymDisplay = NumberHex; return s, nil })
 
 func Actual(v interface{}) Mapper {
 	return Fn(func(s S) (S, error) { s.Actual = v; return s, nil })

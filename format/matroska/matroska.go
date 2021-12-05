@@ -164,7 +164,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 							d.Fatalf("unknown id %d", n)
 						}
 					}
-					return scalar.S{Actual: n, DisplayFormat: scalar.NumberHex, Sym: a.Name, Description: a.Definition}, nil
+					return scalar.S{Actual: n, ActualDisplay: scalar.NumberHex, Sym: a.Name, Description: a.Definition}, nil
 				}))
 				d.FieldValueU("type", uint64(a.Type), scalar.Sym(ebml.TypeNames[a.Type]))
 

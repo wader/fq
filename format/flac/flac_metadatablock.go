@@ -40,13 +40,13 @@ const (
 )
 
 var metadataBlockNames = scalar.UToSymStr{
-	MetadataBlockStreaminfo:    "Streaminfo",
-	MetadataBlockPadding:       "Padding",
-	MetadataBlockApplication:   "Application",
-	MetadataBlockSeektable:     "Seektable",
-	MetadataBlockVorbisComment: "Vorbis comment",
-	MetadataBlockCuesheet:      "Cuesheet",
-	MetadataBlockPicture:       "Picture",
+	MetadataBlockStreaminfo:    "streaminfo",
+	MetadataBlockPadding:       "padding",
+	MetadataBlockApplication:   "application",
+	MetadataBlockSeektable:     "seektable",
+	MetadataBlockVorbisComment: "vorbis_comment",
+	MetadataBlockCuesheet:      "cuesheet",
+	MetadataBlockPicture:       "picture",
 }
 
 func metadatablockDecode(d *decode.D, in interface{}) interface{} {

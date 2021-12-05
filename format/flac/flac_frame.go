@@ -21,28 +21,41 @@ func init() {
 }
 
 const (
+	SampleRateStreaminfo = 0b0000
+)
+
+const (
+	SampleSizeStreaminfo = 0b000
+)
+
+const (
 	BlockingStrategyFixed    = 0
 	BlockingStrategyVariable = 1
 )
 
 var BlockingStrategyNames = scalar.UToSymStr{
-	BlockingStrategyFixed:    "Fixed",
-	BlockingStrategyVariable: "Variable",
+	BlockingStrategyFixed:    "fixed",
+	BlockingStrategyVariable: "variable",
 }
 
 const (
-	SubframeConstant = iota
-	SubframeVerbatim
-	SubframeFixed
-	SubframeLPC
+	BlockSizeEndOfHeader8  = 0b0110
+	BlockSizeEndOfHeader16 = 0b0111
 )
 
-var SubframeTypeNames = map[uint]string{
-	SubframeConstant: "Constant",
-	SubframeVerbatim: "Verbatim",
-	SubframeFixed:    "Fixed",
-	SubframeLPC:      "LPC",
-}
+const (
+	SampeleRateEndOfHeader8   = 0b1100
+	SampeleRateEndOfHeader16  = 0b1101
+	SampeleRateEndOfHeader160 = 0b1110
+)
+
+const (
+	SubframeConstant = "constant"
+	SubframeVerbatim = "verbatim"
+	SubframeFixed    = "fixed"
+	SubframeLPC      = "lpc"
+	SubframeReserved = "reserved"
+)
 
 const (
 	ChannelLeftSide  = 0b1000
@@ -93,10 +106,10 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 
 	frameStart := d.Pos()
 
-	var channels uint64
-	sampleSize := 0
 	blockSize := 0
-	channelAssignment := -1
+	channelAssignment := uint64(0)
+	channels := 0
+	sampleSize := 0
 	sideChannelIndex := -1
 
 	d.FieldStruct("header", func(d *decode.D) {
@@ -120,27 +133,28 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		// 0110 : get 8 bit (blocksize-1) from end of header
 		// 0111 : get 16 bit (blocksize-1) from end of header
 		// 1000-1111 : 256 * (2^(n-8)) samples, i.e. 256/512/1024/2048/4096/8192/16384/32768
-		var blockSizeBits uint64
-		d.FieldUScalarFn("block_size", func(d *decode.D) scalar.S {
-			blockSizeBits = d.U4()
-			s := scalar.S{Actual: blockSizeBits}
-			switch blockSizeBits {
-			case 0b0000:
-				s.Description = "reserved"
-			case 0b0001:
-				blockSize = 192
-			case 0b0010, 0b0011, 0b0100, 0b0101:
-				blockSize = 576 * (1 << (blockSizeBits - 2))
-			case 0b0110:
-				s.Description = "end of header (8 bit)"
-			case 0b0111:
-				s.Description = "end of header (16 bit)"
-			default:
-				blockSize = 256 * (1 << (blockSizeBits - 8))
-			}
-			s.Sym = blockSize
-			return s
-		})
+		var blockSizeMap = scalar.UToScalar{
+			0b0000: {Description: "reserved"},
+			0b0001: {Sym: uint64(192)},
+			0b0010: {Sym: uint64(576)},
+			0b0011: {Sym: uint64(1152)},
+			0b0100: {Sym: uint64(2304)},
+			0b0101: {Sym: uint64(4608)},
+			0b0110: {Description: "end of header (8 bit)"},
+			0b0111: {Description: "end of header (16 bit)"},
+			0b1000: {Sym: uint64(256)},
+			0b1001: {Sym: uint64(512)},
+			0b1010: {Sym: uint64(1024)},
+			0b1011: {Sym: uint64(2048)},
+			0b1100: {Sym: uint64(4096)},
+			0b1101: {Sym: uint64(8192)},
+			0b1110: {Sym: uint64(16384)},
+			0b1111: {Sym: uint64(32768)},
+		}
+		blockSizeS := d.FieldScalarU4("block_size", blockSizeMap, scalar.Bin)
+		if blockSizeS.Sym != nil {
+			blockSize = int(blockSizeS.SymU())
+		}
 
 		// <4> Sample rate:
 		// 0000 : get from STREAMINFO metadata block
@@ -159,47 +173,31 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		// 1101 : get 16 bit sample rate (in Hz) from end of header
 		// 1110 : get 16 bit sample rate (in tens of Hz) from end of header
 		// 1111 : invalid, to prevent sync-fooling string of 1s
-		var sampleRateBits uint64
-		d.FieldUScalarFn("sample_rate", func(d *decode.D) scalar.S {
-			sampleRateBits = d.U4()
-			switch sampleRateBits {
-			case 0:
-				if inStreamInfo == nil {
-					d.Fatalf("streaminfo required for sample rate")
-				}
-				return scalar.S{Actual: sampleRateBits, Sym: inStreamInfo.SampleRate, Description: "streaminfo"}
-			case 0b0001:
-				return scalar.S{Actual: sampleRateBits, Sym: 88200}
-			case 0b0010:
-				return scalar.S{Actual: sampleRateBits, Sym: 176000}
-			case 0b0011:
-				return scalar.S{Actual: sampleRateBits, Sym: 19200}
-			case 0b0100:
-				return scalar.S{Actual: sampleRateBits, Sym: 800}
-			case 0b0101:
-				return scalar.S{Actual: sampleRateBits, Sym: 1600}
-			case 0b0110:
-				return scalar.S{Actual: sampleRateBits, Sym: 22050}
-			case 0b0111:
-				return scalar.S{Actual: sampleRateBits, Sym: 44100}
-			case 0b1000:
-				return scalar.S{Actual: sampleRateBits, Sym: 32000}
-			case 0b1001:
-				return scalar.S{Actual: sampleRateBits, Sym: 44100}
-			case 0b1010:
-				return scalar.S{Actual: sampleRateBits, Sym: 48000}
-			case 0b1011:
-				return scalar.S{Actual: sampleRateBits, Sym: 96000}
-			case 0b1100:
-				return scalar.S{Actual: sampleRateBits, Description: "end of header (8 bit*1000)"}
-			case 0b1101:
-				return scalar.S{Actual: sampleRateBits, Description: "end of header (16 bit)"}
-			case 0b1110:
-				return scalar.S{Actual: sampleRateBits, Description: "end of header (16 bit*10)"}
-			default:
-				return scalar.S{Actual: sampleRateBits, Description: "invalid"}
+		var sampleRateMap = scalar.UToScalar{
+			0b0000: {Description: "from streaminfo"},
+			0b0001: {Sym: uint64(88200)},
+			0b0010: {Sym: uint64(176400)},
+			0b0011: {Sym: uint64(192000)},
+			0b0100: {Sym: uint64(8000)},
+			0b0101: {Sym: uint64(16000)},
+			0b0110: {Sym: uint64(22050)},
+			0b0111: {Sym: uint64(24000)},
+			0b1000: {Sym: uint64(32000)},
+			0b1001: {Sym: uint64(44100)},
+			0b1010: {Sym: uint64(48000)},
+			0b1011: {Sym: uint64(96000)},
+			0b1100: {Description: "end of header (8 bit*1000)"},
+			0b1101: {Description: "end of header (16 bit)"},
+			0b1110: {Description: "end of header (16 bit*10)"},
+			0b1111: {Description: "invalid"},
+		}
+		sampleRateS := d.FieldScalarU4("sample_rate", sampleRateMap, scalar.Bin)
+		switch sampleRateS.ActualU() {
+		case SampleRateStreaminfo:
+			if inStreamInfo == nil {
+				d.Fatalf("streaminfo required for sample rate")
 			}
-		})
+		}
 
 		// <4> Channel assignment
 		// 0000-0111 : (number of independent channels)-1. Where defined, the channel order follows SMPTE/ITU-R recommendations. The assignments are as follows:
@@ -216,48 +214,39 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		// 1010 : mid/side stereo: channel 0 is the mid(average) channel, channel 1 is the side(difference) channel
 		// 1011-1111 : reserved
 		// TODO: extract to tables and cleanup
-		d.FieldUScalarFn("channel_assignment", func(d *decode.D) scalar.S {
-			v, ch, desc := func() (uint64, uint64, string) {
-				v := d.U4()
-				switch v {
-				case 0:
-					return v, 1, "mono"
-				case 1:
-					return v, 2, "left, right"
-				case 2:
-					return v, 3, "left, right, center"
-				case 3:
-					return v, 4, "front left, front right, back left, back right"
-				case 4:
-					return v, 5, "front left, front right, front center, back/surround left, back/surround right"
-				case 5:
-					return v, 6, "front left, front right, front center, LFE, back/surround left, back/surround right"
-				case 6:
-					return v, 7, "front left, front right, front center, LFE, back center, side left, side right"
-				case 7:
-					return v, 8, "front left, front right, front center, LFE, back left, back right, side left, side right"
-				case 0b1000:
-					sideChannelIndex = 1
-					return v, 2, "left/side"
-				case 0b1001:
-					sideChannelIndex = 0
-					return v, 2, "side/right"
-				case 0b1010:
-					sideChannelIndex = 1
-					return v, 2, "mid/side"
-				default:
-					return v, 0, "reserved"
-				}
-			}()
-			channels = ch
-			channelAssignment = int(v)
-			if sideChannelIndex != -1 {
-				d.FieldUFn("side_channel_index", func(d *decode.D) uint64 { return uint64(sideChannelIndex) })
-			}
-			return scalar.S{Actual: v, Sym: ch, Description: desc}
-		})
-		if channels == 0 {
+		var channelAssignmentMap = scalar.UToScalar{
+			0:      {Sym: uint64(1), Description: "mono"},
+			1:      {Sym: uint64(2), Description: "lr"},
+			2:      {Sym: uint64(3), Description: "lrc"},
+			3:      {Sym: uint64(4), Description: "fl,fr,bl,br"},
+			4:      {Sym: uint64(5), Description: "fl,fr,fc,back/surround left,back/surround right"},
+			5:      {Sym: uint64(6), Description: "fl,fr,fc,lfe,back/surround left,back/surround right"},
+			6:      {Sym: uint64(7), Description: "fl,fr,fc,lfe,back center,sl,sr"},
+			7:      {Sym: uint64(8), Description: "fl,fr,fc,lfe,back left,br,sl,sr"},
+			0b1000: {Sym: uint64(2), Description: "left/side stereo"},
+			0b1001: {Sym: uint64(2), Description: "right/side stereo"},
+			0b1010: {Sym: uint64(2), Description: "mid/side stereo"},
+			0b1011: {Sym: nil, Description: "reserved"},
+			0b1100: {Sym: nil, Description: "reserved"},
+			0b1101: {Sym: nil, Description: "reserved"},
+			0b1111: {Sym: nil, Description: "reserved"},
+		}
+		channelAssignmentS := d.FieldScalarU4("channel_assignment", channelAssignmentMap)
+		if channelAssignmentS.Sym == nil {
 			d.Fatalf("unknown number of channels")
+		}
+		channelAssignment = channelAssignmentS.ActualU()
+		channels = int(channelAssignmentS.SymU())
+		switch channelAssignmentS.ActualU() {
+		case ChannelLeftSide:
+			sideChannelIndex = 1
+		case ChannelSideRight:
+			sideChannelIndex = 0
+		case ChannelMidSide:
+			sideChannelIndex = 1
+		}
+		if sideChannelIndex != -1 {
+			d.FieldValueU("side_channel_index", uint64(sideChannelIndex))
 		}
 
 		// <3> Sample size in bits:
@@ -269,34 +258,28 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		// 101 : 20 bits per sample
 		// 110 : 24 bits per sample
 		// 111 : reserved
-		d.FieldUScalarFn("sample_size", func(d *decode.D) scalar.S {
-			sampleSizeBits := d.U3()
-			s := scalar.S{Actual: sampleSizeBits}
-			switch sampleSizeBits {
-			case 0b000:
-				if inStreamInfo == nil {
-					d.Fatalf("streaminfo required for bit per sample")
-				}
-				sampleSize = int(inStreamInfo.BitPerSample)
-				s.Description = "streaminfo"
-			case 0b001:
-				sampleSize = 8
-			case 0b010:
-				sampleSize = 12
-			case 0b011:
-				s.Description = "reserved"
-			case 0b100:
-				sampleSize = 16
-			case 0b101:
-				sampleSize = 20
-			case 0b110:
-				sampleSize = 24
-			case 0b111:
-				s.Description = "reserved"
+		var sampleSizeMap = scalar.UToScalar{
+			0b000: {Description: "from streaminfo"},
+			0b001: {Sym: uint64(8)},
+			0b010: {Sym: uint64(12)},
+			0b011: {Description: "reserved"},
+			0b100: {Sym: uint64(16)},
+			0b101: {Sym: uint64(20)},
+			0b110: {Sym: uint64(24)},
+			0b111: {Description: "reserved"},
+		}
+		sampleSizeS := d.FieldScalarU3("sample_size", sampleSizeMap, scalar.Bin)
+		switch sampleSizeS.ActualU() {
+		case SampleSizeStreaminfo:
+			if inStreamInfo == nil {
+				d.Fatalf("streaminfo required for sample size")
 			}
-			s.Sym = sampleSize
-			return s
-		})
+			sampleSize = int(inStreamInfo.BitPerSample)
+		default:
+			if sampleSizeS.Sym != nil {
+				sampleSize = int(sampleSizeS.SymU())
+			}
+		}
 
 		// <1> Reserved:
 		// 0 : mandatory value
@@ -308,6 +291,8 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			//   <8-56>:"UTF-8" coded sample number (decoded number is 36 bits) [4]
 			// else
 			//   <8-48>:"UTF-8" coded frame number (decoded number is 31 bits) [4]
+			// 0 : fixed-blocksize stream; frame header encodes the frame number
+			// 1 : variable-blocksize stream; frame header encodes the sample number
 			switch blockingStrategy {
 			case BlockingStrategyVariable:
 				d.FieldUFn("sample_number", utf8Uint)
@@ -317,24 +302,27 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 
 			// if(blocksize bits == 011x)
 			//   8/16 bit (blocksize-1)
-			switch blockSizeBits {
-			case 0b0110:
+			// 0110 : get 8 bit (blocksize-1) from end of header
+			// 0111 : get 16 bit (blocksize-1) from end of header
+			switch blockSizeS.ActualU() {
+			case BlockSizeEndOfHeader8:
 				blockSize = int(d.FieldU8("block_size", scalar.UAdd(1)))
-			case 0b0111:
+			case BlockSizeEndOfHeader16:
 				blockSize = int(d.FieldU16("block_size", scalar.UAdd(1)))
 			}
 
 			// if(sample rate bits == 11xx)
 			//   8/16 bit sample rate
-			switch sampleRateBits {
-			case 0b1100:
+			// 1100 : get 8 bit sample rate (in kHz) from end of header
+			// 1101 : get 16 bit sample rate (in Hz) from end of header
+			// 1110 : get 16 bit sample rate (in tens of Hz) from end of header
+			switch sampleRateS.ActualU() {
+			case SampeleRateEndOfHeader8:
 				d.FieldUFn("sample_rate", func(d *decode.D) uint64 { return d.U8() * 1000 })
-			case 0b1101:
-				d.FieldUFn("sample_rate", func(d *decode.D) uint64 { return d.U16() })
-			case 0b1110:
+			case SampeleRateEndOfHeader16:
+				d.FieldU16("sample_rate")
+			case SampeleRateEndOfHeader160:
 				d.FieldUFn("sample_rate", func(d *decode.D) uint64 { return d.U16() * 10 })
-			case 0b1111:
-				// TODO: reserved?
 			}
 		})
 
@@ -345,7 +333,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 
 	var channelSamples [][]int64
 	d.FieldArray("subframes", func(d *decode.D) {
-		for channelIndex := 0; channelIndex < int(channels); channelIndex++ {
+		for channelIndex := 0; channelIndex < channels; channelIndex++ {
 			d.FieldStruct("subframe", func(d *decode.D) {
 				// <1> Zero bit padding, to prevent sync-fooling string of 1s
 				d.FieldU1("zero_bit", d.AssertU(0))
@@ -358,31 +346,27 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 				// 001xxx : if(xxx <= 4) SUBFRAME_FIXED, xxx=order ; else reserved
 				// 01xxxx : reserved
 				// 1xxxxx : SUBFRAME_LPC, xxxxx=order-1
-				var lpcOrder int
-				subframeType := d.FieldUScalarFn("subframe_type", func(d *decode.D) scalar.S {
-					u, sym := func() (uint64, string) {
-						bits := d.U6()
-						switch bits {
-						case 0b000000:
-							return SubframeConstant, SubframeTypeNames[SubframeConstant]
-						case 0b000001:
-							return SubframeVerbatim, SubframeTypeNames[SubframeVerbatim]
-						case 0b001000, 0b001001, 0b001010, 0b001011, 0b001100:
-							lpcOrder = int(bits & 0x7)
-							return SubframeFixed, SubframeTypeNames[SubframeFixed]
-						default:
-							if bits&0x20 > 0 {
-								lpcOrder = int((bits & 0x1f) + 1)
-							} else {
-								return 0, "reserved"
-							}
-							return SubframeLPC, SubframeTypeNames[SubframeLPC]
-						}
-					}()
+				lpcOrder := -1
+				var subframeTypeRangeMap = scalar.URangeToScalar{
+					{0b000000, 0b000000}: {Sym: SubframeConstant},
+					{0b000001, 0b000001}: {Sym: SubframeVerbatim},
+					{0b000010, 0b000011}: {Sym: SubframeReserved},
+					{0b000100, 0b000111}: {Sym: SubframeReserved},
+					{0b001000, 0b001100}: {Sym: SubframeFixed},
+					{0b001101, 0b001111}: {Sym: SubframeReserved},
+					{0b010000, 0b011111}: {Sym: SubframeReserved},
+					{0b100000, 0b111111}: {Sym: SubframeLPC},
+				}
+				subframeTypeS := d.FieldScalarU6("subframe_type", subframeTypeRangeMap, scalar.Bin)
+				switch subframeTypeS.SymStr() {
+				case SubframeFixed:
+					lpcOrder = int(subframeTypeS.ActualU() & 0b111)
+				case SubframeLPC:
+					lpcOrder = int((subframeTypeS.ActualU() & 0b11111) + 1)
+				}
+				if lpcOrder != -1 {
 					d.FieldValueU("lpc_order", uint64(lpcOrder))
-					// TODO: actual wrong for LPC/fixed?
-					return scalar.S{Actual: u, Sym: sym}
-				})
+				}
 
 				// 'Wasted bits-per-sample' flag:
 				// 0 : no wasted bits-per-sample in source subblock, k=0
@@ -514,7 +498,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 				}
 
 				var samples []int64
-				switch subframeType {
+				switch subframeTypeS.SymStr() {
 				case SubframeConstant:
 					samples = make([]int64, blockSize)
 					// <n> Unencoded constant value of the subblock, n = frame's bits-per-sample.
@@ -660,7 +644,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	return format.FlacFrameOut{
 		SamplesBuf:    interleavedSamplesBuf,
 		Samples:       uint64(streamSamples),
-		Channels:      int(channels),
+		Channels:      channels,
 		BitsPerSample: outSampleSize,
 	}
 }
