@@ -8,6 +8,7 @@
 |`adts`                |Audio&nbsp;Data&nbsp;Transport&nbsp;Stream                    |<sub>`adts_frame`</sub>|
 |`adts_frame`          |Audio&nbsp;Data&nbsp;Transport&nbsp;Stream&nbsp;frame         |<sub>`aac_frame`</sub>|
 |`apev2`               |APEv2&nbsp;metadata&nbsp;tag                                  |<sub>`image`</sub>|
+|`ar`                  |Unix&nbsp;archive                                             |<sub>`probe`</sub>|
 |`av1_ccr`             |AV1&nbsp;Codec&nbsp;Configuration&nbsp;Record                 |<sub></sub>|
 |`av1_frame`           |AV1&nbsp;frame                                                |<sub>`av1_obu`</sub>|
 |`av1_obu`             |AV1&nbsp;Open&nbsp;Bitstream&nbsp;Unit                        |<sub></sub>|
@@ -83,7 +84,7 @@
 |`zip`                 |ZIP&nbsp;archive                                              |<sub>`probe`</sub>|
 |`image`               |Group                                                         |<sub>`gif` `jpeg` `mp4` `png` `tiff` `webp`</sub>|
 |`link_frame`          |Group                                                         |<sub>`bsd_loopback_frame` `ether8023_frame` `sll2_packet` `sll_packet`</sub>|
-|`probe`               |Group                                                         |<sub>`adts` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `wav` `webp` `zip`</sub>|
+|`probe`               |Group                                                         |<sub>`adts` `ar` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `wav` `webp` `zip`</sub>|
 |`tcp_stream`          |Group                                                         |<sub>`dns`</sub>|
 |`udp_payload`         |Group                                                         |<sub>`dns`</sub>|
 
