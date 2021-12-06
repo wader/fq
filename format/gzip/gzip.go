@@ -106,16 +106,18 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 		rFn = func(r io.Reader) io.Reader { return flate.NewReader(r) }
 	}
 
-	readCompressedSize, uncompressedBB, dv, _, _ := d.TryFieldReaderRangeFormat("uncompressed", d.Pos(), d.BitsLeft(), rFn, probeFormat, nil)
-	if uncompressedBB != nil {
-		if dv == nil {
-			d.FieldRootBitBuf("uncompressed", uncompressedBB)
+	if rFn != nil {
+		readCompressedSize, uncompressedBB, dv, _, _ := d.TryFieldReaderRangeFormat("uncompressed", d.Pos(), d.BitsLeft(), rFn, probeFormat, nil)
+		if uncompressedBB != nil {
+			if dv == nil {
+				d.FieldRootBitBuf("uncompressed", uncompressedBB)
+			}
+			d.FieldRawLen("compressed", readCompressedSize)
+			crc32W := crc32.NewIEEE()
+			d.MustCopy(crc32W, uncompressedBB.Clone())
+			d.FieldU32("crc32", d.ValidateUBytes(crc32W.Sum(nil)), scalar.Hex)
+			d.FieldU32("isize")
 		}
-		d.FieldRawLen("compressed", readCompressedSize)
-		crc32W := crc32.NewIEEE()
-		d.MustCopy(crc32W, uncompressedBB.Clone())
-		d.FieldU32("crc32", d.ValidateUBytes(crc32W.Sum(nil)), scalar.Hex)
-		d.FieldU32("isize")
 	}
 
 	return nil
