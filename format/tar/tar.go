@@ -59,7 +59,11 @@ func tarDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldUTF8NullFixedLen("mode", 8, mapOctStrToSymU)
 				d.FieldUTF8NullFixedLen("uid", 8, mapOctStrToSymU)
 				d.FieldUTF8NullFixedLen("gid", 8, mapOctStrToSymU)
-				size := d.FieldScalarUTF8NullFixedLen("size", 12, mapOctStrToSymU).SymU()
+				sizeS := d.FieldScalarUTF8NullFixedLen("size", 12, mapOctStrToSymU)
+				if sizeS.Sym == nil {
+					d.Fatalf("could not decode size")
+				}
+				size := int64(sizeS.SymU()) * 8
 				d.FieldUTF8NullFixedLen("mtime", 12, mapOctStrToSymU)
 				d.FieldUTF8NullFixedLen("chksum", 8, mapOctStrToSymU)
 				d.FieldUTF8("typeflag", 1, mapTrimSpaceNull)
@@ -76,9 +80,9 @@ func tarDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldUTF8("prefix", 155, mapTrimSpaceNull)
 				d.FieldRawLen("header_block_padding", blockPadding(d), d.BitBufIsZero())
 
-				dv, _, _ := d.TryFieldFormatLen("data", int64(size)*8, probeFormat, nil)
+				dv, _, _ := d.TryFieldFormatLen("data", size, probeFormat, nil)
 				if dv == nil {
-					d.FieldRawLen("data", int64(size)*8)
+					d.FieldRawLen("data", size)
 				}
 
 				d.FieldRawLen("data_block_padding", blockPadding(d), d.BitBufIsZero())
