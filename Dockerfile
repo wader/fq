@@ -22,7 +22,7 @@ FROM base AS builder
 WORKDIR $GOPATH/src/fq
 COPY go.mod go.sum ./
 RUN go mod download
-COPY Makefile main.go ./
+COPY Makefile *.go ./
 COPY pkg pkg
 COPY internal internal
 COPY format format
