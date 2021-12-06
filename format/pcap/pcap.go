@@ -77,7 +77,8 @@ func decodePcap(d *decode.D, in interface{}) interface{} {
 				}
 
 				if fn, ok := linkToDecodeFn[linkType]; ok {
-					fn(fd, bs)
+					// TODO: report decode errors
+					_ = fn(fd, bs)
 				}
 
 				if g, ok := linkToFormat[linkType]; ok {

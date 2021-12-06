@@ -240,7 +240,9 @@ var blockFns = map[uint64]func(d *decode.D, dc *decodeContext){
 		linkType := dc.interfaceTypes[int(interfaceID)]
 
 		if fn, ok := linkToDecodeFn[linkType]; ok {
-			fn(dc.flowDecoder, bs)
+			// TODO: report decode errors
+			_ = fn(dc.flowDecoder, bs)
+			_ = fn(dc.flowDecoder, bs)
 		}
 
 		if g, ok := linkToFormat[linkType]; ok {

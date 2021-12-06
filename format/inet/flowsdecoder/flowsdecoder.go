@@ -18,23 +18,24 @@ type IPEndpoint struct {
 
 type TCPConnection struct {
 	ClientEndpoint IPEndpoint
-	ServerEnpoint  IPEndpoint
-	ClientStream   *bytes.Buffer
-	ServerStream   *bytes.Buffer
+	ServerEndpoint IPEndpoint
+	ClientToServer *bytes.Buffer
+	ServerToClient *bytes.Buffer
 
-	tcpstate       *reassembly.TCPSimpleFSM
-	optchecker     reassembly.TCPOptionCheck
-	net, transport gopacket.Flow
+	tcpState   *reassembly.TCPSimpleFSM
+	optChecker reassembly.TCPOptionCheck
+	net        gopacket.Flow
+	transport  gopacket.Flow
 }
 
 func (t *TCPConnection) Accept(tcp *layers.TCP, ci gopacket.CaptureInfo, dir reassembly.TCPFlowDirection, nextSeq reassembly.Sequence, start *bool, ac reassembly.AssemblerContext) bool {
 	// has ok state?
-	if !t.tcpstate.CheckState(tcp, dir) {
+	if !t.tcpState.CheckState(tcp, dir) {
 		// TODO: handle err?
 		return false
 	}
 	// has ok options?
-	if err := t.optchecker.Accept(tcp, ci, dir, nextSeq, start); err != nil {
+	if err := t.optChecker.Accept(tcp, ci, dir, nextSeq, start); err != nil {
 		// TODO: handle err?
 		return false
 	}
@@ -52,9 +53,9 @@ func (t *TCPConnection) ReassembledSG(sg reassembly.ScatterGather, ac reassembly
 
 	switch dir {
 	case reassembly.TCPDirClientToServer:
-		t.ClientStream.Write(data)
+		t.ClientToServer.Write(data)
 	case reassembly.TCPDirServerToClient:
-		t.ServerStream.Write(data)
+		t.ServerToClient.Write(data)
 	}
 }
 
@@ -79,17 +80,17 @@ func (fd *Decoder) New(net, transport gopacket.Flow, tcp *layers.TCP, ac reassem
 			IP:   append([]byte(nil), net.Src().Raw()...),
 			Port: int(binary.BigEndian.Uint16(transport.Src().Raw())),
 		},
-		ServerEnpoint: IPEndpoint{
+		ServerEndpoint: IPEndpoint{
 			IP:   append([]byte(nil), net.Dst().Raw()...),
 			Port: int(binary.BigEndian.Uint16(transport.Dst().Raw())),
 		},
-		ClientStream: &bytes.Buffer{},
-		ServerStream: &bytes.Buffer{},
+		ClientToServer: &bytes.Buffer{},
+		ServerToClient: &bytes.Buffer{},
 
 		net:        net,
 		transport:  transport,
-		tcpstate:   reassembly.NewTCPSimpleFSM(fsmOptions),
-		optchecker: reassembly.NewTCPOptionCheck(),
+		tcpState:   reassembly.NewTCPSimpleFSM(fsmOptions),
+		optChecker: reassembly.NewTCPOptionCheck(),
 	}
 
 	fd.TCPConnections = append(fd.TCPConnections, stream)
@@ -98,8 +99,8 @@ func (fd *Decoder) New(net, transport gopacket.Flow, tcp *layers.TCP, ac reassem
 }
 
 type Decoder struct {
-	TCPConnections []*TCPConnection
-	IPV4Reassbled  []IPV4Reassembled
+	TCPConnections  []*TCPConnection
+	IPV4Reassembled []IPV4Reassembled
 
 	ipv4Defrag   *ip4defrag.IPv4Defragmenter
 	tcpAssembler *reassembly.Assembler
@@ -115,36 +116,38 @@ func New() *Decoder {
 	return flowDecoder
 }
 
-func (fd *Decoder) SLLPacket(bs []byte) {
-	fd.packet(gopacket.NewPacket(bs, layers.LayerTypeLinuxSLL, gopacket.Lazy))
+func (fd *Decoder) SLLPacket(bs []byte) error {
+	return fd.packet(gopacket.NewPacket(bs, layers.LayerTypeLinuxSLL, gopacket.Lazy))
 }
 
-func (fd *Decoder) EthernetFrame(bs []byte) {
-	fd.packet(gopacket.NewPacket(bs, layers.LayerTypeEthernet, gopacket.Lazy))
+func (fd *Decoder) EthernetFrame(bs []byte) error {
+	return fd.packet(gopacket.NewPacket(bs, layers.LayerTypeEthernet, gopacket.Lazy))
 }
 
-func (fd *Decoder) packet(p gopacket.Packet) {
+func (fd *Decoder) packet(p gopacket.Packet) error {
 	// TODO: linkType
 	ip4Layer := p.Layer(layers.LayerTypeIPv4)
 	if ip4Layer != nil {
 		ip4, _ := ip4Layer.(*layers.IPv4)
 		l := ip4.Length
-		newip4, err := fd.ipv4Defrag.DefragIPv4(ip4)
+		newIPv4, err := fd.ipv4Defrag.DefragIPv4(ip4)
 		if err != nil {
-			panic(err)
-		} else if newip4 != nil {
+			return err
+		} else if newIPv4 != nil {
 			// TODO: correct way to detect finished reassemble?
-			if newip4.Length != l {
+			if newIPv4.Length != l {
 				// TODO: better way to reconstruct package?
 				sb := gopacket.NewSerializeBuffer()
-				b, _ := sb.PrependBytes(len(newip4.Payload))
-				copy(b, newip4.Payload)
-				_ = newip4.SerializeTo(sb, gopacket.SerializeOptions{
+				b, _ := sb.PrependBytes(len(newIPv4.Payload))
+				copy(b, newIPv4.Payload)
+				if err := newIPv4.SerializeTo(sb, gopacket.SerializeOptions{
 					FixLengths:       true,
 					ComputeChecksums: true,
-				})
+				}); err != nil {
+					return err
+				}
 
-				fd.IPV4Reassbled = append(fd.IPV4Reassbled, IPV4Reassembled{
+				fd.IPV4Reassembled = append(fd.IPV4Reassembled, IPV4Reassembled{
 					SourceIP:      ip4.SrcIP,
 					DestinationIP: ip4.DstIP,
 					Datagram:      sb.Bytes(),
@@ -154,8 +157,10 @@ func (fd *Decoder) packet(p gopacket.Packet) {
 				if !ok {
 					panic("not a PacketBuilder")
 				}
-				nextDecoder := newip4.NextLayerType()
-				_ = nextDecoder.Decode(newip4.Payload, pb)
+				nextDecoder := newIPv4.NextLayerType()
+				if err := nextDecoder.Decode(newIPv4.Payload, pb); err != nil {
+					return err
+				}
 			}
 		}
 	}
@@ -165,6 +170,8 @@ func (fd *Decoder) packet(p gopacket.Packet) {
 		tcp, _ := tcp.(*layers.TCP)
 		fd.tcpAssembler.Assemble(p.NetworkLayer().NetworkFlow(), tcp)
 	}
+
+	return nil
 }
 
 func (fd *Decoder) Flush() {
