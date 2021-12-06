@@ -7,14 +7,14 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var udpDatagramFormat decode.Group
+var udpPayloadFormat decode.Group
 
 func init() {
 	registry.MustRegister(decode.Format{
 		Name:        format.UDP_DATAGRAM,
 		Description: "User datagram protocol",
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.UDP_PAYLOAD}, Group: &udpDatagramFormat},
+			{Names: []string{format.UDP_PAYLOAD}, Group: &udpPayloadFormat},
 		},
 		DecodeFn: decodeUDP,
 	})
@@ -27,7 +27,7 @@ func decodeUDP(d *decode.D, in interface{}) interface{} {
 	d.FieldU16("checksum", scalar.Hex)
 
 	dataLen := int64(length-8) * 8
-	if dv, _, _ := d.TryFieldFormatLen("data", dataLen, udpDatagramFormat, format.UDPDatagramIn{
+	if dv, _, _ := d.TryFieldFormatLen("data", dataLen, udpPayloadFormat, format.UDPDatagramIn{
 		SourcePort:      int(soucePort),
 		DestinationPort: int(destPort),
 	}); dv == nil {
