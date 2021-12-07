@@ -194,7 +194,7 @@ func (d *D) Copy(r io.Writer, w io.Reader) (int64, error) {
 func (d *D) MustCopy(r io.Writer, w io.Reader) int64 {
 	n, err := d.Copy(r, w)
 	if err != nil {
-		d.IOPanic(err, "MustCopy")
+		d.IOPanic(err, "MustCopy: Copy")
 	}
 	return n
 }
@@ -242,7 +242,7 @@ func (d *D) FillGaps(r ranges.Range, namePrefix string) {
 	for i, gap := range gaps {
 		bb, err := d.bitBuf.BitBufRange(gap.Start, gap.Len)
 		if err != nil {
-			panic(err)
+			d.IOPanic(err, "FillGaps: BitBufRange")
 		}
 
 		v := &Value{
@@ -315,10 +315,10 @@ func (d *D) PeekBytes(nBytes int) []byte {
 func (d *D) PeekFind(nBits int, seekBits int64, fn func(v uint64) bool, maxLen int64) (int64, uint64) {
 	peekBits, v, err := d.TryPeekFind(nBits, seekBits, maxLen, fn)
 	if err != nil {
-		panic(IOError{Err: err, Op: "PeekFind", ReadSize: 0, Pos: d.Pos()})
+		d.IOPanic(err, "PeekFind: TryPeekFind")
 	}
 	if peekBits == -1 {
-		panic(IOError{Err: fmt.Errorf("not found"), Op: "PeekFind", ReadSize: 0, Pos: d.Pos()})
+		d.Errorf("peek not found")
 	}
 	return peekBits, v
 }
@@ -652,7 +652,7 @@ func (d *D) RangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 	// TODO: do some kind of DecodeLimitedLen/RangeFn?
 	bb := d.BitBufRange(0, firstBit+nBits)
 	if _, err := bb.SeekAbs(firstBit); err != nil {
-		panic(IOError{Err: err, Op: "SeekAbs", Pos: firstBit})
+		d.IOPanic(err, "RangeFn: SeekAbs")
 	}
 	sd := d.FieldDecoder("", bb, subV)
 
@@ -688,7 +688,7 @@ func (d *D) Format(group Group, inArg interface{}) interface{} {
 		ReadBuf:     d.readBuf,
 	})
 	if dv == nil || dv.Errors() != nil {
-		panic(err)
+		d.IOPanic(err, "Format: decode")
 	}
 
 	switch vv := dv.V.(type) {
@@ -701,7 +701,7 @@ func (d *D) Format(group Group, inArg interface{}) interface{} {
 	}
 
 	if _, err := d.bitBuf.SeekRel(dv.Range.Len); err != nil {
-		panic(err)
+		d.IOPanic(err, "Format: SeekRel")
 	}
 
 	return v
@@ -723,7 +723,7 @@ func (d *D) TryFieldFormat(name string, group Group, inArg interface{}) (*Value,
 
 	d.AddChild(dv)
 	if _, err := d.bitBuf.SeekRel(dv.Range.Len); err != nil {
-		panic(err)
+		d.IOPanic(err, "TryFieldFormat: SeekRel")
 	}
 
 	return dv, v, err
@@ -732,7 +732,7 @@ func (d *D) TryFieldFormat(name string, group Group, inArg interface{}) (*Value,
 func (d *D) FieldFormat(name string, group Group, inArg interface{}) (*Value, interface{}) {
 	dv, v, err := d.TryFieldFormat(name, group, inArg)
 	if dv == nil || dv.Errors() != nil {
-		panic(err)
+		d.IOPanic(err, "FieldFormat: TryFieldFormat")
 	}
 	return dv, v
 }
@@ -753,7 +753,7 @@ func (d *D) TryFieldFormatLen(name string, nBits int64, group Group, inArg inter
 
 	d.AddChild(dv)
 	if _, err := d.bitBuf.SeekRel(nBits); err != nil {
-		panic(err)
+		d.IOPanic(err, "TryFieldFormatLen: SeekRel")
 	}
 
 	return dv, v, err
@@ -762,7 +762,7 @@ func (d *D) TryFieldFormatLen(name string, nBits int64, group Group, inArg inter
 func (d *D) FieldFormatLen(name string, nBits int64, group Group, inArg interface{}) (*Value, interface{}) {
 	dv, v, err := d.TryFieldFormatLen(name, nBits, group, inArg)
 	if dv == nil || dv.Errors() != nil {
-		panic(err)
+		d.IOPanic(err, "FieldFormatLen: TryFieldFormatLen")
 	}
 	return dv, v
 }
@@ -790,7 +790,7 @@ func (d *D) TryFieldFormatRange(name string, firstBit int64, nBits int64, group 
 func (d *D) FieldFormatRange(name string, firstBit int64, nBits int64, group Group, inArg interface{}) (*Value, interface{}) {
 	dv, v, err := d.TryFieldFormatRange(name, firstBit, nBits, group, inArg)
 	if dv == nil || dv.Errors() != nil {
-		panic(err)
+		d.IOPanic(err, "FieldFormatRange: TryFieldFormatRange")
 	}
 
 	return dv, v
@@ -819,7 +819,7 @@ func (d *D) TryFieldFormatBitBuf(name string, bb *bitio.Buffer, group Group, inA
 func (d *D) FieldFormatBitBuf(name string, bb *bitio.Buffer, group Group, inArg interface{}) (*Value, interface{}) {
 	dv, v, err := d.TryFieldFormatBitBuf(name, bb, group, inArg)
 	if dv == nil || dv.Errors() != nil {
-		panic(err)
+		d.IOPanic(err, "FieldFormatBitBuf: TryFieldFormatBitBuf")
 	}
 
 	return dv, v
@@ -853,15 +853,15 @@ func (d *D) FieldStructRootBitBufFn(name string, bb *bitio.Buffer, fn func(d *D)
 func (d *D) FieldFormatReaderLen(name string, nBits int64, fn func(r io.Reader) (io.ReadCloser, error), group Group) (*Value, interface{}) {
 	bb, err := d.bitBuf.BitBufLen(nBits)
 	if err != nil {
-		panic(err)
+		d.IOPanic(err, "FieldFormatReaderLen: BitBufLen")
 	}
 	zr, err := fn(bb)
 	if err != nil {
-		panic(err)
+		d.IOPanic(err, "FieldFormatReaderLen: fn")
 	}
 	zd, err := ioutil.ReadAll(zr)
 	if err != nil {
-		panic(err)
+		d.IOPanic(err, "FieldFormatReaderLen: ReadAll")
 	}
 	zbb := bitio.NewBufferFromBytes(zd, -1)
 
@@ -920,7 +920,7 @@ func (d *D) TryFieldValue(name string, fn func() (*Value, error)) (*Value, error
 func (d *D) FieldValue(name string, fn func() *Value) *Value {
 	v, err := d.TryFieldValue(name, func() (*Value, error) { return fn(), nil })
 	if err != nil {
-		panic(err)
+		d.IOPanic(err, "FieldValue: TryFieldValue")
 	}
 	return v
 }
@@ -949,7 +949,7 @@ func (d *D) TryFieldScalarFn(name string, sfn scalar.Fn, sms ...scalar.Mapper) (
 func (d *D) FieldScalarFn(name string, sfn scalar.Fn, sms ...scalar.Mapper) *scalar.S {
 	v, err := d.TryFieldScalarFn(name, sfn, sms...)
 	if err != nil {
-		panic(err)
+		d.IOPanic(err, "FieldScalarFn: TryFieldScalarFn")
 	}
 	return v
 }
