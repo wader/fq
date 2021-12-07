@@ -77,13 +77,16 @@ func main() {
 	}
 	pkgName := os.Args[2]
 	ebmlPkgPath := os.Args[3]
-	prefix := os.Args[4]
+	scalarPkgPath := os.Args[4]
 	root := os.Args[5]
 
 	fmt.Printf("// Code below generated from %s\n", xmlPath)
 	fmt.Printf("//nolint:revive\n")
 	fmt.Printf("package %s\n", pkgName)
-	fmt.Printf("import %q\n", ebmlPkgPath)
+	fmt.Printf("import (\n")
+	fmt.Printf("\t%q\n", ebmlPkgPath)
+	fmt.Printf("\t%q\n", scalarPkgPath)
+	fmt.Printf(")\n")
 
 	fmt.Printf("var Root = ebml.Tag{\n")
 	fmt.Printf("\tebml.HeaderID: {Name: \"EBML\", Type: ebml.Master, Tag: ebml.Header},\n")
@@ -115,14 +118,14 @@ func main() {
 			continue
 		}
 
-		fmt.Printf("var %s%s = ebml.Tag{\n", prefix, e.Name)
+		fmt.Printf("var %s = ebml.Tag{\n", e.Name)
 		for _, c := range children {
 			def, defOk := findDefintion(c.Documentations)
 			extra := ""
 			typ := c.Type
 			switch typ {
 			case "master":
-				extra = ", Tag: " + prefix + c.Name
+				extra = ", Tag: " + c.Name
 			case "utf-8":
 				typ = "UTF8"
 			}
@@ -136,11 +139,11 @@ func main() {
 			if len(c.Enums) > 0 {
 				switch c.Type {
 				case "integer":
-					fmt.Printf("\t\tIntegerEnums: map[int64]ebml.Enum{\n")
+					fmt.Printf("\t\tIntegerEnums: scalar.SToScalar{\n")
 				case "uinteger":
-					fmt.Printf("\t\tUintegerEnums: map[uint64]ebml.Enum{\n")
+					fmt.Printf("\t\tUintegerEnums: scalar.UToScalar{\n")
 				case "string":
-					fmt.Printf("\t\tStringEnums: map[string]ebml.Enum{\n")
+					fmt.Printf("\t\tStringEnums: scalar.StrToScalar{\n")
 				}
 
 				// matroska.xml has dup keys (e.g. PARTS)
@@ -165,10 +168,9 @@ func main() {
 						fmt.Printf("\t\t\t%q:{\n", e.Value)
 					}
 
-					fmt.Printf("\t\t\t\tValue: %q,\n", e.Value)
-					fmt.Printf("\t\t\t\tLabel: %q,\n", e.Label)
+					fmt.Printf("\t\t\t\tSym: %q,\n", e.Label)
 					if enumDefOk {
-						fmt.Printf("\t\t\t\tDefinition: %q,\n", enumDef)
+						fmt.Printf("\t\t\t\tDescription: %q,\n", enumDef)
 					}
 					fmt.Printf("\t\t\t},\n")
 				}

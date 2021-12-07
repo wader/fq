@@ -178,7 +178,8 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 				//    The end of a Master-element with unknown size is determined by the beginning of the next
 				//    element that is not a valid sub-element of that Master-element
 				// TODO: should also handle garbage between
-				tagSize := d.FieldUFn("size", decodeVint)
+				const maxTagSize = 100 * 1024 * 1024
+				tagSize := d.FieldUFn("size", decodeVint, d.RequireURange(0, maxTagSize))
 
 				if tagSize > 8 &&
 					(a.Type == ebml.Integer ||
@@ -187,45 +188,27 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 					d.Fatalf("invalid tagSize %d for non-master type", tagSize)
 				}
 
+				optionalMap := func(sm scalar.Mapper) scalar.Mapper {
+					return scalar.Fn(func(s scalar.S) (scalar.S, error) {
+						if sm != nil {
+							return sm.MapScalar(s)
+						}
+						return s, nil
+					})
+				}
+
 				switch a.Type {
 				case ebml.Integer:
-					d.FieldU("value", int(tagSize)*8, scalar.Fn(func(s scalar.S) (scalar.S, error) {
-						if a.IntegerEnums != nil {
-							if e, ok := a.IntegerEnums[s.ActualS()]; ok {
-								s.Sym = e.Label
-								s.Description = e.Definition
-							}
-						}
-						return s, nil
-					}))
-
+					d.FieldS("value", int(tagSize)*8, optionalMap(a.IntegerEnums))
 				case ebml.Uinteger:
-					v := d.FieldU("value", int(tagSize)*8, scalar.Fn(func(s scalar.S) (scalar.S, error) {
-						if a.UintegerEnums != nil {
-							if e, ok := a.UintegerEnums[s.ActualU()]; ok {
-								s.Sym = e.Label
-								s.Description = e.Definition
-							}
-						}
-						return s, nil
-					}))
-
+					v := d.FieldU("value", int(tagSize)*8, optionalMap(a.UintegerEnums))
 					if dc.currentTrack != nil && tagID == ebml_matroska.TrackNumberID {
 						dc.currentTrack.number = int(v)
 					}
 				case ebml.Float:
 					d.FieldF("value", int(tagSize)*8)
 				case ebml.String:
-					v := d.FieldUTF8("value", int(tagSize), scalar.Fn(func(s scalar.S) (scalar.S, error) {
-						if a.StringEnums != nil {
-							if e, ok := a.StringEnums[s.ActualStr()]; ok {
-								s.Sym = e.Label
-								s.Description = e.Definition
-							}
-						}
-						return s, nil
-					}))
-
+					v := d.FieldUTF8("value", int(tagSize), optionalMap(a.StringEnums))
 					if dc.currentTrack != nil && tagID == ebml_matroska.CodecIDID {
 						dc.currentTrack.codec = v
 					}

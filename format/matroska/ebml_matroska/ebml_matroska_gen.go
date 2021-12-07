@@ -2,7 +2,10 @@
 //nolint:revive
 package ebml_matroska
 
-import "github.com/wader/fq/format/matroska/ebml"
+import (
+	"github.com/wader/fq/format/matroska/ebml"
+	"github.com/wader/fq/pkg/scalar"
+)
 
 var Root = ebml.Tag{
 	ebml.HeaderID: {Name: "EBML", Type: ebml.Master, Tag: ebml.Header},
@@ -409,14 +412,12 @@ var ChapterTranslate = ebml.Tag{
 		Name:       "ChapterTranslateCodec",
 		Definition: "The",
 		Type:       ebml.Uinteger,
-		UintegerEnums: map[uint64]ebml.Enum{
+		UintegerEnums: scalar.UToScalar{
 			0: {
-				Value: "0",
-				Label: "Matroska Script",
+				Sym: "Matroska Script",
 			},
 			1: {
-				Value: "1",
-				Label: "DVD-menu",
+				Sym: "DVD-menu",
 			},
 		},
 	},
@@ -624,38 +625,30 @@ var TrackEntry = ebml.Tag{
 		Name:       "TrackType",
 		Definition: "A set of track types coded on 8 bits.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: map[uint64]ebml.Enum{
+		UintegerEnums: scalar.UToScalar{
 			1: {
-				Value: "1",
-				Label: "video",
+				Sym: "video",
 			},
 			2: {
-				Value: "2",
-				Label: "audio",
+				Sym: "audio",
 			},
 			3: {
-				Value: "3",
-				Label: "complex",
+				Sym: "complex",
 			},
 			16: {
-				Value: "16",
-				Label: "logo",
+				Sym: "logo",
 			},
 			17: {
-				Value: "17",
-				Label: "subtitle",
+				Sym: "subtitle",
 			},
 			18: {
-				Value: "18",
-				Label: "buttons",
+				Sym: "buttons",
 			},
 			32: {
-				Value: "32",
-				Label: "control",
+				Sym: "control",
 			},
 			33: {
-				Value: "33",
-				Label: "metadata",
+				Sym: "metadata",
 			},
 		},
 	},
@@ -874,14 +867,12 @@ var TrackTranslate = ebml.Tag{
 		Name:       "TrackTranslateCodec",
 		Definition: "The .",
 		Type:       ebml.Uinteger,
-		UintegerEnums: map[uint64]ebml.Enum{
+		UintegerEnums: scalar.UToScalar{
 			0: {
-				Value: "0",
-				Label: "Matroska Script",
+				Sym: "Matroska Script",
 			},
 			1: {
-				Value: "1",
-				Label: "DVD-menu",
+				Sym: "DVD-menu",
 			},
 		},
 	},
@@ -897,18 +888,15 @@ var Video = ebml.Tag{
 		Name:       "FlagInterlaced",
 		Definition: "A flag to declare if the video is known to be progressive or interlaced and if applicable to declare details about the interlacement.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: map[uint64]ebml.Enum{
+		UintegerEnums: scalar.UToScalar{
 			0: {
-				Value: "0",
-				Label: "undetermined",
+				Sym: "undetermined",
 			},
 			1: {
-				Value: "1",
-				Label: "interlaced",
+				Sym: "interlaced",
 			},
 			2: {
-				Value: "2",
-				Label: "progressive",
+				Sym: "progressive",
 			},
 		},
 	},
@@ -916,34 +904,28 @@ var Video = ebml.Tag{
 		Name:       "FieldOrder",
 		Definition: "Declare the field ordering of the video. If FlagInterlaced is not set to 1, this Element MUST be ignored.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: map[uint64]ebml.Enum{
+		UintegerEnums: scalar.UToScalar{
 			0: {
-				Value: "0",
-				Label: "progressive",
+				Sym: "progressive",
 			},
 			1: {
-				Value:      "1",
-				Label:      "tff",
-				Definition: "Top field displayed first. Top field stored first.",
+				Sym:         "tff",
+				Description: "Top field displayed first. Top field stored first.",
 			},
 			2: {
-				Value: "2",
-				Label: "undetermined",
+				Sym: "undetermined",
 			},
 			6: {
-				Value:      "6",
-				Label:      "bff",
-				Definition: "Bottom field displayed first. Bottom field stored first.",
+				Sym:         "bff",
+				Description: "Bottom field displayed first. Bottom field stored first.",
 			},
 			9: {
-				Value:      "9",
-				Label:      "bff(swapped)",
-				Definition: "Top field displayed first. Fields are interleaved in storage with the top line of the top field stored first.",
+				Sym:         "bff(swapped)",
+				Description: "Top field displayed first. Fields are interleaved in storage with the top line of the top field stored first.",
 			},
 			14: {
-				Value:      "14",
-				Label:      "tff(swapped)",
-				Definition: "Bottom field displayed first. Fields are interleaved in storage with the top line of the top field stored first.",
+				Sym:         "tff(swapped)",
+				Description: "Bottom field displayed first. Fields are interleaved in storage with the top line of the top field stored first.",
 			},
 		},
 	},
@@ -951,66 +933,51 @@ var Video = ebml.Tag{
 		Name:       "StereoMode",
 		Definition: "Stereo-3D video mode. There are some more details on .",
 		Type:       ebml.Uinteger,
-		UintegerEnums: map[uint64]ebml.Enum{
+		UintegerEnums: scalar.UToScalar{
 			0: {
-				Value: "0",
-				Label: "mono",
+				Sym: "mono",
 			},
 			1: {
-				Value: "1",
-				Label: "side by side (left eye first)",
+				Sym: "side by side (left eye first)",
 			},
 			2: {
-				Value: "2",
-				Label: "top - bottom (right eye is first)",
+				Sym: "top - bottom (right eye is first)",
 			},
 			3: {
-				Value: "3",
-				Label: "top - bottom (left eye is first)",
+				Sym: "top - bottom (left eye is first)",
 			},
 			4: {
-				Value: "4",
-				Label: "checkboard (right eye is first)",
+				Sym: "checkboard (right eye is first)",
 			},
 			5: {
-				Value: "5",
-				Label: "checkboard (left eye is first)",
+				Sym: "checkboard (left eye is first)",
 			},
 			6: {
-				Value: "6",
-				Label: "row interleaved (right eye is first)",
+				Sym: "row interleaved (right eye is first)",
 			},
 			7: {
-				Value: "7",
-				Label: "row interleaved (left eye is first)",
+				Sym: "row interleaved (left eye is first)",
 			},
 			8: {
-				Value: "8",
-				Label: "column interleaved (right eye is first)",
+				Sym: "column interleaved (right eye is first)",
 			},
 			9: {
-				Value: "9",
-				Label: "column interleaved (left eye is first)",
+				Sym: "column interleaved (left eye is first)",
 			},
 			10: {
-				Value: "10",
-				Label: "anaglyph (cyan/red)",
+				Sym: "anaglyph (cyan/red)",
 			},
 			11: {
-				Value: "11",
-				Label: "side by side (right eye first)",
+				Sym: "side by side (right eye first)",
 			},
 			12: {
-				Value: "12",
-				Label: "anaglyph (green/magenta)",
+				Sym: "anaglyph (green/magenta)",
 			},
 			13: {
-				Value: "13",
-				Label: "both eyes laced in one Block (left eye is first)",
+				Sym: "both eyes laced in one Block (left eye is first)",
 			},
 			14: {
-				Value: "14",
-				Label: "both eyes laced in one Block (right eye is first)",
+				Sym: "both eyes laced in one Block (right eye is first)",
 			},
 		},
 	},
@@ -1023,22 +990,18 @@ var Video = ebml.Tag{
 		Name:       "OldStereoMode",
 		Definition: "DEPRECATED, DO NOT USE. Bogus StereoMode value used in old versions of libmatroska.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: map[uint64]ebml.Enum{
+		UintegerEnums: scalar.UToScalar{
 			0: {
-				Value: "0",
-				Label: "mono",
+				Sym: "mono",
 			},
 			1: {
-				Value: "1",
-				Label: "right eye",
+				Sym: "right eye",
 			},
 			2: {
-				Value: "2",
-				Label: "left eye",
+				Sym: "left eye",
 			},
 			3: {
-				Value: "3",
-				Label: "both eyes",
+				Sym: "both eyes",
 			},
 		},
 	},
@@ -1086,26 +1049,21 @@ var Video = ebml.Tag{
 		Name:       "DisplayUnit",
 		Definition: "How DisplayWidth & DisplayHeight are interpreted.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: map[uint64]ebml.Enum{
+		UintegerEnums: scalar.UToScalar{
 			0: {
-				Value: "0",
-				Label: "pixels",
+				Sym: "pixels",
 			},
 			1: {
-				Value: "1",
-				Label: "centimeters",
+				Sym: "centimeters",
 			},
 			2: {
-				Value: "2",
-				Label: "inches",
+				Sym: "inches",
 			},
 			3: {
-				Value: "3",
-				Label: "display aspect ratio",
+				Sym: "display aspect ratio",
 			},
 			4: {
-				Value: "4",
-				Label: "unknown",
+				Sym: "unknown",
 			},
 		},
 	},
@@ -1113,18 +1071,15 @@ var Video = ebml.Tag{
 		Name:       "AspectRatioType",
 		Definition: "Specify the possible modifications to the aspect ratio.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: map[uint64]ebml.Enum{
+		UintegerEnums: scalar.UToScalar{
 			0: {
-				Value: "0",
-				Label: "free resizing",
+				Sym: "free resizing",
 			},
 			1: {
-				Value: "1",
-				Label: "keep aspect ratio",
+				Sym: "keep aspect ratio",
 			},
 			2: {
-				Value: "2",
-				Label: "fixed",
+				Sym: "fixed",
 			},
 		},
 	},
@@ -1160,66 +1115,51 @@ var Colour = ebml.Tag{
 		Name:       "MatrixCoefficients",
 		Definition: "The Matrix Coefficients of the video used to derive luma and chroma values from red, green, and blue color primaries. For clarity, the value and meanings for MatrixCoefficients are adopted from Table 4 of ISO/IEC 23001-8:2016 or ITU-T H.273.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: map[uint64]ebml.Enum{
+		UintegerEnums: scalar.UToScalar{
 			0: {
-				Value: "0",
-				Label: "Identity",
+				Sym: "Identity",
 			},
 			1: {
-				Value: "1",
-				Label: "ITU-R BT.709",
+				Sym: "ITU-R BT.709",
 			},
 			2: {
-				Value: "2",
-				Label: "unspecified",
+				Sym: "unspecified",
 			},
 			3: {
-				Value: "3",
-				Label: "reserved",
+				Sym: "reserved",
 			},
 			4: {
-				Value: "4",
-				Label: "US FCC 73.682",
+				Sym: "US FCC 73.682",
 			},
 			5: {
-				Value: "5",
-				Label: "ITU-R BT.470BG",
+				Sym: "ITU-R BT.470BG",
 			},
 			6: {
-				Value: "6",
-				Label: "SMPTE 170M",
+				Sym: "SMPTE 170M",
 			},
 			7: {
-				Value: "7",
-				Label: "SMPTE 240M",
+				Sym: "SMPTE 240M",
 			},
 			8: {
-				Value: "8",
-				Label: "YCoCg",
+				Sym: "YCoCg",
 			},
 			9: {
-				Value: "9",
-				Label: "BT2020 Non-constant Luminance",
+				Sym: "BT2020 Non-constant Luminance",
 			},
 			10: {
-				Value: "10",
-				Label: "BT2020 Constant Luminance",
+				Sym: "BT2020 Constant Luminance",
 			},
 			11: {
-				Value: "11",
-				Label: "SMPTE ST 2085",
+				Sym: "SMPTE ST 2085",
 			},
 			12: {
-				Value: "12",
-				Label: "Chroma-derived Non-constant Luminance",
+				Sym: "Chroma-derived Non-constant Luminance",
 			},
 			13: {
-				Value: "13",
-				Label: "Chroma-derived Constant Luminance",
+				Sym: "Chroma-derived Constant Luminance",
 			},
 			14: {
-				Value: "14",
-				Label: "ITU-R BT.2100-0",
+				Sym: "ITU-R BT.2100-0",
 			},
 		},
 	},
@@ -1252,18 +1192,15 @@ var Colour = ebml.Tag{
 		Name:       "ChromaSitingHorz",
 		Definition: "How chroma is subsampled horizontally.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: map[uint64]ebml.Enum{
+		UintegerEnums: scalar.UToScalar{
 			0: {
-				Value: "0",
-				Label: "unspecified",
+				Sym: "unspecified",
 			},
 			1: {
-				Value: "1",
-				Label: "left collocated",
+				Sym: "left collocated",
 			},
 			2: {
-				Value: "2",
-				Label: "half",
+				Sym: "half",
 			},
 		},
 	},
@@ -1271,18 +1208,15 @@ var Colour = ebml.Tag{
 		Name:       "ChromaSitingVert",
 		Definition: "How chroma is subsampled vertically.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: map[uint64]ebml.Enum{
+		UintegerEnums: scalar.UToScalar{
 			0: {
-				Value: "0",
-				Label: "unspecified",
+				Sym: "unspecified",
 			},
 			1: {
-				Value: "1",
-				Label: "top collocated",
+				Sym: "top collocated",
 			},
 			2: {
-				Value: "2",
-				Label: "half",
+				Sym: "half",
 			},
 		},
 	},
@@ -1290,22 +1224,18 @@ var Colour = ebml.Tag{
 		Name:       "Range",
 		Definition: "Clipping of the color ranges.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: map[uint64]ebml.Enum{
+		UintegerEnums: scalar.UToScalar{
 			0: {
-				Value: "0",
-				Label: "unspecified",
+				Sym: "unspecified",
 			},
 			1: {
-				Value: "1",
-				Label: "broadcast range",
+				Sym: "broadcast range",
 			},
 			2: {
-				Value: "2",
-				Label: "full range (no clipping)",
+				Sym: "full range (no clipping)",
 			},
 			3: {
-				Value: "3",
-				Label: "defined by MatrixCoefficients / TransferCharacteristics",
+				Sym: "defined by MatrixCoefficients / TransferCharacteristics",
 			},
 		},
 	},
@@ -1313,82 +1243,63 @@ var Colour = ebml.Tag{
 		Name:       "TransferCharacteristics",
 		Definition: "The transfer characteristics of the video. For clarity, the value and meanings for TransferCharacteristics are adopted from Table 3 of  ISO/IEC 23091-4 or ITU-T H.273.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: map[uint64]ebml.Enum{
+		UintegerEnums: scalar.UToScalar{
 			0: {
-				Value: "0",
-				Label: "reserved",
+				Sym: "reserved",
 			},
 			1: {
-				Value: "1",
-				Label: "ITU-R BT.709",
+				Sym: "ITU-R BT.709",
 			},
 			2: {
-				Value: "2",
-				Label: "unspecified",
+				Sym: "unspecified",
 			},
 			3: {
-				Value: "3",
-				Label: "reserved",
+				Sym: "reserved",
 			},
 			4: {
-				Value: "4",
-				Label: "Gamma 2.2 curve - BT.470M",
+				Sym: "Gamma 2.2 curve - BT.470M",
 			},
 			5: {
-				Value: "5",
-				Label: "Gamma 2.8 curve - BT.470BG",
+				Sym: "Gamma 2.8 curve - BT.470BG",
 			},
 			6: {
-				Value: "6",
-				Label: "SMPTE 170M",
+				Sym: "SMPTE 170M",
 			},
 			7: {
-				Value: "7",
-				Label: "SMPTE 240M",
+				Sym: "SMPTE 240M",
 			},
 			8: {
-				Value: "8",
-				Label: "Linear",
+				Sym: "Linear",
 			},
 			9: {
-				Value: "9",
-				Label: "Log",
+				Sym: "Log",
 			},
 			10: {
-				Value: "10",
-				Label: "Log Sqrt",
+				Sym: "Log Sqrt",
 			},
 			11: {
-				Value: "11",
-				Label: "IEC 61966-2-4",
+				Sym: "IEC 61966-2-4",
 			},
 			12: {
-				Value: "12",
-				Label: "ITU-R BT.1361 Extended Colour Gamut",
+				Sym: "ITU-R BT.1361 Extended Colour Gamut",
 			},
 			13: {
-				Value: "13",
-				Label: "IEC 61966-2-1",
+				Sym: "IEC 61966-2-1",
 			},
 			14: {
-				Value: "14",
-				Label: "ITU-R BT.2020 10 bit",
+				Sym: "ITU-R BT.2020 10 bit",
 			},
 			15: {
-				Value: "15",
-				Label: "ITU-R BT.2020 12 bit",
+				Sym: "ITU-R BT.2020 12 bit",
 			},
 			16: {
-				Value: "16",
-				Label: "ITU-R BT.2100 Perceptual Quantization",
+				Sym: "ITU-R BT.2100 Perceptual Quantization",
 			},
 			17: {
-				Value: "17",
-				Label: "SMPTE ST 428-1",
+				Sym: "SMPTE ST 428-1",
 			},
 			18: {
-				Value: "18",
-				Label: "ARIB STD-B67 (HLG)",
+				Sym: "ARIB STD-B67 (HLG)",
 			},
 		},
 	},
@@ -1396,62 +1307,48 @@ var Colour = ebml.Tag{
 		Name:       "Primaries",
 		Definition: "The colour primaries of the video. For clarity, the value and meanings for Primaries are adopted from Table 2 of ISO/IEC 23091-4 or ITU-T H.273.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: map[uint64]ebml.Enum{
+		UintegerEnums: scalar.UToScalar{
 			0: {
-				Value: "0",
-				Label: "reserved",
+				Sym: "reserved",
 			},
 			1: {
-				Value: "1",
-				Label: "ITU-R BT.709",
+				Sym: "ITU-R BT.709",
 			},
 			2: {
-				Value: "2",
-				Label: "unspecified",
+				Sym: "unspecified",
 			},
 			3: {
-				Value: "3",
-				Label: "reserved",
+				Sym: "reserved",
 			},
 			4: {
-				Value: "4",
-				Label: "ITU-R BT.470M",
+				Sym: "ITU-R BT.470M",
 			},
 			5: {
-				Value: "5",
-				Label: "ITU-R BT.470BG - BT.601 625",
+				Sym: "ITU-R BT.470BG - BT.601 625",
 			},
 			6: {
-				Value: "6",
-				Label: "ITU-R BT.601 525 - SMPTE 170M",
+				Sym: "ITU-R BT.601 525 - SMPTE 170M",
 			},
 			7: {
-				Value: "7",
-				Label: "SMPTE 240M",
+				Sym: "SMPTE 240M",
 			},
 			8: {
-				Value: "8",
-				Label: "FILM",
+				Sym: "FILM",
 			},
 			9: {
-				Value: "9",
-				Label: "ITU-R BT.2020",
+				Sym: "ITU-R BT.2020",
 			},
 			10: {
-				Value: "10",
-				Label: "SMPTE ST 428-1",
+				Sym: "SMPTE ST 428-1",
 			},
 			11: {
-				Value: "11",
-				Label: "SMPTE RP 432-2",
+				Sym: "SMPTE RP 432-2",
 			},
 			12: {
-				Value: "12",
-				Label: "SMPTE EG 432-2",
+				Sym: "SMPTE EG 432-2",
 			},
 			22: {
-				Value: "22",
-				Label: "EBU Tech. 3213-E - JEDEC P22 phosphors",
+				Sym: "EBU Tech. 3213-E - JEDEC P22 phosphors",
 			},
 		},
 	},
@@ -1530,22 +1427,18 @@ var Projection = ebml.Tag{
 		Name:       "ProjectionType",
 		Definition: "Describes the projection used for this video track.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: map[uint64]ebml.Enum{
+		UintegerEnums: scalar.UToScalar{
 			0: {
-				Value: "0",
-				Label: "rectangular",
+				Sym: "rectangular",
 			},
 			1: {
-				Value: "1",
-				Label: "equirectangular",
+				Sym: "equirectangular",
 			},
 			2: {
-				Value: "2",
-				Label: "cubemap",
+				Sym: "cubemap",
 			},
 			3: {
-				Value: "3",
-				Label: "mesh",
+				Sym: "mesh",
 			},
 		},
 	},
@@ -1630,18 +1523,15 @@ var TrackPlane = ebml.Tag{
 		Name:       "TrackPlaneType",
 		Definition: "The kind of plane this track corresponds to.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: map[uint64]ebml.Enum{
+		UintegerEnums: scalar.UToScalar{
 			0: {
-				Value: "0",
-				Label: "left eye",
+				Sym: "left eye",
 			},
 			1: {
-				Value: "1",
-				Label: "right eye",
+				Sym: "right eye",
 			},
 			2: {
-				Value: "2",
-				Label: "background",
+				Sym: "background",
 			},
 		},
 	},
@@ -1673,18 +1563,15 @@ var ContentEncoding = ebml.Tag{
 		Name:       "ContentEncodingScope",
 		Definition: "A bit field that describes which Elements have been modified in this way. Values (big endian) can be OR'ed.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: map[uint64]ebml.Enum{
+		UintegerEnums: scalar.UToScalar{
 			1: {
-				Value: "1",
-				Label: "All frame contents, excluding lacing data",
+				Sym: "All frame contents, excluding lacing data",
 			},
 			2: {
-				Value: "2",
-				Label: "The track's private data",
+				Sym: "The track's private data",
 			},
 			4: {
-				Value: "4",
-				Label: "The next ContentEncoding (next `ContentEncodingOrder`. Either the data inside `ContentCompression` and/or `ContentEncryption`)",
+				Sym: "The next ContentEncoding (next `ContentEncodingOrder`. Either the data inside `ContentCompression` and/or `ContentEncryption`)",
 			},
 		},
 	},
@@ -1692,14 +1579,12 @@ var ContentEncoding = ebml.Tag{
 		Name:       "ContentEncodingType",
 		Definition: "A value describing what kind of transformation is applied.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: map[uint64]ebml.Enum{
+		UintegerEnums: scalar.UToScalar{
 			0: {
-				Value: "0",
-				Label: "Compression",
+				Sym: "Compression",
 			},
 			1: {
-				Value: "1",
-				Label: "Encryption",
+				Sym: "Encryption",
 			},
 		},
 	},
@@ -1720,22 +1605,18 @@ var ContentCompression = ebml.Tag{
 		Name:       "ContentCompAlgo",
 		Definition: "The compression algorithm used.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: map[uint64]ebml.Enum{
+		UintegerEnums: scalar.UToScalar{
 			0: {
-				Value: "0",
-				Label: "zlib",
+				Sym: "zlib",
 			},
 			1: {
-				Value: "1",
-				Label: "bzlib",
+				Sym: "bzlib",
 			},
 			2: {
-				Value: "2",
-				Label: "lzo1x",
+				Sym: "lzo1x",
 			},
 			3: {
-				Value: "3",
-				Label: "Header Stripping",
+				Sym: "Header Stripping",
 			},
 		},
 	},
@@ -1751,30 +1632,24 @@ var ContentEncryption = ebml.Tag{
 		Name:       "ContentEncAlgo",
 		Definition: "The encryption algorithm used. The value '0' means that the contents have not been encrypted but only signed.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: map[uint64]ebml.Enum{
+		UintegerEnums: scalar.UToScalar{
 			0: {
-				Value: "0",
-				Label: "Not encrypted",
+				Sym: "Not encrypted",
 			},
 			1: {
-				Value: "1",
-				Label: "DES - FIPS 46-3",
+				Sym: "DES - FIPS 46-3",
 			},
 			2: {
-				Value: "2",
-				Label: "Triple DES - RFC 1851",
+				Sym: "Triple DES - RFC 1851",
 			},
 			3: {
-				Value: "3",
-				Label: "Twofish",
+				Sym: "Twofish",
 			},
 			4: {
-				Value: "4",
-				Label: "Blowfish",
+				Sym: "Blowfish",
 			},
 			5: {
-				Value: "5",
-				Label: "AES - FIPS 187",
+				Sym: "AES - FIPS 187",
 			},
 		},
 	},
@@ -1802,14 +1677,12 @@ var ContentEncryption = ebml.Tag{
 		Name:       "ContentSigAlgo",
 		Definition: "The algorithm used for the signature.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: map[uint64]ebml.Enum{
+		UintegerEnums: scalar.UToScalar{
 			0: {
-				Value: "0",
-				Label: "Not signed",
+				Sym: "Not signed",
 			},
 			1: {
-				Value: "1",
-				Label: "RSA",
+				Sym: "RSA",
 			},
 		},
 	},
@@ -1817,18 +1690,15 @@ var ContentEncryption = ebml.Tag{
 		Name:       "ContentSigHashAlgo",
 		Definition: "The hash algorithm used for the signature.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: map[uint64]ebml.Enum{
+		UintegerEnums: scalar.UToScalar{
 			0: {
-				Value: "0",
-				Label: "Not signed",
+				Sym: "Not signed",
 			},
 			1: {
-				Value: "1",
-				Label: "SHA1-160",
+				Sym: "SHA1-160",
 			},
 			2: {
-				Value: "2",
-				Label: "MD5",
+				Sym: "MD5",
 			},
 		},
 	},
@@ -1839,14 +1709,12 @@ var ContentEncAESSettings = ebml.Tag{
 		Name:       "AESSettingsCipherMode",
 		Definition: "The AES cipher mode used in the encryption.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: map[uint64]ebml.Enum{
+		UintegerEnums: scalar.UToScalar{
 			1: {
-				Value: "1",
-				Label: "AES-CTR / Counter, NIST SP 800-38A",
+				Sym: "AES-CTR / Counter, NIST SP 800-38A",
 			},
 			2: {
-				Value: "2",
-				Label: "AES-CBC / Cipher Block Chaining, NIST SP 800-38A",
+				Sym: "AES-CBC / Cipher Block Chaining, NIST SP 800-38A",
 			},
 		},
 	},
@@ -2138,18 +2006,15 @@ var ChapProcessCommand = ebml.Tag{
 		Name:       "ChapProcessTime",
 		Definition: "Defines when the process command SHOULD be handled",
 		Type:       ebml.Uinteger,
-		UintegerEnums: map[uint64]ebml.Enum{
+		UintegerEnums: scalar.UToScalar{
 			0: {
-				Value: "0",
-				Label: "during the whole chapter",
+				Sym: "during the whole chapter",
 			},
 			1: {
-				Value: "1",
-				Label: "before starting playback",
+				Sym: "before starting playback",
 			},
 			2: {
-				Value: "2",
-				Label: "after playback of the chapter",
+				Sym: "after playback of the chapter",
 			},
 		},
 	},
@@ -2186,41 +2051,34 @@ var Targets = ebml.Tag{
 		Name:       "TargetTypeValue",
 		Definition: "A number to indicate the logical level of the target.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: map[uint64]ebml.Enum{
+		UintegerEnums: scalar.UToScalar{
 			70: {
-				Value:      "70",
-				Label:      "COLLECTION",
-				Definition: "The highest hierarchical level that tags can describe.",
+				Sym:         "COLLECTION",
+				Description: "The highest hierarchical level that tags can describe.",
 			},
 			60: {
-				Value:      "60",
-				Label:      "EDITION / ISSUE / VOLUME / OPUS / SEASON / SEQUEL",
-				Definition: "A list of lower levels grouped together.",
+				Sym:         "EDITION / ISSUE / VOLUME / OPUS / SEASON / SEQUEL",
+				Description: "A list of lower levels grouped together.",
 			},
 			50: {
-				Value:      "50",
-				Label:      "ALBUM / OPERA / CONCERT / MOVIE / EPISODE / CONCERT",
-				Definition: "The most common grouping level of music and video (equals to an episode for TV series).",
+				Sym:         "ALBUM / OPERA / CONCERT / MOVIE / EPISODE / CONCERT",
+				Description: "The most common grouping level of music and video (equals to an episode for TV series).",
 			},
 			40: {
-				Value:      "40",
-				Label:      "PART / SESSION",
-				Definition: "When an album or episode has different logical parts.",
+				Sym:         "PART / SESSION",
+				Description: "When an album or episode has different logical parts.",
 			},
 			30: {
-				Value:      "30",
-				Label:      "TRACK / SONG / CHAPTER",
-				Definition: "The common parts of an album or movie.",
+				Sym:         "TRACK / SONG / CHAPTER",
+				Description: "The common parts of an album or movie.",
 			},
 			20: {
-				Value:      "20",
-				Label:      "SUBTRACK / PART / MOVEMENT / SCENE",
-				Definition: "Corresponds to parts of a track for audio (like a movement).",
+				Sym:         "SUBTRACK / PART / MOVEMENT / SCENE",
+				Description: "Corresponds to parts of a track for audio (like a movement).",
 			},
 			10: {
-				Value:      "10",
-				Label:      "SHOT",
-				Definition: "The lowest hierarchy found in music or movies.",
+				Sym:         "SHOT",
+				Description: "The lowest hierarchy found in music or movies.",
 			},
 		},
 	},
@@ -2228,90 +2086,69 @@ var Targets = ebml.Tag{
 		Name:       "TargetType",
 		Definition: "An informational string that can be used to display the logical level of the target like \"ALBUM\", \"TRACK\", \"MOVIE\", \"CHAPTER\", etc (see ).",
 		Type:       ebml.String,
-		StringEnums: map[string]ebml.Enum{
+		StringEnums: scalar.StrToScalar{
 			"COLLECTION": {
-				Value: "COLLECTION",
-				Label: "COLLECTION",
+				Sym: "COLLECTION",
 			},
 			"EDITION": {
-				Value: "EDITION",
-				Label: "EDITION",
+				Sym: "EDITION",
 			},
 			"ISSUE": {
-				Value: "ISSUE",
-				Label: "ISSUE",
+				Sym: "ISSUE",
 			},
 			"VOLUME": {
-				Value: "VOLUME",
-				Label: "VOLUME",
+				Sym: "VOLUME",
 			},
 			"OPUS": {
-				Value: "OPUS",
-				Label: "OPUS",
+				Sym: "OPUS",
 			},
 			"SEASON": {
-				Value: "SEASON",
-				Label: "SEASON",
+				Sym: "SEASON",
 			},
 			"SEQUEL": {
-				Value: "SEQUEL",
-				Label: "SEQUEL",
+				Sym: "SEQUEL",
 			},
 			"ALBUM": {
-				Value: "ALBUM",
-				Label: "ALBUM",
+				Sym: "ALBUM",
 			},
 			"OPERA": {
-				Value: "OPERA",
-				Label: "OPERA",
+				Sym: "OPERA",
 			},
 			"CONCERT": {
-				Value: "CONCERT",
-				Label: "CONCERT",
+				Sym: "CONCERT",
 			},
 			"MOVIE": {
-				Value: "MOVIE",
-				Label: "MOVIE",
+				Sym: "MOVIE",
 			},
 			"EPISODE": {
-				Value: "EPISODE",
-				Label: "EPISODE",
+				Sym: "EPISODE",
 			},
 			"PART": {
-				Value: "PART",
-				Label: "PART",
+				Sym: "PART",
 			},
 			"SESSION": {
-				Value: "SESSION",
-				Label: "SESSION",
+				Sym: "SESSION",
 			},
 			"TRACK": {
-				Value: "TRACK",
-				Label: "TRACK",
+				Sym: "TRACK",
 			},
 			"SONG": {
-				Value: "SONG",
-				Label: "SONG",
+				Sym: "SONG",
 			},
 			"CHAPTER": {
-				Value: "CHAPTER",
-				Label: "CHAPTER",
+				Sym: "CHAPTER",
 			},
 			"SUBTRACK": {
-				Value: "SUBTRACK",
-				Label: "SUBTRACK",
+				Sym: "SUBTRACK",
 			},
 			"MOVEMENT": {
-				Value: "MOVEMENT",
-				Label: "MOVEMENT",
+				Sym: "MOVEMENT",
 			},
 			"SCENE": {
-				Value: "SCENE",
-				Label: "SCENE",
+				Sym: "SCENE",
 			},
 			"SHOT": {
-				Value: "SHOT",
-				Label: "SHOT",
+				Sym: "SHOT",
 			},
 		},
 	},

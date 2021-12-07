@@ -1,5 +1,7 @@
 package ebml
 
+import "github.com/wader/fq/pkg/scalar"
+
 type Type int
 
 const (
@@ -24,20 +26,14 @@ var TypeNames = map[Type]string{
 	Master:   "master",
 }
 
-type Enum struct {
-	Value      string
-	Label      string
-	Definition string
-}
-
 type Attribute struct {
 	Name          string
 	Type          Type
 	Tag           Tag
 	Definition    string
-	IntegerEnums  map[int64]Enum
-	UintegerEnums map[uint64]Enum
-	StringEnums   map[string]Enum
+	IntegerEnums  scalar.SToScalar
+	UintegerEnums scalar.UToScalar
+	StringEnums   scalar.StrToScalar
 }
 
 type Tag map[uint64]Attribute
