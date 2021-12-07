@@ -38,7 +38,6 @@ $ fq -d pcap verbose /ipv4frags.pcap
 0x0040|                              08 00 4d 71 13 c2|          ..Mq..|          data: raw bits 0x4a-0x419.7 (976)
 0x0050|00 01 14 2b d2 59 00 00 00 00 3d 2a 08 00 00 00|...+.Y....=*....|
 *     |until 0x419.7 (976)                            |                |
-      |                                               |                |      capture_padding: raw bits 0x41a-NA (0)
       |                                               |                |    [1]: packet {} 0x41a-0x5fb.7 (482)
 0x0410|                              14 2b d2 59      |          .+.Y  |      ts_sec: 1506945812 0x41a-0x41d.7 (4)
 0x0410|                                          9d 2a|              .*|      ts_usec: 535197 0x41e-0x421.7 (4)
@@ -68,7 +67,6 @@ $ fq -d pcap verbose /ipv4frags.pcap
 0x0440|                                    c8 c9 ca cb|            ....|          data: raw bits 0x44c-0x5fb.7 (432)
 0x0450|cc cd ce cf d0 d1 d2 d3 d4 d5 d6 d7 d8 d9 da db|................|
 *     |until 0x5fb.7 (432)                            |                |
-      |                                               |                |      capture_padding: raw bits 0x5fc-NA (0)
       |                                               |                |    [2]: packet {} 0x5fc-0xbad.7 (1458)
 0x05f0|                                    14 2b d2 59|            .+.Y|      ts_sec: 1506945812 0x5fc-0x5ff.7 (4)
 0x0600|59 2c 08 00                                    |Y,..            |      ts_usec: 535641 0x600-0x603.7 (4)
@@ -102,7 +100,6 @@ $ fq -d pcap verbose /ipv4frags.pcap
 0x0630|      13 c2 00 01 14 2b d2 59 00 00 00 00 3d 2a|  .....+.Y....=*|            content: raw bits 0x632-0xbad.7 (1404)
 0x0640|08 00 00 00 00 00 10 11 12 13 14 15 16 17 18 19|................|
 *     |until 0xbad.7 (end) (1404)                     |                |
-      |                                               |                |      capture_padding: raw bits 0xbae-NA (0)
       |                                               |                |  ipv4_reassembled: [1] 0xbae-NA (0)
       |                                               |                |    [0]: ipv4_packet {} (ipv4_packet) 0x0-0x593.7 (1428)
  0x000|45                                             |E               |      version: 4 0x0-0x0.3 (0.4)

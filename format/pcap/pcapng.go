@@ -217,6 +217,8 @@ var mapUToIPv4Sym = scalar.Fn(func(s scalar.S) (scalar.S, error) {
 })
 
 var blockFns = map[uint64]func(d *decode.D, dc *decodeContext){
+	// TODO: SimplePacket
+	// TODO: Packet
 	blockTypeInterfaceDescription: func(d *decode.D, dc *decodeContext) {
 		typ := d.FieldU16("link_type", format.LinkTypeMap)
 		d.FieldU16("reserved")
@@ -230,9 +232,9 @@ var blockFns = map[uint64]func(d *decode.D, dc *decodeContext){
 		d.FieldU32("timestamp_high")
 		d.FieldU32("timestamp_low")
 		capturedLength := d.FieldU32("capture_packet_length")
-		originalLength := d.FieldU32("original_packet_length")
+		d.FieldU32("original_packet_length")
 
-		bs, err := d.BitBufRange(d.Pos(), int64(originalLength)*8).Bytes()
+		bs, err := d.BitBufRange(d.Pos(), int64(capturedLength)*8).Bytes()
 		if err != nil {
 			d.IOPanic(err, "d.BitBufRange")
 		}
@@ -246,12 +248,11 @@ var blockFns = map[uint64]func(d *decode.D, dc *decodeContext){
 		}
 
 		if g, ok := linkToFormat[linkType]; ok {
-			d.FieldFormatLen("packet", int64(originalLength)*8, *g, nil)
+			d.FieldFormatLen("packet", int64(capturedLength)*8, *g, nil)
 		} else {
-			d.FieldRawLen("packet", int64(originalLength)*8)
+			d.FieldRawLen("packet", int64(capturedLength)*8)
 		}
 
-		d.FieldRawLen("capture_padding", int64(capturedLength-originalLength)*8)
 		d.FieldRawLen("padding", int64(d.AlignBits(32)))
 		d.FieldArray("options", func(d *decode.D) { decoodeOptions(d, enhancedPacketOptionsMap) })
 	},

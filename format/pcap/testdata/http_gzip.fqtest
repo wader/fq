@@ -75,7 +75,6 @@ $ fq -d pcap verbose /http_gzip.cap
 0x0070|03                                             |.               |                length: 3 0x70-0x70.7 (1)
 0x0070|   07                                          | .              |                data: raw bits 0x71-0x71.7 (1)
       |                                               |                |            data: raw bits 0x72-NA (0)
-      |                                               |                |      capture_padding: raw bits 0x72-NA (0)
       |                                               |                |    [1]: packet {} 0x72-0xcb.7 (90)
 0x0070|      3c d3 81 41                              |  <..A          |      ts_sec: 1099027260 0x72-0x75.7 (4)
 0x0070|                  2b 24 06 00                  |      +$..      |      ts_usec: 402475 0x76-0x79.7 (4)
@@ -141,7 +140,6 @@ $ fq -d pcap verbose /http_gzip.cap
 0x00c0|                              03               |          .     |                length: 3 0xca-0xca.7 (1)
 0x00c0|                                 00            |           .    |                data: raw bits 0xcb-0xcb.7 (1)
       |                                               |                |            data: raw bits 0xcc-NA (0)
-      |                                               |                |      capture_padding: raw bits 0xcc-NA (0)
       |                                               |                |    [2]: packet {} 0xcc-0x11d.7 (82)
 0x00c0|                                    3c d3 81 41|            <..A|      ts_sec: 1099027260 0xcc-0xcf.7 (4)
 0x00d0|89 24 06 00                                    |.$..            |      ts_usec: 402569 0xd0-0xd3.7 (4)
@@ -197,7 +195,6 @@ $ fq -d pcap verbose /http_gzip.cap
 0x0110|               0a                              |     .          |                length: 10 0x115-0x115.7 (1)
 0x0110|                  77 e3 57 eb 19 c9 2c e4      |      w.W...,.  |                data: raw bits 0x116-0x11d.7 (8)
       |                                               |                |            data: raw bits 0x11e-NA (0)
-      |                                               |                |      capture_padding: raw bits 0x11e-NA (0)
       |                                               |                |    [3]: packet {} 0x11e-0x32c.7 (527)
 0x0110|                                          3c d3|              <.|      ts_sec: 1099027260 0x11e-0x121.7 (4)
 0x0120|81 41                                          |.A              |
@@ -255,7 +252,6 @@ $ fq -d pcap verbose /http_gzip.cap
 0x0160|                        77 e3 57 eb 19 c9 2c e4|        w.W...,.|                data: raw bits 0x168-0x16f.7 (8)
 0x0170|47 45 54 20 2f 74 65 73 74 2f 65 74 68 65 72 65|GET /test/ethere|            data: raw bits 0x170-0x32c.7 (445)
 *     |until 0x32c.7 (445)                            |                |
-      |                                               |                |      capture_padding: raw bits 0x32d-NA (0)
       |                                               |                |    [4]: packet {} 0x32d-0x37e.7 (82)
 0x0320|                                       3c d3 81|             <..|      ts_sec: 1099027260 0x32d-0x330.7 (4)
 0x0330|41                                             |A               |
@@ -315,7 +311,6 @@ $ fq -d pcap verbose /http_gzip.cap
 0x0370|                  0a                           |      .         |                length: 10 0x376-0x376.7 (1)
 0x0370|                     19 c9 2c e4 77 e3 57 eb   |       ..,.w.W. |                data: raw bits 0x377-0x37e.7 (8)
       |                                               |                |            data: raw bits 0x37f-NA (0)
-      |                                               |                |      capture_padding: raw bits 0x37f-NA (0)
       |                                               |                |    [5]: packet {} 0x37f-0x562.7 (484)
 0x0370|                                             3c|               <|      ts_sec: 1099027260 0x37f-0x382.7 (4)
 0x0380|d3 81 41                                       |..A             |
@@ -378,7 +373,6 @@ $ fq -d pcap verbose /http_gzip.cap
 0x03d0|   48 54 54 50 2f 31 2e 31 20 32 30 30 20 4f 4b| HTTP/1.1 200 OK|            data: raw bits 0x3d1-0x562.7 (402)
 0x03e0|0d 0a 44 61 74 65 3a 20 46 72 69 2c 20 32 39 20|..Date: Fri, 29 |
 *     |until 0x562.7 (402)                            |                |
-      |                                               |                |      capture_padding: raw bits 0x563-NA (0)
       |                                               |                |    [6]: packet {} 0x563-0x5b4.7 (82)
 0x0560|         3c d3 81 41                           |   <..A         |      ts_sec: 1099027260 0x563-0x566.7 (4)
 0x0560|                     6d 78 06 00               |       mx..     |      ts_usec: 424045 0x567-0x56a.7 (4)
@@ -438,7 +432,6 @@ $ fq -d pcap verbose /http_gzip.cap
 0x05a0|                                       77 e3 58|             w.X|                data: raw bits 0x5ad-0x5b4.7 (8)
 0x05b0|01 19 c9 2c e6                                 |...,.           |
       |                                               |                |            data: raw bits 0x5b5-NA (0)
-      |                                               |                |      capture_padding: raw bits 0x5b5-NA (0)
       |                                               |                |    [7]: packet {} 0x5b5-0x606.7 (82)
 0x05b0|               3c d3 81 41                     |     <..A       |      ts_sec: 1099027260 0x5b5-0x5b8.7 (4)
 0x05b0|                           eb 78 06 00         |         .x..   |      ts_usec: 424171 0x5b9-0x5bc.7 (4)
@@ -498,7 +491,6 @@ $ fq -d pcap verbose /http_gzip.cap
 0x05f0|                                             19|               .|                data: raw bits 0x5ff-0x606.7 (8)
 0x0600|c9 2c e6 77 e3 58 01                           |.,.w.X.         |
       |                                               |                |            data: raw bits 0x607-NA (0)
-      |                                               |                |      capture_padding: raw bits 0x607-NA (0)
       |                                               |                |    [8]: packet {} 0x607-0x658.7 (82)
 0x0600|                     3c d3 81 41               |       <..A     |      ts_sec: 1099027260 0x607-0x60a.7 (4)
 0x0600|                                 85 7c 06 00   |           .|.. |      ts_usec: 425093 0x60b-0x60e.7 (4)
@@ -557,7 +549,6 @@ $ fq -d pcap verbose /http_gzip.cap
 0x0650|0a                                             |.               |                length: 10 0x650-0x650.7 (1)
 0x0650|   77 e3 58 02 19 c9 2c e6                     | w.X...,.       |                data: raw bits 0x651-0x658.7 (8)
       |                                               |                |            data: raw bits 0x659-NA (0)
-      |                                               |                |      capture_padding: raw bits 0x659-NA (0)
       |                                               |                |    [9]: packet {} 0x659-0x6aa.7 (82)
 0x0650|                           3c d3 81 41         |         <..A   |      ts_sec: 1099027260 0x659-0x65c.7 (4)
 0x0650|                                       ab 7c 06|             .|.|      ts_usec: 425131 0x65d-0x660.7 (4)
@@ -615,7 +606,6 @@ $ fq -d pcap verbose /http_gzip.cap
 0x06a0|      0a                                       |  .             |                length: 10 0x6a2-0x6a2.7 (1)
 0x06a0|         19 c9 2c e6 77 e3 58 02|              |   ..,.w.X.|    |                data: raw bits 0x6a3-0x6aa.7 (8)
       |                                               |                |            data: raw bits 0x6ab-NA (0)
-      |                                               |                |      capture_padding: raw bits 0x6ab-NA (0)
       |                                               |                |  ipv4_reassembled: [0] 0x6ab-NA (0)
       |                                               |                |  tcp_connections: [1] 0x6ab-NA (0)
       |                                               |                |    [0]: flow {} 0x6ab-NA (0)

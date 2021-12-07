@@ -56,7 +56,7 @@ func decodePcap(d *decode.D, in interface{}) interface{} {
 	d.FieldU16("version_minor")
 	d.FieldS32("thiszone")
 	d.FieldU32("sigfigs")
-	d.FieldU32("snaplen")
+	spanLen := d.FieldU32("snaplen")
 	linkType := int(d.FieldU32("network", format.LinkTypeMap))
 
 	fd := flowsdecoder.New()
@@ -69,11 +69,18 @@ func decodePcap(d *decode.D, in interface{}) interface{} {
 				inclLen := d.FieldU32("incl_len")
 				origLen := d.FieldU32("orig_len")
 
-				bb := d.BitBufRange(d.Pos(), int64(origLen)*8)
+				if inclLen > spanLen {
+					d.Errorf("incl_len %d > snaplen %d", inclLen, spanLen)
+				}
+				if inclLen > origLen {
+					d.Errorf("incl_len %d > orig_len %d", inclLen, origLen)
+				}
+
+				bb := d.BitBufRange(d.Pos(), int64(inclLen)*8)
 				bs, err := bb.Bytes()
 				if err != nil {
 					// TODO:
-					panic(err)
+					d.IOPanic(err, "BitBufRange: inclLen")
 				}
 
 				if fn, ok := linkToDecodeFn[linkType]; ok {
@@ -82,11 +89,10 @@ func decodePcap(d *decode.D, in interface{}) interface{} {
 				}
 
 				if g, ok := linkToFormat[linkType]; ok {
-					d.FieldFormatLen("packet", int64(origLen)*8, *g, nil)
+					d.FieldFormatLen("packet", int64(inclLen)*8, *g, nil)
 				} else {
-					d.FieldRawLen("packet", int64(origLen)*8)
+					d.FieldRawLen("packet", int64(inclLen)*8)
 				}
-				d.FieldRawLen("capture_padding", int64(inclLen-origLen)*8)
 			})
 		}
 	})

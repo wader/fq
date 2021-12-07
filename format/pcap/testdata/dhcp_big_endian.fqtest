@@ -73,7 +73,6 @@ $ fq -d pcapng verbose /dhcp_big_endian.pcapng
 0x090|                              01 01 06 00 00 00|          ......|              data: raw bits 0x9a-0x1a9.7 (272)
 0x0a0|3d 1d 00 00 00 00 00 00 00 00 00 00 00 00 00 00|=...............|
 *    |until 0x1a9.7 (272)                            |                |
-     |                                               |                |        capture_padding: raw bits 0x1aa-NA (0)
 0x1a0|                              00 00            |          ..    |        padding: raw bits 0x1aa-0x1ab.7 (2)
      |                                               |                |        options: [0] 0x1ac-NA (0)
 0x1a0|                                    00 00 01 5c|            ...\|        footer_length: 348 0x1ac-0x1af.7 (4)
@@ -114,7 +113,6 @@ $ fq -d pcapng verbose /dhcp_big_endian.pcapng
 0x1f0|                  02 01 06 00 00 00 3d 1d 00 00|      ......=...|              data: raw bits 0x1f6-0x321.7 (300)
 0x200|00 00 00 00 00 00 c0 a8 00 0a c0 a8 00 01 00 00|................|
 *    |until 0x321.7 (300)                            |                |
-     |                                               |                |        capture_padding: raw bits 0x322-NA (0)
 0x320|      00 00                                    |  ..            |        padding: raw bits 0x322-0x323.7 (2)
      |                                               |                |        options: [0] 0x324-NA (0)
 0x320|            00 00 01 78                        |    ...x        |        footer_length: 376 0x324-0x327.7 (4)
@@ -155,7 +153,6 @@ $ fq -d pcapng verbose /dhcp_big_endian.pcapng
 0x360|                                          01 01|              ..|              data: raw bits 0x36e-0x47d.7 (272)
 0x370|06 00 00 00 3d 1e 00 00 00 00 00 00 00 00 00 00|....=...........|
 *    |until 0x47d.7 (272)                            |                |
-     |                                               |                |        capture_padding: raw bits 0x47e-NA (0)
 0x470|                                          00 00|              ..|        padding: raw bits 0x47e-0x47f.7 (2)
      |                                               |                |        options: [0] 0x480-NA (0)
 0x480|00 00 01 5c                                    |...\            |        footer_length: 348 0x480-0x483.7 (4)
@@ -196,7 +193,6 @@ $ fq -d pcapng verbose /dhcp_big_endian.pcapng
 0x4c0|                              02 01 06 00 00 00|          ......|              data: raw bits 0x4ca-0x5f5.7 (300)
 0x4d0|3d 1e 00 00 00 00 00 00 00 00 c0 a8 00 0a 00 00|=...............|
 *    |until 0x5f5.7 (300)                            |                |
-     |                                               |                |        capture_padding: raw bits 0x5f6-NA (0)
 0x5f0|                  00 00                        |      ..        |        padding: raw bits 0x5f6-0x5f7.7 (2)
      |                                               |                |        options: [0] 0x5f8-NA (0)
 0x5f0|                        00 00 01 78|           |        ...x|   |        footer_length: 376 0x5f8-0x5fb.7 (4)

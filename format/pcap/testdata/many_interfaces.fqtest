@@ -439,7 +439,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x05e0|                  7b 22 68 6f 73 74 5f 69 6e 74|      {"host_int|              data: raw bits 0x5e6-0x66d.7 (136)
 0x05f0|22 3a 20 34 30 39 34 35 31 34 34 38 33 2c 20 22|": 4094514483, "|
 *     |until 0x66d.7 (136)                            |                |
-      |                                               |                |        capture_padding: raw bits 0x66e-NA (0)
 0x0660|                                          00 00|              ..|        padding: raw bits 0x66e-0x66f.7 (2)
       |                                               |                |        options: [0] 0x670-NA (0)
 0x0670|d4 00 00 00                                    |....            |        footer_length: 212 0x670-0x673.7 (4)
@@ -480,7 +479,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x06b0|                              7b 22 68 6f 73 74|          {"host|              data: raw bits 0x6ba-0x741.7 (136)
 0x06c0|5f 69 6e 74 22 3a 20 34 30 39 34 35 31 34 34 38|_int": 409451448|
 *     |until 0x741.7 (136)                            |                |
-      |                                               |                |        capture_padding: raw bits 0x742-NA (0)
 0x0740|      00 00                                    |  ..            |        padding: raw bits 0x742-0x743.7 (2)
       |                                               |                |        options: [0] 0x744-NA (0)
 0x0740|            d4 00 00 00                        |    ....        |        footer_length: 212 0x744-0x747.7 (4)
@@ -495,7 +493,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x0760|            02 00 00 00 45 00 00 a4 c6 ce 00 00|    ....E.......|        packet: raw bits 0x764-0x80b.7 (168)
 0x0770|40 11 f1 47 c0 a8 01 8b ff ff ff ff 44 5c 44 5c|@..G........D\D\|
 *     |until 0x80b.7 (168)                            |                |
-      |                                               |                |        capture_padding: raw bits 0x80c-NA (0)
       |                                               |                |        padding: raw bits 0x80c-NA (0)
       |                                               |                |        options: [0] 0x80c-NA (0)
 0x0800|                                    c8 00 00 00|            ....|        footer_length: 200 0x80c-0x80f.7 (4)
@@ -510,7 +507,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x0820|                                    02 00 00 00|            ....|        packet: raw bits 0x82c-0x8d3.7 (168)
 0x0830|45 00 00 a4 60 b4 00 00 40 11 94 ba c0 a8 01 8b|E...`...@.......|
 *     |until 0x8d3.7 (168)                            |                |
-      |                                               |                |        capture_padding: raw bits 0x8d4-NA (0)
       |                                               |                |        padding: raw bits 0x8d4-NA (0)
       |                                               |                |        options: [0] 0x8d4-NA (0)
 0x08d0|            c8 00 00 00                        |    ....        |        footer_length: 200 0x8d4-0x8d7.7 (4)
@@ -593,7 +589,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
       |                                               |                |                answers: [0] 0x94a-NA (0)
       |                                               |                |                nameservers: [0] 0x94a-NA (0)
       |                                               |                |                additionals: [0] 0x94a-NA (0)
-      |                                               |                |        capture_padding: raw bits 0x94a-NA (0)
 0x0940|                              00 00            |          ..    |        padding: raw bits 0x94a-0x94b.7 (2)
       |                                               |                |        options: [0] 0x94c-NA (0)
 0x0940|                                    78 00 00 00|            x...|        footer_length: 120 0x94c-0x94f.7 (4)
@@ -634,7 +629,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x0990|                  23 02 0a ec 00 00 0d 0b 00 00|      #.........|              data: raw bits 0x996-0x9c5.7 (48)
 0x09a0|0a f6 11 fd 0c fd d9 7b 62 3c bf e4 9d cd d9 7b|.......{b<.....{|
 *     |until 0x9c5.7 (48)                             |                |
-      |                                               |                |        capture_padding: raw bits 0x9c6-NA (0)
 0x09c0|                  00 00                        |      ..        |        padding: raw bits 0x9c6-0x9c7.7 (2)
       |                                               |                |        options: [0] 0x9c8-NA (0)
 0x09c0|                        7c 00 00 00            |        |...    |        footer_length: 124 0x9c8-0x9cb.7 (4)
@@ -760,7 +754,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
       |                                               |                |                      value: "Hadriels-MBP" 0xa58-NA (0)
       |                                               |                |                nameservers: [0] 0xa58-NA (0)
       |                                               |                |                additionals: [0] 0xa58-NA (0)
-      |                                               |                |        capture_padding: raw bits 0xa58-NA (0)
       |                                               |                |        padding: raw bits 0xa58-NA (0)
       |                                               |                |        options: [0] 0xa58-NA (0)
 0x0a50|                        90 00 00 00            |        ....    |        footer_length: 144 0xa58-0xa5b.7 (4)
@@ -845,7 +838,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
       |                                               |                |                answers: [0] 0xad0-NA (0)
       |                                               |                |                nameservers: [0] 0xad0-NA (0)
       |                                               |                |                additionals: [0] 0xad0-NA (0)
-      |                                               |                |        capture_padding: raw bits 0xad0-NA (0)
       |                                               |                |        padding: raw bits 0xad0-NA (0)
       |                                               |                |        options: [0] 0xad0-NA (0)
 0x0ad0|78 00 00 00                                    |x...            |        footer_length: 120 0xad0-0xad3.7 (4)
@@ -994,7 +986,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x0b80|09 3a 80                                       |.:.             |
 0x0b80|         00 01 51 80                           |   ..Q.         |                    minimum: 86400 0xb83-0xb86.7 (4)
       |                                               |                |                additionals: [0] 0xb87-NA (0)
-      |                                               |                |        capture_padding: raw bits 0xb87-NA (0)
 0x0b80|                     00                        |       .        |        padding: raw bits 0xb87-0xb87.7 (1)
       |                                               |                |        options: [0] 0xb88-NA (0)
 0x0b80|                        b8 00 00 00            |        ....    |        footer_length: 184 0xb88-0xb8b.7 (4)
@@ -1079,7 +1070,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
       |                                               |                |                answers: [0] 0xbfe-NA (0)
       |                                               |                |                nameservers: [0] 0xbfe-NA (0)
       |                                               |                |                additionals: [0] 0xbfe-NA (0)
-      |                                               |                |        capture_padding: raw bits 0xbfe-NA (0)
 0x0bf0|                                          00 00|              ..|        padding: raw bits 0xbfe-0xbff.7 (2)
       |                                               |                |        options: [0] 0xc00-NA (0)
 0x0c00|78 00 00 00                                    |x...            |        footer_length: 120 0xc00-0xc03.7 (4)
@@ -1120,7 +1110,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x0c40|                              24 01 06 ec 00 00|          $.....|              data: raw bits 0xc4a-0xc79.7 (48)
 0x0c50|00 00 00 00 00 47 47 50 53 73 d9 7b 64 77 91 fd|.....GGPSs.{dw..|
 *     |until 0xc79.7 (48)                             |                |
-      |                                               |                |        capture_padding: raw bits 0xc7a-NA (0)
 0x0c70|                              00 00            |          ..    |        padding: raw bits 0xc7a-0xc7b.7 (2)
       |                                               |                |        options: [0] 0xc7c-NA (0)
 0x0c70|                                    7c 00 00 00|            |...|        footer_length: 124 0xc7c-0xc7f.7 (4)
@@ -1203,7 +1192,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
       |                                               |                |                answers: [0] 0xcf2-NA (0)
       |                                               |                |                nameservers: [0] 0xcf2-NA (0)
       |                                               |                |                additionals: [0] 0xcf2-NA (0)
-      |                                               |                |        capture_padding: raw bits 0xcf2-NA (0)
 0x0cf0|      00 00                                    |  ..            |        padding: raw bits 0xcf2-0xcf3.7 (2)
       |                                               |                |        options: [0] 0xcf4-NA (0)
 0x0cf0|            78 00 00 00                        |    x...        |        footer_length: 120 0xcf4-0xcf7.7 (4)
@@ -1244,7 +1232,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x0d30|                                          10 ef|              ..|              data: raw bits 0xd3e-0xd67.7 (42)
 0x0d40|01 65 d8 b9 9d 48 7a 21 2c ba a9 0d b3 e7 5e bf|.e...Hz!,.....^.|
 *     |until 0xd67.7 (42)                             |                |
-      |                                               |                |        capture_padding: raw bits 0xd68-NA (0)
       |                                               |                |        padding: raw bits 0xd68-NA (0)
       |                                               |                |        options: [0] 0xd68-NA (0)
 0x0d60|                        74 00 00 00            |        t...    |        footer_length: 116 0xd68-0xd6b.7 (4)
@@ -1329,7 +1316,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
       |                                               |                |                answers: [0] 0xdde-NA (0)
       |                                               |                |                nameservers: [0] 0xdde-NA (0)
       |                                               |                |                additionals: [0] 0xdde-NA (0)
-      |                                               |                |        capture_padding: raw bits 0xdde-NA (0)
 0x0dd0|                                          00 00|              ..|        padding: raw bits 0xdde-0xddf.7 (2)
       |                                               |                |        options: [0] 0xde0-NA (0)
 0x0de0|78 00 00 00                                    |x...            |        footer_length: 120 0xde0-0xde3.7 (4)
@@ -1370,7 +1356,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x0e20|                              10 f0 01 a4 5a 64|          ....Zd|              data: raw bits 0xe2a-0xe53.7 (42)
 0x0e30|b9 ba e6 d0 23 9d 37 49 b0 99 fa 95 56 2f 71 80|....#.7I....V/q.|
 *     |until 0xe53.7 (42)                             |                |
-      |                                               |                |        capture_padding: raw bits 0xe54-NA (0)
       |                                               |                |        padding: raw bits 0xe54-NA (0)
       |                                               |                |        options: [0] 0xe54-NA (0)
 0x0e50|            74 00 00 00                        |    t...        |        footer_length: 116 0xe54-0xe57.7 (4)
@@ -1411,7 +1396,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x0e90|                                          0c f3|              ..|              data: raw bits 0xe9e-0xec9.7 (44)
 0x0ea0|95 8f 95 ab 35 c2 ea 87 7e 63 12 43 74 c4 ff cb|....5...~c.Ct...|
 *     |until 0xec9.7 (44)                             |                |
-      |                                               |                |        capture_padding: raw bits 0xeca-NA (0)
 0x0ec0|                              00 00            |          ..    |        padding: raw bits 0xeca-0xecb.7 (2)
       |                                               |                |        options: [0] 0xecc-NA (0)
 0x0ec0|                                    78 00 00 00|            x...|        footer_length: 120 0xecc-0xecf.7 (4)
@@ -1587,7 +1571,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x0f70|            00 0d                              |    ..          |                    rdlength: 13 0xf74-0xf75.7 (2)
       |                                               |                |                nameservers: [0] 0xf83-NA (0)
       |                                               |                |                additionals: [0] 0xf83-NA (0)
-      |                                               |                |        capture_padding: raw bits 0xf83-NA (0)
 0x0f80|         00                                    |   .            |        padding: raw bits 0xf83-0xf83.7 (1)
       |                                               |                |        options: [0] 0xf84-NA (0)
 0x0f80|            b8 00 00 00                        |    ....        |        footer_length: 184 0xf84-0xf87.7 (4)
@@ -1672,7 +1655,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
       |                                               |                |                answers: [0] 0xff8-NA (0)
       |                                               |                |                nameservers: [0] 0xff8-NA (0)
       |                                               |                |                additionals: [0] 0xff8-NA (0)
-      |                                               |                |        capture_padding: raw bits 0xff8-NA (0)
       |                                               |                |        padding: raw bits 0xff8-NA (0)
       |                                               |                |        options: [0] 0xff8-NA (0)
 0x0ff0|                        74 00 00 00            |        t...    |        footer_length: 116 0xff8-0xffb.7 (4)
@@ -1795,7 +1777,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
       |                                               |                |                      value: "kaplake" 0x1081-NA (0)
       |                                               |                |                nameservers: [0] 0x1081-NA (0)
       |                                               |                |                additionals: [0] 0x1081-NA (0)
-      |                                               |                |        capture_padding: raw bits 0x1081-NA (0)
 0x1080|   00 00 00                                    | ...            |        padding: raw bits 0x1081-0x1083.7 (3)
       |                                               |                |        options: [0] 0x1084-NA (0)
 0x1080|            8c 00 00 00                        |    ....        |        footer_length: 140 0x1084-0x1087.7 (4)
@@ -1880,7 +1861,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
       |                                               |                |                answers: [0] 0x10fc-NA (0)
       |                                               |                |                nameservers: [0] 0x10fc-NA (0)
       |                                               |                |                additionals: [0] 0x10fc-NA (0)
-      |                                               |                |        capture_padding: raw bits 0x10fc-NA (0)
       |                                               |                |        padding: raw bits 0x10fc-NA (0)
       |                                               |                |        options: [0] 0x10fc-NA (0)
 0x10f0|                                    78 00 00 00|            x...|        footer_length: 120 0x10fc-0x10ff.7 (4)
@@ -2010,7 +1990,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
       |                                               |                |                      value: "qb-in-f189.1e100.net" 0x1196-NA (0)
       |                                               |                |                nameservers: [0] 0x1196-NA (0)
       |                                               |                |                additionals: [0] 0x1196-NA (0)
-      |                                               |                |        capture_padding: raw bits 0x1196-NA (0)
 0x1190|                  00 00                        |      ..        |        padding: raw bits 0x1196-0x1197.7 (2)
       |                                               |                |        options: [0] 0x1198-NA (0)
 0x1190|                        9c 00 00 00            |        ....    |        footer_length: 156 0x1198-0x119b.7 (4)
@@ -2086,7 +2065,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
       |                                               |                |                answers: [0] 0x1207-NA (0)
       |                                               |                |                nameservers: [0] 0x1207-NA (0)
       |                                               |                |                additionals: [0] 0x1207-NA (0)
-      |                                               |                |        capture_padding: raw bits 0x1207-NA (0)
 0x1200|                     00                        |       .        |        padding: raw bits 0x1207-0x1207.7 (1)
       |                                               |                |        options: [0] 0x1208-NA (0)
 0x1200|                        70 00 00 00            |        p...    |        footer_length: 112 0x1208-0x120b.7 (4)
@@ -2525,7 +2503,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x1330|                                 4a 7d e4 ee   |           J}.. |                    address: "74.125.228.238" 0x133b-0x133e.7 (4)
       |                                               |                |                nameservers: [0] 0x133f-NA (0)
       |                                               |                |                additionals: [0] 0x133f-NA (0)
-      |                                               |                |        capture_padding: raw bits 0x133f-NA (0)
 0x1330|                                             00|               .|        padding: raw bits 0x133f-0x133f.7 (1)
       |                                               |                |        options: [0] 0x1340-NA (0)
 0x1340|38 01 00 00                                    |8...            |        footer_length: 312 0x1340-0x1343.7 (4)
@@ -2605,7 +2582,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
       |                                               |                |                [8]: option {} 0x13ad-0x13ad.7 (1)
 0x13a0|                                       00      |             .  |                  kind: "end" (0) (End of options list) 0x13ad-0x13ad.7 (1)
       |                                               |                |              data: raw bits 0x13ae-NA (0)
-      |                                               |                |        capture_padding: raw bits 0x13ae-NA (0)
 0x13a0|                                          00 00|              ..|        padding: raw bits 0x13ae-0x13af.7 (2)
       |                                               |                |        options: [0] 0x13b0-NA (0)
 0x13b0|70 00 00 00                                    |p...            |        footer_length: 112 0x13b0-0x13b3.7 (4)
@@ -2678,7 +2654,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x1410|                        03                     |        .       |                  length: 3 0x1418-0x1418.7 (1)
 0x1410|                           07                  |         .      |                  data: raw bits 0x1419-0x1419.7 (1)
       |                                               |                |              data: raw bits 0x141a-NA (0)
-      |                                               |                |        capture_padding: raw bits 0x141a-NA (0)
 0x1410|                              00 00            |          ..    |        padding: raw bits 0x141a-0x141b.7 (2)
       |                                               |                |        options: [0] 0x141c-NA (0)
 0x1410|                                    6c 00 00 00|            l...|        footer_length: 108 0x141c-0x141f.7 (4)
@@ -2740,7 +2715,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x1470|               0a                              |     .          |                  length: 10 0x1475-0x1475.7 (1)
 0x1470|                  4b 2a 91 3b e4 57 7b 53      |      K*.;.W{S  |                  data: raw bits 0x1476-0x147d.7 (8)
       |                                               |                |              data: raw bits 0x147e-NA (0)
-      |                                               |                |        capture_padding: raw bits 0x147e-NA (0)
 0x1470|                                          00 00|              ..|        padding: raw bits 0x147e-0x147f.7 (2)
       |                                               |                |        options: [0] 0x1480-NA (0)
 0x1480|64 00 00 00                                    |d...            |        footer_length: 100 0x1480-0x1483.7 (4)
@@ -2805,7 +2779,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x14e0|      16 03 01 02 00 01 00 01 fc 03 03 f0 91 bc|  ..............|              data: raw bits 0x14e2-0x16e6.7 (517)
 0x14f0|87 3e ed 9d cc 98 4a 6a 2e 84 3f 5c 1d 9b a9 e9|.>....Jj..?\....|
 *     |until 0x16e6.7 (517)                           |                |
-      |                                               |                |        capture_padding: raw bits 0x16e7-NA (0)
 0x16e0|                     00                        |       .        |        padding: raw bits 0x16e7-0x16e7.7 (1)
       |                                               |                |        options: [0] 0x16e8-NA (0)
 0x16e0|                        68 02 00 00            |        h...    |        footer_length: 616 0x16e8-0x16eb.7 (4)
@@ -2868,7 +2841,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x1740|   0a                                          | .              |                  length: 10 0x1741-0x1741.7 (1)
 0x1740|      e4 57 7b 6e 4b 2a 91 3b                  |  .W{nK*.;      |                  data: raw bits 0x1742-0x1749.7 (8)
       |                                               |                |              data: raw bits 0x174a-NA (0)
-      |                                               |                |        capture_padding: raw bits 0x174a-NA (0)
 0x1740|                              00 00            |          ..    |        padding: raw bits 0x174a-0x174b.7 (2)
       |                                               |                |        options: [0] 0x174c-NA (0)
 0x1740|                                    64 00 00 00|            d...|        footer_length: 100 0x174c-0x174f.7 (4)
@@ -2932,7 +2904,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x17a0|                                          16 03|              ..|              data: raw bits 0x17ae-0x183f.7 (146)
 0x17b0|03 00 5a 02 00 00 56 03 03 55 d0 e5 ff ab 64 a2|..Z...V..U....d.|
 *     |until 0x183f.7 (146)                           |                |
-      |                                               |                |        capture_padding: raw bits 0x1840-NA (0)
       |                                               |                |        padding: raw bits 0x1840-NA (0)
       |                                               |                |        options: [0] 0x1840-NA (0)
 0x1840|f4 00 00 00                                    |....            |        footer_length: 244 0x1840-0x1843.7 (4)
@@ -2995,7 +2966,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x1890|                              4b 2a 91 55 e4 57|          K*.U.W|                  data: raw bits 0x189a-0x18a1.7 (8)
 0x18a0|7b 6e                                          |{n              |
       |                                               |                |              data: raw bits 0x18a2-NA (0)
-      |                                               |                |        capture_padding: raw bits 0x18a2-NA (0)
 0x18a0|      00 00                                    |  ..            |        padding: raw bits 0x18a2-0x18a3.7 (2)
       |                                               |                |        options: [0] 0x18a4-NA (0)
 0x18a0|            64 00 00 00                        |    d...        |        footer_length: 100 0x18a4-0x18a7.7 (4)
@@ -3061,7 +3031,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x1900|                  14 03 03 00 01 01 16 03 03 00|      ..........|              data: raw bits 0x1906-0x1938.7 (51)
 0x1910|28 00 00 00 00 00 00 00 00 2f 64 40 f5 c5 eb af|(......../d@....|
 *     |until 0x1938.7 (51)                            |                |
-      |                                               |                |        capture_padding: raw bits 0x1939-NA (0)
 0x1930|                           00 00 00            |         ...    |        padding: raw bits 0x1939-0x193b.7 (3)
       |                                               |                |        options: [0] 0x193c-NA (0)
 0x1930|                                    98 00 00 00|            ....|        footer_length: 152 0x193c-0x193f.7 (4)
@@ -3125,7 +3094,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x1990|                                          17 03|              ..|              data: raw bits 0x199e-0x19d2.7 (53)
 0x19a0|03 00 30 00 00 00 00 00 00 00 01 51 98 2a 12 b0|..0........Q.*..|
 *     |until 0x19d2.7 (53)                            |                |
-      |                                               |                |        capture_padding: raw bits 0x19d3-NA (0)
 0x19d0|         00                                    |   .            |        padding: raw bits 0x19d3-0x19d3.7 (1)
       |                                               |                |        options: [0] 0x19d4-NA (0)
 0x19d0|            98 00 00 00                        |    ....        |        footer_length: 152 0x19d4-0x19d7.7 (4)
@@ -3191,7 +3159,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x1a30|                  17 03 03 00 2d 00 00 00 00 00|      ....-.....|              data: raw bits 0x1a36-0x1a67.7 (50)
 0x1a40|00 00 02 f0 bc fa 7b fe 22 8d 11 11 1b 0b 72 db|......{.".....r.|
 *     |until 0x1a67.7 (50)                            |                |
-      |                                               |                |        capture_padding: raw bits 0x1a68-NA (0)
       |                                               |                |        padding: raw bits 0x1a68-NA (0)
       |                                               |                |        options: [0] 0x1a68-NA (0)
 0x1a60|                        94 00 00 00            |        ....    |        footer_length: 148 0x1a68-0x1a6b.7 (4)
@@ -3256,7 +3223,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x1ac0|                              17 03 03 00 25 00|          ....%.|              data: raw bits 0x1aca-0x1af3.7 (42)
 0x1ad0|00 00 00 00 00 00 03 91 f4 86 be 5b 2a 4f 9f 3e|...........[*O.>|
 *     |until 0x1af3.7 (42)                            |                |
-      |                                               |                |        capture_padding: raw bits 0x1af4-NA (0)
       |                                               |                |        padding: raw bits 0x1af4-NA (0)
       |                                               |                |        options: [0] 0x1af4-NA (0)
 0x1af0|            8c 00 00 00                        |    ....        |        footer_length: 140 0x1af4-0x1af7.7 (4)
@@ -3322,7 +3288,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x1b50|                  17 03 03 04 8f 00 00 00 00 00|      ..........|              data: raw bits 0x1b56-0x1fe9.7 (1172)
 0x1b60|00 00 04 98 59 fb 7c d9 ba ce c7 cc 54 de 7c d1|....Y.|.....T.|.|
 *     |until 0x1fe9.7 (1172)                          |                |
-      |                                               |                |        capture_padding: raw bits 0x1fea-NA (0)
 0x1fe0|                              00 00            |          ..    |        padding: raw bits 0x1fea-0x1feb.7 (2)
       |                                               |                |        options: [0] 0x1fec-NA (0)
 0x1fe0|                                    f8 04 00 00|            ....|        footer_length: 1272 0x1fec-0x1fef.7 (4)
@@ -3384,7 +3349,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x2040|               0a                              |     .          |                  length: 10 0x2045-0x2045.7 (1)
 0x2040|                  e4 57 7b 8c 4b 2a 91 55      |      .W{.K*.U  |                  data: raw bits 0x2046-0x204d.7 (8)
       |                                               |                |              data: raw bits 0x204e-NA (0)
-      |                                               |                |        capture_padding: raw bits 0x204e-NA (0)
 0x2040|                                          00 00|              ..|        padding: raw bits 0x204e-0x204f.7 (2)
       |                                               |                |        options: [0] 0x2050-NA (0)
 0x2050|64 00 00 00                                    |d...            |        footer_length: 100 0x2050-0x2053.7 (4)
@@ -3449,7 +3413,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x20b0|      17 03 03 00 33 00 00 00 00 00 00 00 01 84|  ....3.........|              data: raw bits 0x20b2-0x20e9.7 (56)
 0x20c0|43 dc 31 8d ea 84 17 37 3d ee 7d 47 7d a0 24 3f|C.1....7=.}G}.$?|
 *     |until 0x20e9.7 (56)                            |                |
-      |                                               |                |        capture_padding: raw bits 0x20ea-NA (0)
 0x20e0|                              00 00            |          ..    |        padding: raw bits 0x20ea-0x20eb.7 (2)
       |                                               |                |        options: [0] 0x20ec-NA (0)
 0x20e0|                                    9c 00 00 00|            ....|        footer_length: 156 0x20ec-0x20ef.7 (4)
@@ -3513,7 +3476,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x2140|                                          17 03|              ..|              data: raw bits 0x214e-0x2177.7 (42)
 0x2150|03 00 25 00 00 00 00 00 00 00 02 a8 2a 53 77 c7|..%.........*Sw.|
 *     |until 0x2177.7 (42)                            |                |
-      |                                               |                |        capture_padding: raw bits 0x2178-NA (0)
       |                                               |                |        padding: raw bits 0x2178-NA (0)
       |                                               |                |        options: [0] 0x2178-NA (0)
 0x2170|                        8c 00 00 00            |        ....    |        footer_length: 140 0x2178-0x217b.7 (4)
@@ -3578,7 +3540,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x21d0|                              17 03 03 00 21 00|          ....!.|              data: raw bits 0x21da-0x21ff.7 (38)
 0x21e0|00 00 00 00 00 00 03 bd 10 a7 a4 4e 7d 28 b4 4a|...........N}(.J|
 0x21f0|55 a3 39 db 64 b3 7a ae 3d e4 2e fc eb 8e 66 c5|U.9.d.z.=.....f.|
-      |                                               |                |        capture_padding: raw bits 0x2200-NA (0)
       |                                               |                |        padding: raw bits 0x2200-NA (0)
       |                                               |                |        options: [0] 0x2200-NA (0)
 0x2200|88 00 00 00                                    |....            |        footer_length: 136 0x2200-0x2203.7 (4)
@@ -3641,7 +3602,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x2250|                              4b 2a 91 84 e4 57|          K*...W|                  data: raw bits 0x225a-0x2261.7 (8)
 0x2260|7b 8d                                          |{.              |
       |                                               |                |              data: raw bits 0x2262-NA (0)
-      |                                               |                |        capture_padding: raw bits 0x2262-NA (0)
 0x2260|      00 00                                    |  ..            |        padding: raw bits 0x2262-0x2263.7 (2)
       |                                               |                |        options: [0] 0x2264-NA (0)
 0x2260|            64 00 00 00                        |    d...        |        footer_length: 100 0x2264-0x2267.7 (4)
@@ -3705,7 +3665,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x22b0|                                          4b 2a|              K*|                  data: raw bits 0x22be-0x22c5.7 (8)
 0x22c0|91 84 e4 57 7b 8d                              |...W{.          |
       |                                               |                |              data: raw bits 0x22c6-NA (0)
-      |                                               |                |        capture_padding: raw bits 0x22c6-NA (0)
 0x22c0|                  00 00                        |      ..        |        padding: raw bits 0x22c6-0x22c7.7 (2)
       |                                               |                |        options: [0] 0x22c8-NA (0)
 0x22c0|                        64 00 00 00            |        d...    |        footer_length: 100 0x22c8-0x22cb.7 (4)
@@ -3768,7 +3727,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x2320|   0a                                          | .              |                  length: 10 0x2321-0x2321.7 (1)
 0x2320|      4b 2a 91 84 e4 57 7b 8e                  |  K*...W{.      |                  data: raw bits 0x2322-0x2329.7 (8)
       |                                               |                |              data: raw bits 0x232a-NA (0)
-      |                                               |                |        capture_padding: raw bits 0x232a-NA (0)
 0x2320|                              00 00            |          ..    |        padding: raw bits 0x232a-0x232b.7 (2)
       |                                               |                |        options: [0] 0x232c-NA (0)
 0x2320|                                    64 00 00 00|            d...|        footer_length: 100 0x232c-0x232f.7 (4)
@@ -3832,7 +3790,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x2380|                                          17 03|              ..|              data: raw bits 0x238e-0x23b3.7 (38)
 0x2390|03 00 21 00 00 00 00 00 00 00 05 04 b0 d9 88 2d|..!............-|
 *     |until 0x23b3.7 (38)                            |                |
-      |                                               |                |        capture_padding: raw bits 0x23b4-NA (0)
       |                                               |                |        padding: raw bits 0x23b4-NA (0)
       |                                               |                |        options: [0] 0x23b4-NA (0)
 0x23b0|            88 00 00 00                        |    ....        |        footer_length: 136 0x23b4-0x23b7.7 (4)
@@ -3898,7 +3855,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x2410|                  17 03 03 01 e9 00 00 00 00 00|      ..........|              data: raw bits 0x2416-0x2603.7 (494)
 0x2420|00 00 04 cf 1d 4f e3 82 9a 07 84 9e f6 6f 6c 9c|.....O.......ol.|
 *     |until 0x2603.7 (494)                           |                |
-      |                                               |                |        capture_padding: raw bits 0x2604-NA (0)
       |                                               |                |        padding: raw bits 0x2604-NA (0)
       |                                               |                |        options: [0] 0x2604-NA (0)
 0x2600|            50 02 00 00                        |    P...        |        footer_length: 592 0x2604-0x2607.7 (4)
@@ -3964,7 +3920,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x2660|                  17 03 03 00 21 00 00 00 00 00|      ....!.....|              data: raw bits 0x2666-0x268b.7 (38)
 0x2670|00 00 05 d5 71 fb a3 87 9f 58 83 90 15 c7 2d 65|....q....X....-e|
 0x2680|52 df 40 13 ee cb 7f d6 30 c8 39 81            |R.@.....0.9.    |
-      |                                               |                |        capture_padding: raw bits 0x268c-NA (0)
       |                                               |                |        padding: raw bits 0x268c-NA (0)
       |                                               |                |        options: [0] 0x268c-NA (0)
 0x2680|                                    88 00 00 00|            ....|        footer_length: 136 0x268c-0x268f.7 (4)
@@ -4028,7 +3983,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x26e0|                                          17 03|              ..|              data: raw bits 0x26ee-0x271b.7 (46)
 0x26f0|03 00 29 00 00 00 00 00 00 00 06 a7 fa e5 cc 23|..)............#|
 *     |until 0x271b.7 (46)                            |                |
-      |                                               |                |        capture_padding: raw bits 0x271c-NA (0)
       |                                               |                |        padding: raw bits 0x271c-NA (0)
       |                                               |                |        options: [0] 0x271c-NA (0)
 0x2710|                                    90 00 00 00|            ....|        footer_length: 144 0x271c-0x271f.7 (4)
@@ -4090,7 +4044,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x2770|               0a                              |     .          |                  length: 10 0x2775-0x2775.7 (1)
 0x2770|                  4b 2a 91 85 e4 57 7b 99      |      K*...W{.  |                  data: raw bits 0x2776-0x277d.7 (8)
       |                                               |                |              data: raw bits 0x277e-NA (0)
-      |                                               |                |        capture_padding: raw bits 0x277e-NA (0)
 0x2770|                                          00 00|              ..|        padding: raw bits 0x277e-0x277f.7 (2)
       |                                               |                |        options: [0] 0x2780-NA (0)
 0x2780|64 00 00 00                                    |d...            |        footer_length: 100 0x2780-0x2783.7 (4)
@@ -4153,7 +4106,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x27d0|                              4b 2a 91 85 e4 57|          K*...W|                  data: raw bits 0x27da-0x27e1.7 (8)
 0x27e0|7b 99                                          |{.              |
       |                                               |                |              data: raw bits 0x27e2-NA (0)
-      |                                               |                |        capture_padding: raw bits 0x27e2-NA (0)
 0x27e0|      00 00                                    |  ..            |        padding: raw bits 0x27e2-0x27e3.7 (2)
       |                                               |                |        options: [0] 0x27e4-NA (0)
 0x27e0|            64 00 00 00                        |    d...        |        footer_length: 100 0x27e4-0x27e7.7 (4)
@@ -4217,7 +4169,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x2830|                                          4b 2a|              K*|                  data: raw bits 0x283e-0x2845.7 (8)
 0x2840|91 85 e4 57 7b 99                              |...W{.          |
       |                                               |                |              data: raw bits 0x2846-NA (0)
-      |                                               |                |        capture_padding: raw bits 0x2846-NA (0)
 0x2840|                  00 00                        |      ..        |        padding: raw bits 0x2846-0x2847.7 (2)
       |                                               |                |        options: [0] 0x2848-NA (0)
 0x2840|                        64 00 00 00            |        d...    |        footer_length: 100 0x2848-0x284b.7 (4)
@@ -4282,7 +4233,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x28a0|                              17 03 03 00 29 00|          ....).|              data: raw bits 0x28aa-0x28d7.7 (46)
 0x28b0|00 00 00 00 00 00 06 96 50 96 ef 10 f4 be e9 a0|........P.......|
 *     |until 0x28d7.7 (46)                            |                |
-      |                                               |                |        capture_padding: raw bits 0x28d8-NA (0)
       |                                               |                |        padding: raw bits 0x28d8-NA (0)
       |                                               |                |        options: [0] 0x28d8-NA (0)
 0x28d0|                        90 00 00 00            |        ....    |        footer_length: 144 0x28d8-0x28db.7 (4)
@@ -4323,7 +4273,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x2920|      0d 48 4a 3d 55 c4 39 cd 13 51 30 32 35 01|  .HJ=U.9..Q025.|              data: raw bits 0x2922-0x2e67.7 (1350)
 0x2930|0b f5 37 e5 76 ae 5f 9e 40 35 6f 33 01 a0 01 00|..7.v._.@5o3....|
 *     |until 0x2e67.7 (1350)                          |                |
-      |                                               |                |        capture_padding: raw bits 0x2e68-NA (0)
       |                                               |                |        padding: raw bits 0x2e68-NA (0)
       |                                               |                |        options: [0] 0x2e68-NA (0)
 0x2e60|                        90 05 00 00            |        ....    |        footer_length: 1424 0x2e68-0x2e6b.7 (4)
@@ -4405,7 +4354,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
       |                                               |                |                [8]: option {} 0x2ed5-0x2ed5.7 (1)
 0x2ed0|               00                              |     .          |                  kind: "end" (0) (End of options list) 0x2ed5-0x2ed5.7 (1)
       |                                               |                |              data: raw bits 0x2ed6-NA (0)
-      |                                               |                |        capture_padding: raw bits 0x2ed6-NA (0)
 0x2ed0|                  00 00                        |      ..        |        padding: raw bits 0x2ed6-0x2ed7.7 (2)
       |                                               |                |        options: [0] 0x2ed8-NA (0)
 0x2ed0|                        70 00 00 00            |        p...    |        footer_length: 112 0x2ed8-0x2edb.7 (4)
@@ -4468,7 +4416,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x2f30|   0a                                          | .              |                  length: 10 0x2f31-0x2f31.7 (1)
 0x2f30|      e4 57 7b bf 4b 2a 91 84                  |  .W{.K*..      |                  data: raw bits 0x2f32-0x2f39.7 (8)
       |                                               |                |              data: raw bits 0x2f3a-NA (0)
-      |                                               |                |        capture_padding: raw bits 0x2f3a-NA (0)
 0x2f30|                              00 00            |          ..    |        padding: raw bits 0x2f3a-0x2f3b.7 (2)
       |                                               |                |        options: [0] 0x2f3c-NA (0)
 0x2f30|                                    64 00 00 00|            d...|        footer_length: 100 0x2f3c-0x2f3f.7 (4)
@@ -4541,7 +4488,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x2fa0|            03                                 |    .           |                  length: 3 0x2fa4-0x2fa4.7 (1)
 0x2fa0|               07                              |     .          |                  data: raw bits 0x2fa5-0x2fa5.7 (1)
       |                                               |                |              data: raw bits 0x2fa6-NA (0)
-      |                                               |                |        capture_padding: raw bits 0x2fa6-NA (0)
 0x2fa0|                  00 00                        |      ..        |        padding: raw bits 0x2fa6-0x2fa7.7 (2)
       |                                               |                |        options: [0] 0x2fa8-NA (0)
 0x2fa0|                        6c 00 00 00            |        l...    |        footer_length: 108 0x2fa8-0x2fab.7 (4)
@@ -4604,7 +4550,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x3000|   0a                                          | .              |                  length: 10 0x3001-0x3001.7 (1)
 0x3000|      4b 2a 92 83 e4 57 7b c4                  |  K*...W{.      |                  data: raw bits 0x3002-0x3009.7 (8)
       |                                               |                |              data: raw bits 0x300a-NA (0)
-      |                                               |                |        capture_padding: raw bits 0x300a-NA (0)
 0x3000|                              00 00            |          ..    |        padding: raw bits 0x300a-0x300b.7 (2)
       |                                               |                |        options: [0] 0x300c-NA (0)
 0x3000|                                    64 00 00 00|            d...|        footer_length: 100 0x300c-0x300f.7 (4)
@@ -4668,7 +4613,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x3060|                                          16 03|              ..|              data: raw bits 0x306e-0x3145.7 (216)
 0x3070|01 00 d3 01 00 00 cf 03 03 c0 a6 33 83 e1 1e ec|...........3....|
 *     |until 0x3145.7 (216)                           |                |
-      |                                               |                |        capture_padding: raw bits 0x3146-NA (0)
 0x3140|                  00 00                        |      ..        |        padding: raw bits 0x3146-0x3147.7 (2)
       |                                               |                |        options: [0] 0x3148-NA (0)
 0x3140|                        3c 01 00 00            |        <...    |        footer_length: 316 0x3148-0x314b.7 (4)
@@ -4709,7 +4653,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x3190|      0d 48 4a 3d 55 c4 39 cd 13 51 30 32 35 02|  .HJ=U.9..Q025.|              data: raw bits 0x3192-0x36d7.7 (1350)
 0x31a0|2a 82 7d 60 fe 3d e8 fa a2 6e 20 72 01 a0 01 00|*.}`.=...n r....|
 *     |until 0x36d7.7 (1350)                          |                |
-      |                                               |                |        capture_padding: raw bits 0x36d8-NA (0)
       |                                               |                |        padding: raw bits 0x36d8-NA (0)
       |                                               |                |        options: [0] 0x36d8-NA (0)
 0x36d0|                        90 05 00 00            |        ....    |        footer_length: 1424 0x36d8-0x36db.7 (4)
@@ -4749,7 +4692,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x3720|82 94                                          |..              |              checksum: 0x8294 0x3720-0x3721.7 (2)
 0x3720|      1c e0 57 42 2b 58 7f c5 3f bc 11 58 7c 40|  ..WB+X..?..X|@|              data: raw bits 0x3722-0x373a.7 (25)
 0x3730|13 78 17 d5 b1 13 d4 7f 63 8c ca               |.x......c..     |
-      |                                               |                |        capture_padding: raw bits 0x373b-NA (0)
 0x3730|                                 00            |           .    |        padding: raw bits 0x373b-0x373b.7 (1)
       |                                               |                |        options: [0] 0x373c-NA (0)
 0x3730|                                    64 00 00 00|            d...|        footer_length: 100 0x373c-0x373f.7 (4)
@@ -4790,7 +4732,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x3780|                  00 01 8f d0 ba 82 41 2f e5 db|      ......A/..|              data: raw bits 0x3786-0x3ccb.7 (1350)
 0x3790|1a d3 aa 5e 10 5f b8 8d 0f 72 8d 0d ea a9 f6 ac|...^._...r......|
 *     |until 0x3ccb.7 (1350)                          |                |
-      |                                               |                |        capture_padding: raw bits 0x3ccc-NA (0)
       |                                               |                |        padding: raw bits 0x3ccc-NA (0)
       |                                               |                |        options: [0] 0x3ccc-NA (0)
 0x3cc0|                                    90 05 00 00|            ....|        footer_length: 1424 0x3ccc-0x3ccf.7 (4)
@@ -4831,7 +4772,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x3d10|                  00 02 d0 95 f4 2d 7a 1e e0 62|      .....-z..b|              data: raw bits 0x3d16-0x425b.7 (1350)
 0x3d20|95 43 de c9 13 1e ac 8e 74 9c 4f 1b 2c 89 f9 93|.C......t.O.,...|
 *     |until 0x425b.7 (1350)                          |                |
-      |                                               |                |        capture_padding: raw bits 0x425c-NA (0)
       |                                               |                |        padding: raw bits 0x425c-NA (0)
       |                                               |                |        options: [0] 0x425c-NA (0)
 0x4250|                                    90 05 00 00|            ....|        footer_length: 1424 0x425c-0x425f.7 (4)
@@ -4872,7 +4812,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x42a0|                  0c 48 4a 3d 55 c4 39 cd 13 03|      .HJ=U.9...|              data: raw bits 0x42a6-0x42cd.7 (40)
 0x42b0|07 5f f3 2a 24 ab f0 88 33 52 36 56 b5 b4 8d d4|._.*$...3R6V....|
 0x42c0|50 71 5d 32 5d 13 6a 91 e7 33 a1 30 a7 bd      |Pq]2].j..3.0..  |
-      |                                               |                |        capture_padding: raw bits 0x42ce-NA (0)
 0x42c0|                                          00 00|              ..|        padding: raw bits 0x42ce-0x42cf.7 (2)
       |                                               |                |        options: [0] 0x42d0-NA (0)
 0x42d0|74 00 00 00                                    |t...            |        footer_length: 116 0x42d0-0x42d3.7 (4)
@@ -4913,7 +4852,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x4310|                              0c 48 4a 3d 55 c4|          .HJ=U.|              data: raw bits 0x431a-0x485f.7 (1350)
 0x4320|39 cd 13 04 6f 4c 6d 50 81 9f d3 3c 13 d9 36 57|9...oLmP...<..6W|
 *     |until 0x485f.7 (1350)                          |                |
-      |                                               |                |        capture_padding: raw bits 0x4860-NA (0)
       |                                               |                |        padding: raw bits 0x4860-NA (0)
       |                                               |                |        options: [0] 0x4860-NA (0)
 0x4860|90 05 00 00                                    |....            |        footer_length: 1424 0x4860-0x4863.7 (4)
@@ -4954,7 +4892,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x48a0|                              0c 48 4a 3d 55 c4|          .HJ=U.|              data: raw bits 0x48aa-0x4b53.7 (682)
 0x48b0|39 cd 13 05 02 33 9a 73 17 03 94 a4 a1 ac ca e1|9....3.s........|
 *     |until 0x4b53.7 (682)                           |                |
-      |                                               |                |        capture_padding: raw bits 0x4b54-NA (0)
       |                                               |                |        padding: raw bits 0x4b54-NA (0)
       |                                               |                |        options: [0] 0x4b54-NA (0)
 0x4b50|            f4 02 00 00                        |    ....        |        footer_length: 756 0x4b54-0x4b57.7 (4)
@@ -4995,7 +4932,6 @@ $ fq -d pcapng verbose /many_interfaces.pcapng
 0x4b90|                                          0c 48|              .H|              data: raw bits 0x4b9e-0x4c36.7 (153)
 0x4ba0|4a 3d 55 c4 39 cd 13 06 d6 ed 7f 96 60 64 e0 90|J=U.9.......`d..|
 *     |until 0x4c36.7 (153)                           |                |
-      |                                               |                |        capture_padding: raw bits 0x4c37-NA (0)
 0x4c30|                     00                        |       .        |        padding: raw bits 0x4c37-0x4c37.7 (1)
       |                                               |                |        options: [0] 0x4c38-NA (0)
 0x4c30|                        e4 00 00 00            |        ....    |        footer_length: 228 0x4c38-0x4c3b.7 (4)

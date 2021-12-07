@@ -46,8 +46,13 @@ func (t *TCPConnection) Accept(tcp *layers.TCP, ci gopacket.CaptureInfo, dir rea
 }
 
 func (t *TCPConnection) ReassembledSG(sg reassembly.ScatterGather, ac reassembly.AssemblerContext) {
-	dir, _, _, _ := sg.Info()
+	dir, _, _, skip := sg.Info()
 	length, _ := sg.Lengths()
+
+	if skip != 0 {
+		// stream has missing bytes
+		return
+	}
 
 	data := sg.Fetch(length)
 
