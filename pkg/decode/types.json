@@ -1,9 +1,9 @@
 {
     "types": {
-        "Str": {"go_type": "string", "zero": "\"\"", "compare": "a == b"},
-        "U": {"go_type": "uint64", "zero": "0", "compare": "a == b"},
-        "S": {"go_type": "int64", "zero": "0", "compare": "a == b"},
-        "F": {"go_type": "float64", "map_from": false, "zero": "0", "compare": "a == b"},
+        "Str": {"go_type": "string", "zero": "\"\"", "compare": "a == b", "range": "a >= start && a <= end"},
+        "U": {"go_type": "uint64", "zero": "0", "compare": "a == b", "range": "a >= start && a <= end"},
+        "S": {"go_type": "int64", "zero": "0", "compare": "a == b", "range": "a >= start && a <= end"},
+        "F": {"go_type": "float64", "map_from": false, "zero": "0", "compare": "a == b", "range": "a >= start && a <= end"},
         "Bool": {"go_type": "bool", "zero": "false", "compare": "a == b"},
         "BitBuf": {"go_type": "*bitio.Buffer", "zero": "nil", "map_from": false, "map_to": false}
     },

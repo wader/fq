@@ -2,7 +2,7 @@
 package decode
 
 import (
-	"errors"
+	"fmt"
 
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/scalar"
@@ -308,139 +308,328 @@ func (d *D) FieldScalarUFn(name string, fn func(d *D) uint64, sms ...scalar.Mapp
 	return v
 }
 
-// Validate/Assert Bool
+// Require/Assert/Validate Bool
 
-func assertBool(s scalar.S, isAssert bool, vs ...bool) (scalar.S, error) {
+func requireBool(name string, s scalar.S, desc bool, fail bool, vs ...bool) (scalar.S, error) {
 	a := s.ActualBool()
 	for _, b := range vs {
 		if a == b {
-			s.Description = "valid"
+			if desc {
+				s.Description = "valid"
+			}
 			return s, nil
 		}
 	}
-	s.Description = "invalid"
-	if isAssert {
-		return s, errors.New("failed to assert Bool")
+	if desc {
+		s.Description = "invalid"
+	}
+	if fail {
+		return s, fmt.Errorf("failed to %s Bool", name)
 	}
 	return s, nil
 }
 
-// AssertBool asserts that actual value is one of given bool values
+// RequireBool that actual value is one of given bool values
+func (d *D) RequireBool(vs ...bool) scalar.Mapper {
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireBool("require", s, false, true, vs...) })
+}
+
+// AssertBool validate and asserts that actual value is one of given bool values
 func (d *D) AssertBool(vs ...bool) scalar.Mapper {
-	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return assertBool(s, !d.Options.Force, vs...) })
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireBool("assert", s, true, !d.Options.Force, vs...) })
 }
 
 // ValidateBool validates that actual value is one of given bool values
 func (d *D) ValidateBool(vs ...bool) scalar.Mapper {
-	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return assertBool(s, false, vs...) })
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireBool("validate", s, true, false, vs...) })
 }
 
-// Validate/Assert F
+// Require/Assert/Validate F
 
-func assertF(s scalar.S, isAssert bool, vs ...float64) (scalar.S, error) {
+func requireF(name string, s scalar.S, desc bool, fail bool, vs ...float64) (scalar.S, error) {
 	a := s.ActualF()
 	for _, b := range vs {
 		if a == b {
-			s.Description = "valid"
+			if desc {
+				s.Description = "valid"
+			}
 			return s, nil
 		}
 	}
-	s.Description = "invalid"
-	if isAssert {
-		return s, errors.New("failed to assert F")
+	if desc {
+		s.Description = "invalid"
+	}
+	if fail {
+		return s, fmt.Errorf("failed to %s F", name)
 	}
 	return s, nil
 }
 
-// AssertF asserts that actual value is one of given float64 values
+// RequireF that actual value is one of given float64 values
+func (d *D) RequireF(vs ...float64) scalar.Mapper {
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireF("require", s, false, true, vs...) })
+}
+
+// AssertF validate and asserts that actual value is one of given float64 values
 func (d *D) AssertF(vs ...float64) scalar.Mapper {
-	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return assertF(s, !d.Options.Force, vs...) })
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireF("assert", s, true, !d.Options.Force, vs...) })
 }
 
 // ValidateF validates that actual value is one of given float64 values
 func (d *D) ValidateF(vs ...float64) scalar.Mapper {
-	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return assertF(s, false, vs...) })
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireF("validate", s, true, false, vs...) })
 }
 
-// Validate/Assert S
+// Require/Assert/ValidatRange F
 
-func assertS(s scalar.S, isAssert bool, vs ...int64) (scalar.S, error) {
-	a := s.ActualS()
-	for _, b := range vs {
-		if a == b {
+func requireRangeF(name string, s scalar.S, desc bool, fail bool, start, end float64) (scalar.S, error) {
+	a := s.ActualF()
+	if a >= start && a <= end {
+		if desc {
 			s.Description = "valid"
-			return s, nil
 		}
+		return s, nil
 	}
-	s.Description = "invalid"
-	if isAssert {
-		return s, errors.New("failed to assert S")
+	if desc {
+		s.Description = "invalid"
+	}
+	if fail {
+		return s, fmt.Errorf("failed to %s F range %v-%v", name, start, end)
 	}
 	return s, nil
 }
 
-// AssertS asserts that actual value is one of given int64 values
+// RequireFRange require that actual value is in range
+func (d *D) RequireFRange(start, end float64) scalar.Mapper {
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireRangeF("require", s, false, true, start, end) })
+}
+
+// AssertFRange asserts that actual value is in range
+func (d *D) AssertFRange(start, end float64) scalar.Mapper {
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) {
+		return requireRangeF("assert", s, true, !d.Options.Force, start, end)
+	})
+}
+
+// ValidateFRange validates that actual value is in range
+func (d *D) ValidateFRange(start, end float64) scalar.Mapper {
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireRangeF("validate", s, true, false, start, end) })
+}
+
+// Require/Assert/Validate S
+
+func requireS(name string, s scalar.S, desc bool, fail bool, vs ...int64) (scalar.S, error) {
+	a := s.ActualS()
+	for _, b := range vs {
+		if a == b {
+			if desc {
+				s.Description = "valid"
+			}
+			return s, nil
+		}
+	}
+	if desc {
+		s.Description = "invalid"
+	}
+	if fail {
+		return s, fmt.Errorf("failed to %s S", name)
+	}
+	return s, nil
+}
+
+// RequireS that actual value is one of given int64 values
+func (d *D) RequireS(vs ...int64) scalar.Mapper {
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireS("require", s, false, true, vs...) })
+}
+
+// AssertS validate and asserts that actual value is one of given int64 values
 func (d *D) AssertS(vs ...int64) scalar.Mapper {
-	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return assertS(s, !d.Options.Force, vs...) })
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireS("assert", s, true, !d.Options.Force, vs...) })
 }
 
 // ValidateS validates that actual value is one of given int64 values
 func (d *D) ValidateS(vs ...int64) scalar.Mapper {
-	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return assertS(s, false, vs...) })
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireS("validate", s, true, false, vs...) })
 }
 
-// Validate/Assert Str
+// Require/Assert/ValidatRange S
 
-func assertStr(s scalar.S, isAssert bool, vs ...string) (scalar.S, error) {
-	a := s.ActualStr()
-	for _, b := range vs {
-		if a == b {
+func requireRangeS(name string, s scalar.S, desc bool, fail bool, start, end int64) (scalar.S, error) {
+	a := s.ActualS()
+	if a >= start && a <= end {
+		if desc {
 			s.Description = "valid"
-			return s, nil
 		}
+		return s, nil
 	}
-	s.Description = "invalid"
-	if isAssert {
-		return s, errors.New("failed to assert Str")
+	if desc {
+		s.Description = "invalid"
+	}
+	if fail {
+		return s, fmt.Errorf("failed to %s S range %v-%v", name, start, end)
 	}
 	return s, nil
 }
 
-// AssertStr asserts that actual value is one of given string values
+// RequireSRange require that actual value is in range
+func (d *D) RequireSRange(start, end int64) scalar.Mapper {
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireRangeS("require", s, false, true, start, end) })
+}
+
+// AssertSRange asserts that actual value is in range
+func (d *D) AssertSRange(start, end int64) scalar.Mapper {
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) {
+		return requireRangeS("assert", s, true, !d.Options.Force, start, end)
+	})
+}
+
+// ValidateSRange validates that actual value is in range
+func (d *D) ValidateSRange(start, end int64) scalar.Mapper {
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireRangeS("validate", s, true, false, start, end) })
+}
+
+// Require/Assert/Validate Str
+
+func requireStr(name string, s scalar.S, desc bool, fail bool, vs ...string) (scalar.S, error) {
+	a := s.ActualStr()
+	for _, b := range vs {
+		if a == b {
+			if desc {
+				s.Description = "valid"
+			}
+			return s, nil
+		}
+	}
+	if desc {
+		s.Description = "invalid"
+	}
+	if fail {
+		return s, fmt.Errorf("failed to %s Str", name)
+	}
+	return s, nil
+}
+
+// RequireStr that actual value is one of given string values
+func (d *D) RequireStr(vs ...string) scalar.Mapper {
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireStr("require", s, false, true, vs...) })
+}
+
+// AssertStr validate and asserts that actual value is one of given string values
 func (d *D) AssertStr(vs ...string) scalar.Mapper {
-	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return assertStr(s, !d.Options.Force, vs...) })
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireStr("assert", s, true, !d.Options.Force, vs...) })
 }
 
 // ValidateStr validates that actual value is one of given string values
 func (d *D) ValidateStr(vs ...string) scalar.Mapper {
-	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return assertStr(s, false, vs...) })
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireStr("validate", s, true, false, vs...) })
 }
 
-// Validate/Assert U
+// Require/Assert/ValidatRange Str
 
-func assertU(s scalar.S, isAssert bool, vs ...uint64) (scalar.S, error) {
-	a := s.ActualU()
-	for _, b := range vs {
-		if a == b {
+func requireRangeStr(name string, s scalar.S, desc bool, fail bool, start, end string) (scalar.S, error) {
+	a := s.ActualStr()
+	if a >= start && a <= end {
+		if desc {
 			s.Description = "valid"
-			return s, nil
 		}
+		return s, nil
 	}
-	s.Description = "invalid"
-	if isAssert {
-		return s, errors.New("failed to assert U")
+	if desc {
+		s.Description = "invalid"
+	}
+	if fail {
+		return s, fmt.Errorf("failed to %s Str range %v-%v", name, start, end)
 	}
 	return s, nil
 }
 
-// AssertU asserts that actual value is one of given uint64 values
+// RequireStrRange require that actual value is in range
+func (d *D) RequireStrRange(start, end string) scalar.Mapper {
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireRangeStr("require", s, false, true, start, end) })
+}
+
+// AssertStrRange asserts that actual value is in range
+func (d *D) AssertStrRange(start, end string) scalar.Mapper {
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) {
+		return requireRangeStr("assert", s, true, !d.Options.Force, start, end)
+	})
+}
+
+// ValidateStrRange validates that actual value is in range
+func (d *D) ValidateStrRange(start, end string) scalar.Mapper {
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireRangeStr("validate", s, true, false, start, end) })
+}
+
+// Require/Assert/Validate U
+
+func requireU(name string, s scalar.S, desc bool, fail bool, vs ...uint64) (scalar.S, error) {
+	a := s.ActualU()
+	for _, b := range vs {
+		if a == b {
+			if desc {
+				s.Description = "valid"
+			}
+			return s, nil
+		}
+	}
+	if desc {
+		s.Description = "invalid"
+	}
+	if fail {
+		return s, fmt.Errorf("failed to %s U", name)
+	}
+	return s, nil
+}
+
+// RequireU that actual value is one of given uint64 values
+func (d *D) RequireU(vs ...uint64) scalar.Mapper {
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireU("require", s, false, true, vs...) })
+}
+
+// AssertU validate and asserts that actual value is one of given uint64 values
 func (d *D) AssertU(vs ...uint64) scalar.Mapper {
-	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return assertU(s, !d.Options.Force, vs...) })
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireU("assert", s, true, !d.Options.Force, vs...) })
 }
 
 // ValidateU validates that actual value is one of given uint64 values
 func (d *D) ValidateU(vs ...uint64) scalar.Mapper {
-	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return assertU(s, false, vs...) })
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireU("validate", s, true, false, vs...) })
+}
+
+// Require/Assert/ValidatRange U
+
+func requireRangeU(name string, s scalar.S, desc bool, fail bool, start, end uint64) (scalar.S, error) {
+	a := s.ActualU()
+	if a >= start && a <= end {
+		if desc {
+			s.Description = "valid"
+		}
+		return s, nil
+	}
+	if desc {
+		s.Description = "invalid"
+	}
+	if fail {
+		return s, fmt.Errorf("failed to %s U range %v-%v", name, start, end)
+	}
+	return s, nil
+}
+
+// RequireURange require that actual value is in range
+func (d *D) RequireURange(start, end uint64) scalar.Mapper {
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireRangeU("require", s, false, true, start, end) })
+}
+
+// AssertURange asserts that actual value is in range
+func (d *D) AssertURange(start, end uint64) scalar.Mapper {
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) {
+		return requireRangeU("assert", s, true, !d.Options.Force, start, end)
+	})
+}
+
+// ValidateURange validates that actual value is in range
+func (d *D) ValidateURange(start, end uint64) scalar.Mapper {
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireRangeU("validate", s, true, false, start, end) })
 }
 
 // Reader RawLen

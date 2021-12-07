@@ -2,7 +2,7 @@
 package decode
 
 import (
-	"errors"
+	"fmt"
 
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/scalar"
@@ -62,31 +62,75 @@ import (
 
 {{- range $name, $t := $.types }}
 	{{- if $t.compare}}
-		// Validate/Assert {{$name}}
+		// Require/Assert/Validate {{$name}}
 
-		func assert{{$name}}(s scalar.S, isAssert bool, vs ...{{$t.go_type}}) (scalar.S, error) {
+		func require{{$name}}(name string, s scalar.S, desc bool, fail bool, vs ...{{$t.go_type}}) (scalar.S, error) {
 			a := s.Actual{{$name}}()
 			for _, b := range vs {
 				if {{$t.compare}} {
-					s.Description = "valid"
+					if desc {
+						s.Description = "valid"
+					}
 					return s, nil
 				}
 			}
-			s.Description = "invalid"
-			if isAssert {
-				return s, errors.New("failed to assert {{$name}}")
+			if desc {
+				s.Description = "invalid"
+			}
+			if fail {
+				return s, fmt.Errorf("failed to %s {{$name}}", name)
 			}
 			return s, nil
 		}
 
-		// Assert{{$name}} asserts that actual value is one of given {{$t.go_type}} values
+		// Require{{$name}} that actual value is one of given {{$t.go_type}} values
+		func (d *D) Require{{$name}}(vs ...{{$t.go_type}}) scalar.Mapper {
+			return scalar.Fn(func(s scalar.S) (scalar.S, error) { return require{{$name}}("require", s, false, true, vs...) })
+		}
+
+		// Assert{{$name}} validate and asserts that actual value is one of given {{$t.go_type}} values
 		func (d *D) Assert{{$name}}(vs ...{{$t.go_type}}) scalar.Mapper {
-			return scalar.Fn(func(s scalar.S) (scalar.S, error) { return assert{{$name}}(s, !d.Options.Force, vs...) })
+			return scalar.Fn(func(s scalar.S) (scalar.S, error) { return require{{$name}}("assert", s, true, !d.Options.Force, vs...) })
 		}
 
 		// Validate{{$name}} validates that actual value is one of given {{$t.go_type}} values
 		func (d *D) Validate{{$name}}(vs ...{{$t.go_type}}) scalar.Mapper {
-			return scalar.Fn(func(s scalar.S) (scalar.S, error) { return assert{{$name}}(s, false, vs...) })
+			return scalar.Fn(func(s scalar.S) (scalar.S, error) { return require{{$name}}("validate", s, true, false, vs...) })
+		}
+	{{- end}}
+	{{- if $t.range}}
+		// Require/Assert/ValidatRange {{$name}}
+
+		func requireRange{{$name}}(name string, s scalar.S, desc bool, fail bool, start, end {{$t.go_type}}) (scalar.S, error) {
+			a := s.Actual{{$name}}()
+			if {{$t.range}} {
+				if desc {
+					s.Description = "valid"
+				}
+				return s, nil
+			}
+			if desc {
+				s.Description = "invalid"
+			}
+			if fail {
+				return s, fmt.Errorf("failed to %s {{$name}} range %v-%v", name, start, end)
+			}
+			return s, nil
+		}
+
+		// Require{{$name}}Range require that actual value is in range
+		func (d *D) Require{{$name}}Range(start, end {{$t.go_type}}) scalar.Mapper {
+			return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireRange{{$name}}("require", s, false, true, start, end) })
+		}
+
+		// Assert{{$name}}Range asserts that actual value is in range
+		func (d *D) Assert{{$name}}Range(start, end {{$t.go_type}}) scalar.Mapper {
+			return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireRange{{$name}}("assert", s, true, !d.Options.Force, start, end) })
+		}
+
+		// Validate{{$name}}Range validates that actual value is in range
+		func (d *D) Validate{{$name}}Range(start, end {{$t.go_type}}) scalar.Mapper {
+			return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireRange{{$name}}("validate", s, true, false, start, end) })
 		}
 	{{- end}}
 {{- end}}
