@@ -290,6 +290,7 @@ func init() {
 			d.FieldUTF8NullFixedLen("component_manufacturer", 4)
 			d.FieldU32("component_flags")
 			d.FieldU32("component_flags_mask")
+			// TODO: sometimes has a length prefix byte, how to know?
 			d.FieldUTF8NullFixedLen("component_name", int(d.BitsLeft()/8))
 
 			if ctx.currentTrack != nil {
@@ -300,7 +301,6 @@ func init() {
 				}
 			}
 		},
-
 		"minf": decodeBoxes,
 		"dinf": decodeBoxes,
 		"dref": func(_ *decodeContext, d *decode.D) {
