@@ -21,10 +21,10 @@ $ fq . /test.json
 $ fq .b[1] /test.json
 2
 $ fq . /json.gz
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /json.gz (gzip)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /json.gz (gzip)
 0x00|1f 8b                                          |..              |  identification: raw bits (valid)
 0x00|      08                                       |  .             |  compression_method: "deflate" (8)
-0x00|         00                                    |   .            |  flags: {}
+0x00|         00                                    |   .            |  flags{}:
 0x00|            65 0a 08 61                        |    e..a        |  mtime: 1627916901
 0x00|                        00                     |        .       |  extra_flags: 0
 0x00|                           03                  |         .      |  os: "Unix" (3)

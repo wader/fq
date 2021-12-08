@@ -25,7 +25,7 @@ mp3> .headers[0].magic._format
 null
 mp3> ^D
 $ fq -d raw .
-   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} <stdin> (raw)
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: <stdin> (raw)
 0x0|61 62 63 0a|                                   |abc.|           |  unknown0: raw bits
 stdin:
 abc

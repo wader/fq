@@ -139,7 +139,7 @@ $ fq -d mp3 '.frames | map(.header) | sort_by(.bitrate)' /test.mp3
   }
 ]
 $ fq -d mp3 '.frames | map(.header) | sort_by(.bitrate)[0]' /test.mp3
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].header: {}
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].header{}:
 0x20|                                       ff fb   |             .. |  sync: 0b11111111111 (valid)
 0x20|                                          fb   |              . |  mpeg_version: "1" (3) (MPEG Version 1)
 0x20|                                          fb   |              . |  layer: 3 (1) (MPEG Layer 3)
@@ -155,7 +155,7 @@ $ fq -d mp3 '.frames | map(.header) | sort_by(.bitrate)[0]' /test.mp3
 0x30|c0                                             |.               |  original: 0
 0x30|c0                                             |.               |  emphasis: "None" (0b0)
 $ fq -d mp3 '.frames | map(.header) | min_by(.bitrate)' /test.mp3
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].header: {}
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].header{}:
 0x20|                                       ff fb   |             .. |  sync: 0b11111111111 (valid)
 0x20|                                          fb   |              . |  mpeg_version: "1" (3) (MPEG Version 1)
 0x20|                                          fb   |              . |  layer: 3 (1) (MPEG Layer 3)
@@ -171,7 +171,7 @@ $ fq -d mp3 '.frames | map(.header) | min_by(.bitrate)' /test.mp3
 0x30|c0                                             |.               |  original: 0
 0x30|c0                                             |.               |  emphasis: "None" (0b0)
 $ fq -d mp3 '.frames | map(.header) | max_by(.bitrate)' /test.mp3
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[2].header: {}
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[2].header{}:
 0x1b0|         ff fb                                 |   ..           |  sync: 0b11111111111 (valid)
 0x1b0|            fb                                 |    .           |  mpeg_version: "1" (3) (MPEG Version 1)
 0x1b0|            fb                                 |    .           |  layer: 3 (1) (MPEG Layer 3)

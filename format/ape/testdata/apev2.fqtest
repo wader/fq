@@ -2,18 +2,18 @@
 # mp3gain test.mp3
 # fq '.footers[0] | tobytes' test.mp3 > apev2
 $ fq -d apev2 verbose /apev2
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /apev2 (apev2) 0x0-0xad.7 (174)
-    |                                               |                |  header: {} 0x0-0x1f.7 (32)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /apev2 (apev2) 0x0-0xad.7 (174)
+    |                                               |                |  header{}: 0x0-0x1f.7 (32)
 0x00|41 50 45 54 41 47 45 58                        |APETAGEX        |    preamble: "APETAGEX" (valid) 0x0-0x7.7 (8)
 0x00|                        d0 07 00 00            |        ....    |    version: 2000 0x8-0xb.7 (4)
 0x00|                                    8e 00 00 00|            ....|    tag_size: 142 0xc-0xf.7 (4)
 0x10|03 00 00 00                                    |....            |    item_count: 3 0x10-0x13.7 (4)
 0x10|            00 00 00 a0                        |    ....        |    flags: 2684354560 0x14-0x17.7 (4)
 0x10|                        00 00 00 00 00 00 00 00|        ........|    reserved: raw bits (all zero) 0x18-0x1f.7 (8)
-    |                                               |                |  tags: [3] 0x20-0x8d.7 (110)
-    |                                               |                |    [0]: tag {} 0x20-0x3d.7 (30)
+    |                                               |                |  tags[0:3]: 0x20-0x8d.7 (110)
+    |                                               |                |    [0]{}: tag 0x20-0x3d.7 (30)
 0x20|07 00 00 00                                    |....            |      item_size: 7 0x20-0x23.7 (4)
-    |                                               |                |      item_flags: {} 0x24-0x27.7 (4)
+    |                                               |                |      item_flags{}: 0x24-0x27.7 (4)
 0x20|            00                                 |    .           |        unused0: 0 0x24-0x24.5 (0.6)
 0x20|            00                                 |    .           |        binary: false 0x24.6-0x24.6 (0.1)
 0x20|            00 00 00 00                        |    ....        |        unused1: 0 0x24.7-0x27.7 (3.1)
@@ -21,10 +21,10 @@ $ fq -d apev2 verbose /apev2
 0x30|4d 49 4e 4d 41 58                              |MINMAX          |
 0x30|                  00                           |      .         |      key_terminator: 0 0x36-0x36.7 (1)
 0x30|                     31 34 34 2c 32 31 30      |       144,210  |      value: "144,210" 0x37-0x3d.7 (7)
-    |                                               |                |    [1]: tag {} 0x3e-0x67.7 (42)
+    |                                               |                |    [1]{}: tag 0x3e-0x67.7 (42)
 0x30|                                          0c 00|              ..|      item_size: 12 0x3e-0x41.7 (4)
 0x40|00 00                                          |..              |
-    |                                               |                |      item_flags: {} 0x42-0x45.7 (4)
+    |                                               |                |      item_flags{}: 0x42-0x45.7 (4)
 0x40|      00                                       |  .             |        unused0: 0 0x42-0x42.5 (0.6)
 0x40|      00                                       |  .             |        binary: false 0x42.6-0x42.6 (0.1)
 0x40|      00 00 00 00                              |  ....          |        unused1: 0 0x42.7-0x45.7 (3.1)
@@ -33,9 +33,9 @@ $ fq -d apev2 verbose /apev2
 0x50|                                 00            |           .    |      key_terminator: 0 0x5b-0x5b.7 (1)
 0x50|                                    2b 31 33 2e|            +13.|      value: "+13.75000 dB" 0x5c-0x67.7 (12)
 0x60|37 35 30 30 30 20 64 42                        |75000 dB        |
-    |                                               |                |    [2]: tag {} 0x68-0x8d.7 (38)
+    |                                               |                |    [2]{}: tag 0x68-0x8d.7 (38)
 0x60|                        08 00 00 00            |        ....    |      item_size: 8 0x68-0x6b.7 (4)
-    |                                               |                |      item_flags: {} 0x6c-0x6f.7 (4)
+    |                                               |                |      item_flags{}: 0x6c-0x6f.7 (4)
 0x60|                                    00         |            .   |        unused0: 0 0x6c-0x6c.5 (0.6)
 0x60|                                    00         |            .   |        binary: false 0x6c.6-0x6c.6 (0.1)
 0x60|                                    00 00 00 00|            ....|        unused1: 0 0x6c.7-0x6f.7 (3.1)
@@ -43,7 +43,7 @@ $ fq -d apev2 verbose /apev2
 0x80|5f 50 45 41 4b                                 |_PEAK           |
 0x80|               00                              |     .          |      key_terminator: 0 0x85-0x85.7 (1)
 0x80|                  30 2e 30 38 34 36 36 35      |      0.084665  |      value: "0.084665" 0x86-0x8d.7 (8)
-    |                                               |                |  footer: {} 0x8e-0xad.7 (32)
+    |                                               |                |  footer{}: 0x8e-0xad.7 (32)
 0x80|                                          41 50|              AP|    preamble: "APETAGEX" (valid) 0x8e-0x95.7 (8)
 0x90|45 54 41 47 45 58                              |ETAGEX          |
 0x90|                  d0 07 00 00                  |      ....      |    version: 2000 0x96-0x99.7 (4)

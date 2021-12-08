@@ -1,13 +1,13 @@
 # convert -size 4x4 "xc:#000" 4x4.webp
 $ fq -d webp verbose /4x4.webp
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /4x4.webp (webp) 0x0-0x2b.7 (44)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /4x4.webp (webp) 0x0-0x2b.7 (44)
 0x00|52 49 46 46                                    |RIFF            |  riff_id: "RIFF" (valid) 0x0-0x3.7 (4)
 0x00|            24 00 00 00                        |    $...        |  riff_length: 36 0x4-0x7.7 (4)
 0x00|                        57 45 42 50            |        WEBP    |  webp_id: "WEBP" (valid) 0x8-0xb.7 (4)
-    |                                               |                |  image: {} 0xc-0x2b.7 (32)
+    |                                               |                |  image{}: 0xc-0x2b.7 (32)
 0x00|                                    56 50 38 20|            VP8 |    id: "VP8" 0xc-0xf.7 (4)
 0x10|18 00 00 00                                    |....            |    size: 24 0x10-0x13.7 (4)
-    |                                               |                |    tag: {} 0x14-0x16.7 (3)
+    |                                               |                |    tag{}: 0x14-0x16.7 (3)
 0x10|            30                                 |    0           |      first_part_size0: 1 0x14-0x14.2 (0.3)
 0x10|            30                                 |    0           |      show_frame: 1 0x14.3-0x14.3 (0.1)
 0x10|            30                                 |    0           |      version: 0 0x14.4-0x14.6 (0.3)

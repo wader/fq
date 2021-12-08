@@ -1,8 +1,8 @@
 $ fq -d mp4 'mp4_path(".moov.trak[1]")' /fragmented.mp4
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.boxes[1].boxes[2]: {}
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.boxes[1].boxes[2]{}:
 0x280|            00 00 01 bf                        |    ....        |  size: 447
 0x280|                        74 72 61 6b            |        trak    |  type: "trak" (Container for an individual track or stream)
-0x280|                                    00 00 00 5c|            ...\|  boxes: [2]
+0x280|                                    00 00 00 5c|            ...\|  boxes[0:2]:
 0x290|74 6b 68 64 00 00 00 03 00 00 00 00 00 00 00 00|tkhd............|
 *    |until 0x442.7 (439)                            |                |
 $ fq -d mp4 'mp4_path(".moov.trak[1]") | mp4_path' /fragmented.mp4

@@ -1,9 +1,9 @@
 # ffmpeg -y -f lavfi -i testsrc=size=4x4:r=1 -t 2s 4x4a.apng
 $ fq -d png verbose /4x4a.apng
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: {} /4x4a.apng (png) 0x0-0xf3.7 (244)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /4x4a.apng (png) 0x0-0xf3.7 (244)
 0x00|89 50 4e 47 0d 0a 1a 0a                        |.PNG....        |  signature: raw bits (valid) 0x0-0x7.7 (8)
-    |                                               |                |  chunks: [8] 0x8-0xf3.7 (236)
-    |                                               |                |    [0]: chunk {} 0x8-0x20.7 (25)
+    |                                               |                |  chunks[0:8]: 0x8-0xf3.7 (236)
+    |                                               |                |    [0]{}: chunk 0x8-0x20.7 (25)
 0x00|                        00 00 00 0d            |        ....    |      length: 13 0x8-0xb.7 (4)
 0x00|                                    49 48 44 52|            IHDR|      type: "IHDR" 0xc-0xf.7 (4)
 0x00|                                    49         |            I   |      ancillary: false 0xc.3-0xc.3 (0.1)
@@ -19,7 +19,7 @@ $ fq -d png verbose /4x4a.apng
 0x10|                                    00         |            .   |      interlace_method: "No interlace" (0) 0x1c-0x1c.7 (1)
 0x10|                                       26 93 09|             &..|      crc: 0x26930929 (valid) 0x1d-0x20.7 (4)
 0x20|29                                             |)               |
-    |                                               |                |    [1]: chunk {} 0x21-0x35.7 (21)
+    |                                               |                |    [1]{}: chunk 0x21-0x35.7 (21)
 0x20|   00 00 00 09                                 | ....           |      length: 9 0x21-0x24.7 (4)
 0x20|               70 48 59 73                     |     pHYs       |      type: "pHYs" 0x25-0x28.7 (4)
 0x20|               70                              |     p          |      ancillary: true 0x25.3-0x25.3 (0.1)
@@ -31,7 +31,7 @@ $ fq -d png verbose /4x4a.apng
 0x30|01                                             |.               |
 0x30|   00                                          | .              |      unit: 0 0x31-0x31.7 (1)
 0x30|      4f 25 c4 d6                              |  O%..          |      crc: 0x4f25c4d6 (valid) 0x32-0x35.7 (4)
-    |                                               |                |    [2]: chunk {} 0x36-0x49.7 (20)
+    |                                               |                |    [2]{}: chunk 0x36-0x49.7 (20)
 0x30|                  00 00 00 08                  |      ....      |      length: 8 0x36-0x39.7 (4)
 0x30|                              61 63 54 4c      |          acTL  |      type: "acTL" 0x3a-0x3d.7 (4)
 0x30|                              61               |          a     |      ancillary: false 0x3a.3-0x3a.3 (0.1)
@@ -42,7 +42,7 @@ $ fq -d png verbose /4x4a.apng
 0x40|00 02                                          |..              |
 0x40|      00 00 00 01                              |  ....          |      num_plays: 1 0x42-0x45.7 (4)
 0x40|                  84 8a a3 e6                  |      ....      |      crc: 0x848aa3e6 (valid) 0x46-0x49.7 (4)
-    |                                               |                |    [3]: chunk {} 0x4a-0x6f.7 (38)
+    |                                               |                |    [3]{}: chunk 0x4a-0x6f.7 (38)
 0x40|                              00 00 00 1a      |          ....  |      length: 26 0x4a-0x4d.7 (4)
 0x40|                                          66 63|              fc|      type: "fcTL" 0x4e-0x51.7 (4)
 0x50|54 4c                                          |TL              |
@@ -61,7 +61,7 @@ $ fq -d png verbose /4x4a.apng
 0x60|                              00               |          .     |      dispose_op: "none" (0) 0x6a-0x6a.7 (1)
 0x60|                                 00            |           .    |      blend_op: "source" (0) 0x6b-0x6b.7 (1)
 0x60|                                    5b 27 ec 00|            ['..|      crc: 0x5b27ec00 (valid) 0x6c-0x6f.7 (4)
-    |                                               |                |    [4]: chunk {} 0x70-0x9d.7 (46)
+    |                                               |                |    [4]{}: chunk 0x70-0x9d.7 (46)
 0x70|00 00 00 22                                    |..."            |      length: 34 0x70-0x73.7 (4)
 0x70|            49 44 41 54                        |    IDAT        |      type: "IDAT" 0x74-0x77.7 (4)
 0x70|            49                                 |    I           |      ancillary: false 0x74.3-0x74.3 (0.1)
@@ -72,7 +72,7 @@ $ fq -d png verbose /4x4a.apng
 0x80|c6 ff 41 14 88 05 64 fc 87 08 22 71 80 44 3d 88|..A...d..."q.D=.|
 0x90|f1 bf 81 e1 3f 00 c8 76 13 ed                  |....?..v..      |
 0x90|                              2f 76 8a 2a      |          /v.*  |      crc: 0x2f768a2a (valid) 0x9a-0x9d.7 (4)
-    |                                               |                |    [5]: chunk {} 0x9e-0xc3.7 (38)
+    |                                               |                |    [5]{}: chunk 0x9e-0xc3.7 (38)
 0x90|                                          00 00|              ..|      length: 26 0x9e-0xa1.7 (4)
 0xa0|00 1a                                          |..              |
 0xa0|      66 63 54 4c                              |  fcTL          |      type: "fcTL" 0xa2-0xa5.7 (4)
@@ -91,7 +91,7 @@ $ fq -d png verbose /4x4a.apng
 0xb0|                                          00   |              . |      dispose_op: "none" (0) 0xbe-0xbe.7 (1)
 0xb0|                                             00|               .|      blend_op: "source" (0) 0xbf-0xbf.7 (1)
 0xc0|c2 3b a2 c2                                    |.;..            |      crc: 0xc23ba2c2 (valid) 0xc0-0xc3.7 (4)
-    |                                               |                |    [6]: chunk {} 0xc4-0xe7.7 (36)
+    |                                               |                |    [6]{}: chunk 0xc4-0xe7.7 (36)
 0xc0|            00 00 00 18                        |    ....        |      length: 24 0xc4-0xc7.7 (4)
 0xc0|                        66 64 41 54            |        fdAT    |      type: "fdAT" 0xc8-0xcb.7 (4)
 0xc0|                        66                     |        f       |      ancillary: false 0xc8.3-0xc8.3 (0.1)
@@ -101,7 +101,7 @@ $ fq -d png verbose /4x4a.apng
 0xc0|                                    00 00 00 02|            ....|      sequence_number: 2 0xcc-0xcf.7 (4)
 0xd0|78 9c 63 f8 ff 9f 81 e1 7f 03 10 ff 67 a8 07 00|x.c.........g...|      data: raw bits 0xd0-0xdf.7 (16)
 0xe0|            7b f5 c3 3d                        |    {..=        |      crc: 0x7bf5c33d (valid) 0xe4-0xe7.7 (4)
-    |                                               |                |    [7]: chunk {} 0xe8-0xf3.7 (12)
+    |                                               |                |    [7]{}: chunk 0xe8-0xf3.7 (12)
 0xe0|                        00 00 00 00            |        ....    |      length: 0 0xe8-0xeb.7 (4)
 0xe0|                                    49 45 4e 44|            IEND|      type: "IEND" 0xec-0xef.7 (4)
 0xe0|                                    49         |            I   |      ancillary: false 0xec.3-0xec.3 (0.1)

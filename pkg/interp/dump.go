@@ -105,7 +105,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 			indent,
 			deco.Index.F("["),
 			deco.Number.F(strconv.Itoa(v.Index)),
-			deco.Number.F(strconv.Itoa(inArrayLen-1)),
+			deco.Number.F(strconv.Itoa(inArrayLen)),
 			deco.Index.F("]"),
 		)
 		cw.Flush()
@@ -116,10 +116,6 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 	if isInArray {
 		cfmt(colField, "%s%s%s", deco.Index.F("["), deco.Number.F(strconv.Itoa(v.Index)), deco.Index.F("]"))
 	}
-	cprint(colField, ":")
-	if opts.Verbose && isInArray {
-		cfmt(colField, " %s", v.Name)
-	}
 
 	var valueErr error
 
@@ -128,9 +124,13 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 	switch vv := v.V.(type) {
 	case *decode.Compound:
 		if vv.IsArray {
-			cfmt(colField, " %s%s%s", deco.Index.F("["), deco.Number.F(strconv.Itoa(len(vv.Children))), deco.Index.F("]"))
+			cfmt(colField, "%s%s:%s%s", deco.Index.F("["), deco.Number.F("0"), deco.Number.F(strconv.Itoa(len(vv.Children))), deco.Index.F("]"))
 		} else {
-			cfmt(colField, " %s", deco.Object.F("{}"))
+			cfmt(colField, "%s", deco.Object.F("{}"))
+		}
+		cprint(colField, ":")
+		if opts.Verbose && isInArray {
+			cfmt(colField, " %s", v.Name)
 		}
 		if vv.Description != "" {
 			cfmt(colField, " %s", deco.Value.F(vv.Description))
@@ -144,15 +144,20 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 		// TODO: rethink scalar array/struct (json format)
 		switch av := vv.Actual.(type) {
 		case map[string]interface{}:
-			cfmt(colField, " %s (%s)", deco.Object.F("{}"), deco.Value.F("json"))
+			cfmt(colField, ": %s (%s)", deco.Object.F("{}"), deco.Value.F("json"))
 		case []interface{}:
-			cfmt(colField, " %s%s%s (%s)", deco.Index.F("["), deco.Number.F(strconv.Itoa(len(av))), deco.Index.F("]"), deco.Value.F("json"))
+			cfmt(colField, ": %s%s:%s%s (%s)", deco.Index.F("["), deco.Number.F("0"), deco.Number.F(strconv.Itoa(len(av))), deco.Index.F("]"), deco.Value.F("json"))
 		default:
+			cprint(colField, ":")
 			if vv.Sym == nil {
 				cfmt(colField, " %s", deco.ValueColor(vv.Actual).F(previewValue(vv.Actual, vv.ActualDisplay)))
 			} else {
 				cfmt(colField, " %s", deco.ValueColor(vv.Actual).F(previewValue(vv.Sym, vv.SymDisplay)))
 				cfmt(colField, " (%s)", deco.ValueColor(vv.Actual).F(previewValue(vv.Actual, vv.ActualDisplay)))
+			}
+
+			if opts.Verbose && isInArray {
+				cfmt(colField, " %s", v.Name)
 			}
 
 			// TODO: similar to struct/array?
