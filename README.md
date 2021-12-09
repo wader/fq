@@ -85,7 +85,12 @@ jq implementation [gojq](https://github.com/itchyny/gojq). I also want to thank
 [HexFiend](https://github.com/HexFiend/HexFiend) for inspiration and ideas and [stedolan](https://github.com/stedolan)
 for inventing the [jq](https://github.com/stedolan/jq) language.
 
-Similar projects:
-- https://github.com/HexFiend/HexFiend
-- https://github.com/binspector/binspector
-- https://kaitai.io
+Similar or related projects:
+- [HexFiend](https://github.com/HexFiend/HexFiend)
+- [binspector](https://github.com/binspector/binspector)
+- [kaitai](https://kaitai.io)
+- [Wireshark](https://www.wireshark.org) (specially `tshark -T json`)
+- [MediaInfo](https://mediaarea.net/en/MediaInfo) (specially `mediainfo --Output=JSON` and `mediainfo --Details=1`)
+- [GNU poke](https://www.jemarch.net/poke)
+- [ffmpeg/ffprobe](https://ffmpeg.org)
+- [hexdump](https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git/tree/text-utils/hexdump.c)
