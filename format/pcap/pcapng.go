@@ -348,7 +348,8 @@ func decodeSection(d *decode.D, dc *decodeContext) {
 			dc.sectionHeaderFound = true
 		})
 
-		for (sectionLength == -1 && !d.End()) || (sectionLength != -1 && d.Pos()-sectionStart < sectionLength*8) {
+		for (sectionLength == -1 && !d.End()) ||
+			(sectionLength != -1 && d.Pos()-sectionStart < sectionLength*8) {
 			d.FieldStruct("block", func(d *decode.D) { decodeBlock(d, dc) })
 		}
 	})
@@ -363,7 +364,6 @@ type decodeContext struct {
 func decodePcapng(d *decode.D, in interface{}) interface{} {
 	sectionHeaders := 0
 	for !d.End() {
-
 		fd := flowsdecoder.New()
 		dc := decodeContext{
 			interfaceTypes: map[int]int{},

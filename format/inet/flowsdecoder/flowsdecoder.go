@@ -79,15 +79,27 @@ func (fd *Decoder) New(net, transport gopacket.Flow, tcp *layers.TCP, ac reassem
 	fsmOptions := reassembly.TCPSimpleFSMOptions{
 		SupportMissingEstablishment: true,
 	}
+
 	// TODO: get ip layer somehow?
+	// TODO: understand how gopacket handles broken/too short packets, seems like
+	// we can get here when lots of things are missing, assume zero port for now
+	var clientPort int
+	if len(transport.Src().Raw()) == 2 {
+		clientPort = int(binary.BigEndian.Uint16(transport.Src().Raw()))
+	}
+	var serverPort int
+	if len(transport.Dst().Raw()) == 2 {
+		serverPort = int(binary.BigEndian.Uint16(transport.Dst().Raw()))
+	}
+
 	stream := &TCPConnection{
 		ClientEndpoint: IPEndpoint{
 			IP:   append([]byte(nil), net.Src().Raw()...),
-			Port: int(binary.BigEndian.Uint16(transport.Src().Raw())),
+			Port: clientPort,
 		},
 		ServerEndpoint: IPEndpoint{
 			IP:   append([]byte(nil), net.Dst().Raw()...),
-			Port: int(binary.BigEndian.Uint16(transport.Dst().Raw())),
+			Port: serverPort,
 		},
 		ClientToServer: &bytes.Buffer{},
 		ServerToClient: &bytes.Buffer{},

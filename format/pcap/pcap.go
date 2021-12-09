@@ -1,6 +1,7 @@
 package pcap
 
 // https://wiki.wireshark.org/Development/LibpcapFileFormat
+// TODO: tshark seems to not support sll2 in pcap, confusing
 
 import (
 	"github.com/wader/fq/format"
