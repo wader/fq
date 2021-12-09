@@ -228,7 +228,7 @@ def _repl_slurp: _repl({});
 
 # TODO: introspect and show doc, reflection somehow?
 def help:
-  ( "Type jq expression to evaluate"
+  ( "Type expression to evaluate"
   , "\\t          Auto completion"
   , "Up/Down     History"
   , "^C          Interrupt execution"
