@@ -539,6 +539,11 @@ func init() {
 				})
 			} else {
 				if ctx.currentTrack != nil {
+					// TODO: keep track of list of sampleSize/entries instead and change sample read code
+					const maxEntryCount = 10_000_000
+					if entryCount > maxEntryCount {
+						d.Errorf("too many constant stsz entries %d > %d", entryCount, maxEntryCount)
+					}
 					for i := uint64(0); i < entryCount; i++ {
 						ctx.currentTrack.stsz = append(ctx.currentTrack.stsz, uint32(sampleSize))
 					}
