@@ -277,6 +277,9 @@ func (d *D) IOPanic(err error, op string) {
 
 // Bits reads nBits bits from buffer
 func (d *D) bits(nBits int) (uint64, error) {
+	if nBits < 0 || nBits > 64 {
+		return 0, fmt.Errorf("nBits must be 0-64 (%d)", nBits)
+	}
 	// 64 bits max, 9 byte worse case if not byte aligned
 	buf := d.SharedReadBuf(9)
 	_, err := bitio.ReadFull(d.bitBuf, buf, nBits)
