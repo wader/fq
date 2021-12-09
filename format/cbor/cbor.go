@@ -20,7 +20,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-//go:embed *.jq
+//go:embed cbor.jq
 var cborFS embed.FS
 
 func init() {
@@ -29,7 +29,7 @@ func init() {
 		Description: "Concise Binary Object Representation",
 		DecodeFn:    decodeCBOR,
 		Files:       cborFS,
-		ToRepr:      "_cbor_torepr",
+		Functions:   []string{"torepr", "_help"},
 	})
 }
 

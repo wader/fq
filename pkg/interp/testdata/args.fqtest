@@ -67,13 +67,14 @@ byte_colors         0-255=brightwhite,0=brightblack,32-126:9-13=white
 color               false
 colors              array=white,dumpaddr=yellow,dumpheader=yellow+underline,error=brightred,false=yellow,index=white,null=brightblack,number=cyan,object=white,objectkey=brightblue,prompt_repl_level=brightblack,prompt_value=white,string=green,true=yellow,value=white
 compact             false
-completion_timeout  50
+completion_timeout  10
 decode_file         []
 decode_format       probe
 decode_progress     false
 depth               0
 display_bytes       16
 expr                .
+expr_eval_path      arg
 expr_file           
 filenames           [null]
 force               false
@@ -100,7 +101,7 @@ adts_frame           Audio Data Transport Stream frame
 amf0                 Action Message Format 0
 apev2                APEv2 metadata tag
 ar                   Unix archive
-asn1_ber             ASN1 Basic Encoding Rules (also CER and DER)
+asn1_ber             ASN1 BER (basic encoding rules, also CER and DER)
 av1_ccr              AV1 Codec Configuration Record
 av1_frame            AV1 frame
 av1_obu              AV1 Open Bitstream Unit

@@ -12,7 +12,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-//go:embed *.jq
+//go:embed bson.jq
 var bsonFS embed.FS
 
 func init() {
@@ -21,7 +21,7 @@ func init() {
 		Description: "Binary JSON",
 		DecodeFn:    decodeBSON,
 		Files:       bsonFS,
-		ToRepr:      "_bson_torepr",
+		Functions:   []string{"torepr", "_help"},
 	})
 }
 

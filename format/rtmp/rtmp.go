@@ -9,6 +9,7 @@ package rtmp
 
 import (
 	"bytes"
+	"embed"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
@@ -19,6 +20,9 @@ import (
 
 var rtmpAmf0Group decode.Group
 var rtmpMpegASCFormat decode.Group
+
+//go:embed rtmp.jq
+var rtmpFS embed.FS
 
 func init() {
 	registry.MustRegister(decode.Format{
@@ -32,6 +36,8 @@ func init() {
 			{Names: []string{format.AMF0}, Group: &rtmpAmf0Group},
 			{Names: []string{format.MPEG_ASC}, Group: &rtmpMpegASCFormat},
 		},
+		Functions: []string{"_help"},
+		Files:     rtmpFS,
 	})
 }
 

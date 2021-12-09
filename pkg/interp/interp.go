@@ -14,6 +14,8 @@ import (
 	"io/ioutil"
 	"math/big"
 	"path"
+	"reflect"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -47,7 +49,9 @@ import (
 //go:embed query.jq
 //go:embed repl.jq
 //go:embed help.jq
-//go:embed formats.jq
+//go:embed format_decode.jq
+//go:embed format_func.jq
+//go:embed format_include.jq
 var builtinFS embed.FS
 
 var initSource = `include "@builtin/interp";`
@@ -828,7 +832,7 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, expr string, opts Eval
 			}
 
 			// not identity body means it returns something, threat as dynamic include
-			if q.Term.Type != gojq.TermTypeIdentity {
+			if q.Term == nil || q.Term.Type != gojq.TermTypeIdentity {
 				gc, err := gojq.Compile(q, funcCompilerOpts...)
 				if err != nil {
 					return nil, err
@@ -857,7 +861,7 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, expr string, opts Eval
 					p := queryErrorPosition(s, err)
 					return nil, compileError{
 						err:      err,
-						what:     "parse",
+						what:     "dynamic include parse",
 						filename: filenamePart,
 						pos:      p,
 					}
@@ -1129,4 +1133,80 @@ func (i *Interp) NewColorJSON(opts Options) (*colorjson.Encoder, error) {
 			Object:    []byte(opts.Decorator.Object.SetString),
 		},
 	), nil
+}
+
+var camelToSnakeRe = regexp.MustCompile(`[[:lower:]][[:upper:]]`)
+
+// "AaaBbb" -> "aaa_bbb"
+func camelToSnake(s string) string {
+	return strings.ToLower(camelToSnakeRe.ReplaceAllStringFunc(s, func(s string) string {
+		return s[0:1] + "_" + s[1:2]
+	}))
+}
+func mapToStruct(m map[string]interface{}, v interface{}) error {
+	ms, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
+		MatchName: func(mapKey, fieldName string) bool {
+			return camelToSnake(fieldName) == mapKey
+		},
+		DecodeHook: func(
+			f reflect.Type,
+			t reflect.Type,
+			data interface{}) (interface{}, error) {
+
+			if t.Kind() == reflect.Slice && t.Elem().Kind() == reflect.Uint8 {
+				switch d := data.(type) {
+				case string:
+					return []byte(d), nil
+				}
+			} else {
+				switch d := data.(type) {
+				case *big.Int:
+					return d.Uint64(), nil
+				}
+			}
+
+			return data, nil
+		},
+		Result: v,
+	})
+	if err != nil {
+		return err
+	}
+
+	if err := ms.Decode(m); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func camelCaseMap(m map[string]interface{}) map[string]interface{} {
+	nm := map[string]interface{}{}
+	for k, v := range m {
+		sk := camelToSnake(k)
+		if vm, ok := v.(map[string]interface{}); ok {
+			v = camelCaseMap(vm)
+		} else {
+			// TODO: error
+			v, _ = gojqextra.ToGoJQValue(v)
+		}
+		nm[sk] = v
+	}
+
+	return nm
+}
+
+func structToMap(v interface{}) (map[string]interface{}, error) {
+	m := map[string]interface{}{}
+	ms, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
+		Result: &m,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if err := ms.Decode(v); err != nil {
+		return nil, err
+	}
+
+	return camelCaseMap(m), nil
 }

@@ -13,7 +13,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-//go:embed *.jq
+//go:embed msgpack.jq
 var msgPackFS embed.FS
 
 func init() {
@@ -22,7 +22,7 @@ func init() {
 		Description: "MessagePack",
 		DecodeFn:    decodeMsgPack,
 		Files:       msgPackFS,
-		ToRepr:      "_msgpack_torepr",
+		Functions:   []string{"torepr", "_help"},
 	})
 }
 

@@ -34,8 +34,8 @@ type Options struct {
 	FillGaps      bool
 	IsRoot        bool
 	Range         ranges.Range // if zero use whole buffer
-	FormatOptions map[string]interface{}
 	FormatInArg   interface{}
+	FormatInArgFn func(f Format) (interface{}, error)
 	ReadBuf       *[]byte
 }
 
@@ -61,17 +61,31 @@ func decode(ctx context.Context, br bitio.ReaderAtSeeker, group Group, opts Opti
 
 	formatsErr := FormatsError{}
 
-	for _, g := range group {
+	for _, f := range group {
+		var formatInArg interface{}
+		if opts.FormatInArgFn != nil {
+			var err error
+			formatInArg, err = opts.FormatInArgFn(f)
+			if err != nil {
+				return nil, nil, err
+			}
+		} else {
+			formatInArg = opts.FormatInArg
+			if formatInArg == nil {
+				formatInArg = f.DecodeInArg
+			}
+		}
+
 		cBR, err := bitioextra.Range(br, decodeRange.Start, decodeRange.Len)
 		if err != nil {
 			return nil, nil, IOError{Err: err, Op: "BitBufRange", ReadSize: decodeRange.Len, Pos: decodeRange.Start}
 		}
 
-		d := newDecoder(ctx, g, cBR, opts)
+		d := newDecoder(ctx, f, cBR, opts)
 
 		var decodeV interface{}
 		r, rOk := recoverfn.Run(func() {
-			decodeV = g.DecodeFn(d, opts.FormatInArg)
+			decodeV = f.DecodeFn(d, formatInArg)
 		})
 
 		if ctx != nil && ctx.Err() != nil {
@@ -83,7 +97,7 @@ func decode(ctx context.Context, br bitio.ReaderAtSeeker, group Group, opts Opti
 				panicErr, _ := re.(error)
 				formatErr := FormatError{
 					Err:        panicErr,
-					Format:     g,
+					Format:     f,
 					Stacktrace: r,
 				}
 				formatsErr.Errs = append(formatsErr.Errs, formatErr)

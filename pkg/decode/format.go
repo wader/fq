@@ -10,16 +10,40 @@ type Dependency struct {
 }
 
 type Format struct {
-	Name         string
-	ProbeOrder   int // probe order is from low to hi value then by name
-	Description  string
-	Groups       []string
-	DecodeFn     func(d *D, in interface{}) interface{}
-	RootArray    bool
-	RootName     string
-	Dependencies []Dependency
-	Files        fs.ReadDirFS
-	ToRepr       string
+	Name          string
+	ProbeOrder    int // probe order is from low to hi value then by name
+	Description   string
+	Groups        []string
+	DecodeFn      func(d *D, in interface{}) interface{}
+	DecodeInArg   interface{}
+	DecodeOutType interface{}
+	RootArray     bool
+	RootName      string
+	Dependencies  []Dependency
+	Files         fs.ReadDirFS
+	Help          FormatHelp
+	Functions     []string
+}
+
+type HelpExample struct {
+	Comment string
+	Code    string
+}
+
+type HelpFunction struct {
+	Name     string
+	Examples []HelpExample
+}
+
+type HelpReference struct {
+	Title string
+	URL   string
+}
+
+type FormatHelp struct {
+	Notes      string
+	Functions  []HelpFunction
+	References []HelpReference
 }
 
 func FormatFn(d func(d *D, in interface{}) interface{}) Group {

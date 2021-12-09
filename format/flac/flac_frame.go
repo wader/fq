@@ -17,6 +17,9 @@ func init() {
 		Name:        format.FLAC_FRAME,
 		Description: "FLAC frame",
 		DecodeFn:    frameDecode,
+		DecodeInArg: format.FlacFrameIn{
+			BitsPerSample: 16,
+		},
 	})
 }
 
@@ -98,19 +101,17 @@ func utf8Uint(d *decode.D) uint64 {
 
 // in argument is an optional FlacFrameIn struct with stream info
 func frameDecode(d *decode.D, in interface{}) interface{} {
-	var inStreamInfo *format.FlacStreamInfo
-	ffi, ok := in.(format.FlacFrameIn)
-	if ok {
-		inStreamInfo = &ffi.StreamInfo
-	}
-
 	frameStart := d.Pos()
-
 	blockSize := 0
 	channelAssignment := uint64(0)
 	channels := 0
 	sampleSize := 0
 	sideChannelIndex := -1
+
+	ffi, ok := in.(format.FlacFrameIn)
+	if ok {
+		sampleSize = ffi.BitsPerSample
+	}
 
 	d.FieldStruct("header", func(d *decode.D) {
 		// <14> 11111111111110
@@ -192,12 +193,6 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			0b1111: {Description: "invalid"},
 		}
 		sampleRateS := d.FieldScalarU4("sample_rate", sampleRateMap, scalar.Bin)
-		switch sampleRateS.ActualU() {
-		case SampleRateStreaminfo:
-			if inStreamInfo == nil {
-				d.Fatalf("streaminfo required for sample rate")
-			}
-		}
 
 		// <4> Channel assignment
 		// 0000-0111 : (number of independent channels)-1. Where defined, the channel order follows SMPTE/ITU-R recommendations. The assignments are as follows:
@@ -271,10 +266,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		sampleSizeS := d.FieldScalarU3("sample_size", sampleSizeMap, scalar.Bin)
 		switch sampleSizeS.ActualU() {
 		case SampleSizeStreaminfo:
-			if inStreamInfo == nil {
-				d.Fatalf("streaminfo required for sample size")
-			}
-			sampleSize = int(inStreamInfo.BitPerSample)
+			sampleSize = ffi.BitsPerSample
 		default:
 			if sampleSizeS.Sym != nil {
 				sampleSize = int(sampleSizeS.SymU())

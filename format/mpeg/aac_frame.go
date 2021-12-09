@@ -18,8 +18,11 @@ func init() {
 		Name:        format.AAC_FRAME,
 		Description: "Advanced Audio Coding frame",
 		DecodeFn:    aacDecode,
-		RootArray:   true,
-		RootName:    "elements",
+		DecodeInArg: format.AACFrameIn{
+			ObjectType: format.MPEGAudioObjectTypeMain,
+		},
+		RootArray: true,
+		RootName:  "elements",
 	})
 }
 

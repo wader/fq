@@ -1,7 +1,6 @@
 include "internal";
 include "options";
 include "binary";
-include "ansi";
 
 def _display_default_opts:
   options({depth: 1});
@@ -29,37 +28,6 @@ def hd($opts): hexdump($opts);
 def hd: hexdump;
 
 def intdiv(a; b): _intdiv(a; b);
-
-# TODO: escape for safe key names
-# path ["a", 1, "b"] -> "a[1].b"
-def path_to_expr($opts):
-  ( if length == 0 or (.[0] | type) != "string" then
-      [""] + .
-    end
-  | map(
-      if type == "number" then
-        ( ("[" | _ansi_if($opts; "array"))
-        , _ansi_if($opts; "number")
-        , ("]" | _ansi_if($opts; "array"))
-        )      else
-        ( "."
-        , # empty (special case for leading index or empty path) or key
-          if . == "" or _is_ident then _ansi_if($opts; "objectkey")
-          else
-            "\"\(_escape_ident)\"" | _ansi_if($opts; "string")
-          end
-        )
-      end
-    )
-  | join("")
-  );
-def path_to_expr: path_to_expr(null);
-
-# TODO: don't use eval? should support '.a.b[1]."c.c"' and escapes?
-def expr_to_path:
-  ( if type != "string" then error("require string argument") end
-  | _eval("null | path(\(.))")
-  );
 
 def trim: capture("^\\s*(?<str>.*?)\\s*$"; "").str;
 
@@ -132,58 +100,6 @@ def chunk($size):
       )
     ]
   end;
-
-# helper to build path query/generate functions for tree structures with
-# non-unique children, ex: mp4_path
-def tree_path(children; name; $v):
-  def _lookup:
-    # add implicit zeros to get first value
-    # ["a", "b", 1] => ["a", 0, "b", 1]
-    def _normalize_path:
-      ( . as $np
-      | if $np | last | type == "string" then $np+[0] end
-      # state is [path acc, possible pending zero index]
-      | ( reduce .[] as $np ([[], []];
-          if $np | type == "string" then
-            [(.[0]+.[1]+[$np]), [0]]
-          else
-            [.[0]+[$np], []]
-          end
-        ))
-      )[0];
-    ( . as $c
-    | $v
-    | expr_to_path
-    | _normalize_path
-    | reduce .[] as $n ($c;
-        if $n | type == "string" then
-          children | map(select(name == $n))
-        else
-          .[$n]
-        end
-      )
-    );
-  def _path:
-    [ . as $r
-    | $v._path as $p
-    | foreach range(($p | length)/2) as $i (null; null;
-        ( ($r | getpath($p[0:($i+1)*2]) | name) as $name
-        | [($r | getpath($p[0:($i+1)*2-1]))[] | name][0:$p[($i*2)+1]+1] as $before
-        | [ $name
-          , ($before | map(select(. == $name)) | length)-1
-          ]
-        )
-      )
-    | [ ".", .[0],
-      (.[1] | if . == 0 then empty else "[", ., "]" end)
-      ]
-    ]
-    | flatten
-    | join("");
-  if $v | type == "string" then _lookup
-  else _path
-  end;
-
 
 # [{a: 123, ...}, ...]
 # colmap maps something into [col, ...]
@@ -323,3 +239,102 @@ def paste:
     | join("")
     )
   end;
+
+def tojq($style):
+  def _is_ident: test("^[a-zA-Z_][a-zA-Z_0-9]*$");
+  def _key: if _is_ident | not then tojson end;
+  def _f($style):
+    def _r($indent):
+      ( type as $t
+      | if $t == "null" then tojson
+        elif $t == "string" then tojson
+        elif $t == "number" then tojson
+        elif $t == "boolean" then tojson
+        elif $t == "array" then
+          [ "[", $style.compound_newline
+          , ( [ .[]
+              | $indent, $style.indent
+              , _r($indent+$style.indent), $style.array_sep
+              ]
+            | .[0:-1]
+            )
+          , $style.compound_newline
+          , $indent, "]"
+          ]
+        elif $t == "object" then
+          [ "{", $style.compound_newline
+          , ( [ to_entries[]
+              | $indent, $style.indent
+              , (.key | _key), $style.key_sep
+              , (.value | _r($indent+$style.indent)), $style.value_sep
+              ]
+            | .[0:-1]
+            )
+          , $style.compound_newline
+          , $indent, "}"
+          ]
+        else error("unknown type \($t)")
+        end
+      );
+    _r("");
+  ( {
+      compact: {
+        indent: "",
+        key_sep: ":",
+        value_sep: ",",
+        array_sep: ",",
+        compound_newline: "",
+      },
+      fancy_compact: {
+        indent: "",
+        key_sep: ": ",
+        value_sep: ", ",
+        array_sep: ", ",
+        compound_newline: "",
+      },
+      verbose: {
+        indent: "  ",
+        key_sep: ": ",
+        value_sep: ",\n",
+        array_sep: ",\n",
+        compound_newline: "\n",
+      }
+    } as $styles
+  | _f(
+      ( $style // "compact"
+      | if type == "string" then $styles[.]
+        elif type == "object" then .
+        else error("invalid style")
+        end
+      )
+    )
+  | flatten
+  | join("")
+  );
+def tojq: tojq(null);
+
+# very simple markdown to text converter
+# assumes very basic markdown as input
+def _markdown_to_text:
+  ( .
+  # ```
+  # code
+  # ```
+  # -> code
+  | gsub("\\n```\\n"; "\n"; "m")
+  # #, ##, ###, ... -> #
+  | gsub("(?<line>\\n)?#+(?<title>.*)\\n"; "\(.line // "")#\(.title)\n"; "m")
+  # [title](url) -> title (url)
+  | gsub("\\[(?<title>.*)\\]\\((?<url>.*)\\)"; "\(.title) (\(.url))")
+  # `code` -> code
+  | gsub("`(?<code>.*)`"; .code)
+  );
+
+def expr_to_path: _expr_to_path;
+def path_to_expr: _path_to_expr;
+
+def torepr:
+  ( format as $f
+  | if $f == null then error("value is not a format root") end
+  | _format_func($f; "torepr")
+  );

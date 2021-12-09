@@ -1,5 +1,7 @@
 package bencode
 
+// https://wiki.theory.org/BitTorrentSpecification#Bencoding
+
 import (
 	"embed"
 	"strconv"
@@ -10,7 +12,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-//go:embed *.jq
+//go:embed bencode.jq
 var bencodeFS embed.FS
 
 func init() {
@@ -19,7 +21,7 @@ func init() {
 		Description: "BitTorrent bencoding",
 		DecodeFn:    decodeBencode,
 		Files:       bencodeFS,
-		ToRepr:      "_bencode_torepr",
+		Functions:   []string{"torepr", "_help"},
 	})
 }
 

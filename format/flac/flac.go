@@ -52,7 +52,7 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 	if flacMetadatablockOut.HasStreamInfo {
 		streamInfo = flacMetadatablockOut.StreamInfo
 		streamTotalSamples = streamInfo.TotalSamplesInStream
-		flacFrameIn = format.FlacFrameIn{StreamInfo: streamInfo}
+		flacFrameIn = format.FlacFrameIn{BitsPerSample: int(streamInfo.BitsPerSample)}
 	}
 
 	md5Samples := md5.New()

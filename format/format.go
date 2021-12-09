@@ -111,19 +111,13 @@ const (
 
 type FlacStreamInfo struct {
 	SampleRate           uint64
-	BitPerSample         uint64
+	BitsPerSample        uint64
 	TotalSamplesInStream uint64
 	MD5                  []byte
 }
 
 type FlacStreaminfoOut struct {
 	StreamInfo FlacStreamInfo
-}
-
-type FlacMetadatablockStreamInfo struct {
-	SampleRate           uint64
-	BitPerSample         uint64
-	TotalSamplesInStream uint64
 }
 
 type FlacMetadatablockOut struct {
@@ -138,8 +132,8 @@ type FlacMetadatablocksOut struct {
 }
 
 type FlacFrameIn struct {
-	SamplesBuf []byte
-	StreamInfo FlacStreamInfo
+	SamplesBuf    []byte
+	BitsPerSample int `doc:"Bits per sample"`
 }
 
 type FlacFrameOut struct {
@@ -158,16 +152,16 @@ type OggPageOut struct {
 	Segments           [][]byte
 }
 
-type AvcIn struct {
-	LengthSize uint64
+type AvcAuIn struct {
+	LengthSize uint64 `doc:"Length value size"`
 }
 
 type AvcDcrOut struct {
 	LengthSize uint64
 }
 
-type HevcIn struct {
-	LengthSize uint64
+type HevcAuIn struct {
+	LengthSize uint64 `doc:"Length value size"`
 }
 
 type HevcDcrOut struct {
@@ -192,7 +186,12 @@ type MPEGASCOut struct {
 }
 
 type AACFrameIn struct {
-	ObjectType int
+	ObjectType int `doc:"Audio object type"`
+}
+
+type Mp3In struct {
+	MaxUniqueHeaderConfigs int `doc:"Max number of unique frame header configs allowed"`
+	MaxSyncSeek            int `doc:"Max byte distance to next sync"`
 }
 
 type MP3FrameOut struct {
@@ -261,12 +260,7 @@ func (t TCPStreamIn) MustIsPort(fn func(format string, a ...interface{}), ports 
 	}
 }
 
-type X86_64In struct {
-	Base      int64
-	SymLookup func(uint64) (string, uint64)
-}
-
-type ARM64In struct {
-	Base      int64
-	SymLookup func(uint64) (string, uint64)
+type Mp4In struct {
+	DecodeSamples  bool `doc:"Decode supported media samples"`
+	AllowTruncated bool `doc:"Allow box to be truncated"`
 }

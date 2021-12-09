@@ -3,6 +3,7 @@ package macho
 // https://github.com/aidansteele/osx-abi-macho-file-format-reference
 
 import (
+	"embed"
 	"time"
 
 	"github.com/wader/fq/format"
@@ -12,12 +13,17 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
+//go:embed macho.jq
+var machoFS embed.FS
+
 func init() {
 	registry.MustRegister(decode.Format{
 		Name:        format.MACHO,
 		Description: "Mach-O macOS executable",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    machoDecode,
+		Files:       machoFS,
+		Functions:   []string{"_help"},
 	})
 }
 

@@ -8,3 +8,9 @@ def _msgpack_torepr:
   elif .type | . == "bin8" or . == "bin16" or . == "bin32" then .value | tostring
   else .value | tovalue
   end;
+
+def _msgpack__help:
+  { links: [
+      {url: "https://github.com/msgpack/msgpack/blob/master/spec.md"}
+    ]
+  };

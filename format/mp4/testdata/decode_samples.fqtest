@@ -1,0 +1,15 @@
+$ fq -o decode_samples=false -d mp4 '.tracks | dv' /aac.mp4
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.tracks[0:1]: 0x2c-0x291.7 (614)
+     |                                               |                |  [0]{}: track 0x2c-0x291.7 (614)
+     |                                               |                |    samples[0:4]: 0x2c-0x291.7 (614)
+0x020|                                    de 02 00 4c|            ...L|      [0]: raw bits sample 0x2c-0xf8.7 (205)
+0x030|61 76 63 35 38 2e 39 31 2e 31 30 30 00 02 5c ab|avc58.91.100..\.|
+*    |until 0xf8.7 (205)                             |                |
+0x0f0|                           01 22 98 da d8 3d d6|         ."...=.|      [1]: raw bits sample 0xf9-0x1d2.7 (218)
+0x100|93 80 76 db 22 13 6a 38 46 1c 9c 5e ae 85 f1 ab|..v.".j8F..^....|
+*    |until 0x1d2.7 (218)                            |                |
+0x1d0|         01 1a 99 a6 d3 21 41 ad 34 86 c8 cd 9a|   .....!A.4....|      [2]: raw bits sample 0x1d3-0x28c.7 (186)
+0x1e0|f0 3d 04 a1 e7 5f 1d 0c ff 81 d6 bd bc da b0 65|.=..._.........e|
+*    |until 0x28c.7 (186)                            |                |
+0x280|                                       01 18 81|             ...|      [3]: raw bits sample 0x28d-0x291.7 (5)
+0x290|b4 70                                          |.p              |

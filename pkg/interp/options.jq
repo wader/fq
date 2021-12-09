@@ -68,8 +68,62 @@ def _opt_build_default_fixed:
     }
   );
 
+def _opt_options:
+  {
+    addrbase:           "number",
+    arg:                "array_string_pair",
+    argjson:            "array_string_pair",
+    array_truncate:     "number",
+    bits_format:        "string",
+    byte_colors:        "csv_ranges_array",
+    color:              "boolean",
+    colors:             "csv_kv_obj",
+    compact:            "boolean",
+    completion_timeout: "number",
+    decode_file:        "array_string_pair",
+    decode_format:      "string",
+    decode_progress:    "boolean",
+    depth:              "number",
+    display_bytes:      "number",
+    expr:               "string",
+    expr_eval_path:     "string",
+    expr_file:          "string",
+    filenames:          "array_string",
+    force:              "boolean",
+    include_path:       "string",
+    join_string:        "string",
+    line_bytes:         "number",
+    null_input:         "boolean",
+    raw_file:           "array_string_pair",
+    raw_output:         "boolean",
+    raw_string:         "boolean",
+    repl:               "boolean",
+    sizebase:           "number",
+    show_formats:       "boolean",
+    show_help:          "boolean",
+    slurp:              "boolean",
+    string_input:       "boolean",
+    unicode:            "boolean",
+    verbose:            "boolean",
+    width:              "number",
+  };
+
 def _opt_eval($rest):
-  ( { argjson: (
+  ( with_entries(
+      ( select(.value | type == "string" and startswith("@"))
+      | .value |=
+          ( . as $v
+          | try
+              ( .[1:]
+              | open
+              | tobytes
+              | tostring
+              )
+            catch $v
+          )
+      )
+    )
+  + { argjson: (
         ( .argjson
         | if . then
             map(
@@ -155,7 +209,7 @@ def _opt_eval($rest):
   );
 
 # these _to* function do a bit for fuzzy string to type conversions
-def _opt_toboolean:
+def _opt_to_boolean:
   try
     if . == "true" then true
     elif . == "false" then false
@@ -164,14 +218,14 @@ def _opt_toboolean:
   catch
     null;
 
-def _opt_fromboolean: tostring;
+def _opt_from_boolean: tostring;
 
-def _opt_tonumber:
+def _opt_to_number:
   try tonumber catch null;
 
-def _opt_fromnumber: tostring;
+def _opt_from_number: tostring;
 
-def _opt_tostring:
+def _opt_to_string:
   if . != null then
     ( "\"\(.)\""
     | try
@@ -182,19 +236,22 @@ def _opt_tostring:
     )
   end;
 
-def _opt_fromstring: if . then tojson[1:-1] else "" end;
+def _opt_from_string: if . then tojson[1:-1] else "" end;
 
-def _opt_toarray(f):
+def _opt_is_string_pair:
+  type == "array" and length == 2 and all(type == "string");
+
+def _opt_to_array(f):
   try
     ( fromjson
     | if type == "array" and (all(f) | not) then null end
     )
   catch null;
 
-def _opt_fromarray: tojson;
+def _opt_to_array_string_pair: _opt_to_array(_opt_is_string_pair);
+def _opt_to_array_string: _opt_to_array(type == "string");
 
-def _opt_is_string_pair:
-  type == "array" and length == 2 and all(type == "string");
+def _opt_from_array: tojson;
 
 # TODO: cleanup
 def _trim: capture("^\\s*(?<str>.*?)\\s*$"; "").str;
@@ -246,86 +303,53 @@ def _opt_from_csv_kv_obj:
   | join(",")
   );
 
-def _opt_cli_arg_tooptions:
-  ( {
-      addrbase:           (.addrbase | _opt_tonumber),
-      arg:                (.arg | _opt_toarray(_opt_is_string_pair)),
-      argjson:            (.argjson | _opt_toarray(_opt_is_string_pair)),
-      array_truncate:     (.array_truncate | _opt_tonumber),
-      bits_format:        (.bits_format | _opt_tostring),
-      byte_colors:        (.byte_colors | _opt_to_csv_ranges_array),
-      color:              (.color | _opt_toboolean),
-      colors:             (.colors | _opt_to_csv_kv_obj),
-      compact:            (.compact | _opt_toboolean),
-      completion_timeout: (.array_truncate | _opt_tonumber),
-      decode_file:        (.decode_file | _opt_toarray(_opt_is_string_pair)),
-      decode_format:      (.decode_format | _opt_tostring),
-      decode_progress:    (.decode_progress | _opt_toboolean),
-      depth:              (.depth | _opt_tonumber),
-      display_bytes:      (.display_bytes | _opt_tonumber),
-      expr:               (.expr | _opt_tostring),
-      expr_file:          (.expr_file | _opt_tostring),
-      filenames:          (.filenames | _opt_toarray(type == "string")),
-      force:              (.force | _opt_toboolean),
-      include_path:       (.include_path | _opt_tostring),
-      join_string:        (.join_string | _opt_tostring),
-      line_bytes:         (.line_bytes | _opt_tonumber),
-      null_input:         (.null_input | _opt_toboolean),
-      raw_file:           (.raw_file| _opt_toarray(_opt_is_string_pair)),
-      raw_output:         (.raw_output | _opt_toboolean),
-      raw_string:         (.raw_string | _opt_toboolean),
-      repl:               (.repl | _opt_toboolean),
-      sizebase:           (.sizebase | _opt_tonumber),
-      show_formats:       (.show_formats | _opt_toboolean),
-      show_help:          (.show_help | _opt_toboolean),
-      slurp:              (.slurp | _opt_toboolean),
-      string_input:       (.string_input | _opt_toboolean),
-      unicode:            (.unicode | _opt_toboolean),
-      verbose:            (.verbose | _opt_toboolean),
-      width:              (.width | _opt_tonumber),
-    }
-  | with_entries(select(.value != null))
+def _opt_to_fuzzy:
+  ( . as $s
+  | try fromjson
+    catch $s
   );
 
-def _opt_cli_arg_fromoptions:
-  ( {
-      addrbase:           (.addrbase | _opt_fromnumber),
-      arg:                (.arg | _opt_fromarray),
-      argjson:            (.argjson | _opt_fromarray),
-      array_truncate:     (.array_truncate | _opt_fromnumber),
-      bits_format:        (.bits_format | _opt_fromstring),
-      byte_colors:        (.byte_colors | _opt_from_csv_ranges_array),
-      color:              (.color | _opt_fromboolean),
-      colors:             (.colors | _opt_from_csv_kv_obj),
-      compact:            (.compact | _opt_fromboolean),
-      completion_timeout: (.array_truncate | _opt_fromnumber),
-      decode_file:        (.decode_file | _opt_fromarray),
-      decode_format:      (.decode_format | _opt_fromstring),
-      decode_progress:    (.decode_progress | _opt_fromboolean),
-      depth:              (.depth | _opt_fromnumber),
-      display_bytes:      (.display_bytes | _opt_fromnumber),
-      expr:               (.expr | _opt_fromstring),
-      expr_file:          (.expr_file | _opt_fromstring),
-      filenames:          (.filenames | _opt_fromarray),
-      force:              (.force | _opt_fromboolean),
-      include_path:       (.include_path | _opt_fromstring),
-      join_string:        (.join_string | _opt_fromstring),
-      line_bytes:         (.line_bytes | _opt_fromnumber),
-      null_input:         (.null_input | _opt_fromboolean),
-      raw_file:           (.raw_file| _opt_fromarray),
-      raw_output:         (.raw_output | _opt_fromboolean),
-      raw_string:         (.raw_string | _opt_fromboolean),
-      repl:               (.repl | _opt_fromboolean),
-      sizebase:           (.sizebase | _opt_fromnumber),
-      show_formats:       (.show_formats | _opt_fromboolean),
-      show_help:          (.show_help | _opt_fromboolean),
-      slurp:              (.slurp | _opt_fromboolean),
-      string_input:       (.string_input | _opt_fromboolean),
-      unicode:            (.unicode | _opt_fromboolean),
-      verbose:            (.verbose | _opt_fromboolean),
-      width:              (.width | _opt_tonumber),
-    }
-  | with_entries(select(.value != null))
+def _opt_to($type):
+  if $type == "array_string" then _opt_to_array_string
+  elif $type == "array_string_pair" then _opt_to_array_string_pair
+  elif $type == "boolean" then _opt_to_boolean
+  elif $type == "csv_kv_obj" then _opt_to_csv_kv_obj
+  elif $type == "csv_ranges_array" then _opt_to_csv_ranges_array
+  elif $type == "number" then _opt_to_number
+  elif $type == "string" then _opt_to_string
+  elif $type == "fuzzy" then _opt_to_fuzzy
+  else error("unknown type \($type)")
+  end;
+
+def _opt_from($type):
+  if $type == "array_string" then _opt_from_array
+  elif $type == "array_string_pair" then _opt_from_array
+  elif $type == "boolean" then _opt_from_boolean
+  elif $type == "csv_kv_obj" then _opt_from_csv_kv_obj
+  elif $type == "csv_ranges_array" then _opt_from_csv_ranges_array
+  elif $type == "number" then _opt_from_number
+  elif $type == "string" then _opt_from_string
+  else error("unknown type \($type)")
+  end;
+
+def _opt_cli_arg_to_options:
+  ( _opt_options as $opts
+  | with_entries(
+      ( .key as $k
+      | .value |= _opt_to($opts[$k] // "fuzzy")
+      | select(.value != null)
+      )
+    )
+  );
+
+def _opt_cli_arg_from_options:
+  ( _opt_options as $opts
+  | with_entries(
+      ( .key as $k
+      | .value |= _opt_from($opts[$k] // "string")
+      | select(.value != null)
+      )
+    )
   );
 
 def _opt_cli_opts:

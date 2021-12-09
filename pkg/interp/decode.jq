@@ -37,16 +37,17 @@ def decode($name; $decode_opts):
   ( options as $opts
   | _decode(
       $name;
-      $opts +
-      {
-        _progress: (
-          if $opts.decode_progress and $opts.repl and stdout_tty.is_terminal then
-            "_decode_progress"
-          else null
-          end
-        ),
-      } +
-      $decode_opts
+      ( {
+          _progress: (
+            if $opts.decode_progress and $opts.repl and stdout_tty.is_terminal then
+              "_decode_progress"
+            else null
+            end
+          ),
+        }
+      + $opts
+      + $decode_opts
+      )
     )
   );
 def decode($name): decode($name; {});

@@ -26,7 +26,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-//go:embed *.jq
+//go:embed matroska.jq
 var matroskaFS embed.FS
 
 var aacFrameFormat decode.Group
@@ -78,7 +78,8 @@ func init() {
 			{Names: []string{format.VP9_CFM}, Group: &vp9CFMFormat},
 			{Names: []string{format.VP9_FRAME}, Group: &vp9FrameFormat},
 		},
-		Files: matroskaFS,
+		Functions: []string{"_help"},
+		Files:     matroskaFS,
 	})
 
 	codecToFormat = map[string]*decode.Group{
@@ -369,7 +370,7 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 						panic(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
 					}
 					if flacMetadatablockOut.HasStreamInfo {
-						t.formatInArg = format.FlacFrameIn{StreamInfo: flacMetadatablockOut.StreamInfo}
+						t.formatInArg = format.FlacFrameIn{BitsPerSample: int(flacMetadatablockOut.StreamInfo.BitsPerSample)}
 					}
 				})
 			})
@@ -379,14 +380,14 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 			if dv != nil && !ok {
 				panic(fmt.Sprintf("expected AvcDcrOut got %#+v", v))
 			}
-			t.formatInArg = format.AvcIn{LengthSize: avcDcrOut.LengthSize} //nolint:gosimple
+			t.formatInArg = format.AvcAuIn{LengthSize: avcDcrOut.LengthSize} //nolint:gosimple
 		case "V_MPEGH/ISO/HEVC":
 			dv, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegHEVCDCRFormat, nil)
 			hevcDcrOut, ok := v.(format.HevcDcrOut)
 			if dv != nil && !ok {
 				panic(fmt.Sprintf("expected HevcDcrOut got %#+v", v))
 			}
-			t.formatInArg = format.HevcIn{LengthSize: hevcDcrOut.LengthSize} //nolint:gosimple
+			t.formatInArg = format.HevcAuIn{LengthSize: hevcDcrOut.LengthSize} //nolint:gosimple
 		case "V_AV1":
 			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, av1CCRFormat, nil)
 		case "V_VP9":

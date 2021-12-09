@@ -3,6 +3,7 @@ package avro
 import (
 	"bytes"
 	"compress/flate"
+	"embed"
 	"hash/crc32"
 
 	"github.com/golang/snappy"
@@ -15,12 +16,17 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
+//go:embed avro_ocf.jq
+var avroOcfFS embed.FS
+
 func init() {
 	registry.MustRegister(decode.Format{
 		Name:        format.AVRO_OCF,
 		Description: "Avro object container file",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    decodeAvroOCF,
+		Functions:   []string{"_help"},
+		Files:       avroOcfFS,
 	})
 }
 

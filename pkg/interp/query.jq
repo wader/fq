@@ -51,6 +51,11 @@ def _query_is_func:
 def _query_is_func($name):
   _query_is_func and _query_func_name == $name;
 
+def _query_is_string:
+  .term.type == "TermTypeString";
+def _query_string_str:
+  .term.str.str;
+
 def _query_empty:
   _query_func("empty");
 
