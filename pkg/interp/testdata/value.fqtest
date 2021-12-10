@@ -261,4 +261,10 @@ mp3> ._format
 "mp3"
 mp3> ._abc
 error: expected a extkey but got: _abc
+mp3> fgrep("toc") | arrays[10]._index
+10
+mp3> .headers._index
+error: expected a extkey but got: _index
+mp3> ._index
+error: expected a extkey but got: _index
 mp3> ^D

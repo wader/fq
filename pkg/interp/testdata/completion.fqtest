@@ -42,6 +42,7 @@ _description
 _error
 _format
 _format_root
+_index
 _len
 _name
 _parent

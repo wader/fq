@@ -292,6 +292,7 @@ func (dvb decodeValueBase) ExtKeys() []string {
 		"_bits",
 		"_bytes",
 		"_unknown",
+		"_index", // TODO: only if parent is array?
 	}
 
 	if _, ok := dvb.dv.V.(*decode.Compound); ok {
@@ -299,6 +300,10 @@ func (dvb decodeValueBase) ExtKeys() []string {
 			"_error",
 			"_format",
 		)
+
+		if dvb.dv.Index != -1 {
+			kv = append(kv, "_index")
+		}
 	}
 
 	return kv
@@ -416,6 +421,10 @@ func (dvb decodeValueBase) JQValueKey(name string) interface{} {
 			return vv.Unknown
 		default:
 			return false
+		}
+	case "_index":
+		if dv.Index != -1 {
+			return dv.Index
 		}
 	}
 

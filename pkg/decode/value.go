@@ -207,8 +207,15 @@ func (v *Value) postProcess() {
 				return (vv.Children)[i].Range.Start < (vv.Children)[j].Range.Start
 			})
 
-			for i, f := range vv.Children {
-				f.Index = i
+			v.Index = -1
+			if vv.IsArray {
+				for i, f := range vv.Children {
+					f.Index = i
+				}
+			} else {
+				for _, f := range vv.Children {
+					f.Index = -1
+				}
 			}
 		}
 		return nil
