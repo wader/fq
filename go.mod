@@ -23,12 +23,12 @@ require (
 
 require (
 	// fork of github.com/itchyny/gojq, see github.com/wader/gojq fq branch
-	github.com/wader/gojq v0.12.1-0.20211105163429-4313a117784f
+	github.com/wader/gojq v0.12.1-0.20211211101122-3894ded312be
 	// fork of github.com/chzyer/readline, see github.com/wader/readline fq branch
 	github.com/wader/readline v0.0.0-20210920124728-5a81f7707bac
 )
 
 require (
 	github.com/itchyny/timefmt-go v0.1.3 // indirect
-	golang.org/x/sys v0.0.0-20210831042530-f4d43177bf5e // indirect
+	golang.org/x/sys v0.0.0-20211124211545-fe61309f8881 // indirect
 )
