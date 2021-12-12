@@ -75,7 +75,7 @@ depgraph.svg:
 # make cpuprof ARGS=". test.mp3"
 .PHONY: prof
 prof:
-	go build -tags profile -o fq.prof main.go
+	go build -tags profile -o fq.prof fq.go
 	CPUPROFILE=fq.cpu.prof MEMPROFILE=fq.mem.prof ./fq.prof ${ARGS}
 .PHONY: memprof
 memprof: prof
