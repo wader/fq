@@ -220,16 +220,21 @@ func tiffDecode(d *decode.D, in interface{}) interface{} {
 
 	d.SeekRel(-4 * 8)
 
-	d.FieldUTF8("order", 2)
-	// TODO: validate?
-	d.FieldU16("integer_42")
+	d.FieldUTF8("order", 2, d.AssertStr("II", "MM"))
+	d.FieldU16("integer_42", d.AssertU(42))
 
 	ifdOffset := int64(d.FieldU32("first_ifd"))
 	s := &strips{}
 
+	// to catch infinite loops
+	ifdSeen := map[int64]struct{}{}
+
 	d.FieldArray("ifds", func(d *decode.D) {
-		// TODO: inf loop?
 		for ifdOffset != 0 {
+			if _, ok := ifdSeen[ifdOffset]; ok {
+				d.Fatalf("ifd loop detected for %d", ifdOffset)
+			}
+			ifdSeen[ifdOffset] = struct{}{}
 			d.SeekAbs(ifdOffset * 8)
 			ifdOffset = decodeIfd(d, s, tiffTagNames)
 		}
