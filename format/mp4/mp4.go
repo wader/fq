@@ -160,51 +160,37 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 	d.FieldArray("tracks", func(d *decode.D) {
 		for _, t := range sortedTracks {
 			decodeSampleRange := func(d *decode.D, t *track, dataFormat string, name string, firstBit int64, nBits int64, inArg interface{}) {
-				switch dataFormat {
-				case "fLaC":
-					d.FieldFormatRange(name, firstBit, nBits, flacFrameFormat, inArg)
-				case "Opus":
-					d.FieldFormatRange(name, firstBit, nBits, opusPacketFrameFormat, inArg)
-				case "vp09":
-					d.FieldFormatRange(name, firstBit, nBits, vp9FrameFormat, inArg)
-				case "avc1":
-					d.FieldFormatRange(name, firstBit, nBits, mpegAVCAUFormat, inArg)
-				case "hev1", "hvc1":
-					d.FieldFormatRange(name, firstBit, nBits, mpegHEVCSampleFormat, inArg)
-				case "av01":
-					d.FieldFormatRange(name, firstBit, nBits, av1FrameFormat, inArg)
-				case "mp4a":
-					switch t.objectType {
-					case format.MPEGObjectTypeMP3:
-						d.FieldFormatRange(name, firstBit, nBits, mp3FrameFormat, inArg)
-					case format.MPEGObjectTypeAAC:
-						// TODO: MPEGObjectTypeAACLow, Main etc?
-						d.FieldFormatRange(name, firstBit, nBits, aacFrameFormat, inArg)
-					case format.MPEGObjectTypeVORBIS:
-						d.FieldFormatRange(name, firstBit, nBits, vorbisPacketFormat, inArg)
+				d.RangeFn(firstBit, nBits, func(d *decode.D) {
+					switch {
+					case dataFormat == "fLaC":
+						d.FieldFormatLen(name, nBits, flacFrameFormat, inArg)
+					case dataFormat == "Opus":
+						d.FieldFormatLen(name, nBits, opusPacketFrameFormat, inArg)
+					case dataFormat == "vp09":
+						d.FieldFormatLen(name, nBits, vp9FrameFormat, inArg)
+					case dataFormat == "avc1":
+						d.FieldFormatLen(name, nBits, mpegAVCAUFormat, inArg)
+					case dataFormat == "hev1",
+						dataFormat == "hvc1":
+						d.FieldFormatLen(name, nBits, mpegHEVCSampleFormat, inArg)
+					case dataFormat == "av01":
+						d.FieldFormatLen(name, nBits, av1FrameFormat, inArg)
+					case dataFormat == "mp4a" && t.objectType == format.MPEGObjectTypeMP3:
+						d.FieldFormatLen(name, nBits, mp3FrameFormat, inArg)
+					case dataFormat == "mp4a" && t.objectType == format.MPEGObjectTypeAAC:
+						d.FieldFormatLen(name, nBits, aacFrameFormat, inArg)
+					case dataFormat == "mp4a" && t.objectType == format.MPEGObjectTypeVORBIS:
+						d.FieldFormatLen(name, nBits, vorbisPacketFormat, inArg)
+					case dataFormat == "mp4v" && t.objectType == format.MPEGObjectTypeMPEG2VideoMain:
+						d.FieldFormatLen(name, nBits, mpegPESPacketSampleFormat, inArg)
+					case dataFormat == "mp4v" && t.objectType == format.MPEGObjectTypeMJPEG:
+						d.FieldFormatLen(name, nBits, jpegFormat, inArg)
+					case dataFormat == "jpeg":
+						d.FieldFormatLen(name, nBits, jpegFormat, inArg)
 					default:
-						d.RangeFn(firstBit, nBits, func(d *decode.D) {
-							d.FieldRawLen(name, d.BitsLeft())
-						})
-					}
-				case "mp4v":
-					switch t.objectType {
-					case format.MPEGObjectTypeMPEG2VideoMain:
-						d.FieldFormatRange(name, firstBit, nBits, mpegPESPacketSampleFormat, inArg)
-					case format.MPEGObjectTypeMJPEG:
-						d.FieldFormatRange(name, firstBit, nBits, jpegFormat, inArg)
-					default:
-						d.RangeFn(firstBit, nBits, func(d *decode.D) {
-							d.FieldRawLen(name, d.BitsLeft())
-						})
-					}
-				case "jpeg":
-					d.FieldFormatRange(name, firstBit, nBits, jpegFormat, inArg)
-				default:
-					d.RangeFn(firstBit, nBits, func(d *decode.D) {
 						d.FieldRawLen(name, d.BitsLeft())
-					})
-				}
+					}
+				})
 			}
 
 			d.FieldStruct("track", func(d *decode.D) {
