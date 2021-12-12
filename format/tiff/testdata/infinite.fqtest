@@ -1,7 +1,7 @@
 $ fq.go -n '"SUkqAAwAAAAwMDAwAQAwMDAwMDAwMDAwMDAhAAAAMDAwAAAhAAAA" | base64 | tiff'
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (tiff)
     |                                               |                |  error: tiff: error at position 0x27: ifd loop detected for 33
-0x00|49 49 2a 00                                    |II*.            |  endian: "little-edian" (0x49492a00)
+0x00|49 49 2a 00                                    |II*.            |  endian: "little-endian" (0x49492a00)
 0x00|49 49                                          |II              |  order: "II" (valid)
 0x00|      2a 00                                    |  *.            |  integer_42: 42 (valid)
 0x00|            0c 00 00 00                        |    ....        |  first_ifd: 12

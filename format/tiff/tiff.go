@@ -27,7 +27,7 @@ const littleEndian = 0x49492a00 // "II*\0"
 const bigEndian = 0x4d4d002a    // "MM\0*"
 
 var endianNames = scalar.UToSymStr{
-	littleEndian: "little-edian",
+	littleEndian: "little-endian",
 	bigEndian:    "big-endian",
 }
 
@@ -103,7 +103,6 @@ func decodeIfd(d *decode.D, s *strips, tagNames scalar.UToSymStr) int64 {
 					tag := d.FieldU16("tag", tagNames, scalar.Hex)
 					typ := d.FieldU16("type", typeNames)
 					count := d.FieldU32("count")
-					// TODO: short values stored in valueOffset directly?
 					valueOrByteOffset := d.FieldU32("value_offset")
 
 					if _, ok := typeNames[typ]; !ok {
@@ -141,8 +140,6 @@ func decodeIfd(d *decode.D, s *strips, tagNames scalar.UToSymStr) int64 {
 								case InterColorProfile:
 									d.FieldFormatRange("icc", int64(valueByteOffset)*8, int64(valueByteSize)*8, tiffIccProfile, nil)
 								default:
-									// log.Printf("tag: %#+v\n", tag)
-									// log.Printf("valueByteSize: %#+v\n", valueByteSize)
 									d.RangeFn(int64(valueByteOffset*8), int64(valueByteSize*8), func(d *decode.D) {
 										d.FieldRawLen("value", d.BitsLeft())
 									})
@@ -156,8 +153,6 @@ func decodeIfd(d *decode.D, s *strips, tagNames scalar.UToSymStr) int64 {
 									d.FieldRawLen("value", d.BitsLeft())
 								})
 							default:
-								// log.Printf("valueOffset: %d\n", valueByteOffset)
-								// log.Printf("valueSize: %d\n", valueByteSize)
 								d.RangeFn(int64(valueByteOffset*8), int64(valueByteSize*8), func(d *decode.D) {
 									for i := uint64(0); i < count; i++ {
 										switch typ {
