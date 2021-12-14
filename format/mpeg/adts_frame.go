@@ -71,16 +71,7 @@ func adtsFrameDecoder(d *decode.D, in interface{}) interface{} {
 	protectionAbsent := d.FieldBool("protection_absent", protectionAbsentNames)
 
 	objectType := d.FieldU2("profile", scalar.UAdd(1), format.MPEGAudioObjectTypeNames)
-	d.FieldUScalarFn("sampling_frequency", func(d *decode.D) scalar.S {
-		v := d.U4()
-		if v == 15 {
-			return scalar.S{Actual: d.U24()}
-		}
-		if f, ok := frequencyIndexHz[v]; ok {
-			return scalar.S{Actual: v, Sym: f}
-		}
-		return scalar.S{Description: "invalid"}
-	})
+	d.FieldUFn("sampling_frequency", decodeEscapeValueAbsFn(4, 24, 0), frequencyIndexHzMap)
 	d.FieldU1("private_bit")
 	d.FieldU3("channel_configuration", channelConfigurationNames)
 	d.FieldU1("originality")

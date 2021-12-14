@@ -17,7 +17,7 @@ func init() {
 	})
 }
 
-var frequencyIndexHz = map[uint64]int{
+var frequencyIndexHzMap = scalar.UToSymU{
 	0x0: 96000,
 	0x1: 88200,
 	0x2: 64000,
@@ -31,9 +31,6 @@ var frequencyIndexHz = map[uint64]int{
 	0xa: 11025,
 	0xb: 8000,
 	0xc: 7350,
-	0xd: -1,
-	0xe: -1,
-	0xf: -1,
 }
 
 var channelConfigurationNames = scalar.UToScalar{
@@ -48,23 +45,8 @@ var channelConfigurationNames = scalar.UToScalar{
 }
 
 func ascDecoder(d *decode.D, in interface{}) interface{} {
-	objectType := d.FieldUFn("object_type", func(d *decode.D) uint64 {
-		n := d.U5()
-		if n == 31 {
-			n = 32 + d.U6()
-		}
-		return n
-	}, format.MPEGAudioObjectTypeNames)
-	d.FieldUScalarFn("sampling_frequency", func(d *decode.D) scalar.S {
-		v := d.U4()
-		if v == 15 {
-			return scalar.S{Actual: d.U24()}
-		}
-		if f, ok := frequencyIndexHz[v]; ok {
-			return scalar.S{Actual: v, Sym: f}
-		}
-		return scalar.S{Description: "invalid"}
-	})
+	objectType := d.FieldUFn("object_type", decodeEscapeValueCarryFn(5, 6, 0), format.MPEGAudioObjectTypeNames)
+	d.FieldUFn("sampling_frequency", decodeEscapeValueAbsFn(4, 24, 0), frequencyIndexHzMap)
 	d.FieldU4("channel_configuration", channelConfigurationNames)
 	// TODO: GASpecificConfig etc
 	d.FieldRawLen("var_aot_or_byte_align", d.BitsLeft())
