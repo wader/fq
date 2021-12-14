@@ -451,8 +451,11 @@ func ParseCases(s string) *Case {
 			currentRun.StdinInitial = v
 		case strings.HasPrefix(n, "stderr"):
 			currentRun.ExpectedStderr = v
-		case strings.Contains(n, promptEnd): // TODO: better
-			i := strings.LastIndex(n, promptEnd)
+		case strings.Contains(n, promptEnd+" ") || strings.HasSuffix(n, promptEnd): // TODO: better
+			i := strings.LastIndex(n, promptEnd+" ")
+			if strings.HasSuffix(n, promptEnd) {
+				i = len(n) - 1
+			}
 
 			prompt := n[0:i] + promptEnd + " "
 			expr := strings.TrimSpace(n[i+1:])

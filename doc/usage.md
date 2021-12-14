@@ -171,12 +171,21 @@ notable is support for arbitrary-precision integers.
   - `toactual/0` actual value (decoded etc)
   - `tosym/0` symbolic value (mapped etc)
   - `todescription/0` description of value
-  - All `match` and `grep` functions take 1 or 2 arguments. First is a scalar to match, where a string is
+  - All regexp functions work with buffers as input and pattern argument with these differences
+  from the string versions:
+    - All offset and length will be in bytes.
+    - For `capture` the `.string` value is a buffer.
+    - If pattern is a buffer it will be matched literally and not as a regexp.
+    - If pattern is a buffer or flags include "b" each input byte will be read as separate code points
+  - `scan_toend/1`, `scan_toend/2` works the same as `scan` but output buffer are from start of match to
+  end of buffer.
+  instead of possibly multi-byte UTF-8 codepoints. This allows to match raw bytes. Ex: `match("\u00ff"; "b")`
+  will match the byte `0xff` and not the UTF-8 encoded codepoint for 255, `match("[^\u00ff]"; "b")` will match
+  all non-`0xff` bytes.
+  - `grep` functions take 1 or 2 arguments. First is a scalar to match, where a string is
   treated as a regexp. A buffer scalar will be matches exact bytes. Second argument are regexp
   flags with addition that "b" will treat each byte in the input buffer as a code point, this
-  makes it possible to match exact bytes, ex: `match("\u00ff"; "b")` will match the byte `0xff` and not
-  the UTF-8 encoded codepoint for 255.
-    - `match/1`, `match/2` overloaded to support buffers. Match in buffer and output match buffers
+  makes it possible to match exact bytes.
     - `grep/1`, `grep/2` recursively match value and buffer
     - `vgrep/1`, `vgrep/2` recursively match value
     - `bgrep/1`, `bgrep/2` recursively match buffer

@@ -29,6 +29,7 @@ func (i *Interp) _bufferMatch(c interface{}, a []interface{}) gojq.Iter {
 
 	var re string
 	var byteRunes bool
+	var global bool
 
 	switch a0 := a[0].(type) {
 	case string:
@@ -58,6 +59,7 @@ func (i *Interp) _bufferMatch(c interface{}, a []interface{}) gojq.Iter {
 	if strings.Contains(flags, "b") {
 		byteRunes = true
 	}
+	global = strings.Contains(flags, "g")
 
 	// TODO: err to string
 	// TODO: extract to regexpextra? "all" FindReaderSubmatchIndex that can iter?
@@ -65,6 +67,7 @@ func (i *Interp) _bufferMatch(c interface{}, a []interface{}) gojq.Iter {
 	if err != nil {
 		return gojq.NewIter(err)
 	}
+	sreNames := sre.SubexpNames()
 
 	bb, err := bv.toBuffer()
 	if err != nil {
@@ -86,30 +89,77 @@ func (i *Interp) _bufferMatch(c interface{}, a []interface{}) gojq.Iter {
 	}
 
 	var off int64
+	prevOff := int64(-1)
 	return iterFn(func() (interface{}, bool) {
+		// TODO: correct way to handle empty match for buffer, move one byte forward?
+		// > "asdasd" | [match(""; "g")], [(tobytes | match(""; "g"))] | length
+		// 7
+		// 1
+		if prevOff == off {
+			return nil, false
+		}
+
+		if prevOff != -1 && !global {
+			return nil, false
+		}
+
 		_, err = rr.Seek(off, io.SeekStart)
 		if err != nil {
 			return err, false
 		}
 
-		// TODO: groups
 		l := sre.FindReaderSubmatchIndex(rr)
 		if l == nil {
 			return nil, false
 		}
 
-		matchBitOff := (off + int64(l[0])) * 8
-		bbo := Buffer{
-			bb: bv.bb,
-			r: ranges.Range{
-				Start: bv.r.Start + matchBitOff,
-				Len:   bb.Len() - matchBitOff,
-			},
-			unit: 8,
+		var captures []interface{}
+		var firstCapture map[string]interface{}
+
+		for i := 0; i < len(l)/2; i++ {
+			start, end := l[i*2], l[i*2+1]
+			capture := map[string]interface{}{
+				"offset": int(off) + start,
+				"length": end - start,
+			}
+
+			if start != -1 {
+				matchBitOff := (off + int64(start)) * 8
+				matchLength := int64(end-start) * 8
+				bbo := Buffer{
+					bb: bv.bb,
+					r: ranges.Range{
+						Start: bv.r.Start + matchBitOff,
+						Len:   matchLength,
+					},
+					unit: 8,
+				}
+
+				capture["string"] = bbo
+			} else {
+				capture["string"] = nil
+			}
+
+			if i > 0 {
+				if sreNames[i] != "" {
+					capture["name"] = sreNames[i]
+				} else {
+					capture["name"] = nil
+				}
+			}
+
+			if i == 0 {
+				firstCapture = capture
+			}
+
+			captures = append(captures, capture)
 		}
 
+		prevOff = off
 		off = off + int64(l[1])
 
-		return bbo, true
+		firstCapture["captures"] = captures[1:]
+
+		return firstCapture, true
 	})
 }
