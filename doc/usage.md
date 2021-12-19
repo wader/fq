@@ -127,6 +127,19 @@ Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 --version,-v             Show version
 </pre>
 
+## Color and unicode output
+
+fq by default tries to use colors if possible, this can be disabled with `-M`. You can also
+enable useage of unicode characters for improved output by setting the environment
+variable `CLIUNICODE`.
+
+## Configuration
+
+To add own functions you can use `init.fq` that will be read from
+- `$HOME/Library/Application Support/fq/init.jq` on macOS
+- `$HOME/.config/fq/init.jq` on Linux, BSD etc
+- `%AppData%\fq\init.jq` on Windows (TODO: not tested)
+
 ## Use as script interpreter
 
 fq can be used as a scrip interpreter:
@@ -239,17 +252,9 @@ A value has these special keys:
 
 - TODO: similar to erlang io lists, [], binary, string (utf8) and numbers
 
-## Configuration
-
-To add own functions you can use `init.fq` that will be read from
-- `$HOME/Library/Application Support/fq/init.jq` on macOS
-- `$HOME/.config/fq/init.jq` on Linux, BSD etc
-- `%AppData%\fq\init.jq` on Windows (TODO: not tested)
-
 ## Own decoders and use as library
 
 TODO
-
 
 ## Known issues and useful tricks
 
