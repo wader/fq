@@ -69,6 +69,43 @@ $
 
 Use Ctrl-D to exits, Ctrl-C to interrupt current evaluation.
 
+## Example usages
+
+Show AVC SPS difference between two mp4 files:
+```sh
+fq -n 'def f: .. | select(format=="avc_sps"); diff(input|f; input|f)' a.mp4 b.mp4
+```
+`-n` tells fq to not have an implicit `input`, `f` is function to select out some interesting value, call `diff` with two arguments,
+decoded value for `a.mp4` and `b.mp4` filtered thru `f`.
+
+Extract first JPEG found in file:
+```sh
+fq 'first(.. | select(format=="jpeg")) | tobytes' file > file.jpeg
+```
+Recursively look for first value that is a `jpeg` decode value root. Use `tobytes` to get bytes buffer for value. Redirect bytes to a file.
+
+Sample size histogram:
+```sh
+fq '.. | select(.type=="stsz")? as $stsz | .entries | count | max_by(.[1])[1] as $m | ($stsz | topath | path_to_expr), (.[] | "\(.[0]): \((100*.[1]/$m)*"=") \(.[1])") | println' file.mp4
+```
+Recursively look for a all sample size boxes "stsz" and use `?` to ignore errors when doing `.type` on arrays etc. Save reference to box, count unique values, save the max, output the path to the box and output a historgram scaled to 0-100.
+
+Find TCP streams that looks like HTTP GET requests in PCAP file:
+```sh
+fq '.tcp_connections | grep("GET /.* HTTP/1.?")' file.pcap
+```
+Use `grep` to recursively find strings matching a regexp.
+
+Widest PNG in a directory:
+```sh
+$ fq -rn '[inputs | [input_filename, first(.chunks[] | select(.type=="IHDR") | .width)]] | max_by(.[1]) | .[0]' *.png
+```
+
+What values include the byte at position 0x123?
+```sh
+$ fq '.. | select(scalars and in_bytes_range(0x123))' file
+```
+
 ## The jq langauge
 
 fq is based on the [jq language](https://stedolan.github.io/jq/) and for basic usage its syntax

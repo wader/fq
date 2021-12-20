@@ -5,11 +5,11 @@ Tool, language and decoders for inspecting binary data.
 ![fq demo](doc/demo.svg)
 
 In most cases fq works the same way as jq but instead of reading JSON it reads binary data.
-The result is a JSON compatbile structures where each value has a bit range, symbolic
+The result is a JSON compatible structures where each value has a bit range, symbolic
 interpretations and know how to be presented in a useful way.
 
 **NOTE:** fq is early in development and many things are missing, broken or do not make sense.
-That also means there is a great opportunity to help out.
+That also means there is a great opportunity to help out!
 
 ## Goals
 
@@ -21,13 +21,13 @@ That also means there is a great opportunity to help out.
 
 ## Usage
 
-Basic usage is: `fq . file`.
+Basic usage is `fq . file`.
 
 For details see [usage.md](doc/usage.md)
 
 ## Install
 
-Download archive from [releases](https://github.com/wader/fq/releases) page for your
+Download [release](https://github.com/wader/fq/releases) for your
 platform, unarchive it and move the executable to `PATH` etc.
 
 ### Homebrew
