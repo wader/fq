@@ -601,8 +601,8 @@ func init() {
 			entryCount := d.FieldU32("entry_count")
 			var i uint64
 			d.FieldStructArrayLoop("entries", "entry", func() bool { return i < entryCount }, func(d *decode.D) {
-				d.FieldU32("sample_count")
-				d.FieldU32("sample_offset")
+				d.FieldS32("sample_count")
+				d.FieldS32("sample_offset")
 				i++
 			})
 		},
