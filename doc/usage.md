@@ -1,12 +1,43 @@
 ## Basic usage
 
 fq tries to behave the same way as jq as much as possible, so you can do:
+```sh
+#
+fq . file
+fq < file
+fq . < file
+fq . doc/*.png *.mp3
+fq '.frames[0]' file
 ```
-fq . doc/file.mp3
-fq < doc/file.mp3
-fq . < doc/file.mp3
-fq . doc/*.png doc/*.mp3
-fq '.frames[0]' doc/file.mp3
+
+Common usages:
+```sh
+# recursively display decode tree but truncate long arrays
+fq d file
+fq display file
+
+# display all bytes for each value
+fq 'd({display_bytes: 0})' file
+
+# recursively display decode tree
+fq f file
+fq full file
+
+# recursively verbosely display decode tree
+fq v file
+fq verbose file
+
+# JSON for whole file
+fq tovalue file
+
+# recursively look for decode value roots for a format
+fq '.. | select(format=="jpeg")' file
+
+# recursively look for first decode value root for a format
+fq 'first(.. | select(format=="jpeg"))' file
+
+# recursively look for objects fullfilling condition
+fq '.. | select(.type=="trak")?' file
 ```
 
 ## Interactive REPL
@@ -67,7 +98,7 @@ mp3> ^D
 $
 ```
 
-Use Ctrl-D to exits, Ctrl-C to interrupt current evaluation.
+Use Ctrl-D to exit and Ctrl-C to interrupt current evaluation.
 
 ## Example usages
 
