@@ -2,7 +2,6 @@
 
 fq tries to behave the same way as jq as much as possible, so you can do:
 ```sh
-#
 fq . file
 fq < file
 fq . < file
