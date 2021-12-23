@@ -43,6 +43,12 @@ brew install wader/tap/fq
 yay -S fq # or fq-bin
 ```
 
+### Nix
+
+```sh
+nix-shell -p fq
+```
+
 ### Build from source
 
 Make sure you have go 1.17 or later installed.
