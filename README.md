@@ -37,6 +37,12 @@ platform, unarchive it and move the executable to `PATH` etc.
 brew install wader/tap/fq
 ```
 
+### Arch Linux
+
+```sh
+yay -S fq # or fq-bin
+```
+
 ### Build from source
 
 Make sure you have go 1.17 or later installed.
