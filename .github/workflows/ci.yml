@@ -10,10 +10,40 @@ env:
   GOLANGCILINT_VERSION: 1.43.0
 
 jobs:
-  ci:
+  lint:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: v${{ env.GOLANGCILINT_VERSION }}
+
+  test:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            goarch: amd64
+            go_test_race_flags: -race
+          # build and test on 32 bit, does not support race
+          - os: ubuntu-latest
+            goarch: "386"
+            go_test_race_flags: ""
+          - os: macos-latest
+            goarch: amd64
+            go_test_race_flags: -race
+          - os: windows-latest
+            goarch: amd64
+            go_test_race_flags: -race
+    runs-on: ${{ matrix.os }}
+    steps:
+      # only run cli binary tests on linux
       - name: Install expect
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         run: sudo apt-get install expect
       - name: Checkout
         uses: actions/checkout@v2
@@ -23,9 +53,8 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.17.5
-      - name: Lint
-        uses: golangci/golangci-lint-action@v2
-        with:
-          version: v${{ env.GOLANGCILINT_VERSION }}
       - name: Test
+        env:
+          GOARCH: ${{ matrix.goarch }}
+          GO_TEST_RACE_FLAGS: ${{ matrix.go_test_race_flags }}
         run: make test
