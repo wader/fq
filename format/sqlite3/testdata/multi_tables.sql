@@ -1,0 +1,17 @@
+CREATE TABLE aaa (
+    cint INT PRIMARY KEY,
+    ctext TEXT
+);
+INSERT INTO aaa VALUES(123, "AAAAAAA");
+
+CREATE TABLE bbb (
+    cint INT PRIMARY KEY,
+    ctext TEXT
+);
+INSERT INTO bbb VALUES(456, "BBBBBBB");
+
+CREATE TABLE ccc (
+    cint INT PRIMARY KEY,
+    ctext TEXT
+);
+INSERT INTO ccc VALUES(789, "CCCCCCC");

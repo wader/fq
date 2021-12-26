@@ -165,6 +165,7 @@ var (
 	RTMP                = &decode.Group{Name: "rtmp"}
 	SLL_Packet          = &decode.Group{Name: "sll_packet"}
 	SLL2_Packet         = &decode.Group{Name: "sll2_packet"}
+	SQLite3             = &decode.Group{Name: "sqlite3"}
 	TAR                 = &decode.Group{Name: "tar"}
 	TCP_Segment         = &decode.Group{Name: "tcp_segment"}
 	TIFF                = &decode.Group{Name: "tiff"}
