@@ -46,7 +46,7 @@ yay -S fq # or fq-bin
 ### Nix
 
 ```sh
-nix-shell -p fq
+nix-env -iA nixpkgs.fq # or nixos.fq on NixOS
 ```
 
 ### Build from source
