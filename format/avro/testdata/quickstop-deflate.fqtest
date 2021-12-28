@@ -1,0 +1,20 @@
+$ fq . quickstop-deflate.avro
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: quickstop-deflate.avro (avro_ocf)
+0x0000|4f 62 6a 01                                    |Obj.            |  magic: raw bits (valid)
+0x0000|            04 14 61 76 72 6f 2e 63 6f 64 65 63|    ..avro.codec|  meta[0:2]:
+0x0010|0e 64 65 66 6c 61 74 65 16 61 76 72 6f 2e 73 63|.deflate.avro.sc|
+*     |until 0x119.7 (278)                            |                |
+0x0110|                              93 e7 87 9e 02 95|          ......|  sync: raw bits
+0x0120|d5 9e 4f 58 37 ad b2 a2 ce cd                  |..OX7.....      |
+0x0120|                              b4 09 be 22 8d db|          ..."..|  blocks[0:12]:
+0x0130|6f 64 ac f9 19 c6 71 f9 37 49 8e 63 1d 55 55 b5|od....q.7I.c.UU.|
+*     |until 0x5835.7 (end) (22284)                   |                |
+$ fq '.blocks[0]' quickstop-deflate.avro
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.blocks[0]{}:
+0x120|                              b4 09            |          ..    |  count: 602
+0x120|                                    be 22      |            ."  |  size: 2207
+0x120|                                          8d db|              ..|  data: raw bits (deflate encoded)
+0x130|6f 64 ac f9 19 c6 71 f9 37 49 8e 63 1d 55 55 b5|od....q.7I.c.UU.|
+*    |until 0x9cc.7 (2207)                           |                |
+0x9c0|                                       93 e7 87|             ...|  sync: raw bits (valid)
+0x9d0|9e 02 95 d5 9e 4f 58 37 ad b2 a2 ce cd         |.....OX7.....   |
