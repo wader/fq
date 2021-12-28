@@ -8,6 +8,8 @@ In most cases fq works the same way as jq but instead of reading JSON it reads b
 The result is a JSON compatible structures where each value has a bit range, symbolic
 interpretations and know how to be presented in a useful way.
 
+You can pronounce the name as you wish, i pronounce jq /‘dʒei’kju:/ so I usually prefer /‘ef’kju:/.
+
 **NOTE:** fq is early in development and many things are missing, broken or do not make sense.
 That also means there is a great opportunity to help out!
 
@@ -18,6 +20,10 @@ That also means there is a great opportunity to help out!
 - Quick and comfortable CLI tool.
 - Bit and byte transformations and conversions.
 - Programmer's calculator.
+
+## Hopes
+- Make it useful enough that people want to help improve it.
+- Inspire people to create similar tools.
 
 ## Usage
 
@@ -48,6 +54,10 @@ yay -S fq # or fq-bin
 ```sh
 nix-shell -p fq
 ```
+
+### FreeBSD
+
+Use the [fq](https://cgit.freebsd.org/ports/tree/misc/fq) port.
 
 ### Build from source
 
