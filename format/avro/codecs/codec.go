@@ -40,6 +40,6 @@ func BuildCodec(s schema.SimplifiedSchema) (Codec, error) {
 	case schema.MAP:
 		return BuildMapCodec(s)
 	default:
-		return nil, fmt.Errorf("Unknown type: %s", s.Type)
+		return nil, fmt.Errorf("unknown type: %s", s.Type)
 	}
 }

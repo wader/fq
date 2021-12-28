@@ -62,10 +62,8 @@ func SchemaFromJson(schema interface{}) (SimplifiedSchema, error) {
 			}
 			s.UnionTypes = append(s.UnionTypes, unionType)
 		}
-		break
 	case string:
 		s.Type = v
-		break
 	case map[string]interface{}:
 		var err error
 		if s.Type, err = getString(v, "type", true); err != nil {
@@ -103,7 +101,6 @@ func SchemaFromJson(schema interface{}) (SimplifiedSchema, error) {
 				return s, fmt.Errorf("error parsing values: %s", err)
 			}
 		}
-		break
 	default:
 		return s, errors.New("unknown schema")
 	}

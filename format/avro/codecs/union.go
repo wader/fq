@@ -7,7 +7,7 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-type UnionCodec struct{
+type UnionCodec struct {
 	codecs []Codec
 }
 
