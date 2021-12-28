@@ -4,9 +4,10 @@ fq tries to behave the same way as jq as much as possible, so you can do:
 ```sh
 fq . file
 fq < file
+file | fq
 fq . < file
-fq . doc/*.png *.mp3
-fq '.frames[0]' file
+fq . *.png *.mp3
+fq '.frames[0]' file.mp3
 ```
 
 Common usages:
@@ -15,8 +16,9 @@ Common usages:
 fq d file
 fq display file
 
-# display all bytes for each value
+# display all or more bytes for each value
 fq 'd({display_bytes: 0})' file
+fq 'd({display_bytes: 200})' file
 
 # recursively display decode tree
 fq f file
@@ -41,8 +43,8 @@ fq '.. | select(.type=="trak")?' file
 
 ## Interactive REPL
 
-fq has an interactive [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop)
-with auto completion and nested REPL support:
+The interactive [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop)
+has auto completion and nested REPL support:
 
 ```
 # start REPL with null input
@@ -76,9 +78,8 @@ mp3> .frames[0]
 # start a new nested REPL with first frame as input
 mp3> .frames[0] | repl
 # prompt shows "path" to current input and that it's an mp3_frame.
-# Ctrl-D to exit REPL
+# Ctrl-D to exit REPL or to shell if last REPL
 > .frames[0] mp3_frame> ^D
-# Ctrl-D to exit to shell
 # "jq" value of layer in first frame
 mp3> .frames[0].header.layer | tovalue
 3
@@ -101,17 +102,25 @@ Use Ctrl-D to exit and Ctrl-C to interrupt current evaluation.
 
 ## Example usages
 
-Second mp3 frame header as JSON:
+#### Second mp3 frame header as JSON
 ```sh
 fq '.frames[1].header | tovalue' file.mp3
 ```
 
-Byte start position for the first 10 mp3 frames in an array:
+#### Byte start position for the first 10 mp3 frames in an array
 ```sh
 fq '.frames[0:10] | map(tobytesrange.start)' file.mp3
 ```
 
-Show AVC SPS difference between two mp4 files:
+#### Decode at range
+```sh
+# decode byte range 100 to end
+fq -d raw 'tobytes[100:] | mp3_frame | d' file.mp3
+# decode byte range 10 bytes into .somefield and preseve relative position in file
+fq '.somefield | tobytesrange[10:] | mp3_frame | d' file.mp3
+```
+
+#### Show AVC SPS difference between two mp4 files
 
 `-n` tells fq to not have an implicit `input`, `f` is function to select out some interesting value, call `diff` with two arguments,
 decoded value for `a.mp4` and `b.mp4` filtered thru `f`.
@@ -119,7 +128,7 @@ decoded value for `a.mp4` and `b.mp4` filtered thru `f`.
 ```sh
 fq -n 'def f: .. | select(format=="avc_sps"); diff(input|f; input|f)' a.mp4 b.mp4
 ```
-Extract first JPEG found in file:
+#### Extract first JPEG found in file
 
 Recursively look for first value that is a `jpeg` decode value root. Use `tobytes` to get bytes buffer for value. Redirect bytes to a file.
 
@@ -127,7 +136,7 @@ Recursively look for first value that is a `jpeg` decode value root. Use `tobyte
 fq 'first(.. | select(format=="jpeg")) | tobytes' file > file.jpeg
 ```
 
-Sample size histogram:
+#### Sample size histogram
 
 Recursively look for a all sample size boxes "stsz" and use `?` to ignore errors when doing `.type` on arrays etc. Save reference to box, count unique values, save the max, output the path to the box and output a historgram scaled to 0-100.
 
@@ -135,7 +144,7 @@ Recursively look for a all sample size boxes "stsz" and use `?` to ignore errors
 fq '.. | select(.type=="stsz")? as $stsz | .entries | count | max_by(.[1])[1] as $m | ($stsz | topath | path_to_expr), (.[] | "\(.[0]): \((100*.[1]/$m)*"=") \(.[1])") | println' file.mp4
 ```
 
-Find TCP streams that looks like HTTP GET requests in PCAP file:
+#### Find TCP streams that looks like HTTP GET requests in a PCAP file
 
 Use `grep` to recursively find strings matching a regexp.
 
@@ -143,12 +152,14 @@ Use `grep` to recursively find strings matching a regexp.
 fq '.tcp_connections | grep("GET /.* HTTP/1.?")' file.pcap
 ```
 
-Widest PNG in a directory:
+###
+
+#### Widest PNG in a directory
 ```sh
 $ fq -rn '[inputs | [input_filename, first(.chunks[] | select(.type=="IHDR") | .width)]] | max_by(.[1]) | .[0]' *.png
 ```
 
-What values include the byte at position 0x123?
+#### What values include the byte at position 0x123
 ```sh
 $ fq '.. | select(scalars and in_bytes_range(0x123))' file
 ```
@@ -300,21 +311,21 @@ you currently have to do `fq -d raw 'mp3({force: true})' file`.
 - `decode/0`, `decode/1`, `decode/2` decode format
 - `probe/0`, `probe/1` probe and decode format
 - `mp3/0`, `mp3/1`, ..., `<name>/0`, `<name>/1` same as `decode(<name>)/1`, `decode(<name>; <opts>)/2`  decode as format
-
-- `d/0`/`display/0` display value and truncate long arrays
-- `f/0`/`full/0` display value and don't truncate arrays
-- `v/0`/`verbose/0` display value verbosely and don't truncate array
+- Display shows hexdump/ASCII/tree for decode values and JSON for other values.
+  - `d/0`/`display/0` display value and truncate long arrays
+  - `f/0`/`full/0` display value and don't truncate arrays
+  - `v/0`/`verbose/0` display value verbosely and don't truncate array
 - `p/0`/`preview/0` show preview of field tree
 - `hd/0`/`hexdump/0` hexdump value
 - `repl/0` nested REPL, must be last in a pipeline. `1 | repl`, can "slurp" multiple outputs `1, 2, 3 | repl`.
 
-## Decoded values (TODO: better name?)
+## Decoded values
 
 When you decode something you will get a decode value. A decode values work like
 normal jq values but has special abilities and is used to represent a tree structure of the decoded
 binary data. Each value always has a name, type and a bit range.
 
-A value has these special keys:
+A value has these special keys (TODO: remove, are internal)
 
 - `_name` name of value
 - `_value` jq value of value
