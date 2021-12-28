@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"math/big"
 	"strings"
 	"time"
@@ -22,9 +23,10 @@ import (
 func init() {
 	functionRegisterFns = append(functionRegisterFns, func(i *Interp) []Function {
 		return []Function{
+			{"_registry", 0, 0, i._registry, nil},
+			{"_tovalue", 1, 1, i._toValue, nil},
 			{"_decode", 2, 2, i._decode, nil},
 			{"_is_decode_value", 0, 0, i._isDecodeValue, nil},
-			{"_tovalue", 1, 1, i._toValue, nil},
 		}
 	})
 }
@@ -44,6 +46,86 @@ type DecodeValue interface {
 	ToBuffer
 
 	DecodeValue() *decode.Value
+}
+
+func (i *Interp) _registry(c interface{}, a []interface{}) interface{} {
+	uniqueFormats := map[string]decode.Format{}
+
+	groups := map[string]interface{}{}
+	formats := map[string]interface{}{}
+
+	for fsName := range i.registry.Groups {
+		var group []interface{}
+
+		for _, f := range i.registry.MustGroup(fsName) {
+			group = append(group, f.Name)
+			if _, ok := uniqueFormats[f.Name]; ok {
+				continue
+			}
+			uniqueFormats[f.Name] = f
+		}
+
+		groups[fsName] = group
+	}
+
+	for _, f := range uniqueFormats {
+		vf := map[string]interface{}{
+			"name":        f.Name,
+			"description": f.Description,
+			"probe_order": f.ProbeOrder,
+			"root_name":   f.RootName,
+			"root_array":  f.RootArray,
+		}
+
+		var dependenciesVs []interface{}
+		for _, d := range f.Dependencies {
+			var dNamesVs []interface{}
+			for _, n := range d.Names {
+				dNamesVs = append(dNamesVs, n)
+			}
+			dependenciesVs = append(dependenciesVs, dNamesVs)
+		}
+		if len(dependenciesVs) > 0 {
+			vf["dependencies"] = dependenciesVs
+		}
+		var groupsVs []interface{}
+		for _, n := range f.Groups {
+			groupsVs = append(groupsVs, n)
+		}
+		if len(groupsVs) > 0 {
+			vf["groups"] = groupsVs
+		}
+
+		if f.Files != nil {
+			files := map[string]interface{}{}
+
+			entries, err := f.Files.ReadDir(".")
+			if err != nil {
+				return err
+			}
+
+			for _, e := range entries {
+				f, err := f.Files.Open(e.Name())
+				if err != nil {
+					return err
+				}
+				b, err := ioutil.ReadAll(f)
+				if err != nil {
+					return err
+				}
+				files[e.Name()] = string(b)
+			}
+
+			vf["files"] = files
+		}
+
+		formats[f.Name] = vf
+	}
+
+	return map[string]interface{}{
+		"groups":  groups,
+		"formats": formats,
+	}
 }
 
 func (i *Interp) _toValue(c interface{}, a []interface{}) interface{} {
