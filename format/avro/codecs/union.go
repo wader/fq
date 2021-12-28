@@ -1,26 +1,40 @@
 package codecs
 
 import (
+	"errors"
+	"fmt"
 	"github.com/wader/fq/format/avro/schema"
 	"github.com/wader/fq/pkg/decode"
 )
 
-type EnumCodec struct{
-	symbols []string
+type UnionCodec struct{
+	codecs []Codec
 }
 
-func (l EnumCodec) Decode(d *decode.D) interface{} {
-	value := int(VarZigZag(d))
-	if value >= len(l.symbols) {
-		d.Fatalf("invalid enum value: %d", value)
+func (l UnionCodec) Decode(name string, d *decode.D) {
+	// A union is encoded by first writing an int value indicating the zero-based position within the union of the
+	// schema of its value. The value is then encoded per the indicated schema within the union.
+	d.FieldStruct(name, func(d *decode.D) {
+		v := int(d.FieldSFn("type", VarZigZag))
+		if v >= len(l.codecs) {
+			d.Fatalf("invalid union value: %d", v)
+		}
+		l.codecs[v].Decode("value", d)
+	})
+}
+
+func BuildUnionCodec(schema schema.SimplifiedSchema) (Codec, error) {
+	var c UnionCodec
+	if schema.UnionTypes == nil {
+		return nil, errors.New("UnionCodec: no union types")
 	}
-	return l.symbols[value]
-}
+	for _, t := range schema.UnionTypes {
+		tc, err := BuildCodec(t)
+		if err != nil {
+			return nil, fmt.Errorf("UnionCodec: %v", err)
+		}
+		c.codecs = append(c.codecs, tc)
+	}
 
-func (l EnumCodec) Type() CodecType {
-	return SCALAR
-}
-
-func BuildEnumCodec(schema schema.SimplifiedSchema) (Codec, error) {
-	return &EnumCodec{symbols: schema.Symbols}, nil
+	return &c, nil
 }

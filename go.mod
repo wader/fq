@@ -28,7 +28,11 @@ require (
 	github.com/wader/readline v0.0.0-20210920124728-5a81f7707bac
 )
 
+require github.com/linkedin/goavro v2.1.0+incompatible
+
 require (
+	github.com/golang/snappy v0.0.4 // indirect
 	github.com/itchyny/timefmt-go v0.1.3 // indirect
 	golang.org/x/sys v0.0.0-20211124211545-fe61309f8881 // indirect
+	gopkg.in/linkedin/goavro.v1 v1.0.5 // indirect
 )

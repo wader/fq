@@ -5,18 +5,13 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
+type IntCodec struct{}
 
-type BoolCodec struct {}
-
-func (l BoolCodec) Decode(d *decode.D) interface{}{
+func (l IntCodec) Decode(name string, d *decode.D) {
 	// a boolean is written as a single byte whose value is either 0 (false) or 1 (true).
-	return d.U8() != 0
+	d.FieldSFn(name, VarZigZag)
 }
 
-func (l BoolCodec) Type() CodecType {
-	return SCALAR
-}
-
-func BuildBoolCodec(schema schema.SimplifiedSchema) (Codec, error) {
-	return &BoolCodec{}, nil
+func BuildIntCodec(schema schema.SimplifiedSchema) (Codec, error) {
+	return &IntCodec{}, nil
 }

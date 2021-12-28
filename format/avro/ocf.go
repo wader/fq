@@ -2,8 +2,11 @@ package avro
 
 import (
 	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/avro/codecs"
+	"github.com/wader/fq/format/avro/schema"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 var jsonGroup decode.Group
@@ -13,45 +16,41 @@ func init() {
 		Name:        format.AVRO_OCF,
 		Description: "Avro object container file",
 		Groups:      []string{format.PROBE},
-		DecodeFn:    avroDecode,
+		DecodeFn:    avroDecodeOCF,
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.JSON}, Group: &jsonGroup},
 		},
 	})
 }
 
-const headerMetadataSchema = `{"type": "map", "values": "bytes"}`
-const intMask = byte(127)
-const intFlag = byte(128)
-
-// readLong reads a variable length zig zag long from the current position in decoder
-// and returns the decoded value and the number of bytes read.
-func varZigZag(d *decode.D) int64 {
-	var value uint64
-	var shift uint
-	for d.NotEnd() {
-		b := byte(d.U8())
-		value |= uint64(b&intMask) << shift
-		if b&intFlag == 0 {
-			return int64(value>>1) ^ -int64(value&1)
-		}
-		shift += 7
-	}
-	panic("unexpected end of data")
+func ScalarDescription(description string) scalar.Mapper {
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) {
+		s.Description = description
+		return s, nil
+	})
 }
 
-func avroDecode(d *decode.D, in interface{}) interface{} {
+type HeaderData struct {
+	Schema *schema.SimplifiedSchema
+	Codec  string
+	Sync   []byte
+}
+
+func decodeHeader(d *decode.D) HeaderData {
+	var headerData HeaderData
+
+	// Header is encoded in avro so could use avro decoder, but doing it manually so we can
+	// keep asserts and treating schema as JSON
 	d.FieldRawLen("magic", 4*8, d.AssertBitBuf([]byte{'O', 'b', 'j', 1}))
-	//var schema []byte
 	var blockCount int64 = -1
 	d.FieldStructArrayLoop("meta", "block",
 		func() bool { return blockCount != 0 },
 		func(d *decode.D) {
-			blockCount = d.FieldSFn("count", varZigZag)
+			blockCount = d.FieldSFn("count", codecs.VarZigZag)
 			// If its negative, then theres another long representing byte size
 			if blockCount < 0 {
 				blockCount *= -1
-				d.FieldSFn("size", varZigZag)
+				d.FieldSFn("size", codecs.VarZigZag)
 			}
 			if blockCount == 0 {
 				return
@@ -59,28 +58,66 @@ func avroDecode(d *decode.D, in interface{}) interface{} {
 
 			var i int64 = 0
 			d.FieldStructArrayLoop("entries", "entry", func() bool { return i < blockCount }, func(d *decode.D) {
-				keyL := d.FieldSFn("key_length", varZigZag)
+				keyL := d.FieldSFn("key_len", codecs.VarZigZag)
 				key := d.FieldUTF8("key", int(keyL))
-				valL := d.FieldSFn("value_length", varZigZag)
+				valL := d.FieldSFn("value_len", codecs.VarZigZag)
 				if key == "avro.schema" {
-					d.FieldFormatLen("value", valL*8, jsonGroup, nil)
+					v, _ := d.FieldFormatLen("value", valL*8, jsonGroup, nil)
+					s, err := schema.SchemaFromJson(v.V.(*scalar.S).Actual)
+					headerData.Schema = &s
+					if err != nil {
+						d.Fatalf("Failed to parse schema: %s", err)
+					}
+				} else if key == "avro.codec" {
+					headerData.Codec = d.FieldUTF8("value", int(valL))
 				} else {
 					d.FieldUTF8("value", int(valL))
 				}
 				i++
 			})
 		})
+	if headerData.Schema == nil {
+		d.Fatalf("No schema found in header")
+	}
+
+	if headerData.Codec == "null" {
+		headerData.Codec = ""
+	}
+
 	syncbb := d.FieldRawLen("sync", 16*8)
-	sync, err := syncbb.BytesLen(16)
+	var err error
+	headerData.Sync, err = syncbb.BytesLen(16)
 	if err != nil {
 		d.Fatalf("unable to read sync bytes: %v", err)
 	}
+	return headerData
+}
+
+func avroDecodeOCF(d *decode.D, in interface{}) interface{} {
+	header := decodeHeader(d)
+
+	c, err := codecs.BuildCodec(*header.Schema)
+	if err != nil {
+		d.Fatalf("unable to create codec: %v", err)
+	}
+
 	d.FieldStructArrayLoop("blocks", "block", func() bool { return d.NotEnd() }, func(d *decode.D) {
-		count := d.FieldSFn("count", varZigZag)
-		_ = count
-		size := d.FieldSFn("size", varZigZag)
-		d.FieldRawLen("data", size*8)
-		d.FieldRawLen("sync", 16*8, d.AssertBitBuf(sync))
+		count := d.FieldSFn("count", codecs.VarZigZag)
+		if count <= 0 {
+			return
+		}
+		size := d.FieldSFn("size", codecs.VarZigZag)
+		// Currently not supporting encodings.
+		if header.Codec != "" {
+			d.FieldRawLen("data", size*8, ScalarDescription(header.Codec+" encoded"))
+		} else {
+			i := int64(0)
+			d.FieldArrayLoop("data", func() bool { return i < count }, func(d *decode.D) {
+				c.Decode("datum", d)
+				i += 1
+			})
+		}
+		d.FieldRawLen("sync", 16*8, d.AssertBitBuf(header.Sync))
 	})
 
 	return nil

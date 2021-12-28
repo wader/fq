@@ -5,18 +5,20 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-type BytesCodec struct{}
-
-func (l BytesCodec) Decode(d *decode.D) interface{} {
-	length := d.FieldSFn("length", VarZigZag)
-	d.FieldRawLen("value", length*8)
-	return nil
+type EnumCodec struct {
+	symbols []string
 }
 
-func (l BytesCodec) Type() CodecType {
-	return STRUCT
+func (l EnumCodec) Decode(name string, d *decode.D) {
+	d.FieldScalarStrFn(name, func(d *decode.D) string {
+		value := int(VarZigZag(d))
+		if value >= len(l.symbols) {
+			d.Fatalf("invalid enum value: %d", value)
+		}
+		return l.symbols[value]
+	})
 }
 
-func BuildBytesCodec(schema schema.SimplifiedSchema) (Codec, error) {
-	return &BytesCodec{}, nil
+func BuildEnumCodec(schema schema.SimplifiedSchema) (Codec, error) {
+	return &EnumCodec{symbols: schema.Symbols}, nil
 }

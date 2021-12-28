@@ -5,6 +5,7 @@ package all
 import (
 	_ "github.com/wader/fq/format/ape"
 	_ "github.com/wader/fq/format/av1"
+	_ "github.com/wader/fq/format/avro"
 	_ "github.com/wader/fq/format/bzip2"
 	_ "github.com/wader/fq/format/dns"
 	_ "github.com/wader/fq/format/elf"

@@ -65,6 +65,7 @@ avc_nalu             H.264/AVC Network Access Layer Unit
 avc_pps              H.264/AVC Picture Parameter Set
 avc_sei              H.264/AVC Supplemental Enhancement Information
 avc_sps              H.264/AVC Sequence Parameter Set
+avro_ocf             Avro object container file
 bzip2                bzip2 compression
 dns                  DNS packet
 dns_tcp              DNS packet (TCP)
