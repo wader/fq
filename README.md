@@ -46,7 +46,7 @@ brew install wader/tap/fq
 ### Arch Linux
 
 ```sh
-yay -S fq # or fq-bin
+pacman -S fq
 ```
 
 ### Nix
