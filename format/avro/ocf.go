@@ -23,13 +23,6 @@ func init() {
 	})
 }
 
-func ScalarDescription(description string) scalar.Mapper {
-	return scalar.Fn(func(s scalar.S) (scalar.S, error) {
-		s.Description = description
-		return s, nil
-	})
-}
-
 type HeaderData struct {
 	Schema *schema.SimplifiedSchema
 	Codec  string
@@ -109,7 +102,7 @@ func avroDecodeOCF(d *decode.D, in interface{}) interface{} {
 		size := d.FieldSFn("size", decoders.VarZigZag)
 		// Currently not supporting encodings.
 		if header.Codec != "" {
-			d.FieldRawLen("data", size*8, ScalarDescription(header.Codec+" encoded"))
+			d.FieldRawLen("data", size*8, scalar.Description(header.Codec+" encoded"))
 		} else {
 			i := int64(0)
 			d.FieldArrayLoop("data", func() bool { return i < count }, func(d *decode.D) {
