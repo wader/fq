@@ -2,6 +2,7 @@ package decoders
 
 import (
 	"errors"
+
 	"github.com/wader/fq/format/avro/schema"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"

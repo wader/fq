@@ -3,6 +3,7 @@ package decoders
 import (
 	"errors"
 	"fmt"
+
 	"github.com/wader/fq/format/avro/schema"
 	"github.com/wader/fq/pkg/decode"
 )
@@ -16,7 +17,7 @@ func decodeUnionFn(schema schema.SimplifiedSchema) (func(string, *decode.D), err
 	for i, t := range schema.UnionTypes {
 		decodeFn, err := DecodeFnForSchema(t)
 		if err != nil {
-			return nil, fmt.Errorf("failed getting decodeFn for union type %d: %v", i, err)
+			return nil, fmt.Errorf("failed getting decodeFn for union type %d: %w", i, err)
 		}
 		decoders = append(decoders, decodeFn)
 	}

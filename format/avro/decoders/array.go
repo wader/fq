@@ -3,6 +3,7 @@ package decoders
 import (
 	"errors"
 	"fmt"
+
 	"github.com/wader/fq/format/avro/schema"
 	"github.com/wader/fq/pkg/decode"
 )
@@ -14,7 +15,7 @@ func decodeArrayFn(schema schema.SimplifiedSchema) (func(string, *decode.D), err
 
 	valueD, err := DecodeFnForSchema(*schema.Items)
 	if err != nil {
-		return nil, fmt.Errorf("ArrayCodec: %s", err)
+		return nil, fmt.Errorf("failed getting decode fn for array item: %w", err)
 	}
 
 	//Arrays are encoded as a series of blocks. Each block consists of a long count value, followed by that many array

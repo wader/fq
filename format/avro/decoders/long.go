@@ -20,7 +20,8 @@ func VarZigZag(d *decode.D) int64 {
 		}
 		shift += 7
 	}
-	panic("unexpected end of data")
+	d.Fatalf("unexpected end of data")
+	return 0
 }
 
 func decodeLongFn(schema schema.SimplifiedSchema) (func(string, *decode.D), error) {

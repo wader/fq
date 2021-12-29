@@ -2,6 +2,7 @@ package decoders
 
 import (
 	"fmt"
+
 	"github.com/wader/fq/format/avro/schema"
 	"github.com/wader/fq/pkg/decode"
 )
@@ -9,6 +10,8 @@ import (
 func DecodeFnForSchema(s schema.SimplifiedSchema) (func(string, *decode.D), error) {
 	// TODO support logical types. Right now we will just get the raw type.
 	switch s.Type {
+	case schema.ARRAY:
+		return decodeArrayFn(s)
 	case schema.BOOLEAN:
 		return decodeBoolFn(s)
 	case schema.BYTES:

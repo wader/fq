@@ -2,6 +2,7 @@ package decoders
 
 import (
 	"fmt"
+
 	"github.com/wader/fq/format/avro/schema"
 	"github.com/wader/fq/pkg/decode"
 )
@@ -17,7 +18,7 @@ func decodeRecordFn(schema schema.SimplifiedSchema) (func(string, *decode.D), er
 		fieldNames = append(fieldNames, f.Name)
 		fc, err := DecodeFnForSchema(f.Type)
 		if err != nil {
-			return nil, fmt.Errorf("failed parsing record field %s: %v", f.Name, err)
+			return nil, fmt.Errorf("failed parsing record field %s: %w", f.Name, err)
 		}
 		fieldDecoders = append(fieldDecoders, fc)
 	}

@@ -56,14 +56,14 @@ func decodeHeader(d *decode.D) HeaderData {
 				return
 			}
 
-			var i int64 = 0
+			var i int64
 			d.FieldStructArrayLoop("entries", "entry", func() bool { return i < blockCount }, func(d *decode.D) {
 				keyL := d.FieldSFn("key_len", decoders.VarZigZag)
 				key := d.FieldUTF8("key", int(keyL))
 				valL := d.FieldSFn("value_len", decoders.VarZigZag)
 				if key == "avro.schema" {
 					v, _ := d.FieldFormatLen("value", valL*8, jsonGroup, nil)
-					s, err := schema.SchemaFromJson(v.V.(*scalar.S).Actual)
+					s, err := schema.From(v.V.(*scalar.S).Actual)
 					headerData.Schema = &s
 					if err != nil {
 						d.Fatalf("Failed to parse schema: %s", err)
@@ -114,7 +114,7 @@ func avroDecodeOCF(d *decode.D, in interface{}) interface{} {
 			i := int64(0)
 			d.FieldArrayLoop("data", func() bool { return i < count }, func(d *decode.D) {
 				decodeFn("datum", d)
-				i += 1
+				i++
 			})
 		}
 		d.FieldRawLen("sync", 16*8, d.AssertBitBuf(header.Sync))

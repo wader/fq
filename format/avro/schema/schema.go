@@ -44,7 +44,7 @@ type Field struct {
 	Type SimplifiedSchema
 }
 
-func SchemaFromJson(schema interface{}) (SimplifiedSchema, error) {
+func From(schema interface{}) (SimplifiedSchema, error) {
 	if schema == nil {
 		return SimplifiedSchema{}, errors.New("schema cannot be nil")
 	}
@@ -53,9 +53,9 @@ func SchemaFromJson(schema interface{}) (SimplifiedSchema, error) {
 	case []interface{}:
 		s.Type = UNION
 		for _, i := range v {
-			unionType, err := SchemaFromJson(i)
+			unionType, err := From(i)
 			if err != nil {
-				return s, fmt.Errorf("error parsing union type: %s", err)
+				return s, fmt.Errorf("failed parsing union type: %w", err)
 			}
 			if unionType.Type == UNION {
 				return s, errors.New("sub-unions are not supported")
@@ -86,19 +86,19 @@ func SchemaFromJson(schema interface{}) (SimplifiedSchema, error) {
 		}
 		if s.Type == RECORD {
 			if s.Fields, err = getFields(v); err != nil {
-				return s, fmt.Errorf("error parsing fields: %s", err)
+				return s, fmt.Errorf("failed parsing fields: %w", err)
 			}
 		} else if s.Type == ENUM {
 			if s.Symbols, err = getSymbols(v); err != nil {
-				return s, fmt.Errorf("error parsing symbols: %s", err)
+				return s, fmt.Errorf("failed parsing symbols: %w", err)
 			}
 		} else if s.Type == ARRAY {
 			if s.Items, err = getSchema(v, "items"); err != nil {
-				return s, fmt.Errorf("error parsing items: %s", err)
+				return s, fmt.Errorf("failed parsing items: %w", err)
 			}
 		} else if s.Type == MAP {
 			if s.Values, err = getSchema(v, "values"); err != nil {
-				return s, fmt.Errorf("error parsing values: %s", err)
+				return s, fmt.Errorf("failed parsing values: %w", err)
 			}
 		}
 	default:
@@ -112,9 +112,9 @@ func getSchema(m map[string]interface{}, key string) (*SimplifiedSchema, error) 
 	if !ok {
 		return nil, fmt.Errorf("%s not found", key)
 	}
-	v, err := SchemaFromJson(vI)
+	v, err := From(vI)
 	if err != nil {
-		return nil, fmt.Errorf("error parsing %s: %s", key, err)
+		return nil, fmt.Errorf("failed parsing %s: %w", key, err)
 	}
 	return &v, nil
 }
@@ -152,15 +152,15 @@ func getFields(m map[string]interface{}) ([]Field, error) {
 		var f Field
 		f.Name, err = getString(field, "name", true)
 		if err != nil {
-			return fields, fmt.Errorf("error parsing field name: %s", err)
+			return fields, fmt.Errorf("failed parsing field name: %w", err)
 		}
 		t, ok := field["type"]
 		if !ok {
 			return fields, errors.New("field type must be a object")
 		}
 
-		if f.Type, err = SchemaFromJson(t); err != nil {
-			return fields, fmt.Errorf("error parsing field %s type: %s", f.Name, err)
+		if f.Type, err = From(t); err != nil {
+			return fields, fmt.Errorf("failed parsing field %s type: %w", f.Name, err)
 		}
 		fields = append(fields, f)
 	}

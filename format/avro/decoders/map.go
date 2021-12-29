@@ -3,6 +3,7 @@ package decoders
 import (
 	"errors"
 	"fmt"
+
 	"github.com/wader/fq/format/avro/schema"
 	"github.com/wader/fq/pkg/decode"
 )
@@ -43,7 +44,7 @@ func decodeMapFn(s schema.SimplifiedSchema) (func(string, *decode.D), error) {
 	}
 	subFn, err := DecodeFnForSchema(subSchema)
 	if err != nil {
-		return nil, fmt.Errorf("decode map: %v", err)
+		return nil, fmt.Errorf("decode map: %w", err)
 	}
 	return subFn, nil
 }
