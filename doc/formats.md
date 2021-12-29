@@ -18,6 +18,7 @@
 |`avc_pps`             |H.264/AVC&nbsp;Picture&nbsp;Parameter&nbsp;Set                |<sub></sub>|
 |`avc_sei`             |H.264/AVC&nbsp;Supplemental&nbsp;Enhancement&nbsp;Information |<sub></sub>|
 |`avc_sps`             |H.264/AVC&nbsp;Sequence&nbsp;Parameter&nbsp;Set               |<sub></sub>|
+|`avro_ocf`            |Avro&nbsp;object&nbsp;container&nbsp;file                     |<sub>`json`</sub>|
 |`bzip2`               |bzip2&nbsp;compression                                        |<sub>`probe`</sub>|
 |`dns`                 |DNS&nbsp;packet                                               |<sub></sub>|
 |`dns_tcp`             |DNS&nbsp;packet&nbsp;(TCP)                                    |<sub></sub>|
@@ -81,7 +82,7 @@
 |`xing`                |Xing&nbsp;header                                              |<sub></sub>|
 |`zip`                 |ZIP&nbsp;archive                                              |<sub>`probe`</sub>|
 |`image`               |Group                                                         |<sub>`gif` `jpeg` `mp4` `png` `tiff` `webp`</sub>|
-|`probe`               |Group                                                         |<sub>`adts` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `wav` `webp` `zip`</sub>|
+|`probe`               |Group                                                         |<sub>`adts` `avro_ocf` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `wav` `webp` `zip`</sub>|
 |`tcp_stream`          |Group                                                         |<sub>`dns`</sub>|
 |`udp_payload`         |Group                                                         |<sub>`dns`</sub>|
 
