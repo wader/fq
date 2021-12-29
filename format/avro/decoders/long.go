@@ -1,4 +1,4 @@
-package codecs
+package decoders
 
 import (
 	"github.com/wader/fq/format/avro/schema"
@@ -8,7 +8,7 @@ import (
 const intMask = byte(127)
 const intFlag = byte(128)
 
-// readLong reads a variable length zig zag long from the current position in decoder
+// VarZigZag reads a variable length zigzag long from the current position in decoder
 func VarZigZag(d *decode.D) int64 {
 	var value uint64
 	var shift uint
@@ -23,12 +23,9 @@ func VarZigZag(d *decode.D) int64 {
 	panic("unexpected end of data")
 }
 
-type LongCodec struct{}
-
-func (l LongCodec) Decode(name string, d *decode.D) {
-	d.FieldSFn(name, VarZigZag)
-}
-
-func BuildLongCodec(schema schema.SimplifiedSchema) (Codec, error) {
-	return &LongCodec{}, nil
+func decodeLongFn(schema schema.SimplifiedSchema) (func(string, *decode.D), error) {
+	// int and long values are written using variable-length zig-zag coding.
+	return func(name string, d *decode.D) {
+		d.FieldSFn(name, VarZigZag)
+	}, nil
 }

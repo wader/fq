@@ -2,7 +2,7 @@ package avro
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/avro/codecs"
+	"github.com/wader/fq/format/avro/decoders"
 	"github.com/wader/fq/format/avro/schema"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
@@ -46,11 +46,11 @@ func decodeHeader(d *decode.D) HeaderData {
 	d.FieldStructArrayLoop("meta", "block",
 		func() bool { return blockCount != 0 },
 		func(d *decode.D) {
-			blockCount = d.FieldSFn("count", codecs.VarZigZag)
+			blockCount = d.FieldSFn("count", decoders.VarZigZag)
 			// If its negative, then theres another long representing byte size
 			if blockCount < 0 {
 				blockCount *= -1
-				d.FieldSFn("size", codecs.VarZigZag)
+				d.FieldSFn("size", decoders.VarZigZag)
 			}
 			if blockCount == 0 {
 				return
@@ -58,9 +58,9 @@ func decodeHeader(d *decode.D) HeaderData {
 
 			var i int64 = 0
 			d.FieldStructArrayLoop("entries", "entry", func() bool { return i < blockCount }, func(d *decode.D) {
-				keyL := d.FieldSFn("key_len", codecs.VarZigZag)
+				keyL := d.FieldSFn("key_len", decoders.VarZigZag)
 				key := d.FieldUTF8("key", int(keyL))
-				valL := d.FieldSFn("value_len", codecs.VarZigZag)
+				valL := d.FieldSFn("value_len", decoders.VarZigZag)
 				if key == "avro.schema" {
 					v, _ := d.FieldFormatLen("value", valL*8, jsonGroup, nil)
 					s, err := schema.SchemaFromJson(v.V.(*scalar.S).Actual)
@@ -96,24 +96,24 @@ func decodeHeader(d *decode.D) HeaderData {
 func avroDecodeOCF(d *decode.D, in interface{}) interface{} {
 	header := decodeHeader(d)
 
-	c, err := codecs.BuildCodec(*header.Schema)
+	decodeFn, err := decoders.DecodeFnForSchema(*header.Schema)
 	if err != nil {
 		d.Fatalf("unable to create codec: %v", err)
 	}
 
 	d.FieldStructArrayLoop("blocks", "block", func() bool { return d.NotEnd() }, func(d *decode.D) {
-		count := d.FieldSFn("count", codecs.VarZigZag)
+		count := d.FieldSFn("count", decoders.VarZigZag)
 		if count <= 0 {
 			return
 		}
-		size := d.FieldSFn("size", codecs.VarZigZag)
+		size := d.FieldSFn("size", decoders.VarZigZag)
 		// Currently not supporting encodings.
 		if header.Codec != "" {
 			d.FieldRawLen("data", size*8, ScalarDescription(header.Codec+" encoded"))
 		} else {
 			i := int64(0)
 			d.FieldArrayLoop("data", func() bool { return i < count }, func(d *decode.D) {
-				c.Decode("datum", d)
+				decodeFn("datum", d)
 				i += 1
 			})
 		}

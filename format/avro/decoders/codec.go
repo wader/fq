@@ -1,4 +1,4 @@
-package codecs
+package decoders
 
 import (
 	"fmt"
@@ -6,39 +6,35 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-type CodecType int
-
-type Codec interface {
-	Decode(name string, d *decode.D)
-}
-
-func BuildCodec(s schema.SimplifiedSchema) (Codec, error) {
+func DecodeFnForSchema(s schema.SimplifiedSchema) (func(string, *decode.D), error) {
 	// TODO support logical types. Right now we will just get the raw type.
 	switch s.Type {
 	case schema.BOOLEAN:
-		return BuildBoolCodec(s)
+		return decodeBoolFn(s)
 	case schema.BYTES:
-		return BuildBytesCodec(s)
+		return decodeBytesFn(s)
 	case schema.DOUBLE:
-		return BuildDoubleCodec(s)
+		return decodeDoubleFn(s)
 	case schema.ENUM:
-		return BuildEnumCodec(s)
+		return decodeEnumFn(s)
+	case schema.FIXED:
+		return decodeFixedFn(s)
 	case schema.FLOAT:
-		return BuildFloatCodec(s)
+		return decodeFloatFn(s)
 	case schema.INT:
-		return BuildIntCodec(s)
+		return decodeIntFn(s)
 	case schema.LONG:
-		return BuildLongCodec(s)
+		return decodeLongFn(s)
 	case schema.NULL:
-		return BuildNullCodec(s)
+		return decodeNullFn(s)
 	case schema.RECORD:
-		return BuildRecordCodec(s)
+		return decodeRecordFn(s)
 	case schema.STRING:
-		return BuildStringCodec(s)
+		return decodeStringFn(s)
 	case schema.UNION:
-		return BuildUnionCodec(s)
+		return decodeUnionFn(s)
 	case schema.MAP:
-		return BuildMapCodec(s)
+		return decodeMapFn(s)
 	default:
 		return nil, fmt.Errorf("unknown type: %s", s.Type)
 	}
