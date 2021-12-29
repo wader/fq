@@ -45,8 +45,16 @@ brew install wader/tap/fq
 
 ### Arch Linux
 
+`fq` can be installed from the [community repository](https://archlinux.org/packages/community/x86_64/fq/) using [pacman](https://wiki.archlinux.org/title/Pacman):
+
 ```sh
 pacman -S fq
+```
+
+You can also build and install the development (VCS) package using an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers):
+
+```sh
+paru -S fq-git
 ```
 
 ### Nix
