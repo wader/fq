@@ -164,7 +164,7 @@ $ fq -rn '[inputs | [input_filename, first(.chunks[] | select(.type=="IHDR") | .
 $ fq '.. | select(scalars and in_bytes_range(0x123))' file
 ```
 
-## The jq langauge
+## The jq language
 
 fq is based on the [jq language](https://stedolan.github.io/jq/) and for basic usage its syntax
 is similar to how object and array access looks in JavaScript or JSON path, `.food[10]` etc.
