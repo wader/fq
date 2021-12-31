@@ -250,10 +250,10 @@ fq can be used as a scrip interpreter:
 - [gojq's differences to jq](https://github.com/itchyny/gojq#difference-to-jq),
 notable is support for arbitrary-precision integers.
 - Supports hexdecimal `0xab`, octal `0o77` and binary `0b101` integer literals.
-- Has bitwise operations, `band`, `bor`, `bxor`, `bsl`, `bsr`, `bnot`.
+- Has bitwise operators, `band`, `bor`, `bxor`, `bsl`, `bsr`, `bnot`.
 - Try include `include "file?";` that don't fail if file is missing.
 - Some values can act as a object with keys even when it's an array, number etc.
-- There can be keys hidden from `keys` and `[]`. Used for, `_format`, `_bytes` etc.
+- There can be keys hidden from `keys` and `[]`.
 - Some values are readonly and can't be updated.
 
 ## Functions
