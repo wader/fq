@@ -1,6 +1,7 @@
 # Implementation details
 
 - fq uses a gojq fork that can be found at https://github.com/wader/gojq/tree/fq (the "fq" branch)
+- fq uses a readline fork that can be found at https://github.com/wader/readline/tree/fq (the "fq" branch)
 - cli readline uses raw mode so blocks ctrl-c to become a SIGINT
 
 ## Decoder implementation help
@@ -21,15 +22,25 @@ Flags can be struct with bit-fields.
 - Split into multiple sub formats if possible. Makes it possible to use them separately.
 - Validate/Assert
 - Error/Fatal/panic
-- Is format probeable or not?
+- Is format probeable or not
 - Can new formats be added to other formats
+- Does the new format include existing formats
+
+Run `make doc` generate some of the documentation (requires ffmpeg and graphviz).
+
+Run `make lint` to lint source code.
+
+TODO: `make fuzz`
 
 ## Tests
 
-Write new actual output:
 ```sh
-make actual # write all actual outputs
-WRITE_ACTUAL=1 go run -run ... # write only specific tests
+# run all tests for one format
+go test -run TestFQTests/mp4 ./format/
+# write all actual outputs
+make actual
+# write for specific tests
+WRITE_ACTUAL=1 go run -run ...
 ```
 
 ## Debug
