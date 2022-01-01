@@ -178,14 +178,27 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 				//    The end of a Master-element with unknown size is determined by the beginning of the next
 				//    element that is not a valid sub-element of that Master-element
 				// TODO: should also handle garbage between
-				const maxTagSize = 100 * 1024 * 1024
-				tagSize := d.FieldUFn("size", decodeVint, d.RequireURange(0, maxTagSize))
+				const maxStringTagSize = 100 * 1024 * 1024
+				tagSize := d.FieldUFn("size", decodeVint)
 
-				if tagSize > 8 &&
-					(a.Type == ebml.Integer ||
-						a.Type == ebml.Uinteger ||
-						a.Type == ebml.Float) {
-					d.Fatalf("invalid tagSize %d for non-master type", tagSize)
+				// assert sane tag size
+				// TODO: strings are limited for now because they are read into memory
+				switch a.Type {
+				case ebml.Integer,
+					ebml.Uinteger,
+					ebml.Float:
+					if tagSize > 8 {
+						d.Fatalf("invalid tagSize %d for number type", tagSize)
+					}
+				case ebml.String,
+					ebml.UTF8:
+					if tagSize > maxStringTagSize {
+						d.Errorf("tagSize %d > maxStringTagSize %d", tagSize, maxStringTagSize)
+					}
+				case ebml.Binary,
+					ebml.Date,
+					ebml.Master:
+					// nop
 				}
 
 				optionalMap := func(sm scalar.Mapper) scalar.Mapper {
