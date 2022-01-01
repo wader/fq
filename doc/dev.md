@@ -10,7 +10,7 @@
 Prefer a nice and easy to use tree over nice decoder implementation.
 - Use same names, symbols, constant number base etc as in specification.
 - Decode only ranges you know what it is. If possible let "parent" decide what to do with unknown
-bits by using `*Decode*Len/Range/Limit` funcitions.
+bits by using `*Decode*Len/Range/Limit` functions.
 - Try to no decode too much as one value.
 A length encoded int could be two fields, but maybe a length prefixed string should be one.
 Flags can be struct with bit-fields.
@@ -26,7 +26,7 @@ Flags can be struct with bit-fields.
 - Can new formats be added to other formats
 - Does the new format include existing formats
 
-Run `make doc` generate some of the documentation (requires ffmpeg and graphviz).
+Run `make doc` generate some of the documentation (requires [FFmpeg](https://github.com/FFmpeg/FFmpeg) and [Graphviz](https://gitlab.com/graphviz/graphviz)).
 
 Run `make lint` to lint source code.
 
