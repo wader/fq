@@ -53,7 +53,7 @@ func decodePcap(d *decode.D, in interface{}) interface{} {
 	d.FieldU16("version_minor")
 	d.FieldS32("thiszone")
 	d.FieldU32("sigfigs")
-	spanLen := d.FieldU32("snaplen")
+	d.FieldU32("snaplen")
 	linkType := int(d.FieldU32("network", format.LinkTypeMap))
 
 	fd := flowsdecoder.New()
@@ -66,9 +66,14 @@ func decodePcap(d *decode.D, in interface{}) interface{} {
 				inclLen := d.FieldU32("incl_len")
 				origLen := d.FieldU32("orig_len")
 
-				if inclLen > spanLen {
-					d.Errorf("incl_len %d > snaplen %d", inclLen, spanLen)
-				}
+				// "incl_len: the number of bytes of packet data actually captured and saved in the file. This value should never become larger than orig_len or the snaplen value of the global header"
+				// "orig_len: the length of the packet as it appeared on the network when it was captured. If incl_len and orig_len differ, the actually saved packet size was limited by snaplen."
+
+				// TODO: incl_len seems to be larger than snaplen in real pcap files
+				// if inclLen > snapLen {
+				// 	d.Errorf("incl_len %d > snaplen %d", inclLen, snapLen)
+				// }
+
 				if inclLen > origLen {
 					d.Errorf("incl_len %d > orig_len %d", inclLen, origLen)
 				}
