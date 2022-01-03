@@ -106,6 +106,7 @@ id3v2                ID3v2 metadata
 ipv4_packet          Internet protocol v4 packet
 jpeg                 Joint Photographic Experts Group file
 json                 JSON
+macho                Mach-O is the native executable format of binaries in OS X
 matroska             Matroska file
 mp3                  MP3 file
 mp3_frame            MPEG audio layer 3 frame

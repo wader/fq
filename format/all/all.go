@@ -22,6 +22,7 @@ import (
 	_ "github.com/wader/fq/format/inet"
 	_ "github.com/wader/fq/format/jpeg"
 	_ "github.com/wader/fq/format/json"
+	_ "github.com/wader/fq/format/macho"
 	_ "github.com/wader/fq/format/matroska"
 	_ "github.com/wader/fq/format/mp3"
 	_ "github.com/wader/fq/format/mp4"

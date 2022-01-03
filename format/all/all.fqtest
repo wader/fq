@@ -9,6 +9,7 @@ $ fq -n _registry.groups.probe
   "gif",
   "gzip",
   "jpeg",
+  "macho",
   "matroska",
   "mp4",
   "ogg",
