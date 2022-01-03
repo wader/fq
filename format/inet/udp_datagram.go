@@ -27,7 +27,7 @@ func decodeUDP(d *decode.D, in interface{}) interface{} {
 	d.FieldU16("checksum", scalar.Hex)
 
 	dataLen := int64(length-8) * 8
-	if dv, _, _ := d.TryFieldFormatLen("data", dataLen, udpPayloadFormat, format.UDPDatagramIn{
+	if dv, _, _ := d.TryFieldFormatLen("data", dataLen, udpPayloadFormat, format.UDPPayloadIn{
 		SourcePort:      int(soucePort),
 		DestinationPort: int(destPort),
 	}); dv == nil {

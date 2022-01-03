@@ -16,6 +16,7 @@ func init() {
 	registry.MustRegister(decode.Format{
 		Name:        format.SLL_PACKET,
 		Description: "Linux cooked capture encapsulation",
+		Groups:      []string{format.LINK_FRAME},
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.ETHER8023_FRAME}, Group: &sllPacketEther8023Format},
 		},
@@ -112,6 +113,12 @@ var arpHdrTypeMAp = scalar.UToScalar{
 }
 
 func decodeSLL(d *decode.D, in interface{}) interface{} {
+	if lsi, ok := in.(format.LinkFrameIn); ok {
+		if lsi.Type != format.LinkTypeLINUX_SLL {
+			d.Fatalf("wrong link type")
+		}
+	}
+
 	d.FieldU16("packet_type", sllPacketTypeMap)
 	arpHdrType := d.FieldU16("arphdr_type", arpHdrTypeMAp)
 	addressLength := d.FieldU16("link_address_length")

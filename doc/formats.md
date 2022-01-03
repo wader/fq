@@ -18,6 +18,7 @@
 |`avc_pps`             |H.264/AVC&nbsp;Picture&nbsp;Parameter&nbsp;Set                |<sub></sub>|
 |`avc_sei`             |H.264/AVC&nbsp;Supplemental&nbsp;Enhancement&nbsp;Information |<sub></sub>|
 |`avc_sps`             |H.264/AVC&nbsp;Sequence&nbsp;Parameter&nbsp;Set               |<sub></sub>|
+|`bsd_loopback_frame`  |BSD&nbsp;loopback&nbsp;frame                                  |<sub>`ipv4_packet`</sub>|
 |`bzip2`               |bzip2&nbsp;compression                                        |<sub>`probe`</sub>|
 |`dns`                 |DNS&nbsp;packet                                               |<sub></sub>|
 |`dns_tcp`             |DNS&nbsp;packet&nbsp;(TCP)                                    |<sub></sub>|
@@ -57,8 +58,8 @@
 |`ogg`                 |OGG&nbsp;file                                                 |<sub>`ogg_page` `vorbis_packet` `opus_packet` `flac_metadatablock` `flac_frame`</sub>|
 |`ogg_page`            |OGG&nbsp;page                                                 |<sub></sub>|
 |`opus_packet`         |Opus&nbsp;packet                                              |<sub>`vorbis_comment`</sub>|
-|`pcap`                |PCAP&nbsp;packet&nbsp;capture                                 |<sub>`ether8023_frame` `sll_packet` `sll2_packet` `tcp_stream` `ipv4_packet`</sub>|
-|`pcapng`              |PCAPNG&nbsp;packet&nbsp;capture                               |<sub>`ether8023_frame` `sll_packet` `sll2_packet` `tcp_stream` `ipv4_packet`</sub>|
+|`pcap`                |PCAP&nbsp;packet&nbsp;capture                                 |<sub>`link_frame` `tcp_stream` `ipv4_packet`</sub>|
+|`pcapng`              |PCAPNG&nbsp;packet&nbsp;capture                               |<sub>`link_frame` `tcp_stream` `ipv4_packet`</sub>|
 |`png`                 |Portable&nbsp;Network&nbsp;Graphics&nbsp;file                 |<sub>`icc_profile` `exif`</sub>|
 |`protobuf`            |Protobuf                                                      |<sub></sub>|
 |`protobuf_widevine`   |Widevine&nbsp;protobuf                                        |<sub>`protobuf`</sub>|
@@ -81,6 +82,7 @@
 |`xing`                |Xing&nbsp;header                                              |<sub></sub>|
 |`zip`                 |ZIP&nbsp;archive                                              |<sub>`probe`</sub>|
 |`image`               |Group                                                         |<sub>`gif` `jpeg` `mp4` `png` `tiff` `webp`</sub>|
+|`link_frame`          |Group                                                         |<sub>`bsd_loopback_frame` `ether8023_frame` `sll2_packet` `sll_packet`</sub>|
 |`probe`               |Group                                                         |<sub>`adts` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `wav` `webp` `zip`</sub>|
 |`tcp_stream`          |Group                                                         |<sub>`dns`</sub>|
 |`udp_payload`         |Group                                                         |<sub>`dns`</sub>|

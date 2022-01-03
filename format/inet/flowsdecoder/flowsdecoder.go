@@ -141,6 +141,10 @@ func (fd *Decoder) EthernetFrame(bs []byte) error {
 	return fd.packet(gopacket.NewPacket(bs, layers.LayerTypeEthernet, gopacket.Lazy))
 }
 
+func (fd *Decoder) LoopbackFrame(bs []byte) error {
+	return fd.packet(gopacket.NewPacket(bs, layers.LayerTypeLoopback, gopacket.Lazy))
+}
+
 func (fd *Decoder) packet(p gopacket.Packet) error {
 	// TODO: linkType
 	ip4Layer := p.Layer(layers.LayerTypeIPv4)
