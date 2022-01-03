@@ -18,10 +18,11 @@ func init() {
 	registry.MustRegister(decode.Format{
 		Name:        format.ETHER8023_FRAME,
 		Description: "Ethernet 802.3 frame",
+		Groups:      []string{format.LINK_FRAME},
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.IPV4_PACKET}, Group: &ether8023FrameIPv4Format},
 		},
-		DecodeFn: decodeEthernet,
+		DecodeFn: decodeEthernetFrame,
 	})
 }
 
@@ -37,7 +38,13 @@ var mapUToEtherSym = scalar.Fn(func(s scalar.S) (scalar.S, error) {
 	return s, nil
 })
 
-func decodeEthernet(d *decode.D, in interface{}) interface{} {
+func decodeEthernetFrame(d *decode.D, in interface{}) interface{} {
+	if lsi, ok := in.(format.LinkFrameIn); ok {
+		if lsi.Type != format.LinkTypeETHERNET {
+			d.Fatalf("wrong link type")
+		}
+	}
+
 	d.FieldU("destination", 48, mapUToEtherSym, scalar.Hex)
 	d.FieldU("source", 48, mapUToEtherSym, scalar.Hex)
 	etherType := d.FieldU16("ether_type", format.EtherTypeMap, scalar.Hex)

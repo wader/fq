@@ -9,14 +9,8 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-// TODO: is shared between pcap and pcapng
-var linkToFormat = map[int]*decode.Group{
-	format.LinkTypeETHERNET:   &pcapngEther8023Format,
-	format.LinkTypeLINUX_SLL:  &pcapngSLLPacketFormat,
-	format.LinkTypeLINUX_SLL2: &pcapngSLL2PacketFormat,
-}
-
 var linkToDecodeFn = map[int]func(fd *flowsdecoder.Decoder, bs []byte) error{
+	format.LinkTypeNULL:      (*flowsdecoder.Decoder).LoopbackFrame,
 	format.LinkTypeETHERNET:  (*flowsdecoder.Decoder).EthernetFrame,
 	format.LinkTypeLINUX_SLL: (*flowsdecoder.Decoder).SLLPacket,
 	format.LinkTypeLINUX_SLL2: func(fd *flowsdecoder.Decoder, bs []byte) error {

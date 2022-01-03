@@ -271,9 +271,9 @@ func dnsUDPDecode(d *decode.D, in interface{}) interface{} {
 		}
 		d.Fatalf("wrong port")
 	}
-	if udi, ok := in.(format.UDPDatagramIn); ok {
-		if udi.DestinationPort == format.UDPPortDomain || udi.SourcePort == format.UDPPortDomain ||
-			udi.DestinationPort == format.UDPPortMDNS || udi.SourcePort == format.UDPPortMDNS {
+	if upi, ok := in.(format.UDPPayloadIn); ok {
+		if upi.DestinationPort == format.UDPPortDomain || upi.SourcePort == format.UDPPortDomain ||
+			upi.DestinationPort == format.UDPPortMDNS || upi.SourcePort == format.UDPPortMDNS {
 			return dnsDecode(d, false)
 		}
 		d.Fatalf("wrong port")

@@ -8,19 +8,21 @@ const (
 	IMAGE       = "image"
 	TCP_STREAM  = "tcp_stream"
 	UDP_PAYLOAD = "udp_payload"
+	LINK_FRAME  = "link_frame"
 
 	RAW  = "raw"
 	JSON = "json"
 
-	DNS             = "dns"
-	DNS_TCP         = "dns_tcp"
-	ETHER8023_FRAME = "ether8023_frame"
-	SLL_PACKET      = "sll_packet"
-	SLL2_PACKET     = "sll2_packet"
-	IPV4_PACKET     = "ipv4_packet"
-	UDP_DATAGRAM    = "udp_datagram"
-	TCP_SEGMENT     = "tcp_segment"
-	ICMP            = "icmp"
+	DNS                = "dns"
+	DNS_TCP            = "dns_tcp"
+	ETHER8023_FRAME    = "ether8023_frame"
+	BSD_LOOPBACK_FRAME = "bsd_loopback_frame"
+	SLL_PACKET         = "sll_packet"
+	SLL2_PACKET        = "sll2_packet"
+	IPV4_PACKET        = "ipv4_packet"
+	UDP_DATAGRAM       = "udp_datagram"
+	TCP_SEGMENT        = "tcp_segment"
+	ICMP               = "icmp"
 
 	AAC_FRAME           = "aac_frame"
 	ADTS                = "adts"
@@ -187,7 +189,17 @@ type MP3FrameOut struct {
 	ChannelModeIndex int
 }
 
-type UDPDatagramIn struct {
+type In struct {
+	SourcePort      int
+	DestinationPort int
+}
+
+type LinkFrameIn struct {
+	Type         int
+	LittleEndian bool // pcap endian etc
+}
+
+type UDPPayloadIn struct {
 	SourcePort      int
 	DestinationPort int
 }

@@ -11,9 +11,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var pcapEther8023Format decode.Group
-var pcapSLLPacket decode.Group
-var pcapSLL2Packet decode.Group
+var pcapLinkFrameFormat decode.Group
 var pcapTCPStreamFormat decode.Group
 var pcapIPv4PacketFormat decode.Group
 
@@ -33,9 +31,7 @@ func init() {
 		Description: "PCAP packet capture",
 		Groups:      []string{format.PROBE},
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.ETHER8023_FRAME}, Group: &pcapEther8023Format},
-			{Names: []string{format.SLL_PACKET}, Group: &pcapSLLPacket},
-			{Names: []string{format.SLL2_PACKET}, Group: &pcapSLL2Packet},
+			{Names: []string{format.LINK_FRAME}, Group: &pcapLinkFrameFormat},
 			{Names: []string{format.TCP_STREAM}, Group: &pcapTCPStreamFormat},
 			{Names: []string{format.IPV4_PACKET}, Group: &pcapIPv4PacketFormat},
 		},
@@ -89,9 +85,10 @@ func decodePcap(d *decode.D, in interface{}) interface{} {
 					_ = fn(fd, bs)
 				}
 
-				if g, ok := linkToFormat[linkType]; ok {
-					d.FieldFormatLen("packet", int64(inclLen)*8, *g, nil)
-				} else {
+				if dv, _, _ := d.TryFieldFormatLen("packet", int64(inclLen)*8, pcapLinkFrameFormat, format.LinkFrameIn{
+					Type:         linkType,
+					LittleEndian: d.Endian == decode.LittleEndian,
+				}); dv == nil {
 					d.FieldRawLen("packet", int64(inclLen)*8)
 				}
 			})
