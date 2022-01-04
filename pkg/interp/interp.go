@@ -12,7 +12,7 @@ import (
 	"io"
 	"io/fs"
 	"math/big"
-	"path/filepath"
+	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -604,6 +604,51 @@ func (i *Interp) _canDisplay(c interface{}, a []interface{}) interface{} {
 	return ok
 }
 
+type pathResolver struct {
+	prefix string
+	open   func(filename string) (io.ReadCloser, error)
+}
+
+func (i *Interp) lookupPathResolver(filename string) (pathResolver, bool) {
+	resolvePaths := []pathResolver{
+		{
+			"@builtin/",
+			func(filename string) (io.ReadCloser, error) { return builtinFS.Open(filename) },
+		},
+		{
+			"@config/", func(filename string) (io.ReadCloser, error) {
+				configDir, err := i.os.ConfigDir()
+				if err != nil {
+					return nil, err
+				}
+				return i.os.FS().Open(path.Join(configDir, filename))
+			},
+		},
+		{
+			"", func(filename string) (io.ReadCloser, error) {
+				if path.IsAbs(filename) {
+					return i.os.FS().Open(filename)
+				}
+
+				// TODO: jq $ORIGIN
+				for _, includePath := range append([]string{"./"}, i.includePaths()...) {
+					if f, err := i.os.FS().Open(path.Join(includePath, filename)); err == nil {
+						return f, nil
+					}
+				}
+
+				return nil, &fs.PathError{Op: "open", Path: filename, Err: fs.ErrNotExist}
+			},
+		},
+	}
+	for _, p := range resolvePaths {
+		if strings.HasPrefix(filename, p.prefix) {
+			return p, true
+		}
+	}
+	return pathResolver{}, false
+}
+
 func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilename string, output io.Writer) (gojq.Iter, error) {
 	gq, err := gojq.Parse(src)
 	if err != nil {
@@ -664,68 +709,68 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilenam
 			}
 			filename = filename + ".jq"
 
-			pathPrefixes := []struct {
-				prefix string
-				fn     func(filename string) (io.ReadCloser, error)
-			}{
-				{
-					"@builtin/", func(filename string) (io.ReadCloser, error) {
-						return builtinFS.Open(filename)
-					},
-				},
-				{
-					"@config/", func(filename string) (io.ReadCloser, error) {
-						configDir, err := i.os.ConfigDir()
-						if err != nil {
-							return nil, err
-						}
-						return i.os.FS().Open(filepath.Join(configDir, filename))
-					},
-				},
-				{
-					"", func(filename string) (io.ReadCloser, error) {
-						// TODO: jq $ORIGIN
-
-						if filepath.IsAbs(filename) {
-							return i.os.FS().Open(filename)
-						}
-
-						for _, path := range append([]string{"./"}, i.includePaths()...) {
-							if f, err := i.os.FS().Open(filepath.Join(path, filename)); err == nil {
-								return f, nil
-							}
-						}
-
-						return nil, &fs.PathError{Op: "open", Path: filename, Err: fs.ErrNotExist}
-					},
-				},
+			pr, ok := i.lookupPathResolver(filename)
+			if !ok {
+				return nil, fmt.Errorf("could not resolve path: %s", filename)
 			}
 
-			for _, p := range pathPrefixes {
-				if !strings.HasPrefix(filename, p.prefix) {
-					continue
-				}
+			if q, ok := ni.includeCache[filename]; ok {
+				return q, nil
+			}
 
-				if q, ok := ni.includeCache[filename]; ok {
-					return q, nil
-				}
+			filenamePart := strings.TrimPrefix(filename, pr.prefix)
 
-				filenamePart := strings.TrimPrefix(filename, p.prefix)
-				f, err := p.fn(filenamePart)
-				if err != nil {
-					if !isTry {
-						return nil, err
-					}
-					f = io.NopCloser(&bytes.Buffer{})
+			f, err := pr.open(filenamePart)
+			if err != nil {
+				if !isTry {
+					return nil, err
 				}
-				defer f.Close()
+				f = io.NopCloser(&bytes.Buffer{})
+			}
+			defer f.Close()
 
-				b, err := io.ReadAll(f)
+			b, err := io.ReadAll(f)
+			if err != nil {
+				return nil, err
+			}
+			s := string(b)
+			q, err := gojq.Parse(s)
+			if err != nil {
+				p := queryErrorPosition(s, err)
+				return nil, compileError{
+					err:      err,
+					what:     "parse",
+					filename: filenamePart,
+					pos:      p,
+				}
+			}
+
+			// not identity body means it returns something, threat as dynamic include
+			if q.Term.Type != gojq.TermTypeIdentity {
+				gc, err := gojq.Compile(q, funcCompilerOpts...)
 				if err != nil {
 					return nil, err
 				}
-				s := string(b)
-				q, err := gojq.Parse(s)
+				iter := gc.RunWithContext(context.Background(), nil)
+				var vs []interface{}
+				for {
+					v, ok := iter.Next()
+					if !ok {
+						break
+					}
+					if err, ok := v.(error); ok {
+						return nil, err
+					}
+					vs = append(vs, v)
+				}
+				if len(vs) != 1 {
+					return nil, fmt.Errorf("dynamic include: must output one string, got: %#v", vs)
+				}
+				s, sOk := vs[0].(string)
+				if !sOk {
+					return nil, fmt.Errorf("dynamic include: must be string, got %#v", s)
+				}
+				q, err = gojq.Parse(s)
 				if err != nil {
 					p := queryErrorPosition(s, err)
 					return nil, compileError{
@@ -735,67 +780,30 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilenam
 						pos:      p,
 					}
 				}
-
-				// not identity body means it returns something, threat as dynamic include
-				if q.Term.Type != gojq.TermTypeIdentity {
-					gc, err := gojq.Compile(q, funcCompilerOpts...)
-					if err != nil {
-						return nil, err
-					}
-					iter := gc.RunWithContext(context.Background(), nil)
-					var vs []interface{}
-					for {
-						v, ok := iter.Next()
-						if !ok {
-							break
-						}
-						if err, ok := v.(error); ok {
-							return nil, err
-						}
-						vs = append(vs, v)
-					}
-					if len(vs) != 1 {
-						return nil, fmt.Errorf("dynamic include: must output one string, got: %#v", vs)
-					}
-					s, sOk := vs[0].(string)
-					if !sOk {
-						return nil, fmt.Errorf("dynamic include: must be string, got %#v", s)
-					}
-					q, err = gojq.Parse(s)
-					if err != nil {
-						p := queryErrorPosition(s, err)
-						return nil, compileError{
-							err:      err,
-							what:     "parse",
-							filename: filenamePart,
-							pos:      p,
-						}
-					}
-				}
-
-				// TODO: some better way of handling relative includes that
-				// works with @builtin etc
-				basePath := filepath.Dir(name)
-				for _, i := range q.Imports {
-					rewritePath := func(base, path string) string {
-						if strings.HasPrefix(i.IncludePath, "@") {
-							return path
-						}
-						if filepath.IsAbs(i.IncludePath) {
-							return path
-						}
-						return filepath.Join(base, path)
-					}
-					i.IncludePath = rewritePath(basePath, i.IncludePath)
-					i.ImportPath = rewritePath(basePath, i.ImportPath)
-				}
-
-				i.includeCache[filename] = q
-
-				return q, nil
 			}
 
-			panic("unreachable")
+			// TODO: some better way of handling relative includes that
+			// works with @builtin etc
+			basePath := path.Dir(name)
+			for _, qi := range q.Imports {
+				rewritePath := func(base, includePath string) string {
+					if strings.HasPrefix(includePath, "@") || path.IsAbs(includePath) {
+						return includePath
+					}
+
+					return path.Join(base, includePath)
+				}
+				if qi.IncludePath != "" {
+					qi.IncludePath = rewritePath(basePath, qi.IncludePath)
+				}
+				if qi.ImportPath != "" {
+					qi.ImportPath = rewritePath(basePath, qi.ImportPath)
+				}
+			}
+
+			i.includeCache[filename] = q
+
+			return q, nil
 		},
 	}))
 
