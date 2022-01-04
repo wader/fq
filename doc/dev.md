@@ -118,3 +118,12 @@ MultiBitReader
 ```
 jq -n '[1,2,3,4] | .[null:], .[null:2], .[2:null], .[:null]'
 ```
+
+## Setup docker desktop with golang windows container
+
+```sh
+git clone https://github.com/StefanScherer/windows-docker-machine.git
+cd windows-docker-machine
+vagrant up 2016-box
+cd ../fq
+docker --context 2016-box run --rm -ti -v "C:${PWD//\//\\}:C:${PWD//\//\\}" -w "$PWD" golang:1.17.5-windowsservercore-ltsc2016
