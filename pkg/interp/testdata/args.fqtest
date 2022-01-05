@@ -55,6 +55,7 @@ aac_frame            Advanced Audio Coding frame
 adts                 Audio Data Transport Stream
 adts_frame           Audio Data Transport Stream frame
 apev2                APEv2 metadata tag
+ar                   Unix archive
 av1_ccr              AV1 Codec Configuration Record
 av1_frame            AV1 frame
 av1_obu              AV1 Open Bitstream Unit

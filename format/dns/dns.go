@@ -30,17 +30,17 @@ const (
 )
 
 var classNames = scalar.URangeToScalar{
-	{0x0000, 0x0000}:   {Sym: "Reserved", Description: "Reserved"},
-	{classIN, classIN}: {Sym: "IN", Description: "Internet"},
-	{0x0002, 0x0002}:   {Sym: "Unassigned", Description: "Unassigned"},
-	{0x0003, 0x0003}:   {Sym: "Chaos", Description: "Chaos"},
-	{0x0004, 0x0004}:   {Sym: "Hesiod", Description: "Hesiod"},
-	{0x0005, 0x00fd}:   {Sym: "Unassigned", Description: "Unassigned"},
-	{0x00fe, 0x00fe}:   {Sym: "QCLASS_NONE", Description: "QCLASS NONE"},
-	{0x00ff, 0x00ff}:   {Sym: "QCLASS_ANY", Description: "QCLASS ANY"},
-	{0x0100, 0xfeff}:   {Sym: "Unassigned", Description: "Unassigned"},
-	{0xff00, 0xfffe}:   {Sym: "Private", Description: "Reserved for Private Use"},
-	{0xffff, 0xffff}:   {Sym: "Reserved", Description: "Reserved"},
+	{Range: [2]uint64{0x0000, 0x0000}, S: scalar.S{Sym: "Reserved", Description: "Reserved"}},
+	{Range: [2]uint64{classIN, classIN}, S: scalar.S{Sym: "IN", Description: "Internet"}},
+	{Range: [2]uint64{0x0002, 0x0002}, S: scalar.S{Sym: "Unassigned", Description: "Unassigned"}},
+	{Range: [2]uint64{0x0003, 0x0003}, S: scalar.S{Sym: "Chaos", Description: "Chaos"}},
+	{Range: [2]uint64{0x0004, 0x0004}, S: scalar.S{Sym: "Hesiod", Description: "Hesiod"}},
+	{Range: [2]uint64{0x0005, 0x00fd}, S: scalar.S{Sym: "Unassigned", Description: "Unassigned"}},
+	{Range: [2]uint64{0x00fe, 0x00fe}, S: scalar.S{Sym: "QCLASS_NONE", Description: "QCLASS NONE"}},
+	{Range: [2]uint64{0x00ff, 0x00ff}, S: scalar.S{Sym: "QCLASS_ANY", Description: "QCLASS ANY"}},
+	{Range: [2]uint64{0x0100, 0xfeff}, S: scalar.S{Sym: "Unassigned", Description: "Unassigned"}},
+	{Range: [2]uint64{0xff00, 0xfffe}, S: scalar.S{Sym: "Private", Description: "Reserved for Private Use"}},
+	{Range: [2]uint64{0xffff, 0xffff}, S: scalar.S{Sym: "Reserved", Description: "Reserved"}},
 }
 
 const (

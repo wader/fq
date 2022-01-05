@@ -24,6 +24,9 @@ const (
 	TCP_SEGMENT        = "tcp_segment"
 	ICMP               = "icmp"
 
+	ELF = "elf"
+	AR  = "ar"
+
 	AAC_FRAME           = "aac_frame"
 	ADTS                = "adts"
 	ADTS_FRAME          = "adts_frame"
@@ -32,7 +35,6 @@ const (
 	AV1_FRAME           = "av1_frame"
 	AV1_OBU             = "av1_obu"
 	BZIP2               = "bzip2"
-	ELF                 = "elf"
 	EXIF                = "exif"
 	FLAC                = "flac"
 	FLAC_FRAME          = "flac_frame"
@@ -207,4 +209,14 @@ type UDPPayloadIn struct {
 type TCPStreamIn struct {
 	SourcePort      int
 	DestinationPort int
+}
+
+type X86_64In struct {
+	Base      int64
+	SymLookup func(uint64) (string, uint64)
+}
+
+type ARM64In struct {
+	Base      int64
+	SymLookup func(uint64) (string, uint64)
 }

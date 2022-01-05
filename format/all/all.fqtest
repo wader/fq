@@ -1,6 +1,7 @@
 $ fq -n _registry.groups.probe
 [
   "adts",
+  "ar",
   "bzip2",
   "elf",
   "flac",

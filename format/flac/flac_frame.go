@@ -348,14 +348,14 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 				// 1xxxxx : SUBFRAME_LPC, xxxxx=order-1
 				lpcOrder := -1
 				var subframeTypeRangeMap = scalar.URangeToScalar{
-					{0b000000, 0b000000}: {Sym: SubframeConstant},
-					{0b000001, 0b000001}: {Sym: SubframeVerbatim},
-					{0b000010, 0b000011}: {Sym: SubframeReserved},
-					{0b000100, 0b000111}: {Sym: SubframeReserved},
-					{0b001000, 0b001100}: {Sym: SubframeFixed},
-					{0b001101, 0b001111}: {Sym: SubframeReserved},
-					{0b010000, 0b011111}: {Sym: SubframeReserved},
-					{0b100000, 0b111111}: {Sym: SubframeLPC},
+					{Range: [2]uint64{0b000000, 0b000000}, S: scalar.S{Sym: SubframeConstant}},
+					{Range: [2]uint64{0b000001, 0b000001}, S: scalar.S{Sym: SubframeVerbatim}},
+					{Range: [2]uint64{0b000010, 0b000011}, S: scalar.S{Sym: SubframeReserved}},
+					{Range: [2]uint64{0b000100, 0b000111}, S: scalar.S{Sym: SubframeReserved}},
+					{Range: [2]uint64{0b001000, 0b001100}, S: scalar.S{Sym: SubframeFixed}},
+					{Range: [2]uint64{0b001101, 0b001111}, S: scalar.S{Sym: SubframeReserved}},
+					{Range: [2]uint64{0b010000, 0b011111}, S: scalar.S{Sym: SubframeReserved}},
+					{Range: [2]uint64{0b100000, 0b111111}, S: scalar.S{Sym: SubframeLPC}},
 				}
 				subframeTypeS := d.FieldScalarU6("subframe_type", subframeTypeRangeMap, scalar.Bin)
 				switch subframeTypeS.SymStr() {
