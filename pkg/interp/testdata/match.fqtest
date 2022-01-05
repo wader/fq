@@ -1,12 +1,12 @@
 $ fq -i -d mp3 . /test.mp3
-mp3> .frames[1].data | match("3\u0085"; "b")
+mp3> .frames[1].data | tobytes | match("3\u0085"; "b")
 {
   "captures": [],
   "length": 2,
   "offset": 4,
   "string": "3\ufffd"
 }
-mp3> .frames[1].data | match([0x33, 0x85]), first(scan([0x33, 0x85]) | hex), first(splits([0x33, 0x85]) | hex), first(scan_toend([0x33, 0x85]) | hex)
+mp3> .frames[1].data | tobytes | match([0x33, 0x85]), first(scan([0x33, 0x85]) | hex), first(splits([0x33, 0x85]) | hex), first(scan_toend([0x33, 0x85]) | hex)
 {
   "captures": [],
   "length": 2,

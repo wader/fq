@@ -6,7 +6,7 @@ def _buffer_fn(f):
 
 def _buffer_try_orig(bfn; fn):
   ( . as $c
-  | if type == "string" and (_is_buffer | not) then fn
+  | if type == "string" then fn
     else
       ( $c
       | tobytesrange
