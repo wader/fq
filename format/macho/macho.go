@@ -251,7 +251,7 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 			if archBits == 32 {
 				d.FieldStruct("segment_command", func(d *decode.D) {
 					d.FieldRawLen("segname", 16*8)
-					d.FieldU32("vmaddr")
+					d.FieldU32("vmaddr", scalar.Hex)
 					d.FieldU32("vmsize")
 					d.FieldU32("fileoff")
 					d.FieldU32("tfilesize")
@@ -265,7 +265,7 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 					d.FieldStrFn("segname", func(d *decode.D) string {
 						return string(d.BytesLen(16))
 					})
-					d.FieldU64("vmaddr")
+					d.FieldU64("vmaddr", scalar.Hex)
 					d.FieldU64("vmsize")
 					d.FieldU64("fileoff")
 					d.FieldU64("tfilesize")
@@ -287,10 +287,10 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 						return string(d.BytesLen(16))
 					})
 					if archBits == 32 {
-						d.FieldU32("address")
+						d.FieldU32("address", scalar.Hex)
 						d.FieldU32("size")
 					} else {
-						d.FieldU64("address")
+						d.FieldU64("address", scalar.Hex)
 						d.FieldU64("size")
 					}
 					d.FieldU32("offset")
@@ -338,7 +338,7 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 			// better visualization needed for this specific for major architectures
 		case LC_ROUTINES, LC_ROUTINES_64:
 			if archBits == 32 {
-				d.FieldU32("init_address")
+				d.FieldU32("init_address", scalar.Hex)
 				d.FieldU32("init_module")
 				d.FieldU32("reserved1", d.BitBufIsZero())
 				d.FieldU32("reserved2", d.BitBufIsZero())
@@ -347,7 +347,7 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldU32("reserved5", d.BitBufIsZero())
 				d.FieldU32("reserved6", d.BitBufIsZero())
 			} else {
-				d.FieldU64("init_address")
+				d.FieldU64("init_address", scalar.Hex)
 				d.FieldU64("init_module")
 				d.FieldU64("reserved1", d.BitBufIsZero())
 				d.FieldU64("reserved2", d.BitBufIsZero())
@@ -463,7 +463,7 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 			d.FieldStruct("fvmlib", func(d *decode.D) {
 				offset := d.FieldU32("offset")
 				d.FieldU32("minor_version")
-				d.FieldU32("header_addr")
+				d.FieldU32("header_addr", scalar.Hex)
 				d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
 			})
 		default:
