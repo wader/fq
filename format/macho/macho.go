@@ -314,20 +314,14 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldU32("timestamp") // TODO human readable
 				d.FieldU32("current_version")
 				d.FieldU32("compatibility_version")
-				d.FieldStrFn("name", func(d *decode.D) string {
-					return string(d.BytesLen(int(cmdsize) - int(offset)))
-				})
+				d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
 			})
 		case LC_LOAD_DYLINKER, LC_ID_DYLINKER, LC_DYLD_ENVIRONMENT:
 			offset := d.FieldU32("offset")
-			d.FieldStrFn("name", func(d *decode.D) string {
-				return string(d.BytesLen(int(cmdsize) - int(offset)))
-			})
+			d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
 		case LC_RPATH:
 			offset := d.FieldU32("offset")
-			d.FieldStrFn("name", func(d *decode.D) string {
-				return string(d.BytesLen(int(cmdsize) - int(offset)))
-			})
+			d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
 		case LC_PREBOUND_DYLIB:
 			offset := d.FieldU32("offset")
 			nmodules := d.FieldU32("nmodules")
@@ -364,9 +358,7 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 			}
 		case LC_SUB_UMBRELLA, LC_SUB_LIBRARY, LC_SUB_CLIENT, LC_SUB_FRAMEWORK:
 			offset := d.FieldU32("offset")
-			d.FieldStrFn("name", func(d *decode.D) string {
-				return string(d.BytesLen(int(cmdsize) - int(offset)))
-			})
+			d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
 		case LC_SYMTAB:
 			d.FieldU32("symoff")
 			d.FieldU32("nsyms")
@@ -472,9 +464,7 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 				offset := d.FieldU32("offset")
 				d.FieldU32("minor_version")
 				d.FieldU32("header_addr")
-				d.FieldStrFn("name", func(d *decode.D) string {
-					return string(d.BytesLen(int(cmdsize) - int(offset)))
-				})
+				d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
 			})
 		default:
 			if _, ok := loadCommands[cmd]; !ok {
