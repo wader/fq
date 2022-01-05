@@ -21,6 +21,7 @@ func init() {
 	})
 }
 
+//nolint:revive
 const (
 	MH_MAGIC    = 0xfeedface
 	MH_CIGAM    = 0xcefaedfe
@@ -85,6 +86,7 @@ var cpuSubTypes = scalar.SToSymStr{
 	12: "CPU_SUBTYPE_UVAXIII",
 }
 
+//nolint:revive
 const (
 	LC_REQ_DYLD                 = 0x80000000
 	LC_SEGMENT                  = 0x1
