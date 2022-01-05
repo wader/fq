@@ -54,9 +54,9 @@ func init() {
 		return []Function{
 			{"_readline", 0, 2, i.readline, nil},
 			{"eval", 1, 2, nil, i.eval},
-			{"stdin", 0, 0, nil, i.makeStdioFn(i.os.Stdin())},
-			{"stdout", 0, 0, nil, i.makeStdioFn(i.os.Stdout())},
-			{"stderr", 0, 0, nil, i.makeStdioFn(i.os.Stderr())},
+			{"_stdin", 0, 0, nil, i.makeStdioFn(i.os.Stdin())},
+			{"_stdout", 0, 0, nil, i.makeStdioFn(i.os.Stdout())},
+			{"_stderr", 0, 0, nil, i.makeStdioFn(i.os.Stderr())},
 			{"_extkeys", 0, 0, i._extKeys, nil},
 			{"_exttype", 0, 0, i._extType, nil},
 			{"_global_state", 0, 1, i.makeStateFn(i.state), nil},
