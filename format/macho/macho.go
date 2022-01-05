@@ -37,10 +37,10 @@ var classBits = scalar.UToSymU{
 }
 
 var endianNames = scalar.UToSymStr{
-	MH_MAGIC:    "little-endian",
-	MH_CIGAM:    "big-endian",
-	MH_MAGIC_64: "little-endian",
-	MH_CIGAM_64: "big-endian",
+	MH_MAGIC:    "little_endian",
+	MH_CIGAM:    "big_endian",
+	MH_MAGIC_64: "little_endian",
+	MH_CIGAM_64: "big_endian",
 }
 
 var cpuTypes = scalar.SToSymStr{
