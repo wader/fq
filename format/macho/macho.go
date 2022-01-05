@@ -250,7 +250,7 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 			var nsects uint64
 			if archBits == 32 {
 				d.FieldStruct("segment_command", func(d *decode.D) {
-					d.FieldRawLen("segname", 16*8)
+					d.FieldUTF8NullFixedLen("segname", 16*8)
 					d.FieldU32("vmaddr", scalar.Hex)
 					d.FieldU32("vmsize")
 					d.FieldU32("fileoff")
@@ -262,9 +262,7 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 				})
 			} else {
 				d.FieldStruct("segment_command_64", func(d *decode.D) {
-					d.FieldStrFn("segname", func(d *decode.D) string {
-						return string(d.BytesLen(16))
-					})
+					d.FieldUTF8NullFixedLen("segname", 16*8)
 					d.FieldU64("vmaddr", scalar.Hex)
 					d.FieldU64("vmsize")
 					d.FieldU64("fileoff")
