@@ -235,7 +235,7 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 		}
 	})
 	ncmdsIdx := 0
-	d.FieldStructArrayLoop("load_command", "load_command", func() bool {
+	d.FieldStructArrayLoop("load_commands", "load_command", func() bool {
 		return ncmdsIdx < int(ncmds)
 	}, func(d *decode.D) {
 		cmd := d.FieldU32("cmd", loadCommands)
@@ -276,7 +276,7 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 				})
 			}
 			var nsectIdx uint64
-			d.FieldStructArrayLoop("section", "section", func() bool {
+			d.FieldStructArrayLoop("sections", "section", func() bool {
 				return nsectIdx < nsects
 			},
 				func(d *decode.D) {
@@ -412,7 +412,7 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 			d.FieldU32("sdk")
 			ntools := d.FieldU32("ntools")
 			var ntoolsIdx uint64
-			d.FieldStructArrayLoop("tools", "tools", func() bool {
+			d.FieldStructArrayLoop("tools", "tool", func() bool {
 				return ntoolsIdx < ntools
 			}, func(d *decode.D) {
 				d.FieldU32("tool")
