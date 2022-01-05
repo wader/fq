@@ -15,7 +15,7 @@ import (
 func init() {
 	registry.MustRegister(decode.Format{
 		Name:        format.MACHO,
-		Description: "Mach-O is the native executable format of binaries in OS X",
+		Description: "Mach-O macOS executable",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    machoDecode,
 	})
