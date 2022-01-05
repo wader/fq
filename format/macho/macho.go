@@ -28,13 +28,6 @@ const (
 	MH_CIGAM_64 = 0xcffaedfe
 )
 
-var magicToHex = scalar.UToSymStr{
-	MH_MAGIC:    "0xfeedface",
-	MH_CIGAM:    "0xcefaedfe",
-	MH_MAGIC_64: "0xfeedfacf",
-	MH_CIGAM_64: "0xcffaedfe",
-}
-
 var classBits = scalar.UToSymU{
 	MH_MAGIC:    32,
 	MH_CIGAM:    32,
@@ -227,7 +220,7 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 
 	d.SeekAbs(0)
 	d.FieldStruct(fmt.Sprintf("mach_header_%d", archBits), func(d *decode.D) {
-		d.FieldU32("magic", magicToHex, classBits, endianNames)
+		d.FieldU32("magic", scalar.Hex, classBits, endianNames)
 		d.FieldS32("cputype", cpuTypes)
 		d.FieldS32("cpusubtype")
 		// TODO ask about how to symmap this as it depends on a pair of values
