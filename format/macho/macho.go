@@ -323,7 +323,7 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 		case LC_PREBOUND_DYLIB:
 			offset := d.FieldU32("offset")
 			nmodules := d.FieldU32("nmodules")
-			d.FieldBitBufFn("linked_modules", func(d *decode.D) *bitio.Buffer {
+			d.FieldBitBufFn("linked_modules", func(d *decode.D) bitio.ReaderAtSeeker {
 				return d.RawLen(int64((nmodules / 8) + (nmodules % 8)))
 			}) // TODO this needs better representation
 			d.FieldStrFn("name", func(d *decode.D) string {
