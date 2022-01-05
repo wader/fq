@@ -260,6 +260,7 @@ notable is support for arbitrary-precision integers.
 
 - All standard library functions from jq
 - Adds a few new general functions:
+  - `print/0`, `println/0`, `printerr/0`, `printerrln` prints to stdout and stderr.
   - `streaks/0`, `streaks_by/1` like `group` but groups streaks based on condition.
   - `count/0`, `count_by/1` like `group` but counts groups lengths.
   - `debug/1` like `debug/0` but uses arg to produce debug message. `{a: 123} | debug({a}) | ...`.
