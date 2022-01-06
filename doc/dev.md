@@ -127,3 +127,11 @@ cd windows-docker-machine
 vagrant up 2016-box
 cd ../fq
 docker --context 2016-box run --rm -ti -v "C:${PWD//\//\\}:C:${PWD//\//\\}" -w "$PWD" golang:1.17.5-windowsservercore-ltsc2016
+```
+
+## Release process
+
+Run and follow instructions:
+```
+make release=1.2.3
+```
