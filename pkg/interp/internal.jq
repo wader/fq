@@ -9,11 +9,17 @@ def println: ., "\n" | print;
 def printerr: tostring | _stderr;
 def printerrln: ., "\n" | printerr;
 
+# jq compat
 def debug:
   ( ((["DEBUG", .] | tojson) | printerrln)
   , .
   );
 def debug(f): . as $c | f | debug | $c;
+# jq compat, output to compact json to stderr and let input thru
+def stderr:
+  ( (tojson | printerr)
+  , .
+  );
 
 def _global_var($k): _global_state[$k];
 def _global_var($k; f): _global_state(_global_state | .[$k] |= f) | .[$k];
