@@ -239,10 +239,10 @@ $ fq -d zip verbose /test9.zip
  0x010|00 00 00 04                                    |....            |            width: 4 0x10-0x13.7 (4)
  0x010|            00 00 00 04                        |    ....        |            height: 4 0x14-0x17.7 (4)
  0x010|                        01                     |        .       |            bit_depth: 1 0x18-0x18.7 (1)
- 0x010|                           00                  |         .      |            color_type: "g" (0) (Grayscale) 0x19-0x19.7 (1)
+ 0x010|                           00                  |         .      |            color_type: "grayscale" (0) 0x19-0x19.7 (1)
  0x010|                              00               |          .     |            compression_method: "deflate" (0) 0x1a-0x1a.7 (1)
- 0x010|                                 00            |           .    |            filter_method: "Adaptive filtering" (0) 0x1b-0x1b.7 (1)
- 0x010|                                    00         |            .   |            interlace_method: "No interlace" (0) 0x1c-0x1c.7 (1)
+ 0x010|                                 00            |           .    |            filter_method: "adaptive_filtering" (0) 0x1b-0x1b.7 (1)
+ 0x010|                                    00         |            .   |            interlace_method: "none" (0) 0x1c-0x1c.7 (1)
  0x010|                                       81 8a a3|             ...|            crc: 0x818aa3d3 (valid) 0x1d-0x20.7 (4)
  0x020|d3                                             |.               |
       |                                               |                |          [1]{}: chunk 0x21-0x30.7 (16)

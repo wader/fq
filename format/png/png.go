@@ -68,12 +68,12 @@ const (
 	colorTypeRGBA               = 6
 )
 
-var colorTypeMap = scalar.UToScalar{
-	colorTypeGrayscale:          {Sym: "g", Description: "Grayscale"},
-	colorTypeRGB:                {Sym: "rgb", Description: "RGB"},
-	colorTypePalette:            {Sym: "p", Description: "Palette"},
-	colorTypeGrayscaleWithAlpha: {Sym: "ga", Description: "Grayscale with alpha"},
-	colorTypeRGBA:               {Sym: "rgba", Description: "RGBA"},
+var colorTypeMap = scalar.UToSymStr{
+	colorTypeGrayscale:          "grayscale",
+	colorTypeRGB:                "rgb",
+	colorTypePalette:            "palette",
+	colorTypeGrayscaleWithAlpha: "grayscale_alpha",
+	colorTypeRGBA:               "rgba",
 }
 
 func pngDecode(d *decode.D, in interface{}) interface{} {
@@ -84,22 +84,18 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldStructArrayLoop("chunks", "chunk", func() bool { return d.NotEnd() && !iEndFound }, func(d *decode.D) {
 		chunkLength := d.FieldU32("length")
 		crcStartPos := d.Pos()
-		// TODO: this is a bit weird, use struct?
-		chunkType := d.FieldStrFn("type", func(d *decode.D) string {
-			chunkType := d.UTF8(4)
-			// upper/lower case in chunk type is used to set flags
-			d.SeekRel(-4 * 8)
-			d.SeekRel(3)
-			d.FieldBool("ancillary")
-			d.SeekRel(7)
-			d.FieldBool("private")
-			d.SeekRel(7)
-			d.FieldBool("reserved")
-			d.SeekRel(7)
-			d.FieldBool("safe_to_copy")
-			d.SeekRel(4)
-			return chunkType
-		})
+		chunkType := d.FieldUTF8("type", 4)
+		// upper/lower case in chunk type is used for flags
+		d.SeekRel(-4 * 8)
+		d.SeekRel(3)
+		d.FieldBool("ancillary")
+		d.SeekRel(7)
+		d.FieldBool("private")
+		d.SeekRel(7)
+		d.FieldBool("reserved")
+		d.SeekRel(7)
+		d.FieldBool("safe_to_copy")
+		d.SeekRel(4)
 
 		d.LenFn(int64(chunkLength)*8, func(d *decode.D) {
 			switch chunkType {
@@ -110,11 +106,11 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 				colorType = d.FieldU8("color_type", colorTypeMap)
 				d.FieldU8("compression_method", compressionNames)
 				d.FieldU8("filter_method", scalar.UToSymStr{
-					0: "Adaptive filtering",
+					0: "adaptive_filtering",
 				})
 				d.FieldU8("interlace_method", scalar.UToSymStr{
-					0: "No interlace",
-					1: "Adam7 interlace",
+					0: "none",
+					1: "adam7",
 				})
 			case "tEXt":
 				d.FieldUTF8Null("keyword")
@@ -196,6 +192,31 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 			case "fdAT":
 				d.FieldU32("sequence_number")
 				d.FieldRawLen("data", d.BitsLeft()-32)
+			case "PLTE":
+				d.FieldArray("palette", func(d *decode.D) {
+					for !d.End() {
+						d.FieldStruct("color", func(d *decode.D) {
+							d.FieldU8("r")
+							d.FieldU8("g")
+							d.FieldU8("b")
+						})
+					}
+				})
+			case "tRNS":
+				switch colorType {
+				case colorTypeGrayscale:
+					d.FieldU16("alpha")
+				case colorTypeRGB:
+					d.FieldU16("r")
+					d.FieldU16("g")
+					d.FieldU16("b")
+				case colorTypePalette:
+					d.FieldArray("alphas", func(d *decode.D) {
+						for !d.End() {
+							d.FieldU8("alpha")
+						}
+					})
+				}
 			default:
 				if chunkType == "IEND" {
 					iEndFound = true
