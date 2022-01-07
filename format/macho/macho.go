@@ -68,22 +68,117 @@ var cpuTypes = scalar.SToSymStr{
 	255:       "CPU_TYPE_VEO",
 }
 
-// TODO subtypes stosymstr depends on cputype and a signed integer
-var cpuSubTypes = scalar.SToSymStr{
-	-1: "CPU_SUBTYPE_MULTIPLE",
-	0:  "CPU_SUBTYPE_VAX_ALL",
-	1:  "CPU_SUBTYPE_VAX780",
-	2:  "CPU_SUBTYPE_VAX785",
-	3:  "CPU_SUBTYPE_VAX750",
-	4:  "CPU_SUBTYPE_VAX730",
-	5:  "CPU_SUBTYPE_UVAXI",
-	6:  "CPU_SUBTYPE_UVAXII",
-	7:  "CPU_SUBTYPE_VAX8200",
-	8:  "CPU_SUBTYPE_VAX8500",
-	9:  "CPU_SUBTYPE_VAX8600",
-	10: "CPU_SUBTYPE_VAX8650",
-	11: "CPU_SUBTYPE_VAX8800",
-	12: "CPU_SUBTYPE_UVAXIII",
+var cpuSubTypes = map[int64]scalar.SToSymStr{
+	-1: {
+		-1: "CPU_SUBTYPE_MULTIPLE",
+	},
+	1: {
+		0:  "CPU_SUBTYPE_VAX_ALL",
+		1:  "CPU_SUBTYPE_VAX780",
+		2:  "CPU_SUBTYPE_VAX785",
+		3:  "CPU_SUBTYPE_VAX750",
+		4:  "CPU_SUBTYPE_VAX730",
+		5:  "CPU_SUBTYPE_UVAXI",
+		6:  "CPU_SUBTYPE_UVAXII",
+		7:  "CPU_SUBTYPE_VAX8200",
+		8:  "CPU_SUBTYPE_VAX8500",
+		9:  "CPU_SUBTYPE_VAX8600",
+		10: "CPU_SUBTYPE_VAX8650",
+		11: "CPU_SUBTYPE_VAX8800",
+		12: "CPU_SUBTYPE_UVAXIII",
+	},
+	6: {
+		1: "CPU_SUBTYPE_MC680X0_ALL", // 1: CPU_SUBTYPE_MC68030
+		2: "CPU_SUBTYPE_MC68040",
+		3: "CPU_SUBTYPE_MC68030_ONLY",
+	},
+	7: {
+		intelSubTypeHelper(3, 0):  "CPU_SUBTYPE_I386_ALL", // CPU_SUBTYPE_I386
+		intelSubTypeHelper(4, 0):  "CPU_SUBTYPE_I486",
+		intelSubTypeHelper(4, 8):  "CPU_SUBTYPE_486SX",
+		intelSubTypeHelper(5, 0):  "CPU_SUBTYPE_PENT",
+		intelSubTypeHelper(6, 1):  "CPU_SUBTYPE_PENTPRO",
+		intelSubTypeHelper(6, 3):  "CPU_SUBTYPE_PENTII_M3",
+		intelSubTypeHelper(6, 5):  "CPU_SUBTYPE_PENTII_M5",
+		intelSubTypeHelper(7, 6):  "CPU_SUBTYPE_CELERON",
+		intelSubTypeHelper(7, 7):  "CPU_SUBTYPE_CELERON_MOBILE",
+		intelSubTypeHelper(8, 0):  "CPU_SUBTYPE_PENTIUM_3",
+		intelSubTypeHelper(8, 1):  "CPU_SUBTYPE_PENTIUM_3_M",
+		intelSubTypeHelper(8, 2):  "CPU_SUBTYPE_PENTIUM_3_XEON",
+		intelSubTypeHelper(9, 0):  "CPU_SUBTYPE_PENTIUM_M",
+		intelSubTypeHelper(10, 0): "CPU_SUBTYPE_PENTIUM_4",
+		intelSubTypeHelper(10, 1): "CPU_SUBTYPE_PENTIUM_4_M",
+		intelSubTypeHelper(11, 0): "CPU_SUBTYPE_ITANIUM",
+		intelSubTypeHelper(11, 1): "CPU_SUBTYPE_ITANIUM_2",
+		intelSubTypeHelper(12, 0): "CPU_SUBTYPE_XEON",
+		intelSubTypeHelper(12, 1): "CPU_SUBTYPE_XEON_2",
+	},
+	8: {
+		0: "CPU_SUBTYPE_MIPS_ALL",
+		1: "CPU_SUBTYPE_MIPS_R2300",
+		2: "CPU_SUBTYPE_MIPS_R2600",
+		3: "CPU_SUBTYPE_MIPS_R2800",
+		4: "CPU_SUBTYPE_MIPS_R2000A",
+		5: "CPU_SUBTYPE_MIPS_R2000",
+		6: "CPU_SUBTYPE_MIPS_R3000A",
+		7: "CPU_SUBTYPE_MIPS_R3000",
+	},
+	10: {
+		0: "CPU_SUBTYPE_MC98000_ALL",
+		1: "CPU_SUBTYPE_MC98001",
+	},
+	11: {
+		0: "CPU_SUBTYPE_HPPA_ALL",
+		1: "CPU_SUBTYPE_HPPA_7100",
+		2: "CPU_SUBTYPE_HPPA_7100_LC",
+	},
+	12: {
+		0:  "CPU_SUBTYPE_ARM_ALL",
+		5:  "CPU_SUBTYPE_ARM_V4T",
+		6:  "CPU_SUBTYPE_ARM_V6",
+		7:  "CPU_SUBTYPE_ARM_V5TEJ",
+		8:  "CPU_SUBTYPE_ARM_XSCALE",
+		9:  "CPU_SUBTYPE_ARM_V7",
+		10: "CPU_SUBTYPE_ARM_V7F",
+		11: "CPU_SUBTYPE_ARM_V7S",
+		12: "CPU_SUBTYPE_ARM_V7K",
+		13: "CPU_SUBTYPE_ARM_V8",
+		14: "CPU_SUBTYPE_ARM_V6M",
+		15: "CPU_SUBTYPE_ARM_V7M",
+		16: "CPU_SUBTYPE_ARM_V7EM",
+	},
+	13: {
+		0: "CPU_SUBTYPE_MC88000_ALL",
+		1: "CPU_SUBTYPE_MC88100",
+		2: "CPU_SUBTYPE_MC88110",
+	},
+	14: {
+		0: "CPU_SUBTYPE_SPARC_ALL",
+	},
+	15: {
+		0: "CPU_SUBTYPE_I860_ALL",
+		1: "CPU_SUBTYPE_I860_A860",
+	},
+	18: {
+		0:   "CPU_SUBTYPE_POWERPC_ALL",
+		1:   "CPU_SUBTYPE_POWERPC_601",
+		2:   "CPU_SUBTYPE_POWERPC_602",
+		3:   "CPU_SUBTYPE_POWERPC_603",
+		4:   "CPU_SUBTYPE_POWERPC_603E",
+		5:   "CPU_SUBTYPE_POWERPC_603EV",
+		6:   "CPU_SUBTYPE_POWERPC_604",
+		7:   "CPU_SUBTYPE_POWERPC_604E",
+		8:   "CPU_SUBTYPE_POWERPC_620",
+		9:   "CPU_SUBTYPE_POWERPC_750",
+		10:  "CPU_SUBTYPE_POWERPC_7400",
+		11:  "CPU_SUBTYPE_POWERPC_7450",
+		100: "CPU_SUBTYPE_POWERPC_970",
+	},
+	0x1000012: {
+		0: "CPU_SUBTYPE_ARM64_ALL",
+		1: "CPU_SUBTYPE_ARM64_V8",
+		2: "CPU_SUBTYPE_ARM64_E",
+	},
 }
 
 //nolint:revive
@@ -223,8 +318,8 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 	d.SeekAbs(0)
 	d.FieldStruct(fmt.Sprintf("mach_header_%d", archBits), func(d *decode.D) {
 		d.FieldU32("magic", scalar.Hex, classBits, endianNames)
-		d.FieldS32("cputype", cpuTypes)
-		d.FieldS32("cpusubtype")
+		cpuSubType := d.FieldS32("cputype", cpuTypes)
+		d.FieldS32("cpusubtype", cpuSubTypes[cpuSubType])
 		// TODO ask about how to symmap this as it depends on a pair of values
 		d.FieldU32("filetype") // TODO expand this
 		ncmds = d.FieldU32("ncdms")
@@ -472,4 +567,8 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 		ncmdsIdx++
 	})
 	return nil
+}
+
+func intelSubTypeHelper(f, m int64) int64 {
+	return f + (m << 4)
 }
