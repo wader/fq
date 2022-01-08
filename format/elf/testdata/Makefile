@@ -2,7 +2,7 @@ TARGETS=libbbb.o libbbb.so libbbb.a a.o a_dynamic a_stripped a_static
 
 all: $(TARGETS)
 
-all-plaforms:
+all-platforms:
 	make build PLATFORM=linux/amd64 DIR=linux_amd64
 	make build PLATFORM=linux/arm64 DIR=linux_arm64
 	make build PLATFORM=linux/386 DIR=linux_386
