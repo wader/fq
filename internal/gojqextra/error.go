@@ -11,6 +11,24 @@ import (
 // TODO: refactor to use errors from gojq?
 // TODO: preview from gojq?
 
+type UnaryTypeError struct {
+	Name string
+	V    interface{}
+}
+
+func (err *UnaryTypeError) Error() string {
+	return fmt.Sprintf("cannot %s: %s", err.Name, typeof(err.V))
+}
+
+type BinopTypeError struct {
+	Name string
+	L, R interface{}
+}
+
+func (err *BinopTypeError) Error() string {
+	return "cannot " + err.Name + ": " + typeof(err.L) + " and " + typeof(err.R)
+}
+
 type NonUpdatableTypeError struct {
 	Typ string
 	Key string
