@@ -510,6 +510,7 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 			}, func(d *decode.D) {
 				d.FieldU32("tool")
 				d.FieldU32("version")
+				ntoolsIdx++
 			})
 		case LC_CODE_SIGNATURE, LC_SEGMENT_SPLIT_INFO, LC_FUNCTION_STARTS, LC_DATA_IN_CODE, LC_DYLIB_CODE_SIGN_DRS, LC_LINKER_OPTIMIZATION_HINT:
 			d.FieldStruct("linkedit_data", func(d *decode.D) {
@@ -534,8 +535,8 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 			})
 		case LC_MAIN:
 			d.FieldStruct("entrypoint", func(d *decode.D) {
-				d.FieldU32("entryoff")
-				d.FieldU32("stacksize")
+				d.FieldU64("entryoff")
+				d.FieldU64("stacksize")
 			})
 		case LC_SOURCE_VERSION:
 			d.FieldStruct("source_version_tag", func(d *decode.D) {
