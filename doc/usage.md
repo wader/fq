@@ -250,7 +250,6 @@ fq can be used as a scrip interpreter:
 - [gojq's differences to jq](https://github.com/itchyny/gojq#difference-to-jq),
 notable is support for arbitrary-precision integers.
 - Supports hexdecimal `0xab`, octal `0o77` and binary `0b101` integer literals.
-- Has bitwise operators, `band`, `bor`, `bxor`, `bsl`, `bsr`, `bnot`.
 - Try include `include "file?";` that don't fail if file is missing.
 - Some values can act as a object with keys even when it's an array, number etc.
 - There can be keys hidden from `keys` and `[]`.
@@ -269,6 +268,8 @@ notable is support for arbitrary-precision integers.
   - `diff/2` produce diff object between two values.
   - `delta/0`, `delta_by/1`, array with difference between all consecutive pairs.
   - `chunk/1`, split array or string into even chunks
+- Bitwise functions `band`, `bor`, `bxor`, `bsl`, `bsr` and `bnot`. Works the same as jq math functions,
+unary uses input and if more than one argument all as arguments ignoring the input. Ex: `1 | bnot` `bsl(1; 3)`
 - Adds some decode value specific functions:
   - `root/0` tree root for value
   - `buffer_root/0` root value of buffer for value
