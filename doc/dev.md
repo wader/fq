@@ -4,20 +4,29 @@
 - fq uses a readline fork that can be found at https://github.com/wader/readline/tree/fq (the "fq" branch)
 - cli readline uses raw mode so blocks ctrl-c to become a SIGINT
 
-## Decoder implementation help
+## Implement a decoder
+
+### Steps to add new decoder
+
+- Create a directory  `format/<name>`
+- Copy some similar decoder, `format/format/bson.go` is quite small, to `format/<name>/<name>.go`
+- Cleanup and fill in the register struct, rename `format.BSON` and don't forget to change the string constant.
+- Add an import to `format/all/all.go`
+
+## Things to think about
 
 - Main goal in the end is to produce a tree that is user-friendly and easy to work with.
 Prefer a nice and easy to use tree over nice decoder implementation.
-- Use same names, symbols, constant number base etc as in specification.
-- Decode only ranges you know what it is. If possible let "parent" decide what to do with unknown
-bits by using `*Decode*Len/Range/Limit` functions.
+- Use same names, symbols, constant number base etc as in specification. But prefer lowercase to jq/JSON-ish.
+- Decode only ranges you know what they are. If possible let "parent" decide what to do with unknown
+bits by using `*Decode*Len/Range/Limit` functions. fq will automatically add "unknown" fields.
 - Try to no decode too much as one value.
 A length encoded int could be two fields, but maybe a length prefixed string should be one.
 Flags can be struct with bit-fields.
 - Map as many value as possible to more usage symbolic values.
-- Endian inherited inside one format decoder, defaults to big endian for new format decoder
+- Endian is inherited inside one format decoder, defaults to big endian for new format decoder
 - Make sure zero length or no frames etc found fails decoding
-- Try validate input to make it non-ambiguous with other decoders
+- If in the probe group make sure to validate input to make it non-ambiguous with other decoders
 - Try keep decoder code as declarative as possible
 - Split into multiple sub formats if possible. Makes it possible to use them separately.
 - Validate/Assert
