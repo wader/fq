@@ -67,6 +67,14 @@ nix-shell -p fq
 
 Use the [fq](https://cgit.freebsd.org/ports/tree/misc/fq) port.
 
+### Alpine
+
+Currently in edge testing but should work fine in stable also.
+
+```
+apk add -X http://dl-cdn.alpinelinux.org/alpine/edge/testing fq
+```
+
 ### Build from source
 
 Make sure you have go 1.17 or later installed.
@@ -88,6 +96,8 @@ To build and run tests from source directory:
 make test fq
 # copy binary to $PATH if needed
 cp fq /usr/local/bin
+# it's also possible to use go run
+go run fq.go
 ```
 
 ## Supported formats
