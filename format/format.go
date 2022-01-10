@@ -35,6 +35,7 @@ const (
 	AV1_CCR             = "av1_ccr"
 	AV1_FRAME           = "av1_frame"
 	AV1_OBU             = "av1_obu"
+	BENCODE             = "bencode"
 	BZIP2               = "bzip2"
 	EXIF                = "exif"
 	FLAC                = "flac"
