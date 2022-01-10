@@ -1,0 +1,27 @@
+TARGETS=libbbb.o libbbb.so libbbb.a a.o a_dynamic a_stripped a_static
+
+all: $(TARGETS)
+
+all-platforms:
+	make build DIR=darwin_amd64
+
+clean:
+	rm -f $(TARGETS)
+
+build:
+	make
+	mkdir -p $(DIR)
+	mv $(TARGETS) $(DIR)
+	rm $(DIR)/*.o
+
+libbbb.so: libbbb.o
+	$(CC) -shared -o $@ $+
+libbbb.a: libbbb.o
+	ar ru $@ $+
+	ranlib $@
+a_dynamic: a.o
+	$(CC) -o $@ $+ -L./ -lbbb
+a_stripped: a_dynamic
+	strip -o $@ $<
+a_static: a.o libbbb.a
+	$(CC) -o $@ $+ libbbb.a
