@@ -58,6 +58,7 @@
 |`mpeg_pes_packet`     |MPEG&nbsp;Packetized&nbsp;elementary&nbsp;stream&nbsp;packet  |<sub></sub>|
 |`mpeg_spu`            |Sub&nbsp;Picture&nbsp;Unit&nbsp;(DVD&nbsp;subtitle)           |<sub></sub>|
 |`mpeg_ts`             |MPEG&nbsp;Transport&nbsp;Stream                               |<sub></sub>|
+|`msgpack`             |MessagePack                                                   |<sub></sub>|
 |`ogg`                 |OGG&nbsp;file                                                 |<sub>`ogg_page` `vorbis_packet` `opus_packet` `flac_metadatablock` `flac_frame`</sub>|
 |`ogg_page`            |OGG&nbsp;page                                                 |<sub></sub>|
 |`opus_packet`         |Opus&nbsp;packet                                              |<sub>`vorbis_comment`</sub>|

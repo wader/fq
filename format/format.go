@@ -74,6 +74,7 @@ const (
 	MPEG_PES_PACKET     = "mpeg_pes_packet"
 	MPEG_SPU            = "mpeg_spu"
 	MPEG_TS             = "mpeg_ts"
+	MSGPACK             = "msgpack"
 	OGG                 = "ogg"
 	OGG_PAGE            = "ogg_page"
 	OPUS_PACKET         = "opus_packet"

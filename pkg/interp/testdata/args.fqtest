@@ -105,6 +105,7 @@ mpeg_pes             MPEG Packetized elementary stream
 mpeg_pes_packet      MPEG Packetized elementary stream packet
 mpeg_spu             Sub Picture Unit (DVD subtitle)
 mpeg_ts              MPEG Transport Stream
+msgpack              MessagePack
 ogg                  OGG file
 ogg_page             OGG page
 opus_packet          Opus packet
