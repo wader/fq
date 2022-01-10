@@ -82,14 +82,14 @@ exitcode: 4
 stderr:
 error: /a: probe: failed to decode (try -d FORMAT)
 $ fq -i -d raw . /a /b /c
-raw, ...[3]> ._format
+raw, ...[0:3][]> ._format
 "raw"
 "raw"
 "raw"
-raw, ...[3]> ^D
+raw, ...[0:3][]> ^D
 $ fq -i -s -d raw . /a /b /c
-[raw, ...][3]> .[]._format
+[raw, ...][0:3]> .[]._format
 "raw"
 "raw"
 "raw"
-[raw, ...][3]> ^D
+[raw, ...][0:3]> ^D
