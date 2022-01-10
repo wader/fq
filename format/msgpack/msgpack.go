@@ -22,6 +22,7 @@ func init() {
 		Description: "MessagePack",
 		DecodeFn:    decodeMsgPack,
 		Files:       msgPackFS,
+		ToRepr:      "_msgpack_torepr",
 	})
 }
 

@@ -1,7 +1,7 @@
-def bencode_torepr:
+def _bencode_torepr:
   def _f:
-    if .type == "string" then .value
-    elif .type == "integer" then .value
+    if .type == "string" then .value | tovalue
+    elif .type == "integer" then .value | tovalue
     elif .type == "list" then .values | map(_f)
     elif .type == "dictionary" then
       ( .pairs

@@ -60,7 +60,7 @@ $ fq -d bson verbose /test.bson
 0x60|                                       6e 75 6c|             nul|      name: "null" 0x6d-0x71.7 (5)
 0x70|6c 00                                          |l.              |
 0x70|      00|                                      |  .|            |  terminator: 0 (valid) 0x72-0x72.7 (1)
-$ fq -d bson bson_torepr /test.bson
+$ fq -d bson torepr /test.bson
 {
   "array": [
     1,
