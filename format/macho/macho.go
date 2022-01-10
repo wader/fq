@@ -316,7 +316,8 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 	}
 
 	d.SeekAbs(0)
-	d.FieldStruct(fmt.Sprintf("mach_header_%d", archBits), func(d *decode.D) {
+	d.FieldStruct("header", func(d *decode.D) {
+		d.FieldValueS("arch_bits", int64(archBits))
 		d.FieldU32("magic", scalar.Hex, classBits, endianNames)
 		cpuSubType := d.FieldS32("cputype", cpuTypes)
 		d.FieldS32("cpusubtype", cpuSubTypes[cpuSubType])
@@ -343,31 +344,25 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 		case LC_SEGMENT, LC_SEGMENT_64:
 			// nsect := (cmdsize - uint64(archBits)) / uint64(archBits)
 			var nsects uint64
-			if archBits == 32 {
-				d.FieldStruct("segment_command", func(d *decode.D) {
-					d.FieldUTF8NullFixedLen("segname", 16)
+			d.FieldStruct("segment_command", func(d *decode.D) {
+				d.FieldValueS("arch_bits", int64(archBits))
+				d.FieldUTF8NullFixedLen("segname", 16)
+				if archBits == 32 {
 					d.FieldU32("vmaddr", scalar.Hex)
 					d.FieldU32("vmsize")
 					d.FieldU32("fileoff")
 					d.FieldU32("tfilesize")
-					d.FieldS32("initprot")
-					d.FieldS32("maxprot")
-					nsects = d.FieldU32("nsects")
-					d.FieldU32("flags") // TODO expand flags
-				})
-			} else {
-				d.FieldStruct("segment_command_64", func(d *decode.D) {
-					d.FieldUTF8NullFixedLen("segname", 16)
+				} else {
 					d.FieldU64("vmaddr", scalar.Hex)
 					d.FieldU64("vmsize")
 					d.FieldU64("fileoff")
 					d.FieldU64("tfilesize")
-					d.FieldS32("initprot")
-					d.FieldS32("maxprot")
-					nsects = d.FieldU32("nsects")
-					d.FieldU32("flags") // TODO expand flags
-				})
-			}
+				}
+				d.FieldS32("initprot")
+				d.FieldS32("maxprot")
+				nsects = d.FieldU32("nsects")
+				d.FieldU32("flags") // TODO expand flags
+			})
 			var nsectIdx uint64
 			d.FieldStructArrayLoop("sections", "section", func() bool {
 				return nsectIdx < nsects
