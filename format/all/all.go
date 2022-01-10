@@ -23,6 +23,7 @@ import (
 	_ "github.com/wader/fq/format/mp3"
 	_ "github.com/wader/fq/format/mp4"
 	_ "github.com/wader/fq/format/mpeg"
+	_ "github.com/wader/fq/format/msgpack"
 	_ "github.com/wader/fq/format/ogg"
 	_ "github.com/wader/fq/format/opus"
 	_ "github.com/wader/fq/format/pcap"
