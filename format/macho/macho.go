@@ -346,7 +346,7 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 			var nsects uint64
 			d.FieldStruct("segment_command", func(d *decode.D) {
 				d.FieldValueS("arch_bits", int64(archBits))
-				d.FieldUTF8NullFixedLen("segname", 16)
+				d.FieldUTF8NullFixedLen("segname", 16) // OPCODE_DECODER segname==__TEXT
 				if archBits == 32 {
 					d.FieldU32("vmaddr", scalar.Hex)
 					d.FieldU32("vmsize")
@@ -368,12 +368,9 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 				return nsectIdx < nsects
 			},
 				func(d *decode.D) {
-					d.FieldStrFn("sectname", func(d *decode.D) string {
-						return string(d.BytesLen(16))
-					})
-					d.FieldStrFn("segname", func(d *decode.D) string {
-						return string(d.BytesLen(16))
-					})
+					// OPCODE_DECODER sectname==__text
+					d.FieldUTF8NullFixedLen("sectname", 16)
+					d.FieldUTF8NullFixedLen("segname", 16)
 					if archBits == 32 {
 						d.FieldU32("address", scalar.Hex)
 						d.FieldU32("size")
