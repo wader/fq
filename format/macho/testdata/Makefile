@@ -1,4 +1,6 @@
-TARGETS=libbbb.o libbbb.so libbbb.a a.o a_dynamic a_stripped a_static
+TEST_TARGETS=libbbb.o libbbb.so a.o a_dynamic a_stripped a_static
+TARGETS=$(TEST_TARGETS) libbbb.a
+FQ:=fq
 
 all: $(TARGETS)
 
@@ -25,3 +27,9 @@ a_stripped: a_dynamic
 	strip -o $@ $<
 a_static: a.o libbbb.a
 	$(CC) -o $@ $+ libbbb.a
+
+all-platforms-actual:
+	make actual DIR=darwin_amd64
+
+actual:
+	cd $(DIR) && echo $(TEST_TARGETS) | tr -s '[:blank:]' '\n' | grep -ivE '.*\.o$$' | xargs -I '{}' sh -c 'echo "$$ fq -d macho v {}" > {}.fqtest && $(FQ) -d macho v {} >> {}.fqtest'
