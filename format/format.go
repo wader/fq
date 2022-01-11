@@ -13,6 +13,7 @@ const (
 	RAW  = "raw"
 	JSON = "json"
 	BSON = "bson"
+	CBOR = "cbor"
 
 	DNS                = "dns"
 	DNS_TCP            = "dns_tcp"

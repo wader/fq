@@ -23,6 +23,7 @@
 |`bsd_loopback_frame`  |BSD&nbsp;loopback&nbsp;frame                                  |<sub>`ipv4_packet`</sub>|
 |`bson`                |Binary&nbsp;JSON                                              |<sub></sub>|
 |`bzip2`               |bzip2&nbsp;compression                                        |<sub>`probe`</sub>|
+|`cbor`                |Concise&nbsp;Binary&nbsp;Object&nbsp;Representation           |<sub></sub>|
 |`dns`                 |DNS&nbsp;packet                                               |<sub></sub>|
 |`dns_tcp`             |DNS&nbsp;packet&nbsp;(TCP)                                    |<sub></sub>|
 |`elf`                 |Executable&nbsp;and&nbsp;Linkable&nbsp;Format                 |<sub></sub>|

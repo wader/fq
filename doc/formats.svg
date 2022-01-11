@@ -1580,23 +1580,29 @@
 <polygon fill="paleturquoise" stroke="transparent" points="2396,-1539 2396,-1558 2426,-1558 2426,-1539 2396,-1539"/>
 <text text-anchor="start" x="2398" y="-1544.3" font-family="Times,serif" font-size="14.00">bson</text>
 </g>
-<!-- dns_tcp -->
+<!-- cbor -->
 <g id="node84" class="node">
+<title>cbor</title>
+<polygon fill="paleturquoise" stroke="transparent" points="2468.5,-1539 2468.5,-1558 2497.5,-1558 2497.5,-1539 2468.5,-1539"/>
+<text text-anchor="start" x="2471" y="-1544.3" font-family="Times,serif" font-size="14.00">cbor</text>
+</g>
+<!-- dns_tcp -->
+<g id="node85" class="node">
 <title>dns_tcp</title>
-<polygon fill="paleturquoise" stroke="transparent" points="2464.5,-1539 2464.5,-1558 2511.5,-1558 2511.5,-1539 2464.5,-1539"/>
-<text text-anchor="start" x="2467" y="-1544.3" font-family="Times,serif" font-size="14.00">dns_tcp</text>
+<polygon fill="paleturquoise" stroke="transparent" points="2536.5,-1539 2536.5,-1558 2583.5,-1558 2583.5,-1539 2536.5,-1539"/>
+<text text-anchor="start" x="2539" y="-1544.3" font-family="Times,serif" font-size="14.00">dns_tcp</text>
 </g>
 <!-- msgpack -->
-<g id="node85" class="node">
+<g id="node86" class="node">
 <title>msgpack</title>
-<polygon fill="paleturquoise" stroke="transparent" points="2545.5,-1539 2545.5,-1558 2598.5,-1558 2598.5,-1539 2545.5,-1539"/>
-<text text-anchor="start" x="2548" y="-1544.3" font-family="Times,serif" font-size="14.00">msgpack</text>
+<polygon fill="paleturquoise" stroke="transparent" points="2617.5,-1539 2617.5,-1558 2670.5,-1558 2670.5,-1539 2617.5,-1539"/>
+<text text-anchor="start" x="2620" y="-1544.3" font-family="Times,serif" font-size="14.00">msgpack</text>
 </g>
 <!-- raw -->
-<g id="node86" class="node">
+<g id="node87" class="node">
 <title>raw</title>
-<polygon fill="paleturquoise" stroke="transparent" points="2639.5,-1539 2639.5,-1558 2664.5,-1558 2664.5,-1539 2639.5,-1539"/>
-<text text-anchor="start" x="2642" y="-1544.3" font-family="Times,serif" font-size="14.00">raw</text>
+<polygon fill="paleturquoise" stroke="transparent" points="2711.5,-1539 2711.5,-1558 2736.5,-1558 2736.5,-1539 2711.5,-1539"/>
+<text text-anchor="start" x="2714" y="-1544.3" font-family="Times,serif" font-size="14.00">raw</text>
 </g>
 </g>
 </svg>
