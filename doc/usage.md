@@ -281,6 +281,8 @@ unary uses input and if more than one argument all as arguments ignoring the inp
   - `toactual/0` actual value (decoded etc)
   - `tosym/0` symbolic value (mapped etc)
   - `todescription/0` description of value
+  - `torepr/0` convert decode value into what it reptresents. For example convert msgpack decode value
+  into a value representing its JSON representation.
   - All regexp functions work with buffers as input and pattern argument with these differences
   from the string versions:
     - All offset and length will be in bytes.

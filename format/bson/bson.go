@@ -21,6 +21,7 @@ func init() {
 		Description: "Binary JSON",
 		DecodeFn:    decodeBSON,
 		Files:       bsonFS,
+		ToRepr:      "_bson_torepr",
 	})
 }
 

@@ -19,6 +19,7 @@ func init() {
 		Description: "BitTorrent bencoding",
 		DecodeFn:    decodeBencode,
 		Files:       bencodeFS,
+		ToRepr:      "_bencode_torepr",
 	})
 }
 

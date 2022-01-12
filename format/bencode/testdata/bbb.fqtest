@@ -275,7 +275,7 @@ $ fq -d bencode v bbb.torrent
 0x3780|62 33 64 2e 72 65 6e 64 65 72 66 61 72 6d 69 6e|b3d.renderfarmin|
 0x3790|67 2e 6e 65 74                                 |g.net           |
 0x3790|               65|                             |     e|         |  end: "e" (valid) 0x3795-0x3795.7 (1)
-$ fq -d bencode bencode_torepr bbb.torrent
+$ fq -d bencode torepr bbb.torrent
 {
   "announce": "udp://tracker.openbittorrent.com:80/announce",
   "announce-list": [

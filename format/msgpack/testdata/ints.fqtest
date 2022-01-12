@@ -83,7 +83,7 @@ $ fq -d msgpack v ints.msgpack
 0x20|                                       d2      |             .  |      type: "int32" (0xd2) 0x2d-0x2d.7 (1)
 0x20|                                          80 00|              ..|      value: -2147483647 0x2e-0x31.7 (4)
 0x30|00 01|                                         |..|             |
-$ fq -d msgpack msgpack_torepr ints.msgpack
+$ fq -d msgpack torepr ints.msgpack
 [
   0,
   1,

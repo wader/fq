@@ -1,0 +1,6 @@
+$ fq -i
+null> torepr
+error: value is not a format root
+null> "{}" | json | torepr
+error: format has no torepr
+null> ^D

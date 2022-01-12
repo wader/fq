@@ -75,6 +75,7 @@ func (i *Interp) _registry(c interface{}, a []interface{}) interface{} {
 			"probe_order": f.ProbeOrder,
 			"root_name":   f.RootName,
 			"root_array":  f.RootArray,
+			"to_repr":     f.ToRepr,
 		}
 
 		var dependenciesVs []interface{}

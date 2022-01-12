@@ -1,18 +1,18 @@
-def bson_torepr:
-  def _torepr:
+def _bson_torepr:
+  def _f:
    ( if .type == null or .type == "array" then
       ( .value.elements
-      | map(_torepr)
+      | map(_f)
       )
      elif .type == "document" then
       ( .value.elements
-      | map({key: .name, value: _torepr})
+      | map({key: .name, value: _f})
       | from_entries
       )
      elif .type == "boolean" then .value != 0
-     else .value
+     else .value | tovalue
      end
    );
   ( {type: "document", value: .}
-  | _torepr
+  | _f
   );
