@@ -70,6 +70,7 @@ bencode              BitTorrent bencoding
 bsd_loopback_frame   BSD loopback frame
 bson                 Binary JSON
 bzip2                bzip2 compression
+cbor                 Concise Binary Object Representation
 dns                  DNS packet
 dns_tcp              DNS packet (TCP)
 elf                  Executable and Linkable Format

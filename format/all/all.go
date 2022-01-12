@@ -9,6 +9,7 @@ import (
 	_ "github.com/wader/fq/format/bencode"
 	_ "github.com/wader/fq/format/bson"
 	_ "github.com/wader/fq/format/bzip2"
+	_ "github.com/wader/fq/format/cbor"
 	_ "github.com/wader/fq/format/dns"
 	_ "github.com/wader/fq/format/elf"
 	_ "github.com/wader/fq/format/flac"
