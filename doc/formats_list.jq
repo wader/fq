@@ -1,2 +1,2 @@
 #!/usr/bin/env fq -rnf
-[formats[] | "\(.name)"] | join(", ")
+[formats[] | "\(.name)"] | join(",\n")
