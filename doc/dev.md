@@ -175,11 +175,37 @@ cd ../fq
 docker --context 2016-box run --rm -ti -v "C:${PWD//\//\\}:C:${PWD//\//\\}" -w "$PWD" golang:1.17.5-windowsservercore-ltsc2016
 ```
 
-# Implementation details
+## Implementation details
 
 - fq uses a gojq fork that can be found at https://github.com/wader/gojq/tree/fq (the "fq" branch)
 - fq uses a readline fork that can be found at https://github.com/wader/readline/tree/fq (the "fq" branch)
 - cli readline uses raw mode so blocks ctrl-c to become a SIGINT
+
+## Dependencies and source origins
+
+- [gojq](https://github.com/itchyny/gojq) fork that can be found at https://github.com/wader/gojq/tree/fq<br>
+Issues and PR:s related to fq:<br>
+[#43](https://github.com/itchyny/gojq/issues/43) Support for functions written in go when used as a library<br>
+[#46](https://github.com/itchyny/gojq/pull/46) Support custom internal functions<br>
+[#56](https://github.com/itchyny/gojq/issues/56) String format query with no operator using %#v or %#+v panics
+[#65](https://github.com/itchyny/gojq/issues/65) Try-catch with custom function<br>
+[#67](https://github.com/itchyny/gojq/pull/67) Add custom iterator function support which enables implementing a REPL in jq<br>
+[#81](https://github.com/itchyny/gojq/issues/81) path/1 behaviour and path expression question<br>
+[#86](https://github.com/itchyny/gojq/issues/86) ER: basic TCO
+[#109](https://github.com/itchyny/gojq/issues/109) jq halt_error behaviour difference<br>
+[#113](https://github.com/itchyny/gojq/issues/113) error/0 and error/1 behavior difference<br>
+[#117](https://github.com/itchyny/gojq/issues/117) Negative number modulus *big.Int behaves differently to int<br>
+[#118](https://github.com/itchyny/gojq/issues/118) Regression introduced by "remove fork analysis from tail call optimization (ref #86)"<br>
+[#122](https://github.com/itchyny/gojq/issues/122) Slow performance for large error values that ends up using typeErrorPreview()<br>
+[#125](https://github.com/itchyny/gojq/pull/125) improve performance of join by make it internal<br>
+[#141](https://github.com/itchyny/gojq/issues/141) Empty array flatten regression since "improve flatten performance by reducing copy"
+
+- [readline](https://github.com/chzyer/readline) fork that can be found at https://github.com/wader/readline/tree/fq
+- [gopacket](https://github.com/google/gopacket) for TCP and IPv4 reassembly
+- [mapstructure](https://github.com/mitchellh/mapstructure) for convenient JSON/map conversion
+- [go-difflib](https://github.com/pmezard/go-difflib) for diff tests
+- [golang.org/x/text](https://pkg.go.dev/golang.org/x/text) for text encoding conversions
+- [float16.go](https://android.googlesource.com/platform/tools/gpu/+/gradle_2.0.0/binary/float16.go) to convert bits into 16-bit floats
 
 ## Release process
 

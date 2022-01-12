@@ -125,7 +125,8 @@ jq implementation [gojq](https://github.com/itchyny/gojq). I also want to thank
 [HexFiend](https://github.com/HexFiend/HexFiend) for inspiration and ideas and [stedolan](https://github.com/stedolan)
 for inventing the [jq](https://github.com/stedolan/jq) language.
 
-Similar or related projects:
+### Similar or related projects
+
 - [HexFiend](https://github.com/HexFiend/HexFiend)
 - [binspector](https://github.com/binspector/binspector)
 - [kaitai](https://kaitai.io)
