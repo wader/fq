@@ -33,7 +33,7 @@ func decodeChunk(d *decode.D, expectedChunkID string, fn func(d *decode.D)) bool
 	chunkLen := int64(d.FieldU32("size"))
 
 	if fn != nil {
-		d.LenFn(chunkLen*8, fn)
+		d.FramedFn(chunkLen*8, fn)
 	} else {
 		d.FieldRawLen("data", chunkLen*8)
 	}
@@ -48,7 +48,7 @@ func webpDecode(d *decode.D, in interface{}) interface{} {
 	riffLength := d.FieldU32("riff_length")
 	d.FieldUTF8("webp_id", 4, d.AssertStr("WEBP"))
 
-	d.LenFn(int64(riffLength-4)*8, func(d *decode.D) {
+	d.FramedFn(int64(riffLength-4)*8, func(d *decode.D) {
 		p := d.PeekBytes(4)
 
 		// TODO: VP8X

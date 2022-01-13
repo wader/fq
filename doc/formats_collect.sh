@@ -1,11 +1,9 @@
 #!/bin/sh
 
-for i in $(cd $REPODIR/format && ls -1 | sort); do
-    if [ ! -e $REPODIR/format/$i/doc.md ]; then
-        continue
-    fi
-
-    echo "### $i"
+for i in $(cd "$REPODIR" && ls -1 format/*/*.md | sort -t / -k 3); do
+    FORMAT=$(echo "$i" | sed 's#format/.*/\(.*\).md#\1#')
+    echo "### $FORMAT"
     echo
-    cat "$REPODIR/format/$i/doc.md"
+    cat "$REPODIR/$i"
+    echo
 done

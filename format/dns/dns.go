@@ -184,7 +184,7 @@ func dnsDecodeRR(d *decode.D, pointerOffset int64, resp bool, count uint64, name
 				if resp {
 					d.FieldU32("ttl")
 					rdLength := d.FieldU16("rdlength")
-					d.LenFn(int64(rdLength)*8, func(d *decode.D) {
+					d.FramedFn(int64(rdLength)*8, func(d *decode.D) {
 						// TODO: all only for classIN?
 						switch {
 						case class == classIN && typ == typeA:

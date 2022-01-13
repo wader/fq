@@ -253,7 +253,7 @@ func aacFillElement(d *decode.D) {
 	d.FieldValueU("payload_length", cnt)
 
 	d.FieldStruct("extension_payload", func(d *decode.D) {
-		d.LenFn(int64(cnt)*8, func(d *decode.D) {
+		d.FramedFn(int64(cnt)*8, func(d *decode.D) {
 
 			extensionType := d.FieldU4("extension_type", extensionPayloadIDNames)
 

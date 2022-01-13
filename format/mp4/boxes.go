@@ -156,7 +156,7 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 	ctx.path = append(ctx.path, typ)
 
 	if decodeFn, ok := boxDecoders[typ]; ok {
-		d.LenFn(int64(dataSize*8), func(d *decode.D) {
+		d.FramedFn(int64(dataSize*8), func(d *decode.D) {
 			decodeFn(ctx, d)
 		})
 	} else {
@@ -341,7 +341,7 @@ func init() {
 						subType = ctx.currentTrack.subType
 					}
 
-					d.LenFn(int64(size-8)*8, func(d *decode.D) {
+					d.FramedFn(int64(size-8)*8, func(d *decode.D) {
 						d.FieldRawLen("reserved", 6*8)
 						d.FieldU16("data_reference_index")
 

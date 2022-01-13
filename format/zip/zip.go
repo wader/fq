@@ -167,7 +167,7 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 
 	d.SeekAbs(int64(offsetCD) * 8)
 	d.FieldArray("central_directories", func(d *decode.D) {
-		d.LenFn(int64(sizeCD)*8, func(d *decode.D) {
+		d.FramedFn(int64(sizeCD)*8, func(d *decode.D) {
 			for !d.End() {
 				d.FieldStruct("central_directory", func(d *decode.D) {
 					d.FieldRawLen("signature", 4*8, d.AssertBitBuf(centralDirectorySignature))
@@ -205,7 +205,7 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 					localFileOffset := d.FieldU32("relative_offset_of_local_file_header")
 					d.FieldUTF8("file_name", int(fileNameLength))
 					d.FieldArray("extra_fields", func(d *decode.D) {
-						d.LenFn(int64(extraFieldLength)*8, func(d *decode.D) {
+						d.FramedFn(int64(extraFieldLength)*8, func(d *decode.D) {
 							for !d.End() {
 								d.FieldStruct("extra_field", func(d *decode.D) {
 									d.FieldU16("header_id", headerIDMap, scalar.Hex)
@@ -259,7 +259,7 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 				extraFieldLength := d.FieldU16("extra_field_length")
 				d.FieldUTF8("file_name", int(fileNameLength))
 				d.FieldArray("extra_fields", func(d *decode.D) {
-					d.LenFn(int64(extraFieldLength)*8, func(d *decode.D) {
+					d.FramedFn(int64(extraFieldLength)*8, func(d *decode.D) {
 						for !d.End() {
 							d.FieldStruct("extra_field", func(d *decode.D) {
 								d.FieldU16("header_id", headerIDMap, scalar.Hex)

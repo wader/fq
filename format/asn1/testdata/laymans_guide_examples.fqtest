@@ -1,0 +1,551 @@
+$ fq '.[] | . as $t | .hex | gsub("[^0-9a-f]";"") | hex | $t, (asn1_ber | dv)' laymans_guide_examples.json
+{
+  "decoded": "011011100101110111",
+  "hex": "03 04 06 6e 5d c0"
+}
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0x5.7 (6)
+0x0|03                                             |.               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x0|03                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
+0x0|03                                             |.               |  tag: "bit_string" (0x3) 0x0.3-0x0.7 (0.5)
+0x0|   04                                          | .              |  length: 4 0x1-0x1.7 (1)
+0x0|      06                                       |  .             |  unused_bits_count: 6 0x2-0x2.7 (1)
+0x0|         6e 5d c0|                             |   n].|         |  value: raw bits 0x3-0x5.1 (2.2)
+0x0|               c0|                             |     .|         |  unused_bits: raw bits 0x5.2-0x5.7 (0.6)
+{
+  "decoded": "011011100101110111",
+  "hex": "03 04 06 6e 5d e0"
+}
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0x5.7 (6)
+0x0|03                                             |.               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x0|03                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
+0x0|03                                             |.               |  tag: "bit_string" (0x3) 0x0.3-0x0.7 (0.5)
+0x0|   04                                          | .              |  length: 4 0x1-0x1.7 (1)
+0x0|      06                                       |  .             |  unused_bits_count: 6 0x2-0x2.7 (1)
+0x0|         6e 5d e0|                             |   n].|         |  value: raw bits 0x3-0x5.1 (2.2)
+0x0|               e0|                             |     .|         |  unused_bits: raw bits 0x5.2-0x5.7 (0.6)
+{
+  "decoded": "011011100101110111",
+  "hex": "03 81 04 06 6e 5d c0"
+}
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0x6.7 (7)
+0x0|03                                             |.               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x0|03                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
+0x0|03                                             |.               |  tag: "bit_string" (0x3) 0x0.3-0x0.7 (0.5)
+0x0|   81 04                                       | ..             |  length: 4 0x1-0x2.7 (2)
+0x0|         06                                    |   .            |  unused_bits_count: 6 0x3-0x3.7 (1)
+0x0|            6e 5d c0|                          |    n].|        |  value: raw bits 0x4-0x6.1 (2.2)
+0x0|                  c0|                          |      .|        |  unused_bits: raw bits 0x6.2-0x6.7 (0.6)
+{
+  "decoded": "011011100101110111",
+  "hex": "23 09 | 03 03 00 6e 5d | 03 02 06 c0"
+}
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0xa.7 (11)
+0x00|23                                             |#               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x00|23                                             |#               |  form: "constructed" (1) 0x0.2-0x0.2 (0.1)
+0x00|23                                             |#               |  tag: "bit_string" (0x3) 0x0.3-0x0.7 (0.5)
+0x00|   09                                          | .              |  length: 9 0x1-0x1.7 (1)
+    |                                               |                |  constructed[0:2]: 0x2-0xa.7 (9)
+    |                                               |                |    [0]{}: object 0x2-0x6.7 (5)
+0x00|      03                                       |  .             |      class: "universal" (0) 0x2-0x2.1 (0.2)
+0x00|      03                                       |  .             |      form: "primitive" (0) 0x2.2-0x2.2 (0.1)
+0x00|      03                                       |  .             |      tag: "bit_string" (0x3) 0x2.3-0x2.7 (0.5)
+0x00|         03                                    |   .            |      length: 3 0x3-0x3.7 (1)
+0x00|            00                                 |    .           |      unused_bits_count: 0 0x4-0x4.7 (1)
+0x00|               6e 5d                           |     n]         |      value: raw bits 0x5-0x6.7 (2)
+    |                                               |                |    [1]{}: object 0x7-0xa.7 (4)
+0x00|                     03                        |       .        |      class: "universal" (0) 0x7-0x7.1 (0.2)
+0x00|                     03                        |       .        |      form: "primitive" (0) 0x7.2-0x7.2 (0.1)
+0x00|                     03                        |       .        |      tag: "bit_string" (0x3) 0x7.3-0x7.7 (0.5)
+0x00|                        02                     |        .       |      length: 2 0x8-0x8.7 (1)
+0x00|                           06                  |         .      |      unused_bits_count: 6 0x9-0x9.7 (1)
+0x00|                              c0|              |          .|    |      value: raw bits 0xa-0xa.1 (0.2)
+0x00|                              c0|              |          .|    |      unused_bits: raw bits 0xa.2-0xa.7 (0.6)
+ 0x0|6e 5d c0|                                      |n].|            |  value: raw bits 0x0-0x2.1 (2.2)
+{
+  "decoded": "test1@rsa.com",
+  "hex": "16 0d 74 65 73 74 31 40 72 73 61 2e 63 6f 6d"
+}
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0xe.7 (15)
+0x0|16                                             |.               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x0|16                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
+0x0|16                                             |.               |  tag: "ia5_string" (0x16) 0x0.3-0x0.7 (0.5)
+0x0|   0d                                          | .              |  length: 13 0x1-0x1.7 (1)
+0x0|      74 65 73 74 31 40 72 73 61 2e 63 6f 6d|  |  test1@rsa.com||  value: "test1@rsa.com" 0x2-0xe.7 (13)
+{
+  "decoded": "test1@rsa.com",
+  "hex": "16 81 0d | 74 65 73 74 31 40 72 73 61 2e 63 6f 6d"
+}
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0xf.7 (16)
+0x00|16                                             |.               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x00|16                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
+0x00|16                                             |.               |  tag: "ia5_string" (0x16) 0x0.3-0x0.7 (0.5)
+0x00|   81 0d                                       | ..             |  length: 13 0x1-0x2.7 (2)
+0x00|         74 65 73 74 31 40 72 73 61 2e 63 6f 6d|   test1@rsa.com|  value: "test1@rsa.com" 0x3-0xf.7 (13)
+{
+  "decoded": "test1@rsa.com",
+  "hex": "36 13 | 16 05 74 65 73 74 31 | 16 01 40 | 16 07 72 73 61 2e 63 6f 6d"
+}
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0x14.7 (21)
+0x00|36                                             |6               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x00|36                                             |6               |  form: "constructed" (1) 0x0.2-0x0.2 (0.1)
+0x00|36                                             |6               |  tag: "ia5_string" (0x16) 0x0.3-0x0.7 (0.5)
+0x00|   13                                          | .              |  length: 19 0x1-0x1.7 (1)
+    |                                               |                |  constructed[0:3]: 0x2-0x14.7 (19)
+    |                                               |                |    [0]{}: object 0x2-0x8.7 (7)
+0x00|      16                                       |  .             |      class: "universal" (0) 0x2-0x2.1 (0.2)
+0x00|      16                                       |  .             |      form: "primitive" (0) 0x2.2-0x2.2 (0.1)
+0x00|      16                                       |  .             |      tag: "ia5_string" (0x16) 0x2.3-0x2.7 (0.5)
+0x00|         05                                    |   .            |      length: 5 0x3-0x3.7 (1)
+0x00|            74 65 73 74 31                     |    test1       |      value: "test1" 0x4-0x8.7 (5)
+    |                                               |                |    [1]{}: object 0x9-0xb.7 (3)
+0x00|                           16                  |         .      |      class: "universal" (0) 0x9-0x9.1 (0.2)
+0x00|                           16                  |         .      |      form: "primitive" (0) 0x9.2-0x9.2 (0.1)
+0x00|                           16                  |         .      |      tag: "ia5_string" (0x16) 0x9.3-0x9.7 (0.5)
+0x00|                              01               |          .     |      length: 1 0xa-0xa.7 (1)
+0x00|                                 40            |           @    |      value: "@" 0xb-0xb.7 (1)
+    |                                               |                |    [2]{}: object 0xc-0x14.7 (9)
+0x00|                                    16         |            .   |      class: "universal" (0) 0xc-0xc.1 (0.2)
+0x00|                                    16         |            .   |      form: "primitive" (0) 0xc.2-0xc.2 (0.1)
+0x00|                                    16         |            .   |      tag: "ia5_string" (0x16) 0xc.3-0xc.7 (0.5)
+0x00|                                       07      |             .  |      length: 7 0xd-0xd.7 (1)
+0x00|                                          72 73|              rs|      value: "rsa.com" 0xe-0x14.7 (7)
+0x10|61 2e 63 6f 6d|                                |a.com|          |
+    |                                               |                |  value: "test1@rsa.com" 0x15-NA (0)
+{
+  "decoded": 0,
+  "hex": "02 01 00"
+}
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0x2.7 (3)
+0x0|02                                             |.               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x0|02                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
+0x0|02                                             |.               |  tag: "integer" (0x2) 0x0.3-0x0.7 (0.5)
+0x0|   01                                          | .              |  length: 1 0x1-0x1.7 (1)
+0x0|      00|                                      |  .|            |  value: 0 0x2-0x2.7 (1)
+{
+  "decoded": 127,
+  "hex": "02 01 7f"
+}
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0x2.7 (3)
+0x0|02                                             |.               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x0|02                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
+0x0|02                                             |.               |  tag: "integer" (0x2) 0x0.3-0x0.7 (0.5)
+0x0|   01                                          | .              |  length: 1 0x1-0x1.7 (1)
+0x0|      7f|                                      |  .|            |  value: 127 0x2-0x2.7 (1)
+{
+  "decoded": 128,
+  "hex": "02 02 00 80"
+}
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0x3.7 (4)
+0x0|02                                             |.               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x0|02                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
+0x0|02                                             |.               |  tag: "integer" (0x2) 0x0.3-0x0.7 (0.5)
+0x0|   02                                          | .              |  length: 2 0x1-0x1.7 (1)
+0x0|      00 80|                                   |  ..|           |  value: 128 0x2-0x3.7 (2)
+{
+  "decoded": 256,
+  "hex": "02 02 01 00"
+}
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0x3.7 (4)
+0x0|02                                             |.               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x0|02                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
+0x0|02                                             |.               |  tag: "integer" (0x2) 0x0.3-0x0.7 (0.5)
+0x0|   02                                          | .              |  length: 2 0x1-0x1.7 (1)
+0x0|      01 00|                                   |  ..|           |  value: 256 0x2-0x3.7 (2)
+{
+  "decoded": -128,
+  "hex": "02 01 80"
+}
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0x2.7 (3)
+0x0|02                                             |.               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x0|02                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
+0x0|02                                             |.               |  tag: "integer" (0x2) 0x0.3-0x0.7 (0.5)
+0x0|   01                                          | .              |  length: 1 0x1-0x1.7 (1)
+0x0|      80|                                      |  .|            |  value: -128 0x2-0x2.7 (1)
+{
+  "decoded": -129,
+  "hex": "02 02 ff 7f"
+}
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0x3.7 (4)
+0x0|02                                             |.               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x0|02                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
+0x0|02                                             |.               |  tag: "integer" (0x2) 0x0.3-0x0.7 (0.5)
+0x0|   02                                          | .              |  length: 2 0x1-0x1.7 (1)
+0x0|      ff 7f|                                   |  ..|           |  value: -129 0x2-0x3.7 (2)
+{
+  "decoded": "01 23 45 67 89 ab cd ef",
+  "hex": "04 08 01 23 45 67 89 ab cd ef"
+}
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0x9.7 (10)
+0x0|04                                             |.               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x0|04                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
+0x0|04                                             |.               |  tag: "octet_string" (0x4) 0x0.3-0x0.7 (0.5)
+0x0|   08                                          | .              |  length: 8 0x1-0x1.7 (1)
+0x0|      01 23 45 67 89 ab cd ef|                 |  .#Eg....|     |  value: raw bits 0x2-0x9.7 (8)
+{
+  "decoded": "01 23 45 67 89 ab cd ef",
+  "hex": "04 81 08 01 23 45 67 89 ab cd ef"
+}
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0xa.7 (11)
+0x0|04                                             |.               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x0|04                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
+0x0|04                                             |.               |  tag: "octet_string" (0x4) 0x0.3-0x0.7 (0.5)
+0x0|   81 08                                       | ..             |  length: 8 0x1-0x2.7 (2)
+0x0|         01 23 45 67 89 ab cd ef|              |   .#Eg....|    |  value: raw bits 0x3-0xa.7 (8)
+{
+  "decoded": "01 23 45 67 89 ab cd ef",
+  "hex": "24 0c | 04 04 01 23 45 67 | 04 04 89 ab cd ef"
+}
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0xd.7 (14)
+0x00|24                                             |$               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x00|24                                             |$               |  form: "constructed" (1) 0x0.2-0x0.2 (0.1)
+0x00|24                                             |$               |  tag: "octet_string" (0x4) 0x0.3-0x0.7 (0.5)
+0x00|   0c                                          | .              |  length: 12 0x1-0x1.7 (1)
+    |                                               |                |  constructed[0:2]: 0x2-0xd.7 (12)
+    |                                               |                |    [0]{}: object 0x2-0x7.7 (6)
+0x00|      04                                       |  .             |      class: "universal" (0) 0x2-0x2.1 (0.2)
+0x00|      04                                       |  .             |      form: "primitive" (0) 0x2.2-0x2.2 (0.1)
+0x00|      04                                       |  .             |      tag: "octet_string" (0x4) 0x2.3-0x2.7 (0.5)
+0x00|         04                                    |   .            |      length: 4 0x3-0x3.7 (1)
+0x00|            01 23 45 67                        |    .#Eg        |      value: raw bits 0x4-0x7.7 (4)
+    |                                               |                |    [1]{}: object 0x8-0xd.7 (6)
+0x00|                        04                     |        .       |      class: "universal" (0) 0x8-0x8.1 (0.2)
+0x00|                        04                     |        .       |      form: "primitive" (0) 0x8.2-0x8.2 (0.1)
+0x00|                        04                     |        .       |      tag: "octet_string" (0x4) 0x8.3-0x8.7 (0.5)
+0x00|                           04                  |         .      |      length: 4 0x9-0x9.7 (1)
+0x00|                              89 ab cd ef|     |          ....| |      value: raw bits 0xa-0xd.7 (4)
+ 0x0|01 23 45 67 89 ab cd ef|                       |.#Eg....|       |  value: raw bits 0x0-0x7.7 (8)
+{
+  "decoded": "Test User 1",
+  "hex": "13 0b 54 65 73 74 20 55 73 65 72 20 31"
+}
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0xc.7 (13)
+0x0|13                                             |.               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x0|13                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
+0x0|13                                             |.               |  tag: "printable_string" (0x13) 0x0.3-0x0.7 (0.5)
+0x0|   0b                                          | .              |  length: 11 0x1-0x1.7 (1)
+0x0|      54 65 73 74 20 55 73 65 72 20 31|        |  Test User 1|  |  value: "Test User 1" 0x2-0xc.7 (11)
+{
+  "decoded": "Test User 1",
+  "hex": "13 81 0b | 54 65 73 74 20 55 73 65 72 20 31"
+}
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0xd.7 (14)
+0x0|13                                             |.               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x0|13                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
+0x0|13                                             |.               |  tag: "printable_string" (0x13) 0x0.3-0x0.7 (0.5)
+0x0|   81 0b                                       | ..             |  length: 11 0x1-0x2.7 (2)
+0x0|         54 65 73 74 20 55 73 65 72 20 31|     |   Test User 1| |  value: "Test User 1" 0x3-0xd.7 (11)
+{
+  "decoded": "Test User 1",
+  "hex": "33 0f | 13 05 54 65 73 74 20 | 13 06 55 73 65 72 20 31"
+}
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0x10.7 (17)
+0x00|33                                             |3               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x00|33                                             |3               |  form: "constructed" (1) 0x0.2-0x0.2 (0.1)
+0x00|33                                             |3               |  tag: "printable_string" (0x13) 0x0.3-0x0.7 (0.5)
+0x00|   0f                                          | .              |  length: 15 0x1-0x1.7 (1)
+    |                                               |                |  constructed[0:2]: 0x2-0x10.7 (15)
+    |                                               |                |    [0]{}: object 0x2-0x8.7 (7)
+0x00|      13                                       |  .             |      class: "universal" (0) 0x2-0x2.1 (0.2)
+0x00|      13                                       |  .             |      form: "primitive" (0) 0x2.2-0x2.2 (0.1)
+0x00|      13                                       |  .             |      tag: "printable_string" (0x13) 0x2.3-0x2.7 (0.5)
+0x00|         05                                    |   .            |      length: 5 0x3-0x3.7 (1)
+0x00|            54 65 73 74 20                     |    Test        |      value: "Test " 0x4-0x8.7 (5)
+    |                                               |                |    [1]{}: object 0x9-0x10.7 (8)
+0x00|                           13                  |         .      |      class: "universal" (0) 0x9-0x9.1 (0.2)
+0x00|                           13                  |         .      |      form: "primitive" (0) 0x9.2-0x9.2 (0.1)
+0x00|                           13                  |         .      |      tag: "printable_string" (0x13) 0x9.3-0x9.7 (0.5)
+0x00|                              06               |          .     |      length: 6 0xa-0xa.7 (1)
+0x00|                                 55 73 65 72 20|           User |      value: "User 1" 0xb-0x10.7 (6)
+0x10|31|                                            |1|              |
+    |                                               |                |  value: "Test User 1" 0x11-NA (0)
+{
+  "decoded": "cl'es publiques",
+  "hex": "14 0f | 63 6c c2 65 73 20 70 75 62 6c 69 71 75 65 73"
+}
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0x10.7 (17)
+0x00|14                                             |.               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x00|14                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
+0x00|14                                             |.               |  tag: "teletex_string" (0x14) 0x0.3-0x0.7 (0.5)
+0x00|   0f                                          | .              |  length: 15 0x1-0x1.7 (1)
+0x00|      63 6c c2 65 73 20 70 75 62 6c 69 71 75 65|  cl.es publique|  value: "cl�es publiques" 0x2-0x10.7 (15)
+0x10|73|                                            |s|              |
+{
+  "decoded": "cl'es publiques",
+  "hex": "14 81 0f | 63 6c c2 65 73 20 70 75 62 6c 69 71 75 65 73"
+}
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0x11.7 (18)
+0x00|14                                             |.               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x00|14                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
+0x00|14                                             |.               |  tag: "teletex_string" (0x14) 0x0.3-0x0.7 (0.5)
+0x00|   81 0f                                       | ..             |  length: 15 0x1-0x2.7 (2)
+0x00|         63 6c c2 65 73 20 70 75 62 6c 69 71 75|   cl.es publiqu|  value: "cl�es publiques" 0x3-0x11.7 (15)
+0x10|65 73|                                         |es|             |
+{
+  "decoded": "cl'es publiques",
+  "hex": "34 15 | 14 05 63 6c c2 65 73 | 14 01 20 | 14 09 70 75 62 6c 69 71 75 65 73"
+}
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0x16.7 (23)
+0x00|34                                             |4               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x00|34                                             |4               |  form: "constructed" (1) 0x0.2-0x0.2 (0.1)
+0x00|34                                             |4               |  tag: "teletex_string" (0x14) 0x0.3-0x0.7 (0.5)
+0x00|   15                                          | .              |  length: 21 0x1-0x1.7 (1)
+    |                                               |                |  constructed[0:3]: 0x2-0x16.7 (21)
+    |                                               |                |    [0]{}: object 0x2-0x8.7 (7)
+0x00|      14                                       |  .             |      class: "universal" (0) 0x2-0x2.1 (0.2)
+0x00|      14                                       |  .             |      form: "primitive" (0) 0x2.2-0x2.2 (0.1)
+0x00|      14                                       |  .             |      tag: "teletex_string" (0x14) 0x2.3-0x2.7 (0.5)
+0x00|         05                                    |   .            |      length: 5 0x3-0x3.7 (1)
+0x00|            63 6c c2 65 73                     |    cl.es       |      value: "cl�es" 0x4-0x8.7 (5)
+    |                                               |                |    [1]{}: object 0x9-0xb.7 (3)
+0x00|                           14                  |         .      |      class: "universal" (0) 0x9-0x9.1 (0.2)
+0x00|                           14                  |         .      |      form: "primitive" (0) 0x9.2-0x9.2 (0.1)
+0x00|                           14                  |         .      |      tag: "teletex_string" (0x14) 0x9.3-0x9.7 (0.5)
+0x00|                              01               |          .     |      length: 1 0xa-0xa.7 (1)
+0x00|                                 20            |                |      value: " " 0xb-0xb.7 (1)
+    |                                               |                |    [2]{}: object 0xc-0x16.7 (11)
+0x00|                                    14         |            .   |      class: "universal" (0) 0xc-0xc.1 (0.2)
+0x00|                                    14         |            .   |      form: "primitive" (0) 0xc.2-0xc.2 (0.1)
+0x00|                                    14         |            .   |      tag: "teletex_string" (0x14) 0xc.3-0xc.7 (0.5)
+0x00|                                       09      |             .  |      length: 9 0xd-0xd.7 (1)
+0x00|                                          70 75|              pu|      value: "publiques" 0xe-0x16.7 (9)
+0x10|62 6c 69 71 75 65 73|                          |bliques|        |
+    |                                               |                |  value: "cl�es publiques" 0x17-NA (0)
+{
+  "decoded": "910506164540-0700",
+  "hex": "17 0d 39 31 30 35 30 36 32 33 34 35 34 30 5a"
+}
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0xe.7 (15)
+0x0|17                                             |.               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x0|17                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
+0x0|17                                             |.               |  tag: "utc_time" (0x17) 0x0.3-0x0.7 (0.5)
+0x0|   0d                                          | .              |  length: 13 0x1-0x1.7 (1)
+0x0|      39 31 30 35 30 36 32 33 34 35 34 30 5a|  |  910506234540Z||  value: "910506234540Z" 0x2-0xe.7 (13)
+{
+  "decoded": "910506234540Z",
+  "hex": "17 11 39 31 30 35 30 36 31 36 34 35 34 30 2d 30 37 30 30"
+}
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0x12.7 (19)
+0x00|17                                             |.               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x00|17                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
+0x00|17                                             |.               |  tag: "utc_time" (0x17) 0x0.3-0x0.7 (0.5)
+0x00|   11                                          | .              |  length: 17 0x1-0x1.7 (1)
+0x00|      39 31 30 35 30 36 31 36 34 35 34 30 2d 30|  910506164540-0|  value: "910506164540-0700" 0x2-0x12.7 (17)
+0x10|37 30 30|                                      |700|            |
+{
+  "decoded": "countryName",
+  "hex": "06 03 55 04 06"
+}
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0x4.7 (5)
+0x0|06                                             |.               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x0|06                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
+0x0|06                                             |.               |  tag: "object_identifier" (0x6) 0x0.3-0x0.7 (0.5)
+0x0|   03                                          | .              |  length: 3 0x1-0x1.7 (1)
+   |                                               |                |  value[0:4]: 0x2-0x4.7 (3)
+0x0|      55                                       |  U             |    [0]: 2 oid 0x2-0x2.7 (1)
+0x0|      55                                       |  U             |    [1]: 5 oid 0x2-0x2.7 (1)
+0x0|         04                                    |   .            |    [2]: 4 oid 0x3-0x3.7 (1)
+0x0|            06|                                |    .|          |    [3]: 6 oid 0x4-0x4.7 (1)
+{
+  "decoded": "organizationName",
+  "hex": "06 03 55 04 0a"
+}
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0x4.7 (5)
+0x0|06                                             |.               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x0|06                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
+0x0|06                                             |.               |  tag: "object_identifier" (0x6) 0x0.3-0x0.7 (0.5)
+0x0|   03                                          | .              |  length: 3 0x1-0x1.7 (1)
+   |                                               |                |  value[0:4]: 0x2-0x4.7 (3)
+0x0|      55                                       |  U             |    [0]: 2 oid 0x2-0x2.7 (1)
+0x0|      55                                       |  U             |    [1]: 5 oid 0x2-0x2.7 (1)
+0x0|         04                                    |   .            |    [2]: 4 oid 0x3-0x3.7 (1)
+0x0|            0a|                                |    .|          |    [3]: 10 oid 0x4-0x4.7 (1)
+{
+  "decoded": "commonName",
+  "hex": "06 03 55 04 03"
+}
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0x4.7 (5)
+0x0|06                                             |.               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x0|06                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
+0x0|06                                             |.               |  tag: "object_identifier" (0x6) 0x0.3-0x0.7 (0.5)
+0x0|   03                                          | .              |  length: 3 0x1-0x1.7 (1)
+   |                                               |                |  value[0:4]: 0x2-0x4.7 (3)
+0x0|      55                                       |  U             |    [0]: 2 oid 0x2-0x2.7 (1)
+0x0|      55                                       |  U             |    [1]: 5 oid 0x2-0x2.7 (1)
+0x0|         04                                    |   .            |    [2]: 4 oid 0x3-0x3.7 (1)
+0x0|            03|                                |    .|          |    [3]: 3 oid 0x4-0x4.7 (1)
+{
+  "decoded": "US",
+  "hex": "13 02 55 53"
+}
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0x3.7 (4)
+0x0|13                                             |.               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x0|13                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
+0x0|13                                             |.               |  tag: "printable_string" (0x13) 0x0.3-0x0.7 (0.5)
+0x0|   02                                          | .              |  length: 2 0x1-0x1.7 (1)
+0x0|      55 53|                                   |  US|           |  value: "US" 0x2-0x3.7 (2)
+{
+  "decoded": "Example Organization",
+  "hex": "13 14 | 45 78 61 6d 70 6c 65 20 4f 72 67 61 6e 69 7a 61 | 74 69 6f 6e"
+}
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0x15.7 (22)
+0x00|13                                             |.               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x00|13                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
+0x00|13                                             |.               |  tag: "printable_string" (0x13) 0x0.3-0x0.7 (0.5)
+0x00|   14                                          | .              |  length: 20 0x1-0x1.7 (1)
+0x00|      45 78 61 6d 70 6c 65 20 4f 72 67 61 6e 69|  Example Organi|  value: "Example Organization" 0x2-0x15.7 (20)
+0x10|7a 61 74 69 6f 6e|                             |zation|         |
+{
+  "decoded": "Test User 1",
+  "hex": "13 0b | 54 65 73 74 20 55 73 65 72 20 31"
+}
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0xc.7 (13)
+0x0|13                                             |.               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x0|13                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
+0x0|13                                             |.               |  tag: "printable_string" (0x13) 0x0.3-0x0.7 (0.5)
+0x0|   0b                                          | .              |  length: 11 0x1-0x1.7 (1)
+0x0|      54 65 73 74 20 55 73 65 72 20 31|        |  Test User 1|  |  value: "Test User 1" 0x2-0xc.7 (11)
+{
+  "decoded": "US",
+  "hex": "30 09 | 06 03 55 04 06 | 13 02 55 53"
+}
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0xa.7 (11)
+0x0|30                                             |0               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x0|30                                             |0               |  form: "constructed" (1) 0x0.2-0x0.2 (0.1)
+0x0|30                                             |0               |  tag: "sequence" (0x10) 0x0.3-0x0.7 (0.5)
+0x0|   09                                          | .              |  length: 9 0x1-0x1.7 (1)
+   |                                               |                |  constructed[0:2]: 0x2-0xa.7 (9)
+   |                                               |                |    [0]{}: object 0x2-0x6.7 (5)
+0x0|      06                                       |  .             |      class: "universal" (0) 0x2-0x2.1 (0.2)
+0x0|      06                                       |  .             |      form: "primitive" (0) 0x2.2-0x2.2 (0.1)
+0x0|      06                                       |  .             |      tag: "object_identifier" (0x6) 0x2.3-0x2.7 (0.5)
+0x0|         03                                    |   .            |      length: 3 0x3-0x3.7 (1)
+   |                                               |                |      value[0:4]: 0x4-0x6.7 (3)
+0x0|            55                                 |    U           |        [0]: 2 oid 0x4-0x4.7 (1)
+0x0|            55                                 |    U           |        [1]: 5 oid 0x4-0x4.7 (1)
+0x0|               04                              |     .          |        [2]: 4 oid 0x5-0x5.7 (1)
+0x0|                  06                           |      .         |        [3]: 6 oid 0x6-0x6.7 (1)
+   |                                               |                |    [1]{}: object 0x7-0xa.7 (4)
+0x0|                     13                        |       .        |      class: "universal" (0) 0x7-0x7.1 (0.2)
+0x0|                     13                        |       .        |      form: "primitive" (0) 0x7.2-0x7.2 (0.1)
+0x0|                     13                        |       .        |      tag: "printable_string" (0x13) 0x7.3-0x7.7 (0.5)
+0x0|                        02                     |        .       |      length: 2 0x8-0x8.7 (1)
+0x0|                           55 53|              |         US|    |      value: "US" 0x9-0xa.7 (2)
+{
+  "decoded": "organizationName = Example Organization",
+  "hex": "30 1b | 06 03 55 04 0a | 13 14 45 78 61 6d 70 6c 65 20 4f 72 67 61 6e 69 7a 61 | 74 69 6f 6e"
+}
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0x1c.7 (29)
+0x00|30                                             |0               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x00|30                                             |0               |  form: "constructed" (1) 0x0.2-0x0.2 (0.1)
+0x00|30                                             |0               |  tag: "sequence" (0x10) 0x0.3-0x0.7 (0.5)
+0x00|   1b                                          | .              |  length: 27 0x1-0x1.7 (1)
+    |                                               |                |  constructed[0:2]: 0x2-0x1c.7 (27)
+    |                                               |                |    [0]{}: object 0x2-0x6.7 (5)
+0x00|      06                                       |  .             |      class: "universal" (0) 0x2-0x2.1 (0.2)
+0x00|      06                                       |  .             |      form: "primitive" (0) 0x2.2-0x2.2 (0.1)
+0x00|      06                                       |  .             |      tag: "object_identifier" (0x6) 0x2.3-0x2.7 (0.5)
+0x00|         03                                    |   .            |      length: 3 0x3-0x3.7 (1)
+    |                                               |                |      value[0:4]: 0x4-0x6.7 (3)
+0x00|            55                                 |    U           |        [0]: 2 oid 0x4-0x4.7 (1)
+0x00|            55                                 |    U           |        [1]: 5 oid 0x4-0x4.7 (1)
+0x00|               04                              |     .          |        [2]: 4 oid 0x5-0x5.7 (1)
+0x00|                  0a                           |      .         |        [3]: 10 oid 0x6-0x6.7 (1)
+    |                                               |                |    [1]{}: object 0x7-0x1c.7 (22)
+0x00|                     13                        |       .        |      class: "universal" (0) 0x7-0x7.1 (0.2)
+0x00|                     13                        |       .        |      form: "primitive" (0) 0x7.2-0x7.2 (0.1)
+0x00|                     13                        |       .        |      tag: "printable_string" (0x13) 0x7.3-0x7.7 (0.5)
+0x00|                        14                     |        .       |      length: 20 0x8-0x8.7 (1)
+0x00|                           45 78 61 6d 70 6c 65|         Example|      value: "Example Organization" 0x9-0x1c.7 (20)
+0x10|20 4f 72 67 61 6e 69 7a 61 74 69 6f 6e|        | Organization|  |
+{
+  "decoded": "commonName = Test User 1",
+  "hex": "30 12 | 06 03 55 04 0b | 13 0b 54 65 73 74 20 55 73 65 72 20 31"
+}
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0x13.7 (20)
+0x00|30                                             |0               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x00|30                                             |0               |  form: "constructed" (1) 0x0.2-0x0.2 (0.1)
+0x00|30                                             |0               |  tag: "sequence" (0x10) 0x0.3-0x0.7 (0.5)
+0x00|   12                                          | .              |  length: 18 0x1-0x1.7 (1)
+    |                                               |                |  constructed[0:2]: 0x2-0x13.7 (18)
+    |                                               |                |    [0]{}: object 0x2-0x6.7 (5)
+0x00|      06                                       |  .             |      class: "universal" (0) 0x2-0x2.1 (0.2)
+0x00|      06                                       |  .             |      form: "primitive" (0) 0x2.2-0x2.2 (0.1)
+0x00|      06                                       |  .             |      tag: "object_identifier" (0x6) 0x2.3-0x2.7 (0.5)
+0x00|         03                                    |   .            |      length: 3 0x3-0x3.7 (1)
+    |                                               |                |      value[0:4]: 0x4-0x6.7 (3)
+0x00|            55                                 |    U           |        [0]: 2 oid 0x4-0x4.7 (1)
+0x00|            55                                 |    U           |        [1]: 5 oid 0x4-0x4.7 (1)
+0x00|               04                              |     .          |        [2]: 4 oid 0x5-0x5.7 (1)
+0x00|                  0b                           |      .         |        [3]: 11 oid 0x6-0x6.7 (1)
+    |                                               |                |    [1]{}: object 0x7-0x13.7 (13)
+0x00|                     13                        |       .        |      class: "universal" (0) 0x7-0x7.1 (0.2)
+0x00|                     13                        |       .        |      form: "primitive" (0) 0x7.2-0x7.2 (0.1)
+0x00|                     13                        |       .        |      tag: "printable_string" (0x13) 0x7.3-0x7.7 (0.5)
+0x00|                        0b                     |        .       |      length: 11 0x8-0x8.7 (1)
+0x00|                           54 65 73 74 20 55 73|         Test Us|      value: "Test User 1" 0x9-0x13.7 (11)
+0x10|65 72 20 31|                                   |er 1|           |
+{
+  "decoded": "",
+  "hex": "31 0b | 30 09 | 06 03 55 04 06 | 13 02 55 53"
+}
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0xc.7 (13)
+0x0|31                                             |1               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x0|31                                             |1               |  form: "constructed" (1) 0x0.2-0x0.2 (0.1)
+0x0|31                                             |1               |  tag: "set" (0x11) 0x0.3-0x0.7 (0.5)
+0x0|   0b                                          | .              |  length: 11 0x1-0x1.7 (1)
+   |                                               |                |  constructed[0:1]: 0x2-0xc.7 (11)
+   |                                               |                |    [0]{}: object 0x2-0xc.7 (11)
+0x0|      30                                       |  0             |      class: "universal" (0) 0x2-0x2.1 (0.2)
+0x0|      30                                       |  0             |      form: "constructed" (1) 0x2.2-0x2.2 (0.1)
+0x0|      30                                       |  0             |      tag: "sequence" (0x10) 0x2.3-0x2.7 (0.5)
+0x0|         09                                    |   .            |      length: 9 0x3-0x3.7 (1)
+   |                                               |                |      constructed[0:2]: 0x4-0xc.7 (9)
+   |                                               |                |        [0]{}: object 0x4-0x8.7 (5)
+0x0|            06                                 |    .           |          class: "universal" (0) 0x4-0x4.1 (0.2)
+0x0|            06                                 |    .           |          form: "primitive" (0) 0x4.2-0x4.2 (0.1)
+0x0|            06                                 |    .           |          tag: "object_identifier" (0x6) 0x4.3-0x4.7 (0.5)
+0x0|               03                              |     .          |          length: 3 0x5-0x5.7 (1)
+   |                                               |                |          value[0:4]: 0x6-0x8.7 (3)
+0x0|                  55                           |      U         |            [0]: 2 oid 0x6-0x6.7 (1)
+0x0|                  55                           |      U         |            [1]: 5 oid 0x6-0x6.7 (1)
+0x0|                     04                        |       .        |            [2]: 4 oid 0x7-0x7.7 (1)
+0x0|                        06                     |        .       |            [3]: 6 oid 0x8-0x8.7 (1)
+   |                                               |                |        [1]{}: object 0x9-0xc.7 (4)
+0x0|                           13                  |         .      |          class: "universal" (0) 0x9-0x9.1 (0.2)
+0x0|                           13                  |         .      |          form: "primitive" (0) 0x9.2-0x9.2 (0.1)
+0x0|                           13                  |         .      |          tag: "printable_string" (0x13) 0x9.3-0x9.7 (0.5)
+0x0|                              02               |          .     |          length: 2 0xa-0xa.7 (1)
+0x0|                                 55 53|        |           US|  |          value: "US" 0xb-0xc.7 (2)
+{
+  "decoded": "",
+  "hex": "31 1d | 30 1b | 06 03 55 04 0a | 13 14 45 78 61 6d 70 6c 65 20 4f 72 67 61 6e 69 7a 61 | 74 69 6f 6e"
+}
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber) 0x0-0x1e.7 (31)
+0x00|31                                             |1               |  class: "universal" (0) 0x0-0x0.1 (0.2)
+0x00|31                                             |1               |  form: "constructed" (1) 0x0.2-0x0.2 (0.1)
+0x00|31                                             |1               |  tag: "set" (0x11) 0x0.3-0x0.7 (0.5)
+0x00|   1d                                          | .              |  length: 29 0x1-0x1.7 (1)
+    |                                               |                |  constructed[0:1]: 0x2-0x1e.7 (29)
+    |                                               |                |    [0]{}: object 0x2-0x1e.7 (29)
+0x00|      30                                       |  0             |      class: "universal" (0) 0x2-0x2.1 (0.2)
+0x00|      30                                       |  0             |      form: "constructed" (1) 0x2.2-0x2.2 (0.1)
+0x00|      30                                       |  0             |      tag: "sequence" (0x10) 0x2.3-0x2.7 (0.5)
+0x00|         1b                                    |   .            |      length: 27 0x3-0x3.7 (1)
+    |                                               |                |      constructed[0:2]: 0x4-0x1e.7 (27)
+    |                                               |                |        [0]{}: object 0x4-0x8.7 (5)
+0x00|            06                                 |    .           |          class: "universal" (0) 0x4-0x4.1 (0.2)
+0x00|            06                                 |    .           |          form: "primitive" (0) 0x4.2-0x4.2 (0.1)
+0x00|            06                                 |    .           |          tag: "object_identifier" (0x6) 0x4.3-0x4.7 (0.5)
+0x00|               03                              |     .          |          length: 3 0x5-0x5.7 (1)
+    |                                               |                |          value[0:4]: 0x6-0x8.7 (3)
+0x00|                  55                           |      U         |            [0]: 2 oid 0x6-0x6.7 (1)
+0x00|                  55                           |      U         |            [1]: 5 oid 0x6-0x6.7 (1)
+0x00|                     04                        |       .        |            [2]: 4 oid 0x7-0x7.7 (1)
+0x00|                        0a                     |        .       |            [3]: 10 oid 0x8-0x8.7 (1)
+    |                                               |                |        [1]{}: object 0x9-0x1e.7 (22)
+0x00|                           13                  |         .      |          class: "universal" (0) 0x9-0x9.1 (0.2)
+0x00|                           13                  |         .      |          form: "primitive" (0) 0x9.2-0x9.2 (0.1)
+0x00|                           13                  |         .      |          tag: "printable_string" (0x13) 0x9.3-0x9.7 (0.5)
+0x00|                              14               |          .     |          length: 20 0xa-0xa.7 (1)
+0x00|                                 45 78 61 6d 70|           Examp|          value: "Example Organization" 0xb-0x1e.7 (20)
+0x10|6c 65 20 4f 72 67 61 6e 69 7a 61 74 69 6f 6e|  |le Organization||

@@ -1,0 +1,8 @@
+$ fq -d asn1_ber d tc42.ber
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: tc42.ber (asn1_ber)
+   |                                               |                |  error: asn1_ber: BitBufRange: failed at position 0 (read size 104 seek pos 0): outside buffer
+0x0|24                                             |$               |  class: "universal" (0)
+0x0|24                                             |$               |  form: "constructed" (1)
+0x0|24                                             |$               |  tag: "octet_string" (0x4)
+0x0|   80                                          | .              |  length: "indefinite" (0)
+0x0|      04 03 00 04 05 04 5f 29 1c d0 00 00|     |  ......_)....| |  unknown0: raw bits

@@ -61,7 +61,7 @@ var elementTypeMap = scalar.UToScalar{
 
 func decodeBSONDocument(d *decode.D) {
 	size := d.FieldU32("size")
-	d.LenFn(int64(size-4)*8, func(d *decode.D) {
+	d.FramedFn(int64(size-4)*8, func(d *decode.D) {
 		d.FieldArray("elements", func(d *decode.D) {
 			for d.BitsLeft() > 8 {
 				d.FieldStruct("element", func(d *decode.D) {

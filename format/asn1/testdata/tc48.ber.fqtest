@@ -1,0 +1,8 @@
+$ fq -d asn1_ber d tc48.ber
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: tc48.ber (asn1_ber)
+    |                                               |                |  error: asn1_ber: error at position 0xd: unusedBitsCount 15 > 7
+0x00|23                                             |#               |  class: "universal" (0)
+0x00|23                                             |#               |  form: "constructed" (1)
+0x00|23                                             |#               |  tag: "bit_string" (0x3)
+0x00|   80                                          | .              |  length: "indefinite" (0)
+0x00|      03 02 00 01 03 02 00 01 03 02 0f 0f 00 00|  ..............|  unknown0: raw bits

@@ -171,7 +171,7 @@ func pesPacketDecode(d *decode.D, in interface{}) interface{} {
 		switch startCode {
 		case privateStream1:
 			d.FieldStruct("data", func(d *decode.D) {
-				d.LenFn(dataLen, func(d *decode.D) {
+				d.FramedFn(dataLen, func(d *decode.D) {
 					substreamNumber := d.FieldU8("substream")
 					substreamBR := d.FieldRawLen("data", dataLen-8)
 
