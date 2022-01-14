@@ -11,9 +11,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var pcapEther8023Format decode.Group
-var pcapSLLPacket decode.Group
-var pcapSLL2Packet decode.Group
+var pcapLinkFrameFormat decode.Group
 var pcapTCPStreamFormat decode.Group
 var pcapIPv4PacketFormat decode.Group
 
@@ -33,9 +31,7 @@ func init() {
 		Description: "PCAP packet capture",
 		Groups:      []string{format.PROBE},
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.ETHER8023_FRAME}, Group: &pcapEther8023Format},
-			{Names: []string{format.SLL_PACKET}, Group: &pcapSLLPacket},
-			{Names: []string{format.SLL2_PACKET}, Group: &pcapSLL2Packet},
+			{Names: []string{format.LINK_FRAME}, Group: &pcapLinkFrameFormat},
 			{Names: []string{format.TCP_STREAM}, Group: &pcapTCPStreamFormat},
 			{Names: []string{format.IPV4_PACKET}, Group: &pcapIPv4PacketFormat},
 		},
@@ -57,7 +53,7 @@ func decodePcap(d *decode.D, in interface{}) interface{} {
 	d.FieldU16("version_minor")
 	d.FieldS32("thiszone")
 	d.FieldU32("sigfigs")
-	spanLen := d.FieldU32("snaplen")
+	d.FieldU32("snaplen")
 	linkType := int(d.FieldU32("network", format.LinkTypeMap))
 
 	fd := flowsdecoder.New()
@@ -70,9 +66,14 @@ func decodePcap(d *decode.D, in interface{}) interface{} {
 				inclLen := d.FieldU32("incl_len")
 				origLen := d.FieldU32("orig_len")
 
-				if inclLen > spanLen {
-					d.Errorf("incl_len %d > snaplen %d", inclLen, spanLen)
-				}
+				// "incl_len: the number of bytes of packet data actually captured and saved in the file. This value should never become larger than orig_len or the snaplen value of the global header"
+				// "orig_len: the length of the packet as it appeared on the network when it was captured. If incl_len and orig_len differ, the actually saved packet size was limited by snaplen."
+
+				// TODO: incl_len seems to be larger than snaplen in real pcap files
+				// if inclLen > snapLen {
+				// 	d.Errorf("incl_len %d > snaplen %d", inclLen, snapLen)
+				// }
+
 				if inclLen > origLen {
 					d.Errorf("incl_len %d > orig_len %d", inclLen, origLen)
 				}
@@ -89,9 +90,10 @@ func decodePcap(d *decode.D, in interface{}) interface{} {
 					_ = fn(fd, bs)
 				}
 
-				if g, ok := linkToFormat[linkType]; ok {
-					d.FieldFormatLen("packet", int64(inclLen)*8, *g, nil)
-				} else {
+				if dv, _, _ := d.TryFieldFormatLen("packet", int64(inclLen)*8, pcapLinkFrameFormat, format.LinkFrameIn{
+					Type:         linkType,
+					LittleEndian: d.Endian == decode.LittleEndian,
+				}); dv == nil {
 					d.FieldRawLen("packet", int64(inclLen)*8)
 				}
 			})

@@ -2,11 +2,11 @@ def display($opts):
   ( options($opts) as $opts
   | if _can_display then _display($opts)
     else
-      ( if type == "string" and $opts.raw_string then (tostring | stdout)
+      ( if type == "string" and $opts.raw_string then print
         else _print_color_json($opts)
         end
       , ( $opts.join_string
-        | if . then stdout else empty end
+        | if . then print else empty end
         )
       )
     end

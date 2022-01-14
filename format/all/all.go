@@ -4,9 +4,13 @@ package all
 
 import (
 	_ "github.com/wader/fq/format/ape"
+	_ "github.com/wader/fq/format/ar"
 	_ "github.com/wader/fq/format/av1"
+	_ "github.com/wader/fq/format/bencode"
+	_ "github.com/wader/fq/format/bson"
 	_ "github.com/wader/fq/format/avro"
 	_ "github.com/wader/fq/format/bzip2"
+	_ "github.com/wader/fq/format/cbor"
 	_ "github.com/wader/fq/format/dns"
 	_ "github.com/wader/fq/format/elf"
 	_ "github.com/wader/fq/format/flac"
@@ -21,6 +25,7 @@ import (
 	_ "github.com/wader/fq/format/mp3"
 	_ "github.com/wader/fq/format/mp4"
 	_ "github.com/wader/fq/format/mpeg"
+	_ "github.com/wader/fq/format/msgpack"
 	_ "github.com/wader/fq/format/ogg"
 	_ "github.com/wader/fq/format/opus"
 	_ "github.com/wader/fq/format/pcap"

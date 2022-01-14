@@ -58,7 +58,7 @@ def input:
         ( . as $err
         | _input_io_errors(. += {($h): $err}) as $_
         | $err
-        | (_error_str | _errorln)
+        | (_error_str | printerrln)
         , _input($opts; f)
         )
     | try f
@@ -71,7 +71,7 @@ def input:
             else ": failed to decode (try -d FORMAT)"
             end
           ] | join("")
-        | (_error_str | _errorln)
+        | (_error_str | printerrln)
         , _input($opts; f)
         )
     );
@@ -143,7 +143,7 @@ def var($k): . as $c | var($k; $c);
 def _cli_expr_on_error:
   ( . as $err
   | _cli_last_expr_error($err) as $_
-  | (_error_str | _errorln)
+  | (_error_str | printerrln)
   );
 def _cli_expr_on_compile_error:
   ( _eval_compile_error_tostring
@@ -180,7 +180,6 @@ def _main:
   def _usage($arg0):
     "Usage: \($arg0) [OPTIONS] [--] [EXPR] [FILE...]";
   ( . as {$version, $args, args: [$arg0]}
-  | (null | [stdin, stdout]) as [$stdin, $stdout]
   # make sure we don't unintentionally use . to make things clearer
   | null
   | ( try _args_parse($args[1:]; _opt_cli_opts)
@@ -311,10 +310,10 @@ def _main:
         $opts.null_input == false and
         ($opts.repl | not) and
         ($opts.expr_file | not) and
-        $stdin.is_terminal and
-        $stdout.is_terminal
+        stdin_tty.is_terminal and
+        stdout_tty.is_terminal
       ) then
-      ( (( _usage($arg0), "\n") | stderr)
+      ( (_usage($arg0) | printerrln)
       , null | halt_error(_exit_code_args_error)
       )
     else

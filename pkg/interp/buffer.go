@@ -21,7 +21,6 @@ func init() {
 	functionRegisterFns = append(functionRegisterFns, func(i *Interp) []Function {
 		return []Function{
 			{"_tobitsrange", 0, 2, i._toBitsRange, nil},
-			{"_is_buffer", 0, 0, i._isBuffer, nil},
 			{"open", 0, 0, i._open, nil},
 		}
 	})
@@ -106,11 +105,6 @@ func toBuffer(v interface{}) (Buffer, error) {
 		}
 		return newBufferFromBuffer(bb, 8), nil
 	}
-}
-
-func (i *Interp) _isBuffer(c interface{}, a []interface{}) interface{} {
-	_, ok := c.(ToBuffer)
-	return ok
 }
 
 // note is used to implement tobytes*/0 also

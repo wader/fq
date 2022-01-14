@@ -1,5 +1,7 @@
 package flowsdecoder
 
+// TODO: option to not allow missing syn/ack?
+
 import (
 	"bytes"
 	"encoding/binary"
@@ -49,7 +51,10 @@ func (t *TCPConnection) ReassembledSG(sg reassembly.ScatterGather, ac reassembly
 	dir, _, _, skip := sg.Info()
 	length, _ := sg.Lengths()
 
-	if skip != 0 {
+	if skip == -1 {
+		// can't find where skip == -1 is documented but this is what gopacket reassemblydump does
+		// to allow missing syn/ack
+	} else if skip != 0 {
 		// stream has missing bytes
 		return
 	}
@@ -139,6 +144,10 @@ func (fd *Decoder) SLLPacket(bs []byte) error {
 
 func (fd *Decoder) EthernetFrame(bs []byte) error {
 	return fd.packet(gopacket.NewPacket(bs, layers.LayerTypeEthernet, gopacket.Lazy))
+}
+
+func (fd *Decoder) LoopbackFrame(bs []byte) error {
+	return fd.packet(gopacket.NewPacket(bs, layers.LayerTypeLoopback, gopacket.Lazy))
 }
 
 func (fd *Decoder) packet(p gopacket.Packet) error {

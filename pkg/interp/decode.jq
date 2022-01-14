@@ -25,18 +25,17 @@ def _decode_progress:
       )
     else empty
     end
-  | stderr
+  | printerr
   );
 
 def decode($name; $decode_opts):
   ( options as $opts
-  | (null | stdout) as $stdout
   | _decode(
       $name;
       $opts +
       {
         _progress: (
-          if $opts.decode_progress and $opts.repl and $stdout.is_terminal then
+          if $opts.decode_progress and $opts.repl and stdout_tty.is_terminal then
             "_decode_progress"
           else null
           end

@@ -1,5 +1,6 @@
-GO_BUILD_FLAGS=-trimpath
-GO_BUILD_LDFLAGS=-s -w
+GO_BUILD_FLAGS ?= -trimpath
+GO_BUILD_LDFLAGS ?= -s -w
+GO_TEST_RACE_FLAGS ?=-race
 
 all: test fq
 
@@ -15,7 +16,7 @@ test: testgo testjq testcli
 # figure out all go pakges with test files
 testgo: PKGS=$(shell find . -name "*_test.go" | xargs -n 1 dirname | sort | uniq)
 testgo:
-	go test -race ${VERBOSE} ${COVER} ${PKGS}
+	go test ${GO_TEST_RACE_FLAGS} ${VERBOSE} ${COVER} ${PKGS}
 
 .PHONY: testgov
 testgov: export VERBOSE=-v
@@ -97,3 +98,33 @@ update-gomod:
 fuzz:
 # in other terminal: tail -f /tmp/repanic
 	REPANIC_LOG=/tmp/repanic gotip test -tags fuzz -v -fuzz=Fuzz ./format/
+
+# usage: make release VERSION=0.0.1
+# tag forked dependeces for history and to make then stay around
+.PHONY: release
+release: WADER_GOJQ_COMMIT=$(shell go list -m -f '{{.Version}}' github.com/wader/gojq | sed 's/.*-\(.*\)/\1/')
+release: WADER_READLINE_COMMIT=$(shell go list -m -f '{{.Version}}' github.com/wader/readline | sed 's/.*-\(.*\)/\1/')
+release:
+	@echo "# wader/fq":
+	@echo "# make sure head is at wader/master"
+	@echo git fetch wader
+	@echo git show
+	@echo make lint test doc
+	@echo go mod tidy
+	@echo git diff
+	@echo "# make sure head master commit CI was successful"
+	@echo open https://github.com/wader/fq/commit/master
+	@echo git tag v${VERSION}
+	@echo
+	@echo "# wader/gojq:"
+	@echo git tag fq-v${VERSION} ${WADER_GOJQ_COMMIT}
+	@echo git push wader fq-v${VERSION}:fq-v${VERSION}
+	@echo
+	@echo "# wader/readline:"
+	@echo git tag fq-v${VERSION} ${WADER_READLINE_COMMIT}
+	@echo git push wader fq-v${VERSION}:fq-v${VERSION}
+	@echo
+	@echo "# wader/fq":
+	@echo git push wader v${VERSION}:v${VERSION}
+	@echo "# edit draft release notes and publish"
+	@echo open https://github.com/wader/fq/releases/tag/v${VERSION}

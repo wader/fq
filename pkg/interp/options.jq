@@ -2,7 +2,7 @@ def _obj_to_csv_kv:
   [to_entries[] | [.key, .value] | join("=")] | join(",");
 
 def _opt_build_default_fixed:
-  ( (null | stdout) as $stdout
+  ( stdout_tty as $stdout
   | {
       addrbase:       16,
       arg:            [],
@@ -55,11 +55,15 @@ def _opt_build_default_fixed:
   );
 
 def _opt_default_dynamic:
-  ( (null | stdout) as $stdout
+  ( stdout_tty as $stdout
+  # TODO: intdiv 2 * 2 to get even number, nice or maybe not needed?
+  | ( if $stdout.is_terminal then [_intdiv(_intdiv($stdout.width; 8); 2) * 2, 4] | max
+      else 16
+      end
+    ) as $display_bytes
   | {
-      # TODO: intdiv 2 * 2 to get even number, nice or maybe not needed?
-      display_bytes:   (if $stdout.is_terminal then [_intdiv(_intdiv($stdout.width; 8); 2) * 2, 4] | max else 16 end),
-      line_bytes:      (if $stdout.is_terminal then [_intdiv(_intdiv($stdout.width; 8); 2) * 2, 4] | max else 16 end),
+      display_bytes: $display_bytes,
+      line_bytes: $display_bytes,
     }
   );
 

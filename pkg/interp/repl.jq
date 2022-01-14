@@ -124,7 +124,7 @@ def _prompt:
           )
         end
       , "]"
-      , if length > 1 then "[\(length)]" else empty end
+      , if length > 1 then "[0:\(length)]" else empty end
       ] | join("")
     else
       ( . as $c
@@ -146,7 +146,7 @@ def _prompt:
     if length == 0 then "empty"
     else
       [ (.[0] | _value)
-      , if length > 1 then ", ...[\(length)]" else empty end
+      , if length > 1 then ", ...[0:\(length)][]" else empty end
       ] | join("")
     end;
   [ _repl_level

@@ -16,8 +16,8 @@ github.com/nbutton23/zxcvbn-go v0.0.0-20210217022336-fa2cb2858354/go.mod h1:KSVJ
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/testify v1.1.4/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXfy6kDkUVs=
-github.com/wader/gojq v0.12.1-0.20211211101122-3894ded312be h1:Bc8ZRZxUqQPPwHqdY1c99mKInhJ0UeWEMjgsjHMRGUA=
-github.com/wader/gojq v0.12.1-0.20211211101122-3894ded312be/go.mod h1:tdC5h6dXdwAJs7eJUw4681AzsgfOSBrAV+cZzEbCZs4=
+github.com/wader/gojq v0.12.1-0.20220108235115-6a05b6c59ace h1:pt07NaC7OhePrQVRKRxZy9umeWkjr28AmbtQC9CrtVQ=
+github.com/wader/gojq v0.12.1-0.20220108235115-6a05b6c59ace/go.mod h1:tdC5h6dXdwAJs7eJUw4681AzsgfOSBrAV+cZzEbCZs4=
 github.com/wader/readline v0.0.0-20210920124728-5a81f7707bac h1:F5x54dwg6vGyf+8XhujiyXr651E3tKpcL1mqGmS7/MU=
 github.com/wader/readline v0.0.0-20210920124728-5a81f7707bac/go.mod h1:jYXyt9wQg3DifxQ8FM5M/ZoskO23GIwmo05QLHtO9CQ=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=

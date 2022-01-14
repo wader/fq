@@ -162,16 +162,22 @@ var RawHexReverse = Fn(func(s S) (S, error) {
 	})
 })
 
-type URangeToScalar map[[2]uint64]S
+type URangeEntry struct {
+	Range [2]uint64
+	S     S
+}
 
-func (m URangeToScalar) MapScalar(s S) (S, error) {
+// URangeToScalar maps uint64 ranges to a scalar, first in range is chosen
+type URangeToScalar []URangeEntry
+
+func (rs URangeToScalar) MapScalar(s S) (S, error) {
 	n, ok := s.Actual.(uint64)
 	if !ok {
 		return s, nil
 	}
-	for r, rs := range m {
-		if n >= r[0] && n <= r[1] {
-			ns := rs
+	for _, re := range rs {
+		if n >= re.Range[0] && n <= re.Range[1] {
+			ns := re.S
 			ns.Actual = s.Actual
 			s = ns
 			break
@@ -180,13 +186,23 @@ func (m URangeToScalar) MapScalar(s S) (S, error) {
 	return s, nil
 }
 
-type SRangeToScalar map[[2]int64]S
+// SRangeToScalar maps ranges to a scalar, first in range is chosen
+type SRangeEntry struct {
+	Range [2]int64
+	S     S
+}
 
-func (m SRangeToScalar) MapScalar(s S) (S, error) {
-	n := s.ActualS()
-	for r, rs := range m {
-		if n >= r[0] && n <= r[1] {
-			ns := rs
+// SRangeToScalar maps sint64 ranges to a scalar, first in range is chosen
+type SRangeToScalar []SRangeEntry
+
+func (rs SRangeToScalar) MapScalar(s S) (S, error) {
+	n, ok := s.Actual.(int64)
+	if !ok {
+		return s, nil
+	}
+	for _, re := range rs {
+		if n >= re.Range[0] && n <= re.Range[1] {
+			ns := re.S
 			ns.Actual = s.Actual
 			s = ns
 			break

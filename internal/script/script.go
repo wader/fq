@@ -3,6 +3,7 @@ package script
 import (
 	"bytes"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"io"
 	"io/fs"
@@ -284,6 +285,15 @@ func (c *Case) ToActual() string {
 	return sb.String()
 }
 
+func normalizeOSError(err error) error {
+	var pe *os.PathError
+	if errors.As(err, &pe) {
+		pe.Err = errors.New("no such file or directory")
+		pe.Path = filepath.ToSlash(pe.Path)
+	}
+	return err
+}
+
 func (c *Case) Open(name string) (fs.File, error) {
 	for _, p := range c.Parts {
 		f, ok := p.(*caseFile)
@@ -297,7 +307,10 @@ func (c *Case) Open(name string) (fs.File, error) {
 			}, nil
 		}
 	}
-	return os.Open(filepath.Join(filepath.Dir(c.Path), name))
+	f, err := os.Open(filepath.Join(filepath.Dir(c.Path), name))
+	// normalizeOSError is used to normalize OS specific path and messages into the ones unix uses
+	// this needed to make difftest work
+	return f, normalizeOSError(err)
 }
 
 type Section struct {
@@ -412,7 +425,7 @@ func ParseCases(s string) *Case {
 
 	// TODO: better section splitter, too much heuristics now
 	for _, section := range SectionParser(regexp.MustCompile(
-		`^\$ .*$|^stdin:$|^stderr:$|^exitcode:.*$|^#.*$|^/.*:|^[^<:|]+>.*$`,
+		`^\$ .*$|^stdin:$|^stderr:$|^exitcode:.*$|^#.*$|^/.*:|^[^<|"]+>.*$`,
 	), s) {
 		n, v := section.Name, section.Value
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 
+	"github.com/wader/fq/internal/num"
 	"github.com/wader/fq/pkg/bitio"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/unicode"
@@ -57,6 +58,8 @@ func (d *D) tryFE(nBits int, endian Endian) (float64, error) {
 		n = bitio.Uint64ReverseBytes(nBits, n)
 	}
 	switch nBits {
+	case 16:
+		return float64(num.Float16(uint16(n)).Float32()), nil
 	case 32:
 		return float64(math.Float32frombits(uint32(n))), nil
 	case 64:

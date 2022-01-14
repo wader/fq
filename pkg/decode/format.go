@@ -19,6 +19,7 @@ type Format struct {
 	RootName     string
 	Dependencies []Dependency
 	Files        fs.ReadDirFS
+	ToRepr       string
 }
 
 func FormatFn(d func(d *D, in interface{}) interface{}) Group {

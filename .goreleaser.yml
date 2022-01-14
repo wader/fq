@@ -4,6 +4,9 @@ before:
   hooks:
     - go mod download
 
+release:
+  draft: true
+
 builds:
   - env:
       - CGO_ENABLED=0
@@ -42,8 +45,7 @@ changelog:
   sort: asc
   filters:
     exclude:
-      - "^docs:"
-      - "^test:"
+      - "^Merge"
 
 brews:
   - tap:

@@ -16,6 +16,7 @@ func init() {
 	registry.MustRegister(decode.Format{
 		Name:        format.SLL2_PACKET,
 		Description: "Linux cooked capture encapsulation v2",
+		Groups:      []string{format.LINK_FRAME},
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.ETHER8023_FRAME}, Group: &sllPacket2Ether8023Format},
 		},
@@ -28,6 +29,12 @@ var sllPacket2FrameTypeFormat = map[uint64]*decode.Group{
 }
 
 func decodeSLL2(d *decode.D, in interface{}) interface{} {
+	if lsi, ok := in.(format.LinkFrameIn); ok {
+		if lsi.Type != format.LinkTypeLINUX_SLL2 {
+			d.Fatalf("wrong link type")
+		}
+	}
+
 	protcolType := d.FieldU16("protocol_type", format.EtherTypeMap, scalar.Hex)
 	d.FieldU16("reserved")
 	d.FieldU32("interface_index")

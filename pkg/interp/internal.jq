@@ -1,12 +1,25 @@
 # is here to be defined as early as possible to allow debugging
-# TODO: move to builtin.jq etc?
-def print: stdout;
-def println: ., "\n" | stdout;
+# TODO: move some _* to builtin.jq etc?
+
+def stdin_tty: null | _stdin;
+def stdout_tty: null | _stdout;
+
+def print: tostring | _stdout;
+def println: ., "\n" | print;
+def printerr: tostring | _stderr;
+def printerrln: ., "\n" | printerr;
+
+# jq compat
 def debug:
-  ( ((["DEBUG", .] | tojson), "\n" | stderr)
+  ( ((["DEBUG", .] | tojson) | printerrln)
   , .
   );
 def debug(f): . as $c | f | debug | $c;
+# jq compat, output to compact json to stderr and let input thru
+def stderr:
+  ( (tojson | printerr)
+  , .
+  );
 
 def _global_var($k): _global_state[$k];
 def _global_var($k; f): _global_state(_global_state | .[$k] |= f) | .[$k];
@@ -118,4 +131,3 @@ def _is_scalar:
 def _is_context_canceled_error: . == "context canceled";
 
 def _error_str: "error: \(.)";
-def _errorln: ., "\n" | stderr;

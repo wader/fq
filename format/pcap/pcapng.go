@@ -13,9 +13,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var pcapngEther8023Format decode.Group
-var pcapngSLLPacketFormat decode.Group
-var pcapngSLL2PacketFormat decode.Group
+var pcapngLinkFrameFormat decode.Group
 var pcapngTCPStreamFormat decode.Group
 var pcapngIPvPacket4Format decode.Group
 
@@ -26,9 +24,7 @@ func init() {
 		RootArray:   true,
 		Groups:      []string{format.PROBE},
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.ETHER8023_FRAME}, Group: &pcapngEther8023Format},
-			{Names: []string{format.SLL_PACKET}, Group: &pcapngSLLPacketFormat},
-			{Names: []string{format.SLL2_PACKET}, Group: &pcapngSLL2PacketFormat},
+			{Names: []string{format.LINK_FRAME}, Group: &pcapngLinkFrameFormat},
 			{Names: []string{format.TCP_STREAM}, Group: &pcapngTCPStreamFormat},
 			{Names: []string{format.IPV4_PACKET}, Group: &pcapngIPvPacket4Format},
 		},
@@ -244,12 +240,12 @@ var blockFns = map[uint64]func(d *decode.D, dc *decodeContext){
 		if fn, ok := linkToDecodeFn[linkType]; ok {
 			// TODO: report decode errors
 			_ = fn(dc.flowDecoder, bs)
-			_ = fn(dc.flowDecoder, bs)
 		}
 
-		if g, ok := linkToFormat[linkType]; ok {
-			d.FieldFormatLen("packet", int64(capturedLength)*8, *g, nil)
-		} else {
+		if dv, _, _ := d.TryFieldFormatLen("packet", int64(capturedLength)*8, pcapngLinkFrameFormat, format.LinkFrameIn{
+			Type:         linkType,
+			LittleEndian: d.Endian == decode.LittleEndian,
+		}); dv == nil {
 			d.FieldRawLen("packet", int64(capturedLength)*8)
 		}
 

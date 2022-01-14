@@ -488,20 +488,36 @@ func (d *D) BytePos() int64 {
 	return bBytePos
 }
 
-func (d *D) SeekRel(deltaBits int64) int64 {
-	pos, err := d.bitBuf.SeekRel(deltaBits)
-	if err != nil {
-		panic(IOError{Err: err, Op: "SeekRel", SeekPos: deltaBits, Pos: d.Pos()})
+func (d *D) seekAbs(pos int64, name string, fns ...func(d *D)) int64 {
+	var oldPos int64
+	if len(fns) > 0 {
+		oldPos = d.Pos()
 	}
+
+	pos, err := d.bitBuf.SeekAbs(pos)
+	if err != nil {
+		panic(IOError{Err: err, Op: name, SeekPos: pos, Pos: d.Pos()})
+	}
+
+	if len(fns) > 0 {
+		for _, fn := range fns {
+			fn(d)
+		}
+		_, err := d.bitBuf.SeekAbs(oldPos)
+		if err != nil {
+			panic(IOError{Err: err, Op: name, SeekPos: pos, Pos: d.Pos()})
+		}
+	}
+
 	return pos
 }
 
-func (d *D) SeekAbs(pos int64) int64 {
-	pos, err := d.bitBuf.SeekAbs(pos)
-	if err != nil {
-		panic(IOError{Err: err, Op: "SeekAbs", SeekPos: pos, Pos: d.Pos()})
-	}
-	return pos
+func (d *D) SeekRel(deltaPos int64, fns ...func(d *D)) int64 {
+	return d.seekAbs(d.Pos()+deltaPos, "SeekRel", fns...)
+}
+
+func (d *D) SeekAbs(pos int64, fns ...func(d *D)) int64 {
+	return d.seekAbs(pos, "SeekAbs", fns...)
 }
 
 func (d *D) AddChild(v *Value) {
@@ -650,6 +666,10 @@ func (d *D) RangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 		subV = &Compound{IsArray: vv.IsArray}
 	default:
 		panic("unreachable")
+	}
+
+	if nBits < 0 {
+		nBits = d.Len() - firstBit
 	}
 
 	// TODO: do some kind of DecodeLimitedLen/RangeFn?
