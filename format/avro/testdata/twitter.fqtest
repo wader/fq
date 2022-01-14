@@ -29,20 +29,24 @@ $ fq verbose twitter.avro
 0x1a0|                           c8 01               |         ..     |      size: 100 0x1a9-0x1aa.7 (2)
      |                                               |                |      data[0:2]: 0x1ab-0x20e.7 (100)
      |                                               |                |        [0]{}: datum 0x1ab-0x1da.7 (48)
-0x1a0|                                 0c            |           .    |          username_len: 6 0x1ab-0x1ab.7 (1)
-0x1a0|                                    6d 69 67 75|            migu|          username: "miguno" 0x1ac-0x1b1.7 (6)
+     |                                               |                |          username{}: 0x1ab-0x1b1.7 (7)
+0x1a0|                                 0c            |           .    |            length: 6 0x1ab-0x1ab.7 (1)
+0x1a0|                                    6d 69 67 75|            migu|            data: "miguno" 0x1ac-0x1b1.7 (6)
 0x1b0|6e 6f                                          |no              |
-0x1b0|      46                                       |  F             |          tweet_len: 35 0x1b2-0x1b2.7 (1)
-0x1b0|         52 6f 63 6b 3a 20 4e 65 72 66 20 70 61|   Rock: Nerf pa|          tweet: "Rock: Nerf paper, scissors is fine." 0x1b3-0x1d5.7 (35)
+     |                                               |                |          tweet{}: 0x1b2-0x1d5.7 (36)
+0x1b0|      46                                       |  F             |            length: 35 0x1b2-0x1b2.7 (1)
+0x1b0|         52 6f 63 6b 3a 20 4e 65 72 66 20 70 61|   Rock: Nerf pa|            data: "Rock: Nerf paper, scissors is fine." 0x1b3-0x1d5.7 (35)
 0x1c0|70 65 72 2c 20 73 63 69 73 73 6f 72 73 20 69 73|per, scissors is|
 0x1d0|20 66 69 6e 65 2e                              | fine.          |
 0x1d0|                  b2 b8 ee 96 0a               |      .....     |          timestamp: 1366150681 0x1d6-0x1da.7 (5)
      |                                               |                |        [1]{}: datum 0x1db-0x20e.7 (52)
-0x1d0|                                 14            |           .    |          username_len: 10 0x1db-0x1db.7 (1)
-0x1d0|                                    42 6c 69 7a|            Bliz|          username: "BlizzardCS" 0x1dc-0x1e5.7 (10)
+     |                                               |                |          username{}: 0x1db-0x1e5.7 (11)
+0x1d0|                                 14            |           .    |            length: 10 0x1db-0x1db.7 (1)
+0x1d0|                                    42 6c 69 7a|            Bliz|            data: "BlizzardCS" 0x1dc-0x1e5.7 (10)
 0x1e0|7a 61 72 64 43 53                              |zardCS          |
-0x1e0|                  46                           |      F         |          tweet_len: 35 0x1e6-0x1e6.7 (1)
-0x1e0|                     57 6f 72 6b 73 20 61 73 20|       Works as |          tweet: "Works as intended.  Terran is IMBA." 0x1e7-0x209.7 (35)
+     |                                               |                |          tweet{}: 0x1e6-0x209.7 (36)
+0x1e0|                  46                           |      F         |            length: 35 0x1e6-0x1e6.7 (1)
+0x1e0|                     57 6f 72 6b 73 20 61 73 20|       Works as |            data: "Works as intended.  Terran is IMBA." 0x1e7-0x209.7 (35)
 0x1f0|69 6e 74 65 6e 64 65 64 2e 20 20 54 65 72 72 61|intended.  Terra|
 0x200|6e 20 69 73 20 49 4d 42 41 2e                  |n is IMBA.      |
 0x200|                              e2 f3 ee 96 0a   |          ..... |          timestamp: 1366154481 0x20a-0x20e.7 (5)

@@ -3,17 +3,18 @@ package decoders
 import (
 	"errors"
 	"fmt"
+	"github.com/wader/fq/pkg/scalar"
 
 	"github.com/wader/fq/format/avro/schema"
 	"github.com/wader/fq/pkg/decode"
 )
 
-func decodeUnionFn(schema schema.SimplifiedSchema) (func(string, *decode.D), error) {
+func decodeUnionFn(schema schema.SimplifiedSchema, sms ...scalar.Mapper) (DecodeFn, error) {
 	if len(schema.UnionTypes) == 0 {
 		return nil, errors.New("union must have types")
 	}
 
-	var decoders []func(string, *decode.D)
+	var decoders []func(string, *decode.D) interface{}
 	for i, t := range schema.UnionTypes {
 		decodeFn, err := DecodeFnForSchema(t)
 		if err != nil {
@@ -24,13 +25,15 @@ func decodeUnionFn(schema schema.SimplifiedSchema) (func(string, *decode.D), err
 
 	// A union is encoded by first writing an int value indicating the zero-based position within the union of the
 	// schema of its value. The value is then encoded per the indicated schema within the union.
-	return func(name string, d *decode.D) {
+	return func(name string, d *decode.D) interface{} {
+		var val interface{}
 		d.FieldStruct(name, func(d *decode.D) {
 			v := int(d.FieldSFn("type", VarZigZag))
 			if v < 0 || v >= len(decoders) {
 				d.Fatalf("invalid union value: %d", v)
 			}
-			decoders[v]("value", d)
+			val = decoders[v]("value", d)
 		})
+		return val
 	}, nil
 }
