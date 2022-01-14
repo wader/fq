@@ -3,9 +3,30 @@ package scalar
 
 import (
 	"fmt"
+	"math/big"
 
 	"github.com/wader/fq/pkg/bitio"
 )
+
+// Type BigInt
+
+// ActualBigInt asserts actual value is a BigInt and returns it
+func (s S) ActualBigInt() *big.Int {
+	v, ok := s.Actual.(*big.Int)
+	if !ok {
+		panic(fmt.Sprintf("failed to type assert s.Actual %v as *big.Int", s.Actual))
+	}
+	return v
+}
+
+// SymBigInt asserts symbolic value is a BigInt and returns it
+func (s S) SymBigInt() *big.Int {
+	v, ok := s.Sym.(*big.Int)
+	if !ok {
+		panic(fmt.Sprintf("failed to type assert s.Sym %v as *big.Int", s.Sym))
+	}
+	return v
+}
 
 // Type BitBuf
 

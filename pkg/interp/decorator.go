@@ -2,6 +2,7 @@ package interp
 
 import (
 	"log"
+	"math/big"
 	"strconv"
 	"strings"
 
@@ -119,6 +120,8 @@ func decoratorFromOptions(opts Options) Decorator {
 				return d.Null
 			case int, float64, int64, uint64:
 				// TODO: clean up number types
+				return d.Number
+			case *big.Int:
 				return d.Number
 			default:
 				log.Printf("v: %#+v\n", v)

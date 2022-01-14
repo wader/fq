@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"math"
+	"math/big"
 
 	"github.com/wader/fq/internal/num"
 	"github.com/wader/fq/pkg/bitio"
@@ -11,7 +12,14 @@ import (
 	"golang.org/x/text/encoding/unicode"
 )
 
-func (d *D) tryUE(nBits int, endian Endian) (uint64, error) {
+func (d *D) tryBitBuf(nBits int64) (*bitio.Buffer, error) {
+	return d.bitBuf.BitBufLen(nBits)
+}
+
+func (d *D) tryUEndian(nBits int, endian Endian) (uint64, error) {
+	if nBits == 0 {
+		return 0, nil
+	}
 	n, err := d.bits(nBits)
 	if err != nil {
 		return 0, err
@@ -23,20 +31,10 @@ func (d *D) tryUE(nBits int, endian Endian) (uint64, error) {
 	return n, nil
 }
 
-func (d *D) tryBitBuf(nBits int64) (*bitio.Buffer, error) {
-	return d.bitBuf.BitBufLen(nBits)
-}
-
-func (d *D) trySE(nBits int, endian Endian) (int64, error) {
-	n, err := d.bits(nBits)
+func (d *D) trySEndian(nBits int, endian Endian) (int64, error) {
+	n, err := d.tryUEndian(nBits, endian)
 	if err != nil {
 		return 0, err
-	}
-	if nBits == 0 {
-		return 0, nil
-	}
-	if endian == LittleEndian {
-		n = bitio.Uint64ReverseBytes(nBits, n)
 	}
 	var s int64
 	if n&(1<<(nBits-1)) > 0 {
@@ -49,7 +47,41 @@ func (d *D) trySE(nBits int, endian Endian) (int64, error) {
 	return s, nil
 }
 
-func (d *D) tryFE(nBits int, endian Endian) (float64, error) {
+// from https://github.com/golang/go/wiki/SliceTricks#reversing
+func reverseBytes(a []byte) {
+	for i := len(a)/2 - 1; i >= 0; i-- {
+		opp := len(a) - 1 - i
+		a[i], a[opp] = a[opp], a[i]
+	}
+}
+
+func (d *D) tryBigIntEndianSign(nBits int, endian Endian, sign bool) (*big.Int, error) {
+	if nBits < 0 {
+		return nil, fmt.Errorf("nBits must be > 0 (%d)", nBits)
+	}
+	b := int(bitio.BitsByteCount(int64(nBits)))
+	buf := d.SharedReadBuf(b)[0:b]
+	_, err := bitio.ReadFull(d.bitBuf, buf, nBits)
+	if err != nil {
+		return nil, err
+	}
+
+	if endian == LittleEndian {
+		reverseBytes(buf)
+	}
+
+	n := new(big.Int)
+	if sign {
+		num.BigIntSetBytesSigned(n, buf)
+	} else {
+		n.SetBytes(buf)
+	}
+	n.Rsh(n, uint((8-nBits%8)%8))
+
+	return n, nil
+}
+
+func (d *D) tryFEndian(nBits int, endian Endian) (float64, error) {
 	n, err := d.bits(nBits)
 	if err != nil {
 		return 0, err
@@ -69,7 +101,7 @@ func (d *D) tryFE(nBits int, endian Endian) (float64, error) {
 	}
 }
 
-func (d *D) tryFPE(nBits int, fBits int, endian Endian) (float64, error) {
+func (d *D) tryFPEndian(nBits int, fBits int, endian Endian) (float64, error) {
 	n, err := d.bits(nBits)
 	if err != nil {
 		return 0, err

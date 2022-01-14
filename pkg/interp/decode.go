@@ -337,6 +337,11 @@ func makeDecodeValue(dv *decode.Value) interface{} {
 				JQValue:         gojqextra.Null{},
 				decodeValueBase: decodeValueBase{dv},
 			}
+		case *big.Int:
+			return decodeValue{
+				JQValue:         gojqextra.Number{V: vv},
+				decodeValueBase: decodeValueBase{dv},
+			}
 		default:
 			panic(fmt.Sprintf("unreachable vv %#+v", vv))
 		}

@@ -2,6 +2,7 @@ package interp
 
 import (
 	"fmt"
+	"math/big"
 	"strconv"
 
 	"github.com/wader/fq/internal/num"
@@ -34,6 +35,8 @@ func previewValue(v interface{}, df scalar.DisplayFormat) string {
 		return fmt.Sprintf("%q", vv)
 	case *bitio.Buffer:
 		return "raw bits"
+	case *big.Int:
+		return num.PadFormatBigInt(vv, df.FormatBase(), true, 0)
 	default:
 		panic("unreachable")
 	}
