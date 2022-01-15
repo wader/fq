@@ -103,16 +103,19 @@ Use Ctrl-D to exit and Ctrl-C to interrupt current evaluation.
 ## Example usages
 
 #### Second mp3 frame header as JSON
+
 ```sh
 fq '.frames[1].header | tovalue' file.mp3
 ```
 
 #### Byte start position for the first 10 mp3 frames in an array
+
 ```sh
 fq '.frames[0:10] | map(tobytesrange.start)' file.mp3
 ```
 
 #### Decode at range
+
 ```sh
 # decode byte range 100 to end
 fq -d raw 'tobytes[100:] | mp3_frame | d' file.mp3
@@ -128,6 +131,7 @@ decoded value for `a.mp4` and `b.mp4` filtered thru `f`.
 ```sh
 fq -n 'def f: .. | select(format=="avc_sps"); diff(input|f; input|f)' a.mp4 b.mp4
 ```
+
 #### Extract first JPEG found in file
 
 Recursively look for first value that is a `jpeg` decode value root. Use `tobytes` to get bytes buffer for value. Redirect bytes to a file.
@@ -152,7 +156,19 @@ Use `grep` to recursively find strings matching a regexp.
 fq '.tcp_connections | grep("GET /.* HTTP/1.?")' file.pcap
 ```
 
-###
+#### Use representation of a format
+
+Some formats like `msgpack`, `bson` etc are used to represent some data structure. In those cases the `torepr`
+function can be used to get the representation.
+
+```sh
+# whole represented value
+fq -d msgpack torepr file.msgpack
+# value of the key "field" from the represented value
+fq -d msgpack `torepr.field` file.msgpack
+# query or transform represented value
+fq -d msgpack 'torepr | ...' file.msgpack
+```
 
 #### Widest PNG in a directory
 ```sh
