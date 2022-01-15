@@ -103,13 +103,18 @@ type sampleDescription struct {
 	originalFormat string
 }
 
+type stsz struct {
+	size  uint32
+	count uint32
+}
+
 type track struct {
 	id                 uint32
 	sampleDescriptions []sampleDescription
 	subType            string
 	stco               []uint64 //
 	stsc               []stsc
-	stsz               []uint32
+	stsz               []stsz
 	formatInArg        interface{}
 	objectType         int // if data format is "mp4a"
 
@@ -205,48 +210,53 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 					}
 				}
 
+				// TODO: warning if unused stsc/stco entries?
 				d.FieldArray("samples", func(d *decode.D) {
 					stscIndex := 0
-					chunkNr := uint32(0)
-					sampleNr := uint64(0)
+					stszIndex := 0
+					stcoIndex := 0
+					sizeNr := 0
 
-					for sampleNr < uint64(len(t.stsz)) {
+					for stszIndex < len(t.stsz) {
+						stszEntry := t.stsz[stszIndex]
+
 						if stscIndex >= len(t.stsc) {
-							// TODO: add warning
-							break
+							// TODO: outside sample-to-chunk table, add warning
+							return
 						}
 						stscEntry := t.stsc[stscIndex]
-						if int(chunkNr) >= len(t.stco) {
-							// TODO: add warning
-							break
+						if stcoIndex >= len(t.stco) {
+							// TODO: outside sample-chunk-offset table, add warning
+							return
 						}
-						sampleOffset := t.stco[chunkNr]
+						sampleOffset := t.stco[stcoIndex]
 
 						for i := uint32(0); i < stscEntry.samplesPerChunk; i++ {
-							if int(sampleNr) >= len(t.stsz) {
-								// TODO: add warning
-								break
+							if sizeNr >= int(stszEntry.count) {
+								stszIndex++
+								if stszIndex >= len(t.stsz) {
+									// TODO: outside sample-size table, add warning
+									return
+								}
+								stszEntry = t.stsz[stszIndex]
+								sizeNr = 0
 							}
 
-							sampleSize := t.stsz[sampleNr]
-							decodeSampleRange(d, t, trackSdDataFormat, "sample", int64(sampleOffset)*8, int64(sampleSize)*8, t.formatInArg)
+							// log.Printf("%s stsc[%d/%d]=%#v stco[%d/%d]=%d stsz[%d/%d]=%#v i=%d\n",
+							// 	trackSdDataFormat,
+							// 	stscIndex, len(t.stsc), stscEntry,
+							// 	stcoIndex, len(t.stco), sampleOffset,
+							// 	stszIndex, len(t.stsz), stszEntry,
+							// 	i,
+							// )
 
-							// log.Printf("%s %d/%d %d/%d sample=%d/%d chunk=%d size=%d %d-%d\n",
-							// 	trackSdDataFormat, stscIndex, len(t.stsc),
-							// 	i, stscEntry.samplesPerChunk,
-							// 	sampleNr, len(t.stsz),
-							// 	chunkNr,
-							// 	sampleSize,
-							// 	sampleOffset,
-							// 	sampleOffset+uint64(sampleSize))
-
-							sampleOffset += uint64(sampleSize)
-							sampleNr++
-
+							decodeSampleRange(d, t, trackSdDataFormat, "sample", int64(sampleOffset)*8, int64(stszEntry.size)*8, t.formatInArg)
+							sampleOffset += uint64(stszEntry.size)
+							sizeNr++
 						}
 
-						chunkNr++
-						if stscIndex < len(t.stsc)-1 && chunkNr >= t.stsc[stscIndex+1].firstChunk-1 {
+						stcoIndex++
+						if stscIndex < len(t.stsc)-1 && stcoIndex >= int(t.stsc[stscIndex+1].firstChunk-1) {
 							stscIndex++
 						}
 					}
