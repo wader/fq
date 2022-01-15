@@ -6,7 +6,7 @@ package icc
 import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
-	"github.com/wader/fq/internal/num"
+	"github.com/wader/fq/internal/mathextra"
 	"github.com/wader/fq/pkg/decode"
 )
 
@@ -165,7 +165,7 @@ func iccProfileDecode(d *decode.D, in interface{}) interface{} {
 						// was. instead add alignment after if offset+size does not align and to be sure clamp it if outside buffer.
 						paddingStart := int64(offset) + int64(size)
 						paddingBytes := (4 - (int64(offset)+int64(size))%4) % 4
-						paddingBytes = num.MinInt64(paddingBytes, d.Len()-(paddingStart+paddingBytes))
+						paddingBytes = mathextra.MinInt64(paddingBytes, d.Len()-(paddingStart+paddingBytes))
 						if paddingBytes != 0 {
 							d.RangeFn(paddingStart*8, paddingBytes*8, func(d *decode.D) {
 								d.FieldRawLen("alignment", d.BitsLeft())

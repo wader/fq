@@ -9,10 +9,12 @@ package cbor
 import (
 	"bytes"
 	"embed"
+	"math/big"
 	"strings"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/internal/mathextra"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
@@ -109,11 +111,13 @@ func decodeCBORValue(d *decode.D) interface{} {
 	majorTypeMap := majorTypeEntries{
 		majorTypePositiveInt: {s: scalar.S{Sym: "positive_int"}, d: func(d *decode.D, shortCount uint64, count uint64) interface{} {
 			d.FieldValueU("value", count)
-			return count
+			return nil
 		}},
 		majorTypeNegativeInt: {s: scalar.S{Sym: "negative_int"}, d: func(d *decode.D, shortCount uint64, count uint64) interface{} {
-			d.FieldValueS("value", int64(^count))
-			return count
+			n := new(big.Int)
+			n.SetUint64(count).Neg(n).Sub(n, mathextra.BigIntOne)
+			d.FieldValueBigInt("value", n)
+			return nil
 		}},
 		majorTypeBytes: {s: scalar.S{Sym: "bytes"}, d: func(d *decode.D, shortCount uint64, count uint64) interface{} {
 			if shortCount == shortCountIndefinite {
@@ -204,7 +208,7 @@ func decodeCBORValue(d *decode.D) interface{} {
 		majorTypeSematic: {s: scalar.S{Sym: "semantic"}, d: func(d *decode.D, shortCount uint64, count uint64) interface{} {
 			d.FieldValueU("tag", count, tagMap)
 			d.FieldStruct("value", func(d *decode.D) { decodeCBORValue(d) })
-			return count
+			return nil
 		}},
 		majorTypeSpecialFloat: {s: scalar.S{Sym: "special_float"}, d: func(d *decode.D, shortCount uint64, count uint64) interface{} {
 			switch shortCount {

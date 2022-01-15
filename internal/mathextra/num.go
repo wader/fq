@@ -1,8 +1,9 @@
-package num
+package mathextra
 
 import (
 	"fmt"
 	"math"
+	"math/big"
 	"strconv"
 	"strings"
 
@@ -46,8 +47,12 @@ func PadFormatInt(i int64, base int, basePrefix bool, width int) string {
 
 func PadFormatUint(i uint64, base int, basePrefix bool, width int) string {
 	return padFormatNumber(strconv.FormatUint(i, base), base, basePrefix, width)
-
 }
+
+func PadFormatBigInt(i *big.Int, base int, basePrefix bool, width int) string {
+	return padFormatNumber(i.Text(base), base, basePrefix, width)
+}
+
 func MaxUInt64(a, b uint64) uint64 {
 	if a < b {
 		return b

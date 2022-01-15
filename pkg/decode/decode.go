@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"math/big"
 
 	"github.com/wader/fq/internal/recoverfn"
 	"github.com/wader/fq/pkg/bitio"
@@ -633,6 +634,10 @@ func (d *D) FieldValueU(name string, a uint64, sms ...scalar.Mapper) {
 }
 
 func (d *D) FieldValueS(name string, a int64, sms ...scalar.Mapper) {
+	d.FieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return scalar.S{Actual: a}, nil }, sms...)
+}
+
+func (d *D) FieldValueBigInt(name string, a *big.Int, sms ...scalar.Mapper) {
 	d.FieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return scalar.S{Actual: a}, nil }, sms...)
 }
 
