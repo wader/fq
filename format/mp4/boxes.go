@@ -536,18 +536,19 @@ func init() {
 				d.FieldArrayLoop("entries", func() bool { return i < entryCount }, func(d *decode.D) {
 					size := uint32(d.FieldU32("size"))
 					if ctx.currentTrack != nil {
-						ctx.currentTrack.stsz = append(ctx.currentTrack.stsz, size)
+						ctx.currentTrack.stsz = append(ctx.currentTrack.stsz, stsz{
+							size:  size,
+							count: 1,
+						})
 					}
 					i++
 				})
 			} else {
 				if ctx.currentTrack != nil {
-					if entryCount > maxSampleEntryCount {
-						d.Errorf("too many constant stsz entries %d > %d", entryCount, maxSampleEntryCount)
-					}
-					for i := uint64(0); i < entryCount; i++ {
-						ctx.currentTrack.stsz = append(ctx.currentTrack.stsz, uint32(sampleSize))
-					}
+					ctx.currentTrack.stsz = append(ctx.currentTrack.stsz, stsz{
+						size:  uint32(sampleSize),
+						count: uint32(entryCount),
+					})
 				}
 			}
 		},
@@ -767,7 +768,7 @@ func init() {
 			}
 
 			if sampleCount > maxSampleEntryCount {
-				d.Errorf("too many constant trun entries %d > %d", sampleCount, maxSampleEntryCount)
+				d.Errorf("too many sample trun entries %d > %d", sampleCount, maxSampleEntryCount)
 			}
 
 			d.FieldArray("samples", func(d *decode.D) {
