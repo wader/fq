@@ -14,7 +14,7 @@ import (
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
-	"github.com/wader/fq/internal/num"
+	"github.com/wader/fq/internal/mathextra"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
@@ -115,7 +115,7 @@ func decodeCBORValue(d *decode.D) interface{} {
 		}},
 		majorTypeNegativeInt: {s: scalar.S{Sym: "negative_int"}, d: func(d *decode.D, shortCount uint64, count uint64) interface{} {
 			n := new(big.Int)
-			n.SetUint64(count).Neg(n).Sub(n, num.BigIntOne)
+			n.SetUint64(count).Neg(n).Sub(n, mathextra.BigIntOne)
 			d.FieldValueBigInt("value", n)
 			return nil
 		}},

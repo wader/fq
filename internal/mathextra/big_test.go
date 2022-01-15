@@ -1,11 +1,11 @@
-package num_test
+package mathextra_test
 
 import (
 	"fmt"
 	"math/big"
 	"testing"
 
-	"github.com/wader/fq/internal/num"
+	"github.com/wader/fq/internal/mathextra"
 )
 
 func TestBigIntSetBytesSigned(t *testing.T) {
@@ -28,7 +28,7 @@ func TestBigIntSetBytesSigned(t *testing.T) {
 		t.Run(fmt.Sprintf("%v %s", tC.buf, tC.s), func(t *testing.T) {
 			var n big.Int
 			expected := tC.s
-			actual := num.BigIntSetBytesSigned(&n, tC.buf).String()
+			actual := mathextra.BigIntSetBytesSigned(&n, tC.buf).String()
 			if expected != actual {
 				t.Errorf("expected %s, got %s", expected, actual)
 			}

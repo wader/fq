@@ -13,7 +13,7 @@ import (
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
-	"github.com/wader/fq/internal/num"
+	"github.com/wader/fq/internal/mathextra"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
@@ -67,7 +67,7 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 
 			samplesInFrame := ffo.Samples
 			if streamTotalSamples > 0 {
-				samplesInFrame = num.MinUInt64(streamTotalSamples-streamDecodedSamples, ffo.Samples)
+				samplesInFrame = mathextra.MinUInt64(streamTotalSamples-streamDecodedSamples, ffo.Samples)
 			}
 			frameStreamSamplesBuf := ffo.SamplesBuf[0 : samplesInFrame*uint64(ffo.Channels*ffo.BitsPerSample/8)]
 			framesNDecodedSamples += ffo.Samples

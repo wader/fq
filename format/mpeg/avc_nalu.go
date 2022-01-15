@@ -5,7 +5,7 @@ package mpeg
 import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
-	"github.com/wader/fq/internal/num"
+	"github.com/wader/fq/internal/mathextra"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
 )
@@ -48,7 +48,7 @@ func uEV(d *decode.D) uint64 { return expGolomb(d) }
 
 func sEV(d *decode.D) int64 {
 	v := expGolomb(d) + 1
-	return num.ZigZag(v) - -int64(v&1)
+	return mathextra.ZigZag(v) - -int64(v&1)
 }
 
 const (

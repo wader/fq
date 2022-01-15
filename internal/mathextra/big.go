@@ -1,4 +1,4 @@
-package num
+package mathextra
 
 import "math/big"
 

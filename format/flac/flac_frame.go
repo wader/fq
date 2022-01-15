@@ -6,7 +6,7 @@ import (
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
-	"github.com/wader/fq/internal/num"
+	"github.com/wader/fq/internal/mathextra"
 	"github.com/wader/fq/pkg/checksum"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
@@ -471,7 +471,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 										_ = high
 										low := d.U(riceParameter)
 										_ = low
-										samples[n] = num.ZigZag(high<<riceParameter | low)
+										samples[n] = mathextra.ZigZag(high<<riceParameter | low)
 										n++
 									}
 									samplesStop := d.Pos()
