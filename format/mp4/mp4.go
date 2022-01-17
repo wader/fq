@@ -17,6 +17,7 @@ package mp4
 
 import (
 	"embed"
+	"fmt"
 	"sort"
 
 	"github.com/wader/fq/format"
@@ -86,16 +87,16 @@ func init() {
 }
 
 type stsc struct {
-	firstChunk      uint32
-	samplesPerChunk uint32
+	firstChunk      int
+	samplesPerChunk int
 }
 
 type moof struct {
 	offset                        int64
-	defaultSampleSize             uint32
-	defaultSampleDescriptionIndex uint32
-	dataOffset                    uint32
-	samplesSizes                  []uint32
+	defaultSampleSize             int64
+	defaultSampleDescriptionIndex int
+	dataOffset                    int64
+	samplesSizes                  []int64
 }
 
 type sampleDescription struct {
@@ -104,15 +105,15 @@ type sampleDescription struct {
 }
 
 type stsz struct {
-	size  uint32
-	count uint32
+	size  int64
+	count int
 }
 
 type track struct {
-	id                 uint32
+	id                 int
 	sampleDescriptions []sampleDescription
 	subType            string
-	stco               []uint64 //
+	stco               []int64
 	stsc               []stsc
 	stsz               []stsz
 	formatInArg        interface{}
@@ -201,73 +202,86 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 			d.FieldStruct("track", func(d *decode.D) {
 				// TODO: handle progressive/fragmented mp4 differently somehow?
 
-				trackSdDataFormat := "unknown"
+				trackSDDataFormat := "unknown"
 				if len(t.sampleDescriptions) > 0 {
 					sd := t.sampleDescriptions[0]
-					trackSdDataFormat = sd.dataFormat
+					trackSDDataFormat = sd.dataFormat
 					if sd.originalFormat != "" {
-						trackSdDataFormat = sd.originalFormat
+						trackSDDataFormat = sd.originalFormat
 					}
 				}
 
-				// TODO: warning if unused stsc/stco entries?
 				d.FieldArray("samples", func(d *decode.D) {
-					stscIndex := 0
-					stszIndex := 0
-					stcoIndex := 0
-					sizeNr := 0
+					// TODO: warning? could also be init fragment etc
 
-					for stszIndex < len(t.stsz) {
+					if len(t.stsz) > 0 && len(t.stsc) > 0 && len(t.stco) > 0 {
+						stszIndex := 0
+						stszEntryNr := 0
+						sampleNr := 0
+						stscIndex := 0
+						stscEntryNr := 0
+						stcoIndex := 0
+
 						stszEntry := t.stsz[stszIndex]
-
-						if stscIndex >= len(t.stsc) {
-							// TODO: outside sample-to-chunk table, add warning
-							return
-						}
 						stscEntry := t.stsc[stscIndex]
-						if stcoIndex >= len(t.stco) {
-							// TODO: outside sample-chunk-offset table, add warning
-							return
-						}
 						sampleOffset := t.stco[stcoIndex]
 
-						for i := uint32(0); i < stscEntry.samplesPerChunk; i++ {
-							if sizeNr >= int(stszEntry.count) {
-								stszIndex++
-								if stszIndex >= len(t.stsz) {
-									// TODO: outside sample-size table, add warning
-									return
-								}
-								stszEntry = t.stsz[stszIndex]
-								sizeNr = 0
-							}
-
-							// log.Printf("%s stsc[%d/%d]=%#v stco[%d/%d]=%d stsz[%d/%d]=%#v i=%d\n",
-							// 	trackSdDataFormat,
-							// 	stscIndex, len(t.stsc), stscEntry,
-							// 	stcoIndex, len(t.stco), sampleOffset,
-							// 	stszIndex, len(t.stsz), stszEntry,
-							// 	i,
-							// )
-
-							decodeSampleRange(d, t, trackSdDataFormat, "sample", int64(sampleOffset)*8, int64(stszEntry.size)*8, t.formatInArg)
-							sampleOffset += uint64(stszEntry.size)
-							sizeNr++
+						logStrFn := func() string {
+							return fmt.Sprintf("%d: %s: nr=%d: stsz[%d/%d] nr=%d %#v stsc[%d/%d] nr=%d %#v stco[%d/%d]=%d \n",
+								t.id,
+								trackSDDataFormat,
+								sampleNr,
+								stszIndex, len(t.stsz), stszEntryNr, stszEntry,
+								stscIndex, len(t.stsc), stscEntryNr, stscEntry,
+								stcoIndex, len(t.stco), sampleOffset,
+							)
 						}
 
-						stcoIndex++
-						if stscIndex < len(t.stsc)-1 && stcoIndex >= int(t.stsc[stscIndex+1].firstChunk-1) {
-							stscIndex++
+						for stszIndex < len(t.stsz) {
+							if stszEntryNr >= stszEntry.count {
+								stszIndex++
+								if stszIndex >= len(t.stsz) {
+									// TODO: warning if unused stsc/stco entries?
+									break
+								}
+
+								stszEntry = t.stsz[stszIndex]
+								stszEntryNr = 0
+							}
+
+							if stscEntryNr >= stscEntry.samplesPerChunk {
+								stscEntryNr = 0
+								stcoIndex++
+								if stcoIndex >= len(t.stco) {
+									d.Fatalf("outside stco: %s", logStrFn())
+								}
+								sampleOffset = t.stco[stcoIndex]
+
+								if stscIndex < len(t.stsc)-1 && stcoIndex >= t.stsc[stscIndex+1].firstChunk-1 {
+									stscIndex++
+									if stscIndex >= len(t.stsc) {
+										d.Fatalf("outside stsc: %s", logStrFn())
+									}
+									stscEntry = t.stsc[stscIndex]
+								}
+							}
+
+							// log.Println(logStrFn())
+
+							decodeSampleRange(d, t, trackSDDataFormat, "sample", sampleOffset*8, stszEntry.size*8, t.formatInArg)
+
+							sampleOffset += stszEntry.size
+							stscEntryNr++
+							stszEntryNr++
+							sampleNr++
 						}
 					}
 
 					for _, m := range t.moofs {
-						sampleOffset := m.offset + int64(m.dataOffset)
+						sampleOffset := m.offset + m.dataOffset
 						for _, sz := range m.samplesSizes {
-							// log.Printf("moof sample %s %d-%d\n", t.dataFormat, sampleOffset, int64(sz))
-
-							dataFormat := trackSdDataFormat
-							if m.defaultSampleDescriptionIndex != 0 && int(m.defaultSampleDescriptionIndex-1) < len(t.sampleDescriptions) {
+							dataFormat := trackSDDataFormat
+							if m.defaultSampleDescriptionIndex != 0 && m.defaultSampleDescriptionIndex-1 < len(t.sampleDescriptions) {
 								sd := t.sampleDescriptions[m.defaultSampleDescriptionIndex-1]
 								dataFormat = sd.dataFormat
 								if sd.originalFormat != "" {
@@ -275,10 +289,8 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 								}
 							}
 
-							// log.Printf("moof %#+v dataFormat: %#+v\n", m, dataFormat)
-
-							decodeSampleRange(d, t, dataFormat, "sample", sampleOffset*8, int64(sz)*8, t.formatInArg)
-							sampleOffset += int64(sz)
+							decodeSampleRange(d, t, dataFormat, "sample", sampleOffset*8, sz*8, t.formatInArg)
+							sampleOffset += sz
 						}
 					}
 				})
