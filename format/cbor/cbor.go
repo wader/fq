@@ -218,7 +218,7 @@ func decodeCBORValue(d *decode.D) interface{} {
 			case shortCountSpecialTrue:
 				d.FieldValueBool("value", true)
 			case shortCountSpecialNull:
-				// TODO: null
+				d.FieldValueNil("value")
 			case shortCountSpecialUndefined:
 				// TODO: undefined
 			case 24:

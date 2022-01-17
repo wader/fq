@@ -33,6 +33,8 @@ func previewValue(v interface{}, df scalar.DisplayFormat) string {
 			return fmt.Sprintf("%q", vv[0:50]) + "..."
 		}
 		return fmt.Sprintf("%q", vv)
+	case nil:
+		return "null"
 	case *bitio.Buffer:
 		return "raw bits"
 	case *big.Int:

@@ -87,6 +87,7 @@ func ToInt(x interface{}) (int, bool) {
 	case gojq.JQValue:
 		return ToInt(x.JQValueToGoJQ())
 	default:
+		// nil and other should fail, "null | tonumber" in jq is an error
 		return 0, false
 	}
 }
@@ -112,6 +113,7 @@ func ToFloat(x interface{}) (float64, bool) {
 	case gojq.JQValue:
 		return ToFloat(x.JQValueToGoJQ())
 	default:
+		// nil and other should fail, "null | tonumber" in jq is an error
 		return 0.0, false
 	}
 }

@@ -82,6 +82,7 @@ func decodeBSONDocument(d *decode.D) {
 						d.FieldU8("subtype")
 						d.FieldRawLen("value", int64(length)*8)
 					case elementTypeUndefined:
+						//deprecated
 					case elementTypeObjectID:
 						d.FieldRawLen("value", 12*8)
 					case elementTypeBoolean:
@@ -89,6 +90,7 @@ func decodeBSONDocument(d *decode.D) {
 					case elementTypeDatatime:
 						d.FieldS32("value")
 					case elementTypeNull:
+						d.FieldValueNil("value")
 					case elementTypeRegexp:
 						d.FieldUTF8Null("value")
 						d.FieldUTF8Null("options")

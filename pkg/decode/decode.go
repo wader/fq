@@ -653,6 +653,10 @@ func (d *D) FieldValueStr(name string, a string, sms ...scalar.Mapper) {
 	d.FieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return scalar.S{Actual: a}, nil }, sms...)
 }
 
+func (d *D) FieldValueNil(name string, sms ...scalar.Mapper) {
+	d.FieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return scalar.S{Actual: nil}, nil }, sms...)
+}
+
 func (d *D) FieldValueRaw(name string, a []byte, sms ...scalar.Mapper) {
 	d.FieldScalarFn(name, func(_ scalar.S) (scalar.S, error) {
 		return scalar.S{Actual: bitio.NewBufferFromBytes(a, -1)}, nil
