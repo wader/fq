@@ -100,7 +100,7 @@ func decodeMsgPackValue(d *decode.D) {
 			d.FieldUTF8("value", int(length))
 		}},
 		{r: [2]byte{0xc0, 0xc0}, s: scalar.S{Sym: "nil"}, d: func(d *decode.D) {
-			// TODO: fq has no good null type atm
+			d.FieldValueNil("value")
 		}},
 		{r: [2]byte{0xc1, 0xc1}, s: scalar.S{Sym: "never_used"}, d: func(d *decode.D) {
 			d.Fatalf("0xc1 never used")

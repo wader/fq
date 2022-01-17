@@ -59,6 +59,7 @@ $ fq -d bson verbose /test.bson
 0x60|                                    0a         |            .   |      type: "null" (10) (Null value) 0x6c-0x6c.7 (1)
 0x60|                                       6e 75 6c|             nul|      name: "null" 0x6d-0x71.7 (5)
 0x70|6c 00                                          |l.              |
+    |                                               |                |      value: null 0x72-NA (0)
 0x70|      00|                                      |  .|            |  terminator: 0 (valid) 0x72-0x72.7 (1)
 $ fq -d bson torepr /test.bson
 {
