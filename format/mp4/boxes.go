@@ -257,7 +257,7 @@ func init() {
 
 			// TODO: dup track id?
 			if _, ok := ctx.tracks[trackID]; !ok {
-				t := &track{id: trackID}
+				t := &track{id: int(trackID)}
 				ctx.tracks[trackID] = t
 				ctx.currentTrack = t
 			}
@@ -518,8 +518,8 @@ func init() {
 
 				if ctx.currentTrack != nil {
 					ctx.currentTrack.stsc = append(ctx.currentTrack.stsc, stsc{
-						firstChunk:      firstChunk,
-						samplesPerChunk: samplesPerChunk,
+						firstChunk:      int(firstChunk),
+						samplesPerChunk: int(samplesPerChunk),
 					})
 				}
 				i++
@@ -537,7 +537,7 @@ func init() {
 					size := uint32(d.FieldU32("size"))
 					if ctx.currentTrack != nil {
 						ctx.currentTrack.stsz = append(ctx.currentTrack.stsz, stsz{
-							size:  size,
+							size:  int64(size),
 							count: 1,
 						})
 					}
@@ -546,8 +546,8 @@ func init() {
 			} else {
 				if ctx.currentTrack != nil {
 					ctx.currentTrack.stsz = append(ctx.currentTrack.stsz, stsz{
-						size:  uint32(sampleSize),
-						count: uint32(entryCount),
+						size:  int64(sampleSize),
+						count: int(entryCount),
 					})
 				}
 			}
@@ -560,7 +560,7 @@ func init() {
 			d.FieldArrayLoop("entries", func() bool { return i < entryCount }, func(d *decode.D) {
 				chunkOffset := d.FieldU32("chunk_offset")
 				if ctx.currentTrack != nil {
-					ctx.currentTrack.stco = append(ctx.currentTrack.stco, chunkOffset)
+					ctx.currentTrack.stco = append(ctx.currentTrack.stco, int64(chunkOffset))
 				}
 				i++
 			})
@@ -616,7 +616,7 @@ func init() {
 			d.FieldArrayLoop("entries", func() bool { return i < entryCount }, func(d *decode.D) {
 				offset := d.FieldU64("offset")
 				if ctx.currentTrack != nil {
-					ctx.currentTrack.stco = append(ctx.currentTrack.stco, offset)
+					ctx.currentTrack.stco = append(ctx.currentTrack.stco, int64(offset))
 				}
 				i++
 			})
@@ -721,13 +721,13 @@ func init() {
 				d.FieldU64("base_data_offset")
 			}
 			if sampleDescriptionIndexPresent {
-				m.defaultSampleDescriptionIndex = uint32(d.FieldU32("sample_description_index"))
+				m.defaultSampleDescriptionIndex = int(d.FieldU32("sample_description_index"))
 			}
 			if defaultSampleDurationPresent {
 				d.FieldU32("default_sample_duration")
 			}
 			if defaultSampleSizePresent {
-				m.defaultSampleSize = uint32(d.FieldU32("default_sample_size"))
+				m.defaultSampleSize = int64(d.FieldU32("default_sample_size"))
 			}
 			if defaultSampleFlagsPresent {
 				d.FieldU32("default_sample_flags")
@@ -761,7 +761,7 @@ func init() {
 			})
 			sampleCount := d.FieldU32("sample_count")
 			if dataOffsetPresent {
-				m.dataOffset = uint32(d.FieldS32("data_offset"))
+				m.dataOffset = d.FieldS32("data_offset")
 			}
 			if firstSampleFlagsPresent {
 				d.FieldU32("first_sample_flags")
@@ -779,7 +779,7 @@ func init() {
 							d.FieldU32("sample_duration")
 						}
 						if sampleSizePresent {
-							sampleSize = uint32(d.FieldU32("sample_size"))
+							sampleSize = int64(d.FieldU32("sample_size"))
 						}
 						if sampleFlagsPresent {
 							d.FieldU32("sample_flags")
