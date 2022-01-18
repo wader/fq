@@ -50,7 +50,8 @@ func tarDecode(d *decode.D, in interface{}) interface{} {
 
 	// end marker is 512*2 zero bytes
 	endMarker := [blockBytes * 2]byte{}
-	foundEndMarker := false
+	endMarkerFound := false
+	filesCount := 0
 
 	d.FieldArray("files", func(d *decode.D) {
 		for !d.End() {
@@ -68,10 +69,7 @@ func tarDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldUTF8NullFixedLen("chksum", 8, mapOctStrToSymU)
 				d.FieldUTF8("typeflag", 1, mapTrimSpaceNull)
 				d.FieldUTF8("linkname", 100, mapTrimSpaceNull)
-				magic := d.FieldUTF8("magic", 6, mapTrimSpaceNull)
-				if magic != "ustar" {
-					d.Errorf("invalid magic %s", magic)
-				}
+				d.FieldUTF8("magic", 6, mapTrimSpaceNull, d.AssertStr("ustar"))
 				d.FieldUTF8NullFixedLen("version", 2, mapOctStrToSymU)
 				d.FieldUTF8("uname", 32, mapTrimSpaceNull)
 				d.FieldUTF8("gname", 32, mapTrimSpaceNull)
@@ -87,17 +85,20 @@ func tarDecode(d *decode.D, in interface{}) interface{} {
 
 				d.FieldRawLen("data_block_padding", blockPadding(d), d.BitBufIsZero())
 			})
+			filesCount++
 
 			bs := d.PeekBytes(blockBytes * 2)
 			if bytes.Equal(bs, endMarker[:]) {
-				foundEndMarker = true
+				endMarkerFound = true
 				break
 			}
 		}
 	})
-	d.FieldRawLen("end_marker", int64(len(endMarker))*8)
+	if endMarkerFound {
+		d.FieldRawLen("end_marker", int64(len(endMarker))*8)
+	}
 
-	if !foundEndMarker {
+	if filesCount == 0 {
 		d.Errorf("no files found")
 	}
 
