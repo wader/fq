@@ -50,7 +50,8 @@ func tarDecode(d *decode.D, in interface{}) interface{} {
 
 	// end marker is 512*2 zero bytes
 	endMarker := [blockBytes * 2]byte{}
-	endMarkerFound := false
+	var endMarkerStart int64
+	var endMarkerEnd int64
 	filesCount := 0
 
 	d.FieldArray("files", func(d *decode.D) {
@@ -87,15 +88,24 @@ func tarDecode(d *decode.D, in interface{}) interface{} {
 			})
 			filesCount++
 
-			bs := d.PeekBytes(blockBytes * 2)
-			if bytes.Equal(bs, endMarker[:]) {
-				endMarkerFound = true
+			if d.BitsLeft() >= int64(len(endMarker))*8 && bytes.Equal(d.PeekBytes(len(endMarker)), endMarker[:]) {
+				endMarkerStart = d.Pos()
+				// consensus seems to be to allow more than 2 zero blocks at end
+				d.SeekRel(int64(len(endMarker)) * 8)
+				zeroBlock := [blockBytes]byte{}
+				for d.BitsLeft() >= blockBytes*8 && bytes.Equal(d.PeekBytes(blockBytes), zeroBlock[:]) {
+					d.SeekRel(int64(len(zeroBlock)) * 8)
+				}
+				endMarkerEnd = d.Pos()
 				break
 			}
 		}
 	})
-	if endMarkerFound {
-		d.FieldRawLen("end_marker", int64(len(endMarker))*8)
+	endMarkerSize := endMarkerEnd - endMarkerStart
+	if endMarkerSize > 0 {
+		d.RangeFn(endMarkerStart, endMarkerSize, func(d *decode.D) {
+			d.FieldRawLen("end_marker", d.BitsLeft())
+		})
 	}
 
 	if filesCount == 0 {
