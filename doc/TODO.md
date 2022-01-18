@@ -1,5 +1,9 @@
 ### Known bugs to fix
 
+- `fq -n '"aabbccdd" | hex | tobytes[1:] | raw | tobytes'` create buffer `aabbcc` should be `bbccdd`. I think decode (raw in this case) is confused by root value buffer.
+- Buffers/string duality is confusing, most string functions should be wrapped to understand buffers.
+- `fq -n '[([0xab] | tobits[:4]), ([0xdc] | tobits[:4]), 0] | tobytes'` should create a `ad` buffer, now `a0`. Probably because use of `io.Copy` that will ends up padding on byte boundaries. Should use `bitio.Copy` and create a `bitio.Writer` that can transform to a `io.Writer`.
+- REPL cancel seems to sometimes exit a sub-REPl without properly cleanup options.
 - Value errors, can only be accessed with `._error`.
 - Framed (add unknown in gaps) decode should be on struct level not format?
 - `tovalue({bits_format: "base64"})` only affect root value.
@@ -51,7 +55,6 @@
 - `open` leak, file and ctxreadseeker
 - Summary tree with format specific summaries for each format, sample count etc etc?
 - List all unique paths in some compact form?
-- Make buffer work with `test` and `capture`?
 
 ### Tests
 
@@ -86,6 +89,9 @@
 
 #### Formats
 
+- `asn1_ber` `asn1_der`, `asn1_cer` decoder
+- `flatbuffer` decoder
+- `capnproto` decoder
 - Pass argument to format
 - Value decoder in jq `u(32)`, `u32`?
 - Warnings and errors
