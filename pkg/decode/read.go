@@ -17,8 +17,8 @@ func (d *D) tryBitBuf(nBits int64) (*bitio.Buffer, error) {
 }
 
 func (d *D) tryUEndian(nBits int, endian Endian) (uint64, error) {
-	if nBits == 0 {
-		return 0, nil
+	if nBits < 0 {
+		return 0, fmt.Errorf("tryUEndian nBits must be >= 0 (%d)", nBits)
 	}
 	n, err := d.bits(nBits)
 	if err != nil {
@@ -32,6 +32,9 @@ func (d *D) tryUEndian(nBits int, endian Endian) (uint64, error) {
 }
 
 func (d *D) trySEndian(nBits int, endian Endian) (int64, error) {
+	if nBits < 0 {
+		return 0, fmt.Errorf("trySEndian nBits must be >= 0 (%d)", nBits)
+	}
 	n, err := d.tryUEndian(nBits, endian)
 	if err != nil {
 		return 0, err
@@ -57,7 +60,7 @@ func reverseBytes(a []byte) {
 
 func (d *D) tryBigIntEndianSign(nBits int, endian Endian, sign bool) (*big.Int, error) {
 	if nBits < 0 {
-		return nil, fmt.Errorf("nBits must be > 0 (%d)", nBits)
+		return nil, fmt.Errorf("tryBigIntEndianSign nBits must be >= 0 (%d)", nBits)
 	}
 	b := int(bitio.BitsByteCount(int64(nBits)))
 	buf := d.SharedReadBuf(b)[0:b]
@@ -82,6 +85,9 @@ func (d *D) tryBigIntEndianSign(nBits int, endian Endian, sign bool) (*big.Int, 
 }
 
 func (d *D) tryFEndian(nBits int, endian Endian) (float64, error) {
+	if nBits < 0 {
+		return 0, fmt.Errorf("tryFEndian nBits must be >= 0 (%d)", nBits)
+	}
 	n, err := d.bits(nBits)
 	if err != nil {
 		return 0, err
@@ -102,6 +108,9 @@ func (d *D) tryFEndian(nBits int, endian Endian) (float64, error) {
 }
 
 func (d *D) tryFPEndian(nBits int, fBits int, endian Endian) (float64, error) {
+	if nBits < 0 {
+		return 0, fmt.Errorf("tryFPEndian nBits must be >= 0 (%d)", nBits)
+	}
 	n, err := d.bits(nBits)
 	if err != nil {
 		return 0, err
