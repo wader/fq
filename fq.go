@@ -6,7 +6,7 @@ import (
 	"github.com/wader/fq/pkg/cli"
 )
 
-var version = "dev"
+const version = "0.0.3"
 
 func main() {
 	cli.Main(registry.Default, version)
