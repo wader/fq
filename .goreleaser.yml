@@ -22,7 +22,6 @@ builds:
     ldflags:
       # omit symbol table and debug information
       - -s -w
-      - -X main.version={{.Version}}
       - -X main.commit={{.Commit}}
       - -X main.date={{.CommitDate}}
       - -X main.builtBy=goreleaser
