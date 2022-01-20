@@ -857,7 +857,7 @@ func (d *D) FieldFormatBitBuf(name string, bb *bitio.Buffer, group Group, inArg 
 	return dv, v
 }
 
-// TODO: rethink this
+// TODO: rethink these
 func (d *D) FieldRootBitBuf(name string, bb *bitio.Buffer) *Value {
 	v := &Value{}
 	v.V = &scalar.S{Actual: bb}
@@ -868,6 +868,17 @@ func (d *D) FieldRootBitBuf(name string, bb *bitio.Buffer) *Value {
 	d.AddChild(v)
 
 	return v
+}
+
+func (d *D) FieldArrayRootBitBufFn(name string, bb *bitio.Buffer, fn func(d *D)) *Value {
+	cd := d.FieldDecoder(name, bb, &Compound{IsArray: true})
+	cd.Value.IsRoot = true
+	d.AddChild(cd.Value)
+	fn(cd)
+
+	cd.Value.postProcess()
+
+	return cd.Value
 }
 
 func (d *D) FieldStructRootBitBufFn(name string, bb *bitio.Buffer, fn func(d *D)) *Value {
