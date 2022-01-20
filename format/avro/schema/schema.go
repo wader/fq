@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 )
@@ -34,14 +35,23 @@ type SimplifiedSchema struct {
 	Symbols     []string          `json:"symbols,omitempty"`
 	Values      *SimplifiedSchema `json:"values,omitempty"`
 	UnionTypes  []SimplifiedSchema
-	//Choosing not to handle Default as it adds a lot of complexity and this is used for showing the binary
-	//representation of the data, not fully parsing it. See https://github.com/linkedin/goavro/blob/master/record.go
-	//for how it could be handled.
+	// Choosing not to handle Default as it adds a lot of complexity and this is used for showing the binary
+	// representation of the data, not fully parsing it. See https://github.com/linkedin/goavro/blob/master/record.go
+	// for how it could be handled.
 }
 
 type Field struct {
 	Name string
 	Type SimplifiedSchema
+}
+
+func FromSchemaString(schemaString string) (SimplifiedSchema, error) {
+	var jsonSchema interface{}
+	if err := json.Unmarshal([]byte(schemaString), &jsonSchema); err != nil {
+		return SimplifiedSchema{}, fmt.Errorf("failed to unmarshal header schema: %w", err)
+	}
+
+	return From(jsonSchema)
 }
 
 func From(schema interface{}) (SimplifiedSchema, error) {
@@ -81,7 +91,7 @@ func From(schema interface{}) (SimplifiedSchema, error) {
 		if s.Precision, err = getInt(v, "precision", false); err != nil {
 			return s, err
 		}
-		if s.Size, err = getInt(v, "precision", false); err != nil {
+		if s.Size, err = getInt(v, "size", false); err != nil {
 			return s, err
 		}
 		if s.Type == RECORD {
@@ -190,9 +200,9 @@ func getInt(m map[string]interface{}, key string, required bool) (int, error) {
 		}
 		return 0, nil
 	}
-	s, ok := v.(int)
+	s, ok := v.(float64)
 	if !ok {
-		return 0, fmt.Errorf("%s must be a string", key)
+		return 0, fmt.Errorf("%s must be a int", key)
 	}
-	return s, nil
+	return int(s), nil
 }

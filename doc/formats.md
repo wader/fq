@@ -19,7 +19,7 @@
 |`avc_pps`             |H.264/AVC&nbsp;Picture&nbsp;Parameter&nbsp;Set                |<sub></sub>|
 |`avc_sei`             |H.264/AVC&nbsp;Supplemental&nbsp;Enhancement&nbsp;Information |<sub></sub>|
 |`avc_sps`             |H.264/AVC&nbsp;Sequence&nbsp;Parameter&nbsp;Set               |<sub></sub>|
-|`avro_ocf`            |Avro&nbsp;object&nbsp;container&nbsp;file                     |<sub>`json`</sub>|
+|`avro_ocf`            |Avro&nbsp;object&nbsp;container&nbsp;file                     |<sub></sub>|
 |`bencode`             |BitTorrent&nbsp;bencoding                                     |<sub></sub>|
 |`bsd_loopback_frame`  |BSD&nbsp;loopback&nbsp;frame                                  |<sub>`ipv4_packet`</sub>|
 |`bson`                |Binary&nbsp;JSON                                              |<sub></sub>|
