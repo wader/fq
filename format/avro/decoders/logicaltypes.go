@@ -2,9 +2,10 @@ package decoders
 
 import (
 	"errors"
+	"time"
+
 	"github.com/wader/fq/format/avro/schema"
 	"github.com/wader/fq/pkg/scalar"
-	"time"
 )
 
 type Precision int

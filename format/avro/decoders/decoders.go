@@ -2,6 +2,7 @@ package decoders
 
 import (
 	"fmt"
+
 	"github.com/wader/fq/format/avro/schema"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
@@ -18,11 +19,11 @@ func DecodeFnForSchema(s schema.SimplifiedSchema) (DecodeFn, error) {
 
 	switch s.Type {
 	case schema.ARRAY:
-		return decodeArrayFn(s, sms...)
+		return decodeArrayFn(s)
 	case schema.BOOLEAN:
-		return decodeBoolFn(s, sms...)
+		return decodeBoolFn(sms...)
 	case schema.BYTES:
-		return decodeBytesFn(s, sms...)
+		return decodeBytesFn(sms...)
 	case schema.DOUBLE:
 		return decodeDoubleFn(s, sms...)
 	case schema.ENUM:
@@ -38,13 +39,13 @@ func DecodeFnForSchema(s schema.SimplifiedSchema) (DecodeFn, error) {
 	case schema.NULL:
 		return decodeNullFn(s, sms...)
 	case schema.RECORD:
-		return decodeRecordFn(s, sms...)
+		return decodeRecordFn(s)
 	case schema.STRING:
 		return decodeStringFn(s, sms...)
 	case schema.UNION:
-		return decodeUnionFn(s, sms...)
+		return decodeUnionFn(s)
 	case schema.MAP:
-		return decodeMapFn(s, sms...)
+		return decodeMapFn(s)
 	default:
 		return nil, fmt.Errorf("unknown type: %s", s.Type)
 	}

@@ -3,13 +3,12 @@ package decoders
 import (
 	"errors"
 	"fmt"
-	"github.com/wader/fq/pkg/scalar"
 
 	"github.com/wader/fq/format/avro/schema"
 	"github.com/wader/fq/pkg/decode"
 )
 
-func decodeArrayFn(schema schema.SimplifiedSchema, sms ...scalar.Mapper) (DecodeFn, error) {
+func decodeArrayFn(schema schema.SimplifiedSchema) (DecodeFn, error) {
 	if schema.Items == nil {
 		return nil, errors.New("array schema must have items")
 	}

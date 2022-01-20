@@ -2,13 +2,12 @@ package decoders
 
 import (
 	"fmt"
-	"github.com/wader/fq/pkg/scalar"
 
 	"github.com/wader/fq/format/avro/schema"
 	"github.com/wader/fq/pkg/decode"
 )
 
-func decodeRecordFn(schema schema.SimplifiedSchema, sms ...scalar.Mapper) (DecodeFn, error) {
+func decodeRecordFn(schema schema.SimplifiedSchema) (DecodeFn, error) {
 	if len(schema.Fields) == 0 {
 		return nil, fmt.Errorf("record must have fields")
 	}

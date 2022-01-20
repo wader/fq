@@ -3,13 +3,12 @@ package decoders
 import (
 	"errors"
 	"fmt"
-	"github.com/wader/fq/pkg/scalar"
 
 	"github.com/wader/fq/format/avro/schema"
 	"github.com/wader/fq/pkg/decode"
 )
 
-func decodeUnionFn(schema schema.SimplifiedSchema, sms ...scalar.Mapper) (DecodeFn, error) {
+func decodeUnionFn(schema schema.SimplifiedSchema) (DecodeFn, error) {
 	if len(schema.UnionTypes) == 0 {
 		return nil, errors.New("union must have types")
 	}

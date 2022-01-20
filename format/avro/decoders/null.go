@@ -9,7 +9,7 @@ import (
 func decodeNullFn(schema schema.SimplifiedSchema, sms ...scalar.Mapper) (DecodeFn, error) {
 	// null is written as zero bytes.
 	return func(name string, d *decode.D) interface{} {
-		d.FieldRawLen(name, 0)
+		d.FieldValueNil(name)
 		return nil
 	}, nil
 }
