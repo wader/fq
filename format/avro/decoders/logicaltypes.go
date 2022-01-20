@@ -48,18 +48,19 @@ type TimestampMapper struct {
 
 func (t TimestampMapper) MapScalar(s scalar.S) (scalar.S, error) {
 	v := s.ActualS()
+	var ts time.Time
 	if t.Precision == SECOND {
-		s.Sym = time.Unix(v, 0)
+		ts = time.Unix(v, 0)
 	} else if t.Precision == MILLISECOND {
-		s.Sym = time.UnixMilli(v)
+		ts = time.UnixMilli(v)
 	} else if t.Precision == MICROSECOND {
-		s.Sym = time.UnixMicro(v)
+		ts = time.UnixMicro(v)
 	} else if t.Precision == NANOSECOND {
-		s.Sym = time.Unix(0, v)
+		ts = time.Unix(0, v)
 	} else {
 		return s, errors.New("unknown precision")
 	}
-	s.Sym = time.UnixMilli(v)
+	s.Sym = ts.Format(time.RFC3339Nano)
 	return s, nil
 }
 

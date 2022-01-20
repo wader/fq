@@ -134,11 +134,19 @@ func getSymbols(m map[string]interface{}) ([]string, error) {
 	if !ok {
 		return nil, errors.New("symbols required for enum")
 	}
-	v, ok := vI.([]string)
+	vA, ok := vI.([]interface{})
 	if !ok {
-		return nil, errors.New("symbols must be an array of strings")
+		return nil, errors.New("symbols must be an array")
 	}
-	return v, nil
+	symbols := make([]string, len(vA))
+	for i, entry := range vA {
+		v, ok := entry.(string)
+		if !ok {
+			return nil, errors.New("symbols must be an array of strings")
+		}
+		symbols[i] = v
+	}
+	return symbols, nil
 }
 
 func getFields(m map[string]interface{}) ([]Field, error) {
@@ -200,9 +208,19 @@ func getInt(m map[string]interface{}, key string, required bool) (int, error) {
 		}
 		return 0, nil
 	}
-	s, ok := v.(float64)
-	if !ok {
+	switch v := v.(type) {
+	case int:
+		return v, nil
+	case int32:
+		return int(v), nil
+	case int64:
+		return int(v), nil
+	case float32:
+		return int(v), nil
+	case float64:
+		return int(v), nil
+	default:
 		return 0, fmt.Errorf("%s must be a int", key)
+
 	}
-	return int(s), nil
 }

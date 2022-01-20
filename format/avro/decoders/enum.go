@@ -30,5 +30,5 @@ func decodeEnumFn(schema schema.SimplifiedSchema, sms ...scalar.Mapper) (DecodeF
 	//	      {"type": "enum", "name": "Foo", "symbols": ["A", "B", "C", "D"] }
 	// This would be encoded by an int between zero and three, with zero indicating "A", and 3 indicating "D".
 	sms = append([]scalar.Mapper{EnumMapper{Symbols: schema.Symbols}}, sms...)
-	return decodeIntFn(schema, sms...)
+	return decodeIntFn(sms...)
 }

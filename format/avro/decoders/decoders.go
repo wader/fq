@@ -25,19 +25,19 @@ func DecodeFnForSchema(s schema.SimplifiedSchema) (DecodeFn, error) {
 	case schema.BYTES:
 		return decodeBytesFn(sms...)
 	case schema.DOUBLE:
-		return decodeDoubleFn(s, sms...)
+		return decodeDoubleFn(sms...)
 	case schema.ENUM:
 		return decodeEnumFn(s, sms...)
 	case schema.FIXED:
 		return decodeFixedFn(s, sms...)
 	case schema.FLOAT:
-		return decodeFloatFn(s, sms...)
+		return decodeFloatFn(sms...)
 	case schema.INT:
-		return decodeIntFn(s, sms...)
+		return decodeIntFn(sms...)
 	case schema.LONG:
-		return decodeLongFn(s, sms...)
+		return decodeLongFn(sms...)
 	case schema.NULL:
-		return decodeNullFn(s, sms...)
+		return decodeNullFn(sms...)
 	case schema.RECORD:
 		return decodeRecordFn(s)
 	case schema.STRING:

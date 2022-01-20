@@ -1,15 +1,14 @@
 package decoders
 
 import (
-	"github.com/wader/fq/format/avro/schema"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
 )
 
-func decodeNullFn(schema schema.SimplifiedSchema, sms ...scalar.Mapper) (DecodeFn, error) {
+func decodeNullFn(sms ...scalar.Mapper) (DecodeFn, error) {
 	// null is written as zero bytes.
 	return func(name string, d *decode.D) interface{} {
-		d.FieldValueNil(name)
+		d.FieldValueNil(name, sms...)
 		return nil
 	}, nil
 }
