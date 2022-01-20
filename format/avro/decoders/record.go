@@ -29,8 +29,10 @@ func decodeRecordFn(schema schema.SimplifiedSchema, sms ...scalar.Mapper) (Decod
 	// schema. For example, the record schema
 	// 	      { "type": "record",
 	// 	        "name": "test",
-	// 	        "fields" : [ {"name": "a", "type": "long"},
-	// 	      				{"name": "b", "type": "string"} ]
+	// 	        "fields" : [
+	//	            {"name": "a", "type": "long"},
+	//              {"name": "b", "type": "string"}
+	//             ]
 	// 	      }
 	//
 	// An instance of this record whose a field has value 27 (encoded as hex 36) and whose b field has value "foo"

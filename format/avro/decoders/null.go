@@ -9,7 +9,6 @@ import (
 func decodeNullFn(schema schema.SimplifiedSchema, sms ...scalar.Mapper) (DecodeFn, error) {
 	// null is written as zero bytes.
 	return func(name string, d *decode.D) interface{} {
-		// Is this the best way to represent null in fq?
 		d.FieldRawLen(name, 0)
 		return nil
 	}, nil

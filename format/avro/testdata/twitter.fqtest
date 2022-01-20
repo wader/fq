@@ -1,3 +1,4 @@
+# avro file taken from https://github.com/miguno/avro-cli-examples
 $ fq verbose twitter.avro
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: twitter.avro (avro_ocf) 0x0-0x21e.7 (543)
 0x000|4f 62 6a 01                                    |Obj.            |  magic: raw bits (valid) 0x0-0x3.7 (4)

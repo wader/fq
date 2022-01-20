@@ -46,10 +46,7 @@ type TimestampMapper struct {
 }
 
 func (t TimestampMapper) MapScalar(s scalar.S) (scalar.S, error) {
-	v, ok := s.Actual.(int64)
-	if !ok {
-		return s, errors.New("not an int64")
-	}
+	v := s.ActualS()
 	if t.Precision == SECOND {
 		s.Sym = time.Unix(v, 0)
 	} else if t.Precision == MILLISECOND {
