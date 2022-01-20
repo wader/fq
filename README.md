@@ -1,27 +1,29 @@
 # fq
 
-Tool, language and decoders for inspecting binary data.
+Tool, language and decoders for working with binary data.
 
 ![fq demo](doc/demo.svg)
 
 In most cases fq works the same way as jq but instead of reading JSON it reads binary data.
-The result is a JSON compatible structures where each value has a bit range, symbolic
-interpretations and know how to be presented in a useful way.
+The result is a JSON compatible structure where values have a bit range, can have symbolic
+values and know how to be presented in a useful ways.
 
-You can pronounce the name as you wish, i pronounce jq /‘dʒei’kju:/ so I usually prefer /‘ef’kju:/.
+It was initially developed to debug, inspect and query media files but has since been extended
+to handle a variety of binary formats.
 
-**NOTE:** fq is early in development and many things are missing, broken or do not make sense.
-That also means there is a great opportunity to help out!
+You can pronounce the name as you wish, I pronounce jq /‘dʒei’kju:/ so I usually pronounce fq /‘ef’kju:/.
 
-## Goals
+**NOTE:** fq is still early in development so some things are broken or do not make sense.
+That also means that there is a great opportunity to help out!
+
+### Goals
 
 - Make binary formats accessible and queryable.
 - Nested formats and bit-oriented decoding.
 - Quick and comfortable CLI tool.
-- Bit and byte transformations and conversions.
-- Programmer's calculator.
+- Bits and bytes transformations.
 
-## Hopes
+### Hopes
 - Make it useful enough that people want to help improve it.
 - Inspire people to create similar tools.
 
@@ -29,7 +31,7 @@ That also means there is a great opportunity to help out!
 
 Basic usage is `fq . file`.
 
-For details see [usage.md](doc/usage.md)
+For more details see [usage.md](doc/usage.md)
 
 ## Install
 

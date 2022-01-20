@@ -84,6 +84,7 @@ $ fq -d msgpack v test.msgpack
 0x40|6c 6c                                          |ll              |
     |                                               |                |      value{}: 0x42-0x42.7 (1)
 0x40|      c0|                                      |  .|            |        type: "nil" (0xc0) 0x42-0x42.7 (1)
+    |                                               |                |        value: null 0x43-NA (0)
 $ fq -d msgpack torepr test.msgpack
 {
   "array": [

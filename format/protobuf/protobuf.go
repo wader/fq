@@ -3,7 +3,7 @@ package protobuf
 import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
-	"github.com/wader/fq/internal/num"
+	"github.com/wader/fq/internal/mathextra"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
 )
@@ -74,7 +74,7 @@ func protobufDecodeField(d *decode.D, pbm *format.ProtoBufMessage) {
 
 				switch pbf.Type {
 				case format.ProtoBufTypeInt32, format.ProtoBufTypeInt64:
-					v := num.ZigZag(value)
+					v := mathextra.ZigZag(value)
 					d.FieldValueS("value", v)
 					if len(pbf.Enums) > 0 {
 						d.FieldValueStr("enum", pbf.Enums[uint64(v)])
@@ -86,7 +86,7 @@ func protobufDecodeField(d *decode.D, pbm *format.ProtoBufMessage) {
 					}
 				case format.ProtoBufTypeSInt32, format.ProtoBufTypeSInt64:
 					// TODO: correct? 32 different?
-					v := num.TwosComplement(64, value)
+					v := mathextra.TwosComplement(64, value)
 					d.FieldValueS("value", v)
 					if len(pbf.Enums) > 0 {
 						d.FieldValueStr("enum", pbf.Enums[uint64(v)])

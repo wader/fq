@@ -10,7 +10,7 @@ import (
 	"github.com/wader/fq/internal/asciiwriter"
 	"github.com/wader/fq/internal/columnwriter"
 	"github.com/wader/fq/internal/hexpairwriter"
-	"github.com/wader/fq/internal/num"
+	"github.com/wader/fq/internal/mathextra"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
@@ -55,7 +55,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 	var asciiHeader string
 	if depth == 0 {
 		for i := 0; i < opts.LineBytes; i++ {
-			s := num.PadFormatInt(int64(i), opts.AddrBase, false, 2)
+			s := mathextra.PadFormatInt(int64(i), opts.AddrBase, false, 2)
 			hexHeader += s
 			if i < opts.LineBytes-1 {
 				hexHeader += " "
@@ -173,7 +173,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 
 	if opts.Verbose {
 		cfmt(colField, " %s (%s)",
-			num.BitRange(innerRange).StringByteBits(opts.AddrBase), num.Bits(innerRange.Len).StringByteBits(opts.SizeBase))
+			mathextra.BitRange(innerRange).StringByteBits(opts.AddrBase), mathextra.Bits(innerRange.Len).StringByteBits(opts.SizeBase))
 	}
 
 	cprint(colField, "\n")
@@ -258,7 +258,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 	// has length and is not compound or a collapsed struct/array (max depth)
 	if innerRange.Len > 0 && (!isCompound(v) || (opts.Depth != 0 && opts.Depth == depth)) {
 		cfmt(colAddr, "%s%s\n",
-			rootIndent, deco.DumpAddr.F(num.PadFormatInt(startLineByte, opts.AddrBase, true, addrWidth)))
+			rootIndent, deco.DumpAddr.F(mathextra.PadFormatInt(startLineByte, opts.AddrBase, true, addrWidth)))
 
 		vBitBuf, err := rootV.RootBitBuf.BitBufRange(startByte*8, displaySizeBits)
 		if err != nil {
@@ -287,7 +287,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 		for i := int64(1); i < addrLines; i++ {
 			lineStartByte := startLineByte + i*int64(opts.LineBytes)
 			columns()
-			cfmt(colAddr, "%s%s\n", rootIndent, deco.DumpAddr.F(num.PadFormatInt(lineStartByte, opts.AddrBase, true, addrWidth)))
+			cfmt(colAddr, "%s%s\n", rootIndent, deco.DumpAddr.F(mathextra.PadFormatInt(lineStartByte, opts.AddrBase, true, addrWidth)))
 		}
 		// TODO: correct? should rethink columnwriter api maybe?
 		lastLineStopByte := startLineByte + addrLines*int64(opts.LineBytes) - 1
@@ -308,9 +308,9 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 			cprint(colHex, "\n")
 			// TODO: truncate if display_bytes is small?
 			cfmt(colHex, "until %s%s (%s)",
-				num.Bits(stopBit).StringByteBits(opts.AddrBase),
+				mathextra.Bits(stopBit).StringByteBits(opts.AddrBase),
 				isEnd,
-				num.PadFormatInt(bitio.BitsByteCount(sizeBits), opts.SizeBase, true, 0))
+				mathextra.PadFormatInt(bitio.BitsByteCount(sizeBits), opts.SizeBase, true, 0))
 			// TODO: dump last line?
 		}
 	}
@@ -335,9 +335,9 @@ func dump(v *decode.Value, w io.Writer, opts Options) error {
 	}
 
 	_ = v.WalkPreOrder(makeWalkFn(func(v *decode.Value, rootV *decode.Value, depth int, rootDepth int) error {
-		maxAddrIndentWidth = num.MaxInt(
+		maxAddrIndentWidth = mathextra.MaxInt(
 			maxAddrIndentWidth,
-			rootDepth+num.DigitsInBase(bitio.BitsByteCount(v.InnerRange().Stop()), true, opts.AddrBase),
+			rootDepth+mathextra.DigitsInBase(bitio.BitsByteCount(v.InnerRange().Stop()), true, opts.AddrBase),
 		)
 		return nil
 	}))

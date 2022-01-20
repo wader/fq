@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"math/big"
 
 	"github.com/wader/fq/internal/recoverfn"
 	"github.com/wader/fq/pkg/bitio"
@@ -636,6 +637,10 @@ func (d *D) FieldValueS(name string, a int64, sms ...scalar.Mapper) {
 	d.FieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return scalar.S{Actual: a}, nil }, sms...)
 }
 
+func (d *D) FieldValueBigInt(name string, a *big.Int, sms ...scalar.Mapper) {
+	d.FieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return scalar.S{Actual: a}, nil }, sms...)
+}
+
 func (d *D) FieldValueBool(name string, a bool, sms ...scalar.Mapper) {
 	d.FieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return scalar.S{Actual: a}, nil }, sms...)
 }
@@ -646,6 +651,10 @@ func (d *D) FieldValueFloat(name string, a float64, sms ...scalar.Mapper) {
 
 func (d *D) FieldValueStr(name string, a string, sms ...scalar.Mapper) {
 	d.FieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return scalar.S{Actual: a}, nil }, sms...)
+}
+
+func (d *D) FieldValueNil(name string, sms ...scalar.Mapper) {
+	d.FieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return scalar.S{Actual: nil}, nil }, sms...)
 }
 
 func (d *D) FieldValueRaw(name string, a []byte, sms ...scalar.Mapper) {

@@ -6,7 +6,7 @@ import (
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
-	"github.com/wader/fq/internal/num"
+	"github.com/wader/fq/internal/mathextra"
 	"github.com/wader/fq/pkg/checksum"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
@@ -378,8 +378,8 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 				}
 
 				subframeSampleSize := sampleSize - wastedBitsK
-				if subframeSampleSize < 0 {
-					d.Fatalf("negative subframeSampleSize %d", subframeSampleSize)
+				if subframeSampleSize < 1 {
+					d.Fatalf("subframeSampleSize %d < 1", subframeSampleSize)
 				}
 				// if channel is side, add en extra sample bit
 				// https://github.com/xiph/flac/blob/37e675b777d4e0de53ac9ff69e2aea10d92e729c/src/libFLAC/stream_decoder.c#L2040
@@ -471,7 +471,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 										_ = high
 										low := d.U(riceParameter)
 										_ = low
-										samples[n] = num.ZigZag(high<<riceParameter | low)
+										samples[n] = mathextra.ZigZag(high<<riceParameter | low)
 										n++
 									}
 									samplesStop := d.Pos()

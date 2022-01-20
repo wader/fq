@@ -11,23 +11,19 @@ def _formats_dot:
     ] | flatten | join("");
   ( "# ... | dot -Tsvg -o formats.svg"
   , "digraph formats {"
-  , "  concentrate=True"
   , "  rankdir=TB"
-  , "  graph ["
-  , "  ]"
-  , "  node [shape=\"none\"style=\"\"]"
-  , "  edge [arrowsize=\"0.7\"]"
+  , "  node [shape=\"none\" style=\"\"]"
   , ( .[]
     | . as $f
     | .dependencies
     | flatten?
     | .[]
-    | "  \"\($f.name)\":\(.) -> \(.)"
+    | "  \"\($f.name)\":\(.):e -> \(.):n"
     )
   , ( .[]
     | .name as $name
     | .groups[]?
-    | "  \(.) -> \"\($name)\":\($name)"
+    | "  \(.) -> \"\($name)\":\($name):n"
     )
   , ( to_entries[]
     | "  \(.key) [color=\"paleturquoise\", label=\(_record(.key; (.value.dependencies // [])))]"

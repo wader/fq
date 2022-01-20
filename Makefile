@@ -5,9 +5,8 @@ GO_TEST_RACE_FLAGS ?=-race
 all: test fq
 
 .PHONY: fq
-fq: VERSION=$(shell git describe --all --long --dirty 2>/dev/null || echo nogit)
 fq:
-	CGO_ENABLED=0 go build -o fq -ldflags "${GO_BUILD_LDFLAGS} -X main.version=${VERSION}" ${GO_BUILD_FLAGS} .
+	CGO_ENABLED=0 go build -o fq -ldflags "${GO_BUILD_LDFLAGS}" ${GO_BUILD_FLAGS} .
 
 .PHONY: test
 test: testgo testjq testcli
@@ -112,6 +111,12 @@ release:
 	@echo make lint test doc
 	@echo go mod tidy
 	@echo git diff
+	@echo
+	@echo "sed 's/version = "\\\(.*\\\)"/version = \"${VERSION}\"/' fq.go > fq.go.new && mv fq.go.new fq.go"
+	@echo git add fq.go
+	@echo git commit -m "fq: Update version to ${VERSION}"
+	@echo git push wader master
+	@echo
 	@echo "# make sure head master commit CI was successful"
 	@echo open https://github.com/wader/fq/commit/master
 	@echo git tag v${VERSION}
@@ -127,4 +132,3 @@ release:
 	@echo "# wader/fq":
 	@echo git push wader v${VERSION}:v${VERSION}
 	@echo "# edit draft release notes and publish"
-	@echo open https://github.com/wader/fq/releases/tag/v${VERSION}

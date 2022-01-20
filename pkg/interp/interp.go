@@ -22,7 +22,7 @@ import (
 	"github.com/wader/fq/internal/colorjson"
 	"github.com/wader/fq/internal/ctxstack"
 	"github.com/wader/fq/internal/ioextra"
-	"github.com/wader/fq/internal/num"
+	"github.com/wader/fq/internal/mathextra"
 	"github.com/wader/fq/internal/pos"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
@@ -948,7 +948,7 @@ func bitsFormatFnFromOptions(opts Options) func(bb *bitio.Buffer) (interface{}, 
 				return "", err
 			}
 			e.Close()
-			return fmt.Sprintf("<%s>%s", num.Bits(bb.Len()).StringByteBits(opts.SizeBase), b.String()), nil
+			return fmt.Sprintf("<%s>%s", mathextra.Bits(bb.Len()).StringByteBits(opts.SizeBase), b.String()), nil
 		}
 	}
 }
@@ -981,12 +981,12 @@ func (i *Interp) variables() map[string]interface{} {
 func (i *Interp) Options(v interface{}) Options {
 	var opts Options
 	_ = mapstructure.Decode(v, &opts)
-	opts.ArrayTruncate = num.MaxInt(0, opts.ArrayTruncate)
-	opts.Depth = num.MaxInt(0, opts.Depth)
-	opts.AddrBase = num.ClampInt(2, 36, opts.AddrBase)
-	opts.SizeBase = num.ClampInt(2, 36, opts.SizeBase)
-	opts.LineBytes = num.MaxInt(0, opts.LineBytes)
-	opts.DisplayBytes = num.MaxInt(0, opts.DisplayBytes)
+	opts.ArrayTruncate = mathextra.MaxInt(0, opts.ArrayTruncate)
+	opts.Depth = mathextra.MaxInt(0, opts.Depth)
+	opts.AddrBase = mathextra.ClampInt(2, 36, opts.AddrBase)
+	opts.SizeBase = mathextra.ClampInt(2, 36, opts.SizeBase)
+	opts.LineBytes = mathextra.MaxInt(0, opts.LineBytes)
+	opts.DisplayBytes = mathextra.MaxInt(0, opts.DisplayBytes)
 	opts.Decorator = decoratorFromOptions(opts)
 	opts.BitsFormatFn = bitsFormatFnFromOptions(opts)
 

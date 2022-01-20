@@ -5,7 +5,7 @@ package hexpairwriter
 import (
 	"io"
 
-	"github.com/wader/fq/internal/num"
+	"github.com/wader/fq/internal/mathextra"
 	"github.com/wader/fq/pkg/bitio"
 )
 
@@ -115,7 +115,7 @@ func (h *Writer) WriteBits(p []byte, nBits int) (n int, err error) {
 	pos := 0
 	rBits := nBits
 	if h.bitsBufN > 0 {
-		r := num.MinInt(8-h.bitsBufN, nBits)
+		r := mathextra.MinInt(8-h.bitsBufN, nBits)
 		v := bitio.Read64(p, 0, r)
 		bitio.Write64(v, r, h.bitsBuf, h.bitsBufN)
 
