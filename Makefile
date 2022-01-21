@@ -114,7 +114,7 @@ release:
 	@echo
 	@echo "sed 's/version = "\\\(.*\\\)"/version = \"${VERSION}\"/' fq.go > fq.go.new && mv fq.go.new fq.go"
 	@echo git add fq.go
-	@echo git commit -m "fq: Update version to ${VERSION}"
+	@echo git commit -m \"fq: Update version to ${VERSION}\"
 	@echo git push wader master
 	@echo
 	@echo "# make sure head master commit CI was successful"
