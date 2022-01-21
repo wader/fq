@@ -34,6 +34,8 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
+      - goos: darwin
+        format: zip
     replacements:
       darwin: macos
 
