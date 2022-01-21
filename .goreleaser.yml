@@ -48,12 +48,12 @@ changelog:
 
 brews:
   - skip_upload: auto
-  - tap:
+    tap:
       owner: wader
       name: homebrew-tap
     folder: Formula
     homepage: https://github.com/wader/fq
-    description: jq for binaries
+    description: jq for binary formats
     license: MIT
     test: |
       system "#{bin}/fq -v"
