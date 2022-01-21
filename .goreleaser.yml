@@ -47,6 +47,7 @@ changelog:
       - "^Merge"
 
 brews:
+  - skip_upload: auto
   - tap:
       owner: wader
       name: homebrew-tap
