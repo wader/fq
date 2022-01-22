@@ -2,6 +2,7 @@ package zip
 
 // https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
 // https://opensource.apple.com/source/zip/zip-6/unzip/unzip/proginfo/extra.fld
+// TODO: zip64
 
 import (
 	"bytes"
@@ -151,7 +152,7 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 	var diskNr uint64
 
 	d.FieldStruct("end_of_central_directory", func(d *decode.D) {
-		d.FieldRawLen("signature", 4*8, d.ValidateBitBuf(endOfCentralDirectorySignature))
+		d.FieldRawLen("signature", 4*8, d.AssertBitBuf(endOfCentralDirectorySignature))
 		diskNr = d.FieldU16("disk_nr")
 		d.FieldU16("central_directory_start_disk_nr")
 		d.FieldU16("nr_of_central_directory_records_on_disk")
@@ -169,7 +170,7 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 		d.LenFn(int64(sizeCD)*8, func(d *decode.D) {
 			for !d.End() {
 				d.FieldStruct("central_directory", func(d *decode.D) {
-					d.FieldRawLen("signature", 4*8, d.ValidateBitBuf(centralDirectorySignature))
+					d.FieldRawLen("signature", 4*8, d.AssertBitBuf(centralDirectorySignature))
 					d.FieldU16("version_made_by")
 					d.FieldU16("version_needed")
 					d.FieldStruct("flags", func(d *decode.D) {
@@ -229,7 +230,7 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 			d.SeekAbs(int64(o) * 8)
 			d.FieldStruct("local_file", func(d *decode.D) {
 				var hasDataDescriptor bool
-				d.FieldRawLen("signature", 4*8, d.ValidateBitBuf(localFileSignature))
+				d.FieldRawLen("signature", 4*8, d.AssertBitBuf(localFileSignature))
 				d.FieldU16("version_needed")
 				d.FieldStruct("flags", func(d *decode.D) {
 					// TODO: 16LE, should have some kind of native endian flag reader helper?
@@ -311,7 +312,7 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 				if hasDataDescriptor {
 					d.FieldStruct("data_indicator", func(d *decode.D) {
 						if bytes.Equal(d.PeekBytes(4), dataIndicatorSignature) {
-							d.FieldRawLen("signature", 4*8, d.ValidateBitBuf(dataIndicatorSignature))
+							d.FieldRawLen("signature", 4*8, d.AssertBitBuf(dataIndicatorSignature))
 						}
 						d.FieldU32("crc32_uncompressed", scalar.Hex)
 						d.FieldU32("compressed_size")
