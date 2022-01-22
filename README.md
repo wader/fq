@@ -27,82 +27,7 @@ That also means that there is a great opportunity to help out!
 - Make it useful enough that people want to help improve it.
 - Inspire people to create similar tools.
 
-## Usage
-
-Basic usage is `fq . file`.
-
-For more details see [usage.md](doc/usage.md)
-
-## Install
-
-Download [release](https://github.com/wader/fq/releases) for your
-platform, unarchive it and move the executable to `PATH` etc.
-
-### Homebrew
-
-```sh
-# install latest release
-brew install wader/tap/fq
-```
-
-### Arch Linux
-
-`fq` can be installed from the [community repository](https://archlinux.org/packages/community/x86_64/fq/) using [pacman](https://wiki.archlinux.org/title/Pacman):
-
-```sh
-pacman -S fq
-```
-
-You can also build and install the development (VCS) package using an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers):
-
-```sh
-paru -S fq-git
-```
-
-### Nix
-
-```sh
-nix-shell -p fq
-```
-
-### FreeBSD
-
-Use the [fq](https://cgit.freebsd.org/ports/tree/misc/fq) port.
-
-### Alpine
-
-Currently in edge testing but should work fine in stable also.
-
-```
-apk add -X http://dl-cdn.alpinelinux.org/alpine/edge/testing fq
-```
-
-### Build from source
-
-Make sure you have go 1.17 or later installed.
-
-To install directly from git repository do:
-```sh
-# build and install latest release
-go install github.com/wader/fq@latest
-
-# or build and install latest master
-go install github.com/wader/fq@master
-
-# copy binary to $PATH if needed
-cp "$(go env GOPATH)/bin/fq" /usr/local/bin
-```
-
-To build and run tests from source directory:
-```sh
-make test fq
-# copy binary to $PATH if needed
-cp fq /usr/local/bin
-# it's also possible to use go run
-go run fq.go
-```
-
-## Supported formats
+### Supported formats
 
 [./formats_list.jq]: sh-start
 
@@ -192,6 +117,88 @@ zip
 [#]: sh-end
 
 For details see [formats.md](doc/formats.md)
+
+## Usage
+
+Basic usage is `fq . file`.
+
+For more details see [usage.md](doc/usage.md)
+
+## Install
+
+Use one of the methods listed below or download [release](https://github.com/wader/fq/releases)
+for your platform. Unarchive it and move the executable to `PATH` etc.
+
+On macOS if don't install using a method below you might have to manually allow the binary to run.
+This can be done by trying to run the binary, ignore the warning and then go into security preference
+and allow it. Or you can run this command:
+
+```sh
+xattr -d com.apple.quarantine fq && spctl --add fq
+```
+
+### Homebrew
+
+```sh
+# install latest release
+brew install wader/tap/fq
+```
+
+### Arch Linux
+
+`fq` can be installed from the [community repository](https://archlinux.org/packages/community/x86_64/fq/) using [pacman](https://wiki.archlinux.org/title/Pacman):
+
+```sh
+pacman -S fq
+```
+
+You can also build and install the development (VCS) package using an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers):
+
+```sh
+paru -S fq-git
+```
+
+### Nix
+
+```sh
+nix-shell -p fq
+```
+
+### FreeBSD
+
+Use the [fq](https://cgit.freebsd.org/ports/tree/misc/fq) port.
+
+### Alpine
+
+Currently in edge testing but should work fine in stable also.
+
+```
+apk add -X http://dl-cdn.alpinelinux.org/alpine/edge/testing fq
+```
+
+### Build from source
+
+Make sure you have go 1.17 or later installed.
+
+To install directly from git repository do:
+```sh
+# build and install latest release
+go install github.com/wader/fq@latest
+
+# or build and install latest master
+go install github.com/wader/fq@master
+
+# copy binary to $PATH if needed
+cp "$(go env GOPATH)/bin/fq" /usr/local/bin
+```
+
+To run and run tests from source directory:
+```sh
+# run all tests and build binary
+make test fq
+# it's also possible to use go run
+go run fq.go
+```
 
 ## TODO and ideas
 
