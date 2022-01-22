@@ -577,7 +577,7 @@ func decodeFrames(d *decode.D, version int, size uint64) {
 
 func id3v2Decode(d *decode.D, in interface{}) interface{} {
 	d.AssertAtLeastBitsLeft(4 * 8)
-	d.FieldUTF8("magic", 3, d.ValidateStr("ID3"))
+	d.FieldUTF8("magic", 3, d.AssertStr("ID3"))
 	version := int(d.FieldU8("version"))
 	versionValid := version == 2 || version == 3 || version == 4
 	if !versionValid {
