@@ -35,3 +35,9 @@ linters-settings:
       # allow md5
       - G401
       - G501
+issues:
+  exclude-rules:
+    - path: dev/.*\.go
+      linters:
+        # ignore main re-declared errors
+        - typecheck

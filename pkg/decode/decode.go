@@ -664,6 +664,9 @@ func (d *D) FieldValueRaw(name string, a []byte, sms ...scalar.Mapper) {
 }
 
 func (d *D) LenFn(nBits int64, fn func(d *D)) {
+	if nBits < 0 {
+		d.Fatalf("%d nBits < 0", nBits)
+	}
 	d.RangeFn(d.Pos(), nBits, fn)
 	d.SeekRel(nBits)
 }
