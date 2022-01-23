@@ -47,16 +47,17 @@ def input:
     | [.[0], .[1:]] as [$h, $t]
     | _input_filenames($t)
     | _input_filename(null) as $_
+    | ($h // "<stdin>") as $name
     | $h
     | try
         # null input here means stdin
         ( open
-        | _input_filename($h // "<stdin>") as $_
+        | _input_filename($name) as $_
         | .
         )
       catch
         ( . as $err
-        | _input_io_errors(. += {($h): $err}) as $_
+        | _input_io_errors(. += {($name): $err}) as $_
         | $err
         | (_error_str | printerrln)
         , _input($opts; f)
@@ -64,8 +65,8 @@ def input:
     | try f
       catch
         ( . as $err
-        | _input_decode_errors(. += {($h): $err}) as $_
-        | [ "\($h): \($opts.decode_format)"
+        | _input_decode_errors(. += {($name): $err}) as $_
+        | [ "\($name): \($opts.decode_format)"
           , if $err | type == "string" then ": \($err)"
             # TODO: if not string assume decode itself failed for now
             else ": failed to decode (try -d FORMAT)"

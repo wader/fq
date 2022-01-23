@@ -93,3 +93,9 @@ $ fq -i -s -d raw . /a /b /c
 "raw"
 "raw"
 [raw, ...][0:3]> ^D
+$ fq
+exitcode: 4
+stdin:
+test
+stderr:
+error: <stdin>: probe: failed to decode (try -d FORMAT)
