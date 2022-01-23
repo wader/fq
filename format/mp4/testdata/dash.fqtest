@@ -294,8 +294,8 @@ $ fq -d mp4 verbose /dash_audio_init.mp4
 0x2b0|                              00 00 00 02      |          ....  |                          default_length: 2 0x2ba-0x2bd.7 (4)
 0x2b0|                                          00 00|              ..|                          entry_count: 1 0x2be-0x2c1.7 (4)
 0x2c0|00 01                                          |..              |
-     |                                               |                |                          groups[0:1]: 0x2c2-0x2c3.7 (2)
-0x2c0|      ff ff                                    |  ..            |                            [0]: raw bits group 0x2c2-0x2c3.7 (2)
+     |                                               |                |                          entries[0:1]: 0x2c2-0x2c3.7 (2)
+0x2c0|      ff ff                                    |  ..            |                            [0]: raw bits data 0x2c2-0x2c3.7 (2)
      |                                               |                |                    [2]{}: box 0x2c4-0x2d3.7 (16)
 0x2c0|            00 00 00 10                        |    ....        |                      size: 16 0x2c4-0x2c7.7 (4)
 0x2c0|                        73 6d 68 64            |        smhd    |                      type: "smhd" (Sound media header, overall information (sound track only)) 0x2c8-0x2cb.7 (4)

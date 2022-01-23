@@ -302,8 +302,8 @@ $ fq -d mp4 verbose /aac.mp4
 0x510|   72 6f 6c 6c                                 | roll           |                          grouping_type: 1919904876 0x511-0x514.7 (4)
 0x510|               00 00 00 02                     |     ....       |                          default_length: 2 0x515-0x518.7 (4)
 0x510|                           00 00 00 01         |         ....   |                          entry_count: 1 0x519-0x51c.7 (4)
-     |                                               |                |                          groups[0:1]: 0x51d-0x51e.7 (2)
-0x510|                                       ff ff   |             .. |                            [0]: raw bits group 0x51d-0x51e.7 (2)
+     |                                               |                |                          entries[0:1]: 0x51d-0x51e.7 (2)
+0x510|                                       ff ff   |             .. |                            [0]: raw bits data 0x51d-0x51e.7 (2)
      |                                               |                |                        [6]{}: box 0x51f-0x53a.7 (28)
 0x510|                                             00|               .|                          size: 28 0x51f-0x522.7 (4)
 0x520|00 00 1c                                       |...             |

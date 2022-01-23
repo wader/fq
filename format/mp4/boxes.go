@@ -1070,15 +1070,19 @@ func init() {
 				d.FieldU32("default_sample_description_index")
 			}
 			entryCount := d.FieldU32("entry_count")
-			d.FieldArray("groups", func(d *decode.D) {
+			d.FieldArray("entries", func(d *decode.D) {
 				for i := uint64(0); i < entryCount; i++ {
 					entryLen := defaultLength
 					if version == 1 {
 						if defaultLength == 0 {
-							entryLen = d.FieldU32("descriptor_length")
+							entryLen = d.FieldU32("description_length")
+						} else if entryLen == 0 {
+							d.Fatalf("sgpd groups entry len <= 0 version 1")
 						}
+					} else if entryLen == 0 {
+						d.Fatalf("sgpd groups entry len <= 0")
 					}
-					d.FieldRawLen("group", int64(entryLen)*8)
+					d.FieldRawLen("data", int64(entryLen)*8)
 				}
 			})
 		},
