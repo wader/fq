@@ -295,7 +295,11 @@ func decodeBlock(d *decode.D, dc *decodeContext) {
 	typ := d.FieldU32("type", blockTypeMap, scalar.Hex)
 	length := d.FieldU32("length") - 8
 	const footerLengthSize = 32
-	d.LenFn(int64(length)*8-footerLengthSize, func(d *decode.D) {
+	blockLen := int64(length)*8 - footerLengthSize
+	if blockLen <= 0 {
+		d.Fatalf("%d blockLen < 0", blockLen)
+	}
+	d.LenFn(blockLen, func(d *decode.D) {
 		if fn, ok := blockFns[typ]; ok {
 			fn(d, dc)
 		} else {
