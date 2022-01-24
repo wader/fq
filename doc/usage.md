@@ -318,6 +318,7 @@ unary uses input and if more than one argument all as arguments ignoring the inp
     - `vgrep/1`, `vgrep/2` recursively match value
     - `bgrep/1`, `bgrep/2` recursively match buffer
     - `fgrep/1`, `fgrep/2` recursively match field name
+  - `grep_by/1` recursively match using a filter. Ex: `grep_by(. > 180 and . < 200)`, `first(grep_by(format == "id3v2"))`.
   - Buffers:
     - `tobits/0` - Transform input into a bits buffer not preserving source range, will start at zero.
     - `tobitsrange/0` - Transform input into a bits buffer preserving source range if possible.
