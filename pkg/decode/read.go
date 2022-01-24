@@ -127,6 +127,14 @@ var UTF16BE = unicode.UTF16(unicode.BigEndian, unicode.IgnoreBOM)
 var UTF16LE = unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM)
 
 func (d *D) tryText(nBytes int, e encoding.Encoding) (string, error) {
+	if nBytes < 0 {
+		return "", fmt.Errorf("tryText nBytes must be >= 0 (%d)", nBytes)
+	}
+	bytesLeft := d.BitsLeft() / 8
+	if int64(nBytes) > bytesLeft {
+		return "", fmt.Errorf("tryText nBytes %d outside buffer, %d bytes left", nBytes, bytesLeft)
+	}
+
 	bs, err := d.bitBuf.BytesLen(nBytes)
 	if err != nil {
 		return "", err
@@ -139,6 +147,17 @@ func (d *D) tryText(nBytes int, e encoding.Encoding) (string, error) {
 // fixedBytes if != -1 read nBytes but trim to length
 //nolint:unparam
 func (d *D) tryTextLenPrefixed(lenBits int, fixedBytes int, e encoding.Encoding) (string, error) {
+	if lenBits < 0 {
+		return "", fmt.Errorf("tryTextLenPrefixed lenBits must be >= 0 (%d)", lenBits)
+	}
+	if fixedBytes < 0 {
+		return "", fmt.Errorf("tryTextLenPrefixed fixedBytes must be >= 0 (%d)", fixedBytes)
+	}
+	bytesLeft := d.BitsLeft() / 8
+	if int64(fixedBytes) > bytesLeft {
+		return "", fmt.Errorf("tryTextLenPrefixed fixedBytes %d outside, %d bytes left", fixedBytes, bytesLeft)
+	}
+
 	p := d.Pos()
 	l, err := d.bits(lenBits)
 	if err != nil {
@@ -163,6 +182,10 @@ func (d *D) tryTextLenPrefixed(lenBits int, fixedBytes int, e encoding.Encoding)
 }
 
 func (d *D) tryTextNull(nullBytes int, e encoding.Encoding) (string, error) {
+	if nullBytes < 1 {
+		return "", fmt.Errorf("tryTextNull nullBytes must be >= 1 (%d)", nullBytes)
+	}
+
 	p := d.Pos()
 	peekBits, _, err := d.TryPeekFind(nullBytes*8, 8, -1, func(v uint64) bool { return v == 0 })
 	if err != nil {
@@ -179,6 +202,14 @@ func (d *D) tryTextNull(nullBytes int, e encoding.Encoding) (string, error) {
 }
 
 func (d *D) tryTextNullLen(fixedBytes int, e encoding.Encoding) (string, error) {
+	if fixedBytes < 0 {
+		return "", fmt.Errorf("tryTextNullLen fixedBytes must be >= 0 (%d)", fixedBytes)
+	}
+	bytesLeft := d.BitsLeft() / 8
+	if int64(fixedBytes) > bytesLeft {
+		return "", fmt.Errorf("tryTextNullLen fixedBytes %d outside, %d bytes left", fixedBytes, bytesLeft)
+	}
+
 	bs, err := d.bitBuf.BytesLen(fixedBytes)
 	if err != nil {
 		return "", err

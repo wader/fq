@@ -51,7 +51,11 @@ func (ft *fuzzTest) Stderr() interp.Output        { return fuzzTestOutput{os.Std
 func (ft *fuzzTest) InterruptChan() chan struct{} { return nil }
 func (ft *fuzzTest) Environ() []string            { return nil }
 func (ft *fuzzTest) Args() []string {
-	return []string{}
+	return []string{
+		`fq`,
+		`-d`, `raw`,
+		`(_registry.groups | keys[] | select(. != "all")) as $f | decode($f)?`,
+	}
 }
 func (ft *fuzzTest) ConfigDir() (string, error) { return "/config", nil }
 func (ft *fuzzTest) FS() fs.FS                  { return fuzzFS{} }
