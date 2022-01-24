@@ -103,6 +103,9 @@ func spuDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldU16("size")
 	dcsqtOffset := d.FieldU16("dcsqt_offset")
 
+	// to catch infinite loops
+	offsetSeen := map[uint64]struct{}{}
+
 	d.SeekAbs(int64(dcsqtOffset) * 8)
 	d.FieldArray("dcsqt", func(d *decode.D) {
 		lastDCSQ := false
@@ -116,6 +119,11 @@ func spuDecode(d *decode.D, in interface{}) interface{} {
 					lastDCSQ = true
 					return
 				}
+
+				if _, ok := offsetSeen[offset]; ok {
+					d.Fatalf("dcsqt loop detected for %d", offset)
+				}
+				offsetSeen[offset] = struct{}{}
 
 				var pxdTFOffset int64
 				var pxdBFOffset int64
