@@ -14,6 +14,7 @@ import (
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
 )
@@ -108,14 +109,14 @@ func bzip2Decode(d *decode.D, in interface{}) interface{} {
 
 	compressedStart := d.Pos()
 
-	readCompressedSize, uncompressedBB, dv, _, _ := d.TryFieldReaderRangeFormat("uncompressed", 0, d.Len(), bzip2.NewReader, probeGroup, nil)
-	if uncompressedBB != nil {
+	readCompressedSize, uncompressedBR, dv, _, _ := d.TryFieldReaderRangeFormat("uncompressed", 0, d.Len(), bzip2.NewReader, probeGroup, nil)
+	if uncompressedBR != nil {
 		if dv == nil {
-			d.FieldRootBitBuf("uncompressed", uncompressedBB)
+			d.FieldRootBitBuf("uncompressed", uncompressedBR)
 		}
 
 		blockCRC32W := crc32.NewIEEE()
-		d.MustCopy(blockCRC32W, bitFlipReader{uncompressedBB.Clone()})
+		d.MustCopy(blockCRC32W, bitFlipReader{bitio.NewIOReader(uncompressedBR)})
 		blockCRC32N := bits.Reverse32(binary.BigEndian.Uint32(blockCRC32W.Sum(nil)))
 		_ = blockCRCValue.TryScalarFn(d.ValidateU(uint64(blockCRC32N)))
 		streamCRCN = blockCRC32N ^ ((streamCRCN << 1) | (streamCRCN >> 31))

@@ -105,14 +105,14 @@ func decodeOgg(d *decode.D, in interface{}) interface{} {
 			for _, bs := range oggPageOut.Segments {
 				s.packetBuf = append(s.packetBuf, bs...)
 				if len(bs) < 255 {
-					bb := bitio.NewBufferFromBytes(s.packetBuf, -1)
+					br := bitio.NewBitReader(s.packetBuf, -1)
 
 					if s.codec == codecUnknown {
-						if b, err := bb.PeekBytes(len(vorbisIdentification)); err == nil && bytes.Equal(b, vorbisIdentification) {
+						if bytes.HasPrefix(s.packetBuf, vorbisIdentification) {
 							s.codec = codecVorbis
-						} else if b, err := bb.PeekBytes(len(opusIdentification)); err == nil && bytes.Equal(b, opusIdentification) {
+						} else if bytes.HasPrefix(s.packetBuf, opusIdentification) {
 							s.codec = codecOpus
-						} else if b, err := bb.PeekBytes(len(flacIdentification)); err == nil && bytes.Equal(b, flacIdentification) {
+						} else if bytes.HasPrefix(s.packetBuf, flacIdentification) {
 							s.codec = codecFlac
 						}
 					}
@@ -120,25 +120,22 @@ func decodeOgg(d *decode.D, in interface{}) interface{} {
 					switch s.codec {
 					case codecVorbis:
 						// TODO: err
-						if _, _, err := s.packetD.TryFieldFormatBitBuf("packet", bb, vorbisPacketFormat, nil); err != nil {
-							s.packetD.FieldRootBitBuf("packet", bb)
+						if _, _, err := s.packetD.TryFieldFormatBitBuf("packet", br, vorbisPacketFormat, nil); err != nil {
+							s.packetD.FieldRootBitBuf("packet", br)
 						}
 					case codecOpus:
 						// TODO: err
-						if _, _, err := s.packetD.TryFieldFormatBitBuf("packet", bb, opusPacketFormat, nil); err != nil {
-							s.packetD.FieldRootBitBuf("packet", bb)
+						if _, _, err := s.packetD.TryFieldFormatBitBuf("packet", br, opusPacketFormat, nil); err != nil {
+							s.packetD.FieldRootBitBuf("packet", br)
 						}
 					case codecFlac:
-						var firstByte byte
-						bs, err := bb.PeekBytes(1)
-						if err != nil {
+						if len(s.packetBuf) == 0 {
 							return
 						}
-						firstByte = bs[0]
 
 						switch {
-						case firstByte == 0x7f:
-							s.packetD.FieldStructRootBitBufFn("packet", bb, func(d *decode.D) {
+						case s.packetBuf[0] == 0x7f:
+							s.packetD.FieldStructRootBitBufFn("packet", br, func(d *decode.D) {
 								d.FieldU8("type")
 								d.FieldUTF8("signature", 4)
 								d.FieldU8("major")
@@ -152,13 +149,13 @@ func decodeOgg(d *decode.D, in interface{}) interface{} {
 								}
 								s.flacStreamInfo = flacMetadatablockOut.StreamInfo
 							})
-						case firstByte == 0xff:
-							s.packetD.FieldFormatBitBuf("packet", bb, flacFrameFormat, nil)
+						case s.packetBuf[0] == 0xff:
+							s.packetD.FieldFormatBitBuf("packet", br, flacFrameFormat, nil)
 						default:
-							s.packetD.FieldFormatBitBuf("packet", bb, flacMetadatablockFormat, nil)
+							s.packetD.FieldFormatBitBuf("packet", br, flacMetadatablockFormat, nil)
 						}
 					case codecUnknown:
-						s.packetD.FieldRootBitBuf("packet", bb)
+						s.packetD.FieldRootBitBuf("packet", br)
 					}
 
 					s.packetBuf = nil

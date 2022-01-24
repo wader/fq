@@ -5,6 +5,7 @@ import (
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
 )
@@ -25,8 +26,8 @@ func init() {
 }
 
 func decodeJSON(d *decode.D, in interface{}) interface{} {
-	bb := d.RawLen(d.Len())
-	jd := stdjson.NewDecoder(bb)
+	br := d.RawLen(d.Len())
+	jd := stdjson.NewDecoder(bitio.NewIOReader(br))
 	var s scalar.S
 	if err := jd.Decode(&s.Actual); err != nil {
 		d.Fatalf(err.Error())

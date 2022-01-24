@@ -73,9 +73,9 @@ func gifDecode(d *decode.D, in interface{}) interface{} {
 	blocks:
 		for {
 			switch d.PeekBits(8) {
-			case 0x3b: /* ";"  */
+			case ';':
 				break blocks
-			case 0x21: /* "!" */
+			case '!': /* "!" */
 				d.FieldStruct("extension_block", func(d *decode.D) {
 					d.FieldU8("introducer")
 					functionCode := d.FieldU8("function_code", extensionNames, scalar.Hex)
@@ -93,7 +93,7 @@ func gifDecode(d *decode.D, in interface{}) interface{} {
 									d.FieldU8("terminator")
 									seenTerminator = true
 								}
-								d.MustCopy(dataBytes, b.Clone())
+								d.MustCopyBits(dataBytes, d.MustClone(b))
 							})
 						}
 					})
@@ -105,12 +105,12 @@ func gifDecode(d *decode.D, in interface{}) interface{} {
 					// case extensionGraphicalControl:
 					// 	d.FieldFormatBitBuf(
 					// 		"graphics_control",
-					// 		bitio.NewBufferFromBytes(dataBytes.Bytes(), -1),
+					// 		bitio.NewReader(dataBytes.Bytes(), -1),
 					// 	)
 
 					// }
 				})
-			case 0x2c: /* "," */
+			case ',':
 				d.FieldStruct("image", func(d *decode.D) {
 					d.FieldU8("separator_character")
 					d.FieldU16("left")

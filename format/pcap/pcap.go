@@ -78,12 +78,7 @@ func decodePcap(d *decode.D, in interface{}) interface{} {
 					d.Errorf("incl_len %d > orig_len %d", inclLen, origLen)
 				}
 
-				bb := d.BitBufRange(d.Pos(), int64(inclLen)*8)
-				bs, err := bb.Bytes()
-				if err != nil {
-					// TODO:
-					d.IOPanic(err, "BitBufRange: inclLen")
-				}
+				bs := d.MustReadAllBits(d.BitBufRange(d.Pos(), int64(inclLen)*8))
 
 				if fn, ok := linkToDecodeFn[linkType]; ok {
 					// TODO: report decode errors

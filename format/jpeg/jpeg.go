@@ -306,10 +306,7 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 									// TODO: FieldBitsLen? concat bitbuf?
 									chunk := d.FieldRawLen("data", d.BitsLeft())
 									// TODO: redo this? multi reader?
-									chunkBytes, err := chunk.Bytes()
-									if err != nil {
-										d.Fatalf("failed to read xmp chunk: %s", err)
-									}
+									chunkBytes := d.MustReadAllBits(chunk)
 
 									if extendedXMP == nil {
 										extendedXMP = make([]byte, fullLength)
@@ -348,7 +345,7 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 	}
 
 	if extendedXMP != nil {
-		d.FieldRootBitBuf("extended_xmp", bitio.NewBufferFromBytes(extendedXMP, -1))
+		d.FieldRootBitBuf("extended_xmp", bitio.NewBitReader(extendedXMP, -1))
 	}
 
 	return nil

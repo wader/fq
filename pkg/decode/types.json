@@ -5,7 +5,7 @@
         "S": {"go_type": "int64", "zero": "0", "compare": "a == b", "range": "a >= start && a <= end"},
         "F": {"go_type": "float64", "map_from": false, "zero": "0", "compare": "a == b", "range": "a >= start && a <= end"},
         "Bool": {"go_type": "bool", "zero": "false", "compare": "a == b"},
-        "BitBuf": {"go_type": "*bitio.Buffer", "zero": "nil", "map_from": false, "map_to": false},
+        "BitBuf": {"go_type": "bitio.ReaderAtSeeker", "zero": "nil", "map_from": false, "map_to": false},
         "BigInt": {"go_type": "*big.Int", "zero": "nil", "map_from": false, "map_to": false, "compare": "a.Cmp(b) == 0", "range": "a.Cmp(start) >= 0 && a.Cmp(end) <= 0"}
     },
     "readers": [
@@ -57,7 +57,13 @@
             "name": "UBigInt",
             "type": "BigInt",
             "variants": [
-                {"name": "", "args": "nBits", "params": "nBits int", "call": "d.tryBigIntEndianSign(nBits, d.Endian, false)", "doc": "nBits bits signed integer in current endian"},
+                {
+                    "name": "",
+                    "args": "nBits",
+                    "params": "nBits int",
+                    "call": "d.tryBigIntEndianSign(nBits, d.Endian, false)",
+                    "doc": "nBits bits signed integer in current endian"
+                },
                 {
                     "name": "E",
                     "args": "nBits, endian",
@@ -65,15 +71,33 @@
                     "call": "d.tryBigIntEndianSign(nBits, endian, false)",
                     "doc": "nBits signed integer in specified endian"
                 },
-                {"name": "LE", "args": "nBits", "params": "nBits int", "call": "d.tryBigIntEndianSign(nBits, LittleEndian, false)", "doc": "nBits bit signed integer in little-endian"},
-                {"name": "BE", "args": "nBits", "params": "nBits int", "call": "d.tryBigIntEndianSign(nBits, BigEndian, false)", "doc": "nBits bit signed integer in big-endian"}
+                {
+                    "name": "LE",
+                    "args": "nBits",
+                    "params": "nBits int",
+                    "call": "d.tryBigIntEndianSign(nBits, LittleEndian, false)",
+                    "doc": "nBits bit signed integer in little-endian"
+                },
+                {
+                    "name": "BE",
+                    "args": "nBits",
+                    "params": "nBits int",
+                    "call": "d.tryBigIntEndianSign(nBits, BigEndian, false)",
+                    "doc": "nBits bit signed integer in big-endian"
+                }
             ]
         },
         {
             "name": "SBigInt",
             "type": "BigInt",
             "variants": [
-                {"name": "", "args": "nBits", "params": "nBits int", "call": "d.tryBigIntEndianSign(nBits, d.Endian, true)", "doc": "nBits bits signed integer in current endian"},
+                {
+                    "name": "",
+                    "args": "nBits",
+                    "params": "nBits int",
+                    "call": "d.tryBigIntEndianSign(nBits, d.Endian, true)",
+                    "doc": "nBits bits signed integer in current endian"
+                },
                 {
                     "name": "E",
                     "args": "nBits, endian",
@@ -81,7 +105,13 @@
                     "call": "d.tryBigIntEndianSign(nBits, endian, true)",
                     "doc": "nBits signed integer in specified endian"
                 },
-                {"name": "LE", "args": "nBits", "params": "nBits int", "call": "d.tryBigIntEndianSign(nBits, LittleEndian, true)", "doc": "nBits bit signed integer in little-endian"},
+                {
+                    "name": "LE",
+                    "args": "nBits",
+                    "params": "nBits int",
+                    "call": "d.tryBigIntEndianSign(nBits, LittleEndian, true)",
+                    "doc": "nBits bit signed integer in little-endian"
+                },
                 {"name": "BE", "args": "nBits", "params": "nBits int", "call": "d.tryBigIntEndianSign(nBits, BigEndian, true)", "doc": "nBits bit signed integer in big-endian"}
             ]
         },
@@ -90,7 +120,13 @@
             "type": "F",
             "variants": [
                 {"name": "", "args": "nBits", "params": "nBits int", "call": "d.tryFEndian(nBits, d.Endian)", "doc": "nBit IEEE 754 float in current endian"},
-                {"name": "E", "args": "nBits, endian", "params": "nBits int, endian Endian", "call": "d.tryFEndian(nBits, endian)", "doc": "nBit IEEE 754 float in specified endian"},
+                {
+                    "name": "E",
+                    "args": "nBits, endian",
+                    "params": "nBits int, endian Endian",
+                    "call": "d.tryFEndian(nBits, endian)",
+                    "doc": "nBit IEEE 754 float in specified endian"
+                },
                 {"name": "16", "args": "", "params": "", "call": "d.tryFEndian(16, d.Endian)", "doc": "16 bit IEEE 754 float in current endian"},
                 {"name": "32", "args": "", "params": "", "call": "d.tryFEndian(32, d.Endian)", "doc": "32 bit IEEE 754 float in current endian"},
                 {"name": "64", "args": "", "params": "", "call": "d.tryFEndian(64, d.Endian)", "doc": "64 bit IEEE 754 float in current endian"},

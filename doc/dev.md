@@ -150,11 +150,7 @@ aheadreadseeker.Reader does readahead caching
 ^
 | (io.ReadSeeker interface)
 |
-bitio.Reader (implements bitio.Bit* interfaces)
-^
-| (bitio.Bit* interfaces)
-|
-bitio.Buffer convenience wrapper to read bytes from bit reader, create section readers etc
+bitio.IOBitReader (implements bitio.Bit* interfaces)
 SectionBitReader
 MultiBitReader
 ```

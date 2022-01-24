@@ -31,19 +31,19 @@ func (s S) SymBigInt() *big.Int {
 // Type BitBuf
 
 // ActualBitBuf asserts actual value is a BitBuf and returns it
-func (s S) ActualBitBuf() *bitio.Buffer {
-	v, ok := s.Actual.(*bitio.Buffer)
+func (s S) ActualBitBuf() bitio.ReaderAtSeeker {
+	v, ok := s.Actual.(bitio.ReaderAtSeeker)
 	if !ok {
-		panic(fmt.Sprintf("failed to type assert s.Actual %v as *bitio.Buffer", s.Actual))
+		panic(fmt.Sprintf("failed to type assert s.Actual %v as bitio.ReaderAtSeeker", s.Actual))
 	}
 	return v
 }
 
 // SymBitBuf asserts symbolic value is a BitBuf and returns it
-func (s S) SymBitBuf() *bitio.Buffer {
-	v, ok := s.Sym.(*bitio.Buffer)
+func (s S) SymBitBuf() bitio.ReaderAtSeeker {
+	v, ok := s.Sym.(bitio.ReaderAtSeeker)
 	if !ok {
-		panic(fmt.Sprintf("failed to type assert s.Sym %v as *bitio.Buffer", s.Sym))
+		panic(fmt.Sprintf("failed to type assert s.Sym %v as bitio.ReaderAtSeeker", s.Sym))
 	}
 	return v
 }

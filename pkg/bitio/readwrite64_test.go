@@ -12,8 +12,8 @@ import (
 func TestRead64(t *testing.T) {
 	testCases := []struct {
 		buf      []byte
-		firstBit int
-		nBits    int
+		firstBit int64
+		nBits    int64
 		expected uint64
 	}{
 		{buf: []byte{0xff}, firstBit: 0, nBits: 8, expected: 0b11111111},
@@ -93,9 +93,9 @@ func TestRead64(t *testing.T) {
 func TestWrite64(t *testing.T) {
 	testCases := []struct {
 		v           uint64
-		nBits       int
+		nBits       int64
 		buf         []byte
-		firstBit    int
+		firstBit    int64
 		expectedBuf []byte
 	}{
 		{0x0123456789abcdef, 8, []byte{0, 0, 0, 0, 0, 0, 0, 0}, 0, []byte{0xef, 0x00, 0x00, 0x0, 0x0, 0x00, 0x00, 0x00}},
@@ -141,47 +141,6 @@ func TestWrite64(t *testing.T) {
 			bitio.Write64(tC.v, tC.nBits, tC.buf, tC.firstBit)
 			if !bytes.Equal(tC.expectedBuf, tC.buf) {
 				t.Errorf("expected %s, got %s", hex.EncodeToString(tC.expectedBuf), hex.EncodeToString(tC.buf))
-			}
-		})
-	}
-}
-
-// func TestWrite64(t *testing.T) {
-
-// 	b := make([]byte, 2)
-
-// 	bitio.Write64(0xf, 4, b, 0)
-
-// }
-
-func TestUint64Panic(t *testing.T) {
-	// TODO: check panic string
-	defer func() { _ = recover() }()
-	bitio.Read64([]byte{}, 0, 65)
-	t.Error("should panic")
-}
-
-func TestUint64ReverseBytes(t *testing.T) {
-	testCases := []struct {
-		nBits    int
-		n        uint64
-		expected uint64
-	}{
-		{nBits: 0, n: 0, expected: 0},
-		{nBits: 8, n: 0x01, expected: 0x01},
-		{nBits: 16, n: 0x0123, expected: 0x2301},
-		{nBits: 24, n: 0x012345, expected: 0x452301},
-		{nBits: 32, n: 0x01234567, expected: 0x67452301},
-		{nBits: 40, n: 0x0123456789, expected: 0x8967452301},
-		{nBits: 48, n: 0x0123456789ab, expected: 0xab8967452301},
-		{nBits: 56, n: 0x0123456789abcd, expected: 0xcdab8967452301},
-		{nBits: 64, n: 0x0123456789abcdef, expected: 0xefcdab8967452301},
-	}
-	for _, tC := range testCases {
-		t.Run(fmt.Sprintf("%d %x %x", tC.nBits, tC.n, tC.expected), func(t *testing.T) {
-			actual := bitio.Uint64ReverseBytes(tC.nBits, tC.n)
-			if tC.expected != actual {
-				t.Errorf("expected %x, got %x", tC.expected, actual)
 			}
 		})
 	}

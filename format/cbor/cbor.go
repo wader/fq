@@ -135,17 +135,14 @@ func decodeCBORValue(d *decode.D) interface{} {
 						})
 					}
 				})
-				d.FieldRootBitBuf("value", bitio.NewBufferFromBytes(bb.Bytes(), -1))
+				d.FieldRootBitBuf("value", bitio.NewBitReader(bb.Bytes(), -1))
 				// nil, nested indefinite bytes is not allowed
 				return nil
 			}
 
-			bib := d.FieldRawLen("value", int64(count)*8)
-			bs, err := bib.Bytes()
-			if err != nil {
-				d.IOPanic(err, "bytes bb.Bytes")
-			}
-			return bs
+			buf := d.MustReadAllBits(d.FieldRawLen("value", int64(count)*8))
+
+			return buf
 		}},
 		majorTypeUTF8: {s: scalar.S{Sym: "utf8"}, d: func(d *decode.D, shortCount uint64, count uint64) interface{} {
 			if shortCount == shortCountIndefinite {

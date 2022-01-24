@@ -114,7 +114,7 @@ func decoratorFromOptions(opts Options) Decorator {
 					return d.True
 				}
 				return d.False
-			case string, *bitio.Buffer:
+			case string, bitio.Reader:
 				return d.String
 			case nil:
 				return d.Null

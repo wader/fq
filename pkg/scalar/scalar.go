@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/wader/fq/internal/bitioextra"
 	"github.com/wader/fq/pkg/bitio"
 )
 
@@ -41,7 +42,7 @@ func (df DisplayFormat) FormatBase() int {
 }
 
 type S struct {
-	Actual        interface{} // int, int64, uint64, float64, string, bool, []byte, *bitio.Buffer
+	Actual        interface{} // int, int64, uint64, float64, string, bool, []byte, bitio.BitReaderAtSeeker,
 	ActualDisplay DisplayFormat
 	Sym           interface{}
 	SymDisplay    DisplayFormat
@@ -140,55 +141,6 @@ func StrFToSym(base int) Mapper {
 	return strMapToSym(func(s string) (interface{}, error) { return strconv.ParseFloat(s, base) })
 }
 
-//nolint:unparam
-func rawSym(s S, nBytes int, fn func(b []byte) string) (S, error) {
-	bb, ok := s.Actual.(*bitio.Buffer)
-	if !ok {
-		return s, nil
-	}
-	bbLen := bb.Len()
-	if nBytes < 0 {
-		nBytes = int(bbLen) / 8
-		if bbLen%8 != 0 {
-			nBytes++
-		}
-	}
-	if bbLen < int64(nBytes)*8 {
-		return s, nil
-	}
-	// TODO: shared somehow?
-	b := make([]byte, nBytes)
-	if _, err := bb.ReadBitsAt(b, nBytes*8, 0); err != nil {
-		return s, err
-	}
-
-	s.Sym = fn(b[0:nBytes])
-
-	return s, nil
-}
-
-var RawSym = Fn(func(s S) (S, error) {
-	return rawSym(s, -1, func(b []byte) string {
-		return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
-	})
-})
-
-var RawUUID = Fn(func(s S) (S, error) {
-	return rawSym(s, -1, func(b []byte) string {
-		return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
-	})
-})
-
-var RawHex = Fn(func(s S) (S, error) {
-	return rawSym(s, -1, func(b []byte) string { return fmt.Sprintf("%x", b) })
-})
-
-var RawHexReverse = Fn(func(s S) (S, error) {
-	return rawSym(s, -1, func(b []byte) string {
-		return fmt.Sprintf("%x", bitio.ReverseBytes(append([]byte{}, b...)))
-	})
-})
-
 type URangeEntry struct {
 	Range [2]uint64
 	S     S
@@ -238,18 +190,57 @@ func (rs SRangeToScalar) MapScalar(s S) (S, error) {
 	return s, nil
 }
 
+func rawSym(s S, nBytes int, fn func(b []byte) string) (S, error) {
+	br, ok := s.Actual.(bitio.ReadAtSeeker)
+	if !ok {
+		return s, nil
+	}
+	brLen, err := bitioextra.Len(br)
+	if err != nil {
+		return S{}, err
+	}
+	if nBytes < 0 {
+		nBytes = int(brLen) / 8
+		if brLen%8 != 0 {
+			nBytes++
+		}
+	}
+	if brLen < int64(nBytes)*8 {
+		return s, nil
+	}
+	// TODO: shared somehow?
+	b := make([]byte, nBytes)
+	if _, err := br.ReadBitsAt(b, int64(nBytes)*8, 0); err != nil {
+		return s, err
+	}
+
+	s.Sym = fn(b[0:nBytes])
+
+	return s, nil
+}
+
+var RawUUID = Fn(func(s S) (S, error) {
+	return rawSym(s, -1, func(b []byte) string {
+		return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
+	})
+})
+
+var RawHex = Fn(func(s S) (S, error) {
+	return rawSym(s, -1, func(b []byte) string { return fmt.Sprintf("%x", b) })
+})
+
 type BytesToScalar []struct {
 	Bytes  []byte
 	Scalar S
 }
 
 func (m BytesToScalar) MapScalar(s S) (S, error) {
-	ab, err := s.ActualBitBuf().Bytes()
-	if err != nil {
+	bb := &bytes.Buffer{}
+	if _, err := bitioextra.CopyBits(bb, s.ActualBitBuf()); err != nil {
 		return s, err
 	}
 	for _, bs := range m {
-		if bytes.Equal(ab, bs.Bytes) {
+		if bytes.Equal(bb.Bytes(), bs.Bytes) {
 			ns := bs.Scalar
 			ns.Actual = s.Actual
 			s = ns

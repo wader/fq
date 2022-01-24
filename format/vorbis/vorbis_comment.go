@@ -42,14 +42,14 @@ func commentDecode(d *decode.D, in interface{}) interface{} {
 
 			base64Offset := int64(len(metadataBlockPicturePreix)) * 8
 			base64Len := int64(len(userComment))*8 - base64Offset
-			_, base64BB, dv, _, _ := d.TryFieldReaderRangeFormat(
+			_, base64Br, dv, _, _ := d.TryFieldReaderRangeFormat(
 				"picture",
 				userCommentStart+base64Offset, base64Len,
 				func(r io.Reader) io.Reader { return base64.NewDecoder(base64.StdEncoding, r) },
 				flacPicture, nil,
 			)
-			if dv == nil && base64BB != nil {
-				d.FieldRootBitBuf("picture", base64BB)
+			if dv == nil && base64Br != nil {
+				d.FieldRootBitBuf("picture", base64Br)
 			}
 		}
 		i++

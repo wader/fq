@@ -35,7 +35,7 @@ func previewValue(v interface{}, df scalar.DisplayFormat) string {
 		return fmt.Sprintf("%q", vv)
 	case nil:
 		return "null"
-	case *bitio.Buffer:
+	case bitio.Reader:
 		return "raw bits"
 	case *big.Int:
 		return mathextra.PadFormatBigInt(vv, df.FormatBase(), true, 0)
