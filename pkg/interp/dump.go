@@ -152,7 +152,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 			if vv.Sym == nil {
 				cfmt(colField, " %s", deco.ValueColor(vv.Actual).F(previewValue(vv.Actual, vv.ActualDisplay)))
 			} else {
-				cfmt(colField, " %s", deco.ValueColor(vv.Actual).F(previewValue(vv.Sym, vv.SymDisplay)))
+				cfmt(colField, " %s", deco.ValueColor(vv.Sym).F(previewValue(vv.Sym, vv.SymDisplay)))
 				cfmt(colField, " (%s)", deco.ValueColor(vv.Actual).F(previewValue(vv.Actual, vv.ActualDisplay)))
 			}
 
