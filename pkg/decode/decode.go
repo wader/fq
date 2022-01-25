@@ -989,7 +989,11 @@ func (d *D) TryFieldScalarFn(name string, sfn scalar.Fn, sms ...scalar.Mapper) (
 	if err != nil {
 		return &scalar.S{}, err
 	}
-	return v.V.(*scalar.S), nil
+	sr, ok := v.V.(*scalar.S)
+	if !ok {
+		panic("not a scalar value")
+	}
+	return sr, nil
 }
 
 func (d *D) FieldScalarFn(name string, sfn scalar.Fn, sms ...scalar.Mapper) *scalar.S {
