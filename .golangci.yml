@@ -30,6 +30,8 @@ linters-settings:
       - rela
       - equalisation
       - synchronisation
+  exhaustive:
+    default-signifies-exhaustive: true
   gosec:
     excludes:
       # allow md5

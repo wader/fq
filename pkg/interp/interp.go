@@ -965,10 +965,17 @@ func (i *Interp) lookupState(key string) interface{} {
 }
 
 func (i *Interp) includePaths() []string {
-	pathsAny, _ := i.lookupState("include_paths").([]interface{})
+	pathsAny, ok := i.lookupState("include_paths").([]interface{})
+	if !ok {
+		panic("include_paths not slice")
+	}
 	var paths []string
 	for _, pathAny := range pathsAny {
-		paths = append(paths, pathAny.(string))
+		path, ok := pathAny.(string)
+		if !ok {
+			panic("path not string")
+		}
+		paths = append(paths, path)
 	}
 	return paths
 }
