@@ -16,7 +16,7 @@ var mp3Frame decode.Group
 
 // TODO: format options default
 const maxUniqueHeaderConfigs = 5
-const maxSyncSeek = 64 * 1024 * 8
+const maxSyncSeek = 4 * 1024 * 8
 
 func init() {
 	registry.MustRegister(decode.Format{
