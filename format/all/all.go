@@ -39,6 +39,7 @@ import (
 	_ "github.com/wader/fq/format/ogg"
 	_ "github.com/wader/fq/format/opus"
 	_ "github.com/wader/fq/format/pcap"
+	_ "github.com/wader/fq/format/pdf"
 	_ "github.com/wader/fq/format/png"
 	_ "github.com/wader/fq/format/postgres"
 	_ "github.com/wader/fq/format/prores"
