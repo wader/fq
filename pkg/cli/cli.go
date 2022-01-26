@@ -224,7 +224,7 @@ func (o *stdOS) Close() error {
 	return nil
 }
 
-func Main(r *registry.Registry, version string) {
+func Main(r *registry.Registry, version string, osStr string, archStr string) {
 	os.Exit(func() int {
 		defer maybeProfile()()
 		maybeLogFile()
@@ -238,7 +238,7 @@ func Main(r *registry.Registry, version string) {
 			return 1
 		}
 
-		if err := i.Main(context.Background(), sos.Stdout(), version); err != nil {
+		if err := i.Main(context.Background(), sos.Stdout(), version, osStr, archStr); err != nil {
 			if ex, ok := err.(interp.Exiter); ok { //nolint:errorlint
 				return ex.ExitCode()
 			}

@@ -359,7 +359,7 @@ func (i *Interp) Stop() {
 	i.interruptStack.Stop()
 }
 
-func (i *Interp) Main(ctx context.Context, output Output, version string) error {
+func (i *Interp) Main(ctx context.Context, output Output, versionStr string, osStr string, archStr string) error {
 	var args []interface{}
 	for _, a := range i.os.Args() {
 		args = append(args, a)
@@ -367,7 +367,9 @@ func (i *Interp) Main(ctx context.Context, output Output, version string) error 
 
 	input := map[string]interface{}{
 		"args":    args,
-		"version": version,
+		"version": versionStr,
+		"os":      osStr,
+		"arch":    archStr,
 	}
 
 	iter, err := i.EvalFunc(ctx, input, "_main", nil, output)

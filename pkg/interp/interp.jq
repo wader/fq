@@ -180,7 +180,7 @@ def _main:
     );
   def _usage($arg0):
     "Usage: \($arg0) [OPTIONS] [--] [EXPR] [FILE...]";
-  ( . as {$version, $args, args: [$arg0]}
+  ( . as {$version, $os, $arch, $args, args: [$arg0]}
   # make sure we don't unintentionally use . to make things clearer
   | null
   | ( try _args_parse($args[1:]; _opt_cli_opts)
@@ -303,7 +303,7 @@ def _main:
       , args_help_text(_opt_cli_opts)
       ) | println
     elif $opts.show_version then
-      $version | println
+      "\($version) (\($os) \($arch))" | println
     elif $opts.show_formats then
       _formats_list | println
     elif
