@@ -214,7 +214,7 @@ def _opt_cli_opts:
     "null_input": {
       short: "-n",
       long: "--null-input",
-      description: "Null input (use input/0 and inputs/0 to read input)",
+      description: "Null input (use input and inputs functions to read input)",
       bool: true
     },
     "monochrome_output": {
@@ -226,7 +226,7 @@ def _opt_cli_opts:
     "option": {
       short: "-o",
       long: "--option",
-      description: "Set option, eg: color=true (use options/0 to see all options)",
+      description: "Set option, eg: color=true (use options function to see all options)",
       object: "KEY=VALUE",
     },
     "string_input": {
