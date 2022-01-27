@@ -1,0 +1,11 @@
+$ fq -d kaitai -o source=@formats/float_to_i.ksy "d,tovalue({skip_gaps: true})" src/floating_points.bin
+{
+  "double_i": 0,
+  "double_value": 0.25,
+  "float1_i": 1,
+  "float2_i": 1,
+  "float3_i": 1,
+  "float4_i": -2,
+  "single_i": 0,
+  "single_value": 0.5
+}

@@ -1,0 +1,7 @@
+$ fq -d kaitai -o source=@formats/nested_type_param.ksy "d,tovalue({skip_gaps: true})" src/term_strz.bin
+{
+  "main_seq": {
+    "body": "foo|b",
+    "my_len": 5
+  }
+}

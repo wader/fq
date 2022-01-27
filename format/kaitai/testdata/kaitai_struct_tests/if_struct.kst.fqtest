@@ -1,0 +1,22 @@
+$ fq -d kaitai -o source=@formats/if_struct.ksy "d,tovalue({skip_gaps: true})" src/if_struct.bin
+{
+  "op1": {
+    "arg_str": {
+      "str": "foo"
+    },
+    "opcode": 83
+  },
+  "op2": {
+    "arg_tuple": {
+      "num1": 66,
+      "num2": 67
+    },
+    "opcode": 84
+  },
+  "op3": {
+    "arg_str": {
+      "str": "bar"
+    },
+    "opcode": 83
+  }
+}

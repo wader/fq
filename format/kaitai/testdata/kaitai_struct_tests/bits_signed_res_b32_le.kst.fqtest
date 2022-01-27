@@ -1,0 +1,4 @@
+$ fq -d kaitai -o source=@formats/bits_signed_res_b32_le.ksy "d,tovalue({skip_gaps: true})" src/bits_shift_by_b32_le.bin
+{
+  "a": 4294967295
+}

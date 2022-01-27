@@ -1,0 +1,14 @@
+id: nested_types3
+data: fixed_struct.bin
+asserts:
+  - actual: a_cc.value_cc
+    expected: 80
+  - actual: a_c_d.value_d
+    expected: 65
+
+  - actual: b.value_b
+    expected: 67
+  - actual: b.a_cc.value_cc
+    expected: 75
+  - actual: b.a_c_d.value_d
+    expected: 45

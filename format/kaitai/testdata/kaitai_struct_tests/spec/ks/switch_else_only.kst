@@ -1,0 +1,9 @@
+id: switch_else_only
+data: switch_opcodes.bin
+asserts:
+  - actual: opcode
+    expected: 0x53
+  - actual: prim_byte
+    expected: 0x66
+  - actual: ut.value
+    expected: '[0x72, 0x00, 0x49, 0x42]'

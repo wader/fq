@@ -1,0 +1,41 @@
+id: expr_2
+data: str_encodings.bin
+asserts:
+  - actual: str1.len_orig
+    expected: 10
+  - actual: str1.len_mod
+    expected: 7
+  - actual: str1.str
+    expected: '"Some AS"'
+
+  - actual: str1_len
+    expected: 7
+  - actual: str1_len_mod
+    expected: 7
+  - actual: str1_byte1
+    expected: 0x49
+  - actual: str1_avg
+    expected: 0x49
+  - actual: str1_char5
+    expected: '"e"'
+
+  - actual: str1_tuple5.byte0
+    expected: 0x65
+
+  - actual: str1_tuple5.byte0
+    expected: 0x65
+  - actual: str1_tuple5.byte1
+    expected: 0x20
+  - actual: str1_tuple5.byte2
+    expected: 0x41
+  - actual: str1_tuple5.avg
+    expected: 0x30
+
+  - actual: str2_tuple5.byte0
+    expected: 0x65
+  - actual: str2_tuple5.byte1
+    expected: 0x20
+  - actual: str2_tuple5.byte2
+    expected: 0x41
+  - actual: str2_tuple5.avg
+    expected: 0x30

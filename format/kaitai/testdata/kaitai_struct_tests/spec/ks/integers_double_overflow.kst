@@ -1,0 +1,19 @@
+id: integers_double_overflow
+data: integers_double_overflow.bin
+asserts:
+  - actual: signed_safe_min_be
+    expected: -9007199254740991
+  - actual: signed_safe_min_le
+    expected: -9007199254740991
+  - actual: signed_safe_max_be
+    expected: 9007199254740991
+  - actual: signed_safe_max_le
+    expected: 9007199254740991
+  - actual: signed_unsafe_neg_be.to_s
+    expected: '"-9007199254740993"'
+  - actual: signed_unsafe_neg_le.to_s
+    expected: '"-9007199254740993"'
+  - actual: signed_unsafe_pos_be.to_s
+    expected: '"9007199254740993"'
+  - actual: signed_unsafe_pos_be.to_s
+    expected: '"9007199254740993"'

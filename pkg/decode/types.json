@@ -1,593 +1,614 @@
 {
     "types": {
         "Any": {
-            "go_type": "any",
-            "zero": "nil",
-            "map_from": false,
-            "map_to": false,
+            "go_type": "any", 
+            "zero": "nil", 
+            "map_from": false, 
+            "map_to": false, 
             "display_format": false
-        },
+        }, 
         "BitBuf": {
-            "go_type": "bitio.ReaderAtSeeker",
-            "zero": "nil",
-            "map_from": false,
-            "map_to": false,
+            "go_type": "bitio.ReaderAtSeeker", 
+            "zero": "nil", 
+            "map_from": false, 
+            "map_to": false, 
             "display_format": false
-        },
+        }, 
         "BigInt": {
-            "go_type": "*big.Int",
-            "zero": "nil",
-            "map_from": false,
-            "map_to": false,
-            "display_format": true,
-            "compare": "a.Cmp(b) == 0",
+            "go_type": "*big.Int", 
+            "zero": "nil", 
+            "map_from": false, 
+            "map_to": false, 
+            "display_format": true, 
+            "compare": "a.Cmp(b) == 0", 
             "range": "a.Cmp(start) >= 0 && a.Cmp(end) <= 0"
-        },
+        }, 
         "Bool": {
-            "go_type": "bool",
-            "zero": "false",
-            "map_from": true,
-            "map_to": true,
-            "compare": "a == b",
+            "go_type": "bool", 
+            "zero": "false", 
+            "map_from": true, 
+            "map_to": true, 
+            "compare": "a == b", 
             "display_format": false
-        },
+        }, 
         "Flt": {
-            "go_type": "float64",
-            "zero": "0",
-            "map_from": false,
-            "map_to": true,
-            "compare": "a == b",
-            "range": "a >= start && a <= end",
+            "go_type": "float64", 
+            "zero": "0", 
+            "map_from": false, 
+            "map_to": true, 
+            "compare": "a == b", 
+            "range": "a >= start && a <= end", 
             "display_format": false
-        },
+        }, 
         "Str": {
-            "go_type": "string",
-            "zero": "\"\"",
-            "map_from": true,
-            "map_to": true,
-            "compare": "a == b",
-            "range": "a >= start && a <= end",
+            "go_type": "string", 
+            "zero": "\"\"", 
+            "map_from": true, 
+            "map_to": true, 
+            "compare": "a == b", 
+            "range": "a >= start && a <= end", 
             "display_format": false
-        },
+        }, 
         "Uint": {
-            "go_type": "uint64",
-            "zero": "0",
-            "map_from": true,
-            "map_to": true,
-            "compare": "a == b",
-            "range": "a >= start && a <= end",
+            "go_type": "uint64", 
+            "zero": "0", 
+            "map_from": true, 
+            "map_to": true, 
+            "compare": "a == b", 
+            "range": "a >= start && a <= end", 
             "display_format": true
-        },
+        }, 
         "Sint": {
-            "go_type": "int64",
-            "zero": "0",
-            "map_from": true,
-            "map_to": true,
-            "compare": "a == b",
-            "range": "a >= start && a <= end",
+            "go_type": "int64", 
+            "zero": "0", 
+            "map_from": true, 
+            "map_to": true, 
+            "compare": "a == b", 
+            "range": "a >= start && a <= end", 
             "display_format": true
         }
-    },
+    }, 
     "readers": [
         {
-            "name": "Raw",
-            "type": "BitBuf",
+            "name": "Raw", 
+            "type": "BitBuf", 
             "variants": [
                 {
-                    "name"  : "Len"               ,
-                    "args"  : "nBits"             ,
-                    "params": "nBits int64"       ,
-                    "call"  : "d.tryBitBuf(nBits)",
-                    "doc"   : "nBits raw bits"
+                    "name"  : "Len"               , 
+                    "args"  : "nBits"             , 
+                    "params": "nBits int64"       , 
+                    "call"  : "d.tryBitBuf(nBits)", 
+                    "doc"   : "nBits raw bits"      
                 }
             ]
-        },
+        }, 
         {
-            "name": "Bool",
-            "type": "Bool",
+            "name": "Bool", 
+            "type": "Bool", 
             "variants": [
                 {
-                    "name"  : ""             ,
-                    "args"  : ""             ,
-                    "params": ""             ,
-                    "call"  : "d.tryBool()"  ,
-                    "doc"   : "1 bit boolean"
+                    "name"  : ""                   , 
+                    "args"  : ""                   , 
+                    "params": ""                   , 
+                    "call"  : "d.tryBool(d.Endian)", 
+                    "doc"   : "1 bit boolean"        
+                }, 
+                {
+                    "name"  : "E"                                    , 
+                    "args"  : "endian"                               , 
+                    "params": "endian Endian"                        , 
+                    "call"  : "d.tryBool(endian)"                    , 
+                    "doc"   : "1 bit boolean in specified bit-endian"  
+                }, 
+                {
+                    "name"  : "LE"                             , 
+                    "args"  : ""                               , 
+                    "params": ""                               , 
+                    "call"  : "d.tryBool(d.Endian)"            , 
+                    "doc"   : "1 bit boolean bit-little-endian"  
+                }, 
+                {
+                    "name"  : "BE"                          , 
+                    "args"  : ""                            , 
+                    "params": ""                            , 
+                    "call"  : "d.tryBool(d.Endian)"         , 
+                    "doc"   : "1 bit boolean bit-big-endian"  
                 }
             ]
-        },
+        }, 
         {
-            "name": "U",
-            "type": "Uint",
+            "name": "U", 
+            "type": "Uint", 
             "variants": [
                 {
-                    "name"  : ""                                             ,
-                    "args"  : "nBits"                                        ,
-                    "params": "nBits int"                                    ,
-                    "call"  : "d.tryUEndian(nBits, d.Endian)"                ,
-                    "doc"   : "nBits bits unsigned integer in current endian"
-                },
+                    "name"  : ""                                             , 
+                    "args"  : "nBits"                                        , 
+                    "params": "nBits int"                                    , 
+                    "call"  : "d.tryUEndian(nBits, d.Endian)"                , 
+                    "doc"   : "nBits bits unsigned integer in current endian"  
+                }, 
                 {
-                    "name"  : "E"                                         ,
-                    "args"  : "nBits, endian"                             ,
-                    "params": "nBits int, endian Endian"                  ,
-                    "call"  : "d.tryUEndian(nBits, endian)"               ,
-                    "doc"   : "nBits unsigned integer in specified endian"
-                },
+                    "name"  : "E"                                         , 
+                    "args"  : "nBits, endian"                             , 
+                    "params": "nBits int, endian Endian"                  , 
+                    "call"  : "d.tryUEndian(nBits, endian)"               , 
+                    "doc"   : "nBits unsigned integer in specified endian"  
+                }, 
                 {
-                    "name": "$n",
-                    "range": [1, 65],
-                    "args": "",
-                    "params": "",
-                    "call": "d.tryUEndian($n, d.Endian)",
+                    "name": "$n", 
+                    "range": [1, 65], 
+                    "args": "", 
+                    "params": "", 
+                    "call": "d.tryUEndian($n, d.Endian)", 
                     "doc": "$n bit unsigned integer in current endian"
-                },
+                }, 
                 {
-                    "name": "$nLE",
-                    "range": [8, 65],
-                    "args": "",
-                    "params": "",
-                    "call": "d.tryUEndian($n, LittleEndian)",
+                    "name": "$nLE", 
+                    "range": [8, 65], 
+                    "args": "", 
+                    "params": "", 
+                    "call": "d.tryUEndian($n, LittleEndian)", 
                     "doc": "$n bit unsigned integer in little-endian"
-                },
+                }, 
                 {
-                    "name": "$nBE",
-                    "range": [8, 65],
-                    "args": "",
-                    "params": "",
-                    "call": "d.tryUEndian($n, BigEndian)",
+                    "name": "$nBE", 
+                    "range": [8, 65], 
+                    "args": "", 
+                    "params": "", 
+                    "call": "d.tryUEndian($n, BigEndian)", 
                     "doc": "$n bit unsigned integer in big-endian"
                 }
             ]
-        },
+        }, 
         {
-            "name": "S",
-            "type": "Sint",
+            "name": "S", 
+            "type": "Sint", 
             "variants": [
                 {
-                    "name"  : ""                                           ,
-                    "args"  : "nBits"                                      ,
-                    "params": "nBits int"                                  ,
-                    "call"  : "d.trySEndian(nBits, d.Endian)"              ,
-                    "doc"   : "nBits bits signed integer in current endian"
-                },
+                    "name"  : ""                                           , 
+                    "args"  : "nBits"                                      , 
+                    "params": "nBits int"                                  , 
+                    "call"  : "d.trySEndian(nBits, d.Endian)"              , 
+                    "doc"   : "nBits bits signed integer in current endian"  
+                }, 
                 {
-                    "name"  : "E"                                       ,
-                    "args"  : "nBits, endian"                           ,
-                    "params": "nBits int, endian Endian"                ,
-                    "call"  : "d.trySEndian(nBits, endian)"             ,
-                    "doc"   : "nBits signed integer in specified endian"
-                },
+                    "name"  : "E"                                       , 
+                    "args"  : "nBits, endian"                           , 
+                    "params": "nBits int, endian Endian"                , 
+                    "call"  : "d.trySEndian(nBits, endian)"             , 
+                    "doc"   : "nBits signed integer in specified endian"  
+                }, 
                 {
-                    "name": "$n",
-                    "range": [1, 65],
-                    "args": "",
-                    "params": "",
-                    "call": "d.trySEndian($n, d.Endian)",
+                    "name": "$n", 
+                    "range": [1, 65], 
+                    "args": "", 
+                    "params": "", 
+                    "call": "d.trySEndian($n, d.Endian)", 
                     "doc": "$n bit signed integer in current endian"
-                },
+                }, 
                 {
-                    "name": "$nLE",
-                    "range": [8, 65],
-                    "args": "",
-                    "params": "",
-                    "call": "d.trySEndian($n, LittleEndian)",
+                    "name": "$nLE", 
+                    "range": [8, 65], 
+                    "args": "", 
+                    "params": "", 
+                    "call": "d.trySEndian($n, LittleEndian)", 
                     "doc": "$n bit signed integer in little-endian"
-                },
+                }, 
                 {
-                    "name": "$nBE",
-                    "range": [8, 65],
-                    "args": "",
-                    "params": "",
-                    "call": "d.trySEndian($n, BigEndian)",
+                    "name": "$nBE", 
+                    "range": [8, 65], 
+                    "args": "", 
+                    "params": "", 
+                    "call": "d.trySEndian($n, BigEndian)", 
                     "doc": "$n bit signed integer in big-endian"
                 }
             ]
-        },
+        }, 
         {
-            "name": "UBigInt",
-            "type": "BigInt",
+            "name": "UBigInt", 
+            "type": "BigInt", 
             "variants": [
                 {
-                    "name"  : ""                                             ,
-                    "args"  : "nBits"                                        ,
-                    "params": "nBits int"                                    ,
-                    "call"  : "d.tryBigIntEndianSign(nBits, d.Endian, false)",
-                    "doc"   : "nBits bits signed integer in current endian"
-                },
+                    "name"  : ""                                             , 
+                    "args"  : "nBits"                                        , 
+                    "params": "nBits int"                                    , 
+                    "call"  : "d.tryBigIntEndianSign(nBits, d.Endian, false)", 
+                    "doc"   : "nBits bits signed integer in current endian"    
+                }, 
                 {
-                    "name"  : "E"                                          ,
-                    "args"  : "nBits, endian"                              ,
-                    "params": "nBits int, endian Endian"                   ,
-                    "call"  : "d.tryBigIntEndianSign(nBits, endian, false)",
-                    "doc"   : "nBits signed integer in specified endian"
-                },
+                    "name"  : "E"                                          , 
+                    "args"  : "nBits, endian"                              , 
+                    "params": "nBits int, endian Endian"                   , 
+                    "call"  : "d.tryBigIntEndianSign(nBits, endian, false)", 
+                    "doc"   : "nBits signed integer in specified endian"     
+                }, 
                 {
-                    "name": "LE",
-                    "args": "nBits",
-                    "params": "nBits int",
-                    "call": "d.tryBigIntEndianSign(nBits, LittleEndian, false)",
+                    "name": "LE", 
+                    "args": "nBits", 
+                    "params": "nBits int", 
+                    "call": "d.tryBigIntEndianSign(nBits, LittleEndian, false)", 
                     "doc": "nBits bit signed integer in little-endian"
-                },
+                }, 
                 {
-                    "name"  : "BE"                                            ,
-                    "args"  : "nBits"                                         ,
-                    "params": "nBits int"                                     ,
-                    "call"  : "d.tryBigIntEndianSign(nBits, BigEndian, false)",
-                    "doc"   : "nBits bit signed integer in big-endian"
+                    "name"  : "BE"                                            , 
+                    "args"  : "nBits"                                         , 
+                    "params": "nBits int"                                     , 
+                    "call"  : "d.tryBigIntEndianSign(nBits, BigEndian, false)", 
+                    "doc"   : "nBits bit signed integer in big-endian"          
                 }
             ]
-        },
+        }, 
         {
-            "name": "SBigInt",
-            "type": "BigInt",
+            "name": "SBigInt", 
+            "type": "BigInt", 
             "variants": [
                 {
-                    "name"  : ""                                            ,
-                    "args"  : "nBits"                                       ,
-                    "params": "nBits int"                                   ,
-                    "call"  : "d.tryBigIntEndianSign(nBits, d.Endian, true)",
-                    "doc"   : "nBits bits signed integer in current endian"
-                },
+                    "name"  : ""                                            , 
+                    "args"  : "nBits"                                       , 
+                    "params": "nBits int"                                   , 
+                    "call"  : "d.tryBigIntEndianSign(nBits, d.Endian, true)", 
+                    "doc"   : "nBits bits signed integer in current endian"   
+                }, 
                 {
-                    "name"  : "E"                                         ,
-                    "args"  : "nBits, endian"                             ,
-                    "params": "nBits int, endian Endian"                  ,
-                    "call"  : "d.tryBigIntEndianSign(nBits, endian, true)",
-                    "doc"   : "nBits signed integer in specified endian"
-                },
+                    "name"  : "E"                                         , 
+                    "args"  : "nBits, endian"                             , 
+                    "params": "nBits int, endian Endian"                  , 
+                    "call"  : "d.tryBigIntEndianSign(nBits, endian, true)", 
+                    "doc"   : "nBits signed integer in specified endian"    
+                }, 
                 {
-                    "name": "LE",
-                    "args": "nBits",
-                    "params": "nBits int",
-                    "call": "d.tryBigIntEndianSign(nBits, LittleEndian, true)",
+                    "name": "LE", 
+                    "args": "nBits", 
+                    "params": "nBits int", 
+                    "call": "d.tryBigIntEndianSign(nBits, LittleEndian, true)", 
                     "doc": "nBits bit signed integer in little-endian"
-                },
+                }, 
                 {
-                    "name"  : "BE"                                           ,
-                    "args"  : "nBits"                                        ,
-                    "params": "nBits int"                                    ,
-                    "call"  : "d.tryBigIntEndianSign(nBits, BigEndian, true)",
-                    "doc"   : "nBits bit signed integer in big-endian"
+                    "name"  : "BE"                                           , 
+                    "args"  : "nBits"                                        , 
+                    "params": "nBits int"                                    , 
+                    "call"  : "d.tryBigIntEndianSign(nBits, BigEndian, true)", 
+                    "doc"   : "nBits bit signed integer in big-endian"         
                 }
             ]
-        },
+        }, 
         {
-            "name": "F",
-            "type": "Flt",
+            "name": "F", 
+            "type": "Flt", 
             "variants": [
                 {
-                    "name"  : ""                                     ,
-                    "args"  : "nBits"                                ,
-                    "params": "nBits int"                            ,
-                    "call"  : "d.tryFEndian(nBits, d.Endian)"        ,
-                    "doc"   : "nBit IEEE 754 float in current endian"
-                },
+                    "name"  : ""                                     , 
+                    "args"  : "nBits"                                , 
+                    "params": "nBits int"                            , 
+                    "call"  : "d.tryFEndian(nBits, d.Endian)"        , 
+                    "doc"   : "nBit IEEE 754 float in current endian"  
+                }, 
                 {
-                    "name"  : "E"                                      ,
-                    "args"  : "nBits, endian"                          ,
-                    "params": "nBits int, endian Endian"               ,
-                    "call"  : "d.tryFEndian(nBits, endian)"            ,
-                    "doc"   : "nBit IEEE 754 float in specified endian"
-                },
+                    "name"  : "E"                                      , 
+                    "args"  : "nBits, endian"                          , 
+                    "params": "nBits int, endian Endian"               , 
+                    "call"  : "d.tryFEndian(nBits, endian)"            , 
+                    "doc"   : "nBit IEEE 754 float in specified endian"  
+                }, 
                 {
-                    "name"  : "16"                                     ,
-                    "args"  : ""                                       ,
-                    "params": ""                                       ,
-                    "call"  : "d.tryFEndian(16, d.Endian)"             ,
-                    "doc"   : "16 bit IEEE 754 float in current endian"
-                },
+                    "name"  : "16"                                     , 
+                    "args"  : ""                                       , 
+                    "params": ""                                       , 
+                    "call"  : "d.tryFEndian(16, d.Endian)"             , 
+                    "doc"   : "16 bit IEEE 754 float in current endian"  
+                }, 
                 {
-                    "name"  : "32"                                     ,
-                    "args"  : ""                                       ,
-                    "params": ""                                       ,
-                    "call"  : "d.tryFEndian(32, d.Endian)"             ,
-                    "doc"   : "32 bit IEEE 754 float in current endian"
-                },
+                    "name"  : "32"                                     , 
+                    "args"  : ""                                       , 
+                    "params": ""                                       , 
+                    "call"  : "d.tryFEndian(32, d.Endian)"             , 
+                    "doc"   : "32 bit IEEE 754 float in current endian"  
+                }, 
                 {
-                    "name"  : "64"                                     ,
-                    "args"  : ""                                       ,
-                    "params": ""                                       ,
-                    "call"  : "d.tryFEndian(64, d.Endian)"             ,
-                    "doc"   : "64 bit IEEE 754 float in current endian"
-                },
+                    "name"  : "64"                                     , 
+                    "args"  : ""                                       , 
+                    "params": ""                                       , 
+                    "call"  : "d.tryFEndian(64, d.Endian)"             , 
+                    "doc"   : "64 bit IEEE 754 float in current endian"  
+                }, 
                 {
-                    "name"  : "80"                                     ,
-                    "args"  : ""                                       ,
-                    "params": ""                                       ,
-                    "call"  : "d.tryFEndian(80, d.Endian)"             ,
-                    "doc"   : "80 bit IEEE 754 float in current endian"
-                },
+                    "name"  : "80"                                     , 
+                    "args"  : ""                                       , 
+                    "params": ""                                       , 
+                    "call"  : "d.tryFEndian(80, d.Endian)"             , 
+                    "doc"   : "80 bit IEEE 754 float in current endian"  
+                }, 
                 {
-                    "name"  : "16LE"                                  ,
-                    "args"  : ""                                      ,
-                    "params": ""                                      ,
-                    "call"  : "d.tryFEndian(16, LittleEndian)"        ,
-                    "doc"   : "16 bit IEEE 754 float in little-endian"
-                },
+                    "name"  : "16LE"                                  , 
+                    "args"  : ""                                      , 
+                    "params": ""                                      , 
+                    "call"  : "d.tryFEndian(16, LittleEndian)"        , 
+                    "doc"   : "16 bit IEEE 754 float in little-endian"  
+                }, 
                 {
-                    "name"  : "32LE"                                  ,
-                    "args"  : ""                                      ,
-                    "params": ""                                      ,
-                    "call"  : "d.tryFEndian(32, LittleEndian)"        ,
-                    "doc"   : "32 bit IEEE 754 float in little-endian"
-                },
+                    "name"  : "32LE"                                  , 
+                    "args"  : ""                                      , 
+                    "params": ""                                      , 
+                    "call"  : "d.tryFEndian(32, LittleEndian)"        , 
+                    "doc"   : "32 bit IEEE 754 float in little-endian"  
+                }, 
                 {
-                    "name"  : "64LE"                                  ,
-                    "args"  : ""                                      ,
-                    "params": ""                                      ,
-                    "call"  : "d.tryFEndian(64, LittleEndian)"        ,
-                    "doc"   : "64 bit IEEE 754 float in little-endian"
-                },
+                    "name"  : "64LE"                                  , 
+                    "args"  : ""                                      , 
+                    "params": ""                                      , 
+                    "call"  : "d.tryFEndian(64, LittleEndian)"        , 
+                    "doc"   : "64 bit IEEE 754 float in little-endian"  
+                }, 
                 {
-                    "name"  : "80LE"                                  ,
-                    "args"  : ""                                      ,
-                    "params": ""                                      ,
-                    "call"  : "d.tryFEndian(80, LittleEndian)"        ,
-                    "doc"   : "80 bit IEEE 754 float in little-endian"
-                },
+                    "name"  : "80LE"                                  , 
+                    "args"  : ""                                      , 
+                    "params": ""                                      , 
+                    "call"  : "d.tryFEndian(80, LittleEndian)"        , 
+                    "doc"   : "80 bit IEEE 754 float in little-endian"  
+                }, 
                 {
-                    "name"  : "16BE"                               ,
-                    "args"  : ""                                   ,
-                    "params": ""                                   ,
-                    "call"  : "d.tryFEndian(16, BigEndian)"        ,
-                    "doc"   : "16 bit IEEE 754 float in big-endian"
-                },
+                    "name"  : "16BE"                               , 
+                    "args"  : ""                                   , 
+                    "params": ""                                   , 
+                    "call"  : "d.tryFEndian(16, BigEndian)"        , 
+                    "doc"   : "16 bit IEEE 754 float in big-endian"  
+                }, 
                 {
-                    "name"  : "32BE"                               ,
-                    "args"  : ""                                   ,
-                    "params": ""                                   ,
-                    "call"  : "d.tryFEndian(32, BigEndian)"        ,
-                    "doc"   : "32 bit IEEE 754 float in big-endian"
-                },
+                    "name"  : "32BE"                               , 
+                    "args"  : ""                                   , 
+                    "params": ""                                   , 
+                    "call"  : "d.tryFEndian(32, BigEndian)"        , 
+                    "doc"   : "32 bit IEEE 754 float in big-endian"  
+                }, 
                 {
-                    "name"  : "64BE"                               ,
-                    "args"  : ""                                   ,
-                    "params": ""                                   ,
-                    "call"  : "d.tryFEndian(64, BigEndian)"        ,
-                    "doc"   : "64 bit IEEE 754 float in big-endian"
-                },
+                    "name"  : "64BE"                               , 
+                    "args"  : ""                                   , 
+                    "params": ""                                   , 
+                    "call"  : "d.tryFEndian(64, BigEndian)"        , 
+                    "doc"   : "64 bit IEEE 754 float in big-endian"  
+                }, 
                 {
-                    "name"  : "80BE"                               ,
-                    "args"  : ""                                   ,
-                    "params": ""                                   ,
-                    "call"  : "d.tryFEndian(80, BigEndian)"        ,
-                    "doc"   : "80 bit IEEE 754 float in big-endian"
+                    "name"  : "80BE"                               , 
+                    "args"  : ""                                   , 
+                    "params": ""                                   , 
+                    "call"  : "d.tryFEndian(80, BigEndian)"        , 
+                    "doc"   : "80 bit IEEE 754 float in big-endian"  
                 }
             ]
-        },
+        }, 
         {
-            "name": "FP",
-            "type": "Flt",
+            "name": "FP", 
+            "type": "Flt", 
             "variants": [
                 {
-                    "name"  : ""                                          ,
-                    "args"  : "nBits, fBits"                              ,
-                    "params": "nBits int, fBits int"                      ,
-                    "call"  : "d.tryFPEndian(nBits, fBits, d.Endian)"     ,
-                    "doc"   : "nBits fixed-point number in current endian"
-                },
+                    "name"  : ""                                          , 
+                    "args"  : "nBits, fBits"                              , 
+                    "params": "nBits int, fBits int"                      , 
+                    "call"  : "d.tryFPEndian(nBits, fBits, d.Endian)"     , 
+                    "doc"   : "nBits fixed-point number in current endian"  
+                }, 
                 {
-                    "name"  : "E"                                           ,
-                    "args"  : "nBits, fBits, endian"                        ,
-                    "params": "nBits int, fBits int, endian Endian"         ,
-                    "call"  : "d.tryFPEndian(nBits, fBits, endian)"         ,
-                    "doc"   : "nBits fixed-point number in specified endian"
-                },
+                    "name"  : "E"                                           , 
+                    "args"  : "nBits, fBits, endian"                        , 
+                    "params": "nBits int, fBits int, endian Endian"         , 
+                    "call"  : "d.tryFPEndian(nBits, fBits, endian)"         , 
+                    "doc"   : "nBits fixed-point number in specified endian"  
+                }, 
                 {
-                    "name"  : "16"                                         ,
-                    "args"  : ""                                           ,
-                    "params": ""                                           ,
-                    "call"  : "d.tryFPEndian(16, 8, d.Endian)"             ,
-                    "doc"   : "16 bit fixed-point number in current endian"
-                },
+                    "name"  : "16"                                         , 
+                    "args"  : ""                                           , 
+                    "params": ""                                           , 
+                    "call"  : "d.tryFPEndian(16, 8, d.Endian)"             , 
+                    "doc"   : "16 bit fixed-point number in current endian"  
+                }, 
                 {
-                    "name"  : "32"                                         ,
-                    "args"  : ""                                           ,
-                    "params": ""                                           ,
-                    "call"  : "d.tryFPEndian(32, 16, d.Endian)"            ,
-                    "doc"   : "32 bit fixed-point number in current endian"
-                },
+                    "name"  : "32"                                         , 
+                    "args"  : ""                                           , 
+                    "params": ""                                           , 
+                    "call"  : "d.tryFPEndian(32, 16, d.Endian)"            , 
+                    "doc"   : "32 bit fixed-point number in current endian"  
+                }, 
                 {
-                    "name"  : "64"                                         ,
-                    "args"  : ""                                           ,
-                    "params": ""                                           ,
-                    "call"  : "d.tryFPEndian(64, 32, d.Endian)"            ,
-                    "doc"   : "64 bit fixed-point number in current endian"
-                },
+                    "name"  : "64"                                         , 
+                    "args"  : ""                                           , 
+                    "params": ""                                           , 
+                    "call"  : "d.tryFPEndian(64, 32, d.Endian)"            , 
+                    "doc"   : "64 bit fixed-point number in current endian"  
+                }, 
                 {
-                    "name"  : "16LE"                                      ,
-                    "args"  : ""                                          ,
-                    "params": ""                                          ,
-                    "call"  : "d.tryFPEndian(16, 8, LittleEndian)"        ,
-                    "doc"   : "16 bit fixed-point number in little-endian"
-                },
+                    "name"  : "16LE"                                      , 
+                    "args"  : ""                                          , 
+                    "params": ""                                          , 
+                    "call"  : "d.tryFPEndian(16, 8, LittleEndian)"        , 
+                    "doc"   : "16 bit fixed-point number in little-endian"  
+                }, 
                 {
-                    "name"  : "32LE"                                      ,
-                    "args"  : ""                                          ,
-                    "params": ""                                          ,
-                    "call"  : "d.tryFPEndian(32, 16, LittleEndian)"       ,
-                    "doc"   : "32 bit fixed-point number in little-endian"
-                },
+                    "name"  : "32LE"                                      , 
+                    "args"  : ""                                          , 
+                    "params": ""                                          , 
+                    "call"  : "d.tryFPEndian(32, 16, LittleEndian)"       , 
+                    "doc"   : "32 bit fixed-point number in little-endian"  
+                }, 
                 {
-                    "name"  : "64LE"                                      ,
-                    "args"  : ""                                          ,
-                    "params": ""                                          ,
-                    "call"  : "d.tryFPEndian(64, 32, LittleEndian)"       ,
-                    "doc"   : "64 bit fixed-point number in little-endian"
-                },
+                    "name"  : "64LE"                                      , 
+                    "args"  : ""                                          , 
+                    "params": ""                                          , 
+                    "call"  : "d.tryFPEndian(64, 32, LittleEndian)"       , 
+                    "doc"   : "64 bit fixed-point number in little-endian"  
+                }, 
                 {
-                    "name"  : "16BE"                                   ,
-                    "args"  : ""                                       ,
-                    "params": ""                                       ,
-                    "call"  : "d.tryFPEndian(16, 8, BigEndian)"        ,
-                    "doc"   : "16 bit fixed-point number in big-endian"
-                },
+                    "name"  : "16BE"                                   , 
+                    "args"  : ""                                       , 
+                    "params": ""                                       , 
+                    "call"  : "d.tryFPEndian(16, 8, BigEndian)"        , 
+                    "doc"   : "16 bit fixed-point number in big-endian"  
+                }, 
                 {
-                    "name"  : "32BE"                                   ,
-                    "args"  : ""                                       ,
-                    "params": ""                                       ,
-                    "call"  : "d.tryFPEndian(32, 16, BigEndian)"       ,
-                    "doc"   : "32 bit fixed-point number in big-endian"
-                },
+                    "name"  : "32BE"                                   , 
+                    "args"  : ""                                       , 
+                    "params": ""                                       , 
+                    "call"  : "d.tryFPEndian(32, 16, BigEndian)"       , 
+                    "doc"   : "32 bit fixed-point number in big-endian"  
+                }, 
                 {
-                    "name"  : "64BE"                                   ,
-                    "args"  : ""                                       ,
-                    "params": ""                                       ,
-                    "call"  : "d.tryFPEndian(64, 32, BigEndian)"       ,
-                    "doc"   : "64 bit fixed-point number in big-endian"
+                    "name"  : "64BE"                                   , 
+                    "args"  : ""                                       , 
+                    "params": ""                                       , 
+                    "call"  : "d.tryFPEndian(64, 32, BigEndian)"       , 
+                    "doc"   : "64 bit fixed-point number in big-endian"  
                 }
             ]
-        },
+        }, 
         {
-            "name": "Unary",
-            "type": "Uint",
+            "name": "Unary", 
+            "type": "Uint", 
             "variants": [
                 {
-                    "name"  : ""                                       ,
-                    "args"  : "ov"                                     ,
-                    "params": "ov uint64"                              ,
-                    "call"  : "d.tryUnary(ov)"                         ,
-                    "doc"   : "unary integer using ov as \"one\" value"
+                    "name"  : ""                                       , 
+                    "args"  : "ov"                                     , 
+                    "params": "ov uint64"                              , 
+                    "call"  : "d.tryUnary(ov)"                         , 
+                    "doc"   : "unary integer using ov as \"one\" value"  
                 }
             ]
-        },
+        }, 
         {
-            "name": "ULEB128",
-            "type": "Uint",
+            "name": "ULEB128", 
+            "type": "Uint", 
             "variants": [
                 {
-                    "name"  : ""                       ,
-                    "args"  : ""                       ,
-                    "params": ""                       ,
-                    "call"  : "d.tryULEB128()"         ,
-                    "doc"   : "unsigned LEB128 integer"
+                    "name"  : ""                       , 
+                    "args"  : ""                       , 
+                    "params": ""                       , 
+                    "call"  : "d.tryULEB128()"         , 
+                    "doc"   : "unsigned LEB128 integer"  
                 }
             ]
-        },
+        }, 
         {
-            "name": "SLEB128",
-            "type": "Sint",
+            "name": "SLEB128", 
+            "type": "Sint", 
             "variants": [
                 {
-                    "name"  : ""                     ,
-                    "args"  : ""                     ,
-                    "params": ""                     ,
-                    "call"  : "d.trySLEB128()"       ,
-                    "doc"   : "signed LEB128 integer"
+                    "name"  : ""                     , 
+                    "args"  : ""                     , 
+                    "params": ""                     , 
+                    "call"  : "d.trySLEB128()"       , 
+                    "doc"   : "signed LEB128 integer"  
                 }
             ]
-        },
+        }, 
         {
-            "name": "UTF",
-            "type": "Str",
+            "name": "UTF", 
+            "type": "Str", 
             "variants": [
                 {
-                    "name"  : "8"                         ,
-                    "args"  : "nBytes"                    ,
-                    "params": "nBytes int"                ,
-                    "call"  : "d.tryText(nBytes, UTF8BOM)",
-                    "doc"   : "nBytes bytes UTF8 string"
-                },
+                    "name"  : "8"                         , 
+                    "args"  : "nBytes"                    , 
+                    "params": "nBytes int"                , 
+                    "call"  : "d.tryText(nBytes, UTF8BOM)", 
+                    "doc"   : "nBytes bytes UTF8 string"    
+                }, 
                 {
-                    "name": "16",
-                    "args": "nBytes",
-                    "params": "nBytes int",
-                    "call": "d.tryText(nBytes, UTF16BOM)",
+                    "name": "16", 
+                    "args": "nBytes", 
+                    "params": "nBytes int", 
+                    "call": "d.tryText(nBytes, UTF16BOM)", 
                     "doc": "nBytes bytes UTF16 string, default big-endian and accepts BOM"
-                },
+                }, 
                 {
-                    "name"  : "16LE"                                   ,
-                    "args"  : "nBytes"                                 ,
-                    "params": "nBytes int"                             ,
-                    "call"  : "d.tryText(nBytes, UTF16LE)"             ,
-                    "doc"   : "nBytes bytes UTF16 little-endian string"
-                },
+                    "name"  : "16LE"                                   , 
+                    "args"  : "nBytes"                                 , 
+                    "params": "nBytes int"                             , 
+                    "call"  : "d.tryText(nBytes, UTF16LE)"             , 
+                    "doc"   : "nBytes bytes UTF16 little-endian string"  
+                }, 
                 {
-                    "name"  : "16BE"                                ,
-                    "args"  : "nBytes"                              ,
-                    "params": "nBytes int"                          ,
-                    "call"  : "d.tryText(nBytes, UTF16BE)"          ,
-                    "doc"   : "nBytes bytes UTF16 big-endian string"
+                    "name"  : "16BE"                                , 
+                    "args"  : "nBytes"                              , 
+                    "params": "nBytes int"                          , 
+                    "call"  : "d.tryText(nBytes, UTF16BE)"          , 
+                    "doc"   : "nBytes bytes UTF16 big-endian string"  
                 }
             ]
-        },
+        }, 
         {
-            "name": "UTF8ShortString",
-            "type": "Str",
+            "name": "UTF8ShortString", 
+            "type": "Str", 
             "variants": [
                 {
-                    "name"  : ""                                    ,
-                    "args"  : ""                                    ,
-                    "params": ""                                    ,
-                    "call"  : "d.tryTextLenPrefixed(1, -1, UTF8BOM)",
-                    "doc"   : "one byte length fixed UTF8 string"
-                },
+                    "name"  : ""                                    , 
+                    "args"  : ""                                    , 
+                    "params": ""                                    , 
+                    "call"  : "d.tryTextLenPrefixed(1, -1, UTF8BOM)", 
+                    "doc"   : "one byte length fixed UTF8 string"     
+                }, 
                 {
-                    "name": "FixedLen",
-                    "args": "fixedBytes",
-                    "params": "fixedBytes int",
-                    "call": "d.tryTextLenPrefixed(1, fixedBytes, UTF8BOM)",
+                    "name": "FixedLen", 
+                    "args": "fixedBytes", 
+                    "params": "fixedBytes int", 
+                    "call": "d.tryTextLenPrefixed(1, fixedBytes, UTF8BOM)", 
                     "doc": "fixedBytes bytes long one byte length prefixed UTF8 string"
                 }
             ]
-        },
+        }, 
         {
-            "name": "UTF",
-            "type": "Str",
+            "name": "UTF", 
+            "type": "Str", 
             "variants": [
                 {
-                    "name"  : "8Null"                      ,
-                    "args"  : ""                           ,
-                    "params": ""                           ,
-                    "call"  : "d.tryTextNull(1, UTF8BOM)"  ,
-                    "doc"   : "null terminated UTF8 string"
-                },
+                    "name"  : "8Null"                      , 
+                    "args"  : ""                           , 
+                    "params": ""                           , 
+                    "call"  : "d.tryTextNull(1, UTF8BOM)"  , 
+                    "doc"   : "null terminated UTF8 string"  
+                }, 
                 {
-                    "name": "16Null",
-                    "args": "",
-                    "params": "",
-                    "call": "d.tryTextNull(2, UTF16BOM)",
+                    "name": "16Null", 
+                    "args": "", 
+                    "params": "", 
+                    "call": "d.tryTextNull(2, UTF16BOM)", 
                     "doc": "null terminated UTF16 string, default big-endian and accepts BOM"
-                },
+                }, 
                 {
-                    "name"  : "16LENull"                      ,
-                    "args"  : ""                              ,
-                    "params": ""                              ,
-                    "call"  : "d.tryTextNull(2, UTF16LE)"     ,
-                    "doc"   : "null terminated UTF16LE string"
-                },
+                    "name"  : "16LENull"                      , 
+                    "args"  : ""                              , 
+                    "params": ""                              , 
+                    "call"  : "d.tryTextNull(2, UTF16LE)"     , 
+                    "doc"   : "null terminated UTF16LE string"  
+                }, 
                 {
-                    "name"  : "16BENull"                      ,
-                    "args"  : ""                              ,
-                    "params": ""                              ,
-                    "call"  : "d.tryTextNull(2, UTF16BE)"     ,
-                    "doc"   : "null terminated UTF16BE string"
+                    "name"  : "16BENull"                      , 
+                    "args"  : ""                              , 
+                    "params": ""                              , 
+                    "call"  : "d.tryTextNull(2, UTF16BE)"     , 
+                    "doc"   : "null terminated UTF16BE string"  
                 }
             ]
-        },
+        }, 
         {
-            "name": "UTF8NullFixedLen",
-            "type": "Str",
+            "name": "UTF8NullFixedLen", 
+            "type": "Str", 
             "variants": [
                 {
-                    "name": "",
-                    "args": "fixedBytes",
-                    "params": "fixedBytes int",
-                    "call": "d.tryTextNullLen(fixedBytes, UTF8BOM)",
+                    "name": "", 
+                    "args": "fixedBytes", 
+                    "params": "fixedBytes int", 
+                    "call": "d.tryTextNullLen(fixedBytes, UTF8BOM)", 
                     "doc": "fixedBytes bytes long null terminated UTF8 string"
                 }
             ]
-        },
+        }, 
         {
-            "name": "Str",
-            "type": "Str",
+            "name": "Str", 
+            "type": "Str", 
             "variants": [
                 {
-                    "name"  : ""                               ,
-                    "args"  : "nBytes, e"                      ,
-                    "params": "nBytes int, e encoding.Encoding",
-                    "call"  : "d.tryText(nBytes, e)"           ,
-                    "doc"   : "nBytes bytes using encoding e"
+                    "name"  : ""                               , 
+                    "args"  : "nBytes, e"                      , 
+                    "params": "nBytes int, e encoding.Encoding", 
+                    "call"  : "d.tryText(nBytes, e)"           , 
+                    "doc"   : "nBytes bytes using encoding e"    
                 }
             ]
         }

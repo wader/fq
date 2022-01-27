@@ -1,0 +1,9 @@
+id: nav_parent_switch_cast
+data: switch_integers.bin
+asserts:
+  - actual: main.buf_type
+    expected: 1
+  - actual: main.flag
+    expected: 7
+  - actual: main.buf.as<nav_parent_switch_cast::foo::one>.branch.flag
+    expected: 7

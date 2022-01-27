@@ -1,0 +1,44 @@
+id: expr_calc_array_ops
+data: fixed_struct.bin
+asserts:
+#   '[10, 25, 50, 100, 200, 500, 1000]'
+  - actual: int_array_size
+    expected: 7
+  - actual: int_array_first
+    expected: 10
+  - actual: int_array_mid
+    expected: 25
+  - actual: int_array_last
+    expected: 1000
+  - actual: int_array_min
+    expected: 10
+  - actual: int_array_max
+    expected: 1000
+
+#   '[10.0, 25.0, 50.0, 100.0, 3.14159]'
+  - actual: double_array_size
+    expected: 5
+  - actual: double_array_first
+    expected: 10.0
+  - actual: double_array_mid
+    expected: 25.0
+  - actual: double_array_last
+    expected: 3.14159
+  - actual: double_array_min
+    expected: 3.14159
+  - actual: double_array_max
+    expected: 100.0
+
+#   '["un", "deux", "trois", "quatre"]'
+  - actual: str_array_size
+    expected: 4
+  - actual: str_array_first
+    expected: '"un"'
+  - actual: str_array_mid
+    expected: '"deux"'
+  - actual: str_array_last
+    expected: '"quatre"'
+  - actual: str_array_min
+    expected: '"deux"'
+  - actual: str_array_max
+    expected: '"un"'

@@ -1,0 +1,5 @@
+$ fq -d kaitai -o source=@formats/repeat_until_s4.ksy "d,tovalue({skip_gaps: true})" src/repeat_until_s4.bin
+{
+  "afterall": "foobar",
+  "entries": "[0x42, 0x1337, -251658241, -1]"
+}

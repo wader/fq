@@ -1,0 +1,20 @@
+$ fq -d kaitai -o source=@formats/index_to_param_expr.ksy "d,tovalue({skip_gaps: true})" src/index_sizes.bin
+{
+  "blocks": [
+    {
+      "buf": "A"
+    },
+    {
+      "buf": "BBBBBBBB"
+    },
+    {
+      "buf": "CCCC"
+    }
+  ],
+  "qty": 3,
+  "sizes": [
+    1,
+    8,
+    4
+  ]
+}

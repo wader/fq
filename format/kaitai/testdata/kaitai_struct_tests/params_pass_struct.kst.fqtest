@@ -1,0 +1,17 @@
+$ fq -d kaitai -o source=@formats/params_pass_struct.ksy "d,tovalue({skip_gaps: true})" src/enum_negative.bin
+{
+  "first": {
+    "foo": 255
+  },
+  "one": {
+    "bar": {
+      "foo": {
+        "foo": 255
+      },
+      "qux": 1
+    },
+    "foo": {
+      "foo": 255
+    }
+  }
+}

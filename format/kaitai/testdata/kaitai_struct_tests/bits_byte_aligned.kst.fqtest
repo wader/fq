@@ -1,0 +1,14 @@
+$ fq -d kaitai -o source=@formats/bits_byte_aligned.ksy "d,tovalue({skip_gaps: true})" src/fixed_struct.bin
+{
+  "byte_1": 65,
+  "byte_2": 75,
+  "byte_3": [
+    255
+  ],
+  "byte_4": 80,
+  "four": 2892,
+  "full_byte": 255,
+  "one": 20,
+  "three": false,
+  "two": 2
+}

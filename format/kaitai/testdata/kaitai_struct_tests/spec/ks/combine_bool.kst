@@ -1,0 +1,7 @@
+id: combine_bool
+data: enum_negative.bin
+asserts:
+  - actual: bool_bit
+    expected: true
+  - actual: bool_calc_bit
+    expected: false

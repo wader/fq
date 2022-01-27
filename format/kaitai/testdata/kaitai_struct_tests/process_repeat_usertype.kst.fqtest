@@ -1,0 +1,13 @@
+$ fq -d kaitai -o source=@formats/process_repeat_usertype.ksy "d,tovalue({skip_gaps: true})" src/process_xor_4.bin
+{
+  "blocks": [
+    {
+      "a": -1975704206,
+      "b": 20
+    },
+    {
+      "a": 279597642,
+      "b": 68
+    }
+  ]
+}

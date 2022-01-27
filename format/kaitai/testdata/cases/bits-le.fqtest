@@ -1,0 +1,8 @@
+$ fq -d kaitai -o source=@bits-le.ksy 'dv,tovalue' bits-le.input
+{
+  "a1": false,
+  "b3": 1,
+  "c12": 833,
+  "d4": 6,
+  "e4": 5
+}

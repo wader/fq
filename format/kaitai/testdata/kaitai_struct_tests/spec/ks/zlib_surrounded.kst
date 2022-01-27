@@ -1,0 +1,5 @@
+id: zlib_surrounded
+data: zlib_surrounded.bin
+asserts:
+  - actual: zlib.num
+    expected: -1

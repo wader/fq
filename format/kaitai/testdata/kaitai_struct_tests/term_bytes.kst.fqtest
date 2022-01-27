@@ -1,0 +1,20 @@
+$ fq -d kaitai -o source=@formats/term_bytes.ksy "d,tovalue({skip_gaps: true})" src/term_strz.bin
+{
+  "s1": [
+    102,
+    111,
+    111
+  ],
+  "s2": [
+    98,
+    97,
+    114
+  ],
+  "s3": [
+    124,
+    98,
+    97,
+    122,
+    64
+  ]
+}

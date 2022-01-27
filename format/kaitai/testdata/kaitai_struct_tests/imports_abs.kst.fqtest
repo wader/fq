@@ -1,0 +1,9 @@
+$ fq -d kaitai -o source=@formats/imports_abs.ksy "d,tovalue({skip_gaps: true})" src/fixed_struct.bin
+{
+  "body": {
+    "length": 80
+  },
+  "len": {
+    "value": 80
+  }
+}

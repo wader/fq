@@ -1,0 +1,15 @@
+id: expr_mod
+data: fixed_struct.bin
+asserts:
+  - actual: int_u
+    expected: 1262698832
+  - actual: int_s
+    expected: -52947
+  - actual: mod_pos_const
+    expected: 9
+  - actual: mod_neg_const
+    expected: 4
+  - actual: mod_pos_seq
+    expected: 5
+  - actual: mod_neg_seq
+    expected: 2

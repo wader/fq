@@ -1,0 +1,7 @@
+id: bits_signed_shift_b32_le
+data: bits_signed_shift_b32_le.bin
+asserts:
+  - actual: a
+    expected: 0
+  - actual: b
+    expected: 0xff

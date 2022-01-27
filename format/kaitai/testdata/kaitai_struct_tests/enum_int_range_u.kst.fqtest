@@ -1,0 +1,5 @@
+$ fq -d kaitai -o source=@formats/enum_int_range_u.ksy "d,tovalue({skip_gaps: true})" src/enum_int_range_u.bin
+{
+  "f1": "enum_int_range_u::constants::zero",
+  "f2": "enum_int_range_u::constants::int_max"
+}

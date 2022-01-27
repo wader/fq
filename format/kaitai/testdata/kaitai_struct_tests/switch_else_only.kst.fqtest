@@ -1,0 +1,13 @@
+$ fq -d kaitai -o source=@formats/switch_else_only.ksy "d,tovalue({skip_gaps: true})" src/switch_opcodes.bin
+{
+  "opcode": 83,
+  "prim_byte": 102,
+  "ut": {
+    "value": [
+      114,
+      0,
+      73,
+      66
+    ]
+  }
+}

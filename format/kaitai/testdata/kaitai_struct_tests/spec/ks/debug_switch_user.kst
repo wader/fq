@@ -1,0 +1,7 @@
+id: debug_switch_user
+data: nav_parent_switch.bin
+asserts:
+  - actual: code
+    expected: 1
+  - actual: data.as<debug_switch_user::one>.val
+    expected: -190

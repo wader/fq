@@ -1,0 +1,3 @@
+id: eof_exception_bytes
+data: term_strz.bin
+exception: EndOfStreamError

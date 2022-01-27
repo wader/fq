@@ -1,0 +1,10 @@
+$ fq -d kaitai -o source=@formats/cast_to_top.ksy "d,tovalue({skip_gaps: true})" src/fixed_struct.bin
+{
+  "code": 80,
+  "header": {
+    "code": 65
+  },
+  "header_casted": {
+    "code": 65
+  }
+}

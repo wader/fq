@@ -1,0 +1,7 @@
+id: multiple_use
+data: position_abs.bin
+asserts:
+  - actual: t1.first_use.value
+    expected: 0x20
+  - actual: t2.second_use.value
+    expected: 0x20

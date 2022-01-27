@@ -1,0 +1,7 @@
+id: position_abs
+data: position_abs.bin
+asserts:
+  - actual: index_offset
+    expected: 0x20
+  - actual: index.entry
+    expected: '"foo"'

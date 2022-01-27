@@ -1,0 +1,2 @@
+$ fq -d kaitai -o source=@formats/default_endian_expr_exception.ksy "d,tovalue({skip_gaps: true})" src/endian_expr.bin
+{}

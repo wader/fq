@@ -1,0 +1,9 @@
+$ fq -d kaitai -o source=@formats/expr_mod.ksy "d,tovalue({skip_gaps: true})" src/fixed_struct.bin
+{
+  "int_s": -52947,
+  "int_u": 1262698832,
+  "mod_neg_const": 4,
+  "mod_neg_seq": 2,
+  "mod_pos_const": 9,
+  "mod_pos_seq": 5
+}

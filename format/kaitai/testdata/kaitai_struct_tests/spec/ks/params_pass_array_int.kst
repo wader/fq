@@ -1,0 +1,17 @@
+id: params_pass_array_int
+data: position_to_end.bin
+asserts:
+  - actual: pass_ints.nums.size
+    expected: 3
+  - actual: pass_ints.nums[0]
+    expected: 513
+  - actual: pass_ints.nums[1]
+    expected: 1027
+  - actual: pass_ints.nums[2]
+    expected: 1541
+  - actual: pass_ints_calc.nums.size
+    expected: 2
+  - actual: pass_ints_calc.nums[0]
+    expected: 27643
+  - actual: pass_ints_calc.nums[1]
+    expected: 7

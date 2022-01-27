@@ -1,0 +1,15 @@
+id: imports_circular_a
+data: fixed_struct.bin
+imports:
+  - imports_circular_b
+asserts:
+  - actual: code
+    expected: 0x50
+  - actual: two.initial
+    expected: 0x41
+  - actual: two.back_ref.code
+    expected: 0x43
+  - actual: two.back_ref.two.initial
+    expected: 0x4b
+  - actual: two.back_ref.two.back_ref
+    expected: 'null'

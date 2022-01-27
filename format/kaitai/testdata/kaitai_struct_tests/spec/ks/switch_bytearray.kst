@@ -1,0 +1,25 @@
+id: switch_bytearray
+data: switch_opcodes.bin
+asserts:
+  - actual: opcodes.size
+    expected: 4
+
+  - actual: opcodes[0].code
+    expected: '[83]'
+  - actual: opcodes[0].body.as<switch_bytearray::opcode::strval>.value
+    expected: '"foobar"'
+
+  - actual: opcodes[1].code
+    expected: '[73]'
+  - actual: opcodes[1].body.as<switch_bytearray::opcode::intval>.value
+    expected: 0x42
+
+  - actual: opcodes[2].code
+    expected: '[73]'
+  - actual: opcodes[2].body.as<switch_bytearray::opcode::intval>.value
+    expected: 0x37
+
+  - actual: opcodes[3].code
+    expected: '[83]'
+  - actual: opcodes[3].body.as<switch_bytearray::opcode::strval>.value
+    expected: '""'

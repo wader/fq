@@ -1,0 +1,11 @@
+id: type_int_unary_op
+data: fixed_struct.bin
+asserts:
+  - actual: value_s2
+    expected: 0x4150
+  - actual: value_s8
+    expected: 0x4150ffff312d4b43
+  - actual: unary_s2
+    expected: -0x4150
+  - actual: unary_s8
+    expected: -0x4150ffff312d4b43

@@ -1,0 +1,9 @@
+id: switch_repeat_expr
+data: switch_tlv.bin
+asserts:
+  - actual: code
+    expected: 0x11
+  - actual: size
+    expected: 9
+  - actual: 'body[0].as<switch_repeat_expr::one>.first'
+    expected: '[0x53, 0x74, 0x75, 0x66, 0x66, 0x00, 0x4d, 0x65, 0x00]' # "Stuff\0Me\0" as string

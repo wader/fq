@@ -1,0 +1,25 @@
+id: nav_parent3
+data: nav_parent2.bin
+asserts:
+  - actual: ofs_tags
+    expected: 8
+  - actual: num_tags
+    expected: 2
+
+  - actual: tags[0].name
+    expected: '"RAHC"'
+  - actual: tags[0].ofs
+    expected: 0x20
+  - actual: tags[0].num_items
+    expected: 3
+  - actual: tags[0].tag_content.content
+    expected: '"foo"'
+
+  - actual: tags[1].name
+    expected: '"RAHC"'
+  - actual: tags[1].ofs
+    expected: 0x23
+  - actual: tags[1].num_items
+    expected: 6
+  - actual: tags[1].tag_content.content
+    expected: '"barbaz"'

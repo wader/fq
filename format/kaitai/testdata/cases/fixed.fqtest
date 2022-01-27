@@ -1,0 +1,1 @@
+$ fq -d kaitai -o source=@fixed.ksy 'dv,tovalue' fixed.input

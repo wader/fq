@@ -1,0 +1,28 @@
+id: expr_3
+data: fixed_struct.bin
+asserts:
+  - actual: one
+    expected: 80
+  - actual: two
+    expected: '"ACK"'
+
+  - actual: three
+    expected: '"@ACK"'
+  - actual: four
+    expected: '"_ACK_"'
+  - actual: is_str_eq
+    expected: true
+  - actual: is_str_ne
+    expected: false
+  - actual: is_str_lt
+    expected: true
+  - actual: is_str_gt
+    expected: false
+  - actual: is_str_le
+    expected: true
+  - actual: is_str_ge
+    expected: false
+  - actual: is_str_lt2
+    expected: true
+  - actual: test_not
+    expected: true

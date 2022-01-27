@@ -1,0 +1,9 @@
+id: repeat_n_strz_double
+data: repeat_n_strz.bin
+asserts:
+  - actual: qty
+    expected: 2
+  - actual: lines1
+    expected: '["foo"]'
+  - actual: lines2
+    expected: '["bar"]'

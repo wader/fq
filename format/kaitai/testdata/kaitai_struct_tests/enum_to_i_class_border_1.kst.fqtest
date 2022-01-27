@@ -1,0 +1,8 @@
+$ fq -d kaitai -o source=@formats/enum_to_i_class_border_1.ksy "d,tovalue({skip_gaps: true})" src/enum_0.bin
+{
+  "checker": {
+    "is_dog": true
+  },
+  "pet_1": "enum_to_i_class_border_1::animal::cat",
+  "pet_2": "enum_to_i_class_border_1::animal::chicken"
+}

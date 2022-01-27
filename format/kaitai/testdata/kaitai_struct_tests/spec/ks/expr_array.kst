@@ -1,0 +1,35 @@
+id: expr_array
+data: expr_array.bin
+asserts:
+  - actual: aint_size
+    expected: 4
+  - actual: aint_first
+    expected: 7657765
+  - actual: aint_last
+    expected: 16272640
+  - actual: aint_min
+    expected: 49185
+  - actual: aint_max
+    expected: 1123362332
+
+  - actual: afloat_size
+    expected: 3
+  - actual: afloat_first
+    expected: -2.6839530254859364e-121
+  - actual: afloat_last
+    expected: -1.1103359815095273e-175
+  - actual: afloat_min
+    expected: -8.754689149998834e+288
+  - actual: afloat_max
+    expected: -1.1103359815095273e-175
+
+  - actual: astr_size
+    expected: 3
+  - actual: astr_first
+    expected: '"foo"'
+  - actual: astr_last
+    expected: '"baz"'
+  - actual: astr_min
+    expected: '"bar"'
+  - actual: astr_max
+    expected: '"foo"'

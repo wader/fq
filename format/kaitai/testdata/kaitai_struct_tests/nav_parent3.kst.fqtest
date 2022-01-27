@@ -1,0 +1,23 @@
+$ fq -d kaitai -o source=@formats/nav_parent3.ksy "d,tovalue({skip_gaps: true})" src/nav_parent2.bin
+{
+  "num_tags": 2,
+  "ofs_tags": 8,
+  "tags": [
+    {
+      "name": "RAHC",
+      "num_items": 3,
+      "ofs": 32,
+      "tag_content": {
+        "content": "foo"
+      }
+    },
+    {
+      "name": "RAHC",
+      "num_items": 6,
+      "ofs": 35,
+      "tag_content": {
+        "content": "barbaz"
+      }
+    }
+  ]
+}

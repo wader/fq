@@ -1,0 +1,12 @@
+id: expr_io_eof
+data: fixed_struct.bin
+asserts:
+- actual: substream1.one
+  expected: 1262698832
+- actual: substream1.two
+  expected: 'null'
+
+- actual: substream2.one
+  expected: 4294914349
+- actual: substream2.two
+  expected: 1262698832

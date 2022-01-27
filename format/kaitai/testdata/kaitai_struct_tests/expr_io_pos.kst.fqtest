@@ -1,0 +1,24 @@
+$ fq -d kaitai -o source=@formats/expr_io_pos.ksy "d,tovalue({skip_gaps: true})" src/expr_io_pos.bin
+{
+  "substream1": {
+    "body": [
+      17,
+      34,
+      51,
+      68
+    ],
+    "my_str": "CURIOSITY",
+    "number": 66
+  },
+  "substream2": {
+    "body": [
+      97,
+      32,
+      99,
+      97,
+      116
+    ],
+    "my_str": "KILLED",
+    "number": 103
+  }
+}

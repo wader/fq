@@ -1,0 +1,9 @@
+id: nav_parent_override
+data: nav_parent_codes.bin
+asserts:
+  - actual: child_size
+    expected: 3
+  - actual: child_1.data
+    expected: '[0x49, 0x31, 0x32]'
+  - actual: mediator_2.child_2.data
+    expected: '[0x33, 0x42, 0x62]'

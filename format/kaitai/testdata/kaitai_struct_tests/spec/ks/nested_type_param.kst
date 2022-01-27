@@ -1,0 +1,7 @@
+id: nested_type_param
+data: term_strz.bin
+asserts:
+  - actual: main_seq.my_len
+    expected: 5
+  - actual: main_seq.body
+    expected: '"foo|b"'

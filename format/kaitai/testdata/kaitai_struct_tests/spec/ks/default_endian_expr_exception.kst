@@ -1,0 +1,3 @@
+id: default_endian_expr_exception
+data: endian_expr.bin
+exception: UndecidedEndiannessError

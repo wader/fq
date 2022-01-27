@@ -1,0 +1,4 @@
+$ fq -d kaitai -o source=@formats/hello_world.ksy "d,tovalue({skip_gaps: true})" src/fixed_struct.bin
+{
+  "one": 80
+}

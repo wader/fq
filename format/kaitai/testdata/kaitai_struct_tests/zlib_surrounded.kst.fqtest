@@ -1,0 +1,6 @@
+$ fq -d kaitai -o source=@formats/zlib_surrounded.ksy "d,tovalue({skip_gaps: true})" src/zlib_surrounded.bin
+{
+  "zlib": {
+    "num": -1
+  }
+}

@@ -1,0 +1,21 @@
+id: nested_types2
+data: fixed_struct.bin
+asserts:
+  - actual: one.typed_at_root.value_b
+    expected: 80
+
+  - actual: one.typed_here1.value_c
+    expected: 65
+
+  - actual: one.typed_here1.typed_here.value_d
+    expected: 67
+  - actual: one.typed_here1.typed_parent.value_cc
+    expected: 75
+  - actual: one.typed_here1.typed_root.value_b
+    expected: 45
+
+  - actual: one.typed_here2.value_cc
+    expected: 49
+
+  - actual: two.value_b
+    expected: -1

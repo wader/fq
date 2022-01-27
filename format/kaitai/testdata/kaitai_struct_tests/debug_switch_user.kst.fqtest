@@ -1,0 +1,7 @@
+$ fq -d kaitai -o source=@formats/debug_switch_user.ksy "d,tovalue({skip_gaps: true})" src/nav_parent_switch.bin
+{
+  "code": 1,
+  "data": {
+    "val": -190
+  }
+}

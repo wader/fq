@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"log"
 	"math"
 	"math/big"
 
@@ -18,16 +19,79 @@ func (d *D) tryBitBuf(nBits int64) (bitio.ReaderAtSeeker, error) {
 }
 
 func (d *D) tryUEndian(nBits int, endian Endian) (uint64, error) {
+	// log.Printf("tryUEndian nBits: %#+v endian %s\n", nBits, endian)
 	if nBits < 0 {
 		return 0, fmt.Errorf("tryUEndian nBits must be >= 0 (%d)", nBits)
 	}
-	n, err := d.TryUintBits(nBits)
-	if err != nil {
-		return 0, err
+
+	pos := d.Pos()
+	bbLen := d.bitEndianBufLen
+
+	log.Printf("  pos: %#+v\n", pos)
+	log.Printf("  bbLen: %#+v\n", bbLen)
+
+	if bbLen == 0 {
+		if endian == BigEndian || (pos%8 == 0 && nBits%8 == 0) {
+			n, err := d.TryUintBits(nBits)
+			if err != nil {
+				return 0, err
+			}
+			if endian == LittleEndian {
+				n = bitio.ReverseBytes64(nBits, n)
+			}
+			return n, nil
+		}
+
+		if pos%8 != 0 {
+			return 0, fmt.Errorf("tryUEndian can't start bit-endian on non-byte align")
+		}
+
+		d.bitEndianCurrent = endian
 	}
-	if endian == LittleEndian {
-		n = bitio.ReverseBytes64(nBits, n)
+
+	if endian != d.bitEndianCurrent {
+		return 0, fmt.Errorf("tryUEndian can't mix bit-endian on non-byte align (%s to %s)", d.bitEndianCurrent, endian)
 	}
+
+	// little-endian and pos or bits not byte aligned
+
+	bb := d.bitEndianBuf
+	bitsLeft := nBits
+
+	var n uint64
+
+	for bitsLeft > 0 {
+		log.Printf("n: %#+v\n", n)
+		log.Printf("  bitsLeft: %#+v\n", bitsLeft)
+		log.Printf("  bbLen: %#+v\n", bbLen)
+		log.Printf("  bb: %#+v\n", bb)
+		if bbLen == 0 {
+			if endian == LittleEndian && pos%8 != 0 {
+				return 0, fmt.Errorf("unaligend bit-little-endian integer")
+			}
+			n, err := d.TryUintBits(8)
+			if err != nil {
+				return 0, err
+			}
+			bb = byte(n)
+			bbLen = 8
+		}
+
+		l := min(bitsLeft, bbLen)
+
+		n |= uint64((bb>>(8-bbLen))&((1<<l)-1)) << (nBits - bitsLeft)
+
+		bitsLeft -= l
+		bbLen -= l
+
+		log.Printf("n2: %#+v\n", n)
+		log.Printf("  bitsLeft: %#+v\n", bitsLeft)
+		log.Printf("  bbLen: %#+v\n", bbLen)
+		log.Printf("  bb: %#+v\n", bb)
+	}
+
+	d.bitEndianBuf = bb
+	d.bitEndianBufLen = bbLen
 
 	return n, nil
 }
@@ -239,8 +303,8 @@ func (d *D) tryUnary(ov uint64) (uint64, error) {
 	return n, nil
 }
 
-func (d *D) tryBool() (bool, error) {
-	n, err := d.TryUintBits(1)
+func (d *D) tryBool(endian Endian) (bool, error) {
+	n, err := d.TryUE(1, endian)
 	if err != nil {
 		return false, err
 	}

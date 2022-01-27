@@ -1,0 +1,19 @@
+$ fq -d kaitai -o source=@formats/process_repeat_bytes.ksy "d,tovalue({skip_gaps: true})" src/process_xor_4.bin
+{
+  "bufs": [
+    [
+      114,
+      37,
+      61,
+      138,
+      20
+    ],
+    [
+      74,
+      82,
+      170,
+      16,
+      68
+    ]
+  ]
+}

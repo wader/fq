@@ -1,0 +1,18 @@
+$ fq -d kaitai -o source=@formats/expr_array.ksy "d,tovalue({skip_gaps: true})" src/expr_array.bin
+{
+  "afloat_first": -2.6839530254859364e-121,
+  "afloat_last": -1.1103359815095273e-175,
+  "afloat_max": -1.1103359815095273e-175,
+  "afloat_min": -8.754689149998834e+288,
+  "afloat_size": 3,
+  "aint_first": 7657765,
+  "aint_last": 16272640,
+  "aint_max": 1123362332,
+  "aint_min": 49185,
+  "aint_size": 4,
+  "astr_first": "foo",
+  "astr_last": "baz",
+  "astr_max": "foo",
+  "astr_min": "bar",
+  "astr_size": 3
+}

@@ -1,0 +1,11 @@
+id: process_repeat_usertype
+data: process_xor_4.bin
+asserts:
+  - actual: blocks[0].a
+    expected: -1975704206 # 0x8a3d2572
+  - actual: blocks[0].b
+    expected: 0x14
+  - actual: blocks[1].a
+    expected: 0x10aa524a
+  - actual: blocks[1].b
+    expected: 0x44

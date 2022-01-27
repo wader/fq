@@ -1,0 +1,1 @@
+$ fq -d kaitai -o source=@formats/repeat_until_complex.ksy "d,tovalue({skip_gaps: true})" src/repeat_until_complex.bin

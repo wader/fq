@@ -1,0 +1,7 @@
+$ fq -d kaitai -o source=@formats/str_literals2.ksy "d,tovalue({skip_gaps: true})" src/fixed_struct.bin
+{
+  "at_sign": "@foo",
+  "dollar1": "$foo",
+  "dollar2": "${foo}",
+  "hash": "#{foo}"
+}

@@ -1,0 +1,19 @@
+$ fq -d kaitai -o source=@formats/expr_bytes_cmp.ksy "d,tovalue({skip_gaps: true})" src/fixed_struct.bin
+{
+  "is_eq": true,
+  "is_ge": false,
+  "is_gt": false,
+  "is_gt2": true,
+  "is_le": true,
+  "is_lt": true,
+  "is_lt2": false,
+  "is_ne": false,
+  "one": [
+    80
+  ],
+  "two": [
+    65,
+    67,
+    75
+  ]
+}

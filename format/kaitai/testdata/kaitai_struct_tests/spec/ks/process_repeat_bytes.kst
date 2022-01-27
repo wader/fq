@@ -1,0 +1,7 @@
+id: process_repeat_bytes
+data: process_xor_4.bin
+asserts:
+  - actual: bufs[0]
+    expected: '[0x72, 0x25, 0x3d, 0x8a, 0x14]'
+  - actual: bufs[1]
+    expected: '[0x4a, 0x52, 0xaa, 0x10, 0x44]'

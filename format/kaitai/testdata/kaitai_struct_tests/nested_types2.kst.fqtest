@@ -1,0 +1,26 @@
+$ fq -d kaitai -o source=@formats/nested_types2.ksy "d,tovalue({skip_gaps: true})" src/fixed_struct.bin
+{
+  "one": {
+    "typed_at_root": {
+      "value_b": 80
+    },
+    "typed_here1": {
+      "typed_here": {
+        "value_d": 67
+      },
+      "typed_parent": {
+        "value_cc": 75
+      },
+      "typed_root": {
+        "value_b": 45
+      },
+      "value_c": 65
+    },
+    "typed_here2": {
+      "value_cc": 49
+    }
+  },
+  "two": {
+    "value_b": -1
+  }
+}

@@ -1,0 +1,50 @@
+$ fq -d kaitai -o source=@formats/default_endian_expr_is_be.ksy "d,tovalue({skip_gaps: true})" src/endian_expr.bin
+{
+  "docs": [
+    {
+      "indicator": [
+        73,
+        73
+      ],
+      "main": {
+        "inst_int": 66,
+        "inst_sub": {
+          "foo": 66
+        },
+        "some_int": 66,
+        "some_int_be": 66,
+        "some_int_le": 66
+      }
+    },
+    {
+      "indicator": [
+        77,
+        77
+      ],
+      "main": {
+        "inst_int": 1107296256,
+        "inst_sub": {
+          "foo": 1107296256
+        },
+        "some_int": 66,
+        "some_int_be": 66,
+        "some_int_le": 66
+      }
+    },
+    {
+      "indicator": [
+        88,
+        88
+      ],
+      "main": {
+        "inst_int": 66,
+        "inst_sub": {
+          "foo": 66
+        },
+        "some_int": 1107296256,
+        "some_int_be": 66,
+        "some_int_le": 66
+      }
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+id: position_in_seq
+data: position_in_seq.bin
+asserts:
+  - actual: numbers
+    expected: '[0 + 1, 2, 3]'

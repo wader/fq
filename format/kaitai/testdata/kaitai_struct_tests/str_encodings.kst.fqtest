@@ -1,0 +1,7 @@
+$ fq -d kaitai -o source=@formats/str_encodings.ksy "d,tovalue({skip_gaps: true})" src/str_encodings.bin
+{
+  "str1": "Some ASCII",
+  "str2": "こんにちは",
+  "str3": "こんにちは",
+  "str4": "░▒▓"
+}

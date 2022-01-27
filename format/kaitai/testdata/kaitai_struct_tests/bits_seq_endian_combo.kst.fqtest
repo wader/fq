@@ -1,0 +1,11 @@
+$ fq -d kaitai -o source=@formats/bits_seq_endian_combo.ksy "d,tovalue({skip_gaps: true})" src/process_xor_4.bin
+{
+  "be1": 59,
+  "be2": 187,
+  "be4": 20,
+  "be8": true,
+  "le3": 163,
+  "le5": 10,
+  "le6": 36,
+  "le7": 26
+}

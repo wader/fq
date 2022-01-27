@@ -1,0 +1,7 @@
+id: expr_if_int_ops
+data: process_coerce_switch.bin
+asserts:
+  - actual: is_eq_prim
+    expected: true
+  - actual: is_eq_boxed
+    expected: true

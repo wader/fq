@@ -1,0 +1,7 @@
+$ fq -d kaitai -o source=@formats/position_to_end.ksy "d,tovalue({skip_gaps: true})" src/position_to_end.bin
+{
+  "index": {
+    "bar": 4660,
+    "foo": 66
+  }
+}

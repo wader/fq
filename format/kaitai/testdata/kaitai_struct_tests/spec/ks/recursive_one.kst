@@ -1,0 +1,11 @@
+id: recursive_one
+data: fixed_struct.bin
+asserts:
+  - actual: one
+    expected: 0x50
+  - actual: next.as<recursive_one>.one
+    expected: 0x41
+  - actual: next.as<recursive_one>.next.as<recursive_one>.one
+    expected: 0x43
+  - actual: next.as<recursive_one>.next.as<recursive_one>.next.as<recursive_one::fini>.finisher
+    expected: 0x2d4b

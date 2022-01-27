@@ -1,0 +1,16 @@
+id: expr_io_pos
+data: expr_io_pos.bin
+asserts:
+  - actual: substream1.my_str
+    expected: '"CURIOSITY"'
+  - actual: substream1.body
+    expected: '[0x11, 0x22, 0x33, 0x44]'
+  - actual: substream1.number
+    expected: 0x42
+
+  - actual: substream2.my_str
+    expected: '"KILLED"'
+  - actual: substream2.body
+    expected: '[0x61, 0x20, 0x63, 0x61, 0x74]'
+  - actual: substream2.number
+    expected: 0x67

@@ -1,0 +1,10 @@
+id: bits_enum
+data: fixed_struct.bin
+asserts:
+  # 50 41 (4 + 8 + 1) = 0101|0000 0100|0|001
+  - actual: one
+    expected: bits_enum::animal::platypus
+  - actual: two
+    expected: bits_enum::animal::horse
+  - actual: three
+    expected: bits_enum::animal::cat

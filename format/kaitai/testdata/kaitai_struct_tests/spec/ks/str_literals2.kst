@@ -1,0 +1,11 @@
+id: str_literals2
+data: fixed_struct.bin
+asserts:
+  - actual: dollar1
+    expected: '"$foo"'
+  - actual: dollar2
+    expected: '"${foo}"'
+  - actual: hash
+    expected: '"#{foo}"'
+  - actual: at_sign
+    expected: '"@foo"'

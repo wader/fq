@@ -1,0 +1,9 @@
+id: default_endian_mod
+data: fixed_struct.bin
+asserts:
+  - actual: main.one
+    expected: 0x4b434150
+  - actual: main.nest.two
+    expected: -52947
+  - actual: main.nest_be.two
+    expected: 0x5041434b

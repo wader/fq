@@ -1,0 +1,6 @@
+$ fq -d kaitai -o source=@formats/bits_enum.ksy "d,tovalue({skip_gaps: true})" src/fixed_struct.bin
+{
+  "one": "bits_enum::animal::platypus",
+  "three": "bits_enum::animal::cat",
+  "two": "bits_enum::animal::horse"
+}

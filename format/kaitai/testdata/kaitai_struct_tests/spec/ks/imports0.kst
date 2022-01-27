@@ -1,0 +1,10 @@
+id: imports0
+data: fixed_struct.bin
+imports: hello_world
+asserts:
+  - actual: two
+    expected: 0x50
+  - actual: hw.one
+    expected: 0x41
+  - actual: hw_one
+    expected: 0x41

@@ -1,0 +1,17 @@
+id: buffered_struct
+data: buffered_struct.bin
+asserts:
+  - actual: len1
+    expected: 0x10
+  - actual: block1.number1
+    expected: 0x42
+  - actual: block1.number2
+    expected: 0x43
+  - actual: len2
+    expected: 0x8
+  - actual: block2.number1
+    expected: 0x44
+  - actual: block2.number2
+    expected: 0x45
+  - actual: finisher
+    expected: 0xee

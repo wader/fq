@@ -1,0 +1,6 @@
+$ fq -d kaitai -o source=@formats/term_strz.ksy "d,tovalue({skip_gaps: true})" src/term_strz.bin
+{
+  "s1": "foo",
+  "s2": "bar",
+  "s3": "|baz@"
+}

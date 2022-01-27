@@ -1,0 +1,20 @@
+$ fq -d kaitai -o source=@formats/nav_parent_override.ksy "d,tovalue({skip_gaps: true})" src/nav_parent_codes.bin
+{
+  "child_1": {
+    "data": [
+      73,
+      49,
+      50
+    ]
+  },
+  "child_size": 3,
+  "mediator_2": {
+    "child_2": {
+      "data": [
+        51,
+        66,
+        98
+      ]
+    }
+  }
+}

@@ -1,0 +1,17 @@
+id: params_pass_array_str
+data: term_strz.bin
+asserts:
+  - actual: pass_str_array.strs.size
+    expected: 3
+  - actual: pass_str_array.strs[0]
+    expected: '"fo"'
+  - actual: pass_str_array.strs[1]
+    expected: '"o|"'
+  - actual: pass_str_array.strs[2]
+    expected: '"ba"'
+  - actual: pass_str_array_calc.strs.size
+    expected: 2
+  - actual: pass_str_array_calc.strs[0]
+    expected: '"aB"'
+  - actual: pass_str_array_calc.strs[1]
+    expected: '"Cd"'

@@ -1,0 +1,5 @@
+$ fq -d kaitai -o source=@formats/js_signed_right_shift.ksy "d,tovalue({skip_gaps: true})" src/fixed_struct.bin
+{
+  "should_be_40000000": 1073741824,
+  "should_be_a00000": 10485760
+}

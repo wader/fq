@@ -1,0 +1,40 @@
+id: expr_bytes_ops
+data: nav_parent_switch.bin
+asserts:
+  # one = [0x01, 0x42, 0xff]
+
+  - actual: one_size
+    expected: 3
+  - actual: one_first
+    expected: 0x01
+  - actual: one_mid
+    expected: 0x42
+  - actual: one_last
+    expected: 0xff
+  - actual: one_last.to_s
+    expected: '"255"'
+  - actual: one_min
+    expected: 0x01
+  - actual: one_max
+    expected: 0xff
+  - actual: one_max.to_s
+    expected: '"255"'
+
+  # two = [0x41, 0xff, 0x4b]
+
+  - actual: two_size
+    expected: 3
+  - actual: two_first
+    expected: 0x41
+  - actual: two_mid
+    expected: 0xff
+  - actual: two_mid.to_s
+    expected: '"255"'
+  - actual: two_last
+    expected: 0x4b
+  - actual: two_min
+    expected: 0x41
+  - actual: two_max
+    expected: 0xff
+  - actual: two_max.to_s
+    expected: '"255"'

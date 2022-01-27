@@ -1,0 +1,13 @@
+id: nav_parent_false
+data: nav_parent_codes.bin
+asserts:
+  - actual: child_size
+    expected: 3
+  - actual: element_a.foo.code
+    expected: 73
+  - actual: element_a.foo.more
+    expected: '[0x31, 0x32, 0x33]'
+  - actual: element_a.bar.foo.code
+    expected: 66
+  - actual: element_b.foo.code
+    expected: 98

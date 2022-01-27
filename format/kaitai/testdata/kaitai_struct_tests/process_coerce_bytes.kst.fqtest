@@ -1,0 +1,23 @@
+$ fq -d kaitai -o source=@formats/process_coerce_bytes.ksy "d,tovalue({skip_gaps: true})" src/process_coerce_bytes.bin
+{
+  "records": [
+    {
+      "buf": [
+        65,
+        65,
+        65,
+        65
+      ],
+      "flag": 0
+    },
+    {
+      "buf": [
+        66,
+        66,
+        66,
+        66
+      ],
+      "flag": 1
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+id: bcd_user_type_be
+data: bcd_user_type_be.bin
+asserts:
+  - actual: ltr.as_int
+    expected: 12345678
+  - actual: ltr.as_str
+    expected: '"12345678"'
+  - actual: rtl.as_int
+    expected: 87654321
+  - actual: rtl.as_str
+    expected: '"87654321"'
+  - actual: leading_zero_ltr.as_int
+    expected: 123456
+  - actual: leading_zero_ltr.as_str
+    expected: '"00123456"'

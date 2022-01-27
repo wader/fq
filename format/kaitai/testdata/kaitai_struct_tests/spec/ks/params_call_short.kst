@@ -1,0 +1,9 @@
+id: params_call_short
+data: term_strz.bin
+asserts:
+  - actual: buf1.body
+    expected: '"foo|b"'
+  - actual: buf2.body
+    expected: '"ar|ba"'
+  - actual: buf2.trailer
+    expected: 0x7a

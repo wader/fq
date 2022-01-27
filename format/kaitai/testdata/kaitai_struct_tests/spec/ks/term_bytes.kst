@@ -1,0 +1,9 @@
+id: term_bytes
+data: term_strz.bin
+asserts:
+  - actual: s1
+    expected: '[0x66, 0x6f, 0x6f]'
+  - actual: s2
+    expected: '[0x62, 0x61, 0x72]'
+  - actual: s3
+    expected: '[0x7c, 0x62, 0x61, 0x7a, 0x40]'

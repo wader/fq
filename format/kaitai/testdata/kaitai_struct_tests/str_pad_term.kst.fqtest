@@ -1,0 +1,7 @@
+$ fq -d kaitai -o source=@formats/str_pad_term.ksy "d,tovalue({skip_gaps: true})" src/str_pad_term.bin
+{
+  "str_pad": "str1",
+  "str_term": "str2foo",
+  "str_term_and_pad": "str+++3bar+++",
+  "str_term_include": "str4baz@"
+}

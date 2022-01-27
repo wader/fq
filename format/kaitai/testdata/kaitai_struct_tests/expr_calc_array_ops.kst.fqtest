@@ -1,0 +1,21 @@
+$ fq -d kaitai -o source=@formats/expr_calc_array_ops.ksy "d,tovalue({skip_gaps: true})" src/fixed_struct.bin
+{
+  "double_array_first": 10,
+  "double_array_last": 3.14159,
+  "double_array_max": 100,
+  "double_array_mid": 25,
+  "double_array_min": 3.14159,
+  "double_array_size": 5,
+  "int_array_first": 10,
+  "int_array_last": 1000,
+  "int_array_max": 1000,
+  "int_array_mid": 25,
+  "int_array_min": 10,
+  "int_array_size": 7,
+  "str_array_first": "un",
+  "str_array_last": "quatre",
+  "str_array_max": "un",
+  "str_array_mid": "deux",
+  "str_array_min": "deux",
+  "str_array_size": 4
+}

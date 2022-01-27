@@ -1,0 +1,10 @@
+$ fq -d kaitai -o source=@formats/expr_str_encodings.ksy "d,tovalue({skip_gaps: true})" src/str_encodings.bin
+{
+  "str1_eq": true,
+  "str2_eq": true,
+  "str3_eq": true,
+  "str3_eq_str2": true,
+  "str4_eq": true,
+  "str4_gt_str_calc": true,
+  "str4_gt_str_from_bytes": true
+}

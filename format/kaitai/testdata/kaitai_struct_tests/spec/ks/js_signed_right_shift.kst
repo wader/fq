@@ -1,0 +1,7 @@
+id: js_signed_right_shift
+data: fixed_struct.bin
+asserts:
+  - actual: should_be_40000000
+    expected: 0x40000000
+  - actual: should_be_a00000
+    expected: 0xa00000

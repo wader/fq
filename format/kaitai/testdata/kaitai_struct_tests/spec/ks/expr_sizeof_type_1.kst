@@ -1,0 +1,7 @@
+id: expr_sizeof_type_1
+data: fixed_struct.bin
+asserts:
+  - actual: sizeof_block
+    expected: 1 + 4 + 2 + 4
+  - actual: sizeof_subblock
+    expected: 4

@@ -1,0 +1,25 @@
+id: switch_multi_bool_ops
+data: switch_integers.bin
+asserts:
+  - actual: opcodes.size
+    expected: 4
+
+  - actual: opcodes[0].code
+    expected: 1
+  - actual: opcodes[0].body
+    expected: 7
+
+  - actual: opcodes[1].code
+    expected: 2
+  - actual: opcodes[1].body
+    expected: 0x4040
+
+  - actual: opcodes[2].code
+    expected: 4
+  - actual: opcodes[2].body
+    expected: 4919
+
+  - actual: opcodes[3].code
+    expected: 8
+  - actual: opcodes[3].body
+    expected: 4919

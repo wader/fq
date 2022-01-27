@@ -1,0 +1,7 @@
+id: position_to_end
+data: position_to_end.bin
+asserts:
+  - actual: index.foo
+    expected: 0x42
+  - actual: index.bar
+    expected: 0x1234

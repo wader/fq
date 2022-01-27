@@ -1,0 +1,10 @@
+$ fq -d kaitai -o source=@formats/enum_to_i.ksy "d,tovalue({skip_gaps: true})" src/enum_0.bin
+{
+  "one_lt_two": true,
+  "pet_1": "enum_to_i::animal::cat",
+  "pet_1_eq_int": true,
+  "pet_1_i": 7,
+  "pet_1_mod": 32775,
+  "pet_2": "enum_to_i::animal::chicken",
+  "pet_2_eq_int": false
+}

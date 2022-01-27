@@ -1,0 +1,12 @@
+$ fq -d kaitai -o source=@formats/default_endian_mod.ksy "d,tovalue({skip_gaps: true})" src/fixed_struct.bin
+{
+  "main": {
+    "nest": {
+      "two": -52947
+    },
+    "nest_be": {
+      "two": 1346454347
+    },
+    "one": 1262698832
+  }
+}

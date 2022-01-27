@@ -1,0 +1,37 @@
+id: params_pass_bool
+data: term_strz.bin
+asserts:
+  - actual: s_false
+    expected: false
+  - actual: s_true
+    expected: true
+
+  - actual: seq_b1.arg
+    expected: true
+  - actual: seq_b1.foo.size
+    expected: 1
+
+  - actual: seq_bool.arg
+    expected: false
+  - actual: seq_bool.foo.size
+    expected: 2
+
+  - actual: literal_b1.arg
+    expected: false
+  - actual: literal_b1.foo.size
+    expected: 2
+
+  - actual: literal_bool.arg
+    expected: true
+  - actual: literal_bool.foo.size
+    expected: 1
+
+  - actual: inst_b1.arg
+    expected: true
+  - actual: inst_b1.foo.size
+    expected: 1
+
+  - actual: inst_bool.arg
+    expected: false
+  - actual: inst_bool.foo.size
+    expected: 2

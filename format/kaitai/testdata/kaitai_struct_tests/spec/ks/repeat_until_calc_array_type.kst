@@ -1,0 +1,17 @@
+id: repeat_until_calc_array_type
+data: repeat_until_process.bin
+asserts:
+  - actual: records.size
+    expected: 3
+  - actual: records[0].marker
+    expected: 232
+  - actual: records[0].body
+    expected: 2863311546
+  - actual: records[1].marker
+    expected: 250
+  - actual: records[1].body
+    expected: 2863315102
+  - actual: records[2].marker
+    expected: 170
+  - actual: records[2].body
+    expected: 1431655765

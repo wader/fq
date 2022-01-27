@@ -1,0 +1,16 @@
+$ fq -d kaitai -o source=@formats/switch_integers2.ksy "d,tovalue({skip_gaps: true})" src/switch_integers.bin
+{
+  "code": 1,
+  "ham": [
+    2,
+    64,
+    64,
+    4,
+    55,
+    19,
+    0
+  ],
+  "len": 7,
+  "len_mod_str": "13",
+  "padding": 0
+}

@@ -1,0 +1,39 @@
+id: expr_str_ops
+data: term_strz.bin
+asserts:
+  - actual: one
+    expected: '"foo|b"'
+  - actual: one_len
+    expected: 5
+  - actual: one_rev
+    expected: '"b|oof"'
+  - actual: one_substr_0_to_3
+    expected: '"foo"'
+  - actual: one_substr_2_to_5
+    expected: '"o|b"'
+  - actual: one_substr_3_to_3
+    expected: '""'
+
+  - actual: two
+    expected: '"0123456789"'
+  - actual: two_len
+    expected: 10
+  - actual: two_rev
+    expected: '"9876543210"'
+  - actual: two_substr_0_to_7
+    expected: '"0123456"'
+  - actual: two_substr_4_to_10
+    expected: '"456789"'
+  - actual: two_substr_0_to_10
+    expected: '"0123456789"'
+
+  - actual: to_i_attr
+    expected: 9173
+  - actual: to_i_r10
+    expected: -72
+  - actual: to_i_r2
+    expected: 0b1010110
+  - actual: to_i_r8
+    expected: 0o721
+  - actual: to_i_r16
+    expected: 0x47cf

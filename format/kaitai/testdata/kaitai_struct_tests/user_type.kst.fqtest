@@ -1,0 +1,7 @@
+$ fq -d kaitai -o source=@formats/user_type.ksy "d,tovalue({skip_gaps: true})" src/repeat_until_s4.bin
+{
+  "one": {
+    "height": 4919,
+    "width": 66
+  }
+}

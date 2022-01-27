@@ -1,0 +1,14 @@
+$ fq -d kaitai -o source=@formats/imports_circular_a.ksy "d,tovalue({skip_gaps: true})" src/fixed_struct.bin
+{
+  "code": 80,
+  "two": {
+    "back_ref": {
+      "code": 67,
+      "two": {
+        "back_ref": "null",
+        "initial": 75
+      }
+    },
+    "initial": 65
+  }
+}

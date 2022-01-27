@@ -1,0 +1,5 @@
+id: params_call_extra_parens
+data: term_strz.bin
+asserts:
+  - actual: buf1.body
+    expected: '"foo|b"'

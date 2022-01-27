@@ -1,0 +1,13 @@
+id: switch_integers2
+data: switch_integers.bin
+asserts:
+  - actual: code
+    expected: 1
+  - actual: len
+    expected: 7
+  - actual: ham
+    expected: '[0x02, 0x40, 0x40, 0x04, 0x37, 0x13, 0x00]'
+  - actual: padding
+    expected: 0
+  - actual: len_mod_str
+    expected: '"13"'

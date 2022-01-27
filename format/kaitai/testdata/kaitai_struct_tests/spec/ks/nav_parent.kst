@@ -1,0 +1,14 @@
+id: nav_parent
+data: nav.bin
+asserts:
+  - actual: header.qty_entries
+    expected: 2
+  - actual: header.filename_len
+    expected: 8
+
+  - actual: index.entries.size
+    expected: 2
+  - actual: index.entries[0].filename
+    expected: '"FIRST___"'
+  - actual: index.entries[1].filename
+    expected: '"SECOND__"'

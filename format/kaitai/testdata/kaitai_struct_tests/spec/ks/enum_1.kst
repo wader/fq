@@ -1,0 +1,8 @@
+id: enum_1
+data: enum_0.bin
+asserts:
+  - actual: main.submain.pet_1
+    expected: enum_1::main_obj::animal::cat
+  - actual: main.submain.pet_2
+    expected: enum_1::main_obj::animal::chicken
+

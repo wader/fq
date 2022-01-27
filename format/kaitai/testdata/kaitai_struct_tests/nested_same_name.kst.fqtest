@@ -1,0 +1,14 @@
+$ fq -d kaitai -o source=@formats/nested_same_name.ksy "d,tovalue({skip_gaps: true})" src/repeat_n_struct.bin
+{
+  "main_data": {
+    "foo": {
+      "data": [
+        16,
+        0,
+        0,
+        0
+      ]
+    },
+    "main_size": 2
+  }
+}

@@ -1,0 +1,9 @@
+$ fq -d kaitai -o source=@formats/repeat_eos_u4.ksy "d,tovalue({skip_gaps: true})" src/repeat_eos_struct.bin
+{
+  "numbers": [
+    0,
+    66,
+    66,
+    2069
+  ]
+}

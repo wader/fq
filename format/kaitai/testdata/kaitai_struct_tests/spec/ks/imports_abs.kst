@@ -1,0 +1,8 @@
+id: imports_abs
+data: fixed_struct.bin
+imports: vlq_base128_le
+asserts:
+  - actual: len.value
+    expected: 80
+  - actual: body.length
+    expected: 80

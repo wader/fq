@@ -1,0 +1,37 @@
+id: combine_str
+data: term_strz.bin
+asserts:
+  - actual: str_term
+    expected: '"foo"'
+  - actual: str_limit
+    expected: '"bar|"'
+  - actual: str_eos
+    expected: '"baz@"'
+  - actual: str_calc
+    expected: '"bar"'
+  - actual: str_calc_bytes
+    expected: '"baz"'
+
+  - actual: term_or_limit
+    expected: '"foo"'
+  - actual: term_or_eos
+    expected: '"baz@"'
+  - actual: term_or_calc
+    expected: '"foo"'
+  - actual: term_or_calc_bytes
+    expected: '"baz"'
+
+  - actual: limit_or_eos
+    expected: '"bar|"'
+  - actual: limit_or_calc
+    expected: '"bar"'
+  - actual: limit_or_calc_bytes
+    expected: '"bar|"'
+
+  - actual: eos_or_calc
+    expected: '"bar"'
+  - actual: eos_or_calc_bytes
+    expected: '"baz@"'
+
+  - actual: calc_or_calc_bytes
+    expected: '"baz"'

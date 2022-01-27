@@ -1,0 +1,24 @@
+$ fq -d kaitai -o source=@formats/nav_parent_false.ksy "d,tovalue({skip_gaps: true})" src/nav_parent_codes.bin
+{
+  "child_size": 3,
+  "element_a": {
+    "bar": {
+      "foo": {
+        "code": 66
+      }
+    },
+    "foo": {
+      "code": 73,
+      "more": [
+        49,
+        50,
+        51
+      ]
+    }
+  },
+  "element_b": {
+    "foo": {
+      "code": 98
+    }
+  }
+}

@@ -1,0 +1,7 @@
+id: repeat_until_s4
+data: repeat_until_s4.bin
+asserts:
+  - actual: entries
+    expected: '[0x42, 0x1337, -251658241, -1]'
+  - actual: afterall
+    expected: '"foobar"'

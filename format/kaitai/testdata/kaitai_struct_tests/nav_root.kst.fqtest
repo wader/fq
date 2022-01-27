@@ -1,0 +1,1 @@
+$ fq -d kaitai -o source=@formats/nav_root.ksy "d,tovalue({skip_gaps: true})" src/nav.bin

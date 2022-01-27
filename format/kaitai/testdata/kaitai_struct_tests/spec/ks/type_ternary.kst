@@ -1,0 +1,5 @@
+id: type_ternary
+data: term_strz.bin
+asserts:
+  - actual: dif.value
+    expected: 0x65

@@ -1,0 +1,12 @@
+$ fq -d kaitai -o source=@formats/expr_ops_parens.ksy "d,tovalue({skip_gaps: true})" src/enum_negative.bin
+{
+  "bool_and": 0,
+  "bool_eq": 0,
+  "bool_or": 1,
+  "f_sum_to_int": 9,
+  "i_sum_to_str": "29",
+  "str_concat_len": 10,
+  "str_concat_rev": "9876543210",
+  "str_concat_substr_2_to_7": "23456",
+  "str_concat_to_i": 123456789
+}

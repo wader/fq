@@ -1,0 +1,23 @@
+id: expr_bits
+data: switch_opcodes.bin
+asserts:
+  - actual: a
+    expected: 2
+  - actual: enum_seq
+    expected: 'expr_bits::items::foo'
+  - actual: byte_size
+    expected: '[0x66, 0x6f]'
+  - actual: repeat_expr.size
+    expected: 2
+  - actual: repeat_expr[0]
+    expected: 111
+  - actual: repeat_expr[1]
+    expected: 98
+  - actual: switch_on_type
+    expected: 97
+  - actual: switch_on_endian.foo
+    expected: 29184
+  - actual: enum_inst
+    expected: 'expr_bits::items::bar'
+  - actual: inst_pos
+    expected: 111

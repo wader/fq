@@ -1,0 +1,8 @@
+id: cast_to_imported
+data: fixed_struct.bin
+imports: hello_world
+asserts:
+  - actual: one.one
+    expected: 0x50
+  - actual: one_casted.one
+    expected: 0x50

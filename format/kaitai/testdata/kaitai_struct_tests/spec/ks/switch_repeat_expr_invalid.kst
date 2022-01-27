@@ -1,0 +1,10 @@
+id: switch_repeat_expr_invalid
+data: switch_tlv.bin
+asserts:
+  - actual: code
+    expected: 0x11
+  - actual: size
+    expected: 9
+  - actual: 'body[0].as<bytes>' # 'raw_body[0]' for C++ (temporarily add 'raw_body' of 'type: bytes[]' to .ksy),
+                                # then rename it to '_raw_body' in the generated test
+    expected: '[0x53, 0x74, 0x75, 0x66, 0x66, 0x00, 0x4d, 0x65, 0x00]' # "Stuff\0Me\0" as string

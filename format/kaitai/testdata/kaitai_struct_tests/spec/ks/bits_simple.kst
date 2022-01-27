@@ -1,0 +1,47 @@
+id: bits_simple
+data: fixed_struct.bin
+asserts:
+  # 50 41
+  - actual: byte_1
+    expected: 0x50
+  - actual: byte_2
+    expected: 0x41
+
+  # 43 (1 + 3 + 4) = 0|100|0011
+  - actual: bits_a
+    expected: false
+  - actual: bits_b
+    expected: 0b100
+  - actual: bits_c
+    expected: 0b0011
+
+  # 4B 2D 31 (10 + 3 + 11) = 01001011 00|101|101 00110001
+  - actual: large_bits_1
+    expected: 0b0100101100
+  - actual: spacer
+    expected: 0b101
+  - actual: large_bits_2
+    expected: 0b10100110001
+
+  # FF FF
+  - actual: normal_s2
+    expected: -1
+
+  # 50 41 43
+  - actual: byte_8_9_10
+    expected: 0x504143
+
+  # 4B 2D 55 2D
+  - actual: byte_11_to_14
+    expected: 0x4B2D552D
+
+  # 44 45 46 FF FF
+  - actual: byte_15_to_19
+    expected: 0x444546FFFF
+
+  # FF FF FF FF FF FF FF FF
+  - actual: byte_20_to_27
+    expected: 0xFFFFFFFFFFFFFFFF
+
+  - actual: test_if_b1
+    expected: 123

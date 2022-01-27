@@ -1,0 +1,8 @@
+$ fq -d kaitai -o source=@formats/imports0.ksy "d,tovalue({skip_gaps: true})" src/fixed_struct.bin
+{
+  "hw": {
+    "one": 65
+  },
+  "hw_one": 65,
+  "two": 80
+}

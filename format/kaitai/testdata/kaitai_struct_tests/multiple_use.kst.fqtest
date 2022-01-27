@@ -1,0 +1,13 @@
+$ fq -d kaitai -o source=@formats/multiple_use.ksy "d,tovalue({skip_gaps: true})" src/position_abs.bin
+{
+  "t1": {
+    "first_use": {
+      "value": 32
+    }
+  },
+  "t2": {
+    "second_use": {
+      "value": 32
+    }
+  }
+}

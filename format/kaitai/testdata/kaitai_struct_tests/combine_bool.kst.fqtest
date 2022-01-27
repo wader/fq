@@ -1,0 +1,5 @@
+$ fq -d kaitai -o source=@formats/combine_bool.ksy "d,tovalue({skip_gaps: true})" src/enum_negative.bin
+{
+  "bool_bit": true,
+  "bool_calc_bit": false
+}

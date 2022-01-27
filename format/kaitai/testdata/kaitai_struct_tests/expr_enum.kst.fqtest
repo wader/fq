@@ -1,0 +1,6 @@
+$ fq -d kaitai -o source=@formats/expr_enum.ksy "d,tovalue({skip_gaps: true})" src/term_strz.bin
+{
+  "const_dog": "expr_enum::animal::dog",
+  "derived_boom": "expr_enum::animal::boom",
+  "derived_dog": "expr_enum::animal::dog"
+}

@@ -1,0 +1,7 @@
+id: params_enum
+data: enum_0.bin
+asserts:
+  - actual: one
+    expected: params_enum::animal::cat
+  - actual: invoke_with_param.is_cat
+    expected: true

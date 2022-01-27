@@ -1,0 +1,21 @@
+id: floating_points
+data: floating_points.bin
+asserts:
+  - actual: single_value
+    expected: 0.5.as<f4>
+  - actual: single_value_be
+    expected: 0.5.as<f4>
+
+  - actual: double_value
+    expected: 0.25
+  - actual: double_value_be
+    expected: 0.25
+
+  - actual: approximate_value
+    expected: 1.2345
+  - actual: single_value_plus_int
+    expected: 1.5
+  - actual: single_value_plus_float
+    expected: 1.0
+  - actual: double_value_plus_float
+    expected: 0.3

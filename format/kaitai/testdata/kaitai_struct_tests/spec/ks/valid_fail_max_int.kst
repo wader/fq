@@ -1,0 +1,3 @@
+id: valid_fail_max_int
+data: fixed_struct.bin
+exception: ValidationGreaterThanError<u1>

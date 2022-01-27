@@ -1,0 +1,10 @@
+id: bits_unaligned_b64_be
+data: process_xor_4.bin
+asserts:
+  # EC BB A3 14 8A D4 CC 34 8E (1 + 64 + 7) = 1|1101100 10111011 10100011 00010100 10001010 11010100 11001100 00110100 1|000_1110
+  - actual: a
+    expected: true
+  - actual: b
+    expected: 0b1101100_10111011_10100011_00010100_10001010_11010100_11001100_00110100_1
+  - actual: c
+    expected: 0b000_1110

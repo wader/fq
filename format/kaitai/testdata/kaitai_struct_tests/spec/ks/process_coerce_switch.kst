@@ -1,0 +1,9 @@
+id: process_coerce_switch
+data: process_coerce_switch.bin
+asserts:
+  - actual: buf_type
+    expected: 0
+  - actual: flag
+    expected: 0
+  - actual: buf.as<process_coerce_switch::foo>.bar
+    expected: '[0x41, 0x41, 0x41, 0x41]'

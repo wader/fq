@@ -1,0 +1,7 @@
+id: enum_int_range_u
+data: enum_int_range_u.bin
+asserts:
+  - actual: f1
+    expected: enum_int_range_u::constants::zero
+  - actual: f2
+    expected: enum_int_range_u::constants::int_max

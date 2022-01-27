@@ -1,0 +1,7 @@
+$ fq -d kaitai -o source=@formats/yaml_ints.ksy "d,tovalue({skip_gaps: true})" src/fixed_struct.bin
+{
+  "test_u4_dec": 4294967295,
+  "test_u4_hex": 4294967295,
+  "test_u8_dec": 18446744073709551615,
+  "test_u8_hex": 18446744073709551615
+}

@@ -1,0 +1,16 @@
+$ fq -d kaitai -o source=@formats/integers_double_overflow.ksy "d,tovalue({skip_gaps: true})" src/integers_double_overflow.bin
+{
+  "signed_safe_max_be": 9007199254740991,
+  "signed_safe_max_le": 9007199254740991,
+  "signed_safe_min_be": -9007199254740991,
+  "signed_safe_min_le": -9007199254740991,
+  "signed_unsafe_neg_be": {
+    "to_s": "-9007199254740993"
+  },
+  "signed_unsafe_neg_le": {
+    "to_s": "-9007199254740993"
+  },
+  "signed_unsafe_pos_be": {
+    "to_s": "9007199254740993"
+  }
+}

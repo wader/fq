@@ -1,0 +1,11 @@
+id: enum_long_range_u
+data: enum_long_range_u.bin
+asserts:
+  - actual: f1
+    expected: enum_long_range_u::constants::zero
+  - actual: f2
+    expected: enum_long_range_u::constants::int_max
+  - actual: f3
+    expected: enum_long_range_u::constants::int_over_max
+  - actual: f4
+    expected: enum_long_range_u::constants::long_max

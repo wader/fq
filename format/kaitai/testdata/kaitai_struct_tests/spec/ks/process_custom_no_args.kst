@@ -1,0 +1,5 @@
+id: process_custom_no_args
+data: process_rotate.bin
+asserts:
+  - actual: buf
+    expected: '[0x5f, 0x09, 0xac, 0x8d, 0x8d, 0xed, 0x5f]'

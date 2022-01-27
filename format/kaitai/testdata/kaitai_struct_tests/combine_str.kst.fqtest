@@ -1,0 +1,18 @@
+$ fq -d kaitai -o source=@formats/combine_str.ksy "d,tovalue({skip_gaps: true})" src/term_strz.bin
+{
+  "calc_or_calc_bytes": "baz",
+  "eos_or_calc": "bar",
+  "eos_or_calc_bytes": "baz@",
+  "limit_or_calc": "bar",
+  "limit_or_calc_bytes": "bar|",
+  "limit_or_eos": "bar|",
+  "str_calc": "bar",
+  "str_calc_bytes": "baz",
+  "str_eos": "baz@",
+  "str_limit": "bar|",
+  "str_term": "foo",
+  "term_or_calc": "foo",
+  "term_or_calc_bytes": "baz",
+  "term_or_eos": "baz@",
+  "term_or_limit": "foo"
+}

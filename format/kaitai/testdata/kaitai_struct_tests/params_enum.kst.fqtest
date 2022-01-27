@@ -1,0 +1,7 @@
+$ fq -d kaitai -o source=@formats/params_enum.ksy "d,tovalue({skip_gaps: true})" src/enum_0.bin
+{
+  "invoke_with_param": {
+    "is_cat": true
+  },
+  "one": "params_enum::animal::cat"
+}

@@ -1,0 +1,9 @@
+id: expr_bytes_non_literal
+data: enum_negative.bin
+asserts:
+  - actual: calc_bytes.size
+    expected: 2
+  - actual: calc_bytes[0]
+    expected: 255
+  - actual: calc_bytes[1]
+    expected: 1

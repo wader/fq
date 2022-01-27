@@ -1,0 +1,5 @@
+id: repeat_eos_u4
+data: repeat_eos_struct.bin
+asserts:
+  - actual: numbers
+    expected: '[0, 0x42, 0x42, 0x815]'

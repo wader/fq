@@ -1,0 +1,48 @@
+id: default_endian_expr_is_be
+data: endian_expr.bin
+
+asserts:
+  # LE
+  - actual: docs[0].indicator
+    expected: '[0x49, 0x49]'
+  - actual: docs[0].main.some_int
+    expected: 0x42
+  - actual: docs[0].main.some_int_be
+    expected: 0x42
+  - actual: docs[0].main.some_int_le
+    expected: 0x42
+
+  - actual: docs[0].main.inst_int
+    expected: 0x42
+  - actual: docs[0].main.inst_sub.foo
+    expected: 0x42
+
+  # BE
+  - actual: docs[1].indicator
+    expected: '[0x4d, 0x4d]'
+  - actual: docs[1].main.some_int
+    expected: 0x42
+  - actual: docs[1].main.some_int_be
+    expected: 0x42
+  - actual: docs[1].main.some_int_le
+    expected: 0x42
+
+  - actual: docs[1].main.inst_int
+    expected: 0x42000000
+  - actual: docs[1].main.inst_sub.foo
+    expected: 0x42000000
+
+  # Weird => LE
+  - actual: docs[2].indicator
+    expected: '[0x58, 0x58]'
+  - actual: docs[2].main.some_int
+    expected: 0x42000000
+  - actual: docs[2].main.some_int_be
+    expected: 0x42
+  - actual: docs[2].main.some_int_le
+    expected: 0x42
+
+  - actual: docs[2].main.inst_int
+    expected: 0x42
+  - actual: docs[2].main.inst_sub.foo
+    expected: 0x42

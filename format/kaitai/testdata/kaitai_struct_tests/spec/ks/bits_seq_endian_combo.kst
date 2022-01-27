@@ -1,0 +1,24 @@
+id: bits_seq_endian_combo
+data: process_xor_4.bin
+asserts:
+  # EC BB (6 + 16) = 111011|00 10111011
+  - actual: be1
+    expected: 0b111011
+  - actual: be2
+    expected: 0b00_10111011
+  # A3
+  - actual: le3
+    expected: 0xA3
+  # 14
+  - actual: be4
+    expected: 0x14
+  # 8A D4 (5 + 6 + 5) = 100|01010 11010|100
+  - actual: le5
+    expected: 0b01010
+  - actual: le6
+    expected: 0b100100
+  - actual: le7
+    expected: 0b11010
+  # CC = 1|1010100
+  - actual: be8
+    expected: true
