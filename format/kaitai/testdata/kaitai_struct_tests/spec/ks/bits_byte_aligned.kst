@@ -1,0 +1,29 @@
+id: bits_byte_aligned
+data: fixed_struct.bin
+asserts:
+  # 50 (6 + 2) = 010100|00
+  - actual: one
+    expected: 0b010100
+  # 41
+  - actual: byte_1
+    expected: 0x41
+  # 43 (3 + 1 + 4) = 010|0|0011
+  - actual: two
+    expected: 0b010
+  - actual: three
+    expected: false
+  # 4B
+  - actual: byte_2
+    expected: 0x4b
+  # 2D 31 (14 + 2) = 00101101 001100|01
+  - actual: four
+    expected: 0b00101101_001100
+  # FF
+  - actual: byte_3
+    expected: '[0xff]'
+  # FF
+  - actual: full_byte
+    expected: 0xff
+  # 50
+  - actual: byte_4
+    expected: 0x50

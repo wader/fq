@@ -1,0 +1,7 @@
+id: params_pass_usertype
+data: position_in_seq.bin
+asserts:
+  - actual: first.foo
+    expected: 1
+  - actual: one.buf
+    expected: '[2]'

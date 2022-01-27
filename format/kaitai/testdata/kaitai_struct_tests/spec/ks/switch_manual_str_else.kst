@@ -1,0 +1,25 @@
+id: switch_manual_str_else
+data: switch_opcodes2.bin
+asserts:
+  - actual: opcodes.size
+    expected: 4
+
+  - actual: opcodes[0].code
+    expected: '"S"'
+  - actual: opcodes[0].body.as<switch_manual_str_else::opcode::strval>.value
+    expected: '"foo"'
+
+  - actual: opcodes[1].code
+    expected: '"X"'
+  - actual: opcodes[1].body.as<switch_manual_str_else::opcode::noneval>.filler
+    expected: 0x42
+
+  - actual: opcodes[2].code
+    expected: '"Y"'
+  - actual: opcodes[2].body.as<switch_manual_str_else::opcode::noneval>.filler
+    expected: 0xcafe
+
+  - actual: opcodes[3].code
+    expected: '"I"'
+  - actual: opcodes[3].body.as<switch_manual_str_else::opcode::intval>.value
+    expected: 7

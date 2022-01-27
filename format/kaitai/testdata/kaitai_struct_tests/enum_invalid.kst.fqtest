@@ -1,0 +1,5 @@
+$ fq -d kaitai -o source=@formats/enum_invalid.ksy "d,tovalue({skip_gaps: true})" src/term_strz.bin
+{
+  "pet_1": "enum_invalid::animal::dog",
+  "pet_2": 111
+}

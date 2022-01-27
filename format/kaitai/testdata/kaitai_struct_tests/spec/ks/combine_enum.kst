@@ -1,0 +1,9 @@
+id: combine_enum
+data: enum_0.bin
+asserts:
+  - actual: enum_u4
+    expected: combine_enum::animal::pig
+  - actual: enum_u2
+    expected: combine_enum::animal::horse
+  - actual: enum_u4_u2
+    expected: combine_enum::animal::horse

@@ -1,0 +1,5 @@
+id: if_instances
+data: fixed_struct.bin
+asserts:
+  - actual: never_happens
+    expected: 'null'

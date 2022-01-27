@@ -1,0 +1,11 @@
+id: str_pad_term
+data: str_pad_term.bin
+asserts:
+  - actual: str_pad
+    expected: '"str1"'
+  - actual: str_term
+    expected: '"str2foo"'
+  - actual: str_term_and_pad
+    expected: '"str+++3bar+++"'
+  - actual: str_term_include
+    expected: '"str4baz@"'

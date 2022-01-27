@@ -1,0 +1,19 @@
+id: enum_if
+data: if_struct.bin
+asserts:
+  - actual: op1.opcode
+    expected: enum_if::opcodes::a_string
+  - actual: op1.arg_str.str
+    expected: '"foo"'
+
+  - actual: op2.opcode
+    expected: enum_if::opcodes::a_tuple
+  - actual: op2.arg_tuple.num1
+    expected: 0x42
+  - actual: op2.arg_tuple.num2
+    expected: 0x43
+
+  - actual: op3.opcode
+    expected: enum_if::opcodes::a_string
+  - actual: op3.arg_str.str
+    expected: '"bar"'

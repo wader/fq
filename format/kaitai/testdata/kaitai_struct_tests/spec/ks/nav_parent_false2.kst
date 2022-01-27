@@ -1,0 +1,5 @@
+id: nav_parent_false2
+data: fixed_struct.bin
+asserts:
+  - actual: parentless.foo
+    expected: 80

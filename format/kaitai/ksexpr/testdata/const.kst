@@ -1,0 +1,64 @@
+asserts:
+    - actual: array0
+      expected: '[1]'
+    - actual: array1
+      expected: '[1,2,3]'
+    - actual: array3
+      expected: '[1000,1002,1003]'
+    - actual: bigint
+      expected: "18446744073709551615"
+    - actual: bin0
+      expected: "0"
+    - actual: bin1
+      expected: "5"
+    - actual: bin2
+      expected: "-5"
+    - actual: "false"
+      expected: "false"
+    - actual: float0
+      expected: "123"
+    - actual: float1
+      expected: "123.456"
+    - actual: float2
+      expected: "123.4"
+    - actual: hex0
+      expected: "0"
+    - actual: hex1
+      expected: "255"
+    - actual: hex2
+      expected: "-255"
+    - actual: int0
+      expected: "0"
+    - actual: int1
+      expected: "123"
+    - actual: int2
+      expected: "-123"
+    - actual: oct0
+      expected: "0"
+    - actual: oct1
+      expected: "63"
+    - actual: oct2
+      expected: "-63"
+    - actual: string0
+      expected: '""'
+    - actual: string1
+      expected: '"abc"'
+    - actual: string3
+      expected: '"a\\uf00fb"'
+    - actual: string4
+      expected: '"a\\u0020b"'
+    - actual: string5
+      expected: '"a\\24b"'
+    - actual: string6
+      expected: '"abc\\a\\b\\t\\n\\v\\f\\r\\e\\\"\\\\"'
+    - actual: string7
+      expected: '""'
+    - actual: string8
+      expected: '"abc"'
+    - actual: string9
+      expected: '"abc\\\\a\\\\b\\\\t\\\\n\\\\v\\\\f\\\\r\\\\e\\\\\"\\\\\\\\"'
+    - actual: "true"
+      expected: "true"
+data: ""
+id: test
+

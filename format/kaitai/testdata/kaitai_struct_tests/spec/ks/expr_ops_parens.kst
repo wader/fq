@@ -1,0 +1,21 @@
+id: expr_ops_parens
+data: enum_negative.bin
+asserts:
+  - actual: i_sum_to_str
+    expected: '"29"'
+  - actual: f_sum_to_int
+    expected: 9
+  - actual: str_concat_len
+    expected: 10
+  - actual: str_concat_rev
+    expected: '"9876543210"'
+  - actual: str_concat_substr_2_to_7
+    expected: '"23456"'
+  - actual: str_concat_to_i
+    expected: 123456789
+  - actual: bool_eq
+    expected: 0
+  - actual: bool_and
+    expected: 0
+  - actual: bool_or
+    expected: 1

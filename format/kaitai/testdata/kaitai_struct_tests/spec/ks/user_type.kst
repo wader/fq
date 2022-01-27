@@ -1,0 +1,7 @@
+id: user_type
+data: repeat_until_s4.bin
+asserts:
+  - actual: one.width
+    expected: 0x42
+  - actual: one.height
+    expected: 0x1337

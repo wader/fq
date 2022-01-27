@@ -1,0 +1,17 @@
+id: if_values
+data: fixed_struct.bin
+asserts:
+  - actual: codes[0].opcode
+    expected: 80
+  - actual: codes[0].half_opcode
+    expected: 40
+
+  - actual: codes[1].opcode
+    expected: 65
+  - actual: codes[1].half_opcode
+    expected: 'null'
+
+  - actual: codes[2].opcode
+    expected: 67
+  - actual: codes[2].half_opcode
+    expected: 'null'

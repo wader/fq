@@ -1,0 +1,198 @@
+asserts:
+    - actual: add_float
+      expected: "6"
+    - actual: add_float2
+      expected: "7"
+    - actual: add_int
+      expected: "6"
+    - actual: add_string0
+      expected: '"a"'
+    - actual: add_string1
+      expected: '"abcd"'
+    - actual: band0
+      expected: "false"
+    - actual: band1
+      expected: "false"
+    - actual: band2
+      expected: "false"
+    - actual: band3
+      expected: "true"
+    - actual: band_assoc0
+      expected: "false"
+    - actual: band_int
+      expected: "15"
+    - actual: bor0
+      expected: "false"
+    - actual: bor1
+      expected: "true"
+    - actual: bor2
+      expected: "true"
+    - actual: bor3
+      expected: "true"
+    - actual: bor_assoc0
+      expected: "false"
+    - actual: bor_int
+      expected: "255"
+    - actual: bsl_int
+      expected: "32"
+    - actual: bsr_int
+      expected: "2"
+    - actual: bxor_int
+      expected: "231"
+    - actual: div_float
+      expected: "2"
+    - actual: div_float2
+      expected: "1.3333333333333333"
+    - actual: div_float3
+      expected: "1.25"
+    - actual: div_int
+      expected: "2"
+    - actual: div_int2
+      expected: "1"
+    - actual: eq_array0
+      expected: "false"
+    - actual: eq_array1
+      expected: "true"
+    - actual: eq_bool0
+      expected: "true"
+    - actual: eq_bool1
+      expected: "false"
+    - actual: eq_float0
+      expected: "true"
+    - actual: eq_float1
+      expected: "false"
+    - actual: eq_float2
+      expected: "true"
+    - actual: eq_float3
+      expected: "true"
+    - actual: eq_int0
+      expected: "true"
+    - actual: eq_int1
+      expected: "false"
+    - actual: eq_string0
+      expected: "true"
+    - actual: eq_string1
+      expected: "false"
+    - actual: gt_float
+      expected: "true"
+    - actual: gt_float2
+      expected: "true"
+    - actual: gt_float3
+      expected: "true"
+    - actual: gt_int
+      expected: "true"
+    - actual: gt_string0
+      expected: "false"
+    - actual: gt_string1
+      expected: "false"
+    - actual: gt_string2
+      expected: "true"
+    - actual: gteq_float
+      expected: "true"
+    - actual: gteq_float2
+      expected: "true"
+    - actual: gteq_float3
+      expected: "true"
+    - actual: gteq_int
+      expected: "true"
+    - actual: gteq_string0
+      expected: "true"
+    - actual: gteq_string1
+      expected: "false"
+    - actual: gteq_string2
+      expected: "true"
+    - actual: inv_int0
+      expected: "-11"
+    - actual: inv_int1
+      expected: "-4294967296"
+    - actual: inv_int2
+      expected: "9"
+    - actual: lt_float
+      expected: "false"
+    - actual: lt_float2
+      expected: "false"
+    - actual: lt_float3
+      expected: "false"
+    - actual: lt_int
+      expected: "false"
+    - actual: lt_string0
+      expected: "false"
+    - actual: lt_string1
+      expected: "true"
+    - actual: lt_string2
+      expected: "false"
+    - actual: lteq_float
+      expected: "false"
+    - actual: lteq_float2
+      expected: "false"
+    - actual: lteq_float3
+      expected: "false"
+    - actual: lteq_int
+      expected: "false"
+    - actual: lteq_string0
+      expected: "true"
+    - actual: lteq_string1
+      expected: "true"
+    - actual: lteq_string2
+      expected: "false"
+    - actual: mod_float
+      expected: "0"
+    - actual: mod_float2
+      expected: "1"
+    - actual: mod_float3
+      expected: "0.7999999999999998"
+    - actual: mod_int
+      expected: "0"
+    - actual: mul_float
+      expected: "8"
+    - actual: mul_float2
+      expected: "12"
+    - actual: mul_float3
+      expected: "12.8"
+    - actual: mul_int
+      expected: "8"
+    - actual: neg_int0
+      expected: "-10"
+    - actual: neg_int1
+      expected: "-4294967295"
+    - actual: neg_int2
+      expected: "10"
+    - actual: not_bool0
+      expected: "false"
+    - actual: not_bool1
+      expected: "true"
+    - actual: noteq_array0
+      expected: "true"
+    - actual: noteq_array1
+      expected: "false"
+    - actual: noteq_bool0
+      expected: "false"
+    - actual: noteq_bool1
+      expected: "true"
+    - actual: noteq_float0
+      expected: "false"
+    - actual: noteq_float1
+      expected: "true"
+    - actual: noteq_float2
+      expected: "false"
+    - actual: noteq_float3
+      expected: "false"
+    - actual: noteq_int0
+      expected: "false"
+    - actual: noteq_int1
+      expected: "true"
+    - actual: noteq_string0
+      expected: "false"
+    - actual: noteq_string1
+      expected: "true"
+    - actual: sub_float
+      expected: "2"
+    - actual: sub_float2
+      expected: "1"
+    - actual: sub_float3
+      expected: "0.7999999999999998"
+    - actual: sub_int
+      expected: "2"
+data: ""
+id: test
+

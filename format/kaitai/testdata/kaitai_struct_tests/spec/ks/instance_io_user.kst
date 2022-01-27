@@ -1,0 +1,12 @@
+id: instance_io_user
+data: instance_io.bin
+asserts:
+  - actual: qty_entries
+    expected: 3
+
+  - actual: entries[0].name
+    expected: '"the"'
+  - actual: entries[1].name
+    expected: '"rainy"'
+  - actual: entries[2].name
+    expected: '"day it is"'

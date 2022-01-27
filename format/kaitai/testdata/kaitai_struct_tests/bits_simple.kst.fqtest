@@ -1,0 +1,17 @@
+$ fq -d kaitai -o source=@formats/bits_simple.ksy "d,tovalue({skip_gaps: true})" src/fixed_struct.bin
+{
+  "bits_a": false,
+  "bits_b": 4,
+  "bits_c": 3,
+  "byte_1": 80,
+  "byte_11_to_14": 1261262125,
+  "byte_15_to_19": 293220057087,
+  "byte_2": 65,
+  "byte_20_to_27": 18446744073709551615,
+  "byte_8_9_10": 5259587,
+  "large_bits_1": 300,
+  "large_bits_2": 1329,
+  "normal_s2": -1,
+  "spacer": 5,
+  "test_if_b1": 123
+}

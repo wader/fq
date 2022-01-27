@@ -1,0 +1,6 @@
+$ fq -d kaitai -o source=@formats/params_call_extra_parens.ksy "d,tovalue({skip_gaps: true})" src/term_strz.bin
+{
+  "buf1": {
+    "body": "foo|b"
+  }
+}

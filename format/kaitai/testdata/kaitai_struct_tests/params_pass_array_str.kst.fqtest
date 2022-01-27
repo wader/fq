@@ -1,0 +1,1 @@
+$ fq -d kaitai -o source=@formats/params_pass_array_str.ksy "d,tovalue({skip_gaps: true})" src/term_strz.bin

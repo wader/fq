@@ -1,0 +1,15 @@
+$ fq -d kaitai -o source=@formats/expr_3.ksy "d,tovalue({skip_gaps: true})" src/fixed_struct.bin
+{
+  "four": "_ACK_",
+  "is_str_eq": true,
+  "is_str_ge": false,
+  "is_str_gt": false,
+  "is_str_le": true,
+  "is_str_lt": true,
+  "is_str_lt2": true,
+  "is_str_ne": false,
+  "one": 80,
+  "test_not": true,
+  "three": "@ACK",
+  "two": "ACK"
+}

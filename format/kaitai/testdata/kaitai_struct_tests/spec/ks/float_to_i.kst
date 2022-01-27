@@ -1,0 +1,20 @@
+id: float_to_i
+data: floating_points.bin
+asserts:
+  - actual: single_value
+    expected: 0.5
+  - actual: double_value
+    expected: 0.25
+
+  - actual: single_i
+    expected: 0
+  - actual: double_i
+    expected: 0
+  - actual: float1_i
+    expected: 1
+  - actual: float2_i
+    expected: 1
+  - actual: float3_i
+    expected: 1
+  - actual: float4_i
+    expected: -2

@@ -1,0 +1,18 @@
+$ fq -d kaitai -o source=@formats/nested_types3.ksy "d,tovalue({skip_gaps: true})" src/fixed_struct.bin
+{
+  "a_c_d": {
+    "value_d": 65
+  },
+  "a_cc": {
+    "value_cc": 80
+  },
+  "b": {
+    "a_c_d": {
+      "value_d": 45
+    },
+    "a_cc": {
+      "value_cc": 75
+    },
+    "value_b": 67
+  }
+}

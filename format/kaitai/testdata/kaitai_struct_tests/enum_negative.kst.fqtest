@@ -1,0 +1,5 @@
+$ fq -d kaitai -o source=@formats/enum_negative.ksy "d,tovalue({skip_gaps: true})" src/enum_negative.bin
+{
+  "f1": "enum_negative::constants::negative_one",
+  "f2": "enum_negative::constants::positive_one"
+}

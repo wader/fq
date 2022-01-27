@@ -1,0 +1,26 @@
+$ fq -d kaitai -o source=@formats/process_custom.ksy "d,tovalue({skip_gaps: true})" src/process_rotate.bin
+{
+  "buf1": [
+    16,
+    179,
+    148,
+    148,
+    244
+  ],
+  "buf2": [
+    95,
+    186,
+    123,
+    147,
+    99,
+    35,
+    95
+  ],
+  "buf3": [
+    41,
+    51,
+    177,
+    56,
+    177
+  ]
+}

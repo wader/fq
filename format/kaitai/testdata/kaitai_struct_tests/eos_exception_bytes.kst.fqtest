@@ -1,0 +1,2 @@
+$ fq -d kaitai -o source=@formats/eos_exception_bytes.ksy "d,tovalue({skip_gaps: true})" src/term_strz.bin
+{}

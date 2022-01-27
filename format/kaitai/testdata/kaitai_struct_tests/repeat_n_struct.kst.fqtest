@@ -1,0 +1,1 @@
+$ fq -d kaitai -o source=@formats/repeat_n_struct.ksy "d,tovalue({skip_gaps: true})" src/repeat_n_struct.bin

@@ -1,0 +1,9 @@
+id: cast_to_top
+data: fixed_struct.bin
+asserts:
+  - actual: code
+    expected: 0x50
+  - actual: header.code
+    expected: 0x41
+  - actual: header_casted.code
+    expected: 0x41

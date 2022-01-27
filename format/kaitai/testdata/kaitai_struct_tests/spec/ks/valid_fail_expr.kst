@@ -1,0 +1,3 @@
+id: valid_fail_expr
+data: nav_parent_switch.bin
+exception: ValidationExprError<s2>

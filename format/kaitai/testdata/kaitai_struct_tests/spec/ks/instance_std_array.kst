@@ -1,0 +1,18 @@
+id: instance_std_array
+data: instance_std_array.bin
+asserts:
+  - actual: ofs
+    expected: 0x10
+  - actual: qty_entries
+    expected: 3
+  - actual: entry_size
+    expected: 4
+
+  - actual: entries.size
+    expected: 3
+  - actual: entries[0]
+    expected: '[0x11, 0x11, 0x11, 0x11]'
+  - actual: entries[1]
+    expected: '[0x22, 0x22, 0x22, 0x22]'
+  - actual: entries[2]
+    expected: '[0x33, 0x33, 0x33, 0x33]'

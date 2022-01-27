@@ -1,0 +1,12 @@
+id: imports_rel_1
+data: fixed_struct.bin
+imports:
+  - imported_1
+  - imported_2
+asserts:
+  - actual: one
+    expected: 0x50
+  - actual: two.one
+    expected: 0x41
+  - actual: two.two.one
+    expected: 0x43

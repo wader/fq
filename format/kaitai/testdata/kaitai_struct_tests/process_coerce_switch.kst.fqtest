@@ -1,0 +1,13 @@
+$ fq -d kaitai -o source=@formats/process_coerce_switch.ksy "d,tovalue({skip_gaps: true})" src/process_coerce_switch.bin
+{
+  "buf": {
+    "bar": [
+      65,
+      65,
+      65,
+      65
+    ]
+  },
+  "buf_type": 0,
+  "flag": 0
+}

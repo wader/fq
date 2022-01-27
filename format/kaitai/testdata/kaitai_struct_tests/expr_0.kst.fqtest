@@ -1,0 +1,5 @@
+$ fq -d kaitai -o source=@formats/expr_0.ksy "d,tovalue({skip_gaps: true})" src/str_encodings.bin
+{
+  "must_be_abc123": "abc123",
+  "must_be_f7": 247
+}

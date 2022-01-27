@@ -1,0 +1,3 @@
+id: valid_fail_contents
+data: fixed_struct.bin
+exception: ValidationNotEqualError<bytes>

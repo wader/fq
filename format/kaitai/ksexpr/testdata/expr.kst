@@ -1,0 +1,70 @@
+asserts:
+    - actual: array_first
+      expected: "1"
+    - actual: array_last
+      expected: "3"
+    - actual: array_length
+      expected: "3"
+    - actual: array_max
+      expected: "3"
+    - actual: array_min
+      expected: "1"
+    - actual: array_size
+      expected: "3"
+    - actual: boolean_to_i0
+      expected: "1"
+    - actual: boolean_to_i1
+      expected: "0"
+    - actual: chain_methods
+      expected: "3"
+    - actual: float_to_i
+      expected: "123"
+    - actual: ident_underscore
+      expected: '"\u0000\u0000\u0000"'
+    - actual: ident_zeros
+      expected: '"\u0000\u0000\u0000"'
+    - actual: integer_to_s
+      expected: '"123"'
+    - actual: string_length0
+      expected: "3"
+    - actual: string_length1
+      expected: "4"
+    - actual: string_reverse0
+      expected: '""'
+    - actual: string_reverse1
+      expected: '"cba"'
+    - actual: string_reverse2
+      expected: '"dcba"'
+    - actual: string_substring0
+      expected: '"abcd"'
+    - actual: string_substring1
+      expected: '"bc"'
+    - actual: string_substring2
+      expected: '""'
+    - actual: string_substring3
+      expected: '""'
+    - actual: string_to_i0
+      expected: "123"
+    - actual: string_to_i1
+      expected: "5"
+    - actual: string_to_i2
+      expected: "63"
+    - actual: string_to_i3
+      expected: "255"
+    - actual: string_to_i4
+      expected: "13391"
+    - actual: subexpr0
+      expected: "true"
+    - actual: ternary0
+      expected: "1"
+    - actual: ternary1
+      expected: "2"
+    - actual: ternary2
+      expected: "1"
+    - actual: ternary3
+      expected: "3"
+    - actual: zeros
+      expected: '"\u0000\u0000\u0000"'
+data: ""
+id: test
+

@@ -1,0 +1,11 @@
+id: str_encodings
+data: str_encodings.bin
+asserts:
+  - actual: str1
+    expected: '"Some ASCII"'
+  - actual: str2
+    expected: '"こんにちは"'
+  - actual: str3
+    expected: '"こんにちは"'
+  - actual: str4
+    expected: '"░▒▓"'

@@ -1,0 +1,15 @@
+id: expr_int_div
+data: fixed_struct.bin
+asserts:
+  - actual: int_u
+    expected: 1262698832
+  - actual: int_s
+    expected: -52947
+  - actual: div_pos_const
+    expected: 756
+  - actual: div_neg_const
+    expected: -757
+  - actual: div_pos_seq
+    expected: 97130679
+  - actual: div_neg_seq
+    expected: -4073

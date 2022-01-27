@@ -1,0 +1,9 @@
+$ fq -d kaitai -o source=@formats/position_in_seq.ksy "d,tovalue({skip_gaps: true})" src/position_in_seq.bin
+{
+  "numbers": [
+    0,
+    1,
+    2,
+    3
+  ]
+}

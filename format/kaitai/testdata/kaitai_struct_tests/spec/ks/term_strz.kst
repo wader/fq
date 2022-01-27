@@ -1,0 +1,9 @@
+id: term_strz
+data: term_strz.bin
+asserts:
+  - actual: s1
+    expected: '"foo"'
+  - actual: s2
+    expected: '"bar"'
+  - actual: s3
+    expected: '"|baz@"'

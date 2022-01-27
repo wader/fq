@@ -1,0 +1,13 @@
+id: nested_same_name2
+data: nested_same_name2.bin
+asserts:
+  - actual: version
+    expected: 0x42
+  - actual: main_data.main_size
+    expected: 2
+  - actual: main_data.foo.data1
+    expected: '[0x11, 0x11, 0x11, 0x11]'
+  - actual: dummy.dummy_size
+    expected: 3
+  - actual: dummy.foo.data2
+    expected: '[0x22, 0x22, 0x22, 0x22, 0x22, 0x22]'

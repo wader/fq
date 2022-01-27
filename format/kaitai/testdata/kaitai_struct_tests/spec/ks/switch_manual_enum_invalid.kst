@@ -1,0 +1,15 @@
+id: switch_manual_enum_invalid
+data: enum_negative.bin
+asserts:
+  - actual: opcodes.size
+    expected: 2
+
+  - actual: opcodes[0].code
+    expected: 255
+  - actual: opcodes[0].body
+    expected: 'null'
+
+  - actual: opcodes[1].code
+    expected: 1
+  - actual: opcodes[1].body
+    expected: 'null'

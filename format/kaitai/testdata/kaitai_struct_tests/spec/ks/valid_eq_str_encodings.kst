@@ -1,0 +1,4 @@
+id: valid_eq_str_encodings
+data: str_encodings.bin
+
+# No asserts, validation is built into the generated code.

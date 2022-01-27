@@ -126,6 +126,7 @@ var (
 	JPEG                = &decode.Group{Name: "jpeg"}
 	JSON                = &decode.Group{Name: "json"}
 	JSONL               = &decode.Group{Name: "jsonl"}
+	Kaitai              = &decode.Group{Name: "kaitai"}
 	LevelDB_Descriptor  = &decode.Group{Name: "leveldb_descriptor"}
 	LevelDB_LDB         = &decode.Group{Name: "leveldb_table"}
 	LevelDB_LOG         = &decode.Group{Name: "leveldb_log"}
@@ -407,4 +408,8 @@ type Pg_Heap_In struct {
 
 type Pg_BTree_In struct {
 	Page int `doc:"First page number in file, default is 0"`
+}
+
+type Kaitai_In struct {
+	Source string `doc:"ksy source"`
 }

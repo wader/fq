@@ -1,0 +1,20 @@
+$ fq -d kaitai -o source=@formats/expr_str_ops.ksy "d,tovalue({skip_gaps: true})" src/term_strz.bin
+{
+  "one": "foo|b",
+  "one_len": 5,
+  "one_rev": "b|oof",
+  "one_substr_0_to_3": "foo",
+  "one_substr_2_to_5": "o|b",
+  "one_substr_3_to_3": "\"\"",
+  "to_i_attr": 9173,
+  "to_i_r10": -72,
+  "to_i_r16": 18383,
+  "to_i_r2": 86,
+  "to_i_r8": 465,
+  "two": "0123456789",
+  "two_len": 10,
+  "two_rev": "9876543210",
+  "two_substr_0_to_10": "0123456789",
+  "two_substr_0_to_7": "0123456",
+  "two_substr_4_to_10": "456789"
+}

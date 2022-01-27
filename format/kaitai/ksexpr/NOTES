@@ -1,0 +1,31 @@
+docker run -v "$PWD:/share" -it --entrypoint=ksdump kaitai/ksv -f json src/str_encodings.bin formats/expr_0.ksy
+docker run -v "$PWD:/share" -it kaitai/ksv src/str_encodings.bin formats/expr_0.ksy
+
+
+Guide comments:
+
+Tested with web IDE
+substring(4,1) -> subtring(1,4)
+
+go generate ./... && go run main.go 'bla+(1+2)' | jq 'walk(if type == "object" then with_entries(select(.value))  end)'
+
+Arrys:
+    one type
+    no nesting
+
+
+lexer seems to accept uppcase in identifiers, fails in checkIdentifier later
+
+
+
+
+"asdsad" | kaitai({source: {seq: [{id: "bla", size: 3, type: "str"}]} | to_yaml })
+
+
+
+
+band_float0: {value: '15.0 & 255'}
+ksdump ruby
+/tmp/d20230323-1-nyjxug/test.rb:107:in `band_float0': undefined method `&' for 15.0:Float (NoMethodError)
+js:
+bandFloat0 = 0xF

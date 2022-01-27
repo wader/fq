@@ -1,0 +1,20 @@
+id: repeat_until_sized
+data: repeat_until_process.bin
+asserts:
+  - actual: records.size
+    expected: 3
+
+  - actual: records[0].marker
+    expected: 0xe8
+  - actual: records[0].body
+    expected: 0xaaaaaaba
+
+  - actual: records[1].marker
+    expected: 0xfa
+  - actual: records[1].body
+    expected: 0xaaaab89e
+
+  - actual: records[2].marker
+    expected: 0xaa
+  - actual: records[2].body
+    expected: 0x55555555

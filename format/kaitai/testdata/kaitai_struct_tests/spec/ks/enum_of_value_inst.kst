@@ -1,0 +1,11 @@
+id: enum_of_value_inst
+data: enum_0.bin
+asserts:
+  - actual: pet_1
+    expected: enum_of_value_inst::animal::cat
+  - actual: pet_2
+    expected: enum_of_value_inst::animal::chicken
+  - actual: pet_3
+    expected: enum_of_value_inst::animal::dog
+  - actual: pet_4
+    expected: enum_of_value_inst::animal::dog

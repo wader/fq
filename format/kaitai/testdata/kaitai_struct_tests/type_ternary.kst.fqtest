@@ -1,0 +1,6 @@
+$ fq -d kaitai -o source=@formats/type_ternary.ksy "d,tovalue({skip_gaps: true})" src/term_strz.bin
+{
+  "dif": {
+    "value": 101
+  }
+}

@@ -1,0 +1,10 @@
+$ fq -d kaitai -o source=@formats/repeat_n_strz_double.ksy "d,tovalue({skip_gaps: true})" src/repeat_n_strz.bin
+{
+  "lines1": [
+    "foo"
+  ],
+  "lines2": [
+    "bar"
+  ],
+  "qty": 2
+}

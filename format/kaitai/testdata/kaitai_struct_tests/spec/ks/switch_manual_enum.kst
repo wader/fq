@@ -1,0 +1,25 @@
+id: switch_manual_enum
+data: switch_opcodes.bin
+asserts:
+  - actual: opcodes.size
+    expected: 4
+
+  - actual: opcodes[0].code
+    expected: switch_manual_enum::opcode::code_enum::strval
+  - actual: opcodes[0].body.as<switch_manual_enum::opcode::strval>.value
+    expected: '"foobar"'
+
+  - actual: opcodes[1].code
+    expected: switch_manual_enum::opcode::code_enum::intval
+  - actual: opcodes[1].body.as<switch_manual_enum::opcode::intval>.value
+    expected: 0x42
+
+  - actual: opcodes[2].code
+    expected: switch_manual_enum::opcode::code_enum::intval
+  - actual: opcodes[2].body.as<switch_manual_enum::opcode::intval>.value
+    expected: 0x37
+
+  - actual: opcodes[3].code
+    expected: switch_manual_enum::opcode::code_enum::strval
+  - actual: opcodes[3].body.as<switch_manual_enum::opcode::strval>.value
+    expected: '""'

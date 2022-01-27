@@ -1,0 +1,13 @@
+id: repeat_eos_struct
+data: repeat_eos_struct.bin
+asserts:
+  - actual: chunks.size
+    expected: 2
+  - actual: chunks[0].offset
+    expected: 0
+  - actual: chunks[0].len
+    expected: 0x42
+  - actual: chunks[1].offset
+    expected: 0x42
+  - actual: chunks[1].len
+    expected: 0x815

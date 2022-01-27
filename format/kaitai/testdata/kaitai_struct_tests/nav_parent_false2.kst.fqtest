@@ -1,0 +1,6 @@
+$ fq -d kaitai -o source=@formats/nav_parent_false2.ksy "d,tovalue({skip_gaps: true})" src/fixed_struct.bin
+{
+  "parentless": {
+    "foo": 80
+  }
+}

@@ -1,0 +1,9 @@
+$ fq -d kaitai -o source=@formats/cast_to_imported.ksy "d,tovalue({skip_gaps: true})" src/fixed_struct.bin
+{
+  "one": {
+    "one": 80
+  },
+  "one_casted": {
+    "one": 80
+  }
+}

@@ -1,0 +1,48 @@
+id: integers
+data: fixed_struct.bin
+asserts:
+  - actual: uint8
+    expected: 255
+  - actual: uint16
+    expected: 65535
+  - actual: uint32
+    expected: 4294967295
+  - actual: uint64
+    expected: 18446744073709551615
+
+  - actual: sint8
+    expected: -1
+  - actual: sint16
+    expected: -1
+  - actual: sint32
+    expected: -1
+  - actual: sint64
+    expected: -1
+
+  - actual: uint16le
+    expected: 66
+  - actual: uint32le
+    expected: 66
+  - actual: uint64le
+    expected: 66
+
+  - actual: sint16le
+    expected: -66
+  - actual: sint32le
+    expected: -66
+  - actual: sint64le
+    expected: -66
+
+  - actual: uint16be
+    expected: 66
+  - actual: uint32be
+    expected: 66
+  - actual: uint64be
+    expected: 66
+
+  - actual: sint16be
+    expected: -66
+  - actual: sint32be
+    expected: -66
+  - actual: sint64be
+    expected: -66

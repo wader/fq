@@ -1,0 +1,1 @@
+$ fq -d kaitai -o source=@formats/switch_multi_bool_ops.ksy "d,tovalue({skip_gaps: true})" src/switch_integers.bin

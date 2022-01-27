@@ -1,0 +1,2 @@
+$ fq -d kaitai -o source=@formats/valid_not_parsed_if.ksy "d,tovalue({skip_gaps: true})" src/fixed_struct.bin
+{}

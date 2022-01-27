@@ -1,0 +1,7 @@
+id: bits_shift_by_b64_le
+data: bits_shift_by_b64_le.bin
+asserts:
+  - actual: a
+    expected: 0xffff_ffff_ffff_ffff
+  - actual: b
+    expected: 0

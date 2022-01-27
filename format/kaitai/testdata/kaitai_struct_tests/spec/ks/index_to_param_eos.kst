@@ -1,0 +1,19 @@
+id: index_to_param_eos
+data: index_sizes.bin
+asserts:
+  - actual: qty
+    expected: 3
+
+  - actual: sizes[0]
+    expected: 1
+  - actual: sizes[1]
+    expected: 8
+  - actual: sizes[2]
+    expected: 4
+
+  - actual: blocks[0].buf
+    expected: '"A"'
+  - actual: blocks[1].buf
+    expected: '"BBBBBBBB"'
+  - actual: blocks[2].buf
+    expected: '"CCCC"'

@@ -1,0 +1,10 @@
+id: enum_to_i_class_border_1
+data: enum_0.bin
+imports: enum_to_i_class_border_2
+asserts:
+  - actual: pet_1
+    expected: enum_to_i_class_border_1::animal::cat
+  - actual: pet_2
+    expected: enum_to_i_class_border_1::animal::chicken
+  - actual: checker.is_dog
+    expected: true

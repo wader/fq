@@ -1,0 +1,4 @@
+$ fq -d kaitai -o source=@formats/default_big_endian.ksy "d,tovalue({skip_gaps: true})" src/enum_0.bin
+{
+  "one": 117440512
+}

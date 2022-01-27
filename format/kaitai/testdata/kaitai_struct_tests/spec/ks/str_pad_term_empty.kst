@@ -1,0 +1,11 @@
+id: str_pad_term_empty
+data: str_pad_term_empty.bin
+asserts:
+  - actual: str_pad
+    expected: '""'
+  - actual: str_term
+    expected: '""'
+  - actual: str_term_and_pad
+    expected: '""'
+  - actual: str_term_include
+    expected: '"@"'

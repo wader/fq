@@ -1,0 +1,21 @@
+id: str_encodings_utf16
+data: str_encodings_utf16.bin
+asserts:
+  - actual: len_be
+    expected: 12
+  - actual: be_bom_removed.bom
+    expected: 0xFEFF
+  - actual: be_bom_removed.str
+    expected: '"こんにちは"'
+
+  - actual: len_le
+    expected: 12
+  - actual: le_bom_removed.bom
+    expected: 0xFEFF
+  - actual: le_bom_removed.str
+    expected: '"こんにちは"'
+
+  # - actual: be_with_bom
+  #   expected: '"こんにちは"'
+  # - actual: le_with_bom
+  #   expected: '"こんにちは"'

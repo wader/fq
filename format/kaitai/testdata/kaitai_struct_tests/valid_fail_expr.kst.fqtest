@@ -1,0 +1,2 @@
+$ fq -d kaitai -o source=@formats/valid_fail_expr.ksy "d,tovalue({skip_gaps: true})" src/nav_parent_switch.bin
+{}

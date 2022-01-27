@@ -1,0 +1,11 @@
+$ fq -d kaitai -o source=@formats/cast_nested.ksy "d,tovalue({skip_gaps: true})" src/switch_opcodes.bin
+{
+  "opcodes_0_str": {
+    "value": "foobar"
+  },
+  "opcodes_0_str_value": "foobar",
+  "opcodes_1_int": {
+    "value": 66
+  },
+  "opcodes_1_int_value": 66
+}

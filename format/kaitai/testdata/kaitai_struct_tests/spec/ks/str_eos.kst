@@ -1,0 +1,5 @@
+id: str_eos
+data: term_strz.bin
+asserts:
+  - actual: str
+    expected: '"foo|bar|baz@"'

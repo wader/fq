@@ -1,0 +1,4 @@
+$ fq -d kaitai -o source=@formats/expr_sizeof_type_0.ksy "d,tovalue({skip_gaps: true})" src/fixed_struct.bin
+{
+  "sizeof_block": "1 + 4 + 2"
+}

@@ -1,0 +1,2 @@
+$ fq -d kaitai -o source=@formats/valid_fail_range_float.ksy "d,tovalue({skip_gaps: true})" src/floating_points.bin
+{}

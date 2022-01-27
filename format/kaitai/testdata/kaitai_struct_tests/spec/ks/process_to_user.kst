@@ -1,0 +1,5 @@
+id: process_to_user
+data: process_rotate.bin
+asserts:
+  - actual: buf1.str
+    expected: '"Hello"'

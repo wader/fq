@@ -1,0 +1,10 @@
+$ fq -d kaitai -o source=@formats/params_call_short.ksy "d,tovalue({skip_gaps: true})" src/term_strz.bin
+{
+  "buf1": {
+    "body": "foo|b"
+  },
+  "buf2": {
+    "body": "ar|ba",
+    "trailer": 122
+  }
+}

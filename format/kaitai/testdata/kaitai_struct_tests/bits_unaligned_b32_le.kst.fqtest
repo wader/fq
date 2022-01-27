@@ -1,0 +1,6 @@
+$ fq -d kaitai -o source=@formats/bits_unaligned_b32_le.ksy "d,tovalue({skip_gaps: true})" src/process_xor_4.bin
+{
+  "a": false,
+  "b": 173137398,
+  "c": 69
+}

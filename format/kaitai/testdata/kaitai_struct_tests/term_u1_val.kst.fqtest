@@ -1,0 +1,20 @@
+$ fq -d kaitai -o source=@formats/term_u1_val.ksy "d,tovalue({skip_gaps: true})" src/str_encodings.bin
+{
+  "bar": "こんに",
+  "foo": [
+    10,
+    0,
+    83,
+    111,
+    109,
+    101,
+    32,
+    65,
+    83,
+    67,
+    73,
+    73,
+    15,
+    0
+  ]
+}

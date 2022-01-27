@@ -1,0 +1,13 @@
+id: repeat_n_struct
+data: repeat_n_struct.bin
+asserts:
+  - actual: chunks.size
+    expected: 2
+  - actual: chunks[0].offset
+    expected: 0x10
+  - actual: chunks[0].len
+    expected: 0x2078
+  - actual: chunks[1].offset
+    expected: 0x2088
+  - actual: chunks[1].len
+    expected: 0xf

@@ -1,0 +1,8 @@
+id: nested_same_name
+data: repeat_n_struct.bin
+asserts:
+  - actual: main_data.main_size
+    expected: 2
+  - actual: main_data.foo.data
+    expected: '[0x10, 0x00, 0x00, 0x00]'
+

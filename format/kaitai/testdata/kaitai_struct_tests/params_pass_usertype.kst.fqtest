@@ -1,0 +1,11 @@
+$ fq -d kaitai -o source=@formats/params_pass_usertype.ksy "d,tovalue({skip_gaps: true})" src/position_in_seq.bin
+{
+  "first": {
+    "foo": 1
+  },
+  "one": {
+    "buf": [
+      2
+    ]
+  }
+}

@@ -1,0 +1,9 @@
+id: params_pass_array_struct
+data: position_to_end.bin
+asserts:
+  - actual: pass_structs.structs.size
+    expected: 2
+  - actual: pass_structs.structs[0].as<params_pass_array_struct::foo>.f
+    expected: 1
+  - actual: pass_structs.structs[1].as<params_pass_array_struct::bar>.b
+    expected: 2

@@ -1,0 +1,24 @@
+id: expr_bytes_cmp
+data: fixed_struct.bin
+asserts:
+  - actual: one
+    expected: '[0x50]'
+  - actual: two
+    expected: '[0x41, 0x43, 0x4b]'
+
+  - actual: is_eq
+    expected: true
+  - actual: is_ne
+    expected: false
+  - actual: is_lt
+    expected: true
+  - actual: is_gt
+    expected: false
+  - actual: is_le
+    expected: true
+  - actual: is_ge
+    expected: false
+  - actual: is_lt2
+    expected: false
+  - actual: is_gt2
+    expected: true

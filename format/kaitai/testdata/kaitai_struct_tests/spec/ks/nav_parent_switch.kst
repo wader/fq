@@ -1,0 +1,9 @@
+id: nav_parent_switch
+data: nav_parent_switch.bin
+asserts:
+  - actual: category
+    expected: 1
+  - actual: content.as<nav_parent_switch::element_1>.foo
+    expected: 0x42
+  - actual: content.as<nav_parent_switch::element_1>.subelement.bar
+    expected: 0xff

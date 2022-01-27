@@ -1,0 +1,43 @@
+$ fq -d kaitai -o source=@formats/bytes_pad_term.ksy "d,tovalue({skip_gaps: true})" src/str_pad_term.bin
+{
+  "str_pad": [
+    115,
+    116,
+    114,
+    49
+  ],
+  "str_term": [
+    115,
+    116,
+    114,
+    50,
+    102,
+    111,
+    111
+  ],
+  "str_term_and_pad": [
+    115,
+    116,
+    114,
+    43,
+    43,
+    43,
+    51,
+    98,
+    97,
+    114,
+    43,
+    43,
+    43
+  ],
+  "str_term_include": [
+    115,
+    116,
+    114,
+    52,
+    98,
+    97,
+    122,
+    64
+  ]
+}

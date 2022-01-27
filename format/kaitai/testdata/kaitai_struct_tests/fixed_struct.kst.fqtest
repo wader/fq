@@ -1,0 +1,25 @@
+$ fq -d kaitai -o source=@formats/fixed_struct.ksy "d,tovalue({skip_gaps: true})" src/fixed_struct.bin
+{
+  "hdr": {
+    "sint16": -1,
+    "sint16be": -66,
+    "sint16le": -66,
+    "sint32": -1,
+    "sint32be": -66,
+    "sint32le": -66,
+    "sint64": -1,
+    "sint64be": -66,
+    "sint64le": -66,
+    "sint8": -1,
+    "uint16": 65535,
+    "uint16be": 66,
+    "uint16le": 66,
+    "uint32": 4294967295,
+    "uint32be": 66,
+    "uint32le": 66,
+    "uint64": 18446744073709551615,
+    "uint64be": 66,
+    "uint64le": 66,
+    "uint8": 255
+  }
+}

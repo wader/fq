@@ -1,0 +1,11 @@
+id: process_coerce_usertype2
+data: process_coerce_bytes.bin
+asserts:
+  - actual: records[0].flag
+    expected: 0
+  - actual: records[0].buf.value
+    expected: 0x41414141
+  - actual: records[1].flag
+    expected: 1
+  - actual: records[1].buf.value
+    expected: 0x42424242

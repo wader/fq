@@ -1,0 +1,13 @@
+id: expr_sizeof_value_sized
+data: fixed_struct.bin
+asserts:
+  - actual: self_sizeof
+    expected: 12 + 2
+  - actual: sizeof_block
+    expected: 12
+  - actual: sizeof_block_a
+    expected: 1
+  - actual: sizeof_block_b
+    expected: 4
+  - actual: sizeof_block_c
+    expected: 2

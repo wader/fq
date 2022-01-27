@@ -1,0 +1,39 @@
+id: repeat_until_complex
+data: repeat_until_complex.bin
+asserts:
+  - actual: first.size
+    expected: 3
+  - actual: first[0].count
+    expected: 4
+  - actual: first[0].values
+    expected: '[0 + 1, 2, 3, 4]'
+  - actual: first[1].count
+    expected: 2
+  - actual: first[1].values
+    expected: '[0 + 1, 2]'
+  - actual: first[2].count
+    expected: 0
+#  - actual: first[2].values
+#    expected: '[]'
+
+  - actual: second.size
+    expected: 4
+  - actual: second[0].count
+    expected: 6
+  - actual: second[0].values
+    expected: '[0 + 1, 2, 3, 4, 5, 6]'
+  - actual: second[1].count
+    expected: 3
+  - actual: second[1].values
+    expected: '[0 + 1, 2, 3]'
+  - actual: second[2].count
+    expected: 4
+  - actual: second[2].values
+    expected: '[0 + 1, 2, 3, 4]'
+  - actual: second[3].count
+    expected: 0
+#  - actual: second[3].values
+#    expected: '[]'
+
+  - actual: third
+    expected: '[0 + 102, 111, 111, 98, 97, 114, 0]' # 0 + 1 hack to have true integer array, not byte array

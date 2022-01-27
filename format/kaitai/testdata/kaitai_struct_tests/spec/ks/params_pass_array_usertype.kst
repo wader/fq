@@ -1,0 +1,13 @@
+id: params_pass_array_usertype
+data: position_to_end.bin
+asserts:
+  - actual: pass_blocks.bar.size
+    expected: 2
+  - actual: pass_blocks.bar[0].foo
+    expected: 1
+  - actual: pass_blocks.bar[1].foo
+    expected: 2
+  - actual: pass_blocks.one
+    expected: '[3]'
+  - actual: pass_blocks.two
+    expected: '[4, 5]'

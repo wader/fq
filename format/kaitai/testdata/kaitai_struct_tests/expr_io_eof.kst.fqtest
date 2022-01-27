@@ -1,0 +1,11 @@
+$ fq -d kaitai -o source=@formats/expr_io_eof.ksy "d,tovalue({skip_gaps: true})" src/fixed_struct.bin
+{
+  "substream1": {
+    "one": 1262698832,
+    "two": "null"
+  },
+  "substream2": {
+    "one": 4294914349,
+    "two": 1262698832
+  }
+}

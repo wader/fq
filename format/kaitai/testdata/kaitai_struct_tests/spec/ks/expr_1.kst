@@ -1,0 +1,11 @@
+id: expr_1
+data: str_encodings.bin
+asserts:
+  - actual: len_of_1
+    expected: 10
+  - actual: len_of_1_mod
+    expected: 8
+  - actual: str1
+    expected: '"Some ASC"'
+  - actual: str1_len
+    expected: 8

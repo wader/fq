@@ -1,0 +1,25 @@
+$ fq -d kaitai -o source=@formats/expr_2.ksy "d,tovalue({skip_gaps: true})" src/str_encodings.bin
+{
+  "str1": {
+    "len_mod": 7,
+    "len_orig": 10,
+    "str": "Some AS"
+  },
+  "str1_avg": 73,
+  "str1_byte1": 73,
+  "str1_char5": "e",
+  "str1_len": 7,
+  "str1_len_mod": 7,
+  "str1_tuple5": {
+    "avg": 48,
+    "byte0": 101,
+    "byte1": 32,
+    "byte2": 65
+  },
+  "str2_tuple5": {
+    "avg": 48,
+    "byte0": 101,
+    "byte1": 32,
+    "byte2": 65
+  }
+}

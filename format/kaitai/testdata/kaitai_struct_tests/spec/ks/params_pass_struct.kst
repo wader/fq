@@ -1,0 +1,11 @@
+id: params_pass_struct
+data: enum_negative.bin
+asserts:
+  - actual: first.foo
+    expected: 255
+  - actual: one.bar.qux
+    expected: 1
+  - actual: one.foo.as<params_pass_struct::block>.foo
+    expected: 255
+  - actual: one.bar.foo.as<params_pass_struct::block>.foo
+    expected: 255

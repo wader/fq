@@ -1,0 +1,7 @@
+id: enum_invalid
+data: term_strz.bin
+asserts:
+  - actual: pet_1
+    expected: enum_invalid::animal::dog
+  - actual: pet_2
+    expected: 0x6f

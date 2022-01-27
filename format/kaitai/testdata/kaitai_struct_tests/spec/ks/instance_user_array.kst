@@ -1,0 +1,24 @@
+id: instance_user_array
+data: instance_std_array.bin
+asserts:
+  - actual: ofs
+    expected: 0x10
+  - actual: qty_entries
+    expected: 3
+  - actual: entry_size
+    expected: 4
+
+  - actual: user_entries.size
+    expected: 3
+  - actual: user_entries[0].word1
+    expected: 0x1111
+  - actual: user_entries[0].word2
+    expected: 0x1111
+  - actual: user_entries[1].word1
+    expected: 0x2222
+  - actual: user_entries[1].word2
+    expected: 0x2222
+  - actual: user_entries[2].word1
+    expected: 0x3333
+  - actual: user_entries[2].word2
+    expected: 0x3333

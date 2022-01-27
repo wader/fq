@@ -1,0 +1,29 @@
+id: type_ternary_2nd_falsy
+data: switch_integers.bin
+asserts:
+  - actual: v_false
+    expected: false
+  - actual: v_int_zero
+    expected: 0
+  - actual: v_int_neg_zero
+    expected: '-0'
+  - actual: v_float_zero
+    expected: 0.0
+  - actual: v_float_neg_zero
+    expected: '-0.0'
+  - actual: v_str_w_zero
+    expected: '"0"'
+  - actual: v_str_w_zero.length
+    expected: 1
+  - actual: ut.m
+    expected: 7
+  - actual: v_null_ut
+    expected: 'null'
+  - actual: v_str_empty
+    expected: '""'
+  - actual: v_str_empty.length
+    expected: 0
+  - actual: int_array.size
+    expected: 2
+  - actual: v_int_array_empty.size
+    expected: 0

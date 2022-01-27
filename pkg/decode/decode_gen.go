@@ -1043,11 +1043,11 @@ func (d *D) FieldRawLen(name string, nBits int64, sms ...scalar.BitBufMapper) bi
 // Reader Bool
 
 // TryBool tries to read 1 bit boolean
-func (d *D) TryBool() (bool, error) { return d.tryBool() }
+func (d *D) TryBool() (bool, error) { return d.tryBool(d.Endian) }
 
 // Bool reads 1 bit boolean
 func (d *D) Bool() bool {
-	v, err := d.tryBool()
+	v, err := d.tryBool(d.Endian)
 	if err != nil {
 		d.IOPanic(err, "", "Bool")
 	}
@@ -1057,7 +1057,7 @@ func (d *D) Bool() bool {
 // TryFieldScalarBool tries to add a field and read 1 bit boolean
 func (d *D) TryFieldScalarBool(name string, sms ...scalar.BoolMapper) (*scalar.Bool, error) {
 	s, err := d.TryFieldScalarBoolFn(name, func(d *D) (scalar.Bool, error) {
-		v, err := d.tryBool()
+		v, err := d.tryBool(d.Endian)
 		return scalar.Bool{Actual: v}, err
 	}, sms...)
 	if err != nil {
@@ -1084,6 +1084,144 @@ func (d *D) TryFieldBool(name string, sms ...scalar.BoolMapper) (bool, error) {
 // FieldBool adds a field and reads 1 bit boolean
 func (d *D) FieldBool(name string, sms ...scalar.BoolMapper) bool {
 	return d.FieldScalarBool(name, sms...).Actual
+}
+
+// Reader BoolE
+
+// TryBoolE tries to read 1 bit boolean in specified bit-endian
+func (d *D) TryBoolE(endian Endian) (bool, error) { return d.tryBool(endian) }
+
+// BoolE reads 1 bit boolean in specified bit-endian
+func (d *D) BoolE(endian Endian) bool {
+	v, err := d.tryBool(endian)
+	if err != nil {
+		panic(IOError{Err: err, Op: "BoolE", Pos: d.Pos()})
+	}
+	return v
+}
+
+// TryFieldScalarBoolE tries to add a field and read 1 bit boolean in specified bit-endian
+func (d *D) TryFieldScalarBoolE(name string, endian Endian, sms ...scalar.BoolMapper) (*scalar.Bool, error) {
+	s, err := d.TryFieldScalarBoolFn(name, func(d *D) (scalar.Bool, error) {
+		v, err := d.tryBool(endian)
+		return scalar.Bool{Actual: v}, err
+	}, sms...)
+	if err != nil {
+		return nil, err
+	}
+	return s, err
+}
+
+// FieldScalarBoolE adds a field and reads 1 bit boolean in specified bit-endian
+func (d *D) FieldScalarBoolE(name string, endian Endian, sms ...scalar.BoolMapper) *scalar.Bool {
+	s, err := d.TryFieldScalarBoolE(name, endian, sms...)
+	if err != nil {
+		panic(IOError{Err: err, Name: name, Op: "BoolE", Pos: d.Pos()})
+	}
+	return s
+}
+
+// TryFieldBoolE tries to add a field and read 1 bit boolean in specified bit-endian
+func (d *D) TryFieldBoolE(name string, endian Endian, sms ...scalar.BoolMapper) (bool, error) {
+	s, err := d.TryFieldScalarBoolE(name, endian, sms...)
+	return s.Actual, err
+}
+
+// FieldBoolE adds a field and reads 1 bit boolean in specified bit-endian
+func (d *D) FieldBoolE(name string, endian Endian, sms ...scalar.BoolMapper) bool {
+	return d.FieldScalarBoolE(name, endian, sms...).Actual
+}
+
+// Reader BoolLE
+
+// TryBoolLE tries to read 1 bit boolean bit-little-endian
+func (d *D) TryBoolLE() (bool, error) { return d.tryBool(d.Endian) }
+
+// BoolLE reads 1 bit boolean bit-little-endian
+func (d *D) BoolLE() bool {
+	v, err := d.tryBool(d.Endian)
+	if err != nil {
+		panic(IOError{Err: err, Op: "BoolLE", Pos: d.Pos()})
+	}
+	return v
+}
+
+// TryFieldScalarBoolLE tries to add a field and read 1 bit boolean bit-little-endian
+func (d *D) TryFieldScalarBoolLE(name string, sms ...scalar.BoolMapper) (*scalar.Bool, error) {
+	s, err := d.TryFieldScalarBoolFn(name, func(d *D) (scalar.Bool, error) {
+		v, err := d.tryBool(d.Endian)
+		return scalar.Bool{Actual: v}, err
+	}, sms...)
+	if err != nil {
+		return nil, err
+	}
+	return s, err
+}
+
+// FieldScalarBoolLE adds a field and reads 1 bit boolean bit-little-endian
+func (d *D) FieldScalarBoolLE(name string, sms ...scalar.BoolMapper) *scalar.Bool {
+	s, err := d.TryFieldScalarBoolLE(name, sms...)
+	if err != nil {
+		panic(IOError{Err: err, Name: name, Op: "BoolLE", Pos: d.Pos()})
+	}
+	return s
+}
+
+// TryFieldBoolLE tries to add a field and read 1 bit boolean bit-little-endian
+func (d *D) TryFieldBoolLE(name string, sms ...scalar.BoolMapper) (bool, error) {
+	s, err := d.TryFieldScalarBoolLE(name, sms...)
+	return s.Actual, err
+}
+
+// FieldBoolLE adds a field and reads 1 bit boolean bit-little-endian
+func (d *D) FieldBoolLE(name string, sms ...scalar.BoolMapper) bool {
+	return d.FieldScalarBoolLE(name, sms...).Actual
+}
+
+// Reader BoolBE
+
+// TryBoolBE tries to read 1 bit boolean bit-big-endian
+func (d *D) TryBoolBE() (bool, error) { return d.tryBool(d.Endian) }
+
+// BoolBE reads 1 bit boolean bit-big-endian
+func (d *D) BoolBE() bool {
+	v, err := d.tryBool(d.Endian)
+	if err != nil {
+		panic(IOError{Err: err, Op: "BoolBE", Pos: d.Pos()})
+	}
+	return v
+}
+
+// TryFieldScalarBoolBE tries to add a field and read 1 bit boolean bit-big-endian
+func (d *D) TryFieldScalarBoolBE(name string, sms ...scalar.BoolMapper) (*scalar.Bool, error) {
+	s, err := d.TryFieldScalarBoolFn(name, func(d *D) (scalar.Bool, error) {
+		v, err := d.tryBool(d.Endian)
+		return scalar.Bool{Actual: v}, err
+	}, sms...)
+	if err != nil {
+		return nil, err
+	}
+	return s, err
+}
+
+// FieldScalarBoolBE adds a field and reads 1 bit boolean bit-big-endian
+func (d *D) FieldScalarBoolBE(name string, sms ...scalar.BoolMapper) *scalar.Bool {
+	s, err := d.TryFieldScalarBoolBE(name, sms...)
+	if err != nil {
+		panic(IOError{Err: err, Name: name, Op: "BoolBE", Pos: d.Pos()})
+	}
+	return s
+}
+
+// TryFieldBoolBE tries to add a field and read 1 bit boolean bit-big-endian
+func (d *D) TryFieldBoolBE(name string, sms ...scalar.BoolMapper) (bool, error) {
+	s, err := d.TryFieldScalarBoolBE(name, sms...)
+	return s.Actual, err
+}
+
+// FieldBoolBE adds a field and reads 1 bit boolean bit-big-endian
+func (d *D) FieldBoolBE(name string, sms ...scalar.BoolMapper) bool {
+	return d.FieldScalarBoolBE(name, sms...).Actual
 }
 
 // Reader U

@@ -1,0 +1,4 @@
+id: valid_switch
+data: fixed_struct.bin
+
+# No asserts, validation is built into the generated code.

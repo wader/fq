@@ -1,0 +1,7 @@
+id: enum_negative
+data: enum_negative.bin
+asserts:
+  - actual: f1
+    expected: enum_negative::constants::negative_one
+  - actual: f2
+    expected: enum_negative::constants::positive_one

@@ -1,0 +1,7 @@
+id: enum_deep
+data: enum_0.bin
+asserts:
+  - actual: pet_1
+    expected: enum_deep::container1::animal::cat
+  - actual: pet_2
+    expected: enum_deep::container1::container2::animal::hare

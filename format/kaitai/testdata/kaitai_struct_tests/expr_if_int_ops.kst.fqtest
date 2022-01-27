@@ -1,0 +1,5 @@
+$ fq -d kaitai -o source=@formats/expr_if_int_ops.ksy "d,tovalue({skip_gaps: true})" src/process_coerce_switch.bin
+{
+  "is_eq_boxed": true,
+  "is_eq_prim": true
+}

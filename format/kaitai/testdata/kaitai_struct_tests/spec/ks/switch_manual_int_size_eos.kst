@@ -1,0 +1,27 @@
+id: switch_manual_int_size_eos
+data: switch_tlv.bin
+asserts:
+  - actual: chunks.size
+    expected: 4
+
+  - actual: chunks[0].code
+    expected: 0x11
+  - actual: chunks[0].body.body.as<switch_manual_int_size_eos::chunk::chunk_body::chunk_meta>.title
+    expected: '"Stuff"'
+  - actual: chunks[0].body.body.as<switch_manual_int_size_eos::chunk::chunk_body::chunk_meta>.author
+    expected: '"Me"'
+
+  - actual: chunks[1].code
+    expected: 0x22
+  - actual: chunks[1].body.body.as<switch_manual_int_size_eos::chunk::chunk_body::chunk_dir>.entries
+    expected: "['AAAA', 'BBBB', 'CCCC']"
+
+  - actual: chunks[2].code
+    expected: 0x33
+  - actual: chunks[2].body.body.as<bytes>
+    expected: '[0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80].as<bytes>'
+
+  - actual: chunks[3].code
+    expected: 0xff
+  - actual: chunks[3].body.body.as<bytes>
+    expected: '[].as<bytes>'

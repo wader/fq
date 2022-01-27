@@ -1,0 +1,11 @@
+id: yaml_ints
+data: fixed_struct.bin
+asserts:
+  - actual: test_u4_dec
+    expected: '0xffffffff'
+  - actual: test_u4_hex
+    expected: '0xffffffff'
+  - actual: test_u8_dec
+    expected: '0xffffffffffffffff'
+  - actual: test_u8_hex
+    expected: '0xffffffffffffffff'

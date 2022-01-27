@@ -1,0 +1,9 @@
+$ fq -d kaitai -o source=@formats/enum_1.ksy "d,tovalue({skip_gaps: true})" src/enum_0.bin
+{
+  "main": {
+    "submain": {
+      "pet_1": "enum_1::main_obj::animal::cat",
+      "pet_2": "enum_1::main_obj::animal::chicken"
+    }
+  }
+}

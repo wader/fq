@@ -1,0 +1,4 @@
+id: valid_fail_eq_str
+data: fixed_struct.bin
+exception: ValidationNotEqualError<str>
+# TODO: check error message as Ruby does (see https://github.com/kaitai-io/kaitai_struct_tests/pull/93)

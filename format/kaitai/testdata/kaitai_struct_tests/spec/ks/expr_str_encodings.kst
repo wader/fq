@@ -1,0 +1,17 @@
+id: expr_str_encodings
+data: str_encodings.bin
+asserts:
+  - actual: str1_eq
+    expected: true
+  - actual: str2_eq
+    expected: true
+  - actual: str3_eq
+    expected: true
+  - actual: str3_eq_str2
+    expected: true
+  - actual: str4_eq
+    expected: true
+  - actual: str4_gt_str_calc
+    expected: true
+  - actual: str4_gt_str_from_bytes
+    expected: true

@@ -1,0 +1,3 @@
+id: valid_fail_range_str
+data: fixed_struct.bin
+exception: ValidationGreaterThanError<str>

@@ -1,0 +1,4 @@
+$ fq -d kaitai -o source=@formats/instance_std.ksy "d,tovalue({skip_gaps: true})" src/str_encodings.bin
+{
+  "header": "Some "
+}

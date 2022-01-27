@@ -1,0 +1,26 @@
+id: combine_bytes
+data: term_strz.bin
+asserts:
+  - actual: bytes_term
+    expected: '[0x66, 0x6f, 0x6f]'
+  - actual: bytes_limit
+    expected: '[0x62, 0x61, 0x72, 0x7c]'
+  - actual: bytes_eos
+    expected: '[0x62, 0x61, 0x7a, 0x40]'
+  - actual: bytes_calc
+    expected: '[0x52, 0x6e, 0x44]'
+
+  - actual: term_or_limit
+    expected: '[0x66, 0x6f, 0x6f]'
+  - actual: term_or_eos
+    expected: '[0x62, 0x61, 0x7a, 0x40]'
+  - actual: term_or_calc
+    expected: '[0x66, 0x6f, 0x6f]'
+
+  - actual: limit_or_eos
+    expected: '[0x62, 0x61, 0x72, 0x7c]'
+  - actual: limit_or_calc
+    expected: '[0x52, 0x6e, 0x44]'
+
+  - actual: eos_or_calc
+    expected: '[0x62, 0x61, 0x7a, 0x40]'

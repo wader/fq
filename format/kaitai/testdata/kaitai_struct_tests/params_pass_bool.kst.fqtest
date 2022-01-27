@@ -1,0 +1,41 @@
+$ fq -d kaitai -o source=@formats/params_pass_bool.ksy "d,tovalue({skip_gaps: true})" src/term_strz.bin
+{
+  "inst_b1": {
+    "arg": true,
+    "foo": {
+      "size": 1
+    }
+  },
+  "inst_bool": {
+    "arg": false,
+    "foo": {
+      "size": 2
+    }
+  },
+  "literal_b1": {
+    "arg": false,
+    "foo": {
+      "size": 2
+    }
+  },
+  "literal_bool": {
+    "arg": true,
+    "foo": {
+      "size": 1
+    }
+  },
+  "s_false": false,
+  "s_true": true,
+  "seq_b1": {
+    "arg": true,
+    "foo": {
+      "size": 1
+    }
+  },
+  "seq_bool": {
+    "arg": false,
+    "foo": {
+      "size": 2
+    }
+  }
+}

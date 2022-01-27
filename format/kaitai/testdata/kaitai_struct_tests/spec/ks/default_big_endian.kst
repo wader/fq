@@ -1,0 +1,5 @@
+id: default_big_endian
+data: enum_0.bin
+asserts:
+  - actual: one
+    expected: 0x7000000

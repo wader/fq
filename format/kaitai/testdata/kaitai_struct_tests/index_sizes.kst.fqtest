@@ -1,0 +1,14 @@
+$ fq -d kaitai -o source=@formats/index_sizes.ksy "d,tovalue({skip_gaps: true})" src/index_sizes.bin
+{
+  "bufs": [
+    "A",
+    "BBBBBBBB",
+    "CCCC"
+  ],
+  "qty": 3,
+  "sizes": [
+    1,
+    8,
+    4
+  ]
+}

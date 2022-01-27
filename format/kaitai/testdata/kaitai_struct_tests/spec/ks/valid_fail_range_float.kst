@@ -1,0 +1,3 @@
+id: valid_fail_range_float
+data: floating_points.bin
+exception: ValidationGreaterThanError<f4>

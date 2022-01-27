@@ -1,0 +1,7 @@
+id: process_xor_const
+data: process_xor_1.bin
+asserts:
+  - actual: key
+    expected: 0xff
+  - actual: buf
+    expected: '[0x66, 0x6f, 0x6f, 0x20, 0x62, 0x61, 0x72]'

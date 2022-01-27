@@ -1,0 +1,9 @@
+id: expr_enum
+data: term_strz.bin
+asserts:
+  - actual: const_dog
+    expected: expr_enum::animal::dog
+  - actual: derived_boom
+    expected: expr_enum::animal::boom
+  - actual: derived_dog
+    expected: expr_enum::animal::dog

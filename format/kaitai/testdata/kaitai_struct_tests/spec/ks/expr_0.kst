@@ -1,0 +1,7 @@
+id: expr_0
+data: str_encodings.bin
+asserts:
+  - actual: must_be_f7
+    expected: 0xf7
+  - actual: must_be_abc123
+    expected: '"abc123"'

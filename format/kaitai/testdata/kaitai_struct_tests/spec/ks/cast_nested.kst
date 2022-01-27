@@ -1,0 +1,11 @@
+id: cast_nested
+data: switch_opcodes.bin
+asserts:
+  - actual: opcodes_0_str.value
+    expected: '"foobar"'
+  - actual: opcodes_0_str_value
+    expected: '"foobar"'
+  - actual: opcodes_1_int.value
+    expected: 0x42
+  - actual: opcodes_1_int_value
+    expected: 0x42

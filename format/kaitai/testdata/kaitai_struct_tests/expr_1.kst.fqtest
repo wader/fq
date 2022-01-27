@@ -1,0 +1,7 @@
+$ fq -d kaitai -o source=@formats/expr_1.ksy "d,tovalue({skip_gaps: true})" src/str_encodings.bin
+{
+  "len_of_1": 10,
+  "len_of_1_mod": 8,
+  "str1": "Some ASC",
+  "str1_len": 8
+}
