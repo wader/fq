@@ -18,12 +18,13 @@ That also means that there is a great opportunity to help out!
 
 ### Goals
 
-- Make binary formats accessible and queryable.
+- Make binaries accessible, queryable and sliceable.
 - Nested formats and bit-oriented decoding.
 - Quick and comfortable CLI tool.
 - Bits and bytes transformations.
 
 ### Hopes
+
 - Make it useful enough that people want to help improve it.
 - Inspire people to create similar tools.
 
