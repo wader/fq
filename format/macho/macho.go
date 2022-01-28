@@ -247,6 +247,49 @@ const (
 	LC_BUILD_VERSION            = 0x32
 )
 
+var fileTypes = scalar.UToSymStr{
+	0x1: "MH_OBJECT",
+	0x2: "MH_EXECUTE",
+	0x3: "MH_FVMLIB",
+	0x4: "MH_CORE",
+	0x5: "MH_PRELOAD",
+	0x6: "MH_DYLIB",
+	0x7: "MH_DYLINKER",
+	0x8: "MH_BUNDLE",
+	0x9: "MH_DYLIB_STUB",
+	0xa: "MH_DSYM",
+	0xb: "MH_KEXT_BUNDLE",
+}
+
+var machHeaderFlags = map[uint64]string{
+	0x1:         "MH_NOUNDEFS",
+	0x2:         "MH_INCRLINK",
+	0x4:         "MH_DYLDLINK",
+	0x8:         "MH_BINDATLOAD",
+	0x10:        "MH_PREBOUND",
+	0x20:        "MH_SPLIT_SEGS",
+	0x40:        "MH_LAZY_INIT",
+	0x80:        "MH_TWOLEVEL",
+	0x100:       "MH_FORCE_FLAT",
+	0x200:       "MH_NOMULTIDEFS",
+	0x400:       "MH_NOFIXPREBINDING",
+	0x800:       "MH_PREBINDABLE",
+	0x1000:      "MH_ALLMODSBOUND",
+	0x2000:      "MH_SUBSECTIONS_VIA_SYMBOLS",
+	0x4000:      "MH_CANONICAL",
+	0x8000:      "MH_WEAK_DEFINES",
+	0x00010000:  "MH_BINDS_TO_WEAK",
+	0x00020000:  "MH_ALLOW_STACK_EXECUTION",
+	0x00040000:  "MH_ROOT_SAFE",
+	0x0008_0000: "MH_SETUID_SAFE",
+	0x0010_0000: "MH_NO_REEXPORTED_DYLIBS",
+	0x0020_0000: "MH_PIE",
+	0x0040_0000: "MH_DEAD_STRIPPABLE_DYLIB",
+	0x0080_0000: "MH_HAS_TLV_DESCRIPTORS",
+	0x0100_0000: "MH_NO_HEAP_EXECUTION",
+	0x0200_0000: "MH_APP_EXTENSION_SAFE",
+}
+
 var loadCommands = scalar.UToSymStr{
 	LC_REQ_DYLD:                 "req_dyld",
 	LC_SEGMENT:                  "segment",
@@ -363,10 +406,15 @@ func ofileDecode(d *decode.D) {
 		d.FieldValueStr("endian", endianNames[magic])
 		cpuType := d.FieldS32("cputype", cpuTypes)
 		d.FieldS32("cpusubtype", cpuSubTypes[cpuType])
-		d.FieldU32("filetype") // TODO expand this
+		d.FieldU32("filetype", fileTypes)
 		ncmds = d.FieldU32("ncdms")
 		d.FieldU32("sizeofncdms")
-		d.FieldU32("flags") // TODO expand flags
+		d.FieldStruct("flags", func(d *decode.D) {
+			flags := d.U32()
+			for mask, sym := range machHeaderFlags {
+				d.FieldValueBool(sym, (mask&flags) != 0)
+			}
+		})
 		if archBits == 64 {
 			d.FieldRawLen("reserved", 4*8, d.BitBufIsZero())
 		}
@@ -491,28 +539,6 @@ func ofileDecode(d *decode.D) {
 			d.FieldU32("stroff")
 			d.FieldU32("strsize")
 		case LC_DYSYMTAB:
-			// TODO
-			// if archBits == 32 {
-			// 	d.FieldStruct("nlist", func(d *decode.D) {
-			// 		d.FieldStruct("n_un", func(d *decode.D) {
-			// 			d.FieldS32("n_strx")
-			// 		})
-			// 		d.FieldU8("n_type")
-			// 		d.FieldU8("n_sect")
-			// 		d.FieldU16("n_desc")
-			// 		d.FieldU32("n_value")
-			// 	})
-			// } else {
-			// 	d.FieldStruct("nlist", func(d *decode.D) {
-			// 		d.FieldStruct("n_un", func(d *decode.D) {
-			// 			d.FieldS32("n_strx")
-			// 		})
-			// 		d.FieldU8("n_type")
-			// 		d.FieldU8("n_sect")
-			// 		d.FieldU16("n_desc")
-			// 		d.FieldU64("n_value")
-			// 	})
-			// }
 			d.FieldU32("ilocalsym")
 			d.FieldU32("nlocalsym")
 			d.FieldU32("iextdefsym")
