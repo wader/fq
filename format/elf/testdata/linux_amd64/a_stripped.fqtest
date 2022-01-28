@@ -1,4 +1,4 @@
-$ fq -d elf v a_stripped
+$ fq -d elf dv a_stripped
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: a_stripped (elf) 0x0-0x3727.7 (14120)
       |                                               |                |  header{}: 0x0-0x3f.7 (64)
       |                                               |                |    ident{}: 0x0-0xf.7 (16)

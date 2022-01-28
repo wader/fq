@@ -1,5 +1,5 @@
 # from https://wiki.wireshark.org/SampleCaptures
-$ fq -d pcap verbose /ipv4frags.pcap
+$ fq -d pcap dv /ipv4frags.pcap
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /ipv4frags.pcap (pcap) 0x0-0xbad.7 (2990)
 0x0000|d4 c3 b2 a1                                    |....            |  magic: "little_endian" (0xd4c3b2a1) (valid) 0x0-0x3.7 (4)
 0x0000|            02 00                              |    ..          |  version_major: 2 0x4-0x5.7 (2)

@@ -1,5 +1,5 @@
 # fq 'tobytes[0:.end_marker | tobytesrange.start]' test.tar > no_end_marker.tar
-$ fq v no_end_marker.tar
+$ fq dv no_end_marker.tar
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: no_end_marker.tar (tar) 0x0-0x3ff.7 (1024)
      |                                               |                |  files[0:1]: 0x0-0x3ff.7 (1024)
      |                                               |                |    [0]{}: file 0x0-0x3ff.7 (1024)

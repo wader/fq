@@ -35,7 +35,7 @@ json> map(select(.decoded) | (.cbor | base64 | cbor | torepr) as $a | select( .d
     }
   }
 ]
-json> .[] | select(.decoded) | .cbor | base64 | cbor | v
+json> .[] | select(.decoded) | .cbor | base64 | cbor | dv
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (cbor) 0x0-0x0.7 (1)
 0x0|00|                                            |.|              |  major_type: "positive_int" (0) 0x0-0x0.2 (0.3)
 0x0|00|                                            |.|              |  short_count: 0 0x0.3-0x0.7 (0.5)

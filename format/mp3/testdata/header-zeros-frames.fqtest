@@ -1,5 +1,5 @@
 # ffmpeg -f lavfi -i sine -t 10ms -f mp3 pipe:1 | fq - '.headers._bytes, ("\x00\x00\x00" | tobytes), .frames[0]._bytes' > header-zeros-frames.mp3
-$ fq -d mp3 verbose /header-zeros-frames.mp3
+$ fq -d mp3 dv /header-zeros-frames.mp3
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /header-zeros-frames.mp3 (mp3) 0x0-0xff.7 (256)
      |                                               |                |  headers[0:1]: 0x0-0x2c.7 (45)
      |                                               |                |    [0]{}: header (id3v2) 0x0-0x2c.7 (45)
