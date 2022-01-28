@@ -335,6 +335,7 @@ func ofileDecode(d *decode.D) {
 		fatParse(d)
 		return
 	} else {
+		// Try decoding AR
 		d.SeekAbs(0)
 		arMagic := d.RawLen(8 * 8)
 		arMagicBytes, err := arMagic.Bytes()
@@ -349,9 +350,9 @@ func ofileDecode(d *decode.D) {
 				d.Fatalf("AR decode step failed")
 			}
 			return
-		} else {
-			d.Fatalf("Invalid magic field")
 		}
+		// All options are exhausted, fail
+		d.Fatalf("Invalid magic field")
 	}
 
 	d.SeekAbs(0)
