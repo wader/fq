@@ -3,7 +3,10 @@ package macho
 // https://github.com/aidansteele/osx-abi-macho-file-format-reference
 
 import (
+	"bytes"
 	"fmt"
+	"strconv"
+	"strings"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
@@ -27,6 +30,10 @@ const (
 	MH_CIGAM    = 0xcefaedfe
 	MH_MAGIC_64 = 0xfeedfacf
 	MH_CIGAM_64 = 0xcffaedfe
+	FAT_MAGIC   = 0xcafe_babe
+	FAT_CIGAM   = 0xbeba_feca
+	ARMAG       = "!<arch>\n"
+	AR_EFMT1    = "#1/"
 )
 
 var classBits = scalar.UToSymU{
@@ -293,6 +300,11 @@ var loadCommands = scalar.UToSymStr{
 }
 
 func machoDecode(d *decode.D, in interface{}) interface{} {
+	ofileDecode(d)
+	return nil
+}
+
+func ofileDecode(d *decode.D) {
 	var archBits int
 	var ncmds uint64
 	magicBuffer := d.U32LE()
@@ -311,17 +323,32 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 		} else {
 			archBits = 64
 		}
+	} else if magicBuffer == FAT_MAGIC {
+		d.Endian = decode.LittleEndian
+		fatParse(d)
+	} else if magicBuffer == FAT_CIGAM {
+		d.Endian = decode.BigEndian
+		fatParse(d)
 	} else {
-		d.Fatalf("Invalid magic field")
+		d.SeekAbs(0)
+		arMagic := d.FieldRawLen("magic", 8*8)
+		arMagicBytes, err := arMagic.Bytes()
+		if err != nil {
+			d.Fatalf("Fallback to AR(.a) file parsing failed. magic bytes were invalid.")
+		}
+		if bytes.Equal(arMagicBytes, []byte(ARMAG)) {
+			arParse(d)
+		} else {
+			d.Fatalf("Invalid magic field")
+		}
 	}
 
 	d.SeekAbs(0)
 	d.FieldStruct("header", func(d *decode.D) {
 		d.FieldValueS("arch_bits", int64(archBits))
 		d.FieldU32("magic", scalar.Hex, classBits, endianNames)
-		cpuSubType := d.FieldS32("cputype", cpuTypes)
-		d.FieldS32("cpusubtype", cpuSubTypes[cpuSubType])
-		// TODO ask about how to symmap this as it depends on a pair of values
+		cpuType := d.FieldS32("cputype", cpuTypes)
+		d.FieldS32("cpusubtype", cpuSubTypes[cpuType])
 		d.FieldU32("filetype") // TODO expand this
 		ncmds = d.FieldU32("ncdms")
 		d.FieldU32("sizeofncdms")
@@ -559,7 +586,71 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 		}
 		ncmdsIdx++
 	})
-	return nil
+}
+
+func fatParse(d *decode.D) {
+	// Go to start of the file again
+	d.SeekAbs(0)
+	d.FieldStruct("fat_header", func(d *decode.D) {
+		d.FieldRawLen("magic", 8*8)
+		narchs := d.FieldU32("narchs")
+		narchsIdx := 0
+		d.FieldStructArrayLoop("archs", "arch", func() bool {
+			return narchsIdx < int(narchs)
+		}, func(d *decode.D) {
+			// parse FatArch
+			d.FieldStruct("fat_arch", func(d *decode.D) {
+				// beware cputype and cpusubtype changes from ofile header to fat header
+				cpuType := d.FieldU32("cputype", cpuTypes)
+				d.FieldU32("cpusubtype", cpuSubTypes[int64(cpuType)])
+				d.FieldU32("offset")
+				d.FieldU32("size")
+				d.FieldU32("align")
+			})
+		})
+		for i := 0; uint64(i) < narchs; i++ {
+			// parse ofiles
+			ofileDecode(d)
+		}
+	})
+}
+
+func arParse(d *decode.D) {
+	// Go to start of the file again
+	d.SeekAbs(0)
+	d.FieldStruct("ar_header", func(d *decode.D) {
+		name := d.FieldUTF8NullFixedLen("name", 16)
+		d.FieldUTF8NullFixedLen("date", 12)
+		d.FieldUTF8NullFixedLen("uid", 6)
+		d.FieldUTF8NullFixedLen("gid", 6)
+		d.FieldUTF8NullFixedLen("mode", 6)               // parse_octal ?? TODO
+		arSizeStr := d.FieldUTF8NullFixedLen("size", 10) // trim and parse into uint64
+		arSize, err := strconv.ParseInt(strings.TrimSpace(arSizeStr), 10, 64)
+		if err != nil {
+			// todo handle error
+		}
+		d.FieldU16("fmag") // in native endian TODO
+
+		// if it is a ranlib
+		if name == "SYMDEF" || name == "SYMDEF_SORTED" {
+			ranlib_len := d.FieldU32("ranlib_len")
+			nranlib := ranlib_len / 64
+			nranlibIdx := 0
+			d.FieldStructArrayLoop("ranlibs", "ranlib", func() bool {
+				return nranlibIdx < int(nranlib)
+			}, func(d *decode.D) {
+				d.FieldU32("ran_strx")
+				d.FieldU32("ran_off")
+				nranlibIdx++
+			})
+			tocStrSize := d.FieldU32("toc_strsize")
+			d.FieldRawLen("toc_str", int64(tocStrSize)*8)
+		} else {
+			d.FieldRawLen("ar_content", arSize)
+			arParse(d)
+		}
+	})
+
 }
 
 func intelSubTypeHelper(f, m int64) int64 {
