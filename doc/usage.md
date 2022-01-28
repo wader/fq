@@ -11,7 +11,7 @@ fq . *.png *.mp3
 fq '.frames[0]' *.mp3
 ```
 
-Common usages:
+### Common usages
 
 ```sh
 # recursively display decode tree but truncate long arrays
@@ -32,7 +32,7 @@ fq full file
 # recursively and verbosely display decode tree
 fq v file
 # same as
-fq verbose file
+fq dv file
 
 # JSON repersenation for whole file
 fq tovalue file
@@ -55,6 +55,53 @@ fq 'grep("^prefix")' file
 fq 'grep(123)' file
 fq 'grep_by(. >= 100 and . =< 100)' file
 ```
+
+### Display output
+
+`display` or `d` is the main function for displying values and is also the function that will be used if no other output function is explicitly used. If its input is a decode value it will output a dump and tree structure or otherwise it will output as JSON.
+
+Below demonstrates some usages:
+
+First and second example does the same thing, inputs `"hello"` to  `display`.
+
+![fq demo](display_json.svg)
+
+In the next few examples we select out the first "edit list" box in an mp4 file, it's a list of which part of media track to be included during playback, and displays it in various ways.
+
+Default if not explicitly used `display` will only show the root level:
+
+![fq demo](display_decode_value.svg)
+
+First row shows ruler with byte offset into the line and JSON path for the value.
+
+The columns are:
+- Start address for the line. For example we see that `type` starts at `0xd60`+`0x09`.
+- Hex repersenation of input bits for value. Will show the whole byte even if the value only partially uses bits from it.
+- ASCII representation of input bits for value. Will show the whole byte even if the value only partially uses bits from it.
+- Tree structure of decoded value, symbolic value and description.
+
+Notation:
+- `{}` value is an object that might have nested values.
+- `[start:end]` value is an array with index starting at `start` and ending at `end` (exclusive).
+
+
+With `display` or `d` it will recursively show the whole tree:
+
+![fq demo](display_decode_value_d.svg)
+
+Same but verbose `dv`:
+
+![fq demo](display_decode_value_dv.svg)
+
+In verbose mode bit ranges and array element names as shown.
+
+Bit range uses `bytes.bits` notation. For example `type` start at byte `0xd69` bit `0` (left out if zero) and ends at `0xd6c` bit `7` (inclusive) and have byte size of `4`.
+
+There are also some other `display` aliases:
+- `da` same as `display({array_truncate: 0})` which will not truncate long arrays.
+- `dd` same as `display({array_truncate: 0, display_bytes: 0})` which will not truncate long ranges.
+- `dv` same as `display({array_truncate: 0, verbose: true})`
+- `ddv` same as `display({array_truncate: 0, display_bytes: 0 verbose: true})` which will not truncate long and also display verbosely.
 
 ## Interactive REPL
 
@@ -201,21 +248,25 @@ See [formats](formats.md)
 ## The jq language
 
 fq is based on the [jq language](https://stedolan.github.io/jq/) and for basic usage its syntax
-is similar to how object and array access looks in JavaScript or JSON path, `.food[10]` etc.
+is similar to how object and array access looks in JavaScript or JSON path, `.food[10]` etc. but
+it can do much more and is a very expressive language.
 
 To get the most out of fq it's recommended to learn more about jq, here are some good starting points:
 
 - [jq manual](https://stedolan.github.io/jq/manual/)
-- jq wiki pages
-[jq Language Description](https://github.com/stedolan/jq/wiki/jq-Language-Description),
-[jq wiki page Cookbook](https://github.com/stedolan/jq/wiki/Cookbook),
-[FAQ](https://github.com/stedolan/jq/wiki/FAQ) and
-[Pitfalls](https://github.com/stedolan/jq/wiki/How-to:-Avoid-Pitfalls)
+- [Peter Koppstein's A Stream oriented Introduction to jq](https://github.com/pkoppstein/jq/wiki/A-Stream-oriented-Introduction-to-jq)
+- [jq wiki: Language Description](https://github.com/stedolan/jq/wiki/jq-Language-Description)
+- [jq wiki: page Cookbook](https://github.com/stedolan/jq/wiki/Cookbook)
+- [jq wiki: Pitfalls](https://github.com/stedolan/jq/wiki/How-to:-Avoid-Pitfalls)
+- [FAQ](https://github.com/stedolan/jq/wiki/FAQ)
 
-The most common beginner gotcha is probably jq's use of `;` and `,`. jq uses `;` as argument separator
-and `,` as output separator.
-To call a function `f` with two arguments use `f(1; 2)`. If you do `f(1, 2)` you pass a single
-argument `1, 2` (a lambda expression that output `1` and then output `2`) to `f`.
+Common beginner gotcha are:
+- jq's use of `;` and `,`. jq uses `;` as argument separator
+and `,` as output separator. To call a function `f` with two arguments use `f(1; 2)`. If you do `f(1, 2)` you pass a
+single argument `1, 2` (a lambda expression that output `1` and then output `2`) to `f`.
+- Expressions can return or "output" zero or more values. This is how loops, foreach etc is
+achieved.
+- Expressions have one implicit input and output value. This how pipelines like `1 | . * 2` work.
 
 ## Functions
 
@@ -287,49 +338,6 @@ you currently have to do `fq -d raw 'mp3({force: true})' file`.
 - `p`/`preview` show preview of field tree
 - `hd`/`hexdump` hexdump value
 - `repl` nested REPL, must be last in a pipeline. `1 | repl`, can "slurp" outputs `1, 2, 3 | repl`.
-
-## Arguments
-
-TODO: examples, stdin/stdout
-
-<pre sh>
-$ fq -h 
-fq - jq for binary formats
-Tool, language and decoders for inspecting binary data.
-For more information see https://github.com/wader/fq
-
-Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
-
-Example usages:
-  fq . file
-  fq d file
-  fq tovalue file
-  cat file.cbor | fq -d cbor torepr
-  fq 'grep("^main$") | parent' /bin/ls
-  fq 'grep_by(format == "exif") | d' *.png *.jpeg
-
---arg NAME VALUE         Set variable $NAME to string VALUE
---argjson NAME JSON      Set variable $NAME to JSON
---color-output,-C        Force color output
---compact-output,-c      Compact output
---decode,-d NAME         Decode format (probe)
---decode-file NAME PATH  Set variable $NAME to decode of file
---formats                Show supported formats
---from-file,-f PATH      Read EXPR from file
---help,-h                Show help
---include-path,-L PATH   Include search path
---join-output,-j         No newline between outputs
---monochrome-output,-M   Force monochrome output
---null-input,-n          Null input (use input and inputs functions to read input)
---null-output,-0         Null byte between outputs
---option,-o KEY=VALUE    Set option, eg: color=true (use options function to see all options)
---raw-file NAME PATH     Set variable $NAME to string content of file
---raw-input,-R           Read raw input strings (don't decode)
---raw-output,-r          Raw string output (without quotes)
---repl,-i                Interactive REPL
---slurp,-s               Read (slurp) all inputs into an array
---version,-v             Show version
-</pre>
 
 ## Color and unicode output
 

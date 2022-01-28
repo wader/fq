@@ -34,8 +34,8 @@ Flags can be struct with bit-fields.
 
 ### Development tips
 
-I ususally use `-d <format>` and `v` while developing, that way you will get a decode tree
-even if it fails. `v` gives verbose output and also includes stacktrace.
+I ususally use `-d <format>` and `dv` while developing, that way you will get a decode tree
+even if it fails. `dv` gives verbose output and also includes stacktrace.
 
 ```sh
 go run fq.go -d <format> v file

@@ -30,7 +30,7 @@ Please provide command line arguments, jq script, command output etc.
 If possible please attach or share link to affected example files.
 
 To get more information about what is going on you can try to force a format and
-ask for verbose output using "fq -d <format> v file"
+ask for verbose output using "fq -d <format> dv file"
 -->
 
 ### What result did you expect?
