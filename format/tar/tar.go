@@ -5,8 +5,6 @@ package tar
 
 import (
 	"bytes"
-	"strconv"
-	"strings"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
@@ -33,17 +31,6 @@ func tarDecode(d *decode.D, in interface{}) interface{} {
 	const blockBits = blockBytes * 8
 
 	mapTrimSpaceNull := scalar.Trim(" \x00")
-	mapOctStrToSymU := scalar.Fn(func(s scalar.S) (scalar.S, error) {
-		ts := strings.Trim(s.ActualStr(), " ")
-		if ts != "" {
-			n, err := strconv.ParseUint(ts, 8, 64)
-			if err != nil {
-				return s, err
-			}
-			s.Sym = n
-		}
-		return s, nil
-	})
 	blockPadding := func(d *decode.D) int64 {
 		return (blockBits - (d.Pos() % blockBits)) % blockBits
 	}
@@ -58,24 +45,24 @@ func tarDecode(d *decode.D, in interface{}) interface{} {
 		for !d.End() {
 			d.FieldStruct("file", func(d *decode.D) {
 				d.FieldUTF8("name", 100, mapTrimSpaceNull)
-				d.FieldUTF8NullFixedLen("mode", 8, mapOctStrToSymU)
-				d.FieldUTF8NullFixedLen("uid", 8, mapOctStrToSymU)
-				d.FieldUTF8NullFixedLen("gid", 8, mapOctStrToSymU)
-				sizeS := d.FieldScalarUTF8NullFixedLen("size", 12, mapOctStrToSymU)
+				d.FieldUTF8NullFixedLen("mode", 8, scalar.StrUintToSym(8))
+				d.FieldUTF8NullFixedLen("uid", 8, scalar.StrUintToSym(8))
+				d.FieldUTF8NullFixedLen("gid", 8, scalar.StrUintToSym(8))
+				sizeS := d.FieldScalarUTF8NullFixedLen("size", 12, scalar.StrUintToSym(8))
 				if sizeS.Sym == nil {
 					d.Fatalf("could not decode size")
 				}
 				size := int64(sizeS.SymU()) * 8
-				d.FieldUTF8NullFixedLen("mtime", 12, mapOctStrToSymU)
-				d.FieldUTF8NullFixedLen("chksum", 8, mapOctStrToSymU)
+				d.FieldUTF8NullFixedLen("mtime", 12, scalar.StrUintToSym(8))
+				d.FieldUTF8NullFixedLen("chksum", 8, scalar.StrUintToSym(8))
 				d.FieldUTF8("typeflag", 1, mapTrimSpaceNull)
 				d.FieldUTF8("linkname", 100, mapTrimSpaceNull)
 				d.FieldUTF8("magic", 6, mapTrimSpaceNull, d.AssertStr("ustar"))
-				d.FieldUTF8NullFixedLen("version", 2, mapOctStrToSymU)
+				d.FieldUTF8NullFixedLen("version", 2, scalar.StrUintToSym(8))
 				d.FieldUTF8("uname", 32, mapTrimSpaceNull)
 				d.FieldUTF8("gname", 32, mapTrimSpaceNull)
-				d.FieldUTF8NullFixedLen("devmajor", 8, mapOctStrToSymU)
-				d.FieldUTF8NullFixedLen("devminor", 8, mapOctStrToSymU)
+				d.FieldUTF8NullFixedLen("devmajor", 8, scalar.StrUintToSym(8))
+				d.FieldUTF8NullFixedLen("devminor", 8, scalar.StrUintToSym(8))
 				d.FieldUTF8("prefix", 155, mapTrimSpaceNull)
 				d.FieldRawLen("header_block_padding", blockPadding(d), d.BitBufIsZero())
 
