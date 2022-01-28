@@ -8,6 +8,7 @@ package scalar
 import (
 	"bytes"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/wader/fq/pkg/bitio"
@@ -112,6 +113,32 @@ var TrimSpace = Fn(func(s S) (S, error) {
 	s.Actual = strings.TrimSpace(s.ActualStr())
 	return s, nil
 })
+
+func strMapToSym(fn func(s string) (interface{}, error)) Mapper {
+	return Fn(func(s S) (S, error) {
+		ts := strings.TrimSpace(s.ActualStr())
+		if ts != "" {
+			n, err := fn(ts)
+			if err != nil {
+				return s, err
+			}
+			s.Sym = n
+		}
+		return s, nil
+	})
+}
+
+func StrUintToSym(base int) Mapper {
+	return strMapToSym(func(s string) (interface{}, error) { return strconv.ParseUint(s, base, 64) })
+}
+
+func StrIntToSym(base int) Mapper {
+	return strMapToSym(func(s string) (interface{}, error) { return strconv.ParseInt(s, base, 64) })
+}
+
+func StrFToSym(base int) Mapper {
+	return strMapToSym(func(s string) (interface{}, error) { return strconv.ParseFloat(s, base) })
+}
 
 //nolint:unparam
 func rawSym(s S, nBytes int, fn func(b []byte) string) (S, error) {
