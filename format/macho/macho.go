@@ -5,8 +5,6 @@ package macho
 import (
 	"bytes"
 	"fmt"
-	"strconv"
-	"strings"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
@@ -15,12 +13,17 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
+var arGroup decode.Group
+
 func init() {
 	registry.MustRegister(decode.Format{
 		Name:        format.MACHO,
 		Description: "Mach-O macOS executable",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    machoDecode,
+		Dependencies: []decode.Dependency{
+			{Names: []string{format.AR}, Group: &arGroup},
+		},
 	})
 }
 
@@ -36,11 +39,11 @@ const (
 	AR_EFMT1    = "#1/"
 )
 
-var classBits = scalar.UToSymU{
-	MH_MAGIC:    32,
-	MH_CIGAM:    32,
-	MH_MAGIC_64: 64,
-	MH_CIGAM_64: 64,
+var magicSymMapper = scalar.UToScalar{
+	MH_MAGIC:    scalar.S{Description: "32-bit little endian"},
+	MH_CIGAM:    scalar.S{Description: "32-bit big endian"},
+	MH_MAGIC_64: scalar.S{Description: "64-bit little endian"},
+	MH_CIGAM_64: scalar.S{Description: "64-bit big endian"},
 }
 
 var endianNames = scalar.UToSymStr{
@@ -326,18 +329,26 @@ func ofileDecode(d *decode.D) {
 	} else if magicBuffer == FAT_MAGIC {
 		d.Endian = decode.LittleEndian
 		fatParse(d)
+		return
 	} else if magicBuffer == FAT_CIGAM {
 		d.Endian = decode.BigEndian
 		fatParse(d)
+		return
 	} else {
 		d.SeekAbs(0)
-		arMagic := d.FieldRawLen("magic", 8*8)
+		arMagic := d.RawLen(8 * 8)
 		arMagicBytes, err := arMagic.Bytes()
 		if err != nil {
 			d.Fatalf("Fallback to AR(.a) file parsing failed. magic bytes were invalid.")
 		}
 		if bytes.Equal(arMagicBytes, []byte(ARMAG)) {
-			arParse(d)
+			// go to start of the file
+			d.SeekAbs(0)
+			dv, _ := d.FieldFormat("ar", arGroup, nil)
+			if dv == nil {
+				d.Fatalf("AR decode step failed")
+			}
+			return
 		} else {
 			d.Fatalf("Invalid magic field")
 		}
@@ -346,7 +357,9 @@ func ofileDecode(d *decode.D) {
 	d.SeekAbs(0)
 	d.FieldStruct("header", func(d *decode.D) {
 		d.FieldValueS("arch_bits", int64(archBits))
-		d.FieldU32("magic", scalar.Hex, classBits, endianNames)
+		magic := d.FieldU32("magic", scalar.Hex, magicSymMapper)
+		d.FieldValueU("bits", uint64(archBits))
+		d.FieldValueStr("endian", endianNames[magic])
 		cpuType := d.FieldS32("cputype", cpuTypes)
 		d.FieldS32("cpusubtype", cpuSubTypes[cpuType])
 		d.FieldU32("filetype") // TODO expand this
@@ -613,44 +626,6 @@ func fatParse(d *decode.D) {
 			ofileDecode(d)
 		}
 	})
-}
-
-func arParse(d *decode.D) {
-	// Go to start of the file again
-	d.SeekAbs(0)
-	d.FieldStruct("ar_header", func(d *decode.D) {
-		name := d.FieldUTF8NullFixedLen("name", 16)
-		d.FieldUTF8NullFixedLen("date", 12)
-		d.FieldUTF8NullFixedLen("uid", 6)
-		d.FieldUTF8NullFixedLen("gid", 6)
-		d.FieldUTF8NullFixedLen("mode", 6)               // parse_octal ?? TODO
-		arSizeStr := d.FieldUTF8NullFixedLen("size", 10) // trim and parse into uint64
-		arSize, err := strconv.ParseInt(strings.TrimSpace(arSizeStr), 10, 64)
-		if err != nil {
-			// todo handle error
-		}
-		d.FieldU16("fmag") // in native endian TODO
-
-		// if it is a ranlib
-		if name == "SYMDEF" || name == "SYMDEF_SORTED" {
-			ranlib_len := d.FieldU32("ranlib_len")
-			nranlib := ranlib_len / 64
-			nranlibIdx := 0
-			d.FieldStructArrayLoop("ranlibs", "ranlib", func() bool {
-				return nranlibIdx < int(nranlib)
-			}, func(d *decode.D) {
-				d.FieldU32("ran_strx")
-				d.FieldU32("ran_off")
-				nranlibIdx++
-			})
-			tocStrSize := d.FieldU32("toc_strsize")
-			d.FieldRawLen("toc_str", int64(tocStrSize)*8)
-		} else {
-			d.FieldRawLen("ar_content", arSize)
-			arParse(d)
-		}
-	})
-
 }
 
 func intelSubTypeHelper(f, m int64) int64 {

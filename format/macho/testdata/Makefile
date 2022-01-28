@@ -1,5 +1,5 @@
-TEST_TARGETS=libbbb.o libbbb.so a.o a_dynamic a_stripped a_static
-TARGETS=$(TEST_TARGETS) libbbb.a
+TARGETS=libbbb.a libbbb.o libbbb.so a.o a_dynamic a_stripped a_static
+
 FQ:=fq
 
 all: $(TARGETS)
@@ -32,4 +32,4 @@ all-platforms-actual:
 	make actual DIR=darwin_amd64
 
 actual:
-	cd $(DIR) && echo $(TEST_TARGETS) | tr -s '[:blank:]' '\n' | grep -ivE '.*\.o$$' | xargs -I '{}' sh -c 'echo "$$ fq -d macho v {}" > {}.fqtest && $(FQ) -d macho v {} >> {}.fqtest'
+	cd $(DIR) && echo $(TARGETS) | tr -s '[:blank:]' '\n' | grep -ivE '.*\.o$$' | xargs -I '{}' sh -c 'echo "$$ fq -d macho v {}" > {}.fqtest && $(FQ) -d macho v {} >> {}.fqtest'
