@@ -1,4 +1,4 @@
-$ fq -d pcap verbose /sll2_tcp.pcap
+$ fq -d pcap dv /sll2_tcp.pcap
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /sll2_tcp.pcap (pcap) 0x0-0x1e4.7 (485)
 0x000|d4 c3 b2 a1                                    |....            |  magic: "little_endian" (0xd4c3b2a1) (valid) 0x0-0x3.7 (4)
 0x000|            02 00                              |    ..          |  version_major: 2 0x4-0x5.7 (2)

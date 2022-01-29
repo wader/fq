@@ -1,5 +1,5 @@
 # echo test | gzip -N > test.gz
-$ fq -d gzip verbose /test.gz
+$ fq -d gzip dv /test.gz
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /test.gz (gzip) 0x0-0x18.7 (25)
 0x00|1f 8b                                          |..              |  identification: raw bits (valid) 0x0-0x1.7 (2)
 0x00|      08                                       |  .             |  compression_method: "deflate" (8) 0x2-0x2.7 (1)

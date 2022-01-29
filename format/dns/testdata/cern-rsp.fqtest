@@ -1,4 +1,4 @@
-$ fq -d dns verbose /cern-rsp
+$ fq -d dns dv /cern-rsp
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /cern-rsp (dns) 0x0-0x4f.7 (80)
     |                                               |                |  header{}: 0x0-0x3.7 (4)
 0x00|71 02                                          |q.              |    id: 28930 0x0-0x1.7 (2)

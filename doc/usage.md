@@ -279,12 +279,14 @@ you currently have to do `fq -d raw 'mp3({force: true})' file`.
 - `probe`, `probe($opts)` probe and decode format
 - `mp3`, `mp3($opts)`, ..., `<name>`, `<name>($opts)` same as `decode(<name>)($opts)`, `decode($format; $opts)`  decode as format
 - Display shows hexdump/ASCII/tree for decode values and JSON for other values.
-  - `d`/`display` display value and truncate long arrays
-  - `f`/`full` display value and don't truncate arrays
-  - `v`/`verbose` display value verbosely and don't truncate array
+  - `d`/`d($opts)` display value and truncate long arrays and buffers
+  - `da`/`da($opts)` display value and don't truncate arrays
+  - `dd`/`dd($opts)` display value and don't truncate arrays or buffers
+  - `dv`/`dv($opts)` verbosely display value and don't truncate arrays but truncate buffers
+  - `ddv`/`ddv($opts)` verbosely display value and don't truncate arrays or buffers
 - `p`/`preview` show preview of field tree
 - `hd`/`hexdump` hexdump value
-- `repl` nested REPL, must be last in a pipeline. `1 | repl`, can "slurp" multiple outputs `1, 2, 3 | repl`.
+- `repl` nested REPL, must be last in a pipeline. `1 | repl`, can "slurp" outputs `1, 2, 3 | repl`.
 
 ## Arguments
 

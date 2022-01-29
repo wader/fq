@@ -29,15 +29,14 @@ def _exit_code_expr_error: 5;
 
 def d($opts): display($opts);
 def d: display({});
-def full($opts): display({array_truncate: 0} + $opts);
-# TODO: rename, gets mixed up with f args often
-def full: full({});
-def f($opts): full($opts);
-def f: full;
-def verbose($opts): display({verbose: true, array_truncate: 0} + $opts);
-def verbose: verbose({});
-def v($opts): verbose($opts);
-def v: verbose;
+def da($opts): display({array_truncate: 0} + $opts);
+def da: da({});
+def dd($opts): display({array_truncate: 0, display_bytes: 0} + $opts);
+def dd: dd({});
+def dv($opts): display({array_truncate: 0, verbose: true} + $opts);
+def dv: dv({});
+def ddv($opts): display({array_truncate: 0, display_bytes: 0, verbose: true} + $opts);
+def ddv: ddv({});
 
 # next valid input
 def input:
