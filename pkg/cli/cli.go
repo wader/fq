@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"runtime"
 
 	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/registry"
@@ -72,6 +73,13 @@ func newStandardOS() *stdOS {
 	return &stdOS{
 		closeChan:     closeChan,
 		interruptChan: interruptChan,
+	}
+}
+
+func (stdOS) Platform() interp.Platform {
+	return interp.Platform{
+		OS:   runtime.GOOS,
+		Arch: runtime.GOARCH,
 	}
 }
 
@@ -224,7 +232,7 @@ func (o *stdOS) Close() error {
 	return nil
 }
 
-func Main(r *registry.Registry, version string, osStr string, archStr string) {
+func Main(r *registry.Registry, version string) {
 	os.Exit(func() int {
 		defer maybeProfile()()
 		maybeLogFile()
@@ -238,7 +246,7 @@ func Main(r *registry.Registry, version string, osStr string, archStr string) {
 			return 1
 		}
 
-		if err := i.Main(context.Background(), sos.Stdout(), version, osStr, archStr); err != nil {
+		if err := i.Main(context.Background(), sos.Stdout(), version); err != nil {
 			if ex, ok := err.(interp.Exiter); ok { //nolint:errorlint
 				return ex.ExitCode()
 			}

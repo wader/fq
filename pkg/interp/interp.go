@@ -127,7 +127,13 @@ type Output interface {
 	Terminal
 }
 
+type Platform struct {
+	OS   string
+	Arch string
+}
+
 type OS interface {
+	Platform() Platform
 	Stdin() Input
 	Stdout() Output
 	Stderr() Output
@@ -359,17 +365,18 @@ func (i *Interp) Stop() {
 	i.interruptStack.Stop()
 }
 
-func (i *Interp) Main(ctx context.Context, output Output, versionStr string, osStr string, archStr string) error {
+func (i *Interp) Main(ctx context.Context, output Output, versionStr string) error {
 	var args []interface{}
 	for _, a := range i.os.Args() {
 		args = append(args, a)
 	}
 
+	platform := i.os.Platform()
 	input := map[string]interface{}{
 		"args":    args,
 		"version": versionStr,
-		"os":      osStr,
-		"arch":    archStr,
+		"os":      platform.OS,
+		"arch":    platform.Arch,
 	}
 
 	iter, err := i.EvalFunc(ctx, input, "_main", nil, output)
