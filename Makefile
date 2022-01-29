@@ -32,12 +32,15 @@ cover: test
 	cat cover.out.html | grep '<option value="file' | sed -E 's/.*>(.*) \((.*)%\)<.*/\2 \1/' | sort -rn
 
 .PHONY: doc
-doc: fq doc/file.mp3 doc/file.mp4 doc/formats.svg doc/demo.svg
+doc: doc/formats.svg doc/demo.svg
+doc: doc/display_json.svg
+doc: doc/display_decode_value.svg
+doc: doc/display_decode_value_d.svg
+doc: doc/display_decode_value_dv.svg
 	@doc/mdsh.sh ./fq *.md doc/*.md
 
-.PHONY: doc/demo.svg
-doc/demo.svg: fq
-	(cd doc ; ./demo.sh ../fq) | go run github.com/wader/ansisvg@master > doc/demo.svg
+doc/%.svg: doc/%.sh fq
+	(cd doc ; ../$< ../fq) | go run github.com/wader/ansisvg@master > $@
 
 .PHONY: doc/formats.svg
 doc/formats.svg: fq
