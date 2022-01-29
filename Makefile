@@ -17,10 +17,6 @@ testgo: PKGS=$(shell find . -name "*_test.go" | xargs -n 1 dirname | sort | uniq
 testgo:
 	go test ${GO_TEST_RACE_FLAGS} ${VERBOSE} ${COVER} ${PKGS}
 
-.PHONY: testgov
-testgov: export VERBOSE=-v
-testgov: testgo
-
 .PHONY: testjq
 testjq: fq
 	@pkg/interp/testjq.sh ./fq pkg/interp/*_test.jq
@@ -28,10 +24,6 @@ testjq: fq
 .PHONY: testcli
 testcli: fq
 	@pkg/cli/test.sh ./fq pkg/cli/test.exp
-
-.PHONY: actual
-actual: export WRITE_ACTUAL=1
-actual: testgo
 
 .PHONY: cover
 cover: COVER=-cover -coverpkg=./... -coverprofile=cover.out
@@ -85,7 +77,7 @@ memprof: prof
 cpuprof: prof
 	go tool pprof -http :5555 fq.prof fq.cpu.prof
 
-.PHONY: update-gomodreplace
+.PHONY: update-gomod
 update-gomod:
 	GOPROXY=direct go get -d github.com/wader/readline@fq
 	GOPROXY=direct go get -d github.com/wader/gojq@fq
