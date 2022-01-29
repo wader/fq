@@ -5,6 +5,7 @@ FQ="$1"
 shift
 
 REPODIR=$(pwd)
+export REPODIR
 TEMPDIR=$(mktemp -d)
 cp -a doc/* "${TEMPDIR}"
 cp "$FQ" "${TEMPDIR}/fq"

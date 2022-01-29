@@ -310,9 +310,9 @@ Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 --include-path,-L PATH   Include search path
 --join-output,-j         No newline between outputs
 --monochrome-output,-M   Force monochrome output
---null-input,-n          Null input (use input and inputs to read input)
+--null-input,-n          Null input (use input and inputs functions to read input)
 --null-output,-0         Null byte between outputs
---option,-o KEY=VALUE    Set option, eg: color=true (use options to see all options)
+--option,-o KEY=VALUE    Set option, eg: color=true (use options function to see all options)
 --raw-file NAME PATH     Set variable $NAME to string content of file
 --raw-input,-R           Read raw input strings (don't decode)
 --raw-output,-r          Raw string output (without quotes)
