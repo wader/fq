@@ -13,6 +13,6 @@ $ fq 'matroska_path(".Segment.Tracks[0]") file.mkv
 ```
 
 ```
-$ fq 'first(grep_by(.id == "Tracks")) | matroska_path' testfiles/test.mkv
+$ fq 'first(grep_by(.id == "Tracks")) | matroska_path' test.mkv
 ".Segment.Tracks"
 ```
