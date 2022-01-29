@@ -24,14 +24,10 @@ fq 'd({display_bytes: 0})' file
 # display 200 bytes for each value
 fq 'd({display_bytes: 200})' file
 
-# recursively display decode tree
-fq f file
-# same as
-fq full file
+# recursively display decode tree without truncating
+fq da file
 
 # recursively and verbosely display decode tree
-fq v file
-# same as
 fq dv file
 
 # JSON repersenation for whole file

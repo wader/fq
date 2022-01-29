@@ -38,7 +38,7 @@ I ususally use `-d <format>` and `dv` while developing, that way you will get a 
 even if it fails. `dv` gives verbose output and also includes stacktrace.
 
 ```sh
-go run fq.go -d <format> v file
+go run fq.go -d <format> dv file
 ```
 
 If the format is inside some other format it can be handy to first extract the bits and run
@@ -46,7 +46,7 @@ the decode directly. For example if working a `aac_frame` decoder issue:
 
 ```sh
 fq '.tracks[0].samples[1234] | tobytes' file.mp4 > aac_frame_1234
-fq -d aac_frame v aac_frame_1234
+fq -d aac_frame dv aac_frame_1234
 ```
 
 Sometimes nested decoding fails then maybe a good way is to change the parent decoder to
@@ -58,7 +58,7 @@ make things more comfortable. Also using vscode/delve for debugging should work 
 launch `args` are setup etc.
 
 ```
-watchexec "go run fq.go -d aac_frame v aac_frame"
+watchexec "go run fq.go -d aac_frame dv aac_frame"
 ```
 
 Some different ways to run tests:
