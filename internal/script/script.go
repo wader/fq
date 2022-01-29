@@ -82,6 +82,13 @@ func (cr *CaseRun) getEnvInt(name string) int {
 	return n
 }
 
+func (cr *CaseRun) Platform() interp.Platform {
+	return interp.Platform{
+		OS:   "testos",
+		Arch: "testarch",
+	}
+}
+
 func (cr *CaseRun) Stdin() interp.Input {
 	return CaseRunInput{
 		FileReader: interp.FileReader{
