@@ -298,6 +298,14 @@ For more information see https://github.com/wader/fq
 
 Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 
+Example usages:
+  fq . file
+  fq d file
+  fq tovalue file
+  cat file.cbor | fq -d cbor torepr
+  fq 'grep("^main$") | parent' /bin/ls
+  fq 'grep_by(format == "exif") | d' *.png *.jpeg
+
 --arg NAME VALUE         Set variable $NAME to string VALUE
 --argjson NAME JSON      Set variable $NAME to JSON
 --color-output,-C        Force color output
@@ -310,9 +318,9 @@ Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 --include-path,-L PATH   Include search path
 --join-output,-j         No newline between outputs
 --monochrome-output,-M   Force monochrome output
---null-input,-n          Null input (use input and inputs to read input)
+--null-input,-n          Null input (use input and inputs functions to read input)
 --null-output,-0         Null byte between outputs
---option,-o KEY=VALUE    Set option, eg: color=true (use options to see all options)
+--option,-o KEY=VALUE    Set option, eg: color=true (use options function to see all options)
 --raw-file NAME PATH     Set variable $NAME to string content of file
 --raw-input,-R           Read raw input strings (don't decode)
 --raw-output,-r          Raw string output (without quotes)
