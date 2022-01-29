@@ -300,6 +300,14 @@ def _main:
       , ""
       , _usage($arg0)
       , ""
+      , "Example usages:"
+      , "  fq . file"
+      , "  fq d file"
+      , "  fq tovalue file"
+      , "  cat file.cbor | fq -d cbor torepr"
+      , "  fq 'grep(\"^main$\") | parent' /bin/ls"
+      , "  fq 'grep_by(format == \"exif\") | d' *.png *.jpeg"
+      , ""
       , args_help_text(_opt_cli_opts)
       ) | println
     elif $opts.show_version then

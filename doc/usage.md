@@ -298,6 +298,14 @@ For more information see https://github.com/wader/fq
 
 Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 
+Example usages:
+  fq . file
+  fq d file
+  fq tovalue file
+  cat file.cbor | fq -d cbor torepr
+  fq 'grep("^main$") | parent' /bin/ls
+  fq 'grep_by(format == "exif") | d' *.png *.jpeg
+
 --arg NAME VALUE         Set variable $NAME to string VALUE
 --argjson NAME JSON      Set variable $NAME to JSON
 --color-output,-C        Force color output
