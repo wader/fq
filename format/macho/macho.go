@@ -68,8 +68,8 @@ var cpuTypes = scalar.SToSymStr{
 	17:        "CPU_TYPE_RS6000",
 	18:        "CPU_TYPE_POWERPC",
 	0x1000007: "CPU_TYPE_X86_64",
-	0x1000012: "CPU_TYPE_ARM64",
-	0x1000018: "CPU_TYPE_POWERPC64",
+	0x100000c: "CPU_TYPE_ARM64",
+	0x1000013: "CPU_TYPE_POWERPC64",
 	255:       "CPU_TYPE_VEO",
 }
 
@@ -392,6 +392,7 @@ func machoDecode(d *decode.D, in interface{}) interface{} {
 
 func ofileDecode(d *decode.D) {
 	var archBits int
+	var cpuType int64
 	var ncmds uint64
 	magicBuffer := d.U32LE()
 
@@ -428,7 +429,7 @@ func ofileDecode(d *decode.D) {
 		magic := d.FieldU32("magic", scalar.Hex, magicSymMapper)
 		d.FieldValueU("bits", uint64(archBits))
 		d.FieldValueStr("endian", endianNames[magic])
-		cpuType := d.FieldS32("cputype", cpuTypes)
+		cpuType = d.FieldS32("cputype", cpuTypes)
 		d.FieldS32("cpusubtype", cpuSubTypes[cpuType])
 		d.FieldU32("filetype", fileTypes)
 		ncmds = d.FieldU32("ncdms")
@@ -533,8 +534,24 @@ func ofileDecode(d *decode.D) {
 		case LC_THREAD, LC_UNIXTHREAD:
 			d.FieldU32("flavor")
 			count := d.FieldU32("count")
-			d.FieldRawLen("state", int64(count*32))
-			// TODO better visualization needed for this specific for major architectures
+			d.FieldStruct("state", func(d *decode.D) {
+				switch cpuType {
+				case 0x7:
+					threadStateI386{}.Decode(d)
+				case 0xC:
+					threadStateARM32{}.Decode(d)
+				case 0x13:
+					threadStatePPC32{}.Decode(d)
+				case 0x1000007:
+					threadStateX8664{}.Decode(d)
+				case 0x100000C:
+					threadStateARM64{}.Decode(d)
+				case 0x1000013:
+					threadStatePPC64{}.Decode(d)
+				default:
+					d.FieldRawLen("state", int64(count*32))
+				}
+			})
 		case LC_ROUTINES, LC_ROUTINES_64:
 			if archBits == 32 {
 				d.FieldU32("init_address", scalar.Hex)
@@ -704,3 +721,201 @@ var timestampMapper = scalar.Fn(func(s scalar.S) (scalar.S, error) {
 	s.Sym = time.UnixMilli(int64(ts)).String()
 	return s, nil
 })
+
+type threadStateDecoder interface {
+	Decode(*decode.D)
+}
+
+type threadStateI386 struct {
+	eax    uint32
+	ebx    uint32
+	ecx    uint32
+	edx    uint32
+	edi    uint32
+	esi    uint32
+	ebp    uint32
+	esp    uint32
+	ss     uint32
+	eflags uint32
+	eip    uint32
+	cs     uint32
+	ds     uint32
+	es     uint32
+	fs     uint32
+	gs     uint32
+}
+
+func (t threadStateI386) Decode(d *decode.D) {
+	t.eax = uint32(d.FieldU32("eax"))
+	t.ebx = uint32(d.FieldU32("ebx"))
+	t.ecx = uint32(d.FieldU32("ecx"))
+	t.edx = uint32(d.FieldU32("edx"))
+	t.edi = uint32(d.FieldU32("edi"))
+	t.esi = uint32(d.FieldU32("esi"))
+	t.ebp = uint32(d.FieldU32("ebp"))
+	t.esp = uint32(d.FieldU32("esp"))
+	t.ss = uint32(d.FieldU32("ss"))
+	t.eflags = uint32(d.FieldU32("eflags"))
+	t.eip = uint32(d.FieldU32("eip"))
+	t.cs = uint32(d.FieldU32("cs"))
+	t.ds = uint32(d.FieldU32("ds"))
+	t.es = uint32(d.FieldU32("es"))
+	t.fs = uint32(d.FieldU32("fs"))
+	t.gs = uint32(d.FieldU32("gs"))
+}
+
+type threadStateX8664 struct {
+	rax    uint64
+	rbx    uint64
+	rcx    uint64
+	rdx    uint64
+	rdi    uint64
+	rsi    uint64
+	rbp    uint64
+	rsp    uint64
+	r8     uint64
+	r9     uint64
+	r10    uint64
+	r11    uint64
+	r12    uint64
+	r13    uint64
+	r14    uint64
+	r15    uint64
+	rip    uint64
+	rflags uint64
+	cs     uint64
+	fs     uint64
+	gs     uint64
+}
+
+func (t threadStateX8664) Decode(d *decode.D) {
+	t.rax = d.FieldU64("rax")
+	t.rbx = d.FieldU64("rbx")
+	t.rcx = d.FieldU64("rcx")
+	t.rdx = d.FieldU64("rdx")
+	t.rdi = d.FieldU64("rdi")
+	t.rsi = d.FieldU64("rsi")
+	t.rbp = d.FieldU64("rbp")
+	t.rsp = d.FieldU64("rsp")
+	t.r8 = d.FieldU64("r8")
+	t.r9 = d.FieldU64("r9")
+	t.r10 = d.FieldU64("r10")
+	t.r11 = d.FieldU64("r11")
+	t.r12 = d.FieldU64("r12")
+	t.r13 = d.FieldU64("r13")
+	t.r14 = d.FieldU64("r14")
+	t.r15 = d.FieldU64("r15")
+	t.rip = d.FieldU64("rip")
+	t.rflags = d.FieldU64("rflags")
+	t.cs = d.FieldU64("cs")
+	t.fs = d.FieldU64("fs")
+	t.gs = d.FieldU64("gs")
+}
+
+type threadStateARM32 struct {
+	r    [13]uint32
+	sp   uint32
+	lr   uint32
+	pc   uint32
+	cpsr uint32
+}
+
+func (t threadStateARM32) Decode(d *decode.D) {
+	rIdx := 0
+	d.FieldStructArrayLoop("r", "r", func() bool {
+		return rIdx < 13
+	}, func(d *decode.D) {
+		t.r[rIdx] = uint32(d.FieldU32("value"))
+	})
+	t.sp = uint32(d.FieldU32("sp"))
+	t.lr = uint32(d.FieldU32("lr"))
+	t.pc = uint32(d.FieldU32("pc"))
+	t.cpsr = uint32(d.FieldU32("cpsr"))
+}
+
+type threadStateARM64 struct {
+	r    [29]uint64
+	fp   uint64
+	lr   uint64
+	sp   uint64
+	pc   uint64
+	cpsr uint32
+	pad  uint32
+}
+
+func (t threadStateARM64) Decode(d *decode.D) {
+	rIdx := 0
+	d.FieldStructArrayLoop("r", "r", func() bool {
+		return rIdx < 29
+	}, func(d *decode.D) {
+		t.r[rIdx] = d.FieldU64("value")
+	})
+	t.fp = d.FieldU64("fp")
+	t.lr = d.FieldU64("lr")
+	t.sp = d.FieldU64("sp")
+	t.pc = d.FieldU64("pc")
+	t.cpsr = uint32(d.FieldU32("cpsr"))
+	t.pad = uint32(d.FieldU32("pad"))
+}
+
+type threadStatePPC32 struct {
+	srr    [2]uint32
+	r      [32]uint32
+	ct     uint32
+	xer    uint32
+	lr     uint32
+	ctr    uint32
+	mq     uint32
+	vrsave uint32
+}
+
+func (t threadStatePPC32) Decode(d *decode.D) {
+	srrIdx := 0
+	d.FieldStructArrayLoop("srr", "srr", func() bool {
+		return srrIdx < 2
+	}, func(d *decode.D) {
+		t.r[srrIdx] = uint32(d.FieldU32("value"))
+	})
+	rIdx := 0
+	d.FieldStructArrayLoop("r", "r", func() bool {
+		return rIdx < 32
+	}, func(d *decode.D) {
+		t.r[rIdx] = uint32(d.FieldU32("value"))
+	})
+	t.ct = uint32(d.FieldU32("ct"))
+	t.xer = uint32(d.FieldU32("xer"))
+	t.lr = uint32(d.FieldU32("lr"))
+	t.ctr = uint32(d.FieldU32("ctr"))
+	t.mq = uint32(d.FieldU32("mq"))
+	t.vrsave = uint32(d.FieldU32("vrsave"))
+}
+
+type threadStatePPC64 struct {
+	srr    [2]uint64
+	r      [32]uint64
+	cr     uint32
+	xer    uint64
+	lr     uint64
+	ctr    uint64
+	vrsave uint32
+}
+
+func (t threadStatePPC64) Decode(d *decode.D) {
+	srrIdx := 0
+	d.FieldStructArrayLoop("srr", "srr", func() bool {
+		return srrIdx < 2
+	}, func(d *decode.D) {
+		t.r[srrIdx] = d.FieldU64("value")
+	})
+	rIdx := 0
+	d.FieldStructArrayLoop("r", "r", func() bool {
+		return rIdx < 32
+	}, func(d *decode.D) {
+		t.r[rIdx] = d.FieldU64("value")
+	})
+	t.cr = uint32(d.FieldU32("ct"))
+	t.xer = d.FieldU64("xer")
+	t.lr = d.FieldU64("lr")
+	t.ctr = d.FieldU64("ctr")
+	t.vrsave = uint32(d.FieldU32("vrsave"))
+}
