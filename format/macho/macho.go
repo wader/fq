@@ -344,6 +344,50 @@ var loadCommands = scalar.UToSymStr{
 	LC_NOTE:                     "note",
 	LC_BUILD_VERSION:            "build_version",
 }
+var segmentFlags = map[uint64]string{
+	0x1: "SG_HIGHVM",
+	0x2: "SG_FVMLIB",
+	0x4: "SG_NORELOC",
+	0x8: "SG_PROTECTED_VERSION_1",
+}
+
+var sectionTypes = scalar.UToSymStr{
+	0x0:  "S_REGULAR",
+	0x1:  "S_ZEROFILL",
+	0x2:  "S_CSTRING_LITERALS",
+	0x3:  "S_4BYTE_LITERALS",
+	0x4:  "S_8BYTE_LITERALS",
+	0x5:  "S_LITERAL_POINTERS",
+	0x6:  "S_NON_LAZY_SYMBOL_POINTERS",
+	0x7:  "S_LAZY_SYMBOL_POINTERS",
+	0x8:  "S_SYMBOL_STUBS",
+	0x9:  "S_MOD_INIT_FUNC_POINTERS",
+	0xa:  "S_MOD_TERM_FUNC_POINTERS",
+	0xb:  "S_COALESCED",
+	0xc:  "S_GB_ZEROFILL",
+	0xd:  "S_INTERPOSING",
+	0xe:  "S_16BYTE_LITERALS",
+	0xf:  "S_DTRACE_DOF",
+	0x10: "S_LAZY_DYLIB_SYMBOL_POINTERS",
+	0x11: "S_THREAD_LOCAL_REGULAR",
+	0x12: "S_THREAD_LOCAL_ZEROFILL",
+	0x13: "S_THREAD_LOCAL_VARIABLES",
+	0x14: "S_THREAD_LOCAL_VARIABLE_POINTERS",
+	0x15: "S_THREAD_LOCAL_INIT_FUNCTION_POINTERS",
+}
+
+var sectionFlags = map[uint64]string{
+	0x8000_0000: "S_ATTR_PURE_INSTRUCTIONS",
+	0x4000_0000: "S_ATTR_NO_TOC",
+	0x2000_0000: "S_ATTR_STRIP_STATIC_SYMS",
+	0x1000_0000: "S_ATTR_NO_DEAD_STRIP",
+	0x0800_0000: "S_ATTR_LIVE_SUPPORT",
+	0x0400_0000: "S_ATTR_SELF_MODIFYING_CODE",
+	0x0200_0000: "S_ATTR_DEBUG",
+	0x0000_0400: "S_ATTR_SOME_INSTRUCTIONS",
+	0x0000_0200: "S_ATTR_EXT_RELOC",
+	0x0000_0100: "S_ATTR_LOC_RELOC",
+}
 
 func machoDecode(d *decode.D, in interface{}) interface{} {
 	ofileDecode(d)
@@ -409,12 +453,7 @@ func ofileDecode(d *decode.D) {
 		d.FieldU32("filetype", fileTypes)
 		ncmds = d.FieldU32("ncdms")
 		d.FieldU32("sizeofncdms")
-		d.FieldStruct("flags", func(d *decode.D) {
-			flags := d.U32()
-			for mask, sym := range machHeaderFlags {
-				d.FieldValueBool(sym, (mask&flags) != 0)
-			}
-		})
+		d.FieldStruct("flags", parseFlags(machHeaderFlags))
 		if archBits == 64 {
 			d.FieldRawLen("reserved", 4*8, d.BitBufIsZero())
 		}
@@ -450,7 +489,7 @@ func ofileDecode(d *decode.D) {
 				d.FieldS32("initprot")
 				d.FieldS32("maxprot")
 				nsects = d.FieldU32("nsects")
-				d.FieldU32("flags") // TODO expand flags
+				d.FieldStruct("flags", parseFlags(segmentFlags))
 			})
 			var nsectIdx uint64
 			d.FieldStructArrayLoop("sections", "section", func() bool {
@@ -471,7 +510,7 @@ func ofileDecode(d *decode.D) {
 					d.FieldU32("align")
 					d.FieldU32("reloff")
 					d.FieldU32("nreloc")
-					d.FieldU32("flags") // TODO expand flags
+					d.FieldStruct("flags", parseFlags(sectionFlags))
 					d.FieldU32("reserved1")
 					d.FieldU32("reserved2")
 					if archBits == 64 {
@@ -509,7 +548,7 @@ func ofileDecode(d *decode.D) {
 			d.FieldU32("flavor")
 			count := d.FieldU32("count")
 			d.FieldRawLen("state", int64(count*32))
-			// better visualization needed for this specific for major architectures
+			// TODO better visualization needed for this specific for major architectures
 		case LC_ROUTINES, LC_ROUTINES_64:
 			if archBits == 32 {
 				d.FieldU32("init_address", scalar.Hex)
@@ -657,4 +696,13 @@ func fatParse(d *decode.D) {
 
 func intelSubTypeHelper(f, m int64) int64 {
 	return f + (m << 4)
+}
+
+func parseFlags(symbolMap map[uint64]string) func(*decode.D) {
+	return func(d *decode.D) {
+		flags := d.U32()
+		for mask, sym := range symbolMap {
+			d.FieldValueBool(sym, (mask&flags) != 0)
+		}
+	}
 }
