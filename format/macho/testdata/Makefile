@@ -29,4 +29,4 @@ all-platforms-actual:
 	make actual DIR=darwin_amd64
 
 actual:
-	cd $(DIR) && echo $(TARGETS) | tr -s '[:blank:]' '\n' | grep -ivE '.*\.o$$' | xargs -I '{}' sh -c 'echo "$$ fq -d macho v {}" > {}.fqtest && $(FQ) -d macho v {} >> {}.fqtest'
+	cd $(DIR) && echo $(TARGETS) | tr -s '[:blank:]' '\n' | grep -ivE '.*\.o$$' | xargs -I '{}' sh -c 'echo "$$ fq -d macho dv {}" > {}.fqtest && $(FQ) -d macho dv {} >> {}.fqtest'

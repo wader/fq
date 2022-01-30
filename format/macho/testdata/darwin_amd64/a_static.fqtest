@@ -1,4 +1,4 @@
-$ fq -d macho v a_static
+$ fq -d macho dv a_static
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: a_static (macho) 0x0-0xc157.7 (49496)
       |                                               |                |  header{}: 0x0-0x1f.7 (32)
       |                                               |                |    arch_bits: 64 0x0-NA (0)
@@ -426,7 +426,7 @@ $ fq -d macho v a_static
 0x0520|            38 00 00 00                        |    8...        |      cmdsize: 56 0x524-0x527.7 (4)
       |                                               |                |      dylib_command{}: 0x528-0x557.7 (48)
 0x0520|                        18 00 00 00            |        ....    |        offset: 24 0x528-0x52b.7 (4)
-0x0520|                                    02 00 00 00|            ....|        timestamp: 2 0x52c-0x52f.7 (4)
+0x0520|                                    02 00 00 00|            ....|        timestamp: "1970-01-01 01:00:00.002 +0100 CET" (2) 0x52c-0x52f.7 (4)
 0x0530|00 00 1f 05                                    |....            |        current_version: 85917696 0x530-0x533.7 (4)
 0x0530|            00 00 01 00                        |    ....        |        compatibility_version: 65536 0x534-0x537.7 (4)
 0x0530|                        2f 75 73 72 2f 6c 69 62|        /usr/lib|        name: "/usr/lib/libSystem.B.dylib" 0x538-0x557.7 (32)

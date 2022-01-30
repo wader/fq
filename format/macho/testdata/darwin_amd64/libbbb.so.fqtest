@@ -1,4 +1,4 @@
-$ fq -d macho v libbbb.so
+$ fq -d macho dv libbbb.so
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: libbbb.so (macho) 0x0-0xc0d7.7 (49368)
       |                                               |                |  header{}: 0x0-0x1f.7 (32)
       |                                               |                |    arch_bits: 64 0x0-NA (0)
@@ -341,7 +341,7 @@ $ fq -d macho v libbbb.so
 0x03c0|            28 00 00 00                        |    (...        |      cmdsize: 40 0x3c4-0x3c7.7 (4)
       |                                               |                |      dylib_command{}: 0x3c8-0x3e7.7 (32)
 0x03c0|                        18 00 00 00            |        ....    |        offset: 24 0x3c8-0x3cb.7 (4)
-0x03c0|                                    01 00 00 00|            ....|        timestamp: 1 0x3cc-0x3cf.7 (4)
+0x03c0|                                    01 00 00 00|            ....|        timestamp: "1970-01-01 01:00:00.001 +0100 CET" (1) 0x3cc-0x3cf.7 (4)
 0x03d0|00 00 00 00                                    |....            |        current_version: 0 0x3d0-0x3d3.7 (4)
 0x03d0|            00 00 00 00                        |    ....        |        compatibility_version: 0 0x3d4-0x3d7.7 (4)
 0x03d0|                        6c 69 62 62 62 62 2e 73|        libbbb.s|        name: "libbbb.so" 0x3d8-0x3e7.7 (16)
@@ -415,7 +415,7 @@ $ fq -d macho v libbbb.so
 0x04c0|                                    38 00 00 00|            8...|      cmdsize: 56 0x4cc-0x4cf.7 (4)
       |                                               |                |      dylib_command{}: 0x4d0-0x4ff.7 (48)
 0x04d0|18 00 00 00                                    |....            |        offset: 24 0x4d0-0x4d3.7 (4)
-0x04d0|            02 00 00 00                        |    ....        |        timestamp: 2 0x4d4-0x4d7.7 (4)
+0x04d0|            02 00 00 00                        |    ....        |        timestamp: "1970-01-01 01:00:00.002 +0100 CET" (2) 0x4d4-0x4d7.7 (4)
 0x04d0|                        00 00 1f 05            |        ....    |        current_version: 85917696 0x4d8-0x4db.7 (4)
 0x04d0|                                    00 00 01 00|            ....|        compatibility_version: 65536 0x4dc-0x4df.7 (4)
 0x04e0|2f 75 73 72 2f 6c 69 62 2f 6c 69 62 53 79 73 74|/usr/lib/libSyst|        name: "/usr/lib/libSystem.B.dylib" 0x4e0-0x4ff.7 (32)
