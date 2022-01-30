@@ -256,32 +256,32 @@ var fileTypes = scalar.UToSymStr{
 }
 
 var machHeaderFlags = map[uint64]string{
-	0x1:         "MH_NOUNDEFS",
-	0x2:         "MH_INCRLINK",
-	0x4:         "MH_DYLDLINK",
-	0x8:         "MH_BINDATLOAD",
-	0x10:        "MH_PREBOUND",
-	0x20:        "MH_SPLIT_SEGS",
-	0x40:        "MH_LAZY_INIT",
-	0x80:        "MH_TWOLEVEL",
-	0x100:       "MH_FORCE_FLAT",
-	0x200:       "MH_NOMULTIDEFS",
-	0x400:       "MH_NOFIXPREBINDING",
-	0x800:       "MH_PREBINDABLE",
-	0x1000:      "MH_ALLMODSBOUND",
-	0x2000:      "MH_SUBSECTIONS_VIA_SYMBOLS",
-	0x4000:      "MH_CANONICAL",
-	0x8000:      "MH_WEAK_DEFINES",
-	0x00010000:  "MH_BINDS_TO_WEAK",
-	0x00020000:  "MH_ALLOW_STACK_EXECUTION",
-	0x00040000:  "MH_ROOT_SAFE",
-	0x0008_0000: "MH_SETUID_SAFE",
-	0x0010_0000: "MH_NO_REEXPORTED_DYLIBS",
-	0x0020_0000: "MH_PIE",
-	0x0040_0000: "MH_DEAD_STRIPPABLE_DYLIB",
-	0x0080_0000: "MH_HAS_TLV_DESCRIPTORS",
-	0x0100_0000: "MH_NO_HEAP_EXECUTION",
-	0x0200_0000: "MH_APP_EXTENSION_SAFE",
+	0x1:        "MH_NOUNDEFS",
+	0x2:        "MH_INCRLINK",
+	0x4:        "MH_DYLDLINK",
+	0x8:        "MH_BINDATLOAD",
+	0x10:       "MH_PREBOUND",
+	0x20:       "MH_SPLIT_SEGS",
+	0x40:       "MH_LAZY_INIT",
+	0x80:       "MH_TWOLEVEL",
+	0x100:      "MH_FORCE_FLAT",
+	0x200:      "MH_NOMULTIDEFS",
+	0x400:      "MH_NOFIXPREBINDING",
+	0x800:      "MH_PREBINDABLE",
+	0x1000:     "MH_ALLMODSBOUND",
+	0x2000:     "MH_SUBSECTIONS_VIA_SYMBOLS",
+	0x4000:     "MH_CANONICAL",
+	0x8000:     "MH_WEAK_DEFINES",
+	0x00010000: "MH_BINDS_TO_WEAK",
+	0x00020000: "MH_ALLOW_STACK_EXECUTION",
+	0x00040000: "MH_ROOT_SAFE",
+	0x00080000: "MH_SETUID_SAFE",
+	0x00100000: "MH_NO_REEXPORTED_DYLIBS",
+	0x00200000: "MH_PIE",
+	0x00400000: "MH_DEAD_STRIPPABLE_DYLIB",
+	0x00800000: "MH_HAS_TLV_DESCRIPTORS",
+	0x01000000: "MH_NO_HEAP_EXECUTION",
+	0x02000000: "MH_APP_EXTENSION_SAFE",
 }
 
 var loadCommands = scalar.UToSymStr{
@@ -371,16 +371,17 @@ var sectionTypes = scalar.UToSymStr{
 }
 
 var sectionFlags = map[uint64]string{
-	0x8000_0000: "S_ATTR_PURE_INSTRUCTIONS",
-	0x4000_0000: "S_ATTR_NO_TOC",
-	0x2000_0000: "S_ATTR_STRIP_STATIC_SYMS",
-	0x1000_0000: "S_ATTR_NO_DEAD_STRIP",
-	0x0800_0000: "S_ATTR_LIVE_SUPPORT",
-	0x0400_0000: "S_ATTR_SELF_MODIFYING_CODE",
-	0x0200_0000: "S_ATTR_DEBUG",
-	0x0000_0400: "S_ATTR_SOME_INSTRUCTIONS",
-	0x0000_0200: "S_ATTR_EXT_RELOC",
-	0x0000_0100: "S_ATTR_LOC_RELOC",
+	0x00000100: "S_ATTR_LOC_RELOC",
+	0x00000200: "S_ATTR_EXT_RELOC",
+	0x00000400: "S_ATTR_SOME_INSTRUCTIONS",
+
+	0x02000000: "S_ATTR_DEBUG",
+	0x04000000: "S_ATTR_SELF_MODIFYING_CODE",
+	0x08000000: "S_ATTR_LIVE_SUPPORT",
+	0x10000000: "S_ATTR_NO_DEAD_STRIP",
+	0x20000000: "S_ATTR_STRIP_STATIC_SYMS",
+	0x40000000: "S_ATTR_NO_TOC",
+	0x80000000: "S_ATTR_PURE_INSTRUCTIONS",
 }
 
 func machoDecode(d *decode.D, in interface{}) interface{} {
@@ -684,9 +685,12 @@ func intelSubTypeHelper(f, m int64) int64 {
 
 func parseFlags(symbolMap map[uint64]string) func(*decode.D) {
 	return func(d *decode.D) {
-		flags := d.U32()
-		for mask, sym := range symbolMap {
-			d.FieldValueBool(sym, (mask&flags) != 0)
+		var flagIdx uint64
+		flags := d.FieldU32("flags")
+		for flagIdx = 1; flagIdx <= 0x80000000; flagIdx <<= 1 {
+			if val, ok := symbolMap[uint64(flagIdx)]; ok {
+				d.FieldValueBool(val, (flagIdx&flags) != 0)
+			}
 		}
 	}
 }
