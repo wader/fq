@@ -4,6 +4,7 @@ package macho
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
@@ -509,7 +510,7 @@ func ofileDecode(d *decode.D) {
 		case LC_LOAD_DYLIB, LC_ID_DYLIB, LC_LOAD_UPWARD_DYLIB, LC_LOAD_WEAK_DYLIB, LC_LAZY_LOAD_DYLIB, LC_REEXPORT_DYLIB:
 			d.FieldStruct("dylib_command", func(d *decode.D) {
 				offset := d.FieldU32("offset")
-				d.FieldU32("timestamp") // TODO human readable
+				d.FieldU32("timestamp", timestampMapper)
 				d.FieldU32("current_version")
 				d.FieldU32("compatibility_version")
 				d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
@@ -694,3 +695,12 @@ func parseFlags(symbolMap map[uint64]string) func(*decode.D) {
 		}
 	}
 }
+
+var timestampMapper = scalar.Fn(func(s scalar.S) (scalar.S, error) {
+	ts, ok := s.Actual.(uint64)
+	if !ok {
+		return s, nil
+	}
+	s.Sym = time.UnixMilli(int64(ts)).String()
+	return s, nil
+})
