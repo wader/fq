@@ -1,4 +1,4 @@
-TARGETS=libbbb.a libbbb.o libbbb.so a.o a_dynamic a_stripped a_static
+TARGETS=libbbb.o libbbb.so a.o a_dynamic a_stripped a_static
 
 FQ:=fq
 
@@ -18,9 +18,6 @@ build:
 
 libbbb.so: libbbb.o
 	$(CC) -shared -o $@ $+
-libbbb.a: libbbb.o
-	ar ru $@ $+
-	ranlib $@
 a_dynamic: a.o
 	$(CC) -o $@ $+ -L./ -lbbb
 a_stripped: a_dynamic
