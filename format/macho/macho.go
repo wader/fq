@@ -536,14 +536,14 @@ func ofileDecode(d *decode.D) {
 			offset := d.FieldU32("offset")
 			d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
 		case LC_PREBOUND_DYLIB:
-			offset := d.FieldU32("offset")
+			// https://github.com/aidansteele/osx-abi-macho-file-format-reference#prebound_dylib_command
+			d.U32() // name_offset
 			nmodules := d.FieldU32("nmodules")
+			d.U32() // linked_modules_offset
+			d.FieldUTF8Null("name")
 			d.FieldBitBufFn("linked_modules", func(d *decode.D) bitio.ReaderAtSeeker {
 				return d.RawLen(int64((nmodules / 8) + (nmodules % 8)))
-			}) // TODO this needs better representation
-			d.FieldStrFn("name", func(d *decode.D) string {
-				return string(d.BytesLen(int(cmdsize) - int(offset)))
-			}) // TODO visualize this bitset
+			})
 		case LC_THREAD, LC_UNIXTHREAD:
 			d.FieldU32("flavor")
 			count := d.FieldU32("count")
