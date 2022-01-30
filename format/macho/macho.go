@@ -537,17 +537,17 @@ func ofileDecode(d *decode.D) {
 			d.FieldStruct("state", func(d *decode.D) {
 				switch cpuType {
 				case 0x7:
-					threadStateI386{}.Decode(d)
+					threadStateI386Decode(d)
 				case 0xC:
-					threadStateARM32{}.Decode(d)
+					threadStateARM32Decode(d)
 				case 0x13:
-					threadStatePPC32{}.Decode(d)
+					threadStatePPC32Decode(d)
 				case 0x1000007:
-					threadStateX8664{}.Decode(d)
+					threadStateX8664Decode(d)
 				case 0x100000C:
-					threadStateARM64{}.Decode(d)
+					threadStateARM64Decode(d)
 				case 0x1000013:
-					threadStatePPC64{}.Decode(d)
+					threadStatePPC64Decode(d)
 				default:
 					d.FieldRawLen("state", int64(count*32))
 				}
@@ -706,7 +706,7 @@ func parseFlags(symbolMap map[uint64]string) func(*decode.D) {
 		var flagIdx uint64
 		flags := d.FieldU32("flags")
 		for flagIdx = 1; flagIdx <= 0x80000000; flagIdx <<= 1 {
-			if val, ok := symbolMap[uint64(flagIdx)]; ok {
+			if val, ok := symbolMap[flagIdx]; ok {
 				d.FieldValueBool(val, (flagIdx&flags) != 0)
 			}
 		}
@@ -722,200 +722,114 @@ var timestampMapper = scalar.Fn(func(s scalar.S) (scalar.S, error) {
 	return s, nil
 })
 
-type threadStateDecoder interface {
-	Decode(*decode.D)
+func threadStateI386Decode(d *decode.D) {
+	d.FieldU32("eax")
+	d.FieldU32("ebx")
+	d.FieldU32("ecx")
+	d.FieldU32("edx")
+	d.FieldU32("edi")
+	d.FieldU32("esi")
+	d.FieldU32("ebp")
+	d.FieldU32("esp")
+	d.FieldU32("ss")
+	d.FieldU32("eflags")
+	d.FieldU32("eip")
+	d.FieldU32("cs")
+	d.FieldU32("ds")
+	d.FieldU32("es")
+	d.FieldU32("fs")
+	d.FieldU32("gs")
 }
 
-type threadStateI386 struct {
-	eax    uint32
-	ebx    uint32
-	ecx    uint32
-	edx    uint32
-	edi    uint32
-	esi    uint32
-	ebp    uint32
-	esp    uint32
-	ss     uint32
-	eflags uint32
-	eip    uint32
-	cs     uint32
-	ds     uint32
-	es     uint32
-	fs     uint32
-	gs     uint32
+func threadStateX8664Decode(d *decode.D) {
+	d.FieldU64("rax")
+	d.FieldU64("rbx")
+	d.FieldU64("rcx")
+	d.FieldU64("rdx")
+	d.FieldU64("rdi")
+	d.FieldU64("rsi")
+	d.FieldU64("rbp")
+	d.FieldU64("rsp")
+	d.FieldU64("r8")
+	d.FieldU64("r9")
+	d.FieldU64("r10")
+	d.FieldU64("r11")
+	d.FieldU64("r12")
+	d.FieldU64("r13")
+	d.FieldU64("r14")
+	d.FieldU64("r15")
+	d.FieldU64("rip")
+	d.FieldU64("rflags")
+	d.FieldU64("cs")
+	d.FieldU64("fs")
+	d.FieldU64("gs")
 }
 
-func (t threadStateI386) Decode(d *decode.D) {
-	t.eax = uint32(d.FieldU32("eax"))
-	t.ebx = uint32(d.FieldU32("ebx"))
-	t.ecx = uint32(d.FieldU32("ecx"))
-	t.edx = uint32(d.FieldU32("edx"))
-	t.edi = uint32(d.FieldU32("edi"))
-	t.esi = uint32(d.FieldU32("esi"))
-	t.ebp = uint32(d.FieldU32("ebp"))
-	t.esp = uint32(d.FieldU32("esp"))
-	t.ss = uint32(d.FieldU32("ss"))
-	t.eflags = uint32(d.FieldU32("eflags"))
-	t.eip = uint32(d.FieldU32("eip"))
-	t.cs = uint32(d.FieldU32("cs"))
-	t.ds = uint32(d.FieldU32("ds"))
-	t.es = uint32(d.FieldU32("es"))
-	t.fs = uint32(d.FieldU32("fs"))
-	t.gs = uint32(d.FieldU32("gs"))
-}
-
-type threadStateX8664 struct {
-	rax    uint64
-	rbx    uint64
-	rcx    uint64
-	rdx    uint64
-	rdi    uint64
-	rsi    uint64
-	rbp    uint64
-	rsp    uint64
-	r8     uint64
-	r9     uint64
-	r10    uint64
-	r11    uint64
-	r12    uint64
-	r13    uint64
-	r14    uint64
-	r15    uint64
-	rip    uint64
-	rflags uint64
-	cs     uint64
-	fs     uint64
-	gs     uint64
-}
-
-func (t threadStateX8664) Decode(d *decode.D) {
-	t.rax = d.FieldU64("rax")
-	t.rbx = d.FieldU64("rbx")
-	t.rcx = d.FieldU64("rcx")
-	t.rdx = d.FieldU64("rdx")
-	t.rdi = d.FieldU64("rdi")
-	t.rsi = d.FieldU64("rsi")
-	t.rbp = d.FieldU64("rbp")
-	t.rsp = d.FieldU64("rsp")
-	t.r8 = d.FieldU64("r8")
-	t.r9 = d.FieldU64("r9")
-	t.r10 = d.FieldU64("r10")
-	t.r11 = d.FieldU64("r11")
-	t.r12 = d.FieldU64("r12")
-	t.r13 = d.FieldU64("r13")
-	t.r14 = d.FieldU64("r14")
-	t.r15 = d.FieldU64("r15")
-	t.rip = d.FieldU64("rip")
-	t.rflags = d.FieldU64("rflags")
-	t.cs = d.FieldU64("cs")
-	t.fs = d.FieldU64("fs")
-	t.gs = d.FieldU64("gs")
-}
-
-type threadStateARM32 struct {
-	r    [13]uint32
-	sp   uint32
-	lr   uint32
-	pc   uint32
-	cpsr uint32
-}
-
-func (t threadStateARM32) Decode(d *decode.D) {
+func threadStateARM32Decode(d *decode.D) {
 	rIdx := 0
 	d.FieldStructArrayLoop("r", "r", func() bool {
 		return rIdx < 13
 	}, func(d *decode.D) {
-		t.r[rIdx] = uint32(d.FieldU32("value"))
+		d.FieldU32("value")
 	})
-	t.sp = uint32(d.FieldU32("sp"))
-	t.lr = uint32(d.FieldU32("lr"))
-	t.pc = uint32(d.FieldU32("pc"))
-	t.cpsr = uint32(d.FieldU32("cpsr"))
+	d.FieldU32("sp")
+	d.FieldU32("lr")
+	d.FieldU32("pc")
+	d.FieldU32("cpsr")
 }
 
-type threadStateARM64 struct {
-	r    [29]uint64
-	fp   uint64
-	lr   uint64
-	sp   uint64
-	pc   uint64
-	cpsr uint32
-	pad  uint32
-}
-
-func (t threadStateARM64) Decode(d *decode.D) {
+func threadStateARM64Decode(d *decode.D) {
 	rIdx := 0
 	d.FieldStructArrayLoop("r", "r", func() bool {
 		return rIdx < 29
 	}, func(d *decode.D) {
-		t.r[rIdx] = d.FieldU64("value")
+		d.FieldU64("value")
 	})
-	t.fp = d.FieldU64("fp")
-	t.lr = d.FieldU64("lr")
-	t.sp = d.FieldU64("sp")
-	t.pc = d.FieldU64("pc")
-	t.cpsr = uint32(d.FieldU32("cpsr"))
-	t.pad = uint32(d.FieldU32("pad"))
+	d.FieldU64("fp")
+	d.FieldU64("lr")
+	d.FieldU64("sp")
+	d.FieldU64("pc")
+	d.FieldU32("cpsr")
+	d.FieldU32("pad")
 }
 
-type threadStatePPC32 struct {
-	srr    [2]uint32
-	r      [32]uint32
-	ct     uint32
-	xer    uint32
-	lr     uint32
-	ctr    uint32
-	mq     uint32
-	vrsave uint32
-}
-
-func (t threadStatePPC32) Decode(d *decode.D) {
+func threadStatePPC32Decode(d *decode.D) {
 	srrIdx := 0
 	d.FieldStructArrayLoop("srr", "srr", func() bool {
 		return srrIdx < 2
 	}, func(d *decode.D) {
-		t.r[srrIdx] = uint32(d.FieldU32("value"))
+		d.FieldU32("value")
 	})
 	rIdx := 0
 	d.FieldStructArrayLoop("r", "r", func() bool {
 		return rIdx < 32
 	}, func(d *decode.D) {
-		t.r[rIdx] = uint32(d.FieldU32("value"))
+		d.FieldU32("value")
 	})
-	t.ct = uint32(d.FieldU32("ct"))
-	t.xer = uint32(d.FieldU32("xer"))
-	t.lr = uint32(d.FieldU32("lr"))
-	t.ctr = uint32(d.FieldU32("ctr"))
-	t.mq = uint32(d.FieldU32("mq"))
-	t.vrsave = uint32(d.FieldU32("vrsave"))
+	d.FieldU32("ct")
+	d.FieldU32("xer")
+	d.FieldU32("lr")
+	d.FieldU32("ctr")
+	d.FieldU32("mq")
+	d.FieldU32("vrsave")
 }
 
-type threadStatePPC64 struct {
-	srr    [2]uint64
-	r      [32]uint64
-	cr     uint32
-	xer    uint64
-	lr     uint64
-	ctr    uint64
-	vrsave uint32
-}
-
-func (t threadStatePPC64) Decode(d *decode.D) {
+func threadStatePPC64Decode(d *decode.D) {
 	srrIdx := 0
 	d.FieldStructArrayLoop("srr", "srr", func() bool {
 		return srrIdx < 2
 	}, func(d *decode.D) {
-		t.r[srrIdx] = d.FieldU64("value")
+		d.FieldU64("value")
 	})
 	rIdx := 0
 	d.FieldStructArrayLoop("r", "r", func() bool {
 		return rIdx < 32
 	}, func(d *decode.D) {
-		t.r[rIdx] = d.FieldU64("value")
+		d.FieldU64("value")
 	})
-	t.cr = uint32(d.FieldU32("ct"))
-	t.xer = d.FieldU64("xer")
-	t.lr = d.FieldU64("lr")
-	t.ctr = d.FieldU64("ctr")
-	t.vrsave = uint32(d.FieldU32("vrsave"))
+	d.FieldU32("ct")
+	d.FieldU64("xer")
+	d.FieldU64("lr")
+	d.FieldU64("ctr")
+	d.FieldU32("vrsave")
 }
