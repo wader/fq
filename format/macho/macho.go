@@ -3,7 +3,6 @@ package macho
 // https://github.com/aidansteele/osx-abi-macho-file-format-reference
 
 import (
-	"bytes"
 	"fmt"
 
 	"github.com/wader/fq/format"
@@ -13,17 +12,12 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var arGroup decode.Group
-
 func init() {
 	registry.MustRegister(decode.Format{
 		Name:        format.MACHO,
 		Description: "Mach-O macOS executable",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    machoDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.AR}, Group: &arGroup},
-		},
 	})
 }
 
@@ -422,23 +416,7 @@ func ofileDecode(d *decode.D) {
 		fatParse(d)
 		return
 	} else {
-		// Try decoding AR
-		d.SeekAbs(0)
-		arMagic := d.RawLen(8 * 8)
-		arMagicBytes, err := arMagic.Bytes()
-		if err != nil {
-			d.Fatalf("Fallback to AR(.a) file parsing failed. magic bytes were invalid.")
-		}
-		if bytes.Equal(arMagicBytes, []byte(ARMAG)) {
-			// go to start of the file
-			d.SeekAbs(0)
-			dv, _ := d.FieldFormat("ar", arGroup, nil)
-			if dv == nil {
-				d.Fatalf("AR decode step failed")
-			}
-			return
-		}
-		// All options are exhausted, fail
+		// AR files are also valid OFiles but they should be parsed by `-d ar`
 		d.Fatalf("Invalid magic field")
 	}
 
