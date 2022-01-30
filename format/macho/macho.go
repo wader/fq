@@ -488,6 +488,12 @@ func ofileDecode(d *decode.D) {
 					d.FieldU32("align")
 					d.FieldU32("reloff")
 					d.FieldU32("nreloc")
+					// get section type
+					sectionType := d.U32()
+					sectionTypeMasked := sectionType & 0xFF
+					d.FieldValueStr("type", sectionTypes[sectionTypeMasked])
+					// rewind 32 bits and parse flags
+					d.SeekRel(4 * 8)
 					d.FieldStruct("flags", parseFlags(sectionFlags))
 					d.FieldU32("reserved1")
 					d.FieldU32("reserved2")
