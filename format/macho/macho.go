@@ -718,7 +718,7 @@ var timestampMapper = scalar.Fn(func(s scalar.S) (scalar.S, error) {
 	if !ok {
 		return s, nil
 	}
-	s.Sym = time.UnixMilli(int64(ts)).String()
+	s.Sym = time.UnixMilli(int64(ts)).UTC().String()
 	return s, nil
 })
 
