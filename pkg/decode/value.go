@@ -9,6 +9,7 @@ import (
 
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/ranges"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 type Compound struct {
@@ -223,4 +224,21 @@ func (v *Value) postProcess() {
 	}); err != nil {
 		panic(err)
 	}
+}
+
+func (v *Value) TryScalarFn(sms ...scalar.Mapper) error {
+	var err error
+	sr, ok := v.V.(*scalar.S)
+	if !ok {
+		panic("not a scalar value")
+	}
+	s := *sr
+	for _, sm := range sms {
+		s, err = sm.MapScalar(s)
+		if err != nil {
+			break
+		}
+	}
+	v.V = &s
+	return err
 }
