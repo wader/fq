@@ -1,5 +1,7 @@
 package protobuf
 
+// https://developers.google.com/protocol-buffers/docs/encoding
+
 import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"

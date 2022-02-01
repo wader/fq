@@ -1,7 +1,7 @@
-Supports `matroska_path`, ex:
+Supports `matroska_path`:
 
 ```
-$ fq 'matroska_path(".Segment.Tracks[0]") file.mkv
+$ fq 'matroska_path(".Segment.Tracks[0]")' file.mkv
      │00 01 02 03 04 05 06 07 08 09│0123456789│.elements[1].elements[3]{}:
 0x122│         16 54 ae 6b         │   .T.k   │  id: "Tracks" (0x1654ae6b) (A Top-Level Element of information with many tracks described.)
      │                             │          │  type: "master" (7)

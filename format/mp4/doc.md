@@ -1,4 +1,4 @@
-Supports `mp4_path`, ex:
+Supports `mp4_path`:
 
 ```
 $ fq 'mp4_path(".moov.trak[1]")' file.mp4
