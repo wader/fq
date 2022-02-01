@@ -4,21 +4,21 @@
 
 ### bencode
 
-Supports `torepr`, ex:
+Supports `torepr`:
 
 ```
 fq -d bencode torepr file.torrent
 ```
 ### bson
 
-Supports `torepr`, ex:
+Supports `torepr`:
 
 ```
 fq -d bson torepr file.bson
 ```
 ### cbor
 
-Supports `torepr`, ex:
+Supports `torepr`:
 
 ```
 fq -d cbor torepr file.cbor
@@ -28,10 +28,10 @@ fq -d cbor 'torepr | grep("abc")' file.cbor
 ```
 ### matroska
 
-Supports `matroska_path`, ex:
+Supports `matroska_path`:
 
 ```
-$ fq 'matroska_path(".Segment.Tracks[0]") file.mkv
+$ fq 'matroska_path(".Segment.Tracks[0]")' file.mkv
      │00 01 02 03 04 05 06 07 08 09│0123456789│.elements[1].elements[3]{}:
 0x122│         16 54 ae 6b         │   .T.k   │  id: "Tracks" (0x1654ae6b) (A Top-Level Element of information with many tracks described.)
      │                             │          │  type: "master" (7)
@@ -48,7 +48,7 @@ $ fq 'first(grep_by(.id == "Tracks")) | matroska_path' test.mkv
 ```
 ### mp4
 
-Supports `mp4_path`, ex:
+Supports `mp4_path`:
 
 ```
 $ fq 'mp4_path(".moov.trak[1]")' file.mp4
@@ -68,10 +68,17 @@ $ fq 'first(grep_by(.type == "trak")) | mp4_path' file.mp4
 ```
 ### msgpack
 
-Supports `torepr`, ex:
+Supports `torepr`:
 
 ```
 fq -d msgpack torepr file.msgpack
+```
+### protobuf
+
+`protobuf` decoder can be used to decode sub messages:
+
+```
+fq -d protobuf '.fields[6].wire_value | protobuf | d'
 ```
 
 [#]: sh-end

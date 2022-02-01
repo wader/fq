@@ -1,4 +1,4 @@
-Supports `torepr`, ex:
+Supports `torepr`:
 
 ```
 fq -d cbor torepr file.cbor
