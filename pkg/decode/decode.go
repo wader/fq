@@ -861,13 +861,16 @@ func (d *D) FieldFormatBitBuf(name string, bb *bitio.Buffer, group Group, inArg 
 }
 
 // TODO: rethink these
-func (d *D) FieldRootBitBuf(name string, bb *bitio.Buffer) *Value {
+func (d *D) FieldRootBitBuf(name string, bb *bitio.Buffer, sms ...scalar.Mapper) *Value {
 	v := &Value{}
 	v.V = &scalar.S{Actual: bb}
 	v.Name = name
 	v.RootBitBuf = bb
 	v.IsRoot = true
 	v.Range = ranges.Range{Start: d.Pos(), Len: bb.Len()}
+	if err := v.TryScalarFn(sms...); err != nil {
+		d.Fatalf("%v", err)
+	}
 	d.AddChild(v)
 
 	return v
@@ -1002,21 +1005,4 @@ func (d *D) FieldScalarFn(name string, sfn scalar.Fn, sms ...scalar.Mapper) *sca
 		d.IOPanic(err, "FieldScalarFn: TryFieldScalarFn")
 	}
 	return v
-}
-
-func (v *Value) TryScalarFn(sms ...scalar.Mapper) error {
-	var err error
-	sr, ok := v.V.(*scalar.S)
-	if !ok {
-		panic("not a scalar value")
-	}
-	s := *sr
-	for _, sm := range sms {
-		s, err = sm.MapScalar(s)
-		if err != nil {
-			break
-		}
-	}
-	v.V = &s
-	return err
 }
