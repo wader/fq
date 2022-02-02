@@ -1,5 +1,8 @@
 #!/usr/bin/env fq -rnf
 
+def color:
+  md5 | [.[range(3)]] | map(band(.; 0x7f)+60 | radix16 | "0"[length:]+.) | join("");
+
 def _formats_dot:
   def _record($title; $fields):
     [  "<"
@@ -12,18 +15,19 @@ def _formats_dot:
   ( "# ... | dot -Tsvg -o formats.svg"
   , "digraph formats {"
   , "  rankdir=TB"
-  , "  node [shape=\"none\" style=\"\"]"
+  , "  node [penwidth=2 shape=\"none\" style=\"\"]"
+  , "  edge [penwidth=2]"
   , ( .[]
     | . as $f
     | .dependencies
     | flatten?
     | .[]
-    | "  \"\($f.name)\":\(.):e -> \(.):n"
+    | "  \"\($f.name)\":\(.):e -> \(.):n [color=\"#\($f.name | color)\"]"
     )
   , ( .[]
     | .name as $name
     | .groups[]?
-    | "  \(.) -> \"\($name)\":\($name):n"
+    | "  \(.) -> \"\($name)\":\($name):n [color=\"#\(. | color)\"]"
     )
   , ( to_entries[]
     | "  \(.key) [color=\"paleturquoise\", label=\(_record(.key; (.value.dependencies // [])))]"
