@@ -3,7 +3,6 @@ package macho
 // https://github.com/aidansteele/osx-abi-macho-file-format-reference
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/wader/fq/format"
@@ -24,14 +23,12 @@ func init() {
 
 //nolint:revive
 const (
-	MH_MAGIC    = 0xfeedface
-	MH_CIGAM    = 0xcefaedfe
-	MH_MAGIC_64 = 0xfeedfacf
-	MH_CIGAM_64 = 0xcffaedfe
+	MH_MAGIC    = 0xfeed_face
+	MH_CIGAM    = 0xcefa_edfe
+	MH_MAGIC_64 = 0xfeed_facf
+	MH_CIGAM_64 = 0xcffa_edfe
 	FAT_MAGIC   = 0xcafe_babe
 	FAT_CIGAM   = 0xbeba_feca
-	ARMAG       = "!<arch>\n"
-	AR_EFMT1    = "#1/"
 )
 
 var magicSymMapper = scalar.UToScalar{
@@ -493,7 +490,7 @@ func ofileDecode(d *decode.D) {
 					d.FieldU32("nreloc")
 					// get section type
 					sectionType := d.U32()
-					sectionTypeMasked := sectionType & 0xFF
+					sectionTypeMasked := sectionType & 0xff
 					d.FieldValueStr("type", sectionTypes[sectionTypeMasked])
 					// rewind 32 bits and parse flags
 					d.SeekRel(-4 * 8)
@@ -556,21 +553,21 @@ func ofileDecode(d *decode.D) {
 			if archBits == 32 {
 				d.FieldU32("init_address", scalar.Hex)
 				d.FieldU32("init_module")
-				d.FieldU32("reserved1", d.BitBufIsZero())
-				d.FieldU32("reserved2", d.BitBufIsZero())
-				d.FieldU32("reserved3", d.BitBufIsZero())
-				d.FieldU32("reserved4", d.BitBufIsZero())
-				d.FieldU32("reserved5", d.BitBufIsZero())
-				d.FieldU32("reserved6", d.BitBufIsZero())
+				d.FieldU32("reserved1")
+				d.FieldU32("reserved2")
+				d.FieldU32("reserved3")
+				d.FieldU32("reserved4")
+				d.FieldU32("reserved5")
+				d.FieldU32("reserved6")
 			} else {
 				d.FieldU64("init_address", scalar.Hex)
 				d.FieldU64("init_module")
-				d.FieldU64("reserved1", d.BitBufIsZero())
-				d.FieldU64("reserved2", d.BitBufIsZero())
-				d.FieldU64("reserved3", d.BitBufIsZero())
-				d.FieldU64("reserved4", d.BitBufIsZero())
-				d.FieldU64("reserved5", d.BitBufIsZero())
-				d.FieldU64("reserved6", d.BitBufIsZero())
+				d.FieldU64("reserved1")
+				d.FieldU64("reserved2")
+				d.FieldU64("reserved3")
+				d.FieldU64("reserved4")
+				d.FieldU64("reserved5")
+				d.FieldU64("reserved6")
 			}
 		case LC_SUB_UMBRELLA, LC_SUB_LIBRARY, LC_SUB_CLIENT, LC_SUB_FRAMEWORK:
 			offset := d.FieldU32("offset")
@@ -649,7 +646,7 @@ func ofileDecode(d *decode.D) {
 				d.FieldUTF8NullFixedLen("option", int(count))
 			})
 		case LC_ENCRYPTION_INFO, LC_ENCRYPTION_INFO_64:
-			d.FieldStruct(fmt.Sprintf("encryption_info_%d", archBits), func(d *decode.D) {
+			d.FieldStruct("encryption_info", func(d *decode.D) {
 				d.FieldU32("offset")
 				d.FieldU32("size")
 				d.FieldU32("id")
@@ -689,6 +686,7 @@ func fatParse(d *decode.D) {
 				d.FieldU32("size")
 				d.FieldU32("align")
 			})
+			narchsIdx++
 		})
 		for i := 0; uint64(i) < narchs; i++ {
 			// parse ofiles
@@ -771,6 +769,7 @@ func threadStateARM32Decode(d *decode.D) {
 		return rIdx < 13
 	}, func(d *decode.D) {
 		d.FieldU32("value")
+		rIdx++
 	})
 	d.FieldU32("sp")
 	d.FieldU32("lr")
@@ -784,6 +783,7 @@ func threadStateARM64Decode(d *decode.D) {
 		return rIdx < 29
 	}, func(d *decode.D) {
 		d.FieldU64("value")
+		rIdx++
 	})
 	d.FieldU64("fp")
 	d.FieldU64("lr")
@@ -799,12 +799,14 @@ func threadStatePPC32Decode(d *decode.D) {
 		return srrIdx < 2
 	}, func(d *decode.D) {
 		d.FieldU32("value")
+		srrIdx++
 	})
 	rIdx := 0
 	d.FieldStructArrayLoop("r", "r", func() bool {
 		return rIdx < 32
 	}, func(d *decode.D) {
 		d.FieldU32("value")
+		rIdx++
 	})
 	d.FieldU32("ct")
 	d.FieldU32("xer")
@@ -820,12 +822,14 @@ func threadStatePPC64Decode(d *decode.D) {
 		return srrIdx < 2
 	}, func(d *decode.D) {
 		d.FieldU64("value")
+		srrIdx++
 	})
 	rIdx := 0
 	d.FieldStructArrayLoop("r", "r", func() bool {
 		return rIdx < 32
 	}, func(d *decode.D) {
 		d.FieldU64("value")
+		rIdx++
 	})
 	d.FieldU32("ct")
 	d.FieldU64("xer")
