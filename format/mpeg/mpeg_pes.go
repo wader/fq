@@ -61,17 +61,16 @@ func pesDecode(d *decode.D, in interface{}) interface{} {
 				s = &subStream{}
 				substreams[dvv.number] = s
 			}
-			b, _ := dvv.bb.BytesRange(0, int(dvv.bb.Len()/8))
-			s.b = append(s.b, b...)
+			s.b = append(s.b, dvv.buf...)
 
-			if s.l == 0 && len(b) >= 2 {
-				s.l = int(b[0])<<8 | int(b[1])
+			if s.l == 0 && len(s.b) >= 2 {
+				s.l = int(s.b[0])<<8 | int(s.b[1])
 				// TODO: zero l?
 			}
 
 			// TODO: is this how spu end is signalled?
 			if s.l == len(s.b) {
-				spuD.FieldFormatBitBuf("spu", bitio.NewBufferFromBytes(s.b, -1), spuFormat, nil)
+				spuD.FieldFormatBitBuf("spu", bitio.NewBitReader(s.b, -1), spuFormat, nil)
 				s.b = nil
 				s.l = 0
 			}

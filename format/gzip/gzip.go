@@ -101,20 +101,21 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 	var rFn func(r io.Reader) io.Reader
 	switch compressionMethod {
 	case delfateMethod:
-		// *bitio.Buffer implements io.ByteReader so hat deflate don't do own
+		// bitio.NewIOReadSeeker implements io.ByteReader so that deflate don't do own
 		// buffering and might read more than needed messing up knowing compressed size
 		rFn = func(r io.Reader) io.Reader { return flate.NewReader(r) }
 	}
 
 	if rFn != nil {
-		readCompressedSize, uncompressedBB, dv, _, _ := d.TryFieldReaderRangeFormat("uncompressed", d.Pos(), d.BitsLeft(), rFn, probeFormat, nil)
-		if uncompressedBB != nil {
+		readCompressedSize, uncompressedBR, dv, _, _ := d.TryFieldReaderRangeFormat("uncompressed", d.Pos(), d.BitsLeft(), rFn, probeFormat, nil)
+		if uncompressedBR != nil {
 			if dv == nil {
-				d.FieldRootBitBuf("uncompressed", uncompressedBB)
+				d.FieldRootBitBuf("uncompressed", uncompressedBR)
 			}
 			d.FieldRawLen("compressed", readCompressedSize)
 			crc32W := crc32.NewIEEE()
-			d.MustCopy(crc32W, uncompressedBB.Clone())
+			// TODO: cleanup clone
+			d.MustCopyBits(crc32W, d.MustClone(uncompressedBR))
 			d.FieldU32("crc32", d.ValidateUBytes(crc32W.Sum(nil)), scalar.Hex)
 			d.FieldU32("isize")
 		}

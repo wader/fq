@@ -19,6 +19,7 @@ import (
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/wader/fq/internal/ansi"
+	"github.com/wader/fq/internal/bitioextra"
 	"github.com/wader/fq/internal/colorjson"
 	"github.com/wader/fq/internal/ctxstack"
 	"github.com/wader/fq/internal/ioextra"
@@ -269,12 +270,12 @@ func toBigInt(v interface{}) (*big.Int, error) {
 func toBytes(v interface{}) ([]byte, error) {
 	switch v := v.(type) {
 	default:
-		bb, err := toBitBuf(v)
+		br, err := toBitBuf(v)
 		if err != nil {
 			return nil, fmt.Errorf("value is not bytes")
 		}
 		buf := &bytes.Buffer{}
-		if _, err := io.Copy(buf, bb); err != nil {
+		if _, err := bitioextra.CopyBits(buf, br); err != nil {
 			return nil, err
 		}
 
@@ -907,24 +908,24 @@ type Options struct {
 	SizeBase       int    `mapstructure:"sizebase"`
 
 	Decorator    Decorator
-	BitsFormatFn func(bb *bitio.Buffer) (interface{}, error)
+	BitsFormatFn func(br bitio.ReaderAtSeeker) (interface{}, error)
 }
 
-func bitsFormatFnFromOptions(opts Options) func(bb *bitio.Buffer) (interface{}, error) {
+func bitsFormatFnFromOptions(opts Options) func(br bitio.ReaderAtSeeker) (interface{}, error) {
 	switch opts.BitsFormat {
 	case "md5":
-		return func(bb *bitio.Buffer) (interface{}, error) {
+		return func(br bitio.ReaderAtSeeker) (interface{}, error) {
 			d := md5.New()
-			if _, err := io.Copy(d, bb); err != nil {
+			if _, err := bitioextra.CopyBits(d, br); err != nil {
 				return "", err
 			}
 			return hex.EncodeToString(d.Sum(nil)), nil
 		}
 	case "base64":
-		return func(bb *bitio.Buffer) (interface{}, error) {
+		return func(br bitio.ReaderAtSeeker) (interface{}, error) {
 			b := &bytes.Buffer{}
 			e := base64.NewEncoder(base64.StdEncoding, b)
-			if _, err := io.Copy(e, bb); err != nil {
+			if _, err := bitioextra.CopyBits(e, br); err != nil {
 				return "", err
 			}
 			e.Close()
@@ -932,17 +933,17 @@ func bitsFormatFnFromOptions(opts Options) func(bb *bitio.Buffer) (interface{}, 
 		}
 	case "truncate":
 		// TODO: configure
-		return func(bb *bitio.Buffer) (interface{}, error) {
+		return func(br bitio.ReaderAtSeeker) (interface{}, error) {
 			b := &bytes.Buffer{}
-			if _, err := io.Copy(b, io.LimitReader(bb, 1024)); err != nil {
+			if _, err := bitioextra.CopyBits(b, bitio.NewLimitReader(br, 1024*8)); err != nil {
 				return "", err
 			}
 			return b.String(), nil
 		}
 	case "string":
-		return func(bb *bitio.Buffer) (interface{}, error) {
+		return func(br bitio.ReaderAtSeeker) (interface{}, error) {
 			b := &bytes.Buffer{}
-			if _, err := io.Copy(b, bb); err != nil {
+			if _, err := bitioextra.CopyBits(b, br); err != nil {
 				return "", err
 			}
 			return b.String(), nil
@@ -950,14 +951,20 @@ func bitsFormatFnFromOptions(opts Options) func(bb *bitio.Buffer) (interface{}, 
 	case "snippet":
 		fallthrough
 	default:
-		return func(bb *bitio.Buffer) (interface{}, error) {
+		return func(br bitio.ReaderAtSeeker) (interface{}, error) {
 			b := &bytes.Buffer{}
 			e := base64.NewEncoder(base64.StdEncoding, b)
-			if _, err := io.Copy(e, io.LimitReader(bb, 256)); err != nil {
+			if _, err := bitioextra.CopyBits(e, bitio.NewLimitReader(br, 256*8)); err != nil {
 				return "", err
 			}
 			e.Close()
-			return fmt.Sprintf("<%s>%s", mathextra.Bits(bb.Len()).StringByteBits(opts.SizeBase), b.String()), nil
+
+			brLen, err := bitioextra.Len(br)
+			if err != nil {
+				return nil, err
+			}
+
+			return fmt.Sprintf("<%s>%s", mathextra.Bits(brLen).StringByteBits(opts.SizeBase), b.String()), nil
 		}
 	}
 }

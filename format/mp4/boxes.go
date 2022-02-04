@@ -964,12 +964,9 @@ func init() {
 
 			version := d.FieldU8("version")
 			d.FieldU24("flags")
-			systemIDBB := d.FieldRawLen("system_id", 6*8, systemIDNames)
+			systemIDBR := d.FieldRawLen("system_id", 6*8, systemIDNames)
 			// TODO: make nicer
-			systemID, err := systemIDBB.Bytes()
-			if err != nil {
-				d.IOPanic(err, "systemIDBB.Bytes")
-			}
+			systemID := d.MustReadAllBits(systemIDBR)
 			switch version {
 			case 0:
 			case 1:

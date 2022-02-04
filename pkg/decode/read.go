@@ -12,8 +12,8 @@ import (
 	"golang.org/x/text/encoding/unicode"
 )
 
-func (d *D) tryBitBuf(nBits int64) (*bitio.Buffer, error) {
-	return d.bitBuf.BitBufLen(nBits)
+func (d *D) tryBitBuf(nBits int64) (bitio.ReaderAtSeeker, error) {
+	return d.TryBitBufLen(nBits)
 }
 
 func (d *D) tryUEndian(nBits int, endian Endian) (uint64, error) {
@@ -25,7 +25,7 @@ func (d *D) tryUEndian(nBits int, endian Endian) (uint64, error) {
 		return 0, err
 	}
 	if endian == LittleEndian {
-		n = bitio.Uint64ReverseBytes(nBits, n)
+		n = bitio.ReverseBytes64(nBits, n)
 	}
 
 	return n, nil
@@ -64,7 +64,7 @@ func (d *D) tryBigIntEndianSign(nBits int, endian Endian, sign bool) (*big.Int, 
 	}
 	b := int(bitio.BitsByteCount(int64(nBits)))
 	buf := d.SharedReadBuf(b)[0:b]
-	_, err := bitio.ReadFull(d.bitBuf, buf, nBits)
+	_, err := bitio.ReadFull(d.bitBuf, buf, int64(nBits))
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +93,7 @@ func (d *D) tryFEndian(nBits int, endian Endian) (float64, error) {
 		return 0, err
 	}
 	if endian == LittleEndian {
-		n = bitio.Uint64ReverseBytes(nBits, n)
+		n = bitio.ReverseBytes64(nBits, n)
 	}
 	switch nBits {
 	case 16:
@@ -116,7 +116,7 @@ func (d *D) tryFPEndian(nBits int, fBits int, endian Endian) (float64, error) {
 		return 0, err
 	}
 	if endian == LittleEndian {
-		n = bitio.Uint64ReverseBytes(nBits, n)
+		n = bitio.ReverseBytes64(nBits, n)
 	}
 	return float64(n) / float64(uint64(1<<fBits)), nil
 }
@@ -135,7 +135,7 @@ func (d *D) tryText(nBytes int, e encoding.Encoding) (string, error) {
 		return "", fmt.Errorf("tryText nBytes %d outside buffer, %d bytes left", nBytes, bytesLeft)
 	}
 
-	bs, err := d.bitBuf.BytesLen(nBytes)
+	bs, err := d.TryBytesLen(nBytes)
 	if err != nil {
 		return "", err
 	}
@@ -173,7 +173,7 @@ func (d *D) tryTextLenPrefixed(lenBits int, fixedBytes int, e encoding.Encoding)
 		}
 	}
 
-	bs, err := d.bitBuf.BytesLen(n)
+	bs, err := d.TryBytesLen(n)
 	if err != nil {
 		d.SeekAbs(p)
 		return "", err
@@ -192,7 +192,7 @@ func (d *D) tryTextNull(nullBytes int, e encoding.Encoding) (string, error) {
 		return "", err
 	}
 	n := (int(peekBits) / 8) + nullBytes
-	bs, err := d.bitBuf.BytesLen(n)
+	bs, err := d.TryBytesLen(n)
 	if err != nil {
 		d.SeekAbs(p)
 		return "", err
@@ -210,7 +210,7 @@ func (d *D) tryTextNullLen(fixedBytes int, e encoding.Encoding) (string, error) 
 		return "", fmt.Errorf("tryTextNullLen fixedBytes %d outside, %d bytes left", fixedBytes, bytesLeft)
 	}
 
-	bs, err := d.bitBuf.BytesLen(fixedBytes)
+	bs, err := d.TryBytesLen(fixedBytes)
 	if err != nil {
 		return "", err
 	}

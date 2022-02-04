@@ -1,6 +1,7 @@
 package interp
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"io"
@@ -8,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/wader/fq/internal/asciiwriter"
+	"github.com/wader/fq/internal/bitioextra"
 	"github.com/wader/fq/internal/columnwriter"
 	"github.com/wader/fq/internal/hexpairwriter"
 	"github.com/wader/fq/internal/mathextra"
@@ -217,7 +219,12 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 		printErrs(depth, valueErr)
 	}
 
-	bufferLastBit := rootV.RootBitBuf.Len() - 1
+	rootBitLen, err := bitioextra.Len(rootV.RootBitBuf)
+	if err != nil {
+		return err
+	}
+
+	bufferLastBit := rootBitLen - 1
 	startBit := innerRange.Start
 	stopBit := innerRange.Stop() - 1
 	sizeBits := innerRange.Len
@@ -260,7 +267,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 		cfmt(colAddr, "%s%s\n",
 			rootIndent, deco.DumpAddr.F(mathextra.PadFormatInt(startLineByte, opts.AddrBase, true, addrWidth)))
 
-		vBitBuf, err := rootV.RootBitBuf.BitBufRange(startByte*8, displaySizeBits)
+		vBR, err := bitioextra.Range(rootV.RootBitBuf, startByte*8, displaySizeBits)
 		if err != nil {
 			return err
 		}
@@ -269,19 +276,26 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 		hexpairFn := func(b byte) string { return deco.ByteColor(b).Wrap(hexpairwriter.Pair(b)) }
 		asciiFn := func(b byte) string { return deco.ByteColor(b).Wrap(asciiwriter.SafeASCII(b)) }
 
-		if vBitBuf != nil {
-			if _, err := io.CopyBuffer(
-				hexpairwriter.New(cw.Columns[colHex], opts.LineBytes, int(startLineByteOffset), hexpairFn),
-				io.LimitReader(vBitBuf.Clone(), displaySizeBytes),
-				buf); err != nil {
-				return err
-			}
-			if _, err := io.CopyBuffer(
-				asciiwriter.New(cw.Columns[colASCII], opts.LineBytes, int(startLineByteOffset), asciiFn),
-				io.LimitReader(vBitBuf.Clone(), displaySizeBytes),
-				buf); err != nil {
-				return err
-			}
+		hexBR, err := bitioextra.Clone(vBR)
+		if err != nil {
+			return err
+		}
+		if _, err := bitioextra.CopyBitsBuffer(
+			hexpairwriter.New(cw.Columns[colHex], opts.LineBytes, int(startLineByteOffset), hexpairFn),
+			hexBR,
+			buf); err != nil {
+			return err
+		}
+
+		asciiBR, err := bitioextra.Clone(vBR)
+		if err != nil {
+			return err
+		}
+		if _, err := bitioextra.CopyBitsBuffer(
+			asciiwriter.New(cw.Columns[colASCII], opts.LineBytes, int(startLineByteOffset), asciiFn),
+			asciiBR,
+			buf); err != nil {
+			return err
 		}
 
 		for i := int64(1); i < addrLines; i++ {
@@ -351,18 +365,31 @@ func dump(v *decode.Value, w io.Writer, opts Options) error {
 }
 
 func hexdump(w io.Writer, bv Buffer, opts Options) error {
-	bb, err := bv.toBuffer()
+	br, err := bv.toBuffer()
 	if err != nil {
 		return err
 	}
+
+	cBR, err := bitioextra.Clone(bv.br)
+	if err != nil {
+		return err
+	}
+
+	bytesB := &bytes.Buffer{}
+	if _, err := bitioextra.CopyBits(bytesB, cBR); err != nil {
+		return err
+	}
+
+	biib := bitio.NewBitReader(bytesB.Bytes(), -1)
+
 	// TODO: hack
 	opts.Verbose = true
 	return dump(
 		&decode.Value{
 			// TODO: hack
-			V:          &scalar.S{Actual: bb},
+			V:          &scalar.S{Actual: br},
 			Range:      bv.r,
-			RootBitBuf: bv.bb.Clone(),
+			RootBitBuf: biib,
 		},
 		w,
 		opts,

@@ -4,9 +4,6 @@ package hexpairwriter
 
 import (
 	"io"
-
-	"github.com/wader/fq/internal/mathextra"
-	"github.com/wader/fq/pkg/bitio"
 )
 
 type Writer struct {
@@ -17,9 +14,6 @@ type Writer struct {
 	offset          int
 	buf             []byte
 	bufOffset       int
-
-	bitsBuf  []byte
-	bitsBufN int
 }
 
 // for i in $(seq 0 255) ; do printf "%02x" $i ; done | while read -n 32 s ; do echo "\"$s\""+; done
@@ -53,9 +47,7 @@ func New(w io.Writer, width int, startLineOffset int, fn func(b byte) string) *W
 		fn:              fn,
 		offset:          0,
 		// TODO: ansi length? nicer reusable buffer?
-		buf:       make([]byte, width*200+1), // worst case " " or "\n" + width*(XX "+ansi) + "\n"
-		bufOffset: 0,
-		bitsBuf:   make([]byte, 1),
+		buf: make([]byte, width*200+1), // worst case " " or "\n" + width*(XX "+ansi) + "\n"
 	}
 }
 
@@ -109,47 +101,4 @@ func (h *Writer) Write(p []byte) (n int, err error) {
 	}
 
 	return len(p), nil
-}
-
-func (h *Writer) WriteBits(p []byte, nBits int) (n int, err error) {
-	pos := 0
-	rBits := nBits
-	if h.bitsBufN > 0 {
-		r := mathextra.MinInt(8-h.bitsBufN, nBits)
-		v := bitio.Read64(p, 0, r)
-		bitio.Write64(v, r, h.bitsBuf, h.bitsBufN)
-
-		h.bitsBufN += r
-
-		if h.bitsBufN < 8 {
-			return nBits, nil
-		}
-		if n, err := h.Write(h.bitsBuf); err != nil {
-			return n * 8, err
-		}
-		pos = r
-		rBits -= r
-	}
-
-	for rBits >= 8 {
-		b := [1]byte{0}
-
-		b[0] = byte(bitio.Read64(p, pos, 8))
-		if n, err := h.Write(b[:]); err != nil {
-			return n * 8, err
-		}
-
-		pos += 8
-		rBits -= 8
-
-	}
-
-	if rBits > 0 {
-		h.bitsBuf[0] = byte(bitio.Read64(p, pos, rBits)) << (8 - rBits)
-		h.bitsBufN = rBits
-	} else {
-		h.bitsBufN = 0
-	}
-
-	return nBits, nil
 }

@@ -230,10 +230,7 @@ var blockFns = map[uint64]func(d *decode.D, dc *decodeContext){
 		capturedLength := d.FieldU32("capture_packet_length")
 		d.FieldU32("original_packet_length")
 
-		bs, err := d.BitBufRange(d.Pos(), int64(capturedLength)*8).Bytes()
-		if err != nil {
-			d.IOPanic(err, "d.BitBufRange")
-		}
+		bs := d.MustReadAllBits(d.BitBufRange(d.Pos(), int64(capturedLength)*8))
 
 		linkType := dc.interfaceTypes[int(interfaceID)]
 

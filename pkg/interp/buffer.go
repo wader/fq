@@ -9,6 +9,7 @@ import (
 	"math/big"
 
 	"github.com/wader/fq/internal/aheadreadseeker"
+	"github.com/wader/fq/internal/bitioextra"
 	"github.com/wader/fq/internal/ctxreadseeker"
 	"github.com/wader/fq/internal/gojqextra"
 	"github.com/wader/fq/internal/ioextra"
@@ -30,20 +31,20 @@ type ToBuffer interface {
 	ToBuffer() (Buffer, error)
 }
 
-func toBitBuf(v interface{}) (*bitio.Buffer, error) {
+func toBitBuf(v interface{}) (bitio.ReaderAtSeeker, error) {
 	return toBitBufEx(v, false)
 }
 
-func toBitBufEx(v interface{}, inArray bool) (*bitio.Buffer, error) {
+func toBitBufEx(v interface{}, inArray bool) (bitio.ReaderAtSeeker, error) {
 	switch vv := v.(type) {
 	case ToBuffer:
 		bv, err := vv.ToBuffer()
 		if err != nil {
 			return nil, err
 		}
-		return bv.bb.BitBufRange(bv.r.Start, bv.r.Len)
+		return bitioextra.Range(bv.br, bv.r.Start, bv.r.Len)
 	case string:
-		return bitio.NewBufferFromBytes([]byte(vv), -1), nil
+		return bitio.NewBitReader([]byte(vv), -1), nil
 	case int, float64, *big.Int:
 		bi, err := toBigInt(v)
 		if err != nil {
@@ -56,39 +57,40 @@ func toBitBufEx(v interface{}, inArray bool) (*bitio.Buffer, error) {
 			}
 			n := bi.Uint64()
 			b := [1]byte{byte(n)}
-			return bitio.NewBufferFromBytes(b[:], -1), nil
+			return bitio.NewBitReader(b[:], -1), nil
 		}
 
+		bitLen := int64(bi.BitLen())
+		// bit.Int "The bit length of 0 is 0."
+		if bitLen == 0 {
+			var z [1]byte
+			return bitio.NewBitReader(z[:], 1), nil
+		}
 		// TODO: how should this work? "0xf | tobytes" 4bits or 8bits? now 4
-		//padBefore := (8 - (bi.BitLen() % 8)) % 8
-		padBefore := 0
-		bb, err := bitio.NewBufferFromBytes(bi.Bytes(), -1).BitBufRange(int64(padBefore), int64(bi.BitLen()))
+		padBefore := (8 - (bitLen % 8)) % 8
+		// padBefore := 0
+		br, err := bitioextra.Range(bitio.NewBitReader(bi.Bytes(), -1), padBefore, bitLen)
 		if err != nil {
 			return nil, err
 		}
-		return bb, nil
+		return br, nil
 	case []interface{}:
-		var rr []bitio.BitReadAtSeeker
+		rr := make([]bitio.ReadAtSeeker, 0, len(vv))
 		// TODO: optimize byte array case, flatten into one slice
 		for _, e := range vv {
-			eBB, eErr := toBitBufEx(e, true)
+			eBR, eErr := toBitBufEx(e, true)
 			if eErr != nil {
 				return nil, eErr
 			}
-			rr = append(rr, eBB)
+			rr = append(rr, eBR)
 		}
 
-		mb, err := bitio.NewMultiBitReader(rr)
+		mb, err := bitio.NewMultiBitReader(rr...)
 		if err != nil {
 			return nil, err
 		}
 
-		bb, err := bitio.NewBufferFromBitReadSeeker(mb)
-		if err != nil {
-			return nil, err
-		}
-
-		return bb, nil
+		return mb, nil
 	default:
 		return nil, fmt.Errorf("value can't be a buffer")
 	}
@@ -99,11 +101,11 @@ func toBuffer(v interface{}) (Buffer, error) {
 	case ToBuffer:
 		return vv.ToBuffer()
 	default:
-		bb, err := toBitBuf(v)
+		br, err := toBitBuf(v)
 		if err != nil {
 			return Buffer{}, err
 		}
-		return newBufferFromBuffer(bb, 8), nil
+		return newBufferFromBuffer(br, 8)
 	}
 }
 
@@ -140,8 +142,15 @@ func (i *Interp) _toBitsRange(c interface{}, a []interface{}) interface{} {
 	bv.unit = unit
 
 	if !r {
-		bb, _ := bv.toBuffer()
-		return newBufferFromBuffer(bb, unit)
+		br, err := bv.toBuffer()
+		if err != nil {
+			return err
+		}
+		bb, err := newBufferFromBuffer(br, unit)
+		if err != nil {
+			return err
+		}
+		return bb
 	}
 
 	return bv
@@ -162,12 +171,12 @@ func (of *openFile) Display(w io.Writer, opts Options) error {
 }
 
 func (of *openFile) ToBuffer() (Buffer, error) {
-	return newBufferFromBuffer(of.bb, 8), nil
+	return newBufferFromBuffer(of.br, 8)
 }
 
 // def open: #:: string| => buffer
 // opens a file for reading from filesystem
-// TODO: when to close? when bb loses all refs? need to use finalizer somehow?
+// TODO: when to close? when br loses all refs? need to use finalizer somehow?
 func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 	var err error
 	var f fs.File
@@ -237,7 +246,7 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 
 	// bitio.Buffer -> (bitio.Reader) -> aheadreadseeker -> progressreadseeker -> ctxreadseeker -> readseeker
 
-	bbf.bb, err = bitio.NewBufferFromReadSeeker(aheadRs)
+	bbf.br = bitio.NewIOBitReadSeeker(aheadRs)
 	if err != nil {
 		return err
 	}
@@ -249,28 +258,34 @@ var _ Value = Buffer{}
 var _ ToBuffer = Buffer{}
 
 type Buffer struct {
-	bb   *bitio.Buffer
+	br   bitio.ReaderAtSeeker
 	r    ranges.Range
 	unit int
 }
 
-func newBufferFromBuffer(bb *bitio.Buffer, unit int) Buffer {
-	return Buffer{
-		bb:   bb,
-		r:    ranges.Range{Start: 0, Len: bb.Len()},
-		unit: unit,
+func newBufferFromBuffer(br bitio.ReaderAtSeeker, unit int) (Buffer, error) {
+	l, err := bitioextra.Len(br)
+	if err != nil {
+		return Buffer{}, err
 	}
+
+	return Buffer{
+		br:   br,
+		r:    ranges.Range{Start: 0, Len: l},
+		unit: unit,
+	}, nil
 }
 
 func (b Buffer) toBytesBuffer(r ranges.Range) (*bytes.Buffer, error) {
-	bb, err := b.bb.BitBufRange(r.Start, r.Len)
+	br, err := bitioextra.Range(b.br, r.Start, r.Len)
 	if err != nil {
 		return nil, err
 	}
 	buf := &bytes.Buffer{}
-	if _, err := io.Copy(buf, bb.Clone()); err != nil {
+	if _, err := bitioextra.CopyBits(buf, br); err != nil {
 		return nil, err
 	}
+
 	return buf, nil
 }
 
@@ -307,7 +322,8 @@ func (b Buffer) JQValueIndex(index int) interface{} {
 		return err
 	}
 
-	extraBits := uint((8 - b.r.Len%8) % 8)
+	extraBits := uint((8 - b.unit%8) % 8)
+
 	return new(big.Int).Rsh(new(big.Int).SetBytes(buf.Bytes()), extraBits)
 }
 func (b Buffer) JQValueSlice(start int, end int) interface{} {
@@ -315,7 +331,7 @@ func (b Buffer) JQValueSlice(start int, end int) interface{} {
 	rLen := int64((end - start) * b.unit)
 
 	return Buffer{
-		bb:   b.bb,
+		br:   b.br,
 		r:    ranges.Range{Start: b.r.Start + rStart, Len: rLen},
 		unit: b.unit,
 	}
@@ -337,12 +353,12 @@ func (b Buffer) JQValueKey(name string) interface{} {
 		if b.unit == 1 {
 			return b
 		}
-		return Buffer{bb: b.bb, r: b.r, unit: 1}
+		return Buffer{br: b.br, r: b.r, unit: 1}
 	case "bytes":
 		if b.unit == 8 {
 			return b
 		}
-		return Buffer{bb: b.bb, r: b.r, unit: 8}
+		return Buffer{br: b.br, r: b.r, unit: 8}
 	}
 	return nil
 }
@@ -382,19 +398,21 @@ func (b Buffer) JQValueUpdate(key interface{}, u interface{}, delpath bool) inte
 
 func (b Buffer) Display(w io.Writer, opts Options) error {
 	if opts.RawOutput {
-		bb, err := b.toBuffer()
+		br, err := b.toBuffer()
 		if err != nil {
 			return err
 		}
-		if _, err := io.Copy(w, bb.Clone()); err != nil {
+
+		if _, err := bitioextra.CopyBits(w, br); err != nil {
 			return err
 		}
+
 		return nil
 	}
 
 	return hexdump(w, b, opts)
 }
 
-func (b Buffer) toBuffer() (*bitio.Buffer, error) {
-	return b.bb.BitBufRange(b.r.Start, b.r.Len)
+func (b Buffer) toBuffer() (bitio.ReaderAtSeeker, error) {
+	return bitioextra.Range(b.br, b.r.Start, b.r.Len)
 }

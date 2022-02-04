@@ -62,7 +62,7 @@ func (d *D) FieldScalarBigIntFn(name string, fn func(d *D) *big.Int, sms ...scal
 // Type BitBuf
 
 // TryFieldBitBufScalarFn tries to add a field, calls scalar functions and returns actual value as a BitBuf
-func (d *D) TryFieldBitBufScalarFn(name string, fn func(d *D) (scalar.S, error), sms ...scalar.Mapper) (*bitio.Buffer, error) {
+func (d *D) TryFieldBitBufScalarFn(name string, fn func(d *D) (scalar.S, error), sms ...scalar.Mapper) (bitio.ReaderAtSeeker, error) {
 	v, err := d.TryFieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return fn(d) }, sms...)
 	if err != nil {
 		return nil, err
@@ -71,7 +71,7 @@ func (d *D) TryFieldBitBufScalarFn(name string, fn func(d *D) (scalar.S, error),
 }
 
 // FieldBitBufScalarFn adds a field, calls scalar functions and returns actual value as a BitBuf
-func (d *D) FieldBitBufScalarFn(name string, fn func(d *D) scalar.S, sms ...scalar.Mapper) *bitio.Buffer {
+func (d *D) FieldBitBufScalarFn(name string, fn func(d *D) scalar.S, sms ...scalar.Mapper) bitio.ReaderAtSeeker {
 	v, err := d.TryFieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return fn(d), nil }, sms...)
 	if err != nil {
 		panic(IOError{Err: err, Name: name, Op: "BitBuf", Pos: d.Pos()})
@@ -79,30 +79,30 @@ func (d *D) FieldBitBufScalarFn(name string, fn func(d *D) scalar.S, sms ...scal
 	return v.ActualBitBuf()
 }
 
-// FieldBitBufFn adds a field, calls *bitio.Buffer decode function and returns actual value as a BitBuf
-func (d *D) FieldBitBufFn(name string, fn func(d *D) *bitio.Buffer, sms ...scalar.Mapper) *bitio.Buffer {
+// FieldBitBufFn adds a field, calls bitio.ReaderAtSeeker decode function and returns actual value as a BitBuf
+func (d *D) FieldBitBufFn(name string, fn func(d *D) bitio.ReaderAtSeeker, sms ...scalar.Mapper) bitio.ReaderAtSeeker {
 	return d.FieldBitBufScalarFn(name, func(d *D) scalar.S { return scalar.S{Actual: fn(d)} }, sms...)
 }
 
-// TryFieldBitBufFn tries to add a field, calls *bitio.Buffer decode function and returns actual value as a BitBuf
-func (d *D) TryFieldBitBufFn(name string, fn func(d *D) (*bitio.Buffer, error), sms ...scalar.Mapper) (*bitio.Buffer, error) {
+// TryFieldBitBufFn tries to add a field, calls bitio.ReaderAtSeeker decode function and returns actual value as a BitBuf
+func (d *D) TryFieldBitBufFn(name string, fn func(d *D) (bitio.ReaderAtSeeker, error), sms ...scalar.Mapper) (bitio.ReaderAtSeeker, error) {
 	return d.TryFieldBitBufScalarFn(name, func(d *D) (scalar.S, error) {
 		v, err := fn(d)
 		return scalar.S{Actual: v}, err
 	}, sms...)
 }
 
-// TryFieldScalarBitBufFn tries to add a field, calls *bitio.Buffer decode function and returns scalar
-func (d *D) TryFieldScalarBitBufFn(name string, fn func(d *D) (*bitio.Buffer, error), sms ...scalar.Mapper) (*scalar.S, error) {
+// TryFieldScalarBitBufFn tries to add a field, calls bitio.ReaderAtSeeker decode function and returns scalar
+func (d *D) TryFieldScalarBitBufFn(name string, fn func(d *D) (bitio.ReaderAtSeeker, error), sms ...scalar.Mapper) (*scalar.S, error) {
 	return d.TryFieldScalarFn(name, func(_ scalar.S) (scalar.S, error) {
 		v, err := fn(d)
 		return scalar.S{Actual: v}, err
 	}, sms...)
 }
 
-// FieldScalarBitBufFn tries to add a field, calls *bitio.Buffer decode function and returns scalar
-func (d *D) FieldScalarBitBufFn(name string, fn func(d *D) *bitio.Buffer, sms ...scalar.Mapper) *scalar.S {
-	v, err := d.TryFieldScalarBitBufFn(name, func(d *D) (*bitio.Buffer, error) { return fn(d), nil }, sms...)
+// FieldScalarBitBufFn tries to add a field, calls bitio.ReaderAtSeeker decode function and returns scalar
+func (d *D) FieldScalarBitBufFn(name string, fn func(d *D) bitio.ReaderAtSeeker, sms ...scalar.Mapper) *scalar.S {
+	v, err := d.TryFieldScalarBitBufFn(name, func(d *D) (bitio.ReaderAtSeeker, error) { return fn(d), nil }, sms...)
 	if err != nil {
 		panic(IOError{Err: err, Name: name, Op: "BitBuf", Pos: d.Pos()})
 	}
@@ -758,10 +758,10 @@ func (d *D) ValidateURange(start, end uint64) scalar.Mapper {
 // Reader RawLen
 
 // TryRawLen tries to read nBits raw bits
-func (d *D) TryRawLen(nBits int64) (*bitio.Buffer, error) { return d.tryBitBuf(nBits) }
+func (d *D) TryRawLen(nBits int64) (bitio.ReaderAtSeeker, error) { return d.tryBitBuf(nBits) }
 
 // RawLen reads nBits raw bits
-func (d *D) RawLen(nBits int64) *bitio.Buffer {
+func (d *D) RawLen(nBits int64) bitio.ReaderAtSeeker {
 	v, err := d.tryBitBuf(nBits)
 	if err != nil {
 		panic(IOError{Err: err, Op: "RawLen", Pos: d.Pos()})
@@ -792,13 +792,13 @@ func (d *D) FieldScalarRawLen(name string, nBits int64, sms ...scalar.Mapper) *s
 }
 
 // TryFieldRawLen tries to add a field and read nBits raw bits
-func (d *D) TryFieldRawLen(name string, nBits int64, sms ...scalar.Mapper) (*bitio.Buffer, error) {
+func (d *D) TryFieldRawLen(name string, nBits int64, sms ...scalar.Mapper) (bitio.ReaderAtSeeker, error) {
 	s, err := d.TryFieldScalarRawLen(name, nBits, sms...)
 	return s.ActualBitBuf(), err
 }
 
 // FieldRawLen adds a field and reads nBits raw bits
-func (d *D) FieldRawLen(name string, nBits int64, sms ...scalar.Mapper) *bitio.Buffer {
+func (d *D) FieldRawLen(name string, nBits int64, sms ...scalar.Mapper) bitio.ReaderAtSeeker {
 	return d.FieldScalarRawLen(name, nBits, sms...).ActualBitBuf()
 }
 

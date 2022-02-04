@@ -285,15 +285,15 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 					var rFn func(r io.Reader) io.Reader
 					switch compressionMethod {
 					case compressionMethodDeflated:
-						// *bitio.Buffer implements io.ByteReader so hat deflate don't do own
+						// bitio.NewIOReadSeeker implements io.ByteReader so that deflate don't do own
 						// buffering and might read more than needed messing up knowing compressed size
 						rFn = func(r io.Reader) io.Reader { return flate.NewReader(r) }
 					}
 
 					if rFn != nil {
-						readCompressedSize, uncompressedBB, dv, _, _ := d.TryFieldReaderRangeFormat("uncompressed", d.Pos(), compressedLimit, rFn, probeFormat, nil)
-						if dv == nil && uncompressedBB != nil {
-							d.FieldRootBitBuf("uncompressed", uncompressedBB)
+						readCompressedSize, uncompressedBR, dv, _, _ := d.TryFieldReaderRangeFormat("uncompressed", d.Pos(), compressedLimit, rFn, probeFormat, nil)
+						if dv == nil && uncompressedBR != nil {
+							d.FieldRootBitBuf("uncompressed", uncompressedBR)
 						}
 						if compressedSize == 0 {
 							compressedSize = readCompressedSize

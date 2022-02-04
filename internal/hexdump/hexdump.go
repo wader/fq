@@ -25,7 +25,7 @@ type Dumper struct {
 	hasWrittenHeader bool
 
 	bitsBuf  []byte
-	bitsBufN int
+	bitsBufN int64
 }
 
 // TODO: something more generic? bin, octal, arbitrary base?
@@ -72,11 +72,11 @@ func (d *Dumper) flush() error {
 	return nil
 }
 
-func (d *Dumper) WriteBits(p []byte, nBits int) (n int, err error) {
-	pos := 0
+func (d *Dumper) WriteBits(p []byte, nBits int64) (n int64, err error) {
+	pos := int64(0)
 	rBits := nBits
 	if d.bitsBufN > 0 {
-		r := mathextra.MinInt(8-d.bitsBufN, nBits)
+		r := mathextra.MinInt64(8-d.bitsBufN, nBits)
 		v := bitio.Read64(p, 0, r)
 		bitio.Write64(v, r, d.bitsBuf, d.bitsBufN)
 
@@ -86,7 +86,7 @@ func (d *Dumper) WriteBits(p []byte, nBits int) (n int, err error) {
 			return nBits, nil
 		}
 		if n, err := d.Write(d.bitsBuf); err != nil {
-			return n * 8, err
+			return int64(n) * 8, err
 		}
 		pos = r
 		rBits -= r
@@ -97,7 +97,7 @@ func (d *Dumper) WriteBits(p []byte, nBits int) (n int, err error) {
 
 		b[0] = byte(bitio.Read64(p, pos, 8))
 		if n, err := d.Write(b[:]); err != nil {
-			return n * 8, err
+			return int64(n) * 8, err
 		}
 
 		pos += 8
