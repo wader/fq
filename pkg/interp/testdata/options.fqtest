@@ -20,6 +20,7 @@ $ fq -n options
   "filenames": [
     null
   ],
+  "force": false,
   "include_path": null,
   "join_string": "\n",
   "line_bytes": 16,
@@ -80,6 +81,8 @@ stderr:
 error: open testdata/test.jq: no such file or directory
 $ fq -o 'filenames=["/test.mp3"]' format
 "mp3"
+$ fq -o 'force=true' -n options.force
+true
 $ fq -o include_path=path -n options.include_path
 "path"
 $ fq -o 'join_string=aaa\n' -n options.join_string

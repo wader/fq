@@ -50,6 +50,11 @@ fq 'grep_by(.type=="trak")' file
 fq 'grep("^prefix")' file
 fq 'grep(123)' file
 fq 'grep_by(. >= 100 and . =< 100)' file
+
+# decode file as mp4 and return a result even if there are some errors
+fq -d mp4 file.mp4
+# decode file as mp4 and also ignore validity assertions
+fq -o force=true -d mp4 file.mp4
 ```
 
 ### Display output
