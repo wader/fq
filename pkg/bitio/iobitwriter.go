@@ -11,6 +11,7 @@ type IOBitWriter struct {
 	b Buffer
 }
 
+// NewIOBitWriter returns a new bitio.IOBitWriter
 func NewIOBitWriter(w io.Writer) *IOBitWriter {
 	return &IOBitWriter{w: w}
 }

@@ -11,39 +11,50 @@ import (
 var ErrOffset = errors.New("invalid seek offset")
 var ErrNegativeNBits = errors.New("negative number of bits")
 
-type ReaderAt interface {
-	ReadBitsAt(p []byte, nBits int64, bitOff int64) (n int64, err error)
-}
-
+// Reader is something that reads bits
+// Similar to io.Reader
 type Reader interface {
 	ReadBits(p []byte, nBits int64) (n int64, err error)
 }
 
+// Writer is something that writs bits
+// Similar to io.Writer
+type Writer interface {
+	WriteBits(p []byte, nBits int64) (n int64, err error)
+}
+
+// Seeker is something that seeks bits
+// Similar to io.Seeker
 type Seeker interface {
 	SeekBits(bitOffset int64, whence int) (int64, error)
 }
 
+// ReaderAt is something that reads bits at an offset
+// Similar to io.ReaderAt
+type ReaderAt interface {
+	ReadBitsAt(p []byte, nBits int64, bitOff int64) (n int64, err error)
+}
+
+// ReadSeeker is bitio.Reader and bitio.Seeker
 type ReadSeeker interface {
 	Reader
 	Seeker
 }
 
+// ReadAtSeeker is bitio.ReaderAt and bitio.Seeker
 type ReadAtSeeker interface {
 	ReaderAt
 	Seeker
 }
 
+// ReaderAtSeeker is bitio.Reader, bitio.ReaderAt and bitio.Seeker
 type ReaderAtSeeker interface {
 	Reader
 	ReaderAt
 	Seeker
 }
 
-type Writer interface {
-	WriteBits(p []byte, nBits int64) (n int64, err error)
-}
-
-// NewBitReader reading nBits bits from a []byte
+// NewBitReader reader reading nBits bits from a []byte
 // If nBits is -1 all bits will be used.
 // Similar to bytes.NewReader
 func NewBitReader(buf []byte, nBits int64) *SectionReader {
@@ -140,7 +151,7 @@ func Copy(dst Writer, src Reader) (n int64, err error) {
 }
 
 // TODO: make faster, align and use copy()
-func copyBits(dst []byte, dstStart int64, src []byte, srcStart int64, n int64, zero bool) {
+func copyBufBits(dst []byte, dstStart int64, src []byte, srcStart int64, n int64, zero bool) {
 	l := n
 	off := int64(0)
 	for l > 0 {

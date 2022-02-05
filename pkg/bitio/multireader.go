@@ -24,7 +24,7 @@ func endPos(rs Seeker) (int64, error) {
 }
 
 // MultiReader is a bitio.ReaderAtSeeker concatinating multiple bitio.ReadAtSeeker:s
-// Similar to io.MultiReader but for bits
+// Similar to io.MultiReader
 type MultiReader struct {
 	pos        int64
 	readers    []ReadAtSeeker

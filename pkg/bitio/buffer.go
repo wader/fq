@@ -21,10 +21,11 @@ func (b *Buffer) Reset() {
 	b.bitsOff = 0
 }
 
-func (b *Buffer) Bytes() ([]byte, int64) {
+// Bits return unread bits in buffer
+func (b *Buffer) Bits() ([]byte, int64) {
 	l := b.Len()
 	buf := make([]byte, BitsByteCount(l))
-	copyBits(buf, 0, b.buf, b.bitsOff, l, true)
+	copyBufBits(buf, 0, b.buf, b.bitsOff, l, true)
 	return buf, b.bufBits
 }
 
@@ -41,7 +42,7 @@ func (b *Buffer) WriteBits(p []byte, nBits int64) (n int64, err error) {
 		}
 	}
 
-	copyBits(b.buf, b.bufBits, p, 0, nBits, true)
+	copyBufBits(b.buf, b.bufBits, p, 0, nBits, true)
 	b.bufBits += nBits
 
 	return nBits, nil
@@ -59,12 +60,12 @@ func (b *Buffer) ReadBits(p []byte, nBits int64) (n int64, err error) {
 	}
 
 	c := nBits
-	left := b.bufBits - b.bitsOff
+	left := b.Len()
 	if c > left {
 		c = left
 	}
 
-	copyBits(p, 0, b.buf, b.bitsOff, c, true)
+	copyBufBits(p, 0, b.buf, b.bitsOff, c, true)
 	b.bitsOff += c
 
 	return c, nil

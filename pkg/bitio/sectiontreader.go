@@ -5,7 +5,7 @@ import (
 )
 
 // SectionReader is a bitio.BitReaderAtSeeker reading a section of a bitio.ReaderAt
-// Similar to io.SectionReader but for bits
+// Similar to io.SectionReader
 type SectionReader struct {
 	r        ReaderAt
 	bitBase  int64
@@ -13,6 +13,7 @@ type SectionReader struct {
 	bitLimit int64
 }
 
+// NewSectionReader returns a new bitio.SectionReader
 func NewSectionReader(r ReaderAt, bitOff int64, nBits int64) *SectionReader {
 	return &SectionReader{
 		r:        r,
