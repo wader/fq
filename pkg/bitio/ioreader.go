@@ -5,7 +5,7 @@ import (
 	"io"
 )
 
-// IOReader is a io.Reader that reads bytes from a bitio.BitReader
+// IOReader is a io.Reader and io.ByteReader that reads from a bitio.Reader
 // Unaligned byte at EOF will be zero bit padded
 type IOReader struct {
 	r    Reader
@@ -13,6 +13,7 @@ type IOReader struct {
 	b    Buffer
 }
 
+// NewIOReader returns a new bitio.IOReader
 func NewIOReader(r Reader) *IOReader {
 	return &IOReader{r: r}
 }

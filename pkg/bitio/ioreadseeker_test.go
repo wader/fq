@@ -21,7 +21,7 @@ func bs(br bitio.Reader) string {
 	if err != nil {
 		panic(err)
 	}
-	buf, nBits := bib.Bytes()
+	buf, nBits := bib.Bits()
 	return bitio.BitStringFromBytes(buf, nBits)
 }
 
