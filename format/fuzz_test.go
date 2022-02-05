@@ -43,6 +43,7 @@ type fuzzTestOutput struct {
 func (o fuzzTestOutput) Size() (int, int) { return 120, 25 }
 func (o fuzzTestOutput) IsTerminal() bool { return false }
 
+func (ft *fuzzTest) Platform() interp.Platform { return interp.Platform{} }
 func (ft *fuzzTest) Stdin() interp.Input {
 	return fuzzTestInput{FileReader: interp.FileReader{R: bytes.NewBuffer(ft.b)}}
 }
@@ -66,6 +67,7 @@ func (ft *fuzzTest) Readline(prompt string, complete func(line string, pos int) 
 }
 
 func FuzzFormats(f *testing.F) {
+	i := 0
 	filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
 		if filepath.Ext(path) == ".fqtest" {
 			return nil
@@ -80,10 +82,12 @@ func FuzzFormats(f *testing.F) {
 
 		b, err := ioutil.ReadFile(path)
 		if err != nil {
-			panic(err)
+			f.Fatal(err)
 		}
 
+		f.Logf("seed#%d %s", i, path)
 		f.Add(b)
+		i++
 
 		return nil
 	})
