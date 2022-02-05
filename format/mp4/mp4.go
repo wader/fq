@@ -147,7 +147,12 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 	}
 	firstType := d.UTF8(4)
 	switch firstType {
-	case "styp", "ftyp", "free", "moov":
+	case "styp", // mp4 segment
+		"ftyp", // mp4 file
+		"free", // seems to happen
+		"moov", // seems to happen
+		"pnot", // video preview file
+		"jP  ": // JPEG 2000
 	default:
 		d.Errorf("no styp, ftyp, free or moov box found")
 	}
