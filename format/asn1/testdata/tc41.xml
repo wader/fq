@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<OCTET_STRING>
+	<error>OCTET STRING may consists of OCTET STRINGs only</error>
+	<identification_block>
+		<tag_class>UNIVERSAL</tag_class>
+		<is_constructed>true</is_constructed>
+		<value_dec>4</value_dec>
+	</identification_block>
+	<length_block>
+		<is_indefinite_form>true</is_indefinite_form>
+		<long_form_used>false</long_form_used>
+		<length>0</length>
+	</length_block>
+	<value_block>
+		<error>OCTET STRING may consists of OCTET STRINGs only</error>
+	</value_block>
+</OCTET_STRING>

@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<BIT_STRING>
+	<identification_block>
+		<tag_class>UNIVERSAL</tag_class>
+		<is_constructed>true</is_constructed>
+		<value_dec>3</value_dec>
+	</identification_block>
+	<length_block>
+		<is_indefinite_form>false</is_indefinite_form>
+		<long_form_used>false</long_form_used>
+		<length>12</length>
+	</length_block>
+	<value_block>
+		<BIT_STRING>
+			<identification_block>
+				<tag_class>UNIVERSAL</tag_class>
+				<is_constructed>false</is_constructed>
+				<value_dec>3</value_dec>
+			</identification_block>
+			<length_block>
+				<is_indefinite_form>false</is_indefinite_form>
+				<long_form_used>false</long_form_used>
+				<length>2</length>
+			</length_block>
+			<value_block>
+				<unused_bits>0</unused_bits>
+				<value_hex>0000 0001</value_hex>
+			</value_block>
+		</BIT_STRING>
+		<BIT_STRING>
+			<identification_block>
+				<tag_class>UNIVERSAL</tag_class>
+				<is_constructed>false</is_constructed>
+				<value_dec>3</value_dec>
+			</identification_block>
+			<length_block>
+				<is_indefinite_form>false</is_indefinite_form>
+				<long_form_used>false</long_form_used>
+				<length>2</length>
+			</length_block>
+			<value_block>
+				<unused_bits>0</unused_bits>
+				<value_hex>0000 0001</value_hex>
+			</value_block>
+		</BIT_STRING>
+		<BIT_STRING>
+			<identification_block>
+				<tag_class>UNIVERSAL</tag_class>
+				<is_constructed>false</is_constructed>
+				<value_dec>3</value_dec>
+			</identification_block>
+			<length_block>
+				<is_indefinite_form>false</is_indefinite_form>
+				<long_form_used>false</long_form_used>
+				<length>2</length>
+			</length_block>
+			<value_block>
+				<unused_bits>4</unused_bits>
+				<value_hex>0000 1111</value_hex>
+			</value_block>
+		</BIT_STRING>
+	</value_block>
+</BIT_STRING>

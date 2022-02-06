@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<ASN1_TYPE>
+	<error>End of input reached before message was fully decoded</error>
+	<identification_block>
+		<error>End of input reached before message was fully decoded</error>
+	</identification_block>
+</ASN1_TYPE>

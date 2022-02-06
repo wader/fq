@@ -9,6 +9,7 @@ import (
 	"math/big"
 
 	"github.com/wader/fq/internal/bitioextra"
+	"github.com/wader/fq/internal/mathextra"
 	"github.com/wader/fq/internal/recoverfn"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/ranges"
@@ -842,15 +843,28 @@ func (d *D) FieldValueRaw(name string, a []byte, sms ...scalar.Mapper) {
 	}, sms...)
 }
 
-func (d *D) LenFn(nBits int64, fn func(d *D)) {
+// FramedFn decode from current position nBits forward. When done position will be nBits forward.
+func (d *D) FramedFn(nBits int64, fn func(d *D)) int64 {
 	if nBits < 0 {
 		d.Fatalf("%d nBits < 0", nBits)
 	}
-	d.RangeFn(d.Pos(), nBits, fn)
+	decodeLen := d.RangeFn(d.Pos(), nBits, fn)
 	d.SeekRel(nBits)
+	return decodeLen
 }
 
-func (d *D) RangeFn(firstBit int64, nBits int64, fn func(d *D)) {
+// LimitedFn decode from current position nBits forward. When done position will be set to last bit decoded.
+func (d *D) LimitedFn(nBits int64, fn func(d *D)) int64 {
+	if nBits < 0 {
+		d.Fatalf("%d nBits < 0", nBits)
+	}
+	decodeLen := d.RangeFn(d.Pos(), nBits, fn)
+	d.SeekRel(decodeLen)
+	return decodeLen
+}
+
+// RangeFn decode from current position nBits forward. Position will not be changed.
+func (d *D) RangeFn(firstBit int64, nBits int64, fn func(d *D)) int64 {
 	var subV interface{}
 	switch vv := d.Value.V.(type) {
 	case *Compound:
@@ -870,12 +884,16 @@ func (d *D) RangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 	}
 	sd := d.FieldDecoder("", br, subV)
 
+	startPos := d.Pos()
+	endPos := startPos
+
 	fn(sd)
 
 	// TODO: refactor, similar to decode()
 	if err := sd.Value.WalkRootPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
 		//v.Range.Start += firstBit
 		v.RootBitBuf = d.Value.RootBitBuf
+		endPos = mathextra.MaxInt64(endPos, v.Range.Stop())
 
 		return nil
 	}); err != nil {
@@ -890,6 +908,8 @@ func (d *D) RangeFn(firstBit int64, nBits int64, fn func(d *D)) {
 	default:
 		panic("unreachable")
 	}
+
+	return endPos - startPos
 }
 
 func (d *D) Format(group Group, inArg interface{}) interface{} {

@@ -405,7 +405,7 @@ func elfDecodeSymbolTable(d *decode.D, ec elfContext, nEntries int, strTab strin
 }
 
 func elfDecodeGNUHash(d *decode.D, ec elfContext, size int64, strTab string) {
-	d.LenFn(size, func(d *decode.D) {
+	d.FramedFn(size, func(d *decode.D) {
 		nBuckets := d.FieldU32("nbuckets")
 		d.FieldU32("symndx")
 		maskwords := d.FieldU32("maskwords")

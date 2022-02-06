@@ -1,0 +1,6 @@
+$ fq -d asn1_ber d tc3.ber
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: tc3.ber (asn1_ber)
+   |                                               |                |  error: asn1_ber: U8: failed at position 10 (read size 0 seek pos 0): EOF
+0x0|9f                                             |.               |  class: "context" (2)
+0x0|9f                                             |.               |  form: "primitive" (0)
+0x0|9f ff ff ff ff ff ff ff ff 7f|                 |..........|     |  tag: 18446744073709551615

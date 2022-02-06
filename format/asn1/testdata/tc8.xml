@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<REAL>
+	<identification_block>
+		<tag_class>UNIVERSAL</tag_class>
+		<is_constructed>false</is_constructed>
+		<value_dec>9</value_dec>
+	</identification_block>
+	<length_block>
+		<is_indefinite_form>false</is_indefinite_form>
+		<long_form_used>false</long_form_used>
+		<length>3</length>
+	</length_block>
+	<value_block>
+		<information_block>
+			<warnings>
+				<warning>Special REAL value should be encoded by 1 octet only</warning>
+			</warnings>
+			<is_special_value>true</is_special_value>
+			<special_value>MINUS-INFINITY</special_value>
+		</information_block>
+	</value_block>
+</REAL>

@@ -98,7 +98,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldBool("safe_to_copy")
 		d.SeekRel(4)
 
-		d.LenFn(int64(chunkLength)*8, func(d *decode.D) {
+		d.FramedFn(int64(chunkLength)*8, func(d *decode.D) {
 			switch chunkType {
 			case "IHDR":
 				d.FieldU32("width")

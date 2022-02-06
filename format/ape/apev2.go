@@ -56,7 +56,7 @@ func apev2Decode(d *decode.D, in interface{}) interface{} {
 				d.FieldUTF8("key", int(keyLen))
 				d.FieldU8("key_terminator")
 				if binaryItem {
-					d.LenFn(int64(itemSize)*8, func(d *decode.D) {
+					d.FramedFn(int64(itemSize)*8, func(d *decode.D) {
 						d.FieldUTF8Null("filename")
 						// assume image if binary
 						dv, _, _ := d.TryFieldFormat("value", imageFormat, nil)

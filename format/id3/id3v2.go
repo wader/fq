@@ -547,7 +547,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		d.FieldRawLen("data", int64(dataSize*8))
 	} else {
 		if fn, ok := frames[idNormalized]; ok {
-			d.LenFn(int64(dataSize)*8, func(d *decode.D) {
+			d.FramedFn(int64(dataSize)*8, func(d *decode.D) {
 				fn(d)
 			})
 		} else {

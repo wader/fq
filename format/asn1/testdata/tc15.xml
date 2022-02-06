@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<REAL>
+	<identification_block>
+		<tag_class>UNIVERSAL</tag_class>
+		<is_constructed>false</is_constructed>
+		<value_dec>9</value_dec>
+	</identification_block>
+	<length_block>
+		<is_indefinite_form>false</is_indefinite_form>
+		<long_form_used>false</long_form_used>
+		<length>12</length>
+	</length_block>
+	<value_block>
+		<information_block>
+			<is_special_value>false</is_special_value>
+			<base>2</base>
+			<scaling_factor>0</scaling_factor>
+			<is_negative>false</is_negative>
+			<exponent_format>4</exponent_format>
+		</information_block>
+		<exponent_block>
+			<warnings>
+				<warning>Too big REAL exponent block for decoding, hex only</warning>
+			</warnings>
+			<is_hex_only>true</is_hex_only>
+			<value_hex>09 7F FF FF FF FF FF FF FF FB</value_hex>
+		</exponent_block>
+		<mantissa_block>
+			<is_hex_only>false</is_hex_only>
+			<value_dec>5</value_dec>
+		</mantissa_block>
+		<value_hex>5 * 2^{09 7F FF FF FF FF FF FF FF FB}</value_hex>
+	</value_block>
+</REAL>

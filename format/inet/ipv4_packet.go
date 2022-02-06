@@ -78,7 +78,7 @@ func decodeIPv4(d *decode.D, in interface{}) interface{} {
 	d.FieldU32("destination_ip", mapUToIPv4Sym, scalar.Hex)
 	optionsLen := (int64(ihl) - 5) * 8 * 4
 	if optionsLen > 0 {
-		d.LenFn(optionsLen, func(d *decode.D) {
+		d.FramedFn(optionsLen, func(d *decode.D) {
 			d.FieldArray("options", func(d *decode.D) {
 				for !d.End() {
 					d.FieldStruct("option", func(d *decode.D) {

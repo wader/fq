@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<REAL>
+	<error>End of input reached before message was fully decoded</error>
+	<identification_block>
+		<tag_class>UNIVERSAL</tag_class>
+		<is_constructed>false</is_constructed>
+		<value_dec>9</value_dec>
+	</identification_block>
+	<length_block>
+		<warnings>
+			<warning>Needlessly long encoded length</warning>
+			<warning>Unneccesary usage of long length form</warning>
+		</warnings>
+		<is_indefinite_form>false</is_indefinite_form>
+		<long_form_used>true</long_form_used>
+		<length>7</length>
+	</length_block>
+	<value_block>
+		<error>End of input reached before message was fully decoded</error>
+		<information_block>
+			<is_special_value>false</is_special_value>
+			<base>2</base>
+			<scaling_factor>0</scaling_factor>
+			<is_negative>false</is_negative>
+			<exponent_format>4</exponent_format>
+		</information_block>
+		<exponent_block>
+			<error>End of input reached before message was fully decoded</error>
+		</exponent_block>
+	</value_block>
+</REAL>

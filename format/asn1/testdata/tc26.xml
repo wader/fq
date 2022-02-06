@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<BOOLEAN>
+	<identification_block>
+		<tag_class>UNIVERSAL</tag_class>
+		<is_constructed>false</is_constructed>
+		<value_dec>1</value_dec>
+	</identification_block>
+	<length_block>
+		<is_indefinite_form>false</is_indefinite_form>
+		<long_form_used>false</long_form_used>
+		<length>3</length>
+	</length_block>
+	<value_block>
+		<warnings>
+			<warning>Needlessly long format</warning>
+			<warning>BOOLEAN value encoded in more then 1 octet</warning>
+		</warnings>
+		<value_hex>00 00 01</value_hex>
+	</value_block>
+</BOOLEAN>
