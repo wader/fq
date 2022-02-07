@@ -1,7 +1,7 @@
 # from https://github.com/protocolbuffers/protobuf/blob/master/objectivec/Tests/golden_message
 # https://github.com/protocolbuffers/protobuf/blob/master/LICENSE
 # TODO: test with schema somehow
-$ fq -d protobuf v /golden_message
+$ fq -d protobuf dv /golden_message
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /golden_message (protobuf) 0x0-0x212.7 (531)
      |                                               |                |  fields[0:106]: 0x0-0x212.7 (531)
      |                                               |                |    [0]{}: field 0x0-0x1.7 (2)

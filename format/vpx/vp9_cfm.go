@@ -23,7 +23,7 @@ func vp9CFMDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldStruct("feature", func(d *decode.D) {
 			id := d.FieldU8("id", vp9FeatureIDNames)
 			l := d.FieldU8("length")
-			d.LenFn(int64(l)*8, func(d *decode.D) {
+			d.FramedFn(int64(l)*8, func(d *decode.D) {
 				switch id {
 				case vp9FeatureProfile:
 					d.FieldU8("profile")

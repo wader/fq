@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i anullsrc=d=10ms -f lavfi -i testsrc=s=4x4:r=1:d=1 -map 0:0 -map 1:0 -f mp3 test.mp3
 # fq test.mp3 '.. | select(format == "id3v2")._bytes' > apic
-$ fq -d id3v2 verbose /apic
+$ fq -d id3v2 dv /apic
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /apic (id3v2) 0x0-0xb3.7 (180)
 0x00|49 44 33                                       |ID3             |  magic: "ID3" (valid) 0x0-0x2.7 (3)
 0x00|         04                                    |   .            |  version: 4 0x3-0x3.7 (1)

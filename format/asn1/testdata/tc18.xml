@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<INTEGER>
+	<identification_block>
+		<tag_class>UNIVERSAL</tag_class>
+		<is_constructed>false</is_constructed>
+		<value_dec>2</value_dec>
+	</identification_block>
+	<length_block>
+		<is_indefinite_form>false</is_indefinite_form>
+		<long_form_used>false</long_form_used>
+		<length>3</length>
+	</length_block>
+	<value_block>
+		<warnings>
+			<warning>Needlessly long format</warning>
+		</warnings>
+		<value_dec>-4095</value_dec>
+	</value_block>
+</INTEGER>

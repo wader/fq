@@ -386,8 +386,8 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 
 	crcHash := &checksum.CRC{Bits: 16, Current: 0xffff, Table: checksum.ANSI16Table}
 	// 2 bytes after sync and some other fields + all of side info
-	d.MustCopy(crcHash, d.BitBufRange(2*8, 2*8))
-	d.MustCopy(crcHash, d.BitBufRange(6*8, sideInfoBytes*8))
+	d.MustCopyBits(crcHash, d.BitBufRange(2*8, 2*8))
+	d.MustCopyBits(crcHash, d.BitBufRange(6*8, sideInfoBytes*8))
 
 	if crcValue != nil {
 		_ = crcValue.TryScalarFn(d.ValidateUBytes(crcHash.Sum(nil)))

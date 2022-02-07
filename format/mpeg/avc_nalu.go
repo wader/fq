@@ -6,6 +6,7 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/internal/mathextra"
+	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
 )
@@ -101,7 +102,7 @@ func avcNALUDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldBool("forbidden_zero_bit")
 	d.FieldU2("nal_ref_idc")
 	nalType := d.FieldU5("nal_unit_type", avcNALNames)
-	unescapedBb := d.MustNewBitBufFromReader(decode.NALUnescapeReader{Reader: d.BitBufRange(d.Pos(), d.BitsLeft())})
+	unescapedBR := d.MustNewBitBufFromReader(decode.NALUnescapeReader{Reader: bitio.NewIOReader(d.BitBufRange(d.Pos(), d.BitsLeft()))})
 
 	switch nalType {
 	case avcNALCodedSliceNonIDR,
@@ -118,11 +119,11 @@ func avcNALUDecode(d *decode.D, in interface{}) interface{} {
 			// TODO: if ( separate_colour_plane_flag from SPS ) colour_plane_id; frame_num
 		})
 	case avcNALSupplementalEnhancementInformation:
-		d.FieldFormatBitBuf("sei", unescapedBb, avcSEIFormat, nil)
+		d.FieldFormatBitBuf("sei", unescapedBR, avcSEIFormat, nil)
 	case avcNALSequenceParameterSet:
-		d.FieldFormatBitBuf("sps", unescapedBb, avcSPSFormat, nil)
+		d.FieldFormatBitBuf("sps", unescapedBR, avcSPSFormat, nil)
 	case avcNALPictureParameterSet:
-		d.FieldFormatBitBuf("pps", unescapedBb, avcPPSFormat, nil)
+		d.FieldFormatBitBuf("pps", unescapedBR, avcPPSFormat, nil)
 	}
 	d.FieldRawLen("data", d.BitsLeft())
 

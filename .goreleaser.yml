@@ -34,6 +34,8 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
+      - goos: darwin
+        format: zip
     replacements:
       darwin: macos
 
@@ -47,12 +49,13 @@ changelog:
       - "^Merge"
 
 brews:
-  - tap:
+  - skip_upload: auto
+    tap:
       owner: wader
       name: homebrew-tap
     folder: Formula
     homepage: https://github.com/wader/fq
-    description: jq for binaries
+    description: jq for binary formats
     license: MIT
     test: |
       system "#{bin}/fq -v"

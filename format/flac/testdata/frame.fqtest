@@ -1,6 +1,6 @@
 # test decode separate frame
 # ffmpeg -f lavfi -i sine -t 0.01s -f flac pipe:1 | fq - '.frames[0]._bytes' > frame
-$ fq -d flac_frame verbose /frame
+$ fq -d flac_frame dv /frame
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /frame (flac_frame) 0x0-0x1ff.7 (512)
      |                                               |                |  header{}: 0x0-0x7.7 (8)
 0x000|ff f8                                          |..              |    sync: 0b11111111111110 (valid) 0x0-0x1.5 (1.6)

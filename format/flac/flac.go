@@ -80,7 +80,7 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 		}
 	})
 
-	md5CalcValue := d.FieldRootBitBuf("md5_calculated", bitio.NewBufferFromBytes(md5Samples.Sum(nil), -1))
+	md5CalcValue := d.FieldRootBitBuf("md5_calculated", bitio.NewBitReader(md5Samples.Sum(nil), -1))
 	_ = md5CalcValue.TryScalarFn(d.ValidateBitBuf(streamInfo.MD5), scalar.RawHex)
 	d.FieldValueU("decoded_samples", framesNDecodedSamples)
 

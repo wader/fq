@@ -268,9 +268,9 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, expectedTagID int, fn func(d
 	tagLen := d.FieldUFn("length", esLengthEncoding)
 
 	if fn != nil {
-		d.LenFn(int64(tagLen)*8, fn)
+		d.FramedFn(int64(tagLen)*8, fn)
 	} else if tagDecoder, ok := odDecoders[tagID]; ok {
-		d.LenFn(int64(tagLen)*8, tagDecoder)
+		d.FramedFn(int64(tagLen)*8, tagDecoder)
 	} else {
 		d.FieldRawLen("data", d.BitsLeft())
 	}

@@ -107,7 +107,7 @@ func iccProfileDecode(d *decode.D, in interface{}) interface{} {
 	size := d.U32()
 	d.SeekRel(-4 * 8)
 
-	d.LenFn(int64(size)*8, func(d *decode.D) {
+	d.FramedFn(int64(size)*8, func(d *decode.D) {
 		d.FieldStruct("header", func(d *decode.D) {
 			d.FieldU32("size")
 			d.FieldUTF8NullFixedLen("cmm_type_signature", 4)

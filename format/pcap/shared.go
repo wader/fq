@@ -36,14 +36,14 @@ var linkToDecodeFn = map[int]func(fd *flowsdecoder.Decoder, bs []byte) error{
 func fieldFlows(d *decode.D, fd *flowsdecoder.Decoder, tcpStreamFormat decode.Group, ipv4PacketFormat decode.Group) {
 	d.FieldArray("ipv4_reassembled", func(d *decode.D) {
 		for _, p := range fd.IPV4Reassembled {
-			bb := bitio.NewBufferFromBytes(p.Datagram, -1)
+			br := bitio.NewBitReader(p.Datagram, -1)
 			if dv, _, _ := d.TryFieldFormatBitBuf(
 				"ipv4_packet",
-				bb,
+				br,
 				ipv4PacketFormat,
 				nil,
 			); dv == nil {
-				d.FieldRootBitBuf("ipv4_packet", bb)
+				d.FieldRootBitBuf("ipv4_packet", br)
 			}
 		}
 	})
@@ -55,30 +55,30 @@ func fieldFlows(d *decode.D, fd *flowsdecoder.Decoder, tcpStreamFormat decode.Gr
 				d.FieldValueU("source_port", uint64(s.ClientEndpoint.Port), format.TCPPortMap)
 				d.FieldValueStr("destination_ip", s.ServerEndpoint.IP.String())
 				d.FieldValueU("destination_port", uint64(s.ServerEndpoint.Port), format.TCPPortMap)
-				csBB := bitio.NewBufferFromBytes(s.ClientToServer.Bytes(), -1)
+				csBR := bitio.NewBitReader(s.ClientToServer.Bytes(), -1)
 				if dv, _, _ := d.TryFieldFormatBitBuf(
 					"client_stream",
-					csBB,
+					csBR,
 					tcpStreamFormat,
 					format.TCPStreamIn{
 						SourcePort:      s.ClientEndpoint.Port,
 						DestinationPort: s.ServerEndpoint.Port,
 					},
 				); dv == nil {
-					d.FieldRootBitBuf("client_stream", csBB)
+					d.FieldRootBitBuf("client_stream", csBR)
 				}
 
-				scBB := bitio.NewBufferFromBytes(s.ServerToClient.Bytes(), -1)
+				scBR := bitio.NewBitReader(s.ServerToClient.Bytes(), -1)
 				if dv, _, _ := d.TryFieldFormatBitBuf(
 					"server_stream",
-					scBB,
+					scBR,
 					tcpStreamFormat,
 					format.TCPStreamIn{
 						SourcePort:      s.ClientEndpoint.Port,
 						DestinationPort: s.ServerEndpoint.Port,
 					},
 				); dv == nil {
-					d.FieldRootBitBuf("server_stream", scBB)
+					d.FieldRootBitBuf("server_stream", scBR)
 				}
 			})
 		}

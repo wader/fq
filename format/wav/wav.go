@@ -179,7 +179,7 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 { /
 	}
 
 	if fn, ok := chunks[trimChunkID]; ok {
-		d.LenFn(chunkLen*8, fn)
+		d.FramedFn(chunkLen*8, fn)
 	} else {
 		if stringData {
 			d.FieldUTF8("data", int(chunkLen), scalar.Trim(" \x00"))

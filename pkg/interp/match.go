@@ -7,6 +7,7 @@ import (
 
 	"github.com/wader/fq/internal/gojqextra"
 	"github.com/wader/fq/internal/ioextra"
+	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/ranges"
 	"github.com/wader/gojq"
 )
@@ -69,7 +70,7 @@ func (i *Interp) _bufferMatch(c interface{}, a []interface{}) gojq.Iter {
 	}
 	sreNames := sre.SubexpNames()
 
-	bb, err := bv.toBuffer()
+	br, err := bv.toBuffer()
 	if err != nil {
 		return gojq.NewIter(err)
 	}
@@ -83,9 +84,9 @@ func (i *Interp) _bufferMatch(c interface{}, a []interface{}) gojq.Iter {
 	// will match the byte \0xff
 	if byteRunes {
 		// byte mode, read each byte as a rune
-		rr = ioextra.ByteRuneReader{RS: bb}
+		rr = ioextra.ByteRuneReader{RS: bitio.NewIOReadSeeker(br)}
 	} else {
-		rr = ioextra.RuneReadSeeker{RS: bb}
+		rr = ioextra.RuneReadSeeker{RS: bitio.NewIOReadSeeker(br)}
 	}
 
 	var off int64
@@ -127,7 +128,7 @@ func (i *Interp) _bufferMatch(c interface{}, a []interface{}) gojq.Iter {
 				matchBitOff := (off + int64(start)) * 8
 				matchLength := int64(end-start) * 8
 				bbo := Buffer{
-					bb: bv.bb,
+					br: bv.br,
 					r: ranges.Range{
 						Start: bv.r.Start + matchBitOff,
 						Len:   matchLength,

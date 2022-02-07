@@ -1,4 +1,4 @@
-$ fq -d elf v a_dynamic
+$ fq -d elf dv a_dynamic
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: a_dynamic (elf) 0x0-0x2593.7 (9620)
       |                                               |                |  header{}: 0x0-0x33.7 (52)
       |                                               |                |    ident{}: 0x0-0xf.7 (16)

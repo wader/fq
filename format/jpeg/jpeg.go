@@ -242,7 +242,7 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 					case DQT:
 						lQ := int64(d.FieldU16("Lq"))
 						// TODO: how to extract n? spec says lq is 2 + sum for i in 1 to n 65+64*Pq(i)
-						d.LenFn(lQ*8-16, func(d *decode.D) {
+						d.FramedFn(lQ*8-16, func(d *decode.D) {
 							d.FieldArray("Qs", func(d *decode.D) {
 								for d.NotEnd() {
 									d.FieldStruct("Q", func(d *decode.D) {
@@ -272,7 +272,7 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 						}
 
 						markerLen := d.FieldU16("length")
-						d.LenFn(int64((markerLen-2)*8), func(d *decode.D) {
+						d.FramedFn(int64((markerLen-2)*8), func(d *decode.D) {
 							// TODO: map lookup and descriptions?
 							app0JFIFPrefix := []byte("JFIF\x00")
 							app1ExifPrefix := []byte("Exif\x00\x00")
@@ -306,10 +306,7 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 									// TODO: FieldBitsLen? concat bitbuf?
 									chunk := d.FieldRawLen("data", d.BitsLeft())
 									// TODO: redo this? multi reader?
-									chunkBytes, err := chunk.Bytes()
-									if err != nil {
-										d.Fatalf("failed to read xmp chunk: %s", err)
-									}
+									chunkBytes := d.MustReadAllBits(chunk)
 
 									if extendedXMP == nil {
 										extendedXMP = make([]byte, fullLength)
@@ -348,7 +345,7 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 	}
 
 	if extendedXMP != nil {
-		d.FieldRootBitBuf("extended_xmp", bitio.NewBufferFromBytes(extendedXMP, -1))
+		d.FieldRootBitBuf("extended_xmp", bitio.NewBitReader(extendedXMP, -1))
 	}
 
 	return nil

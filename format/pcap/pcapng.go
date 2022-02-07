@@ -230,10 +230,7 @@ var blockFns = map[uint64]func(d *decode.D, dc *decodeContext){
 		capturedLength := d.FieldU32("capture_packet_length")
 		d.FieldU32("original_packet_length")
 
-		bs, err := d.BitBufRange(d.Pos(), int64(capturedLength)*8).Bytes()
-		if err != nil {
-			d.IOPanic(err, "d.BitBufRange")
-		}
+		bs := d.MustReadAllBits(d.BitBufRange(d.Pos(), int64(capturedLength)*8))
 
 		linkType := dc.interfaceTypes[int(interfaceID)]
 
@@ -263,7 +260,7 @@ var blockFns = map[uint64]func(d *decode.D, dc *decodeContext){
 						seenEnd = true
 						return
 					}
-					d.LenFn(int64(length)*8, func(d *decode.D) {
+					d.FramedFn(int64(length)*8, func(d *decode.D) {
 						switch typ {
 						case nameResolutionRecordIpv4:
 							d.FieldU32BE("address", mapUToIPv4Sym, scalar.Hex)
@@ -295,7 +292,11 @@ func decodeBlock(d *decode.D, dc *decodeContext) {
 	typ := d.FieldU32("type", blockTypeMap, scalar.Hex)
 	length := d.FieldU32("length") - 8
 	const footerLengthSize = 32
-	d.LenFn(int64(length)*8-footerLengthSize, func(d *decode.D) {
+	blockLen := int64(length)*8 - footerLengthSize
+	if blockLen <= 0 {
+		d.Fatalf("%d blockLen < 0", blockLen)
+	}
+	d.FramedFn(blockLen, func(d *decode.D) {
 		if fn, ok := blockFns[typ]; ok {
 			fn(d, dc)
 		} else {
@@ -331,11 +332,11 @@ func decodeSection(d *decode.D, dc *decodeContext) {
 			length := d.FieldU32("length") - 8 - 4
 			d.SeekRel(32)
 
-			d.LenFn(int64(length)*8, func(d *decode.D) {
+			d.FramedFn(int64(length)*8, func(d *decode.D) {
 				d.FieldU16("major_version")
 				d.FieldU16("minor_version")
 				sectionLength = d.FieldS64("section_length")
-				d.LenFn(d.BitsLeft()-32, func(d *decode.D) {
+				d.FramedFn(d.BitsLeft()-32, func(d *decode.D) {
 					d.FieldArray("options", func(d *decode.D) { decoodeOptions(d, sectionHeaderOptionsMap) })
 				})
 				d.FieldU32("footer_total_length")

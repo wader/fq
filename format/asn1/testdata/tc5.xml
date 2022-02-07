@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<ASN1_TYPE>
+	<identification_block>
+		<warnings>
+			<warning>Tag too long, represented as hex-coded</warning>
+		</warnings>
+		<tag_class>CONTEXT_SPECIFIC</tag_class>
+		<is_constructed>false</is_constructed>
+		<value_hex>7F 7F 7F 7F 7F 7F 7F 7F 7F</value_hex>
+	</identification_block>
+	<length_block>
+		<warnings>
+			<warning>Unneccesary usage of long length form</warning>
+		</warnings>
+		<is_indefinite_form>false</is_indefinite_form>
+		<long_form_used>true</long_form_used>
+		<length>1</length>
+	</length_block>
+	<value_block>
+		<value_hex>40</value_hex>
+	</value_block>
+</ASN1_TYPE>

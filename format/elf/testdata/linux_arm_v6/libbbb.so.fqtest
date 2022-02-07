@@ -1,4 +1,4 @@
-$ fq -d elf v libbbb.so
+$ fq -d elf dv libbbb.so
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: libbbb.so (elf) 0x0-0x1e9f.7 (7840)
       |                                               |                |  header{}: 0x0-0x33.7 (52)
       |                                               |                |    ident{}: 0x0-0xf.7 (16)

@@ -326,3 +326,25 @@ def diff($a; $b):
       if $a == $b then empty else {a: $a, b: $b} end
     end
   );
+
+# https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail
+# TODO: add test
+def frompem:
+  ( tobytes
+  | tostring
+  | capture("-----BEGIN(.*?)-----(?<s>.*?)-----END(.*?)-----"; "mg").s
+  | base64
+  ) // error("no pem header or footer found");
+
+def topem($label):
+  ( tobytes
+  | base64
+  | ($label | if $label != "" then " " + $label end) as $label
+  | [ "-----BEGIN\($label)-----"
+    , .
+    , "-----END\($label)-----"
+    , ""
+    ]
+  | join("\n")
+  );
+def topem: topem("");

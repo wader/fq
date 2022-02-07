@@ -1,5 +1,5 @@
 # from https://wiki.wireshark.org/Development/PcapNg
-$ fq -d pcapng verbose /dhcp_big_endian.pcapng
+$ fq -d pcapng dv /dhcp_big_endian.pcapng
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0:1]: /dhcp_big_endian.pcapng (pcapng) 0x0-0x5fb.7 (1532)
      |                                               |                |  [0]{}: section 0x0-0x5fb.7 (1532)
      |                                               |                |    blocks[0:7]: 0x0-0x5fb.7 (1532)

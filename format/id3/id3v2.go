@@ -11,6 +11,7 @@ import (
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
 	"golang.org/x/text/encoding"
@@ -533,8 +534,8 @@ func decodeFrame(d *decode.D, version int) uint64 {
 	if unsyncFlag {
 		// TODO: DecodeFn
 		// TODO: unknown after frame decode
-		unsyncedBb := d.MustNewBitBufFromReader(unsyncReader{Reader: d.BitBufRange(d.Pos(), int64(dataSize)*8)})
-		d.FieldFormatBitBuf("unsync", unsyncedBb, decode.FormatFn(func(d *decode.D, in interface{}) interface{} {
+		unsyncedBR := d.MustNewBitBufFromReader(unsyncReader{Reader: bitio.NewIOReader(d.BitBufRange(d.Pos(), int64(dataSize)*8))})
+		d.FieldFormatBitBuf("unsync", unsyncedBR, decode.FormatFn(func(d *decode.D, in interface{}) interface{} {
 			if fn, ok := frames[idNormalized]; ok {
 				fn(d)
 			} else {
@@ -546,7 +547,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		d.FieldRawLen("data", int64(dataSize*8))
 	} else {
 		if fn, ok := frames[idNormalized]; ok {
-			d.LenFn(int64(dataSize)*8, func(d *decode.D) {
+			d.FramedFn(int64(dataSize)*8, func(d *decode.D) {
 				fn(d)
 			})
 		} else {
@@ -577,7 +578,7 @@ func decodeFrames(d *decode.D, version int, size uint64) {
 
 func id3v2Decode(d *decode.D, in interface{}) interface{} {
 	d.AssertAtLeastBitsLeft(4 * 8)
-	d.FieldUTF8("magic", 3, d.ValidateStr("ID3"))
+	d.FieldUTF8("magic", 3, d.AssertStr("ID3"))
 	version := int(d.FieldU8("version"))
 	versionValid := version == 2 || version == 3 || version == 4
 	if !versionValid {

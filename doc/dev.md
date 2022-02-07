@@ -34,11 +34,11 @@ Flags can be struct with bit-fields.
 
 ### Development tips
 
-I ususally use `-d <format>` and `v` while developing, that way you will get a decode tree
-even if it fails. `v` gives verbose output and also includes stacktrace.
+I ususally use `-d <format>` and `dv` while developing, that way you will get a decode tree
+even if it fails. `dv` gives verbose output and also includes stacktrace.
 
 ```sh
-go run fq.go -d <format> v file
+go run fq.go -d <format> dv file
 ```
 
 If the format is inside some other format it can be handy to first extract the bits and run
@@ -46,7 +46,7 @@ the decode directly. For example if working a `aac_frame` decoder issue:
 
 ```sh
 fq '.tracks[0].samples[1234] | tobytes' file.mp4 > aac_frame_1234
-fq -d aac_frame v aac_frame_1234
+fq -d aac_frame dv aac_frame_1234
 ```
 
 Sometimes nested decoding fails then maybe a good way is to change the parent decoder to
@@ -58,7 +58,7 @@ make things more comfortable. Also using vscode/delve for debugging should work 
 launch `args` are setup etc.
 
 ```
-watchexec "go run fq.go -d aac_frame v aac_frame"
+watchexec "go run fq.go -d aac_frame dv aac_frame"
 ```
 
 Some different ways to run tests:
@@ -70,7 +70,7 @@ go test ./...
 # run all tests for one format
 go test -run TestFQTests/mp4 ./format/
 # write all actual outputs
-make actual
+WRITE_ACTUAL=1 go test ./...
 # write actual output for specific tests
 WRITE_ACTUAL=1 go run -run ...
 # color diff
@@ -150,11 +150,7 @@ aheadreadseeker.Reader does readahead caching
 ^
 | (io.ReadSeeker interface)
 |
-bitio.Reader (implements bitio.Bit* interfaces)
-^
-| (bitio.Bit* interfaces)
-|
-bitio.Buffer convenience wrapper to read bytes from bit reader, create section readers etc
+bitio.IOBitReader (implements bitio.Bit* interfaces)
 SectionBitReader
 MultiBitReader
 ```

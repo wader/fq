@@ -41,7 +41,7 @@ func TestPath(t *testing.T, registry *registry.Registry) {
 						t.Fatal(err)
 					}
 
-					err = i.Main(context.Background(), cr.Stdout(), "dev")
+					err = i.Main(context.Background(), cr.Stdout(), "testversion")
 					if err != nil {
 						if ex, ok := err.(interp.Exiter); ok { //nolint:errorlint
 							cr.ActualExitCode = ex.ExitCode()

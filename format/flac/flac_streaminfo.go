@@ -26,11 +26,8 @@ func streaminfoDecode(d *decode.D, in interface{}) interface{} {
 	// <5> (bits per sample)-1. FLAC supports from 4 to 32 bits per sample. Currently the reference encoder and decoders only support up to 24 bits per sample.
 	bitPerSample := d.FieldU5("bits_per_sample", scalar.UAdd(1))
 	totalSamplesInStream := d.FieldU("total_samples_in_stream", 36)
-	md5BB := d.FieldRawLen("md5", 16*8, scalar.RawHex)
-	md5b, err := md5BB.Bytes()
-	if err != nil {
-		d.IOPanic(err, "md5BB.Bytes")
-	}
+	md5BR := d.FieldRawLen("md5", 16*8, scalar.RawHex)
+	md5b := d.MustReadAllBits(md5BR)
 
 	return format.FlacStreaminfoOut{
 		StreamInfo: format.FlacStreamInfo{

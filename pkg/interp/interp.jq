@@ -29,15 +29,14 @@ def _exit_code_expr_error: 5;
 
 def d($opts): display($opts);
 def d: display({});
-def full($opts): display({array_truncate: 0} + $opts);
-# TODO: rename, gets mixed up with f args often
-def full: full({});
-def f($opts): full($opts);
-def f: full;
-def verbose($opts): display({verbose: true, array_truncate: 0} + $opts);
-def verbose: verbose({});
-def v($opts): verbose($opts);
-def v: verbose;
+def da($opts): display({array_truncate: 0} + $opts);
+def da: da({});
+def dd($opts): display({array_truncate: 0, display_bytes: 0} + $opts);
+def dd: dd({});
+def dv($opts): display({array_truncate: 0, verbose: true} + $opts);
+def dv: dv({});
+def ddv($opts): display({array_truncate: 0, display_bytes: 0, verbose: true} + $opts);
+def ddv: ddv({});
 
 # next valid input
 def input:
@@ -47,16 +46,17 @@ def input:
     | [.[0], .[1:]] as [$h, $t]
     | _input_filenames($t)
     | _input_filename(null) as $_
+    | ($h // "<stdin>") as $name
     | $h
     | try
         # null input here means stdin
         ( open
-        | _input_filename($h // "<stdin>") as $_
+        | _input_filename($name) as $_
         | .
         )
       catch
         ( . as $err
-        | _input_io_errors(. += {($h): $err}) as $_
+        | _input_io_errors(. += {($name): $err}) as $_
         | $err
         | (_error_str | printerrln)
         , _input($opts; f)
@@ -64,8 +64,8 @@ def input:
     | try f
       catch
         ( . as $err
-        | _input_decode_errors(. += {($h): $err}) as $_
-        | [ "\($h): \($opts.decode_format)"
+        | _input_decode_errors(. += {($name): $err}) as $_
+        | [ "\($name): \($opts.decode_format)"
           , if $err | type == "string" then ": \($err)"
             # TODO: if not string assume decode itself failed for now
             else ": failed to decode (try -d FORMAT)"
@@ -179,7 +179,7 @@ def _main:
     );
   def _usage($arg0):
     "Usage: \($arg0) [OPTIONS] [--] [EXPR] [FILE...]";
-  ( . as {$version, $args, args: [$arg0]}
+  ( . as {$version, $os, $arch, $args, args: [$arg0]}
   # make sure we don't unintentionally use . to make things clearer
   | null
   | ( try _args_parse($args[1:]; _opt_cli_opts)
@@ -299,10 +299,18 @@ def _main:
       , ""
       , _usage($arg0)
       , ""
+      , "Example usages:"
+      , "  fq . file"
+      , "  fq d file"
+      , "  fq tovalue file"
+      , "  cat file.cbor | fq -d cbor torepr"
+      , "  fq 'grep(\"^main$\") | parent' /bin/ls"
+      , "  fq 'grep_by(format == \"exif\") | d' *.png *.jpeg"
+      , ""
       , args_help_text(_opt_cli_opts)
       ) | println
     elif $opts.show_version then
-      $version | println
+      "\($version) (\($os) \($arch))" | println
     elif $opts.show_formats then
       _formats_list | println
     elif

@@ -1,6 +1,6 @@
 # https://github.com/dwight/bsontools
 # echo '{array: [1,2,3], object: {key: "value"}, number: 123, string: "abc", true: true, false: false, null: null}' | fromjson test.bson
-$ fq -d bson verbose /test.bson
+$ fq -d bson dv /test.bson
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /test.bson (bson) 0x0-0x72.7 (115)
 0x00|73 00 00 00                                    |s...            |  size: 115 0x0-0x3.7 (4)
     |                                               |                |  elements[0:7]: 0x4-0x71.7 (110)

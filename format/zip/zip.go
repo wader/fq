@@ -2,6 +2,7 @@ package zip
 
 // https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
 // https://opensource.apple.com/source/zip/zip-6/unzip/unzip/proginfo/extra.fld
+// TODO: zip64
 
 import (
 	"bytes"
@@ -151,7 +152,7 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 	var diskNr uint64
 
 	d.FieldStruct("end_of_central_directory", func(d *decode.D) {
-		d.FieldRawLen("signature", 4*8, d.ValidateBitBuf(endOfCentralDirectorySignature))
+		d.FieldRawLen("signature", 4*8, d.AssertBitBuf(endOfCentralDirectorySignature))
 		diskNr = d.FieldU16("disk_nr")
 		d.FieldU16("central_directory_start_disk_nr")
 		d.FieldU16("nr_of_central_directory_records_on_disk")
@@ -166,10 +167,10 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 
 	d.SeekAbs(int64(offsetCD) * 8)
 	d.FieldArray("central_directories", func(d *decode.D) {
-		d.LenFn(int64(sizeCD)*8, func(d *decode.D) {
+		d.FramedFn(int64(sizeCD)*8, func(d *decode.D) {
 			for !d.End() {
 				d.FieldStruct("central_directory", func(d *decode.D) {
-					d.FieldRawLen("signature", 4*8, d.ValidateBitBuf(centralDirectorySignature))
+					d.FieldRawLen("signature", 4*8, d.AssertBitBuf(centralDirectorySignature))
 					d.FieldU16("version_made_by")
 					d.FieldU16("version_needed")
 					d.FieldStruct("flags", func(d *decode.D) {
@@ -204,7 +205,7 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 					localFileOffset := d.FieldU32("relative_offset_of_local_file_header")
 					d.FieldUTF8("file_name", int(fileNameLength))
 					d.FieldArray("extra_fields", func(d *decode.D) {
-						d.LenFn(int64(extraFieldLength)*8, func(d *decode.D) {
+						d.FramedFn(int64(extraFieldLength)*8, func(d *decode.D) {
 							for !d.End() {
 								d.FieldStruct("extra_field", func(d *decode.D) {
 									d.FieldU16("header_id", headerIDMap, scalar.Hex)
@@ -229,7 +230,7 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 			d.SeekAbs(int64(o) * 8)
 			d.FieldStruct("local_file", func(d *decode.D) {
 				var hasDataDescriptor bool
-				d.FieldRawLen("signature", 4*8, d.ValidateBitBuf(localFileSignature))
+				d.FieldRawLen("signature", 4*8, d.AssertBitBuf(localFileSignature))
 				d.FieldU16("version_needed")
 				d.FieldStruct("flags", func(d *decode.D) {
 					// TODO: 16LE, should have some kind of native endian flag reader helper?
@@ -258,7 +259,7 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 				extraFieldLength := d.FieldU16("extra_field_length")
 				d.FieldUTF8("file_name", int(fileNameLength))
 				d.FieldArray("extra_fields", func(d *decode.D) {
-					d.LenFn(int64(extraFieldLength)*8, func(d *decode.D) {
+					d.FramedFn(int64(extraFieldLength)*8, func(d *decode.D) {
 						for !d.End() {
 							d.FieldStruct("extra_field", func(d *decode.D) {
 								d.FieldU16("header_id", headerIDMap, scalar.Hex)
@@ -284,15 +285,15 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 					var rFn func(r io.Reader) io.Reader
 					switch compressionMethod {
 					case compressionMethodDeflated:
-						// *bitio.Buffer implements io.ByteReader so hat deflate don't do own
+						// bitio.NewIOReadSeeker implements io.ByteReader so that deflate don't do own
 						// buffering and might read more than needed messing up knowing compressed size
 						rFn = func(r io.Reader) io.Reader { return flate.NewReader(r) }
 					}
 
 					if rFn != nil {
-						readCompressedSize, uncompressedBB, dv, _, _ := d.TryFieldReaderRangeFormat("uncompressed", d.Pos(), compressedLimit, rFn, probeFormat, nil)
-						if dv == nil && uncompressedBB != nil {
-							d.FieldRootBitBuf("uncompressed", uncompressedBB)
+						readCompressedSize, uncompressedBR, dv, _, _ := d.TryFieldReaderRangeFormat("uncompressed", d.Pos(), compressedLimit, rFn, probeFormat, nil)
+						if dv == nil && uncompressedBR != nil {
+							d.FieldRootBitBuf("uncompressed", uncompressedBR)
 						}
 						if compressedSize == 0 {
 							compressedSize = readCompressedSize
@@ -311,7 +312,7 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 				if hasDataDescriptor {
 					d.FieldStruct("data_indicator", func(d *decode.D) {
 						if bytes.Equal(d.PeekBytes(4), dataIndicatorSignature) {
-							d.FieldRawLen("signature", 4*8, d.ValidateBitBuf(dataIndicatorSignature))
+							d.FieldRawLen("signature", 4*8, d.AssertBitBuf(dataIndicatorSignature))
 						}
 						d.FieldU32("crc32_uncompressed", scalar.Hex)
 						d.FieldU32("compressed_size")

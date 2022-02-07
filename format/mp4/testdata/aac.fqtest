@@ -1,5 +1,5 @@
 # ffmpeg -f lavfi -i sine -c:a aac -f mp4 -t 50ms aac.mp4
-$ fq -d mp4 verbose /aac.mp4
+$ fq -d mp4 dv /aac.mp4
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /aac.mp4 (mp4) 0x0-0x59c.7 (1437)
      |                                               |                |  boxes[0:4]: 0x0-0x59c.7 (1437)
      |                                               |                |    [0]{}: box 0x0-0x1b.7 (28)
@@ -302,8 +302,8 @@ $ fq -d mp4 verbose /aac.mp4
 0x510|   72 6f 6c 6c                                 | roll           |                          grouping_type: 1919904876 0x511-0x514.7 (4)
 0x510|               00 00 00 02                     |     ....       |                          default_length: 2 0x515-0x518.7 (4)
 0x510|                           00 00 00 01         |         ....   |                          entry_count: 1 0x519-0x51c.7 (4)
-     |                                               |                |                          groups[0:1]: 0x51d-0x51e.7 (2)
-0x510|                                       ff ff   |             .. |                            [0]: raw bits group 0x51d-0x51e.7 (2)
+     |                                               |                |                          entries[0:1]: 0x51d-0x51e.7 (2)
+0x510|                                       ff ff   |             .. |                            [0]: raw bits data 0x51d-0x51e.7 (2)
      |                                               |                |                        [6]{}: box 0x51f-0x53a.7 (28)
 0x510|                                             00|               .|                          size: 28 0x51f-0x522.7 (4)
 0x520|00 00 1c                                       |...             |

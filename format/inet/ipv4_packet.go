@@ -6,6 +6,7 @@ import (
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/checksum"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
@@ -77,7 +78,7 @@ func decodeIPv4(d *decode.D, in interface{}) interface{} {
 	d.FieldU32("destination_ip", mapUToIPv4Sym, scalar.Hex)
 	optionsLen := (int64(ihl) - 5) * 8 * 4
 	if optionsLen > 0 {
-		d.LenFn(optionsLen, func(d *decode.D) {
+		d.FramedFn(optionsLen, func(d *decode.D) {
 			d.FieldArray("options", func(d *decode.D) {
 				for !d.End() {
 					d.FieldStruct("option", func(d *decode.D) {
@@ -98,8 +99,8 @@ func decodeIPv4(d *decode.D, in interface{}) interface{} {
 	headerEnd := d.Pos()
 
 	ipv4Checksum := &checksum.IPv4{}
-	d.MustCopy(ipv4Checksum, d.BitBufRange(0, checksumStart))
-	d.MustCopy(ipv4Checksum, d.BitBufRange(checksumEnd, headerEnd-checksumEnd))
+	d.MustCopy(ipv4Checksum, bitio.NewIOReader(d.BitBufRange(0, checksumStart)))
+	d.MustCopy(ipv4Checksum, bitio.NewIOReader(d.BitBufRange(checksumEnd, headerEnd-checksumEnd)))
 	_ = d.FieldMustGet("header_checksum").TryScalarFn(d.ValidateUBytes(ipv4Checksum.Sum(nil)), scalar.Hex)
 
 	dataLen := int64(totalLength-(ihl*4)) * 8

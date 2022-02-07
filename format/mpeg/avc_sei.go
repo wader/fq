@@ -105,7 +105,7 @@ func avcSEIDecode(d *decode.D, in interface{}) interface{} {
 	payloadType := d.FieldUFn("payload_type", func(d *decode.D) uint64 { return ffSum(d) }, seiNames)
 	payloadSize := d.FieldUFn("payload_size", func(d *decode.D) uint64 { return ffSum(d) })
 
-	d.LenFn(int64(payloadSize)*8, func(d *decode.D) {
+	d.FramedFn(int64(payloadSize)*8, func(d *decode.D) {
 		switch payloadType {
 		case avcSEIUserDataUnregistered:
 			d.FieldRawLen("uuid", 16*8, userDataUnregisteredNames)

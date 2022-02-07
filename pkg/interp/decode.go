@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/mitchellh/mapstructure"
+	"github.com/wader/fq/internal/bitioextra"
 	"github.com/wader/fq/internal/gojqextra"
 	"github.com/wader/fq/internal/ioextra"
 	"github.com/wader/fq/pkg/bitio"
@@ -201,7 +202,7 @@ func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
 		return err
 	}
 
-	dv, _, err := decode.Decode(i.evalContext.ctx, bv.bb, decodeFormat,
+	dv, _, err := decode.Decode(i.evalContext.ctx, bv.br, decodeFormat,
 		decode.Options{
 			IsRoot:        true,
 			FillGaps:      true,
@@ -273,7 +274,7 @@ func makeDecodeValue(dv *decode.Value) interface{} {
 		return NewStructDecodeValue(dv, vv)
 	case *scalar.S:
 		switch vv := vv.Value().(type) {
-		case *bitio.Buffer:
+		case bitio.ReaderAtSeeker:
 			// is lazy so that in situations where the decode value is only used to
 			// create another buffer we don't have to read and create a string, ex:
 			// .unknown0 | tobytes[1:] | ...
@@ -283,7 +284,11 @@ func makeDecodeValue(dv *decode.Value) interface{} {
 					IsScalar: true,
 					Fn: func() (gojq.JQValue, error) {
 						buf := &bytes.Buffer{}
-						if _, err := io.Copy(buf, vv.Clone()); err != nil {
+						vvC, err := bitioextra.Clone(vv)
+						if err != nil {
+							return nil, err
+						}
+						if _, err := bitioextra.CopyBits(buf, vvC); err != nil {
 							return nil, err
 						}
 						return gojqextra.String([]rune(buf.String())), nil
@@ -360,7 +365,7 @@ func (dvb decodeValueBase) DecodeValue() *decode.Value {
 
 func (dvb decodeValueBase) Display(w io.Writer, opts Options) error { return dump(dvb.dv, w, opts) }
 func (dvb decodeValueBase) ToBuffer() (Buffer, error) {
-	return Buffer{bb: dvb.dv.RootBitBuf, r: dvb.dv.InnerRange(), unit: 8}, nil
+	return Buffer{br: dvb.dv.RootBitBuf, r: dvb.dv.InnerRange(), unit: 8}, nil
 }
 func (decodeValueBase) ExtType() string { return "decode_value" }
 func (dvb decodeValueBase) ExtKeys() []string {
@@ -475,13 +480,13 @@ func (dvb decodeValueBase) JQValueKey(name string) interface{} {
 		}
 	case "_bits":
 		return Buffer{
-			bb:   dv.RootBitBuf,
+			br:   dv.RootBitBuf,
 			r:    dv.Range,
 			unit: 1,
 		}
 	case "_bytes":
 		return Buffer{
-			bb:   dv.RootBitBuf,
+			br:   dv.RootBitBuf,
 			r:    dv.Range,
 			unit: 8,
 		}
@@ -542,12 +547,17 @@ func (v decodeValue) JQValueToGoJQEx(optsFn func() Options) interface{} {
 	if err != nil {
 		return err
 	}
-	bb, err := bv.toBuffer()
+	br, err := bv.toBuffer()
 	if err != nil {
 		return err
 	}
 
-	s, err := optsFn().BitsFormatFn(bb.Clone())
+	brC, err := bitioextra.Clone(br)
+	if err != nil {
+		return err
+	}
+
+	s, err := optsFn().BitsFormatFn(brC)
 	if err != nil {
 		return err
 	}

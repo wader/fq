@@ -156,7 +156,7 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 	ctx.path = append(ctx.path, typ)
 
 	if decodeFn, ok := boxDecoders[typ]; ok {
-		d.LenFn(int64(dataSize*8), func(d *decode.D) {
+		d.FramedFn(int64(dataSize*8), func(d *decode.D) {
 			decodeFn(ctx, d)
 		})
 	} else {
@@ -341,7 +341,7 @@ func init() {
 						subType = ctx.currentTrack.subType
 					}
 
-					d.LenFn(int64(size-8)*8, func(d *decode.D) {
+					d.FramedFn(int64(size-8)*8, func(d *decode.D) {
 						d.FieldRawLen("reserved", 6*8)
 						d.FieldU16("data_reference_index")
 
@@ -531,6 +531,9 @@ func init() {
 			// TODO: bytes_per_sample from audio stsd?
 			sampleSize := d.FieldU32("sample_size")
 			entryCount := d.FieldU32("entry_count")
+			if ctx.currentTrack != nil && len(ctx.currentTrack.stsz) > 0 {
+				d.Errorf("multiple stsz or stz2 boxes")
+			}
 			if sampleSize == 0 {
 				var i uint64
 				d.FieldArrayLoop("entries", func() bool { return i < entryCount }, func(d *decode.D) {
@@ -551,6 +554,29 @@ func init() {
 					})
 				}
 			}
+		},
+		"stz2": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+			fieldSize := d.FieldU32("field_size")
+			if fieldSize > 16 {
+				d.Errorf("field_size %d > 16", fieldSize)
+			}
+			entryCount := d.FieldU32("entry_count")
+			var i uint64
+			if ctx.currentTrack != nil && len(ctx.currentTrack.stsz) > 0 {
+				d.Errorf("multiple stsz or stz2 boxes")
+			}
+			d.FieldArrayLoop("entries", func() bool { return i < entryCount }, func(d *decode.D) {
+				size := uint32(d.FieldU("size", int(fieldSize)))
+				if ctx.currentTrack != nil {
+					ctx.currentTrack.stsz = append(ctx.currentTrack.stsz, stsz{
+						size:  int64(size),
+						count: 1,
+					})
+				}
+				i++
+			})
 		},
 		"stco": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
@@ -964,12 +990,9 @@ func init() {
 
 			version := d.FieldU8("version")
 			d.FieldU24("flags")
-			systemIDBB := d.FieldRawLen("system_id", 6*8, systemIDNames)
+			systemIDBR := d.FieldRawLen("system_id", 6*8, systemIDNames)
 			// TODO: make nicer
-			systemID, err := systemIDBB.Bytes()
-			if err != nil {
-				d.IOPanic(err, "systemIDBB.Bytes")
-			}
+			systemID := d.MustReadAllBits(systemIDBR)
 			switch version {
 			case 0:
 			case 1:
@@ -1070,15 +1093,19 @@ func init() {
 				d.FieldU32("default_sample_description_index")
 			}
 			entryCount := d.FieldU32("entry_count")
-			d.FieldArray("groups", func(d *decode.D) {
+			d.FieldArray("entries", func(d *decode.D) {
 				for i := uint64(0); i < entryCount; i++ {
 					entryLen := defaultLength
 					if version == 1 {
 						if defaultLength == 0 {
-							entryLen = d.FieldU32("descriptor_length")
+							entryLen = d.FieldU32("description_length")
+						} else if entryLen == 0 {
+							d.Fatalf("sgpd groups entry len <= 0 version 1")
 						}
+					} else if entryLen == 0 {
+						d.Fatalf("sgpd groups entry len <= 0")
 					}
-					d.FieldRawLen("group", int64(entryLen)*8)
+					d.FieldRawLen("data", int64(entryLen)*8)
 				}
 			})
 		},

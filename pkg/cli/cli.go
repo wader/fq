@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"runtime"
 
 	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/registry"
@@ -72,6 +73,13 @@ func newStandardOS() *stdOS {
 	return &stdOS{
 		closeChan:     closeChan,
 		interruptChan: interruptChan,
+	}
+}
+
+func (stdOS) Platform() interp.Platform {
+	return interp.Platform{
+		OS:   runtime.GOOS,
+		Arch: runtime.GOARCH,
 	}
 }
 

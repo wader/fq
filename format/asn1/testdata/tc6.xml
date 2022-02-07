@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<REAL>
+	<identification_block>
+		<tag_class>UNIVERSAL</tag_class>
+		<is_constructed>false</is_constructed>
+		<value_dec>9</value_dec>
+	</identification_block>
+	<length_block>
+		<is_indefinite_form>false</is_indefinite_form>
+		<long_form_used>false</long_form_used>
+		<length>7</length>
+	</length_block>
+	<value_block>
+		<warnings>
+			<warning>REAL values for +0 and -0 can not be encoded in decimal format</warning>
+		</warnings>
+		<information_block>
+			<is_special_value>false</is_special_value>
+			<base>10</base>
+			<NR_form>3</NR_form>
+		</information_block>
+		<mantissa_block>
+			<is_hex_only>true</is_hex_only>
+			<value_hex>2B 2E 45 2D 35</value_hex>
+		</mantissa_block>
+		<value_hex>+.E-5</value_hex>
+	</value_block>
+</REAL>

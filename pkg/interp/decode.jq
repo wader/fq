@@ -49,7 +49,7 @@ def decode: decode(options.decode_format; {});
 
 def topath: _decode_value(._path);
 def tovalue($opts): _tovalue(options($opts));
-def tovalue: _tovalue({});
+def tovalue: _tovalue(options({}));
 def toactual: _decode_value(._actual);
 def tosym: _decode_value(._sym);
 def todescription: _decode_value(._description);

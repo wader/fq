@@ -37,6 +37,7 @@ def _opt_build_default_fixed:
       expr_eval_path:  "arg",
       expr_file:       null,
       filenames:       null,
+      force:           false,
       include_path:    null,
       join_string:     "\n",
       null_input:      false,
@@ -120,6 +121,7 @@ def _opt_cli_arg_options:
       expr:            (.expr | _opt_tostring),
       expr_file:       (.expr_file | _opt_tostring),
       filenames:       (.filenames | _opt_toarray(type == "string")),
+      force:           (.force | _opt_toboolean),
       include_path:    (.include_path | _opt_tostring),
       join_string:     (.join_string | _opt_tostring),
       line_bytes:      (.line_bytes | _opt_tonumber),
@@ -214,7 +216,7 @@ def _opt_cli_opts:
     "null_input": {
       short: "-n",
       long: "--null-input",
-      description: "Null input (use input/0 and inputs/0 to read input)",
+      description: "Null input (use input and inputs functions to read input)",
       bool: true
     },
     "monochrome_output": {
@@ -226,7 +228,7 @@ def _opt_cli_opts:
     "option": {
       short: "-o",
       long: "--option",
-      description: "Set option, eg: color=true (use options/0 to see all options)",
+      description: "Set option, eg: color=true (use options function to see all options)",
       object: "KEY=VALUE",
     },
     "string_input": {

@@ -10,6 +10,7 @@ import (
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
 )
@@ -97,7 +98,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldBool("safe_to_copy")
 		d.SeekRel(4)
 
-		d.LenFn(int64(chunkLength)*8, func(d *decode.D) {
+		d.FramedFn(int64(chunkLength)*8, func(d *decode.D) {
 			switch chunkType {
 			case "IHDR":
 				d.FieldU32("width")
@@ -227,7 +228,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 		})
 
 		chunkCRC := crc32.NewIEEE()
-		d.MustCopy(chunkCRC, d.BitBufRange(crcStartPos, d.Pos()-crcStartPos))
+		d.MustCopy(chunkCRC, bitio.NewIOReader(d.BitBufRange(crcStartPos, d.Pos()-crcStartPos)))
 		d.FieldU32("crc", d.ValidateUBytes(chunkCRC.Sum(nil)), scalar.Hex)
 	})
 

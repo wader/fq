@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<REAL>
+	<error>Wrong NR form</error>
+	<identification_block>
+		<tag_class>UNIVERSAL</tag_class>
+		<is_constructed>false</is_constructed>
+		<value_dec>9</value_dec>
+	</identification_block>
+	<length_block>
+		<is_indefinite_form>false</is_indefinite_form>
+		<long_form_used>false</long_form_used>
+		<length>9</length>
+	</length_block>
+	<value_block>
+		<error>Wrong NR form</error>
+		<information_block>
+			<error>Wrong NR form</error>
+		</information_block>
+	</value_block>
+</REAL>

@@ -65,12 +65,12 @@ func makeStringBitBufTransformFn(
 	return func(c interface{}, a []interface{}) interface{} {
 		switch c := c.(type) {
 		case string:
-			bb, err := toBitBuf(c)
+			br, err := toBitBuf(c)
 			if err != nil {
 				return err
 			}
 
-			r, err := decodeFn(bb)
+			r, err := decodeFn(bitio.NewIOReader(br))
 			if err != nil {
 				return err
 			}
@@ -79,11 +79,14 @@ func makeStringBitBufTransformFn(
 			if _, err := io.Copy(buf, r); err != nil {
 				return err
 			}
-			outBB := bitio.NewBufferFromBytes(buf.Bytes(), -1)
 
-			return newBufferFromBuffer(outBB, 8)
+			bb, err := newBufferFromBuffer(bitio.NewBitReader(buf.Bytes(), -1), 8)
+			if err != nil {
+				return err
+			}
+			return bb
 		default:
-			bb, err := toBitBuf(c)
+			br, err := toBitBuf(c)
 			if err != nil {
 				return err
 			}
@@ -94,7 +97,7 @@ func makeStringBitBufTransformFn(
 				return err
 			}
 
-			if _, err := io.Copy(w, bb); err != nil {
+			if _, err := io.Copy(w, bitio.NewIOReader(br)); err != nil {
 				return err
 			}
 
@@ -110,12 +113,12 @@ func makeStringBitBufTransformFn(
 // transform to buffer using fn
 func makeBitBufTransformFn(fn func(r io.Reader) (io.Reader, error)) func(c interface{}, a []interface{}) interface{} {
 	return func(c interface{}, a []interface{}) interface{} {
-		inBB, err := toBitBuf(c)
+		inBR, err := toBitBuf(c)
 		if err != nil {
 			return err
 		}
 
-		r, err := fn(inBB)
+		r, err := fn(bitio.NewIOReader(inBR))
 		if err != nil {
 			return err
 		}
@@ -125,16 +128,20 @@ func makeBitBufTransformFn(fn func(r io.Reader) (io.Reader, error)) func(c inter
 			return err
 		}
 
-		outBB := bitio.NewBufferFromBytes(outBuf.Bytes(), -1)
+		outBR := bitio.NewBitReader(outBuf.Bytes(), -1)
 
-		return newBufferFromBuffer(outBB, 8)
+		bb, err := newBufferFromBuffer(outBR, 8)
+		if err != nil {
+			return err
+		}
+		return bb
 	}
 }
 
 // transform to buffer using fn
 func makeHashFn(fn func() (hash.Hash, error)) func(c interface{}, a []interface{}) interface{} {
 	return func(c interface{}, a []interface{}) interface{} {
-		inBB, err := toBitBuf(c)
+		inBR, err := toBitBuf(c)
 		if err != nil {
 			return err
 		}
@@ -143,13 +150,17 @@ func makeHashFn(fn func() (hash.Hash, error)) func(c interface{}, a []interface{
 		if err != nil {
 			return err
 		}
-		if _, err := io.Copy(h, inBB); err != nil {
+		if _, err := io.Copy(h, bitio.NewIOReader(inBR)); err != nil {
 			return err
 		}
 
-		outBB := bitio.NewBufferFromBytes(h.Sum(nil), -1)
+		outBR := bitio.NewBitReader(h.Sum(nil), -1)
 
-		return newBufferFromBuffer(outBB, 8)
+		bb, err := newBufferFromBuffer(outBR, 8)
+		if err != nil {
+			return err
+		}
+		return bb
 	}
 }
 
@@ -223,18 +234,22 @@ func (i *Interp) aesCtr(c interface{}, a []interface{}) interface{} {
 		ivBytes = make([]byte, block.BlockSize())
 	}
 
-	bb, err := toBitBuf(c)
+	br, err := toBitBuf(c)
 	if err != nil {
 		return err
 	}
 
 	buf := &bytes.Buffer{}
-	reader := &cipher.StreamReader{S: cipher.NewCTR(block, ivBytes), R: bb}
+	reader := &cipher.StreamReader{S: cipher.NewCTR(block, ivBytes), R: bitio.NewIOReader(br)}
 	if _, err := io.Copy(buf, reader); err != nil {
 		return err
 	}
 
-	return newBufferFromBuffer(bitio.NewBufferFromBytes(buf.Bytes(), -1), 8)
+	bb, err := newBufferFromBuffer(bitio.NewBitReader(buf.Bytes(), -1), 8)
+	if err != nil {
+		return err
+	}
+	return bb
 }
 
 func (i *Interp) _hexdump(c interface{}, a []interface{}) gojq.Iter {

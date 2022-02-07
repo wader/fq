@@ -1,6 +1,6 @@
 # echo hello > test
 # tar test c > test.tar
-$ fq -d tar v /test.tar
+$ fq -d tar dv /test.tar
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /test.tar (tar) 0x0-0x27ff.7 (10240)
       |                                               |                |  files[0:1]: 0x0-0x3ff.7 (1024)
       |                                               |                |    [0]{}: file 0x0-0x3ff.7 (1024)

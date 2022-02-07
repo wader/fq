@@ -6,7 +6,6 @@ package mpeg
 import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
-	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
 )
@@ -28,7 +27,7 @@ const (
 
 type subStreamPacket struct {
 	number int
-	bb     *bitio.Buffer
+	buf    []byte
 }
 
 var startAndStreamNames = scalar.URangeToScalar{
@@ -172,13 +171,13 @@ func pesPacketDecode(d *decode.D, in interface{}) interface{} {
 		switch startCode {
 		case privateStream1:
 			d.FieldStruct("data", func(d *decode.D) {
-				d.LenFn(dataLen, func(d *decode.D) {
+				d.FramedFn(dataLen, func(d *decode.D) {
 					substreamNumber := d.FieldU8("substream")
-					substreamBB := d.FieldRawLen("data", dataLen-8)
+					substreamBR := d.FieldRawLen("data", dataLen-8)
 
 					v = subStreamPacket{
 						number: int(substreamNumber),
-						bb:     substreamBB,
+						buf:    d.MustReadAllBits(substreamBR),
 					}
 				})
 			})

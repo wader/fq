@@ -15,6 +15,7 @@ const (
 	ADTS_FRAME          = "adts_frame"
 	APEV2               = "apev2"
 	AR                  = "ar"
+	ASN1_BER            = "asn1_ber"
 	AV1_CCR             = "av1_ccr"
 	AV1_FRAME           = "av1_frame"
 	AV1_OBU             = "av1_obu"

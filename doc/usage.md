@@ -1,66 +1,128 @@
 ## Basic usage
 
 fq tries to behave the same way as jq as much as possible, so you can do:
+
 ```sh
 fq . file
 fq < file
-file | fq
+cat file | fq
 fq . < file
 fq . *.png *.mp3
-fq '.frames[0]' file.mp3
+fq '.frames[0]' *.mp3
 ```
 
-Common usages:
+### Common usages
+
 ```sh
 # recursively display decode tree but truncate long arrays
 fq d file
+# same as
 fq display file
 
-# display all or more bytes for each value
+# display all bytes for each value
 fq 'd({display_bytes: 0})' file
+# display 200 bytes for each value
 fq 'd({display_bytes: 200})' file
 
-# recursively display decode tree
-fq f file
-fq full file
+# recursively display decode tree without truncating
+fq da file
 
-# recursively verbosely display decode tree
-fq v file
-fq verbose file
+# recursively and verbosely display decode tree
+fq dv file
 
-# JSON for whole file
+# JSON repersenation for whole file
 fq tovalue file
 
 # recursively look for decode value roots for a format
 fq '.. | select(format=="jpeg")' file
+# can also use grep_by
+fq 'grep_by(format=="jpeg")' file
 
 # recursively look for first decode value root for a format
 fq 'first(.. | select(format=="jpeg"))' file
+fq 'first(grep_by(format=="jpeg"))' file
 
 # recursively look for objects fullfilling condition
 fq '.. | select(.type=="trak")?' file
+fq 'grep_by(.type=="trak")' file
+
+# grep whole tree
+fq 'grep("^prefix")' file
+fq 'grep(123)' file
+fq 'grep_by(. >= 100 and . =< 100)' file
+
+# decode file as mp4 and return a result even if there are some errors
+fq -d mp4 file.mp4
+# decode file as mp4 and also ignore validity assertions
+fq -o force=true -d mp4 file.mp4
 ```
+
+### Display output
+
+`display` or `d` is the main function for displying values and is also the function that will be used if no other output function is explicitly used. If its input is a decode value it will output a dump and tree structure or otherwise it will output as JSON.
+
+Below demonstrates some usages:
+
+First and second example does the same thing, inputs `"hello"` to  `display`.
+
+![fq demo](display_json.svg)
+
+In the next few examples we select out the first "edit list" box in an mp4 file, it's a list of which part of media track to be included during playback, and displays it in various ways.
+
+Default if not explicitly used `display` will only show the root level:
+
+![fq demo](display_decode_value.svg)
+
+First row shows ruler with byte offset into the line and JSON path for the value.
+
+The columns are:
+- Start address for the line. For example we see that `type` starts at `0xd60`+`0x09`.
+- Hex repersenation of input bits for value. Will show the whole byte even if the value only partially uses bits from it.
+- ASCII representation of input bits for value. Will show the whole byte even if the value only partially uses bits from it.
+- Tree structure of decoded value, symbolic value and description.
+
+Notation:
+- `{}` value is an object that might have nested values.
+- `[start:end]` value is an array with index starting at `start` and ending at `end` (exclusive).
+
+
+With `display` or `d` it will recursively show the whole tree:
+
+![fq demo](display_decode_value_d.svg)
+
+Same but verbose `dv`:
+
+![fq demo](display_decode_value_dv.svg)
+
+In verbose mode bit ranges and array element names as shown.
+
+Bit range uses `bytes.bits` notation. For example `type` start at byte `0xd69` bit `0` (left out if zero) and ends at `0xd6c` bit `7` (inclusive) and have byte size of `4`.
+
+There are also some other `display` aliases:
+- `da` same as `display({array_truncate: 0})` which will not truncate long arrays.
+- `dd` same as `display({array_truncate: 0, display_bytes: 0})` which will not truncate long ranges.
+- `dv` same as `display({array_truncate: 0, verbose: true})`
+- `ddv` same as `display({array_truncate: 0, display_bytes: 0 verbose: true})` which will not truncate long and also display verbosely.
 
 ## Interactive REPL
 
 The interactive [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop)
 has auto completion and nested REPL support:
 
-```
+```sh
 # start REPL with null input
 $ fq -i
 null>
 # same as
 $ fq -ni
 null>
+
+# in the REPL you will see a prompt indicating current input and you can type jq expression to evaluate.
+
 # start REPL with one file as input
 $ fq -i . doc/file.mp3
 mp3>
-```
 
-In the REPL you will see a prompt indicating current input and you can type jq expression to evaluate.
-
-```
 $ fq -i . doc/file.mp3
 # basic arithmetics and jq expressions
 mp3> 1+1
@@ -180,63 +242,103 @@ $ fq -rn '[inputs | [input_filename, first(.chunks[] | select(.type=="IHDR") | .
 $ fq '.. | select(scalars and in_bytes_range(0x123))' file
 ```
 
-## The jq language
-
-fq is based on the [jq language](https://stedolan.github.io/jq/) and for basic usage its syntax
-is similar to how object and array access looks in JavaScript or JSON path, `.food[10]` etc.
-
-To get the most out of fq it's recommended to learn more about jq, here are some good starting points:
-
-- [jq manual](https://stedolan.github.io/jq/manual/)
-- jq wiki pages
-[jq Language Description](https://github.com/stedolan/jq/wiki/jq-Language-Description),
-[jq wiki page Cookbook](https://github.com/stedolan/jq/wiki/Cookbook),
-[FAQ](https://github.com/stedolan/jq/wiki/FAQ) and
-[Pitfalls](https://github.com/stedolan/jq/wiki/How-to:-Avoid-Pitfalls)
-
-The most common beginner gotcha is probably jq's use of `;` and `,`. jq uses `;` as argument separator
-and `,` as output separator.
-To call a function `f` with two arguments use `f(1; 2)`. If you do `f(1, 2)` you pass a single
-argument `1, 2` (a lambda expression that output `1` and then output `2`) to `f`.
-
 ## Support formats
 
 See [formats](formats.md)
 
-## Arguments
+## The jq language
 
-TODO: examples, stdin/stdout
+fq is based on the [jq language](https://stedolan.github.io/jq/) and for basic usage its syntax
+is similar to how object and array access looks in JavaScript or JSON path, `.food[10]` etc. but
+it can do much more and is a very expressive language.
 
-<pre sh>
-$ fq -h 
-fq - jq for binary formats
-Tool, language and decoders for inspecting binary data.
-For more information see https://github.com/wader/fq
+To get the most out of fq it's recommended to learn more about jq, here are some good starting points:
 
-Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
+- [jq manual](https://stedolan.github.io/jq/manual/)
+- [Peter Koppstein's A Stream oriented Introduction to jq](https://github.com/pkoppstein/jq/wiki/A-Stream-oriented-Introduction-to-jq)
+- [jq wiki: Language Description](https://github.com/stedolan/jq/wiki/jq-Language-Description)
+- [jq wiki: page Cookbook](https://github.com/stedolan/jq/wiki/Cookbook)
+- [jq wiki: Pitfalls](https://github.com/stedolan/jq/wiki/How-to:-Avoid-Pitfalls)
+- [FAQ](https://github.com/stedolan/jq/wiki/FAQ)
 
---arg NAME VALUE         Set variable $NAME to string VALUE
---argjson NAME JSON      Set variable $NAME to JSON
---color-output,-C        Force color output
---compact-output,-c      Compact output
---decode,-d NAME         Decode format (probe)
---decode-file NAME PATH  Set variable $NAME to decode of file
---formats                Show supported formats
---from-file,-f PATH      Read EXPR from file
---help,-h                Show help
---include-path,-L PATH   Include search path
---join-output,-j         No newline between outputs
---monochrome-output,-M   Force monochrome output
---null-input,-n          Null input (use input/0 and inputs/0 to read input)
---null-output,-0         Null byte between outputs
---option,-o KEY=VALUE    Set option, eg: color=true (use options/0 to see all options)
---raw-file NAME PATH     Set variable $NAME to string content of file
---raw-input,-R           Read raw input strings (don't decode)
---raw-output,-r          Raw string output (without quotes)
---repl,-i                Interactive REPL
---slurp,-s               Read (slurp) all inputs into an array
---version,-v             Show version
-</pre>
+Common beginner gotcha are:
+- jq's use of `;` and `,`. jq uses `;` as argument separator
+and `,` as output separator. To call a function `f` with two arguments use `f(1; 2)`. If you do `f(1, 2)` you pass a
+single argument `1, 2` (a lambda expression that output `1` and then output `2`) to `f`.
+- Expressions can return or "output" zero or more values. This is how loops, foreach etc is
+achieved.
+- Expressions have one implicit input and output value. This how pipelines like `1 | . * 2` work.
+
+## Functions
+
+- All standard library functions from jq
+- Adds a few new general functions:
+  - `print`, `println`, `printerr`, `printerrln` prints to stdout and stderr.
+  - `streaks`, `streaks_by(f)` like `group` but groups streaks based on condition.
+  - `count`, `count_by(f)` like `group` but counts groups lengths.
+  - `debug(f)` like `debug` but uses arg to produce debug message. `{a: 123} | debug({a}) | ...`.
+  - `path_to_expr` from `["key", 1]` to `".key[1]"`.
+  - `expr_to_path` from `".key[1]"` to `["key", 1]`.
+  - `diff($a; $b)` produce diff object between two values.
+  - `delta`, `delta_by(f)`, array with difference between all consecutive pairs.
+  - `chunk(f)`, split array or string into even chunks
+- Bitwise functions `band`, `bor`, `bxor`, `bsl`, `bsr` and `bnot`. Works the same as jq math functions,
+unary uses input and if more than one argument all as arguments ignoring the input. Ex: `1 | bnot` `bsl(1; 3)`
+- Adds some decode value specific functions:
+  - `root` tree root for value
+  - `buffer_root` root value of buffer for value
+  - `format_root` root value of format for value
+  - `parent` parent value
+  - `parents` output parents of value
+  - `topath` path of value. Use `path_to_expr` to get a string representation.
+  - `tovalue`, `tovalue($opts)` symbolic value if available otherwise actual value
+  - `toactual` actual value (decoded etc)
+  - `tosym` symbolic value (mapped etc)
+  - `todescription` description of value
+  - `torepr` convert decode value into what it reptresents. For example convert msgpack decode value
+  into a value representing its JSON representation.
+  - All regexp functions work with buffers as input and pattern argument with these differences
+  from the string versions:
+    - All offset and length will be in bytes.
+    - For `capture` the `.string` value is a buffer.
+    - If pattern is a buffer it will be matched literally and not as a regexp.
+    - If pattern is a buffer or flags include "b" each input byte will be read as separate code points
+  - `scan_toend($v)`, `scan_toend($v; $flags)` works the same as `scan` but output buffer are from start of match to
+  end of buffer.
+  instead of possibly multi-byte UTF-8 codepoints. This allows to match raw bytes. Ex: `match("\u00ff"; "b")`
+  will match the byte `0xff` and not the UTF-8 encoded codepoint for 255, `match("[^\u00ff]"; "b")` will match
+  all non-`0xff` bytes.
+  - `grep` functions take 1 or 2 arguments. First is a scalar to match, where a string is
+  treated as a regexp. A buffer scalar will be matches exact bytes. Second argument are regexp
+  flags with addition that "b" will treat each byte in the input buffer as a code point, this
+  makes it possible to match exact bytes.
+    - `grep($v)`, `grep($v; $flags)` recursively match value and buffer
+    - `vgrep($v)`, `vgrep($v; $flags)` recursively match value
+    - `bgrep($v)`, `bgrep($v; $flags)` recursively match buffer
+    - `fgrep($v)`, `fgrep($v; $flags)` recursively match field name
+  - `grep_by(f)` recursively match using a filter. Ex: `grep_by(. > 180 and . < 200)`, `first(grep_by(format == "id3v2"))`.
+  - Buffers:
+    - `tobits` - Transform input into a bits buffer not preserving source range, will start at zero.
+    - `tobitsrange` - Transform input into a bits buffer preserving source range if possible.
+    - `tobytes` - Transform input into a bytes buffer not preserving source range, will start at zero.
+    - `tobytesrange` - Transform input into a byte buffer preserving source range if possible.
+    - `buffer[start:end]`, `buffer[:end]`, `buffer[start:]` - Create a sub buffer from start to end in buffer units preserving source range.
+- `open` open file for reading
+- All decode function takes a optional option argument. The only option currently is `force` to ignore decoder asserts.
+For example to decode as mp3 and ignore assets do `mp3({force: true})` or `decode("mp3"; {force: true})`, from command line
+you currently have to do `fq -d raw 'mp3({force: true})' file`.
+- `decode`, `decode($format)`, `decode($format; $opts)` decode format
+- `probe`, `probe($opts)` probe and decode format
+- `mp3`, `mp3($opts)`, ..., `<name>`, `<name>($opts)` same as `decode(<name>)($opts)`, `decode($format; $opts)`  decode as format
+- Display shows hexdump/ASCII/tree for decode values and JSON for other values.
+  - `d`/`d($opts)` display value and truncate long arrays and buffers
+  - `da`/`da($opts)` display value and don't truncate arrays
+  - `dd`/`dd($opts)` display value and don't truncate arrays or buffers
+  - `dv`/`dv($opts)` verbosely display value and don't truncate arrays but truncate buffers
+  - `ddv`/`ddv($opts)` verbosely display value and don't truncate arrays or buffers
+- `p`/`preview` show preview of field tree
+- `hd`/`hexdump` hexdump value
+- `repl` nested REPL, must be last in a pipeline. `1 | repl`, can "slurp" outputs `1, 2, 3 | repl`.
 
 ## Color and unicode output
 
@@ -270,74 +372,6 @@ notable is support for arbitrary-precision integers.
 - Some values can act as a object with keys even when it's an array, number etc.
 - There can be keys hidden from `keys` and `[]`.
 - Some values are readonly and can't be updated.
-
-## Functions
-
-- All standard library functions from jq
-- Adds a few new general functions:
-  - `print/0`, `println/0`, `printerr/0`, `printerrln` prints to stdout and stderr.
-  - `streaks/0`, `streaks_by/1` like `group` but groups streaks based on condition.
-  - `count/0`, `count_by/1` like `group` but counts groups lengths.
-  - `debug/1` like `debug/0` but uses arg to produce debug message. `{a: 123} | debug({a}) | ...`.
-  - `path_to_expr/0` from `["key", 1]` to `".key[1]"`.
-  - `expr_to_path/0` from `".key[1]"` to `["key", 1]`.
-  - `diff/2` produce diff object between two values.
-  - `delta/0`, `delta_by/1`, array with difference between all consecutive pairs.
-  - `chunk/1`, split array or string into even chunks
-- Bitwise functions `band`, `bor`, `bxor`, `bsl`, `bsr` and `bnot`. Works the same as jq math functions,
-unary uses input and if more than one argument all as arguments ignoring the input. Ex: `1 | bnot` `bsl(1; 3)`
-- Adds some decode value specific functions:
-  - `root/0` tree root for value
-  - `buffer_root/0` root value of buffer for value
-  - `format_root/0` root value of format for value
-  - `parent/0` parent value
-  - `parents/0` output parents of value
-  - `topath/0` path of value. Use `path_to_expr` to get a string representation.
-  - `tovalue/0`, `tovalue/1` symbolic value if available otherwise actual value
-  - `toactual/0` actual value (decoded etc)
-  - `tosym/0` symbolic value (mapped etc)
-  - `todescription/0` description of value
-  - `torepr/0` convert decode value into what it reptresents. For example convert msgpack decode value
-  into a value representing its JSON representation.
-  - All regexp functions work with buffers as input and pattern argument with these differences
-  from the string versions:
-    - All offset and length will be in bytes.
-    - For `capture` the `.string` value is a buffer.
-    - If pattern is a buffer it will be matched literally and not as a regexp.
-    - If pattern is a buffer or flags include "b" each input byte will be read as separate code points
-  - `scan_toend/1`, `scan_toend/2` works the same as `scan` but output buffer are from start of match to
-  end of buffer.
-  instead of possibly multi-byte UTF-8 codepoints. This allows to match raw bytes. Ex: `match("\u00ff"; "b")`
-  will match the byte `0xff` and not the UTF-8 encoded codepoint for 255, `match("[^\u00ff]"; "b")` will match
-  all non-`0xff` bytes.
-  - `grep` functions take 1 or 2 arguments. First is a scalar to match, where a string is
-  treated as a regexp. A buffer scalar will be matches exact bytes. Second argument are regexp
-  flags with addition that "b" will treat each byte in the input buffer as a code point, this
-  makes it possible to match exact bytes.
-    - `grep/1`, `grep/2` recursively match value and buffer
-    - `vgrep/1`, `vgrep/2` recursively match value
-    - `bgrep/1`, `bgrep/2` recursively match buffer
-    - `fgrep/1`, `fgrep/2` recursively match field name
-  - Buffers:
-    - `tobits/0` - Transform input into a bits buffer not preserving source range, will start at zero.
-    - `tobitsrange/0` - Transform input into a bits buffer preserving source range if possible.
-    - `tobytes/0` - Transform input into a bytes buffer not preserving source range, will start at zero.
-    - `tobytesrange/0` - Transform input into a byte buffer preserving source range if possible.
-    - `buffer[start:end]`, `buffer[:end]`, `buffer[start:]` - Create a sub buffer from start to end in buffer units preserving source range.
-- `open` open file for reading
-- All decode function takes a optional option argument. The only option currently is `force` to ignore decoder asserts.
-For example to decode as mp3 and ignore assets do `mp3({force: true})` or `decode("mp3"; {force: true})`, from command line
-you currently have to do `fq -d raw 'mp3({force: true})' file`.
-- `decode/0`, `decode/1`, `decode/2` decode format
-- `probe/0`, `probe/1` probe and decode format
-- `mp3/0`, `mp3/1`, ..., `<name>/0`, `<name>/1` same as `decode(<name>)/1`, `decode(<name>; <opts>)/2`  decode as format
-- Display shows hexdump/ASCII/tree for decode values and JSON for other values.
-  - `d/0`/`display/0` display value and truncate long arrays
-  - `f/0`/`full/0` display value and don't truncate arrays
-  - `v/0`/`verbose/0` display value verbosely and don't truncate array
-- `p/0`/`preview/0` show preview of field tree
-- `hd/0`/`hexdump/0` hexdump value
-- `repl/0` nested REPL, must be last in a pipeline. `1 | repl`, can "slurp" multiple outputs `1, 2, 3 | repl`.
 
 ## Decoded values
 

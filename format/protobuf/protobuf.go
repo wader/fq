@@ -1,5 +1,7 @@
 package protobuf
 
+// https://developers.google.com/protocol-buffers/docs/encoding
+
 import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
@@ -107,7 +109,7 @@ func protobufDecodeField(d *decode.D, pbm *format.ProtoBufMessage) {
 					d.FieldValueRaw("value", d.BytesRange(valueStart, int(length)))
 				case format.ProtoBufTypeMessage:
 					// TODO: test
-					d.LenFn(int64(length)*8, func(d *decode.D) {
+					d.FramedFn(int64(length)*8, func(d *decode.D) {
 						protobufDecodeFields(d, &pbf.Message)
 					})
 				case format.ProtoBufTypePackedRepeated:
