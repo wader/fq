@@ -70,7 +70,7 @@ var cpuTypes = scalar.UToSymStr{
 	255:           "CPU_TYPE_VEO",
 }
 
-var cpuSubTypes = map[uint64]scalar.SToSymStr{
+var cpuSubTypes = map[uint64]scalar.UToSymStr{
 	0xff_ff_ff_ff: {
 		0xff_ff_ff_ff: "CPU_SUBTYPE_MULTIPLE",
 	},
@@ -707,7 +707,7 @@ func fatParse(d *decode.D) {
 	})
 }
 
-func intelSubTypeHelper(f, m int64) int64 {
+func intelSubTypeHelper(f, m uint64) uint64 {
 	return f + (m << 4)
 }
 
