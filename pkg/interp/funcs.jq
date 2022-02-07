@@ -332,7 +332,7 @@ def diff($a; $b):
 def frompem:
   ( tobytes
   | tostring
-  | first(capture("-----BEGIN(.*?)-----(?<s>.*?)-----END(.*?)-----"; "m")).s
+  | capture("-----BEGIN(.*?)-----(?<s>.*?)-----END(.*?)-----"; "mg").s
   | base64
   ) // error("no pem header or footer found");
 
