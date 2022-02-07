@@ -1,7 +1,8 @@
 $ fq -i
 null> "abc" | topem
 "-----BEGIN-----\nYWJj\n-----END-----\n"
-null> "abc" | topem | frompem | tostring
+null> "abc" | topem | "before" + . + "between" + . + "after" | frompem | tostring
+"abc"
 "abc"
 null> 
 null> ^D
