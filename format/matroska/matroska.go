@@ -350,7 +350,13 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 				})
 			})
 		case "A_AAC":
-			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegASCFrameFormat, nil)
+			dv, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegASCFrameFormat, nil)
+			mpegASCOut, ok := v.(format.MPEGASCOut)
+			if dv != nil && !ok {
+				panic(fmt.Sprintf("expected mpegASCOut got %#+v", v))
+			}
+			//nolint:gosimple
+			t.formatInArg = format.AACFrameIn{ObjectType: mpegASCOut.ObjectType}
 		case "A_OPUS":
 			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, opusPacketFrameFormat, nil)
 		case "A_FLAC":

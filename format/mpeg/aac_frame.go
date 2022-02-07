@@ -4,6 +4,7 @@ package mpeg
 
 // ISO/IEC 13818-7 Part 7: Advanced Audio Coding (AAC)
 // ISO/IEC 14496-3
+// TODO: currently only does very basic main, lc, ssr and ltp
 
 import (
 	"github.com/wader/fq/format"
@@ -273,40 +274,52 @@ func aacDecode(d *decode.D, in interface{}) interface{} {
 	if afi, ok := in.(format.AACFrameIn); ok {
 		objectType = afi.ObjectType
 	}
-	// objectType = 2
 
 	// TODO: seems tricky to know length of blocks
 	// TODO: currently break when length is unknown
-	seenTerm := false
-	for !seenTerm {
-		d.FieldStruct("element", func(d *decode.D) {
-			se := d.FieldU3("syntax_element", syntaxElementNames)
 
-			switch se {
-			case FIL:
-				aacFillElement(d)
+	switch objectType {
+	case format.MPEGAudioObjectTypeMain,
+		format.MPEGAudioObjectTypeLC,
+		format.MPEGAudioObjectTypeSSR,
+		format.MPEGAudioObjectTypeLTP,
+		format.MPEGAudioObjectTypeSBR,
+		format.MPEGAudioObjectTypeER_AAC_LD,
+		format.MPEGAudioObjectTypePS:
+		seenTerm := false
+		for !seenTerm {
+			d.FieldStruct("element", func(d *decode.D) {
+				se := d.FieldU3("syntax_element", syntaxElementNames)
 
-			case SCE:
-				aacSingleChannelElement(d, objectType)
-				seenTerm = true
+				switch se {
+				case FIL:
+					aacFillElement(d)
 
-			case PCE:
-				aacProgramConfigElement(d, 0)
-				seenTerm = true
+				case SCE:
+					aacSingleChannelElement(d, objectType)
+					seenTerm = true
 
-			default:
-				fallthrough
-			case TERM:
-				seenTerm = true
-			}
-		})
+				case PCE:
+					aacProgramConfigElement(d, 0)
+					seenTerm = true
+
+				default:
+					fallthrough
+				case TERM:
+					seenTerm = true
+				}
+			})
+		}
+
+		if d.ByteAlignBits() > 0 {
+			d.FieldRawLen("byte_align", int64(d.ByteAlignBits()))
+		}
+
+		d.FieldRawLen("data", d.BitsLeft())
+	default:
+		// not supported
+		d.FieldRawLen("data", d.BitsLeft())
 	}
-
-	if d.ByteAlignBits() > 0 {
-		d.FieldRawLen("byte_align", int64(d.ByteAlignBits()))
-	}
-
-	d.FieldRawLen("data", d.BitsLeft())
 
 	return nil
 }
