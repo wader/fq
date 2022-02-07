@@ -531,6 +531,9 @@ func init() {
 			// TODO: bytes_per_sample from audio stsd?
 			sampleSize := d.FieldU32("sample_size")
 			entryCount := d.FieldU32("entry_count")
+			if ctx.currentTrack != nil && len(ctx.currentTrack.stsz) > 0 {
+				d.Errorf("multiple stsz or stz2 boxes")
+			}
 			if sampleSize == 0 {
 				var i uint64
 				d.FieldArrayLoop("entries", func() bool { return i < entryCount }, func(d *decode.D) {
@@ -551,6 +554,29 @@ func init() {
 					})
 				}
 			}
+		},
+		"stz2": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+			fieldSize := d.FieldU32("field_size")
+			if fieldSize > 16 {
+				d.Errorf("field_size %d > 16", fieldSize)
+			}
+			entryCount := d.FieldU32("entry_count")
+			var i uint64
+			if ctx.currentTrack != nil && len(ctx.currentTrack.stsz) > 0 {
+				d.Errorf("multiple stsz or stz2 boxes")
+			}
+			d.FieldArrayLoop("entries", func() bool { return i < entryCount }, func(d *decode.D) {
+				size := uint32(d.FieldU("size", int(fieldSize)))
+				if ctx.currentTrack != nil {
+					ctx.currentTrack.stsz = append(ctx.currentTrack.stsz, stsz{
+						size:  int64(size),
+						count: 1,
+					})
+				}
+				i++
+			})
 		},
 		"stco": func(ctx *decodeContext, d *decode.D) {
 			d.FieldU8("version")
