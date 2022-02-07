@@ -1,5 +1,5 @@
 # Generated using https://gist.github.com/xentripetal/c0f1645ee1abd4d25f71896c8d650543
-$ fq verbose allDataTypes.avro
+$ fq dv allDataTypes.avro
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: allDataTypes.avro (avro_ocf) 0x0-0x738.7 (1849)
 0x000|4f 62 6a 01                                    |Obj.            |  magic: raw bits (valid) 0x0-0x3.7 (4)
      |                                               |                |  header{}: 0x4-0x41d.7 (1050)
