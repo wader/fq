@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"compress/flate"
 	"encoding/binary"
+	"hash/crc32"
+
 	"github.com/golang/snappy"
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/avro/decoders"
@@ -12,7 +14,6 @@ import (
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
-	"hash/crc32"
 )
 
 func init() {
@@ -148,8 +149,4 @@ func decodeAvroOCF(d *decode.D, in interface{}) interface{} {
 	})
 
 	return nil
-}
-
-func decodeBlock(d *decode.D, decodeFn decoders.DecodeFn) {
-
 }
