@@ -1,0 +1,13 @@
+# Generated using https://gist.github.com/xentripetal/c0f1645ee1abd4d25f71896c8d650543
+$ fq '.blocks[0]' snappy.avro
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.blocks[0]{}:
+ 0x000|01 0e 42 00 00 00 00 92 24 49 92 24 49 f2 3f 02|..B.....$I.$I.?.|  data[0:10]:
+ *    |until 0x307.7 (end) (776)                      |                |
+0x0420|14                                             |.               |  count: 10
+0x0420|   8c 08                                       | ..             |  size: 518
+0x0420|         88 06 f0 52 01 0e 42 00 00 00 00 92 24|   ...R..B.....$|  compressed: raw bits
+0x0430|49 92 24 49 f2 3f 02 39 04 31 30 00 00 06 02 61|I.$I.?.9.10....a|
+*     |until 0x624.7 (514)                            |                |
+0x0620|               87 b8 fe b6                     |     ....       |  crc32: raw bits (valid)
+0x0620|                           cc cc 61 31 fd 14 d0|         ..a1...|  sync: raw bits (valid)
+0x0630|61 16 b6 0f 9d 30 f4 1b f0|                    |a....0...|      |
