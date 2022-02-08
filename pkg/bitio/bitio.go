@@ -110,7 +110,7 @@ func BitStringFromBytes(buf []byte, nBits int64) string {
 	return sb.String()
 }
 
-// CopyBuffer bits from src to dst using provided buffer
+// CopyBuffer bits from src to dst using provided byte buffer
 // Similar to io.CopyBuffer
 func CopyBuffer(dst Writer, src Reader, buf []byte) (n int64, err error) {
 	// same default size as io.Copy

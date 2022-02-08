@@ -1,6 +1,6 @@
 include "internal";
 include "options";
-include "buffer";
+include "binary";
 include "decode";
 include "match";
 include "funcs";

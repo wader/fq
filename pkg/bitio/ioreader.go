@@ -62,7 +62,7 @@ func (r *IOReader) Read(p []byte) (n int, err error) {
 				if err != nil {
 					return 0, err
 				}
-				return 1, nil
+				return 1, r.rErr
 			}
 			return 0, r.rErr
 		}
