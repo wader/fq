@@ -112,7 +112,7 @@ func decode(ctx context.Context, br bitio.ReaderAtSeeker, group Group, opts Opti
 		if err := d.Value.WalkRootPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
 			minMaxRange = ranges.MinMax(minMaxRange, v.Range)
 			v.Range.Start += decodeRange.Start
-			v.RootBitBuf = br
+			v.RootReader = br
 			return nil
 		}); err != nil {
 			return nil, nil, err
@@ -165,7 +165,7 @@ func newDecoder(ctx context.Context, format Format, br bitio.ReaderAtSeeker, opt
 		Value: &Value{
 			Name:       name,
 			V:          rootV,
-			RootBitBuf: br,
+			RootReader: br,
 			Range:      ranges.Range{Start: 0, Len: 0},
 			IsRoot:     opts.IsRoot,
 		},
@@ -184,7 +184,7 @@ func (d *D) FieldDecoder(name string, bitBuf bitio.ReaderAtSeeker, v interface{}
 			Name:       name,
 			V:          v,
 			Range:      ranges.Range{Start: d.Pos(), Len: 0},
-			RootBitBuf: bitBuf,
+			RootReader: bitBuf,
 		},
 		Options: d.Options,
 
@@ -289,7 +289,7 @@ func (d *D) FillGaps(r ranges.Range, namePrefix string) {
 	for i, gap := range gaps {
 		br, err := bitioextra.Range(d.bitBuf, gap.Start, gap.Len)
 		if err != nil {
-			d.IOPanic(err, "FillGaps: BitBufRange")
+			d.IOPanic(err, "FillGaps: Range")
 		}
 
 		v := &Value{
@@ -298,7 +298,7 @@ func (d *D) FillGaps(r ranges.Range, namePrefix string) {
 				Actual:  br,
 				Unknown: true,
 			},
-			RootBitBuf: d.bitBuf,
+			RootReader: d.bitBuf,
 			Range:      gap,
 		}
 
@@ -779,7 +779,7 @@ func (d *D) FieldArrayLoop(name string, condFn func() bool, fn func(d *D)) *D {
 func (d *D) FieldRangeFn(name string, firstBit int64, nBits int64, fn func() *Value) *Value {
 	v := fn()
 	v.Name = name
-	v.RootBitBuf = d.bitBuf
+	v.RootReader = d.bitBuf
 	v.Range = ranges.Range{Start: firstBit, Len: nBits}
 	d.AddChild(v)
 
@@ -892,7 +892,7 @@ func (d *D) RangeFn(firstBit int64, nBits int64, fn func(d *D)) int64 {
 	// TODO: refactor, similar to decode()
 	if err := sd.Value.WalkRootPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
 		//v.Range.Start += firstBit
-		v.RootBitBuf = d.Value.RootBitBuf
+		v.RootReader = d.Value.RootReader
 		endPos = mathextra.MaxInt64(endPos, v.Range.Stop())
 
 		return nil
@@ -1070,7 +1070,7 @@ func (d *D) FieldRootBitBuf(name string, br bitio.ReaderAtSeeker, sms ...scalar.
 	v := &Value{}
 	v.V = &scalar.S{Actual: br}
 	v.Name = name
-	v.RootBitBuf = br
+	v.RootReader = br
 	v.IsRoot = true
 	v.Range = ranges.Range{Start: d.Pos(), Len: brLen}
 
@@ -1164,7 +1164,7 @@ func (d *D) TryFieldValue(name string, fn func() (*Value, error)) (*Value, error
 	v, err := fn()
 	stop := d.Pos()
 	v.Name = name
-	v.RootBitBuf = d.bitBuf
+	v.RootReader = d.bitBuf
 	v.Range = ranges.Range{Start: start, Len: stop - start}
 	if err != nil {
 		return nil, err

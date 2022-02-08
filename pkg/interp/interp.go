@@ -35,7 +35,7 @@ import (
 //go:embed interp.jq
 //go:embed internal.jq
 //go:embed options.jq
-//go:embed buffer.jq
+//go:embed binary.jq
 //go:embed decode.jq
 //go:embed match.jq
 //go:embed funcs.jq
@@ -270,7 +270,7 @@ func toBigInt(v interface{}) (*big.Int, error) {
 func toBytes(v interface{}) ([]byte, error) {
 	switch v := v.(type) {
 	default:
-		br, err := toBitBuf(v)
+		br, err := toBitReader(v)
 		if err != nil {
 			return nil, fmt.Errorf("value is not bytes")
 		}

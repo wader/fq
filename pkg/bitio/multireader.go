@@ -31,7 +31,7 @@ type MultiReader struct {
 	readerEnds []int64
 }
 
-func NewMultiBitReader(rs ...ReadAtSeeker) (*MultiReader, error) {
+func NewMultiReader(rs ...ReadAtSeeker) (*MultiReader, error) {
 	readerEnds := make([]int64, len(rs))
 	var esSum int64
 	for i, r := range rs {

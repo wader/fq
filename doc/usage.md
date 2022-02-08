@@ -196,7 +196,7 @@ fq -n 'def f: .. | select(format=="avc_sps"); diff(input|f; input|f)' a.mp4 b.mp
 
 #### Extract first JPEG found in file
 
-Recursively look for first value that is a `jpeg` decode value root. Use `tobytes` to get bytes buffer for value. Redirect bytes to a file.
+Recursively look for first value that is a `jpeg` decode value root. Use `tobytes` to get bytes for value. Redirect bytes to a file.
 
 ```sh
 fq 'first(.. | select(format=="jpeg")) | tobytes' file > file.jpeg
@@ -269,6 +269,63 @@ single argument `1, 2` (a lambda expression that output `1` and then output `2`)
 achieved.
 - Expressions have one implicit input and output value. This how pipelines like `1 | . * 2` work.
 
+
+## Types specific to fq
+
+fq has two additional types compared to jq, decode value and binary. In standard jq expressions they will in most case behave as some standard jq type.
+
+### Decode value
+
+This type is returned by decoders and it used to represent parts of the decoed input. It can act as all JSON types, object, array, number, string etc.
+
+Each decode value has these propties:
+- A bit range in the input
+  - Can be accessed as a binary using `tobits`/`tobytes`. Use the `start` and `size` keys to postion and size.
+  - `.name` as bytes `.name | tobytes`
+  - Bit 4-8 of `.name` as bits `.name | tobits[4:8]`
+
+Each non-compound decode value has these propties:
+- An actual value:
+  - This is the decoded representation of the bits, a number, string, bool etc.
+  - Can be accessed using `toactual`.
+- An optional symbolic value:
+  - Is usually a mapping of the actual to symbolic value, ex: map number to a string value.
+  - Can be accessed using `tosym`.
+- An optional description:
+  - Can be accessed using `todescription`
+
+The JSON value of a decode value is the symbolic value if available otherwise the actual value. To explicitly access the JSON value use `tovalue`. In most expression this is not needed as it will be done automactically.
+
+### Binary
+
+Raw bits with a unit size, 1 (bits) or 8 (bytes). Will act as a string in standard jq expressions.
+
+Are created using `tobits`/`tobytes` functions from decode values or binary lists.
+
+Can be sliced using the jq `[start:end]` slice syntax.
+
+#### Binary array
+
+Is an array of numbers, strings, binaries or other nested binary arrays. When used as input to `tobits`/`tobytes` the following rules are used:
+- Number is a byte so has to be 0-255
+- String it's UTF8 code point representation
+- Binary as is
+- Binary array used recursively
+
+Similar to and inspired by erlang io-lists.
+
+Some examples:
+
+`[0, 123, 255] | tobytes` will be 3 bytes 0, 123 and 255
+
+`[0, [123, 255]] | tobytes` same as above
+
+`[0, 1, 1, 0, 0, 1, 1, 0 | tobits]`  will be 1 byte 0x66 an "f"
+
+`[(.a | tobytes[-10:]), 255, (.b | tobits[:10])]` the concatenation of the last 10 bytes of `.a`, a byte with value 255 and the first 10 bits of `.b`.
+
+TODO: padding and alignment
+
 ## Functions
 
 - All standard library functions from jq
@@ -297,32 +354,32 @@ unary uses input and if more than one argument all as arguments ignoring the inp
   - `todescription` description of value
   - `torepr` convert decode value into what it reptresents. For example convert msgpack decode value
   into a value representing its JSON representation.
-  - All regexp functions work with buffers as input and pattern argument with these differences
-  from the string versions:
+  - All regexp functions work with binary as input and pattern argument with these differences
+  compared to when using string input:
     - All offset and length will be in bytes.
-    - For `capture` the `.string` value is a buffer.
-    - If pattern is a buffer it will be matched literally and not as a regexp.
-    - If pattern is a buffer or flags include "b" each input byte will be read as separate code points
-  - `scan_toend($v)`, `scan_toend($v; $flags)` works the same as `scan` but output buffer are from start of match to
-  end of buffer.
+    - For `capture` the `.string` value is a binary.
+    - If pattern is a binary it will be matched literally and not as a regexp.
+    - If pattern is a binary or flags include "b" each input byte will be read as separate code points
+  - `scan_toend($v)`, `scan_toend($v; $flags)` works the same as `scan` but output binary are from start of match to
+  end of binary.
   instead of possibly multi-byte UTF-8 codepoints. This allows to match raw bytes. Ex: `match("\u00ff"; "b")`
   will match the byte `0xff` and not the UTF-8 encoded codepoint for 255, `match("[^\u00ff]"; "b")` will match
   all non-`0xff` bytes.
   - `grep` functions take 1 or 2 arguments. First is a scalar to match, where a string is
-  treated as a regexp. A buffer scalar will be matches exact bytes. Second argument are regexp
-  flags with addition that "b" will treat each byte in the input buffer as a code point, this
+  treated as a regexp. A binary will be matches exact bytes. Second argument are regexp
+  flags with addition that "b" will treat each byte in the input binary as a code point, this
   makes it possible to match exact bytes.
-    - `grep($v)`, `grep($v; $flags)` recursively match value and buffer
+    - `grep($v)`, `grep($v; $flags)` recursively match value and binary
     - `vgrep($v)`, `vgrep($v; $flags)` recursively match value
-    - `bgrep($v)`, `bgrep($v; $flags)` recursively match buffer
+    - `bgrep($v)`, `bgrep($v; $flags)` recursively match binary
     - `fgrep($v)`, `fgrep($v; $flags)` recursively match field name
   - `grep_by(f)` recursively match using a filter. Ex: `grep_by(. > 180 and . < 200)`, `first(grep_by(format == "id3v2"))`.
-  - Buffers:
-    - `tobits` - Transform input into a bits buffer not preserving source range, will start at zero.
-    - `tobitsrange` - Transform input into a bits buffer preserving source range if possible.
-    - `tobytes` - Transform input into a bytes buffer not preserving source range, will start at zero.
-    - `tobytesrange` - Transform input into a byte buffer preserving source range if possible.
-    - `buffer[start:end]`, `buffer[:end]`, `buffer[start:]` - Create a sub buffer from start to end in buffer units preserving source range.
+  - Binary:
+    - `tobits` - Transform input to binary with bit as unit, does not preserving source range, will start at zero.
+    - `tobitsrange` - Transform input to binary with bit as unit, preserves source range if possible.
+    - `tobytes` - Transform input to binary with byte as unit, does not preserving source range, will start at zero.
+    - `tobytesrange` - Transform input binary with byte as unit, preserves source range if possible.
+    - `.[start:end]`, `.[:end]`, `.[start:]` - Slice binary from start to end preserving source range.
 - `open` open file for reading
 - All decode function takes a optional option argument. The only option currently is `force` to ignore decoder asserts.
 For example to decode as mp3 and ignore assets do `mp3({force: true})` or `decode("mp3"; {force: true})`, from command line
@@ -331,11 +388,11 @@ you currently have to do `fq -d raw 'mp3({force: true})' file`.
 - `probe`, `probe($opts)` probe and decode format
 - `mp3`, `mp3($opts)`, ..., `<name>`, `<name>($opts)` same as `decode(<name>)($opts)`, `decode($format; $opts)`  decode as format
 - Display shows hexdump/ASCII/tree for decode values and JSON for other values.
-  - `d`/`d($opts)` display value and truncate long arrays and buffers
+  - `d`/`d($opts)` display value and truncate long arrays and binaries
   - `da`/`da($opts)` display value and don't truncate arrays
-  - `dd`/`dd($opts)` display value and don't truncate arrays or buffers
-  - `dv`/`dv($opts)` verbosely display value and don't truncate arrays but truncate buffers
-  - `ddv`/`ddv($opts)` verbosely display value and don't truncate arrays or buffers
+  - `dd`/`dd($opts)` display value and don't truncate arrays or binaries
+  - `dv`/`dv($opts)` verbosely display value and don't truncate arrays but truncate binaries
+  - `ddv`/`ddv($opts)` verbosely display value and don't truncate arrays or binaries
 - `p`/`preview` show preview of field tree
 - `hd`/`hexdump` hexdump value
 - `repl` nested REPL, must be last in a pipeline. `1 | repl`, can "slurp" outputs `1, 2, 3 | repl`.
@@ -396,10 +453,6 @@ A value has these special keys (TODO: remove, are internal)
 - `_error` error message (optional)
 
 - TODO: unknown gaps
-
-## Binary and IO lists
-
-- TODO: similar to erlang io lists, [], binary, string (utf8) and numbers
 
 ## Own decoders and use as library
 

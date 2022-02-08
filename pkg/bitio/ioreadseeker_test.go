@@ -108,7 +108,7 @@ func Test(t *testing.T) {
 		for _, p := range bsParts {
 			bsBRs = append(bsBRs, sb(p))
 		}
-		bsBR, err := bitio.NewMultiBitReader(bsBRs...)
+		bsBR, err := bitio.NewMultiReader(bsBRs...)
 		if err != nil {
 			panic(err)
 		}

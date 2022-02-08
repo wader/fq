@@ -15,15 +15,15 @@ import (
 func init() {
 	functionRegisterFns = append(functionRegisterFns, func(i *Interp) []Function {
 		return []Function{
-			{"_match_buffer", 1, 2, nil, i._bufferMatch},
+			{"_match_binary", 1, 2, nil, i._binaryMatch},
 		}
 	})
 }
 
-func (i *Interp) _bufferMatch(c interface{}, a []interface{}) gojq.Iter {
+func (i *Interp) _binaryMatch(c interface{}, a []interface{}) gojq.Iter {
 	var ok bool
 
-	bv, err := toBuffer(c)
+	bv, err := toBinary(c)
 	if err != nil {
 		return gojq.NewIter(err)
 	}
@@ -70,7 +70,7 @@ func (i *Interp) _bufferMatch(c interface{}, a []interface{}) gojq.Iter {
 	}
 	sreNames := sre.SubexpNames()
 
-	br, err := bv.toBuffer()
+	br, err := bv.toReader()
 	if err != nil {
 		return gojq.NewIter(err)
 	}
@@ -92,7 +92,7 @@ func (i *Interp) _bufferMatch(c interface{}, a []interface{}) gojq.Iter {
 	var off int64
 	prevOff := int64(-1)
 	return iterFn(func() (interface{}, bool) {
-		// TODO: correct way to handle empty match for buffer, move one byte forward?
+		// TODO: correct way to handle empty match for binary, move one byte forward?
 		// > "asdasd" | [match(""; "g")], [(tobytes | match(""; "g"))] | length
 		// 7
 		// 1
@@ -127,7 +127,7 @@ func (i *Interp) _bufferMatch(c interface{}, a []interface{}) gojq.Iter {
 			if start != -1 {
 				matchBitOff := (off + int64(start)) * 8
 				matchLength := int64(end-start) * 8
-				bbo := Buffer{
+				bbo := Binary{
 					br: bv.br,
 					r: ranges.Range{
 						Start: bv.r.Start + matchBitOff,
