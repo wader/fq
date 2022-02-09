@@ -125,7 +125,7 @@ For details see [formats.md](doc/formats.md)
 
 Basic usage is `fq . file`.
 
-For more details see [usage.md](doc/usage.md)
+For details see [usage.md](doc/usage.md)
 
 ## Install
 
