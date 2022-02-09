@@ -8,40 +8,43 @@ import (
 	"strings"
 )
 
+// ErrOffset means seek positions is invalid
 var ErrOffset = errors.New("invalid seek offset")
+
+// ErrNegativeNBits means read tried to read negative number of bits
 var ErrNegativeNBits = errors.New("negative number of bits")
 
-// Reader is something that reads bits
-// Similar to io.Reader
+// Reader is something that reads bits.
+// Similar to io.Reader.
 type Reader interface {
 	ReadBits(p []byte, nBits int64) (n int64, err error)
 }
 
-// Writer is something that writs bits
-// Similar to io.Writer
+// Writer is something that writs bits.
+// Similar to io.Writer.
 type Writer interface {
 	WriteBits(p []byte, nBits int64) (n int64, err error)
 }
 
 // Seeker is something that seeks bits
-// Similar to io.Seeker
+// Similar to io.Seeker.
 type Seeker interface {
 	SeekBits(bitOffset int64, whence int) (int64, error)
 }
 
-// ReaderAt is something that reads bits at an offset
-// Similar to io.ReaderAt
+// ReaderAt is something that reads bits at an offset.
+// Similar to io.ReaderAt.
 type ReaderAt interface {
 	ReadBitsAt(p []byte, nBits int64, bitOff int64) (n int64, err error)
 }
 
-// ReadSeeker is bitio.Reader and bitio.Seeker
+// ReadSeeker is bitio.Reader and bitio.Seeker.
 type ReadSeeker interface {
 	Reader
 	Seeker
 }
 
-// ReadAtSeeker is bitio.ReaderAt and bitio.Seeker
+// ReadAtSeeker is bitio.ReaderAt and bitio.Seeker.
 type ReadAtSeeker interface {
 	ReaderAt
 	Seeker
@@ -54,9 +57,9 @@ type ReaderAtSeeker interface {
 	Seeker
 }
 
-// NewBitReader reader reading nBits bits from a []byte
+// NewBitReader reader reading nBits bits from a []byte.
 // If nBits is -1 all bits will be used.
-// Similar to bytes.NewReader
+// Similar to bytes.NewReader.
 func NewBitReader(buf []byte, nBits int64) *SectionReader {
 	if nBits < 0 {
 		nBits = int64(len(buf)) * 8
@@ -68,7 +71,7 @@ func NewBitReader(buf []byte, nBits int64) *SectionReader {
 	)
 }
 
-// BitsByteCount returns smallest amount of bytes to fit nBits bits
+// BitsByteCount returns smallest amount of bytes to fit nBits bits.
 func BitsByteCount(nBits int64) int64 {
 	n := nBits / 8
 	if nBits%8 != 0 {
@@ -77,7 +80,7 @@ func BitsByteCount(nBits int64) int64 {
 	return n
 }
 
-// BytesFromBitString []byte from bit string, ex: "0101" -> ([]byte{0x50}, 4)
+// BytesFromBitString from []byte to bit string, ex: "0101" -> ([]byte{0x50}, 4)
 func BytesFromBitString(s string) ([]byte, int64) {
 	r := len(s) % 8
 	bufLen := len(s) / 8
@@ -97,7 +100,7 @@ func BytesFromBitString(s string) ([]byte, int64) {
 	return buf, int64(len(s))
 }
 
-// BitStringFromBytes string from []byte], ex: ([]byte{0x50}, 4) -> "0101"
+// BitStringFromBytes from string to []byte, ex: ([]byte{0x50}, 4) -> "0101"
 func BitStringFromBytes(buf []byte, nBits int64) string {
 	sb := &strings.Builder{}
 	for i := int64(0); i < nBits; i++ {
@@ -110,8 +113,8 @@ func BitStringFromBytes(buf []byte, nBits int64) string {
 	return sb.String()
 }
 
-// CopyBuffer bits from src to dst using provided byte buffer
-// Similar to io.CopyBuffer
+// CopyBuffer bits from src to dst using provided byte buffer.
+// Similar to io.CopyBuffer.
 func CopyBuffer(dst Writer, src Reader, buf []byte) (n int64, err error) {
 	// same default size as io.Copy
 	if buf == nil {
@@ -144,8 +147,8 @@ func CopyBuffer(dst Writer, src Reader, buf []byte) (n int64, err error) {
 	return written, err
 }
 
-// Copy bits from src to dst
-// Similar to io.Copy
+// Copy bits from src to dst.
+// Similar to io.Copy.
 func Copy(dst Writer, src Reader) (n int64, err error) {
 	return CopyBuffer(dst, src, nil)
 }
@@ -214,12 +217,16 @@ func readFull(p []byte, nBits int64, bitOff int64, fn func(p []byte, nBits int64
 	return nBits, nil
 }
 
+// ReadAtFull expects to read nBits from r at bitOff.
+// Similar to io.ReadFull.
 func ReadAtFull(r ReaderAt, p []byte, nBits int64, bitOff int64) (int64, error) {
 	return readFull(p, nBits, bitOff, func(p []byte, nBits int64, bitOff int64) (int64, error) {
 		return r.ReadBitsAt(p, nBits, bitOff)
 	})
 }
 
+// ReadFull expects to read nBits from r.
+// Similar to io.ReadFull.
 func ReadFull(r Reader, p []byte, nBits int64) (int64, error) {
 	return readFull(p, nBits, 0, func(p []byte, nBits int64, bitOff int64) (int64, error) {
 		return r.ReadBits(p, nBits)

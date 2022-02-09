@@ -2,8 +2,8 @@ package bitio
 
 import "fmt"
 
-// ReverseBytes64 reverses the bytes part of the lowest nBits
-// Similar to bits.ReverseBytes64 but only rotates the lowest bytes and rest of bytes will be zero
+// ReverseBytes64 reverses the bytes part of the lowest nBits.
+// Similar to bits.ReverseBytes64 but only rotates the lowest bytes and rest of bytes will be zero.
 func ReverseBytes64(nBits int, n uint64) uint64 {
 	switch {
 	case nBits <= 8:
