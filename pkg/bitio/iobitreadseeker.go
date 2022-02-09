@@ -5,7 +5,7 @@ import (
 	"io"
 )
 
-// IOBitReadSeeker is a bitio.BitReadAtSeeker reading from a io.ReadSeeker
+// IOBitReadSeeker is a bitio.ReadAtSeeker reading from a io.ReadSeeker
 type IOBitReadSeeker struct {
 	bitPos int64
 	rs     io.ReadSeeker

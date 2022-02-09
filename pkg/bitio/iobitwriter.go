@@ -4,7 +4,7 @@ import (
 	"io"
 )
 
-// IOBitWriter is a bitio.BitWriter that writes to a io.Writer
+// IOBitWriter is a bitio.Writer that writes to a io.Writer
 // Use Flush to write possible unaligned byte zero bit padded.
 type IOBitWriter struct {
 	w io.Writer

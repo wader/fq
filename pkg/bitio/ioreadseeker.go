@@ -1,6 +1,6 @@
 package bitio
 
-// IOReadSeeker is a io.ReadSeeker that reads and seeks from a bitio.BitReadSeeker
+// IOReadSeeker is a io.ReadSeeker that reads from a bitio.ReadSeeker
 // Unaligned byte at EOF will be zero bit padded
 type IOReadSeeker struct {
 	IOReader
