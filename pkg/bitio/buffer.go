@@ -6,8 +6,8 @@ import (
 	"io"
 )
 
-// Buffer is a bitio.Reader and bitio.Writer providing a bit buffer
-// Similar to bytes.Buffer
+// Buffer is a bitio.Reader and bitio.Writer providing a bit buffer.
+// Similar to bytes.Buffer.
 type Buffer struct {
 	buf     []byte
 	bufBits int64

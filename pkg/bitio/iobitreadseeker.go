@@ -5,13 +5,14 @@ import (
 	"io"
 )
 
-// IOBitReadSeeker is a bitio.ReadAtSeeker reading from a io.ReadSeeker
+// IOBitReadSeeker is a bitio.ReadAtSeeker reading from a io.ReadSeeker.
 type IOBitReadSeeker struct {
 	bitPos int64
 	rs     io.ReadSeeker
 	buf    []byte
 }
 
+// NewIOBitReadSeeker returns a new bitio.IOBitReadSeeker
 func NewIOBitReadSeeker(rs io.ReadSeeker) *IOBitReadSeeker {
 	return &IOBitReadSeeker{
 		bitPos: 0,

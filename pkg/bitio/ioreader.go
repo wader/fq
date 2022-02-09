@@ -5,15 +5,15 @@ import (
 	"io"
 )
 
-// IOReader is a io.Reader and io.ByteReader that reads from a bitio.Reader
-// Unaligned byte at EOF will be zero bit padded
+// IOReader is a io.Reader and io.ByteReader that reads from a bitio.Reader.
+// Unaligned byte at EOF will be zero bit padded.
 type IOReader struct {
 	r    Reader
 	rErr error
 	b    Buffer
 }
 
-// NewIOReader returns a new bitio.IOReader
+// NewIOReader returns a new bitio.IOReader.
 func NewIOReader(r Reader) *IOReader {
 	return &IOReader{r: r}
 }
@@ -22,8 +22,6 @@ func (r *IOReader) Read(p []byte) (n int, err error) {
 	var ns int64
 
 	for {
-		var err error
-
 		// uses p even if returning nothing, io.Reader docs says:
 		// "it may use all of p as scratch space during the call"
 		if r.rErr == nil {
