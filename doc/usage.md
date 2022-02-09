@@ -73,7 +73,7 @@ Default if not explicitly used `display` will only show the root level:
 
 ![fq demo](display_decode_value.svg)
 
-First row shows ruler with byte offset into the line and JSON path for the value.
+First row shows ruler with byte offset into the line and jq path for the value.
 
 The columns are:
 - Start address for the line. For example we see that `type` starts at `0xd60`+`0x09`.
@@ -109,7 +109,7 @@ There are also some other `display` aliases:
 The interactive [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop)
 has auto completion and nested REPL support:
 
-```sh
+```
 # start REPL with null input
 $ fq -i
 null>
@@ -276,15 +276,15 @@ fq has two additional types compared to jq, decode value and binary. In standard
 
 ### Decode value
 
-This type is returned by decoders and it used to represent parts of the decoed input. It can act as all JSON types, object, array, number, string etc.
+This type is returned by decoders and it used to represent parts of the decoed input. It can act as all standard jq types, object, array, number, string etc.
 
-Each decode value has these propties:
+Each decode value has these properties:
 - A bit range in the input
   - Can be accessed as a binary using `tobits`/`tobytes`. Use the `start` and `size` keys to postion and size.
   - `.name` as bytes `.name | tobytes`
   - Bit 4-8 of `.name` as bits `.name | tobits[4:8]`
 
-Each non-compound decode value has these propties:
+Each non-compound decode value has these properties:
 - An actual value:
   - This is the decoded representation of the bits, a number, string, bool etc.
   - Can be accessed using `toactual`.
@@ -293,36 +293,58 @@ Each non-compound decode value has these propties:
   - Can be accessed using `tosym`.
 - An optional description:
   - Can be accessed using `todescription`
+- `parent` is the parent decode value
+- `parents` is the all parent decode values
+- `topath` is the jq path for the decode value
+- `torepr` convert decode value to its representation if possible
 
-The JSON value of a decode value is the symbolic value if available otherwise the actual value. To explicitly access the JSON value use `tovalue`. In most expression this is not needed as it will be done automactically.
+The value of a decode value is the symbolic value if available and otherwise the actual value. To explicitly access the value use `tovalue`. In most expression this is not needed as it will be done automactically.
 
 ### Binary
 
-Raw bits with a unit size, 1 (bits) or 8 (bytes). Will act as a string in standard jq expressions.
+Binaries are raw bits with a unit size, 1 (bits) or 8 (bytes), that can have a non-byte aligned size. Will act as byte padded strings in standard jq expressions.
 
-Are created using `tobits`/`tobytes` functions from decode values or binary lists.
+Use `tobits` and `tobytes` to create them from a decode values, strings, numbers or binary arrays. `tobytes` will if needed zero pad most significant bits to be byte aligned.
 
-Can be sliced using the jq `[start:end]` slice syntax.
+There is also `tobitsrange` and `tobytesrange` which does the same thing but will preserve it's source range when displayed.
+
+- `"string" | tobytes` produces a binary with UTF8 codepoint bytes.
+- `1234 | tobits` produces a binary with the unsigned big-endian integer 1234 with enough bits to represent the number. Use `tobytes` to get the same but with enough bytes to represent the number. This is different to how numbers works inside binary arrays where they are limited to 0-255.
+- `["abc", 123, ...]  | tobytes` produce a binary from a binary array. See [binary array](#binary-array) below.
+- `.[index]` access bit or byte at index `index`. Index is in units.
+  - `[0x12, 0x34, 0x56] | tobytes[1]` is `0x35`
+  - `[0x12, 0x34, 0x56] | tobits[3]` is `1`
+- `.[start:]`, `.[start:end]` or `.[:end]` is normal jq slice syntax and will slice the binary from `start` to `end`. `start` and `end` is in units.
+  - `[0x12, 0x34, 0x56] | tobytes[1:2]` will be a binary with the byte `0x34`
+  - `[0x12, 0x34, 0x56] | tobits[4:12]` will be a binary with the byte `0x23`
+  - `[0x12, 0x34, 0x56] | tobits[4:20]` will be a binary with the byte `0x23`, `0x45`
+  - `[0x12, 0x34, 0x56] | tobits[4:20] | tobytes[1:]` will be a binary with the byte `0x45`,
+
+Both `.[index]` and `.[start:end]` support negative indices to index from end.
+
+TODO: tobytesrange, padding
 
 #### Binary array
 
 Is an array of numbers, strings, binaries or other nested binary arrays. When used as input to `tobits`/`tobytes` the following rules are used:
-- Number is a byte so has to be 0-255
-- String it's UTF8 code point representation
+- Number is a byte with value be 0-255
+- String it's UTF8 codepoint bytes
 - Binary as is
 - Binary array used recursively
 
-Similar to and inspired by erlang io-lists.
+Binary arrays are similar to and inspired by [Erlang iolist](https://www.erlang.org/doc/man/erlang.html#type-iolist).
 
 Some examples:
 
-`[0, 123, 255] | tobytes` will be 3 bytes 0, 123 and 255
+`[0, 123, 255] | tobytes` will be binary with 3 bytes 0, 123 and 255
 
 `[0, [123, 255]] | tobytes` same as above
 
-`[0, 1, 1, 0, 0, 1, 1, 0 | tobits]`  will be 1 byte 0x66 an "f"
+`[0, 1, 1, 0, 0, 1, 1, 0 | tobits]`  will be binary with 1 byte, 0x66 an "f"
 
-`[(.a | tobytes[-10:]), 255, (.b | tobits[:10])]` the concatenation of the last 10 bytes of `.a`, a byte with value 255 and the first 10 bits of `.b`.
+`[(.a | tobytes[-10:]), 255, (.b | tobits[:10])] | tobytes` the concatenation of the last 10 bytes of `.a`, a byte with value 255 and the first 10 bits of `.b`.
+
+The difference between `tobits` and `tobytes` is
 
 TODO: padding and alignment
 
@@ -387,7 +409,7 @@ you currently have to do `fq -d raw 'mp3({force: true})' file`.
 - `decode`, `decode($format)`, `decode($format; $opts)` decode format
 - `probe`, `probe($opts)` probe and decode format
 - `mp3`, `mp3($opts)`, ..., `<name>`, `<name>($opts)` same as `decode(<name>)($opts)`, `decode($format; $opts)`  decode as format
-- Display shows hexdump/ASCII/tree for decode values and JSON for other values.
+- Display shows hexdump/ASCII/tree for decode values and jq value for other types.
   - `d`/`d($opts)` display value and truncate long arrays and binaries
   - `da`/`da($opts)` display value and don't truncate arrays
   - `dd`/`dd($opts)` display value and don't truncate arrays or binaries
