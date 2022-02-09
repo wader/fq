@@ -41,7 +41,8 @@ def urldecode:
 # ex: .frames | changes(.header.sample_rate)
 def changes(f): streaks_by(f)[].[0];
 
-def radix62sp: radix(62; "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"; {
+def toradix62sp: toradix(62; "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+def fromradix62sp: fromradix(62; {
     "0": 0, "1": 1, "2": 2, "3": 3,"4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9,
     "a": 10, "b": 11, "c": 12, "d": 13, "e": 14, "f": 15, "g": 16,
     "h": 17, "i": 18, "j": 19, "k": 20, "l": 21, "m": 22, "n": 23,
