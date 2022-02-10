@@ -1,4 +1,3 @@
-# Avro OCF
 Supports reading Avro Object Container Format (OCF) files based on the [1.11.0 specification](https://avro.apache.org/docs/current/spec.html#Object+Container+Files).
 
 Capable of handling null, deflate, and snappy codecs for data compression.
