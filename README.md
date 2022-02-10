@@ -146,6 +146,14 @@ xattr -d com.apple.quarantine fq && spctl --add fq
 brew install wader/tap/fq
 ```
 
+### Windows
+
+`fq` can be installed via [scoop](https://scoop.sh/).
+
+```powershell
+scoop install fq
+```
+
 ### Arch Linux
 
 `fq` can be installed from the [community repository](https://archlinux.org/packages/community/x86_64/fq/) using [pacman](https://wiki.archlinux.org/title/Pacman):
