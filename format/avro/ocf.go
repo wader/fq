@@ -93,6 +93,9 @@ func decodeBlockCodec(d *decode.D, dataSize int64, codec string) *bytes.Buffer {
 		// Everything but last 4 bytes which are the checksum
 		n := dataSize - 4
 		br := d.FieldRawLen("compressed", n*8)
+
+		// This could be simplified to be similar to deflate, however snappy's reader only works for streaming frames,
+		// not block data. See https://github.com/google/snappy/blob/main/framing_format.txt for details.
 		compressed := make([]byte, n)
 		if _, err := bitio.ReadFull(br, compressed, n*8); err != nil {
 			d.Fatalf("failed reading compressed data %v", err)
