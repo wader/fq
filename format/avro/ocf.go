@@ -3,9 +3,6 @@ package avro
 import (
 	"bytes"
 	"compress/flate"
-	"encoding/binary"
-	"hash/crc32"
-
 	"github.com/golang/snappy"
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/avro/decoders"
@@ -14,6 +11,7 @@ import (
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
+	"hash/crc32"
 )
 
 func init() {
@@ -85,6 +83,37 @@ func decodeHeader(d *decode.D) HeaderData {
 	return headerData
 }
 
+func decodeBlockCodec(d *decode.D, dataSize int64, codec string) *bytes.Buffer {
+	bb := &bytes.Buffer{}
+	if codec == "deflate" {
+		br := d.FieldRawLen("compressed", dataSize*8)
+		d.MustCopy(bb, flate.NewReader(bitio.NewIOReader(br)))
+	} else if codec == "snappy" {
+		// Everything but last 4 bytes which are the checksum
+		n := dataSize - 4
+		br := d.FieldRawLen("compressed", n*8)
+		compressed := make([]byte, n)
+		if _, err := bitio.ReadFull(br, compressed, n*8); err != nil {
+			d.Fatalf("failed reading compressed data %v", err)
+		}
+		decompressed, err := snappy.Decode(nil, compressed)
+		if err != nil {
+			d.Fatalf("failed decompressing data: %v", err)
+		}
+		d.MustCopy(bb, bytes.NewReader(decompressed))
+
+		// Check the checksum
+		crc32W := crc32.NewIEEE()
+		d.MustCopy(crc32W, bytes.NewReader(bb.Bytes()))
+		d.FieldU32("crc", d.ValidateUBytes(crc32W.Sum(nil)), scalar.Hex)
+	} else {
+		// Unknown codec, just dump the compressed data.
+		d.FieldRawLen("compressed", dataSize*8, scalar.Description(codec+" encoded"))
+		return nil
+	}
+	return bb
+}
+
 func decodeAvroOCF(d *decode.D, in interface{}) interface{} {
 	header := decodeHeader(d)
 
@@ -101,49 +130,19 @@ func decodeAvroOCF(d *decode.D, in interface{}) interface{} {
 		size := d.FieldSFn("size", decoders.VarZigZag)
 		i := int64(0)
 
-		if header.Codec == "deflate" {
-			br := d.FieldRawLen("compressed", size*8)
-			bb := &bytes.Buffer{}
-			d.MustCopy(bb, flate.NewReader(bitio.NewIOReader(br)))
-			d.FieldArrayRootBitBufFn("data", bitio.NewBitReader(bb.Bytes(), -1), func(d *decode.D) {
-				for ; i < count; i++ {
-					decodeFn("data", d)
-				}
-			})
-		} else if header.Codec == "snappy" {
-			// Everything but last 4 bytes which are the checksum
-			n := (size - 4) * 8
-			br := d.FieldRawLen("compressed", n)
-			data := make([]byte, size-4)
-			if _, err := br.ReadBits(data, n); err != nil {
-				d.Fatalf("failed to read snappy compressed data: %v", err)
+		if header.Codec != "null" {
+			if bb := decodeBlockCodec(d, size, header.Codec); bb != nil {
+				d.FieldArrayRootBitBufFn("data", bitio.NewBitReader(bb.Bytes(), -1), func(d *decode.D) {
+					for ; i < count; i++ {
+						decodeFn("data", d)
+					}
+				})
 			}
-			decoded, err := snappy.Decode(nil, data)
-			if err != nil {
-				d.Fatalf("failed to decode snappy compressed data: %v", err)
-			}
-
-			crc := crc32.ChecksumIEEE(decoded)
-			crcB := make([]byte, 4)
-			if d.Endian == decode.BigEndian {
-				binary.BigEndian.PutUint32(crcB, crc)
-			} else {
-				binary.LittleEndian.PutUint32(crcB, crc)
-			}
-			d.FieldRawLen("crc32", 4*8, d.AssertBitBuf(crcB))
-			d.FieldArrayRootBitBufFn("data", bitio.NewBitReader(decoded, -1), func(d *decode.D) {
-				for ; i < count; i++ {
-					decodeFn("data", d)
-				}
-			})
-		} else if header.Codec == "null" {
+		} else {
 			d.FieldArrayLoop("data", func() bool { return i < count }, func(d *decode.D) {
 				decodeFn("datum", d)
 				i++
 			})
-		} else {
-			// Unknown codec, just dump the compressed data.
-			d.FieldRawLen("data", size*8, scalar.Description(header.Codec+" encoded"))
 		}
 		d.FieldRawLen("sync", 16*8, d.AssertBitBuf(header.Sync))
 	})
