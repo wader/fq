@@ -16,13 +16,14 @@ import (
 	"github.com/wader/fq/internal/progressreadseeker"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/ranges"
+	"github.com/wader/gojq"
 )
 
 func init() {
 	functionRegisterFns = append(functionRegisterFns, func(i *Interp) []Function {
 		return []Function{
 			{"_tobits", 3, 3, i._toBits, nil},
-			{"open", 0, 0, i._open, nil},
+			{"open", 0, 0, nil, i._open},
 		}
 	})
 }
@@ -175,7 +176,11 @@ func (of *openFile) ToBinary() (Binary, error) {
 // def open: #:: string| => binary
 // opens a file for reading from filesystem
 // TODO: when to close? when br loses all refs? need to use finalizer somehow?
-func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
+func (i *Interp) _open(c interface{}, a []interface{}) gojq.Iter {
+	if i.evalContext.isCompleting {
+		return gojq.NewIter()
+	}
+
 	var err error
 	var f fs.File
 	var path string
@@ -187,11 +192,11 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 	default:
 		path, err = toString(c)
 		if err != nil {
-			return fmt.Errorf("%s: %w", path, err)
+			return gojq.NewIter(fmt.Errorf("%s: %w", path, err))
 		}
 		f, err = i.os.FS().Open(path)
 		if err != nil {
-			return err
+			return gojq.NewIter(err)
 		}
 	}
 
@@ -201,7 +206,7 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 	fFI, err := f.Stat()
 	if err != nil {
 		f.Close()
-		return err
+		return gojq.NewIter(err)
 	}
 
 	// ctxreadseeker is used to make sure any io calls can be canceled
@@ -219,7 +224,7 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 		buf, err := ioutil.ReadAll(ctxreadseeker.New(i.evalContext.ctx, &ioextra.ReadErrSeeker{Reader: f}))
 		if err != nil {
 			f.Close()
-			return err
+			return gojq.NewIter(err)
 		}
 		fRS = bytes.NewReader(buf)
 		bEnd = int64(len(buf))
@@ -246,10 +251,10 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 
 	bbf.br = bitio.NewIOBitReadSeeker(aheadRs)
 	if err != nil {
-		return err
+		return gojq.NewIter(err)
 	}
 
-	return bbf
+	return gojq.NewIter(bbf)
 }
 
 var _ Value = Binary{}
