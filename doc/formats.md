@@ -20,7 +20,7 @@
 |`avc_pps`               |H.264/AVC&nbsp;Picture&nbsp;Parameter&nbsp;Set                                  |<sub></sub>|
 |`avc_sei`               |H.264/AVC&nbsp;Supplemental&nbsp;Enhancement&nbsp;Information                   |<sub></sub>|
 |`avc_sps`               |H.264/AVC&nbsp;Sequence&nbsp;Parameter&nbsp;Set                                 |<sub></sub>|
-|`avro_ocf`              |Avro&nbsp;object&nbsp;container&nbsp;file                                       |<sub></sub>|
+|[`avro_ocf`](#avro_ocf) |Avro&nbsp;object&nbsp;container&nbsp;file                                       |<sub></sub>|
 |`bencode`               |BitTorrent&nbsp;bencoding                                                       |<sub></sub>|
 |`bsd_loopback_frame`    |BSD&nbsp;loopback&nbsp;frame                                                    |<sub>`ipv4_packet`</sub>|
 |[`bson`](#bson)         |Binary&nbsp;JSON                                                                |<sub></sub>|
@@ -130,6 +130,16 @@ If the schema is known and not that complicated it can be reproduced:
 ```
 fq -d asn1_ber 'torepr as $r | ["version", "modulus", "private_exponent", "private_exponen", "prime1", "prime2", "exponent1", "exponent2", "coefficient"] | with_entries({key: .value, value: $r[.key]})' pkcs1.der
 ```
+### avro_ocf
+
+# Avro OCF
+Supports reading Avro Object Container Format (OCF) files based on the [1.11.0 specification](https://avro.apache.org/docs/current/spec.html#Object+Container+Files).
+
+Capable of handling null, deflate, and snappy codecs for data compression.
+
+Limitations:
+ - Schema does not support self-referential types, only built-in types.
+ - Decimal logical types are not supported for decoding, will just be treated as their primitive type
 ### becode
 
 Supports `torepr`:
