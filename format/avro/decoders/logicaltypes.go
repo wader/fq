@@ -96,7 +96,7 @@ func (d DateMapper) MapScalar(s scalar.S) (scalar.S, error) {
 	if !ok {
 		return s, errors.New("not an int64")
 	}
-	s.Sym = time.Unix(0, 0).AddDate(0, 0, int(v)).Format("2006-01-02")
+	s.Sym = time.Unix(0, 0).AddDate(0, 0, int(v)).UTC().Format("2006-01-02")
 	return s, nil
 }
 
