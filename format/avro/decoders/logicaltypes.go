@@ -60,7 +60,7 @@ func (t TimestampMapper) MapScalar(s scalar.S) (scalar.S, error) {
 	} else {
 		return s, errors.New("unknown precision")
 	}
-	s.Sym = ts.Format(time.RFC3339Nano)
+	s.Sym = ts.UTC().Format(time.RFC3339Nano)
 	return s, nil
 }
 
@@ -75,13 +75,13 @@ func (t TimeMapper) MapScalar(s scalar.S) (scalar.S, error) {
 	}
 
 	if t.Precision == SECOND {
-		s.Sym = time.Unix(v, 0).Format("15:04:05")
+		s.Sym = time.Unix(v, 0).UTC().Format("15:04:05")
 	} else if t.Precision == MILLISECOND {
-		s.Sym = time.UnixMilli(v).Format("15:04:05.000")
+		s.Sym = time.UnixMilli(v).UTC().Format("15:04:05.000")
 	} else if t.Precision == MICROSECOND {
-		s.Sym = time.UnixMicro(v).Format("15:04:05.000000")
+		s.Sym = time.UnixMicro(v).UTC().Format("15:04:05.000000")
 	} else if t.Precision == NANOSECOND {
-		s.Sym = time.Unix(0, v).Format("15:04:05.000000000")
+		s.Sym = time.Unix(0, v).UTC().Format("15:04:05.000000000")
 	} else {
 		return s, errors.New("unknown precision")
 	}
