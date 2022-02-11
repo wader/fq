@@ -53,7 +53,7 @@ var functionRegisterFns []func(i *Interp) []Function
 func init() {
 	functionRegisterFns = append(functionRegisterFns, func(i *Interp) []Function {
 		return []Function{
-			{"_readline", 0, 2, i.readline, nil},
+			{"_readline", 0, 2, i._readline, nil},
 			{"eval", 1, 2, nil, i.eval},
 			{"_stdin", 0, 0, nil, i.makeStdioFn(i.os.Stdin())},
 			{"_stdout", 0, 0, nil, i.makeStdioFn(i.os.Stdout())},
@@ -324,10 +324,10 @@ type evalContext struct {
 type Interp struct {
 	registry       *registry.Registry
 	os             OS
-	initFqQuery    *gojq.Query
+	initQuery      *gojq.Query
 	includeCache   map[string]*gojq.Query
 	interruptStack *ctxstack.Stack
-	// global state, is ref as Interp i cloned per eval
+	// global state, is ref as Interp is cloned per eval
 	state *interface{}
 
 	// new for each run, other values are copied by value
@@ -343,7 +343,7 @@ func New(os OS, registry *registry.Registry) (*Interp, error) {
 	}
 
 	i.includeCache = map[string]*gojq.Query{}
-	i.initFqQuery, err = gojq.Parse(initSource)
+	i.initQuery, err = gojq.Parse(initSource)
 	if err != nil {
 		return nil, fmt.Errorf("init:%s: %w", queryErrorPosition(initSource, err), err)
 	}
@@ -414,7 +414,7 @@ func (i *Interp) Main(ctx context.Context, output Output, versionStr string) err
 	return nil
 }
 
-func (i *Interp) readline(c interface{}, a []interface{}) interface{} {
+func (i *Interp) _readline(c interface{}, a []interface{}) interface{} {
 	var opts struct {
 		Complete string  `mapstructure:"complete"`
 		Timeout  float64 `mapstructure:"timeout"`
@@ -616,47 +616,55 @@ func (i *Interp) _canDisplay(c interface{}, a []interface{}) interface{} {
 
 type pathResolver struct {
 	prefix string
-	open   func(filename string) (io.ReadCloser, error)
+	open   func(filename string) (io.ReadCloser, string, error)
 }
 
-func (i *Interp) lookupPathResolver(filename string) (pathResolver, bool) {
+func (i *Interp) lookupPathResolver(filename string) (pathResolver, error) {
+	configDir, err := i.os.ConfigDir()
+	if err != nil {
+		return pathResolver{}, err
+	}
+
 	resolvePaths := []pathResolver{
 		{
 			"@builtin/",
-			func(filename string) (io.ReadCloser, error) { return builtinFS.Open(filename) },
-		},
-		{
-			"@config/", func(filename string) (io.ReadCloser, error) {
-				configDir, err := i.os.ConfigDir()
-				if err != nil {
-					return nil, err
-				}
-				return i.os.FS().Open(path.Join(configDir, filename))
+			func(filename string) (io.ReadCloser, string, error) {
+				f, err := builtinFS.Open(filename)
+				return f, "@builtin/" + filename, err
 			},
 		},
 		{
-			"", func(filename string) (io.ReadCloser, error) {
+			"@config/", func(filename string) (io.ReadCloser, string, error) {
+				p := path.Join(configDir, filename)
+				f, err := i.os.FS().Open(p)
+				return f, p, err
+			},
+		},
+		{
+			"", func(filename string) (io.ReadCloser, string, error) {
 				if path.IsAbs(filename) {
-					return i.os.FS().Open(filename)
+					f, err := i.os.FS().Open(filename)
+					return f, filename, err
 				}
 
 				// TODO: jq $ORIGIN
 				for _, includePath := range append([]string{"./"}, i.includePaths()...) {
+					p := path.Join(includePath, filename)
 					if f, err := i.os.FS().Open(path.Join(includePath, filename)); err == nil {
-						return f, nil
+						return f, p, nil
 					}
 				}
 
-				return nil, &fs.PathError{Op: "open", Path: filename, Err: fs.ErrNotExist}
+				return nil, "", &fs.PathError{Op: "open", Path: filename, Err: fs.ErrNotExist}
 			},
 		},
 	}
 	for _, p := range resolvePaths {
 		if strings.HasPrefix(filename, p.prefix) {
-			return p, true
+			return p, nil
 		}
 	}
-	return pathResolver{}, false
+	return pathResolver{}, fmt.Errorf("could not resolve path: %s", filename)
 }
 
 func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilename string, output io.Writer) (gojq.Iter, error) {
@@ -701,7 +709,7 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilenam
 	compilerOpts = append(compilerOpts, gojq.WithVariables(variableNames))
 	compilerOpts = append(compilerOpts, gojq.WithModuleLoader(loadModule{
 		init: func() ([]*gojq.Query, error) {
-			return []*gojq.Query{i.initFqQuery}, nil
+			return []*gojq.Query{i.initQuery}, nil
 		},
 		load: func(name string) (*gojq.Query, error) {
 			if err := ctx.Err(); err != nil {
@@ -719,9 +727,9 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilenam
 			}
 			filename = filename + ".jq"
 
-			pr, ok := i.lookupPathResolver(filename)
-			if !ok {
-				return nil, fmt.Errorf("could not resolve path: %s", filename)
+			pr, err := i.lookupPathResolver(filename)
+			if err != nil {
+				return nil, err
 			}
 
 			if q, ok := ni.includeCache[filename]; ok {
@@ -730,7 +738,7 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilenam
 
 			filenamePart := strings.TrimPrefix(filename, pr.prefix)
 
-			f, err := pr.open(filenamePart)
+			f, absPath, err := pr.open(filenamePart)
 			if err != nil {
 				if !isTry {
 					return nil, err
@@ -750,7 +758,7 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilenam
 				return nil, compileError{
 					err:      err,
 					what:     "parse",
-					filename: filenamePart,
+					filename: absPath,
 					pos:      p,
 				}
 			}

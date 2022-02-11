@@ -1,5 +1,7 @@
 /library/a.jq:
 def a: "a";
+/config/has_error.jq:
+)
 $ fq -L /library -n 'include "a"; a'
 "a"
 $ fq --include-path /library -n 'include "a"; a'
@@ -12,3 +14,13 @@ $ fq -L /wrong -n 'include "a"; a'
 exitcode: 3
 stderr:
 error: arg:1:0: open a.jq: file does not exist
+$ fq -n 'include "@config/a";'
+exitcode: 3
+stderr:
+error: arg:1:0: open testdata/config/a.jq: no such file or directory
+$ fq -n 'include "@config/missing?";'
+null
+$ fq -n 'include "@config/has_error?";'
+exitcode: 3
+stderr:
+error: arg:1:0: /config/has_error.jq:1:1: parse: unexpected token ")"
