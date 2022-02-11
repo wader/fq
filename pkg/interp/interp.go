@@ -560,12 +560,12 @@ func (i *Interp) makeStateFn(state *interface{}) func(c interface{}, a []interfa
 
 func (i *Interp) makeStdioFn(name string, t Terminal) func(c interface{}, a []interface{}) gojq.Iter {
 	return func(c interface{}, a []interface{}) gojq.Iter {
-		if i.evalContext.isCompleting {
-			return gojq.NewIter("")
-		}
-
 		switch {
 		case len(a) == 1:
+			if i.evalContext.isCompleting {
+				return gojq.NewIter("")
+			}
+
 			r, ok := t.(io.Reader)
 			if !ok {
 				return gojq.NewIter(fmt.Errorf("%s is not readable", name))
@@ -596,6 +596,10 @@ func (i *Interp) makeStdioFn(name string, t Terminal) func(c interface{}, a []in
 				"height":      h,
 			})
 		default:
+			if i.evalContext.isCompleting {
+				return gojq.NewIter()
+			}
+
 			w, ok := t.(io.Writer)
 			if !ok {
 				return gojq.NewIter(fmt.Errorf("%v: it not writeable", c))
