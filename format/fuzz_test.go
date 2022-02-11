@@ -15,6 +15,7 @@ import (
 
 	_ "github.com/wader/fq/format/all"
 	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
 )
 
@@ -26,6 +27,7 @@ func (fuzzFS) Open(name string) (fs.File, error) {
 
 type fuzzTest struct {
 	b []byte
+	f decode.Format
 }
 
 type fuzzTestInput struct {
@@ -47,22 +49,22 @@ func (ft *fuzzTest) Platform() interp.Platform { return interp.Platform{} }
 func (ft *fuzzTest) Stdin() interp.Input {
 	return fuzzTestInput{FileReader: interp.FileReader{R: bytes.NewBuffer(ft.b)}}
 }
-func (ft *fuzzTest) Stdout() interp.Output        { return fuzzTestOutput{os.Stdout} }
-func (ft *fuzzTest) Stderr() interp.Output        { return fuzzTestOutput{os.Stderr} }
+func (ft *fuzzTest) Stdout() interp.Output        { return fuzzTestOutput{ioutil.Discard} }
+func (ft *fuzzTest) Stderr() interp.Output        { return fuzzTestOutput{ioutil.Discard} }
 func (ft *fuzzTest) InterruptChan() chan struct{} { return nil }
 func (ft *fuzzTest) Environ() []string            { return nil }
 func (ft *fuzzTest) Args() []string {
 	return []string{
 		`fq`,
-		`-d`, `raw`,
-		`(_registry.groups | keys[] | select(. != "all")) as $f | decode($f)?`,
+		`-d`, ft.f.Name,
+		`.`,
 	}
 }
 func (ft *fuzzTest) ConfigDir() (string, error) { return "/config", nil }
 func (ft *fuzzTest) FS() fs.FS                  { return fuzzFS{} }
 func (ft *fuzzTest) History() ([]string, error) { return nil, nil }
 
-func (ft *fuzzTest) Readline(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error) {
+func (ft *fuzzTest) Readline(opts interp.ReadlineOpts) (string, error) {
 	return "", io.EOF
 }
 
@@ -92,8 +94,11 @@ func FuzzFormats(f *testing.F) {
 		return nil
 	})
 
+	gi := 0
+	g := registry.Default.MustAll()
+
 	f.Fuzz(func(t *testing.T, b []byte) {
-		fz := &fuzzTest{b: b}
+		fz := &fuzzTest{b: b, f: g[gi]}
 		q, err := interp.New(fz, registry.Default)
 		if err != nil {
 			t.Fatal(err)
@@ -104,5 +109,7 @@ func FuzzFormats(f *testing.F) {
 		// 	// TODO: expect error
 		// 	t.Fatal(err)
 		// }
+
+		gi = (gi + 1) % len(g)
 	})
 }
