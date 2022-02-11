@@ -28,6 +28,8 @@ def _complete_keywords:
 
 def _complete_scope:
   [scope[], _complete_keywords[]];
+def _complete_keys:
+  [keys[]?, _extkeys[]?];
 
 # TODO: handle variables via ast walk?
 # TODO: refactor this
@@ -55,10 +57,7 @@ def _complete($line; $cursor_pos):
     # TODO: move map/add logic to here?
     | _query_completion(
         if .type | . == "func" or . == "var" then "_complete_scope"
-        elif .type == "index" then
-          if (.prefix | startswith("_")) then "_extkeys"
-          else "keys"
-          end
+        elif .type == "index" then "_complete_keys"
         else error("unreachable")
         end
       ) as {$type, $query, $prefix}
@@ -79,7 +78,7 @@ def _complete($line; $cursor_pos):
                   strings and
                   # TODO: var type really needed? just func?
                   (_is_ident or $type == "var") and
-                  ((_is_internal | not) or $prefix_is_internal or $type == "index") and
+                  ((_is_internal | not) or $prefix_is_internal) and
                   startswith($prefix)
                 )
               )
