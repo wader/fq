@@ -162,7 +162,7 @@ func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
 					c,
 					opts.Progress,
 					nil,
-					ioextra.DiscardCtxWriter{Ctx: i.evalContext.ctx},
+					EvalOpts{output: ioextra.DiscardCtxWriter{Ctx: i.evalContext.ctx}},
 				)
 			}
 			lastProgress := time.Now()

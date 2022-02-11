@@ -305,3 +305,14 @@ def topem($label):
   | join("\n")
   );
 def topem: topem("");
+
+def paste:
+  if _is_completing | not then
+    ( [ _repeat_break(
+          try _stdin(64*1024)
+          catch if . == "eof" then error("break") end
+        )
+      ]
+    | join("")
+    )
+  end;

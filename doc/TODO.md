@@ -13,6 +13,7 @@
 - Rework cli/repl user interrupt (context cancel via ctrl-c), see comment in Interp.Main
 - Optimize `Interp.Options` calls, now called per display. Cache per eval? needs to handle nested evals.
 - `<array decode value>[{start: ...: end: ...}]` syntax a bit broken.
+- REPL completion might have side effcts. Make interp.Function type know and wrap somehow? input, inputs, open, ...
 
 ### TODO and ideas
 

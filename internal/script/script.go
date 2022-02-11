@@ -149,8 +149,8 @@ func (cr *CaseRun) ConfigDir() (string, error) { return "/config", nil }
 
 func (cr *CaseRun) FS() fs.FS { return cr.Case }
 
-func (cr *CaseRun) Readline(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error) {
-	cr.ActualStdoutBuf.WriteString(prompt)
+func (cr *CaseRun) Readline(opts interp.ReadlineOpts) (string, error) {
+	cr.ActualStdoutBuf.WriteString(opts.Prompt)
 	if cr.ReadlinesPos >= len(cr.Readlines) {
 		return "", io.EOF
 	}
@@ -165,7 +165,7 @@ func (cr *CaseRun) Readline(prompt string, complete func(line string, pos int) (
 		cr.ActualStdoutBuf.WriteString(lineRaw + "\n")
 
 		l := len(line) - 1
-		newLine, shared := complete(line[0:l], l)
+		newLine, shared := opts.CompleteFn(line[0:l], l)
 		// TODO: shared
 		_ = shared
 		for _, nl := range newLine {

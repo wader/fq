@@ -158,7 +158,7 @@ func (stdOSFS) Open(name string) (fs.File, error) { return os.Open(name) }
 
 func (*stdOS) FS() fs.FS { return stdOSFS{} }
 
-func (o *stdOS) Readline(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error) {
+func (o *stdOS) Readline(opts interp.ReadlineOpts) (string, error) {
 	if o.rl == nil {
 		var err error
 
@@ -179,9 +179,9 @@ func (o *stdOS) Readline(prompt string, complete func(line string, pos int) (new
 		}
 	}
 
-	if complete != nil {
+	if opts.CompleteFn != nil {
 		o.rl.Config.AutoComplete = autoCompleterFn(func(line []rune, pos int) (newLine [][]rune, length int) {
-			names, shared := complete(string(line), pos)
+			names, shared := opts.CompleteFn(string(line), pos)
 			var runeNames [][]rune
 			for _, name := range names {
 				runeNames = append(runeNames, []rune(name[shared:]))
@@ -191,7 +191,7 @@ func (o *stdOS) Readline(prompt string, complete func(line string, pos int) (new
 		})
 	}
 
-	o.rl.SetPrompt(prompt)
+	o.rl.SetPrompt(opts.Prompt)
 	line, err := o.rl.Readline()
 	if errors.Is(err, readline.ErrInterrupt) {
 		return "", interp.ErrInterrupt

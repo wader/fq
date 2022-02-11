@@ -182,7 +182,7 @@ def _repl($opts): #:: a|(Opts) => @
   def _read_expr:
     _repeat_break(
       # both _prompt and _complete want input arrays
-      ( _readline(_prompt; {complete: "_complete", timeout: 1})
+      ( _readline({prompt: _prompt, complete: "_complete", timeout: 1})
       | if trim == "" then empty
         else (., error("break"))
         end
@@ -216,12 +216,15 @@ def _repl($opts): #:: a|(Opts) => @
         else error
         end
     );
-  ( _options_stack(. + [$opts]) as $_
-  | _finally(
-      _repeat_break(_repl_loop);
-      _options_stack(.[:-1])
+  if _is_completing | not then
+    ( _options_stack(. + [$opts]) as $_
+    | _finally(
+        _repeat_break(_repl_loop);
+        _options_stack(.[:-1])
+      )
     )
-  );
+  else empty
+  end;
 
 def _repl_slurp($opts): _repl($opts);
 def _repl_slurp: _repl({});
@@ -229,7 +232,7 @@ def _repl_slurp: _repl({});
 # TODO: introspect and show doc, reflection somehow?
 def help:
   ( "Type expression to evaluate"
-  , "\\t          Auto completion"
+  , "\\t          Completion"
   , "Up/Down     History"
   , "^C          Interrupt execution"
   , "... | repl  Start a new REPL"
