@@ -23,7 +23,7 @@ require (
 
 require (
 	// fork of github.com/itchyny/gojq, see github.com/wader/gojq fq branch
-	github.com/wader/gojq v0.12.1-0.20220108235115-6a05b6c59ace
+	github.com/wader/gojq v0.12.1-0.20220212115358-b98ce15ac16e
 	// fork of github.com/chzyer/readline, see github.com/wader/readline fq branch
 	github.com/wader/readline v0.0.0-20220117233529-692d84ca36e2
 )
