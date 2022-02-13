@@ -3,6 +3,13 @@ module github.com/wader/fq
 go 1.17
 
 require (
+	// fork of github.com/itchyny/gojq, see github.com/wader/gojq fq branch
+	github.com/wader/gojq v0.12.1-0.20220212115358-b98ce15ac16e
+	// fork of github.com/chzyer/readline, see github.com/wader/readline fq branch
+	github.com/wader/readline v0.0.0-20220117233529-692d84ca36e2
+)
+
+require (
 	// bump: gomod-gopacket /github\.com\/google\/gopacket v(.*)/ https://github.com/google/gopacket.git|^1
 	// bump: gomod-gopacket command go get -d github.com/google/gopacket@v$LATEST && go mod tidy
 	// bump: gomod-gopacket link "Release notes" https://github.com/google/gopacket/releases/tag/v$LATEST
@@ -19,16 +26,11 @@ require (
 	// bump: gomod-golang/text command go get -d golang.org/x/text@v$LATEST && go mod tidy
 	// bump: gomod-golang/text link "Source diff $CURRENT..$LATEST" https://github.com/golang/text/compare/v$CURRENT..v$LATEST
 	golang.org/x/text v0.3.7
+	// bump: gomod-golang-snappy /github.com\/golang\/snappy v(.*)/ https://github.com/golang/snappy.git|^0
+	// bump: gomod-golang-snappy command go get -d github.com/golang/snappy@v$LATEST && go mod tidy
+	// bump: gomod-golang-snappy link "Source diff $CURRENT..$LATEST" https://github.com/golang/snappy/compare/v$CURRENT..v$LATEST
+	github.com/golang/snappy v0.0.4
 )
-
-require (
-	// fork of github.com/itchyny/gojq, see github.com/wader/gojq fq branch
-	github.com/wader/gojq v0.12.1-0.20220212115358-b98ce15ac16e
-	// fork of github.com/chzyer/readline, see github.com/wader/readline fq branch
-	github.com/wader/readline v0.0.0-20220117233529-692d84ca36e2
-)
-
-require github.com/golang/snappy v0.0.4
 
 require (
 	github.com/itchyny/timefmt-go v0.1.3 // indirect
