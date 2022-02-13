@@ -355,3 +355,8 @@ Run and follow instructions:
 ```
 make release=1.2.3
 ```
+
+Commits since release
+```
+git log --no-decorate --no-merges --oneline v0.0.4..wader/master | sort -t " " -k 2 | sed 's/\(.*\)/* \1/'
+```
