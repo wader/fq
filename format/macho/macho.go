@@ -265,35 +265,6 @@ var fileTypes = scalar.UToSymStr{
 	0xb: "MH_KEXT_BUNDLE",
 }
 
-var machHeaderFlags = map[uint64]string{
-	0x1:        "MH_NOUNDEFS",
-	0x2:        "MH_INCRLINK",
-	0x4:        "MH_DYLDLINK",
-	0x8:        "MH_BINDATLOAD",
-	0x10:       "MH_PREBOUND",
-	0x20:       "MH_SPLIT_SEGS",
-	0x40:       "MH_LAZY_INIT",
-	0x80:       "MH_TWOLEVEL",
-	0x100:      "MH_FORCE_FLAT",
-	0x200:      "MH_NOMULTIDEFS",
-	0x400:      "MH_NOFIXPREBINDING",
-	0x800:      "MH_PREBINDABLE",
-	0x1000:     "MH_ALLMODSBOUND",
-	0x2000:     "MH_SUBSECTIONS_VIA_SYMBOLS",
-	0x4000:     "MH_CANONICAL",
-	0x8000:     "MH_WEAK_DEFINES",
-	0x00010000: "MH_BINDS_TO_WEAK",
-	0x00020000: "MH_ALLOW_STACK_EXECUTION",
-	0x00040000: "MH_ROOT_SAFE",
-	0x00080000: "MH_SETUID_SAFE",
-	0x00100000: "MH_NO_REEXPORTED_DYLIBS",
-	0x00200000: "MH_PIE",
-	0x00400000: "MH_DEAD_STRIPPABLE_DYLIB",
-	0x00800000: "MH_HAS_TLV_DESCRIPTORS",
-	0x01000000: "MH_NO_HEAP_EXECUTION",
-	0x02000000: "MH_APP_EXTENSION_SAFE",
-}
-
 var loadCommands = scalar.UToSymStr{
 	LC_REQ_DYLD:                 "req_dyld",
 	LC_SEGMENT:                  "segment",
@@ -348,12 +319,6 @@ var loadCommands = scalar.UToSymStr{
 	LC_NOTE:                     "note",
 	LC_BUILD_VERSION:            "build_version",
 }
-var segmentFlags = map[uint64]string{
-	0x1: "SG_HIGHVM",
-	0x2: "SG_FVMLIB",
-	0x4: "SG_NORELOC",
-	0x8: "SG_PROTECTED_VERSION_1",
-}
 
 var sectionTypes = scalar.UToSymStr{
 	0x0:  "S_REGULAR",
@@ -378,20 +343,6 @@ var sectionTypes = scalar.UToSymStr{
 	0x13: "S_THREAD_LOCAL_VARIABLES",
 	0x14: "S_THREAD_LOCAL_VARIABLE_POINTERS",
 	0x15: "S_THREAD_LOCAL_INIT_FUNCTION_POINTERS",
-}
-
-var sectionFlags = map[uint64]string{
-	0x00000100: "S_ATTR_LOC_RELOC",
-	0x00000200: "S_ATTR_EXT_RELOC",
-	0x00000400: "S_ATTR_SOME_INSTRUCTIONS",
-
-	0x02000000: "S_ATTR_DEBUG",
-	0x04000000: "S_ATTR_SELF_MODIFYING_CODE",
-	0x08000000: "S_ATTR_LIVE_SUPPORT",
-	0x10000000: "S_ATTR_NO_DEAD_STRIP",
-	0x20000000: "S_ATTR_STRIP_STATIC_SYMS",
-	0x40000000: "S_ATTR_NO_TOC",
-	0x80000000: "S_ATTR_PURE_INSTRUCTIONS",
 }
 
 func machoDecode(d *decode.D, in interface{}) interface{} {
@@ -443,7 +394,7 @@ func ofileDecode(d *decode.D) {
 		d.FieldU32("filetype", fileTypes)
 		ncmds = d.FieldU32("ncdms")
 		d.FieldU32("sizeofncdms")
-		d.FieldStruct("flags", parseFlags(machHeaderFlags))
+		d.FieldStruct("flags", parseMachHeaderFlags)
 		if archBits == 64 {
 			d.FieldRawLen("reserved", 4*8, d.BitBufIsZero())
 		}
@@ -479,7 +430,7 @@ func ofileDecode(d *decode.D) {
 				d.FieldS32("initprot")
 				d.FieldS32("maxprot")
 				nsects = d.FieldU32("nsects")
-				d.FieldStruct("flags", parseFlags(segmentFlags))
+				d.FieldStruct("flags", parseSegmentFlags)
 			})
 			var nsectIdx uint64
 			d.FieldStructArrayLoop("sections", "section", func() bool {
@@ -506,7 +457,7 @@ func ofileDecode(d *decode.D) {
 					d.FieldValueStr("type", sectionTypes[sectionTypeMasked])
 					// rewind 32 bits and parse flags
 					d.SeekRel(-4 * 8)
-					d.FieldStruct("flags", parseFlags(sectionFlags))
+					d.FieldStruct("flags", parseSectionFlags)
 					d.FieldU32("reserved1")
 					d.FieldU32("reserved2")
 					if archBits == 64 {
@@ -719,16 +670,74 @@ func intelSubTypeHelper(f, m uint64) uint64 {
 	return f + (m << 4)
 }
 
-func parseFlags(symbolMap map[uint64]string) func(*decode.D) {
-	return func(d *decode.D) {
-		var flagIdx uint64
-		flags := d.FieldU32("flags")
-		for flagIdx = 1; flagIdx <= 0x80000000; flagIdx <<= 1 {
-			if val, ok := symbolMap[flagIdx]; ok {
-				d.FieldValueBool(val, (flagIdx&flags) != 0)
-			}
-		}
-	}
+func parseMachHeaderFlags(d *decode.D) {
+	d.RawLen(4)
+
+	d.RawLen(2)
+	d.FieldBool("MH_APP_EXTENSION_SAFE")
+	d.FieldBool("MH_NO_HEAP_EXECUTION")
+
+	d.FieldBool("MH_HAS_TLV_DESCRIPTORS")
+	d.FieldBool("MH_DEAD_STRIPPABLE_DYLIB")
+	d.FieldBool("MH_PIE")
+	d.FieldBool("MH_NO_REEXPORTED_DYLIBS")
+
+	d.FieldBool("MH_SETUID_SAFE")
+	d.FieldBool("MH_ROOT_SAFE")
+	d.FieldBool("MH_ALLOW_STACK_EXECUTION")
+	d.FieldBool("MH_BINDS_TO_WEAK")
+
+	d.FieldBool("MH_WEAK_DEFINES")
+	d.FieldBool("MH_CANONICAL")
+	d.FieldBool("MH_SUBSECTIONS_VIA_SYMBOLS")
+	d.FieldBool("MH_ALLMODSBOUND")
+
+	d.FieldBool("MH_PREBINDABLE")
+	d.FieldBool("MH_NOFIXPREBINDING")
+	d.FieldBool("MH_NOMULTIDEFS")
+	d.FieldBool("MH_FORCE_FLAT")
+
+	d.FieldBool("MH_TWOLEVEL")
+	d.FieldBool("MH_LAZY_INIT")
+	d.FieldBool("MH_SPLIT_SEGS")
+	d.FieldBool("MH_PREBOUND")
+
+	d.FieldBool("MH_BINDATLOAD")
+	d.FieldBool("MH_DYLDLINK")
+	d.FieldBool("MH_INCRLINK")
+	d.FieldBool("MH_NOUNDEFS")
+}
+
+func parseSegmentFlags(d *decode.D) {
+	d.RawLen(28)
+	d.FieldBool("SG_PROTECTED_VERSION_1")
+	d.FieldBool("SG_NORELOC")
+	d.FieldBool("SG_FVMLIB")
+	d.FieldBool("SG_HIGHVM")
+}
+
+func parseSectionFlags(d *decode.D) {
+	d.FieldBool("S_ATTR_PURE_INSTRUCTIONS")
+	d.FieldBool("S_ATTR_NO_TOC")
+	d.FieldBool("S_ATTR_STRIP_STATIC_SYMS")
+	d.FieldBool("S_ATTR_NO_DEAD_STRIP")
+
+	d.FieldBool("S_ATTR_LIVE_SUPPORT")
+	d.FieldBool("S_ATTR_SELF_MODIFYING_CODE")
+	d.FieldBool("S_ATTR_DEBUG")
+	d.RawLen(1)
+
+	d.RawLen(4)
+	d.RawLen(4)
+	d.RawLen(4)
+
+	d.RawLen(1)
+	d.FieldBool("S_ATTR_SOME_INSTRUCTIONS")
+	d.FieldBool("S_ATTR_EXT_RELOC")
+	d.FieldBool("S_ATTR_LOC_RELOC")
+
+	d.RawLen(4)
+	d.RawLen(4)
 }
 
 var timestampMapper = scalar.Fn(func(s scalar.S) (scalar.S, error) {
