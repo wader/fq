@@ -34,34 +34,49 @@ Flags can be struct with bit-fields.
 
 ### Decoder API
 
-Readers use this convention `d.<Field>?<reader<length>?>|<type>Fn>(... [,scalar.Mapper...])`:
+`*decode.D` reader methods use this name convention:
+
+`<Field>?(<reader<length>?>|<type>Fn>)(...[, scalar.Mapper...]) <type>`
+
 - If starts with `Field` a field will be added and first argument will be name of field. If not it will just read.
 - `<reader<length>?>|<type>Fn>` a reader or a reader function
-  - `<reader<length>?>` reader such as `U16` (unsigned 16 bit) or `UTF8` (utf8 and length as argument). Read bits using some decoder.
+  - `<reader<length>?>` Read bits using some decoder.
+    - `U16` unsigned 16 bit integer.
+    - `UTF8` UTF8 with byte length as argument.
   - `<type>Fn>` read using a `func(d *decode.D) <type>`  function.
     - This can be used to implement own custom readers.
 
 All `Field` functions takes a var args of `scalar.Mapper`:s that will be applied after reading.
 
-`<type>` are these go types and their name in the API:
-- `uint64` known as `U` (unsigned number)
-- `int64` known as `S` (singed number)
-- `float64` known as `F`
-- `string` known as `Str`
-- `bool` known as `Bool`,
-- `*big.Int` known as `BigInt`
-- `nil` null value known as `Nil`.
+`<type>` are these types:
+
+| `<type>` | Go type | jq type |
+| -------- | ------- | ------- |
+| U        | uint64  | number  |
+| S        | int64   | number  |
+| F        | float64 | number  |
+| Str      | string  | string  |
+| Bool     | bool    | boolean |
+| Nil      | nil     | null    |
+
 
 TODO: there are some more (BitBuf etc, should be renamed)
 
 To add a struct or array use `d.FieldStruct(...)` and `d.FieldArray(...)`.
 
+TODO: nested formats, buffers, own decoders, scalar mappers
+
+TODO: seeking, framed/limited/range decode
+
 For example this decoder:
 
 ```go
-d.FieldUTF8("magic", 4) // read 4 byte UTF8 string and add it as "magic"
-d.FieldStruct("headers", func(d *decode.D) { // create a new struct and add it as "headers"
-    d.FieldU8("type", scalar.UToSymStr{ // read 8 bit unsigned integer, map it and add it as "type
+// read 4 byte UTF8 string and add it as "magic", return a string
+d.FieldUTF8("magic", 4)
+// create a new struct and add it as "headers", returns a *decode.D
+d.FieldStruct("headers", func(d *decode.D) {
+    // read 8 bit unsigned integer, map it and add it as "type", returns a uint64
+    d.FieldU8("type", scalar.UToSymStr{
         1: "start",
         // ...
     })
@@ -81,6 +96,7 @@ will produce something like this:
                 V: scalar.S{
                     Actual: "abcd", // read and set by UTF8 reader
                 },
+                Range: ranges.Range{Start: 0, Len: 32},
             },
             *decode.Value{
                 Parent: &... // ref parent *decode.Value>,
@@ -94,12 +110,15 @@ will produce something like this:
                                 Actual: uint64(1), // read and set by U8 reader
                                 Sym: "start", // set by UToSymStr scalar.Mapper
                             },
+                            Range: ranges.Range{Start: 32, Len: 8},
                         },
                     },
                 },
+                Range: ranges.Range{Start: 32, Len: 8},
             },
         },
     },
+    Range: ranges.Range{Start: 0, Len: 40},
 }
 ```
 
@@ -114,26 +133,26 @@ and will look like this in jq/JSON:
 }
 ```
 
-#### *decode.D
+#### `*decode.D` type
 
 This is the main type used during decoding. It keeps track of:
 
-- A current array or struct `*decode.Value` where fields will be added to.
+- A current array or struct [`*decode.Value`](#decodevalue-type) where fields will be added.
 - Current bit reader
+- Current default endian
 - Decode options
-- Default endian
 
-New `*decode.D` are created during decoding when `d.FieldStruct` etc is used. It is also a kitchen sink of all kind functions for reading various standard number and string encodings etc.
+New [`*decode.D`](#decoded-type) are created during decoding when `d.FieldStruct` etc is used. It is also a kitchen sink of all kind functions for reading various standard number and string encodings etc.
 
 Decoder authors do not have to create them.
 
-#### decode.Value
+#### `*decode.Value` type
 
-Is what `*decode.D` produce and it used to represent the decoded structure, can be array, struct, number, string etc. It is the underlaying type used by `interp.DecodeValue` that implements `gojq.JQValue` to expose it as various jq types.
+Is what [`*decode.D`](#decoded-type) produces and it used to represent the decoded structure. Can be array, struct, number, string etc. It is the underlaying type used by `interp.DecodeValue` that implements `gojq.JQValue` to expose it as various jq types, which in turn is used to produce JSON.
 
 It stores:
-- Parent `*decode.Value` unless it's a root.
-- A decoded value, a `scalar.S` or `*decode.Compound` (struct or array)
+- Parent [`*decode.Value`](#decodevalue-type) unless it's a root.
+- A decoded value, a [`scalar.S`](#scalars-type) or [`*decode.Compound`](#decodecompound-type) (struct or array)
 - Name in parent struct or array. If parent is a struct the name is unique.
 - Index in parent array. Not used if parent is a struct.
 - A bit range. Also struct and array have a range that is the min/max range of its children.
@@ -141,7 +160,7 @@ It stores:
 
 Decoder authors will probably not have to create them.
 
-#### scalar.S
+#### `scalar.S` type
 
 Keeps track of
 - Actual value. Decoded value represented using a go type like `uint64`, `string` etc. For example a value reader by a utf8 or utf16 reader both will ends up as a `string`.
@@ -149,17 +168,17 @@ Keeps track of
 - String description of the value.
 - Number representation
 
-The `scalar` package has `scalar.Mapper` implementations for all types to map actual to whole `scalar.S` value `scalar.<type>ToScalar` or to just to set symbolic value `scalar.<type>ToSym<type>`. There is also mappers to just set values or to change number representations `scalar.Hex`/`scalar.SymHex` etc.
+The `scalar` package has `scalar.Mapper` implementations for all types to map actual to whole [`scalar.S`](#scalars-type) value `scalar.<type>ToScalar` or to just to set symbolic value `scalar.<type>ToSym<type>`. There is also mappers to just set values or to change number representations `scalar.Hex`/`scalar.SymHex` etc.
 
 Decoder authors will probably not have to create them. But you might implement your own `scalar.Mapper` to modify them.
 
-#### *decode.Compound
+#### `*decode.Compound` type
 
-Used to store struct or array of `*decode.Value`.
+Used to store struct or array of [`*decode.Value`](#decodevalue-type).
 
 Decoder authors do not have to create them.
 
-### Development tips
+## Development tips
 
 I ususally use `-d <format>` and `dv` while developing, that way you will get a decode tree
 even if it fails. `dv` gives verbose output and also includes stacktrace.
@@ -302,7 +321,7 @@ docker --context 2016-box run --rm -ti -v "C:${PWD//\//\\}:C:${PWD//\//\\}" -w "
 
 - fq uses a gojq fork that can be found at https://github.com/wader/gojq/tree/fq (the "fq" branch)
 - fq uses a readline fork that can be found at https://github.com/wader/readline/tree/fq (the "fq" branch)
-- cli readline uses raw mode so blocks ctrl-c to become a SIGINT
+- cli readline uses raw mode to blocks ctrl-c to become a SIGINT
 
 ## Dependencies and source origins
 
