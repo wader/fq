@@ -432,7 +432,7 @@ func ofileDecode(d *decode.D) {
 		d.Fatalf("Invalid magic field")
 	}
 
-	d.SeekAbs(0)
+	d.SeekRel(-4 * 8)
 	d.FieldStruct("header", func(d *decode.D) {
 		d.FieldValueS("arch_bits", int64(archBits))
 		magic := d.FieldU32("magic", scalar.Hex, magicSymMapper)
@@ -682,10 +682,13 @@ func ofileDecode(d *decode.D) {
 func fatParse(d *decode.D) {
 	// Go to start of the file again
 	d.SeekAbs(0)
+	var narchs uint64
+	var ofile_offsets []uint64
 	d.FieldStruct("fat_header", func(d *decode.D) {
 		d.FieldRawLen("magic", 4*8)
-		narchs := d.FieldU32("narchs")
+		narchs = d.FieldU32("narchs")
 		narchsIdx := 0
+
 		d.FieldStructArrayLoop("archs", "arch", func() bool {
 			return narchsIdx < int(narchs)
 		}, func(d *decode.D) {
@@ -694,16 +697,20 @@ func fatParse(d *decode.D) {
 				// beware cputype and cpusubtype changes from ofile header to fat header
 				cpuType := d.FieldU32("cputype", cpuTypes)
 				d.FieldU32("cpusubtype", cpuSubTypes[cpuType])
-				d.FieldU32("offset")
+				ofile_offsets = append(ofile_offsets, d.FieldU32("offset"))
 				d.FieldU32("size")
 				d.FieldU32("align")
 			})
 			narchsIdx++
 		})
-		for i := 0; uint64(i) < narchs; i++ {
-			// parse ofiles
-			ofileDecode(d)
-		}
+	})
+	nfilesIdx := 0
+	d.FieldStructArrayLoop("files", "file", func() bool {
+		return nfilesIdx < int(narchs)
+	}, func(d *decode.D) {
+		d.SeekAbs(int64(ofile_offsets[nfilesIdx]) * 8)
+		ofileDecode(d)
+		nfilesIdx++
 	})
 }
 
