@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"io/ioutil"
 	"math/big"
 	"path"
 	"strconv"
@@ -22,6 +23,7 @@ import (
 	"github.com/wader/fq/internal/bitioextra"
 	"github.com/wader/fq/internal/colorjson"
 	"github.com/wader/fq/internal/ctxstack"
+	"github.com/wader/fq/internal/gojqextra"
 	"github.com/wader/fq/internal/ioextra"
 	"github.com/wader/fq/internal/mathextra"
 	"github.com/wader/fq/internal/pos"
@@ -35,7 +37,7 @@ import (
 //go:embed interp.jq
 //go:embed internal.jq
 //go:embed options.jq
-//go:embed buffer.jq
+//go:embed binary.jq
 //go:embed decode.jq
 //go:embed match.jq
 //go:embed funcs.jq
@@ -53,11 +55,11 @@ var functionRegisterFns []func(i *Interp) []Function
 func init() {
 	functionRegisterFns = append(functionRegisterFns, func(i *Interp) []Function {
 		return []Function{
-			{"_readline", 0, 2, i.readline, nil},
+			{"_readline", 0, 1, nil, i._readline},
 			{"eval", 1, 2, nil, i.eval},
-			{"_stdin", 0, 0, nil, i.makeStdioFn(i.os.Stdin())},
-			{"_stdout", 0, 0, nil, i.makeStdioFn(i.os.Stdout())},
-			{"_stderr", 0, 0, nil, i.makeStdioFn(i.os.Stderr())},
+			{"_stdin", 0, 1, nil, i.makeStdioFn("stdin", i.os.Stdin())},
+			{"_stdout", 0, 0, nil, i.makeStdioFn("stdout", i.os.Stdout())},
+			{"_stderr", 0, 0, nil, i.makeStdioFn("stderr", i.os.Stderr())},
 			{"_extkeys", 0, 0, i._extKeys, nil},
 			{"_exttype", 0, 0, i._extType, nil},
 			{"_global_state", 0, 1, i.makeStateFn(i.state), nil},
@@ -65,6 +67,7 @@ func init() {
 			{"_display", 1, 1, nil, i._display},
 			{"_can_display", 0, 0, i._canDisplay, nil},
 			{"_print_color_json", 0, 1, nil, i._printColorJSON},
+			{"_is_completing", 0, 1, i._isCompleting, nil},
 		}
 	})
 }
@@ -95,7 +98,7 @@ func (ce compileError) Value() interface{} {
 func (ce compileError) Error() string {
 	filename := ce.filename
 	if filename == "" {
-		filename = "src"
+		filename = "expr"
 	}
 	return fmt.Sprintf("%s:%d:%d: %s: %s", filename, ce.pos.Line, ce.pos.Column, ce.what, ce.err.Error())
 }
@@ -133,6 +136,11 @@ type Platform struct {
 	Arch string
 }
 
+type ReadlineOpts struct {
+	Prompt     string
+	CompleteFn func(line string, pos int) (newLine []string, shared int)
+}
+
 type OS interface {
 	Platform() Platform
 	Stdin() Input
@@ -144,7 +152,7 @@ type OS interface {
 	ConfigDir() (string, error)
 	// FS.File returned by FS().Open() can optionally implement io.Seeker
 	FS() fs.FS
-	Readline(prompt string, complete func(line string, pos int) (newLine []string, shared int)) (string, error)
+	Readline(opts ReadlineOpts) (string, error)
 	History() ([]string, error)
 }
 
@@ -270,7 +278,7 @@ func toBigInt(v interface{}) (*big.Int, error) {
 func toBytes(v interface{}) ([]byte, error) {
 	switch v := v.(type) {
 	default:
-		br, err := toBitBuf(v)
+		br, err := toBitReader(v)
 		if err != nil {
 			return nil, fmt.Errorf("value is not bytes")
 		}
@@ -283,14 +291,14 @@ func toBytes(v interface{}) ([]byte, error) {
 	}
 }
 
-func queryErrorPosition(src string, v error) pos.Pos {
+func queryErrorPosition(expr string, v error) pos.Pos {
 	var offset int
 
 	if tokIf, ok := v.(interface{ Token() (string, int) }); ok { //nolint:errorlint
 		_, offset = tokIf.Token()
 	}
 	if offset >= 0 {
-		return pos.NewFromOffset(src, offset)
+		return pos.NewFromOffset(expr, offset)
 	}
 	return pos.Pos{}
 }
@@ -317,17 +325,18 @@ const (
 )
 
 type evalContext struct {
-	ctx    context.Context
-	output io.Writer
+	ctx          context.Context
+	output       io.Writer
+	isCompleting bool
 }
 
 type Interp struct {
 	registry       *registry.Registry
 	os             OS
-	initFqQuery    *gojq.Query
+	initQuery      *gojq.Query
 	includeCache   map[string]*gojq.Query
 	interruptStack *ctxstack.Stack
-	// global state, is ref as Interp i cloned per eval
+	// global state, is ref as Interp is cloned per eval
 	state *interface{}
 
 	// new for each run, other values are copied by value
@@ -343,7 +352,7 @@ func New(os OS, registry *registry.Registry) (*Interp, error) {
 	}
 
 	i.includeCache = map[string]*gojq.Query{}
-	i.initFqQuery, err = gojq.Parse(initSource)
+	i.initQuery, err = gojq.Parse(initSource)
 	if err != nil {
 		return nil, fmt.Errorf("init:%s: %w", queryErrorPosition(initSource, err), err)
 	}
@@ -380,7 +389,7 @@ func (i *Interp) Main(ctx context.Context, output Output, versionStr string) err
 		"arch":    platform.Arch,
 	}
 
-	iter, err := i.EvalFunc(ctx, input, "_main", nil, output)
+	iter, err := i.EvalFunc(ctx, input, "_main", nil, EvalOpts{output: output})
 	if err != nil {
 		fmt.Fprintln(i.os.Stderr(), err)
 		return err
@@ -414,28 +423,24 @@ func (i *Interp) Main(ctx context.Context, output Output, versionStr string) err
 	return nil
 }
 
-func (i *Interp) readline(c interface{}, a []interface{}) interface{} {
+func (i *Interp) _readline(c interface{}, a []interface{}) gojq.Iter {
+	if i.evalContext.isCompleting {
+		return gojq.NewIter()
+	}
+
 	var opts struct {
+		Promopt  string  `mapstructure:"prompt"`
 		Complete string  `mapstructure:"complete"`
 		Timeout  float64 `mapstructure:"timeout"`
 	}
 
-	var err error
-	prompt := ""
-
 	if len(a) > 0 {
-		prompt, err = toString(a[0])
-		if err != nil {
-			return fmt.Errorf("prompt: %w", err)
-		}
-	}
-	if len(a) > 1 {
-		_ = mapstructure.Decode(a[1], &opts)
+		_ = mapstructure.Decode(a[0], &opts)
 	}
 
-	src, err := i.os.Readline(
-		prompt,
-		func(line string, pos int) (newLine []string, shared int) {
+	expr, err := i.os.Readline(ReadlineOpts{
+		Prompt: opts.Promopt,
+		CompleteFn: func(line string, pos int) (newLine []string, shared int) {
 			completeCtx := i.evalContext.ctx
 			if opts.Timeout > 0 {
 				var completeCtxCancelFn context.CancelFunc
@@ -450,7 +455,10 @@ func (i *Interp) readline(c interface{}, a []interface{}) interface{} {
 					c,
 					opts.Complete,
 					[]interface{}{line, pos},
-					ioextra.DiscardCtxWriter{Ctx: completeCtx},
+					EvalOpts{
+						output:       ioextra.DiscardCtxWriter{Ctx: completeCtx},
+						isCompleting: true,
+					},
 				)
 				if err != nil {
 					return nil, pos, err
@@ -485,24 +493,24 @@ func (i *Interp) readline(c interface{}, a []interface{}) interface{} {
 
 			return names, shared
 		},
-	)
+	})
 
 	if errors.Is(err, ErrInterrupt) {
-		return valueError{"interrupt"}
+		return gojq.NewIter(valueError{"interrupt"})
 	} else if errors.Is(err, ErrEOF) {
-		return valueError{"eof"}
+		return gojq.NewIter(valueError{"eof"})
 	} else if err != nil {
-		return err
+		return gojq.NewIter(err)
 	}
 
-	return src
+	return gojq.NewIter(expr)
 }
 
 func (i *Interp) eval(c interface{}, a []interface{}) gojq.Iter {
 	var err error
-	src, err := toString(a[0])
+	expr, err := toString(a[0])
 	if err != nil {
-		return gojq.NewIter(fmt.Errorf("src: %w", err))
+		return gojq.NewIter(fmt.Errorf("expr: %w", err))
 	}
 	var filenameHint string
 	if len(a) >= 2 {
@@ -512,7 +520,10 @@ func (i *Interp) eval(c interface{}, a []interface{}) gojq.Iter {
 		}
 	}
 
-	iter, err := i.Eval(i.evalContext.ctx, c, src, filenameHint, i.evalContext.output)
+	iter, err := i.Eval(i.evalContext.ctx, c, expr, EvalOpts{
+		filename: filenameHint,
+		output:   i.evalContext.output,
+	})
 	if err != nil {
 		return gojq.NewIter(err)
 	}
@@ -547,25 +558,57 @@ func (i *Interp) makeStateFn(state *interface{}) func(c interface{}, a []interfa
 	}
 }
 
-func (i *Interp) makeStdioFn(t Terminal) func(c interface{}, a []interface{}) gojq.Iter {
+func (i *Interp) makeStdioFn(name string, t Terminal) func(c interface{}, a []interface{}) gojq.Iter {
 	return func(c interface{}, a []interface{}) gojq.Iter {
-		if c == nil {
+		switch {
+		case len(a) == 1:
+			if i.evalContext.isCompleting {
+				return gojq.NewIter("")
+			}
+
+			r, ok := t.(io.Reader)
+			if !ok {
+				return gojq.NewIter(fmt.Errorf("%s is not readable", name))
+			}
+			l, ok := gojqextra.ToInt(a[0])
+			if !ok {
+				return gojq.NewIter(gojqextra.FuncTypeError{Name: name, V: a[0]})
+			}
+
+			buf := make([]byte, l)
+			n, err := io.ReadFull(r, buf)
+			s := string(buf[0:n])
+
+			vs := []interface{}{s}
+			switch {
+			case errors.Is(err, io.EOF), errors.Is(err, io.ErrUnexpectedEOF):
+				vs = append(vs, valueError{"eof"})
+			default:
+				vs = append(vs, err)
+			}
+
+			return gojq.NewIter(vs...)
+		case c == nil:
 			w, h := t.Size()
 			return gojq.NewIter(map[string]interface{}{
 				"is_terminal": t.IsTerminal(),
 				"width":       w,
 				"height":      h,
 			})
-		}
+		default:
+			if i.evalContext.isCompleting {
+				return gojq.NewIter()
+			}
 
-		if w, ok := t.(io.Writer); ok {
+			w, ok := t.(io.Writer)
+			if !ok {
+				return gojq.NewIter(fmt.Errorf("%v: it not writeable", c))
+			}
 			if _, err := fmt.Fprint(w, c); err != nil {
 				return gojq.NewIter(err)
 			}
 			return gojq.NewIter()
 		}
-
-		return gojq.NewIter(fmt.Errorf("%v: it not writeable", c))
 	}
 }
 
@@ -595,6 +638,11 @@ func (i *Interp) _display(c interface{}, a []interface{}) gojq.Iter {
 	}
 }
 
+func (i *Interp) _canDisplay(c interface{}, a []interface{}) interface{} {
+	_, ok := c.(Display)
+	return ok
+}
+
 func (i *Interp) _printColorJSON(c interface{}, a []interface{}) gojq.Iter {
 	opts := i.Options(a[0])
 
@@ -609,64 +657,77 @@ func (i *Interp) _printColorJSON(c interface{}, a []interface{}) gojq.Iter {
 	return gojq.NewIter()
 }
 
-func (i *Interp) _canDisplay(c interface{}, a []interface{}) interface{} {
-	_, ok := c.(Display)
-	return ok
+func (i *Interp) _isCompleting(c interface{}, a []interface{}) interface{} {
+	return i.evalContext.isCompleting
 }
 
 type pathResolver struct {
 	prefix string
-	open   func(filename string) (io.ReadCloser, error)
+	open   func(filename string) (io.ReadCloser, string, error)
 }
 
-func (i *Interp) lookupPathResolver(filename string) (pathResolver, bool) {
+func (i *Interp) lookupPathResolver(filename string) (pathResolver, error) {
+	configDir, err := i.os.ConfigDir()
+	if err != nil {
+		return pathResolver{}, err
+	}
+
 	resolvePaths := []pathResolver{
 		{
 			"@builtin/",
-			func(filename string) (io.ReadCloser, error) { return builtinFS.Open(filename) },
-		},
-		{
-			"@config/", func(filename string) (io.ReadCloser, error) {
-				configDir, err := i.os.ConfigDir()
-				if err != nil {
-					return nil, err
-				}
-				return i.os.FS().Open(path.Join(configDir, filename))
+			func(filename string) (io.ReadCloser, string, error) {
+				f, err := builtinFS.Open(filename)
+				return f, "@builtin/" + filename, err
 			},
 		},
 		{
-			"", func(filename string) (io.ReadCloser, error) {
+			"@config/", func(filename string) (io.ReadCloser, string, error) {
+				p := path.Join(configDir, filename)
+				f, err := i.os.FS().Open(p)
+				return f, p, err
+			},
+		},
+		{
+			"", func(filename string) (io.ReadCloser, string, error) {
 				if path.IsAbs(filename) {
-					return i.os.FS().Open(filename)
+					f, err := i.os.FS().Open(filename)
+					return f, filename, err
 				}
 
 				// TODO: jq $ORIGIN
 				for _, includePath := range append([]string{"./"}, i.includePaths()...) {
+					p := path.Join(includePath, filename)
 					if f, err := i.os.FS().Open(path.Join(includePath, filename)); err == nil {
-						return f, nil
+						return f, p, nil
 					}
 				}
 
-				return nil, &fs.PathError{Op: "open", Path: filename, Err: fs.ErrNotExist}
+				return nil, "", &fs.PathError{Op: "open", Path: filename, Err: fs.ErrNotExist}
 			},
 		},
 	}
 	for _, p := range resolvePaths {
 		if strings.HasPrefix(filename, p.prefix) {
-			return p, true
+			return p, nil
 		}
 	}
-	return pathResolver{}, false
+	return pathResolver{}, fmt.Errorf("could not resolve path: %s", filename)
 }
 
-func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilename string, output io.Writer) (gojq.Iter, error) {
-	gq, err := gojq.Parse(src)
+type EvalOpts struct {
+	filename     string
+	output       io.Writer
+	isCompleting bool
+}
+
+func (i *Interp) Eval(ctx context.Context, c interface{}, expr string, opts EvalOpts) (gojq.Iter, error) {
+	gq, err := gojq.Parse(expr)
 	if err != nil {
-		p := queryErrorPosition(src, err)
+		p := queryErrorPosition(expr, err)
 		return nil, compileError{
 			err:      err,
 			what:     "parse",
-			filename: srcFilename,
+			filename: opts.filename,
 			pos:      p,
 		}
 	}
@@ -701,7 +762,7 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilenam
 	compilerOpts = append(compilerOpts, gojq.WithVariables(variableNames))
 	compilerOpts = append(compilerOpts, gojq.WithModuleLoader(loadModule{
 		init: func() ([]*gojq.Query, error) {
-			return []*gojq.Query{i.initFqQuery}, nil
+			return []*gojq.Query{i.initQuery}, nil
 		},
 		load: func(name string) (*gojq.Query, error) {
 			if err := ctx.Err(); err != nil {
@@ -719,9 +780,9 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilenam
 			}
 			filename = filename + ".jq"
 
-			pr, ok := i.lookupPathResolver(filename)
-			if !ok {
-				return nil, fmt.Errorf("could not resolve path: %s", filename)
+			pr, err := i.lookupPathResolver(filename)
+			if err != nil {
+				return nil, err
 			}
 
 			if q, ok := ni.includeCache[filename]; ok {
@@ -730,7 +791,7 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilenam
 
 			filenamePart := strings.TrimPrefix(filename, pr.prefix)
 
-			f, err := pr.open(filenamePart)
+			f, absPath, err := pr.open(filenamePart)
 			if err != nil {
 				if !isTry {
 					return nil, err
@@ -750,7 +811,7 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilenam
 				return nil, compileError{
 					err:      err,
 					what:     "parse",
-					filename: filenamePart,
+					filename: absPath,
 					pos:      p,
 				}
 			}
@@ -819,18 +880,25 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilenam
 
 	gc, err := gojq.Compile(gq, compilerOpts...)
 	if err != nil {
-		p := queryErrorPosition(src, err)
+		p := queryErrorPosition(expr, err)
 		return nil, compileError{
 			err:      err,
 			what:     "compile",
-			filename: srcFilename,
+			filename: opts.filename,
 			pos:      p,
 		}
+	}
+
+	output := opts.output
+	if opts.output == nil {
+		output = ioutil.Discard
 	}
 
 	runCtx, runCtxCancelFn := i.interruptStack.Push(ctx)
 	ni.evalContext.ctx = runCtx
 	ni.evalContext.output = ioextra.CtxWriter{Writer: output, Ctx: runCtx}
+	// inherit or set
+	ni.evalContext.isCompleting = i.evalContext.isCompleting || opts.isCompleting
 	iter := gc.RunWithContext(runCtx, c, variableValues...)
 
 	iterWrapper := iterFn(func() (interface{}, bool) {
@@ -845,7 +913,7 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, src string, srcFilenam
 	return iterWrapper, nil
 }
 
-func (i *Interp) EvalFunc(ctx context.Context, c interface{}, name string, args []interface{}, output io.Writer) (gojq.Iter, error) {
+func (i *Interp) EvalFunc(ctx context.Context, c interface{}, name string, args []interface{}, opts EvalOpts) (gojq.Iter, error) {
 	var argsExpr []string
 	for i := range args {
 		argsExpr = append(argsExpr, fmt.Sprintf("$_args[%d]", i))
@@ -862,15 +930,15 @@ func (i *Interp) EvalFunc(ctx context.Context, c interface{}, name string, args 
 	// _args to mark variable as internal and hide it from completion
 	// {input: ..., args: [...]} | .args as {args: $_args} | .input | name[($_args[0]; ...)]
 	trampolineExpr := fmt.Sprintf(". as {args: $_args} | .input | %s%s", name, argExpr)
-	iter, err := i.Eval(ctx, trampolineInput, trampolineExpr, "", output)
+	iter, err := i.Eval(ctx, trampolineInput, trampolineExpr, opts)
 	if err != nil {
 		return nil, err
 	}
 	return iter, nil
 }
 
-func (i *Interp) EvalFuncValues(ctx context.Context, c interface{}, name string, args []interface{}, output io.Writer) ([]interface{}, error) {
-	iter, err := i.EvalFunc(ctx, c, name, args, output)
+func (i *Interp) EvalFuncValues(ctx context.Context, c interface{}, name string, args []interface{}, opts EvalOpts) ([]interface{}, error) {
+	iter, err := i.EvalFunc(ctx, c, name, args, opts)
 	if err != nil {
 		return nil, err
 	}

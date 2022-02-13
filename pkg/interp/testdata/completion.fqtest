@@ -56,4 +56,12 @@ mp3> .frames\t
 frames[]
 mp3> .frames[]\t
 .
+mp3> "abc" | tobitsrange.s\t
+size
+start
+stop
+mp3> options.c\t
+color
+colors
+compact
 mp3> ^D

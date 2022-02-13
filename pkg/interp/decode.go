@@ -44,7 +44,7 @@ func (err expectedExtkeyError) Error() string {
 // used by _isDecodeValue
 type DecodeValue interface {
 	Value
-	ToBuffer
+	ToBinary
 
 	DecodeValue() *decode.Value
 }
@@ -162,7 +162,7 @@ func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
 					c,
 					opts.Progress,
 					nil,
-					ioextra.DiscardCtxWriter{Ctx: i.evalContext.ctx},
+					EvalOpts{output: ioextra.DiscardCtxWriter{Ctx: i.evalContext.ctx}},
 				)
 			}
 			lastProgress := time.Now()
@@ -188,7 +188,7 @@ func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
 		}
 	}
 
-	bv, err := toBuffer(c)
+	bv, err := toBinary(c)
 	if err != nil {
 		return err
 	}
@@ -276,7 +276,7 @@ func makeDecodeValue(dv *decode.Value) interface{} {
 		switch vv := vv.Value().(type) {
 		case bitio.ReaderAtSeeker:
 			// is lazy so that in situations where the decode value is only used to
-			// create another buffer we don't have to read and create a string, ex:
+			// create another binary we don't have to read and create a string, ex:
 			// .unknown0 | tobytes[1:] | ...
 			return decodeValue{
 				JQValue: &gojqextra.Lazy{
@@ -364,8 +364,8 @@ func (dvb decodeValueBase) DecodeValue() *decode.Value {
 }
 
 func (dvb decodeValueBase) Display(w io.Writer, opts Options) error { return dump(dvb.dv, w, opts) }
-func (dvb decodeValueBase) ToBuffer() (Buffer, error) {
-	return Buffer{br: dvb.dv.RootBitBuf, r: dvb.dv.InnerRange(), unit: 8}, nil
+func (dvb decodeValueBase) ToBinary() (Binary, error) {
+	return Binary{br: dvb.dv.RootReader, r: dvb.dv.InnerRange(), unit: 8}, nil
 }
 func (decodeValueBase) ExtType() string { return "decode_value" }
 func (dvb decodeValueBase) ExtKeys() []string {
@@ -479,14 +479,14 @@ func (dvb decodeValueBase) JQValueKey(name string) interface{} {
 			return nil
 		}
 	case "_bits":
-		return Buffer{
-			br:   dv.RootBitBuf,
+		return Binary{
+			br:   dv.RootReader,
 			r:    dv.Range,
 			unit: 1,
 		}
 	case "_bytes":
-		return Buffer{
-			br:   dv.RootBitBuf,
+		return Binary{
+			br:   dv.RootReader,
 			r:    dv.Range,
 			unit: 8,
 		}
@@ -543,11 +543,11 @@ func (v decodeValue) JQValueToGoJQEx(optsFn func() Options) interface{} {
 		return v.JQValueToGoJQ()
 	}
 
-	bv, err := v.decodeValueBase.ToBuffer()
+	bv, err := v.decodeValueBase.ToBinary()
 	if err != nil {
 		return err
 	}
-	br, err := bv.toBuffer()
+	br, err := bv.toReader()
 	if err != nil {
 		return err
 	}

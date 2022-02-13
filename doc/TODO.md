@@ -1,8 +1,7 @@
 ### Known bugs to fix
 
-- `fq -n '"aabbccdd" | hex | tobytes[1:] | raw | tobytes'` create buffer `aabbcc` should be `bbccdd`. I think decode (raw in this case) is confused by root value buffer.
-- Buffers/string duality is confusing, most string functions should be wrapped to understand buffers.
-- `fq -n '[([0xab] | tobits[:4]), ([0xdc] | tobits[:4]), 0] | tobytes'` should create a `ad` buffer, now `a0`. Probably because use of `io.Copy` that will ends up padding on byte boundaries. Should use `bitio.Copy` and create a `bitio.Writer` that can transform to a `io.Writer`.
+- `fq -n '"aabbccdd" | hex | tobytes[1:] | raw | tobytes'` create binary `aabbcc` should be `bbccdd`. I think decode (raw in this case) is confused by root value buffer.
+- Buffers/string duality is confusing, most string functions should be wrapped to understand binary.
 - REPL cancel seems to sometimes exit a sub-REPl without properly cleanup options.
 - Value errors, can only be accessed with `._error`.
 - Framed (add unknown in gaps) decode should be on struct level not format?
@@ -14,6 +13,7 @@
 - Rework cli/repl user interrupt (context cancel via ctrl-c), see comment in Interp.Main
 - Optimize `Interp.Options` calls, now called per display. Cache per eval? needs to handle nested evals.
 - `<array decode value>[{start: ...: end: ...}]` syntax a bit broken.
+- REPL completion might have side effcts. Make interp.Function type know and wrap somehow? input, inputs, open, ...
 
 ### TODO and ideas
 

@@ -27,7 +27,7 @@ type Value struct {
 	V          interface{} // scalar.S or Compound (array/struct)
 	Index      int         // index in parent array/struct
 	Range      ranges.Range
-	RootBitBuf bitio.ReaderAtSeeker
+	RootReader bitio.ReaderAtSeeker
 	IsRoot     bool // TODO: rework?
 }
 

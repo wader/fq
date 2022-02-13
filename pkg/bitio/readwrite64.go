@@ -90,6 +90,8 @@ func Read64(buf []byte, firstBit int64, nBits int64) uint64 {
 	return n
 }
 
+// Write64 writes nBits bits large unsigned integer to buf starting from firstBit.
+// Integer is written most significant bit first.
 func Write64(v uint64, nBits int64, buf []byte, firstBit int64) {
 	if nBits < 0 || nBits > 64 {
 		panic(fmt.Sprintf("nBits must be 0-64 (%d)", nBits))

@@ -4,14 +4,14 @@ import (
 	"io"
 )
 
-// IOBitWriter is a bitio.BitWriter that writes to a io.Writer
+// IOBitWriter is a bitio.Writer that writes to a io.Writer.
 // Use Flush to write possible unaligned byte zero bit padded.
 type IOBitWriter struct {
 	w io.Writer
 	b Buffer
 }
 
-// NewIOBitWriter returns a new bitio.IOBitWriter
+// NewIOBitWriter returns a new bitio.IOBitWriter.
 func NewIOBitWriter(w io.Writer) *IOBitWriter {
 	return &IOBitWriter{w: w}
 }

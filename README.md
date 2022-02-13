@@ -147,6 +147,14 @@ xattr -d com.apple.quarantine fq && spctl --add fq
 brew install wader/tap/fq
 ```
 
+### Windows
+
+`fq` can be installed via [scoop](https://scoop.sh/).
+
+```powershell
+scoop install fq
+```
+
 ### Arch Linux
 
 `fq` can be installed from the [community repository](https://archlinux.org/packages/community/x86_64/fq/) using [pacman](https://wiki.archlinux.org/title/Pacman):
@@ -228,3 +236,18 @@ for inventing the [jq](https://github.com/stedolan/jq) language.
 - [GNU poke](https://www.jemarch.net/poke)
 - [ffmpeg/ffprobe](https://ffmpeg.org)
 - [hexdump](https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git/tree/text-utils/hexdump.c)
+
+## License
+
+`fq` is distributed under the terms of the MIT License.
+
+See the [LICENSE](LICENSE) file for license details.
+
+Licenses of direct dependencies:
+
+- Forked version of gojq https://github.com/itchyny/gojq/blob/main/LICENSE (MIT)
+- Forked version of readline https://github.com/chzyer/readline/blob/master/LICENSE (MIT)
+- gopacket https://github.com/google/gopacket/blob/master/LICENSE (BSD)
+- mapstructure https://github.com/mitchellh/mapstructure/blob/master/LICENSE (MIT)
+- go-difflib https://github.com/pmezard/go-difflib/blob/master/LICENSE (BSD)
+- golang/x/text https://github.com/golang/text/blob/master/LICENSE (BSD)

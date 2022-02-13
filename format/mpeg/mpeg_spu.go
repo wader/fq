@@ -168,6 +168,8 @@ func spuDecode(d *decode.D, in interface{}) interface{} {
 								size := d.FieldU16("size")
 								// TODO
 								d.FieldRawLen("data", int64(size)*8)
+							default:
+								d.Fatalf("unknown command %d", cmd)
 							}
 						})
 					}

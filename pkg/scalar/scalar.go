@@ -42,7 +42,7 @@ func (df DisplayFormat) FormatBase() int {
 }
 
 type S struct {
-	Actual        interface{} // int, int64, uint64, float64, string, bool, []byte, bitio.BitReaderAtSeeker,
+	Actual        interface{} // nil, int, int64, uint64, float64, string, bool, []byte, *bit.Int, bitio.BitReaderAtSeeker,
 	ActualDisplay DisplayFormat
 	Sym           interface{}
 	SymDisplay    DisplayFormat

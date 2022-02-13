@@ -219,7 +219,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 		printErrs(depth, valueErr)
 	}
 
-	rootBitLen, err := bitioextra.Len(rootV.RootBitBuf)
+	rootBitLen, err := bitioextra.Len(rootV.RootReader)
 	if err != nil {
 		return err
 	}
@@ -267,7 +267,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 		cfmt(colAddr, "%s%s\n",
 			rootIndent, deco.DumpAddr.F(mathextra.PadFormatInt(startLineByte, opts.AddrBase, true, addrWidth)))
 
-		vBR, err := bitioextra.Range(rootV.RootBitBuf, startByte*8, displaySizeBits)
+		vBR, err := bitioextra.Range(rootV.RootReader, startByte*8, displaySizeBits)
 		if err != nil {
 			return err
 		}
@@ -364,8 +364,8 @@ func dump(v *decode.Value, w io.Writer, opts Options) error {
 	}))
 }
 
-func hexdump(w io.Writer, bv Buffer, opts Options) error {
-	br, err := bv.toBuffer()
+func hexdump(w io.Writer, bv Binary, opts Options) error {
+	br, err := bv.toReader()
 	if err != nil {
 		return err
 	}
@@ -389,7 +389,7 @@ func hexdump(w io.Writer, bv Buffer, opts Options) error {
 			// TODO: hack
 			V:          &scalar.S{Actual: br},
 			Range:      bv.r,
-			RootBitBuf: biib,
+			RootReader: biib,
 		},
 		w,
 		opts,

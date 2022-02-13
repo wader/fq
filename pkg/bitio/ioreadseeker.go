@@ -1,14 +1,14 @@
 package bitio
 
-// IOReadSeeker is a io.ReadSeeker that reads and seeks from a bitio.BitReadSeeker
-// Unaligned byte at EOF will be zero bit padded
+// IOReadSeeker is a io.ReadSeeker that reads from a bitio.ReadSeeker.
+// Unaligned byte at EOF will be zero bit padded.
 type IOReadSeeker struct {
 	IOReader
 	s    Seeker
 	sPos int64
 }
 
-// NewIOReadSeeker return a new bitio.IOReadSeeker
+// NewIOReadSeeker return a new bitio.IOReadSeeker.
 func NewIOReadSeeker(rs ReadSeeker) *IOReadSeeker {
 	return &IOReadSeeker{
 		IOReader: IOReader{r: rs},
