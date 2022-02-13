@@ -251,3 +251,4 @@ Licenses of direct dependencies:
 - mapstructure https://github.com/mitchellh/mapstructure/blob/master/LICENSE (MIT)
 - go-difflib https://github.com/pmezard/go-difflib/blob/master/LICENSE (BSD)
 - golang/x/text https://github.com/golang/text/blob/master/LICENSE (BSD)
+- golang/snappy https://github.com/golang/snappy (BSD)
