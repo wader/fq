@@ -5,8 +5,8 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-const intMask = byte(127)
-const intFlag = byte(128)
+const intMask = 0b0111_1111
+const intFlag = 0b1000_0000
 
 // VarZigZag reads a variable length zigzag long from the current position in decoder
 func VarZigZag(d *decode.D) int64 {

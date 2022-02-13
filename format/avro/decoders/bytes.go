@@ -1,6 +1,7 @@
 package decoders
 
 import (
+	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
 )
@@ -14,10 +15,10 @@ func decodeBytesFn(sms ...scalar.Mapper) (DecodeFn, error) {
 
 		d.FieldStruct(name, func(d *decode.D) {
 			length := d.FieldSFn("length", VarZigZag)
-			r := d.FieldRawLen("data", length*8, sms...)
+			br := d.FieldRawLen("data", length*8, sms...)
 
 			val = make([]byte, length)
-			if _, err := r.ReadBits(val, length*8); err != nil {
+			if _, err := bitio.ReadFull(br, val, length*8); err != nil {
 				d.Fatalf("failed to read %s bytes: %v", name, err)
 			}
 		})

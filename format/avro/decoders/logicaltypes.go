@@ -69,10 +69,7 @@ type TimeMapper struct {
 }
 
 func (t TimeMapper) MapScalar(s scalar.S) (scalar.S, error) {
-	v, ok := s.Actual.(int64)
-	if !ok {
-		return s, errors.New("not an int64")
-	}
+	v := s.ActualS()
 
 	if t.Precision == SECOND {
 		s.Sym = time.Unix(v, 0).UTC().Format("15:04:05")
@@ -92,10 +89,7 @@ type DateMapper struct {
 }
 
 func (d DateMapper) MapScalar(s scalar.S) (scalar.S, error) {
-	v, ok := s.Actual.(int64)
-	if !ok {
-		return s, errors.New("not an int64")
-	}
+	v := s.ActualS()
 	s.Sym = time.Unix(0, 0).AddDate(0, 0, int(v)).UTC().Format("2006-01-02")
 	return s, nil
 }
