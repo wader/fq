@@ -683,7 +683,7 @@ func fatParse(d *decode.D) {
 	// Go to start of the file again
 	d.SeekAbs(0)
 	d.FieldStruct("fat_header", func(d *decode.D) {
-		d.FieldRawLen("magic", 8*8)
+		d.FieldRawLen("magic", 4*8)
 		narchs := d.FieldU32("narchs")
 		narchsIdx := 0
 		d.FieldStructArrayLoop("archs", "arch", func() bool {
