@@ -26,6 +26,7 @@ const (
 	AVC_PPS             = "avc_pps"
 	AVC_SEI             = "avc_sei"
 	AVC_SPS             = "avc_sps"
+	AVRO_OCF            = "avro_ocf"
 	BENCODE             = "bencode"
 	BSD_LOOPBACK_FRAME  = "bsd_loopback_frame"
 	BSON                = "bson"

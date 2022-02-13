@@ -7,6 +7,7 @@ import (
 	_ "github.com/wader/fq/format/ar"
 	_ "github.com/wader/fq/format/asn1"
 	_ "github.com/wader/fq/format/av1"
+	_ "github.com/wader/fq/format/avro"
 	_ "github.com/wader/fq/format/bencode"
 	_ "github.com/wader/fq/format/bson"
 	_ "github.com/wader/fq/format/bzip2"
