@@ -672,7 +672,8 @@ func ofileDecode(d *decode.D) {
 			})
 		default:
 			if _, ok := loadCommands[cmd]; !ok {
-				d.FieldRawLen("unknown", int64((cmdsize-8)*8))
+				d.SeekRel(int64((cmdsize - 8) * 8))
+				// Seek Rel so the parts are marked unknown
 			}
 		}
 		ncmdsIdx++
