@@ -20,7 +20,7 @@ exitcode: 5
 stderr:
 error: break
 $ fq -d raw -n '(.,inputs) | try todescription catch .' /a /b /c
-"expected a decode value but got: null (null)"
+"expected decode value but got: null (null)"
 "/a"
 "/b"
 "/c"

@@ -45,7 +45,7 @@ mp3> . | (root, buffer_root, format_root, parent | try topath | path_to_expr cat
 "."
 "."
 "."
-"expected a decode value but got: null (null)"
+"expected decode value but got: null (null)"
 []
 mp3> .headers[0].magic | (root, buffer_root, format_root, parent | topath | path_to_expr), [parents | topath | path_to_expr]
 "."
@@ -70,15 +70,15 @@ mp3> .frames[0].side_info.granules[1] | (root, buffer_root, format_root, parent 
   "."
 ]
 mp3> 123 | root
-error: expected a decode value but got: number (123)
+error: expected decode value but got: number (123)
 mp3> 123 | buffer_root
-error: expected a decode value but got: number (123)
+error: expected decode value but got: number (123)
 mp3> 123 | format_root
-error: expected a decode value but got: number (123)
+error: expected decode value but got: number (123)
 mp3> 123 | parent
-error: expected a decode value but got: number (123)
+error: expected decode value but got: number (123)
 mp3> 123 | parents
-error: expected a decode value but got: number (123)
+error: expected decode value but got: number (123)
 mp3> ^D
 $ fq -d mp3 -i . /test.mp3
 mp3> . as $c | ("headers", 0, "abc") as $n | $n, try ($c | has($n)) catch .

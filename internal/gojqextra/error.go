@@ -2,9 +2,6 @@ package gojqextra
 
 import (
 	"fmt"
-	"math/big"
-
-	"github.com/wader/gojq"
 )
 
 // many of these based on errors from gojq
@@ -17,7 +14,7 @@ type UnaryTypeError struct {
 }
 
 func (err *UnaryTypeError) Error() string {
-	return fmt.Sprintf("cannot %s: %s", err.Name, typeof(err.V))
+	return fmt.Sprintf("cannot %s: %s", err.Name, Typeof(err.V))
 }
 
 type BinopTypeError struct {
@@ -26,7 +23,7 @@ type BinopTypeError struct {
 }
 
 func (err *BinopTypeError) Error() string {
-	return "cannot " + err.Name + ": " + typeof(err.L) + " and " + typeof(err.R)
+	return "cannot " + err.Name + ": " + Typeof(err.L) + " and " + Typeof(err.R)
 }
 
 type NonUpdatableTypeError struct {
@@ -43,7 +40,7 @@ type FuncTypeError struct {
 	V    interface{}
 }
 
-func (err FuncTypeError) Error() string { return err.Name + " cannot be applied to: " + typeof(err.V) }
+func (err FuncTypeError) Error() string { return err.Name + " cannot be applied to: " + Typeof(err.V) }
 
 type FuncTypeNameError struct {
 	Name string
@@ -110,25 +107,4 @@ type ArrayIndexTooLargeError struct {
 
 func (err *ArrayIndexTooLargeError) Error() string {
 	return fmt.Sprintf("array index too large: %v", err.V)
-}
-
-func typeof(v interface{}) string {
-	switch v := v.(type) {
-	case nil:
-		return "null"
-	case bool:
-		return "boolean"
-	case int, float64, *big.Int:
-		return "number"
-	case string:
-		return "string"
-	case []interface{}:
-		return "array"
-	case map[string]interface{}:
-		return "object"
-	case gojq.JQValue:
-		return fmt.Sprintf("JQValue(%s)", v.JQValueType())
-	default:
-		panic(fmt.Sprintf("invalid value: %v", v))
-	}
 }
