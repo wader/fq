@@ -27,7 +27,6 @@ func init() {
 			{"_registry", 0, 0, i._registry, nil},
 			{"_tovalue", 1, 1, i._toValue, nil},
 			{"_decode", 2, 2, i._decode, nil},
-			{"_is_decode_value", 0, 0, i._isDecodeValue, nil},
 		}
 	})
 }
@@ -227,11 +226,6 @@ func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
 	}
 
 	return makeDecodeValue(dv)
-}
-
-func (i *Interp) _isDecodeValue(c interface{}, a []interface{}) interface{} {
-	_, ok := c.(DecodeValue)
-	return ok
 }
 
 func valueKey(name string, a, b func(name string) interface{}) interface{} {

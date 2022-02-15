@@ -16,4 +16,4 @@ error: not matroska format
 $ fq -n '1 | matroska_path(".Segment")'
 exitcode: 5
 stderr:
-error: expected a decode value but got: number (1)
+error: expected decode value but got: number (1)

@@ -546,7 +546,7 @@ func (i *Interp) _extType(c interface{}, a []interface{}) interface{} {
 	if v, ok := c.(Value); ok {
 		return v.ExtType()
 	}
-	return nil
+	return gojqextra.Typeof(c)
 }
 
 func (i *Interp) makeStateFn(state *interface{}) func(c interface{}, a []interface{}) interface{} {
