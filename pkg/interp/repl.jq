@@ -1,4 +1,8 @@
+include "internal";
+include "options";
 include "query";
+include "decode";
+include "funcs";
 
 # TODO: currently only make sense to allow keywords start  start a term or directive
 def _complete_keywords:
@@ -181,7 +185,11 @@ def _repl($opts): #:: a|(Opts) => @
   def _read_expr:
     _repeat_break(
       # both _prompt and _complete want input arrays
-      ( _readline({prompt: _prompt, complete: "_complete", timeout: 1})
+      ( _readline({
+          prompt: _prompt,
+          complete: "_complete",
+          timeout: options.completion_timeout
+        })
       | if trim == "" then empty
         else (., error("break"))
         end

@@ -64,4 +64,5 @@ mp3> options.c\t
 color
 colors
 compact
+completion_timeout
 mp3> ^D
