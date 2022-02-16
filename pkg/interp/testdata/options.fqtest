@@ -9,6 +9,7 @@ $ fq -n options
   "color": false,
   "colors": "array=white,dumpaddr=yellow,dumpheader=yellow+underline,error=brightred,false=yellow,index=white,null=brightblack,number=cyan,object=white,objectkey=brightblue,string=green,true=yellow,value=white",
   "compact": false,
+  "completion_timeout": 10,
   "decode_file": [],
   "decode_format": "probe",
   "decode_progress": false,

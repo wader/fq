@@ -1,3 +1,7 @@
+include "internal";
+include "options";
+include "binary";
+
 def display($opts):
   ( options($opts) as $opts
   | if _can_display then _display($opts)

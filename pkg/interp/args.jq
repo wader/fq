@@ -1,3 +1,5 @@
+include "funcs";
+
 # TODO: refactor this mess
 def _args_parse($args; $opts):
   def _parse($args; $flagmap; $r):

@@ -1,3 +1,5 @@
+include "binary";
+
 def _binary_fn(f):
   ( . as $c
   | tobytesrange

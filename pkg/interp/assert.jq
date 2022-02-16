@@ -1,3 +1,5 @@
+include "internal";
+
 def log: if env.VERBOSE then printerrln else empty end;
 
 def assert($name; $expected; $actual):

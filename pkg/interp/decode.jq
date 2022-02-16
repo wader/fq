@@ -1,3 +1,6 @@
+include "internal";
+include "options";
+
 # TODO: error value preview
 def _expected_decode_value:
   error("expected decode value but got: \(. | type) (\(. | tostring))");

@@ -1,3 +1,7 @@
+include "internal";
+include "binary";
+include "decode";
+
 def grep_by(f):
   ( ..
   | select(f)?
