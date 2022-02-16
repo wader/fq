@@ -374,17 +374,6 @@ func (d *D) PeekBytes(nBytes int) []byte {
 	return bs
 }
 
-func (d *D) PeekFind(nBits int, seekBits int64, fn func(v uint64) bool, maxLen int64) (int64, uint64) {
-	peekBits, v, err := d.TryPeekFind(nBits, seekBits, maxLen, fn)
-	if err != nil {
-		d.IOPanic(err, "PeekFind: TryPeekFind")
-	}
-	if peekBits == -1 {
-		d.Errorf("peek not found")
-	}
-	return peekBits, v
-}
-
 func (d *D) TryHasBytes(hb []byte) bool {
 	lenHb := len(hb)
 	if d.BitsLeft() < int64(lenHb*8) {
@@ -466,6 +455,17 @@ func (d *D) TryPeekFind(nBits int, seekBits int64, maxLen int64, fn func(v uint6
 	}
 
 	return count, v, nil
+}
+
+func (d *D) PeekFind(nBits int, seekBits int64, maxLen int64, fn func(v uint64) bool) (int64, uint64) {
+	peekBits, v, err := d.TryPeekFind(nBits, seekBits, maxLen, fn)
+	if err != nil {
+		d.IOPanic(err, "PeekFind: TryPeekFind")
+	}
+	if peekBits == -1 {
+		d.Errorf("peek not found")
+	}
+	return peekBits, v
 }
 
 // BytesRange reads nBytes bytes starting bit position start
@@ -557,8 +557,6 @@ func (d *D) TryBitBufLen(nBits int64) (bitio.ReaderAtSeeker, error) {
 
 	return br, nil
 }
-
-////
 
 // End is true if current position is at the end
 func (d *D) TryEnd() (bool, error) {

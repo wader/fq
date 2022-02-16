@@ -293,8 +293,8 @@ func textNullFn(encoding int) func(d *decode.D) string {
 		offset, _ := d.PeekFind(
 			int(nullLen)*8,
 			nullLen*8,
-			func(v uint64) bool { return v == 0 },
 			-1,
+			func(v uint64) bool { return v == 0 },
 		)
 		offsetBytes := offset / 8
 		text := textFn(encoding, int(offsetBytes))(d)
