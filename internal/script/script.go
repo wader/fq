@@ -124,7 +124,7 @@ func (cr *CaseRun) Environ() []string {
 		"_STDOUT_ISTERMINAL=1",
 		"NO_COLOR=1",
 		"NO_DECODE_PROGRESS=1",
-		"COMPLETION_TIMEOUT=10", // increase to make -race worker better
+		"COMPLETION_TIMEOUT=10", // increase to make -race work better
 	}
 	env = append(env, cr.Env...)
 	env = append(env, cr.ReadlineEnv...)

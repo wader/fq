@@ -217,7 +217,7 @@ go run fq.go
 
 See [TODO.md](doc/TODO.md)
 
-## Development
+## Development and adding a new decoder
 
 See [dev.md](doc/dev.md)
 
