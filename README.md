@@ -4,17 +4,19 @@ Tool, language and decoders for working with binary data.
 
 ![fq demo](doc/demo.svg)
 
-In most cases fq works the same way as jq but instead of reading JSON it reads binary data.
-The result is a JSON compatible structure where values have a bit range, can have symbolic
-values and know how to be presented in a useful ways.
+It is inspired by the well known jq tool and language and allows you to work with binary formats the same way you would use jq. In addition it can also present data similar to a hex viewer, do bit-oriented binary slicing and concatenation, supports nested formats and also features an interactive REPL with auto-completion.
 
-It was initially developed to debug, inspect and query media files but has since been extended
-to handle a variety of binary formats.
+It was designed for a need to query, inspect and debug codecs and metadata in media files and containers like mp4, flac, mp3, jpeg. But has since been extended to support a variety of formats like executables, packet captures including TCP reassembly and serialization formats like ASN1 BER, Avro, CBOR, protobuf and a lot more.
 
-You can pronounce the name as you wish, I pronounce jq /‘dʒei’kju:/ so I usually pronounce fq /‘ef’kju:/.
+In summary it aims to be something like jq, hexdump, dd and gdb combined into one.
 
-**NOTE:** fq is still early in development so some things are broken or do not make sense.
+**NOTE:** fq is still early in development so things might change, be broken or do not make sense.
 That also means that there is a great opportunity to help out!
+
+### Name
+
+The "f" originate from [file(1)](https://man7.org/linux/man-pages/man1/file.1.html) and format in FFmpeg terminlogy.  I pronounce jq /‘dʒei’kju:/ so I usually pronounce fq /‘ef’kju:/.
+
 
 ### Goals
 
