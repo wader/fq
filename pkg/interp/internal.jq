@@ -116,7 +116,10 @@ def _recurse_break(f):
 # TODO: better way? what about nested eval errors?
 def _eval_is_compile_error: type == "object" and .error != null and .what != null;
 def _eval_compile_error_tostring:
-  "\(.filename // "src"):\(.line):\(.column): \(.error)";
+  [ (.filename | if . == "" then "expr" end)
+  , if .line != 1 or .column != 0 then "\(.line):\(.column)" else empty end
+  , " \(.error)"
+  ] | join(":");
 def _eval($expr; $filename; f; on_error; on_compile_error):
   try
     eval($expr; $filename) | f

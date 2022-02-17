@@ -2,4 +2,4 @@
 $ fq -d mp3_frame '.header.crc | verbose' /mp3-frame-mono-crc
 exitcode: 3
 stderr:
-error: arg:1:0: function not defined: verbose/0
+error: arg: function not defined: verbose/0

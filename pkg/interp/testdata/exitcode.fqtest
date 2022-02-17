@@ -15,7 +15,7 @@ exitcode: 123
 $ fq -n invalid
 exitcode: 3
 stderr:
-error: arg:1:0: function not defined: invalid/0
+error: arg: function not defined: invalid/0
 $ fq -n "("
 exitcode: 3
 stderr:

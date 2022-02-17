@@ -5,9 +5,9 @@ null
 null> 1+1
 2
 null> (
-error: repl:1:2: unexpected token <EOF>
+error: expr:1:2: unexpected token <EOF>
 null> abc
-error: repl:1:0: function not defined: abc/0
+error: expr: function not defined: abc/0
 null> 1+"a"
 error: cannot add: number (1) and string ("a")
 null> 1 | repl

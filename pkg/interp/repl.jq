@@ -173,7 +173,7 @@ def _repl_eval($expr):
   ( _repl_display_opts as $opts
   | _eval(
       $expr;
-      "repl";
+      "";
       _repl_display($opts);
       _repl_on_error;
       _repl_on_compile_error
@@ -195,26 +195,22 @@ def _repl($opts): #:: a|(Opts) => @
         end
       )
     );
+  def _query_rewrite:
+    ( _query_fromstring
+    | if _query_pipe_last | _query_is_func("repl") then
+        _query_slurp_wrap(_query_func_rename("_repl_slurp"))
+      else
+        _query_iter_wrap
+      end
+    | _query_tostring
+    );
   def _repl_loop:
     ( . as $c
     | try
         ( _read_expr
-        | . as $expr
-        | try _query_fromstring
-          # TODO: nicer way to set filename for error message
-          catch (. | .filename = "repl")
-        | if _query_pipe_last | _query_is_func("repl") then
-            ( _query_slurp_wrap(_query_func_rename("_repl_slurp"))
-            | _query_tostring as $wrap_expr
-            | $c
-            | _repl_eval($wrap_expr)
-            )
-          else
-            ( $c
-            | .[]
-            | _repl_eval($expr)
-            )
-          end
+        | _query_rewrite as $expr
+        |  $c
+        | _repl_eval($expr)
         )
       catch
         if . == "interrupt" then empty
