@@ -4,9 +4,9 @@ Tool, language and decoders for working with binary data.
 
 ![fq demo](doc/demo.svg)
 
-It is inspired by the well known jq tool and language and allows you to work with binary formats the same way you would use jq. In addition it can also present data similar to a hex viewer, do bit-oriented binary slicing and concatenation, supports nested formats and also features an interactive REPL with auto-completion.
+fq is inspired by the well known jq tool and language and allows you to work with binary formats the same way you would using jq. In addition it can also present data similar to a hex viewer, transform, slice and concatenate binary data, supports nested formats and has an interactive REPL with auto-completion.
 
-It was designed for a need to query, inspect and debug codecs and metadata in media files and containers like mp4, flac, mp3, jpeg. But has since been extended to support a variety of formats like executables, packet captures including TCP reassembly and serialization formats like ASN1 BER, Avro, CBOR, protobuf and a lot more.
+It was originally designed to query, inspect and debug codecs and metadata in media files and containers like mp4, flac, mp3, jpeg. But has since been extended to support a variety of formats like executables, packet captures including TCP reassembly and serialization formats like ASN1 BER, Avro, CBOR, protobuf and a lot more.
 
 In summary it aims to be something like jq, hexdump, dd and gdb combined into one.
 
@@ -15,8 +15,8 @@ That also means that there is a great opportunity to help out!
 
 ### Name
 
-The "f" originate from [file(1)](https://man7.org/linux/man-pages/man1/file.1.html) and format in FFmpeg terminlogy.  I pronounce jq /‘dʒei’kju:/ so I usually pronounce fq /‘ef’kju:/.
-
+The "f" in fq  originate from [file(1)](https://man7.org/linux/man-pages/man1/file.1.html) and format in FFmpeg terminology.
+I pronounce jq /‘dʒei’kju:/ so I usually pronounce fq /‘ef’kju:/.
 
 ### Goals
 
@@ -131,12 +131,9 @@ For details see [usage.md](doc/usage.md)
 
 ## Install
 
-Use one of the methods listed below or download [release](https://github.com/wader/fq/releases)
-for your platform. Unarchive it and move the executable to `PATH` etc.
+Use one of the methods listed below or download [release](https://github.com/wader/fq/releases) for your platform. Unarchive it and move the executable to `PATH` etc.
 
-On macOS if don't install using a method below you might have to manually allow the binary to run.
-This can be done by trying to run the binary, ignore the warning and then go into security preference
-and allow it. Or you can run this command:
+On macOS if you don't install using a method below you might have to manually allow the binary to run. This can be done by trying to run the binary, ignore the warning and then go into security preference and allow it. Or you can run this command:
 
 ```sh
 xattr -d com.apple.quarantine fq && spctl --add fq
@@ -253,4 +250,4 @@ Licenses of direct dependencies:
 - mapstructure https://github.com/mitchellh/mapstructure/blob/master/LICENSE (MIT)
 - go-difflib https://github.com/pmezard/go-difflib/blob/master/LICENSE (BSD)
 - golang/x/text https://github.com/golang/text/blob/master/LICENSE (BSD)
-- golang/snappy https://github.com/golang/snappy (BSD)
+- golang/snappy https://github.com/golang/snappy/blob/master/LICENSE (BSD)
