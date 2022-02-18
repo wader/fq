@@ -207,3 +207,10 @@ def _query_iter_wrap:
   | _query_iter
   | _query_pipe($q)
   );
+
+# query rewrite helper, takes care of from/to
+def _query_fromto(f):
+  ( _query_fromstring
+  | f
+  | _query_tostring
+  );

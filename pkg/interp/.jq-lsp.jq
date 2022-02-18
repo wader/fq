@@ -29,5 +29,4 @@ def base64: empty;
 def eval($expr; $filename): empty;
 def eval($expr): empty;
 def open: empty;
-def options: empty;
 def scope: empty;
