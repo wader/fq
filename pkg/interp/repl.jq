@@ -181,6 +181,7 @@ def _repl_eval($expr):
   );
 
 # run read-eval-print-loop
+# input is array of inputs to iterate
 def _repl($opts): #:: a|(Opts) => @
   def _read_expr:
     _repeat_break(
@@ -195,30 +196,27 @@ def _repl($opts): #:: a|(Opts) => @
         end
       )
     );
-  def _query_rewrite:
-    ( _query_fromstring
-    | if _query_pipe_last | _query_is_func("repl") then
-        _query_slurp_wrap(_query_func_rename("_repl_slurp"))
-      else
-        _query_iter_wrap
-      end
-    | _query_tostring
-    );
   def _repl_loop:
-    ( . as $c
-    | try
+    try
+      _repl_eval(
         ( _read_expr
-        | _query_rewrite as $expr
-        |  $c
-        | _repl_eval($expr)
+        | _query_fromto(
+            if _query_pipe_last | _query_is_func("repl") then
+              # "... | repl" -> "map(... | .) | _repl_slurp"
+              _query_slurp_wrap(_query_func_rename("_repl_slurp"))
+            else
+              # "..." to -> ".[] | ..."
+              _query_iter_wrap
+            end
+          )
         )
-      catch
-        if . == "interrupt" then empty
-        elif . == "eof" then error("break")
-        elif _eval_is_compile_error then _repl_on_error
-        else error
-        end
-    );
+      )
+    catch
+      if . == "interrupt" then empty
+      elif . == "eof" then error("break")
+      elif _eval_is_compile_error then _repl_on_error
+      else error
+      end;
   if _is_completing | not then
     ( _options_stack(. + [$opts]) as $_
     | _finally(
