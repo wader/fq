@@ -9,6 +9,10 @@ def _query_pipe(r):
     right: r
   };
 
+# . -> .[]
+def _query_iter:
+  .term.suffix_list = [{iter: true}];
+
 def _query_ident:
   {term: {type: "TermTypeIdentity"}};
 
@@ -194,4 +198,12 @@ def _query_slurp_wrap(f):
   | _query_pipe($lq | f)
   | .meta = $meta
   | .imports = $imports
+  );
+
+# filter -> .[] | filter
+def _query_iter_wrap:
+  ( . as $q
+  | _query_ident
+  | _query_iter
+  | _query_pipe($q)
   );
