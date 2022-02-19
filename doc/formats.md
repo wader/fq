@@ -105,7 +105,7 @@ fq -d mp4 -o force=true file.mp4
 fq -d raw 'mp4({force: true})' file.mp4
 ```
 
-## Format functions
+## Format details
 
 [./formats_collect.sh]: sh-start
 

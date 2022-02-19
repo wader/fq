@@ -1,2 +1,7 @@
 #!/usr/bin/env fq -rnf
-[formats[] | "\(.name)"] | join(",\n")
+
+[ (formats | keys[]) as $format
+| if ($doc_formats | indices($format)) != [] then "[\($format)](doc/formats.md#\($format))"
+  else $format
+  end
+] | join(",\n")
