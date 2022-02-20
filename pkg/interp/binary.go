@@ -2,6 +2,7 @@ package interp
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"io/fs"
@@ -173,7 +174,6 @@ func (of *openFile) ToBinary() (Binary, error) {
 	return newBinaryFromBitReader(of.br, 8, 0)
 }
 
-// def open: #:: string| => binary
 // opens a file for reading from filesystem
 // TODO: when to close? when br loses all refs? need to use finalizer somehow?
 func (i *Interp) _open(c interface{}, a []interface{}) gojq.Iter {
@@ -196,6 +196,11 @@ func (i *Interp) _open(c interface{}, a []interface{}) gojq.Iter {
 		}
 		f, err = i.os.FS().Open(path)
 		if err != nil {
+			// path context added in jq error code
+			var pe *fs.PathError
+			if errors.As(err, &pe) {
+				return gojq.NewIter(pe.Err)
+			}
 			return gojq.NewIter(err)
 		}
 	}

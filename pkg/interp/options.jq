@@ -86,9 +86,10 @@ def _opt_eval($rest):
         # if -f was used, all rest non-args are filenames
         # otherwise first is expr rest is filesnames
         ( .expr_file
+        | . as $expr_file
         | if . then
             try (open | tobytes | tostring)
-            catch halt_error(_exit_code_args_error)
+            catch ("\($expr_file): \(.)" | halt_error(_exit_code_args_error))
           else $rest[0] // null
           end
         )
@@ -123,8 +124,10 @@ def _opt_eval($rest):
         ( .raw_file
         | if . then
             ( map(.[1] |=
-                try (open | tobytes | tostring)
-                catch halt_error(_exit_code_args_error)
+                ( . as $f
+                | try (open | tobytes | tostring)
+                  catch ("\($f): \(.)" | halt_error(_exit_code_args_error))
+                )
               )
             )
           end

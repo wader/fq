@@ -417,7 +417,9 @@ you currently have to do `fq -d raw 'mp3({force: true})' file`.
   - `ddv`/`ddv($opts)` verbosely display value and don't truncate arrays or binaries
 - `p`/`preview` show preview of field tree
 - `hd`/`hexdump` hexdump value
-- `repl` nested REPL, must be last in a pipeline. `1 | repl`, can "slurp" outputs `1, 2, 3 | repl`.
+- `repl`/`repl($opts)` nested REPL, must be last in a pipeline. `1 | repl`, can "slurp" outputs. Ex: `1, 2, 3 | repl`, `[1,2,3] | repl({compact: true})`.
+- `slurp($name)` slurp outputs and save them to `$name`, must be last in pipeline. Will be available as global array `$name`. Ex `1,2,3 | slurp("a")`, `$a[]` same as `spew("a")`.
+- `spew`/`spew($name)` output previously slurped values. `spew` outputs all slurps as an object, `spew($name)` outouts one slurp. Ex: `spew("a")`.
 - `paste` read string from stdin until ^D. Useful for pasting text.
     - Ex: `paste | frompem | asn1_ber | repl` read from stdin then decode and start a new sub-REPL with result.
 

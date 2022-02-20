@@ -36,7 +36,6 @@
 
 #### Language
 
-- Nicer variables somehow? `... | var($VAR)`? make slurp and rewrite `$var` to `$var[]`?
 - Cleanup/Make binary buffers make sense.
 - gojq uses golang `int` for slice indexes, might be issue for non-64bit cpus
 

@@ -2,6 +2,9 @@ include "internal";
 include "options";
 include "binary";
 
+def _display_default_opts:
+  options({depth: 1});
+
 def display($opts):
   ( options($opts) as $opts
   | if _can_display then _display($opts)
@@ -17,6 +20,7 @@ def display($opts):
   | error("unreachable")
   );
 def display: display({});
+
 
 def hexdump($opts): _hexdump(options({display_bytes: 0} + $opts));
 def hexdump: hexdump({display_bytes: 0});
@@ -55,7 +59,7 @@ def path_to_expr:
 # TODO: don't use eval? should support '.a.b[1]."c.c"' and escapes?
 def expr_to_path:
   ( if type != "string" then error("require string argument") end
-  | eval("null | path(\(.))")
+  | _eval("null | path(\(.))")
   );
 
 def trim: capture("^\\s*(?<str>.*?)\\s*$"; "").str;
