@@ -21,6 +21,21 @@ def stderr:
   , .
   );
 
+# try to be same exit codes as jq
+# TODO: jq seems to halt processing inputs on JSON decode error but not IO errors,
+# seems strange.
+# jq '(' <(echo 1) <(echo 2) ; echo $? => 3 and no inputs processed
+# jq '.' missing <(echo 2) ; echo $? => 2 and continues process inputs
+# jq '.' <(echo 'a') <(echo 123) ; echo $? => 4 and stops process inputs
+# jq '.' missing <(echo 'a') <(echo 123) ; echo $? => 2 ???
+# jq '"a"+.' <(echo '"a"') <(echo 1) ; echo $? => 5
+# jq '"a"+.' <(echo 1) <(echo '"a"') ; echo $? => 0
+def _exit_code_args_error: 2;
+def _exit_code_input_io_error: 2;
+def _exit_code_compile_error: 3;
+def _exit_code_input_decode_error: 4;
+def _exit_code_expr_error: 5;
+
 def _global_var($k): _global_state[$k];
 def _global_var($k; f): _global_state(_global_state | .[$k] |= f) | .[$k];
 

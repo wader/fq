@@ -12,20 +12,6 @@ include "formats";
 # optional user init
 include "@config/init?";
 
-# try to be same exit codes as jq
-# TODO: jq seems to halt processing inputs on JSON decode error but not IO errors,
-# seems strange.
-# jq '(' <(echo 1) <(echo 2) ; echo $? => 3 and no inputs processed
-# jq '.' missing <(echo 2) ; echo $? => 2 and continues process inputs
-# jq '.' <(echo 'a') <(echo 123) ; echo $? => 4 and stops process inputs
-# jq '.' missing <(echo 'a') <(echo 123) ; echo $? => 2 ???
-# jq '"a"+.' <(echo '"a"') <(echo 1) ; echo $? => 5
-# jq '"a"+.' <(echo 1) <(echo '"a"') ; echo $? => 0
-def _exit_code_args_error: 2;
-def _exit_code_input_io_error: 2;
-def _exit_code_compile_error: 3;
-def _exit_code_input_decode_error: 4;
-def _exit_code_expr_error: 5;
 
 def d($opts): display($opts);
 def d: display({});
@@ -157,6 +143,28 @@ def _cli_expr_eval($expr; $filename):
 
 
 def _main:
+  def _banner:
+    ( "fq - jq for binary formats"
+    , "Tool, language and decoders for inspecting binary data."
+    , "For more information see https://github.com/wader/fq"
+    );
+  def _usage($arg0):
+    "Usage: \($arg0) [OPTIONS] [--] [EXPR] [FILE...]";
+  def _help($arg0):
+    ( _banner
+    , ""
+    , _usage($arg0)
+    , ""
+    , "Example usages:"
+    , "  fq . file"
+    , "  fq d file"
+    , "  fq tovalue file"
+    , "  cat file.cbor | fq -d cbor torepr"
+    , "  fq 'grep(\"^main$\") | parent' /bin/ls"
+    , "  fq 'grep_by(format == \"exif\") | d' *.png *.jpeg"
+    , ""
+    , args_help_text(_opt_cli_opts)
+    );
   def _formats_list:
     [ ( formats
       | to_entries[]
@@ -172,147 +180,42 @@ def _main:
           )
         ) | join("")
       );
-  def _banner:
-    ( "fq - jq for binary formats"
-    , "Tool, language and decoders for inspecting binary data."
-    , "For more information see https://github.com/wader/fq"
+  def _map_decode_file:
+    map(
+      ( . as $a
+      | .[1] |=
+        try (open | decode)
+        catch
+          ( "--decode-file \($a[0]): \(.)"
+          | halt_error(_exit_code_args_error)
+          )
+      )
     );
-  def _usage($arg0):
-    "Usage: \($arg0) [OPTIONS] [--] [EXPR] [FILE...]";
   ( . as {$version, $os, $arch, $args, args: [$arg0]}
   # make sure we don't unintentionally use . to make things clearer
   | null
   | ( try _args_parse($args[1:]; _opt_cli_opts)
       catch halt_error(_exit_code_args_error)
     ) as {parsed: $parsed_args, $rest}
+  # combine default fixed opt, parsed args and -o key=value opts
+  | _options_stack([
+      ( ( _opt_build_default_fixed
+        + $parsed_args
+        + ($parsed_args.option | _opt_cli_arg_options)
+        )
+      | . + _opt_eval($rest)
+      )
+    ]) as $_
   | _opt_build_default_fixed as $default_fixed_opts
   # combine default fixed opt, --args opts and -o key=value opts
   | ( $default_fixed_opts
     + $parsed_args
     + ($parsed_args.option | _opt_cli_arg_options)
     ) as $combined_opts
-  # "eval" options
-  | _options_stack(
-      [ $combined_opts
-      + ( {
-            argjson: (
-              ( $combined_opts.argjson
-              | if . then
-                  map(
-                    ( . as $a
-                    | .[1] |=
-                      try fromjson
-                      catch
-                        ( "--argjson \($a[0]): \(.)"
-                        | halt_error(_exit_code_args_error)
-                        )
-                    )
-                  )
-                end
-              )
-            ),
-            color: (
-              if $combined_opts.monochrome_output == true then false
-              elif $combined_opts.color_output == true then true
-              end
-            ),
-            decode_file: (
-              ( $combined_opts.decode_file
-              | if . then
-                  # [[name, path], ...] pairs
-                  map(
-                    ( . as $a
-                    | .[1] |=
-                      try (open | decode($combined_opts.decode_format))
-                      catch
-                        ( "--decode-file \($a[0]): \(.)"
-                        | halt_error(_exit_code_args_error)
-                        )
-                    )
-                  )
-                end
-              )
-            ),
-            expr: (
-              # if -f was used, all rest non-args are filenames
-              # otherwise first is expr rest is filesnames
-              ( $combined_opts.expr_file
-              | if . then
-                  try (open | tobytes | tostring)
-                  catch halt_error(_exit_code_args_error)
-                else $rest[0] // null
-                end
-              )
-            ),
-            expr_eval_path: $combined_opts.expr_file,
-            filenames: (
-              ( if $combined_opts.filenames then $combined_opts.filenames
-                elif $combined_opts.expr_file then $rest
-                else $rest[1:]
-                end
-              # null means stdin
-              | if . == [] then [null] end
-              )
-            ),
-            join_string: (
-              if $combined_opts.join_output then ""
-              elif $combined_opts.null_output then "\u0000"
-              else null
-              end
-            ),
-            null_input: (
-              ( if $combined_opts.expr_file then $rest
-                else $rest[1:]
-                end
-              | if . == [] and $combined_opts.repl then true
-                else null
-                end
-              )
-            ),
-            raw_file: (
-              ( $combined_opts.raw_file
-              | if . then
-                  ( map(.[1] |=
-                      try (open | tobytes | tostring)
-                      catch halt_error(_exit_code_args_error)
-                    )
-                  )
-                end
-              )
-            ),
-            raw_string: (
-              if $combined_opts.raw_string
-                or $combined_opts.join_output
-                or $combined_opts.null_output
-              then true
-              else null
-              end
-            )
-          }
-        | with_entries(select(.value != null))
-        )
-      ]
-    ) as $_
   | options as $opts
-  | if $opts.show_help then
-      ( _banner
-      , ""
-      , _usage($arg0)
-      , ""
-      , "Example usages:"
-      , "  fq . file"
-      , "  fq d file"
-      , "  fq tovalue file"
-      , "  cat file.cbor | fq -d cbor torepr"
-      , "  fq 'grep(\"^main$\") | parent' /bin/ls"
-      , "  fq 'grep_by(format == \"exif\") | d' *.png *.jpeg"
-      , ""
-      , args_help_text(_opt_cli_opts)
-      ) | println
-    elif $opts.show_version then
-      "\($version) (\($os) \($arch))" | println
-    elif $opts.show_formats then
-      _formats_list | println
+  | if $opts.show_help then _help($arg0) | println
+    elif $opts.show_version then "\($version) (\($os) \($arch))" | println
+    elif $opts.show_formats then _formats_list | println
     elif
       ( $opts.filenames == [null] and
         $opts.null_input == false and
@@ -334,7 +237,7 @@ def _main:
             ( $opts.arg +
               $opts.argjson +
               $opts.raw_file +
-              $opts.decode_file
+              ($opts.decode_file | if . then _map_decode_file end)
             | map({key: .[0], value: .[1]})
             | from_entries
             )
