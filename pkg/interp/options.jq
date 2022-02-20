@@ -1,4 +1,5 @@
 include "internal";
+include "binary";
 
 def _obj_to_csv_kv:
   [to_entries[] | [.key, .value] | join("=")] | join(",");
@@ -57,6 +58,90 @@ def _opt_build_default_fixed:
       verbose:            false,
     }
   );
+
+def _opt_eval($rest):
+  ( { argjson: (
+        ( .argjson
+        | if . then
+            map(
+              ( . as $a
+              | .[1] |=
+                try fromjson
+                catch
+                  ( "--argjson \($a[0]): \(.)"
+                  | halt_error(_exit_code_args_error)
+                  )
+              )
+            )
+          end
+        )
+      ),
+      color: (
+        if .monochrome_output == true then false
+        elif .color_output == true then true
+        else null
+        end
+      ),
+      expr: (
+        # if -f was used, all rest non-args are filenames
+        # otherwise first is expr rest is filesnames
+        ( .expr_file
+        | if . then
+            try (open | tobytes | tostring)
+            catch halt_error(_exit_code_args_error)
+          else $rest[0] // null
+          end
+        )
+      ),
+      expr_eval_path: .expr_file,
+      filenames: (
+        ( if .filenames then .filenames
+          elif .expr_file then $rest
+          else $rest[1:]
+          end
+        # null means stdin
+        | if . == [] then [null] end
+        )
+      ),
+      join_string: (
+        if .join_output then ""
+        elif .null_output then "\u0000"
+        else null
+        end
+      ),
+      null_input: (
+        ( ( if .expr_file then $rest
+            else $rest[1:]
+            end
+          ) as $files
+        | if $files == [] and .repl then true
+          else null
+          end
+        )
+      ),
+      raw_file: (
+        ( .raw_file
+        | if . then
+            ( map(.[1] |=
+                try (open | tobytes | tostring)
+                catch halt_error(_exit_code_args_error)
+              )
+            )
+          end
+        )
+      ),
+      raw_string: (
+        if .raw_string
+          or .join_output
+          or .null_output
+        then true
+        else null
+        end
+      )
+    }
+  | with_entries(select(.value != null))
+  );
+
 
 def _opt_default_dynamic:
   ( stdout_tty as $stdout
