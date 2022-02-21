@@ -403,7 +403,7 @@ func ofileDecode(d *decode.D) {
 	d.FieldStructArrayLoop("load_commands", "load_command", func() bool {
 		return ncmdsIdx < int(ncmds)
 	}, func(d *decode.D) {
-		cmd := d.FieldU32("cmd", loadCommands)
+		cmd := d.FieldU32("cmd", loadCommands, scalar.Hex)
 		cmdsize := d.FieldU32("cmdsize")
 		switch cmd {
 		case LC_UUID:
@@ -452,12 +452,8 @@ func ofileDecode(d *decode.D) {
 					d.FieldU32("reloff")
 					d.FieldU32("nreloc")
 					// get section type
-					sectionType := d.U32()
-					sectionTypeMasked := sectionType & 0xff
-					d.FieldValueStr("type", sectionTypes[sectionTypeMasked])
-					// rewind 32 bits and parse flags
-					d.SeekRel(-4 * 8)
 					d.FieldStruct("flags", parseSectionFlags)
+					d.FieldU8("type", sectionTypes)
 					d.FieldU32("reserved1")
 					d.FieldU32("reserved2")
 					if archBits == 64 {
@@ -635,7 +631,7 @@ func fatParse(d *decode.D) {
 	// Go to start of the file again
 	d.SeekAbs(0)
 	var narchs uint64
-	var ofile_offsets []uint64
+	var ofileOffsets []uint64
 	d.FieldStruct("fat_header", func(d *decode.D) {
 		d.FieldRawLen("magic", 4*8)
 		narchs = d.FieldU32("narchs")
@@ -649,7 +645,7 @@ func fatParse(d *decode.D) {
 				// beware cputype and cpusubtype changes from ofile header to fat header
 				cpuType := d.FieldU32("cputype", cpuTypes)
 				d.FieldU32("cpusubtype", cpuSubTypes[cpuType])
-				ofile_offsets = append(ofile_offsets, d.FieldU32("offset"))
+				ofileOffsets = append(ofileOffsets, d.FieldU32("offset"))
 				d.FieldU32("size")
 				d.FieldU32("align")
 			})
@@ -660,7 +656,7 @@ func fatParse(d *decode.D) {
 	d.FieldStructArrayLoop("files", "file", func() bool {
 		return nfilesIdx < int(narchs)
 	}, func(d *decode.D) {
-		d.SeekAbs(int64(ofile_offsets[nfilesIdx]) * 8)
+		d.SeekAbs(int64(ofileOffsets[nfilesIdx]) * 8)
 		ofileDecode(d)
 		nfilesIdx++
 	})
@@ -671,9 +667,7 @@ func intelSubTypeHelper(f, m uint64) uint64 {
 }
 
 func parseMachHeaderFlags(d *decode.D) {
-	d.RawLen(4)
-
-	d.RawLen(2)
+	d.FieldRawLen("reserved", 6)
 	d.FieldBool("MH_APP_EXTENSION_SAFE")
 	d.FieldBool("MH_NO_HEAP_EXECUTION")
 
@@ -709,7 +703,7 @@ func parseMachHeaderFlags(d *decode.D) {
 }
 
 func parseSegmentFlags(d *decode.D) {
-	d.RawLen(28)
+	d.FieldRawLen("reserved", 28)
 	d.FieldBool("SG_PROTECTED_VERSION_1")
 	d.FieldBool("SG_NORELOC")
 	d.FieldBool("SG_FVMLIB")
@@ -725,19 +719,11 @@ func parseSectionFlags(d *decode.D) {
 	d.FieldBool("S_ATTR_LIVE_SUPPORT")
 	d.FieldBool("S_ATTR_SELF_MODIFYING_CODE")
 	d.FieldBool("S_ATTR_DEBUG")
-	d.RawLen(1)
+	d.FieldRawLen("reserved", 14)
 
-	d.RawLen(4)
-	d.RawLen(4)
-	d.RawLen(4)
-
-	d.RawLen(1)
 	d.FieldBool("S_ATTR_SOME_INSTRUCTIONS")
 	d.FieldBool("S_ATTR_EXT_RELOC")
 	d.FieldBool("S_ATTR_LOC_RELOC")
-
-	d.RawLen(4)
-	d.RawLen(4)
 }
 
 var timestampMapper = scalar.Fn(func(s scalar.S) (scalar.S, error) {
