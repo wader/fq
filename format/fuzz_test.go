@@ -70,27 +70,31 @@ func (ft *fuzzTest) Readline(opts interp.ReadlineOpts) (string, error) {
 
 func FuzzFormats(f *testing.F) {
 	i := 0
+
 	filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
-		if filepath.Ext(path) == ".fqtest" {
-			return nil
-		}
-		if filepath.Base(filepath.Dir(path)) != "testdata" {
+		if filepath.Base(path) != "testdata" {
 			return nil
 		}
 
-		if st, err := os.Stat(path); err != nil || st.IsDir() {
+		filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+			if filepath.Ext(path) == ".fqtest" {
+				return nil
+			}
+			if st, err := os.Stat(path); err != nil || st.IsDir() {
+				return nil
+			}
+
+			b, err := ioutil.ReadFile(path)
+			if err != nil {
+				f.Fatal(err)
+			}
+
+			f.Logf("seed#%d %s", i, path)
+			f.Add(b)
+			i++
+
 			return nil
-		}
-
-		b, err := ioutil.ReadFile(path)
-		if err != nil {
-			f.Fatal(err)
-		}
-
-		f.Logf("seed#%d %s", i, path)
-		f.Add(b)
-		i++
-
+		})
 		return nil
 	})
 
