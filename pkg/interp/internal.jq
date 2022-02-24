@@ -72,15 +72,22 @@ def _input_decode_errors(f): _global_var("input_decode_errors"; f);
 def _variables: _global_var("variables");
 def _variables(f): _global_var("variables"; f);
 
-# eval f and finally eval fin even on empty or error.
-# note that if f outputs more than one value fin will be called
-# for each value.
+# eval f and finally eval fin even if empty or error.
+# _finally(1; debug)
+# _finally(null; debug)
+# _finally(error("a"); debug)
+# _finally(empty; debug)
+# _finally(1,2,3; debug)
+# _finally({a:1}; debug)
 def _finally(f; fin):
-  ( try f // (fin | empty)
-    catch (fin as $_ | error)
-  | fin as $_
-  | .
-  );
+  try
+    ( f
+    , (fin | empty)
+    )
+  catch
+    ( fin as $_
+    | error
+    );
 
 # TODO: figure out a saner way to force int
 def _to_int: (. % (. + 1));
