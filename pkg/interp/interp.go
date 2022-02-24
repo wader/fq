@@ -324,10 +324,11 @@ const (
 	CompletionMode
 )
 
-type evalContext struct {
+type evalInstance struct {
 	ctx          context.Context
 	output       io.Writer
 	isCompleting bool
+	includeSeen  map[string]struct{}
 }
 
 type Interp struct {
@@ -339,8 +340,8 @@ type Interp struct {
 	// global state, is ref as Interp is cloned per eval
 	state *interface{}
 
-	// new for each run, other values are copied by value
-	evalContext evalContext
+	// new for each eval, other values are copied by value
+	evalInstance evalInstance
 }
 
 func New(os OS, registry *registry.Registry) (*Interp, error) {
@@ -424,7 +425,7 @@ func (i *Interp) Main(ctx context.Context, output Output, versionStr string) err
 }
 
 func (i *Interp) _readline(c interface{}, a []interface{}) gojq.Iter {
-	if i.evalContext.isCompleting {
+	if i.evalInstance.isCompleting {
 		return gojq.NewIter()
 	}
 
@@ -441,10 +442,10 @@ func (i *Interp) _readline(c interface{}, a []interface{}) gojq.Iter {
 	expr, err := i.os.Readline(ReadlineOpts{
 		Prompt: opts.Promopt,
 		CompleteFn: func(line string, pos int) (newLine []string, shared int) {
-			completeCtx := i.evalContext.ctx
+			completeCtx := i.evalInstance.ctx
 			if opts.Timeout > 0 {
 				var completeCtxCancelFn context.CancelFunc
-				completeCtx, completeCtxCancelFn = context.WithTimeout(i.evalContext.ctx, time.Duration(opts.Timeout*float64(time.Second)))
+				completeCtx, completeCtxCancelFn = context.WithTimeout(i.evalInstance.ctx, time.Duration(opts.Timeout*float64(time.Second)))
 				defer completeCtxCancelFn()
 			}
 
@@ -520,9 +521,9 @@ func (i *Interp) eval(c interface{}, a []interface{}) gojq.Iter {
 		}
 	}
 
-	iter, err := i.Eval(i.evalContext.ctx, c, expr, EvalOpts{
+	iter, err := i.Eval(i.evalInstance.ctx, c, expr, EvalOpts{
 		filename: filenameHint,
-		output:   i.evalContext.output,
+		output:   i.evalInstance.output,
 	})
 	if err != nil {
 		return gojq.NewIter(err)
@@ -562,7 +563,7 @@ func (i *Interp) makeStdioFn(name string, t Terminal) func(c interface{}, a []in
 	return func(c interface{}, a []interface{}) gojq.Iter {
 		switch {
 		case len(a) == 1:
-			if i.evalContext.isCompleting {
+			if i.evalInstance.isCompleting {
 				return gojq.NewIter("")
 			}
 
@@ -596,7 +597,7 @@ func (i *Interp) makeStdioFn(name string, t Terminal) func(c interface{}, a []in
 				"height":      h,
 			})
 		default:
-			if i.evalContext.isCompleting {
+			if i.evalInstance.isCompleting {
 				return gojq.NewIter()
 			}
 
@@ -629,7 +630,7 @@ func (i *Interp) _display(c interface{}, a []interface{}) gojq.Iter {
 
 	switch v := c.(type) {
 	case Display:
-		if err := v.Display(i.evalContext.output, opts); err != nil {
+		if err := v.Display(i.evalInstance.output, opts); err != nil {
 			return gojq.NewIter(err)
 		}
 		return gojq.NewIter()
@@ -650,7 +651,7 @@ func (i *Interp) _printColorJSON(c interface{}, a []interface{}) gojq.Iter {
 	if err != nil {
 		return gojq.NewIter(err)
 	}
-	if err := cj.Marshal(c, i.evalContext.output); err != nil {
+	if err := cj.Marshal(c, i.evalInstance.output); err != nil {
 		return gojq.NewIter(err)
 	}
 
@@ -658,7 +659,7 @@ func (i *Interp) _printColorJSON(c interface{}, a []interface{}) gojq.Iter {
 }
 
 func (i *Interp) _isCompleting(c interface{}, a []interface{}) interface{} {
-	return i.evalContext.isCompleting
+	return i.evalInstance.isCompleting
 }
 
 type pathResolver struct {
@@ -735,7 +736,9 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, expr string, opts Eval
 	// make copy of interp and give it its own eval context
 	ci := *i
 	ni := &ci
-	ni.evalContext = evalContext{}
+	ni.evalInstance = evalInstance{
+		includeSeen: map[string]struct{}{},
+	}
 
 	var variableNames []string
 	var variableValues []interface{}
@@ -785,6 +788,13 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, expr string, opts Eval
 				return nil, err
 			}
 
+			// skip if this eval instance has already included the file
+			if _, ok := ni.evalInstance.includeSeen[filename]; ok {
+				return &gojq.Query{Term: &gojq.Term{Type: gojq.TermTypeIdentity}}, nil
+			}
+			ni.evalInstance.includeSeen[filename] = struct{}{}
+
+			// return cached version if file has already been compiled
 			if q, ok := ni.includeCache[filename]; ok {
 				return q, nil
 			}
@@ -895,10 +905,10 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, expr string, opts Eval
 	}
 
 	runCtx, runCtxCancelFn := i.interruptStack.Push(ctx)
-	ni.evalContext.ctx = runCtx
-	ni.evalContext.output = ioextra.CtxWriter{Writer: output, Ctx: runCtx}
-	// inherit or set
-	ni.evalContext.isCompleting = i.evalContext.isCompleting || opts.isCompleting
+	ni.evalInstance.ctx = runCtx
+	ni.evalInstance.output = ioextra.CtxWriter{Writer: output, Ctx: runCtx}
+	// inherit or maybe set
+	ni.evalInstance.isCompleting = i.evalInstance.isCompleting || opts.isCompleting
 	iter := gc.RunWithContext(runCtx, c, variableValues...)
 
 	iterWrapper := iterFn(func() (interface{}, bool) {
