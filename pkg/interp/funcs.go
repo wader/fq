@@ -258,7 +258,7 @@ func (i *Interp) _hexdump(c interface{}, a []interface{}) gojq.Iter {
 	if err != nil {
 		return gojq.NewIter(err)
 	}
-	if err := hexdump(i.evalContext.output, bv, opts); err != nil {
+	if err := hexdump(i.evalInstance.output, bv, opts); err != nil {
 		return gojq.NewIter(err)
 	}
 

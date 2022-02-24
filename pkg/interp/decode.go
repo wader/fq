@@ -157,11 +157,11 @@ func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
 			evalProgress := func(c interface{}) {
 				// {approx_read_bytes: 123, total_size: 123} | opts.Progress
 				_, _ = i.EvalFuncValues(
-					i.evalContext.ctx,
+					i.evalInstance.ctx,
 					c,
 					opts.Progress,
 					nil,
-					EvalOpts{output: ioextra.DiscardCtxWriter{Ctx: i.evalContext.ctx}},
+					EvalOpts{output: ioextra.DiscardCtxWriter{Ctx: i.evalInstance.ctx}},
 				)
 			}
 			lastProgress := time.Now()
@@ -201,7 +201,7 @@ func (i *Interp) _decode(c interface{}, a []interface{}) interface{} {
 		return err
 	}
 
-	dv, _, err := decode.Decode(i.evalContext.ctx, bv.br, decodeFormat,
+	dv, _, err := decode.Decode(i.evalInstance.ctx, bv.br, decodeFormat,
 		decode.Options{
 			IsRoot:        true,
 			FillGaps:      true,

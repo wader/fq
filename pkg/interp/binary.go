@@ -177,7 +177,7 @@ func (of *openFile) ToBinary() (Binary, error) {
 // opens a file for reading from filesystem
 // TODO: when to close? when br loses all refs? need to use finalizer somehow?
 func (i *Interp) _open(c interface{}, a []interface{}) gojq.Iter {
-	if i.evalContext.isCompleting {
+	if i.evalInstance.isCompleting {
 		return gojq.NewIter()
 	}
 
@@ -215,13 +215,13 @@ func (i *Interp) _open(c interface{}, a []interface{}) gojq.Iter {
 	// a regular file should be seekable but fallback below to read whole file if not
 	if fFI.Mode().IsRegular() {
 		if rs, ok := f.(io.ReadSeeker); ok {
-			fRS = ctxreadseeker.New(i.evalContext.ctx, rs)
+			fRS = ctxreadseeker.New(i.evalInstance.ctx, rs)
 			bEnd = fFI.Size()
 		}
 	}
 
 	if fRS == nil {
-		buf, err := ioutil.ReadAll(ctxreadseeker.New(i.evalContext.ctx, &ioextra.ReadErrSeeker{Reader: f}))
+		buf, err := ioutil.ReadAll(ctxreadseeker.New(i.evalInstance.ctx, &ioextra.ReadErrSeeker{Reader: f}))
 		if err != nil {
 			f.Close()
 			return gojq.NewIter(err)
