@@ -1,12 +1,18 @@
-# MACHO Format
-
 Decodes vanilla and FAT Macho binaries
 
 ## Examples
 
+To decode the MacOS build of `fq`
+
 ```
 fq . -d macho fq
 ```
+
+---
+**NOTE**
+`-d macho` is usually not needed.
+
+---
 
 Can be used to decode nested parts:
 
