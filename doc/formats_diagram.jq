@@ -7,13 +7,15 @@ def _formats_dot:
   def _record($title; $fields):
     [  "<"
     , "<table bgcolor=\"paleturquoise\" border=\"0\" cellspacing=\"0\">"
-    , "<tr><td port=\"\($title)\">\($title)</td></tr>"
+    , "<tr><td port=\"\($title)\"><font point-size=\"20\">\($title)</font></td></tr>"
     , [$fields | flatten | map("<tr><td align=\"left\" bgcolor=\"lightgrey\" port=\"\(.)\">\(.)</td></tr>")]
     , "</table>"
     , ">"
     ] | flatten | join("");
   ( "# ... | dot -Tsvg -o formats.svg"
   , "digraph formats {"
+  , "  nodesep=0.2"
+  , "  ranksep=1"
   , "  rankdir=TB"
   , "  node [penwidth=2 shape=\"none\" style=\"\"]"
   , "  edge [penwidth=2]"
@@ -34,7 +36,7 @@ def _formats_dot:
     )
   , ( [.[].groups[]?]
     | unique[]
-    | "  \(.) [shape=\"record\",style=\"rounded,filled\",color=\"palegreen\"]"
+    | "  \(.) [shape=\"record\",style=\"rounded,filled\",fontsize=\"25\"color=\"palegreen\"]"
     )
   , "}"
   );
