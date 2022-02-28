@@ -51,7 +51,7 @@
 |`ipv4_packet`           |Internet&nbsp;protocol&nbsp;v4&nbsp;packet                                      |<sub>`udp_datagram` `tcp_segment` `icmp`</sub>|
 |`jpeg`                  |Joint&nbsp;Photographic&nbsp;Experts&nbsp;Group&nbsp;file                       |<sub>`exif` `icc_profile`</sub>|
 |`json`                  |JSON                                                                            |<sub></sub>|
-|`macho`                 |Mach-O&nbsp;macOS&nbsp;executable                                               |<sub></sub>|
+|[`macho`](#macho)       |Mach-O&nbsp;macOS&nbsp;executable                                               |<sub></sub>|
 |[`matroska`](#matroska) |Matroska&nbsp;file                                                              |<sub>`aac_frame` `av1_ccr` `av1_frame` `avc_au` `avc_dcr` `flac_frame` `flac_metadatablocks` `hevc_au` `hevc_dcr` `image` `mp3_frame` `mpeg_asc` `mpeg_pes_packet` `mpeg_spu` `opus_packet` `vorbis_packet` `vp8_frame` `vp9_cfm` `vp9_frame`</sub>|
 |`mp3`                   |MP3&nbsp;file                                                                   |<sub>`id3v2` `id3v1` `id3v11` `apev2` `mp3_frame`</sub>|
 |`mp3_frame`             |MPEG&nbsp;audio&nbsp;layer&nbsp;3&nbsp;frame                                    |<sub>`xing`</sub>|
@@ -181,6 +181,33 @@ fq -d cbor 'torepr.field' file.cbor
 fq -d cbor 'torepr | .field' file.cbor
 fq -d cbor 'torepr | grep("abc")' file.cbor
 ```
+
+### macho
+
+Decodes vanilla and FAT Macho binaries
+
+## Examples
+
+To decode the MacOS build of `fq`
+
+```
+fq . -d macho fq
+```
+
+---
+**NOTE**
+`-d macho` is usually not needed.
+
+---
+
+Can be used to decode nested parts:
+
+```
+./fq '.load_commands[] | select(.cmd=="segment_64")' -d macho fq
+```
+
+## References:
+- https://github.com/aidansteele/osx-abi-macho-file-format-reference
 
 ### matroska
 
