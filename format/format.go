@@ -58,6 +58,7 @@ const (
 	IPV4_PACKET         = "ipv4_packet"
 	JPEG                = "jpeg"
 	JSON                = "json"
+	MACHO               = "macho"
 	MATROSKA            = "matroska"
 	MP3                 = "mp3"
 	MP3_FRAME           = "mp3_frame"
