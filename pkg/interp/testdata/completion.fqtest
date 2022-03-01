@@ -9,11 +9,11 @@ hex
 hexdump
 null> _is_ide\t
 _is_ident
-null> {aa: 123} | var("test")
+null> {aa: 123} | slurp("test")
 null> $\t
 $ENV
 $test
-null> $test.a\t
+null> $test[].a\t
 aa
 null> {bb: 123} as $aa | $aa.b\t
 bb

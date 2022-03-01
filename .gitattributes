@@ -1,4 +1,4 @@
-# for windows: fqtest uses \n and asserts output so should be exact
+# for windows: fqtest, jq and json uses \n and uses it in output so must be exact
 *.fqtest eol=lf
-# for windows: there are fqtest using json that need to be exact
 *.json eol=lf
+*.jq eol=lf

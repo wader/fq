@@ -79,7 +79,7 @@ $ fq -n -o expr=123
 $ fq -o expr_file=test.jq -n options.expr_file
 exitcode: 2
 stderr:
-error: open testdata/test.jq: no such file or directory
+error: test.jq: no such file or directory
 $ fq -o 'filenames=["/test.mp3"]' format
 "mp3"
 $ fq -o 'force=true' -n options.force

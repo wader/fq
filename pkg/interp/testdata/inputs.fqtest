@@ -18,7 +18,7 @@ $ fq -d raw '(.,input,input,input) | try todescription catch .' /a /b /c
 "/c"
 exitcode: 5
 stderr:
-error: break
+error: /c: break
 $ fq -d raw -n '(.,inputs) | try todescription catch .' /a /b /c
 "expected decode value but got: null (null)"
 "/a"
@@ -40,7 +40,7 @@ $ fq -d raw -n '(input,input,input,input) | todescription' /a /b /c
 "/c"
 exitcode: 5
 stderr:
-error: break
+error: /c: break
 $ fq -d raw input_filename
 "<stdin>"
 stdin:
@@ -54,7 +54,7 @@ $ fq -d raw input_filename /a /non-existing /c
 "/c"
 exitcode: 2
 stderr:
-error: open testdata/non-existing: no such file or directory
+error: /non-existing: no such file or directory
 $ fq -d raw '(' /a /b /c
 exitcode: 3
 stderr:
@@ -66,9 +66,9 @@ error: arg: function not defined: bla/0
 $ fq -d raw '1+"a"' /a /b /c
 exitcode: 5
 stderr:
-error: cannot add: number (1) and string ("a")
-error: cannot add: number (1) and string ("a")
-error: cannot add: number (1) and string ("a")
+error: /a: cannot add: number (1) and string ("a")
+error: /b: cannot add: number (1) and string ("a")
+error: /c: cannot add: number (1) and string ("a")
 $ fq -s -d raw '[.[] | todescription]' /a /b /c
 [
   "/a",

@@ -1,0 +1,43 @@
+$ fq -ni
+null> help
+Type expression to evaluate
+\t          Completion
+Up/Down     History
+^C          Interrupt execution
+... | repl  Start a new REPL
+^D          Exit REPL
+null> help | abc
+error: expr: function not defined: abc/0
+null> help | 1
+error: help must be alone or last in pipeline. ex: help(length) or ... | help
+null> abc | help
+error: expr: function not defined: abc/0
+null> "a"+1 | help
+error: cannot add: string ("a") and number (1)
+"value help"
+[]
+null> help(length)
+length: Length of string, array, object, etc
+- For string number of unicode codepoints
+- For array number of elements in array
+- For object number of key-value pairs
+- For null zero
+- For number the number itself
+- For boolean is an error
+
+Examples:
+> [1,2,3] | length
+3
+> "abc" | length
+3
+> {"a":1,"b":2} | length
+2
+> null | length
+0
+> 123 | length
+123
+> true | length
+error: length cannot be applied to: boolean (true)
+null> help(1;2)
+error: expr: help must be last in pipeline. ex: help(length) or ... | help
+null> ^D

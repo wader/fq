@@ -6,8 +6,11 @@ include "match";
 include "funcs";
 include "grep";
 include "args";
+include "eval";
+include "query";
 include "repl";
-# generated decode functions per format and format helpers
+include "help";
+# generate torepr, format decode helpers and include format specific functions
 include "formats";
 # optional user init
 include "@config/init?";
@@ -44,20 +47,20 @@ def input:
         ( . as $err
         | _input_io_errors(. += {($name): $err}) as $_
         | $err
-        | (_error_str | printerrln)
+        | (_error_str([$name]) | printerrln)
         , _input($opts; f)
         )
     | try f
       catch
         ( . as $err
         | _input_decode_errors(. += {($name): $err}) as $_
-        | [ "\($name): \($opts.decode_format)"
+        | [ $opts.decode_format
           , if $err | type == "string" then ": \($err)"
             # TODO: if not string assume decode itself failed for now
             else ": failed to decode (try -d FORMAT)"
             end
           ] | join("")
-        | (_error_str | printerrln)
+        | (_error_str([$name]) | printerrln)
         , _input($opts; f)
         )
     );
@@ -116,30 +119,46 @@ def inputs: _repeat_break(input);
 
 def input_filename: _input_filename;
 
-def var: _variables;
-def var($k; f):
-  ( . as $c
-  | if ($k | _is_ident | not) then error("invalid variable name: \($k)") end
-  | _variables(.[$k] |= f)
-  | empty
-  );
-def var($k): . as $c | var($k; $c);
-
-
-def _cli_expr_on_error:
-  ( . as $err
+# user expr error, report and continue
+def _cli_eval_on_expr_error:
+  ( if type == "object" then
+      if .error | _eval_is_compile_error then .error | _eval_compile_error_tostring
+      elif .error then .error
+      end
+    else tostring
+    end
+  | . as $err
   | _cli_last_expr_error($err) as $_
-  | (_error_str | printerrln)
+  | (_error_str([input_filename // empty]) | printerrln)
   );
-def _cli_expr_on_compile_error:
-  ( _eval_compile_error_tostring
+# other expr error, should not happen, report and halt
+def _cli_eval_on_error:
+  halt_error(_exit_code_expr_error);
+# could not compile expr, report and halt
+def _cli_eval_on_compile_error:
+  ( .error
+  | _eval_compile_error_tostring
   | halt_error(_exit_code_compile_error)
   );
-# _cli_expr_eval halts on compile errors
-def _cli_expr_eval($expr; $filename; f):
-  _eval($expr; $filename; f; _cli_expr_on_error; _cli_expr_on_compile_error);
-def _cli_expr_eval($expr; $filename):
-  _eval($expr; $filename; .; _cli_expr_on_error; _cli_expr_on_compile_error);
+def _cli_repl_error($_):
+  _eval_error("compile"; "repl can only be used from interactive repl");
+def _cli_slurp_error(_):
+  _eval_error("compile"; "slurp can only be used from interactive repl");
+# _cli_eval halts on compile errors
+def _cli_eval($expr; $opts):
+  eval(
+    $expr;
+    $opts + {
+      slurps: {
+        help: "_help_slurp",
+        repl: "_cli_repl_error",
+        slurp: "_cli_slurp_error"
+      },
+      catch_query: _query_func("_cli_eval_on_expr_error")
+    };
+    _cli_eval_on_error;
+    _cli_eval_on_compile_error
+  );
 
 
 def _main:
@@ -166,20 +185,22 @@ def _main:
     , args_help_text(_opt_cli_opts)
     );
   def _formats_list:
-    [ ( formats
+    ( [ formats
       | to_entries[]
       | [(.key+"  "), .value.description]
-      )
-    ]
+      ]
     | table(
         .;
         map(
           ( . as $rc
-          | .string
-          | if $rc.column != 1 then rpad(" "; $rc.maxwidth) end
+          # right pad format name to align description
+          | if .column == 0 then .string | rpad(" "; $rc.maxwidth)
+            else $rc.string
+            end
           )
         ) | join("")
-      );
+      )
+    );
   def _map_decode_file:
     map(
       ( . as $a
@@ -228,12 +249,10 @@ def _main:
       , null | halt_error(_exit_code_args_error)
       )
     else
-      # use _finally as display etc prints and outputs empty
-      _finally(
-        # store some globals
+      ( # store some global state
         ( _include_paths($opts.include_path) as $_
         | _input_filenames($opts.filenames) as $_
-        | _variables(
+        | _slurps(
             ( $opts.arg +
               $opts.argjson +
               $opts.raw_file +
@@ -242,45 +261,51 @@ def _main:
             | from_entries
             )
           )
-        # for inputs a, b, c:
-        # repl:       [a,b,c] | repl
-        # repl slurp: [[a, b, c]] | repl
-        # cli         a, b, c | expr
-        # cli slurp   [a ,b c] | expr
-        | ( def _inputs:
-              ( if $opts.null_input then null
-                # note that jq --slurp --raw-input (string_input) is special, will concat
-                # all files into one string instead of iterating lines
-                elif $opts.string_input then inputs
-                elif $opts.slurp then [inputs]
-                else inputs
-                end
-              );
-            if $opts.repl then
-              ( [_inputs]
-              | map(_cli_expr_eval($opts.expr; $opts.expr_eval_path))
-              | _repl({})
-              )
-            else
-              ( _inputs
-              # iterate all inputs
-              | _cli_last_expr_error(null) as $_
-              | _cli_expr_eval($opts.expr; $opts.expr_eval_path; _repl_display)
-              )
-            end
+        ) as $_
+      | { filename: $opts.expr_eval_path
+        } as $eval_opts
+      # use _finally as display etc prints and outputs empty
+      | _finally(
+        if $opts.repl then
+          # TODO: share input_query but first have to figure out how to handle
+          # context/interrupts better as open will happen in a sub repl which
+          # context will be cancelled.
+          ( def _inputs:
+              if $opts.null_input then null
+              elif $opts.string_input then inputs
+              elif $opts.slurp then [inputs]
+              else inputs
+              end;
+            [_inputs]
+          | map(_cli_eval($opts.expr; $eval_opts))
+          | _repl({})
           )
-        )
-        ; # finally
-        ( if _input_io_errors then
-            null | halt_error(_exit_code_input_io_error)
-          end
-        | if _input_decode_errors then
-            null | halt_error(_exit_code_input_decode_error)
-          end
-        | if _cli_last_expr_error then
-            null | halt_error(_exit_code_expr_error)
-          end
+        else
+          ( _cli_last_expr_error(null) as $_
+          | _display_default_opts as $default_opts
+          | _cli_eval(
+              $opts.expr;
+              ( $eval_opts
+              | .input_query =
+                  ( if $opts.null_input then _query_null
+                    # note that jq --slurp --raw-input (string_input) is special, will concat
+                    # all files into one string instead of iterating lines
+                    elif $opts.string_input then _query_func("inputs")
+                    elif $opts.slurp then _query_func("inputs") | _query_array
+                    else _query_func("inputs")
+                    end
+                  )
+              )
+            )
+          | display($default_opts)
+          )
+        end;
+        # finally
+        ( if _input_io_errors then null | halt_error(_exit_code_input_io_error) end
+        | if _input_decode_errors then null | halt_error(_exit_code_input_decode_error) end
+        | if _cli_last_expr_error then null | halt_error(_exit_code_expr_error) end
         )
       )
+    )
     end
   );

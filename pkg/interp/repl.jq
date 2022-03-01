@@ -1,10 +1,11 @@
 include "internal";
 include "options";
+include "eval";
 include "query";
 include "decode";
 include "funcs";
 
-# TODO: currently only make sense to allow keywords start  start a term or directive
+# TODO: currently only make sense to allow keywords starting a term or directive
 def _complete_keywords:
   [
     "and",
@@ -46,7 +47,7 @@ def _complete($line; $cursor_pos):
   def _is_separator: . as $c | " .;[]()|=" | contains($c);
   def _is_internal: startswith("_") or startswith("$_");
   def _query_index_or_key($q):
-    ( ([.[] | eval($q) | type]) as $n
+    ( ([.[] | _eval($q) | type]) as $n
     | if ($n | all(. == "object")) then "."
       elif ($n | all(. == "array")) then "[]"
       else null
@@ -75,7 +76,7 @@ def _complete($line; $cursor_pos):
             )
           else
             ( $c
-            | eval($query)
+            | _eval($query)
             | ($prefix | _is_internal) as $prefix_is_internal
             | map(
                 select(
@@ -156,33 +157,56 @@ def _prompt:
   , _values
   ] | join(" ") + "> ";
 
-# _repl_display takes a opts arg to make it possible for repl_eval to
-# just call options/0 once per eval even if it was multiple outputs
-def _repl_display_opts: options({depth: 1});
-def _repl_display($opts): display($opts);
-def _repl_display: display(_repl_display_opts);
-def _repl_on_error:
+
+# user expr error
+def _repl_on_expr_error:
   ( if _eval_is_compile_error then _eval_compile_error_tostring
-    # was interrupted by user, just ignore
-    elif _is_context_canceled_error then empty
+    else tostring
     end
-  | (_error_str | println)
+  | _error_str
+  | println
   );
-def _repl_on_compile_error: _repl_on_error;
-def _repl_eval($expr):
-  ( _repl_display_opts as $opts
-  | _eval(
-      $expr;
-      "";
-      _repl_display($opts);
-      _repl_on_error;
-      _repl_on_compile_error
-    )
+# other expr error, should not happen
+def _repl_on_error:
+  halt_error(_exit_code_expr_error);
+# compile error
+def _repl_on_compile_error:
+  ( if .error | _eval_is_compile_error then
+      ( # TODO: move, redo as: def _symbols: if unicode then {...} else {...} end?
+        def _arrow_up: if options.unicode then "⬆" else "^" end;
+        if .error.column != 0 then
+          ( ((.input | _prompt | length) + .error.column-1) as $pos
+          | " " * $pos + "\(_arrow_up) \(.error.error)"
+          )
+        else
+          ( .error
+          | _eval_compile_error_tostring
+          | _error_str
+          )
+        end
+      )
+    # was interrupted by user, just ignore
+    elif .error | _is_context_canceled_error then empty
+    else .error | _error_str
+    end
+  | println
   );
+def _repl_eval($expr; on_error; on_compile_error; $slurps):
+  eval(
+    $expr;
+    { slurps: $slurps,
+      input_query: (_query_ident | _query_iter), # .[]
+      catch_query: _query_func("_repl_on_expr_error")
+    };
+    on_error;
+    on_compile_error
+  );
+def _repl_eval($expr; on_error; on_compile_error):
+  _repl_eval($expr; on_error; on_compile_error; null);
 
 # run read-eval-print-loop
 # input is array of inputs to iterate
-def _repl($opts): #:: a|(Opts) => @
+def _repl($opts):
   def _read_expr:
     _repeat_break(
       # both _prompt and _complete want input arrays
@@ -198,18 +222,17 @@ def _repl($opts): #:: a|(Opts) => @
     );
   def _repl_loop:
     try
-      _repl_eval(
-        ( _read_expr
-        | _query_fromto(
-            if _query_pipe_last | _query_is_func("repl") then
-              # "... | repl" -> "map(... | .) | _repl_slurp"
-              _query_slurp_wrap(_query_func_rename("_repl_slurp"))
-            else
-              # "..." to -> ".[] | ..."
-              _query_iter_wrap
-            end
-          )
+      ( _display_default_opts as $default_opts
+      | _repl_eval(
+          _read_expr;
+          _repl_on_error;
+          _repl_on_compile_error;
+          { repl: "_repl_slurp",
+            help: "_help_slurp",
+            slurp: "_slurp"
+          }
         )
+      | display($default_opts)
       )
     catch
       if . == "interrupt" then empty
@@ -217,7 +240,9 @@ def _repl($opts): #:: a|(Opts) => @
       elif _eval_is_compile_error then _repl_on_error
       else error
       end;
-  if _is_completing | not then
+  if $opts | type != "object" then
+    error("options must be an object")
+  elif _is_completing | not then
     ( _options_stack(. + [$opts]) as $_
     | _finally(
         _repeat_break(_repl_loop);
@@ -227,22 +252,65 @@ def _repl($opts): #:: a|(Opts) => @
   else empty
   end;
 
-def _repl_slurp($opts): _repl($opts);
-def _repl_slurp: _repl({});
+def _repl_slurp_eval($query):
+  try
+    [ eval(
+        $query | _query_tostring;
+        {};
+        _repl_on_expr_error;
+        error
+      )
+    ]
+  catch
+    error(.error);
 
-# TODO: introspect and show doc, reflection somehow?
-def help:
-  ( "Type expression to evaluate"
-  , "\\t          Completion"
-  , "Up/Down     History"
-  , "^C          Interrupt execution"
-  , "... | repl  Start a new REPL"
-  , "^D          Exit REPL"
-  ) | println;
+def _repl_slurp($query):
+  if ($query.slurp_args | length) > 1 then
+    _eval_error("compile"; "repl requires none or one options argument. ex: ... | repl or ... | repl({compact: true})")
+  else
+    # only allow one output for args, multiple would be confusing i think (would start multiples repl:s)
+    ( ( if ($query.slurp_args | length) > 0 then
+          first(_repl_slurp_eval($query.slurp_args[0])[])
+        else {}
+        end
+      ) as $opts
+    | if $opts | type != "object" then
+        _eval_error("compile"; "options must be an object")
+      end
+    | _repl_slurp_eval($query.rewrite)
+    | _repl($opts)
+    )
+  end;
 
 # just gives error, call appearing last will be renamed to _repl_slurp
-def repl($_):
-  if options.repl then error("repl must be last")
-  else error("repl can only be used from interactive repl")
-  end;
+def repl($_): error("repl must be last in pipeline. ex: ... | repl");
 def repl: repl(null);
+
+def _slurp($query):
+  if ($query.slurp_args | length != 1) then
+    _eval_error("compile"; "slurp requires one string argument. ex: ... | slurp(\"name\")")
+  else
+    # TODO: allow only one output?
+    ( _repl_slurp_eval($query.slurp_args[0])[] as $name
+    | if ($name | _is_ident | not) then
+        _eval_error("compile"; "invalid slurp name \"\($name)\", must be a valid identifier. ex: ... | slurp(\"name\")")
+      else
+        ( _repl_slurp_eval($query.rewrite) as $v
+        | _slurps(.[$name] |= $v)
+        | empty
+        )
+      end
+    )
+  end;
+
+def slurp($_): error("slurp must be last in pipeline. ex: ... | slurp(\"name\")");
+def slurp: slurp(null);
+
+def spew($name):
+  ( _slurps[$name]
+  | if . then .[]
+    else error("no such slurp: \($name)")
+    end
+  );
+def spew:
+  _slurps;

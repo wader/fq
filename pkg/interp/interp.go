@@ -36,6 +36,7 @@ import (
 
 //go:embed interp.jq
 //go:embed internal.jq
+//go:embed eval.jq
 //go:embed options.jq
 //go:embed binary.jq
 //go:embed decode.jq
@@ -45,6 +46,7 @@ import (
 //go:embed args.jq
 //go:embed query.jq
 //go:embed repl.jq
+//go:embed help.jq
 //go:embed formats.jq
 var builtinFS embed.FS
 
@@ -56,7 +58,7 @@ func init() {
 	functionRegisterFns = append(functionRegisterFns, func(i *Interp) []Function {
 		return []Function{
 			{"_readline", 0, 1, nil, i._readline},
-			{"eval", 1, 2, nil, i.eval},
+			{"_eval", 1, 2, nil, i._eval},
 			{"_stdin", 0, 1, nil, i.makeStdioFn("stdin", i.os.Stdin())},
 			{"_stdout", 0, 0, nil, i.makeStdioFn("stdout", i.os.Stdout())},
 			{"_stderr", 0, 0, nil, i.makeStdioFn("stderr", i.os.Stderr())},
@@ -507,7 +509,7 @@ func (i *Interp) _readline(c interface{}, a []interface{}) gojq.Iter {
 	return gojq.NewIter(expr)
 }
 
-func (i *Interp) eval(c interface{}, a []interface{}) gojq.Iter {
+func (i *Interp) _eval(c interface{}, a []interface{}) gojq.Iter {
 	var err error
 	expr, err := toString(a[0])
 	if err != nil {
@@ -742,7 +744,7 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, expr string, opts Eval
 
 	var variableNames []string
 	var variableValues []interface{}
-	for k, v := range i.variables() {
+	for k, v := range i.slurps() {
 		variableNames = append(variableNames, "$"+k)
 		variableValues = append(variableValues, v)
 	}
@@ -794,7 +796,7 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, expr string, opts Eval
 			}
 			ni.evalInstance.includeSeen[filename] = struct{}{}
 
-			// return cached version if file has already been compiled
+			// return cached version if file has already been parsed
 			if q, ok := ni.includeCache[filename]; ok {
 				return q, nil
 			}
@@ -1074,9 +1076,9 @@ func (i *Interp) includePaths() []string {
 	return paths
 }
 
-func (i *Interp) variables() map[string]interface{} {
-	variablesAny, _ := i.lookupState("variables").(map[string]interface{})
-	return variablesAny
+func (i *Interp) slurps() map[string]interface{} {
+	slurpsAny, _ := i.lookupState("slurps").(map[string]interface{})
+	return slurpsAny
 }
 
 func (i *Interp) Options(v interface{}) Options {

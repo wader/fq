@@ -2,6 +2,8 @@
 def _can_display: empty;
 def _decode($format; $opts): empty;
 def _display($opts): empty;
+def _eval($expr; $filename): empty;
+def _eval($expr): empty;
 def _extkeys: empty;
 def _exttype: empty;
 def _global_state: empty;
@@ -26,7 +28,5 @@ def _tobits($bits; $is_range; $pad): empty;
 def _tovalue: empty;
 def _tovalue($opts): empty;
 def base64: empty;
-def eval($expr; $filename): empty;
-def eval($expr): empty;
 def open: empty;
 def scope: empty;

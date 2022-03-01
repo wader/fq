@@ -16,3 +16,7 @@ $ fq -nf /err.jq
 exitcode: 3
 stderr:
 error: /err.jq:1:6: unexpected token ")"
+$ fq -n -f missing
+exitcode: 2
+stderr:
+error: missing: no such file or directory

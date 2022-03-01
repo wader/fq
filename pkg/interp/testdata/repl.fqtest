@@ -5,11 +5,20 @@ null
 null> 1+1
 2
 null> (
-error: expr:1:2: unexpected token <EOF>
+       ^ unexpected token <EOF>
+null> )
+      ^ unexpected token ")"
 null> abc
 error: expr: function not defined: abc/0
 null> 1+"a"
 error: cannot add: number (1) and string ("a")
+null> abc | repl
+error: expr: function not defined: abc/0
+null> "a"+1 | repl
+error: cannot add: string ("a") and number (1)
+> empty> ^D
+null> repl | 1
+error: repl must be last in pipeline. ex: ... | repl
 null> 1 | repl
 > number> .+1
 2
@@ -24,6 +33,11 @@ null> 1,2,3 | repl
 2
 3
 > number, ...[0:3][]> ^D
+null> 1,error("err"),3 | repl
+error: err
+> number> .
+1
+> number> ^D
 null> (1 | raw | .unknown0), 1 | repl
 > .unknown0 string, ...[0:2][]> ^D
 null> def f: 1; f,f | repl
@@ -45,6 +59,16 @@ null> [1] | repl
   1
 ]
 > [number]> ^D
+null> 1,2,error("err"),3 | repl
+error: err
+> number, ...[0:2][]> .
+1
+2
+> number, ...[0:2][]> ^D
+null> repl(123)
+error: expr: options must be an object
+null> repl(123; 123)
+error: expr: repl requires none or one options argument. ex: ... | repl or ... | repl({compact: true})
 null> [] | repl
 > []> ^D
 null> ^D
@@ -56,6 +80,12 @@ number, ...[0:3][]> .*2
 2
 4
 6
+number, ...[0:3][]> .*2 | repl
+> number, ...[0:3][]> .
+2
+4
+6
+> number, ...[0:3][]> ^D
 number, ...[0:3][]> ^D
 $ fq -i '[1,2,3]'
 [number, ...][0:3]> repl({compact: true})
@@ -74,6 +104,6 @@ json!> ^D
 $ fq -i -n '"[]" | json'
 json> ^D
 $ fq -n repl
-exitcode: 5
+exitcode: 3
 stderr:
-error: repl can only be used from interactive repl
+error: arg: repl can only be used from interactive repl

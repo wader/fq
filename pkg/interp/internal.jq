@@ -9,12 +9,15 @@ def println: ., "\n" | print;
 def printerr: tostring | _stderr;
 def printerrln: ., "\n" | printerr;
 
-# jq compat
-def debug:
-  ( ((["DEBUG", .] | tojson) | printerrln)
+def _debug($name):
+  ( (([$name, .] | tojson) | printerrln)
   , .
   );
+
+# jq compat
+def debug: _debug("DEBUG");
 def debug(f): . as $c | f | debug | $c;
+
 # jq compat, output to compact json to stderr and let input thru
 def stderr:
   ( (tojson | printerr)
@@ -45,9 +48,6 @@ def _include_paths(f): _global_var("include_paths"; f);
 def _options_stack: _global_var("options_stack");
 def _options_stack(f): _global_var("options_stack"; f);
 
-def _options_cache: _global_var("options_cache");
-def _options_cache(f): _global_var("options_cache"; f);
-
 def _cli_last_expr_error: _global_var("cli_last_expr_error");
 def _cli_last_expr_error(f): _global_var("cli_last_expr_error"; f);
 
@@ -69,10 +69,10 @@ def _input_io_errors(f): _global_var("input_io_errors"; f);
 def _input_decode_errors: _global_var("input_decode_errors");
 def _input_decode_errors(f): _global_var("input_decode_errors"; f);
 
-def _variables: _global_var("variables");
-def _variables(f): _global_var("variables"; f);
+def _slurps: _global_var("slurps");
+def _slurps(f): _global_var("slurps"; f);
 
-# eval f and finally eval fin even if empty or error.
+# call f and finally eval fin even if empty or error.
 # _finally(1; debug)
 # _finally(null; debug)
 # _finally(error("a"); debug)
@@ -135,24 +135,10 @@ def _recurse_break(f):
     else error
     end;
 
-# TODO: better way? what about nested eval errors?
-def _eval_is_compile_error: type == "object" and .error != null and .what != null;
-def _eval_compile_error_tostring:
-  [ (.filename | if . == "" then "expr" end)
-  , if .line != 1 or .column != 0 then "\(.line):\(.column)" else empty end
-  , " \(.error)"
-  ] | join(":");
-def _eval($expr; $filename; f; on_error; on_compile_error):
-  try
-    eval($expr; $filename) | f
-  catch
-    if _eval_is_compile_error then on_compile_error
-    else on_error
-    end;
-
 def _is_scalar:
   type |. != "array" and . != "object";
 
 def _is_context_canceled_error: . == "context canceled";
 
-def _error_str: "error: \(.)";
+def _error_str($contexts): (["error"] + $contexts + [.]) | join(": ");
+def _error_str: _error_str([]);
