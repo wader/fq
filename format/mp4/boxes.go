@@ -1289,7 +1289,6 @@ func init() {
 				d.FieldU16("primaries_index", format.ISO_23091_2_ColourPrimariesMap)
 				d.FieldU16("transfer_function_index", format.ISO_23091_2_TransferCharacteristicMap)
 				d.FieldU16("matrix_index", format.ISO_23091_2_MatrixCoefficients)
-
 				switch parameterType {
 				case "nclx":
 					d.FieldU8("color_range")
@@ -1299,5 +1298,6 @@ func init() {
 			default:
 				d.FieldRawLen("data", d.BitsLeft())
 			}
-		}}
+		},
+	}
 }
