@@ -49,6 +49,7 @@ var psshPlayreadyFormat decode.Group
 var vorbisPacketFormat decode.Group
 var vp9FrameFormat decode.Group
 var vpxCCRFormat decode.Group
+var iccProfileFormat decode.Group
 
 func init() {
 	registry.MustRegister(decode.Format{
@@ -81,6 +82,7 @@ func init() {
 			{Names: []string{format.VORBIS_PACKET}, Group: &vorbisPacketFormat},
 			{Names: []string{format.VP9_FRAME}, Group: &vp9FrameFormat},
 			{Names: []string{format.VPX_CCR}, Group: &vpxCCRFormat},
+			{Names: []string{format.ICC_PROFILE}, Group: &iccProfileFormat},
 		},
 		Files: mp4FS,
 	})
