@@ -4,6 +4,7 @@ include "eval";
 include "query";
 include "decode";
 include "funcs";
+include "ansi";
 
 # TODO: currently only make sense to allow keywords starting a term or directive
 def _complete_keywords:
@@ -114,11 +115,11 @@ def _complete($line): _complete($line; $line | length);
 # >* VALUE_PATH VALUE_PREVIEW, ...[#]>
 # single/multi inputs where first input is array [[v,...], ...]
 # >* [VALUE_PATH VALUE_PREVIEW, ...][#], ...[#]>
-def _prompt:
+def _prompt($opts):
   def _repl_level:
     (_options_stack | length | if . > 2 then ((.-2) * ">") else empty end);
   def _value_path:
-    (._path? // []) | if . == [] then empty else path_to_expr end;
+    (._path? // []) | if . == [] then empty else path_to_expr($opts) end;
   def _value_preview($depth):
     if $depth == 0 and format == null and type == "array" then
       [ "["
@@ -129,7 +130,15 @@ def _prompt:
           )
         end
       , "]"
-      , if length > 1 then "[0:\(length)]" else empty end
+      , if length > 1 then
+          ( ("[" | _ansi_if($opts; "array"))
+          , ("0" |  _ansi_if($opts; "number"))
+          , ":"
+          , (length | tostring | _ansi_if($opts; "number"))
+          , ("]" | _ansi_if($opts; "array"))
+          )
+        else empty
+        end
       ] | join("")
     else
       ( . as $c
@@ -141,7 +150,7 @@ def _prompt:
         else
           ($c | type)
         end
-      )
+      ) | _ansi_if($opts; "prompt_value")
     end;
   def _value:
     [ _value_path
@@ -151,11 +160,20 @@ def _prompt:
     if length == 0 then "empty"
     else
       [ (.[0] | _value)
-      , if length > 1 then ", ...[0:\(length)][]" else empty end
+      , if length > 1 then
+          ( ", ..."
+          , ("[" | _ansi_if($opts; "array"))
+          , ("0" |  _ansi_if($opts; "number"))
+          , ":"
+          , (length | tostring | _ansi_if($opts; "number"))
+          , ("]" | _ansi_if($opts; "array"))
+          , "[]"
+          )
+        else empty
+        end
       ] | join("")
     end;
-  [ _repl_level
-  , _values
+  [ (_repl_level | _ansi_if($opts; "prompt_repl_level"))  , _values
   ] | join(" ") + "> ";
 
 
@@ -176,7 +194,7 @@ def _repl_on_compile_error:
       ( # TODO: move, redo as: def _symbols: if unicode then {...} else {...} end?
         def _arrow_up: if options.unicode then "⬆" else "^" end;
         if .error.column != 0 then
-          ( ((.input | _prompt | length) + .error.column-1) as $pos
+          ( ((.input | _prompt(options) | length) + .error.column-1) as $pos
           | " " * $pos + "\(_arrow_up) \(.error.error)"
           )
         else
@@ -212,7 +230,7 @@ def _repl($opts):
     _repeat_break(
       # both _prompt and _complete want input arrays
       ( _readline({
-          prompt: _prompt,
+          prompt: _prompt(options($opts)),
           complete: "_complete",
           timeout: options.completion_timeout
         })

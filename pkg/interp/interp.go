@@ -38,6 +38,7 @@ import (
 //go:embed internal.jq
 //go:embed eval.jq
 //go:embed options.jq
+//go:embed ansi.jq
 //go:embed binary.jq
 //go:embed decode.jq
 //go:embed match.jq
