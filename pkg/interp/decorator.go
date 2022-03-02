@@ -1,77 +1,11 @@
 package interp
 
 import (
-	"log"
 	"math/big"
-	"strconv"
-	"strings"
 
 	"github.com/wader/fq/internal/ansi"
 	"github.com/wader/fq/pkg/bitio"
 )
-
-type stringRanges struct {
-	rs [][2]int
-	s  string
-}
-
-func atoi(s string) int {
-	n, _ := strconv.ParseUint(s, 0, 64)
-	return int(n)
-}
-
-// 0-255=brightwhite,0=brightblack,32-126:9-13=white
-func parseCSVRangeMap(s string) []stringRanges {
-	var srs []stringRanges
-
-	for _, stringRangesStr := range strings.Split(s, ",") {
-		stringRangesStr = strings.TrimSpace(stringRangesStr)
-		var rs [][2]int
-
-		stringRangesParts := strings.Split(stringRangesStr, "=")
-		if len(stringRangesParts) != 2 {
-			continue
-		}
-
-		for _, rangeStr := range strings.Split(stringRangesParts[0], ":") {
-			rangeStr = strings.TrimSpace(rangeStr)
-			rangeStrParts := strings.SplitN(rangeStr, "-", 2)
-			var start int
-			var stop int
-
-			if len(rangeStrParts) == 1 {
-				start = atoi(rangeStrParts[0])
-				stop = start
-			} else {
-				start = atoi(rangeStrParts[0])
-				stop = atoi(rangeStrParts[1])
-			}
-
-			rs = append(rs, [2]int{start, stop})
-		}
-
-		srs = append(srs, stringRanges{rs: rs, s: stringRangesParts[1]})
-	}
-
-	return srs
-}
-
-// key=value,a=b,.. -> {"key": "value", "a": "b", ...}
-func parseCSVStringMap(s string) map[string]string {
-	m := map[string]string{}
-
-	for _, stringKVStr := range strings.Split(s, ",") {
-		stringKVStr = strings.TrimSpace(stringKVStr)
-		stringKVParts := strings.Split(stringKVStr, "=")
-		if len(stringKVParts) != 2 {
-			continue
-		}
-
-		m[strings.TrimSpace(stringKVParts[0])] = strings.TrimSpace(stringKVParts[1])
-	}
-
-	return m
-}
 
 var PlainDecorator = Decorator{
 	Column:     "|",
@@ -88,7 +22,7 @@ func decoratorFromOptions(opts Options) Decorator {
 	}
 
 	if opts.Color {
-		colors := parseCSVStringMap(opts.Colors)
+		colors := opts.Colors
 
 		d.Null = ansi.FromString(colors["null"])
 		d.False = ansi.FromString(colors["false"])
@@ -124,7 +58,6 @@ func decoratorFromOptions(opts Options) Decorator {
 			case *big.Int:
 				return d.Number
 			default:
-				log.Printf("v: %#+v\n", v)
 				panic("unreachable")
 			}
 		}
@@ -133,9 +66,9 @@ func decoratorFromOptions(opts Options) Decorator {
 		for i := 0; i < 256; i++ {
 			byteColors[byte(i)] = byteDefaultColor
 		}
-		for _, sr := range parseCSVRangeMap(opts.ByteColors) {
-			c := ansi.FromString(sr.s)
-			for _, r := range sr.rs {
+		for _, sr := range opts.ByteColors {
+			c := ansi.FromString(sr.Value)
+			for _, r := range sr.Ranges {
 				for i := r[0]; i <= r[1]; i++ {
 					byteColors[byte(i)] = c
 				}

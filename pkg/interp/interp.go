@@ -968,24 +968,27 @@ func (i *Interp) EvalFuncValues(ctx context.Context, c interface{}, name string,
 }
 
 type Options struct {
-	Depth          int    `mapstructure:"depth"`
-	ArrayTruncate  int    `mapstructure:"array_truncate"`
-	Verbose        bool   `mapstructure:"verbose"`
-	DecodeProgress bool   `mapstructure:"decode_progress"`
-	Color          bool   `mapstructure:"color"`
-	Colors         string `mapstructure:"colors"`
-	ByteColors     string `mapstructure:"byte_colors"`
-	Unicode        bool   `mapstructure:"unicode"`
-	RawOutput      bool   `mapstructure:"raw_output"`
-	REPL           bool   `mapstructure:"repl"`
-	RawString      bool   `mapstructure:"raw_string"`
-	JoinString     string `mapstructure:"join_string"`
-	Compact        bool   `mapstructure:"compact"`
-	BitsFormat     string `mapstructure:"bits_format"`
-	LineBytes      int    `mapstructure:"line_bytes"`
-	DisplayBytes   int    `mapstructure:"display_bytes"`
-	AddrBase       int    `mapstructure:"addrbase"`
-	SizeBase       int    `mapstructure:"sizebase"`
+	Depth          int               `mapstructure:"depth"`
+	ArrayTruncate  int               `mapstructure:"array_truncate"`
+	Verbose        bool              `mapstructure:"verbose"`
+	DecodeProgress bool              `mapstructure:"decode_progress"`
+	Color          bool              `mapstructure:"color"`
+	Colors         map[string]string `mapstructure:"colors"`
+	ByteColors     []struct {
+		Ranges [][2]int `mapstructure:"ranges"`
+		Value  string   `mapstructure:"value"`
+	} `mapstructure:"byte_colors"`
+	Unicode      bool   `mapstructure:"unicode"`
+	RawOutput    bool   `mapstructure:"raw_output"`
+	REPL         bool   `mapstructure:"repl"`
+	RawString    bool   `mapstructure:"raw_string"`
+	JoinString   string `mapstructure:"join_string"`
+	Compact      bool   `mapstructure:"compact"`
+	BitsFormat   string `mapstructure:"bits_format"`
+	LineBytes    int    `mapstructure:"line_bytes"`
+	DisplayBytes int    `mapstructure:"display_bytes"`
+	AddrBase     int    `mapstructure:"addrbase"`
+	SizeBase     int    `mapstructure:"sizebase"`
 
 	Decorator    Decorator
 	BitsFormatFn func(br bitio.ReaderAtSeeker) (interface{}, error)

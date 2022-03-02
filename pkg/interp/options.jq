@@ -1,8 +1,6 @@
 include "internal";
 include "binary";
 
-def _obj_to_csv_kv:
-  [to_entries[] | [.key, .value] | join("=")] | join(",");
 
 def _opt_build_default_fixed:
   ( stdout_tty as $stdout
@@ -12,25 +10,36 @@ def _opt_build_default_fixed:
       argjson:        [],
       array_truncate: 50,
       bits_format:    "snippet",
-      byte_colors:    "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
+      # 0-0xff=brightwhite,0=brightblack,32-126:9-13=white
+      byte_colors:    [
+        { ranges: [[0,255]],
+          value: "brightwhite"
+        },
+        { ranges: [[0]],
+          value: "brightblack"
+        },
+        { ranges: [[32,126],[9,13]],
+          value: "white"
+        }
+      ],
       color:          ($stdout.is_terminal and (env.NO_COLOR | . == null or . == "")),
-      colors: (
-        {
-          null: "brightblack",
-          false: "yellow",
-          true: "yellow",
-          number: "cyan",
-          string: "green",
-          objectkey: "brightblue",
-          array: "white",
-          object: "white",
-          index: "white",
-          value: "white",
-          error: "brightred",
-          dumpheader: "yellow+underline",
-          dumpaddr: "yellow"
-        } | _obj_to_csv_kv
-      ),
+      colors: {
+        null: "brightblack",
+        false: "yellow",
+        true: "yellow",
+        number: "cyan",
+        string: "green",
+        objectkey: "brightblue",
+        array: "white",
+        object: "white",
+        index: "white",
+        value: "white",
+        error: "brightred",
+        dumpheader: "yellow+underline",
+        dumpaddr: "yellow",
+        prompt_repl_level: "brightblack",
+        prompt_value: "white"
+      },
       compact:            false,
       completion_timeout: (env.COMPLETION_TIMEOUT | if . != null then tonumber else 1 end),
       decode_file:        [],
@@ -193,6 +202,40 @@ def _opt_toarray(f):
 def _opt_is_string_pair:
   type == "array" and length == 2 and all(type == "string");
 
+# TODO: cleanup
+def _trim: capture("^\\s*(?<str>.*?)\\s*$"; "").str;
+
+# "0-255=brightwhite,0=brightblack,32-126:9-13=white" -> [{"ranges": [[0-255]], value: "brightwhite"}, ...]
+def _csv_ranges_to_array:
+  ( split(",")
+  | map(
+    ( _trim
+    | split("=")
+    | { ranges:
+          ( .[0]
+          | split(":")
+          | map(split("-") | map(tonumber))
+          ),
+        value: .[1]
+      }
+    ))
+  );
+
+def _opt_csv_ranges_to_array:
+  try _csv_ranges_to_array
+  catch null;
+
+# "key=value,a=b,..." -> {"key": "value", "a": "b", ...}
+def _csv_kv_to_obj:
+  ( split(",")
+  | map(_trim | split("=") | {key: .[0], value: .[1]})
+  | from_entries
+  );
+
+def _opt_csv_kv_to_obj:
+  try _csv_kv_to_obj
+  catch null;
+
 def _opt_cli_arg_options:
   ( {
       addrbase:           (.addrbase | _opt_tonumber),
@@ -200,9 +243,9 @@ def _opt_cli_arg_options:
       argjson:            (.argjson | _opt_toarray(_opt_is_string_pair)),
       array_truncate:     (.array_truncate | _opt_tonumber),
       bits_format:        (.bits_format | _opt_tostring),
-      byte_colors:        (.byte_colors | _opt_tostring),
+      byte_colors:        (.byte_colors | _opt_csv_ranges_to_array),
       color:              (.color | _opt_toboolean),
-      colors:             (.colors | _opt_tostring),
+      colors:             (.colors | _opt_csv_kv_to_obj),
       compact:            (.compact | _opt_toboolean),
       completion_timeout: (.array_truncate | _opt_tonumber),
       decode_file:        (.decode_file | _opt_toarray(_opt_is_string_pair)),
