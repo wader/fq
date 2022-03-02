@@ -41,7 +41,7 @@ mp3> .frames[0].header.bitrate | (topath | path_to_expr), tovalue, toactual, tos
 4
 56000
 null
-mp3> . | (root, buffer_root, format_root, parent | try topath | path_to_expr catch .), [parents | topath | path_to_expr]
+mp3> . | (root, buffer_root, format_root, parent | try (topath | path_to_expr) catch .), [parents | topath | path_to_expr]
 "."
 "."
 "."

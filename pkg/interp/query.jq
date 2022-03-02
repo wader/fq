@@ -2,6 +2,14 @@
 def _query_null:
   {term: {type: "TermTypeNull"}};
 
+# . -> (.)
+def _query_query:
+  { term: {
+      type: "TermTypeQuery",
+      query: .
+    }
+  };
+
 # string
 def _query_string($str):
   { term: {
