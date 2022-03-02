@@ -34,7 +34,8 @@ def _complete_keywords:
 def _complete_scope:
   [scope[], _complete_keywords[]];
 def _complete_keys:
-  [keys[]?, _extkeys[]?];
+  # uses try as []? will not catch errors
+  [try keys[] catch empty, try _extkeys[] catch empty];
 
 # TODO: handle variables via ast walk?
 # TODO: refactor this
