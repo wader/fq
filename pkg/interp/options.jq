@@ -384,7 +384,7 @@ def _opt_cli_opts:
     "show_help": {
       short: "-h",
       long: "--help",
-      description: "Show help or help for TOPIC (ex: --help formats, --help options)",
+      description: "Show help for TOPIC (ex: --help, --help formats)",
       string: "[TOPIC]",
       optional: true
     },
@@ -411,7 +411,7 @@ def _opt_cli_opts:
     "null_input": {
       short: "-n",
       long: "--null-input",
-      description: "Null input (use input and inputs functions to read input)",
+      description: "Null input (use input and inputs functions to read)",
       bool: true
     },
     "monochrome_output": {
