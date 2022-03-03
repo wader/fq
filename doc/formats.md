@@ -55,7 +55,7 @@
 |[`matroska`](#matroska) |Matroska&nbsp;file                                                              |<sub>`aac_frame` `av1_ccr` `av1_frame` `avc_au` `avc_dcr` `flac_frame` `flac_metadatablocks` `hevc_au` `hevc_dcr` `image` `mp3_frame` `mpeg_asc` `mpeg_pes_packet` `mpeg_spu` `opus_packet` `vorbis_packet` `vp8_frame` `vp9_cfm` `vp9_frame`</sub>|
 |`mp3`                   |MP3&nbsp;file                                                                   |<sub>`id3v2` `id3v1` `id3v11` `apev2` `mp3_frame`</sub>|
 |`mp3_frame`             |MPEG&nbsp;audio&nbsp;layer&nbsp;3&nbsp;frame                                    |<sub>`xing`</sub>|
-|[`mp4`](#mp4)           |MPEG-4&nbsp;file&nbsp;and&nbsp;similar                                          |<sub>`aac_frame` `av1_ccr` `av1_frame` `flac_frame` `flac_metadatablocks` `id3v2` `image` `jpeg` `mp3_frame` `avc_au` `avc_dcr` `mpeg_es` `hevc_au` `hevc_dcr` `mpeg_pes_packet` `opus_packet` `protobuf_widevine` `pssh_playready` `vorbis_packet` `vp9_frame` `vpx_ccr`</sub>|
+|[`mp4`](#mp4)           |MPEG-4&nbsp;file&nbsp;and&nbsp;similar                                          |<sub>`aac_frame` `av1_ccr` `av1_frame` `flac_frame` `flac_metadatablocks` `id3v2` `image` `jpeg` `mp3_frame` `avc_au` `avc_dcr` `mpeg_es` `hevc_au` `hevc_dcr` `mpeg_pes_packet` `opus_packet` `protobuf_widevine` `pssh_playready` `vorbis_packet` `vp9_frame` `vpx_ccr` `icc_profile`</sub>|
 |`mpeg_asc`              |MPEG-4&nbsp;Audio&nbsp;Specific&nbsp;Config                                     |<sub></sub>|
 |`mpeg_es`               |MPEG&nbsp;Elementary&nbsp;Stream                                                |<sub>`mpeg_asc` `vorbis_packet`</sub>|
 |`mpeg_pes`              |MPEG&nbsp;Packetized&nbsp;elementary&nbsp;stream                                |<sub>`mpeg_pes_packet` `mpeg_spu`</sub>|
@@ -186,7 +186,7 @@ fq -d cbor 'torepr | grep("abc")' file.cbor
 
 Decodes vanilla and FAT Macho binaries
 
-## Examples
+#### Examples
 
 To decode the MacOS build of `fq`
 
@@ -206,7 +206,7 @@ Can be used to decode nested parts:
 ./fq '.load_commands[] | select(.cmd=="segment_64")' -d macho fq
 ```
 
-## References:
+#### References:
 - https://github.com/aidansteele/osx-abi-macho-file-format-reference
 
 ### matroska
