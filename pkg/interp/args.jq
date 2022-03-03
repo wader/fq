@@ -55,7 +55,11 @@ def _args_parse($args; $opts):
               if $assign_i then
                 _parse_with_arg($args[1:]; $optname; $args[0][$assign_i+1:]; $opt)
               elif ($args | length) < 2 then
-                error("\($arg): needs an argument")
+                if $opt.optional then
+                  _parse_without_arg($args[1:]; $optname)
+                else
+                  error("\($arg): needs an argument")
+                end
               else
                 _parse_with_arg($args[2:]; $optname; $args[1]; $opt)
               end

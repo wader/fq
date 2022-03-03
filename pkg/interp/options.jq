@@ -178,8 +178,12 @@ def _opt_toboolean:
   catch
     null;
 
+def _opt_fromboolean: tostring;
+
 def _opt_tonumber:
   try tonumber catch null;
+
+def _opt_fromnumber: tostring;
 
 def _opt_tostring:
   if . != null then
@@ -192,12 +196,16 @@ def _opt_tostring:
     )
   end;
 
+def _opt_fromstring: if . then tojson[1:-1] else "" end;
+
 def _opt_toarray(f):
   try
     ( fromjson
     | if type == "array" and (all(f) | not) then null end
     )
   catch null;
+
+def _opt_fromarray: tojson;
 
 def _opt_is_string_pair:
   type == "array" and length == 2 and all(type == "string");
@@ -221,9 +229,19 @@ def _csv_ranges_to_array:
     ))
   );
 
-def _opt_csv_ranges_to_array:
+def _opt_to_csv_ranges_array:
   try _csv_ranges_to_array
   catch null;
+
+def _opt_from_csv_ranges_array:
+  ( map(
+      ( (.ranges | map(join("-")) | join(":"))
+      + "="
+      + .value
+      )
+    )
+  | join(",")
+  );
 
 # "key=value,a=b,..." -> {"key": "value", "a": "b", ...}
 def _csv_kv_to_obj:
@@ -232,20 +250,26 @@ def _csv_kv_to_obj:
   | from_entries
   );
 
-def _opt_csv_kv_to_obj:
+def _opt_to_csv_kv_obj:
   try _csv_kv_to_obj
   catch null;
 
-def _opt_cli_arg_options:
+def _opt_from_csv_kv_obj:
+  ( to_entries
+  | map("\(.key)=\(.value)")
+  | join(",")
+  );
+
+def _opt_cli_arg_tooptions:
   ( {
       addrbase:           (.addrbase | _opt_tonumber),
       arg:                (.arg | _opt_toarray(_opt_is_string_pair)),
       argjson:            (.argjson | _opt_toarray(_opt_is_string_pair)),
       array_truncate:     (.array_truncate | _opt_tonumber),
       bits_format:        (.bits_format | _opt_tostring),
-      byte_colors:        (.byte_colors | _opt_csv_ranges_to_array),
+      byte_colors:        (.byte_colors | _opt_to_csv_ranges_array),
       color:              (.color | _opt_toboolean),
-      colors:             (.colors | _opt_csv_kv_to_obj),
+      colors:             (.colors | _opt_to_csv_kv_obj),
       compact:            (.compact | _opt_toboolean),
       completion_timeout: (.array_truncate | _opt_tonumber),
       decode_file:        (.decode_file | _opt_toarray(_opt_is_string_pair)),
@@ -272,6 +296,46 @@ def _opt_cli_arg_options:
       string_input:       (.string_input | _opt_toboolean),
       unicode:            (.unicode | _opt_toboolean),
       verbose:            (.verbose | _opt_toboolean),
+    }
+  | with_entries(select(.value != null))
+  );
+
+def _opt_cli_arg_fromoptions:
+  ( {
+      addrbase:           (.addrbase | _opt_fromnumber),
+      arg:                (.arg | _opt_fromarray),
+      argjson:            (.argjson | _opt_fromarray),
+      array_truncate:     (.array_truncate | _opt_fromnumber),
+      bits_format:        (.bits_format | _opt_fromstring),
+      byte_colors:        (.byte_colors | _opt_from_csv_ranges_array),
+      color:              (.color | _opt_fromboolean),
+      colors:             (.colors | _opt_from_csv_kv_obj),
+      compact:            (.compact | _opt_fromboolean),
+      completion_timeout: (.array_truncate | _opt_fromnumber),
+      decode_file:        (.decode_file | _opt_fromarray),
+      decode_format:      (.decode_format | _opt_fromstring),
+      decode_progress:    (.decode_progress | _opt_fromboolean),
+      depth:              (.depth | _opt_fromnumber),
+      display_bytes:      (.display_bytes | _opt_fromnumber),
+      expr:               (.expr | _opt_fromstring),
+      expr_file:          (.expr_file | _opt_fromstring),
+      filenames:          (.filenames | _opt_fromarray),
+      force:              (.force | _opt_fromboolean),
+      include_path:       (.include_path | _opt_fromstring),
+      join_string:        (.join_string | _opt_fromstring),
+      line_bytes:         (.line_bytes | _opt_fromnumber),
+      null_input:         (.null_input | _opt_fromboolean),
+      raw_file:           (.raw_file| _opt_fromarray),
+      raw_output:         (.raw_output | _opt_fromboolean),
+      raw_string:         (.raw_string | _opt_fromboolean),
+      repl:               (.repl | _opt_fromboolean),
+      sizebase:           (.sizebase | _opt_fromnumber),
+      show_formats:       (.show_formats | _opt_fromboolean),
+      show_help:          (.show_help | _opt_fromboolean),
+      slurp:              (.slurp | _opt_fromboolean),
+      string_input:       (.string_input | _opt_fromboolean),
+      unicode:            (.unicode | _opt_fromboolean),
+      verbose:            (.verbose | _opt_fromboolean),
     }
   | with_entries(select(.value != null))
   );
@@ -317,16 +381,12 @@ def _opt_cli_opts:
       description: "Read EXPR from file",
       string: "PATH"
     },
-    "show_formats": {
-      long: "--formats",
-      description: "Show supported formats",
-      bool: true
-    },
     "show_help": {
       short: "-h",
       long: "--help",
-      description: "Show help",
-      bool: true
+      description: "Show help or help for TOPIC (ex: --help formats, --help options)",
+      string: "[TOPIC]",
+      optional: true
     },
     "join_output": {
       short: "-j",
@@ -363,7 +423,7 @@ def _opt_cli_opts:
     "option": {
       short: "-o",
       long: "--option",
-      description: "Set option, eg: color=true (use options function to see all options)",
+      description: "Set option (ex: -o color=true, see --help options)",
       object: "KEY=VALUE",
     },
     "string_input": {

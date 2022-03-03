@@ -28,9 +28,6 @@ def hexdump: hexdump({display_bytes: 0});
 def hd($opts): hexdump($opts);
 def hd: hexdump;
 
-def formats:
-  _registry.formats;
-
 def intdiv(a; b): _intdiv(a; b);
 
 # TODO: escape for safe key names

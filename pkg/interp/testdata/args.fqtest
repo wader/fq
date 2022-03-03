@@ -23,15 +23,14 @@ Example usages:
 --compact-output,-c      Compact output
 --decode,-d NAME         Decode format (probe)
 --decode-file NAME PATH  Set variable $NAME to decode of file
---formats                Show supported formats
 --from-file,-f PATH      Read EXPR from file
---help,-h                Show help
+--help,-h [TOPIC]        Show help or help for TOPIC (ex: --help formats, --help options)
 --include-path,-L PATH   Include search path
 --join-output,-j         No newline between outputs
 --monochrome-output,-M   Force monochrome output
 --null-input,-n          Null input (use input and inputs functions to read input)
 --null-output,-0         Null byte between outputs
---option,-o KEY=VALUE    Set option, eg: color=true (use options function to see all options)
+--option,-o KEY=VALUE    Set option (ex: -o color=true, see --help options)
 --raw-file NAME PATH     Set variable $NAME to string content of file
 --raw-input,-R           Read raw input strings (don't decode)
 --raw-output,-r          Raw string output (without quotes)
@@ -58,7 +57,42 @@ $ fq -n "[1,2,3]"
 ]
 $ fq -nc "[1,2,3]"
 [1,2,3]
-$ fq --formats
+$ fq --help options
+addrbase            16
+arg                 []
+argjson             []
+array_truncate      50
+bits_format         snippet
+byte_colors         0-255=brightwhite,0=brightblack,32-126:9-13=white
+color               false
+colors              array=white,dumpaddr=yellow,dumpheader=yellow+underline,error=brightred,false=yellow,index=white,null=brightblack,number=cyan,object=white,objectkey=brightblue,prompt_repl_level=brightblack,prompt_value=white,string=green,true=yellow,value=white
+compact             false
+completion_timeout  50
+decode_file         []
+decode_format       probe
+decode_progress     false
+depth               0
+display_bytes       16
+expr                .
+expr_file           
+filenames           [null]
+force               false
+include_path        
+join_string         \n
+line_bytes          16
+null_input          false
+raw_file            []
+raw_output          false
+raw_string          false
+repl                false
+show_formats        false
+show_help           options
+sizebase            10
+slurp               false
+string_input        false
+unicode             false
+verbose             false
+$ fq --help formats
 aac_frame            Advanced Audio Coding frame
 adts                 Audio Data Transport Stream
 adts_frame           Audio Data Transport Stream frame

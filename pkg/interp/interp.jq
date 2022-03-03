@@ -162,45 +162,6 @@ def _cli_eval($expr; $opts):
 
 
 def _main:
-  def _banner:
-    ( "fq - jq for binary formats"
-    , "Tool, language and decoders for inspecting binary data."
-    , "For more information see https://github.com/wader/fq"
-    );
-  def _usage($arg0):
-    "Usage: \($arg0) [OPTIONS] [--] [EXPR] [FILE...]";
-  def _help($arg0):
-    ( _banner
-    , ""
-    , _usage($arg0)
-    , ""
-    , "Example usages:"
-    , "  fq . file"
-    , "  fq d file"
-    , "  fq tovalue file"
-    , "  cat file.cbor | fq -d cbor torepr"
-    , "  fq 'grep(\"^main$\") | parent' /bin/ls"
-    , "  fq 'grep_by(format == \"exif\") | d' *.png *.jpeg"
-    , ""
-    , args_help_text(_opt_cli_opts)
-    );
-  def _formats_list:
-    ( [ formats
-      | to_entries[]
-      | [(.key+"  "), .value.description]
-      ]
-    | table(
-        .;
-        map(
-          ( . as $rc
-          # right pad format name to align description
-          | if .column == 0 then .string | rpad(" "; $rc.maxwidth)
-            else $rc.string
-            end
-          )
-        ) | join("")
-      )
-    );
   def _map_decode_file:
     map(
       ( . as $a
@@ -222,7 +183,7 @@ def _main:
   | _options_stack([
       ( ( _opt_build_default_fixed
         + $parsed_args
-        + ($parsed_args.option | _opt_cli_arg_options)
+        + ($parsed_args.option | _opt_cli_arg_tooptions)
         )
       | . + _opt_eval($rest)
       )
@@ -231,12 +192,19 @@ def _main:
   # combine default fixed opt, --args opts and -o key=value opts
   | ( $default_fixed_opts
     + $parsed_args
-    + ($parsed_args.option | _opt_cli_arg_options)
+    + ($parsed_args.option | _opt_cli_arg_tooptions)
     ) as $combined_opts
   | options as $opts
-  | if $opts.show_help then _help($arg0) | println
+  | if $opts.show_help then
+      ( if ($opts.show_help | type) == "boolean" then
+          ( ("banner", "", "usage", "", "example_usage", "", "args")
+          | if . != "" then _help($arg0; .) end
+          )
+        else _help($arg0; $opts.show_help)
+        end
+      | println
+      )
     elif $opts.show_version then "\($version) (\($os) \($arch))" | println
-    elif $opts.show_formats then _formats_list | println
     elif
       ( $opts.filenames == [null] and
         $opts.null_input == false and
@@ -245,7 +213,7 @@ def _main:
         stdin_tty.is_terminal and
         stdout_tty.is_terminal
       ) then
-      ( (_usage($arg0) | printerrln)
+      ( (_help($arg0; "usage") | printerrln)
       , null | halt_error(_exit_code_args_error)
       )
     else

@@ -62,6 +62,9 @@ def todescription: _decode_value(._description);
 # TODO: rename?
 def format: _decode_value(._format; null);
 
+def formats:
+  _registry.formats;
+
 def root: _decode_value(._root);
 def buffer_root: _decode_value(._buffer_root);
 def format_root: _decode_value(._format_root);
