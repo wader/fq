@@ -24,11 +24,11 @@ Example usages:
 --decode,-d NAME         Decode format (probe)
 --decode-file NAME PATH  Set variable $NAME to decode of file
 --from-file,-f PATH      Read EXPR from file
---help,-h [TOPIC]        Show help or help for TOPIC (ex: --help formats, --help options)
+--help,-h [TOPIC]        Show help for TOPIC (ex: --help, --help formats)
 --include-path,-L PATH   Include search path
 --join-output,-j         No newline between outputs
 --monochrome-output,-M   Force monochrome output
---null-input,-n          Null input (use input and inputs functions to read input)
+--null-input,-n          Null input (use input and inputs functions to read)
 --null-output,-0         Null byte between outputs
 --option,-o KEY=VALUE    Set option (ex: -o color=true, see --help options)
 --raw-file NAME PATH     Set variable $NAME to string content of file
