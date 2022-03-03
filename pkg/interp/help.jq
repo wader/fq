@@ -2,6 +2,10 @@ include "internal";
 include "query";
 include "eval";
 include "repl";
+include "decode";
+include "funcs";
+include "options";
+include "args";
 
 # TODO: variants, values, keywords?
 # TODO: store some other way?
@@ -52,6 +56,67 @@ Same as recurse without argument.
 def help($_): error("help must be alone or last in pipeline. ex: help(length) or ... | help");
 def help: help(null);
 
+def _help($arg0; $topic):
+  ( $topic
+  | if  . == "usage" then
+      "Usage: \($arg0) [OPTIONS] [--] [EXPR] [FILE...]"
+    elif . == "example_usage" then
+      ( "Example usages:"
+      , "  fq . file"
+      , "  fq d file"
+      , "  fq tovalue file"
+      , "  cat file.cbor | fq -d cbor torepr"
+      , "  fq 'grep(\"^main$\") | parent' /bin/ls"
+      , "  fq 'grep_by(format == \"exif\") | d' *.png *.jpeg"
+      )
+    elif . == "banner" then
+      ( "fq - jq for binary formats"
+      , "Tool, language and decoders for inspecting binary data."
+      , "For more information see https://github.com/wader/fq"
+      )
+    elif . == "args" then
+      args_help_text(_opt_cli_opts)
+    elif  . == "options" then
+      ( [ ( options
+          | _opt_cli_arg_fromoptions
+          )
+        | to_entries[]
+        | [(.key+"  "), .value | tostring]
+        ]
+      | table(
+          .;
+          map(
+            ( . as $rc
+            # right pad format name to align description
+            | if .column == 0 then .string | rpad(" "; $rc.maxwidth)
+              else $rc.string
+              end
+            )
+          ) | join("")
+        )
+      )
+    elif . == "formats" then
+      ( [ formats
+      | to_entries[]
+      | [(.key+"  "), .value.description]
+      ]
+      | table(
+          .;
+          map(
+            ( . as $rc
+            # right pad format name to align description
+            | if .column == 0 then .string | rpad(" "; $rc.maxwidth)
+              else $rc.string
+              end
+            )
+          ) | join("")
+        )
+      )
+    else
+      error("unknown topic: \($topic)")
+    end
+  );
+
 # TODO: refactor
  def _help_slurp($query):
   def _name:
@@ -78,19 +143,22 @@ def help: help(null);
             # help(name)
             ( "\($name): \($hf.summary)"
             , $hf.doc
-            , "Examples:"
-            , ( $hf.examples[]
-              | . as $e
-              | if length == 1 then
-                  ( "> \($e[0])"
-                  , (null | try (_eval($e[0]) | tojson) catch "error: \(.)")
+            , if $hf.examples then
+                ( "Examples:"
+                , ( $hf.examples[]
+                  | . as $e
+                  | if length == 1 then
+                      ( "> \($e[0])"
+                      , (null | try (_eval($e[0]) | tojson) catch "error: \(.)")
+                      )
+                    else
+                      ( "> \($e[0] | tojson) | \($e[1])"
+                      , ($e[0] | try (_eval($e[1]) | tojson) catch "error: \(.)")
+                      )
+                    end
                   )
-                else
-                  ( "> \($e[0] | tojson) | \($e[1])"
-                  , ($e[0] | try (_eval($e[1]) | tojson) catch "error: \(.)")
-                  )
-                end
-              )
+                )
+              end
             ) | println
           else
             # help(unknown)

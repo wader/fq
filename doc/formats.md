@@ -184,27 +184,21 @@ fq -d cbor 'torepr | grep("abc")' file.cbor
 
 ### macho
 
-Decodes vanilla and FAT Macho binaries
+Supports decoding vanilla and FAT Mach-O binaries.
 
 #### Examples
 
-To decode the MacOS build of `fq`
+To decode the macOS build of `fq`:
 
 ```
-fq . -d macho fq
+fq . /path/to/fq
 ```
 
----
-**NOTE**
-`-d macho` is usually not needed.
-
----
-
-Can be used to decode nested parts:
-
 ```
-./fq '.load_commands[] | select(.cmd=="segment_64")' -d macho fq
+fq '.load_commands[] | select(.cmd=="segment_64")' /path/to/fq
 ```
+
+Note you can use `-d macho` to decode a broken Mach-O binary.
 
 #### References:
 - https://github.com/aidansteele/osx-abi-macho-file-format-reference

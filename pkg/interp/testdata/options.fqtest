@@ -5,9 +5,56 @@ $ fq -n options
   "argjson": [],
   "array_truncate": 50,
   "bits_format": "snippet",
-  "byte_colors": "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
+  "byte_colors": [
+    {
+      "ranges": [
+        [
+          0,
+          255
+        ]
+      ],
+      "value": "brightwhite"
+    },
+    {
+      "ranges": [
+        [
+          0
+        ]
+      ],
+      "value": "brightblack"
+    },
+    {
+      "ranges": [
+        [
+          32,
+          126
+        ],
+        [
+          9,
+          13
+        ]
+      ],
+      "value": "white"
+    }
+  ],
   "color": false,
-  "colors": "array=white,dumpaddr=yellow,dumpheader=yellow+underline,error=brightred,false=yellow,index=white,null=brightblack,number=cyan,object=white,objectkey=brightblue,string=green,true=yellow,value=white",
+  "colors": {
+    "array": "white",
+    "dumpaddr": "yellow",
+    "dumpheader": "yellow+underline",
+    "error": "brightred",
+    "false": "yellow",
+    "index": "white",
+    "null": "brightblack",
+    "number": "cyan",
+    "object": "white",
+    "objectkey": "brightblue",
+    "prompt_repl_level": "brightblack",
+    "prompt_value": "white",
+    "string": "green",
+    "true": "yellow",
+    "value": "white"
+  },
   "compact": false,
   "completion_timeout": 10,
   "decode_file": [],
@@ -49,13 +96,25 @@ $ fq -o array_truncate=true -n options.array_truncate
 $ fq -o bits_format=base64 -n options.bits_format
 "base64"
 $ fq -o byte_colors=0-0xff=red -n options.byte_colors
-"0-0xff=red"
+[
+  {
+    "ranges": [
+      [
+        0,
+        255
+      ]
+    ],
+    "value": "red"
+  }
+]
 $ fq -o color=10 -n options.color
 [33mtrue[m
 $ fq -o color=true -n options.color
 [33mtrue[m
 $ fq -o colors=number=red -n options.colors
-"number=red"
+{
+  "number": "red"
+}
 $ fq -o compact=true -n options.compact
 true
 $ fq -o compact=aaa -n options.compact

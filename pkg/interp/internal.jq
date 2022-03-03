@@ -100,12 +100,6 @@ def _intdiv($a; $b):
   | ($a - ($a % $b)) / $b
   );
 
-def _esc: "\u001b";
-def _ansi:
-  {
-    clear_line: "\(_esc)[2K",
-  };
-
 # valid jq identifier, start with alpha or underscore then zero or more alpha, num or underscore
 def _is_ident: type == "string" and test("^[a-zA-Z_][a-zA-Z_0-9]*$");
 # escape " and \

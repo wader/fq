@@ -1,6 +1,7 @@
 include "internal";
 include "options";
 include "binary";
+include "ansi";
 
 def _display_default_opts:
   options({depth: 1});
@@ -27,34 +28,32 @@ def hexdump: hexdump({display_bytes: 0});
 def hd($opts): hexdump($opts);
 def hd: hexdump;
 
-def formats:
-  _registry.formats;
-
 def intdiv(a; b): _intdiv(a; b);
 
 # TODO: escape for safe key names
 # path ["a", 1, "b"] -> "a[1].b"
-def path_to_expr:
+def path_to_expr($opts):
   ( if length == 0 or (.[0] | type) != "string" then
       [""] + .
     end
   | map(
-      if type == "number" then "[", ., "]"
-      else
+      if type == "number" then
+        ( ("[" | _ansi_if($opts; "array"))
+        , _ansi_if($opts; "number")
+        , ("]" | _ansi_if($opts; "array"))
+        )      else
         ( "."
         , # empty (special case for leading index or empty path) or key
-          if . == "" or _is_ident then .
+          if . == "" or _is_ident then _ansi_if($opts; "objectkey")
           else
-            ( "\""
-            , _escape_ident
-            , "\""
-            )
+            "\"\(_escape_ident)\"" | _ansi_if($opts; "string")
           end
         )
       end
     )
   | join("")
   );
+def path_to_expr: path_to_expr(null);
 
 # TODO: don't use eval? should support '.a.b[1]."c.c"' and escapes?
 def expr_to_path:
