@@ -175,7 +175,7 @@ def _prompt($opts):
     end;
   [ (_repl_level | _ansi_if($opts; "prompt_repl_level"))  , _values
   ] | join(" ") + "> ";
-
+def _prompt: _prompt(null);
 
 # user expr error
 def _repl_on_expr_error:
@@ -194,7 +194,7 @@ def _repl_on_compile_error:
       ( # TODO: move, redo as: def _symbols: if unicode then {...} else {...} end?
         def _arrow_up: if options.unicode then "⬆" else "^" end;
         if .error.column != 0 then
-          ( ((.input | _prompt(options) | length) + .error.column-1) as $pos
+          ( ((.input | _prompt | length) + .error.column-1) as $pos
           | " " * $pos + "\(_arrow_up) \(.error.error)"
           )
         else
