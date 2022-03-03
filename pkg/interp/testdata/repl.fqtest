@@ -4,10 +4,13 @@ null> .
 null
 null> 1+1
 2
-null> (
-       ^ unexpected token <EOF>
+null> repl({color: true})
+[90m>[39m [37mnull[39m> )
+        ^ unexpected token ")"
+[90m>[39m [37mnull[39m> ^D
 null> )
       ^ unexpected token ")"
+null> 
 null> abc
 error: expr: function not defined: abc/0
 null> 1+"a"
