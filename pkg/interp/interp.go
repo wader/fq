@@ -41,7 +41,6 @@ import (
 //go:embed ansi.jq
 //go:embed binary.jq
 //go:embed decode.jq
-//go:embed match.jq
 //go:embed funcs.jq
 //go:embed grep.jq
 //go:embed args.jq

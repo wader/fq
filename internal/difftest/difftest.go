@@ -1,9 +1,8 @@
-// Package difftest implement test based on serialized string output
+// Package difftest implement test based on diffing serialized string output
 //
-// User provides a function that gets a input string. It returns a output string
-// based on the input somehow and a output path to file with content to compare it
-// to or to write to if in write mode.
-// If there is a difference test will fail with a diff.
+// User provides a function that get a input path and input string and returns a
+// output path and output string. Content of output path and output string is compared
+// and if there is a difference the test fails with a diff.
 //
 // Test inputs are read from files matching Pattern from Path.
 //
@@ -30,16 +29,6 @@ type tf interface {
 const green = "\x1b[32m"
 const red = "\x1b[31m"
 const reset = "\x1b[0m"
-
-type Fn func(t *testing.T, path string, input string) (string, string, error)
-
-type Options struct {
-	Path        string
-	Pattern     string
-	ColorDiff   bool
-	WriteOutput bool
-	Fn          Fn
-}
 
 func testDeepEqual(t tf, color bool, printfFn func(format string, args ...interface{}), expected string, actual string) {
 	t.Helper()
@@ -109,6 +98,16 @@ func FatalEx(t tf, color bool, expected string, actual string) {
 func Fatal(t tf, expected string, actual string) {
 	t.Helper()
 	testDeepEqual(t, false, t.Fatalf, expected, actual)
+}
+
+type Fn func(t *testing.T, path string, input string) (string, string, error)
+
+type Options struct {
+	Path        string
+	Pattern     string
+	ColorDiff   bool
+	WriteOutput bool
+	Fn          Fn
 }
 
 func TestWithOptions(t *testing.T, opts Options) {
