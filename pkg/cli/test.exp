@@ -22,6 +22,7 @@ send ".frames | mp3_fr\t"
 expect "mp3_frame"
 send "\n"
 expect "side_info"
+expect "mp3> "
 
 # ctrl-d
 send "\x04"
