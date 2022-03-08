@@ -1,0 +1,20 @@
+# Pipeline using pipe operator "|" and identity function "." for current input
+> "hello" | length | . * 2
+10
+
+# Multiple outputs using output operator ","
+> 1, 2 | . * 2
+2
+4
+
+# Index array or object using .[key/index] or just .key for objects
+> [1,2,3][1]
+2
+
+# Collect outputs into array using [...]
+> [1,empty,2]
+[1,2]
+
+# Iterate array or object using .[]
+> [[1,2,3][]]
+[1,2,3]

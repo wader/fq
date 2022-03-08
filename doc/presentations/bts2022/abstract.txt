@@ -1,0 +1,15 @@
+fq is inspired by the well known jq tool and language and allows you
+to work with binary formats the same way you would using jq. In
+addition it can also present data similar to a hex viewer, transform,
+slice and concatenate binary data, supports nested formats and has an
+interactive REPL with auto-completion.
+
+It was originally designed to query, inspect and debug codecs and
+metadata in media files and containers like mp4, flac, mp3, jpeg. But
+has since been extended to support a variety of formats like
+executables, packet captures including TCP reassembly and
+serialization formats like ASN1 BER, Avro, CBOR, protobuf and a lot
+more.
+
+In summary it aims to be something like jq, hexdump, dd and gdb
+combined into one.

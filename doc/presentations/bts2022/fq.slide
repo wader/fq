@@ -1,0 +1,238 @@
+# fq
+
+jq for binary formats
+
+Mattias Wadman
+mattias.wadman@gmail.com
+https://github.com/wader/fq
+@mwader
+
+## Background
+
+.html style.html
+
+- Use various tools to extract data
+    - ffprobe, gm identify, mp4dump, mediainfo, wireshark, one off programs, ...
+- Convert to usable format and do queries
+    - jq, grep, sqlite, sort, awk, sed, one off programs, ...
+- Digging into and slicing binaries
+    - Hexfiend, hexdump, dd, cat, one off programs, ...
+
+
+## Wishlist
+
+"Want to see everything about this picture except the picture"
+
+- A very verbose version of file(1)
+- gdb for files
+- Select and query things using a language
+- Make all parts of a file symbolically addressable
+- Nested formats and binaries
+- Convenient bit-oriented decoder DSL
+
+
+## Experiments and prototypes
+
+- Decoder DSL
+  - TCL, lisp, tengo, Starlark, JavaScript, Go
+- Query language
+  - JSONPath, SQL, jq, JavaScript
+- How to use
+  - IR-JSON: `fq file | jq ... | fq`
+  - Extend existing project
+  - Decode and query in same tool
+
+
+## Result
+
+Go
+
+- Tests showed fast enough to decode big files
+- Found gojq
+- Previous good experience
+- Good tooling
+
+
+## jq
+
+"The JSON indenter"
+
+- JSON in/out
+- Syntax kind of a superset of JSON with same types
+- Functional language based on generators and backtracking
+    - Expressions can return or "output" zero, one or more values
+    - No more outputs backtracks
+- Implicit input and output similar to shell pipes
+- Extraordinary iteration and combinatorial abilities
+- Great for traversing tree structures
+
+
+## Examples
+
+.code jq1
+
+## Examples
+
+.code jq2
+
+## Examples
+
+.code jq3
+
+
+## Examples
+
+.code jq4
+
+
+## fq
+
+"The binary indenter"
+
+- Superset of jq
+- Re-implements most of jq's CLI interface
+- 83 input formats, 22 supports probe
+- Additional standard library functions
+- Additional types that act as standard jq types but has special abilities
+  - _Decode value_ has bit range, actual and symbolic value, description, ...
+  - _Binary_ has a unit size, bit or bytes,  and can be sliced
+- Output fancy hexdump, JSON and binary
+- Interactive REPL with completion and sub-REPL support
+
+
+##
+
+.image formats.svg _ 1024
+
+## Usage
+
+- Basic usage
+  - `fq . file`, `cat file | fq`
+- Multiple input files
+  - `fq 'grep_by(format == "exif")' *.png *.jpeg`
+- Hexdump, JSON and binary output
+  - `fq '.frames[10] | d' file.mp3`
+  - `fq '[grep_by(format == "dns").questions[].name.value]' file.pcap`
+  - `fq 'first(grep_by(format == "jpeg")) | tobytes' file > file.jpeg`
+- Interactive REPL
+  - `fq -i . *.png`
+
+
+##
+
+.background data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAAXNSR0IArs4c6QAAAAlwSFlzAAAWJQAAFiUBSVIk8AAAABNJREFUCB1jZGBg+A/EDEwgAgQADigBA//q6GsAAAAASUVORK5CYII%3D
+.image usage.svg _ 900
+
+
+## fq specific functions
+
+- Standard library
+  - `streaks`, `count`, `delta`, `chunk`, `diff`, `grep`, `grep_by`, ...
+  - `toradix`, `fromradix`, `hex`, `base64`, ...
+- Decode value
+  - `display` (alias `d`, `dv`, `da` ...)
+  - `parent`, `format`, ...
+  - `tobytes`, `tovalue`, `toactual`, ...
+  - `torepr`, ...
+- Binary
+  -  Regexp functions `test`, `match`, ...
+  -  Decode functions `probe`, `mp3_frame`, ...
+
+
+## Binary and binary array
+
+- A binary is created using `tobits`, `tobytes`, `tobitsrange` or `tobytesrange`.
+  - From decode value `.frames[1] | tobytes`
+  - String or number `"hello" | tobits`
+  - Binary array `[0xab, ["hello", .name]] | tobytes`
+- Can be sliced using normal jq slice syntax.
+  - `"hello" | tobits[8:8+16]` are the bits for `"el"`
+- Can be decoded
+  - `[tobytes[-10:], 0, 0, 0, 0] | flac_frame`
+
+
+## Example queries
+
+- Slice and decode
+  - `tobits[8:8+8000] | mp3_frame | d`
+  - `match([0xff,0xd8]) as $m | tobytes[$m.offset:] | jpeg`
+- ASN1 BER, CBOR, msgpack, BSON, ... has `torepr` support
+  - `fq -d cbor torepr file.cbor`
+  - `fq -d msgpack '[torepr.items[].name]' file.msgpack`
+- PCAP with TCP reassembly, look for GET requests
+  - `fq 'grep("GET .*")' file.pcap`
+- Parent of scalar value that includes bit 100
+  - `grep_by(scalars and in_bits_range(100)) | parent`
+
+
+## Use as script interpreter
+
+.code fqscript
+
+
+## Use as script interpreter
+
+.code fqscriptout
+
+
+## Implementation
+
+- Library of jq function implemented in Go
+    - Decoders, decode value, binary, bit reader, IO, tty, ...
+- CLI and REPL is mostly written in jq
+  ```
+  ( open
+  | decode
+  | if $repl then repeat(read as $expr | eval($expr) | print)
+    else eval($arg) | print
+    end
+  )
+  ```
+- All current decoders in Go
+- Uses a forked version of gojq
+  - Helped add native functions and iterators support
+  - JQValue interface, bin/hex/oct literals, reflection, query AST functions, ...
+
+## Decode API
+
+SPS HRD parameters from ITU-T H.264 specification
+
+.code avc_sps_hdr_params.go
+
+## Decode API
+
+.image avc_sps_hdr_params.png _ 900
+
+
+## Decode API
+
+Formats can use other formats. Simplified version of mp3 decoder:
+
+.code mp3.go
+
+
+## Future
+
+- Declarative decoding like kaitai struct, decoder in jq
+- Nicer way to handle checksums, encoding, validation etc
+- Schemas for ASN1, protobuf, ...
+- Better support for modifying data
+- More formats like tls, http, http2, grpc, filesystems, ...
+- Encoders
+- More efficient, lazy decoding, smarter representation
+- GUI
+- Streaming input, read network traffic `tap("eth0") | select(...)`?
+- Hope for more contributors
+
+
+## Thanks and useful tools
+
+- @itchyny for gojq
+- Stephen Dolan and others for jq
+- HexFiend
+- GNU poke
+- Kaitai struct
+- Wireshark
+- [vscode-jq](https://github.com/wader/vscode-jq)
+- [jq-lsp](https://github.com/wader/jq-lsp)
+

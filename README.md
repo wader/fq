@@ -130,6 +130,11 @@ Basic usage is `fq . file`.
 
 For details see [usage.md](doc/usage.md)
 
+## Presentations
+
+- "fq - jq for binary formats" at [Binary Tools Summit 2022](https://binary-tools.net/summit.html) - (recording soon) - [slides](doc/presentations/bts2022/fq-bts2022-v1.pdf)
+
+
 ## Install
 
 Use one of the methods listed below or download [release](https://github.com/wader/fq/releases) for your platform. Unarchive it and move the executable to `PATH` etc.
