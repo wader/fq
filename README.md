@@ -132,7 +132,7 @@ For details see [usage.md](doc/usage.md)
 
 ## Presentations
 
-- "fq - jq for binary formats" at [Binary Tools Summit 2022](https://binary-tools.net/summit.html) - (recording soon) - [slides](doc/presentations/bts2022/fq-bts2022-v1.pdf)
+- "fq - jq for binary formats" at [Binary Tools Summit 2022](https://binary-tools.net/summit.html) - [video](https://www.youtube.com/watch?v=GJOq_b0eb-s&list=PLTj8twuHdQz-JcX7k6eOwyVPDB8CyfZc8&index=1) [slides](doc/presentations/bts2022/fq-bts2022-v1.pdf)
 
 
 ## Install
