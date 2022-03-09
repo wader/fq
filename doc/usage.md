@@ -382,7 +382,8 @@ unary uses input and if more than one argument all as arguments ignoring the inp
     - For `capture` the `.string` value is a binary.
     - If pattern is a binary it will be matched literally and not as a regexp.
     - If pattern is a binary or flags include "b" each input byte will be read as separate code points
-  - `scan_toend($v)`, `scan_toend($v; $flags)` works the same as `scan` but output binary are from start of match to
+  - String function are not overloaded to support binary for now as some of them are bahaviours that might be confusing.
+  - `explode` is overloaded to work with binary. Will explode into array of the unit of the binary.
   end of binary.
   instead of possibly multi-byte UTF-8 codepoints. This allows to match raw bytes. Ex: `match("\u00ff"; "b")`
   will match the byte `0xff` and not the UTF-8 encoded codepoint for 255, `match("[^\u00ff]"; "b")` will match

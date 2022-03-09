@@ -2,7 +2,6 @@ include "internal";
 include "options";
 include "binary";
 include "decode";
-include "match";
 include "funcs";
 include "grep";
 include "args";

@@ -171,6 +171,7 @@
     },
     "[jq]": {
         "editor.tabSize": 2,
+        "files.trimTrailingWhitespace": true
     },
     "fracturedjsonvsc.MaxInlineLength": 160,
 }
