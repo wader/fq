@@ -353,7 +353,7 @@ Issues and PR:s related to fq:<br>
 
 Run and follow instructions:
 ```
-make release=1.2.3
+make release VERSION=1.2.3
 ```
 
 Commits since release
