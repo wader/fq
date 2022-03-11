@@ -185,9 +185,12 @@ def _repl_on_expr_error:
   | _error_str
   | println
   );
-# other expr error, should not happen
+# other expr error, interrupted or something unexpected happened
 def _repl_on_error:
-  halt_error(_exit_code_expr_error);
+  # was interrupted by user, just ignore
+  if .error | _is_context_canceled_error then empty
+  else halt_error(_exit_code_expr_error)
+  end;
 # compile error
 def _repl_on_compile_error:
   ( if .error | _eval_is_compile_error then
@@ -204,8 +207,6 @@ def _repl_on_compile_error:
           )
         end
       )
-    # was interrupted by user, just ignore
-    elif .error | _is_context_canceled_error then empty
     else .error | _error_str
     end
   | println
