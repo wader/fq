@@ -17,6 +17,13 @@ def _eval_error_function_not_defined($name; $args):
     "function not defined: \($name)/\($args | length)"
   );
 
+# if catch_query . -> try (.) catch .catch_query
+# if input_query . -> .input_query | .
+# if ... | <.slurp.> -> .slurp({slurp: "<slurp>", slurp_args: [arg query ast], orig: orig query ast, rewrite: rewritten query})
+# else if .output_query -> . | .output_query
+#
+# ex ... | slurp -> <slurp>({...})
+# ex no slurp: . -> try (.input_query | . | .output_query) catch .catch_query
 def _eval_query_rewrite($opts):
   _query_fromtostring(
     ( . as $orig_query
@@ -35,10 +42,9 @@ def _eval_query_rewrite($opts):
         # try (1+1) catch vs try 1 + 1 catch
         _query_try(. | _query_query; $opts.catch_query)
       end
-    | _query_pipe(
-        $opts.input_query // _query_ident;
-        .
-      )
+    | if $opts.input_query then
+        _query_pipe($opts.input_query; .)
+      end
     | if $slurp then
         _query_func(
           $slurp;
@@ -61,6 +67,8 @@ def _eval_query_rewrite($opts):
             )
           ]
         )
+      elif $opts.output_query then
+        _query_pipe(.; $opts.output_query)
       end
     )
   );

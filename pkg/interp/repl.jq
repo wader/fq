@@ -211,18 +211,26 @@ def _repl_on_compile_error:
     end
   | println
   );
-def _repl_eval($expr; on_error; on_compile_error; $slurps):
+def _repl_display:
+  display(_display_default_opts);
+def _repl_eval($expr; on_error; on_compile_error):
   eval(
     $expr;
-    { slurps: $slurps,
+    { slurps:
+        { repl: "_repl_slurp",
+          help: "_help_slurp",
+          slurp: "_slurp"
+        },
+      # input to repl is always array of values to iterate
       input_query: (_query_ident | _query_iter), # .[]
-      catch_query: _query_func("_repl_on_expr_error")
+      # each input should be evaluted separatel like with cli, so catch and just print errors
+      catch_query: _query_func("_repl_on_expr_error"),
+      # run display in sub eval so it can be interrupted
+      output_query: _query_func("_repl_display")
     };
     on_error;
     on_compile_error
   );
-def _repl_eval($expr; on_error; on_compile_error):
-  _repl_eval($expr; on_error; on_compile_error; null);
 
 # run read-eval-print-loop
 # input is array of inputs to iterate
@@ -242,17 +250,10 @@ def _repl($opts):
     );
   def _repl_loop:
     try
-      ( _display_default_opts as $default_opts
-      | _repl_eval(
-          _read_expr;
-          _repl_on_error;
-          _repl_on_compile_error;
-          { repl: "_repl_slurp",
-            help: "_help_slurp",
-            slurp: "_slurp"
-          }
-        )
-      | display($default_opts)
+      _repl_eval(
+        _read_expr;
+        _repl_on_error;
+        _repl_on_compile_error
       )
     catch
       if . == "interrupt" then empty

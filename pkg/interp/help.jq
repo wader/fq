@@ -194,5 +194,6 @@ def _help($arg0; $topic):
     ( _repl_slurp_eval($query.rewrite) as $outputs
     | "value help"
     , $outputs
+    | display
     )
   end;
