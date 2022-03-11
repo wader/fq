@@ -1,10 +1,9 @@
 #!/usr/bin/env expect
-# TODO: move this script somehwere else
+# TODO: move this script somewere else
 # TODO: run without NO_DECODE_PROGRESS
-# TODO: test interrupt?
 
 log_user 1
-set timeout 1
+set timeout 3
 
 expect_after {
     timeout {exit 1}
@@ -18,13 +17,28 @@ send ".\n"
 expect "footers"
 expect "mp3> "
 
+# test completion
 send ".frames | mp3_fr\t"
 expect "mp3_frame"
 send "\n"
 expect "side_info"
 expect "mp3> "
 
+# test interrupt multiple outputs
+send "range(100000) | d\n"
+expect "123"
+# ctrl-c
+send "\x03"
+expect "mp3> "
+
+# test interrupt big json output
+send "\[range(100000)\] | d\n"
+expect "123"
+# ctrl-c
+send "\x03"
+expect "mp3> "
+
+# test exit
 # ctrl-d
 send "\x04"
-
 expect eof
