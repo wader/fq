@@ -1,3 +1,122 @@
+# 0.0.6
+
+Added `macho` decoder (thanks @Akaame), nicer REPL interrupt, error and prompt, add `slurp`/`spew` functions and `explode` for binary.
+
+Added fq talk slides from [Binary Tools Summit 2022](https://binary-tools.net/summit.html) to `README.md`.
+
+## Changes
+
+- Major query rewrite refactor to share code for slurp-ish functions `repl`, `slurp` and future `help` system. #178
+- REPL improvements:
+  - Much improved eval and output interrupt. Should fix more or less all issue with un-interruptable long outputs. It is still possible to get "hangs" if some decode value ends up being expanded into a huge string etc. #191  #192
+  - Prompt paths now has colors support. #181
+  - Shows an arrow on parse error.
+  - Faster on multi inputs. #165
+- Speedup interpeter by skipping redundant includes. #172
+- gojq fork rebase: #179
+  - Fixes `try ... | ... catch` precedence issue.
+  - `tonumber` now supports non-base-10 numbers.
+- Add `slurp`/`spew` to collect outputs and outputs them later.
+  - `1,2,3 | slurp("a")` collects, later do `spew("a")` to output them. Also a global array `$a` will be available.  #178
+- Add `explode` for binary. #188
+  - `"a" | tobits | explode` return bits `[0,1,1,0,0,0,0,1]`.
+  - `"åäö" | tobytes | explode` return utf8 bytes instead of codepoints `[195,165,195,164,195,182]`.
+- Add optional sub topic to `--help`: #177
+  - Replace `--formats` with `--help formats`. #181
+  - Add `--help options` to see all default option values. #181
+- Remove `var`, use `slupr` instead.
+
+## Decoder changes
+
+- `macho` Add decoder. Thanks @Akaame #43
+- `mp4` Support `colr` box. #176
+
+## Changelog
+
+* ee5e4718 Update docker-golang from 1.17.7 to 1.17.8
+* ca04cc20 Update github-golangci-lint from 1.44.0 to 1.44.1
+* 5c6e1d32 Update github-golangci-lint from 1.44.1 to 1.44.2
+* 1b8e6936 Update make-golangci-lint from 1.44.0 to 1.44.1
+* 9d5ba826 Update make-golangci-lint from 1.44.1 to 1.44.2
+* cd2cbef6 decode: Some cleanup
+* 9e4f2641 dev: Add .jq-lsp.jq to add additional builtins for jq-lsp
+* c6a90cfc doc,asn1_ber: Add more documentation
+* c53bd777 doc: Add bts2022 video
+* b97776c9 doc: Add fq bts2022 presentation
+* d334c2d4 doc: Add href in supported format list
+* c95b0d6d doc: Forgot make doc
+* a202df9a doc: Improve and fix some typos
+* 9ec1d357 doc: Improve project description
+* 758b2d0e doc: Regenerate after macho merge
+* 920629f5 doc: Regenerate and fix macho section size
+* d3397cf9 doc: Tweak format diagram
+* d47e04c4 fixup! macho: CPU_SUBTYPE_MULTIPLE and TYPE_ALL are 0xff_ff_ff_ff
+* 27e76157 format: Simplify torepr, no need for _f function
+* 206dcd02 fuzz: Include more testdata seed files
+* be6f0093 gojq: Rebase fq fork and add support for non-10 base for tonumber
+* 33efb02a interp,repl: Add path and value colors to prompt
+* 41551de3 interp,repl: Improved eval and output interrupt
+* dff7e7da interp: Cleanup binary regexp overloading and add explode
+* fe8183b5 interp: Color parse in jq
+* 6f10745a interp: Fix interrupt regression after query rewrite refactor
+* f66f115e interp: Make _finally handle null, call fin once and last
+* eeb59152 interp: Make help output less wide
+* 9dc59e5d interp: Move _is_decode_value to jq
+* 0bc11719 interp: Move opts eval to options.jq
+* 3f50bb90 interp: Rework formats and options help
+* 03f450f8 interp: Skip redundant includes
+* c5918d23 macho: CPU_SUBTYPE_MULTIPLE and TYPE_ALL are 0xff_ff_ff_ff
+* 5c974209 macho: TS string to UTC
+* 04eae939 macho: add basic docs
+* 5e95d1c3 macho: add cpuSubTypes
+* 2638f419 macho: add darwin_amd64 test
+* 5c5bd879 macho: add fqtest actualization
+* bf214d5e macho: add nolint suppression to const defs
+* 333a3243 macho: add scalar.Hex mapper to addr fields
+* a86e7043 macho: add section type parsing
+* 90b94631 macho: adopt plural-singular scheme for FieldStructArrayLoop
+* b78ed02f macho: barebones decoder impl
+* e199d219 macho: basic impl for ar and fat file parsing
+* 66feebc5 macho: change parseFlags impl for ordered results
+* b5fe9ce6 macho: change registry description
+* 20e5be3f macho: delete ar decoder code
+* efdd0bf5 macho: discard lc_ and lowercase command names
+* b0911af2 macho: docs review changes
+* a29bfca5 macho: expand filetypes and header flags
+* fb0654ec macho: fix FieldUTF8NullFixedLen for segname
+* d1f093ce macho: fix fat header decode bug
+* 0d648928 macho: fix null in segname sectname
+* 9eb71dc6 macho: generate doc via make doc
+* 3991c51a macho: handle unknown lc_commands better
+* ef2919b3 macho: introduce arm and fat tests
+* 98c9840d macho: linting changes for ar parse
+* 1feb81c9 macho: little-endian to little_endian
+* 141a8e84 macho: mach_header_X to header
+* 9206d9d8 macho: magicToHex to scalar.Hex
+* 2021b054 macho: make actual
+* 70b84cde macho: ntools fix LC_MAIN fix
+* 78699f3a macho: parse flags individually
+* 4016ad0b macho: parse segment section flags
+* 5a48cb30 macho: refactor prebound_dylib
+* 2e7767cd macho: remake docs
+* 33347503 macho: reuse ar decoder
+* 228757b9 macho: review fixes
+* 5ee9a23c macho: review fixes
+* e3daee7d macho: simplify thread state decoder
+* 70c9d519 macho: thread state visualization
+* a4789dc1 macho: timestamp mapper
+* 2ccb8087 macho: update test cases v to dv
+* 74abe990 macho: update tests
+* 12eb7cc5 macho: use FieldUTF8NullFixedLen
+* 5f4ad410 macho: use FieldUTF8NullFixedLen for segname
+* f8690e6c mp4: Add colr box support
+* b157751a mp4: Reformat and use dv in test
+* 0a043f90 repl,interp: Refactor repl and slurp
+* ca8cdadb repl: Add comments and query from/to  helper
+* 9cb4205b repl: Correct error arrow position in color mode
+* e238f292 repl: Speedup multi input to sub-repl
+* 56ae4a0c test: Make expect cli test more robust
+
 # 0.0.5
 
 Improved binary slicing and bit reading, `avro_ocf` decoder (thanks @xentripetal), `asn1_ber` decoder, renamed `display` aliases, new `grep_by` and `paste` function.
