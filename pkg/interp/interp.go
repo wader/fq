@@ -918,6 +918,8 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, expr string, opts Eval
 		// gojq ctx cancel will not return ok=false, just cancelled error
 		if !ok {
 			runCtxCancelFn()
+		} else if _, ok := v.(error); ok {
+			runCtxCancelFn()
 		}
 		return v, ok
 	})

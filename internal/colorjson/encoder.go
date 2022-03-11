@@ -205,6 +205,10 @@ func (e *Encoder) encodeArray(vs []interface{}) {
 	e.writeByte('[', e.colors.Array)
 	e.depth += e.indent
 	for i, v := range vs {
+		if e.wErr != nil {
+			return
+		}
+
 		if i > 0 {
 			e.writeByte(',', e.colors.Array)
 		}
@@ -237,6 +241,10 @@ func (e *Encoder) encodeMap(vs map[string]interface{}) {
 		return kvs[i].key < kvs[j].key
 	})
 	for i, kv := range kvs {
+		if e.wErr != nil {
+			return
+		}
+
 		if i > 0 {
 			e.writeByte(',', e.colors.Object)
 		}

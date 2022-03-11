@@ -31,8 +31,22 @@ expect "123"
 send "\x03"
 expect "mp3> "
 
+# test interrupt multiple outputs implicit display
+send "range(100000)\n"
+expect "123"
+# ctrl-c
+send "\x03"
+expect "mp3> "
+
 # test interrupt big json output
 send "\[range(100000)\] | d\n"
+expect "123"
+# ctrl-c
+send "\x03"
+expect "mp3> "
+
+# test interrupt big json output implicit display
+send "\[range(100000)\]\n"
 expect "123"
 # ctrl-c
 send "\x03"
