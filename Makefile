@@ -23,7 +23,9 @@ testjq: fq
 
 .PHONY: testcli
 testcli: fq
-	@pkg/cli/test.sh ./fq pkg/cli/test.exp
+	@pkg/cli/test_exp.sh ./fq pkg/cli/test_repl.exp
+	@pkg/cli/test_exp.sh ./fq pkg/cli/test_cli_ctrlc.exp
+	@pkg/cli/test_exp.sh ./fq pkg/cli/test_cli_ctrld.exp
 
 .PHONY: cover
 cover: COVER=-cover -coverpkg=./... -coverprofile=cover.out

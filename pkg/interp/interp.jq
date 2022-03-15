@@ -130,9 +130,11 @@ def _cli_eval_on_expr_error:
   | _cli_last_expr_error($err) as $_
   | (_error_str([input_filename // empty]) | printerrln)
   );
-# other expr error, should not happen, report and halt
+# other expr error, other errors then cancel should not happen, report and halt
 def _cli_eval_on_error:
-  halt_error(_exit_code_expr_error);
+  if .error | _is_context_canceled_error then (null | halt_error(_exit_code_expr_error))
+  else halt_error(_exit_code_expr_error)
+  end;
 # could not compile expr, report and halt
 def _cli_eval_on_compile_error:
   ( .error
