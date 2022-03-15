@@ -9,48 +9,49 @@ expect_after {
     timeout {exit 1}
 }
 
+proc expect_prompt {} {
+    global spawn_id
+    sleep 0.2
+    expect *
+    send "\n"
+    expect "> "
+}
+
 spawn sh -c "NO_DECODE_PROGRESS=1 fq -o color=false -i . pkg/interp/testdata/test.mp3 2>&1"
 
-expect "mp3> "
+expect_prompt
 
 send ".\n"
 expect "footers"
-expect "mp3> "
-
-# test completion
-send ".frames | mp3_fr\t"
-expect "mp3_frame"
-send "\n"
-expect "side_info"
-expect "mp3> "
+expect_prompt
 
 # test interrupt multiple outputs
 send "range(100000) | d\n"
 expect "123"
 # ctrl-c
 send "\x03"
-expect "mp3> "
+expect_prompt
 
 # test interrupt multiple outputs implicit display
 send "range(100000)\n"
 expect "123"
 # ctrl-c
 send "\x03"
-expect "mp3> "
+expect_prompt
 
 # test interrupt big json output
 send "\[range(100000)\] | d\n"
 expect "123"
 # ctrl-c
 send "\x03"
-expect "mp3> "
+expect_prompt
 
 # test interrupt big json output implicit display
 send "\[range(100000)\]\n"
 expect "123"
 # ctrl-c
 send "\x03"
-expect "mp3> "
+expect_prompt
 
 # test exit
 # ctrl-d
