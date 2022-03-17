@@ -19,6 +19,39 @@ import (
 	"github.com/wader/fq/pkg/interp"
 )
 
+var unescapeRe = regexp.MustCompile(`\\(?:t|b|n|r|0(?:b[01]{8}|x[0-f]{2}))`)
+
+func Unescape(s string) string {
+	return unescapeRe.ReplaceAllStringFunc(s, func(r string) string {
+		switch {
+		case r == `\n`:
+			return "\n"
+		case r == `\r`:
+			return "\r"
+		case r == `\t`:
+			return "\t"
+		case r == `\b`:
+			return "\b"
+		case strings.HasPrefix(r, `\0b`):
+			b, _ := bitio.BytesFromBitString(r[3:])
+			return string(b)
+		case strings.HasPrefix(r, `\0x`):
+			b, _ := hex.DecodeString(r[3:])
+			return string(b)
+		default:
+			return r
+		}
+	})
+}
+
+var escapeRe = regexp.MustCompile(`[^[:print:][:space:]]`)
+
+func Escape(s string) string {
+	return string(escapeRe.ReplaceAllFunc([]byte(s), func(r []byte) []byte {
+		return []byte(fmt.Sprintf(`\0x%.2x`, r[0]))
+	}))
+}
+
 type CaseReadline struct {
 	expr           string
 	env            []string
@@ -101,8 +134,13 @@ func (cr *CaseRun) Stdin() interp.Input {
 }
 
 func (cr *CaseRun) Stdout() interp.Output {
+	var w io.Writer = cr.ActualStdoutBuf
+	if cr.getEnvInt("_STDOUT_HEX") != 0 {
+		w = hex.NewEncoder(cr.ActualStdoutBuf)
+	}
+
 	return CaseRunOutput{
-		Writer:   cr.ActualStdoutBuf,
+		Writer:   w,
 		Terminal: cr.getEnvInt("_STDOUT_ISTERMINAL") != 0,
 		Width:    cr.getEnvInt("_STDOUT_WIDTH"),
 		Height:   cr.getEnvInt("_STDOUT_HEIGHT"),
@@ -325,31 +363,6 @@ type Section struct {
 	LineNr int
 	Name   string
 	Value  string
-}
-
-var unescapeRe = regexp.MustCompile(`\\(?:t|b|n|r|0(?:b[01]{8}|x[0-f]{2}))`)
-
-func Unescape(s string) string {
-	return unescapeRe.ReplaceAllStringFunc(s, func(r string) string {
-		switch {
-		case r == `\n`:
-			return "\n"
-		case r == `\r`:
-			return "\r"
-		case r == `\t`:
-			return "\t"
-		case r == `\b`:
-			return "\b"
-		case strings.HasPrefix(r, `\0b`):
-			b, _ := bitio.BytesFromBitString(r[3:])
-			return string(b)
-		case strings.HasPrefix(r, `\0x`):
-			b, _ := hex.DecodeString(r[3:])
-			return string(b)
-		default:
-			return r
-		}
-	})
 }
 
 func SectionParser(re *regexp.Regexp, s string) []Section {

@@ -149,7 +149,7 @@ func (i *Interp) _toBits(c interface{}, a []interface{}) interface{} {
 	if err != nil {
 		return err
 	}
-	bb, err := newBinaryFromBitReader(br, bv.unit, bv.pad)
+	bb, err := newBinaryFromBitReader(br, bv.unit, 0)
 	if err != nil {
 		return err
 	}
@@ -272,6 +272,7 @@ type Binary struct {
 	pad  int64
 }
 
+//nolint:unparam
 func newBinaryFromBitReader(br bitio.ReaderAtSeeker, unit int, pad int64) (Binary, error) {
 	l, err := bitioextra.Len(br)
 	if err != nil {
