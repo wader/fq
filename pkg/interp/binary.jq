@@ -4,8 +4,6 @@ def tobitsrange: _tobits(1; true; 0);
 def tobytesrange: _tobits(8; true; 0);
 def tobits($pad): _tobits(1; false; $pad);
 def tobytes($pad): _tobits(8; false; $pad);
-def tobitsrange($pad): _tobits(1; true; $pad);
-def tobytesrange($pad): _tobits(8; true; $pad);
 
 # same as regexp.QuoteMeta
 def _re_quote_meta:
