@@ -46,6 +46,13 @@ var avcAspectRatioIdcMap = scalar.UToSymStr{
 	16: "2:1",
 }
 
+var chromaFormatMap = scalar.UToSymStr{
+	0: "monochrome",
+	1: "4:2:0",
+	2: "4:2:2",
+	3: "4:4:4",
+}
+
 func avcVuiParameters(d *decode.D) {
 	aspectRatioInfoPresentFlag := d.FieldBool("aspect_ratio_info_present_flag")
 	if aspectRatioInfoPresentFlag {
@@ -142,7 +149,7 @@ func avcSPSDecode(d *decode.D, in interface{}) interface{} {
 	switch profileIdc {
 	// TODO: ffmpeg has some more (legacy values?)
 	case 100, 110, 122, 244, 44, 83, 86, 118, 128, 138, 139, 134, 135:
-		chromaFormatIdc := d.FieldUFn("chroma_format_idc", uEV)
+		chromaFormatIdc := d.FieldUFn("chroma_format_idc", uEV, chromaFormatMap)
 		if chromaFormatIdc == 3 {
 			d.FieldBool("separate_colour_plane_flag")
 		}
