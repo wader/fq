@@ -14,7 +14,7 @@ $ fq -d avc_annexb dv /avc_annexb
  0x000|   00                                          | .              |      reserved_zero_2bits: 0 0x1.6-0x1.7 (0.2)
  0x000|      0d                                       |  .             |      level_idc: "1.3" (13) 0x2-0x2.7 (1)
  0x000|         91                                    |   .            |      seq_parameter_set_id: 0 0x3-0x3 (0.1)
- 0x000|         91                                    |   .            |      chroma_format_idc: 3 0x3.1-0x3.5 (0.5)
+ 0x000|         91                                    |   .            |      chroma_format_idc: "4:4:4" (3) 0x3.1-0x3.5 (0.5)
  0x000|         91                                    |   .            |      separate_colour_plane_flag: false 0x3.6-0x3.6 (0.1)
  0x000|         91                                    |   .            |      bit_depth_luma: 8 0x3.7-0x3.7 (0.1)
  0x000|            9b                                 |    .           |      bit_depth_chroma: 8 0x4-0x4 (0.1)
