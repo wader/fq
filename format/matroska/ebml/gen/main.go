@@ -69,6 +69,13 @@ func findDefintion(docs []Documentation) (string, bool) {
 	return "", false
 }
 
+func title(s string) string {
+	if len(s) <= 1 {
+		return s
+	}
+	return strings.ToUpper(s[0:1]) + s[1:]
+}
+
 func main() {
 	xmlPath := os.Args[1]
 	r, err := os.Open(xmlPath)
@@ -135,7 +142,7 @@ func main() {
 			if defOk {
 				fmt.Printf("\t\tDefinition: %q,\n", def)
 			}
-			fmt.Printf("\t\tType: ebml.%s%s,\n", strings.Title(typ), extra)
+			fmt.Printf("\t\tType: ebml.%s%s,\n", title(typ), extra)
 			if len(c.Enums) > 0 {
 				switch c.Type {
 				case "integer":
