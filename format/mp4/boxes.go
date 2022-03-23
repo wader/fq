@@ -1299,5 +1299,54 @@ func init() {
 				d.FieldRawLen("data", d.BitsLeft())
 			}
 		},
+		"ispe": func(_ *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+			d.FieldU32("image_width")
+			d.FieldU32("image_height")
+		},
+		"ipma": func(_ *decodeContext, d *decode.D) {
+			version := d.FieldU8("version")
+			flags := d.FieldU24("flags")
+			entryCount := d.FieldU32("entry_count")
+			d.FieldArray("entries", func(d *decode.D) {
+				for i := uint64(0); i < entryCount; i++ {
+					d.FieldStruct("entry", func(d *decode.D) {
+						if version < 1 {
+							d.FieldU16("item_id")
+						} else {
+							d.FieldU32("item_id")
+						}
+						associationCount := d.FieldU8("association_count")
+						d.FieldArray("associations", func(d *decode.D) {
+							for j := uint64(0); j < associationCount; j++ {
+								d.FieldStruct("association", func(d *decode.D) {
+									d.FieldBool("essential")
+									if flags&0b1 != 0 {
+										d.FieldU15("property_index")
+									} else {
+										d.FieldU7("item_id")
+									}
+								})
+							}
+						})
+					})
+				}
+			})
+		},
+		"pitm": func(_ *decodeContext, d *decode.D) {
+			version := d.FieldU8("version")
+			d.FieldU24("flags")
+			if version < 1 {
+				d.FieldU16("item_id")
+			} else {
+				d.FieldU32("item_id")
+			}
+		},
+		"iref": func(ctx *decodeContext, d *decode.D) {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+			decodeBoxes(ctx, d)
+		},
 	}
 }
