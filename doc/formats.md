@@ -42,7 +42,10 @@
 |`hevc_annexb`           |H.265/HEVC&nbsp;Annex&nbsp;B                                                    |<sub>`hevc_nalu`</sub>|
 |`hevc_au`               |H.265/HEVC&nbsp;Access&nbsp;Unit                                                |<sub>`hevc_nalu`</sub>|
 |`hevc_dcr`              |H.265/HEVC&nbsp;Decoder&nbsp;Configuration&nbsp;Record                          |<sub>`hevc_nalu`</sub>|
-|`hevc_nalu`             |H.265/HEVC&nbsp;Network&nbsp;Access&nbsp;Layer&nbsp;Unit                        |<sub></sub>|
+|`hevc_nalu`             |H.265/HEVC&nbsp;Network&nbsp;Access&nbsp;Layer&nbsp;Unit                        |<sub>`hevc_vps` `hevc_pps` `hevc_sps`</sub>|
+|`hevc_pps`              |H.265/HEVC&nbsp;Picture&nbsp;Parameter&nbsp;Set                                 |<sub></sub>|
+|`hevc_sps`              |H.265/HEVC&nbsp;Sequence&nbsp;Parameter&nbsp;Set                                |<sub></sub>|
+|`hevc_vps`              |H.265/HEVC&nbsp;Video&nbsp;Parameter&nbsp;Set                                   |<sub></sub>|
 |`icc_profile`           |International&nbsp;Color&nbsp;Consortium&nbsp;profile                           |<sub></sub>|
 |`icmp`                  |Internet&nbsp;Control&nbsp;Message&nbsp;Protocol                                |<sub></sub>|
 |`id3v1`                 |ID3v1&nbsp;metadata                                                             |<sub></sub>|

@@ -132,6 +132,9 @@ hevc_annexb          H.265/HEVC Annex B
 hevc_au              H.265/HEVC Access Unit
 hevc_dcr             H.265/HEVC Decoder Configuration Record
 hevc_nalu            H.265/HEVC Network Access Layer Unit
+hevc_pps             H.265/HEVC Picture Parameter Set
+hevc_sps             H.265/HEVC Sequence Parameter Set
+hevc_vps             H.265/HEVC Video Parameter Set
 icc_profile          International Color Consortium profile
 icmp                 Internet Control Message Protocol
 id3v1                ID3v1 metadata

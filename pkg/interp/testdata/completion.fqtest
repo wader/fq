@@ -5,6 +5,9 @@ hevc_annexb
 hevc_au
 hevc_dcr
 hevc_nalu
+hevc_pps
+hevc_sps
+hevc_vps
 hex
 hexdump
 null> _is_ide\t
