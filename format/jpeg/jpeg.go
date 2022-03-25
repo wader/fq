@@ -22,8 +22,12 @@ func init() {
 		format.JPEG,
 		&decode.Format{
 			Description: "Joint Photographic Experts Group file",
-			Groups:      []*decode.Group{format.Probe, format.Image},
-			DecodeFn:    jpegDecode,
+			Groups: []*decode.Group{
+				format.Probe,
+				format.Image,
+				format.Content_Type,
+			},
+			DecodeFn: jpegDecode,
 			Dependencies: []decode.Dependency{
 				{Groups: []*decode.Group{format.Exif}, Out: &exifFormat},
 				{Groups: []*decode.Group{format.ICC_Profile}, Out: &iccProfileFormat},
@@ -166,6 +170,11 @@ var markers = scalar.UintMap{
 }
 
 func jpegDecode(d *decode.D) any {
+	var cti format.Content_Type_In
+	if d.ArgAs(&cti) && cti.ContentType != "image/jpeg" {
+		d.Fatalf("content-type not image/jpeg")
+	}
+
 	d.AssertLeastBytesLeft(2)
 	if !bytes.Equal(d.PeekBytes(2), []byte{0xff, SOI}) {
 		d.Errorf("no SOI marker")

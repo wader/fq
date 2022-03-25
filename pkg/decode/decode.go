@@ -1316,5 +1316,7 @@ func (d *D) FieldRE(re *regexp.Regexp, mRef *map[string]string, sms ...scalar.St
 		}
 	}
 
-	d.SeekAbs(rs[0].Stop())
+	if len(rs) > 0 {
+		d.SeekAbs(rs[0].Stop())
+	}
 }

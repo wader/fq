@@ -53,6 +53,7 @@ var (
 	Probe_Args     = &decode.Group{Name: "probe_args", DefaultInArg: Probe_Args_In{}}
 	TCP_Stream     = &decode.Group{Name: "tcp_stream", DefaultInArg: TCP_Stream_In{}}   // ex: http
 	UDP_Payload    = &decode.Group{Name: "udp_payload", DefaultInArg: UDP_Payload_In{}} // ex: dns
+	Content_Type   = &decode.Group{Name: "content_type", DefaultInArg: Content_Type_In{}}
 
 	Bits  = &decode.Group{Name: "bits"}
 	Bytes = &decode.Group{Name: "bytes"}
@@ -114,6 +115,8 @@ var (
 	HEVC_SPS            = &decode.Group{Name: "hevc_sps"}
 	HEVC_VPS            = &decode.Group{Name: "hevc_vps"}
 	HTML                = &decode.Group{Name: "html"}
+	HTTP                = &decode.Group{Name: "http"}
+	HTTP_Chunked        = &decode.Group{Name: "http_chunked"}
 	ICC_Profile         = &decode.Group{Name: "icc_profile"}
 	ICMP                = &decode.Group{Name: "icmp"}
 	ICMPv6              = &decode.Group{Name: "icmpv6"}
@@ -135,6 +138,7 @@ var (
 	Markdown            = &decode.Group{Name: "markdown"}
 	Matroska            = &decode.Group{Name: "matroska"}
 	MIDI                = &decode.Group{Name: "midi"}
+	MIME_Multi_Part     = &decode.Group{Name: "mime_multipart"}
 	MOC3                = &decode.Group{Name: "moc3"}
 	MP3                 = &decode.Group{Name: "mp3"}
 	MP3_Frame           = &decode.Group{Name: "mp3_frame"}
@@ -170,6 +174,7 @@ var (
 	TAP                 = &decode.Group{Name: "tap"}
 	TAR                 = &decode.Group{Name: "tar"}
 	TCP_Segment         = &decode.Group{Name: "tcp_segment"}
+	TextProto           = &decode.Group{Name: "textproto"}
 	TIFF                = &decode.Group{Name: "tiff"}
 	TLS                 = &decode.Group{Name: "tls"}
 	TOML                = &decode.Group{Name: "toml"}
@@ -366,6 +371,9 @@ type AVI_In struct {
 	DecodeExtendedChunks bool `doc:"Decode extended chunks"`
 }
 
+type Bitcoin_Block_In struct {
+	HasHeader bool `doc:"Has blkdat header"`
+}
 type Zip_In struct {
 	Uncompress bool `doc:"Uncompress and probe files"`
 }
@@ -387,8 +395,32 @@ type CSV_In struct {
 	Comment string `doc:"Comment line character"`
 }
 
-type Bitcoin_Block_In struct {
-	HasHeader bool `doc:"Has blkdat header"`
+type Mime_Multipart_In struct {
+	Boundary string `doc:"Part boundary"`
+}
+
+type TextProto_In struct {
+	Name string `doc:"Name of key/value"`
+}
+
+type TextProto_Out struct {
+	Pairs map[string][]string
+}
+
+type Content_Type_In struct {
+	ContentType string
+	Pairs       map[string]string
+}
+
+type Http_Chunked_In struct {
+	ContentEncoding string
+	ContentType     string
+	Pairs           map[string]string
+}
+
+type Gzip_In struct {
+	ContentType string
+	Pairs       map[string]string
 }
 
 type TLS_In struct {

@@ -273,6 +273,11 @@ func fieldsExtraFields(d *decode.D) extraFields {
 }
 
 func zipDecode(d *decode.D) any {
+	var cti format.Content_Type_In
+	if d.ArgAs(&cti) && cti.ContentType != "application/zip" {
+		d.Fatalf("content-type not image/jpeg")
+	}
+
 	var zi format.Zip_In
 	d.ArgAs(&zi)
 

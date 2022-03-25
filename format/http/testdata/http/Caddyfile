@@ -1,0 +1,17 @@
+{
+    auto_https off
+    debug
+}
+
+http://:8080 {
+  root * ./static
+  encode gzip {
+    minimum_length 1
+    match {
+      status 2xx
+    }
+  }
+
+  respond /ok ok 200
+  file_server
+}

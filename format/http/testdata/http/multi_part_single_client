@@ -1,0 +1,13 @@
+POST /ok HTTP/1.1
+Host: 0.0.0.0:8080
+User-Agent: curl/7.77.0
+Accept: */*
+Content-Length: 202
+Content-Type: multipart/form-data; boundary=------------------------86670d766d5fa801
+
+--------------------------86670d766d5fa801
+Content-Disposition: form-data; name="aaa_file"; filename="aaa"
+Content-Type: application/octet-stream
+
+aaa
+--------------------------86670d766d5fa801--

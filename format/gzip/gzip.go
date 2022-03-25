@@ -18,16 +18,19 @@ import (
 )
 
 var probeGroup decode.Group
+var contentTypeGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
 		format.Gzip,
 		&decode.Format{
-			Description: "gzip compression",
-			Groups:      []*decode.Group{format.Probe},
-			DecodeFn:    gzipDecode,
+			Description:  "gzip compression",
+			Groups:       []*decode.Group{format.Probe},
+			DecodeFn:     gzipDecode,
+			DefaultInArg: format.Gzip_In{},
 			Dependencies: []decode.Dependency{
 				{Groups: []*decode.Group{format.Probe}, Out: &probeGroup},
+				{Groups: []*decode.Group{format.Content_Type}, Out: &contentTypeGroup},
 			},
 		})
 }
@@ -130,6 +133,9 @@ func gzipDecodeMember(d *decode.D) bitio.ReaderAtSeeker {
 }
 
 func gzipDecode(d *decode.D) any {
+	var gzi format.Gzip_In
+	d.ArgAs((&gzi))
+
 	d.Endian = decode.LittleEndian
 
 	var brs []bitio.ReadAtSeeker
@@ -151,7 +157,10 @@ func gzipDecode(d *decode.D) any {
 	if err != nil {
 		d.IOPanic(err, "members", "NewMultiReader")
 	}
-	dv, _, _ := d.TryFieldFormatBitBuf("uncompressed", cbr, &probeGroup, format.Probe_In{})
+	dv, _, _ := d.TryFieldFormatBitBuf("uncompressed", cbr, &probeGroup, format.Content_Type_In{
+		ContentType: gzi.ContentType,
+		Pairs:       gzi.Pairs,
+	})
 	if dv == nil {
 		d.FieldRootBitBuf("uncompressed", cbr)
 	}

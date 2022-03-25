@@ -26,6 +26,7 @@ import (
 	_ "github.com/wader/fq/format/flac"
 	_ "github.com/wader/fq/format/gif"
 	_ "github.com/wader/fq/format/gzip"
+	_ "github.com/wader/fq/format/http"
 	_ "github.com/wader/fq/format/icc"
 	_ "github.com/wader/fq/format/id3"
 	_ "github.com/wader/fq/format/inet"

@@ -1,0 +1,6 @@
+GET /4x4.png HTTP/1.1
+Host: 0.0.0.0:8080
+User-Agent: curl/7.77.0
+Accept: */*
+Accept-Encoding: deflate, gzip
+

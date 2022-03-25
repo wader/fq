@@ -1181,6 +1181,7 @@ var UDPPortMap = scalar.UintMap{
 
 const (
 	TCPPortDomain = 53
+	TCPPortHTTP   = 80
 	TCPPortRTMP   = 1935
 )
 
@@ -1240,7 +1241,7 @@ var TCPPortMap = scalar.UintMap{
 	76:            {Sym: "deos", Description: "Distributed External Object Store"},
 	78:            {Sym: "vettcp", Description: "vettcp"},
 	79:            {Sym: "finger", Description: "Finger"},
-	80:            {Sym: "http", Description: "World Wide Web HTTP"},
+	TCPPortHTTP:   {Sym: "http", Description: "World Wide Web HTTP"},
 	81:            {Sym: "hosts2-ns", Description: "HOSTS2 Name Server"},
 	82:            {Sym: "xfer", Description: "XFER Utility"},
 	83:            {Sym: "mit-ml-dev", Description: "MIT ML Device"},

@@ -1,0 +1,17 @@
+HTTP/1.1 200 OK
+Accept-Ranges: bytes
+Content-Length: 3
+Etag: "r9v8og3"
+Last-Modified: Tue, 05 Apr 2022 12:14:40 GMT
+Server: Caddy
+Date: Tue, 05 Apr 2022 13:17:44 GMT
+
+aaaHTTP/1.1 200 OK
+Accept-Ranges: bytes
+Content-Length: 3
+Etag: "r9v8og3"
+Last-Modified: Tue, 05 Apr 2022 12:14:40 GMT
+Server: Caddy
+Date: Tue, 05 Apr 2022 13:17:44 GMT
+
+bbb
