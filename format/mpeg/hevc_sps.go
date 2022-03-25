@@ -16,21 +16,21 @@ func init() {
 	})
 }
 
-func profileLayerDecode(d *decode.D, profilePresent bool, levelPresent bool, isSublayer bool) {
+func profileLayerDecode(d *decode.D, prefix string, profilePresent bool, levelPresent bool, isSublayer bool) {
 	if profilePresent {
-		d.FieldU2("profile_space")
-		d.FieldU1("tier_flag")
-		generalProfileIdc := d.FieldU5("profile_idc")
+		d.FieldU2(prefix + "profile_space")
+		d.FieldU1(prefix + "tier_flag")
+		generalProfileIdc := d.FieldU5(prefix + "profile_idc")
 		var generalProfileCompatibilityFlags [32]bool
-		d.FieldArray("profile_compatibility_flags", func(d *decode.D) {
+		d.FieldArray(prefix+"profile_compatibility_flags", func(d *decode.D) {
 			for j := 0; j < 32; j++ {
-				generalProfileCompatibilityFlags[j] = d.FieldBool("profile_compatibility_flag")
+				generalProfileCompatibilityFlags[j] = d.FieldBool(prefix + "profile_compatibility_flag")
 			}
 		})
-		d.FieldBool("progressive_source_flag")
-		d.FieldBool("interlaced_source_flag")
-		d.FieldBool("non_packed_constraint_flag")
-		d.FieldBool("frame_only_constraint_flag")
+		d.FieldBool(prefix + "progressive_source_flag")
+		d.FieldBool(prefix + "interlaced_source_flag")
+		d.FieldBool(prefix + "non_packed_constraint_flag")
+		d.FieldBool(prefix + "frame_only_constraint_flag")
 		if generalProfileIdc == 4 || generalProfileCompatibilityFlags[4] ||
 			generalProfileIdc == 5 || generalProfileCompatibilityFlags[5] ||
 			generalProfileIdc == 6 || generalProfileCompatibilityFlags[6] ||
@@ -38,47 +38,45 @@ func profileLayerDecode(d *decode.D, profilePresent bool, levelPresent bool, isS
 			generalProfileIdc == 8 || generalProfileCompatibilityFlags[8] ||
 			generalProfileIdc == 9 || generalProfileCompatibilityFlags[9] ||
 			generalProfileIdc == 10 || generalProfileCompatibilityFlags[10] {
-			d.FieldBool("max_12bit_constraint_flag")
-			d.FieldBool("max_10bit_constraint_flag")
-			d.FieldBool("max_8bit_constraint_flag")
-			d.FieldBool("max_422chroma_constraint_flag")
-			d.FieldBool("max_420chroma_constraint_flag")
-			d.FieldBool("max_monochrome_constraint_flag")
-			d.FieldBool("intra_constraint_flag")
-			d.FieldBool("one_picture_only_constraint_flag")
-			d.FieldBool("lower_bit_rate_constraint_flag")
+			d.FieldBool(prefix + "max_12bit_constraint_flag")
+			d.FieldBool(prefix + "max_10bit_constraint_flag")
+			d.FieldBool(prefix + "max_8bit_constraint_flag")
+			d.FieldBool(prefix + "max_422chroma_constraint_flag")
+			d.FieldBool(prefix + "max_420chroma_constraint_flag")
+			d.FieldBool(prefix + "max_monochrome_constraint_flag")
+			d.FieldBool(prefix + "intra_constraint_flag")
+			d.FieldBool(prefix + "one_picture_only_constraint_flag")
+			d.FieldBool(prefix + "lower_bit_rate_constraint_flag")
 			if generalProfileIdc == 5 || generalProfileCompatibilityFlags[5] ||
 				(!isSublayer &&
 					(generalProfileIdc == 9 || generalProfileCompatibilityFlags[9] ||
 						generalProfileIdc == 10 || generalProfileCompatibilityFlags[10])) {
-				d.FieldBool("max_14bit_constraint_flag")
-				d.FieldU33("reserved_zero_33bits")
+				d.FieldBool(prefix + "max_14bit_constraint_flag")
+				d.FieldU33(prefix + "reserved_zero_33bits")
 			} else {
-				d.FieldU34("reserved_zero_34bits")
+				d.FieldU34(prefix + "reserved_zero_34bits")
 			}
 		} else {
-			d.FieldU43("reserved_zero_43bits")
+			d.FieldU43(prefix + "reserved_zero_43bits")
 		}
 		if (generalProfileIdc >= 1 && generalProfileIdc <= 5) ||
 			generalProfileIdc == 9 ||
 			generalProfileCompatibilityFlags[1] || generalProfileCompatibilityFlags[2] ||
 			generalProfileCompatibilityFlags[3] || generalProfileCompatibilityFlags[4] ||
 			generalProfileCompatibilityFlags[5] || generalProfileCompatibilityFlags[9] {
-			d.FieldBool("inbld_flag")
+			d.FieldBool(prefix + "inbld_flag")
 		} else {
-			d.FieldBool("reserved_zero_bit")
+			d.FieldBool(prefix + "reserved_zero_bit")
 		}
 	}
 	if levelPresent {
-		d.FieldU8("level_idc")
+		d.FieldU8(prefix + "level_idc")
 	}
 }
 
 // H.265 page 41
 func profileTierLevelDecode(d *decode.D, profilePresentFlag bool, maxNumSubLayersMinus1 uint64) {
-	d.FieldStruct("general", func(d *decode.D) {
-		profileLayerDecode(d, profilePresentFlag, true, false)
-	})
+	profileLayerDecode(d, "general_", profilePresentFlag, true, false)
 	subLayerProfilePresentFlags := make([]bool, maxNumSubLayersMinus1)
 	subLayerLevelPresentFlags := make([]bool, maxNumSubLayersMinus1)
 	d.FieldArray("sub_layer_presents", func(d *decode.D) {
@@ -99,7 +97,7 @@ func profileTierLevelDecode(d *decode.D, profilePresentFlag bool, maxNumSubLayer
 	d.FieldArray("sub_layers", func(d *decode.D) {
 		for i := uint64(0); i < maxNumSubLayersMinus1; i++ {
 			d.FieldStruct("sub_layer", func(d *decode.D) {
-				profileLayerDecode(d, subLayerProfilePresentFlags[i], subLayerProfilePresentFlags[i], true)
+				profileLayerDecode(d, "", subLayerProfilePresentFlags[i], subLayerProfilePresentFlags[i], true)
 			})
 		}
 	})
