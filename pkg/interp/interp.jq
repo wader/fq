@@ -189,12 +189,6 @@ def _main:
       | . + _opt_eval($rest)
       )
     ]) as $_
-  | _opt_build_default_fixed as $default_fixed_opts
-  # combine default fixed opt, --args opts and -o key=value opts
-  | ( $default_fixed_opts
-    + $parsed_args
-    + ($parsed_args.option | _opt_cli_arg_tooptions)
-    ) as $combined_opts
   | options as $opts
   | if $opts.show_help then
       ( if ($opts.show_help | type) == "boolean" then
