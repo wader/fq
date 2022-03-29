@@ -61,6 +61,7 @@ func fieldFlows(d *decode.D, fd *flowsdecoder.Decoder, tcpStreamFormat decode.Gr
 					csBR,
 					tcpStreamFormat,
 					format.TCPStreamIn{
+						IsClient:        true,
 						SourcePort:      s.ClientEndpoint.Port,
 						DestinationPort: s.ServerEndpoint.Port,
 					},
@@ -74,6 +75,7 @@ func fieldFlows(d *decode.D, fd *flowsdecoder.Decoder, tcpStreamFormat decode.Gr
 					scBR,
 					tcpStreamFormat,
 					format.TCPStreamIn{
+						IsClient:        false,
 						SourcePort:      s.ClientEndpoint.Port,
 						DestinationPort: s.ServerEndpoint.Port,
 					},

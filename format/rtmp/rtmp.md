@@ -1,0 +1,1 @@
+Current only supports plain RTMP (not RTMPT or encrypted variants etc) with AMF0 (not AMF3).

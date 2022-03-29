@@ -7,6 +7,7 @@
 |`aac_frame`             |Advanced&nbsp;Audio&nbsp;Coding&nbsp;frame                                      |<sub></sub>|
 |`adts`                  |Audio&nbsp;Data&nbsp;Transport&nbsp;Stream                                      |<sub>`adts_frame`</sub>|
 |`adts_frame`            |Audio&nbsp;Data&nbsp;Transport&nbsp;Stream&nbsp;frame                           |<sub>`aac_frame`</sub>|
+|`amf0`                  |Action&nbsp;Message&nbsp;Format&nbsp;0                                          |<sub></sub>|
 |`apev2`                 |APEv2&nbsp;metadata&nbsp;tag                                                    |<sub>`image`</sub>|
 |`ar`                    |Unix&nbsp;archive                                                               |<sub>`probe`</sub>|
 |[`asn1_ber`](#asn1_ber) |ASN1&nbsp;Basic&nbsp;Encoding&nbsp;Rules&nbsp;(also&nbsp;CER&nbsp;and&nbsp;DER) |<sub></sub>|
@@ -76,6 +77,7 @@
 |`protobuf_widevine`     |Widevine&nbsp;protobuf                                                          |<sub>`protobuf`</sub>|
 |`pssh_playready`        |PlayReady&nbsp;PSSH                                                             |<sub></sub>|
 |`raw`                   |Raw&nbsp;bits                                                                   |<sub></sub>|
+|[`rtmp`](#rtmp)         |Real-Time&nbsp;Messaging&nbsp;Protocol                                          |<sub>`amf0`</sub>|
 |`sll2_packet`           |Linux&nbsp;cooked&nbsp;capture&nbsp;encapsulation&nbsp;v2                       |<sub>`ether8023_frame`</sub>|
 |`sll_packet`            |Linux&nbsp;cooked&nbsp;capture&nbsp;encapsulation                               |<sub>`ether8023_frame`</sub>|
 |`tar`                   |Tar&nbsp;archive                                                                |<sub>`probe`</sub>|
@@ -95,7 +97,7 @@
 |`image`                 |Group                                                                           |<sub>`gif` `jpeg` `mp4` `png` `tiff` `webp`</sub>|
 |`link_frame`            |Group                                                                           |<sub>`bsd_loopback_frame` `ether8023_frame` `sll2_packet` `sll_packet`</sub>|
 |`probe`                 |Group                                                                           |<sub>`adts` `ar` `avro_ocf` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `macho` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `wav` `webp` `zip`</sub>|
-|`tcp_stream`            |Group                                                                           |<sub>`dns`</sub>|
+|`tcp_stream`            |Group                                                                           |<sub>`dns` `rtmp`</sub>|
 |`udp_payload`           |Group                                                                           |<sub>`dns`</sub>|
 
 [#]: sh-end
@@ -264,6 +266,9 @@ fq -d msgpack torepr file.msgpack
 fq -d protobuf '.fields[6].wire_value | protobuf | d'
 ```
 
+### rtmp
+
+Current only supports plain RTMP (not RTMPT or encrypted variants etc) with AMF0 (not AMF3).
 
 [#]: sh-end
 
