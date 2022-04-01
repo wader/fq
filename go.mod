@@ -74,6 +74,8 @@ require (
 	gopkg.in/yaml.v3 v3.0.1
 )
 
+require golang.org/x/arch v0.0.0-20220401014709-5424468ecbac
+
 require (
 	github.com/itchyny/timefmt-go v0.1.5 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
