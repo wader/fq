@@ -12,18 +12,15 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var udpPacketFormat decode.Group
-var tcpPacketFormat decode.Group
-var icmpFormat decode.Group
+var ipv4IpPacketGroup decode.Group
 
 func init() {
 	registry.MustRegister(decode.Format{
 		Name:        format.IPV4_PACKET,
 		Description: "Internet protocol v4 packet",
+		Groups:      []string{format.INET_PACKET},
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.UDP_DATAGRAM}, Group: &udpPacketFormat},
-			{Names: []string{format.TCP_SEGMENT}, Group: &tcpPacketFormat},
-			{Names: []string{format.ICMP}, Group: &icmpFormat},
+			{Names: []string{format.IP_PACKET}, Group: &ipv4IpPacketGroup},
 		},
 		DecodeFn: decodeIPv4,
 	})
@@ -45,12 +42,6 @@ var ipv4OptionsMap = scalar.UToScalar{
 	4:             {Description: "Internet Timestamp"},
 }
 
-var ipv4ProtocolFormat = map[uint64]*decode.Group{
-	format.IPv4ProtocolUDP:  &udpPacketFormat,
-	format.IPv4ProtocolTCP:  &tcpPacketFormat,
-	format.IPv4ProtocolICMP: &icmpFormat,
-}
-
 var mapUToIPv4Sym = scalar.Fn(func(s scalar.S) (scalar.S, error) {
 	var b [4]byte
 	binary.BigEndian.PutUint32(b[:], uint32(s.ActualU()))
@@ -59,6 +50,10 @@ var mapUToIPv4Sym = scalar.Fn(func(s scalar.S) (scalar.S, error) {
 })
 
 func decodeIPv4(d *decode.D, in interface{}) interface{} {
+	if ipi, ok := in.(format.InetPacketIn); ok && ipi.EtherType != format.EtherTypeIPv4 {
+		d.Fatalf("incorrect ethertype %d", ipi.EtherType)
+	}
+
 	d.FieldU4("version")
 	ihl := d.FieldU4("ihl")
 	d.FieldU6("dscp")
@@ -104,11 +99,15 @@ func decodeIPv4(d *decode.D, in interface{}) interface{} {
 	_ = d.FieldMustGet("header_checksum").TryScalarFn(d.ValidateUBytes(ipv4Checksum.Sum(nil)), scalar.Hex)
 
 	dataLen := int64(totalLength-(ihl*4)) * 8
-	g, ok := ipv4ProtocolFormat[protocol]
-	if !ok || moreFragments || fragmentOffset > 0 {
-		d.FieldRawLen("data", dataLen)
-	} else {
-		d.FieldFormatLen("data", dataLen, *g, nil)
+
+	if moreFragments || fragmentOffset > 0 {
+		d.FieldRawLen("payload", dataLen)
+	} else if dv, _, _ := d.TryFieldFormatLen(
+		"payload",
+		dataLen,
+		ipv4IpPacketGroup,
+		format.IPPacketIn{Protocol: int(protocol)}); dv == nil {
+		d.FieldRawLen("payload", dataLen)
 	}
 
 	return nil

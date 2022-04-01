@@ -11,6 +11,7 @@ func init() {
 	registry.MustRegister(decode.Format{
 		Name:        format.ICMP,
 		Description: "Internet Control Message Protocol",
+		Groups:      []string{format.IP_PACKET},
 		DecodeFn:    decodeICMP,
 	})
 }
@@ -92,6 +93,10 @@ var icmpCodeMapMap = map[uint64]scalar.UToScalar{
 }
 
 func decodeICMP(d *decode.D, in interface{}) interface{} {
+	if ipi, ok := in.(format.IPPacketIn); ok && ipi.Protocol != format.IPv4ProtocolICMP {
+		d.Fatalf("incorrect protocol %d", ipi.Protocol)
+	}
+
 	typ := d.FieldU8("type", icmpTypeMap)
 	d.FieldU8("code", icmpCodeMapMap[typ])
 	d.FieldU16("checksum")

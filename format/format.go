@@ -5,10 +5,12 @@ const (
 	ALL = "all"
 
 	IMAGE       = "image"
-	LINK_FRAME  = "link_frame"
 	PROBE       = "probe"
-	TCP_STREAM  = "tcp_stream"
-	UDP_PAYLOAD = "udp_payload"
+	LINK_FRAME  = "link_frame"  // ex: ethernet
+	INET_PACKET = "inet_packet" // ex: ipv4
+	IP_PACKET   = "ip_packet"   // ex: tcp
+	TCP_STREAM  = "tcp_stream"  // ex: http
+	UDP_PAYLOAD = "udp_payload" // ex: dns
 
 	AAC_FRAME           = "aac_frame"
 	ADTS                = "adts"
@@ -56,10 +58,12 @@ const (
 	HEVC_VPS            = "hevc_vps"
 	ICC_PROFILE         = "icc_profile"
 	ICMP                = "icmp"
+	ICMPV6              = "icmpv6"
 	ID3V1               = "id3v1"
 	ID3V11              = "id3v11"
 	ID3V2               = "id3v2"
 	IPV4_PACKET         = "ipv4_packet"
+	IPV6_PACKET         = "ipv6_packet"
 	JPEG                = "jpeg"
 	JSON                = "json"
 	MACHO               = "macho"
@@ -200,14 +204,17 @@ type MP3FrameOut struct {
 	ChannelModeIndex int
 }
 
-type In struct {
-	SourcePort      int
-	DestinationPort int
+type LinkFrameIn struct {
+	Type           int
+	IsLittleEndian bool // pcap endian etc
 }
 
-type LinkFrameIn struct {
-	Type         int
-	LittleEndian bool // pcap endian etc
+type InetPacketIn struct {
+	EtherType int
+}
+
+type IPPacketIn struct {
+	Protocol int
 }
 
 type UDPPayloadIn struct {

@@ -5,6 +5,6 @@ $ fq -d udp_datagram dv /udp_datagram
 0x00|      44 5c                                    |  D\            |  destination_port: 17500 0x2-0x3.7 (2)
 0x00|            00 90                              |    ..          |  length: 144 0x4-0x5.7 (2)
 0x00|                  ba 03                        |      ..        |  checksum: 0xba03 0x6-0x7.7 (2)
-0x00|                        7b 22 68 6f 73 74 5f 69|        {"host_i|  data: raw bits 0x8-0x8f.7 (136)
+0x00|                        7b 22 68 6f 73 74 5f 69|        {"host_i|  payload: raw bits 0x8-0x8f.7 (136)
 0x10|6e 74 22 3a 20 34 30 39 34 35 31 34 34 38 33 2c|nt": 4094514483,|
 *   |until 0x8f.7 (end) (136)                       |                |

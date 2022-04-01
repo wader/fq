@@ -46,4 +46,4 @@ $ fq -d tcp_segment dv /tcp_segment
 0x20|                              00               |          .     |      kind: "end" (0) (End of options list) 0x2a-0x2a.7 (1)
     |                                               |                |    [8]{}: option 0x2b-0x2b.7 (1)
 0x20|                                 00|           |           .|   |      kind: "end" (0) (End of options list) 0x2b-0x2b.7 (1)
-    |                                               |                |  data: raw bits 0x2c-NA (0)
+    |                                               |                |  payload: raw bits 0x2c-NA (0)

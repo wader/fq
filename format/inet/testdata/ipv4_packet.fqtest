@@ -16,6 +16,6 @@ $ fq -d ipv4_packet dv /ipv4_packet
 0x000|                              9b 44            |          .D    |  header_checksum: 0x9b44 (valid) 0xa-0xb.7 (2)
 0x000|                                    02 01 01 02|            ....|  source_ip: "2.1.1.2" (0x2010102) 0xc-0xf.7 (4)
 0x010|02 01 01 01                                    |....            |  destination_ip: "2.1.1.1" (0x2010101) 0x10-0x13.7 (4)
-0x010|            08 00 4d 71 13 c2 00 01 14 2b d2 59|    ..Mq.....+.Y|  data: raw bits 0x14-0x3e3.7 (976)
+0x010|            08 00 4d 71 13 c2 00 01 14 2b d2 59|    ..Mq.....+.Y|  payload: raw bits 0x14-0x3e3.7 (976)
 0x020|00 00 00 00 3d 2a 08 00 00 00 00 00 10 11 12 13|....=*..........|
 *    |until 0x3e3.7 (end) (976)                      |                |
