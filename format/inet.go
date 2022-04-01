@@ -1180,6 +1180,7 @@ var UDPPortMap = scalar.UToScalar{
 
 const (
 	TCPPortDomain = 53
+	TCPPortRTMP   = 1935
 )
 
 var TCPPortMap = scalar.UToScalar{
@@ -1862,4 +1863,5 @@ var TCPPortMap = scalar.UToScalar{
 	999:           {Sym: "garcon"},
 	1000:          {Sym: "cadlock2"},
 	1010:          {Sym: "surf", Description: "surf"},
+	TCPPortRTMP:   {Sym: "rtmp", Description: "Real-Time Messaging Protocol"},
 }

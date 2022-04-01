@@ -13,6 +13,7 @@ const (
 	AAC_FRAME           = "aac_frame"
 	ADTS                = "adts"
 	ADTS_FRAME          = "adts_frame"
+	AMF0                = "amf0"
 	APEV2               = "apev2"
 	AR                  = "ar"
 	ASN1_BER            = "asn1_ber"
@@ -83,6 +84,7 @@ const (
 	PROTOBUF_WIDEVINE   = "protobuf_widevine"
 	PSSH_PLAYREADY      = "pssh_playready"
 	RAW                 = "raw"
+	RTMP                = "rtmp"
 	SLL_PACKET          = "sll_packet"
 	SLL2_PACKET         = "sll2_packet"
 	TAR                 = "tar"
@@ -214,6 +216,7 @@ type UDPPayloadIn struct {
 }
 
 type TCPStreamIn struct {
+	IsClient        bool
 	SourcePort      int
 	DestinationPort int
 }
