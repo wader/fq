@@ -4,7 +4,7 @@ $ fq -d ether8023_frame dv /ether8023_frame
 0x00|ff ff ff ff ff ff                              |......          |  destination: "ff:ff:ff:ff:ff:ff" (0xffffffffffff) 0x0-0x5.7 (6)
 0x00|                  a4 5e 60 f1 7d 93            |      .^`.}.    |  source: "a4:5e:60:f1:7d:93" (0xa45e60f17d93) 0x6-0xb.7 (6)
 0x00|                                    08 00      |            ..  |  ether_type: "ipv4" (0x800) (Internet Protocol version 4) 0xc-0xd.7 (2)
-    |                                               |                |  packet{}: (ipv4_packet) 0xe-0xb1.7 (164)
+    |                                               |                |  payload{}: (ipv4_packet) 0xe-0xb1.7 (164)
 0x00|                                          45   |              E |    version: 4 0xe-0xe.3 (0.4)
 0x00|                                          45   |              E |    ihl: 5 0xe.4-0xe.7 (0.4)
 0x00|                                             00|               .|    dscp: 0 0xf-0xf.5 (0.6)
@@ -21,11 +21,11 @@ $ fq -d ether8023_frame dv /ether8023_frame
 0x10|                              c0 a8 01 8b      |          ....  |    source_ip: "192.168.1.139" (0xc0a8018b) 0x1a-0x1d.7 (4)
 0x10|                                          ff ff|              ..|    destination_ip: "255.255.255.255" (0xffffffff) 0x1e-0x21.7 (4)
 0x20|ff ff                                          |..              |
-    |                                               |                |    data{}: (udp_datagram) 0x22-0xb1.7 (144)
+    |                                               |                |    payload{}: (udp_datagram) 0x22-0xb1.7 (144)
 0x20|      44 5c                                    |  D\            |      source_port: 17500 0x22-0x23.7 (2)
 0x20|            44 5c                              |    D\          |      destination_port: 17500 0x24-0x25.7 (2)
 0x20|                  00 90                        |      ..        |      length: 144 0x26-0x27.7 (2)
 0x20|                        ba 03                  |        ..      |      checksum: 0xba03 0x28-0x29.7 (2)
-0x20|                              7b 22 68 6f 73 74|          {"host|      data: raw bits 0x2a-0xb1.7 (136)
+0x20|                              7b 22 68 6f 73 74|          {"host|      payload: raw bits 0x2a-0xb1.7 (136)
 0x30|5f 69 6e 74 22 3a 20 34 30 39 34 35 31 34 34 38|_int": 409451448|
 *   |until 0xb1.7 (end) (136)                       |                |

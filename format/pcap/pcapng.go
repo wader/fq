@@ -240,8 +240,8 @@ var blockFns = map[uint64]func(d *decode.D, dc *decodeContext){
 		}
 
 		if dv, _, _ := d.TryFieldFormatLen("packet", int64(capturedLength)*8, pcapngLinkFrameFormat, format.LinkFrameIn{
-			Type:         linkType,
-			LittleEndian: d.Endian == decode.LittleEndian,
+			Type:           linkType,
+			IsLittleEndian: d.Endian == decode.LittleEndian,
 		}); dv == nil {
 			d.FieldRawLen("packet", int64(capturedLength)*8)
 		}

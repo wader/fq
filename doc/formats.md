@@ -23,14 +23,14 @@
 |`avc_sps`               |H.264/AVC&nbsp;Sequence&nbsp;Parameter&nbsp;Set                                 |<sub></sub>|
 |[`avro_ocf`](#avro_ocf) |Avro&nbsp;object&nbsp;container&nbsp;file                                       |<sub></sub>|
 |`bencode`               |BitTorrent&nbsp;bencoding                                                       |<sub></sub>|
-|`bsd_loopback_frame`    |BSD&nbsp;loopback&nbsp;frame                                                    |<sub>`ipv4_packet`</sub>|
+|`bsd_loopback_frame`    |BSD&nbsp;loopback&nbsp;frame                                                    |<sub>`inet_packet`</sub>|
 |[`bson`](#bson)         |Binary&nbsp;JSON                                                                |<sub></sub>|
 |`bzip2`                 |bzip2&nbsp;compression                                                          |<sub>`probe`</sub>|
 |[`cbor`](#cbor)         |Concise&nbsp;Binary&nbsp;Object&nbsp;Representation                             |<sub></sub>|
 |`dns`                   |DNS&nbsp;packet                                                                 |<sub></sub>|
 |`dns_tcp`               |DNS&nbsp;packet&nbsp;(TCP)                                                      |<sub></sub>|
 |`elf`                   |Executable&nbsp;and&nbsp;Linkable&nbsp;Format                                   |<sub></sub>|
-|`ether8023_frame`       |Ethernet&nbsp;802.3&nbsp;frame                                                  |<sub>`ipv4_packet`</sub>|
+|`ether8023_frame`       |Ethernet&nbsp;802.3&nbsp;frame                                                  |<sub>`inet_packet`</sub>|
 |`exif`                  |Exchangeable&nbsp;Image&nbsp;File&nbsp;Format                                   |<sub></sub>|
 |`flac`                  |Free&nbsp;Lossless&nbsp;Audio&nbsp;Codec&nbsp;file                              |<sub>`flac_metadatablocks` `flac_frame`</sub>|
 |`flac_frame`            |FLAC&nbsp;frame                                                                 |<sub></sub>|
@@ -49,10 +49,12 @@
 |`hevc_vps`              |H.265/HEVC&nbsp;Video&nbsp;Parameter&nbsp;Set                                   |<sub></sub>|
 |`icc_profile`           |International&nbsp;Color&nbsp;Consortium&nbsp;profile                           |<sub></sub>|
 |`icmp`                  |Internet&nbsp;Control&nbsp;Message&nbsp;Protocol                                |<sub></sub>|
+|`icmpv6`                |Internet&nbsp;Control&nbsp;Message&nbsp;Protocol&nbsp;v6                        |<sub></sub>|
 |`id3v1`                 |ID3v1&nbsp;metadata                                                             |<sub></sub>|
 |`id3v11`                |ID3v1.1&nbsp;metadata                                                           |<sub></sub>|
 |`id3v2`                 |ID3v2&nbsp;metadata                                                             |<sub>`image`</sub>|
-|`ipv4_packet`           |Internet&nbsp;protocol&nbsp;v4&nbsp;packet                                      |<sub>`udp_datagram` `tcp_segment` `icmp`</sub>|
+|`ipv4_packet`           |Internet&nbsp;protocol&nbsp;v4&nbsp;packet                                      |<sub>`ip_packet`</sub>|
+|`ipv6_packet`           |Internet&nbsp;protocol&nbsp;v6&nbsp;packet                                      |<sub>`ip_packet`</sub>|
 |`jpeg`                  |Joint&nbsp;Photographic&nbsp;Experts&nbsp;Group&nbsp;file                       |<sub>`exif` `icc_profile`</sub>|
 |`json`                  |JSON                                                                            |<sub></sub>|
 |[`macho`](#macho)       |Mach-O&nbsp;macOS&nbsp;executable                                               |<sub></sub>|
@@ -78,8 +80,8 @@
 |`pssh_playready`        |PlayReady&nbsp;PSSH                                                             |<sub></sub>|
 |`raw`                   |Raw&nbsp;bits                                                                   |<sub></sub>|
 |[`rtmp`](#rtmp)         |Real-Time&nbsp;Messaging&nbsp;Protocol                                          |<sub>`amf0`</sub>|
-|`sll2_packet`           |Linux&nbsp;cooked&nbsp;capture&nbsp;encapsulation&nbsp;v2                       |<sub>`ether8023_frame`</sub>|
-|`sll_packet`            |Linux&nbsp;cooked&nbsp;capture&nbsp;encapsulation                               |<sub>`ether8023_frame`</sub>|
+|`sll2_packet`           |Linux&nbsp;cooked&nbsp;capture&nbsp;encapsulation&nbsp;v2                       |<sub>`inet_packet`</sub>|
+|`sll_packet`            |Linux&nbsp;cooked&nbsp;capture&nbsp;encapsulation                               |<sub>`inet_packet`</sub>|
 |`tar`                   |Tar&nbsp;archive                                                                |<sub>`probe`</sub>|
 |`tcp_segment`           |Transmission&nbsp;control&nbsp;protocol&nbsp;segment                            |<sub></sub>|
 |`tiff`                  |Tag&nbsp;Image&nbsp;File&nbsp;Format                                            |<sub>`icc_profile`</sub>|
@@ -95,6 +97,8 @@
 |`xing`                  |Xing&nbsp;header                                                                |<sub></sub>|
 |`zip`                   |ZIP&nbsp;archive                                                                |<sub>`probe`</sub>|
 |`image`                 |Group                                                                           |<sub>`gif` `jpeg` `mp4` `png` `tiff` `webp`</sub>|
+|`inet_packet`           |Group                                                                           |<sub>`ipv4_packet` `ipv6_packet`</sub>|
+|`ip_packet`             |Group                                                                           |<sub>`icmp` `icmpv6` `tcp_segment` `udp_datagram`</sub>|
 |`link_frame`            |Group                                                                           |<sub>`bsd_loopback_frame` `ether8023_frame` `sll2_packet` `sll_packet`</sub>|
 |`probe`                 |Group                                                                           |<sub>`adts` `ar` `avro_ocf` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `macho` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `wav` `webp` `zip`</sub>|
 |`tcp_stream`            |Group                                                                           |<sub>`dns` `rtmp`</sub>|

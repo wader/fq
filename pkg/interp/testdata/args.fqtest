@@ -138,10 +138,12 @@ hevc_sps             H.265/HEVC Sequence Parameter Set
 hevc_vps             H.265/HEVC Video Parameter Set
 icc_profile          International Color Consortium profile
 icmp                 Internet Control Message Protocol
+icmpv6               Internet Control Message Protocol v6
 id3v1                ID3v1 metadata
 id3v11               ID3v1.1 metadata
 id3v2                ID3v2 metadata
 ipv4_packet          Internet protocol v4 packet
+ipv6_packet          Internet protocol v6 packet
 jpeg                 Joint Photographic Experts Group file
 json                 JSON
 macho                Mach-O macOS executable

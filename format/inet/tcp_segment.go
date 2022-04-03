@@ -13,6 +13,7 @@ func init() {
 	registry.MustRegister(decode.Format{
 		Name:        format.TCP_SEGMENT,
 		Description: "Transmission control protocol segment",
+		Groups:      []string{format.IP_PACKET},
 		DecodeFn:    decodeTCP,
 	})
 }
@@ -33,6 +34,10 @@ var tcpOptionsMap = scalar.UToScalar{
 }
 
 func decodeTCP(d *decode.D, in interface{}) interface{} {
+	if ipi, ok := in.(format.IPPacketIn); ok && ipi.Protocol != format.IPv4ProtocolTCP {
+		d.Fatalf("incorrect protocol %d", ipi.Protocol)
+	}
+
 	d.FieldU16("source_port", format.TCPPortMap)
 	d.FieldU16("destination_port", format.TCPPortMap)
 	d.FieldU32("sequence_number")
@@ -78,7 +83,7 @@ func decodeTCP(d *decode.D, in interface{}) interface{} {
 	// d.MustCopy(tcpChecksum, d.BitBufRange(checksumEnd, d.Len()-checksumEnd))
 	// _ = d.FieldMustGet("checksum").TryScalarFn(d.ValidateUBytes(tcpChecksum.Sum(nil)), scalar.Hex)
 
-	d.FieldRawLen("data", d.BitsLeft())
+	d.FieldRawLen("payload", d.BitsLeft())
 
 	return nil
 }

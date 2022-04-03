@@ -10,7 +10,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var sllPacket2Ether8023Format decode.Group
+var sllPacket2InetPacketGroup decode.Group
 
 func init() {
 	registry.MustRegister(decode.Format{
@@ -18,20 +18,16 @@ func init() {
 		Description: "Linux cooked capture encapsulation v2",
 		Groups:      []string{format.LINK_FRAME},
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.ETHER8023_FRAME}, Group: &sllPacket2Ether8023Format},
+			{Names: []string{format.INET_PACKET}, Group: &sllPacket2InetPacketGroup},
 		},
 		DecodeFn: decodeSLL2,
 	})
 }
 
-var sllPacket2FrameTypeFormat = map[uint64]*decode.Group{
-	format.EtherTypeIPv4: &ether8023FrameIPv4Format,
-}
-
 func decodeSLL2(d *decode.D, in interface{}) interface{} {
-	if lsi, ok := in.(format.LinkFrameIn); ok {
-		if lsi.Type != format.LinkTypeLINUX_SLL2 {
-			d.Fatalf("wrong link type")
+	if lfi, ok := in.(format.LinkFrameIn); ok {
+		if lfi.Type != format.LinkTypeLINUX_SLL2 {
+			d.Fatalf("wrong link type %d", lfi.Type)
 		}
 	}
 
@@ -56,13 +52,15 @@ func decodeSLL2(d *decode.D, in interface{}) interface{} {
 	switch arpHdrType {
 	case arpHdrTypeLoopback, arpHdrTypeEther:
 		_ = d.FieldMustGet("link_address").TryScalarFn(mapUToEtherSym, scalar.Hex)
-		if g, ok := sllPacket2FrameTypeFormat[protcolType]; ok {
-			d.FieldFormatLen("data", d.BitsLeft(), *g, nil)
-		} else {
-			d.FieldRawLen("data", d.BitsLeft())
+		if dv, _, _ := d.TryFieldFormatLen(
+			"payload",
+			d.BitsLeft(),
+			sllPacket2InetPacketGroup,
+			format.LinkFrameIn{Type: int(protcolType)}); dv == nil {
+			d.FieldRawLen("payload", d.BitsLeft())
 		}
 	default:
-		d.FieldRawLen("data", d.BitsLeft())
+		d.FieldRawLen("payload", d.BitsLeft())
 	}
 
 	return nil

@@ -19,7 +19,7 @@ $ fq -d pcap dv /ipv4frags.pcap
 0x0020|                                          08 00|              ..|        source: "08:00:27:fc:6a:c9" (0x80027fc6ac9) 0x2e-0x33.7 (6)
 0x0030|27 fc 6a c9                                    |'.j.            |
 0x0030|            08 00                              |    ..          |        ether_type: "ipv4" (0x800) (Internet Protocol version 4) 0x34-0x35.7 (2)
-      |                                               |                |        packet{}: (ipv4_packet) 0x36-0x419.7 (996)
+      |                                               |                |        payload{}: (ipv4_packet) 0x36-0x419.7 (996)
 0x0030|                  45                           |      E         |          version: 4 0x36-0x36.3 (0.4)
 0x0030|                  45                           |      E         |          ihl: 5 0x36.4-0x36.7 (0.4)
 0x0030|                     00                        |       .        |          dscp: 0 0x37-0x37.5 (0.6)
@@ -35,7 +35,7 @@ $ fq -d pcap dv /ipv4frags.pcap
 0x0040|9b 44                                          |.D              |          header_checksum: 0x9b44 (valid) 0x40-0x41.7 (2)
 0x0040|      02 01 01 02                              |  ....          |          source_ip: "2.1.1.2" (0x2010102) 0x42-0x45.7 (4)
 0x0040|                  02 01 01 01                  |      ....      |          destination_ip: "2.1.1.1" (0x2010101) 0x46-0x49.7 (4)
-0x0040|                              08 00 4d 71 13 c2|          ..Mq..|          data: raw bits 0x4a-0x419.7 (976)
+0x0040|                              08 00 4d 71 13 c2|          ..Mq..|          payload: raw bits 0x4a-0x419.7 (976)
 0x0050|00 01 14 2b d2 59 00 00 00 00 3d 2a 08 00 00 00|...+.Y....=*....|
 *     |until 0x419.7 (976)                            |                |
       |                                               |                |    [1]{}: packet 0x41a-0x5fb.7 (482)
@@ -48,7 +48,7 @@ $ fq -d pcap dv /ipv4frags.pcap
 0x0420|                              08 00 27 e2 9f a6|          ..'...|        destination: "08:00:27:e2:9f:a6" (0x80027e29fa6) 0x42a-0x42f.7 (6)
 0x0430|08 00 27 fc 6a c9                              |..'.j.          |        source: "08:00:27:fc:6a:c9" (0x80027fc6ac9) 0x430-0x435.7 (6)
 0x0430|                  08 00                        |      ..        |        ether_type: "ipv4" (0x800) (Internet Protocol version 4) 0x436-0x437.7 (2)
-      |                                               |                |        packet{}: (ipv4_packet) 0x438-0x5fb.7 (452)
+      |                                               |                |        payload{}: (ipv4_packet) 0x438-0x5fb.7 (452)
 0x0430|                        45                     |        E       |          version: 4 0x438-0x438.3 (0.4)
 0x0430|                        45                     |        E       |          ihl: 5 0x438.4-0x438.7 (0.4)
 0x0430|                           00                  |         .      |          dscp: 0 0x439-0x439.5 (0.6)
@@ -64,7 +64,7 @@ $ fq -d pcap dv /ipv4frags.pcap
 0x0440|      bc ea                                    |  ..            |          header_checksum: 0xbcea (valid) 0x442-0x443.7 (2)
 0x0440|            02 01 01 02                        |    ....        |          source_ip: "2.1.1.2" (0x2010102) 0x444-0x447.7 (4)
 0x0440|                        02 01 01 01            |        ....    |          destination_ip: "2.1.1.1" (0x2010101) 0x448-0x44b.7 (4)
-0x0440|                                    c8 c9 ca cb|            ....|          data: raw bits 0x44c-0x5fb.7 (432)
+0x0440|                                    c8 c9 ca cb|            ....|          payload: raw bits 0x44c-0x5fb.7 (432)
 0x0450|cc cd ce cf d0 d1 d2 d3 d4 d5 d6 d7 d8 d9 da db|................|
 *     |until 0x5fb.7 (432)                            |                |
       |                                               |                |    [2]{}: packet 0x5fc-0xbad.7 (1458)
@@ -77,7 +77,7 @@ $ fq -d pcap dv /ipv4frags.pcap
 0x0610|6a c9                                          |j.              |
 0x0610|      08 00 27 e2 9f a6                        |  ..'...        |        source: "08:00:27:e2:9f:a6" (0x80027e29fa6) 0x612-0x617.7 (6)
 0x0610|                        08 00                  |        ..      |        ether_type: "ipv4" (0x800) (Internet Protocol version 4) 0x618-0x619.7 (2)
-      |                                               |                |        packet{}: (ipv4_packet) 0x61a-0xbad.7 (1428)
+      |                                               |                |        payload{}: (ipv4_packet) 0x61a-0xbad.7 (1428)
 0x0610|                              45               |          E     |          version: 4 0x61a-0x61a.3 (0.4)
 0x0610|                              45               |          E     |          ihl: 5 0x61a.4-0x61a.7 (0.4)
 0x0610|                                 00            |           .    |          dscp: 0 0x61b-0x61b.5 (0.6)
@@ -93,7 +93,7 @@ $ fq -d pcap dv /ipv4frags.pcap
 0x0620|            eb 6e                              |    .n          |          header_checksum: 0xeb6e (valid) 0x624-0x625.7 (2)
 0x0620|                  02 01 01 01                  |      ....      |          source_ip: "2.1.1.1" (0x2010101) 0x626-0x629.7 (4)
 0x0620|                              02 01 01 02      |          ....  |          destination_ip: "2.1.1.2" (0x2010102) 0x62a-0x62d.7 (4)
-      |                                               |                |          data{}: (icmp) 0x62e-0xbad.7 (1408)
+      |                                               |                |          payload{}: (icmp) 0x62e-0xbad.7 (1408)
 0x0620|                                          00   |              . |            type: "echo_reply" (0) (Echo reply) 0x62e-0x62e.7 (1)
 0x0620|                                             00|               .|            code: 0 0x62f-0x62f.7 (1)
 0x0630|55 71                                          |Uq              |            checksum: 21873 0x630-0x631.7 (2)
@@ -117,7 +117,7 @@ $ fq -d pcap dv /ipv4frags.pcap
  0x000|                              b9 94            |          ..    |      header_checksum: 0xb994 (valid) 0xa-0xb.7 (2)
  0x000|                                    02 01 01 02|            ....|      source_ip: "2.1.1.2" (0x2010102) 0xc-0xf.7 (4)
  0x010|02 01 01 01                                    |....            |      destination_ip: "2.1.1.1" (0x2010101) 0x10-0x13.7 (4)
-      |                                               |                |      data{}: (icmp) 0x14-0x593.7 (1408)
+      |                                               |                |      payload{}: (icmp) 0x14-0x593.7 (1408)
  0x010|            08                                 |    .           |        type: "echo_request" (8) (Echo request) 0x14-0x14.7 (1)
  0x010|               00                              |     .          |        code: 0 0x15-0x15.7 (1)
  0x010|                  4d 71                        |      Mq        |        checksum: 19825 0x16-0x17.7 (2)
