@@ -3,8 +3,7 @@
 package flv
 
 // TODO: make it useful
-
-// https://www.adobe.com/content/dam/acom/en/devnet/flv/video_file_format_spec_v10.pdf
+// https://rtmp.veriskope.com/pdf/video_file_format_spec_v10.pdf
 
 import (
 	"github.com/wader/fq/format"

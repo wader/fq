@@ -1,11 +1,11 @@
 package rtmp
 
 // https://rtmp.veriskope.com/docs/spec/
+// https://rtmp.veriskope.com/pdf/video_file_format_spec_v10.pdf
 
-// TODO: audio/video message, coded header?
 // TODO: split to rtmp/rtmp_message?
-// TODO: format options, set default chunk size?
 // TODO: support to skip handshake?
+// TODO: keep track of message stream format, decode aac etc
 
 import (
 	"bytes"
@@ -17,7 +17,8 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var amf0Group decode.Group
+var rtmpAmf0Group decode.Group
+var rtmpMpegASCFormat decode.Group
 
 func init() {
 	registry.MustRegister(decode.Format{
@@ -28,7 +29,8 @@ func init() {
 		},
 		DecodeFn: rtmpDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.AMF0}, Group: &amf0Group},
+			{Names: []string{format.AMF0}, Group: &rtmpAmf0Group},
+			{Names: []string{format.MPEG_ASC}, Group: &rtmpMpegASCFormat},
 		},
 	})
 }
@@ -111,28 +113,42 @@ var timestampDescription = scalar.UToScalar{
 	timestampExtended: scalar.S{Description: "extended"},
 }
 
+const (
+	audioMessageCodecAAC = 10
+)
+
 // based on https://github.com/wireshark/wireshark/blob/master/epan/dissectors/packet-rtmpt.c
 // which in turn is based on rtmp and swf specifications and FLV v10.1 section E.4.3.1
 var audioMessageCodecNames = scalar.UToSymStr{
-	0:  "uncompressed",
-	1:  "adpcm",
-	2:  "mp3",
-	3:  "uncompressed_le",
-	4:  "nellymoser_16khz",
-	5:  "nellymoser_8khz",
-	6:  "nellymoser",
-	7:  "g711a",
-	8:  "g711u",
-	9:  "nellymoser_16khz",
-	10: "he-aac",
-	11: "speex",
+	0:                    "uncompressed",
+	1:                    "adpcm",
+	2:                    "mp3",
+	3:                    "uncompressed_le",
+	4:                    "nellymoser_16khz",
+	5:                    "nellymoser_8khz",
+	6:                    "nellymoser",
+	7:                    "g711a",
+	8:                    "g711u",
+	9:                    "nellymoser_16khz",
+	audioMessageCodecAAC: "aac",
+	11:                   "speex",
+}
+
+const (
+	audioMessageAACPacketTypeASC = 0
+	audioMessageAACPacketTypeRaw = 1
+)
+
+var audioMessageAACPacketTypeNames = scalar.UToSymStr{
+	audioMessageAACPacketTypeASC: "asc",
+	audioMessageAACPacketTypeRaw: "raw",
 }
 
 var audioMessageRateNames = scalar.UToSymU{
 	0: 5500,
-	1: 11000,
-	2: 22000, // TODO: 22050?
-	3: 44000, // TODO: 44100?
+	1: 11025,
+	2: 22050,
+	3: 44100,
 }
 
 var audioMessageSampleSize = scalar.UToSymU{
@@ -153,13 +169,23 @@ var videoMessageTypeNames = scalar.UToSymStr{
 	5: "video_info_or_command_frame",
 }
 
+const (
+	videoMessageCodecH264 = 7
+)
+
 var videoMessageCodecNames = scalar.UToSymStr{
-	2: "sorensen_h263",
-	3: "screen_video",
-	4: "on2_vp6",
-	5: "on2_vp6_alpha",
-	6: "screen_video_version_2",
-	7: "h264",
+	2:                     "h263",
+	3:                     "screen_video",
+	4:                     "vp6",
+	5:                     "vp6_alpha",
+	6:                     "screen_video_v2",
+	videoMessageCodecH264: "h264",
+}
+
+var videoMessageH264PacketTypeNames = scalar.UToSymStr{
+	0: "dcr",
+	1: "au", // TODO: is access unit?
+	2: "empty",
 }
 
 // TODO: invalid warning that timestampDelta is unused
@@ -182,22 +208,44 @@ func rtmpDecodeMessageType(d *decode.D, typ int, chunkSize *int) {
 	case messageTypeAcknowledgment:
 		d.FieldU32("sequence_number")
 	case messageTypeUserControlMessage:
-		d.FieldU16("type", userControlEvenTypNames)
-		d.FieldRawLen("data", d.BitsLeft())
+		typ := d.FieldU16("type", userControlEvenTypNames)
+		switch typ {
+		case userControlEvenTypeStreamBegin:
+			d.FieldU32("stream_id")
+		case userControlEvenTypeStreamEOF:
+			d.FieldU32("stream_id")
+		case userControlEvenTypeStreamDry:
+			d.FieldU32("stream_id")
+		case userControlEvenTypeSetBufferLength:
+			d.FieldU32("stream_id")
+			d.FieldU32("length")
+		case userControlEvenTypeStreamIsRecorded:
+			d.FieldU32("stream_id")
+		case userControlEvenTypePingRequest:
+			d.FieldU32("timestamp")
+		case userControlEvenTypePingResponse:
+			d.FieldU32("timestamp")
+		default:
+			d.FieldRawLen("data", d.BitsLeft())
+		}
 	case messageTypeWindowAcknowledgementSize:
 		d.FieldU32("window_size")
 	case messageTypeSetPeerBandwidth:
 		d.FieldU32("chunk_size")
 		d.FieldU8("limit_type", setPeerBandwidthLimitTypeName)
 	case messageTypeDataMessage:
-		d.FieldFormat("message", amf0Group, nil)
+		d.FieldArray("messages", func(d *decode.D) {
+			for !d.End() {
+				d.FieldFormat("message", rtmpAmf0Group, nil)
+			}
+		})
 	case messageTypeCommandMessage:
-		d.FieldFormat("command_name", amf0Group, nil)
-		d.FieldFormat("transaction_id", amf0Group, nil)
-		d.FieldFormat("command_object", amf0Group, nil)
+		d.FieldFormat("command_name", rtmpAmf0Group, nil)
+		d.FieldFormat("transaction_id", rtmpAmf0Group, nil)
+		d.FieldFormat("command_object", rtmpAmf0Group, nil)
 		d.FieldArray("arguments", func(d *decode.D) {
 			for !d.End() {
-				d.FieldFormat("argument", amf0Group, nil)
+				d.FieldFormat("argument", rtmpAmf0Group, nil)
 			}
 		})
 	case messageTypeAggregateMessage:
@@ -221,19 +269,32 @@ func rtmpDecodeMessageType(d *decode.D, typ int, chunkSize *int) {
 		if d.BitsLeft() == 0 {
 			return
 		}
-		d.FieldU4("codec", audioMessageCodecNames)
+		codec := d.FieldU4("codec", audioMessageCodecNames)
 		d.FieldU2("sample_rate", audioMessageRateNames)
 		d.FieldU1("sample_size", audioMessageSampleSize)
 		d.FieldU1("channels", audioMessageChannels)
-		d.FieldRawLen("data", d.BitsLeft())
+		if codec == audioMessageCodecAAC {
+			switch d.FieldU8("type", audioMessageAACPacketTypeNames) {
+			case audioMessageAACPacketTypeASC:
+				d.FieldFormat("data", rtmpMpegASCFormat, nil)
+			default:
+				d.FieldRawLen("data", d.BitsLeft())
+			}
+		} else {
+			d.FieldRawLen("data", d.BitsLeft())
+		}
 	case messageTypeVideoMessage:
 		if d.BitsLeft() == 0 {
 			return
 		}
 		d.FieldU4("type", videoMessageTypeNames)
-		d.FieldU4("codec", videoMessageCodecNames)
+		codec := d.FieldU4("codec", videoMessageCodecNames)
 		// TODO: flv header + h263 format?
 		// TODO: ffmpeg rtmp proto seems to recrate a flv stream and demux it
+		if codec == videoMessageCodecH264 {
+			d.FieldU8("type", videoMessageH264PacketTypeNames)
+		}
+
 		d.FieldRawLen("data", d.BitsLeft())
 	default:
 		d.FieldRawLen("data", d.BitsLeft())
@@ -257,14 +318,14 @@ func rtmpDecode(d *decode.D, in interface{}) interface{} {
 	if isClient {
 		name = "c"
 	}
-	// TODO: 1536 byte blob instead?
+	// TODO: 1536 byte blobs instead?
 	d.FieldStruct("handshake", func(d *decode.D) {
 		d.FieldStruct(name+"0", func(d *decode.D) {
 			d.FieldU8("version")
 		})
 		d.FieldStruct(name+"1", func(d *decode.D) {
 			d.FieldU32("time")
-			d.FieldU32("zero")
+			d.FieldU32("zero") // TODO: does not seems to be zero sometimes?
 			d.FieldRawLen("random", 1528*8)
 		})
 		d.FieldStruct(name+"2", func(d *decode.D) {
@@ -380,14 +441,20 @@ func rtmpDecode(d *decode.D, in interface{}) interface{} {
 					cs.messageSteams[h.messageStreamID] = m
 				}
 
-				payloadLength := chunkSize
-				left := int(m.l) - m.b.Len()
-				if left < payloadLength {
-					payloadLength = left
+				payloadLength := int64(chunkSize)
+				messageLeft := int64(m.l) - int64(m.b.Len())
+				if messageLeft < payloadLength {
+					payloadLength = messageLeft
+				}
+				// support decoding interrupted rtmp stream
+				// TODO: throw away message buffer? currently only do tcp not needed?
+				payloadLength *= 8
+				if payloadLength > d.BitsLeft() {
+					payloadLength = d.BitsLeft()
 				}
 
 				if payloadLength > 0 {
-					d.MustCopyBits(&m.b, d.FieldRawLen("data", int64(payloadLength)*8))
+					d.MustCopyBits(&m.b, d.FieldRawLen("data", payloadLength))
 				}
 
 				if m.l == uint64(m.b.Len()) {

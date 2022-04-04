@@ -79,7 +79,7 @@
 |`protobuf_widevine`     |Widevine&nbsp;protobuf                                                          |<sub>`protobuf`</sub>|
 |`pssh_playready`        |PlayReady&nbsp;PSSH                                                             |<sub></sub>|
 |`raw`                   |Raw&nbsp;bits                                                                   |<sub></sub>|
-|[`rtmp`](#rtmp)         |Real-Time&nbsp;Messaging&nbsp;Protocol                                          |<sub>`amf0`</sub>|
+|[`rtmp`](#rtmp)         |Real-Time&nbsp;Messaging&nbsp;Protocol                                          |<sub>`amf0` `mpeg_asc`</sub>|
 |`sll2_packet`           |Linux&nbsp;cooked&nbsp;capture&nbsp;encapsulation&nbsp;v2                       |<sub>`inet_packet`</sub>|
 |`sll_packet`            |Linux&nbsp;cooked&nbsp;capture&nbsp;encapsulation                               |<sub>`inet_packet`</sub>|
 |`tar`                   |Tar&nbsp;archive                                                                |<sub>`probe`</sub>|

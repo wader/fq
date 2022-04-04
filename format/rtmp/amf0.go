@@ -88,14 +88,16 @@ func amf0DecodeValue(d *decode.D) {
 	case typeReference:
 		d.FieldU16("value") // TODO: index pointer
 	case typeECMAArray:
-		count := d.FieldU32("count")
+		d.FieldU32("count")
 		d.FieldArray("value", func(d *decode.D) {
-			d.FieldStruct("entry", func(d *decode.D) {
-				for i := uint64(0); i < count; i++ {
+			var typ uint64
+			for typ != typeObjectEnd {
+				d.FieldStruct("entry", func(d *decode.D) {
 					d.FieldStrFn("key", amf0DecodeString)
+					typ = d.PeekBits(8)
 					d.FieldStruct("value", amf0DecodeValue)
-				}
-			})
+				})
+			}
 		})
 	case typeObjectEnd:
 		// nop
