@@ -38,14 +38,14 @@ const (
 )
 
 var vp9ColorSpaceNames = scalar.UToSymStr{
-	CS_UNKNOWN:   "CS_UNKNOWN",
-	CS_BT_601:    "CS_BT_601",
-	CS_BT_709:    "CS_BT_709",
-	CS_SMPTE_170: "CS_SMPTE_170",
-	CS_SMPTE_240: "CS_SMPTE_240",
-	CS_BT_2020:   "CS_BT_2020",
-	CS_RESERVED:  "CS_RESERVED",
-	CS_RGB:       "CS_RGB",
+	CS_UNKNOWN:   "unknown",
+	CS_BT_601:    "bt_601",
+	CS_BT_709:    "bt_709",
+	CS_SMPTE_170: "smpte_170",
+	CS_SMPTE_240: "smpte_240",
+	CS_BT_2020:   "bt_2020",
+	CS_RESERVED:  "reserved",
+	CS_RGB:       "rgb",
 }
 
 var vp9ProfilesMap = scalar.UToScalar{

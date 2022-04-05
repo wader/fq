@@ -46,152 +46,152 @@ var endianNames = scalar.UToSymStr{
 }
 
 var cpuTypes = scalar.UToSymStr{
-	0xff_ff_ff_ff: "CPU_TYPE_ANY",
-	1:             "CPU_TYPE_VAX",
-	2:             "CPU_TYPE_ROMP",
-	4:             "CPU_TYPE_NS32032",
-	5:             "CPU_TYPE_NS32332",
-	6:             "CPU_TYPE_MC680x0",
-	7:             "CPU_TYPE_X86",
-	8:             "CPU_TYPE_MIPS",
-	9:             "CPU_TYPE_NS32532",
-	10:            "CPU_TYPE_MC98000",
-	11:            "CPU_TYPE_HPPA",
-	12:            "CPU_TYPE_ARM",
-	13:            "CPU_TYPE_MC88000",
-	14:            "CPU_TYPE_SPARC",
-	15:            "CPU_TYPE_I860",
-	16:            "CPU_TYPE_I860_LITTLE",
-	17:            "CPU_TYPE_RS6000",
-	18:            "CPU_TYPE_POWERPC",
-	0x1000007:     "CPU_TYPE_X86_64",
-	0x100000c:     "CPU_TYPE_ARM64",
-	0x1000013:     "CPU_TYPE_POWERPC64",
-	255:           "CPU_TYPE_VEO",
+	0xff_ff_ff_ff: "cpu_type_any",
+	1:             "cpu_type_vax",
+	2:             "cpu_type_romp",
+	4:             "cpu_type_ns32032",
+	5:             "cpu_type_ns32332",
+	6:             "cpu_type_mc680x0",
+	7:             "cpu_type_x86",
+	8:             "cpu_type_mips",
+	9:             "cpu_type_ns32532",
+	10:            "cpu_type_mc98000",
+	11:            "cpu_type_hppa",
+	12:            "cpu_type_arm",
+	13:            "cpu_type_mc88000",
+	14:            "cpu_type_sparc",
+	15:            "cpu_type_i860",
+	16:            "cpu_type_i860_little",
+	17:            "cpu_type_rs6000",
+	18:            "cpu_type_powerpc",
+	0x1000007:     "cpu_type_x86_64",
+	0x100000c:     "cpu_type_arm64",
+	0x1000013:     "cpu_type_powerpc64",
+	255:           "cpu_type_veo",
 }
 
 var cpuSubTypes = map[uint64]scalar.UToSymStr{
 	0xff_ff_ff_ff: {
-		0xff_ff_ff_ff: "CPU_SUBTYPE_MULTIPLE",
+		0xff_ff_ff_ff: "cpu_subtype_multiple",
 	},
 	1: {
-		0xff_ff_ff_ff: "CPU_SUBTYPE_MULTIPLE",
-		0:             "CPU_SUBTYPE_VAX_ALL",
-		1:             "CPU_SUBTYPE_VAX780",
-		2:             "CPU_SUBTYPE_VAX785",
-		3:             "CPU_SUBTYPE_VAX750",
-		4:             "CPU_SUBTYPE_VAX730",
-		5:             "CPU_SUBTYPE_UVAXI",
-		6:             "CPU_SUBTYPE_UVAXII",
-		7:             "CPU_SUBTYPE_VAX8200",
-		8:             "CPU_SUBTYPE_VAX8500",
-		9:             "CPU_SUBTYPE_VAX8600",
-		10:            "CPU_SUBTYPE_VAX8650",
-		11:            "CPU_SUBTYPE_VAX8800",
-		12:            "CPU_SUBTYPE_UVAXIII",
+		0xff_ff_ff_ff: "cpu_subtype_multiple",
+		0:             "cpu_subtype_vax_all",
+		1:             "cpu_subtype_vax780",
+		2:             "cpu_subtype_vax785",
+		3:             "cpu_subtype_vax750",
+		4:             "cpu_subtype_vax730",
+		5:             "cpu_subtype_uvaxi",
+		6:             "cpu_subtype_uvaxii",
+		7:             "cpu_subtype_vax8200",
+		8:             "cpu_subtype_vax8500",
+		9:             "cpu_subtype_vax8600",
+		10:            "cpu_subtype_vax8650",
+		11:            "cpu_subtype_vax8800",
+		12:            "cpu_subtype_uvaxiii",
 	},
 	6: {
-		0xff_ff_ff_ff: "CPU_SUBTYPE_MULTIPLE",
-		1:             "CPU_SUBTYPE_MC680X0_ALL", // 1: CPU_SUBTYPE_MC68030
-		2:             "CPU_SUBTYPE_MC68040",
-		3:             "CPU_SUBTYPE_MC68030_ONLY",
+		0xff_ff_ff_ff: "cpu_subtype_multiple",
+		1:             "cpu_subtype_mc680x0_all", // 1: cpu_subtype_mc68030
+		2:             "cpu_subtype_mc68040",
+		3:             "cpu_subtype_mc68030_only",
 	},
 	7: {
-		0xff_ff_ff_ff:             "CPU_SUBTYPE_MULTIPLE",
-		intelSubTypeHelper(3, 0):  "CPU_SUBTYPE_I386_ALL", // CPU_SUBTYPE_I386
-		intelSubTypeHelper(4, 0):  "CPU_SUBTYPE_I486",
-		intelSubTypeHelper(4, 8):  "CPU_SUBTYPE_486SX",
-		intelSubTypeHelper(5, 0):  "CPU_SUBTYPE_PENT",
-		intelSubTypeHelper(6, 1):  "CPU_SUBTYPE_PENTPRO",
-		intelSubTypeHelper(6, 3):  "CPU_SUBTYPE_PENTII_M3",
-		intelSubTypeHelper(6, 5):  "CPU_SUBTYPE_PENTII_M5",
-		intelSubTypeHelper(7, 6):  "CPU_SUBTYPE_CELERON",
-		intelSubTypeHelper(7, 7):  "CPU_SUBTYPE_CELERON_MOBILE",
-		intelSubTypeHelper(8, 0):  "CPU_SUBTYPE_PENTIUM_3",
-		intelSubTypeHelper(8, 1):  "CPU_SUBTYPE_PENTIUM_3_M",
-		intelSubTypeHelper(8, 2):  "CPU_SUBTYPE_PENTIUM_3_XEON",
-		intelSubTypeHelper(9, 0):  "CPU_SUBTYPE_PENTIUM_M",
-		intelSubTypeHelper(10, 0): "CPU_SUBTYPE_PENTIUM_4",
-		intelSubTypeHelper(10, 1): "CPU_SUBTYPE_PENTIUM_4_M",
-		intelSubTypeHelper(11, 0): "CPU_SUBTYPE_ITANIUM",
-		intelSubTypeHelper(11, 1): "CPU_SUBTYPE_ITANIUM_2",
-		intelSubTypeHelper(12, 0): "CPU_SUBTYPE_XEON",
-		intelSubTypeHelper(12, 1): "CPU_SUBTYPE_XEON_2",
+		0xff_ff_ff_ff:             "cpu_subtype_multiple",
+		intelSubTypeHelper(3, 0):  "cpu_subtype_i386_all", // cpu_subtype_i386
+		intelSubTypeHelper(4, 0):  "cpu_subtype_i486",
+		intelSubTypeHelper(4, 8):  "cpu_subtype_486sx",
+		intelSubTypeHelper(5, 0):  "cpu_subtype_pent",
+		intelSubTypeHelper(6, 1):  "cpu_subtype_pentpro",
+		intelSubTypeHelper(6, 3):  "cpu_subtype_pentii_m3",
+		intelSubTypeHelper(6, 5):  "cpu_subtype_pentii_m5",
+		intelSubTypeHelper(7, 6):  "cpu_subtype_celeron",
+		intelSubTypeHelper(7, 7):  "cpu_subtype_celeron_mobile",
+		intelSubTypeHelper(8, 0):  "cpu_subtype_pentium_3",
+		intelSubTypeHelper(8, 1):  "cpu_subtype_pentium_3_m",
+		intelSubTypeHelper(8, 2):  "cpu_subtype_pentium_3_xeon",
+		intelSubTypeHelper(9, 0):  "cpu_subtype_pentium_m",
+		intelSubTypeHelper(10, 0): "cpu_subtype_pentium_4",
+		intelSubTypeHelper(10, 1): "cpu_subtype_pentium_4_m",
+		intelSubTypeHelper(11, 0): "cpu_subtype_itanium",
+		intelSubTypeHelper(11, 1): "cpu_subtype_itanium_2",
+		intelSubTypeHelper(12, 0): "cpu_subtype_xeon",
+		intelSubTypeHelper(12, 1): "cpu_subtype_xeon_2",
 	},
 	8: {
-		0xff_ff_ff_ff: "CPU_SUBTYPE_MULTIPLE",
-		0:             "CPU_SUBTYPE_MIPS_ALL",
-		1:             "CPU_SUBTYPE_MIPS_R2300",
-		2:             "CPU_SUBTYPE_MIPS_R2600",
-		3:             "CPU_SUBTYPE_MIPS_R2800",
-		4:             "CPU_SUBTYPE_MIPS_R2000A",
-		5:             "CPU_SUBTYPE_MIPS_R2000",
-		6:             "CPU_SUBTYPE_MIPS_R3000A",
-		7:             "CPU_SUBTYPE_MIPS_R3000",
+		0xff_ff_ff_ff: "cpu_subtype_multiple",
+		0:             "cpu_subtype_mips_all",
+		1:             "cpu_subtype_mips_r2300",
+		2:             "cpu_subtype_mips_r2600",
+		3:             "cpu_subtype_mips_r2800",
+		4:             "cpu_subtype_mips_r2000a",
+		5:             "cpu_subtype_mips_r2000",
+		6:             "cpu_subtype_mips_r3000a",
+		7:             "cpu_subtype_mips_r3000",
 	},
 	10: {
-		0xff_ff_ff_ff: "CPU_SUBTYPE_MULTIPLE",
-		0:             "CPU_SUBTYPE_MC98000_ALL",
-		1:             "CPU_SUBTYPE_MC98001",
+		0xff_ff_ff_ff: "cpu_subtype_multiple",
+		0:             "cpu_subtype_mc98000_all",
+		1:             "cpu_subtype_mc98001",
 	},
 	11: {
-		0xff_ff_ff_ff: "CPU_SUBTYPE_MULTIPLE",
-		0:             "CPU_SUBTYPE_HPPA_ALL",
-		1:             "CPU_SUBTYPE_HPPA_7100",
-		2:             "CPU_SUBTYPE_HPPA_7100_LC",
+		0xff_ff_ff_ff: "cpu_subtype_multiple",
+		0:             "cpu_subtype_hppa_all",
+		1:             "cpu_subtype_hppa_7100",
+		2:             "cpu_subtype_hppa_7100_lc",
 	},
 	12: {
-		0xff_ff_ff_ff: "CPU_SUBTYPE_MULTIPLE",
-		0:             "CPU_SUBTYPE_ARM_ALL",
-		5:             "CPU_SUBTYPE_ARM_V4T",
-		6:             "CPU_SUBTYPE_ARM_V6",
-		7:             "CPU_SUBTYPE_ARM_V5TEJ",
-		8:             "CPU_SUBTYPE_ARM_XSCALE",
-		9:             "CPU_SUBTYPE_ARM_V7",
-		10:            "CPU_SUBTYPE_ARM_V7F",
-		11:            "CPU_SUBTYPE_ARM_V7S",
-		12:            "CPU_SUBTYPE_ARM_V7K",
-		13:            "CPU_SUBTYPE_ARM_V8",
-		14:            "CPU_SUBTYPE_ARM_V6M",
-		15:            "CPU_SUBTYPE_ARM_V7M",
-		16:            "CPU_SUBTYPE_ARM_V7EM",
+		0xff_ff_ff_ff: "cpu_subtype_multiple",
+		0:             "cpu_subtype_arm_all",
+		5:             "cpu_subtype_arm_v4t",
+		6:             "cpu_subtype_arm_v6",
+		7:             "cpu_subtype_arm_v5tej",
+		8:             "cpu_subtype_arm_xscale",
+		9:             "cpu_subtype_arm_v7",
+		10:            "cpu_subtype_arm_v7f",
+		11:            "cpu_subtype_arm_v7s",
+		12:            "cpu_subtype_arm_v7k",
+		13:            "cpu_subtype_arm_v8",
+		14:            "cpu_subtype_arm_v6m",
+		15:            "cpu_subtype_arm_v7m",
+		16:            "cpu_subtype_arm_v7em",
 	},
 	13: {
-		0xff_ff_ff_ff: "CPU_SUBTYPE_MULTIPLE",
-		0:             "CPU_SUBTYPE_MC88000_ALL",
-		1:             "CPU_SUBTYPE_MC88100",
-		2:             "CPU_SUBTYPE_MC88110",
+		0xff_ff_ff_ff: "cpu_subtype_multiple",
+		0:             "cpu_subtype_mc88000_all",
+		1:             "cpu_subtype_mc88100",
+		2:             "cpu_subtype_mc88110",
 	},
 	14: {
-		0xff_ff_ff_ff: "CPU_SUBTYPE_MULTIPLE",
-		0:             "CPU_SUBTYPE_SPARC_ALL",
+		0xff_ff_ff_ff: "cpu_subtype_multiple",
+		0:             "cpu_subtype_sparc_all",
 	},
 	15: {
-		0xff_ff_ff_ff: "CPU_SUBTYPE_MULTIPLE",
-		0:             "CPU_SUBTYPE_I860_ALL",
-		1:             "CPU_SUBTYPE_I860_A860",
+		0xff_ff_ff_ff: "cpu_subtype_multiple",
+		0:             "cpu_subtype_i860_all",
+		1:             "cpu_subtype_i860_a860",
 	},
 	18: {
-		0xff_ff_ff_ff: "CPU_SUBTYPE_MULTIPLE",
-		0:             "CPU_SUBTYPE_POWERPC_ALL",
-		1:             "CPU_SUBTYPE_POWERPC_601",
-		2:             "CPU_SUBTYPE_POWERPC_602",
-		3:             "CPU_SUBTYPE_POWERPC_603",
-		4:             "CPU_SUBTYPE_POWERPC_603E",
-		5:             "CPU_SUBTYPE_POWERPC_603EV",
-		6:             "CPU_SUBTYPE_POWERPC_604",
-		7:             "CPU_SUBTYPE_POWERPC_604E",
-		8:             "CPU_SUBTYPE_POWERPC_620",
-		9:             "CPU_SUBTYPE_POWERPC_750",
-		10:            "CPU_SUBTYPE_POWERPC_7400",
-		11:            "CPU_SUBTYPE_POWERPC_7450",
-		100:           "CPU_SUBTYPE_POWERPC_970",
+		0xff_ff_ff_ff: "cpu_subtype_multiple",
+		0:             "cpu_subtype_powerpc_all",
+		1:             "cpu_subtype_powerpc_601",
+		2:             "cpu_subtype_powerpc_602",
+		3:             "cpu_subtype_powerpc_603",
+		4:             "cpu_subtype_powerpc_603e",
+		5:             "cpu_subtype_powerpc_603ev",
+		6:             "cpu_subtype_powerpc_604",
+		7:             "cpu_subtype_powerpc_604e",
+		8:             "cpu_subtype_powerpc_620",
+		9:             "cpu_subtype_powerpc_750",
+		10:            "cpu_subtype_powerpc_7400",
+		11:            "cpu_subtype_powerpc_7450",
+		100:           "cpu_subtype_powerpc_970",
 	},
 	0x1000012: {
-		0xff_ff_ff_ff: "CPU_SUBTYPE_MULTIPLE",
-		0:             "CPU_SUBTYPE_ARM64_ALL",
-		1:             "CPU_SUBTYPE_ARM64_V8",
-		2:             "CPU_SUBTYPE_ARM64_E",
+		0xff_ff_ff_ff: "cpu_subtype_multiple",
+		0:             "cpu_subtype_arm64_all",
+		1:             "cpu_subtype_arm64_v8",
+		2:             "cpu_subtype_arm64_e",
 	},
 }
 
@@ -240,29 +240,29 @@ const (
 	LC_DYLD_ENVIRONMENT         = 0x27
 	LC_MAIN                     = 0x80000028
 	LC_DATA_IN_CODE             = 0x29
-	LC_SOURCE_VERSION           = 0x2A
-	LC_DYLIB_CODE_SIGN_DRS      = 0x2B
-	LC_ENCRYPTION_INFO_64       = 0x2C
-	LC_LINKER_OPTION            = 0x2D
-	LC_LINKER_OPTIMIZATION_HINT = 0x2E
-	LC_VERSION_MIN_TVOS         = 0x2F
+	LC_SOURCE_VERSION           = 0x2a
+	LC_DYLIB_CODE_SIGN_DRS      = 0x2b
+	LC_ENCRYPTION_INFO_64       = 0x2c
+	LC_LINKER_OPTION            = 0x2d
+	LC_LINKER_OPTIMIZATION_HINT = 0x2e
+	LC_VERSION_MIN_TVOS         = 0x2f
 	LC_VERSION_MIN_WATCHOS      = 0x30
 	LC_NOTE                     = 0x31 // not implemented
 	LC_BUILD_VERSION            = 0x32
 )
 
 var fileTypes = scalar.UToSymStr{
-	0x1: "MH_OBJECT",
-	0x2: "MH_EXECUTE",
-	0x3: "MH_FVMLIB",
-	0x4: "MH_CORE",
-	0x5: "MH_PRELOAD",
-	0x6: "MH_DYLIB",
-	0x7: "MH_DYLINKER",
-	0x8: "MH_BUNDLE",
-	0x9: "MH_DYLIB_STUB",
-	0xa: "MH_DSYM",
-	0xb: "MH_KEXT_BUNDLE",
+	0x1: "object",
+	0x2: "execute",
+	0x3: "fvmlib",
+	0x4: "core",
+	0x5: "preload",
+	0x6: "dylib",
+	0x7: "dylinker",
+	0x8: "bundle",
+	0x9: "dylib_stub",
+	0xa: "dsym",
+	0xb: "kext_bundle",
 }
 
 var loadCommands = scalar.UToSymStr{
@@ -321,28 +321,28 @@ var loadCommands = scalar.UToSymStr{
 }
 
 var sectionTypes = scalar.UToSymStr{
-	0x0:  "S_REGULAR",
-	0x1:  "S_ZEROFILL",
-	0x2:  "S_CSTRING_LITERALS",
-	0x3:  "S_4BYTE_LITERALS",
-	0x4:  "S_8BYTE_LITERALS",
-	0x5:  "S_LITERAL_POINTERS",
-	0x6:  "S_NON_LAZY_SYMBOL_POINTERS",
-	0x7:  "S_LAZY_SYMBOL_POINTERS",
-	0x8:  "S_SYMBOL_STUBS",
-	0x9:  "S_MOD_INIT_FUNC_POINTERS",
-	0xa:  "S_MOD_TERM_FUNC_POINTERS",
-	0xb:  "S_COALESCED",
-	0xc:  "S_GB_ZEROFILL",
-	0xd:  "S_INTERPOSING",
-	0xe:  "S_16BYTE_LITERALS",
-	0xf:  "S_DTRACE_DOF",
-	0x10: "S_LAZY_DYLIB_SYMBOL_POINTERS",
-	0x11: "S_THREAD_LOCAL_REGULAR",
-	0x12: "S_THREAD_LOCAL_ZEROFILL",
-	0x13: "S_THREAD_LOCAL_VARIABLES",
-	0x14: "S_THREAD_LOCAL_VARIABLE_POINTERS",
-	0x15: "S_THREAD_LOCAL_INIT_FUNCTION_POINTERS",
+	0x0:  "regular",
+	0x1:  "zerofill",
+	0x2:  "cstring_literals",
+	0x3:  "4byte_literals",
+	0x4:  "8byte_literals",
+	0x5:  "literal_pointers",
+	0x6:  "non_lazy_symbol_pointers",
+	0x7:  "lazy_symbol_pointers",
+	0x8:  "symbol_stubs",
+	0x9:  "mod_init_func_pointers",
+	0xa:  "mod_term_func_pointers",
+	0xb:  "coalesced",
+	0xc:  "gb_zerofill",
+	0xd:  "interposing",
+	0xe:  "16byte_literals",
+	0xf:  "dtrace_dof",
+	0x10: "lazy_dylib_symbol_pointers",
+	0x11: "thread_local_regular",
+	0x12: "thread_local_zerofill",
+	0x13: "thread_local_variables",
+	0x14: "thread_local_variable_pointers",
+	0x15: "thread_local_init_function_pointers",
 }
 
 func machoDecode(d *decode.D, in interface{}) interface{} {
@@ -668,62 +668,62 @@ func intelSubTypeHelper(f, m uint64) uint64 {
 
 func parseMachHeaderFlags(d *decode.D) {
 	d.FieldRawLen("reserved", 6)
-	d.FieldBool("MH_APP_EXTENSION_SAFE")
-	d.FieldBool("MH_NO_HEAP_EXECUTION")
+	d.FieldBool("app_extension_safe")
+	d.FieldBool("no_heap_execution")
 
-	d.FieldBool("MH_HAS_TLV_DESCRIPTORS")
-	d.FieldBool("MH_DEAD_STRIPPABLE_DYLIB")
-	d.FieldBool("MH_PIE")
-	d.FieldBool("MH_NO_REEXPORTED_DYLIBS")
+	d.FieldBool("has_tlv_descriptors")
+	d.FieldBool("dead_strippable_dylib")
+	d.FieldBool("pie")
+	d.FieldBool("no_reexported_dylibs")
 
-	d.FieldBool("MH_SETUID_SAFE")
-	d.FieldBool("MH_ROOT_SAFE")
-	d.FieldBool("MH_ALLOW_STACK_EXECUTION")
-	d.FieldBool("MH_BINDS_TO_WEAK")
+	d.FieldBool("setuid_safe")
+	d.FieldBool("root_safe")
+	d.FieldBool("allow_stack_execution")
+	d.FieldBool("binds_to_weak")
 
-	d.FieldBool("MH_WEAK_DEFINES")
-	d.FieldBool("MH_CANONICAL")
-	d.FieldBool("MH_SUBSECTIONS_VIA_SYMBOLS")
-	d.FieldBool("MH_ALLMODSBOUND")
+	d.FieldBool("weak_defines")
+	d.FieldBool("canonical")
+	d.FieldBool("subsections_via_symbols")
+	d.FieldBool("allmodsbound")
 
-	d.FieldBool("MH_PREBINDABLE")
-	d.FieldBool("MH_NOFIXPREBINDING")
-	d.FieldBool("MH_NOMULTIDEFS")
-	d.FieldBool("MH_FORCE_FLAT")
+	d.FieldBool("prebindable")
+	d.FieldBool("nofixprebinding")
+	d.FieldBool("nomultidefs")
+	d.FieldBool("force_flat")
 
-	d.FieldBool("MH_TWOLEVEL")
-	d.FieldBool("MH_LAZY_INIT")
-	d.FieldBool("MH_SPLIT_SEGS")
-	d.FieldBool("MH_PREBOUND")
+	d.FieldBool("twolevel")
+	d.FieldBool("lazy_init")
+	d.FieldBool("split_segs")
+	d.FieldBool("prebound")
 
-	d.FieldBool("MH_BINDATLOAD")
-	d.FieldBool("MH_DYLDLINK")
-	d.FieldBool("MH_INCRLINK")
-	d.FieldBool("MH_NOUNDEFS")
+	d.FieldBool("bindatload")
+	d.FieldBool("dyldlink")
+	d.FieldBool("incrlink")
+	d.FieldBool("noundefs")
 }
 
 func parseSegmentFlags(d *decode.D) {
 	d.FieldRawLen("reserved", 28)
-	d.FieldBool("SG_PROTECTED_VERSION_1")
-	d.FieldBool("SG_NORELOC")
-	d.FieldBool("SG_FVMLIB")
-	d.FieldBool("SG_HIGHVM")
+	d.FieldBool("protected_version_1")
+	d.FieldBool("noreloc")
+	d.FieldBool("fvmlib")
+	d.FieldBool("highvm")
 }
 
 func parseSectionFlags(d *decode.D) {
-	d.FieldBool("S_ATTR_PURE_INSTRUCTIONS")
-	d.FieldBool("S_ATTR_NO_TOC")
-	d.FieldBool("S_ATTR_STRIP_STATIC_SYMS")
-	d.FieldBool("S_ATTR_NO_DEAD_STRIP")
+	d.FieldBool("attr_pure_instructions")
+	d.FieldBool("attr_no_toc")
+	d.FieldBool("attr_strip_static_syms")
+	d.FieldBool("attr_no_dead_strip")
 
-	d.FieldBool("S_ATTR_LIVE_SUPPORT")
-	d.FieldBool("S_ATTR_SELF_MODIFYING_CODE")
-	d.FieldBool("S_ATTR_DEBUG")
+	d.FieldBool("attr_live_support")
+	d.FieldBool("attr_self_modifying_code")
+	d.FieldBool("attr_debug")
 	d.FieldRawLen("reserved", 14)
 
-	d.FieldBool("S_ATTR_SOME_INSTRUCTIONS")
-	d.FieldBool("S_ATTR_EXT_RELOC")
-	d.FieldBool("S_ATTR_LOC_RELOC")
+	d.FieldBool("attr_some_instructions")
+	d.FieldBool("attr_ext_reloc")
+	d.FieldBool("attr_loc_reloc")
 }
 
 var timestampMapper = scalar.Fn(func(s scalar.S) (scalar.S, error) {

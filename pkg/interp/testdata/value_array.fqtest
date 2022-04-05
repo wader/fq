@@ -29,7 +29,7 @@ mp3> .headers | ., tovalue, type, length?
         "id": "TSSE",
         "size": 15,
         "text": "Lavf58.45.100",
-        "text_encoding": "UTF-8"
+        "text_encoding": "utf8"
       }
     ],
     "magic": "ID3",
@@ -97,7 +97,7 @@ mp3> .headers[-1000:2000] | ., type, length?
         "id": "TSSE",
         "size": 15,
         "text": "Lavf58.45.100",
-        "text_encoding": "UTF-8"
+        "text_encoding": "utf8"
       }
     ],
     "magic": "ID3",

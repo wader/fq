@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -74,6 +75,13 @@ func title(s string) string {
 		return s
 	}
 	return strings.ToUpper(s[0:1]) + s[1:]
+}
+
+var symSnakeRE = regexp.MustCompile(`[^a-z0-9]+`)
+
+func symSnake(s string) string {
+	s = strings.ToLower(s)
+	return symSnakeRE.ReplaceAllStringFunc(s, func(s string) string { return "_" })
 }
 
 func main() {
@@ -175,10 +183,18 @@ func main() {
 						fmt.Printf("\t\t\t%q:{\n", e.Value)
 					}
 
-					fmt.Printf("\t\t\t\tSym: %q,\n", e.Label)
+					labelOk := !strings.ContainsAny(e.Label, "()")
+
+					if labelOk {
+						fmt.Printf("\t\t\t\tSym: %q,\n", symSnake(e.Label))
+					}
+
 					if enumDefOk {
 						fmt.Printf("\t\t\t\tDescription: %q,\n", enumDef)
+					} else if !labelOk {
+						fmt.Printf("\t\t\t\tDescription: %q,\n", e.Label)
 					}
+
 					fmt.Printf("\t\t\t},\n")
 				}
 				fmt.Printf("\t\t},\n")

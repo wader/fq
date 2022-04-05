@@ -233,10 +233,10 @@ const (
 //     Terminated with $00 00.
 // $03 UTF-8 [UTF-8] encoded Unicode [UNICODE]. Terminated with $00.
 var encodingNames = scalar.UToSymStr{
-	encodingISO8859_1: "ISO-8859-1",
-	encodingUTF16:     "UTF-16",
-	encodingUTF16BE:   "UTF-16BE",
-	encodingUTF8:      "UTF-8",
+	encodingISO8859_1: "iso_8859-1",
+	encodingUTF16:     "utf16",
+	encodingUTF16BE:   "utf16be",
+	encodingUTF8:      "utf8",
 }
 
 var encodingLen = map[uint64]int64{

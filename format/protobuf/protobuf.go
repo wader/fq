@@ -26,10 +26,10 @@ const (
 )
 
 var wireTypeNames = scalar.UToSymStr{
-	0: "Varint",
-	1: "64-bit",
-	2: "Length-delimited",
-	5: "32-bit",
+	0: "varint",
+	1: "64bit",
+	2: "length_delimited",
+	5: "32bit",
 }
 
 func varInt(d *decode.D) uint64 {

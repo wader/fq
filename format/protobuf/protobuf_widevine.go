@@ -25,8 +25,8 @@ func init() {
 func widevineDecode(d *decode.D, in interface{}) interface{} {
 	widewinePb := format.ProtoBufMessage{
 		1: {Type: format.ProtoBufTypeEnum, Name: "algorithm", Enums: scalar.UToSymStr{
-			0: "UNENCRYPTED",
-			1: "AESCTR",
+			0: "unencrypted",
+			1: "aesctr",
 		}},
 		2: {Type: format.ProtoBufTypeBytes, Name: "key_id"},
 		3: {Type: format.ProtoBufTypeString, Name: "provider"},
