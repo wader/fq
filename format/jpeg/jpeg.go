@@ -98,70 +98,70 @@ const (
 )
 
 var markers = scalar.UToScalar{
-	SOF0:  {Sym: "SOF0", Description: "Baseline DCT"},
-	SOF1:  {Sym: "SOF1", Description: "Extended sequential DCT"},
-	SOF2:  {Sym: "SOF2", Description: "Progressive DCT"},
-	SOF3:  {Sym: "SOF3", Description: "Lossless (sequential)"},
-	SOF5:  {Sym: "SOF5", Description: "Differential sequential DCT"},
-	SOF6:  {Sym: "SOF6", Description: "Differential progressive DCT"},
-	SOF7:  {Sym: "SOF7", Description: "Differential lossless (sequential)"},
-	JPG:   {Sym: "JPG", Description: "Reserved for JPEG extensions"},
-	SOF9:  {Sym: "SOF9", Description: "Extended sequential DCT"},
-	SOF10: {Sym: "SOF10", Description: "Progressive DCT"},
-	SOF11: {Sym: "SOF11", Description: "Lossless (sequential)"},
-	SOF13: {Sym: "SOF13", Description: "Differential sequential DCT"},
-	SOF14: {Sym: "SOF14", Description: "Differential progressive DCT"},
-	SOF15: {Sym: "SOF15", Description: "Differential lossless (sequential)"},
-	DHT:   {Sym: "DHT", Description: "Define Huffman table(s)"},
-	DAC:   {Sym: "DAC", Description: "Define arithmetic coding conditioning(s)"},
-	RST0:  {Sym: "RST0", Description: "Restart with modulo 8 count 0"},
-	RST1:  {Sym: "RST1", Description: "Restart with modulo 8 count 1"},
-	RST2:  {Sym: "RST2", Description: "Restart with modulo 8 count 2"},
-	RST3:  {Sym: "RST3", Description: "Restart with modulo 8 count 3"},
-	RST4:  {Sym: "RST4", Description: "Restart with modulo 8 count 4"},
-	RST5:  {Sym: "RST5", Description: "Restart with modulo 8 count 5"},
-	RST6:  {Sym: "RST6", Description: "Restart with modulo 8 count 6"},
-	RST7:  {Sym: "RST7", Description: "Restart with modulo 8 count 7"},
-	SOI:   {Sym: "SOI", Description: "Start of image"},
-	EOI:   {Sym: "EOI", Description: "End of image true"},
-	SOS:   {Sym: "SOS", Description: "Start of scan"},
-	DQT:   {Sym: "DQT", Description: "Define quantization table(s)"},
-	DNL:   {Sym: "DNL", Description: "Define number of lines"},
-	DRI:   {Sym: "DRI", Description: "Define restart interval"},
-	DHP:   {Sym: "DHP", Description: "Define hierarchical progression"},
-	EXP:   {Sym: "EXP", Description: "Expand reference component(s)"},
-	APP0:  {Sym: "APP0", Description: "Reserved for application segments"},
-	APP1:  {Sym: "APP1", Description: "Reserved for application segments"},
-	APP2:  {Sym: "APP2", Description: "Reserved for application segments"},
-	APP3:  {Sym: "APP3", Description: "Reserved for application segments"},
-	APP4:  {Sym: "APP4", Description: "Reserved for application segments"},
-	APP5:  {Sym: "APP5", Description: "Reserved for application segments"},
-	APP6:  {Sym: "APP6", Description: "Reserved for application segments"},
-	APP7:  {Sym: "APP7", Description: "Reserved for application segments"},
-	APP8:  {Sym: "APP8", Description: "Reserved for application segments"},
-	APP9:  {Sym: "APP9", Description: "Reserved for application segments"},
-	APP10: {Sym: "APP10", Description: "Reserved for application segments"},
-	APP11: {Sym: "APP11", Description: "Reserved for application segments"},
-	APP12: {Sym: "APP12", Description: "Reserved for application segments"},
-	APP13: {Sym: "APP13", Description: "Reserved for application segments"},
-	APP14: {Sym: "APP14", Description: "Reserved for application segments"},
-	APP15: {Sym: "APP15", Description: "Reserved for application segments"},
-	JPG0:  {Sym: "JPG0", Description: "Reserved for JPEG extensions"},
-	JPG1:  {Sym: "JPG1", Description: "Reserved for JPEG extensions"},
-	JPG2:  {Sym: "JPG2", Description: "Reserved for JPEG extensions"},
-	JPG3:  {Sym: "JPG3", Description: "Reserved for JPEG extensions"},
-	JPG4:  {Sym: "JPG4", Description: "Reserved for JPEG extensions"},
-	JPG5:  {Sym: "JPG5", Description: "Reserved for JPEG extensions"},
-	JPG6:  {Sym: "JPG6", Description: "Reserved for JPEG extensions"},
-	JPG7:  {Sym: "JPG7", Description: "Reserved for JPEG extensions"},
-	JPG8:  {Sym: "JPG8", Description: "Reserved for JPEG extensions"},
-	JPG9:  {Sym: "JPG9", Description: "Reserved for JPEG extensions"},
-	JPG10: {Sym: "JPG10", Description: "Reserved for JPEG extensions"},
-	JPG11: {Sym: "JPG11", Description: "Reserved for JPEG extensions"},
-	JPG12: {Sym: "JPG12", Description: "Reserved for JPEG extensions"},
-	JPG13: {Sym: "JPG13", Description: "Reserved for JPEG extensions"},
-	COM:   {Sym: "COM", Description: "Comment"},
-	TEM:   {Sym: "TEM", Description: "For temporary private use in arithmetic coding"},
+	SOF0:  {Sym: "sof0", Description: "Baseline DCT"},
+	SOF1:  {Sym: "sof1", Description: "Extended sequential DCT"},
+	SOF2:  {Sym: "sof2", Description: "Progressive DCT"},
+	SOF3:  {Sym: "sof3", Description: "Lossless (sequential)"},
+	SOF5:  {Sym: "sof5", Description: "Differential sequential DCT"},
+	SOF6:  {Sym: "sof6", Description: "Differential progressive DCT"},
+	SOF7:  {Sym: "sof7", Description: "Differential lossless (sequential)"},
+	JPG:   {Sym: "jpg", Description: "Reserved for JPEG extensions"},
+	SOF9:  {Sym: "sof9", Description: "Extended sequential DCT"},
+	SOF10: {Sym: "sof10", Description: "Progressive DCT"},
+	SOF11: {Sym: "sof11", Description: "Lossless (sequential)"},
+	SOF13: {Sym: "sof13", Description: "Differential sequential DCT"},
+	SOF14: {Sym: "sof14", Description: "Differential progressive DCT"},
+	SOF15: {Sym: "sof15", Description: "Differential lossless (sequential)"},
+	DHT:   {Sym: "dht", Description: "Define Huffman table(s)"},
+	DAC:   {Sym: "dac", Description: "Define arithmetic coding conditioning(s)"},
+	RST0:  {Sym: "rst0", Description: "Restart with modulo 8 count 0"},
+	RST1:  {Sym: "rst1", Description: "Restart with modulo 8 count 1"},
+	RST2:  {Sym: "rst2", Description: "Restart with modulo 8 count 2"},
+	RST3:  {Sym: "rst3", Description: "Restart with modulo 8 count 3"},
+	RST4:  {Sym: "rst4", Description: "Restart with modulo 8 count 4"},
+	RST5:  {Sym: "rst5", Description: "Restart with modulo 8 count 5"},
+	RST6:  {Sym: "rst6", Description: "Restart with modulo 8 count 6"},
+	RST7:  {Sym: "rst7", Description: "Restart with modulo 8 count 7"},
+	SOI:   {Sym: "soi", Description: "Start of image"},
+	EOI:   {Sym: "eoi", Description: "End of image true"},
+	SOS:   {Sym: "sos", Description: "Start of scan"},
+	DQT:   {Sym: "dqt", Description: "Define quantization table(s)"},
+	DNL:   {Sym: "dnl", Description: "Define number of lines"},
+	DRI:   {Sym: "dri", Description: "Define restart interval"},
+	DHP:   {Sym: "dhp", Description: "Define hierarchical progression"},
+	EXP:   {Sym: "exp", Description: "Expand reference component(s)"},
+	APP0:  {Sym: "app0", Description: "Reserved for application segments"},
+	APP1:  {Sym: "app1", Description: "Reserved for application segments"},
+	APP2:  {Sym: "app2", Description: "Reserved for application segments"},
+	APP3:  {Sym: "app3", Description: "Reserved for application segments"},
+	APP4:  {Sym: "app4", Description: "Reserved for application segments"},
+	APP5:  {Sym: "app5", Description: "Reserved for application segments"},
+	APP6:  {Sym: "app6", Description: "Reserved for application segments"},
+	APP7:  {Sym: "app7", Description: "Reserved for application segments"},
+	APP8:  {Sym: "app8", Description: "Reserved for application segments"},
+	APP9:  {Sym: "app9", Description: "Reserved for application segments"},
+	APP10: {Sym: "app10", Description: "Reserved for application segments"},
+	APP11: {Sym: "app11", Description: "Reserved for application segments"},
+	APP12: {Sym: "app12", Description: "Reserved for application segments"},
+	APP13: {Sym: "app13", Description: "Reserved for application segments"},
+	APP14: {Sym: "app14", Description: "Reserved for application segments"},
+	APP15: {Sym: "app15", Description: "Reserved for application segments"},
+	JPG0:  {Sym: "jpg0", Description: "Reserved for JPEG extensions"},
+	JPG1:  {Sym: "jpg1", Description: "Reserved for JPEG extensions"},
+	JPG2:  {Sym: "jpg2", Description: "Reserved for JPEG extensions"},
+	JPG3:  {Sym: "jpg3", Description: "Reserved for JPEG extensions"},
+	JPG4:  {Sym: "jpg4", Description: "Reserved for JPEG extensions"},
+	JPG5:  {Sym: "jpg5", Description: "Reserved for JPEG extensions"},
+	JPG6:  {Sym: "jpg6", Description: "Reserved for JPEG extensions"},
+	JPG7:  {Sym: "jpg7", Description: "Reserved for JPEG extensions"},
+	JPG8:  {Sym: "jpg8", Description: "Reserved for JPEG extensions"},
+	JPG9:  {Sym: "jpg9", Description: "Reserved for JPEG extensions"},
+	JPG10: {Sym: "jpg10", Description: "Reserved for JPEG extensions"},
+	JPG11: {Sym: "jpg11", Description: "Reserved for JPEG extensions"},
+	JPG12: {Sym: "jpg12", Description: "Reserved for JPEG extensions"},
+	JPG13: {Sym: "jpg13", Description: "Reserved for JPEG extensions"},
+	COM:   {Sym: "com", Description: "Comment"},
+	TEM:   {Sym: "tem", Description: "For temporary private use in arithmetic coding"},
 }
 
 func jpegDecode(d *decode.D, in interface{}) interface{} {
@@ -204,57 +204,57 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 					case SOI:
 						soiMarkerFound = true
 					case SOF0, SOF1, SOF2, SOF3, SOF5, SOF6, SOF7, SOF9, SOF10, SOF11:
-						d.FieldU16("Lf")
-						d.FieldU8("P")
-						d.FieldU16("Y")
-						d.FieldU16("X")
-						nf := d.FieldU8("Nf")
+						d.FieldU16("lf")
+						d.FieldU8("p")
+						d.FieldU16("y")
+						d.FieldU16("x")
+						nf := d.FieldU8("nf")
 						d.FieldArray("frame_components", func(d *decode.D) {
 							for i := uint64(0); i < nf; i++ {
 								d.FieldStruct("frame_component", func(d *decode.D) {
-									d.FieldU8("C")
-									d.FieldU4("H")
-									d.FieldU4("V")
-									d.FieldU8("Tq")
+									d.FieldU8("c")
+									d.FieldU4("h")
+									d.FieldU4("v")
+									d.FieldU8("tq")
 								})
 							}
 						})
 					case COM:
-						comLen := d.FieldU16("Lc")
-						d.FieldUTF8("Cm", int(comLen)-2)
+						comLen := d.FieldU16("lc")
+						d.FieldUTF8("cm", int(comLen)-2)
 					case SOS:
-						d.FieldU16("Ls")
-						ns := d.FieldU8("Ns")
+						d.FieldU16("ls")
+						ns := d.FieldU8("ns")
 						d.FieldArray("scan_components", func(d *decode.D) {
 							for i := uint64(0); i < ns; i++ {
 								d.FieldStruct("scan_component", func(d *decode.D) {
-									d.FieldU8("Cs")
-									d.FieldU4("Td")
-									d.FieldU4("Ta")
+									d.FieldU8("cs")
+									d.FieldU4("td")
+									d.FieldU4("ta")
 								})
 							}
 						})
-						d.FieldU8("Ss")
-						d.FieldU8("Se")
-						d.FieldU4("Ah")
-						d.FieldU4("Al")
+						d.FieldU8("ss")
+						d.FieldU8("se")
+						d.FieldU4("ah")
+						d.FieldU4("al")
 						inECD = true
 					case DQT:
-						lQ := int64(d.FieldU16("Lq"))
+						lQ := int64(d.FieldU16("lq"))
 						// TODO: how to extract n? spec says lq is 2 + sum for i in 1 to n 65+64*Pq(i)
 						d.FramedFn(lQ*8-16, func(d *decode.D) {
-							d.FieldArray("Qs", func(d *decode.D) {
+							d.FieldArray("qs", func(d *decode.D) {
 								for d.NotEnd() {
-									d.FieldStruct("Q", func(d *decode.D) {
-										pQ := d.FieldU4("Pq")
+									d.FieldStruct("q", func(d *decode.D) {
+										pQ := d.FieldU4("pq")
 										qBits := 8
 										if pQ != 0 {
 											qBits = 16
 										}
-										d.FieldU4("Tq")
+										d.FieldU4("tq")
 										qK := uint64(0)
-										d.FieldArrayLoop("Q", func() bool { return qK < 64 }, func(d *decode.D) {
-											d.FieldU("Q", qBits)
+										d.FieldArrayLoop("q", func() bool { return qK < 64 }, func(d *decode.D) {
+											d.FieldU("q", qBits)
 											qK++
 										})
 									})

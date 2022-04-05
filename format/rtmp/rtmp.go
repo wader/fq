@@ -35,7 +35,7 @@ func init() {
 	})
 }
 
-// from spec
+// from RTMP spec
 const defaultChunkSize = 128
 
 // names from RTMP spec
@@ -46,7 +46,7 @@ const (
 	messageTypeUserControlMessage          = 4
 	messageTypeWindowAcknowledgementSize   = 5
 	messageTypeSetPeerBandwidth            = 6
-	messageTypeVirtualControl              = 7 // TODO: not in spec?
+	messageTypeVirtualControl              = 7 // TODO: not in spec but in wikipedia article
 	messageTypeAudioMessage                = 8
 	messageTypeVideoMessage                = 9
 	messageTypeDataMessageExtended         = 15
@@ -55,9 +55,9 @@ const (
 	messageTypeDataMessage                 = 18
 	messageTypeSharedObjectMessage         = 19
 	messageTypeCommandMessage              = 20
-	messageTypeUDP                         = 21 // TODO: not in spec?
+	messageTypeUDP                         = 21 // TODO: not in spec but in wikipedia article
 	messageTypeAggregateMessage            = 22
-	messageTypePresent                     = 23 // TODO: not in spec?
+	messageTypePresent                     = 23 // TODO: not in spec but in wikipedia article
 )
 
 var rtmpMessageTypeIDNames = scalar.UToSymStr{
@@ -365,11 +365,13 @@ func rtmpDecode(d *decode.D, in interface{}) interface{} {
 				fmt := d.FieldU2("fmt")
 				switch d.PeekBits(6) {
 				case 0:
-					// 64-319: 1 byte
-					chunkSteamID = d.FieldU14("chunk_stream_id", scalar.UAdd(64))
+					// 64-319: 2 byte
+					d.FieldU6("chunk_stream_id_prefix")
+					chunkSteamID = d.FieldU8("chunk_stream_id", scalar.UAdd(64))
 				case 1:
-					// 64-65599: 1 byte
-					chunkSteamID = d.FieldU30("chunk_stream_id", scalar.UAdd(64))
+					// 64-65599: 3 byte
+					d.FieldU6("chunk_stream_id_prefix")
+					chunkSteamID = d.FieldU16("chunk_stream_id", scalar.UAdd(64))
 				default:
 					// 2-63: 1 byte
 					chunkSteamID = d.FieldU6("chunk_stream_id")
@@ -447,7 +449,7 @@ func rtmpDecode(d *decode.D, in interface{}) interface{} {
 					payloadLength = messageLeft
 				}
 				// support decoding interrupted rtmp stream
-				// TODO: throw away message buffer? currently only do tcp not needed?
+				// TODO: throw away message buffer? currently only do tcp so no point?
 				payloadLength *= 8
 				if payloadLength > d.BitsLeft() {
 					payloadLength = d.BitsLeft()

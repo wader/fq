@@ -66,7 +66,7 @@ func adtsFrameDecoder(d *decode.D, in interface{}) interface{} {
 	// Q	16	CRC if protection absent is 0
 
 	d.FieldU12("syncword", d.AssertU(0b1111_1111_1111), scalar.Bin)
-	d.FieldU1("mpeg_version", scalar.UToSymStr{0: "MPEG-4", 1: "MPEG2- AAC"})
+	d.FieldU1("mpeg_version", scalar.UToSymStr{0: "mpeg4", 1: "mpeg2_aac"})
 	d.FieldU2("layer", d.AssertU(0))
 	protectionAbsent := d.FieldBool("protection_absent", protectionAbsentNames)
 

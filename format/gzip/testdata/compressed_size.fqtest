@@ -6,7 +6,7 @@ $ fq -d gzip 'tobits | chunk(3) | gzip' test.gz
 0x00|         00                                    |   .            |  flags{}:
 0x00|            41 02 ea 5f                        |    A.._        |  mtime: 1609171521
 0x00|                        00                     |        .       |  extra_flags: 0
-0x00|                           03                  |         .      |  os: "Unix" (3)
+0x00|                           03                  |         .      |  os: "unix" (3)
  0x0|74 65 73 74 0a|                                |test.|          |  uncompressed: raw bits
 0x00|                              2b 49 2d 2e e1 02|          +I-...|  compressed: raw bits
 0x10|00                                             |.               |

@@ -351,7 +351,7 @@ $ fq -d matroska dv /mpeg2.mkv
 0x0230|         80                                    |   .            |                discardable: false 0x233.7-0x233.7 (0.1)
       |                                               |                |              packet{}: (mpeg_pes_packet) 0x234-0x23f.7 (12)
 0x0230|            00 00 01                           |    ...         |                prefix: 0b1 (valid) 0x234-0x236.7 (3)
-0x0230|                     b3                        |       .        |                start_code: "SequenceHeader" (0xb3) 0x237-0x237.7 (1)
+0x0230|                     b3                        |       .        |                start_code: "sequence_header" (0xb3) 0x237-0x237.7 (1)
 0x0230|                        14 00                  |        ..      |                horizontal_size: 320 0x238-0x239.3 (1.4)
 0x0230|                           00 f0               |         ..     |                vertical_size: 240 0x239.4-0x23a.7 (1.4)
 0x0230|                                 23            |           #    |                aspect_ratio: 2 0x23b-0x23b.3 (0.4)

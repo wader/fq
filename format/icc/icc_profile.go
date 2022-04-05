@@ -19,9 +19,9 @@ func init() {
 }
 
 func xyzType(_ int64, d *decode.D) {
-	d.FieldFP32("X")
-	d.FieldFP32("Y")
-	d.FieldFP32("Z")
+	d.FieldFP32("x")
+	d.FieldFP32("y")
+	d.FieldFP32("z")
 }
 
 func textType(_ int64, d *decode.D) {

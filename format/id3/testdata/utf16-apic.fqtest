@@ -30,7 +30,7 @@ $ fq -d id3v2 dv /utf16-apic
 0x010|         00                                    |   .            |        encryption: false 0x13.5-0x13.5 (0.1)
 0x010|         00                                    |   .            |        unsync: false 0x13.6-0x13.6 (0.1)
 0x010|         00                                    |   .            |        data_length_indicator: false 0x13.7-0x13.7 (0.1)
-0x010|            01                                 |    .           |      text_encoding: "UTF-16" (1) 0x14-0x14.7 (1)
+0x010|            01                                 |    .           |      text_encoding: "utf16" (1) 0x14-0x14.7 (1)
 0x010|               69 6d 61 67 65 2f 70 6e 67 00   |     image/png. |      mime_type: "image/png" 0x15-0x1e.7 (10)
 0x010|                                             00|               .|      picture_type: 0 0x1f-0x1f.7 (1)
 0x020|ff fe 74 00 65 00 73 00 74 00 00 00            |..t.e.s.t...    |      description: "test" 0x20-0x2b.7 (12)
@@ -163,7 +163,7 @@ $ fq -d id3v2 dv /utf16-apic
 0x130|                        00                     |        .       |        encryption: false 0x138.5-0x138.5 (0.1)
 0x130|                        00                     |        .       |        unsync: false 0x138.6-0x138.6 (0.1)
 0x130|                        00                     |        .       |        data_length_indicator: false 0x138.7-0x138.7 (0.1)
-0x130|                           01                  |         .      |      text_encoding: "UTF-16" (1) 0x139-0x139.7 (1)
+0x130|                           01                  |         .      |      text_encoding: "utf16" (1) 0x139-0x139.7 (1)
 0x130|                              ff fe 4c 00 61 00|          ..L.a.|      text: "Lavf58.76.100" 0x13a-0x155.7 (28)
 0x140|76 00 66 00 35 00 38 00 2e 00 37 00 36 00 2e 00|v.f.5.8...7.6...|
 0x150|31 00 30 00 30 00                              |1.0.0.          |

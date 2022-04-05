@@ -8,7 +8,7 @@ $ fq -d wav dv /end-of-file.wav
      |                                               |                |    [0]{}: chunk 0xc-0x23.7 (24)
 0x000|                                    66 6d 74 20|            fmt |      id: "fmt" 0xc-0xf.7 (4)
 0x010|10 00 00 00                                    |....            |      size: 16 0x10-0x13.7 (4)
-0x010|            01 00                              |    ..          |      audio_format: "PCM" (1) 0x14-0x15.7 (2)
+0x010|            01 00                              |    ..          |      audio_format: "pcm" (1) 0x14-0x15.7 (2)
 0x010|                  02 00                        |      ..        |      num_channels: 2 0x16-0x17.7 (2)
 0x010|                        44 ac 00 00            |        D...    |      sample_rate: 44100 0x18-0x1b.7 (4)
 0x010|                                    10 b1 02 00|            ....|      byte_rate: 176400 0x1c-0x1f.7 (4)

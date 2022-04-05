@@ -362,7 +362,7 @@ $ fq -d matroska dv /vp9.mkv
 0x0230|            83                                 |    .           |                frame_sync_byte_1: 131 0x234-0x234.7 (1)
 0x0230|               42                              |     B          |                frame_sync_byte_2: 66 0x235-0x235.7 (1)
       |                                               |                |                bit_depth: 8 0x236-NA (0)
-0x0230|                  e0                           |      .         |                color_space: "CS_RGB" (7) 0x236-0x236.2 (0.3)
+0x0230|                  e0                           |      .         |                color_space: "rgb" (7) 0x236-0x236.2 (0.3)
       |                                               |                |                color_range: 1 0x236.3-NA (0)
       |                                               |                |                subsampling_x: 0 0x236.3-NA (0)
       |                                               |                |                subsampling_y: 0 0x236.3-NA (0)

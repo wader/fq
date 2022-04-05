@@ -414,10 +414,10 @@ var ChapterTranslate = ebml.Tag{
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			0: {
-				Sym: "Matroska Script",
+				Sym: "matroska_script",
 			},
 			1: {
-				Sym: "DVD-menu",
+				Sym: "dvd_menu",
 			},
 		},
 	},
@@ -869,10 +869,10 @@ var TrackTranslate = ebml.Tag{
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			0: {
-				Sym: "Matroska Script",
+				Sym: "matroska_script",
 			},
 			1: {
-				Sym: "DVD-menu",
+				Sym: "dvd_menu",
 			},
 		},
 	},
@@ -920,11 +920,9 @@ var Video = ebml.Tag{
 				Description: "Bottom field displayed first. Bottom field stored first.",
 			},
 			9: {
-				Sym:         "bff(swapped)",
 				Description: "Top field displayed first. Fields are interleaved in storage with the top line of the top field stored first.",
 			},
 			14: {
-				Sym:         "tff(swapped)",
 				Description: "Bottom field displayed first. Fields are interleaved in storage with the top line of the top field stored first.",
 			},
 		},
@@ -938,46 +936,46 @@ var Video = ebml.Tag{
 				Sym: "mono",
 			},
 			1: {
-				Sym: "side by side (left eye first)",
+				Description: "side by side (left eye first)",
 			},
 			2: {
-				Sym: "top - bottom (right eye is first)",
+				Description: "top - bottom (right eye is first)",
 			},
 			3: {
-				Sym: "top - bottom (left eye is first)",
+				Description: "top - bottom (left eye is first)",
 			},
 			4: {
-				Sym: "checkboard (right eye is first)",
+				Description: "checkboard (right eye is first)",
 			},
 			5: {
-				Sym: "checkboard (left eye is first)",
+				Description: "checkboard (left eye is first)",
 			},
 			6: {
-				Sym: "row interleaved (right eye is first)",
+				Description: "row interleaved (right eye is first)",
 			},
 			7: {
-				Sym: "row interleaved (left eye is first)",
+				Description: "row interleaved (left eye is first)",
 			},
 			8: {
-				Sym: "column interleaved (right eye is first)",
+				Description: "column interleaved (right eye is first)",
 			},
 			9: {
-				Sym: "column interleaved (left eye is first)",
+				Description: "column interleaved (left eye is first)",
 			},
 			10: {
-				Sym: "anaglyph (cyan/red)",
+				Description: "anaglyph (cyan/red)",
 			},
 			11: {
-				Sym: "side by side (right eye first)",
+				Description: "side by side (right eye first)",
 			},
 			12: {
-				Sym: "anaglyph (green/magenta)",
+				Description: "anaglyph (green/magenta)",
 			},
 			13: {
-				Sym: "both eyes laced in one Block (left eye is first)",
+				Description: "both eyes laced in one Block (left eye is first)",
 			},
 			14: {
-				Sym: "both eyes laced in one Block (right eye is first)",
+				Description: "both eyes laced in one Block (right eye is first)",
 			},
 		},
 	},
@@ -995,13 +993,13 @@ var Video = ebml.Tag{
 				Sym: "mono",
 			},
 			1: {
-				Sym: "right eye",
+				Sym: "right_eye",
 			},
 			2: {
-				Sym: "left eye",
+				Sym: "left_eye",
 			},
 			3: {
-				Sym: "both eyes",
+				Sym: "both_eyes",
 			},
 		},
 	},
@@ -1060,7 +1058,7 @@ var Video = ebml.Tag{
 				Sym: "inches",
 			},
 			3: {
-				Sym: "display aspect ratio",
+				Sym: "display_aspect_ratio",
 			},
 			4: {
 				Sym: "unknown",
@@ -1073,10 +1071,10 @@ var Video = ebml.Tag{
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			0: {
-				Sym: "free resizing",
+				Sym: "free_resizing",
 			},
 			1: {
-				Sym: "keep aspect ratio",
+				Sym: "keep_aspect_ratio",
 			},
 			2: {
 				Sym: "fixed",
@@ -1117,10 +1115,10 @@ var Colour = ebml.Tag{
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			0: {
-				Sym: "Identity",
+				Sym: "identity",
 			},
 			1: {
-				Sym: "ITU-R BT.709",
+				Sym: "itu_r_bt_709",
 			},
 			2: {
 				Sym: "unspecified",
@@ -1129,37 +1127,37 @@ var Colour = ebml.Tag{
 				Sym: "reserved",
 			},
 			4: {
-				Sym: "US FCC 73.682",
+				Sym: "us_fcc_73_682",
 			},
 			5: {
-				Sym: "ITU-R BT.470BG",
+				Sym: "itu_r_bt_470bg",
 			},
 			6: {
-				Sym: "SMPTE 170M",
+				Sym: "smpte_170m",
 			},
 			7: {
-				Sym: "SMPTE 240M",
+				Sym: "smpte_240m",
 			},
 			8: {
-				Sym: "YCoCg",
+				Sym: "ycocg",
 			},
 			9: {
-				Sym: "BT2020 Non-constant Luminance",
+				Sym: "bt2020_non_constant_luminance",
 			},
 			10: {
-				Sym: "BT2020 Constant Luminance",
+				Sym: "bt2020_constant_luminance",
 			},
 			11: {
-				Sym: "SMPTE ST 2085",
+				Sym: "smpte_st_2085",
 			},
 			12: {
-				Sym: "Chroma-derived Non-constant Luminance",
+				Sym: "chroma_derived_non_constant_luminance",
 			},
 			13: {
-				Sym: "Chroma-derived Constant Luminance",
+				Sym: "chroma_derived_constant_luminance",
 			},
 			14: {
-				Sym: "ITU-R BT.2100-0",
+				Sym: "itu_r_bt_2100_0",
 			},
 		},
 	},
@@ -1197,7 +1195,7 @@ var Colour = ebml.Tag{
 				Sym: "unspecified",
 			},
 			1: {
-				Sym: "left collocated",
+				Sym: "left_collocated",
 			},
 			2: {
 				Sym: "half",
@@ -1213,7 +1211,7 @@ var Colour = ebml.Tag{
 				Sym: "unspecified",
 			},
 			1: {
-				Sym: "top collocated",
+				Sym: "top_collocated",
 			},
 			2: {
 				Sym: "half",
@@ -1229,13 +1227,13 @@ var Colour = ebml.Tag{
 				Sym: "unspecified",
 			},
 			1: {
-				Sym: "broadcast range",
+				Sym: "broadcast_range",
 			},
 			2: {
-				Sym: "full range (no clipping)",
+				Description: "full range (no clipping)",
 			},
 			3: {
-				Sym: "defined by MatrixCoefficients / TransferCharacteristics",
+				Sym: "defined_by_matrixcoefficients_transfercharacteristics",
 			},
 		},
 	},
@@ -1248,7 +1246,7 @@ var Colour = ebml.Tag{
 				Sym: "reserved",
 			},
 			1: {
-				Sym: "ITU-R BT.709",
+				Sym: "itu_r_bt_709",
 			},
 			2: {
 				Sym: "unspecified",
@@ -1257,49 +1255,49 @@ var Colour = ebml.Tag{
 				Sym: "reserved",
 			},
 			4: {
-				Sym: "Gamma 2.2 curve - BT.470M",
+				Sym: "gamma_2_2_curve_bt_470m",
 			},
 			5: {
-				Sym: "Gamma 2.8 curve - BT.470BG",
+				Sym: "gamma_2_8_curve_bt_470bg",
 			},
 			6: {
-				Sym: "SMPTE 170M",
+				Sym: "smpte_170m",
 			},
 			7: {
-				Sym: "SMPTE 240M",
+				Sym: "smpte_240m",
 			},
 			8: {
-				Sym: "Linear",
+				Sym: "linear",
 			},
 			9: {
-				Sym: "Log",
+				Sym: "log",
 			},
 			10: {
-				Sym: "Log Sqrt",
+				Sym: "log_sqrt",
 			},
 			11: {
-				Sym: "IEC 61966-2-4",
+				Sym: "iec_61966_2_4",
 			},
 			12: {
-				Sym: "ITU-R BT.1361 Extended Colour Gamut",
+				Sym: "itu_r_bt_1361_extended_colour_gamut",
 			},
 			13: {
-				Sym: "IEC 61966-2-1",
+				Sym: "iec_61966_2_1",
 			},
 			14: {
-				Sym: "ITU-R BT.2020 10 bit",
+				Sym: "itu_r_bt_2020_10_bit",
 			},
 			15: {
-				Sym: "ITU-R BT.2020 12 bit",
+				Sym: "itu_r_bt_2020_12_bit",
 			},
 			16: {
-				Sym: "ITU-R BT.2100 Perceptual Quantization",
+				Sym: "itu_r_bt_2100_perceptual_quantization",
 			},
 			17: {
-				Sym: "SMPTE ST 428-1",
+				Sym: "smpte_st_428_1",
 			},
 			18: {
-				Sym: "ARIB STD-B67 (HLG)",
+				Description: "ARIB STD-B67 (HLG)",
 			},
 		},
 	},
@@ -1312,7 +1310,7 @@ var Colour = ebml.Tag{
 				Sym: "reserved",
 			},
 			1: {
-				Sym: "ITU-R BT.709",
+				Sym: "itu_r_bt_709",
 			},
 			2: {
 				Sym: "unspecified",
@@ -1321,34 +1319,34 @@ var Colour = ebml.Tag{
 				Sym: "reserved",
 			},
 			4: {
-				Sym: "ITU-R BT.470M",
+				Sym: "itu_r_bt_470m",
 			},
 			5: {
-				Sym: "ITU-R BT.470BG - BT.601 625",
+				Sym: "itu_r_bt_470bg_bt_601_625",
 			},
 			6: {
-				Sym: "ITU-R BT.601 525 - SMPTE 170M",
+				Sym: "itu_r_bt_601_525_smpte_170m",
 			},
 			7: {
-				Sym: "SMPTE 240M",
+				Sym: "smpte_240m",
 			},
 			8: {
-				Sym: "FILM",
+				Sym: "film",
 			},
 			9: {
-				Sym: "ITU-R BT.2020",
+				Sym: "itu_r_bt_2020",
 			},
 			10: {
-				Sym: "SMPTE ST 428-1",
+				Sym: "smpte_st_428_1",
 			},
 			11: {
-				Sym: "SMPTE RP 432-2",
+				Sym: "smpte_rp_432_2",
 			},
 			12: {
-				Sym: "SMPTE EG 432-2",
+				Sym: "smpte_eg_432_2",
 			},
 			22: {
-				Sym: "EBU Tech. 3213-E - JEDEC P22 phosphors",
+				Sym: "ebu_tech_3213_e_jedec_p22_phosphors",
 			},
 		},
 	},
@@ -1525,10 +1523,10 @@ var TrackPlane = ebml.Tag{
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			0: {
-				Sym: "left eye",
+				Sym: "left_eye",
 			},
 			1: {
-				Sym: "right eye",
+				Sym: "right_eye",
 			},
 			2: {
 				Sym: "background",
@@ -1565,13 +1563,13 @@ var ContentEncoding = ebml.Tag{
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			1: {
-				Sym: "All frame contents, excluding lacing data",
+				Sym: "all_frame_contents_excluding_lacing_data",
 			},
 			2: {
-				Sym: "The track's private data",
+				Sym: "the_track_s_private_data",
 			},
 			4: {
-				Sym: "The next ContentEncoding (next `ContentEncodingOrder`. Either the data inside `ContentCompression` and/or `ContentEncryption`)",
+				Description: "The next ContentEncoding (next `ContentEncodingOrder`. Either the data inside `ContentCompression` and/or `ContentEncryption`)",
 			},
 		},
 	},
@@ -1581,10 +1579,10 @@ var ContentEncoding = ebml.Tag{
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			0: {
-				Sym: "Compression",
+				Sym: "compression",
 			},
 			1: {
-				Sym: "Encryption",
+				Sym: "encryption",
 			},
 		},
 	},
@@ -1616,7 +1614,7 @@ var ContentCompression = ebml.Tag{
 				Sym: "lzo1x",
 			},
 			3: {
-				Sym: "Header Stripping",
+				Sym: "header_stripping",
 			},
 		},
 	},
@@ -1634,22 +1632,22 @@ var ContentEncryption = ebml.Tag{
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			0: {
-				Sym: "Not encrypted",
+				Sym: "not_encrypted",
 			},
 			1: {
-				Sym: "DES - FIPS 46-3",
+				Sym: "des_fips_46_3",
 			},
 			2: {
-				Sym: "Triple DES - RFC 1851",
+				Sym: "triple_des_rfc_1851",
 			},
 			3: {
-				Sym: "Twofish",
+				Sym: "twofish",
 			},
 			4: {
-				Sym: "Blowfish",
+				Sym: "blowfish",
 			},
 			5: {
-				Sym: "AES - FIPS 187",
+				Sym: "aes_fips_187",
 			},
 		},
 	},
@@ -1679,10 +1677,10 @@ var ContentEncryption = ebml.Tag{
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			0: {
-				Sym: "Not signed",
+				Sym: "not_signed",
 			},
 			1: {
-				Sym: "RSA",
+				Sym: "rsa",
 			},
 		},
 	},
@@ -1692,13 +1690,13 @@ var ContentEncryption = ebml.Tag{
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			0: {
-				Sym: "Not signed",
+				Sym: "not_signed",
 			},
 			1: {
-				Sym: "SHA1-160",
+				Sym: "sha1_160",
 			},
 			2: {
-				Sym: "MD5",
+				Sym: "md5",
 			},
 		},
 	},
@@ -1711,10 +1709,10 @@ var ContentEncAESSettings = ebml.Tag{
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			1: {
-				Sym: "AES-CTR / Counter, NIST SP 800-38A",
+				Sym: "aes_ctr_counter_nist_sp_800_38a",
 			},
 			2: {
-				Sym: "AES-CBC / Cipher Block Chaining, NIST SP 800-38A",
+				Sym: "aes_cbc_cipher_block_chaining_nist_sp_800_38a",
 			},
 		},
 	},
@@ -2008,13 +2006,13 @@ var ChapProcessCommand = ebml.Tag{
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			0: {
-				Sym: "during the whole chapter",
+				Sym: "during_the_whole_chapter",
 			},
 			1: {
-				Sym: "before starting playback",
+				Sym: "before_starting_playback",
 			},
 			2: {
-				Sym: "after playback of the chapter",
+				Sym: "after_playback_of_the_chapter",
 			},
 		},
 	},
@@ -2053,31 +2051,31 @@ var Targets = ebml.Tag{
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			70: {
-				Sym:         "COLLECTION",
+				Sym:         "collection",
 				Description: "The highest hierarchical level that tags can describe.",
 			},
 			60: {
-				Sym:         "EDITION / ISSUE / VOLUME / OPUS / SEASON / SEQUEL",
+				Sym:         "edition_issue_volume_opus_season_sequel",
 				Description: "A list of lower levels grouped together.",
 			},
 			50: {
-				Sym:         "ALBUM / OPERA / CONCERT / MOVIE / EPISODE / CONCERT",
+				Sym:         "album_opera_concert_movie_episode_concert",
 				Description: "The most common grouping level of music and video (equals to an episode for TV series).",
 			},
 			40: {
-				Sym:         "PART / SESSION",
+				Sym:         "part_session",
 				Description: "When an album or episode has different logical parts.",
 			},
 			30: {
-				Sym:         "TRACK / SONG / CHAPTER",
+				Sym:         "track_song_chapter",
 				Description: "The common parts of an album or movie.",
 			},
 			20: {
-				Sym:         "SUBTRACK / PART / MOVEMENT / SCENE",
+				Sym:         "subtrack_part_movement_scene",
 				Description: "Corresponds to parts of a track for audio (like a movement).",
 			},
 			10: {
-				Sym:         "SHOT",
+				Sym:         "shot",
 				Description: "The lowest hierarchy found in music or movies.",
 			},
 		},
@@ -2088,67 +2086,67 @@ var Targets = ebml.Tag{
 		Type:       ebml.String,
 		StringEnums: scalar.StrToScalar{
 			"COLLECTION": {
-				Sym: "COLLECTION",
+				Sym: "collection",
 			},
 			"EDITION": {
-				Sym: "EDITION",
+				Sym: "edition",
 			},
 			"ISSUE": {
-				Sym: "ISSUE",
+				Sym: "issue",
 			},
 			"VOLUME": {
-				Sym: "VOLUME",
+				Sym: "volume",
 			},
 			"OPUS": {
-				Sym: "OPUS",
+				Sym: "opus",
 			},
 			"SEASON": {
-				Sym: "SEASON",
+				Sym: "season",
 			},
 			"SEQUEL": {
-				Sym: "SEQUEL",
+				Sym: "sequel",
 			},
 			"ALBUM": {
-				Sym: "ALBUM",
+				Sym: "album",
 			},
 			"OPERA": {
-				Sym: "OPERA",
+				Sym: "opera",
 			},
 			"CONCERT": {
-				Sym: "CONCERT",
+				Sym: "concert",
 			},
 			"MOVIE": {
-				Sym: "MOVIE",
+				Sym: "movie",
 			},
 			"EPISODE": {
-				Sym: "EPISODE",
+				Sym: "episode",
 			},
 			"PART": {
-				Sym: "PART",
+				Sym: "part",
 			},
 			"SESSION": {
-				Sym: "SESSION",
+				Sym: "session",
 			},
 			"TRACK": {
-				Sym: "TRACK",
+				Sym: "track",
 			},
 			"SONG": {
-				Sym: "SONG",
+				Sym: "song",
 			},
 			"CHAPTER": {
-				Sym: "CHAPTER",
+				Sym: "chapter",
 			},
 			"SUBTRACK": {
-				Sym: "SUBTRACK",
+				Sym: "subtrack",
 			},
 			"MOVEMENT": {
-				Sym: "MOVEMENT",
+				Sym: "movement",
 			},
 			"SCENE": {
-				Sym: "SCENE",
+				Sym: "scene",
 			},
 			"SHOT": {
-				Sym: "SHOT",
+				Sym: "shot",
 			},
 		},
 	},

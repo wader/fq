@@ -341,7 +341,7 @@ $ fq -d mp4 dv /mpeg2.mp4
       |                                               |                |      samples[0:1]: 0x2c-0x1fa5.7 (8058)
       |                                               |                |        [0]{}: sample (mpeg_pes_packet) 0x2c-0x1fa5.7 (8058)
 0x0020|                                    00 00 01   |            ... |          prefix: 0b1 (valid) 0x2c-0x2e.7 (3)
-0x0020|                                             b3|               .|          start_code: "SequenceHeader" (0xb3) 0x2f-0x2f.7 (1)
+0x0020|                                             b3|               .|          start_code: "sequence_header" (0xb3) 0x2f-0x2f.7 (1)
 0x0030|14 00                                          |..              |          horizontal_size: 320 0x30-0x31.3 (1.4)
 0x0030|   00 f0                                       | ..             |          vertical_size: 240 0x31.4-0x32.7 (1.4)
 0x0030|         23                                    |   #            |          aspect_ratio: 2 0x33-0x33.3 (0.4)

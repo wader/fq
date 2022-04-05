@@ -983,9 +983,9 @@ func init() {
 				systemIDPlayReady = [16]byte{0x9a, 0x04, 0xf0, 0x79, 0x98, 0x40, 0x42, 0x86, 0xab, 0x92, 0xe6, 0x5b, 0xe0, 0x88, 0x5f, 0x95}
 			)
 			systemIDNames := scalar.BytesToScalar{
-				{Bytes: systemIDCommon[:], Scalar: scalar.S{Sym: "Common"}},
-				{Bytes: systemIDWidevine[:], Scalar: scalar.S{Sym: "Widevine"}},
-				{Bytes: systemIDPlayReady[:], Scalar: scalar.S{Sym: "PlayReady"}},
+				{Bytes: systemIDCommon[:], Scalar: scalar.S{Sym: "common"}},
+				{Bytes: systemIDWidevine[:], Scalar: scalar.S{Sym: "widevine"}},
+				{Bytes: systemIDPlayReady[:], Scalar: scalar.S{Sym: "playReady"}},
 			}
 
 			version := d.FieldU8("version")

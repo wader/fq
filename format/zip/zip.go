@@ -48,21 +48,21 @@ const (
 )
 
 var compressionMethodMap = scalar.UToSymStr{
-	compressionMethodNone:                      "None",
-	compressionMethodShrunk:                    "Shrunk",
-	compressionMethodReducedCompressionFactor1: "ReducedCompressionFactor1",
-	compressionMethodReducedCompressionFactor2: "ReducedCompressionFactor2",
-	compressionMethodReducedCompressionFactor3: "ReducedCompressionFactor3",
-	compressionMethodReducedCompressionFactor4: "ReducedCompressionFactor4",
-	compressionMethodImploded:                  "Imploded",
-	compressionMethodDeflated:                  "Deflated",
-	compressionMethodEnhancedDeflated:          "EnhancedDeflated",
-	compressionMethodPKWareDCLImploded:         "PKWareDCLImploded",
-	compressionMethodBzip2:                     "Bzip2",
-	compressionMethodLZMA:                      "LZMA",
-	compressionMethodIBMTERSE:                  "IBMTERSE",
-	compressionMethodIBMLZ77z:                  "IBMLZ77z",
-	compressionMethodPPMd:                      "PPMd",
+	compressionMethodNone:                      "none",
+	compressionMethodShrunk:                    "shrunk",
+	compressionMethodReducedCompressionFactor1: "reduced_compression_factor1",
+	compressionMethodReducedCompressionFactor2: "reduced_compression_factor2",
+	compressionMethodReducedCompressionFactor3: "reduced_compression_factor3",
+	compressionMethodReducedCompressionFactor4: "reduced_compression_factor4",
+	compressionMethodImploded:                  "imploded",
+	compressionMethodDeflated:                  "deflated",
+	compressionMethodEnhancedDeflated:          "enhanced_deflated",
+	compressionMethodPKWareDCLImploded:         "pk_ware_dcl_imploded",
+	compressionMethodBzip2:                     "bzip2",
+	compressionMethodLZMA:                      "lzma",
+	compressionMethodIBMTERSE:                  "ibmterse",
+	compressionMethodIBMLZ77z:                  "ibmlz77z",
+	compressionMethodPPMd:                      "pp_md",
 }
 
 var (

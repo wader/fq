@@ -242,30 +242,30 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		}))
 
 		paddingBytes = d.FieldU1("padding", scalar.UToSymStr{
-			0: "Not padded",
-			1: "Padded",
+			0: "not_padded",
+			1: "padded",
 		}, scalar.Bin)
 		d.FieldU1("private")
 		channelsIndex = d.FieldU2("channels", scalar.UToSymStr{
-			0b00: "Stereo",
-			0b01: "Joint stereo",
-			0b10: "Dual",
-			0b11: "Mono",
+			0b00: "stereo",
+			0b01: "joint_stereo",
+			0b10: "dual",
+			0b11: "mono",
 		}, scalar.Bin)
 		isStereo = channelsIndex != 0b11
 		channelModeIndex = d.FieldU2("channel_mode", scalar.UToSymStr{
-			0b00: "None",
-			0b01: "Intensity stereo",
-			0b10: "MS stereo",
-			0b11: "Intensity stereo, MS stereo",
+			0b00: "none",
+			0b01: "intensity stereo",
+			0b10: "ms_stereo",
+			0b11: "intensity_stereo_ms_stereo",
 		}, scalar.Bin)
 		d.FieldU1("copyright")
 		d.FieldU1("original")
 		d.FieldU2("emphasis", scalar.UToSymStr{
-			0b00: "None",
-			0b01: "50/15",
+			0b00: "none",
+			0b01: "50_15",
 			0b10: "reserved",
-			0b11: "CCIT J.17",
+			0b11: "ccit_j.17",
 		}, scalar.Bin)
 		if hasCRC {
 			d.FieldU16("crc", scalar.Hex)

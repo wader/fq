@@ -26,25 +26,25 @@ func init() {
 }
 
 var avcProfileNames = scalar.UToSymStr{
-	// 66: "Constrained Baseline Profile", // (CBP, 66 with constraint set 1)
-	66:  "Baseline Profile",
-	88:  "Extended Profile",
-	77:  "Main Profile",
-	100: "High Profile",
+	// 66: "constrained_baseline_profile", // (CBP, 66 with constraint set 1)
+	66:  "baseline_profile",
+	88:  "extended_profile",
+	77:  "main_profile",
+	100: "high_profile",
 	//100: "Constrained High Profile", // (100 with constraint set 4 and 5)
-	110: "High 10 Profile",
-	122: "High 4:2:2 Profile",
-	244: "High 4:4:4 Predictive Profile",
+	110: "high_10_profile",
+	122: "high_422_profile",
+	244: "high_444_predictive_profile",
 	// 110: "High 10 Intra Profile", // (110 with constraint set 3)
 	// 122: "High 4:2:2 Intra Profile", // (122 with constraint set 3)
 	// 244: "High 4:4:4 Intra Profile", // (244 with constraint set 3)
-	44:  "CAVLC 4:4:4 Intra Profile",
-	83:  "Scalable Baseline Profile",
-	86:  "Scalable High Profile",
-	128: "Stereo High Profile",
-	134: "MFC High Profile",
-	138: "Multiview Depth High Profile",
-	139: "Enhanced Multiview Depth High Profile",
+	44:  "cavlc_444_intra_profile",
+	83:  "scalable_baseline_profile",
+	86:  "scalable_high_profile",
+	128: "stereo_high_profile",
+	134: "mfc_high_profile",
+	138: "multiview_depth_high_profile",
+	139: "enhanced_multiview_depth_high_profile",
 }
 
 // TODO: 1b contraint flag 1?

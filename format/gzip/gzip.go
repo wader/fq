@@ -36,20 +36,20 @@ var compressionMethodNames = scalar.UToSymStr{
 }
 
 var osNames = scalar.UToSymStr{
-	0:  "FAT filesystem (MS-DOS, OS/2, NT/Win32)",
-	1:  "Amiga",
-	2:  "VMS (or OpenVMS)",
-	3:  "Unix",
-	4:  "VM/CMS",
-	5:  "Atari TOS",
-	6:  "HPFS filesystem (OS/2, NT)",
-	7:  "Macintosh",
-	8:  "Z-System",
-	9:  "CP/M",
-	10: " TOPS-20",
-	11: " NTFS filesystem (NT)",
-	12: " QDOS",
-	13: " Acorn RISCOS",
+	0:  "fat",
+	1:  "amiga",
+	2:  "vms",
+	3:  "unix",
+	4:  "vm_cms",
+	5:  "atari_tOS",
+	6:  "hpfs",
+	7:  "Mmcintosh",
+	8:  "z_system",
+	9:  "cpm",
+	10: "tops_20",
+	11: "ntfs",
+	12: "qdos",
+	13: "acorn_riscos",
 }
 
 var deflateExtraFlagsNames = scalar.UToSymStr{
