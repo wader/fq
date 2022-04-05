@@ -57,9 +57,6 @@ var typeNames = scalar.UToSymStr{
 	typeTypedObject: "typed_object",
 }
 
-func amf0DecodeString(d *decode.D) string     { return d.UTF8(int(d.U16())) }
-func amf0DecodeStringLong(d *decode.D) string { return d.UTF8(int(d.U32())) }
-
 func amf0DecodeValue(d *decode.D) {
 	typ := d.FieldU8("type", typeNames)
 
@@ -69,13 +66,17 @@ func amf0DecodeValue(d *decode.D) {
 	case typeBoolean:
 		d.FieldU8("value")
 	case typeString:
-		d.FieldStrFn("value", amf0DecodeString)
+		l := d.FieldU16("length")
+		d.FieldUTF8("value", int(l))
 	case typeObject:
 		d.FieldArray("value", func(d *decode.D) {
 			var typ uint64
 			for typ != typeObjectEnd {
 				d.FieldStruct("pair", func(d *decode.D) {
-					d.FieldStrFn("key", amf0DecodeString)
+					d.FieldStruct("key", func(d *decode.D) {
+						l := d.FieldU16("length")
+						d.FieldUTF8("value", int(l))
+					})
 					typ = d.PeekBits(8)
 					d.FieldStruct("value", amf0DecodeValue)
 				})
@@ -93,7 +94,10 @@ func amf0DecodeValue(d *decode.D) {
 			var typ uint64
 			for typ != typeObjectEnd {
 				d.FieldStruct("entry", func(d *decode.D) {
-					d.FieldStrFn("key", amf0DecodeString)
+					d.FieldStruct("key", func(d *decode.D) {
+						l := d.FieldU16("length")
+						d.FieldUTF8("value", int(l))
+					})
 					typ = d.PeekBits(8)
 					d.FieldStruct("value", amf0DecodeValue)
 				})
@@ -112,16 +116,24 @@ func amf0DecodeValue(d *decode.D) {
 		d.FieldF64("date_time")
 		d.FieldS16("local_data_time_offset")
 	case typeLongString:
-		d.FieldStrFn("value", amf0DecodeStringLong)
+		l := d.FieldU32("length")
+		d.FieldUTF8("value", int(l))
 	case typeXML:
-		d.FieldStrFn("value", amf0DecodeStringLong)
+		l := d.FieldU16("length")
+		d.FieldUTF8("value", int(l))
 	case typeTypedObject:
-		d.FieldStrFn("class_name", amf0DecodeString)
+		d.FieldStruct("class_name", func(d *decode.D) {
+			l := d.FieldU16("length")
+			d.FieldUTF8("value", int(l))
+		})
 		d.FieldArray("value", func(d *decode.D) {
 			var typ uint64
 			for typ != typeObjectEnd {
 				d.FieldStruct("pair", func(d *decode.D) {
-					d.FieldStrFn("key", amf0DecodeString)
+					d.FieldStruct("key", func(d *decode.D) {
+						l := d.FieldU16("length")
+						d.FieldUTF8("value", int(l))
+					})
 					typ = d.PeekBits(8)
 					d.FieldStruct("value", amf0DecodeValue)
 				})
