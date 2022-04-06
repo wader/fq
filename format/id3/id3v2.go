@@ -417,6 +417,24 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			})
 		},
 
+		// id3v2.0
+		// Attached picture   "PIC"
+		// Frame size         $xx xx xx
+		// Text encoding      $xx
+		// Image format       $xx xx xx
+		// Picture type       $xx
+		// Description        <textstring> $00 (00)
+		// Picture data       <binary data>
+		"PIC": func(d *decode.D) {
+			encoding := d.FieldU8("text_encoding", encodingNames)
+			d.FieldUTF8("image_format", 3)
+			d.FieldU8("picture_type") // TODO: table
+			d.FieldStrFn("description", textNullFn(int(encoding)))
+			if dv, _, _ := d.TryFieldFormatLen("picture", d.BitsLeft(), imageFormat, nil); dv == nil {
+				d.FieldRawLen("picture", d.BitsLeft())
+			}
+		},
+
 		// <Header for 'Attached picture', ID: "APIC">
 		// Text encoding      $xx
 		// MIME type          <text string> $00
@@ -428,8 +446,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			d.FieldStrFn("mime_type", textNullFn(encodingUTF8))
 			d.FieldU8("picture_type") // TODO: table
 			d.FieldStrFn("description", textNullFn(int(encoding)))
-			dv, _, _ := d.TryFieldFormatLen("picture", d.BitsLeft(), imageFormat, nil)
-			if dv == nil {
+			if dv, _, _ := d.TryFieldFormatLen("picture", d.BitsLeft(), imageFormat, nil); dv == nil {
 				d.FieldRawLen("picture", d.BitsLeft())
 			}
 		},
@@ -445,8 +462,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			d.FieldStrFn("mime_type", textNullFn(encodingUTF8))
 			d.FieldStrFn("filename", textNullFn(int(encoding)))
 			d.FieldStrFn("description", textNullFn(int(encoding)))
-			dv, _, _ := d.TryFieldFormatLen("data", d.BitsLeft(), imageFormat, nil)
-			if dv == nil {
+			if dv, _, _ := d.TryFieldFormatLen("data", d.BitsLeft(), imageFormat, nil); dv == nil {
 				d.FieldRawLen("data", d.BitsLeft())
 			}
 		},
