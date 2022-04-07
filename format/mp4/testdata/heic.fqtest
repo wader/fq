@@ -397,4 +397,3 @@ $ fq -d mp4 dv /heic.mp4
 0xaf0|                                 49 73 6f 4d 65|           IsoMe|      data: raw bits 0xafb-0xb2c.7 (50)
 0xb00|64 69 61 20 46 69 6c 65 20 50 72 6f 64 75 63 65|dia File Produce|
 *    |until 0xb2c.7 (end) (50)                       |                |
-     |                                               |                |  tracks[0:0]: 0xb2d-NA (0)

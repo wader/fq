@@ -24,41 +24,41 @@ const (
 	boxSizeUse64bitSize = 1
 )
 
-var boxSizeNames = scalar.UToScalar{
-	boxSizeRestOfFile:   scalar.S{Description: "Rest of file"},
-	boxSizeUse64bitSize: scalar.S{Description: "Use 64 bit size"},
+var boxSizeNames = scalar.UToDescription{
+	boxSizeRestOfFile:   "Rest of file",
+	boxSizeUse64bitSize: "Use 64 bit size",
 }
 
-var mediaTimeNames = scalar.SToScalar{
-	-1: {Description: "empty"},
+var mediaTimeNames = scalar.SToDescription{
+	-1: "empty",
 }
 
-var subTypeNames = scalar.StrToScalar{
-	"alis": {Description: "Alias Data"},
-	"camm": {Description: "Camera Metadata"},
-	"crsm": {Description: "Clock Reference"},
-	"data": {Description: "Data"},
-	"hint": {Description: "Hint Track"},
-	"ipsm": {Description: "IPMP"},
-	"m7sm": {Description: "MPEG-7 Stream"},
-	"mdir": {Description: "Metadata"},
-	"mdta": {Description: "Metadata Tags"},
-	"meta": {Description: "NRT Metadata"},
-	"mjsm": {Description: "MPEG-J"},
-	"nrtm": {Description: "Non-Real Time Metadata"},
-	"ocsm": {Description: "Object Content"},
-	"odsm": {Description: "Object Descriptor"},
-	"pict": {Description: "Picture"},
-	"priv": {Description: "Private"},
-	"psmd": {Description: "Panasonic Static Metadata"},
-	"sbtl": {Description: "Subtitle"},
-	"sdsm": {Description: "Scene Description"},
-	"soun": {Description: "Audio Track"},
-	"subp": {Description: "Subpicture"},
-	"text": {Description: "Text"},
-	"tmcd": {Description: "Time Code"},
-	"url ": {Description: "URL"},
-	"vide": {Description: "Video Track"},
+var subTypeNames = scalar.StrToDescription{
+	"alis": "Alias Data",
+	"camm": "Camera Metadata",
+	"crsm": "Clock Reference",
+	"data": "Data",
+	"hint": "Hint Track",
+	"ipsm": "IPMP",
+	"m7sm": "MPEG-7 Stream",
+	"mdir": "Metadata",
+	"mdta": "Metadata Tags",
+	"meta": "NRT Metadata",
+	"mjsm": "MPEG-J",
+	"nrtm": "Non-Real Time Metadata",
+	"ocsm": "Object Content",
+	"odsm": "Object Descriptor",
+	"pict": "Picture",
+	"priv": "Private",
+	"psmd": "Panasonic Static Metadata",
+	"sbtl": "Subtitle",
+	"sdsm": "Scene Description",
+	"soun": "Audio Track",
+	"subp": "Subpicture",
+	"text": "Text",
+	"tmcd": "Time Code",
+	"url ": "URL",
+	"vide": "Video Track",
 }
 
 var (
@@ -119,7 +119,7 @@ func decodeFieldMatrix(d *decode.D, name string) {
 	})
 }
 
-func decodeBox(ctx *decodeContext, d *decode.D) {
+func decodeBoxWithParentData(ctx *decodeContext, d *decode.D, parentData interface{}) {
 	var typ string
 	var dataSize uint64
 
@@ -153,7 +153,10 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 		typ = a
 	}
 
-	ctx.path = append(ctx.path, typ)
+	if parentData != nil {
+		ctx.path[len(ctx.path)-1].data = parentData
+	}
+	ctx.path = append(ctx.path, pathEntry{typ: typ, data: parentData})
 
 	if decodeFn, ok := boxDecoders[typ]; ok {
 		d.FramedFn(int64(dataSize*8), func(d *decode.D) {
@@ -167,8 +170,12 @@ func decodeBox(ctx *decodeContext, d *decode.D) {
 }
 
 func decodeBoxes(ctx *decodeContext, d *decode.D) {
+	decodeBoxesWithParentData(ctx, d, nil)
+}
+
+func decodeBoxesWithParentData(ctx *decodeContext, d *decode.D, parentData interface{}) {
 	d.FieldStructArrayLoop("boxes", "box", func() bool { return d.BitsLeft() >= 8*8 }, func(d *decode.D) {
-		decodeBox(ctx, d)
+		decodeBoxWithParentData(ctx, d, parentData)
 	})
 
 	if d.BitsLeft() > 0 {
@@ -183,6 +190,32 @@ func decodeBoxes(ctx *decodeContext, d *decode.D) {
 }
 
 var boxDecoders map[string]func(ctx *decodeContext, d *decode.D)
+
+type irefBox struct {
+	version int
+}
+
+func irefEntryDecode(ctx *decodeContext, d *decode.D) {
+	irefBox, ok := ctx.parent().data.(irefBox)
+	if !ok {
+		d.FieldRawLen("data", d.BitsLeft())
+		return
+	}
+
+	idSize := 16
+	if irefBox.version != 0 {
+		idSize = 32
+	}
+
+	d.FieldU("from_id", idSize)
+	count := d.FieldU16("count")
+
+	d.FieldArray("ids", func(d *decode.D) {
+		for i := uint64(0); i < count; i++ {
+			d.FieldU("id", idSize)
+		}
+	})
+}
 
 func init() {
 	boxDecoders = map[string]func(ctx *decodeContext, d *decode.D){
@@ -693,7 +726,7 @@ func init() {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			d.FieldU32("reserved")
-			if isParent(ctx, "covr") {
+			if ctx.isParent("covr") {
 				dv, _, _ := d.TryFieldFormatLen("data", d.BitsLeft(), imageFormat, nil)
 				if dv == nil {
 					d.FieldRawLen("data", d.BitsLeft())
@@ -1344,9 +1377,20 @@ func init() {
 			}
 		},
 		"iref": func(ctx *decodeContext, d *decode.D) {
-			d.FieldU8("version")
+			version := d.FieldU8("version")
 			d.FieldU24("flags")
-			decodeBoxes(ctx, d)
+			decodeBoxesWithParentData(ctx, d, irefBox{version: int(version)})
+		},
+		"dimg": irefEntryDecode,
+		"thmb": irefEntryDecode,
+		"cdsc": irefEntryDecode,
+		"irot": func(_ *decodeContext, d *decode.D) {
+			d.FieldU8("rotation", scalar.UToSymU{
+				0: 0,
+				1: 90,
+				2: 180,
+				3: 270,
+			})
 		},
 	}
 }

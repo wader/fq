@@ -31,11 +31,11 @@ const (
 	FAT_CIGAM   = 0xbeba_feca
 )
 
-var magicSymMapper = scalar.UToScalar{
-	MH_MAGIC:    scalar.S{Description: "32-bit little endian"},
-	MH_CIGAM:    scalar.S{Description: "32-bit big endian"},
-	MH_MAGIC_64: scalar.S{Description: "64-bit little endian"},
-	MH_CIGAM_64: scalar.S{Description: "64-bit big endian"},
+var magicSymMapper = scalar.UToDescription{
+	MH_MAGIC:    "32-bit little endian",
+	MH_CIGAM:    "32-bit big endian",
+	MH_MAGIC_64: "64-bit little endian",
+	MH_CIGAM_64: "64-bit big endian",
 }
 
 var endianNames = scalar.UToSymStr{

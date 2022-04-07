@@ -125,47 +125,30 @@ type track struct {
 	currentMoof *moof
 }
 
+type pathEntry struct {
+	typ  string
+	data interface{}
+}
+
 type decodeContext struct {
-	path              []string
+	path              []pathEntry
 	tracks            map[uint32]*track
 	currentTrack      *track
 	currentMoofOffset int64
 }
 
-func isParent(ctx *decodeContext, typ string) bool {
-	return len(ctx.path) >= 2 && ctx.path[len(ctx.path)-2] == typ
+func (ctx *decodeContext) isParent(typ string) bool {
+	return ctx.parent().typ == typ
 }
 
-func mp4Decode(d *decode.D, in interface{}) interface{} {
-	ctx := &decodeContext{
-		tracks: map[uint32]*track{},
-	}
+func (ctx *decodeContext) parent() pathEntry {
+	return ctx.path[len(ctx.path)-2]
+}
 
-	// TODO: nicer, validate functions without field?
-	d.AssertLeastBytesLeft(16)
-	size := d.U32()
-	if size < 8 {
-		d.Fatalf("first box size too small < 8")
-	}
-	firstType := d.UTF8(4)
-	switch firstType {
-	case "styp", // mp4 segment
-		"ftyp", // mp4 file
-		"free", // seems to happen
-		"moov", // seems to happen
-		"pnot", // video preview file
-		"jP  ": // JPEG 2000
-	default:
-		d.Errorf("no styp, ftyp, free or moov box found")
-	}
-
-	d.SeekRel(-8 * 8)
-
-	decodeBoxes(ctx, d)
-
+func mp4Tracks(d *decode.D, tracks map[uint32]*track) {
 	// keep track order stable
 	var sortedTracks []*track
-	for _, t := range ctx.tracks {
+	for _, t := range tracks {
 		sortedTracks = append(sortedTracks, t)
 	}
 	sort.Slice(sortedTracks, func(i, j int) bool { return sortedTracks[i].id < sortedTracks[j].id })
@@ -304,6 +287,38 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 			})
 		}
 	})
+}
+
+func mp4Decode(d *decode.D, in interface{}) interface{} {
+	ctx := &decodeContext{
+		path:   []pathEntry{{typ: "root"}},
+		tracks: map[uint32]*track{},
+	}
+
+	// TODO: nicer, validate functions without field?
+	d.AssertLeastBytesLeft(16)
+	size := d.U32()
+	if size < 8 {
+		d.Fatalf("first box size too small < 8")
+	}
+	firstType := d.UTF8(4)
+	switch firstType {
+	case "styp", // mp4 segment
+		"ftyp", // mp4 file
+		"free", // seems to happen
+		"moov", // seems to happen
+		"pnot", // video preview file
+		"jP  ": // JPEG 2000
+	default:
+		d.Errorf("no styp, ftyp, free or moov box found")
+	}
+
+	d.SeekRel(-8 * 8)
+
+	decodeBoxes(ctx, d)
+	if len(ctx.tracks) > 0 {
+		mp4Tracks(d, ctx.tracks)
+	}
 
 	return nil
 

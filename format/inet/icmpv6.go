@@ -56,24 +56,24 @@ var icmpv6TypeMap = scalar.UToScalar{
 	255: {Description: "Reserved for expansion of ICMPv6 informational messages"},
 }
 
-var icmpv6CodeMapMap = map[uint64]scalar.UToScalar{
+var icmpv6CodeMapMap = map[uint64]scalar.UToDescription{
 	1: {
-		1: {Description: "Communication with destination administratively prohibited"},
-		2: {Description: "Beyond scope of source address"},
-		3: {Description: "Address unreachable"},
-		4: {Description: "Port unreachable"},
-		5: {Description: "Source address failed ingress/egress policy"},
-		6: {Description: "Reject route to destination"},
-		7: {Description: "Error in Source Routing Header"},
+		1: "Communication with destination administratively prohibited",
+		2: "Beyond scope of source address",
+		3: "Address unreachable",
+		4: "Port unreachable",
+		5: "Source address failed ingress/egress policy",
+		6: "Reject route to destination",
+		7: "Error in Source Routing Header",
 	},
 	3: {
-		0: {Description: "Hop limit exceeded in transit"},
-		1: {Description: "Fragment reassembly time exceeded"},
+		0: "Hop limit exceeded in transit",
+		1: "Fragment reassembly time exceeded",
 	},
 	4: {
-		0: {Description: "Erroneous header field encountered"},
-		1: {Description: "Unrecognized Next Header type encountered"},
-		2: {Description: "Unrecognized IPv6 option encountered"},
+		0: "Erroneous header field encountered",
+		1: "Unrecognized Next Header type encountered",
+		2: "Unrecognized IPv6 option encountered",
 	},
 }
 

@@ -135,9 +135,9 @@ var mpegLayerN = map[uint64]uint64{
 	mpegLayer1: 1,
 }
 
-var protectionNames = scalar.BoolToScalar{
-	true:  {Description: "No CRC"},
-	false: {Description: "Has CRC"},
+var protectionNames = scalar.BoolToDescription{
+	true:  "No CRC",
+	false: "Has CRC",
 }
 
 func frameDecode(d *decode.D, in interface{}) interface{} {

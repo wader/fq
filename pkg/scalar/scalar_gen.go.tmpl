@@ -33,9 +33,7 @@ import (
 {{- range $from_name, $from := $.types }}
 	{{- if ne $from.map_from false}}
 		// Map {{$from_name}} -> Scalar
-
 		type {{$from_name}}ToScalar map[{{$from.go_type}}]S
-
 		func (m {{$from_name}}ToScalar) MapScalar(s S) (S, error) {
 			a := s.Actual{{$from_name}}()
 			if ns, ok := m[a]; ok {
@@ -45,12 +43,20 @@ import (
 			return s, nil
 		}
 
+		// Map {{$from_name}} -> Scalar description
+		type {{$from_name}}ToDescription map[{{$from.go_type}}]string
+		func (m {{$from_name}}ToDescription) MapScalar(s S) (S, error) {
+			a := s.Actual{{$from_name}}()
+			if d, ok := m[a]; ok {
+				s.Description = d
+			}
+			return s, nil
+		}
+
 		{{- range $to_name, $to := $.types }}
 			{{- if ne $to.map_to false}}
-				// Map {{$from_name}} -> sym {{$to_name}}
-
+				// Map {{$from_name}} -> Sym {{$to_name}}
 				type {{$from_name}}ToSym{{$to_name}} map[{{$from.go_type}}]{{$to.go_type}}
-
 				func (m {{$from_name}}ToSym{{$to_name}}) MapScalar(s S) (S, error) {
 					if t, ok := m[s.Actual{{$from_name}}()]; ok {
 						s.Sym = t
