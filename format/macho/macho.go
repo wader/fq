@@ -46,153 +46,171 @@ var endianNames = scalar.UToSymStr{
 }
 
 var cpuTypes = scalar.UToSymStr{
-	0xff_ff_ff_ff: "cpu_type_any",
-	1:             "cpu_type_vax",
-	2:             "cpu_type_romp",
-	4:             "cpu_type_ns32032",
-	5:             "cpu_type_ns32332",
-	6:             "cpu_type_mc680x0",
-	7:             "cpu_type_x86",
-	8:             "cpu_type_mips",
-	9:             "cpu_type_ns32532",
-	10:            "cpu_type_mc98000",
-	11:            "cpu_type_hppa",
-	12:            "cpu_type_arm",
-	13:            "cpu_type_mc88000",
-	14:            "cpu_type_sparc",
-	15:            "cpu_type_i860",
-	16:            "cpu_type_i860_little",
-	17:            "cpu_type_rs6000",
-	18:            "cpu_type_powerpc",
-	0x1000007:     "cpu_type_x86_64",
-	0x100000c:     "cpu_type_arm64",
-	0x1000013:     "cpu_type_powerpc64",
-	255:           "cpu_type_veo",
+	0xff_ff_ff_ff: "any",
+	1:             "vax",
+	2:             "romp",
+	4:             "ns32032",
+	5:             "ns32332",
+	6:             "mc680x0",
+	7:             "x86",
+	8:             "mips",
+	9:             "ns32532",
+	10:            "mc98000",
+	11:            "hppa",
+	12:            "arm",
+	13:            "mc88000",
+	14:            "sparc",
+	15:            "i860",
+	16:            "i860_little",
+	17:            "rs6000",
+	18:            "powerpc",
+	0x1000007:     "x86_64",
+	0x100000c:     "arm64",
+	0x1000013:     "powerpc64",
+	255:           "veo",
+}
+
+func intelSubTypeHelper(f, m uint64) uint64 {
+	return f + (m << 4)
 }
 
 var cpuSubTypes = map[uint64]scalar.UToSymStr{
 	0xff_ff_ff_ff: {
-		0xff_ff_ff_ff: "cpu_subtype_multiple",
+		0xff_ff_ff_ff: "multiple",
 	},
 	1: {
-		0xff_ff_ff_ff: "cpu_subtype_multiple",
-		0:             "cpu_subtype_vax_all",
-		1:             "cpu_subtype_vax780",
-		2:             "cpu_subtype_vax785",
-		3:             "cpu_subtype_vax750",
-		4:             "cpu_subtype_vax730",
-		5:             "cpu_subtype_uvaxi",
-		6:             "cpu_subtype_uvaxii",
-		7:             "cpu_subtype_vax8200",
-		8:             "cpu_subtype_vax8500",
-		9:             "cpu_subtype_vax8600",
-		10:            "cpu_subtype_vax8650",
-		11:            "cpu_subtype_vax8800",
-		12:            "cpu_subtype_uvaxiii",
+		0xff_ff_ff_ff: "multiple",
+		0:             "vax_all",
+		1:             "vax780",
+		2:             "vax785",
+		3:             "vax750",
+		4:             "vax730",
+		5:             "uvaxi",
+		6:             "uvaxii",
+		7:             "vax8200",
+		8:             "vax8500",
+		9:             "vax8600",
+		10:            "vax8650",
+		11:            "vax8800",
+		12:            "uvaxiii",
 	},
 	6: {
-		0xff_ff_ff_ff: "cpu_subtype_multiple",
-		1:             "cpu_subtype_mc680x0_all", // 1: cpu_subtype_mc68030
-		2:             "cpu_subtype_mc68040",
-		3:             "cpu_subtype_mc68030_only",
+		0xff_ff_ff_ff: "multiple",
+		1:             "mc680x0_all", // 1: mc68030
+		2:             "mc68040",
+		3:             "mc68030_only",
 	},
 	7: {
-		0xff_ff_ff_ff:             "cpu_subtype_multiple",
-		intelSubTypeHelper(3, 0):  "cpu_subtype_i386_all", // cpu_subtype_i386
-		intelSubTypeHelper(4, 0):  "cpu_subtype_i486",
-		intelSubTypeHelper(4, 8):  "cpu_subtype_486sx",
-		intelSubTypeHelper(5, 0):  "cpu_subtype_pent",
-		intelSubTypeHelper(6, 1):  "cpu_subtype_pentpro",
-		intelSubTypeHelper(6, 3):  "cpu_subtype_pentii_m3",
-		intelSubTypeHelper(6, 5):  "cpu_subtype_pentii_m5",
-		intelSubTypeHelper(7, 6):  "cpu_subtype_celeron",
-		intelSubTypeHelper(7, 7):  "cpu_subtype_celeron_mobile",
-		intelSubTypeHelper(8, 0):  "cpu_subtype_pentium_3",
-		intelSubTypeHelper(8, 1):  "cpu_subtype_pentium_3_m",
-		intelSubTypeHelper(8, 2):  "cpu_subtype_pentium_3_xeon",
-		intelSubTypeHelper(9, 0):  "cpu_subtype_pentium_m",
-		intelSubTypeHelper(10, 0): "cpu_subtype_pentium_4",
-		intelSubTypeHelper(10, 1): "cpu_subtype_pentium_4_m",
-		intelSubTypeHelper(11, 0): "cpu_subtype_itanium",
-		intelSubTypeHelper(11, 1): "cpu_subtype_itanium_2",
-		intelSubTypeHelper(12, 0): "cpu_subtype_xeon",
-		intelSubTypeHelper(12, 1): "cpu_subtype_xeon_2",
+		0xff_ff_ff_ff:             "multiple",
+		intelSubTypeHelper(3, 0):  "i386_all", // i386
+		intelSubTypeHelper(4, 0):  "i486",
+		intelSubTypeHelper(4, 8):  "486sx",
+		intelSubTypeHelper(5, 0):  "pent",
+		intelSubTypeHelper(6, 1):  "pentpro",
+		intelSubTypeHelper(6, 3):  "pentii_m3",
+		intelSubTypeHelper(6, 5):  "pentii_m5",
+		intelSubTypeHelper(7, 6):  "celeron",
+		intelSubTypeHelper(7, 7):  "celeron_mobile",
+		intelSubTypeHelper(8, 0):  "pentium_3",
+		intelSubTypeHelper(8, 1):  "pentium_3_m",
+		intelSubTypeHelper(8, 2):  "pentium_3_xeon",
+		intelSubTypeHelper(9, 0):  "pentium_m",
+		intelSubTypeHelper(10, 0): "pentium_4",
+		intelSubTypeHelper(10, 1): "pentium_4_m",
+		intelSubTypeHelper(11, 0): "itanium",
+		intelSubTypeHelper(11, 1): "itanium_2",
+		intelSubTypeHelper(12, 0): "xeon",
+		intelSubTypeHelper(12, 1): "xeon_2",
 	},
 	8: {
-		0xff_ff_ff_ff: "cpu_subtype_multiple",
-		0:             "cpu_subtype_mips_all",
-		1:             "cpu_subtype_mips_r2300",
-		2:             "cpu_subtype_mips_r2600",
-		3:             "cpu_subtype_mips_r2800",
-		4:             "cpu_subtype_mips_r2000a",
-		5:             "cpu_subtype_mips_r2000",
-		6:             "cpu_subtype_mips_r3000a",
-		7:             "cpu_subtype_mips_r3000",
+		0xff_ff_ff_ff: "multiple",
+		0:             "mips_all",
+		1:             "mips_r2300",
+		2:             "mips_r2600",
+		3:             "mips_r2800",
+		4:             "mips_r2000a",
+		5:             "mips_r2000",
+		6:             "mips_r3000a",
+		7:             "mips_r3000",
 	},
 	10: {
-		0xff_ff_ff_ff: "cpu_subtype_multiple",
-		0:             "cpu_subtype_mc98000_all",
-		1:             "cpu_subtype_mc98001",
+		0xff_ff_ff_ff: "multiple",
+		0:             "mc98000_all",
+		1:             "mc98001",
 	},
 	11: {
-		0xff_ff_ff_ff: "cpu_subtype_multiple",
-		0:             "cpu_subtype_hppa_all",
-		1:             "cpu_subtype_hppa_7100",
-		2:             "cpu_subtype_hppa_7100_lc",
+		0xff_ff_ff_ff: "multiple",
+		0:             "hppa_all",
+		1:             "hppa_7100",
+		2:             "hppa_7100_lc",
 	},
 	12: {
-		0xff_ff_ff_ff: "cpu_subtype_multiple",
-		0:             "cpu_subtype_arm_all",
-		5:             "cpu_subtype_arm_v4t",
-		6:             "cpu_subtype_arm_v6",
-		7:             "cpu_subtype_arm_v5tej",
-		8:             "cpu_subtype_arm_xscale",
-		9:             "cpu_subtype_arm_v7",
-		10:            "cpu_subtype_arm_v7f",
-		11:            "cpu_subtype_arm_v7s",
-		12:            "cpu_subtype_arm_v7k",
-		13:            "cpu_subtype_arm_v8",
-		14:            "cpu_subtype_arm_v6m",
-		15:            "cpu_subtype_arm_v7m",
-		16:            "cpu_subtype_arm_v7em",
+		0xff_ff_ff_ff: "multiple",
+		0:             "arm_all",
+		5:             "arm_v4t",
+		6:             "arm_v6",
+		7:             "arm_v5tej",
+		8:             "arm_xscale",
+		9:             "arm_v7",
+		10:            "arm_v7f",
+		11:            "arm_v7s",
+		12:            "arm_v7k",
+		13:            "arm_v8",
+		14:            "arm_v6m",
+		15:            "arm_v7m",
+		16:            "arm_v7em",
 	},
 	13: {
-		0xff_ff_ff_ff: "cpu_subtype_multiple",
-		0:             "cpu_subtype_mc88000_all",
-		1:             "cpu_subtype_mc88100",
-		2:             "cpu_subtype_mc88110",
+		0xff_ff_ff_ff: "multiple",
+		0:             "mc88000_all",
+		1:             "mc88100",
+		2:             "mc88110",
 	},
 	14: {
-		0xff_ff_ff_ff: "cpu_subtype_multiple",
-		0:             "cpu_subtype_sparc_all",
+		0xff_ff_ff_ff: "multiple",
+		0:             "sparc_all",
 	},
 	15: {
-		0xff_ff_ff_ff: "cpu_subtype_multiple",
-		0:             "cpu_subtype_i860_all",
-		1:             "cpu_subtype_i860_a860",
+		0xff_ff_ff_ff: "multiple",
+		0:             "i860_all",
+		1:             "i860_a860",
 	},
 	18: {
-		0xff_ff_ff_ff: "cpu_subtype_multiple",
-		0:             "cpu_subtype_powerpc_all",
-		1:             "cpu_subtype_powerpc_601",
-		2:             "cpu_subtype_powerpc_602",
-		3:             "cpu_subtype_powerpc_603",
-		4:             "cpu_subtype_powerpc_603e",
-		5:             "cpu_subtype_powerpc_603ev",
-		6:             "cpu_subtype_powerpc_604",
-		7:             "cpu_subtype_powerpc_604e",
-		8:             "cpu_subtype_powerpc_620",
-		9:             "cpu_subtype_powerpc_750",
-		10:            "cpu_subtype_powerpc_7400",
-		11:            "cpu_subtype_powerpc_7450",
-		100:           "cpu_subtype_powerpc_970",
+		0xff_ff_ff_ff: "multiple",
+		0:             "powerpc_all",
+		1:             "powerpc_601",
+		2:             "powerpc_602",
+		3:             "powerpc_603",
+		4:             "powerpc_603e",
+		5:             "powerpc_603ev",
+		6:             "powerpc_604",
+		7:             "powerpc_604e",
+		8:             "powerpc_620",
+		9:             "powerpc_750",
+		10:            "powerpc_7400",
+		11:            "powerpc_7450",
+		100:           "powerpc_970",
 	},
 	0x1000012: {
-		0xff_ff_ff_ff: "cpu_subtype_multiple",
-		0:             "cpu_subtype_arm64_all",
-		1:             "cpu_subtype_arm64_v8",
-		2:             "cpu_subtype_arm64_e",
+		0xff_ff_ff_ff: "multiple",
+		0:             "arm64_all",
+		1:             "arm64_v8",
+		2:             "arm64_e",
 	},
+}
+
+var fileTypes = scalar.UToSymStr{
+	0x1: "object",
+	0x2: "execute",
+	0x3: "fvmlib",
+	0x4: "core",
+	0x5: "preload",
+	0x6: "dylib",
+	0x7: "dylinker",
+	0x8: "bundle",
+	0x9: "dylib_stub",
+	0xa: "dsym",
+	0xb: "kext_bundle",
 }
 
 //nolint:revive
@@ -250,20 +268,6 @@ const (
 	LC_NOTE                     = 0x31 // not implemented
 	LC_BUILD_VERSION            = 0x32
 )
-
-var fileTypes = scalar.UToSymStr{
-	0x1: "object",
-	0x2: "execute",
-	0x3: "fvmlib",
-	0x4: "core",
-	0x5: "preload",
-	0x6: "dylib",
-	0x7: "dylinker",
-	0x8: "bundle",
-	0x9: "dylib_stub",
-	0xa: "dsym",
-	0xb: "kext_bundle",
-}
 
 var loadCommands = scalar.UToSymStr{
 	LC_REQ_DYLD:                 "req_dyld",
@@ -386,11 +390,11 @@ func ofileDecode(d *decode.D) {
 	d.SeekRel(-4 * 8)
 	d.FieldStruct("header", func(d *decode.D) {
 		d.FieldValueS("arch_bits", int64(archBits))
-		magic := d.FieldU32("magic", scalar.Hex, magicSymMapper)
+		magic := d.FieldU32("magic", magicSymMapper, scalar.Hex)
 		d.FieldValueU("bits", uint64(archBits))
 		d.FieldValueStr("endian", endianNames[magic])
-		cpuType = d.FieldU32("cputype", cpuTypes)
-		d.FieldU32("cpusubtype", cpuSubTypes[cpuType])
+		cpuType = d.FieldU32("cputype", cpuTypes, scalar.Hex)
+		d.FieldU32("cpusubtype", cpuSubTypes[cpuType], scalar.Hex)
 		d.FieldU32("filetype", fileTypes)
 		ncmds = d.FieldU32("ncdms")
 		d.FieldU32("sizeofncdms")
@@ -633,22 +637,20 @@ func fatParse(d *decode.D) {
 	var narchs uint64
 	var ofileOffsets []uint64
 	d.FieldStruct("fat_header", func(d *decode.D) {
-		d.FieldRawLen("magic", 4*8)
+		d.FieldU32("magic", scalar.Hex)
 		narchs = d.FieldU32("narchs")
 		narchsIdx := 0
 
-		d.FieldStructArrayLoop("archs", "arch", func() bool {
+		d.FieldStructArrayLoop("archs", "fat_arch", func() bool {
 			return narchsIdx < int(narchs)
 		}, func(d *decode.D) {
 			// parse FatArch
-			d.FieldStruct("fat_arch", func(d *decode.D) {
-				// beware cputype and cpusubtype changes from ofile header to fat header
-				cpuType := d.FieldU32("cputype", cpuTypes)
-				d.FieldU32("cpusubtype", cpuSubTypes[cpuType])
-				ofileOffsets = append(ofileOffsets, d.FieldU32("offset"))
-				d.FieldU32("size")
-				d.FieldU32("align")
-			})
+			// beware cputype and cpusubtype changes from ofile header to fat header
+			cpuType := d.FieldU32("cputype", cpuTypes, scalar.Hex)
+			d.FieldU32("cpusubtype", cpuSubTypes[cpuType], scalar.Hex)
+			ofileOffsets = append(ofileOffsets, d.FieldU32("offset"))
+			d.FieldU32("size")
+			d.FieldU32("align")
 			narchsIdx++
 		})
 	})
@@ -660,10 +662,6 @@ func fatParse(d *decode.D) {
 		ofileDecode(d)
 		nfilesIdx++
 	})
-}
-
-func intelSubTypeHelper(f, m uint64) uint64 {
-	return f + (m << 4)
 }
 
 func parseMachHeaderFlags(d *decode.D) {
