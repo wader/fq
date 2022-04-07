@@ -33,15 +33,15 @@ var frequencyIndexHzMap = scalar.UToSymU{
 	0xc: 7350,
 }
 
-var channelConfigurationNames = scalar.UToScalar{
-	0: {Description: "defined in AOT Specifc Config"},
-	1: {Description: "front-center"},
-	2: {Description: "front-left, front-right"},
-	3: {Description: "front-center, front-left, front-right"},
-	4: {Description: "front-center, front-left, front-right, back-center"},
-	5: {Description: "front-center, front-left, front-right, back-left, back-right"},
-	6: {Description: "front-center, front-left, front-right, back-left, back-right, LFE-channel"},
-	7: {Description: "front-center, front-left, front-right, side-left, side-right, back-left, back-right, LFE-channel"},
+var channelConfigurationNames = scalar.UToDescription{
+	0: "defined in AOT Specifc Config",
+	1: "front-center",
+	2: "front-left, front-right",
+	3: "front-center, front-left, front-right",
+	4: "front-center, front-left, front-right, back-center",
+	5: "front-center, front-left, front-right, back-left, back-right",
+	6: "front-center, front-left, front-right, back-left, back-right, LFE-channel",
+	7: "front-center, front-left, front-right, side-left, side-right, back-left, back-right, LFE-channel",
 }
 
 func ascDecoder(d *decode.D, in interface{}) interface{} {

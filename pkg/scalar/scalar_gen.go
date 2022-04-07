@@ -149,7 +149,6 @@ func (s S) SymU() uint64 {
 }
 
 // Map Bool -> Scalar
-
 type BoolToScalar map[bool]S
 
 func (m BoolToScalar) MapScalar(s S) (S, error) {
@@ -161,8 +160,18 @@ func (m BoolToScalar) MapScalar(s S) (S, error) {
 	return s, nil
 }
 
-// Map Bool -> sym Bool
+// Map Bool -> Scalar description
+type BoolToDescription map[bool]string
 
+func (m BoolToDescription) MapScalar(s S) (S, error) {
+	a := s.ActualBool()
+	if d, ok := m[a]; ok {
+		s.Description = d
+	}
+	return s, nil
+}
+
+// Map Bool -> Sym Bool
 type BoolToSymBool map[bool]bool
 
 func (m BoolToSymBool) MapScalar(s S) (S, error) {
@@ -172,8 +181,7 @@ func (m BoolToSymBool) MapScalar(s S) (S, error) {
 	return s, nil
 }
 
-// Map Bool -> sym F
-
+// Map Bool -> Sym F
 type BoolToSymF map[bool]float64
 
 func (m BoolToSymF) MapScalar(s S) (S, error) {
@@ -183,8 +191,7 @@ func (m BoolToSymF) MapScalar(s S) (S, error) {
 	return s, nil
 }
 
-// Map Bool -> sym S
-
+// Map Bool -> Sym S
 type BoolToSymS map[bool]int64
 
 func (m BoolToSymS) MapScalar(s S) (S, error) {
@@ -194,8 +201,7 @@ func (m BoolToSymS) MapScalar(s S) (S, error) {
 	return s, nil
 }
 
-// Map Bool -> sym Str
-
+// Map Bool -> Sym Str
 type BoolToSymStr map[bool]string
 
 func (m BoolToSymStr) MapScalar(s S) (S, error) {
@@ -205,8 +211,7 @@ func (m BoolToSymStr) MapScalar(s S) (S, error) {
 	return s, nil
 }
 
-// Map Bool -> sym U
-
+// Map Bool -> Sym U
 type BoolToSymU map[bool]uint64
 
 func (m BoolToSymU) MapScalar(s S) (S, error) {
@@ -217,7 +222,6 @@ func (m BoolToSymU) MapScalar(s S) (S, error) {
 }
 
 // Map S -> Scalar
-
 type SToScalar map[int64]S
 
 func (m SToScalar) MapScalar(s S) (S, error) {
@@ -229,8 +233,18 @@ func (m SToScalar) MapScalar(s S) (S, error) {
 	return s, nil
 }
 
-// Map S -> sym Bool
+// Map S -> Scalar description
+type SToDescription map[int64]string
 
+func (m SToDescription) MapScalar(s S) (S, error) {
+	a := s.ActualS()
+	if d, ok := m[a]; ok {
+		s.Description = d
+	}
+	return s, nil
+}
+
+// Map S -> Sym Bool
 type SToSymBool map[int64]bool
 
 func (m SToSymBool) MapScalar(s S) (S, error) {
@@ -240,8 +254,7 @@ func (m SToSymBool) MapScalar(s S) (S, error) {
 	return s, nil
 }
 
-// Map S -> sym F
-
+// Map S -> Sym F
 type SToSymF map[int64]float64
 
 func (m SToSymF) MapScalar(s S) (S, error) {
@@ -251,8 +264,7 @@ func (m SToSymF) MapScalar(s S) (S, error) {
 	return s, nil
 }
 
-// Map S -> sym S
-
+// Map S -> Sym S
 type SToSymS map[int64]int64
 
 func (m SToSymS) MapScalar(s S) (S, error) {
@@ -262,8 +274,7 @@ func (m SToSymS) MapScalar(s S) (S, error) {
 	return s, nil
 }
 
-// Map S -> sym Str
-
+// Map S -> Sym Str
 type SToSymStr map[int64]string
 
 func (m SToSymStr) MapScalar(s S) (S, error) {
@@ -273,8 +284,7 @@ func (m SToSymStr) MapScalar(s S) (S, error) {
 	return s, nil
 }
 
-// Map S -> sym U
-
+// Map S -> Sym U
 type SToSymU map[int64]uint64
 
 func (m SToSymU) MapScalar(s S) (S, error) {
@@ -285,7 +295,6 @@ func (m SToSymU) MapScalar(s S) (S, error) {
 }
 
 // Map Str -> Scalar
-
 type StrToScalar map[string]S
 
 func (m StrToScalar) MapScalar(s S) (S, error) {
@@ -297,8 +306,18 @@ func (m StrToScalar) MapScalar(s S) (S, error) {
 	return s, nil
 }
 
-// Map Str -> sym Bool
+// Map Str -> Scalar description
+type StrToDescription map[string]string
 
+func (m StrToDescription) MapScalar(s S) (S, error) {
+	a := s.ActualStr()
+	if d, ok := m[a]; ok {
+		s.Description = d
+	}
+	return s, nil
+}
+
+// Map Str -> Sym Bool
 type StrToSymBool map[string]bool
 
 func (m StrToSymBool) MapScalar(s S) (S, error) {
@@ -308,8 +327,7 @@ func (m StrToSymBool) MapScalar(s S) (S, error) {
 	return s, nil
 }
 
-// Map Str -> sym F
-
+// Map Str -> Sym F
 type StrToSymF map[string]float64
 
 func (m StrToSymF) MapScalar(s S) (S, error) {
@@ -319,8 +337,7 @@ func (m StrToSymF) MapScalar(s S) (S, error) {
 	return s, nil
 }
 
-// Map Str -> sym S
-
+// Map Str -> Sym S
 type StrToSymS map[string]int64
 
 func (m StrToSymS) MapScalar(s S) (S, error) {
@@ -330,8 +347,7 @@ func (m StrToSymS) MapScalar(s S) (S, error) {
 	return s, nil
 }
 
-// Map Str -> sym Str
-
+// Map Str -> Sym Str
 type StrToSymStr map[string]string
 
 func (m StrToSymStr) MapScalar(s S) (S, error) {
@@ -341,8 +357,7 @@ func (m StrToSymStr) MapScalar(s S) (S, error) {
 	return s, nil
 }
 
-// Map Str -> sym U
-
+// Map Str -> Sym U
 type StrToSymU map[string]uint64
 
 func (m StrToSymU) MapScalar(s S) (S, error) {
@@ -353,7 +368,6 @@ func (m StrToSymU) MapScalar(s S) (S, error) {
 }
 
 // Map U -> Scalar
-
 type UToScalar map[uint64]S
 
 func (m UToScalar) MapScalar(s S) (S, error) {
@@ -365,8 +379,18 @@ func (m UToScalar) MapScalar(s S) (S, error) {
 	return s, nil
 }
 
-// Map U -> sym Bool
+// Map U -> Scalar description
+type UToDescription map[uint64]string
 
+func (m UToDescription) MapScalar(s S) (S, error) {
+	a := s.ActualU()
+	if d, ok := m[a]; ok {
+		s.Description = d
+	}
+	return s, nil
+}
+
+// Map U -> Sym Bool
 type UToSymBool map[uint64]bool
 
 func (m UToSymBool) MapScalar(s S) (S, error) {
@@ -376,8 +400,7 @@ func (m UToSymBool) MapScalar(s S) (S, error) {
 	return s, nil
 }
 
-// Map U -> sym F
-
+// Map U -> Sym F
 type UToSymF map[uint64]float64
 
 func (m UToSymF) MapScalar(s S) (S, error) {
@@ -387,8 +410,7 @@ func (m UToSymF) MapScalar(s S) (S, error) {
 	return s, nil
 }
 
-// Map U -> sym S
-
+// Map U -> Sym S
 type UToSymS map[uint64]int64
 
 func (m UToSymS) MapScalar(s S) (S, error) {
@@ -398,8 +420,7 @@ func (m UToSymS) MapScalar(s S) (S, error) {
 	return s, nil
 }
 
-// Map U -> sym Str
-
+// Map U -> Sym Str
 type UToSymStr map[uint64]string
 
 func (m UToSymStr) MapScalar(s S) (S, error) {
@@ -409,8 +430,7 @@ func (m UToSymStr) MapScalar(s S) (S, error) {
 	return s, nil
 }
 
-// Map U -> sym U
-
+// Map U -> Sym U
 type UToSymU map[uint64]uint64
 
 func (m UToSymU) MapScalar(s S) (S, error) {

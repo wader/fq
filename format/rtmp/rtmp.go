@@ -109,8 +109,8 @@ var setPeerBandwidthLimitTypeName = scalar.UToSymStr{
 
 const timestampExtended = 0xff_ff_ff
 
-var timestampDescription = scalar.UToScalar{
-	timestampExtended: scalar.S{Description: "extended"},
+var timestampDescription = scalar.UToDescription{
+	timestampExtended: "extended",
 }
 
 const (

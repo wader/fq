@@ -469,7 +469,6 @@ $ fq -d mp4 dv /dash_audio_1.m4s
 0x0f0|                                    de 04 00 4c|            ...L|      data: raw bits 0xfc-0x4eb.7 (1008)
 0x100|61 76 63 35 38 2e 31 33 34 2e 31 30 30 00 02 5c|avc58.134.100..\|
 *    |until 0x4eb.7 (end) (1008)                     |                |
-     |                                               |                |  tracks[0:0]: 0x4ec-NA (0)
 $ fq -d mp4 dv /dash_video_init.mp4
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /dash_video_init.mp4 (mp4) 0x0-0x332.7 (819)
      |                                               |                |  boxes[0:2]: 0x0-0x332.7 (819)
@@ -964,4 +963,3 @@ $ fq -d mp4 dv /dash_video_1.m4s
 0x00c0|            00 00 02 5d 06 05 ff ff 59 dc 45 e9|    ...]....Y.E.|      data: raw bits 0xc4-0x1fd0.7 (7949)
 0x00d0|bd e6 d9 48 b7 96 2c d8 20 d9 23 ee ef 78 32 36|...H..,. .#..x26|
 *     |until 0x1fd0.7 (end) (7949)                    |                |
-      |                                               |                |  tracks[0:0]: 0x1fd1-NA (0)

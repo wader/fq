@@ -24,9 +24,9 @@ func init() {
 	})
 }
 
-var protectionAbsentNames = scalar.BoolToScalar{
-	true:  {Description: "No CRC"},
-	false: {Description: "Has CRC"},
+var protectionAbsentNames = scalar.BoolToDescription{
+	true:  "No CRC",
+	false: "Has CRC",
 }
 
 func adtsFrameDecoder(d *decode.D, in interface{}) interface{} {

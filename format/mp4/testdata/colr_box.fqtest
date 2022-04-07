@@ -15,4 +15,3 @@ $ fq -n '"000000106674797069736f6d0000020000000013636f6c726e636c7800010001000100
 0x10|                                          00 01|              ..|      transfer_function_index: "bt709" (1) (ITU-R BT1361) 0x1e-0x1f.7 (2)
 0x20|00 01                                          |..              |      matrix_index: "bt709" (1) (ITU-R BT1361 / IEC 61966-2-4 xvYCC709 / derived in SMPTE RP 177 Annex B) 0x20-0x21.7 (2)
 0x20|      00|                                      |  .|            |      color_range: 0 0x22-0x22.7 (1)
-    |                                               |                |  tracks[0:0]: 0x23-NA (0)

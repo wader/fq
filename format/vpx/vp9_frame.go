@@ -48,11 +48,11 @@ var vp9ColorSpaceNames = scalar.UToSymStr{
 	CS_RGB:       "rgb",
 }
 
-var vp9ProfilesMap = scalar.UToScalar{
-	0: {Description: "8 bit/sample, chroma subsampling: 4:2:0"},
-	1: {Description: "8 bit, chroma subsampling: 4:2:2, 4:4:0, 4:4:4"},
-	2: {Description: "10–12 bit, chroma subsampling: 4:2:0"},
-	3: {Description: "10–12 bit, chroma subsampling: 4:2:2, 4:4:0, 4:4:4"},
+var vp9ProfilesMap = scalar.UToDescription{
+	0: "8 bit/sample, chroma subsampling: 4:2:0",
+	1: "8 bit, chroma subsampling: 4:2:2, 4:4:0, 4:4:4",
+	2: "10–12 bit, chroma subsampling: 4:2:0",
+	3: "10–12 bit, chroma subsampling: 4:2:2, 4:4:0, 4:4:4",
 }
 
 func init() {

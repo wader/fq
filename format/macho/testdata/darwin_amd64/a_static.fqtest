@@ -2,7 +2,7 @@ $ fq -d macho dv a_static
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: a_static (macho) 0x0-0x8137.7 (33080)
       |                                               |                |  header{}: 0x0-0x1f.7 (32)
       |                                               |                |    arch_bits: 64 0x0-NA (0)
-0x0000|cf fa ed fe                                    |....            |    magic: 4277009103 (64-bit little endian) 0x0-0x3.7 (4)
+0x0000|cf fa ed fe                                    |....            |    magic: 0xfeedfacf (64-bit little endian) 0x0-0x3.7 (4)
       |                                               |                |    bits: 64 0x4-NA (0)
       |                                               |                |    endian: "little_endian" 0x4-NA (0)
 0x0000|            07 00 00 01                        |    ....        |    cputype: "cpu_type_x86_64" (16777223) 0x4-0x7.7 (4)
