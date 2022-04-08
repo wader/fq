@@ -21,6 +21,8 @@ type IPEndpoint struct {
 type TCPConnection struct {
 	ClientEndpoint IPEndpoint
 	ServerEndpoint IPEndpoint
+	HasStart       bool
+	HasEnd         bool
 	ClientToServer *bytes.Buffer
 	ServerToClient *bytes.Buffer
 
@@ -48,7 +50,7 @@ func (t *TCPConnection) Accept(tcp *layers.TCP, ci gopacket.CaptureInfo, dir rea
 }
 
 func (t *TCPConnection) ReassembledSG(sg reassembly.ScatterGather, ac reassembly.AssemblerContext) {
-	dir, _, _, skip := sg.Info()
+	dir, start, end, skip := sg.Info()
 	length, _ := sg.Lengths()
 
 	if skip == -1 {
@@ -58,6 +60,9 @@ func (t *TCPConnection) ReassembledSG(sg reassembly.ScatterGather, ac reassembly
 		// stream has missing bytes
 		return
 	}
+
+	t.HasStart = t.HasStart || start
+	t.HasEnd = t.HasEnd || end
 
 	data := sg.Fetch(length)
 

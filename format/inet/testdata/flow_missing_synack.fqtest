@@ -6,6 +6,8 @@ $ fq '.tcp_connections | d' flow_missing_synack.pcap
        |                                               |                |    source_port: 2061
        |                                               |                |    destination_ip: "192.168.1.3"
        |                                               |                |    destination_port: "https" (443) (http protocol over TLS/SSL)
+       |                                               |                |    has_start: false
+       |                                               |                |    has_end: false
  0x0000|16 03 01 00 9e 01 00 00 9a 03 01 50 83 9c fa fe|...........P....|    client_stream: raw bits
  *     |until 0x177.7 (end) (376)                      |                |
  0x0000|16 03 01 00 35 02 00 00 31 03 01 50 83 9c 9f e3|....5...1..P....|    server_stream: raw bits
@@ -15,6 +17,8 @@ $ fq '.tcp_connections | d' flow_missing_synack.pcap
        |                                               |                |    source_port: 2068
        |                                               |                |    destination_ip: "192.168.1.3"
        |                                               |                |    destination_port: "https" (443) (http protocol over TLS/SSL)
+       |                                               |                |    has_start: false
+       |                                               |                |    has_end: false
  0x0000|16 03 01 00 9e 01 00 00 9a 03 01 50 83 9d 00 a1|...........P....|    client_stream: raw bits
  *     |until 0x177.7 (end) (376)                      |                |
  0x0000|16 03 01 00 35 02 00 00 31 03 01 50 83 9c a5 e5|....5...1..P....|    server_stream: raw bits
@@ -24,6 +28,8 @@ $ fq '.tcp_connections | d' flow_missing_synack.pcap
        |                                               |                |    source_port: 2070
        |                                               |                |    destination_ip: "192.168.1.3"
        |                                               |                |    destination_port: "https" (443) (http protocol over TLS/SSL)
+       |                                               |                |    has_start: false
+       |                                               |                |    has_end: false
  0x0000|16 03 01 00 9e 01 00 00 9a 03 01 50 83 9d 03 f3|...........P....|    client_stream: raw bits
  *     |until 0x2ad.7 (end) (686)                      |                |
  0x0000|16 03 01 00 35 02 00 00 31 03 01 50 83 9c a8 b2|....5...1..P....|    server_stream: raw bits
@@ -33,6 +39,8 @@ $ fq '.tcp_connections | d' flow_missing_synack.pcap
        |                                               |                |    source_port: 2071
        |                                               |                |    destination_ip: "192.168.1.3"
        |                                               |                |    destination_port: "https" (443) (http protocol over TLS/SSL)
+       |                                               |                |    has_start: false
+       |                                               |                |    has_end: false
  0x0000|16 03 01 01 6e 01 00 01 6a 03 01 50 83 9d 03 d8|....n...j..P....|    client_stream: raw bits
  *     |until 0x2df.7 (end) (736)                      |                |
  0x0000|16 03 01 00 51 02 00 00 4d 03 01 50 83 9c a8 fc|....Q...M..P....|    server_stream: raw bits
@@ -42,6 +50,8 @@ $ fq '.tcp_connections | d' flow_missing_synack.pcap
        |                                               |                |    source_port: 2072
        |                                               |                |    destination_ip: "192.168.1.3"
        |                                               |                |    destination_port: "https" (443) (http protocol over TLS/SSL)
+       |                                               |                |    has_start: false
+       |                                               |                |    has_end: false
  0x0000|16 03 01 01 6e 01 00 01 6a 03 01 50 83 9d 03 94|....n...j..P....|    client_stream: raw bits
  *     |until 0x2fd.7 (end) (766)                      |                |
  0x0000|16 03 01 00 51 02 00 00 4d 03 01 50 83 9c a8 d8|....Q...M..P....|    server_stream: raw bits
@@ -51,6 +61,8 @@ $ fq '.tcp_connections | d' flow_missing_synack.pcap
        |                                               |                |    source_port: 2073
        |                                               |                |    destination_ip: "192.168.1.3"
        |                                               |                |    destination_port: "https" (443) (http protocol over TLS/SSL)
+       |                                               |                |    has_start: false
+       |                                               |                |    has_end: true
  0x0000|16 03 01 01 6e 01 00 01 6a 03 01 50 83 9d 0d 96|....n...j..P....|    client_stream: raw bits
  *     |until 0x2fd.7 (end) (766)                      |                |
  0x0000|16 03 01 00 51 02 00 00 4d 03 01 50 83 9c b2 45|....Q...M..P...E|    server_stream: raw bits
@@ -60,6 +72,8 @@ $ fq '.tcp_connections | d' flow_missing_synack.pcap
        |                                               |                |    source_port: 2078
        |                                               |                |    destination_ip: "192.168.1.3"
        |                                               |                |    destination_port: "https" (443) (http protocol over TLS/SSL)
+       |                                               |                |    has_start: false
+       |                                               |                |    has_end: false
  0x0000|16 03 01 01 6e 01 00 01 6a 03 01 50 83 9d d7 3a|....n...j..P...:|    client_stream: raw bits
  *     |until 0x38c.7 (end) (909)                      |                |
  0x0000|16 03 01 00 51 02 00 00 4d 03 01 50 83 9d 7c ac|....Q...M..P..|.|    server_stream: raw bits
@@ -69,6 +83,8 @@ $ fq '.tcp_connections | d' flow_missing_synack.pcap
        |                                               |                |    source_port: 2085
        |                                               |                |    destination_ip: "192.168.1.3"
        |                                               |                |    destination_port: "https" (443) (http protocol over TLS/SSL)
+       |                                               |                |    has_start: false
+       |                                               |                |    has_end: false
  0x0000|16 03 01 01 6e 01 00 01 6a 03 01 50 83 9e 02 2b|....n...j..P...+|    client_stream: raw bits
  *     |until 0x4a0.7 (end) (1185)                     |                |
  0x0000|16 03 01 00 51 02 00 00 4d 03 01 50 83 9d a7 8b|....Q...M..P....|    server_stream: raw bits

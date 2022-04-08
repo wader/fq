@@ -222,10 +222,43 @@ type UDPPayloadIn struct {
 	DestinationPort int
 }
 
+func (u UDPPayloadIn) IsPort(ports ...int) bool {
+	for _, p := range ports {
+		if u.DestinationPort == p || u.SourcePort == p {
+			return true
+		}
+	}
+	return false
+}
+
+func (u UDPPayloadIn) MustIsPort(fn func(format string, a ...interface{}), ports ...int) {
+	if !u.IsPort(ports...) {
+		fn("incorrect udp port %t src:%d dst:%d", u.DestinationPort, u.SourcePort)
+	}
+}
+
 type TCPStreamIn struct {
 	IsClient        bool
+	HasStart        bool
+	HasEnd          bool
 	SourcePort      int
 	DestinationPort int
+}
+
+func (t TCPStreamIn) IsPort(ports ...int) bool {
+	for _, p := range ports {
+		if (t.IsClient && t.DestinationPort == p) ||
+			(!t.IsClient && t.SourcePort == p) {
+			return true
+		}
+	}
+	return false
+}
+
+func (t TCPStreamIn) MustIsPort(fn func(format string, a ...interface{}), ports ...int) {
+	if !t.IsPort(ports...) {
+		fn("incorrect tcp port client %t src:%d dst:%d", t.IsClient, t.DestinationPort, t.SourcePort)
+	}
 }
 
 type X86_64In struct {

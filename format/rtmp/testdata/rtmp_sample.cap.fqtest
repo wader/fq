@@ -5,6 +5,8 @@ $ fq '.tcp_connections | dv' rtmp_sample.cap
       |                                               |                |    source_port: 1177 0x2268-NA (0)
       |                                               |                |    destination_ip: "192.168.43.128" 0x2268-NA (0)
       |                                               |                |    destination_port: "rtmp" (1935) (Real-Time Messaging Protocol) 0x2268-NA (0)
+      |                                               |                |    has_start: true 0x2268-NA (0)
+      |                                               |                |    has_end: false 0x2268-NA (0)
       |                                               |                |    client_stream{}: (rtmp) 0x0-0xd7b.7 (3452)
       |                                               |                |      handshake{}: 0x0-0xc00.7 (3073)
       |                                               |                |        c0{}: 0x0-0x0.7 (1)

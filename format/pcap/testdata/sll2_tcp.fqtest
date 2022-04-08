@@ -339,5 +339,7 @@ $ fq -d pcap dv /sll2_tcp.pcap
      |                                               |                |      source_port: 47174 0x1e5-NA (0)
      |                                               |                |      destination_ip: "127.0.0.1" 0x1e5-NA (0)
      |                                               |                |      destination_port: 1234 0x1e5-NA (0)
+     |                                               |                |      has_start: true 0x1e5-NA (0)
+     |                                               |                |      has_end: false 0x1e5-NA (0)
  0x00|74 65 73 74 0a|                                |test.|          |      client_stream: raw bits 0x0-0x4.7 (5)
      |                                               |                |      server_stream: raw bits 0x0-NA (0)
