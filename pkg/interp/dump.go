@@ -82,7 +82,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 		name = ""
 	}
 	if depth == 0 {
-		name = valuePathDecorated(nameV, deco)
+		name = valuePathExprDecorated(nameV, deco)
 	} else {
 		name = deco.ObjectKey.Wrap(name)
 	}
