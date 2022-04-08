@@ -303,11 +303,8 @@ func rtmpDecodeMessageType(d *decode.D, typ int, chunkSize *int) {
 
 func rtmpDecode(d *decode.D, in interface{}) interface{} {
 	var isClient bool
-
 	if tsi, ok := in.(format.TCPStreamIn); ok {
-		if tsi.DestinationPort != format.TCPPortRTMP {
-			d.Fatalf("wrong port")
-		}
+		tsi.MustIsPort(d.Fatalf, format.TCPPortRTMP)
 		isClient = tsi.IsClient
 	}
 

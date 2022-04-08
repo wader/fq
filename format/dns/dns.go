@@ -265,18 +265,8 @@ func dnsDecode(d *decode.D, isTCP bool) interface{} {
 }
 
 func dnsUDPDecode(d *decode.D, in interface{}) interface{} {
-	if tsi, ok := in.(format.TCPStreamIn); ok {
-		if tsi.DestinationPort == format.TCPPortDomain || tsi.SourcePort == format.TCPPortDomain {
-			return dnsDecode(d, true)
-		}
-		d.Fatalf("wrong port")
-	}
 	if upi, ok := in.(format.UDPPayloadIn); ok {
-		if upi.DestinationPort == format.UDPPortDomain || upi.SourcePort == format.UDPPortDomain ||
-			upi.DestinationPort == format.UDPPortMDNS || upi.SourcePort == format.UDPPortMDNS {
-			return dnsDecode(d, false)
-		}
-		d.Fatalf("wrong port")
+		upi.MustIsPort(d.Fatalf, format.UDPPortDomain, format.UDPPortMDNS)
 	}
 	return dnsDecode(d, false)
 }

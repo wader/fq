@@ -55,6 +55,8 @@ func fieldFlows(d *decode.D, fd *flowsdecoder.Decoder, tcpStreamFormat decode.Gr
 				d.FieldValueU("source_port", uint64(s.ClientEndpoint.Port), format.TCPPortMap)
 				d.FieldValueStr("destination_ip", s.ServerEndpoint.IP.String())
 				d.FieldValueU("destination_port", uint64(s.ServerEndpoint.Port), format.TCPPortMap)
+				d.FieldValueBool("has_start", s.HasStart)
+				d.FieldValueBool("has_end", s.HasEnd)
 				csBR := bitio.NewBitReader(s.ClientToServer.Bytes(), -1)
 				if dv, _, _ := d.TryFieldFormatBitBuf(
 					"client_stream",
@@ -62,6 +64,8 @@ func fieldFlows(d *decode.D, fd *flowsdecoder.Decoder, tcpStreamFormat decode.Gr
 					tcpStreamFormat,
 					format.TCPStreamIn{
 						IsClient:        true,
+						HasStart:        s.HasStart,
+						HasEnd:          s.HasEnd,
 						SourcePort:      s.ClientEndpoint.Port,
 						DestinationPort: s.ServerEndpoint.Port,
 					},
@@ -76,8 +80,10 @@ func fieldFlows(d *decode.D, fd *flowsdecoder.Decoder, tcpStreamFormat decode.Gr
 					tcpStreamFormat,
 					format.TCPStreamIn{
 						IsClient:        false,
-						SourcePort:      s.ClientEndpoint.Port,
-						DestinationPort: s.ServerEndpoint.Port,
+						HasStart:        s.HasStart,
+						HasEnd:          s.HasEnd,
+						SourcePort:      s.ServerEndpoint.Port,
+						DestinationPort: s.ClientEndpoint.Port,
 					},
 				); dv == nil {
 					d.FieldRootBitBuf("server_stream", scBR)

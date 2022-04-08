@@ -15,5 +15,8 @@ func init() {
 }
 
 func dnsTCPDecode(d *decode.D, in interface{}) interface{} {
+	if tsi, ok := in.(format.TCPStreamIn); ok {
+		tsi.MustIsPort(d.Fatalf, format.TCPPortDomain, format.TCPPortDomain)
+	}
 	return dnsDecode(d, true)
 }

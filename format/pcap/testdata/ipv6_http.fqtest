@@ -3487,6 +3487,8 @@ $ fq -d pcap dv ipv6_http.pcap
       |                                               |                |      source_port: 59201 0x23c7-NA (0)
       |                                               |                |      destination_ip: "2001:6f8:900:7c0::2" 0x23c7-NA (0)
       |                                               |                |      destination_port: "http" (80) (World Wide Web HTTP) 0x23c7-NA (0)
+      |                                               |                |      has_start: true 0x23c7-NA (0)
+      |                                               |                |      has_end: true 0x23c7-NA (0)
  0x000|47 45 54 20 2f 20 48 54 54 50 2f 31 2e 30 0d 0a|GET / HTTP/1.0..|      client_stream: raw bits 0x0-0xef.7 (240)
  *    |until 0xef.7 (end) (240)                       |                |
  0x000|48 54 54 50 2f 31 2e 31 20 32 30 30 20 4f 4b 0d|HTTP/1.1 200 OK.|      server_stream: raw bits 0x0-0x8d2.7 (2259)
