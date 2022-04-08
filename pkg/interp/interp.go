@@ -216,21 +216,20 @@ func valuePath(v *decode.Value) []interface{} {
 	return parts
 }
 
-func valuePathDecorated(v *decode.Value, d Decorator) string {
-	var parts []string
+func valuePathExprDecorated(v *decode.Value, d Decorator) string {
+	parts := []string{"."}
 
-	for _, p := range valuePath(v) {
+	for i, p := range valuePath(v) {
 		switch p := p.(type) {
 		case string:
-			parts = append(parts, ".", d.ObjectKey.Wrap(p))
+			if i > 0 {
+				parts = append(parts, ".")
+			}
+			parts = append(parts, d.ObjectKey.Wrap(p))
 		case int:
 			indexStr := strconv.Itoa(p)
 			parts = append(parts, fmt.Sprintf("%s%s%s", d.Index.F("["), d.Number.F(indexStr), d.Index.F("]")))
 		}
-	}
-
-	if len(parts) == 0 {
-		return "."
 	}
 
 	return strings.Join(parts, "")
