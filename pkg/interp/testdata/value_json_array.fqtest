@@ -108,13 +108,13 @@ error: expected an object but got: array
 json> (.)[0] |= empty
 []
 json> (.) | setpath(["a"]; 1)
-error: cannot check whether array has a key: a
+error: expected an object but got: array ([])
 json> (.) | setpath([0]; 1)
 [
   1
 ]
 json> (.) | delpaths([["a"]])
-error: cannot check whether array has a key: a
+error: expected an object but got: array ([])
 json> (.) | delpaths([[0]])
 []
 json> ^D
