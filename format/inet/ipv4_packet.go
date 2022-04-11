@@ -102,12 +102,13 @@ func decodeIPv4(d *decode.D, in interface{}) interface{} {
 
 	if moreFragments || fragmentOffset > 0 {
 		d.FieldRawLen("payload", dataLen)
-	} else if dv, _, _ := d.TryFieldFormatLen(
-		"payload",
-		dataLen,
-		ipv4IpPacketGroup,
-		format.IPPacketIn{Protocol: int(protocol)}); dv == nil {
-		d.FieldRawLen("payload", dataLen)
+	} else {
+		d.FieldFormatOrRawLen(
+			"payload",
+			dataLen,
+			ipv4IpPacketGroup,
+			format.IPPacketIn{Protocol: int(protocol)},
+		)
 	}
 
 	return nil

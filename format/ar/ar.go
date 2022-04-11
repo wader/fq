@@ -37,10 +37,7 @@ func decodeAr(d *decode.D, in interface{}) interface{} {
 				}
 				size := int64(sizeS.SymU()) * 8
 				d.FieldUTF8("ending_characters", 2)
-				dv, _, _ := d.TryFieldFormatLen("data", size, probeFormat, nil)
-				if dv == nil {
-					d.FieldRawLen("data", size)
-				}
+				d.FieldFormatOrRawLen("data", size, probeFormat, nil)
 				padding := d.AlignBits(16)
 				if padding > 0 {
 					d.FieldRawLen("padding", int64(padding))

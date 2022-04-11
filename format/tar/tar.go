@@ -66,10 +66,7 @@ func tarDecode(d *decode.D, in interface{}) interface{} {
 				d.FieldUTF8("prefix", 155, mapTrimSpaceNull)
 				d.FieldRawLen("header_block_padding", blockPadding(d), d.BitBufIsZero())
 
-				dv, _, _ := d.TryFieldFormatLen("data", size, probeFormat, nil)
-				if dv == nil {
-					d.FieldRawLen("data", size)
-				}
+				d.FieldFormatOrRawLen("data", size, probeFormat, nil)
 
 				d.FieldRawLen("data_block_padding", blockPadding(d), d.BitBufIsZero())
 			})

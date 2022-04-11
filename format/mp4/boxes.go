@@ -727,10 +727,7 @@ func init() {
 			d.FieldU24("flags")
 			d.FieldU32("reserved")
 			if ctx.isParent("covr") {
-				dv, _, _ := d.TryFieldFormatLen("data", d.BitsLeft(), imageFormat, nil)
-				if dv == nil {
-					d.FieldRawLen("data", d.BitsLeft())
-				}
+				d.FieldFormatOrRawLen("data", d.BitsLeft(), imageFormat, nil)
 			} else {
 				d.FieldUTF8("data", int(d.BitsLeft()/8))
 			}

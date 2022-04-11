@@ -239,12 +239,15 @@ var blockFns = map[uint64]func(d *decode.D, dc *decodeContext){
 			_ = fn(dc.flowDecoder, bs)
 		}
 
-		if dv, _, _ := d.TryFieldFormatLen("packet", int64(capturedLength)*8, pcapngLinkFrameFormat, format.LinkFrameIn{
-			Type:           linkType,
-			IsLittleEndian: d.Endian == decode.LittleEndian,
-		}); dv == nil {
-			d.FieldRawLen("packet", int64(capturedLength)*8)
-		}
+		d.FieldFormatOrRawLen(
+			"packet",
+			int64(capturedLength)*8,
+			pcapngLinkFrameFormat,
+			format.LinkFrameIn{
+				Type:           linkType,
+				IsLittleEndian: d.Endian == decode.LittleEndian,
+			},
+		)
 
 		d.FieldRawLen("padding", int64(d.AlignBits(32)))
 		d.FieldArray("options", func(d *decode.D) { decoodeOptions(d, enhancedPacketOptionsMap) })

@@ -34,13 +34,13 @@ func commentDecode(d *decode.D, in interface{}) interface{} {
 		userCommentLength := d.FieldU32("length")
 		userCommentStart := d.Pos()
 		userComment := d.FieldUTF8("comment", int(userCommentLength))
-		var metadataBlockPicturePreix = "METADATA_BLOCK_PICTURE="
+		var metadataBlockPicturePrefix = "METADATA_BLOCK_PICTURE="
 		var metadataBlockPicturePrefixLower = "metadata_block_picture="
 
-		if strings.HasPrefix(userComment, metadataBlockPicturePreix) ||
+		if strings.HasPrefix(userComment, metadataBlockPicturePrefix) ||
 			strings.HasPrefix(userComment, metadataBlockPicturePrefixLower) {
 
-			base64Offset := int64(len(metadataBlockPicturePreix)) * 8
+			base64Offset := int64(len(metadataBlockPicturePrefix)) * 8
 			base64Len := int64(len(userComment))*8 - base64Offset
 			_, base64Br, dv, _, _ := d.TryFieldReaderRangeFormat(
 				"picture",

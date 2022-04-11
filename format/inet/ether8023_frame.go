@@ -45,13 +45,12 @@ func decodeEthernetFrame(d *decode.D, in interface{}) interface{} {
 	d.FieldU("source", 48, mapUToEtherSym, scalar.Hex)
 	etherType := d.FieldU16("ether_type", format.EtherTypeMap, scalar.Hex)
 
-	if dv, _, _ := d.TryFieldFormatLen(
+	d.FieldFormatOrRawLen(
 		"payload",
 		d.BitsLeft(),
 		ether8023FrameInetPacketGroup,
-		format.InetPacketIn{EtherType: int(etherType)}); dv == nil {
-		d.FieldRawLen("payload", d.BitsLeft())
-	}
+		format.InetPacketIn{EtherType: int(etherType)},
+	)
 
 	return nil
 }

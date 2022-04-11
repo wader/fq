@@ -52,13 +52,12 @@ func decodeSLL2(d *decode.D, in interface{}) interface{} {
 	switch arpHdrType {
 	case arpHdrTypeLoopback, arpHdrTypeEther:
 		_ = d.FieldMustGet("link_address").TryScalarFn(mapUToEtherSym, scalar.Hex)
-		if dv, _, _ := d.TryFieldFormatLen(
+		d.FieldFormatOrRawLen(
 			"payload",
 			d.BitsLeft(),
 			sllPacket2InetPacketGroup,
-			format.LinkFrameIn{Type: int(protcolType)}); dv == nil {
-			d.FieldRawLen("payload", d.BitsLeft())
-		}
+			format.LinkFrameIn{Type: int(protcolType)},
+		)
 	default:
 		d.FieldRawLen("payload", d.BitsLeft())
 	}
