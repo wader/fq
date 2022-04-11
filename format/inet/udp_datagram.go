@@ -32,16 +32,15 @@ func decodeUDP(d *decode.D, in interface{}) interface{} {
 	d.FieldU16("checksum", scalar.Hex)
 
 	payloadLen := int64(length-8) * 8
-	if dv, _, _ := d.TryFieldFormatLen(
+	d.FieldFormatOrRawLen(
 		"payload",
 		payloadLen,
 		udpPayloadGroup,
 		format.UDPPayloadIn{
 			SourcePort:      int(sourcePort),
 			DestinationPort: int(destPort),
-		}); dv == nil {
-		d.FieldRawLen("payload", payloadLen)
-	}
+		},
+	)
 
 	// TODO: for checksum need to pass ipv4 pseudo header somehow
 

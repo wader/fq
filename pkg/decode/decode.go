@@ -969,6 +969,14 @@ func (d *D) FieldFormat(name string, group Group, inArg interface{}) (*Value, in
 	return dv, v
 }
 
+func (d *D) FieldFormatOrRaw(name string, group Group, inArg interface{}) (*Value, interface{}) {
+	dv, v, _ := d.TryFieldFormat(name, group, inArg)
+	if dv == nil {
+		d.FieldRawLen(name, d.BitsLeft())
+	}
+	return dv, v
+}
+
 func (d *D) TryFieldFormatLen(name string, nBits int64, group Group, inArg interface{}) (*Value, interface{}, error) {
 	dv, v, err := decode(d.Ctx, d.bitBuf, group, Options{
 		Name:        name,
@@ -995,6 +1003,14 @@ func (d *D) FieldFormatLen(name string, nBits int64, group Group, inArg interfac
 	dv, v, err := d.TryFieldFormatLen(name, nBits, group, inArg)
 	if dv == nil || dv.Errors() != nil {
 		d.IOPanic(err, "FieldFormatLen: TryFieldFormatLen")
+	}
+	return dv, v
+}
+
+func (d *D) FieldFormatOrRawLen(name string, nBits int64, group Group, inArg interface{}) (*Value, interface{}) {
+	dv, v, _ := d.TryFieldFormatLen(name, nBits, group, inArg)
+	if dv == nil {
+		d.FieldRawLen(name, nBits)
 	}
 	return dv, v
 }

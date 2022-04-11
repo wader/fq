@@ -129,13 +129,12 @@ func decodeSLL(d *decode.D, in interface{}) interface{} {
 	case arpHdrTypeLoopback, arpHdrTypeEther:
 		_ = d.FieldMustGet("link_address").TryScalarFn(mapUToEtherSym, scalar.Hex)
 		protcolType := d.FieldU16("protocol_type", format.EtherTypeMap, scalar.Hex)
-		if dv, _, _ := d.TryFieldFormatLen(
+		d.FieldFormatOrRawLen(
 			"payload",
 			d.BitsLeft(),
 			sllPacketInetPacketGroup,
-			format.LinkFrameIn{Type: int(protcolType)}); dv == nil {
-			d.FieldRawLen("payload", d.BitsLeft())
-		}
+			format.LinkFrameIn{Type: int(protcolType)},
+		)
 	default:
 		d.FieldU16LE("protocol_type")
 		d.FieldRawLen("payload", d.BitsLeft())

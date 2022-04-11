@@ -52,14 +52,13 @@ func decodeLoopbackFrame(d *decode.D, in interface{}) interface{} {
 
 	networkLayer := d.FieldU32("network_layer", bsdLookbackNetworkLayerMap, scalar.Hex)
 
-	if dv, _, _ := d.TryFieldFormatLen(
+	d.FieldFormatOrRawLen(
 		"payload",
 		d.BitsLeft(),
 		bsdLoopbackFrameInetPacketGroup,
 		// TODO: unknown mapped to ether type 0 is ok?
-		format.InetPacketIn{EtherType: bsdLoopbackFrameNetworkLayerEtherType[networkLayer]}); dv == nil {
-		d.FieldRawLen("payload", d.BitsLeft())
-	}
+		format.InetPacketIn{EtherType: bsdLoopbackFrameNetworkLayerEtherType[networkLayer]},
+	)
 
 	return nil
 }

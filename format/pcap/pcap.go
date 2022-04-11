@@ -85,12 +85,14 @@ func decodePcap(d *decode.D, in interface{}) interface{} {
 					_ = fn(fd, bs)
 				}
 
-				if dv, _, _ := d.TryFieldFormatLen("packet", int64(inclLen)*8, pcapLinkFrameFormat, format.LinkFrameIn{
-					Type:           linkType,
-					IsLittleEndian: d.Endian == decode.LittleEndian,
-				}); dv == nil {
-					d.FieldRawLen("packet", int64(inclLen)*8)
-				}
+				d.FieldFormatOrRawLen(
+					"packet",
+					int64(inclLen)*8,
+					pcapLinkFrameFormat, format.LinkFrameIn{
+						Type:           linkType,
+						IsLittleEndian: d.Endian == decode.LittleEndian,
+					},
+				)
 			})
 		}
 	})

@@ -430,9 +430,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			d.FieldUTF8("image_format", 3)
 			d.FieldU8("picture_type") // TODO: table
 			d.FieldStrFn("description", textNullFn(int(encoding)))
-			if dv, _, _ := d.TryFieldFormatLen("picture", d.BitsLeft(), imageFormat, nil); dv == nil {
-				d.FieldRawLen("picture", d.BitsLeft())
-			}
+			d.FieldFormatOrRawLen("picture", d.BitsLeft(), imageFormat, nil)
 		},
 
 		// <Header for 'Attached picture', ID: "APIC">
@@ -446,9 +444,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			d.FieldStrFn("mime_type", textNullFn(encodingUTF8))
 			d.FieldU8("picture_type") // TODO: table
 			d.FieldStrFn("description", textNullFn(int(encoding)))
-			if dv, _, _ := d.TryFieldFormatLen("picture", d.BitsLeft(), imageFormat, nil); dv == nil {
-				d.FieldRawLen("picture", d.BitsLeft())
-			}
+			d.FieldFormatOrRawLen("picture", d.BitsLeft(), imageFormat, nil)
 		},
 
 		// <Header for 'General encapsulated object', ID: "GEOB">
@@ -462,9 +458,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			d.FieldStrFn("mime_type", textNullFn(encodingUTF8))
 			d.FieldStrFn("filename", textNullFn(int(encoding)))
 			d.FieldStrFn("description", textNullFn(int(encoding)))
-			if dv, _, _ := d.TryFieldFormatLen("data", d.BitsLeft(), imageFormat, nil); dv == nil {
-				d.FieldRawLen("data", d.BitsLeft())
-			}
+			d.FieldFormatOrRawLen("data", d.BitsLeft(), imageFormat, nil)
 		},
 
 		// Unsynced lyrics/text "ULT"

@@ -162,14 +162,12 @@ func decodeIPv6(d *decode.D, in interface{}) interface{} {
 	// TODO: nextHeader 59 skip
 
 	payloadLen := int64(dataLength)*8 - extLen
-
-	if dv, _, _ := d.TryFieldFormatLen(
+	d.FieldFormatOrRawLen(
 		"payload",
 		payloadLen,
 		ipv4IpPacketGroup,
-		format.IPPacketIn{Protocol: int(nextHeader)}); dv == nil {
-		d.FieldRawLen("payload", payloadLen)
-	}
+		format.IPPacketIn{Protocol: int(nextHeader)},
+	)
 
 	return nil
 }
