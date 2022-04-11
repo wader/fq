@@ -48,12 +48,12 @@ var startAndStreamNames = scalar.URangeToScalar{
 	{Range: [2]uint64{0xbd, 0xbd}, S: scalar.S{Sym: "private_stream1"}},
 	{Range: [2]uint64{0xbe, 0xbe}, S: scalar.S{Sym: "padding_stream"}},
 	{Range: [2]uint64{0xbf, 0xbf}, S: scalar.S{Sym: "private_stream2"}},
-	{Range: [2]uint64{0xc0, 0xdf}, S: scalar.S{Sym: "mpeg1_or_mpeg2_audio_stream"}},
-	{Range: [2]uint64{0xe0, 0xef}, S: scalar.S{Sym: "mpeg1_or_mpeg2_video_stream"}},
+	{Range: [2]uint64{0xc0, 0xdf}, S: scalar.S{Sym: "audio_stream"}},
+	{Range: [2]uint64{0xe0, 0xef}, S: scalar.S{Sym: "video_stream"}},
 	{Range: [2]uint64{0xf0, 0xf0}, S: scalar.S{Sym: "ecm_stream"}},
 	{Range: [2]uint64{0xf1, 0xf1}, S: scalar.S{Sym: "emm_stream"}},
 	{Range: [2]uint64{0xf2, 0xf2}, S: scalar.S{Sym: "itu_t_rec_h_222_0"}},
-	{Range: [2]uint64{0xf3, 0xf3}, S: scalar.S{Sym: "iso/IEC_13522_stream"}},
+	{Range: [2]uint64{0xf3, 0xf3}, S: scalar.S{Sym: "iso_iec_13522_stream"}},
 	{Range: [2]uint64{0xf4, 0xf4}, S: scalar.S{Sym: "itu_t_rec_h_222_1_type_a"}},
 	{Range: [2]uint64{0xf5, 0xf5}, S: scalar.S{Sym: "itu_t_rec_h_222_1_type_b"}},
 	{Range: [2]uint64{0xf6, 0xf6}, S: scalar.S{Sym: "itu_t_rec_h_222_1_type_c"}},
@@ -62,6 +62,11 @@ var startAndStreamNames = scalar.URangeToScalar{
 	{Range: [2]uint64{0xf9, 0xf9}, S: scalar.S{Sym: "ancillary_stream"}},
 	{Range: [2]uint64{0xfa, 0xfe}, S: scalar.S{Sym: "reserved"}},
 	{Range: [2]uint64{0xff, 0xff}, S: scalar.S{Sym: "program_stream_directory"}},
+}
+
+var mpegVersion = scalar.UToDescription{
+	0b01: "MPEG2",
+	0b10: "MPEG1",
 }
 
 func pesPacketDecode(d *decode.D, in interface{}) interface{} {
@@ -92,25 +97,33 @@ func pesPacketDecode(d *decode.D, in interface{}) interface{} {
 
 		}
 	case startCode == packHeader:
-		d.FieldStruct("scr", func(d *decode.D) {
-			d.FieldU2("skip0")
-			scr0 := d.FieldU3("scr0")
-			d.FieldU1("skip1")
-			scr1 := d.FieldU15("scr1")
-			d.FieldU1("skip2")
-			scr2 := d.FieldU15("scr2")
-			d.FieldU1("skip3")
+		isMPEG2 := d.PeekBits(2) == 0b01
+		if isMPEG2 {
+			d.FieldU2("marker_bits0", mpegVersion)
+		} else {
+			d.FieldU4("marker_bits0", mpegVersion)
+		}
+		scr0 := d.FieldU3("system_clock0")
+		d.FieldU1("marker_bits1")
+		scr1 := d.FieldU15("system_clock1")
+		d.FieldU1("marker_bits2")
+		scr2 := d.FieldU15("system_clock2")
+		d.FieldU1("marker_bits3")
+		if isMPEG2 {
 			d.FieldU9("scr_ext")
-			d.FieldU1("skip4")
-			scr := scr0<<30 | scr1<<15 | scr2
-			d.FieldValueU("scr", scr)
-		})
+		}
+		d.FieldU1("marker_bits4")
+		scr := scr0<<30 | scr1<<15 | scr2
+		d.FieldValueU("scr", scr)
 		d.FieldU22("mux_rate")
-		d.FieldU2("skip0")
-		d.FieldU5("reserved")
-		packStuffingLength := d.FieldU3("pack_stuffing_length")
-		if packStuffingLength > 0 {
-			d.FieldRawLen("stuffing", int64(packStuffingLength*8))
+		d.FieldU1("marker_bits5")
+		if isMPEG2 {
+			d.FieldU1("marker_bits6")
+			d.FieldU5("reserved")
+			packStuffingLength := d.FieldU3("pack_stuffing_length")
+			if packStuffingLength > 0 {
+				d.FieldRawLen("stuffing", int64(packStuffingLength*8))
+			}
 		}
 	case startCode == systemHeader:
 		d.FieldU16("length")

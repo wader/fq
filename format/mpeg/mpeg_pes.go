@@ -5,8 +5,6 @@ package mpeg
 // http://dvdnav.mplayerhq.hu/dvdinfo/mpeghdrs.html
 
 import (
-	"log"
-
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/bitio"
@@ -50,7 +48,6 @@ func pesDecode(d *decode.D, in interface{}) interface{} {
 	for d.NotEnd() {
 		dv, v, err := d.TryFieldFormat("packet", pesPacketFormat, nil)
 		if dv == nil || err != nil {
-			log.Printf("errs[0]: %#+v\n", err)
 			break
 		}
 
