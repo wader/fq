@@ -102,9 +102,9 @@ json> (.) | setpath(["a"]; 1)
   "a": 1
 }
 json> (.) | setpath([0]; 1)
-error: cannot check whether object has a key: 0
+error: expected an array but got: object ({})
 json> (.) | delpaths([["a"]])
 {}
 json> (.) | delpaths([[0]])
-error: cannot check whether object has a key: 0
+error: expected an array but got: object ({})
 json> ^D

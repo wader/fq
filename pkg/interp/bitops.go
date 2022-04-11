@@ -35,8 +35,12 @@ func (i *Interp) bnot(c interface{}, a []interface{}) interface{} {
 
 func (i *Interp) bsl(c interface{}, a []interface{}) interface{} {
 	return gojq.BinopTypeSwitch(a[0], a[1],
-		func(l, r int) bool { return false }, // TODO: can be int safe i think
-		func(l, r int) interface{} { return l << r },
+		func(l, r int) interface{} {
+			if v := l << r; v>>r == l {
+				return v
+			}
+			return new(big.Int).Lsh(big.NewInt(int64(l)), uint(r))
+		},
 		func(l, r float64) interface{} { return int(l) << int(r) },
 		func(l, r *big.Int) interface{} { return new(big.Int).Lsh(l, uint(r.Uint64())) },
 		func(l, r string) interface{} { return &gojqextra.BinopTypeError{Name: "bsl", L: l, R: r} },
@@ -50,7 +54,6 @@ func (i *Interp) bsl(c interface{}, a []interface{}) interface{} {
 
 func (i *Interp) bsr(c interface{}, a []interface{}) interface{} {
 	return gojq.BinopTypeSwitch(a[0], a[1],
-		func(l, r int) bool { return true },
 		func(l, r int) interface{} { return l >> r },
 		func(l, r float64) interface{} { return int(l) >> int(r) },
 		func(l, r *big.Int) interface{} { return new(big.Int).Rsh(l, uint(r.Uint64())) },
@@ -65,7 +68,6 @@ func (i *Interp) bsr(c interface{}, a []interface{}) interface{} {
 
 func (i *Interp) band(c interface{}, a []interface{}) interface{} {
 	return gojq.BinopTypeSwitch(a[0], a[1],
-		func(l, r int) bool { return true },
 		func(l, r int) interface{} { return l & r },
 		func(l, r float64) interface{} { return int(l) & int(r) },
 		func(l, r *big.Int) interface{} { return new(big.Int).And(l, r) },
@@ -80,7 +82,6 @@ func (i *Interp) band(c interface{}, a []interface{}) interface{} {
 
 func (i *Interp) bor(c interface{}, a []interface{}) interface{} {
 	return gojq.BinopTypeSwitch(a[0], a[1],
-		func(l, r int) bool { return true },
 		func(l, r int) interface{} { return l | r },
 		func(l, r float64) interface{} { return int(l) | int(r) },
 		func(l, r *big.Int) interface{} { return new(big.Int).Or(l, r) },
@@ -95,7 +96,6 @@ func (i *Interp) bor(c interface{}, a []interface{}) interface{} {
 
 func (i *Interp) bxor(c interface{}, a []interface{}) interface{} {
 	return gojq.BinopTypeSwitch(a[0], a[1],
-		func(l, r int) bool { return true },
 		func(l, r int) interface{} { return l ^ r },
 		func(l, r float64) interface{} { return int(l) ^ int(r) },
 		func(l, r *big.Int) interface{} { return new(big.Int).Xor(l, r) },

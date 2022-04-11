@@ -595,9 +595,6 @@ func (v ArrayDecodeValue) JQValueSlice(start int, end int) interface{} {
 	}
 	return vs
 }
-func (v ArrayDecodeValue) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
-	return gojqextra.NonUpdatableTypeError{Key: fmt.Sprintf("%v", key), Typ: "array"}
-}
 func (v ArrayDecodeValue) JQValueEach() interface{} {
 	props := make([]gojq.PathValue, len(v.Compound.Children))
 	for i, f := range v.Compound.Children {
@@ -663,9 +660,6 @@ func (v StructDecodeValue) JQValueKey(name string) interface{} {
 		}
 	}
 	return nil
-}
-func (v StructDecodeValue) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
-	return gojqextra.NonUpdatableTypeError{Key: fmt.Sprintf("%v", key), Typ: "object"}
 }
 func (v StructDecodeValue) JQValueEach() interface{} {
 	props := make([]gojq.PathValue, len(v.Compound.Children))

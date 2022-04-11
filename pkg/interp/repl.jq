@@ -56,7 +56,7 @@ def _complete($line; $cursor_pos):
       end
     );
   # only complete if at end or there is a whitespace for now
-  if ($line[$cursor_pos] | . == "" or _is_separator) then
+  if ($line[$cursor_pos] | . == null or _is_separator) then
     ( . as $c
     | $line[0:$cursor_pos]
     | . as $line_query

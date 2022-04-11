@@ -11,8 +11,8 @@ github.com/mitchellh/mapstructure v1.4.3 h1:OVowDSCllw/YjdLkam3/sm7wEtOy59d8ndGg
 github.com/mitchellh/mapstructure v1.4.3/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/wader/gojq v0.12.1-0.20220328204148-c4e42b829bf0 h1:rj+NshD1TyRazsy+HoTBP3qwPdwjvfMFjGavikvJ/dc=
-github.com/wader/gojq v0.12.1-0.20220328204148-c4e42b829bf0/go.mod h1:Pq2wrnwmiGxsaT62vOTEXkH3J3tI81VHJ2K2ZePP6oI=
+github.com/wader/gojq v0.12.1-0.20220411171543-50797e8a0c45 h1:1ykRtREd6IKyPdybnBIj0BOtB09OF69l5caX80HvPA0=
+github.com/wader/gojq v0.12.1-0.20220411171543-50797e8a0c45/go.mod h1:Pq2wrnwmiGxsaT62vOTEXkH3J3tI81VHJ2K2ZePP6oI=
 github.com/wader/readline v0.0.0-20220117233529-692d84ca36e2 h1:AK4wt6mSypGEVAzUcCfrJqVD5hju+w81b9J/k0swV/8=
 github.com/wader/readline v0.0.0-20220117233529-692d84ca36e2/go.mod h1:TJUJCkylZhI0Z07t2Nw6l6Ck7NiZqUpnMlkjEzN7+yM=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=

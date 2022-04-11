@@ -403,9 +403,6 @@ func (b Binary) JQValueToGoJQ() interface{} {
 	}
 	return buf.String()
 }
-func (b Binary) JQValueUpdate(key interface{}, u interface{}, delpath bool) interface{} {
-	return gojqextra.NonUpdatableTypeError{Key: fmt.Sprintf("%v", key), Typ: "binary"}
-}
 
 func (b Binary) Display(w io.Writer, opts Options) error {
 	if opts.RawOutput {
