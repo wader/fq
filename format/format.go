@@ -68,6 +68,7 @@ const (
 	JSON                = "json"
 	MACHO               = "macho"
 	MATROSKA            = "matroska"
+	MBR                 = "mbr"
 	MP3                 = "mp3"
 	MP3_FRAME           = "mp3_frame"
 	MP4                 = "mp4"

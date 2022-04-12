@@ -24,6 +24,7 @@ import (
 	_ "github.com/wader/fq/format/json"
 	_ "github.com/wader/fq/format/macho"
 	_ "github.com/wader/fq/format/matroska"
+	_ "github.com/wader/fq/format/mbr"
 	_ "github.com/wader/fq/format/mp3"
 	_ "github.com/wader/fq/format/mp4"
 	_ "github.com/wader/fq/format/mpeg"
