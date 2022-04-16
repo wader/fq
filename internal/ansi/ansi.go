@@ -219,3 +219,27 @@ func Len(s string) int {
 	}
 	return l
 }
+
+// Truncate string to n visible characters.
+// An ANSI reset is added to the end of the string.
+func Truncate(s string, n int) string {
+	l := 0
+	inANSI := false
+	for i, c := range s {
+		if inANSI {
+			if c == 'm' {
+				inANSI = false
+			}
+		} else {
+			if c == '\x1b' {
+				inANSI = true
+			} else {
+				l++
+				if l >= n {
+					return s[0:i+1] + "\x1b[0m"
+				}
+			}
+		}
+	}
+	return s
+}

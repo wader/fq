@@ -3,9 +3,6 @@ package columnwriter
 import (
 	"bytes"
 	"io"
-	"strings"
-
-	"github.com/wader/fq/internal/ansi"
 )
 
 type Column struct {
@@ -65,8 +62,11 @@ func (c *Column) Flush() {
 
 // Writer maintins multiple column io.Writer:s. On Flush() row align them.
 type Writer struct {
-	Columns []*Column
-	w       io.Writer
+	Columns    []*Column
+	LenFn      func(s string) int
+	TruncateFn func(s string, l int) string
+
+	w io.Writer
 }
 
 func indexByteSet(s []byte, cs []byte) int {
@@ -95,6 +95,17 @@ func New(w io.Writer, widths []int) *Writer {
 }
 
 func (w *Writer) Flush() error {
+	const whitespace = "                                                                                "
+
+	lenFn := w.LenFn
+	if lenFn == nil {
+		lenFn = func(s string) int { return len(s) }
+	}
+	truncateFn := w.TruncateFn
+	if truncateFn == nil {
+		truncateFn = func(s string, l int) string { return s[0:l] }
+	}
+
 	for _, c := range w.Columns {
 		c.Flush()
 	}
@@ -108,21 +119,36 @@ func (w *Writer) Flush() error {
 	}
 
 	for i := 0; i < maxLines; i++ {
-		for _, c := range w.Columns {
+		for ci, c := range w.Columns {
 			var s string
 			if i < len(c.Lines) {
 				s = c.Lines[i]
-			}
-
-			if c.Width != -1 {
-				l := ansi.Len(s)
-				if l < c.Width {
-					s += strings.Repeat(" ", c.Width-l)
+				if c.Width != -1 && lenFn(s) > c.Width {
+					s = truncateFn(s, c.Width)
 				}
 			}
 
 			if _, err := w.w.Write([]byte(s)); err != nil {
 				return err
+			}
+
+			if ci < len(w.Columns)-1 && c.Width != -1 {
+				l := lenFn(s)
+				if l < c.Width {
+					n := c.Width - l
+					for n > 0 {
+						r := n
+						if r > len(whitespace) {
+							r = len(whitespace)
+						}
+						n -= r
+
+						if _, err := w.w.Write([]byte(whitespace[0:r])); err != nil {
+							return err
+						}
+					}
+
+				}
 			}
 		}
 		if _, err := w.w.Write([]byte{'\n'}); err != nil {

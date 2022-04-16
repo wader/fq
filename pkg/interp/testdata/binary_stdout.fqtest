@@ -1,8 +1,8 @@
-$ _STDOUT_ISTERMINAL=0 _STDOUT_HEX=1 NO_COLOR=1 fq -n '[1,1,1 | tobits] | tobytes'
+$ _STDOUT_IS_TERMINAL=0 _STDOUT_HEX=1 NO_COLOR=1 fq -n '[1,1,1 | tobits] | tobytes'
 07\
-$ _STDOUT_ISTERMINAL=0 _STDOUT_HEX=1 NO_COLOR=1 fq -n '[1,1,1 | tobits] | tobytes(3)'
+$ _STDOUT_IS_TERMINAL=0 _STDOUT_HEX=1 NO_COLOR=1 fq -n '[1,1,1 | tobits] | tobytes(3)'
 000007\
-$ _STDOUT_ISTERMINAL=0 _STDOUT_HEX=1 NO_COLOR=1 fq -n '[1,1,1 | tobits] | tobits(9)'
+$ _STDOUT_IS_TERMINAL=0 _STDOUT_HEX=1 NO_COLOR=1 fq -n '[1,1,1 | tobits] | tobits(9)'
 0380\
-$ _STDOUT_ISTERMINAL=0 _STDOUT_HEX=1 NO_COLOR=1 fq -n '[5 | tobits(12)], [3 | tobytes(3)] | tobytes'
+$ _STDOUT_IS_TERMINAL=0 _STDOUT_HEX=1 NO_COLOR=1 fq -n '[5 | tobits(12)], [3 | tobytes(3)] | tobytes'
 0005000003\

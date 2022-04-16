@@ -972,6 +972,7 @@ type Options struct {
 	Depth          int               `mapstructure:"depth"`
 	ArrayTruncate  int               `mapstructure:"array_truncate"`
 	Verbose        bool              `mapstructure:"verbose"`
+	Width          int               `mapstructure:"width"`
 	DecodeProgress bool              `mapstructure:"decode_progress"`
 	Color          bool              `mapstructure:"color"`
 	Colors         map[string]string `mapstructure:"colors"`

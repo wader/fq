@@ -141,7 +141,7 @@ func (cr *CaseRun) Stdout() interp.Output {
 
 	return CaseRunOutput{
 		Writer:   w,
-		Terminal: cr.getEnvInt("_STDOUT_ISTERMINAL") != 0,
+		Terminal: cr.getEnvInt("_STDOUT_IS_TERMINAL") != 0,
 		Width:    cr.getEnvInt("_STDOUT_WIDTH"),
 		Height:   cr.getEnvInt("_STDOUT_HEIGHT"),
 	}
@@ -155,11 +155,11 @@ func (cr *CaseRun) InterruptChan() chan struct{} { return nil }
 
 func (cr *CaseRun) Environ() []string {
 	env := []string{
-		"_STDIN_WIDTH=135",
+		"_STDIN_WIDTH=0",
 		"_STDIN_HEIGHT=25",
-		"_STDOUT_WIDTH=135",
+		"_STDOUT_WIDTH=0",
 		"_STDOUT_HEIGHT=25",
-		"_STDOUT_ISTERMINAL=1",
+		"_STDOUT_IS_TERMINAL=1",
 		"NO_COLOR=1",
 		"NO_DECODE_PROGRESS=1",
 		"COMPLETION_TIMEOUT=10", // increase to make -race work better
