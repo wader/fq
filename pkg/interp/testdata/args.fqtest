@@ -92,6 +92,7 @@ slurp               false
 string_input        false
 unicode             false
 verbose             false
+width               0
 $ fq --help formats
 aac_frame            Advanced Audio Coding frame
 adts                 Audio Data Transport Stream

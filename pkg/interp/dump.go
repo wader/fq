@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/wader/fq/internal/ansi"
 	"github.com/wader/fq/internal/asciiwriter"
 	"github.com/wader/fq/internal/bitioextra"
 	"github.com/wader/fq/internal/columnwriter"
@@ -17,6 +18,12 @@ import (
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
 )
+
+// TODO: refactor this
+// move more things to jq?
+// select columns?
+// smart line wrap instead of truncate?
+// binary/octal/... dump?
 
 // 0   12      34    56
 // addr|hexdump|ascii|field
@@ -36,7 +43,7 @@ func isCompound(v *decode.Value) bool {
 	}
 }
 
-func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, rootV *decode.Value, rootDepth int, addrWidth int, opts Options) error {
+func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, rootV *decode.Value, rootDepth int, addrWidth int, opts *Options) error {
 	deco := opts.Decorator
 	// no error check as we write into buffering column
 	// we check for err later for Flush()
@@ -356,11 +363,38 @@ func dump(v *decode.Value, w io.Writer, opts Options) error {
 		return nil
 	}))
 
-	cw := columnwriter.New(w, []int{maxAddrIndentWidth, 1, opts.LineBytes*3 - 1, 1, opts.LineBytes, 1, -1})
+	maxTreeWidth := -1
+	if opts.Width > 0 {
+		maxTreeWidth = opts.Width - (0 +
+			maxAddrIndentWidth +
+			1 +
+			(opts.LineBytes*3 - 1) +
+			1 +
+			opts.LineBytes +
+			1 +
+			0)
+	}
+
+	cw := columnwriter.New(
+		w,
+		[]int{
+			maxAddrIndentWidth,
+			1,
+			opts.LineBytes*3 - 1,
+			1,
+			opts.LineBytes,
+			1,
+			maxTreeWidth,
+		})
 	buf := make([]byte, 32*1024)
 
+	if opts.Color {
+		cw.LenFn = ansi.Len
+		cw.TruncateFn = ansi.Truncate
+	}
+
 	return v.WalkPreOrder(makeWalkFn(func(v *decode.Value, rootV *decode.Value, depth int, rootDepth int) error {
-		return dumpEx(v, buf, cw, depth, rootV, rootDepth, maxAddrIndentWidth-rootDepth, opts)
+		return dumpEx(v, buf, cw, depth, rootV, rootDepth, maxAddrIndentWidth-rootDepth, &opts)
 	}))
 }
 

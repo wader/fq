@@ -54,7 +54,7 @@ def _opt_build_default_fixed:
       include_path:       null,
       join_string:        "\n",
       null_input:         false,
-      raw_file:            [],
+      raw_file:           [],
       raw_output:         ($stdout.is_terminal | not),
       raw_string:         false,
       repl:               false,
@@ -152,20 +152,6 @@ def _opt_eval($rest):
       )
     }
   | with_entries(select(.value != null))
-  );
-
-
-def _opt_default_dynamic:
-  ( stdout_tty as $stdout
-  # TODO: intdiv 2 * 2 to get even number, nice or maybe not needed?
-  | ( if $stdout.is_terminal then [_intdiv(_intdiv($stdout.width; 8); 2) * 2, 4] | max
-      else 16
-      end
-    ) as $display_bytes
-  | {
-      display_bytes: $display_bytes,
-      line_bytes: $display_bytes,
-    }
   );
 
 # these _to* function do a bit for fuzzy string to type conversions
@@ -296,6 +282,7 @@ def _opt_cli_arg_tooptions:
       string_input:       (.string_input | _opt_toboolean),
       unicode:            (.unicode | _opt_toboolean),
       verbose:            (.verbose | _opt_toboolean),
+      width:              (.width | _opt_tonumber),
     }
   | with_entries(select(.value != null))
   );
@@ -336,6 +323,7 @@ def _opt_cli_arg_fromoptions:
       string_input:       (.string_input | _opt_fromboolean),
       unicode:            (.unicode | _opt_fromboolean),
       verbose:            (.verbose | _opt_fromboolean),
+      width:              (.width | _opt_tonumber),
     }
   | with_entries(select(.value != null))
   );
@@ -468,5 +456,18 @@ def _opt_cli_opts:
   };
 
 def options($opts):
-  [_opt_default_dynamic] + _options_stack + [$opts] | add;
+  ( stdout_tty as $stdout
+  | ( [{width: $stdout.width}]
+    + _options_stack
+    + [$opts]
+    )
+  | add
+  | ( if .width != 0 then [_intdiv(_intdiv(.width; 8); 2) * 2, 4] | max
+      else 16
+      end
+    ) as $display_bytes
+  # default if not set
+  | .display_bytes |= (. // $display_bytes)
+  | .line_bytes |= (. // $display_bytes)
+  );
 def options: options({});

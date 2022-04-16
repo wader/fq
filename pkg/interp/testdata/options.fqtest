@@ -83,7 +83,8 @@ $ fq -n options
   "slurp": false,
   "string_input": false,
   "unicode": false,
-  "verbose": false
+  "verbose": false,
+  "width": 0
 }
 $ fq -o addrbase=10 -n options.addrbase
 10
@@ -188,7 +189,7 @@ $ fq -n "options | {display_bytes, line_bytes}"
   "display_bytes": 16,
   "line_bytes": 16
 }
-$ _STDOUT_ISTERMINAL= fq -n  "options | {display_bytes, line_bytes}"
+$ _STDOUT_IS_TERMINAL= fq -n  "options | {display_bytes, line_bytes}"
 {
   "display_bytes": 16,
   "line_bytes": 16
@@ -198,10 +199,10 @@ $ _STDOUT_WIDTH=160 _STDOUT_HEIGHT=40 fq -n  "options | {display_bytes, line_byt
   "display_bytes": 20,
   "line_bytes": 20
 }
-$ _STDOUT_ISTERMINAL= _STDOUT_WIDTH=160 _STDOUT_HEIGHT=40 fq -n  "options | {display_bytes, line_bytes}"
+$ _STDOUT_IS_TERMINAL= _STDOUT_WIDTH=160 _STDOUT_HEIGHT=40 fq -n  "options | {display_bytes, line_bytes}"
 {
-  "display_bytes": 16,
-  "line_bytes": 16
+  "display_bytes": 20,
+  "line_bytes": 20
 }
 $ fq -in
 null> options | {display_bytes, line_bytes}
