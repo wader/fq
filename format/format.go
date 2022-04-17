@@ -33,6 +33,7 @@ const (
 	BENCODE             = "bencode"
 	BSD_LOOPBACK_FRAME  = "bsd_loopback_frame"
 	BSON                = "bson"
+	BLKDAT              = "blkdat"
 	BZIP2               = "bzip2"
 	CBOR                = "cbor"
 	DNS                 = "dns"
