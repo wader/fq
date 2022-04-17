@@ -3,6 +3,7 @@ $ fq -n _registry.groups.probe
   "adts",
   "ar",
   "avro_ocf",
+  "bitcoin_blkdat",
   "bzip2",
   "elf",
   "flac",

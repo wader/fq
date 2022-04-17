@@ -179,6 +179,34 @@ out   # Supports torepr
 out   ... | bencode | torepr
 out References and links
 out   https://wiki.theory.org/BitTorrentSpecification#Bencoding
+"help(bitcoin_blkdat)"
+out bitcoin_blkdat: Bitcoin blk.dat decoder
+out Examples:
+out   # Decode file as bitcoin_blkdat
+out   $ fq -d bitcoin_blkdat . file
+out   # Decode value as bitcoin_blkdat
+out   ... | bitcoin_blkdat
+"help(bitcoin_block)"
+out bitcoin_block: Bitcoin block decoder
+out Examples:
+out   # Decode file as bitcoin_block
+out   $ fq -d bitcoin_block . file
+out   # Decode value as bitcoin_block
+out   ... | bitcoin_block
+"help(bitcoin_script)"
+out bitcoin_script: Bitcoin script decoder
+out Examples:
+out   # Decode file as bitcoin_script
+out   $ fq -d bitcoin_script . file
+out   # Decode value as bitcoin_script
+out   ... | bitcoin_script
+"help(bitcoin_transaction)"
+out bitcoin_transaction: Bitcoin transaction decoder
+out Examples:
+out   # Decode file as bitcoin_transaction
+out   $ fq -d bitcoin_transaction . file
+out   # Decode value as bitcoin_transaction
+out   ... | bitcoin_transaction
 "help(bsd_loopback_frame)"
 out bsd_loopback_frame: BSD loopback frame decoder
 out Examples:

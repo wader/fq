@@ -114,6 +114,10 @@ avc_sei              H.264/AVC Supplemental Enhancement Information
 avc_sps              H.264/AVC Sequence Parameter Set
 avro_ocf             Avro object container file
 bencode              BitTorrent bencoding
+bitcoin_blkdat       Bitcoin blk.dat
+bitcoin_block        Bitcoin block
+bitcoin_script       Bitcoin script
+bitcoin_transaction  Bitcoin transaction
 bsd_loopback_frame   BSD loopback frame
 bson                 Binary JSON
 bzip2                bzip2 compression
