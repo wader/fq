@@ -155,9 +155,9 @@ func (cr *CaseRun) InterruptChan() chan struct{} { return nil }
 
 func (cr *CaseRun) Environ() []string {
 	env := []string{
-		"_STDIN_WIDTH=0",
+		"_STDIN_WIDTH=135",
 		"_STDIN_HEIGHT=25",
-		"_STDOUT_WIDTH=0",
+		"_STDOUT_WIDTH=135",
 		"_STDOUT_HEIGHT=25",
 		"_STDOUT_IS_TERMINAL=1",
 		"NO_COLOR=1",
