@@ -1,7 +1,6 @@
 package interp
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"io"
@@ -399,22 +398,10 @@ func dump(v *decode.Value, w io.Writer, opts Options) error {
 }
 
 func hexdump(w io.Writer, bv Binary, opts Options) error {
-	br, err := bv.toReader()
+	br, err := bitioextra.Range(bv.br, bv.r.Start, bv.r.Len)
 	if err != nil {
 		return err
 	}
-
-	cBR, err := bitioextra.Clone(bv.br)
-	if err != nil {
-		return err
-	}
-
-	bytesB := &bytes.Buffer{}
-	if _, err := bitioextra.CopyBits(bytesB, cBR); err != nil {
-		return err
-	}
-
-	biib := bitio.NewBitReader(bytesB.Bytes(), -1)
 
 	// TODO: hack
 	opts.Verbose = true
@@ -423,7 +410,7 @@ func hexdump(w io.Writer, bv Binary, opts Options) error {
 			// TODO: hack
 			V:          &scalar.S{Actual: br},
 			Range:      bv.r,
-			RootReader: biib,
+			RootReader: bv.br,
 		},
 		w,
 		opts,
