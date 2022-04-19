@@ -362,18 +362,6 @@ func dump(v *decode.Value, w io.Writer, opts Options) error {
 		return nil
 	}))
 
-	maxTreeWidth := -1
-	if opts.Width > 0 {
-		maxTreeWidth = opts.Width - (0 +
-			maxAddrIndentWidth +
-			1 +
-			(opts.LineBytes*3 - 1) +
-			1 +
-			opts.LineBytes +
-			1 +
-			0)
-	}
-
 	cw := columnwriter.New(
 		w,
 		[]int{
@@ -383,7 +371,7 @@ func dump(v *decode.Value, w io.Writer, opts Options) error {
 			1,
 			opts.LineBytes,
 			1,
-			maxTreeWidth,
+			-1,
 		})
 	buf := make([]byte, 32*1024)
 
