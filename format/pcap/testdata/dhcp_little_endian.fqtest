@@ -1,7 +1,7 @@
 # from https://wiki.wireshark.org/Development/PcapNg
 # TODO: move once we can have decode value tests somehow
 $ fq '.[0].blocks[0]' /dhcp_little_endian.pcapng
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].blocks[0]{}:
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].blocks[0]{}: block
 0x00|0a 0d 0d 0a                                    |....            |  type: "section_header" (0xa0d0d0a) (Section Header Block)
 0x00|            1c 00 00 00                        |    ....        |  length: 28
 0x00|                        4d 3c 2b 1a            |        M<+.    |  byte_order_magic: "little_endian" (0x4d3c2b1a)

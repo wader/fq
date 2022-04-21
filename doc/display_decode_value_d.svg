@@ -1,4 +1,4 @@
-<svg viewBox="0 0 880 224" width="880" height="224" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg viewBox="0 0 912 224" width="912" height="224" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <style>
         rect { shape-rendering: crispEdges; }
         text {
@@ -159,6 +159,9 @@
     <text x="856" y="16">{</text>
     <text x="864" y="16">}</text>
     <text x="872" y="16">:</text>
+    <text x="888" y="16">b</text>
+    <text x="896" y="16">o</text>
+    <text x="904" y="16">x</text>
     <text x="0" y="32" style="fill: #bbbb00">0</text>
     <text x="8" y="32" style="fill: #bbbb00">x</text>
     <text x="16" y="32" style="fill: #bbbb00">d</text>
@@ -339,6 +342,11 @@
     <text x="624" y="144">{</text>
     <text x="632" y="144">}</text>
     <text x="640" y="144">:</text>
+    <text x="656" y="144">e</text>
+    <text x="664" y="144">n</text>
+    <text x="672" y="144">t</text>
+    <text x="680" y="144">r</text>
+    <text x="688" y="144">y</text>
     <text x="0" y="160" style="fill: #bbbb00">0</text>
     <text x="8" y="160" style="fill: #bbbb00">x</text>
     <text x="16" y="160" style="fill: #bbbb00">d</text>

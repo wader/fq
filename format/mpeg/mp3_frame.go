@@ -303,41 +303,41 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 
 			// TODO: mpeg_version 2 use 1, otherwise 2
 			granuleCount := 2
-			granuleNr := 0
-			d.FieldStructArrayLoop("granules", "granule", func() bool { return granuleNr < granuleCount }, func(d *decode.D) {
-				channelNr := 0
-				d.FieldStructArrayLoop("channels", "channel", func() bool { return channelNr < channelCount }, func(d *decode.D) {
-					// TODO: tables and interpret values a bit
-					d.FieldU12("part2_3_length")
-					d.FieldU9("big_values")
-					d.FieldU8("global_gain")
-					d.FieldU4("scalefac_compress")
-					blocksplitFlag := d.FieldU1("blocksplit_flag")
+			d.FieldArray("granules", func(d *decode.D) {
+				for i := 0; i < granuleCount; i++ {
+					d.FieldArray("granule", func(d *decode.D) {
+						for j := 0; j < channelCount; j++ {
+							d.FieldStruct("channel", func(d *decode.D) {
+								// TODO: tables and interpret values a bit
+								d.FieldU12("part2_3_length")
+								d.FieldU9("big_values")
+								d.FieldU8("global_gain")
+								d.FieldU4("scalefac_compress")
+								blocksplitFlag := d.FieldU1("blocksplit_flag")
 
-					if blocksplitFlag == 1 {
-						d.FieldU2("block_type", blockTypeNames)
-						d.FieldU1("switch_point")
-						d.FieldU5("table_select0")
-						d.FieldU5("table_select1")
-						d.FieldU3("subblock_gain0")
-						d.FieldU3("subblock_gain1")
-						d.FieldU3("subblock_gain2")
-					} else {
-						d.FieldU5("table_select0")
-						d.FieldU5("table_select1")
-						d.FieldU5("table_select2")
-						d.FieldU4("region_address1")
-						d.FieldU3("region_address2")
-					}
+								if blocksplitFlag == 1 {
+									d.FieldU2("block_type", blockTypeNames)
+									d.FieldU1("switch_point")
+									d.FieldU5("table_select0")
+									d.FieldU5("table_select1")
+									d.FieldU3("subblock_gain0")
+									d.FieldU3("subblock_gain1")
+									d.FieldU3("subblock_gain2")
+								} else {
+									d.FieldU5("table_select0")
+									d.FieldU5("table_select1")
+									d.FieldU5("table_select2")
+									d.FieldU4("region_address1")
+									d.FieldU3("region_address2")
+								}
 
-					d.FieldU1("preflag")
-					d.FieldU1("scalefac_scale")
-					d.FieldU1("count1table_select")
-
-					channelNr++
-				})
-
-				granuleNr++
+								d.FieldU1("preflag")
+								d.FieldU1("scalefac_scale")
+								d.FieldU1("count1table_select")
+							})
+						}
+					})
+				}
 			})
 		})
 	}

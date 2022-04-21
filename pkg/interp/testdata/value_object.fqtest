@@ -129,44 +129,40 @@ mp3> .headers[0].flags.a = 1
       "padding": "<5>AAAAAAA=",
       "side_info": {
         "granules": [
-          {
-            "channels": [
-              {
-                "big_values": 0,
-                "blocksplit_flag": 0,
-                "count1table_select": 0,
-                "global_gain": 0,
-                "part2_3_length": 0,
-                "preflag": 0,
-                "region_address1": 0,
-                "region_address2": 0,
-                "scalefac_compress": 0,
-                "scalefac_scale": 0,
-                "table_select0": 0,
-                "table_select1": 0,
-                "table_select2": 0
-              }
-            ]
-          },
-          {
-            "channels": [
-              {
-                "big_values": 0,
-                "blocksplit_flag": 0,
-                "count1table_select": 0,
-                "global_gain": 0,
-                "part2_3_length": 0,
-                "preflag": 0,
-                "region_address1": 0,
-                "region_address2": 0,
-                "scalefac_compress": 0,
-                "scalefac_scale": 0,
-                "table_select0": 0,
-                "table_select1": 0,
-                "table_select2": 0
-              }
-            ]
-          }
+          [
+            {
+              "big_values": 0,
+              "blocksplit_flag": 0,
+              "count1table_select": 0,
+              "global_gain": 0,
+              "part2_3_length": 0,
+              "preflag": 0,
+              "region_address1": 0,
+              "region_address2": 0,
+              "scalefac_compress": 0,
+              "scalefac_scale": 0,
+              "table_select0": 0,
+              "table_select1": 0,
+              "table_select2": 0
+            }
+          ],
+          [
+            {
+              "big_values": 0,
+              "blocksplit_flag": 0,
+              "count1table_select": 0,
+              "global_gain": 0,
+              "part2_3_length": 0,
+              "preflag": 0,
+              "region_address1": 0,
+              "region_address2": 0,
+              "scalefac_compress": 0,
+              "scalefac_scale": 0,
+              "table_select0": 0,
+              "table_select1": 0,
+              "table_select2": 0
+            }
+          ]
         ],
         "main_data_end": 0,
         "private_bits": 0,
@@ -330,48 +326,44 @@ mp3> .headers[0].flags.a = 1
       "other_data": "<0>",
       "side_info": {
         "granules": [
-          {
-            "channels": [
-              {
-                "big_values": 33,
-                "block_type": "start block",
-                "blocksplit_flag": 1,
-                "count1table_select": 0,
-                "global_gain": 151,
-                "part2_3_length": 651,
-                "preflag": 0,
-                "scalefac_compress": 2,
-                "scalefac_scale": 0,
-                "subblock_gain0": 0,
-                "subblock_gain1": 0,
-                "subblock_gain2": 0,
-                "switch_point": 0,
-                "table_select0": 25,
-                "table_select1": 9
-              }
-            ]
-          },
-          {
-            "channels": [
-              {
-                "big_values": 77,
-                "block_type": "3 short windows",
-                "blocksplit_flag": 1,
-                "count1table_select": 0,
-                "global_gain": 172,
-                "part2_3_length": 769,
-                "preflag": 0,
-                "scalefac_compress": 9,
-                "scalefac_scale": 0,
-                "subblock_gain0": 0,
-                "subblock_gain1": 0,
-                "subblock_gain2": 0,
-                "switch_point": 0,
-                "table_select0": 24,
-                "table_select1": 8
-              }
-            ]
-          }
+          [
+            {
+              "big_values": 33,
+              "block_type": "start block",
+              "blocksplit_flag": 1,
+              "count1table_select": 0,
+              "global_gain": 151,
+              "part2_3_length": 651,
+              "preflag": 0,
+              "scalefac_compress": 2,
+              "scalefac_scale": 0,
+              "subblock_gain0": 0,
+              "subblock_gain1": 0,
+              "subblock_gain2": 0,
+              "switch_point": 0,
+              "table_select0": 25,
+              "table_select1": 9
+            }
+          ],
+          [
+            {
+              "big_values": 77,
+              "block_type": "3 short windows",
+              "blocksplit_flag": 1,
+              "count1table_select": 0,
+              "global_gain": 172,
+              "part2_3_length": 769,
+              "preflag": 0,
+              "scalefac_compress": 9,
+              "scalefac_scale": 0,
+              "subblock_gain0": 0,
+              "subblock_gain1": 0,
+              "subblock_gain2": 0,
+              "switch_point": 0,
+              "table_select0": 24,
+              "table_select1": 8
+            }
+          ]
         ],
         "main_data_end": 0,
         "private_bits": 0,
@@ -401,46 +393,42 @@ mp3> .headers[0].flags.a = 1
       "padding_byte": "<1>qg==",
       "side_info": {
         "granules": [
-          {
-            "channels": [
-              {
-                "big_values": 28,
-                "block_type": "end",
-                "blocksplit_flag": 1,
-                "count1table_select": 0,
-                "global_gain": 148,
-                "part2_3_length": 581,
-                "preflag": 0,
-                "scalefac_compress": 9,
-                "scalefac_scale": 0,
-                "subblock_gain0": 0,
-                "subblock_gain1": 0,
-                "subblock_gain2": 0,
-                "switch_point": 0,
-                "table_select0": 12,
-                "table_select1": 6
-              }
-            ]
-          },
-          {
-            "channels": [
-              {
-                "big_values": 0,
-                "blocksplit_flag": 0,
-                "count1table_select": 0,
-                "global_gain": 210,
-                "part2_3_length": 0,
-                "preflag": 1,
-                "region_address1": 0,
-                "region_address2": 0,
-                "scalefac_compress": 0,
-                "scalefac_scale": 0,
-                "table_select0": 0,
-                "table_select1": 0,
-                "table_select2": 0
-              }
-            ]
-          }
+          [
+            {
+              "big_values": 28,
+              "block_type": "end",
+              "blocksplit_flag": 1,
+              "count1table_select": 0,
+              "global_gain": 148,
+              "part2_3_length": 581,
+              "preflag": 0,
+              "scalefac_compress": 9,
+              "scalefac_scale": 0,
+              "subblock_gain0": 0,
+              "subblock_gain1": 0,
+              "subblock_gain2": 0,
+              "switch_point": 0,
+              "table_select0": 12,
+              "table_select1": 6
+            }
+          ],
+          [
+            {
+              "big_values": 0,
+              "blocksplit_flag": 0,
+              "count1table_select": 0,
+              "global_gain": 210,
+              "part2_3_length": 0,
+              "preflag": 1,
+              "region_address1": 0,
+              "region_address2": 0,
+              "scalefac_compress": 0,
+              "scalefac_scale": 0,
+              "table_select0": 0,
+              "table_select1": 0,
+              "table_select2": 0
+            }
+          ]
         ],
         "main_data_end": 9,
         "private_bits": 0,
@@ -513,44 +501,40 @@ mp3> .headers[0].flags.a |= empty
       "padding": "<5>AAAAAAA=",
       "side_info": {
         "granules": [
-          {
-            "channels": [
-              {
-                "big_values": 0,
-                "blocksplit_flag": 0,
-                "count1table_select": 0,
-                "global_gain": 0,
-                "part2_3_length": 0,
-                "preflag": 0,
-                "region_address1": 0,
-                "region_address2": 0,
-                "scalefac_compress": 0,
-                "scalefac_scale": 0,
-                "table_select0": 0,
-                "table_select1": 0,
-                "table_select2": 0
-              }
-            ]
-          },
-          {
-            "channels": [
-              {
-                "big_values": 0,
-                "blocksplit_flag": 0,
-                "count1table_select": 0,
-                "global_gain": 0,
-                "part2_3_length": 0,
-                "preflag": 0,
-                "region_address1": 0,
-                "region_address2": 0,
-                "scalefac_compress": 0,
-                "scalefac_scale": 0,
-                "table_select0": 0,
-                "table_select1": 0,
-                "table_select2": 0
-              }
-            ]
-          }
+          [
+            {
+              "big_values": 0,
+              "blocksplit_flag": 0,
+              "count1table_select": 0,
+              "global_gain": 0,
+              "part2_3_length": 0,
+              "preflag": 0,
+              "region_address1": 0,
+              "region_address2": 0,
+              "scalefac_compress": 0,
+              "scalefac_scale": 0,
+              "table_select0": 0,
+              "table_select1": 0,
+              "table_select2": 0
+            }
+          ],
+          [
+            {
+              "big_values": 0,
+              "blocksplit_flag": 0,
+              "count1table_select": 0,
+              "global_gain": 0,
+              "part2_3_length": 0,
+              "preflag": 0,
+              "region_address1": 0,
+              "region_address2": 0,
+              "scalefac_compress": 0,
+              "scalefac_scale": 0,
+              "table_select0": 0,
+              "table_select1": 0,
+              "table_select2": 0
+            }
+          ]
         ],
         "main_data_end": 0,
         "private_bits": 0,
@@ -714,48 +698,44 @@ mp3> .headers[0].flags.a |= empty
       "other_data": "<0>",
       "side_info": {
         "granules": [
-          {
-            "channels": [
-              {
-                "big_values": 33,
-                "block_type": "start block",
-                "blocksplit_flag": 1,
-                "count1table_select": 0,
-                "global_gain": 151,
-                "part2_3_length": 651,
-                "preflag": 0,
-                "scalefac_compress": 2,
-                "scalefac_scale": 0,
-                "subblock_gain0": 0,
-                "subblock_gain1": 0,
-                "subblock_gain2": 0,
-                "switch_point": 0,
-                "table_select0": 25,
-                "table_select1": 9
-              }
-            ]
-          },
-          {
-            "channels": [
-              {
-                "big_values": 77,
-                "block_type": "3 short windows",
-                "blocksplit_flag": 1,
-                "count1table_select": 0,
-                "global_gain": 172,
-                "part2_3_length": 769,
-                "preflag": 0,
-                "scalefac_compress": 9,
-                "scalefac_scale": 0,
-                "subblock_gain0": 0,
-                "subblock_gain1": 0,
-                "subblock_gain2": 0,
-                "switch_point": 0,
-                "table_select0": 24,
-                "table_select1": 8
-              }
-            ]
-          }
+          [
+            {
+              "big_values": 33,
+              "block_type": "start block",
+              "blocksplit_flag": 1,
+              "count1table_select": 0,
+              "global_gain": 151,
+              "part2_3_length": 651,
+              "preflag": 0,
+              "scalefac_compress": 2,
+              "scalefac_scale": 0,
+              "subblock_gain0": 0,
+              "subblock_gain1": 0,
+              "subblock_gain2": 0,
+              "switch_point": 0,
+              "table_select0": 25,
+              "table_select1": 9
+            }
+          ],
+          [
+            {
+              "big_values": 77,
+              "block_type": "3 short windows",
+              "blocksplit_flag": 1,
+              "count1table_select": 0,
+              "global_gain": 172,
+              "part2_3_length": 769,
+              "preflag": 0,
+              "scalefac_compress": 9,
+              "scalefac_scale": 0,
+              "subblock_gain0": 0,
+              "subblock_gain1": 0,
+              "subblock_gain2": 0,
+              "switch_point": 0,
+              "table_select0": 24,
+              "table_select1": 8
+            }
+          ]
         ],
         "main_data_end": 0,
         "private_bits": 0,
@@ -785,46 +765,42 @@ mp3> .headers[0].flags.a |= empty
       "padding_byte": "<1>qg==",
       "side_info": {
         "granules": [
-          {
-            "channels": [
-              {
-                "big_values": 28,
-                "block_type": "end",
-                "blocksplit_flag": 1,
-                "count1table_select": 0,
-                "global_gain": 148,
-                "part2_3_length": 581,
-                "preflag": 0,
-                "scalefac_compress": 9,
-                "scalefac_scale": 0,
-                "subblock_gain0": 0,
-                "subblock_gain1": 0,
-                "subblock_gain2": 0,
-                "switch_point": 0,
-                "table_select0": 12,
-                "table_select1": 6
-              }
-            ]
-          },
-          {
-            "channels": [
-              {
-                "big_values": 0,
-                "blocksplit_flag": 0,
-                "count1table_select": 0,
-                "global_gain": 210,
-                "part2_3_length": 0,
-                "preflag": 1,
-                "region_address1": 0,
-                "region_address2": 0,
-                "scalefac_compress": 0,
-                "scalefac_scale": 0,
-                "table_select0": 0,
-                "table_select1": 0,
-                "table_select2": 0
-              }
-            ]
-          }
+          [
+            {
+              "big_values": 28,
+              "block_type": "end",
+              "blocksplit_flag": 1,
+              "count1table_select": 0,
+              "global_gain": 148,
+              "part2_3_length": 581,
+              "preflag": 0,
+              "scalefac_compress": 9,
+              "scalefac_scale": 0,
+              "subblock_gain0": 0,
+              "subblock_gain1": 0,
+              "subblock_gain2": 0,
+              "switch_point": 0,
+              "table_select0": 12,
+              "table_select1": 6
+            }
+          ],
+          [
+            {
+              "big_values": 0,
+              "blocksplit_flag": 0,
+              "count1table_select": 0,
+              "global_gain": 210,
+              "part2_3_length": 0,
+              "preflag": 1,
+              "region_address1": 0,
+              "region_address2": 0,
+              "scalefac_compress": 0,
+              "scalefac_scale": 0,
+              "table_select0": 0,
+              "table_select1": 0,
+              "table_select2": 0
+            }
+          ]
         ],
         "main_data_end": 9,
         "private_bits": 0,

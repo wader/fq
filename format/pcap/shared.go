@@ -50,7 +50,7 @@ func fieldFlows(d *decode.D, fd *flowsdecoder.Decoder, tcpStreamFormat decode.Gr
 
 	d.FieldArray("tcp_connections", func(d *decode.D) {
 		for _, s := range fd.TCPConnections {
-			d.FieldStruct("flow", func(d *decode.D) {
+			d.FieldStruct("tcp_connection", func(d *decode.D) {
 				d.FieldValueStr("source_ip", s.ClientEndpoint.IP.String())
 				d.FieldValueU("source_port", uint64(s.ClientEndpoint.Port), format.TCPPortMap)
 				d.FieldValueStr("destination_ip", s.ServerEndpoint.IP.String())

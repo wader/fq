@@ -76,7 +76,7 @@ $ fq -o force=true -d png d /test.mp3
      |                                               |                |  error: png: BitBufRange: failed at position 0 (read size 2315363 seek pos 0): outside buffer
 0x000|49 44 33 04 00 00 00 00                        |ID3.....        |  signature: raw bits (invalid)
      |                                               |                |  chunks[0:1]:
-     |                                               |                |    [0]{}:
+     |                                               |                |    [0]{}: chunk
 0x000|                        00 23 54 53            |        .#TS    |      length: 2315347
 0x000|                                    53 45 00 00|            SE..|      type: "SE\x00\x00"
 0x000|                                    53         |            S   |      ancillary: true
@@ -92,7 +92,7 @@ $ fq -d raw 'png({force: true}) | d' /test.mp3
      |                                               |                |  error: png: BitBufRange: failed at position 0 (read size 2315363 seek pos 0): outside buffer
 0x000|49 44 33 04 00 00 00 00                        |ID3.....        |  signature: raw bits (invalid)
      |                                               |                |  chunks[0:1]:
-     |                                               |                |    [0]{}:
+     |                                               |                |    [0]{}: chunk
 0x000|                        00 23 54 53            |        .#TS    |      length: 2315347
 0x000|                                    53 45 00 00|            SE..|      type: "SE\x00\x00"
 0x000|                                    53         |            S   |      ancillary: true

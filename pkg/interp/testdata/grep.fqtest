@@ -64,7 +64,7 @@ mp3> grep_by(. == 44100)
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x1b0|               52                              |     R          |.frames[2].header.sample_rate: 44100 (0)
 mp3> grep_by(format == "id3v2")
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.headers[0]{}: (id3v2)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.headers[0]{}: header (id3v2)
 0x00|49 44 33                                       |ID3             |  magic: "ID3" (valid)
 0x00|         04                                    |   .            |  version: 4
 0x00|            00                                 |    .           |  revision: 0
