@@ -137,7 +137,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 			cfmt(colField, "%s", deco.Object.F("{}"))
 		}
 		cprint(colField, ":")
-		if opts.Verbose && isInArray {
+		if isInArray {
 			cfmt(colField, " %s", v.Name)
 		}
 		if vv.Description != "" {

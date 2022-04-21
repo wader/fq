@@ -608,7 +608,7 @@ $ fq -d pcap dv /http_gzip.cap
       |                                               |                |            payload: raw bits 0x6ab-NA (0)
       |                                               |                |  ipv4_reassembled[0:0]: 0x6ab-NA (0)
       |                                               |                |  tcp_connections[0:1]: 0x6ab-NA (0)
-      |                                               |                |    [0]{}: flow 0x6ab-NA (0)
+      |                                               |                |    [0]{}: tcp_connection 0x6ab-NA (0)
       |                                               |                |      source_ip: "192.168.69.2" 0x6ab-NA (0)
       |                                               |                |      source_port: 34059 0x6ab-NA (0)
       |                                               |                |      destination_ip: "192.168.69.1" 0x6ab-NA (0)

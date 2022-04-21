@@ -54,7 +54,7 @@ var iccProfileFormat decode.Group
 func init() {
 	registry.MustRegister(decode.Format{
 		Name:        format.MP4,
-		Description: "MPEG-4 file and similar",
+		Description: "ISOBMFF MPEG-4 part 12 and similar",
 		Groups: []string{
 			format.PROBE,
 			format.IMAGE, // avif
