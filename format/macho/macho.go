@@ -444,14 +444,15 @@ func ofileDecode(d *decode.D) {
 					// OPCODE_DECODER sectname==__text
 					d.FieldUTF8NullFixedLen("sectname", 16)
 					d.FieldUTF8NullFixedLen("segname", 16)
+					var size uint64
 					if archBits == 32 {
 						d.FieldU32("address", scalar.Hex)
-						d.FieldU32("size")
+						size = d.FieldU32("size")
 					} else {
 						d.FieldU64("address", scalar.Hex)
-						d.FieldU64("size")
+						size = d.FieldU64("size")
 					}
-					d.FieldU32("offset")
+					offset := d.FieldU32("offset")
 					d.FieldU32("align")
 					d.FieldU32("reloff")
 					d.FieldU32("nreloc")
@@ -463,6 +464,9 @@ func ofileDecode(d *decode.D) {
 					if archBits == 64 {
 						d.FieldU32("reserved3")
 					}
+					d.RangeFn(int64(offset)*8, int64(size)*8, func(d *decode.D) {
+						d.FieldRawLen("data", d.BitsLeft())
+					})
 					nsectIdx++
 				})
 		case LC_TWOLEVEL_HINTS:
@@ -610,9 +614,12 @@ func ofileDecode(d *decode.D) {
 			})
 		case LC_ENCRYPTION_INFO, LC_ENCRYPTION_INFO_64:
 			d.FieldStruct("encryption_info", func(d *decode.D) {
-				d.FieldU32("offset")
-				d.FieldU32("size")
+				offset := d.FieldU32("offset")
+				size := d.FieldU32("size")
 				d.FieldU32("id")
+				d.RangeFn(int64(offset)*8, int64(size)*8, func(d *decode.D) {
+					d.FieldRawLen("data", d.BitsLeft())
+				})
 			})
 		case LC_IDFVMLIB, LC_LOADFVMLIB:
 			d.FieldStruct("fvmlib", func(d *decode.D) {
