@@ -39,8 +39,8 @@ $ fq -d macho dv libbbb.so
 0x0010|                                 00            |           .    |      incrlink: false 0x1b.6-0x1b.6 (0.1)
 0x0010|                                 00            |           .    |      noundefs: false 0x1b.7-0x1b.7 (0.1)
 0x0010|                                    00 00 00 00|            ....|    reserved: raw bits (all zero) 0x1c-0x1f.7 (4)
-      |                                               |                |  load_commands[0:13]: 0x20-0x4c7.7 (1192)
-      |                                               |                |    [0]{}: load_command 0x20-0x1f7.7 (472)
+      |                                               |                |  load_commands[0:13]: 0x20-0x4017.7 (16376)
+      |                                               |                |    [0]{}: load_command 0x20-0x3ffb.7 (16348)
 0x0020|19 00 00 00                                    |....            |      cmd: "segment_64" (0x19) 0x20-0x23.7 (4)
 0x0020|            d8 01 00 00                        |    ....        |      cmdsize: 472 0x24-0x27.7 (4)
       |                                               |                |      segment_command{}: 0x28-0x67.7 (64)
@@ -60,8 +60,8 @@ $ fq -d macho dv libbbb.so
 0x0060|                     00                        |       .        |          noreloc: false 0x67.5-0x67.5 (0.1)
 0x0060|                     00                        |       .        |          fvmlib: false 0x67.6-0x67.6 (0.1)
 0x0060|                     00                        |       .        |          highvm: false 0x67.7-0x67.7 (0.1)
-      |                                               |                |      sections[0:5]: 0x68-0x1f7.7 (400)
-      |                                               |                |        [0]{}: section 0x68-0xb7.7 (80)
+      |                                               |                |      sections[0:5]: 0x68-0x3ffb.7 (16276)
+      |                                               |                |        [0]{}: section 0x68-0x3f83.7 (16156)
 0x0060|                        5f 5f 74 65 78 74 00 00|        __text..|          sectname: "__text" 0x68-0x77.7 (16)
 0x0070|00 00 00 00 00 00 00 00                        |........        |
 0x0070|                        5f 5f 54 45 58 54 00 00|        __TEXT..|          segname: "__TEXT" 0x78-0x87.7 (16)
@@ -88,7 +88,9 @@ $ fq -d macho dv libbbb.so
 0x00a0|                                    00 00 00 00|            ....|          reserved1: 0 0xac-0xaf.7 (4)
 0x00b0|00 00 00 00                                    |....            |          reserved2: 0 0xb0-0xb3.7 (4)
 0x00b0|            00 00 00 00                        |    ....        |          reserved3: 0 0xb4-0xb7.7 (4)
-      |                                               |                |        [1]{}: section 0xb8-0x107.7 (80)
+0x3f70|55 48 89 e5 48 8d 3d 2b 00 00 00 b0 00 e8 02 00|UH..H.=+........|          data: raw bits 0x3f70-0x3f83.7 (20)
+0x3f80|00 00 5d c3                                    |..].            |
+      |                                               |                |        [1]{}: section 0xb8-0x3f89.7 (16082)
 0x00b0|                        5f 5f 73 74 75 62 73 00|        __stubs.|          sectname: "__stubs" 0xb8-0xc7.7 (16)
 0x00c0|00 00 00 00 00 00 00 00                        |........        |
 0x00c0|                        5f 5f 54 45 58 54 00 00|        __TEXT..|          segname: "__TEXT" 0xc8-0xd7.7 (16)
@@ -115,7 +117,8 @@ $ fq -d macho dv libbbb.so
 0x00f0|                                    00 00 00 00|            ....|          reserved1: 0 0xfc-0xff.7 (4)
 0x0100|06 00 00 00                                    |....            |          reserved2: 6 0x100-0x103.7 (4)
 0x0100|            00 00 00 00                        |    ....        |          reserved3: 0 0x104-0x107.7 (4)
-      |                                               |                |        [2]{}: section 0x108-0x157.7 (80)
+0x3f80|            ff 25 86 00 00 00                  |    .%....      |          data: raw bits 0x3f84-0x3f89.7 (6)
+      |                                               |                |        [2]{}: section 0x108-0x3fa5.7 (16030)
 0x0100|                        5f 5f 73 74 75 62 5f 68|        __stub_h|          sectname: "__stub_helper" 0x108-0x117.7 (16)
 0x0110|65 6c 70 65 72 00 00 00                        |elper...        |
 0x0110|                        5f 5f 54 45 58 54 00 00|        __TEXT..|          segname: "__TEXT" 0x118-0x127.7 (16)
@@ -142,7 +145,10 @@ $ fq -d macho dv libbbb.so
 0x0140|                                    00 00 00 00|            ....|          reserved1: 0 0x14c-0x14f.7 (4)
 0x0150|00 00 00 00                                    |....            |          reserved2: 0 0x150-0x153.7 (4)
 0x0150|            00 00 00 00                        |    ....        |          reserved3: 0 0x154-0x157.7 (4)
-      |                                               |                |        [3]{}: section 0x158-0x1a7.7 (80)
+0x3f80|                                    4c 8d 1d 6d|            L..m|          data: raw bits 0x3f8c-0x3fa5.7 (26)
+0x3f90|00 00 00 41 53 ff 25 6d 00 00 00 90 68 00 00 00|...AS.%m....h...|
+0x3fa0|00 e9 e6 ff ff ff                              |......          |
+      |                                               |                |        [3]{}: section 0x158-0x3fb1.7 (15962)
 0x0150|                        5f 5f 63 73 74 72 69 6e|        __cstrin|          sectname: "__cstring" 0x158-0x167.7 (16)
 0x0160|67 00 00 00 00 00 00 00                        |g.......        |
 0x0160|                        5f 5f 54 45 58 54 00 00|        __TEXT..|          segname: "__TEXT" 0x168-0x177.7 (16)
@@ -169,7 +175,9 @@ $ fq -d macho dv libbbb.so
 0x0190|                                    00 00 00 00|            ....|          reserved1: 0 0x19c-0x19f.7 (4)
 0x01a0|00 00 00 00                                    |....            |          reserved2: 0 0x1a0-0x1a3.7 (4)
 0x01a0|            00 00 00 00                        |    ....        |          reserved3: 0 0x1a4-0x1a7.7 (4)
-      |                                               |                |        [4]{}: section 0x1a8-0x1f7.7 (80)
+0x3fa0|                  6c 69 62 62 62 62 5f 62 62 62|      libbbb_bbb|          data: raw bits 0x3fa6-0x3fb1.7 (12)
+0x3fb0|0a 00                                          |..              |
+      |                                               |                |        [4]{}: section 0x1a8-0x3ffb.7 (15956)
 0x01a0|                        5f 5f 75 6e 77 69 6e 64|        __unwind|          sectname: "__unwind_info" 0x1a8-0x1b7.7 (16)
 0x01b0|5f 69 6e 66 6f 00 00 00                        |_info...        |
 0x01b0|                        5f 5f 54 45 58 54 00 00|        __TEXT..|          segname: "__TEXT" 0x1b8-0x1c7.7 (16)
@@ -196,7 +204,10 @@ $ fq -d macho dv libbbb.so
 0x01e0|                                    00 00 00 00|            ....|          reserved1: 0 0x1ec-0x1ef.7 (4)
 0x01f0|00 00 00 00                                    |....            |          reserved2: 0 0x1f0-0x1f3.7 (4)
 0x01f0|            00 00 00 00                        |    ....        |          reserved3: 0 0x1f4-0x1f7.7 (4)
-      |                                               |                |    [1]{}: load_command 0x1f8-0x32f.7 (312)
+0x3fb0|            01 00 00 00 1c 00 00 00 00 00 00 00|    ............|          data: raw bits 0x3fb4-0x3ffb.7 (72)
+0x3fc0|1c 00 00 00 00 00 00 00 1c 00 00 00 02 00 00 00|................|
+*     |until 0x3ffb.7 (72)                            |                |
+      |                                               |                |    [1]{}: load_command 0x1f8-0x4017.7 (15904)
 0x01f0|                        19 00 00 00            |        ....    |      cmd: "segment_64" (0x19) 0x1f8-0x1fb.7 (4)
 0x01f0|                                    38 01 00 00|            8...|      cmdsize: 312 0x1fc-0x1ff.7 (4)
       |                                               |                |      segment_command{}: 0x200-0x23f.7 (64)
@@ -215,8 +226,8 @@ $ fq -d macho dv libbbb.so
 0x0230|                                             00|               .|          noreloc: false 0x23f.5-0x23f.5 (0.1)
 0x0230|                                             00|               .|          fvmlib: false 0x23f.6-0x23f.6 (0.1)
 0x0230|                                             00|               .|          highvm: false 0x23f.7-0x23f.7 (0.1)
-      |                                               |                |      sections[0:3]: 0x240-0x32f.7 (240)
-      |                                               |                |        [0]{}: section 0x240-0x28f.7 (80)
+      |                                               |                |      sections[0:3]: 0x240-0x4017.7 (15832)
+      |                                               |                |        [0]{}: section 0x240-0x4007.7 (15816)
 0x0240|5f 5f 6e 6c 5f 73 79 6d 62 6f 6c 5f 70 74 72 00|__nl_symbol_ptr.|          sectname: "__nl_symbol_ptr" 0x240-0x24f.7 (16)
 0x0250|5f 5f 44 41 54 41 00 00 00 00 00 00 00 00 00 00|__DATA..........|          segname: "__DATA" 0x250-0x25f.7 (16)
 0x0260|00 40 00 00 00 00 00 00                        |.@......        |          address: 0x4000 0x260-0x267.7 (8)
@@ -241,7 +252,8 @@ $ fq -d macho dv libbbb.so
 0x0280|            01 00 00 00                        |    ....        |          reserved1: 1 0x284-0x287.7 (4)
 0x0280|                        00 00 00 00            |        ....    |          reserved2: 0 0x288-0x28b.7 (4)
 0x0280|                                    00 00 00 00|            ....|          reserved3: 0 0x28c-0x28f.7 (4)
-      |                                               |                |        [1]{}: section 0x290-0x2df.7 (80)
+0x4000|00 00 00 00 00 00 00 00                        |........        |          data: raw bits 0x4000-0x4007.7 (8)
+      |                                               |                |        [1]{}: section 0x290-0x400f.7 (15744)
 0x0290|5f 5f 67 6f 74 00 00 00 00 00 00 00 00 00 00 00|__got...........|          sectname: "__got" 0x290-0x29f.7 (16)
 0x02a0|5f 5f 44 41 54 41 00 00 00 00 00 00 00 00 00 00|__DATA..........|          segname: "__DATA" 0x2a0-0x2af.7 (16)
 0x02b0|08 40 00 00 00 00 00 00                        |.@......        |          address: 0x4008 0x2b0-0x2b7.7 (8)
@@ -266,7 +278,8 @@ $ fq -d macho dv libbbb.so
 0x02d0|            02 00 00 00                        |    ....        |          reserved1: 2 0x2d4-0x2d7.7 (4)
 0x02d0|                        00 00 00 00            |        ....    |          reserved2: 0 0x2d8-0x2db.7 (4)
 0x02d0|                                    00 00 00 00|            ....|          reserved3: 0 0x2dc-0x2df.7 (4)
-      |                                               |                |        [2]{}: section 0x2e0-0x32f.7 (80)
+0x4000|                        00 00 00 00 00 00 00 00|        ........|          data: raw bits 0x4008-0x400f.7 (8)
+      |                                               |                |        [2]{}: section 0x2e0-0x4017.7 (15672)
 0x02e0|5f 5f 6c 61 5f 73 79 6d 62 6f 6c 5f 70 74 72 00|__la_symbol_ptr.|          sectname: "__la_symbol_ptr" 0x2e0-0x2ef.7 (16)
 0x02f0|5f 5f 44 41 54 41 00 00 00 00 00 00 00 00 00 00|__DATA..........|          segname: "__DATA" 0x2f0-0x2ff.7 (16)
 0x0300|10 40 00 00 00 00 00 00                        |.@......        |          address: 0x4010 0x300-0x307.7 (8)
@@ -291,6 +304,7 @@ $ fq -d macho dv libbbb.so
 0x0320|            03 00 00 00                        |    ....        |          reserved1: 3 0x324-0x327.7 (4)
 0x0320|                        00 00 00 00            |        ....    |          reserved2: 0 0x328-0x32b.7 (4)
 0x0320|                                    00 00 00 00|            ....|          reserved3: 0 0x32c-0x32f.7 (4)
+0x4010|9c 3f 00 00 00 00 00 00                        |.?......        |          data: raw bits 0x4010-0x4017.7 (8)
       |                                               |                |    [2]{}: load_command 0x330-0x377.7 (72)
 0x0330|19 00 00 00                                    |....            |      cmd: "segment_64" (0x19) 0x330-0x333.7 (4)
 0x0330|            48 00 00 00                        |    H...        |      cmdsize: 72 0x334-0x337.7 (4)
@@ -401,6 +415,12 @@ $ fq -d macho dv libbbb.so
       |                                               |                |      linkedit_data{}: 0x4c0-0x4c7.7 (8)
 0x04c0|50 80 00 00                                    |P...            |        off: 32848 0x4c0-0x4c3.7 (4)
 0x04c0|            00 00 00 00                        |    ....        |        size: 0 0x4c4-0x4c7.7 (4)
-0x04c0|                        00 00 00 00 00 00 00 00|        ........|  unknown0: raw bits 0x4c8-0x80b7.7 (31728)
+0x04c0|                        00 00 00 00 00 00 00 00|        ........|  unknown0: raw bits 0x4c8-0x3f6f.7 (15016)
 0x04d0|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
-*     |until 0x80b7.7 (end) (31728)                   |                |
+*     |until 0x3f6f.7 (15016)                         |                |
+0x3f80|                              00 00            |          ..    |  unknown1: raw bits 0x3f8a-0x3f8b.7 (2)
+0x3fb0|      00 00                                    |  ..            |  unknown2: raw bits 0x3fb2-0x3fb3.7 (2)
+0x3ff0|                                    00 00 00 00|            ....|  unknown3: raw bits 0x3ffc-0x3fff.7 (4)
+0x4010|                        00 00 00 00 00 00 00 00|        ........|  unknown4: raw bits 0x4018-0x80b7.7 (16544)
+0x4020|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
+*     |until 0x80b7.7 (end) (16544)                   |                |
