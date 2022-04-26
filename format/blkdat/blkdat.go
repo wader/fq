@@ -43,81 +43,83 @@ func decodeBlkDat(d *decode.D, in interface{}) interface{} {
 		for !d.End() {
 			d.FieldStruct("block", func(d *decode.D) {
 	
-			d.FieldU32("magic", scalar.UToSymStr{
-				0xf9beb4d9: "mainnet",
-				0x0b110907: "testnet3",
-				0xfabfb5da: "regtest",
-			}, scalar.Hex, d.AssertU(0xf9beb4d9, 0x0b110907, 0xfabfb5da))
+				d.FieldU32("magic", scalar.UToSymStr{
+					0xf9beb4d9: "mainnet",
+					0x0b110907: "testnet3",
+					0xfabfb5da: "regtest",
+				}, scalar.Hex, d.AssertU(0xf9beb4d9, 0x0b110907, 0xfabfb5da))
 
-			d.Endian = decode.LittleEndian
+				d.Endian = decode.LittleEndian
 
-			size := d.FieldU32("size")
+				size := d.FieldU32("size")
 
-			d.FramedFn(int64(size)*8, func(d *decode.D) {
-				d.FieldStruct("block_header", func(d *decode.D) {
-					d.FieldU32("version")
-					d.FieldRawLen("previous_block_hash", 32*8)
-					d.FieldRawLen("merkle_root", 32*8)
-					d.FieldU32("time")
-					d.FieldU32("bits")
-					d.FieldU32("nonce")
+				d.FramedFn(int64(size)*8, func(d *decode.D) {
+					d.FieldStruct("block_header", func(d *decode.D) {
+						d.FieldU32("version")
+						d.FieldRawLen("previous_block_hash", 32*8)
+						d.FieldRawLen("merkle_root", 32*8)
+						d.FieldU32("time")
+						d.FieldU32("bits")
+						d.FieldU32("nonce")
 
-				})
+					})
 
-				txCount := d.FieldUFn("tx_count", decodeVarInt)
+					txCount := d.FieldUFn("tx_count", decodeVarInt)
 
-				d.FieldArray("transactions", func(d *decode.D) {
-					for i := uint64(0); i < txCount; i++ {
-						d.FieldStruct("transaction", func(d *decode.D) {
-							d.FieldU32("version")
-							witness := false
-							if d.PeekBits(8) == 0 {
-								witness = true
-								d.FieldU8("marker")
-								d.FieldU8("flag")
-							}
-							inputCount := d.FieldUFn("input_count", decodeVarInt)
-							d.FieldArray("inputs", func(d *decode.D) {
-								for i := uint64(0); i < inputCount; i++ {
-									d.FieldStruct("input", func(d *decode.D) {
-										d.FieldRawLen("txid", 32*8)
-										d.FieldU32("vout")
-										scriptSigSize := d.FieldUFn("scriptsig_size", decodeVarInt)
-										d.FieldRawLen("scriptsig", int64(scriptSigSize)*8)
-										d.FieldU32("sequence")
-									})
+					d.FieldArray("transactions", func(d *decode.D) {
+						for i := uint64(0); i < txCount; i++ {
+							d.FieldStruct("transaction", func(d *decode.D) {
+								d.FieldU32("version")
+								witness := false
+								if d.PeekBits(8) == 0 {
+									witness = true
+									d.FieldU8("marker")
+									d.FieldU8("flag")
 								}
-							})
-							outputCount := d.FieldUFn("output_count", decodeVarInt)
-							d.FieldArray("outputs", func(d *decode.D) {
-								for i := uint64(0); i < outputCount; i++ {
-									d.FieldStruct("output", func(d *decode.D) {
-										d.FieldRawLen("value", 8*8)
-										scriptSigSize := d.FieldUFn("scriptpub_size", decodeVarInt)
-										d.FieldRawLen("scriptpub", int64(scriptSigSize)*8)
-									})
-								}
-							})
-
-							if witness {
-								d.FieldArray("witnesses", func(d *decode.D) {
+								inputCount := d.FieldUFn("input_count", decodeVarInt)
+								d.FieldArray("inputs", func(d *decode.D) {
 									for i := uint64(0); i < inputCount; i++ {
-										d.FieldStruct("witness", func(d *decode.D) {
-											witnessSize := d.FieldUFn("witness_size", decodeVarInt)
-											d.FieldArray("items", func(d *decode.D) {
-												for j := uint64(0); j < witnessSize; j++ {
-													itemSize := d.FieldUFn("item_size", decodeVarInt)
-													d.FieldRawLen("item", int64(itemSize)*8)
-												}
-											})
+										d.FieldStruct("input", func(d *decode.D) {
+											d.FieldRawLen("txid", 32*8)
+											d.FieldU32("vout")
+											scriptSigSize := d.FieldUFn("scriptsig_size", decodeVarInt)
+											d.FieldRawLen("scriptsig", int64(scriptSigSize)*8)
+											d.FieldU32("sequence")
 										})
 									}
 								})
-							}
-							d.FieldU32("locktime")
-						})
+								outputCount := d.FieldUFn("output_count", decodeVarInt)
+								d.FieldArray("outputs", func(d *decode.D) {
+									for i := uint64(0); i < outputCount; i++ {
+										d.FieldStruct("output", func(d *decode.D) {
+											d.FieldRawLen("value", 8*8)
+											scriptSigSize := d.FieldUFn("scriptpub_size", decodeVarInt)
+											d.FieldRawLen("scriptpub", int64(scriptSigSize)*8)
+										})
+									}
+								})
 
-					}
+								if witness {
+									d.FieldArray("witnesses", func(d *decode.D) {
+										for i := uint64(0); i < inputCount; i++ {
+											d.FieldStruct("witness", func(d *decode.D) {
+												witnessSize := d.FieldUFn("witness_size", decodeVarInt)
+												d.FieldArray("items", func(d *decode.D) {
+													for j := uint64(0); j < witnessSize; j++ {
+														itemSize := d.FieldUFn("item_size", decodeVarInt)
+														d.FieldRawLen("item", int64(itemSize)*8)
+													}
+												})
+											})
+										}
+									})
+								}
+								d.FieldU32("locktime")
+							})
+
+						}
+					})
+
 				})
 			})	
 		}
