@@ -1,3 +1,87 @@
+# 0.0.7
+
+## Changes
+
+- Format specific options
+  - Formats can now have own options
+  - Example to skip decoding of samples in a mp4 file use:
+  - `fq -d decode_samples=false d file.mp4` or `... | mp4({decode_samples: false}})`
+  - To see supported options for a formats see formats documentation, use `fq -h mp4` or `help(mp4)` in the REPL.
+- gojq fork rebase:
+  - Many performance improvements from upstream
+  - Assign to a JQValue will now shallowly turn it into a jq value and then be assigned.
+  - Refactor and rewrote large parts to make it easier to rebase and maintain in the future.
+
+## Decoder changes
+
+- `amf0` Add Action Message Format 0 decoder #214
+- `hevc_pps` Add H.265/HEVC Picture Parameter Set decoder #210
+- `hevc_sps` Add H.265/HEVC Sequence Parameter Set decoder #210
+- `hevc_vpc` Add H.265/HEVC Video Parameter Set decoder #210
+- `mp3` Add `max_unique_header_config` and `max_sync_seek` options #242
+- `mp4` Simplify granule structure a bit #242
+- `mp4` Add `decode_samples` and `allow_truncate` options #242
+- `flac_frame` Add `bits_per_sample` option #242
+- `icmpv6` Add Internet Control Message Protocol v6 decoder #216
+- `id3v2` Add v2.0 PIC support
+- `ipv6_packet` Add Internet protocol v6 packet decoder #216
+- `macho` Remove redundant arch struct level and cleanup some sym values #226
+- `macho` Add raw fields for section and encryption info #238
+- `mp4` Add more HEIF boxes support #221
+- `mpeg_pes` Support MPEG1 #219
+- `rtmp` Add Real-Time Messaging Protocol decoder. Only plain RTMP for now. #214
+- `matroska` Symbol name cleanup #220
+- `tcp` Better port matching and make it possible to know if byte stream has start/end. #223
+- `udp` Better port matching #223
+
+## Changelog
+
+* 010f6430 Update docker-golang from 1.17.8 to 1.18.0
+* 05096f50 Update docker-golang from 1.18.0 to 1.18.1
+* e5f61e22 Update github-go-version from 1.17.7, 1.17.7, 1.17.7 to 1.18.0
+* fdfc5c5b Update github-go-version from 1.18.0, 1.18.0, 1.18.0 to 1.18.1
+* 4ea362e3 Update github-golangci-lint from 1.44.2 to 1.45.0
+* 2a90485b Update github-golangci-lint from 1.45.0 to 1.45.2
+* d9195ac4 Update gomod-mapstructure from 1.4.3 to 1.5.0
+* cf88bc11 Update make-golangci-lint from 1.44.2 to 1.45.0
+* 3a0799cb Update make-golangci-lint from 1.45.0 to 1.45.2
+* 34cbe487 amf0: Decode strings in more detail
+* b2a865ea avc_sps: Add chroma format name mapping
+* b35b1804 decode,format: Add d.FieldFormatOrRaw(Len)
+* f4480c6f decode,interp: Support for format specific options
+* 5ff67e4c formats: Sym and field name cleanup to be more jq friendly
+* 3c029925 github: Update action versions
+* 02a97fa3 gojq: Rebase fq fork
+* 2e240447 gojq: Rebase fq fork
+* 518f6af4 gojq: Rebase fq fork
+* 88f791e0 gojq: Rebase fq fork
+* 8c918702 gojq: Rebase fq fork
+* adde8c70 gojq: Rebase fq fork
+* d79afeb3 gojq: Rebase fq fork
+* dd0d97ea gojq: Rebase fq fork (speedup and fix range with JQValue)
+* afd724bf gojq: Rebase fq fork. Fixes JQValue path tracking when iterating
+* 74978c9d hevc: Add hevc_vps, hevc_sps and hevc_pps decoders
+* c0202483 hevc_vpc,hevc_sps: Use same nameing for profile as in spec
+* 09385c61 id3v2: Add 2.0 PIC support
+* 9cb4b57a interp,cli: Handle ctrl-c properly
+* 607202bb interp: Don't truncate last display column
+* 6f03471d interp: Paths with a array as root was missing start dot
+* dabad850 interp: Proper display column truncate
+* e8678ca8 interp: Remove opts refactor leftover
+* d376520f interp: Remove to*range pad argument and fix stdout padding issue
+* 087d1241 interp: Simpler and more efficient hexdump
+* 21ad628a interp: dump: Show field name for compound values in arrays
+* e8dc7112 ipv6,icmpv6: Add decoder
+* d6c31dac macho: Add section and encryption_info raw data fields
+* 5424eed7 macho: Cleanup syms and remove redundant fat_arch struct
+* f8d79a57 matroska: More sym cleanup
+* f34ebd83 mp4: Add more HEIF boxes
+* f8fd6b7f mp4: Add more HEIF boxes
+* 39ba5c4d mpeg_pes: Support mpeg1 and some cleanup
+* d8aaf303 rtmp,amf0: Add decoders
+* 788b0ac1 rtmp,amf0: Improve decoders, aac asc, chunk stream interrupt, fix amf0 ecma arrays
+* 5d25bbc2 tcp,udp: Refactor and make port matching better
+
 # 0.0.6
 
 Added `macho` decoder (thanks @Akaame), nicer REPL interrupt, error and prompt, add `slurp`/`spew` functions and `explode` for binary.
