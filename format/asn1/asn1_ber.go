@@ -28,16 +28,16 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-//go:embed *.jq
+//go:embed asn1_ber.jq
 var asn1FS embed.FS
 
 func init() {
 	registry.MustRegister(decode.Format{
 		Name:        format.ASN1_BER,
-		Description: "ASN1 Basic Encoding Rules (also CER and DER)",
+		Description: "ASN1 BER (basic encoding rules, also CER and DER)",
 		DecodeFn:    decodeASN1BER,
 		Files:       asn1FS,
-		ToRepr:      "_asn1_ber_torepr",
+		Functions:   []string{"torepr", "_help"},
 	})
 }
 

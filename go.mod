@@ -18,6 +18,10 @@ require (
 	// bump: gomod-gopacket command go get -d github.com/google/gopacket@v$LATEST && go mod tidy
 	// bump: gomod-gopacket link "Release notes" https://github.com/google/gopacket/releases/tag/v$LATEST
 	github.com/google/gopacket v1.1.19
+	// bump: gomod-copystructure /github.com\/mitchellh\/copystructure v(.*)/ https://github.com/mitchellh/copystructure.git|^1
+	// bump: gomod-copystructure command go get -d github.com/mitchellh/copystructure@v$LATEST && go mod tidy
+	// bump: gomod-copystructure link "CHANGELOG" https://github.com/mitchellh/copystructure/blob/master/CHANGELOG.md
+	github.com/mitchellh/copystructure v1.2.0
 	// bump: gomod-mapstructure /github.com\/mitchellh\/mapstructure v(.*)/ https://github.com/mitchellh/mapstructure.git|^1
 	// bump: gomod-mapstructure command go get -d github.com/mitchellh/mapstructure@v$LATEST && go mod tidy
 	// bump: gomod-mapstructure link "CHANGELOG" https://github.com/mitchellh/mapstructure/blob/master/CHANGELOG.md
@@ -34,5 +38,6 @@ require (
 
 require (
 	github.com/itchyny/timefmt-go v0.1.3 // indirect
+	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9 // indirect
 )

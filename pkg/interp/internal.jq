@@ -1,3 +1,5 @@
+include "ansi";
+
 # is here to be defined as early as possible to allow debugging
 # TODO: move some _* to builtin.jq etc?
 
@@ -136,3 +138,86 @@ def _is_context_canceled_error: . == "context canceled";
 
 def _error_str($contexts): (["error"] + $contexts + [.]) | join(": ");
 def _error_str: _error_str([]);
+
+# TODO: escape for safe key names
+# path ["a", 1, "b"] -> "a[1].b"
+def _path_to_expr($opts):
+  ( if length == 0 or (.[0] | type) != "string" then
+      [""] + .
+    end
+  | map(
+      if type == "number" then
+        ( ("[" | _ansi_if($opts; "array"))
+        , _ansi_if($opts; "number")
+        , ("]" | _ansi_if($opts; "array"))
+        )      else
+        ( "."
+        , # empty (special case for leading index or empty path) or key
+          if . == "" or _is_ident then _ansi_if($opts; "objectkey")
+          else
+            "\"\(_escape_ident)\"" | _ansi_if($opts; "string")
+          end
+        )
+      end
+    )
+  | join("")
+  );
+def _path_to_expr: _path_to_expr(null);
+
+# TODO: don't use eval? should support '.a.b[1]."c.c"' and escapes?
+def _expr_to_path:
+  ( if type != "string" then error("require string argument") end
+  | _eval("null | path(\(.))")
+  );
+
+# helper to build path query/generate functions for tree structures with
+# non-unique children, ex: mp4_path
+def _tree_path(children; name; $v):
+  def _lookup:
+    # add implicit zeros to get first value
+    # ["a", "b", 1] => ["a", 0, "b", 1]
+    def _normalize_path:
+      ( . as $np
+      | if $np | last | type == "string" then $np+[0] end
+      # state is [path acc, possible pending zero index]
+      | ( reduce .[] as $np ([[], []];
+          if $np | type == "string" then
+            [(.[0]+.[1]+[$np]), [0]]
+          else
+            [.[0]+[$np], []]
+          end
+        ))
+      )[0];
+    ( . as $c
+    | $v
+    | _expr_to_path
+    | _normalize_path
+    | reduce .[] as $n ($c;
+        if $n | type == "string" then
+          children | map(select(name == $n))
+        else
+          .[$n]
+        end
+      )
+    );
+  def _path:
+    [ . as $r
+    | $v._path as $p
+    | foreach range(($p | length)/2) as $i (null; null;
+        ( ($r | getpath($p[0:($i+1)*2]) | name) as $name
+        | [($r | getpath($p[0:($i+1)*2-1]))[] | name][0:$p[($i*2)+1]+1] as $before
+        | [ $name
+          , ($before | map(select(. == $name)) | length)-1
+          ]
+        )
+      )
+    | [ ".", .[0],
+      (.[1] | if . == 0 then empty else "[", ., "]" end)
+      ]
+    ]
+    | flatten
+    | join("");
+  if $v | type == "string" then _lookup
+  else _path
+  end;
+

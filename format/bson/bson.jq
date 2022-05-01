@@ -16,3 +16,12 @@ def _bson_torepr:
   ( {type: "document", value: .}
   | _f
   );
+
+def _bson__help:
+  { examples: [
+      {comment: "BSON as JSON", shell: "fq -d bson torepr file"}
+    ],
+    links: [
+      {url: "https://wiki.theory.org/BitTorrentSpecification#Bencoding"}
+    ]
+  };

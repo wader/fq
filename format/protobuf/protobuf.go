@@ -3,6 +3,8 @@ package protobuf
 // https://developers.google.com/protocol-buffers/docs/encoding
 
 import (
+	"embed"
+
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/internal/mathextra"
@@ -10,11 +12,16 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
+//go:embed protobuf.jq
+var protobufFS embed.FS
+
 func init() {
 	registry.MustRegister(decode.Format{
 		Name:        format.PROTOBUF,
 		Description: "Protobuf",
 		DecodeFn:    protobufDecode,
+		Functions:   []string{"_help"},
+		Files:       protobufFS,
 	})
 }
 

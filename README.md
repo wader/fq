@@ -32,9 +32,9 @@ I pronounce jq /‘dʒei’kju:/ so I usually pronounce fq /‘ef’kju:/.
 
 ### Supported formats
 
-[./formats_list.sh]: sh-start
+[fq -rn -L doc 'include "formats"; formats_list']: sh-start
 
-aac_frame,
+[aac_frame](doc/formats.md#aac_frame),
 adts,
 adts_frame,
 amf0,
@@ -45,14 +45,14 @@ av1_ccr,
 av1_frame,
 av1_obu,
 avc_annexb,
-avc_au,
+[avc_au](doc/formats.md#avc_au),
 avc_dcr,
 avc_nalu,
 avc_pps,
 avc_sei,
 avc_sps,
 [avro_ocf](doc/formats.md#avro_ocf),
-bencode,
+[bencode](doc/formats.md#bencode),
 bsd_loopback_frame,
 [bson](doc/formats.md#bson),
 bzip2,
@@ -63,7 +63,7 @@ elf,
 ether8023_frame,
 exif,
 flac,
-flac_frame,
+[flac_frame](doc/formats.md#flac_frame),
 flac_metadatablock,
 flac_metadatablocks,
 flac_picture,
@@ -71,7 +71,7 @@ flac_streaminfo,
 gif,
 gzip,
 hevc_annexb,
-hevc_au,
+[hevc_au](doc/formats.md#hevc_au),
 hevc_dcr,
 hevc_nalu,
 hevc_pps,
@@ -89,7 +89,7 @@ jpeg,
 json,
 [macho](doc/formats.md#macho),
 [matroska](doc/formats.md#matroska),
-mp3,
+[mp3](doc/formats.md#mp3),
 mp3_frame,
 [mp4](doc/formats.md#mp4),
 mpeg_asc,
@@ -261,6 +261,7 @@ Licenses of direct dependencies:
 - Forked version of readline https://github.com/chzyer/readline/blob/master/LICENSE (MIT)
 - gopacket https://github.com/google/gopacket/blob/master/LICENSE (BSD)
 - mapstructure https://github.com/mitchellh/mapstructure/blob/master/LICENSE (MIT)
+- copystructure https://github.com/mitchellh/copystructure/blob/master/LICENSE (MIT)
 - go-difflib https://github.com/pmezard/go-difflib/blob/master/LICENSE (BSD)
 - golang/x/text https://github.com/golang/text/blob/master/LICENSE (BSD)
 - golang/snappy https://github.com/golang/snappy/blob/master/LICENSE (BSD)

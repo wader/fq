@@ -15,8 +15,11 @@ func init() {
 		Name:        format.AVC_AU,
 		Description: "H.264/AVC Access Unit",
 		DecodeFn:    avcAUDecode,
-		RootArray:   true,
-		RootName:    "access_unit",
+		DecodeInArg: format.AvcAuIn{
+			LengthSize: 4,
+		},
+		RootArray: true,
+		RootName:  "access_unit",
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.AVC_NALU}, Group: &avcNALUFormat},
 		},
@@ -24,7 +27,7 @@ func init() {
 }
 
 func avcAUDecode(d *decode.D, in interface{}) interface{} {
-	avcIn, ok := in.(format.AvcIn)
+	avcIn, ok := in.(format.AvcAuIn)
 	if !ok {
 		d.Fatalf("avcIn required")
 	}

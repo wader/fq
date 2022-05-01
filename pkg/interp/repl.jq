@@ -119,7 +119,7 @@ def _prompt($opts):
   def _repl_level:
     (_options_stack | length | if . > 2 then ((.-2) * ">") else empty end);
   def _value_path:
-    (._path? // []) | if . == [] then empty else path_to_expr($opts) end;
+    (._path? // []) | if . == [] then empty else _path_to_expr($opts) end;
   def _value_preview($depth):
     if $depth == 0 and format == null and type == "array" then
       [ "["

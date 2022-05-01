@@ -136,10 +136,10 @@ func decodeBoxWithParentData(ctx *decodeContext, d *decode.D, parentData interfa
 		dataSize = boxSize - 8
 	}
 
-	// TODO: add truncate to size option?
-	// if dataSize > uint64(d.BitsLeft()/8) {
-	// 	dataSize = uint64(d.BitsLeft() / 8)
-	// }
+	if ctx.opts.AllowTruncated && dataSize > uint64(d.BitsLeft()/8) {
+		dataSize = uint64(d.BitsLeft() / 8)
+
+	}
 
 	// TODO: not sure about this
 	switch {
@@ -475,7 +475,7 @@ func init() {
 				panic(fmt.Sprintf("expected AvcDcrOut got %#+v", v))
 			}
 			if ctx.currentTrack != nil {
-				ctx.currentTrack.formatInArg = format.AvcIn{LengthSize: avcDcrOut.LengthSize} //nolint:gosimple
+				ctx.currentTrack.formatInArg = format.AvcAuIn{LengthSize: avcDcrOut.LengthSize} //nolint:gosimple
 			}
 		},
 		"hvcC": func(ctx *decodeContext, d *decode.D) {
@@ -485,7 +485,7 @@ func init() {
 				panic(fmt.Sprintf("expected HevcDcrOut got %#+v", v))
 			}
 			if ctx.currentTrack != nil {
-				ctx.currentTrack.formatInArg = format.HevcIn{LengthSize: hevcDcrOut.LengthSize} //nolint:gosimple
+				ctx.currentTrack.formatInArg = format.HevcAuIn{LengthSize: hevcDcrOut.LengthSize} //nolint:gosimple
 			}
 		},
 		"dfLa": func(ctx *decodeContext, d *decode.D) {
@@ -498,7 +498,7 @@ func init() {
 			}
 			if flacMetadatablockOut.HasStreamInfo {
 				if ctx.currentTrack != nil {
-					ctx.currentTrack.formatInArg = format.FlacFrameIn{StreamInfo: flacMetadatablockOut.StreamInfo}
+					ctx.currentTrack.formatInArg = format.FlacFrameIn{BitsPerSample: int(flacMetadatablockOut.StreamInfo.BitsPerSample)}
 				}
 			}
 		},

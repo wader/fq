@@ -9,3 +9,12 @@ def _bencode_torepr:
     )
   else error("unknown type \(.type)")
   end;
+
+def _bencode__help:
+  { examples: [
+      {comment: "bencode as JSON", shell: "fq -d bencode torepr file"}
+    ],
+    links: [
+      {url: "https://bsonspec.org/spec.html"}
+    ]
+  };

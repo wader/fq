@@ -2,15 +2,16 @@ include "internal";
 include "options";
 include "binary";
 include "decode";
-include "funcs";
+include "format_decode";
+include "format_include";
+include "format_func";
 include "grep";
 include "args";
 include "eval";
 include "query";
 include "repl";
 include "help";
-# generate torepr, format decode helpers and include format specific functions
-include "formats";
+include "funcs";
 # optional user init
 include "@config/init?";
 
@@ -184,7 +185,7 @@ def _main:
   | _options_stack([
       ( ( _opt_build_default_fixed
         + $parsed_args
-        + ($parsed_args.option | _opt_cli_arg_tooptions)
+        + ($parsed_args.option | if . then _opt_cli_arg_to_options end)
         )
       | . + _opt_eval($rest)
       )

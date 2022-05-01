@@ -140,12 +140,16 @@ func ToGoJQValue(v interface{}) (interface{}, bool) {
 		return big.NewInt(vv), true
 	case uint64:
 		return new(big.Int).SetUint64(vv), true
+	case float32:
+		return float64(vv), true
 	case float64:
 		return vv, true
 	case *big.Int:
 		return vv, true
 	case string:
 		return vv, true
+	case []byte:
+		return string(vv), true
 	case gojq.JQValue:
 		return ToGoJQValue(vv.JQValueToGoJQ())
 	case []interface{}:

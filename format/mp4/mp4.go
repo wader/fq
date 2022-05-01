@@ -25,7 +25,7 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-//go:embed *.jq
+//go:embed mp4.jq
 var mp4FS embed.FS
 
 var aacFrameFormat decode.Group
@@ -60,6 +60,10 @@ func init() {
 			format.IMAGE, // avif
 		},
 		DecodeFn: mp4Decode,
+		DecodeInArg: format.Mp4In{
+			DecodeSamples:  true,
+			AllowTruncated: false,
+		},
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.AAC_FRAME}, Group: &aacFrameFormat},
 			{Names: []string{format.AV1_CCR}, Group: &av1CCRFormat},
@@ -84,7 +88,8 @@ func init() {
 			{Names: []string{format.VPX_CCR}, Group: &vpxCCRFormat},
 			{Names: []string{format.ICC_PROFILE}, Group: &iccProfileFormat},
 		},
-		Files: mp4FS,
+		Files:     mp4FS,
+		Functions: []string{"_help"},
 	})
 }
 
@@ -131,6 +136,7 @@ type pathEntry struct {
 }
 
 type decodeContext struct {
+	opts              format.Mp4In
 	path              []pathEntry
 	tracks            map[uint32]*track
 	currentTrack      *track
@@ -145,10 +151,10 @@ func (ctx *decodeContext) parent() pathEntry {
 	return ctx.path[len(ctx.path)-2]
 }
 
-func mp4Tracks(d *decode.D, tracks map[uint32]*track) {
+func mp4Tracks(d *decode.D, ctx *decodeContext) {
 	// keep track order stable
 	var sortedTracks []*track
-	for _, t := range tracks {
+	for _, t := range ctx.tracks {
 		sortedTracks = append(sortedTracks, t)
 	}
 	sort.Slice(sortedTracks, func(i, j int) bool { return sortedTracks[i].id < sortedTracks[j].id })
@@ -157,6 +163,11 @@ func mp4Tracks(d *decode.D, tracks map[uint32]*track) {
 		for _, t := range sortedTracks {
 			decodeSampleRange := func(d *decode.D, t *track, dataFormat string, name string, firstBit int64, nBits int64, inArg interface{}) {
 				d.RangeFn(firstBit, nBits, func(d *decode.D) {
+					if !ctx.opts.DecodeSamples {
+						d.FieldRawLen(name, d.BitsLeft())
+						return
+					}
+
 					switch {
 					case dataFormat == "fLaC":
 						d.FieldFormatLen(name, nBits, flacFrameFormat, inArg)
@@ -290,7 +301,10 @@ func mp4Tracks(d *decode.D, tracks map[uint32]*track) {
 }
 
 func mp4Decode(d *decode.D, in interface{}) interface{} {
+	mi, _ := in.(format.Mp4In)
+
 	ctx := &decodeContext{
+		opts:   mi,
 		path:   []pathEntry{{typ: "root"}},
 		tracks: map[uint32]*track{},
 	}
@@ -317,9 +331,8 @@ func mp4Decode(d *decode.D, in interface{}) interface{} {
 
 	decodeBoxes(ctx, d)
 	if len(ctx.tracks) > 0 {
-		mp4Tracks(d, ctx.tracks)
+		mp4Tracks(d, ctx)
 	}
 
 	return nil
-
 }
