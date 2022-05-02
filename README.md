@@ -159,6 +159,14 @@ xattr -d com.apple.quarantine fq && spctl --add fq
 brew install wader/tap/fq
 ```
 
+### MacPorts
+
+On macOS, `fq` can also be installed via [MacPorts](https://www.macports.org).  More details [here](https://ports.macports.org/port/fq/).
+
+```sh
+sudo port install fq
+```
+
 ### Windows
 
 `fq` can be installed via [scoop](https://scoop.sh/).
