@@ -160,6 +160,8 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 	sort.Slice(sortedTracks, func(i, j int) bool { return sortedTracks[i].id < sortedTracks[j].id })
 
 	d.FieldArray("tracks", func(d *decode.D) {
+		d.RangeSorted = false
+
 		for _, t := range sortedTracks {
 			decodeSampleRange := func(d *decode.D, t *track, dataFormat string, name string, firstBit int64, nBits int64, inArg interface{}) {
 				d.RangeFn(firstBit, nBits, func(d *decode.D) {

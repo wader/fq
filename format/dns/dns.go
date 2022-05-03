@@ -141,6 +141,8 @@ func fieldDecodeLabel(d *decode.D, pointerOffset int64, name string) {
 	d.FieldStruct(name, func(d *decode.D) {
 		var ls []string
 		d.FieldArray("labels", func(d *decode.D) {
+			d.RangeSorted = false
+
 			seenTermintor := false
 			for !seenTermintor {
 				d.FieldStruct("label", func(d *decode.D) {
@@ -176,6 +178,8 @@ func fieldDecodeLabel(d *decode.D, pointerOffset int64, name string) {
 
 func dnsDecodeRR(d *decode.D, pointerOffset int64, resp bool, count uint64, name string, structName string) {
 	d.FieldArray(name, func(d *decode.D) {
+		d.RangeSorted = false
+
 		for i := uint64(0); i < count; i++ {
 			d.FieldStruct(structName, func(d *decode.D) {
 				fieldDecodeLabel(d, pointerOffset, "name")

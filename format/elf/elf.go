@@ -894,8 +894,14 @@ func elfDecode(d *decode.D, in interface{}) interface{} {
 	d.Endian = ec.endian
 	// a first pass to find all sections and string table information etc
 	elfReadSectionHeaders(d, &ec)
-	d.FieldArray("program_headers", func(d *decode.D) { elfDecodeProgramHeaders(d, ec) })
-	d.FieldArray("section_headers", func(d *decode.D) { elfDecodeSectionHeaders(d, ec) })
+	d.FieldArray("program_headers", func(d *decode.D) {
+		d.RangeSorted = false
+		elfDecodeProgramHeaders(d, ec)
+	})
+	d.FieldArray("section_headers", func(d *decode.D) {
+		d.RangeSorted = false
+		elfDecodeSectionHeaders(d, ec)
+	})
 
 	return nil
 }

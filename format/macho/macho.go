@@ -409,238 +409,241 @@ func ofileDecode(d *decode.D) {
 			d.FieldRawLen("reserved", 4*8, d.BitBufIsZero())
 		}
 	})
-	ncmdsIdx := 0
-	d.FieldStructArrayLoop("load_commands", "load_command", func() bool {
-		return ncmdsIdx < int(ncmds)
-	}, func(d *decode.D) {
-		cmd := d.FieldU32("cmd", loadCommands, scalar.Hex)
-		cmdsize := d.FieldU32("cmdsize")
-		switch cmd {
-		case LC_UUID:
-			d.FieldStruct("uuid_command", func(d *decode.D) {
-				d.FieldRawLen("uuid", 16*8)
-			})
-		case LC_SEGMENT, LC_SEGMENT_64:
-			// nsect := (cmdsize - uint64(archBits)) / uint64(archBits)
-			var nsects uint64
-			d.FieldStruct("segment_command", func(d *decode.D) {
-				d.FieldValueS("arch_bits", int64(archBits))
-				d.FieldUTF8NullFixedLen("segname", 16) // OPCODE_DECODER segname==__TEXT
-				if archBits == 32 {
-					d.FieldU32("vmaddr", scalar.Hex)
-					d.FieldU32("vmsize")
-					d.FieldU32("fileoff")
-					d.FieldU32("tfilesize")
-				} else {
-					d.FieldU64("vmaddr", scalar.Hex)
-					d.FieldU64("vmsize")
-					d.FieldU64("fileoff")
-					d.FieldU64("tfilesize")
-				}
-				d.FieldS32("initprot")
-				d.FieldS32("maxprot")
-				nsects = d.FieldU32("nsects")
-				d.FieldStruct("flags", parseSegmentFlags)
-			})
-			var nsectIdx uint64
-			d.FieldStructArrayLoop("sections", "section", func() bool {
-				return nsectIdx < nsects
-			},
-				func(d *decode.D) {
-					// OPCODE_DECODER sectname==__text
-					d.FieldUTF8NullFixedLen("sectname", 16)
-					d.FieldUTF8NullFixedLen("segname", 16)
-					var size uint64
-					if archBits == 32 {
-						d.FieldU32("address", scalar.Hex)
-						size = d.FieldU32("size")
-					} else {
-						d.FieldU64("address", scalar.Hex)
-						size = d.FieldU64("size")
-					}
-					offset := d.FieldU32("offset")
-					d.FieldU32("align")
-					d.FieldU32("reloff")
-					d.FieldU32("nreloc")
-					// get section type
-					d.FieldStruct("flags", parseSectionFlags)
-					d.FieldU8("type", sectionTypes)
-					d.FieldU32("reserved1")
-					d.FieldU32("reserved2")
-					if archBits == 64 {
-						d.FieldU32("reserved3")
-					}
-					d.RangeFn(int64(offset)*8, int64(size)*8, func(d *decode.D) {
-						d.FieldRawLen("data", d.BitsLeft())
-					})
-					nsectIdx++
-				})
-		case LC_TWOLEVEL_HINTS:
-			d.FieldU32("offset")
-			d.FieldU32("nhints")
-		case LC_LOAD_DYLIB, LC_ID_DYLIB, LC_LOAD_UPWARD_DYLIB, LC_LOAD_WEAK_DYLIB, LC_LAZY_LOAD_DYLIB, LC_REEXPORT_DYLIB:
-			d.FieldStruct("dylib_command", func(d *decode.D) {
-				offset := d.FieldU32("offset")
-				d.FieldU32("timestamp", timestampMapper)
-				d.FieldU32("current_version")
-				d.FieldU32("compatibility_version")
-				d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
-			})
-		case LC_LOAD_DYLINKER, LC_ID_DYLINKER, LC_DYLD_ENVIRONMENT:
-			offset := d.FieldU32("offset")
-			d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
-		case LC_RPATH:
-			offset := d.FieldU32("offset")
-			d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
-		case LC_PREBOUND_DYLIB:
-			// https://github.com/aidansteele/osx-abi-macho-file-format-reference#prebound_dylib_command
-			d.U32() // name_offset
-			nmodules := d.FieldU32("nmodules")
-			d.U32() // linked_modules_offset
-			d.FieldUTF8Null("name")
-			d.FieldBitBufFn("linked_modules", func(d *decode.D) bitio.ReaderAtSeeker {
-				return d.RawLen(int64((nmodules / 8) + (nmodules % 8)))
-			})
-		case LC_THREAD, LC_UNIXTHREAD:
-			d.FieldU32("flavor")
-			count := d.FieldU32("count")
-			d.FieldStruct("state", func(d *decode.D) {
-				switch cpuType {
-				case 0x7:
-					threadStateI386Decode(d)
-				case 0xC:
-					threadStateARM32Decode(d)
-				case 0x13:
-					threadStatePPC32Decode(d)
-				case 0x1000007:
-					threadStateX8664Decode(d)
-				case 0x100000C:
-					threadStateARM64Decode(d)
-				case 0x1000013:
-					threadStatePPC64Decode(d)
-				default:
-					d.FieldRawLen("state", int64(count*32))
-				}
-			})
-		case LC_ROUTINES, LC_ROUTINES_64:
-			if archBits == 32 {
-				d.FieldU32("init_address", scalar.Hex)
-				d.FieldU32("init_module")
-				d.FieldU32("reserved1")
-				d.FieldU32("reserved2")
-				d.FieldU32("reserved3")
-				d.FieldU32("reserved4")
-				d.FieldU32("reserved5")
-				d.FieldU32("reserved6")
-			} else {
-				d.FieldU64("init_address", scalar.Hex)
-				d.FieldU64("init_module")
-				d.FieldU64("reserved1")
-				d.FieldU64("reserved2")
-				d.FieldU64("reserved3")
-				d.FieldU64("reserved4")
-				d.FieldU64("reserved5")
-				d.FieldU64("reserved6")
-			}
-		case LC_SUB_UMBRELLA, LC_SUB_LIBRARY, LC_SUB_CLIENT, LC_SUB_FRAMEWORK:
-			offset := d.FieldU32("offset")
-			d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
-		case LC_SYMTAB:
-			d.FieldU32("symoff")
-			d.FieldU32("nsyms")
-			d.FieldU32("stroff")
-			d.FieldU32("strsize")
-		case LC_DYSYMTAB:
-			d.FieldU32("ilocalsym")
-			d.FieldU32("nlocalsym")
-			d.FieldU32("iextdefsym")
-			d.FieldU32("nextdefsym")
-			d.FieldU32("iundefsym")
-			d.FieldU32("nundefsym")
-			d.FieldU32("tocoff")
-			d.FieldU32("ntoc")
-			d.FieldU32("modtaboff")
-			d.FieldU32("nmodtab")
-			d.FieldU32("extrefsymoff")
-			d.FieldU32("nextrefsyms")
-			d.FieldU32("indirectsymoff")
-			d.FieldU32("nindirectsyms")
+	d.FieldArray("load_commands", func(d *decode.D) {
+		d.RangeSorted = false
 
-			d.FieldU32("extreloff")
-			d.FieldU32("nextrel")
-			d.FieldU32("locreloff")
-			d.FieldU32("nlocrel")
-		case LC_BUILD_VERSION:
-			d.FieldU32("platform")
-			d.FieldU32("minos")
-			d.FieldU32("sdk")
-			ntools := d.FieldU32("ntools")
-			var ntoolsIdx uint64
-			d.FieldStructArrayLoop("tools", "tool", func() bool {
-				return ntoolsIdx < ntools
-			}, func(d *decode.D) {
-				d.FieldU32("tool")
-				d.FieldU32("version")
-				ntoolsIdx++
+		for i := uint64(0); i < ncmds; i++ {
+			d.FieldStruct("load_command", func(d *decode.D) {
+				cmd := d.FieldU32("cmd", loadCommands, scalar.Hex)
+				cmdsize := d.FieldU32("cmdsize")
+				switch cmd {
+				case LC_UUID:
+					d.FieldStruct("uuid_command", func(d *decode.D) {
+						d.FieldRawLen("uuid", 16*8)
+					})
+				case LC_SEGMENT, LC_SEGMENT_64:
+					// nsect := (cmdsize - uint64(archBits)) / uint64(archBits)
+					var nsects uint64
+					d.FieldStruct("segment_command", func(d *decode.D) {
+						d.FieldValueS("arch_bits", int64(archBits))
+						d.FieldUTF8NullFixedLen("segname", 16) // OPCODE_DECODER segname==__TEXT
+						if archBits == 32 {
+							d.FieldU32("vmaddr", scalar.Hex)
+							d.FieldU32("vmsize")
+							d.FieldU32("fileoff")
+							d.FieldU32("tfilesize")
+						} else {
+							d.FieldU64("vmaddr", scalar.Hex)
+							d.FieldU64("vmsize")
+							d.FieldU64("fileoff")
+							d.FieldU64("tfilesize")
+						}
+						d.FieldS32("initprot")
+						d.FieldS32("maxprot")
+						nsects = d.FieldU32("nsects")
+						d.FieldStruct("flags", parseSegmentFlags)
+					})
+					d.FieldArray("sections", func(d *decode.D) {
+						d.RangeSorted = false
+
+						for i := uint64(0); i < nsects; i++ {
+							d.FieldStruct("section", func(d *decode.D) {
+								// OPCODE_DECODER sectname==__text
+								d.FieldUTF8NullFixedLen("sectname", 16)
+								d.FieldUTF8NullFixedLen("segname", 16)
+								var size uint64
+								if archBits == 32 {
+									d.FieldU32("address", scalar.Hex)
+									size = d.FieldU32("size")
+								} else {
+									d.FieldU64("address", scalar.Hex)
+									size = d.FieldU64("size")
+								}
+								offset := d.FieldU32("offset")
+								d.FieldU32("align")
+								d.FieldU32("reloff")
+								d.FieldU32("nreloc")
+								// get section type
+								d.FieldStruct("flags", parseSectionFlags)
+								d.FieldU8("type", sectionTypes)
+								d.FieldU32("reserved1")
+								d.FieldU32("reserved2")
+								if archBits == 64 {
+									d.FieldU32("reserved3")
+								}
+								d.RangeFn(int64(offset)*8, int64(size)*8, func(d *decode.D) {
+									d.FieldRawLen("data", d.BitsLeft())
+								})
+							})
+						}
+					})
+				case LC_TWOLEVEL_HINTS:
+					d.FieldU32("offset")
+					d.FieldU32("nhints")
+				case LC_LOAD_DYLIB, LC_ID_DYLIB, LC_LOAD_UPWARD_DYLIB, LC_LOAD_WEAK_DYLIB, LC_LAZY_LOAD_DYLIB, LC_REEXPORT_DYLIB:
+					d.FieldStruct("dylib_command", func(d *decode.D) {
+						offset := d.FieldU32("offset")
+						d.FieldU32("timestamp", timestampMapper)
+						d.FieldU32("current_version")
+						d.FieldU32("compatibility_version")
+						d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
+					})
+				case LC_LOAD_DYLINKER, LC_ID_DYLINKER, LC_DYLD_ENVIRONMENT:
+					offset := d.FieldU32("offset")
+					d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
+				case LC_RPATH:
+					offset := d.FieldU32("offset")
+					d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
+				case LC_PREBOUND_DYLIB:
+					// https://github.com/aidansteele/osx-abi-macho-file-format-reference#prebound_dylib_command
+					d.U32() // name_offset
+					nmodules := d.FieldU32("nmodules")
+					d.U32() // linked_modules_offset
+					d.FieldUTF8Null("name")
+					d.FieldBitBufFn("linked_modules", func(d *decode.D) bitio.ReaderAtSeeker {
+						return d.RawLen(int64((nmodules / 8) + (nmodules % 8)))
+					})
+				case LC_THREAD, LC_UNIXTHREAD:
+					d.FieldU32("flavor")
+					count := d.FieldU32("count")
+					d.FieldStruct("state", func(d *decode.D) {
+						switch cpuType {
+						case 0x7:
+							threadStateI386Decode(d)
+						case 0xC:
+							threadStateARM32Decode(d)
+						case 0x13:
+							threadStatePPC32Decode(d)
+						case 0x1000007:
+							threadStateX8664Decode(d)
+						case 0x100000C:
+							threadStateARM64Decode(d)
+						case 0x1000013:
+							threadStatePPC64Decode(d)
+						default:
+							d.FieldRawLen("state", int64(count*32))
+						}
+					})
+				case LC_ROUTINES, LC_ROUTINES_64:
+					if archBits == 32 {
+						d.FieldU32("init_address", scalar.Hex)
+						d.FieldU32("init_module")
+						d.FieldU32("reserved1")
+						d.FieldU32("reserved2")
+						d.FieldU32("reserved3")
+						d.FieldU32("reserved4")
+						d.FieldU32("reserved5")
+						d.FieldU32("reserved6")
+					} else {
+						d.FieldU64("init_address", scalar.Hex)
+						d.FieldU64("init_module")
+						d.FieldU64("reserved1")
+						d.FieldU64("reserved2")
+						d.FieldU64("reserved3")
+						d.FieldU64("reserved4")
+						d.FieldU64("reserved5")
+						d.FieldU64("reserved6")
+					}
+				case LC_SUB_UMBRELLA, LC_SUB_LIBRARY, LC_SUB_CLIENT, LC_SUB_FRAMEWORK:
+					offset := d.FieldU32("offset")
+					d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
+				case LC_SYMTAB:
+					d.FieldU32("symoff")
+					d.FieldU32("nsyms")
+					d.FieldU32("stroff")
+					d.FieldU32("strsize")
+				case LC_DYSYMTAB:
+					d.FieldU32("ilocalsym")
+					d.FieldU32("nlocalsym")
+					d.FieldU32("iextdefsym")
+					d.FieldU32("nextdefsym")
+					d.FieldU32("iundefsym")
+					d.FieldU32("nundefsym")
+					d.FieldU32("tocoff")
+					d.FieldU32("ntoc")
+					d.FieldU32("modtaboff")
+					d.FieldU32("nmodtab")
+					d.FieldU32("extrefsymoff")
+					d.FieldU32("nextrefsyms")
+					d.FieldU32("indirectsymoff")
+					d.FieldU32("nindirectsyms")
+
+					d.FieldU32("extreloff")
+					d.FieldU32("nextrel")
+					d.FieldU32("locreloff")
+					d.FieldU32("nlocrel")
+				case LC_BUILD_VERSION:
+					d.FieldU32("platform")
+					d.FieldU32("minos")
+					d.FieldU32("sdk")
+					ntools := d.FieldU32("ntools")
+					var ntoolsIdx uint64
+					d.FieldStructArrayLoop("tools", "tool", func() bool {
+						return ntoolsIdx < ntools
+					}, func(d *decode.D) {
+						d.FieldU32("tool")
+						d.FieldU32("version")
+						ntoolsIdx++
+					})
+				case LC_CODE_SIGNATURE, LC_SEGMENT_SPLIT_INFO, LC_FUNCTION_STARTS, LC_DATA_IN_CODE, LC_DYLIB_CODE_SIGN_DRS, LC_LINKER_OPTIMIZATION_HINT:
+					d.FieldStruct("linkedit_data", func(d *decode.D) {
+						d.FieldU32("off")
+						d.FieldU32("size")
+					})
+				case LC_VERSION_MIN_IPHONEOS, LC_VERSION_MIN_MACOSX, LC_VERSION_MIN_TVOS, LC_VERSION_MIN_WATCHOS:
+					d.FieldU32("version")
+					d.FieldU32("sdk")
+				case LC_DYLD_INFO, LC_DYLD_INFO_ONLY:
+					d.FieldStruct("dyld_info", func(d *decode.D) {
+						d.FieldU32("rebase_off")
+						d.FieldU32("rebase_size")
+						d.FieldU32("bind_off")
+						d.FieldU32("bind_size")
+						d.FieldU32("weak_bind_off")
+						d.FieldU32("weak_bind_size")
+						d.FieldU32("lazy_bind_off")
+						d.FieldU32("lazy_bind_size")
+						d.FieldU32("export_off")
+						d.FieldU32("export_size")
+					})
+				case LC_MAIN:
+					d.FieldStruct("entrypoint", func(d *decode.D) {
+						d.FieldU64("entryoff")
+						d.FieldU64("stacksize")
+					})
+				case LC_SOURCE_VERSION:
+					d.FieldStruct("source_version_tag", func(d *decode.D) {
+						d.FieldU64("tag")
+					})
+				case LC_LINKER_OPTION:
+					d.FieldStruct("linker_option", func(d *decode.D) {
+						count := d.FieldU32("count")
+						d.FieldUTF8NullFixedLen("option", int(count))
+					})
+				case LC_ENCRYPTION_INFO, LC_ENCRYPTION_INFO_64:
+					d.FieldStruct("encryption_info", func(d *decode.D) {
+						offset := d.FieldU32("offset")
+						size := d.FieldU32("size")
+						d.FieldU32("id")
+						d.RangeFn(int64(offset)*8, int64(size)*8, func(d *decode.D) {
+							d.FieldRawLen("data", d.BitsLeft())
+						})
+					})
+				case LC_IDFVMLIB, LC_LOADFVMLIB:
+					d.FieldStruct("fvmlib", func(d *decode.D) {
+						offset := d.FieldU32("offset")
+						d.FieldU32("minor_version")
+						d.FieldU32("header_addr", scalar.Hex)
+						d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
+					})
+				default:
+					if _, ok := loadCommands[cmd]; !ok {
+						d.SeekRel(int64((cmdsize - 8) * 8))
+						// Seek Rel so the parts are marked unknown
+					}
+				}
 			})
-		case LC_CODE_SIGNATURE, LC_SEGMENT_SPLIT_INFO, LC_FUNCTION_STARTS, LC_DATA_IN_CODE, LC_DYLIB_CODE_SIGN_DRS, LC_LINKER_OPTIMIZATION_HINT:
-			d.FieldStruct("linkedit_data", func(d *decode.D) {
-				d.FieldU32("off")
-				d.FieldU32("size")
-			})
-		case LC_VERSION_MIN_IPHONEOS, LC_VERSION_MIN_MACOSX, LC_VERSION_MIN_TVOS, LC_VERSION_MIN_WATCHOS:
-			d.FieldU32("version")
-			d.FieldU32("sdk")
-		case LC_DYLD_INFO, LC_DYLD_INFO_ONLY:
-			d.FieldStruct("dyld_info", func(d *decode.D) {
-				d.FieldU32("rebase_off")
-				d.FieldU32("rebase_size")
-				d.FieldU32("bind_off")
-				d.FieldU32("bind_size")
-				d.FieldU32("weak_bind_off")
-				d.FieldU32("weak_bind_size")
-				d.FieldU32("lazy_bind_off")
-				d.FieldU32("lazy_bind_size")
-				d.FieldU32("export_off")
-				d.FieldU32("export_size")
-			})
-		case LC_MAIN:
-			d.FieldStruct("entrypoint", func(d *decode.D) {
-				d.FieldU64("entryoff")
-				d.FieldU64("stacksize")
-			})
-		case LC_SOURCE_VERSION:
-			d.FieldStruct("source_version_tag", func(d *decode.D) {
-				d.FieldU64("tag")
-			})
-		case LC_LINKER_OPTION:
-			d.FieldStruct("linker_option", func(d *decode.D) {
-				count := d.FieldU32("count")
-				d.FieldUTF8NullFixedLen("option", int(count))
-			})
-		case LC_ENCRYPTION_INFO, LC_ENCRYPTION_INFO_64:
-			d.FieldStruct("encryption_info", func(d *decode.D) {
-				offset := d.FieldU32("offset")
-				size := d.FieldU32("size")
-				d.FieldU32("id")
-				d.RangeFn(int64(offset)*8, int64(size)*8, func(d *decode.D) {
-					d.FieldRawLen("data", d.BitsLeft())
-				})
-			})
-		case LC_IDFVMLIB, LC_LOADFVMLIB:
-			d.FieldStruct("fvmlib", func(d *decode.D) {
-				offset := d.FieldU32("offset")
-				d.FieldU32("minor_version")
-				d.FieldU32("header_addr", scalar.Hex)
-				d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
-			})
-		default:
-			if _, ok := loadCommands[cmd]; !ok {
-				d.SeekRel(int64((cmdsize - 8) * 8))
-				// Seek Rel so the parts are marked unknown
-			}
 		}
-		ncmdsIdx++
 	})
 }
 
