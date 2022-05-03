@@ -5,4 +5,16 @@ $ fq -d asn1_ber d tc42.ber
 0x0|24                                             |$               |  form: "constructed" (1)
 0x0|24                                             |$               |  tag: "octet_string" (0x4)
 0x0|   80                                          | .              |  length: "indefinite" (0)
-0x0|      04 03 00 04 05 04 5f 29 1c d0 00 00|     |  ......_)....| |  unknown0: raw bits
+   |                                               |                |  constructed[0:2]:
+   |                                               |                |    [0]{}: object
+0x0|      04                                       |  .             |      class: "universal" (0)
+0x0|      04                                       |  .             |      form: "primitive" (0)
+0x0|      04                                       |  .             |      tag: "octet_string" (0x4)
+0x0|         03                                    |   .            |      length: 3
+0x0|            00 04 05                           |    ...         |      value: raw bits
+   |                                               |                |    [1]{}: object
+0x0|                     04                        |       .        |      class: "universal" (0)
+0x0|                     04                        |       .        |      form: "primitive" (0)
+0x0|                     04                        |       .        |      tag: "octet_string" (0x4)
+0x0|                        5f                     |        _       |      length: 95
+0x0|                           29 1c d0 00 00|     |         )....| |  unknown0: raw bits

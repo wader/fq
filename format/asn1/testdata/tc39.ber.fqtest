@@ -5,3 +5,4 @@ $ fq -d asn1_ber d tc39.ber
 0x0|23                                             |#               |  form: "constructed" (1)
 0x0|23                                             |#               |  tag: "bit_string" (0x3)
 0x0|   00|                                         | .|             |  length: "indefinite" (0)
+   |                                               |                |  constructed[0:0]:

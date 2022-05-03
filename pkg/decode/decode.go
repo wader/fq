@@ -9,7 +9,6 @@ import (
 	"math/big"
 
 	"github.com/wader/fq/internal/bitioextra"
-	"github.com/wader/fq/internal/mathextra"
 	"github.com/wader/fq/internal/recoverfn"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/ranges"
@@ -877,49 +876,20 @@ func (d *D) LimitedFn(nBits int64, fn func(d *D)) int64 {
 
 // RangeFn decode from current position nBits forward. Position will not be changed.
 func (d *D) RangeFn(firstBit int64, nBits int64, fn func(d *D)) int64 {
-	var subV interface{}
-	switch vv := d.Value.V.(type) {
-	case *Compound:
-		subV = &Compound{IsArray: vv.IsArray}
-	default:
-		panic("unreachable")
-	}
 
-	if nBits < 0 {
-		nBits = d.Len() - firstBit
-	}
+	startPos := d.Pos()
 
 	// TODO: do some kind of DecodeLimitedLen/RangeFn?
 	br := d.BitBufRange(0, firstBit+nBits)
 	if _, err := br.SeekBits(firstBit, io.SeekStart); err != nil {
 		d.IOPanic(err, "RangeFn: SeekAbs")
 	}
-	sd := d.FieldDecoder("", br, subV)
 
-	startPos := d.Pos()
-	endPos := startPos
-
-	fn(sd)
-
-	// TODO: refactor, similar to decode()
-	if err := sd.Value.WalkRootPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
-		//v.Range.Start += firstBit
-		v.RootReader = d.Value.RootReader
-		endPos = mathextra.MaxInt64(endPos, v.Range.Stop())
-
-		return nil
-	}); err != nil {
-		panic(err)
-	}
-
-	switch vv := sd.Value.V.(type) {
-	case *Compound:
-		for _, f := range vv.Children {
-			d.AddChild(f)
-		}
-	default:
-		panic("unreachable")
-	}
+	pbr := d.bitBuf
+	d.bitBuf = br
+	fn(d)
+	endPos := d.Pos()
+	d.bitBuf = pbr
 
 	return endPos - startPos
 }
