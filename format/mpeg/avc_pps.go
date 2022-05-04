@@ -15,12 +15,9 @@ func init() {
 	})
 }
 
-// TODO:
-// ffmpeg does: get_bits_left(gb) > 0 && show_bits(gb, 8) != 0x80
-// we do: there is more than trailing rbsp left
 func moreRBSPData(d *decode.D) bool {
 	l := d.BitsLeft()
-	return l > 8 //|| (l == 8 && d.PeekBits(8) != 1)
+	return l >= 8 && d.PeekBits(8) != 0b1000_0000
 }
 
 func avcPPSDecode(d *decode.D, in interface{}) interface{} {
@@ -77,7 +74,6 @@ func avcPPSDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldBool("constrained_intra_pred_flag")
 	d.FieldBool("redundant_pic_cnt_present_flag")
 
-	// TODO: more_data() is there non-zero bits left?
 	if moreRBSPData(d) {
 		d.FieldBool("transform_8x8_mode_flag")
 		picScalingMatrixPresentFlag := d.FieldBool("pic_scaling_matrix_present_flag")
@@ -89,6 +85,8 @@ func avcPPSDecode(d *decode.D, in interface{}) interface{} {
 			})
 		}
 		d.FieldSFn("second_chroma_qp_index_offset", sEV)
+	} else {
+		d.FieldBool("rbsp_stop_one_bit")
 	}
 
 	d.FieldRawLen("rbsp_trailing_bits", d.BitsLeft())
