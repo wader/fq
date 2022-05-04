@@ -976,10 +976,14 @@ func init() {
 			}
 		},
 		"iinf": func(ctx *decodeContext, d *decode.D) {
-			d.FieldU8("version")
+			version := d.FieldU8("version")
 			d.FieldU24("flags")
-			_ = d.FieldU16("entry_count")
-			decodeBoxes(ctx, d)
+			if version == 0 {
+				_ = d.FieldU16("entry_count")
+				decodeBoxes(ctx, d)
+			} else {
+				d.FieldRawLen("data", d.BitsLeft())
+			}
 		},
 		"iprp": decodeBoxes,
 		"ipco": decodeBoxes,
