@@ -34,7 +34,7 @@ var startAndStreamNames = scalar.URangeToScalar{
 	{Range: [2]uint64{0x00, 0x00}, S: scalar.S{Sym: "picture"}},
 	{Range: [2]uint64{0x01, 0xaf}, S: scalar.S{Sym: "slice"}},
 	{Range: [2]uint64{0xb0, 0xb1}, S: scalar.S{Sym: "reserved"}},
-	{Range: [2]uint64{0xb2, 0xb2}, S: scalar.S{Sym: "user data"}},
+	{Range: [2]uint64{0xb2, 0xb2}, S: scalar.S{Sym: "user_data"}},
 	{Range: [2]uint64{0xb3, 0xb3}, S: scalar.S{Sym: "sequence_header"}},
 	{Range: [2]uint64{0xb4, 0xb4}, S: scalar.S{Sym: "sequence_error"}},
 	{Range: [2]uint64{0xb5, 0xb5}, S: scalar.S{Sym: "extension"}},

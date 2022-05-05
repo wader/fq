@@ -173,7 +173,7 @@ var MPEGAudioObjectTypeNames = scalar.UToScalar{
 	28:                           {Sym: "ssc", Description: "SinuSoidal Coding"},
 	MPEGAudioObjectTypePS:        {Sym: "ps", Description: "Parametric Stereo"},
 	30:                           {Sym: "mpeg_surround", Description: "MPEG Surround"},
-	31:                           {Sym: "(escape value)", Description: "(Escape value)"},
+	31:                           {Description: "(Escape value)"},
 	32:                           {Sym: "layer_1", Description: "MPEG Layer-1"},
 	33:                           {Sym: "layer_2", Description: "MPEG Layer-2"},
 	34:                           {Sym: "layer_3", Description: "MPEG Layer-3"},
