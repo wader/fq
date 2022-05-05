@@ -169,8 +169,6 @@ out   https://avro.apache.org/docs/current/spec.html#Object+Container+Files
 "help(bencode)"
 out bencode: BitTorrent bencoding decoder
 out Examples:
-out   # bencode as JSON
-out   $ fq -d bencode torepr file
 out   # Decode file as bencode
 out   $ fq -d bencode file
 out   # Decode value as bencode

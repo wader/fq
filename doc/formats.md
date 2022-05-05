@@ -219,11 +219,6 @@ Limitations:
 
 #### Examples
 
-bencode as JSON
-```
-$ fq -d bencode torepr file
-```
-
 Supports `torepr`
 ```
 $ fq -d bencode torepr file

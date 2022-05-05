@@ -169,7 +169,7 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 { /
 	chunkLen := int64(d.FieldUScalarFn("size", func(d *decode.D) scalar.S {
 		l := d.U32()
 		if l == restOfFileLen {
-			return scalar.S{Actual: l, ActualDisplay: scalar.NumberHex, Sym: "rest of file"}
+			return scalar.S{Actual: l, ActualDisplay: scalar.NumberHex, Description: "Rest of file"}
 		}
 		return scalar.S{Actual: l, ActualDisplay: scalar.NumberDecimal}
 	}))
