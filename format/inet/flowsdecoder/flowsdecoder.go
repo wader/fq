@@ -13,19 +13,22 @@ import (
 	"github.com/google/gopacket/reassembly"
 )
 
-type IPEndpoint struct {
+type TCPEndpoint struct {
 	IP   net.IP
 	Port int
 }
 
-type TCPConnection struct {
-	ClientEndpoint IPEndpoint
-	ServerEndpoint IPEndpoint
-	HasStart       bool
-	HasEnd         bool
-	ClientToServer *bytes.Buffer
-	ServerToClient *bytes.Buffer
+type TCPDirection struct {
+	Endpoint     TCPEndpoint
+	HasStart     bool
+	HasEnd       bool
+	Buffer       *bytes.Buffer
+	SkippedBytes uint64
+}
 
+type TCPConnection struct {
+	Client     TCPDirection
+	Server     TCPDirection
 	tcpState   *reassembly.TCPSimpleFSM
 	optChecker reassembly.TCPOptionCheck
 	net        gopacket.Flow
@@ -53,25 +56,31 @@ func (t *TCPConnection) ReassembledSG(sg reassembly.ScatterGather, ac reassembly
 	dir, start, end, skip := sg.Info()
 	length, _ := sg.Lengths()
 
+	var d *TCPDirection
+	switch dir {
+	case reassembly.TCPDirClientToServer:
+		d = &t.Client
+	case reassembly.TCPDirServerToClient:
+		d = &t.Server
+	default:
+		panic("unreachable")
+	}
+
 	if skip == -1 {
 		// can't find where skip == -1 is documented but this is what gopacket reassemblydump does
 		// to allow missing syn/ack
 	} else if skip != 0 {
 		// stream has missing bytes
+		d.SkippedBytes += uint64(skip)
 		return
 	}
 
-	t.HasStart = t.HasStart || start
-	t.HasEnd = t.HasEnd || end
+	d.HasStart = d.HasStart || start
+	d.HasEnd = d.HasEnd || end
 
 	data := sg.Fetch(length)
 
-	switch dir {
-	case reassembly.TCPDirClientToServer:
-		t.ClientToServer.Write(data)
-	case reassembly.TCPDirServerToClient:
-		t.ServerToClient.Write(data)
-	}
+	d.Buffer.Write(data)
 }
 
 func (t *TCPConnection) ReassemblyComplete(ac reassembly.AssemblerContext) bool {
@@ -103,16 +112,20 @@ func (fd *Decoder) New(net, transport gopacket.Flow, tcp *layers.TCP, ac reassem
 	}
 
 	stream := &TCPConnection{
-		ClientEndpoint: IPEndpoint{
-			IP:   append([]byte(nil), net.Src().Raw()...),
-			Port: clientPort,
+		Client: TCPDirection{
+			Endpoint: TCPEndpoint{
+				IP:   append([]byte(nil), net.Src().Raw()...),
+				Port: clientPort,
+			},
+			Buffer: &bytes.Buffer{},
 		},
-		ServerEndpoint: IPEndpoint{
-			IP:   append([]byte(nil), net.Dst().Raw()...),
-			Port: serverPort,
+		Server: TCPDirection{
+			Endpoint: TCPEndpoint{
+				IP:   append([]byte(nil), net.Dst().Raw()...),
+				Port: serverPort,
+			},
+			Buffer: &bytes.Buffer{},
 		},
-		ClientToServer: &bytes.Buffer{},
-		ServerToClient: &bytes.Buffer{},
 
 		net:        net,
 		transport:  transport,

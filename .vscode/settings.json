@@ -55,6 +55,7 @@
         "gojq",
         "gojqextra",
         "golangci",
+        "gopacket",
         "GOPATH",
         "gosec",
         "gosimple",

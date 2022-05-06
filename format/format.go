@@ -240,6 +240,7 @@ type TCPStreamIn struct {
 	IsClient        bool
 	HasStart        bool
 	HasEnd          bool
+	SkippedBytes    uint64
 	SourcePort      int
 	DestinationPort int
 }
