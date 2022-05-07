@@ -51,7 +51,7 @@ func vp8Decode(d *decode.D, in interface{}) interface{} {
 	})
 
 	if isKeyFrame {
-		d.FieldU24("start_code", d.ValidateU(0x9d012a), scalar.Hex)
+		d.FieldU24("start_code", d.ValidateU(0x9d012a), scalar.ActualHex)
 
 		// width and height are not contiguous bits
 		width0 := d.FieldU8("width0")

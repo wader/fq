@@ -34,7 +34,7 @@ func pageDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldU64("granule_position")
 	p.StreamSerialNumber = uint32(d.FieldU32("bitstream_serial_number"))
 	p.SequenceNo = uint32(d.FieldU32("page_sequence_no"))
-	d.FieldU32("crc", scalar.Hex)
+	d.FieldU32("crc", scalar.ActualHex)
 	pageSegments := d.FieldU8("page_segments")
 	var segmentTable []uint64
 	d.FieldArray("segment_table", func(d *decode.D) {

@@ -115,7 +115,7 @@ func decodeBlockCodec(d *decode.D, dataSize int64, codec string) *bytes.Buffer {
 		// Check the checksum
 		crc32W := crc32.NewIEEE()
 		d.MustCopy(crc32W, bytes.NewReader(bb.Bytes()))
-		d.FieldU32("crc", d.ValidateUBytes(crc32W.Sum(nil)), scalar.Hex)
+		d.FieldU32("crc", d.ValidateUBytes(crc32W.Sum(nil)), scalar.ActualHex)
 	} else {
 		// Unknown codec, just dump the compressed data.
 		d.FieldRawLen("compressed", dataSize*8, scalar.Description(codec+" encoded"))

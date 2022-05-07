@@ -78,7 +78,7 @@ func gifDecode(d *decode.D, in interface{}) interface{} {
 			case '!': /* "!" */
 				d.FieldStruct("extension_block", func(d *decode.D) {
 					d.FieldU8("introducer")
-					functionCode := d.FieldU8("function_code", extensionNames, scalar.Hex)
+					functionCode := d.FieldU8("function_code", extensionNames, scalar.ActualHex)
 
 					dataBytes := &bytes.Buffer{}
 

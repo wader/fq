@@ -40,7 +40,7 @@ func init() {
 }
 
 func decodePcap(d *decode.D, in interface{}) interface{} {
-	endian := d.FieldU32("magic", d.AssertU(bigEndian, littleEndian), endianMap, scalar.Hex)
+	endian := d.FieldU32("magic", d.AssertU(bigEndian, littleEndian), endianMap, scalar.ActualHex)
 	switch endian {
 	case bigEndian:
 		d.Endian = decode.BigEndian

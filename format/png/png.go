@@ -229,7 +229,7 @@ func pngDecode(d *decode.D, in interface{}) interface{} {
 
 		chunkCRC := crc32.NewIEEE()
 		d.MustCopy(chunkCRC, bitio.NewIOReader(d.BitBufRange(crcStartPos, d.Pos()-crcStartPos)))
-		d.FieldU32("crc", d.ValidateUBytes(chunkCRC.Sum(nil)), scalar.Hex)
+		d.FieldU32("crc", d.ValidateUBytes(chunkCRC.Sum(nil)), scalar.ActualHex)
 	})
 
 	return nil

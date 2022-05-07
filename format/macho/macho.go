@@ -396,11 +396,11 @@ func ofileDecode(d *decode.D) {
 	d.SeekRel(-4 * 8)
 	d.FieldStruct("header", func(d *decode.D) {
 		d.FieldValueS("arch_bits", int64(archBits))
-		magic := d.FieldU32("magic", magicSymMapper, scalar.Hex)
+		magic := d.FieldU32("magic", magicSymMapper, scalar.ActualHex)
 		d.FieldValueU("bits", uint64(archBits))
 		d.FieldValueStr("endian", endianNames[magic])
-		cpuType = d.FieldU32("cputype", cpuTypes, scalar.Hex)
-		d.FieldU32("cpusubtype", cpuSubTypes[cpuType], scalar.Hex)
+		cpuType = d.FieldU32("cputype", cpuTypes, scalar.ActualHex)
+		d.FieldU32("cpusubtype", cpuSubTypes[cpuType], scalar.ActualHex)
 		d.FieldU32("filetype", fileTypes)
 		ncmds = d.FieldU32("ncdms")
 		d.FieldU32("sizeofncdms")
@@ -414,7 +414,7 @@ func ofileDecode(d *decode.D) {
 
 		for i := uint64(0); i < ncmds; i++ {
 			d.FieldStruct("load_command", func(d *decode.D) {
-				cmd := d.FieldU32("cmd", loadCommands, scalar.Hex)
+				cmd := d.FieldU32("cmd", loadCommands, scalar.ActualHex)
 				cmdsize := d.FieldU32("cmdsize")
 				switch cmd {
 				case LC_UUID:
@@ -428,12 +428,12 @@ func ofileDecode(d *decode.D) {
 						d.FieldValueS("arch_bits", int64(archBits))
 						d.FieldUTF8NullFixedLen("segname", 16) // OPCODE_DECODER segname==__TEXT
 						if archBits == 32 {
-							d.FieldU32("vmaddr", scalar.Hex)
+							d.FieldU32("vmaddr", scalar.ActualHex)
 							d.FieldU32("vmsize")
 							d.FieldU32("fileoff")
 							d.FieldU32("tfilesize")
 						} else {
-							d.FieldU64("vmaddr", scalar.Hex)
+							d.FieldU64("vmaddr", scalar.ActualHex)
 							d.FieldU64("vmsize")
 							d.FieldU64("fileoff")
 							d.FieldU64("tfilesize")
@@ -453,10 +453,10 @@ func ofileDecode(d *decode.D) {
 								d.FieldUTF8NullFixedLen("segname", 16)
 								var size uint64
 								if archBits == 32 {
-									d.FieldU32("address", scalar.Hex)
+									d.FieldU32("address", scalar.ActualHex)
 									size = d.FieldU32("size")
 								} else {
-									d.FieldU64("address", scalar.Hex)
+									d.FieldU64("address", scalar.ActualHex)
 									size = d.FieldU64("size")
 								}
 								offset := d.FieldU32("offset")
@@ -526,7 +526,7 @@ func ofileDecode(d *decode.D) {
 					})
 				case LC_ROUTINES, LC_ROUTINES_64:
 					if archBits == 32 {
-						d.FieldU32("init_address", scalar.Hex)
+						d.FieldU32("init_address", scalar.ActualHex)
 						d.FieldU32("init_module")
 						d.FieldU32("reserved1")
 						d.FieldU32("reserved2")
@@ -535,7 +535,7 @@ func ofileDecode(d *decode.D) {
 						d.FieldU32("reserved5")
 						d.FieldU32("reserved6")
 					} else {
-						d.FieldU64("init_address", scalar.Hex)
+						d.FieldU64("init_address", scalar.ActualHex)
 						d.FieldU64("init_module")
 						d.FieldU64("reserved1")
 						d.FieldU64("reserved2")
@@ -633,7 +633,7 @@ func ofileDecode(d *decode.D) {
 					d.FieldStruct("fvmlib", func(d *decode.D) {
 						offset := d.FieldU32("offset")
 						d.FieldU32("minor_version")
-						d.FieldU32("header_addr", scalar.Hex)
+						d.FieldU32("header_addr", scalar.ActualHex)
 						d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
 					})
 				default:
@@ -653,7 +653,7 @@ func fatParse(d *decode.D) {
 	var narchs uint64
 	var ofileOffsets []uint64
 	d.FieldStruct("fat_header", func(d *decode.D) {
-		d.FieldU32("magic", scalar.Hex)
+		d.FieldU32("magic", scalar.ActualHex)
 		narchs = d.FieldU32("narchs")
 		narchsIdx := 0
 
@@ -662,8 +662,8 @@ func fatParse(d *decode.D) {
 		}, func(d *decode.D) {
 			// parse FatArch
 			// beware cputype and cpusubtype changes from ofile header to fat header
-			cpuType := d.FieldU32("cputype", cpuTypes, scalar.Hex)
-			d.FieldU32("cpusubtype", cpuSubTypes[cpuType], scalar.Hex)
+			cpuType := d.FieldU32("cputype", cpuTypes, scalar.ActualHex)
+			d.FieldU32("cpusubtype", cpuSubTypes[cpuType], scalar.ActualHex)
 			ofileOffsets = append(ofileOffsets, d.FieldU32("offset"))
 			d.FieldU32("size")
 			d.FieldU32("align")

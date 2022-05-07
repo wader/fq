@@ -122,7 +122,7 @@ func avcDcrDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldU8("profile_compatibility")
 	d.FieldU8("level_indication", avcLevelNames)
 	d.FieldU6("reserved0")
-	lengthSize := d.FieldU2("length_size", scalar.UAdd(1))
+	lengthSize := d.FieldU2("length_size", scalar.ActualUAdd(1))
 	d.FieldU3("reserved1")
 	numSeqParamSets := d.FieldU5("num_of_sequence_parameter_sets")
 	d.FieldArray("sequence_parameter_sets", func(d *decode.D) {

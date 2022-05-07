@@ -20,6 +20,14 @@ import (
 		return v
 	}
 
+	// Actual{{$name}}Fn map actual {{$name}} using f
+	type Actual{{$name}}Fn func(a {{$t.go_type}}) {{$t.go_type}}
+
+	func (fn Actual{{$name}}Fn) MapScalar(s S) (S, error) {
+		s.Actual = fn(s.Actual{{$name}}())
+		return s, nil
+	}
+
 	// Sym{{$name}} asserts symbolic value is a {{$name}} and returns it
 	func (s S) Sym{{$name}}() {{$t.go_type}} {
 		v, ok := s.Sym.({{$t.go_type}})
@@ -27,6 +35,14 @@ import (
 			panic(fmt.Sprintf("failed to type assert s.Sym %v as {{$t.go_type}}", s.Sym))
 		}
 		return v
+	}
+
+	// Sym{{$name}}Fn map sym {{$name}} using f
+	type Sym{{$name}}Fn func(a {{$t.go_type}}) {{$t.go_type}}
+
+	func (f Sym{{$name}}Fn) MapScalar(s S) (S, error) {
+		s.Sym = f(s.Sym{{$name}}())
+		return s, nil
 	}
 {{end}}
 
@@ -43,7 +59,7 @@ import (
 			return s, nil
 		}
 
-		// Map {{$from_name}} -> Scalar description
+		// Map {{$from_name}} -> Description
 		type {{$from_name}}ToDescription map[{{$from.go_type}}]string
 		func (m {{$from_name}}ToDescription) MapScalar(s S) (S, error) {
 			a := s.Actual{{$from_name}}()

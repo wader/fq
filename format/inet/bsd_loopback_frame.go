@@ -50,7 +50,7 @@ func decodeLoopbackFrame(d *decode.D, in interface{}) interface{} {
 	}
 	// if no LinkFrameIn assume big endian for now
 
-	networkLayer := d.FieldU32("network_layer", bsdLookbackNetworkLayerMap, scalar.Hex)
+	networkLayer := d.FieldU32("network_layer", bsdLookbackNetworkLayerMap, scalar.ActualHex)
 
 	d.FieldFormatOrRawLen(
 		"payload",

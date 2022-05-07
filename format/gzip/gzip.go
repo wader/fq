@@ -116,7 +116,7 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 			crc32W := crc32.NewIEEE()
 			// TODO: cleanup clone
 			d.MustCopyBits(crc32W, d.MustClone(uncompressedBR))
-			d.FieldU32("crc32", d.ValidateUBytes(crc32W.Sum(nil)), scalar.Hex)
+			d.FieldU32("crc32", d.ValidateUBytes(crc32W.Sum(nil)), scalar.ActualHex)
 			d.FieldU32("isize")
 		}
 	}

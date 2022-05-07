@@ -67,10 +67,10 @@ func (fn Fn) MapScalar(s S) (S, error) {
 	return fn(s)
 }
 
-var Bin = Fn(func(s S) (S, error) { s.ActualDisplay = NumberBinary; return s, nil })
-var Oct = Fn(func(s S) (S, error) { s.ActualDisplay = NumberOctal; return s, nil })
-var Dec = Fn(func(s S) (S, error) { s.ActualDisplay = NumberDecimal; return s, nil })
-var Hex = Fn(func(s S) (S, error) { s.ActualDisplay = NumberHex; return s, nil })
+var ActualBin = Fn(func(s S) (S, error) { s.ActualDisplay = NumberBinary; return s, nil })
+var ActualOct = Fn(func(s S) (S, error) { s.ActualDisplay = NumberOctal; return s, nil })
+var ActualDec = Fn(func(s S) (S, error) { s.ActualDisplay = NumberDecimal; return s, nil })
+var ActualHex = Fn(func(s S) (S, error) { s.ActualDisplay = NumberHex; return s, nil })
 
 var SymBin = Fn(func(s S) (S, error) { s.SymDisplay = NumberBinary; return s, nil })
 var SymOct = Fn(func(s S) (S, error) { s.SymDisplay = NumberOctal; return s, nil })
@@ -87,33 +87,20 @@ func Description(v string) Mapper {
 	return Fn(func(s S) (S, error) { s.Description = v; return s, nil })
 }
 
-func UAdd(n int) Mapper {
-	return Fn(func(s S) (S, error) {
-		// TODO: use math.Add/Sub?
-		s.Actual = uint64(int64(s.ActualU()) + int64(n))
-		return s, nil
-	})
+func ActualUAdd(n int) ActualUFn {
+	// TODO: use math.Add/Sub?
+	return ActualUFn(func(a uint64) uint64 { return uint64(int64(a) + int64(n)) })
 }
 
-func SAdd(n int) Mapper {
-	return Fn(func(s S) (S, error) {
-		s.Actual = s.ActualS() + int64(n)
-		return s, nil
-	})
+func ActualSAdd(n int) ActualSFn {
+	return ActualSFn(func(a int64) int64 { return a + int64(n) })
 }
 
-// TODO: nicer api?
-func Trim(cutset string) Mapper {
-	return Fn(func(s S) (S, error) {
-		s.Actual = strings.Trim(s.ActualStr(), cutset)
-		return s, nil
-	})
+func ActualTrim(cutset string) ActualStrFn {
+	return ActualStrFn(func(a string) string { return strings.Trim(a, cutset) })
 }
 
-var TrimSpace = Fn(func(s S) (S, error) {
-	s.Actual = strings.TrimSpace(s.ActualStr())
-	return s, nil
-})
+var ActualTrimSpace = ActualStrFn(strings.TrimSpace)
 
 func strMapToSym(fn func(s string) (interface{}, error)) Mapper {
 	return Fn(func(s S) (S, error) {
@@ -129,15 +116,15 @@ func strMapToSym(fn func(s string) (interface{}, error)) Mapper {
 	})
 }
 
-func StrUintToSym(base int) Mapper {
+func SymUParseUint(base int) Mapper {
 	return strMapToSym(func(s string) (interface{}, error) { return strconv.ParseUint(s, base, 64) })
 }
 
-func StrIntToSym(base int) Mapper {
+func SymSParseInt(base int) Mapper {
 	return strMapToSym(func(s string) (interface{}, error) { return strconv.ParseInt(s, base, 64) })
 }
 
-func StrFToSym(base int) Mapper {
+func SymFParseFloat(base int) Mapper {
 	return strMapToSym(func(s string) (interface{}, error) { return strconv.ParseFloat(s, base) })
 }
 

@@ -266,7 +266,7 @@ var blockFns = map[uint64]func(d *decode.D, dc *decodeContext){
 					d.FramedFn(int64(length)*8, func(d *decode.D) {
 						switch typ {
 						case nameResolutionRecordIpv4:
-							d.FieldU32BE("address", mapUToIPv4Sym, scalar.Hex)
+							d.FieldU32BE("address", mapUToIPv4Sym, scalar.ActualHex)
 							d.FieldArray("entries", func(d *decode.D) {
 								for !d.End() {
 									d.FieldUTF8Null("string")
@@ -292,7 +292,7 @@ var blockFns = map[uint64]func(d *decode.D, dc *decodeContext){
 }
 
 func decodeBlock(d *decode.D, dc *decodeContext) {
-	typ := d.FieldU32("type", blockTypeMap, scalar.Hex)
+	typ := d.FieldU32("type", blockTypeMap, scalar.ActualHex)
 	length := d.FieldU32("length") - 8
 	const footerLengthSize = 32
 	blockLen := int64(length)*8 - footerLengthSize
@@ -317,10 +317,10 @@ func decodeSection(d *decode.D, dc *decodeContext) {
 
 		// treat header block differently as it has endian info
 		d.FieldStruct("block", func(d *decode.D) {
-			d.FieldU32("type", d.AssertU(blockTypeSectionHeader), blockTypeMap, scalar.Hex)
+			d.FieldU32("type", d.AssertU(blockTypeSectionHeader), blockTypeMap, scalar.ActualHex)
 
 			d.SeekRel(32)
-			endian := d.FieldU32("byte_order_magic", ngEndianMap, scalar.Hex)
+			endian := d.FieldU32("byte_order_magic", ngEndianMap, scalar.ActualHex)
 			// peeks length and byte-order magic and marks away length
 			switch endian {
 			case ngBigEndian:

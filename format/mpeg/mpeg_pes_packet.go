@@ -72,8 +72,8 @@ var mpegVersion = scalar.UToDescription{
 func pesPacketDecode(d *decode.D, in interface{}) interface{} {
 	var v interface{}
 
-	d.FieldU24("prefix", d.AssertU(0b0000_0000_0000_0000_0000_0001), scalar.Bin)
-	startCode := d.FieldU8("start_code", startAndStreamNames, scalar.Hex)
+	d.FieldU24("prefix", d.AssertU(0b0000_0000_0000_0000_0000_0001), scalar.ActualBin)
+	startCode := d.FieldU8("start_code", startAndStreamNames, scalar.ActualHex)
 
 	switch {
 	case startCode == sequenceHeader:

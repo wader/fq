@@ -41,9 +41,9 @@ func decodeEthernetFrame(d *decode.D, in interface{}) interface{} {
 		}
 	}
 
-	d.FieldU("destination", 48, mapUToEtherSym, scalar.Hex)
-	d.FieldU("source", 48, mapUToEtherSym, scalar.Hex)
-	etherType := d.FieldU16("ether_type", format.EtherTypeMap, scalar.Hex)
+	d.FieldU("destination", 48, mapUToEtherSym, scalar.ActualHex)
+	d.FieldU("source", 48, mapUToEtherSym, scalar.ActualHex)
+	etherType := d.FieldU16("ether_type", format.EtherTypeMap, scalar.ActualHex)
 
 	d.FieldFormatOrRawLen(
 		"payload",

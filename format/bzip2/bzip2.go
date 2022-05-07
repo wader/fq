@@ -67,8 +67,8 @@ func bzip2Decode(d *decode.D, in interface{}) interface{} {
 		// 	moreStreams = false
 		// 	return
 		// }
-		d.FieldU48("magic", d.AssertU(blockMagic), scalar.Hex)
-		d.FieldU32("crc", scalar.Hex)
+		d.FieldU48("magic", d.AssertU(blockMagic), scalar.ActualHex)
+		d.FieldU32("crc", scalar.ActualHex)
 		blockCRCValue = d.FieldGet("crc")
 		d.FieldU1("randomised")
 		d.FieldU24("origptr")
@@ -137,9 +137,9 @@ func bzip2Decode(d *decode.D, in interface{}) interface{} {
 		d.FieldRawLen("compressed", compressedSize)
 
 		d.FieldStruct("footer", func(d *decode.D) {
-			d.FieldU48("magic", d.AssertU(footerMagic), scalar.Hex)
+			d.FieldU48("magic", d.AssertU(footerMagic), scalar.ActualHex)
 			// TODO: crc of block crcs
-			d.FieldU32("crc", scalar.Hex, d.ValidateU(uint64(streamCRCN)))
+			d.FieldU32("crc", scalar.ActualHex, d.ValidateU(uint64(streamCRCN)))
 			d.FieldRawLen("padding", int64(d.ByteAlignBits()))
 		})
 	}

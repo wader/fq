@@ -29,7 +29,7 @@ func decodeUDP(d *decode.D, in interface{}) interface{} {
 	sourcePort := d.FieldU16("source_port", format.UDPPortMap)
 	destPort := d.FieldU16("destination_port", format.UDPPortMap)
 	length := d.FieldU16("length")
-	d.FieldU16("checksum", scalar.Hex)
+	d.FieldU16("checksum", scalar.ActualHex)
 
 	payloadLen := int64(length-8) * 8
 	d.FieldFormatOrRawLen(

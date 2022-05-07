@@ -116,21 +116,21 @@ func avcVuiParameters(d *decode.D) {
 }
 
 func avcHdrParameters(d *decode.D) {
-	cpbCnt := d.FieldUFn("cpb_cnt", uEV, scalar.UAdd(1))
+	cpbCnt := d.FieldUFn("cpb_cnt", uEV, scalar.ActualUAdd(1))
 	d.FieldU4("bit_rate_scale")
 	d.FieldU4("cpb_size_scale")
 	d.FieldArray("sched_sels", func(d *decode.D) {
 		for i := uint64(0); i < cpbCnt; i++ {
 			d.FieldStruct("sched_sel", func(d *decode.D) {
-				d.FieldUFn("bit_rate_value", uEV, scalar.UAdd(1))
-				d.FieldUFn("cpb_size_value", uEV, scalar.UAdd(1))
+				d.FieldUFn("bit_rate_value", uEV, scalar.ActualUAdd(1))
+				d.FieldUFn("cpb_size_value", uEV, scalar.ActualUAdd(1))
 				d.FieldBool("cbr_flag")
 			})
 		}
 	})
-	d.FieldU5("initial_cpb_removal_delay_length", scalar.UAdd(1))
-	d.FieldU5("cpb_removal_delay_length", scalar.UAdd(1))
-	d.FieldU5("dpb_output_delay_length", scalar.UAdd(1))
+	d.FieldU5("initial_cpb_removal_delay_length", scalar.ActualUAdd(1))
+	d.FieldU5("cpb_removal_delay_length", scalar.ActualUAdd(1))
+	d.FieldU5("dpb_output_delay_length", scalar.ActualUAdd(1))
 	d.FieldU5("time_offset_length")
 }
 
@@ -154,8 +154,8 @@ func avcSPSDecode(d *decode.D, in interface{}) interface{} {
 			d.FieldBool("separate_colour_plane_flag")
 		}
 
-		d.FieldUFn("bit_depth_luma", uEV, scalar.UAdd(8))
-		d.FieldUFn("bit_depth_chroma", uEV, scalar.UAdd(8))
+		d.FieldUFn("bit_depth_luma", uEV, scalar.ActualUAdd(8))
+		d.FieldUFn("bit_depth_chroma", uEV, scalar.ActualUAdd(8))
 		d.FieldBool("qpprime_y_zero_transform_bypass_flag")
 		seqScalingMatrixPresentFlag := d.FieldBool("seq_scaling_matrix_present_flag")
 		if seqScalingMatrixPresentFlag {
@@ -164,11 +164,11 @@ func avcSPSDecode(d *decode.D, in interface{}) interface{} {
 		}
 	}
 
-	d.FieldUFn("log2_max_frame_num", uEV, scalar.UAdd(4))
+	d.FieldUFn("log2_max_frame_num", uEV, scalar.ActualUAdd(4))
 
 	picOrderCntType := d.FieldUFn("pic_order_cnt_type", uEV)
 	if picOrderCntType == 0 {
-		d.FieldUFn("log2_max_pic_order_cnt_lsb", uEV, scalar.UAdd(4))
+		d.FieldUFn("log2_max_pic_order_cnt_lsb", uEV, scalar.ActualUAdd(4))
 	} else if picOrderCntType == 1 {
 		d.FieldBool("delta_pic_order_always_zero_flag")
 		d.FieldSFn("offset_for_non_ref_pic", sEV)
@@ -183,8 +183,8 @@ func avcSPSDecode(d *decode.D, in interface{}) interface{} {
 
 	d.FieldUFn("max_num_ref_frames", uEV)
 	d.FieldBool("gaps_in_frame_num_value_allowed_flag")
-	d.FieldUFn("pic_width_in_mbs", uEV, scalar.UAdd(1))
-	d.FieldUFn("pic_height_in_map_units", uEV, scalar.UAdd(1))
+	d.FieldUFn("pic_width_in_mbs", uEV, scalar.ActualUAdd(1))
+	d.FieldUFn("pic_height_in_map_units", uEV, scalar.ActualUAdd(1))
 	frameMbsOnlyFlag := d.FieldBool("frame_mbs_only_flag")
 	if !frameMbsOnlyFlag {
 		d.FieldBool("mb_adaptive_frame_field_flag")
