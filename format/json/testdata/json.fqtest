@@ -25,7 +25,7 @@ $ fq . /json.gz
 0x00|1f 8b                                          |..              |  identification: raw bits (valid)
 0x00|      08                                       |  .             |  compression_method: "deflate" (8)
 0x00|         00                                    |   .            |  flags{}:
-0x00|            65 0a 08 61                        |    e..a        |  mtime: 1627916901
+0x00|            65 0a 08 61                        |    e..a        |  mtime: 1627916901 (2021-08-02T15:08:21Z)
 0x00|                        00                     |        .       |  extra_flags: 0
 0x00|                           03                  |         .      |  os: "unix" (3)
  0x0|7b 22 61 22 3a 20 31 32 33 7d 0a|              |{"a": 123}.|    |  uncompressed: {} (json)

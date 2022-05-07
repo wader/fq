@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/wader/fq/internal/bitioextra"
 	"github.com/wader/fq/pkg/bitio"
@@ -236,3 +237,41 @@ func (m BytesToScalar) MapScalar(s S) (S, error) {
 	}
 	return s, nil
 }
+
+// TODO: nicer api, use generics
+
+var unixTimeEpochDate = time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC)
+
+func DescriptionActualUTime(epoch time.Time, format string) Mapper {
+	return Fn(func(s S) (S, error) {
+		s.Description = epoch.Add(time.Second * time.Duration(s.ActualU())).Format(format)
+		return s, nil
+	})
+}
+
+func DescriptionSymUTime(epoch time.Time, format string) Mapper {
+	return Fn(func(s S) (S, error) {
+		s.Description = epoch.Add(time.Second * time.Duration(s.SymU())).Format(format)
+		return s, nil
+	})
+}
+
+var DescriptionActualUUnixTime = DescriptionActualUTime(unixTimeEpochDate, time.RFC3339)
+var DescriptionSymUUnixTime = DescriptionSymUTime(unixTimeEpochDate, time.RFC3339)
+
+func DescriptionActualSTime(epoch time.Time, format string) Mapper {
+	return Fn(func(s S) (S, error) {
+		s.Description = epoch.Add(time.Second * time.Duration(s.ActualS())).Format(format)
+		return s, nil
+	})
+}
+
+func DescriptionSymSTime(epoch time.Time, format string) Mapper {
+	return Fn(func(s S) (S, error) {
+		s.Description = epoch.Add(time.Second * time.Duration(s.SymS())).Format(format)
+		return s, nil
+	})
+}
+
+var DescriptionActualSUnixTime = DescriptionActualSTime(unixTimeEpochDate, time.RFC3339)
+var DescriptionSymSUnixTime = DescriptionSymSTime(unixTimeEpochDate, time.RFC3339)

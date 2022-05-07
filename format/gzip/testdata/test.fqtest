@@ -10,7 +10,7 @@ $ fq -d gzip dv /test.gz
 0x00|         00                                    |   .            |    name: false 0x3.3-0x3.3 (0.1)
 0x00|         00                                    |   .            |    comment: false 0x3.4-0x3.4 (0.1)
 0x00|         00                                    |   .            |    reserved: 0 0x3.5-0x3.7 (0.3)
-0x00|            41 02 ea 5f                        |    A.._        |  mtime: 1609171521 0x4-0x7.7 (4)
+0x00|            41 02 ea 5f                        |    A.._        |  mtime: 1609171521 (2020-12-28T16:05:21Z) 0x4-0x7.7 (4)
 0x00|                        00                     |        .       |  extra_flags: 0 0x8-0x8.7 (1)
 0x00|                           03                  |         .      |  os: "unix" (3) 0x9-0x9.7 (1)
  0x0|74 65 73 74 0a|                                |test.|          |  uncompressed: raw bits 0x0-0x4.7 (5)
