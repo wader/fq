@@ -74,7 +74,7 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 		hasComment = d.FieldBool("comment")
 		d.FieldU3("reserved")
 	})
-	d.FieldU32("mtime") // TODO: unix time
+	d.FieldU32("mtime", scalar.DescriptionActualUUnixTime)
 	switch compressionMethod {
 	case delfateMethod:
 		d.FieldU8("extra_flags", deflateExtraFlagsNames)

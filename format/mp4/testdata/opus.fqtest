@@ -31,8 +31,8 @@ $ fq -d mp4 dv /opus.mp4
 0x1a0|         6d 76 68 64                           |   mvhd         |          type: "mvhd" (Movie header, overall declarations) 0x1a3-0x1a6.7 (4)
 0x1a0|                     00                        |       .        |          version: 0 0x1a7-0x1a7.7 (1)
 0x1a0|                        00 00 00               |        ...     |          flags: 0 0x1a8-0x1aa.7 (3)
-0x1a0|                                 00 00 00 00   |           .... |          creation_time: "1904-01-04T00:00:00Z" (0) 0x1ab-0x1ae.7 (4)
-0x1a0|                                             00|               .|          modification_time: "1904-01-04T00:00:00Z" (0) 0x1af-0x1b2.7 (4)
+0x1a0|                                 00 00 00 00   |           .... |          creation_time: 0 (1904-01-04T00:00:00Z) 0x1ab-0x1ae.7 (4)
+0x1a0|                                             00|               .|          modification_time: 0 (1904-01-04T00:00:00Z) 0x1af-0x1b2.7 (4)
 0x1b0|00 00 00                                       |...             |
 0x1b0|         00 00 03 e8                           |   ....         |          time_scale: 1000 0x1b3-0x1b6.7 (4)
 0x1b0|                     00 00 00 35               |       ...5     |          duration: 53 0x1b7-0x1ba.7 (4)
@@ -71,9 +71,9 @@ $ fq -d mp4 dv /opus.mp4
 0x210|                     74 6b 68 64               |       tkhd     |              type: "tkhd" (Track header, overall information about the track) 0x217-0x21a.7 (4)
 0x210|                                 00            |           .    |              version: 0 0x21b-0x21b.7 (1)
 0x210|                                    00 00 03   |            ... |              flags: 3 0x21c-0x21e.7 (3)
-0x210|                                             00|               .|              creation_time: "1904-01-04T00:00:00Z" (0) 0x21f-0x222.7 (4)
+0x210|                                             00|               .|              creation_time: 0 (1904-01-04T00:00:00Z) 0x21f-0x222.7 (4)
 0x220|00 00 00                                       |...             |
-0x220|         00 00 00 00                           |   ....         |              modification_time: "1904-01-04T00:00:00Z" (0) 0x223-0x226.7 (4)
+0x220|         00 00 00 00                           |   ....         |              modification_time: 0 (1904-01-04T00:00:00Z) 0x223-0x226.7 (4)
 0x220|                     00 00 00 01               |       ....     |              track_id: 1 0x227-0x22a.7 (4)
 0x220|                                 00 00 00 00   |           .... |              reserved1: 0 0x22b-0x22e.7 (4)
 0x220|                                             00|               .|              duration: 53 0x22f-0x232.7 (4)
@@ -125,8 +125,8 @@ $ fq -d mp4 dv /opus.mp4
 0x2a0|64 68 64                                       |dhd             |
 0x2a0|         00                                    |   .            |                  version: 0 0x2a3-0x2a3.7 (1)
 0x2a0|            00 00 00                           |    ...         |                  flags: 0 0x2a4-0x2a6.7 (3)
-0x2a0|                     00 00 00 00               |       ....     |                  creation_time: "1904-01-04T00:00:00Z" (0) 0x2a7-0x2aa.7 (4)
-0x2a0|                                 00 00 00 00   |           .... |                  modification_time: "1904-01-04T00:00:00Z" (0) 0x2ab-0x2ae.7 (4)
+0x2a0|                     00 00 00 00               |       ....     |                  creation_time: 0 (1904-01-04T00:00:00Z) 0x2a7-0x2aa.7 (4)
+0x2a0|                                 00 00 00 00   |           .... |                  modification_time: 0 (1904-01-04T00:00:00Z) 0x2ab-0x2ae.7 (4)
 0x2a0|                                             00|               .|                  time_scale: 48000 0x2af-0x2b2.7 (4)
 0x2b0|00 bb 80                                       |...             |
 0x2b0|         00 00 09 d8                           |   ....         |                  duration: 2520 0x2b3-0x2b6.7 (4)

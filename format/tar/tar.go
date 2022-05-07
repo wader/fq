@@ -53,7 +53,7 @@ func tarDecode(d *decode.D, in interface{}) interface{} {
 					d.Fatalf("could not decode size")
 				}
 				size := int64(sizeS.SymU()) * 8
-				d.FieldUTF8NullFixedLen("mtime", 12, scalar.SymUParseUint(8))
+				d.FieldUTF8NullFixedLen("mtime", 12, scalar.SymUParseUint(8), scalar.DescriptionSymUUnixTime)
 				d.FieldUTF8NullFixedLen("chksum", 8, scalar.SymUParseUint(8))
 				d.FieldUTF8("typeflag", 1, mapTrimSpaceNull)
 				d.FieldUTF8("linkname", 100, mapTrimSpaceNull)

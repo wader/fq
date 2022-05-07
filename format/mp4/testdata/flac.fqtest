@@ -31,9 +31,9 @@ $ fq -d mp4 dv /flac.mp4
 0x290|                  6d 76 68 64                  |      mvhd      |          type: "mvhd" (Movie header, overall declarations) 0x296-0x299.7 (4)
 0x290|                              00               |          .     |          version: 0 0x29a-0x29a.7 (1)
 0x290|                                 00 00 00      |           ...  |          flags: 0 0x29b-0x29d.7 (3)
-0x290|                                          00 00|              ..|          creation_time: "1904-01-04T00:00:00Z" (0) 0x29e-0x2a1.7 (4)
+0x290|                                          00 00|              ..|          creation_time: 0 (1904-01-04T00:00:00Z) 0x29e-0x2a1.7 (4)
 0x2a0|00 00                                          |..              |
-0x2a0|      00 00 00 00                              |  ....          |          modification_time: "1904-01-04T00:00:00Z" (0) 0x2a2-0x2a5.7 (4)
+0x2a0|      00 00 00 00                              |  ....          |          modification_time: 0 (1904-01-04T00:00:00Z) 0x2a2-0x2a5.7 (4)
 0x2a0|                  00 00 03 e8                  |      ....      |          time_scale: 1000 0x2a6-0x2a9.7 (4)
 0x2a0|                              00 00 00 32      |          ...2  |          duration: 50 0x2aa-0x2ad.7 (4)
 0x2a0|                                          00 01|              ..|          preferred_rate: 1 0x2ae-0x2b1.7 (4)
@@ -72,8 +72,8 @@ $ fq -d mp4 dv /flac.mp4
 0x300|                                          00   |              . |              version: 0 0x30e-0x30e.7 (1)
 0x300|                                             00|               .|              flags: 3 0x30f-0x311.7 (3)
 0x310|00 03                                          |..              |
-0x310|      00 00 00 00                              |  ....          |              creation_time: "1904-01-04T00:00:00Z" (0) 0x312-0x315.7 (4)
-0x310|                  00 00 00 00                  |      ....      |              modification_time: "1904-01-04T00:00:00Z" (0) 0x316-0x319.7 (4)
+0x310|      00 00 00 00                              |  ....          |              creation_time: 0 (1904-01-04T00:00:00Z) 0x312-0x315.7 (4)
+0x310|                  00 00 00 00                  |      ....      |              modification_time: 0 (1904-01-04T00:00:00Z) 0x316-0x319.7 (4)
 0x310|                              00 00 00 01      |          ....  |              track_id: 1 0x31a-0x31d.7 (4)
 0x310|                                          00 00|              ..|              reserved1: 0 0x31e-0x321.7 (4)
 0x320|00 00                                          |..              |
@@ -125,8 +125,8 @@ $ fq -d mp4 dv /flac.mp4
 0x390|      6d 64 68 64                              |  mdhd          |                  type: "mdhd" (Media header, overall information about the media) 0x392-0x395.7 (4)
 0x390|                  00                           |      .         |                  version: 0 0x396-0x396.7 (1)
 0x390|                     00 00 00                  |       ...      |                  flags: 0 0x397-0x399.7 (3)
-0x390|                              00 00 00 00      |          ....  |                  creation_time: "1904-01-04T00:00:00Z" (0) 0x39a-0x39d.7 (4)
-0x390|                                          00 00|              ..|                  modification_time: "1904-01-04T00:00:00Z" (0) 0x39e-0x3a1.7 (4)
+0x390|                              00 00 00 00      |          ....  |                  creation_time: 0 (1904-01-04T00:00:00Z) 0x39a-0x39d.7 (4)
+0x390|                                          00 00|              ..|                  modification_time: 0 (1904-01-04T00:00:00Z) 0x39e-0x3a1.7 (4)
 0x3a0|00 00                                          |..              |
 0x3a0|      00 00 ac 44                              |  ...D          |                  time_scale: 44100 0x3a2-0x3a5.7 (4)
 0x3a0|                  00 00 08 9d                  |      ....      |                  duration: 2205 0x3a6-0x3a9.7 (4)
