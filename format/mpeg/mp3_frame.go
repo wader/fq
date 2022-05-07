@@ -157,7 +157,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	var crcValue *decode.Value
 
 	d.FieldStruct("header", func(d *decode.D) {
-		d.FieldU11("sync", d.AssertU(0b111_1111_1111), scalar.Bin)
+		d.FieldU11("sync", d.AssertU(0b111_1111_1111), scalar.ActualBin)
 
 		// v = 3 means version 2.5
 		mpegVersion := d.FieldU2("mpeg_version", mpegVersionNames)
@@ -244,21 +244,21 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		paddingBytes = d.FieldU1("padding", scalar.UToSymStr{
 			0: "not_padded",
 			1: "padded",
-		}, scalar.Bin)
+		}, scalar.ActualBin)
 		d.FieldU1("private")
 		channelsIndex = d.FieldU2("channels", scalar.UToSymStr{
 			0b00: "stereo",
 			0b01: "joint_stereo",
 			0b10: "dual",
 			0b11: "mono",
-		}, scalar.Bin)
+		}, scalar.ActualBin)
 		isStereo = channelsIndex != 0b11
 		channelModeIndex = d.FieldU2("channel_mode", scalar.UToSymStr{
 			0b00: "none",
 			0b01: "intensity stereo",
 			0b10: "ms_stereo",
 			0b11: "intensity_stereo_ms_stereo",
-		}, scalar.Bin)
+		}, scalar.ActualBin)
 		d.FieldU1("copyright")
 		d.FieldU1("original")
 		d.FieldU2("emphasis", scalar.UToSymStr{
@@ -266,9 +266,9 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			0b01: "50_15",
 			0b10: "reserved",
 			0b11: "ccit_j.17",
-		}, scalar.Bin)
+		}, scalar.ActualBin)
 		if hasCRC {
-			d.FieldU16("crc", scalar.Hex)
+			d.FieldU16("crc", scalar.ActualHex)
 			crcValue = d.FieldGet("crc")
 			crcBytes = 2
 		}

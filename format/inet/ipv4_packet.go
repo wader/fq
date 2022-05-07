@@ -67,10 +67,10 @@ func decodeIPv4(d *decode.D, in interface{}) interface{} {
 	d.FieldU8("ttl")
 	protocol := d.FieldU8("protocol", format.IPv4ProtocolMap)
 	checksumStart := d.Pos()
-	d.FieldU16("header_checksum", scalar.Hex)
+	d.FieldU16("header_checksum", scalar.ActualHex)
 	checksumEnd := d.Pos()
-	d.FieldU32("source_ip", mapUToIPv4Sym, scalar.Hex)
-	d.FieldU32("destination_ip", mapUToIPv4Sym, scalar.Hex)
+	d.FieldU32("source_ip", mapUToIPv4Sym, scalar.ActualHex)
+	d.FieldU32("destination_ip", mapUToIPv4Sym, scalar.ActualHex)
 	optionsLen := (int64(ihl) - 5) * 8 * 4
 	if optionsLen > 0 {
 		d.FramedFn(optionsLen, func(d *decode.D) {
@@ -96,7 +96,7 @@ func decodeIPv4(d *decode.D, in interface{}) interface{} {
 	ipv4Checksum := &checksum.IPv4{}
 	d.MustCopy(ipv4Checksum, bitio.NewIOReader(d.BitBufRange(0, checksumStart)))
 	d.MustCopy(ipv4Checksum, bitio.NewIOReader(d.BitBufRange(checksumEnd, headerEnd-checksumEnd)))
-	_ = d.FieldMustGet("header_checksum").TryScalarFn(d.ValidateUBytes(ipv4Checksum.Sum(nil)), scalar.Hex)
+	_ = d.FieldMustGet("header_checksum").TryScalarFn(d.ValidateUBytes(ipv4Checksum.Sum(nil)), scalar.ActualHex)
 
 	dataLen := int64(totalLength-(ihl*4)) * 8
 

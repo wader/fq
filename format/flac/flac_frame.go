@@ -115,7 +115,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 
 	d.FieldStruct("header", func(d *decode.D) {
 		// <14> 11111111111110
-		d.FieldU14("sync", d.AssertU(0b11111111111110), scalar.Bin)
+		d.FieldU14("sync", d.AssertU(0b11111111111110), scalar.ActualBin)
 
 		// <1> Reserved
 		// 0 : mandatory value
@@ -152,7 +152,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			0b1110: {Sym: uint64(16384)},
 			0b1111: {Sym: uint64(32768)},
 		}
-		blockSizeS := d.FieldScalarU4("block_size", blockSizeMap, scalar.Bin)
+		blockSizeS := d.FieldScalarU4("block_size", blockSizeMap, scalar.ActualBin)
 		if blockSizeS.Sym != nil {
 			blockSize = int(blockSizeS.SymU())
 		}
@@ -192,7 +192,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			0b1110: {Description: "end of header (16 bit*10)"},
 			0b1111: {Description: "invalid"},
 		}
-		sampleRateS := d.FieldScalarU4("sample_rate", sampleRateMap, scalar.Bin)
+		sampleRateS := d.FieldScalarU4("sample_rate", sampleRateMap, scalar.ActualBin)
 
 		// <4> Channel assignment
 		// 0000-0111 : (number of independent channels)-1. Where defined, the channel order follows SMPTE/ITU-R recommendations. The assignments are as follows:
@@ -263,7 +263,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			0b110: {Sym: uint64(24)},
 			0b111: {Description: "reserved"},
 		}
-		sampleSizeS := d.FieldScalarU3("sample_size", sampleSizeMap, scalar.Bin)
+		sampleSizeS := d.FieldScalarU3("sample_size", sampleSizeMap, scalar.ActualBin)
 		switch sampleSizeS.ActualU() {
 		case SampleSizeStreaminfo:
 			sampleSize = ffi.BitsPerSample
@@ -298,9 +298,9 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			// 0111 : get 16 bit (blocksize-1) from end of header
 			switch blockSizeS.ActualU() {
 			case BlockSizeEndOfHeader8:
-				blockSize = int(d.FieldU8("block_size", scalar.UAdd(1)))
+				blockSize = int(d.FieldU8("block_size", scalar.ActualUAdd(1)))
 			case BlockSizeEndOfHeader16:
-				blockSize = int(d.FieldU16("block_size", scalar.UAdd(1)))
+				blockSize = int(d.FieldU16("block_size", scalar.ActualUAdd(1)))
 			}
 
 			// if(sample rate bits == 11xx)
@@ -320,7 +320,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 
 		headerCRC := &checksum.CRC{Bits: 8, Table: checksum.ATM8Table}
 		d.MustCopyBits(headerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
-		d.FieldU8("crc", d.ValidateUBytes(headerCRC.Sum(nil)), scalar.Hex)
+		d.FieldU8("crc", d.ValidateUBytes(headerCRC.Sum(nil)), scalar.ActualHex)
 	})
 
 	var channelSamples [][]int64
@@ -349,7 +349,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 					{Range: [2]uint64{0b010000, 0b011111}, S: scalar.S{Sym: SubframeReserved}},
 					{Range: [2]uint64{0b100000, 0b111111}, S: scalar.S{Sym: SubframeLPC}},
 				}
-				subframeTypeS := d.FieldScalarU6("subframe_type", subframeTypeRangeMap, scalar.Bin)
+				subframeTypeS := d.FieldScalarU6("subframe_type", subframeTypeRangeMap, scalar.ActualBin)
 				switch subframeTypeS.SymStr() {
 				case SubframeFixed:
 					lpcOrder = int(subframeTypeS.ActualU() & 0b111)
@@ -366,7 +366,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 				wastedBitsFlag := d.FieldU1("wasted_bits_flag")
 				var wastedBitsK int
 				if wastedBitsFlag != 0 {
-					wastedBitsK = int(d.FieldUnary("wasted_bits_k", 0, scalar.UAdd(1)))
+					wastedBitsK = int(d.FieldUnary("wasted_bits_k", 0, scalar.ActualUAdd(1)))
 				}
 
 				subframeSampleSize := sampleSize - wastedBitsK
@@ -532,7 +532,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 					// <n> Unencoded warm-up samples (n = frame's bits-per-sample * lpc order).
 					decodeWarmupSamples(samples, lpcOrder, subframeSampleSize)
 					// <4> (Quantized linear predictor coefficients' precision in bits)-1 (1111 = invalid).
-					precision := int(d.FieldU4("precision", scalar.UAdd(1)))
+					precision := int(d.FieldU4("precision", scalar.ActualUAdd(1)))
 					// <5> Quantized linear predictor coefficient shift needed in bits (NOTE: this number is signed two's-complement).
 					shift := d.FieldS5("shift")
 					if shift < 0 {

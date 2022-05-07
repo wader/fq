@@ -127,8 +127,8 @@ func decodeSLL(d *decode.D, in interface{}) interface{} {
 	// TODO: handle other arphdr types
 	switch arpHdrType {
 	case arpHdrTypeLoopback, arpHdrTypeEther:
-		_ = d.FieldMustGet("link_address").TryScalarFn(mapUToEtherSym, scalar.Hex)
-		protcolType := d.FieldU16("protocol_type", format.EtherTypeMap, scalar.Hex)
+		_ = d.FieldMustGet("link_address").TryScalarFn(mapUToEtherSym, scalar.ActualHex)
+		protcolType := d.FieldU16("protocol_type", format.EtherTypeMap, scalar.ActualHex)
 		d.FieldFormatOrRawLen(
 			"payload",
 			d.BitsLeft(),

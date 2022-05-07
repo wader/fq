@@ -90,7 +90,7 @@ func vorbisDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldU1("framing_flag", d.ValidateU(1))
 	case packetTypeSetup:
 		d.FieldUFn("vorbis_codebook_count", func(d *decode.D) uint64 { return d.U8() + 1 })
-		d.FieldU24("codecooke_sync", d.ValidateU(0x564342), scalar.Hex)
+		d.FieldU24("codecooke_sync", d.ValidateU(0x564342), scalar.ActualHex)
 		d.FieldU16("codebook_dimensions")
 		d.FieldU24("codebook_entries")
 

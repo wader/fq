@@ -178,7 +178,7 @@ func decodeASN1BERValue(d *decode.D, bib *bitio.Buffer, sb *strings.Builder, par
 	var tag uint64
 	switch class {
 	case classUniversal:
-		tag = d.FieldUFn("tag", decodeTagNumber, universalTypeMap, scalar.Hex)
+		tag = d.FieldUFn("tag", decodeTagNumber, universalTypeMap, scalar.ActualHex)
 	default:
 		tag = d.FieldUFn("tag", decodeTagNumber)
 	}

@@ -225,7 +225,7 @@ func init() {
 			numBrands := d.BitsLeft() / 8 / 4
 			var i int64
 			d.FieldArrayLoop("brands", func() bool { return i < numBrands }, func(d *decode.D) {
-				d.FieldUTF8("brand", 4, brandDescriptions, scalar.TrimSpace)
+				d.FieldUTF8("brand", 4, brandDescriptions, scalar.ActualTrimSpace)
 				i++
 			})
 		},
@@ -322,7 +322,7 @@ func init() {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			d.FieldUTF8NullFixedLen("component_type", 4)
-			subType := d.FieldUTF8("component_subtype", 4, subTypeNames, scalar.TrimSpace)
+			subType := d.FieldUTF8("component_subtype", 4, subTypeNames, scalar.ActualTrimSpace)
 			d.FieldUTF8NullFixedLen("component_manufacturer", 4)
 			d.FieldU32("component_flags")
 			d.FieldU32("component_flags_mask")

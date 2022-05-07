@@ -193,7 +193,7 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 					d.FieldU16("compression_method", compressionMethodMap)
 					d.FieldStruct("last_modification_date", fieldMSDOSTime)
 					d.FieldStruct("last_modification_time", fieldMSDOSDate)
-					d.FieldU32("crc32_uncompressed", scalar.Hex)
+					d.FieldU32("crc32_uncompressed", scalar.ActualHex)
 					d.FieldU32("compressed_size")
 					d.FieldU32("uncompressed_size")
 					fileNameLength := d.FieldU16("file_name_length")
@@ -208,7 +208,7 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 						d.FramedFn(int64(extraFieldLength)*8, func(d *decode.D) {
 							for !d.End() {
 								d.FieldStruct("extra_field", func(d *decode.D) {
-									d.FieldU16("header_id", headerIDMap, scalar.Hex)
+									d.FieldU16("header_id", headerIDMap, scalar.ActualHex)
 									dataSize := d.FieldU16("data_size")
 									d.FieldRawLen("data", int64(dataSize)*8)
 								})
@@ -252,7 +252,7 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 				compressionMethod := d.FieldU16("compression_method", compressionMethodMap)
 				d.FieldStruct("last_modification_date", fieldMSDOSTime)
 				d.FieldStruct("last_modification_time", fieldMSDOSDate)
-				d.FieldU32("crc32_uncompressed", scalar.Hex)
+				d.FieldU32("crc32_uncompressed", scalar.ActualHex)
 				compressedSizeBytes := d.FieldU32("compressed_size")
 				d.FieldU32("uncompressed_size")
 				fileNameLength := d.FieldU16("file_name_length")
@@ -262,7 +262,7 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 					d.FramedFn(int64(extraFieldLength)*8, func(d *decode.D) {
 						for !d.End() {
 							d.FieldStruct("extra_field", func(d *decode.D) {
-								d.FieldU16("header_id", headerIDMap, scalar.Hex)
+								d.FieldU16("header_id", headerIDMap, scalar.ActualHex)
 								dataSize := d.FieldU16("data_size")
 								d.FieldRawLen("data", int64(dataSize)*8)
 							})
@@ -312,7 +312,7 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 						if bytes.Equal(d.PeekBytes(4), dataIndicatorSignature) {
 							d.FieldRawLen("signature", 4*8, d.AssertBitBuf(dataIndicatorSignature))
 						}
-						d.FieldU32("crc32_uncompressed", scalar.Hex)
+						d.FieldU32("crc32_uncompressed", scalar.ActualHex)
 						d.FieldU32("compressed_size")
 						d.FieldU32("uncompressed_size")
 					})

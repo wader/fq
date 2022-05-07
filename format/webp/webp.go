@@ -26,7 +26,7 @@ func init() {
 }
 
 func decodeChunk(d *decode.D, expectedChunkID string, fn func(d *decode.D)) bool { //nolint:unparam
-	trimChunkID := d.FieldUTF8("id", 4, scalar.TrimSpace)
+	trimChunkID := d.FieldUTF8("id", 4, scalar.ActualTrimSpace)
 	if expectedChunkID != "" && trimChunkID != expectedChunkID {
 		return false
 	}

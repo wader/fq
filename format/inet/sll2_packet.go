@@ -31,7 +31,7 @@ func decodeSLL2(d *decode.D, in interface{}) interface{} {
 		}
 	}
 
-	protcolType := d.FieldU16("protocol_type", format.EtherTypeMap, scalar.Hex)
+	protcolType := d.FieldU16("protocol_type", format.EtherTypeMap, scalar.ActualHex)
 	d.FieldU16("reserved")
 	d.FieldU32("interface_index")
 	arpHdrType := d.FieldU16("arphdr_type", arpHdrTypeMAp)
@@ -51,7 +51,7 @@ func decodeSLL2(d *decode.D, in interface{}) interface{} {
 	// TODO: handle other arphdr types
 	switch arpHdrType {
 	case arpHdrTypeLoopback, arpHdrTypeEther:
-		_ = d.FieldMustGet("link_address").TryScalarFn(mapUToEtherSym, scalar.Hex)
+		_ = d.FieldMustGet("link_address").TryScalarFn(mapUToEtherSym, scalar.ActualHex)
 		d.FieldFormatOrRawLen(
 			"payload",
 			d.BitsLeft(),

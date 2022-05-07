@@ -25,7 +25,7 @@ func avcPPSDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldUFn("seq_parameter_set_id", uEV)
 	d.FieldBool("entropy_coding_mode_flag")
 	d.FieldBool("bottom_field_pic_order_in_frame_present_flag")
-	numSliceGroups := d.FieldUFn("num_slice_groups", uEV, scalar.UAdd(1))
+	numSliceGroups := d.FieldUFn("num_slice_groups", uEV, scalar.ActualUAdd(1))
 	if numSliceGroups > 1 {
 		sliceGroupMapType := d.FieldUFn("slice_group_map_type", uEV)
 		switch sliceGroupMapType {
@@ -49,12 +49,12 @@ func avcPPSDecode(d *decode.D, in interface{}) interface{} {
 				for i := uint64(0); i < numSliceGroups; i++ {
 					d.FieldStruct("slice_group", func(d *decode.D) {
 						d.FieldBool("change_direction_flag")
-						d.FieldUFn("change_rate", uEV, scalar.UAdd(1))
+						d.FieldUFn("change_rate", uEV, scalar.ActualUAdd(1))
 					})
 				}
 			})
 		case 6:
-			picSizeInMapUnits := d.FieldUFn("pic_size_in_map_units", uEV, scalar.UAdd(1))
+			picSizeInMapUnits := d.FieldUFn("pic_size_in_map_units", uEV, scalar.ActualUAdd(1))
 			for i := uint64(0); i < picSizeInMapUnits; i++ {
 				d.FieldStruct("slice_group", func(d *decode.D) {
 					d.FieldBool("id")
@@ -63,12 +63,12 @@ func avcPPSDecode(d *decode.D, in interface{}) interface{} {
 		}
 	}
 
-	d.FieldUFn("num_ref_idx_l0_default_active", uEV, scalar.UAdd(1))
-	d.FieldUFn("num_ref_idx_l1_default_active", uEV, scalar.UAdd(1))
+	d.FieldUFn("num_ref_idx_l0_default_active", uEV, scalar.ActualUAdd(1))
+	d.FieldUFn("num_ref_idx_l1_default_active", uEV, scalar.ActualUAdd(1))
 	d.FieldBool("weighted_pred_flag")
 	d.FieldU2("weighted_bipred_idc")
-	d.FieldSFn("pic_init_qp", sEV, scalar.SAdd(26))
-	d.FieldSFn("pic_init_qs", sEV, scalar.SAdd(26))
+	d.FieldSFn("pic_init_qp", sEV, scalar.ActualSAdd(26))
+	d.FieldSFn("pic_init_qs", sEV, scalar.ActualSAdd(26))
 	d.FieldSFn("chroma_qp_index_offset", sEV)
 	d.FieldBool("deblocking_filter_control_present_flag")
 	d.FieldBool("constrained_intra_pred_flag")

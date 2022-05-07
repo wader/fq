@@ -635,8 +635,8 @@ func elfDecodeHeader(d *decode.D, ec *elfContext) {
 		d.Fatalf("unknown endian %d", endian)
 	}
 
-	d.FieldU16("type", typeNames, scalar.Hex)
-	machine := d.FieldU16("machine", machineNames, scalar.Hex)
+	d.FieldU16("type", typeNames, scalar.ActualHex)
+	machine := d.FieldU16("machine", machineNames, scalar.ActualHex)
 	d.FieldU32("version")
 	d.FieldU("entry", archBits)
 	phOff := d.FieldU("phoff", archBits)
@@ -686,9 +686,9 @@ func elfDecodeProgramHeader(d *decode.D, ec elfContext) {
 		switch ec.archBits {
 		case 32:
 			d.FieldU32("type", phTypeNames)
-			offset = d.FieldU("offset", ec.archBits, scalar.Hex)
-			d.FieldU("vaddr", ec.archBits, scalar.Hex)
-			d.FieldU("paddr", ec.archBits, scalar.Hex)
+			offset = d.FieldU("offset", ec.archBits, scalar.ActualHex)
+			d.FieldU("vaddr", ec.archBits, scalar.ActualHex)
+			d.FieldU("paddr", ec.archBits, scalar.ActualHex)
 			size = d.FieldU32("filesz")
 			d.FieldU32("memsz")
 			pFlags(d)
@@ -696,9 +696,9 @@ func elfDecodeProgramHeader(d *decode.D, ec elfContext) {
 		case 64:
 			d.FieldU32("type", phTypeNames)
 			pFlags(d)
-			offset = d.FieldU("offset", ec.archBits, scalar.Hex)
-			d.FieldU("vaddr", ec.archBits, scalar.Hex)
-			d.FieldU("paddr", ec.archBits, scalar.Hex)
+			offset = d.FieldU("offset", ec.archBits, scalar.ActualHex)
+			d.FieldU("vaddr", ec.archBits, scalar.ActualHex)
+			d.FieldU("paddr", ec.archBits, scalar.ActualHex)
 			size = d.FieldU64("filesz")
 			d.FieldU64("memsz")
 			d.FieldU64("align")
@@ -722,14 +722,14 @@ func elfDecodeProgramHeaders(d *decode.D, ec elfContext) {
 func elfDecodeDynamicTag(d *decode.D, ec elfContext, dc dynamicContext) {
 	dtTag := d.FieldU("tag", ec.archBits, dynamicTableMap)
 	name := "unspecified"
-	dfMapper := scalar.Hex
+	dfMapper := scalar.ActualHex
 	if de, ok := dynamicTableMap.lookup(dtTag); ok {
 		switch de.dUn {
 		case dUnIgnored:
 			name = "ignored"
 		case dUnVal:
 			name = "val"
-			dfMapper = scalar.Dec
+			dfMapper = scalar.ActualDec
 		case dUnPtr:
 			name = "ptr"
 		}
@@ -820,21 +820,21 @@ func elfDecodeSectionHeader(d *decode.D, ec elfContext, sh sectionHeader) {
 	switch ec.archBits {
 	case 32:
 		d.FieldU32("name", strTable(ec.strTabMap[STRTAB_SHSTRTAB]))
-		typ = d.FieldU32("type", sectionHeaderTypeMap, scalar.Hex)
+		typ = d.FieldU32("type", sectionHeaderTypeMap, scalar.ActualHex)
 		shFlags(d, ec.archBits)
-		d.FieldU("addr", ec.archBits, scalar.Hex)
+		d.FieldU("addr", ec.archBits, scalar.ActualHex)
 		offset = int64(d.FieldU("offset", ec.archBits)) * 8
-		size = int64(d.FieldU32("size", scalar.Hex) * 8)
+		size = int64(d.FieldU32("size", scalar.ActualHex) * 8)
 		d.FieldU32("link")
 		d.FieldU32("info")
 		d.FieldU32("addralign")
 		entSize = int64(d.FieldU32("entsize") * 8)
 	case 64:
 		d.FieldU32("name", strTable(ec.strTabMap[STRTAB_SHSTRTAB]))
-		typ = d.FieldU32("type", sectionHeaderTypeMap, scalar.Hex)
+		typ = d.FieldU32("type", sectionHeaderTypeMap, scalar.ActualHex)
 		shFlags(d, ec.archBits)
-		d.FieldU("addr", ec.archBits, scalar.Hex)
-		offset = int64(d.FieldU("offset", ec.archBits, scalar.Hex) * 8)
+		d.FieldU("addr", ec.archBits, scalar.ActualHex)
+		offset = int64(d.FieldU("offset", ec.archBits, scalar.ActualHex) * 8)
 		size = int64(d.FieldU64("size") * 8)
 		d.FieldU32("link")
 		d.FieldU32("info")

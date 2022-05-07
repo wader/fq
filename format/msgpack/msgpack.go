@@ -145,7 +145,7 @@ func decodeMsgPackValue(d *decode.D) {
 		}},
 	}
 
-	typ := d.FieldU8("type", formatMap, scalar.Hex)
+	typ := d.FieldU8("type", formatMap, scalar.ActualHex)
 	if fe, ok := formatMap.lookup(byte(typ)); ok {
 		fe.d(d)
 	} else {

@@ -55,7 +55,7 @@ func decodeTCP(d *decode.D, in interface{}) interface{} {
 	d.FieldBool("fin")
 	d.FieldU16("window_size")
 	// checksumStart := d.Pos()
-	d.FieldU16("checksum", scalar.Hex)
+	d.FieldU16("checksum", scalar.ActualHex)
 	// checksumEnd := d.Pos()
 	d.FieldU16("urgent_pointer")
 	optionsLen := (int64(dataOffset) - 5) * 8 * 4

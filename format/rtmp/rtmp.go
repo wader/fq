@@ -370,11 +370,11 @@ func rtmpDecode(d *decode.D, in interface{}) interface{} {
 				case 0:
 					// 64-319: 2 byte
 					d.FieldU6("chunk_stream_id_prefix")
-					chunkSteamID = d.FieldU8("chunk_stream_id", scalar.UAdd(64))
+					chunkSteamID = d.FieldU8("chunk_stream_id", scalar.ActualUAdd(64))
 				case 1:
 					// 64-65599: 3 byte
 					d.FieldU6("chunk_stream_id_prefix")
-					chunkSteamID = d.FieldU16("chunk_stream_id", scalar.UAdd(64))
+					chunkSteamID = d.FieldU16("chunk_stream_id", scalar.ActualUAdd(64))
 				default:
 					// 2-63: 1 byte
 					chunkSteamID = d.FieldU6("chunk_stream_id")
