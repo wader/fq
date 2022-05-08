@@ -279,8 +279,8 @@ $ fq -d mp4 'dv' stz2.mp4
 0x4f0|                                          49 73|              Is|      data: raw bits 0x4fe-0x52f.7 (50)
 0x500|6f 4d 65 64 69 61 20 46 69 6c 65 20 50 72 6f 64|oMedia File Prod|
 *    |until 0x52f.7 (end) (50)                       |                |
-     |                                               |                |  tracks[0:1]: 0x284-0x4f5.7 (626)
-     |                                               |                |    [0]{}: track 0x284-0x4f5.7 (626)
+     |                                               |                |  tracks[0:1]: 0x284-0x52f.7 (684)
+     |                                               |                |    [0]{}: track 0x284-0x52f.7 (684)
      |                                               |                |      samples[0:3]: 0x284-0x4f5.7 (626)
      |                                               |                |        [0]{}: sample (mp3_frame) 0x284-0x353.7 (208)
      |                                               |                |          header{}: 0x284-0x287.7 (4)
@@ -470,3 +470,4 @@ $ fq -d mp4 'dv' stz2.mp4
 0x4e0|2e 31 30 30 aa aa aa aa aa aa aa aa aa aa aa aa|.100............|
 0x4f0|aa aa aa aa aa aa                              |......          |
      |                                               |                |          crc_calculated: "c36b" (raw bits) 0x4f6-NA (0)
+     |                                               |                |      id: 1 0x530-NA (0)

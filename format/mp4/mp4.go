@@ -205,6 +205,8 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 			d.FieldStruct("track", func(d *decode.D) {
 				// TODO: handle progressive/fragmented mp4 differently somehow?
 
+				d.FieldValueU("id", uint64(t.id))
+
 				trackSDDataFormat := "unknown"
 				if len(t.sampleDescriptions) > 0 {
 					sd := t.sampleDescriptions[0]

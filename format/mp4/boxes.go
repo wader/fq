@@ -280,12 +280,12 @@ func init() {
 			d.FieldFP32("track_width")
 			d.FieldFP32("track_height")
 
-			// TODO: dup track id?
-			if _, ok := ctx.tracks[trackID]; !ok {
-				t := &track{id: int(trackID)}
+			t, ok := ctx.tracks[trackID]
+			if !ok {
+				t = &track{id: int(trackID)}
 				ctx.tracks[trackID] = t
-				ctx.currentTrack = t
 			}
+			ctx.currentTrack = t
 		},
 		"mdia": decodeBoxes,
 		"mdhd": func(_ *decodeContext, d *decode.D) {
@@ -759,11 +759,14 @@ func init() {
 			})
 			trackID := uint32(d.FieldU32("track_id"))
 			m := &moof{}
-			ctx.currentTrack = ctx.tracks[trackID]
-			if ctx.currentTrack != nil {
-				ctx.currentTrack.moofs = append(ctx.currentTrack.moofs, m)
-				ctx.currentTrack.currentMoof = m
+			t, ok := ctx.tracks[trackID]
+			if !ok {
+				t = &track{id: int(trackID)}
+				ctx.tracks[trackID] = t
 			}
+			t.moofs = append(t.moofs, m)
+			t.currentMoof = m
+			ctx.currentTrack = t
 
 			if baseDataOffsetPresent {
 				d.FieldU64("base_data_offset")

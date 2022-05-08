@@ -347,6 +347,7 @@ $ fq -d mp4 dv /dash_audio_init.mp4
 0x320|                                          00 00|              ..|              sample_degradation_priority: 0 0x32e-0x32f.7 (2)
      |                                               |                |  tracks[0:1]: 0x330-NA (0)
      |                                               |                |    [0]{}: track 0x330-NA (0)
+     |                                               |                |      id: 1 0x330-NA (0)
      |                                               |                |      samples[0:0]: 0x330-NA (0)
 $ fq -d mp4 dv /dash_audio_1.m4s
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /dash_audio_1.m4s (mp4) 0x0-0x4eb.7 (1260)
@@ -469,6 +470,26 @@ $ fq -d mp4 dv /dash_audio_1.m4s
 0x0f0|                                    de 04 00 4c|            ...L|      data: raw bits 0xfc-0x4eb.7 (1008)
 0x100|61 76 63 35 38 2e 31 33 34 2e 31 30 30 00 02 5c|avc58.134.100..\|
 *    |until 0x4eb.7 (end) (1008)                     |                |
+     |                                               |                |  tracks[0:1]: 0xfc-0x4eb.7 (1008)
+     |                                               |                |    [0]{}: track 0xfc-0x4eb.7 (1008)
+     |                                               |                |      samples[0:6]: 0xfc-0x4eb.7 (1008)
+0x0f0|                                    de 04 00 4c|            ...L|        [0]: raw bits sample 0xfc-0x1c9.7 (206)
+0x100|61 76 63 35 38 2e 31 33 34 2e 31 30 30 00 02 5c|avc58.134.100..\|
+*    |until 0x1c9.7 (206)                            |                |
+0x1c0|                              01 22 98 da d8 3d|          ."...=|        [1]: raw bits sample 0x1ca-0x2a3.7 (218)
+0x1d0|d6 93 80 76 db 22 13 6a 38 46 1c 9c 5e ae 85 f1|...v.".j8F..^...|
+*    |until 0x2a3.7 (218)                            |                |
+0x2a0|            01 24 f5 ad 0d 12 60 98 00 5e 7b 67|    .$....`..^{g|        [2]: raw bits sample 0x2a4-0x363.7 (192)
+0x2b0|55 34 92 48 92 24 05 04 08 5d b4 ee 91 f5 9f f4|U4.H.$...]......|
+*    |until 0x363.7 (192)                            |                |
+0x360|            01 22 55 ad 4c f4 38 a3 42 22 00 0e|    ."U.L.8.B"..|        [3]: raw bits sample 0x364-0x425.7 (194)
+0x370|b3 db 7e 72 6a ea 4b 49 00 14 71 4c 0e c8 24 f1|..~rj.KI..qL..$.|
+*    |until 0x425.7 (194)                            |                |
+0x420|                  01 1a 99 b2 d2 30 e2 d2 46 66|      .....0..Ff|        [4]: raw bits sample 0x426-0x4e6.7 (193)
+0x430|ec d7 81 e8 03 cf 1e dc 15 9f dc 71 af 6f 3a 56|...........q.o:V|
+*    |until 0x4e6.7 (193)                            |                |
+0x4e0|                     01 18 81 b4 70|           |       ....p|   |        [5]: raw bits sample 0x4e7-0x4eb.7 (5)
+     |                                               |                |      id: 1 0x4ec-NA (0)
 $ fq -d mp4 dv /dash_video_init.mp4
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /dash_video_init.mp4 (mp4) 0x0-0x332.7 (819)
      |                                               |                |  boxes[0:2]: 0x0-0x332.7 (819)
@@ -862,6 +883,7 @@ $ fq -d mp4 dv /dash_video_init.mp4
 0x330|   00 00|                                      | ..|            |              sample_degradation_priority: 0 0x331-0x332.7 (2)
      |                                               |                |  tracks[0:1]: 0x333-NA (0)
      |                                               |                |    [0]{}: track 0x333-NA (0)
+     |                                               |                |      id: 1 0x333-NA (0)
      |                                               |                |      samples[0:0]: 0x333-NA (0)
 $ fq -d mp4 dv /dash_video_1.m4s
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /dash_video_1.m4s (mp4) 0x0-0x1fd0.7 (8145)
@@ -963,3 +985,16 @@ $ fq -d mp4 dv /dash_video_1.m4s
 0x00c0|            00 00 02 5d 06 05 ff ff 59 dc 45 e9|    ...]....Y.E.|      data: raw bits 0xc4-0x1fd0.7 (7949)
 0x00d0|bd e6 d9 48 b7 96 2c d8 20 d9 23 ee ef 78 32 36|...H..,. .#..x26|
 *     |until 0x1fd0.7 (end) (7949)                    |                |
+      |                                               |                |  tracks[0:1]: 0xc4-0x1fd0.7 (7949)
+      |                                               |                |    [0]{}: track 0xc4-0x1fd0.7 (7949)
+      |                                               |                |      samples[0:3]: 0xc4-0x1fd0.7 (7949)
+0x00c0|            00 00 02 5d 06 05 ff ff 59 dc 45 e9|    ...]....Y.E.|        [0]: raw bits sample 0xc4-0xe46.7 (3459)
+0x00d0|bd e6 d9 48 b7 96 2c d8 20 d9 23 ee ef 78 32 36|...H..,. .#..x26|
+*     |until 0xe46.7 (3459)                           |                |
+0x0e40|                     00 00 08 c6 65 88 82 03 3f|       ....e...?|        [1]: raw bits sample 0xe47-0x1710.7 (2250)
+0x0e50|fe f6 86 f8 14 d8 53 23 af ff f2 50 06 7f 30 02|......S#...P..0.|
+*     |until 0x1710.7 (2250)                          |                |
+0x1710|   00 00 08 bc 65 88 84 0c ff fe f6 86 f8 14 d8| ....e..........|        [2]: raw bits sample 0x1711-0x1fd0.7 (2240)
+0x1720|53 23 af ff f2 50 06 7f 30 02 17 55 d4 5a 6f db|S#...P..0..U.Zo.|
+*     |until 0x1fd0.7 (end) (2240)                    |                |
+      |                                               |                |      id: 1 0x1fd1-NA (0)
