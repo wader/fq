@@ -1,0 +1,4 @@
+$ fq -n '"ff7f00" | frombase64 | ., (("", "std", "url", "rawstd", "rawurl") as $e | tobase64({encoding: $e}) | ., frombase64({encoding: $e})
+exitcode: 3
+stderr:
+error: arg:1:132: unexpected token <EOF>

@@ -38,20 +38,21 @@ import (
 
 //go:embed interp.jq
 //go:embed internal.jq
-//go:embed eval.jq
 //go:embed options.jq
-//go:embed ansi.jq
+//go:embed encoding.jq
 //go:embed binary.jq
 //go:embed decode.jq
-//go:embed funcs.jq
+//go:embed format_decode.jq
+//go:embed format_include.jq
+//go:embed format_func.jq
 //go:embed grep.jq
 //go:embed args.jq
+//go:embed eval.jq
 //go:embed query.jq
 //go:embed repl.jq
 //go:embed help.jq
-//go:embed format_decode.jq
-//go:embed format_func.jq
-//go:embed format_include.jq
+//go:embed funcs.jq
+//go:embed ansi.jq
 var builtinFS embed.FS
 
 var initSource = `include "@builtin/interp";`

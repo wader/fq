@@ -1,4 +1,4 @@
-$ fq '.[] | . as $t | .hex | gsub("[^0-9a-f]";"") | hex | $t, (asn1_ber | dv)' laymans_guide_examples.json
+$ fq '.[] | . as $t | .hex | gsub("[^0-9a-f]";"") | fromhex | $t, (asn1_ber | dv)' laymans_guide_examples.json
 {
   "decoded": "011011100101110111",
   "hex": "03 04 06 6e 5d c0"
