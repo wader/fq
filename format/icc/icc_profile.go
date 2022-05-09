@@ -163,11 +163,11 @@ func iccProfileDecode(d *decode.D, in interface{}) interface{} {
 						// "All tag data is required to start on a 4-byte boundary (relative to the start of the profile data stream)"
 						// we can't add this at the start of the element as we don't know how big the previous element in the stream
 						// was. instead add alignment after if offset+size does not align and to be sure clamp it if outside buffer.
-						paddingStart := int64(offset) + int64(size)
-						paddingBytes := (4 - (int64(offset)+int64(size))%4) % 4
-						paddingBytes = mathextra.MinInt64(paddingBytes, d.Len()-(paddingStart+paddingBytes))
-						if paddingBytes != 0 {
-							d.RangeFn(paddingStart*8, paddingBytes*8, func(d *decode.D) {
+						alignStart := int64(offset) + int64(size)
+						alignBytes := (4 - (int64(offset)+int64(size))%4) % 4
+						alignBytes = mathextra.MinInt64(d.Len()/8-alignStart, alignBytes)
+						if alignBytes != 0 {
+							d.RangeFn(alignStart*8, alignBytes*8, func(d *decode.D) {
 								d.FieldRawLen("alignment", d.BitsLeft())
 							})
 						}
