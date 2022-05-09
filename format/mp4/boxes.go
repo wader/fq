@@ -222,12 +222,22 @@ func init() {
 			})
 		},
 		"mvhd": func(_ *decodeContext, d *decode.D) {
-			d.FieldU8("version")
+			version := d.FieldU8("version")
 			d.FieldU24("flags")
-			d.FieldU32("creation_time", quicktimeEpoch)
-			d.FieldU32("modification_time", quicktimeEpoch)
-			d.FieldU32("time_scale")
-			d.FieldU32("duration")
+			switch version {
+			case 0:
+				d.FieldU32("creation_time", quicktimeEpoch)
+				d.FieldU32("modification_time", quicktimeEpoch)
+				d.FieldU32("time_scale")
+				d.FieldU32("duration")
+			case 1:
+				d.FieldU64("creation_time", quicktimeEpoch)
+				d.FieldU64("modification_time", quicktimeEpoch)
+				d.FieldU32("time_scale")
+				d.FieldU64("duration")
+			default:
+				return
+			}
 			d.FieldFP32("preferred_rate")
 			d.FieldFP16("preferred_volume")
 			d.FieldUTF8("reserved", 10)
@@ -264,13 +274,25 @@ func init() {
 		},
 		"tref": decodeBoxes,
 		"tkhd": func(ctx *decodeContext, d *decode.D) {
-			d.FieldU8("version")
+			var trackID uint32
+			version := d.FieldU8("version")
 			d.FieldU24("flags")
-			d.FieldU32("creation_time", quicktimeEpoch)
-			d.FieldU32("modification_time", quicktimeEpoch)
-			trackID := uint32(d.FieldU32("track_id"))
-			d.FieldU32("reserved1")
-			d.FieldU32("duration")
+			switch version {
+			case 0:
+				d.FieldU32("creation_time", quicktimeEpoch)
+				d.FieldU32("modification_time", quicktimeEpoch)
+				trackID = uint32(d.FieldU32("track_id"))
+				d.FieldU32("reserved1")
+				d.FieldU32("duration")
+			case 1:
+				d.FieldU64("creation_time", quicktimeEpoch)
+				d.FieldU64("modification_time", quicktimeEpoch)
+				trackID = uint32(d.FieldU32("track_id"))
+				d.FieldU32("reserved1")
+				d.FieldU64("duration")
+			default:
+				return
+			}
 			d.FieldRawLen("reserved2", 8*8)
 			d.FieldU16("layer")
 			d.FieldU16("alternate_group")
@@ -289,13 +311,23 @@ func init() {
 		},
 		"mdia": decodeBoxes,
 		"mdhd": func(_ *decodeContext, d *decode.D) {
-			d.FieldU8("version")
+			version := d.FieldU8("version")
 			d.FieldU24("flags")
 			// TODO: timestamps
-			d.FieldU32("creation_time", quicktimeEpoch)
-			d.FieldU32("modification_time", quicktimeEpoch)
-			d.FieldU32("time_scale")
-			d.FieldU32("duration")
+			switch version {
+			case 0:
+				d.FieldU32("creation_time", quicktimeEpoch)
+				d.FieldU32("modification_time", quicktimeEpoch)
+				d.FieldU32("time_scale")
+				d.FieldU32("duration")
+			case 1:
+				d.FieldU64("creation_time", quicktimeEpoch)
+				d.FieldU64("modification_time", quicktimeEpoch)
+				d.FieldU32("time_scale")
+				d.FieldU64("duration")
+			default:
+				return
+			}
 			d.FieldStrFn("language", decodeLang)
 			d.FieldU16("quality")
 		},
@@ -997,12 +1029,13 @@ func init() {
 			d.FieldFormat("data", id3v2Format, nil)
 		},
 		"mehd": func(_ *decodeContext, d *decode.D) {
-			d.FieldU8("version")
-			flags := d.FieldU24("flags")
-			if flags&0b1 != 0 {
-				d.FieldU64("fragment_duration")
-			} else {
+			version := d.FieldU8("version")
+			d.FieldU24("flags")
+			switch version {
+			case 0:
 				d.FieldU32("fragment_duration")
+			case 1:
+				d.FieldU64("fragment_duration")
 			}
 		},
 		"pssh": func(_ *decodeContext, d *decode.D) {
