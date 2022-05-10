@@ -60,6 +60,7 @@ $ fq '.[] | . as $t | .hex | gsub("[^0-9a-f]";"") | hex | $t, (asn1_ber | dv)' l
 0x00|                           06                  |         .      |      unused_bits_count: 6 0x9-0x9.7 (1)
 0x00|                              c0|              |          .|    |      value: raw bits 0xa-0xa.1 (0.2)
 0x00|                              c0|              |          .|    |      unused_bits: raw bits 0xa.2-0xa.7 (0.6)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x0|6e 5d c0|                                      |n].|            |  value: raw bits 0x0-0x2.1 (2.2)
 {
   "decoded": "test1@rsa.com",
@@ -213,6 +214,7 @@ $ fq '.[] | . as $t | .hex | gsub("[^0-9a-f]";"") | hex | $t, (asn1_ber | dv)' l
 0x00|                        04                     |        .       |      tag: "octet_string" (0x4) 0x8.3-0x8.7 (0.5)
 0x00|                           04                  |         .      |      length: 4 0x9-0x9.7 (1)
 0x00|                              89 ab cd ef|     |          ....| |      value: raw bits 0xa-0xd.7 (4)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x0|01 23 45 67 89 ab cd ef|                       |.#Eg....|       |  value: raw bits 0x0-0x7.7 (8)
 {
   "decoded": "Test User 1",

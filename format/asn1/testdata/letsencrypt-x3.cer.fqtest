@@ -462,6 +462,7 @@ $ fq -d raw 'frompem | asn1_ber | dv' letsencrypt-x3.cer
 0x0360|                                    04 14 a8 4a|            ...J|                      value: raw bits 0x36c-0x381.7 (22)
 0x0370|6a 63 04 7d dd ba e6 d1 39 b7 a6 45 65 ef f3 a8|jc.}....9..Ee...|
 0x0380|ec a1                                          |..              |
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x000|30 06 01 01 ff 02 01 00 03 02 01 86 30 71 30 32|0...........0q02|          value: raw bits 0x0-0x12e.7 (303)
  *    |until 0x12e.7 (end) (303)                      |                |
       |                                               |                |    [1]{}: object 0x382-0x390.7 (15)

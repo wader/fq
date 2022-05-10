@@ -3489,6 +3489,7 @@ $ fq -d pcap dv ipv6_http.pcap
       |                                               |                |        has_start: true 0x23c7-NA (0)
       |                                               |                |        has_end: true 0x23c7-NA (0)
       |                                               |                |        skipped_bytes: 0 0x23c7-NA (0)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x000|47 45 54 20 2f 20 48 54 54 50 2f 31 2e 30 0d 0a|GET / HTTP/1.0..|        stream: raw bits 0x0-0xef.7 (240)
  *    |until 0xef.7 (end) (240)                       |                |
       |                                               |                |      server{}: 0x23c7-NA (0)
@@ -3497,5 +3498,6 @@ $ fq -d pcap dv ipv6_http.pcap
       |                                               |                |        has_start: true 0x23c7-NA (0)
       |                                               |                |        has_end: true 0x23c7-NA (0)
       |                                               |                |        skipped_bytes: 0 0x23c7-NA (0)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x000|48 54 54 50 2f 31 2e 31 20 32 30 30 20 4f 4b 0d|HTTP/1.1 200 OK.|        stream: raw bits 0x0-0x8d2.7 (2259)
  *    |until 0x8d2.7 (end) (2259)                     |                |

@@ -31,7 +31,7 @@ $ fq 'dv({array_truncate: 5})' quickstop-deflate.avro
 0x00120|d5 9e 4f 58 37 ad b2 a2 ce cd                  |..OX7.....      |
        |                                               |                |  blocks[0:12]: 0x12a-0x5835.7 (22284)
        |                                               |                |    [0]{}: block 0x12a-0x9dc.7 (2227)
-       |                                               |                |      data[0:602]: 0x0-0x3ff1.7 (16370)
+       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      data[0:602]: 0x0-0x3ff1.7 (16370)
        |                                               |                |        [0]{}: data 0x0-0x11.7 (18)
  0x0000|02                                             |.               |          ID: 1 0x0-0x0.7 (1)
        |                                               |                |          First{}: 0x1-0x6.7 (6)
@@ -108,7 +108,7 @@ $ fq 'dv({array_truncate: 5})' quickstop-deflate.avro
 0x009c0|                                       93 e7 87|             ...|      sync: raw bits (valid) 0x9cd-0x9dc.7 (16)
 0x009d0|9e 02 95 d5 9e 4f 58 37 ad b2 a2 ce cd         |.....OX7.....   |
        |                                               |                |    [1]{}: block 0x9dd-0x1257.7 (2171)
-       |                                               |                |      data[0:592]: 0x0-0x3ffc.7 (16381)
+       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      data[0:592]: 0x0-0x3ffc.7 (16381)
        |                                               |                |        [0]{}: data 0x0-0x23.7 (36)
  0x0000|b6 09                                          |..              |          ID: 603 0x0-0x1.7 (2)
        |                                               |                |          First{}: 0x2-0xa.7 (9)
@@ -183,7 +183,7 @@ $ fq 'dv({array_truncate: 5})' quickstop-deflate.avro
 0x01240|                        93 e7 87 9e 02 95 d5 9e|        ........|      sync: raw bits (valid) 0x1248-0x1257.7 (16)
 0x01250|4f 58 37 ad b2 a2 ce cd                        |OX7.....        |
        |                                               |                |    [2]{}: block 0x1258-0x1ad5.7 (2174)
-       |                                               |                |      data[0:591]: 0x0-0x3fe4.7 (16357)
+       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      data[0:591]: 0x0-0x3fe4.7 (16357)
        |                                               |                |        [0]{}: data 0x0-0x14.7 (21)
  0x0000|d6 12                                          |..              |          ID: 1195 0x0-0x1.7 (2)
        |                                               |                |          First{}: 0x2-0x7.7 (6)
@@ -261,7 +261,7 @@ $ fq 'dv({array_truncate: 5})' quickstop-deflate.avro
 0x01ac0|                  93 e7 87 9e 02 95 d5 9e 4f 58|      ........OX|      sync: raw bits (valid) 0x1ac6-0x1ad5.7 (16)
 0x01ad0|37 ad b2 a2 ce cd                              |7.....          |
        |                                               |                |    [3]{}: block 0x1ad6-0x235f.7 (2186)
-       |                                               |                |      data[0:592]: 0x0-0x3fed.7 (16366)
+       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      data[0:592]: 0x0-0x3fed.7 (16366)
        |                                               |                |        [0]{}: data 0x0-0x1e.7 (31)
  0x0000|f4 1b                                          |..              |          ID: 1786 0x0-0x1.7 (2)
        |                                               |                |          First{}: 0x2-0x9.7 (8)
@@ -336,7 +336,7 @@ $ fq 'dv({array_truncate: 5})' quickstop-deflate.avro
 *      |until 0x234f.7 (2166)                          |                |
 0x02350|93 e7 87 9e 02 95 d5 9e 4f 58 37 ad b2 a2 ce cd|........OX7.....|      sync: raw bits (valid) 0x2350-0x235f.7 (16)
        |                                               |                |    [4]{}: block 0x2360-0x2bda.7 (2171)
-       |                                               |                |      data[0:591]: 0x0-0x3fee.7 (16367)
+       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      data[0:591]: 0x0-0x3fee.7 (16367)
        |                                               |                |        [0]{}: data 0x0-0x1f.7 (32)
  0x0000|94 25                                          |.%              |          ID: 2378 0x0-0x1.7 (2)
        |                                               |                |          First{}: 0x2-0x8.7 (7)

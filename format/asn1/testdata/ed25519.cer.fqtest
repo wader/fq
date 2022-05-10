@@ -367,6 +367,7 @@ $ fq -d raw 'frompem | asn1_ber | dv' ed25519.cer
 0x130|      04                                       |  .             |                      tag: "octet_string" (0x4) 0x132.3-0x132.7 (0.5)
 0x130|         05                                    |   .            |                      length: 5 0x133-0x133.7 (1)
 0x130|            30 03 01 01 ff                     |    0....       |                      value: raw bits 0x134-0x138.7 (5)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x00|04 14 6b a5 bd cf 9d fa 23 59 78 12 64 17 ae 1e|..k.....#Yx.d...|          value: raw bits 0x0-0x32.7 (51)
  *   |until 0x32.7 (end) (51)                        |                |
      |                                               |                |    [1]{}: object 0x139-0x13f.7 (7)

@@ -61,7 +61,8 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 
 	var hexHeader string
 	var asciiHeader string
-	if depth == 0 {
+
+	if v.IsRoot {
 		for i := 0; i < opts.LineBytes; i++ {
 			s := mathextra.PadFormatInt(int64(i), opts.AddrBase, false, 2)
 			hexHeader += s
@@ -96,7 +97,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 	rootIndent := strings.Repeat(" ", rootDepth)
 	indent := strings.Repeat("  ", depth)
 
-	if depth == 0 {
+	if v.IsRoot {
 		if !isCompound(v) {
 			columns()
 		}
