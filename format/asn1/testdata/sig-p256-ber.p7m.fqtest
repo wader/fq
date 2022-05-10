@@ -190,6 +190,7 @@ $ fq -d raw 'frompem | asn1_ber | dv' sig-p256-ber.p7m
 0x02770|41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41|AAAAAAAAAAAAAAAA|                          value: raw bits 0x2770-0x2791.7 (34)
 *      |until 0x2791.7 (34)                            |                |
 0x02790|      00 00                                    |  ..            |                      end_marker: 0 0x2792-0x2793.7 (2)
+       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x0000|49 6e 69 7a 69 6f 20 63 6f 6e 74 65 6e 75 74 6f|Inizio contenuto|                      value: raw bits 0x0-0x2731.7 (10034)
  *     |until 0x2731.7 (end) (10034)                   |                |
 0x02790|            00 00                              |    ..          |                  end_marker: 0 0x2794-0x2795.7 (2)
@@ -473,6 +474,7 @@ $ fq -d raw 'frompem | asn1_ber | dv' sig-p256-ber.p7m
 0x02890|                                          30 16|              0.|                                      value: raw bits 0x289e-0x28b5.7 (24)
 0x028a0|80 14 66 0d 2d d0 4b 45 ed 33 c8 a2 f9 71 49 85|..f.-.KE.3...qI.|
 0x028b0|72 c2 08 57 b5 be                              |r..W..          |
+       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x0000|03 02 04 f0 04 14 66 0d 2d d0 4b 45 ed 33 c8 a2|......f.-.KE.3..|                          value: raw bits 0x0-0x31.7 (50)
  *     |until 0x31.7 (end) (50)                        |                |
        |                                               |                |                    [1]{}: object 0x28b6-0x28c1.7 (12)
@@ -891,6 +893,7 @@ $ fq -d raw 'frompem | asn1_ber | dv' sig-p256-ber.p7m
 0x02a20|                                             0c|               .|                                                                      tag: "utf8_string" (0xc) 0x2a2f.3-0x2a2f.7 (0.5)
 0x02a30|04                                             |.               |                                                                      length: 4 0x2a30-0x2a30.7 (1)
 0x02a30|   54 65 73 74                                 | Test           |                                                                      value: "Test" 0x2a31-0x2a34.7 (4)
+       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
        |                                               |                |                                                      value: raw bits 0x0-NA (0)
        |                                               |                |                                                [1]{}: object 0x2a35-0x2a46.7 (18)
 0x02a30|               02                              |     .          |                                                  class: "universal" (0) 0x2a35-0x2a35.1 (0.2)

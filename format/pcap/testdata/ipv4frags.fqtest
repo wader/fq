@@ -101,7 +101,7 @@ $ fq -d pcap dv /ipv4frags.pcap
 0x0640|08 00 00 00 00 00 10 11 12 13 14 15 16 17 18 19|................|
 *     |until 0xbad.7 (end) (1404)                     |                |
       |                                               |                |  ipv4_reassembled[0:1]: 0xbae-NA (0)
-      |                                               |                |    [0]{}: ipv4_packet (ipv4_packet) 0x0-0x593.7 (1428)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [0]{}: ipv4_packet (ipv4_packet) 0x0-0x593.7 (1428)
  0x000|45                                             |E               |      version: 4 0x0-0x0.3 (0.4)
  0x000|45                                             |E               |      ihl: 5 0x0.4-0x0.7 (0.4)
  0x000|   00                                          | .              |      dscp: 0 0x1-0x1.5 (0.6)

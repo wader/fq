@@ -817,5 +817,6 @@ $ fq -d flac dv /stereo16.flac
 *     |until 0xc549.1 (451)                           |                |
 0xc540|                           80                  |         .      |      byte_align: 0 (valid) 0xc549.2-0xc549.7 (0.6)
 0xc540|                              06 d3|           |          ..|   |      footer_crc: "06d3" (raw bits) (valid) 0xc54a-0xc54b.7 (2)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x000|5a 00 c8 73 b8 0b 8f 62 94 d1 4f e7 5b 14 a7 d3|Z..s...b..O.[...|  md5_calculated: "5a00c873b80b8f6294d14fe75b14a7d3" (raw bits) (valid) 0x0-0xf.7 (16)
       |                                               |                |  decoded_samples: 22050 0xc54c-NA (0)
