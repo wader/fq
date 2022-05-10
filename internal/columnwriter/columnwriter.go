@@ -3,6 +3,7 @@ package columnwriter
 import (
 	"bytes"
 	"io"
+	"unicode/utf8"
 )
 
 type Column struct {
@@ -62,9 +63,9 @@ func (c *Column) Flush() {
 
 // Writer maintins multiple column io.Writer:s. On Flush() row align them.
 type Writer struct {
-	Columns    []*Column
-	LenFn      func(s string) int
-	TruncateFn func(s string, l int) string
+	Columns           []*Column
+	DisplayLenFn      func(s string) int
+	DisplayTruncateFn func(s string, l int) string
 
 	w io.Writer
 }
@@ -97,13 +98,16 @@ func New(w io.Writer, widths []int) *Writer {
 func (w *Writer) Flush() error {
 	const whitespace = "                                                                                "
 
-	lenFn := w.LenFn
+	// TODO: both fn assume fixed width runes
+	lenFn := w.DisplayLenFn
 	if lenFn == nil {
-		lenFn = func(s string) int { return len(s) }
+		lenFn = func(s string) int { return utf8.RuneCountInString(s) }
 	}
-	truncateFn := w.TruncateFn
+	truncateFn := w.DisplayTruncateFn
 	if truncateFn == nil {
-		truncateFn = func(s string, l int) string { return s[0:l] }
+		truncateFn = func(s string, l int) string {
+			return string(([]rune(s))[0:l])
+		}
 	}
 
 	for _, c := range w.Columns {
