@@ -376,8 +376,8 @@ func dump(v *decode.Value, w io.Writer, opts Options) error {
 	buf := make([]byte, 32*1024)
 
 	if opts.Color {
-		cw.LenFn = ansi.Len
-		cw.TruncateFn = ansi.Truncate
+		cw.DisplayLenFn = ansi.Len
+		cw.DisplayTruncateFn = ansi.Truncate
 	}
 
 	return v.WalkPreOrder(makeWalkFn(func(v *decode.Value, rootV *decode.Value, depth int, rootDepth int) error {
