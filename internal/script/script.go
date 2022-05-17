@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -341,9 +342,14 @@ func normalizeOSError(err error) error {
 }
 
 func (c *Case) Open(name string) (fs.File, error) {
+	// test assume cwd "/"
+	name = path.Join("/", name)
 	for _, p := range c.Parts {
 		f, ok := p.(*caseFile)
-		if ok && f.name == name {
+		if !ok {
+			continue
+		}
+		if f.name == name {
 			return interp.FileReader{
 				R: io.NewSectionReader(bytes.NewReader(f.data), 0, int64(len(f.data))),
 				FileInfo: interp.FixedFileInfo{
