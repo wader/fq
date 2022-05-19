@@ -471,3 +471,4 @@ $ fq -d mp4 'dv' stz2.mp4
 0x4f0|aa aa aa aa aa aa                              |......          |
      |                                               |                |          crc_calculated: "c36b" (raw bits) 0x4f6-NA (0)
      |                                               |                |      id: 1 0x530-NA (0)
+     |                                               |                |      data_foramt: "mp4a" 0x530-NA (0)

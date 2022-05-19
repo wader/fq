@@ -372,3 +372,4 @@ $ fq -d mp4 dv /flac.mp4
 0x280|                     00                        |       .        |          byte_align: 0 (valid) 0x287.2-0x287.7 (0.6)
 0x280|                        82 cb                  |        ..      |          footer_crc: "82cb" (raw bits) (valid) 0x288-0x289.7 (2)
      |                                               |                |      id: 1 0x543-NA (0)
+     |                                               |                |      data_foramt: "fLaC" 0x543-NA (0)

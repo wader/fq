@@ -512,3 +512,4 @@ $ fq -d mp4 dv /mp3.mp4
 0x290|aa aa aa aa aa aa aa aa aa aa aa aa aa aa      |..............  |
      |                                               |                |          crc_calculated: "c36b" (raw bits) 0x29e-NA (0)
      |                                               |                |      id: 1 0x565-NA (0)
+     |                                               |                |      data_foramt: "mp4a" 0x565-NA (0)
