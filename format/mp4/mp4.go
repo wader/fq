@@ -203,8 +203,6 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 			}
 
 			d.FieldStruct("track", func(d *decode.D) {
-				// TODO: handle progressive/fragmented mp4 differently somehow?
-
 				d.FieldValueU("id", uint64(t.id))
 
 				trackSDDataFormat := "unknown"
@@ -214,6 +212,24 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 					if sd.originalFormat != "" {
 						trackSDDataFormat = sd.originalFormat
 					}
+				}
+
+				d.FieldValueStr("data_foramt", trackSDDataFormat)
+
+				switch trackSDDataFormat {
+				case "lpcm",
+					"raw ",
+					"twos",
+					"sowt",
+					"in24",
+					"in32",
+					"fl23",
+					"fl64",
+					"alaw",
+					"ulaw":
+					// TODO: treat raw samples format differently, a bit too much to have one field per sample.
+					// maybe in some future fq could have smart array fields
+					return
 				}
 
 				d.FieldArray("samples", func(d *decode.D) {

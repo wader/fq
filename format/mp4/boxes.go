@@ -440,7 +440,7 @@ func init() {
 									d.FieldU16("always_3")
 									d.FieldU16("always_16")
 									d.FieldU16("always_minus_2") // TODO: as in const -2?
-									d.FieldU32("always_0")
+									d.FieldU16("always_0")
 									d.FieldU32("always_65536")
 									d.FieldU32("size_of_struct_only")
 									d.FieldF64("audio_sample_rate")
