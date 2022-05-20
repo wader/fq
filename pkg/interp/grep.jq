@@ -8,7 +8,7 @@ def grep_by(f):
   );
 
 def _value_grep_string_cond($v; $flags):
-  if type == "string" then test($v; $flags)
+  if _is_string then test($v; $flags)
   else false
   end;
 
@@ -16,7 +16,7 @@ def _value_grep_other_cond($v; $flags):
   . == $v;
 
 def vgrep($v; $flags):
-  if $v | type == "string" then
+  if $v | _is_string then
     grep_by(_is_scalar and _value_grep_string_cond($v; $flags))
   else
     grep_by(_is_scalar and _value_grep_other_cond($v; $flags))
@@ -26,7 +26,7 @@ def vgrep($v): vgrep($v; "");
 def _buf_grep_any_cond($v; $flags):
   (isempty(tobytesrange | match($v; $flags)) | not)? // false;
 def bgrep($v; $flags):
-  if $v | type == "string" then
+  if $v | _is_string then
     grep_by(_is_scalar and _buf_grep_any_cond($v; $flags))
   else
     grep_by(_is_scalar and _buf_grep_any_cond($v; $flags))
@@ -34,7 +34,7 @@ def bgrep($v; $flags):
 def bgrep($v): bgrep($v; "");
 
 def grep($v; $flags):
-  if $v | type == "string" then
+  if $v | _is_string then
     grep_by(_is_scalar and _buf_grep_any_cond($v; $flags) or _value_grep_string_cond($v; $flags))
   else
     grep_by(_is_scalar and _buf_grep_any_cond($v; $flags) or _value_grep_other_cond($v; $flags))

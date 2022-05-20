@@ -55,7 +55,7 @@ def input:
         ( . as $err
         | _input_decode_errors(. += {($name): $err}) as $_
         | [ $opts.decode_format
-          , if $err | type == "string" then ": \($err)"
+          , if $err | _is_string then ": \($err)"
             # TODO: if not string assume decode itself failed for now
             else ": failed to decode (try -d FORMAT)"
             end
@@ -121,7 +121,7 @@ def input_filename: _input_filename;
 
 # user expr error, report and continue
 def _cli_eval_on_expr_error:
-  ( if type == "object" then
+  ( if _is_object then
       if .error | _eval_is_compile_error then .error | _eval_compile_error_tostring
       elif .error then .error
       end

@@ -75,7 +75,7 @@ def _eval_query_rewrite($opts):
 
 # TODO: better way? what about nested eval errors?
 def _eval_is_compile_error:
-  type == "object" and .error != null and .what != null;
+  _is_object and .error != null and .what != null;
 def _eval_compile_error_tostring:
   [ (.filename // "expr")
   , if .line != 1 or .column != 0 then "\(.line):\(.column)"

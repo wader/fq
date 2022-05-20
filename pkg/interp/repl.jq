@@ -121,7 +121,7 @@ def _prompt($opts):
   def _value_path:
     (._path? // []) | if . == [] then empty else _path_to_expr($opts) end;
   def _value_preview($depth):
-    if $depth == 0 and format == null and type == "array" then
+    if $depth == 0 and format == null and _is_array then
       [ "["
       , if length == 0 then empty
         else
