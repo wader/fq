@@ -84,6 +84,6 @@ def duration:
         )
       ] | join("")
     end;
-  if . | type == "string" then _string
-  elif . | type == "number" then _number
+  if type == "string" then _string
+  elif type == "number" then _number
   else error("expected string or number") end;

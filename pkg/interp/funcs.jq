@@ -9,7 +9,7 @@ def display($opts):
   ( options($opts) as $opts
   | if _can_display then _display($opts)
     else
-      ( if type == "string" and $opts.raw_string then print
+      ( if _is_string and $opts.raw_string then print
         else _print_color_json($opts)
         end
       , ( $opts.join_string
@@ -302,8 +302,8 @@ def tojq($style):
     } as $styles
   | _f(
       ( $style // "compact"
-      | if type == "string" then $styles[.]
-        elif type == "object" then .
+      | if _is_string then $styles[.]
+        elif _is_object then .
         else error("invalid style")
         end
       )

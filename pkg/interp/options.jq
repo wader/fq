@@ -110,7 +110,7 @@ def _opt_options:
 
 def _opt_eval($rest):
   ( with_entries(
-      ( select(.value | type == "string" and startswith("@"))
+      ( select(.value | _is_string and startswith("@"))
       | .value |=
           ( . as $v
           | try
@@ -239,17 +239,17 @@ def _opt_to_string:
 def _opt_from_string: if . then tojson[1:-1] else "" end;
 
 def _opt_is_string_pair:
-  type == "array" and length == 2 and all(type == "string");
+  _is_array and length == 2 and all(_is_string);
 
 def _opt_to_array(f):
   try
     ( fromjson
-    | if type == "array" and (all(f) | not) then null end
+    | if _is_array and (all(f) | not) then null end
     )
   catch null;
 
 def _opt_to_array_string_pair: _opt_to_array(_opt_is_string_pair);
-def _opt_to_array_string: _opt_to_array(type == "string");
+def _opt_to_array_string: _opt_to_array(_is_string);
 
 def _opt_from_array: tojson;
 
