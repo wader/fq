@@ -21,5 +21,4 @@ $ fq -d asn1_ber dv tc41.ber
 0x00|                              5f 29 1c d0      |          _)..  |      value: raw bits 0xa-0xd.3 (3.4)
 0x00|                                       d0      |             .  |      unused_bits: raw bits 0xd.4-0xd.7 (0.4)
 0x00|                                          00 00|              ..|  end_marker: 0 0xe-0xf.7 (2)
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x0|0a 3b 5f 29 1c d0|                             |.;_)..|         |  value: raw bits 0x0-0x5.3 (5.4)

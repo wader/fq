@@ -259,6 +259,5 @@ $ fq -d flac dv /picture_seek_gain.flac
 *     |until 0x225d.2 (467)                           |                |
 0x2250|                                       20      |                |      byte_align: 0 (valid) 0x225d.3-0x225d.7 (0.5)
 0x2250|                                          7f ab|              ..|      footer_crc: "7fab" (raw bits) (valid) 0x225e-0x225f.7 (2)
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x000|89 88 7b 80 f8 10 28 5b 45 f6 c4 ec c7 2c 97 7e|..{...([E....,.~|  md5_calculated: "89887b80f810285b45f6c4ecc72c977e" (raw bits) (valid) 0x0-0xf.7 (16)
       |                                               |                |  decoded_samples: 441 0x2260-NA (0)

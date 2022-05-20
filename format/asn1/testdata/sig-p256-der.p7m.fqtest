@@ -381,7 +381,6 @@ $ fq -d raw 'frompem | asn1_ber | dv' sig-p256-der.p7m
 0x2870|                                    30 16 80 14|            0...|                                      value: raw bits 0x287c-0x2893.7 (24)
 0x2880|c3 c0 84 df 7b 04 0d b0 38 af 51 8c e3 97 f6 ec|....{...8.Q.....|
 0x2890|20 d6 26 e6                                    | .&.            |
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x000|03 02 04 f0 04 14 c3 c0 84 df 7b 04 0d b0 38 af|..........{...8.|                          value: raw bits 0x0-0x31.7 (50)
  *    |until 0x31.7 (end) (50)                        |                |
       |                                               |                |                    [1]{}: object 0x2894-0x289f.7 (12)
@@ -798,7 +797,6 @@ $ fq -d raw 'frompem | asn1_ber | dv' sig-p256-der.p7m
 0x2a00|                                    04         |            .   |                                                                      length: 4 0x2a0c-0x2a0c.7 (1)
 0x2a00|                                       54 65 73|             Tes|                                                                      value: "Test" 0x2a0d-0x2a10.7 (4)
 0x2a10|74                                             |t               |
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
       |                                               |                |                                                      value: raw bits 0x0-NA (0)
       |                                               |                |                                                [1]{}: object 0x2a11-0x2a22.7 (18)
 0x2a10|   02                                          | .              |                                                  class: "universal" (0) 0x2a11-0x2a11.1 (0.2)

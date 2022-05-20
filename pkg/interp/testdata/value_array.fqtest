@@ -1,6 +1,6 @@
 $ fq -i -d mp3 . /test.mp3
 mp3> .headers | ., tovalue, type, length?
-    |                                               |                |.headers[0:1]:
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.headers[0:1]:
 0x00|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|  [0]{}: header (id3v2)
 *   |until 0x2c.7 (45)                              |                |
 [
@@ -42,7 +42,7 @@ mp3> .headers | ., tovalue, type, length?
 "array"
 1
 mp3> .headers[0] | ., type, length?
-    |                                               |                |.headers[0]{}: header (id3v2)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.headers[0]{}: header (id3v2)
 0x00|49 44 33                                       |ID3             |  magic: "ID3" (valid)
 0x00|         04                                    |   .            |  version: 4
 0x00|            00                                 |    .           |  revision: 0
@@ -163,12 +163,14 @@ mp3> .headers._path | ., type, length?
 "array"
 1
 mp3> .headers._bits | ., type, length?
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x00|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|.: raw bits 0x0-0x2c.7 (45)
 *   |until 0x2c.7 (45)                              |                |
 "binary"
 360
 mp3> 
 mp3> .headers._bytes | ., type, length?
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x00|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|.: raw bits 0x0-0x2c.7 (45)
 *   |until 0x2c.7 (45)                              |                |
 "binary"

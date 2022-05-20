@@ -78,7 +78,7 @@ $ fq -d ogg dv /opus.ogg
       |                                               |                |    [0]{}: stream 0x2f-NA (0)
       |                                               |                |      serial_number: 1949835335 0x2f-NA (0)
       |                                               |                |      packets[0:5]: 0x2f-NA (0)
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0]{}: packet (opus_packet) 0x0-0x12.7 (19)
+      |                                               |                |        [0]{}: packet (opus_packet) 0x0-0x12.7 (19)
       |                                               |                |          type: "head" 0x0-NA (0)
  0x000|4f 70 75 73 48 65 61 64                        |OpusHead        |          prefix: "OpusHead" 0x0-0x7.7 (8)
  0x000|                        01                     |        .       |          version: 1 0x8-0x8.7 (1)
@@ -87,7 +87,7 @@ $ fq -d ogg dv /opus.ogg
  0x000|                                    80 bb 00 00|            ....|          sample_rate: 48000 0xc-0xf.7 (4)
  0x010|00 00                                          |..              |          output_gain: 0 0x10-0x11.7 (2)
  0x010|      00|                                      |  .|            |          map_family: 0 0x12-0x12.7 (1)
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [1]{}: packet (opus_packet) 0x0-0x3e.7 (63)
+      |                                               |                |        [1]{}: packet (opus_packet) 0x0-0x3e.7 (63)
       |                                               |                |          type: "tags" 0x0-NA (0)
  0x000|4f 70 75 73 54 61 67 73                        |OpusTags        |          prefix: "OpusTags" 0x0-0x7.7 (8)
       |                                               |                |          comment{}: (vorbis_comment) 0x8-0x3e.7 (55)
@@ -101,7 +101,7 @@ $ fq -d ogg dv /opus.ogg
  0x020|00                                             |.               |
  0x020|   65 6e 63 6f 64 65 72 3d 4c 61 76 63 35 38 2e| encoder=Lavc58.|                comment: "encoder=Lavc58.134.100 libopus" 0x21-0x3e.7 (30)
  0x030|31 33 34 2e 31 30 30 20 6c 69 62 6f 70 75 73|  |134.100 libopus||
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [2]{}: packet (opus_packet) 0x0-0x12b.7 (300)
+      |                                               |                |        [2]{}: packet (opus_packet) 0x0-0x12b.7 (300)
       |                                               |                |          type: "audio" 0x0-NA (0)
       |                                               |                |          toc{}: 0x0-0x12b.7 (300)
       |                                               |                |            config{}: 0x0-0x0.4 (0.5)
@@ -117,7 +117,7 @@ $ fq -d ogg dv /opus.ogg
  0x000|   b4 af ca aa e5 b5 b0 a6 1c b1 7a e9 fe 3a d0| ..........z..:.|            data: raw bits 0x1-0x12b.7 (299)
  0x010|06 85 51 4c e9 29 01 cf 97 74 f4 80 4d 5b 0b 4a|..QL.)...t..M[.J|
  *    |until 0x12b.7 (end) (299)                      |                |
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [3]{}: packet (opus_packet) 0x0-0x9f.7 (160)
+      |                                               |                |        [3]{}: packet (opus_packet) 0x0-0x9f.7 (160)
       |                                               |                |          type: "audio" 0x0-NA (0)
       |                                               |                |          toc{}: 0x0-0x9f.7 (160)
       |                                               |                |            config{}: 0x0-0x0.4 (0.5)
@@ -133,7 +133,7 @@ $ fq -d ogg dv /opus.ogg
  0x000|   b1 72 9a 6a 33 7d 6f 9d d8 6d d7 fb c5 f3 d9| .r.j3}o..m.....|            data: raw bits 0x1-0x9f.7 (159)
  0x010|31 eb 29 39 95 09 9a de b2 79 ef 2b 26 f1 ed fa|1.)9.....y.+&...|
  *    |until 0x9f.7 (end) (159)                       |                |
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [4]{}: packet (opus_packet) 0x0-0x13a.7 (315)
+      |                                               |                |        [4]{}: packet (opus_packet) 0x0-0x13a.7 (315)
       |                                               |                |          type: "audio" 0x0-NA (0)
       |                                               |                |          toc{}: 0x0-0x13a.7 (315)
       |                                               |                |            config{}: 0x0-0x0.4 (0.5)

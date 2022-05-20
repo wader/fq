@@ -31,7 +31,7 @@ $ fq 'dv({array_truncate: 25})' snappy.avro
 0x0410|cc cc 61 31 fd 14 d0 61 16 b6 0f 9d 30 f4 1b f0|..a1...a....0...|    sync: raw bits 0x410-0x41f.7 (16)
       |                                               |                |  blocks[0:1]: 0x420-0x638.7 (537)
       |                                               |                |    [0]{}: block 0x420-0x638.7 (537)
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      data[0:10]: 0x0-0x307.7 (776)
+      |                                               |                |      data[0:10]: 0x0-0x307.7 (776)
       |                                               |                |        [0]{}: data 0x0-0x4a.7 (75)
       |                                               |                |          null: null 0x0-NA (0)
  0x000|01                                             |.               |          boolean: true 0x0-0x0.7 (1)

@@ -1,5 +1,6 @@
 $ fq -i -d mp3 . /test.mp3
 mp3> .headers[0].padding | ., tovalue, type, length?
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x20|         00 00 00 00 00 00 00 00 00 00         |   ..........   |.headers[0].padding: raw bits (all zero)
 "<10>AAAAAAAAAAAAAA=="
 "string"
@@ -81,11 +82,13 @@ mp3> .headers[0].padding._path | ., type, length?
 "array"
 3
 mp3> .headers[0].padding._bits | ., type, length?
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x20|         00 00 00 00 00 00 00 00 00 00         |   ..........   |.: raw bits 0x23-0x2c.7 (10)
 "binary"
 80
 mp3> 
 mp3> .headers[0].padding._bytes | ., type, length?
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x20|         00 00 00 00 00 00 00 00 00 00         |   ..........   |.: raw bits 0x23-0x2c.7 (10)
 "binary"
 10

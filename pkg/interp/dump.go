@@ -42,8 +42,20 @@ func isCompound(v *decode.Value) bool {
 	}
 }
 
-func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, rootV *decode.Value, rootDepth int, addrWidth int, opts *Options) error {
-	deco := opts.Decorator
+type dumpCtx struct {
+	opts        Options
+	buf         []byte
+	cw          *columnwriter.Writer
+	hexHeader   string
+	asciiHeader string
+}
+
+func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootDepth int, addrWidth int) error {
+	opts := ctx.opts
+	cw := ctx.cw
+	buf := ctx.buf
+	deco := ctx.opts.Decorator
+
 	// no error check as we write into buffering column
 	// we check for err later for Flush()
 	cprint := func(c int, a ...interface{}) {
@@ -57,20 +69,6 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 		cprint(1, deco.Column, "\n")
 		cprint(3, deco.Column, "\n")
 		cprint(5, deco.Column, "\n")
-	}
-
-	var hexHeader string
-	var asciiHeader string
-
-	if v.IsRoot {
-		for i := 0; i < opts.LineBytes; i++ {
-			s := mathextra.PadFormatInt(int64(i), opts.AddrBase, false, 2)
-			hexHeader += s
-			if i < opts.LineBytes-1 {
-				hexHeader += " "
-			}
-			asciiHeader += s[len(s)-1:]
-		}
 	}
 
 	isInArray := false
@@ -97,12 +95,12 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 	rootIndent := strings.Repeat(" ", rootDepth)
 	indent := strings.Repeat("  ", depth)
 
-	if v.IsRoot {
+	if depth == 0 {
 		if !isCompound(v) {
 			columns()
 		}
-		cfmt(colHex, "%s", deco.DumpHeader.F(hexHeader))
-		cfmt(colASCII, "%s", deco.DumpHeader.F(asciiHeader))
+		cfmt(colHex, "%s", deco.DumpHeader.F(ctx.hexHeader))
+		cfmt(colASCII, "%s", deco.DumpHeader.F(ctx.asciiHeader))
 		if !isCompound(v) {
 			cw.Flush()
 		}
@@ -381,8 +379,27 @@ func dump(v *decode.Value, w io.Writer, opts Options) error {
 		cw.DisplayTruncateFn = ansi.Truncate
 	}
 
+	var hexHeader string
+	var asciiHeader string
+	for i := 0; i < opts.LineBytes; i++ {
+		s := mathextra.PadFormatInt(int64(i), opts.AddrBase, false, 2)
+		hexHeader += s
+		if i < opts.LineBytes-1 {
+			hexHeader += " "
+		}
+		asciiHeader += s[len(s)-1:]
+	}
+
+	ctx := &dumpCtx{
+		opts:        opts,
+		buf:         buf,
+		cw:          cw,
+		hexHeader:   hexHeader,
+		asciiHeader: asciiHeader,
+	}
+
 	return v.WalkPreOrder(makeWalkFn(func(v *decode.Value, rootV *decode.Value, depth int, rootDepth int) error {
-		return dumpEx(v, buf, cw, depth, rootV, rootDepth, maxAddrIndentWidth-rootDepth, &opts)
+		return dumpEx(v, ctx, depth, rootV, rootDepth, maxAddrIndentWidth-rootDepth)
 	}))
 }
 
