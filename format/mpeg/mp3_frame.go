@@ -178,10 +178,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			2: [...]uint{0, 1152, 1152, 1152},
 			3: [...]uint{0, 1152, 576, 576},
 		}
-		// TODO: synthentic fields somehow?
-		d.FieldUFn("sample_count", func(d *decode.D) uint64 {
-			return uint64(samplesFrameIndex[uint(mpegLayerNr)][uint(mpegVersionNr)])
-		})
+		d.FieldValueU("sample_count", uint64(samplesFrameIndex[uint(mpegLayerNr)][uint(mpegVersionNr)]))
 		protection := d.FieldBool("protection_absent", protectionNames)
 		// note false mean has protection
 		hasCRC := !protection
@@ -202,7 +199,6 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			0b1101: [...]uint{416, 320, 256, 224, 144, 144, 224, 144, 144},
 			0b1110: [...]uint{448, 384, 320, 256, 160, 160, 256, 160, 160},
 		}
-		// TODO: FieldU4
 		d.FieldU4("bitrate", scalar.Fn(func(s scalar.S) (scalar.S, error) {
 			u := s.ActualU()
 			switch u {
@@ -228,7 +224,6 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			0b01: [...]uint{48000, 24000, 12000},
 			0b10: [...]uint{32000, 16000, 8000},
 		}
-		// TODO: FieldU2
 		d.FieldU2("sample_rate", scalar.Fn(func(s scalar.S) (scalar.S, error) {
 			u := s.ActualU()
 			switch u {
