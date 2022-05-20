@@ -27,7 +27,6 @@ $ fq -d asn1_ber dv tc36.ber
 0x00|                                 02            |           .    |          value: raw bits 0xb-0xb.6 (0.7)
 0x00|                                 02            |           .    |          unused_bits: raw bits 0xb.7-0xb.7 (0.1)
 0x00|                                    00 00      |            ..  |      end_marker: 0 0xc-0xd.7 (2)
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x0|01 02|                                         |..|             |      value: raw bits 0x0-0x1.6 (1.7)
     |                                               |                |    [1]{}: object 0xe-0x11.7 (4)
 0x00|                                          03   |              . |      class: "universal" (0) 0xe-0xe.1 (0.2)
@@ -38,5 +37,4 @@ $ fq -d asn1_ber dv tc36.ber
 0x10|   0f                                          | .              |      value: raw bits 0x11-0x11.3 (0.4)
 0x10|   0f                                          | .              |      unused_bits: raw bits 0x11.4-0x11.7 (0.4)
 0x10|      00 00|                                   |  ..|           |  end_marker: 0 0x12-0x13.7 (2)
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x0|01 02 00|                                      |...|            |  value: raw bits 0x0-0x2.2 (2.3)

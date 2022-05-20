@@ -1,6 +1,6 @@
 # ssl_test.pcap from https://www.cloudshark.org/captures/a9718e5fdb28
 $ fq '.tcp_connections | d' flow_missing_synack.pcap
-       |                                               |                |.tcp_connections[0:8]:
+       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.tcp_connections[0:8]:
        |                                               |                |  [0]{}: tcp_connection
        |                                               |                |    client{}:
        |                                               |                |      ip: "192.168.1.4"
@@ -8,7 +8,6 @@ $ fq '.tcp_connections | d' flow_missing_synack.pcap
        |                                               |                |      has_start: false
        |                                               |                |      has_end: false
        |                                               |                |      skipped_bytes: 0
-       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x0000|16 03 01 00 9e 01 00 00 9a 03 01 50 83 9c fa fe|...........P....|      stream: raw bits
  *     |until 0x177.7 (end) (376)                      |                |
        |                                               |                |    server{}:
@@ -17,7 +16,6 @@ $ fq '.tcp_connections | d' flow_missing_synack.pcap
        |                                               |                |      has_start: false
        |                                               |                |      has_end: false
        |                                               |                |      skipped_bytes: 0
-       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x0000|16 03 01 00 35 02 00 00 31 03 01 50 83 9c 9f e3|....5...1..P....|      stream: raw bits
  *     |until 0x42b.7 (end) (1068)                     |                |
        |                                               |                |  [1]{}: tcp_connection
@@ -27,7 +25,6 @@ $ fq '.tcp_connections | d' flow_missing_synack.pcap
        |                                               |                |      has_start: false
        |                                               |                |      has_end: false
        |                                               |                |      skipped_bytes: 0
-       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x0000|16 03 01 00 9e 01 00 00 9a 03 01 50 83 9d 00 a1|...........P....|      stream: raw bits
  *     |until 0x177.7 (end) (376)                      |                |
        |                                               |                |    server{}:
@@ -36,7 +33,6 @@ $ fq '.tcp_connections | d' flow_missing_synack.pcap
        |                                               |                |      has_start: false
        |                                               |                |      has_end: false
        |                                               |                |      skipped_bytes: 0
-       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x0000|16 03 01 00 35 02 00 00 31 03 01 50 83 9c a5 e5|....5...1..P....|      stream: raw bits
  *     |until 0x42b.7 (end) (1068)                     |                |
        |                                               |                |  [2]{}: tcp_connection
@@ -46,7 +42,6 @@ $ fq '.tcp_connections | d' flow_missing_synack.pcap
        |                                               |                |      has_start: false
        |                                               |                |      has_end: false
        |                                               |                |      skipped_bytes: 0
-       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x0000|16 03 01 00 9e 01 00 00 9a 03 01 50 83 9d 03 f3|...........P....|      stream: raw bits
  *     |until 0x2ad.7 (end) (686)                      |                |
        |                                               |                |    server{}:
@@ -55,7 +50,6 @@ $ fq '.tcp_connections | d' flow_missing_synack.pcap
        |                                               |                |      has_start: false
        |                                               |                |      has_end: false
        |                                               |                |      skipped_bytes: 0
-       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x0000|16 03 01 00 35 02 00 00 31 03 01 50 83 9c a8 b2|....5...1..P....|      stream: raw bits
  *     |until 0x53c.7 (end) (1341)                     |                |
        |                                               |                |  [3]{}: tcp_connection
@@ -65,7 +59,6 @@ $ fq '.tcp_connections | d' flow_missing_synack.pcap
        |                                               |                |      has_start: false
        |                                               |                |      has_end: false
        |                                               |                |      skipped_bytes: 0
-       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x0000|16 03 01 01 6e 01 00 01 6a 03 01 50 83 9d 03 d8|....n...j..P....|      stream: raw bits
  *     |until 0x2df.7 (end) (736)                      |                |
        |                                               |                |    server{}:
@@ -74,7 +67,6 @@ $ fq '.tcp_connections | d' flow_missing_synack.pcap
        |                                               |                |      has_start: false
        |                                               |                |      has_end: false
        |                                               |                |      skipped_bytes: 0
-       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x0000|16 03 01 00 51 02 00 00 4d 03 01 50 83 9c a8 fc|....Q...M..P....|      stream: raw bits
  *     |until 0x1b7.7 (end) (440)                      |                |
        |                                               |                |  [4]{}: tcp_connection
@@ -84,7 +76,6 @@ $ fq '.tcp_connections | d' flow_missing_synack.pcap
        |                                               |                |      has_start: false
        |                                               |                |      has_end: false
        |                                               |                |      skipped_bytes: 0
-       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x0000|16 03 01 01 6e 01 00 01 6a 03 01 50 83 9d 03 94|....n...j..P....|      stream: raw bits
  *     |until 0x2fd.7 (end) (766)                      |                |
        |                                               |                |    server{}:
@@ -93,7 +84,6 @@ $ fq '.tcp_connections | d' flow_missing_synack.pcap
        |                                               |                |      has_start: false
        |                                               |                |      has_end: false
        |                                               |                |      skipped_bytes: 0
-       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x0000|16 03 01 00 51 02 00 00 4d 03 01 50 83 9c a8 d8|....Q...M..P....|      stream: raw bits
  *     |until 0x1b7.7 (end) (440)                      |                |
        |                                               |                |  [5]{}: tcp_connection
@@ -103,7 +93,6 @@ $ fq '.tcp_connections | d' flow_missing_synack.pcap
        |                                               |                |      has_start: false
        |                                               |                |      has_end: false
        |                                               |                |      skipped_bytes: 0
-       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x0000|16 03 01 01 6e 01 00 01 6a 03 01 50 83 9d 0d 96|....n...j..P....|      stream: raw bits
  *     |until 0x2fd.7 (end) (766)                      |                |
        |                                               |                |    server{}:
@@ -112,7 +101,6 @@ $ fq '.tcp_connections | d' flow_missing_synack.pcap
        |                                               |                |      has_start: false
        |                                               |                |      has_end: true
        |                                               |                |      skipped_bytes: 0
-       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x0000|16 03 01 00 51 02 00 00 4d 03 01 50 83 9c b2 45|....Q...M..P...E|      stream: raw bits
  *     |until 0x2d73.7 (end) (11636)                   |                |
        |                                               |                |  [6]{}: tcp_connection
@@ -122,7 +110,6 @@ $ fq '.tcp_connections | d' flow_missing_synack.pcap
        |                                               |                |      has_start: false
        |                                               |                |      has_end: false
        |                                               |                |      skipped_bytes: 0
-       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x0000|16 03 01 01 6e 01 00 01 6a 03 01 50 83 9d d7 3a|....n...j..P...:|      stream: raw bits
  *     |until 0x38c.7 (end) (909)                      |                |
        |                                               |                |    server{}:
@@ -131,7 +118,6 @@ $ fq '.tcp_connections | d' flow_missing_synack.pcap
        |                                               |                |      has_start: false
        |                                               |                |      has_end: false
        |                                               |                |      skipped_bytes: 0
-       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x0000|16 03 01 00 51 02 00 00 4d 03 01 50 83 9d 7c ac|....Q...M..P..|.|      stream: raw bits
  *     |until 0x2d5.7 (end) (726)                      |                |
        |                                               |                |  [7]{}: tcp_connection
@@ -141,7 +127,6 @@ $ fq '.tcp_connections | d' flow_missing_synack.pcap
        |                                               |                |      has_start: false
        |                                               |                |      has_end: false
        |                                               |                |      skipped_bytes: 0
-       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x0000|16 03 01 01 6e 01 00 01 6a 03 01 50 83 9e 02 2b|....n...j..P...+|      stream: raw bits
  *     |until 0x4a0.7 (end) (1185)                     |                |
        |                                               |                |    server{}:
@@ -150,6 +135,5 @@ $ fq '.tcp_connections | d' flow_missing_synack.pcap
        |                                               |                |      has_start: false
        |                                               |                |      has_end: false
        |                                               |                |      skipped_bytes: 0
-       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x0000|16 03 01 00 51 02 00 00 4d 03 01 50 83 9d a7 8b|....Q...M..P....|      stream: raw bits
  *     |until 0x4f3.7 (end) (1268)                     |                |

@@ -341,7 +341,6 @@ $ fq -d pcap dv /sll2_tcp.pcap
      |                                               |                |        has_start: true 0x1e5-NA (0)
      |                                               |                |        has_end: false 0x1e5-NA (0)
      |                                               |                |        skipped_bytes: 0 0x1e5-NA (0)
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x00|74 65 73 74 0a|                                |test.|          |        stream: raw bits 0x0-0x4.7 (5)
      |                                               |                |      server{}: 0x1e5-NA (0)
      |                                               |                |        ip: "127.0.0.1" 0x1e5-NA (0)
@@ -349,5 +348,4 @@ $ fq -d pcap dv /sll2_tcp.pcap
      |                                               |                |        has_start: true 0x1e5-NA (0)
      |                                               |                |        has_end: false 0x1e5-NA (0)
      |                                               |                |        skipped_bytes: 0 0x1e5-NA (0)
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
      |                                               |                |        stream: raw bits 0x0-NA (0)

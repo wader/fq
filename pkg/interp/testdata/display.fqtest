@@ -51,7 +51,7 @@ mp3> display({width: 30, depth: 1})
 *    |until 0x283|    |
      |           |    |  footers[0:0]:
 mp3> .frames[0] | dv({depth: 1, addrbase: 10})
-   |                                               |                |.frames[0]{}: frame (mp3_frame) 45-226.7 (182)
+   |00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15|0123456789012345|.frames[0]{}: frame (mp3_frame) 45-226.7 (182)
 032|                                       ff fb 40|             ..@|  header{}: 45-48.7 (4)
 048|c0                                             |.               |
 048|   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00| ...............|  side_info{}: 49-65.7 (17)
@@ -63,7 +63,7 @@ mp3> .frames[0] | dv({depth: 1, addrbase: 10})
 224|00 00 00                                       |...             |
    |                                               |                |  crc_calculated: "827a" (raw bits) 227-NA (0)
 mp3> .frames[0] | dv({depth: 1, sizebase: 16})
-    |                                               |                |.frames[0]{}: frame (mp3_frame) 0x2d-0xe2.7 (0xb6)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0]{}: frame (mp3_frame) 0x2d-0xe2.7 (0xb6)
 0x20|                                       ff fb 40|             ..@|  header{}: 0x2d-0x30.7 (0x4)
 0x30|c0                                             |.               |
 0x30|   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00| ...............|  side_info{}: 0x31-0x41.7 (0x11)
@@ -76,7 +76,7 @@ mp3> .frames[0] | dv({depth: 1, sizebase: 16})
     |                                               |                |  crc_calculated: "827a" (raw bits) 0xe3-NA (0x0)
 mp3> .frames[0].xing | "d", d, "da", da, "dd", dd, "dv", dv, "ddv", ddv
 "d"
-    |                                               |                |.frames[0].xing{}: (xing)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].xing{}: (xing)
 0x40|      49 6e 66 6f                              |  Info          |  header: "Info"
     |                                               |                |  present_flags{}:
 0x40|                  00 00 00 0f                  |      ....      |    unused: 0
@@ -162,7 +162,7 @@ mp3> .frames[0].xing | "d", d, "da", da, "dd", dd, "dv", dv, "ddv", ddv
 0xd0|                              62 f0            |          b.    |    music_crc: 25328
 0xd0|                                    5a 35      |            Z5  |    tag_crc: 23093
 "da"
-    |                                               |                |.frames[0].xing{}: (xing)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].xing{}: (xing)
 0x40|      49 6e 66 6f                              |  Info          |  header: "Info"
     |                                               |                |  present_flags{}:
 0x40|                  00 00 00 0f                  |      ....      |    unused: 0
@@ -297,7 +297,7 @@ mp3> .frames[0].xing | "d", d, "da", da, "dd", dd, "dv", dv, "ddv", ddv
 0xd0|                              62 f0            |          b.    |    music_crc: 25328
 0xd0|                                    5a 35      |            Z5  |    tag_crc: 23093
 "dd"
-    |                                               |                |.frames[0].xing{}: (xing)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].xing{}: (xing)
 0x40|      49 6e 66 6f                              |  Info          |  header: "Info"
     |                                               |                |  present_flags{}:
 0x40|                  00 00 00 0f                  |      ....      |    unused: 0
@@ -432,7 +432,7 @@ mp3> .frames[0].xing | "d", d, "da", da, "dd", dd, "dv", dv, "ddv", ddv
 0xd0|                              62 f0            |          b.    |    music_crc: 25328
 0xd0|                                    5a 35      |            Z5  |    tag_crc: 23093
 "dv"
-    |                                               |                |.frames[0].xing{}: (xing) 0x42-0xdd.7 (156)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].xing{}: (xing) 0x42-0xdd.7 (156)
 0x40|      49 6e 66 6f                              |  Info          |  header: "Info" 0x42-0x45.7 (4)
     |                                               |                |  present_flags{}: 0x46-0x49.7 (4)
 0x40|                  00 00 00 0f                  |      ....      |    unused: 0 0x46-0x49.3 (3.4)
@@ -567,7 +567,7 @@ mp3> .frames[0].xing | "d", d, "da", da, "dd", dd, "dv", dv, "ddv", ddv
 0xd0|                              62 f0            |          b.    |    music_crc: 25328 0xda-0xdb.7 (2)
 0xd0|                                    5a 35      |            Z5  |    tag_crc: 23093 0xdc-0xdd.7 (2)
 "ddv"
-    |                                               |                |.frames[0].xing{}: (xing) 0x42-0xdd.7 (156)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].xing{}: (xing) 0x42-0xdd.7 (156)
 0x40|      49 6e 66 6f                              |  Info          |  header: "Info" 0x42-0x45.7 (4)
     |                                               |                |  present_flags{}: 0x46-0x49.7 (4)
 0x40|                  00 00 00 0f                  |      ....      |    unused: 0 0x46-0x49.3 (3.4)

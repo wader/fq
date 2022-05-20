@@ -1393,6 +1393,5 @@ $ fq -d flac dv /stereo24.flac
 *      |until 0x11bc9.1 (451)                          |                |
 0x11bc0|                           80                  |         .      |      byte_align: 0 (valid) 0x11bc9.2-0x11bc9.7 (0.6)
 0x11bc0|                              fa 69|           |          .i|   |      footer_crc: "fa69" (raw bits) (valid) 0x11bca-0x11bcb.7 (2)
-       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
  0x0000|bd dd 75 b3 c0 3e 05 52 8c c7 1f 65 a0 77 48 28|..u..>.R...e.wH(|  md5_calculated: "bddd75b3c03e05528cc71f65a0774828" (raw bits) (valid) 0x0-0xf.7 (16)
        |                                               |                |  decoded_samples: 22050 0x11bcc-NA (0)
