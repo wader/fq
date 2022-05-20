@@ -44,7 +44,7 @@ var channelConfigurationNames = scalar.UToDescription{
 	7: "front-center, front-left, front-right, side-left, side-right, back-left, back-right, LFE-channel",
 }
 
-func ascDecoder(d *decode.D, in interface{}) interface{} {
+func ascDecoder(d *decode.D, in any) any {
 	objectType := d.FieldUFn("object_type", decodeEscapeValueCarryFn(5, 6, 0), format.MPEGAudioObjectTypeNames)
 	d.FieldUFn("sampling_frequency", decodeEscapeValueAbsFn(4, 24, 0), frequencyIndexHzMap)
 	d.FieldU4("channel_configuration", channelConfigurationNames)

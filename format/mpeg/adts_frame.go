@@ -29,7 +29,7 @@ var protectionAbsentNames = scalar.BoolToDescription{
 	false: "Has CRC",
 }
 
-func adtsFrameDecoder(d *decode.D, in interface{}) interface{} {
+func adtsFrameDecoder(d *decode.D, in any) any {
 
 	/*
 	   adts_frame() {

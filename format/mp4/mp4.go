@@ -123,7 +123,7 @@ type track struct {
 	stco               []int64
 	stsc               []stsc
 	stsz               []stsz
-	formatInArg        interface{}
+	formatInArg        any
 	objectType         int // if data format is "mp4a"
 
 	moofs       []*moof // for fmp4
@@ -132,7 +132,7 @@ type track struct {
 
 type pathEntry struct {
 	typ  string
-	data interface{}
+	data any
 }
 
 type decodeContext struct {
@@ -163,7 +163,7 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 		d.RangeSorted = false
 
 		for _, t := range sortedTracks {
-			decodeSampleRange := func(d *decode.D, t *track, dataFormat string, name string, firstBit int64, nBits int64, inArg interface{}) {
+			decodeSampleRange := func(d *decode.D, t *track, dataFormat string, name string, firstBit int64, nBits int64, inArg any) {
 				d.RangeFn(firstBit, nBits, func(d *decode.D) {
 					if !ctx.opts.DecodeSamples {
 						d.FieldRawLen(name, d.BitsLeft())
@@ -320,7 +320,7 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 	})
 }
 
-func mp4Decode(d *decode.D, in interface{}) interface{} {
+func mp4Decode(d *decode.D, in any) any {
 	mi, _ := in.(format.Mp4In)
 
 	ctx := &decodeContext{

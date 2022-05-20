@@ -144,7 +144,7 @@ func amf0DecodeValue(d *decode.D) {
 	}
 }
 
-func amf0Decode(d *decode.D, in interface{}) interface{} {
+func amf0Decode(d *decode.D, in any) any {
 	amf0DecodeValue(d)
 	return nil
 }

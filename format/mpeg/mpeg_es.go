@@ -161,7 +161,7 @@ func esLengthEncoding(d *decode.D) uint64 {
 	return v
 }
 
-func fieldODDecodeTag(d *decode.D, edc *esDecodeContext, name string, expectedTagID int, fn func(d *decode.D)) { //nolint:unparam
+func fieldODDecodeTag(d *decode.D, edc *esDecodeContext, name string, expectedTagID int, fn func(d *decode.D)) {
 	d.FieldStruct(name, func(d *decode.D) {
 		odDecodeTag(d, edc, expectedTagID, fn)
 	})
@@ -172,7 +172,7 @@ type esDecodeContext struct {
 	decoderConfigs       []format.MpegDecoderConfig
 }
 
-func odDecodeTag(d *decode.D, edc *esDecodeContext, expectedTagID int, fn func(d *decode.D)) { //nolint:unparam
+func odDecodeTag(d *decode.D, edc *esDecodeContext, expectedTagID int, fn func(d *decode.D)) {
 	odDecoders := map[uint64]func(d *decode.D){
 		ES_DescrTag: func(d *decode.D) {
 			d.FieldU16("es_id")
@@ -276,7 +276,7 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, expectedTagID int, fn func(d
 	}
 }
 
-func esDecode(d *decode.D, in interface{}) interface{} {
+func esDecode(d *decode.D, in any) any {
 	var edc esDecodeContext
 	odDecodeTag(d, &edc, -1, nil)
 	return format.MpegEsOut{DecoderConfigs: edc.decoderConfigs}

@@ -24,7 +24,7 @@ func init() {
 	})
 }
 
-func decodeSLL2(d *decode.D, in interface{}) interface{} {
+func decodeSLL2(d *decode.D, in any) any {
 	if lfi, ok := in.(format.LinkFrameIn); ok {
 		if lfi.Type != format.LinkTypeLINUX_SLL2 {
 			d.Fatalf("wrong link type %d", lfi.Type)

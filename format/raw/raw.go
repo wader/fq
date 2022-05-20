@@ -10,6 +10,6 @@ func init() {
 	registry.MustRegister(decode.Format{
 		Name:        format.RAW,
 		Description: "Raw bits",
-		DecodeFn:    func(d *decode.D, in interface{}) interface{} { return nil },
+		DecodeFn:    func(d *decode.D, in any) any { return nil },
 	})
 }

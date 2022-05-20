@@ -129,7 +129,7 @@ type track struct {
 	codec               string
 	codecPrivatePos     int64
 	codecPrivateTagSize int64
-	formatInArg         interface{}
+	formatInArg         any
 }
 
 type block struct {
@@ -300,7 +300,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 
 }
 
-func matroskaDecode(d *decode.D, in interface{}) interface{} {
+func matroskaDecode(d *decode.D, in any) any {
 	ebmlHeaderID := uint64(0x1a45dfa3)
 	if d.PeekBits(32) != ebmlHeaderID {
 		d.Errorf("no EBML header found")

@@ -48,7 +48,7 @@ func (bfr bitFlipReader) Read(p []byte) (n int, err error) {
 	return n, err
 }
 
-func bzip2Decode(d *decode.D, in interface{}) interface{} {
+func bzip2Decode(d *decode.D, in any) any {
 	// moreStreams := true
 
 	// d.FieldArray("streams", func(d *decode.D) {

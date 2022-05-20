@@ -21,7 +21,7 @@ func init() {
 	})
 }
 
-func decodeUDP(d *decode.D, in interface{}) interface{} {
+func decodeUDP(d *decode.D, in any) any {
 	if ipi, ok := in.(format.IPPacketIn); ok && ipi.Protocol != format.IPv4ProtocolUDP {
 		d.Fatalf("incorrect protocol %d", ipi.Protocol)
 	}

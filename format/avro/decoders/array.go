@@ -28,8 +28,8 @@ func decodeArrayFn(schema schema.SimplifiedSchema) (DecodeFn, error) {
 	// followed by long values 3 and 27 (encoded as hex 06 36) terminated by zero:
 	// 04 06 36 00
 
-	return func(name string, d *decode.D) interface{} {
-		var values []interface{}
+	return func(name string, d *decode.D) any {
+		var values []any
 		d.FieldArray(name, func(d *decode.D) {
 			count := int64(-1)
 			for count != 0 {

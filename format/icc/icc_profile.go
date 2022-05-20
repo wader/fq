@@ -81,7 +81,7 @@ func decodeBCDU8(d *decode.D) uint64 {
 	return (n>>4)*10 + n&0xf
 }
 
-func iccProfileDecode(d *decode.D, in interface{}) interface{} {
+func iccProfileDecode(d *decode.D, in any) any {
 	/*
 	   0..3 Profile size uInt32Number
 	   4..7 CMM Type signature see below

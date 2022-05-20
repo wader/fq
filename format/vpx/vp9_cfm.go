@@ -18,7 +18,7 @@ func init() {
 	})
 }
 
-func vp9CFMDecode(d *decode.D, in interface{}) interface{} {
+func vp9CFMDecode(d *decode.D, in any) any {
 	for d.NotEnd() {
 		d.FieldStruct("feature", func(d *decode.D) {
 			id := d.FieldU8("id", vp9FeatureIDNames)

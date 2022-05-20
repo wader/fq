@@ -11,7 +11,7 @@ import (
 	"text/template"
 )
 
-func toInt(v interface{}) int {
+func toInt(v any) int {
 	switch v := v.(type) {
 	case float64:
 		return int(v)
@@ -22,7 +22,7 @@ func toInt(v interface{}) int {
 	}
 }
 
-func toString(v interface{}) string {
+func toString(v any) string {
 	switch v := v.(type) {
 	case string:
 		return v
@@ -35,7 +35,7 @@ func toString(v interface{}) string {
 
 func main() {
 	funcMap := template.FuncMap{
-		"xrange": func(args ...interface{}) (interface{}, error) {
+		"xrange": func(args ...any) (any, error) {
 			if len(args) < 2 {
 				return nil, errors.New("need min and max argument")
 			}
@@ -49,7 +49,7 @@ func main() {
 
 			return v, nil
 		},
-		"replace": func(args ...interface{}) (interface{}, error) {
+		"replace": func(args ...any) (any, error) {
 			if len(args) < 3 {
 				return nil, errors.New("need tmpl, old and new argument")
 			}
@@ -62,7 +62,7 @@ func main() {
 		},
 	}
 
-	data := map[string]interface{}{}
+	data := map[string]any{}
 	if len(os.Args) > 1 {
 		r, err := os.Open(os.Args[1])
 		if err != nil {

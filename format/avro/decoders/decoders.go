@@ -8,7 +8,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-type DecodeFn func(string, *decode.D) interface{}
+type DecodeFn func(string, *decode.D) any
 
 func DecodeFnForSchema(s schema.SimplifiedSchema) (DecodeFn, error) {
 	var sms []scalar.Mapper

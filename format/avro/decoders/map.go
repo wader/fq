@@ -43,17 +43,17 @@ func decodeMapFn(s schema.SimplifiedSchema) (DecodeFn, error) {
 	if err != nil {
 		return nil, fmt.Errorf("decode map: %w", err)
 	}
-	return func(s string, d *decode.D) interface{} {
-		val := make(map[string]interface{})
+	return func(s string, d *decode.D) any {
+		val := make(map[string]any)
 
 		rawV := subFn(s, d)
-		rawSlice, ok := rawV.([]interface{})
+		rawSlice, ok := rawV.([]any)
 		if !ok {
 			d.Fatalf("decode map: expected array of interfaces, got %v", rawV)
 			return nil
 		}
 		for _, rawEntry := range rawSlice {
-			entry, ok := rawEntry.(map[string]interface{})
+			entry, ok := rawEntry.(map[string]any)
 			if !ok {
 				d.Fatalf("decode map: expected map, got %T", rawEntry)
 			}

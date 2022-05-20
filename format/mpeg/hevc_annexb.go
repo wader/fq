@@ -12,7 +12,7 @@ func init() {
 	registry.MustRegister(decode.Format{
 		Name:        format.HEVC_ANNEXB,
 		Description: "H.265/HEVC Annex B",
-		DecodeFn: func(d *decode.D, in interface{}) interface{} {
+		DecodeFn: func(d *decode.D, in any) any {
 			return annexBDecode(d, in, annexBHEVCNALUFormat)
 		},
 		RootArray: true,

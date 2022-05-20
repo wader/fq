@@ -40,7 +40,7 @@ func init() {
 	})
 }
 
-func mp3Decode(d *decode.D, in interface{}) interface{} {
+func mp3Decode(d *decode.D, in any) any {
 	mi, _ := in.(format.Mp3In)
 
 	// things in a mp3 stream usually have few unique combinations of.

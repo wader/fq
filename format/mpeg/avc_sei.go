@@ -101,7 +101,7 @@ func ffSum(d *decode.D) uint64 {
 	return s
 }
 
-func avcSEIDecode(d *decode.D, in interface{}) interface{} {
+func avcSEIDecode(d *decode.D, in any) any {
 	payloadType := d.FieldUFn("payload_type", func(d *decode.D) uint64 { return ffSum(d) }, seiNames)
 	payloadSize := d.FieldUFn("payload_size", func(d *decode.D) uint64 { return ffSum(d) })
 

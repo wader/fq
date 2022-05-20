@@ -134,7 +134,7 @@ func avcHdrParameters(d *decode.D) {
 	d.FieldU5("time_offset_length")
 }
 
-func avcSPSDecode(d *decode.D, in interface{}) interface{} {
+func avcSPSDecode(d *decode.D, in any) any {
 	profileIdc := d.FieldU8("profile_idc", avcProfileNames)
 	d.FieldBool("constraint_set0_flag")
 	d.FieldBool("constraint_set1_flag")

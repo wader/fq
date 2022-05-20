@@ -20,7 +20,7 @@ func init() {
 	})
 }
 
-func (i *Interp) bnot(c interface{}, a []interface{}) interface{} {
+func (i *Interp) bnot(c any, a []any) any {
 	switch c := c.(type) {
 	case int:
 		return ^c
@@ -33,77 +33,77 @@ func (i *Interp) bnot(c interface{}, a []interface{}) interface{} {
 	}
 }
 
-func (i *Interp) bsl(c interface{}, a []interface{}) interface{} {
+func (i *Interp) bsl(c any, a []any) any {
 	return gojq.BinopTypeSwitch(a[0], a[1],
-		func(l, r int) interface{} {
+		func(l, r int) any {
 			if v := l << r; v>>r == l {
 				return v
 			}
 			return new(big.Int).Lsh(big.NewInt(int64(l)), uint(r))
 		},
-		func(l, r float64) interface{} { return int(l) << int(r) },
-		func(l, r *big.Int) interface{} { return new(big.Int).Lsh(l, uint(r.Uint64())) },
-		func(l, r string) interface{} { return &gojqextra.BinopTypeError{Name: "bsl", L: l, R: r} },
-		func(l, r []interface{}) interface{} { return &gojqextra.BinopTypeError{Name: "bsl", L: l, R: r} },
-		func(l, r map[string]interface{}) interface{} {
+		func(l, r float64) any { return int(l) << int(r) },
+		func(l, r *big.Int) any { return new(big.Int).Lsh(l, uint(r.Uint64())) },
+		func(l, r string) any { return &gojqextra.BinopTypeError{Name: "bsl", L: l, R: r} },
+		func(l, r []any) any { return &gojqextra.BinopTypeError{Name: "bsl", L: l, R: r} },
+		func(l, r map[string]any) any {
 			return &gojqextra.BinopTypeError{Name: "bsl", L: l, R: r}
 		},
-		func(l, r interface{}) interface{} { return &gojqextra.BinopTypeError{Name: "bsl", L: l, R: r} },
+		func(l, r any) any { return &gojqextra.BinopTypeError{Name: "bsl", L: l, R: r} },
 	)
 }
 
-func (i *Interp) bsr(c interface{}, a []interface{}) interface{} {
+func (i *Interp) bsr(c any, a []any) any {
 	return gojq.BinopTypeSwitch(a[0], a[1],
-		func(l, r int) interface{} { return l >> r },
-		func(l, r float64) interface{} { return int(l) >> int(r) },
-		func(l, r *big.Int) interface{} { return new(big.Int).Rsh(l, uint(r.Uint64())) },
-		func(l, r string) interface{} { return &gojqextra.BinopTypeError{Name: "bsr", L: l, R: r} },
-		func(l, r []interface{}) interface{} { return &gojqextra.BinopTypeError{Name: "bsr", L: l, R: r} },
-		func(l, r map[string]interface{}) interface{} {
+		func(l, r int) any { return l >> r },
+		func(l, r float64) any { return int(l) >> int(r) },
+		func(l, r *big.Int) any { return new(big.Int).Rsh(l, uint(r.Uint64())) },
+		func(l, r string) any { return &gojqextra.BinopTypeError{Name: "bsr", L: l, R: r} },
+		func(l, r []any) any { return &gojqextra.BinopTypeError{Name: "bsr", L: l, R: r} },
+		func(l, r map[string]any) any {
 			return &gojqextra.BinopTypeError{Name: "bsr", L: l, R: r}
 		},
-		func(l, r interface{}) interface{} { return &gojqextra.BinopTypeError{Name: "bsr", L: l, R: r} },
+		func(l, r any) any { return &gojqextra.BinopTypeError{Name: "bsr", L: l, R: r} },
 	)
 }
 
-func (i *Interp) band(c interface{}, a []interface{}) interface{} {
+func (i *Interp) band(c any, a []any) any {
 	return gojq.BinopTypeSwitch(a[0], a[1],
-		func(l, r int) interface{} { return l & r },
-		func(l, r float64) interface{} { return int(l) & int(r) },
-		func(l, r *big.Int) interface{} { return new(big.Int).And(l, r) },
-		func(l, r string) interface{} { return &gojqextra.BinopTypeError{Name: "band", L: l, R: r} },
-		func(l, r []interface{}) interface{} { return &gojqextra.BinopTypeError{Name: "band", L: l, R: r} },
-		func(l, r map[string]interface{}) interface{} {
+		func(l, r int) any { return l & r },
+		func(l, r float64) any { return int(l) & int(r) },
+		func(l, r *big.Int) any { return new(big.Int).And(l, r) },
+		func(l, r string) any { return &gojqextra.BinopTypeError{Name: "band", L: l, R: r} },
+		func(l, r []any) any { return &gojqextra.BinopTypeError{Name: "band", L: l, R: r} },
+		func(l, r map[string]any) any {
 			return &gojqextra.BinopTypeError{Name: "band", L: l, R: r}
 		},
-		func(l, r interface{}) interface{} { return &gojqextra.BinopTypeError{Name: "band", L: l, R: r} },
+		func(l, r any) any { return &gojqextra.BinopTypeError{Name: "band", L: l, R: r} },
 	)
 }
 
-func (i *Interp) bor(c interface{}, a []interface{}) interface{} {
+func (i *Interp) bor(c any, a []any) any {
 	return gojq.BinopTypeSwitch(a[0], a[1],
-		func(l, r int) interface{} { return l | r },
-		func(l, r float64) interface{} { return int(l) | int(r) },
-		func(l, r *big.Int) interface{} { return new(big.Int).Or(l, r) },
-		func(l, r string) interface{} { return &gojqextra.BinopTypeError{Name: "bor", L: l, R: r} },
-		func(l, r []interface{}) interface{} { return &gojqextra.BinopTypeError{Name: "bor", L: l, R: r} },
-		func(l, r map[string]interface{}) interface{} {
+		func(l, r int) any { return l | r },
+		func(l, r float64) any { return int(l) | int(r) },
+		func(l, r *big.Int) any { return new(big.Int).Or(l, r) },
+		func(l, r string) any { return &gojqextra.BinopTypeError{Name: "bor", L: l, R: r} },
+		func(l, r []any) any { return &gojqextra.BinopTypeError{Name: "bor", L: l, R: r} },
+		func(l, r map[string]any) any {
 			return &gojqextra.BinopTypeError{Name: "bor", L: l, R: r}
 		},
-		func(l, r interface{}) interface{} { return &gojqextra.BinopTypeError{Name: "bor", L: l, R: r} },
+		func(l, r any) any { return &gojqextra.BinopTypeError{Name: "bor", L: l, R: r} },
 	)
 }
 
-func (i *Interp) bxor(c interface{}, a []interface{}) interface{} {
+func (i *Interp) bxor(c any, a []any) any {
 	return gojq.BinopTypeSwitch(a[0], a[1],
-		func(l, r int) interface{} { return l ^ r },
-		func(l, r float64) interface{} { return int(l) ^ int(r) },
-		func(l, r *big.Int) interface{} { return new(big.Int).Xor(l, r) },
-		func(l, r string) interface{} { return &gojqextra.BinopTypeError{Name: "bxor", L: l, R: r} },
-		func(l, r []interface{}) interface{} { return &gojqextra.BinopTypeError{Name: "bxor", L: l, R: r} },
-		func(l, r map[string]interface{}) interface{} {
+		func(l, r int) any { return l ^ r },
+		func(l, r float64) any { return int(l) ^ int(r) },
+		func(l, r *big.Int) any { return new(big.Int).Xor(l, r) },
+		func(l, r string) any { return &gojqextra.BinopTypeError{Name: "bxor", L: l, R: r} },
+		func(l, r []any) any { return &gojqextra.BinopTypeError{Name: "bxor", L: l, R: r} },
+		func(l, r map[string]any) any {
 			return &gojqextra.BinopTypeError{Name: "bxor", L: l, R: r}
 		},
-		func(l, r interface{}) interface{} { return &gojqextra.BinopTypeError{Name: "bxor", L: l, R: r} },
+		func(l, r any) any { return &gojqextra.BinopTypeError{Name: "bxor", L: l, R: r} },
 	)
 }

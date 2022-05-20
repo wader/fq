@@ -272,7 +272,7 @@ func aacFillElement(d *decode.D) {
 	})
 }
 
-func aacDecode(d *decode.D, in interface{}) interface{} {
+func aacDecode(d *decode.D, in any) any {
 	var objectType int
 	if afi, ok := in.(format.AACFrameIn); ok {
 		objectType = afi.ObjectType

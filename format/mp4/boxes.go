@@ -111,7 +111,7 @@ func decodeFieldMatrix(d *decode.D, name string) {
 	})
 }
 
-func decodeBoxWithParentData(ctx *decodeContext, d *decode.D, parentData interface{}) {
+func decodeBoxWithParentData(ctx *decodeContext, d *decode.D, parentData any) {
 	var typ string
 	var dataSize uint64
 
@@ -165,7 +165,7 @@ func decodeBoxes(ctx *decodeContext, d *decode.D) {
 	decodeBoxesWithParentData(ctx, d, nil)
 }
 
-func decodeBoxesWithParentData(ctx *decodeContext, d *decode.D, parentData interface{}) {
+func decodeBoxesWithParentData(ctx *decodeContext, d *decode.D, parentData any) {
 	d.FieldStructArrayLoop("boxes", "box", func() bool { return d.BitsLeft() >= 8*8 }, func(d *decode.D) {
 		decodeBoxWithParentData(ctx, d, parentData)
 	})

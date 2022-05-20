@@ -26,7 +26,7 @@ func init() {
 	})
 }
 
-func avcAUDecode(d *decode.D, in interface{}) interface{} {
+func avcAUDecode(d *decode.D, in any) any {
 	avcIn, ok := in.(format.AvcAuIn)
 	if !ok {
 		d.Fatalf("avcIn required")

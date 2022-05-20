@@ -15,7 +15,7 @@ func init() {
 	})
 }
 
-func (i *Interp) queryFromString(c interface{}, a []interface{}) interface{} {
+func (i *Interp) queryFromString(c any, a []any) any {
 	s, err := toString(c)
 	if err != nil {
 		return err
@@ -35,7 +35,7 @@ func (i *Interp) queryFromString(c interface{}, a []interface{}) interface{} {
 	if err != nil {
 		return err
 	}
-	var v interface{}
+	var v any
 	if err := json.Unmarshal(b, &v); err != nil {
 		return err
 	}
@@ -44,7 +44,7 @@ func (i *Interp) queryFromString(c interface{}, a []interface{}) interface{} {
 
 }
 
-func (i *Interp) queryToString(c interface{}, a []interface{}) interface{} {
+func (i *Interp) queryToString(c any, a []any) any {
 	b, err := json.Marshal(c)
 	if err != nil {
 		return err

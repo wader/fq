@@ -39,13 +39,13 @@ func (fe FormatError) Error() string {
 	return fe.Err.Error()
 }
 
-func (fe FormatError) Value() interface{} {
-	var st []interface{}
+func (fe FormatError) Value() any {
+	var st []any
 	for _, f := range fe.Stacktrace.Frames() {
 		st = append(st, f.Function)
 	}
 
-	return map[string]interface{}{
+	return map[string]any{
 		"format":     fe.Format.Name,
 		"error":      fe.Err.Error(),
 		"stacktrace": st,

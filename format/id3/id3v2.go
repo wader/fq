@@ -545,7 +545,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// TODO: DecodeFn
 		// TODO: unknown after frame decode
 		unsyncedBR := d.MustNewBitBufFromReader(unsyncReader{Reader: bitio.NewIOReader(d.BitBufRange(d.Pos(), int64(dataSize)*8))})
-		d.FieldFormatBitBuf("unsync", unsyncedBR, decode.FormatFn(func(d *decode.D, in interface{}) interface{} {
+		d.FieldFormatBitBuf("unsync", unsyncedBR, decode.FormatFn(func(d *decode.D, in any) any {
 			if fn, ok := frames[idNormalized]; ok {
 				fn(d)
 			} else {
@@ -586,7 +586,7 @@ func decodeFrames(d *decode.D, version int, size uint64) {
 	}
 }
 
-func id3v2Decode(d *decode.D, in interface{}) interface{} {
+func id3v2Decode(d *decode.D, in any) any {
 	d.AssertAtLeastBitsLeft(4 * 8)
 	d.FieldUTF8("magic", 3, d.AssertStr("ID3"))
 	version := int(d.FieldU8("version"))

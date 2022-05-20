@@ -241,7 +241,7 @@ func hevcVuiParameters(d *decode.D, spsMaxSubLayersMinus1 uint64) {
 }
 
 // H.265 page 34
-func hevcSPSDecode(d *decode.D, in interface{}) interface{} {
+func hevcSPSDecode(d *decode.D, in any) any {
 	d.FieldU4("sps_video_parameter_set_id")
 	spsMaxSubLayersMinus1 := d.FieldU3("sps_max_sub_layers_minus1")
 	d.FieldBool("sps_temporal_id_nesting_flag")

@@ -141,7 +141,7 @@ func protobufDecodeFields(d *decode.D, pbm *format.ProtoBufMessage) {
 	})
 }
 
-func protobufDecode(d *decode.D, in interface{}) interface{} {
+func protobufDecode(d *decode.D, in any) any {
 	var pbm *format.ProtoBufMessage
 	pbi, ok := in.(format.ProtoBufIn)
 	if ok {

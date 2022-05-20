@@ -20,7 +20,7 @@ func init() {
 	})
 }
 
-func (i *Interp) _binaryMatch(c interface{}, a []interface{}) gojq.Iter {
+func (i *Interp) _binaryMatch(c any, a []any) gojq.Iter {
 	var ok bool
 
 	bv, err := toBinary(c)
@@ -91,7 +91,7 @@ func (i *Interp) _binaryMatch(c interface{}, a []interface{}) gojq.Iter {
 
 	var off int64
 	prevOff := int64(-1)
-	return iterFn(func() (interface{}, bool) {
+	return iterFn(func() (any, bool) {
 		// TODO: correct way to handle empty match for binary, move one byte forward?
 		// > "asdasd" | [match(""; "g")], [(tobytes | match(""; "g"))] | length
 		// 7
@@ -114,12 +114,12 @@ func (i *Interp) _binaryMatch(c interface{}, a []interface{}) gojq.Iter {
 			return nil, false
 		}
 
-		var captures []interface{}
-		var firstCapture map[string]interface{}
+		var captures []any
+		var firstCapture map[string]any
 
 		for i := 0; i < len(l)/2; i++ {
 			start, end := l[i*2], l[i*2+1]
-			capture := map[string]interface{}{
+			capture := map[string]any{
 				"offset": int(off) + start,
 				"length": end - start,
 			}

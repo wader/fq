@@ -7,7 +7,7 @@ import (
 
 func decodeNullFn(sms ...scalar.Mapper) (DecodeFn, error) {
 	// null is written as zero bytes.
-	return func(name string, d *decode.D) interface{} {
+	return func(name string, d *decode.D) any {
 		d.FieldValueNil(name, sms...)
 		return nil
 	}, nil

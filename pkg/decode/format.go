@@ -14,9 +14,9 @@ type Format struct {
 	ProbeOrder    int // probe order is from low to hi value then by name
 	Description   string
 	Groups        []string
-	DecodeFn      func(d *D, in interface{}) interface{}
-	DecodeInArg   interface{}
-	DecodeOutType interface{}
+	DecodeFn      func(d *D, in any) any
+	DecodeInArg   any
+	DecodeOutType any
 	RootArray     bool
 	RootName      string
 	Dependencies  []Dependency
@@ -46,7 +46,7 @@ type FormatHelp struct {
 	References []HelpReference
 }
 
-func FormatFn(d func(d *D, in interface{}) interface{}) Group {
+func FormatFn(d func(d *D, in any) any) Group {
 	return Group{{
 		DecodeFn: d,
 	}}

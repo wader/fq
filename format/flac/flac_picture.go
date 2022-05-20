@@ -44,8 +44,8 @@ func init() {
 	})
 }
 
-func pictureDecode(d *decode.D, in interface{}) interface{} {
-	lenStr := func(name string) string { //nolint:unparam
+func pictureDecode(d *decode.D, in any) any {
+	lenStr := func(name string) string {
 		l := d.FieldU32(name + "_length")
 		return d.FieldUTF8(name, int(l))
 	}

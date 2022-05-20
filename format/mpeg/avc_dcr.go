@@ -116,7 +116,7 @@ func avcDcrParameterSet(d *decode.D, numParamSets uint64) {
 	}
 }
 
-func avcDcrDecode(d *decode.D, in interface{}) interface{} {
+func avcDcrDecode(d *decode.D, in any) any {
 	d.FieldU8("configuration_version")
 	d.FieldU8("profile_indication", avcProfileNames)
 	d.FieldU8("profile_compatibility")

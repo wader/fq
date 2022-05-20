@@ -25,8 +25,8 @@ type Compound struct {
 type Value struct {
 	Parent     *Value
 	Name       string
-	V          interface{} // scalar.S or Compound (array/struct)
-	Index      int         // index in parent array/struct
+	V          any // scalar.S or Compound (array/struct)
+	Index      int // index in parent array/struct
 	Range      ranges.Range
 	RootReader bitio.ReaderAtSeeker
 	IsRoot     bool // TODO: rework?

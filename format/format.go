@@ -230,7 +230,7 @@ func (u UDPPayloadIn) IsPort(ports ...int) bool {
 	return false
 }
 
-func (u UDPPayloadIn) MustIsPort(fn func(format string, a ...interface{}), ports ...int) {
+func (u UDPPayloadIn) MustIsPort(fn func(format string, a ...any), ports ...int) {
 	if !u.IsPort(ports...) {
 		fn("incorrect udp port %t src:%d dst:%d", u.DestinationPort, u.SourcePort)
 	}
@@ -255,7 +255,7 @@ func (t TCPStreamIn) IsPort(ports ...int) bool {
 	return false
 }
 
-func (t TCPStreamIn) MustIsPort(fn func(format string, a ...interface{}), ports ...int) {
+func (t TCPStreamIn) MustIsPort(fn func(format string, a ...any), ports ...int) {
 	if !t.IsPort(ports...) {
 		fn("incorrect tcp port client %t src:%d dst:%d", t.IsClient, t.DestinationPort, t.SourcePort)
 	}
