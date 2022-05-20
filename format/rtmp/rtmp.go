@@ -195,7 +195,7 @@ var videoMessageH264PacketTypeNames = scalar.UToSymStr{
 }
 
 // TODO: invalid warning that timestampDelta is unused
-//nolint: structcheck,unused
+//nolint: unused
 type messageHeader struct {
 	timestamp       uint64
 	timestampDelta  uint64
@@ -307,7 +307,7 @@ func rtmpDecodeMessageType(d *decode.D, typ int, chunkSize *int) {
 	}
 }
 
-func rtmpDecode(d *decode.D, in interface{}) interface{} {
+func rtmpDecode(d *decode.D, in any) any {
 	var isClient bool
 	if tsi, ok := in.(format.TCPStreamIn); ok {
 		tsi.MustIsPort(d.Fatalf, format.TCPPortRTMP)

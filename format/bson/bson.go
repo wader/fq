@@ -110,7 +110,7 @@ func decodeBSONDocument(d *decode.D) {
 	})
 }
 
-func decodeBSON(d *decode.D, in interface{}) interface{} {
+func decodeBSON(d *decode.D, in any) any {
 	d.Endian = decode.LittleEndian
 
 	decodeBSONDocument(d)

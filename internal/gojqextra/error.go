@@ -10,7 +10,7 @@ import (
 
 type UnaryTypeError struct {
 	Name string
-	V    interface{}
+	V    any
 }
 
 func (err *UnaryTypeError) Error() string {
@@ -19,7 +19,7 @@ func (err *UnaryTypeError) Error() string {
 
 type BinopTypeError struct {
 	Name string
-	L, R interface{}
+	L, R any
 }
 
 func (err *BinopTypeError) Error() string {
@@ -37,7 +37,7 @@ func (err NonUpdatableTypeError) Error() string {
 
 type FuncTypeError struct {
 	Name string
-	V    interface{}
+	V    any
 }
 
 func (err FuncTypeError) Error() string { return err.Name + " cannot be applied to: " + Typeof(err.V) }
@@ -102,7 +102,7 @@ func (err HasKeyTypeError) Error() string {
 }
 
 type ArrayIndexTooLargeError struct {
-	V interface{}
+	V any
 }
 
 func (err *ArrayIndexTooLargeError) Error() string {

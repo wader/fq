@@ -15,7 +15,7 @@ func init() {
 	})
 }
 
-func streaminfoDecode(d *decode.D, in interface{}) interface{} {
+func streaminfoDecode(d *decode.D, in any) any {
 	d.FieldU16("minimum_block_size")
 	d.FieldU16("maximum_block_size")
 	d.FieldU24("minimum_frame_size")

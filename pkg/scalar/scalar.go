@@ -43,15 +43,15 @@ func (df DisplayFormat) FormatBase() int {
 }
 
 type S struct {
-	Actual        interface{} // nil, int, int64, uint64, float64, string, bool, []byte, *bit.Int, bitio.BitReaderAtSeeker,
+	Actual        any // nil, int, int64, uint64, float64, string, bool, []byte, *bit.Int, bitio.BitReaderAtSeeker,
 	ActualDisplay DisplayFormat
-	Sym           interface{}
+	Sym           any
 	SymDisplay    DisplayFormat
 	Description   string
 	Unknown       bool
 }
 
-func (s S) Value() interface{} {
+func (s S) Value() any {
 	if s.Sym != nil {
 		return s.Sym
 	}
@@ -78,10 +78,10 @@ var SymOct = Fn(func(s S) (S, error) { s.SymDisplay = NumberOctal; return s, nil
 var SymDec = Fn(func(s S) (S, error) { s.SymDisplay = NumberDecimal; return s, nil })
 var SymHex = Fn(func(s S) (S, error) { s.SymDisplay = NumberHex; return s, nil })
 
-func Actual(v interface{}) Mapper {
+func Actual(v any) Mapper {
 	return Fn(func(s S) (S, error) { s.Actual = v; return s, nil })
 }
-func Sym(v interface{}) Mapper {
+func Sym(v any) Mapper {
 	return Fn(func(s S) (S, error) { s.Sym = v; return s, nil })
 }
 func Description(v string) Mapper {
@@ -103,7 +103,7 @@ func ActualTrim(cutset string) ActualStrFn {
 
 var ActualTrimSpace = ActualStrFn(strings.TrimSpace)
 
-func strMapToSym(fn func(s string) (interface{}, error)) Mapper {
+func strMapToSym(fn func(s string) (any, error)) Mapper {
 	return Fn(func(s S) (S, error) {
 		ts := strings.TrimSpace(s.ActualStr())
 		if ts != "" {
@@ -118,15 +118,15 @@ func strMapToSym(fn func(s string) (interface{}, error)) Mapper {
 }
 
 func SymUParseUint(base int) Mapper {
-	return strMapToSym(func(s string) (interface{}, error) { return strconv.ParseUint(s, base, 64) })
+	return strMapToSym(func(s string) (any, error) { return strconv.ParseUint(s, base, 64) })
 }
 
 func SymSParseInt(base int) Mapper {
-	return strMapToSym(func(s string) (interface{}, error) { return strconv.ParseInt(s, base, 64) })
+	return strMapToSym(func(s string) (any, error) { return strconv.ParseInt(s, base, 64) })
 }
 
 func SymFParseFloat(base int) Mapper {
-	return strMapToSym(func(s string) (interface{}, error) { return strconv.ParseFloat(s, base) })
+	return strMapToSym(func(s string) (any, error) { return strconv.ParseFloat(s, base) })
 }
 
 type URangeEntry struct {

@@ -61,11 +61,11 @@ func decodeHeader(d *decode.D) HeaderData {
 	}
 
 	header := decodeHeaderFn("header", d)
-	headerRecord, ok := header.(map[string]interface{})
+	headerRecord, ok := header.(map[string]any)
 	if !ok {
 		d.Fatalf("header is not a map")
 	}
-	meta, ok := headerRecord["meta"].(map[string]interface{})
+	meta, ok := headerRecord["meta"].(map[string]any)
 	if !ok {
 		d.Fatalf("header.meta is not a map")
 	}
@@ -124,7 +124,7 @@ func decodeBlockCodec(d *decode.D, dataSize int64, codec string) *bytes.Buffer {
 	return bb
 }
 
-func decodeAvroOCF(d *decode.D, in interface{}) interface{} {
+func decodeAvroOCF(d *decode.D, in any) any {
 	header := decodeHeader(d)
 
 	decodeFn, err := decoders.DecodeFnForSchema(header.Schema)

@@ -49,7 +49,7 @@ var mapUToIPv4Sym = scalar.Fn(func(s scalar.S) (scalar.S, error) {
 	return s, nil
 })
 
-func decodeIPv4(d *decode.D, in interface{}) interface{} {
+func decodeIPv4(d *decode.D, in any) any {
 	if ipi, ok := in.(format.InetPacketIn); ok && ipi.EtherType != format.EtherTypeIPv4 {
 		d.Fatalf("incorrect ethertype %d", ipi.EtherType)
 	}

@@ -108,7 +108,7 @@ var arpHdrTypeMAp = scalar.UToScalar{
 	0xfffe:             {Sym: "none", Description: `zero header length`},
 }
 
-func decodeSLL(d *decode.D, in interface{}) interface{} {
+func decodeSLL(d *decode.D, in any) any {
 	if lfi, ok := in.(format.LinkFrameIn); ok {
 		if lfi.Type != format.LinkTypeLINUX_SLL {
 			d.Fatalf("wrong link type %d", lfi.Type)

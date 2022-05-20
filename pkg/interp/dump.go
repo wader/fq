@@ -58,10 +58,10 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 
 	// no error check as we write into buffering column
 	// we check for err later for Flush()
-	cprint := func(c int, a ...interface{}) {
+	cprint := func(c int, a ...any) {
 		fmt.Fprint(cw.Columns[c], a...)
 	}
-	cfmt := func(c int, format string, a ...interface{}) {
+	cfmt := func(c int, format string, a ...any) {
 		fmt.Fprintf(cw.Columns[c], format, a...)
 	}
 
@@ -126,7 +126,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 
 	var valueErr error
 
-	// TODO: cleanup map[string]interface{} []interface{} or json format
+	// TODO: cleanup map[string]any []any or json format
 	// dump should use some internal interface instead?
 	switch vv := v.V.(type) {
 	case *decode.Compound:
@@ -150,9 +150,9 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 	case *scalar.S:
 		// TODO: rethink scalar array/struct (json format)
 		switch av := vv.Actual.(type) {
-		case map[string]interface{}:
+		case map[string]any:
 			cfmt(colField, ": %s (%s)", deco.Object.F("{}"), deco.Value.F("json"))
-		case []interface{}:
+		case []any:
 			cfmt(colField, ": %s%s:%s%s (%s)", deco.Index.F("["), deco.Number.F("0"), deco.Number.F(strconv.Itoa(len(av))), deco.Index.F("]"), deco.Value.F("json"))
 		default:
 			cprint(colField, ":")

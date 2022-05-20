@@ -13,7 +13,7 @@ import (
 	"github.com/wader/gojq"
 )
 
-func ToString(x interface{}) (string, bool) {
+func ToString(x any) (string, bool) {
 	switch x := x.(type) {
 	case string:
 		return x, true
@@ -24,9 +24,9 @@ func ToString(x interface{}) (string, bool) {
 	}
 }
 
-func ToObject(x interface{}) (map[string]interface{}, bool) {
+func ToObject(x any) (map[string]any, bool) {
 	switch x := x.(type) {
-	case map[string]interface{}:
+	case map[string]any:
 		return x, true
 	case gojq.JQValue:
 		return ToObject(x.JQValueToGoJQ())
@@ -35,9 +35,9 @@ func ToObject(x interface{}) (map[string]interface{}, bool) {
 	}
 }
 
-func ToArray(x interface{}) ([]interface{}, bool) {
+func ToArray(x any) ([]any, bool) {
 	switch x := x.(type) {
-	case []interface{}:
+	case []any:
 		return x, true
 	case gojq.JQValue:
 		return ToArray(x.JQValueToGoJQ())
@@ -46,7 +46,7 @@ func ToArray(x interface{}) ([]interface{}, bool) {
 	}
 }
 
-func ToBoolean(x interface{}) (bool, bool) {
+func ToBoolean(x any) (bool, bool) {
 	switch x := x.(type) {
 	case bool:
 		return x, true
@@ -57,7 +57,7 @@ func ToBoolean(x interface{}) (bool, bool) {
 	}
 }
 
-func IsNull(x interface{}) bool {
+func IsNull(x any) bool {
 	switch x := x.(type) {
 	case nil:
 		return true
@@ -68,7 +68,7 @@ func IsNull(x interface{}) bool {
 	}
 }
 
-func ToInt(x interface{}) (int, bool) {
+func ToInt(x any) (int, bool) {
 	switch x := x.(type) {
 	case int:
 		return x, true
@@ -102,7 +102,7 @@ func floatToInt(x float64) int {
 	return minInt
 }
 
-func ToFloat(x interface{}) (float64, bool) {
+func ToFloat(x any) (float64, bool) {
 	switch x := x.(type) {
 	case int:
 		return float64(x), true
@@ -128,7 +128,7 @@ func bigToFloat(x *big.Int) float64 {
 	return math.Inf(x.Sign())
 }
 
-func ToGoJQValue(v interface{}) (interface{}, bool) {
+func ToGoJQValue(v any) (any, bool) {
 	switch vv := v.(type) {
 	case nil:
 		return vv, true
@@ -152,8 +152,8 @@ func ToGoJQValue(v interface{}) (interface{}, bool) {
 		return string(vv), true
 	case gojq.JQValue:
 		return ToGoJQValue(vv.JQValueToGoJQ())
-	case []interface{}:
-		vvs := make([]interface{}, len(vv))
+	case []any:
+		vvs := make([]any, len(vv))
 		for i, v := range vv {
 			v, ok := ToGoJQValue(v)
 			if !ok {
@@ -162,8 +162,8 @@ func ToGoJQValue(v interface{}) (interface{}, bool) {
 			vvs[i] = v
 		}
 		return vvs, true
-	case map[string]interface{}:
-		vvs := make(map[string]interface{}, len(vv))
+	case map[string]any:
+		vvs := make(map[string]any, len(vv))
 		for k, v := range vv {
 			v, ok := ToGoJQValue(v)
 			if !ok {

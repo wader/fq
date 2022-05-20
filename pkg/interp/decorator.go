@@ -9,7 +9,7 @@ import (
 
 var PlainDecorator = Decorator{
 	Column:     "|",
-	ValueColor: func(v interface{}) ansi.Code { return ansi.None },
+	ValueColor: func(v any) ansi.Code { return ansi.None },
 	ByteColor:  func(b byte) ansi.Code { return ansi.None },
 }
 
@@ -41,7 +41,7 @@ func decoratorFromOptions(opts Options) Decorator {
 
 		d.Error = ansi.FromString(colors["error"])
 
-		d.ValueColor = func(v interface{}) ansi.Code {
+		d.ValueColor = func(v any) ansi.Code {
 			switch vv := v.(type) {
 			case bool:
 				if vv {
@@ -76,7 +76,7 @@ func decoratorFromOptions(opts Options) Decorator {
 		}
 		d.ByteColor = func(b byte) ansi.Code { return byteColors[b] }
 	} else {
-		d.ValueColor = func(v interface{}) ansi.Code { return ansi.None }
+		d.ValueColor = func(v any) ansi.Code { return ansi.None }
 		d.ByteColor = func(b byte) ansi.Code { return ansi.None }
 	}
 
@@ -101,7 +101,7 @@ type Decorator struct {
 
 	Error ansi.Code
 
-	ValueColor func(v interface{}) ansi.Code
+	ValueColor func(v any) ansi.Code
 	ByteColor  func(b byte) ansi.Code
 
 	Column string

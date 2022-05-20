@@ -10,7 +10,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-func previewValue(v interface{}, df scalar.DisplayFormat) string {
+func previewValue(v any, df scalar.DisplayFormat) string {
 	switch vv := v.(type) {
 	case bool:
 		if vv {

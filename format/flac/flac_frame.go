@@ -100,7 +100,7 @@ func utf8Uint(d *decode.D) uint64 {
 }
 
 // in argument is an optional FlacFrameIn struct with stream info
-func frameDecode(d *decode.D, in interface{}) interface{} {
+func frameDecode(d *decode.D, in any) any {
 	frameStart := d.Pos()
 	blockSize := 0
 	channelAssignment := uint64(0)

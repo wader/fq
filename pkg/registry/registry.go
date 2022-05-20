@@ -22,7 +22,7 @@ func New() *Registry {
 	}
 }
 
-func (r *Registry) register(groupName string, format decode.Format, single bool) decode.Format { //nolint:unparam
+func (r *Registry) register(groupName string, format decode.Format, single bool) decode.Format {
 	if r.resolved {
 		// for now can't change after resolved
 		panic("registry already resolved")

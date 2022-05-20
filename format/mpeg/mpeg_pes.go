@@ -33,7 +33,7 @@ type subStream struct {
 	l int
 }
 
-func pesDecode(d *decode.D, in interface{}) interface{} {
+func pesDecode(d *decode.D, in any) any {
 	substreams := map[int]*subStream{}
 
 	prefix := d.PeekBits(24)

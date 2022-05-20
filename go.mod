@@ -1,6 +1,6 @@
 module github.com/wader/fq
 
-go 1.17
+go 1.18
 
 require (
 	// fork of github.com/itchyny/gojq, see github.com/wader/gojq fq branch

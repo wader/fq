@@ -128,7 +128,7 @@ func fieldMSDOSDate(d *decode.D) {
 	d.FieldU5("day")
 }
 
-func zipDecode(d *decode.D, in interface{}) interface{} {
+func zipDecode(d *decode.D, in any) any {
 	// TODO: just decode instead?
 	if !bytes.Equal(d.PeekBytes(4), []byte("PK\x03\x04")) {
 		d.Errorf("expected PK header")

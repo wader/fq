@@ -16,7 +16,7 @@ func init() {
 	})
 }
 
-func xingDecode(d *decode.D, in interface{}) interface{} {
+func xingDecode(d *decode.D, in any) any {
 	// TODO: info has lame extension?
 	hasLameExtension := false
 	switch d.FieldUTF8("header", 4) {

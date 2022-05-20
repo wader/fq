@@ -1,4 +1,4 @@
-func decode(d *decode.D, in interface{}) interface{} {
+func decode(d *decode.D, in any) any {
 	d.FieldArray("headers", func(d *decode.D) {
 		for !d.End() {
 			d.TryFieldFormat("header", headerGroup)

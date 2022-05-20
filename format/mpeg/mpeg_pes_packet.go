@@ -69,8 +69,8 @@ var mpegVersion = scalar.UToDescription{
 	0b10: "MPEG1",
 }
 
-func pesPacketDecode(d *decode.D, in interface{}) interface{} {
-	var v interface{}
+func pesPacketDecode(d *decode.D, in any) any {
+	var v any
 
 	d.FieldU24("prefix", d.AssertU(0b0000_0000_0000_0000_0000_0001), scalar.ActualBin)
 	startCode := d.FieldU8("start_code", startAndStreamNames, scalar.ActualHex)

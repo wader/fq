@@ -33,7 +33,7 @@ var tcpOptionsMap = scalar.UToScalar{
 	8:            {Sym: "timestamp", Description: "Timestamp and echo of previous timestamp"},
 }
 
-func decodeTCP(d *decode.D, in interface{}) interface{} {
+func decodeTCP(d *decode.D, in any) any {
 	if ipi, ok := in.(format.IPPacketIn); ok && ipi.Protocol != format.IPv4ProtocolTCP {
 		d.Fatalf("incorrect protocol %d", ipi.Protocol)
 	}

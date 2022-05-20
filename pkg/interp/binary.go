@@ -33,7 +33,7 @@ type ToBinary interface {
 	ToBinary() (Binary, error)
 }
 
-func toBinary(v interface{}) (Binary, error) {
+func toBinary(v any) (Binary, error) {
 	switch vv := v.(type) {
 	case ToBinary:
 		return vv.ToBinary()
@@ -46,11 +46,11 @@ func toBinary(v interface{}) (Binary, error) {
 	}
 }
 
-func toBitReader(v interface{}) (bitio.ReaderAtSeeker, error) {
+func toBitReader(v any) (bitio.ReaderAtSeeker, error) {
 	return toBitReaderEx(v, false)
 }
 
-func toBitReaderEx(v interface{}, inArray bool) (bitio.ReaderAtSeeker, error) {
+func toBitReaderEx(v any, inArray bool) (bitio.ReaderAtSeeker, error) {
 	switch vv := v.(type) {
 	case ToBinary:
 		bv, err := vv.ToBinary()
@@ -89,7 +89,7 @@ func toBitReaderEx(v interface{}, inArray bool) (bitio.ReaderAtSeeker, error) {
 			return nil, err
 		}
 		return br, nil
-	case []interface{}:
+	case []any:
 		rr := make([]bitio.ReadAtSeeker, 0, len(vv))
 		// TODO: optimize byte array case, flatten into one slice
 		for _, e := range vv {
@@ -112,7 +112,7 @@ func toBitReaderEx(v interface{}, inArray bool) (bitio.ReaderAtSeeker, error) {
 }
 
 // note is used to implement tobytes* also
-func (i *Interp) _toBits(c interface{}, a []interface{}) interface{} {
+func (i *Interp) _toBits(c any, a []any) any {
 	unit, ok := gojqextra.ToInt(a[0])
 	if !ok {
 		return gojqextra.FuncTypeError{Name: "_tobits", V: a[0]}
@@ -176,7 +176,7 @@ func (of *openFile) ToBinary() (Binary, error) {
 
 // opens a file for reading from filesystem
 // TODO: when to close? when br loses all refs? need to use finalizer somehow?
-func (i *Interp) _open(c interface{}, a []interface{}) gojq.Iter {
+func (i *Interp) _open(c any, a []any) gojq.Iter {
 	if i.evalInstance.isCompleting {
 		return gojq.NewIter()
 	}
@@ -272,7 +272,6 @@ type Binary struct {
 	pad  int64
 }
 
-//nolint:unparam
 func newBinaryFromBitReader(br bitio.ReaderAtSeeker, unit int, pad int64) (Binary, error) {
 	l, err := bitioextra.Len(br)
 	if err != nil {
@@ -316,14 +315,14 @@ func (b Binary) ToBinary() (Binary, error) {
 	return b, nil
 }
 
-func (b Binary) JQValueLength() interface{} {
+func (b Binary) JQValueLength() any {
 	return int(b.r.Len / int64(b.unit))
 }
-func (b Binary) JQValueSliceLen() interface{} {
+func (b Binary) JQValueSliceLen() any {
 	return b.JQValueLength()
 }
 
-func (b Binary) JQValueIndex(index int) interface{} {
+func (b Binary) JQValueIndex(index int) any {
 	if index < 0 {
 		return nil
 	}
@@ -337,7 +336,7 @@ func (b Binary) JQValueIndex(index int) interface{} {
 
 	return new(big.Int).Rsh(new(big.Int).SetBytes(buf.Bytes()), extraBits)
 }
-func (b Binary) JQValueSlice(start int, end int) interface{} {
+func (b Binary) JQValueSlice(start int, end int) any {
 	rStart := int64(start * b.unit)
 	rLen := int64((end - start) * b.unit)
 
@@ -347,7 +346,7 @@ func (b Binary) JQValueSlice(start int, end int) interface{} {
 		unit: b.unit,
 	}
 }
-func (b Binary) JQValueKey(name string) interface{} {
+func (b Binary) JQValueKey(name string) any {
 	switch name {
 	case "size":
 		return new(big.Int).SetInt64(b.r.Len / int64(b.unit))
@@ -373,19 +372,19 @@ func (b Binary) JQValueKey(name string) interface{} {
 	}
 	return nil
 }
-func (b Binary) JQValueEach() interface{} {
+func (b Binary) JQValueEach() any {
 	return nil
 }
 func (b Binary) JQValueType() string {
 	return "binary"
 }
-func (b Binary) JQValueKeys() interface{} {
+func (b Binary) JQValueKeys() any {
 	return gojqextra.FuncTypeNameError{Name: "keys", Typ: "binary"}
 }
-func (b Binary) JQValueHas(key interface{}) interface{} {
+func (b Binary) JQValueHas(key any) any {
 	return gojqextra.HasKeyTypeError{L: "binary", R: fmt.Sprintf("%v", key)}
 }
-func (b Binary) JQValueToNumber() interface{} {
+func (b Binary) JQValueToNumber() any {
 	buf, err := b.toBytesBuffer(b.r)
 	if err != nil {
 		return err
@@ -393,10 +392,10 @@ func (b Binary) JQValueToNumber() interface{} {
 	extraBits := uint((8 - b.r.Len%8) % 8)
 	return new(big.Int).Rsh(new(big.Int).SetBytes(buf.Bytes()), extraBits)
 }
-func (b Binary) JQValueToString() interface{} {
+func (b Binary) JQValueToString() any {
 	return b.JQValueToGoJQ()
 }
-func (b Binary) JQValueToGoJQ() interface{} {
+func (b Binary) JQValueToGoJQ() any {
 	buf, err := b.toBytesBuffer(b.r)
 	if err != nil {
 		return err

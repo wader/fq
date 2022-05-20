@@ -61,8 +61,8 @@ func init() {
 func makeStringBinaryTransformFn(
 	decodeFn func(r io.Reader) (io.Reader, error),
 	encodeFn func(w io.Writer) (io.Writer, error),
-) func(c interface{}, a []interface{}) interface{} {
-	return func(c interface{}, a []interface{}) interface{} {
+) func(c any, a []any) any {
+	return func(c any, a []any) any {
 		switch c := c.(type) {
 		case string:
 			br, err := toBitReader(c)
@@ -111,8 +111,8 @@ func makeStringBinaryTransformFn(
 }
 
 // transform to binary using fn
-func makeBinaryTransformFn(fn func(r io.Reader) (io.Reader, error)) func(c interface{}, a []interface{}) interface{} {
-	return func(c interface{}, a []interface{}) interface{} {
+func makeBinaryTransformFn(fn func(r io.Reader) (io.Reader, error)) func(c any, a []any) any {
+	return func(c any, a []any) any {
 		inBR, err := toBitReader(c)
 		if err != nil {
 			return err
@@ -139,8 +139,8 @@ func makeBinaryTransformFn(fn func(r io.Reader) (io.Reader, error)) func(c inter
 }
 
 // transform to binary using fn
-func makeHashFn(fn func() (hash.Hash, error)) func(c interface{}, a []interface{}) interface{} {
-	return func(c interface{}, a []interface{}) interface{} {
+func makeHashFn(fn func() (hash.Hash, error)) func(c any, a []any) any {
+	return func(c any, a []any) any {
 		inBR, err := toBitReader(c)
 		if err != nil {
 			return err
@@ -164,7 +164,7 @@ func makeHashFn(fn func() (hash.Hash, error)) func(c interface{}, a []interface{
 	}
 }
 
-func (i *Interp) queryEscape(c interface{}, a []interface{}) interface{} {
+func (i *Interp) queryEscape(c any, a []any) any {
 	s, err := toString(c)
 	if err != nil {
 		return err
@@ -172,7 +172,7 @@ func (i *Interp) queryEscape(c interface{}, a []interface{}) interface{} {
 	return url.QueryEscape(s)
 }
 
-func (i *Interp) queryUnescape(c interface{}, a []interface{}) interface{} {
+func (i *Interp) queryUnescape(c any, a []any) any {
 	s, err := toString(c)
 	if err != nil {
 		return err
@@ -183,7 +183,7 @@ func (i *Interp) queryUnescape(c interface{}, a []interface{}) interface{} {
 	}
 	return u
 }
-func (i *Interp) pathEscape(c interface{}, a []interface{}) interface{} {
+func (i *Interp) pathEscape(c any, a []any) any {
 	s, err := toString(c)
 	if err != nil {
 		return err
@@ -191,7 +191,7 @@ func (i *Interp) pathEscape(c interface{}, a []interface{}) interface{} {
 	return url.PathEscape(s)
 }
 
-func (i *Interp) pathUnescape(c interface{}, a []interface{}) interface{} {
+func (i *Interp) pathUnescape(c any, a []any) any {
 	s, err := toString(c)
 	if err != nil {
 		return err
@@ -203,7 +203,7 @@ func (i *Interp) pathUnescape(c interface{}, a []interface{}) interface{} {
 	return u
 }
 
-func (i *Interp) aesCtr(c interface{}, a []interface{}) interface{} {
+func (i *Interp) aesCtr(c any, a []any) any {
 	keyBytes, err := toBytes(a[0])
 	if err != nil {
 		return err
@@ -252,7 +252,7 @@ func (i *Interp) aesCtr(c interface{}, a []interface{}) interface{} {
 	return bb
 }
 
-func (i *Interp) _hexdump(c interface{}, a []interface{}) gojq.Iter {
+func (i *Interp) _hexdump(c any, a []any) gojq.Iter {
 	opts := i.Options(a[0])
 	bv, err := toBinary(c)
 	if err != nil {

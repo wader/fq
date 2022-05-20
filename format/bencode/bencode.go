@@ -90,7 +90,7 @@ func decodeBencodeValue(d *decode.D) {
 	}
 }
 
-func decodeBencode(d *decode.D, in interface{}) interface{} {
+func decodeBencode(d *decode.D, in any) any {
 	decodeBencodeValue(d)
 	return nil
 }

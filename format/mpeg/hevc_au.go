@@ -24,7 +24,7 @@ func init() {
 	})
 }
 
-func hevcAUDecode(d *decode.D, in interface{}) interface{} {
+func hevcAUDecode(d *decode.D, in any) any {
 	hevcIn, ok := in.(format.HevcAuIn)
 	if !ok {
 		d.Errorf("HevcAuIn required")

@@ -25,7 +25,7 @@ func init() {
 	})
 }
 
-func decodeJSON(d *decode.D, in interface{}) interface{} {
+func decodeJSON(d *decode.D, in any) any {
 	br := d.RawLen(d.Len())
 	jd := stdjson.NewDecoder(bitio.NewIOReader(br))
 	var s scalar.S
@@ -33,8 +33,8 @@ func decodeJSON(d *decode.D, in interface{}) interface{} {
 		d.Fatalf(err.Error())
 	}
 	switch s.Actual.(type) {
-	case map[string]interface{},
-		[]interface{}:
+	case map[string]any,
+		[]any:
 	default:
 		d.Fatalf("root not object or array")
 	}

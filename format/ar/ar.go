@@ -21,7 +21,7 @@ func init() {
 	})
 }
 
-func decodeAr(d *decode.D, in interface{}) interface{} {
+func decodeAr(d *decode.D, in any) any {
 	d.FieldUTF8("signature", 8, d.AssertStr("!<arch>\n"))
 	d.FieldArray("files", func(d *decode.D) {
 		for !d.End() {

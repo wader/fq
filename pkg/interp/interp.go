@@ -79,11 +79,11 @@ func init() {
 }
 
 type valueError struct {
-	v interface{}
+	v any
 }
 
-func (v valueError) Error() string      { return fmt.Sprintf("error: %v", v.v) }
-func (v valueError) Value() interface{} { return v.v }
+func (v valueError) Error() string { return fmt.Sprintf("error: %v", v.v) }
+func (v valueError) Value() any    { return v.v }
 
 type compileError struct {
 	err      error
@@ -92,8 +92,8 @@ type compileError struct {
 	pos      pos.Pos
 }
 
-func (ce compileError) Value() interface{} {
-	return map[string]interface{}{
+func (ce compileError) Value() any {
+	return map[string]any{
 		"error":    ce.err.Error(),
 		"what":     ce.what,
 		"filename": ce.filename,
@@ -168,7 +168,7 @@ type FixedFileInfo struct {
 	FMode    fs.FileMode
 	FModTime time.Time
 	FIsDir   bool
-	FSys     interface{}
+	FSys     any
 }
 
 func (ffi FixedFileInfo) Name() string       { return ffi.FName }
@@ -176,7 +176,7 @@ func (ffi FixedFileInfo) Size() int64        { return ffi.FSize }
 func (ffi FixedFileInfo) Mode() fs.FileMode  { return ffi.FMode }
 func (ffi FixedFileInfo) ModTime() time.Time { return ffi.FModTime }
 func (ffi FixedFileInfo) IsDir() bool        { return ffi.FIsDir }
-func (ffi FixedFileInfo) Sys() interface{}   { return ffi.FSys }
+func (ffi FixedFileInfo) Sys() any           { return ffi.FSys }
 
 type FileReader struct {
 	R        io.Reader
@@ -199,19 +199,19 @@ type Display interface {
 }
 
 type JQValueEx interface {
-	JQValueToGoJQEx(optsFn func() Options) interface{}
+	JQValueToGoJQEx(optsFn func() Options) any
 }
 
-func valuePath(v *decode.Value) []interface{} {
-	var parts []interface{}
+func valuePath(v *decode.Value) []any {
+	var parts []any
 
 	for v.Parent != nil {
 		switch vv := v.Parent.V.(type) {
 		case *decode.Compound:
 			if vv.IsArray {
-				parts = append([]interface{}{v.Index}, parts...)
+				parts = append([]any{v.Index}, parts...)
 			} else {
-				parts = append([]interface{}{v.Name}, parts...)
+				parts = append([]any{v.Name}, parts...)
 			}
 		}
 		v = v.Parent
@@ -239,9 +239,9 @@ func valuePathExprDecorated(v *decode.Value, d Decorator) string {
 	return strings.Join(parts, "")
 }
 
-type iterFn func() (interface{}, bool)
+type iterFn func() (any, bool)
 
-func (i iterFn) Next() (interface{}, bool) { return i() }
+func (i iterFn) Next() (any, bool) { return i() }
 
 type loadModule struct {
 	init func() ([]*gojq.Query, error)
@@ -251,7 +251,7 @@ type loadModule struct {
 func (l loadModule) LoadInitModules() ([]*gojq.Query, error)     { return l.init() }
 func (l loadModule) LoadModule(name string) (*gojq.Query, error) { return l.load(name) }
 
-func toString(v interface{}) (string, error) {
+func toString(v any) (string, error) {
 	switch v := v.(type) {
 	case string:
 		return v, nil
@@ -267,7 +267,7 @@ func toString(v interface{}) (string, error) {
 	}
 }
 
-func toBigInt(v interface{}) (*big.Int, error) {
+func toBigInt(v any) (*big.Int, error) {
 	switch v := v.(type) {
 	case int:
 		return new(big.Int).SetInt64(int64(v)), nil
@@ -280,7 +280,7 @@ func toBigInt(v interface{}) (*big.Int, error) {
 	}
 }
 
-func toBytes(v interface{}) ([]byte, error) {
+func toBytes(v any) ([]byte, error) {
 	switch v := v.(type) {
 	default:
 		br, err := toBitReader(v)
@@ -310,15 +310,15 @@ func queryErrorPosition(expr string, v error) pos.Pos {
 
 type Variable struct {
 	Name  string
-	Value interface{}
+	Value any
 }
 
 type Function struct {
 	Name     string
 	MinArity int
 	MaxArity int
-	Fn       func(interface{}, []interface{}) interface{}
-	IterFn   func(interface{}, []interface{}) gojq.Iter
+	Fn       func(any, []any) any
+	IterFn   func(any, []any) gojq.Iter
 }
 
 type RunMode int
@@ -343,7 +343,7 @@ type Interp struct {
 	includeCache   map[string]*gojq.Query
 	interruptStack *ctxstack.Stack
 	// global state, is ref as Interp is cloned per eval
-	state *interface{}
+	state *any
 
 	// new for each eval, other values are copied by value
 	evalInstance evalInstance
@@ -371,7 +371,7 @@ func New(os OS, registry *registry.Registry) (*Interp, error) {
 			return
 		}
 	})
-	i.state = new(interface{})
+	i.state = new(any)
 
 	return i, nil
 }
@@ -382,13 +382,13 @@ func (i *Interp) Stop() {
 }
 
 func (i *Interp) Main(ctx context.Context, output Output, versionStr string) error {
-	var args []interface{}
+	var args []any
 	for _, a := range i.os.Args() {
 		args = append(args, a)
 	}
 
 	platform := i.os.Platform()
-	input := map[string]interface{}{
+	input := map[string]any{
 		"args":    args,
 		"version": versionStr,
 		"os":      platform.OS,
@@ -418,7 +418,7 @@ func (i *Interp) Main(ctx context.Context, output Output, versionStr string) err
 				fmt.Fprintln(i.os.Stderr(), v)
 			}
 			return v
-		case [2]interface{}:
+		case [2]any:
 			fmt.Fprintln(i.os.Stderr(), v[:]...)
 		default:
 			// TODO: can this happen?
@@ -429,7 +429,7 @@ func (i *Interp) Main(ctx context.Context, output Output, versionStr string) err
 	return nil
 }
 
-func (i *Interp) _readline(c interface{}, a []interface{}) gojq.Iter {
+func (i *Interp) _readline(c any, a []any) gojq.Iter {
 	if i.evalInstance.isCompleting {
 		return gojq.NewIter()
 	}
@@ -460,7 +460,7 @@ func (i *Interp) _readline(c interface{}, a []interface{}) gojq.Iter {
 					completeCtx,
 					c,
 					opts.Complete,
-					[]interface{}{line, pos},
+					[]any{line, pos},
 					EvalOpts{
 						output:       ioextra.DiscardCtxWriter{Ctx: completeCtx},
 						isCompleting: true,
@@ -512,7 +512,7 @@ func (i *Interp) _readline(c interface{}, a []interface{}) gojq.Iter {
 	return gojq.NewIter(expr)
 }
 
-func (i *Interp) _eval(c interface{}, a []interface{}) gojq.Iter {
+func (i *Interp) _eval(c any, a []any) gojq.Iter {
 	var err error
 	expr, err := toString(a[0])
 	if err != nil {
@@ -537,9 +537,9 @@ func (i *Interp) _eval(c interface{}, a []interface{}) gojq.Iter {
 	return iter
 }
 
-func (i *Interp) _extKeys(c interface{}, a []interface{}) interface{} {
+func (i *Interp) _extKeys(c any, a []any) any {
 	if v, ok := c.(Value); ok {
-		var vs []interface{}
+		var vs []any
 		for _, s := range v.ExtKeys() {
 			vs = append(vs, s)
 		}
@@ -548,15 +548,15 @@ func (i *Interp) _extKeys(c interface{}, a []interface{}) interface{} {
 	return nil
 }
 
-func (i *Interp) _extType(c interface{}, a []interface{}) interface{} {
+func (i *Interp) _extType(c any, a []any) any {
 	if v, ok := c.(Value); ok {
 		return v.ExtType()
 	}
 	return gojqextra.Typeof(c)
 }
 
-func (i *Interp) makeStateFn(state *interface{}) func(c interface{}, a []interface{}) interface{} {
-	return func(c interface{}, a []interface{}) interface{} {
+func (i *Interp) makeStateFn(state *any) func(c any, a []any) any {
+	return func(c any, a []any) any {
 		if len(a) > 0 {
 			*state = a[0]
 		}
@@ -564,8 +564,8 @@ func (i *Interp) makeStateFn(state *interface{}) func(c interface{}, a []interfa
 	}
 }
 
-func (i *Interp) makeStdioFn(name string, t Terminal) func(c interface{}, a []interface{}) gojq.Iter {
-	return func(c interface{}, a []interface{}) gojq.Iter {
+func (i *Interp) makeStdioFn(name string, t Terminal) func(c any, a []any) gojq.Iter {
+	return func(c any, a []any) gojq.Iter {
 		switch {
 		case len(a) == 1:
 			if i.evalInstance.isCompleting {
@@ -585,7 +585,7 @@ func (i *Interp) makeStdioFn(name string, t Terminal) func(c interface{}, a []in
 			n, err := io.ReadFull(r, buf)
 			s := string(buf[0:n])
 
-			vs := []interface{}{s}
+			vs := []any{s}
 			switch {
 			case errors.Is(err, io.EOF), errors.Is(err, io.ErrUnexpectedEOF):
 				vs = append(vs, valueError{"eof"})
@@ -596,7 +596,7 @@ func (i *Interp) makeStdioFn(name string, t Terminal) func(c interface{}, a []in
 			return gojq.NewIter(vs...)
 		case c == nil:
 			w, h := t.Size()
-			return gojq.NewIter(map[string]interface{}{
+			return gojq.NewIter(map[string]any{
 				"is_terminal": t.IsTerminal(),
 				"width":       w,
 				"height":      h,
@@ -618,19 +618,19 @@ func (i *Interp) makeStdioFn(name string, t Terminal) func(c interface{}, a []in
 	}
 }
 
-func (i *Interp) history(c interface{}, a []interface{}) interface{} {
+func (i *Interp) history(c any, a []any) any {
 	hs, err := i.os.History()
 	if err != nil {
 		return err
 	}
-	var vs []interface{}
+	var vs []any
 	for _, s := range hs {
 		vs = append(vs, s)
 	}
 	return vs
 }
 
-func (i *Interp) _display(c interface{}, a []interface{}) gojq.Iter {
+func (i *Interp) _display(c any, a []any) gojq.Iter {
 	opts := i.Options(a[0])
 
 	switch v := c.(type) {
@@ -644,12 +644,12 @@ func (i *Interp) _display(c interface{}, a []interface{}) gojq.Iter {
 	}
 }
 
-func (i *Interp) _canDisplay(c interface{}, a []interface{}) interface{} {
+func (i *Interp) _canDisplay(c any, a []any) any {
 	_, ok := c.(Display)
 	return ok
 }
 
-func (i *Interp) _printColorJSON(c interface{}, a []interface{}) gojq.Iter {
+func (i *Interp) _printColorJSON(c any, a []any) gojq.Iter {
 	opts := i.Options(a[0])
 
 	cj, err := i.NewColorJSON(opts)
@@ -663,7 +663,7 @@ func (i *Interp) _printColorJSON(c interface{}, a []interface{}) gojq.Iter {
 	return gojq.NewIter()
 }
 
-func (i *Interp) _isCompleting(c interface{}, a []interface{}) interface{} {
+func (i *Interp) _isCompleting(c any, a []any) any {
 	return i.evalInstance.isCompleting
 }
 
@@ -726,7 +726,7 @@ type EvalOpts struct {
 	isCompleting bool
 }
 
-func (i *Interp) Eval(ctx context.Context, c interface{}, expr string, opts EvalOpts) (gojq.Iter, error) {
+func (i *Interp) Eval(ctx context.Context, c any, expr string, opts EvalOpts) (gojq.Iter, error) {
 	gq, err := gojq.Parse(expr)
 	if err != nil {
 		p := queryErrorPosition(expr, err)
@@ -746,7 +746,7 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, expr string, opts Eval
 	}
 
 	var variableNames []string
-	var variableValues []interface{}
+	var variableValues []any
 	for k, v := range i.slurps() {
 		variableNames = append(variableNames, "$"+k)
 		variableValues = append(variableValues, v)
@@ -838,7 +838,7 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, expr string, opts Eval
 					return nil, err
 				}
 				iter := gc.RunWithContext(context.Background(), nil)
-				var vs []interface{}
+				var vs []any
 				for {
 					v, ok := iter.Next()
 					if !ok {
@@ -916,7 +916,7 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, expr string, opts Eval
 	ni.evalInstance.isCompleting = i.evalInstance.isCompleting || opts.isCompleting
 	iter := gc.RunWithContext(runCtx, c, variableValues...)
 
-	iterWrapper := iterFn(func() (interface{}, bool) {
+	iterWrapper := iterFn(func() (any, bool) {
 		v, ok := iter.Next()
 		// gojq ctx cancel will not return ok=false, just cancelled error
 		if !ok {
@@ -930,7 +930,7 @@ func (i *Interp) Eval(ctx context.Context, c interface{}, expr string, opts Eval
 	return iterWrapper, nil
 }
 
-func (i *Interp) EvalFunc(ctx context.Context, c interface{}, name string, args []interface{}, opts EvalOpts) (gojq.Iter, error) {
+func (i *Interp) EvalFunc(ctx context.Context, c any, name string, args []any, opts EvalOpts) (gojq.Iter, error) {
 	var argsExpr []string
 	for i := range args {
 		argsExpr = append(argsExpr, fmt.Sprintf("$_args[%d]", i))
@@ -940,7 +940,7 @@ func (i *Interp) EvalFunc(ctx context.Context, c interface{}, name string, args 
 		argExpr = "(" + strings.Join(argsExpr, ";") + ")"
 	}
 
-	trampolineInput := map[string]interface{}{
+	trampolineInput := map[string]any{
 		"input": c,
 		"args":  args,
 	}
@@ -954,13 +954,13 @@ func (i *Interp) EvalFunc(ctx context.Context, c interface{}, name string, args 
 	return iter, nil
 }
 
-func (i *Interp) EvalFuncValues(ctx context.Context, c interface{}, name string, args []interface{}, opts EvalOpts) ([]interface{}, error) {
+func (i *Interp) EvalFuncValues(ctx context.Context, c any, name string, args []any, opts EvalOpts) ([]any, error) {
 	iter, err := i.EvalFunc(ctx, c, name, args, opts)
 	if err != nil {
 		return nil, err
 	}
 
-	var vs []interface{}
+	var vs []any
 	for {
 		v, ok := iter.Next()
 		if !ok {
@@ -997,13 +997,13 @@ type Options struct {
 	SizeBase     int    `mapstructure:"sizebase"`
 
 	Decorator    Decorator
-	BitsFormatFn func(br bitio.ReaderAtSeeker) (interface{}, error)
+	BitsFormatFn func(br bitio.ReaderAtSeeker) (any, error)
 }
 
-func bitsFormatFnFromOptions(opts Options) func(br bitio.ReaderAtSeeker) (interface{}, error) {
+func bitsFormatFnFromOptions(opts Options) func(br bitio.ReaderAtSeeker) (any, error) {
 	switch opts.BitsFormat {
 	case "md5":
-		return func(br bitio.ReaderAtSeeker) (interface{}, error) {
+		return func(br bitio.ReaderAtSeeker) (any, error) {
 			d := md5.New()
 			if _, err := bitioextra.CopyBits(d, br); err != nil {
 				return "", err
@@ -1011,7 +1011,7 @@ func bitsFormatFnFromOptions(opts Options) func(br bitio.ReaderAtSeeker) (interf
 			return hex.EncodeToString(d.Sum(nil)), nil
 		}
 	case "base64":
-		return func(br bitio.ReaderAtSeeker) (interface{}, error) {
+		return func(br bitio.ReaderAtSeeker) (any, error) {
 			b := &bytes.Buffer{}
 			e := base64.NewEncoder(base64.StdEncoding, b)
 			if _, err := bitioextra.CopyBits(e, br); err != nil {
@@ -1022,7 +1022,7 @@ func bitsFormatFnFromOptions(opts Options) func(br bitio.ReaderAtSeeker) (interf
 		}
 	case "truncate":
 		// TODO: configure
-		return func(br bitio.ReaderAtSeeker) (interface{}, error) {
+		return func(br bitio.ReaderAtSeeker) (any, error) {
 			b := &bytes.Buffer{}
 			if _, err := bitioextra.CopyBits(b, bitio.NewLimitReader(br, 1024*8)); err != nil {
 				return "", err
@@ -1030,7 +1030,7 @@ func bitsFormatFnFromOptions(opts Options) func(br bitio.ReaderAtSeeker) (interf
 			return b.String(), nil
 		}
 	case "string":
-		return func(br bitio.ReaderAtSeeker) (interface{}, error) {
+		return func(br bitio.ReaderAtSeeker) (any, error) {
 			b := &bytes.Buffer{}
 			if _, err := bitioextra.CopyBits(b, br); err != nil {
 				return "", err
@@ -1040,7 +1040,7 @@ func bitsFormatFnFromOptions(opts Options) func(br bitio.ReaderAtSeeker) (interf
 	case "snippet":
 		fallthrough
 	default:
-		return func(br bitio.ReaderAtSeeker) (interface{}, error) {
+		return func(br bitio.ReaderAtSeeker) (any, error) {
 			b := &bytes.Buffer{}
 			e := base64.NewEncoder(base64.StdEncoding, b)
 			if _, err := bitioextra.CopyBits(e, bitio.NewLimitReader(br, 256*8)); err != nil {
@@ -1058,11 +1058,11 @@ func bitsFormatFnFromOptions(opts Options) func(br bitio.ReaderAtSeeker) (interf
 	}
 }
 
-func (i *Interp) lookupState(key string) interface{} {
+func (i *Interp) lookupState(key string) any {
 	if i.state == nil {
 		return nil
 	}
-	m, ok := (*i.state).(map[string]interface{})
+	m, ok := (*i.state).(map[string]any)
 	if !ok {
 		return nil
 	}
@@ -1070,7 +1070,7 @@ func (i *Interp) lookupState(key string) interface{} {
 }
 
 func (i *Interp) includePaths() []string {
-	pathsAny, _ := i.lookupState("include_paths").([]interface{})
+	pathsAny, _ := i.lookupState("include_paths").([]any)
 	var paths []string
 	for _, pathAny := range pathsAny {
 		path, ok := pathAny.(string)
@@ -1082,12 +1082,12 @@ func (i *Interp) includePaths() []string {
 	return paths
 }
 
-func (i *Interp) slurps() map[string]interface{} {
-	slurpsAny, _ := i.lookupState("slurps").(map[string]interface{})
+func (i *Interp) slurps() map[string]any {
+	slurpsAny, _ := i.lookupState("slurps").(map[string]any)
 	return slurpsAny
 }
 
-func (i *Interp) Options(v interface{}) Options {
+func (i *Interp) Options(v any) Options {
 	var opts Options
 	_ = mapstructure.Decode(v, &opts)
 	opts.ArrayTruncate = mathextra.MaxInt(0, opts.ArrayTruncate)
@@ -1112,7 +1112,7 @@ func (i *Interp) NewColorJSON(opts Options) (*colorjson.Encoder, error) {
 		opts.Color,
 		false,
 		indent,
-		func(v interface{}) interface{} {
+		func(v any) any {
 			if v, ok := toValue(func() Options { return opts }, v); ok {
 				return v
 			}
@@ -1140,7 +1140,7 @@ func camelToSnake(s string) string {
 		return s[0:1] + "_" + s[1:2]
 	}))
 }
-func mapToStruct(m map[string]interface{}, v interface{}) error {
+func mapToStruct(m map[string]any, v any) error {
 	ms, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
 		MatchName: func(mapKey, fieldName string) bool {
 			return camelToSnake(fieldName) == mapKey
@@ -1148,7 +1148,7 @@ func mapToStruct(m map[string]interface{}, v interface{}) error {
 		DecodeHook: func(
 			f reflect.Type,
 			t reflect.Type,
-			data interface{}) (interface{}, error) {
+			data any) (any, error) {
 
 			if t.Kind() == reflect.Slice && t.Elem().Kind() == reflect.Uint8 {
 				switch d := data.(type) {
@@ -1177,11 +1177,11 @@ func mapToStruct(m map[string]interface{}, v interface{}) error {
 	return nil
 }
 
-func camelCaseMap(m map[string]interface{}) map[string]interface{} {
-	nm := map[string]interface{}{}
+func camelCaseMap(m map[string]any) map[string]any {
+	nm := map[string]any{}
 	for k, v := range m {
 		sk := camelToSnake(k)
-		if vm, ok := v.(map[string]interface{}); ok {
+		if vm, ok := v.(map[string]any); ok {
 			v = camelCaseMap(vm)
 		} else {
 			// TODO: error
@@ -1193,8 +1193,8 @@ func camelCaseMap(m map[string]interface{}) map[string]interface{} {
 	return nm
 }
 
-func structToMap(v interface{}) (map[string]interface{}, error) {
-	m := map[string]interface{}{}
+func structToMap(v any) (map[string]any, error) {
+	m := map[string]any{}
 	ms, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
 		Result: &m,
 	})

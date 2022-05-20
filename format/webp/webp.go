@@ -25,7 +25,7 @@ func init() {
 	})
 }
 
-func decodeChunk(d *decode.D, expectedChunkID string, fn func(d *decode.D)) bool { //nolint:unparam
+func decodeChunk(d *decode.D, expectedChunkID string, fn func(d *decode.D)) bool {
 	trimChunkID := d.FieldUTF8("id", 4, scalar.ActualTrimSpace)
 	if expectedChunkID != "" && trimChunkID != expectedChunkID {
 		return false
@@ -41,7 +41,7 @@ func decodeChunk(d *decode.D, expectedChunkID string, fn func(d *decode.D)) bool
 	return true
 }
 
-func webpDecode(d *decode.D, in interface{}) interface{} {
+func webpDecode(d *decode.D, in any) any {
 	d.Endian = decode.LittleEndian
 
 	d.FieldUTF8("riff_id", 4, d.AssertStr("RIFF"))

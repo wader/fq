@@ -13,7 +13,7 @@ func decodeUnionFn(schema schema.SimplifiedSchema) (DecodeFn, error) {
 		return nil, errors.New("union must have types")
 	}
 
-	var decoders []func(string, *decode.D) interface{}
+	var decoders []func(string, *decode.D) any
 	for i, t := range schema.UnionTypes {
 		decodeFn, err := DecodeFnForSchema(t)
 		if err != nil {
@@ -24,8 +24,8 @@ func decodeUnionFn(schema schema.SimplifiedSchema) (DecodeFn, error) {
 
 	// A union is encoded by first writing an int value indicating the zero-based position within the union of the
 	// schema of its value. The value is then encoded per the indicated schema within the union.
-	return func(name string, d *decode.D) interface{} {
-		var val interface{}
+	return func(name string, d *decode.D) any {
+		var val any
 		d.FieldStruct(name, func(d *decode.D) {
 			v := int(d.FieldSFn("type", VarZigZag))
 			if v < 0 || v >= len(decoders) {

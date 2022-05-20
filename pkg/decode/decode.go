@@ -33,17 +33,17 @@ type Options struct {
 	FillGaps      bool
 	IsRoot        bool
 	Range         ranges.Range // if zero use whole buffer
-	FormatInArg   interface{}
-	FormatInArgFn func(f Format) (interface{}, error)
+	FormatInArg   any
+	FormatInArgFn func(f Format) (any, error)
 	ReadBuf       *[]byte
 }
 
 // Decode try decode group and return first success and all other decoder errors
-func Decode(ctx context.Context, br bitio.ReaderAtSeeker, group Group, opts Options) (*Value, interface{}, error) {
+func Decode(ctx context.Context, br bitio.ReaderAtSeeker, group Group, opts Options) (*Value, any, error) {
 	return decode(ctx, br, group, opts)
 }
 
-func decode(ctx context.Context, br bitio.ReaderAtSeeker, group Group, opts Options) (*Value, interface{}, error) {
+func decode(ctx context.Context, br bitio.ReaderAtSeeker, group Group, opts Options) (*Value, any, error) {
 	brLen, err := bitioextra.Len(br)
 	if err != nil {
 		return nil, nil, err
@@ -61,7 +61,7 @@ func decode(ctx context.Context, br bitio.ReaderAtSeeker, group Group, opts Opti
 	formatsErr := FormatsError{}
 
 	for _, f := range group {
-		var formatInArg interface{}
+		var formatInArg any
 		if opts.FormatInArgFn != nil {
 			var err error
 			formatInArg, err = opts.FormatInArgFn(f)
@@ -82,7 +82,7 @@ func decode(ctx context.Context, br bitio.ReaderAtSeeker, group Group, opts Opti
 
 		d := newDecoder(ctx, f, cBR, opts)
 
-		var decodeV interface{}
+		var decodeV any
 		r, rOk := recoverfn.Run(func() {
 			decodeV = f.DecodeFn(d, formatInArg)
 		})
@@ -192,7 +192,7 @@ func newDecoder(ctx context.Context, format Format, br bitio.ReaderAtSeeker, opt
 	}
 }
 
-func (d *D) FieldDecoder(name string, bitBuf bitio.ReaderAtSeeker, v interface{}) *D {
+func (d *D) FieldDecoder(name string, bitBuf bitio.ReaderAtSeeker, v any) *D {
 	return &D{
 		Ctx:         d.Ctx,
 		Endian:      d.Endian,
@@ -324,14 +324,14 @@ func (d *D) FillGaps(r ranges.Range, namePrefix string) {
 }
 
 // Errorf stops decode with a reason unless forced
-func (d *D) Errorf(format string, a ...interface{}) {
+func (d *D) Errorf(format string, a ...any) {
 	if !d.Options.Force {
 		panic(DecoderError{Reason: fmt.Sprintf(format, a...), Pos: d.Pos()})
 	}
 }
 
 // Fatalf stops decode with a reason regardless of forced
-func (d *D) Fatalf(format string, a ...interface{}) {
+func (d *D) Fatalf(format string, a ...any) {
 	panic(DecoderError{Reason: fmt.Sprintf(format, a...), Pos: d.Pos()})
 }
 
@@ -902,7 +902,7 @@ func (d *D) RangeFn(firstBit int64, nBits int64, fn func(d *D)) int64 {
 	return endPos - startPos
 }
 
-func (d *D) Format(group Group, inArg interface{}) interface{} {
+func (d *D) Format(group Group, inArg any) any {
 	dv, v, err := decode(d.Ctx, d.bitBuf, group, Options{
 		Force:       d.Options.Force,
 		FillGaps:    false,
@@ -931,7 +931,7 @@ func (d *D) Format(group Group, inArg interface{}) interface{} {
 	return v
 }
 
-func (d *D) TryFieldFormat(name string, group Group, inArg interface{}) (*Value, interface{}, error) {
+func (d *D) TryFieldFormat(name string, group Group, inArg any) (*Value, any, error) {
 	dv, v, err := decode(d.Ctx, d.bitBuf, group, Options{
 		Name:        name,
 		Force:       d.Options.Force,
@@ -953,7 +953,7 @@ func (d *D) TryFieldFormat(name string, group Group, inArg interface{}) (*Value,
 	return dv, v, err
 }
 
-func (d *D) FieldFormat(name string, group Group, inArg interface{}) (*Value, interface{}) {
+func (d *D) FieldFormat(name string, group Group, inArg any) (*Value, any) {
 	dv, v, err := d.TryFieldFormat(name, group, inArg)
 	if dv == nil || dv.Errors() != nil {
 		d.IOPanic(err, "FieldFormat: TryFieldFormat")
@@ -961,7 +961,7 @@ func (d *D) FieldFormat(name string, group Group, inArg interface{}) (*Value, in
 	return dv, v
 }
 
-func (d *D) FieldFormatOrRaw(name string, group Group, inArg interface{}) (*Value, interface{}) {
+func (d *D) FieldFormatOrRaw(name string, group Group, inArg any) (*Value, any) {
 	dv, v, _ := d.TryFieldFormat(name, group, inArg)
 	if dv == nil {
 		d.FieldRawLen(name, d.BitsLeft())
@@ -969,7 +969,7 @@ func (d *D) FieldFormatOrRaw(name string, group Group, inArg interface{}) (*Valu
 	return dv, v
 }
 
-func (d *D) TryFieldFormatLen(name string, nBits int64, group Group, inArg interface{}) (*Value, interface{}, error) {
+func (d *D) TryFieldFormatLen(name string, nBits int64, group Group, inArg any) (*Value, any, error) {
 	dv, v, err := decode(d.Ctx, d.bitBuf, group, Options{
 		Name:        name,
 		Force:       d.Options.Force,
@@ -991,7 +991,7 @@ func (d *D) TryFieldFormatLen(name string, nBits int64, group Group, inArg inter
 	return dv, v, err
 }
 
-func (d *D) FieldFormatLen(name string, nBits int64, group Group, inArg interface{}) (*Value, interface{}) {
+func (d *D) FieldFormatLen(name string, nBits int64, group Group, inArg any) (*Value, any) {
 	dv, v, err := d.TryFieldFormatLen(name, nBits, group, inArg)
 	if dv == nil || dv.Errors() != nil {
 		d.IOPanic(err, "FieldFormatLen: TryFieldFormatLen")
@@ -999,7 +999,7 @@ func (d *D) FieldFormatLen(name string, nBits int64, group Group, inArg interfac
 	return dv, v
 }
 
-func (d *D) FieldFormatOrRawLen(name string, nBits int64, group Group, inArg interface{}) (*Value, interface{}) {
+func (d *D) FieldFormatOrRawLen(name string, nBits int64, group Group, inArg any) (*Value, any) {
 	dv, v, _ := d.TryFieldFormatLen(name, nBits, group, inArg)
 	if dv == nil {
 		d.FieldRawLen(name, nBits)
@@ -1008,7 +1008,7 @@ func (d *D) FieldFormatOrRawLen(name string, nBits int64, group Group, inArg int
 }
 
 // TODO: return decooder?
-func (d *D) TryFieldFormatRange(name string, firstBit int64, nBits int64, group Group, inArg interface{}) (*Value, interface{}, error) {
+func (d *D) TryFieldFormatRange(name string, firstBit int64, nBits int64, group Group, inArg any) (*Value, any, error) {
 	dv, v, err := decode(d.Ctx, d.bitBuf, group, Options{
 		Name:        name,
 		Force:       d.Options.Force,
@@ -1027,7 +1027,7 @@ func (d *D) TryFieldFormatRange(name string, firstBit int64, nBits int64, group 
 	return dv, v, err
 }
 
-func (d *D) FieldFormatRange(name string, firstBit int64, nBits int64, group Group, inArg interface{}) (*Value, interface{}) {
+func (d *D) FieldFormatRange(name string, firstBit int64, nBits int64, group Group, inArg any) (*Value, any) {
 	dv, v, err := d.TryFieldFormatRange(name, firstBit, nBits, group, inArg)
 	if dv == nil || dv.Errors() != nil {
 		d.IOPanic(err, "FieldFormatRange: TryFieldFormatRange")
@@ -1036,7 +1036,7 @@ func (d *D) FieldFormatRange(name string, firstBit int64, nBits int64, group Gro
 	return dv, v
 }
 
-func (d *D) TryFieldFormatBitBuf(name string, br bitio.ReaderAtSeeker, group Group, inArg interface{}) (*Value, interface{}, error) {
+func (d *D) TryFieldFormatBitBuf(name string, br bitio.ReaderAtSeeker, group Group, inArg any) (*Value, any, error) {
 	dv, v, err := decode(d.Ctx, br, group, Options{
 		Name:        name,
 		Force:       d.Options.Force,
@@ -1056,7 +1056,7 @@ func (d *D) TryFieldFormatBitBuf(name string, br bitio.ReaderAtSeeker, group Gro
 	return dv, v, err
 }
 
-func (d *D) FieldFormatBitBuf(name string, br bitio.ReaderAtSeeker, group Group, inArg interface{}) (*Value, interface{}) {
+func (d *D) FieldFormatBitBuf(name string, br bitio.ReaderAtSeeker, group Group, inArg any) (*Value, any) {
 	dv, v, err := d.TryFieldFormatBitBuf(name, br, group, inArg)
 	if dv == nil || dv.Errors() != nil {
 		d.IOPanic(err, "FieldFormatBitBuf: TryFieldFormatBitBuf")
@@ -1116,7 +1116,7 @@ func (d *D) FieldStructRootBitBufFn(name string, br bitio.ReaderAtSeeker, fn fun
 }
 
 // TODO: range?
-func (d *D) FieldFormatReaderLen(name string, nBits int64, fn func(r io.Reader) (io.ReadCloser, error), group Group) (*Value, interface{}) {
+func (d *D) FieldFormatReaderLen(name string, nBits int64, fn func(r io.Reader) (io.ReadCloser, error), group Group) (*Value, any) {
 	br, err := d.TryBitBufLen(nBits)
 	if err != nil {
 		d.IOPanic(err, "FieldFormatReaderLen: BitBufLen")
@@ -1137,7 +1137,7 @@ func (d *D) FieldFormatReaderLen(name string, nBits int64, fn func(r io.Reader) 
 }
 
 // TODO: too mant return values
-func (d *D) TryFieldReaderRangeFormat(name string, startBit int64, nBits int64, fn func(r io.Reader) io.Reader, group Group, inArg interface{}) (int64, bitio.ReaderAtSeeker, *Value, interface{}, error) {
+func (d *D) TryFieldReaderRangeFormat(name string, startBit int64, nBits int64, fn func(r io.Reader) io.Reader, group Group, inArg any) (int64, bitio.ReaderAtSeeker, *Value, any, error) {
 	bitLen := nBits
 	if bitLen == -1 {
 		bitLen = d.BitsLeft()
@@ -1161,7 +1161,7 @@ func (d *D) TryFieldReaderRangeFormat(name string, startBit int64, nBits int64, 
 	return cz * 8, rbr, dv, v, err
 }
 
-func (d *D) FieldReaderRangeFormat(name string, startBit int64, nBits int64, fn func(r io.Reader) io.Reader, group Group, inArg interface{}) (int64, bitio.ReaderAtSeeker, *Value, interface{}) {
+func (d *D) FieldReaderRangeFormat(name string, startBit int64, nBits int64, fn func(r io.Reader) io.Reader, group Group, inArg any) (int64, bitio.ReaderAtSeeker, *Value, any) {
 	cz, rBR, dv, v, err := d.TryFieldReaderRangeFormat(name, startBit, nBits, fn, group, inArg)
 	if err != nil {
 		d.IOPanic(err, "TryFieldReaderRangeFormat")

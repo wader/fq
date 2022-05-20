@@ -22,7 +22,7 @@ func init() {
 	})
 }
 
-func widevineDecode(d *decode.D, in interface{}) interface{} {
+func widevineDecode(d *decode.D, in any) any {
 	widewinePb := format.ProtoBufMessage{
 		1: {Type: format.ProtoBufTypeEnum, Name: "algorithm", Enums: scalar.UToSymStr{
 			0: "unencrypted",

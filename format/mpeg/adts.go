@@ -22,7 +22,7 @@ func init() {
 	})
 }
 
-func adtsDecoder(d *decode.D, in interface{}) interface{} {
+func adtsDecoder(d *decode.D, in any) any {
 	validFrames := 0
 	for !d.End() {
 		if dv, _, _ := d.TryFieldFormat("frame", adtsFrame, nil); dv == nil {

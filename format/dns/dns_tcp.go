@@ -14,7 +14,7 @@ func init() {
 	})
 }
 
-func dnsTCPDecode(d *decode.D, in interface{}) interface{} {
+func dnsTCPDecode(d *decode.D, in any) any {
 	if tsi, ok := in.(format.TCPStreamIn); ok {
 		tsi.MustIsPort(d.Fatalf, format.TCPPortDomain, format.TCPPortDomain)
 	}
