@@ -32,7 +32,7 @@ aa
 ab
 > object> ^D
 null> ^D
-$ fq -i . /test.mp3
+$ fq -i . test.mp3
 mp3> .f\t
 footers
 frames

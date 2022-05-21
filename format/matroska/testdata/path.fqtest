@@ -1,15 +1,15 @@
-$ fq -d matroska 'matroska_path(".Segment.Tracks[0].TrackEntry[0].CodecID")' /avc.mkv
+$ fq -d matroska 'matroska_path(".Segment.Tracks[0].TrackEntry[0].CodecID")' avc.mkv
 exitcode: 5
 stderr:
-error: /avc.mkv: cannot iterate over: null
-$ fq -d matroska 'matroska_path(".Segment.Tracks[0].TrackEntry[0].CodecID") | matroska_path' /avc.mkv
+error: avc.mkv: cannot iterate over: null
+$ fq -d matroska 'matroska_path(".Segment.Tracks[0].TrackEntry[0].CodecID") | matroska_path' avc.mkv
 exitcode: 5
 stderr:
-error: /avc.mkv: cannot iterate over: null
-$ fq -d matroska 'matroska_path(matroska_path(".Segment.Tracks[0].TrackEntry[0].CodecID"))' /avc.mkv
+error: avc.mkv: cannot iterate over: null
+$ fq -d matroska 'matroska_path(matroska_path(".Segment.Tracks[0].TrackEntry[0].CodecID"))' avc.mkv
 exitcode: 5
 stderr:
-error: /avc.mkv: cannot iterate over: null
+error: avc.mkv: cannot iterate over: null
 $ fq -n '"a" | raw | matroska_path(".Segment")'
 exitcode: 5
 stderr:

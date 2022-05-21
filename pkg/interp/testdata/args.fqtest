@@ -39,7 +39,7 @@ Example usages:
 --version,-v             Show version
 $ fq -i
 null> ^D
-$ fq -i . /test.mp3
+$ fq -i . test.mp3
 mp3> ^D
 $ fq -n
 null

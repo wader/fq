@@ -120,7 +120,7 @@ $ fq -o compact=true -n options.compact
 true
 $ fq -o compact=aaa -n options.compact
 false
-$ fq -n -o 'decode_file=[["a", "/test.mp3"]]' '$a | format'
+$ fq -n -o 'decode_file=[["a", "test.mp3"]]' '$a | format'
 "mp3"
 $ fq -o decode_progress=false -n options.decode_progress
 false
@@ -140,7 +140,7 @@ $ fq -o expr_file=test.jq -n options.expr_file
 exitcode: 2
 stderr:
 error: test.jq: no such file or directory
-$ fq -o 'filenames=["/test.mp3"]' format
+$ fq -o 'filenames=["test.mp3"]' format
 "mp3"
 $ fq -o 'force=true' -n options.force
 true

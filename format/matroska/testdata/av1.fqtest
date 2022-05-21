@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i testsrc -g 1 -c:v librav1e -t 50ms av1.mkv
-$ fq -d matroska dv /av1.mkv
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /av1.mkv (matroska) 0x0-0x13e6.7 (5095)
+$ fq -d matroska dv av1.mkv
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: av1.mkv (matroska) 0x0-0x13e6.7 (5095)
       |                                               |                |  elements[0:2]: 0x0-0x13e6.7 (5095)
       |                                               |                |    [0]{}: element 0x0-0x27.7 (40)
 0x0000|1a 45 df a3                                    |.E..            |      id: "ebml" (0x1a45dfa3) 0x0-0x3.7 (4)

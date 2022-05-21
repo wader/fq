@@ -1,13 +1,13 @@
-$ fq -d mp3 '.headers[0].magic._bits[8:16] | hd' /test.mp3
+$ fq -d mp3 '.headers[0].magic._bits[8:16] | hd' test.mp3
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|   44                                          | D              |.: raw bits 0x1-0x1.7 (1)
-$ fq -d mp3 '.headers[0].magic._bits | [.[8:16], .[0:8]] | hd' /test.mp3
+$ fq -d mp3 '.headers[0].magic._bits | [.[8:16], .[0:8]] | hd' test.mp3
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|44 49|                                         |DI|             |.: raw bits 0x0-0x1.7 (2)
-$ fq -d mp3 '.headers[0].magic._bits | [.[8:16], .[0:8]] | tobits | hd' /test.mp3
+$ fq -d mp3 '.headers[0].magic._bits | [.[8:16], .[0:8]] | tobits | hd' test.mp3
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|44 49|                                         |DI|             |.: raw bits 0x0-0x1.7 (2)
-$ fq -d mp3 '.headers[0].magic._bits | [.[8:16], .[0:8]] | tobytes | hd' /test.mp3
+$ fq -d mp3 '.headers[0].magic._bits | [.[8:16], .[0:8]] | tobytes | hd' test.mp3
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|44 49|                                         |DI|             |.: raw bits 0x0-0x1.7 (2)
 $ fq -n '"12" | tobytes | hd'
@@ -29,18 +29,18 @@ $ fq -n '[("11" | hex), ("22" | hex)] | tobits  | hd'
 $ fq -n '[("12" | hex | .bits[4:]), ("34" | hex | .bits[0:4])] | tobits  | hd'
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|23|                                            |#|              |.: raw bits 0x0-0x0.7 (1)
-$ fq -d mp3 '.frames[]._bits[0:12] | tonumber' /test.mp3
+$ fq -d mp3 '.frames[]._bits[0:12] | tonumber' test.mp3
 4095
 4095
 4095
-$ fq -d mp3 '.headers[0].magic._bits[0:24] | tostring' /test.mp3
+$ fq -d mp3 '.headers[0].magic._bits[0:24] | tostring' test.mp3
 "ID3"
-$ fq -d mp3 '.frames[0].padding | ("", "md5", "base64", "snippet") as $f | tovalue({bits_format: $f})' /test.mp3
+$ fq -d mp3 '.frames[0].padding | ("", "md5", "base64", "snippet") as $f | tovalue({bits_format: $f})' test.mp3
 "<5>AAAAAAA="
 "ca9c491ac66b2c62500882e93f3719a8"
 "AAAAAAA="
 "<5>AAAAAAA="
-$ fq -d mp3 -i . /test.mp3
+$ fq -d mp3 -i . test.mp3
 mp3> [1, 2, 3] | tobytes
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|01 02 03|                                      |...|            |.: raw bits 0x0-0x2.7 (3)
@@ -55,7 +55,7 @@ error: byte in binary list must be bytes (0-255) got -1
 mp3> [256] | tobytes
 error: byte in binary list must be bytes (0-255) got 256
 mp3> ^D
-$ fq -d mp3 -i . /test.mp3
+$ fq -d mp3 -i . test.mp3
 mp3> .frames[1] | tobits       | ., .start, .stop, .size, .[4:17], (tobits, tobytes, tobitsrange, tobytesrange | ., .start, .stop, .size, .[4:17])
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x00|ff fb 50 c4 00 00 0a 2c 43 2e 55 94 80 01 80 93|..P....,C.U.....|.: raw bits 0x0-0xcf.7 (208)

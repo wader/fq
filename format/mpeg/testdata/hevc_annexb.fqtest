@@ -1,6 +1,6 @@
 # ffmpeg -y -f lavfi -i testsrc -t 10ms -f hevc hevc_annexb
-$ fq -d hevc_annexb dv /hevc_annexb
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0:10]: /hevc_annexb (hevc_annexb) 0x0-0x1193.7 (4500)
+$ fq -d hevc_annexb dv hevc_annexb
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0:10]: hevc_annexb (hevc_annexb) 0x0-0x1193.7 (4500)
 0x0000|00 00 00 01                                    |....            |  [0]: raw bits start_code 0x0-0x3.7 (4)
       |                                               |                |  [1]{}: nalu (hevc_nalu) 0x4-0x1a.7 (23)
       |                                               |                |    vps{}: (hevc_vps) 0x0-0x12.7 (19)

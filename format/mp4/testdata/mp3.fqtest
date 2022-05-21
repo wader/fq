@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i sine -c:a mp3 -f mp4 -t 50ms mp3.mp4
-$ fq -d mp4 dv /mp3.mp4
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /mp3.mp4 (mp4) 0x0-0x564.7 (1381)
+$ fq -d mp4 dv mp3.mp4
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: mp3.mp4 (mp4) 0x0-0x564.7 (1381)
      |                                               |                |  boxes[0:4]: 0x0-0x564.7 (1381)
      |                                               |                |    [0]{}: box 0x0-0x1b.7 (28)
 0x000|00 00 00 1c                                    |....            |      size: 28 0x0-0x3.7 (4)

@@ -8,7 +8,6 @@ import (
 	"io"
 	"io/fs"
 	"os"
-	"path"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -342,14 +341,20 @@ func normalizeOSError(err error) error {
 }
 
 func (c *Case) Open(name string) (fs.File, error) {
-	// test assume cwd "/"
-	name = path.Join("/", name)
+	const testData = "testdata"
+	testDataIndex := strings.Index(c.Path, testData)
+	// cwd is directory where current script file is
+	testRoot := c.Path[0 : testDataIndex+len(testData)]
+	testCwd := filepath.Dir(c.Path[testDataIndex+len(testData):])
+	testAbsPath := filepath.Join(testCwd, name)
+	fsPath := filepath.Join(testRoot, testAbsPath)
+
 	for _, p := range c.Parts {
 		f, ok := p.(*caseFile)
 		if !ok {
 			continue
 		}
-		if f.name == name {
+		if f.name == filepath.ToSlash(testAbsPath) {
 			return interp.FileReader{
 				R: io.NewSectionReader(bytes.NewReader(f.data), 0, int64(len(f.data))),
 				FileInfo: interp.FixedFileInfo{
@@ -359,7 +364,7 @@ func (c *Case) Open(name string) (fs.File, error) {
 			}, nil
 		}
 	}
-	f, err := os.Open(filepath.Join(filepath.Dir(c.Path), name))
+	f, err := os.Open(fsPath)
 	// normalizeOSError is used to normalize OS specific path and messages into the ones unix uses
 	// this needed to make difftest work
 	return f, normalizeOSError(err)

@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i testsrc -c:v hevc -f matroska -t 50ms hevc.mkv
-$ fq -d matroska dv /hevc.mkv
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /hevc.mkv (matroska) 0x0-0x13ea.7 (5099)
+$ fq -d matroska dv hevc.mkv
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: hevc.mkv (matroska) 0x0-0x13ea.7 (5099)
       |                                               |                |  elements[0:2]: 0x0-0x13ea.7 (5099)
       |                                               |                |    [0]{}: element 0x0-0x27.7 (40)
 0x0000|1a 45 df a3                                    |.E..            |      id: "ebml" (0x1a45dfa3) 0x0-0x3.7 (4)

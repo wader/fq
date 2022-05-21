@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i testsrc -c:v mpeg2video -f matroska -t 50ms mpeg2.mkv
-$ fq -d matroska dv /mpeg2.mkv
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /mpeg2.mkv (matroska) 0x0-0x21c9.7 (8650)
+$ fq -d matroska dv mpeg2.mkv
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: mpeg2.mkv (matroska) 0x0-0x21c9.7 (8650)
       |                                               |                |  elements[0:2]: 0x0-0x21c9.7 (8650)
       |                                               |                |    [0]{}: element 0x0-0x27.7 (40)
 0x0000|1a 45 df a3                                    |.E..            |      id: "ebml" (0x1a45dfa3) 0x0-0x3.7 (4)
