@@ -4,90 +4,90 @@ a
 b
 /c:
 c
-$ fq -d raw todescription /a /b /c
-"/a"
-"/b"
-"/c"
-$ fq -d raw '(.,inputs) | todescription' /a /b /c
-"/a"
-"/b"
-"/c"
-$ fq -d raw '(.,input,input,input) | try todescription catch .' /a /b /c
-"/a"
-"/b"
-"/c"
+$ fq -d raw todescription a b c
+"a"
+"b"
+"c"
+$ fq -d raw '(.,inputs) | todescription' a b c
+"a"
+"b"
+"c"
+$ fq -d raw '(.,input,input,input) | try todescription catch .' a b c
+"a"
+"b"
+"c"
 exitcode: 5
 stderr:
-error: /c: break
-$ fq -d raw -n '(.,inputs) | try todescription catch .' /a /b /c
+error: c: break
+$ fq -d raw -n '(.,inputs) | try todescription catch .' a b c
 "expected decode value but got: null (null)"
-"/a"
-"/b"
-"/c"
-$ fq -d raw -n 'inputs | try todescription catch .' /a /b /c
-"/a"
-"/b"
-"/c"
-$ fq -d raw -n '[inputs | try todescription catch .]' /a /b /c
+"a"
+"b"
+"c"
+$ fq -d raw -n 'inputs | try todescription catch .' a b c
+"a"
+"b"
+"c"
+$ fq -d raw -n '[inputs | try todescription catch .]' a b c
 [
-  "/a",
-  "/b",
-  "/c"
+  "a",
+  "b",
+  "c"
 ]
-$ fq -d raw -n '(input,input,input,input) | todescription' /a /b /c
-"/a"
-"/b"
-"/c"
+$ fq -d raw -n '(input,input,input,input) | todescription' a b c
+"a"
+"b"
+"c"
 exitcode: 5
 stderr:
-error: /c: break
+error: c: break
 $ fq -d raw input_filename
 "<stdin>"
 stdin:
 test
-$ fq -d raw input_filename /a /b /c
-"/a"
-"/b"
-"/c"
-$ fq -d raw input_filename /a /non-existing /c
-"/a"
-"/c"
+$ fq -d raw input_filename a b c
+"a"
+"b"
+"c"
+$ fq -d raw input_filename a non-existing c
+"a"
+"c"
 exitcode: 2
 stderr:
-error: /non-existing: no such file or directory
-$ fq -d raw '(' /a /b /c
+error: non-existing: no such file or directory
+$ fq -d raw '(' a b c
 exitcode: 3
 stderr:
 error: arg:1:2: unexpected token <EOF>
-$ fq -d raw bla /a /b /c
+$ fq -d raw bla a b c
 exitcode: 3
 stderr:
 error: arg: function not defined: bla/0
-$ fq -d raw '1+"a"' /a /b /c
+$ fq -d raw '1+"a"' a b c
 exitcode: 5
 stderr:
-error: /a: cannot add: number (1) and string ("a")
-error: /b: cannot add: number (1) and string ("a")
-error: /c: cannot add: number (1) and string ("a")
-$ fq -s -d raw '[.[] | todescription]' /a /b /c
+error: a: cannot add: number (1) and string ("a")
+error: b: cannot add: number (1) and string ("a")
+error: c: cannot add: number (1) and string ("a")
+$ fq -s -d raw '[.[] | todescription]' a b c
 [
-  "/a",
-  "/b",
-  "/c"
+  "a",
+  "b",
+  "c"
 ]
-$ fq -n -s -d raw . /a /b /c
+$ fq -n -s -d raw . a b c
 null
-$ fq . /a
+$ fq . a
 exitcode: 4
 stderr:
-error: /a: probe: failed to decode (try -d FORMAT)
-$ fq -i -d raw . /a /b /c
+error: a: probe: failed to decode (try -d FORMAT)
+$ fq -i -d raw . a b c
 raw, ...[0:3][]> ._format
 "raw"
 "raw"
 "raw"
 raw, ...[0:3][]> ^D
-$ fq -i -s -d raw . /a /b /c
+$ fq -i -s -d raw . a b c
 [raw, ...][0:3]> .[]._format
 "raw"
 "raw"

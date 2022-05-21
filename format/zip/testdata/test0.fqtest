@@ -1,5 +1,5 @@
-$ fq -d zip dv /test0.zip
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /test0.zip (zip) 0x0-0x3c7.7 (968)
+$ fq -d zip dv test0.zip
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: test0.zip (zip) 0x0-0x3c7.7 (968)
       |                                               |                |  local_files[0:5]: 0x0-0x227.7 (552)
       |                                               |                |    [0]{}: local_file 0x0-0x3e.7 (63)
 0x0000|50 4b 03 04                                    |PK..            |      signature: raw bits (valid) 0x0-0x3.7 (4)

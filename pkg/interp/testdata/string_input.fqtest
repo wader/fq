@@ -4,15 +4,15 @@ a
 b
 /c:
 c
-$ fq -R . /a /c
+$ fq -R . a c
 "a"
 "b"
 "c"
-$ fq -Rs . /a /c
+$ fq -Rs . a c
 "a\nb\nc\n"
-$ fq -nRs input /a /c
+$ fq -nRs input a c
 "a\nb\nc\n"
-$ fq -nRs inputs /a /c
+$ fq -nRs inputs a c
 "a\nb\nc\n"
 $ fq -R
 "a"

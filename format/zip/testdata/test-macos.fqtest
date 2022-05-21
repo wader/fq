@@ -1,5 +1,5 @@
-$ fq -d zip dv /test-macos.zip
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /test-macos.zip (zip) 0x0-0x435.7 (1078)
+$ fq -d zip dv test-macos.zip
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: test-macos.zip (zip) 0x0-0x435.7 (1078)
       |                                               |                |  local_files[0:5]: 0x0-0x26d.7 (622)
       |                                               |                |    [0]{}: local_file 0x0-0x42.7 (67)
 0x0000|50 4b 03 04                                    |PK..            |      signature: raw bits (valid) 0x0-0x3.7 (4)

@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i sine -t 1ms -ac 2 -c:a pcm_s24le -f mov in24.mp4
-$ fq dv /in24.mp4
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /in24.mp4 (mp4) 0x0-0x3eb.7 (1004)
+$ fq dv in24.mp4
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: in24.mp4 (mp4) 0x0-0x3eb.7 (1004)
      |                                               |                |  boxes[0:4]: 0x0-0x3eb.7 (1004)
      |                                               |                |    [0]{}: box 0x0-0x13.7 (20)
 0x000|00 00 00 14                                    |....            |      size: 20 0x0-0x3.7 (4)

@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i sine -ac 2 -strict experimental -c:a vorbis -t 50ms vorbis.mp4
-$ fq -d mp4 dv /vorbis.mp4
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /vorbis.mp4 (mp4) 0x0-0x1188.7 (4489)
+$ fq -d mp4 dv vorbis.mp4
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: vorbis.mp4 (mp4) 0x0-0x1188.7 (4489)
       |                                               |                |  boxes[0:4]: 0x0-0x1188.7 (4489)
       |                                               |                |    [0]{}: box 0x0-0x1b.7 (28)
 0x0000|00 00 00 1c                                    |....            |      size: 28 0x0-0x3.7 (4)

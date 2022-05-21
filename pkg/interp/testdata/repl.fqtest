@@ -96,13 +96,13 @@ $ fq -i '[1,2,3]'
 [1,2,3]
 > [number, ...][0:3]> ^D
 [number, ...][0:3]> ^D
-$ fq -i -d mp3 '.headers[0]' /test.mp3
+$ fq -i -d mp3 '.headers[0]' test.mp3
 .headers[0] id3v2> ^D
-$ fq -i -d mp3 . /test.mp3
+$ fq -i -d mp3 . test.mp3
 mp3> .headers[0] | repl
 > .headers[0] id3v2> ^D
 mp3> ^D
-$ fq -i -d json . /test.mp3
+$ fq -i -d json . test.mp3
 json!> ^D
 $ fq -i -n '"[]" | json'
 json> ^D
