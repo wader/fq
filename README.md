@@ -4,11 +4,11 @@ Tool, language and decoders for working with binary data.
 
 ![fq demo](doc/demo.svg)
 
-fq is inspired by the well known jq tool and language and allows you to work with binary formats the same way you would using jq. In addition it can also present data similar to a hex viewer, transform, slice and concatenate binary data, supports nested formats and has an interactive REPL with auto-completion.
+fq is inspired by the well known jq tool and language and allows you to work with binary formats the same way you would using jq. In addition it can present data like a hex viewer, transform, slice and concatenate binary data. It also supports nested formats and has an interactive REPL with auto-completion.
 
-It was originally designed to query, inspect and debug codecs and metadata in media files and containers like mp4, flac, mp3, jpeg. But has since been extended to support a variety of formats like executables, packet captures including TCP reassembly and serialization formats like ASN1 BER, Avro, CBOR, protobuf and a lot more.
+It was originally designed to query, inspect and debug media codecs and containers like mp4, flac, mp3, jpeg. Since then it has been extended to support a variety of formats like executables, packet captures (including TCP reassembly) and serialization formats like ASN1 BER, Avro, CBOR, protobuf.
 
-In summary it aims to be something like jq, hexdump, dd and gdb combined into one.
+In summary it aims to be jq, hexdump, dd and gdb for files combined into one.
 
 **NOTE:** fq is still early in development so things might change, be broken or do not make sense.
 That also means that there is a great opportunity to help out!
@@ -139,7 +139,7 @@ For details see [usage.md](doc/usage.md)
 
 ## Presentations
 
-- "fq - jq for binary formats" at [Binary Tools Summit 2022](https://binary-tools.net/summit.html) - [video](https://www.youtube.com/watch?v=GJOq_b0eb-s&list=PLTj8twuHdQz-JcX7k6eOwyVPDB8CyfZc8&index=1) [slides](doc/presentations/bts2022/fq-bts2022-v1.pdf)
+- "fq - jq for binary formats" at [Binary Tools Summit 2022](https://binary-tools.net/summit.html) - [video](https://www.youtube.com/watch?v=GJOq_b0eb-s&list=PLTj8twuHdQz-JcX7k6eOwyVPDB8CyfZc8&index=1) - [slides](doc/presentations/bts2022/fq-bts2022-v1.pdf)
 
 
 ## Install
@@ -209,7 +209,7 @@ apk add -X http://dl-cdn.alpinelinux.org/alpine/edge/testing fq
 
 ### Build from source
 
-Make sure you have go 1.17 or later installed.
+Make sure you have go 1.18 or later installed.
 
 To install directly from git repository do:
 ```sh
