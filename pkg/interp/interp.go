@@ -552,7 +552,7 @@ func (i *Interp) _extType(c any, a []any) any {
 	if v, ok := c.(Value); ok {
 		return v.ExtType()
 	}
-	return gojqextra.Typeof(c)
+	return gojq.TypeOf(c)
 }
 
 func (i *Interp) makeStateFn(state *any) func(c any, a []any) any {

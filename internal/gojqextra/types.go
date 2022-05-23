@@ -4,35 +4,11 @@ package gojqextra
 import (
 	"bytes"
 	"fmt"
-	"math/big"
 
 	"github.com/wader/fq/internal/colorjson"
 
 	"github.com/wader/gojq"
 )
-
-func Typeof(v any) string {
-	switch v := v.(type) {
-	case nil:
-		return "null"
-	case bool:
-		return "boolean"
-	case int, float64, *big.Int:
-		return "number"
-	case string:
-		return "string"
-	case []any:
-		return "array"
-	case map[string]any:
-		return "object"
-	case gojq.JQValue:
-		return v.JQValueType()
-	default:
-		panic(fmt.Sprintf("invalid value: %v", v))
-	}
-}
-
-// TODO: preview errors
 
 // array
 

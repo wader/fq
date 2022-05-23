@@ -2,6 +2,8 @@ package gojqextra
 
 import (
 	"fmt"
+
+	"github.com/wader/gojq"
 )
 
 // many of these based on errors from gojq
@@ -14,7 +16,7 @@ type UnaryTypeError struct {
 }
 
 func (err *UnaryTypeError) Error() string {
-	return fmt.Sprintf("cannot %s: %s", err.Name, Typeof(err.V))
+	return fmt.Sprintf("cannot %s: %s", err.Name, typeErrorPreview(err.V))
 }
 
 type BinopTypeError struct {
@@ -23,7 +25,7 @@ type BinopTypeError struct {
 }
 
 func (err *BinopTypeError) Error() string {
-	return "cannot " + err.Name + ": " + Typeof(err.L) + " and " + Typeof(err.R)
+	return "cannot " + err.Name + ": " + typeErrorPreview(err.L) + " and " + typeErrorPreview(err.R)
 }
 
 type NonUpdatableTypeError struct {
@@ -40,7 +42,9 @@ type FuncTypeError struct {
 	V    any
 }
 
-func (err FuncTypeError) Error() string { return err.Name + " cannot be applied to: " + Typeof(err.V) }
+func (err FuncTypeError) Error() string {
+	return err.Name + " cannot be applied to: " + typeErrorPreview(err.V)
+}
 
 type FuncTypeNameError struct {
 	Name string
@@ -107,4 +111,15 @@ type ArrayIndexTooLargeError struct {
 
 func (err *ArrayIndexTooLargeError) Error() string {
 	return fmt.Sprintf("array index too large: %v", err.V)
+}
+
+func typeErrorPreview(v interface{}) string {
+	switch v.(type) {
+	case nil:
+		return "null"
+	case gojq.Iter:
+		return "gojq.Iter"
+	default:
+		return gojq.TypeOf(v) + " (" + gojq.Preview(v) + ")"
+	}
 }
