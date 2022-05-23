@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	// fork of github.com/itchyny/gojq, see github.com/wader/gojq fq branch
-	github.com/wader/gojq v0.12.1-0.20220503161759-eae34c73de13
+	github.com/wader/gojq v0.12.1-0.20220523090556-421507c088ee
 	// fork of github.com/chzyer/readline, see github.com/wader/readline fq branch
 	github.com/wader/readline v0.0.0-20220519145246-cc6b808370a7
 )
