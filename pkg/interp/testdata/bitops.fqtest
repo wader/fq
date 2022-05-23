@@ -15,7 +15,7 @@ null> [0,0], [8,1], [0xffff_ffff_ffff_ffff,1] | bsl(.[0]; .[1])
 null> bsl(1)
 error: expr: function not defined: bsl/1
 null> bsl(null; 1)
-error: cannot bsl: null and number
+error: cannot bsl: null and number (1)
 null> [0,0], [8,1], [0x1_ffff_ffff_ffff_fffe,1] | bsr(.[0]; .[1])
 0
 4
@@ -23,7 +23,7 @@ null> [0,0], [8,1], [0x1_ffff_ffff_ffff_fffe,1] | bsr(.[0]; .[1])
 null> bsr(1)
 error: expr: function not defined: bsr/1
 null> bsr(null; 1)
-error: cannot bsr: null and number
+error: cannot bsr: null and number (1)
 null> [0,0], [0xffff_ffff_ffff_ffff_ffff,0x1234], [0x1234,0xffff_ffff_ffff_ffff_ffff,0x1234] | band(.[0]; .[1])
 0
 4660
@@ -31,7 +31,7 @@ null> [0,0], [0xffff_ffff_ffff_ffff_ffff,0x1234], [0x1234,0xffff_ffff_ffff_ffff_
 null> band(1)
 error: expr: function not defined: band/1
 null> band(null; 1)
-error: cannot band: null and number
+error: cannot band: null and number (1)
 null> [0,0], [0xffff_ffff_ffff_ffff_0000,0x1234], [0x1234,0xffff_ffff_ffff_ffff_0000,0x1234] | bor(.[0]; .[1])
 0
 1208925819614629174645300
@@ -39,7 +39,7 @@ null> [0,0], [0xffff_ffff_ffff_ffff_0000,0x1234], [0x1234,0xffff_ffff_ffff_ffff_
 null> bor(1)
 error: expr: function not defined: bor/1
 null> bor(null; 1)
-error: cannot bor: null and number
+error: cannot bor: null and number (1)
 null> [0,0], [0xffff_ffff_ffff_ffff_ffff,0x1234], [0x1234,0xffff_ffff_ffff_ffff_ffff,0x1234] | bxor(.[0]; .[1])
 0
 1208925819614629174701515
@@ -47,5 +47,5 @@ null> [0,0], [0xffff_ffff_ffff_ffff_ffff,0x1234], [0x1234,0xffff_ffff_ffff_ffff_
 null> bxor(1)
 error: expr: function not defined: bxor/1
 null> bxor(null; 1)
-error: cannot bxor: null and number
+error: cannot bxor: null and number (1)
 null> ^D

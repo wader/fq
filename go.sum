@@ -15,8 +15,8 @@ github.com/mitchellh/reflectwalk v1.0.2 h1:G2LzWKi524PWgd3mLHV8Y5k7s6XUvT0Gef6zx
 github.com/mitchellh/reflectwalk v1.0.2/go.mod h1:mSTlrgnPZtwu0c4WaC2kGObEpuNDbx0jmZXqmk4esnw=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/wader/gojq v0.12.1-0.20220523090556-421507c088ee h1:Iz4p9TR23Y5MUGOp1Ju7ObNKZQLTyY//9Gi/xUyCeA8=
-github.com/wader/gojq v0.12.1-0.20220523090556-421507c088ee/go.mod h1:Pq2wrnwmiGxsaT62vOTEXkH3J3tI81VHJ2K2ZePP6oI=
+github.com/wader/gojq v0.12.1-0.20220523192338-6ad601ba3ad4 h1:tVeOphgXlGRx0s92DZirhEXUI+6PymV/aHUWFx7ZCcQ=
+github.com/wader/gojq v0.12.1-0.20220523192338-6ad601ba3ad4/go.mod h1:Pq2wrnwmiGxsaT62vOTEXkH3J3tI81VHJ2K2ZePP6oI=
 github.com/wader/readline v0.0.0-20220519145246-cc6b808370a7 h1:dzXHW2D21gXwLUYEcauxccmtfUVkOoB/zJ9pqX00FiA=
 github.com/wader/readline v0.0.0-20220519145246-cc6b808370a7/go.mod h1:7FWZ5rXtHk67PmaVWEAUAVNaqdEqq3H6T75m+sPlx+w=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
