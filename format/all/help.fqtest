@@ -765,7 +765,7 @@ out   ... | xing
 out zip: ZIP archive decoder
 out Supports ZIP64.
 out Options:
-out   uncompress=true  Decompress and probe files
+out   uncompress=true  Uncompress and probe files
 out Examples:
 out   # Decode file as zip
 out   $ fq -d zip . file

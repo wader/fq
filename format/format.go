@@ -267,5 +267,5 @@ type Mp4In struct {
 }
 
 type ZipIn struct {
-	Uncompress bool `doc:"Decompress and probe files"`
+	Uncompress bool `doc:"Uncompress and probe files"`
 }
