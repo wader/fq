@@ -453,6 +453,8 @@ Current only supports plain RTMP (not RTMPT or encrypted variants etc) with AMF0
 
 ### zip
 
+Supports ZIP64.
+
 #### Options
 
 |Name        |Default|Description|
@@ -470,6 +472,10 @@ Decode value as zip
 ```
 ... | zip({uncompress: true})
 ```
+
+#### References and links
+
+- https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
 
 
 [#]: sh-end
