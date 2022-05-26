@@ -95,7 +95,7 @@
 |`wav`                       |WAV&nbsp;file                                                                            |<sub>`id3v2` `id3v1` `id3v11`</sub>|
 |`webp`                      |WebP&nbsp;image                                                                          |<sub>`vp8_frame`</sub>|
 |`xing`                      |Xing&nbsp;header                                                                         |<sub></sub>|
-|`zip`                       |ZIP&nbsp;archive                                                                         |<sub>`probe`</sub>|
+|[`zip`](#zip)               |ZIP&nbsp;archive                                                                         |<sub>`probe`</sub>|
 |`image`                     |Group                                                                                    |<sub>`gif` `jpeg` `mp4` `png` `tiff` `webp`</sub>|
 |`inet_packet`               |Group                                                                                    |<sub>`ipv4_packet` `ipv6_packet`</sub>|
 |`ip_packet`                 |Group                                                                                    |<sub>`icmp` `icmpv6` `tcp_segment` `udp_datagram`</sub>|
@@ -450,6 +450,26 @@ Current only supports plain RTMP (not RTMPT or encrypted variants etc) with AMF0
 
 - https://rtmp.veriskope.com/docs/spec/
 - https://rtmp.veriskope.com/pdf/video_file_format_spec_v10.pdf
+
+### zip
+
+#### Options
+
+|Name        |Default|Description|
+|-           |-      |-|
+|`uncompress`|true   |Decompress and probe files|
+
+#### Examples
+
+Decode file using options
+```
+$ fq -d zip -o uncompress=true file
+```
+
+Decode value as zip
+```
+... | zip({uncompress: true})
+```
 
 
 [#]: sh-end
