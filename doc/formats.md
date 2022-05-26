@@ -129,9 +129,9 @@ fq -d raw 'mp4({force: true})' file.mp4
 
 #### Examples
 
-Decode file using options
+Decode file using aac_frame options
 ```
-$ fq -d aac_frame -o object_type=1 file
+$ fq -d aac_frame -o object_type=1 . file
 ```
 
 Decode value as aac_frame
@@ -191,9 +191,9 @@ Supports `torepr`
 
 #### Examples
 
-Decode file using options
+Decode file using avc_au options
 ```
-$ fq -d avc_au -o length_size=4 file
+$ fq -d avc_au -o length_size=4 . file
 ```
 
 Decode value as avc_au
@@ -285,9 +285,9 @@ Supports `torepr`
 
 #### Examples
 
-Decode file using options
+Decode file using flac_frame options
 ```
-$ fq -d flac_frame -o bits_per_sample=16 file
+$ fq -d flac_frame -o bits_per_sample=16 . file
 ```
 
 Decode value as flac_frame
@@ -305,9 +305,9 @@ Decode value as flac_frame
 
 #### Examples
 
-Decode file using options
+Decode file using hevc_au options
 ```
-$ fq -d hevc_au -o length_size=4 file
+$ fq -d hevc_au -o length_size=4 . file
 ```
 
 Decode value as hevc_au
@@ -363,9 +363,9 @@ Return `matroska_path` string for a box decode value
 
 #### Examples
 
-Decode file using options
+Decode file using mp3 options
 ```
-$ fq -d mp3 -o max_sync_seek=32768 -o max_unique_header_configs=5 file
+$ fq -d mp3 -o max_sync_seek=32768 -o max_unique_header_configs=5 . file
 ```
 
 Decode value as mp3
@@ -396,9 +396,9 @@ Return `mp4_path` string for a box decode value
 ... | grep_by(.type == "trak") | mp4_path
 ```
 
-Decode file using options
+Decode file using mp4 options
 ```
-$ fq -d mp4 -o allow_truncated=false -o decode_samples=true file
+$ fq -d mp4 -o allow_truncated=false -o decode_samples=true . file
 ```
 
 Decode value as mp4
@@ -461,9 +461,9 @@ Current only supports plain RTMP (not RTMPT or encrypted variants etc) with AMF0
 
 #### Examples
 
-Decode file using options
+Decode file using zip options
 ```
-$ fq -d zip -o uncompress=true file
+$ fq -d zip -o uncompress=true . file
 ```
 
 Decode value as zip
