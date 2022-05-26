@@ -265,3 +265,7 @@ type Mp4In struct {
 	DecodeSamples  bool `doc:"Decode supported media samples"`
 	AllowTruncated bool `doc:"Allow box to be truncated"`
 }
+
+type ZipIn struct {
+	Uncompress bool `doc:"Decompress and probe files"`
+}

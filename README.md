@@ -125,7 +125,7 @@ vpx_ccr,
 wav,
 webp,
 xing,
-zip
+[zip](doc/formats.md#zip)
 
 [#]: sh-end
 
