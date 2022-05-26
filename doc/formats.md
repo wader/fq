@@ -459,7 +459,7 @@ Supports ZIP64.
 
 |Name        |Default|Description|
 |-           |-      |-|
-|`uncompress`|true   |Decompress and probe files|
+|`uncompress`|true   |Uncompress and probe files|
 
 #### Examples
 
