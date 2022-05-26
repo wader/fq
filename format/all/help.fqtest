@@ -763,6 +763,7 @@ out   # Decode value as xing
 out   ... | xing
 "help(zip)"
 out zip: ZIP archive decoder
+out Supports ZIP64.
 out Options:
 out   uncompress=true  Decompress and probe files
 out Examples:
@@ -774,3 +775,5 @@ out   # Decode file using zip options
 out   $ fq -d zip -o uncompress=true . file
 out   # Decode value as zip
 out   ... | zip({uncompress: true})
+out References and links
+out   https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
