@@ -59,7 +59,7 @@ def help: help(null);
 def _help_format_enrich($arg0; $f; $include_basic):
   ( if $include_basic then
       .examples +=
-        [ {comment: "Decode file as \($f.name)", shell: "fq -d \($f.name) file"}
+        [ {comment: "Decode file as \($f.name)", shell: "fq -d \($f.name) . file"}
         , {comment: "Decode value as \($f.name)", expr: "\($f.name)"}
         ]
     end
@@ -73,8 +73,8 @@ def _help_format_enrich($arg0; $f; $include_basic):
     end
   | if $f.decode_in_arg then
       .examples +=
-        [ { comment: "Decode file using options"
-          , shell: "\($arg0) -d \($f.name)\($f.decode_in_arg | to_entries | map(" -o ", .key, "=", (.value | tojson)) | join("")) file"
+        [ { comment: "Decode file using \($f.name) options"
+          , shell: "\($arg0) -d \($f.name)\($f.decode_in_arg | to_entries | map(" -o ", .key, "=", (.value | tojson)) | join("")) . file"
           }
         , { comment: "Decode value as \($f.name)"
           , expr: "\($f.name)(\($f.decode_in_arg | tojq("fancy_compact")))"
