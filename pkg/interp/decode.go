@@ -349,7 +349,7 @@ func makeDecodeValueOut(dv *decode.Value, out any) any {
 					IsScalar: true,
 					Fn: func() (gojq.JQValue, error) {
 						buf := &bytes.Buffer{}
-						vvC, err := bitioextra.Clone(vv)
+						vvC, err := bitio.CloneReader(vv)
 						if err != nil {
 							return nil, err
 						}
@@ -621,7 +621,7 @@ func (v decodeValue) JQValueToGoJQEx(optsFn func() Options) any {
 		return err
 	}
 
-	brC, err := bitioextra.Clone(br)
+	brC, err := bitio.CloneReaderAtSeeker(br)
 	if err != nil {
 		return err
 	}

@@ -281,7 +281,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 		hexpairFn := func(b byte) string { return deco.ByteColor(b).Wrap(hexpairwriter.Pair(b)) }
 		asciiFn := func(b byte) string { return deco.ByteColor(b).Wrap(asciiwriter.SafeASCII(b)) }
 
-		hexBR, err := bitioextra.Clone(vBR)
+		hexBR, err := bitio.CloneReadSeeker(vBR)
 		if err != nil {
 			return err
 		}
@@ -292,7 +292,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 			return err
 		}
 
-		asciiBR, err := bitioextra.Clone(vBR)
+		asciiBR, err := bitio.CloneReadSeeker(vBR)
 		if err != nil {
 			return err
 		}

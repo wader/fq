@@ -25,3 +25,11 @@ func (l *LimitReader) ReadBits(p []byte, nBits int64) (n int64, err error) {
 	l.n -= n
 	return n, err
 }
+
+func (l *LimitReader) CloneReader() (Reader, error) {
+	rc, err := CloneReader(l.r)
+	if err != nil {
+		return nil, err
+	}
+	return &LimitReader{r: rc, n: l.n}, nil
+}

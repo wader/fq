@@ -1,6 +1,6 @@
 package bitioextra
 
-// bitio helpers that don't really belong in bitio
+// bitio helpers that im not sure belong in bitio
 
 import (
 	"errors"
@@ -15,14 +15,6 @@ func CopyBitsBuffer(dst io.Writer, src bitio.Reader, buf []byte) (int64, error) 
 
 func CopyBits(dst io.Writer, src bitio.Reader) (int64, error) {
 	return CopyBitsBuffer(dst, src, nil)
-}
-
-func Clone(br bitio.ReaderAtSeeker) (bitio.ReaderAtSeeker, error) {
-	l, err := Len(br)
-	if err != nil {
-		return nil, err
-	}
-	return bitio.NewSectionReader(br, 0, l), nil
 }
 
 func Len(br bitio.ReadAtSeeker) (int64, error) {

@@ -223,8 +223,12 @@ type BytesToScalar []struct {
 }
 
 func (m BytesToScalar) MapScalar(s S) (S, error) {
+	rc, err := bitio.CloneReader(s.ActualBitBuf())
+	if err != nil {
+		return s, err
+	}
 	bb := &bytes.Buffer{}
-	if _, err := bitioextra.CopyBits(bb, s.ActualBitBuf()); err != nil {
+	if _, err := bitioextra.CopyBits(bb, rc); err != nil {
 		return s, err
 	}
 	for _, bs := range m {

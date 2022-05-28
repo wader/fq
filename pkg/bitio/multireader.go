@@ -107,3 +107,23 @@ func (m *MultiReader) SeekBits(bitOff int64, whence int) (int64, error) {
 
 	return p, nil
 }
+
+func (m *MultiReader) CloneReader() (Reader, error) {
+	return m.CloneReaderAtSeeker()
+}
+
+func (m *MultiReader) CloneReadSeeker() (ReadSeeker, error) {
+	return m.CloneReaderAtSeeker()
+}
+
+func (m *MultiReader) CloneReadAtSeeker() (ReadAtSeeker, error) {
+	return m.CloneReaderAtSeeker()
+}
+
+func (m *MultiReader) CloneReaderAtSeeker() (ReaderAtSeeker, error) {
+	return &MultiReader{
+		pos:        0,
+		readers:    m.readers,
+		readerEnds: m.readerEnds,
+	}, nil
+}
