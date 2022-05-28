@@ -137,14 +137,33 @@ func ToGoJQValue(v any) (any, bool) {
 	case int:
 		return vv, true
 	case int64:
+		if vv >= math.MinInt && vv <= math.MaxInt {
+			return int(vv), true
+		}
 		return big.NewInt(vv), true
 	case uint64:
+		if vv <= math.MaxInt {
+			return int(vv), true
+		}
 		return new(big.Int).SetUint64(vv), true
 	case float32:
 		return float64(vv), true
 	case float64:
 		return vv, true
 	case *big.Int:
+		if vv.IsInt64() {
+			vv := vv.Int64()
+			if vv >= math.MinInt && vv <= math.MaxInt {
+				return int(vv), true
+			}
+			return vv, true
+		} else if vv.IsUint64() {
+			vv := vv.Uint64()
+			if vv <= math.MaxInt {
+				return int(vv), true
+			}
+			return vv, true
+		}
 		return vv, true
 	case string:
 		return vv, true
