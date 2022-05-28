@@ -59,3 +59,24 @@ func (r *SectionReader) SeekBits(bitOff int64, whence int) (int64, error) {
 	r.bitOff = bitOff
 	return bitOff - r.bitBase, nil
 }
+
+func (r *SectionReader) CloneReader() (Reader, error) {
+	return r.CloneReaderAtSeeker()
+}
+
+func (r *SectionReader) CloneReadSeeker() (ReadSeeker, error) {
+	return r.CloneReaderAtSeeker()
+}
+
+func (r *SectionReader) CloneReaderSeeker() (ReadAtSeeker, error) {
+	return r.CloneReaderAtSeeker()
+}
+
+func (r *SectionReader) CloneReaderAtSeeker() (ReaderAtSeeker, error) {
+	return &SectionReader{
+		r:        r.r,
+		bitBase:  r.bitBase,
+		bitOff:   r.bitBase,
+		bitLimit: r.bitLimit,
+	}, nil
+}

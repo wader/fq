@@ -57,6 +57,26 @@ type ReaderAtSeeker interface {
 	Seeker
 }
 
+// ReadCloner is a cloneable bitio.Reader, resetting read position to start
+type ReadCloner interface {
+	CloneReader() (Reader, error)
+}
+
+// ReadSeekerCloner is a cloneable bitio.ReadSeeker, resetting read position to start
+type ReadSeekerCloner interface {
+	CloneReadSeeker() (ReadSeeker, error)
+}
+
+// ReadAtSeekerCloner is a cloneable bitio.ReadAtSeeker, resetting read position to start
+type ReadAtSeekerCloner interface {
+	CloneReadAtSeeker() (ReadAtSeeker, error)
+}
+
+// CloneReaderAtSeeker is a cloneable bitio.ReaderAtSeeker, resetting read position to start
+type ReaderAtSeekerCloner interface {
+	CloneReaderAtSeeker() (ReaderAtSeeker, error)
+}
+
 // NewBitReader reader reading nBits bits from a []byte.
 // If nBits is -1 all bits will be used.
 // Similar to bytes.NewReader.
@@ -231,4 +251,40 @@ func ReadFull(r Reader, p []byte, nBits int64) (int64, error) {
 	return readFull(p, nBits, 0, func(p []byte, nBits int64, bitOff int64) (int64, error) {
 		return r.ReadBits(p, nBits)
 	})
+}
+
+// CloneReader clones a bitio.Reader if possible, resetting read position to start
+func CloneReader(r Reader) (Reader, error) {
+	switch r := r.(type) {
+	case ReadCloner:
+		return r.CloneReader()
+	}
+	return nil, fmt.Errorf("can't be cloned")
+}
+
+// CloneReadSeeker clones a bitio.ReadSeeker if possible, resetting read position to start
+func CloneReadSeeker(r ReadSeeker) (ReadSeeker, error) {
+	switch r := r.(type) {
+	case ReadSeekerCloner:
+		return r.CloneReadSeeker()
+	}
+	return nil, fmt.Errorf("can't be cloned")
+}
+
+// CloneReadAtSeeker clones a bitio.ReadAtSeeker if possible, resetting read position to start
+func CloneReadAtSeeker(r ReadAtSeeker) (ReadAtSeeker, error) {
+	switch r := r.(type) {
+	case ReadAtSeekerCloner:
+		return r.CloneReadAtSeeker()
+	}
+	return nil, fmt.Errorf("can't be cloned")
+}
+
+// CloneReaderAtSeeker clones a bitio.ReadAtSeeker if possible, resetting read position to start
+func CloneReaderAtSeeker(r ReadAtSeeker) (ReaderAtSeeker, error) {
+	switch r := r.(type) {
+	case ReaderAtSeekerCloner:
+		return r.CloneReaderAtSeeker()
+	}
+	return nil, fmt.Errorf("can't be cloned")
 }

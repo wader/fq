@@ -1047,12 +1047,12 @@ func init() {
 			systemIDNames := scalar.BytesToScalar{
 				{Bytes: systemIDCommon[:], Scalar: scalar.S{Sym: "common"}},
 				{Bytes: systemIDWidevine[:], Scalar: scalar.S{Sym: "widevine"}},
-				{Bytes: systemIDPlayReady[:], Scalar: scalar.S{Sym: "playReady"}},
+				{Bytes: systemIDPlayReady[:], Scalar: scalar.S{Sym: "playready"}},
 			}
 
 			version := d.FieldU8("version")
 			d.FieldU24("flags")
-			systemIDBR := d.FieldRawLen("system_id", 6*8, systemIDNames)
+			systemIDBR := d.FieldRawLen("system_id", 16*8, systemIDNames)
 			// TODO: make nicer
 			systemID := d.MustReadAllBits(systemIDBR)
 			switch version {

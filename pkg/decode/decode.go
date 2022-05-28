@@ -238,8 +238,8 @@ func (d *D) MustCopy(w io.Writer, r io.Reader) int64 {
 	return n
 }
 
-func (d *D) MustClone(br bitio.ReaderAtSeeker) bitio.ReaderAtSeeker {
-	br, err := bitioextra.Clone(br)
+func (d *D) MustCloneReadSeeker(br bitio.ReadSeeker) bitio.ReadSeeker {
+	br, err := bitio.CloneReadSeeker(br)
 	if err != nil {
 		d.IOPanic(err, "MustClone")
 	}
