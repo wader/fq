@@ -1,4 +1,5 @@
 # toml does not support null in arrays
+# TODO: add uint64 norm test
 $ fq -rRs 'fromjson[] | (walk(if type == "array" then map(select(. != null)) end) | try (totoml | ., fromtoml) catch .), "----"' variants.json
 
 {}

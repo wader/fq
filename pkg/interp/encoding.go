@@ -717,7 +717,7 @@ func init() {
 	})
 
 	addFunc("_toyaml", func(c any) any {
-		b, err := yaml.Marshal(c)
+		b, err := yaml.Marshal(norm(c))
 		if err != nil {
 			return err
 		}
@@ -734,7 +734,7 @@ func init() {
 
 	addFunc("_totoml", func(c map[string]any) any {
 		b := &bytes.Buffer{}
-		if err := toml.NewEncoder(b).Encode(c); err != nil {
+		if err := toml.NewEncoder(b).Encode(norm(c)); err != nil {
 			return err
 		}
 		return b.String()

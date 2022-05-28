@@ -1,3 +1,4 @@
+# TODO: add uint64 norm test
 $ fq -rRs 'fromjson[] | (try (toyaml | ., fromyaml) catch .), "----"' variants.json
 null
 
