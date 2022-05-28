@@ -1,4 +1,5 @@
 include "internal";
+include "encoding";
 include "query";
 include "eval";
 include "repl";
@@ -77,7 +78,7 @@ def _help_format_enrich($arg0; $f; $include_basic):
           , shell: "\($arg0) -d \($f.name)\($f.decode_in_arg | to_entries | map(" -o ", .key, "=", (.value | tojson)) | join("")) . file"
           }
         , { comment: "Decode value as \($f.name)"
-          , expr: "\($f.name)(\($f.decode_in_arg | tojq("fancy_compact")))"
+          , expr: "\($f.name)(\($f.decode_in_arg | tojq))"
           }
         ]
     end

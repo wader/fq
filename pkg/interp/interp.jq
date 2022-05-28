@@ -1,5 +1,6 @@
 include "internal";
 include "options";
+include "encoding";
 include "binary";
 include "decode";
 include "format_decode";

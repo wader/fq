@@ -1,0 +1,43 @@
+$ fq -i
+null> "schema://user:pass@host/path/a/b?a=1+2&b=2%20%33#fragment" | fromurl | ., tourl
+{
+  "fragment": "fragment",
+  "host": "host",
+  "path": "/path/a/b",
+  "query": {
+    "a": "1 2",
+    "b": "2 3"
+  },
+  "rawquery": "a=1+2&b=2%20%33",
+  "scheme": "schema",
+  "user": {
+    "password": "pass",
+    "username": "user"
+  }
+}
+"schema://user:pass@host/path/a/b?a=1+2&b=2+3#fragment"
+null> "schema://host?query" | fromurl | ., tourl
+{
+  "host": "host",
+  "query": {
+    "query": ""
+  },
+  "rawquery": "query",
+  "scheme": "schema"
+}
+"schema://host?query="
+null> "schema://user@host" | fromurl | ., tourl
+{
+  "host": "host",
+  "scheme": "schema",
+  "user": {
+    "username": "user"
+  }
+}
+"schema://user@host"
+null> "schema://" | fromurl | ., tourl
+{
+  "scheme": "schema"
+}
+"schema:"
+null> ^D

@@ -1,0 +1,26 @@
+$ fq -i '"åäö"'
+string> toutf8 | ., fromutf8
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|c3 a5 c3 a4 c3 b6|                             |......|         |.: raw bits 0x0-0x5.7 (6)
+"åäö"
+string> toiso8859_1 | ., fromiso8859_1
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|e5 e4 f6|                                      |...|            |.: raw bits 0x0-0x2.7 (3)
+"åäö"
+string> toutf8 | ., fromutf8
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|c3 a5 c3 a4 c3 b6|                             |......|         |.: raw bits 0x0-0x5.7 (6)
+"åäö"
+string> toutf16 | ., fromutf16
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|ff fe e5 00 e4 00 f6 00|                       |........|       |.: raw bits 0x0-0x7.7 (8)
+"åäö"
+string> toutf16le | ., fromutf16le
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|e5 00 e4 00 f6 00|                             |......|         |.: raw bits 0x0-0x5.7 (6)
+"åäö"
+string> toutf16be | ., fromutf16be
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|00 e5 00 e4 00 f6|                             |......|         |.: raw bits 0x0-0x5.7 (6)
+"åäö"
+string> ^D

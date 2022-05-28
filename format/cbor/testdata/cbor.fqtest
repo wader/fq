@@ -1,4 +1,4 @@
-$ fq -n '"v2NGdW71Y0FtdCH/" | base64 | cbor | torepr'
+$ fq -n '"v2NGdW71Y0FtdCH/" | frombase64 | cbor | torepr'
 {
   "Amt": -2,
   "Fun": true

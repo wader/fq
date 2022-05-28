@@ -11,7 +11,7 @@ out   ... | aac_frame
 out   # Decode file using aac_frame options
 out   $ fq -d aac_frame -o object_type=1 . file
 out   # Decode value as aac_frame
-out   ... | aac_frame({object_type: 1})
+out   ... | aac_frame({object_type:1})
 "help(adts)"
 out adts: Audio Data Transport Stream decoder
 out Examples:
@@ -114,7 +114,7 @@ out   ... | avc_au
 out   # Decode file using avc_au options
 out   $ fq -d avc_au -o length_size=4 . file
 out   # Decode value as avc_au
-out   ... | avc_au({length_size: 4})
+out   ... | avc_au({length_size:4})
 "help(avc_dcr)"
 out avc_dcr: H.264/AVC Decoder Configuration Record decoder
 out Examples:
@@ -276,7 +276,7 @@ out   ... | flac_frame
 out   # Decode file using flac_frame options
 out   $ fq -d flac_frame -o bits_per_sample=16 . file
 out   # Decode value as flac_frame
-out   ... | flac_frame({bits_per_sample: 16})
+out   ... | flac_frame({bits_per_sample:16})
 "help(flac_metadatablock)"
 out flac_metadatablock: FLAC metadatablock decoder
 out Examples:
@@ -338,7 +338,7 @@ out   ... | hevc_au
 out   # Decode file using hevc_au options
 out   $ fq -d hevc_au -o length_size=4 . file
 out   # Decode value as hevc_au
-out   ... | hevc_au({length_size: 4})
+out   ... | hevc_au({length_size:4})
 "help(hevc_dcr)"
 out hevc_dcr: H.265/HEVC Decoder Configuration Record decoder
 out Examples:
@@ -486,7 +486,7 @@ out   ... | mp3
 out   # Decode file using mp3 options
 out   $ fq -d mp3 -o max_sync_seek=32768 -o max_unique_header_configs=5 . file
 out   # Decode value as mp3
-out   ... | mp3({max_sync_seek: 32768, max_unique_header_configs: 5})
+out   ... | mp3({max_sync_seek:32768,max_unique_header_configs:5})
 "help(mp3_frame)"
 out mp3_frame: MPEG audio layer 3 frame decoder
 out Examples:
@@ -512,7 +512,7 @@ out   ... | mp4
 out   # Decode file using mp4 options
 out   $ fq -d mp4 -o allow_truncated=false -o decode_samples=true . file
 out   # Decode value as mp4
-out   ... | mp4({allow_truncated: false, decode_samples: true})
+out   ... | mp4({allow_truncated:false,decode_samples:true})
 out References and links
 out   ISO/IEC base media file format (MPEG-4 Part 12) https://en.wikipedia.org/wiki/ISO/IEC_base_media_file_format
 out   Quicktime file format https://developer.apple.com/standards/qtff-2001.pdf
@@ -774,6 +774,6 @@ out   ... | zip
 out   # Decode file using zip options
 out   $ fq -d zip -o uncompress=true . file
 out   # Decode value as zip
-out   ... | zip({uncompress: true})
+out   ... | zip({uncompress:true})
 out References and links
 out   https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT

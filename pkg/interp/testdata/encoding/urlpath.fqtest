@@ -1,0 +1,3 @@
+$ fq -n '"abc%2fdef" | fromurlpath | ., tourlpath'
+"abc/def"
+"abc%2Fdef"

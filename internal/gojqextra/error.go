@@ -7,8 +7,6 @@ import (
 )
 
 // many of these based on errors from gojq
-// TODO: refactor to use errors from gojq?
-// TODO: preview from gojq?
 
 type UnaryTypeError struct {
 	Name string
@@ -16,7 +14,7 @@ type UnaryTypeError struct {
 }
 
 func (err *UnaryTypeError) Error() string {
-	return fmt.Sprintf("cannot %s: %s", err.Name, typeErrorPreview(err.V))
+	return fmt.Sprintf("cannot %s: %s", err.Name, TypeErrorPreview(err.V))
 }
 
 type BinopTypeError struct {
@@ -25,7 +23,7 @@ type BinopTypeError struct {
 }
 
 func (err *BinopTypeError) Error() string {
-	return "cannot " + err.Name + ": " + typeErrorPreview(err.L) + " and " + typeErrorPreview(err.R)
+	return "cannot " + err.Name + ": " + TypeErrorPreview(err.L) + " and " + TypeErrorPreview(err.R)
 }
 
 type NonUpdatableTypeError struct {
@@ -43,7 +41,7 @@ type FuncTypeError struct {
 }
 
 func (err FuncTypeError) Error() string {
-	return err.Name + " cannot be applied to: " + typeErrorPreview(err.V)
+	return err.Name + " cannot be applied to: " + TypeErrorPreview(err.V)
 }
 
 type FuncTypeNameError struct {
@@ -113,7 +111,7 @@ func (err *ArrayIndexTooLargeError) Error() string {
 	return fmt.Sprintf("array index too large: %v", err.V)
 }
 
-func typeErrorPreview(v interface{}) string {
+func TypeErrorPreview(v interface{}) string {
 	switch v.(type) {
 	case nil:
 		return "null"

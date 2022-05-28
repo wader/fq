@@ -6,7 +6,7 @@ Tool, language and decoders for working with binary data.
 
 fq is inspired by the well known jq tool and language and allows you to work with binary formats the same way you would using jq. In addition it can present data like a hex viewer, transform, slice and concatenate binary data. It also supports nested formats and has an interactive REPL with auto-completion.
 
-It was originally designed to query, inspect and debug media codecs and containers like mp4, flac, mp3, jpeg. Since then it has been extended to support a variety of formats like executables, packet captures (including TCP reassembly) and serialization formats like ASN1 BER, Avro, CBOR, protobuf.
+It was originally designed to query, inspect and debug media codecs and containers like mp4, flac, mp3, jpeg. Since then it has been extended to support a variety of formats like executables, packet captures (including TCP reassembly) and serialization formats like JSON, YAML, XML, ASN1 BER, Avro, CBOR, protobuf.
 
 In summary it aims to be jq, hexdump, dd and gdb for files combined into one.
 
@@ -129,7 +129,11 @@ xing,
 
 [#]: sh-end
 
-For details see [formats.md](doc/formats.md)
+#### Other non-binary formats
+
+Can go to/from XML, JSON, jq-flavored JSON, YAML, TOML, CSV, URLs, hex string, base64, string encodings etc.
+
+For details see [formats.md](doc/formats.md) and [usage.md](doc/usage.md).
 
 ## Usage
 
@@ -140,7 +144,6 @@ For details see [usage.md](doc/usage.md)
 ## Presentations
 
 - "fq - jq for binary formats" at [Binary Tools Summit 2022](https://binary-tools.net/summit.html) - [video](https://www.youtube.com/watch?v=GJOq_b0eb-s&list=PLTj8twuHdQz-JcX7k6eOwyVPDB8CyfZc8&index=1) - [slides](doc/presentations/bts2022/fq-bts2022-v1.pdf)
-
 
 ## Install
 
@@ -271,5 +274,7 @@ Licenses of direct dependencies:
 - mapstructure https://github.com/mitchellh/mapstructure/blob/master/LICENSE (MIT)
 - copystructure https://github.com/mitchellh/copystructure/blob/master/LICENSE (MIT)
 - go-difflib https://github.com/pmezard/go-difflib/blob/master/LICENSE (BSD)
-- golang/x/text https://github.com/golang/text/blob/master/LICENSE (BSD)
+- golang/x/* https://github.com/golang/text/blob/master/LICENSE (BSD)
 - golang/snappy https://github.com/golang/snappy/blob/master/LICENSE (BSD)
+- github.com/BurntSushi/toml https://github.com/BurntSushi/toml/blob/master/COPYING (MIT)
+- gopkg.in/yaml.v3 https://github.com/go-yaml/yaml/blob/v3/LICENSE (MIT)

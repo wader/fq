@@ -1,0 +1,3 @@
+$ fq -n '"2%20%33" | fromurlencode | ., tourlencode'
+"2 3"
+"2+3"
