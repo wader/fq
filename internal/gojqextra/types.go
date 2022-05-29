@@ -4,11 +4,156 @@ package gojqextra
 import (
 	"bytes"
 	"fmt"
+	"math"
+	"math/big"
+	"reflect"
+	"strconv"
 
 	"github.com/wader/fq/internal/colorjson"
 
 	"github.com/wader/gojq"
 )
+
+// Cast gojq value to go value
+//nolint: forcetypeassert, unconvert
+func CastFn[T any](v any, structFn func(input map[string]any, result any) error) (T, bool) {
+	var t T
+	switch any(t).(type) {
+	case bool:
+		switch v := v.(type) {
+		case bool:
+			return any(v).(T), true
+		case gojq.JQValue:
+			return CastFn[T](v.JQValueToGoJQ(), structFn)
+		default:
+			return t, false
+		}
+	case int:
+		switch v := v.(type) {
+		case int:
+			return any(v).(T), true
+		case *big.Int:
+			if !v.IsInt64() {
+				return t, false
+			}
+			ci := v.Int64()
+			if ci < math.MinInt || ci > math.MaxInt {
+				return t, false
+			}
+			return any(int(ci)).(T), true
+		case float64:
+			return any(int(v)).(T), true
+		case gojq.JQValue:
+			return CastFn[T](v.JQValueToGoJQ(), structFn)
+		default:
+			return t, false
+		}
+	case float64:
+		switch v := v.(type) {
+		case float64:
+			return any(v).(T), true
+		case int:
+			return any(float64(v)).(T), true
+		case *big.Int:
+			if v.IsInt64() {
+				return any(float64(v.Int64())).(T), true
+			}
+			// TODO: use *big.Float SetInt
+			if f, err := strconv.ParseFloat(v.String(), 64); err == nil {
+				return any(f).(T), true
+			}
+			return any(float64(math.Inf(v.Sign()))).(T), true
+		case gojq.JQValue:
+			return CastFn[T](v.JQValueToGoJQ(), structFn)
+		default:
+			return t, false
+		}
+	case *big.Int:
+		switch v := v.(type) {
+		case *big.Int:
+			return any(v).(T), true
+		case int:
+			return any(new(big.Int).SetInt64(int64(v))).(T), true
+		case float64:
+			return any(new(big.Int).SetInt64(int64(v))).(T), true
+		case gojq.JQValue:
+			return CastFn[T](v.JQValueToGoJQ(), structFn)
+		default:
+			return t, false
+		}
+	case string:
+		switch v := v.(type) {
+		case string:
+			return any(v).(T), true
+		case gojq.JQValue:
+			return CastFn[T](v.JQValueToGoJQ(), structFn)
+		default:
+			return t, false
+		}
+	case map[string]any:
+		switch v := v.(type) {
+		case map[string]any:
+			return any(v).(T), true
+		case nil:
+			// return empty instantiated map, not nil map
+			return any(map[string]any{}).(T), true
+		case gojq.JQValue:
+			return CastFn[T](v.JQValueToGoJQ(), structFn)
+		default:
+			return t, false
+		}
+	case []any:
+		switch v := v.(type) {
+		case []any:
+			return any(v).(T), true
+		case nil:
+			return t, true
+		case gojq.JQValue:
+			return CastFn[T](v.JQValueToGoJQ(), structFn)
+		default:
+			return t, false
+		}
+	default:
+		ft := reflect.TypeOf(&t)
+		if ft.Elem().Kind() == reflect.Struct {
+			m := map[string]any{}
+			switch v := v.(type) {
+			case map[string]any:
+				m = v
+			case nil:
+				// nop use instantiated map
+			case gojq.JQValue:
+				if jm, ok := Cast[map[string]any](v.JQValueToGoJQ()); ok {
+					m = jm
+				}
+			default:
+				return t, false
+			}
+
+			err := structFn(m, &t)
+			if err != nil {
+				return t, false
+			}
+
+			return t, true
+		} else if ft.Elem().Kind() == reflect.Interface {
+			// TODO: panic on non any interface?
+			// ignore failed type assert as v can be nil
+			cv, ok := any(v).(T)
+			if !ok && v != nil {
+				return cv, false
+			}
+
+			return cv, true
+		}
+
+		panic(fmt.Sprintf("unsupported type %s", ft.Elem().Kind()))
+	}
+}
+
+func Cast[T any](v any) (T, bool) {
+	return CastFn[T](v, nil)
+}
 
 // array
 

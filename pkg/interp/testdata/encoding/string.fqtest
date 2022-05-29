@@ -1,26 +1,42 @@
-$ fq -i '"åäö"'
-string> toutf8 | ., fromutf8
-   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|c3 a5 c3 a4 c3 b6|                             |......|         |.: raw bits 0x0-0x5.7 (6)
-"åäö"
-string> toiso8859_1 | ., fromiso8859_1
+$ fq -i
+null> "åäö" | toiso8859_1 | ., fromiso8859_1
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|e5 e4 f6|                                      |...|            |.: raw bits 0x0-0x2.7 (3)
 "åäö"
-string> toutf8 | ., fromutf8
+null> "åäö" | toutf8 | ., fromutf8
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|c3 a5 c3 a4 c3 b6|                             |......|         |.: raw bits 0x0-0x5.7 (6)
 "åäö"
-string> toutf16 | ., fromutf16
+null> "åäö" | toutf16 | ., fromutf16
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|ff fe e5 00 e4 00 f6 00|                       |........|       |.: raw bits 0x0-0x7.7 (8)
 "åäö"
-string> toutf16le | ., fromutf16le
+null> "åäö" | toutf16le | ., fromutf16le
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|e5 00 e4 00 f6 00|                             |......|         |.: raw bits 0x0-0x5.7 (6)
 "åäö"
-string> toutf16be | ., fromutf16be
+null> "åäö" | toutf16be | ., fromutf16be
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|00 e5 00 e4 00 f6|                             |......|         |.: raw bits 0x0-0x5.7 (6)
 "åäö"
-string> ^D
+null> [97,98,99] | fromiso8859_1 | ., toiso8859_1
+"abc"
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|61 62 63|                                      |abc|            |.: raw bits 0x0-0x2.7 (3)
+null> [97,98,99] | fromutf8 | ., toutf8
+"abc"
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|61 62 63|                                      |abc|            |.: raw bits 0x0-0x2.7 (3)
+null> [97,0,98,0,99,0] | fromutf16 | ., toutf16
+"abc"
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|ff fe 61 00 62 00 63 00|                       |..a.b.c.|       |.: raw bits 0x0-0x7.7 (8)
+null> [97,0,98,0,99,0] | fromutf16le | ., toutf16le
+"abc"
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|61 00 62 00 63 00|                             |a.b.c.|         |.: raw bits 0x0-0x5.7 (6)
+null> [0,97,0,98,0,99] | fromutf16be | ., toutf16be
+"abc"
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|00 61 00 62 00 63|                             |.a.b.c|         |.: raw bits 0x0-0x5.7 (6)
+null> ^D
