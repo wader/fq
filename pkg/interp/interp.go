@@ -1147,23 +1147,12 @@ func mapToStruct(m map[string]any, v any) error {
 			return camelToSnake(fieldName) == mapKey
 		},
 		DecodeHook: func(
-			f reflect.Type,
-			t reflect.Type,
-			data any) (any, error) {
+			f reflect.Value,
+			t reflect.Value) (any, error) {
 
-			if t.Kind() == reflect.Slice && t.Elem().Kind() == reflect.Uint8 {
-				switch d := data.(type) {
-				case string:
-					return []byte(d), nil
-				}
-			} else {
-				switch d := data.(type) {
-				case *big.Int:
-					return d.Uint64(), nil
-				}
-			}
+			// log.Printf("f: %#+v -> t: %#+v\n", f, t)
 
-			return data, nil
+			return f.Interface(), nil
 		},
 		Result: v,
 	})

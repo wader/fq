@@ -44,6 +44,16 @@ func (err FuncTypeError) Error() string {
 	return err.Name + " cannot be applied to: " + TypeErrorPreview(err.V)
 }
 
+type FuncArgTypeError struct {
+	Name    string
+	ArgName string
+	V       any
+}
+
+func (err FuncArgTypeError) Error() string {
+	return fmt.Sprintf("%s %s argument cannot be: %s", err.Name, err.ArgName, TypeErrorPreview(err.V))
+}
+
 type FuncTypeNameError struct {
 	Name string
 	Typ  string

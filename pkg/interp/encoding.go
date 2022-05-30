@@ -35,6 +35,9 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// TODO: Fn1, Fn2 etc?
+// TODO: struct arg, own reflect code? no need for refs etc
+
 // TODO: xml default indent?
 // TODO: query dup key
 // TODO: walk tostring tests
@@ -81,47 +84,6 @@ func norm(v any) any {
 	}
 }
 
-func addFuncOpts[TOpt any, Tc any](name string, fn func(c Tc, opts TOpt) any) {
-	if name[0] != '_' {
-		panic(fmt.Sprintf("invalid addFunc name %q", name))
-	}
-	functionRegisterFns = append(
-		functionRegisterFns,
-		func(i *Interp) []Function {
-			return []Function{{
-				name, 1, 1, func(c any, a []any) any {
-					var opts TOpt
-					if a[0] != nil {
-						optsM, ok := a[0].(map[string]any)
-						if !ok {
-							return fmt.Errorf("options %v not a object", a[0])
-						}
-						_ = mapToStruct(optsM, &opts)
-					}
-
-					cv, ok := gojqextra.ToGoJQValue(c)
-					if !ok {
-						return fmt.Errorf("invalid jq value %#v", cv)
-					}
-
-					var ct Tc
-					switch cv.(type) {
-					case nil:
-						// TODO: better way to check if Tc can be nil?
-					default:
-						ct, ok = cv.(Tc)
-						if !ok {
-							return gojqextra.FuncTypeError{Name: name[1:], V: c}
-						}
-					}
-
-					return fn(ct, opts)
-				},
-				nil,
-			}}
-		})
-}
-
 func addFunc[Tc any](name string, fn func(c Tc) any) {
 	if name[0] != '_' {
 		panic(fmt.Sprintf("invalid addFunc name %q", name))
@@ -131,22 +93,37 @@ func addFunc[Tc any](name string, fn func(c Tc) any) {
 		func(i *Interp) []Function {
 			return []Function{{
 				name, 0, 0, func(c any, a []any) any {
-					cv, ok := gojqextra.ToGoJQValue(c)
+					cv, ok := gojqextra.CastFn[Tc](c, mapToStruct)
 					if !ok {
-						return fmt.Errorf("invalid jq value %#v", cv)
-					}
-					var ct Tc
-					switch cv.(type) {
-					case nil:
-						// TODO: better way to check if Tc can be nil?
-					default:
-						ct, ok = cv.(Tc)
-						if !ok {
-							return gojqextra.FuncTypeError{Name: name[1:], V: c}
-						}
+						return gojqextra.FuncTypeError{Name: name[1:], V: c}
 					}
 
-					return fn(ct)
+					return fn(cv)
+				},
+				nil,
+			}}
+		})
+}
+
+func addFunc1[Tc any, Ta0 any](name string, fn func(c Tc, a0 Ta0) any) {
+	if name[0] != '_' {
+		panic(fmt.Sprintf("invalid addFunc name %q", name))
+	}
+	functionRegisterFns = append(
+		functionRegisterFns,
+		func(i *Interp) []Function {
+			return []Function{{
+				name, 1, 1, func(c any, a []any) any {
+					cv, ok := gojqextra.CastFn[Tc](c, mapToStruct)
+					if !ok {
+						return gojqextra.FuncTypeError{Name: name[1:], V: c}
+					}
+					a0, ok := gojqextra.CastFn[Ta0](a[0], mapToStruct)
+					if !ok {
+						return gojqextra.FuncArgTypeError{Name: name[1:], ArgName: "first", V: c}
+					}
+
+					return fn(cv, a0)
 				},
 				nil,
 			}}
@@ -197,7 +174,7 @@ func init() {
 	type ToJSONOpts struct {
 		Indent int
 	}
-	addFuncOpts("_tojson", func(c any, opts ToJSONOpts) any {
+	addFunc1("_tojson", func(c any, opts ToJSONOpts) any {
 		// TODO: share
 		cj := colorjson.NewEncoder(
 			false,
@@ -347,7 +324,7 @@ func init() {
 
 		return f(n, nil)
 	}
-	addFuncOpts("_fromxml", func(s string, opts FromXMLOpts) any {
+	addFunc1("_fromxml", func(s string, opts FromXMLOpts) any {
 		if opts.Array {
 			return fromXMLArray(s)
 		}
@@ -531,7 +508,7 @@ func init() {
 
 		return bb.String()
 	}
-	addFuncOpts("_toxml", func(c any, opts ToXMLOpts) any {
+	addFunc1("_toxml", func(c any, opts ToXMLOpts) any {
 		switch c := c.(type) {
 		case map[string]any:
 			return toXMLObject(c, opts)
@@ -701,7 +678,7 @@ func init() {
 
 		return f(doc.FirstChild)
 	}
-	addFuncOpts("_fromhtml", func(s string, opts FromHTMLOpts) any {
+	addFunc1("_fromhtml", func(s string, opts FromHTMLOpts) any {
 		if opts.Array {
 			return fromHTMLArray(s)
 		}
@@ -744,7 +721,7 @@ func init() {
 		Comma   string
 		Comment string
 	}
-	addFuncOpts("_fromcsv", func(s string, opts FromCSVOpts) any {
+	addFunc1("_fromcsv", func(s string, opts FromCSVOpts) any {
 		var rvs []any
 		r := csv.NewReader(strings.NewReader(s))
 		r.TrimLeadingSpace = true
@@ -772,7 +749,7 @@ func init() {
 	type ToCSVOpts struct {
 		Comma string
 	}
-	addFuncOpts("_tocsv", func(c []any, opts ToCSVOpts) any {
+	addFunc1("_tocsv", func(c []any, opts ToCSVOpts) any {
 		b := &bytes.Buffer{}
 		w := csv.NewWriter(b)
 		if opts.Comma != "" {
@@ -839,7 +816,7 @@ func init() {
 	type FromBase64Opts struct {
 		Encoding string
 	}
-	addFuncOpts("_frombase64", func(s string, opts FromBase64Opts) any {
+	addFunc1("_frombase64", func(s string, opts FromBase64Opts) any {
 		b, err := base64Encoding(opts.Encoding).DecodeString(s)
 		if err != nil {
 			return err
@@ -853,7 +830,7 @@ func init() {
 	type ToBase64Opts struct {
 		Encoding string
 	}
-	addFuncOpts("_tobase64", func(c any, opts ToBase64Opts) any {
+	addFunc1("_tobase64", func(c any, opts ToBase64Opts) any {
 		br, err := toBitReader(c)
 		if err != nil {
 			return err
@@ -972,7 +949,7 @@ func init() {
 		return m
 	})
 	addFunc("_tourl", func(c map[string]any) any {
-		str := func(v any) string { s, _ := gojqextra.ToString(v); return s }
+		str := func(v any) string { s, _ := gojqextra.Cast[string](v); return s }
 		u := url.URL{
 			Scheme:   str(c["scheme"]),
 			Host:     str(c["host"]),
@@ -980,18 +957,20 @@ func init() {
 			Fragment: str(c["fragment"]),
 		}
 
-		if um, ok := gojqextra.ToObject(c["user"]); ok {
+		if um, ok := gojqextra.Cast[map[string]any](c["user"]); ok {
 			username, password := str(um["username"]), str(um["password"])
-			if password == "" {
-				u.User = url.User(username)
-			} else {
-				u.User = url.UserPassword(username, password)
+			if username != "" {
+				if password == "" {
+					u.User = url.User(username)
+				} else {
+					u.User = url.UserPassword(username, password)
+				}
 			}
 		}
-		if s, ok := gojqextra.ToString(c["rawquery"]); ok {
+		if s, ok := gojqextra.Cast[string](c["rawquery"]); ok {
 			u.RawQuery = s
 		}
-		if qm, ok := gojqextra.ToObject(c["query"]); ok {
+		if qm, ok := gojqextra.Cast[map[string]any](c["query"]); ok {
 			u.RawQuery = toURLValues(qm).Encode()
 		}
 
@@ -1025,7 +1004,7 @@ func init() {
 	type ToHashOpts struct {
 		Name string
 	}
-	addFuncOpts("_tohash", func(c any, opts ToHashOpts) any {
+	addFunc1("_tohash", func(c any, opts ToHashOpts) any {
 		inBR, err := toBitReader(c)
 		if err != nil {
 			return err
@@ -1157,7 +1136,7 @@ func init() {
 	type ToStrEncodingOpts struct {
 		Encoding string
 	}
-	addFuncOpts("_tostrencoding", func(c string, opts ToStrEncodingOpts) any {
+	addFunc1("_tostrencoding", func(c string, opts ToStrEncodingOpts) any {
 		h := strEncodingFn(opts.Encoding)
 		if h == nil {
 			return fmt.Errorf("unknown string encoding %s", opts.Encoding)
@@ -1178,7 +1157,7 @@ func init() {
 	type FromStrEncodingOpts struct {
 		Encoding string
 	}
-	addFuncOpts("_fromstrencoding", func(c string, opts FromStrEncodingOpts) any {
+	addFunc1("_fromstrencoding", func(c any, opts FromStrEncodingOpts) any {
 		inBR, err := toBitReader(c)
 		if err != nil {
 			return err
