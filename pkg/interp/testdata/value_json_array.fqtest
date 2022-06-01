@@ -45,7 +45,7 @@ json> (.) | type
 json> (.) | tonumber
 error: tonumber cannot be applied to: array
 json> (.) | tostring
-error: tostring cannot be applied to: array
+"[]"
 json> (.) + ""
 error: cannot add: array ([]) and string ("")
 json> (.) + 1
