@@ -86,8 +86,3 @@ $ fq -d mp4 ddv mvhd-tkhd-mdhd-mehd-v1
 0x120|                                    01         |            .   |      version: 1 0x12c-0x12c.7 (1)
 0x120|                                       00 00 00|             ...|      flags: 0 0x12d-0x12f.7 (3)
 0x130|00 00 00 06 2c e9 8a ab|                       |....,...|       |      fragment_duration: 26523306667 0x130-0x137.7 (8)
-     |                                               |                |  tracks[0:1]: 0x138-NA (0)
-     |                                               |                |    [0]{}: track 0x138-NA (0)
-     |                                               |                |      id: 1 0x138-NA (0)
-     |                                               |                |      data_foramt: "unknown" 0x138-NA (0)
-     |                                               |                |      samples[0:0]: 0x138-NA (0)
