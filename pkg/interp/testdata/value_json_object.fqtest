@@ -35,7 +35,7 @@ json> (.) | type
 json> (.) | tonumber
 error: tonumber cannot be applied to: object
 json> (.) | tostring
-error: tostring cannot be applied to: object
+"{}"
 json> (.) + ""
 error: cannot add: object ({}) and string ("")
 json> (.) + 1

@@ -127,7 +127,7 @@ mp3> .headers | type
 mp3> .headers | tonumber
 error: tonumber cannot be applied to: array
 mp3> .headers | tostring
-error: tostring cannot be applied to: array
+"[{\"flags\":{\"experimental_indicator\":false,\"extended_header\":false,\"unsynchronisation\":false,\"unused\":0},\"frames\":[{\"flags\":{\"compression\":false,\"data_length_indicator\":false,\"encryption\":false,\"file_alter_preservation\":false,\"grouping_identity\":false,\"read_only\":false,\"tag_alter_preservation\":false,\"unsync\":false,\"unused0\":0,\"unused1\":0,\"unused2\":0},\"id\":\"TSSE\",\"size\":15,\"text\":\"Lavf58.45.100\",\"text_encoding\":\"utf8\"}],\"magic\":\"ID3\",\"padding\":\"\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\",\"revision\":0,\"size\":35,\"version\":4}]"
 mp3> .headers + ""
 error: cannot add: array ([{"flags":{"experimental_ ...]) and string ("")
 mp3> .headers + 1

@@ -58,7 +58,7 @@ error: non-existing: no such file or directory
 $ fq -d raw '(' a b c
 exitcode: 3
 stderr:
-error: arg:1:2: unexpected token <EOF>
+error: arg:1:1: unexpected EOF
 $ fq -d raw bla a b c
 exitcode: 3
 stderr:
