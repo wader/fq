@@ -7,8 +7,10 @@ import (
 	"io"
 	"io/ioutil"
 	"math/big"
+	"regexp"
 
 	"github.com/wader/fq/internal/bitioextra"
+	"github.com/wader/fq/internal/ioextra"
 	"github.com/wader/fq/internal/recoverfn"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/ranges"
@@ -104,8 +106,8 @@ func decode(ctx context.Context, br bitio.ReaderAtSeeker, group Group, opts Opti
 				switch vv := d.Value.V.(type) {
 				case *Compound:
 					// TODO: hack, changes V
-					vv.Err = formatErr
 					d.Value.V = vv
+					d.Value.Err = formatErr
 				}
 
 				if len(group) != 1 {
@@ -171,7 +173,6 @@ func newDecoder(ctx context.Context, format Format, br bitio.ReaderAtSeeker, opt
 		RangeSorted: true,
 		Children:    nil,
 		Description: opts.Description,
-		Format:      &format,
 	}
 
 	return &D{
@@ -184,6 +185,7 @@ func newDecoder(ctx context.Context, format Format, br bitio.ReaderAtSeeker, opt
 			RootReader: br,
 			Range:      ranges.Range{Start: 0, Len: 0},
 			IsRoot:     opts.IsRoot,
+			Format:     &format,
 		},
 		Options: opts,
 
@@ -1225,4 +1227,57 @@ func (d *D) FieldScalarFn(name string, sfn scalar.Fn, sms ...scalar.Mapper) *sca
 		d.IOPanic(err, "FieldScalarFn: TryFieldScalarFn")
 	}
 	return v
+}
+
+func (d *D) RE(reRef **regexp.Regexp, reStr string) []ranges.Range {
+	if *reRef == nil {
+		*reRef = regexp.MustCompile(reStr)
+	}
+
+	startPos := d.Pos()
+
+	rr := ioextra.ByteRuneReader{RS: bitio.NewIOReadSeeker(d.bitBuf)}
+	locs := (*reRef).FindReaderSubmatchIndex(rr)
+	if locs == nil {
+		return nil
+	}
+	d.SeekAbs(startPos)
+
+	var rs []ranges.Range
+	l := len(locs) / 2
+	for i := 0; i < l; i++ {
+		loc := locs[i*2 : i*2+2]
+		if loc[0] == -1 {
+			rs = append(rs, ranges.Range{Start: -1})
+		} else {
+			rs = append(rs, ranges.Range{
+				Start: startPos + int64(loc[0]*8),
+				Len:   int64((loc[1] - loc[0]) * 8)},
+			)
+		}
+	}
+
+	return rs
+}
+
+func (d *D) FieldRE(reRef **regexp.Regexp, reStr string, mRef *map[string]string, sms ...scalar.Mapper) {
+	if *reRef == nil {
+		*reRef = regexp.MustCompile(reStr)
+	}
+	subexpNames := (*reRef).SubexpNames()
+
+	rs := d.RE(reRef, reStr)
+	for i, r := range rs {
+		if i == 0 || r.Start == -1 {
+			continue
+		}
+		d.SeekAbs(r.Start)
+		name := subexpNames[i]
+		value := d.FieldUTF8(name, int(r.Len/8), sms...)
+		if mRef != nil {
+			(*mRef)[name] = value
+		}
+	}
+
+	d.SeekAbs(rs[0].Stop())
 }

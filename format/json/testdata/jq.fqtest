@@ -1,4 +1,4 @@
-$ fq -rRs 'fromjson[] | (tojson | ., fromjson), "----", (tojson({indent:2}) | ., fromjson), "----"' variants.json
+$ fq -rRs 'fromjson[] | (tojq | ., fromjq), "----", (tojq({indent:2}) | ., fromjq), "----"' variants.json
 null
 null
 ----
@@ -53,7 +53,7 @@ string
   3
 ]
 ----
-{"array":[true,false,null,1.2,"string",[1.2,3],{"a":1}],"escape \\\"":456,"false":false,"null":null,"number":1.2,"object":{"a":1},"string":"string","true":true,"white space":123}
+{array:[true,false,null,1.2,"string",[1.2,3],{a:1}],"escape \\\"":456,false:false,null:null,number:1.2,object:{a:1},string:"string",true:true,"white space":123}
 {
   "array": [
     true,
@@ -82,7 +82,7 @@ string
 }
 ----
 {
-  "array": [
+  array: [
     true,
     false,
     null,
@@ -93,18 +93,18 @@ string
       3
     ],
     {
-      "a": 1
+      a: 1
     }
   ],
   "escape \\\"": 456,
-  "false": false,
-  "null": null,
-  "number": 1.2,
-  "object": {
-    "a": 1
+  false: false,
+  null: null,
+  number: 1.2,
+  object: {
+    a: 1
   },
-  "string": "string",
-  "true": true,
+  string: "string",
+  true: true,
   "white space": 123
 }
 {
@@ -133,4 +133,16 @@ string
   "true": true,
   "white space": 123
 }
+----
+[]
+[]
+----
+[]
+[]
+----
+{}
+{}
+----
+{}
+{}
 ----

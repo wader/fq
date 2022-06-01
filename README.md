@@ -61,6 +61,7 @@ bsd_loopback_frame,
 [bson](doc/formats.md#bson),
 bzip2,
 [cbor](doc/formats.md#cbor),
+[csv](doc/formats.md#csv),
 dns,
 dns_tcp,
 elf,
@@ -82,6 +83,7 @@ hevc_nalu,
 hevc_pps,
 hevc_sps,
 hevc_vps,
+[html](doc/formats.md#html),
 icc_profile,
 icmp,
 icmpv6,
@@ -120,6 +122,7 @@ sll_packet,
 tar,
 tcp_segment,
 tiff,
+toml,
 udp_datagram,
 vorbis_comment,
 vorbis_packet,
@@ -130,6 +133,8 @@ vpx_ccr,
 wav,
 webp,
 xing,
+[xml](doc/formats.md#xml),
+yaml,
 [zip](doc/formats.md#zip)
 
 [#]: sh-end
@@ -286,3 +291,4 @@ Licenses of direct dependencies:
 - golang/snappy https://github.com/golang/snappy/blob/master/LICENSE (BSD)
 - github.com/BurntSushi/toml https://github.com/BurntSushi/toml/blob/master/COPYING (MIT)
 - gopkg.in/yaml.v3 https://github.com/go-yaml/yaml/blob/v3/LICENSE (MIT)
+- github.com/creasty/defaults https://github.com/creasty/defaults/blob/master/LICENSE (MIT)

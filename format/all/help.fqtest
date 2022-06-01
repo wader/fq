@@ -250,6 +250,20 @@ out   ... | cbor | torepr
 out References and links
 out   https://en.wikipedia.org/wiki/CBOR
 out   https://www.rfc-editor.org/rfc/rfc8949.html
+"help(csv)"
+out csv: Comma separated values decoder
+out Options:
+out   comma=,    Separator character
+out   comment=#  Comment line character
+out Examples:
+out   # Decode file as csv
+out   $ fq -d csv . file
+out   # Decode value as csv
+out   ... | csv
+out   # Decode file using csv options
+out   $ fq -d csv -o comma="," -o comment="#" . file
+out   # Decode value as csv
+out   ... | csv({comma:",",comment:"#"})
 "help(dns)"
 out dns: DNS packet decoder
 out Examples:
@@ -409,6 +423,20 @@ out   # Decode file as hevc_vps
 out   $ fq -d hevc_vps . file
 out   # Decode value as hevc_vps
 out   ... | hevc_vps
+"help(html)"
+out html: HyperText Markup Language decoder
+out Options:
+out   array=false  Decode as nested arrays
+out   seq=false    Use seq attribute to preserve element order
+out Examples:
+out   # Decode file as html
+out   $ fq -d html . file
+out   # Decode value as html
+out   ... | html
+out   # Decode file using html options
+out   $ fq -d html -o array=false -o seq=false . file
+out   # Decode value as html
+out   ... | html({array:false,seq:false})
 "help(icc_profile)"
 out icc_profile: International Color Consortium profile decoder
 out Examples:
@@ -473,7 +501,7 @@ out   $ fq -d jpeg . file
 out   # Decode value as jpeg
 out   ... | jpeg
 "help(json)"
-out json: JSON decoder
+out json: JavaScript Object Notation decoder
 out Examples:
 out   # Decode file as json
 out   $ fq -d json . file
@@ -726,6 +754,13 @@ out   # Decode file as tiff
 out   $ fq -d tiff . file
 out   # Decode value as tiff
 out   ... | tiff
+"help(toml)"
+out toml: Tom's Obvious, Minimal Language decoder
+out Examples:
+out   # Decode file as toml
+out   $ fq -d toml . file
+out   # Decode value as toml
+out   ... | toml
 "help(udp_datagram)"
 out udp_datagram: User datagram protocol decoder
 out Examples:
@@ -796,6 +831,27 @@ out   # Decode file as xing
 out   $ fq -d xing . file
 out   # Decode value as xing
 out   ... | xing
+"help(xml)"
+out xml: Extensible Markup Language decoder
+out Options:
+out   array=false  Decode as nested arrays
+out   seq=false    Use seq attribute to preserve element order
+out Examples:
+out   # Decode file as xml
+out   $ fq -d xml . file
+out   # Decode value as xml
+out   ... | xml
+out   # Decode file using xml options
+out   $ fq -d xml -o array=false -o seq=false . file
+out   # Decode value as xml
+out   ... | xml({array:false,seq:false})
+"help(yaml)"
+out yaml: YAML Ain't Markup Language decoder
+out Examples:
+out   # Decode file as yaml
+out   $ fq -d yaml . file
+out   # Decode value as yaml
+out   ... | yaml
 "help(zip)"
 out zip: ZIP archive decoder
 out Supports ZIP64.

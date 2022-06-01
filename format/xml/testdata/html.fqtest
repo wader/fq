@@ -1,4 +1,13 @@
-$ fq -d raw -ni . all.xml multi_diff.xml multi_same.xml ns.xml simple.xml escape.xml
+/test:
+test
+$ fq -d html . /test
+{
+  "html": {
+    "body": "test",
+    "head": ""
+  }
+}
+$ fq -d raw -ni . all.xml multi_diff.xml multi_same.xml ns.xml simple.xml escape.xml noscript.html
 null> inputs | {name: input_filename, str: (tobytes | tostring)} | slurp("files")
 null> spew("files") | .name, (.str | fromhtml | ., (toxml({indent: 2}) | println))
 "all.xml"
@@ -145,6 +154,25 @@ null> spew("files") | .name, (.str | fromhtml | ., (toxml({indent: 2}) | println
     <a attr="&amp;&lt;&gt;">&amp;&lt;&gt;</a>
   </body>
   <head></head>
+</html>
+"noscript.html"
+{
+  "html": {
+    "body": {
+      "a": "text"
+    },
+    "head": {
+      "noscript": ""
+    }
+  }
+}
+<html>
+  <body>
+    <a>text</a>
+  </body>
+  <head>
+    <noscript></noscript>
+  </head>
 </html>
 null> spew("files") | .name, (.str | fromhtml({seq: true}) | ., (toxml({indent: 2}) | println))
 "all.xml"
@@ -329,6 +357,27 @@ null> spew("files") | .name, (.str | fromhtml({seq: true}) | ., (toxml({indent: 
   <head></head>
   <body>
     <a attr="&amp;&lt;&gt;">&amp;&lt;&gt;</a>
+  </body>
+</html>
+"noscript.html"
+{
+  "html": {
+    "body": {
+      "#seq": 1,
+      "a": "text"
+    },
+    "head": {
+      "#seq": 0,
+      "noscript": ""
+    }
+  }
+}
+<html>
+  <head>
+    <noscript></noscript>
+  </head>
+  <body>
+    <a>text</a>
   </body>
 </html>
 null> spew("files") | .name, (.str | fromhtml({array: true}) | ., (toxml({indent: 2}) | println))
@@ -563,6 +612,39 @@ null> spew("files") | .name, (.str | fromhtml({array: true}) | ., (toxml({indent
   <head></head>
   <body>
     <a attr="&amp;&lt;&gt;">&amp;&lt;&gt;</a>
+  </body>
+</html>
+"noscript.html"
+[
+  "html",
+  [
+    [
+      "head",
+      [
+        [
+          "noscript"
+        ]
+      ]
+    ],
+    [
+      "body",
+      [
+        [
+          "a",
+          {
+            "#text": "text"
+          }
+        ]
+      ]
+    ]
+  ]
+]
+<html>
+  <head>
+    <noscript></noscript>
+  </head>
+  <body>
+    <a>text</a>
   </body>
 </html>
 null> ^D

@@ -561,17 +561,11 @@ func (dvb decodeValueBase) JQValueKey(name string) any {
 	case "_path":
 		return valuePath(dv)
 	case "_error":
-		switch vv := dv.V.(type) {
-		case *decode.Compound:
-			var formatErr decode.FormatError
-			if errors.As(vv.Err, &formatErr) {
-				return formatErr.Value()
-
-			}
-			return vv.Err
-		default:
-			return nil
+		var formatErr decode.FormatError
+		if errors.As(dv.Err, &formatErr) {
+			return formatErr.Value()
 		}
+		return nil
 	case "_bits":
 		return Binary{
 			br:   dv.RootReader,
@@ -585,23 +579,10 @@ func (dvb decodeValueBase) JQValueKey(name string) any {
 			unit: 8,
 		}
 	case "_format":
-		switch vv := dv.V.(type) {
-		case *decode.Compound:
-			if vv.Format != nil {
-				return vv.Format.Name
-			}
-			return nil
-		case *scalar.S:
-			// TODO: hack, Scalar interface?
-			switch vv.Actual.(type) {
-			case map[string]any, []any:
-				return "json"
-			default:
-				return nil
-			}
-		default:
-			return nil
+		if dv.Format != nil {
+			return dv.Format.Name
 		}
+		return nil
 	case "_out":
 		return dvb.out
 	case "_unknown":

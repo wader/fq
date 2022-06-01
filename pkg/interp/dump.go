@@ -142,18 +142,13 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 		if vv.Description != "" {
 			cfmt(colField, " %s", deco.Value.F(vv.Description))
 		}
-		if vv.Format != nil {
-			cfmt(colField, " (%s)", deco.Value.F(vv.Format.Name))
-		}
-
-		valueErr = vv.Err
 	case *scalar.S:
-		// TODO: rethink scalar array/struct (json format)
 		switch av := vv.Actual.(type) {
 		case map[string]any:
-			cfmt(colField, ": %s (%s)", deco.Object.F("{}"), deco.Value.F("json"))
+			cfmt(colField, ": %s", deco.Object.F("{}"))
 		case []any:
-			cfmt(colField, ": %s%s:%s%s (%s)", deco.Index.F("["), deco.Number.F("0"), deco.Number.F(strconv.Itoa(len(av))), deco.Index.F("]"), deco.Value.F("json"))
+			// TODO: format?
+			cfmt(colField, ": %s%s:%s%s", deco.Index.F("["), deco.Number.F("0"), deco.Number.F(strconv.Itoa(len(av))), deco.Index.F("]"))
 		default:
 			cprint(colField, ":")
 			if vv.Sym == nil {
@@ -162,19 +157,22 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 				cfmt(colField, " %s", deco.ValueColor(vv.Sym).F(previewValue(vv.Sym, vv.SymDisplay)))
 				cfmt(colField, " (%s)", deco.ValueColor(vv.Actual).F(previewValue(vv.Actual, vv.ActualDisplay)))
 			}
+		}
 
-			if opts.Verbose && isInArray {
-				cfmt(colField, " %s", v.Name)
-			}
-
-			// TODO: similar to struct/array?
-			if vv.Description != "" {
-				cfmt(colField, fmt.Sprintf(" (%s)", deco.Value.F(vv.Description)))
-			}
+		if opts.Verbose && isInArray {
+			cfmt(colField, " %s", v.Name)
+		}
+		if vv.Description != "" {
+			cfmt(colField, " (%s)", deco.Value.F(vv.Description))
 		}
 	default:
 		panic(fmt.Sprintf("unreachable vv %#+v", vv))
 	}
+
+	if v.Format != nil {
+		cfmt(colField, " (%s)", deco.Value.F(v.Format.Name))
+	}
+	valueErr = v.Err
 
 	innerRange := v.InnerRange()
 

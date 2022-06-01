@@ -21,8 +21,11 @@ $ fq -n _registry.groups.probe
   "tiff",
   "webp",
   "zip",
+  "mp3",
   "mpeg_ts",
   "wav",
-  "mp3",
-  "json"
+  "json",
+  "toml",
+  "xml",
+  "yaml"
 ]

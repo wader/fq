@@ -620,14 +620,14 @@ zip> ^D
 - `fromxmlentities` Decode XML entities.
 - `toxmlentities` Encode XML entities.
 - `fromurlpath` Decode URL path component.
-- `tourlpath` Encode URL path component.
+- `tourlpath` Encode URL path component. Whitespace as %20.
 - `fromurlencode` Decode URL query encoding.
-- `tourlencode` Encode URL to query encoding.
+- `tourlencode` Encode URL to query encoding. Whitespace as "+".
 - `fromurlquery` Decode URL query into object. For duplicates keys value will be an array.
 - `tourlquery` Encode objet into query string.
 - `fromurl` Decode URL into object.
   ```jq
-  > "schema://user:pass@host/path?key=value#fragement" | fromurl
+  > "schema://user:pass@host/path?key=value#fragment" | fromurl
   {
     "fragment": "fragement",
     "host": "host",
