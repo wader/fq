@@ -125,9 +125,8 @@ type track struct {
 	stsz               []stsz
 	formatInArg        any
 	objectType         int // if data format is "mp4a"
-
-	moofs       []*moof // for fmp4
-	currentMoof *moof
+	defaultIVSize      int
+	moofs              []*moof // for fmp4
 }
 
 type pathEntry struct {
@@ -136,11 +135,18 @@ type pathEntry struct {
 }
 
 type decodeContext struct {
-	opts              format.Mp4In
-	path              []pathEntry
-	tracks            map[uint32]*track
-	currentTrack      *track
-	currentMoofOffset int64
+	opts   format.Mp4In
+	path   []pathEntry
+	tracks map[int]*track
+}
+
+func (ctx *decodeContext) lookupTrack(id int) *track {
+	t, ok := ctx.tracks[id]
+	if !ok {
+		t = &track{id: id}
+		ctx.tracks[id] = t
+	}
+	return t
 }
 
 func (ctx *decodeContext) isParent(typ string) bool {
@@ -149,6 +155,41 @@ func (ctx *decodeContext) isParent(typ string) bool {
 
 func (ctx *decodeContext) parent() pathEntry {
 	return ctx.path[len(ctx.path)-2]
+}
+
+func (ctx *decodeContext) findParent(typ string) any {
+	for i := len(ctx.path) - 1; i >= 0; i-- {
+		p := ctx.path[i]
+		if p.typ == typ {
+			return p.data
+		}
+	}
+	return nil
+}
+
+func (ctx *decodeContext) currentTrakBox() *trakBox {
+	t, _ := ctx.findParent("trak").(*trakBox)
+	return t
+}
+
+func (ctx *decodeContext) currentTrafBox() *trafBox {
+	t, _ := ctx.findParent("traf").(*trafBox)
+	return t
+}
+
+func (ctx *decodeContext) currentMoofBox() *moofBox {
+	t, _ := ctx.findParent("moof").(*moofBox)
+	return t
+}
+
+func (ctx *decodeContext) currentTrack() *track {
+	if t := ctx.currentTrakBox(); t != nil {
+		return ctx.lookupTrack(t.trackID)
+	}
+	if t := ctx.currentTrafBox(); t != nil {
+		return ctx.lookupTrack(t.trackID)
+	}
+	return nil
 }
 
 func mp4Tracks(d *decode.D, ctx *decodeContext) {
@@ -326,7 +367,7 @@ func mp4Decode(d *decode.D, in any) any {
 	ctx := &decodeContext{
 		opts:   mi,
 		path:   []pathEntry{{typ: "root"}},
-		tracks: map[uint32]*track{},
+		tracks: map[int]*track{},
 	}
 
 	// TODO: nicer, validate functions without field?
