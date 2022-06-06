@@ -29,9 +29,9 @@ const (
 	NextFilenameID                = 0x3e83bb
 	SegmentFamilyID               = 0x4444
 	ChapterTranslateID            = 0x6924
-	ChapterTranslateEditionUIDID  = 0x69fc
-	ChapterTranslateCodecID       = 0x69bf
 	ChapterTranslateIDID          = 0x69a5
+	ChapterTranslateCodecID       = 0x69bf
+	ChapterTranslateEditionUIDID  = 0x69fc
 	TimestampScaleID              = 0x2ad7b1
 	DurationID                    = 0x4489
 	DateUTCID                     = 0x4461
@@ -77,6 +77,11 @@ const (
 	FlagEnabledID                 = 0xb9
 	FlagDefaultID                 = 0x88
 	FlagForcedID                  = 0x55aa
+	FlagHearingImpairedID         = 0x55ab
+	FlagVisualImpairedID          = 0x55ac
+	FlagTextDescriptionsID        = 0x55ad
+	FlagOriginalID                = 0x55ae
+	FlagCommentaryID              = 0x55af
 	FlagLacingID                  = 0x9c
 	MinCacheID                    = 0x6de7
 	MaxCacheID                    = 0x6df8
@@ -105,9 +110,9 @@ const (
 	CodecDelayID                  = 0x56aa
 	SeekPreRollID                 = 0x56bb
 	TrackTranslateID              = 0x6624
-	TrackTranslateEditionUIDID    = 0x66fc
-	TrackTranslateCodecID         = 0x66bf
 	TrackTranslateTrackIDID       = 0x66a5
+	TrackTranslateCodecID         = 0x66bf
+	TrackTranslateEditionUIDID    = 0x66fc
 	VideoID                       = 0xe0
 	FlagInterlacedID              = 0x9a
 	FieldOrderID                  = 0x9d
@@ -124,7 +129,7 @@ const (
 	DisplayHeightID               = 0x54ba
 	DisplayUnitID                 = 0x54b2
 	AspectRatioTypeID             = 0x54b3
-	ColourSpaceID                 = 0x2eb524
+	UncompressedFourCCID          = 0x2eb524
 	GammaValueID                  = 0x2fb523
 	FrameRateID                   = 0x2383e3
 	ColourID                      = 0x55b0
@@ -261,6 +266,7 @@ const (
 	TagLanguageID                 = 0x447a
 	TagLanguageIETFID             = 0x447b
 	TagDefaultID                  = 0x4484
+	TagDefaultBogusID             = 0x44b4
 	TagStringID                   = 0x4487
 	TagBinaryID                   = 0x4485
 )
@@ -288,7 +294,7 @@ var Segment = ebml.Tag{
 	},
 	CuesID: {
 		Name:       "cues",
-		Definition: "A Top-Level Element to speed seeking access. All entries are local to the Segment.",
+		Definition: "A Top-Level Element to speed seeking access.\nAll entries are local to the Segment.",
 		Type:       ebml.Master, Tag: Cues,
 	},
 	AttachmentsID: {
@@ -298,12 +304,12 @@ var Segment = ebml.Tag{
 	},
 	ChaptersID: {
 		Name:       "chapters",
-		Definition: "A system to define basic menus and partition data. For more detailed information, look at the .",
+		Definition: "A system to define basic menus and partition data.\nFor more detailed information, look at the Chapters explanation in (#chapters).",
 		Type:       ebml.Master, Tag: Chapters,
 	},
 	TagsID: {
 		Name:       "tags",
-		Definition: "Element containing metadata describing Tracks, Editions, Chapters, Attachments, or the Segment as a whole. A list of valid tags can be found",
+		Definition: "Element containing metadata describing Tracks, Editions, Chapters, Attachments, or the Segment as a whole.\nA list of valid tags can be found in [@!MatroskaTags].",
 		Type:       ebml.Master, Tag: Tags,
 	},
 }
@@ -362,22 +368,22 @@ var Info = ebml.Tag{
 	},
 	SegmentFamilyID: {
 		Name:       "segment_family",
-		Definition: "A randomly generated unique ID that all Segments of a Linked Segment MUST share (128 bits).",
+		Definition: "A randomly generated unique ID that all Segments of a Linked Segment **MUST** share (128 bits).",
 		Type:       ebml.Binary,
 	},
 	ChapterTranslateID: {
 		Name:       "chapter_translate",
-		Definition: "A tuple of corresponding ID used by chapter codecs to represent this Segment.",
+		Definition: "The mapping between this `Segment` and a segment value in the given Chapter Codec.",
 		Type:       ebml.Master, Tag: ChapterTranslate,
 	},
 	TimestampScaleID: {
 		Name:       "timestamp_scale",
-		Definition: "Timestamp scale in nanoseconds (1.000.000 means all timestamps in the Segment are expressed in milliseconds).",
+		Definition: "Base unit for Segment Ticks and Track Ticks, in nanoseconds. A TimestampScale value of 1.000.000 means scaled timestamps in the Segment are expressed in milliseconds; see (#timestamps) on how to interpret timestamps.",
 		Type:       ebml.Uinteger,
 	},
 	DurationID: {
 		Name:       "duration",
-		Definition: "Duration of the Segment in nanoseconds based on TimestampScale.",
+		Definition: "Duration of the Segment, expressed in Segment Ticks which is based on TimestampScale; see (#timestamp-ticks).",
 		Type:       ebml.Float,
 	},
 	DateUTCID: {
@@ -403,45 +409,47 @@ var Info = ebml.Tag{
 }
 
 var ChapterTranslate = ebml.Tag{
-	ChapterTranslateEditionUIDID: {
-		Name:       "chapter_translate_edition_uid",
-		Definition: "Specify an edition UID on which this correspondence applies. When not specified, it means for all editions found in the Segment.",
-		Type:       ebml.Uinteger,
+	ChapterTranslateIDID: {
+		Name:       "chapter_translate_id",
+		Definition: "The binary value used to represent this Segment in the chapter codec data.\nThe format depends on the ChapProcessCodecID used; see (#chapprocesscodecid-element).",
+		Type:       ebml.Binary,
 	},
 	ChapterTranslateCodecID: {
 		Name:       "chapter_translate_codec",
-		Definition: "The",
+		Definition: "This `ChapterTranslate` applies to this chapter codec of the given chapter edition(s); see (#chapprocesscodecid-element).",
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			0: {
-				Sym: "matroska_script",
+				Sym:         "matroska_script",
+				Description: "Chapter commands using the Matroska Script codec.",
 			},
 			1: {
-				Sym: "dvd_menu",
+				Sym:         "dvd_menu",
+				Description: "Chapter commands using the DVD-like codec.",
 			},
 		},
 	},
-	ChapterTranslateIDID: {
-		Name:       "chapter_translate_id",
-		Definition: "The binary value used to represent this Segment in the chapter codec data. The format depends on the  used.",
-		Type:       ebml.Binary,
+	ChapterTranslateEditionUIDID: {
+		Name:       "chapter_translate_edition_uid",
+		Definition: "Specify a chapter edition UID on which this `ChapterTranslate` applies.",
+		Type:       ebml.Uinteger,
 	},
 }
 
 var Cluster = ebml.Tag{
 	TimestampID: {
 		Name:       "timestamp",
-		Definition: "Absolute timestamp of the cluster (based on TimestampScale).",
+		Definition: "Absolute timestamp of the cluster, expressed in Segment Ticks which is based on TimestampScale; see (#timestamp-ticks).",
 		Type:       ebml.Uinteger,
 	},
 	SilentTracksID: {
 		Name:       "silent_tracks",
-		Definition: "The list of tracks that are not used in that part of the stream. It is useful when using overlay tracks on seeking or to decide what track to use.",
+		Definition: "The list of tracks that are not used in that part of the stream.\nIt is useful when using overlay tracks on seeking or to decide what track to use.",
 		Type:       ebml.Master, Tag: SilentTracks,
 	},
 	PositionID: {
 		Name:       "position",
-		Definition: "The Segment Position of the Cluster in the Segment (0 in live streams). It might help to resynchronise offset on damaged streams.",
+		Definition: "The Segment Position of the Cluster in the Segment (0 in live streams).\nIt might help to resynchronise offset on damaged streams.",
 		Type:       ebml.Uinteger,
 	},
 	PrevSizeID: {
@@ -451,7 +459,7 @@ var Cluster = ebml.Tag{
 	},
 	SimpleBlockID: {
 		Name:       "simple_block",
-		Definition: "Similar to  but without all the extra information, mostly used to reduced overhead when no extra feature is needed. (see )",
+		Definition: "Similar to Block, see (#block-structure), but without all the extra information,\nmostly used to reduced overhead when no extra feature is needed; see (#simpleblock-structure) on SimpleBlock Structure.",
 		Type:       ebml.Binary,
 	},
 	BlockGroupID: {
@@ -461,7 +469,7 @@ var Cluster = ebml.Tag{
 	},
 	EncryptedBlockID: {
 		Name:       "encrypted_block",
-		Definition: "Similar to  but the data inside the Block are Transformed (encrypt and/or signed). (see )",
+		Definition: "Similar to SimpleBlock, see (#simpleblock-structure),\nbut the data inside the Block are Transformed (encrypt and/or signed).",
 		Type:       ebml.Binary,
 	},
 }
@@ -469,7 +477,7 @@ var Cluster = ebml.Tag{
 var SilentTracks = ebml.Tag{
 	SilentTrackNumberID: {
 		Name:       "silent_track_number",
-		Definition: "One of the track number that are not used from now on in the stream. It could change later if not specified as silent in a further Cluster.",
+		Definition: "One of the track number that are not used from now on in the stream.\nIt could change later if not specified as silent in a further Cluster.",
 		Type:       ebml.Uinteger,
 	},
 }
@@ -477,32 +485,32 @@ var SilentTracks = ebml.Tag{
 var BlockGroup = ebml.Tag{
 	BlockID: {
 		Name:       "block",
-		Definition: "Block containing the actual data to be rendered and a timestamp relative to the Cluster Timestamp. (see )",
+		Definition: "Block containing the actual data to be rendered and a timestamp relative to the Cluster Timestamp;\nsee (#block-structure) on Block Structure.",
 		Type:       ebml.Binary,
 	},
 	BlockVirtualID: {
 		Name:       "block_virtual",
-		Definition: "A Block with no data. It MUST be stored in the stream at the place the real Block would be in display order. (see )",
+		Definition: "A Block with no data. It **MUST** be stored in the stream at the place the real Block would be in display order.",
 		Type:       ebml.Binary,
 	},
 	BlockAdditionsID: {
 		Name:       "block_additions",
-		Definition: "Contain additional blocks to complete the main one. An EBML parser that has no knowledge of the Block structure could still see and use/skip these data.",
+		Definition: "Contain additional blocks to complete the main one.\nAn EBML parser that has no knowledge of the Block structure could still see and use/skip these data.",
 		Type:       ebml.Master, Tag: BlockAdditions,
 	},
 	BlockDurationID: {
 		Name:       "block_duration",
-		Definition: "The duration of the Block (based on TimestampScale). The BlockDuration Element can be useful at the end of a Track to define the duration of the last frame (as there is no subsequent Block available), or when there is a break in a track like for subtitle tracks.",
+		Definition: "The duration of the Block, expressed in Track Ticks; see (#timestamp-ticks).\nThe BlockDuration Element can be useful at the end of a Track to define the duration of the last frame (as there is no subsequent Block available),\nor when there is a break in a track like for subtitle tracks.",
 		Type:       ebml.Uinteger,
 	},
 	ReferencePriorityID: {
 		Name:       "reference_priority",
-		Definition: "This frame is referenced and has the specified cache priority. In cache only a frame of the same or higher priority can replace this frame. A value of 0 means the frame is not referenced.",
+		Definition: "This frame is referenced and has the specified cache priority.\nIn cache only a frame of the same or higher priority can replace this frame. A value of 0 means the frame is not referenced.",
 		Type:       ebml.Uinteger,
 	},
 	ReferenceBlockID: {
 		Name:       "reference_block",
-		Definition: "Timestamp of another frame used as a reference (ie: B or P frame). The timestamp is relative to the block it's attached to.",
+		Definition: "A timestamp value, relative to the timestamp of the Block in this BlockGroup, expressed in Track Ticks; see (#timestamp-ticks).\nThis is used to reference other frames necessary to decode this frame.\nThe relative value **SHOULD** correspond to a valid `Block` this `Block` depends on.\nHistorically Matroska Writer didn't write the actual `Block(s)` this `Block` depends on, but *some* `Block` in the past.\n\nThe value \"0\" **MAY** also be used to signify this `Block` cannot be decoded on its own, but without knownledge of which `Block` is necessary. In this case, other `ReferenceBlock` **MUST NOT** be found in the same `BlockGroup`.\n\nIf the `BlockGroup` doesn't have any `ReferenceBlock` element, then the `Block` it contains can be decoded without using any other `Block` data.",
 		Type:       ebml.Integer,
 	},
 	ReferenceVirtualID: {
@@ -512,12 +520,12 @@ var BlockGroup = ebml.Tag{
 	},
 	CodecStateID: {
 		Name:       "codec_state",
-		Definition: "The new codec state to use. Data interpretation is private to the codec. This information SHOULD always be referenced by a seek entry.",
+		Definition: "The new codec state to use. Data interpretation is private to the codec.\nThis information **SHOULD** always be referenced by a seek entry.",
 		Type:       ebml.Binary,
 	},
 	DiscardPaddingID: {
 		Name:       "discard_padding",
-		Definition: "Duration in nanoseconds of the silent data added to the Block (padding at the end of the Block for positive value, at the beginning of the Block for negative value). The duration of DiscardPadding is not calculated in the duration of the TrackEntry and SHOULD be discarded during playback.",
+		Definition: "Duration of the silent data added to the Block, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks)\n(padding at the end of the Block for positive value, at the beginning of the Block for negative value).\nThe duration of DiscardPadding is not calculated in the duration of the TrackEntry and **SHOULD** be discarded during playback.",
 		Type:       ebml.Integer,
 	},
 	SlicesID: {
@@ -527,7 +535,7 @@ var BlockGroup = ebml.Tag{
 	},
 	ReferenceFrameID: {
 		Name:       "reference_frame",
-		Definition: "",
+		Definition: "Contains information about the last reference frame. See [@?DivXTrickTrack].",
 		Type:       ebml.Master, Tag: ReferenceFrame,
 	},
 }
@@ -543,7 +551,7 @@ var BlockAdditions = ebml.Tag{
 var BlockMore = ebml.Tag{
 	BlockAddIDID: {
 		Name:       "block_add_id",
-		Definition: "An ID to identify the BlockAdditional level. A value of 1 means the BlockAdditional data is interpreted as additional data passed to the codec with the Block data.",
+		Definition: "An ID to identify the BlockAdditional level.\nIf BlockAddIDType of the corresponding block is 0, this value is also the value of BlockAddIDType for the meaning of the content of BlockAdditional.",
 		Type:       ebml.Uinteger,
 	},
 	BlockAdditionalID: {
@@ -556,7 +564,7 @@ var BlockMore = ebml.Tag{
 var Slices = ebml.Tag{
 	TimeSliceID: {
 		Name:       "time_slice",
-		Definition: "Contains extra time information about the data contained in the Block. Being able to interpret this Element is not REQUIRED for playback.",
+		Definition: "Contains extra time information about the data contained in the Block.\nBeing able to interpret this Element is not **REQUIRED** for playback.",
 		Type:       ebml.Master, Tag: TimeSlice,
 	},
 }
@@ -564,12 +572,12 @@ var Slices = ebml.Tag{
 var TimeSlice = ebml.Tag{
 	LaceNumberID: {
 		Name:       "lace_number",
-		Definition: "The reverse number of the frame in the lace (0 is the last frame, 1 is the next to last, etc). Being able to interpret this Element is not REQUIRED for playback.",
+		Definition: "The reverse number of the frame in the lace (0 is the last frame, 1 is the next to last, etc).\nBeing able to interpret this Element is not **REQUIRED** for playback.",
 		Type:       ebml.Uinteger,
 	},
 	FrameNumberID: {
 		Name:       "frame_number",
-		Definition: "The number of the frame to generate from this lace with this delay (allow you to generate many frames from the same Block/Frame).",
+		Definition: "The number of the frame to generate from this lace with this delay\n(allow you to generate many frames from the same Block/Frame).",
 		Type:       ebml.Uinteger,
 	},
 	BlockAdditionIDID: {
@@ -579,12 +587,12 @@ var TimeSlice = ebml.Tag{
 	},
 	DelayID: {
 		Name:       "delay",
-		Definition: "The (scaled) delay to apply to the Element.",
+		Definition: "The delay to apply to the Element, expressed in Track Ticks; see (#timestamp-ticks).",
 		Type:       ebml.Uinteger,
 	},
 	SliceDurationID: {
 		Name:       "slice_duration",
-		Definition: "The (scaled) duration to apply to the Element.",
+		Definition: "The duration to apply to the Element, expressed in Track Ticks; see (#timestamp-ticks).",
 		Type:       ebml.Uinteger,
 	},
 }
@@ -592,12 +600,12 @@ var TimeSlice = ebml.Tag{
 var ReferenceFrame = ebml.Tag{
 	ReferenceOffsetID: {
 		Name:       "reference_offset",
-		Definition: "",
+		Definition: "The relative offset, in bytes, from the previous BlockGroup element for this Smooth FF/RW video track to the containing BlockGroup element. See [@?DivXTrickTrack].",
 		Type:       ebml.Uinteger,
 	},
 	ReferenceTimestampID: {
 		Name:       "reference_timestamp",
-		Definition: "",
+		Definition: "The timestamp of the BlockGroup pointed to by ReferenceOffset, expressed in Track Ticks; see (#timestamp-ticks). See [@?DivXTrickTrack].",
 		Type:       ebml.Uinteger,
 	},
 }
@@ -613,103 +621,136 @@ var Tracks = ebml.Tag{
 var TrackEntry = ebml.Tag{
 	TrackNumberID: {
 		Name:       "track_number",
-		Definition: "The track number as used in the Block Header (using more than 127 tracks is not encouraged, though the design allows an unlimited number).",
+		Definition: "The track number as used in the Block Header (using more than 127 tracks is not encouraged,\nthough the design allows an unlimited number).",
 		Type:       ebml.Uinteger,
 	},
 	TrackUIDID: {
 		Name:       "track_uid",
-		Definition: "A unique ID to identify the Track. This SHOULD be kept the same when making a direct stream copy of the Track to another file.",
+		Definition: "A unique ID to identify the Track.",
 		Type:       ebml.Uinteger,
 	},
 	TrackTypeID: {
 		Name:       "track_type",
-		Definition: "A set of track types coded on 8 bits.",
+		Definition: "The `TrackType` defines the type of each frame found in the Track.\nThe value **SHOULD** be stored on 1 octet.",
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			1: {
-				Sym: "video",
+				Sym:         "video",
+				Description: "An image.",
 			},
 			2: {
-				Sym: "audio",
+				Sym:         "audio",
+				Description: "Audio samples.",
 			},
 			3: {
-				Sym: "complex",
+				Sym:         "complex",
+				Description: "A mix of different other TrackType. The codec needs to define how the `Matroska Player` should interpret such data.",
 			},
 			16: {
-				Sym: "logo",
+				Sym:         "logo",
+				Description: "An image to be rendered over the video track(s).",
 			},
 			17: {
-				Sym: "subtitle",
+				Sym:         "subtitle",
+				Description: "Subtitle or closed caption data to be rendered over the video track(s).",
 			},
 			18: {
-				Sym: "buttons",
+				Sym:         "buttons",
+				Description: "Interactive button(s) to be rendered over the video track(s).",
 			},
 			32: {
-				Sym: "control",
+				Sym:         "control",
+				Description: "Metadata used to control the player of the `Matroska Player`.",
 			},
 			33: {
-				Sym: "metadata",
+				Sym:         "metadata",
+				Description: "Timed metadata that can be passed on to the `Matroska Player`.",
 			},
 		},
 	},
 	FlagEnabledID: {
 		Name:       "flag_enabled",
-		Definition: "Set if the track is usable. (1 bit)",
+		Definition: "Set to 1 if the track is usable. It is possible to turn a not usable track into a usable track using chapter codecs or control tracks.",
 		Type:       ebml.Uinteger,
 	},
 	FlagDefaultID: {
 		Name:       "flag_default",
-		Definition: "Set if that track (audio, video or subs) SHOULD be active if no language found matches the user preference. (1 bit)",
+		Definition: "Set if that track (audio, video or subs) **SHOULD** be eligible for automatic selection by the player; see (#default-track-selection) for more details.",
 		Type:       ebml.Uinteger,
 	},
 	FlagForcedID: {
 		Name:       "flag_forced",
-		Definition: "Set if that track MUST be active during playback. There can be many forced track for a kind (audio, video or subs), the player SHOULD select the one which language matches the user preference or the default + forced track. Overlay MAY happen between a forced and non-forced track of the same kind. (1 bit)",
+		Definition: "Applies only to subtitles. Set if that track **SHOULD** be eligible for automatic selection by the player if it matches the user's language preference,\neven if the user's preferences would normally not enable subtitles with the selected audio track;\nthis can be used for tracks containing only translations of foreign-language audio or onscreen text.\nSee (#default-track-selection) for more details.",
+		Type:       ebml.Uinteger,
+	},
+	FlagHearingImpairedID: {
+		Name:       "flag_hearing_impaired",
+		Definition: "Set to 1 if that track is suitable for users with hearing impairments, set to 0 if it is unsuitable for users with hearing impairments.",
+		Type:       ebml.Uinteger,
+	},
+	FlagVisualImpairedID: {
+		Name:       "flag_visual_impaired",
+		Definition: "Set to 1 if that track is suitable for users with visual impairments, set to 0 if it is unsuitable for users with visual impairments.",
+		Type:       ebml.Uinteger,
+	},
+	FlagTextDescriptionsID: {
+		Name:       "flag_text_descriptions",
+		Definition: "Set to 1 if that track contains textual descriptions of video content, set to 0 if that track does not contain textual descriptions of video content.",
+		Type:       ebml.Uinteger,
+	},
+	FlagOriginalID: {
+		Name:       "flag_original",
+		Definition: "Set to 1 if that track is in the content's original language, set to 0 if it is a translation.",
+		Type:       ebml.Uinteger,
+	},
+	FlagCommentaryID: {
+		Name:       "flag_commentary",
+		Definition: "Set to 1 if that track contains commentary, set to 0 if it does not contain commentary.",
 		Type:       ebml.Uinteger,
 	},
 	FlagLacingID: {
 		Name:       "flag_lacing",
-		Definition: "Set if the track MAY contain blocks using lacing. (1 bit)",
+		Definition: "Set to 1 if the track **MAY** contain blocks using lacing. When set to 0 all blocks **MUST** have their lacing flags set to No lacing; see (#block-lacing) on Block Lacing.",
 		Type:       ebml.Uinteger,
 	},
 	MinCacheID: {
 		Name:       "min_cache",
-		Definition: "The minimum number of frames a player SHOULD be able to cache during playback. If set to 0, the reference pseudo-cache system is not used.",
+		Definition: "The minimum number of frames a player **SHOULD** be able to cache during playback.\nIf set to 0, the reference pseudo-cache system is not used.",
 		Type:       ebml.Uinteger,
 	},
 	MaxCacheID: {
 		Name:       "max_cache",
-		Definition: "The maximum cache size necessary to store referenced frames in and the current frame. 0 means no cache is needed.",
+		Definition: "The maximum cache size necessary to store referenced frames in and the current frame.\n0 means no cache is needed.",
 		Type:       ebml.Uinteger,
 	},
 	DefaultDurationID: {
 		Name:       "default_duration",
-		Definition: "Number of nanoseconds (not scaled via TimestampScale) per frame ('frame' in the Matroska sense -- one Element put into a (Simple)Block).",
+		Definition: "Number of nanoseconds per frame, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks)\n(frame in the Matroska sense -- one Element put into a (Simple)Block).",
 		Type:       ebml.Uinteger,
 	},
 	DefaultDecodedFieldDurationID: {
 		Name:       "default_decoded_field_duration",
-		Definition: "The period in nanoseconds (not scaled by TimestampScale) between two successive fields at the output of the decoding process (see )",
+		Definition: "The period between two successive fields at the output of the decoding process, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks).\nsee (#defaultdecodedfieldduration) for more information",
 		Type:       ebml.Uinteger,
 	},
 	TrackTimestampScaleID: {
 		Name:       "track_timestamp_scale",
-		Definition: "DEPRECATED, DO NOT USE. The scale to apply on this track to work at normal speed in relation with other tracks (mostly used to adjust video speed when the audio length differs).",
+		Definition: "DEPRECATED, DO NOT USE. The scale to apply on this track to work at normal speed in relation with other tracks\n(mostly used to adjust video speed when the audio length differs).",
 		Type:       ebml.Float,
 	},
 	TrackOffsetID: {
 		Name:       "track_offset",
-		Definition: "A value to add to the Block's Timestamp. This can be used to adjust the playback offset of a track.",
+		Definition: "A value to add to the Block's Timestamp, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks).\nThis can be used to adjust the playback offset of a track.",
 		Type:       ebml.Integer,
 	},
 	MaxBlockAdditionIDID: {
 		Name:       "max_block_addition_id",
-		Definition: "The maximum value of . A value 0 means there is no  for this track.",
+		Definition: "The maximum value of BlockAddID ((#blockaddid-element)).\nA value 0 means there is no BlockAdditions ((#blockadditions-element)) for this track.",
 		Type:       ebml.Uinteger,
 	},
 	BlockAdditionMappingID: {
 		Name:       "block_addition_mapping",
-		Definition: "Contains elements that describe each value of  found in the Track.",
+		Definition: "Contains elements that extend the track format, by adding content either to each frame,\nwith BlockAddID ((#blockaddid-element)), or to the track as a whole\nwith BlockAddIDExtraData.",
 		Type:       ebml.Master, Tag: BlockAdditionMapping,
 	},
 	NameID: {
@@ -719,17 +760,17 @@ var TrackEntry = ebml.Tag{
 	},
 	LanguageID: {
 		Name:       "language",
-		Definition: "Specifies the language of the track in the . This Element MUST be ignored if the LanguageIETF Element is used in the same TrackEntry.",
+		Definition: "Specifies the language of the track in the Matroska languages form;\nsee (#language-codes) on language codes.\nThis Element **MUST** be ignored if the LanguageIETF Element is used in the same TrackEntry.",
 		Type:       ebml.String,
 	},
 	LanguageIETFID: {
 		Name:       "language_ietf",
-		Definition: "Specifies the language of the track according to  and using the . If this Element is used, then any Language Elements used in the same TrackEntry MUST be ignored.",
+		Definition: "Specifies the language of the track according to [@!BCP47]\nand using the IANA Language Subtag Registry [@!IANALangRegistry].\nIf this Element is used, then any Language Elements used in the same TrackEntry **MUST** be ignored.",
 		Type:       ebml.String,
 	},
 	CodecIDID: {
 		Name:       "codec_id",
-		Definition: "An ID corresponding to the codec, see the  for more info.",
+		Definition: "An ID corresponding to the codec,\nsee [@!MatroskaCodec] for more info.",
 		Type:       ebml.String,
 	},
 	CodecPrivateID: {
@@ -764,27 +805,27 @@ var TrackEntry = ebml.Tag{
 	},
 	CodecDecodeAllID: {
 		Name:       "codec_decode_all",
-		Definition: "The codec can decode potentially damaged data (1 bit).",
+		Definition: "Set to 1 if the codec can decode potentially damaged data.",
 		Type:       ebml.Uinteger,
 	},
 	TrackOverlayID: {
 		Name:       "track_overlay",
-		Definition: "Specify that this track is an overlay track for the Track specified (in the u-integer). That means when this track has a gap (see ) the overlay track SHOULD be used instead. The order of multiple TrackOverlay matters, the first one is the one that SHOULD be used. If not found it SHOULD be the second, etc.",
+		Definition: "Specify that this track is an overlay track for the Track specified (in the u-integer).\nThat means when this track has a gap, see (#silenttracks-element) on SilentTracks,\nthe overlay track **SHOULD** be used instead. The order of multiple TrackOverlay matters, the first one is the one that **SHOULD** be used.\nIf not found it **SHOULD** be the second, etc.",
 		Type:       ebml.Uinteger,
 	},
 	CodecDelayID: {
 		Name:       "codec_delay",
-		Definition: "CodecDelay is The codec-built-in delay in nanoseconds. This value MUST be subtracted from each block timestamp in order to get the actual timestamp. The value SHOULD be small so the muxing of tracks with the same actual timestamp are in the same Cluster.",
+		Definition: "CodecDelay is The codec-built-in delay, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks).\nIt represents the amount of codec samples that will be discarded by the decoder during playback.\nThis timestamp value **MUST** be subtracted from each frame timestamp in order to get the timestamp that will be actually played.\nThe value **SHOULD** be small so the muxing of tracks with the same actual timestamp are in the same Cluster.",
 		Type:       ebml.Uinteger,
 	},
 	SeekPreRollID: {
 		Name:       "seek_pre_roll",
-		Definition: "After a discontinuity, SeekPreRoll is the duration in nanoseconds of the data the decoder MUST decode before the decoded data is valid.",
+		Definition: "After a discontinuity, SeekPreRoll is the duration of the data\nthe decoder **MUST** decode before the decoded data is valid, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks).",
 		Type:       ebml.Uinteger,
 	},
 	TrackTranslateID: {
 		Name:       "track_translate",
-		Definition: "The track identification for the given Chapter Codec.",
+		Definition: "The mapping between this `TrackEntry` and a track value in the given Chapter Codec.",
 		Type:       ebml.Master, Tag: TrackTranslate,
 	},
 	VideoID: {
@@ -799,32 +840,32 @@ var TrackEntry = ebml.Tag{
 	},
 	TrackOperationID: {
 		Name:       "track_operation",
-		Definition: "Operation that needs to be applied on tracks to create this virtual track. For more details  on the subject.",
+		Definition: "Operation that needs to be applied on tracks to create this virtual track.\nFor more details look at (#track-operation).",
 		Type:       ebml.Master, Tag: TrackOperation,
 	},
 	TrickTrackUIDID: {
 		Name:       "trick_track_uid",
-		Definition: "",
+		Definition: "The TrackUID of the Smooth FF/RW video in the paired EBML structure corresponding to this video track. See [@?DivXTrickTrack].",
 		Type:       ebml.Uinteger,
 	},
 	TrickTrackSegmentUIDID: {
 		Name:       "trick_track_segment_uid",
-		Definition: "",
+		Definition: "The SegmentUID of the Segment containing the track identified by TrickTrackUID. See [@?DivXTrickTrack].",
 		Type:       ebml.Binary,
 	},
 	TrickTrackFlagID: {
 		Name:       "trick_track_flag",
-		Definition: "",
+		Definition: "Set to 1 if this video track is a Smooth FF/RW track. If set to 1, MasterTrackUID and MasterTrackSegUID should must be present and BlockGroups for this track must contain ReferenceFrame structures.\nOtherwise, TrickTrackUID and TrickTrackSegUID must be present if this track has a corresponding Smooth FF/RW track. See [@?DivXTrickTrack].",
 		Type:       ebml.Uinteger,
 	},
 	TrickMasterTrackUIDID: {
 		Name:       "trick_master_track_uid",
-		Definition: "",
+		Definition: "The TrackUID of the video track in the paired EBML structure that corresponds to this Smooth FF/RW track. See [@?DivXTrickTrack].",
 		Type:       ebml.Uinteger,
 	},
 	TrickMasterTrackSegmentUIDID: {
 		Name:       "trick_master_track_segment_uid",
-		Definition: "",
+		Definition: "The SegmentUID of the Segment containing the track identified by MasterTrackUID. See [@?DivXTrickTrack].",
 		Type:       ebml.Binary,
 	},
 	ContentEncodingsID: {
@@ -837,99 +878,106 @@ var TrackEntry = ebml.Tag{
 var BlockAdditionMapping = ebml.Tag{
 	BlockAddIDValueID: {
 		Name:       "block_add_idvalue",
-		Definition: "The  value being described. To keep MaxBlockAdditionID as low as possible, small values SHOULD be used.",
+		Definition: "If the track format extension needs content beside frames,\nthe value refers to the BlockAddID ((#blockaddid-element)), value being described.\nTo keep MaxBlockAdditionID as low as possible, small values **SHOULD** be used.",
 		Type:       ebml.Uinteger,
 	},
 	BlockAddIDNameID: {
 		Name:       "block_add_idname",
-		Definition: "A human-friendly name describing the type of BlockAdditional data as defined by the associated Block Additional Mapping.",
+		Definition: "A human-friendly name describing the type of BlockAdditional data,\nas defined by the associated Block Additional Mapping.",
 		Type:       ebml.String,
 	},
 	BlockAddIDTypeID: {
 		Name:       "block_add_idtype",
-		Definition: "Stores the registered identifier of the Block Additional Mapping to define how the BlockAdditional data should be handled.",
+		Definition: "Stores the registered identifier of the Block Additional Mapping\nto define how the BlockAdditional data should be handled.",
 		Type:       ebml.Uinteger,
 	},
 	BlockAddIDExtraDataID: {
 		Name:       "block_add_idextra_data",
-		Definition: "Extra binary data that the BlockAddIDType can use to interpret the BlockAdditional data. The interpretation of the binary data depends on the BlockAddIDType value and the corresponding Block Additional Mapping.",
+		Definition: "Extra binary data that the BlockAddIDType can use to interpret the BlockAdditional data.\nThe interpretation of the binary data depends on the BlockAddIDType value and the corresponding Block Additional Mapping.",
 		Type:       ebml.Binary,
 	},
 }
 
 var TrackTranslate = ebml.Tag{
-	TrackTranslateEditionUIDID: {
-		Name:       "track_translate_edition_uid",
-		Definition: "Specify an edition UID on which this translation applies. When not specified, it means for all editions found in the Segment.",
-		Type:       ebml.Uinteger,
+	TrackTranslateTrackIDID: {
+		Name:       "track_translate_track_id",
+		Definition: "The binary value used to represent this `TrackEntry` in the chapter codec data.\nThe format depends on the `ChapProcessCodecID` used; see (#chapprocesscodecid-element).",
+		Type:       ebml.Binary,
 	},
 	TrackTranslateCodecID: {
 		Name:       "track_translate_codec",
-		Definition: "The .",
+		Definition: "This `TrackTranslate` applies to this chapter codec of the given chapter edition(s); see (#chapprocesscodecid-element).",
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			0: {
-				Sym: "matroska_script",
+				Sym:         "matroska_script",
+				Description: "Chapter commands using the Matroska Script codec.",
 			},
 			1: {
-				Sym: "dvd_menu",
+				Sym:         "dvd_menu",
+				Description: "Chapter commands using the DVD-like codec.",
 			},
 		},
 	},
-	TrackTranslateTrackIDID: {
-		Name:       "track_translate_track_id",
-		Definition: "The binary value used to represent this track in the chapter codec data. The format depends on the  used.",
-		Type:       ebml.Binary,
+	TrackTranslateEditionUIDID: {
+		Name:       "track_translate_edition_uid",
+		Definition: "Specify a chapter edition UID on which this `TrackTranslate` applies.",
+		Type:       ebml.Uinteger,
 	},
 }
 
 var Video = ebml.Tag{
 	FlagInterlacedID: {
 		Name:       "flag_interlaced",
-		Definition: "A flag to declare if the video is known to be progressive or interlaced and if applicable to declare details about the interlacement.",
+		Definition: "Specify whether the video frames in this track are interlaced or not.",
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			0: {
-				Sym: "undetermined",
+				Sym:         "undetermined",
+				Description: "Unknown status.",
 			},
 			1: {
-				Sym: "interlaced",
+				Sym:         "interlaced",
+				Description: "Interlaced frames.",
 			},
 			2: {
-				Sym: "progressive",
+				Sym:         "progressive",
+				Description: "No interlacing.",
 			},
 		},
 	},
 	FieldOrderID: {
 		Name:       "field_order",
-		Definition: "Declare the field ordering of the video. If FlagInterlaced is not set to 1, this Element MUST be ignored.",
+		Definition: "Specify the field ordering of video frames in this track.",
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			0: {
-				Sym: "progressive",
+				Sym:         "progressive",
+				Description: "Interlaced frames.",
 			},
 			1: {
 				Sym:         "tff",
 				Description: "Top field displayed first. Top field stored first.",
 			},
 			2: {
-				Sym: "undetermined",
+				Sym:         "undetermined",
+				Description: "Unknown field order.",
 			},
 			6: {
 				Sym:         "bff",
 				Description: "Bottom field displayed first. Bottom field stored first.",
 			},
 			9: {
-				Description: "Top field displayed first. Fields are interleaved in storage with the top line of the top field stored first.",
+				Description: "Top field displayed first. Fields are interleaved in storage\nwith the top line of the top field stored first.",
 			},
 			14: {
-				Description: "Bottom field displayed first. Fields are interleaved in storage with the top line of the top field stored first.",
+				Description: "Bottom field displayed first. Fields are interleaved in storage\nwith the top line of the top field stored first.",
 			},
 		},
 	},
 	StereoModeID: {
 		Name:       "stereo_mode",
-		Definition: "Stereo-3D video mode. There are some more details on .",
+		Definition: "Stereo-3D video mode. There are some more details in (#multi-planar-and-3d-videos).",
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			0: {
@@ -981,8 +1029,18 @@ var Video = ebml.Tag{
 	},
 	AlphaModeID: {
 		Name:       "alpha_mode",
-		Definition: "Alpha Video Mode. Presence of this Element indicates that the BlockAdditional Element could contain Alpha data.",
+		Definition: "Indicate whether the BlockAdditional Element with BlockAddID of \"1\" contains Alpha data, as defined by to the Codec Mapping for the `CodecID`.\nUndefined values **SHOULD NOT** be used as the behavior of known implementations is different (considered either as 0 or 1).",
 		Type:       ebml.Uinteger,
+		UintegerEnums: scalar.UToScalar{
+			0: {
+				Sym:         "none",
+				Description: "The BlockAdditional Element with BlockAddID of \"1\" does not exist or **SHOULD NOT** be considered as containing such data.",
+			},
+			1: {
+				Sym:         "present",
+				Description: "The BlockAdditional Element with BlockAddID of \"1\" contains alpha channel data.",
+			},
+		},
 	},
 	OldStereoModeID: {
 		Name:       "old_stereo_mode",
@@ -1081,9 +1139,9 @@ var Video = ebml.Tag{
 			},
 		},
 	},
-	ColourSpaceID: {
-		Name:       "colour_space",
-		Definition: "Specify the pixel format used for the Track's data as a FourCC. This value is similar in scope to the biCompression value of AVI's BITMAPINFOHEADER.",
+	UncompressedFourCCID: {
+		Name:       "uncompressed_four_cc",
+		Definition: "Specify the uncompressed pixel format used for the Track's data as a FourCC.\nThis value is similar in scope to the biCompression value of AVI's `BITMAPINFO` [@?AVIFormat]. See the YUV video formats [@?FourCC-YUV] and RGB video formats [@?FourCC-RGB] for common values.",
 		Type:       ebml.Binary,
 	},
 	GammaValueID: {
@@ -1093,7 +1151,7 @@ var Video = ebml.Tag{
 	},
 	FrameRateID: {
 		Name:       "frame_rate",
-		Definition: "Number of frames per second.  only.",
+		Definition: "Number of frames per second. This value is Informational only. It is intended for constant frame rate streams, and **SHOULD NOT** be used for a variable frame rate TrackEntry.",
 		Type:       ebml.Float,
 	},
 	ColourID: {
@@ -1103,7 +1161,7 @@ var Video = ebml.Tag{
 	},
 	ProjectionID: {
 		Name:       "projection",
-		Definition: "Describes the video projection details. Used to render spherical and VR videos.",
+		Definition: "Describes the video projection details. Used to render spherical, VR videos or flipping videos horizontally/vertically.",
 		Type:       ebml.Master, Tag: Projection,
 	},
 }
@@ -1111,7 +1169,7 @@ var Video = ebml.Tag{
 var Colour = ebml.Tag{
 	MatrixCoefficientsID: {
 		Name:       "matrix_coefficients",
-		Definition: "The Matrix Coefficients of the video used to derive luma and chroma values from red, green, and blue color primaries. For clarity, the value and meanings for MatrixCoefficients are adopted from Table 4 of ISO/IEC 23001-8:2016 or ITU-T H.273.",
+		Definition: "The Matrix Coefficients of the video used to derive luma and chroma values from red, green, and blue color primaries.\nFor clarity, the value and meanings for MatrixCoefficients are adopted from Table 4 of ISO/IEC 23001-8:2016 or ITU-T H.273.",
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			0: {
@@ -1168,22 +1226,22 @@ var Colour = ebml.Tag{
 	},
 	ChromaSubsamplingHorzID: {
 		Name:       "chroma_subsampling_horz",
-		Definition: "The amount of pixels to remove in the Cr and Cb channels for every pixel not removed horizontally. Example: For video with 4:2:0 chroma subsampling, the ChromaSubsamplingHorz SHOULD be set to 1.",
+		Definition: "The amount of pixels to remove in the Cr and Cb channels for every pixel not removed horizontally.\nExample: For video with 4:2:0 chroma subsampling, the ChromaSubsamplingHorz **SHOULD** be set to 1.",
 		Type:       ebml.Uinteger,
 	},
 	ChromaSubsamplingVertID: {
 		Name:       "chroma_subsampling_vert",
-		Definition: "The amount of pixels to remove in the Cr and Cb channels for every pixel not removed vertically. Example: For video with 4:2:0 chroma subsampling, the ChromaSubsamplingVert SHOULD be set to 1.",
+		Definition: "The amount of pixels to remove in the Cr and Cb channels for every pixel not removed vertically.\nExample: For video with 4:2:0 chroma subsampling, the ChromaSubsamplingVert **SHOULD** be set to 1.",
 		Type:       ebml.Uinteger,
 	},
 	CbSubsamplingHorzID: {
 		Name:       "cb_subsampling_horz",
-		Definition: "The amount of pixels to remove in the Cb channel for every pixel not removed horizontally. This is additive with ChromaSubsamplingHorz. Example: For video with 4:2:1 chroma subsampling, the ChromaSubsamplingHorz SHOULD be set to 1 and CbSubsamplingHorz SHOULD be set to 1.",
+		Definition: "The amount of pixels to remove in the Cb channel for every pixel not removed horizontally.\nThis is additive with ChromaSubsamplingHorz. Example: For video with 4:2:1 chroma subsampling,\nthe ChromaSubsamplingHorz **SHOULD** be set to 1 and CbSubsamplingHorz **SHOULD** be set to 1.",
 		Type:       ebml.Uinteger,
 	},
 	CbSubsamplingVertID: {
 		Name:       "cb_subsampling_vert",
-		Definition: "The amount of pixels to remove in the Cb channel for every pixel not removed vertically. This is additive with ChromaSubsamplingVert.",
+		Definition: "The amount of pixels to remove in the Cb channel for every pixel not removed vertically.\nThis is additive with ChromaSubsamplingVert.",
 		Type:       ebml.Uinteger,
 	},
 	ChromaSitingHorzID: {
@@ -1239,7 +1297,7 @@ var Colour = ebml.Tag{
 	},
 	TransferCharacteristicsID: {
 		Name:       "transfer_characteristics",
-		Definition: "The transfer characteristics of the video. For clarity, the value and meanings for TransferCharacteristics are adopted from Table 3 of  ISO/IEC 23091-4 or ITU-T H.273.",
+		Definition: "The transfer characteristics of the video. For clarity,\nthe value and meanings for TransferCharacteristics are adopted from Table 3 of ISO/IEC 23091-4 or ITU-T H.273.",
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			0: {
@@ -1303,7 +1361,7 @@ var Colour = ebml.Tag{
 	},
 	PrimariesID: {
 		Name:       "primaries",
-		Definition: "The colour primaries of the video. For clarity, the value and meanings for Primaries are adopted from Table 2 of ISO/IEC 23091-4 or ITU-T H.273.",
+		Definition: "The colour primaries of the video. For clarity,\nthe value and meanings for Primaries are adopted from Table 2 of ISO/IEC 23091-4 or ITU-T H.273.",
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			0: {
@@ -1352,12 +1410,12 @@ var Colour = ebml.Tag{
 	},
 	MaxCLLID: {
 		Name:       "max_cll",
-		Definition: "Maximum brightness of a single pixel (Maximum Content Light Level) in candelas per square meter (cd/m²).",
+		Definition: "Maximum brightness of a single pixel (Maximum Content Light Level)\nin candelas per square meter (cd/m^2^).",
 		Type:       ebml.Uinteger,
 	},
 	MaxFALLID: {
 		Name:       "max_fall",
-		Definition: "Maximum brightness of a single full frame (Maximum Frame-Average Light Level) in candelas per square meter (cd/m²).",
+		Definition: "Maximum brightness of a single full frame (Maximum Frame-Average Light Level)\nin candelas per square meter (cd/m^2^).",
 		Type:       ebml.Uinteger,
 	},
 	MasteringMetadataID: {
@@ -1370,52 +1428,52 @@ var Colour = ebml.Tag{
 var MasteringMetadata = ebml.Tag{
 	PrimaryRChromaticityXID: {
 		Name:       "primary_rchromaticity_x",
-		Definition: "Red X chromaticity coordinate as defined by CIE 1931.",
+		Definition: "Red X chromaticity coordinate, as defined by CIE 1931.",
 		Type:       ebml.Float,
 	},
 	PrimaryRChromaticityYID: {
 		Name:       "primary_rchromaticity_y",
-		Definition: "Red Y chromaticity coordinate as defined by CIE 1931.",
+		Definition: "Red Y chromaticity coordinate, as defined by CIE 1931.",
 		Type:       ebml.Float,
 	},
 	PrimaryGChromaticityXID: {
 		Name:       "primary_gchromaticity_x",
-		Definition: "Green X chromaticity coordinate as defined by CIE 1931.",
+		Definition: "Green X chromaticity coordinate, as defined by CIE 1931.",
 		Type:       ebml.Float,
 	},
 	PrimaryGChromaticityYID: {
 		Name:       "primary_gchromaticity_y",
-		Definition: "Green Y chromaticity coordinate as defined by CIE 1931.",
+		Definition: "Green Y chromaticity coordinate, as defined by CIE 1931.",
 		Type:       ebml.Float,
 	},
 	PrimaryBChromaticityXID: {
 		Name:       "primary_bchromaticity_x",
-		Definition: "Blue X chromaticity coordinate as defined by CIE 1931.",
+		Definition: "Blue X chromaticity coordinate, as defined by CIE 1931.",
 		Type:       ebml.Float,
 	},
 	PrimaryBChromaticityYID: {
 		Name:       "primary_bchromaticity_y",
-		Definition: "Blue Y chromaticity coordinate as defined by CIE 1931.",
+		Definition: "Blue Y chromaticity coordinate, as defined by CIE 1931.",
 		Type:       ebml.Float,
 	},
 	WhitePointChromaticityXID: {
 		Name:       "white_point_chromaticity_x",
-		Definition: "White X chromaticity coordinate as defined by CIE 1931.",
+		Definition: "White X chromaticity coordinate, as defined by CIE 1931.",
 		Type:       ebml.Float,
 	},
 	WhitePointChromaticityYID: {
 		Name:       "white_point_chromaticity_y",
-		Definition: "White Y chromaticity coordinate as defined by CIE 1931.",
+		Definition: "White Y chromaticity coordinate, as defined by CIE 1931.",
 		Type:       ebml.Float,
 	},
 	LuminanceMaxID: {
 		Name:       "luminance_max",
-		Definition: "Maximum luminance. Represented in candelas per square meter (cd/m²).",
+		Definition: "Maximum luminance. Represented in candelas per square meter (cd/m^2^).",
 		Type:       ebml.Float,
 	},
 	LuminanceMinID: {
 		Name:       "luminance_min",
-		Definition: "Minimum luminance. Represented in candelas per square meter (cd/m²).",
+		Definition: "Minimum luminance. Represented in candelas per square meter (cd/m^2^).",
 		Type:       ebml.Float,
 	},
 }
@@ -1442,22 +1500,22 @@ var Projection = ebml.Tag{
 	},
 	ProjectionPrivateID: {
 		Name:       "projection_private",
-		Definition: "Private data that only applies to a specific projection.SemanticsIf ProjectionType equals 0 (Rectangular),\n     then this element must not be present.If ProjectionType equals 1 (Equirectangular), then this element must be present and contain the same binary data that would be stored inside\n      an ISOBMFF Equirectangular Projection Box ('equi').If ProjectionType equals 2 (Cubemap), then this element must be present and contain the same binary data that would be stored \n      inside an ISOBMFF Cubemap Projection Box ('cbmp').If ProjectionType equals 3 (Mesh), then this element must be present and contain the same binary data that would be stored inside\n       an ISOBMFF Mesh Projection Box ('mshp').Note: ISOBMFF box size and fourcc fields are not included in the binary data, but the FullBox version and flag fields are. This is to avoid \n       redundant framing information while preserving versioning and semantics between the two container formats.",
+		Definition: "Private data that only applies to a specific projection.\n\n*  If `ProjectionType` equals 0 (Rectangular),\n     then this element must not be present.\n*  If `ProjectionType` equals 1 (Equirectangular), then this element must be present and contain the same binary data that would be stored inside\n      an ISOBMFF Equirectangular Projection Box ('equi').\n*  If `ProjectionType` equals 2 (Cubemap), then this element must be present and contain the same binary data that would be stored\n      inside an ISOBMFF Cubemap Projection Box ('cbmp').\n*  If `ProjectionType` equals 3 (Mesh), then this element must be present and contain the same binary data that would be stored inside\n       an ISOBMFF Mesh Projection Box ('mshp').",
 		Type:       ebml.Binary,
 	},
 	ProjectionPoseYawID: {
 		Name:       "projection_pose_yaw",
-		Definition: "Specifies a yaw rotation to the projection.SemanticsValue represents a clockwise rotation, in degrees, around the up vector. This rotation must be applied before any ProjectionPosePitch or ProjectionPoseRoll rotations. The value of this field should be in the -180 to 180 degree range.",
+		Definition: "Specifies a yaw rotation to the projection.\n\nValue represents a clockwise rotation, in degrees, around the up vector. This rotation must be applied\nbefore any `ProjectionPosePitch` or `ProjectionPoseRoll` rotations.\nThe value of this element **MUST** be in the -180 to 180 degree range, both included.\n\nSetting `ProjectionPoseYaw` to 180 or -180 degrees, with the `ProjectionPoseRoll` and `ProjectionPosePitch` set to 0 degrees flips the image horizontally.",
 		Type:       ebml.Float,
 	},
 	ProjectionPosePitchID: {
 		Name:       "projection_pose_pitch",
-		Definition: "Specifies a pitch rotation to the projection.SemanticsValue represents a counter-clockwise rotation, in degrees, around the right vector. This rotation must be applied after the ProjectionPoseYaw rotation and before the ProjectionPoseRoll rotation. The value of this field should be in the -90 to 90 degree range.",
+		Definition: "Specifies a pitch rotation to the projection.\n\nValue represents a counter-clockwise rotation, in degrees, around the right vector. This rotation must be applied\nafter the `ProjectionPoseYaw` rotation and before the `ProjectionPoseRoll` rotation.\nThe value of this element **MUST** be in the -90 to 90 degree range, both included.",
 		Type:       ebml.Float,
 	},
 	ProjectionPoseRollID: {
 		Name:       "projection_pose_roll",
-		Definition: "Specifies a roll rotation to the projection.SemanticsValue represents a counter-clockwise rotation, in degrees, around the forward vector. This rotation must be applied after the ProjectionPoseYaw and ProjectionPosePitch rotations. The value of this field should be in the -180 to 180 degree range.",
+		Definition: "Specifies a roll rotation to the projection.\n\nValue represents a counter-clockwise rotation, in degrees, around the forward vector. This rotation must be applied\nafter the `ProjectionPoseYaw` and `ProjectionPosePitch` rotations.\nThe value of this element **MUST** be in the -180 to 180 degree range, both included.\n\nSetting `ProjectionPoseRoll` to 180 or -180 degrees, the `ProjectionPoseYaw` to 180 or -180 degrees with `ProjectionPosePitch` set to 0 degrees flips the image vertically.\n\nSetting `ProjectionPoseRoll` to 180 or -180 degrees, with the `ProjectionPoseYaw` and `ProjectionPosePitch` set to 0 degrees flips the image horizontally and vertically.",
 		Type:       ebml.Float,
 	},
 }
@@ -1480,7 +1538,7 @@ var Audio = ebml.Tag{
 	},
 	ChannelPositionsID: {
 		Name:       "channel_positions",
-		Definition: "Table of horizontal angles for each successive channel, see .",
+		Definition: "Table of horizontal angles for each successive channel.",
 		Type:       ebml.Binary,
 	},
 	BitDepthID: {
@@ -1554,22 +1612,25 @@ var ContentEncodings = ebml.Tag{
 var ContentEncoding = ebml.Tag{
 	ContentEncodingOrderID: {
 		Name:       "content_encoding_order",
-		Definition: "Tells when this modification was used during encoding/muxing starting with 0 and counting upwards. The decoder/demuxer has to start with the highest order number it finds and work its way down. This value has to be unique over all ContentEncodingOrder Elements in the TrackEntry that contains this ContentEncodingOrder element.",
+		Definition: "Tell in which order to apply each `ContentEncoding` of the `ContentEncodings`.\nThe decoder/demuxer **MUST** start with the `ContentEncoding` with the highest `ContentEncodingOrder` and work its way down to the `ContentEncoding` with the lowest `ContentEncodingOrder`.\nThis value **MUST** be unique over for each `ContentEncoding` found in the `ContentEncodings` of this `TrackEntry`.",
 		Type:       ebml.Uinteger,
 	},
 	ContentEncodingScopeID: {
 		Name:       "content_encoding_scope",
-		Definition: "A bit field that describes which Elements have been modified in this way. Values (big endian) can be OR'ed.",
+		Definition: "A bit field that describes which Elements have been modified in this way.\nValues (big-endian) can be OR'ed.",
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			1: {
-				Sym: "all_frame_contents_excluding_lacing_data",
+				Sym:         "block",
+				Description: "All frame contents, excluding lacing data.",
 			},
 			2: {
-				Sym: "the_track_s_private_data",
+				Sym:         "private",
+				Description: "The track's private data.",
 			},
 			4: {
-				Description: "The next ContentEncoding (next `ContentEncodingOrder`. Either the data inside `ContentCompression` and/or `ContentEncryption`)",
+				Sym:         "next",
+				Description: "The next ContentEncoding (next `ContentEncodingOrder`. Either the data inside `ContentCompression` and/or `ContentEncryption`).",
 			},
 		},
 	},
@@ -1588,12 +1649,12 @@ var ContentEncoding = ebml.Tag{
 	},
 	ContentCompressionID: {
 		Name:       "content_compression",
-		Definition: "Settings describing the compression used. This Element MUST be present if the value of ContentEncodingType is 0 and absent otherwise. Each block MUST be decompressable even if no previous block is available in order not to prevent seeking.",
+		Definition: "Settings describing the compression used.\nThis Element **MUST** be present if the value of ContentEncodingType is 0 and absent otherwise.\nEach block **MUST** be decompressable even if no previous block is available in order not to prevent seeking.",
 		Type:       ebml.Master, Tag: ContentCompression,
 	},
 	ContentEncryptionID: {
 		Name:       "content_encryption",
-		Definition: "Settings describing the encryption used. This Element MUST be present if the value of `ContentEncodingType` is 1 (encryption) and MUST be ignored otherwise.",
+		Definition: "Settings describing the encryption used.\nThis Element **MUST** be present if the value of `ContentEncodingType` is 1 (encryption) and **MUST** be ignored otherwise.",
 		Type:       ebml.Master, Tag: ContentEncryption,
 	},
 }
@@ -1605,22 +1666,26 @@ var ContentCompression = ebml.Tag{
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			0: {
-				Sym: "zlib",
+				Sym:         "zlib",
+				Description: "zlib compression [@!RFC1950].",
 			},
 			1: {
-				Sym: "bzlib",
+				Sym:         "bzlib",
+				Description: "bzip2 compression [@!BZIP2], **SHOULD NOT** be used; see usage notes.",
 			},
 			2: {
-				Sym: "lzo1x",
+				Sym:         "lzo1x",
+				Description: "Lempel-Ziv-Oberhumer compression [@!LZO], **SHOULD NOT** be used; see usage notes.",
 			},
 			3: {
-				Sym: "header_stripping",
+				Sym:         "header_stripping",
+				Description: "Octets in `ContentCompSettings` ((#contentcompsettings-element)) have been stripped from each frame.",
 			},
 		},
 	},
 	ContentCompSettingsID: {
 		Name:       "content_comp_settings",
-		Definition: "Settings that might be needed by the decompressor. For Header Stripping (`ContentCompAlgo`=3), the bytes that were removed from the beginning of each frames of the track.",
+		Definition: "Settings that might be needed by the decompressor. For Header Stripping (`ContentCompAlgo`=3),\nthe bytes that were removed from the beginning of each frames of the track.",
 		Type:       ebml.Binary,
 	},
 }
@@ -1628,26 +1693,31 @@ var ContentCompression = ebml.Tag{
 var ContentEncryption = ebml.Tag{
 	ContentEncAlgoID: {
 		Name:       "content_enc_algo",
-		Definition: "The encryption algorithm used. The value '0' means that the contents have not been encrypted but only signed.",
+		Definition: "The encryption algorithm used.\nThe value \"0\" means that the contents have not been encrypted.",
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			0: {
 				Sym: "not_encrypted",
 			},
 			1: {
-				Sym: "des_fips_46_3",
+				Sym:         "des",
+				Description: "Data Encryption Standard (DES) [@!FIPS.46-3].",
 			},
 			2: {
-				Sym: "triple_des_rfc_1851",
+				Sym:         "3des",
+				Description: "Triple Data Encryption Algorithm [@!SP.800-67].",
 			},
 			3: {
-				Sym: "twofish",
+				Sym:         "twofish",
+				Description: "Twofish Encryption Algorithm [@!Twofish].",
 			},
 			4: {
-				Sym: "blowfish",
+				Sym:         "blowfish",
+				Description: "Blowfish Encryption Algorithm [@!Blowfish].",
 			},
 			5: {
-				Sym: "aes_fips_187",
+				Sym:         "aes",
+				Description: "Advanced Encryption Standard (AES) [@!FIPS.197].",
 			},
 		},
 	},
@@ -1658,7 +1728,7 @@ var ContentEncryption = ebml.Tag{
 	},
 	ContentEncAESSettingsID: {
 		Name:       "content_enc_aessettings",
-		Definition: "Settings describing the encryption algorithm used. If `ContentEncAlgo` != 5 this MUST be ignored.",
+		Definition: "Settings describing the encryption algorithm used.\nIt **MUST** be ignored if `ContentEncAlgo` is not AES (5).",
 		Type:       ebml.Master, Tag: ContentEncAESSettings,
 	},
 	ContentSignatureID: {
@@ -1705,14 +1775,16 @@ var ContentEncryption = ebml.Tag{
 var ContentEncAESSettings = ebml.Tag{
 	AESSettingsCipherModeID: {
 		Name:       "aessettings_cipher_mode",
-		Definition: "The AES cipher mode used in the encryption.",
+		Definition: "The AES cipher mode used in the encryption.\nIt **MUST** be ignored if `ContentEncAlgo` is not AES (5).",
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			1: {
-				Sym: "aes_ctr_counter_nist_sp_800_38a",
+				Sym:         "aes_ctr",
+				Description: "Counter [@!SP.800-38A].",
 			},
 			2: {
-				Sym: "aes_cbc_cipher_block_chaining_nist_sp_800_38a",
+				Sym:         "aes_cbc",
+				Description: "Cipher Block Chaining [@!SP.800-38A].",
 			},
 		},
 	},
@@ -1729,7 +1801,7 @@ var Cues = ebml.Tag{
 var CuePoint = ebml.Tag{
 	CueTimeID: {
 		Name:       "cue_time",
-		Definition: "Absolute timestamp according to the Segment time base.",
+		Definition: "Absolute timestamp of the seek point, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks).",
 		Type:       ebml.Uinteger,
 	},
 	CueTrackPositionsID: {
@@ -1752,12 +1824,12 @@ var CueTrackPositions = ebml.Tag{
 	},
 	CueRelativePositionID: {
 		Name:       "cue_relative_position",
-		Definition: "The relative position inside the Cluster of the referenced SimpleBlock or BlockGroup with 0 being the first possible position for an Element inside that Cluster.",
+		Definition: "The relative position inside the Cluster of the referenced SimpleBlock or BlockGroup\nwith 0 being the first possible position for an Element inside that Cluster.",
 		Type:       ebml.Uinteger,
 	},
 	CueDurationID: {
 		Name:       "cue_duration",
-		Definition: "The duration of the block according to the Segment time base. If missing the track's DefaultDuration does not apply and no duration information is available in terms of the cues.",
+		Definition: "The duration of the block, expressed in Segment Ticks which is based on TimestampScale; see (#timestamp-ticks).\nIf missing, the track's DefaultDuration does not apply and no duration information is available in terms of the cues.",
 		Type:       ebml.Uinteger,
 	},
 	CueBlockNumberID: {
@@ -1767,7 +1839,7 @@ var CueTrackPositions = ebml.Tag{
 	},
 	CueCodecStateID: {
 		Name:       "cue_codec_state",
-		Definition: "The Segment Position of the Codec State corresponding to this Cue Element. 0 means that the data is taken from the initial Track Entry.",
+		Definition: "The Segment Position of the Codec State corresponding to this Cue Element.\n0 means that the data is taken from the initial Track Entry.",
 		Type:       ebml.Uinteger,
 	},
 	CueReferenceID: {
@@ -1780,7 +1852,7 @@ var CueTrackPositions = ebml.Tag{
 var CueReference = ebml.Tag{
 	CueRefTimeID: {
 		Name:       "cue_ref_time",
-		Definition: "Timestamp of the referenced Block.",
+		Definition: "Timestamp of the referenced Block, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks).",
 		Type:       ebml.Uinteger,
 	},
 	CueRefClusterID: {
@@ -1795,7 +1867,7 @@ var CueReference = ebml.Tag{
 	},
 	CueRefCodecStateID: {
 		Name:       "cue_ref_codec_state",
-		Definition: "The Segment Position of the Codec State corresponding to this referenced Element. 0 means that the data is taken from the initial Track Entry.",
+		Definition: "The Segment Position of the Codec State corresponding to this referenced Element.\n0 means that the data is taken from the initial Track Entry.",
 		Type:       ebml.Uinteger,
 	},
 }
@@ -1841,12 +1913,12 @@ var AttachedFile = ebml.Tag{
 	},
 	FileUsedStartTimeID: {
 		Name:       "file_used_start_time",
-		Definition: "",
+		Definition: "The timestamp at which this optimized font attachment comes into context, expressed in Segment Ticks which is based on TimestampScale. See [@?DivXWorldFonts].",
 		Type:       ebml.Uinteger,
 	},
 	FileUsedEndTimeID: {
 		Name:       "file_used_end_time",
-		Definition: "",
+		Definition: "The timestamp at which this optimized font attachment goes out of context, expressed in Segment Ticks which is based on TimestampScale. See [@?DivXWorldFonts].",
 		Type:       ebml.Uinteger,
 	},
 }
@@ -1867,17 +1939,17 @@ var EditionEntry = ebml.Tag{
 	},
 	EditionFlagHiddenID: {
 		Name:       "edition_flag_hidden",
-		Definition: "If an edition is hidden (1), it SHOULD NOT be available to the user interface (but still to Control Tracks; see ). (1 bit)",
+		Definition: "Set to 1 if an edition is hidden. Hidden editions **SHOULD NOT** be available to the user interface\n(but still to Control Tracks; see (#chapter-flags) on Chapter flags).",
 		Type:       ebml.Uinteger,
 	},
 	EditionFlagDefaultID: {
 		Name:       "edition_flag_default",
-		Definition: "If a flag is set (1) the edition SHOULD be used as the default one. (1 bit)",
+		Definition: "Set to 1 if the edition **SHOULD** be used as the default one.",
 		Type:       ebml.Uinteger,
 	},
 	EditionFlagOrderedID: {
 		Name:       "edition_flag_ordered",
-		Definition: "Specify if the chapters can be defined multiple times and the order to play them is enforced. (1 bit)",
+		Definition: "Set to 1 if the chapters can be defined multiple times and the order to play them is enforced; see (#editionflagordered).",
 		Type:       ebml.Uinteger,
 	},
 	ChapterAtomID: {
@@ -1895,27 +1967,27 @@ var ChapterAtom = ebml.Tag{
 	},
 	ChapterStringUIDID: {
 		Name:       "chapter_string_uid",
-		Definition: "A unique string ID to identify the Chapter. Use for .",
+		Definition: "A unique string ID to identify the Chapter.\nUse for WebVTT cue identifier storage [@!WebVTT].",
 		Type:       ebml.UTF8,
 	},
 	ChapterTimeStartID: {
 		Name:       "chapter_time_start",
-		Definition: "Timestamp of the start of Chapter (not scaled).",
+		Definition: "Timestamp of the start of Chapter, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks).",
 		Type:       ebml.Uinteger,
 	},
 	ChapterTimeEndID: {
 		Name:       "chapter_time_end",
-		Definition: "Timestamp of the end of Chapter (timestamp excluded, not scaled).",
+		Definition: "Timestamp of the end of Chapter timestamp excluded, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks).\nThe value **MUST** be greater than or equal to the `ChapterTimeStart` of the same `ChapterAtom`.",
 		Type:       ebml.Uinteger,
 	},
 	ChapterFlagHiddenID: {
 		Name:       "chapter_flag_hidden",
-		Definition: "If a chapter is hidden (1), it SHOULD NOT be available to the user interface (but still to Control Tracks; see ). (1 bit)",
+		Definition: "Set to 1 if a chapter is hidden. Hidden chapters **SHOULD NOT** be available to the user interface\n(but still to Control Tracks; see (#chapterflaghidden) on Chapter flags).",
 		Type:       ebml.Uinteger,
 	},
 	ChapterFlagEnabledID: {
 		Name:       "chapter_flag_enabled",
-		Definition: "Specify whether the chapter is enabled. It can be enabled/disabled by a Control Track. When disabled, the movie SHOULD skip all the content between the TimeStart and TimeEnd of this chapter (see ). (1 bit)",
+		Definition: "Set to 1 if the chapter is enabled. It can be enabled/disabled by a Control Track.\nWhen disabled, the movie **SHOULD** skip all the content between the TimeStart and TimeEnd of this chapter; see (#chapter-flags) on Chapter flags.",
 		Type:       ebml.Uinteger,
 	},
 	ChapterSegmentUIDID: {
@@ -1925,12 +1997,12 @@ var ChapterAtom = ebml.Tag{
 	},
 	ChapterSegmentEditionUIDID: {
 		Name:       "chapter_segment_edition_uid",
-		Definition: "The EditionUID to play from the Segment linked in ChapterSegmentUID. If ChapterSegmentEditionUID is undeclared then no Edition of the linked Segment is used.",
+		Definition: "The EditionUID to play from the Segment linked in ChapterSegmentUID.\nIf ChapterSegmentEditionUID is undeclared, then no Edition of the linked Segment is used; see (#medium-linking) on medium-linking Segments.",
 		Type:       ebml.Uinteger,
 	},
 	ChapterPhysicalEquivID: {
 		Name:       "chapter_physical_equiv",
-		Definition: "Specify the physical equivalent of this ChapterAtom like \"DVD\" (60) or \"SIDE\" (50), see .",
+		Definition: "Specify the physical equivalent of this ChapterAtom like \"DVD\" (60) or \"SIDE\" (50);\nsee (#physical-types) for a complete list of values.",
 		Type:       ebml.Uinteger,
 	},
 	ChapterTrackID: {
@@ -1953,7 +2025,7 @@ var ChapterAtom = ebml.Tag{
 var ChapterTrack = ebml.Tag{
 	ChapterTrackUIDID: {
 		Name:       "chapter_track_uid",
-		Definition: "UID of the Track to apply this chapter too. In the absence of a control track, choosing this chapter will select the listed Tracks and deselect unlisted tracks. Absence of this Element indicates that the Chapter SHOULD be applied to any currently used Tracks.",
+		Definition: "UID of the Track to apply this chapter to.\nIn the absence of a control track, choosing this chapter will select the listed Tracks and deselect unlisted tracks.\nAbsence of this Element indicates that the Chapter **SHOULD** be applied to any currently used Tracks.",
 		Type:       ebml.Uinteger,
 	},
 }
@@ -1966,17 +2038,17 @@ var ChapterDisplay = ebml.Tag{
 	},
 	ChapLanguageID: {
 		Name:       "chap_language",
-		Definition: "The languages corresponding to the string, in the . This Element MUST be ignored if the ChapLanguageIETF Element is used within the same ChapterDisplay Element.",
+		Definition: "A language corresponding to the string,\nin the bibliographic ISO-639-2 form [@!ISO639-2].\nThis Element **MUST** be ignored if a ChapLanguageIETF Element is used within the same ChapterDisplay Element.",
 		Type:       ebml.String,
 	},
 	ChapLanguageIETFID: {
 		Name:       "chap_language_ietf",
-		Definition: "Specifies the language used in the ChapString according to  and using the . If this Element is used, then any ChapLanguage Elements used in the same ChapterDisplay MUST be ignored.",
+		Definition: "Specifies a language corresponding to the ChapString in the format defined in [@!BCP47]\nand using the IANA Language Subtag Registry [@!IANALangRegistry].\nIf a ChapLanguageIETF Element is used, then any ChapLanguage and ChapCountry Elements used in the same ChapterDisplay **MUST** be ignored.",
 		Type:       ebml.String,
 	},
 	ChapCountryID: {
 		Name:       "chap_country",
-		Definition: "The countries corresponding to the string, same 2 octets as in . This Element MUST be ignored if the ChapLanguageIETF Element is used within the same ChapterDisplay Element.",
+		Definition: "A country corresponding to the string, using the same 2 octets country-codes as in Internet domains [@!IANADomains] based on [@!ISO3166-1] alpha-2 codes.\nThis Element **MUST** be ignored if a ChapLanguageIETF Element is used within the same ChapterDisplay Element.",
 		Type:       ebml.String,
 	},
 }
@@ -1984,12 +2056,12 @@ var ChapterDisplay = ebml.Tag{
 var ChapProcess = ebml.Tag{
 	ChapProcessCodecIDID: {
 		Name:       "chap_process_codec_id",
-		Definition: "Contains the type of the codec used for the processing. A value of 0 means native Matroska processing (to be defined), a value of 1 means the  command set is used. More codec IDs can be added later.",
+		Definition: "Contains the type of the codec used for the processing.\nA value of 0 means native Matroska processing (to be defined), a value of 1 means the DVD command set is used; see (#menu-features) on DVD menus.\nMore codec IDs can be added later.",
 		Type:       ebml.Uinteger,
 	},
 	ChapProcessPrivateID: {
 		Name:       "chap_process_private",
-		Definition: "Some optional data attached to the ChapProcessCodecID information. , it is the \"DVD level\" equivalent.",
+		Definition: "Some optional data attached to the ChapProcessCodecID information.\n    For ChapProcessCodecID = 1, it is the \"DVD level\" equivalent; see (#menu-features) on DVD menus.",
 		Type:       ebml.Binary,
 	},
 	ChapProcessCommandID: {
@@ -2002,7 +2074,7 @@ var ChapProcess = ebml.Tag{
 var ChapProcessCommand = ebml.Tag{
 	ChapProcessTimeID: {
 		Name:       "chap_process_time",
-		Definition: "Defines when the process command SHOULD be handled",
+		Definition: "Defines when the process command **SHOULD** be handled",
 		Type:       ebml.Uinteger,
 		UintegerEnums: scalar.UToScalar{
 			0: {
@@ -2018,7 +2090,7 @@ var ChapProcessCommand = ebml.Tag{
 	},
 	ChapProcessDataID: {
 		Name:       "chap_process_data",
-		Definition: "Contains the command information. The data SHOULD be interpreted depending on the ChapProcessCodecID value. , the data correspond to the binary DVD cell pre/post commands.",
+		Definition: "Contains the command information.\nThe data **SHOULD** be interpreted depending on the ChapProcessCodecID value. For ChapProcessCodecID = 1,\nthe data correspond to the binary DVD cell pre/post commands; see (#menu-features) on DVD menus.",
 		Type:       ebml.Binary,
 	},
 }
@@ -2034,7 +2106,7 @@ var Tags = ebml.Tag{
 var Tag = ebml.Tag{
 	TargetsID: {
 		Name:       "targets",
-		Definition: "Specifies which other elements the metadata represented by the Tag applies to. If empty or not present, then the Tag describes everything in the Segment.",
+		Definition: "Specifies which other elements the metadata represented by the Tag applies to.\nIf empty or not present, then the Tag describes everything in the Segment.",
 		Type:       ebml.Master, Tag: Targets,
 	},
 	SimpleTagID: {
@@ -2059,7 +2131,7 @@ var Targets = ebml.Tag{
 				Description: "A list of lower levels grouped together.",
 			},
 			50: {
-				Sym:         "album_opera_concert_movie_episode_concert",
+				Sym:         "album_opera_concert_movie_episode",
 				Description: "The most common grouping level of music and video (equals to an episode for TV series).",
 			},
 			40: {
@@ -2082,7 +2154,7 @@ var Targets = ebml.Tag{
 	},
 	TargetTypeID: {
 		Name:       "target_type",
-		Definition: "An informational string that can be used to display the logical level of the target like \"ALBUM\", \"TRACK\", \"MOVIE\", \"CHAPTER\", etc (see ).",
+		Definition: "An informational string that can be used to display the logical level of the target like \"ALBUM\", \"TRACK\", \"MOVIE\", \"CHAPTER\", etc\n; see Section 6.4 of [@!MatroskaTags].",
 		Type:       ebml.String,
 		StringEnums: scalar.StrToScalar{
 			"COLLECTION": {
@@ -2152,22 +2224,22 @@ var Targets = ebml.Tag{
 	},
 	TagTrackUIDID: {
 		Name:       "tag_track_uid",
-		Definition: "A unique ID to identify the Track(s) the tags belong to. If the value is 0 at this level, the tags apply to all tracks in the Segment.",
+		Definition: "A unique ID to identify the Track(s) the tags belong to.",
 		Type:       ebml.Uinteger,
 	},
 	TagEditionUIDID: {
 		Name:       "tag_edition_uid",
-		Definition: "A unique ID to identify the EditionEntry(s) the tags belong to. If the value is 0 at this level, the tags apply to all editions in the Segment.",
+		Definition: "A unique ID to identify the EditionEntry(s) the tags belong to.",
 		Type:       ebml.Uinteger,
 	},
 	TagChapterUIDID: {
 		Name:       "tag_chapter_uid",
-		Definition: "A unique ID to identify the Chapter(s) the tags belong to. If the value is 0 at this level, the tags apply to all chapters in the Segment.",
+		Definition: "A unique ID to identify the Chapter(s) the tags belong to.",
 		Type:       ebml.Uinteger,
 	},
 	TagAttachmentUIDID: {
 		Name:       "tag_attachment_uid",
-		Definition: "A unique ID to identify the Attachment(s) the tags belong to. If the value is 0 at this level, the tags apply to all the attachments in the Segment.",
+		Definition: "A unique ID to identify the Attachment(s) the tags belong to.",
 		Type:       ebml.Uinteger,
 	},
 }
@@ -2180,17 +2252,22 @@ var SimpleTag = ebml.Tag{
 	},
 	TagLanguageID: {
 		Name:       "tag_language",
-		Definition: "Specifies the language of the tag specified, in the . This Element MUST be ignored if the TagLanguageIETF Element is used within the same SimpleTag Element.",
+		Definition: "Specifies the language of the tag specified, in the Matroska languages form;\nsee (#language-codes) on language codes.\nThis Element **MUST** be ignored if the TagLanguageIETF Element is used within the same SimpleTag Element.",
 		Type:       ebml.String,
 	},
 	TagLanguageIETFID: {
 		Name:       "tag_language_ietf",
-		Definition: "Specifies the language used in the TagString according to  and using the . If this Element is used, then any TagLanguage Elements used in the same SimpleTag MUST be ignored.",
+		Definition: "Specifies the language used in the TagString according to [@!BCP47]\nand using the IANA Language Subtag Registry [@!IANALangRegistry].\nIf this Element is used, then any TagLanguage Elements used in the same SimpleTag **MUST** be ignored.",
 		Type:       ebml.String,
 	},
 	TagDefaultID: {
 		Name:       "tag_default",
 		Definition: "A boolean value to indicate if this is the default/original language to use for the given tag.",
+		Type:       ebml.Uinteger,
+	},
+	TagDefaultBogusID: {
+		Name:       "tag_default_bogus",
+		Definition: "A variant of the TagDefault element with a bogus Element ID; see (#tagdefault-element).",
 		Type:       ebml.Uinteger,
 	},
 	TagStringID: {
@@ -2200,7 +2277,7 @@ var SimpleTag = ebml.Tag{
 	},
 	TagBinaryID: {
 		Name:       "tag_binary",
-		Definition: "The values of the Tag if it is binary. Note that this cannot be used in the same SimpleTag as TagString.",
+		Definition: "The values of the Tag, if it is binary. Note that this cannot be used in the same SimpleTag as TagString.",
 		Type:       ebml.Binary,
 	},
 }
