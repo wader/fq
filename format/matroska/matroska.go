@@ -162,12 +162,15 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 					if !ok {
 						a, ok = ebml.Global[n]
 						if !ok {
-							d.Fatalf("unknown id %d", n)
+							a = ebml.Attribute{
+								Type: ebml.Unknown,
+							}
+							return scalar.S{Actual: n, ActualDisplay: scalar.NumberHex, Description: "Unknown"}, nil
 						}
 					}
 					return scalar.S{Actual: n, ActualDisplay: scalar.NumberHex, Sym: a.Name, Description: a.Definition}, nil
 				}))
-				d.FieldValueU("type", uint64(a.Type), scalar.Sym(ebml.TypeNames[a.Type]))
+				d.FieldValueStr("type", ebml.TypeNames[a.Type])
 
 				if tagID == ebml_matroska.TrackEntryID {
 					dc.currentTrack = &track{}
@@ -196,7 +199,8 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 					if tagSize > maxStringTagSize {
 						d.Errorf("tagSize %d > maxStringTagSize %d", tagSize, maxStringTagSize)
 					}
-				case ebml.Binary,
+				case ebml.Unknown,
+					ebml.Binary,
 					ebml.Date,
 					ebml.Master:
 					// nop
@@ -212,6 +216,8 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 				}
 
 				switch a.Type {
+				case ebml.Unknown:
+					d.FieldRawLen("data", int64(tagSize)*8)
 				case ebml.Integer:
 					d.FieldS("value", int(tagSize)*8, optionalMap(a.IntegerEnums))
 				case ebml.Uinteger:
