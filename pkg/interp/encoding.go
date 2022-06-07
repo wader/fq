@@ -181,7 +181,7 @@ func init() {
 			false,
 			opts.Indent,
 			func(v any) any {
-				if v, ok := toValue(func() Options { return Options{} }, v); ok {
+				if v, ok := toValue(nil, v); ok {
 					return v
 				}
 				panic(fmt.Sprintf("toValue not a JQValue value: %#v", v))
