@@ -200,6 +200,7 @@ type Display interface {
 }
 
 type JQValueEx interface {
+	gojq.JQValue
 	JQValueToGoJQEx(optsFn func() Options) any
 }
 

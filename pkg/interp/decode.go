@@ -316,6 +316,9 @@ func valueHas(key any, a func(name string) any, b func(key any) any) any {
 func toValue(optsFn func() Options, v any) (any, bool) {
 	switch v := v.(type) {
 	case JQValueEx:
+		if optsFn == nil {
+			return v.JQValueToGoJQ(), true
+		}
 		return v.JQValueToGoJQEx(optsFn), true
 	case gojq.JQValue:
 		return v.JQValueToGoJQ(), true
