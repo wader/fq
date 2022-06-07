@@ -102,8 +102,12 @@ type moof struct {
 	offset                        int64
 	defaultSampleSize             int64
 	defaultSampleDescriptionIndex int
-	dataOffset                    int64
-	samplesSizes                  []int64
+	truns                         []trun
+}
+
+type trun struct {
+	dataOffset   int64
+	samplesSizes []int64
 }
 
 type sampleDescription struct {
@@ -339,20 +343,39 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 						}
 					}
 
+					sampleNr := 0
 					for _, m := range t.moofs {
-						sampleOffset := m.offset + m.dataOffset
-						for _, sz := range m.samplesSizes {
-							dataFormat := trackSDDataFormat
-							if m.defaultSampleDescriptionIndex != 0 && m.defaultSampleDescriptionIndex-1 < len(t.sampleDescriptions) {
-								sd := t.sampleDescriptions[m.defaultSampleDescriptionIndex-1]
-								dataFormat = sd.dataFormat
-								if sd.originalFormat != "" {
-									dataFormat = sd.originalFormat
-								}
-							}
+						for _, trun := range m.truns {
+							sampleOffset := m.offset + trun.dataOffset
 
-							decodeSampleRange(d, t, dataFormat, "sample", sampleOffset*8, sz*8, t.formatInArg)
-							sampleOffset += sz
+							for _, sz := range trun.samplesSizes {
+								dataFormat := trackSDDataFormat
+								if m.defaultSampleDescriptionIndex != 0 && m.defaultSampleDescriptionIndex-1 < len(t.sampleDescriptions) {
+									sd := t.sampleDescriptions[m.defaultSampleDescriptionIndex-1]
+									dataFormat = sd.dataFormat
+									if sd.originalFormat != "" {
+										dataFormat = sd.originalFormat
+									}
+								}
+
+								// logStrFn := func() string {
+								// 	return fmt.Sprintf("%d: %s: %d: (%s): sz=%d %d+%d=%d",
+								// 		t.id,
+								// 		dataFormat,
+								// 		sampleNr,
+								// 		trackSDDataFormat,
+								// 		sz,
+								// 		m.offset,
+								// 		m.dataOffset,
+								// 		sampleOffset,
+								// 	)
+								// }
+								// log.Println(logStrFn())
+
+								decodeSampleRange(d, t, dataFormat, "sample", sampleOffset*8, sz*8, t.formatInArg)
+								sampleOffset += sz
+								sampleNr++
+							}
 						}
 					}
 				})

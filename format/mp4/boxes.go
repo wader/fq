@@ -196,8 +196,9 @@ type moofBox struct {
 }
 
 type trafBox struct {
-	trackID int
-	moof    *moof
+	trackID        int
+	baseDataOffset int64
+	moof           *moof
 }
 
 func irefEntryDecode(ctx *decodeContext, d *decode.D) {
@@ -777,7 +778,8 @@ func init() {
 		},
 		"moov": decodeBoxes,
 		"moof": func(ctx *decodeContext, d *decode.D) {
-			decodeBoxesWithParentData(ctx, d, &moofBox{offset: (d.Pos() / 8) - 8})
+			offset := (d.Pos() / 8) - 8
+			decodeBoxesWithParentData(ctx, d, &moofBox{offset: offset})
 		},
 		// Track Fragment
 		"traf": func(ctx *decodeContext, d *decode.D) {
@@ -807,7 +809,6 @@ func init() {
 				d.FieldU1("unused2")
 				sampleDescriptionIndexPresent = d.FieldBool("sample_description_index_present")
 				baseDataOffsetPresent = d.FieldBool("base_data_offset_present")
-
 			})
 			trackID := int(d.FieldU32("track_id"))
 
@@ -815,16 +816,10 @@ func init() {
 			if mb := ctx.currentMoofBox(); mb != nil {
 				m.offset = mb.offset
 			}
-			if t := ctx.currentTrafBox(); t != nil {
-				t.trackID = trackID
-				t.moof = m
-			}
-			if t := ctx.currentTrack(); t != nil {
-				t.moofs = append(t.moofs, m)
-			}
 
+			baseDataOffset := int64(0)
 			if baseDataOffsetPresent {
-				d.FieldU64("base_data_offset")
+				baseDataOffset = int64(d.FieldU64("base_data_offset"))
 			}
 			if sampleDescriptionIndexPresent {
 				m.defaultSampleDescriptionIndex = int(d.FieldU32("sample_description_index"))
@@ -837,6 +832,15 @@ func init() {
 			}
 			if defaultSampleFlagsPresent {
 				d.FieldU32("default_sample_flags")
+			}
+
+			if t := ctx.currentTrafBox(); t != nil {
+				t.trackID = trackID
+				t.moof = m
+				t.baseDataOffset = baseDataOffset
+			}
+			if t := ctx.currentTrack(); t != nil {
+				t.moofs = append(t.moofs, m)
 			}
 		},
 		// Track Fragment Run
@@ -865,8 +869,9 @@ func init() {
 				dataOffsetPresent = d.FieldBool("data_offset_present")
 			})
 			sampleCount := d.FieldU32("sample_count")
+			dataOffset := int64(0)
 			if dataOffsetPresent {
-				m.dataOffset = d.FieldS32("data_offset")
+				dataOffset = d.FieldS32("data_offset")
 			}
 			if firstSampleFlagsPresent {
 				d.FieldU32("first_sample_flags")
@@ -876,6 +881,9 @@ func init() {
 				d.Errorf("too many sample trun entries %d > %d", sampleCount, maxSampleEntryCount)
 			}
 
+			t := trun{
+				dataOffset: dataOffset,
+			}
 			d.FieldArray("samples", func(d *decode.D) {
 				for i := uint64(0); i < sampleCount; i++ {
 					sampleSize := m.defaultSampleSize
@@ -894,9 +902,11 @@ func init() {
 						}
 					})
 
-					m.samplesSizes = append(m.samplesSizes, sampleSize)
+					t.samplesSizes = append(t.samplesSizes, sampleSize)
 				}
 			})
+
+			m.truns = append(m.truns, t)
 		},
 		"tfdt": func(_ *decodeContext, d *decode.D) {
 			version := d.FieldU8("version")
@@ -1244,7 +1254,9 @@ func init() {
 			d.FieldArray("samples", func(d *decode.D) {
 				for i := uint64(0); i < sampleCount; i++ {
 					d.FieldStruct("entry", func(d *decode.D) {
-						d.FieldRawLen("iv", int64(t.defaultIVSize*8))
+						if t.defaultIVSize != 0 {
+							d.FieldRawLen("iv", int64(t.defaultIVSize*8))
+						}
 						if flags&0b10 != 0 {
 							subSampleCount := d.FieldU16("subsample_count")
 							d.FieldArray("subsamples", func(d *decode.D) {
@@ -1278,7 +1290,8 @@ func init() {
 			d.FieldRawLen("default_kid", 8*16)
 
 			if defaultIsEncrypted != 0 && defaultIVSize == 0 {
-				d.FieldU8("default_constant_iv_size")
+				defaultConstantIVSize := d.FieldU8("default_constant_iv_size")
+				d.FieldRawLen("default_constant_iv", int64(defaultConstantIVSize)*8)
 			}
 			if t := ctx.currentTrack(); t != nil {
 				t.defaultIVSize = int(defaultIVSize)
