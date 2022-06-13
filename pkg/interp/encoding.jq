@@ -171,7 +171,7 @@ def _tojq($opts):
           , ( [ to_entries[]
               | $prefix, $indent
               , (.key | _key), $opts.key_sep
-              , (.value | _r($prefix+$indent)), $opts.value_sep
+              , (.value | _r($prefix+$indent)), $opts.object_sep
               ]
             | .[0:-1]
             )
@@ -189,13 +189,13 @@ def tojq($opts):
   _tojq(
     ( { indent: 0,
         key_sep: ":",
-        value_sep: ",",
+        object_sep: ",",
         array_sep: ",",
         compound_newline: "",
       } + $opts
     | if .indent > 0  then
         ( .key_sep = ": "
-        | .value_sep = ",\n"
+        | .object_sep = ",\n"
         | .array_sep = ",\n"
         | .compound_newline = "\n"
         )
