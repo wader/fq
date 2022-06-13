@@ -12,6 +12,6 @@ def _bencode_torepr:
 
 def _bencode__help:
   { links: [
-      {url: "https://bsonspec.org/spec.html"}
+      {url: "https://wiki.theory.org/BitTorrentSpecification#Bencoding"}
     ]
   };

@@ -178,7 +178,7 @@ out   $ fq -d bencode torepr file
 out   # Supports torepr
 out   ... | bencode | torepr
 out References and links
-out   https://bsonspec.org/spec.html
+out   https://wiki.theory.org/BitTorrentSpecification#Bencoding
 "help(bsd_loopback_frame)"
 out bsd_loopback_frame: BSD loopback frame decoder
 out Examples:

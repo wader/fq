@@ -136,7 +136,7 @@ $ fq -d aac_frame -o object_type=1 . file
 
 Decode value as aac_frame
 ```
-... | aac_frame({object_type: 1})
+... | aac_frame({object_type:1})
 ```
 
 ### asn1_ber
@@ -198,7 +198,7 @@ $ fq -d avc_au -o length_size=4 . file
 
 Decode value as avc_au
 ```
-... | avc_au({length_size: 4})
+... | avc_au({length_size:4})
 ```
 
 ### avro_ocf
@@ -231,7 +231,7 @@ Supports `torepr`
 
 #### References and links
 
-- https://bsonspec.org/spec.html
+- https://wiki.theory.org/BitTorrentSpecification#Bencoding
 
 ### bson
 
@@ -292,7 +292,7 @@ $ fq -d flac_frame -o bits_per_sample=16 . file
 
 Decode value as flac_frame
 ```
-... | flac_frame({bits_per_sample: 16})
+... | flac_frame({bits_per_sample:16})
 ```
 
 ### hevc_au
@@ -312,7 +312,7 @@ $ fq -d hevc_au -o length_size=4 . file
 
 Decode value as hevc_au
 ```
-... | hevc_au({length_size: 4})
+... | hevc_au({length_size:4})
 ```
 
 ### macho
@@ -370,7 +370,7 @@ $ fq -d mp3 -o max_sync_seek=32768 -o max_unique_header_configs=5 . file
 
 Decode value as mp3
 ```
-... | mp3({max_sync_seek: 32768, max_unique_header_configs: 5})
+... | mp3({max_sync_seek:32768,max_unique_header_configs:5})
 ```
 
 ### mp4
@@ -403,7 +403,7 @@ $ fq -d mp4 -o allow_truncated=false -o decode_samples=true . file
 
 Decode value as mp4
 ```
-... | mp4({allow_truncated: false, decode_samples: true})
+... | mp4({allow_truncated:false,decode_samples:true})
 ```
 
 #### References and links
@@ -470,7 +470,7 @@ $ fq -d zip -o uncompress=true . file
 
 Decode value as zip
 ```
-... | zip({uncompress: true})
+... | zip({uncompress:true})
 ```
 
 #### References and links
