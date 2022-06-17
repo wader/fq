@@ -77,18 +77,19 @@ def _slurps(f): _global_var("slurps"; f);
 # call f and finally eval fin even if empty or error.
 # _finally(1; debug)
 # _finally(null; debug)
-# _finally(error("a"); debug)
 # _finally(empty; debug)
 # _finally(1,2,3; debug)
 # _finally({a:1}; debug)
+# _finally(error("a"); debug)
+# _finally(error("a"); empty)
 def _finally(f; fin):
   try
     ( f
     , (fin | empty)
     )
   catch
-    ( fin as $_
-    | error
+    ( (fin | empty)
+    , error
     );
 
 # TODO: figure out a saner way to force int
