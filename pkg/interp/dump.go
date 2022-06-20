@@ -180,7 +180,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 
 	if opts.Verbose {
 		cfmt(colField, " %s (%s)",
-			mathextra.BitRange(innerRange).StringByteBits(opts.AddrBase), mathextra.Bits(innerRange.Len).StringByteBits(opts.SizeBase))
+			mathextra.BitRange(innerRange).StringByteBits(opts.Addrbase), mathextra.Bits(innerRange.Len).StringByteBits(opts.Sizebase))
 	}
 
 	cprint(colField, "\n")
@@ -270,7 +270,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 	// has length and is not compound or a collapsed struct/array (max depth)
 	if innerRange.Len > 0 && (!isCompound(v) || (opts.Depth != 0 && opts.Depth == depth)) {
 		cfmt(colAddr, "%s%s\n",
-			rootIndent, deco.DumpAddr.F(mathextra.PadFormatInt(startLineByte, opts.AddrBase, true, addrWidth)))
+			rootIndent, deco.DumpAddr.F(mathextra.PadFormatInt(startLineByte, opts.Addrbase, true, addrWidth)))
 
 		vBR, err := bitioextra.Range(rootV.RootReader, startByte*8, displaySizeBits)
 		if err != nil {
@@ -306,7 +306,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 		for i := int64(1); i < addrLines; i++ {
 			lineStartByte := startLineByte + i*int64(opts.LineBytes)
 			columns()
-			cfmt(colAddr, "%s%s\n", rootIndent, deco.DumpAddr.F(mathextra.PadFormatInt(lineStartByte, opts.AddrBase, true, addrWidth)))
+			cfmt(colAddr, "%s%s\n", rootIndent, deco.DumpAddr.F(mathextra.PadFormatInt(lineStartByte, opts.Addrbase, true, addrWidth)))
 		}
 		// TODO: correct? should rethink columnwriter api maybe?
 		lastLineStopByte := startLineByte + addrLines*int64(opts.LineBytes) - 1
@@ -327,9 +327,9 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 			cprint(colHex, "\n")
 			// TODO: truncate if display_bytes is small?
 			cfmt(colHex, "until %s%s (%s)",
-				mathextra.Bits(stopBit).StringByteBits(opts.AddrBase),
+				mathextra.Bits(stopBit).StringByteBits(opts.Addrbase),
 				isEnd,
-				mathextra.PadFormatInt(bitio.BitsByteCount(sizeBits), opts.SizeBase, true, 0))
+				mathextra.PadFormatInt(bitio.BitsByteCount(sizeBits), opts.Sizebase, true, 0))
 			// TODO: dump last line?
 		}
 	}
@@ -356,7 +356,7 @@ func dump(v *decode.Value, w io.Writer, opts Options) error {
 	_ = v.WalkPreOrder(makeWalkFn(func(v *decode.Value, rootV *decode.Value, depth int, rootDepth int) error {
 		maxAddrIndentWidth = mathextra.MaxInt(
 			maxAddrIndentWidth,
-			rootDepth+mathextra.DigitsInBase(bitio.BitsByteCount(v.InnerRange().Stop()), true, opts.AddrBase),
+			rootDepth+mathextra.DigitsInBase(bitio.BitsByteCount(v.InnerRange().Stop()), true, opts.Addrbase),
 		)
 		return nil
 	}))
@@ -382,7 +382,7 @@ func dump(v *decode.Value, w io.Writer, opts Options) error {
 	var hexHeader string
 	var asciiHeader string
 	for i := 0; i < opts.LineBytes; i++ {
-		s := mathextra.PadFormatInt(int64(i), opts.AddrBase, false, 2)
+		s := mathextra.PadFormatInt(int64(i), opts.Addrbase, false, 2)
 		hexHeader += s
 		if i < opts.LineBytes-1 {
 			hexHeader += " "

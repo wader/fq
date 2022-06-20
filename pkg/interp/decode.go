@@ -12,10 +12,10 @@ import (
 	"time"
 
 	"github.com/mitchellh/copystructure"
-	"github.com/mitchellh/mapstructure"
 	"github.com/wader/fq/internal/bitioextra"
 	"github.com/wader/fq/internal/gojqextra"
 	"github.com/wader/fq/internal/ioextra"
+	"github.com/wader/fq/internal/mapstruct"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
@@ -103,12 +103,12 @@ func (i *Interp) _registry(c any, a []any) any {
 			for i := 0; i < st.NumField(); i++ {
 				f := st.Field(i)
 				if v, ok := f.Tag.Lookup("doc"); ok {
-					doc[camelToSnake(f.Name)] = v
+					doc[mapstruct.CamelToSnake(f.Name)] = v
 				}
 			}
 			vf["decode_in_arg_doc"] = doc
 
-			args, err := structToMap(f.DecodeInArg)
+			args, err := mapstruct.ToMap(f.DecodeInArg)
 			if err != nil {
 				return err
 			}
@@ -119,7 +119,7 @@ func (i *Interp) _registry(c any, a []any) any {
 					delete(args, k)
 				}
 			}
-			vf["decode_in_arg"] = args
+			vf["decode_in_arg"] = norm(args)
 		}
 
 		if f.Files != nil {
@@ -174,13 +174,14 @@ func (i *Interp) _toValue(c any, a []any) any {
 	return v
 }
 
+type decodeOpts struct {
+	Force    bool
+	Progress string
+	Remain   map[string]any `mapstruct:",remain"`
+}
+
 func (i *Interp) _decode(c any, a []any) any {
-	var opts struct {
-		Force    bool           `mapstructure:"force"`
-		Progress string         `mapstructure:"_progress"`
-		Remain   map[string]any `mapstructure:",remain"`
-	}
-	_ = mapstructure.Decode(a[1], &opts)
+	opts, _ := gojqextra.CastFn[decodeOpts](a[1], mapstruct.ToStruct)
 
 	var filename string
 
@@ -259,7 +260,7 @@ func (i *Interp) _decode(c any, a []any) any {
 				}
 
 				if len(opts.Remain) > 0 {
-					if err := mapToStruct(opts.Remain, &inArg); err != nil {
+					if err := mapstruct.ToStruct(opts.Remain, &inArg); err != nil {
 						// TODO: currently ignores failed struct mappings
 						return f.DecodeInArg, nil
 					}
@@ -286,7 +287,7 @@ func (i *Interp) _decode(c any, a []any) any {
 	var formatOutMap any
 
 	if formatOut != nil {
-		formatOutMap, err = structToMap(formatOut)
+		formatOutMap, err = mapstruct.ToMap(formatOut)
 		if err != nil {
 			return err
 		}

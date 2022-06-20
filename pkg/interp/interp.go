@@ -14,19 +14,17 @@ import (
 	"io/ioutil"
 	"math/big"
 	"path"
-	"reflect"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/mitchellh/mapstructure"
 	"github.com/wader/fq/internal/ansi"
 	"github.com/wader/fq/internal/bitioextra"
 	"github.com/wader/fq/internal/colorjson"
 	"github.com/wader/fq/internal/ctxstack"
 	"github.com/wader/fq/internal/gojqextra"
 	"github.com/wader/fq/internal/ioextra"
+	"github.com/wader/fq/internal/mapstruct"
 	"github.com/wader/fq/internal/mathextra"
 	"github.com/wader/fq/internal/pos"
 	"github.com/wader/fq/pkg/bitio"
@@ -62,7 +60,7 @@ var functionRegisterFns []func(i *Interp) []Function
 func init() {
 	functionRegisterFns = append(functionRegisterFns, func(i *Interp) []Function {
 		return []Function{
-			{"_readline", 0, 1, nil, i._readline},
+			{"_readline", 1, 1, nil, i._readline},
 			{"_eval", 1, 2, nil, i._eval},
 			{"_stdin", 0, 1, nil, i.makeStdioFn("stdin", i.os.Stdin())},
 			{"_stdout", 0, 0, nil, i.makeStdioFn("stdout", i.os.Stdout())},
@@ -431,23 +429,26 @@ func (i *Interp) Main(ctx context.Context, output Output, versionStr string) err
 	return nil
 }
 
+type completionResult struct {
+	Names  []string
+	Prefix string
+}
+
+type readlineOpts struct {
+	Prompt   string
+	Complete string
+	Timeout  float64
+}
+
 func (i *Interp) _readline(c any, a []any) gojq.Iter {
 	if i.evalInstance.isCompleting {
 		return gojq.NewIter()
 	}
 
-	var opts struct {
-		Promopt  string  `mapstructure:"prompt"`
-		Complete string  `mapstructure:"complete"`
-		Timeout  float64 `mapstructure:"timeout"`
-	}
-
-	if len(a) > 0 {
-		_ = mapstructure.Decode(a[0], &opts)
-	}
+	opts, _ := gojqextra.CastFn[readlineOpts](a[0], mapstruct.ToStruct)
 
 	expr, err := i.os.Readline(ReadlineOpts{
-		Prompt: opts.Promopt,
+		Prompt: opts.Prompt,
 		CompleteFn: func(line string, pos int) (newLine []string, shared int) {
 			completeCtx := i.evalInstance.ctx
 			if opts.Timeout > 0 {
@@ -480,20 +481,14 @@ func (i *Interp) _readline(c any, a []any) gojq.Iter {
 				}
 
 				// {abc: 123, abd: 123} | complete(".ab"; 3) will return {prefix: "ab", names: ["abc", "abd"]}
-
-				var result struct {
-					Names  []string `mapstructure:"names"`
-					Prefix string   `mapstructure:"prefix"`
+				r, ok := gojqextra.CastFn[completionResult](v, mapstruct.ToStruct)
+				if !ok {
+					return nil, pos, fmt.Errorf("completion result not a map")
 				}
 
-				_ = mapstructure.Decode(v, &result)
-				if len(result.Names) == 0 {
-					return nil, pos, nil
-				}
+				sharedLen := len(r.Prefix)
 
-				sharedLen := len(result.Prefix)
-
-				return result.Names, sharedLen, nil
+				return r.Names, sharedLen, nil
 			}()
 
 			// TODO: how to report err?
@@ -975,28 +970,28 @@ func (i *Interp) EvalFuncValues(ctx context.Context, c any, name string, args []
 }
 
 type Options struct {
-	Depth          int               `mapstructure:"depth"`
-	ArrayTruncate  int               `mapstructure:"array_truncate"`
-	Verbose        bool              `mapstructure:"verbose"`
-	Width          int               `mapstructure:"width"`
-	DecodeProgress bool              `mapstructure:"decode_progress"`
-	Color          bool              `mapstructure:"color"`
-	Colors         map[string]string `mapstructure:"colors"`
+	Depth          int
+	ArrayTruncate  int
+	Verbose        bool
+	Width          int
+	DecodeProgress bool
+	Color          bool
+	Colors         map[string]string
 	ByteColors     []struct {
-		Ranges [][2]int `mapstructure:"ranges"`
-		Value  string   `mapstructure:"value"`
-	} `mapstructure:"byte_colors"`
-	Unicode      bool   `mapstructure:"unicode"`
-	RawOutput    bool   `mapstructure:"raw_output"`
-	REPL         bool   `mapstructure:"repl"`
-	RawString    bool   `mapstructure:"raw_string"`
-	JoinString   string `mapstructure:"join_string"`
-	Compact      bool   `mapstructure:"compact"`
-	BitsFormat   string `mapstructure:"bits_format"`
-	LineBytes    int    `mapstructure:"line_bytes"`
-	DisplayBytes int    `mapstructure:"display_bytes"`
-	AddrBase     int    `mapstructure:"addrbase"`
-	SizeBase     int    `mapstructure:"sizebase"`
+		Ranges [][2]int
+		Value  string
+	}
+	Unicode      bool
+	RawOutput    bool
+	REPL         bool
+	RawString    bool
+	JoinString   string
+	Compact      bool
+	BitsFormat   string
+	LineBytes    int
+	DisplayBytes int
+	Addrbase     int
+	Sizebase     int
 
 	Decorator    Decorator
 	BitsFormatFn func(br bitio.ReaderAtSeeker) (any, error)
@@ -1055,7 +1050,7 @@ func bitsFormatFnFromOptions(opts Options) func(br bitio.ReaderAtSeeker) (any, e
 				return nil, err
 			}
 
-			return fmt.Sprintf("<%s>%s", mathextra.Bits(brLen).StringByteBits(opts.SizeBase), b.String()), nil
+			return fmt.Sprintf("<%s>%s", mathextra.Bits(brLen).StringByteBits(opts.Sizebase), b.String()), nil
 		}
 	}
 }
@@ -1091,11 +1086,11 @@ func (i *Interp) slurps() map[string]any {
 
 func (i *Interp) Options(v any) Options {
 	var opts Options
-	_ = mapstructure.Decode(v, &opts)
+	_ = mapstruct.ToStruct(v, &opts)
 	opts.ArrayTruncate = mathextra.MaxInt(0, opts.ArrayTruncate)
 	opts.Depth = mathextra.MaxInt(0, opts.Depth)
-	opts.AddrBase = mathextra.ClampInt(2, 36, opts.AddrBase)
-	opts.SizeBase = mathextra.ClampInt(2, 36, opts.SizeBase)
+	opts.Addrbase = mathextra.ClampInt(2, 36, opts.Addrbase)
+	opts.Sizebase = mathextra.ClampInt(2, 36, opts.Sizebase)
 	opts.LineBytes = mathextra.MaxInt(0, opts.LineBytes)
 	opts.DisplayBytes = mathextra.MaxInt(0, opts.DisplayBytes)
 	opts.Decorator = decoratorFromOptions(opts)
@@ -1132,69 +1127,4 @@ func (i *Interp) NewColorJSON(opts Options) (*colorjson.Encoder, error) {
 			Object:    []byte(opts.Decorator.Object.SetString),
 		},
 	), nil
-}
-
-var camelToSnakeRe = regexp.MustCompile(`[[:lower:]][[:upper:]]`)
-
-// "AaaBbb" -> "aaa_bbb"
-func camelToSnake(s string) string {
-	return strings.ToLower(camelToSnakeRe.ReplaceAllStringFunc(s, func(s string) string {
-		return s[0:1] + "_" + s[1:2]
-	}))
-}
-func mapToStruct(m map[string]any, v any) error {
-	ms, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
-		MatchName: func(mapKey, fieldName string) bool {
-			return camelToSnake(fieldName) == mapKey
-		},
-		DecodeHook: func(
-			f reflect.Value,
-			t reflect.Value) (any, error) {
-
-			// log.Printf("f: %#+v -> t: %#+v\n", f, t)
-
-			return f.Interface(), nil
-		},
-		Result: v,
-	})
-	if err != nil {
-		return err
-	}
-
-	if err := ms.Decode(m); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func camelCaseMap(m map[string]any) map[string]any {
-	nm := map[string]any{}
-	for k, v := range m {
-		sk := camelToSnake(k)
-		if vm, ok := v.(map[string]any); ok {
-			v = camelCaseMap(vm)
-		} else {
-			// TODO: error
-			v, _ = gojqextra.ToGoJQValue(v)
-		}
-		nm[sk] = v
-	}
-
-	return nm
-}
-
-func structToMap(v any) (map[string]any, error) {
-	m := map[string]any{}
-	ms, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
-		Result: &m,
-	})
-	if err != nil {
-		return nil, err
-	}
-	if err := ms.Decode(v); err != nil {
-		return nil, err
-	}
-
-	return camelCaseMap(m), nil
 }
