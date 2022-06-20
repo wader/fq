@@ -38,7 +38,7 @@ def decode($name; $decode_opts):
   | _decode(
       $name;
       ( {
-          _progress: (
+          progress: (
             if $opts.decode_progress and $opts.repl and stdout_tty.is_terminal then
               "_decode_progress"
             else null

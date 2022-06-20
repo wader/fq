@@ -23,6 +23,7 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/wader/fq/internal/colorjson"
 	"github.com/wader/fq/internal/gojqextra"
+	"github.com/wader/fq/internal/mapstruct"
 	"github.com/wader/fq/internal/proxysort"
 	"github.com/wader/fq/pkg/bitio"
 
@@ -93,7 +94,7 @@ func addFunc[Tc any](name string, fn func(c Tc) any) {
 		func(i *Interp) []Function {
 			return []Function{{
 				name, 0, 0, func(c any, a []any) any {
-					cv, ok := gojqextra.CastFn[Tc](c, mapToStruct)
+					cv, ok := gojqextra.CastFn[Tc](c, mapstruct.ToStruct)
 					if !ok {
 						return gojqextra.FuncTypeError{Name: name[1:], V: c}
 					}
@@ -114,11 +115,11 @@ func addFunc1[Tc any, Ta0 any](name string, fn func(c Tc, a0 Ta0) any) {
 		func(i *Interp) []Function {
 			return []Function{{
 				name, 1, 1, func(c any, a []any) any {
-					cv, ok := gojqextra.CastFn[Tc](c, mapToStruct)
+					cv, ok := gojqextra.CastFn[Tc](c, mapstruct.ToStruct)
 					if !ok {
 						return gojqextra.FuncTypeError{Name: name[1:], V: c}
 					}
-					a0, ok := gojqextra.CastFn[Ta0](a[0], mapToStruct)
+					a0, ok := gojqextra.CastFn[Ta0](a[0], mapstruct.ToStruct)
 					if !ok {
 						return gojqextra.FuncArgTypeError{Name: name[1:], ArgName: "first", V: c}
 					}
@@ -184,7 +185,7 @@ func init() {
 				if v, ok := toValue(nil, v); ok {
 					return v
 				}
-				panic(fmt.Sprintf("toValue not a JQValue value: %#v", v))
+				panic(fmt.Sprintf("toValue not a JQValue value: %#v %T", v, v))
 			},
 			colorjson.Colors{},
 		)
