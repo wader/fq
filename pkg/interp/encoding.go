@@ -893,15 +893,15 @@ func init() {
 	toURLValues := func(c map[string]any) url.Values {
 		qv := url.Values{}
 		for k, v := range c {
-			if va, ok := gojqextra.ToArray(v); ok {
+			if va, ok := gojqextra.Cast[[]any](v); ok {
 				var ss []string
 				for _, s := range va {
-					if s, ok := gojqextra.ToString(s); ok {
+					if s, ok := gojqextra.Cast[string](s); ok {
 						ss = append(ss, s)
 					}
 				}
 				qv[k] = ss
-			} else if vs, ok := gojqextra.ToString(v); ok {
+			} else if vs, ok := gojqextra.Cast[string](v); ok {
 				qv[k] = []string{vs}
 			}
 		}

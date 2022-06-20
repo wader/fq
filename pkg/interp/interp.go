@@ -578,7 +578,7 @@ func (i *Interp) makeStdioFn(name string, t Terminal) func(c any, a []any) gojq.
 			if !ok {
 				return gojq.NewIter(fmt.Errorf("%s is not readable", name))
 			}
-			l, ok := gojqextra.ToInt(a[0])
+			l, ok := gojqextra.Cast[int](a[0])
 			if !ok {
 				return gojq.NewIter(gojqextra.FuncTypeError{Name: name, V: a[0]})
 			}
