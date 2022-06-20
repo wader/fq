@@ -113,15 +113,15 @@ func toBitReaderEx(v any, inArray bool) (bitio.ReaderAtSeeker, error) {
 
 // note is used to implement tobytes* also
 func (i *Interp) _toBits(c any, a []any) any {
-	unit, ok := gojqextra.ToInt(a[0])
+	unit, ok := gojqextra.Cast[int](a[0])
 	if !ok {
 		return gojqextra.FuncTypeError{Name: "_tobits", V: a[0]}
 	}
-	keepRange, ok := gojqextra.ToBoolean(a[1])
+	keepRange, ok := gojqextra.Cast[bool](a[1])
 	if !ok {
 		return gojqextra.FuncTypeError{Name: "_tobits", V: a[1]}
 	}
-	padToUnits, ok := gojqextra.ToInt(a[2])
+	padToUnits, ok := gojqextra.Cast[int](a[2])
 	if !ok {
 		return gojqextra.FuncTypeError{Name: "_tobits", V: a[2]}
 	}
