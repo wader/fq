@@ -353,6 +353,7 @@ TODO: padding and alignment
 - All standard library functions from jq
 - Adds a few new general functions:
   - `print`, `println`, `printerr`, `printerrln` prints to stdout and stderr.
+  - `group` group values, same as `group_by(.)`.
   - `streaks`, `streaks_by(f)` like `group` but groups streaks based on condition.
   - `count`, `count_by(f)` like `group` but counts groups lengths.
   - `debug(f)` like `debug` but uses arg to produce debug message. `{a: 123} | debug({a}) | ...`.

@@ -35,6 +35,10 @@ def trim: capture("^\\s*(?<str>.*?)\\s*$"; "").str;
 # does +1 and [:1] as " "*0 is null
 def rpad($s; $w): . + ($s * ($w+1-length))[1:];
 
+# add missing group/0 function
+# https://github.com/stedolan/jq/issues/2444
+def group: group_by(.);
+
 # like group but groups streaks based on condition
 def streaks_by(f):
   ( . as $a
