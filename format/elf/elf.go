@@ -431,9 +431,11 @@ func elfDecodeGNUHash(d *decode.D, ec elfContext, size int64, strTab string) {
 }
 
 type dynamicContext struct {
-	entries int
-	strTab  string
-	symEnt  int64
+	entries   int
+	strTabPtr int64
+	strSzVal  int64
+	strTab    string
+	symEnt    int64
 }
 
 func elfReadDynamicTags(d *decode.D, ec *elfContext) dynamicContext {
@@ -461,9 +463,10 @@ func elfReadDynamicTags(d *decode.D, ec *elfContext) dynamicContext {
 	}
 
 	return dynamicContext{
-		entries: entries,
-		strTab:  string(d.BytesRange(strTabPtr, int(strSzVal/8))),
-		symEnt:  symEnt,
+		entries:   entries,
+		strTabPtr: strTabPtr,
+		strSzVal:  strSzVal,
+		symEnt:    symEnt,
 	}
 }
 
@@ -557,6 +560,19 @@ func elfReadSectionHeaders(d *decode.D, ec *elfContext) {
 		}
 
 		ec.sections = append(ec.sections, sh)
+	}
+
+	// for dynamic linking sections find offset to string table by looking up
+	// section by address using string stable address
+	for i := range ec.sections {
+		sh := &ec.sections[i]
+		if sh.typ != SHT_DYNAMIC {
+			continue
+		}
+		if i, ok := ec.sectionIndexByAddr(sh.dc.strTabPtr); ok {
+			strTabSh := ec.sections[i]
+			sh.dc.strTab = string(d.BytesRange(strTabSh.offset, int(sh.dc.strSzVal/8)))
+		}
 	}
 
 	ec.strTabMap = map[string]string{}
