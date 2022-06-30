@@ -5,7 +5,7 @@
 - Create a directory  `format/<name>`
 - Copy some similar decoder, `format/format/bson.go` is quite small, to `format/<name>/<name>.go`
 - Cleanup and fill in the register struct, rename `format.BSON` and add it
-to `format/fromat.go` and don't forget to change the string constant.
+to `format/format.go` and don't forget to change the string constant.
 - Add an import to `format/all/all.go`
 
 ### Some general tips
@@ -38,8 +38,9 @@ Flags can be struct with bit-fields.
 
 `<Field>?(<reader<length>?>|<type>Fn>)(...[, scalar.Mapper...]) <type>`
 
-- If starts with `Field` a field will be added and first argument will be name of field. If not it will just read.
-- `<reader<length>?>|<type>Fn>` a reader or a reader function
+- If it starts with `Field` a field will be added and first argument will be name of field. If not it will just read.
+- `<try>?<reader<length>?>|<try>?<type>Fn>` a reader or a reader function
+  - `<try>?` If prefixed with `Try` function return error instead of panic on error.
   - `<reader<length>?>` Read bits using some decoder.
     - `U16` unsigned 16 bit integer.
     - `UTF8` UTF8 with byte length as argument.

@@ -280,7 +280,7 @@ This type is returned by decoders and it used to represent parts of the decoed i
 
 Each decode value has these properties:
 - A bit range in the input
-  - Can be accessed as a binary using `tobits`/`tobytes`. Use the `start` and `size` keys to position and size.
+  - Can be accessed as a binary using `tobits`/`tobytes`. Use the `start` and `size` keys to access position and size.
   - `.name` as bytes `.name | tobytes`
   - Bit 4-8 of `.name` as bits `.name | tobits[4:8]`
 
