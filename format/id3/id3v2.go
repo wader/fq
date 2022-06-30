@@ -544,7 +544,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 	if unsyncFlag {
 		// TODO: DecodeFn
 		// TODO: unknown after frame decode
-		unsyncedBR := d.MustNewBitBufFromReader(unsyncReader{Reader: bitio.NewIOReader(d.BitBufRange(d.Pos(), int64(dataSize)*8))})
+		unsyncedBR := d.NewBitBufFromReader(unsyncReader{Reader: bitio.NewIOReader(d.BitBufRange(d.Pos(), int64(dataSize)*8))})
 		d.FieldFormatBitBuf("unsync", unsyncedBR, decode.FormatFn(func(d *decode.D, in any) any {
 			if fn, ok := frames[idNormalized]; ok {
 				fn(d)

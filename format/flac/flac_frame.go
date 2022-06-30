@@ -319,7 +319,7 @@ func frameDecode(d *decode.D, in any) any {
 		})
 
 		headerCRC := &checksum.CRC{Bits: 8, Table: checksum.ATM8Table}
-		d.MustCopyBits(headerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
+		d.CopyBits(headerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
 		d.FieldU8("crc", d.ValidateUBytes(headerCRC.Sum(nil)), scalar.ActualHex)
 	})
 
@@ -565,7 +565,7 @@ func frameDecode(d *decode.D, in any) any {
 	d.FieldU("byte_align", d.ByteAlignBits(), d.AssertU(0))
 	// <16> CRC-16 (polynomial = x^16 + x^15 + x^2 + x^0, initialized with 0) of everything before the crc, back to and including the frame header sync code
 	footerCRC := &checksum.CRC{Bits: 16, Table: checksum.ANSI16Table}
-	d.MustCopyBits(footerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
+	d.CopyBits(footerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
 	d.FieldRawLen("footer_crc", 16, d.ValidateBitBuf(footerCRC.Sum(nil)), scalar.RawHex)
 
 	streamSamples := len(channelSamples[0])

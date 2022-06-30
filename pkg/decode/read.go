@@ -20,7 +20,7 @@ func (d *D) tryUEndian(nBits int, endian Endian) (uint64, error) {
 	if nBits < 0 {
 		return 0, fmt.Errorf("tryUEndian nBits must be >= 0 (%d)", nBits)
 	}
-	n, err := d.bits(nBits)
+	n, err := d.TryBits(nBits)
 	if err != nil {
 		return 0, err
 	}
@@ -88,7 +88,7 @@ func (d *D) tryFEndian(nBits int, endian Endian) (float64, error) {
 	if nBits < 0 {
 		return 0, fmt.Errorf("tryFEndian nBits must be >= 0 (%d)", nBits)
 	}
-	n, err := d.bits(nBits)
+	n, err := d.TryBits(nBits)
 	if err != nil {
 		return 0, err
 	}
@@ -111,7 +111,7 @@ func (d *D) tryFPEndian(nBits int, fBits int, endian Endian) (float64, error) {
 	if nBits < 0 {
 		return 0, fmt.Errorf("tryFPEndian nBits must be >= 0 (%d)", nBits)
 	}
-	n, err := d.bits(nBits)
+	n, err := d.TryBits(nBits)
 	if err != nil {
 		return 0, err
 	}
@@ -158,7 +158,7 @@ func (d *D) tryTextLenPrefixed(lenBits int, fixedBytes int, e encoding.Encoding)
 	}
 
 	p := d.Pos()
-	l, err := d.bits(lenBits)
+	l, err := d.TryBits(lenBits)
 	if err != nil {
 		return "", err
 	}
@@ -226,7 +226,7 @@ func (d *D) tryUnary(ov uint64) (uint64, error) {
 	p := d.Pos()
 	var n uint64
 	for {
-		b, err := d.bits(1)
+		b, err := d.TryBits(1)
 		if err != nil {
 			d.SeekAbs(p)
 			return 0, err
@@ -240,7 +240,7 @@ func (d *D) tryUnary(ov uint64) (uint64, error) {
 }
 
 func (d *D) tryBool() (bool, error) {
-	n, err := d.bits(1)
+	n, err := d.TryBits(1)
 	if err != nil {
 		return false, err
 	}

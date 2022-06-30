@@ -44,7 +44,7 @@ func pageDecode(d *decode.D, in any) any {
 	})
 	d.FieldArray("segments", func(d *decode.D) {
 		for _, ss := range segmentTable {
-			bs := d.MustReadAllBits(d.FieldRawLen("segment", int64(ss)*8))
+			bs := d.ReadAllBits(d.FieldRawLen("segment", int64(ss)*8))
 			p.Segments = append(p.Segments, bs)
 		}
 	})
@@ -52,9 +52,9 @@ func pageDecode(d *decode.D, in any) any {
 
 	pageChecksumValue := d.FieldGet("crc")
 	pageCRC := &checksum.CRC{Bits: 32, Table: checksum.Poly04c11db7Table}
-	d.MustCopy(pageCRC, bitio.NewIOReader(d.BitBufRange(startPos, pageChecksumValue.Range.Start-startPos)))                      // header before checksum
-	d.MustCopy(pageCRC, bytes.NewReader([]byte{0, 0, 0, 0}))                                                                     // zero checksum bits
-	d.MustCopy(pageCRC, bitio.NewIOReader(d.BitBufRange(pageChecksumValue.Range.Stop(), endPos-pageChecksumValue.Range.Stop()))) // rest of page
+	d.Copy(pageCRC, bitio.NewIOReader(d.BitBufRange(startPos, pageChecksumValue.Range.Start-startPos)))                      // header before checksum
+	d.Copy(pageCRC, bytes.NewReader([]byte{0, 0, 0, 0}))                                                                     // zero checksum bits
+	d.Copy(pageCRC, bitio.NewIOReader(d.BitBufRange(pageChecksumValue.Range.Stop(), endPos-pageChecksumValue.Range.Stop()))) // rest of page
 	_ = pageChecksumValue.TryScalarFn(d.ValidateUBytes(pageCRC.Sum(nil)))
 
 	return p

@@ -1086,7 +1086,7 @@ func init() {
 			d.FieldU24("flags")
 			systemIDBR := d.FieldRawLen("system_id", 16*8, systemIDNames)
 			// TODO: make nicer
-			systemID := d.MustReadAllBits(systemIDBR)
+			systemID := d.ReadAllBits(systemIDBR)
 			switch version {
 			case 0:
 			case 1:

@@ -228,7 +228,7 @@ func pngDecode(d *decode.D, in any) any {
 		})
 
 		chunkCRC := crc32.NewIEEE()
-		d.MustCopy(chunkCRC, bitio.NewIOReader(d.BitBufRange(crcStartPos, d.Pos()-crcStartPos)))
+		d.Copy(chunkCRC, bitio.NewIOReader(d.BitBufRange(crcStartPos, d.Pos()-crcStartPos)))
 		d.FieldU32("crc", d.ValidateUBytes(chunkCRC.Sum(nil)), scalar.ActualHex)
 	})
 

@@ -94,7 +94,7 @@ func decodeBlockCodec(d *decode.D, dataSize int64, codec string) *bytes.Buffer {
 	bb := &bytes.Buffer{}
 	if codec == "deflate" {
 		br := d.FieldRawLen("compressed", dataSize*8)
-		d.MustCopy(bb, flate.NewReader(bitio.NewIOReader(br)))
+		d.Copy(bb, flate.NewReader(bitio.NewIOReader(br)))
 	} else if codec == "snappy" {
 		// Everything but last 4 bytes which are the checksum
 		n := dataSize - 4
@@ -110,11 +110,11 @@ func decodeBlockCodec(d *decode.D, dataSize int64, codec string) *bytes.Buffer {
 		if err != nil {
 			d.Fatalf("failed decompressing data: %v", err)
 		}
-		d.MustCopy(bb, bytes.NewReader(decompressed))
+		d.Copy(bb, bytes.NewReader(decompressed))
 
 		// Check the checksum
 		crc32W := crc32.NewIEEE()
-		d.MustCopy(crc32W, bytes.NewReader(bb.Bytes()))
+		d.Copy(crc32W, bytes.NewReader(bb.Bytes()))
 		d.FieldU32("crc", d.ValidateUBytes(crc32W.Sum(nil)), scalar.ActualHex)
 	} else {
 		// Unknown codec, just dump the compressed data.

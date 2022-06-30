@@ -306,7 +306,7 @@ func jpegDecode(d *decode.D, in any) any {
 									// TODO: FieldBitsLen? concat bitbuf?
 									chunk := d.FieldRawLen("data", d.BitsLeft())
 									// TODO: redo this? multi reader?
-									chunkBytes := d.MustReadAllBits(chunk)
+									chunkBytes := d.ReadAllBits(chunk)
 
 									if extendedXMP == nil {
 										extendedXMP = make([]byte, fullLength)
