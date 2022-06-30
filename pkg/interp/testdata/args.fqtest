@@ -150,6 +150,7 @@ jpeg                 Joint Photographic Experts Group file
 json                 JSON
 macho                Mach-O macOS executable
 matroska             Matroska file
+mbr                  Master Boot Record
 mp3                  MP3 file
 mp3_frame            MPEG audio layer 3 frame
 mp4                  ISOBMFF MPEG-4 part 12 and similar
