@@ -94,8 +94,8 @@ func decodeIPv4(d *decode.D, in any) any {
 	headerEnd := d.Pos()
 
 	ipv4Checksum := &checksum.IPv4{}
-	d.MustCopy(ipv4Checksum, bitio.NewIOReader(d.BitBufRange(0, checksumStart)))
-	d.MustCopy(ipv4Checksum, bitio.NewIOReader(d.BitBufRange(checksumEnd, headerEnd-checksumEnd)))
+	d.Copy(ipv4Checksum, bitio.NewIOReader(d.BitBufRange(0, checksumStart)))
+	d.Copy(ipv4Checksum, bitio.NewIOReader(d.BitBufRange(checksumEnd, headerEnd-checksumEnd)))
 	_ = d.FieldMustGet("header_checksum").TryScalarFn(d.ValidateUBytes(ipv4Checksum.Sum(nil)), scalar.ActualHex)
 
 	dataLen := int64(totalLength-(ihl*4)) * 8

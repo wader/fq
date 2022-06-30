@@ -87,7 +87,7 @@ func hevcNALUDecode(d *decode.D, in any) any {
 	nalType := d.FieldU6("nal_unit_type", hevcNALNames)
 	d.FieldU6("nuh_layer_id")
 	d.FieldU3("nuh_temporal_id_plus1")
-	unescapedBR := d.MustNewBitBufFromReader(decode.NALUnescapeReader{Reader: bitio.NewIOReader(d.BitBufRange(d.Pos(), d.BitsLeft()))})
+	unescapedBR := d.NewBitBufFromReader(decode.NALUnescapeReader{Reader: bitio.NewIOReader(d.BitBufRange(d.Pos(), d.BitsLeft()))})
 
 	switch nalType {
 	case hevcNALNUTVPS:

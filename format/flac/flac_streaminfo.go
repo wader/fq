@@ -27,7 +27,7 @@ func streaminfoDecode(d *decode.D, in any) any {
 	bitsPerSample := d.FieldU5("bits_per_sample", scalar.ActualUAdd(1))
 	totalSamplesInStream := d.FieldU("total_samples_in_stream", 36)
 	md5BR := d.FieldRawLen("md5", 16*8, scalar.RawHex)
-	md5b := d.MustReadAllBits(md5BR)
+	md5b := d.ReadAllBits(md5BR)
 
 	return format.FlacStreaminfoOut{
 		StreamInfo: format.FlacStreamInfo{

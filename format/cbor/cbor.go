@@ -140,7 +140,7 @@ func decodeCBORValue(d *decode.D) any {
 				return nil
 			}
 
-			buf := d.MustReadAllBits(d.FieldRawLen("value", int64(count)*8))
+			buf := d.ReadAllBits(d.FieldRawLen("value", int64(count)*8))
 
 			return buf
 		}},

@@ -210,49 +210,49 @@ func (d *D) FieldDecoder(name string, bitBuf bitio.ReaderAtSeeker, v any) *D {
 	}
 }
 
-func (d *D) CopyBits(w io.Writer, r bitio.Reader) (int64, error) {
+func (d *D) TryCopyBits(w io.Writer, r bitio.Reader) (int64, error) {
 	// TODO: what size? now same as io.Copy
 	buf := d.SharedReadBuf(32 * 1024)
 	return bitioextra.CopyBitsBuffer(w, r, buf)
 }
 
-func (d *D) MustCopyBits(w io.Writer, r bitio.Reader) int64 {
-	n, err := d.CopyBits(w, r)
+func (d *D) CopyBits(w io.Writer, r bitio.Reader) int64 {
+	n, err := d.TryCopyBits(w, r)
 	if err != nil {
-		d.IOPanic(err, "MustCopy: Copy")
+		d.IOPanic(err, "CopyBits: Copy")
 	}
 	return n
 }
 
-func (d *D) Copy(w io.Writer, r io.Reader) (int64, error) {
+func (d *D) TryCopy(w io.Writer, r io.Reader) (int64, error) {
 	// TODO: what size? now same as io.Copy
 	buf := d.SharedReadBuf(32 * 1024)
 	return io.CopyBuffer(w, r, buf)
 }
 
-func (d *D) MustCopy(w io.Writer, r io.Reader) int64 {
-	n, err := d.Copy(w, r)
+func (d *D) Copy(w io.Writer, r io.Reader) int64 {
+	n, err := d.TryCopy(w, r)
 	if err != nil {
-		d.IOPanic(err, "MustCopy: Copy")
+		d.IOPanic(err, "Copy")
 	}
 	return n
 }
 
-func (d *D) MustCloneReadSeeker(br bitio.ReadSeeker) bitio.ReadSeeker {
+func (d *D) CloneReadSeeker(br bitio.ReadSeeker) bitio.ReadSeeker {
 	br, err := bitio.CloneReadSeeker(br)
 	if err != nil {
-		d.IOPanic(err, "MustClone")
+		d.IOPanic(err, "CloneReadSeeker")
 	}
 	return br
 }
 
-func (d *D) MustNewBitBufFromReader(r io.Reader) bitio.ReaderAtSeeker {
+func (d *D) NewBitBufFromReader(r io.Reader) bitio.ReaderAtSeeker {
 	b := &bytes.Buffer{}
-	d.MustCopy(b, r)
+	d.Copy(b, r)
 	return bitio.NewBitReader(b.Bytes(), -1)
 }
 
-func (d *D) ReadAllBits(r bitio.Reader) ([]byte, error) {
+func (d *D) TryReadAllBits(r bitio.Reader) ([]byte, error) {
 	bb := &bytes.Buffer{}
 	buf := d.SharedReadBuf(32 * 1024)
 	if _, err := bitioextra.CopyBitsBuffer(bb, r, buf); err != nil {
@@ -261,8 +261,8 @@ func (d *D) ReadAllBits(r bitio.Reader) ([]byte, error) {
 	return bb.Bytes(), nil
 }
 
-func (d *D) MustReadAllBits(r bitio.Reader) []byte {
-	buf, err := d.ReadAllBits(r)
+func (d *D) ReadAllBits(r bitio.Reader) []byte {
+	buf, err := d.TryReadAllBits(r)
 	if err != nil {
 		d.IOPanic(err, "Bytes ReadAllBytes")
 	}
@@ -340,7 +340,7 @@ func (d *D) IOPanic(err error, op string) {
 }
 
 // Bits reads nBits bits from buffer
-func (d *D) bits(nBits int) (uint64, error) {
+func (d *D) TryBits(nBits int) (uint64, error) {
 	if nBits < 0 || nBits > 64 {
 		return 0, fmt.Errorf("nBits must be 0-64 (%d)", nBits)
 	}
@@ -355,12 +355,12 @@ func (d *D) bits(nBits int) (uint64, error) {
 }
 
 // Bits reads nBits bits from buffer
-func (d *D) Bits(nBits int) (uint64, error) {
-	n, err := d.bits(nBits)
+func (d *D) Bits(nBits int) uint64 {
+	n, err := d.TryBits(nBits)
 	if err != nil {
-		return 0, err
+		panic(IOError{Err: err, Op: "Bits", ReadSize: int64(nBits), Pos: d.Pos()})
 	}
-	return n, nil
+	return n
 }
 
 func (d *D) PeekBits(nBits int) uint64 {
@@ -419,7 +419,7 @@ func (d *D) TryPeekBits(nBits int) (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
-	n, err := d.bits(nBits)
+	n, err := d.TryBits(nBits)
 	if _, err := d.bitBuf.SeekBits(start, io.SeekStart); err != nil {
 		return 0, err
 	}

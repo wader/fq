@@ -190,7 +190,7 @@ func pesPacketDecode(d *decode.D, in any) any {
 
 					v = subStreamPacket{
 						number: int(substreamNumber),
-						buf:    d.MustReadAllBits(substreamBR),
+						buf:    d.ReadAllBits(substreamBR),
 					}
 				})
 			})

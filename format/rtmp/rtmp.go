@@ -459,7 +459,7 @@ func rtmpDecode(d *decode.D, in any) any {
 				}
 
 				if payloadLength > 0 {
-					d.MustCopyBits(&m.b, d.FieldRawLen("data", payloadLength))
+					d.CopyBits(&m.b, d.FieldRawLen("data", payloadLength))
 				}
 
 				if m.l == uint64(m.b.Len()) {
