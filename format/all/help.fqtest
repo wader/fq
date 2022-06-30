@@ -473,6 +473,17 @@ out   https://matroska.org/technical/specs/index.html
 out   https://www.matroska.org/technical/basics.html
 out   https://www.matroska.org/technical/codec_specs.html
 out   https://wiki.xiph.org/MatroskaOpus
+"help(mbr)"
+out mbr: Master Boot Record decoder
+out Supports decoding Master Boot Record data
+out Examples:
+out   # Decode file as mbr
+out   $ fq -d mbr . file
+out   # Decode value as mbr
+out   ... | mbr
+out References and links
+out   https://thestarman.pcministry.com/asm/mbr/PartTables.htm#mbr
+out   https://en.wikipedia.org/wiki/Master_boot_record
 "help(mp3)"
 out mp3: MP3 file decoder
 out Options:

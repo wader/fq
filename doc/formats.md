@@ -59,6 +59,7 @@
 |`json`                      |JSON                                                                                     |<sub></sub>|
 |[`macho`](#macho)           |Mach-O&nbsp;macOS&nbsp;executable                                                        |<sub></sub>|
 |[`matroska`](#matroska)     |Matroska&nbsp;file                                                                       |<sub>`aac_frame` `av1_ccr` `av1_frame` `avc_au` `avc_dcr` `flac_frame` `flac_metadatablocks` `hevc_au` `hevc_dcr` `image` `mp3_frame` `mpeg_asc` `mpeg_pes_packet` `mpeg_spu` `opus_packet` `vorbis_packet` `vp8_frame` `vp9_cfm` `vp9_frame`</sub>|
+|[`mbr`](#mbr)               |Master&nbsp;Boot&nbsp;Record                                                             |<sub></sub>|
 |[`mp3`](#mp3)               |MP3&nbsp;file                                                                            |<sub>`id3v2` `id3v1` `id3v11` `apev2` `mp3_frame`</sub>|
 |`mp3_frame`                 |MPEG&nbsp;audio&nbsp;layer&nbsp;3&nbsp;frame                                             |<sub>`xing`</sub>|
 |[`mp4`](#mp4)               |ISOBMFF&nbsp;MPEG-4&nbsp;part&nbsp;12&nbsp;and&nbsp;similar                              |<sub>`aac_frame` `av1_ccr` `av1_frame` `flac_frame` `flac_metadatablocks` `id3v2` `image` `jpeg` `mp3_frame` `avc_au` `avc_dcr` `mpeg_es` `hevc_au` `hevc_dcr` `mpeg_pes_packet` `opus_packet` `protobuf_widevine` `pssh_playready` `vorbis_packet` `vp9_frame` `vpx_ccr` `icc_profile`</sub>|
@@ -351,6 +352,15 @@ Return `matroska_path` string for a box decode value
 - https://www.matroska.org/technical/basics.html
 - https://www.matroska.org/technical/codec_specs.html
 - https://wiki.xiph.org/MatroskaOpus
+
+### mbr
+
+Supports decoding Master Boot Record data
+
+#### References and links
+
+- https://thestarman.pcministry.com/asm/mbr/PartTables.htm#mbr
+- https://en.wikipedia.org/wiki/Master_boot_record
 
 ### mp3
 
