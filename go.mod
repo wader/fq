@@ -36,10 +36,10 @@ require (
 	github.com/pmezard/go-difflib v1.0.0
 	// has no tags
 	// go get -d golang.org/x/crypto@master && go mod tidy
-	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e
+	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
 	// has no tags
 	// go get -d golang.org/x/net@master && go mod tidy
-	golang.org/x/net v0.0.0-20220526153639-5463443f8c37
+	golang.org/x/net v0.0.0-20220630215102-69896b714898
 	// bump: gomod-golang/text /golang\.org\/x\/text v(.*)/ https://github.com/golang/text.git|^0
 	// bump: gomod-golang/text command go get -d golang.org/x/text@v$LATEST && go mod tidy
 	// bump: gomod-golang/text link "Source diff $CURRENT..$LATEST" https://github.com/golang/text/compare/v$CURRENT..v$LATEST
