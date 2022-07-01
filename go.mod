@@ -6,7 +6,7 @@ require (
 	// fork of github.com/itchyny/gojq, see github.com/wader/gojq fq branch
 	github.com/wader/gojq v0.12.1-0.20220601152154-922ce7140f4e
 	// fork of github.com/chzyer/readline, see github.com/wader/readline fq branch
-	github.com/wader/readline v0.0.0-20220519145246-cc6b808370a7
+	github.com/wader/readline v0.0.0-20220701173129-54010e5640f9
 )
 
 require (
@@ -53,5 +53,5 @@ require (
 require (
 	github.com/itchyny/timefmt-go v0.1.3 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
-	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
+	golang.org/x/sys v0.0.0-20220627191245-f75cf1eec38b // indirect
 )
