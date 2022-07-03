@@ -3,6 +3,7 @@ package gojqextra
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"math"
 	"math/big"
@@ -308,8 +309,13 @@ func (v String) JQValueKeys() any                    { return FuncTypeNameError{
 func (v String) JQValueHas(key any) any {
 	return FuncTypeNameError{Name: "has", Typ: "string"}
 }
-func (v String) JQValueType() string  { return "string" }
-func (v String) JQValueToNumber() any { return gojq.NormalizeNumbers(string(v)) }
+func (v String) JQValueType() string { return "string" }
+func (v String) JQValueToNumber() any {
+	if !gojq.ValidNumber(string(v)) {
+		return fmt.Errorf("invalid number: %q", string(v))
+	}
+	return gojq.NormalizeNumber(json.Number(string(v)))
+}
 func (v String) JQValueToString() any { return string(v) }
 func (v String) JQValueToGoJQ() any   { return string(v) }
 
