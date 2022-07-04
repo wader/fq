@@ -7,6 +7,7 @@ def _opt_build_default_fixed:
   | {
       addrbase:       16,
       arg:            [],
+      argdecode:      [],
       argjson:        [],
       array_truncate: 50,
       bits_format:    "snippet",
@@ -42,7 +43,6 @@ def _opt_build_default_fixed:
       },
       compact:            false,
       completion_timeout: (env.COMPLETION_TIMEOUT | if . != null then tonumber else 1 end),
-      decode_file:        [],
       decode_format:      "probe",
       decode_progress:    (env.NO_DECODE_PROGRESS == null),
       depth:              0,
@@ -72,6 +72,7 @@ def _opt_options:
   {
     addrbase:           "number",
     arg:                "array_string_pair",
+    argdecode:          "array_string_pair",
     argjson:            "array_string_pair",
     array_truncate:     "number",
     bits_format:        "string",
@@ -80,7 +81,6 @@ def _opt_options:
     colors:             "csv_kv_obj",
     compact:            "boolean",
     completion_timeout: "number",
-    decode_file:        "array_string_pair",
     decode_format:      "string",
     decode_progress:    "boolean",
     depth:              "number",
@@ -359,6 +359,13 @@ def _opt_cli_opts:
       description: "Set variable $NAME to string VALUE",
       pairs: "NAME VALUE"
     },
+    "argdecode": {
+      long: "--argdecode",
+      # TODO: remove at some point
+      aliases: ["--decode-file"],
+      description: "Set variable $NAME to decode of PATH",
+      pairs: "NAME PATH"
+    },
     "argjson": {
       long: "--argjson",
       description: "Set variable $NAME to JSON",
@@ -381,11 +388,6 @@ def _opt_cli_opts:
       long: "--decode",
       description: "Decode format (probe)",
       string: "NAME"
-    },
-    "decode_file": {
-      long: "--decode-file",
-      description: "Set variable $NAME to decode of file",
-      pairs: "NAME PATH"
     },
     "expr_file": {
       short: "-f",

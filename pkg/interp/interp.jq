@@ -165,13 +165,13 @@ def _cli_eval($expr; $opts):
 
 
 def _main:
-  def _map_decode_file:
+  def _map_argdecode:
     map(
       ( . as $a
       | .[1] |=
         try (open | decode)
         catch
-          ( "--decode-file \($a[0]): \(.)"
+          ( "--argdecode \($a[0]): \(.)"
           | halt_error(_exit_code_args_error)
           )
       )
@@ -221,7 +221,7 @@ def _main:
             ( $opts.arg +
               $opts.argjson +
               $opts.raw_file +
-              ($opts.decode_file | if . then _map_decode_file end)
+              ($opts.argdecode | if . then _map_argdecode end)
             | map({key: .[0], value: .[1]})
             | from_entries
             )
