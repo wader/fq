@@ -178,7 +178,7 @@ func (rs SRangeToScalar) MapScalar(s S) (S, error) {
 	return s, nil
 }
 
-func rawSym(s S, nBytes int, fn func(b []byte) string) (S, error) {
+func RawSym(s S, nBytes int, fn func(b []byte) string) (S, error) {
 	br, ok := s.Actual.(bitio.ReadAtSeeker)
 	if !ok {
 		return s, nil
@@ -208,13 +208,13 @@ func rawSym(s S, nBytes int, fn func(b []byte) string) (S, error) {
 }
 
 var RawUUID = Fn(func(s S) (S, error) {
-	return rawSym(s, -1, func(b []byte) string {
+	return RawSym(s, -1, func(b []byte) string {
 		return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
 	})
 })
 
 var RawHex = Fn(func(s S) (S, error) {
-	return rawSym(s, -1, func(b []byte) string { return fmt.Sprintf("%x", b) })
+	return RawSym(s, -1, func(b []byte) string { return fmt.Sprintf("%x", b) })
 })
 
 type BytesToScalar []struct {

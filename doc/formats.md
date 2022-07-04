@@ -23,6 +23,10 @@
 |`avc_sps`                   |H.264/AVC&nbsp;Sequence&nbsp;Parameter&nbsp;Set                                          |<sub></sub>|
 |[`avro_ocf`](#avro_ocf)     |Avro&nbsp;object&nbsp;container&nbsp;file                                                |<sub></sub>|
 |[`bencode`](#bencode)       |BitTorrent&nbsp;bencoding                                                                |<sub></sub>|
+|`bitcoin_blkdat`            |Bitcoin&nbsp;blk.dat                                                                     |<sub>`bitcoin_block`</sub>|
+|`bitcoin_block`             |Bitcoin&nbsp;block                                                                       |<sub>`bitcoin_transaction`</sub>|
+|`bitcoin_script`            |Bitcoin&nbsp;script                                                                      |<sub></sub>|
+|`bitcoin_transaction`       |Bitcoin&nbsp;transaction                                                                 |<sub>`bitcoin_script`</sub>|
 |`bsd_loopback_frame`        |BSD&nbsp;loopback&nbsp;frame                                                             |<sub>`inet_packet`</sub>|
 |[`bson`](#bson)             |Binary&nbsp;JSON                                                                         |<sub></sub>|
 |`bzip2`                     |bzip2&nbsp;compression                                                                   |<sub>`probe`</sub>|
@@ -100,7 +104,7 @@
 |`inet_packet`               |Group                                                                                    |<sub>`ipv4_packet` `ipv6_packet`</sub>|
 |`ip_packet`                 |Group                                                                                    |<sub>`icmp` `icmpv6` `tcp_segment` `udp_datagram`</sub>|
 |`link_frame`                |Group                                                                                    |<sub>`bsd_loopback_frame` `ether8023_frame` `sll2_packet` `sll_packet`</sub>|
-|`probe`                     |Group                                                                                    |<sub>`adts` `ar` `avro_ocf` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `macho` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `wav` `webp` `zip`</sub>|
+|`probe`                     |Group                                                                                    |<sub>`adts` `ar` `avro_ocf` `bitcoin_blkdat` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `macho` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `wav` `webp` `zip`</sub>|
 |`tcp_stream`                |Group                                                                                    |<sub>`dns` `rtmp`</sub>|
 |`udp_payload`               |Group                                                                                    |<sub>`dns`</sub>|
 
