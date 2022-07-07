@@ -103,6 +103,12 @@ type moof struct {
 	defaultSampleSize             int64
 	defaultSampleDescriptionIndex int
 	truns                         []trun
+	sencs                         []senc
+}
+
+// TODO: nothing for now
+type senc struct {
+	entries []struct{}
 }
 
 type trun struct {
@@ -208,9 +214,9 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 		d.RangeSorted = false
 
 		for _, t := range sortedTracks {
-			decodeSampleRange := func(d *decode.D, t *track, dataFormat string, name string, firstBit int64, nBits int64, inArg any) {
+			decodeSampleRange := func(d *decode.D, t *track, decodeSample bool, dataFormat string, name string, firstBit int64, nBits int64, inArg any) {
 				d.RangeFn(firstBit, nBits, func(d *decode.D) {
-					if !ctx.opts.DecodeSamples {
+					if !decodeSample {
 						d.FieldRawLen(name, d.BitsLeft())
 						return
 					}
@@ -334,7 +340,7 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 
 							// log.Println(logStrFn())
 
-							decodeSampleRange(d, t, trackSDDataFormat, "sample", sampleOffset*8, stszEntry.size*8, t.formatInArg)
+							decodeSampleRange(d, t, ctx.opts.DecodeSamples, trackSDDataFormat, "sample", sampleOffset*8, stszEntry.size*8, t.formatInArg)
 
 							sampleOffset += stszEntry.size
 							stscEntryNr++
@@ -345,10 +351,14 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 
 					sampleNr := 0
 					for _, m := range t.moofs {
-						for _, trun := range m.truns {
+						for trunNr, trun := range m.truns {
+							var senc senc
+							if trunNr < len(m.sencs) {
+								senc = m.sencs[trunNr]
+							}
 							sampleOffset := m.offset + trun.dataOffset
 
-							for _, sz := range trun.samplesSizes {
+							for trunSampleNr, sz := range trun.samplesSizes {
 								dataFormat := trackSDDataFormat
 								if m.defaultSampleDescriptionIndex != 0 && m.defaultSampleDescriptionIndex-1 < len(t.sampleDescriptions) {
 									sd := t.sampleDescriptions[m.defaultSampleDescriptionIndex-1]
@@ -372,7 +382,14 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 								// }
 								// log.Println(logStrFn())
 
-								decodeSampleRange(d, t, dataFormat, "sample", sampleOffset*8, sz*8, t.formatInArg)
+								decodeSample := ctx.opts.DecodeSamples
+								if trunSampleNr < len(senc.entries) {
+									// TODO: encrypted
+									decodeSample = false
+								}
+
+								decodeSampleRange(d, t, decodeSample, dataFormat, "sample", sampleOffset*8, sz*8, t.formatInArg)
+
 								sampleOffset += sz
 								sampleNr++
 							}

@@ -1251,7 +1251,12 @@ func init() {
 				// need to know iv size
 				return
 			}
+			m := &moof{}
+			if t := ctx.currentTrafBox(); t != nil {
+				m = t.moof
+			}
 
+			s := senc{}
 			sampleCount := d.FieldU32("sample_count")
 			d.FieldArray("samples", func(d *decode.D) {
 				for i := uint64(0); i < sampleCount; i++ {
@@ -1271,8 +1276,12 @@ func init() {
 							})
 						}
 					})
+
+					// TODO: add iv etc
+					s.entries = append(s.entries, struct{}{})
 				}
 			})
+			m.sencs = append(m.sencs, s)
 		},
 		"tenc": func(ctx *decodeContext, d *decode.D) {
 			version := d.FieldU8("version")
