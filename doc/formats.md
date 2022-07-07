@@ -36,6 +36,7 @@
 |`elf`                       |Executable&nbsp;and&nbsp;Linkable&nbsp;Format                                            |<sub></sub>|
 |`ether8023_frame`           |Ethernet&nbsp;802.3&nbsp;frame                                                           |<sub>`inet_packet`</sub>|
 |`exif`                      |Exchangeable&nbsp;Image&nbsp;File&nbsp;Format                                            |<sub></sub>|
+|`fairplay_spc`              |FairPlay&nbsp;Server&nbsp;Playback&nbsp;Context                                          |<sub></sub>|
 |`flac`                      |Free&nbsp;Lossless&nbsp;Audio&nbsp;Codec&nbsp;file                                       |<sub>`flac_metadatablocks` `flac_frame`</sub>|
 |[`flac_frame`](#flac_frame) |FLAC&nbsp;frame                                                                          |<sub></sub>|
 |`flac_metadatablock`        |FLAC&nbsp;metadatablock                                                                  |<sub>`flac_streaminfo` `flac_picture` `vorbis_comment`</sub>|

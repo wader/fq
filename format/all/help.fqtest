@@ -285,6 +285,13 @@ out   # Decode file as exif
 out   $ fq -d exif . file
 out   # Decode value as exif
 out   ... | exif
+"help(fairplay_spc)"
+out fairplay_spc: FairPlay Server Playback Context decoder
+out Examples:
+out   # Decode file as fairplay_spc
+out   $ fq -d fairplay_spc . file
+out   # Decode value as fairplay_spc
+out   ... | fairplay_spc
 "help(flac)"
 out flac: Free Lossless Audio Codec file decoder
 out Examples:

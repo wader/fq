@@ -127,6 +127,7 @@ dns_tcp              DNS packet (TCP)
 elf                  Executable and Linkable Format
 ether8023_frame      Ethernet 802.3 frame
 exif                 Exchangeable Image File Format
+fairplay_spc         FairPlay Server Playback Context
 flac                 Free Lossless Audio Codec file
 flac_frame           FLAC frame
 flac_metadatablock   FLAC metadatablock
