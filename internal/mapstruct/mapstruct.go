@@ -38,15 +38,22 @@ func ToStruct(m any, v any) error {
 	return nil
 }
 
-func camelCaseMap(m map[string]any) map[string]any {
-	nm := map[string]any{}
-	for k, v := range m {
-		if vm, ok := v.(map[string]any); ok {
-			v = camelCaseMap(vm)
+func CamelCase(v any) any {
+	switch vv := v.(type) {
+	case map[string]any:
+		n := map[string]any{}
+		for k, v := range vv {
+			n[CamelToSnake(k)] = CamelCase(v)
 		}
-		nm[CamelToSnake(k)] = v
+		return n
+	case []any:
+		n := make([]any, len(vv))
+		for i, v := range vv {
+			n[i] = CamelCase(v)
+		}
+		return n
 	}
-	return nm
+	return v
 }
 
 func ToMap(v any) (map[string]any, error) {
@@ -60,6 +67,10 @@ func ToMap(v any) (map[string]any, error) {
 	if err := ms.Decode(v); err != nil {
 		return nil, err
 	}
+	m, ok := CamelCase(m).(map[string]any)
+	if !ok {
+		panic("not map")
+	}
 
-	return camelCaseMap(m), nil
+	return m, nil
 }
