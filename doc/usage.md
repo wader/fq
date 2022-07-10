@@ -460,7 +460,7 @@ Vince Guaraldi Trio - Baseball Theme
 $ fq  -i . <(curl -sL https://github.com/stefangabos/world_countries/archive/master.zip)
 # select from interesting xml file
 zip> .local_files[] | select(.file_name == "world_countries-master/data/countries/en/world.xml").uncompressed | repl
-# convert xml into jq values
+# convert xml into jq value
 > .local_files[95].uncompressed string> fromxml | repl
 # sort countries by and select the first one
 >> object> .countries.country | sort_by(."-name") | first |
@@ -485,11 +485,11 @@ name: Afghanistan
 zip> ^D
 ```
 
-- `fromxml`/`fromxml($opts)` Parse XML into jq values.<br>
+- `fromxml`/`fromxml($opts)` Parse XML into jq value.<br>
   `{seq: true}` preserve element ordering if more than one sibling.<br>
   `{array: true}` use nested arrays to represent elements.<br>
-- `fromhtml`/`fromhtml($opts)` Parse HTML into jq values.<br>
-  Same as `fromxml` but less strict and follows html5 parsing rules. Will always have a `html` root with `head` and `body` elements.<br>
+- `fromhtml`/`fromhtml($opts)` Parse HTML into jq value.<br>
+  Similar to `fromxml` but parses html5 in non-script mode. Will always have a `html` root with `head` and `body` elements.<br>
   `{array: true}` use nested arrays to represent elements.<br>
   `{seq: true}` preserve element ordering if more than one sibling.<br>
 - `toxml`/`toxml($opts})` Serialize jq value into XML.<br>
@@ -498,7 +498,7 @@ zip> ^D
   Will automatically add a root `doc` element if jq value has more then one root element.<br>
   If a `#seq` is found on at least one element all siblings will be sort by sequence number. Attributes are always sorted.<br>
 
-  XML elements can be represented as jq values in two ways, as objects (inspired by [mxj](https://github.com/clbanning/mxj) and [xml.com's Converting Between XML and JSON
+  XML elements can be represented as jq value in two ways, as objects (inspired by [mxj](https://github.com/clbanning/mxj) and [xml.com's Converting Between XML and JSON
 ](https://www.xml.com/pub/a/2006/05/31/converting-between-xml-and-json.html)) or nested arrays. Both representations are lossy and might lose ordering of elements, text nodes and comments. In object representation `fromxml`, `fromhtml` and `toxml` support `{seq:true}` option to parse/serialize `{"#seq"=<number>}` attributes to preserve element sibling ordering.
 
   The object version is denser and convenient to query, the nested arrays version is probably easier to use when generating XML.
@@ -601,18 +601,18 @@ zip> ^D
     <other>text</other>
   </root>
   ```
-- `fromjson` Parse JSON into jq values.
+- `fromjson` Parse JSON into jq value.
 - `tojson`/`tojson($opt)`  Serialize jq value into JSON.<br>
   `{indent: number}` indent array/object values.<br>
-- `fromjq` Parse jq-flavoured JSON into jq values.
+- `fromjq` Parse jq-flavoured JSON into jq value.
 - `tojq`/`tojq($opt)`  Serialize jq value into jq-flavoured JSON<br>
   `{indent: number}` indent array/object values.<br>
   jq-flavoured JSON has optional key quotes, `#` comments and can have trailing comma in arrays.
-- `fromyaml` Parse YAML into jq values.
+- `fromyaml` Parse YAML into jq value.
 - `toyaml`  Serialize jq value into YAML.
-- `fromtoml` Parse TOML into jq values.
+- `fromtoml` Parse TOML into jq value.
 - `totoml`  Serialize jq value into TOML.
-- `fromcsv`/`fromcvs($opts)` Parse CSV into jq values.<br>
+- `fromcsv`/`fromcvs($opts)` Parse CSV into jq value.<br>
   `{comma: string}` field separator, default ",".<br>
   `{comment: string}` comment line character, default "#".<br>
 - `tocsv`/`tocsv($opts)` Serialize jq value into CSV.<br>
@@ -705,7 +705,7 @@ notable is support for arbitrary-precision integers.
 
 ## Decoded values
 
-When you decode something you will get a decode value. A decode values work like
+When you decode something you will get a decode value. A decode value work like
 normal jq values but has special abilities and is used to represent a tree structure of the decoded
 binary data. Each value always has a name, type and a bit range.
 
