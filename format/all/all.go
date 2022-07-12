@@ -24,6 +24,7 @@ import (
 	_ "github.com/wader/fq/format/opus"
 	_ "github.com/wader/fq/format/pcap"
 	_ "github.com/wader/fq/format/png"
+	_ "github.com/wader/fq/format/postgres"
 	_ "github.com/wader/fq/format/protobuf"
 	_ "github.com/wader/fq/format/raw"
 	_ "github.com/wader/fq/format/tar"

@@ -214,6 +214,10 @@ func (i *Interp) _open(c interface{}, a []interface{}) interface{} {
 		}
 	}
 
+	if fFI.Mode().IsDir() {
+		panic("provided directory instead of regular file")
+	}
+
 	if fRS == nil {
 		buf, err := ioutil.ReadAll(ctxreadseeker.New(i.evalContext.ctx, &ioextra.ReadErrSeeker{Reader: f}))
 		if err != nil {
