@@ -9,5 +9,5 @@ import (
 const version = "0.0.7"
 
 func main() {
-	cli.Main(interp.DefaultRegister, version)
+	cli.Main(interp.DefaultRegistry, version)
 }

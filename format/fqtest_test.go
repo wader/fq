@@ -9,5 +9,5 @@ import (
 )
 
 func TestFQTests(t *testing.T) {
-	fqtest.TestPath(t, interp.DefaultRegister)
+	fqtest.TestPath(t, interp.DefaultRegistry)
 }
