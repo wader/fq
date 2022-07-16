@@ -52,10 +52,10 @@ func (i *Interp) _registry(c any) any {
 	groups := map[string]any{}
 	formats := map[string]any{}
 
-	for groupName := range i.Registry.Groups {
+	for groupName := range i.Registry.FormatGroups {
 		var group []any
 
-		for _, f := range i.Registry.MustGroup(groupName) {
+		for _, f := range i.Registry.MustFormatGroup(groupName) {
 			group = append(group, f.Name)
 			if _, ok := uniqueFormats[f.Name]; ok {
 				continue
@@ -258,7 +258,7 @@ func (i *Interp) _decode(c any, format string, opts decodeOpts) any {
 	if err != nil {
 		return err
 	}
-	decodeFormat, err := i.Registry.Group(formatName)
+	decodeFormat, err := i.Registry.FormatGroup(formatName)
 	if err != nil {
 		return err
 	}
