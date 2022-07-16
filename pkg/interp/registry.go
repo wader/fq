@@ -11,7 +11,7 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-type EnvFuncFn func(envFn func() *Interp) gojqextra.Function
+type EnvFuncFn func(env *Interp) gojqextra.Function
 
 type Registry struct {
 	Groups      map[string]decode.Group
