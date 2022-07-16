@@ -6,9 +6,9 @@ import (
 	"embed"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/internal/mathextra"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -16,7 +16,7 @@ import (
 var protobufFS embed.FS
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.PROTOBUF,
 		Description: "Protobuf",
 		DecodeFn:    protobufDecode,

@@ -4,10 +4,10 @@ import (
 	"testing"
 
 	_ "github.com/wader/fq/format/all"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/fqtest"
+	"github.com/wader/fq/pkg/interp"
 )
 
 func TestFQTests(t *testing.T) {
-	fqtest.TestPath(t, registry.Default)
+	fqtest.TestPath(t, interp.DefaultRegister)
 }

@@ -6,15 +6,15 @@ import (
 	"bytes"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 var vp8Frame decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.WEBP,
 		Description: "WebP image",
 		Groups:      []string{format.PROBE, format.IMAGE},

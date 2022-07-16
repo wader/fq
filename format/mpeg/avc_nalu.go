@@ -4,10 +4,10 @@ package mpeg
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/internal/mathextra"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -16,7 +16,7 @@ var avcPPSFormat decode.Group
 var avcSEIFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.AVC_NALU,
 		Description: "H.264/AVC Network Access Layer Unit",
 		DecodeFn:    avcNALUDecode,
@@ -102,7 +102,7 @@ func avcNALUDecode(d *decode.D, in any) any {
 	d.FieldBool("forbidden_zero_bit")
 	d.FieldU2("nal_ref_idc")
 	nalType := d.FieldU5("nal_unit_type", avcNALNames)
-	unescapedBR := d.NewBitBufFromReader(decode.NALUnescapeReader{Reader: bitio.NewIOReader(d.BitBufRange(d.Pos(), d.BitsLeft()))})
+	unescapedBR := d.NewBitBufFromReader(nalUnescapeReader{Reader: bitio.NewIOReader(d.BitBufRange(d.Pos(), d.BitsLeft()))})
 
 	switch nalType {
 	case avcNALCodedSliceNonIDR,

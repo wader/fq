@@ -14,7 +14,6 @@ import (
 	"runtime"
 
 	"github.com/wader/fq/pkg/interp"
-	"github.com/wader/fq/pkg/registry"
 
 	"github.com/wader/readline"
 )
@@ -232,7 +231,7 @@ func (o *stdOS) Close() error {
 	return nil
 }
 
-func Main(r *registry.Registry, version string) {
+func Main(r *interp.Registry, version string) {
 	os.Exit(func() int {
 		defer maybeProfile()()
 		maybeLogFile()

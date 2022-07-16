@@ -12,10 +12,10 @@ import (
 	"fmt"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/internal/mathextra"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -23,7 +23,7 @@ var flacMetadatablocksFormat decode.Group
 var flacFrameFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.FLAC,
 		Description: "Free Lossless Audio Codec file",
 		Groups:      []string{format.PROBE},

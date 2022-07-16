@@ -10,9 +10,9 @@ import (
 	"strings"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/charmap"
@@ -22,7 +22,7 @@ import (
 var imageFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.ID3V2,
 		Description: "ID3v2 metadata",
 		DecodeFn:    id3v2Decode,

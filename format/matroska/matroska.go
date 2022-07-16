@@ -20,8 +20,8 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/matroska/ebml"
 	"github.com/wader/fq/format/matroska/ebml_matroska"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/ranges"
 	"github.com/wader/fq/pkg/scalar"
 )
@@ -52,7 +52,7 @@ var vp9FrameFormat decode.Group
 var codecToFormat map[string]*decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.MATROSKA,
 		Description: "Matroska file",
 		Groups:      []string{format.PROBE},
@@ -153,7 +153,9 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 
 		for d.Pos() < tagEndBit && d.NotEnd() {
 			d.FieldStruct("element", func(d *decode.D) {
-				var a ebml.Attribute
+				a := ebml.Attribute{
+					Type: ebml.Unknown,
+				}
 
 				tagID := d.FieldUFn("id", decodeRawVint, scalar.Fn(func(s scalar.S) (scalar.S, error) {
 					n := s.ActualU()

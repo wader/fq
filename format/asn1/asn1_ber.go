@@ -22,9 +22,9 @@ import (
 	"strings"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -32,7 +32,7 @@ import (
 var asn1FS embed.FS
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.ASN1_BER,
 		Description: "ASN1 BER (basic encoding rules, also CER and DER)",
 		DecodeFn:    decodeASN1BER,

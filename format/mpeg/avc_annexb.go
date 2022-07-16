@@ -2,14 +2,14 @@ package mpeg
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 var annexBAVCNALUFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.AVC_ANNEXB,
 		Description: "H.264/AVC Annex B",
 		DecodeFn: func(d *decode.D, in any) any {

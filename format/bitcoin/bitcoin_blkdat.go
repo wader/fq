@@ -2,14 +2,14 @@ package bitcoin
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 var bitcoinBlockFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.BITCOIN_BLKDAT,
 		Description: "Bitcoin blk.dat",
 		Groups:      []string{format.PROBE},

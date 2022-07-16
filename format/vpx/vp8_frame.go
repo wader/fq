@@ -4,15 +4,15 @@ package vpx
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 // TODO: vpx frame?
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.VP8_FRAME,
 		Description: "VP8 frame",
 		DecodeFn:    vp8Decode,

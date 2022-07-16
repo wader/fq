@@ -4,15 +4,15 @@ package tiff
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 var tiffIccProfile decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.TIFF,
 		Description: "Tag Image File Format",
 		Groups:      []string{format.PROBE, format.IMAGE},

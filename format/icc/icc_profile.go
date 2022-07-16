@@ -5,13 +5,13 @@ package icc
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/internal/mathextra"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.ICC_PROFILE,
 		Description: "International Color Consortium profile",
 		DecodeFn:    iccProfileDecode,

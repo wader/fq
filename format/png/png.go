@@ -9,9 +9,9 @@ import (
 	"hash/crc32"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -19,7 +19,7 @@ var iccProfileFormat decode.Group
 var exifFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.PNG,
 		Description: "Portable Network Graphics file",
 		Groups:      []string{format.PROBE, format.IMAGE},

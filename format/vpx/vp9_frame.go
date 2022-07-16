@@ -4,8 +4,8 @@ package vpx
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -56,7 +56,7 @@ var vp9ProfilesMap = scalar.UToDescription{
 }
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.VP9_FRAME,
 		Description: "VP9 frame",
 		DecodeFn:    vp9Decode,

@@ -5,16 +5,16 @@ import (
 	"net"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/internal/bitioextra"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 var ipv6IpPacketGroup decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.IPV6_PACKET,
 		Description: "Internet protocol v6 packet",
 		Groups:      []string{format.INET_PACKET},

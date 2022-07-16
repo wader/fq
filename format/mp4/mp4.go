@@ -21,8 +21,8 @@ import (
 	"sort"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 //go:embed mp4.jq
@@ -52,7 +52,7 @@ var vpxCCRFormat decode.Group
 var iccProfileFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.MP4,
 		Description: "ISOBMFF MPEG-4 part 12 and similar",
 		Groups: []string{

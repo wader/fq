@@ -10,9 +10,9 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/avro/decoders"
 	"github.com/wader/fq/format/avro/schema"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -20,7 +20,7 @@ import (
 var avroOcfFS embed.FS
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.AVRO_OCF,
 		Description: "Avro object container file",
 		Groups:      []string{format.PROBE},

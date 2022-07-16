@@ -2,11 +2,20 @@ package gojqextra
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/wader/gojq"
 )
 
 // many of these based on errors from gojq
+
+// TODO: figute out a nicer way for internal/external func name in errors
+func funcName(s string) string {
+	if strings.HasPrefix(s, "_") {
+		return s[1:]
+	}
+	return s
+}
 
 type UnaryTypeError struct {
 	Name string
@@ -14,7 +23,7 @@ type UnaryTypeError struct {
 }
 
 func (err *UnaryTypeError) Error() string {
-	return fmt.Sprintf("cannot %s: %s", err.Name, TypeErrorPreview(err.V))
+	return fmt.Sprintf("cannot %s: %s", funcName(err.Name), TypeErrorPreview(err.V))
 }
 
 type BinopTypeError struct {
@@ -23,7 +32,7 @@ type BinopTypeError struct {
 }
 
 func (err *BinopTypeError) Error() string {
-	return "cannot " + err.Name + ": " + TypeErrorPreview(err.L) + " and " + TypeErrorPreview(err.R)
+	return "cannot " + funcName(err.Name) + ": " + TypeErrorPreview(err.L) + " and " + TypeErrorPreview(err.R)
 }
 
 type NonUpdatableTypeError struct {
@@ -41,7 +50,7 @@ type FuncTypeError struct {
 }
 
 func (err FuncTypeError) Error() string {
-	return err.Name + " cannot be applied to: " + TypeErrorPreview(err.V)
+	return funcName(err.Name) + " cannot be applied to: " + TypeErrorPreview(err.V)
 }
 
 type FuncArgTypeError struct {
@@ -51,7 +60,7 @@ type FuncArgTypeError struct {
 }
 
 func (err FuncArgTypeError) Error() string {
-	return fmt.Sprintf("%s %s argument cannot be: %s", err.Name, err.ArgName, TypeErrorPreview(err.V))
+	return fmt.Sprintf("%s %s argument cannot be: %s", funcName(err.Name), err.ArgName, TypeErrorPreview(err.V))
 }
 
 type FuncTypeNameError struct {
@@ -60,7 +69,7 @@ type FuncTypeNameError struct {
 }
 
 func (err FuncTypeNameError) Error() string {
-	return err.Name + " cannot be applied to: " + err.Typ
+	return funcName(err.Name) + " cannot be applied to: " + err.Typ
 }
 
 type ExpectedObjectError struct {

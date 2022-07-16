@@ -6,15 +6,15 @@ package vorbis
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 var vorbisComment decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.VORBIS_PACKET,
 		Description: "Vorbis packet",
 		DecodeFn:    vorbisDecode,

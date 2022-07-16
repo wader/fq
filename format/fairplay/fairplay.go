@@ -4,12 +4,12 @@ package fairplay
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.FAIRPLAY_SPC,
 		Description: "FairPlay Server Playback Context",
 		DecodeFn:    fairPlaySPCDecode,

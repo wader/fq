@@ -3,6 +3,7 @@ include "options";
 include "eval";
 include "query";
 include "decode";
+include "interp";
 include "funcs";
 include "ansi";
 
@@ -49,7 +50,7 @@ def _complete($line; $cursor_pos):
   def _is_separator: . as $c | " .;[]()|=" | contains($c);
   def _is_internal: startswith("_") or startswith("$_");
   def _query_index_or_key($q):
-    ( ([.[] | _eval($q) | type]) as $n
+    ( ([.[] | _eval($q; {}) | type]) as $n
     | if ($n | all(. == "object")) then "."
       elif ($n | all(. == "array")) then "[]"
       else null
@@ -78,7 +79,7 @@ def _complete($line; $cursor_pos):
             )
           else
             ( $c
-            | _eval($query)
+            | _eval($query; {})
             | ($prefix | _is_internal) as $prefix_is_internal
             | map(
                 select(

@@ -14,9 +14,9 @@ import (
 	"testing"
 
 	_ "github.com/wader/fq/format/all"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
+	"github.com/wader/fq/pkg/registry"
 )
 
 type fuzzFS struct{}
@@ -99,11 +99,11 @@ func FuzzFormats(f *testing.F) {
 	})
 
 	gi := 0
-	g := registry.Default.MustAll()
+	g := interp.DefaultRegister.MustAll()
 
 	f.Fuzz(func(t *testing.T, b []byte) {
 		fz := &fuzzTest{b: b, f: g[gi]}
-		q, err := interp.New(fz, registry.Default)
+		q, err := interp.New(fz, interp.DefaultRegister)
 		if err != nil {
 			t.Fatal(err)
 		}

@@ -43,7 +43,7 @@ func main() {
 			min := toInt(args[0])
 			max := toInt(args[1])
 			var v []int
-			for i := min; i <= max; i++ {
+			for i := min; i < max; i++ {
 				v = append(v, i)
 			}
 
@@ -59,6 +59,16 @@ func main() {
 			n := toString(args[2])
 
 			return strings.Replace(s, o, n, -1), nil
+		},
+		"slice": func(args ...any) []any {
+			return args
+		},
+		"map": func(args ...any) map[any]any {
+			m := map[any]any{}
+			for i := 0; i < len(args)/2; i++ {
+				m[args[i*2]] = args[i*2+1]
+			}
+			return m
 		},
 	}
 

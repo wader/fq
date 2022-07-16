@@ -7,8 +7,8 @@ package flv
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/registry"
 	"github.com/wader/fq/pkg/scalar"
 )
 

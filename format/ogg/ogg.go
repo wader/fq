@@ -7,9 +7,9 @@ import (
 	"fmt"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 var oggPageFormat decode.Group
@@ -19,7 +19,7 @@ var flacMetadatablockFormat decode.Group
 var flacFrameFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.OGG,
 		Description: "OGG file",
 		Groups:      []string{format.PROBE},

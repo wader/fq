@@ -5,15 +5,15 @@ package inet
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 var sllPacket2InetPacketGroup decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.SLL2_PACKET,
 		Description: "Linux cooked capture encapsulation v2",
 		Groups:      []string{format.LINK_FRAME},

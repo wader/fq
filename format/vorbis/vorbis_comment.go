@@ -6,14 +6,14 @@ import (
 	"strings"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 var flacPicture decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.VORBIS_COMMENT,
 		Description: "Vorbis comment",
 		DecodeFn:    commentDecode,

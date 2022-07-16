@@ -2,15 +2,15 @@ package id3
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 // TODO: comment 28 long, zero byte, track number
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.ID3V1,
 		Description: "ID3v1 metadata",
 		DecodeFn:    id3v1Decode,

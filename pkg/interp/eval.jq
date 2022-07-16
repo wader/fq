@@ -90,7 +90,7 @@ def eval($expr; $opts; on_error; on_compile_error):
   | try
       _eval(
         $expr | _eval_query_rewrite($opts);
-        $filename
+        {filename: $filename}
       )
     catch
       if _eval_is_compile_error then

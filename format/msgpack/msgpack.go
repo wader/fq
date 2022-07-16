@@ -8,8 +8,8 @@ import (
 	"embed"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -17,7 +17,7 @@ import (
 var msgPackFS embed.FS
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.MSGPACK,
 		Description: "MessagePack",
 		DecodeFn:    decodeMsgPack,

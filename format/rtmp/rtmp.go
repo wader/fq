@@ -12,9 +12,9 @@ import (
 	"embed"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -25,7 +25,7 @@ var rtmpMpegASCFormat decode.Group
 var rtmpFS embed.FS
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.RTMP,
 		Description: "Real-Time Messaging Protocol",
 		Groups: []string{
