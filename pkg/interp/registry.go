@@ -1,21 +1,29 @@
-package registry
+package interp
 
 import (
 	"errors"
 	"fmt"
+	"io/fs"
 	"sort"
 	"sync"
 
+	"github.com/wader/fq/internal/gojqextra"
 	"github.com/wader/fq/pkg/decode"
 )
+
+type EnvFuncFn func(envFn func() *Interp) gojqextra.Function
 
 type Registry struct {
 	Groups      map[string]decode.Group
 	resolveOnce sync.Once
 	resolved    bool
+
+	EnvFuncFns []EnvFuncFn
+
+	FSs []fs.ReadDirFS
 }
 
-func New() *Registry {
+func NewRegistry() *Registry {
 	return &Registry{
 		Groups:      map[string]decode.Group{},
 		resolveOnce: sync.Once{},
@@ -42,7 +50,7 @@ func (r *Registry) register(groupName string, format decode.Format, single bool)
 	return format
 }
 
-func (r *Registry) MustRegister(format decode.Format) decode.Format {
+func (r *Registry) Format(format decode.Format) decode.Format {
 	r.register(format.Name, format, false)
 	for _, g := range format.Groups {
 		r.register(g, format, true)
@@ -50,6 +58,14 @@ func (r *Registry) MustRegister(format decode.Format) decode.Format {
 	r.register("all", format, true)
 
 	return format
+}
+
+func (r *Registry) FS(fs fs.ReadDirFS) {
+	r.FSs = append(r.FSs, fs)
+}
+
+func (r *Registry) Func(funcFn EnvFuncFn) {
+	r.EnvFuncFns = append(r.EnvFuncFns, funcFn)
 }
 
 func sortFormats(g decode.Group) {

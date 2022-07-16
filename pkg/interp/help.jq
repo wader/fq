@@ -1,5 +1,5 @@
 include "internal";
-include "encoding";
+include "interp";
 include "query";
 include "eval";
 include "repl";
@@ -199,11 +199,11 @@ def _help($arg0; $topic):
             | . as $e
             | if length == 1 then
                 ( "> \($e[0])"
-                , (null | try (_eval($e[0]) | tojson) catch "error: \(.)")
+                , (null | try (_eval($e[0]; {}) | tojson) catch "error: \(.)")
                 )
               else
                 ( "> \($e[0] | tojson) | \($e[1])"
-                , ($e[0] | try (_eval($e[1]) | tojson) catch "error: \(.)")
+                , ($e[0] | try (_eval($e[1]; {}) | tojson) catch "error: \(.)")
                 )
               end
             )

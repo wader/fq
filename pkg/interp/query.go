@@ -7,22 +7,14 @@ import (
 )
 
 func init() {
-	functionRegisterFns = append(functionRegisterFns, func(i *Interp) []Function {
-		return []Function{
-			{"_query_fromstring", 0, 0, i.queryFromString, nil},
-			{"_query_tostring", 0, 0, i.queryToString, nil},
-		}
-	})
+	RegisterFunc0("_query_fromstring", (*Interp)._queryFromString)
+	RegisterFunc0("_query_tostring", (*Interp)._queryToString)
 }
 
-func (i *Interp) queryFromString(c any, a []any) any {
-	s, err := toString(c)
+func (i *Interp) _queryFromString(c string) any {
+	q, err := gojq.Parse(c)
 	if err != nil {
-		return err
-	}
-	q, err := gojq.Parse(s)
-	if err != nil {
-		p := queryErrorPosition(s, err)
+		p := queryErrorPosition(c, err)
 		return compileError{
 			err:  err,
 			what: "parse",
@@ -41,10 +33,9 @@ func (i *Interp) queryFromString(c any, a []any) any {
 	}
 
 	return v
-
 }
 
-func (i *Interp) queryToString(c any, a []any) any {
+func (i *Interp) _queryToString(c any) any {
 	b, err := json.Marshal(c)
 	if err != nil {
 		return err

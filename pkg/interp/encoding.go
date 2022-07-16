@@ -23,7 +23,6 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/wader/fq/internal/colorjson"
 	"github.com/wader/fq/internal/gojqextra"
-	"github.com/wader/fq/internal/mapstruct"
 	"github.com/wader/fq/internal/proxysort"
 	"github.com/wader/fq/pkg/bitio"
 
@@ -85,52 +84,6 @@ func norm(v any) any {
 	}
 }
 
-func addFunc[Tc any](name string, fn func(c Tc) any) {
-	if name[0] != '_' {
-		panic(fmt.Sprintf("invalid addFunc name %q", name))
-	}
-	functionRegisterFns = append(
-		functionRegisterFns,
-		func(i *Interp) []Function {
-			return []Function{{
-				name, 0, 0, func(c any, a []any) any {
-					cv, ok := gojqextra.CastFn[Tc](c, mapstruct.ToStruct)
-					if !ok {
-						return gojqextra.FuncTypeError{Name: name[1:], V: c}
-					}
-
-					return fn(cv)
-				},
-				nil,
-			}}
-		})
-}
-
-func addFunc1[Tc any, Ta0 any](name string, fn func(c Tc, a0 Ta0) any) {
-	if name[0] != '_' {
-		panic(fmt.Sprintf("invalid addFunc name %q", name))
-	}
-	functionRegisterFns = append(
-		functionRegisterFns,
-		func(i *Interp) []Function {
-			return []Function{{
-				name, 1, 1, func(c any, a []any) any {
-					cv, ok := gojqextra.CastFn[Tc](c, mapstruct.ToStruct)
-					if !ok {
-						return gojqextra.FuncTypeError{Name: name[1:], V: c}
-					}
-					a0, ok := gojqextra.CastFn[Ta0](a[0], mapstruct.ToStruct)
-					if !ok {
-						return gojqextra.FuncArgTypeError{Name: name[1:], ArgName: "first", V: c}
-					}
-
-					return fn(cv, a0)
-				},
-				nil,
-			}}
-		})
-}
-
 var whitespaceRE = regexp.MustCompile(`^\s*$`)
 
 type xmlNode struct {
@@ -175,7 +128,7 @@ func init() {
 	type ToJSONOpts struct {
 		Indent int
 	}
-	addFunc1("_tojson", func(c any, opts ToJSONOpts) any {
+	RegisterFunc1("_tojson", func(i *Interp, c any, opts ToJSONOpts) any {
 		// TODO: share
 		cj := colorjson.NewEncoder(
 			false,
@@ -325,7 +278,7 @@ func init() {
 
 		return f(n, nil)
 	}
-	addFunc1("_fromxml", func(s string, opts FromXMLOpts) any {
+	RegisterFunc1("_fromxml", func(i *Interp, s string, opts FromXMLOpts) any {
 		if opts.Array {
 			return fromXMLArray(s)
 		}
@@ -509,7 +462,7 @@ func init() {
 
 		return bb.String()
 	}
-	addFunc1("_toxml", func(c any, opts ToXMLOpts) any {
+	RegisterFunc1("_toxml", func(i *Interp, c any, opts ToXMLOpts) any {
 		switch c := c.(type) {
 		case map[string]any:
 			return toXMLObject(c, opts)
@@ -679,14 +632,14 @@ func init() {
 
 		return f(doc.FirstChild)
 	}
-	addFunc1("_fromhtml", func(s string, opts FromHTMLOpts) any {
+	RegisterFunc1("_fromhtml", func(i *Interp, s string, opts FromHTMLOpts) any {
 		if opts.Array {
 			return fromHTMLArray(s)
 		}
 		return fromHTMLObject(s, opts)
 	})
 
-	addFunc("_fromyaml", func(s string) any {
+	RegisterFunc0("_fromyaml", func(i *Interp, s string) any {
 		var t any
 		if err := yaml.Unmarshal([]byte(s), &t); err != nil {
 			return err
@@ -694,7 +647,7 @@ func init() {
 		return norm(t)
 	})
 
-	addFunc("_toyaml", func(c any) any {
+	RegisterFunc0("_toyaml", func(i *Interp, c any) any {
 		b, err := yaml.Marshal(norm(c))
 		if err != nil {
 			return err
@@ -702,7 +655,7 @@ func init() {
 		return string(b)
 	})
 
-	addFunc("_fromtoml", func(s string) any {
+	RegisterFunc0("_fromtoml", func(i *Interp, s string) any {
 		var t any
 		if err := toml.Unmarshal([]byte(s), &t); err != nil {
 			return err
@@ -710,7 +663,7 @@ func init() {
 		return norm(t)
 	})
 
-	addFunc("_totoml", func(c map[string]any) any {
+	RegisterFunc0("_totoml", func(i *Interp, c map[string]any) any {
 		b := &bytes.Buffer{}
 		if err := toml.NewEncoder(b).Encode(norm(c)); err != nil {
 			return err
@@ -722,7 +675,7 @@ func init() {
 		Comma   string
 		Comment string
 	}
-	addFunc1("_fromcsv", func(s string, opts FromCSVOpts) any {
+	RegisterFunc1("_fromcsv", func(i *Interp, s string, opts FromCSVOpts) any {
 		var rvs []any
 		r := csv.NewReader(strings.NewReader(s))
 		r.TrimLeadingSpace = true
@@ -750,7 +703,7 @@ func init() {
 	type ToCSVOpts struct {
 		Comma string
 	}
-	addFunc1("_tocsv", func(c []any, opts ToCSVOpts) any {
+	RegisterFunc1("_tocsv", func(i *Interp, c []any, opts ToCSVOpts) any {
 		b := &bytes.Buffer{}
 		w := csv.NewWriter(b)
 		if opts.Comma != "" {
@@ -778,19 +731,19 @@ func init() {
 		return b.String()
 	})
 
-	addFunc("_fromhex", func(s string) any {
+	RegisterFunc0("_fromhex", func(i *Interp, s string) any {
 		b, err := hex.DecodeString(s)
 		if err != nil {
 			return err
 		}
-		bb, err := newBinaryFromBitReader(bitio.NewBitReader(b, -1), 8, 0)
+		bb, err := NewBinaryFromBitReader(bitio.NewBitReader(b, -1), 8, 0)
 		if err != nil {
 			return err
 		}
 		return bb
 	})
-	addFunc("_tohex", func(c any) any {
-		br, err := toBitReader(c)
+	RegisterFunc0("_tohex", func(i *Interp, c any) any {
+		br, err := ToBitReader(c)
 		if err != nil {
 			return err
 		}
@@ -817,12 +770,12 @@ func init() {
 	type FromBase64Opts struct {
 		Encoding string
 	}
-	addFunc1("_frombase64", func(s string, opts FromBase64Opts) any {
+	RegisterFunc1("_frombase64", func(i *Interp, s string, opts FromBase64Opts) any {
 		b, err := base64Encoding(opts.Encoding).DecodeString(s)
 		if err != nil {
 			return err
 		}
-		bin, err := newBinaryFromBitReader(bitio.NewBitReader(b, -1), 8, 0)
+		bin, err := NewBinaryFromBitReader(bitio.NewBitReader(b, -1), 8, 0)
 		if err != nil {
 			return err
 		}
@@ -831,8 +784,8 @@ func init() {
 	type ToBase64Opts struct {
 		Encoding string
 	}
-	addFunc1("_tobase64", func(c any, opts ToBase64Opts) any {
-		br, err := toBitReader(c)
+	RegisterFunc1("_tobase64", func(i *Interp, c any, opts ToBase64Opts) any {
+		br, err := ToBitReader(c)
 		if err != nil {
 			return err
 		}
@@ -845,26 +798,26 @@ func init() {
 		return bb.String()
 	})
 
-	addFunc("_fromxmlentities", func(s string) any {
+	RegisterFunc0("_fromxmlentities", func(i *Interp, s string) any {
 		return html.UnescapeString(s)
 	})
-	addFunc("_toxmlentities", func(s string) any {
+	RegisterFunc0("_toxmlentities", func(i *Interp, s string) any {
 		return html.EscapeString(s)
 	})
 
-	addFunc("_fromurlencode", func(s string) any {
+	RegisterFunc0("_fromurlencode", func(i *Interp, s string) any {
 		u, _ := url.QueryUnescape(s)
 		return u
 	})
-	addFunc("_tourlencode", func(s string) any {
+	RegisterFunc0("_tourlencode", func(i *Interp, s string) any {
 		return url.QueryEscape(s)
 	})
 
-	addFunc("_fromurlpath", func(s string) any {
+	RegisterFunc0("_fromurlpath", func(i *Interp, s string) any {
 		u, _ := url.PathUnescape(s)
 		return u
 	})
-	addFunc("_tourlpath", func(s string) any {
+	RegisterFunc0("_tourlpath", func(i *Interp, s string) any {
 		return url.PathEscape(s)
 	})
 
@@ -884,7 +837,7 @@ func init() {
 
 		return qm
 	}
-	addFunc("_fromurlquery", func(s string) any {
+	RegisterFunc0("_fromurlquery", func(i *Interp, s string) any {
 		q, err := url.ParseQuery(s)
 		if err != nil {
 			return err
@@ -908,11 +861,11 @@ func init() {
 		}
 		return qv
 	}
-	addFunc("_tourlquery", func(c map[string]any) any {
+	RegisterFunc0("_tourlquery", func(i *Interp, c map[string]any) any {
 		return toURLValues(c).Encode()
 	})
 
-	addFunc("_fromurl", func(s string) any {
+	RegisterFunc0("_fromurl", func(i *Interp, s string) any {
 		u, err := url.Parse(s)
 		if err != nil {
 			return err
@@ -949,7 +902,7 @@ func init() {
 		}
 		return m
 	})
-	addFunc("_tourl", func(c map[string]any) any {
+	RegisterFunc0("_tourl", func(i *Interp, c map[string]any) any {
 		str := func(v any) string { s, _ := gojqextra.Cast[string](v); return s }
 		u := url.URL{
 			Scheme:   str(c["scheme"]),
@@ -1005,8 +958,8 @@ func init() {
 	type ToHashOpts struct {
 		Name string
 	}
-	addFunc1("_tohash", func(c any, opts ToHashOpts) any {
-		inBR, err := toBitReader(c)
+	RegisterFunc1("_tohash", func(i *Interp, c any, opts ToHashOpts) any {
+		inBR, err := ToBitReader(c)
 		if err != nil {
 			return err
 		}
@@ -1021,7 +974,7 @@ func init() {
 
 		outBR := bitio.NewBitReader(h.Sum(nil), -1)
 
-		bb, err := newBinaryFromBitReader(outBR, 8, 0)
+		bb, err := NewBinaryFromBitReader(outBR, 8, 0)
 		if err != nil {
 			return err
 		}
@@ -1137,7 +1090,7 @@ func init() {
 	type ToStrEncodingOpts struct {
 		Encoding string
 	}
-	addFunc1("_tostrencoding", func(c string, opts ToStrEncodingOpts) any {
+	RegisterFunc1("_tostrencoding", func(i *Interp, c string, opts ToStrEncodingOpts) any {
 		h := strEncodingFn(opts.Encoding)
 		if h == nil {
 			return fmt.Errorf("unknown string encoding %s", opts.Encoding)
@@ -1148,7 +1101,7 @@ func init() {
 			return err
 		}
 		outBR := bitio.NewBitReader(bb.Bytes(), -1)
-		bin, err := newBinaryFromBitReader(outBR, 8, 0)
+		bin, err := NewBinaryFromBitReader(outBR, 8, 0)
 		if err != nil {
 			return err
 		}
@@ -1158,8 +1111,8 @@ func init() {
 	type FromStrEncodingOpts struct {
 		Encoding string
 	}
-	addFunc1("_fromstrencoding", func(c any, opts FromStrEncodingOpts) any {
-		inBR, err := toBitReader(c)
+	RegisterFunc1("_fromstrencoding", func(i *Interp, c any, opts FromStrEncodingOpts) any {
+		inBR, err := ToBitReader(c)
 		if err != nil {
 			return err
 		}

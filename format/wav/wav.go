@@ -12,8 +12,8 @@ import (
 	"strings"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -21,7 +21,7 @@ var headerFormat decode.Group
 var footerFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.WAV,
 		ProbeOrder:  10, // after most others (overlap some with webp)
 		Description: "WAV file",

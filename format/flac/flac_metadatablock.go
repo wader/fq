@@ -7,8 +7,8 @@ import (
 	"fmt"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -17,7 +17,7 @@ var flacPicture decode.Group
 var vorbisCommentFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.FLAC_METADATABLOCK,
 		Description: "FLAC metadatablock",
 		DecodeFn:    metadatablockDecode,

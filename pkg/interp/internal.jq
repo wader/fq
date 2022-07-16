@@ -3,6 +3,20 @@ include "ansi";
 # is here to be defined as early as possible to allow debugging
 # TODO: move some _* to builtin.jq etc?
 
+def _stdio($name):
+  if . == null then _stdio_info($name)
+  else _stdio_write($name)
+  end;
+def _stdio($name; $l):
+  _stdio_read($name; $l);
+
+def _stdin: _stdio("stdin");
+def _stdin($l): _stdio("stdin"; $l);
+def _stdout: _stdio("stdout");
+def _stdout($l): _stdio("stdout"; $l);
+def _stderr: _stdio("stderr");
+def _stderr($l): _stdio("stderr"; $l);
+
 def stdin_tty: null | _stdin;
 def stdout_tty: null | _stdout;
 
@@ -174,7 +188,7 @@ def _path_to_expr: _path_to_expr(null);
 # TODO: don't use eval? should support '.a.b[1]."c.c"' and escapes?
 def _expr_to_path:
   ( if type != "string" then error("require string argument") end
-  | _eval("null | path(\(.))")
+  | _eval("null | path(\(.))"; {})
   );
 
 # helper to build path query/generate functions for tree structures with

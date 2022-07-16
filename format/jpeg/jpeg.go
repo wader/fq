@@ -8,9 +8,9 @@ import (
 	"bytes"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -18,7 +18,7 @@ var exifFormat decode.Group
 var iccProfileFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.JPEG,
 		Description: "Joint Photographic Experts Group file",
 		Groups:      []string{format.PROBE, format.IMAGE},

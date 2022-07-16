@@ -2,12 +2,12 @@ package dns
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.DNS_TCP,
 		Description: "DNS packet (TCP)",
 		DecodeFn:    dnsTCPDecode,

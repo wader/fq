@@ -1,32 +1,9 @@
 include "internal";
 include "options";
-include "encoding";
 include "binary";
+include "decode";
+include "encoding";
 
-def _display_default_opts:
-  options({depth: 1});
-
-def display($opts):
-  ( options($opts) as $opts
-  | if _can_display then _display($opts)
-    else
-      ( if _is_string and $opts.raw_string then print
-        else _print_color_json($opts)
-        end
-      , ( $opts.join_string
-        | if . then print else empty end
-        )
-      )
-    end
-  | error("unreachable")
-  );
-def display: display({});
-
-
-def hexdump($opts): _hexdump(options({display_bytes: 0} + $opts));
-def hexdump: hexdump({display_bytes: 0});
-def hd($opts): hexdump($opts);
-def hd: hexdump;
 
 def intdiv(a; b): _intdiv(a; b);
 
@@ -131,6 +108,7 @@ def table(colmap; render):
   end;
 
 # TODO: rename keys and add more, ascii/utf8/utf16/codepoint name?, le/be, signed/unsigned?
+# TODO: move?
 def iprint:
   {
     bin: "0b\(toradix(2))",

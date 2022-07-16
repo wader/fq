@@ -8,8 +8,8 @@ import (
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/inet/flowsdecoder"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -18,7 +18,7 @@ var pcapngTCPStreamFormat decode.Group
 var pcapngIPvPacket4Format decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.PCAPNG,
 		Description: "PCAPNG packet capture",
 		RootArray:   true,

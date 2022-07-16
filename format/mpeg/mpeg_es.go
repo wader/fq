@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -14,7 +14,7 @@ var mpegASCFormat decode.Group
 var vorbisPacketFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.MPEG_ES,
 		Description: "MPEG Elementary Stream",
 		DecodeFn:    esDecode,

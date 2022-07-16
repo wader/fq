@@ -6,8 +6,8 @@ package pcap
 import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/inet/flowsdecoder"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -26,7 +26,7 @@ var endianMap = scalar.UToSymStr{
 }
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.PCAP,
 		Description: "PCAP packet capture",
 		Groups:      []string{format.PROBE},

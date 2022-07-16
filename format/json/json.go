@@ -4,9 +4,9 @@ import (
 	stdjson "encoding/json"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -16,7 +16,7 @@ import (
 // TODO: use jd.InputOffset() * 8?
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.JSON,
 		Description: "JSON",
 		ProbeOrder:  100, // last

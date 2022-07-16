@@ -2,8 +2,8 @@ package bitcoin
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -34,7 +34,7 @@ func (ops opcodeEntries) MapScalar(s scalar.S) (scalar.S, error) {
 }
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.BITCOIN_SCRIPT,
 		Description: "Bitcoin script",
 		DecodeFn:    decodeBitcoinScript,

@@ -2,8 +2,8 @@ package flac
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -34,7 +34,7 @@ var pictureTypeNames = scalar.UToSymStr{
 }
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.FLAC_PICTURE,
 		Description: "FLAC metadatablock picture",
 		DecodeFn:    pictureDecode,

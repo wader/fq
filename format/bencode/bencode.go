@@ -7,8 +7,8 @@ import (
 	"strconv"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -16,7 +16,7 @@ import (
 var bencodeFS embed.FS
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.BENCODE,
 		Description: "BitTorrent bencoding",
 		DecodeFn:    decodeBencode,

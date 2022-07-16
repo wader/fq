@@ -37,13 +37,19 @@ func CastFn[T any](v any, structFn func(input any, result any) error) (T, bool) 
 			if !v.IsInt64() {
 				return t, false
 			}
-			ci := v.Int64()
-			if ci < math.MinInt || ci > math.MaxInt {
-				return t, false
+			vi := v.Int64()
+			if math.MinInt <= vi && vi <= math.MaxInt {
+				return any(int(vi)).(T), true
 			}
-			return any(int(ci)).(T), true
+			return t, false
 		case float64:
-			return any(int(v)).(T), true
+			if math.MinInt <= v && v <= math.MaxInt {
+				return any(int(v)).(T), true
+			}
+			if v > 0 {
+				return any(int(math.MaxInt)).(T), true
+			}
+			return any(int(math.MinInt)).(T), true
 		case gojq.JQValue:
 			return CastFn[T](v.JQValueToGoJQ(), structFn)
 		default:
@@ -126,6 +132,8 @@ func CastFn[T any](v any, structFn func(input any, result any) error) (T, bool) 
 			case gojq.JQValue:
 				if jm, ok := Cast[map[string]any](v.JQValueToGoJQ()); ok {
 					m = jm
+				} else {
+					return t, false
 				}
 			default:
 				return t, false
@@ -157,6 +165,65 @@ func CastFn[T any](v any, structFn func(input any, result any) error) (T, bool) 
 
 func Cast[T any](v any) (T, bool) {
 	return CastFn[T](v, nil)
+}
+
+// convert to gojq compatible values and map scalars with fn
+func NormalizeFn(v any, fn func(v any) any) any {
+	switch v := v.(type) {
+	case map[string]any:
+		for i, e := range v {
+			v[i] = NormalizeFn(e, fn)
+		}
+		return v
+	case map[any]any:
+		// for gopkg.in/yaml.v2
+		vm := map[string]any{}
+		for i, e := range v {
+			switch i := i.(type) {
+			case string:
+				vm[i] = NormalizeFn(e, fn)
+			case int:
+				vm[strconv.Itoa(i)] = NormalizeFn(e, fn)
+			}
+		}
+		return vm
+	case []map[string]any:
+		var vs []any
+		for _, e := range v {
+			vs = append(vs, NormalizeFn(e, fn))
+		}
+		return vs
+	case []any:
+		for i, e := range v {
+			v[i] = NormalizeFn(e, fn)
+		}
+		return v
+	default:
+		return fn(v)
+	}
+}
+
+// NormalizeToStrings normalizes to strings
+// strings as is
+// null to empty string
+// others to JSON representation
+func NormalizeToStrings(v any) any {
+	return NormalizeFn(v, func(v any) any {
+		r, _ := ToGoJQValue(v)
+		switch r := r.(type) {
+		case string:
+			return r
+		case nil:
+			return ""
+		default:
+			b, _ := gojq.Marshal(r)
+			return string(b)
+		}
+	})
+}
+
+func Normalize(v any) any {
+	return NormalizeFn(v, func(v any) any { r, _ := ToGoJQValue(v); return r })
 }
 
 // array

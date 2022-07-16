@@ -29,7 +29,6 @@ import (
 	"github.com/wader/fq/internal/pos"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
-	"github.com/wader/fq/pkg/registry"
 
 	"github.com/wader/gojq"
 )
@@ -43,6 +42,7 @@ import (
 //go:embed format_decode.jq
 //go:embed format_include.jq
 //go:embed format_func.jq
+//go:embed registry_files.jq
 //go:embed grep.jq
 //go:embed args.jq
 //go:embed eval.jq
@@ -51,30 +51,32 @@ import (
 //go:embed help.jq
 //go:embed funcs.jq
 //go:embed ansi.jq
+//go:embed init.jq
 var builtinFS embed.FS
 
-var initSource = `include "@builtin/interp";`
-
-var functionRegisterFns []func(i *Interp) []Function
+var initSource = `include "@builtin/init";`
 
 func init() {
-	functionRegisterFns = append(functionRegisterFns, func(i *Interp) []Function {
-		return []Function{
-			{"_readline", 1, 1, nil, i._readline},
-			{"_eval", 1, 2, nil, i._eval},
-			{"_stdin", 0, 1, nil, i.makeStdioFn("stdin", i.os.Stdin())},
-			{"_stdout", 0, 0, nil, i.makeStdioFn("stdout", i.os.Stdout())},
-			{"_stderr", 0, 0, nil, i.makeStdioFn("stderr", i.os.Stderr())},
-			{"_extkeys", 0, 0, i._extKeys, nil},
-			{"_exttype", 0, 0, i._extType, nil},
-			{"_global_state", 0, 1, i.makeStateFn(i.state), nil},
-			{"history", 0, 0, i.history, nil},
-			{"_display", 1, 1, nil, i._display},
-			{"_can_display", 0, 0, i._canDisplay, nil},
-			{"_print_color_json", 0, 1, nil, i._printColorJSON},
-			{"_is_completing", 0, 1, i._isCompleting, nil},
-		}
-	})
+	RegisterIter1("_readline", (*Interp)._readline)
+	RegisterIter2("_eval", (*Interp)._eval)
+
+	RegisterIter2("_stdio_read", (*Interp)._stdioRead)
+	RegisterIter1("_stdio_write", (*Interp)._stdioWrite)
+	RegisterFunc1("_stdio_info", (*Interp)._stdioInfo)
+
+	RegisterFunc0("_extkeys", (*Interp)._extKeys)
+	RegisterFunc0("_exttype", (*Interp)._extType)
+
+	RegisterFunc0("_global_state", func(i *Interp, c any) any { return *i.state })
+	RegisterFunc1("_global_state", func(i *Interp, c any, v any) any { *i.state = v; return v })
+
+	RegisterFunc0("history", (*Interp).history)
+	RegisterIter1("_display", (*Interp)._display)
+	RegisterFunc0("_can_display", (*Interp)._canDisplay)
+	RegisterIter1("_hexdump", (*Interp)._hexdump)
+	RegisterIter1("_print_color_json", (*Interp)._printColorJSON)
+
+	RegisterFunc0("_is_completing", (*Interp)._isCompleting)
 }
 
 type valueError struct {
@@ -283,7 +285,7 @@ func toBigInt(v any) (*big.Int, error) {
 func toBytes(v any) ([]byte, error) {
 	switch v := v.(type) {
 	default:
-		br, err := toBitReader(v)
+		br, err := ToBitReader(v)
 		if err != nil {
 			return nil, fmt.Errorf("value is not bytes")
 		}
@@ -313,14 +315,6 @@ type Variable struct {
 	Value any
 }
 
-type Function struct {
-	Name     string
-	MinArity int
-	MaxArity int
-	Fn       func(any, []any) any
-	IterFn   func(any, []any) gojq.Iter
-}
-
 type RunMode int
 
 const (
@@ -329,16 +323,18 @@ const (
 	CompletionMode
 )
 
-type evalInstance struct {
-	ctx          context.Context
-	output       io.Writer
-	isCompleting bool
-	includeSeen  map[string]struct{}
+type EvalInstance struct {
+	Ctx          context.Context
+	Output       io.Writer
+	IsCompleting bool
+
+	includeSeen map[string]struct{}
 }
 
 type Interp struct {
-	registry       *registry.Registry
-	os             OS
+	Registry *Registry
+	OS       OS
+
 	initQuery      *gojq.Query
 	includeCache   map[string]*gojq.Query
 	interruptStack *ctxstack.Stack
@@ -346,15 +342,15 @@ type Interp struct {
 	state *any
 
 	// new for each eval, other values are copied by value
-	evalInstance evalInstance
+	EvalInstance EvalInstance
 }
 
-func New(os OS, registry *registry.Registry) (*Interp, error) {
+func New(os OS, registry *Registry) (*Interp, error) {
 	var err error
 
 	i := &Interp{
-		os:       os,
-		registry: registry,
+		OS:       os,
+		Registry: registry,
 	}
 
 	i.includeCache = map[string]*gojq.Query{}
@@ -383,11 +379,11 @@ func (i *Interp) Stop() {
 
 func (i *Interp) Main(ctx context.Context, output Output, versionStr string) error {
 	var args []any
-	for _, a := range i.os.Args() {
+	for _, a := range i.OS.Args() {
 		args = append(args, a)
 	}
 
-	platform := i.os.Platform()
+	platform := i.OS.Platform()
 	input := map[string]any{
 		"args":    args,
 		"version": versionStr,
@@ -397,7 +393,7 @@ func (i *Interp) Main(ctx context.Context, output Output, versionStr string) err
 
 	iter, err := i.EvalFunc(ctx, input, "_main", nil, EvalOpts{output: output})
 	if err != nil {
-		fmt.Fprintln(i.os.Stderr(), err)
+		fmt.Fprintln(i.OS.Stderr(), err)
 		return err
 	}
 	for {
@@ -415,14 +411,14 @@ func (i *Interp) Main(ctx context.Context, output Output, versionStr string) err
 				// TODO: handle this inside interp.jq instead but then we probably have to do nested
 				// eval and or also use different contexts for the interpreter and reading/decoding
 			} else {
-				fmt.Fprintln(i.os.Stderr(), v)
+				fmt.Fprintln(i.OS.Stderr(), v)
 			}
 			return v
 		case [2]any:
-			fmt.Fprintln(i.os.Stderr(), v[:]...)
+			fmt.Fprintln(i.OS.Stderr(), v[:]...)
 		default:
 			// TODO: can this happen?
-			fmt.Fprintln(i.os.Stderr(), v)
+			fmt.Fprintln(i.OS.Stderr(), v)
 		}
 	}
 
@@ -440,20 +436,18 @@ type readlineOpts struct {
 	Timeout  float64
 }
 
-func (i *Interp) _readline(c any, a []any) gojq.Iter {
-	if i.evalInstance.isCompleting {
+func (i *Interp) _readline(c any, opts readlineOpts) gojq.Iter {
+	if i.EvalInstance.IsCompleting {
 		return gojq.NewIter()
 	}
 
-	opts, _ := gojqextra.CastFn[readlineOpts](a[0], mapstruct.ToStruct)
-
-	expr, err := i.os.Readline(ReadlineOpts{
+	expr, err := i.OS.Readline(ReadlineOpts{
 		Prompt: opts.Prompt,
 		CompleteFn: func(line string, pos int) (newLine []string, shared int) {
-			completeCtx := i.evalInstance.ctx
+			completeCtx := i.EvalInstance.Ctx
 			if opts.Timeout > 0 {
 				var completeCtxCancelFn context.CancelFunc
-				completeCtx, completeCtxCancelFn = context.WithTimeout(i.evalInstance.ctx, time.Duration(opts.Timeout*float64(time.Second)))
+				completeCtx, completeCtxCancelFn = context.WithTimeout(i.EvalInstance.Ctx, time.Duration(opts.Timeout*float64(time.Second)))
 				defer completeCtxCancelFn()
 			}
 
@@ -509,23 +503,16 @@ func (i *Interp) _readline(c any, a []any) gojq.Iter {
 	return gojq.NewIter(expr)
 }
 
-func (i *Interp) _eval(c any, a []any) gojq.Iter {
-	var err error
-	expr, err := toString(a[0])
-	if err != nil {
-		return gojq.NewIter(fmt.Errorf("expr: %w", err))
-	}
-	var filenameHint string
-	if len(a) >= 2 {
-		filenameHint, err = toString(a[1])
-		if err != nil {
-			return gojq.NewIter(fmt.Errorf("filename hint: %w", err))
-		}
-	}
+type evalOpts struct {
+	Filename string
+}
 
-	iter, err := i.Eval(i.evalInstance.ctx, c, expr, EvalOpts{
-		filename: filenameHint,
-		output:   i.evalInstance.output,
+func (i *Interp) _eval(c any, expr string, opts evalOpts) gojq.Iter {
+	var err error
+
+	iter, err := i.Eval(i.EvalInstance.Ctx, c, expr, EvalOpts{
+		filename: opts.Filename,
+		output:   i.EvalInstance.Output,
 	})
 	if err != nil {
 		return gojq.NewIter(err)
@@ -534,7 +521,7 @@ func (i *Interp) _eval(c any, a []any) gojq.Iter {
 	return iter
 }
 
-func (i *Interp) _extKeys(c any, a []any) any {
+func (i *Interp) _extKeys(c any) any {
 	if v, ok := c.(Value); ok {
 		var vs []any
 		for _, s := range v.ExtKeys() {
@@ -545,78 +532,94 @@ func (i *Interp) _extKeys(c any, a []any) any {
 	return nil
 }
 
-func (i *Interp) _extType(c any, a []any) any {
+func (i *Interp) _extType(c any) any {
 	if v, ok := c.(Value); ok {
 		return v.ExtType()
 	}
 	return gojq.TypeOf(c)
 }
 
-func (i *Interp) makeStateFn(state *any) func(c any, a []any) any {
-	return func(c any, a []any) any {
-		if len(a) > 0 {
-			*state = a[0]
-		}
-		return *state
+func (i *Interp) _stdioFdName(s string) (any, error) {
+	switch s {
+	case "stdin":
+		return i.OS.Stdin(), nil
+	case "stdout":
+		return i.OS.Stdout(), nil
+	case "stderr":
+		return i.OS.Stderr(), nil
+	default:
+		return nil, fmt.Errorf("unknown fd %s", s)
 	}
 }
 
-func (i *Interp) makeStdioFn(name string, t Terminal) func(c any, a []any) gojq.Iter {
-	return func(c any, a []any) gojq.Iter {
-		switch {
-		case len(a) == 1:
-			if i.evalInstance.isCompleting {
-				return gojq.NewIter("")
-			}
+func (i *Interp) _stdioRead(c any, fdName string, l int) gojq.Iter {
+	fd, err := i._stdioFdName(fdName)
+	if err != nil {
+		return gojq.NewIter(err)
+	}
+	r, ok := fd.(io.Reader)
+	if !ok {
+		return gojq.NewIter(fmt.Errorf("%s is not a writeable", fdName))
+	}
 
-			r, ok := t.(io.Reader)
-			if !ok {
-				return gojq.NewIter(fmt.Errorf("%s is not readable", name))
-			}
-			l, ok := gojqextra.Cast[int](a[0])
-			if !ok {
-				return gojq.NewIter(gojqextra.FuncTypeError{Name: name, V: a[0]})
-			}
+	if i.EvalInstance.IsCompleting {
+		return gojq.NewIter("")
+	}
 
-			buf := make([]byte, l)
-			n, err := io.ReadFull(r, buf)
-			s := string(buf[0:n])
+	buf := make([]byte, l)
+	n, err := io.ReadFull(r, buf)
+	s := string(buf[0:n])
 
-			vs := []any{s}
-			switch {
-			case errors.Is(err, io.EOF), errors.Is(err, io.ErrUnexpectedEOF):
-				vs = append(vs, valueError{"eof"})
-			default:
-				vs = append(vs, err)
-			}
+	vs := []any{s}
+	switch {
+	case errors.Is(err, io.EOF), errors.Is(err, io.ErrUnexpectedEOF):
+		vs = append(vs, valueError{"eof"})
+	default:
+		vs = append(vs, err)
+	}
 
-			return gojq.NewIter(vs...)
-		case c == nil:
-			w, h := t.Size()
-			return gojq.NewIter(map[string]any{
-				"is_terminal": t.IsTerminal(),
-				"width":       w,
-				"height":      h,
-			})
-		default:
-			if i.evalInstance.isCompleting {
-				return gojq.NewIter()
-			}
+	return gojq.NewIter(vs...)
+}
 
-			w, ok := t.(io.Writer)
-			if !ok {
-				return gojq.NewIter(fmt.Errorf("%v: it not writeable", c))
-			}
-			if _, err := fmt.Fprint(w, c); err != nil {
-				return gojq.NewIter(err)
-			}
-			return gojq.NewIter()
-		}
+func (i *Interp) _stdioWrite(c any, fdName string) gojq.Iter {
+	fd, err := i._stdioFdName(fdName)
+	if err != nil {
+		return gojq.NewIter(err)
+	}
+	w, ok := fd.(io.Writer)
+	if !ok {
+		return gojq.NewIter(fmt.Errorf("%s is not a writeable", fdName))
+	}
+	if i.EvalInstance.IsCompleting {
+		return gojq.NewIter()
+	}
+
+	if _, err := fmt.Fprint(w, c); err != nil {
+		return gojq.NewIter(err)
+	}
+	return gojq.NewIter()
+}
+
+func (i *Interp) _stdioInfo(c any, fdName string) any {
+	fd, err := i._stdioFdName(fdName)
+	if err != nil {
+		return err
+	}
+	t, ok := fd.(Terminal)
+	if !ok {
+		return fmt.Errorf("%s is not a terminal", fdName)
+	}
+
+	w, h := t.Size()
+	return map[string]any{
+		"is_terminal": t.IsTerminal(),
+		"width":       w,
+		"height":      h,
 	}
 }
 
-func (i *Interp) history(c any, a []any) any {
-	hs, err := i.os.History()
+func (i *Interp) history(c any) any {
+	hs, err := i.OS.History()
 	if err != nil {
 		return err
 	}
@@ -627,12 +630,12 @@ func (i *Interp) history(c any, a []any) any {
 	return vs
 }
 
-func (i *Interp) _display(c any, a []any) gojq.Iter {
-	opts := i.Options(a[0])
+func (i *Interp) _display(c any, v any) gojq.Iter {
+	opts := OptionsFromValue(v)
 
 	switch v := c.(type) {
 	case Display:
-		if err := v.Display(i.evalInstance.output, opts); err != nil {
+		if err := v.Display(i.EvalInstance.Output, opts); err != nil {
 			return gojq.NewIter(err)
 		}
 		return gojq.NewIter()
@@ -641,27 +644,40 @@ func (i *Interp) _display(c any, a []any) gojq.Iter {
 	}
 }
 
-func (i *Interp) _canDisplay(c any, a []any) any {
+func (i *Interp) _canDisplay(c any) any {
 	_, ok := c.(Display)
 	return ok
 }
 
-func (i *Interp) _printColorJSON(c any, a []any) gojq.Iter {
-	opts := i.Options(a[0])
-
-	cj, err := i.NewColorJSON(opts)
+func (i *Interp) _hexdump(c any, v any) gojq.Iter {
+	opts := OptionsFromValue(v)
+	bv, err := toBinary(c)
 	if err != nil {
 		return gojq.NewIter(err)
 	}
-	if err := cj.Marshal(c, i.evalInstance.output); err != nil {
+	if err := hexdump(i.EvalInstance.Output, bv, opts); err != nil {
 		return gojq.NewIter(err)
 	}
 
 	return gojq.NewIter()
 }
 
-func (i *Interp) _isCompleting(c any, a []any) any {
-	return i.evalInstance.isCompleting
+func (i *Interp) _printColorJSON(c any, v any) gojq.Iter {
+	opts := OptionsFromValue(v)
+
+	cj, err := i.NewColorJSON(opts)
+	if err != nil {
+		return gojq.NewIter(err)
+	}
+	if err := cj.Marshal(c, i.EvalInstance.Output); err != nil {
+		return gojq.NewIter(err)
+	}
+
+	return gojq.NewIter()
+}
+
+func (i *Interp) _isCompleting(c any) any {
+	return i.EvalInstance.IsCompleting
 }
 
 type pathResolver struct {
@@ -670,7 +686,7 @@ type pathResolver struct {
 }
 
 func (i *Interp) lookupPathResolver(filename string) (pathResolver, error) {
-	configDir, err := i.os.ConfigDir()
+	configDir, err := i.OS.ConfigDir()
 	if err != nil {
 		return pathResolver{}, err
 	}
@@ -686,21 +702,21 @@ func (i *Interp) lookupPathResolver(filename string) (pathResolver, error) {
 		{
 			"@config/", func(filename string) (io.ReadCloser, string, error) {
 				p := path.Join(configDir, filename)
-				f, err := i.os.FS().Open(p)
+				f, err := i.OS.FS().Open(p)
 				return f, p, err
 			},
 		},
 		{
 			"", func(filename string) (io.ReadCloser, string, error) {
 				if path.IsAbs(filename) {
-					f, err := i.os.FS().Open(filename)
+					f, err := i.OS.FS().Open(filename)
 					return f, filename, err
 				}
 
 				// TODO: jq $ORIGIN
 				for _, includePath := range append([]string{"./"}, i.includePaths()...) {
 					p := path.Join(includePath, filename)
-					if f, err := i.os.FS().Open(path.Join(includePath, filename)); err == nil {
+					if f, err := i.OS.FS().Open(path.Join(includePath, filename)); err == nil {
 						return f, p, nil
 					}
 				}
@@ -738,7 +754,7 @@ func (i *Interp) Eval(ctx context.Context, c any, expr string, opts EvalOpts) (g
 	// make copy of interp and give it its own eval context
 	ci := *i
 	ni := &ci
-	ni.evalInstance = evalInstance{
+	ni.EvalInstance = EvalInstance{
 		includeSeen: map[string]struct{}{},
 	}
 
@@ -750,20 +766,20 @@ func (i *Interp) Eval(ctx context.Context, c any, expr string, opts EvalOpts) (g
 	}
 
 	var funcCompilerOpts []gojq.CompilerOption
-	for _, frFn := range functionRegisterFns {
-		for _, f := range frFn(ni) {
-			if f.IterFn != nil {
-				funcCompilerOpts = append(funcCompilerOpts,
-					gojq.WithIterFunction(f.Name, f.MinArity, f.MaxArity, f.IterFn))
-			} else {
-				funcCompilerOpts = append(funcCompilerOpts,
-					gojq.WithFunction(f.Name, f.MinArity, f.MaxArity, f.Fn))
-			}
+
+	for _, fn := range i.Registry.EnvFuncFns {
+		f := fn(func() *Interp { return ni })
+		if f.IterFn != nil {
+			funcCompilerOpts = append(funcCompilerOpts,
+				gojq.WithIterFunction(f.Name, f.MinArity, f.MaxArity, f.IterFn))
+		} else {
+			funcCompilerOpts = append(funcCompilerOpts,
+				gojq.WithFunction(f.Name, f.MinArity, f.MaxArity, f.FuncFn))
 		}
 	}
 
 	compilerOpts := append([]gojq.CompilerOption{}, funcCompilerOpts...)
-	compilerOpts = append(compilerOpts, gojq.WithEnvironLoader(ni.os.Environ))
+	compilerOpts = append(compilerOpts, gojq.WithEnvironLoader(ni.OS.Environ))
 	compilerOpts = append(compilerOpts, gojq.WithVariables(variableNames))
 	compilerOpts = append(compilerOpts, gojq.WithModuleLoader(loadModule{
 		init: func() ([]*gojq.Query, error) {
@@ -791,10 +807,10 @@ func (i *Interp) Eval(ctx context.Context, c any, expr string, opts EvalOpts) (g
 			}
 
 			// skip if this eval instance has already included the file
-			if _, ok := ni.evalInstance.includeSeen[filename]; ok {
+			if _, ok := ni.EvalInstance.includeSeen[filename]; ok {
 				return &gojq.Query{Term: &gojq.Term{Type: gojq.TermTypeIdentity}}, nil
 			}
-			ni.evalInstance.includeSeen[filename] = struct{}{}
+			ni.EvalInstance.includeSeen[filename] = struct{}{}
 
 			// return cached version if file has already been parsed
 			if q, ok := ni.includeCache[filename]; ok {
@@ -907,10 +923,10 @@ func (i *Interp) Eval(ctx context.Context, c any, expr string, opts EvalOpts) (g
 	}
 
 	runCtx, runCtxCancelFn := i.interruptStack.Push(ctx)
-	ni.evalInstance.ctx = runCtx
-	ni.evalInstance.output = ioextra.CtxWriter{Writer: output, Ctx: runCtx}
+	ni.EvalInstance.Ctx = runCtx
+	ni.EvalInstance.Output = ioextra.CtxWriter{Writer: output, Ctx: runCtx}
 	// inherit or maybe set
-	ni.evalInstance.isCompleting = i.evalInstance.isCompleting || opts.isCompleting
+	ni.EvalInstance.IsCompleting = i.EvalInstance.IsCompleting || opts.isCompleting
 	iter := gc.RunWithContext(runCtx, c, variableValues...)
 
 	iterWrapper := iterFn(func() (any, bool) {
@@ -995,6 +1011,21 @@ type Options struct {
 
 	Decorator    Decorator
 	BitsFormatFn func(br bitio.ReaderAtSeeker) (any, error)
+}
+
+func OptionsFromValue(v any) Options {
+	var opts Options
+	_ = mapstruct.ToStruct(v, &opts)
+	opts.ArrayTruncate = mathextra.MaxInt(0, opts.ArrayTruncate)
+	opts.Depth = mathextra.MaxInt(0, opts.Depth)
+	opts.Addrbase = mathextra.ClampInt(2, 36, opts.Addrbase)
+	opts.Sizebase = mathextra.ClampInt(2, 36, opts.Sizebase)
+	opts.LineBytes = mathextra.MaxInt(0, opts.LineBytes)
+	opts.DisplayBytes = mathextra.MaxInt(0, opts.DisplayBytes)
+	opts.Decorator = decoratorFromOptions(opts)
+	opts.BitsFormatFn = bitsFormatFnFromOptions(opts)
+
+	return opts
 }
 
 func bitsFormatFnFromOptions(opts Options) func(br bitio.ReaderAtSeeker) (any, error) {
@@ -1082,21 +1113,6 @@ func (i *Interp) includePaths() []string {
 func (i *Interp) slurps() map[string]any {
 	slurpsAny, _ := i.lookupState("slurps").(map[string]any)
 	return slurpsAny
-}
-
-func (i *Interp) Options(v any) Options {
-	var opts Options
-	_ = mapstruct.ToStruct(v, &opts)
-	opts.ArrayTruncate = mathextra.MaxInt(0, opts.ArrayTruncate)
-	opts.Depth = mathextra.MaxInt(0, opts.Depth)
-	opts.Addrbase = mathextra.ClampInt(2, 36, opts.Addrbase)
-	opts.Sizebase = mathextra.ClampInt(2, 36, opts.Sizebase)
-	opts.LineBytes = mathextra.MaxInt(0, opts.LineBytes)
-	opts.DisplayBytes = mathextra.MaxInt(0, opts.DisplayBytes)
-	opts.Decorator = decoratorFromOptions(opts)
-	opts.BitsFormatFn = bitsFormatFnFromOptions(opts)
-
-	return opts
 }
 
 func (i *Interp) NewColorJSON(opts Options) (*colorjson.Encoder, error) {

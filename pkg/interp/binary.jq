@@ -1,9 +1,9 @@
-def tobits: _tobits(1; false; 0);
-def tobytes: _tobits(8; false; 0);
-def tobitsrange: _tobits(1; true; 0);
-def tobytesrange: _tobits(8; true; 0);
-def tobits($pad): _tobits(1; false; $pad);
-def tobytes($pad): _tobits(8; false; $pad);
+def tobits: _tobits({unit: 1, keep_range: false, pad_to_units: 0});
+def tobytes: _tobits({unit: 8, keep_range: false, pad_to_units: 0});
+def tobitsrange: _tobits({unit: 1, keep_range: true, pad_to_units: 0});
+def tobytesrange: _tobits({unit: 8, keep_range: true, pad_to_units: 0});
+def tobits($pad): _tobits({unit: 1, keep_range: false, pad_to_units: $pad});
+def tobytes($pad): _tobits({unit: 8, keep_range: false, pad_to_units: $pad});
 
 # same as regexp.QuoteMeta
 def _re_quote_meta:
@@ -66,7 +66,7 @@ def test($regex; $flags): _binary_or_orig(_test_binary($regex; $flags); _orig_te
 
 def _orig_match($val): match($val);
 def _orig_match($regex; $flags): match($regex; $flags);
-def match($val): _binary_or_orig(_match_binary($val); _orig_match($val));
+def match($val): _binary_or_orig(_match_binary($val; ""); _orig_match($val));
 def match($regex; $flags): _binary_or_orig(_match_binary($regex; $flags); _orig_match($regex; $flags));
 
 def _orig_capture($val): capture($val);

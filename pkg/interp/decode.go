@@ -24,13 +24,9 @@ import (
 )
 
 func init() {
-	functionRegisterFns = append(functionRegisterFns, func(i *Interp) []Function {
-		return []Function{
-			{"_registry", 0, 0, i._registry, nil},
-			{"_tovalue", 1, 1, i._toValue, nil},
-			{"_decode", 2, 2, i._decode, nil},
-		}
-	})
+	RegisterFunc0("_registry", (*Interp)._registry)
+	RegisterFunc1("_tovalue", (*Interp)._toValue)
+	RegisterFunc2("_decode", (*Interp)._decode)
 }
 
 type expectedExtkeyError struct {
@@ -50,16 +46,16 @@ type DecodeValue interface {
 	DecodeValue() *decode.Value
 }
 
-func (i *Interp) _registry(c any, a []any) any {
+func (i *Interp) _registry(c any) any {
 	uniqueFormats := map[string]decode.Format{}
 
 	groups := map[string]any{}
 	formats := map[string]any{}
 
-	for fsName := range i.registry.Groups {
+	for groupName := range i.Registry.Groups {
 		var group []any
 
-		for _, f := range i.registry.MustGroup(fsName) {
+		for _, f := range i.Registry.MustGroup(groupName) {
 			group = append(group, f.Name)
 			if _, ok := uniqueFormats[f.Name]; ok {
 				continue
@@ -67,7 +63,7 @@ func (i *Interp) _registry(c any, a []any) any {
 			uniqueFormats[f.Name] = f
 		}
 
-		groups[fsName] = group
+		groups[groupName] = group
 	}
 
 	for _, f := range uniqueFormats {
@@ -119,7 +115,7 @@ func (i *Interp) _registry(c any, a []any) any {
 					delete(args, k)
 				}
 			}
-			vf["decode_in_arg"] = norm(args)
+			vf["decode_in_arg"] = gojqextra.Normalize(args)
 		}
 
 		if f.Files != nil {
@@ -160,15 +156,44 @@ func (i *Interp) _registry(c any, a []any) any {
 		formats[f.Name] = vf
 	}
 
+	var files []any
+	for _, fs := range i.Registry.FSs {
+		ventries := []any{}
+
+		entries, err := fs.ReadDir(".")
+		if err != nil {
+			return err
+		}
+
+		for _, e := range entries {
+			f, err := fs.Open(e.Name())
+			if err != nil {
+				return err
+			}
+			b, err := ioutil.ReadAll(f)
+			if err != nil {
+				return err
+			}
+
+			ventries = append(ventries, map[string]any{
+				"name": e.Name(),
+				"data": string(b),
+			})
+		}
+
+		files = append(files, ventries)
+	}
+
 	return map[string]any{
 		"groups":  groups,
 		"formats": formats,
+		"files":   files,
 	}
 }
 
-func (i *Interp) _toValue(c any, a []any) any {
+func (i *Interp) _toValue(c any, opts map[string]any) any {
 	v, _ := toValue(
-		func() Options { return i.Options(a[0]) },
+		func() Options { return OptionsFromValue(opts) },
 		c,
 	)
 	return v
@@ -180,9 +205,7 @@ type decodeOpts struct {
 	Remain   map[string]any `mapstruct:",remain"`
 }
 
-func (i *Interp) _decode(c any, a []any) any {
-	opts, _ := gojqextra.CastFn[decodeOpts](a[1], mapstruct.ToStruct)
-
+func (i *Interp) _decode(c any, format string, opts decodeOpts) any {
 	var filename string
 
 	// TODO: progress hack
@@ -196,11 +219,11 @@ func (i *Interp) _decode(c any, a []any) any {
 			evalProgress := func(c any) {
 				// {approx_read_bytes: 123, total_size: 123} | opts.Progress
 				_, _ = i.EvalFuncValues(
-					i.evalInstance.ctx,
+					i.EvalInstance.Ctx,
 					c,
 					opts.Progress,
 					nil,
-					EvalOpts{output: ioextra.DiscardCtxWriter{Ctx: i.evalInstance.ctx}},
+					EvalOpts{output: ioextra.DiscardCtxWriter{Ctx: i.EvalInstance.Ctx}},
 				)
 			}
 			lastProgress := time.Now()
@@ -231,16 +254,16 @@ func (i *Interp) _decode(c any, a []any) any {
 		return err
 	}
 
-	formatName, err := toString(a[0])
+	formatName, err := toString(format)
 	if err != nil {
 		return err
 	}
-	decodeFormat, err := i.registry.Group(formatName)
+	decodeFormat, err := i.Registry.Group(formatName)
 	if err != nil {
 		return err
 	}
 
-	dv, formatOut, err := decode.Decode(i.evalInstance.ctx, bv.br, decodeFormat,
+	dv, formatOut, err := decode.Decode(i.EvalInstance.Ctx, bv.br, decodeFormat,
 		decode.Options{
 			IsRoot:      true,
 			FillGaps:    true,
