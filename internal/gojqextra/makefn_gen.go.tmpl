@@ -9,8 +9,8 @@ import (
 {{- range $fn := slice (map "name" "Func" "type" "any" "field" "FuncFn") (map "name" "Iter" "type" "gojq.Iter" "field" "IterFn") }}
 {{- range $args := xrange 0 4}}
 
-	func {{$fn.name}}{{$args}}[Tenv any, Tc any{{range $i := xrange 0 $args}}, Ta{{$i}} any{{end}}](name string, fn func(e Tenv, c Tc{{range $i := xrange 0 $args}}, a{{$i}} Ta{{$i}}{{end}}) {{$fn.type}}) func(envFn func() Tenv) Function {
-		return func(envFn func() Tenv) Function {
+	func {{$fn.name}}{{$args}}[Tenv any, Tc any{{range $i := xrange 0 $args}}, Ta{{$i}} any{{end}}](name string, fn func(e Tenv, c Tc{{range $i := xrange 0 $args}}, a{{$i}} Ta{{$i}}{{end}}) {{$fn.type}}) func(env Tenv) Function {
+		return func(env Tenv) Function {
 			f := Function{Name: name, MinArity: {{$args}}, MaxArity: {{$args}}}
 			f.{{$fn.field}} = func(c any, a []any) {{$fn.type}} {
 				cv, ok := CastFn[Tc](c, mapstruct.ToStruct)
@@ -32,7 +32,7 @@ import (
 					}
 				{{- end}}
 
-				return fn(envFn(), cv{{range $i := xrange 0 $args}}, a{{$i}}{{end}})
+				return fn(env, cv{{range $i := xrange 0 $args}}, a{{$i}}{{end}})
 			}
 			return f
 		}

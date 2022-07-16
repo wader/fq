@@ -768,7 +768,7 @@ func (i *Interp) Eval(ctx context.Context, c any, expr string, opts EvalOpts) (g
 	var funcCompilerOpts []gojq.CompilerOption
 
 	for _, fn := range i.Registry.EnvFuncFns {
-		f := fn(func() *Interp { return ni })
+		f := fn(ni)
 		if f.IterFn != nil {
 			funcCompilerOpts = append(funcCompilerOpts,
 				gojq.WithIterFunction(f.Name, f.MinArity, f.MaxArity, f.IterFn))
