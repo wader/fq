@@ -4,13 +4,13 @@ package mpeg
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.MPEG_ASC,
 		Description: "MPEG-4 Audio Specific Config",
 		DecodeFn:    ascDecoder,
@@ -33,18 +33,18 @@ var frequencyIndexHzMap = scalar.UToSymU{
 	0xc: 7350,
 }
 
-var channelConfigurationNames = scalar.UToScalar{
-	0: {Description: "defined in AOT Specifc Config"},
-	1: {Description: "front-center"},
-	2: {Description: "front-left, front-right"},
-	3: {Description: "front-center, front-left, front-right"},
-	4: {Description: "front-center, front-left, front-right, back-center"},
-	5: {Description: "front-center, front-left, front-right, back-left, back-right"},
-	6: {Description: "front-center, front-left, front-right, back-left, back-right, LFE-channel"},
-	7: {Description: "front-center, front-left, front-right, side-left, side-right, back-left, back-right, LFE-channel"},
+var channelConfigurationNames = scalar.UToDescription{
+	0: "defined in AOT Specifc Config",
+	1: "front-center",
+	2: "front-left, front-right",
+	3: "front-center, front-left, front-right",
+	4: "front-center, front-left, front-right, back-center",
+	5: "front-center, front-left, front-right, back-left, back-right",
+	6: "front-center, front-left, front-right, back-left, back-right, LFE-channel",
+	7: "front-center, front-left, front-right, side-left, side-right, back-left, back-right, LFE-channel",
 }
 
-func ascDecoder(d *decode.D, in interface{}) interface{} {
+func ascDecoder(d *decode.D, in any) any {
 	objectType := d.FieldUFn("object_type", decodeEscapeValueCarryFn(5, 6, 0), format.MPEGAudioObjectTypeNames)
 	d.FieldUFn("sampling_frequency", decodeEscapeValueAbsFn(4, 24, 0), frequencyIndexHzMap)
 	d.FieldU4("channel_configuration", channelConfigurationNames)

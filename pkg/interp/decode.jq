@@ -1,7 +1,12 @@
+include "internal";
+include "options";
+include "ansi";
+
 # TODO: error value preview
 def _expected_decode_value:
-  error("expected a decode value but got: \(. | type) (\(. | tostring))");
-# TODO: helper? _is_decode_value?
+  error("expected decode value but got: \(. | type) (\(. | tostring))");
+def _is_decode_value: _exttype == "decode_value";
+
 def _decode_value(f; ef):
   if _is_decode_value then f
   else ef
@@ -25,24 +30,24 @@ def _decode_progress:
       )
     else empty
     end
-  | stderr
+  | printerr
   );
 
 def decode($name; $decode_opts):
   ( options as $opts
-  | (null | stdout) as $stdout
   | _decode(
       $name;
-      $opts +
-      {
-        _progress: (
-          if $opts.decode_progress and $opts.repl and $stdout.is_terminal then
-            "_decode_progress"
-          else null
-          end
-        ),
-      } +
-      $decode_opts
+      ( {
+          progress: (
+            if $opts.decode_progress and $opts.repl and stdout_tty.is_terminal then
+              "_decode_progress"
+            else null
+            end
+          ),
+        }
+      + $opts
+      + $decode_opts
+      )
     )
   );
 def decode($name): decode($name; {});
@@ -50,13 +55,16 @@ def decode: decode(options.decode_format; {});
 
 def topath: _decode_value(._path);
 def tovalue($opts): _tovalue(options($opts));
-def tovalue: _tovalue({});
+def tovalue: _tovalue(options({}));
 def toactual: _decode_value(._actual);
 def tosym: _decode_value(._sym);
 def todescription: _decode_value(._description);
 
 # TODO: rename?
 def format: _decode_value(._format; null);
+
+def formats:
+  _registry.formats;
 
 def root: _decode_value(._root);
 def buffer_root: _decode_value(._buffer_root);

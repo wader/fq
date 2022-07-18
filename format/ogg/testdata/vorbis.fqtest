@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i sine -t 50ms -c:a libvorbis vorbis.ogg
-$ fq -d ogg verbose /vorbis.ogg
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /vorbis.ogg (ogg) 0x0-0xe46.7 (3655)
+$ fq -d ogg dv vorbis.ogg
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: vorbis.ogg (ogg) 0x0-0xe46.7 (3655)
       |                                               |                |  pages[0:3]: 0x0-0xe46.7 (3655)
       |                                               |                |    [0]{}: page (ogg_page) 0x0-0x39.7 (58)
 0x0000|4f 67 67 53                                    |OggS            |      capture_pattern: "OggS" (valid) 0x0-0x3.7 (4)

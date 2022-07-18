@@ -8,27 +8,23 @@ import (
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/inet/flowsdecoder"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var pcapngEther8023Format decode.Group
-var pcapngSLLPacketFormat decode.Group
-var pcapngSLL2PacketFormat decode.Group
+var pcapngLinkFrameFormat decode.Group
 var pcapngTCPStreamFormat decode.Group
 var pcapngIPvPacket4Format decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.PCAPNG,
 		Description: "PCAPNG packet capture",
 		RootArray:   true,
 		Groups:      []string{format.PROBE},
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.ETHER8023_FRAME}, Group: &pcapngEther8023Format},
-			{Names: []string{format.SLL_PACKET}, Group: &pcapngSLLPacketFormat},
-			{Names: []string{format.SLL2_PACKET}, Group: &pcapngSLL2PacketFormat},
+			{Names: []string{format.LINK_FRAME}, Group: &pcapngLinkFrameFormat},
 			{Names: []string{format.TCP_STREAM}, Group: &pcapngTCPStreamFormat},
 			{Names: []string{format.IPV4_PACKET}, Group: &pcapngIPvPacket4Format},
 		},
@@ -234,24 +230,24 @@ var blockFns = map[uint64]func(d *decode.D, dc *decodeContext){
 		capturedLength := d.FieldU32("capture_packet_length")
 		d.FieldU32("original_packet_length")
 
-		bs, err := d.BitBufRange(d.Pos(), int64(capturedLength)*8).Bytes()
-		if err != nil {
-			d.IOPanic(err, "d.BitBufRange")
-		}
+		bs := d.ReadAllBits(d.BitBufRange(d.Pos(), int64(capturedLength)*8))
 
 		linkType := dc.interfaceTypes[int(interfaceID)]
 
 		if fn, ok := linkToDecodeFn[linkType]; ok {
 			// TODO: report decode errors
 			_ = fn(dc.flowDecoder, bs)
-			_ = fn(dc.flowDecoder, bs)
 		}
 
-		if g, ok := linkToFormat[linkType]; ok {
-			d.FieldFormatLen("packet", int64(capturedLength)*8, *g, nil)
-		} else {
-			d.FieldRawLen("packet", int64(capturedLength)*8)
-		}
+		d.FieldFormatOrRawLen(
+			"packet",
+			int64(capturedLength)*8,
+			pcapngLinkFrameFormat,
+			format.LinkFrameIn{
+				Type:           linkType,
+				IsLittleEndian: d.Endian == decode.LittleEndian,
+			},
+		)
 
 		d.FieldRawLen("padding", int64(d.AlignBits(32)))
 		d.FieldArray("options", func(d *decode.D) { decoodeOptions(d, enhancedPacketOptionsMap) })
@@ -267,10 +263,10 @@ var blockFns = map[uint64]func(d *decode.D, dc *decodeContext){
 						seenEnd = true
 						return
 					}
-					d.LenFn(int64(length)*8, func(d *decode.D) {
+					d.FramedFn(int64(length)*8, func(d *decode.D) {
 						switch typ {
 						case nameResolutionRecordIpv4:
-							d.FieldU32BE("address", mapUToIPv4Sym, scalar.Hex)
+							d.FieldU32BE("address", mapUToIPv4Sym, scalar.ActualHex)
 							d.FieldArray("entries", func(d *decode.D) {
 								for !d.End() {
 									d.FieldUTF8Null("string")
@@ -296,10 +292,14 @@ var blockFns = map[uint64]func(d *decode.D, dc *decodeContext){
 }
 
 func decodeBlock(d *decode.D, dc *decodeContext) {
-	typ := d.FieldU32("type", blockTypeMap, scalar.Hex)
+	typ := d.FieldU32("type", blockTypeMap, scalar.ActualHex)
 	length := d.FieldU32("length") - 8
 	const footerLengthSize = 32
-	d.LenFn(int64(length)*8-footerLengthSize, func(d *decode.D) {
+	blockLen := int64(length)*8 - footerLengthSize
+	if blockLen <= 0 {
+		d.Fatalf("%d blockLen < 0", blockLen)
+	}
+	d.FramedFn(blockLen, func(d *decode.D) {
 		if fn, ok := blockFns[typ]; ok {
 			fn(d, dc)
 		} else {
@@ -317,10 +317,10 @@ func decodeSection(d *decode.D, dc *decodeContext) {
 
 		// treat header block differently as it has endian info
 		d.FieldStruct("block", func(d *decode.D) {
-			d.FieldU32("type", d.AssertU(blockTypeSectionHeader), blockTypeMap, scalar.Hex)
+			d.FieldU32("type", d.AssertU(blockTypeSectionHeader), blockTypeMap, scalar.ActualHex)
 
 			d.SeekRel(32)
-			endian := d.FieldU32("byte_order_magic", ngEndianMap, scalar.Hex)
+			endian := d.FieldU32("byte_order_magic", ngEndianMap, scalar.ActualHex)
 			// peeks length and byte-order magic and marks away length
 			switch endian {
 			case ngBigEndian:
@@ -335,11 +335,11 @@ func decodeSection(d *decode.D, dc *decodeContext) {
 			length := d.FieldU32("length") - 8 - 4
 			d.SeekRel(32)
 
-			d.LenFn(int64(length)*8, func(d *decode.D) {
+			d.FramedFn(int64(length)*8, func(d *decode.D) {
 				d.FieldU16("major_version")
 				d.FieldU16("minor_version")
 				sectionLength = d.FieldS64("section_length")
-				d.LenFn(d.BitsLeft()-32, func(d *decode.D) {
+				d.FramedFn(d.BitsLeft()-32, func(d *decode.D) {
 					d.FieldArray("options", func(d *decode.D) { decoodeOptions(d, sectionHeaderOptionsMap) })
 				})
 				d.FieldU32("footer_total_length")
@@ -361,7 +361,7 @@ type decodeContext struct {
 	flowDecoder        *flowsdecoder.Decoder
 }
 
-func decodePcapng(d *decode.D, in interface{}) interface{} {
+func decodePcapng(d *decode.D, in any) any {
 	sectionHeaders := 0
 	for !d.End() {
 		fd := flowsdecoder.New()

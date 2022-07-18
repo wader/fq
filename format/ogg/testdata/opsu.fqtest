@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i sine -t 50ms -c:a libopus opus.ogg
-$ fq -d ogg verbose /opus.ogg
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /opus.ogg (ogg) 0x0-0x3b0.7 (945)
+$ fq -d ogg dv opus.ogg
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: opus.ogg (ogg) 0x0-0x3b0.7 (945)
       |                                               |                |  pages[0:3]: 0x0-0x3b0.7 (945)
       |                                               |                |    [0]{}: page (ogg_page) 0x0-0x2e.7 (47)
 0x0000|4f 67 67 53                                    |OggS            |      capture_pattern: "OggS" (valid) 0x0-0x3.7 (4)

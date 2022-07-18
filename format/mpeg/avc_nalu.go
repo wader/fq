@@ -4,9 +4,10 @@ package mpeg
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
-	"github.com/wader/fq/internal/num"
+	"github.com/wader/fq/internal/mathextra"
+	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -15,7 +16,7 @@ var avcPPSFormat decode.Group
 var avcSEIFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.AVC_NALU,
 		Description: "H.264/AVC Network Access Layer Unit",
 		DecodeFn:    avcNALUDecode,
@@ -48,7 +49,7 @@ func uEV(d *decode.D) uint64 { return expGolomb(d) }
 
 func sEV(d *decode.D) int64 {
 	v := expGolomb(d) + 1
-	return num.ZigZag(v) - -int64(v&1)
+	return mathextra.ZigZag(v) - -int64(v&1)
 }
 
 const (
@@ -65,43 +66,43 @@ const (
 )
 
 var avcNALNames = scalar.UToScalar{
-	1:                                        {Sym: "SLICE", Description: "Coded slice of a non-IDR picture"},
-	2:                                        {Sym: "DPA", Description: "Coded slice data partition A"},
-	3:                                        {Sym: "DPB", Description: "Coded slice data partition B"},
-	4:                                        {Sym: "DPC", Description: "Coded slice data partition C"},
-	5:                                        {Sym: "IDR_SLICE", Description: "Coded slice of an IDR picture"},
-	avcNALSupplementalEnhancementInformation: {Sym: "SEI", Description: "Supplemental enhancement information"},
-	avcNALSequenceParameterSet:               {Sym: "SPS", Description: "Sequence parameter set"},
-	avcNALPictureParameterSet:                {Sym: "PPS", Description: "Picture parameter set"},
-	9:                                        {Sym: "AUD", Description: "Access unit delimiter"},
-	10:                                       {Sym: "EOSEQ", Description: "End of sequence"},
-	11:                                       {Sym: "EOS", Description: "End of stream"},
-	12:                                       {Sym: "FILLER", Description: "Filler data"},
-	13:                                       {Sym: "SPS_EXT", Description: "Sequence parameter set extension"},
-	14:                                       {Sym: "PREFIX", Description: "Prefix NAL unit"},
-	15:                                       {Sym: "SUB_SPS", Description: "Subset sequence parameter set"},
-	19:                                       {Sym: "AUX_SLICE", Description: "Coded slice of an auxiliary coded picture without partitioning"},
-	20:                                       {Sym: "EXTEN_SLICE", Description: "Coded slice extension"},
+	1:                                        {Sym: "slice", Description: "Coded slice of a non-IDR picture"},
+	2:                                        {Sym: "dpa", Description: "Coded slice data partition A"},
+	3:                                        {Sym: "dpb", Description: "Coded slice data partition B"},
+	4:                                        {Sym: "dpc", Description: "Coded slice data partition C"},
+	5:                                        {Sym: "idr_slice", Description: "Coded slice of an IDR picture"},
+	avcNALSupplementalEnhancementInformation: {Sym: "sei", Description: "Supplemental enhancement information"},
+	avcNALSequenceParameterSet:               {Sym: "sps", Description: "Sequence parameter set"},
+	avcNALPictureParameterSet:                {Sym: "pps", Description: "Picture parameter set"},
+	9:                                        {Sym: "aud", Description: "Access unit delimiter"},
+	10:                                       {Sym: "eoseq", Description: "End of sequence"},
+	11:                                       {Sym: "eos", Description: "End of stream"},
+	12:                                       {Sym: "filler", Description: "Filler data"},
+	13:                                       {Sym: "sps_ext", Description: "Sequence parameter set extension"},
+	14:                                       {Sym: "prefix", Description: "Prefix NAL unit"},
+	15:                                       {Sym: "sub_sps", Description: "Subset sequence parameter set"},
+	19:                                       {Sym: "aux_slice", Description: "Coded slice of an auxiliary coded picture without partitioning"},
+	20:                                       {Sym: "exten_slice", Description: "Coded slice extension"},
 }
 
 var sliceNames = scalar.UToSymStr{
-	0: "P",
-	1: "B",
-	2: "I",
-	3: "SP",
-	4: "SI",
-	5: "P",
-	6: "B",
-	7: "I",
-	8: "SP",
-	9: "SI",
+	0: "p",
+	1: "b",
+	2: "i",
+	3: "sp",
+	4: "si",
+	5: "p",
+	6: "b",
+	7: "i",
+	8: "sp",
+	9: "si",
 }
 
-func avcNALUDecode(d *decode.D, in interface{}) interface{} {
+func avcNALUDecode(d *decode.D, in any) any {
 	d.FieldBool("forbidden_zero_bit")
 	d.FieldU2("nal_ref_idc")
 	nalType := d.FieldU5("nal_unit_type", avcNALNames)
-	unescapedBb := d.MustNewBitBufFromReader(decode.NALUnescapeReader{Reader: d.BitBufRange(d.Pos(), d.BitsLeft())})
+	unescapedBR := d.NewBitBufFromReader(nalUnescapeReader{Reader: bitio.NewIOReader(d.BitBufRange(d.Pos(), d.BitsLeft()))})
 
 	switch nalType {
 	case avcNALCodedSliceNonIDR,
@@ -118,11 +119,11 @@ func avcNALUDecode(d *decode.D, in interface{}) interface{} {
 			// TODO: if ( separate_colour_plane_flag from SPS ) colour_plane_id; frame_num
 		})
 	case avcNALSupplementalEnhancementInformation:
-		d.FieldFormatBitBuf("sei", unescapedBb, avcSEIFormat, nil)
+		d.FieldFormatBitBuf("sei", unescapedBR, avcSEIFormat, nil)
 	case avcNALSequenceParameterSet:
-		d.FieldFormatBitBuf("sps", unescapedBb, avcSPSFormat, nil)
+		d.FieldFormatBitBuf("sps", unescapedBR, avcSPSFormat, nil)
 	case avcNALPictureParameterSet:
-		d.FieldFormatBitBuf("pps", unescapedBb, avcPPSFormat, nil)
+		d.FieldFormatBitBuf("pps", unescapedBR, avcPPSFormat, nil)
 	}
 	d.FieldRawLen("data", d.BitsLeft())
 

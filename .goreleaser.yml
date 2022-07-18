@@ -4,6 +4,9 @@ before:
   hooks:
     - go mod download
 
+release:
+  draft: true
+
 builds:
   - env:
       - CGO_ENABLED=0
@@ -19,7 +22,6 @@ builds:
     ldflags:
       # omit symbol table and debug information
       - -s -w
-      - -X main.version={{.Version}}
       - -X main.commit={{.Commit}}
       - -X main.date={{.CommitDate}}
       - -X main.builtBy=goreleaser
@@ -32,6 +34,8 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
+      - goos: darwin
+        format: zip
     replacements:
       darwin: macos
 
@@ -42,16 +46,16 @@ changelog:
   sort: asc
   filters:
     exclude:
-      - "^docs:"
-      - "^test:"
+      - "^Merge"
 
 brews:
-  - tap:
+  - skip_upload: auto
+    tap:
       owner: wader
       name: homebrew-tap
     folder: Formula
     homepage: https://github.com/wader/fq
-    description: jq for binaries
+    description: jq for binary formats
     license: MIT
     test: |
       system "#{bin}/fq -v"

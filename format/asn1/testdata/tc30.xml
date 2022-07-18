@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<NULL>
+	<identification_block>
+		<tag_class>UNIVERSAL</tag_class>
+		<is_constructed>false</is_constructed>
+		<value_dec>5</value_dec>
+	</identification_block>
+	<length_block>
+		<is_indefinite_form>false</is_indefinite_form>
+		<long_form_used>false</long_form_used>
+		<length>3</length>
+	</length_block>
+	<value_block>
+		<warnings>
+			<warning>Non-zero length of value block for NULL type</warning>
+		</warnings>
+	</value_block>
+</NULL>

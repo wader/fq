@@ -5,19 +5,17 @@ package mpeg
 // http://dvdnav.mplayerhq.hu/dvdinfo/mpeghdrs.html
 
 import (
-	"log"
-
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 var pesPacketFormat decode.Group
 var spuFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.MPEG_PES,
 		Description: "MPEG Packetized elementary stream",
 		DecodeFn:    pesDecode,
@@ -35,7 +33,7 @@ type subStream struct {
 	l int
 }
 
-func pesDecode(d *decode.D, in interface{}) interface{} {
+func pesDecode(d *decode.D, in any) any {
 	substreams := map[int]*subStream{}
 
 	prefix := d.PeekBits(24)
@@ -50,7 +48,6 @@ func pesDecode(d *decode.D, in interface{}) interface{} {
 	for d.NotEnd() {
 		dv, v, err := d.TryFieldFormat("packet", pesPacketFormat, nil)
 		if dv == nil || err != nil {
-			log.Printf("errs[0]: %#+v\n", err)
 			break
 		}
 
@@ -61,17 +58,16 @@ func pesDecode(d *decode.D, in interface{}) interface{} {
 				s = &subStream{}
 				substreams[dvv.number] = s
 			}
-			b, _ := dvv.bb.BytesRange(0, int(dvv.bb.Len()/8))
-			s.b = append(s.b, b...)
+			s.b = append(s.b, dvv.buf...)
 
-			if s.l == 0 && len(b) >= 2 {
-				s.l = int(b[0])<<8 | int(b[1])
+			if s.l == 0 && len(s.b) >= 2 {
+				s.l = int(s.b[0])<<8 | int(s.b[1])
 				// TODO: zero l?
 			}
 
 			// TODO: is this how spu end is signalled?
 			if s.l == len(s.b) {
-				spuD.FieldFormatBitBuf("spu", bitio.NewBufferFromBytes(s.b, -1), spuFormat, nil)
+				spuD.FieldFormatBitBuf("spu", bitio.NewBitReader(s.b, -1), spuFormat, nil)
 				s.b = nil
 				s.l = 0
 			}

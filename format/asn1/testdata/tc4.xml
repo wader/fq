@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<ASN1_TYPE>
+	<error>Length block 0xFF is reserved by standard</error>
+	<identification_block>
+		<warnings>
+			<warning>Tag too long, represented as hex-coded</warning>
+		</warnings>
+		<tag_class>CONTEXT_SPECIFIC</tag_class>
+		<is_constructed>false</is_constructed>
+		<value_hex>7F 7F 7F 7F 7F 7F 7F 7F 7F</value_hex>
+	</identification_block>
+	<length_block>
+		<error>Length block 0xFF is reserved by standard</error>
+	</length_block>
+</ASN1_TYPE>

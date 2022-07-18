@@ -13,15 +13,16 @@ import (
 	"math/bits"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 var probeGroup decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.BZIP2,
 		Description: "bzip2 compression",
 		Groups:      []string{format.PROBE},
@@ -47,7 +48,7 @@ func (bfr bitFlipReader) Read(p []byte) (n int, err error) {
 	return n, err
 }
 
-func bzip2Decode(d *decode.D, in interface{}) interface{} {
+func bzip2Decode(d *decode.D, in any) any {
 	// moreStreams := true
 
 	// d.FieldArray("streams", func(d *decode.D) {
@@ -66,8 +67,8 @@ func bzip2Decode(d *decode.D, in interface{}) interface{} {
 		// 	moreStreams = false
 		// 	return
 		// }
-		d.FieldU48("magic", d.AssertU(blockMagic), scalar.Hex)
-		d.FieldU32("crc", scalar.Hex)
+		d.FieldU48("magic", d.AssertU(blockMagic), scalar.ActualHex)
+		d.FieldU32("crc", scalar.ActualHex)
 		blockCRCValue = d.FieldGet("crc")
 		d.FieldU1("randomised")
 		d.FieldU24("origptr")
@@ -108,14 +109,14 @@ func bzip2Decode(d *decode.D, in interface{}) interface{} {
 
 	compressedStart := d.Pos()
 
-	readCompressedSize, uncompressedBB, dv, _, _ := d.TryFieldReaderRangeFormat("uncompressed", 0, d.Len(), bzip2.NewReader, probeGroup, nil)
-	if uncompressedBB != nil {
+	readCompressedSize, uncompressedBR, dv, _, _ := d.TryFieldReaderRangeFormat("uncompressed", 0, d.Len(), bzip2.NewReader, probeGroup, nil)
+	if uncompressedBR != nil {
 		if dv == nil {
-			d.FieldRootBitBuf("uncompressed", uncompressedBB)
+			d.FieldRootBitBuf("uncompressed", uncompressedBR)
 		}
 
 		blockCRC32W := crc32.NewIEEE()
-		d.MustCopy(blockCRC32W, bitFlipReader{uncompressedBB.Clone()})
+		d.Copy(blockCRC32W, bitFlipReader{bitio.NewIOReader(uncompressedBR)})
 		blockCRC32N := bits.Reverse32(binary.BigEndian.Uint32(blockCRC32W.Sum(nil)))
 		_ = blockCRCValue.TryScalarFn(d.ValidateU(uint64(blockCRC32N)))
 		streamCRCN = blockCRC32N ^ ((streamCRCN << 1) | (streamCRCN >> 31))
@@ -136,9 +137,9 @@ func bzip2Decode(d *decode.D, in interface{}) interface{} {
 		d.FieldRawLen("compressed", compressedSize)
 
 		d.FieldStruct("footer", func(d *decode.D) {
-			d.FieldU48("magic", d.AssertU(footerMagic), scalar.Hex)
+			d.FieldU48("magic", d.AssertU(footerMagic), scalar.ActualHex)
 			// TODO: crc of block crcs
-			d.FieldU32("crc", scalar.Hex, d.ValidateU(uint64(streamCRCN)))
+			d.FieldU32("crc", scalar.ActualHex, d.ValidateU(uint64(streamCRCN)))
 			d.FieldRawLen("padding", int64(d.ByteAlignBits()))
 		})
 	}

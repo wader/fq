@@ -1,0 +1,14 @@
+$ fq -d asn1_ber d tc15.ber
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: tc15.ber (asn1_ber)
+   |                                               |                |  error: asn1_ber: S(exp): failed at position 4 (read size 0 seek pos 0): nBits must be 0-64 (72)
+0x0|09                                             |.               |  class: "universal" (0)
+0x0|09                                             |.               |  form: "primitive" (0)
+0x0|09                                             |.               |  tag: "real" (0x9)
+0x0|   0c                                          | .              |  length: 12
+0x0|      83                                       |  .             |  binary_encoding: true
+0x0|      83                                       |  .             |  sign: 1 (false)
+0x0|      83                                       |  .             |  base: 2 (0)
+0x0|      83                                       |  .             |  scale: 0
+0x0|      83                                       |  .             |  format: 3
+0x0|         09                                    |   .            |  exp_bytes: 9
+0x0|            7f ff ff ff ff ff ff ff fb 05|     |    ..........| |  unknown0: raw bits

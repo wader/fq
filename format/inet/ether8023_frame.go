@@ -7,26 +7,23 @@ import (
 	"fmt"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var ether8023FrameIPv4Format decode.Group
+var ether8023FrameInetPacketGroup decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.ETHER8023_FRAME,
 		Description: "Ethernet 802.3 frame",
+		Groups:      []string{format.LINK_FRAME},
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.IPV4_PACKET}, Group: &ether8023FrameIPv4Format},
+			{Names: []string{format.INET_PACKET}, Group: &ether8023FrameInetPacketGroup},
 		},
-		DecodeFn: decodeEthernet,
+		DecodeFn: decodeEthernetFrame,
 	})
-}
-
-var ether8023FrameTypeFormat = map[uint64]*decode.Group{
-	format.EtherTypeIPv4: &ether8023FrameIPv4Format,
 }
 
 // TODO: move to shared?
@@ -37,15 +34,23 @@ var mapUToEtherSym = scalar.Fn(func(s scalar.S) (scalar.S, error) {
 	return s, nil
 })
 
-func decodeEthernet(d *decode.D, in interface{}) interface{} {
-	d.FieldU("destination", 48, mapUToEtherSym, scalar.Hex)
-	d.FieldU("source", 48, mapUToEtherSym, scalar.Hex)
-	etherType := d.FieldU16("ether_type", format.EtherTypeMap, scalar.Hex)
-	if g, ok := ether8023FrameTypeFormat[etherType]; ok {
-		d.FieldFormatLen("packet", d.BitsLeft(), *g, nil)
-	} else {
-		d.FieldRawLen("data", d.BitsLeft())
+func decodeEthernetFrame(d *decode.D, in any) any {
+	if lfi, ok := in.(format.LinkFrameIn); ok {
+		if lfi.Type != format.LinkTypeETHERNET {
+			d.Fatalf("wrong link type %d", lfi.Type)
+		}
 	}
+
+	d.FieldU("destination", 48, mapUToEtherSym, scalar.ActualHex)
+	d.FieldU("source", 48, mapUToEtherSym, scalar.ActualHex)
+	etherType := d.FieldU16("ether_type", format.EtherTypeMap, scalar.ActualHex)
+
+	d.FieldFormatOrRawLen(
+		"payload",
+		d.BitsLeft(),
+		ether8023FrameInetPacketGroup,
+		format.InetPacketIn{EtherType: int(etherType)},
+	)
 
 	return nil
 }

@@ -1,12 +1,12 @@
-GO_BUILD_FLAGS=-trimpath
-GO_BUILD_LDFLAGS=-s -w
+GO_BUILD_FLAGS ?= -trimpath
+GO_BUILD_LDFLAGS ?= -s -w
+GO_TEST_RACE_FLAGS ?=-race
 
 all: test fq
 
 .PHONY: fq
-fq: VERSION=$(shell git describe --all --long --dirty 2>/dev/null || echo nogit)
 fq:
-	CGO_ENABLED=0 go build -o fq -ldflags "${GO_BUILD_LDFLAGS} -X main.version=${VERSION}" ${GO_BUILD_FLAGS} .
+	CGO_ENABLED=0 go build -o fq -ldflags "${GO_BUILD_LDFLAGS}" ${GO_BUILD_FLAGS} .
 
 .PHONY: test
 test: testgo testjq testcli
@@ -15,11 +15,7 @@ test: testgo testjq testcli
 # figure out all go pakges with test files
 testgo: PKGS=$(shell find . -name "*_test.go" | xargs -n 1 dirname | sort | uniq)
 testgo:
-	go test -race ${VERBOSE} ${COVER} ${PKGS}
-
-.PHONY: testgov
-testgov: export VERBOSE=-v
-testgov: testgo
+	go test ${GO_TEST_RACE_FLAGS} ${VERBOSE} ${COVER} ${PKGS}
 
 .PHONY: testjq
 testjq: fq
@@ -27,11 +23,9 @@ testjq: fq
 
 .PHONY: testcli
 testcli: fq
-	@pkg/cli/test.sh ./fq pkg/cli/test.exp
-
-.PHONY: actual
-actual: export WRITE_ACTUAL=1
-actual: testgo
+	@pkg/cli/test_exp.sh ./fq pkg/cli/test_repl.exp
+	@pkg/cli/test_exp.sh ./fq pkg/cli/test_cli_ctrlc.exp
+	@pkg/cli/test_exp.sh ./fq pkg/cli/test_cli_ctrld.exp
 
 .PHONY: cover
 cover: COVER=-cover -coverpkg=./... -coverprofile=cover.out
@@ -40,12 +34,15 @@ cover: test
 	cat cover.out.html | grep '<option value="file' | sed -E 's/.*>(.*) \((.*)%\)<.*/\2 \1/' | sort -rn
 
 .PHONY: doc
-doc: fq doc/file.mp3 doc/file.mp4 doc/formats.svg doc/demo.svg
+doc: doc/formats.svg doc/demo.svg
+doc: doc/display_json.svg
+doc: doc/display_decode_value.svg
+doc: doc/display_decode_value_d.svg
+doc: doc/display_decode_value_dv.svg
 	@doc/mdsh.sh ./fq *.md doc/*.md
 
-.PHONY: doc/demo.svg
-doc/demo.svg: fq
-	(cd doc ; ./demo.sh ../fq) | go run github.com/wader/ansisvg@master > doc/demo.svg
+doc/%.svg: doc/%.sh fq
+	(cd doc ; ../$< ../fq) | go run github.com/wader/ansisvg@master > $@
 
 .PHONY: doc/formats.svg
 doc/formats.svg: fq
@@ -65,7 +62,7 @@ gogenerate:
 .PHONY: lint
 lint:
 # bump: make-golangci-lint /golangci-lint@v([\d.]+)/ git:https://github.com/golangci/golangci-lint.git|^1
-	go run github.com/golangci/golangci-lint/cmd/golangci-lint@v1.43.0 run
+	go run github.com/golangci/golangci-lint/cmd/golangci-lint@v1.46.2 run
 
 .PHONY: depgraph.svg
 depgraph.svg:
@@ -85,7 +82,7 @@ memprof: prof
 cpuprof: prof
 	go tool pprof -http :5555 fq.prof fq.cpu.prof
 
-.PHONY: update-gomodreplace
+.PHONY: update-gomod
 update-gomod:
 	GOPROXY=direct go get -d github.com/wader/readline@fq
 	GOPROXY=direct go get -d github.com/wader/gojq@fq
@@ -96,4 +93,39 @@ update-gomod:
 .PHONY: fuzz
 fuzz:
 # in other terminal: tail -f /tmp/repanic
-	REPANIC_LOG=/tmp/repanic gotip test -tags fuzz -v -fuzz=Fuzz ./format/
+	REPANIC_LOG=/tmp/repanic gotip test -tags fuzz -v -run Fuzz -fuzz=Fuzz ./format/
+
+# usage: make release VERSION=0.0.1
+# tag forked dependeces for history and to make then stay around
+.PHONY: release
+release: WADER_GOJQ_COMMIT=$(shell go list -m -f '{{.Version}}' github.com/wader/gojq | sed 's/.*-\(.*\)/\1/')
+release: WADER_READLINE_COMMIT=$(shell go list -m -f '{{.Version}}' github.com/wader/readline | sed 's/.*-\(.*\)/\1/')
+release:
+	@echo "# wader/fq":
+	@echo "# make sure head is at wader/master"
+	@echo git fetch wader
+	@echo git show
+	@echo make lint test doc
+	@echo go mod tidy
+	@echo git diff
+	@echo
+	@echo "sed 's/version = "\\\(.*\\\)"/version = \"${VERSION}\"/' fq.go > fq.go.new && mv fq.go.new fq.go"
+	@echo git add fq.go
+	@echo git commit -m \"fq: Update version to ${VERSION}\"
+	@echo git push wader master
+	@echo
+	@echo "# make sure head master commit CI was successful"
+	@echo open https://github.com/wader/fq/commit/master
+	@echo git tag v${VERSION}
+	@echo
+	@echo "# wader/gojq:"
+	@echo git tag fq-v${VERSION} ${WADER_GOJQ_COMMIT}
+	@echo git push wader fq-v${VERSION}:fq-v${VERSION}
+	@echo
+	@echo "# wader/readline:"
+	@echo git tag fq-v${VERSION} ${WADER_READLINE_COMMIT}
+	@echo git push wader fq-v${VERSION}:fq-v${VERSION}
+	@echo
+	@echo "# wader/fq":
+	@echo git push wader v${VERSION}:v${VERSION}
+	@echo "# edit draft release notes and publish"

@@ -5,24 +5,22 @@ import (
 	"net"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/checksum"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var udpPacketFormat decode.Group
-var tcpPacketFormat decode.Group
-var icmpFormat decode.Group
+var ipv4IpPacketGroup decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.IPV4_PACKET,
 		Description: "Internet protocol v4 packet",
+		Groups:      []string{format.INET_PACKET},
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.UDP_DATAGRAM}, Group: &udpPacketFormat},
-			{Names: []string{format.TCP_SEGMENT}, Group: &tcpPacketFormat},
-			{Names: []string{format.ICMP}, Group: &icmpFormat},
+			{Names: []string{format.IP_PACKET}, Group: &ipv4IpPacketGroup},
 		},
 		DecodeFn: decodeIPv4,
 	})
@@ -44,12 +42,6 @@ var ipv4OptionsMap = scalar.UToScalar{
 	4:             {Description: "Internet Timestamp"},
 }
 
-var ipv4ProtocolFormat = map[uint64]*decode.Group{
-	format.IPv4ProtocolUDP:  &udpPacketFormat,
-	format.IPv4ProtocolTCP:  &tcpPacketFormat,
-	format.IPv4ProtocolICMP: &icmpFormat,
-}
-
 var mapUToIPv4Sym = scalar.Fn(func(s scalar.S) (scalar.S, error) {
 	var b [4]byte
 	binary.BigEndian.PutUint32(b[:], uint32(s.ActualU()))
@@ -57,7 +49,11 @@ var mapUToIPv4Sym = scalar.Fn(func(s scalar.S) (scalar.S, error) {
 	return s, nil
 })
 
-func decodeIPv4(d *decode.D, in interface{}) interface{} {
+func decodeIPv4(d *decode.D, in any) any {
+	if ipi, ok := in.(format.InetPacketIn); ok && ipi.EtherType != format.EtherTypeIPv4 {
+		d.Fatalf("incorrect ethertype %d", ipi.EtherType)
+	}
+
 	d.FieldU4("version")
 	ihl := d.FieldU4("ihl")
 	d.FieldU6("dscp")
@@ -71,13 +67,13 @@ func decodeIPv4(d *decode.D, in interface{}) interface{} {
 	d.FieldU8("ttl")
 	protocol := d.FieldU8("protocol", format.IPv4ProtocolMap)
 	checksumStart := d.Pos()
-	d.FieldU16("header_checksum", scalar.Hex)
+	d.FieldU16("header_checksum", scalar.ActualHex)
 	checksumEnd := d.Pos()
-	d.FieldU32("source_ip", mapUToIPv4Sym, scalar.Hex)
-	d.FieldU32("destination_ip", mapUToIPv4Sym, scalar.Hex)
+	d.FieldU32("source_ip", mapUToIPv4Sym, scalar.ActualHex)
+	d.FieldU32("destination_ip", mapUToIPv4Sym, scalar.ActualHex)
 	optionsLen := (int64(ihl) - 5) * 8 * 4
 	if optionsLen > 0 {
-		d.LenFn(optionsLen, func(d *decode.D) {
+		d.FramedFn(optionsLen, func(d *decode.D) {
 			d.FieldArray("options", func(d *decode.D) {
 				for !d.End() {
 					d.FieldStruct("option", func(d *decode.D) {
@@ -98,16 +94,21 @@ func decodeIPv4(d *decode.D, in interface{}) interface{} {
 	headerEnd := d.Pos()
 
 	ipv4Checksum := &checksum.IPv4{}
-	d.MustCopy(ipv4Checksum, d.BitBufRange(0, checksumStart))
-	d.MustCopy(ipv4Checksum, d.BitBufRange(checksumEnd, headerEnd-checksumEnd))
-	_ = d.FieldMustGet("header_checksum").TryScalarFn(d.ValidateUBytes(ipv4Checksum.Sum(nil)), scalar.Hex)
+	d.Copy(ipv4Checksum, bitio.NewIOReader(d.BitBufRange(0, checksumStart)))
+	d.Copy(ipv4Checksum, bitio.NewIOReader(d.BitBufRange(checksumEnd, headerEnd-checksumEnd)))
+	_ = d.FieldMustGet("header_checksum").TryScalarFn(d.ValidateUBytes(ipv4Checksum.Sum(nil)), scalar.ActualHex)
 
 	dataLen := int64(totalLength-(ihl*4)) * 8
-	g, ok := ipv4ProtocolFormat[protocol]
-	if !ok || moreFragments || fragmentOffset > 0 {
-		d.FieldRawLen("data", dataLen)
+
+	if moreFragments || fragmentOffset > 0 {
+		d.FieldRawLen("payload", dataLen)
 	} else {
-		d.FieldFormatLen("data", dataLen, *g, nil)
+		d.FieldFormatOrRawLen(
+			"payload",
+			dataLen,
+			ipv4IpPacketGroup,
+			format.IPPacketIn{Protocol: int(protocol)},
+		)
 	}
 
 	return nil

@@ -1,5 +1,5 @@
-$ fq -d flac verbose /picture_seek_gain.flac
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /picture_seek_gain.flac (flac) 0x0-0x225f.7 (8800)
+$ fq -d flac dv picture_seek_gain.flac
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: picture_seek_gain.flac (flac) 0x0-0x225f.7 (8800)
 0x0000|66 4c 61 43                                    |fLaC            |  magic: "fLaC" (valid) 0x0-0x3.7 (4)
       |                                               |                |  metadatablocks[0:5]: (flac_metadatablocks) 0x4-0x205f.7 (8284)
       |                                               |                |    [0]{}: metadatablock (flac_metadatablock) 0x4-0x29.7 (38)
@@ -72,7 +72,7 @@ $ fq -d flac verbose /picture_seek_gain.flac
 0x0120|                                             06|               .|      type: "picture" (6) 0x12f.1-0x12f.7 (0.7)
 0x0130|00 01 2c                                       |..,             |      length: 300 0x130-0x132.7 (3)
       |                                               |                |      picture{}: (flac_picture) 0x133-0x25e.7 (300)
-0x0130|         00 00 00 03                           |   ....         |        picture_type: "Cover (front)" (3) 0x133-0x136.7 (4)
+0x0130|         00 00 00 03                           |   ....         |        picture_type: "cover_front)" (3) 0x133-0x136.7 (4)
 0x0130|                     00 00 00 09               |       ....     |        mime_length: 9 0x137-0x13a.7 (4)
 0x0130|                                 69 6d 61 67 65|           image|        mime: "image/png" 0x13b-0x143.7 (9)
 0x0140|2f 70 6e 67                                    |/png            |
@@ -97,10 +97,10 @@ $ fq -d flac verbose /picture_seek_gain.flac
 0x0160|                                    00 00 00 04|            ....|              width: 4 0x16c-0x16f.7 (4)
 0x0170|00 00 00 04                                    |....            |              height: 4 0x170-0x173.7 (4)
 0x0170|            01                                 |    .           |              bit_depth: 1 0x174-0x174.7 (1)
-0x0170|               00                              |     .          |              color_type: "g" (0) (Grayscale) 0x175-0x175.7 (1)
+0x0170|               00                              |     .          |              color_type: "grayscale" (0) 0x175-0x175.7 (1)
 0x0170|                  00                           |      .         |              compression_method: "deflate" (0) 0x176-0x176.7 (1)
-0x0170|                     00                        |       .        |              filter_method: "Adaptive filtering" (0) 0x177-0x177.7 (1)
-0x0170|                        00                     |        .       |              interlace_method: "No interlace" (0) 0x178-0x178.7 (1)
+0x0170|                     00                        |       .        |              filter_method: "adaptive_filtering" (0) 0x177-0x177.7 (1)
+0x0170|                        00                     |        .       |              interlace_method: "none" (0) 0x178-0x178.7 (1)
 0x0170|                           81 8a a3 d3         |         ....   |              crc: 0x818aa3d3 (valid) 0x179-0x17c.7 (4)
       |                                               |                |            [1]{}: chunk 0x17d-0x18c.7 (16)
 0x0170|                                       00 00 00|             ...|              length: 4 0x17d-0x180.7 (4)

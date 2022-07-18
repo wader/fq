@@ -1,0 +1,19 @@
+#!/usr/bin/env expect
+
+log_user 1
+set timeout 3
+
+expect_after {
+    timeout {exit 1}
+}
+
+spawn sh -c "cat | fq 2>&1"
+sleep 1
+# ctrl-c
+send "\x03"
+expect eof
+
+# should not have outputted anything except maybe "^C", seems flakey
+if { $expect_out(buffer) != "" && $expect_out(buffer) != "^C" } {
+    exit 1
+}

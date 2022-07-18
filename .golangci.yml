@@ -23,6 +23,11 @@ linters:
     - predeclared
     - tagliatelle
 
+run:
+  skip-dirs:
+    - dev
+    - doc
+
 linters-settings:
   misspell:
     ignore-words:
@@ -30,6 +35,8 @@ linters-settings:
       - rela
       - equalisation
       - synchronisation
+  exhaustive:
+    default-signifies-exhaustive: true
   gosec:
     excludes:
       # allow md5

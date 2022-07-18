@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i testsrc -c:v h264 -f mp4 -t 100ms avc.mp4
-$ fq -d mp4 verbose /avc.mp4
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /avc.mp4 (mp4) 0x0-0x10df.7 (4320)
+$ fq -d mp4 dv avc.mp4
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: avc.mp4 (mp4) 0x0-0x10df.7 (4320)
       |                                               |                |  boxes[0:4]: 0x0-0x10df.7 (4320)
       |                                               |                |    [0]{}: box 0x0-0x1f.7 (32)
 0x0000|00 00 00 20                                    |...             |      size: 32 0x0-0x3.7 (4)
@@ -31,8 +31,8 @@ $ fq -d mp4 verbose /avc.mp4
 0x0d90|64                                             |d               |
 0x0d90|   00                                          | .              |          version: 0 0xd91-0xd91.7 (1)
 0x0d90|      00 00 00                                 |  ...           |          flags: 0 0xd92-0xd94.7 (3)
-0x0d90|               00 00 00 00                     |     ....       |          creation_time: "1904-01-04T00:00:00Z" (0) 0xd95-0xd98.7 (4)
-0x0d90|                           00 00 00 00         |         ....   |          modification_time: "1904-01-04T00:00:00Z" (0) 0xd99-0xd9c.7 (4)
+0x0d90|               00 00 00 00                     |     ....       |          creation_time: 0 (1904-01-04T00:00:00Z) 0xd95-0xd98.7 (4)
+0x0d90|                           00 00 00 00         |         ....   |          modification_time: 0 (1904-01-04T00:00:00Z) 0xd99-0xd9c.7 (4)
 0x0d90|                                       00 00 03|             ...|          time_scale: 1000 0xd9d-0xda0.7 (4)
 0x0da0|e8                                             |.               |
 0x0da0|   00 00 00 78                                 | ...x           |          duration: 120 0xda1-0xda4.7 (4)
@@ -71,8 +71,8 @@ $ fq -d mp4 verbose /avc.mp4
 0x0e00|   74 6b 68 64                                 | tkhd           |              type: "tkhd" (Track header, overall information about the track) 0xe01-0xe04.7 (4)
 0x0e00|               00                              |     .          |              version: 0 0xe05-0xe05.7 (1)
 0x0e00|                  00 00 03                     |      ...       |              flags: 3 0xe06-0xe08.7 (3)
-0x0e00|                           00 00 00 00         |         ....   |              creation_time: "1904-01-04T00:00:00Z" (0) 0xe09-0xe0c.7 (4)
-0x0e00|                                       00 00 00|             ...|              modification_time: "1904-01-04T00:00:00Z" (0) 0xe0d-0xe10.7 (4)
+0x0e00|                           00 00 00 00         |         ....   |              creation_time: 0 (1904-01-04T00:00:00Z) 0xe09-0xe0c.7 (4)
+0x0e00|                                       00 00 00|             ...|              modification_time: 0 (1904-01-04T00:00:00Z) 0xe0d-0xe10.7 (4)
 0x0e10|00                                             |.               |
 0x0e10|   00 00 00 01                                 | ....           |              track_id: 1 0xe11-0xe14.7 (4)
 0x0e10|               00 00 00 00                     |     ....       |              reserved1: 0 0xe15-0xe18.7 (4)
@@ -126,8 +126,8 @@ $ fq -d mp4 verbose /avc.mp4
 0x0e80|                                       00      |             .  |                  version: 0 0xe8d-0xe8d.7 (1)
 0x0e80|                                          00 00|              ..|                  flags: 0 0xe8e-0xe90.7 (3)
 0x0e90|00                                             |.               |
-0x0e90|   00 00 00 00                                 | ....           |                  creation_time: "1904-01-04T00:00:00Z" (0) 0xe91-0xe94.7 (4)
-0x0e90|               00 00 00 00                     |     ....       |                  modification_time: "1904-01-04T00:00:00Z" (0) 0xe95-0xe98.7 (4)
+0x0e90|   00 00 00 00                                 | ....           |                  creation_time: 0 (1904-01-04T00:00:00Z) 0xe91-0xe94.7 (4)
+0x0e90|               00 00 00 00                     |     ....       |                  modification_time: 0 (1904-01-04T00:00:00Z) 0xe95-0xe98.7 (4)
 0x0e90|                           00 00 32 00         |         ..2.   |                  time_scale: 12800 0xe99-0xe9c.7 (4)
 0x0e90|                                       00 00 06|             ...|                  duration: 1536 0xe9d-0xea0.7 (4)
 0x0ea0|00                                             |.               |
@@ -224,7 +224,7 @@ $ fq -d mp4 verbose /avc.mp4
 0x0f80|            61 76 63 43                        |    avcC        |                                  type: "avcC" 0xf84-0xf87.7 (4)
       |                                               |                |                                  descriptor{}: (avc_dcr) 0xf88-0xfb5.7 (46)
 0x0f80|                        01                     |        .       |                                    configuration_version: 1 0xf88-0xf88.7 (1)
-0x0f80|                           f4                  |         .      |                                    profile_indication: "High 4:4:4 Predictive Profile" (244) 0xf89-0xf89.7 (1)
+0x0f80|                           f4                  |         .      |                                    profile_indication: "high_444_predictive_profile" (244) 0xf89-0xf89.7 (1)
 0x0f80|                              00               |          .     |                                    profile_compatibility: 0 0xf8a-0xf8a.7 (1)
 0x0f80|                                 0d            |           .    |                                    level_indication: "1.3" (13) 0xf8b-0xf8b.7 (1)
 0x0f80|                                    ff         |            .   |                                    reserved0: 63 0xf8c-0xf8c.5 (0.6)
@@ -236,7 +236,7 @@ $ fq -d mp4 verbose /avc.mp4
 0x0f80|                                          00 19|              ..|                                        length: 25 0xf8e-0xf8f.7 (2)
       |                                               |                |                                        nal{}: (avc_nalu) 0xf90-0xfa8.7 (25)
       |                                               |                |                                          sps{}: (avc_sps) 0x0-0x15.7 (22)
- 0x000|f4                                             |.               |                                            profile_idc: "High 4:4:4 Predictive Profile" (244) 0x0-0x0.7 (1)
+ 0x000|f4                                             |.               |                                            profile_idc: "high_444_predictive_profile" (244) 0x0-0x0.7 (1)
  0x000|   00                                          | .              |                                            constraint_set0_flag: false 0x1-0x1 (0.1)
  0x000|   00                                          | .              |                                            constraint_set1_flag: false 0x1.1-0x1.1 (0.1)
  0x000|   00                                          | .              |                                            constraint_set2_flag: false 0x1.2-0x1.2 (0.1)
@@ -246,7 +246,7 @@ $ fq -d mp4 verbose /avc.mp4
  0x000|   00                                          | .              |                                            reserved_zero_2bits: 0 0x1.6-0x1.7 (0.2)
  0x000|      0d                                       |  .             |                                            level_idc: "1.3" (13) 0x2-0x2.7 (1)
  0x000|         91                                    |   .            |                                            seq_parameter_set_id: 0 0x3-0x3 (0.1)
- 0x000|         91                                    |   .            |                                            chroma_format_idc: 3 0x3.1-0x3.5 (0.5)
+ 0x000|         91                                    |   .            |                                            chroma_format_idc: "4:4:4" (3) 0x3.1-0x3.5 (0.5)
  0x000|         91                                    |   .            |                                            separate_colour_plane_flag: false 0x3.6-0x3.6 (0.1)
  0x000|         91                                    |   .            |                                            bit_depth_luma: 8 0x3.7-0x3.7 (0.1)
  0x000|            9b                                 |    .           |                                            bit_depth_chroma: 8 0x4-0x4 (0.1)
@@ -288,7 +288,7 @@ $ fq -d mp4 verbose /avc.mp4
  0x010|               2c|                             |     ,|         |                                            rbsp_trailing_bits: raw bits 0x15.5-0x15.7 (0.3)
 0x0f90|67                                             |g               |                                          forbidden_zero_bit: false 0xf90-0xf90 (0.1)
 0x0f90|67                                             |g               |                                          nal_ref_idc: 3 0xf90.1-0xf90.2 (0.2)
-0x0f90|67                                             |g               |                                          nal_unit_type: "SPS" (7) (Sequence parameter set) 0xf90.3-0xf90.7 (0.5)
+0x0f90|67                                             |g               |                                          nal_unit_type: "sps" (7) (Sequence parameter set) 0xf90.3-0xf90.7 (0.5)
 0x0f90|   f4 00 0d 91 9b 28 28 3f 60 22 00 00 03 00 02| .....((?`".....|                                          data: raw bits 0xf91-0xfa8.7 (24)
 0x0fa0|00 00 03 00 64 1e 28 53 2c                     |....d.(S,       |
 0x0fa0|                           01                  |         .      |                                    num_of_picture_parameter_sets: 1 0xfa9-0xfa9.7 (1)
@@ -318,7 +318,7 @@ $ fq -d mp4 verbose /avc.mp4
  0x000|            44|                                |    D|          |                                            rbsp_trailing_bits: raw bits 0x4.5-0x4.7 (0.3)
 0x0fa0|                                    68         |            h   |                                          forbidden_zero_bit: false 0xfac-0xfac (0.1)
 0x0fa0|                                    68         |            h   |                                          nal_ref_idc: 3 0xfac.1-0xfac.2 (0.2)
-0x0fa0|                                    68         |            h   |                                          nal_unit_type: "PPS" (8) (Picture parameter set) 0xfac.3-0xfac.7 (0.5)
+0x0fa0|                                    68         |            h   |                                          nal_unit_type: "pps" (8) (Picture parameter set) 0xfac.3-0xfac.7 (0.5)
 0x0fa0|                                       eb e3 c4|             ...|                                          data: raw bits 0xfad-0xfb1.7 (5)
 0x0fb0|48 44                                          |HD              |
 0x0fb0|      ff f8 f8 00                              |  ....          |                                    data: raw bits 0xfb2-0xfb5.7 (4)
@@ -450,8 +450,8 @@ $ fq -d mp4 verbose /avc.mp4
 0x10c0|                                             00|               .|                          reserved: 0 0x10cf-0x10d2.7 (4)
 0x10d0|00 00 00                                       |...             |
 0x10d0|         4c 61 76 66 35 38 2e 37 36 2e 31 30 30|   Lavf58.76.100|                          data: "Lavf58.76.100" 0x10d3-0x10df.7 (13)
-      |                                               |                |  tracks[0:1]: 0x30-0xd80.7 (3409)
-      |                                               |                |    [0]{}: track 0x30-0xd80.7 (3409)
+      |                                               |                |  tracks[0:1]: 0x30-0x10df.7 (4272)
+      |                                               |                |    [0]{}: track 0x30-0x10df.7 (4272)
       |                                               |                |      samples[0:3]: 0x30-0xd80.7 (3409)
       |                                               |                |        [0][0:2]: sample (avc_au) 0x30-0xbfb.7 (3020)
       |                                               |                |          [0]{}: nalu 0x30-0x2e0.7 (689)
@@ -468,7 +468,7 @@ $ fq -d mp4 verbose /avc.mp4
  0x2a0|                                 80|           |           .|   |                rbsp_trailing_bits: raw bits 0x2ab-0x2ab.7 (1)
 0x0030|            06                                 |    .           |              forbidden_zero_bit: false 0x34-0x34 (0.1)
 0x0030|            06                                 |    .           |              nal_ref_idc: 0 0x34.1-0x34.2 (0.2)
-0x0030|            06                                 |    .           |              nal_unit_type: "SEI" (6) (Supplemental enhancement information) 0x34.3-0x34.7 (0.5)
+0x0030|            06                                 |    .           |              nal_unit_type: "sei" (6) (Supplemental enhancement information) 0x34.3-0x34.7 (0.5)
 0x0030|               05 ff ff a9 dc 45 e9 bd e6 d9 48|     .....E....H|              data: raw bits 0x35-0x2e0.7 (684)
 0x0040|b7 96 2c d8 20 d9 23 ee ef 78 32 36 34 20 2d 20|..,. .#..x264 - |
 *     |until 0x2e0.7 (684)                            |                |
@@ -477,10 +477,10 @@ $ fq -d mp4 verbose /avc.mp4
       |                                               |                |            nalu{}: (avc_nalu) 0x2e5-0xbfb.7 (2327)
 0x02e0|               65                              |     e          |              forbidden_zero_bit: false 0x2e5-0x2e5 (0.1)
 0x02e0|               65                              |     e          |              nal_ref_idc: 3 0x2e5.1-0x2e5.2 (0.2)
-0x02e0|               65                              |     e          |              nal_unit_type: "IDR_SLICE" (5) (Coded slice of an IDR picture) 0x2e5.3-0x2e5.7 (0.5)
+0x02e0|               65                              |     e          |              nal_unit_type: "idr_slice" (5) (Coded slice of an IDR picture) 0x2e5.3-0x2e5.7 (0.5)
       |                                               |                |              slice_header{}: 0x2e6-0x2e7 (1.1)
 0x02e0|                  88                           |      .         |                first_mb_in_slice: 0 0x2e6-0x2e6 (0.1)
-0x02e0|                  88                           |      .         |                slice_type: "I" (7) 0x2e6.1-0x2e6.7 (0.7)
+0x02e0|                  88                           |      .         |                slice_type: "i" (7) 0x2e6.1-0x2e6.7 (0.7)
 0x02e0|                     84                        |       .        |                pic_parameter_set_id: 0 0x2e7-0x2e7 (0.1)
 0x02e0|                     84 00 33 ff fe f6 86 f8 14|       ..3......|              data: raw bits 0x2e7.1-0xbfb.7 (2324.7)
 0x02f0|d8 53 23 af ff f2 50 06 7f 30 02 17 55 d4 5a 6f|.S#...P..0..U.Zo|
@@ -491,10 +491,10 @@ $ fq -d mp4 verbose /avc.mp4
       |                                               |                |            nalu{}: (avc_nalu) 0xc00-0xd48.7 (329)
 0x0c00|41                                             |A               |              forbidden_zero_bit: false 0xc00-0xc00 (0.1)
 0x0c00|41                                             |A               |              nal_ref_idc: 2 0xc00.1-0xc00.2 (0.2)
-0x0c00|41                                             |A               |              nal_unit_type: "SLICE" (1) (Coded slice of a non-IDR picture) 0xc00.3-0xc00.7 (0.5)
+0x0c00|41                                             |A               |              nal_unit_type: "slice" (1) (Coded slice of a non-IDR picture) 0xc00.3-0xc00.7 (0.5)
       |                                               |                |              slice_header{}: 0xc01-0xc01.6 (0.7)
 0x0c00|   9a                                          | .              |                first_mb_in_slice: 0 0xc01-0xc01 (0.1)
-0x0c00|   9a                                          | .              |                slice_type: "P" (5) 0xc01.1-0xc01.5 (0.5)
+0x0c00|   9a                                          | .              |                slice_type: "p" (5) 0xc01.1-0xc01.5 (0.5)
 0x0c00|   9a                                          | .              |                pic_parameter_set_id: 0 0xc01.6-0xc01.6 (0.1)
 0x0c00|   9a 22 6c 42 bf fe 38 85 de c2 03 1a de 79 0a| ."lB..8......y.|              data: raw bits 0xc01.7-0xd48.7 (327.1)
 0x0c10|56 fd b3 4b b4 0f 24 7f e9 d3 b6 f2 5e 6f dd b7|V..K..$.....^o..|
@@ -505,11 +505,13 @@ $ fq -d mp4 verbose /avc.mp4
       |                                               |                |            nalu{}: (avc_nalu) 0xd4d-0xd80.7 (52)
 0x0d40|                                       01      |             .  |              forbidden_zero_bit: false 0xd4d-0xd4d (0.1)
 0x0d40|                                       01      |             .  |              nal_ref_idc: 0 0xd4d.1-0xd4d.2 (0.2)
-0x0d40|                                       01      |             .  |              nal_unit_type: "SLICE" (1) (Coded slice of a non-IDR picture) 0xd4d.3-0xd4d.7 (0.5)
+0x0d40|                                       01      |             .  |              nal_unit_type: "slice" (1) (Coded slice of a non-IDR picture) 0xd4d.3-0xd4d.7 (0.5)
       |                                               |                |              slice_header{}: 0xd4e-0xd4e.6 (0.7)
 0x0d40|                                          9e   |              . |                first_mb_in_slice: 0 0xd4e-0xd4e (0.1)
-0x0d40|                                          9e   |              . |                slice_type: "B" (6) 0xd4e.1-0xd4e.5 (0.5)
+0x0d40|                                          9e   |              . |                slice_type: "b" (6) 0xd4e.1-0xd4e.5 (0.5)
 0x0d40|                                          9e   |              . |                pic_parameter_set_id: 0 0xd4e.6-0xd4e.6 (0.1)
 0x0d40|                                          9e 41|              .A|              data: raw bits 0xd4e.7-0xd80.7 (50.1)
 0x0d50|79 0a ff 01 f9 2d 04 d3 29 fe 4d 76 42 26 f6 cd|y....-..).MvB&..|
 *     |until 0xd80.7 (51)                             |                |
+      |                                               |                |      id: 1 0x10e0-NA (0)
+      |                                               |                |      data_foramt: "avc1" 0x10e0-NA (0)

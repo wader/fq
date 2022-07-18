@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -69,6 +70,29 @@ func findDefintion(docs []Documentation) (string, bool) {
 	return "", false
 }
 
+func title(s string) string {
+	if len(s) <= 1 {
+		return s
+	}
+	return strings.ToUpper(s[0:1]) + s[1:]
+}
+
+var symLowerRE = regexp.MustCompile(`[^a-z0-9]+`)
+
+func symLower(s string) string {
+	s = strings.ToLower(s)
+	return symLowerRE.ReplaceAllStringFunc(s, func(s string) string { return "_" })
+}
+
+var camelToSnakeRe = regexp.MustCompile(`[[:lower:]][[:upper:]]`)
+
+// "AaaBbb" -> "aaa_bbb"
+func camelToSnake(s string) string {
+	return strings.ToLower(camelToSnakeRe.ReplaceAllStringFunc(s, func(s string) string {
+		return s[0:1] + "_" + s[1:2]
+	}))
+}
+
 func main() {
 	xmlPath := os.Args[1]
 	r, err := os.Open(xmlPath)
@@ -89,8 +113,8 @@ func main() {
 	fmt.Printf(")\n")
 
 	fmt.Printf("var Root = ebml.Tag{\n")
-	fmt.Printf("\tebml.HeaderID: {Name: \"EBML\", Type: ebml.Master, Tag: ebml.Header},\n")
-	fmt.Printf("\t%sID: {Name: \"%s\", Type: ebml.Master, Tag: %s},\n", root, root, root)
+	fmt.Printf("\tebml.HeaderID: {Name: \"ebml\", Type: ebml.Master, Tag: ebml.Header},\n")
+	fmt.Printf("\t%sID: {Name: \"%s\", Type: ebml.Master, Tag: %s},\n", root, camelToSnake(root), root)
 	fmt.Printf("}\n")
 
 	xd := xml.NewDecoder(r)
@@ -101,7 +125,7 @@ func main() {
 
 	fmt.Println("const (")
 	for _, e := range es.Elements {
-		fmt.Printf("\t%sID = %s\n", e.Name, e.ID)
+		fmt.Printf("\t%sID = %s\n", e.Name, strings.ToLower(e.ID))
 	}
 	fmt.Println(")")
 
@@ -131,11 +155,11 @@ func main() {
 			}
 
 			fmt.Printf("\t%sID: {\n", c.Name)
-			fmt.Printf("\t\tName: %q,\n", c.Name)
+			fmt.Printf("\t\tName: %q,\n", camelToSnake(c.Name))
 			if defOk {
 				fmt.Printf("\t\tDefinition: %q,\n", def)
 			}
-			fmt.Printf("\t\tType: ebml.%s%s,\n", strings.Title(typ), extra)
+			fmt.Printf("\t\tType: ebml.%s%s,\n", title(typ), extra)
 			if len(c.Enums) > 0 {
 				switch c.Type {
 				case "integer":
@@ -168,10 +192,18 @@ func main() {
 						fmt.Printf("\t\t\t%q:{\n", e.Value)
 					}
 
-					fmt.Printf("\t\t\t\tSym: %q,\n", e.Label)
+					labelOk := !strings.ContainsAny(e.Label, "()")
+
+					if labelOk {
+						fmt.Printf("\t\t\t\tSym: %q,\n", symLower(e.Label))
+					}
+
 					if enumDefOk {
 						fmt.Printf("\t\t\t\tDescription: %q,\n", enumDef)
+					} else if !labelOk {
+						fmt.Printf("\t\t\t\tDescription: %q,\n", e.Label)
 					}
+
 					fmt.Printf("\t\t\t},\n")
 				}
 				fmt.Printf("\t\t},\n")

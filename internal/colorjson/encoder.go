@@ -58,11 +58,11 @@ type Encoder struct {
 	indent  int
 	depth   int
 	buf     [64]byte
-	valueFn func(v interface{}) interface{}
+	valueFn func(v any) any
 	colors  Colors
 }
 
-func NewEncoder(color bool, tab bool, indent int, valueFn func(v interface{}) interface{}, colors Colors) *Encoder {
+func NewEncoder(color bool, tab bool, indent int, valueFn func(v any) any, colors Colors) *Encoder {
 	// reuse the buffer in multiple calls of marshal
 	return &Encoder{
 		color:   color,
@@ -73,7 +73,7 @@ func NewEncoder(color bool, tab bool, indent int, valueFn func(v interface{}) in
 	}
 }
 
-func (e *Encoder) Marshal(v interface{}, w io.Writer) error {
+func (e *Encoder) Marshal(v any, w io.Writer) error {
 	e.w = bufio.NewWriter(w)
 	e.encode(v)
 	if e.wErr != nil {
@@ -82,7 +82,7 @@ func (e *Encoder) Marshal(v interface{}, w io.Writer) error {
 	return e.w.Flush()
 }
 
-func (e *Encoder) encode(v interface{}) {
+func (e *Encoder) encode(v any) {
 	switch v := v.(type) {
 	case nil:
 		e.write([]byte("null"), e.colors.Null)
@@ -100,9 +100,9 @@ func (e *Encoder) encode(v interface{}) {
 		e.write(v.Append(e.buf[:0], 10), e.colors.Number)
 	case string:
 		e.encodeString(v, e.colors.String)
-	case []interface{}:
+	case []any:
 		e.encodeArray(v)
-	case map[string]interface{}:
+	case map[string]any:
 		e.encodeMap(v)
 	default:
 		if e.valueFn != nil {
@@ -201,10 +201,14 @@ func (e *Encoder) encodeString(s string, color []byte) {
 	}
 }
 
-func (e *Encoder) encodeArray(vs []interface{}) {
+func (e *Encoder) encodeArray(vs []any) {
 	e.writeByte('[', e.colors.Array)
 	e.depth += e.indent
 	for i, v := range vs {
+		if e.wErr != nil {
+			return
+		}
+
 		if i > 0 {
 			e.writeByte(',', e.colors.Array)
 		}
@@ -220,12 +224,12 @@ func (e *Encoder) encodeArray(vs []interface{}) {
 	e.writeByte(']', e.colors.Array)
 }
 
-func (e *Encoder) encodeMap(vs map[string]interface{}) {
+func (e *Encoder) encodeMap(vs map[string]any) {
 	e.writeByte('{', e.colors.Object)
 	e.depth += e.indent
 	type keyVal struct {
 		key string
-		val interface{}
+		val any
 	}
 	kvs := make([]keyVal, len(vs))
 	var i int
@@ -237,6 +241,10 @@ func (e *Encoder) encodeMap(vs map[string]interface{}) {
 		return kvs[i].key < kvs[j].key
 	})
 	for i, kv := range kvs {
+		if e.wErr != nil {
+			return
+		}
+
 		if i > 0 {
 			e.writeByte(',', e.colors.Object)
 		}

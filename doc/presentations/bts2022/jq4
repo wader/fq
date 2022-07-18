@@ -1,0 +1,20 @@
+# Function using lambda argument. map from standard library:
+def map(f): [.[] | f];
+> [1,2,3] | map(. * 2)
+[
+  2,
+  4,
+  6
+]
+# select from standard library:
+def select(f): if f then . else empty end;
+> [1,2,3] | map(select(. % 2 == 0))
+[
+  2
+]
+
+# Function using argument binding and recursion to output multiple values
+def down($n):
+  if $n >= 0 then $n, down($n-1)
+  else empty
+  end;

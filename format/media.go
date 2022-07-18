@@ -138,6 +138,7 @@ const (
 	MPEGAudioObjectTypeLTP       = 4
 	MPEGAudioObjectTypeSBR       = 5
 	MPEGAudioObjectTypeER_AAC_LD = 23
+	MPEGAudioObjectTypePS        = 29
 )
 
 var MPEGAudioObjectTypeNames = scalar.UToScalar{
@@ -170,9 +171,9 @@ var MPEGAudioObjectTypeNames = scalar.UToScalar{
 	26:                           {Sym: "er_hiln", Description: "ER HILN Harmonic and Individual Lines plus Noise"},
 	27:                           {Sym: "er_parametric", Description: "ER Parametric"},
 	28:                           {Sym: "ssc", Description: "SinuSoidal Coding"},
-	29:                           {Sym: "ps", Description: "Parametric Stereo"},
+	MPEGAudioObjectTypePS:        {Sym: "ps", Description: "Parametric Stereo"},
 	30:                           {Sym: "mpeg_surround", Description: "MPEG Surround"},
-	31:                           {Sym: "(escape value)", Description: "(Escape value)"},
+	31:                           {Description: "(Escape value)"},
 	32:                           {Sym: "layer_1", Description: "MPEG Layer-1"},
 	33:                           {Sym: "layer_2", Description: "MPEG Layer-2"},
 	34:                           {Sym: "layer_3", Description: "MPEG Layer-3"},

@@ -3,13 +3,12 @@
 package flv
 
 // TODO: make it useful
-
-// https://www.adobe.com/content/dam/acom/en/devnet/flv/video_file_format_spec_v10.pdf
+// https://rtmp.veriskope.com/pdf/video_file_format_spec_v10.pdf
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/registry"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -66,7 +65,7 @@ var typeNames = scalar.UToSymStr{
 	typeLongString:  "LongString",
 }
 
-func flvDecode(d *decode.D, in interface{}) interface{} {
+func flvDecode(d *decode.D, in any) any {
 	var fieldScriptDataObject func()
 	var fieldScriptDataVariable func(d *decode.D, name string)
 

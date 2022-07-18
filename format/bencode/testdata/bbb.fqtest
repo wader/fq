@@ -1,0 +1,317 @@
+$ fq -d bencode dv bbb.torrent
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: bbb.torrent (bencode) 0x0-0x3795.7 (14230)
+0x0000|64                                             |d               |  type: "dictionary" ("d") 0x0-0x0.7 (1)
+      |                                               |                |  pairs[0:9]: 0x1-0x3794.7 (14228)
+      |                                               |                |    [0]{}: pair 0x1-0x39.7 (57)
+      |                                               |                |      key{}: 0x1-0xa.7 (10)
+0x0000|   38                                          | 8              |        type: "string" ("8") 0x1-0x1.7 (1)
+0x0000|   38                                          | 8              |        length: 8 0x1-0x1.7 (1)
+0x0000|      3a                                       |  :             |        separator: ":" (valid) 0x2-0x2.7 (1)
+0x0000|         61 6e 6e 6f 75 6e 63 65               |   announce     |        value: "announce" 0x3-0xa.7 (8)
+      |                                               |                |      value{}: 0xb-0x39.7 (47)
+0x0000|                                 34            |           4    |        type: "string" ("4") 0xb-0xb.7 (1)
+0x0000|                                 34 34         |           44   |        length: 44 0xb-0xc.7 (2)
+0x0000|                                       3a      |             :  |        separator: ":" (valid) 0xd-0xd.7 (1)
+0x0000|                                          75 64|              ud|        value: "udp://tracker.openbittorrent.com:80/announce" 0xe-0x39.7 (44)
+0x0010|70 3a 2f 2f 74 72 61 63 6b 65 72 2e 6f 70 65 6e|p://tracker.open|
+*     |until 0x39.7 (44)                              |                |
+      |                                               |                |    [1]{}: pair 0x3a-0xa7.7 (110)
+      |                                               |                |      key{}: 0x3a-0x49.7 (16)
+0x0030|                              31               |          1     |        type: "string" ("1") 0x3a-0x3a.7 (1)
+0x0030|                              31 33            |          13    |        length: 13 0x3a-0x3b.7 (2)
+0x0030|                                    3a         |            :   |        separator: ":" (valid) 0x3c-0x3c.7 (1)
+0x0030|                                       61 6e 6e|             ann|        value: "announce-list" 0x3d-0x49.7 (13)
+0x0040|6f 75 6e 63 65 2d 6c 69 73 74                  |ounce-list      |
+      |                                               |                |      value{}: 0x4a-0xa7.7 (94)
+0x0040|                              6c               |          l     |        type: "list" ("l") 0x4a-0x4a.7 (1)
+      |                                               |                |        values[0:2]: 0x4b-0xa6.7 (92)
+      |                                               |                |          [0]{}: value 0x4b-0x7b.7 (49)
+0x0040|                                 6c            |           l    |            type: "list" ("l") 0x4b-0x4b.7 (1)
+      |                                               |                |            values[0:1]: 0x4c-0x7a.7 (47)
+      |                                               |                |              [0]{}: value 0x4c-0x7a.7 (47)
+0x0040|                                    34         |            4   |                type: "string" ("4") 0x4c-0x4c.7 (1)
+0x0040|                                    34 34      |            44  |                length: 44 0x4c-0x4d.7 (2)
+0x0040|                                          3a   |              : |                separator: ":" (valid) 0x4e-0x4e.7 (1)
+0x0040|                                             75|               u|                value: "udp://tracker.openbittorrent.com:80/announce" 0x4f-0x7a.7 (44)
+0x0050|64 70 3a 2f 2f 74 72 61 63 6b 65 72 2e 6f 70 65|dp://tracker.ope|
+*     |until 0x7a.7 (44)                              |                |
+0x0070|                                 65            |           e    |            end: "e" (valid) 0x7b-0x7b.7 (1)
+      |                                               |                |          [1]{}: value 0x7c-0xa6.7 (43)
+0x0070|                                    6c         |            l   |            type: "list" ("l") 0x7c-0x7c.7 (1)
+      |                                               |                |            values[0:1]: 0x7d-0xa5.7 (41)
+      |                                               |                |              [0]{}: value 0x7d-0xa5.7 (41)
+0x0070|                                       33      |             3  |                type: "string" ("3") 0x7d-0x7d.7 (1)
+0x0070|                                       33 38   |             38 |                length: 38 0x7d-0x7e.7 (2)
+0x0070|                                             3a|               :|                separator: ":" (valid) 0x7f-0x7f.7 (1)
+0x0080|75 64 70 3a 2f 2f 74 72 61 63 6b 65 72 2e 70 75|udp://tracker.pu|                value: "udp://tracker.publicbt.com:80/announce" 0x80-0xa5.7 (38)
+*     |until 0xa5.7 (38)                              |                |
+0x00a0|                  65                           |      e         |            end: "e" (valid) 0xa6-0xa6.7 (1)
+0x00a0|                     65                        |       e        |        end: "e" (valid) 0xa7-0xa7.7 (1)
+      |                                               |                |    [2]{}: pair 0xa8-0xd4.7 (45)
+      |                                               |                |      key{}: 0xa8-0xb0.7 (9)
+0x00a0|                        37                     |        7       |        type: "string" ("7") 0xa8-0xa8.7 (1)
+0x00a0|                        37                     |        7       |        length: 7 0xa8-0xa8.7 (1)
+0x00a0|                           3a                  |         :      |        separator: ":" (valid) 0xa9-0xa9.7 (1)
+0x00a0|                              63 6f 6d 6d 65 6e|          commen|        value: "comment" 0xaa-0xb0.7 (7)
+0x00b0|74                                             |t               |
+      |                                               |                |      value{}: 0xb1-0xd4.7 (36)
+0x00b0|   33                                          | 3              |        type: "string" ("3") 0xb1-0xb1.7 (1)
+0x00b0|   33 33                                       | 33             |        length: 33 0xb1-0xb2.7 (2)
+0x00b0|         3a                                    |   :            |        separator: ":" (valid) 0xb3-0xb3.7 (1)
+0x00b0|            42 69 67 20 42 75 63 6b 20 42 75 6e|    Big Buck Bun|        value: "Big Buck Bunny, Sunflower version" 0xb4-0xd4.7 (33)
+0x00c0|6e 79 2c 20 53 75 6e 66 6c 6f 77 65 72 20 76 65|ny, Sunflower ve|
+0x00d0|72 73 69 6f 6e                                 |rsion           |
+      |                                               |                |    [3]{}: pair 0xd5-0xf1.7 (29)
+      |                                               |                |      key{}: 0xd5-0xe1.7 (13)
+0x00d0|               31                              |     1          |        type: "string" ("1") 0xd5-0xd5.7 (1)
+0x00d0|               31 30                           |     10         |        length: 10 0xd5-0xd6.7 (2)
+0x00d0|                     3a                        |       :        |        separator: ":" (valid) 0xd7-0xd7.7 (1)
+0x00d0|                        63 72 65 61 74 65 64 20|        created |        value: "created by" 0xd8-0xe1.7 (10)
+0x00e0|62 79                                          |by              |
+      |                                               |                |      value{}: 0xe2-0xf1.7 (16)
+0x00e0|      31                                       |  1             |        type: "string" ("1") 0xe2-0xe2.7 (1)
+0x00e0|      31 33                                    |  13            |        length: 13 0xe2-0xe3.7 (2)
+0x00e0|            3a                                 |    :           |        separator: ":" (valid) 0xe4-0xe4.7 (1)
+0x00e0|               75 54 6f 72 72 65 6e 74 2f 33 33|     uTorrent/33|        value: "uTorrent/3320" 0xe5-0xf1.7 (13)
+0x00f0|32 30                                          |20              |
+      |                                               |                |    [4]{}: pair 0xf2-0x10d.7 (28)
+      |                                               |                |      key{}: 0xf2-0x101.7 (16)
+0x00f0|      31                                       |  1             |        type: "string" ("1") 0xf2-0xf2.7 (1)
+0x00f0|      31 33                                    |  13            |        length: 13 0xf2-0xf3.7 (2)
+0x00f0|            3a                                 |    :           |        separator: ":" (valid) 0xf4-0xf4.7 (1)
+0x00f0|               63 72 65 61 74 69 6f 6e 20 64 61|     creation da|        value: "creation date" 0xf5-0x101.7 (13)
+0x0100|74 65                                          |te              |
+      |                                               |                |      value{}: 0x102-0x10d.7 (12)
+0x0100|      69                                       |  i             |        type: "integer" ("i") 0x102-0x102.7 (1)
+0x0100|         31 33 38 37 33 30 38 31 35 39         |   1387308159   |        value: 1387308159 0x103-0x10c.7 (10)
+0x0100|                                       65      |             e  |        end: "e" (valid) 0x10d-0x10d.7 (1)
+      |                                               |                |    [5]{}: pair 0x10e-0x11e.7 (17)
+      |                                               |                |      key{}: 0x10e-0x117.7 (10)
+0x0100|                                          38   |              8 |        type: "string" ("8") 0x10e-0x10e.7 (1)
+0x0100|                                          38   |              8 |        length: 8 0x10e-0x10e.7 (1)
+0x0100|                                             3a|               :|        separator: ":" (valid) 0x10f-0x10f.7 (1)
+0x0110|65 6e 63 6f 64 69 6e 67                        |encoding        |        value: "encoding" 0x110-0x117.7 (8)
+      |                                               |                |      value{}: 0x118-0x11e.7 (7)
+0x0110|                        35                     |        5       |        type: "string" ("5") 0x118-0x118.7 (1)
+0x0110|                        35                     |        5       |        length: 5 0x118-0x118.7 (1)
+0x0110|                           3a                  |         :      |        separator: ":" (valid) 0x119-0x119.7 (1)
+0x0110|                              55 54 46 2d 38   |          UTF-8 |        value: "UTF-8" 0x11a-0x11e.7 (5)
+      |                                               |                |    [6]{}: pair 0x11f-0x3701.7 (13795)
+      |                                               |                |      key{}: 0x11f-0x124.7 (6)
+0x0110|                                             34|               4|        type: "string" ("4") 0x11f-0x11f.7 (1)
+0x0110|                                             34|               4|        length: 4 0x11f-0x11f.7 (1)
+0x0120|3a                                             |:               |        separator: ":" (valid) 0x120-0x120.7 (1)
+0x0120|   69 6e 66 6f                                 | info           |        value: "info" 0x121-0x124.7 (4)
+      |                                               |                |      value{}: 0x125-0x3701.7 (13789)
+0x0120|               64                              |     d          |        type: "dictionary" ("d") 0x125-0x125.7 (1)
+      |                                               |                |        pairs[0:7]: 0x126-0x3700.7 (13787)
+      |                                               |                |          [0]{}: pair 0x126-0x13c.7 (23)
+      |                                               |                |            key{}: 0x126-0x135.7 (16)
+0x0120|                  31                           |      1         |              type: "string" ("1") 0x126-0x126.7 (1)
+0x0120|                  31 33                        |      13        |              length: 13 0x126-0x127.7 (2)
+0x0120|                        3a                     |        :       |              separator: ":" (valid) 0x128-0x128.7 (1)
+0x0120|                           66 69 6c 65 2d 64 75|         file-du|              value: "file-duration" 0x129-0x135.7 (13)
+0x0130|72 61 74 69 6f 6e                              |ration          |
+      |                                               |                |            value{}: 0x136-0x13c.7 (7)
+0x0130|                  6c                           |      l         |              type: "list" ("l") 0x136-0x136.7 (1)
+      |                                               |                |              values[0:1]: 0x137-0x13b.7 (5)
+      |                                               |                |                [0]{}: value 0x137-0x13b.7 (5)
+0x0130|                     69                        |       i        |                  type: "integer" ("i") 0x137-0x137.7 (1)
+0x0130|                        36 33 34               |        634     |                  value: 634 0x138-0x13a.7 (3)
+0x0130|                                 65            |           e    |                  end: "e" (valid) 0x13b-0x13b.7 (1)
+0x0130|                                    65         |            e   |              end: "e" (valid) 0x13c-0x13c.7 (1)
+      |                                               |                |          [1]{}: pair 0x13d-0x14e.7 (18)
+      |                                               |                |            key{}: 0x13d-0x149.7 (13)
+0x0130|                                       31      |             1  |              type: "string" ("1") 0x13d-0x13d.7 (1)
+0x0130|                                       31 30   |             10 |              length: 10 0x13d-0x13e.7 (2)
+0x0130|                                             3a|               :|              separator: ":" (valid) 0x13f-0x13f.7 (1)
+0x0140|66 69 6c 65 2d 6d 65 64 69 61                  |file-media      |              value: "file-media" 0x140-0x149.7 (10)
+      |                                               |                |            value{}: 0x14a-0x14e.7 (5)
+0x0140|                              6c               |          l     |              type: "list" ("l") 0x14a-0x14a.7 (1)
+      |                                               |                |              values[0:1]: 0x14b-0x14d.7 (3)
+      |                                               |                |                [0]{}: value 0x14b-0x14d.7 (3)
+0x0140|                                 69            |           i    |                  type: "integer" ("i") 0x14b-0x14b.7 (1)
+0x0140|                                    30         |            0   |                  value: 0 0x14c-0x14c.7 (1)
+0x0140|                                       65      |             e  |                  end: "e" (valid) 0x14d-0x14d.7 (1)
+0x0140|                                          65   |              e |              end: "e" (valid) 0x14e-0x14e.7 (1)
+      |                                               |                |          [2]{}: pair 0x14f-0x161.7 (19)
+      |                                               |                |            key{}: 0x14f-0x156.7 (8)
+0x0140|                                             36|               6|              type: "string" ("6") 0x14f-0x14f.7 (1)
+0x0140|                                             36|               6|              length: 6 0x14f-0x14f.7 (1)
+0x0150|3a                                             |:               |              separator: ":" (valid) 0x150-0x150.7 (1)
+0x0150|   6c 65 6e 67 74 68                           | length         |              value: "length" 0x151-0x156.7 (6)
+      |                                               |                |            value{}: 0x157-0x161.7 (11)
+0x0150|                     69                        |       i        |              type: "integer" ("i") 0x157-0x157.7 (1)
+0x0150|                        33 35 35 38 35 36 35 36|        35585656|              value: 355856562 0x158-0x160.7 (9)
+0x0160|32                                             |2               |
+0x0160|   65                                          | e              |              end: "e" (valid) 0x161-0x161.7 (1)
+      |                                               |                |          [3]{}: pair 0x162-0x18e.7 (45)
+      |                                               |                |            key{}: 0x162-0x167.7 (6)
+0x0160|      34                                       |  4             |              type: "string" ("4") 0x162-0x162.7 (1)
+0x0160|      34                                       |  4             |              length: 4 0x162-0x162.7 (1)
+0x0160|         3a                                    |   :            |              separator: ":" (valid) 0x163-0x163.7 (1)
+0x0160|            6e 61 6d 65                        |    name        |              value: "name" 0x164-0x167.7 (4)
+      |                                               |                |            value{}: 0x168-0x18e.7 (39)
+0x0160|                        33                     |        3       |              type: "string" ("3") 0x168-0x168.7 (1)
+0x0160|                        33 36                  |        36      |              length: 36 0x168-0x169.7 (2)
+0x0160|                              3a               |          :     |              separator: ":" (valid) 0x16a-0x16a.7 (1)
+0x0160|                                 62 62 62 5f 73|           bbb_s|              value: "bbb_sunflower_1080p_60fps_normal.mp4" 0x16b-0x18e.7 (36)
+0x0170|75 6e 66 6c 6f 77 65 72 5f 31 30 38 30 70 5f 36|unflower_1080p_6|
+0x0180|30 66 70 73 5f 6e 6f 72 6d 61 6c 2e 6d 70 34   |0fps_normal.mp4 |
+      |                                               |                |          [4]{}: pair 0x18f-0x1a5.7 (23)
+      |                                               |                |            key{}: 0x18f-0x19d.7 (15)
+0x0180|                                             31|               1|              type: "string" ("1") 0x18f-0x18f.7 (1)
+0x0180|                                             31|               1|              length: 12 0x18f-0x190.7 (2)
+0x0190|32                                             |2               |
+0x0190|   3a                                          | :              |              separator: ":" (valid) 0x191-0x191.7 (1)
+0x0190|      70 69 65 63 65 20 6c 65 6e 67 74 68      |  piece length  |              value: "piece length" 0x192-0x19d.7 (12)
+      |                                               |                |            value{}: 0x19e-0x1a5.7 (8)
+0x0190|                                          69   |              i |              type: "integer" ("i") 0x19e-0x19e.7 (1)
+0x0190|                                             35|               5|              value: 524288 0x19f-0x1a4.7 (6)
+0x01a0|32 34 32 38 38                                 |24288           |
+0x01a0|               65                              |     e          |              end: "e" (valid) 0x1a5-0x1a5.7 (1)
+      |                                               |                |          [5]{}: pair 0x1a6-0x36bf.7 (13594)
+      |                                               |                |            key{}: 0x1a6-0x1ad.7 (8)
+0x01a0|                  36                           |      6         |              type: "string" ("6") 0x1a6-0x1a6.7 (1)
+0x01a0|                  36                           |      6         |              length: 6 0x1a6-0x1a6.7 (1)
+0x01a0|                     3a                        |       :        |              separator: ":" (valid) 0x1a7-0x1a7.7 (1)
+0x01a0|                        70 69 65 63 65 73      |        pieces  |              value: "pieces" 0x1a8-0x1ad.7 (6)
+      |                                               |                |            value{}: 0x1ae-0x36bf.7 (13586)
+0x01a0|                                          31   |              1 |              type: "string" ("1") 0x1ae-0x1ae.7 (1)
+0x01a0|                                          31 33|              13|              length: 13580 0x1ae-0x1b2.7 (5)
+0x01b0|35 38 30                                       |580             |
+0x01b0|         3a                                    |   :            |              separator: ":" (valid) 0x1b3-0x1b3.7 (1)
+0x01b0|            99 71 9b 2c 2e aa b6 80 df fa 1f 36|    .q.,.......6|              value: "�q�,.�����\x1f6\x0e�LS�x���)�>"... 0x1b4-0x36bf.7 (13580)
+0x01c0|0e e0 4c 53 f3 78 bb 84 82 29 c8 3e 98 91 93 f9|..LS.x...).>....|
+*     |until 0x36bf.7 (13580)                         |                |
+      |                                               |                |          [6]{}: pair 0x36c0-0x3700.7 (65)
+      |                                               |                |            key{}: 0x36c0-0x36c9.7 (10)
+0x36c0|38                                             |8               |              type: "string" ("8") 0x36c0-0x36c0.7 (1)
+0x36c0|38                                             |8               |              length: 8 0x36c0-0x36c0.7 (1)
+0x36c0|   3a                                          | :              |              separator: ":" (valid) 0x36c1-0x36c1.7 (1)
+0x36c0|      70 72 6f 66 69 6c 65 73                  |  profiles      |              value: "profiles" 0x36c2-0x36c9.7 (8)
+      |                                               |                |            value{}: 0x36ca-0x3700.7 (55)
+0x36c0|                              6c               |          l     |              type: "list" ("l") 0x36ca-0x36ca.7 (1)
+      |                                               |                |              values[0:1]: 0x36cb-0x36ff.7 (53)
+      |                                               |                |                [0]{}: value 0x36cb-0x36ff.7 (53)
+0x36c0|                                 64            |           d    |                  type: "dictionary" ("d") 0x36cb-0x36cb.7 (1)
+      |                                               |                |                  pairs[0:4]: 0x36cc-0x36fe.7 (51)
+      |                                               |                |                    [0]{}: pair 0x36cc-0x36d5.7 (10)
+      |                                               |                |                      key{}: 0x36cc-0x36d3.7 (8)
+0x36c0|                                    36         |            6   |                        type: "string" ("6") 0x36cc-0x36cc.7 (1)
+0x36c0|                                    36         |            6   |                        length: 6 0x36cc-0x36cc.7 (1)
+0x36c0|                                       3a      |             :  |                        separator: ":" (valid) 0x36cd-0x36cd.7 (1)
+0x36c0|                                          61 63|              ac|                        value: "acodec" 0x36ce-0x36d3.7 (6)
+0x36d0|6f 64 65 63                                    |odec            |
+      |                                               |                |                      value{}: 0x36d4-0x36d5.7 (2)
+0x36d0|            30                                 |    0           |                        type: "string" ("0") 0x36d4-0x36d4.7 (1)
+0x36d0|            30                                 |    0           |                        length: 0 0x36d4-0x36d4.7 (1)
+0x36d0|               3a                              |     :          |                        separator: ":" (valid) 0x36d5-0x36d5.7 (1)
+      |                                               |                |                        value: "" 0x36d6-NA (0)
+      |                                               |                |                    [1]{}: pair 0x36d6-0x36e3.7 (14)
+      |                                               |                |                      key{}: 0x36d6-0x36dd.7 (8)
+0x36d0|                  36                           |      6         |                        type: "string" ("6") 0x36d6-0x36d6.7 (1)
+0x36d0|                  36                           |      6         |                        length: 6 0x36d6-0x36d6.7 (1)
+0x36d0|                     3a                        |       :        |                        separator: ":" (valid) 0x36d7-0x36d7.7 (1)
+0x36d0|                        68 65 69 67 68 74      |        height  |                        value: "height" 0x36d8-0x36dd.7 (6)
+      |                                               |                |                      value{}: 0x36de-0x36e3.7 (6)
+0x36d0|                                          69   |              i |                        type: "integer" ("i") 0x36de-0x36de.7 (1)
+0x36d0|                                             31|               1|                        value: 1080 0x36df-0x36e2.7 (4)
+0x36e0|30 38 30                                       |080             |
+0x36e0|         65                                    |   e            |                        end: "e" (valid) 0x36e3-0x36e3.7 (1)
+      |                                               |                |                    [2]{}: pair 0x36e4-0x36f1.7 (14)
+      |                                               |                |                      key{}: 0x36e4-0x36eb.7 (8)
+0x36e0|            36                                 |    6           |                        type: "string" ("6") 0x36e4-0x36e4.7 (1)
+0x36e0|            36                                 |    6           |                        length: 6 0x36e4-0x36e4.7 (1)
+0x36e0|               3a                              |     :          |                        separator: ":" (valid) 0x36e5-0x36e5.7 (1)
+0x36e0|                  76 63 6f 64 65 63            |      vcodec    |                        value: "vcodec" 0x36e6-0x36eb.7 (6)
+      |                                               |                |                      value{}: 0x36ec-0x36f1.7 (6)
+0x36e0|                                    34         |            4   |                        type: "string" ("4") 0x36ec-0x36ec.7 (1)
+0x36e0|                                    34         |            4   |                        length: 4 0x36ec-0x36ec.7 (1)
+0x36e0|                                       3a      |             :  |                        separator: ":" (valid) 0x36ed-0x36ed.7 (1)
+0x36e0|                                          41 56|              AV|                        value: "AVC1" 0x36ee-0x36f1.7 (4)
+0x36f0|43 31                                          |C1              |
+      |                                               |                |                    [3]{}: pair 0x36f2-0x36fe.7 (13)
+      |                                               |                |                      key{}: 0x36f2-0x36f8.7 (7)
+0x36f0|      35                                       |  5             |                        type: "string" ("5") 0x36f2-0x36f2.7 (1)
+0x36f0|      35                                       |  5             |                        length: 5 0x36f2-0x36f2.7 (1)
+0x36f0|         3a                                    |   :            |                        separator: ":" (valid) 0x36f3-0x36f3.7 (1)
+0x36f0|            77 69 64 74 68                     |    width       |                        value: "width" 0x36f4-0x36f8.7 (5)
+      |                                               |                |                      value{}: 0x36f9-0x36fe.7 (6)
+0x36f0|                           69                  |         i      |                        type: "integer" ("i") 0x36f9-0x36f9.7 (1)
+0x36f0|                              31 39 32 30      |          1920  |                        value: 1920 0x36fa-0x36fd.7 (4)
+0x36f0|                                          65   |              e |                        end: "e" (valid) 0x36fe-0x36fe.7 (1)
+0x36f0|                                             65|               e|                  end: "e" (valid) 0x36ff-0x36ff.7 (1)
+0x3700|65                                             |e               |              end: "e" (valid) 0x3700-0x3700.7 (1)
+0x3700|   65                                          | e              |        end: "e" (valid) 0x3701-0x3701.7 (1)
+      |                                               |                |    [7]{}: pair 0x3702-0x376a.7 (105)
+      |                                               |                |      key{}: 0x3702-0x370b.7 (10)
+0x3700|      38                                       |  8             |        type: "string" ("8") 0x3702-0x3702.7 (1)
+0x3700|      38                                       |  8             |        length: 8 0x3702-0x3702.7 (1)
+0x3700|         3a                                    |   :            |        separator: ":" (valid) 0x3703-0x3703.7 (1)
+0x3700|            75 72 6c 2d 6c 69 73 74            |    url-list    |        value: "url-list" 0x3704-0x370b.7 (8)
+      |                                               |                |      value{}: 0x370c-0x376a.7 (95)
+0x3700|                                    6c         |            l   |        type: "list" ("l") 0x370c-0x370c.7 (1)
+      |                                               |                |        values[0:1]: 0x370d-0x3769.7 (93)
+      |                                               |                |          [0]{}: value 0x370d-0x3769.7 (93)
+0x3700|                                       39      |             9  |            type: "string" ("9") 0x370d-0x370d.7 (1)
+0x3700|                                       39 30   |             90 |            length: 90 0x370d-0x370e.7 (2)
+0x3700|                                             3a|               :|            separator: ":" (valid) 0x370f-0x370f.7 (1)
+0x3710|68 74 74 70 3a 2f 2f 64 69 73 74 72 69 62 75 74|http://distribut|            value: "http://distribution.bbb3d.renderfarming.net/video/"... 0x3710-0x3769.7 (90)
+*     |until 0x3769.7 (90)                            |                |
+0x3760|                              65               |          e     |        end: "e" (valid) 0x376a-0x376a.7 (1)
+      |                                               |                |    [8]{}: pair 0x376b-0x3794.7 (42)
+      |                                               |                |      key{}: 0x376b-0x3773.7 (9)
+0x3760|                                 37            |           7    |        type: "string" ("7") 0x376b-0x376b.7 (1)
+0x3760|                                 37            |           7    |        length: 7 0x376b-0x376b.7 (1)
+0x3760|                                    3a         |            :   |        separator: ":" (valid) 0x376c-0x376c.7 (1)
+0x3760|                                       77 65 62|             web|        value: "website" 0x376d-0x3773.7 (7)
+0x3770|73 69 74 65                                    |site            |
+      |                                               |                |      value{}: 0x3774-0x3794.7 (33)
+0x3770|            33                                 |    3           |        type: "string" ("3") 0x3774-0x3774.7 (1)
+0x3770|            33 30                              |    30          |        length: 30 0x3774-0x3775.7 (2)
+0x3770|                  3a                           |      :         |        separator: ":" (valid) 0x3776-0x3776.7 (1)
+0x3770|                     68 74 74 70 3a 2f 2f 62 62|       http://bb|        value: "http://bbb3d.renderfarming.net" 0x3777-0x3794.7 (30)
+0x3780|62 33 64 2e 72 65 6e 64 65 72 66 61 72 6d 69 6e|b3d.renderfarmin|
+0x3790|67 2e 6e 65 74                                 |g.net           |
+0x3790|               65|                             |     e|         |  end: "e" (valid) 0x3795-0x3795.7 (1)
+$ fq -d bencode torepr bbb.torrent
+{
+  "announce": "udp://tracker.openbittorrent.com:80/announce",
+  "announce-list": [
+    [
+      "udp://tracker.openbittorrent.com:80/announce"
+    ],
+    [
+      "udp://tracker.publicbt.com:80/announce"
+    ]
+  ],
+  "comment": "Big Buck Bunny, Sunflower version",
+  "created by": "uTorrent/3320",
+  "creation date": 1387308159,
+  "encoding": "UTF-8",
+  "info": {
+    "file-duration": [
+      634
+    ],
+    "file-media": [
+      0
+    ],
+    "length": 355856562,
+    "name": "bbb_sunflower_1080p_60fps_normal.mp4",
+    "piece length": 524288,
+    "pieces": "�q�,.�����\u001f6\u000e�LS�x���)�>����\u0003\u0019%�\u0004\u0004�}�\u000b�Ķ{\rB���wT\r��VW�u�<��K]�H�_�\u000e\r5i����\u0006\u001d���Y�$t^�M`hI�͗֜��hD|הdTLF8���bz���m�j��d�1�\u001c#h�|ʏ��+�\u001d-ճ�69�|��l�_Y�(72e�9r�Sꏖ��\u001a�l2\u0014%�.�\u0001�)`*]4X\u000e��}\u001e���U�\na}�X\"N�x\u0014�bm\u0012�x\f:{�kE\u0007��\u001f��G�bL���\u0019�� �GJ�c�㰨\n�jx\n���\u00039�\u0017jC�( W/\u0011��\u0017Ɋ���N�����X�JM�\u0000&��;����h\u001aB\u0017O��e�=�C�\u007f�\u0006��NN�K��R\u0003W�`\u0016;�2���\rD�\u001aKk\f����0�gVm��s7\u0018#�8\u0013�\u0005�U\u0018�\u0018��\u0017\u001e#ʴK�0�\u001e^7�\u0006+2�\u0001\\b-<1+��\u000b�]��\u0016�\u0015�\u001b}���Ǣ\u0005�u$ԪN*\u001e\b�vO1���W�\u0010Ԃls'GT�(\u0012���\"��'��\u000bR!���?���@\"\u001d\u001e�T^[YL��\\(8�Wq\u0014c����lYu�\u0016��r��;�t�\u000fP��Q ��z�g�q�rź�g��e��Z\u0007�u\\\u0003P�\u0017#ؚ����'fC��A�좁G���>fƤr���\"\u0010����&�G���j��w��n��:���#\u0002��?R\u0000�8��T#�8Z�PIHޙ�f�5\u000b�g��Ҷ��t!�o��%�U'�s5=�\u0013�<\u0014�j�WZ��cZ�MGUI�H4X1=�\r�ɇˀL�\u0001qx�u})\u0006��S6�fs�c\u0016��c�\u000eX\u0001��0���cM�\u0012�y�\u001e��y���Pښ@���ۧ{5������\u000f�1���\u001b[T\u000b_��\u0017\u0010�w�\u0015��\u000e\u0005�p�N���Rs�.���#-�wk��M\u0003�G\u0018˅V��]$C�TN�\u0006�V>�k���F����\u0002�9�}܇\u000b%�B\u0012�Z��\t�u\u0017Y\u0013>s��V����\u0018�ѕ�v8[ٛ9oo\u001f���e�\u001e��\b��\u0014�='S�:\u007f-0 �M\u0013��\u0011�\u0010R}F[M�k���\u0000J��\u0017�X�L2�o\f�B�yYVK�Y\u0015�,\u0005�\"�%:+R�T��#�?��x�Q}{\u000e�4�>WG�\"E�Ol\u001ez\\\u001e5�޻�ՙ���z:G�\u001f�>r\u0002TM+�+�mL[m\r\u0017�-��ꂵ�@�]7=%-\u001c���>\u000e���OR�v9~{s�/l͖w,��v�I�}!c?��*l�\f)�Nz�&\u000e��} ��\u0015���w\u0007\u000e\u0005\f\u007fB\u0004�\u00151�!�Q�f\u000fC��)�\u0013\u0015��R|�ĉ�u2+�\u0019��u�ٝX���4�!\u001a\u0015\u001a��JG\f��M�\u0018N@EK���ٛw\u0002'��;�Bvg��;\u0019�\t�X�&h2K��.��;�1����\u0018M\u0010x0񆟤\u000f�9�\u001c���\u0011�\"q�or��X����\"(\"�H��Na��n/�nap����(%�qƒ7z\u001e�5庾�O\u0011�\u001dZ\u000f�kd�Դ9|\"�?\u001e�s�ܴ���J7�\u0013\f��b���;auPF��0F\u0006�\u0018Z+\u0016�M<#�\n�\u0014��|D���>\u000e�\u001c��ſ�c\f�p5\u00078�\u0010\u0013�<��$�\u001b�q��{^�0��\u0005Tc�uk�z����\t�ҏ@�UV�{\u0011&�a0.\u0016\u0010:\u0005����c��Ӈ�i����7�9C1��#�\u0002\u0015N\u0001\bݳb�M�`\u0002^\u0005\u001c���P�9�3o=\u0017'�XhF�l�`�^�(Z<��k�\t?1��q�4X,B��܁\u0016�\u007fq-M\u000b/���]�R>�:n�a��6(,\u0012�3�m\u001fq\r��\u0010?�X�GeS\u001b\u0017Q\u0018�BeA\u0007\u0015h���@\u0012�q8���L�\\Rt�!=C�\u0012��\u0017�/eu���\u000b@�&�\u001dN�|[��#\u0005z_�67�B�OG�;�3�3�gGCL���^S%�w*��1���\u0014��N��%��u\u001cG�=D)��#�=���c�������\u0017ڌ�Q-�������?�%ˑ��`�]Ψ�d�\n����\u0017h�>�n\u0018�ݲ*஻\u001f\u000b/\"P\u0004\u0015t\u0006%���U.K�k�#�\u0000�cU}\t8�=�%�����\u000e\u001f�v锜��lw)�l��>o��\t�uO�H��k1A�na������zQHb�ψ@�g�7{�Y\u0007��w�\u0005�����c~͚2��}��6����|F.w0�\u0006�L<��\rҔ�)��>\r\u0004�\u0015�� Ti\u001aя_z���T�\u0016Ek�\u0019�\r�ݾ�\u0007���\u0013��B�\u0007\u0015\u0006����7}�����$Q�\u001d@���>�Pm���n\\^cb���\fI����n��uB���V���&.\u0005�\u0013����]\u001f\u0014ȷr�\u0019g���{D�����\u007f\u001aI芽�1��n�<'\u0017\n\u0003\u001d[�2~��pJ��|-#\u0013�v����|����A\u0015�\r��\rZ.� Obl~��\u001b��p\u007fOrv�[��WwN��CZU~�P5�?K:C*�:JdV�\u0016moᶒM��Ũ���Yķ��g���}�24�$O\u0011��4GeHi\u001c瓾~j�\u0013ќp|�i\u001c�xd`S�a�c�O�\u001d\u000fAoG�\u001d-�\u0017\u001f�ct\u0019���\u0015@�!\u001bk�\u0004��ƌ3��=�-��0�\u0014�}@\u0016�����m�w��\\T^\u001b��5j�Z�ԥ��/.\u0013�\u0014솋�Q]\u007f;�M�ut�\u00028�ÒM6\b�R{ݢ�\u0006;()��\f\u001cm\u0005W$�,�/�Z� �%���g\u0013���㠀���d�\u001f�'^���7�\u000e����[�Ft:����ʑ�\u001b^����\u0003(6F93�f\u0005�y���Х\u0018&\u0013b\u0011�+�Qވ�\u0014L\u0002ʑ\u000b\f\f\u0011\u0014N\u0001�!��焍t�8��mRL\u0004�\u0005�߷Ю4UW��F�ҷ\u0016v[�\u000eT\u0016����@E��[=��\u0006���k�_.t��4\u000e����\u0007��9x���PI\\�\u0007�a�B���YN\u0012�7t�� `��tKt����),���mud�rD}n8d��Pu���\u0017\u0011S\u007f�\u000b�-\u0010�`C�H��y[f��S��I���\u001b�\u0015��`��\u0012��x[M��\u0004�\u0001Ah�\u007f��\u0003�jcj\u001f1���r��-�\u0012\u0005,����e�\t�c�\u001b-��G�\u000f��Q\u000e!)�%\u0018\u0010�\u0011��q\u0005����.Ɣ�!�@iC\u0011��\\f4�aW��W0�\u0000�\u0018������m(g�~�/�\u0016SI�?�F\u0017�QR$.�l�k�уbՔ��U \t01����@C��Jo1�\u00114{��(�\nv\u0002ϳiC��A�B?�X�������k��x7\f�W��ɦFpJk�e�ܻ��9˸\u0007\u0012�����~�d1�\u0005�U�\u0004��\u0004~�n?ឃj\t�\u0001\n}5w\u0007F����\u0004;�8�s����� {yte'�堨�!�l�)릗�R�\u0006w�[�W:����\u001a;���Z�B��#RH,Lk������$�}C\u001c z3���7|�N�x�\u0015+�\\�c#�D*-���\u0013\"KF���\u001a\u0017\u007f-��H��]Dg��`Z�\u000e�\u001e�\"�?�!Y��!�x\u001f8\u0003)Ͼ@\u0001&�P�w�f���\u0019�w\u0002�w�Ȝ�\u0003�\u0011I\n\fՙ$�4�G̈��}8�\fLk�\u001bX�\u000eǇ��i'C��\u001d}b@ˣ��\u001c���\u001d!g��������v�*o\u001a�b\u0014�\"|�\n\u000b<\b(V\u0007�^�\n���~�Jݠ\"���\u001d&���\u0017$�\u001fۆ�9\\X��(Υ�VFD�Z��)������T?U��2�8|E\t�S�\f塇7�3�\u001b��>AP�M�\u0017|J��D ���l\u0019�Z̠[ݫ��D�����>�}�H�\u001b\b�\u0019n���*QDHq]2����w3��RTN��񾝇\u001ep-\r<�K--���l��y�\\\f�;��R\u0011\"�n�\\ژM��S�A��\u0004���8��54��]T�e\"����;�\t,�\u0007\u007f��5|02�gK��q~7���(!M�tP�\u0007�EI{Z�99n1��I7S�\u001c).��i�w\r?�S{�ɶ��}Wk�\u0015���\u0007?���P�\u00008���\\� *d��x����H��@c�1����2PHU\u0011�\u001cA�\u0007wz>z\u000b'�f��\\��{�,Re��f4zW6��\u000f��tD��J�7U9��mm�Ju��CP�\u0019�?�n�!��_���\u0019��x��h<�\u0003�\u001d��\u0015Ntʌ,\u0014!\u0012����\u0010m]�\t\u000eX\"\u0004��B>7S�oɓW&\u000b\u001e2�j����G�{x�6\u000bWGK��z�:��f-´�g\\ߋ�\"�Ȳ%�\u0007uB=pt#-\u0017L4�LV2d�e�%�<��P�i\u0003�\u001bd�\u001b�\u0003M\u0007\u0006g�1�e��T�xĻ�\"\n�SM�\u0019����J��ả�\u001e@��\u0019}���A2��P\u0015t��Z��.���L��\u001fT�?�J�v\u001f\u0019vVY���Ȇ��\u001ae`�e�\\�\u0014�\u0014\u0017�>�\t��;y)�ނ�;�;4L�/��j\u001d�?\u0016ƽ\r?���D����\u0017�nTJ\u001dlh�O�3��}���~���\u0016F��\\Yu�M[��Rw\u000e�E��|�f\u0012�^e+\u0003��Lhy1\u0010\u001a�\")�bc\u0004��4�\u0004m�5�f���\u0016\\�&v�@��\u001b\u001c;X�m��h�!�V,��k�������L�F\tP\u0011\u001e��I�\u0012�2\tV~3\r}x�\u0007H��r�=�\u000b�Y��+�\u0010z9y��g��\u000b���\u0013��a�*\u0001M� ��\u0001F�\f\"\u0002�/Ƨ��*\u0011�Tt^�㓥�2\u00113f�{��� _�}��:ф�f�\b\u0001�A��m\u0014\u0010\t�!�eLv3�\u001eL��=��B���+Kp\f/�O�����*�<wo���fT�+N]ޥ\u000e\bC���T[��\u001f��س����\u0012\r\u0011\u0016NQ��0f���ʆR�n\u0006�X��2��\ry��s��\u0004��tZ���\u001b%��\b���{k��AkT��\u0014-T\u001c:����;@p��+\u0006�E����\u000b�N1t�>��E��A���W*\u0018�ۈ\u001fj��/�\u007fh\u007f�(���\u0004��\u0006nX\u001a]�݃V���(\u0005`&��Ѐ�视�\r�\u000b�`��\u001d�d�!�:���a���Y��\u0017�J��A]\u001b����\u001e͝�q�F�},�'pR��B��LP��BW���\t �'e�]\u0013k%��b$�{w�c*\u001d�?�\u0002����\u0015�|��>����#rG�~j����C�Um�\u0000��H=�w���\u0010�<�\"\u0004����q�#w��\u001d\u0013�\u001ed\u001b�\u007f/���0L����l#6��Ä$�Z��n\u0004\u0006�jׁ}�\u001b���Q�,�kF%\u0005��\u0001\u000f\u001ab�⡃��.C�;\u001e�\u000e��\u001d�����G#�k�k�����+���^������K�ϳ�\u001b]��\u0015��d@�=\u0016-�h88d�G�*��g���/��eي\f55�\u0001l���%��M\u0019\u0013\u001d�h�����r\u0012¥:��B��|0G$PL\u0005��\\�pELno\u001e|���O�hg��\u001a'���}�y\"<�\u000f��\u0013[��\u0014\u001a�\u001e\u0004/��گɵ\u0004p�B�D��\u0014T\u0010�u�9lǮ\u0019(B}��Gd�CnIDh3>��\u001cF��yz�\u0015��}Cwtt�����\u0016��FO����\u0006�Ε�r\u0000��+�|�����c\u0001�\n\u0007��&��i\u0017\u0012SUJ����ٴA�N�u�߇�\u0004�\u0003'�g���.ٖ�ң��߅\u001aY�/\nF\t��y��\u001d���3H�:2\n\u0006��K|�Cl��Ĭ!��E֓~���\u0016%f�)\u0017���q=�+�c\u0005�v��\u007f����\u0018�-�ax��L��,�\u001f���r�7\\\u0006��Y����ْ�|��Z�&f���)�o��}��\rh0>'Gi��ӗE�k�\u001e�蛎e��_L��%$��|��ue�WW��\u0012�OJ�\u0018�8K�p�_\u0011\u0012~��M�\r��U߁��-���\u0015�\u000b9�EU<\u0010`\t�~�p�pЃ>���\u0000�Χyp�\"b+��HFK�ěn&�\u0012&��F-\u0004�?HI\u0001�\u000b܋��LF�ͳ�o\u001b��Kxt\u001b�qX�u��5�-8�����z@=�����\u0013\u001c\u0014�M�\u0019�Mt]ِ\u0018�#O�\u001bw��\u001b�ѱ�\u0003���X��\fk\u000b(~#\u0011a~\u0015���\u00059 O�}��J\u001bC��\r?\u0006�))��~\u0011mRa0\u0011T\u001b�\r޿\u001d0�����D\u000b\u001b�R�3\b=����^�SzM���<��w6�VBͲ\u0003�\u0012�-�p\u0017\u0012���\u0013\u0017���4���#�%����2q�0#v�l��#dG\rMy޻�ZB9J\u001c�h4�{W}Y����\u0004l9\b� J�\u0014�!\u000b0�w����'3���@*7��\u0006�A\u0001��#;W\u0016\u000b�C\u0001�.�����\u0012���\u001e�\u0013���\u0019n�\u0013�\u00073Zעmjۋ{++��A\u0011�,Cu`�q\u00116\u0011N�\u0000[=u���ހ�����s֖��\u0015�/\u000e\u001b��|;���\u0016��C\r�k\u0016��`�.\u0015M���>�u�u��\u0010���\b��/(Y�0�z�\u001f�Ħs�^�+�vxL�\u001f\u0007�˧E�\u0018�FB�\b��e�\u001d��!�t�0Ӟ��F\n!7K�\u0001Ϯz2 J?��\u0018|p�ؔD�a4�s�dW���\rK�,3��M\\��g\u0019�\u0018=�k%���y�Y���G\u0001K7�)��:�9/�\u001bW轷�\u0002U�D�7�\u001a�ؾ�pK\u0015R�A�\u0005Uզ`�Q�5\u0000Y$=;�x<�����=\u0017�O=�\u0019XU\u0018˹\u0000��?G�T�f�B���R���s�UR\u0002����\u001c\u0019`�W6��%ۺ���M�K�\u000e!\u007f��O_\r�x\u0016*�iB�\u000314�M&vR�4�����\f\u0019fc9\u0013���Yg2�\u0012�Ѫ3V\u0007ai�\u000e���4��m:�g�*���fiR�`�4g\b|Q�\u0013V8V��:�s!�>��ȦĬ\u001e\u0002\u0005�h�\u0011\u00056�\u0010\u007f\u0016\u0012��$q���pA���\u0005\u0000���>}�7C.\u0000%\"ր� 9�#\u00071�\u001f77�P��6��0�\u0014��*�ϲ%��)U�=.�}v�\u0018B�\u0017(�^5��!���!K�P0U�٢��S��\u000b�\\����\u0005`A�\u007f`^��t��\u000b����\u0015\tGe#�9G3Ҍr)\u001a��\u0007\u0000��<c\u0018�ܾ�Bh�DY��N\u0011F�\u0001\r��g��f�y\u001bR\u0018��<0�Y3�$��0��\u0018�{ N6�=Q\b��\u0015��yԷ3>���,�*��}\u000eF�x��Ԏz����qP2%�\"HQ5�O���\u0019�s���e8�d�A\u0010O�\u000e�Ƙ\u007f�\u001flf���ꬄ6��.\u001d����j�\u0017XۺuN5�\u0000hQ�eml�V�mq���%�z�C٘#��H�����\\]/gl�\fl��oW�s�2A�!��(�u:�\u0014�O��\u001f��[o[�A��R�\n[\u001f�\u001b\u0016n�Y�^�z:�N��&�\u0010��\b��\rJ���gX��L�}d��6���ׯ0�\u0001��;\n0�F�/��P���j�c�\u001f��K�O\u0004��.\u0010;���<i��'{���^�d����\u0002\u001b�5s��\u0003��b!*�|�@2a©\u0010�\n��\u0011�}R�S��!�.i�j㈪\u0011�j�\u0007��7���\u0011;�n�`��L���:���3bO�\u0007�I��sJ܈*c�/Ox���@�o��Y�E�\u0017�����/^�\u000e\u001d�@E�����)�\u0012����uK&��\u0000�T���\u0004`�\u001b��\u0011��/�WԌ��'�\u0002����'{ �c1���h��'��n����\u0003\u0011s�M�(X|:]!��J�\u001b���;��'r�,�?\u0006-��s��\u00173]�lp�_l\u001c�֫�M��\b^\u001d�Κ��g\u001d�ۍ�L�\\V�X��+��r����F�1�v{�ױ��Q\u001b�`�L�._,SS\u0015�X�Iۨr��~��\u0016��#����I������I���~��r�}�s�dD�u��\f8\u0000J�/%\u0013���P�����BH�㖀G\u0010;#0O��h\u001c��Y�/#i����Wn�\u0016ڎ,�(1�5q�%\u0014���6���\u0000J�K�\u0006~�t�U��d�D>�i\u0019�^�\t��o`�&?�.+\tԫ����*\u0006HN��A�\u0013�f\u0005\u0002%'��'ﴠ�������#\u001d \r+�1^��=5_]�n�c�\b�r���P������{�\u007f\tJ\bsT܀�S\b�r�z�]9�3l`H�b\u0010'�ր�P'���\u0005�Q%��c ����c\t�TZ27'&�\u00049\\�.P��+Z�Y���DAb�ýf�,a���\u001e�K�b8/N�8�6ʥ�\u007f8�|�FI\t�ep·��\u0004�\u000fG�q���a�\u00005uR��5\r6�\u0017�eޤt\u000bLu�L\u007f˨\b�{�*\b/y�sr�p�\u001a���i3\\\u001d��\u0004�\u007f�/y.�C���2`��E��v����I�s����\u0002�\u001e5��K��n5�H'�L\n]O�:>�q2��˱g\u0006d��7��3��*U��\f\u0017(\u0019��~\u0007\t6�Q��\\\u0014��\r�\u0002�S0q t��g˺��\u00150&r�I�\u0016�4��z��%���uo��FQ��P>t�tm�-��3\u0006�Z/�c�$Bf�D�2��@��j���u���\".Ń��$��D��UbBJ?\nJ�\"\u001b�\u0015�&�\u000fz��|P���Ŝx�@`\n�$Y\u001dN�\u000e\u001c�vw�U�����#\u001c�#\u007f�\u0019��;��\u0002����y?j�5��E��v\u0010;�\\�Q�`\u00050\u0019$�\u000b ӊǿC?\n�v׌\u0010�\u001b>��\u0019 ��<�Yg\u0004JѶ`٥6��\u001a�kѢ�Or�J�,H�&X �ÒG)k�I&\u000eʋ��[���\t���c$����w\nA��\u0017��j�w@�T��V�!=���\u001c\u0016���զ��g�p8K8\f\u000f��r>�\u0011�=��\f�\u000b��i4�h�d\u0010\u000e����\\h�n�����3�*���jA��\u001e�\u0014L��v�`n���\u001f!�0T�ZJ(��k��ʬ\u0005>-lȸ���6��vİHV��N��\ra\u0000e`/\u0012��\u0019�7�\\BBq*`�`���X\u001dШc}\u0000��h������\u001b����Y\u0002/��\u0007�}\u00144ю�\u001d֨\f\u00009;�����q�$�>\u001c��{!�@a1��w�-��J/^�����8�f=�\u0012�\u007f(T\u000b{L�\u001ba�t��/����\t\u0012F���ܻ;�y��}U��u#.��\u001f��6��u�F�\b,�'=\r�F�*\u001dQ�Yu\u0010��7Ա8(�M >�T?k�J }���\nB]`C�1�{��:�9�\t���9\u001c�s\u0011\u001c��I�L�i�6��B�p2��^�\u0006\u0019Ǟ�� \u001f�οɡ���\u0006I7���a6�`��\u0002���m\u001d�Ɂ�\u0018H�\u0014�*�)1,d���2|l��(\r�����\\�{��\u0004s�\u001b,�$�ٷ�\u0001�1\u0011F\"Wl�Z���\u0012A���\u0003\u001a>\u001b�����E��\u0000)\u00045|�_@��>�Jţ����D�/=��sn\u0003��E~}$��\u0000�\u0011)�?x���\u000f���o\u0012��\u0014��X\u001b�\u0016�������p�Hjp�r����Y>Ĥn�h�\u0007�\u001fq{\u0002RY\u0012�\u000f[\f��U?S���>��)H��+\u0010\u0016�\u0006��\b7�\u001e\u0013��Nt=�ȯW��';u5�\u001d���n\u001f=��\u001e#r�yfq��\u0016\u0017�U]\u0016���\u0003���%\u0005Z\u001b����o܀syT�Q�\u001e!_\u0002\n4������tE�����a�@\u0006�u�z-��\u001c-�\u0015\u0003]߅\u001fo{�l���%�F)�Xc�4�\n�Z���PV@t�#wT9`K�S�Mn�\u0007�\u0012\u001a���\u0005 qN�\u007f����\u000e�\b��X�vC�`R��+&\u0000y�K���\b�8�^mӶ\u001cւG�\u0014X\u007f�9\fp�&�S\u0017��F�/�I\u0018N��L���=/V�it��,�`����f�Jd����Z5���)h? c.hU��^.�\"��#c�\u0011�MGB,���ᮁ]L�e�=?Kݘ���x\u0003]\u0017@W4�e�C9�ps�����>��\u0019�j{�Q�a�v�5n��2�\u0014@�H�V��}:Yqm�R+l�^3��t0�'=�m\u0010�q�u/���Q�c{���\u0019dj����\tg�\t\u001e\u001dޚ\u007f\f\u0003��\u001b:���3�[\u001a\u0007�\\M��,.t����\u007f9�s\u0007��K5W�߅�΢���:=�Goo4˒��c��SJ�\u0003���\f\u0005Y�b.u�J���~�h�zk\u007fbK���F����G�\u0014;q���f>�f�\u0014�\u007f\u001e�И6�w���&*\u0005�a|֎\u0005�DO?���\u007fq\u0018�\u000f�\t��2,\u0002YG6Q��h�K�\u001f�\"���E�\u0006�;8;5�����%�\u0006�F4\u000bV�k�Q���0�J�sI\u001b��\u0016�F�\"-\u0014\u001a\u001e�\nŗ����H(��\u0011��C��d��J��An{���ev-̨Y�J�\\s�ǯ}(\u001fiCE�*����\nL��轰[���bhH�(�1�O�h�Q�u/��p���/\u001a3��e\u001d\u001f���e�����}6*���������\u000f$\u007f+�I\u0006���\u0017{ǔ�\u001b��\u001d:�G���\fu�hc��K�X�\n��~\u0018�!�\t�I�\u0004}5���\u000f��g#��\u0010\u0018\u0012X\u0019v�,�9%ň�̅�cّ�\u007f�MF��%Hi-�z6U��|ar����=���-U\u001f�K�G�*��g1brm�@�:\fx\u0012\u0015�i�\u000fB��\u0018\u001c��+|�d�\t\u0001m:0��\u0004KU�3�x�\u0005T#\u0011�z�\u001c���xYc�\u0005���+��v+C�CD�\f�\u0017*\u000e�\\��4��\u0003?�dQPF��V4�S\u0014�u\u001f��a>\u000fc��4c�Ǚ��QӦ�Db\\��\u0007=�I&pY���\u000b�@��tea\u0004�\"!(Wj��%B�>\u001f���\b�ܕ?h�\u0004�\u0011ٹ]�A��%�\u001f��J\u00048��)&�f\u000b\u0015�Ps�\u0005�<��F{�S�\u0011��g\be\u001b\u001f�����\u0014�D��p��+\u0012(Q�[�kd�-YD��\u0014�9,���\u0000\\\u0006\u0006��G��K\\.�;�kz�\u001e��B`#{�.�\u000f�#)��~�Ka0ש�S��2�=�\u001f���^k�W�E\u0000��4����*�^ʝ,�%V\u0014b���\u0017X��!��yx\f\u001d됫��[C!z\"��\u001f0�\u0013�?�ŀ\u001c��O�G�v�1��&\u0013\n����x�g��,�{\u000bI� �GV�\u0017�ݼg�\u001f^�*��\\z\u001c�\u0007\u001aC����\f��n�T�����6Gn��\u00122�=R��M�V@���\u000ba��)Z'�YW�}�;�t�x'��291��uR��f��\b����SPk:;�\u001d�d�S�i�c寲�\u0013�i�Ӄs��fǹ\u0006��y\u0001Cڜw\u0000�\u0019�2���\t�$њ.���Ƈ�#�����g���3���>�D�bȚ\u0019:�|[�\u001a��n�Vj�2k���\\�?&��,{h�{��G�G|\u001e1k\u001cX�>Fr��\u0015���Nc��Q\r/Ws���\u0002��{<=fv�)��no���ϩF\u0012u+��ƴ�\u0010� ��\u0016��\\�Qd֐��﹵\u007fUӝk�\u0000�\"�LC`���3�]?{(�a�11=Y�'D�8�Cgrkڲ�|\u0019@D�Ѻ:y�-��p.�\bK͚\u0005�fT\u0000��PC\u0004a�\r\u0006Z�a�3��e�@g�y\t�TAu�_[@UU�*8�7�\u0002)펄\u0014\u0018\u0002���\u0010��\u0012�]���ޕ\u001a=f���q�m�lå����\u001e��{�ȥ��'4�1QV\u001a�)��N\\p���F��\u0013�)�\u000e'���;���Ĝ�8�0\u0013\u007f�,z�\u001a�J=\u007f��6�ہ��A\u001b���7�z�\f��&оb��?�4��{��oU\u0011n\r��<��s��Z��i�0��0�\u00143�����\b�dr��\u0018`df�Pk�\u0014�E]\b�$�'i\r逕�\u0011v%�j\u001c\u001f��91Y~#\u0017���ԎF�1�A�x���\u0016�9��/�\u0010\u0007�\b�\u007f~17x\u0012 �fe�<��#\u00071�D{��nۥ%6�ѕ�E\u0006I7�)\u00103\tv���w6�\u0014�n��\u0001v\f����\u0004�w�Y=[U\u0019�&ln\u000b���]\u0013�W�5�\n��i�\u0003w!��Ō𫻮�c��\u0005���o�͕yރ�8f\u0006v\u0017����U<�Ø\u007f����s}\u0017\u001f�\"ޝ�\u0010D���b��n�F�����.��%�\u0013��R�V\r\u0007h\u0013�����=;}���Z�\n~G-��Q�����+l��Kc�N�m.\u001eN\u0011%QF+��\u001d�\\j�z\u00190I�֘)&�<��|�%�\u0002�lG��q�\\\u001ax#|�\u0004�\u000esi\u0007�Y�Q�\u0010WY��\u0006bk�9���Ŧ\u0013$L������-Ccf�$8w\u0019��\u0000�F�~�;\u0013\u0019#�I�\t�N�\u0013�!E;�<v��Q�@\u0017��J\t��7�\u0000±�~Z��?h�q9fީ\r��kg�M�*[\u0013��4f:�;C�\r퐝�B�\u001b�ꀷ\u000bN9��6�/\u0003��B=y�\u0001��\u001a�<;�\u0015#-\fP~\u0012���#��'\u001dqژ�B�J\u0014T�\u007f�+\u000e&^� ��n\u007f�\u0015��i�\t��C�\u000e���\u000eR\"���/�W[��\u0012?�:x7|\u007f�\u001d.�\u0004ql�;)��X��\u001e�ϖ�\"l��ֲͧo_\u0013�}���G瓇?n\\��i�N��&�~~��\u00072}�\"�y�R�[\fG��vQ�.�2w4U:z�Y\u0002��u�r�k�<- ���4`�@�Ż�vb�v\n�\u0006��\t�@����:v���-S�\u0013t�#��?���\f\u001b���A���\rk\u0012?9ZE�E�R\u000f��\u001d\nS���H\u0017�\u0019��\u0003{\u001c��.��$HwK_\u0002΂9\u0017��wr��1d�\t\"���^vشJ�\u0000�F���<ĳ42��}2�p��S��`6\u001b��X���\u0007�݆\u0019#��7\u0010_�mP�@���X\u001a\u0015��\bCr��\u0001\u0019��m�/w+�ܵ� �A[�A�=\u000e\u0005÷�\\\u0006���\b��յ5<r!P�,�vs�4�L\u001b��W�bf�Y=\u000e�B�/\u0006���|H�V�\r^J�vҲ���͜\u0011#\f\u0003�\u0005a�\u0019;M�l���\u0014a#m��7?�\u0012�\u0017>ܯ՜l\u0015}����&�u\u0018?����6�R*\u0015\u0003\u0010��O��`��\u001a�\u0017��C|�\"y=x�\u0012�\u001cl\u0016N�fŴ�Z!/�P\tSs����zy\u001bSm�?F}�\u0007�\\����\u000b\u0003\u0004Ν��i.����@P�U�%�\u001a�=~FZ�`�eu�'\u0015\u0002�\u0017��D�5�,�\u007fuGC�gH���{�����\u00062k�3_��\u000fx��Z�\u001c��)y�Fb��G��q�\u0017J�KSqA˷�[f\u00190$g\u00065�\tDd��P\u0011�\u0006��Q\u001e\u0016>�dA�T��\u0016�]�5a6?(\u001f \b����_G��F%%�\u0014�v�/膆C�ψ�I \u0016FR��v(�\u0016��7��{tS�Iz\u0013o�7��z��\u0010��6\u000f-%PN\u0019(lT�6\b*���S���f�\n4����(�S\u0013��+'\u000f��W���\u000f�\u001c\bAq�E����Q�&��[�1G�O���}Y\nc���r���$\u0001����هR[����^7|\u0005#�����\u0005����s���\u0002ъ�\u001b9;�a:eR�$0Ş�Cs�m\u007fz\u0007�^j���R(�iD��(�n\r\u000e�ׇs�\u000b�i1\u0004��_n��[��d�7/�cfC0,�{��kv\u0013��6�`�gc\u001dOu���w��L`t�߬F\u0012B�E[%�|J�W~\u0011�\u0001|\u0000d�\u001ba\u000b�\u007f�\u0005t�Q�jQ��\u00151�h~�E=�9�:���L�\u000b?2VJ�\u001c�2�Mi���9\u007f�]$�[���\u0004�\u0010�{߽�{JrS�A�ǩ��!�^\u001c�@\u0013%��8\u0007��j-2ʶ���\t\u0015�T�\u0005\f\tN�7���\u0012t��1���u5\u001fi���\u0011=�2Q����;\u0016/�\u0007R\u0002\u0006��E���\u0019���A�.\u001f\u001f&A�ez�꟨�&Z!\"�\u0017�/6\b\u000f���8�\u001c�+�4+�\u0002�6�]QQ��0�eI\u0012�G!\n`�i<��\u0016b;�Ga\u0000ƥ\"��j�\u0000�\u0014\u0017�8\u001b��*�K���\u0018gβ��v��yO��a��\r8�_h��^\u000fKO^�\u007f9_\u0004��\u0002\u0012\u00048D\u0011�Y/N�Wt�>�\n���3��� ���k�/��KH\\�t�M#�:!\u001c��#L�\rFO�(\u0004�\u000ew�\u007fD)N�3�\u0011�u�^�\t:����p�(�Y��\u0007\u0007R�\f�~ց�뽖�\f�����@㮐��i���g�Z�m�\u0004���LM�R�X�F]&h���sF#��&\u0000�axoGp7�\u0014�B��\u001aE���װ�B��O�1B�\f�x�7�ͮA�S5\u0019��\u0004m|6�k�BtPרGǿ��\u0011�;\u001c;�26�F��\rL��/J&\n��m\u0018]#�Ks\u001a��\u001d�Շ\u0002\u001c\u0007�K�5c��|�҂\u001f�!�)��S���\fJ���\u0011�\u007fc�=!/��\u001b=���eh�,;J�ot�T\u0014��v\u0013J5(�;���|\u0014�)��Z����\u0011\u000e��$�\u0002�d�=շ�\ts�(��_\u0019�\t�$���\u0017.)�(�\u0015�x�kB�,;�/�xѐ�m���2�mJl\u0014\u0013���y�\u0018Tw\"��2�w�M�1\u001e��\f�\u001a�]�r\\�-��WR�g�MO\u0000\t��\u0017i�&Y\u0018i\u001ePٻ9Ft�q�*�h]%���1���@�Ip*(\u0005j�4I6_��褐��M�gyA���KڵI�\u0019L?�[��� m\u001c���,5�g\u000f���\f��V�b�����\u0011d /lN�\u001bM���\u000f<��)\u0000�Z�M����tC��-\"�M��{����\u001b��\u000e\u0017+\u001d��ǿ�\f��J�\u0015�+�B\u000fTHa�\u0011�J\u0011\u001aEV�TU/\u0004�\u0006�Q7���54�\u007f��:T\u0004yC�ѫ,^V\u0015�\u0013�4�H���1\u001b�\u0004D\u007f�)7\n���\u0007�6]��(^3��F\u001bz�\u000e^��\u001e]m��i����\u0004�_��!&\u0000懕�»\u001fDX�g_��\u001c���;�.4�/dE�$�!�J�'���Nt\u001e\u0005\u0006s:���gpG��_�ϩ�0�g\u0005�Nm� �\u000f��:;�N���.;@�)��G�I�!\u0005UZ�%��\u0012�8'V����TpC�K��u%G^�Eߛ$Yj}>m��T��\u0007������O��;��'��{\u0000_�ߜ}��<�\u001cנ�\u0014�D�����|�\u001f�\u0006�����������I``;��l6��\u000bW�u?�D/�`��\u0010��n\u0016��lq��7\u0016C;Pm]Hk���I\f/��z�dY� p�ՙ���fT�n\u001eGf�Q�M@�o�w��E<�2Y�����\t��ئ�]�*{�����,r�L7TY�\u0018\b�[��\u0014.�\u0004��J3�\"��}?�ؖ��\u0011ӣ����M\u0019\u001dOd܈��Σw\u0016km�d��1�%�\u0007���'�T�9��(�\u000b\bU\n\u001ad�<��� �=�a\u001e\u000e�ӎ��+?��\n\u0017��iT���6��FBn��s�ͤ\u001b�4�\u0001�NQ3p7�����^��^F�H�_��\u0003�X��y�P\u0018K�\u001a\u000f�U�\u0013�\u0002r�߁0�\u0004�~�-\u0005\u001a�\u0007��I�\u000b�o���I\u0012��0X\u001d5\u0016�\u0001<A(��+��J:�\u0007�\u0014��o��y}#n\f�M��4���*}��E&I�ٵ�.���P��!&ߩ�z����Y^\u0006\u001eՔ��\u0013\u001b��/<\u0001�C/�l�ܓ�\u0005x;�\u0003�xH�|�@@v�4�����}\u0007��4ǯ#�0l�797����EoO\u0015VR�h\u000b��ę\bÒ�\u001a�S4���o�UQٽ����\u0005\u000b�/��:\u0006���Z3\b��\u001a��\u0011LTȔ;;��L\u0013w\\d�1�K2B�\u00196���D�x����]��� K4K�\u0010�s��\f��\u000b�堭0\u0017Z�\u0017�y�Ĩ�\u0005:�]�\f\\=�D�\b6�^X��Z�\f�b%D�@�\u0007�\u0007�*F4��}��\u0017\u001a���}��H{cJżϘ�ȑ���AK��l\u0016�$��܆m\u0003��',��Bw�RG��\u001bUZ��`{~\u0003w~�c\u0007�\u0016\u000e�^`:�.~��\u0014�~\t���o�\u000eX�� \u0018.�\u0010ie�@L��9�N1h��n��v��\u0018�ʜ\u0016��&�޷�M��|umKC_y�\u001b�{>��\u007f[>>\u0015�:�\u0001%\u007f��5��^a�.\r󰌸]\u0013$�CyW\u0002�����Y��Q�<\u0012IS��ǚΧ�{�QO���,�wz�r|\u0001�\u001b{h��6�EL´��\u0006S�f\f�a�����(^D`�\n[\u0006׊�w?!�|\u0011vZlt��=���g\u0016L��G~��ߒ,\u007f>qC�@}�DF\u0004L�-:�8����\"���t��N�[.J�?,�\u0010a��U��u\b\u0013���\u0016��k!p�A�\u0001#�Q�f\u000eM7�Px\nx�QN�P'�\u001dz�\t��f㻍�\u0013���SP�R�Gi�{�f\u001d҃��\u001c�\u0016�3a�\b��@\u0017v^<\u0015�6��ɒ�W�}��0�\f�\u0006ހCDo�\u0007[.-)\u001e��t���lcG���\nNa\t��B�Tj\u0001\u0004��I�oFG\u0014�NF�\u0003:Ȑ��1k!�uLN��0R�h�d\n\u0007�\rV}��;4�_T,����R節��|\u0005\u001c�ۭӠ�\u000e�1��KT\n�T���kQE���\u0012A\u0003���\u0015Q�\u000b(��ẃ�b�\u0006��S+\u000b��x ^`d���\u00196�\u0003�.\f��_��p����\u0014N,��\f'\u000b)�\u001e\\���Jjx�ԝ�\u0015�k��tPmC�i7�n�6�\u0015e4c��ZS{m'ٴTY�T9\u00000AN�\u0007�\u001d�\u000eԷHa[��;��\u000f5L�ε�.\u0000r�\u0010��l��z2��ù",
+    "profiles": [
+      {
+        "acodec": "",
+        "height": 1080,
+        "vcodec": "AVC1",
+        "width": 1920
+      }
+    ]
+  },
+  "url-list": [
+    "http://distribution.bbb3d.renderfarming.net/video/mp4/bbb_sunflower_1080p_60fps_normal.mp4"
+  ],
+  "website": "http://bbb3d.renderfarming.net"
+}

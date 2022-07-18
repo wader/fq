@@ -1,4 +1,4 @@
-$ fq -i -d mp3 . /test.mp3
+$ fq -i -d mp3 . test.mp3
 mp3> .headers[0].flags | ., tovalue, type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.headers[0].flags{}:
 0x0|               00                              |     .          |  unsynchronisation: false
@@ -48,7 +48,7 @@ mp3> .headers[0].flags | type
 mp3> .headers[0].flags | tonumber
 error: tonumber cannot be applied to: object
 mp3> .headers[0].flags | tostring
-error: tostring cannot be applied to: object
+"{\"experimental_indicator\":false,\"extended_header\":false,\"unsynchronisation\":false,\"unused\":0}"
 mp3> .headers[0].flags + ""
 error: cannot add: object ({"experimental_indicator" ...}) and string ("")
 mp3> .headers[0].flags + 1
@@ -88,13 +88,13 @@ mp3> .headers[0].flags._path | ., type, length?
 mp3> .headers[0].flags._bits | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|               00                              |     .          |.: raw bits 0x5-0x5.7 (1)
-"buffer"
+"binary"
 8
 mp3> 
 mp3> .headers[0].flags._bytes | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|               00                              |     .          |.: raw bits 0x5-0x5.7 (1)
-"buffer"
+"binary"
 1
 mp3> 
 mp3> .headers[0].flags._error | ., type, length?
@@ -105,19 +105,765 @@ mp3> .headers[0].flags._unknown | ., type, length?
 false
 "boolean"
 mp3> .headers[0].flags.a = 1
-error: update key a cannot be applied to: object
+{
+  "footers": [],
+  "frames": [
+    {
+      "crc_calculated": "827a",
+      "header": {
+        "bitrate": 56000,
+        "channel_mode": "none",
+        "channels": "mono",
+        "copyright": 0,
+        "emphasis": "none",
+        "layer": 3,
+        "mpeg_version": "1",
+        "original": 0,
+        "padding": "not_padded",
+        "private": 0,
+        "protection_absent": true,
+        "sample_count": 1152,
+        "sample_rate": 44100,
+        "sync": 2047
+      },
+      "padding": "<5>AAAAAAA=",
+      "side_info": {
+        "granules": [
+          [
+            {
+              "big_values": 0,
+              "blocksplit_flag": 0,
+              "count1table_select": 0,
+              "global_gain": 0,
+              "part2_3_length": 0,
+              "preflag": 0,
+              "region_address1": 0,
+              "region_address2": 0,
+              "scalefac_compress": 0,
+              "scalefac_scale": 0,
+              "table_select0": 0,
+              "table_select1": 0,
+              "table_select2": 0
+            }
+          ],
+          [
+            {
+              "big_values": 0,
+              "blocksplit_flag": 0,
+              "count1table_select": 0,
+              "global_gain": 0,
+              "part2_3_length": 0,
+              "preflag": 0,
+              "region_address1": 0,
+              "region_address2": 0,
+              "scalefac_compress": 0,
+              "scalefac_scale": 0,
+              "table_select0": 0,
+              "table_select1": 0,
+              "table_select2": 0
+            }
+          ]
+        ],
+        "main_data_end": 0,
+        "private_bits": 0,
+        "share0": 0
+      },
+      "xing": {
+        "bytes": 599,
+        "frames": 2,
+        "header": "Info",
+        "lame_extension": {
+          "abr_vbr": 0,
+          "audiophile_replay_gain": 0,
+          "encoder": "Lavc58.91",
+          "encoder_delay": 576,
+          "encoder_padding": 1287,
+          "lame_ath_type": 0,
+          "lame_flags": 0,
+          "length": 599,
+          "lowpass_filter": 0,
+          "misc": 0,
+          "mp3_gain": 0,
+          "music_crc": 25328,
+          "preset": 0,
+          "radio_replay_gain": 0,
+          "replay_gain_peak": 0,
+          "tag_crc": 23093,
+          "tag_revision": 0,
+          "vbr_method": 0
+        },
+        "present_flags": {
+          "bytes": true,
+          "frames": true,
+          "quality": true,
+          "toc": true,
+          "unused": 0
+        },
+        "quality": 0,
+        "toc": [
+          0,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ]
+      }
+    },
+    {
+      "crc_calculated": "e5b0",
+      "data": "<187>B6rDjjOF02TxocEIHFgfXh8YHEYEHonlsy5aD6g7E2vw+GBQFAQDAoJEDE5o0aNsH3iAEAQxOD/BB050+c5fznL+7p93Lg+D4Ph8EAxKAMH9IAH///555554T7EPKQdc5TdRYNYihmqWGn6jVTNuL+Em0eAKJCYbPQRwVHtKrRk2Hogmi3/vFJwLDWJ//++4IUY5R/oJnyoaCgV9HgUESINnfuTyoCETQkEv/+OQSYPWtQkEQMCZSqCIEQ==",
+      "header": {
+        "bitrate": 64000,
+        "channel_mode": "none",
+        "channels": "mono",
+        "copyright": 0,
+        "emphasis": "none",
+        "layer": 3,
+        "mpeg_version": "1",
+        "original": 1,
+        "padding": "not_padded",
+        "private": 0,
+        "protection_absent": true,
+        "sample_count": 1152,
+        "sample_rate": 44100,
+        "sync": 2047
+      },
+      "other_data": "<0>",
+      "side_info": {
+        "granules": [
+          [
+            {
+              "big_values": 33,
+              "block_type": "start block",
+              "blocksplit_flag": 1,
+              "count1table_select": 0,
+              "global_gain": 151,
+              "part2_3_length": 651,
+              "preflag": 0,
+              "scalefac_compress": 2,
+              "scalefac_scale": 0,
+              "subblock_gain0": 0,
+              "subblock_gain1": 0,
+              "subblock_gain2": 0,
+              "switch_point": 0,
+              "table_select0": 25,
+              "table_select1": 9
+            }
+          ],
+          [
+            {
+              "big_values": 77,
+              "block_type": "3 short windows",
+              "blocksplit_flag": 1,
+              "count1table_select": 0,
+              "global_gain": 172,
+              "part2_3_length": 769,
+              "preflag": 0,
+              "scalefac_compress": 9,
+              "scalefac_scale": 0,
+              "subblock_gain0": 0,
+              "subblock_gain1": 0,
+              "subblock_gain2": 0,
+              "switch_point": 0,
+              "table_select0": 24,
+              "table_select1": 8
+            }
+          ]
+        ],
+        "main_data_end": 0,
+        "private_bits": 0,
+        "share0": 0
+      }
+    },
+    {
+      "crc_calculated": "61fd",
+      "data": "<178>EUs2SgiDWMkg1ClSmMjI+ROAQCS8kSNCUFYNGBEDQd6wVWCsRHiwdgr6P4lOlXKBqDUqdWdiL/BXlj3Ev//xEkxBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqg==",
+      "header": {
+        "bitrate": 64000,
+        "channel_mode": "none",
+        "channels": "mono",
+        "copyright": 0,
+        "emphasis": "none",
+        "layer": 3,
+        "mpeg_version": "1",
+        "original": 1,
+        "padding": "padded",
+        "private": 0,
+        "protection_absent": true,
+        "sample_count": 1152,
+        "sample_rate": 44100,
+        "sync": 2047
+      },
+      "other_data": "<9>qqqqqqqqqqqq",
+      "padding_byte": "<1>qg==",
+      "side_info": {
+        "granules": [
+          [
+            {
+              "big_values": 28,
+              "block_type": "end",
+              "blocksplit_flag": 1,
+              "count1table_select": 0,
+              "global_gain": 148,
+              "part2_3_length": 581,
+              "preflag": 0,
+              "scalefac_compress": 9,
+              "scalefac_scale": 0,
+              "subblock_gain0": 0,
+              "subblock_gain1": 0,
+              "subblock_gain2": 0,
+              "switch_point": 0,
+              "table_select0": 12,
+              "table_select1": 6
+            }
+          ],
+          [
+            {
+              "big_values": 0,
+              "blocksplit_flag": 0,
+              "count1table_select": 0,
+              "global_gain": 210,
+              "part2_3_length": 0,
+              "preflag": 1,
+              "region_address1": 0,
+              "region_address2": 0,
+              "scalefac_compress": 0,
+              "scalefac_scale": 0,
+              "table_select0": 0,
+              "table_select1": 0,
+              "table_select2": 0
+            }
+          ]
+        ],
+        "main_data_end": 9,
+        "private_bits": 0,
+        "share0": 15
+      }
+    }
+  ],
+  "headers": [
+    {
+      "flags": {
+        "a": 1,
+        "experimental_indicator": false,
+        "extended_header": false,
+        "unsynchronisation": false,
+        "unused": 0
+      },
+      "frames": [
+        {
+          "flags": {
+            "compression": false,
+            "data_length_indicator": false,
+            "encryption": false,
+            "file_alter_preservation": false,
+            "grouping_identity": false,
+            "read_only": false,
+            "tag_alter_preservation": false,
+            "unsync": false,
+            "unused0": 0,
+            "unused1": 0,
+            "unused2": 0
+          },
+          "id": "TSSE",
+          "size": 15,
+          "text": "Lavf58.45.100",
+          "text_encoding": "utf8"
+        }
+      ],
+      "magic": "ID3",
+      "padding": "<10>AAAAAAAAAAAAAA==",
+      "revision": 0,
+      "size": 35,
+      "version": 4
+    }
+  ]
+}
 mp3> .headers[0].flags[0] = 1
-error: expected an array with index 0 but got: object
+error: expected an array but got: object ({"experimental_indicator" ...})
 mp3> .headers[0].flags.a |= empty
-error: update key a cannot be applied to: object
+{
+  "footers": [],
+  "frames": [
+    {
+      "crc_calculated": "827a",
+      "header": {
+        "bitrate": 56000,
+        "channel_mode": "none",
+        "channels": "mono",
+        "copyright": 0,
+        "emphasis": "none",
+        "layer": 3,
+        "mpeg_version": "1",
+        "original": 0,
+        "padding": "not_padded",
+        "private": 0,
+        "protection_absent": true,
+        "sample_count": 1152,
+        "sample_rate": 44100,
+        "sync": 2047
+      },
+      "padding": "<5>AAAAAAA=",
+      "side_info": {
+        "granules": [
+          [
+            {
+              "big_values": 0,
+              "blocksplit_flag": 0,
+              "count1table_select": 0,
+              "global_gain": 0,
+              "part2_3_length": 0,
+              "preflag": 0,
+              "region_address1": 0,
+              "region_address2": 0,
+              "scalefac_compress": 0,
+              "scalefac_scale": 0,
+              "table_select0": 0,
+              "table_select1": 0,
+              "table_select2": 0
+            }
+          ],
+          [
+            {
+              "big_values": 0,
+              "blocksplit_flag": 0,
+              "count1table_select": 0,
+              "global_gain": 0,
+              "part2_3_length": 0,
+              "preflag": 0,
+              "region_address1": 0,
+              "region_address2": 0,
+              "scalefac_compress": 0,
+              "scalefac_scale": 0,
+              "table_select0": 0,
+              "table_select1": 0,
+              "table_select2": 0
+            }
+          ]
+        ],
+        "main_data_end": 0,
+        "private_bits": 0,
+        "share0": 0
+      },
+      "xing": {
+        "bytes": 599,
+        "frames": 2,
+        "header": "Info",
+        "lame_extension": {
+          "abr_vbr": 0,
+          "audiophile_replay_gain": 0,
+          "encoder": "Lavc58.91",
+          "encoder_delay": 576,
+          "encoder_padding": 1287,
+          "lame_ath_type": 0,
+          "lame_flags": 0,
+          "length": 599,
+          "lowpass_filter": 0,
+          "misc": 0,
+          "mp3_gain": 0,
+          "music_crc": 25328,
+          "preset": 0,
+          "radio_replay_gain": 0,
+          "replay_gain_peak": 0,
+          "tag_crc": 23093,
+          "tag_revision": 0,
+          "vbr_method": 0
+        },
+        "present_flags": {
+          "bytes": true,
+          "frames": true,
+          "quality": true,
+          "toc": true,
+          "unused": 0
+        },
+        "quality": 0,
+        "toc": [
+          0,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          166,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ]
+      }
+    },
+    {
+      "crc_calculated": "e5b0",
+      "data": "<187>B6rDjjOF02TxocEIHFgfXh8YHEYEHonlsy5aD6g7E2vw+GBQFAQDAoJEDE5o0aNsH3iAEAQxOD/BB050+c5fznL+7p93Lg+D4Ph8EAxKAMH9IAH///555554T7EPKQdc5TdRYNYihmqWGn6jVTNuL+Em0eAKJCYbPQRwVHtKrRk2Hogmi3/vFJwLDWJ//++4IUY5R/oJnyoaCgV9HgUESINnfuTyoCETQkEv/+OQSYPWtQkEQMCZSqCIEQ==",
+      "header": {
+        "bitrate": 64000,
+        "channel_mode": "none",
+        "channels": "mono",
+        "copyright": 0,
+        "emphasis": "none",
+        "layer": 3,
+        "mpeg_version": "1",
+        "original": 1,
+        "padding": "not_padded",
+        "private": 0,
+        "protection_absent": true,
+        "sample_count": 1152,
+        "sample_rate": 44100,
+        "sync": 2047
+      },
+      "other_data": "<0>",
+      "side_info": {
+        "granules": [
+          [
+            {
+              "big_values": 33,
+              "block_type": "start block",
+              "blocksplit_flag": 1,
+              "count1table_select": 0,
+              "global_gain": 151,
+              "part2_3_length": 651,
+              "preflag": 0,
+              "scalefac_compress": 2,
+              "scalefac_scale": 0,
+              "subblock_gain0": 0,
+              "subblock_gain1": 0,
+              "subblock_gain2": 0,
+              "switch_point": 0,
+              "table_select0": 25,
+              "table_select1": 9
+            }
+          ],
+          [
+            {
+              "big_values": 77,
+              "block_type": "3 short windows",
+              "blocksplit_flag": 1,
+              "count1table_select": 0,
+              "global_gain": 172,
+              "part2_3_length": 769,
+              "preflag": 0,
+              "scalefac_compress": 9,
+              "scalefac_scale": 0,
+              "subblock_gain0": 0,
+              "subblock_gain1": 0,
+              "subblock_gain2": 0,
+              "switch_point": 0,
+              "table_select0": 24,
+              "table_select1": 8
+            }
+          ]
+        ],
+        "main_data_end": 0,
+        "private_bits": 0,
+        "share0": 0
+      }
+    },
+    {
+      "crc_calculated": "61fd",
+      "data": "<178>EUs2SgiDWMkg1ClSmMjI+ROAQCS8kSNCUFYNGBEDQd6wVWCsRHiwdgr6P4lOlXKBqDUqdWdiL/BXlj3Ev//xEkxBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqg==",
+      "header": {
+        "bitrate": 64000,
+        "channel_mode": "none",
+        "channels": "mono",
+        "copyright": 0,
+        "emphasis": "none",
+        "layer": 3,
+        "mpeg_version": "1",
+        "original": 1,
+        "padding": "padded",
+        "private": 0,
+        "protection_absent": true,
+        "sample_count": 1152,
+        "sample_rate": 44100,
+        "sync": 2047
+      },
+      "other_data": "<9>qqqqqqqqqqqq",
+      "padding_byte": "<1>qg==",
+      "side_info": {
+        "granules": [
+          [
+            {
+              "big_values": 28,
+              "block_type": "end",
+              "blocksplit_flag": 1,
+              "count1table_select": 0,
+              "global_gain": 148,
+              "part2_3_length": 581,
+              "preflag": 0,
+              "scalefac_compress": 9,
+              "scalefac_scale": 0,
+              "subblock_gain0": 0,
+              "subblock_gain1": 0,
+              "subblock_gain2": 0,
+              "switch_point": 0,
+              "table_select0": 12,
+              "table_select1": 6
+            }
+          ],
+          [
+            {
+              "big_values": 0,
+              "blocksplit_flag": 0,
+              "count1table_select": 0,
+              "global_gain": 210,
+              "part2_3_length": 0,
+              "preflag": 1,
+              "region_address1": 0,
+              "region_address2": 0,
+              "scalefac_compress": 0,
+              "scalefac_scale": 0,
+              "table_select0": 0,
+              "table_select1": 0,
+              "table_select2": 0
+            }
+          ]
+        ],
+        "main_data_end": 9,
+        "private_bits": 0,
+        "share0": 15
+      }
+    }
+  ],
+  "headers": [
+    {
+      "flags": {
+        "experimental_indicator": false,
+        "extended_header": false,
+        "unsynchronisation": false,
+        "unused": 0
+      },
+      "frames": [
+        {
+          "flags": {
+            "compression": false,
+            "data_length_indicator": false,
+            "encryption": false,
+            "file_alter_preservation": false,
+            "grouping_identity": false,
+            "read_only": false,
+            "tag_alter_preservation": false,
+            "unsync": false,
+            "unused0": 0,
+            "unused1": 0,
+            "unused2": 0
+          },
+          "id": "TSSE",
+          "size": 15,
+          "text": "Lavf58.45.100",
+          "text_encoding": "utf8"
+        }
+      ],
+      "magic": "ID3",
+      "padding": "<10>AAAAAAAAAAAAAA==",
+      "revision": 0,
+      "size": 35,
+      "version": 4
+    }
+  ]
+}
 mp3> .headers[0].flags[0] |= empty
 error: expected an array with index 0 but got: object
 mp3> .headers[0].flags | setpath(["a"]; 1)
-error: update key a cannot be applied to: object
+{
+  "a": 1,
+  "experimental_indicator": false,
+  "extended_header": false,
+  "unsynchronisation": false,
+  "unused": 0
+}
 mp3> .headers[0].flags | setpath([0]; 1)
-error: update key 0 cannot be applied to: object
+error: expected an array but got: object ({"experimental_indicator" ...})
 mp3> .headers[0].flags | delpaths([["a"]])
-error: update key a cannot be applied to: object
+{
+  "experimental_indicator": false,
+  "extended_header": false,
+  "unsynchronisation": false,
+  "unused": 0
+}
 mp3> .headers[0].flags | delpaths([[0]])
-error: update key 0 cannot be applied to: object
+error: expected an array but got: object ({"experimental_indicator" ...})
 mp3> ^D

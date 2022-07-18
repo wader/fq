@@ -4,8 +4,9 @@ import (
 	stdjson "encoding/json"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -15,7 +16,7 @@ import (
 // TODO: use jd.InputOffset() * 8?
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.JSON,
 		Description: "JSON",
 		ProbeOrder:  100, // last
@@ -24,16 +25,16 @@ func init() {
 	})
 }
 
-func decodeJSON(d *decode.D, in interface{}) interface{} {
-	bb := d.RawLen(d.Len())
-	jd := stdjson.NewDecoder(bb)
+func decodeJSON(d *decode.D, in any) any {
+	br := d.RawLen(d.Len())
+	jd := stdjson.NewDecoder(bitio.NewIOReader(br))
 	var s scalar.S
 	if err := jd.Decode(&s.Actual); err != nil {
 		d.Fatalf(err.Error())
 	}
 	switch s.Actual.(type) {
-	case map[string]interface{},
-		[]interface{}:
+	case map[string]any,
+		[]any:
 	default:
 		d.Fatalf("root not object or array")
 	}

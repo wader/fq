@@ -1,0 +1,75 @@
+$ fq dd genesis.dat
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0:1]: genesis.dat (bitcoin_blkdat)
+     |                                               |                |  [0]{}: block (bitcoin_block)
+0x000|f9 be b4 d9                                    |....            |    magic: "mainnet" (0xf9beb4d9)
+0x000|            1d 01 00 00                        |    ....        |    size: 285
+     |                                               |                |    header{}:
+0x000|                        01 00 00 00            |        ....    |      version: 0x1
+0x000|                                    00 00 00 00|            ....|      previous_block_hash: "00000000000000000000000000000000000000000000000000"... (raw bits)
+0x010|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
+0x020|00 00 00 00 00 00 00 00 00 00 00 00            |............    |
+0x020|                                    3b a3 ed fd|            ;...|      merkle_root: "4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2"... (raw bits)
+0x030|7a 7b 12 b2 7a c7 2c 3e 67 76 8f 61 7f c8 1b c3|z{..z.,>gv.a....|
+0x040|88 8a 51 32 3a 9f b8 aa 4b 1e 5e 4a            |..Q2:...K.^J    |
+0x040|                                    29 ab 5f 49|            )._I|      time: 1231006505 (2009-01-03T18:15:05Z)
+0x050|ff ff 00 1d                                    |....            |      bits: 0x1d00ffff
+0x050|            1d ac 2b 7c                        |    ..+|        |      nonce: 0x7c2bac1d
+0x050|                        01                     |        .       |    tx_count: 1
+     |                                               |                |    transactions[0:1]:
+     |                                               |                |      [0]{}: transaction (bitcoin_transaction)
+0x050|                           01 00 00 00         |         ....   |        version: 1
+0x050|                                       01      |             .  |        input_count: 1
+     |                                               |                |        inputs[0:1]:
+     |                                               |                |          [0]{}: input
+0x050|                                          00 00|              ..|            txid: "00000000000000000000000000000000000000000000000000"... (raw bits) (coinbase)
+0x060|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
+0x070|00 00 00 00 00 00 00 00 00 00 00 00 00 00      |..............  |
+0x070|                                          ff ff|              ..|            vout: 4294967295
+0x080|ff ff                                          |..              |
+0x080|      4d                                       |  M             |            scriptsig_size: 77
+     |                                               |                |            scriptsig[0:3]: (bitcoin_script)
+     |                                               |                |              [0]{}: opcode
+0x080|         04                                    |   .            |                op: "pushself" (4)
+0x080|            ff ff 00 1d                        |    ....        |                arg: raw bits
+     |                                               |                |              [1]{}: opcode
+0x080|                        01                     |        .       |                op: "pushself" (1)
+0x080|                           04                  |         .      |                arg: raw bits
+     |                                               |                |              [2]{}: opcode
+0x080|                              45               |          E     |                op: "pushself" (69)
+0x080|                                 54 68 65 20 54|           The T|                arg: raw bits
+0x090|69 6d 65 73 20 30 33 2f 4a 61 6e 2f 32 30 30 39|imes 03/Jan/2009|
+0x0a0|20 43 68 61 6e 63 65 6c 6c 6f 72 20 6f 6e 20 62| Chancellor on b|
+0x0b0|72 69 6e 6b 20 6f 66 20 73 65 63 6f 6e 64 20 62|rink of second b|
+0x0c0|61 69 6c 6f 75 74 20 66 6f 72 20 62 61 6e 6b 73|ailout for banks|
+0x0d0|ff ff ff ff                                    |....            |            sequence: 0xffffffff
+0x0d0|            01                                 |    .           |        output_count: 1
+     |                                               |                |        outputs[0:1]:
+     |                                               |                |          [0]{}: output
+0x0d0|               00 f2 05 2a 01 00 00 00         |     ...*....   |            value: 5000000000
+0x0d0|                                       43      |             C  |            scriptpub_size: 67
+     |                                               |                |            scriptpub[0:2]: (bitcoin_script)
+     |                                               |                |              [0]{}: opcode
+0x0d0|                                          41   |              A |                op: "pushself" (65)
+0x0d0|                                             04|               .|                arg: raw bits
+0x0e0|67 8a fd b0 fe 55 48 27 19 67 f1 a6 71 30 b7 10|g....UH'.g..q0..|
+0x0f0|5c d6 a8 28 e0 39 09 a6 79 62 e0 ea 1f 61 de b6|\..(.9..yb...a..|
+0x100|49 f6 bc 3f 4c ef 38 c4 f3 55 04 e5 1e c1 12 de|I..?L.8..U......|
+0x110|5c 38 4d f7 ba 0b 8d 57 8a 4c 70 2b 6b f1 1d 5f|\8M....W.Lp+k.._|
+     |                                               |                |              [1]{}: opcode
+0x120|ac                                             |.               |                op: "checksig" (172)
+0x120|   00 00 00 00|                                | ....|          |        locktime: 0
+$ fq '.[0].transactions[0].inputs[0].scriptsig | bitcoin_script | dd' genesis.dat
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0:3]: (bitcoin_script)
+    |                                               |                |  [0]{}: opcode
+0x80|         04                                    |   .            |    op: "pushself" (4)
+0x80|            ff ff 00 1d                        |    ....        |    arg: raw bits
+    |                                               |                |  [1]{}: opcode
+0x80|                        01                     |        .       |    op: "pushself" (1)
+0x80|                           04                  |         .      |    arg: raw bits
+    |                                               |                |  [2]{}: opcode
+0x80|                              45               |          E     |    op: "pushself" (69)
+0x80|                                 54 68 65 20 54|           The T|    arg: raw bits
+0x90|69 6d 65 73 20 30 33 2f 4a 61 6e 2f 32 30 30 39|imes 03/Jan/2009|
+0xa0|20 43 68 61 6e 63 65 6c 6c 6f 72 20 6f 6e 20 62| Chancellor on b|
+0xb0|72 69 6e 6b 20 6f 66 20 73 65 63 6f 6e 64 20 62|rink of second b|
+0xc0|61 69 6c 6f 75 74 20 66 6f 72 20 62 61 6e 6b 73|ailout for banks|

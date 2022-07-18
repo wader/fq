@@ -8,13 +8,13 @@ import (
 	"strings"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.DNS,
 		Description: "DNS packet",
 		Groups: []string{
@@ -30,17 +30,17 @@ const (
 )
 
 var classNames = scalar.URangeToScalar{
-	{0x0000, 0x0000}:   {Sym: "Reserved", Description: "Reserved"},
-	{classIN, classIN}: {Sym: "IN", Description: "Internet"},
-	{0x0002, 0x0002}:   {Sym: "Unassigned", Description: "Unassigned"},
-	{0x0003, 0x0003}:   {Sym: "Chaos", Description: "Chaos"},
-	{0x0004, 0x0004}:   {Sym: "Hesiod", Description: "Hesiod"},
-	{0x0005, 0x00fd}:   {Sym: "Unassigned", Description: "Unassigned"},
-	{0x00fe, 0x00fe}:   {Sym: "QCLASS_NONE", Description: "QCLASS NONE"},
-	{0x00ff, 0x00ff}:   {Sym: "QCLASS_ANY", Description: "QCLASS ANY"},
-	{0x0100, 0xfeff}:   {Sym: "Unassigned", Description: "Unassigned"},
-	{0xff00, 0xfffe}:   {Sym: "Private", Description: "Reserved for Private Use"},
-	{0xffff, 0xffff}:   {Sym: "Reserved", Description: "Reserved"},
+	{Range: [2]uint64{0x0000, 0x0000}, S: scalar.S{Sym: "reserved", Description: "Reserved"}},
+	{Range: [2]uint64{classIN, classIN}, S: scalar.S{Sym: "in", Description: "Internet"}},
+	{Range: [2]uint64{0x0002, 0x0002}, S: scalar.S{Sym: "unassigned", Description: "Unassigned"}},
+	{Range: [2]uint64{0x0003, 0x0003}, S: scalar.S{Sym: "chaos", Description: "Chaos"}},
+	{Range: [2]uint64{0x0004, 0x0004}, S: scalar.S{Sym: "hesiod", Description: "Hesiod"}},
+	{Range: [2]uint64{0x0005, 0x00fd}, S: scalar.S{Sym: "unassigned", Description: "Unassigned"}},
+	{Range: [2]uint64{0x00fe, 0x00fe}, S: scalar.S{Sym: "qclass_none", Description: "QCLASS NONE"}},
+	{Range: [2]uint64{0x00ff, 0x00ff}, S: scalar.S{Sym: "qclass_any", Description: "QCLASS ANY"}},
+	{Range: [2]uint64{0x0100, 0xfeff}, S: scalar.S{Sym: "unassigned", Description: "Unassigned"}},
+	{Range: [2]uint64{0xff00, 0xfffe}, S: scalar.S{Sym: "private", Description: "Reserved for Private Use"}},
+	{Range: [2]uint64{0xffff, 0xffff}, S: scalar.S{Sym: "reserved", Description: "Reserved"}},
 }
 
 const (
@@ -54,75 +54,75 @@ const (
 )
 
 var typeNames = scalar.UToSymStr{
-	typeA:     "A",
-	typeAAAA:  "AAAA",
-	18:        "AFSDB",
-	42:        "APL",
-	257:       "CAA",
-	60:        "CDNSKEY",
-	59:        "CDS",
-	37:        "CERT",
-	typeCNAME: "CNAME",
-	62:        "CSYNC",
-	49:        "DHCID",
-	32769:     "DLV",
-	39:        "DNAME",
-	48:        "DNSKEY",
-	43:        "DS",
-	108:       "EUI48",
-	109:       "EUI64",
-	13:        "HINFO",
-	55:        "HIP",
-	45:        "IPSECKEY",
-	25:        "KEY",
-	36:        "KX",
-	29:        "LOC",
-	15:        "MX",
-	35:        "NAPTR",
-	typeNS:    "NS",
-	47:        "NSEC",
-	50:        "NSEC3",
-	51:        "NSEC3PARAM",
-	61:        "OPENPGPKEY",
-	typePTR:   "PTR",
-	46:        "RRSIG",
-	17:        "RP",
-	24:        "SIG",
-	53:        "SMIMEA",
-	typeSOA:   "SOA",
-	33:        "SRV",
-	44:        "SSHFP",
-	32768:     "TA",
-	249:       "TKEY",
-	52:        "TLSA",
-	250:       "TSIG",
-	typeTXT:   "TXT",
-	256:       "URI",
-	63:        "ZONEMD",
-	64:        "SVCB",
-	65:        "HTTPS",
+	typeA:     "a",
+	typeAAAA:  "aaaa",
+	18:        "afsdb",
+	42:        "apl",
+	257:       "caa",
+	60:        "cdnskey",
+	59:        "cds",
+	37:        "cert",
+	typeCNAME: "cname",
+	62:        "csync",
+	49:        "dhcid",
+	32769:     "dlv",
+	39:        "dname",
+	48:        "dnskey",
+	43:        "ds",
+	108:       "eui48",
+	109:       "eui64",
+	13:        "hinfo",
+	55:        "hip",
+	45:        "ipseckey",
+	25:        "key",
+	36:        "kx",
+	29:        "loc",
+	15:        "mx",
+	35:        "naptr",
+	typeNS:    "ns",
+	47:        "nsec",
+	50:        "nsec3",
+	51:        "nsec3_param",
+	61:        "openpgp_key",
+	typePTR:   "ptr",
+	46:        "rrsig",
+	17:        "rp",
+	24:        "sig",
+	53:        "smimea",
+	typeSOA:   "soa",
+	33:        "srv",
+	44:        "sshfp",
+	32768:     "ta",
+	249:       "tkey",
+	52:        "tlsa",
+	250:       "tsig",
+	typeTXT:   "txt",
+	256:       "uri",
+	63:        "zonemd",
+	64:        "svcb",
+	65:        "https",
 }
 
 var rcodeNames = scalar.UToScalar{
-	0:  {Sym: "NoError", Description: "No error"},
-	1:  {Sym: "FormErr", Description: "Format error"},
-	2:  {Sym: "ServFail", Description: "Server failure"},
-	3:  {Sym: "NXDomain", Description: "Non-Existent Domain"},
-	4:  {Sym: "NotiImpl", Description: "Not implemented"},
-	5:  {Sym: "Refused", Description: "Refused"},
-	6:  {Sym: "YXDomain", Description: "DescriptionName Exists when it should not"}, // RFC 2136
-	7:  {Sym: "YXRRSet", Description: "RR Set Exists when it should not"},           // RFC 2136
-	8:  {Sym: "NXRRSet", Description: "RR Set that should exist does not"},          // RFC 2136
-	9:  {Sym: "NotAuth", Description: "Server Not Authoritative for zone"},          // RFC 2136
-	10: {Sym: "NotZone", Description: "Name not contained in zone"},                 // RFC 2136
+	0:  {Sym: "no_error", Description: "No error"},
+	1:  {Sym: "form_err", Description: "Format error"},
+	2:  {Sym: "serv_fail", Description: "Server failure"},
+	3:  {Sym: "nx_domain", Description: "Non-Existent Domain"},
+	4:  {Sym: "no_tiimpl", Description: "Not implemented"},
+	5:  {Sym: "refused", Description: "Refused"},
+	6:  {Sym: "yx_domain", Description: "DescriptionName Exists when it should not"}, // RFC 2136
+	7:  {Sym: "yxrr_set", Description: "RR Set Exists when it should not"},           // RFC 2136
+	8:  {Sym: "nxrr_set", Description: "RR Set that should exist does not"},          // RFC 2136
+	9:  {Sym: "not_auth", Description: "Server Not Authoritative for zone"},          // RFC 2136
+	10: {Sym: "not_zone", Description: "Name not contained in zone"},                 // RFC 2136
 	// collision in RFCs
-	// 16: {Sym: "BADVERS", Description: "Bad OPT Version"},           // RFC 2671
-	16: {Sym: "BADSIG", Description: "TSIG Signature Failure"},        // RFC 2845
-	17: {Sym: "BADKEY", Description: "Key not recognized"},            // RFC 2845
-	18: {Sym: "BADTIME", Description: "Signature out of time window"}, // RFC 2845
-	19: {Sym: "BADMODE", Description: "Bad TKEY Mode"},                // RFC 2930
-	20: {Sym: "BADNAME", Description: "Duplicate key name"},           // RFC 2930
-	21: {Sym: "BADALG", Description: "Algorithm not supported"},       // RFC 2930
+	// 16: {Sym: "badvers", Description: "Bad OPT Version"},           // RFC 2671
+	16: {Sym: "bad_sig", Description: "TSIG Signature Failure"},        // RFC 2845
+	17: {Sym: "bad_key", Description: "Key not recognized"},            // RFC 2845
+	18: {Sym: "bad_time", Description: "Signature out of time window"}, // RFC 2845
+	19: {Sym: "bad_mode", Description: "Bad TKEY Mode"},                // RFC 2930
+	20: {Sym: "bad_name", Description: "Duplicate key name"},           // RFC 2930
+	21: {Sym: "bad_alg", Description: "Algorithm not supported"},       // RFC 2930
 }
 
 func decodeAStr(d *decode.D) string {
@@ -141,6 +141,8 @@ func fieldDecodeLabel(d *decode.D, pointerOffset int64, name string) {
 	d.FieldStruct(name, func(d *decode.D) {
 		var ls []string
 		d.FieldArray("labels", func(d *decode.D) {
+			d.RangeSorted = false
+
 			seenTermintor := false
 			for !seenTermintor {
 				d.FieldStruct("label", func(d *decode.D) {
@@ -176,6 +178,8 @@ func fieldDecodeLabel(d *decode.D, pointerOffset int64, name string) {
 
 func dnsDecodeRR(d *decode.D, pointerOffset int64, resp bool, count uint64, name string, structName string) {
 	d.FieldArray(name, func(d *decode.D) {
+		d.RangeSorted = false
+
 		for i := uint64(0); i < count; i++ {
 			d.FieldStruct(structName, func(d *decode.D) {
 				fieldDecodeLabel(d, pointerOffset, "name")
@@ -184,7 +188,7 @@ func dnsDecodeRR(d *decode.D, pointerOffset int64, resp bool, count uint64, name
 				if resp {
 					d.FieldU32("ttl")
 					rdLength := d.FieldU16("rdlength")
-					d.LenFn(int64(rdLength)*8, func(d *decode.D) {
+					d.FramedFn(int64(rdLength)*8, func(d *decode.D) {
 						// TODO: all only for classIN?
 						switch {
 						case class == classIN && typ == typeA:
@@ -225,7 +229,7 @@ func dnsDecodeRR(d *decode.D, pointerOffset int64, resp bool, count uint64, name
 	})
 }
 
-func dnsDecode(d *decode.D, isTCP bool) interface{} {
+func dnsDecode(d *decode.D, isTCP bool) any {
 	pointerOffset := int64(0)
 	d.FieldStruct("header", func(d *decode.D) {
 		if isTCP {
@@ -238,11 +242,11 @@ func dnsDecode(d *decode.D, isTCP bool) interface{} {
 			1: "response",
 		})
 		d.FieldU4("opcode", scalar.UToSymStr{
-			0: "Query",
-			1: "IQuery",
-			2: "Status",
-			4: "Notify", // RFC 1996
-			5: "Update", // RFC 2136
+			0: "query",
+			1: "iquery",
+			2: "status",
+			4: "notify", // RFC 1996
+			5: "update", // RFC 2136
 		})
 		d.FieldBool("authoritative_answer")
 		d.FieldBool("truncation")
@@ -264,19 +268,9 @@ func dnsDecode(d *decode.D, isTCP bool) interface{} {
 	return nil
 }
 
-func dnsUDPDecode(d *decode.D, in interface{}) interface{} {
-	if tsi, ok := in.(format.TCPStreamIn); ok {
-		if tsi.DestinationPort == format.TCPPortDomain || tsi.SourcePort == format.TCPPortDomain {
-			return dnsDecode(d, true)
-		}
-		d.Fatalf("wrong port")
-	}
-	if udi, ok := in.(format.UDPDatagramIn); ok {
-		if udi.DestinationPort == format.UDPPortDomain || udi.SourcePort == format.UDPPortDomain ||
-			udi.DestinationPort == format.UDPPortMDNS || udi.SourcePort == format.UDPPortMDNS {
-			return dnsDecode(d, false)
-		}
-		d.Fatalf("wrong port")
+func dnsUDPDecode(d *decode.D, in any) any {
+	if upi, ok := in.(format.UDPPayloadIn); ok {
+		upi.MustIsPort(d.Fatalf, format.UDPPortDomain, format.UDPPortMDNS)
 	}
 	return dnsDecode(d, false)
 }

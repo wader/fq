@@ -1,6 +1,17 @@
 # from https://wiki.wireshark.org/Development/PcapNg
-$ fq -d pcapng verbose /dhcp_little_endian.pcapng
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0:1]: /dhcp_little_endian.pcapng (pcapng) 0x0-0x5fb.7 (1532)
+# TODO: move once we can have decode value tests somehow
+$ fq '.[0].blocks[0]' dhcp_little_endian.pcapng
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].blocks[0]{}: block
+0x00|0a 0d 0d 0a                                    |....            |  type: "section_header" (0xa0d0d0a) (Section Header Block)
+0x00|            1c 00 00 00                        |    ....        |  length: 28
+0x00|                        4d 3c 2b 1a            |        M<+.    |  byte_order_magic: "little_endian" (0x4d3c2b1a)
+0x00|                                    01 00      |            ..  |  major_version: 1
+0x00|                                          00 00|              ..|  minor_version: 0
+0x10|ff ff ff ff ff ff ff ff                        |........        |  section_length: -1
+    |                                               |                |  options[0:0]:
+0x10|                        1c 00 00 00            |        ....    |  footer_total_length: 28
+$ fq dv dhcp_little_endian.pcapng
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0:1]: dhcp_little_endian.pcapng (pcapng) 0x0-0x5fb.7 (1532)
      |                                               |                |  [0]{}: section 0x0-0x5fb.7 (1532)
      |                                               |                |    blocks[0:7]: 0x0-0x5fb.7 (1532)
      |                                               |                |      [0]{}: block 0x0-0x1b.7 (28)
@@ -48,7 +59,7 @@ $ fq -d pcapng verbose /dhcp_little_endian.pcapng
 0x070|ff ff ff ff ff ff                              |......          |          destination: "ff:ff:ff:ff:ff:ff" (0xffffffffffff) 0x70-0x75.7 (6)
 0x070|                  00 0b 82 01 fc 42            |      .....B    |          source: "00:0b:82:01:fc:42" (0xb8201fc42) 0x76-0x7b.7 (6)
 0x070|                                    08 00      |            ..  |          ether_type: "ipv4" (0x800) (Internet Protocol version 4) 0x7c-0x7d.7 (2)
-     |                                               |                |          packet{}: (ipv4_packet) 0x7e-0x1a9.7 (300)
+     |                                               |                |          payload{}: (ipv4_packet) 0x7e-0x1a9.7 (300)
 0x070|                                          45   |              E |            version: 4 0x7e-0x7e.3 (0.4)
 0x070|                                          45   |              E |            ihl: 5 0x7e.4-0x7e.7 (0.4)
 0x070|                                             00|               .|            dscp: 0 0x7f-0x7f.5 (0.6)
@@ -65,12 +76,12 @@ $ fq -d pcapng verbose /dhcp_little_endian.pcapng
 0x080|                              00 00 00 00      |          ....  |            source_ip: "0.0.0.0" (0x0) 0x8a-0x8d.7 (4)
 0x080|                                          ff ff|              ..|            destination_ip: "255.255.255.255" (0xffffffff) 0x8e-0x91.7 (4)
 0x090|ff ff                                          |..              |
-     |                                               |                |            data{}: (udp_datagram) 0x92-0x1a9.7 (280)
+     |                                               |                |            payload{}: (udp_datagram) 0x92-0x1a9.7 (280)
 0x090|      00 44                                    |  .D            |              source_port: "bootpc" (68) (Bootstrap Protocol Client) 0x92-0x93.7 (2)
 0x090|            00 43                              |    .C          |              destination_port: "bootps" (67) (Bootstrap Protocol Server) 0x94-0x95.7 (2)
 0x090|                  01 18                        |      ..        |              length: 280 0x96-0x97.7 (2)
 0x090|                        59 1f                  |        Y.      |              checksum: 0x591f 0x98-0x99.7 (2)
-0x090|                              01 01 06 00 00 00|          ......|              data: raw bits 0x9a-0x1a9.7 (272)
+0x090|                              01 01 06 00 00 00|          ......|              payload: raw bits 0x9a-0x1a9.7 (272)
 0x0a0|3d 1d 00 00 00 00 00 00 00 00 00 00 00 00 00 00|=...............|
 *    |until 0x1a9.7 (272)                            |                |
 0x1a0|                              00 00            |          ..    |        padding: raw bits 0x1aa-0x1ab.7 (2)
@@ -89,7 +100,7 @@ $ fq -d pcapng verbose /dhcp_little_endian.pcapng
 0x1d0|fc 42                                          |.B              |
 0x1d0|      00 08 74 ad f1 9b                        |  ..t...        |          source: "00:08:74:ad:f1:9b" (0x874adf19b) 0x1d2-0x1d7.7 (6)
 0x1d0|                        08 00                  |        ..      |          ether_type: "ipv4" (0x800) (Internet Protocol version 4) 0x1d8-0x1d9.7 (2)
-     |                                               |                |          packet{}: (ipv4_packet) 0x1da-0x321.7 (328)
+     |                                               |                |          payload{}: (ipv4_packet) 0x1da-0x321.7 (328)
 0x1d0|                              45               |          E     |            version: 4 0x1da-0x1da.3 (0.4)
 0x1d0|                              45               |          E     |            ihl: 5 0x1da.4-0x1da.7 (0.4)
 0x1d0|                                 00            |           .    |            dscp: 0 0x1db-0x1db.5 (0.6)
@@ -105,12 +116,12 @@ $ fq -d pcapng verbose /dhcp_little_endian.pcapng
 0x1e0|            00 00                              |    ..          |            header_checksum: 0x0 (invalid) 0x1e4-0x1e5.7 (2)
 0x1e0|                  c0 a8 00 01                  |      ....      |            source_ip: "192.168.0.1" (0xc0a80001) 0x1e6-0x1e9.7 (4)
 0x1e0|                              c0 a8 00 0a      |          ....  |            destination_ip: "192.168.0.10" (0xc0a8000a) 0x1ea-0x1ed.7 (4)
-     |                                               |                |            data{}: (udp_datagram) 0x1ee-0x321.7 (308)
+     |                                               |                |            payload{}: (udp_datagram) 0x1ee-0x321.7 (308)
 0x1e0|                                          00 43|              .C|              source_port: "bootps" (67) (Bootstrap Protocol Server) 0x1ee-0x1ef.7 (2)
 0x1f0|00 44                                          |.D              |              destination_port: "bootpc" (68) (Bootstrap Protocol Client) 0x1f0-0x1f1.7 (2)
 0x1f0|      01 34                                    |  .4            |              length: 308 0x1f2-0x1f3.7 (2)
 0x1f0|            22 33                              |    "3          |              checksum: 0x2233 0x1f4-0x1f5.7 (2)
-0x1f0|                  02 01 06 00 00 00 3d 1d 00 00|      ......=...|              data: raw bits 0x1f6-0x321.7 (300)
+0x1f0|                  02 01 06 00 00 00 3d 1d 00 00|      ......=...|              payload: raw bits 0x1f6-0x321.7 (300)
 0x200|00 00 00 00 00 00 c0 a8 00 0a c0 a8 00 01 00 00|................|
 *    |until 0x321.7 (300)                            |                |
 0x320|      00 00                                    |  ..            |        padding: raw bits 0x322-0x323.7 (2)
@@ -128,7 +139,7 @@ $ fq -d pcapng verbose /dhcp_little_endian.pcapng
 0x340|            ff ff ff ff ff ff                  |    ......      |          destination: "ff:ff:ff:ff:ff:ff" (0xffffffffffff) 0x344-0x349.7 (6)
 0x340|                              00 0b 82 01 fc 42|          .....B|          source: "00:0b:82:01:fc:42" (0xb8201fc42) 0x34a-0x34f.7 (6)
 0x350|08 00                                          |..              |          ether_type: "ipv4" (0x800) (Internet Protocol version 4) 0x350-0x351.7 (2)
-     |                                               |                |          packet{}: (ipv4_packet) 0x352-0x47d.7 (300)
+     |                                               |                |          payload{}: (ipv4_packet) 0x352-0x47d.7 (300)
 0x350|      45                                       |  E             |            version: 4 0x352-0x352.3 (0.4)
 0x350|      45                                       |  E             |            ihl: 5 0x352.4-0x352.7 (0.4)
 0x350|         00                                    |   .            |            dscp: 0 0x353-0x353.5 (0.6)
@@ -145,12 +156,12 @@ $ fq -d pcapng verbose /dhcp_little_endian.pcapng
 0x350|                                          00 00|              ..|            source_ip: "0.0.0.0" (0x0) 0x35e-0x361.7 (4)
 0x360|00 00                                          |..              |
 0x360|      ff ff ff ff                              |  ....          |            destination_ip: "255.255.255.255" (0xffffffff) 0x362-0x365.7 (4)
-     |                                               |                |            data{}: (udp_datagram) 0x366-0x47d.7 (280)
+     |                                               |                |            payload{}: (udp_datagram) 0x366-0x47d.7 (280)
 0x360|                  00 44                        |      .D        |              source_port: "bootpc" (68) (Bootstrap Protocol Client) 0x366-0x367.7 (2)
 0x360|                        00 43                  |        .C      |              destination_port: "bootps" (67) (Bootstrap Protocol Server) 0x368-0x369.7 (2)
 0x360|                              01 18            |          ..    |              length: 280 0x36a-0x36b.7 (2)
 0x360|                                    9f bd      |            ..  |              checksum: 0x9fbd 0x36c-0x36d.7 (2)
-0x360|                                          01 01|              ..|              data: raw bits 0x36e-0x47d.7 (272)
+0x360|                                          01 01|              ..|              payload: raw bits 0x36e-0x47d.7 (272)
 0x370|06 00 00 00 3d 1e 00 00 00 00 00 00 00 00 00 00|....=...........|
 *    |until 0x47d.7 (272)                            |                |
 0x470|                                          00 00|              ..|        padding: raw bits 0x47e-0x47f.7 (2)
@@ -168,7 +179,7 @@ $ fq -d pcapng verbose /dhcp_little_endian.pcapng
 0x4a0|00 0b 82 01 fc 42                              |.....B          |          destination: "00:0b:82:01:fc:42" (0xb8201fc42) 0x4a0-0x4a5.7 (6)
 0x4a0|                  00 08 74 ad f1 9b            |      ..t...    |          source: "00:08:74:ad:f1:9b" (0x874adf19b) 0x4a6-0x4ab.7 (6)
 0x4a0|                                    08 00      |            ..  |          ether_type: "ipv4" (0x800) (Internet Protocol version 4) 0x4ac-0x4ad.7 (2)
-     |                                               |                |          packet{}: (ipv4_packet) 0x4ae-0x5f5.7 (328)
+     |                                               |                |          payload{}: (ipv4_packet) 0x4ae-0x5f5.7 (328)
 0x4a0|                                          45   |              E |            version: 4 0x4ae-0x4ae.3 (0.4)
 0x4a0|                                          45   |              E |            ihl: 5 0x4ae.4-0x4ae.7 (0.4)
 0x4a0|                                             00|               .|            dscp: 0 0x4af-0x4af.5 (0.6)
@@ -185,12 +196,12 @@ $ fq -d pcapng verbose /dhcp_little_endian.pcapng
 0x4b0|                              c0 a8 00 01      |          ....  |            source_ip: "192.168.0.1" (0xc0a80001) 0x4ba-0x4bd.7 (4)
 0x4b0|                                          c0 a8|              ..|            destination_ip: "192.168.0.10" (0xc0a8000a) 0x4be-0x4c1.7 (4)
 0x4c0|00 0a                                          |..              |
-     |                                               |                |            data{}: (udp_datagram) 0x4c2-0x5f5.7 (308)
+     |                                               |                |            payload{}: (udp_datagram) 0x4c2-0x5f5.7 (308)
 0x4c0|      00 43                                    |  .C            |              source_port: "bootps" (67) (Bootstrap Protocol Server) 0x4c2-0x4c3.7 (2)
 0x4c0|            00 44                              |    .D          |              destination_port: "bootpc" (68) (Bootstrap Protocol Client) 0x4c4-0x4c5.7 (2)
 0x4c0|                  01 34                        |      .4        |              length: 308 0x4c6-0x4c7.7 (2)
 0x4c0|                        df db                  |        ..      |              checksum: 0xdfdb 0x4c8-0x4c9.7 (2)
-0x4c0|                              02 01 06 00 00 00|          ......|              data: raw bits 0x4ca-0x5f5.7 (300)
+0x4c0|                              02 01 06 00 00 00|          ......|              payload: raw bits 0x4ca-0x5f5.7 (300)
 0x4d0|3d 1e 00 00 00 00 00 00 00 00 c0 a8 00 0a 00 00|=...............|
 *    |until 0x5f5.7 (300)                            |                |
 0x5f0|                  00 00                        |      ..        |        padding: raw bits 0x5f6-0x5f7.7 (2)

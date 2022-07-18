@@ -1,8 +1,8 @@
-$ fq -i -d mp3 . /test.mp3
+$ fq -i -d mp3 . test.mp3
 mp3> .headers[0].padding | ., tovalue, type, length?
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x20|         00 00 00 00 00 00 00 00 00 00         |   ..........   |.headers[0].padding: raw bits (all zero)
-"<0b1010>AAAAAAAAAAAAAA=="
+"<10>AAAAAAAAAAAAAA=="
 "string"
 10
 mp3> .headers[0].padding[0] | ., type, length?
@@ -84,13 +84,13 @@ mp3> .headers[0].padding._path | ., type, length?
 mp3> .headers[0].padding._bits | ., type, length?
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x20|         00 00 00 00 00 00 00 00 00 00         |   ..........   |.: raw bits 0x23-0x2c.7 (10)
-"buffer"
+"binary"
 80
 mp3> 
 mp3> .headers[0].padding._bytes | ., type, length?
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x20|         00 00 00 00 00 00 00 00 00 00         |   ..........   |.: raw bits 0x23-0x2c.7 (10)
-"buffer"
+"binary"
 10
 mp3> 
 mp3> .headers[0].padding._error | ., type, length?
@@ -101,19 +101,19 @@ mp3> .headers[0].padding._unknown | ., type, length?
 false
 "boolean"
 mp3> .headers[0].padding.a = 1
-error: expected an object with key "a" but got: string
+error: expected an object but got: string ("\u0000\u0000\u0000\u0000 ...")
 mp3> .headers[0].padding[0] = 1
-error: expected an array with index 0 but got: string
+error: expected an array but got: string ("\u0000\u0000\u0000\u0000 ...")
 mp3> .headers[0].padding.a |= empty
 error: expected an object with key "a" but got: string
 mp3> .headers[0].padding[0] |= empty
-error: expected an array with index 0 but got: string
+error: expected an array but got: string ("\u0000\u0000\u0000\u0000 ...")
 mp3> .headers[0].padding | setpath(["a"]; 1)
-error: expected an object with key "a" but got: string
+error: expected an object but got: string ("\u0000\u0000\u0000\u0000 ...")
 mp3> .headers[0].padding | setpath([0]; 1)
-error: expected an array with index 0 but got: string
+error: expected an array but got: string ("\u0000\u0000\u0000\u0000 ...")
 mp3> .headers[0].padding | delpaths([["a"]])
-error: expected an object with key "a" but got: string
+error: expected an object but got: string ("\u0000\u0000\u0000\u0000 ...")
 mp3> .headers[0].padding | delpaths([[0]])
-error: expected an array with index 0 but got: string
+error: expected an array but got: string ("\u0000\u0000\u0000\u0000 ...")
 mp3> ^D

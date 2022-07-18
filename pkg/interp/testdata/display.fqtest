@@ -1,7 +1,7 @@
 # ffmpeg -f lavfi -i sine -t 10ms test.mp3
-$ fq -i -d mp3 . /test.mp3
+$ fq -i -d mp3 . test.mp3
 mp3> display({depth: 1})
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /test.mp3 (mp3)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: test.mp3 (mp3)
 0x000|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|  headers[0:1]:
 *    |until 0x2c.7 (45)                              |                |
 0x020|                                       ff fb 40|             ..@|  frames[0:3]:
@@ -9,23 +9,23 @@ mp3> display({depth: 1})
 *    |until 0x283.7 (end) (599)                      |                |
      |                                               |                |  footers[0:0]:
 mp3> display({depth: 2})
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /test.mp3 (mp3)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: test.mp3 (mp3)
      |                                               |                |  headers[0:1]:
-0x000|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|    [0]{}: (id3v2)
+0x000|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|    [0]{}: header (id3v2)
 *    |until 0x2c.7 (45)                              |                |
      |                                               |                |  frames[0:3]:
-0x020|                                       ff fb 40|             ..@|    [0]{}: (mp3_frame)
+0x020|                                       ff fb 40|             ..@|    [0]{}: frame (mp3_frame)
 0x030|c0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
 *    |until 0xe2.7 (182)                             |                |
-0x0e0|         ff fb 50 c4 00 00 0a 2c 43 2e 55 94 80|   ..P....,C.U..|    [1]{}: (mp3_frame)
+0x0e0|         ff fb 50 c4 00 00 0a 2c 43 2e 55 94 80|   ..P....,C.U..|    [1]{}: frame (mp3_frame)
 0x0f0|01 80 93 6b 27 30 80 00 07 aa c3 8e 33 85 d3 64|...k'0......3..d|
 *    |until 0x1b2.7 (208)                            |                |
-0x1b0|         ff fb 52 c4 04 83 c9 14 39 29 3c c3 00|   ..R.....9)<..|    [2]{}: (mp3_frame)
+0x1b0|         ff fb 52 c4 04 83 c9 14 39 29 3c c3 00|   ..R.....9)<..|    [2]{}: frame (mp3_frame)
 0x1c0|00 00 00 34 80 00 00 04 11 4b 36 4a 08 83 58 c9|...4.....K6J..X.|
 *    |until 0x283.7 (end) (209)                      |                |
      |                                               |                |  footers[0:0]:
 mp3> display({depth: 1, display_bytes: 8})
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /test.mp3 (mp3)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: test.mp3 (mp3)
 0x000|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|  headers[0:1]:
 *    |until 0x2c.7 (45)                              |                |
 0x020|                                       ff fb 40|             ..@|  frames[0:3]:
@@ -33,16 +33,24 @@ mp3> display({depth: 1, display_bytes: 8})
 *    |until 0x283.7 (end) (599)                      |                |
      |                                               |                |  footers[0:0]:
 mp3> display({depth: 1, line_bytes: 8})
-     |00 01 02 03 04 05 06 07|01234567|.{}: /test.mp3 (mp3)
+     |00 01 02 03 04 05 06 07|01234567|.{}: test.mp3 (mp3)
 0x000|49 44 33 04 00 00 00 00|ID3.....|  headers[0:1]:
 0x008|00 23 54 53 53 45 00 00|.#TSSE..|
 *    |until 0x2c.7 (45)      |        |
 0x028|               ff fb 40|     ..@|  frames[0:3]:
 0x030|c0 00 00 00 00 00 00 00|........|
 0x038|00 00 00 00 00 00 00 00|........|
-*    |until 0x283.7 (end) (599)|        |
+*    |until 0x283.7 (end) (59|        |
      |                       |        |  footers[0:0]:
-mp3> .frames[0] | verbose({depth: 1, addrbase: 10})
+mp3> display({width: 30, depth: 1})
+     |00 01 02 03|0123|.{}: test.mp3 (mp3)
+0x000|49 44 33 04|ID3.|  headers[0:1]:
+*    |until 0x2c.|    |
+0x02c|   ff fb 40| ..@|  frames[0:3]:
+0x030|c0 00 00 00|....|
+*    |until 0x283|    |
+     |           |    |  footers[0:0]:
+mp3> .frames[0] | dv({depth: 1, addrbase: 10})
    |00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15|0123456789012345|.frames[0]{}: frame (mp3_frame) 45-226.7 (182)
 032|                                       ff fb 40|             ..@|  header{}: 45-48.7 (4)
 048|c0                                             |.               |
@@ -54,7 +62,7 @@ mp3> .frames[0] | verbose({depth: 1, addrbase: 10})
 208|                                          00 00|              ..|  padding: raw bits 222-226.7 (5)
 224|00 00 00                                       |...             |
    |                                               |                |  crc_calculated: "827a" (raw bits) 227-NA (0)
-mp3> .frames[0] | verbose({depth: 1, sizebase: 16})
+mp3> .frames[0] | dv({depth: 1, sizebase: 16})
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0]{}: frame (mp3_frame) 0x2d-0xe2.7 (0xb6)
 0x20|                                       ff fb 40|             ..@|  header{}: 0x2d-0x30.7 (0x4)
 0x30|c0                                             |.               |
@@ -66,7 +74,8 @@ mp3> .frames[0] | verbose({depth: 1, sizebase: 16})
 0xd0|                                          00 00|              ..|  padding: raw bits 0xde-0xe2.7 (0x5)
 0xe0|00 00 00                                       |...             |
     |                                               |                |  crc_calculated: "827a" (raw bits) 0xe3-NA (0x0)
-mp3> .frames[0].xing | d, f, v
+mp3> .frames[0].xing | "d", d, "da", da, "dd", dd, "dv", dv, "ddv", ddv
+"d"
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].xing{}: (xing)
 0x40|      49 6e 66 6f                              |  Info          |  header: "Info"
     |                                               |                |  present_flags{}:
@@ -152,6 +161,7 @@ mp3> .frames[0].xing | d, f, v
 0xd0|                  00 00 02 57                  |      ...W      |    length: 599
 0xd0|                              62 f0            |          b.    |    music_crc: 25328
 0xd0|                                    5a 35      |            Z5  |    tag_crc: 23093
+"da"
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].xing{}: (xing)
 0x40|      49 6e 66 6f                              |  Info          |  header: "Info"
     |                                               |                |  present_flags{}:
@@ -286,6 +296,277 @@ mp3> .frames[0].xing | d, f, v
 0xd0|                  00 00 02 57                  |      ...W      |    length: 599
 0xd0|                              62 f0            |          b.    |    music_crc: 25328
 0xd0|                                    5a 35      |            Z5  |    tag_crc: 23093
+"dd"
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].xing{}: (xing)
+0x40|      49 6e 66 6f                              |  Info          |  header: "Info"
+    |                                               |                |  present_flags{}:
+0x40|                  00 00 00 0f                  |      ....      |    unused: 0
+0x40|                           0f                  |         .      |    quality: true
+0x40|                           0f                  |         .      |    toc: true
+0x40|                           0f                  |         .      |    bytes: true
+0x40|                           0f                  |         .      |    frames: true
+0x40|                              00 00 00 02      |          ....  |  frames: 2
+0x40|                                          00 00|              ..|  bytes: 599
+0x50|02 57                                          |.W              |
+    |                                               |                |  toc[0:100]:
+0x50|      00                                       |  .             |    [0]: 0
+0x50|         a6                                    |   .            |    [1]: 166
+0x50|            a6                                 |    .           |    [2]: 166
+0x50|               a6                              |     .          |    [3]: 166
+0x50|                  a6                           |      .         |    [4]: 166
+0x50|                     a6                        |       .        |    [5]: 166
+0x50|                        a6                     |        .       |    [6]: 166
+0x50|                           a6                  |         .      |    [7]: 166
+0x50|                              a6               |          .     |    [8]: 166
+0x50|                                 a6            |           .    |    [9]: 166
+0x50|                                    a6         |            .   |    [10]: 166
+0x50|                                       a6      |             .  |    [11]: 166
+0x50|                                          a6   |              . |    [12]: 166
+0x50|                                             a6|               .|    [13]: 166
+0x60|a6                                             |.               |    [14]: 166
+0x60|   a6                                          | .              |    [15]: 166
+0x60|      a6                                       |  .             |    [16]: 166
+0x60|         a6                                    |   .            |    [17]: 166
+0x60|            a6                                 |    .           |    [18]: 166
+0x60|               a6                              |     .          |    [19]: 166
+0x60|                  a6                           |      .         |    [20]: 166
+0x60|                     a6                        |       .        |    [21]: 166
+0x60|                        a6                     |        .       |    [22]: 166
+0x60|                           a6                  |         .      |    [23]: 166
+0x60|                              a6               |          .     |    [24]: 166
+0x60|                                 a6            |           .    |    [25]: 166
+0x60|                                    a6         |            .   |    [26]: 166
+0x60|                                       a6      |             .  |    [27]: 166
+0x60|                                          a6   |              . |    [28]: 166
+0x60|                                             a6|               .|    [29]: 166
+0x70|a6                                             |.               |    [30]: 166
+0x70|   a6                                          | .              |    [31]: 166
+0x70|      a6                                       |  .             |    [32]: 166
+0x70|         a6                                    |   .            |    [33]: 166
+0x70|            a6                                 |    .           |    [34]: 166
+0x70|               a6                              |     .          |    [35]: 166
+0x70|                  a6                           |      .         |    [36]: 166
+0x70|                     a6                        |       .        |    [37]: 166
+0x70|                        a6                     |        .       |    [38]: 166
+0x70|                           a6                  |         .      |    [39]: 166
+0x70|                              a6               |          .     |    [40]: 166
+0x70|                                 a6            |           .    |    [41]: 166
+0x70|                                    a6         |            .   |    [42]: 166
+0x70|                                       a6      |             .  |    [43]: 166
+0x70|                                          a6   |              . |    [44]: 166
+0x70|                                             a6|               .|    [45]: 166
+0x80|a6                                             |.               |    [46]: 166
+0x80|   a6                                          | .              |    [47]: 166
+0x80|      a6                                       |  .             |    [48]: 166
+0x80|         a6                                    |   .            |    [49]: 166
+0x80|            ff                                 |    .           |    [50]: 255
+0x80|               ff                              |     .          |    [51]: 255
+0x80|                  ff                           |      .         |    [52]: 255
+0x80|                     ff                        |       .        |    [53]: 255
+0x80|                        ff                     |        .       |    [54]: 255
+0x80|                           ff                  |         .      |    [55]: 255
+0x80|                              ff               |          .     |    [56]: 255
+0x80|                                 ff            |           .    |    [57]: 255
+0x80|                                    ff         |            .   |    [58]: 255
+0x80|                                       ff      |             .  |    [59]: 255
+0x80|                                          ff   |              . |    [60]: 255
+0x80|                                             ff|               .|    [61]: 255
+0x90|ff                                             |.               |    [62]: 255
+0x90|   ff                                          | .              |    [63]: 255
+0x90|      ff                                       |  .             |    [64]: 255
+0x90|         ff                                    |   .            |    [65]: 255
+0x90|            ff                                 |    .           |    [66]: 255
+0x90|               ff                              |     .          |    [67]: 255
+0x90|                  ff                           |      .         |    [68]: 255
+0x90|                     ff                        |       .        |    [69]: 255
+0x90|                        ff                     |        .       |    [70]: 255
+0x90|                           ff                  |         .      |    [71]: 255
+0x90|                              ff               |          .     |    [72]: 255
+0x90|                                 ff            |           .    |    [73]: 255
+0x90|                                    ff         |            .   |    [74]: 255
+0x90|                                       ff      |             .  |    [75]: 255
+0x90|                                          ff   |              . |    [76]: 255
+0x90|                                             ff|               .|    [77]: 255
+0xa0|ff                                             |.               |    [78]: 255
+0xa0|   ff                                          | .              |    [79]: 255
+0xa0|      ff                                       |  .             |    [80]: 255
+0xa0|         ff                                    |   .            |    [81]: 255
+0xa0|            ff                                 |    .           |    [82]: 255
+0xa0|               ff                              |     .          |    [83]: 255
+0xa0|                  ff                           |      .         |    [84]: 255
+0xa0|                     ff                        |       .        |    [85]: 255
+0xa0|                        ff                     |        .       |    [86]: 255
+0xa0|                           ff                  |         .      |    [87]: 255
+0xa0|                              ff               |          .     |    [88]: 255
+0xa0|                                 ff            |           .    |    [89]: 255
+0xa0|                                    ff         |            .   |    [90]: 255
+0xa0|                                       ff      |             .  |    [91]: 255
+0xa0|                                          ff   |              . |    [92]: 255
+0xa0|                                             ff|               .|    [93]: 255
+0xb0|ff                                             |.               |    [94]: 255
+0xb0|   ff                                          | .              |    [95]: 255
+0xb0|      ff                                       |  .             |    [96]: 255
+0xb0|         ff                                    |   .            |    [97]: 255
+0xb0|            ff                                 |    .           |    [98]: 255
+0xb0|               ff                              |     .          |    [99]: 255
+0xb0|                  00 00 00 00                  |      ....      |  quality: 0
+    |                                               |                |  lame_extension{}:
+0xb0|                              4c 61 76 63 35 38|          Lavc58|    encoder: "Lavc58.91"
+0xc0|2e 39 31                                       |.91             |
+0xc0|         00                                    |   .            |    tag_revision: 0
+0xc0|         00                                    |   .            |    vbr_method: 0
+0xc0|            00                                 |    .           |    lowpass_filter: 0
+0xc0|               00 00 00 00                     |     ....       |    replay_gain_peak: 0
+0xc0|                           00 00               |         ..     |    radio_replay_gain: 0
+0xc0|                                 00 00         |           ..   |    audiophile_replay_gain: 0
+0xc0|                                       00      |             .  |    lame_flags: 0
+0xc0|                                       00      |             .  |    lame_ath_type: 0
+0xc0|                                          00   |              . |    abr_vbr: 0
+0xc0|                                             24|               $|    encoder_delay: 576
+0xd0|05                                             |.               |
+0xd0|05 07                                          |..              |    encoder_padding: 1287
+0xd0|      00                                       |  .             |    misc: 0
+0xd0|         00                                    |   .            |    mp3_gain: 0
+0xd0|            00 00                              |    ..          |    preset: 0
+0xd0|                  00 00 02 57                  |      ...W      |    length: 599
+0xd0|                              62 f0            |          b.    |    music_crc: 25328
+0xd0|                                    5a 35      |            Z5  |    tag_crc: 23093
+"dv"
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].xing{}: (xing) 0x42-0xdd.7 (156)
+0x40|      49 6e 66 6f                              |  Info          |  header: "Info" 0x42-0x45.7 (4)
+    |                                               |                |  present_flags{}: 0x46-0x49.7 (4)
+0x40|                  00 00 00 0f                  |      ....      |    unused: 0 0x46-0x49.3 (3.4)
+0x40|                           0f                  |         .      |    quality: true 0x49.4-0x49.4 (0.1)
+0x40|                           0f                  |         .      |    toc: true 0x49.5-0x49.5 (0.1)
+0x40|                           0f                  |         .      |    bytes: true 0x49.6-0x49.6 (0.1)
+0x40|                           0f                  |         .      |    frames: true 0x49.7-0x49.7 (0.1)
+0x40|                              00 00 00 02      |          ....  |  frames: 2 0x4a-0x4d.7 (4)
+0x40|                                          00 00|              ..|  bytes: 599 0x4e-0x51.7 (4)
+0x50|02 57                                          |.W              |
+    |                                               |                |  toc[0:100]: 0x52-0xb5.7 (100)
+0x50|      00                                       |  .             |    [0]: 0 entry 0x52-0x52.7 (1)
+0x50|         a6                                    |   .            |    [1]: 166 entry 0x53-0x53.7 (1)
+0x50|            a6                                 |    .           |    [2]: 166 entry 0x54-0x54.7 (1)
+0x50|               a6                              |     .          |    [3]: 166 entry 0x55-0x55.7 (1)
+0x50|                  a6                           |      .         |    [4]: 166 entry 0x56-0x56.7 (1)
+0x50|                     a6                        |       .        |    [5]: 166 entry 0x57-0x57.7 (1)
+0x50|                        a6                     |        .       |    [6]: 166 entry 0x58-0x58.7 (1)
+0x50|                           a6                  |         .      |    [7]: 166 entry 0x59-0x59.7 (1)
+0x50|                              a6               |          .     |    [8]: 166 entry 0x5a-0x5a.7 (1)
+0x50|                                 a6            |           .    |    [9]: 166 entry 0x5b-0x5b.7 (1)
+0x50|                                    a6         |            .   |    [10]: 166 entry 0x5c-0x5c.7 (1)
+0x50|                                       a6      |             .  |    [11]: 166 entry 0x5d-0x5d.7 (1)
+0x50|                                          a6   |              . |    [12]: 166 entry 0x5e-0x5e.7 (1)
+0x50|                                             a6|               .|    [13]: 166 entry 0x5f-0x5f.7 (1)
+0x60|a6                                             |.               |    [14]: 166 entry 0x60-0x60.7 (1)
+0x60|   a6                                          | .              |    [15]: 166 entry 0x61-0x61.7 (1)
+0x60|      a6                                       |  .             |    [16]: 166 entry 0x62-0x62.7 (1)
+0x60|         a6                                    |   .            |    [17]: 166 entry 0x63-0x63.7 (1)
+0x60|            a6                                 |    .           |    [18]: 166 entry 0x64-0x64.7 (1)
+0x60|               a6                              |     .          |    [19]: 166 entry 0x65-0x65.7 (1)
+0x60|                  a6                           |      .         |    [20]: 166 entry 0x66-0x66.7 (1)
+0x60|                     a6                        |       .        |    [21]: 166 entry 0x67-0x67.7 (1)
+0x60|                        a6                     |        .       |    [22]: 166 entry 0x68-0x68.7 (1)
+0x60|                           a6                  |         .      |    [23]: 166 entry 0x69-0x69.7 (1)
+0x60|                              a6               |          .     |    [24]: 166 entry 0x6a-0x6a.7 (1)
+0x60|                                 a6            |           .    |    [25]: 166 entry 0x6b-0x6b.7 (1)
+0x60|                                    a6         |            .   |    [26]: 166 entry 0x6c-0x6c.7 (1)
+0x60|                                       a6      |             .  |    [27]: 166 entry 0x6d-0x6d.7 (1)
+0x60|                                          a6   |              . |    [28]: 166 entry 0x6e-0x6e.7 (1)
+0x60|                                             a6|               .|    [29]: 166 entry 0x6f-0x6f.7 (1)
+0x70|a6                                             |.               |    [30]: 166 entry 0x70-0x70.7 (1)
+0x70|   a6                                          | .              |    [31]: 166 entry 0x71-0x71.7 (1)
+0x70|      a6                                       |  .             |    [32]: 166 entry 0x72-0x72.7 (1)
+0x70|         a6                                    |   .            |    [33]: 166 entry 0x73-0x73.7 (1)
+0x70|            a6                                 |    .           |    [34]: 166 entry 0x74-0x74.7 (1)
+0x70|               a6                              |     .          |    [35]: 166 entry 0x75-0x75.7 (1)
+0x70|                  a6                           |      .         |    [36]: 166 entry 0x76-0x76.7 (1)
+0x70|                     a6                        |       .        |    [37]: 166 entry 0x77-0x77.7 (1)
+0x70|                        a6                     |        .       |    [38]: 166 entry 0x78-0x78.7 (1)
+0x70|                           a6                  |         .      |    [39]: 166 entry 0x79-0x79.7 (1)
+0x70|                              a6               |          .     |    [40]: 166 entry 0x7a-0x7a.7 (1)
+0x70|                                 a6            |           .    |    [41]: 166 entry 0x7b-0x7b.7 (1)
+0x70|                                    a6         |            .   |    [42]: 166 entry 0x7c-0x7c.7 (1)
+0x70|                                       a6      |             .  |    [43]: 166 entry 0x7d-0x7d.7 (1)
+0x70|                                          a6   |              . |    [44]: 166 entry 0x7e-0x7e.7 (1)
+0x70|                                             a6|               .|    [45]: 166 entry 0x7f-0x7f.7 (1)
+0x80|a6                                             |.               |    [46]: 166 entry 0x80-0x80.7 (1)
+0x80|   a6                                          | .              |    [47]: 166 entry 0x81-0x81.7 (1)
+0x80|      a6                                       |  .             |    [48]: 166 entry 0x82-0x82.7 (1)
+0x80|         a6                                    |   .            |    [49]: 166 entry 0x83-0x83.7 (1)
+0x80|            ff                                 |    .           |    [50]: 255 entry 0x84-0x84.7 (1)
+0x80|               ff                              |     .          |    [51]: 255 entry 0x85-0x85.7 (1)
+0x80|                  ff                           |      .         |    [52]: 255 entry 0x86-0x86.7 (1)
+0x80|                     ff                        |       .        |    [53]: 255 entry 0x87-0x87.7 (1)
+0x80|                        ff                     |        .       |    [54]: 255 entry 0x88-0x88.7 (1)
+0x80|                           ff                  |         .      |    [55]: 255 entry 0x89-0x89.7 (1)
+0x80|                              ff               |          .     |    [56]: 255 entry 0x8a-0x8a.7 (1)
+0x80|                                 ff            |           .    |    [57]: 255 entry 0x8b-0x8b.7 (1)
+0x80|                                    ff         |            .   |    [58]: 255 entry 0x8c-0x8c.7 (1)
+0x80|                                       ff      |             .  |    [59]: 255 entry 0x8d-0x8d.7 (1)
+0x80|                                          ff   |              . |    [60]: 255 entry 0x8e-0x8e.7 (1)
+0x80|                                             ff|               .|    [61]: 255 entry 0x8f-0x8f.7 (1)
+0x90|ff                                             |.               |    [62]: 255 entry 0x90-0x90.7 (1)
+0x90|   ff                                          | .              |    [63]: 255 entry 0x91-0x91.7 (1)
+0x90|      ff                                       |  .             |    [64]: 255 entry 0x92-0x92.7 (1)
+0x90|         ff                                    |   .            |    [65]: 255 entry 0x93-0x93.7 (1)
+0x90|            ff                                 |    .           |    [66]: 255 entry 0x94-0x94.7 (1)
+0x90|               ff                              |     .          |    [67]: 255 entry 0x95-0x95.7 (1)
+0x90|                  ff                           |      .         |    [68]: 255 entry 0x96-0x96.7 (1)
+0x90|                     ff                        |       .        |    [69]: 255 entry 0x97-0x97.7 (1)
+0x90|                        ff                     |        .       |    [70]: 255 entry 0x98-0x98.7 (1)
+0x90|                           ff                  |         .      |    [71]: 255 entry 0x99-0x99.7 (1)
+0x90|                              ff               |          .     |    [72]: 255 entry 0x9a-0x9a.7 (1)
+0x90|                                 ff            |           .    |    [73]: 255 entry 0x9b-0x9b.7 (1)
+0x90|                                    ff         |            .   |    [74]: 255 entry 0x9c-0x9c.7 (1)
+0x90|                                       ff      |             .  |    [75]: 255 entry 0x9d-0x9d.7 (1)
+0x90|                                          ff   |              . |    [76]: 255 entry 0x9e-0x9e.7 (1)
+0x90|                                             ff|               .|    [77]: 255 entry 0x9f-0x9f.7 (1)
+0xa0|ff                                             |.               |    [78]: 255 entry 0xa0-0xa0.7 (1)
+0xa0|   ff                                          | .              |    [79]: 255 entry 0xa1-0xa1.7 (1)
+0xa0|      ff                                       |  .             |    [80]: 255 entry 0xa2-0xa2.7 (1)
+0xa0|         ff                                    |   .            |    [81]: 255 entry 0xa3-0xa3.7 (1)
+0xa0|            ff                                 |    .           |    [82]: 255 entry 0xa4-0xa4.7 (1)
+0xa0|               ff                              |     .          |    [83]: 255 entry 0xa5-0xa5.7 (1)
+0xa0|                  ff                           |      .         |    [84]: 255 entry 0xa6-0xa6.7 (1)
+0xa0|                     ff                        |       .        |    [85]: 255 entry 0xa7-0xa7.7 (1)
+0xa0|                        ff                     |        .       |    [86]: 255 entry 0xa8-0xa8.7 (1)
+0xa0|                           ff                  |         .      |    [87]: 255 entry 0xa9-0xa9.7 (1)
+0xa0|                              ff               |          .     |    [88]: 255 entry 0xaa-0xaa.7 (1)
+0xa0|                                 ff            |           .    |    [89]: 255 entry 0xab-0xab.7 (1)
+0xa0|                                    ff         |            .   |    [90]: 255 entry 0xac-0xac.7 (1)
+0xa0|                                       ff      |             .  |    [91]: 255 entry 0xad-0xad.7 (1)
+0xa0|                                          ff   |              . |    [92]: 255 entry 0xae-0xae.7 (1)
+0xa0|                                             ff|               .|    [93]: 255 entry 0xaf-0xaf.7 (1)
+0xb0|ff                                             |.               |    [94]: 255 entry 0xb0-0xb0.7 (1)
+0xb0|   ff                                          | .              |    [95]: 255 entry 0xb1-0xb1.7 (1)
+0xb0|      ff                                       |  .             |    [96]: 255 entry 0xb2-0xb2.7 (1)
+0xb0|         ff                                    |   .            |    [97]: 255 entry 0xb3-0xb3.7 (1)
+0xb0|            ff                                 |    .           |    [98]: 255 entry 0xb4-0xb4.7 (1)
+0xb0|               ff                              |     .          |    [99]: 255 entry 0xb5-0xb5.7 (1)
+0xb0|                  00 00 00 00                  |      ....      |  quality: 0 0xb6-0xb9.7 (4)
+    |                                               |                |  lame_extension{}: 0xba-0xdd.7 (36)
+0xb0|                              4c 61 76 63 35 38|          Lavc58|    encoder: "Lavc58.91" 0xba-0xc2.7 (9)
+0xc0|2e 39 31                                       |.91             |
+0xc0|         00                                    |   .            |    tag_revision: 0 0xc3-0xc3.3 (0.4)
+0xc0|         00                                    |   .            |    vbr_method: 0 0xc3.4-0xc3.7 (0.4)
+0xc0|            00                                 |    .           |    lowpass_filter: 0 0xc4-0xc4.7 (1)
+0xc0|               00 00 00 00                     |     ....       |    replay_gain_peak: 0 0xc5-0xc8.7 (4)
+0xc0|                           00 00               |         ..     |    radio_replay_gain: 0 0xc9-0xca.7 (2)
+0xc0|                                 00 00         |           ..   |    audiophile_replay_gain: 0 0xcb-0xcc.7 (2)
+0xc0|                                       00      |             .  |    lame_flags: 0 0xcd-0xcd.3 (0.4)
+0xc0|                                       00      |             .  |    lame_ath_type: 0 0xcd.4-0xcd.7 (0.4)
+0xc0|                                          00   |              . |    abr_vbr: 0 0xce-0xce.7 (1)
+0xc0|                                             24|               $|    encoder_delay: 576 0xcf-0xd0.3 (1.4)
+0xd0|05                                             |.               |
+0xd0|05 07                                          |..              |    encoder_padding: 1287 0xd0.4-0xd1.7 (1.4)
+0xd0|      00                                       |  .             |    misc: 0 0xd2-0xd2.7 (1)
+0xd0|         00                                    |   .            |    mp3_gain: 0 0xd3-0xd3.7 (1)
+0xd0|            00 00                              |    ..          |    preset: 0 0xd4-0xd5.7 (2)
+0xd0|                  00 00 02 57                  |      ...W      |    length: 599 0xd6-0xd9.7 (4)
+0xd0|                              62 f0            |          b.    |    music_crc: 25328 0xda-0xdb.7 (2)
+0xd0|                                    5a 35      |            Z5  |    tag_crc: 23093 0xdc-0xdd.7 (2)
+"ddv"
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].xing{}: (xing) 0x42-0xdd.7 (156)
 0x40|      49 6e 66 6f                              |  Info          |  header: "Info" 0x42-0x45.7 (4)
     |                                               |                |  present_flags{}: 0x46-0x49.7 (4)
@@ -428,3 +709,12 @@ $ fq -n '"broken" | mp3 | d'
    |                                               |                |  frames[0:0]:
 0x0|62 72 6f 6b 65 6e|                             |broken|         |  unknown0: raw bits
 # TODO: add root depth test
+# test unicode "│" and column truncate
+$ fq -o unicode=true . test.mp3
+     │00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f│0123456789abcdef│.{}: test.mp3 (mp3)
+0x000│49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00│ID3......#TSSE..│  headers[0:1]:
+*    │until 0x2c.7 (45)                              │                │
+0x020│                                       ff fb 40│             ..@│  frames[0:3]:
+0x030│c0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00│................│
+*    │until 0x283.7 (end) (599)                      │                │
+     │                                               │                │  footers[0:0]:

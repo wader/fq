@@ -10,15 +10,15 @@ import (
 	"io"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 var probeFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.GZIP,
 		Description: "gzip compression",
 		Groups:      []string{format.PROBE},
@@ -36,20 +36,20 @@ var compressionMethodNames = scalar.UToSymStr{
 }
 
 var osNames = scalar.UToSymStr{
-	0:  "FAT filesystem (MS-DOS, OS/2, NT/Win32)",
-	1:  "Amiga",
-	2:  "VMS (or OpenVMS)",
-	3:  "Unix",
-	4:  "VM/CMS",
-	5:  "Atari TOS",
-	6:  "HPFS filesystem (OS/2, NT)",
-	7:  "Macintosh",
-	8:  "Z-System",
-	9:  "CP/M",
-	10: " TOPS-20",
-	11: " NTFS filesystem (NT)",
-	12: " QDOS",
-	13: " Acorn RISCOS",
+	0:  "fat",
+	1:  "amiga",
+	2:  "vms",
+	3:  "unix",
+	4:  "vm_cms",
+	5:  "atari_tOS",
+	6:  "hpfs",
+	7:  "Mmcintosh",
+	8:  "z_system",
+	9:  "cpm",
+	10: "tops_20",
+	11: "ntfs",
+	12: "qdos",
+	13: "acorn_riscos",
 }
 
 var deflateExtraFlagsNames = scalar.UToSymStr{
@@ -57,7 +57,7 @@ var deflateExtraFlagsNames = scalar.UToSymStr{
 	4: "fast",
 }
 
-func gzDecode(d *decode.D, in interface{}) interface{} {
+func gzDecode(d *decode.D, in any) any {
 	d.Endian = decode.LittleEndian
 
 	d.FieldRawLen("identification", 2*8, d.AssertBitBuf([]byte("\x1f\x8b")))
@@ -74,7 +74,7 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 		hasComment = d.FieldBool("comment")
 		d.FieldU3("reserved")
 	})
-	d.FieldU32("mtime") // TODO: unix time
+	d.FieldU32("mtime", scalar.DescriptionActualUUnixTime)
 	switch compressionMethod {
 	case delfateMethod:
 		d.FieldU8("extra_flags", deflateExtraFlagsNames)
@@ -101,21 +101,22 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 	var rFn func(r io.Reader) io.Reader
 	switch compressionMethod {
 	case delfateMethod:
-		// *bitio.Buffer implements io.ByteReader so hat deflate don't do own
+		// bitio.NewIOReadSeeker implements io.ByteReader so that deflate don't do own
 		// buffering and might read more than needed messing up knowing compressed size
 		rFn = func(r io.Reader) io.Reader { return flate.NewReader(r) }
 	}
 
 	if rFn != nil {
-		readCompressedSize, uncompressedBB, dv, _, _ := d.TryFieldReaderRangeFormat("uncompressed", d.Pos(), d.BitsLeft(), rFn, probeFormat, nil)
-		if uncompressedBB != nil {
+		readCompressedSize, uncompressedBR, dv, _, _ := d.TryFieldReaderRangeFormat("uncompressed", d.Pos(), d.BitsLeft(), rFn, probeFormat, nil)
+		if uncompressedBR != nil {
 			if dv == nil {
-				d.FieldRootBitBuf("uncompressed", uncompressedBB)
+				d.FieldRootBitBuf("uncompressed", uncompressedBR)
 			}
 			d.FieldRawLen("compressed", readCompressedSize)
 			crc32W := crc32.NewIEEE()
-			d.MustCopy(crc32W, uncompressedBB.Clone())
-			d.FieldU32("crc32", d.ValidateUBytes(crc32W.Sum(nil)), scalar.Hex)
+			// TODO: cleanup clone
+			d.CopyBits(crc32W, d.CloneReadSeeker(uncompressedBR))
+			d.FieldU32("crc32", d.ValidateUBytes(crc32W.Sum(nil)), scalar.ActualHex)
 			d.FieldU32("isize")
 		}
 	}

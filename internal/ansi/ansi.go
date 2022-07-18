@@ -163,7 +163,7 @@ func (c Code) Wrap(s string) string {
 	return s
 }
 
-type colorFormatter [3]interface{}
+type colorFormatter [3]any
 
 func (cf colorFormatter) Format(state fmt.State, verb rune) {
 	switch verb {
@@ -177,11 +177,11 @@ func (cf colorFormatter) Format(state fmt.State, verb rune) {
 	}
 }
 
-func (c Code) F(s interface{}) fmt.Formatter {
+func (c Code) F(s any) fmt.Formatter {
 	if c.SetString != "" {
-		return colorFormatter([3]interface{}{c.SetString, s, c.ResetString})
+		return colorFormatter([3]any{c.SetString, s, c.ResetString})
 	}
-	return colorFormatter([3]interface{}{s})
+	return colorFormatter([3]any{s})
 }
 
 type colorWriter struct {
@@ -218,4 +218,28 @@ func Len(s string) int {
 		}
 	}
 	return l
+}
+
+// Truncate string to n visible characters.
+// An ANSI reset is added to the end of the string.
+func Truncate(s string, n int) string {
+	l := 0
+	inANSI := false
+	for i, c := range s {
+		if inANSI {
+			if c == 'm' {
+				inANSI = false
+			}
+		} else {
+			if c == '\x1b' {
+				inANSI = true
+			} else {
+				l++
+				if l >= n {
+					return s[0:i+1] + "\x1b[0m"
+				}
+			}
+		}
+	}
+	return s
 }

@@ -5,15 +5,18 @@ hevc_annexb
 hevc_au
 hevc_dcr
 hevc_nalu
+hevc_pps
+hevc_sps
+hevc_vps
 hex
 hexdump
 null> _is_ide\t
 _is_ident
-null> {aa: 123} | var("test")
+null> {aa: 123} | slurp("test")
 null> $\t
 $ENV
 $test
-null> $test.a\t
+null> $test[].a\t
 aa
 null> {bb: 123} as $aa | $aa.b\t
 bb
@@ -29,7 +32,7 @@ aa
 ab
 > object> ^D
 null> ^D
-$ fq -i . /test.mp3
+$ fq -i . test.mp3
 mp3> .f\t
 footers
 frames
@@ -45,6 +48,7 @@ _format_root
 _index
 _len
 _name
+_out
 _parent
 _path
 _root
@@ -56,4 +60,13 @@ mp3> .frames\t
 frames[]
 mp3> .frames[]\t
 .
+mp3> "abc" | tobitsrange.s\t
+size
+start
+stop
+mp3> options.c\t
+color
+colors
+compact
+completion_timeout
 mp3> ^D

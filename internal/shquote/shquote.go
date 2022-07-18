@@ -39,6 +39,8 @@ func Parse(s string) []Token {
 			sb.WriteRune(r)
 			ss = doubleQuote
 			continue
+		default:
+			// nop
 		}
 
 		switch r {
@@ -107,6 +109,8 @@ func Parse(s string) []Token {
 			case whitespace:
 				ss = word
 				start = i
+			default:
+				// nop
 			}
 			sb.WriteRune(r)
 		}
@@ -115,6 +119,8 @@ func Parse(s string) []Token {
 		switch ss {
 		case word, singleQuote, doubleQuote:
 			tokens = append(tokens, Token{Start: start, End: len(s), Str: sb.String()})
+		default:
+			// nop
 		}
 	}
 	tokens = append(tokens, Token{Separator: true})

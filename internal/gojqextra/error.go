@@ -2,14 +2,38 @@ package gojqextra
 
 import (
 	"fmt"
-	"math/big"
+	"strings"
 
 	"github.com/wader/gojq"
 )
 
 // many of these based on errors from gojq
-// TODO: refactor to use errors from gojq?
-// TODO: preview from gojq?
+
+// TODO: figute out a nicer way for internal/external func name in errors
+func funcName(s string) string {
+	if strings.HasPrefix(s, "_") {
+		return s[1:]
+	}
+	return s
+}
+
+type UnaryTypeError struct {
+	Name string
+	V    any
+}
+
+func (err *UnaryTypeError) Error() string {
+	return fmt.Sprintf("cannot %s: %s", funcName(err.Name), TypeErrorPreview(err.V))
+}
+
+type BinopTypeError struct {
+	Name string
+	L, R any
+}
+
+func (err *BinopTypeError) Error() string {
+	return "cannot " + funcName(err.Name) + ": " + TypeErrorPreview(err.L) + " and " + TypeErrorPreview(err.R)
+}
 
 type NonUpdatableTypeError struct {
 	Typ string
@@ -22,10 +46,22 @@ func (err NonUpdatableTypeError) Error() string {
 
 type FuncTypeError struct {
 	Name string
-	V    interface{}
+	V    any
 }
 
-func (err FuncTypeError) Error() string { return err.Name + " cannot be applied to: " + typeof(err.V) }
+func (err FuncTypeError) Error() string {
+	return funcName(err.Name) + " cannot be applied to: " + TypeErrorPreview(err.V)
+}
+
+type FuncArgTypeError struct {
+	Name    string
+	ArgName string
+	V       any
+}
+
+func (err FuncArgTypeError) Error() string {
+	return fmt.Sprintf("%s %s argument cannot be: %s", funcName(err.Name), err.ArgName, TypeErrorPreview(err.V))
+}
 
 type FuncTypeNameError struct {
 	Name string
@@ -33,7 +69,7 @@ type FuncTypeNameError struct {
 }
 
 func (err FuncTypeNameError) Error() string {
-	return err.Name + " cannot be applied to: " + err.Typ
+	return funcName(err.Name) + " cannot be applied to: " + err.Typ
 }
 
 type ExpectedObjectError struct {
@@ -87,30 +123,20 @@ func (err HasKeyTypeError) Error() string {
 }
 
 type ArrayIndexTooLargeError struct {
-	V interface{}
+	V any
 }
 
 func (err *ArrayIndexTooLargeError) Error() string {
 	return fmt.Sprintf("array index too large: %v", err.V)
 }
 
-func typeof(v interface{}) string {
-	switch v := v.(type) {
+func TypeErrorPreview(v interface{}) string {
+	switch v.(type) {
 	case nil:
 		return "null"
-	case bool:
-		return "boolean"
-	case int, float64, *big.Int:
-		return "number"
-	case string:
-		return "string"
-	case []interface{}:
-		return "array"
-	case map[string]interface{}:
-		return "object"
-	case gojq.JQValue:
-		return fmt.Sprintf("JQValue(%s)", v.JQValueType())
+	case gojq.Iter:
+		return "gojq.Iter"
 	default:
-		panic(fmt.Sprintf("invalid value: %v", v))
+		return gojq.TypeOf(v) + " (" + gojq.Preview(v) + ")"
 	}
 }

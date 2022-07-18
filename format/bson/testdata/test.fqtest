@@ -1,0 +1,79 @@
+# https://github.com/dwight/bsontools
+# echo '{array: [1,2,3], object: {key: "value"}, number: 123, string: "abc", true: true, false: false, null: null}' | fromjson test.bson
+$ fq -d bson dv test.bson
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: test.bson (bson) 0x0-0x72.7 (115)
+0x00|73 00 00 00                                    |s...            |  size: 115 0x0-0x3.7 (4)
+    |                                               |                |  elements[0:7]: 0x4-0x71.7 (110)
+    |                                               |                |    [0]{}: element 0x4-0x24.7 (33)
+0x00|            04                                 |    .           |      type: "array" (4) (Array) 0x4-0x4.7 (1)
+0x00|               61 72 72 61 79 00               |     array.     |      name: "array" 0x5-0xa.7 (6)
+    |                                               |                |      value{}: 0xb-0x24.7 (26)
+0x00|                                 1a 00 00 00   |           .... |        size: 26 0xb-0xe.7 (4)
+    |                                               |                |        elements[0:3]: 0xf-0x23.7 (21)
+    |                                               |                |          [0]{}: element 0xf-0x15.7 (7)
+0x00|                                             10|               .|            type: "int32" (16) (32-bit integer) 0xf-0xf.7 (1)
+0x10|30 00                                          |0.              |            name: "0" 0x10-0x11.7 (2)
+0x10|      01 00 00 00                              |  ....          |            value: 1 0x12-0x15.7 (4)
+    |                                               |                |          [1]{}: element 0x16-0x1c.7 (7)
+0x10|                  10                           |      .         |            type: "int32" (16) (32-bit integer) 0x16-0x16.7 (1)
+0x10|                     31 00                     |       1.       |            name: "1" 0x17-0x18.7 (2)
+0x10|                           02 00 00 00         |         ....   |            value: 2 0x19-0x1c.7 (4)
+    |                                               |                |          [2]{}: element 0x1d-0x23.7 (7)
+0x10|                                       10      |             .  |            type: "int32" (16) (32-bit integer) 0x1d-0x1d.7 (1)
+0x10|                                          32 00|              2.|            name: "2" 0x1e-0x1f.7 (2)
+0x20|03 00 00 00                                    |....            |            value: 3 0x20-0x23.7 (4)
+0x20|            00                                 |    .           |        terminator: 0 (valid) 0x24-0x24.7 (1)
+    |                                               |                |    [1]{}: element 0x25-0x40.7 (28)
+0x20|               03                              |     .          |      type: "document" (3) (Embedded document) 0x25-0x25.7 (1)
+0x20|                  6f 62 6a 65 63 74 00         |      object.   |      name: "object" 0x26-0x2c.7 (7)
+    |                                               |                |      value{}: 0x2d-0x40.7 (20)
+0x20|                                       14 00 00|             ...|        size: 20 0x2d-0x30.7 (4)
+0x30|00                                             |.               |
+    |                                               |                |        elements[0:1]: 0x31-0x3f.7 (15)
+    |                                               |                |          [0]{}: element 0x31-0x3f.7 (15)
+0x30|   02                                          | .              |            type: "string" (2) (UTF-8 string) 0x31-0x31.7 (1)
+0x30|      6b 65 79 00                              |  key.          |            name: "key" 0x32-0x35.7 (4)
+0x30|                  06 00 00 00                  |      ....      |            length: 6 0x36-0x39.7 (4)
+0x30|                              76 61 6c 75 65 00|          value.|            value: "value" 0x3a-0x3f.7 (6)
+0x40|00                                             |.               |        terminator: 0 (valid) 0x40-0x40.7 (1)
+    |                                               |                |    [2]{}: element 0x41-0x4c.7 (12)
+0x40|   10                                          | .              |      type: "int32" (16) (32-bit integer) 0x41-0x41.7 (1)
+0x40|      6e 75 6d 62 65 72 00                     |  number.       |      name: "number" 0x42-0x48.7 (7)
+0x40|                           7b 00 00 00         |         {...   |      value: 123 0x49-0x4c.7 (4)
+    |                                               |                |    [3]{}: element 0x4d-0x5c.7 (16)
+0x40|                                       02      |             .  |      type: "string" (2) (UTF-8 string) 0x4d-0x4d.7 (1)
+0x40|                                          73 74|              st|      name: "string" 0x4e-0x54.7 (7)
+0x50|72 69 6e 67 00                                 |ring.           |
+0x50|               04 00 00 00                     |     ....       |      length: 4 0x55-0x58.7 (4)
+0x50|                           61 62 63 00         |         abc.   |      value: "abc" 0x59-0x5c.7 (4)
+    |                                               |                |    [4]{}: element 0x5d-0x63.7 (7)
+0x50|                                       08      |             .  |      type: "boolean" (8) (Boolean) 0x5d-0x5d.7 (1)
+0x50|                                          74 72|              tr|      name: "true" 0x5e-0x62.7 (5)
+0x60|75 65 00                                       |ue.             |
+0x60|         01                                    |   .            |      value: 1 0x63-0x63.7 (1)
+    |                                               |                |    [5]{}: element 0x64-0x6b.7 (8)
+0x60|            08                                 |    .           |      type: "boolean" (8) (Boolean) 0x64-0x64.7 (1)
+0x60|               66 61 6c 73 65 00               |     false.     |      name: "false" 0x65-0x6a.7 (6)
+0x60|                                 00            |           .    |      value: 0 0x6b-0x6b.7 (1)
+    |                                               |                |    [6]{}: element 0x6c-0x71.7 (6)
+0x60|                                    0a         |            .   |      type: "null" (10) (Null value) 0x6c-0x6c.7 (1)
+0x60|                                       6e 75 6c|             nul|      name: "null" 0x6d-0x71.7 (5)
+0x70|6c 00                                          |l.              |
+    |                                               |                |      value: null 0x72-NA (0)
+0x70|      00|                                      |  .|            |  terminator: 0 (valid) 0x72-0x72.7 (1)
+$ fq -d bson torepr test.bson
+{
+  "array": [
+    1,
+    2,
+    3
+  ],
+  "false": false,
+  "null": null,
+  "number": 123,
+  "object": {
+    "key": "value"
+  },
+  "string": "abc",
+  "true": true
+}

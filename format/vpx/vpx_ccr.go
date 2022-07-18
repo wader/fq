@@ -4,19 +4,19 @@ package vpx
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.VPX_CCR,
 		Description: "VPX Codec Configuration Record",
 		DecodeFn:    vpxCCRDecode,
 	})
 }
 
-func vpxCCRDecode(d *decode.D, in interface{}) interface{} {
+func vpxCCRDecode(d *decode.D, in any) any {
 	d.FieldU8("profile")
 	d.FieldU8("level", vpxLevelNames)
 	d.FieldU4("bit_depth")

@@ -15,12 +15,12 @@ exitcode: 123
 $ fq -n invalid
 exitcode: 3
 stderr:
-error: arg:1:0: function not defined: invalid/0
+error: arg: function not defined: invalid/0
 $ fq -n "("
 exitcode: 3
 stderr:
-error: arg:1:2: unexpected token <EOF>
+error: arg:1:1: unexpected EOF
 $ fq . non-existing
 exitcode: 2
 stderr:
-error: open testdata/non-existing: no such file or directory
+error: non-existing: no such file or directory

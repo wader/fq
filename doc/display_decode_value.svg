@@ -1,0 +1,383 @@
+<svg viewBox="0 0 912 160" width="912" height="160" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <style>
+        rect { shape-rendering: crispEdges; }
+        text {
+            dominant-baseline: text-before-edge;
+            white-space: pre;
+            font: 14px monospace;
+            fill: #bbbbbb;
+        }
+        .u { text-decoration: underline; }
+    </style>
+    <rect width="100%" height="100%" x="0" y="0" style="fill: #000000"/>
+    <text x="0" y="0">$</text>
+    <text x="16" y="0">f</text>
+    <text x="24" y="0">q</text>
+    <text x="40" y="0">&#39;</text>
+    <text x="48" y="0">f</text>
+    <text x="56" y="0">i</text>
+    <text x="64" y="0">r</text>
+    <text x="72" y="0">s</text>
+    <text x="80" y="0">t</text>
+    <text x="88" y="0">(</text>
+    <text x="96" y="0">g</text>
+    <text x="104" y="0">r</text>
+    <text x="112" y="0">e</text>
+    <text x="120" y="0">p</text>
+    <text x="128" y="0">_</text>
+    <text x="136" y="0">b</text>
+    <text x="144" y="0">y</text>
+    <text x="152" y="0">(</text>
+    <text x="160" y="0">.</text>
+    <text x="168" y="0">t</text>
+    <text x="176" y="0">y</text>
+    <text x="184" y="0">p</text>
+    <text x="192" y="0">e</text>
+    <text x="208" y="0">=</text>
+    <text x="216" y="0">=</text>
+    <text x="232" y="0">&#34;</text>
+    <text x="240" y="0">e</text>
+    <text x="248" y="0">l</text>
+    <text x="256" y="0">s</text>
+    <text x="264" y="0">t</text>
+    <text x="272" y="0">&#34;</text>
+    <text x="280" y="0">)</text>
+    <text x="288" y="0">)</text>
+    <text x="296" y="0">&#39;</text>
+    <text x="312" y="0">f</text>
+    <text x="320" y="0">i</text>
+    <text x="328" y="0">l</text>
+    <text x="336" y="0">e</text>
+    <text x="344" y="0">.</text>
+    <text x="352" y="0">m</text>
+    <text x="360" y="0">p</text>
+    <text x="368" y="0">4</text>
+    <text x="40" y="16">│</text>
+    <text x="48" y="16" style="fill: #bbbb00" class="u">0</text>
+    <text x="56" y="16" style="fill: #bbbb00" class="u">0</text>
+    <text x="64" y="16" style="fill: #bbbb00" class="u"> </text>
+    <text x="72" y="16" style="fill: #bbbb00" class="u">0</text>
+    <text x="80" y="16" style="fill: #bbbb00" class="u">1</text>
+    <text x="88" y="16" style="fill: #bbbb00" class="u"> </text>
+    <text x="96" y="16" style="fill: #bbbb00" class="u">0</text>
+    <text x="104" y="16" style="fill: #bbbb00" class="u">2</text>
+    <text x="112" y="16" style="fill: #bbbb00" class="u"> </text>
+    <text x="120" y="16" style="fill: #bbbb00" class="u">0</text>
+    <text x="128" y="16" style="fill: #bbbb00" class="u">3</text>
+    <text x="136" y="16" style="fill: #bbbb00" class="u"> </text>
+    <text x="144" y="16" style="fill: #bbbb00" class="u">0</text>
+    <text x="152" y="16" style="fill: #bbbb00" class="u">4</text>
+    <text x="160" y="16" style="fill: #bbbb00" class="u"> </text>
+    <text x="168" y="16" style="fill: #bbbb00" class="u">0</text>
+    <text x="176" y="16" style="fill: #bbbb00" class="u">5</text>
+    <text x="184" y="16" style="fill: #bbbb00" class="u"> </text>
+    <text x="192" y="16" style="fill: #bbbb00" class="u">0</text>
+    <text x="200" y="16" style="fill: #bbbb00" class="u">6</text>
+    <text x="208" y="16" style="fill: #bbbb00" class="u"> </text>
+    <text x="216" y="16" style="fill: #bbbb00" class="u">0</text>
+    <text x="224" y="16" style="fill: #bbbb00" class="u">7</text>
+    <text x="232" y="16" style="fill: #bbbb00" class="u"> </text>
+    <text x="240" y="16" style="fill: #bbbb00" class="u">0</text>
+    <text x="248" y="16" style="fill: #bbbb00" class="u">8</text>
+    <text x="256" y="16" style="fill: #bbbb00" class="u"> </text>
+    <text x="264" y="16" style="fill: #bbbb00" class="u">0</text>
+    <text x="272" y="16" style="fill: #bbbb00" class="u">9</text>
+    <text x="280" y="16" style="fill: #bbbb00" class="u"> </text>
+    <text x="288" y="16" style="fill: #bbbb00" class="u">0</text>
+    <text x="296" y="16" style="fill: #bbbb00" class="u">a</text>
+    <text x="304" y="16" style="fill: #bbbb00" class="u"> </text>
+    <text x="312" y="16" style="fill: #bbbb00" class="u">0</text>
+    <text x="320" y="16" style="fill: #bbbb00" class="u">b</text>
+    <text x="328" y="16" style="fill: #bbbb00" class="u"> </text>
+    <text x="336" y="16" style="fill: #bbbb00" class="u">0</text>
+    <text x="344" y="16" style="fill: #bbbb00" class="u">c</text>
+    <text x="352" y="16" style="fill: #bbbb00" class="u"> </text>
+    <text x="360" y="16" style="fill: #bbbb00" class="u">0</text>
+    <text x="368" y="16" style="fill: #bbbb00" class="u">d</text>
+    <text x="376" y="16" style="fill: #bbbb00" class="u"> </text>
+    <text x="384" y="16" style="fill: #bbbb00" class="u">0</text>
+    <text x="392" y="16" style="fill: #bbbb00" class="u">e</text>
+    <text x="400" y="16" style="fill: #bbbb00" class="u"> </text>
+    <text x="408" y="16" style="fill: #bbbb00" class="u">0</text>
+    <text x="416" y="16" style="fill: #bbbb00" class="u">f</text>
+    <text x="424" y="16">│</text>
+    <text x="432" y="16" style="fill: #bbbb00" class="u">0</text>
+    <text x="440" y="16" style="fill: #bbbb00" class="u">1</text>
+    <text x="448" y="16" style="fill: #bbbb00" class="u">2</text>
+    <text x="456" y="16" style="fill: #bbbb00" class="u">3</text>
+    <text x="464" y="16" style="fill: #bbbb00" class="u">4</text>
+    <text x="472" y="16" style="fill: #bbbb00" class="u">5</text>
+    <text x="480" y="16" style="fill: #bbbb00" class="u">6</text>
+    <text x="488" y="16" style="fill: #bbbb00" class="u">7</text>
+    <text x="496" y="16" style="fill: #bbbb00" class="u">8</text>
+    <text x="504" y="16" style="fill: #bbbb00" class="u">9</text>
+    <text x="512" y="16" style="fill: #bbbb00" class="u">a</text>
+    <text x="520" y="16" style="fill: #bbbb00" class="u">b</text>
+    <text x="528" y="16" style="fill: #bbbb00" class="u">c</text>
+    <text x="536" y="16" style="fill: #bbbb00" class="u">d</text>
+    <text x="544" y="16" style="fill: #bbbb00" class="u">e</text>
+    <text x="552" y="16" style="fill: #bbbb00" class="u">f</text>
+    <text x="560" y="16">│</text>
+    <text x="568" y="16">.</text>
+    <text x="576" y="16" style="fill: #5555ff">b</text>
+    <text x="584" y="16" style="fill: #5555ff">o</text>
+    <text x="592" y="16" style="fill: #5555ff">x</text>
+    <text x="600" y="16" style="fill: #5555ff">e</text>
+    <text x="608" y="16" style="fill: #5555ff">s</text>
+    <text x="616" y="16">[</text>
+    <text x="624" y="16" style="fill: #00bbbb">3</text>
+    <text x="632" y="16">]</text>
+    <text x="640" y="16">.</text>
+    <text x="648" y="16" style="fill: #5555ff">b</text>
+    <text x="656" y="16" style="fill: #5555ff">o</text>
+    <text x="664" y="16" style="fill: #5555ff">x</text>
+    <text x="672" y="16" style="fill: #5555ff">e</text>
+    <text x="680" y="16" style="fill: #5555ff">s</text>
+    <text x="688" y="16">[</text>
+    <text x="696" y="16" style="fill: #00bbbb">1</text>
+    <text x="704" y="16">]</text>
+    <text x="712" y="16">.</text>
+    <text x="720" y="16" style="fill: #5555ff">b</text>
+    <text x="728" y="16" style="fill: #5555ff">o</text>
+    <text x="736" y="16" style="fill: #5555ff">x</text>
+    <text x="744" y="16" style="fill: #5555ff">e</text>
+    <text x="752" y="16" style="fill: #5555ff">s</text>
+    <text x="760" y="16">[</text>
+    <text x="768" y="16" style="fill: #00bbbb">1</text>
+    <text x="776" y="16">]</text>
+    <text x="784" y="16">.</text>
+    <text x="792" y="16" style="fill: #5555ff">b</text>
+    <text x="800" y="16" style="fill: #5555ff">o</text>
+    <text x="808" y="16" style="fill: #5555ff">x</text>
+    <text x="816" y="16" style="fill: #5555ff">e</text>
+    <text x="824" y="16" style="fill: #5555ff">s</text>
+    <text x="832" y="16">[</text>
+    <text x="840" y="16" style="fill: #00bbbb">0</text>
+    <text x="848" y="16">]</text>
+    <text x="856" y="16">{</text>
+    <text x="864" y="16">}</text>
+    <text x="872" y="16">:</text>
+    <text x="888" y="16">b</text>
+    <text x="896" y="16">o</text>
+    <text x="904" y="16">x</text>
+    <text x="0" y="32" style="fill: #bbbb00">0</text>
+    <text x="8" y="32" style="fill: #bbbb00">x</text>
+    <text x="16" y="32" style="fill: #bbbb00">d</text>
+    <text x="24" y="32" style="fill: #bbbb00">6</text>
+    <text x="32" y="32" style="fill: #bbbb00">0</text>
+    <text x="40" y="32">│</text>
+    <text x="168" y="32" style="fill: #555555">0</text>
+    <text x="176" y="32" style="fill: #555555">0</text>
+    <text x="192" y="32" style="fill: #555555">0</text>
+    <text x="200" y="32" style="fill: #555555">0</text>
+    <text x="216" y="32" style="fill: #555555">0</text>
+    <text x="224" y="32" style="fill: #555555">0</text>
+    <text x="240" y="32" style="fill: #ffffff">1</text>
+    <text x="248" y="32" style="fill: #ffffff">c</text>
+    <text x="424" y="32">│</text>
+    <text x="472" y="32" style="fill: #555555">.</text>
+    <text x="480" y="32" style="fill: #555555">.</text>
+    <text x="488" y="32" style="fill: #555555">.</text>
+    <text x="496" y="32" style="fill: #ffffff">.</text>
+    <text x="560" y="32">│</text>
+    <text x="584" y="32" style="fill: #5555ff">s</text>
+    <text x="592" y="32" style="fill: #5555ff">i</text>
+    <text x="600" y="32" style="fill: #5555ff">z</text>
+    <text x="608" y="32" style="fill: #5555ff">e</text>
+    <text x="616" y="32">:</text>
+    <text x="632" y="32" style="fill: #00bbbb">2</text>
+    <text x="640" y="32" style="fill: #00bbbb">8</text>
+    <text x="0" y="48" style="fill: #bbbb00">0</text>
+    <text x="8" y="48" style="fill: #bbbb00">x</text>
+    <text x="16" y="48" style="fill: #bbbb00">d</text>
+    <text x="24" y="48" style="fill: #bbbb00">6</text>
+    <text x="32" y="48" style="fill: #bbbb00">0</text>
+    <text x="40" y="48">│</text>
+    <text x="264" y="48">6</text>
+    <text x="272" y="48">5</text>
+    <text x="288" y="48">6</text>
+    <text x="296" y="48">c</text>
+    <text x="312" y="48">7</text>
+    <text x="320" y="48">3</text>
+    <text x="336" y="48">7</text>
+    <text x="344" y="48">4</text>
+    <text x="424" y="48">│</text>
+    <text x="504" y="48">e</text>
+    <text x="512" y="48">l</text>
+    <text x="520" y="48">s</text>
+    <text x="528" y="48">t</text>
+    <text x="560" y="48">│</text>
+    <text x="584" y="48" style="fill: #5555ff">t</text>
+    <text x="592" y="48" style="fill: #5555ff">y</text>
+    <text x="600" y="48" style="fill: #5555ff">p</text>
+    <text x="608" y="48" style="fill: #5555ff">e</text>
+    <text x="616" y="48">:</text>
+    <text x="632" y="48" style="fill: #00bb00">&#34;</text>
+    <text x="640" y="48" style="fill: #00bb00">e</text>
+    <text x="648" y="48" style="fill: #00bb00">l</text>
+    <text x="656" y="48" style="fill: #00bb00">s</text>
+    <text x="664" y="48" style="fill: #00bb00">t</text>
+    <text x="672" y="48" style="fill: #00bb00">&#34;</text>
+    <text x="688" y="48">(</text>
+    <text x="696" y="48">A</text>
+    <text x="704" y="48">n</text>
+    <text x="720" y="48">e</text>
+    <text x="728" y="48">d</text>
+    <text x="736" y="48">i</text>
+    <text x="744" y="48">t</text>
+    <text x="760" y="48">l</text>
+    <text x="768" y="48">i</text>
+    <text x="776" y="48">s</text>
+    <text x="784" y="48">t</text>
+    <text x="792" y="48">)</text>
+    <text x="0" y="64" style="fill: #bbbb00">0</text>
+    <text x="8" y="64" style="fill: #bbbb00">x</text>
+    <text x="16" y="64" style="fill: #bbbb00">d</text>
+    <text x="24" y="64" style="fill: #bbbb00">6</text>
+    <text x="32" y="64" style="fill: #bbbb00">0</text>
+    <text x="40" y="64">│</text>
+    <text x="360" y="64" style="fill: #555555">0</text>
+    <text x="368" y="64" style="fill: #555555">0</text>
+    <text x="424" y="64">│</text>
+    <text x="536" y="64" style="fill: #555555">.</text>
+    <text x="560" y="64">│</text>
+    <text x="584" y="64" style="fill: #5555ff">v</text>
+    <text x="592" y="64" style="fill: #5555ff">e</text>
+    <text x="600" y="64" style="fill: #5555ff">r</text>
+    <text x="608" y="64" style="fill: #5555ff">s</text>
+    <text x="616" y="64" style="fill: #5555ff">i</text>
+    <text x="624" y="64" style="fill: #5555ff">o</text>
+    <text x="632" y="64" style="fill: #5555ff">n</text>
+    <text x="640" y="64">:</text>
+    <text x="656" y="64" style="fill: #00bbbb">0</text>
+    <text x="0" y="80" style="fill: #bbbb00">0</text>
+    <text x="8" y="80" style="fill: #bbbb00">x</text>
+    <text x="16" y="80" style="fill: #bbbb00">d</text>
+    <text x="24" y="80" style="fill: #bbbb00">6</text>
+    <text x="32" y="80" style="fill: #bbbb00">0</text>
+    <text x="40" y="80">│</text>
+    <text x="384" y="80" style="fill: #555555">0</text>
+    <text x="392" y="80" style="fill: #555555">0</text>
+    <text x="408" y="80" style="fill: #555555">0</text>
+    <text x="416" y="80" style="fill: #555555">0</text>
+    <text x="424" y="80">│</text>
+    <text x="544" y="80" style="fill: #555555">.</text>
+    <text x="552" y="80" style="fill: #555555">.</text>
+    <text x="560" y="80">│</text>
+    <text x="584" y="80" style="fill: #5555ff">f</text>
+    <text x="592" y="80" style="fill: #5555ff">l</text>
+    <text x="600" y="80" style="fill: #5555ff">a</text>
+    <text x="608" y="80" style="fill: #5555ff">g</text>
+    <text x="616" y="80" style="fill: #5555ff">s</text>
+    <text x="624" y="80">:</text>
+    <text x="640" y="80" style="fill: #00bbbb">0</text>
+    <text x="0" y="96" style="fill: #bbbb00">0</text>
+    <text x="8" y="96" style="fill: #bbbb00">x</text>
+    <text x="16" y="96" style="fill: #bbbb00">d</text>
+    <text x="24" y="96" style="fill: #bbbb00">7</text>
+    <text x="32" y="96" style="fill: #bbbb00">0</text>
+    <text x="40" y="96">│</text>
+    <text x="48" y="96" style="fill: #555555">0</text>
+    <text x="56" y="96" style="fill: #555555">0</text>
+    <text x="424" y="96">│</text>
+    <text x="432" y="96" style="fill: #555555">.</text>
+    <text x="560" y="96">│</text>
+    <text x="0" y="112" style="fill: #bbbb00">0</text>
+    <text x="8" y="112" style="fill: #bbbb00">x</text>
+    <text x="16" y="112" style="fill: #bbbb00">d</text>
+    <text x="24" y="112" style="fill: #bbbb00">7</text>
+    <text x="32" y="112" style="fill: #bbbb00">0</text>
+    <text x="40" y="112">│</text>
+    <text x="72" y="112" style="fill: #555555">0</text>
+    <text x="80" y="112" style="fill: #555555">0</text>
+    <text x="96" y="112" style="fill: #555555">0</text>
+    <text x="104" y="112" style="fill: #555555">0</text>
+    <text x="120" y="112" style="fill: #555555">0</text>
+    <text x="128" y="112" style="fill: #555555">0</text>
+    <text x="144" y="112" style="fill: #ffffff">0</text>
+    <text x="152" y="112" style="fill: #ffffff">1</text>
+    <text x="424" y="112">│</text>
+    <text x="440" y="112" style="fill: #555555">.</text>
+    <text x="448" y="112" style="fill: #555555">.</text>
+    <text x="456" y="112" style="fill: #555555">.</text>
+    <text x="464" y="112" style="fill: #ffffff">.</text>
+    <text x="560" y="112">│</text>
+    <text x="584" y="112" style="fill: #5555ff">e</text>
+    <text x="592" y="112" style="fill: #5555ff">n</text>
+    <text x="600" y="112" style="fill: #5555ff">t</text>
+    <text x="608" y="112" style="fill: #5555ff">r</text>
+    <text x="616" y="112" style="fill: #5555ff">y</text>
+    <text x="624" y="112" style="fill: #5555ff">_</text>
+    <text x="632" y="112" style="fill: #5555ff">c</text>
+    <text x="640" y="112" style="fill: #5555ff">o</text>
+    <text x="648" y="112" style="fill: #5555ff">u</text>
+    <text x="656" y="112" style="fill: #5555ff">n</text>
+    <text x="664" y="112" style="fill: #5555ff">t</text>
+    <text x="672" y="112">:</text>
+    <text x="688" y="112" style="fill: #00bbbb">1</text>
+    <text x="0" y="128" style="fill: #bbbb00">0</text>
+    <text x="8" y="128" style="fill: #bbbb00">x</text>
+    <text x="16" y="128" style="fill: #bbbb00">d</text>
+    <text x="24" y="128" style="fill: #bbbb00">7</text>
+    <text x="32" y="128" style="fill: #bbbb00">0</text>
+    <text x="40" y="128">│</text>
+    <text x="168" y="128" style="fill: #555555">0</text>
+    <text x="176" y="128" style="fill: #555555">0</text>
+    <text x="192" y="128" style="fill: #555555">0</text>
+    <text x="200" y="128" style="fill: #555555">0</text>
+    <text x="216" y="128" style="fill: #555555">0</text>
+    <text x="224" y="128" style="fill: #555555">0</text>
+    <text x="240" y="128">2</text>
+    <text x="248" y="128">8</text>
+    <text x="264" y="128" style="fill: #555555">0</text>
+    <text x="272" y="128" style="fill: #555555">0</text>
+    <text x="288" y="128" style="fill: #555555">0</text>
+    <text x="296" y="128" style="fill: #555555">0</text>
+    <text x="312" y="128" style="fill: #555555">0</text>
+    <text x="320" y="128" style="fill: #555555">0</text>
+    <text x="336" y="128" style="fill: #555555">0</text>
+    <text x="344" y="128" style="fill: #555555">0</text>
+    <text x="360" y="128" style="fill: #555555">0</text>
+    <text x="368" y="128" style="fill: #555555">0</text>
+    <text x="384" y="128" style="fill: #ffffff">0</text>
+    <text x="392" y="128" style="fill: #ffffff">1</text>
+    <text x="408" y="128" style="fill: #555555">0</text>
+    <text x="416" y="128" style="fill: #555555">0</text>
+    <text x="424" y="128">│</text>
+    <text x="472" y="128" style="fill: #555555">.</text>
+    <text x="480" y="128" style="fill: #555555">.</text>
+    <text x="488" y="128" style="fill: #555555">.</text>
+    <text x="496" y="128">(</text>
+    <text x="504" y="128" style="fill: #555555">.</text>
+    <text x="512" y="128" style="fill: #555555">.</text>
+    <text x="520" y="128" style="fill: #555555">.</text>
+    <text x="528" y="128" style="fill: #555555">.</text>
+    <text x="536" y="128" style="fill: #555555">.</text>
+    <text x="544" y="128" style="fill: #ffffff">.</text>
+    <text x="552" y="128" style="fill: #555555">.</text>
+    <text x="560" y="128">│</text>
+    <text x="584" y="128" style="fill: #5555ff">e</text>
+    <text x="592" y="128" style="fill: #5555ff">n</text>
+    <text x="600" y="128" style="fill: #5555ff">t</text>
+    <text x="608" y="128" style="fill: #5555ff">r</text>
+    <text x="616" y="128" style="fill: #5555ff">i</text>
+    <text x="624" y="128" style="fill: #5555ff">e</text>
+    <text x="632" y="128" style="fill: #5555ff">s</text>
+    <text x="640" y="128">[</text>
+    <text x="648" y="128" style="fill: #00bbbb">0</text>
+    <text x="656" y="128">:</text>
+    <text x="664" y="128" style="fill: #00bbbb">1</text>
+    <text x="672" y="128">]</text>
+    <text x="680" y="128">:</text>
+    <text x="0" y="144" style="fill: #bbbb00">0</text>
+    <text x="8" y="144" style="fill: #bbbb00">x</text>
+    <text x="16" y="144" style="fill: #bbbb00">d</text>
+    <text x="24" y="144" style="fill: #bbbb00">8</text>
+    <text x="32" y="144" style="fill: #bbbb00">0</text>
+    <text x="40" y="144">│</text>
+    <text x="48" y="144" style="fill: #555555">0</text>
+    <text x="56" y="144" style="fill: #555555">0</text>
+    <text x="424" y="144">│</text>
+    <text x="432" y="144" style="fill: #555555">.</text>
+    <text x="560" y="144">│</text>
+</svg>

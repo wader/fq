@@ -9,30 +9,37 @@ For more information see https://github.com/wader/fq
 
 Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 
---arg NAME VALUE         Set variable $NAME to string VALUE
---argjson NAME JSON      Set variable $NAME to JSON
---color-output,-C        Force color output
---compact-output,-c      Compact output
---decode,-d NAME         Decode format (probe)
---decode-file NAME PATH  Set variable $NAME to decode of file
---formats                Show supported formats
---from-file,-f PATH      Read EXPR from file
---help,-h                Show help
---include-path,-L PATH   Include search path
---join-output,-j         No newline between outputs
---monochrome-output,-M   Force monochrome output
---null-input,-n          Null input (use input/0 and inputs/0 to read input)
---null-output,-0         Null byte between outputs
---option,-o KEY=VALUE    Set option, eg: color=true (use options/0 to see all options)
---raw-file NAME PATH     Set variable $NAME to string content of file
---raw-input,-R           Read raw input strings (don't decode)
---raw-output,-r          Raw string output (without quotes)
---repl,-i                Interactive REPL
---slurp,-s               Read (slurp) all inputs into an array
---version,-v             Show version
+Example usages:
+  fq . file
+  fq d file
+  fq tovalue file
+  cat file.cbor | fq -d cbor torepr
+  fq 'grep("^main$") | parent' /bin/ls
+  fq 'grep_by(format == "exif") | d' *.png *.jpeg
+
+--arg NAME VALUE        Set variable $NAME to string VALUE
+--argdecode NAME PATH   Set variable $NAME to decode of PATH
+--argjson NAME JSON     Set variable $NAME to JSON
+--color-output,-C       Force color output
+--compact-output,-c     Compact output
+--decode,-d NAME        Decode format (probe)
+--from-file,-f PATH     Read EXPR from file
+--help,-h [TOPIC]       Show help for TOPIC (ex: --help, --help formats)
+--include-path,-L PATH  Include search path
+--join-output,-j        No newline between outputs
+--monochrome-output,-M  Force monochrome output
+--null-input,-n         Null input (use input and inputs functions to read)
+--null-output,-0        Null byte between outputs
+--option,-o KEY=VALUE   Set option (ex: -o color=true, see --help options)
+--raw-file NAME PATH    Set variable $NAME to string content of file
+--raw-input,-R          Read raw input strings (don't decode)
+--raw-output,-r         Raw string output (without quotes)
+--repl,-i               Interactive REPL
+--slurp,-s              Read (slurp) all inputs into an array
+--version,-v            Show version
 $ fq -i
 null> ^D
-$ fq -i . /test.mp3
+$ fq -i . test.mp3
 mp3> ^D
 $ fq -n
 null
@@ -50,11 +57,51 @@ $ fq -n "[1,2,3]"
 ]
 $ fq -nc "[1,2,3]"
 [1,2,3]
-$ fq --formats
+$ fq --help options
+addrbase            16
+arg                 []
+argdecode           []
+argjson             []
+array_truncate      50
+bits_format         snippet
+byte_colors         0-255=brightwhite,0=brightblack,32-126:9-13=white
+color               false
+colors              array=white,dumpaddr=yellow,dumpheader=yellow+underline,error=brightred,false=yellow,index=white,null=brightblack,number=cyan,object=white,objectkey=brightblue,prompt_repl_level=brightblack,prompt_value=white,string=green,true=yellow,value=white
+compact             false
+completion_timeout  10
+decode_format       probe
+decode_progress     false
+depth               0
+display_bytes       16
+expr                .
+expr_eval_path      arg
+expr_file           
+filenames           [null]
+force               false
+include_path        
+join_string         \n
+line_bytes          16
+null_input          false
+raw_file            []
+raw_output          false
+raw_string          false
+repl                false
+show_formats        false
+show_help           options
+sizebase            10
+slurp               false
+string_input        false
+unicode             false
+verbose             false
+width               135
+$ fq --help formats
 aac_frame            Advanced Audio Coding frame
 adts                 Audio Data Transport Stream
 adts_frame           Audio Data Transport Stream frame
+amf0                 Action Message Format 0
 apev2                APEv2 metadata tag
+ar                   Unix archive
+asn1_ber             ASN1 BER (basic encoding rules, also CER and DER)
 av1_ccr              AV1 Codec Configuration Record
 av1_frame            AV1 frame
 av1_obu              AV1 Open Bitstream Unit
@@ -65,12 +112,22 @@ avc_nalu             H.264/AVC Network Access Layer Unit
 avc_pps              H.264/AVC Picture Parameter Set
 avc_sei              H.264/AVC Supplemental Enhancement Information
 avc_sps              H.264/AVC Sequence Parameter Set
+avro_ocf             Avro object container file
+bencode              BitTorrent bencoding
+bitcoin_blkdat       Bitcoin blk.dat
+bitcoin_block        Bitcoin block
+bitcoin_script       Bitcoin script
+bitcoin_transaction  Bitcoin transaction
+bsd_loopback_frame   BSD loopback frame
+bson                 Binary JSON
 bzip2                bzip2 compression
+cbor                 Concise Binary Object Representation
 dns                  DNS packet
 dns_tcp              DNS packet (TCP)
 elf                  Executable and Linkable Format
 ether8023_frame      Ethernet 802.3 frame
 exif                 Exchangeable Image File Format
+fairplay_spc         FairPlay Server Playback Context
 flac                 Free Lossless Audio Codec file
 flac_frame           FLAC frame
 flac_metadatablock   FLAC metadatablock
@@ -83,24 +140,31 @@ hevc_annexb          H.265/HEVC Annex B
 hevc_au              H.265/HEVC Access Unit
 hevc_dcr             H.265/HEVC Decoder Configuration Record
 hevc_nalu            H.265/HEVC Network Access Layer Unit
+hevc_pps             H.265/HEVC Picture Parameter Set
+hevc_sps             H.265/HEVC Sequence Parameter Set
+hevc_vps             H.265/HEVC Video Parameter Set
 icc_profile          International Color Consortium profile
 icmp                 Internet Control Message Protocol
+icmpv6               Internet Control Message Protocol v6
 id3v1                ID3v1 metadata
 id3v11               ID3v1.1 metadata
 id3v2                ID3v2 metadata
 ipv4_packet          Internet protocol v4 packet
+ipv6_packet          Internet protocol v6 packet
 jpeg                 Joint Photographic Experts Group file
 json                 JSON
+macho                Mach-O macOS executable
 matroska             Matroska file
 mp3                  MP3 file
 mp3_frame            MPEG audio layer 3 frame
-mp4                  MPEG-4 file and similar
+mp4                  ISOBMFF MPEG-4 part 12 and similar
 mpeg_asc             MPEG-4 Audio Specific Config
 mpeg_es              MPEG Elementary Stream
 mpeg_pes             MPEG Packetized elementary stream
 mpeg_pes_packet      MPEG Packetized elementary stream packet
 mpeg_spu             Sub Picture Unit (DVD subtitle)
 mpeg_ts              MPEG Transport Stream
+msgpack              MessagePack
 ogg                  OGG file
 ogg_page             OGG page
 opus_packet          Opus packet
@@ -111,6 +175,7 @@ protobuf             Protobuf
 protobuf_widevine    Widevine protobuf
 pssh_playready       PlayReady PSSH
 raw                  Raw bits
+rtmp                 Real-Time Messaging Protocol
 sll2_packet          Linux cooked capture encapsulation v2
 sll_packet           Linux cooked capture encapsulation
 tar                  Tar archive

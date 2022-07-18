@@ -1,4 +1,9 @@
 # TODO: various gojq fq fork regression tests, should probably be move to fork code instead
+# 0xf_ffff_ffff_fffff_fffff-1 | toradix(2,8,16)
+$ fq -n '0b1111111111111111111111111111111111111111111111111111111111111111111111111110, 0o17777777777777777777777776, 0xffffffffffffffffffe'
+75557863725914323419134
+75557863725914323419134
+75557863725914323419134
 $ fq -n '[true] | all'
 true
 $ fq -n '{a:1, b: 2} | tostream'
@@ -19,32 +24,32 @@ $ fq -n '{a:1, b: 2} | tostream'
     "b"
   ]
 ]
-$ fq -d mp3 '{(.headers[0].magic): 123}' /test.mp3
+$ fq -d mp3 '{(.headers[0].magic): 123}' test.mp3
 {
   "ID3": 123
 }
-$ fq -d mp3 '{(.headers[0].magic): 123}' /test.mp3
+$ fq -d mp3 '{(.headers[0].magic): 123}' test.mp3
 {
   "ID3": 123
 }
-$ fq -d mp3 '.frames | group_by(.side_info | {b: .main_data_end}) | map(length)' /test.mp3
+$ fq -d mp3 '.frames | group_by(.side_info | {b: .main_data_end}) | map(length)' test.mp3
 [
   2,
   1
 ]
-$ fq -d mp3 '.frames | map(.header) | group_by(.bitrate)' /test.mp3
+$ fq -d mp3 '.frames | map(.header) | group_by(.bitrate)' test.mp3
 [
   [
     {
       "bitrate": 56000,
-      "channel_mode": "None",
-      "channels": "Mono",
+      "channel_mode": "none",
+      "channels": "mono",
       "copyright": 0,
-      "emphasis": "None",
+      "emphasis": "none",
       "layer": 3,
       "mpeg_version": "1",
       "original": 0,
-      "padding": "Not padded",
+      "padding": "not_padded",
       "private": 0,
       "protection_absent": true,
       "sample_count": 1152,
@@ -55,14 +60,14 @@ $ fq -d mp3 '.frames | map(.header) | group_by(.bitrate)' /test.mp3
   [
     {
       "bitrate": 64000,
-      "channel_mode": "None",
-      "channels": "Mono",
+      "channel_mode": "none",
+      "channels": "mono",
       "copyright": 0,
-      "emphasis": "None",
+      "emphasis": "none",
       "layer": 3,
       "mpeg_version": "1",
       "original": 1,
-      "padding": "Not padded",
+      "padding": "not_padded",
       "private": 0,
       "protection_absent": true,
       "sample_count": 1152,
@@ -71,14 +76,14 @@ $ fq -d mp3 '.frames | map(.header) | group_by(.bitrate)' /test.mp3
     },
     {
       "bitrate": 64000,
-      "channel_mode": "None",
-      "channels": "Mono",
+      "channel_mode": "none",
+      "channels": "mono",
       "copyright": 0,
-      "emphasis": "None",
+      "emphasis": "none",
       "layer": 3,
       "mpeg_version": "1",
       "original": 1,
-      "padding": "Padded",
+      "padding": "padded",
       "private": 0,
       "protection_absent": true,
       "sample_count": 1152,
@@ -87,18 +92,18 @@ $ fq -d mp3 '.frames | map(.header) | group_by(.bitrate)' /test.mp3
     }
   ]
 ]
-$ fq -d mp3 '.frames | map(.header) | sort_by(.bitrate)' /test.mp3
+$ fq -d mp3 '.frames | map(.header) | sort_by(.bitrate)' test.mp3
 [
   {
     "bitrate": 56000,
-    "channel_mode": "None",
-    "channels": "Mono",
+    "channel_mode": "none",
+    "channels": "mono",
     "copyright": 0,
-    "emphasis": "None",
+    "emphasis": "none",
     "layer": 3,
     "mpeg_version": "1",
     "original": 0,
-    "padding": "Not padded",
+    "padding": "not_padded",
     "private": 0,
     "protection_absent": true,
     "sample_count": 1152,
@@ -107,14 +112,14 @@ $ fq -d mp3 '.frames | map(.header) | sort_by(.bitrate)' /test.mp3
   },
   {
     "bitrate": 64000,
-    "channel_mode": "None",
-    "channels": "Mono",
+    "channel_mode": "none",
+    "channels": "mono",
     "copyright": 0,
-    "emphasis": "None",
+    "emphasis": "none",
     "layer": 3,
     "mpeg_version": "1",
     "original": 1,
-    "padding": "Not padded",
+    "padding": "not_padded",
     "private": 0,
     "protection_absent": true,
     "sample_count": 1152,
@@ -123,14 +128,14 @@ $ fq -d mp3 '.frames | map(.header) | sort_by(.bitrate)' /test.mp3
   },
   {
     "bitrate": 64000,
-    "channel_mode": "None",
-    "channels": "Mono",
+    "channel_mode": "none",
+    "channels": "mono",
     "copyright": 0,
-    "emphasis": "None",
+    "emphasis": "none",
     "layer": 3,
     "mpeg_version": "1",
     "original": 1,
-    "padding": "Padded",
+    "padding": "padded",
     "private": 0,
     "protection_absent": true,
     "sample_count": 1152,
@@ -138,7 +143,7 @@ $ fq -d mp3 '.frames | map(.header) | sort_by(.bitrate)' /test.mp3
     "sync": 2047
   }
 ]
-$ fq -d mp3 '.frames | map(.header) | sort_by(.bitrate)[0]' /test.mp3
+$ fq -d mp3 '.frames | map(.header) | sort_by(.bitrate)[0]' test.mp3
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].header{}:
 0x20|                                       ff fb   |             .. |  sync: 0b11111111111 (valid)
 0x20|                                          fb   |              . |  mpeg_version: "1" (3) (MPEG Version 1)
@@ -147,14 +152,14 @@ $ fq -d mp3 '.frames | map(.header) | sort_by(.bitrate)[0]' /test.mp3
 0x20|                                          fb   |              . |  protection_absent: true (No CRC)
 0x20|                                             40|               @|  bitrate: 56000 (4)
 0x20|                                             40|               @|  sample_rate: 44100 (0)
-0x20|                                             40|               @|  padding: "Not padded" (0b0)
+0x20|                                             40|               @|  padding: "not_padded" (0b0)
 0x20|                                             40|               @|  private: 0
-0x30|c0                                             |.               |  channels: "Mono" (0b11)
-0x30|c0                                             |.               |  channel_mode: "None" (0b0)
+0x30|c0                                             |.               |  channels: "mono" (0b11)
+0x30|c0                                             |.               |  channel_mode: "none" (0b0)
 0x30|c0                                             |.               |  copyright: 0
 0x30|c0                                             |.               |  original: 0
-0x30|c0                                             |.               |  emphasis: "None" (0b0)
-$ fq -d mp3 '.frames | map(.header) | min_by(.bitrate)' /test.mp3
+0x30|c0                                             |.               |  emphasis: "none" (0b0)
+$ fq -d mp3 '.frames | map(.header) | min_by(.bitrate)' test.mp3
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].header{}:
 0x20|                                       ff fb   |             .. |  sync: 0b11111111111 (valid)
 0x20|                                          fb   |              . |  mpeg_version: "1" (3) (MPEG Version 1)
@@ -163,14 +168,14 @@ $ fq -d mp3 '.frames | map(.header) | min_by(.bitrate)' /test.mp3
 0x20|                                          fb   |              . |  protection_absent: true (No CRC)
 0x20|                                             40|               @|  bitrate: 56000 (4)
 0x20|                                             40|               @|  sample_rate: 44100 (0)
-0x20|                                             40|               @|  padding: "Not padded" (0b0)
+0x20|                                             40|               @|  padding: "not_padded" (0b0)
 0x20|                                             40|               @|  private: 0
-0x30|c0                                             |.               |  channels: "Mono" (0b11)
-0x30|c0                                             |.               |  channel_mode: "None" (0b0)
+0x30|c0                                             |.               |  channels: "mono" (0b11)
+0x30|c0                                             |.               |  channel_mode: "none" (0b0)
 0x30|c0                                             |.               |  copyright: 0
 0x30|c0                                             |.               |  original: 0
-0x30|c0                                             |.               |  emphasis: "None" (0b0)
-$ fq -d mp3 '.frames | map(.header) | max_by(.bitrate)' /test.mp3
+0x30|c0                                             |.               |  emphasis: "none" (0b0)
+$ fq -d mp3 '.frames | map(.header) | max_by(.bitrate)' test.mp3
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[2].header{}:
 0x1b0|         ff fb                                 |   ..           |  sync: 0b11111111111 (valid)
 0x1b0|            fb                                 |    .           |  mpeg_version: "1" (3) (MPEG Version 1)
@@ -179,14 +184,14 @@ $ fq -d mp3 '.frames | map(.header) | max_by(.bitrate)' /test.mp3
 0x1b0|            fb                                 |    .           |  protection_absent: true (No CRC)
 0x1b0|               52                              |     R          |  bitrate: 64000 (5)
 0x1b0|               52                              |     R          |  sample_rate: 44100 (0)
-0x1b0|               52                              |     R          |  padding: "Padded" (0b1)
+0x1b0|               52                              |     R          |  padding: "padded" (0b1)
 0x1b0|               52                              |     R          |  private: 0
-0x1b0|                  c4                           |      .         |  channels: "Mono" (0b11)
-0x1b0|                  c4                           |      .         |  channel_mode: "None" (0b0)
+0x1b0|                  c4                           |      .         |  channels: "mono" (0b11)
+0x1b0|                  c4                           |      .         |  channel_mode: "none" (0b0)
 0x1b0|                  c4                           |      .         |  copyright: 0
 0x1b0|                  c4                           |      .         |  original: 1
-0x1b0|                  c4                           |      .         |  emphasis: "None" (0b0)
-$ fq -d mp3 '.frames[0] | . + .header | keys, .bitrate' /test.mp3
+0x1b0|                  c4                           |      .         |  emphasis: "none" (0b0)
+$ fq -d mp3 '.frames[0] | . + .header | keys, .bitrate' test.mp3
 [
   "bitrate",
   "channel_mode",
@@ -209,7 +214,7 @@ $ fq -d mp3 '.frames[0] | . + .header | keys, .bitrate' /test.mp3
 ]
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x20|                                             40|               @|.frames[0].header.bitrate: 56000 (4)
-$ fq -d mp3 '[.frames[0] | ., .header] | add | keys, .bitrate' /test.mp3
+$ fq -d mp3 '[.frames[0] | ., .header] | add | keys, .bitrate' test.mp3
 [
   "bitrate",
   "channel_mode",

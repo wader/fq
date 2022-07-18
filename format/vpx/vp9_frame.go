@@ -4,8 +4,8 @@ package vpx
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -38,25 +38,25 @@ const (
 )
 
 var vp9ColorSpaceNames = scalar.UToSymStr{
-	CS_UNKNOWN:   "CS_UNKNOWN",
-	CS_BT_601:    "CS_BT_601",
-	CS_BT_709:    "CS_BT_709",
-	CS_SMPTE_170: "CS_SMPTE_170",
-	CS_SMPTE_240: "CS_SMPTE_240",
-	CS_BT_2020:   "CS_BT_2020",
-	CS_RESERVED:  "CS_RESERVED",
-	CS_RGB:       "CS_RGB",
+	CS_UNKNOWN:   "unknown",
+	CS_BT_601:    "bt_601",
+	CS_BT_709:    "bt_709",
+	CS_SMPTE_170: "smpte_170",
+	CS_SMPTE_240: "smpte_240",
+	CS_BT_2020:   "bt_2020",
+	CS_RESERVED:  "reserved",
+	CS_RGB:       "rgb",
 }
 
-var vp9ProfilesMap = scalar.UToScalar{
-	0: {Description: "8 bit/sample, chroma subsampling: 4:2:0"},
-	1: {Description: "8 bit, chroma subsampling: 4:2:2, 4:4:0, 4:4:4"},
-	2: {Description: "10–12 bit, chroma subsampling: 4:2:0"},
-	3: {Description: "10–12 bit, chroma subsampling: 4:2:2, 4:4:0, 4:4:4"},
+var vp9ProfilesMap = scalar.UToDescription{
+	0: "8 bit/sample, chroma subsampling: 4:2:0",
+	1: "8 bit, chroma subsampling: 4:2:2, 4:4:0, 4:4:4",
+	2: "10–12 bit, chroma subsampling: 4:2:0",
+	3: "10–12 bit, chroma subsampling: 4:2:2, 4:4:0, 4:4:4",
 }
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.VP9_FRAME,
 		Description: "VP9 frame",
 		DecodeFn:    vp9Decode,
@@ -107,7 +107,7 @@ func vp9DecodeFrameSize(d *decode.D) {
 	d.FieldUFn("frame_height", func(d *decode.D) uint64 { return d.U16() + 1 })
 }
 
-func vp9Decode(d *decode.D, in interface{}) interface{} {
+func vp9Decode(d *decode.D, in any) any {
 
 	// TODO: header_size at end? even for show_existing_frame?
 

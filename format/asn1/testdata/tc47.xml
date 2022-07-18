@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<BIT_STRING>
+	<error>EOC is unexpected, BIT STRING may consists of BIT STRINGs only</error>
+	<identification_block>
+		<tag_class>UNIVERSAL</tag_class>
+		<is_constructed>true</is_constructed>
+		<value_dec>3</value_dec>
+	</identification_block>
+	<length_block>
+		<is_indefinite_form>false</is_indefinite_form>
+		<long_form_used>false</long_form_used>
+		<length>14</length>
+	</length_block>
+	<value_block>
+		<error>EOC is unexpected, BIT STRING may consists of BIT STRINGs only</error>
+	</value_block>
+</BIT_STRING>

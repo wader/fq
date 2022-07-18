@@ -1,12 +1,16 @@
 $ fq -n _registry.groups.probe
 [
   "adts",
+  "ar",
+  "avro_ocf",
+  "bitcoin_blkdat",
   "bzip2",
   "elf",
   "flac",
   "gif",
   "gzip",
   "jpeg",
+  "macho",
   "matroska",
   "mp4",
   "ogg",

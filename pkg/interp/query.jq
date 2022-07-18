@@ -1,41 +1,136 @@
-# a() -> b()
-def _query_func_rename(name):
-  .term.func.name = name;
+# null
+def _query_null:
+  {term: {type: "TermTypeNull"}};
 
-# . | r
-def _query_pipe(r):
-  { op: "|",
-    left: .,
-    right: r
-  };
-
-def _query_ident:
-  {term: {type: "TermTypeIdentity"}};
-
-def _query_try(f):
+# . -> (.)
+def _query_query:
   { term: {
-      try: {
-        body: f,
-      },
-      type: "TermTypeTry"
+      type: "TermTypeQuery",
+      query: .
     }
   };
 
+# string
+def _query_string($str):
+  { term: {
+      type: "TermTypeString",
+      str: {
+        str: $str
+      }
+    }
+  };
+
+# .
+def _query_ident:
+  {term: {type: "TermTypeIdentity"}};
+def _query_is_ident:
+  .term.type == "TermTypeIdentity";
+
+# a($args...) -> b($args...)
+def _query_func_rename(name):
+  .term.func.name = name;
+# $name($args)
 def _query_func($name; $args):
   { term: {
+      type: "TermTypeFunc",
       func: {
         args: $args,
         name: $name
-      },
-      type: "TermTypeFunc"
+      }
     }
   };
-
 def _query_func($name):
   _query_func($name; null);
 
-def _query_is_func(name):
-  .term.func.name == name;
+def _query_func_name:
+  .term.func.name;
+def _query_func_args:
+  .term.func.args;
+def _query_is_func:
+  .term.type == "TermTypeFunc";
+def _query_is_func($name):
+  _query_is_func and _query_func_name == $name;
+
+def _query_is_string:
+  .term.type == "TermTypeString";
+def _query_string_str:
+  .term.str.str;
+
+def _query_empty:
+  _query_func("empty");
+
+# l | r
+def _query_pipe(l; r):
+  { op: "|",
+    left: l,
+    right: r
+  };
+
+# . -> [.]
+def _query_array:
+  ( . as $q
+  | { term: {
+        type: "TermTypeArray",
+        array: {}
+      }
+    }
+  | if $q then .term.array.query = $q end
+  );
+
+# {} -> {}
+def _query_object:
+  { term: {
+      object: {
+        key_vals:
+          ( to_entries
+          | map(
+              {
+                key: .key,
+                val: {
+                  queries: [.value]
+                }
+              }
+            )
+          )
+      },
+      type: "TermTypeObject"
+    }
+  };
+
+# l,r
+def _query_comma(l; r):
+  { left: l,
+    op: ",",
+    right: r
+  };
+
+# [1,2,3] -> 1,2,3
+# output each query in array
+def _query_commas:
+  if length == 0 then _query_empty
+  else
+    reduce .[1:][] as $q (
+      .[0];
+      _query_comma(.; $q)
+    )
+  end;
+
+# . -> .[]
+def _query_iter:
+  .term.suffix_list = [{iter: true}];
+
+# try b catch c
+def _query_try(b; c):
+  { term: {
+      type: "TermTypeTry",
+      try: {
+        body: b,
+        catch: c
+      }
+    }
+  };
+def _query_try(b):
+  _query_try(b; null);
 
 # last query in pipeline
 def _query_pipe_last:
@@ -158,14 +253,9 @@ def _query_completion(f):
       | if . then
           ( .query |=
               ( _query_func("map"; [
-                  _query_pipe(
-                    _query_try(
-                      _query_func($c | f)
-                    )
-                  )
+                  _query_pipe(.; _query_try(_query_func($c | f)))
                 ])
-              | _query_pipe(
-                  _query_func("add")
+              | _query_pipe(.; _query_func("add")
                 )
               | .meta = $meta
               | .imports = $imports
@@ -181,17 +271,21 @@ def _query_completion(f):
     catch {type: "error", name: "", error: .}
   );
 
-# <filter...> | <slurp_func> ->
-# map(<filter...> | .) | (<slurp_func> | f)
-def _query_slurp_wrap(f):
-  # save and move directives to new root query
-  ( . as {$meta, $imports}
+# query ast to ast of quey itself, used by query rewrite/slurp
+def _query_toquery:
+  ( tojson
+  | _query_fromstring
+  );
+
+# query rewrite helper, takes care of from/to and directives
+def _query_fromtostring(f):
+  ( _query_fromstring
+  # save and move directives to possible new root query
+  | . as {$meta, $imports}
   | del(.meta)
   | del(.imports)
-  | _query_pipe_last as $lq
-  | _query_transform_pipe_last(_query_ident) as $pipe
-  | _query_func("map"; [$pipe])
-  | _query_pipe($lq | f)
+  | f
   | .meta = $meta
   | .imports = $imports
+  | _query_tostring
   );

@@ -20,13 +20,13 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/matroska/ebml"
 	"github.com/wader/fq/format/matroska/ebml_matroska"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/ranges"
 	"github.com/wader/fq/pkg/scalar"
 )
 
-//go:embed *.jq
+//go:embed matroska.jq
 var matroskaFS embed.FS
 
 var aacFrameFormat decode.Group
@@ -52,7 +52,7 @@ var vp9FrameFormat decode.Group
 var codecToFormat map[string]*decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.MATROSKA,
 		Description: "Matroska file",
 		Groups:      []string{format.PROBE},
@@ -78,7 +78,8 @@ func init() {
 			{Names: []string{format.VP9_CFM}, Group: &vp9CFMFormat},
 			{Names: []string{format.VP9_FRAME}, Group: &vp9FrameFormat},
 		},
-		Files: matroskaFS,
+		Functions: []string{"_help"},
+		Files:     matroskaFS,
 	})
 
 	codecToFormat = map[string]*decode.Group{
@@ -128,7 +129,7 @@ type track struct {
 	codec               string
 	codecPrivatePos     int64
 	codecPrivateTagSize int64
-	formatInArg         interface{}
+	formatInArg         any
 }
 
 type block struct {
@@ -152,7 +153,9 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 
 		for d.Pos() < tagEndBit && d.NotEnd() {
 			d.FieldStruct("element", func(d *decode.D) {
-				var a ebml.Attribute
+				a := ebml.Attribute{
+					Type: ebml.Unknown,
+				}
 
 				tagID := d.FieldUFn("id", decodeRawVint, scalar.Fn(func(s scalar.S) (scalar.S, error) {
 					n := s.ActualU()
@@ -161,12 +164,15 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 					if !ok {
 						a, ok = ebml.Global[n]
 						if !ok {
-							d.Fatalf("unknown id %d", n)
+							a = ebml.Attribute{
+								Type: ebml.Unknown,
+							}
+							return scalar.S{Actual: n, ActualDisplay: scalar.NumberHex, Description: "Unknown"}, nil
 						}
 					}
 					return scalar.S{Actual: n, ActualDisplay: scalar.NumberHex, Sym: a.Name, Description: a.Definition}, nil
 				}))
-				d.FieldValueU("type", uint64(a.Type), scalar.Sym(ebml.TypeNames[a.Type]))
+				d.FieldValueStr("type", ebml.TypeNames[a.Type])
 
 				if tagID == ebml_matroska.TrackEntryID {
 					dc.currentTrack = &track{}
@@ -178,14 +184,28 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 				//    The end of a Master-element with unknown size is determined by the beginning of the next
 				//    element that is not a valid sub-element of that Master-element
 				// TODO: should also handle garbage between
-				const maxTagSize = 100 * 1024 * 1024
-				tagSize := d.FieldUFn("size", decodeVint, d.RequireURange(0, maxTagSize))
+				const maxStringTagSize = 100 * 1024 * 1024
+				tagSize := d.FieldUFn("size", decodeVint)
 
-				if tagSize > 8 &&
-					(a.Type == ebml.Integer ||
-						a.Type == ebml.Uinteger ||
-						a.Type == ebml.Float) {
-					d.Fatalf("invalid tagSize %d for non-master type", tagSize)
+				// assert sane tag size
+				// TODO: strings are limited for now because they are read into memory
+				switch a.Type {
+				case ebml.Integer,
+					ebml.Uinteger,
+					ebml.Float:
+					if tagSize > 8 {
+						d.Fatalf("invalid tagSize %d for number type", tagSize)
+					}
+				case ebml.String,
+					ebml.UTF8:
+					if tagSize > maxStringTagSize {
+						d.Errorf("tagSize %d > maxStringTagSize %d", tagSize, maxStringTagSize)
+					}
+				case ebml.Unknown,
+					ebml.Binary,
+					ebml.Date,
+					ebml.Master:
+					// nop
 				}
 
 				optionalMap := func(sm scalar.Mapper) scalar.Mapper {
@@ -198,6 +218,8 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 				}
 
 				switch a.Type {
+				case ebml.Unknown:
+					d.FieldRawLen("data", int64(tagSize)*8)
 				case ebml.Integer:
 					d.FieldS("value", int(tagSize)*8, optionalMap(a.IntegerEnums))
 				case ebml.Uinteger:
@@ -286,7 +308,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 
 }
 
-func matroskaDecode(d *decode.D, in interface{}) interface{} {
+func matroskaDecode(d *decode.D, in any) any {
 	ebmlHeaderID := uint64(0x1a45dfa3)
 	if d.PeekBits(32) != ebmlHeaderID {
 		d.Errorf("no EBML header found")
@@ -337,7 +359,13 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 				})
 			})
 		case "A_AAC":
-			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegASCFrameFormat, nil)
+			dv, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegASCFrameFormat, nil)
+			mpegASCOut, ok := v.(format.MPEGASCOut)
+			if dv != nil && !ok {
+				panic(fmt.Sprintf("expected mpegASCOut got %#+v", v))
+			}
+			//nolint:gosimple
+			t.formatInArg = format.AACFrameIn{ObjectType: mpegASCOut.ObjectType}
 		case "A_OPUS":
 			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, opusPacketFrameFormat, nil)
 		case "A_FLAC":
@@ -350,7 +378,7 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 						panic(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
 					}
 					if flacMetadatablockOut.HasStreamInfo {
-						t.formatInArg = format.FlacFrameIn{StreamInfo: flacMetadatablockOut.StreamInfo}
+						t.formatInArg = format.FlacFrameIn{BitsPerSample: int(flacMetadatablockOut.StreamInfo.BitsPerSample)}
 					}
 				})
 			})
@@ -360,14 +388,14 @@ func matroskaDecode(d *decode.D, in interface{}) interface{} {
 			if dv != nil && !ok {
 				panic(fmt.Sprintf("expected AvcDcrOut got %#+v", v))
 			}
-			t.formatInArg = format.AvcIn{LengthSize: avcDcrOut.LengthSize} //nolint:gosimple
+			t.formatInArg = format.AvcAuIn{LengthSize: avcDcrOut.LengthSize} //nolint:gosimple
 		case "V_MPEGH/ISO/HEVC":
 			dv, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegHEVCDCRFormat, nil)
 			hevcDcrOut, ok := v.(format.HevcDcrOut)
 			if dv != nil && !ok {
 				panic(fmt.Sprintf("expected HevcDcrOut got %#+v", v))
 			}
-			t.formatInArg = format.HevcIn{LengthSize: hevcDcrOut.LengthSize} //nolint:gosimple
+			t.formatInArg = format.HevcAuIn{LengthSize: hevcDcrOut.LengthSize} //nolint:gosimple
 		case "V_AV1":
 			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, av1CCRFormat, nil)
 		case "V_VP9":

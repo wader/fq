@@ -5,13 +5,13 @@ package icc
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
-	"github.com/wader/fq/internal/num"
+	"github.com/wader/fq/internal/mathextra"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.ICC_PROFILE,
 		Description: "International Color Consortium profile",
 		DecodeFn:    iccProfileDecode,
@@ -19,9 +19,9 @@ func init() {
 }
 
 func xyzType(_ int64, d *decode.D) {
-	d.FieldFP32("X")
-	d.FieldFP32("Y")
-	d.FieldFP32("Z")
+	d.FieldFP32("x")
+	d.FieldFP32("y")
+	d.FieldFP32("z")
 }
 
 func textType(_ int64, d *decode.D) {
@@ -81,7 +81,7 @@ func decodeBCDU8(d *decode.D) uint64 {
 	return (n>>4)*10 + n&0xf
 }
 
-func iccProfileDecode(d *decode.D, in interface{}) interface{} {
+func iccProfileDecode(d *decode.D, in any) any {
 	/*
 	   0..3 Profile size uInt32Number
 	   4..7 CMM Type signature see below
@@ -107,7 +107,7 @@ func iccProfileDecode(d *decode.D, in interface{}) interface{} {
 	size := d.U32()
 	d.SeekRel(-4 * 8)
 
-	d.LenFn(int64(size)*8, func(d *decode.D) {
+	d.FramedFn(int64(size)*8, func(d *decode.D) {
 		d.FieldStruct("header", func(d *decode.D) {
 			d.FieldU32("size")
 			d.FieldUTF8NullFixedLen("cmm_type_signature", 4)
@@ -163,11 +163,11 @@ func iccProfileDecode(d *decode.D, in interface{}) interface{} {
 						// "All tag data is required to start on a 4-byte boundary (relative to the start of the profile data stream)"
 						// we can't add this at the start of the element as we don't know how big the previous element in the stream
 						// was. instead add alignment after if offset+size does not align and to be sure clamp it if outside buffer.
-						paddingStart := int64(offset) + int64(size)
-						paddingBytes := (4 - (int64(offset)+int64(size))%4) % 4
-						paddingBytes = num.MinInt64(paddingBytes, d.Len()-(paddingStart+paddingBytes))
-						if paddingBytes != 0 {
-							d.RangeFn(paddingStart*8, paddingBytes*8, func(d *decode.D) {
+						alignStart := int64(offset) + int64(size)
+						alignBytes := (4 - (int64(offset)+int64(size))%4) % 4
+						alignBytes = mathextra.MinInt64(d.Len()/8-alignStart, alignBytes)
+						if alignBytes != 0 {
+							d.RangeFn(alignStart*8, alignBytes*8, func(d *decode.D) {
 								d.FieldRawLen("alignment", d.BitsLeft())
 							})
 						}

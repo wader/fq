@@ -10,10 +10,9 @@ import (
 	"github.com/wader/fq/internal/difftest"
 	"github.com/wader/fq/internal/script"
 	"github.com/wader/fq/pkg/interp"
-	"github.com/wader/fq/pkg/registry"
 )
 
-func TestPath(t *testing.T, registry *registry.Registry) {
+func TestPath(t *testing.T, registry *interp.Registry) {
 	difftest.TestWithOptions(t, difftest.Options{
 		Path:        ".",
 		Pattern:     "*.fqtest",
@@ -41,7 +40,7 @@ func TestPath(t *testing.T, registry *registry.Registry) {
 						t.Fatal(err)
 					}
 
-					err = i.Main(context.Background(), cr.Stdout(), "dev")
+					err = i.Main(context.Background(), cr.Stdout(), "testversion")
 					if err != nil {
 						if ex, ok := err.(interp.Exiter); ok { //nolint:errorlint
 							cr.ActualExitCode = ex.ExitCode()

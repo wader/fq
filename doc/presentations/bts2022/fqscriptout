@@ -1,0 +1,23 @@
+$ ./editlist file.mp4
+{
+  "duration": 60.095,
+  "time_scale": 600,
+  "tracks": [
+    {
+      "data_format": "mp4a",
+      "edit_list": [
+        {
+          "media_time": 0,
+          "track_duration": 60.095
+        }
+      ],
+      "media_scale": 22050
+    },
+    {
+      "data_format": "avc1",
+      "edit_list": [
+        {
+          "media_time": 0,
+          "track_duration": 60.095
+        }
+...

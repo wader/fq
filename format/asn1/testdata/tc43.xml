@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<OCTET_STRING>
+	<error>End of input reached before message was fully decoded</error>
+	<identification_block>
+		<tag_class>UNIVERSAL</tag_class>
+		<is_constructed>true</is_constructed>
+		<value_dec>4</value_dec>
+	</identification_block>
+	<length_block>
+		<is_indefinite_form>false</is_indefinite_form>
+		<long_form_used>false</long_form_used>
+		<length>3</length>
+	</length_block>
+	<value_block>
+		<error>End of input reached before message was fully decoded</error>
+	</value_block>
+</OCTET_STRING>

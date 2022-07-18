@@ -11,7 +11,7 @@ import (
 	"text/template"
 )
 
-func toInt(v interface{}) int {
+func toInt(v any) int {
 	switch v := v.(type) {
 	case float64:
 		return int(v)
@@ -22,7 +22,7 @@ func toInt(v interface{}) int {
 	}
 }
 
-func toString(v interface{}) string {
+func toString(v any) string {
 	switch v := v.(type) {
 	case string:
 		return v
@@ -35,7 +35,7 @@ func toString(v interface{}) string {
 
 func main() {
 	funcMap := template.FuncMap{
-		"xrange": func(args ...interface{}) (interface{}, error) {
+		"xrange": func(args ...any) (any, error) {
 			if len(args) < 2 {
 				return nil, errors.New("need min and max argument")
 			}
@@ -43,13 +43,13 @@ func main() {
 			min := toInt(args[0])
 			max := toInt(args[1])
 			var v []int
-			for i := min; i <= max; i++ {
+			for i := min; i < max; i++ {
 				v = append(v, i)
 			}
 
 			return v, nil
 		},
-		"replace": func(args ...interface{}) (interface{}, error) {
+		"replace": func(args ...any) (any, error) {
 			if len(args) < 3 {
 				return nil, errors.New("need tmpl, old and new argument")
 			}
@@ -60,9 +60,19 @@ func main() {
 
 			return strings.Replace(s, o, n, -1), nil
 		},
+		"slice": func(args ...any) []any {
+			return args
+		},
+		"map": func(args ...any) map[any]any {
+			m := map[any]any{}
+			for i := 0; i < len(args)/2; i++ {
+				m[args[i*2]] = args[i*2+1]
+			}
+			return m
+		},
 	}
 
-	data := map[string]interface{}{}
+	data := map[string]any{}
 	if len(os.Args) > 1 {
 		r, err := os.Open(os.Args[1])
 		if err != nil {

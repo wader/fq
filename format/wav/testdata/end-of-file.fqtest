@@ -1,14 +1,14 @@
 # ffmpeg -f lavfi -i sine -t 10ms -ac 2 -f wav pipe:1 > end-of-file.wav
-$ fq -d wav verbose /end-of-file.wav
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /end-of-file.wav (wav) 0x0-0x731.7 (1842)
+$ fq -d wav dv end-of-file.wav
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: end-of-file.wav (wav) 0x0-0x731.7 (1842)
 0x000|52 49 46 46                                    |RIFF            |  id: "RIFF" 0x0-0x3.7 (4)
-0x000|            ff ff ff ff                        |    ....        |  size: "rest of file" (0xffffffff) 0x4-0x7.7 (4)
+0x000|            ff ff ff ff                        |    ....        |  size: 0xffffffff (Rest of file) 0x4-0x7.7 (4)
 0x000|                        57 41 56 45            |        WAVE    |  format: "WAVE" 0x8-0xb.7 (4)
      |                                               |                |  chunks[0:3]: 0xc-0x731.7 (1830)
      |                                               |                |    [0]{}: chunk 0xc-0x23.7 (24)
 0x000|                                    66 6d 74 20|            fmt |      id: "fmt" 0xc-0xf.7 (4)
 0x010|10 00 00 00                                    |....            |      size: 16 0x10-0x13.7 (4)
-0x010|            01 00                              |    ..          |      audio_format: "PCM" (1) 0x14-0x15.7 (2)
+0x010|            01 00                              |    ..          |      audio_format: "pcm" (1) 0x14-0x15.7 (2)
 0x010|                  02 00                        |      ..        |      num_channels: 2 0x16-0x17.7 (2)
 0x010|                        44 ac 00 00            |        D...    |      sample_rate: 44100 0x18-0x1b.7 (4)
 0x010|                                    10 b1 02 00|            ....|      byte_rate: 176400 0x1c-0x1f.7 (4)
@@ -26,7 +26,7 @@ $ fq -d wav verbose /end-of-file.wav
 0x040|35 2e 31 30 30 00                              |5.100.          |
      |                                               |                |    [2]{}: chunk 0x46-0x731.7 (1772)
 0x040|                  64 61 74 61                  |      data      |      id: "data" 0x46-0x49.7 (4)
-0x040|                              ff ff ff ff      |          ....  |      size: "rest of file" (0xffffffff) 0x4a-0x4d.7 (4)
+0x040|                              ff ff ff ff      |          ....  |      size: 0xffffffff (Rest of file) 0x4a-0x4d.7 (4)
 0x040|                                          00 00|              ..|      samples: raw bits 0x4e-0x731.7 (1764)
 0x050|00 00 b5 00 b5 00 69 01 69 01 1d 02 1d 02 ce 02|......i.i.......|
 *    |until 0x731.7 (end) (1764)                     |                |

@@ -1,12 +1,59 @@
+include "ansi";
+
 # is here to be defined as early as possible to allow debugging
-# TODO: move to builtin.jq etc?
-def print: stdout;
-def println: ., "\n" | stdout;
-def debug:
-  ( ((["DEBUG", .] | tojson), "\n" | stderr)
+# TODO: move some _* to builtin.jq etc?
+
+def _stdio($name):
+  if . == null then _stdio_info($name)
+  else _stdio_write($name)
+  end;
+def _stdio($name; $l):
+  _stdio_read($name; $l);
+
+def _stdin: _stdio("stdin");
+def _stdin($l): _stdio("stdin"; $l);
+def _stdout: _stdio("stdout");
+def _stdout($l): _stdio("stdout"; $l);
+def _stderr: _stdio("stderr");
+def _stderr($l): _stdio("stderr"; $l);
+
+def stdin_tty: null | _stdin;
+def stdout_tty: null | _stdout;
+
+def print: tostring | _stdout;
+def println: ., "\n" | print;
+def printerr: tostring | _stderr;
+def printerrln: ., "\n" | printerr;
+
+def _debug($name):
+  ( (([$name, .] | tojson) | printerrln)
   , .
   );
+
+# jq compat
+def debug: _debug("DEBUG");
 def debug(f): . as $c | f | debug | $c;
+
+# jq compat, output to compact json to stderr and let input thru
+def stderr:
+  ( (tojson | printerr)
+  , .
+  );
+
+# try to be same exit codes as jq
+# TODO: jq seems to halt processing inputs on JSON decode error but not IO errors,
+# seems strange.
+# jq '(' <(echo 1) <(echo 2) ; echo $? => 3 and no inputs processed
+# jq '.' missing <(echo 2) ; echo $? => 2 and continues process inputs
+# jq '.' <(echo 'a') <(echo 123) ; echo $? => 4 and stops process inputs
+# jq '.' missing <(echo 'a') <(echo 123) ; echo $? => 2 ???
+# jq '"a"+.' <(echo '"a"') <(echo 1) ; echo $? => 5
+# jq '"a"+.' <(echo 1) <(echo '"a"') ; echo $? => 0
+def _exit_code_args_error: 2;
+def _exit_code_input_io_error: 2;
+def _exit_code_compile_error: 3;
+def _exit_code_input_decode_error: 4;
+def _exit_code_expr_error: 5;
 
 def _global_var($k): _global_state[$k];
 def _global_var($k; f): _global_state(_global_state | .[$k] |= f) | .[$k];
@@ -16,9 +63,6 @@ def _include_paths(f): _global_var("include_paths"; f);
 
 def _options_stack: _global_var("options_stack");
 def _options_stack(f): _global_var("options_stack"; f);
-
-def _options_cache: _global_var("options_cache");
-def _options_cache(f): _global_var("options_cache"; f);
 
 def _cli_last_expr_error: _global_var("cli_last_expr_error");
 def _cli_last_expr_error(f): _global_var("cli_last_expr_error"; f);
@@ -41,18 +85,26 @@ def _input_io_errors(f): _global_var("input_io_errors"; f);
 def _input_decode_errors: _global_var("input_decode_errors");
 def _input_decode_errors(f): _global_var("input_decode_errors"; f);
 
-def _variables: _global_var("variables");
-def _variables(f): _global_var("variables"; f);
+def _slurps: _global_var("slurps");
+def _slurps(f): _global_var("slurps"; f);
 
-# eval f and finally eval fin even on empty or error.
-# note that if f outputs more than one value fin will be called
-# for each value.
+# call f and finally eval fin even if empty or error.
+# _finally(1; debug)
+# _finally(null; debug)
+# _finally(empty; debug)
+# _finally(1,2,3; debug)
+# _finally({a:1}; debug)
+# _finally(error("a"); debug)
+# _finally(error("a"); empty)
 def _finally(f; fin):
-  ( try f // (fin | empty)
-    catch (fin as $_ | error)
-  | fin as $_
-  | .
-  );
+  try
+    ( f
+    , (fin | empty)
+    )
+  catch
+    ( (fin | empty)
+    , error
+    );
 
 # TODO: figure out a saner way to force int
 def _to_int: (. % (. + 1));
@@ -65,14 +117,6 @@ def _intdiv($a; $b):
   | ($a - ($a % $b)) / $b
   );
 
-def _esc: "\u001b";
-def _ansi:
-  {
-    clear_line: "\(_esc)[2K",
-  };
-
-# valid jq identifier, start with alpha or underscore then zero or more alpha, num or underscore
-def _is_ident: type == "string" and test("^[a-zA-Z_][a-zA-Z_0-9]*$");
 # escape " and \
 def _escape_ident: gsub("(?<g>[\\\\\"])"; "\\\(.g)");
 
@@ -100,22 +144,101 @@ def _recurse_break(f):
     else error
     end;
 
-# TODO: better way? what about nested eval errors?
-def _eval_is_compile_error: type == "object" and .error != null and .what != null;
-def _eval_compile_error_tostring:
-  "\(.filename // "src"):\(.line):\(.column): \(.error)";
-def _eval($expr; $filename; f; on_error; on_compile_error):
-  try
-    eval($expr; $filename) | f
-  catch
-    if _eval_is_compile_error then on_compile_error
-    else on_error
-    end;
+def _is_null: type == "null";
+def _is_string: type == "string";
+def _is_number: type == "number";
+def _is_boolean: type == "boolean";
+def _is_array: type == "array";
+def _is_object: type == "object";
+def _is_scalar: (_is_array or _is_object) | not;
 
-def _is_scalar:
-  type |. != "array" and . != "object";
+# valid jq identifier, start with alpha or underscore then zero or more alpha, num or underscore
+def _is_ident: _is_string and test("^[a-zA-Z_][a-zA-Z_0-9]*$");
 
 def _is_context_canceled_error: . == "context canceled";
 
-def _error_str: "error: \(.)";
-def _errorln: ., "\n" | stderr;
+def _error_str($contexts): (["error"] + $contexts + [.]) | join(": ");
+def _error_str: _error_str([]);
+
+# TODO: escape for safe key names
+# path ["a", 1, "b"] -> "a[1].b"
+def _path_to_expr($opts):
+  ( if length == 0 or (.[0] | type) != "string" then
+      [""] + .
+    end
+  | map(
+      if _is_number then
+        ( ("[" | _ansi_if($opts; "array"))
+        , _ansi_if($opts; "number")
+        , ("]" | _ansi_if($opts; "array"))
+        )      else
+        ( "."
+        , # empty (special case for leading index or empty path) or key
+          if . == "" or _is_ident then _ansi_if($opts; "objectkey")
+          else
+            "\"\(_escape_ident)\"" | _ansi_if($opts; "string")
+          end
+        )
+      end
+    )
+  | join("")
+  );
+def _path_to_expr: _path_to_expr(null);
+
+# TODO: don't use eval? should support '.a.b[1]."c.c"' and escapes?
+def _expr_to_path:
+  ( if type != "string" then error("require string argument") end
+  | _eval("null | path(\(.))"; {})
+  );
+
+# helper to build path query/generate functions for tree structures with
+# non-unique children, ex: mp4_path
+def _tree_path(children; name; $v):
+  def _lookup:
+    # add implicit zeros to get first value
+    # ["a", "b", 1] => ["a", 0, "b", 1]
+    def _normalize_path:
+      ( . as $np
+      | if $np | last | _is_string then $np+[0] end
+      # state is [path acc, possible pending zero index]
+      | ( reduce .[] as $np ([[], []];
+          if $np | _is_string then
+            [(.[0]+.[1]+[$np]), [0]]
+          else
+            [.[0]+[$np], []]
+          end
+        ))
+      )[0];
+    ( . as $c
+    | $v
+    | _expr_to_path
+    | _normalize_path
+    | reduce .[] as $n ($c;
+        if $n | _is_string then
+          children | map(select(name == $n))
+        else
+          .[$n]
+        end
+      )
+    );
+  def _path:
+    [ . as $r
+    | $v._path as $p
+    | foreach range(($p | length)/2) as $i (null; null;
+        ( ($r | getpath($p[0:($i+1)*2]) | name) as $name
+        | [($r | getpath($p[0:($i+1)*2-1]))[] | name][0:$p[($i*2)+1]+1] as $before
+        | [ $name
+          , ($before | map(select(. == $name)) | length)-1
+          ]
+        )
+      )
+    | [ ".", .[0],
+      (.[1] | if . == 0 then empty else "[", ., "]" end)
+      ]
+    ]
+    | flatten
+    | join("");
+  if $v | _is_string then _lookup
+  else _path
+  end;
+

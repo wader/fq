@@ -1,0 +1,21 @@
+$ fq -d asn1_ber d tc47.ber
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: tc47.ber (asn1_ber)
+    |                                               |                |  error: asn1_ber: error at position 0x8: primitive with indefinite length
+0x00|23                                             |#               |  class: "universal" (0)
+0x00|23                                             |#               |  form: "constructed" (1)
+0x00|23                                             |#               |  tag: "bit_string" (0x3)
+0x00|   0e                                          | .              |  length: 14
+    |                                               |                |  constructed[0:2]:
+    |                                               |                |    [0]{}: object
+0x00|      03                                       |  .             |      class: "universal" (0)
+0x00|      03                                       |  .             |      form: "primitive" (0)
+0x00|      03                                       |  .             |      tag: "bit_string" (0x3)
+0x00|         02                                    |   .            |      length: 2
+0x00|            00                                 |    .           |      unused_bits_count: 0
+0x00|               01                              |     .          |      value: raw bits
+    |                                               |                |    [1]{}: object
+0x00|                  00                           |      .         |      class: "universal" (0)
+0x00|                  00                           |      .         |      form: "primitive" (0)
+0x00|                  00                           |      .         |      tag: "end_of_content" (0x0)
+0x00|                     00                        |       .        |      length: "indefinite" (0)
+0x00|                        03 02 00 01 03 02 04 0f|        ........|  unknown0: raw bits

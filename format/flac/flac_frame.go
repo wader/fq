@@ -5,18 +5,21 @@ import (
 	"math/bits"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
-	"github.com/wader/fq/internal/num"
+	"github.com/wader/fq/internal/mathextra"
 	"github.com/wader/fq/pkg/checksum"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.FLAC_FRAME,
 		Description: "FLAC frame",
 		DecodeFn:    frameDecode,
+		DecodeInArg: format.FlacFrameIn{
+			BitsPerSample: 16,
+		},
 	})
 }
 
@@ -97,24 +100,22 @@ func utf8Uint(d *decode.D) uint64 {
 }
 
 // in argument is an optional FlacFrameIn struct with stream info
-func frameDecode(d *decode.D, in interface{}) interface{} {
-	var inStreamInfo *format.FlacStreamInfo
-	ffi, ok := in.(format.FlacFrameIn)
-	if ok {
-		inStreamInfo = &ffi.StreamInfo
-	}
-
+func frameDecode(d *decode.D, in any) any {
 	frameStart := d.Pos()
-
 	blockSize := 0
 	channelAssignment := uint64(0)
 	channels := 0
 	sampleSize := 0
 	sideChannelIndex := -1
 
+	ffi, ok := in.(format.FlacFrameIn)
+	if ok {
+		sampleSize = ffi.BitsPerSample
+	}
+
 	d.FieldStruct("header", func(d *decode.D) {
 		// <14> 11111111111110
-		d.FieldU14("sync", d.AssertU(0b11111111111110), scalar.Bin)
+		d.FieldU14("sync", d.AssertU(0b11111111111110), scalar.ActualBin)
 
 		// <1> Reserved
 		// 0 : mandatory value
@@ -151,7 +152,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			0b1110: {Sym: uint64(16384)},
 			0b1111: {Sym: uint64(32768)},
 		}
-		blockSizeS := d.FieldScalarU4("block_size", blockSizeMap, scalar.Bin)
+		blockSizeS := d.FieldScalarU4("block_size", blockSizeMap, scalar.ActualBin)
 		if blockSizeS.Sym != nil {
 			blockSize = int(blockSizeS.SymU())
 		}
@@ -191,13 +192,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			0b1110: {Description: "end of header (16 bit*10)"},
 			0b1111: {Description: "invalid"},
 		}
-		sampleRateS := d.FieldScalarU4("sample_rate", sampleRateMap, scalar.Bin)
-		switch sampleRateS.ActualU() {
-		case SampleRateStreaminfo:
-			if inStreamInfo == nil {
-				d.Fatalf("streaminfo required for sample rate")
-			}
-		}
+		sampleRateS := d.FieldScalarU4("sample_rate", sampleRateMap, scalar.ActualBin)
 
 		// <4> Channel assignment
 		// 0000-0111 : (number of independent channels)-1. Where defined, the channel order follows SMPTE/ITU-R recommendations. The assignments are as follows:
@@ -268,13 +263,10 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			0b110: {Sym: uint64(24)},
 			0b111: {Description: "reserved"},
 		}
-		sampleSizeS := d.FieldScalarU3("sample_size", sampleSizeMap, scalar.Bin)
+		sampleSizeS := d.FieldScalarU3("sample_size", sampleSizeMap, scalar.ActualBin)
 		switch sampleSizeS.ActualU() {
 		case SampleSizeStreaminfo:
-			if inStreamInfo == nil {
-				d.Fatalf("streaminfo required for sample size")
-			}
-			sampleSize = int(inStreamInfo.BitPerSample)
+			sampleSize = ffi.BitsPerSample
 		default:
 			if sampleSizeS.Sym != nil {
 				sampleSize = int(sampleSizeS.SymU())
@@ -306,9 +298,9 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			// 0111 : get 16 bit (blocksize-1) from end of header
 			switch blockSizeS.ActualU() {
 			case BlockSizeEndOfHeader8:
-				blockSize = int(d.FieldU8("block_size", scalar.UAdd(1)))
+				blockSize = int(d.FieldU8("block_size", scalar.ActualUAdd(1)))
 			case BlockSizeEndOfHeader16:
-				blockSize = int(d.FieldU16("block_size", scalar.UAdd(1)))
+				blockSize = int(d.FieldU16("block_size", scalar.ActualUAdd(1)))
 			}
 
 			// if(sample rate bits == 11xx)
@@ -327,8 +319,8 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		})
 
 		headerCRC := &checksum.CRC{Bits: 8, Table: checksum.ATM8Table}
-		d.MustCopy(headerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
-		d.FieldU8("crc", d.ValidateUBytes(headerCRC.Sum(nil)), scalar.Hex)
+		d.CopyBits(headerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
+		d.FieldU8("crc", d.ValidateUBytes(headerCRC.Sum(nil)), scalar.ActualHex)
 	})
 
 	var channelSamples [][]int64
@@ -348,16 +340,16 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 				// 1xxxxx : SUBFRAME_LPC, xxxxx=order-1
 				lpcOrder := -1
 				var subframeTypeRangeMap = scalar.URangeToScalar{
-					{0b000000, 0b000000}: {Sym: SubframeConstant},
-					{0b000001, 0b000001}: {Sym: SubframeVerbatim},
-					{0b000010, 0b000011}: {Sym: SubframeReserved},
-					{0b000100, 0b000111}: {Sym: SubframeReserved},
-					{0b001000, 0b001100}: {Sym: SubframeFixed},
-					{0b001101, 0b001111}: {Sym: SubframeReserved},
-					{0b010000, 0b011111}: {Sym: SubframeReserved},
-					{0b100000, 0b111111}: {Sym: SubframeLPC},
+					{Range: [2]uint64{0b000000, 0b000000}, S: scalar.S{Sym: SubframeConstant}},
+					{Range: [2]uint64{0b000001, 0b000001}, S: scalar.S{Sym: SubframeVerbatim}},
+					{Range: [2]uint64{0b000010, 0b000011}, S: scalar.S{Sym: SubframeReserved}},
+					{Range: [2]uint64{0b000100, 0b000111}, S: scalar.S{Sym: SubframeReserved}},
+					{Range: [2]uint64{0b001000, 0b001100}, S: scalar.S{Sym: SubframeFixed}},
+					{Range: [2]uint64{0b001101, 0b001111}, S: scalar.S{Sym: SubframeReserved}},
+					{Range: [2]uint64{0b010000, 0b011111}, S: scalar.S{Sym: SubframeReserved}},
+					{Range: [2]uint64{0b100000, 0b111111}, S: scalar.S{Sym: SubframeLPC}},
 				}
-				subframeTypeS := d.FieldScalarU6("subframe_type", subframeTypeRangeMap, scalar.Bin)
+				subframeTypeS := d.FieldScalarU6("subframe_type", subframeTypeRangeMap, scalar.ActualBin)
 				switch subframeTypeS.SymStr() {
 				case SubframeFixed:
 					lpcOrder = int(subframeTypeS.ActualU() & 0b111)
@@ -374,12 +366,12 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 				wastedBitsFlag := d.FieldU1("wasted_bits_flag")
 				var wastedBitsK int
 				if wastedBitsFlag != 0 {
-					wastedBitsK = int(d.FieldUnary("wasted_bits_k", 0, scalar.UAdd(1)))
+					wastedBitsK = int(d.FieldUnary("wasted_bits_k", 0, scalar.ActualUAdd(1)))
 				}
 
 				subframeSampleSize := sampleSize - wastedBitsK
-				if subframeSampleSize < 0 {
-					d.Fatalf("negative subframeSampleSize %d", subframeSampleSize)
+				if subframeSampleSize < 1 {
+					d.Fatalf("subframeSampleSize %d < 1", subframeSampleSize)
 				}
 				// if channel is side, add en extra sample bit
 				// https://github.com/xiph/flac/blob/37e675b777d4e0de53ac9ff69e2aea10d92e729c/src/libFLAC/stream_decoder.c#L2040
@@ -471,7 +463,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 										_ = high
 										low := d.U(riceParameter)
 										_ = low
-										samples[n] = num.ZigZag(high<<riceParameter | low)
+										samples[n] = mathextra.ZigZag(high<<riceParameter | low)
 										n++
 									}
 									samplesStop := d.Pos()
@@ -540,7 +532,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 					// <n> Unencoded warm-up samples (n = frame's bits-per-sample * lpc order).
 					decodeWarmupSamples(samples, lpcOrder, subframeSampleSize)
 					// <4> (Quantized linear predictor coefficients' precision in bits)-1 (1111 = invalid).
-					precision := int(d.FieldU4("precision", scalar.UAdd(1)))
+					precision := int(d.FieldU4("precision", scalar.ActualUAdd(1)))
 					// <5> Quantized linear predictor coefficient shift needed in bits (NOTE: this number is signed two's-complement).
 					shift := d.FieldS5("shift")
 					if shift < 0 {
@@ -573,7 +565,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldU("byte_align", d.ByteAlignBits(), d.AssertU(0))
 	// <16> CRC-16 (polynomial = x^16 + x^15 + x^2 + x^0, initialized with 0) of everything before the crc, back to and including the frame header sync code
 	footerCRC := &checksum.CRC{Bits: 16, Table: checksum.ANSI16Table}
-	d.MustCopy(footerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
+	d.CopyBits(footerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
 	d.FieldRawLen("footer_crc", 16, d.ValidateBitBuf(footerCRC.Sum(nil)), scalar.RawHex)
 
 	streamSamples := len(channelSamples[0])

@@ -1,9 +1,9 @@
 # ffmpeg -y -f lavfi -i sine -ac 2 -t 40ms -f adts adts
-$ fq -d adts verbose /adts
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0:3]: /adts (adts) 0x0-0x406.7 (1031)
+$ fq -d adts dv adts
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0:3]: adts (adts) 0x0-0x406.7 (1031)
      |                                               |                |  [0]{}: frame (adts_frame) 0x0-0x153.7 (340)
 0x000|ff f1                                          |..              |    syncword: 0b111111111111 (valid) 0x0-0x1.3 (1.4)
-0x000|   f1                                          | .              |    mpeg_version: "MPEG-4" (0) 0x1.4-0x1.4 (0.1)
+0x000|   f1                                          | .              |    mpeg_version: "mpeg4" (0) 0x1.4-0x1.4 (0.1)
 0x000|   f1                                          | .              |    layer: 0 (valid) 0x1.5-0x1.6 (0.2)
 0x000|   f1                                          | .              |    protection_absent: true (No CRC) 0x1.7-0x1.7 (0.1)
 0x000|      50                                       |  P             |    profile: "aac_lc" (2) (AAC Low Complexity)) 0x2-0x2.1 (0.2)
@@ -38,7 +38,7 @@ $ fq -d adts verbose /adts
 *    |until 0x153.7 (314)                            |                |
      |                                               |                |  [1]{}: frame (adts_frame) 0x154-0x2be.7 (363)
 0x150|            ff f1                              |    ..          |    syncword: 0b111111111111 (valid) 0x154-0x155.3 (1.4)
-0x150|               f1                              |     .          |    mpeg_version: "MPEG-4" (0) 0x155.4-0x155.4 (0.1)
+0x150|               f1                              |     .          |    mpeg_version: "mpeg4" (0) 0x155.4-0x155.4 (0.1)
 0x150|               f1                              |     .          |    layer: 0 (valid) 0x155.5-0x155.6 (0.2)
 0x150|               f1                              |     .          |    protection_absent: true (No CRC) 0x155.7-0x155.7 (0.1)
 0x150|                  50                           |      P         |    profile: "aac_lc" (2) (AAC Low Complexity)) 0x156-0x156.1 (0.2)
@@ -63,7 +63,7 @@ $ fq -d adts verbose /adts
      |                                               |                |  [2]{}: frame (adts_frame) 0x2bf-0x406.7 (328)
 0x2b0|                                             ff|               .|    syncword: 0b111111111111 (valid) 0x2bf-0x2c0.3 (1.4)
 0x2c0|f1                                             |.               |
-0x2c0|f1                                             |.               |    mpeg_version: "MPEG-4" (0) 0x2c0.4-0x2c0.4 (0.1)
+0x2c0|f1                                             |.               |    mpeg_version: "mpeg4" (0) 0x2c0.4-0x2c0.4 (0.1)
 0x2c0|f1                                             |.               |    layer: 0 (valid) 0x2c0.5-0x2c0.6 (0.2)
 0x2c0|f1                                             |.               |    protection_absent: true (No CRC) 0x2c0.7-0x2c0.7 (0.1)
 0x2c0|   50                                          | P              |    profile: "aac_lc" (2) (AAC Low Complexity)) 0x2c1-0x2c1.1 (0.2)

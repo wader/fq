@@ -1,18 +1,27 @@
 package protobuf
 
+// https://developers.google.com/protocol-buffers/docs/encoding
+
 import (
+	"embed"
+
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
-	"github.com/wader/fq/internal/num"
+	"github.com/wader/fq/internal/mathextra"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
+//go:embed protobuf.jq
+var protobufFS embed.FS
+
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.PROTOBUF,
 		Description: "Protobuf",
 		DecodeFn:    protobufDecode,
+		Functions:   []string{"_help"},
+		Files:       protobufFS,
 	})
 }
 
@@ -24,10 +33,10 @@ const (
 )
 
 var wireTypeNames = scalar.UToSymStr{
-	0: "Varint",
-	1: "64-bit",
-	2: "Length-delimited",
-	5: "32-bit",
+	0: "varint",
+	1: "64bit",
+	2: "length_delimited",
+	5: "32bit",
 }
 
 func varInt(d *decode.D) uint64 {
@@ -74,7 +83,7 @@ func protobufDecodeField(d *decode.D, pbm *format.ProtoBufMessage) {
 
 				switch pbf.Type {
 				case format.ProtoBufTypeInt32, format.ProtoBufTypeInt64:
-					v := num.ZigZag(value)
+					v := mathextra.ZigZag(value)
 					d.FieldValueS("value", v)
 					if len(pbf.Enums) > 0 {
 						d.FieldValueStr("enum", pbf.Enums[uint64(v)])
@@ -86,7 +95,7 @@ func protobufDecodeField(d *decode.D, pbm *format.ProtoBufMessage) {
 					}
 				case format.ProtoBufTypeSInt32, format.ProtoBufTypeSInt64:
 					// TODO: correct? 32 different?
-					v := num.TwosComplement(64, value)
+					v := mathextra.TwosComplement(64, value)
 					d.FieldValueS("value", v)
 					if len(pbf.Enums) > 0 {
 						d.FieldValueStr("enum", pbf.Enums[uint64(v)])
@@ -107,7 +116,7 @@ func protobufDecodeField(d *decode.D, pbm *format.ProtoBufMessage) {
 					d.FieldValueRaw("value", d.BytesRange(valueStart, int(length)))
 				case format.ProtoBufTypeMessage:
 					// TODO: test
-					d.LenFn(int64(length)*8, func(d *decode.D) {
+					d.FramedFn(int64(length)*8, func(d *decode.D) {
 						protobufDecodeFields(d, &pbf.Message)
 					})
 				case format.ProtoBufTypePackedRepeated:
@@ -132,7 +141,7 @@ func protobufDecodeFields(d *decode.D, pbm *format.ProtoBufMessage) {
 	})
 }
 
-func protobufDecode(d *decode.D, in interface{}) interface{} {
+func protobufDecode(d *decode.D, in any) any {
 	var pbm *format.ProtoBufMessage
 	pbi, ok := in.(format.ProtoBufIn)
 	if ok {

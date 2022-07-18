@@ -1,0 +1,59 @@
+#!/usr/bin/env expect
+# TODO: move this script somewere else
+# TODO: run without NO_DECODE_PROGRESS
+
+log_user 1
+set timeout 3
+
+expect_after {
+    timeout {exit 1}
+}
+
+proc expect_prompt {} {
+    global spawn_id
+    sleep 0.2
+    expect *
+    send "\n"
+    expect "> "
+}
+
+spawn sh -c "NO_DECODE_PROGRESS=1 fq -o color=false -i . pkg/interp/testdata/test.mp3 2>&1"
+
+expect_prompt
+
+send ".\n"
+expect "footers"
+expect_prompt
+
+# test interrupt multiple outputs
+send "range(100000) | d\n"
+expect "123"
+# ctrl-c
+send "\x03"
+expect_prompt
+
+# test interrupt multiple outputs implicit display
+send "range(100000)\n"
+expect "123"
+# ctrl-c
+send "\x03"
+expect_prompt
+
+# test interrupt big json output
+send "\[range(100000)\] | d\n"
+expect "123"
+# ctrl-c
+send "\x03"
+expect_prompt
+
+# test interrupt big json output implicit display
+send "\[range(100000)\]\n"
+expect "123"
+# ctrl-c
+send "\x03"
+expect_prompt
+
+# test exit
+# ctrl-d
+send "\x04"
+expect eof

@@ -2,29 +2,32 @@ package mpeg
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 var hevcAUNALFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.HEVC_AU,
 		Description: "H.265/HEVC Access Unit",
 		DecodeFn:    hevcAUDecode,
-		RootArray:   true,
-		RootName:    "access_unit",
+		DecodeInArg: format.HevcAuIn{
+			LengthSize: 4,
+		},
+		RootArray: true,
+		RootName:  "access_unit",
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.HEVC_NALU}, Group: &hevcAUNALFormat},
 		},
 	})
 }
 
-func hevcAUDecode(d *decode.D, in interface{}) interface{} {
-	hevcIn, ok := in.(format.HevcIn)
+func hevcAUDecode(d *decode.D, in any) any {
+	hevcIn, ok := in.(format.HevcAuIn)
 	if !ok {
-		d.Errorf("hevcIn required")
+		d.Errorf("HevcAuIn required")
 	}
 
 	for d.NotEnd() {

@@ -1,5 +1,8 @@
 ### Known bugs to fix
 
+- `fq -n '"aabbccdd" | hex | tobytes[1:] | raw | tobytes'` create binary `aabbcc` should be `bbccdd`. I think decode (raw in this case) is confused by root value buffer.
+- Buffers/string duality is confusing, most string functions should be wrapped to understand binary.
+- REPL cancel seems to sometimes exit a sub-REPl without properly cleanup options.
 - Value errors, can only be accessed with `._error`.
 - Framed (add unknown in gaps) decode should be on struct level not format?
 - `tovalue({bits_format: "base64"})` only affect root value.
@@ -10,6 +13,7 @@
 - Rework cli/repl user interrupt (context cancel via ctrl-c), see comment in Interp.Main
 - Optimize `Interp.Options` calls, now called per display. Cache per eval? needs to handle nested evals.
 - `<array decode value>[{start: ...: end: ...}]` syntax a bit broken.
+- REPL completion might have side effcts. Make interp.Function type know and wrap somehow? input, inputs, open, ...
 
 ### TODO and ideas
 
@@ -32,7 +36,6 @@
 
 #### Language
 
-- Nicer variables somehow? `... | var($VAR)`? make slurp and rewrite `$var` to `$var[]`?
 - Cleanup/Make binary buffers make sense.
 - gojq uses golang `int` for slice indexes, might be issue for non-64bit cpus
 
@@ -51,7 +54,6 @@
 - `open` leak, file and ctxreadseeker
 - Summary tree with format specific summaries for each format, sample count etc etc?
 - List all unique paths in some compact form?
-- Make buffer work with `test` and `capture`?
 
 ### Tests
 
@@ -86,6 +88,9 @@
 
 #### Formats
 
+- `asn1_ber` `asn1_der`, `asn1_cer` decoder
+- `flatbuffer` decoder
+- `capnproto` decoder
 - Pass argument to format
 - Value decoder in jq `u(32)`, `u32`?
 - Warnings and errors

@@ -2,14 +2,62 @@ $ fq -n options
 {
   "addrbase": 16,
   "arg": [],
+  "argdecode": [],
   "argjson": [],
   "array_truncate": 50,
   "bits_format": "snippet",
-  "byte_colors": "0-0xff=brightwhite,0=brightblack,32-126:9-13=white",
+  "byte_colors": [
+    {
+      "ranges": [
+        [
+          0,
+          255
+        ]
+      ],
+      "value": "brightwhite"
+    },
+    {
+      "ranges": [
+        [
+          0
+        ]
+      ],
+      "value": "brightblack"
+    },
+    {
+      "ranges": [
+        [
+          32,
+          126
+        ],
+        [
+          9,
+          13
+        ]
+      ],
+      "value": "white"
+    }
+  ],
   "color": false,
-  "colors": "array=white,dumpaddr=yellow,dumpheader=yellow+underline,error=brightred,false=yellow,index=white,null=brightblack,number=cyan,object=white,objectkey=brightblue,string=green,true=yellow,value=white",
+  "colors": {
+    "array": "white",
+    "dumpaddr": "yellow",
+    "dumpheader": "yellow+underline",
+    "error": "brightred",
+    "false": "yellow",
+    "index": "white",
+    "null": "brightblack",
+    "number": "cyan",
+    "object": "white",
+    "objectkey": "brightblue",
+    "prompt_repl_level": "brightblack",
+    "prompt_value": "white",
+    "string": "green",
+    "true": "yellow",
+    "value": "white"
+  },
   "compact": false,
-  "decode_file": [],
+  "completion_timeout": 10,
   "decode_format": "probe",
   "decode_progress": false,
   "depth": 0,
@@ -20,6 +68,7 @@ $ fq -n options
   "filenames": [
     null
   ],
+  "force": false,
   "include_path": null,
   "join_string": "\n",
   "line_bytes": 16,
@@ -34,7 +83,8 @@ $ fq -n options
   "slurp": false,
   "string_input": false,
   "unicode": false,
-  "verbose": false
+  "verbose": false,
+  "width": 135
 }
 $ fq -o addrbase=10 -n options.addrbase
 10
@@ -47,18 +97,30 @@ $ fq -o array_truncate=true -n options.array_truncate
 $ fq -o bits_format=base64 -n options.bits_format
 "base64"
 $ fq -o byte_colors=0-0xff=red -n options.byte_colors
-"0-0xff=red"
+[
+  {
+    "ranges": [
+      [
+        0,
+        255
+      ]
+    ],
+    "value": "red"
+  }
+]
 $ fq -o color=10 -n options.color
 [33mtrue[m
 $ fq -o color=true -n options.color
 [33mtrue[m
 $ fq -o colors=number=red -n options.colors
-"number=red"
+{
+  "number": "red"
+}
 $ fq -o compact=true -n options.compact
 true
 $ fq -o compact=aaa -n options.compact
 false
-$ fq -n -o 'decode_file=[["a", "/test.mp3"]]' '$a | format'
+$ fq -n -o 'argdecode=[["a", "test.mp3"]]' '$a | format'
 "mp3"
 $ fq -o decode_progress=false -n options.decode_progress
 false
@@ -77,9 +139,11 @@ $ fq -n -o expr=123
 $ fq -o expr_file=test.jq -n options.expr_file
 exitcode: 2
 stderr:
-error: open testdata/test.jq: no such file or directory
-$ fq -o 'filenames=["/test.mp3"]' format
+error: test.jq: no such file or directory
+$ fq -o 'filenames=["test.mp3"]' format
 "mp3"
+$ fq -o 'force=true' -n options.force
+true
 $ fq -o include_path=path -n options.include_path
 "path"
 $ fq -o 'join_string=aaa\n' -n options.join_string
@@ -125,7 +189,7 @@ $ fq -n "options | {display_bytes, line_bytes}"
   "display_bytes": 16,
   "line_bytes": 16
 }
-$ _STDOUT_ISTERMINAL= fq -n  "options | {display_bytes, line_bytes}"
+$ _STDOUT_IS_TERMINAL= fq -n  "options | {display_bytes, line_bytes}"
 {
   "display_bytes": 16,
   "line_bytes": 16
@@ -135,10 +199,10 @@ $ _STDOUT_WIDTH=160 _STDOUT_HEIGHT=40 fq -n  "options | {display_bytes, line_byt
   "display_bytes": 20,
   "line_bytes": 20
 }
-$ _STDOUT_ISTERMINAL= _STDOUT_WIDTH=160 _STDOUT_HEIGHT=40 fq -n  "options | {display_bytes, line_bytes}"
+$ _STDOUT_IS_TERMINAL= _STDOUT_WIDTH=160 _STDOUT_HEIGHT=40 fq -n  "options | {display_bytes, line_bytes}"
 {
-  "display_bytes": 16,
-  "line_bytes": 16
+  "display_bytes": 20,
+  "line_bytes": 20
 }
 $ fq -in
 null> options | {display_bytes, line_bytes}

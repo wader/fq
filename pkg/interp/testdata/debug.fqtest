@@ -13,3 +13,32 @@ null> ^D
 stderr:
 ["DEBUG",{"a":123,"b":[]}]
 ["DEBUG",{"a":123}]
+$ fq -n 'null, {a:1}, "abc" | ., "\n" | print'
+null
+{"a":1}
+abc
+$ fq -n 'null, {a:1}, "abc" | println'
+null
+{"a":1}
+abc
+$ fq -n 'null, {a:1}, "abc" | ., "\n" | printerr'
+stderr:
+null
+{"a":1}
+abc
+$ fq -n 'null, {a:1}, "abc" | printerrln'
+stderr:
+null
+{"a":1}
+abc
+$ fq -n 'null, {a:1}, "abc" | ., "\n" | stderr'
+null
+"\n"
+{
+  "a": 1
+}
+"\n"
+"abc"
+"\n"
+stderr:
+null"\n"{"a":1}"\n""abc""\n"

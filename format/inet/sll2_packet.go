@@ -5,30 +5,33 @@ package inet
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var sllPacket2Ether8023Format decode.Group
+var sllPacket2InetPacketGroup decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.SLL2_PACKET,
 		Description: "Linux cooked capture encapsulation v2",
+		Groups:      []string{format.LINK_FRAME},
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.ETHER8023_FRAME}, Group: &sllPacket2Ether8023Format},
+			{Names: []string{format.INET_PACKET}, Group: &sllPacket2InetPacketGroup},
 		},
 		DecodeFn: decodeSLL2,
 	})
 }
 
-var sllPacket2FrameTypeFormat = map[uint64]*decode.Group{
-	format.EtherTypeIPv4: &ether8023FrameIPv4Format,
-}
+func decodeSLL2(d *decode.D, in any) any {
+	if lfi, ok := in.(format.LinkFrameIn); ok {
+		if lfi.Type != format.LinkTypeLINUX_SLL2 {
+			d.Fatalf("wrong link type %d", lfi.Type)
+		}
+	}
 
-func decodeSLL2(d *decode.D, in interface{}) interface{} {
-	protcolType := d.FieldU16("protocol_type", format.EtherTypeMap, scalar.Hex)
+	protcolType := d.FieldU16("protocol_type", format.EtherTypeMap, scalar.ActualHex)
 	d.FieldU16("reserved")
 	d.FieldU32("interface_index")
 	arpHdrType := d.FieldU16("arphdr_type", arpHdrTypeMAp)
@@ -48,14 +51,15 @@ func decodeSLL2(d *decode.D, in interface{}) interface{} {
 	// TODO: handle other arphdr types
 	switch arpHdrType {
 	case arpHdrTypeLoopback, arpHdrTypeEther:
-		_ = d.FieldMustGet("link_address").TryScalarFn(mapUToEtherSym, scalar.Hex)
-		if g, ok := sllPacket2FrameTypeFormat[protcolType]; ok {
-			d.FieldFormatLen("data", d.BitsLeft(), *g, nil)
-		} else {
-			d.FieldRawLen("data", d.BitsLeft())
-		}
+		_ = d.FieldMustGet("link_address").TryScalarFn(mapUToEtherSym, scalar.ActualHex)
+		d.FieldFormatOrRawLen(
+			"payload",
+			d.BitsLeft(),
+			sllPacket2InetPacketGroup,
+			format.LinkFrameIn{Type: int(protcolType)},
+		)
 	default:
-		d.FieldRawLen("data", d.BitsLeft())
+		d.FieldRawLen("payload", d.BitsLeft())
 	}
 
 	return nil

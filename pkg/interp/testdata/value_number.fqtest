@@ -1,4 +1,4 @@
-$ fq -i -d mp3 . /test.mp3
+$ fq -i -d mp3 . test.mp3
 mp3> .headers[0].version | ., tovalue, type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|         04                                    |   .            |.headers[0].version: 4
@@ -72,13 +72,13 @@ mp3> .headers[0].version._path | ., type, length?
 mp3> .headers[0].version._bits | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|         04                                    |   .            |.: raw bits 0x3-0x3.7 (1)
-"buffer"
+"binary"
 8
 mp3> 
 mp3> .headers[0].version._bytes | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|         04                                    |   .            |.: raw bits 0x3-0x3.7 (1)
-"buffer"
+"binary"
 1
 mp3> 
 mp3> .headers[0].version._error | ., type, length?
@@ -89,19 +89,19 @@ mp3> .headers[0].version._unknown | ., type, length?
 false
 "boolean"
 mp3> .headers[0].version.a = 1
-error: expected an object but got: number
+error: expected an object but got: number (4)
 mp3> .headers[0].version[0] = 1
-error: expected an array but got: number
+error: expected an array but got: number (4)
 mp3> .headers[0].version.a |= empty
 error: expected an object but got: number
 mp3> .headers[0].version[0] |= empty
 error: expected an array but got: number
 mp3> .headers[0].version | setpath(["a"]; 1)
-error: expected an object with key "a" but got: number
+error: expected an object but got: number (4)
 mp3> .headers[0].version | setpath([0]; 1)
-error: expected an array with index 0 but got: number
+error: expected an array but got: number (4)
 mp3> .headers[0].version | delpaths([["a"]])
-error: expected an object with key "a" but got: number
+error: expected an object but got: number (4)
 mp3> .headers[0].version | delpaths([[0]])
-error: expected an array with index 0 but got: number
+error: expected an array but got: number (4)
 mp3> ^D

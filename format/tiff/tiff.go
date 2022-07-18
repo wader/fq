@@ -4,15 +4,15 @@ package tiff
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 var tiffIccProfile decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.TIFF,
 		Description: "Tag Image File Format",
 		Groups:      []string{format.PROBE, format.IMAGE},
@@ -100,7 +100,7 @@ func decodeIfd(d *decode.D, s *strips, tagNames scalar.UToSymStr) int64 {
 		d.FieldArray("entries", func(d *decode.D) {
 			for i := uint64(0); i < numberOfFields; i++ {
 				d.FieldStruct("entry", func(d *decode.D) {
-					tag := d.FieldU16("tag", tagNames, scalar.Hex)
+					tag := d.FieldU16("tag", tagNames, scalar.ActualHex)
 					typ := d.FieldU16("type", typeNames)
 					count := d.FieldU32("count")
 					valueOrByteOffset := d.FieldU32("value_offset")
@@ -201,8 +201,8 @@ func decodeIfd(d *decode.D, s *strips, tagNames scalar.UToSymStr) int64 {
 	return nextIfdOffset
 }
 
-func tiffDecode(d *decode.D, in interface{}) interface{} {
-	endian := d.FieldU32("endian", endianNames, scalar.Hex)
+func tiffDecode(d *decode.D, in any) any {
+	endian := d.FieldU32("endian", endianNames, scalar.ActualHex)
 
 	switch endian {
 	case littleEndian:

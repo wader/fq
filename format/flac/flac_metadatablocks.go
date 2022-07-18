@@ -4,14 +4,14 @@ import (
 	"fmt"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 var flacMetadatablockFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.FLAC_METADATABLOCKS,
 		Description: "FLAC metadatablocks",
 		DecodeFn:    metadatablocksDecode,
@@ -23,7 +23,7 @@ func init() {
 	})
 }
 
-func metadatablocksDecode(d *decode.D, in interface{}) interface{} {
+func metadatablocksDecode(d *decode.D, in any) any {
 	flacMetadatablocksOut := format.FlacMetadatablocksOut{}
 
 	isLastBlock := false

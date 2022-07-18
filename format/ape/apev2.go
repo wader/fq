@@ -4,14 +4,14 @@ package ape
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 var imageFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.APEV2,
 		Description: "APEv2 metadata tag",
 		DecodeFn:    apev2Decode,
@@ -21,7 +21,7 @@ func init() {
 	})
 }
 
-func apev2Decode(d *decode.D, in interface{}) interface{} {
+func apev2Decode(d *decode.D, in any) any {
 	d.Endian = decode.LittleEndian
 
 	headerFooterFn := func(d *decode.D, name string) uint64 {
@@ -56,14 +56,10 @@ func apev2Decode(d *decode.D, in interface{}) interface{} {
 				d.FieldUTF8("key", int(keyLen))
 				d.FieldU8("key_terminator")
 				if binaryItem {
-					d.LenFn(int64(itemSize)*8, func(d *decode.D) {
+					d.FramedFn(int64(itemSize)*8, func(d *decode.D) {
 						d.FieldUTF8Null("filename")
 						// assume image if binary
-						dv, _, _ := d.TryFieldFormat("value", imageFormat, nil)
-						if dv == nil {
-							// TODO: framed and unknown instead?
-							d.FieldRawLen("value", d.BitsLeft())
-						}
+						d.FieldFormatOrRaw("value", imageFormat, nil)
 					})
 				} else {
 					d.FieldUTF8("value", int(itemSize))

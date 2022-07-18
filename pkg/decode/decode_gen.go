@@ -1,17 +1,68 @@
-// Code below generated from scalar_gen.go.tmpl
+// Code below generated from decode_gen.go.tmpl
 package decode
 
 import (
 	"fmt"
+	"math/big"
 
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/scalar"
 )
 
+// Type BigInt
+
+// TryFieldBigIntScalarFn tries to add a field, calls scalar functions and returns actual value as a BigInt
+func (d *D) TryFieldBigIntScalarFn(name string, fn func(d *D) (scalar.S, error), sms ...scalar.Mapper) (*big.Int, error) {
+	v, err := d.TryFieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return fn(d) }, sms...)
+	if err != nil {
+		return nil, err
+	}
+	return v.ActualBigInt(), err
+}
+
+// FieldBigIntScalarFn adds a field, calls scalar functions and returns actual value as a BigInt
+func (d *D) FieldBigIntScalarFn(name string, fn func(d *D) scalar.S, sms ...scalar.Mapper) *big.Int {
+	v, err := d.TryFieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return fn(d), nil }, sms...)
+	if err != nil {
+		panic(IOError{Err: err, Name: name, Op: "BigInt", Pos: d.Pos()})
+	}
+	return v.ActualBigInt()
+}
+
+// FieldBigIntFn adds a field, calls *big.Int decode function and returns actual value as a BigInt
+func (d *D) FieldBigIntFn(name string, fn func(d *D) *big.Int, sms ...scalar.Mapper) *big.Int {
+	return d.FieldBigIntScalarFn(name, func(d *D) scalar.S { return scalar.S{Actual: fn(d)} }, sms...)
+}
+
+// TryFieldBigIntFn tries to add a field, calls *big.Int decode function and returns actual value as a BigInt
+func (d *D) TryFieldBigIntFn(name string, fn func(d *D) (*big.Int, error), sms ...scalar.Mapper) (*big.Int, error) {
+	return d.TryFieldBigIntScalarFn(name, func(d *D) (scalar.S, error) {
+		v, err := fn(d)
+		return scalar.S{Actual: v}, err
+	}, sms...)
+}
+
+// TryFieldScalarBigIntFn tries to add a field, calls *big.Int decode function and returns scalar
+func (d *D) TryFieldScalarBigIntFn(name string, fn func(d *D) (*big.Int, error), sms ...scalar.Mapper) (*scalar.S, error) {
+	return d.TryFieldScalarFn(name, func(_ scalar.S) (scalar.S, error) {
+		v, err := fn(d)
+		return scalar.S{Actual: v}, err
+	}, sms...)
+}
+
+// FieldScalarBigIntFn tries to add a field, calls *big.Int decode function and returns scalar
+func (d *D) FieldScalarBigIntFn(name string, fn func(d *D) *big.Int, sms ...scalar.Mapper) *scalar.S {
+	v, err := d.TryFieldScalarBigIntFn(name, func(d *D) (*big.Int, error) { return fn(d), nil }, sms...)
+	if err != nil {
+		panic(IOError{Err: err, Name: name, Op: "BigInt", Pos: d.Pos()})
+	}
+	return v
+}
+
 // Type BitBuf
 
 // TryFieldBitBufScalarFn tries to add a field, calls scalar functions and returns actual value as a BitBuf
-func (d *D) TryFieldBitBufScalarFn(name string, fn func(d *D) (scalar.S, error), sms ...scalar.Mapper) (*bitio.Buffer, error) {
+func (d *D) TryFieldBitBufScalarFn(name string, fn func(d *D) (scalar.S, error), sms ...scalar.Mapper) (bitio.ReaderAtSeeker, error) {
 	v, err := d.TryFieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return fn(d) }, sms...)
 	if err != nil {
 		return nil, err
@@ -20,7 +71,7 @@ func (d *D) TryFieldBitBufScalarFn(name string, fn func(d *D) (scalar.S, error),
 }
 
 // FieldBitBufScalarFn adds a field, calls scalar functions and returns actual value as a BitBuf
-func (d *D) FieldBitBufScalarFn(name string, fn func(d *D) scalar.S, sms ...scalar.Mapper) *bitio.Buffer {
+func (d *D) FieldBitBufScalarFn(name string, fn func(d *D) scalar.S, sms ...scalar.Mapper) bitio.ReaderAtSeeker {
 	v, err := d.TryFieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return fn(d), nil }, sms...)
 	if err != nil {
 		panic(IOError{Err: err, Name: name, Op: "BitBuf", Pos: d.Pos()})
@@ -28,30 +79,30 @@ func (d *D) FieldBitBufScalarFn(name string, fn func(d *D) scalar.S, sms ...scal
 	return v.ActualBitBuf()
 }
 
-// FieldBitBufFn adds a field, calls *bitio.Buffer decode function and returns actual value as a BitBuf
-func (d *D) FieldBitBufFn(name string, fn func(d *D) *bitio.Buffer, sms ...scalar.Mapper) *bitio.Buffer {
+// FieldBitBufFn adds a field, calls bitio.ReaderAtSeeker decode function and returns actual value as a BitBuf
+func (d *D) FieldBitBufFn(name string, fn func(d *D) bitio.ReaderAtSeeker, sms ...scalar.Mapper) bitio.ReaderAtSeeker {
 	return d.FieldBitBufScalarFn(name, func(d *D) scalar.S { return scalar.S{Actual: fn(d)} }, sms...)
 }
 
-// TryFieldBitBufFn tries to add a field, calls *bitio.Buffer decode function and returns actual value as a BitBuf
-func (d *D) TryFieldBitBufFn(name string, fn func(d *D) (*bitio.Buffer, error), sms ...scalar.Mapper) (*bitio.Buffer, error) {
+// TryFieldBitBufFn tries to add a field, calls bitio.ReaderAtSeeker decode function and returns actual value as a BitBuf
+func (d *D) TryFieldBitBufFn(name string, fn func(d *D) (bitio.ReaderAtSeeker, error), sms ...scalar.Mapper) (bitio.ReaderAtSeeker, error) {
 	return d.TryFieldBitBufScalarFn(name, func(d *D) (scalar.S, error) {
 		v, err := fn(d)
 		return scalar.S{Actual: v}, err
 	}, sms...)
 }
 
-// TryFieldScalarBitBufFn tries to add a field, calls *bitio.Buffer decode function and returns scalar
-func (d *D) TryFieldScalarBitBufFn(name string, fn func(d *D) (*bitio.Buffer, error), sms ...scalar.Mapper) (*scalar.S, error) {
+// TryFieldScalarBitBufFn tries to add a field, calls bitio.ReaderAtSeeker decode function and returns scalar
+func (d *D) TryFieldScalarBitBufFn(name string, fn func(d *D) (bitio.ReaderAtSeeker, error), sms ...scalar.Mapper) (*scalar.S, error) {
 	return d.TryFieldScalarFn(name, func(_ scalar.S) (scalar.S, error) {
 		v, err := fn(d)
 		return scalar.S{Actual: v}, err
 	}, sms...)
 }
 
-// FieldScalarBitBufFn tries to add a field, calls *bitio.Buffer decode function and returns scalar
-func (d *D) FieldScalarBitBufFn(name string, fn func(d *D) *bitio.Buffer, sms ...scalar.Mapper) *scalar.S {
-	v, err := d.TryFieldScalarBitBufFn(name, func(d *D) (*bitio.Buffer, error) { return fn(d), nil }, sms...)
+// FieldScalarBitBufFn tries to add a field, calls bitio.ReaderAtSeeker decode function and returns scalar
+func (d *D) FieldScalarBitBufFn(name string, fn func(d *D) bitio.ReaderAtSeeker, sms ...scalar.Mapper) *scalar.S {
+	v, err := d.TryFieldScalarBitBufFn(name, func(d *D) (bitio.ReaderAtSeeker, error) { return fn(d), nil }, sms...)
 	if err != nil {
 		panic(IOError{Err: err, Name: name, Op: "BitBuf", Pos: d.Pos()})
 	}
@@ -306,6 +357,78 @@ func (d *D) FieldScalarUFn(name string, fn func(d *D) uint64, sms ...scalar.Mapp
 		panic(IOError{Err: err, Name: name, Op: "U", Pos: d.Pos()})
 	}
 	return v
+}
+
+// Require/Assert/Validate BigInt
+
+func requireBigInt(name string, s scalar.S, desc bool, fail bool, vs ...*big.Int) (scalar.S, error) {
+	a := s.ActualBigInt()
+	for _, b := range vs {
+		if a.Cmp(b) == 0 {
+			if desc {
+				s.Description = "valid"
+			}
+			return s, nil
+		}
+	}
+	if desc {
+		s.Description = "invalid"
+	}
+	if fail {
+		return s, fmt.Errorf("failed to %s BigInt", name)
+	}
+	return s, nil
+}
+
+// RequireBigInt that actual value is one of given *big.Int values
+func (d *D) RequireBigInt(vs ...*big.Int) scalar.Mapper {
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireBigInt("require", s, false, true, vs...) })
+}
+
+// AssertBigInt validate and asserts that actual value is one of given *big.Int values
+func (d *D) AssertBigInt(vs ...*big.Int) scalar.Mapper {
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireBigInt("assert", s, true, !d.Options.Force, vs...) })
+}
+
+// ValidateBigInt validates that actual value is one of given *big.Int values
+func (d *D) ValidateBigInt(vs ...*big.Int) scalar.Mapper {
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireBigInt("validate", s, true, false, vs...) })
+}
+
+// Require/Assert/ValidatRange BigInt
+
+func requireRangeBigInt(name string, s scalar.S, desc bool, fail bool, start, end *big.Int) (scalar.S, error) {
+	a := s.ActualBigInt()
+	if a.Cmp(start) >= 0 && a.Cmp(end) <= 0 {
+		if desc {
+			s.Description = "valid"
+		}
+		return s, nil
+	}
+	if desc {
+		s.Description = "invalid"
+	}
+	if fail {
+		return s, fmt.Errorf("failed to %s BigInt range %v-%v", name, start, end)
+	}
+	return s, nil
+}
+
+// RequireBigIntRange require that actual value is in range
+func (d *D) RequireBigIntRange(start, end *big.Int) scalar.Mapper {
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireRangeBigInt("require", s, false, true, start, end) })
+}
+
+// AssertBigIntRange asserts that actual value is in range
+func (d *D) AssertBigIntRange(start, end *big.Int) scalar.Mapper {
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) {
+		return requireRangeBigInt("assert", s, true, !d.Options.Force, start, end)
+	})
+}
+
+// ValidateBigIntRange validates that actual value is in range
+func (d *D) ValidateBigIntRange(start, end *big.Int) scalar.Mapper {
+	return scalar.Fn(func(s scalar.S) (scalar.S, error) { return requireRangeBigInt("validate", s, true, false, start, end) })
 }
 
 // Require/Assert/Validate Bool
@@ -635,10 +758,10 @@ func (d *D) ValidateURange(start, end uint64) scalar.Mapper {
 // Reader RawLen
 
 // TryRawLen tries to read nBits raw bits
-func (d *D) TryRawLen(nBits int64) (*bitio.Buffer, error) { return d.tryBitBuf(nBits) }
+func (d *D) TryRawLen(nBits int64) (bitio.ReaderAtSeeker, error) { return d.tryBitBuf(nBits) }
 
 // RawLen reads nBits raw bits
-func (d *D) RawLen(nBits int64) *bitio.Buffer {
+func (d *D) RawLen(nBits int64) bitio.ReaderAtSeeker {
 	v, err := d.tryBitBuf(nBits)
 	if err != nil {
 		panic(IOError{Err: err, Op: "RawLen", Pos: d.Pos()})
@@ -669,13 +792,13 @@ func (d *D) FieldScalarRawLen(name string, nBits int64, sms ...scalar.Mapper) *s
 }
 
 // TryFieldRawLen tries to add a field and read nBits raw bits
-func (d *D) TryFieldRawLen(name string, nBits int64, sms ...scalar.Mapper) (*bitio.Buffer, error) {
+func (d *D) TryFieldRawLen(name string, nBits int64, sms ...scalar.Mapper) (bitio.ReaderAtSeeker, error) {
 	s, err := d.TryFieldScalarRawLen(name, nBits, sms...)
 	return s.ActualBitBuf(), err
 }
 
 // FieldRawLen adds a field and reads nBits raw bits
-func (d *D) FieldRawLen(name string, nBits int64, sms ...scalar.Mapper) *bitio.Buffer {
+func (d *D) FieldRawLen(name string, nBits int64, sms ...scalar.Mapper) bitio.ReaderAtSeeker {
 	return d.FieldScalarRawLen(name, nBits, sms...).ActualBitBuf()
 }
 
@@ -729,11 +852,11 @@ func (d *D) FieldBool(name string, sms ...scalar.Mapper) bool {
 // Reader U
 
 // TryU tries to read nBits bits unsigned integer in current endian
-func (d *D) TryU(nBits int) (uint64, error) { return d.tryUE(nBits, d.Endian) }
+func (d *D) TryU(nBits int) (uint64, error) { return d.tryUEndian(nBits, d.Endian) }
 
 // U reads nBits bits unsigned integer in current endian
 func (d *D) U(nBits int) uint64 {
-	v, err := d.tryUE(nBits, d.Endian)
+	v, err := d.tryUEndian(nBits, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U", Pos: d.Pos()})
 	}
@@ -743,7 +866,7 @@ func (d *D) U(nBits int) uint64 {
 // TryFieldScalarU tries to add a field and read nBits bits unsigned integer in current endian
 func (d *D) TryFieldScalarU(name string, nBits int, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(nBits, d.Endian)
+		v, err := d.tryUEndian(nBits, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -776,11 +899,11 @@ func (d *D) FieldU(name string, nBits int, sms ...scalar.Mapper) uint64 {
 // Reader UE
 
 // TryUE tries to read nBits unsigned integer in specified endian
-func (d *D) TryUE(nBits int, endian Endian) (uint64, error) { return d.tryUE(nBits, endian) }
+func (d *D) TryUE(nBits int, endian Endian) (uint64, error) { return d.tryUEndian(nBits, endian) }
 
 // UE reads nBits unsigned integer in specified endian
 func (d *D) UE(nBits int, endian Endian) uint64 {
-	v, err := d.tryUE(nBits, endian)
+	v, err := d.tryUEndian(nBits, endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "UE", Pos: d.Pos()})
 	}
@@ -790,7 +913,7 @@ func (d *D) UE(nBits int, endian Endian) uint64 {
 // TryFieldScalarUE tries to add a field and read nBits unsigned integer in specified endian
 func (d *D) TryFieldScalarUE(name string, nBits int, endian Endian, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(nBits, endian)
+		v, err := d.tryUEndian(nBits, endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -823,11 +946,11 @@ func (d *D) FieldUE(name string, nBits int, endian Endian, sms ...scalar.Mapper)
 // Reader U1
 
 // TryU1 tries to read 1 bit unsigned integer in current endian
-func (d *D) TryU1() (uint64, error) { return d.tryUE(1, d.Endian) }
+func (d *D) TryU1() (uint64, error) { return d.tryUEndian(1, d.Endian) }
 
 // U1 reads 1 bit unsigned integer in current endian
 func (d *D) U1() uint64 {
-	v, err := d.tryUE(1, d.Endian)
+	v, err := d.tryUEndian(1, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U1", Pos: d.Pos()})
 	}
@@ -837,7 +960,7 @@ func (d *D) U1() uint64 {
 // TryFieldScalarU1 tries to add a field and read 1 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU1(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(1, d.Endian)
+		v, err := d.tryUEndian(1, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -870,11 +993,11 @@ func (d *D) FieldU1(name string, sms ...scalar.Mapper) uint64 {
 // Reader U2
 
 // TryU2 tries to read 2 bit unsigned integer in current endian
-func (d *D) TryU2() (uint64, error) { return d.tryUE(2, d.Endian) }
+func (d *D) TryU2() (uint64, error) { return d.tryUEndian(2, d.Endian) }
 
 // U2 reads 2 bit unsigned integer in current endian
 func (d *D) U2() uint64 {
-	v, err := d.tryUE(2, d.Endian)
+	v, err := d.tryUEndian(2, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U2", Pos: d.Pos()})
 	}
@@ -884,7 +1007,7 @@ func (d *D) U2() uint64 {
 // TryFieldScalarU2 tries to add a field and read 2 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU2(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(2, d.Endian)
+		v, err := d.tryUEndian(2, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -917,11 +1040,11 @@ func (d *D) FieldU2(name string, sms ...scalar.Mapper) uint64 {
 // Reader U3
 
 // TryU3 tries to read 3 bit unsigned integer in current endian
-func (d *D) TryU3() (uint64, error) { return d.tryUE(3, d.Endian) }
+func (d *D) TryU3() (uint64, error) { return d.tryUEndian(3, d.Endian) }
 
 // U3 reads 3 bit unsigned integer in current endian
 func (d *D) U3() uint64 {
-	v, err := d.tryUE(3, d.Endian)
+	v, err := d.tryUEndian(3, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U3", Pos: d.Pos()})
 	}
@@ -931,7 +1054,7 @@ func (d *D) U3() uint64 {
 // TryFieldScalarU3 tries to add a field and read 3 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU3(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(3, d.Endian)
+		v, err := d.tryUEndian(3, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -964,11 +1087,11 @@ func (d *D) FieldU3(name string, sms ...scalar.Mapper) uint64 {
 // Reader U4
 
 // TryU4 tries to read 4 bit unsigned integer in current endian
-func (d *D) TryU4() (uint64, error) { return d.tryUE(4, d.Endian) }
+func (d *D) TryU4() (uint64, error) { return d.tryUEndian(4, d.Endian) }
 
 // U4 reads 4 bit unsigned integer in current endian
 func (d *D) U4() uint64 {
-	v, err := d.tryUE(4, d.Endian)
+	v, err := d.tryUEndian(4, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U4", Pos: d.Pos()})
 	}
@@ -978,7 +1101,7 @@ func (d *D) U4() uint64 {
 // TryFieldScalarU4 tries to add a field and read 4 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU4(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(4, d.Endian)
+		v, err := d.tryUEndian(4, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -1011,11 +1134,11 @@ func (d *D) FieldU4(name string, sms ...scalar.Mapper) uint64 {
 // Reader U5
 
 // TryU5 tries to read 5 bit unsigned integer in current endian
-func (d *D) TryU5() (uint64, error) { return d.tryUE(5, d.Endian) }
+func (d *D) TryU5() (uint64, error) { return d.tryUEndian(5, d.Endian) }
 
 // U5 reads 5 bit unsigned integer in current endian
 func (d *D) U5() uint64 {
-	v, err := d.tryUE(5, d.Endian)
+	v, err := d.tryUEndian(5, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U5", Pos: d.Pos()})
 	}
@@ -1025,7 +1148,7 @@ func (d *D) U5() uint64 {
 // TryFieldScalarU5 tries to add a field and read 5 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU5(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(5, d.Endian)
+		v, err := d.tryUEndian(5, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -1058,11 +1181,11 @@ func (d *D) FieldU5(name string, sms ...scalar.Mapper) uint64 {
 // Reader U6
 
 // TryU6 tries to read 6 bit unsigned integer in current endian
-func (d *D) TryU6() (uint64, error) { return d.tryUE(6, d.Endian) }
+func (d *D) TryU6() (uint64, error) { return d.tryUEndian(6, d.Endian) }
 
 // U6 reads 6 bit unsigned integer in current endian
 func (d *D) U6() uint64 {
-	v, err := d.tryUE(6, d.Endian)
+	v, err := d.tryUEndian(6, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U6", Pos: d.Pos()})
 	}
@@ -1072,7 +1195,7 @@ func (d *D) U6() uint64 {
 // TryFieldScalarU6 tries to add a field and read 6 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU6(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(6, d.Endian)
+		v, err := d.tryUEndian(6, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -1105,11 +1228,11 @@ func (d *D) FieldU6(name string, sms ...scalar.Mapper) uint64 {
 // Reader U7
 
 // TryU7 tries to read 7 bit unsigned integer in current endian
-func (d *D) TryU7() (uint64, error) { return d.tryUE(7, d.Endian) }
+func (d *D) TryU7() (uint64, error) { return d.tryUEndian(7, d.Endian) }
 
 // U7 reads 7 bit unsigned integer in current endian
 func (d *D) U7() uint64 {
-	v, err := d.tryUE(7, d.Endian)
+	v, err := d.tryUEndian(7, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U7", Pos: d.Pos()})
 	}
@@ -1119,7 +1242,7 @@ func (d *D) U7() uint64 {
 // TryFieldScalarU7 tries to add a field and read 7 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU7(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(7, d.Endian)
+		v, err := d.tryUEndian(7, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -1152,11 +1275,11 @@ func (d *D) FieldU7(name string, sms ...scalar.Mapper) uint64 {
 // Reader U8
 
 // TryU8 tries to read 8 bit unsigned integer in current endian
-func (d *D) TryU8() (uint64, error) { return d.tryUE(8, d.Endian) }
+func (d *D) TryU8() (uint64, error) { return d.tryUEndian(8, d.Endian) }
 
 // U8 reads 8 bit unsigned integer in current endian
 func (d *D) U8() uint64 {
-	v, err := d.tryUE(8, d.Endian)
+	v, err := d.tryUEndian(8, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U8", Pos: d.Pos()})
 	}
@@ -1166,7 +1289,7 @@ func (d *D) U8() uint64 {
 // TryFieldScalarU8 tries to add a field and read 8 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU8(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(8, d.Endian)
+		v, err := d.tryUEndian(8, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -1199,11 +1322,11 @@ func (d *D) FieldU8(name string, sms ...scalar.Mapper) uint64 {
 // Reader U9
 
 // TryU9 tries to read 9 bit unsigned integer in current endian
-func (d *D) TryU9() (uint64, error) { return d.tryUE(9, d.Endian) }
+func (d *D) TryU9() (uint64, error) { return d.tryUEndian(9, d.Endian) }
 
 // U9 reads 9 bit unsigned integer in current endian
 func (d *D) U9() uint64 {
-	v, err := d.tryUE(9, d.Endian)
+	v, err := d.tryUEndian(9, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U9", Pos: d.Pos()})
 	}
@@ -1213,7 +1336,7 @@ func (d *D) U9() uint64 {
 // TryFieldScalarU9 tries to add a field and read 9 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU9(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(9, d.Endian)
+		v, err := d.tryUEndian(9, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -1246,11 +1369,11 @@ func (d *D) FieldU9(name string, sms ...scalar.Mapper) uint64 {
 // Reader U10
 
 // TryU10 tries to read 10 bit unsigned integer in current endian
-func (d *D) TryU10() (uint64, error) { return d.tryUE(10, d.Endian) }
+func (d *D) TryU10() (uint64, error) { return d.tryUEndian(10, d.Endian) }
 
 // U10 reads 10 bit unsigned integer in current endian
 func (d *D) U10() uint64 {
-	v, err := d.tryUE(10, d.Endian)
+	v, err := d.tryUEndian(10, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U10", Pos: d.Pos()})
 	}
@@ -1260,7 +1383,7 @@ func (d *D) U10() uint64 {
 // TryFieldScalarU10 tries to add a field and read 10 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU10(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(10, d.Endian)
+		v, err := d.tryUEndian(10, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -1293,11 +1416,11 @@ func (d *D) FieldU10(name string, sms ...scalar.Mapper) uint64 {
 // Reader U11
 
 // TryU11 tries to read 11 bit unsigned integer in current endian
-func (d *D) TryU11() (uint64, error) { return d.tryUE(11, d.Endian) }
+func (d *D) TryU11() (uint64, error) { return d.tryUEndian(11, d.Endian) }
 
 // U11 reads 11 bit unsigned integer in current endian
 func (d *D) U11() uint64 {
-	v, err := d.tryUE(11, d.Endian)
+	v, err := d.tryUEndian(11, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U11", Pos: d.Pos()})
 	}
@@ -1307,7 +1430,7 @@ func (d *D) U11() uint64 {
 // TryFieldScalarU11 tries to add a field and read 11 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU11(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(11, d.Endian)
+		v, err := d.tryUEndian(11, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -1340,11 +1463,11 @@ func (d *D) FieldU11(name string, sms ...scalar.Mapper) uint64 {
 // Reader U12
 
 // TryU12 tries to read 12 bit unsigned integer in current endian
-func (d *D) TryU12() (uint64, error) { return d.tryUE(12, d.Endian) }
+func (d *D) TryU12() (uint64, error) { return d.tryUEndian(12, d.Endian) }
 
 // U12 reads 12 bit unsigned integer in current endian
 func (d *D) U12() uint64 {
-	v, err := d.tryUE(12, d.Endian)
+	v, err := d.tryUEndian(12, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U12", Pos: d.Pos()})
 	}
@@ -1354,7 +1477,7 @@ func (d *D) U12() uint64 {
 // TryFieldScalarU12 tries to add a field and read 12 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU12(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(12, d.Endian)
+		v, err := d.tryUEndian(12, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -1387,11 +1510,11 @@ func (d *D) FieldU12(name string, sms ...scalar.Mapper) uint64 {
 // Reader U13
 
 // TryU13 tries to read 13 bit unsigned integer in current endian
-func (d *D) TryU13() (uint64, error) { return d.tryUE(13, d.Endian) }
+func (d *D) TryU13() (uint64, error) { return d.tryUEndian(13, d.Endian) }
 
 // U13 reads 13 bit unsigned integer in current endian
 func (d *D) U13() uint64 {
-	v, err := d.tryUE(13, d.Endian)
+	v, err := d.tryUEndian(13, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U13", Pos: d.Pos()})
 	}
@@ -1401,7 +1524,7 @@ func (d *D) U13() uint64 {
 // TryFieldScalarU13 tries to add a field and read 13 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU13(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(13, d.Endian)
+		v, err := d.tryUEndian(13, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -1434,11 +1557,11 @@ func (d *D) FieldU13(name string, sms ...scalar.Mapper) uint64 {
 // Reader U14
 
 // TryU14 tries to read 14 bit unsigned integer in current endian
-func (d *D) TryU14() (uint64, error) { return d.tryUE(14, d.Endian) }
+func (d *D) TryU14() (uint64, error) { return d.tryUEndian(14, d.Endian) }
 
 // U14 reads 14 bit unsigned integer in current endian
 func (d *D) U14() uint64 {
-	v, err := d.tryUE(14, d.Endian)
+	v, err := d.tryUEndian(14, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U14", Pos: d.Pos()})
 	}
@@ -1448,7 +1571,7 @@ func (d *D) U14() uint64 {
 // TryFieldScalarU14 tries to add a field and read 14 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU14(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(14, d.Endian)
+		v, err := d.tryUEndian(14, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -1481,11 +1604,11 @@ func (d *D) FieldU14(name string, sms ...scalar.Mapper) uint64 {
 // Reader U15
 
 // TryU15 tries to read 15 bit unsigned integer in current endian
-func (d *D) TryU15() (uint64, error) { return d.tryUE(15, d.Endian) }
+func (d *D) TryU15() (uint64, error) { return d.tryUEndian(15, d.Endian) }
 
 // U15 reads 15 bit unsigned integer in current endian
 func (d *D) U15() uint64 {
-	v, err := d.tryUE(15, d.Endian)
+	v, err := d.tryUEndian(15, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U15", Pos: d.Pos()})
 	}
@@ -1495,7 +1618,7 @@ func (d *D) U15() uint64 {
 // TryFieldScalarU15 tries to add a field and read 15 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU15(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(15, d.Endian)
+		v, err := d.tryUEndian(15, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -1528,11 +1651,11 @@ func (d *D) FieldU15(name string, sms ...scalar.Mapper) uint64 {
 // Reader U16
 
 // TryU16 tries to read 16 bit unsigned integer in current endian
-func (d *D) TryU16() (uint64, error) { return d.tryUE(16, d.Endian) }
+func (d *D) TryU16() (uint64, error) { return d.tryUEndian(16, d.Endian) }
 
 // U16 reads 16 bit unsigned integer in current endian
 func (d *D) U16() uint64 {
-	v, err := d.tryUE(16, d.Endian)
+	v, err := d.tryUEndian(16, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U16", Pos: d.Pos()})
 	}
@@ -1542,7 +1665,7 @@ func (d *D) U16() uint64 {
 // TryFieldScalarU16 tries to add a field and read 16 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU16(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(16, d.Endian)
+		v, err := d.tryUEndian(16, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -1575,11 +1698,11 @@ func (d *D) FieldU16(name string, sms ...scalar.Mapper) uint64 {
 // Reader U17
 
 // TryU17 tries to read 17 bit unsigned integer in current endian
-func (d *D) TryU17() (uint64, error) { return d.tryUE(17, d.Endian) }
+func (d *D) TryU17() (uint64, error) { return d.tryUEndian(17, d.Endian) }
 
 // U17 reads 17 bit unsigned integer in current endian
 func (d *D) U17() uint64 {
-	v, err := d.tryUE(17, d.Endian)
+	v, err := d.tryUEndian(17, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U17", Pos: d.Pos()})
 	}
@@ -1589,7 +1712,7 @@ func (d *D) U17() uint64 {
 // TryFieldScalarU17 tries to add a field and read 17 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU17(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(17, d.Endian)
+		v, err := d.tryUEndian(17, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -1622,11 +1745,11 @@ func (d *D) FieldU17(name string, sms ...scalar.Mapper) uint64 {
 // Reader U18
 
 // TryU18 tries to read 18 bit unsigned integer in current endian
-func (d *D) TryU18() (uint64, error) { return d.tryUE(18, d.Endian) }
+func (d *D) TryU18() (uint64, error) { return d.tryUEndian(18, d.Endian) }
 
 // U18 reads 18 bit unsigned integer in current endian
 func (d *D) U18() uint64 {
-	v, err := d.tryUE(18, d.Endian)
+	v, err := d.tryUEndian(18, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U18", Pos: d.Pos()})
 	}
@@ -1636,7 +1759,7 @@ func (d *D) U18() uint64 {
 // TryFieldScalarU18 tries to add a field and read 18 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU18(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(18, d.Endian)
+		v, err := d.tryUEndian(18, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -1669,11 +1792,11 @@ func (d *D) FieldU18(name string, sms ...scalar.Mapper) uint64 {
 // Reader U19
 
 // TryU19 tries to read 19 bit unsigned integer in current endian
-func (d *D) TryU19() (uint64, error) { return d.tryUE(19, d.Endian) }
+func (d *D) TryU19() (uint64, error) { return d.tryUEndian(19, d.Endian) }
 
 // U19 reads 19 bit unsigned integer in current endian
 func (d *D) U19() uint64 {
-	v, err := d.tryUE(19, d.Endian)
+	v, err := d.tryUEndian(19, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U19", Pos: d.Pos()})
 	}
@@ -1683,7 +1806,7 @@ func (d *D) U19() uint64 {
 // TryFieldScalarU19 tries to add a field and read 19 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU19(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(19, d.Endian)
+		v, err := d.tryUEndian(19, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -1716,11 +1839,11 @@ func (d *D) FieldU19(name string, sms ...scalar.Mapper) uint64 {
 // Reader U20
 
 // TryU20 tries to read 20 bit unsigned integer in current endian
-func (d *D) TryU20() (uint64, error) { return d.tryUE(20, d.Endian) }
+func (d *D) TryU20() (uint64, error) { return d.tryUEndian(20, d.Endian) }
 
 // U20 reads 20 bit unsigned integer in current endian
 func (d *D) U20() uint64 {
-	v, err := d.tryUE(20, d.Endian)
+	v, err := d.tryUEndian(20, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U20", Pos: d.Pos()})
 	}
@@ -1730,7 +1853,7 @@ func (d *D) U20() uint64 {
 // TryFieldScalarU20 tries to add a field and read 20 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU20(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(20, d.Endian)
+		v, err := d.tryUEndian(20, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -1763,11 +1886,11 @@ func (d *D) FieldU20(name string, sms ...scalar.Mapper) uint64 {
 // Reader U21
 
 // TryU21 tries to read 21 bit unsigned integer in current endian
-func (d *D) TryU21() (uint64, error) { return d.tryUE(21, d.Endian) }
+func (d *D) TryU21() (uint64, error) { return d.tryUEndian(21, d.Endian) }
 
 // U21 reads 21 bit unsigned integer in current endian
 func (d *D) U21() uint64 {
-	v, err := d.tryUE(21, d.Endian)
+	v, err := d.tryUEndian(21, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U21", Pos: d.Pos()})
 	}
@@ -1777,7 +1900,7 @@ func (d *D) U21() uint64 {
 // TryFieldScalarU21 tries to add a field and read 21 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU21(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(21, d.Endian)
+		v, err := d.tryUEndian(21, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -1810,11 +1933,11 @@ func (d *D) FieldU21(name string, sms ...scalar.Mapper) uint64 {
 // Reader U22
 
 // TryU22 tries to read 22 bit unsigned integer in current endian
-func (d *D) TryU22() (uint64, error) { return d.tryUE(22, d.Endian) }
+func (d *D) TryU22() (uint64, error) { return d.tryUEndian(22, d.Endian) }
 
 // U22 reads 22 bit unsigned integer in current endian
 func (d *D) U22() uint64 {
-	v, err := d.tryUE(22, d.Endian)
+	v, err := d.tryUEndian(22, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U22", Pos: d.Pos()})
 	}
@@ -1824,7 +1947,7 @@ func (d *D) U22() uint64 {
 // TryFieldScalarU22 tries to add a field and read 22 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU22(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(22, d.Endian)
+		v, err := d.tryUEndian(22, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -1857,11 +1980,11 @@ func (d *D) FieldU22(name string, sms ...scalar.Mapper) uint64 {
 // Reader U23
 
 // TryU23 tries to read 23 bit unsigned integer in current endian
-func (d *D) TryU23() (uint64, error) { return d.tryUE(23, d.Endian) }
+func (d *D) TryU23() (uint64, error) { return d.tryUEndian(23, d.Endian) }
 
 // U23 reads 23 bit unsigned integer in current endian
 func (d *D) U23() uint64 {
-	v, err := d.tryUE(23, d.Endian)
+	v, err := d.tryUEndian(23, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U23", Pos: d.Pos()})
 	}
@@ -1871,7 +1994,7 @@ func (d *D) U23() uint64 {
 // TryFieldScalarU23 tries to add a field and read 23 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU23(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(23, d.Endian)
+		v, err := d.tryUEndian(23, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -1904,11 +2027,11 @@ func (d *D) FieldU23(name string, sms ...scalar.Mapper) uint64 {
 // Reader U24
 
 // TryU24 tries to read 24 bit unsigned integer in current endian
-func (d *D) TryU24() (uint64, error) { return d.tryUE(24, d.Endian) }
+func (d *D) TryU24() (uint64, error) { return d.tryUEndian(24, d.Endian) }
 
 // U24 reads 24 bit unsigned integer in current endian
 func (d *D) U24() uint64 {
-	v, err := d.tryUE(24, d.Endian)
+	v, err := d.tryUEndian(24, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U24", Pos: d.Pos()})
 	}
@@ -1918,7 +2041,7 @@ func (d *D) U24() uint64 {
 // TryFieldScalarU24 tries to add a field and read 24 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU24(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(24, d.Endian)
+		v, err := d.tryUEndian(24, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -1951,11 +2074,11 @@ func (d *D) FieldU24(name string, sms ...scalar.Mapper) uint64 {
 // Reader U25
 
 // TryU25 tries to read 25 bit unsigned integer in current endian
-func (d *D) TryU25() (uint64, error) { return d.tryUE(25, d.Endian) }
+func (d *D) TryU25() (uint64, error) { return d.tryUEndian(25, d.Endian) }
 
 // U25 reads 25 bit unsigned integer in current endian
 func (d *D) U25() uint64 {
-	v, err := d.tryUE(25, d.Endian)
+	v, err := d.tryUEndian(25, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U25", Pos: d.Pos()})
 	}
@@ -1965,7 +2088,7 @@ func (d *D) U25() uint64 {
 // TryFieldScalarU25 tries to add a field and read 25 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU25(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(25, d.Endian)
+		v, err := d.tryUEndian(25, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -1998,11 +2121,11 @@ func (d *D) FieldU25(name string, sms ...scalar.Mapper) uint64 {
 // Reader U26
 
 // TryU26 tries to read 26 bit unsigned integer in current endian
-func (d *D) TryU26() (uint64, error) { return d.tryUE(26, d.Endian) }
+func (d *D) TryU26() (uint64, error) { return d.tryUEndian(26, d.Endian) }
 
 // U26 reads 26 bit unsigned integer in current endian
 func (d *D) U26() uint64 {
-	v, err := d.tryUE(26, d.Endian)
+	v, err := d.tryUEndian(26, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U26", Pos: d.Pos()})
 	}
@@ -2012,7 +2135,7 @@ func (d *D) U26() uint64 {
 // TryFieldScalarU26 tries to add a field and read 26 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU26(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(26, d.Endian)
+		v, err := d.tryUEndian(26, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -2045,11 +2168,11 @@ func (d *D) FieldU26(name string, sms ...scalar.Mapper) uint64 {
 // Reader U27
 
 // TryU27 tries to read 27 bit unsigned integer in current endian
-func (d *D) TryU27() (uint64, error) { return d.tryUE(27, d.Endian) }
+func (d *D) TryU27() (uint64, error) { return d.tryUEndian(27, d.Endian) }
 
 // U27 reads 27 bit unsigned integer in current endian
 func (d *D) U27() uint64 {
-	v, err := d.tryUE(27, d.Endian)
+	v, err := d.tryUEndian(27, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U27", Pos: d.Pos()})
 	}
@@ -2059,7 +2182,7 @@ func (d *D) U27() uint64 {
 // TryFieldScalarU27 tries to add a field and read 27 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU27(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(27, d.Endian)
+		v, err := d.tryUEndian(27, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -2092,11 +2215,11 @@ func (d *D) FieldU27(name string, sms ...scalar.Mapper) uint64 {
 // Reader U28
 
 // TryU28 tries to read 28 bit unsigned integer in current endian
-func (d *D) TryU28() (uint64, error) { return d.tryUE(28, d.Endian) }
+func (d *D) TryU28() (uint64, error) { return d.tryUEndian(28, d.Endian) }
 
 // U28 reads 28 bit unsigned integer in current endian
 func (d *D) U28() uint64 {
-	v, err := d.tryUE(28, d.Endian)
+	v, err := d.tryUEndian(28, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U28", Pos: d.Pos()})
 	}
@@ -2106,7 +2229,7 @@ func (d *D) U28() uint64 {
 // TryFieldScalarU28 tries to add a field and read 28 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU28(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(28, d.Endian)
+		v, err := d.tryUEndian(28, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -2139,11 +2262,11 @@ func (d *D) FieldU28(name string, sms ...scalar.Mapper) uint64 {
 // Reader U29
 
 // TryU29 tries to read 29 bit unsigned integer in current endian
-func (d *D) TryU29() (uint64, error) { return d.tryUE(29, d.Endian) }
+func (d *D) TryU29() (uint64, error) { return d.tryUEndian(29, d.Endian) }
 
 // U29 reads 29 bit unsigned integer in current endian
 func (d *D) U29() uint64 {
-	v, err := d.tryUE(29, d.Endian)
+	v, err := d.tryUEndian(29, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U29", Pos: d.Pos()})
 	}
@@ -2153,7 +2276,7 @@ func (d *D) U29() uint64 {
 // TryFieldScalarU29 tries to add a field and read 29 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU29(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(29, d.Endian)
+		v, err := d.tryUEndian(29, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -2186,11 +2309,11 @@ func (d *D) FieldU29(name string, sms ...scalar.Mapper) uint64 {
 // Reader U30
 
 // TryU30 tries to read 30 bit unsigned integer in current endian
-func (d *D) TryU30() (uint64, error) { return d.tryUE(30, d.Endian) }
+func (d *D) TryU30() (uint64, error) { return d.tryUEndian(30, d.Endian) }
 
 // U30 reads 30 bit unsigned integer in current endian
 func (d *D) U30() uint64 {
-	v, err := d.tryUE(30, d.Endian)
+	v, err := d.tryUEndian(30, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U30", Pos: d.Pos()})
 	}
@@ -2200,7 +2323,7 @@ func (d *D) U30() uint64 {
 // TryFieldScalarU30 tries to add a field and read 30 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU30(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(30, d.Endian)
+		v, err := d.tryUEndian(30, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -2233,11 +2356,11 @@ func (d *D) FieldU30(name string, sms ...scalar.Mapper) uint64 {
 // Reader U31
 
 // TryU31 tries to read 31 bit unsigned integer in current endian
-func (d *D) TryU31() (uint64, error) { return d.tryUE(31, d.Endian) }
+func (d *D) TryU31() (uint64, error) { return d.tryUEndian(31, d.Endian) }
 
 // U31 reads 31 bit unsigned integer in current endian
 func (d *D) U31() uint64 {
-	v, err := d.tryUE(31, d.Endian)
+	v, err := d.tryUEndian(31, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U31", Pos: d.Pos()})
 	}
@@ -2247,7 +2370,7 @@ func (d *D) U31() uint64 {
 // TryFieldScalarU31 tries to add a field and read 31 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU31(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(31, d.Endian)
+		v, err := d.tryUEndian(31, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -2280,11 +2403,11 @@ func (d *D) FieldU31(name string, sms ...scalar.Mapper) uint64 {
 // Reader U32
 
 // TryU32 tries to read 32 bit unsigned integer in current endian
-func (d *D) TryU32() (uint64, error) { return d.tryUE(32, d.Endian) }
+func (d *D) TryU32() (uint64, error) { return d.tryUEndian(32, d.Endian) }
 
 // U32 reads 32 bit unsigned integer in current endian
 func (d *D) U32() uint64 {
-	v, err := d.tryUE(32, d.Endian)
+	v, err := d.tryUEndian(32, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U32", Pos: d.Pos()})
 	}
@@ -2294,7 +2417,7 @@ func (d *D) U32() uint64 {
 // TryFieldScalarU32 tries to add a field and read 32 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU32(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(32, d.Endian)
+		v, err := d.tryUEndian(32, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -2327,11 +2450,11 @@ func (d *D) FieldU32(name string, sms ...scalar.Mapper) uint64 {
 // Reader U33
 
 // TryU33 tries to read 33 bit unsigned integer in current endian
-func (d *D) TryU33() (uint64, error) { return d.tryUE(33, d.Endian) }
+func (d *D) TryU33() (uint64, error) { return d.tryUEndian(33, d.Endian) }
 
 // U33 reads 33 bit unsigned integer in current endian
 func (d *D) U33() uint64 {
-	v, err := d.tryUE(33, d.Endian)
+	v, err := d.tryUEndian(33, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U33", Pos: d.Pos()})
 	}
@@ -2341,7 +2464,7 @@ func (d *D) U33() uint64 {
 // TryFieldScalarU33 tries to add a field and read 33 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU33(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(33, d.Endian)
+		v, err := d.tryUEndian(33, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -2374,11 +2497,11 @@ func (d *D) FieldU33(name string, sms ...scalar.Mapper) uint64 {
 // Reader U34
 
 // TryU34 tries to read 34 bit unsigned integer in current endian
-func (d *D) TryU34() (uint64, error) { return d.tryUE(34, d.Endian) }
+func (d *D) TryU34() (uint64, error) { return d.tryUEndian(34, d.Endian) }
 
 // U34 reads 34 bit unsigned integer in current endian
 func (d *D) U34() uint64 {
-	v, err := d.tryUE(34, d.Endian)
+	v, err := d.tryUEndian(34, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U34", Pos: d.Pos()})
 	}
@@ -2388,7 +2511,7 @@ func (d *D) U34() uint64 {
 // TryFieldScalarU34 tries to add a field and read 34 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU34(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(34, d.Endian)
+		v, err := d.tryUEndian(34, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -2421,11 +2544,11 @@ func (d *D) FieldU34(name string, sms ...scalar.Mapper) uint64 {
 // Reader U35
 
 // TryU35 tries to read 35 bit unsigned integer in current endian
-func (d *D) TryU35() (uint64, error) { return d.tryUE(35, d.Endian) }
+func (d *D) TryU35() (uint64, error) { return d.tryUEndian(35, d.Endian) }
 
 // U35 reads 35 bit unsigned integer in current endian
 func (d *D) U35() uint64 {
-	v, err := d.tryUE(35, d.Endian)
+	v, err := d.tryUEndian(35, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U35", Pos: d.Pos()})
 	}
@@ -2435,7 +2558,7 @@ func (d *D) U35() uint64 {
 // TryFieldScalarU35 tries to add a field and read 35 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU35(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(35, d.Endian)
+		v, err := d.tryUEndian(35, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -2468,11 +2591,11 @@ func (d *D) FieldU35(name string, sms ...scalar.Mapper) uint64 {
 // Reader U36
 
 // TryU36 tries to read 36 bit unsigned integer in current endian
-func (d *D) TryU36() (uint64, error) { return d.tryUE(36, d.Endian) }
+func (d *D) TryU36() (uint64, error) { return d.tryUEndian(36, d.Endian) }
 
 // U36 reads 36 bit unsigned integer in current endian
 func (d *D) U36() uint64 {
-	v, err := d.tryUE(36, d.Endian)
+	v, err := d.tryUEndian(36, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U36", Pos: d.Pos()})
 	}
@@ -2482,7 +2605,7 @@ func (d *D) U36() uint64 {
 // TryFieldScalarU36 tries to add a field and read 36 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU36(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(36, d.Endian)
+		v, err := d.tryUEndian(36, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -2515,11 +2638,11 @@ func (d *D) FieldU36(name string, sms ...scalar.Mapper) uint64 {
 // Reader U37
 
 // TryU37 tries to read 37 bit unsigned integer in current endian
-func (d *D) TryU37() (uint64, error) { return d.tryUE(37, d.Endian) }
+func (d *D) TryU37() (uint64, error) { return d.tryUEndian(37, d.Endian) }
 
 // U37 reads 37 bit unsigned integer in current endian
 func (d *D) U37() uint64 {
-	v, err := d.tryUE(37, d.Endian)
+	v, err := d.tryUEndian(37, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U37", Pos: d.Pos()})
 	}
@@ -2529,7 +2652,7 @@ func (d *D) U37() uint64 {
 // TryFieldScalarU37 tries to add a field and read 37 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU37(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(37, d.Endian)
+		v, err := d.tryUEndian(37, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -2562,11 +2685,11 @@ func (d *D) FieldU37(name string, sms ...scalar.Mapper) uint64 {
 // Reader U38
 
 // TryU38 tries to read 38 bit unsigned integer in current endian
-func (d *D) TryU38() (uint64, error) { return d.tryUE(38, d.Endian) }
+func (d *D) TryU38() (uint64, error) { return d.tryUEndian(38, d.Endian) }
 
 // U38 reads 38 bit unsigned integer in current endian
 func (d *D) U38() uint64 {
-	v, err := d.tryUE(38, d.Endian)
+	v, err := d.tryUEndian(38, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U38", Pos: d.Pos()})
 	}
@@ -2576,7 +2699,7 @@ func (d *D) U38() uint64 {
 // TryFieldScalarU38 tries to add a field and read 38 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU38(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(38, d.Endian)
+		v, err := d.tryUEndian(38, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -2609,11 +2732,11 @@ func (d *D) FieldU38(name string, sms ...scalar.Mapper) uint64 {
 // Reader U39
 
 // TryU39 tries to read 39 bit unsigned integer in current endian
-func (d *D) TryU39() (uint64, error) { return d.tryUE(39, d.Endian) }
+func (d *D) TryU39() (uint64, error) { return d.tryUEndian(39, d.Endian) }
 
 // U39 reads 39 bit unsigned integer in current endian
 func (d *D) U39() uint64 {
-	v, err := d.tryUE(39, d.Endian)
+	v, err := d.tryUEndian(39, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U39", Pos: d.Pos()})
 	}
@@ -2623,7 +2746,7 @@ func (d *D) U39() uint64 {
 // TryFieldScalarU39 tries to add a field and read 39 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU39(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(39, d.Endian)
+		v, err := d.tryUEndian(39, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -2656,11 +2779,11 @@ func (d *D) FieldU39(name string, sms ...scalar.Mapper) uint64 {
 // Reader U40
 
 // TryU40 tries to read 40 bit unsigned integer in current endian
-func (d *D) TryU40() (uint64, error) { return d.tryUE(40, d.Endian) }
+func (d *D) TryU40() (uint64, error) { return d.tryUEndian(40, d.Endian) }
 
 // U40 reads 40 bit unsigned integer in current endian
 func (d *D) U40() uint64 {
-	v, err := d.tryUE(40, d.Endian)
+	v, err := d.tryUEndian(40, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U40", Pos: d.Pos()})
 	}
@@ -2670,7 +2793,7 @@ func (d *D) U40() uint64 {
 // TryFieldScalarU40 tries to add a field and read 40 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU40(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(40, d.Endian)
+		v, err := d.tryUEndian(40, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -2703,11 +2826,11 @@ func (d *D) FieldU40(name string, sms ...scalar.Mapper) uint64 {
 // Reader U41
 
 // TryU41 tries to read 41 bit unsigned integer in current endian
-func (d *D) TryU41() (uint64, error) { return d.tryUE(41, d.Endian) }
+func (d *D) TryU41() (uint64, error) { return d.tryUEndian(41, d.Endian) }
 
 // U41 reads 41 bit unsigned integer in current endian
 func (d *D) U41() uint64 {
-	v, err := d.tryUE(41, d.Endian)
+	v, err := d.tryUEndian(41, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U41", Pos: d.Pos()})
 	}
@@ -2717,7 +2840,7 @@ func (d *D) U41() uint64 {
 // TryFieldScalarU41 tries to add a field and read 41 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU41(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(41, d.Endian)
+		v, err := d.tryUEndian(41, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -2750,11 +2873,11 @@ func (d *D) FieldU41(name string, sms ...scalar.Mapper) uint64 {
 // Reader U42
 
 // TryU42 tries to read 42 bit unsigned integer in current endian
-func (d *D) TryU42() (uint64, error) { return d.tryUE(42, d.Endian) }
+func (d *D) TryU42() (uint64, error) { return d.tryUEndian(42, d.Endian) }
 
 // U42 reads 42 bit unsigned integer in current endian
 func (d *D) U42() uint64 {
-	v, err := d.tryUE(42, d.Endian)
+	v, err := d.tryUEndian(42, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U42", Pos: d.Pos()})
 	}
@@ -2764,7 +2887,7 @@ func (d *D) U42() uint64 {
 // TryFieldScalarU42 tries to add a field and read 42 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU42(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(42, d.Endian)
+		v, err := d.tryUEndian(42, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -2797,11 +2920,11 @@ func (d *D) FieldU42(name string, sms ...scalar.Mapper) uint64 {
 // Reader U43
 
 // TryU43 tries to read 43 bit unsigned integer in current endian
-func (d *D) TryU43() (uint64, error) { return d.tryUE(43, d.Endian) }
+func (d *D) TryU43() (uint64, error) { return d.tryUEndian(43, d.Endian) }
 
 // U43 reads 43 bit unsigned integer in current endian
 func (d *D) U43() uint64 {
-	v, err := d.tryUE(43, d.Endian)
+	v, err := d.tryUEndian(43, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U43", Pos: d.Pos()})
 	}
@@ -2811,7 +2934,7 @@ func (d *D) U43() uint64 {
 // TryFieldScalarU43 tries to add a field and read 43 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU43(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(43, d.Endian)
+		v, err := d.tryUEndian(43, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -2844,11 +2967,11 @@ func (d *D) FieldU43(name string, sms ...scalar.Mapper) uint64 {
 // Reader U44
 
 // TryU44 tries to read 44 bit unsigned integer in current endian
-func (d *D) TryU44() (uint64, error) { return d.tryUE(44, d.Endian) }
+func (d *D) TryU44() (uint64, error) { return d.tryUEndian(44, d.Endian) }
 
 // U44 reads 44 bit unsigned integer in current endian
 func (d *D) U44() uint64 {
-	v, err := d.tryUE(44, d.Endian)
+	v, err := d.tryUEndian(44, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U44", Pos: d.Pos()})
 	}
@@ -2858,7 +2981,7 @@ func (d *D) U44() uint64 {
 // TryFieldScalarU44 tries to add a field and read 44 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU44(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(44, d.Endian)
+		v, err := d.tryUEndian(44, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -2891,11 +3014,11 @@ func (d *D) FieldU44(name string, sms ...scalar.Mapper) uint64 {
 // Reader U45
 
 // TryU45 tries to read 45 bit unsigned integer in current endian
-func (d *D) TryU45() (uint64, error) { return d.tryUE(45, d.Endian) }
+func (d *D) TryU45() (uint64, error) { return d.tryUEndian(45, d.Endian) }
 
 // U45 reads 45 bit unsigned integer in current endian
 func (d *D) U45() uint64 {
-	v, err := d.tryUE(45, d.Endian)
+	v, err := d.tryUEndian(45, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U45", Pos: d.Pos()})
 	}
@@ -2905,7 +3028,7 @@ func (d *D) U45() uint64 {
 // TryFieldScalarU45 tries to add a field and read 45 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU45(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(45, d.Endian)
+		v, err := d.tryUEndian(45, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -2938,11 +3061,11 @@ func (d *D) FieldU45(name string, sms ...scalar.Mapper) uint64 {
 // Reader U46
 
 // TryU46 tries to read 46 bit unsigned integer in current endian
-func (d *D) TryU46() (uint64, error) { return d.tryUE(46, d.Endian) }
+func (d *D) TryU46() (uint64, error) { return d.tryUEndian(46, d.Endian) }
 
 // U46 reads 46 bit unsigned integer in current endian
 func (d *D) U46() uint64 {
-	v, err := d.tryUE(46, d.Endian)
+	v, err := d.tryUEndian(46, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U46", Pos: d.Pos()})
 	}
@@ -2952,7 +3075,7 @@ func (d *D) U46() uint64 {
 // TryFieldScalarU46 tries to add a field and read 46 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU46(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(46, d.Endian)
+		v, err := d.tryUEndian(46, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -2985,11 +3108,11 @@ func (d *D) FieldU46(name string, sms ...scalar.Mapper) uint64 {
 // Reader U47
 
 // TryU47 tries to read 47 bit unsigned integer in current endian
-func (d *D) TryU47() (uint64, error) { return d.tryUE(47, d.Endian) }
+func (d *D) TryU47() (uint64, error) { return d.tryUEndian(47, d.Endian) }
 
 // U47 reads 47 bit unsigned integer in current endian
 func (d *D) U47() uint64 {
-	v, err := d.tryUE(47, d.Endian)
+	v, err := d.tryUEndian(47, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U47", Pos: d.Pos()})
 	}
@@ -2999,7 +3122,7 @@ func (d *D) U47() uint64 {
 // TryFieldScalarU47 tries to add a field and read 47 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU47(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(47, d.Endian)
+		v, err := d.tryUEndian(47, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -3032,11 +3155,11 @@ func (d *D) FieldU47(name string, sms ...scalar.Mapper) uint64 {
 // Reader U48
 
 // TryU48 tries to read 48 bit unsigned integer in current endian
-func (d *D) TryU48() (uint64, error) { return d.tryUE(48, d.Endian) }
+func (d *D) TryU48() (uint64, error) { return d.tryUEndian(48, d.Endian) }
 
 // U48 reads 48 bit unsigned integer in current endian
 func (d *D) U48() uint64 {
-	v, err := d.tryUE(48, d.Endian)
+	v, err := d.tryUEndian(48, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U48", Pos: d.Pos()})
 	}
@@ -3046,7 +3169,7 @@ func (d *D) U48() uint64 {
 // TryFieldScalarU48 tries to add a field and read 48 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU48(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(48, d.Endian)
+		v, err := d.tryUEndian(48, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -3079,11 +3202,11 @@ func (d *D) FieldU48(name string, sms ...scalar.Mapper) uint64 {
 // Reader U49
 
 // TryU49 tries to read 49 bit unsigned integer in current endian
-func (d *D) TryU49() (uint64, error) { return d.tryUE(49, d.Endian) }
+func (d *D) TryU49() (uint64, error) { return d.tryUEndian(49, d.Endian) }
 
 // U49 reads 49 bit unsigned integer in current endian
 func (d *D) U49() uint64 {
-	v, err := d.tryUE(49, d.Endian)
+	v, err := d.tryUEndian(49, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U49", Pos: d.Pos()})
 	}
@@ -3093,7 +3216,7 @@ func (d *D) U49() uint64 {
 // TryFieldScalarU49 tries to add a field and read 49 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU49(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(49, d.Endian)
+		v, err := d.tryUEndian(49, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -3126,11 +3249,11 @@ func (d *D) FieldU49(name string, sms ...scalar.Mapper) uint64 {
 // Reader U50
 
 // TryU50 tries to read 50 bit unsigned integer in current endian
-func (d *D) TryU50() (uint64, error) { return d.tryUE(50, d.Endian) }
+func (d *D) TryU50() (uint64, error) { return d.tryUEndian(50, d.Endian) }
 
 // U50 reads 50 bit unsigned integer in current endian
 func (d *D) U50() uint64 {
-	v, err := d.tryUE(50, d.Endian)
+	v, err := d.tryUEndian(50, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U50", Pos: d.Pos()})
 	}
@@ -3140,7 +3263,7 @@ func (d *D) U50() uint64 {
 // TryFieldScalarU50 tries to add a field and read 50 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU50(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(50, d.Endian)
+		v, err := d.tryUEndian(50, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -3173,11 +3296,11 @@ func (d *D) FieldU50(name string, sms ...scalar.Mapper) uint64 {
 // Reader U51
 
 // TryU51 tries to read 51 bit unsigned integer in current endian
-func (d *D) TryU51() (uint64, error) { return d.tryUE(51, d.Endian) }
+func (d *D) TryU51() (uint64, error) { return d.tryUEndian(51, d.Endian) }
 
 // U51 reads 51 bit unsigned integer in current endian
 func (d *D) U51() uint64 {
-	v, err := d.tryUE(51, d.Endian)
+	v, err := d.tryUEndian(51, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U51", Pos: d.Pos()})
 	}
@@ -3187,7 +3310,7 @@ func (d *D) U51() uint64 {
 // TryFieldScalarU51 tries to add a field and read 51 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU51(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(51, d.Endian)
+		v, err := d.tryUEndian(51, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -3220,11 +3343,11 @@ func (d *D) FieldU51(name string, sms ...scalar.Mapper) uint64 {
 // Reader U52
 
 // TryU52 tries to read 52 bit unsigned integer in current endian
-func (d *D) TryU52() (uint64, error) { return d.tryUE(52, d.Endian) }
+func (d *D) TryU52() (uint64, error) { return d.tryUEndian(52, d.Endian) }
 
 // U52 reads 52 bit unsigned integer in current endian
 func (d *D) U52() uint64 {
-	v, err := d.tryUE(52, d.Endian)
+	v, err := d.tryUEndian(52, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U52", Pos: d.Pos()})
 	}
@@ -3234,7 +3357,7 @@ func (d *D) U52() uint64 {
 // TryFieldScalarU52 tries to add a field and read 52 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU52(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(52, d.Endian)
+		v, err := d.tryUEndian(52, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -3267,11 +3390,11 @@ func (d *D) FieldU52(name string, sms ...scalar.Mapper) uint64 {
 // Reader U53
 
 // TryU53 tries to read 53 bit unsigned integer in current endian
-func (d *D) TryU53() (uint64, error) { return d.tryUE(53, d.Endian) }
+func (d *D) TryU53() (uint64, error) { return d.tryUEndian(53, d.Endian) }
 
 // U53 reads 53 bit unsigned integer in current endian
 func (d *D) U53() uint64 {
-	v, err := d.tryUE(53, d.Endian)
+	v, err := d.tryUEndian(53, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U53", Pos: d.Pos()})
 	}
@@ -3281,7 +3404,7 @@ func (d *D) U53() uint64 {
 // TryFieldScalarU53 tries to add a field and read 53 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU53(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(53, d.Endian)
+		v, err := d.tryUEndian(53, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -3314,11 +3437,11 @@ func (d *D) FieldU53(name string, sms ...scalar.Mapper) uint64 {
 // Reader U54
 
 // TryU54 tries to read 54 bit unsigned integer in current endian
-func (d *D) TryU54() (uint64, error) { return d.tryUE(54, d.Endian) }
+func (d *D) TryU54() (uint64, error) { return d.tryUEndian(54, d.Endian) }
 
 // U54 reads 54 bit unsigned integer in current endian
 func (d *D) U54() uint64 {
-	v, err := d.tryUE(54, d.Endian)
+	v, err := d.tryUEndian(54, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U54", Pos: d.Pos()})
 	}
@@ -3328,7 +3451,7 @@ func (d *D) U54() uint64 {
 // TryFieldScalarU54 tries to add a field and read 54 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU54(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(54, d.Endian)
+		v, err := d.tryUEndian(54, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -3361,11 +3484,11 @@ func (d *D) FieldU54(name string, sms ...scalar.Mapper) uint64 {
 // Reader U55
 
 // TryU55 tries to read 55 bit unsigned integer in current endian
-func (d *D) TryU55() (uint64, error) { return d.tryUE(55, d.Endian) }
+func (d *D) TryU55() (uint64, error) { return d.tryUEndian(55, d.Endian) }
 
 // U55 reads 55 bit unsigned integer in current endian
 func (d *D) U55() uint64 {
-	v, err := d.tryUE(55, d.Endian)
+	v, err := d.tryUEndian(55, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U55", Pos: d.Pos()})
 	}
@@ -3375,7 +3498,7 @@ func (d *D) U55() uint64 {
 // TryFieldScalarU55 tries to add a field and read 55 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU55(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(55, d.Endian)
+		v, err := d.tryUEndian(55, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -3408,11 +3531,11 @@ func (d *D) FieldU55(name string, sms ...scalar.Mapper) uint64 {
 // Reader U56
 
 // TryU56 tries to read 56 bit unsigned integer in current endian
-func (d *D) TryU56() (uint64, error) { return d.tryUE(56, d.Endian) }
+func (d *D) TryU56() (uint64, error) { return d.tryUEndian(56, d.Endian) }
 
 // U56 reads 56 bit unsigned integer in current endian
 func (d *D) U56() uint64 {
-	v, err := d.tryUE(56, d.Endian)
+	v, err := d.tryUEndian(56, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U56", Pos: d.Pos()})
 	}
@@ -3422,7 +3545,7 @@ func (d *D) U56() uint64 {
 // TryFieldScalarU56 tries to add a field and read 56 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU56(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(56, d.Endian)
+		v, err := d.tryUEndian(56, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -3455,11 +3578,11 @@ func (d *D) FieldU56(name string, sms ...scalar.Mapper) uint64 {
 // Reader U57
 
 // TryU57 tries to read 57 bit unsigned integer in current endian
-func (d *D) TryU57() (uint64, error) { return d.tryUE(57, d.Endian) }
+func (d *D) TryU57() (uint64, error) { return d.tryUEndian(57, d.Endian) }
 
 // U57 reads 57 bit unsigned integer in current endian
 func (d *D) U57() uint64 {
-	v, err := d.tryUE(57, d.Endian)
+	v, err := d.tryUEndian(57, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U57", Pos: d.Pos()})
 	}
@@ -3469,7 +3592,7 @@ func (d *D) U57() uint64 {
 // TryFieldScalarU57 tries to add a field and read 57 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU57(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(57, d.Endian)
+		v, err := d.tryUEndian(57, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -3502,11 +3625,11 @@ func (d *D) FieldU57(name string, sms ...scalar.Mapper) uint64 {
 // Reader U58
 
 // TryU58 tries to read 58 bit unsigned integer in current endian
-func (d *D) TryU58() (uint64, error) { return d.tryUE(58, d.Endian) }
+func (d *D) TryU58() (uint64, error) { return d.tryUEndian(58, d.Endian) }
 
 // U58 reads 58 bit unsigned integer in current endian
 func (d *D) U58() uint64 {
-	v, err := d.tryUE(58, d.Endian)
+	v, err := d.tryUEndian(58, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U58", Pos: d.Pos()})
 	}
@@ -3516,7 +3639,7 @@ func (d *D) U58() uint64 {
 // TryFieldScalarU58 tries to add a field and read 58 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU58(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(58, d.Endian)
+		v, err := d.tryUEndian(58, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -3549,11 +3672,11 @@ func (d *D) FieldU58(name string, sms ...scalar.Mapper) uint64 {
 // Reader U59
 
 // TryU59 tries to read 59 bit unsigned integer in current endian
-func (d *D) TryU59() (uint64, error) { return d.tryUE(59, d.Endian) }
+func (d *D) TryU59() (uint64, error) { return d.tryUEndian(59, d.Endian) }
 
 // U59 reads 59 bit unsigned integer in current endian
 func (d *D) U59() uint64 {
-	v, err := d.tryUE(59, d.Endian)
+	v, err := d.tryUEndian(59, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U59", Pos: d.Pos()})
 	}
@@ -3563,7 +3686,7 @@ func (d *D) U59() uint64 {
 // TryFieldScalarU59 tries to add a field and read 59 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU59(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(59, d.Endian)
+		v, err := d.tryUEndian(59, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -3596,11 +3719,11 @@ func (d *D) FieldU59(name string, sms ...scalar.Mapper) uint64 {
 // Reader U60
 
 // TryU60 tries to read 60 bit unsigned integer in current endian
-func (d *D) TryU60() (uint64, error) { return d.tryUE(60, d.Endian) }
+func (d *D) TryU60() (uint64, error) { return d.tryUEndian(60, d.Endian) }
 
 // U60 reads 60 bit unsigned integer in current endian
 func (d *D) U60() uint64 {
-	v, err := d.tryUE(60, d.Endian)
+	v, err := d.tryUEndian(60, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U60", Pos: d.Pos()})
 	}
@@ -3610,7 +3733,7 @@ func (d *D) U60() uint64 {
 // TryFieldScalarU60 tries to add a field and read 60 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU60(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(60, d.Endian)
+		v, err := d.tryUEndian(60, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -3643,11 +3766,11 @@ func (d *D) FieldU60(name string, sms ...scalar.Mapper) uint64 {
 // Reader U61
 
 // TryU61 tries to read 61 bit unsigned integer in current endian
-func (d *D) TryU61() (uint64, error) { return d.tryUE(61, d.Endian) }
+func (d *D) TryU61() (uint64, error) { return d.tryUEndian(61, d.Endian) }
 
 // U61 reads 61 bit unsigned integer in current endian
 func (d *D) U61() uint64 {
-	v, err := d.tryUE(61, d.Endian)
+	v, err := d.tryUEndian(61, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U61", Pos: d.Pos()})
 	}
@@ -3657,7 +3780,7 @@ func (d *D) U61() uint64 {
 // TryFieldScalarU61 tries to add a field and read 61 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU61(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(61, d.Endian)
+		v, err := d.tryUEndian(61, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -3690,11 +3813,11 @@ func (d *D) FieldU61(name string, sms ...scalar.Mapper) uint64 {
 // Reader U62
 
 // TryU62 tries to read 62 bit unsigned integer in current endian
-func (d *D) TryU62() (uint64, error) { return d.tryUE(62, d.Endian) }
+func (d *D) TryU62() (uint64, error) { return d.tryUEndian(62, d.Endian) }
 
 // U62 reads 62 bit unsigned integer in current endian
 func (d *D) U62() uint64 {
-	v, err := d.tryUE(62, d.Endian)
+	v, err := d.tryUEndian(62, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U62", Pos: d.Pos()})
 	}
@@ -3704,7 +3827,7 @@ func (d *D) U62() uint64 {
 // TryFieldScalarU62 tries to add a field and read 62 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU62(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(62, d.Endian)
+		v, err := d.tryUEndian(62, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -3737,11 +3860,11 @@ func (d *D) FieldU62(name string, sms ...scalar.Mapper) uint64 {
 // Reader U63
 
 // TryU63 tries to read 63 bit unsigned integer in current endian
-func (d *D) TryU63() (uint64, error) { return d.tryUE(63, d.Endian) }
+func (d *D) TryU63() (uint64, error) { return d.tryUEndian(63, d.Endian) }
 
 // U63 reads 63 bit unsigned integer in current endian
 func (d *D) U63() uint64 {
-	v, err := d.tryUE(63, d.Endian)
+	v, err := d.tryUEndian(63, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U63", Pos: d.Pos()})
 	}
@@ -3751,7 +3874,7 @@ func (d *D) U63() uint64 {
 // TryFieldScalarU63 tries to add a field and read 63 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU63(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(63, d.Endian)
+		v, err := d.tryUEndian(63, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -3784,11 +3907,11 @@ func (d *D) FieldU63(name string, sms ...scalar.Mapper) uint64 {
 // Reader U64
 
 // TryU64 tries to read 64 bit unsigned integer in current endian
-func (d *D) TryU64() (uint64, error) { return d.tryUE(64, d.Endian) }
+func (d *D) TryU64() (uint64, error) { return d.tryUEndian(64, d.Endian) }
 
 // U64 reads 64 bit unsigned integer in current endian
 func (d *D) U64() uint64 {
-	v, err := d.tryUE(64, d.Endian)
+	v, err := d.tryUEndian(64, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U64", Pos: d.Pos()})
 	}
@@ -3798,7 +3921,7 @@ func (d *D) U64() uint64 {
 // TryFieldScalarU64 tries to add a field and read 64 bit unsigned integer in current endian
 func (d *D) TryFieldScalarU64(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(64, d.Endian)
+		v, err := d.tryUEndian(64, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -3831,11 +3954,11 @@ func (d *D) FieldU64(name string, sms ...scalar.Mapper) uint64 {
 // Reader U8LE
 
 // TryU8LE tries to read 8 bit unsigned integer in little-endian
-func (d *D) TryU8LE() (uint64, error) { return d.tryUE(8, LittleEndian) }
+func (d *D) TryU8LE() (uint64, error) { return d.tryUEndian(8, LittleEndian) }
 
 // U8LE reads 8 bit unsigned integer in little-endian
 func (d *D) U8LE() uint64 {
-	v, err := d.tryUE(8, LittleEndian)
+	v, err := d.tryUEndian(8, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U8LE", Pos: d.Pos()})
 	}
@@ -3845,7 +3968,7 @@ func (d *D) U8LE() uint64 {
 // TryFieldScalarU8LE tries to add a field and read 8 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU8LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(8, LittleEndian)
+		v, err := d.tryUEndian(8, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -3878,11 +4001,11 @@ func (d *D) FieldU8LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U9LE
 
 // TryU9LE tries to read 9 bit unsigned integer in little-endian
-func (d *D) TryU9LE() (uint64, error) { return d.tryUE(9, LittleEndian) }
+func (d *D) TryU9LE() (uint64, error) { return d.tryUEndian(9, LittleEndian) }
 
 // U9LE reads 9 bit unsigned integer in little-endian
 func (d *D) U9LE() uint64 {
-	v, err := d.tryUE(9, LittleEndian)
+	v, err := d.tryUEndian(9, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U9LE", Pos: d.Pos()})
 	}
@@ -3892,7 +4015,7 @@ func (d *D) U9LE() uint64 {
 // TryFieldScalarU9LE tries to add a field and read 9 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU9LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(9, LittleEndian)
+		v, err := d.tryUEndian(9, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -3925,11 +4048,11 @@ func (d *D) FieldU9LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U10LE
 
 // TryU10LE tries to read 10 bit unsigned integer in little-endian
-func (d *D) TryU10LE() (uint64, error) { return d.tryUE(10, LittleEndian) }
+func (d *D) TryU10LE() (uint64, error) { return d.tryUEndian(10, LittleEndian) }
 
 // U10LE reads 10 bit unsigned integer in little-endian
 func (d *D) U10LE() uint64 {
-	v, err := d.tryUE(10, LittleEndian)
+	v, err := d.tryUEndian(10, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U10LE", Pos: d.Pos()})
 	}
@@ -3939,7 +4062,7 @@ func (d *D) U10LE() uint64 {
 // TryFieldScalarU10LE tries to add a field and read 10 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU10LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(10, LittleEndian)
+		v, err := d.tryUEndian(10, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -3972,11 +4095,11 @@ func (d *D) FieldU10LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U11LE
 
 // TryU11LE tries to read 11 bit unsigned integer in little-endian
-func (d *D) TryU11LE() (uint64, error) { return d.tryUE(11, LittleEndian) }
+func (d *D) TryU11LE() (uint64, error) { return d.tryUEndian(11, LittleEndian) }
 
 // U11LE reads 11 bit unsigned integer in little-endian
 func (d *D) U11LE() uint64 {
-	v, err := d.tryUE(11, LittleEndian)
+	v, err := d.tryUEndian(11, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U11LE", Pos: d.Pos()})
 	}
@@ -3986,7 +4109,7 @@ func (d *D) U11LE() uint64 {
 // TryFieldScalarU11LE tries to add a field and read 11 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU11LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(11, LittleEndian)
+		v, err := d.tryUEndian(11, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -4019,11 +4142,11 @@ func (d *D) FieldU11LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U12LE
 
 // TryU12LE tries to read 12 bit unsigned integer in little-endian
-func (d *D) TryU12LE() (uint64, error) { return d.tryUE(12, LittleEndian) }
+func (d *D) TryU12LE() (uint64, error) { return d.tryUEndian(12, LittleEndian) }
 
 // U12LE reads 12 bit unsigned integer in little-endian
 func (d *D) U12LE() uint64 {
-	v, err := d.tryUE(12, LittleEndian)
+	v, err := d.tryUEndian(12, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U12LE", Pos: d.Pos()})
 	}
@@ -4033,7 +4156,7 @@ func (d *D) U12LE() uint64 {
 // TryFieldScalarU12LE tries to add a field and read 12 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU12LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(12, LittleEndian)
+		v, err := d.tryUEndian(12, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -4066,11 +4189,11 @@ func (d *D) FieldU12LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U13LE
 
 // TryU13LE tries to read 13 bit unsigned integer in little-endian
-func (d *D) TryU13LE() (uint64, error) { return d.tryUE(13, LittleEndian) }
+func (d *D) TryU13LE() (uint64, error) { return d.tryUEndian(13, LittleEndian) }
 
 // U13LE reads 13 bit unsigned integer in little-endian
 func (d *D) U13LE() uint64 {
-	v, err := d.tryUE(13, LittleEndian)
+	v, err := d.tryUEndian(13, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U13LE", Pos: d.Pos()})
 	}
@@ -4080,7 +4203,7 @@ func (d *D) U13LE() uint64 {
 // TryFieldScalarU13LE tries to add a field and read 13 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU13LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(13, LittleEndian)
+		v, err := d.tryUEndian(13, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -4113,11 +4236,11 @@ func (d *D) FieldU13LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U14LE
 
 // TryU14LE tries to read 14 bit unsigned integer in little-endian
-func (d *D) TryU14LE() (uint64, error) { return d.tryUE(14, LittleEndian) }
+func (d *D) TryU14LE() (uint64, error) { return d.tryUEndian(14, LittleEndian) }
 
 // U14LE reads 14 bit unsigned integer in little-endian
 func (d *D) U14LE() uint64 {
-	v, err := d.tryUE(14, LittleEndian)
+	v, err := d.tryUEndian(14, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U14LE", Pos: d.Pos()})
 	}
@@ -4127,7 +4250,7 @@ func (d *D) U14LE() uint64 {
 // TryFieldScalarU14LE tries to add a field and read 14 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU14LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(14, LittleEndian)
+		v, err := d.tryUEndian(14, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -4160,11 +4283,11 @@ func (d *D) FieldU14LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U15LE
 
 // TryU15LE tries to read 15 bit unsigned integer in little-endian
-func (d *D) TryU15LE() (uint64, error) { return d.tryUE(15, LittleEndian) }
+func (d *D) TryU15LE() (uint64, error) { return d.tryUEndian(15, LittleEndian) }
 
 // U15LE reads 15 bit unsigned integer in little-endian
 func (d *D) U15LE() uint64 {
-	v, err := d.tryUE(15, LittleEndian)
+	v, err := d.tryUEndian(15, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U15LE", Pos: d.Pos()})
 	}
@@ -4174,7 +4297,7 @@ func (d *D) U15LE() uint64 {
 // TryFieldScalarU15LE tries to add a field and read 15 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU15LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(15, LittleEndian)
+		v, err := d.tryUEndian(15, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -4207,11 +4330,11 @@ func (d *D) FieldU15LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U16LE
 
 // TryU16LE tries to read 16 bit unsigned integer in little-endian
-func (d *D) TryU16LE() (uint64, error) { return d.tryUE(16, LittleEndian) }
+func (d *D) TryU16LE() (uint64, error) { return d.tryUEndian(16, LittleEndian) }
 
 // U16LE reads 16 bit unsigned integer in little-endian
 func (d *D) U16LE() uint64 {
-	v, err := d.tryUE(16, LittleEndian)
+	v, err := d.tryUEndian(16, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U16LE", Pos: d.Pos()})
 	}
@@ -4221,7 +4344,7 @@ func (d *D) U16LE() uint64 {
 // TryFieldScalarU16LE tries to add a field and read 16 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU16LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(16, LittleEndian)
+		v, err := d.tryUEndian(16, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -4254,11 +4377,11 @@ func (d *D) FieldU16LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U17LE
 
 // TryU17LE tries to read 17 bit unsigned integer in little-endian
-func (d *D) TryU17LE() (uint64, error) { return d.tryUE(17, LittleEndian) }
+func (d *D) TryU17LE() (uint64, error) { return d.tryUEndian(17, LittleEndian) }
 
 // U17LE reads 17 bit unsigned integer in little-endian
 func (d *D) U17LE() uint64 {
-	v, err := d.tryUE(17, LittleEndian)
+	v, err := d.tryUEndian(17, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U17LE", Pos: d.Pos()})
 	}
@@ -4268,7 +4391,7 @@ func (d *D) U17LE() uint64 {
 // TryFieldScalarU17LE tries to add a field and read 17 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU17LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(17, LittleEndian)
+		v, err := d.tryUEndian(17, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -4301,11 +4424,11 @@ func (d *D) FieldU17LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U18LE
 
 // TryU18LE tries to read 18 bit unsigned integer in little-endian
-func (d *D) TryU18LE() (uint64, error) { return d.tryUE(18, LittleEndian) }
+func (d *D) TryU18LE() (uint64, error) { return d.tryUEndian(18, LittleEndian) }
 
 // U18LE reads 18 bit unsigned integer in little-endian
 func (d *D) U18LE() uint64 {
-	v, err := d.tryUE(18, LittleEndian)
+	v, err := d.tryUEndian(18, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U18LE", Pos: d.Pos()})
 	}
@@ -4315,7 +4438,7 @@ func (d *D) U18LE() uint64 {
 // TryFieldScalarU18LE tries to add a field and read 18 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU18LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(18, LittleEndian)
+		v, err := d.tryUEndian(18, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -4348,11 +4471,11 @@ func (d *D) FieldU18LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U19LE
 
 // TryU19LE tries to read 19 bit unsigned integer in little-endian
-func (d *D) TryU19LE() (uint64, error) { return d.tryUE(19, LittleEndian) }
+func (d *D) TryU19LE() (uint64, error) { return d.tryUEndian(19, LittleEndian) }
 
 // U19LE reads 19 bit unsigned integer in little-endian
 func (d *D) U19LE() uint64 {
-	v, err := d.tryUE(19, LittleEndian)
+	v, err := d.tryUEndian(19, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U19LE", Pos: d.Pos()})
 	}
@@ -4362,7 +4485,7 @@ func (d *D) U19LE() uint64 {
 // TryFieldScalarU19LE tries to add a field and read 19 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU19LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(19, LittleEndian)
+		v, err := d.tryUEndian(19, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -4395,11 +4518,11 @@ func (d *D) FieldU19LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U20LE
 
 // TryU20LE tries to read 20 bit unsigned integer in little-endian
-func (d *D) TryU20LE() (uint64, error) { return d.tryUE(20, LittleEndian) }
+func (d *D) TryU20LE() (uint64, error) { return d.tryUEndian(20, LittleEndian) }
 
 // U20LE reads 20 bit unsigned integer in little-endian
 func (d *D) U20LE() uint64 {
-	v, err := d.tryUE(20, LittleEndian)
+	v, err := d.tryUEndian(20, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U20LE", Pos: d.Pos()})
 	}
@@ -4409,7 +4532,7 @@ func (d *D) U20LE() uint64 {
 // TryFieldScalarU20LE tries to add a field and read 20 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU20LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(20, LittleEndian)
+		v, err := d.tryUEndian(20, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -4442,11 +4565,11 @@ func (d *D) FieldU20LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U21LE
 
 // TryU21LE tries to read 21 bit unsigned integer in little-endian
-func (d *D) TryU21LE() (uint64, error) { return d.tryUE(21, LittleEndian) }
+func (d *D) TryU21LE() (uint64, error) { return d.tryUEndian(21, LittleEndian) }
 
 // U21LE reads 21 bit unsigned integer in little-endian
 func (d *D) U21LE() uint64 {
-	v, err := d.tryUE(21, LittleEndian)
+	v, err := d.tryUEndian(21, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U21LE", Pos: d.Pos()})
 	}
@@ -4456,7 +4579,7 @@ func (d *D) U21LE() uint64 {
 // TryFieldScalarU21LE tries to add a field and read 21 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU21LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(21, LittleEndian)
+		v, err := d.tryUEndian(21, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -4489,11 +4612,11 @@ func (d *D) FieldU21LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U22LE
 
 // TryU22LE tries to read 22 bit unsigned integer in little-endian
-func (d *D) TryU22LE() (uint64, error) { return d.tryUE(22, LittleEndian) }
+func (d *D) TryU22LE() (uint64, error) { return d.tryUEndian(22, LittleEndian) }
 
 // U22LE reads 22 bit unsigned integer in little-endian
 func (d *D) U22LE() uint64 {
-	v, err := d.tryUE(22, LittleEndian)
+	v, err := d.tryUEndian(22, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U22LE", Pos: d.Pos()})
 	}
@@ -4503,7 +4626,7 @@ func (d *D) U22LE() uint64 {
 // TryFieldScalarU22LE tries to add a field and read 22 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU22LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(22, LittleEndian)
+		v, err := d.tryUEndian(22, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -4536,11 +4659,11 @@ func (d *D) FieldU22LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U23LE
 
 // TryU23LE tries to read 23 bit unsigned integer in little-endian
-func (d *D) TryU23LE() (uint64, error) { return d.tryUE(23, LittleEndian) }
+func (d *D) TryU23LE() (uint64, error) { return d.tryUEndian(23, LittleEndian) }
 
 // U23LE reads 23 bit unsigned integer in little-endian
 func (d *D) U23LE() uint64 {
-	v, err := d.tryUE(23, LittleEndian)
+	v, err := d.tryUEndian(23, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U23LE", Pos: d.Pos()})
 	}
@@ -4550,7 +4673,7 @@ func (d *D) U23LE() uint64 {
 // TryFieldScalarU23LE tries to add a field and read 23 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU23LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(23, LittleEndian)
+		v, err := d.tryUEndian(23, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -4583,11 +4706,11 @@ func (d *D) FieldU23LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U24LE
 
 // TryU24LE tries to read 24 bit unsigned integer in little-endian
-func (d *D) TryU24LE() (uint64, error) { return d.tryUE(24, LittleEndian) }
+func (d *D) TryU24LE() (uint64, error) { return d.tryUEndian(24, LittleEndian) }
 
 // U24LE reads 24 bit unsigned integer in little-endian
 func (d *D) U24LE() uint64 {
-	v, err := d.tryUE(24, LittleEndian)
+	v, err := d.tryUEndian(24, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U24LE", Pos: d.Pos()})
 	}
@@ -4597,7 +4720,7 @@ func (d *D) U24LE() uint64 {
 // TryFieldScalarU24LE tries to add a field and read 24 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU24LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(24, LittleEndian)
+		v, err := d.tryUEndian(24, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -4630,11 +4753,11 @@ func (d *D) FieldU24LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U25LE
 
 // TryU25LE tries to read 25 bit unsigned integer in little-endian
-func (d *D) TryU25LE() (uint64, error) { return d.tryUE(25, LittleEndian) }
+func (d *D) TryU25LE() (uint64, error) { return d.tryUEndian(25, LittleEndian) }
 
 // U25LE reads 25 bit unsigned integer in little-endian
 func (d *D) U25LE() uint64 {
-	v, err := d.tryUE(25, LittleEndian)
+	v, err := d.tryUEndian(25, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U25LE", Pos: d.Pos()})
 	}
@@ -4644,7 +4767,7 @@ func (d *D) U25LE() uint64 {
 // TryFieldScalarU25LE tries to add a field and read 25 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU25LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(25, LittleEndian)
+		v, err := d.tryUEndian(25, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -4677,11 +4800,11 @@ func (d *D) FieldU25LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U26LE
 
 // TryU26LE tries to read 26 bit unsigned integer in little-endian
-func (d *D) TryU26LE() (uint64, error) { return d.tryUE(26, LittleEndian) }
+func (d *D) TryU26LE() (uint64, error) { return d.tryUEndian(26, LittleEndian) }
 
 // U26LE reads 26 bit unsigned integer in little-endian
 func (d *D) U26LE() uint64 {
-	v, err := d.tryUE(26, LittleEndian)
+	v, err := d.tryUEndian(26, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U26LE", Pos: d.Pos()})
 	}
@@ -4691,7 +4814,7 @@ func (d *D) U26LE() uint64 {
 // TryFieldScalarU26LE tries to add a field and read 26 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU26LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(26, LittleEndian)
+		v, err := d.tryUEndian(26, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -4724,11 +4847,11 @@ func (d *D) FieldU26LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U27LE
 
 // TryU27LE tries to read 27 bit unsigned integer in little-endian
-func (d *D) TryU27LE() (uint64, error) { return d.tryUE(27, LittleEndian) }
+func (d *D) TryU27LE() (uint64, error) { return d.tryUEndian(27, LittleEndian) }
 
 // U27LE reads 27 bit unsigned integer in little-endian
 func (d *D) U27LE() uint64 {
-	v, err := d.tryUE(27, LittleEndian)
+	v, err := d.tryUEndian(27, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U27LE", Pos: d.Pos()})
 	}
@@ -4738,7 +4861,7 @@ func (d *D) U27LE() uint64 {
 // TryFieldScalarU27LE tries to add a field and read 27 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU27LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(27, LittleEndian)
+		v, err := d.tryUEndian(27, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -4771,11 +4894,11 @@ func (d *D) FieldU27LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U28LE
 
 // TryU28LE tries to read 28 bit unsigned integer in little-endian
-func (d *D) TryU28LE() (uint64, error) { return d.tryUE(28, LittleEndian) }
+func (d *D) TryU28LE() (uint64, error) { return d.tryUEndian(28, LittleEndian) }
 
 // U28LE reads 28 bit unsigned integer in little-endian
 func (d *D) U28LE() uint64 {
-	v, err := d.tryUE(28, LittleEndian)
+	v, err := d.tryUEndian(28, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U28LE", Pos: d.Pos()})
 	}
@@ -4785,7 +4908,7 @@ func (d *D) U28LE() uint64 {
 // TryFieldScalarU28LE tries to add a field and read 28 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU28LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(28, LittleEndian)
+		v, err := d.tryUEndian(28, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -4818,11 +4941,11 @@ func (d *D) FieldU28LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U29LE
 
 // TryU29LE tries to read 29 bit unsigned integer in little-endian
-func (d *D) TryU29LE() (uint64, error) { return d.tryUE(29, LittleEndian) }
+func (d *D) TryU29LE() (uint64, error) { return d.tryUEndian(29, LittleEndian) }
 
 // U29LE reads 29 bit unsigned integer in little-endian
 func (d *D) U29LE() uint64 {
-	v, err := d.tryUE(29, LittleEndian)
+	v, err := d.tryUEndian(29, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U29LE", Pos: d.Pos()})
 	}
@@ -4832,7 +4955,7 @@ func (d *D) U29LE() uint64 {
 // TryFieldScalarU29LE tries to add a field and read 29 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU29LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(29, LittleEndian)
+		v, err := d.tryUEndian(29, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -4865,11 +4988,11 @@ func (d *D) FieldU29LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U30LE
 
 // TryU30LE tries to read 30 bit unsigned integer in little-endian
-func (d *D) TryU30LE() (uint64, error) { return d.tryUE(30, LittleEndian) }
+func (d *D) TryU30LE() (uint64, error) { return d.tryUEndian(30, LittleEndian) }
 
 // U30LE reads 30 bit unsigned integer in little-endian
 func (d *D) U30LE() uint64 {
-	v, err := d.tryUE(30, LittleEndian)
+	v, err := d.tryUEndian(30, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U30LE", Pos: d.Pos()})
 	}
@@ -4879,7 +5002,7 @@ func (d *D) U30LE() uint64 {
 // TryFieldScalarU30LE tries to add a field and read 30 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU30LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(30, LittleEndian)
+		v, err := d.tryUEndian(30, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -4912,11 +5035,11 @@ func (d *D) FieldU30LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U31LE
 
 // TryU31LE tries to read 31 bit unsigned integer in little-endian
-func (d *D) TryU31LE() (uint64, error) { return d.tryUE(31, LittleEndian) }
+func (d *D) TryU31LE() (uint64, error) { return d.tryUEndian(31, LittleEndian) }
 
 // U31LE reads 31 bit unsigned integer in little-endian
 func (d *D) U31LE() uint64 {
-	v, err := d.tryUE(31, LittleEndian)
+	v, err := d.tryUEndian(31, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U31LE", Pos: d.Pos()})
 	}
@@ -4926,7 +5049,7 @@ func (d *D) U31LE() uint64 {
 // TryFieldScalarU31LE tries to add a field and read 31 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU31LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(31, LittleEndian)
+		v, err := d.tryUEndian(31, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -4959,11 +5082,11 @@ func (d *D) FieldU31LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U32LE
 
 // TryU32LE tries to read 32 bit unsigned integer in little-endian
-func (d *D) TryU32LE() (uint64, error) { return d.tryUE(32, LittleEndian) }
+func (d *D) TryU32LE() (uint64, error) { return d.tryUEndian(32, LittleEndian) }
 
 // U32LE reads 32 bit unsigned integer in little-endian
 func (d *D) U32LE() uint64 {
-	v, err := d.tryUE(32, LittleEndian)
+	v, err := d.tryUEndian(32, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U32LE", Pos: d.Pos()})
 	}
@@ -4973,7 +5096,7 @@ func (d *D) U32LE() uint64 {
 // TryFieldScalarU32LE tries to add a field and read 32 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU32LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(32, LittleEndian)
+		v, err := d.tryUEndian(32, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -5006,11 +5129,11 @@ func (d *D) FieldU32LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U33LE
 
 // TryU33LE tries to read 33 bit unsigned integer in little-endian
-func (d *D) TryU33LE() (uint64, error) { return d.tryUE(33, LittleEndian) }
+func (d *D) TryU33LE() (uint64, error) { return d.tryUEndian(33, LittleEndian) }
 
 // U33LE reads 33 bit unsigned integer in little-endian
 func (d *D) U33LE() uint64 {
-	v, err := d.tryUE(33, LittleEndian)
+	v, err := d.tryUEndian(33, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U33LE", Pos: d.Pos()})
 	}
@@ -5020,7 +5143,7 @@ func (d *D) U33LE() uint64 {
 // TryFieldScalarU33LE tries to add a field and read 33 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU33LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(33, LittleEndian)
+		v, err := d.tryUEndian(33, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -5053,11 +5176,11 @@ func (d *D) FieldU33LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U34LE
 
 // TryU34LE tries to read 34 bit unsigned integer in little-endian
-func (d *D) TryU34LE() (uint64, error) { return d.tryUE(34, LittleEndian) }
+func (d *D) TryU34LE() (uint64, error) { return d.tryUEndian(34, LittleEndian) }
 
 // U34LE reads 34 bit unsigned integer in little-endian
 func (d *D) U34LE() uint64 {
-	v, err := d.tryUE(34, LittleEndian)
+	v, err := d.tryUEndian(34, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U34LE", Pos: d.Pos()})
 	}
@@ -5067,7 +5190,7 @@ func (d *D) U34LE() uint64 {
 // TryFieldScalarU34LE tries to add a field and read 34 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU34LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(34, LittleEndian)
+		v, err := d.tryUEndian(34, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -5100,11 +5223,11 @@ func (d *D) FieldU34LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U35LE
 
 // TryU35LE tries to read 35 bit unsigned integer in little-endian
-func (d *D) TryU35LE() (uint64, error) { return d.tryUE(35, LittleEndian) }
+func (d *D) TryU35LE() (uint64, error) { return d.tryUEndian(35, LittleEndian) }
 
 // U35LE reads 35 bit unsigned integer in little-endian
 func (d *D) U35LE() uint64 {
-	v, err := d.tryUE(35, LittleEndian)
+	v, err := d.tryUEndian(35, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U35LE", Pos: d.Pos()})
 	}
@@ -5114,7 +5237,7 @@ func (d *D) U35LE() uint64 {
 // TryFieldScalarU35LE tries to add a field and read 35 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU35LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(35, LittleEndian)
+		v, err := d.tryUEndian(35, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -5147,11 +5270,11 @@ func (d *D) FieldU35LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U36LE
 
 // TryU36LE tries to read 36 bit unsigned integer in little-endian
-func (d *D) TryU36LE() (uint64, error) { return d.tryUE(36, LittleEndian) }
+func (d *D) TryU36LE() (uint64, error) { return d.tryUEndian(36, LittleEndian) }
 
 // U36LE reads 36 bit unsigned integer in little-endian
 func (d *D) U36LE() uint64 {
-	v, err := d.tryUE(36, LittleEndian)
+	v, err := d.tryUEndian(36, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U36LE", Pos: d.Pos()})
 	}
@@ -5161,7 +5284,7 @@ func (d *D) U36LE() uint64 {
 // TryFieldScalarU36LE tries to add a field and read 36 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU36LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(36, LittleEndian)
+		v, err := d.tryUEndian(36, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -5194,11 +5317,11 @@ func (d *D) FieldU36LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U37LE
 
 // TryU37LE tries to read 37 bit unsigned integer in little-endian
-func (d *D) TryU37LE() (uint64, error) { return d.tryUE(37, LittleEndian) }
+func (d *D) TryU37LE() (uint64, error) { return d.tryUEndian(37, LittleEndian) }
 
 // U37LE reads 37 bit unsigned integer in little-endian
 func (d *D) U37LE() uint64 {
-	v, err := d.tryUE(37, LittleEndian)
+	v, err := d.tryUEndian(37, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U37LE", Pos: d.Pos()})
 	}
@@ -5208,7 +5331,7 @@ func (d *D) U37LE() uint64 {
 // TryFieldScalarU37LE tries to add a field and read 37 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU37LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(37, LittleEndian)
+		v, err := d.tryUEndian(37, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -5241,11 +5364,11 @@ func (d *D) FieldU37LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U38LE
 
 // TryU38LE tries to read 38 bit unsigned integer in little-endian
-func (d *D) TryU38LE() (uint64, error) { return d.tryUE(38, LittleEndian) }
+func (d *D) TryU38LE() (uint64, error) { return d.tryUEndian(38, LittleEndian) }
 
 // U38LE reads 38 bit unsigned integer in little-endian
 func (d *D) U38LE() uint64 {
-	v, err := d.tryUE(38, LittleEndian)
+	v, err := d.tryUEndian(38, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U38LE", Pos: d.Pos()})
 	}
@@ -5255,7 +5378,7 @@ func (d *D) U38LE() uint64 {
 // TryFieldScalarU38LE tries to add a field and read 38 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU38LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(38, LittleEndian)
+		v, err := d.tryUEndian(38, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -5288,11 +5411,11 @@ func (d *D) FieldU38LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U39LE
 
 // TryU39LE tries to read 39 bit unsigned integer in little-endian
-func (d *D) TryU39LE() (uint64, error) { return d.tryUE(39, LittleEndian) }
+func (d *D) TryU39LE() (uint64, error) { return d.tryUEndian(39, LittleEndian) }
 
 // U39LE reads 39 bit unsigned integer in little-endian
 func (d *D) U39LE() uint64 {
-	v, err := d.tryUE(39, LittleEndian)
+	v, err := d.tryUEndian(39, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U39LE", Pos: d.Pos()})
 	}
@@ -5302,7 +5425,7 @@ func (d *D) U39LE() uint64 {
 // TryFieldScalarU39LE tries to add a field and read 39 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU39LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(39, LittleEndian)
+		v, err := d.tryUEndian(39, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -5335,11 +5458,11 @@ func (d *D) FieldU39LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U40LE
 
 // TryU40LE tries to read 40 bit unsigned integer in little-endian
-func (d *D) TryU40LE() (uint64, error) { return d.tryUE(40, LittleEndian) }
+func (d *D) TryU40LE() (uint64, error) { return d.tryUEndian(40, LittleEndian) }
 
 // U40LE reads 40 bit unsigned integer in little-endian
 func (d *D) U40LE() uint64 {
-	v, err := d.tryUE(40, LittleEndian)
+	v, err := d.tryUEndian(40, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U40LE", Pos: d.Pos()})
 	}
@@ -5349,7 +5472,7 @@ func (d *D) U40LE() uint64 {
 // TryFieldScalarU40LE tries to add a field and read 40 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU40LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(40, LittleEndian)
+		v, err := d.tryUEndian(40, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -5382,11 +5505,11 @@ func (d *D) FieldU40LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U41LE
 
 // TryU41LE tries to read 41 bit unsigned integer in little-endian
-func (d *D) TryU41LE() (uint64, error) { return d.tryUE(41, LittleEndian) }
+func (d *D) TryU41LE() (uint64, error) { return d.tryUEndian(41, LittleEndian) }
 
 // U41LE reads 41 bit unsigned integer in little-endian
 func (d *D) U41LE() uint64 {
-	v, err := d.tryUE(41, LittleEndian)
+	v, err := d.tryUEndian(41, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U41LE", Pos: d.Pos()})
 	}
@@ -5396,7 +5519,7 @@ func (d *D) U41LE() uint64 {
 // TryFieldScalarU41LE tries to add a field and read 41 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU41LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(41, LittleEndian)
+		v, err := d.tryUEndian(41, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -5429,11 +5552,11 @@ func (d *D) FieldU41LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U42LE
 
 // TryU42LE tries to read 42 bit unsigned integer in little-endian
-func (d *D) TryU42LE() (uint64, error) { return d.tryUE(42, LittleEndian) }
+func (d *D) TryU42LE() (uint64, error) { return d.tryUEndian(42, LittleEndian) }
 
 // U42LE reads 42 bit unsigned integer in little-endian
 func (d *D) U42LE() uint64 {
-	v, err := d.tryUE(42, LittleEndian)
+	v, err := d.tryUEndian(42, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U42LE", Pos: d.Pos()})
 	}
@@ -5443,7 +5566,7 @@ func (d *D) U42LE() uint64 {
 // TryFieldScalarU42LE tries to add a field and read 42 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU42LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(42, LittleEndian)
+		v, err := d.tryUEndian(42, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -5476,11 +5599,11 @@ func (d *D) FieldU42LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U43LE
 
 // TryU43LE tries to read 43 bit unsigned integer in little-endian
-func (d *D) TryU43LE() (uint64, error) { return d.tryUE(43, LittleEndian) }
+func (d *D) TryU43LE() (uint64, error) { return d.tryUEndian(43, LittleEndian) }
 
 // U43LE reads 43 bit unsigned integer in little-endian
 func (d *D) U43LE() uint64 {
-	v, err := d.tryUE(43, LittleEndian)
+	v, err := d.tryUEndian(43, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U43LE", Pos: d.Pos()})
 	}
@@ -5490,7 +5613,7 @@ func (d *D) U43LE() uint64 {
 // TryFieldScalarU43LE tries to add a field and read 43 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU43LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(43, LittleEndian)
+		v, err := d.tryUEndian(43, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -5523,11 +5646,11 @@ func (d *D) FieldU43LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U44LE
 
 // TryU44LE tries to read 44 bit unsigned integer in little-endian
-func (d *D) TryU44LE() (uint64, error) { return d.tryUE(44, LittleEndian) }
+func (d *D) TryU44LE() (uint64, error) { return d.tryUEndian(44, LittleEndian) }
 
 // U44LE reads 44 bit unsigned integer in little-endian
 func (d *D) U44LE() uint64 {
-	v, err := d.tryUE(44, LittleEndian)
+	v, err := d.tryUEndian(44, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U44LE", Pos: d.Pos()})
 	}
@@ -5537,7 +5660,7 @@ func (d *D) U44LE() uint64 {
 // TryFieldScalarU44LE tries to add a field and read 44 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU44LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(44, LittleEndian)
+		v, err := d.tryUEndian(44, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -5570,11 +5693,11 @@ func (d *D) FieldU44LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U45LE
 
 // TryU45LE tries to read 45 bit unsigned integer in little-endian
-func (d *D) TryU45LE() (uint64, error) { return d.tryUE(45, LittleEndian) }
+func (d *D) TryU45LE() (uint64, error) { return d.tryUEndian(45, LittleEndian) }
 
 // U45LE reads 45 bit unsigned integer in little-endian
 func (d *D) U45LE() uint64 {
-	v, err := d.tryUE(45, LittleEndian)
+	v, err := d.tryUEndian(45, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U45LE", Pos: d.Pos()})
 	}
@@ -5584,7 +5707,7 @@ func (d *D) U45LE() uint64 {
 // TryFieldScalarU45LE tries to add a field and read 45 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU45LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(45, LittleEndian)
+		v, err := d.tryUEndian(45, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -5617,11 +5740,11 @@ func (d *D) FieldU45LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U46LE
 
 // TryU46LE tries to read 46 bit unsigned integer in little-endian
-func (d *D) TryU46LE() (uint64, error) { return d.tryUE(46, LittleEndian) }
+func (d *D) TryU46LE() (uint64, error) { return d.tryUEndian(46, LittleEndian) }
 
 // U46LE reads 46 bit unsigned integer in little-endian
 func (d *D) U46LE() uint64 {
-	v, err := d.tryUE(46, LittleEndian)
+	v, err := d.tryUEndian(46, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U46LE", Pos: d.Pos()})
 	}
@@ -5631,7 +5754,7 @@ func (d *D) U46LE() uint64 {
 // TryFieldScalarU46LE tries to add a field and read 46 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU46LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(46, LittleEndian)
+		v, err := d.tryUEndian(46, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -5664,11 +5787,11 @@ func (d *D) FieldU46LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U47LE
 
 // TryU47LE tries to read 47 bit unsigned integer in little-endian
-func (d *D) TryU47LE() (uint64, error) { return d.tryUE(47, LittleEndian) }
+func (d *D) TryU47LE() (uint64, error) { return d.tryUEndian(47, LittleEndian) }
 
 // U47LE reads 47 bit unsigned integer in little-endian
 func (d *D) U47LE() uint64 {
-	v, err := d.tryUE(47, LittleEndian)
+	v, err := d.tryUEndian(47, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U47LE", Pos: d.Pos()})
 	}
@@ -5678,7 +5801,7 @@ func (d *D) U47LE() uint64 {
 // TryFieldScalarU47LE tries to add a field and read 47 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU47LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(47, LittleEndian)
+		v, err := d.tryUEndian(47, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -5711,11 +5834,11 @@ func (d *D) FieldU47LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U48LE
 
 // TryU48LE tries to read 48 bit unsigned integer in little-endian
-func (d *D) TryU48LE() (uint64, error) { return d.tryUE(48, LittleEndian) }
+func (d *D) TryU48LE() (uint64, error) { return d.tryUEndian(48, LittleEndian) }
 
 // U48LE reads 48 bit unsigned integer in little-endian
 func (d *D) U48LE() uint64 {
-	v, err := d.tryUE(48, LittleEndian)
+	v, err := d.tryUEndian(48, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U48LE", Pos: d.Pos()})
 	}
@@ -5725,7 +5848,7 @@ func (d *D) U48LE() uint64 {
 // TryFieldScalarU48LE tries to add a field and read 48 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU48LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(48, LittleEndian)
+		v, err := d.tryUEndian(48, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -5758,11 +5881,11 @@ func (d *D) FieldU48LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U49LE
 
 // TryU49LE tries to read 49 bit unsigned integer in little-endian
-func (d *D) TryU49LE() (uint64, error) { return d.tryUE(49, LittleEndian) }
+func (d *D) TryU49LE() (uint64, error) { return d.tryUEndian(49, LittleEndian) }
 
 // U49LE reads 49 bit unsigned integer in little-endian
 func (d *D) U49LE() uint64 {
-	v, err := d.tryUE(49, LittleEndian)
+	v, err := d.tryUEndian(49, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U49LE", Pos: d.Pos()})
 	}
@@ -5772,7 +5895,7 @@ func (d *D) U49LE() uint64 {
 // TryFieldScalarU49LE tries to add a field and read 49 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU49LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(49, LittleEndian)
+		v, err := d.tryUEndian(49, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -5805,11 +5928,11 @@ func (d *D) FieldU49LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U50LE
 
 // TryU50LE tries to read 50 bit unsigned integer in little-endian
-func (d *D) TryU50LE() (uint64, error) { return d.tryUE(50, LittleEndian) }
+func (d *D) TryU50LE() (uint64, error) { return d.tryUEndian(50, LittleEndian) }
 
 // U50LE reads 50 bit unsigned integer in little-endian
 func (d *D) U50LE() uint64 {
-	v, err := d.tryUE(50, LittleEndian)
+	v, err := d.tryUEndian(50, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U50LE", Pos: d.Pos()})
 	}
@@ -5819,7 +5942,7 @@ func (d *D) U50LE() uint64 {
 // TryFieldScalarU50LE tries to add a field and read 50 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU50LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(50, LittleEndian)
+		v, err := d.tryUEndian(50, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -5852,11 +5975,11 @@ func (d *D) FieldU50LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U51LE
 
 // TryU51LE tries to read 51 bit unsigned integer in little-endian
-func (d *D) TryU51LE() (uint64, error) { return d.tryUE(51, LittleEndian) }
+func (d *D) TryU51LE() (uint64, error) { return d.tryUEndian(51, LittleEndian) }
 
 // U51LE reads 51 bit unsigned integer in little-endian
 func (d *D) U51LE() uint64 {
-	v, err := d.tryUE(51, LittleEndian)
+	v, err := d.tryUEndian(51, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U51LE", Pos: d.Pos()})
 	}
@@ -5866,7 +5989,7 @@ func (d *D) U51LE() uint64 {
 // TryFieldScalarU51LE tries to add a field and read 51 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU51LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(51, LittleEndian)
+		v, err := d.tryUEndian(51, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -5899,11 +6022,11 @@ func (d *D) FieldU51LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U52LE
 
 // TryU52LE tries to read 52 bit unsigned integer in little-endian
-func (d *D) TryU52LE() (uint64, error) { return d.tryUE(52, LittleEndian) }
+func (d *D) TryU52LE() (uint64, error) { return d.tryUEndian(52, LittleEndian) }
 
 // U52LE reads 52 bit unsigned integer in little-endian
 func (d *D) U52LE() uint64 {
-	v, err := d.tryUE(52, LittleEndian)
+	v, err := d.tryUEndian(52, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U52LE", Pos: d.Pos()})
 	}
@@ -5913,7 +6036,7 @@ func (d *D) U52LE() uint64 {
 // TryFieldScalarU52LE tries to add a field and read 52 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU52LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(52, LittleEndian)
+		v, err := d.tryUEndian(52, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -5946,11 +6069,11 @@ func (d *D) FieldU52LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U53LE
 
 // TryU53LE tries to read 53 bit unsigned integer in little-endian
-func (d *D) TryU53LE() (uint64, error) { return d.tryUE(53, LittleEndian) }
+func (d *D) TryU53LE() (uint64, error) { return d.tryUEndian(53, LittleEndian) }
 
 // U53LE reads 53 bit unsigned integer in little-endian
 func (d *D) U53LE() uint64 {
-	v, err := d.tryUE(53, LittleEndian)
+	v, err := d.tryUEndian(53, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U53LE", Pos: d.Pos()})
 	}
@@ -5960,7 +6083,7 @@ func (d *D) U53LE() uint64 {
 // TryFieldScalarU53LE tries to add a field and read 53 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU53LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(53, LittleEndian)
+		v, err := d.tryUEndian(53, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -5993,11 +6116,11 @@ func (d *D) FieldU53LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U54LE
 
 // TryU54LE tries to read 54 bit unsigned integer in little-endian
-func (d *D) TryU54LE() (uint64, error) { return d.tryUE(54, LittleEndian) }
+func (d *D) TryU54LE() (uint64, error) { return d.tryUEndian(54, LittleEndian) }
 
 // U54LE reads 54 bit unsigned integer in little-endian
 func (d *D) U54LE() uint64 {
-	v, err := d.tryUE(54, LittleEndian)
+	v, err := d.tryUEndian(54, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U54LE", Pos: d.Pos()})
 	}
@@ -6007,7 +6130,7 @@ func (d *D) U54LE() uint64 {
 // TryFieldScalarU54LE tries to add a field and read 54 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU54LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(54, LittleEndian)
+		v, err := d.tryUEndian(54, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -6040,11 +6163,11 @@ func (d *D) FieldU54LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U55LE
 
 // TryU55LE tries to read 55 bit unsigned integer in little-endian
-func (d *D) TryU55LE() (uint64, error) { return d.tryUE(55, LittleEndian) }
+func (d *D) TryU55LE() (uint64, error) { return d.tryUEndian(55, LittleEndian) }
 
 // U55LE reads 55 bit unsigned integer in little-endian
 func (d *D) U55LE() uint64 {
-	v, err := d.tryUE(55, LittleEndian)
+	v, err := d.tryUEndian(55, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U55LE", Pos: d.Pos()})
 	}
@@ -6054,7 +6177,7 @@ func (d *D) U55LE() uint64 {
 // TryFieldScalarU55LE tries to add a field and read 55 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU55LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(55, LittleEndian)
+		v, err := d.tryUEndian(55, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -6087,11 +6210,11 @@ func (d *D) FieldU55LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U56LE
 
 // TryU56LE tries to read 56 bit unsigned integer in little-endian
-func (d *D) TryU56LE() (uint64, error) { return d.tryUE(56, LittleEndian) }
+func (d *D) TryU56LE() (uint64, error) { return d.tryUEndian(56, LittleEndian) }
 
 // U56LE reads 56 bit unsigned integer in little-endian
 func (d *D) U56LE() uint64 {
-	v, err := d.tryUE(56, LittleEndian)
+	v, err := d.tryUEndian(56, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U56LE", Pos: d.Pos()})
 	}
@@ -6101,7 +6224,7 @@ func (d *D) U56LE() uint64 {
 // TryFieldScalarU56LE tries to add a field and read 56 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU56LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(56, LittleEndian)
+		v, err := d.tryUEndian(56, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -6134,11 +6257,11 @@ func (d *D) FieldU56LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U57LE
 
 // TryU57LE tries to read 57 bit unsigned integer in little-endian
-func (d *D) TryU57LE() (uint64, error) { return d.tryUE(57, LittleEndian) }
+func (d *D) TryU57LE() (uint64, error) { return d.tryUEndian(57, LittleEndian) }
 
 // U57LE reads 57 bit unsigned integer in little-endian
 func (d *D) U57LE() uint64 {
-	v, err := d.tryUE(57, LittleEndian)
+	v, err := d.tryUEndian(57, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U57LE", Pos: d.Pos()})
 	}
@@ -6148,7 +6271,7 @@ func (d *D) U57LE() uint64 {
 // TryFieldScalarU57LE tries to add a field and read 57 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU57LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(57, LittleEndian)
+		v, err := d.tryUEndian(57, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -6181,11 +6304,11 @@ func (d *D) FieldU57LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U58LE
 
 // TryU58LE tries to read 58 bit unsigned integer in little-endian
-func (d *D) TryU58LE() (uint64, error) { return d.tryUE(58, LittleEndian) }
+func (d *D) TryU58LE() (uint64, error) { return d.tryUEndian(58, LittleEndian) }
 
 // U58LE reads 58 bit unsigned integer in little-endian
 func (d *D) U58LE() uint64 {
-	v, err := d.tryUE(58, LittleEndian)
+	v, err := d.tryUEndian(58, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U58LE", Pos: d.Pos()})
 	}
@@ -6195,7 +6318,7 @@ func (d *D) U58LE() uint64 {
 // TryFieldScalarU58LE tries to add a field and read 58 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU58LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(58, LittleEndian)
+		v, err := d.tryUEndian(58, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -6228,11 +6351,11 @@ func (d *D) FieldU58LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U59LE
 
 // TryU59LE tries to read 59 bit unsigned integer in little-endian
-func (d *D) TryU59LE() (uint64, error) { return d.tryUE(59, LittleEndian) }
+func (d *D) TryU59LE() (uint64, error) { return d.tryUEndian(59, LittleEndian) }
 
 // U59LE reads 59 bit unsigned integer in little-endian
 func (d *D) U59LE() uint64 {
-	v, err := d.tryUE(59, LittleEndian)
+	v, err := d.tryUEndian(59, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U59LE", Pos: d.Pos()})
 	}
@@ -6242,7 +6365,7 @@ func (d *D) U59LE() uint64 {
 // TryFieldScalarU59LE tries to add a field and read 59 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU59LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(59, LittleEndian)
+		v, err := d.tryUEndian(59, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -6275,11 +6398,11 @@ func (d *D) FieldU59LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U60LE
 
 // TryU60LE tries to read 60 bit unsigned integer in little-endian
-func (d *D) TryU60LE() (uint64, error) { return d.tryUE(60, LittleEndian) }
+func (d *D) TryU60LE() (uint64, error) { return d.tryUEndian(60, LittleEndian) }
 
 // U60LE reads 60 bit unsigned integer in little-endian
 func (d *D) U60LE() uint64 {
-	v, err := d.tryUE(60, LittleEndian)
+	v, err := d.tryUEndian(60, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U60LE", Pos: d.Pos()})
 	}
@@ -6289,7 +6412,7 @@ func (d *D) U60LE() uint64 {
 // TryFieldScalarU60LE tries to add a field and read 60 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU60LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(60, LittleEndian)
+		v, err := d.tryUEndian(60, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -6322,11 +6445,11 @@ func (d *D) FieldU60LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U61LE
 
 // TryU61LE tries to read 61 bit unsigned integer in little-endian
-func (d *D) TryU61LE() (uint64, error) { return d.tryUE(61, LittleEndian) }
+func (d *D) TryU61LE() (uint64, error) { return d.tryUEndian(61, LittleEndian) }
 
 // U61LE reads 61 bit unsigned integer in little-endian
 func (d *D) U61LE() uint64 {
-	v, err := d.tryUE(61, LittleEndian)
+	v, err := d.tryUEndian(61, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U61LE", Pos: d.Pos()})
 	}
@@ -6336,7 +6459,7 @@ func (d *D) U61LE() uint64 {
 // TryFieldScalarU61LE tries to add a field and read 61 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU61LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(61, LittleEndian)
+		v, err := d.tryUEndian(61, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -6369,11 +6492,11 @@ func (d *D) FieldU61LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U62LE
 
 // TryU62LE tries to read 62 bit unsigned integer in little-endian
-func (d *D) TryU62LE() (uint64, error) { return d.tryUE(62, LittleEndian) }
+func (d *D) TryU62LE() (uint64, error) { return d.tryUEndian(62, LittleEndian) }
 
 // U62LE reads 62 bit unsigned integer in little-endian
 func (d *D) U62LE() uint64 {
-	v, err := d.tryUE(62, LittleEndian)
+	v, err := d.tryUEndian(62, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U62LE", Pos: d.Pos()})
 	}
@@ -6383,7 +6506,7 @@ func (d *D) U62LE() uint64 {
 // TryFieldScalarU62LE tries to add a field and read 62 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU62LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(62, LittleEndian)
+		v, err := d.tryUEndian(62, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -6416,11 +6539,11 @@ func (d *D) FieldU62LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U63LE
 
 // TryU63LE tries to read 63 bit unsigned integer in little-endian
-func (d *D) TryU63LE() (uint64, error) { return d.tryUE(63, LittleEndian) }
+func (d *D) TryU63LE() (uint64, error) { return d.tryUEndian(63, LittleEndian) }
 
 // U63LE reads 63 bit unsigned integer in little-endian
 func (d *D) U63LE() uint64 {
-	v, err := d.tryUE(63, LittleEndian)
+	v, err := d.tryUEndian(63, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U63LE", Pos: d.Pos()})
 	}
@@ -6430,7 +6553,7 @@ func (d *D) U63LE() uint64 {
 // TryFieldScalarU63LE tries to add a field and read 63 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU63LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(63, LittleEndian)
+		v, err := d.tryUEndian(63, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -6463,11 +6586,11 @@ func (d *D) FieldU63LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U64LE
 
 // TryU64LE tries to read 64 bit unsigned integer in little-endian
-func (d *D) TryU64LE() (uint64, error) { return d.tryUE(64, LittleEndian) }
+func (d *D) TryU64LE() (uint64, error) { return d.tryUEndian(64, LittleEndian) }
 
 // U64LE reads 64 bit unsigned integer in little-endian
 func (d *D) U64LE() uint64 {
-	v, err := d.tryUE(64, LittleEndian)
+	v, err := d.tryUEndian(64, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U64LE", Pos: d.Pos()})
 	}
@@ -6477,7 +6600,7 @@ func (d *D) U64LE() uint64 {
 // TryFieldScalarU64LE tries to add a field and read 64 bit unsigned integer in little-endian
 func (d *D) TryFieldScalarU64LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(64, LittleEndian)
+		v, err := d.tryUEndian(64, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -6510,11 +6633,11 @@ func (d *D) FieldU64LE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U8BE
 
 // TryU8BE tries to read 8 bit unsigned integer in big-endian
-func (d *D) TryU8BE() (uint64, error) { return d.tryUE(8, BigEndian) }
+func (d *D) TryU8BE() (uint64, error) { return d.tryUEndian(8, BigEndian) }
 
 // U8BE reads 8 bit unsigned integer in big-endian
 func (d *D) U8BE() uint64 {
-	v, err := d.tryUE(8, BigEndian)
+	v, err := d.tryUEndian(8, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U8BE", Pos: d.Pos()})
 	}
@@ -6524,7 +6647,7 @@ func (d *D) U8BE() uint64 {
 // TryFieldScalarU8BE tries to add a field and read 8 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU8BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(8, BigEndian)
+		v, err := d.tryUEndian(8, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -6557,11 +6680,11 @@ func (d *D) FieldU8BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U9BE
 
 // TryU9BE tries to read 9 bit unsigned integer in big-endian
-func (d *D) TryU9BE() (uint64, error) { return d.tryUE(9, BigEndian) }
+func (d *D) TryU9BE() (uint64, error) { return d.tryUEndian(9, BigEndian) }
 
 // U9BE reads 9 bit unsigned integer in big-endian
 func (d *D) U9BE() uint64 {
-	v, err := d.tryUE(9, BigEndian)
+	v, err := d.tryUEndian(9, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U9BE", Pos: d.Pos()})
 	}
@@ -6571,7 +6694,7 @@ func (d *D) U9BE() uint64 {
 // TryFieldScalarU9BE tries to add a field and read 9 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU9BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(9, BigEndian)
+		v, err := d.tryUEndian(9, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -6604,11 +6727,11 @@ func (d *D) FieldU9BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U10BE
 
 // TryU10BE tries to read 10 bit unsigned integer in big-endian
-func (d *D) TryU10BE() (uint64, error) { return d.tryUE(10, BigEndian) }
+func (d *D) TryU10BE() (uint64, error) { return d.tryUEndian(10, BigEndian) }
 
 // U10BE reads 10 bit unsigned integer in big-endian
 func (d *D) U10BE() uint64 {
-	v, err := d.tryUE(10, BigEndian)
+	v, err := d.tryUEndian(10, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U10BE", Pos: d.Pos()})
 	}
@@ -6618,7 +6741,7 @@ func (d *D) U10BE() uint64 {
 // TryFieldScalarU10BE tries to add a field and read 10 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU10BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(10, BigEndian)
+		v, err := d.tryUEndian(10, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -6651,11 +6774,11 @@ func (d *D) FieldU10BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U11BE
 
 // TryU11BE tries to read 11 bit unsigned integer in big-endian
-func (d *D) TryU11BE() (uint64, error) { return d.tryUE(11, BigEndian) }
+func (d *D) TryU11BE() (uint64, error) { return d.tryUEndian(11, BigEndian) }
 
 // U11BE reads 11 bit unsigned integer in big-endian
 func (d *D) U11BE() uint64 {
-	v, err := d.tryUE(11, BigEndian)
+	v, err := d.tryUEndian(11, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U11BE", Pos: d.Pos()})
 	}
@@ -6665,7 +6788,7 @@ func (d *D) U11BE() uint64 {
 // TryFieldScalarU11BE tries to add a field and read 11 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU11BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(11, BigEndian)
+		v, err := d.tryUEndian(11, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -6698,11 +6821,11 @@ func (d *D) FieldU11BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U12BE
 
 // TryU12BE tries to read 12 bit unsigned integer in big-endian
-func (d *D) TryU12BE() (uint64, error) { return d.tryUE(12, BigEndian) }
+func (d *D) TryU12BE() (uint64, error) { return d.tryUEndian(12, BigEndian) }
 
 // U12BE reads 12 bit unsigned integer in big-endian
 func (d *D) U12BE() uint64 {
-	v, err := d.tryUE(12, BigEndian)
+	v, err := d.tryUEndian(12, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U12BE", Pos: d.Pos()})
 	}
@@ -6712,7 +6835,7 @@ func (d *D) U12BE() uint64 {
 // TryFieldScalarU12BE tries to add a field and read 12 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU12BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(12, BigEndian)
+		v, err := d.tryUEndian(12, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -6745,11 +6868,11 @@ func (d *D) FieldU12BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U13BE
 
 // TryU13BE tries to read 13 bit unsigned integer in big-endian
-func (d *D) TryU13BE() (uint64, error) { return d.tryUE(13, BigEndian) }
+func (d *D) TryU13BE() (uint64, error) { return d.tryUEndian(13, BigEndian) }
 
 // U13BE reads 13 bit unsigned integer in big-endian
 func (d *D) U13BE() uint64 {
-	v, err := d.tryUE(13, BigEndian)
+	v, err := d.tryUEndian(13, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U13BE", Pos: d.Pos()})
 	}
@@ -6759,7 +6882,7 @@ func (d *D) U13BE() uint64 {
 // TryFieldScalarU13BE tries to add a field and read 13 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU13BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(13, BigEndian)
+		v, err := d.tryUEndian(13, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -6792,11 +6915,11 @@ func (d *D) FieldU13BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U14BE
 
 // TryU14BE tries to read 14 bit unsigned integer in big-endian
-func (d *D) TryU14BE() (uint64, error) { return d.tryUE(14, BigEndian) }
+func (d *D) TryU14BE() (uint64, error) { return d.tryUEndian(14, BigEndian) }
 
 // U14BE reads 14 bit unsigned integer in big-endian
 func (d *D) U14BE() uint64 {
-	v, err := d.tryUE(14, BigEndian)
+	v, err := d.tryUEndian(14, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U14BE", Pos: d.Pos()})
 	}
@@ -6806,7 +6929,7 @@ func (d *D) U14BE() uint64 {
 // TryFieldScalarU14BE tries to add a field and read 14 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU14BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(14, BigEndian)
+		v, err := d.tryUEndian(14, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -6839,11 +6962,11 @@ func (d *D) FieldU14BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U15BE
 
 // TryU15BE tries to read 15 bit unsigned integer in big-endian
-func (d *D) TryU15BE() (uint64, error) { return d.tryUE(15, BigEndian) }
+func (d *D) TryU15BE() (uint64, error) { return d.tryUEndian(15, BigEndian) }
 
 // U15BE reads 15 bit unsigned integer in big-endian
 func (d *D) U15BE() uint64 {
-	v, err := d.tryUE(15, BigEndian)
+	v, err := d.tryUEndian(15, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U15BE", Pos: d.Pos()})
 	}
@@ -6853,7 +6976,7 @@ func (d *D) U15BE() uint64 {
 // TryFieldScalarU15BE tries to add a field and read 15 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU15BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(15, BigEndian)
+		v, err := d.tryUEndian(15, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -6886,11 +7009,11 @@ func (d *D) FieldU15BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U16BE
 
 // TryU16BE tries to read 16 bit unsigned integer in big-endian
-func (d *D) TryU16BE() (uint64, error) { return d.tryUE(16, BigEndian) }
+func (d *D) TryU16BE() (uint64, error) { return d.tryUEndian(16, BigEndian) }
 
 // U16BE reads 16 bit unsigned integer in big-endian
 func (d *D) U16BE() uint64 {
-	v, err := d.tryUE(16, BigEndian)
+	v, err := d.tryUEndian(16, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U16BE", Pos: d.Pos()})
 	}
@@ -6900,7 +7023,7 @@ func (d *D) U16BE() uint64 {
 // TryFieldScalarU16BE tries to add a field and read 16 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU16BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(16, BigEndian)
+		v, err := d.tryUEndian(16, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -6933,11 +7056,11 @@ func (d *D) FieldU16BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U17BE
 
 // TryU17BE tries to read 17 bit unsigned integer in big-endian
-func (d *D) TryU17BE() (uint64, error) { return d.tryUE(17, BigEndian) }
+func (d *D) TryU17BE() (uint64, error) { return d.tryUEndian(17, BigEndian) }
 
 // U17BE reads 17 bit unsigned integer in big-endian
 func (d *D) U17BE() uint64 {
-	v, err := d.tryUE(17, BigEndian)
+	v, err := d.tryUEndian(17, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U17BE", Pos: d.Pos()})
 	}
@@ -6947,7 +7070,7 @@ func (d *D) U17BE() uint64 {
 // TryFieldScalarU17BE tries to add a field and read 17 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU17BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(17, BigEndian)
+		v, err := d.tryUEndian(17, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -6980,11 +7103,11 @@ func (d *D) FieldU17BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U18BE
 
 // TryU18BE tries to read 18 bit unsigned integer in big-endian
-func (d *D) TryU18BE() (uint64, error) { return d.tryUE(18, BigEndian) }
+func (d *D) TryU18BE() (uint64, error) { return d.tryUEndian(18, BigEndian) }
 
 // U18BE reads 18 bit unsigned integer in big-endian
 func (d *D) U18BE() uint64 {
-	v, err := d.tryUE(18, BigEndian)
+	v, err := d.tryUEndian(18, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U18BE", Pos: d.Pos()})
 	}
@@ -6994,7 +7117,7 @@ func (d *D) U18BE() uint64 {
 // TryFieldScalarU18BE tries to add a field and read 18 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU18BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(18, BigEndian)
+		v, err := d.tryUEndian(18, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -7027,11 +7150,11 @@ func (d *D) FieldU18BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U19BE
 
 // TryU19BE tries to read 19 bit unsigned integer in big-endian
-func (d *D) TryU19BE() (uint64, error) { return d.tryUE(19, BigEndian) }
+func (d *D) TryU19BE() (uint64, error) { return d.tryUEndian(19, BigEndian) }
 
 // U19BE reads 19 bit unsigned integer in big-endian
 func (d *D) U19BE() uint64 {
-	v, err := d.tryUE(19, BigEndian)
+	v, err := d.tryUEndian(19, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U19BE", Pos: d.Pos()})
 	}
@@ -7041,7 +7164,7 @@ func (d *D) U19BE() uint64 {
 // TryFieldScalarU19BE tries to add a field and read 19 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU19BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(19, BigEndian)
+		v, err := d.tryUEndian(19, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -7074,11 +7197,11 @@ func (d *D) FieldU19BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U20BE
 
 // TryU20BE tries to read 20 bit unsigned integer in big-endian
-func (d *D) TryU20BE() (uint64, error) { return d.tryUE(20, BigEndian) }
+func (d *D) TryU20BE() (uint64, error) { return d.tryUEndian(20, BigEndian) }
 
 // U20BE reads 20 bit unsigned integer in big-endian
 func (d *D) U20BE() uint64 {
-	v, err := d.tryUE(20, BigEndian)
+	v, err := d.tryUEndian(20, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U20BE", Pos: d.Pos()})
 	}
@@ -7088,7 +7211,7 @@ func (d *D) U20BE() uint64 {
 // TryFieldScalarU20BE tries to add a field and read 20 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU20BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(20, BigEndian)
+		v, err := d.tryUEndian(20, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -7121,11 +7244,11 @@ func (d *D) FieldU20BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U21BE
 
 // TryU21BE tries to read 21 bit unsigned integer in big-endian
-func (d *D) TryU21BE() (uint64, error) { return d.tryUE(21, BigEndian) }
+func (d *D) TryU21BE() (uint64, error) { return d.tryUEndian(21, BigEndian) }
 
 // U21BE reads 21 bit unsigned integer in big-endian
 func (d *D) U21BE() uint64 {
-	v, err := d.tryUE(21, BigEndian)
+	v, err := d.tryUEndian(21, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U21BE", Pos: d.Pos()})
 	}
@@ -7135,7 +7258,7 @@ func (d *D) U21BE() uint64 {
 // TryFieldScalarU21BE tries to add a field and read 21 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU21BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(21, BigEndian)
+		v, err := d.tryUEndian(21, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -7168,11 +7291,11 @@ func (d *D) FieldU21BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U22BE
 
 // TryU22BE tries to read 22 bit unsigned integer in big-endian
-func (d *D) TryU22BE() (uint64, error) { return d.tryUE(22, BigEndian) }
+func (d *D) TryU22BE() (uint64, error) { return d.tryUEndian(22, BigEndian) }
 
 // U22BE reads 22 bit unsigned integer in big-endian
 func (d *D) U22BE() uint64 {
-	v, err := d.tryUE(22, BigEndian)
+	v, err := d.tryUEndian(22, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U22BE", Pos: d.Pos()})
 	}
@@ -7182,7 +7305,7 @@ func (d *D) U22BE() uint64 {
 // TryFieldScalarU22BE tries to add a field and read 22 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU22BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(22, BigEndian)
+		v, err := d.tryUEndian(22, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -7215,11 +7338,11 @@ func (d *D) FieldU22BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U23BE
 
 // TryU23BE tries to read 23 bit unsigned integer in big-endian
-func (d *D) TryU23BE() (uint64, error) { return d.tryUE(23, BigEndian) }
+func (d *D) TryU23BE() (uint64, error) { return d.tryUEndian(23, BigEndian) }
 
 // U23BE reads 23 bit unsigned integer in big-endian
 func (d *D) U23BE() uint64 {
-	v, err := d.tryUE(23, BigEndian)
+	v, err := d.tryUEndian(23, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U23BE", Pos: d.Pos()})
 	}
@@ -7229,7 +7352,7 @@ func (d *D) U23BE() uint64 {
 // TryFieldScalarU23BE tries to add a field and read 23 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU23BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(23, BigEndian)
+		v, err := d.tryUEndian(23, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -7262,11 +7385,11 @@ func (d *D) FieldU23BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U24BE
 
 // TryU24BE tries to read 24 bit unsigned integer in big-endian
-func (d *D) TryU24BE() (uint64, error) { return d.tryUE(24, BigEndian) }
+func (d *D) TryU24BE() (uint64, error) { return d.tryUEndian(24, BigEndian) }
 
 // U24BE reads 24 bit unsigned integer in big-endian
 func (d *D) U24BE() uint64 {
-	v, err := d.tryUE(24, BigEndian)
+	v, err := d.tryUEndian(24, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U24BE", Pos: d.Pos()})
 	}
@@ -7276,7 +7399,7 @@ func (d *D) U24BE() uint64 {
 // TryFieldScalarU24BE tries to add a field and read 24 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU24BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(24, BigEndian)
+		v, err := d.tryUEndian(24, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -7309,11 +7432,11 @@ func (d *D) FieldU24BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U25BE
 
 // TryU25BE tries to read 25 bit unsigned integer in big-endian
-func (d *D) TryU25BE() (uint64, error) { return d.tryUE(25, BigEndian) }
+func (d *D) TryU25BE() (uint64, error) { return d.tryUEndian(25, BigEndian) }
 
 // U25BE reads 25 bit unsigned integer in big-endian
 func (d *D) U25BE() uint64 {
-	v, err := d.tryUE(25, BigEndian)
+	v, err := d.tryUEndian(25, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U25BE", Pos: d.Pos()})
 	}
@@ -7323,7 +7446,7 @@ func (d *D) U25BE() uint64 {
 // TryFieldScalarU25BE tries to add a field and read 25 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU25BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(25, BigEndian)
+		v, err := d.tryUEndian(25, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -7356,11 +7479,11 @@ func (d *D) FieldU25BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U26BE
 
 // TryU26BE tries to read 26 bit unsigned integer in big-endian
-func (d *D) TryU26BE() (uint64, error) { return d.tryUE(26, BigEndian) }
+func (d *D) TryU26BE() (uint64, error) { return d.tryUEndian(26, BigEndian) }
 
 // U26BE reads 26 bit unsigned integer in big-endian
 func (d *D) U26BE() uint64 {
-	v, err := d.tryUE(26, BigEndian)
+	v, err := d.tryUEndian(26, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U26BE", Pos: d.Pos()})
 	}
@@ -7370,7 +7493,7 @@ func (d *D) U26BE() uint64 {
 // TryFieldScalarU26BE tries to add a field and read 26 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU26BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(26, BigEndian)
+		v, err := d.tryUEndian(26, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -7403,11 +7526,11 @@ func (d *D) FieldU26BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U27BE
 
 // TryU27BE tries to read 27 bit unsigned integer in big-endian
-func (d *D) TryU27BE() (uint64, error) { return d.tryUE(27, BigEndian) }
+func (d *D) TryU27BE() (uint64, error) { return d.tryUEndian(27, BigEndian) }
 
 // U27BE reads 27 bit unsigned integer in big-endian
 func (d *D) U27BE() uint64 {
-	v, err := d.tryUE(27, BigEndian)
+	v, err := d.tryUEndian(27, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U27BE", Pos: d.Pos()})
 	}
@@ -7417,7 +7540,7 @@ func (d *D) U27BE() uint64 {
 // TryFieldScalarU27BE tries to add a field and read 27 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU27BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(27, BigEndian)
+		v, err := d.tryUEndian(27, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -7450,11 +7573,11 @@ func (d *D) FieldU27BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U28BE
 
 // TryU28BE tries to read 28 bit unsigned integer in big-endian
-func (d *D) TryU28BE() (uint64, error) { return d.tryUE(28, BigEndian) }
+func (d *D) TryU28BE() (uint64, error) { return d.tryUEndian(28, BigEndian) }
 
 // U28BE reads 28 bit unsigned integer in big-endian
 func (d *D) U28BE() uint64 {
-	v, err := d.tryUE(28, BigEndian)
+	v, err := d.tryUEndian(28, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U28BE", Pos: d.Pos()})
 	}
@@ -7464,7 +7587,7 @@ func (d *D) U28BE() uint64 {
 // TryFieldScalarU28BE tries to add a field and read 28 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU28BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(28, BigEndian)
+		v, err := d.tryUEndian(28, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -7497,11 +7620,11 @@ func (d *D) FieldU28BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U29BE
 
 // TryU29BE tries to read 29 bit unsigned integer in big-endian
-func (d *D) TryU29BE() (uint64, error) { return d.tryUE(29, BigEndian) }
+func (d *D) TryU29BE() (uint64, error) { return d.tryUEndian(29, BigEndian) }
 
 // U29BE reads 29 bit unsigned integer in big-endian
 func (d *D) U29BE() uint64 {
-	v, err := d.tryUE(29, BigEndian)
+	v, err := d.tryUEndian(29, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U29BE", Pos: d.Pos()})
 	}
@@ -7511,7 +7634,7 @@ func (d *D) U29BE() uint64 {
 // TryFieldScalarU29BE tries to add a field and read 29 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU29BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(29, BigEndian)
+		v, err := d.tryUEndian(29, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -7544,11 +7667,11 @@ func (d *D) FieldU29BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U30BE
 
 // TryU30BE tries to read 30 bit unsigned integer in big-endian
-func (d *D) TryU30BE() (uint64, error) { return d.tryUE(30, BigEndian) }
+func (d *D) TryU30BE() (uint64, error) { return d.tryUEndian(30, BigEndian) }
 
 // U30BE reads 30 bit unsigned integer in big-endian
 func (d *D) U30BE() uint64 {
-	v, err := d.tryUE(30, BigEndian)
+	v, err := d.tryUEndian(30, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U30BE", Pos: d.Pos()})
 	}
@@ -7558,7 +7681,7 @@ func (d *D) U30BE() uint64 {
 // TryFieldScalarU30BE tries to add a field and read 30 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU30BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(30, BigEndian)
+		v, err := d.tryUEndian(30, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -7591,11 +7714,11 @@ func (d *D) FieldU30BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U31BE
 
 // TryU31BE tries to read 31 bit unsigned integer in big-endian
-func (d *D) TryU31BE() (uint64, error) { return d.tryUE(31, BigEndian) }
+func (d *D) TryU31BE() (uint64, error) { return d.tryUEndian(31, BigEndian) }
 
 // U31BE reads 31 bit unsigned integer in big-endian
 func (d *D) U31BE() uint64 {
-	v, err := d.tryUE(31, BigEndian)
+	v, err := d.tryUEndian(31, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U31BE", Pos: d.Pos()})
 	}
@@ -7605,7 +7728,7 @@ func (d *D) U31BE() uint64 {
 // TryFieldScalarU31BE tries to add a field and read 31 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU31BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(31, BigEndian)
+		v, err := d.tryUEndian(31, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -7638,11 +7761,11 @@ func (d *D) FieldU31BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U32BE
 
 // TryU32BE tries to read 32 bit unsigned integer in big-endian
-func (d *D) TryU32BE() (uint64, error) { return d.tryUE(32, BigEndian) }
+func (d *D) TryU32BE() (uint64, error) { return d.tryUEndian(32, BigEndian) }
 
 // U32BE reads 32 bit unsigned integer in big-endian
 func (d *D) U32BE() uint64 {
-	v, err := d.tryUE(32, BigEndian)
+	v, err := d.tryUEndian(32, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U32BE", Pos: d.Pos()})
 	}
@@ -7652,7 +7775,7 @@ func (d *D) U32BE() uint64 {
 // TryFieldScalarU32BE tries to add a field and read 32 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU32BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(32, BigEndian)
+		v, err := d.tryUEndian(32, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -7685,11 +7808,11 @@ func (d *D) FieldU32BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U33BE
 
 // TryU33BE tries to read 33 bit unsigned integer in big-endian
-func (d *D) TryU33BE() (uint64, error) { return d.tryUE(33, BigEndian) }
+func (d *D) TryU33BE() (uint64, error) { return d.tryUEndian(33, BigEndian) }
 
 // U33BE reads 33 bit unsigned integer in big-endian
 func (d *D) U33BE() uint64 {
-	v, err := d.tryUE(33, BigEndian)
+	v, err := d.tryUEndian(33, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U33BE", Pos: d.Pos()})
 	}
@@ -7699,7 +7822,7 @@ func (d *D) U33BE() uint64 {
 // TryFieldScalarU33BE tries to add a field and read 33 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU33BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(33, BigEndian)
+		v, err := d.tryUEndian(33, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -7732,11 +7855,11 @@ func (d *D) FieldU33BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U34BE
 
 // TryU34BE tries to read 34 bit unsigned integer in big-endian
-func (d *D) TryU34BE() (uint64, error) { return d.tryUE(34, BigEndian) }
+func (d *D) TryU34BE() (uint64, error) { return d.tryUEndian(34, BigEndian) }
 
 // U34BE reads 34 bit unsigned integer in big-endian
 func (d *D) U34BE() uint64 {
-	v, err := d.tryUE(34, BigEndian)
+	v, err := d.tryUEndian(34, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U34BE", Pos: d.Pos()})
 	}
@@ -7746,7 +7869,7 @@ func (d *D) U34BE() uint64 {
 // TryFieldScalarU34BE tries to add a field and read 34 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU34BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(34, BigEndian)
+		v, err := d.tryUEndian(34, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -7779,11 +7902,11 @@ func (d *D) FieldU34BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U35BE
 
 // TryU35BE tries to read 35 bit unsigned integer in big-endian
-func (d *D) TryU35BE() (uint64, error) { return d.tryUE(35, BigEndian) }
+func (d *D) TryU35BE() (uint64, error) { return d.tryUEndian(35, BigEndian) }
 
 // U35BE reads 35 bit unsigned integer in big-endian
 func (d *D) U35BE() uint64 {
-	v, err := d.tryUE(35, BigEndian)
+	v, err := d.tryUEndian(35, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U35BE", Pos: d.Pos()})
 	}
@@ -7793,7 +7916,7 @@ func (d *D) U35BE() uint64 {
 // TryFieldScalarU35BE tries to add a field and read 35 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU35BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(35, BigEndian)
+		v, err := d.tryUEndian(35, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -7826,11 +7949,11 @@ func (d *D) FieldU35BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U36BE
 
 // TryU36BE tries to read 36 bit unsigned integer in big-endian
-func (d *D) TryU36BE() (uint64, error) { return d.tryUE(36, BigEndian) }
+func (d *D) TryU36BE() (uint64, error) { return d.tryUEndian(36, BigEndian) }
 
 // U36BE reads 36 bit unsigned integer in big-endian
 func (d *D) U36BE() uint64 {
-	v, err := d.tryUE(36, BigEndian)
+	v, err := d.tryUEndian(36, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U36BE", Pos: d.Pos()})
 	}
@@ -7840,7 +7963,7 @@ func (d *D) U36BE() uint64 {
 // TryFieldScalarU36BE tries to add a field and read 36 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU36BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(36, BigEndian)
+		v, err := d.tryUEndian(36, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -7873,11 +7996,11 @@ func (d *D) FieldU36BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U37BE
 
 // TryU37BE tries to read 37 bit unsigned integer in big-endian
-func (d *D) TryU37BE() (uint64, error) { return d.tryUE(37, BigEndian) }
+func (d *D) TryU37BE() (uint64, error) { return d.tryUEndian(37, BigEndian) }
 
 // U37BE reads 37 bit unsigned integer in big-endian
 func (d *D) U37BE() uint64 {
-	v, err := d.tryUE(37, BigEndian)
+	v, err := d.tryUEndian(37, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U37BE", Pos: d.Pos()})
 	}
@@ -7887,7 +8010,7 @@ func (d *D) U37BE() uint64 {
 // TryFieldScalarU37BE tries to add a field and read 37 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU37BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(37, BigEndian)
+		v, err := d.tryUEndian(37, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -7920,11 +8043,11 @@ func (d *D) FieldU37BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U38BE
 
 // TryU38BE tries to read 38 bit unsigned integer in big-endian
-func (d *D) TryU38BE() (uint64, error) { return d.tryUE(38, BigEndian) }
+func (d *D) TryU38BE() (uint64, error) { return d.tryUEndian(38, BigEndian) }
 
 // U38BE reads 38 bit unsigned integer in big-endian
 func (d *D) U38BE() uint64 {
-	v, err := d.tryUE(38, BigEndian)
+	v, err := d.tryUEndian(38, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U38BE", Pos: d.Pos()})
 	}
@@ -7934,7 +8057,7 @@ func (d *D) U38BE() uint64 {
 // TryFieldScalarU38BE tries to add a field and read 38 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU38BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(38, BigEndian)
+		v, err := d.tryUEndian(38, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -7967,11 +8090,11 @@ func (d *D) FieldU38BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U39BE
 
 // TryU39BE tries to read 39 bit unsigned integer in big-endian
-func (d *D) TryU39BE() (uint64, error) { return d.tryUE(39, BigEndian) }
+func (d *D) TryU39BE() (uint64, error) { return d.tryUEndian(39, BigEndian) }
 
 // U39BE reads 39 bit unsigned integer in big-endian
 func (d *D) U39BE() uint64 {
-	v, err := d.tryUE(39, BigEndian)
+	v, err := d.tryUEndian(39, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U39BE", Pos: d.Pos()})
 	}
@@ -7981,7 +8104,7 @@ func (d *D) U39BE() uint64 {
 // TryFieldScalarU39BE tries to add a field and read 39 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU39BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(39, BigEndian)
+		v, err := d.tryUEndian(39, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -8014,11 +8137,11 @@ func (d *D) FieldU39BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U40BE
 
 // TryU40BE tries to read 40 bit unsigned integer in big-endian
-func (d *D) TryU40BE() (uint64, error) { return d.tryUE(40, BigEndian) }
+func (d *D) TryU40BE() (uint64, error) { return d.tryUEndian(40, BigEndian) }
 
 // U40BE reads 40 bit unsigned integer in big-endian
 func (d *D) U40BE() uint64 {
-	v, err := d.tryUE(40, BigEndian)
+	v, err := d.tryUEndian(40, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U40BE", Pos: d.Pos()})
 	}
@@ -8028,7 +8151,7 @@ func (d *D) U40BE() uint64 {
 // TryFieldScalarU40BE tries to add a field and read 40 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU40BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(40, BigEndian)
+		v, err := d.tryUEndian(40, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -8061,11 +8184,11 @@ func (d *D) FieldU40BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U41BE
 
 // TryU41BE tries to read 41 bit unsigned integer in big-endian
-func (d *D) TryU41BE() (uint64, error) { return d.tryUE(41, BigEndian) }
+func (d *D) TryU41BE() (uint64, error) { return d.tryUEndian(41, BigEndian) }
 
 // U41BE reads 41 bit unsigned integer in big-endian
 func (d *D) U41BE() uint64 {
-	v, err := d.tryUE(41, BigEndian)
+	v, err := d.tryUEndian(41, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U41BE", Pos: d.Pos()})
 	}
@@ -8075,7 +8198,7 @@ func (d *D) U41BE() uint64 {
 // TryFieldScalarU41BE tries to add a field and read 41 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU41BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(41, BigEndian)
+		v, err := d.tryUEndian(41, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -8108,11 +8231,11 @@ func (d *D) FieldU41BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U42BE
 
 // TryU42BE tries to read 42 bit unsigned integer in big-endian
-func (d *D) TryU42BE() (uint64, error) { return d.tryUE(42, BigEndian) }
+func (d *D) TryU42BE() (uint64, error) { return d.tryUEndian(42, BigEndian) }
 
 // U42BE reads 42 bit unsigned integer in big-endian
 func (d *D) U42BE() uint64 {
-	v, err := d.tryUE(42, BigEndian)
+	v, err := d.tryUEndian(42, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U42BE", Pos: d.Pos()})
 	}
@@ -8122,7 +8245,7 @@ func (d *D) U42BE() uint64 {
 // TryFieldScalarU42BE tries to add a field and read 42 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU42BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(42, BigEndian)
+		v, err := d.tryUEndian(42, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -8155,11 +8278,11 @@ func (d *D) FieldU42BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U43BE
 
 // TryU43BE tries to read 43 bit unsigned integer in big-endian
-func (d *D) TryU43BE() (uint64, error) { return d.tryUE(43, BigEndian) }
+func (d *D) TryU43BE() (uint64, error) { return d.tryUEndian(43, BigEndian) }
 
 // U43BE reads 43 bit unsigned integer in big-endian
 func (d *D) U43BE() uint64 {
-	v, err := d.tryUE(43, BigEndian)
+	v, err := d.tryUEndian(43, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U43BE", Pos: d.Pos()})
 	}
@@ -8169,7 +8292,7 @@ func (d *D) U43BE() uint64 {
 // TryFieldScalarU43BE tries to add a field and read 43 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU43BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(43, BigEndian)
+		v, err := d.tryUEndian(43, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -8202,11 +8325,11 @@ func (d *D) FieldU43BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U44BE
 
 // TryU44BE tries to read 44 bit unsigned integer in big-endian
-func (d *D) TryU44BE() (uint64, error) { return d.tryUE(44, BigEndian) }
+func (d *D) TryU44BE() (uint64, error) { return d.tryUEndian(44, BigEndian) }
 
 // U44BE reads 44 bit unsigned integer in big-endian
 func (d *D) U44BE() uint64 {
-	v, err := d.tryUE(44, BigEndian)
+	v, err := d.tryUEndian(44, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U44BE", Pos: d.Pos()})
 	}
@@ -8216,7 +8339,7 @@ func (d *D) U44BE() uint64 {
 // TryFieldScalarU44BE tries to add a field and read 44 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU44BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(44, BigEndian)
+		v, err := d.tryUEndian(44, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -8249,11 +8372,11 @@ func (d *D) FieldU44BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U45BE
 
 // TryU45BE tries to read 45 bit unsigned integer in big-endian
-func (d *D) TryU45BE() (uint64, error) { return d.tryUE(45, BigEndian) }
+func (d *D) TryU45BE() (uint64, error) { return d.tryUEndian(45, BigEndian) }
 
 // U45BE reads 45 bit unsigned integer in big-endian
 func (d *D) U45BE() uint64 {
-	v, err := d.tryUE(45, BigEndian)
+	v, err := d.tryUEndian(45, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U45BE", Pos: d.Pos()})
 	}
@@ -8263,7 +8386,7 @@ func (d *D) U45BE() uint64 {
 // TryFieldScalarU45BE tries to add a field and read 45 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU45BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(45, BigEndian)
+		v, err := d.tryUEndian(45, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -8296,11 +8419,11 @@ func (d *D) FieldU45BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U46BE
 
 // TryU46BE tries to read 46 bit unsigned integer in big-endian
-func (d *D) TryU46BE() (uint64, error) { return d.tryUE(46, BigEndian) }
+func (d *D) TryU46BE() (uint64, error) { return d.tryUEndian(46, BigEndian) }
 
 // U46BE reads 46 bit unsigned integer in big-endian
 func (d *D) U46BE() uint64 {
-	v, err := d.tryUE(46, BigEndian)
+	v, err := d.tryUEndian(46, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U46BE", Pos: d.Pos()})
 	}
@@ -8310,7 +8433,7 @@ func (d *D) U46BE() uint64 {
 // TryFieldScalarU46BE tries to add a field and read 46 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU46BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(46, BigEndian)
+		v, err := d.tryUEndian(46, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -8343,11 +8466,11 @@ func (d *D) FieldU46BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U47BE
 
 // TryU47BE tries to read 47 bit unsigned integer in big-endian
-func (d *D) TryU47BE() (uint64, error) { return d.tryUE(47, BigEndian) }
+func (d *D) TryU47BE() (uint64, error) { return d.tryUEndian(47, BigEndian) }
 
 // U47BE reads 47 bit unsigned integer in big-endian
 func (d *D) U47BE() uint64 {
-	v, err := d.tryUE(47, BigEndian)
+	v, err := d.tryUEndian(47, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U47BE", Pos: d.Pos()})
 	}
@@ -8357,7 +8480,7 @@ func (d *D) U47BE() uint64 {
 // TryFieldScalarU47BE tries to add a field and read 47 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU47BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(47, BigEndian)
+		v, err := d.tryUEndian(47, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -8390,11 +8513,11 @@ func (d *D) FieldU47BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U48BE
 
 // TryU48BE tries to read 48 bit unsigned integer in big-endian
-func (d *D) TryU48BE() (uint64, error) { return d.tryUE(48, BigEndian) }
+func (d *D) TryU48BE() (uint64, error) { return d.tryUEndian(48, BigEndian) }
 
 // U48BE reads 48 bit unsigned integer in big-endian
 func (d *D) U48BE() uint64 {
-	v, err := d.tryUE(48, BigEndian)
+	v, err := d.tryUEndian(48, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U48BE", Pos: d.Pos()})
 	}
@@ -8404,7 +8527,7 @@ func (d *D) U48BE() uint64 {
 // TryFieldScalarU48BE tries to add a field and read 48 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU48BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(48, BigEndian)
+		v, err := d.tryUEndian(48, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -8437,11 +8560,11 @@ func (d *D) FieldU48BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U49BE
 
 // TryU49BE tries to read 49 bit unsigned integer in big-endian
-func (d *D) TryU49BE() (uint64, error) { return d.tryUE(49, BigEndian) }
+func (d *D) TryU49BE() (uint64, error) { return d.tryUEndian(49, BigEndian) }
 
 // U49BE reads 49 bit unsigned integer in big-endian
 func (d *D) U49BE() uint64 {
-	v, err := d.tryUE(49, BigEndian)
+	v, err := d.tryUEndian(49, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U49BE", Pos: d.Pos()})
 	}
@@ -8451,7 +8574,7 @@ func (d *D) U49BE() uint64 {
 // TryFieldScalarU49BE tries to add a field and read 49 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU49BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(49, BigEndian)
+		v, err := d.tryUEndian(49, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -8484,11 +8607,11 @@ func (d *D) FieldU49BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U50BE
 
 // TryU50BE tries to read 50 bit unsigned integer in big-endian
-func (d *D) TryU50BE() (uint64, error) { return d.tryUE(50, BigEndian) }
+func (d *D) TryU50BE() (uint64, error) { return d.tryUEndian(50, BigEndian) }
 
 // U50BE reads 50 bit unsigned integer in big-endian
 func (d *D) U50BE() uint64 {
-	v, err := d.tryUE(50, BigEndian)
+	v, err := d.tryUEndian(50, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U50BE", Pos: d.Pos()})
 	}
@@ -8498,7 +8621,7 @@ func (d *D) U50BE() uint64 {
 // TryFieldScalarU50BE tries to add a field and read 50 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU50BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(50, BigEndian)
+		v, err := d.tryUEndian(50, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -8531,11 +8654,11 @@ func (d *D) FieldU50BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U51BE
 
 // TryU51BE tries to read 51 bit unsigned integer in big-endian
-func (d *D) TryU51BE() (uint64, error) { return d.tryUE(51, BigEndian) }
+func (d *D) TryU51BE() (uint64, error) { return d.tryUEndian(51, BigEndian) }
 
 // U51BE reads 51 bit unsigned integer in big-endian
 func (d *D) U51BE() uint64 {
-	v, err := d.tryUE(51, BigEndian)
+	v, err := d.tryUEndian(51, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U51BE", Pos: d.Pos()})
 	}
@@ -8545,7 +8668,7 @@ func (d *D) U51BE() uint64 {
 // TryFieldScalarU51BE tries to add a field and read 51 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU51BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(51, BigEndian)
+		v, err := d.tryUEndian(51, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -8578,11 +8701,11 @@ func (d *D) FieldU51BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U52BE
 
 // TryU52BE tries to read 52 bit unsigned integer in big-endian
-func (d *D) TryU52BE() (uint64, error) { return d.tryUE(52, BigEndian) }
+func (d *D) TryU52BE() (uint64, error) { return d.tryUEndian(52, BigEndian) }
 
 // U52BE reads 52 bit unsigned integer in big-endian
 func (d *D) U52BE() uint64 {
-	v, err := d.tryUE(52, BigEndian)
+	v, err := d.tryUEndian(52, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U52BE", Pos: d.Pos()})
 	}
@@ -8592,7 +8715,7 @@ func (d *D) U52BE() uint64 {
 // TryFieldScalarU52BE tries to add a field and read 52 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU52BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(52, BigEndian)
+		v, err := d.tryUEndian(52, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -8625,11 +8748,11 @@ func (d *D) FieldU52BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U53BE
 
 // TryU53BE tries to read 53 bit unsigned integer in big-endian
-func (d *D) TryU53BE() (uint64, error) { return d.tryUE(53, BigEndian) }
+func (d *D) TryU53BE() (uint64, error) { return d.tryUEndian(53, BigEndian) }
 
 // U53BE reads 53 bit unsigned integer in big-endian
 func (d *D) U53BE() uint64 {
-	v, err := d.tryUE(53, BigEndian)
+	v, err := d.tryUEndian(53, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U53BE", Pos: d.Pos()})
 	}
@@ -8639,7 +8762,7 @@ func (d *D) U53BE() uint64 {
 // TryFieldScalarU53BE tries to add a field and read 53 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU53BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(53, BigEndian)
+		v, err := d.tryUEndian(53, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -8672,11 +8795,11 @@ func (d *D) FieldU53BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U54BE
 
 // TryU54BE tries to read 54 bit unsigned integer in big-endian
-func (d *D) TryU54BE() (uint64, error) { return d.tryUE(54, BigEndian) }
+func (d *D) TryU54BE() (uint64, error) { return d.tryUEndian(54, BigEndian) }
 
 // U54BE reads 54 bit unsigned integer in big-endian
 func (d *D) U54BE() uint64 {
-	v, err := d.tryUE(54, BigEndian)
+	v, err := d.tryUEndian(54, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U54BE", Pos: d.Pos()})
 	}
@@ -8686,7 +8809,7 @@ func (d *D) U54BE() uint64 {
 // TryFieldScalarU54BE tries to add a field and read 54 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU54BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(54, BigEndian)
+		v, err := d.tryUEndian(54, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -8719,11 +8842,11 @@ func (d *D) FieldU54BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U55BE
 
 // TryU55BE tries to read 55 bit unsigned integer in big-endian
-func (d *D) TryU55BE() (uint64, error) { return d.tryUE(55, BigEndian) }
+func (d *D) TryU55BE() (uint64, error) { return d.tryUEndian(55, BigEndian) }
 
 // U55BE reads 55 bit unsigned integer in big-endian
 func (d *D) U55BE() uint64 {
-	v, err := d.tryUE(55, BigEndian)
+	v, err := d.tryUEndian(55, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U55BE", Pos: d.Pos()})
 	}
@@ -8733,7 +8856,7 @@ func (d *D) U55BE() uint64 {
 // TryFieldScalarU55BE tries to add a field and read 55 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU55BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(55, BigEndian)
+		v, err := d.tryUEndian(55, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -8766,11 +8889,11 @@ func (d *D) FieldU55BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U56BE
 
 // TryU56BE tries to read 56 bit unsigned integer in big-endian
-func (d *D) TryU56BE() (uint64, error) { return d.tryUE(56, BigEndian) }
+func (d *D) TryU56BE() (uint64, error) { return d.tryUEndian(56, BigEndian) }
 
 // U56BE reads 56 bit unsigned integer in big-endian
 func (d *D) U56BE() uint64 {
-	v, err := d.tryUE(56, BigEndian)
+	v, err := d.tryUEndian(56, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U56BE", Pos: d.Pos()})
 	}
@@ -8780,7 +8903,7 @@ func (d *D) U56BE() uint64 {
 // TryFieldScalarU56BE tries to add a field and read 56 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU56BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(56, BigEndian)
+		v, err := d.tryUEndian(56, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -8813,11 +8936,11 @@ func (d *D) FieldU56BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U57BE
 
 // TryU57BE tries to read 57 bit unsigned integer in big-endian
-func (d *D) TryU57BE() (uint64, error) { return d.tryUE(57, BigEndian) }
+func (d *D) TryU57BE() (uint64, error) { return d.tryUEndian(57, BigEndian) }
 
 // U57BE reads 57 bit unsigned integer in big-endian
 func (d *D) U57BE() uint64 {
-	v, err := d.tryUE(57, BigEndian)
+	v, err := d.tryUEndian(57, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U57BE", Pos: d.Pos()})
 	}
@@ -8827,7 +8950,7 @@ func (d *D) U57BE() uint64 {
 // TryFieldScalarU57BE tries to add a field and read 57 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU57BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(57, BigEndian)
+		v, err := d.tryUEndian(57, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -8860,11 +8983,11 @@ func (d *D) FieldU57BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U58BE
 
 // TryU58BE tries to read 58 bit unsigned integer in big-endian
-func (d *D) TryU58BE() (uint64, error) { return d.tryUE(58, BigEndian) }
+func (d *D) TryU58BE() (uint64, error) { return d.tryUEndian(58, BigEndian) }
 
 // U58BE reads 58 bit unsigned integer in big-endian
 func (d *D) U58BE() uint64 {
-	v, err := d.tryUE(58, BigEndian)
+	v, err := d.tryUEndian(58, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U58BE", Pos: d.Pos()})
 	}
@@ -8874,7 +8997,7 @@ func (d *D) U58BE() uint64 {
 // TryFieldScalarU58BE tries to add a field and read 58 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU58BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(58, BigEndian)
+		v, err := d.tryUEndian(58, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -8907,11 +9030,11 @@ func (d *D) FieldU58BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U59BE
 
 // TryU59BE tries to read 59 bit unsigned integer in big-endian
-func (d *D) TryU59BE() (uint64, error) { return d.tryUE(59, BigEndian) }
+func (d *D) TryU59BE() (uint64, error) { return d.tryUEndian(59, BigEndian) }
 
 // U59BE reads 59 bit unsigned integer in big-endian
 func (d *D) U59BE() uint64 {
-	v, err := d.tryUE(59, BigEndian)
+	v, err := d.tryUEndian(59, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U59BE", Pos: d.Pos()})
 	}
@@ -8921,7 +9044,7 @@ func (d *D) U59BE() uint64 {
 // TryFieldScalarU59BE tries to add a field and read 59 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU59BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(59, BigEndian)
+		v, err := d.tryUEndian(59, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -8954,11 +9077,11 @@ func (d *D) FieldU59BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U60BE
 
 // TryU60BE tries to read 60 bit unsigned integer in big-endian
-func (d *D) TryU60BE() (uint64, error) { return d.tryUE(60, BigEndian) }
+func (d *D) TryU60BE() (uint64, error) { return d.tryUEndian(60, BigEndian) }
 
 // U60BE reads 60 bit unsigned integer in big-endian
 func (d *D) U60BE() uint64 {
-	v, err := d.tryUE(60, BigEndian)
+	v, err := d.tryUEndian(60, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U60BE", Pos: d.Pos()})
 	}
@@ -8968,7 +9091,7 @@ func (d *D) U60BE() uint64 {
 // TryFieldScalarU60BE tries to add a field and read 60 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU60BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(60, BigEndian)
+		v, err := d.tryUEndian(60, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -9001,11 +9124,11 @@ func (d *D) FieldU60BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U61BE
 
 // TryU61BE tries to read 61 bit unsigned integer in big-endian
-func (d *D) TryU61BE() (uint64, error) { return d.tryUE(61, BigEndian) }
+func (d *D) TryU61BE() (uint64, error) { return d.tryUEndian(61, BigEndian) }
 
 // U61BE reads 61 bit unsigned integer in big-endian
 func (d *D) U61BE() uint64 {
-	v, err := d.tryUE(61, BigEndian)
+	v, err := d.tryUEndian(61, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U61BE", Pos: d.Pos()})
 	}
@@ -9015,7 +9138,7 @@ func (d *D) U61BE() uint64 {
 // TryFieldScalarU61BE tries to add a field and read 61 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU61BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(61, BigEndian)
+		v, err := d.tryUEndian(61, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -9048,11 +9171,11 @@ func (d *D) FieldU61BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U62BE
 
 // TryU62BE tries to read 62 bit unsigned integer in big-endian
-func (d *D) TryU62BE() (uint64, error) { return d.tryUE(62, BigEndian) }
+func (d *D) TryU62BE() (uint64, error) { return d.tryUEndian(62, BigEndian) }
 
 // U62BE reads 62 bit unsigned integer in big-endian
 func (d *D) U62BE() uint64 {
-	v, err := d.tryUE(62, BigEndian)
+	v, err := d.tryUEndian(62, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U62BE", Pos: d.Pos()})
 	}
@@ -9062,7 +9185,7 @@ func (d *D) U62BE() uint64 {
 // TryFieldScalarU62BE tries to add a field and read 62 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU62BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(62, BigEndian)
+		v, err := d.tryUEndian(62, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -9095,11 +9218,11 @@ func (d *D) FieldU62BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U63BE
 
 // TryU63BE tries to read 63 bit unsigned integer in big-endian
-func (d *D) TryU63BE() (uint64, error) { return d.tryUE(63, BigEndian) }
+func (d *D) TryU63BE() (uint64, error) { return d.tryUEndian(63, BigEndian) }
 
 // U63BE reads 63 bit unsigned integer in big-endian
 func (d *D) U63BE() uint64 {
-	v, err := d.tryUE(63, BigEndian)
+	v, err := d.tryUEndian(63, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U63BE", Pos: d.Pos()})
 	}
@@ -9109,7 +9232,7 @@ func (d *D) U63BE() uint64 {
 // TryFieldScalarU63BE tries to add a field and read 63 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU63BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(63, BigEndian)
+		v, err := d.tryUEndian(63, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -9142,11 +9265,11 @@ func (d *D) FieldU63BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader U64BE
 
 // TryU64BE tries to read 64 bit unsigned integer in big-endian
-func (d *D) TryU64BE() (uint64, error) { return d.tryUE(64, BigEndian) }
+func (d *D) TryU64BE() (uint64, error) { return d.tryUEndian(64, BigEndian) }
 
 // U64BE reads 64 bit unsigned integer in big-endian
 func (d *D) U64BE() uint64 {
-	v, err := d.tryUE(64, BigEndian)
+	v, err := d.tryUEndian(64, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "U64BE", Pos: d.Pos()})
 	}
@@ -9156,7 +9279,7 @@ func (d *D) U64BE() uint64 {
 // TryFieldScalarU64BE tries to add a field and read 64 bit unsigned integer in big-endian
 func (d *D) TryFieldScalarU64BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryUE(64, BigEndian)
+		v, err := d.tryUEndian(64, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -9189,11 +9312,11 @@ func (d *D) FieldU64BE(name string, sms ...scalar.Mapper) uint64 {
 // Reader S
 
 // TryS tries to read nBits bits signed integer in current endian
-func (d *D) TryS(nBits int) (int64, error) { return d.trySE(nBits, d.Endian) }
+func (d *D) TryS(nBits int) (int64, error) { return d.trySEndian(nBits, d.Endian) }
 
 // S reads nBits bits signed integer in current endian
 func (d *D) S(nBits int) int64 {
-	v, err := d.trySE(nBits, d.Endian)
+	v, err := d.trySEndian(nBits, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S", Pos: d.Pos()})
 	}
@@ -9203,7 +9326,7 @@ func (d *D) S(nBits int) int64 {
 // TryFieldScalarS tries to add a field and read nBits bits signed integer in current endian
 func (d *D) TryFieldScalarS(name string, nBits int, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(nBits, d.Endian)
+		v, err := d.trySEndian(nBits, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -9236,11 +9359,11 @@ func (d *D) FieldS(name string, nBits int, sms ...scalar.Mapper) int64 {
 // Reader SE
 
 // TrySE tries to read nBits signed integer in specified endian
-func (d *D) TrySE(nBits int, endian Endian) (int64, error) { return d.trySE(nBits, endian) }
+func (d *D) TrySE(nBits int, endian Endian) (int64, error) { return d.trySEndian(nBits, endian) }
 
 // SE reads nBits signed integer in specified endian
 func (d *D) SE(nBits int, endian Endian) int64 {
-	v, err := d.trySE(nBits, endian)
+	v, err := d.trySEndian(nBits, endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "SE", Pos: d.Pos()})
 	}
@@ -9250,7 +9373,7 @@ func (d *D) SE(nBits int, endian Endian) int64 {
 // TryFieldScalarSE tries to add a field and read nBits signed integer in specified endian
 func (d *D) TryFieldScalarSE(name string, nBits int, endian Endian, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(nBits, endian)
+		v, err := d.trySEndian(nBits, endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -9283,11 +9406,11 @@ func (d *D) FieldSE(name string, nBits int, endian Endian, sms ...scalar.Mapper)
 // Reader S1
 
 // TryS1 tries to read 1 bit signed integer in current endian
-func (d *D) TryS1() (int64, error) { return d.trySE(1, d.Endian) }
+func (d *D) TryS1() (int64, error) { return d.trySEndian(1, d.Endian) }
 
 // S1 reads 1 bit signed integer in current endian
 func (d *D) S1() int64 {
-	v, err := d.trySE(1, d.Endian)
+	v, err := d.trySEndian(1, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S1", Pos: d.Pos()})
 	}
@@ -9297,7 +9420,7 @@ func (d *D) S1() int64 {
 // TryFieldScalarS1 tries to add a field and read 1 bit signed integer in current endian
 func (d *D) TryFieldScalarS1(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(1, d.Endian)
+		v, err := d.trySEndian(1, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -9330,11 +9453,11 @@ func (d *D) FieldS1(name string, sms ...scalar.Mapper) int64 {
 // Reader S2
 
 // TryS2 tries to read 2 bit signed integer in current endian
-func (d *D) TryS2() (int64, error) { return d.trySE(2, d.Endian) }
+func (d *D) TryS2() (int64, error) { return d.trySEndian(2, d.Endian) }
 
 // S2 reads 2 bit signed integer in current endian
 func (d *D) S2() int64 {
-	v, err := d.trySE(2, d.Endian)
+	v, err := d.trySEndian(2, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S2", Pos: d.Pos()})
 	}
@@ -9344,7 +9467,7 @@ func (d *D) S2() int64 {
 // TryFieldScalarS2 tries to add a field and read 2 bit signed integer in current endian
 func (d *D) TryFieldScalarS2(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(2, d.Endian)
+		v, err := d.trySEndian(2, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -9377,11 +9500,11 @@ func (d *D) FieldS2(name string, sms ...scalar.Mapper) int64 {
 // Reader S3
 
 // TryS3 tries to read 3 bit signed integer in current endian
-func (d *D) TryS3() (int64, error) { return d.trySE(3, d.Endian) }
+func (d *D) TryS3() (int64, error) { return d.trySEndian(3, d.Endian) }
 
 // S3 reads 3 bit signed integer in current endian
 func (d *D) S3() int64 {
-	v, err := d.trySE(3, d.Endian)
+	v, err := d.trySEndian(3, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S3", Pos: d.Pos()})
 	}
@@ -9391,7 +9514,7 @@ func (d *D) S3() int64 {
 // TryFieldScalarS3 tries to add a field and read 3 bit signed integer in current endian
 func (d *D) TryFieldScalarS3(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(3, d.Endian)
+		v, err := d.trySEndian(3, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -9424,11 +9547,11 @@ func (d *D) FieldS3(name string, sms ...scalar.Mapper) int64 {
 // Reader S4
 
 // TryS4 tries to read 4 bit signed integer in current endian
-func (d *D) TryS4() (int64, error) { return d.trySE(4, d.Endian) }
+func (d *D) TryS4() (int64, error) { return d.trySEndian(4, d.Endian) }
 
 // S4 reads 4 bit signed integer in current endian
 func (d *D) S4() int64 {
-	v, err := d.trySE(4, d.Endian)
+	v, err := d.trySEndian(4, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S4", Pos: d.Pos()})
 	}
@@ -9438,7 +9561,7 @@ func (d *D) S4() int64 {
 // TryFieldScalarS4 tries to add a field and read 4 bit signed integer in current endian
 func (d *D) TryFieldScalarS4(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(4, d.Endian)
+		v, err := d.trySEndian(4, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -9471,11 +9594,11 @@ func (d *D) FieldS4(name string, sms ...scalar.Mapper) int64 {
 // Reader S5
 
 // TryS5 tries to read 5 bit signed integer in current endian
-func (d *D) TryS5() (int64, error) { return d.trySE(5, d.Endian) }
+func (d *D) TryS5() (int64, error) { return d.trySEndian(5, d.Endian) }
 
 // S5 reads 5 bit signed integer in current endian
 func (d *D) S5() int64 {
-	v, err := d.trySE(5, d.Endian)
+	v, err := d.trySEndian(5, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S5", Pos: d.Pos()})
 	}
@@ -9485,7 +9608,7 @@ func (d *D) S5() int64 {
 // TryFieldScalarS5 tries to add a field and read 5 bit signed integer in current endian
 func (d *D) TryFieldScalarS5(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(5, d.Endian)
+		v, err := d.trySEndian(5, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -9518,11 +9641,11 @@ func (d *D) FieldS5(name string, sms ...scalar.Mapper) int64 {
 // Reader S6
 
 // TryS6 tries to read 6 bit signed integer in current endian
-func (d *D) TryS6() (int64, error) { return d.trySE(6, d.Endian) }
+func (d *D) TryS6() (int64, error) { return d.trySEndian(6, d.Endian) }
 
 // S6 reads 6 bit signed integer in current endian
 func (d *D) S6() int64 {
-	v, err := d.trySE(6, d.Endian)
+	v, err := d.trySEndian(6, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S6", Pos: d.Pos()})
 	}
@@ -9532,7 +9655,7 @@ func (d *D) S6() int64 {
 // TryFieldScalarS6 tries to add a field and read 6 bit signed integer in current endian
 func (d *D) TryFieldScalarS6(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(6, d.Endian)
+		v, err := d.trySEndian(6, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -9565,11 +9688,11 @@ func (d *D) FieldS6(name string, sms ...scalar.Mapper) int64 {
 // Reader S7
 
 // TryS7 tries to read 7 bit signed integer in current endian
-func (d *D) TryS7() (int64, error) { return d.trySE(7, d.Endian) }
+func (d *D) TryS7() (int64, error) { return d.trySEndian(7, d.Endian) }
 
 // S7 reads 7 bit signed integer in current endian
 func (d *D) S7() int64 {
-	v, err := d.trySE(7, d.Endian)
+	v, err := d.trySEndian(7, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S7", Pos: d.Pos()})
 	}
@@ -9579,7 +9702,7 @@ func (d *D) S7() int64 {
 // TryFieldScalarS7 tries to add a field and read 7 bit signed integer in current endian
 func (d *D) TryFieldScalarS7(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(7, d.Endian)
+		v, err := d.trySEndian(7, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -9612,11 +9735,11 @@ func (d *D) FieldS7(name string, sms ...scalar.Mapper) int64 {
 // Reader S8
 
 // TryS8 tries to read 8 bit signed integer in current endian
-func (d *D) TryS8() (int64, error) { return d.trySE(8, d.Endian) }
+func (d *D) TryS8() (int64, error) { return d.trySEndian(8, d.Endian) }
 
 // S8 reads 8 bit signed integer in current endian
 func (d *D) S8() int64 {
-	v, err := d.trySE(8, d.Endian)
+	v, err := d.trySEndian(8, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S8", Pos: d.Pos()})
 	}
@@ -9626,7 +9749,7 @@ func (d *D) S8() int64 {
 // TryFieldScalarS8 tries to add a field and read 8 bit signed integer in current endian
 func (d *D) TryFieldScalarS8(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(8, d.Endian)
+		v, err := d.trySEndian(8, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -9659,11 +9782,11 @@ func (d *D) FieldS8(name string, sms ...scalar.Mapper) int64 {
 // Reader S9
 
 // TryS9 tries to read 9 bit signed integer in current endian
-func (d *D) TryS9() (int64, error) { return d.trySE(9, d.Endian) }
+func (d *D) TryS9() (int64, error) { return d.trySEndian(9, d.Endian) }
 
 // S9 reads 9 bit signed integer in current endian
 func (d *D) S9() int64 {
-	v, err := d.trySE(9, d.Endian)
+	v, err := d.trySEndian(9, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S9", Pos: d.Pos()})
 	}
@@ -9673,7 +9796,7 @@ func (d *D) S9() int64 {
 // TryFieldScalarS9 tries to add a field and read 9 bit signed integer in current endian
 func (d *D) TryFieldScalarS9(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(9, d.Endian)
+		v, err := d.trySEndian(9, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -9706,11 +9829,11 @@ func (d *D) FieldS9(name string, sms ...scalar.Mapper) int64 {
 // Reader S10
 
 // TryS10 tries to read 10 bit signed integer in current endian
-func (d *D) TryS10() (int64, error) { return d.trySE(10, d.Endian) }
+func (d *D) TryS10() (int64, error) { return d.trySEndian(10, d.Endian) }
 
 // S10 reads 10 bit signed integer in current endian
 func (d *D) S10() int64 {
-	v, err := d.trySE(10, d.Endian)
+	v, err := d.trySEndian(10, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S10", Pos: d.Pos()})
 	}
@@ -9720,7 +9843,7 @@ func (d *D) S10() int64 {
 // TryFieldScalarS10 tries to add a field and read 10 bit signed integer in current endian
 func (d *D) TryFieldScalarS10(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(10, d.Endian)
+		v, err := d.trySEndian(10, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -9753,11 +9876,11 @@ func (d *D) FieldS10(name string, sms ...scalar.Mapper) int64 {
 // Reader S11
 
 // TryS11 tries to read 11 bit signed integer in current endian
-func (d *D) TryS11() (int64, error) { return d.trySE(11, d.Endian) }
+func (d *D) TryS11() (int64, error) { return d.trySEndian(11, d.Endian) }
 
 // S11 reads 11 bit signed integer in current endian
 func (d *D) S11() int64 {
-	v, err := d.trySE(11, d.Endian)
+	v, err := d.trySEndian(11, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S11", Pos: d.Pos()})
 	}
@@ -9767,7 +9890,7 @@ func (d *D) S11() int64 {
 // TryFieldScalarS11 tries to add a field and read 11 bit signed integer in current endian
 func (d *D) TryFieldScalarS11(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(11, d.Endian)
+		v, err := d.trySEndian(11, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -9800,11 +9923,11 @@ func (d *D) FieldS11(name string, sms ...scalar.Mapper) int64 {
 // Reader S12
 
 // TryS12 tries to read 12 bit signed integer in current endian
-func (d *D) TryS12() (int64, error) { return d.trySE(12, d.Endian) }
+func (d *D) TryS12() (int64, error) { return d.trySEndian(12, d.Endian) }
 
 // S12 reads 12 bit signed integer in current endian
 func (d *D) S12() int64 {
-	v, err := d.trySE(12, d.Endian)
+	v, err := d.trySEndian(12, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S12", Pos: d.Pos()})
 	}
@@ -9814,7 +9937,7 @@ func (d *D) S12() int64 {
 // TryFieldScalarS12 tries to add a field and read 12 bit signed integer in current endian
 func (d *D) TryFieldScalarS12(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(12, d.Endian)
+		v, err := d.trySEndian(12, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -9847,11 +9970,11 @@ func (d *D) FieldS12(name string, sms ...scalar.Mapper) int64 {
 // Reader S13
 
 // TryS13 tries to read 13 bit signed integer in current endian
-func (d *D) TryS13() (int64, error) { return d.trySE(13, d.Endian) }
+func (d *D) TryS13() (int64, error) { return d.trySEndian(13, d.Endian) }
 
 // S13 reads 13 bit signed integer in current endian
 func (d *D) S13() int64 {
-	v, err := d.trySE(13, d.Endian)
+	v, err := d.trySEndian(13, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S13", Pos: d.Pos()})
 	}
@@ -9861,7 +9984,7 @@ func (d *D) S13() int64 {
 // TryFieldScalarS13 tries to add a field and read 13 bit signed integer in current endian
 func (d *D) TryFieldScalarS13(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(13, d.Endian)
+		v, err := d.trySEndian(13, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -9894,11 +10017,11 @@ func (d *D) FieldS13(name string, sms ...scalar.Mapper) int64 {
 // Reader S14
 
 // TryS14 tries to read 14 bit signed integer in current endian
-func (d *D) TryS14() (int64, error) { return d.trySE(14, d.Endian) }
+func (d *D) TryS14() (int64, error) { return d.trySEndian(14, d.Endian) }
 
 // S14 reads 14 bit signed integer in current endian
 func (d *D) S14() int64 {
-	v, err := d.trySE(14, d.Endian)
+	v, err := d.trySEndian(14, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S14", Pos: d.Pos()})
 	}
@@ -9908,7 +10031,7 @@ func (d *D) S14() int64 {
 // TryFieldScalarS14 tries to add a field and read 14 bit signed integer in current endian
 func (d *D) TryFieldScalarS14(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(14, d.Endian)
+		v, err := d.trySEndian(14, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -9941,11 +10064,11 @@ func (d *D) FieldS14(name string, sms ...scalar.Mapper) int64 {
 // Reader S15
 
 // TryS15 tries to read 15 bit signed integer in current endian
-func (d *D) TryS15() (int64, error) { return d.trySE(15, d.Endian) }
+func (d *D) TryS15() (int64, error) { return d.trySEndian(15, d.Endian) }
 
 // S15 reads 15 bit signed integer in current endian
 func (d *D) S15() int64 {
-	v, err := d.trySE(15, d.Endian)
+	v, err := d.trySEndian(15, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S15", Pos: d.Pos()})
 	}
@@ -9955,7 +10078,7 @@ func (d *D) S15() int64 {
 // TryFieldScalarS15 tries to add a field and read 15 bit signed integer in current endian
 func (d *D) TryFieldScalarS15(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(15, d.Endian)
+		v, err := d.trySEndian(15, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -9988,11 +10111,11 @@ func (d *D) FieldS15(name string, sms ...scalar.Mapper) int64 {
 // Reader S16
 
 // TryS16 tries to read 16 bit signed integer in current endian
-func (d *D) TryS16() (int64, error) { return d.trySE(16, d.Endian) }
+func (d *D) TryS16() (int64, error) { return d.trySEndian(16, d.Endian) }
 
 // S16 reads 16 bit signed integer in current endian
 func (d *D) S16() int64 {
-	v, err := d.trySE(16, d.Endian)
+	v, err := d.trySEndian(16, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S16", Pos: d.Pos()})
 	}
@@ -10002,7 +10125,7 @@ func (d *D) S16() int64 {
 // TryFieldScalarS16 tries to add a field and read 16 bit signed integer in current endian
 func (d *D) TryFieldScalarS16(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(16, d.Endian)
+		v, err := d.trySEndian(16, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -10035,11 +10158,11 @@ func (d *D) FieldS16(name string, sms ...scalar.Mapper) int64 {
 // Reader S17
 
 // TryS17 tries to read 17 bit signed integer in current endian
-func (d *D) TryS17() (int64, error) { return d.trySE(17, d.Endian) }
+func (d *D) TryS17() (int64, error) { return d.trySEndian(17, d.Endian) }
 
 // S17 reads 17 bit signed integer in current endian
 func (d *D) S17() int64 {
-	v, err := d.trySE(17, d.Endian)
+	v, err := d.trySEndian(17, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S17", Pos: d.Pos()})
 	}
@@ -10049,7 +10172,7 @@ func (d *D) S17() int64 {
 // TryFieldScalarS17 tries to add a field and read 17 bit signed integer in current endian
 func (d *D) TryFieldScalarS17(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(17, d.Endian)
+		v, err := d.trySEndian(17, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -10082,11 +10205,11 @@ func (d *D) FieldS17(name string, sms ...scalar.Mapper) int64 {
 // Reader S18
 
 // TryS18 tries to read 18 bit signed integer in current endian
-func (d *D) TryS18() (int64, error) { return d.trySE(18, d.Endian) }
+func (d *D) TryS18() (int64, error) { return d.trySEndian(18, d.Endian) }
 
 // S18 reads 18 bit signed integer in current endian
 func (d *D) S18() int64 {
-	v, err := d.trySE(18, d.Endian)
+	v, err := d.trySEndian(18, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S18", Pos: d.Pos()})
 	}
@@ -10096,7 +10219,7 @@ func (d *D) S18() int64 {
 // TryFieldScalarS18 tries to add a field and read 18 bit signed integer in current endian
 func (d *D) TryFieldScalarS18(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(18, d.Endian)
+		v, err := d.trySEndian(18, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -10129,11 +10252,11 @@ func (d *D) FieldS18(name string, sms ...scalar.Mapper) int64 {
 // Reader S19
 
 // TryS19 tries to read 19 bit signed integer in current endian
-func (d *D) TryS19() (int64, error) { return d.trySE(19, d.Endian) }
+func (d *D) TryS19() (int64, error) { return d.trySEndian(19, d.Endian) }
 
 // S19 reads 19 bit signed integer in current endian
 func (d *D) S19() int64 {
-	v, err := d.trySE(19, d.Endian)
+	v, err := d.trySEndian(19, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S19", Pos: d.Pos()})
 	}
@@ -10143,7 +10266,7 @@ func (d *D) S19() int64 {
 // TryFieldScalarS19 tries to add a field and read 19 bit signed integer in current endian
 func (d *D) TryFieldScalarS19(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(19, d.Endian)
+		v, err := d.trySEndian(19, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -10176,11 +10299,11 @@ func (d *D) FieldS19(name string, sms ...scalar.Mapper) int64 {
 // Reader S20
 
 // TryS20 tries to read 20 bit signed integer in current endian
-func (d *D) TryS20() (int64, error) { return d.trySE(20, d.Endian) }
+func (d *D) TryS20() (int64, error) { return d.trySEndian(20, d.Endian) }
 
 // S20 reads 20 bit signed integer in current endian
 func (d *D) S20() int64 {
-	v, err := d.trySE(20, d.Endian)
+	v, err := d.trySEndian(20, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S20", Pos: d.Pos()})
 	}
@@ -10190,7 +10313,7 @@ func (d *D) S20() int64 {
 // TryFieldScalarS20 tries to add a field and read 20 bit signed integer in current endian
 func (d *D) TryFieldScalarS20(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(20, d.Endian)
+		v, err := d.trySEndian(20, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -10223,11 +10346,11 @@ func (d *D) FieldS20(name string, sms ...scalar.Mapper) int64 {
 // Reader S21
 
 // TryS21 tries to read 21 bit signed integer in current endian
-func (d *D) TryS21() (int64, error) { return d.trySE(21, d.Endian) }
+func (d *D) TryS21() (int64, error) { return d.trySEndian(21, d.Endian) }
 
 // S21 reads 21 bit signed integer in current endian
 func (d *D) S21() int64 {
-	v, err := d.trySE(21, d.Endian)
+	v, err := d.trySEndian(21, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S21", Pos: d.Pos()})
 	}
@@ -10237,7 +10360,7 @@ func (d *D) S21() int64 {
 // TryFieldScalarS21 tries to add a field and read 21 bit signed integer in current endian
 func (d *D) TryFieldScalarS21(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(21, d.Endian)
+		v, err := d.trySEndian(21, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -10270,11 +10393,11 @@ func (d *D) FieldS21(name string, sms ...scalar.Mapper) int64 {
 // Reader S22
 
 // TryS22 tries to read 22 bit signed integer in current endian
-func (d *D) TryS22() (int64, error) { return d.trySE(22, d.Endian) }
+func (d *D) TryS22() (int64, error) { return d.trySEndian(22, d.Endian) }
 
 // S22 reads 22 bit signed integer in current endian
 func (d *D) S22() int64 {
-	v, err := d.trySE(22, d.Endian)
+	v, err := d.trySEndian(22, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S22", Pos: d.Pos()})
 	}
@@ -10284,7 +10407,7 @@ func (d *D) S22() int64 {
 // TryFieldScalarS22 tries to add a field and read 22 bit signed integer in current endian
 func (d *D) TryFieldScalarS22(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(22, d.Endian)
+		v, err := d.trySEndian(22, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -10317,11 +10440,11 @@ func (d *D) FieldS22(name string, sms ...scalar.Mapper) int64 {
 // Reader S23
 
 // TryS23 tries to read 23 bit signed integer in current endian
-func (d *D) TryS23() (int64, error) { return d.trySE(23, d.Endian) }
+func (d *D) TryS23() (int64, error) { return d.trySEndian(23, d.Endian) }
 
 // S23 reads 23 bit signed integer in current endian
 func (d *D) S23() int64 {
-	v, err := d.trySE(23, d.Endian)
+	v, err := d.trySEndian(23, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S23", Pos: d.Pos()})
 	}
@@ -10331,7 +10454,7 @@ func (d *D) S23() int64 {
 // TryFieldScalarS23 tries to add a field and read 23 bit signed integer in current endian
 func (d *D) TryFieldScalarS23(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(23, d.Endian)
+		v, err := d.trySEndian(23, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -10364,11 +10487,11 @@ func (d *D) FieldS23(name string, sms ...scalar.Mapper) int64 {
 // Reader S24
 
 // TryS24 tries to read 24 bit signed integer in current endian
-func (d *D) TryS24() (int64, error) { return d.trySE(24, d.Endian) }
+func (d *D) TryS24() (int64, error) { return d.trySEndian(24, d.Endian) }
 
 // S24 reads 24 bit signed integer in current endian
 func (d *D) S24() int64 {
-	v, err := d.trySE(24, d.Endian)
+	v, err := d.trySEndian(24, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S24", Pos: d.Pos()})
 	}
@@ -10378,7 +10501,7 @@ func (d *D) S24() int64 {
 // TryFieldScalarS24 tries to add a field and read 24 bit signed integer in current endian
 func (d *D) TryFieldScalarS24(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(24, d.Endian)
+		v, err := d.trySEndian(24, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -10411,11 +10534,11 @@ func (d *D) FieldS24(name string, sms ...scalar.Mapper) int64 {
 // Reader S25
 
 // TryS25 tries to read 25 bit signed integer in current endian
-func (d *D) TryS25() (int64, error) { return d.trySE(25, d.Endian) }
+func (d *D) TryS25() (int64, error) { return d.trySEndian(25, d.Endian) }
 
 // S25 reads 25 bit signed integer in current endian
 func (d *D) S25() int64 {
-	v, err := d.trySE(25, d.Endian)
+	v, err := d.trySEndian(25, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S25", Pos: d.Pos()})
 	}
@@ -10425,7 +10548,7 @@ func (d *D) S25() int64 {
 // TryFieldScalarS25 tries to add a field and read 25 bit signed integer in current endian
 func (d *D) TryFieldScalarS25(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(25, d.Endian)
+		v, err := d.trySEndian(25, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -10458,11 +10581,11 @@ func (d *D) FieldS25(name string, sms ...scalar.Mapper) int64 {
 // Reader S26
 
 // TryS26 tries to read 26 bit signed integer in current endian
-func (d *D) TryS26() (int64, error) { return d.trySE(26, d.Endian) }
+func (d *D) TryS26() (int64, error) { return d.trySEndian(26, d.Endian) }
 
 // S26 reads 26 bit signed integer in current endian
 func (d *D) S26() int64 {
-	v, err := d.trySE(26, d.Endian)
+	v, err := d.trySEndian(26, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S26", Pos: d.Pos()})
 	}
@@ -10472,7 +10595,7 @@ func (d *D) S26() int64 {
 // TryFieldScalarS26 tries to add a field and read 26 bit signed integer in current endian
 func (d *D) TryFieldScalarS26(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(26, d.Endian)
+		v, err := d.trySEndian(26, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -10505,11 +10628,11 @@ func (d *D) FieldS26(name string, sms ...scalar.Mapper) int64 {
 // Reader S27
 
 // TryS27 tries to read 27 bit signed integer in current endian
-func (d *D) TryS27() (int64, error) { return d.trySE(27, d.Endian) }
+func (d *D) TryS27() (int64, error) { return d.trySEndian(27, d.Endian) }
 
 // S27 reads 27 bit signed integer in current endian
 func (d *D) S27() int64 {
-	v, err := d.trySE(27, d.Endian)
+	v, err := d.trySEndian(27, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S27", Pos: d.Pos()})
 	}
@@ -10519,7 +10642,7 @@ func (d *D) S27() int64 {
 // TryFieldScalarS27 tries to add a field and read 27 bit signed integer in current endian
 func (d *D) TryFieldScalarS27(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(27, d.Endian)
+		v, err := d.trySEndian(27, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -10552,11 +10675,11 @@ func (d *D) FieldS27(name string, sms ...scalar.Mapper) int64 {
 // Reader S28
 
 // TryS28 tries to read 28 bit signed integer in current endian
-func (d *D) TryS28() (int64, error) { return d.trySE(28, d.Endian) }
+func (d *D) TryS28() (int64, error) { return d.trySEndian(28, d.Endian) }
 
 // S28 reads 28 bit signed integer in current endian
 func (d *D) S28() int64 {
-	v, err := d.trySE(28, d.Endian)
+	v, err := d.trySEndian(28, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S28", Pos: d.Pos()})
 	}
@@ -10566,7 +10689,7 @@ func (d *D) S28() int64 {
 // TryFieldScalarS28 tries to add a field and read 28 bit signed integer in current endian
 func (d *D) TryFieldScalarS28(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(28, d.Endian)
+		v, err := d.trySEndian(28, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -10599,11 +10722,11 @@ func (d *D) FieldS28(name string, sms ...scalar.Mapper) int64 {
 // Reader S29
 
 // TryS29 tries to read 29 bit signed integer in current endian
-func (d *D) TryS29() (int64, error) { return d.trySE(29, d.Endian) }
+func (d *D) TryS29() (int64, error) { return d.trySEndian(29, d.Endian) }
 
 // S29 reads 29 bit signed integer in current endian
 func (d *D) S29() int64 {
-	v, err := d.trySE(29, d.Endian)
+	v, err := d.trySEndian(29, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S29", Pos: d.Pos()})
 	}
@@ -10613,7 +10736,7 @@ func (d *D) S29() int64 {
 // TryFieldScalarS29 tries to add a field and read 29 bit signed integer in current endian
 func (d *D) TryFieldScalarS29(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(29, d.Endian)
+		v, err := d.trySEndian(29, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -10646,11 +10769,11 @@ func (d *D) FieldS29(name string, sms ...scalar.Mapper) int64 {
 // Reader S30
 
 // TryS30 tries to read 30 bit signed integer in current endian
-func (d *D) TryS30() (int64, error) { return d.trySE(30, d.Endian) }
+func (d *D) TryS30() (int64, error) { return d.trySEndian(30, d.Endian) }
 
 // S30 reads 30 bit signed integer in current endian
 func (d *D) S30() int64 {
-	v, err := d.trySE(30, d.Endian)
+	v, err := d.trySEndian(30, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S30", Pos: d.Pos()})
 	}
@@ -10660,7 +10783,7 @@ func (d *D) S30() int64 {
 // TryFieldScalarS30 tries to add a field and read 30 bit signed integer in current endian
 func (d *D) TryFieldScalarS30(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(30, d.Endian)
+		v, err := d.trySEndian(30, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -10693,11 +10816,11 @@ func (d *D) FieldS30(name string, sms ...scalar.Mapper) int64 {
 // Reader S31
 
 // TryS31 tries to read 31 bit signed integer in current endian
-func (d *D) TryS31() (int64, error) { return d.trySE(31, d.Endian) }
+func (d *D) TryS31() (int64, error) { return d.trySEndian(31, d.Endian) }
 
 // S31 reads 31 bit signed integer in current endian
 func (d *D) S31() int64 {
-	v, err := d.trySE(31, d.Endian)
+	v, err := d.trySEndian(31, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S31", Pos: d.Pos()})
 	}
@@ -10707,7 +10830,7 @@ func (d *D) S31() int64 {
 // TryFieldScalarS31 tries to add a field and read 31 bit signed integer in current endian
 func (d *D) TryFieldScalarS31(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(31, d.Endian)
+		v, err := d.trySEndian(31, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -10740,11 +10863,11 @@ func (d *D) FieldS31(name string, sms ...scalar.Mapper) int64 {
 // Reader S32
 
 // TryS32 tries to read 32 bit signed integer in current endian
-func (d *D) TryS32() (int64, error) { return d.trySE(32, d.Endian) }
+func (d *D) TryS32() (int64, error) { return d.trySEndian(32, d.Endian) }
 
 // S32 reads 32 bit signed integer in current endian
 func (d *D) S32() int64 {
-	v, err := d.trySE(32, d.Endian)
+	v, err := d.trySEndian(32, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S32", Pos: d.Pos()})
 	}
@@ -10754,7 +10877,7 @@ func (d *D) S32() int64 {
 // TryFieldScalarS32 tries to add a field and read 32 bit signed integer in current endian
 func (d *D) TryFieldScalarS32(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(32, d.Endian)
+		v, err := d.trySEndian(32, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -10787,11 +10910,11 @@ func (d *D) FieldS32(name string, sms ...scalar.Mapper) int64 {
 // Reader S33
 
 // TryS33 tries to read 33 bit signed integer in current endian
-func (d *D) TryS33() (int64, error) { return d.trySE(33, d.Endian) }
+func (d *D) TryS33() (int64, error) { return d.trySEndian(33, d.Endian) }
 
 // S33 reads 33 bit signed integer in current endian
 func (d *D) S33() int64 {
-	v, err := d.trySE(33, d.Endian)
+	v, err := d.trySEndian(33, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S33", Pos: d.Pos()})
 	}
@@ -10801,7 +10924,7 @@ func (d *D) S33() int64 {
 // TryFieldScalarS33 tries to add a field and read 33 bit signed integer in current endian
 func (d *D) TryFieldScalarS33(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(33, d.Endian)
+		v, err := d.trySEndian(33, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -10834,11 +10957,11 @@ func (d *D) FieldS33(name string, sms ...scalar.Mapper) int64 {
 // Reader S34
 
 // TryS34 tries to read 34 bit signed integer in current endian
-func (d *D) TryS34() (int64, error) { return d.trySE(34, d.Endian) }
+func (d *D) TryS34() (int64, error) { return d.trySEndian(34, d.Endian) }
 
 // S34 reads 34 bit signed integer in current endian
 func (d *D) S34() int64 {
-	v, err := d.trySE(34, d.Endian)
+	v, err := d.trySEndian(34, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S34", Pos: d.Pos()})
 	}
@@ -10848,7 +10971,7 @@ func (d *D) S34() int64 {
 // TryFieldScalarS34 tries to add a field and read 34 bit signed integer in current endian
 func (d *D) TryFieldScalarS34(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(34, d.Endian)
+		v, err := d.trySEndian(34, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -10881,11 +11004,11 @@ func (d *D) FieldS34(name string, sms ...scalar.Mapper) int64 {
 // Reader S35
 
 // TryS35 tries to read 35 bit signed integer in current endian
-func (d *D) TryS35() (int64, error) { return d.trySE(35, d.Endian) }
+func (d *D) TryS35() (int64, error) { return d.trySEndian(35, d.Endian) }
 
 // S35 reads 35 bit signed integer in current endian
 func (d *D) S35() int64 {
-	v, err := d.trySE(35, d.Endian)
+	v, err := d.trySEndian(35, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S35", Pos: d.Pos()})
 	}
@@ -10895,7 +11018,7 @@ func (d *D) S35() int64 {
 // TryFieldScalarS35 tries to add a field and read 35 bit signed integer in current endian
 func (d *D) TryFieldScalarS35(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(35, d.Endian)
+		v, err := d.trySEndian(35, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -10928,11 +11051,11 @@ func (d *D) FieldS35(name string, sms ...scalar.Mapper) int64 {
 // Reader S36
 
 // TryS36 tries to read 36 bit signed integer in current endian
-func (d *D) TryS36() (int64, error) { return d.trySE(36, d.Endian) }
+func (d *D) TryS36() (int64, error) { return d.trySEndian(36, d.Endian) }
 
 // S36 reads 36 bit signed integer in current endian
 func (d *D) S36() int64 {
-	v, err := d.trySE(36, d.Endian)
+	v, err := d.trySEndian(36, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S36", Pos: d.Pos()})
 	}
@@ -10942,7 +11065,7 @@ func (d *D) S36() int64 {
 // TryFieldScalarS36 tries to add a field and read 36 bit signed integer in current endian
 func (d *D) TryFieldScalarS36(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(36, d.Endian)
+		v, err := d.trySEndian(36, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -10975,11 +11098,11 @@ func (d *D) FieldS36(name string, sms ...scalar.Mapper) int64 {
 // Reader S37
 
 // TryS37 tries to read 37 bit signed integer in current endian
-func (d *D) TryS37() (int64, error) { return d.trySE(37, d.Endian) }
+func (d *D) TryS37() (int64, error) { return d.trySEndian(37, d.Endian) }
 
 // S37 reads 37 bit signed integer in current endian
 func (d *D) S37() int64 {
-	v, err := d.trySE(37, d.Endian)
+	v, err := d.trySEndian(37, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S37", Pos: d.Pos()})
 	}
@@ -10989,7 +11112,7 @@ func (d *D) S37() int64 {
 // TryFieldScalarS37 tries to add a field and read 37 bit signed integer in current endian
 func (d *D) TryFieldScalarS37(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(37, d.Endian)
+		v, err := d.trySEndian(37, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -11022,11 +11145,11 @@ func (d *D) FieldS37(name string, sms ...scalar.Mapper) int64 {
 // Reader S38
 
 // TryS38 tries to read 38 bit signed integer in current endian
-func (d *D) TryS38() (int64, error) { return d.trySE(38, d.Endian) }
+func (d *D) TryS38() (int64, error) { return d.trySEndian(38, d.Endian) }
 
 // S38 reads 38 bit signed integer in current endian
 func (d *D) S38() int64 {
-	v, err := d.trySE(38, d.Endian)
+	v, err := d.trySEndian(38, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S38", Pos: d.Pos()})
 	}
@@ -11036,7 +11159,7 @@ func (d *D) S38() int64 {
 // TryFieldScalarS38 tries to add a field and read 38 bit signed integer in current endian
 func (d *D) TryFieldScalarS38(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(38, d.Endian)
+		v, err := d.trySEndian(38, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -11069,11 +11192,11 @@ func (d *D) FieldS38(name string, sms ...scalar.Mapper) int64 {
 // Reader S39
 
 // TryS39 tries to read 39 bit signed integer in current endian
-func (d *D) TryS39() (int64, error) { return d.trySE(39, d.Endian) }
+func (d *D) TryS39() (int64, error) { return d.trySEndian(39, d.Endian) }
 
 // S39 reads 39 bit signed integer in current endian
 func (d *D) S39() int64 {
-	v, err := d.trySE(39, d.Endian)
+	v, err := d.trySEndian(39, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S39", Pos: d.Pos()})
 	}
@@ -11083,7 +11206,7 @@ func (d *D) S39() int64 {
 // TryFieldScalarS39 tries to add a field and read 39 bit signed integer in current endian
 func (d *D) TryFieldScalarS39(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(39, d.Endian)
+		v, err := d.trySEndian(39, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -11116,11 +11239,11 @@ func (d *D) FieldS39(name string, sms ...scalar.Mapper) int64 {
 // Reader S40
 
 // TryS40 tries to read 40 bit signed integer in current endian
-func (d *D) TryS40() (int64, error) { return d.trySE(40, d.Endian) }
+func (d *D) TryS40() (int64, error) { return d.trySEndian(40, d.Endian) }
 
 // S40 reads 40 bit signed integer in current endian
 func (d *D) S40() int64 {
-	v, err := d.trySE(40, d.Endian)
+	v, err := d.trySEndian(40, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S40", Pos: d.Pos()})
 	}
@@ -11130,7 +11253,7 @@ func (d *D) S40() int64 {
 // TryFieldScalarS40 tries to add a field and read 40 bit signed integer in current endian
 func (d *D) TryFieldScalarS40(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(40, d.Endian)
+		v, err := d.trySEndian(40, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -11163,11 +11286,11 @@ func (d *D) FieldS40(name string, sms ...scalar.Mapper) int64 {
 // Reader S41
 
 // TryS41 tries to read 41 bit signed integer in current endian
-func (d *D) TryS41() (int64, error) { return d.trySE(41, d.Endian) }
+func (d *D) TryS41() (int64, error) { return d.trySEndian(41, d.Endian) }
 
 // S41 reads 41 bit signed integer in current endian
 func (d *D) S41() int64 {
-	v, err := d.trySE(41, d.Endian)
+	v, err := d.trySEndian(41, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S41", Pos: d.Pos()})
 	}
@@ -11177,7 +11300,7 @@ func (d *D) S41() int64 {
 // TryFieldScalarS41 tries to add a field and read 41 bit signed integer in current endian
 func (d *D) TryFieldScalarS41(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(41, d.Endian)
+		v, err := d.trySEndian(41, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -11210,11 +11333,11 @@ func (d *D) FieldS41(name string, sms ...scalar.Mapper) int64 {
 // Reader S42
 
 // TryS42 tries to read 42 bit signed integer in current endian
-func (d *D) TryS42() (int64, error) { return d.trySE(42, d.Endian) }
+func (d *D) TryS42() (int64, error) { return d.trySEndian(42, d.Endian) }
 
 // S42 reads 42 bit signed integer in current endian
 func (d *D) S42() int64 {
-	v, err := d.trySE(42, d.Endian)
+	v, err := d.trySEndian(42, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S42", Pos: d.Pos()})
 	}
@@ -11224,7 +11347,7 @@ func (d *D) S42() int64 {
 // TryFieldScalarS42 tries to add a field and read 42 bit signed integer in current endian
 func (d *D) TryFieldScalarS42(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(42, d.Endian)
+		v, err := d.trySEndian(42, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -11257,11 +11380,11 @@ func (d *D) FieldS42(name string, sms ...scalar.Mapper) int64 {
 // Reader S43
 
 // TryS43 tries to read 43 bit signed integer in current endian
-func (d *D) TryS43() (int64, error) { return d.trySE(43, d.Endian) }
+func (d *D) TryS43() (int64, error) { return d.trySEndian(43, d.Endian) }
 
 // S43 reads 43 bit signed integer in current endian
 func (d *D) S43() int64 {
-	v, err := d.trySE(43, d.Endian)
+	v, err := d.trySEndian(43, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S43", Pos: d.Pos()})
 	}
@@ -11271,7 +11394,7 @@ func (d *D) S43() int64 {
 // TryFieldScalarS43 tries to add a field and read 43 bit signed integer in current endian
 func (d *D) TryFieldScalarS43(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(43, d.Endian)
+		v, err := d.trySEndian(43, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -11304,11 +11427,11 @@ func (d *D) FieldS43(name string, sms ...scalar.Mapper) int64 {
 // Reader S44
 
 // TryS44 tries to read 44 bit signed integer in current endian
-func (d *D) TryS44() (int64, error) { return d.trySE(44, d.Endian) }
+func (d *D) TryS44() (int64, error) { return d.trySEndian(44, d.Endian) }
 
 // S44 reads 44 bit signed integer in current endian
 func (d *D) S44() int64 {
-	v, err := d.trySE(44, d.Endian)
+	v, err := d.trySEndian(44, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S44", Pos: d.Pos()})
 	}
@@ -11318,7 +11441,7 @@ func (d *D) S44() int64 {
 // TryFieldScalarS44 tries to add a field and read 44 bit signed integer in current endian
 func (d *D) TryFieldScalarS44(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(44, d.Endian)
+		v, err := d.trySEndian(44, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -11351,11 +11474,11 @@ func (d *D) FieldS44(name string, sms ...scalar.Mapper) int64 {
 // Reader S45
 
 // TryS45 tries to read 45 bit signed integer in current endian
-func (d *D) TryS45() (int64, error) { return d.trySE(45, d.Endian) }
+func (d *D) TryS45() (int64, error) { return d.trySEndian(45, d.Endian) }
 
 // S45 reads 45 bit signed integer in current endian
 func (d *D) S45() int64 {
-	v, err := d.trySE(45, d.Endian)
+	v, err := d.trySEndian(45, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S45", Pos: d.Pos()})
 	}
@@ -11365,7 +11488,7 @@ func (d *D) S45() int64 {
 // TryFieldScalarS45 tries to add a field and read 45 bit signed integer in current endian
 func (d *D) TryFieldScalarS45(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(45, d.Endian)
+		v, err := d.trySEndian(45, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -11398,11 +11521,11 @@ func (d *D) FieldS45(name string, sms ...scalar.Mapper) int64 {
 // Reader S46
 
 // TryS46 tries to read 46 bit signed integer in current endian
-func (d *D) TryS46() (int64, error) { return d.trySE(46, d.Endian) }
+func (d *D) TryS46() (int64, error) { return d.trySEndian(46, d.Endian) }
 
 // S46 reads 46 bit signed integer in current endian
 func (d *D) S46() int64 {
-	v, err := d.trySE(46, d.Endian)
+	v, err := d.trySEndian(46, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S46", Pos: d.Pos()})
 	}
@@ -11412,7 +11535,7 @@ func (d *D) S46() int64 {
 // TryFieldScalarS46 tries to add a field and read 46 bit signed integer in current endian
 func (d *D) TryFieldScalarS46(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(46, d.Endian)
+		v, err := d.trySEndian(46, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -11445,11 +11568,11 @@ func (d *D) FieldS46(name string, sms ...scalar.Mapper) int64 {
 // Reader S47
 
 // TryS47 tries to read 47 bit signed integer in current endian
-func (d *D) TryS47() (int64, error) { return d.trySE(47, d.Endian) }
+func (d *D) TryS47() (int64, error) { return d.trySEndian(47, d.Endian) }
 
 // S47 reads 47 bit signed integer in current endian
 func (d *D) S47() int64 {
-	v, err := d.trySE(47, d.Endian)
+	v, err := d.trySEndian(47, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S47", Pos: d.Pos()})
 	}
@@ -11459,7 +11582,7 @@ func (d *D) S47() int64 {
 // TryFieldScalarS47 tries to add a field and read 47 bit signed integer in current endian
 func (d *D) TryFieldScalarS47(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(47, d.Endian)
+		v, err := d.trySEndian(47, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -11492,11 +11615,11 @@ func (d *D) FieldS47(name string, sms ...scalar.Mapper) int64 {
 // Reader S48
 
 // TryS48 tries to read 48 bit signed integer in current endian
-func (d *D) TryS48() (int64, error) { return d.trySE(48, d.Endian) }
+func (d *D) TryS48() (int64, error) { return d.trySEndian(48, d.Endian) }
 
 // S48 reads 48 bit signed integer in current endian
 func (d *D) S48() int64 {
-	v, err := d.trySE(48, d.Endian)
+	v, err := d.trySEndian(48, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S48", Pos: d.Pos()})
 	}
@@ -11506,7 +11629,7 @@ func (d *D) S48() int64 {
 // TryFieldScalarS48 tries to add a field and read 48 bit signed integer in current endian
 func (d *D) TryFieldScalarS48(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(48, d.Endian)
+		v, err := d.trySEndian(48, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -11539,11 +11662,11 @@ func (d *D) FieldS48(name string, sms ...scalar.Mapper) int64 {
 // Reader S49
 
 // TryS49 tries to read 49 bit signed integer in current endian
-func (d *D) TryS49() (int64, error) { return d.trySE(49, d.Endian) }
+func (d *D) TryS49() (int64, error) { return d.trySEndian(49, d.Endian) }
 
 // S49 reads 49 bit signed integer in current endian
 func (d *D) S49() int64 {
-	v, err := d.trySE(49, d.Endian)
+	v, err := d.trySEndian(49, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S49", Pos: d.Pos()})
 	}
@@ -11553,7 +11676,7 @@ func (d *D) S49() int64 {
 // TryFieldScalarS49 tries to add a field and read 49 bit signed integer in current endian
 func (d *D) TryFieldScalarS49(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(49, d.Endian)
+		v, err := d.trySEndian(49, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -11586,11 +11709,11 @@ func (d *D) FieldS49(name string, sms ...scalar.Mapper) int64 {
 // Reader S50
 
 // TryS50 tries to read 50 bit signed integer in current endian
-func (d *D) TryS50() (int64, error) { return d.trySE(50, d.Endian) }
+func (d *D) TryS50() (int64, error) { return d.trySEndian(50, d.Endian) }
 
 // S50 reads 50 bit signed integer in current endian
 func (d *D) S50() int64 {
-	v, err := d.trySE(50, d.Endian)
+	v, err := d.trySEndian(50, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S50", Pos: d.Pos()})
 	}
@@ -11600,7 +11723,7 @@ func (d *D) S50() int64 {
 // TryFieldScalarS50 tries to add a field and read 50 bit signed integer in current endian
 func (d *D) TryFieldScalarS50(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(50, d.Endian)
+		v, err := d.trySEndian(50, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -11633,11 +11756,11 @@ func (d *D) FieldS50(name string, sms ...scalar.Mapper) int64 {
 // Reader S51
 
 // TryS51 tries to read 51 bit signed integer in current endian
-func (d *D) TryS51() (int64, error) { return d.trySE(51, d.Endian) }
+func (d *D) TryS51() (int64, error) { return d.trySEndian(51, d.Endian) }
 
 // S51 reads 51 bit signed integer in current endian
 func (d *D) S51() int64 {
-	v, err := d.trySE(51, d.Endian)
+	v, err := d.trySEndian(51, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S51", Pos: d.Pos()})
 	}
@@ -11647,7 +11770,7 @@ func (d *D) S51() int64 {
 // TryFieldScalarS51 tries to add a field and read 51 bit signed integer in current endian
 func (d *D) TryFieldScalarS51(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(51, d.Endian)
+		v, err := d.trySEndian(51, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -11680,11 +11803,11 @@ func (d *D) FieldS51(name string, sms ...scalar.Mapper) int64 {
 // Reader S52
 
 // TryS52 tries to read 52 bit signed integer in current endian
-func (d *D) TryS52() (int64, error) { return d.trySE(52, d.Endian) }
+func (d *D) TryS52() (int64, error) { return d.trySEndian(52, d.Endian) }
 
 // S52 reads 52 bit signed integer in current endian
 func (d *D) S52() int64 {
-	v, err := d.trySE(52, d.Endian)
+	v, err := d.trySEndian(52, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S52", Pos: d.Pos()})
 	}
@@ -11694,7 +11817,7 @@ func (d *D) S52() int64 {
 // TryFieldScalarS52 tries to add a field and read 52 bit signed integer in current endian
 func (d *D) TryFieldScalarS52(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(52, d.Endian)
+		v, err := d.trySEndian(52, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -11727,11 +11850,11 @@ func (d *D) FieldS52(name string, sms ...scalar.Mapper) int64 {
 // Reader S53
 
 // TryS53 tries to read 53 bit signed integer in current endian
-func (d *D) TryS53() (int64, error) { return d.trySE(53, d.Endian) }
+func (d *D) TryS53() (int64, error) { return d.trySEndian(53, d.Endian) }
 
 // S53 reads 53 bit signed integer in current endian
 func (d *D) S53() int64 {
-	v, err := d.trySE(53, d.Endian)
+	v, err := d.trySEndian(53, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S53", Pos: d.Pos()})
 	}
@@ -11741,7 +11864,7 @@ func (d *D) S53() int64 {
 // TryFieldScalarS53 tries to add a field and read 53 bit signed integer in current endian
 func (d *D) TryFieldScalarS53(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(53, d.Endian)
+		v, err := d.trySEndian(53, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -11774,11 +11897,11 @@ func (d *D) FieldS53(name string, sms ...scalar.Mapper) int64 {
 // Reader S54
 
 // TryS54 tries to read 54 bit signed integer in current endian
-func (d *D) TryS54() (int64, error) { return d.trySE(54, d.Endian) }
+func (d *D) TryS54() (int64, error) { return d.trySEndian(54, d.Endian) }
 
 // S54 reads 54 bit signed integer in current endian
 func (d *D) S54() int64 {
-	v, err := d.trySE(54, d.Endian)
+	v, err := d.trySEndian(54, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S54", Pos: d.Pos()})
 	}
@@ -11788,7 +11911,7 @@ func (d *D) S54() int64 {
 // TryFieldScalarS54 tries to add a field and read 54 bit signed integer in current endian
 func (d *D) TryFieldScalarS54(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(54, d.Endian)
+		v, err := d.trySEndian(54, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -11821,11 +11944,11 @@ func (d *D) FieldS54(name string, sms ...scalar.Mapper) int64 {
 // Reader S55
 
 // TryS55 tries to read 55 bit signed integer in current endian
-func (d *D) TryS55() (int64, error) { return d.trySE(55, d.Endian) }
+func (d *D) TryS55() (int64, error) { return d.trySEndian(55, d.Endian) }
 
 // S55 reads 55 bit signed integer in current endian
 func (d *D) S55() int64 {
-	v, err := d.trySE(55, d.Endian)
+	v, err := d.trySEndian(55, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S55", Pos: d.Pos()})
 	}
@@ -11835,7 +11958,7 @@ func (d *D) S55() int64 {
 // TryFieldScalarS55 tries to add a field and read 55 bit signed integer in current endian
 func (d *D) TryFieldScalarS55(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(55, d.Endian)
+		v, err := d.trySEndian(55, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -11868,11 +11991,11 @@ func (d *D) FieldS55(name string, sms ...scalar.Mapper) int64 {
 // Reader S56
 
 // TryS56 tries to read 56 bit signed integer in current endian
-func (d *D) TryS56() (int64, error) { return d.trySE(56, d.Endian) }
+func (d *D) TryS56() (int64, error) { return d.trySEndian(56, d.Endian) }
 
 // S56 reads 56 bit signed integer in current endian
 func (d *D) S56() int64 {
-	v, err := d.trySE(56, d.Endian)
+	v, err := d.trySEndian(56, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S56", Pos: d.Pos()})
 	}
@@ -11882,7 +12005,7 @@ func (d *D) S56() int64 {
 // TryFieldScalarS56 tries to add a field and read 56 bit signed integer in current endian
 func (d *D) TryFieldScalarS56(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(56, d.Endian)
+		v, err := d.trySEndian(56, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -11915,11 +12038,11 @@ func (d *D) FieldS56(name string, sms ...scalar.Mapper) int64 {
 // Reader S57
 
 // TryS57 tries to read 57 bit signed integer in current endian
-func (d *D) TryS57() (int64, error) { return d.trySE(57, d.Endian) }
+func (d *D) TryS57() (int64, error) { return d.trySEndian(57, d.Endian) }
 
 // S57 reads 57 bit signed integer in current endian
 func (d *D) S57() int64 {
-	v, err := d.trySE(57, d.Endian)
+	v, err := d.trySEndian(57, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S57", Pos: d.Pos()})
 	}
@@ -11929,7 +12052,7 @@ func (d *D) S57() int64 {
 // TryFieldScalarS57 tries to add a field and read 57 bit signed integer in current endian
 func (d *D) TryFieldScalarS57(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(57, d.Endian)
+		v, err := d.trySEndian(57, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -11962,11 +12085,11 @@ func (d *D) FieldS57(name string, sms ...scalar.Mapper) int64 {
 // Reader S58
 
 // TryS58 tries to read 58 bit signed integer in current endian
-func (d *D) TryS58() (int64, error) { return d.trySE(58, d.Endian) }
+func (d *D) TryS58() (int64, error) { return d.trySEndian(58, d.Endian) }
 
 // S58 reads 58 bit signed integer in current endian
 func (d *D) S58() int64 {
-	v, err := d.trySE(58, d.Endian)
+	v, err := d.trySEndian(58, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S58", Pos: d.Pos()})
 	}
@@ -11976,7 +12099,7 @@ func (d *D) S58() int64 {
 // TryFieldScalarS58 tries to add a field and read 58 bit signed integer in current endian
 func (d *D) TryFieldScalarS58(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(58, d.Endian)
+		v, err := d.trySEndian(58, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -12009,11 +12132,11 @@ func (d *D) FieldS58(name string, sms ...scalar.Mapper) int64 {
 // Reader S59
 
 // TryS59 tries to read 59 bit signed integer in current endian
-func (d *D) TryS59() (int64, error) { return d.trySE(59, d.Endian) }
+func (d *D) TryS59() (int64, error) { return d.trySEndian(59, d.Endian) }
 
 // S59 reads 59 bit signed integer in current endian
 func (d *D) S59() int64 {
-	v, err := d.trySE(59, d.Endian)
+	v, err := d.trySEndian(59, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S59", Pos: d.Pos()})
 	}
@@ -12023,7 +12146,7 @@ func (d *D) S59() int64 {
 // TryFieldScalarS59 tries to add a field and read 59 bit signed integer in current endian
 func (d *D) TryFieldScalarS59(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(59, d.Endian)
+		v, err := d.trySEndian(59, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -12056,11 +12179,11 @@ func (d *D) FieldS59(name string, sms ...scalar.Mapper) int64 {
 // Reader S60
 
 // TryS60 tries to read 60 bit signed integer in current endian
-func (d *D) TryS60() (int64, error) { return d.trySE(60, d.Endian) }
+func (d *D) TryS60() (int64, error) { return d.trySEndian(60, d.Endian) }
 
 // S60 reads 60 bit signed integer in current endian
 func (d *D) S60() int64 {
-	v, err := d.trySE(60, d.Endian)
+	v, err := d.trySEndian(60, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S60", Pos: d.Pos()})
 	}
@@ -12070,7 +12193,7 @@ func (d *D) S60() int64 {
 // TryFieldScalarS60 tries to add a field and read 60 bit signed integer in current endian
 func (d *D) TryFieldScalarS60(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(60, d.Endian)
+		v, err := d.trySEndian(60, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -12103,11 +12226,11 @@ func (d *D) FieldS60(name string, sms ...scalar.Mapper) int64 {
 // Reader S61
 
 // TryS61 tries to read 61 bit signed integer in current endian
-func (d *D) TryS61() (int64, error) { return d.trySE(61, d.Endian) }
+func (d *D) TryS61() (int64, error) { return d.trySEndian(61, d.Endian) }
 
 // S61 reads 61 bit signed integer in current endian
 func (d *D) S61() int64 {
-	v, err := d.trySE(61, d.Endian)
+	v, err := d.trySEndian(61, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S61", Pos: d.Pos()})
 	}
@@ -12117,7 +12240,7 @@ func (d *D) S61() int64 {
 // TryFieldScalarS61 tries to add a field and read 61 bit signed integer in current endian
 func (d *D) TryFieldScalarS61(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(61, d.Endian)
+		v, err := d.trySEndian(61, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -12150,11 +12273,11 @@ func (d *D) FieldS61(name string, sms ...scalar.Mapper) int64 {
 // Reader S62
 
 // TryS62 tries to read 62 bit signed integer in current endian
-func (d *D) TryS62() (int64, error) { return d.trySE(62, d.Endian) }
+func (d *D) TryS62() (int64, error) { return d.trySEndian(62, d.Endian) }
 
 // S62 reads 62 bit signed integer in current endian
 func (d *D) S62() int64 {
-	v, err := d.trySE(62, d.Endian)
+	v, err := d.trySEndian(62, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S62", Pos: d.Pos()})
 	}
@@ -12164,7 +12287,7 @@ func (d *D) S62() int64 {
 // TryFieldScalarS62 tries to add a field and read 62 bit signed integer in current endian
 func (d *D) TryFieldScalarS62(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(62, d.Endian)
+		v, err := d.trySEndian(62, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -12197,11 +12320,11 @@ func (d *D) FieldS62(name string, sms ...scalar.Mapper) int64 {
 // Reader S63
 
 // TryS63 tries to read 63 bit signed integer in current endian
-func (d *D) TryS63() (int64, error) { return d.trySE(63, d.Endian) }
+func (d *D) TryS63() (int64, error) { return d.trySEndian(63, d.Endian) }
 
 // S63 reads 63 bit signed integer in current endian
 func (d *D) S63() int64 {
-	v, err := d.trySE(63, d.Endian)
+	v, err := d.trySEndian(63, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S63", Pos: d.Pos()})
 	}
@@ -12211,7 +12334,7 @@ func (d *D) S63() int64 {
 // TryFieldScalarS63 tries to add a field and read 63 bit signed integer in current endian
 func (d *D) TryFieldScalarS63(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(63, d.Endian)
+		v, err := d.trySEndian(63, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -12244,11 +12367,11 @@ func (d *D) FieldS63(name string, sms ...scalar.Mapper) int64 {
 // Reader S64
 
 // TryS64 tries to read 64 bit signed integer in current endian
-func (d *D) TryS64() (int64, error) { return d.trySE(64, d.Endian) }
+func (d *D) TryS64() (int64, error) { return d.trySEndian(64, d.Endian) }
 
 // S64 reads 64 bit signed integer in current endian
 func (d *D) S64() int64 {
-	v, err := d.trySE(64, d.Endian)
+	v, err := d.trySEndian(64, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S64", Pos: d.Pos()})
 	}
@@ -12258,7 +12381,7 @@ func (d *D) S64() int64 {
 // TryFieldScalarS64 tries to add a field and read 64 bit signed integer in current endian
 func (d *D) TryFieldScalarS64(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(64, d.Endian)
+		v, err := d.trySEndian(64, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -12291,11 +12414,11 @@ func (d *D) FieldS64(name string, sms ...scalar.Mapper) int64 {
 // Reader S8LE
 
 // TryS8LE tries to read 8 bit signed integer in little-endian
-func (d *D) TryS8LE() (int64, error) { return d.trySE(8, LittleEndian) }
+func (d *D) TryS8LE() (int64, error) { return d.trySEndian(8, LittleEndian) }
 
 // S8LE reads 8 bit signed integer in little-endian
 func (d *D) S8LE() int64 {
-	v, err := d.trySE(8, LittleEndian)
+	v, err := d.trySEndian(8, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S8LE", Pos: d.Pos()})
 	}
@@ -12305,7 +12428,7 @@ func (d *D) S8LE() int64 {
 // TryFieldScalarS8LE tries to add a field and read 8 bit signed integer in little-endian
 func (d *D) TryFieldScalarS8LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(8, LittleEndian)
+		v, err := d.trySEndian(8, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -12338,11 +12461,11 @@ func (d *D) FieldS8LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S9LE
 
 // TryS9LE tries to read 9 bit signed integer in little-endian
-func (d *D) TryS9LE() (int64, error) { return d.trySE(9, LittleEndian) }
+func (d *D) TryS9LE() (int64, error) { return d.trySEndian(9, LittleEndian) }
 
 // S9LE reads 9 bit signed integer in little-endian
 func (d *D) S9LE() int64 {
-	v, err := d.trySE(9, LittleEndian)
+	v, err := d.trySEndian(9, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S9LE", Pos: d.Pos()})
 	}
@@ -12352,7 +12475,7 @@ func (d *D) S9LE() int64 {
 // TryFieldScalarS9LE tries to add a field and read 9 bit signed integer in little-endian
 func (d *D) TryFieldScalarS9LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(9, LittleEndian)
+		v, err := d.trySEndian(9, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -12385,11 +12508,11 @@ func (d *D) FieldS9LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S10LE
 
 // TryS10LE tries to read 10 bit signed integer in little-endian
-func (d *D) TryS10LE() (int64, error) { return d.trySE(10, LittleEndian) }
+func (d *D) TryS10LE() (int64, error) { return d.trySEndian(10, LittleEndian) }
 
 // S10LE reads 10 bit signed integer in little-endian
 func (d *D) S10LE() int64 {
-	v, err := d.trySE(10, LittleEndian)
+	v, err := d.trySEndian(10, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S10LE", Pos: d.Pos()})
 	}
@@ -12399,7 +12522,7 @@ func (d *D) S10LE() int64 {
 // TryFieldScalarS10LE tries to add a field and read 10 bit signed integer in little-endian
 func (d *D) TryFieldScalarS10LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(10, LittleEndian)
+		v, err := d.trySEndian(10, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -12432,11 +12555,11 @@ func (d *D) FieldS10LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S11LE
 
 // TryS11LE tries to read 11 bit signed integer in little-endian
-func (d *D) TryS11LE() (int64, error) { return d.trySE(11, LittleEndian) }
+func (d *D) TryS11LE() (int64, error) { return d.trySEndian(11, LittleEndian) }
 
 // S11LE reads 11 bit signed integer in little-endian
 func (d *D) S11LE() int64 {
-	v, err := d.trySE(11, LittleEndian)
+	v, err := d.trySEndian(11, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S11LE", Pos: d.Pos()})
 	}
@@ -12446,7 +12569,7 @@ func (d *D) S11LE() int64 {
 // TryFieldScalarS11LE tries to add a field and read 11 bit signed integer in little-endian
 func (d *D) TryFieldScalarS11LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(11, LittleEndian)
+		v, err := d.trySEndian(11, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -12479,11 +12602,11 @@ func (d *D) FieldS11LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S12LE
 
 // TryS12LE tries to read 12 bit signed integer in little-endian
-func (d *D) TryS12LE() (int64, error) { return d.trySE(12, LittleEndian) }
+func (d *D) TryS12LE() (int64, error) { return d.trySEndian(12, LittleEndian) }
 
 // S12LE reads 12 bit signed integer in little-endian
 func (d *D) S12LE() int64 {
-	v, err := d.trySE(12, LittleEndian)
+	v, err := d.trySEndian(12, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S12LE", Pos: d.Pos()})
 	}
@@ -12493,7 +12616,7 @@ func (d *D) S12LE() int64 {
 // TryFieldScalarS12LE tries to add a field and read 12 bit signed integer in little-endian
 func (d *D) TryFieldScalarS12LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(12, LittleEndian)
+		v, err := d.trySEndian(12, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -12526,11 +12649,11 @@ func (d *D) FieldS12LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S13LE
 
 // TryS13LE tries to read 13 bit signed integer in little-endian
-func (d *D) TryS13LE() (int64, error) { return d.trySE(13, LittleEndian) }
+func (d *D) TryS13LE() (int64, error) { return d.trySEndian(13, LittleEndian) }
 
 // S13LE reads 13 bit signed integer in little-endian
 func (d *D) S13LE() int64 {
-	v, err := d.trySE(13, LittleEndian)
+	v, err := d.trySEndian(13, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S13LE", Pos: d.Pos()})
 	}
@@ -12540,7 +12663,7 @@ func (d *D) S13LE() int64 {
 // TryFieldScalarS13LE tries to add a field and read 13 bit signed integer in little-endian
 func (d *D) TryFieldScalarS13LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(13, LittleEndian)
+		v, err := d.trySEndian(13, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -12573,11 +12696,11 @@ func (d *D) FieldS13LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S14LE
 
 // TryS14LE tries to read 14 bit signed integer in little-endian
-func (d *D) TryS14LE() (int64, error) { return d.trySE(14, LittleEndian) }
+func (d *D) TryS14LE() (int64, error) { return d.trySEndian(14, LittleEndian) }
 
 // S14LE reads 14 bit signed integer in little-endian
 func (d *D) S14LE() int64 {
-	v, err := d.trySE(14, LittleEndian)
+	v, err := d.trySEndian(14, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S14LE", Pos: d.Pos()})
 	}
@@ -12587,7 +12710,7 @@ func (d *D) S14LE() int64 {
 // TryFieldScalarS14LE tries to add a field and read 14 bit signed integer in little-endian
 func (d *D) TryFieldScalarS14LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(14, LittleEndian)
+		v, err := d.trySEndian(14, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -12620,11 +12743,11 @@ func (d *D) FieldS14LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S15LE
 
 // TryS15LE tries to read 15 bit signed integer in little-endian
-func (d *D) TryS15LE() (int64, error) { return d.trySE(15, LittleEndian) }
+func (d *D) TryS15LE() (int64, error) { return d.trySEndian(15, LittleEndian) }
 
 // S15LE reads 15 bit signed integer in little-endian
 func (d *D) S15LE() int64 {
-	v, err := d.trySE(15, LittleEndian)
+	v, err := d.trySEndian(15, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S15LE", Pos: d.Pos()})
 	}
@@ -12634,7 +12757,7 @@ func (d *D) S15LE() int64 {
 // TryFieldScalarS15LE tries to add a field and read 15 bit signed integer in little-endian
 func (d *D) TryFieldScalarS15LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(15, LittleEndian)
+		v, err := d.trySEndian(15, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -12667,11 +12790,11 @@ func (d *D) FieldS15LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S16LE
 
 // TryS16LE tries to read 16 bit signed integer in little-endian
-func (d *D) TryS16LE() (int64, error) { return d.trySE(16, LittleEndian) }
+func (d *D) TryS16LE() (int64, error) { return d.trySEndian(16, LittleEndian) }
 
 // S16LE reads 16 bit signed integer in little-endian
 func (d *D) S16LE() int64 {
-	v, err := d.trySE(16, LittleEndian)
+	v, err := d.trySEndian(16, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S16LE", Pos: d.Pos()})
 	}
@@ -12681,7 +12804,7 @@ func (d *D) S16LE() int64 {
 // TryFieldScalarS16LE tries to add a field and read 16 bit signed integer in little-endian
 func (d *D) TryFieldScalarS16LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(16, LittleEndian)
+		v, err := d.trySEndian(16, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -12714,11 +12837,11 @@ func (d *D) FieldS16LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S17LE
 
 // TryS17LE tries to read 17 bit signed integer in little-endian
-func (d *D) TryS17LE() (int64, error) { return d.trySE(17, LittleEndian) }
+func (d *D) TryS17LE() (int64, error) { return d.trySEndian(17, LittleEndian) }
 
 // S17LE reads 17 bit signed integer in little-endian
 func (d *D) S17LE() int64 {
-	v, err := d.trySE(17, LittleEndian)
+	v, err := d.trySEndian(17, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S17LE", Pos: d.Pos()})
 	}
@@ -12728,7 +12851,7 @@ func (d *D) S17LE() int64 {
 // TryFieldScalarS17LE tries to add a field and read 17 bit signed integer in little-endian
 func (d *D) TryFieldScalarS17LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(17, LittleEndian)
+		v, err := d.trySEndian(17, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -12761,11 +12884,11 @@ func (d *D) FieldS17LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S18LE
 
 // TryS18LE tries to read 18 bit signed integer in little-endian
-func (d *D) TryS18LE() (int64, error) { return d.trySE(18, LittleEndian) }
+func (d *D) TryS18LE() (int64, error) { return d.trySEndian(18, LittleEndian) }
 
 // S18LE reads 18 bit signed integer in little-endian
 func (d *D) S18LE() int64 {
-	v, err := d.trySE(18, LittleEndian)
+	v, err := d.trySEndian(18, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S18LE", Pos: d.Pos()})
 	}
@@ -12775,7 +12898,7 @@ func (d *D) S18LE() int64 {
 // TryFieldScalarS18LE tries to add a field and read 18 bit signed integer in little-endian
 func (d *D) TryFieldScalarS18LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(18, LittleEndian)
+		v, err := d.trySEndian(18, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -12808,11 +12931,11 @@ func (d *D) FieldS18LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S19LE
 
 // TryS19LE tries to read 19 bit signed integer in little-endian
-func (d *D) TryS19LE() (int64, error) { return d.trySE(19, LittleEndian) }
+func (d *D) TryS19LE() (int64, error) { return d.trySEndian(19, LittleEndian) }
 
 // S19LE reads 19 bit signed integer in little-endian
 func (d *D) S19LE() int64 {
-	v, err := d.trySE(19, LittleEndian)
+	v, err := d.trySEndian(19, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S19LE", Pos: d.Pos()})
 	}
@@ -12822,7 +12945,7 @@ func (d *D) S19LE() int64 {
 // TryFieldScalarS19LE tries to add a field and read 19 bit signed integer in little-endian
 func (d *D) TryFieldScalarS19LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(19, LittleEndian)
+		v, err := d.trySEndian(19, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -12855,11 +12978,11 @@ func (d *D) FieldS19LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S20LE
 
 // TryS20LE tries to read 20 bit signed integer in little-endian
-func (d *D) TryS20LE() (int64, error) { return d.trySE(20, LittleEndian) }
+func (d *D) TryS20LE() (int64, error) { return d.trySEndian(20, LittleEndian) }
 
 // S20LE reads 20 bit signed integer in little-endian
 func (d *D) S20LE() int64 {
-	v, err := d.trySE(20, LittleEndian)
+	v, err := d.trySEndian(20, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S20LE", Pos: d.Pos()})
 	}
@@ -12869,7 +12992,7 @@ func (d *D) S20LE() int64 {
 // TryFieldScalarS20LE tries to add a field and read 20 bit signed integer in little-endian
 func (d *D) TryFieldScalarS20LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(20, LittleEndian)
+		v, err := d.trySEndian(20, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -12902,11 +13025,11 @@ func (d *D) FieldS20LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S21LE
 
 // TryS21LE tries to read 21 bit signed integer in little-endian
-func (d *D) TryS21LE() (int64, error) { return d.trySE(21, LittleEndian) }
+func (d *D) TryS21LE() (int64, error) { return d.trySEndian(21, LittleEndian) }
 
 // S21LE reads 21 bit signed integer in little-endian
 func (d *D) S21LE() int64 {
-	v, err := d.trySE(21, LittleEndian)
+	v, err := d.trySEndian(21, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S21LE", Pos: d.Pos()})
 	}
@@ -12916,7 +13039,7 @@ func (d *D) S21LE() int64 {
 // TryFieldScalarS21LE tries to add a field and read 21 bit signed integer in little-endian
 func (d *D) TryFieldScalarS21LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(21, LittleEndian)
+		v, err := d.trySEndian(21, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -12949,11 +13072,11 @@ func (d *D) FieldS21LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S22LE
 
 // TryS22LE tries to read 22 bit signed integer in little-endian
-func (d *D) TryS22LE() (int64, error) { return d.trySE(22, LittleEndian) }
+func (d *D) TryS22LE() (int64, error) { return d.trySEndian(22, LittleEndian) }
 
 // S22LE reads 22 bit signed integer in little-endian
 func (d *D) S22LE() int64 {
-	v, err := d.trySE(22, LittleEndian)
+	v, err := d.trySEndian(22, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S22LE", Pos: d.Pos()})
 	}
@@ -12963,7 +13086,7 @@ func (d *D) S22LE() int64 {
 // TryFieldScalarS22LE tries to add a field and read 22 bit signed integer in little-endian
 func (d *D) TryFieldScalarS22LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(22, LittleEndian)
+		v, err := d.trySEndian(22, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -12996,11 +13119,11 @@ func (d *D) FieldS22LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S23LE
 
 // TryS23LE tries to read 23 bit signed integer in little-endian
-func (d *D) TryS23LE() (int64, error) { return d.trySE(23, LittleEndian) }
+func (d *D) TryS23LE() (int64, error) { return d.trySEndian(23, LittleEndian) }
 
 // S23LE reads 23 bit signed integer in little-endian
 func (d *D) S23LE() int64 {
-	v, err := d.trySE(23, LittleEndian)
+	v, err := d.trySEndian(23, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S23LE", Pos: d.Pos()})
 	}
@@ -13010,7 +13133,7 @@ func (d *D) S23LE() int64 {
 // TryFieldScalarS23LE tries to add a field and read 23 bit signed integer in little-endian
 func (d *D) TryFieldScalarS23LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(23, LittleEndian)
+		v, err := d.trySEndian(23, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -13043,11 +13166,11 @@ func (d *D) FieldS23LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S24LE
 
 // TryS24LE tries to read 24 bit signed integer in little-endian
-func (d *D) TryS24LE() (int64, error) { return d.trySE(24, LittleEndian) }
+func (d *D) TryS24LE() (int64, error) { return d.trySEndian(24, LittleEndian) }
 
 // S24LE reads 24 bit signed integer in little-endian
 func (d *D) S24LE() int64 {
-	v, err := d.trySE(24, LittleEndian)
+	v, err := d.trySEndian(24, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S24LE", Pos: d.Pos()})
 	}
@@ -13057,7 +13180,7 @@ func (d *D) S24LE() int64 {
 // TryFieldScalarS24LE tries to add a field and read 24 bit signed integer in little-endian
 func (d *D) TryFieldScalarS24LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(24, LittleEndian)
+		v, err := d.trySEndian(24, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -13090,11 +13213,11 @@ func (d *D) FieldS24LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S25LE
 
 // TryS25LE tries to read 25 bit signed integer in little-endian
-func (d *D) TryS25LE() (int64, error) { return d.trySE(25, LittleEndian) }
+func (d *D) TryS25LE() (int64, error) { return d.trySEndian(25, LittleEndian) }
 
 // S25LE reads 25 bit signed integer in little-endian
 func (d *D) S25LE() int64 {
-	v, err := d.trySE(25, LittleEndian)
+	v, err := d.trySEndian(25, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S25LE", Pos: d.Pos()})
 	}
@@ -13104,7 +13227,7 @@ func (d *D) S25LE() int64 {
 // TryFieldScalarS25LE tries to add a field and read 25 bit signed integer in little-endian
 func (d *D) TryFieldScalarS25LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(25, LittleEndian)
+		v, err := d.trySEndian(25, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -13137,11 +13260,11 @@ func (d *D) FieldS25LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S26LE
 
 // TryS26LE tries to read 26 bit signed integer in little-endian
-func (d *D) TryS26LE() (int64, error) { return d.trySE(26, LittleEndian) }
+func (d *D) TryS26LE() (int64, error) { return d.trySEndian(26, LittleEndian) }
 
 // S26LE reads 26 bit signed integer in little-endian
 func (d *D) S26LE() int64 {
-	v, err := d.trySE(26, LittleEndian)
+	v, err := d.trySEndian(26, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S26LE", Pos: d.Pos()})
 	}
@@ -13151,7 +13274,7 @@ func (d *D) S26LE() int64 {
 // TryFieldScalarS26LE tries to add a field and read 26 bit signed integer in little-endian
 func (d *D) TryFieldScalarS26LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(26, LittleEndian)
+		v, err := d.trySEndian(26, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -13184,11 +13307,11 @@ func (d *D) FieldS26LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S27LE
 
 // TryS27LE tries to read 27 bit signed integer in little-endian
-func (d *D) TryS27LE() (int64, error) { return d.trySE(27, LittleEndian) }
+func (d *D) TryS27LE() (int64, error) { return d.trySEndian(27, LittleEndian) }
 
 // S27LE reads 27 bit signed integer in little-endian
 func (d *D) S27LE() int64 {
-	v, err := d.trySE(27, LittleEndian)
+	v, err := d.trySEndian(27, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S27LE", Pos: d.Pos()})
 	}
@@ -13198,7 +13321,7 @@ func (d *D) S27LE() int64 {
 // TryFieldScalarS27LE tries to add a field and read 27 bit signed integer in little-endian
 func (d *D) TryFieldScalarS27LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(27, LittleEndian)
+		v, err := d.trySEndian(27, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -13231,11 +13354,11 @@ func (d *D) FieldS27LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S28LE
 
 // TryS28LE tries to read 28 bit signed integer in little-endian
-func (d *D) TryS28LE() (int64, error) { return d.trySE(28, LittleEndian) }
+func (d *D) TryS28LE() (int64, error) { return d.trySEndian(28, LittleEndian) }
 
 // S28LE reads 28 bit signed integer in little-endian
 func (d *D) S28LE() int64 {
-	v, err := d.trySE(28, LittleEndian)
+	v, err := d.trySEndian(28, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S28LE", Pos: d.Pos()})
 	}
@@ -13245,7 +13368,7 @@ func (d *D) S28LE() int64 {
 // TryFieldScalarS28LE tries to add a field and read 28 bit signed integer in little-endian
 func (d *D) TryFieldScalarS28LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(28, LittleEndian)
+		v, err := d.trySEndian(28, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -13278,11 +13401,11 @@ func (d *D) FieldS28LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S29LE
 
 // TryS29LE tries to read 29 bit signed integer in little-endian
-func (d *D) TryS29LE() (int64, error) { return d.trySE(29, LittleEndian) }
+func (d *D) TryS29LE() (int64, error) { return d.trySEndian(29, LittleEndian) }
 
 // S29LE reads 29 bit signed integer in little-endian
 func (d *D) S29LE() int64 {
-	v, err := d.trySE(29, LittleEndian)
+	v, err := d.trySEndian(29, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S29LE", Pos: d.Pos()})
 	}
@@ -13292,7 +13415,7 @@ func (d *D) S29LE() int64 {
 // TryFieldScalarS29LE tries to add a field and read 29 bit signed integer in little-endian
 func (d *D) TryFieldScalarS29LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(29, LittleEndian)
+		v, err := d.trySEndian(29, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -13325,11 +13448,11 @@ func (d *D) FieldS29LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S30LE
 
 // TryS30LE tries to read 30 bit signed integer in little-endian
-func (d *D) TryS30LE() (int64, error) { return d.trySE(30, LittleEndian) }
+func (d *D) TryS30LE() (int64, error) { return d.trySEndian(30, LittleEndian) }
 
 // S30LE reads 30 bit signed integer in little-endian
 func (d *D) S30LE() int64 {
-	v, err := d.trySE(30, LittleEndian)
+	v, err := d.trySEndian(30, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S30LE", Pos: d.Pos()})
 	}
@@ -13339,7 +13462,7 @@ func (d *D) S30LE() int64 {
 // TryFieldScalarS30LE tries to add a field and read 30 bit signed integer in little-endian
 func (d *D) TryFieldScalarS30LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(30, LittleEndian)
+		v, err := d.trySEndian(30, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -13372,11 +13495,11 @@ func (d *D) FieldS30LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S31LE
 
 // TryS31LE tries to read 31 bit signed integer in little-endian
-func (d *D) TryS31LE() (int64, error) { return d.trySE(31, LittleEndian) }
+func (d *D) TryS31LE() (int64, error) { return d.trySEndian(31, LittleEndian) }
 
 // S31LE reads 31 bit signed integer in little-endian
 func (d *D) S31LE() int64 {
-	v, err := d.trySE(31, LittleEndian)
+	v, err := d.trySEndian(31, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S31LE", Pos: d.Pos()})
 	}
@@ -13386,7 +13509,7 @@ func (d *D) S31LE() int64 {
 // TryFieldScalarS31LE tries to add a field and read 31 bit signed integer in little-endian
 func (d *D) TryFieldScalarS31LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(31, LittleEndian)
+		v, err := d.trySEndian(31, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -13419,11 +13542,11 @@ func (d *D) FieldS31LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S32LE
 
 // TryS32LE tries to read 32 bit signed integer in little-endian
-func (d *D) TryS32LE() (int64, error) { return d.trySE(32, LittleEndian) }
+func (d *D) TryS32LE() (int64, error) { return d.trySEndian(32, LittleEndian) }
 
 // S32LE reads 32 bit signed integer in little-endian
 func (d *D) S32LE() int64 {
-	v, err := d.trySE(32, LittleEndian)
+	v, err := d.trySEndian(32, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S32LE", Pos: d.Pos()})
 	}
@@ -13433,7 +13556,7 @@ func (d *D) S32LE() int64 {
 // TryFieldScalarS32LE tries to add a field and read 32 bit signed integer in little-endian
 func (d *D) TryFieldScalarS32LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(32, LittleEndian)
+		v, err := d.trySEndian(32, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -13466,11 +13589,11 @@ func (d *D) FieldS32LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S33LE
 
 // TryS33LE tries to read 33 bit signed integer in little-endian
-func (d *D) TryS33LE() (int64, error) { return d.trySE(33, LittleEndian) }
+func (d *D) TryS33LE() (int64, error) { return d.trySEndian(33, LittleEndian) }
 
 // S33LE reads 33 bit signed integer in little-endian
 func (d *D) S33LE() int64 {
-	v, err := d.trySE(33, LittleEndian)
+	v, err := d.trySEndian(33, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S33LE", Pos: d.Pos()})
 	}
@@ -13480,7 +13603,7 @@ func (d *D) S33LE() int64 {
 // TryFieldScalarS33LE tries to add a field and read 33 bit signed integer in little-endian
 func (d *D) TryFieldScalarS33LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(33, LittleEndian)
+		v, err := d.trySEndian(33, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -13513,11 +13636,11 @@ func (d *D) FieldS33LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S34LE
 
 // TryS34LE tries to read 34 bit signed integer in little-endian
-func (d *D) TryS34LE() (int64, error) { return d.trySE(34, LittleEndian) }
+func (d *D) TryS34LE() (int64, error) { return d.trySEndian(34, LittleEndian) }
 
 // S34LE reads 34 bit signed integer in little-endian
 func (d *D) S34LE() int64 {
-	v, err := d.trySE(34, LittleEndian)
+	v, err := d.trySEndian(34, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S34LE", Pos: d.Pos()})
 	}
@@ -13527,7 +13650,7 @@ func (d *D) S34LE() int64 {
 // TryFieldScalarS34LE tries to add a field and read 34 bit signed integer in little-endian
 func (d *D) TryFieldScalarS34LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(34, LittleEndian)
+		v, err := d.trySEndian(34, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -13560,11 +13683,11 @@ func (d *D) FieldS34LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S35LE
 
 // TryS35LE tries to read 35 bit signed integer in little-endian
-func (d *D) TryS35LE() (int64, error) { return d.trySE(35, LittleEndian) }
+func (d *D) TryS35LE() (int64, error) { return d.trySEndian(35, LittleEndian) }
 
 // S35LE reads 35 bit signed integer in little-endian
 func (d *D) S35LE() int64 {
-	v, err := d.trySE(35, LittleEndian)
+	v, err := d.trySEndian(35, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S35LE", Pos: d.Pos()})
 	}
@@ -13574,7 +13697,7 @@ func (d *D) S35LE() int64 {
 // TryFieldScalarS35LE tries to add a field and read 35 bit signed integer in little-endian
 func (d *D) TryFieldScalarS35LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(35, LittleEndian)
+		v, err := d.trySEndian(35, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -13607,11 +13730,11 @@ func (d *D) FieldS35LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S36LE
 
 // TryS36LE tries to read 36 bit signed integer in little-endian
-func (d *D) TryS36LE() (int64, error) { return d.trySE(36, LittleEndian) }
+func (d *D) TryS36LE() (int64, error) { return d.trySEndian(36, LittleEndian) }
 
 // S36LE reads 36 bit signed integer in little-endian
 func (d *D) S36LE() int64 {
-	v, err := d.trySE(36, LittleEndian)
+	v, err := d.trySEndian(36, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S36LE", Pos: d.Pos()})
 	}
@@ -13621,7 +13744,7 @@ func (d *D) S36LE() int64 {
 // TryFieldScalarS36LE tries to add a field and read 36 bit signed integer in little-endian
 func (d *D) TryFieldScalarS36LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(36, LittleEndian)
+		v, err := d.trySEndian(36, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -13654,11 +13777,11 @@ func (d *D) FieldS36LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S37LE
 
 // TryS37LE tries to read 37 bit signed integer in little-endian
-func (d *D) TryS37LE() (int64, error) { return d.trySE(37, LittleEndian) }
+func (d *D) TryS37LE() (int64, error) { return d.trySEndian(37, LittleEndian) }
 
 // S37LE reads 37 bit signed integer in little-endian
 func (d *D) S37LE() int64 {
-	v, err := d.trySE(37, LittleEndian)
+	v, err := d.trySEndian(37, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S37LE", Pos: d.Pos()})
 	}
@@ -13668,7 +13791,7 @@ func (d *D) S37LE() int64 {
 // TryFieldScalarS37LE tries to add a field and read 37 bit signed integer in little-endian
 func (d *D) TryFieldScalarS37LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(37, LittleEndian)
+		v, err := d.trySEndian(37, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -13701,11 +13824,11 @@ func (d *D) FieldS37LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S38LE
 
 // TryS38LE tries to read 38 bit signed integer in little-endian
-func (d *D) TryS38LE() (int64, error) { return d.trySE(38, LittleEndian) }
+func (d *D) TryS38LE() (int64, error) { return d.trySEndian(38, LittleEndian) }
 
 // S38LE reads 38 bit signed integer in little-endian
 func (d *D) S38LE() int64 {
-	v, err := d.trySE(38, LittleEndian)
+	v, err := d.trySEndian(38, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S38LE", Pos: d.Pos()})
 	}
@@ -13715,7 +13838,7 @@ func (d *D) S38LE() int64 {
 // TryFieldScalarS38LE tries to add a field and read 38 bit signed integer in little-endian
 func (d *D) TryFieldScalarS38LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(38, LittleEndian)
+		v, err := d.trySEndian(38, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -13748,11 +13871,11 @@ func (d *D) FieldS38LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S39LE
 
 // TryS39LE tries to read 39 bit signed integer in little-endian
-func (d *D) TryS39LE() (int64, error) { return d.trySE(39, LittleEndian) }
+func (d *D) TryS39LE() (int64, error) { return d.trySEndian(39, LittleEndian) }
 
 // S39LE reads 39 bit signed integer in little-endian
 func (d *D) S39LE() int64 {
-	v, err := d.trySE(39, LittleEndian)
+	v, err := d.trySEndian(39, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S39LE", Pos: d.Pos()})
 	}
@@ -13762,7 +13885,7 @@ func (d *D) S39LE() int64 {
 // TryFieldScalarS39LE tries to add a field and read 39 bit signed integer in little-endian
 func (d *D) TryFieldScalarS39LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(39, LittleEndian)
+		v, err := d.trySEndian(39, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -13795,11 +13918,11 @@ func (d *D) FieldS39LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S40LE
 
 // TryS40LE tries to read 40 bit signed integer in little-endian
-func (d *D) TryS40LE() (int64, error) { return d.trySE(40, LittleEndian) }
+func (d *D) TryS40LE() (int64, error) { return d.trySEndian(40, LittleEndian) }
 
 // S40LE reads 40 bit signed integer in little-endian
 func (d *D) S40LE() int64 {
-	v, err := d.trySE(40, LittleEndian)
+	v, err := d.trySEndian(40, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S40LE", Pos: d.Pos()})
 	}
@@ -13809,7 +13932,7 @@ func (d *D) S40LE() int64 {
 // TryFieldScalarS40LE tries to add a field and read 40 bit signed integer in little-endian
 func (d *D) TryFieldScalarS40LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(40, LittleEndian)
+		v, err := d.trySEndian(40, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -13842,11 +13965,11 @@ func (d *D) FieldS40LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S41LE
 
 // TryS41LE tries to read 41 bit signed integer in little-endian
-func (d *D) TryS41LE() (int64, error) { return d.trySE(41, LittleEndian) }
+func (d *D) TryS41LE() (int64, error) { return d.trySEndian(41, LittleEndian) }
 
 // S41LE reads 41 bit signed integer in little-endian
 func (d *D) S41LE() int64 {
-	v, err := d.trySE(41, LittleEndian)
+	v, err := d.trySEndian(41, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S41LE", Pos: d.Pos()})
 	}
@@ -13856,7 +13979,7 @@ func (d *D) S41LE() int64 {
 // TryFieldScalarS41LE tries to add a field and read 41 bit signed integer in little-endian
 func (d *D) TryFieldScalarS41LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(41, LittleEndian)
+		v, err := d.trySEndian(41, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -13889,11 +14012,11 @@ func (d *D) FieldS41LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S42LE
 
 // TryS42LE tries to read 42 bit signed integer in little-endian
-func (d *D) TryS42LE() (int64, error) { return d.trySE(42, LittleEndian) }
+func (d *D) TryS42LE() (int64, error) { return d.trySEndian(42, LittleEndian) }
 
 // S42LE reads 42 bit signed integer in little-endian
 func (d *D) S42LE() int64 {
-	v, err := d.trySE(42, LittleEndian)
+	v, err := d.trySEndian(42, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S42LE", Pos: d.Pos()})
 	}
@@ -13903,7 +14026,7 @@ func (d *D) S42LE() int64 {
 // TryFieldScalarS42LE tries to add a field and read 42 bit signed integer in little-endian
 func (d *D) TryFieldScalarS42LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(42, LittleEndian)
+		v, err := d.trySEndian(42, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -13936,11 +14059,11 @@ func (d *D) FieldS42LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S43LE
 
 // TryS43LE tries to read 43 bit signed integer in little-endian
-func (d *D) TryS43LE() (int64, error) { return d.trySE(43, LittleEndian) }
+func (d *D) TryS43LE() (int64, error) { return d.trySEndian(43, LittleEndian) }
 
 // S43LE reads 43 bit signed integer in little-endian
 func (d *D) S43LE() int64 {
-	v, err := d.trySE(43, LittleEndian)
+	v, err := d.trySEndian(43, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S43LE", Pos: d.Pos()})
 	}
@@ -13950,7 +14073,7 @@ func (d *D) S43LE() int64 {
 // TryFieldScalarS43LE tries to add a field and read 43 bit signed integer in little-endian
 func (d *D) TryFieldScalarS43LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(43, LittleEndian)
+		v, err := d.trySEndian(43, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -13983,11 +14106,11 @@ func (d *D) FieldS43LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S44LE
 
 // TryS44LE tries to read 44 bit signed integer in little-endian
-func (d *D) TryS44LE() (int64, error) { return d.trySE(44, LittleEndian) }
+func (d *D) TryS44LE() (int64, error) { return d.trySEndian(44, LittleEndian) }
 
 // S44LE reads 44 bit signed integer in little-endian
 func (d *D) S44LE() int64 {
-	v, err := d.trySE(44, LittleEndian)
+	v, err := d.trySEndian(44, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S44LE", Pos: d.Pos()})
 	}
@@ -13997,7 +14120,7 @@ func (d *D) S44LE() int64 {
 // TryFieldScalarS44LE tries to add a field and read 44 bit signed integer in little-endian
 func (d *D) TryFieldScalarS44LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(44, LittleEndian)
+		v, err := d.trySEndian(44, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -14030,11 +14153,11 @@ func (d *D) FieldS44LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S45LE
 
 // TryS45LE tries to read 45 bit signed integer in little-endian
-func (d *D) TryS45LE() (int64, error) { return d.trySE(45, LittleEndian) }
+func (d *D) TryS45LE() (int64, error) { return d.trySEndian(45, LittleEndian) }
 
 // S45LE reads 45 bit signed integer in little-endian
 func (d *D) S45LE() int64 {
-	v, err := d.trySE(45, LittleEndian)
+	v, err := d.trySEndian(45, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S45LE", Pos: d.Pos()})
 	}
@@ -14044,7 +14167,7 @@ func (d *D) S45LE() int64 {
 // TryFieldScalarS45LE tries to add a field and read 45 bit signed integer in little-endian
 func (d *D) TryFieldScalarS45LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(45, LittleEndian)
+		v, err := d.trySEndian(45, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -14077,11 +14200,11 @@ func (d *D) FieldS45LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S46LE
 
 // TryS46LE tries to read 46 bit signed integer in little-endian
-func (d *D) TryS46LE() (int64, error) { return d.trySE(46, LittleEndian) }
+func (d *D) TryS46LE() (int64, error) { return d.trySEndian(46, LittleEndian) }
 
 // S46LE reads 46 bit signed integer in little-endian
 func (d *D) S46LE() int64 {
-	v, err := d.trySE(46, LittleEndian)
+	v, err := d.trySEndian(46, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S46LE", Pos: d.Pos()})
 	}
@@ -14091,7 +14214,7 @@ func (d *D) S46LE() int64 {
 // TryFieldScalarS46LE tries to add a field and read 46 bit signed integer in little-endian
 func (d *D) TryFieldScalarS46LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(46, LittleEndian)
+		v, err := d.trySEndian(46, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -14124,11 +14247,11 @@ func (d *D) FieldS46LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S47LE
 
 // TryS47LE tries to read 47 bit signed integer in little-endian
-func (d *D) TryS47LE() (int64, error) { return d.trySE(47, LittleEndian) }
+func (d *D) TryS47LE() (int64, error) { return d.trySEndian(47, LittleEndian) }
 
 // S47LE reads 47 bit signed integer in little-endian
 func (d *D) S47LE() int64 {
-	v, err := d.trySE(47, LittleEndian)
+	v, err := d.trySEndian(47, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S47LE", Pos: d.Pos()})
 	}
@@ -14138,7 +14261,7 @@ func (d *D) S47LE() int64 {
 // TryFieldScalarS47LE tries to add a field and read 47 bit signed integer in little-endian
 func (d *D) TryFieldScalarS47LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(47, LittleEndian)
+		v, err := d.trySEndian(47, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -14171,11 +14294,11 @@ func (d *D) FieldS47LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S48LE
 
 // TryS48LE tries to read 48 bit signed integer in little-endian
-func (d *D) TryS48LE() (int64, error) { return d.trySE(48, LittleEndian) }
+func (d *D) TryS48LE() (int64, error) { return d.trySEndian(48, LittleEndian) }
 
 // S48LE reads 48 bit signed integer in little-endian
 func (d *D) S48LE() int64 {
-	v, err := d.trySE(48, LittleEndian)
+	v, err := d.trySEndian(48, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S48LE", Pos: d.Pos()})
 	}
@@ -14185,7 +14308,7 @@ func (d *D) S48LE() int64 {
 // TryFieldScalarS48LE tries to add a field and read 48 bit signed integer in little-endian
 func (d *D) TryFieldScalarS48LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(48, LittleEndian)
+		v, err := d.trySEndian(48, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -14218,11 +14341,11 @@ func (d *D) FieldS48LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S49LE
 
 // TryS49LE tries to read 49 bit signed integer in little-endian
-func (d *D) TryS49LE() (int64, error) { return d.trySE(49, LittleEndian) }
+func (d *D) TryS49LE() (int64, error) { return d.trySEndian(49, LittleEndian) }
 
 // S49LE reads 49 bit signed integer in little-endian
 func (d *D) S49LE() int64 {
-	v, err := d.trySE(49, LittleEndian)
+	v, err := d.trySEndian(49, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S49LE", Pos: d.Pos()})
 	}
@@ -14232,7 +14355,7 @@ func (d *D) S49LE() int64 {
 // TryFieldScalarS49LE tries to add a field and read 49 bit signed integer in little-endian
 func (d *D) TryFieldScalarS49LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(49, LittleEndian)
+		v, err := d.trySEndian(49, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -14265,11 +14388,11 @@ func (d *D) FieldS49LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S50LE
 
 // TryS50LE tries to read 50 bit signed integer in little-endian
-func (d *D) TryS50LE() (int64, error) { return d.trySE(50, LittleEndian) }
+func (d *D) TryS50LE() (int64, error) { return d.trySEndian(50, LittleEndian) }
 
 // S50LE reads 50 bit signed integer in little-endian
 func (d *D) S50LE() int64 {
-	v, err := d.trySE(50, LittleEndian)
+	v, err := d.trySEndian(50, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S50LE", Pos: d.Pos()})
 	}
@@ -14279,7 +14402,7 @@ func (d *D) S50LE() int64 {
 // TryFieldScalarS50LE tries to add a field and read 50 bit signed integer in little-endian
 func (d *D) TryFieldScalarS50LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(50, LittleEndian)
+		v, err := d.trySEndian(50, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -14312,11 +14435,11 @@ func (d *D) FieldS50LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S51LE
 
 // TryS51LE tries to read 51 bit signed integer in little-endian
-func (d *D) TryS51LE() (int64, error) { return d.trySE(51, LittleEndian) }
+func (d *D) TryS51LE() (int64, error) { return d.trySEndian(51, LittleEndian) }
 
 // S51LE reads 51 bit signed integer in little-endian
 func (d *D) S51LE() int64 {
-	v, err := d.trySE(51, LittleEndian)
+	v, err := d.trySEndian(51, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S51LE", Pos: d.Pos()})
 	}
@@ -14326,7 +14449,7 @@ func (d *D) S51LE() int64 {
 // TryFieldScalarS51LE tries to add a field and read 51 bit signed integer in little-endian
 func (d *D) TryFieldScalarS51LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(51, LittleEndian)
+		v, err := d.trySEndian(51, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -14359,11 +14482,11 @@ func (d *D) FieldS51LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S52LE
 
 // TryS52LE tries to read 52 bit signed integer in little-endian
-func (d *D) TryS52LE() (int64, error) { return d.trySE(52, LittleEndian) }
+func (d *D) TryS52LE() (int64, error) { return d.trySEndian(52, LittleEndian) }
 
 // S52LE reads 52 bit signed integer in little-endian
 func (d *D) S52LE() int64 {
-	v, err := d.trySE(52, LittleEndian)
+	v, err := d.trySEndian(52, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S52LE", Pos: d.Pos()})
 	}
@@ -14373,7 +14496,7 @@ func (d *D) S52LE() int64 {
 // TryFieldScalarS52LE tries to add a field and read 52 bit signed integer in little-endian
 func (d *D) TryFieldScalarS52LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(52, LittleEndian)
+		v, err := d.trySEndian(52, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -14406,11 +14529,11 @@ func (d *D) FieldS52LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S53LE
 
 // TryS53LE tries to read 53 bit signed integer in little-endian
-func (d *D) TryS53LE() (int64, error) { return d.trySE(53, LittleEndian) }
+func (d *D) TryS53LE() (int64, error) { return d.trySEndian(53, LittleEndian) }
 
 // S53LE reads 53 bit signed integer in little-endian
 func (d *D) S53LE() int64 {
-	v, err := d.trySE(53, LittleEndian)
+	v, err := d.trySEndian(53, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S53LE", Pos: d.Pos()})
 	}
@@ -14420,7 +14543,7 @@ func (d *D) S53LE() int64 {
 // TryFieldScalarS53LE tries to add a field and read 53 bit signed integer in little-endian
 func (d *D) TryFieldScalarS53LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(53, LittleEndian)
+		v, err := d.trySEndian(53, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -14453,11 +14576,11 @@ func (d *D) FieldS53LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S54LE
 
 // TryS54LE tries to read 54 bit signed integer in little-endian
-func (d *D) TryS54LE() (int64, error) { return d.trySE(54, LittleEndian) }
+func (d *D) TryS54LE() (int64, error) { return d.trySEndian(54, LittleEndian) }
 
 // S54LE reads 54 bit signed integer in little-endian
 func (d *D) S54LE() int64 {
-	v, err := d.trySE(54, LittleEndian)
+	v, err := d.trySEndian(54, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S54LE", Pos: d.Pos()})
 	}
@@ -14467,7 +14590,7 @@ func (d *D) S54LE() int64 {
 // TryFieldScalarS54LE tries to add a field and read 54 bit signed integer in little-endian
 func (d *D) TryFieldScalarS54LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(54, LittleEndian)
+		v, err := d.trySEndian(54, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -14500,11 +14623,11 @@ func (d *D) FieldS54LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S55LE
 
 // TryS55LE tries to read 55 bit signed integer in little-endian
-func (d *D) TryS55LE() (int64, error) { return d.trySE(55, LittleEndian) }
+func (d *D) TryS55LE() (int64, error) { return d.trySEndian(55, LittleEndian) }
 
 // S55LE reads 55 bit signed integer in little-endian
 func (d *D) S55LE() int64 {
-	v, err := d.trySE(55, LittleEndian)
+	v, err := d.trySEndian(55, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S55LE", Pos: d.Pos()})
 	}
@@ -14514,7 +14637,7 @@ func (d *D) S55LE() int64 {
 // TryFieldScalarS55LE tries to add a field and read 55 bit signed integer in little-endian
 func (d *D) TryFieldScalarS55LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(55, LittleEndian)
+		v, err := d.trySEndian(55, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -14547,11 +14670,11 @@ func (d *D) FieldS55LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S56LE
 
 // TryS56LE tries to read 56 bit signed integer in little-endian
-func (d *D) TryS56LE() (int64, error) { return d.trySE(56, LittleEndian) }
+func (d *D) TryS56LE() (int64, error) { return d.trySEndian(56, LittleEndian) }
 
 // S56LE reads 56 bit signed integer in little-endian
 func (d *D) S56LE() int64 {
-	v, err := d.trySE(56, LittleEndian)
+	v, err := d.trySEndian(56, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S56LE", Pos: d.Pos()})
 	}
@@ -14561,7 +14684,7 @@ func (d *D) S56LE() int64 {
 // TryFieldScalarS56LE tries to add a field and read 56 bit signed integer in little-endian
 func (d *D) TryFieldScalarS56LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(56, LittleEndian)
+		v, err := d.trySEndian(56, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -14594,11 +14717,11 @@ func (d *D) FieldS56LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S57LE
 
 // TryS57LE tries to read 57 bit signed integer in little-endian
-func (d *D) TryS57LE() (int64, error) { return d.trySE(57, LittleEndian) }
+func (d *D) TryS57LE() (int64, error) { return d.trySEndian(57, LittleEndian) }
 
 // S57LE reads 57 bit signed integer in little-endian
 func (d *D) S57LE() int64 {
-	v, err := d.trySE(57, LittleEndian)
+	v, err := d.trySEndian(57, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S57LE", Pos: d.Pos()})
 	}
@@ -14608,7 +14731,7 @@ func (d *D) S57LE() int64 {
 // TryFieldScalarS57LE tries to add a field and read 57 bit signed integer in little-endian
 func (d *D) TryFieldScalarS57LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(57, LittleEndian)
+		v, err := d.trySEndian(57, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -14641,11 +14764,11 @@ func (d *D) FieldS57LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S58LE
 
 // TryS58LE tries to read 58 bit signed integer in little-endian
-func (d *D) TryS58LE() (int64, error) { return d.trySE(58, LittleEndian) }
+func (d *D) TryS58LE() (int64, error) { return d.trySEndian(58, LittleEndian) }
 
 // S58LE reads 58 bit signed integer in little-endian
 func (d *D) S58LE() int64 {
-	v, err := d.trySE(58, LittleEndian)
+	v, err := d.trySEndian(58, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S58LE", Pos: d.Pos()})
 	}
@@ -14655,7 +14778,7 @@ func (d *D) S58LE() int64 {
 // TryFieldScalarS58LE tries to add a field and read 58 bit signed integer in little-endian
 func (d *D) TryFieldScalarS58LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(58, LittleEndian)
+		v, err := d.trySEndian(58, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -14688,11 +14811,11 @@ func (d *D) FieldS58LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S59LE
 
 // TryS59LE tries to read 59 bit signed integer in little-endian
-func (d *D) TryS59LE() (int64, error) { return d.trySE(59, LittleEndian) }
+func (d *D) TryS59LE() (int64, error) { return d.trySEndian(59, LittleEndian) }
 
 // S59LE reads 59 bit signed integer in little-endian
 func (d *D) S59LE() int64 {
-	v, err := d.trySE(59, LittleEndian)
+	v, err := d.trySEndian(59, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S59LE", Pos: d.Pos()})
 	}
@@ -14702,7 +14825,7 @@ func (d *D) S59LE() int64 {
 // TryFieldScalarS59LE tries to add a field and read 59 bit signed integer in little-endian
 func (d *D) TryFieldScalarS59LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(59, LittleEndian)
+		v, err := d.trySEndian(59, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -14735,11 +14858,11 @@ func (d *D) FieldS59LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S60LE
 
 // TryS60LE tries to read 60 bit signed integer in little-endian
-func (d *D) TryS60LE() (int64, error) { return d.trySE(60, LittleEndian) }
+func (d *D) TryS60LE() (int64, error) { return d.trySEndian(60, LittleEndian) }
 
 // S60LE reads 60 bit signed integer in little-endian
 func (d *D) S60LE() int64 {
-	v, err := d.trySE(60, LittleEndian)
+	v, err := d.trySEndian(60, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S60LE", Pos: d.Pos()})
 	}
@@ -14749,7 +14872,7 @@ func (d *D) S60LE() int64 {
 // TryFieldScalarS60LE tries to add a field and read 60 bit signed integer in little-endian
 func (d *D) TryFieldScalarS60LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(60, LittleEndian)
+		v, err := d.trySEndian(60, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -14782,11 +14905,11 @@ func (d *D) FieldS60LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S61LE
 
 // TryS61LE tries to read 61 bit signed integer in little-endian
-func (d *D) TryS61LE() (int64, error) { return d.trySE(61, LittleEndian) }
+func (d *D) TryS61LE() (int64, error) { return d.trySEndian(61, LittleEndian) }
 
 // S61LE reads 61 bit signed integer in little-endian
 func (d *D) S61LE() int64 {
-	v, err := d.trySE(61, LittleEndian)
+	v, err := d.trySEndian(61, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S61LE", Pos: d.Pos()})
 	}
@@ -14796,7 +14919,7 @@ func (d *D) S61LE() int64 {
 // TryFieldScalarS61LE tries to add a field and read 61 bit signed integer in little-endian
 func (d *D) TryFieldScalarS61LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(61, LittleEndian)
+		v, err := d.trySEndian(61, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -14829,11 +14952,11 @@ func (d *D) FieldS61LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S62LE
 
 // TryS62LE tries to read 62 bit signed integer in little-endian
-func (d *D) TryS62LE() (int64, error) { return d.trySE(62, LittleEndian) }
+func (d *D) TryS62LE() (int64, error) { return d.trySEndian(62, LittleEndian) }
 
 // S62LE reads 62 bit signed integer in little-endian
 func (d *D) S62LE() int64 {
-	v, err := d.trySE(62, LittleEndian)
+	v, err := d.trySEndian(62, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S62LE", Pos: d.Pos()})
 	}
@@ -14843,7 +14966,7 @@ func (d *D) S62LE() int64 {
 // TryFieldScalarS62LE tries to add a field and read 62 bit signed integer in little-endian
 func (d *D) TryFieldScalarS62LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(62, LittleEndian)
+		v, err := d.trySEndian(62, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -14876,11 +14999,11 @@ func (d *D) FieldS62LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S63LE
 
 // TryS63LE tries to read 63 bit signed integer in little-endian
-func (d *D) TryS63LE() (int64, error) { return d.trySE(63, LittleEndian) }
+func (d *D) TryS63LE() (int64, error) { return d.trySEndian(63, LittleEndian) }
 
 // S63LE reads 63 bit signed integer in little-endian
 func (d *D) S63LE() int64 {
-	v, err := d.trySE(63, LittleEndian)
+	v, err := d.trySEndian(63, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S63LE", Pos: d.Pos()})
 	}
@@ -14890,7 +15013,7 @@ func (d *D) S63LE() int64 {
 // TryFieldScalarS63LE tries to add a field and read 63 bit signed integer in little-endian
 func (d *D) TryFieldScalarS63LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(63, LittleEndian)
+		v, err := d.trySEndian(63, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -14923,11 +15046,11 @@ func (d *D) FieldS63LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S64LE
 
 // TryS64LE tries to read 64 bit signed integer in little-endian
-func (d *D) TryS64LE() (int64, error) { return d.trySE(64, LittleEndian) }
+func (d *D) TryS64LE() (int64, error) { return d.trySEndian(64, LittleEndian) }
 
 // S64LE reads 64 bit signed integer in little-endian
 func (d *D) S64LE() int64 {
-	v, err := d.trySE(64, LittleEndian)
+	v, err := d.trySEndian(64, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S64LE", Pos: d.Pos()})
 	}
@@ -14937,7 +15060,7 @@ func (d *D) S64LE() int64 {
 // TryFieldScalarS64LE tries to add a field and read 64 bit signed integer in little-endian
 func (d *D) TryFieldScalarS64LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(64, LittleEndian)
+		v, err := d.trySEndian(64, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -14970,11 +15093,11 @@ func (d *D) FieldS64LE(name string, sms ...scalar.Mapper) int64 {
 // Reader S8BE
 
 // TryS8BE tries to read 8 bit signed integer in big-endian
-func (d *D) TryS8BE() (int64, error) { return d.trySE(8, BigEndian) }
+func (d *D) TryS8BE() (int64, error) { return d.trySEndian(8, BigEndian) }
 
 // S8BE reads 8 bit signed integer in big-endian
 func (d *D) S8BE() int64 {
-	v, err := d.trySE(8, BigEndian)
+	v, err := d.trySEndian(8, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S8BE", Pos: d.Pos()})
 	}
@@ -14984,7 +15107,7 @@ func (d *D) S8BE() int64 {
 // TryFieldScalarS8BE tries to add a field and read 8 bit signed integer in big-endian
 func (d *D) TryFieldScalarS8BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(8, BigEndian)
+		v, err := d.trySEndian(8, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -15017,11 +15140,11 @@ func (d *D) FieldS8BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S9BE
 
 // TryS9BE tries to read 9 bit signed integer in big-endian
-func (d *D) TryS9BE() (int64, error) { return d.trySE(9, BigEndian) }
+func (d *D) TryS9BE() (int64, error) { return d.trySEndian(9, BigEndian) }
 
 // S9BE reads 9 bit signed integer in big-endian
 func (d *D) S9BE() int64 {
-	v, err := d.trySE(9, BigEndian)
+	v, err := d.trySEndian(9, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S9BE", Pos: d.Pos()})
 	}
@@ -15031,7 +15154,7 @@ func (d *D) S9BE() int64 {
 // TryFieldScalarS9BE tries to add a field and read 9 bit signed integer in big-endian
 func (d *D) TryFieldScalarS9BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(9, BigEndian)
+		v, err := d.trySEndian(9, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -15064,11 +15187,11 @@ func (d *D) FieldS9BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S10BE
 
 // TryS10BE tries to read 10 bit signed integer in big-endian
-func (d *D) TryS10BE() (int64, error) { return d.trySE(10, BigEndian) }
+func (d *D) TryS10BE() (int64, error) { return d.trySEndian(10, BigEndian) }
 
 // S10BE reads 10 bit signed integer in big-endian
 func (d *D) S10BE() int64 {
-	v, err := d.trySE(10, BigEndian)
+	v, err := d.trySEndian(10, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S10BE", Pos: d.Pos()})
 	}
@@ -15078,7 +15201,7 @@ func (d *D) S10BE() int64 {
 // TryFieldScalarS10BE tries to add a field and read 10 bit signed integer in big-endian
 func (d *D) TryFieldScalarS10BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(10, BigEndian)
+		v, err := d.trySEndian(10, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -15111,11 +15234,11 @@ func (d *D) FieldS10BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S11BE
 
 // TryS11BE tries to read 11 bit signed integer in big-endian
-func (d *D) TryS11BE() (int64, error) { return d.trySE(11, BigEndian) }
+func (d *D) TryS11BE() (int64, error) { return d.trySEndian(11, BigEndian) }
 
 // S11BE reads 11 bit signed integer in big-endian
 func (d *D) S11BE() int64 {
-	v, err := d.trySE(11, BigEndian)
+	v, err := d.trySEndian(11, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S11BE", Pos: d.Pos()})
 	}
@@ -15125,7 +15248,7 @@ func (d *D) S11BE() int64 {
 // TryFieldScalarS11BE tries to add a field and read 11 bit signed integer in big-endian
 func (d *D) TryFieldScalarS11BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(11, BigEndian)
+		v, err := d.trySEndian(11, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -15158,11 +15281,11 @@ func (d *D) FieldS11BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S12BE
 
 // TryS12BE tries to read 12 bit signed integer in big-endian
-func (d *D) TryS12BE() (int64, error) { return d.trySE(12, BigEndian) }
+func (d *D) TryS12BE() (int64, error) { return d.trySEndian(12, BigEndian) }
 
 // S12BE reads 12 bit signed integer in big-endian
 func (d *D) S12BE() int64 {
-	v, err := d.trySE(12, BigEndian)
+	v, err := d.trySEndian(12, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S12BE", Pos: d.Pos()})
 	}
@@ -15172,7 +15295,7 @@ func (d *D) S12BE() int64 {
 // TryFieldScalarS12BE tries to add a field and read 12 bit signed integer in big-endian
 func (d *D) TryFieldScalarS12BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(12, BigEndian)
+		v, err := d.trySEndian(12, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -15205,11 +15328,11 @@ func (d *D) FieldS12BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S13BE
 
 // TryS13BE tries to read 13 bit signed integer in big-endian
-func (d *D) TryS13BE() (int64, error) { return d.trySE(13, BigEndian) }
+func (d *D) TryS13BE() (int64, error) { return d.trySEndian(13, BigEndian) }
 
 // S13BE reads 13 bit signed integer in big-endian
 func (d *D) S13BE() int64 {
-	v, err := d.trySE(13, BigEndian)
+	v, err := d.trySEndian(13, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S13BE", Pos: d.Pos()})
 	}
@@ -15219,7 +15342,7 @@ func (d *D) S13BE() int64 {
 // TryFieldScalarS13BE tries to add a field and read 13 bit signed integer in big-endian
 func (d *D) TryFieldScalarS13BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(13, BigEndian)
+		v, err := d.trySEndian(13, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -15252,11 +15375,11 @@ func (d *D) FieldS13BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S14BE
 
 // TryS14BE tries to read 14 bit signed integer in big-endian
-func (d *D) TryS14BE() (int64, error) { return d.trySE(14, BigEndian) }
+func (d *D) TryS14BE() (int64, error) { return d.trySEndian(14, BigEndian) }
 
 // S14BE reads 14 bit signed integer in big-endian
 func (d *D) S14BE() int64 {
-	v, err := d.trySE(14, BigEndian)
+	v, err := d.trySEndian(14, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S14BE", Pos: d.Pos()})
 	}
@@ -15266,7 +15389,7 @@ func (d *D) S14BE() int64 {
 // TryFieldScalarS14BE tries to add a field and read 14 bit signed integer in big-endian
 func (d *D) TryFieldScalarS14BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(14, BigEndian)
+		v, err := d.trySEndian(14, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -15299,11 +15422,11 @@ func (d *D) FieldS14BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S15BE
 
 // TryS15BE tries to read 15 bit signed integer in big-endian
-func (d *D) TryS15BE() (int64, error) { return d.trySE(15, BigEndian) }
+func (d *D) TryS15BE() (int64, error) { return d.trySEndian(15, BigEndian) }
 
 // S15BE reads 15 bit signed integer in big-endian
 func (d *D) S15BE() int64 {
-	v, err := d.trySE(15, BigEndian)
+	v, err := d.trySEndian(15, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S15BE", Pos: d.Pos()})
 	}
@@ -15313,7 +15436,7 @@ func (d *D) S15BE() int64 {
 // TryFieldScalarS15BE tries to add a field and read 15 bit signed integer in big-endian
 func (d *D) TryFieldScalarS15BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(15, BigEndian)
+		v, err := d.trySEndian(15, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -15346,11 +15469,11 @@ func (d *D) FieldS15BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S16BE
 
 // TryS16BE tries to read 16 bit signed integer in big-endian
-func (d *D) TryS16BE() (int64, error) { return d.trySE(16, BigEndian) }
+func (d *D) TryS16BE() (int64, error) { return d.trySEndian(16, BigEndian) }
 
 // S16BE reads 16 bit signed integer in big-endian
 func (d *D) S16BE() int64 {
-	v, err := d.trySE(16, BigEndian)
+	v, err := d.trySEndian(16, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S16BE", Pos: d.Pos()})
 	}
@@ -15360,7 +15483,7 @@ func (d *D) S16BE() int64 {
 // TryFieldScalarS16BE tries to add a field and read 16 bit signed integer in big-endian
 func (d *D) TryFieldScalarS16BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(16, BigEndian)
+		v, err := d.trySEndian(16, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -15393,11 +15516,11 @@ func (d *D) FieldS16BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S17BE
 
 // TryS17BE tries to read 17 bit signed integer in big-endian
-func (d *D) TryS17BE() (int64, error) { return d.trySE(17, BigEndian) }
+func (d *D) TryS17BE() (int64, error) { return d.trySEndian(17, BigEndian) }
 
 // S17BE reads 17 bit signed integer in big-endian
 func (d *D) S17BE() int64 {
-	v, err := d.trySE(17, BigEndian)
+	v, err := d.trySEndian(17, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S17BE", Pos: d.Pos()})
 	}
@@ -15407,7 +15530,7 @@ func (d *D) S17BE() int64 {
 // TryFieldScalarS17BE tries to add a field and read 17 bit signed integer in big-endian
 func (d *D) TryFieldScalarS17BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(17, BigEndian)
+		v, err := d.trySEndian(17, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -15440,11 +15563,11 @@ func (d *D) FieldS17BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S18BE
 
 // TryS18BE tries to read 18 bit signed integer in big-endian
-func (d *D) TryS18BE() (int64, error) { return d.trySE(18, BigEndian) }
+func (d *D) TryS18BE() (int64, error) { return d.trySEndian(18, BigEndian) }
 
 // S18BE reads 18 bit signed integer in big-endian
 func (d *D) S18BE() int64 {
-	v, err := d.trySE(18, BigEndian)
+	v, err := d.trySEndian(18, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S18BE", Pos: d.Pos()})
 	}
@@ -15454,7 +15577,7 @@ func (d *D) S18BE() int64 {
 // TryFieldScalarS18BE tries to add a field and read 18 bit signed integer in big-endian
 func (d *D) TryFieldScalarS18BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(18, BigEndian)
+		v, err := d.trySEndian(18, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -15487,11 +15610,11 @@ func (d *D) FieldS18BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S19BE
 
 // TryS19BE tries to read 19 bit signed integer in big-endian
-func (d *D) TryS19BE() (int64, error) { return d.trySE(19, BigEndian) }
+func (d *D) TryS19BE() (int64, error) { return d.trySEndian(19, BigEndian) }
 
 // S19BE reads 19 bit signed integer in big-endian
 func (d *D) S19BE() int64 {
-	v, err := d.trySE(19, BigEndian)
+	v, err := d.trySEndian(19, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S19BE", Pos: d.Pos()})
 	}
@@ -15501,7 +15624,7 @@ func (d *D) S19BE() int64 {
 // TryFieldScalarS19BE tries to add a field and read 19 bit signed integer in big-endian
 func (d *D) TryFieldScalarS19BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(19, BigEndian)
+		v, err := d.trySEndian(19, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -15534,11 +15657,11 @@ func (d *D) FieldS19BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S20BE
 
 // TryS20BE tries to read 20 bit signed integer in big-endian
-func (d *D) TryS20BE() (int64, error) { return d.trySE(20, BigEndian) }
+func (d *D) TryS20BE() (int64, error) { return d.trySEndian(20, BigEndian) }
 
 // S20BE reads 20 bit signed integer in big-endian
 func (d *D) S20BE() int64 {
-	v, err := d.trySE(20, BigEndian)
+	v, err := d.trySEndian(20, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S20BE", Pos: d.Pos()})
 	}
@@ -15548,7 +15671,7 @@ func (d *D) S20BE() int64 {
 // TryFieldScalarS20BE tries to add a field and read 20 bit signed integer in big-endian
 func (d *D) TryFieldScalarS20BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(20, BigEndian)
+		v, err := d.trySEndian(20, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -15581,11 +15704,11 @@ func (d *D) FieldS20BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S21BE
 
 // TryS21BE tries to read 21 bit signed integer in big-endian
-func (d *D) TryS21BE() (int64, error) { return d.trySE(21, BigEndian) }
+func (d *D) TryS21BE() (int64, error) { return d.trySEndian(21, BigEndian) }
 
 // S21BE reads 21 bit signed integer in big-endian
 func (d *D) S21BE() int64 {
-	v, err := d.trySE(21, BigEndian)
+	v, err := d.trySEndian(21, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S21BE", Pos: d.Pos()})
 	}
@@ -15595,7 +15718,7 @@ func (d *D) S21BE() int64 {
 // TryFieldScalarS21BE tries to add a field and read 21 bit signed integer in big-endian
 func (d *D) TryFieldScalarS21BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(21, BigEndian)
+		v, err := d.trySEndian(21, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -15628,11 +15751,11 @@ func (d *D) FieldS21BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S22BE
 
 // TryS22BE tries to read 22 bit signed integer in big-endian
-func (d *D) TryS22BE() (int64, error) { return d.trySE(22, BigEndian) }
+func (d *D) TryS22BE() (int64, error) { return d.trySEndian(22, BigEndian) }
 
 // S22BE reads 22 bit signed integer in big-endian
 func (d *D) S22BE() int64 {
-	v, err := d.trySE(22, BigEndian)
+	v, err := d.trySEndian(22, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S22BE", Pos: d.Pos()})
 	}
@@ -15642,7 +15765,7 @@ func (d *D) S22BE() int64 {
 // TryFieldScalarS22BE tries to add a field and read 22 bit signed integer in big-endian
 func (d *D) TryFieldScalarS22BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(22, BigEndian)
+		v, err := d.trySEndian(22, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -15675,11 +15798,11 @@ func (d *D) FieldS22BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S23BE
 
 // TryS23BE tries to read 23 bit signed integer in big-endian
-func (d *D) TryS23BE() (int64, error) { return d.trySE(23, BigEndian) }
+func (d *D) TryS23BE() (int64, error) { return d.trySEndian(23, BigEndian) }
 
 // S23BE reads 23 bit signed integer in big-endian
 func (d *D) S23BE() int64 {
-	v, err := d.trySE(23, BigEndian)
+	v, err := d.trySEndian(23, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S23BE", Pos: d.Pos()})
 	}
@@ -15689,7 +15812,7 @@ func (d *D) S23BE() int64 {
 // TryFieldScalarS23BE tries to add a field and read 23 bit signed integer in big-endian
 func (d *D) TryFieldScalarS23BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(23, BigEndian)
+		v, err := d.trySEndian(23, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -15722,11 +15845,11 @@ func (d *D) FieldS23BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S24BE
 
 // TryS24BE tries to read 24 bit signed integer in big-endian
-func (d *D) TryS24BE() (int64, error) { return d.trySE(24, BigEndian) }
+func (d *D) TryS24BE() (int64, error) { return d.trySEndian(24, BigEndian) }
 
 // S24BE reads 24 bit signed integer in big-endian
 func (d *D) S24BE() int64 {
-	v, err := d.trySE(24, BigEndian)
+	v, err := d.trySEndian(24, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S24BE", Pos: d.Pos()})
 	}
@@ -15736,7 +15859,7 @@ func (d *D) S24BE() int64 {
 // TryFieldScalarS24BE tries to add a field and read 24 bit signed integer in big-endian
 func (d *D) TryFieldScalarS24BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(24, BigEndian)
+		v, err := d.trySEndian(24, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -15769,11 +15892,11 @@ func (d *D) FieldS24BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S25BE
 
 // TryS25BE tries to read 25 bit signed integer in big-endian
-func (d *D) TryS25BE() (int64, error) { return d.trySE(25, BigEndian) }
+func (d *D) TryS25BE() (int64, error) { return d.trySEndian(25, BigEndian) }
 
 // S25BE reads 25 bit signed integer in big-endian
 func (d *D) S25BE() int64 {
-	v, err := d.trySE(25, BigEndian)
+	v, err := d.trySEndian(25, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S25BE", Pos: d.Pos()})
 	}
@@ -15783,7 +15906,7 @@ func (d *D) S25BE() int64 {
 // TryFieldScalarS25BE tries to add a field and read 25 bit signed integer in big-endian
 func (d *D) TryFieldScalarS25BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(25, BigEndian)
+		v, err := d.trySEndian(25, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -15816,11 +15939,11 @@ func (d *D) FieldS25BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S26BE
 
 // TryS26BE tries to read 26 bit signed integer in big-endian
-func (d *D) TryS26BE() (int64, error) { return d.trySE(26, BigEndian) }
+func (d *D) TryS26BE() (int64, error) { return d.trySEndian(26, BigEndian) }
 
 // S26BE reads 26 bit signed integer in big-endian
 func (d *D) S26BE() int64 {
-	v, err := d.trySE(26, BigEndian)
+	v, err := d.trySEndian(26, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S26BE", Pos: d.Pos()})
 	}
@@ -15830,7 +15953,7 @@ func (d *D) S26BE() int64 {
 // TryFieldScalarS26BE tries to add a field and read 26 bit signed integer in big-endian
 func (d *D) TryFieldScalarS26BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(26, BigEndian)
+		v, err := d.trySEndian(26, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -15863,11 +15986,11 @@ func (d *D) FieldS26BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S27BE
 
 // TryS27BE tries to read 27 bit signed integer in big-endian
-func (d *D) TryS27BE() (int64, error) { return d.trySE(27, BigEndian) }
+func (d *D) TryS27BE() (int64, error) { return d.trySEndian(27, BigEndian) }
 
 // S27BE reads 27 bit signed integer in big-endian
 func (d *D) S27BE() int64 {
-	v, err := d.trySE(27, BigEndian)
+	v, err := d.trySEndian(27, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S27BE", Pos: d.Pos()})
 	}
@@ -15877,7 +16000,7 @@ func (d *D) S27BE() int64 {
 // TryFieldScalarS27BE tries to add a field and read 27 bit signed integer in big-endian
 func (d *D) TryFieldScalarS27BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(27, BigEndian)
+		v, err := d.trySEndian(27, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -15910,11 +16033,11 @@ func (d *D) FieldS27BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S28BE
 
 // TryS28BE tries to read 28 bit signed integer in big-endian
-func (d *D) TryS28BE() (int64, error) { return d.trySE(28, BigEndian) }
+func (d *D) TryS28BE() (int64, error) { return d.trySEndian(28, BigEndian) }
 
 // S28BE reads 28 bit signed integer in big-endian
 func (d *D) S28BE() int64 {
-	v, err := d.trySE(28, BigEndian)
+	v, err := d.trySEndian(28, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S28BE", Pos: d.Pos()})
 	}
@@ -15924,7 +16047,7 @@ func (d *D) S28BE() int64 {
 // TryFieldScalarS28BE tries to add a field and read 28 bit signed integer in big-endian
 func (d *D) TryFieldScalarS28BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(28, BigEndian)
+		v, err := d.trySEndian(28, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -15957,11 +16080,11 @@ func (d *D) FieldS28BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S29BE
 
 // TryS29BE tries to read 29 bit signed integer in big-endian
-func (d *D) TryS29BE() (int64, error) { return d.trySE(29, BigEndian) }
+func (d *D) TryS29BE() (int64, error) { return d.trySEndian(29, BigEndian) }
 
 // S29BE reads 29 bit signed integer in big-endian
 func (d *D) S29BE() int64 {
-	v, err := d.trySE(29, BigEndian)
+	v, err := d.trySEndian(29, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S29BE", Pos: d.Pos()})
 	}
@@ -15971,7 +16094,7 @@ func (d *D) S29BE() int64 {
 // TryFieldScalarS29BE tries to add a field and read 29 bit signed integer in big-endian
 func (d *D) TryFieldScalarS29BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(29, BigEndian)
+		v, err := d.trySEndian(29, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -16004,11 +16127,11 @@ func (d *D) FieldS29BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S30BE
 
 // TryS30BE tries to read 30 bit signed integer in big-endian
-func (d *D) TryS30BE() (int64, error) { return d.trySE(30, BigEndian) }
+func (d *D) TryS30BE() (int64, error) { return d.trySEndian(30, BigEndian) }
 
 // S30BE reads 30 bit signed integer in big-endian
 func (d *D) S30BE() int64 {
-	v, err := d.trySE(30, BigEndian)
+	v, err := d.trySEndian(30, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S30BE", Pos: d.Pos()})
 	}
@@ -16018,7 +16141,7 @@ func (d *D) S30BE() int64 {
 // TryFieldScalarS30BE tries to add a field and read 30 bit signed integer in big-endian
 func (d *D) TryFieldScalarS30BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(30, BigEndian)
+		v, err := d.trySEndian(30, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -16051,11 +16174,11 @@ func (d *D) FieldS30BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S31BE
 
 // TryS31BE tries to read 31 bit signed integer in big-endian
-func (d *D) TryS31BE() (int64, error) { return d.trySE(31, BigEndian) }
+func (d *D) TryS31BE() (int64, error) { return d.trySEndian(31, BigEndian) }
 
 // S31BE reads 31 bit signed integer in big-endian
 func (d *D) S31BE() int64 {
-	v, err := d.trySE(31, BigEndian)
+	v, err := d.trySEndian(31, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S31BE", Pos: d.Pos()})
 	}
@@ -16065,7 +16188,7 @@ func (d *D) S31BE() int64 {
 // TryFieldScalarS31BE tries to add a field and read 31 bit signed integer in big-endian
 func (d *D) TryFieldScalarS31BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(31, BigEndian)
+		v, err := d.trySEndian(31, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -16098,11 +16221,11 @@ func (d *D) FieldS31BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S32BE
 
 // TryS32BE tries to read 32 bit signed integer in big-endian
-func (d *D) TryS32BE() (int64, error) { return d.trySE(32, BigEndian) }
+func (d *D) TryS32BE() (int64, error) { return d.trySEndian(32, BigEndian) }
 
 // S32BE reads 32 bit signed integer in big-endian
 func (d *D) S32BE() int64 {
-	v, err := d.trySE(32, BigEndian)
+	v, err := d.trySEndian(32, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S32BE", Pos: d.Pos()})
 	}
@@ -16112,7 +16235,7 @@ func (d *D) S32BE() int64 {
 // TryFieldScalarS32BE tries to add a field and read 32 bit signed integer in big-endian
 func (d *D) TryFieldScalarS32BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(32, BigEndian)
+		v, err := d.trySEndian(32, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -16145,11 +16268,11 @@ func (d *D) FieldS32BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S33BE
 
 // TryS33BE tries to read 33 bit signed integer in big-endian
-func (d *D) TryS33BE() (int64, error) { return d.trySE(33, BigEndian) }
+func (d *D) TryS33BE() (int64, error) { return d.trySEndian(33, BigEndian) }
 
 // S33BE reads 33 bit signed integer in big-endian
 func (d *D) S33BE() int64 {
-	v, err := d.trySE(33, BigEndian)
+	v, err := d.trySEndian(33, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S33BE", Pos: d.Pos()})
 	}
@@ -16159,7 +16282,7 @@ func (d *D) S33BE() int64 {
 // TryFieldScalarS33BE tries to add a field and read 33 bit signed integer in big-endian
 func (d *D) TryFieldScalarS33BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(33, BigEndian)
+		v, err := d.trySEndian(33, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -16192,11 +16315,11 @@ func (d *D) FieldS33BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S34BE
 
 // TryS34BE tries to read 34 bit signed integer in big-endian
-func (d *D) TryS34BE() (int64, error) { return d.trySE(34, BigEndian) }
+func (d *D) TryS34BE() (int64, error) { return d.trySEndian(34, BigEndian) }
 
 // S34BE reads 34 bit signed integer in big-endian
 func (d *D) S34BE() int64 {
-	v, err := d.trySE(34, BigEndian)
+	v, err := d.trySEndian(34, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S34BE", Pos: d.Pos()})
 	}
@@ -16206,7 +16329,7 @@ func (d *D) S34BE() int64 {
 // TryFieldScalarS34BE tries to add a field and read 34 bit signed integer in big-endian
 func (d *D) TryFieldScalarS34BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(34, BigEndian)
+		v, err := d.trySEndian(34, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -16239,11 +16362,11 @@ func (d *D) FieldS34BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S35BE
 
 // TryS35BE tries to read 35 bit signed integer in big-endian
-func (d *D) TryS35BE() (int64, error) { return d.trySE(35, BigEndian) }
+func (d *D) TryS35BE() (int64, error) { return d.trySEndian(35, BigEndian) }
 
 // S35BE reads 35 bit signed integer in big-endian
 func (d *D) S35BE() int64 {
-	v, err := d.trySE(35, BigEndian)
+	v, err := d.trySEndian(35, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S35BE", Pos: d.Pos()})
 	}
@@ -16253,7 +16376,7 @@ func (d *D) S35BE() int64 {
 // TryFieldScalarS35BE tries to add a field and read 35 bit signed integer in big-endian
 func (d *D) TryFieldScalarS35BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(35, BigEndian)
+		v, err := d.trySEndian(35, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -16286,11 +16409,11 @@ func (d *D) FieldS35BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S36BE
 
 // TryS36BE tries to read 36 bit signed integer in big-endian
-func (d *D) TryS36BE() (int64, error) { return d.trySE(36, BigEndian) }
+func (d *D) TryS36BE() (int64, error) { return d.trySEndian(36, BigEndian) }
 
 // S36BE reads 36 bit signed integer in big-endian
 func (d *D) S36BE() int64 {
-	v, err := d.trySE(36, BigEndian)
+	v, err := d.trySEndian(36, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S36BE", Pos: d.Pos()})
 	}
@@ -16300,7 +16423,7 @@ func (d *D) S36BE() int64 {
 // TryFieldScalarS36BE tries to add a field and read 36 bit signed integer in big-endian
 func (d *D) TryFieldScalarS36BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(36, BigEndian)
+		v, err := d.trySEndian(36, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -16333,11 +16456,11 @@ func (d *D) FieldS36BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S37BE
 
 // TryS37BE tries to read 37 bit signed integer in big-endian
-func (d *D) TryS37BE() (int64, error) { return d.trySE(37, BigEndian) }
+func (d *D) TryS37BE() (int64, error) { return d.trySEndian(37, BigEndian) }
 
 // S37BE reads 37 bit signed integer in big-endian
 func (d *D) S37BE() int64 {
-	v, err := d.trySE(37, BigEndian)
+	v, err := d.trySEndian(37, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S37BE", Pos: d.Pos()})
 	}
@@ -16347,7 +16470,7 @@ func (d *D) S37BE() int64 {
 // TryFieldScalarS37BE tries to add a field and read 37 bit signed integer in big-endian
 func (d *D) TryFieldScalarS37BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(37, BigEndian)
+		v, err := d.trySEndian(37, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -16380,11 +16503,11 @@ func (d *D) FieldS37BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S38BE
 
 // TryS38BE tries to read 38 bit signed integer in big-endian
-func (d *D) TryS38BE() (int64, error) { return d.trySE(38, BigEndian) }
+func (d *D) TryS38BE() (int64, error) { return d.trySEndian(38, BigEndian) }
 
 // S38BE reads 38 bit signed integer in big-endian
 func (d *D) S38BE() int64 {
-	v, err := d.trySE(38, BigEndian)
+	v, err := d.trySEndian(38, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S38BE", Pos: d.Pos()})
 	}
@@ -16394,7 +16517,7 @@ func (d *D) S38BE() int64 {
 // TryFieldScalarS38BE tries to add a field and read 38 bit signed integer in big-endian
 func (d *D) TryFieldScalarS38BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(38, BigEndian)
+		v, err := d.trySEndian(38, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -16427,11 +16550,11 @@ func (d *D) FieldS38BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S39BE
 
 // TryS39BE tries to read 39 bit signed integer in big-endian
-func (d *D) TryS39BE() (int64, error) { return d.trySE(39, BigEndian) }
+func (d *D) TryS39BE() (int64, error) { return d.trySEndian(39, BigEndian) }
 
 // S39BE reads 39 bit signed integer in big-endian
 func (d *D) S39BE() int64 {
-	v, err := d.trySE(39, BigEndian)
+	v, err := d.trySEndian(39, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S39BE", Pos: d.Pos()})
 	}
@@ -16441,7 +16564,7 @@ func (d *D) S39BE() int64 {
 // TryFieldScalarS39BE tries to add a field and read 39 bit signed integer in big-endian
 func (d *D) TryFieldScalarS39BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(39, BigEndian)
+		v, err := d.trySEndian(39, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -16474,11 +16597,11 @@ func (d *D) FieldS39BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S40BE
 
 // TryS40BE tries to read 40 bit signed integer in big-endian
-func (d *D) TryS40BE() (int64, error) { return d.trySE(40, BigEndian) }
+func (d *D) TryS40BE() (int64, error) { return d.trySEndian(40, BigEndian) }
 
 // S40BE reads 40 bit signed integer in big-endian
 func (d *D) S40BE() int64 {
-	v, err := d.trySE(40, BigEndian)
+	v, err := d.trySEndian(40, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S40BE", Pos: d.Pos()})
 	}
@@ -16488,7 +16611,7 @@ func (d *D) S40BE() int64 {
 // TryFieldScalarS40BE tries to add a field and read 40 bit signed integer in big-endian
 func (d *D) TryFieldScalarS40BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(40, BigEndian)
+		v, err := d.trySEndian(40, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -16521,11 +16644,11 @@ func (d *D) FieldS40BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S41BE
 
 // TryS41BE tries to read 41 bit signed integer in big-endian
-func (d *D) TryS41BE() (int64, error) { return d.trySE(41, BigEndian) }
+func (d *D) TryS41BE() (int64, error) { return d.trySEndian(41, BigEndian) }
 
 // S41BE reads 41 bit signed integer in big-endian
 func (d *D) S41BE() int64 {
-	v, err := d.trySE(41, BigEndian)
+	v, err := d.trySEndian(41, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S41BE", Pos: d.Pos()})
 	}
@@ -16535,7 +16658,7 @@ func (d *D) S41BE() int64 {
 // TryFieldScalarS41BE tries to add a field and read 41 bit signed integer in big-endian
 func (d *D) TryFieldScalarS41BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(41, BigEndian)
+		v, err := d.trySEndian(41, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -16568,11 +16691,11 @@ func (d *D) FieldS41BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S42BE
 
 // TryS42BE tries to read 42 bit signed integer in big-endian
-func (d *D) TryS42BE() (int64, error) { return d.trySE(42, BigEndian) }
+func (d *D) TryS42BE() (int64, error) { return d.trySEndian(42, BigEndian) }
 
 // S42BE reads 42 bit signed integer in big-endian
 func (d *D) S42BE() int64 {
-	v, err := d.trySE(42, BigEndian)
+	v, err := d.trySEndian(42, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S42BE", Pos: d.Pos()})
 	}
@@ -16582,7 +16705,7 @@ func (d *D) S42BE() int64 {
 // TryFieldScalarS42BE tries to add a field and read 42 bit signed integer in big-endian
 func (d *D) TryFieldScalarS42BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(42, BigEndian)
+		v, err := d.trySEndian(42, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -16615,11 +16738,11 @@ func (d *D) FieldS42BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S43BE
 
 // TryS43BE tries to read 43 bit signed integer in big-endian
-func (d *D) TryS43BE() (int64, error) { return d.trySE(43, BigEndian) }
+func (d *D) TryS43BE() (int64, error) { return d.trySEndian(43, BigEndian) }
 
 // S43BE reads 43 bit signed integer in big-endian
 func (d *D) S43BE() int64 {
-	v, err := d.trySE(43, BigEndian)
+	v, err := d.trySEndian(43, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S43BE", Pos: d.Pos()})
 	}
@@ -16629,7 +16752,7 @@ func (d *D) S43BE() int64 {
 // TryFieldScalarS43BE tries to add a field and read 43 bit signed integer in big-endian
 func (d *D) TryFieldScalarS43BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(43, BigEndian)
+		v, err := d.trySEndian(43, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -16662,11 +16785,11 @@ func (d *D) FieldS43BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S44BE
 
 // TryS44BE tries to read 44 bit signed integer in big-endian
-func (d *D) TryS44BE() (int64, error) { return d.trySE(44, BigEndian) }
+func (d *D) TryS44BE() (int64, error) { return d.trySEndian(44, BigEndian) }
 
 // S44BE reads 44 bit signed integer in big-endian
 func (d *D) S44BE() int64 {
-	v, err := d.trySE(44, BigEndian)
+	v, err := d.trySEndian(44, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S44BE", Pos: d.Pos()})
 	}
@@ -16676,7 +16799,7 @@ func (d *D) S44BE() int64 {
 // TryFieldScalarS44BE tries to add a field and read 44 bit signed integer in big-endian
 func (d *D) TryFieldScalarS44BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(44, BigEndian)
+		v, err := d.trySEndian(44, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -16709,11 +16832,11 @@ func (d *D) FieldS44BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S45BE
 
 // TryS45BE tries to read 45 bit signed integer in big-endian
-func (d *D) TryS45BE() (int64, error) { return d.trySE(45, BigEndian) }
+func (d *D) TryS45BE() (int64, error) { return d.trySEndian(45, BigEndian) }
 
 // S45BE reads 45 bit signed integer in big-endian
 func (d *D) S45BE() int64 {
-	v, err := d.trySE(45, BigEndian)
+	v, err := d.trySEndian(45, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S45BE", Pos: d.Pos()})
 	}
@@ -16723,7 +16846,7 @@ func (d *D) S45BE() int64 {
 // TryFieldScalarS45BE tries to add a field and read 45 bit signed integer in big-endian
 func (d *D) TryFieldScalarS45BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(45, BigEndian)
+		v, err := d.trySEndian(45, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -16756,11 +16879,11 @@ func (d *D) FieldS45BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S46BE
 
 // TryS46BE tries to read 46 bit signed integer in big-endian
-func (d *D) TryS46BE() (int64, error) { return d.trySE(46, BigEndian) }
+func (d *D) TryS46BE() (int64, error) { return d.trySEndian(46, BigEndian) }
 
 // S46BE reads 46 bit signed integer in big-endian
 func (d *D) S46BE() int64 {
-	v, err := d.trySE(46, BigEndian)
+	v, err := d.trySEndian(46, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S46BE", Pos: d.Pos()})
 	}
@@ -16770,7 +16893,7 @@ func (d *D) S46BE() int64 {
 // TryFieldScalarS46BE tries to add a field and read 46 bit signed integer in big-endian
 func (d *D) TryFieldScalarS46BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(46, BigEndian)
+		v, err := d.trySEndian(46, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -16803,11 +16926,11 @@ func (d *D) FieldS46BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S47BE
 
 // TryS47BE tries to read 47 bit signed integer in big-endian
-func (d *D) TryS47BE() (int64, error) { return d.trySE(47, BigEndian) }
+func (d *D) TryS47BE() (int64, error) { return d.trySEndian(47, BigEndian) }
 
 // S47BE reads 47 bit signed integer in big-endian
 func (d *D) S47BE() int64 {
-	v, err := d.trySE(47, BigEndian)
+	v, err := d.trySEndian(47, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S47BE", Pos: d.Pos()})
 	}
@@ -16817,7 +16940,7 @@ func (d *D) S47BE() int64 {
 // TryFieldScalarS47BE tries to add a field and read 47 bit signed integer in big-endian
 func (d *D) TryFieldScalarS47BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(47, BigEndian)
+		v, err := d.trySEndian(47, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -16850,11 +16973,11 @@ func (d *D) FieldS47BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S48BE
 
 // TryS48BE tries to read 48 bit signed integer in big-endian
-func (d *D) TryS48BE() (int64, error) { return d.trySE(48, BigEndian) }
+func (d *D) TryS48BE() (int64, error) { return d.trySEndian(48, BigEndian) }
 
 // S48BE reads 48 bit signed integer in big-endian
 func (d *D) S48BE() int64 {
-	v, err := d.trySE(48, BigEndian)
+	v, err := d.trySEndian(48, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S48BE", Pos: d.Pos()})
 	}
@@ -16864,7 +16987,7 @@ func (d *D) S48BE() int64 {
 // TryFieldScalarS48BE tries to add a field and read 48 bit signed integer in big-endian
 func (d *D) TryFieldScalarS48BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(48, BigEndian)
+		v, err := d.trySEndian(48, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -16897,11 +17020,11 @@ func (d *D) FieldS48BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S49BE
 
 // TryS49BE tries to read 49 bit signed integer in big-endian
-func (d *D) TryS49BE() (int64, error) { return d.trySE(49, BigEndian) }
+func (d *D) TryS49BE() (int64, error) { return d.trySEndian(49, BigEndian) }
 
 // S49BE reads 49 bit signed integer in big-endian
 func (d *D) S49BE() int64 {
-	v, err := d.trySE(49, BigEndian)
+	v, err := d.trySEndian(49, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S49BE", Pos: d.Pos()})
 	}
@@ -16911,7 +17034,7 @@ func (d *D) S49BE() int64 {
 // TryFieldScalarS49BE tries to add a field and read 49 bit signed integer in big-endian
 func (d *D) TryFieldScalarS49BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(49, BigEndian)
+		v, err := d.trySEndian(49, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -16944,11 +17067,11 @@ func (d *D) FieldS49BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S50BE
 
 // TryS50BE tries to read 50 bit signed integer in big-endian
-func (d *D) TryS50BE() (int64, error) { return d.trySE(50, BigEndian) }
+func (d *D) TryS50BE() (int64, error) { return d.trySEndian(50, BigEndian) }
 
 // S50BE reads 50 bit signed integer in big-endian
 func (d *D) S50BE() int64 {
-	v, err := d.trySE(50, BigEndian)
+	v, err := d.trySEndian(50, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S50BE", Pos: d.Pos()})
 	}
@@ -16958,7 +17081,7 @@ func (d *D) S50BE() int64 {
 // TryFieldScalarS50BE tries to add a field and read 50 bit signed integer in big-endian
 func (d *D) TryFieldScalarS50BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(50, BigEndian)
+		v, err := d.trySEndian(50, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -16991,11 +17114,11 @@ func (d *D) FieldS50BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S51BE
 
 // TryS51BE tries to read 51 bit signed integer in big-endian
-func (d *D) TryS51BE() (int64, error) { return d.trySE(51, BigEndian) }
+func (d *D) TryS51BE() (int64, error) { return d.trySEndian(51, BigEndian) }
 
 // S51BE reads 51 bit signed integer in big-endian
 func (d *D) S51BE() int64 {
-	v, err := d.trySE(51, BigEndian)
+	v, err := d.trySEndian(51, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S51BE", Pos: d.Pos()})
 	}
@@ -17005,7 +17128,7 @@ func (d *D) S51BE() int64 {
 // TryFieldScalarS51BE tries to add a field and read 51 bit signed integer in big-endian
 func (d *D) TryFieldScalarS51BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(51, BigEndian)
+		v, err := d.trySEndian(51, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -17038,11 +17161,11 @@ func (d *D) FieldS51BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S52BE
 
 // TryS52BE tries to read 52 bit signed integer in big-endian
-func (d *D) TryS52BE() (int64, error) { return d.trySE(52, BigEndian) }
+func (d *D) TryS52BE() (int64, error) { return d.trySEndian(52, BigEndian) }
 
 // S52BE reads 52 bit signed integer in big-endian
 func (d *D) S52BE() int64 {
-	v, err := d.trySE(52, BigEndian)
+	v, err := d.trySEndian(52, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S52BE", Pos: d.Pos()})
 	}
@@ -17052,7 +17175,7 @@ func (d *D) S52BE() int64 {
 // TryFieldScalarS52BE tries to add a field and read 52 bit signed integer in big-endian
 func (d *D) TryFieldScalarS52BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(52, BigEndian)
+		v, err := d.trySEndian(52, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -17085,11 +17208,11 @@ func (d *D) FieldS52BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S53BE
 
 // TryS53BE tries to read 53 bit signed integer in big-endian
-func (d *D) TryS53BE() (int64, error) { return d.trySE(53, BigEndian) }
+func (d *D) TryS53BE() (int64, error) { return d.trySEndian(53, BigEndian) }
 
 // S53BE reads 53 bit signed integer in big-endian
 func (d *D) S53BE() int64 {
-	v, err := d.trySE(53, BigEndian)
+	v, err := d.trySEndian(53, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S53BE", Pos: d.Pos()})
 	}
@@ -17099,7 +17222,7 @@ func (d *D) S53BE() int64 {
 // TryFieldScalarS53BE tries to add a field and read 53 bit signed integer in big-endian
 func (d *D) TryFieldScalarS53BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(53, BigEndian)
+		v, err := d.trySEndian(53, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -17132,11 +17255,11 @@ func (d *D) FieldS53BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S54BE
 
 // TryS54BE tries to read 54 bit signed integer in big-endian
-func (d *D) TryS54BE() (int64, error) { return d.trySE(54, BigEndian) }
+func (d *D) TryS54BE() (int64, error) { return d.trySEndian(54, BigEndian) }
 
 // S54BE reads 54 bit signed integer in big-endian
 func (d *D) S54BE() int64 {
-	v, err := d.trySE(54, BigEndian)
+	v, err := d.trySEndian(54, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S54BE", Pos: d.Pos()})
 	}
@@ -17146,7 +17269,7 @@ func (d *D) S54BE() int64 {
 // TryFieldScalarS54BE tries to add a field and read 54 bit signed integer in big-endian
 func (d *D) TryFieldScalarS54BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(54, BigEndian)
+		v, err := d.trySEndian(54, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -17179,11 +17302,11 @@ func (d *D) FieldS54BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S55BE
 
 // TryS55BE tries to read 55 bit signed integer in big-endian
-func (d *D) TryS55BE() (int64, error) { return d.trySE(55, BigEndian) }
+func (d *D) TryS55BE() (int64, error) { return d.trySEndian(55, BigEndian) }
 
 // S55BE reads 55 bit signed integer in big-endian
 func (d *D) S55BE() int64 {
-	v, err := d.trySE(55, BigEndian)
+	v, err := d.trySEndian(55, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S55BE", Pos: d.Pos()})
 	}
@@ -17193,7 +17316,7 @@ func (d *D) S55BE() int64 {
 // TryFieldScalarS55BE tries to add a field and read 55 bit signed integer in big-endian
 func (d *D) TryFieldScalarS55BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(55, BigEndian)
+		v, err := d.trySEndian(55, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -17226,11 +17349,11 @@ func (d *D) FieldS55BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S56BE
 
 // TryS56BE tries to read 56 bit signed integer in big-endian
-func (d *D) TryS56BE() (int64, error) { return d.trySE(56, BigEndian) }
+func (d *D) TryS56BE() (int64, error) { return d.trySEndian(56, BigEndian) }
 
 // S56BE reads 56 bit signed integer in big-endian
 func (d *D) S56BE() int64 {
-	v, err := d.trySE(56, BigEndian)
+	v, err := d.trySEndian(56, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S56BE", Pos: d.Pos()})
 	}
@@ -17240,7 +17363,7 @@ func (d *D) S56BE() int64 {
 // TryFieldScalarS56BE tries to add a field and read 56 bit signed integer in big-endian
 func (d *D) TryFieldScalarS56BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(56, BigEndian)
+		v, err := d.trySEndian(56, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -17273,11 +17396,11 @@ func (d *D) FieldS56BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S57BE
 
 // TryS57BE tries to read 57 bit signed integer in big-endian
-func (d *D) TryS57BE() (int64, error) { return d.trySE(57, BigEndian) }
+func (d *D) TryS57BE() (int64, error) { return d.trySEndian(57, BigEndian) }
 
 // S57BE reads 57 bit signed integer in big-endian
 func (d *D) S57BE() int64 {
-	v, err := d.trySE(57, BigEndian)
+	v, err := d.trySEndian(57, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S57BE", Pos: d.Pos()})
 	}
@@ -17287,7 +17410,7 @@ func (d *D) S57BE() int64 {
 // TryFieldScalarS57BE tries to add a field and read 57 bit signed integer in big-endian
 func (d *D) TryFieldScalarS57BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(57, BigEndian)
+		v, err := d.trySEndian(57, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -17320,11 +17443,11 @@ func (d *D) FieldS57BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S58BE
 
 // TryS58BE tries to read 58 bit signed integer in big-endian
-func (d *D) TryS58BE() (int64, error) { return d.trySE(58, BigEndian) }
+func (d *D) TryS58BE() (int64, error) { return d.trySEndian(58, BigEndian) }
 
 // S58BE reads 58 bit signed integer in big-endian
 func (d *D) S58BE() int64 {
-	v, err := d.trySE(58, BigEndian)
+	v, err := d.trySEndian(58, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S58BE", Pos: d.Pos()})
 	}
@@ -17334,7 +17457,7 @@ func (d *D) S58BE() int64 {
 // TryFieldScalarS58BE tries to add a field and read 58 bit signed integer in big-endian
 func (d *D) TryFieldScalarS58BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(58, BigEndian)
+		v, err := d.trySEndian(58, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -17367,11 +17490,11 @@ func (d *D) FieldS58BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S59BE
 
 // TryS59BE tries to read 59 bit signed integer in big-endian
-func (d *D) TryS59BE() (int64, error) { return d.trySE(59, BigEndian) }
+func (d *D) TryS59BE() (int64, error) { return d.trySEndian(59, BigEndian) }
 
 // S59BE reads 59 bit signed integer in big-endian
 func (d *D) S59BE() int64 {
-	v, err := d.trySE(59, BigEndian)
+	v, err := d.trySEndian(59, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S59BE", Pos: d.Pos()})
 	}
@@ -17381,7 +17504,7 @@ func (d *D) S59BE() int64 {
 // TryFieldScalarS59BE tries to add a field and read 59 bit signed integer in big-endian
 func (d *D) TryFieldScalarS59BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(59, BigEndian)
+		v, err := d.trySEndian(59, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -17414,11 +17537,11 @@ func (d *D) FieldS59BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S60BE
 
 // TryS60BE tries to read 60 bit signed integer in big-endian
-func (d *D) TryS60BE() (int64, error) { return d.trySE(60, BigEndian) }
+func (d *D) TryS60BE() (int64, error) { return d.trySEndian(60, BigEndian) }
 
 // S60BE reads 60 bit signed integer in big-endian
 func (d *D) S60BE() int64 {
-	v, err := d.trySE(60, BigEndian)
+	v, err := d.trySEndian(60, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S60BE", Pos: d.Pos()})
 	}
@@ -17428,7 +17551,7 @@ func (d *D) S60BE() int64 {
 // TryFieldScalarS60BE tries to add a field and read 60 bit signed integer in big-endian
 func (d *D) TryFieldScalarS60BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(60, BigEndian)
+		v, err := d.trySEndian(60, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -17461,11 +17584,11 @@ func (d *D) FieldS60BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S61BE
 
 // TryS61BE tries to read 61 bit signed integer in big-endian
-func (d *D) TryS61BE() (int64, error) { return d.trySE(61, BigEndian) }
+func (d *D) TryS61BE() (int64, error) { return d.trySEndian(61, BigEndian) }
 
 // S61BE reads 61 bit signed integer in big-endian
 func (d *D) S61BE() int64 {
-	v, err := d.trySE(61, BigEndian)
+	v, err := d.trySEndian(61, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S61BE", Pos: d.Pos()})
 	}
@@ -17475,7 +17598,7 @@ func (d *D) S61BE() int64 {
 // TryFieldScalarS61BE tries to add a field and read 61 bit signed integer in big-endian
 func (d *D) TryFieldScalarS61BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(61, BigEndian)
+		v, err := d.trySEndian(61, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -17508,11 +17631,11 @@ func (d *D) FieldS61BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S62BE
 
 // TryS62BE tries to read 62 bit signed integer in big-endian
-func (d *D) TryS62BE() (int64, error) { return d.trySE(62, BigEndian) }
+func (d *D) TryS62BE() (int64, error) { return d.trySEndian(62, BigEndian) }
 
 // S62BE reads 62 bit signed integer in big-endian
 func (d *D) S62BE() int64 {
-	v, err := d.trySE(62, BigEndian)
+	v, err := d.trySEndian(62, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S62BE", Pos: d.Pos()})
 	}
@@ -17522,7 +17645,7 @@ func (d *D) S62BE() int64 {
 // TryFieldScalarS62BE tries to add a field and read 62 bit signed integer in big-endian
 func (d *D) TryFieldScalarS62BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(62, BigEndian)
+		v, err := d.trySEndian(62, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -17555,11 +17678,11 @@ func (d *D) FieldS62BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S63BE
 
 // TryS63BE tries to read 63 bit signed integer in big-endian
-func (d *D) TryS63BE() (int64, error) { return d.trySE(63, BigEndian) }
+func (d *D) TryS63BE() (int64, error) { return d.trySEndian(63, BigEndian) }
 
 // S63BE reads 63 bit signed integer in big-endian
 func (d *D) S63BE() int64 {
-	v, err := d.trySE(63, BigEndian)
+	v, err := d.trySEndian(63, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S63BE", Pos: d.Pos()})
 	}
@@ -17569,7 +17692,7 @@ func (d *D) S63BE() int64 {
 // TryFieldScalarS63BE tries to add a field and read 63 bit signed integer in big-endian
 func (d *D) TryFieldScalarS63BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(63, BigEndian)
+		v, err := d.trySEndian(63, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -17602,11 +17725,11 @@ func (d *D) FieldS63BE(name string, sms ...scalar.Mapper) int64 {
 // Reader S64BE
 
 // TryS64BE tries to read 64 bit signed integer in big-endian
-func (d *D) TryS64BE() (int64, error) { return d.trySE(64, BigEndian) }
+func (d *D) TryS64BE() (int64, error) { return d.trySEndian(64, BigEndian) }
 
 // S64BE reads 64 bit signed integer in big-endian
 func (d *D) S64BE() int64 {
-	v, err := d.trySE(64, BigEndian)
+	v, err := d.trySEndian(64, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "S64BE", Pos: d.Pos()})
 	}
@@ -17616,7 +17739,7 @@ func (d *D) S64BE() int64 {
 // TryFieldScalarS64BE tries to add a field and read 64 bit signed integer in big-endian
 func (d *D) TryFieldScalarS64BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.trySE(64, BigEndian)
+		v, err := d.trySEndian(64, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -17646,14 +17769,406 @@ func (d *D) FieldS64BE(name string, sms ...scalar.Mapper) int64 {
 	return d.FieldScalarS64BE(name, sms...).ActualS()
 }
 
+// Reader UBigInt
+
+// TryUBigInt tries to read nBits bits signed integer in current endian
+func (d *D) TryUBigInt(nBits int) (*big.Int, error) {
+	return d.tryBigIntEndianSign(nBits, d.Endian, false)
+}
+
+// UBigInt reads nBits bits signed integer in current endian
+func (d *D) UBigInt(nBits int) *big.Int {
+	v, err := d.tryBigIntEndianSign(nBits, d.Endian, false)
+	if err != nil {
+		panic(IOError{Err: err, Op: "UBigInt", Pos: d.Pos()})
+	}
+	return v
+}
+
+// TryFieldScalarUBigInt tries to add a field and read nBits bits signed integer in current endian
+func (d *D) TryFieldScalarUBigInt(name string, nBits int, sms ...scalar.Mapper) (*scalar.S, error) {
+	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
+		v, err := d.tryBigIntEndianSign(nBits, d.Endian, false)
+		s.Actual = v
+		return s, err
+	}, sms...)
+	if err != nil {
+		return nil, err
+	}
+	return s, err
+}
+
+// FieldScalarUBigInt adds a field and reads nBits bits signed integer in current endian
+func (d *D) FieldScalarUBigInt(name string, nBits int, sms ...scalar.Mapper) *scalar.S {
+	s, err := d.TryFieldScalarUBigInt(name, nBits, sms...)
+	if err != nil {
+		panic(IOError{Err: err, Name: name, Op: "UBigInt", Pos: d.Pos()})
+	}
+	return s
+}
+
+// TryFieldUBigInt tries to add a field and read nBits bits signed integer in current endian
+func (d *D) TryFieldUBigInt(name string, nBits int, sms ...scalar.Mapper) (*big.Int, error) {
+	s, err := d.TryFieldScalarUBigInt(name, nBits, sms...)
+	return s.ActualBigInt(), err
+}
+
+// FieldUBigInt adds a field and reads nBits bits signed integer in current endian
+func (d *D) FieldUBigInt(name string, nBits int, sms ...scalar.Mapper) *big.Int {
+	return d.FieldScalarUBigInt(name, nBits, sms...).ActualBigInt()
+}
+
+// Reader UBigIntE
+
+// TryUBigIntE tries to read nBits signed integer in specified endian
+func (d *D) TryUBigIntE(nBits int, endian Endian) (*big.Int, error) {
+	return d.tryBigIntEndianSign(nBits, endian, false)
+}
+
+// UBigIntE reads nBits signed integer in specified endian
+func (d *D) UBigIntE(nBits int, endian Endian) *big.Int {
+	v, err := d.tryBigIntEndianSign(nBits, endian, false)
+	if err != nil {
+		panic(IOError{Err: err, Op: "UBigIntE", Pos: d.Pos()})
+	}
+	return v
+}
+
+// TryFieldScalarUBigIntE tries to add a field and read nBits signed integer in specified endian
+func (d *D) TryFieldScalarUBigIntE(name string, nBits int, endian Endian, sms ...scalar.Mapper) (*scalar.S, error) {
+	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
+		v, err := d.tryBigIntEndianSign(nBits, endian, false)
+		s.Actual = v
+		return s, err
+	}, sms...)
+	if err != nil {
+		return nil, err
+	}
+	return s, err
+}
+
+// FieldScalarUBigIntE adds a field and reads nBits signed integer in specified endian
+func (d *D) FieldScalarUBigIntE(name string, nBits int, endian Endian, sms ...scalar.Mapper) *scalar.S {
+	s, err := d.TryFieldScalarUBigIntE(name, nBits, endian, sms...)
+	if err != nil {
+		panic(IOError{Err: err, Name: name, Op: "UBigIntE", Pos: d.Pos()})
+	}
+	return s
+}
+
+// TryFieldUBigIntE tries to add a field and read nBits signed integer in specified endian
+func (d *D) TryFieldUBigIntE(name string, nBits int, endian Endian, sms ...scalar.Mapper) (*big.Int, error) {
+	s, err := d.TryFieldScalarUBigIntE(name, nBits, endian, sms...)
+	return s.ActualBigInt(), err
+}
+
+// FieldUBigIntE adds a field and reads nBits signed integer in specified endian
+func (d *D) FieldUBigIntE(name string, nBits int, endian Endian, sms ...scalar.Mapper) *big.Int {
+	return d.FieldScalarUBigIntE(name, nBits, endian, sms...).ActualBigInt()
+}
+
+// Reader UBigIntLE
+
+// TryUBigIntLE tries to read nBits bit signed integer in little-endian
+func (d *D) TryUBigIntLE(nBits int) (*big.Int, error) {
+	return d.tryBigIntEndianSign(nBits, LittleEndian, false)
+}
+
+// UBigIntLE reads nBits bit signed integer in little-endian
+func (d *D) UBigIntLE(nBits int) *big.Int {
+	v, err := d.tryBigIntEndianSign(nBits, LittleEndian, false)
+	if err != nil {
+		panic(IOError{Err: err, Op: "UBigIntLE", Pos: d.Pos()})
+	}
+	return v
+}
+
+// TryFieldScalarUBigIntLE tries to add a field and read nBits bit signed integer in little-endian
+func (d *D) TryFieldScalarUBigIntLE(name string, nBits int, sms ...scalar.Mapper) (*scalar.S, error) {
+	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
+		v, err := d.tryBigIntEndianSign(nBits, LittleEndian, false)
+		s.Actual = v
+		return s, err
+	}, sms...)
+	if err != nil {
+		return nil, err
+	}
+	return s, err
+}
+
+// FieldScalarUBigIntLE adds a field and reads nBits bit signed integer in little-endian
+func (d *D) FieldScalarUBigIntLE(name string, nBits int, sms ...scalar.Mapper) *scalar.S {
+	s, err := d.TryFieldScalarUBigIntLE(name, nBits, sms...)
+	if err != nil {
+		panic(IOError{Err: err, Name: name, Op: "UBigIntLE", Pos: d.Pos()})
+	}
+	return s
+}
+
+// TryFieldUBigIntLE tries to add a field and read nBits bit signed integer in little-endian
+func (d *D) TryFieldUBigIntLE(name string, nBits int, sms ...scalar.Mapper) (*big.Int, error) {
+	s, err := d.TryFieldScalarUBigIntLE(name, nBits, sms...)
+	return s.ActualBigInt(), err
+}
+
+// FieldUBigIntLE adds a field and reads nBits bit signed integer in little-endian
+func (d *D) FieldUBigIntLE(name string, nBits int, sms ...scalar.Mapper) *big.Int {
+	return d.FieldScalarUBigIntLE(name, nBits, sms...).ActualBigInt()
+}
+
+// Reader UBigIntBE
+
+// TryUBigIntBE tries to read nBits bit signed integer in big-endian
+func (d *D) TryUBigIntBE(nBits int) (*big.Int, error) {
+	return d.tryBigIntEndianSign(nBits, BigEndian, false)
+}
+
+// UBigIntBE reads nBits bit signed integer in big-endian
+func (d *D) UBigIntBE(nBits int) *big.Int {
+	v, err := d.tryBigIntEndianSign(nBits, BigEndian, false)
+	if err != nil {
+		panic(IOError{Err: err, Op: "UBigIntBE", Pos: d.Pos()})
+	}
+	return v
+}
+
+// TryFieldScalarUBigIntBE tries to add a field and read nBits bit signed integer in big-endian
+func (d *D) TryFieldScalarUBigIntBE(name string, nBits int, sms ...scalar.Mapper) (*scalar.S, error) {
+	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
+		v, err := d.tryBigIntEndianSign(nBits, BigEndian, false)
+		s.Actual = v
+		return s, err
+	}, sms...)
+	if err != nil {
+		return nil, err
+	}
+	return s, err
+}
+
+// FieldScalarUBigIntBE adds a field and reads nBits bit signed integer in big-endian
+func (d *D) FieldScalarUBigIntBE(name string, nBits int, sms ...scalar.Mapper) *scalar.S {
+	s, err := d.TryFieldScalarUBigIntBE(name, nBits, sms...)
+	if err != nil {
+		panic(IOError{Err: err, Name: name, Op: "UBigIntBE", Pos: d.Pos()})
+	}
+	return s
+}
+
+// TryFieldUBigIntBE tries to add a field and read nBits bit signed integer in big-endian
+func (d *D) TryFieldUBigIntBE(name string, nBits int, sms ...scalar.Mapper) (*big.Int, error) {
+	s, err := d.TryFieldScalarUBigIntBE(name, nBits, sms...)
+	return s.ActualBigInt(), err
+}
+
+// FieldUBigIntBE adds a field and reads nBits bit signed integer in big-endian
+func (d *D) FieldUBigIntBE(name string, nBits int, sms ...scalar.Mapper) *big.Int {
+	return d.FieldScalarUBigIntBE(name, nBits, sms...).ActualBigInt()
+}
+
+// Reader SBigInt
+
+// TrySBigInt tries to read nBits bits signed integer in current endian
+func (d *D) TrySBigInt(nBits int) (*big.Int, error) {
+	return d.tryBigIntEndianSign(nBits, d.Endian, true)
+}
+
+// SBigInt reads nBits bits signed integer in current endian
+func (d *D) SBigInt(nBits int) *big.Int {
+	v, err := d.tryBigIntEndianSign(nBits, d.Endian, true)
+	if err != nil {
+		panic(IOError{Err: err, Op: "SBigInt", Pos: d.Pos()})
+	}
+	return v
+}
+
+// TryFieldScalarSBigInt tries to add a field and read nBits bits signed integer in current endian
+func (d *D) TryFieldScalarSBigInt(name string, nBits int, sms ...scalar.Mapper) (*scalar.S, error) {
+	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
+		v, err := d.tryBigIntEndianSign(nBits, d.Endian, true)
+		s.Actual = v
+		return s, err
+	}, sms...)
+	if err != nil {
+		return nil, err
+	}
+	return s, err
+}
+
+// FieldScalarSBigInt adds a field and reads nBits bits signed integer in current endian
+func (d *D) FieldScalarSBigInt(name string, nBits int, sms ...scalar.Mapper) *scalar.S {
+	s, err := d.TryFieldScalarSBigInt(name, nBits, sms...)
+	if err != nil {
+		panic(IOError{Err: err, Name: name, Op: "SBigInt", Pos: d.Pos()})
+	}
+	return s
+}
+
+// TryFieldSBigInt tries to add a field and read nBits bits signed integer in current endian
+func (d *D) TryFieldSBigInt(name string, nBits int, sms ...scalar.Mapper) (*big.Int, error) {
+	s, err := d.TryFieldScalarSBigInt(name, nBits, sms...)
+	return s.ActualBigInt(), err
+}
+
+// FieldSBigInt adds a field and reads nBits bits signed integer in current endian
+func (d *D) FieldSBigInt(name string, nBits int, sms ...scalar.Mapper) *big.Int {
+	return d.FieldScalarSBigInt(name, nBits, sms...).ActualBigInt()
+}
+
+// Reader SBigIntE
+
+// TrySBigIntE tries to read nBits signed integer in specified endian
+func (d *D) TrySBigIntE(nBits int, endian Endian) (*big.Int, error) {
+	return d.tryBigIntEndianSign(nBits, endian, true)
+}
+
+// SBigIntE reads nBits signed integer in specified endian
+func (d *D) SBigIntE(nBits int, endian Endian) *big.Int {
+	v, err := d.tryBigIntEndianSign(nBits, endian, true)
+	if err != nil {
+		panic(IOError{Err: err, Op: "SBigIntE", Pos: d.Pos()})
+	}
+	return v
+}
+
+// TryFieldScalarSBigIntE tries to add a field and read nBits signed integer in specified endian
+func (d *D) TryFieldScalarSBigIntE(name string, nBits int, endian Endian, sms ...scalar.Mapper) (*scalar.S, error) {
+	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
+		v, err := d.tryBigIntEndianSign(nBits, endian, true)
+		s.Actual = v
+		return s, err
+	}, sms...)
+	if err != nil {
+		return nil, err
+	}
+	return s, err
+}
+
+// FieldScalarSBigIntE adds a field and reads nBits signed integer in specified endian
+func (d *D) FieldScalarSBigIntE(name string, nBits int, endian Endian, sms ...scalar.Mapper) *scalar.S {
+	s, err := d.TryFieldScalarSBigIntE(name, nBits, endian, sms...)
+	if err != nil {
+		panic(IOError{Err: err, Name: name, Op: "SBigIntE", Pos: d.Pos()})
+	}
+	return s
+}
+
+// TryFieldSBigIntE tries to add a field and read nBits signed integer in specified endian
+func (d *D) TryFieldSBigIntE(name string, nBits int, endian Endian, sms ...scalar.Mapper) (*big.Int, error) {
+	s, err := d.TryFieldScalarSBigIntE(name, nBits, endian, sms...)
+	return s.ActualBigInt(), err
+}
+
+// FieldSBigIntE adds a field and reads nBits signed integer in specified endian
+func (d *D) FieldSBigIntE(name string, nBits int, endian Endian, sms ...scalar.Mapper) *big.Int {
+	return d.FieldScalarSBigIntE(name, nBits, endian, sms...).ActualBigInt()
+}
+
+// Reader SBigIntLE
+
+// TrySBigIntLE tries to read nBits bit signed integer in little-endian
+func (d *D) TrySBigIntLE(nBits int) (*big.Int, error) {
+	return d.tryBigIntEndianSign(nBits, LittleEndian, true)
+}
+
+// SBigIntLE reads nBits bit signed integer in little-endian
+func (d *D) SBigIntLE(nBits int) *big.Int {
+	v, err := d.tryBigIntEndianSign(nBits, LittleEndian, true)
+	if err != nil {
+		panic(IOError{Err: err, Op: "SBigIntLE", Pos: d.Pos()})
+	}
+	return v
+}
+
+// TryFieldScalarSBigIntLE tries to add a field and read nBits bit signed integer in little-endian
+func (d *D) TryFieldScalarSBigIntLE(name string, nBits int, sms ...scalar.Mapper) (*scalar.S, error) {
+	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
+		v, err := d.tryBigIntEndianSign(nBits, LittleEndian, true)
+		s.Actual = v
+		return s, err
+	}, sms...)
+	if err != nil {
+		return nil, err
+	}
+	return s, err
+}
+
+// FieldScalarSBigIntLE adds a field and reads nBits bit signed integer in little-endian
+func (d *D) FieldScalarSBigIntLE(name string, nBits int, sms ...scalar.Mapper) *scalar.S {
+	s, err := d.TryFieldScalarSBigIntLE(name, nBits, sms...)
+	if err != nil {
+		panic(IOError{Err: err, Name: name, Op: "SBigIntLE", Pos: d.Pos()})
+	}
+	return s
+}
+
+// TryFieldSBigIntLE tries to add a field and read nBits bit signed integer in little-endian
+func (d *D) TryFieldSBigIntLE(name string, nBits int, sms ...scalar.Mapper) (*big.Int, error) {
+	s, err := d.TryFieldScalarSBigIntLE(name, nBits, sms...)
+	return s.ActualBigInt(), err
+}
+
+// FieldSBigIntLE adds a field and reads nBits bit signed integer in little-endian
+func (d *D) FieldSBigIntLE(name string, nBits int, sms ...scalar.Mapper) *big.Int {
+	return d.FieldScalarSBigIntLE(name, nBits, sms...).ActualBigInt()
+}
+
+// Reader SBigIntBE
+
+// TrySBigIntBE tries to read nBits bit signed integer in big-endian
+func (d *D) TrySBigIntBE(nBits int) (*big.Int, error) {
+	return d.tryBigIntEndianSign(nBits, BigEndian, true)
+}
+
+// SBigIntBE reads nBits bit signed integer in big-endian
+func (d *D) SBigIntBE(nBits int) *big.Int {
+	v, err := d.tryBigIntEndianSign(nBits, BigEndian, true)
+	if err != nil {
+		panic(IOError{Err: err, Op: "SBigIntBE", Pos: d.Pos()})
+	}
+	return v
+}
+
+// TryFieldScalarSBigIntBE tries to add a field and read nBits bit signed integer in big-endian
+func (d *D) TryFieldScalarSBigIntBE(name string, nBits int, sms ...scalar.Mapper) (*scalar.S, error) {
+	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
+		v, err := d.tryBigIntEndianSign(nBits, BigEndian, true)
+		s.Actual = v
+		return s, err
+	}, sms...)
+	if err != nil {
+		return nil, err
+	}
+	return s, err
+}
+
+// FieldScalarSBigIntBE adds a field and reads nBits bit signed integer in big-endian
+func (d *D) FieldScalarSBigIntBE(name string, nBits int, sms ...scalar.Mapper) *scalar.S {
+	s, err := d.TryFieldScalarSBigIntBE(name, nBits, sms...)
+	if err != nil {
+		panic(IOError{Err: err, Name: name, Op: "SBigIntBE", Pos: d.Pos()})
+	}
+	return s
+}
+
+// TryFieldSBigIntBE tries to add a field and read nBits bit signed integer in big-endian
+func (d *D) TryFieldSBigIntBE(name string, nBits int, sms ...scalar.Mapper) (*big.Int, error) {
+	s, err := d.TryFieldScalarSBigIntBE(name, nBits, sms...)
+	return s.ActualBigInt(), err
+}
+
+// FieldSBigIntBE adds a field and reads nBits bit signed integer in big-endian
+func (d *D) FieldSBigIntBE(name string, nBits int, sms ...scalar.Mapper) *big.Int {
+	return d.FieldScalarSBigIntBE(name, nBits, sms...).ActualBigInt()
+}
+
 // Reader F
 
 // TryF tries to read nBit IEEE 754 float in current endian
-func (d *D) TryF(nBits int) (float64, error) { return d.tryFE(nBits, d.Endian) }
+func (d *D) TryF(nBits int) (float64, error) { return d.tryFEndian(nBits, d.Endian) }
 
 // F reads nBit IEEE 754 float in current endian
 func (d *D) F(nBits int) float64 {
-	v, err := d.tryFE(nBits, d.Endian)
+	v, err := d.tryFEndian(nBits, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "F", Pos: d.Pos()})
 	}
@@ -17663,7 +18178,7 @@ func (d *D) F(nBits int) float64 {
 // TryFieldScalarF tries to add a field and read nBit IEEE 754 float in current endian
 func (d *D) TryFieldScalarF(name string, nBits int, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryFE(nBits, d.Endian)
+		v, err := d.tryFEndian(nBits, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -17696,11 +18211,11 @@ func (d *D) FieldF(name string, nBits int, sms ...scalar.Mapper) float64 {
 // Reader FE
 
 // TryFE tries to read nBit IEEE 754 float in specified endian
-func (d *D) TryFE(nBits int, endian Endian) (float64, error) { return d.tryFE(nBits, endian) }
+func (d *D) TryFE(nBits int, endian Endian) (float64, error) { return d.tryFEndian(nBits, endian) }
 
 // FE reads nBit IEEE 754 float in specified endian
 func (d *D) FE(nBits int, endian Endian) float64 {
-	v, err := d.tryFE(nBits, endian)
+	v, err := d.tryFEndian(nBits, endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "FE", Pos: d.Pos()})
 	}
@@ -17710,7 +18225,7 @@ func (d *D) FE(nBits int, endian Endian) float64 {
 // TryFieldScalarFE tries to add a field and read nBit IEEE 754 float in specified endian
 func (d *D) TryFieldScalarFE(name string, nBits int, endian Endian, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryFE(nBits, endian)
+		v, err := d.tryFEndian(nBits, endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -17743,11 +18258,11 @@ func (d *D) FieldFE(name string, nBits int, endian Endian, sms ...scalar.Mapper)
 // Reader F16
 
 // TryF16 tries to read 16 bit IEEE 754 float in current endian
-func (d *D) TryF16() (float64, error) { return d.tryFE(16, d.Endian) }
+func (d *D) TryF16() (float64, error) { return d.tryFEndian(16, d.Endian) }
 
 // F16 reads 16 bit IEEE 754 float in current endian
 func (d *D) F16() float64 {
-	v, err := d.tryFE(16, d.Endian)
+	v, err := d.tryFEndian(16, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "F16", Pos: d.Pos()})
 	}
@@ -17757,7 +18272,7 @@ func (d *D) F16() float64 {
 // TryFieldScalarF16 tries to add a field and read 16 bit IEEE 754 float in current endian
 func (d *D) TryFieldScalarF16(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryFE(16, d.Endian)
+		v, err := d.tryFEndian(16, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -17790,11 +18305,11 @@ func (d *D) FieldF16(name string, sms ...scalar.Mapper) float64 {
 // Reader F32
 
 // TryF32 tries to read 32 bit IEEE 754 float in current endian
-func (d *D) TryF32() (float64, error) { return d.tryFE(32, d.Endian) }
+func (d *D) TryF32() (float64, error) { return d.tryFEndian(32, d.Endian) }
 
 // F32 reads 32 bit IEEE 754 float in current endian
 func (d *D) F32() float64 {
-	v, err := d.tryFE(32, d.Endian)
+	v, err := d.tryFEndian(32, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "F32", Pos: d.Pos()})
 	}
@@ -17804,7 +18319,7 @@ func (d *D) F32() float64 {
 // TryFieldScalarF32 tries to add a field and read 32 bit IEEE 754 float in current endian
 func (d *D) TryFieldScalarF32(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryFE(32, d.Endian)
+		v, err := d.tryFEndian(32, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -17837,11 +18352,11 @@ func (d *D) FieldF32(name string, sms ...scalar.Mapper) float64 {
 // Reader F64
 
 // TryF64 tries to read 64 bit IEEE 754 float in current endian
-func (d *D) TryF64() (float64, error) { return d.tryFE(64, d.Endian) }
+func (d *D) TryF64() (float64, error) { return d.tryFEndian(64, d.Endian) }
 
 // F64 reads 64 bit IEEE 754 float in current endian
 func (d *D) F64() float64 {
-	v, err := d.tryFE(64, d.Endian)
+	v, err := d.tryFEndian(64, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "F64", Pos: d.Pos()})
 	}
@@ -17851,7 +18366,7 @@ func (d *D) F64() float64 {
 // TryFieldScalarF64 tries to add a field and read 64 bit IEEE 754 float in current endian
 func (d *D) TryFieldScalarF64(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryFE(64, d.Endian)
+		v, err := d.tryFEndian(64, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -17884,11 +18399,11 @@ func (d *D) FieldF64(name string, sms ...scalar.Mapper) float64 {
 // Reader F16LE
 
 // TryF16LE tries to read 16 bit IEEE 754 float in little-endian
-func (d *D) TryF16LE() (float64, error) { return d.tryFE(16, LittleEndian) }
+func (d *D) TryF16LE() (float64, error) { return d.tryFEndian(16, LittleEndian) }
 
 // F16LE reads 16 bit IEEE 754 float in little-endian
 func (d *D) F16LE() float64 {
-	v, err := d.tryFE(16, LittleEndian)
+	v, err := d.tryFEndian(16, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "F16LE", Pos: d.Pos()})
 	}
@@ -17898,7 +18413,7 @@ func (d *D) F16LE() float64 {
 // TryFieldScalarF16LE tries to add a field and read 16 bit IEEE 754 float in little-endian
 func (d *D) TryFieldScalarF16LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryFE(16, LittleEndian)
+		v, err := d.tryFEndian(16, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -17931,11 +18446,11 @@ func (d *D) FieldF16LE(name string, sms ...scalar.Mapper) float64 {
 // Reader F32LE
 
 // TryF32LE tries to read 32 bit IEEE 754 float in little-endian
-func (d *D) TryF32LE() (float64, error) { return d.tryFE(32, LittleEndian) }
+func (d *D) TryF32LE() (float64, error) { return d.tryFEndian(32, LittleEndian) }
 
 // F32LE reads 32 bit IEEE 754 float in little-endian
 func (d *D) F32LE() float64 {
-	v, err := d.tryFE(32, LittleEndian)
+	v, err := d.tryFEndian(32, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "F32LE", Pos: d.Pos()})
 	}
@@ -17945,7 +18460,7 @@ func (d *D) F32LE() float64 {
 // TryFieldScalarF32LE tries to add a field and read 32 bit IEEE 754 float in little-endian
 func (d *D) TryFieldScalarF32LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryFE(32, LittleEndian)
+		v, err := d.tryFEndian(32, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -17978,11 +18493,11 @@ func (d *D) FieldF32LE(name string, sms ...scalar.Mapper) float64 {
 // Reader F64LE
 
 // TryF64LE tries to read 64 bit IEEE 754 float in little-endian
-func (d *D) TryF64LE() (float64, error) { return d.tryFE(64, LittleEndian) }
+func (d *D) TryF64LE() (float64, error) { return d.tryFEndian(64, LittleEndian) }
 
 // F64LE reads 64 bit IEEE 754 float in little-endian
 func (d *D) F64LE() float64 {
-	v, err := d.tryFE(64, LittleEndian)
+	v, err := d.tryFEndian(64, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "F64LE", Pos: d.Pos()})
 	}
@@ -17992,7 +18507,7 @@ func (d *D) F64LE() float64 {
 // TryFieldScalarF64LE tries to add a field and read 64 bit IEEE 754 float in little-endian
 func (d *D) TryFieldScalarF64LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryFE(64, LittleEndian)
+		v, err := d.tryFEndian(64, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -18025,11 +18540,11 @@ func (d *D) FieldF64LE(name string, sms ...scalar.Mapper) float64 {
 // Reader F16BE
 
 // TryF16BE tries to read 16 bit IEEE 754 float in big-endian
-func (d *D) TryF16BE() (float64, error) { return d.tryFE(16, BigEndian) }
+func (d *D) TryF16BE() (float64, error) { return d.tryFEndian(16, BigEndian) }
 
 // F16BE reads 16 bit IEEE 754 float in big-endian
 func (d *D) F16BE() float64 {
-	v, err := d.tryFE(16, BigEndian)
+	v, err := d.tryFEndian(16, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "F16BE", Pos: d.Pos()})
 	}
@@ -18039,7 +18554,7 @@ func (d *D) F16BE() float64 {
 // TryFieldScalarF16BE tries to add a field and read 16 bit IEEE 754 float in big-endian
 func (d *D) TryFieldScalarF16BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryFE(16, BigEndian)
+		v, err := d.tryFEndian(16, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -18072,11 +18587,11 @@ func (d *D) FieldF16BE(name string, sms ...scalar.Mapper) float64 {
 // Reader F32BE
 
 // TryF32BE tries to read 32 bit IEEE 754 float in big-endian
-func (d *D) TryF32BE() (float64, error) { return d.tryFE(32, BigEndian) }
+func (d *D) TryF32BE() (float64, error) { return d.tryFEndian(32, BigEndian) }
 
 // F32BE reads 32 bit IEEE 754 float in big-endian
 func (d *D) F32BE() float64 {
-	v, err := d.tryFE(32, BigEndian)
+	v, err := d.tryFEndian(32, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "F32BE", Pos: d.Pos()})
 	}
@@ -18086,7 +18601,7 @@ func (d *D) F32BE() float64 {
 // TryFieldScalarF32BE tries to add a field and read 32 bit IEEE 754 float in big-endian
 func (d *D) TryFieldScalarF32BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryFE(32, BigEndian)
+		v, err := d.tryFEndian(32, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -18119,11 +18634,11 @@ func (d *D) FieldF32BE(name string, sms ...scalar.Mapper) float64 {
 // Reader F64BE
 
 // TryF64BE tries to read 64 bit IEEE 754 float in big-endian
-func (d *D) TryF64BE() (float64, error) { return d.tryFE(64, BigEndian) }
+func (d *D) TryF64BE() (float64, error) { return d.tryFEndian(64, BigEndian) }
 
 // F64BE reads 64 bit IEEE 754 float in big-endian
 func (d *D) F64BE() float64 {
-	v, err := d.tryFE(64, BigEndian)
+	v, err := d.tryFEndian(64, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "F64BE", Pos: d.Pos()})
 	}
@@ -18133,7 +18648,7 @@ func (d *D) F64BE() float64 {
 // TryFieldScalarF64BE tries to add a field and read 64 bit IEEE 754 float in big-endian
 func (d *D) TryFieldScalarF64BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryFE(64, BigEndian)
+		v, err := d.tryFEndian(64, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -18166,11 +18681,13 @@ func (d *D) FieldF64BE(name string, sms ...scalar.Mapper) float64 {
 // Reader FP
 
 // TryFP tries to read nBits fixed-point number in current endian
-func (d *D) TryFP(nBits int, fBits int) (float64, error) { return d.tryFPE(nBits, fBits, d.Endian) }
+func (d *D) TryFP(nBits int, fBits int) (float64, error) {
+	return d.tryFPEndian(nBits, fBits, d.Endian)
+}
 
 // FP reads nBits fixed-point number in current endian
 func (d *D) FP(nBits int, fBits int) float64 {
-	v, err := d.tryFPE(nBits, fBits, d.Endian)
+	v, err := d.tryFPEndian(nBits, fBits, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "FP", Pos: d.Pos()})
 	}
@@ -18180,7 +18697,7 @@ func (d *D) FP(nBits int, fBits int) float64 {
 // TryFieldScalarFP tries to add a field and read nBits fixed-point number in current endian
 func (d *D) TryFieldScalarFP(name string, nBits int, fBits int, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryFPE(nBits, fBits, d.Endian)
+		v, err := d.tryFPEndian(nBits, fBits, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -18214,12 +18731,12 @@ func (d *D) FieldFP(name string, nBits int, fBits int, sms ...scalar.Mapper) flo
 
 // TryFPE tries to read nBits fixed-point number in specified endian
 func (d *D) TryFPE(nBits int, fBits int, endian Endian) (float64, error) {
-	return d.tryFPE(nBits, fBits, endian)
+	return d.tryFPEndian(nBits, fBits, endian)
 }
 
 // FPE reads nBits fixed-point number in specified endian
 func (d *D) FPE(nBits int, fBits int, endian Endian) float64 {
-	v, err := d.tryFPE(nBits, fBits, endian)
+	v, err := d.tryFPEndian(nBits, fBits, endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "FPE", Pos: d.Pos()})
 	}
@@ -18229,7 +18746,7 @@ func (d *D) FPE(nBits int, fBits int, endian Endian) float64 {
 // TryFieldScalarFPE tries to add a field and read nBits fixed-point number in specified endian
 func (d *D) TryFieldScalarFPE(name string, nBits int, fBits int, endian Endian, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryFPE(nBits, fBits, endian)
+		v, err := d.tryFPEndian(nBits, fBits, endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -18262,11 +18779,11 @@ func (d *D) FieldFPE(name string, nBits int, fBits int, endian Endian, sms ...sc
 // Reader FP16
 
 // TryFP16 tries to read 16 bit fixed-point number in current endian
-func (d *D) TryFP16() (float64, error) { return d.tryFPE(16, 8, d.Endian) }
+func (d *D) TryFP16() (float64, error) { return d.tryFPEndian(16, 8, d.Endian) }
 
 // FP16 reads 16 bit fixed-point number in current endian
 func (d *D) FP16() float64 {
-	v, err := d.tryFPE(16, 8, d.Endian)
+	v, err := d.tryFPEndian(16, 8, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "FP16", Pos: d.Pos()})
 	}
@@ -18276,7 +18793,7 @@ func (d *D) FP16() float64 {
 // TryFieldScalarFP16 tries to add a field and read 16 bit fixed-point number in current endian
 func (d *D) TryFieldScalarFP16(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryFPE(16, 8, d.Endian)
+		v, err := d.tryFPEndian(16, 8, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -18309,11 +18826,11 @@ func (d *D) FieldFP16(name string, sms ...scalar.Mapper) float64 {
 // Reader FP32
 
 // TryFP32 tries to read 32 bit fixed-point number in current endian
-func (d *D) TryFP32() (float64, error) { return d.tryFPE(32, 16, d.Endian) }
+func (d *D) TryFP32() (float64, error) { return d.tryFPEndian(32, 16, d.Endian) }
 
 // FP32 reads 32 bit fixed-point number in current endian
 func (d *D) FP32() float64 {
-	v, err := d.tryFPE(32, 16, d.Endian)
+	v, err := d.tryFPEndian(32, 16, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "FP32", Pos: d.Pos()})
 	}
@@ -18323,7 +18840,7 @@ func (d *D) FP32() float64 {
 // TryFieldScalarFP32 tries to add a field and read 32 bit fixed-point number in current endian
 func (d *D) TryFieldScalarFP32(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryFPE(32, 16, d.Endian)
+		v, err := d.tryFPEndian(32, 16, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -18356,11 +18873,11 @@ func (d *D) FieldFP32(name string, sms ...scalar.Mapper) float64 {
 // Reader FP64
 
 // TryFP64 tries to read 64 bit fixed-point number in current endian
-func (d *D) TryFP64() (float64, error) { return d.tryFPE(64, 32, d.Endian) }
+func (d *D) TryFP64() (float64, error) { return d.tryFPEndian(64, 32, d.Endian) }
 
 // FP64 reads 64 bit fixed-point number in current endian
 func (d *D) FP64() float64 {
-	v, err := d.tryFPE(64, 32, d.Endian)
+	v, err := d.tryFPEndian(64, 32, d.Endian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "FP64", Pos: d.Pos()})
 	}
@@ -18370,7 +18887,7 @@ func (d *D) FP64() float64 {
 // TryFieldScalarFP64 tries to add a field and read 64 bit fixed-point number in current endian
 func (d *D) TryFieldScalarFP64(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryFPE(64, 32, d.Endian)
+		v, err := d.tryFPEndian(64, 32, d.Endian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -18403,11 +18920,11 @@ func (d *D) FieldFP64(name string, sms ...scalar.Mapper) float64 {
 // Reader FP16LE
 
 // TryFP16LE tries to read 16 bit fixed-point number in little-endian
-func (d *D) TryFP16LE() (float64, error) { return d.tryFPE(16, 8, LittleEndian) }
+func (d *D) TryFP16LE() (float64, error) { return d.tryFPEndian(16, 8, LittleEndian) }
 
 // FP16LE reads 16 bit fixed-point number in little-endian
 func (d *D) FP16LE() float64 {
-	v, err := d.tryFPE(16, 8, LittleEndian)
+	v, err := d.tryFPEndian(16, 8, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "FP16LE", Pos: d.Pos()})
 	}
@@ -18417,7 +18934,7 @@ func (d *D) FP16LE() float64 {
 // TryFieldScalarFP16LE tries to add a field and read 16 bit fixed-point number in little-endian
 func (d *D) TryFieldScalarFP16LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryFPE(16, 8, LittleEndian)
+		v, err := d.tryFPEndian(16, 8, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -18450,11 +18967,11 @@ func (d *D) FieldFP16LE(name string, sms ...scalar.Mapper) float64 {
 // Reader FP32LE
 
 // TryFP32LE tries to read 32 bit fixed-point number in little-endian
-func (d *D) TryFP32LE() (float64, error) { return d.tryFPE(32, 16, LittleEndian) }
+func (d *D) TryFP32LE() (float64, error) { return d.tryFPEndian(32, 16, LittleEndian) }
 
 // FP32LE reads 32 bit fixed-point number in little-endian
 func (d *D) FP32LE() float64 {
-	v, err := d.tryFPE(32, 16, LittleEndian)
+	v, err := d.tryFPEndian(32, 16, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "FP32LE", Pos: d.Pos()})
 	}
@@ -18464,7 +18981,7 @@ func (d *D) FP32LE() float64 {
 // TryFieldScalarFP32LE tries to add a field and read 32 bit fixed-point number in little-endian
 func (d *D) TryFieldScalarFP32LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryFPE(32, 16, LittleEndian)
+		v, err := d.tryFPEndian(32, 16, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -18497,11 +19014,11 @@ func (d *D) FieldFP32LE(name string, sms ...scalar.Mapper) float64 {
 // Reader FP64LE
 
 // TryFP64LE tries to read 64 bit fixed-point number in little-endian
-func (d *D) TryFP64LE() (float64, error) { return d.tryFPE(64, 32, LittleEndian) }
+func (d *D) TryFP64LE() (float64, error) { return d.tryFPEndian(64, 32, LittleEndian) }
 
 // FP64LE reads 64 bit fixed-point number in little-endian
 func (d *D) FP64LE() float64 {
-	v, err := d.tryFPE(64, 32, LittleEndian)
+	v, err := d.tryFPEndian(64, 32, LittleEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "FP64LE", Pos: d.Pos()})
 	}
@@ -18511,7 +19028,7 @@ func (d *D) FP64LE() float64 {
 // TryFieldScalarFP64LE tries to add a field and read 64 bit fixed-point number in little-endian
 func (d *D) TryFieldScalarFP64LE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryFPE(64, 32, LittleEndian)
+		v, err := d.tryFPEndian(64, 32, LittleEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -18544,11 +19061,11 @@ func (d *D) FieldFP64LE(name string, sms ...scalar.Mapper) float64 {
 // Reader FP16BE
 
 // TryFP16BE tries to read 16 bit fixed-point number in big-endian
-func (d *D) TryFP16BE() (float64, error) { return d.tryFPE(16, 8, BigEndian) }
+func (d *D) TryFP16BE() (float64, error) { return d.tryFPEndian(16, 8, BigEndian) }
 
 // FP16BE reads 16 bit fixed-point number in big-endian
 func (d *D) FP16BE() float64 {
-	v, err := d.tryFPE(16, 8, BigEndian)
+	v, err := d.tryFPEndian(16, 8, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "FP16BE", Pos: d.Pos()})
 	}
@@ -18558,7 +19075,7 @@ func (d *D) FP16BE() float64 {
 // TryFieldScalarFP16BE tries to add a field and read 16 bit fixed-point number in big-endian
 func (d *D) TryFieldScalarFP16BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryFPE(16, 8, BigEndian)
+		v, err := d.tryFPEndian(16, 8, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -18591,11 +19108,11 @@ func (d *D) FieldFP16BE(name string, sms ...scalar.Mapper) float64 {
 // Reader FP32BE
 
 // TryFP32BE tries to read 32 bit fixed-point number in big-endian
-func (d *D) TryFP32BE() (float64, error) { return d.tryFPE(32, 16, BigEndian) }
+func (d *D) TryFP32BE() (float64, error) { return d.tryFPEndian(32, 16, BigEndian) }
 
 // FP32BE reads 32 bit fixed-point number in big-endian
 func (d *D) FP32BE() float64 {
-	v, err := d.tryFPE(32, 16, BigEndian)
+	v, err := d.tryFPEndian(32, 16, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "FP32BE", Pos: d.Pos()})
 	}
@@ -18605,7 +19122,7 @@ func (d *D) FP32BE() float64 {
 // TryFieldScalarFP32BE tries to add a field and read 32 bit fixed-point number in big-endian
 func (d *D) TryFieldScalarFP32BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryFPE(32, 16, BigEndian)
+		v, err := d.tryFPEndian(32, 16, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)
@@ -18638,11 +19155,11 @@ func (d *D) FieldFP32BE(name string, sms ...scalar.Mapper) float64 {
 // Reader FP64BE
 
 // TryFP64BE tries to read 64 bit fixed-point number in big-endian
-func (d *D) TryFP64BE() (float64, error) { return d.tryFPE(64, 32, BigEndian) }
+func (d *D) TryFP64BE() (float64, error) { return d.tryFPEndian(64, 32, BigEndian) }
 
 // FP64BE reads 64 bit fixed-point number in big-endian
 func (d *D) FP64BE() float64 {
-	v, err := d.tryFPE(64, 32, BigEndian)
+	v, err := d.tryFPEndian(64, 32, BigEndian)
 	if err != nil {
 		panic(IOError{Err: err, Op: "FP64BE", Pos: d.Pos()})
 	}
@@ -18652,7 +19169,7 @@ func (d *D) FP64BE() float64 {
 // TryFieldScalarFP64BE tries to add a field and read 64 bit fixed-point number in big-endian
 func (d *D) TryFieldScalarFP64BE(name string, sms ...scalar.Mapper) (*scalar.S, error) {
 	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
-		v, err := d.tryFPE(64, 32, BigEndian)
+		v, err := d.tryFPEndian(64, 32, BigEndian)
 		s.Actual = v
 		return s, err
 	}, sms...)

@@ -6,25 +6,25 @@ import (
 	"fmt"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 var headerFormat decode.Group
 var footerFormat decode.Group
 var mp3Frame decode.Group
 
-// TODO: format options default
-const maxUniqueHeaderConfigs = 5
-const maxSyncSeek = 64 * 1024 * 8
-
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.MP3,
 		ProbeOrder:  20, // after most others (silent samples and jpeg header can look like mp3 sync)
 		Description: "MP3 file",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    mp3Decode,
+		DecodeInArg: format.Mp3In{
+			MaxUniqueHeaderConfigs: 5,
+			MaxSyncSeek:            4 * 1024 * 8,
+		},
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.ID3V2}, Group: &headerFormat},
 			{
@@ -40,7 +40,9 @@ func init() {
 	})
 }
 
-func mp3Decode(d *decode.D, in interface{}) interface{} {
+func mp3Decode(d *decode.D, in any) any {
+	mi, _ := in.(format.Mp3In)
+
 	// things in a mp3 stream usually have few unique combinations of.
 	// does not include bitrate on purpose
 	type headerConfig struct {
@@ -66,7 +68,7 @@ func mp3Decode(d *decode.D, in interface{}) interface{} {
 	decodeFailures := 0
 	d.FieldArray("frames", func(d *decode.D) {
 		for d.NotEnd() {
-			syncLen, _, err := d.TryPeekFind(16, 8, maxSyncSeek, func(v uint64) bool {
+			syncLen, _, err := d.TryPeekFind(16, 8, int64(mi.MaxSyncSeek), func(v uint64) bool {
 				return (v&0b1111_1111_1110_0000 == 0b1111_1111_1110_0000 && // sync header
 					v&0b0000_0000_0001_1000 != 0b0000_0000_0000_1000 && // not reserved mpeg version
 					v&0b0000_0000_0000_0110 == 0b0000_0000_0000_0010) // layer 3
@@ -99,7 +101,7 @@ func mp3Decode(d *decode.D, in interface{}) interface{} {
 			lastValidEnd = d.Pos()
 			validFrames++
 
-			if len(uniqueHeaderConfigs) >= maxUniqueHeaderConfigs {
+			if len(uniqueHeaderConfigs) >= mi.MaxUniqueHeaderConfigs {
 				d.Errorf("too many unique header configurations")
 			}
 		}

@@ -6,15 +6,15 @@ package vorbis
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 var vorbisComment decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.VORBIS_PACKET,
 		Description: "Vorbis packet",
 		DecodeFn:    vorbisDecode,
@@ -38,7 +38,7 @@ var packetTypeNames = map[uint]string{
 	packetTypeSetup:          "Setup",
 }
 
-func vorbisDecode(d *decode.D, in interface{}) interface{} {
+func vorbisDecode(d *decode.D, in any) any {
 	d.Endian = decode.LittleEndian
 
 	packetType := d.FieldUScalarFn("packet_type", func(d *decode.D) scalar.S {
@@ -90,7 +90,7 @@ func vorbisDecode(d *decode.D, in interface{}) interface{} {
 		d.FieldU1("framing_flag", d.ValidateU(1))
 	case packetTypeSetup:
 		d.FieldUFn("vorbis_codebook_count", func(d *decode.D) uint64 { return d.U8() + 1 })
-		d.FieldU24("codecooke_sync", d.ValidateU(0x564342), scalar.Hex)
+		d.FieldU24("codecooke_sync", d.ValidateU(0x564342), scalar.ActualHex)
 		d.FieldU16("codebook_dimensions")
 		d.FieldU24("codebook_entries")
 

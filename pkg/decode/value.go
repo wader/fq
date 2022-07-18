@@ -9,11 +9,13 @@ import (
 
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/ranges"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 type Compound struct {
-	IsArray  bool
-	Children []*Value
+	IsArray     bool
+	RangeSorted bool
+	Children    []*Value
 
 	Description string
 	Format      *Format
@@ -23,10 +25,10 @@ type Compound struct {
 type Value struct {
 	Parent     *Value
 	Name       string
-	V          interface{} // scalar.S or Compound (array/struct)
-	Index      int         // index in parent array/struct
+	V          any // scalar.S or Compound (array/struct)
+	Index      int // index in parent array/struct
 	Range      ranges.Range
-	RootBitBuf *bitio.Buffer
+	RootReader bitio.ReaderAtSeeker
 	IsRoot     bool // TODO: rework?
 }
 
@@ -202,10 +204,13 @@ func (v *Value) postProcess() {
 				}
 			}
 
-			// TODO: really sort array?
-			sort.Slice(vv.Children, func(i, j int) bool {
-				return (vv.Children)[i].Range.Start < (vv.Children)[j].Range.Start
-			})
+			// TODO: really sort array? if sort it needs to be stable to keep the order
+			// of value with same range start, think null values etc
+			if vv.RangeSorted {
+				sort.SliceStable(vv.Children, func(i, j int) bool {
+					return (vv.Children)[i].Range.Start < (vv.Children)[j].Range.Start
+				})
+			}
 
 			v.Index = -1
 			if vv.IsArray {
@@ -222,4 +227,21 @@ func (v *Value) postProcess() {
 	}); err != nil {
 		panic(err)
 	}
+}
+
+func (v *Value) TryScalarFn(sms ...scalar.Mapper) error {
+	var err error
+	sr, ok := v.V.(*scalar.S)
+	if !ok {
+		panic("not a scalar value")
+	}
+	s := *sr
+	for _, sm := range sms {
+		s, err = sm.MapScalar(s)
+		if err != nil {
+			break
+		}
+	}
+	v.V = &s
+	return err
 }

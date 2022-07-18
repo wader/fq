@@ -1,0 +1,8 @@
+$ fq -d asn1_ber d tc23.ber
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: tc23.ber (asn1_ber)
+   |                                               |                |  error: asn1_ber: BitBufRange: failed at position 0 (read size 19 seek pos 0): outside buffer
+0x0|06                                             |.               |  class: "universal" (0)
+0x0|06                                             |.               |  form: "primitive" (0)
+0x0|06                                             |.               |  tag: "object_identifier" (0x6)
+0x0|   11                                          | .              |  length: 17
+0x0|      7f ff ff ff ff ff|                       |  ......|       |  unknown0: raw bits

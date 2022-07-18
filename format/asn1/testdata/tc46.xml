@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<ASN1_TYPE>
+	<error>Indefinite length form used for primitive encoding form</error>
+	<identification_block>
+		<tag_class>UNIVERSAL</tag_class>
+		<is_constructed>false</is_constructed>
+		<value_dec>3</value_dec>
+	</identification_block>
+	<length_block>
+		<is_indefinite_form>true</is_indefinite_form>
+		<long_form_used>false</long_form_used>
+		<length>0</length>
+	</length_block>
+</ASN1_TYPE>

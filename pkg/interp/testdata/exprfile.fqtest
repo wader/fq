@@ -4,15 +4,19 @@
 .headers[0].magic | tovalue
 /err.jq:
 asdad)
-$ fq -n -f /test.jq
+$ fq -n -f test.jq
 123
 /test.jq:
 123
-$ fq -f /test2.jq /test.mp3
+$ fq -f test2.jq test.mp3
 "ID3"
-$ fq --from-file /test2.jq /test.mp3
+$ fq --from-file test2.jq test.mp3
 "ID3"
-$ fq -nf /err.jq
+$ fq -nf err.jq
 exitcode: 3
 stderr:
-error: /err.jq:1:6: unexpected token ")"
+error: err.jq:1:6: unexpected token ")"
+$ fq -n -f missing
+exitcode: 2
+stderr:
+error: missing: no such file or directory

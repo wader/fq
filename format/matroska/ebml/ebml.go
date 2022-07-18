@@ -5,7 +5,8 @@ import "github.com/wader/fq/pkg/scalar"
 type Type int
 
 const (
-	Integer Type = iota
+	Unknown Type = iota
+	Integer
 	Uinteger
 	Float
 	String
@@ -16,11 +17,12 @@ const (
 )
 
 var TypeNames = map[Type]string{
+	Unknown:  "unknown",
 	Integer:  "integer",
 	Uinteger: "uinteger",
 	Float:    "float",
 	String:   "string",
-	UTF8:     "UTF8",
+	UTF8:     "utf8",
 	Date:     "data",
 	Binary:   "binary",
 	Master:   "master",
@@ -52,16 +54,16 @@ const (
 )
 
 var Global = Tag{
-	CRC32ID: {Name: "CRC-32", Type: Binary},
-	VoidID:  {Name: "Void", Type: Binary},
+	CRC32ID: {Name: "crc32", Type: Binary},
+	VoidID:  {Name: "void", Type: Binary},
 }
 
 var Header = Tag{
-	EBMLVersionID:        {Name: "EBMLVersion", Type: Uinteger},
-	EBMLReadVersionID:    {Name: "EBMLReadVersion", Type: Uinteger},
-	EBMLMaxIDLengthID:    {Name: "EBMLMaxIDLength", Type: Uinteger},
-	EBMLMaxSizeLengthID:  {Name: "EBMLMaxSizeLength", Type: Uinteger},
-	DocTypeID:            {Name: "DocType", Type: String},
-	DocTypeVersionID:     {Name: "DocTypeVersion", Type: Uinteger},
-	DocTypeReadVersionID: {Name: "DocTypeReadVersion", Type: Uinteger},
+	EBMLVersionID:        {Name: "ebml_version", Type: Uinteger},
+	EBMLReadVersionID:    {Name: "ebml_read_version", Type: Uinteger},
+	EBMLMaxIDLengthID:    {Name: "ebml_max_id_length", Type: Uinteger},
+	EBMLMaxSizeLengthID:  {Name: "ebml_max_size_length", Type: Uinteger},
+	DocTypeID:            {Name: "doc_type", Type: String},
+	DocTypeVersionID:     {Name: "doc_type_version", Type: Uinteger},
+	DocTypeReadVersionID: {Name: "doc_type_read_version", Type: Uinteger},
 }

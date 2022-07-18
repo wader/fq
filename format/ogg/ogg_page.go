@@ -4,21 +4,22 @@ import (
 	"bytes"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
+	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/checksum"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.OGG_PAGE,
 		Description: "OGG page",
 		DecodeFn:    pageDecode,
 	})
 }
 
-func pageDecode(d *decode.D, in interface{}) interface{} {
+func pageDecode(d *decode.D, in any) any {
 	p := format.OggPageOut{}
 	startPos := d.Pos()
 
@@ -33,7 +34,7 @@ func pageDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldU64("granule_position")
 	p.StreamSerialNumber = uint32(d.FieldU32("bitstream_serial_number"))
 	p.SequenceNo = uint32(d.FieldU32("page_sequence_no"))
-	d.FieldU32("crc", scalar.Hex)
+	d.FieldU32("crc", scalar.ActualHex)
 	pageSegments := d.FieldU8("page_segments")
 	var segmentTable []uint64
 	d.FieldArray("segment_table", func(d *decode.D) {
@@ -43,10 +44,7 @@ func pageDecode(d *decode.D, in interface{}) interface{} {
 	})
 	d.FieldArray("segments", func(d *decode.D) {
 		for _, ss := range segmentTable {
-			bs, err := d.FieldRawLen("segment", int64(ss)*8).Bytes()
-			if err != nil {
-				d.IOPanic(err, "d.BitBufRange segment")
-			}
+			bs := d.ReadAllBits(d.FieldRawLen("segment", int64(ss)*8))
 			p.Segments = append(p.Segments, bs)
 		}
 	})
@@ -54,9 +52,9 @@ func pageDecode(d *decode.D, in interface{}) interface{} {
 
 	pageChecksumValue := d.FieldGet("crc")
 	pageCRC := &checksum.CRC{Bits: 32, Table: checksum.Poly04c11db7Table}
-	d.MustCopy(pageCRC, d.BitBufRange(startPos, pageChecksumValue.Range.Start-startPos))                      // header before checksum
-	d.MustCopy(pageCRC, bytes.NewReader([]byte{0, 0, 0, 0}))                                                  // zero checksum bits
-	d.MustCopy(pageCRC, d.BitBufRange(pageChecksumValue.Range.Stop(), endPos-pageChecksumValue.Range.Stop())) // rest of page
+	d.Copy(pageCRC, bitio.NewIOReader(d.BitBufRange(startPos, pageChecksumValue.Range.Start-startPos)))                      // header before checksum
+	d.Copy(pageCRC, bytes.NewReader([]byte{0, 0, 0, 0}))                                                                     // zero checksum bits
+	d.Copy(pageCRC, bitio.NewIOReader(d.BitBufRange(pageChecksumValue.Range.Stop(), endPos-pageChecksumValue.Range.Stop()))) // rest of page
 	_ = pageChecksumValue.TryScalarFn(d.ValidateUBytes(pageCRC.Sum(nil)))
 
 	return p

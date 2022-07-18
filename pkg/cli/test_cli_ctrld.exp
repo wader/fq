@@ -1,0 +1,15 @@
+#!/usr/bin/env expect
+
+log_user 1
+set timeout 3
+
+expect_after {
+    timeout {exit 1}
+}
+
+spawn sh -c "cat | fq 2>&1"
+sleep 1
+# ctrl-d
+send "\x04"
+expect "failed to decode"
+expect eof

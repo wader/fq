@@ -1,6 +1,6 @@
 # fq 'first(.. | select(format=="tcp")) | tobytes' many_interfaces.pcapng > tcp_segment
-$ fq -d tcp_segment verbose /tcp_segment
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /tcp_segment (tcp_segment) 0x0-0x2b.7 (44)
+$ fq -d tcp_segment dv tcp_segment
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: tcp_segment (tcp_segment) 0x0-0x2b.7 (44)
 0x00|c7 25                                          |.%              |  source_port: 50981 0x0-0x1.7 (2)
 0x00|      01 bb                                    |  ..            |  destination_port: "https" (443) (http protocol over TLS/SSL) 0x2-0x3.7 (2)
 0x00|            2b ce 2e 8a                        |    +...        |  sequence_number: 734932618 0x4-0x7.7 (4)
@@ -46,4 +46,4 @@ $ fq -d tcp_segment verbose /tcp_segment
 0x20|                              00               |          .     |      kind: "end" (0) (End of options list) 0x2a-0x2a.7 (1)
     |                                               |                |    [8]{}: option 0x2b-0x2b.7 (1)
 0x20|                                 00|           |           .|   |      kind: "end" (0) (End of options list) 0x2b-0x2b.7 (1)
-    |                                               |                |  data: raw bits 0x2c-NA (0)
+    |                                               |                |  payload: raw bits 0x2c-NA (0)

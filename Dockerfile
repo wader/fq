@@ -1,5 +1,5 @@
 # bump: docker-golang /FROM golang:([\d.]+)/ docker:golang|^1
-FROM golang:1.17.5-bullseye AS base
+FROM golang:1.18.4-bullseye AS base
 
 # expect is used to test cli
 RUN \
@@ -9,13 +9,6 @@ RUN \
 
 # docker build --target dev -t fq-dev - < Dockerfile && docker run --rm -ti -v "$PWD:/$PWD" -w "$PWD" fq-dev
 FROM base AS dev
-
-# bump: docker-golangci-lint /GOLANGCILINT_VERSION=([\d.]+)/ git:https://github.com/golangci/golangci-lint.git|^1
-# bump: docker-golangci-lint link "Release notes" https://github.com/golangci/golangci-lint/releases/tag/v$LATEST
-ARG GOLANGCILINT_VERSION=1.43.0
-RUN \
-    curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | \
-    sh -s -- -b /usr/local/bin v$GOLANGCILINT_VERSION
 
 FROM base AS builder
 

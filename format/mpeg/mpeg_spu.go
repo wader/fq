@@ -9,13 +9,13 @@ import (
 	"strings"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.MPEG_SPU,
 		Description: "Sub Picture Unit (DVD subtitle)",
 		DecodeFn:    spuDecode,
@@ -70,7 +70,7 @@ func rleValue(d *decode.D) (uint64, uint64, int) {
 	}
 }
 
-func decodeLines(d *decode.D, lines int, width int) []string { //nolint:unparam
+func decodeLines(d *decode.D, lines int, width int) []string {
 	var ls []string
 
 	for i := 0; i < lines; i++ {
@@ -99,9 +99,12 @@ func decodeLines(d *decode.D, lines int, width int) []string { //nolint:unparam
 	return ls
 }
 
-func spuDecode(d *decode.D, in interface{}) interface{} {
+func spuDecode(d *decode.D, in any) any {
 	d.FieldU16("size")
 	dcsqtOffset := d.FieldU16("dcsqt_offset")
+
+	// to catch infinite loops
+	offsetSeen := map[uint64]struct{}{}
 
 	d.SeekAbs(int64(dcsqtOffset) * 8)
 	d.FieldArray("dcsqt", func(d *decode.D) {
@@ -116,6 +119,11 @@ func spuDecode(d *decode.D, in interface{}) interface{} {
 					lastDCSQ = true
 					return
 				}
+
+				if _, ok := offsetSeen[offset]; ok {
+					d.Fatalf("dcsqt loop detected for %d", offset)
+				}
+				offsetSeen[offset] = struct{}{}
 
 				var pxdTFOffset int64
 				var pxdBFOffset int64
@@ -160,6 +168,8 @@ func spuDecode(d *decode.D, in interface{}) interface{} {
 								size := d.FieldU16("size")
 								// TODO
 								d.FieldRawLen("data", int64(size)*8)
+							default:
+								d.Fatalf("unknown command %d", cmd)
 							}
 						})
 					}

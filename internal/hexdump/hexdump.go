@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/wader/fq/internal/columnwriter"
-	"github.com/wader/fq/internal/num"
+	"github.com/wader/fq/internal/mathextra"
 	"github.com/wader/fq/pkg/bitio"
 )
 
@@ -25,7 +25,7 @@ type Dumper struct {
 	hasWrittenHeader bool
 
 	bitsBuf  []byte
-	bitsBufN int
+	bitsBufN int64
 }
 
 // TODO: something more generic? bin, octal, arbitrary base?
@@ -60,7 +60,7 @@ func New(w io.Writer, startOffset int64, addrLen int, addrBase int, lineBytes in
 
 func (d *Dumper) flush() error {
 	if _, err := d.columnW.Columns[0].Write([]byte(
-		d.dumpAddrFn(num.PadFormatInt(((d.offset-1)/d.lineBytes)*d.lineBytes, d.addrBase, true, d.addrLen)))); err != nil {
+		d.dumpAddrFn(mathextra.PadFormatInt(((d.offset-1)/d.lineBytes)*d.lineBytes, d.addrBase, true, d.addrLen)))); err != nil {
 		return err
 	}
 	if _, err := d.separatorsW.Write([]byte(d.column)); err != nil {
@@ -72,11 +72,11 @@ func (d *Dumper) flush() error {
 	return nil
 }
 
-func (d *Dumper) WriteBits(p []byte, nBits int) (n int, err error) {
-	pos := 0
+func (d *Dumper) WriteBits(p []byte, nBits int64) (n int64, err error) {
+	pos := int64(0)
 	rBits := nBits
 	if d.bitsBufN > 0 {
-		r := num.MinInt(8-d.bitsBufN, nBits)
+		r := mathextra.MinInt64(8-d.bitsBufN, nBits)
 		v := bitio.Read64(p, 0, r)
 		bitio.Write64(v, r, d.bitsBuf, d.bitsBufN)
 
@@ -86,7 +86,7 @@ func (d *Dumper) WriteBits(p []byte, nBits int) (n int, err error) {
 			return nBits, nil
 		}
 		if n, err := d.Write(d.bitsBuf); err != nil {
-			return n * 8, err
+			return int64(n) * 8, err
 		}
 		pos = r
 		rBits -= r
@@ -97,7 +97,7 @@ func (d *Dumper) WriteBits(p []byte, nBits int) (n int, err error) {
 
 		b[0] = byte(bitio.Read64(p, pos, 8))
 		if n, err := d.Write(b[:]); err != nil {
-			return n * 8, err
+			return int64(n) * 8, err
 		}
 
 		pos += 8
@@ -122,7 +122,7 @@ func (d *Dumper) Write(p []byte) (n int, err error) {
 		}
 		for i := int64(0); i < d.lineBytes; i++ {
 			headerSB := &strings.Builder{}
-			if _, err := headerSB.Write([]byte(num.PadFormatInt(i, d.addrBase, false, 2))); err != nil {
+			if _, err := headerSB.Write([]byte(mathextra.PadFormatInt(i, d.addrBase, false, 2))); err != nil {
 				return 0, err
 			}
 			if i < d.lineBytes-1 {

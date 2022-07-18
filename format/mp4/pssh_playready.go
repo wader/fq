@@ -2,13 +2,13 @@ package mp4
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.PSSH_PLAYREADY,
 		Description: "PlayReady PSSH",
 		DecodeFn:    playreadyPsshDecode,
@@ -25,7 +25,7 @@ var recordTypeNames = scalar.UToSymStr{
 	recordTypeLicenseStore:           "License store",
 }
 
-func playreadyPsshDecode(d *decode.D, in interface{}) interface{} {
+func playreadyPsshDecode(d *decode.D, in any) any {
 	d.Endian = decode.LittleEndian
 
 	d.FieldU32("size")

@@ -1,5 +1,5 @@
-$ fq -d flac verbose /stereo24.flac
-       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /stereo24.flac (flac) 0x0-0x11bcb.7 (72652)
+$ fq -d flac dv stereo24.flac
+       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: stereo24.flac (flac) 0x0-0x11bcb.7 (72652)
 0x00000|66 4c 61 43                                    |fLaC            |  magic: "fLaC" (valid) 0x0-0x3.7 (4)
        |                                               |                |  metadatablocks[0:4]: (flac_metadatablocks) 0x4-0x209b.7 (8344)
        |                                               |                |    [0]{}: metadatablock (flac_metadatablock) 0x4-0x29.7 (38)

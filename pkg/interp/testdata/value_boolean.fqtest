@@ -1,4 +1,4 @@
-$ fq -i -d mp3 . /test.mp3
+$ fq -i -d mp3 . test.mp3
 mp3> .headers[0].flags.unsynchronisation | ., tovalue, type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|               00                              |     .          |.headers[0].flags.unsynchronisation: false
@@ -72,13 +72,13 @@ mp3> .headers[0].flags.unsynchronisation._path | ., type, length?
 mp3> .headers[0].flags.unsynchronisation._bits | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|               00                              |     .          |.: raw bits 0x5-0x5 (0.1)
-"buffer"
+"binary"
 1
 mp3> 
 mp3> .headers[0].flags.unsynchronisation._bytes | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|               00                              |     .          |.: raw bits 0x5-0x5 (0.1)
-"buffer"
+"binary"
 0
 mp3> 
 mp3> .headers[0].flags.unsynchronisation._error | ., type, length?
@@ -89,19 +89,19 @@ mp3> .headers[0].flags.unsynchronisation._unknown | ., type, length?
 false
 "boolean"
 mp3> .headers[0].flags.unsynchronisation.a = 1
-error: expected an object but got: boolean
+error: expected an object but got: boolean (false)
 mp3> .headers[0].flags.unsynchronisation[0] = 1
-error: expected an array but got: boolean
+error: expected an array but got: boolean (false)
 mp3> .headers[0].flags.unsynchronisation.a |= empty
 error: expected an object but got: boolean
 mp3> .headers[0].flags.unsynchronisation[0] |= empty
 error: expected an array but got: boolean
 mp3> .headers[0].flags.unsynchronisation | setpath(["a"]; 1)
-error: expected an object with key "a" but got: boolean
+error: expected an object but got: boolean (false)
 mp3> .headers[0].flags.unsynchronisation | setpath([0]; 1)
-error: expected an array with index 0 but got: boolean
+error: expected an array but got: boolean (false)
 mp3> .headers[0].flags.unsynchronisation | delpaths([["a"]])
-error: expected an object with key "a" but got: boolean
+error: expected an object but got: boolean (false)
 mp3> .headers[0].flags.unsynchronisation | delpaths([[0]])
-error: expected an array with index 0 but got: boolean
+error: expected an array but got: boolean (false)
 mp3> ^D

@@ -4,12 +4,12 @@ package vpx
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.VP9_CFM,
 		Description: "VP9 Codec Feature Metadata",
 		DecodeFn:    vp9CFMDecode,
@@ -18,12 +18,12 @@ func init() {
 	})
 }
 
-func vp9CFMDecode(d *decode.D, in interface{}) interface{} {
+func vp9CFMDecode(d *decode.D, in any) any {
 	for d.NotEnd() {
 		d.FieldStruct("feature", func(d *decode.D) {
 			id := d.FieldU8("id", vp9FeatureIDNames)
 			l := d.FieldU8("length")
-			d.LenFn(int64(l)*8, func(d *decode.D) {
+			d.FramedFn(int64(l)*8, func(d *decode.D) {
 				switch id {
 				case vp9FeatureProfile:
 					d.FieldU8("profile")

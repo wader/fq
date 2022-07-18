@@ -1,0 +1,6 @@
+$ fq -i
+null> paste
+"test\n"
+null> ^D
+stdin:
+test
