@@ -9,7 +9,7 @@ import (
 func init() {
 	interp.RegisterFormat(decode.Format{
 		Name:        format.PG_CONTROL,
-		Description: "PostgreSQL 14 control file",
+		Description: "PostgreSQL control file",
 		DecodeFn:    decodePgControl,
 	})
 }
@@ -24,8 +24,8 @@ func decodePgControl(d *decode.D, in any) any {
 
 	/*    0      |     8 */ // uint64 system_identifier;
 	/*    8      |     4 */ // uint32 pg_control_version;
-	d.FieldU64("system_identifier")
-	pgControlVersion := d.FieldU32("pg_control_version")
+	d.U64()
+	pgControlVersion := d.U32()
 
 	switch pgControlVersion {
 	case PG_CONTROL_VERSION_11:
@@ -109,13 +109,14 @@ func decodePgControl(d *decode.D, in any) any {
 /* total size (bytes):   80 */
 //
 func decodePgControl11(d *decode.D, in any) any {
+	d.SeekAbs(0)
 	/*    0      |     8 */ // uint64 system_identifier;
 	/*    8      |     4 */ // uint32 pg_control_version;
 	/*   12      |     4 */ // uint32 catalog_version_no;
 	/*   16      |     4 */ // DBState state;
 	/* XXX  4-byte hole  */
-	//d.FieldU64("system_identifier")
-	//d.FieldU32("pg_control_version")
+	d.FieldU64("system_identifier")
+	d.FieldU32("pg_control_version")
 	d.FieldU32("catalog_version_no")
 	d.FieldU32("state")
 	d.U32()
@@ -234,7 +235,7 @@ func decodePgControl11(d *decode.D, in any) any {
 	d.FieldU8("float4ByVal")
 	d.FieldU8("float8ByVal")
 	d.U16()
-	
+
 	/*  252      |     4 */ // uint32 data_checksum_version;
 	/*  256      |    32 */ // char mock_authentication_nonce[32];
 	/*  288      |     4 */ // pg_crc32c crc;
@@ -319,13 +320,14 @@ func decodePgControl11(d *decode.D, in any) any {
 //
 /* total size (bytes):   88 */
 func decodePgControl14(d *decode.D, in any) any {
+	d.SeekAbs(0)
 	/*    0      |     8 */ // uint64 system_identifier;
 	/*    8      |     4 */ // uint32 pg_control_version;
 	/*   12      |     4 */ // uint32 catalog_version_no;
 	/*   16      |     4 */ // DBState state;
 	/* XXX  4-byte hole  */
-	//d.FieldU64("system_identifier")
-	//d.FieldU32("pg_control_version")
+	d.FieldU64("system_identifier")
+	d.FieldU32("pg_control_version")
 	d.FieldU32("catalog_version_no")
 	d.FieldU32("state")
 	d.U32()
