@@ -52,7 +52,7 @@ func decodeLeb128(d *decode.D) uint64 {
 	return v
 }
 
-func obuDecode(d *decode.D, in any) any {
+func obuDecode(d *decode.D, _ any) any {
 	var obuType uint64
 	var obuSize int64
 	hasExtension := false

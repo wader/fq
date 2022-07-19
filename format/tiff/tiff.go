@@ -201,7 +201,7 @@ func decodeIfd(d *decode.D, s *strips, tagNames scalar.UToSymStr) int64 {
 	return nextIfdOffset
 }
 
-func tiffDecode(d *decode.D, in any) any {
+func tiffDecode(d *decode.D, _ any) any {
 	endian := d.FieldU32("endian", endianNames, scalar.ActualHex)
 
 	switch endian {

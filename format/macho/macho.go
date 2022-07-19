@@ -355,7 +355,7 @@ var sectionTypes = scalar.UToSymStr{
 	0x15: "thread_local_init_function_pointers",
 }
 
-func machoDecode(d *decode.D, in any) any {
+func machoDecode(d *decode.D, _ any) any {
 	ofileDecode(d)
 	return nil
 }

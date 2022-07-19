@@ -51,7 +51,7 @@ func fieldColorMap(d *decode.D, name string, bitDepth int) {
 	})
 }
 
-func gifDecode(d *decode.D, in any) any {
+func gifDecode(d *decode.D, _ any) any {
 	d.Endian = decode.LittleEndian
 
 	d.FieldUTF8("header", 6, d.AssertStr("GIF87a", "GIF89a"))

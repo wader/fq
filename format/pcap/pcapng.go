@@ -361,7 +361,7 @@ type decodeContext struct {
 	flowDecoder        *flowsdecoder.Decoder
 }
 
-func decodePcapng(d *decode.D, in any) any {
+func decodePcapng(d *decode.D, _ any) any {
 	sectionHeaders := 0
 	for !d.End() {
 		fd := flowsdecoder.New()

@@ -10,6 +10,6 @@ func init() {
 	interp.RegisterFormat(decode.Format{
 		Name:        format.RAW,
 		Description: "Raw bits",
-		DecodeFn:    func(d *decode.D, in any) any { return nil },
+		DecodeFn:    func(d *decode.D, _ any) any { return nil },
 	})
 }

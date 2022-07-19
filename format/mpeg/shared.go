@@ -17,7 +17,7 @@ func init() {
 
 // transform to binary using fn
 func makeBinaryTransformFn(fn func(r io.Reader) (io.Reader, error)) func(i *interp.Interp, c any) any {
-	return func(i *interp.Interp, c any) any {
+	return func(_ *interp.Interp, c any) any {
 		inBR, err := interp.ToBitReader(c)
 		if err != nil {
 			return err

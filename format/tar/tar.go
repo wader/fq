@@ -26,7 +26,7 @@ func init() {
 	})
 }
 
-func tarDecode(d *decode.D, in any) any {
+func tarDecode(d *decode.D, _ any) any {
 	const blockBytes = 512
 	const blockBits = blockBytes * 8
 

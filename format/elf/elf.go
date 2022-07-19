@@ -903,7 +903,7 @@ func elfDecodeSectionHeaders(d *decode.D, ec elfContext) {
 	}
 }
 
-func elfDecode(d *decode.D, in any) any {
+func elfDecode(d *decode.D, _ any) any {
 	var ec elfContext
 
 	d.FieldStruct("header", func(d *decode.D) { elfDecodeHeader(d, &ec) })

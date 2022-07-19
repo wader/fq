@@ -140,7 +140,7 @@ var protectionNames = scalar.BoolToDescription{
 	false: "Has CRC",
 }
 
-func frameDecode(d *decode.D, in any) any {
+func frameDecode(d *decode.D, _ any) any {
 	const headerBytes = 4
 	var sideInfoBytes int64
 	var isStereo bool

@@ -98,7 +98,7 @@ var sliceNames = scalar.UToSymStr{
 	9: "si",
 }
 
-func avcNALUDecode(d *decode.D, in any) any {
+func avcNALUDecode(d *decode.D, _ any) any {
 	d.FieldBool("forbidden_zero_bit")
 	d.FieldU2("nal_ref_idc")
 	nalType := d.FieldU5("nal_unit_type", avcNALNames)

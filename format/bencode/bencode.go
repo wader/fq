@@ -90,7 +90,7 @@ func decodeBencodeValue(d *decode.D) {
 	}
 }
 
-func decodeBencode(d *decode.D, in any) any {
+func decodeBencode(d *decode.D, _ any) any {
 	decodeBencodeValue(d)
 	return nil
 }

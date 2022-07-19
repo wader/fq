@@ -57,7 +57,7 @@ var deflateExtraFlagsNames = scalar.UToSymStr{
 	4: "fast",
 }
 
-func gzDecode(d *decode.D, in any) any {
+func gzDecode(d *decode.D, _ any) any {
 	d.Endian = decode.LittleEndian
 
 	d.FieldRawLen("identification", 2*8, d.AssertBitBuf([]byte("\x1f\x8b")))
