@@ -19,7 +19,7 @@ func init() {
 	})
 }
 
-func vp8Decode(d *decode.D, in any) any {
+func vp8Decode(d *decode.D, _ any) any {
 	var isKeyFrame bool
 
 	versions := map[uint64]struct {

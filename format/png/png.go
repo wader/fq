@@ -77,7 +77,7 @@ var colorTypeMap = scalar.UToSymStr{
 	colorTypeRGBA:               "rgba",
 }
 
-func pngDecode(d *decode.D, in any) any {
+func pngDecode(d *decode.D, _ any) any {
 	iEndFound := false
 	var colorType uint64
 
@@ -127,7 +127,7 @@ func pngDecode(d *decode.D, in any) any {
 
 				switch compressionMethod {
 				case compressionDeflate:
-					d.FieldFormatReaderLen("uncompressed", dataLen, zlib.NewReader, decode.FormatFn(func(d *decode.D, in any) any {
+					d.FieldFormatReaderLen("uncompressed", dataLen, zlib.NewReader, decode.FormatFn(func(d *decode.D, _ any) any {
 						d.FieldUTF8("text", int(d.BitsLeft()/8))
 						return nil
 					}))

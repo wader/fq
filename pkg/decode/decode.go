@@ -122,7 +122,7 @@ func decode(ctx context.Context, br bitio.ReaderAtSeeker, group Group, opts Opti
 		}
 
 		var minMaxRange ranges.Range
-		if err := d.Value.WalkRootPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
+		if err := d.Value.WalkRootPreOrder(func(v *Value, _ *Value, _ int, _ int) error {
 			minMaxRange = ranges.MinMax(minMaxRange, v.Range)
 			v.Range.Start += decodeRange.Start
 			v.RootReader = br
@@ -281,7 +281,7 @@ func (d *D) SharedReadBuf(n int) []byte {
 
 func (d *D) FillGaps(r ranges.Range, namePrefix string) {
 	makeWalkFn := func(fn func(iv *Value)) func(iv *Value, rootV *Value, depth int, rootDepth int) error {
-		return func(iv *Value, rootV *Value, depth int, rootDepth int) error {
+		return func(iv *Value, _ *Value, _ int, _ int) error {
 			switch iv.V.(type) {
 			case *Compound:
 			default:
@@ -294,7 +294,7 @@ func (d *D) FillGaps(r ranges.Range, namePrefix string) {
 	// TODO: redo this, tries to get rid of slice grow
 	// TODO: pre-sorted somehow?
 	n := 0
-	_ = d.Value.WalkRootPreOrder(makeWalkFn(func(iv *Value) { n++ }))
+	_ = d.Value.WalkRootPreOrder(makeWalkFn(func(_ *Value) { n++ }))
 	valueRanges := make([]ranges.Range, n)
 	i := 0
 	_ = d.Value.WalkRootPreOrder(makeWalkFn(func(iv *Value) {

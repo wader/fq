@@ -1,44 +1,43 @@
 linters:
-  enable:
-    - revive
-    - errname
-    - goimports
-    - nilerr
-    - forcetypeassert
-    - asciicheck
-    - bodyclose
-    - durationcheck
-    - errorlint
-    - noctx
-    - misspell
-    - exportloopref
-    - unconvert
-    - unparam
-    - wastedassign
-    - makezero
-    - exhaustive
-    - gosec
-    - nolintlint
-    - nakedret
-    - predeclared
-    - tagliatelle
-
-run:
-  skip-dirs:
-    - dev
-    - doc
-
+    enable:
+        - asciicheck
+        - bodyclose
+        - durationcheck
+        - errname
+        - errorlint
+        - exhaustive
+        - exportloopref
+        - forcetypeassert
+        - goimports
+        - gosec
+        - makezero
+        - misspell
+        - nakedret
+        - nilerr
+        - noctx
+        - nolintlint
+        - nosprintfhostport
+        - predeclared
+        - revive
+        - tagliatelle
+        - unconvert
+        - unparam
+        - wastedassign
 linters-settings:
-  misspell:
-    ignore-words:
-      # elf RELA
-      - rela
-      - equalisation
-      - synchronisation
-  exhaustive:
-    default-signifies-exhaustive: true
-  gosec:
-    excludes:
-      # allow md5
-      - G401
-      - G501
+    exhaustive:
+        default-signifies-exhaustive: true
+    gosec:
+        excludes:
+            - G401
+            - G501
+    misspell:
+        ignore-words:
+            # elf RELA
+            - rela
+            - equalisation
+            - synchronisation
+run:
+    skip-dirs:
+        # allow md5
+        - dev
+        - doc

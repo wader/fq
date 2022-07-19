@@ -25,7 +25,7 @@ func init() {
 	})
 }
 
-func decodeJSON(d *decode.D, in any) any {
+func decodeJSON(d *decode.D, _ any) any {
 	br := d.RawLen(d.Len())
 	jd := stdjson.NewDecoder(bitio.NewIOReader(br))
 	var s scalar.S

@@ -153,7 +153,7 @@ func decodeMsgPackValue(d *decode.D) {
 	}
 }
 
-func decodeMsgPack(d *decode.D, in any) any {
+func decodeMsgPack(d *decode.D, _ any) any {
 	decodeMsgPackValue(d)
 	return nil
 }

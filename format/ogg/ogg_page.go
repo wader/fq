@@ -19,7 +19,7 @@ func init() {
 	})
 }
 
-func pageDecode(d *decode.D, in any) any {
+func pageDecode(d *decode.D, _ any) any {
 	p := format.OggPageOut{}
 	startPos := d.Pos()
 

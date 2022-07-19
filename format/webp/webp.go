@@ -41,7 +41,7 @@ func decodeChunk(d *decode.D, expectedChunkID string, fn func(d *decode.D)) bool
 	return true
 }
 
-func webpDecode(d *decode.D, in any) any {
+func webpDecode(d *decode.D, _ any) any {
 	d.Endian = decode.LittleEndian
 
 	d.FieldUTF8("riff_id", 4, d.AssertStr("RIFF"))

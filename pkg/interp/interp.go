@@ -68,7 +68,7 @@ func init() {
 	RegisterFunc0("_exttype", (*Interp)._extType)
 
 	RegisterFunc0("_global_state", func(i *Interp, c any) any { return *i.state })
-	RegisterFunc1("_global_state", func(i *Interp, c any, v any) any { *i.state = v; return v })
+	RegisterFunc1("_global_state", func(i *Interp, _ any, v any) any { *i.state = v; return v })
 
 	RegisterFunc0("history", (*Interp).history)
 	RegisterIter1("_display", (*Interp)._display)

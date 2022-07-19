@@ -17,7 +17,7 @@ func init() {
 }
 
 // H.265 page 33
-func hevcVPSDecode(d *decode.D, in any) any {
+func hevcVPSDecode(d *decode.D, _ any) any {
 	d.FieldU4("vps_video_parameter_set_id")
 	d.FieldBool("vps_base_layer_internal_flag")
 	d.FieldBool("vps_base_layer_available_flag")
