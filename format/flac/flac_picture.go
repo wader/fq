@@ -45,9 +45,9 @@ func init() {
 }
 
 func pictureDecode(d *decode.D, _ any) any {
-	lenStr := func(name string) string {
+	lenStr := func(name string) {
 		l := d.FieldU32(name + "_length")
-		return d.FieldUTF8(name, int(l))
+		d.FieldUTF8(name, int(l))
 	}
 	d.FieldU32("picture_type", pictureTypeNames)
 	lenStr("mime")

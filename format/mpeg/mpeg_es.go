@@ -161,6 +161,7 @@ func esLengthEncoding(d *decode.D) uint64 {
 	return v
 }
 
+//nolint:unparam
 func fieldODDecodeTag(d *decode.D, edc *esDecodeContext, name string, expectedTagID int, fn func(d *decode.D)) {
 	d.FieldStruct(name, func(d *decode.D) {
 		odDecodeTag(d, edc, expectedTagID, fn)
