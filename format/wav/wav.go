@@ -124,7 +124,7 @@ var subFormatNames = scalar.BytesToScalar{
 	{Bytes: subFormatIEEEFloat[:], Scalar: scalar.S{Sym: "ieee_float"}},
 }
 
-func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 {
+func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) {
 	d.Endian = decode.LittleEndian
 
 	chunks := map[string]func(d *decode.D){
@@ -191,8 +191,6 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 {
 	if chunkLen%2 != 0 {
 		d.FieldRawLen("align", 8)
 	}
-
-	return chunkLen + 8
 }
 
 func decodeChunks(d *decode.D, stringData bool) {

@@ -30,7 +30,7 @@ func NewRegistry() *Registry {
 	}
 }
 
-func (r *Registry) format(groupName string, format decode.Format, single bool) decode.Format {
+func (r *Registry) format(groupName string, format decode.Format, single bool) {
 	if r.formatResolved {
 		// for now can't change after resolved
 		panic("registry already resolved")
@@ -46,8 +46,6 @@ func (r *Registry) format(groupName string, format decode.Format, single bool) d
 	}
 
 	r.FormatGroups[groupName] = append(group, format)
-
-	return format
 }
 
 func (r *Registry) Format(format decode.Format) decode.Format {

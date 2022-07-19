@@ -167,7 +167,7 @@ func (v *Value) FormatRoot() *Value { return v.root(true, true) }
 
 func (v *Value) Errors() []error {
 	var errs []error
-	_ = v.WalkPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
+	_ = v.WalkPreOrder(func(_ *Value, rootV *Value, _ int, _ int) error {
 		switch vv := rootV.V.(type) {
 		case *Compound:
 			if vv.Err != nil {
@@ -187,7 +187,7 @@ func (v *Value) InnerRange() ranges.Range {
 }
 
 func (v *Value) postProcess() {
-	if err := v.WalkRootPostOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
+	if err := v.WalkRootPostOrder(func(v *Value, _ *Value, _ int, _ int) error {
 		switch vv := v.V.(type) {
 		case *Compound:
 			first := true

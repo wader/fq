@@ -70,6 +70,7 @@ func rleValue(d *decode.D) (uint64, uint64, int) {
 	}
 }
 
+//nolint:unparam
 func decodeLines(d *decode.D, lines int, width int) []string {
 	var ls []string
 

@@ -128,7 +128,7 @@ func init() {
 	type ToJSONOpts struct {
 		Indent int
 	}
-	RegisterFunc1("_tojson", func(i *Interp, c any, opts ToJSONOpts) any {
+	RegisterFunc1("_tojson", func(_ *Interp, c any, opts ToJSONOpts) any {
 		// TODO: share
 		cj := colorjson.NewEncoder(
 			false,
@@ -278,7 +278,7 @@ func init() {
 
 		return f(n, nil)
 	}
-	RegisterFunc1("_fromxml", func(i *Interp, s string, opts FromXMLOpts) any {
+	RegisterFunc1("_fromxml", func(_ *Interp, s string, opts FromXMLOpts) any {
 		if opts.Array {
 			return fromXMLArray(s)
 		}
@@ -462,7 +462,7 @@ func init() {
 
 		return bb.String()
 	}
-	RegisterFunc1("_toxml", func(i *Interp, c any, opts ToXMLOpts) any {
+	RegisterFunc1("_toxml", func(_ *Interp, c any, opts ToXMLOpts) any {
 		switch c := c.(type) {
 		case map[string]any:
 			return toXMLObject(c, opts)
@@ -632,14 +632,14 @@ func init() {
 
 		return f(doc.FirstChild)
 	}
-	RegisterFunc1("_fromhtml", func(i *Interp, s string, opts FromHTMLOpts) any {
+	RegisterFunc1("_fromhtml", func(_ *Interp, s string, opts FromHTMLOpts) any {
 		if opts.Array {
 			return fromHTMLArray(s)
 		}
 		return fromHTMLObject(s, opts)
 	})
 
-	RegisterFunc0("_fromyaml", func(i *Interp, s string) any {
+	RegisterFunc0("_fromyaml", func(_ *Interp, s string) any {
 		var t any
 		if err := yaml.Unmarshal([]byte(s), &t); err != nil {
 			return err
@@ -647,7 +647,7 @@ func init() {
 		return norm(t)
 	})
 
-	RegisterFunc0("_toyaml", func(i *Interp, c any) any {
+	RegisterFunc0("_toyaml", func(_ *Interp, c any) any {
 		b, err := yaml.Marshal(norm(c))
 		if err != nil {
 			return err
@@ -655,7 +655,7 @@ func init() {
 		return string(b)
 	})
 
-	RegisterFunc0("_fromtoml", func(i *Interp, s string) any {
+	RegisterFunc0("_fromtoml", func(_ *Interp, s string) any {
 		var t any
 		if err := toml.Unmarshal([]byte(s), &t); err != nil {
 			return err
@@ -663,7 +663,7 @@ func init() {
 		return norm(t)
 	})
 
-	RegisterFunc0("_totoml", func(i *Interp, c map[string]any) any {
+	RegisterFunc0("_totoml", func(_ *Interp, c map[string]any) any {
 		b := &bytes.Buffer{}
 		if err := toml.NewEncoder(b).Encode(norm(c)); err != nil {
 			return err
@@ -675,7 +675,7 @@ func init() {
 		Comma   string
 		Comment string
 	}
-	RegisterFunc1("_fromcsv", func(i *Interp, s string, opts FromCSVOpts) any {
+	RegisterFunc1("_fromcsv", func(_ *Interp, s string, opts FromCSVOpts) any {
 		var rvs []any
 		r := csv.NewReader(strings.NewReader(s))
 		r.TrimLeadingSpace = true
@@ -703,7 +703,7 @@ func init() {
 	type ToCSVOpts struct {
 		Comma string
 	}
-	RegisterFunc1("_tocsv", func(i *Interp, c []any, opts ToCSVOpts) any {
+	RegisterFunc1("_tocsv", func(_ *Interp, c []any, opts ToCSVOpts) any {
 		b := &bytes.Buffer{}
 		w := csv.NewWriter(b)
 		if opts.Comma != "" {
@@ -731,7 +731,7 @@ func init() {
 		return b.String()
 	})
 
-	RegisterFunc0("_fromhex", func(i *Interp, s string) any {
+	RegisterFunc0("_fromhex", func(_ *Interp, s string) any {
 		b, err := hex.DecodeString(s)
 		if err != nil {
 			return err
@@ -742,7 +742,7 @@ func init() {
 		}
 		return bb
 	})
-	RegisterFunc0("_tohex", func(i *Interp, c any) any {
+	RegisterFunc0("_tohex", func(_ *Interp, c any) any {
 		br, err := ToBitReader(c)
 		if err != nil {
 			return err
@@ -770,7 +770,7 @@ func init() {
 	type FromBase64Opts struct {
 		Encoding string
 	}
-	RegisterFunc1("_frombase64", func(i *Interp, s string, opts FromBase64Opts) any {
+	RegisterFunc1("_frombase64", func(_ *Interp, s string, opts FromBase64Opts) any {
 		b, err := base64Encoding(opts.Encoding).DecodeString(s)
 		if err != nil {
 			return err
@@ -784,7 +784,7 @@ func init() {
 	type ToBase64Opts struct {
 		Encoding string
 	}
-	RegisterFunc1("_tobase64", func(i *Interp, c any, opts ToBase64Opts) any {
+	RegisterFunc1("_tobase64", func(_ *Interp, c any, opts ToBase64Opts) any {
 		br, err := ToBitReader(c)
 		if err != nil {
 			return err
@@ -798,26 +798,26 @@ func init() {
 		return bb.String()
 	})
 
-	RegisterFunc0("_fromxmlentities", func(i *Interp, s string) any {
+	RegisterFunc0("_fromxmlentities", func(_ *Interp, s string) any {
 		return html.UnescapeString(s)
 	})
-	RegisterFunc0("_toxmlentities", func(i *Interp, s string) any {
+	RegisterFunc0("_toxmlentities", func(_ *Interp, s string) any {
 		return html.EscapeString(s)
 	})
 
-	RegisterFunc0("_fromurlencode", func(i *Interp, s string) any {
+	RegisterFunc0("_fromurlencode", func(_ *Interp, s string) any {
 		u, _ := url.QueryUnescape(s)
 		return u
 	})
-	RegisterFunc0("_tourlencode", func(i *Interp, s string) any {
+	RegisterFunc0("_tourlencode", func(_ *Interp, s string) any {
 		return url.QueryEscape(s)
 	})
 
-	RegisterFunc0("_fromurlpath", func(i *Interp, s string) any {
+	RegisterFunc0("_fromurlpath", func(_ *Interp, s string) any {
 		u, _ := url.PathUnescape(s)
 		return u
 	})
-	RegisterFunc0("_tourlpath", func(i *Interp, s string) any {
+	RegisterFunc0("_tourlpath", func(_ *Interp, s string) any {
 		return url.PathEscape(s)
 	})
 
@@ -837,7 +837,7 @@ func init() {
 
 		return qm
 	}
-	RegisterFunc0("_fromurlquery", func(i *Interp, s string) any {
+	RegisterFunc0("_fromurlquery", func(_ *Interp, s string) any {
 		q, err := url.ParseQuery(s)
 		if err != nil {
 			return err
@@ -861,11 +861,11 @@ func init() {
 		}
 		return qv
 	}
-	RegisterFunc0("_tourlquery", func(i *Interp, c map[string]any) any {
+	RegisterFunc0("_tourlquery", func(_ *Interp, c map[string]any) any {
 		return toURLValues(c).Encode()
 	})
 
-	RegisterFunc0("_fromurl", func(i *Interp, s string) any {
+	RegisterFunc0("_fromurl", func(_ *Interp, s string) any {
 		u, err := url.Parse(s)
 		if err != nil {
 			return err
@@ -902,7 +902,7 @@ func init() {
 		}
 		return m
 	})
-	RegisterFunc0("_tourl", func(i *Interp, c map[string]any) any {
+	RegisterFunc0("_tourl", func(_ *Interp, c map[string]any) any {
 		str := func(v any) string { s, _ := gojqextra.Cast[string](v); return s }
 		u := url.URL{
 			Scheme:   str(c["scheme"]),
@@ -958,7 +958,7 @@ func init() {
 	type ToHashOpts struct {
 		Name string
 	}
-	RegisterFunc1("_tohash", func(i *Interp, c any, opts ToHashOpts) any {
+	RegisterFunc1("_tohash", func(_ *Interp, c any, opts ToHashOpts) any {
 		inBR, err := ToBitReader(c)
 		if err != nil {
 			return err
@@ -1090,7 +1090,7 @@ func init() {
 	type ToStrEncodingOpts struct {
 		Encoding string
 	}
-	RegisterFunc1("_tostrencoding", func(i *Interp, c string, opts ToStrEncodingOpts) any {
+	RegisterFunc1("_tostrencoding", func(_ *Interp, c string, opts ToStrEncodingOpts) any {
 		h := strEncodingFn(opts.Encoding)
 		if h == nil {
 			return fmt.Errorf("unknown string encoding %s", opts.Encoding)
@@ -1111,7 +1111,7 @@ func init() {
 	type FromStrEncodingOpts struct {
 		Encoding string
 	}
-	RegisterFunc1("_fromstrencoding", func(i *Interp, c any, opts FromStrEncodingOpts) any {
+	RegisterFunc1("_fromstrencoding", func(_ *Interp, c any, opts FromStrEncodingOpts) any {
 		inBR, err := ToBitReader(c)
 		if err != nil {
 			return err

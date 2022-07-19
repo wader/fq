@@ -37,6 +37,7 @@ linters-settings:
             - equalisation
             - synchronisation
 run:
+    timeout: 5m
     skip-dirs:
         # allow md5
         - dev
