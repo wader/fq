@@ -2,20 +2,20 @@ package postgres
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 const BLCKSZ = 8192
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.PGMULTIXACTOFF,
 		Description: "PostgreSQL multixact offset file",
 		DecodeFn:    mxOffsetDecode,
 	})
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.PGMULTIXACTMEM,
 		Description: "PostgreSQL multixact members file",
 		DecodeFn:    mxMembersDecode,
@@ -30,7 +30,7 @@ func mxOffsetDecode(d *decode.D, in interface{}) interface{} {
 			if d.End() {
 				break
 			}
-			d.FieldU32("offset", scalar.Hex)
+			d.FieldU32("offset", scalar.ActualHex)
 
 		}
 	})

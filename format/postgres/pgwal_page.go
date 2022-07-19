@@ -2,13 +2,13 @@ package postgres
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	_ "github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.PGWALPAGE,
 		Description: "PostgreSQL write-ahead page",
 		DecodeFn:    walpageDecode,

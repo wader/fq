@@ -92,6 +92,7 @@ const (
 	PGWALPAGE           = "pgwal_page"
 	PGMULTIXACTOFF      = "pgmultixact_offsets"
 	PGMULTIXACTMEM      = "pgmultixact_members"
+	PG_CONTROL          = "pg_control"
 	PNG                 = "png"
 	PROTOBUF            = "protobuf"
 	PROTOBUF_WIDEVINE   = "protobuf_widevine"

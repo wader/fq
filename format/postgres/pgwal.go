@@ -2,13 +2,13 @@ package postgres
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.PGWAL,
 		Description: "PostgreSQL write-ahead log file",
 		DecodeFn:    pgwalDecode,
@@ -104,11 +104,11 @@ func pgwalDecode(d *decode.D, in interface{}) interface{} {
 				record_end := record_pos + record_len
 				header_pos := record_end - record_end%XLOG_BLCKSZ
 				d.FieldU32("xl_xid")
-				d.FieldU64("xl_prev", scalar.Hex)
+				d.FieldU64("xl_prev", scalar.ActualHex)
 				d.FieldU8("xl_info")
 				d.FieldU8("xl_rmid", rmgrIds)
 				d.FieldRawLen("padding", int64(d.AlignBits(32)))
-				d.FieldU32("xl_crc", scalar.Hex)
+				d.FieldU32("xl_crc", scalar.ActualHex)
 
 				var lenghts []uint64 = []uint64{}
 
