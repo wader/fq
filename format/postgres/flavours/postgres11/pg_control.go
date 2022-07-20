@@ -1,6 +1,9 @@
 package postgres11
 
-import "github.com/wader/fq/pkg/decode"
+import (
+	"github.com/wader/fq/format/postgres/common"
+	"github.com/wader/fq/pkg/decode"
+)
 
 // type = struct ControlFileData {
 /*    0      |     8 */ // uint64 system_identifier;
@@ -82,7 +85,7 @@ func DecodePgControl(d *decode.D, in any) any {
 	d.FieldU64("system_identifier")
 	d.FieldU32("pg_control_version")
 	d.FieldU32("catalog_version_no")
-	d.FieldU32("state")
+	d.FieldU32("state", common.DBState)
 	d.U32()
 
 	/*   24      |     8 */ // pg_time_t time;
