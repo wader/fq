@@ -95,14 +95,14 @@ func DecodePgControl(d *decode.D, in any) any {
 	/*   32      |     8 */ // XLogRecPtr checkPoint;
 	/*   40      |   120 */ // CheckPoint checkPointCopy;
 	d.FieldS64("time")
-	d.FieldU64("checkPoint")
+	d.FieldU64("checkPoint", common.XLogRecPtrMapper)
 	d.FieldStruct("checkPointCopy", func(d *decode.D) {
 		/*    0      |     8 */ // XLogRecPtr redo;
 		/*    8      |     4 */ // TimeLineID ThisTimeLineID;
 		/*   12      |     4 */ // TimeLineID PrevTimeLineID;
 		/*   16      |     1 */ // _Bool fullPageWrites;
 		/* XXX  7-byte hole  */
-		d.FieldU64("redo")
+		d.FieldU64("redo", common.XLogRecPtrMapper)
 		d.FieldU32("ThisTimeLineID")
 		d.FieldU32("PrevTimeLineID")
 		d.FieldU8("fullPageWrites")

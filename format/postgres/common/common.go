@@ -50,3 +50,13 @@ func (m icuVersionMapper) MapScalar(s scalar.S) (scalar.S, error) {
 }
 
 var IcuVersionMapper = icuVersionMapper{}
+
+type xLogRecPtrMapper struct{}
+
+func (m xLogRecPtrMapper) MapScalar(s scalar.S) (scalar.S, error) {
+	lsn := s.ActualU()
+	s.Sym = fmt.Sprintf("%X/%X", lsn>>32, uint32(lsn))
+	return s, nil
+}
+
+var XLogRecPtrMapper = xLogRecPtrMapper{}
