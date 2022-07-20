@@ -1,5 +1,3 @@
-//go:build fuzz
-
 package format_test
 
 import (
@@ -16,7 +14,6 @@ import (
 	_ "github.com/wader/fq/format/all"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
-	"github.com/wader/fq/pkg/registry"
 )
 
 type fuzzFS struct{}
@@ -69,14 +66,18 @@ func (ft *fuzzTest) Readline(opts interp.ReadlineOpts) (string, error) {
 }
 
 func FuzzFormats(f *testing.F) {
+	if os.Getenv("FUZZTEST") == "" {
+		f.Skip("run with FUZZTEST=1 do fuzz")
+	}
+
 	i := 0
 
-	filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
+	if err := filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
 		if filepath.Base(path) != "testdata" {
 			return nil
 		}
 
-		filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+		if err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 			if filepath.Ext(path) == ".fqtest" {
 				return nil
 			}
@@ -84,8 +85,8 @@ func FuzzFormats(f *testing.F) {
 				return nil
 			}
 
-			b, err := ioutil.ReadFile(path)
-			if err != nil {
+			b, readErr := ioutil.ReadFile(path)
+			if readErr != nil {
 				f.Fatal(err)
 			}
 
@@ -94,16 +95,20 @@ func FuzzFormats(f *testing.F) {
 			i++
 
 			return nil
-		})
+		}); err != nil {
+			f.Fatal(f)
+		}
 		return nil
-	})
+	}); err != nil {
+		f.Fatal(f)
+	}
 
 	gi := 0
-	g := interp.DefaultRegister.MustAll()
+	g := interp.DefaultRegistry.MustAll()
 
 	f.Fuzz(func(t *testing.T, b []byte) {
 		fz := &fuzzTest{b: b, f: g[gi]}
-		q, err := interp.New(fz, interp.DefaultRegister)
+		q, err := interp.New(fz, interp.DefaultRegistry)
 		if err != nil {
 			t.Fatal(err)
 		}
