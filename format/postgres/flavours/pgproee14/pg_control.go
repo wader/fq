@@ -3,6 +3,7 @@ package pgproee14
 import (
 	"github.com/wader/fq/format/postgres/common"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 // type = struct ControlFileData {
@@ -214,7 +215,7 @@ func DecodePgControl(d *decode.D, in any) any {
 	/*  328      |     4 */ // pg_crc32c crc;
 	/* XXX  4-byte padding  */
 	d.FieldU32("data_checksum_version")
-	d.FieldUTF8ShortStringFixedLen("mock_authentication_nonce", 32)
+	d.FieldRawLen("mock_authentication_nonce", 32*8, scalar.RawHex)
 	d.FieldU32("icu_version")
 	d.FieldU32("pg_old_version")
 	d.FieldU32("crc")
