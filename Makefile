@@ -94,7 +94,7 @@ update-gomod:
 .PHONY: fuzz
 fuzz:
 # in other terminal: tail -f /tmp/repanic
-	REPANIC_LOG=/tmp/repanic gotip test -tags fuzz -v -run Fuzz -fuzz=Fuzz ./format/
+	FUZZTEST=1 REPANIC_LOG=/tmp/repanic gotip test -v -run Fuzz -fuzz=Fuzz ./format/
 
 # usage: make release VERSION=0.0.1
 # tag forked dependeces for history and to make then stay around
