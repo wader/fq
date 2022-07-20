@@ -279,3 +279,7 @@ type Mp4In struct {
 type ZipIn struct {
 	Uncompress bool `doc:"Uncompress and probe files"`
 }
+
+type PostgresIn struct {
+	Flavour string `doc:"PostgreSQL flavour: postgres, postgres13, pgpro..."`
+}
