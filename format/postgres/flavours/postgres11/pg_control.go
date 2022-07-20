@@ -72,7 +72,7 @@ import "github.com/wader/fq/pkg/decode"
 //
 /* total size (bytes):   80 */
 //
-func DecodePgControl11(d *decode.D, in any) any {
+func DecodePgControl(d *decode.D, in any) any {
 	d.SeekAbs(0)
 	/*    0      |     8 */ // uint64 system_identifier;
 	/*    8      |     4 */ // uint32 pg_control_version;
