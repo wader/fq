@@ -1,6 +1,9 @@
 package common
 
-import "github.com/wader/fq/pkg/scalar"
+import (
+	"fmt"
+	"github.com/wader/fq/pkg/scalar"
+)
 
 //typedef enum DBState
 //{
@@ -33,3 +36,17 @@ var WalLevel = scalar.SToScalar{
 	1: {Sym: "WAL_LEVEL_REPLICA"},
 	2: {Sym: "WAL_LEVEL_LOGICAL"},
 }
+
+type icuVersionMapper struct{}
+
+func (m icuVersionMapper) MapScalar(s scalar.S) (scalar.S, error) {
+	a := s.ActualU()
+	major := a & 0xff
+	minor := (a >> 8) & 0xff
+	v1 := (a >> 16) & 0xff
+	v2 := (a >> 24) & 0xff
+	s.Sym = fmt.Sprintf("%d.%d.%d.%d", major, minor, v1, v2)
+	return s, nil
+}
+
+var IcuVersionMapper = icuVersionMapper{}

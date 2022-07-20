@@ -216,7 +216,7 @@ func DecodePgControl(d *decode.D, in any) any {
 	/* XXX  4-byte padding  */
 	d.FieldU32("data_checksum_version")
 	d.FieldRawLen("mock_authentication_nonce", 32*8, scalar.RawHex)
-	d.FieldU32("icu_version")
+	d.FieldU32("icu_version", common.IcuVersionMapper)
 	d.FieldU32("pg_old_version")
 	d.FieldU32("crc")
 	d.U32()
