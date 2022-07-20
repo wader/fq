@@ -21,3 +21,15 @@ var DBState = scalar.UToScalar{
 	5: {Sym: "DB_IN_ARCHIVE_RECOVERY"},
 	6: {Sym: "DB_IN_PRODUCTION"},
 }
+
+//typedef enum WalLevel
+//{
+//	WAL_LEVEL_MINIMAL = 0,
+//	WAL_LEVEL_REPLICA,
+//	WAL_LEVEL_LOGICAL
+//} WalLevel;
+var WalLevel = scalar.SToScalar{
+	0: {Sym: "WAL_LEVEL_MINIMAL"},
+	1: {Sym: "WAL_LEVEL_REPLICA"},
+	2: {Sym: "WAL_LEVEL_LOGICAL"},
+}

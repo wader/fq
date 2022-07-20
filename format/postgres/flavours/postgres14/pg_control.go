@@ -156,7 +156,7 @@ func DecodePgControl(d *decode.D, in any) any {
 	/*  172      |     4 */ // int wal_level;
 	/*  176      |     1 */ // _Bool wal_log_hints;
 	/* XXX  3-byte hole  */
-	d.FieldS32("wal_level")
+	d.FieldS32("wal_level", common.WalLevel)
 	d.FieldU8("wal_log_hints")
 	d.U24()
 
