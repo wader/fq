@@ -3,6 +3,7 @@ package common
 import (
 	"fmt"
 	"github.com/wader/fq/pkg/scalar"
+	"time"
 )
 
 //typedef enum DBState
@@ -60,3 +61,14 @@ func (m xLogRecPtrMapper) MapScalar(s scalar.S) (scalar.S, error) {
 }
 
 var XLogRecPtrMapper = xLogRecPtrMapper{}
+
+type timeMapper struct{}
+
+func (m timeMapper) MapScalar(s scalar.S) (scalar.S, error) {
+	ut := s.ActualS()
+	t := time.Unix(ut, 0)
+	s.Sym = t.UTC().Format(time.RFC1123)
+	return s, nil
+}
+
+var TimeMapper = timeMapper{}

@@ -94,7 +94,7 @@ func DecodePgControl(d *decode.D, in any) any {
 	/*   24      |     8 */ // pg_time_t time;
 	/*   32      |     8 */ // XLogRecPtr checkPoint;
 	/*   40      |   120 */ // CheckPoint checkPointCopy;
-	d.FieldS64("time")
+	d.FieldS64("time", common.TimeMapper)
 	d.FieldU64("checkPoint", common.XLogRecPtrMapper)
 	d.FieldStruct("checkPointCopy", func(d *decode.D) {
 		/*    0      |     8 */ // XLogRecPtr redo;
@@ -137,7 +137,7 @@ func DecodePgControl(d *decode.D, in any) any {
 		/*   96      |     8 */ // TransactionId oldestCommitTsXid;
 		/*  104      |     8 */ // TransactionId newestCommitTsXid;
 		/*  112      |     8 */ // TransactionId oldestActiveXid;
-		d.FieldS64("time")
+		d.FieldS64("time", common.TimeMapper)
 		d.FieldU64("oldestCommitTsXid")
 		d.FieldU64("newestCommitTsXid")
 		d.FieldU64("oldestActiveXid")
