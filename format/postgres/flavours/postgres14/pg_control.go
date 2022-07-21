@@ -139,8 +139,8 @@ func DecodePgControl(d *decode.D, in any) any {
 	/*  136      |     8 */ // XLogRecPtr minRecoveryPoint;
 	/*  144      |     4 */ // TimeLineID minRecoveryPointTLI;
 	/* XXX  4-byte hole  */
-	d.FieldU64("unloggedLSN")
-	d.FieldU64("minRecoveryPoint")
+	d.FieldU64("unloggedLSN", common.LocPtrMapper)
+	d.FieldU64("minRecoveryPoint", common.LocPtrMapper)
 	d.FieldU32("minRecoveryPointTLI")
 	d.U32()
 
@@ -148,8 +148,8 @@ func DecodePgControl(d *decode.D, in any) any {
 	/*  160      |     8 */ // XLogRecPtr backupEndPoint;
 	/*  168      |     1 */ // _Bool backupEndRequired;
 	/* XXX  3-byte hole  */
-	d.FieldU64("backupStartPoint")
-	d.FieldU64("backupEndPoint")
+	d.FieldU64("backupStartPoint", common.LocPtrMapper)
+	d.FieldU64("backupEndPoint", common.LocPtrMapper)
 	d.FieldU8("backupEndRequired")
 	d.U24()
 
