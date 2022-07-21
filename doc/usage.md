@@ -408,9 +408,9 @@ unary uses input and if more than one argument all as arguments ignoring the inp
 - All decode function takes a optional option argument. The only option currently is `force` to ignore decoder asserts.
 For example to decode as mp3 and ignore assets do `mp3({force: true})` or `decode("mp3"; {force: true})`, from command line
 you currently have to do `fq -d raw 'mp3({force: true})' file`.
-- `decode`, `decode($format)`, `decode($format; $opts)` decode format
+- `decode`, `decode("<format>")`, `decode("<format>"; $opts)` decode format
 - `probe`, `probe($opts)` probe and decode format
-- `mp3`, `mp3($opts)`, ..., `<name>`, `<name>($opts)` same as `decode(<name>)($opts)`, `decode($format; $opts)`  decode as format
+- `mp3`, `mp3($opts)`, ..., `<format>`, `<format>($opts)` same as `decode("<format>")`, `decode("<format>"; $opts)`  decode as format
 - Display shows hexdump/ASCII/tree for decode values and jq value for other types.
   - `d`/`d($opts)` display value and truncate long arrays and binaries
   - `da`/`da($opts)` display value and don't truncate arrays
@@ -420,8 +420,8 @@ you currently have to do `fq -d raw 'mp3({force: true})' file`.
 - `p`/`preview` show preview of field tree
 - `hd`/`hexdump` hexdump value
 - `repl`/`repl($opts)` nested REPL, must be last in a pipeline. `1 | repl`, can "slurp" outputs. Ex: `1, 2, 3 | repl`, `[1,2,3] | repl({compact: true})`.
-- `slurp($name)` slurp outputs and save them to `$name`, must be last in pipeline. Will be available as global array `$name`. Ex `1,2,3 | slurp("a")`, `$a[]` same as `spew("a")`.
-- `spew`/`spew($name)` output previously slurped values. `spew` outputs all slurps as an object, `spew($name)` outouts one slurp. Ex: `spew("a")`.
+- `slurp("<name>")` slurp outputs and save them to `$name`, must be last in pipeline. Will be available as global array `$name`. Ex `1,2,3 | slurp("a")`, `$a[]` same as `spew("a")`.
+- `spew`/`spew("<name>")` output previously slurped values. `spew` outputs all slurps as an object, `spew("<name>")` outouts one slurp. Ex: `spew("a")`.
 - `paste` read string from stdin until ^D. Useful for pasting text.
     - Ex: `paste | frompem | asn1_ber | repl` read from stdin then decode and start a new sub-REPL with result.
 
