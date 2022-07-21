@@ -63,7 +63,7 @@ gogenerate:
 lint:
 # bump: make-golangci-lint /golangci-lint@v([\d.]+)/ git:https://github.com/golangci/golangci-lint.git|^1
 # bump: make-golangci-lint link "Release notes" https://github.com/golangci/golangci-lint/releases/tag/v$LATEST
-	go run github.com/golangci/golangci-lint/cmd/golangci-lint@v1.47.1 run
+	go run github.com/golangci/golangci-lint/cmd/golangci-lint@v1.47.2 run
 
 .PHONY: depgraph.svg
 depgraph.svg:
