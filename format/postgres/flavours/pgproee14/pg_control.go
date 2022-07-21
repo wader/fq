@@ -86,7 +86,7 @@ func DecodePgControl(d *decode.D, in any) any {
 	/*   16      |     4 */ // DBState state;
 	/* XXX  4-byte hole  */
 	d.FieldU64("system_identifier")
-	d.FieldU32("pg_control_version")
+	d.FieldU32("pg_control_version", common.VersionMapper)
 	d.FieldU32("catalog_version_no")
 	d.FieldU32("state", common.DBState)
 	d.U32()

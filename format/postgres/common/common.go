@@ -72,3 +72,43 @@ func (m timeMapper) MapScalar(s scalar.S) (scalar.S, error) {
 }
 
 var TimeMapper = timeMapper{}
+
+// typedef enum
+//{
+//	PG_UNKNOWN					= 0xFFFF,
+//	PG_ORIGINAL					= 0,
+//	PGPRO_STANDARD				= ('P'<<8|'P'),
+//	PGPRO_ENTERPRISE			= ('P'<<8|'E'),
+//} PgEdition;
+const (
+	PG_UNKNOWN       = 0xFFFF
+	PG_ORIGINAL      = 0
+	PGPRO_STANDARD   = (uint32('P') << 8) | uint32('P')
+	PGPRO_ENTERPRISE = (uint32('P') << 8) | uint32('E')
+
+	PG_UNKNOWN_STR       = "(unknown edition)"
+	PG_ORIGINAL_STR      = "PostgreSQL"
+	PGPRO_STANDARD_STR   = "Postgres Pro Standard"
+	PGPRO_ENTERPRISE_STR = "Postgres Pro Enterprise"
+)
+
+type versionMapper struct{}
+
+func (m versionMapper) MapScalar(s scalar.S) (scalar.S, error) {
+	v := s.ActualU()
+	v1 := uint32(v >> 16)
+	v2 := uint32(v & 0xffff)
+	switch v1 {
+	case PG_UNKNOWN:
+		s.Sym = fmt.Sprintf("%s %d", PG_UNKNOWN_STR, v2)
+	case PG_ORIGINAL:
+		s.Sym = fmt.Sprintf("%s %d", PG_ORIGINAL_STR, v2)
+	case PGPRO_STANDARD:
+		s.Sym = fmt.Sprintf("%s %d", PGPRO_STANDARD_STR, v2)
+	case PGPRO_ENTERPRISE:
+		s.Sym = fmt.Sprintf("%s %d", PGPRO_ENTERPRISE_STR, v2)
+	}
+	return s, nil
+}
+
+var VersionMapper = versionMapper{}
