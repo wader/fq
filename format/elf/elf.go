@@ -518,6 +518,15 @@ type sectionHeader struct {
 	symbols []symbol
 }
 
+const maxStrTabSize = 100_000_000
+
+func readStrTab(d *decode.D, firstBit int64, nBytes int64) string {
+	if nBytes > maxStrTabSize {
+		d.Errorf("string table too large %d > %d", nBytes, maxStrTabSize)
+	}
+	return string(d.BytesRange(firstBit, int(nBytes)))
+}
+
 func elfReadSectionHeaders(d *decode.D, ec *elfContext) {
 	for i := 0; i < ec.shNum; i++ {
 		d.SeekAbs(ec.shOff + int64(i)*ec.shEntSize)
@@ -571,7 +580,7 @@ func elfReadSectionHeaders(d *decode.D, ec *elfContext) {
 		}
 		if i, ok := ec.sectionIndexByAddr(sh.dc.strTabPtr); ok {
 			strTabSh := ec.sections[i]
-			sh.dc.strTab = string(d.BytesRange(strTabSh.offset, int(sh.dc.strSzVal/8)))
+			sh.dc.strTab = readStrTab(d, strTabSh.offset, sh.dc.strSzVal/8)
 		}
 	}
 
@@ -581,12 +590,13 @@ func elfReadSectionHeaders(d *decode.D, ec *elfContext) {
 		d.Fatalf("can't find shStrNdx %d", ec.shStrNdx)
 	}
 	sh := ec.sections[ec.shStrNdx]
-	shStrTab = string(d.BytesRange(sh.offset, int(sh.size/8)))
+
+	shStrTab = readStrTab(d, sh.offset, sh.size/8)
 	for _, sh := range ec.sections {
 		if sh.typ != SHT_STRTAB {
 			continue
 		}
-		ec.strTabMap[strIndexNull(sh.name, shStrTab)] = string(d.BytesRange(sh.offset, int(sh.size/8)))
+		ec.strTabMap[strIndexNull(sh.name, shStrTab)] = readStrTab(d, sh.offset, sh.size/8)
 	}
 }
 
