@@ -286,6 +286,10 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 				d.FieldArray("samples", func(d *decode.D) {
 					// TODO: warning? could also be init fragment etc
 
+					// make sure to keep samples in same order as in sample table.
+					// there are mp4 files where stco jumps around
+					d.RangeSorted = false
+
 					if len(t.stsz) > 0 && len(t.stsc) > 0 && len(t.stco) > 0 {
 						stszIndex := 0
 						stszEntryNr := 0
