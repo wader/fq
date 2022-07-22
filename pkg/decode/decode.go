@@ -872,7 +872,7 @@ func (d *D) FramedFn(nBits int64, fn func(d *D)) int64 {
 	return decodeLen
 }
 
-// LimitedFn decode from current position nBits forward. When done position will be set to last bit decoded.
+// LimitedFn decode from current position nBits forward. When done position will after last bit decoded.
 func (d *D) LimitedFn(nBits int64, fn func(d *D)) int64 {
 	if nBits < 0 {
 		d.Fatalf("%d nBits < 0", nBits)
@@ -882,9 +882,8 @@ func (d *D) LimitedFn(nBits int64, fn func(d *D)) int64 {
 	return decodeLen
 }
 
-// RangeFn decode from current position nBits forward. Position will not be changed.
+// RangeFn decode from firstBit position nBits forward. Position will not change.
 func (d *D) RangeFn(firstBit int64, nBits int64, fn func(d *D)) int64 {
-
 	startPos := d.Pos()
 
 	// TODO: do some kind of DecodeLimitedLen/RangeFn?
@@ -893,11 +892,14 @@ func (d *D) RangeFn(firstBit int64, nBits int64, fn func(d *D)) int64 {
 		d.IOPanic(err, "RangeFn: SeekAbs")
 	}
 
-	pbr := d.bitBuf
-	d.bitBuf = br
-	fn(d)
-	endPos := d.Pos()
-	d.bitBuf = pbr
+	nd := *d
+	nd.bitBuf = br
+
+	fn(&nd)
+
+	d.Value = nd.Value
+
+	endPos := nd.Pos()
 
 	return endPos - startPos
 }
