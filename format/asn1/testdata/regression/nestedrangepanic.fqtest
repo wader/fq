@@ -1,0 +1,12 @@
+# should not crash on nested range decode error
+$ fq -n '"7f1f76ba84212aba6eccaae5faf13b494b10f7dbcc7ff45f4a7c117faa80212f7fc3d56e4712f543a459d9f1146c494f9e2176ce0e7b0d11f15dc6f7b3e1c81917400feb53ac623de65cef4323370a44eaac860acd60f93e19951806d3af45432942495c99159cfda333c9a5ee6ea235c040bcaae02147dcddad" | fromhex | tobytes | asn1_ber'
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (asn1_ber)
+    |                                               |                |  error: asn1_ber: BitBufRange: failed at position 0 (read size 556448375 seek pos 0): outside buffer
+0x00|7f                                             |.               |  class: "application" (1)
+0x00|7f                                             |.               |  form: "constructed" (1)
+0x00|7f 1f                                          |..              |  tag: 3999
+0x00|      76                                       |  v             |  length: 118
+0x00|         ba 84 21 2a ba 6e                     |   ..!*.n       |  constructed[0:1]:
+0x00|                           cc aa e5 fa f1 3b 49|         .....;I|  unknown0: raw bits
+0x10|4b 10 f7 db cc 7f f4 5f 4a 7c 11 7f aa 80 21 2f|K......_J|....!/|
+*   |until 0x79.7 (end) (113)                       |                |
