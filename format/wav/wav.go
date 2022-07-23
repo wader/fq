@@ -23,7 +23,7 @@ var footerFormat decode.Group
 func init() {
 	interp.RegisterFormat(decode.Format{
 		Name:        format.WAV,
-		ProbeOrder:  10, // after most others (overlap some with webp)
+		ProbeOrder:  format.ProbeOrderBinFuzzy, // after most others (overlap some with webp)
 		Description: "WAV file",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    wavDecode,

@@ -36,7 +36,6 @@ import (
 //go:embed interp.jq
 //go:embed internal.jq
 //go:embed options.jq
-//go:embed encoding.jq
 //go:embed binary.jq
 //go:embed decode.jq
 //go:embed format_decode.jq

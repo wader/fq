@@ -5,11 +5,17 @@ include "decode";
 def _display_default_opts:
   options({depth: 1});
 
-def _display_default_opts:
-  options({depth: 1});
+def _todisplay:
+  ( format as $f
+  # TODO: not sure about the error check here
+  | if $f == null or ._error != null then error("value is not a format root or has errors") end
+  | _format_func($f; "_todisplay")
+  );
 
 def display($opts):
-  ( options($opts) as $opts
+  ( . as $c
+  | options($opts) as $opts
+  | try _todisplay catch $c
   | if _can_display then _display($opts)
     else
       ( if _is_string and $opts.raw_string then print

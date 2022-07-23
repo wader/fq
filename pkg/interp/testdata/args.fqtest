@@ -122,6 +122,7 @@ bsd_loopback_frame   BSD loopback frame
 bson                 Binary JSON
 bzip2                bzip2 compression
 cbor                 Concise Binary Object Representation
+csv                  Comma separated values
 dns                  DNS packet
 dns_tcp              DNS packet (TCP)
 elf                  Executable and Linkable Format
@@ -143,6 +144,7 @@ hevc_nalu            H.265/HEVC Network Access Layer Unit
 hevc_pps             H.265/HEVC Picture Parameter Set
 hevc_sps             H.265/HEVC Sequence Parameter Set
 hevc_vps             H.265/HEVC Video Parameter Set
+html                 HyperText Markup Language
 icc_profile          International Color Consortium profile
 icmp                 Internet Control Message Protocol
 icmpv6               Internet Control Message Protocol v6
@@ -152,7 +154,7 @@ id3v2                ID3v2 metadata
 ipv4_packet          Internet protocol v4 packet
 ipv6_packet          Internet protocol v6 packet
 jpeg                 Joint Photographic Experts Group file
-json                 JSON
+json                 JavaScript Object Notation
 macho                Mach-O macOS executable
 matroska             Matroska file
 mp3                  MP3 file
@@ -181,6 +183,7 @@ sll_packet           Linux cooked capture encapsulation
 tar                  Tar archive
 tcp_segment          Transmission control protocol segment
 tiff                 Tag Image File Format
+toml                 Tom's Obvious, Minimal Language
 udp_datagram         User datagram protocol
 vorbis_comment       Vorbis comment
 vorbis_packet        Vorbis packet
@@ -191,6 +194,8 @@ vpx_ccr              VPX Codec Configuration Record
 wav                  WAV file
 webp                 WebP image
 xing                 Xing header
+xml                  Extensible Markup Language
+yaml                 YAML Ain't Markup Language
 zip                  ZIP archive
 $ fq -X
 exitcode: 2

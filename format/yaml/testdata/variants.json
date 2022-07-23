@@ -1,0 +1,22 @@
+[
+    null,
+    true,
+    false,
+    123,
+    123.123,
+    "string",
+    [1, 2, 3],
+    {
+        "array": [ true, false, null, 1.2, "string", [1.2, 3], {"a": 1} ],
+        "escape \\\"": 456,
+        "false": false,
+        "null": null,
+        "number": 1.2,
+        "object": {"a": 1},
+        "string": "string",
+        "true": true,
+        "white space": 123
+    },
+    [],
+    {}
+]

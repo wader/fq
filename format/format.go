@@ -1,5 +1,13 @@
 package format
 
+// TODO: do before-format somehow and topology sort?
+const (
+	ProbeOrderBinUnique = 0   // binary with unlikely overlap
+	ProbeOrderBinFuzzy  = 50  // binary with possible overlap
+	ProbeOrderText      = 100 // text format
+)
+
+// TODO: change to CamelCase?
 //nolint:revive
 const (
 	ALL = "all"
@@ -39,6 +47,7 @@ const (
 	BSON                = "bson"
 	BZIP2               = "bzip2"
 	CBOR                = "cbor"
+	CSV                 = "csv"
 	DNS                 = "dns"
 	DNS_TCP             = "dns_tcp"
 	ELF                 = "elf"
@@ -61,6 +70,7 @@ const (
 	HEVC_PPS            = "hevc_pps"
 	HEVC_SPS            = "hevc_sps"
 	HEVC_VPS            = "hevc_vps"
+	HTML                = "html"
 	ICC_PROFILE         = "icc_profile"
 	ICMP                = "icmp"
 	ICMPV6              = "icmpv6"
@@ -99,6 +109,7 @@ const (
 	TAR                 = "tar"
 	TCP_SEGMENT         = "tcp_segment"
 	TIFF                = "tiff"
+	TOML                = "toml"
 	UDP_DATAGRAM        = "udp_datagram"
 	VORBIS_COMMENT      = "vorbis_comment"
 	VORBIS_PACKET       = "vorbis_packet"
@@ -109,6 +120,8 @@ const (
 	WAV                 = "wav"
 	WEBP                = "webp"
 	XING                = "xing"
+	XML                 = "xml"
+	YAML                = "yaml"
 	ZIP                 = "zip"
 )
 
@@ -273,4 +286,19 @@ type Mp4In struct {
 
 type ZipIn struct {
 	Uncompress bool `doc:"Uncompress and probe files"`
+}
+
+type XMLIn struct {
+	Seq   bool `doc:"Use seq attribute to preserve element order"`
+	Array bool `doc:"Decode as nested arrays"`
+}
+
+type HTMLIn struct {
+	Seq   bool `doc:"Use seq attribute to preserve element order"`
+	Array bool `doc:"Decode as nested arrays"`
+}
+
+type CSVLIn struct {
+	Comma   string `doc:"Separator character"`
+	Comment string `doc:"Comment line character"`
 }

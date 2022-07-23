@@ -16,5 +16,7 @@
         "string": "string",
         "true": true,
         "white space": 123
-    }
+    },
+    [],
+    {}
 ]

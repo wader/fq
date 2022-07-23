@@ -1,0 +1,4 @@
+$ fq -n '"<a></a> trailing" | fromxml'
+exitcode: 5
+stderr:
+error: error at position 0xa: root element has trailing data

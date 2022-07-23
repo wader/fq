@@ -10,7 +10,7 @@ import (
 func init() {
 	interp.RegisterFormat(decode.Format{
 		Name:        format.MPEG_TS,
-		ProbeOrder:  10, // make sure to be after gif, both start with 0x47
+		ProbeOrder:  format.ProbeOrderBinFuzzy, // make sure to be after gif, both start with 0x47
 		Description: "MPEG Transport Stream",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    tsDecode,

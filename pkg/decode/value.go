@@ -1,8 +1,5 @@
 package decode
 
-// TODO: Encoding, u16le, varint etc, encode?
-// TODO: Value/Compound interface? can have per type and save memory
-
 import (
 	"errors"
 	"sort"
@@ -16,20 +13,23 @@ type Compound struct {
 	IsArray     bool
 	RangeSorted bool
 	Children    []*Value
-
 	Description string
-	Format      *Format
-	Err         error
 }
 
+// TODO: Encoding, u16le, varint etc, encode?
+// TODO: Value/Compound interface? can have per type and save memory
+// TODO: Make some fields optional somehow? map/slice?
 type Value struct {
-	Parent     *Value
-	Name       string
-	V          any // scalar.S or Compound (array/struct)
-	Index      int // index in parent array/struct
-	Range      ranges.Range
-	RootReader bitio.ReaderAtSeeker
-	IsRoot     bool // TODO: rework?
+	Parent      *Value
+	Name        string
+	V           any // scalar.S or Compound (array/struct)
+	Index       int // index in parent array/struct
+	Range       ranges.Range
+	RootReader  bitio.ReaderAtSeeker
+	IsRoot      bool    // TODO: rework?
+	Format      *Format // TODO: rework
+	Description string
+	Err         error
 }
 
 type WalkFn func(v *Value, rootV *Value, depth int, rootDepth int) error
@@ -148,12 +148,8 @@ func (v *Value) root(findSubRoot bool, findFormatRoot bool) *Value {
 		if findSubRoot && rootV.IsRoot {
 			break
 		}
-		if findFormatRoot {
-			if c, ok := rootV.V.(*Compound); ok {
-				if c.Format != nil {
-					break
-				}
-			}
+		if findFormatRoot && rootV.Format != nil {
+			break
 		}
 
 		rootV = rootV.Parent
@@ -167,12 +163,9 @@ func (v *Value) FormatRoot() *Value { return v.root(true, true) }
 
 func (v *Value) Errors() []error {
 	var errs []error
-	_ = v.WalkPreOrder(func(_ *Value, rootV *Value, _ int, _ int) error {
-		switch vv := rootV.V.(type) {
-		case *Compound:
-			if vv.Err != nil {
-				errs = append(errs, vv.Err)
-			}
+	_ = v.WalkPreOrder(func(v *Value, _ *Value, _ int, _ int) error {
+		if v.Err != nil {
+			errs = append(errs, v.Err)
 		}
 		return nil
 	})

@@ -2,8 +2,6 @@ include "internal";
 include "options";
 include "binary";
 include "decode";
-include "encoding";
-
 
 def intdiv(a; b): _intdiv(a; b);
 

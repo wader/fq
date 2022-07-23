@@ -1,10 +1,4 @@
 $ fq -i
-null> "abc" | topem
-"-----BEGIN-----\nYWJj\n-----END-----\n"
-null> "abc" | topem | "before" + . + "between" + . + "after" | frompem | tostring
-"abc"
-"abc"
-null> 
 null> (0,1,1024,99999999999999999999) as $n | (2,8,16,62,64) as $r | "\($r): \($n) \($n | toradix($r)) \($n | toradix($r) | fromradix($r))" | println
 2: 0 0 0
 8: 0 0 0

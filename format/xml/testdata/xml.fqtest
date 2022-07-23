@@ -1,6 +1,12 @@
+/probe.xml:
+<a></a>
+$ fq . probe.xml
+{
+  "a": ""
+}
 $ fq -d raw -ni . all.xml decl.xml multi_diff.xml multi_same.xml ns.xml simple.xml escape.xml
 null> inputs | {name: input_filename, str: (tobytes | tostring)} | slurp("files")
-null> spew("files") | .name, (.str | fromxml | ., (toxml({indent: 2}) | println))
+null> spew("files") | .name, try (.str | fromxml | ., (toxml({indent: 2}) | println)) catch .
 "all.xml"
 {
   "elm": {
@@ -29,15 +35,9 @@ null> spew("files") | .name, (.str | fromxml | ., (toxml({indent: 2}) | println)
 }
 <elm></elm>
 "multi_diff.xml"
-{
-  "elm1": ""
-}
-<elm1></elm1>
+"error at position 0x10: root element has trailing data"
 "multi_same.xml"
-{
-  "elm": ""
-}
-<elm></elm>
+"error at position 0xe: root element has trailing data"
 "ns.xml"
 {
   "elm": {
@@ -51,14 +51,14 @@ null> spew("files") | .name, (.str | fromxml | ., (toxml({indent: 2}) | println)
     "ns2:aaa": {
       "#text": "2",
       "-ns2:attr2": "v2",
+      "ccc": {
+        "-ns2:attr5": "v5"
+      },
       "ns1:ccc": {
         "-ns1:attr3": "v3"
       },
       "ns2:ccc": {
         "-ns2:attr4": "v4"
-      },
-      "ns3:ccc": {
-        "-ns2:attr5": "v5"
       }
     }
   }
@@ -67,9 +67,9 @@ null> spew("files") | .name, (.str | fromxml | ., (toxml({indent: 2}) | println)
   <aaa>3</aaa>
   <ns1:aaa ns1:attr1="v1">1</ns1:aaa>
   <ns2:aaa ns2:attr2="v2">2
+    <ccc ns2:attr5="v5"></ccc>
     <ns1:ccc ns1:attr3="v3"></ns1:ccc>
     <ns2:ccc ns2:attr4="v4"></ns2:ccc>
-    <ns3:ccc ns2:attr5="v5"></ns3:ccc>
   </ns2:aaa>
 </elm>
 "simple.xml"
@@ -85,7 +85,7 @@ null> spew("files") | .name, (.str | fromxml | ., (toxml({indent: 2}) | println)
   }
 }
 <a attr="&amp;&lt;&gt;">&amp;&lt;&gt;</a>
-null> spew("files") | .name, (.str | fromxml({seq: true}) | ., (toxml({indent: 2}) | println))
+null> spew("files") | .name, try (.str | fromxml({seq: true}) | ., (toxml({indent: 2}) | println)) catch .
 "all.xml"
 {
   "elm": {
@@ -119,15 +119,9 @@ null> spew("files") | .name, (.str | fromxml({seq: true}) | ., (toxml({indent: 2
 }
 <elm></elm>
 "multi_diff.xml"
-{
-  "elm1": ""
-}
-<elm1></elm1>
+"error at position 0x10: root element has trailing data"
 "multi_same.xml"
-{
-  "elm": ""
-}
-<elm></elm>
+"error at position 0xe: root element has trailing data"
 "ns.xml"
 {
   "elm": {
@@ -146,6 +140,10 @@ null> spew("files") | .name, (.str | fromxml({seq: true}) | ., (toxml({indent: 2
       "#seq": 1,
       "#text": "2",
       "-ns2:attr2": "v2",
+      "ccc": {
+        "#seq": 2,
+        "-ns2:attr5": "v5"
+      },
       "ns1:ccc": {
         "#seq": 0,
         "-ns1:attr3": "v3"
@@ -153,10 +151,6 @@ null> spew("files") | .name, (.str | fromxml({seq: true}) | ., (toxml({indent: 2
       "ns2:ccc": {
         "#seq": 1,
         "-ns2:attr4": "v4"
-      },
-      "ns3:ccc": {
-        "#seq": 2,
-        "-ns2:attr5": "v5"
       }
     }
   }
@@ -166,7 +160,7 @@ null> spew("files") | .name, (.str | fromxml({seq: true}) | ., (toxml({indent: 2
   <ns2:aaa ns2:attr2="v2">2
     <ns1:ccc ns1:attr3="v3"></ns1:ccc>
     <ns2:ccc ns2:attr4="v4"></ns2:ccc>
-    <ns3:ccc ns2:attr5="v5"></ns3:ccc>
+    <ccc ns2:attr5="v5"></ccc>
   </ns2:aaa>
   <aaa>3</aaa>
 </elm>
@@ -183,7 +177,7 @@ null> spew("files") | .name, (.str | fromxml({seq: true}) | ., (toxml({indent: 2
   }
 }
 <a attr="&amp;&lt;&gt;">&amp;&lt;&gt;</a>
-null> spew("files") | .name, (.str | fromxml({array: true}) | ., (toxml({indent: 2}) | println))
+null> spew("files") | .name, try (.str | fromxml({array: true}) | ., (toxml({indent: 2}) | println)) catch .
 "all.xml"
 [
   "elm",
@@ -224,15 +218,9 @@ null> spew("files") | .name, (.str | fromxml({array: true}) | ., (toxml({indent:
 ]
 <elm></elm>
 "multi_diff.xml"
-[
-  "elm1"
-]
-<elm1></elm1>
+"error at position 0x10: root element has trailing data"
 "multi_same.xml"
-[
-  "elm"
-]
-<elm></elm>
+"error at position 0xe: root element has trailing data"
 "ns.xml"
 [
   "elm",
@@ -268,7 +256,7 @@ null> spew("files") | .name, (.str | fromxml({array: true}) | ., (toxml({indent:
           }
         ],
         [
-          "ns3:ccc",
+          "ccc",
           {
             "ns2:attr5": "v5"
           }
@@ -288,7 +276,7 @@ null> spew("files") | .name, (.str | fromxml({array: true}) | ., (toxml({indent:
   <ns2:aaa ns2:attr2="v2">2
     <ns1:ccc ns1:attr3="v3"></ns1:ccc>
     <ns2:ccc ns2:attr4="v4"></ns2:ccc>
-    <ns3:ccc ns2:attr5="v5"></ns3:ccc>
+    <ccc ns2:attr5="v5"></ccc>
   </ns2:aaa>
   <aaa>3</aaa>
 </elm>
@@ -337,5 +325,5 @@ null> {a: ["b", "c"]} | toxml
 null> {a: [123, null, true, false]} | toxml
 "<doc><a>123</a><a></a><a>true</a><a>false</a></doc>"
 null> 123 | toxml
-error: toxml cannot be applied to: string ("123")
+error: toxml cannot be applied to: number (123)
 null> ^D

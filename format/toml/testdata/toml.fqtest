@@ -1,20 +1,28 @@
+/probe.toml:
+[test]
+key = 123
+$ fq . probe.toml
+{
+  "test": {
+    "key": 123
+  }
+}
 # toml does not support null in arrays
 # TODO: add uint64 norm test
 $ fq -rRs 'fromjson[] | (walk(if type == "array" then map(select(. != null)) end) | try (totoml | ., fromtoml) catch .), "----"' variants.json
-
-{}
+totoml cannot be applied to: null
 ----
-totoml cannot be applied to: boolean (true)
+toml: top-level values must be Go maps or structs
 ----
-totoml cannot be applied to: boolean (false)
+toml: top-level values must be Go maps or structs
 ----
-totoml cannot be applied to: number (123)
+toml: top-level values must be Go maps or structs
 ----
-totoml cannot be applied to: number (123.123)
+toml: top-level values must be Go maps or structs
 ----
-totoml cannot be applied to: string ("string")
+toml: top-level values must be Go maps or structs
 ----
-totoml cannot be applied to: array ([1,2,3])
+toml: top-level values must be Go maps or structs
 ----
 array = [true, false, 1.2, "string", [1.2, 3], {a = 1}]
 "escape \\\"" = 456
@@ -52,3 +60,12 @@ true = true
   "white space": 123
 }
 ----
+toml: top-level values must be Go maps or structs
+----
+
+error at position 0x0: root object has no values
+----
+$ fq -n '"" | fromtoml'
+exitcode: 5
+stderr:
+error: error at position 0x0: root object has no values

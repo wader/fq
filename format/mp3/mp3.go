@@ -17,7 +17,7 @@ var mp3Frame decode.Group
 func init() {
 	interp.RegisterFormat(decode.Format{
 		Name:        format.MP3,
-		ProbeOrder:  20, // after most others (silent samples and jpeg header can look like mp3 sync)
+		ProbeOrder:  format.ProbeOrderBinFuzzy, // after most others (silent samples and jpeg header can look like mp3 sync)
 		Description: "MP3 file",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    mp3Decode,

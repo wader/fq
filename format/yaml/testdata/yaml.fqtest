@@ -1,28 +1,37 @@
+/probe.yaml:
+test:
+  key: 123
+$ fq . probe.yaml
+{
+  "test": {
+    "key": 123
+  }
+}
 # TODO: add uint64 norm test
 $ fq -rRs 'fromjson[] | (try (toyaml | ., fromyaml) catch .), "----"' variants.json
 null
 
-null
+error at position 0x5: root not object or array
 ----
 true
 
-true
+error at position 0x5: root not object or array
 ----
 false
 
-false
+error at position 0x6: root not object or array
 ----
 123
 
-123
+error at position 0x4: root not object or array
 ----
 123.123
 
-123.123
+error at position 0x8: root not object or array
 ----
 string
 
-string
+error at position 0x7: root not object or array
 ----
 - 1
 - 2
@@ -79,4 +88,12 @@ white space: 123
   "true": true,
   "white space": 123
 }
+----
+[]
+
+[]
+----
+{}
+
+{}
 ----
