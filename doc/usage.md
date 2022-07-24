@@ -431,39 +431,47 @@ In an addition to binary formats fq also support reading to and from encodings a
 
 At the moment fq does not have any dedicated argument for serialization formats but raw string input `-R` slurp `-s` and raw string output `-r` can make things easier. The combination `-Rs` will read all inputs into one string (same as jq).
 
-Note that `from*` functions output jq values and `to*` takes jq values as input so in some cases not all information will properly preserved, for example for XML element and attribute order might change and text and comment nodes might move and will be merged.
+Note that `from*` functions output jq values and `to*` takes jq values as input so in some cases not all information will properly preserved, for example for XML element and attribute order might change and text and comment nodes might move and will be merged. [yq](https://github.com/mikefarah/yq) might be a better tool if that is needed.
 
 Some example usages:
 
 ```sh
-# read yml and do some query
-$ fq -Rs 'fromyaml | ...' file.yml
+# read yml (format is probed, use -d yaml to force) and do some query
+$ fq '...' file.yml
 
 # convert YAML to JSON
 # note -r for raw string output, without a JSON string with JSON would outputted
-$ fq -Rsr 'fromyaml | tojson({indent:2})' file.yml
+$ fq -r 'tojson({indent:2})' file.yml
 
 # add token to URL
 $ echo -n "https://host.org" | fq -Rsr 'fromurl | .user.username="token" | tourl'
 https://token@host.org
 
-$ curl -s https://www.discogs.com/ | fq -Rsr 'fromhtml | .. | select(."-id" == "hot-releases")? | .div[].a."-aria-label"'
-Arcade Fire - We
-Bell Biv Devoe - Poison
-Jazz Sabbath - Vol. 2
-Jonathan Richman And The Modern Lovers* - Modern Lovers 88
-Kylie* - Infinite Disco
-Vince Guaraldi Trio - Baseball Theme
+# top 3 hosts in src or href attributes:
+# -d to decode as html, can't be probed as html5 parsers always produce some parse tree
+# [...] to start collect values into an array
+# .. | ."-src"?, ."-href"? | values, recurse and try (?) to get src and href attributes and filter out nulls
+# fromurl.host | values, parse as url and filter out those without a host
+# count to count unique values, returns [[key, count], ...]
+# reverse sort by count and pick first 3
+# map [key, count] tuples into {key: key, values: count}
+# from_entries, convert into object
+$ curl -s https://www.discogs.com/ | fq -d html '[.. | ."-src"?, ."-href"? | values | fromurl.host | values] | count | sort_by(-.[1])[0:3] | map({key: .[0], value: .[1]}) | from_entries'
+{
+  "blog.discogs.com": 9,
+  "st.discogs.com": 10,
+  "www.discogs.com": 14
+}
 
 # shows how serialization functions can be used on any string, how to transform values and output som other format
-# read decode zip file and start an interactive REPL
+# read and decode zip file and start an interactive REPL
 $ fq  -i . <(curl -sL https://github.com/stefangabos/world_countries/archive/master.zip)
 # select from interesting xml file
 zip> .local_files[] | select(.file_name == "world_countries-master/data/countries/en/world.xml").uncompressed | repl
 # convert xml into jq value
 > .local_files[95].uncompressed string> fromxml | repl
 # sort countries by and select the first one
->> object> .countries.country | sort_by(."-name") | first |
+>> object> .countries.country | sort_by(."-name") | first | repl
 # see what current input is
 >>> object> .
 {
@@ -601,6 +609,8 @@ zip> ^D
     <other>text</other>
   </root>
   ```
+
+JSON and jq-flavoured JSON
 - `fromjson` Parse JSON into jq value.
 - `tojson`/`tojson($opt)`  Serialize jq value into JSON.<br>
   `{indent: number}` indent array/object values.<br>
@@ -608,17 +618,28 @@ zip> ^D
 - `tojq`/`tojq($opt)`  Serialize jq value into jq-flavoured JSON<br>
   `{indent: number}` indent array/object values.<br>
   jq-flavoured JSON has optional key quotes, `#` comments and can have trailing comma in arrays.
+
+YAML
 - `fromyaml` Parse YAML into jq value.
 - `toyaml`  Serialize jq value into YAML.
+
+TOML
 - `fromtoml` Parse TOML into jq value.
 - `totoml`  Serialize jq value into TOML.
+
+CSV
 - `fromcsv`/`fromcvs($opts)` Parse CSV into jq value.<br>
   `{comma: string}` field separator, default ",".<br>
   `{comment: string}` comment line character, default "#".<br>
+  To work with tab separated values you can use `fromcvs({comma: "\t"})` or `fq -d csv -o 'comma="\t"'`
 - `tocsv`/`tocsv($opts)` Serialize jq value into CSV.<br>
   `{comma: string}` field separator, default ",".<br>
+
+XML encoding
 - `fromxmlentities` Decode XML entities.
 - `toxmlentities` Encode XML entities.
+
+URL parts and XML encodings
 - `fromurlpath` Decode URL path component.
 - `tourlpath` Encode URL path component. Whitespace as %20.
 - `fromurlencode` Decode URL query encoding.
@@ -645,11 +666,15 @@ zip> ^D
   ```
 - `tourl` Encode object into URL string.
 - `fromhex` Decode hexstring to binary.
+
+Binary encodings like hex and base64
 - `tohex` Encode binay into hexstring.
 - `frombase64`/`frombase64($opts)` Decode base64 encodings into binary.<br>
   `{encoding:string}` encoding variant: `std` (default), `url`, `rawstd` or `rawurl`
 - `tobase64`/`tobase64($opts)` Encode binary into base64 encodings.<br>
   `{encoding:string}` encoding variant: `std` (default), `url`, `rawstd` or `rawurl`
+
+Hash functions
 - `tomd4` Hash binary using md4.
 - `tomd5` Hash binary using md5.
 - `tosha1` Hash binary using sha1.
@@ -659,6 +684,8 @@ zip> ^D
 - `tosha3_256` Hash binary using sha3 256.
 - `tosha3_384` Hash binary using sha3 384.
 - `tosha3_512` Hash binary using sha3 512.
+
+Text encodings
 - `toiso8859_1` Decode binary as ISO8859-1 into string.
 - `fromiso8859_1` Encode string as ISO8859-1 into binary.
 - `toutf8` Encode string as UTF8 into binary.
