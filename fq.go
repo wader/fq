@@ -6,7 +6,7 @@ import (
 	"github.com/wader/fq/pkg/interp"
 )
 
-const version = "0.0.7"
+const version = "0.0.8"
 
 func main() {
 	cli.Main(interp.DefaultRegistry, version)
