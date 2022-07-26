@@ -17,6 +17,7 @@ import (
 	"github.com/wader/fq/internal/progressreadseeker"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/ranges"
+	"github.com/wader/gojq"
 )
 
 func init() {
@@ -366,13 +367,13 @@ func (b Binary) JQValueEach() any {
 	return nil
 }
 func (b Binary) JQValueType() string {
-	return "binary"
+	return gojq.JQTypeString
 }
 func (b Binary) JQValueKeys() any {
-	return gojqextra.FuncTypeNameError{Name: "keys", Typ: "binary"}
+	return gojqextra.FuncTypeNameError{Name: "keys", Typ: gojq.JQTypeString}
 }
 func (b Binary) JQValueHas(key any) any {
-	return gojqextra.HasKeyTypeError{L: "binary", R: fmt.Sprintf("%v", key)}
+	return gojqextra.HasKeyTypeError{L: gojq.JQTypeString, R: fmt.Sprintf("%v", key)}
 }
 func (b Binary) JQValueToNumber() any {
 	buf, err := b.toBytesBuffer(b.r)

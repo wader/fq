@@ -242,7 +242,7 @@ func (v Array) JQValueIndex(index int) any {
 }
 func (v Array) JQValueSlice(start int, end int) any { return v[start:end] }
 func (v Array) JQValueKey(name string) any {
-	return ExpectedObjectError{Typ: "array"}
+	return ExpectedObjectError{Typ: gojq.JQTypeArray}
 }
 func (v Array) JQValueEach() any {
 	vs := make([]gojq.PathValue, len(v))
@@ -261,16 +261,16 @@ func (v Array) JQValueKeys() any {
 func (v Array) JQValueHas(key any) any {
 	intKey, ok := key.(int)
 	if !ok {
-		return HasKeyTypeError{L: "array", R: fmt.Sprintf("%v", key)}
+		return HasKeyTypeError{L: gojq.JQTypeArray, R: fmt.Sprintf("%v", key)}
 	}
 	return intKey >= 0 && intKey < len(v)
 }
-func (v Array) JQValueType() string { return "array" }
+func (v Array) JQValueType() string { return gojq.JQTypeArray }
 func (v Array) JQValueToNumber() any {
-	return FuncTypeNameError{Name: "tonumber", Typ: "array"}
+	return FuncTypeNameError{Name: "tonumber", Typ: gojq.JQTypeArray}
 }
 func (v Array) JQValueToString() any {
-	return FuncTypeNameError{Name: "tostring", Typ: "array"}
+	return FuncTypeNameError{Name: "tostring", Typ: gojq.JQTypeArray}
 }
 func (v Array) JQValueToGoJQ() any { return []any(v) }
 
@@ -281,10 +281,10 @@ var _ gojq.JQValue = Object{}
 type Object map[string]any
 
 func (v Object) JQValueLength() any         { return len(v) }
-func (v Object) JQValueSliceLen() any       { return ExpectedArrayError{Typ: "object"} }
-func (v Object) JQValueIndex(index int) any { return ExpectedArrayError{Typ: "object"} }
+func (v Object) JQValueSliceLen() any       { return ExpectedArrayError{Typ: gojq.JQTypeObject} }
+func (v Object) JQValueIndex(index int) any { return ExpectedArrayError{Typ: gojq.JQTypeObject} }
 func (v Object) JQValueSlice(start int, end int) any {
-	return ExpectedArrayError{Typ: "object"}
+	return ExpectedArrayError{Typ: gojq.JQTypeObject}
 }
 func (v Object) JQValueKey(name string) any { return v[name] }
 func (v Object) JQValueEach() any {
@@ -308,17 +308,17 @@ func (v Object) JQValueKeys() any {
 func (v Object) JQValueHas(key any) any {
 	stringKey, ok := key.(string)
 	if !ok {
-		return HasKeyTypeError{L: "object", R: fmt.Sprintf("%v", key)}
+		return HasKeyTypeError{L: gojq.JQTypeObject, R: fmt.Sprintf("%v", key)}
 	}
 	_, ok = v[stringKey]
 	return ok
 }
-func (v Object) JQValueType() string { return "object" }
+func (v Object) JQValueType() string { return gojq.JQTypeObject }
 func (v Object) JQValueToNumber() any {
-	return FuncTypeNameError{Name: "tonumber", Typ: "object"}
+	return FuncTypeNameError{Name: "tonumber", Typ: gojq.JQTypeObject}
 }
 func (v Object) JQValueToString() any {
-	return FuncTypeNameError{Name: "tostring", Typ: "object"}
+	return FuncTypeNameError{Name: "tostring", Typ: gojq.JQTypeObject}
 }
 func (v Object) JQValueToGoJQ() any { return map[string]any(v) }
 
@@ -331,18 +331,18 @@ type Number struct {
 }
 
 func (v Number) JQValueLength() any         { return v.V }
-func (v Number) JQValueSliceLen() any       { return ExpectedArrayError{Typ: "number"} }
-func (v Number) JQValueIndex(index int) any { return ExpectedArrayError{Typ: "number"} }
+func (v Number) JQValueSliceLen() any       { return ExpectedArrayError{Typ: gojq.JQTypeNumber} }
+func (v Number) JQValueIndex(index int) any { return ExpectedArrayError{Typ: gojq.JQTypeNumber} }
 func (v Number) JQValueSlice(start int, end int) any {
-	return ExpectedArrayError{Typ: "number"}
+	return ExpectedArrayError{Typ: gojq.JQTypeNumber}
 }
-func (v Number) JQValueKey(name string) any { return ExpectedObjectError{Typ: "number"} }
-func (v Number) JQValueEach() any           { return IteratorError{Typ: "number"} }
-func (v Number) JQValueKeys() any           { return FuncTypeNameError{Name: "keys", Typ: "number"} }
+func (v Number) JQValueKey(name string) any { return ExpectedObjectError{Typ: gojq.JQTypeNumber} }
+func (v Number) JQValueEach() any           { return IteratorError{Typ: gojq.JQTypeNumber} }
+func (v Number) JQValueKeys() any           { return FuncTypeNameError{Name: "keys", Typ: gojq.JQTypeNumber} }
 func (v Number) JQValueHas(key any) any {
-	return FuncTypeNameError{Name: "has", Typ: "number"}
+	return FuncTypeNameError{Name: "has", Typ: gojq.JQTypeNumber}
 }
-func (v Number) JQValueType() string  { return "number" }
+func (v Number) JQValueType() string  { return gojq.JQTypeNumber }
 func (v Number) JQValueToNumber() any { return v.V }
 func (v Number) JQValueToString() any {
 	b := &bytes.Buffer{}
@@ -370,13 +370,13 @@ func (v String) JQValueIndex(index int) any {
 	return fmt.Sprintf("%c", v[index])
 }
 func (v String) JQValueSlice(start int, end int) any { return string(v[start:end]) }
-func (v String) JQValueKey(name string) any          { return ExpectedObjectError{Typ: "string"} }
-func (v String) JQValueEach() any                    { return IteratorError{Typ: "string"} }
-func (v String) JQValueKeys() any                    { return FuncTypeNameError{Name: "keys", Typ: "string"} }
+func (v String) JQValueKey(name string) any          { return ExpectedObjectError{Typ: gojq.JQTypeString} }
+func (v String) JQValueEach() any                    { return IteratorError{Typ: gojq.JQTypeString} }
+func (v String) JQValueKeys() any                    { return FuncTypeNameError{Name: "keys", Typ: gojq.JQTypeString} }
 func (v String) JQValueHas(key any) any {
-	return FuncTypeNameError{Name: "has", Typ: "string"}
+	return FuncTypeNameError{Name: "has", Typ: gojq.JQTypeString}
 }
-func (v String) JQValueType() string { return "string" }
+func (v String) JQValueType() string { return gojq.JQTypeString }
 func (v String) JQValueToNumber() any {
 	if !gojq.ValidNumber(string(v)) {
 		return fmt.Errorf("invalid number: %q", string(v))
@@ -393,22 +393,22 @@ var _ gojq.JQValue = Boolean(true)
 type Boolean bool
 
 func (v Boolean) JQValueLength() any {
-	return FuncTypeNameError{Name: "length", Typ: "boolean"}
+	return FuncTypeNameError{Name: "length", Typ: gojq.JQTypeBoolean}
 }
-func (v Boolean) JQValueSliceLen() any       { return ExpectedArrayError{Typ: "boolean"} }
-func (v Boolean) JQValueIndex(index int) any { return ExpectedArrayError{Typ: "boolean"} }
+func (v Boolean) JQValueSliceLen() any       { return ExpectedArrayError{Typ: gojq.JQTypeBoolean} }
+func (v Boolean) JQValueIndex(index int) any { return ExpectedArrayError{Typ: gojq.JQTypeBoolean} }
 func (v Boolean) JQValueSlice(start int, end int) any {
-	return ExpectedArrayError{Typ: "boolean"}
+	return ExpectedArrayError{Typ: gojq.JQTypeBoolean}
 }
-func (v Boolean) JQValueKey(name string) any { return ExpectedObjectError{Typ: "boolean"} }
-func (v Boolean) JQValueEach() any           { return IteratorError{Typ: "boolean"} }
-func (v Boolean) JQValueKeys() any           { return FuncTypeNameError{Name: "keys", Typ: "boolean"} }
+func (v Boolean) JQValueKey(name string) any { return ExpectedObjectError{Typ: gojq.JQTypeBoolean} }
+func (v Boolean) JQValueEach() any           { return IteratorError{Typ: gojq.JQTypeBoolean} }
+func (v Boolean) JQValueKeys() any           { return FuncTypeNameError{Name: "keys", Typ: gojq.JQTypeBoolean} }
 func (v Boolean) JQValueHas(key any) any {
-	return FuncTypeNameError{Name: "has", Typ: "boolean"}
+	return FuncTypeNameError{Name: "has", Typ: gojq.JQTypeBoolean}
 }
-func (v Boolean) JQValueType() string { return "boolean" }
+func (v Boolean) JQValueType() string { return gojq.JQTypeBoolean }
 func (v Boolean) JQValueToNumber() any {
-	return FuncTypeNameError{Name: "tonumber", Typ: "boolean"}
+	return FuncTypeNameError{Name: "tonumber", Typ: gojq.JQTypeBoolean}
 }
 func (v Boolean) JQValueToString() any {
 	if v {
@@ -425,19 +425,19 @@ var _ gojq.JQValue = Null{}
 type Null struct{}
 
 func (v Null) JQValueLength() any                  { return 0 }
-func (v Null) JQValueSliceLen() any                { return ExpectedArrayError{Typ: "null"} }
-func (v Null) JQValueIndex(index int) any          { return ExpectedArrayError{Typ: "null"} }
-func (v Null) JQValueSlice(start int, end int) any { return ExpectedArrayError{Typ: "null"} }
-func (v Null) JQValueKey(name string) any          { return ExpectedObjectError{Typ: "null"} }
+func (v Null) JQValueSliceLen() any                { return ExpectedArrayError{Typ: gojq.JQTypeNull} }
+func (v Null) JQValueIndex(index int) any          { return ExpectedArrayError{Typ: gojq.JQTypeNull} }
+func (v Null) JQValueSlice(start int, end int) any { return ExpectedArrayError{Typ: gojq.JQTypeNull} }
+func (v Null) JQValueKey(name string) any          { return ExpectedObjectError{Typ: gojq.JQTypeNull} }
 
-func (v Null) JQValueEach() any { return IteratorError{Typ: "null"} }
-func (v Null) JQValueKeys() any { return FuncTypeNameError{Name: "keys", Typ: "null"} }
+func (v Null) JQValueEach() any { return IteratorError{Typ: gojq.JQTypeNull} }
+func (v Null) JQValueKeys() any { return FuncTypeNameError{Name: "keys", Typ: gojq.JQTypeNull} }
 func (v Null) JQValueHas(key any) any {
-	return FuncTypeNameError{Name: "has", Typ: "null"}
+	return FuncTypeNameError{Name: "has", Typ: gojq.JQTypeNull}
 }
-func (v Null) JQValueType() string  { return "null" }
-func (v Null) JQValueToNumber() any { return FuncTypeNameError{Name: "tonumber", Typ: "null"} }
-func (v Null) JQValueToString() any { return "null" }
+func (v Null) JQValueType() string  { return gojq.JQTypeNull }
+func (v Null) JQValueToNumber() any { return FuncTypeNameError{Name: "tonumber", Typ: gojq.JQTypeNull} }
+func (v Null) JQValueToString() any { return gojq.JQTypeNull }
 func (v Null) JQValueToGoJQ() any   { return nil }
 
 // Base
@@ -460,7 +460,7 @@ func (v Base) JQValueKey(name string) any {
 func (v Base) JQValueEach() any { return IteratorError{Typ: v.Typ} }
 func (v Base) JQValueKeys() any { return FuncTypeNameError{Name: "keys", Typ: v.Typ} }
 func (v Base) JQValueHas(key any) any {
-	return HasKeyTypeError{L: "array", R: fmt.Sprintf("%v", key)}
+	return HasKeyTypeError{L: gojq.JQTypeArray, R: fmt.Sprintf("%v", key)}
 }
 func (v Base) JQValueType() string  { return v.Typ }
 func (v Base) JQValueToNumber() any { return FuncTypeNameError{Name: "tonumber", Typ: v.Typ} }
@@ -523,7 +523,7 @@ func (v *Lazy) JQValueEach() any {
 }
 func (v *Lazy) JQValueKeys() any {
 	if v.IsScalar {
-		return FuncTypeNameError{Name: "keys", Typ: "string"}
+		return FuncTypeNameError{Name: "keys", Typ: gojq.JQTypeString}
 	}
 	return v.f(func(jv gojq.JQValue) any { return jv.JQValueKeys() })
 }
