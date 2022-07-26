@@ -171,15 +171,15 @@ func Cast[T any](v any) (T, bool) {
 func NormalizeFn(v any, fn func(v any) any) any {
 	switch v := v.(type) {
 	case map[string]any:
-		for i, e := range v {
-			v[i] = NormalizeFn(e, fn)
+		for k, e := range v {
+			v[k] = NormalizeFn(e, fn)
 		}
 		return v
 	case map[any]any:
 		// for gopkg.in/yaml.v2
 		vm := map[string]any{}
-		for i, e := range v {
-			switch i := i.(type) {
+		for k, e := range v {
+			switch i := k.(type) {
 			case string:
 				vm[i] = NormalizeFn(e, fn)
 			case int:
@@ -198,6 +198,8 @@ func NormalizeFn(v any, fn func(v any) any) any {
 			v[i] = NormalizeFn(e, fn)
 		}
 		return v
+	case gojq.JQValue:
+		return NormalizeFn(v.JQValueToGoJQ(), fn)
 	default:
 		return fn(v)
 	}
