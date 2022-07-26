@@ -654,7 +654,7 @@ type ArrayDecodeValue struct {
 func NewArrayDecodeValue(dv *decode.Value, out any, c *decode.Compound) ArrayDecodeValue {
 	return ArrayDecodeValue{
 		decodeValueBase: decodeValueBase{dv: dv, out: out},
-		Base:            gojqextra.Base{Typ: "array"},
+		Base:            gojqextra.Base{Typ: gojq.JQTypeArray},
 		Compound:        c,
 	}
 }
@@ -699,7 +699,7 @@ func (v ArrayDecodeValue) JQValueHas(key any) any {
 		func(key any) any {
 			intKey, ok := key.(int)
 			if !ok {
-				return gojqextra.HasKeyTypeError{L: "array", R: fmt.Sprintf("%v", key)}
+				return gojqextra.HasKeyTypeError{L: gojq.JQTypeArray, R: fmt.Sprintf("%v", key)}
 			}
 			return intKey >= 0 && intKey < len(v.Compound.Children)
 		})
@@ -725,7 +725,7 @@ type StructDecodeValue struct {
 func NewStructDecodeValue(dv *decode.Value, out any, c *decode.Compound) StructDecodeValue {
 	return StructDecodeValue{
 		decodeValueBase: decodeValueBase{dv: dv, out: out},
-		Base:            gojqextra.Base{Typ: "object"},
+		Base:            gojqextra.Base{Typ: gojq.JQTypeObject},
 		Compound:        c,
 	}
 }
@@ -765,7 +765,7 @@ func (v StructDecodeValue) JQValueHas(key any) any {
 		func(key any) any {
 			stringKey, ok := key.(string)
 			if !ok {
-				return gojqextra.HasKeyTypeError{L: "object", R: fmt.Sprintf("%v", key)}
+				return gojqextra.HasKeyTypeError{L: gojq.JQTypeObject, R: fmt.Sprintf("%v", key)}
 			}
 			for _, f := range v.Compound.Children {
 				if f.Name == stringKey {
