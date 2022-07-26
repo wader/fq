@@ -252,3 +252,38 @@ $ fq -d mp3 '.frames[0] | to_entries[].key' test.mp3
 "xing"
 "padding"
 "crc_calculated"
+# xml, csv does string normalization, make sure it works with nested JQValue:s
+# TODO: move this test as it depends on xml
+$ fq -r '.headers[0] | toxml({indent: 2})' test.mp3
+<doc>
+  <flags>
+    <experimental_indicator>false</experimental_indicator>
+    <extended_header>false</extended_header>
+    <unsynchronisation>false</unsynchronisation>
+    <unused>0</unused>
+  </flags>
+  <frames>
+    <flags>
+      <compression>false</compression>
+      <data_length_indicator>false</data_length_indicator>
+      <encryption>false</encryption>
+      <file_alter_preservation>false</file_alter_preservation>
+      <grouping_identity>false</grouping_identity>
+      <read_only>false</read_only>
+      <tag_alter_preservation>false</tag_alter_preservation>
+      <unsync>false</unsync>
+      <unused0>0</unused0>
+      <unused1>0</unused1>
+      <unused2>0</unused2>
+    </flags>
+    <id>TSSE</id>
+    <size>15</size>
+    <text>Lavf58.45.100</text>
+    <text_encoding>utf8</text_encoding>
+  </frames>
+  <magic>ID3</magic>
+  <padding>����������</padding>
+  <revision>0</revision>
+  <size>35</size>
+  <version>4</version>
+</doc>
