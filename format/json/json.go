@@ -29,8 +29,8 @@ func init() {
 		Groups:      []string{format.PROBE},
 		DecodeFn:    decodeJSON,
 		Functions:   []string{"_todisplay"},
-		Files:       jsonFS,
 	})
+	interp.RegisterFS(jsonFS)
 	interp.RegisterFunc1("_tojson", toJSON)
 }
 

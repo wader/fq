@@ -39,8 +39,8 @@ func init() {
 			Array: false,
 		},
 		Functions: []string{"_todisplay"},
-		Files:     xmlFS,
 	})
+	interp.RegisterFS(xmlFS)
 	interp.RegisterFunc1("toxml", toXML)
 	interp.RegisterFunc0("fromxmlentities", func(_ *interp.Interp, c string) any {
 		return html.UnescapeString(c)

@@ -25,8 +25,8 @@ func init() {
 		Groups:      []string{format.PROBE},
 		DecodeFn:    decodeYAML,
 		Functions:   []string{"_todisplay"},
-		Files:       yamlFS,
 	})
+	interp.RegisterFS(yamlFS)
 	interp.RegisterFunc0("toyaml", toYAML)
 }
 

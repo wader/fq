@@ -28,9 +28,9 @@ func init() {
 		Name:        format.CBOR,
 		Description: "Concise Binary Object Representation",
 		DecodeFn:    decodeCBOR,
-		Files:       cborFS,
 		Functions:   []string{"torepr", "_help"},
 	})
+	interp.RegisterFS(cborFS)
 }
 
 type majorTypeEntry struct {

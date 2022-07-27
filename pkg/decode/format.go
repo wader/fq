@@ -1,7 +1,5 @@
 package decode
 
-import "io/fs"
-
 type Group []Format
 
 type Dependency struct {
@@ -20,7 +18,6 @@ type Format struct {
 	RootArray     bool
 	RootName      string
 	Dependencies  []Dependency
-	Files         fs.ReadDirFS
 	Help          FormatHelp
 	Functions     []string
 }

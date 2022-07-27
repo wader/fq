@@ -36,9 +36,9 @@ func init() {
 		Name:        format.ASN1_BER,
 		Description: "ASN1 BER (basic encoding rules, also CER and DER)",
 		DecodeFn:    decodeASN1BER,
-		Files:       asn1FS,
 		Functions:   []string{"torepr", "_help"},
 	})
+	interp.RegisterFS(asn1FS)
 }
 
 const (

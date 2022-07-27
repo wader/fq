@@ -20,9 +20,9 @@ func init() {
 		Name:        format.BSON,
 		Description: "Binary JSON",
 		DecodeFn:    decodeBSON,
-		Files:       bsonFS,
 		Functions:   []string{"torepr", "_help"},
 	})
+	interp.RegisterFS(bsonFS)
 }
 
 const (

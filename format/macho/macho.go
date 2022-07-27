@@ -22,9 +22,9 @@ func init() {
 		Description: "Mach-O macOS executable",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    machoDecode,
-		Files:       machoFS,
 		Functions:   []string{"_help"},
 	})
+	interp.RegisterFS(machoFS)
 }
 
 //nolint:revive

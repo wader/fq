@@ -37,8 +37,8 @@ func init() {
 			{Names: []string{format.MPEG_ASC}, Group: &rtmpMpegASCFormat},
 		},
 		Functions: []string{"_help"},
-		Files:     rtmpFS,
 	})
+	interp.RegisterFS(rtmpFS)
 }
 
 // from RTMP spec

@@ -30,8 +30,8 @@ func init() {
 			Comment: "#",
 		},
 		Functions: []string{"_todisplay"},
-		Files:     csvFS,
 	})
+	interp.RegisterFS(csvFS)
 	interp.RegisterFunc1("_tocsv", toCSV)
 }
 
