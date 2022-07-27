@@ -21,8 +21,8 @@ func init() {
 		Description: "Protobuf",
 		DecodeFn:    protobufDecode,
 		Functions:   []string{"_help"},
-		Files:       protobufFS,
 	})
+	interp.RegisterFS(protobufFS)
 }
 
 const (

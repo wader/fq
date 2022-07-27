@@ -24,8 +24,8 @@ func init() {
 		Groups:      []string{format.PROBE},
 		DecodeFn:    decodeTOML,
 		Functions:   []string{"_todisplay"},
-		Files:       tomlFS,
 	})
+	interp.RegisterFS(tomlFS)
 	interp.RegisterFunc0("totoml", toTOML)
 }
 

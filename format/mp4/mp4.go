@@ -88,9 +88,9 @@ func init() {
 			{Names: []string{format.VPX_CCR}, Group: &vpxCCRFormat},
 			{Names: []string{format.ICC_PROFILE}, Group: &iccProfileFormat},
 		},
-		Files:     mp4FS,
 		Functions: []string{"_help"},
 	})
+	interp.RegisterFS(mp4FS)
 }
 
 type stsc struct {

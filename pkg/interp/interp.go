@@ -38,10 +38,9 @@ import (
 //go:embed options.jq
 //go:embed binary.jq
 //go:embed decode.jq
+//go:embed registry_include.jq
 //go:embed format_decode.jq
-//go:embed format_include.jq
 //go:embed format_func.jq
-//go:embed registry_files.jq
 //go:embed grep.jq
 //go:embed args.jq
 //go:embed eval.jq

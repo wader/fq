@@ -118,33 +118,6 @@ func (i *Interp) _registry(c any) any {
 			vf["decode_in_arg"] = gojqextra.Normalize(args)
 		}
 
-		if f.Files != nil {
-			files := []any{}
-
-			entries, err := f.Files.ReadDir(".")
-			if err != nil {
-				return err
-			}
-
-			for _, e := range entries {
-				f, err := f.Files.Open(e.Name())
-				if err != nil {
-					return err
-				}
-				b, err := ioutil.ReadAll(f)
-				if err != nil {
-					return err
-				}
-
-				files = append(files, map[string]any{
-					"name": e.Name(),
-					"data": string(b),
-				})
-			}
-
-			vf["files"] = files
-		}
-
 		if f.Functions != nil {
 			var ss []any
 			for _, f := range f.Functions {

@@ -25,8 +25,8 @@ func init() {
 			Array: false,
 		},
 		Functions: []string{"_todisplay"},
-		Files:     htmlFS,
 	})
+	interp.RegisterFS(htmlFS)
 }
 
 func fromHTMLObject(n *html.Node, hi format.HTMLIn) any {

@@ -26,8 +26,8 @@ func init() {
 		Groups:      []string{format.PROBE},
 		DecodeFn:    decodeAvroOCF,
 		Functions:   []string{"_help"},
-		Files:       avroOcfFS,
 	})
+	interp.RegisterFS(avroOcfFS)
 }
 
 type HeaderData struct {

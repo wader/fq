@@ -32,9 +32,9 @@ func init() {
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.PROBE}, Group: &probeFormat},
 		},
-		Files:     zipFS,
 		Functions: []string{"_help"},
 	})
+	interp.RegisterFS(zipFS)
 }
 
 const (

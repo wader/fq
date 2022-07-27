@@ -79,8 +79,8 @@ func init() {
 			{Names: []string{format.VP9_FRAME}, Group: &vp9FrameFormat},
 		},
 		Functions: []string{"_help"},
-		Files:     matroskaFS,
 	})
+	interp.RegisterFS(matroskaFS)
 
 	codecToFormat = map[string]*decode.Group{
 		"A_VORBIS":         &vorbisPacketFormat,

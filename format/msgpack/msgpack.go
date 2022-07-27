@@ -21,9 +21,9 @@ func init() {
 		Name:        format.MSGPACK,
 		Description: "MessagePack",
 		DecodeFn:    decodeMsgPack,
-		Files:       msgPackFS,
 		Functions:   []string{"torepr", "_help"},
 	})
+	interp.RegisterFS(msgPackFS)
 }
 
 type formatEntry struct {
