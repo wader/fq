@@ -113,3 +113,13 @@ func (m versionMapper) MapScalar(s scalar.S) (scalar.S, error) {
 }
 
 var VersionMapper = versionMapper{}
+
+type hexMapper struct{}
+
+func (m hexMapper) MapScalar(s scalar.S) (scalar.S, error) {
+	v := s.ActualU()
+	s.Sym = fmt.Sprintf("%X", v)
+	return s, nil
+}
+
+var HexMapper = hexMapper{}

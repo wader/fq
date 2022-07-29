@@ -3,6 +3,7 @@ package postgres14
 import (
 	"context"
 	"fmt"
+	"github.com/wader/fq/format/postgres/common"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
 )
@@ -151,14 +152,6 @@ func DecodePgwal(d *decode.D, in any) any {
 	return nil
 }
 
-func TypeAlign(alignVal uint64, alignLen uint64) uint64 {
-	return (alignLen + alignVal - 1) & ^(alignVal - 1)
-}
-
-func TypeAlign8(alignLen uint64) uint64 {
-	return TypeAlign(8, alignLen)
-}
-
 func decodeXLogPage(d *decode.D) {
 
 	wal := getWalD(d)
@@ -193,7 +186,7 @@ func decodeXLogPage(d *decode.D) {
 
 	record := wal.record
 	if record == nil {
-		rawLen := int64(TypeAlign8(remLen))
+		rawLen := int64(common.TypeAlign8(remLen))
 		page.FieldRawLen("prev_file_rec", rawLen*8)
 	}
 
@@ -214,7 +207,7 @@ func decodeXLogRecords(d *decode.D) {
 	pageRecords := wal.pageRecords
 
 	pos := d.Pos() / 8
-	posMaxOfPage := int64(TypeAlign(8192, uint64(pos)))
+	posMaxOfPage := int64(common.TypeAlign(8192, uint64(pos)))
 	fmt.Printf("posMaxOfPage = %d\n", posMaxOfPage)
 
 	for {
@@ -269,7 +262,7 @@ func decodeXLogRecords(d *decode.D) {
 
 			xLogRecordBodyLen := xlTotLen - uint64(sizeOfXLogRecord)
 
-			rawLen := int64(TypeAlign8(xLogRecordBodyLen))
+			rawLen := int64(common.TypeAlign8(xLogRecordBodyLen))
 			record.FieldRawLen("xLogBody", rawLen*8)
 		})
 

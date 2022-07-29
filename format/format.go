@@ -93,6 +93,7 @@ const (
 	PGMULTIXACTOFF      = "pgmultixact_offsets"
 	PGMULTIXACTMEM      = "pgmultixact_members"
 	PG_CONTROL          = "pg_control"
+	PGHEAP              = "pgheap"
 	PNG                 = "png"
 	PROTOBUF            = "protobuf"
 	PROTOBUF_WIDEVINE   = "protobuf_widevine"
