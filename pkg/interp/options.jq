@@ -470,7 +470,7 @@ def _opt_cli_opts:
     "slurp": {
       short: "-s",
       long: "--slurp",
-      description: "Read (slurp) all inputs into an array",
+      description: "Slurp all inputs into an array or string (-Rs)",
       bool: true
     },
     "show_version": {
