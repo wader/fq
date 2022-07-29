@@ -35,7 +35,7 @@ Example usages:
 --raw-input,-R          Read raw input strings (don't decode)
 --raw-output,-r         Raw string output (without quotes)
 --repl,-i               Interactive REPL
---slurp,-s              Read (slurp) all inputs into an array
+--slurp,-s              Slurp all inputs into an array or string (-Rs)
 --version,-v            Show version
 $ fq -i
 null> ^D
