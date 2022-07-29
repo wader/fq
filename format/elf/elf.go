@@ -705,34 +705,32 @@ func elfDecodeProgramHeader(d *decode.D, ec elfContext) {
 		})
 	}
 
-	d.FieldStruct("program_header", func(d *decode.D) {
-		var offset uint64
-		var size uint64
+	var offset uint64
+	var size uint64
 
-		switch ec.archBits {
-		case 32:
-			d.FieldU32("type", phTypeNames)
-			offset = d.FieldU("offset", ec.archBits, scalar.ActualHex)
-			d.FieldU("vaddr", ec.archBits, scalar.ActualHex)
-			d.FieldU("paddr", ec.archBits, scalar.ActualHex)
-			size = d.FieldU32("filesz")
-			d.FieldU32("memsz")
-			pFlags(d)
-			d.FieldU32("align")
-		case 64:
-			d.FieldU32("type", phTypeNames)
-			pFlags(d)
-			offset = d.FieldU("offset", ec.archBits, scalar.ActualHex)
-			d.FieldU("vaddr", ec.archBits, scalar.ActualHex)
-			d.FieldU("paddr", ec.archBits, scalar.ActualHex)
-			size = d.FieldU64("filesz")
-			d.FieldU64("memsz")
-			d.FieldU64("align")
-		}
+	switch ec.archBits {
+	case 32:
+		d.FieldU32("type", phTypeNames)
+		offset = d.FieldU("offset", ec.archBits, scalar.ActualHex)
+		d.FieldU("vaddr", ec.archBits, scalar.ActualHex)
+		d.FieldU("paddr", ec.archBits, scalar.ActualHex)
+		size = d.FieldU32("filesz")
+		d.FieldU32("memsz")
+		pFlags(d)
+		d.FieldU32("align")
+	case 64:
+		d.FieldU32("type", phTypeNames)
+		pFlags(d)
+		offset = d.FieldU("offset", ec.archBits, scalar.ActualHex)
+		d.FieldU("vaddr", ec.archBits, scalar.ActualHex)
+		d.FieldU("paddr", ec.archBits, scalar.ActualHex)
+		size = d.FieldU64("filesz")
+		d.FieldU64("memsz")
+		d.FieldU64("align")
+	}
 
-		d.RangeFn(int64(offset*8), int64(size*8), func(d *decode.D) {
-			d.FieldRawLen("data", d.BitsLeft())
-		})
+	d.RangeFn(int64(offset*8), int64(size*8), func(d *decode.D) {
+		d.FieldRawLen("data", d.BitsLeft())
 	})
 }
 
