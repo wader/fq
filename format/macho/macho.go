@@ -410,8 +410,6 @@ func ofileDecode(d *decode.D) {
 		}
 	})
 	d.FieldArray("load_commands", func(d *decode.D) {
-		d.RangeSorted = false
-
 		for i := uint64(0); i < ncmds; i++ {
 			d.FieldStruct("load_command", func(d *decode.D) {
 				cmd := d.FieldU32("cmd", loadCommands, scalar.ActualHex)
@@ -444,8 +442,6 @@ func ofileDecode(d *decode.D) {
 						d.FieldStruct("flags", parseSegmentFlags)
 					})
 					d.FieldArray("sections", func(d *decode.D) {
-						d.RangeSorted = false
-
 						for i := uint64(0); i < nsects; i++ {
 							d.FieldStruct("section", func(d *decode.D) {
 								// OPCODE_DECODER sectname==__text
