@@ -11,6 +11,7 @@ $ fq -n _registry.groups.probe
   "gzip",
   "jpeg",
   "macho",
+  "macho_fat",
   "matroska",
   "mp4",
   "ogg",

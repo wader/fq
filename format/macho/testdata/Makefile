@@ -28,7 +28,7 @@ build_fat_targets:
 
 # build_fat creates a FAT binary from TARGET_X86 and TARGET_ARM
 # creates FAT binary $(OUTPUT) under $(DIR)
-build_fat: 
+build_fat:
 	lipo -create -output $(DIR)/$(OUTPUT) $(TARGET_X86) $(TARGET_ARM)
 
 libbbb.so: libbbb.o
@@ -50,4 +50,4 @@ all-platforms-actual:
 
 # generates or actualizes the test cases
 actual:
-	cd $(DIR) && echo $(TARGETS) | tr -s '[:blank:]' '\n' | grep -ivE '.*\.o$$' | xargs -I '{}' sh -c 'echo "$$ fq -d macho dv {}" > {}.fqtest && $(FQ) -d macho dv {} >> {}.fqtest'
+	cd $(DIR) && echo $(TARGETS) | tr -s '[:blank:]' '\n' | grep -ivE '.*\.o$$' | xargs -I '{}' sh -c 'echo "$$ fq dv {}" > {}.fqtest && $(FQ) -d macho dv {} >> {}.fqtest'

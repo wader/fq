@@ -33,22 +33,13 @@ const (
 	MH_CIGAM    = 0xcefa_edfe
 	MH_MAGIC_64 = 0xfeed_facf
 	MH_CIGAM_64 = 0xcffa_edfe
-	FAT_MAGIC   = 0xcafe_babe
-	FAT_CIGAM   = 0xbeba_feca
 )
 
-var magicSymMapper = scalar.UToDescription{
-	MH_MAGIC:    "32-bit little endian",
-	MH_CIGAM:    "32-bit big endian",
-	MH_MAGIC_64: "64-bit little endian",
-	MH_CIGAM_64: "64-bit big endian",
-}
-
-var endianNames = scalar.UToSymStr{
-	MH_MAGIC:    "little_endian",
-	MH_CIGAM:    "big_endian",
-	MH_MAGIC_64: "little_endian",
-	MH_CIGAM_64: "big_endian",
+var magicSymMapper = scalar.UToScalar{
+	MH_MAGIC:    scalar.S{Sym: "32le", Description: "32-bit little endian"},
+	MH_CIGAM:    scalar.S{Sym: "32be", Description: "32-bit big endian"},
+	MH_MAGIC_64: scalar.S{Sym: "64le", Description: "64-bit little endian"},
+	MH_CIGAM_64: scalar.S{Sym: "64be", Description: "64-bit big endian"},
 }
 
 var cpuTypes = scalar.UToSymStr{
@@ -356,11 +347,6 @@ var sectionTypes = scalar.UToSymStr{
 }
 
 func machoDecode(d *decode.D, _ any) any {
-	ofileDecode(d)
-	return nil
-}
-
-func ofileDecode(d *decode.D) {
 	var archBits int
 	var cpuType uint64
 	var ncmds uint64
@@ -380,25 +366,15 @@ func ofileDecode(d *decode.D) {
 		} else {
 			archBits = 64
 		}
-	} else if magicBuffer == FAT_MAGIC {
-		d.Endian = decode.LittleEndian
-		fatParse(d)
-		return
-	} else if magicBuffer == FAT_CIGAM {
-		d.Endian = decode.BigEndian
-		fatParse(d)
-		return
 	} else {
-		// AR files are also valid OFiles but they should be parsed by `-d ar`
-		d.Fatalf("Invalid magic field")
+		d.Fatalf("invalid magic")
 	}
 
 	d.SeekRel(-4 * 8)
 	d.FieldStruct("header", func(d *decode.D) {
 		d.FieldValueS("arch_bits", int64(archBits))
-		magic := d.FieldU32("magic", magicSymMapper, scalar.ActualHex)
+		d.FieldU32("magic", magicSymMapper, scalar.ActualHex)
 		d.FieldValueU("bits", uint64(archBits))
-		d.FieldValueStr("endian", endianNames[magic])
 		cpuType = d.FieldU32("cputype", cpuTypes, scalar.ActualHex)
 		d.FieldU32("cpusubtype", cpuSubTypes[cpuType], scalar.ActualHex)
 		d.FieldU32("filetype", fileTypes)
@@ -419,21 +395,26 @@ func ofileDecode(d *decode.D) {
 					d.FieldStruct("uuid_command", func(d *decode.D) {
 						d.FieldRawLen("uuid", 16*8)
 					})
-				case LC_SEGMENT, LC_SEGMENT_64:
+				case LC_SEGMENT,
+					LC_SEGMENT_64:
 					// nsect := (cmdsize - uint64(archBits)) / uint64(archBits)
+
+					var vmaddr int64
+					var fileoff int64
+
 					var nsects uint64
 					d.FieldStruct("segment_command", func(d *decode.D) {
 						d.FieldValueS("arch_bits", int64(archBits))
 						d.FieldUTF8NullFixedLen("segname", 16) // OPCODE_DECODER segname==__TEXT
 						if archBits == 32 {
-							d.FieldU32("vmaddr", scalar.ActualHex)
+							vmaddr = int64(d.FieldU32("vmaddr", scalar.ActualHex))
 							d.FieldU32("vmsize")
-							d.FieldU32("fileoff")
+							fileoff = int64(d.FieldU32("fileoff", scalar.ActualHex))
 							d.FieldU32("tfilesize")
 						} else {
-							d.FieldU64("vmaddr", scalar.ActualHex)
+							vmaddr = int64(d.FieldU64("vmaddr", scalar.ActualHex))
 							d.FieldU64("vmsize")
-							d.FieldU64("fileoff")
+							fileoff = int64(d.FieldU64("fileoff", scalar.ActualHex))
 							d.FieldU64("tfilesize")
 						}
 						d.FieldS32("initprot")
@@ -445,7 +426,7 @@ func ofileDecode(d *decode.D) {
 						for i := uint64(0); i < nsects; i++ {
 							d.FieldStruct("section", func(d *decode.D) {
 								// OPCODE_DECODER sectname==__text
-								d.FieldUTF8NullFixedLen("sectname", 16)
+								sectName := d.FieldUTF8NullFixedLen("sectname", 16)
 								d.FieldUTF8NullFixedLen("segname", 16)
 								var size uint64
 								if archBits == 32 {
@@ -455,7 +436,7 @@ func ofileDecode(d *decode.D) {
 									d.FieldU64("address", scalar.ActualHex)
 									size = d.FieldU64("size")
 								}
-								offset := d.FieldU32("offset")
+								offset := d.FieldU32("offset", scalar.ActualHex)
 								d.FieldU32("align")
 								d.FieldU32("reloff")
 								d.FieldU32("nreloc")
@@ -467,28 +448,86 @@ func ofileDecode(d *decode.D) {
 								if archBits == 64 {
 									d.FieldU32("reserved3")
 								}
-								d.RangeFn(int64(offset)*8, int64(size)*8, func(d *decode.D) {
-									d.FieldRawLen("data", d.BitsLeft())
-								})
+
+								switch sectName {
+								case "__bss", // uninitialized data
+									"__common": // allocated by linker
+									// skip, no data from file
+									// TODO: more?
+								default:
+									d.RangeFn(int64(offset)*8, int64(size)*8, func(d *decode.D) {
+										switch sectName {
+										case "__cstring":
+											d.FieldArray("cstrings", func(d *decode.D) {
+												for !d.End() {
+													d.FieldUTF8Null("cstring")
+												}
+											})
+										case "__ustring":
+											d.FieldArray("ustrings", func(d *decode.D) {
+												for !d.End() {
+													// TODO: always LE?
+													d.FieldUTF16LENull("ustring")
+												}
+											})
+										case "__cfstring":
+											d.FieldArray("cfstrings", func(d *decode.D) {
+												for !d.End() {
+													d.FieldStruct("cfstring", func(d *decode.D) {
+														// https://github.com/llvm-mirror/clang/blob/aa231e4be75ac4759c236b755c57876f76e3cf05/lib/CodeGen/CodeGenModule.cpp#L4708
+														const flagUTF8 = 0x07c8
+														const flagUTF16 = 0x07d0
+
+														d.FieldU("isa_vmaddr", archBits)
+														flag := d.FieldU("flags", archBits, scalar.ActualHex, scalar.UToSymStr{
+															flagUTF8:  "utf8",
+															flagUTF16: "utf16",
+														})
+														dataPtr := int64(d.FieldU("data_ptr", archBits, scalar.ActualHex))
+														length := int64(d.FieldU("length", archBits))
+
+														offset := ((dataPtr - vmaddr) + fileoff) * 8
+														switch flag {
+														case flagUTF8:
+															d.RangeFn(offset, length*8, func(d *decode.D) { d.FieldUTF8("string", int(length)) })
+														case flagUTF16:
+															// TODO: endian?
+															d.RangeFn(offset, length*8*2, func(d *decode.D) { d.FieldUTF16("string", int(length*2)) })
+														}
+													})
+												}
+											})
+										default:
+											d.FieldRawLen("data", d.BitsLeft())
+										}
+									})
+								}
 							})
 						}
 					})
 				case LC_TWOLEVEL_HINTS:
-					d.FieldU32("offset")
+					d.FieldU32("offset", scalar.ActualHex)
 					d.FieldU32("nhints")
-				case LC_LOAD_DYLIB, LC_ID_DYLIB, LC_LOAD_UPWARD_DYLIB, LC_LOAD_WEAK_DYLIB, LC_LAZY_LOAD_DYLIB, LC_REEXPORT_DYLIB:
+				case LC_LOAD_DYLIB,
+					LC_ID_DYLIB,
+					LC_LOAD_UPWARD_DYLIB,
+					LC_LOAD_WEAK_DYLIB,
+					LC_LAZY_LOAD_DYLIB,
+					LC_REEXPORT_DYLIB:
 					d.FieldStruct("dylib_command", func(d *decode.D) {
-						offset := d.FieldU32("offset")
+						offset := d.FieldU32("offset", scalar.ActualHex)
 						d.FieldU32("timestamp", timestampMapper)
 						d.FieldU32("current_version")
 						d.FieldU32("compatibility_version")
 						d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
 					})
-				case LC_LOAD_DYLINKER, LC_ID_DYLINKER, LC_DYLD_ENVIRONMENT:
-					offset := d.FieldU32("offset")
+				case LC_LOAD_DYLINKER,
+					LC_ID_DYLINKER,
+					LC_DYLD_ENVIRONMENT:
+					offset := d.FieldU32("offset", scalar.ActualHex)
 					d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
 				case LC_RPATH:
-					offset := d.FieldU32("offset")
+					offset := d.FieldU32("offset", scalar.ActualHex)
 					d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
 				case LC_PREBOUND_DYLIB:
 					// https://github.com/aidansteele/osx-abi-macho-file-format-reference#prebound_dylib_command
@@ -499,28 +538,28 @@ func ofileDecode(d *decode.D) {
 					d.FieldBitBufFn("linked_modules", func(d *decode.D) bitio.ReaderAtSeeker {
 						return d.RawLen(int64((nmodules / 8) + (nmodules % 8)))
 					})
-				case LC_THREAD, LC_UNIXTHREAD:
+				case LC_THREAD,
+					LC_UNIXTHREAD:
 					d.FieldU32("flavor")
 					count := d.FieldU32("count")
-					d.FieldStruct("state", func(d *decode.D) {
-						switch cpuType {
-						case 0x7:
-							threadStateI386Decode(d)
-						case 0xC:
-							threadStateARM32Decode(d)
-						case 0x13:
-							threadStatePPC32Decode(d)
-						case 0x1000007:
-							threadStateX8664Decode(d)
-						case 0x100000C:
-							threadStateARM64Decode(d)
-						case 0x1000013:
-							threadStatePPC64Decode(d)
-						default:
-							d.FieldRawLen("state", int64(count*32))
-						}
-					})
-				case LC_ROUTINES, LC_ROUTINES_64:
+					switch cpuType {
+					case 0x7:
+						d.FieldStruct("state", threadStateI386Decode)
+					case 0xC:
+						d.FieldStruct("state", threadStateARM32Decode)
+					case 0x13:
+						d.FieldStruct("state", threadStatePPC32Decode)
+					case 0x1000007:
+						d.FieldStruct("state", threadStateX8664Decode)
+					case 0x100000C:
+						d.FieldStruct("state", threadStateARM64Decode)
+					case 0x1000013:
+						d.FieldStruct("state", threadStatePPC64Decode)
+					default:
+						d.FieldRawLen("state", int64(count*32))
+					}
+				case LC_ROUTINES,
+					LC_ROUTINES_64:
 					if archBits == 32 {
 						d.FieldU32("init_address", scalar.ActualHex)
 						d.FieldU32("init_module")
@@ -540,8 +579,11 @@ func ofileDecode(d *decode.D) {
 						d.FieldU64("reserved5")
 						d.FieldU64("reserved6")
 					}
-				case LC_SUB_UMBRELLA, LC_SUB_LIBRARY, LC_SUB_CLIENT, LC_SUB_FRAMEWORK:
-					offset := d.FieldU32("offset")
+				case LC_SUB_UMBRELLA,
+					LC_SUB_LIBRARY,
+					LC_SUB_CLIENT,
+					LC_SUB_FRAMEWORK:
+					offset := d.FieldU32("offset", scalar.ActualHex)
 					d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
 				case LC_SYMTAB:
 					d.FieldU32("symoff")
@@ -581,30 +623,39 @@ func ofileDecode(d *decode.D) {
 						d.FieldU32("version")
 						ntoolsIdx++
 					})
-				case LC_CODE_SIGNATURE, LC_SEGMENT_SPLIT_INFO, LC_FUNCTION_STARTS, LC_DATA_IN_CODE, LC_DYLIB_CODE_SIGN_DRS, LC_LINKER_OPTIMIZATION_HINT:
+				case LC_CODE_SIGNATURE,
+					LC_SEGMENT_SPLIT_INFO,
+					LC_FUNCTION_STARTS,
+					LC_DATA_IN_CODE,
+					LC_DYLIB_CODE_SIGN_DRS,
+					LC_LINKER_OPTIMIZATION_HINT:
 					d.FieldStruct("linkedit_data", func(d *decode.D) {
 						d.FieldU32("off")
 						d.FieldU32("size")
 					})
-				case LC_VERSION_MIN_IPHONEOS, LC_VERSION_MIN_MACOSX, LC_VERSION_MIN_TVOS, LC_VERSION_MIN_WATCHOS:
+				case LC_VERSION_MIN_IPHONEOS,
+					LC_VERSION_MIN_MACOSX,
+					LC_VERSION_MIN_TVOS,
+					LC_VERSION_MIN_WATCHOS:
 					d.FieldU32("version")
 					d.FieldU32("sdk")
-				case LC_DYLD_INFO, LC_DYLD_INFO_ONLY:
+				case LC_DYLD_INFO,
+					LC_DYLD_INFO_ONLY:
 					d.FieldStruct("dyld_info", func(d *decode.D) {
-						d.FieldU32("rebase_off")
+						d.FieldU32("rebase_off", scalar.ActualHex)
 						d.FieldU32("rebase_size")
-						d.FieldU32("bind_off")
+						d.FieldU32("bind_off", scalar.ActualHex)
 						d.FieldU32("bind_size")
-						d.FieldU32("weak_bind_off")
+						d.FieldU32("weak_bind_off", scalar.ActualHex)
 						d.FieldU32("weak_bind_size")
-						d.FieldU32("lazy_bind_off")
+						d.FieldU32("lazy_bind_off", scalar.ActualHex)
 						d.FieldU32("lazy_bind_size")
-						d.FieldU32("export_off")
+						d.FieldU32("export_off", scalar.ActualHex)
 						d.FieldU32("export_size")
 					})
 				case LC_MAIN:
 					d.FieldStruct("entrypoint", func(d *decode.D) {
-						d.FieldU64("entryoff")
+						d.FieldU64("entryoff", scalar.ActualHex)
 						d.FieldU64("stacksize")
 					})
 				case LC_SOURCE_VERSION:
@@ -616,64 +667,36 @@ func ofileDecode(d *decode.D) {
 						count := d.FieldU32("count")
 						d.FieldUTF8NullFixedLen("option", int(count))
 					})
-				case LC_ENCRYPTION_INFO, LC_ENCRYPTION_INFO_64:
+				case LC_ENCRYPTION_INFO,
+					LC_ENCRYPTION_INFO_64:
 					d.FieldStruct("encryption_info", func(d *decode.D) {
-						offset := d.FieldU32("offset")
+						offset := d.FieldU32("offset", scalar.ActualHex)
 						size := d.FieldU32("size")
 						d.FieldU32("id")
 						d.RangeFn(int64(offset)*8, int64(size)*8, func(d *decode.D) {
 							d.FieldRawLen("data", d.BitsLeft())
 						})
 					})
-				case LC_IDFVMLIB, LC_LOADFVMLIB:
+					if cmd == LC_ENCRYPTION_INFO_64 {
+						// 64 bit align
+						d.FieldU32("pad")
+					}
+				case LC_IDFVMLIB,
+					LC_LOADFVMLIB:
 					d.FieldStruct("fvmlib", func(d *decode.D) {
-						offset := d.FieldU32("offset")
+						offset := d.FieldU32("offset", scalar.ActualHex)
 						d.FieldU32("minor_version")
 						d.FieldU32("header_addr", scalar.ActualHex)
 						d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
 					})
 				default:
-					if _, ok := loadCommands[cmd]; !ok {
-						d.SeekRel(int64((cmdsize - 8) * 8))
-						// Seek Rel so the parts are marked unknown
-					}
+					d.SeekRel(int64((cmdsize - 8) * 8))
 				}
 			})
 		}
 	})
-}
 
-func fatParse(d *decode.D) {
-	// Go to start of the file again
-	d.SeekAbs(0)
-	var narchs uint64
-	var ofileOffsets []uint64
-	d.FieldStruct("fat_header", func(d *decode.D) {
-		d.FieldU32("magic", scalar.ActualHex)
-		narchs = d.FieldU32("narchs")
-		narchsIdx := 0
-
-		d.FieldStructArrayLoop("archs", "fat_arch", func() bool {
-			return narchsIdx < int(narchs)
-		}, func(d *decode.D) {
-			// parse FatArch
-			// beware cputype and cpusubtype changes from ofile header to fat header
-			cpuType := d.FieldU32("cputype", cpuTypes, scalar.ActualHex)
-			d.FieldU32("cpusubtype", cpuSubTypes[cpuType], scalar.ActualHex)
-			ofileOffsets = append(ofileOffsets, d.FieldU32("offset"))
-			d.FieldU32("size")
-			d.FieldU32("align")
-			narchsIdx++
-		})
-	})
-	nfilesIdx := 0
-	d.FieldStructArrayLoop("files", "file", func() bool {
-		return nfilesIdx < int(narchs)
-	}, func(d *decode.D) {
-		d.SeekAbs(int64(ofileOffsets[nfilesIdx]) * 8)
-		ofileDecode(d)
-		nfilesIdx++
-	})
+	return nil
 }
 
 func parseMachHeaderFlags(d *decode.D) {
