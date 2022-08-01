@@ -211,8 +211,6 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 	sort.Slice(sortedTracks, func(i, j int) bool { return sortedTracks[i].id < sortedTracks[j].id })
 
 	d.FieldArray("tracks", func(d *decode.D) {
-		d.RangeSorted = false
-
 		for _, t := range sortedTracks {
 			decodeSampleRange := func(d *decode.D, t *track, decodeSample bool, dataFormat string, name string, firstBit int64, nBits int64, inArg any) {
 				d.RangeFn(firstBit, nBits, func(d *decode.D) {
@@ -285,10 +283,6 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 
 				d.FieldArray("samples", func(d *decode.D) {
 					// TODO: warning? could also be init fragment etc
-
-					// make sure to keep samples in same order as in sample table.
-					// there are mp4 files where stco jumps around
-					d.RangeSorted = false
 
 					if len(t.stsz) > 0 && len(t.stsc) > 0 && len(t.stco) > 0 {
 						stszIndex := 0

@@ -150,11 +150,10 @@ func decode(ctx context.Context, br bitio.ReaderAtSeeker, group Group, opts Opti
 }
 
 type D struct {
-	Ctx         context.Context
-	Endian      Endian
-	RangeSorted bool
-	Value       *Value
-	Options     Options
+	Ctx     context.Context
+	Endian  Endian
+	Value   *Value
+	Options Options
 
 	bitBuf bitio.ReaderAtSeeker
 
@@ -170,15 +169,14 @@ func newDecoder(ctx context.Context, format Format, br bitio.ReaderAtSeeker, opt
 	}
 	rootV := &Compound{
 		IsArray:     format.RootArray,
-		RangeSorted: true,
+		RangeSorted: !format.RootArray,
 		Children:    nil,
 		Description: opts.Description,
 	}
 
 	return &D{
-		Ctx:         ctx,
-		Endian:      BigEndian,
-		RangeSorted: true,
+		Ctx:    ctx,
+		Endian: BigEndian,
 		Value: &Value{
 			Name:       name,
 			V:          rootV,
@@ -194,11 +192,10 @@ func newDecoder(ctx context.Context, format Format, br bitio.ReaderAtSeeker, opt
 	}
 }
 
-func (d *D) FieldDecoder(name string, bitBuf bitio.ReaderAtSeeker, v any) *D {
+func (d *D) fieldDecoder(name string, bitBuf bitio.ReaderAtSeeker, v any) *D {
 	return &D{
-		Ctx:         d.Ctx,
-		Endian:      d.Endian,
-		RangeSorted: true,
+		Ctx:    d.Ctx,
+		Endian: d.Endian,
 		Value: &Value{
 			Name:       name,
 			V:          v,
@@ -321,6 +318,7 @@ func (d *D) FillGaps(r ranges.Range, namePrefix string) {
 			Range:      gap,
 		}
 
+		// TODO: for arrays not great that we just append unknown fields
 		d.AddChild(v)
 	}
 }
@@ -755,28 +753,30 @@ func (d *D) FieldMustGet(name string) *Value {
 	panic(fmt.Sprintf("%s not found in struct %s", name, d.Value.Name))
 }
 
+// FieldArray decode array of fields. Will not be range sorted.
 func (d *D) FieldArray(name string, fn func(d *D), sms ...scalar.Mapper) *D {
-	c := &Compound{IsArray: true, RangeSorted: true}
-	cd := d.FieldDecoder(name, d.bitBuf, c)
+	c := &Compound{IsArray: true, RangeSorted: false}
+	cd := d.fieldDecoder(name, d.bitBuf, c)
 	d.AddChild(cd.Value)
 	fn(cd)
-	c.RangeSorted = cd.RangeSorted
 	return cd
 }
 
+// FieldArrayValue decode array of fields. Will not be range sorted.
 func (d *D) FieldArrayValue(name string) *D {
 	return d.FieldArray(name, func(d *D) {})
 }
 
+// FieldStruct decode array of fields. Will be range sorted.
 func (d *D) FieldStruct(name string, fn func(d *D)) *D {
 	c := &Compound{IsArray: false, RangeSorted: true}
-	cd := d.FieldDecoder(name, d.bitBuf, c)
+	cd := d.fieldDecoder(name, d.bitBuf, c)
 	d.AddChild(cd.Value)
 	fn(cd)
-	c.RangeSorted = cd.RangeSorted
 	return cd
 }
 
+// FieldStructValue decode array of fields. Will be range sorted.
 func (d *D) FieldStructValue(name string) *D {
 	return d.FieldStruct(name, func(d *D) {})
 }
@@ -1094,12 +1094,11 @@ func (d *D) FieldRootBitBuf(name string, br bitio.ReaderAtSeeker, sms ...scalar.
 }
 
 func (d *D) FieldArrayRootBitBufFn(name string, br bitio.ReaderAtSeeker, fn func(d *D)) *Value {
-	c := &Compound{IsArray: true, RangeSorted: true}
-	cd := d.FieldDecoder(name, br, c)
+	c := &Compound{IsArray: true, RangeSorted: false}
+	cd := d.fieldDecoder(name, br, c)
 	cd.Value.IsRoot = true
 	d.AddChild(cd.Value)
 	fn(cd)
-	c.RangeSorted = cd.RangeSorted
 
 	cd.Value.postProcess()
 
@@ -1108,11 +1107,10 @@ func (d *D) FieldArrayRootBitBufFn(name string, br bitio.ReaderAtSeeker, fn func
 
 func (d *D) FieldStructRootBitBufFn(name string, br bitio.ReaderAtSeeker, fn func(d *D)) *Value {
 	c := &Compound{IsArray: false, RangeSorted: true}
-	cd := d.FieldDecoder(name, br, c)
+	cd := d.fieldDecoder(name, br, c)
 	cd.Value.IsRoot = true
 	d.AddChild(cd.Value)
 	fn(cd)
-	c.RangeSorted = cd.RangeSorted
 
 	cd.Value.postProcess()
 
