@@ -37,3 +37,14 @@ func (m lpLenMapper) MapScalar(s scalar.S) (scalar.S, error) {
 }
 
 var LpLenMapper = lpLenMapper{}
+
+type Mask struct {
+	Mask uint64
+}
+
+func (m Mask) MapScalar(s scalar.S) (scalar.S, error) {
+	m1 := s.ActualU()
+	v := IsMaskSet(m1, m.Mask)
+	s.Actual = v
+	return s, nil
+}

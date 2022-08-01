@@ -7,6 +7,42 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
+const (
+	HEAP_HASNULL          = 0x0001 /* has null attribute(s) */
+	HEAP_HASVARWIDTH      = 0x0002 /* has variable-width attribute(s) */
+	HEAP_HASEXTERNAL      = 0x0004 /* has external stored attribute(s) */
+	HEAP_HASOID_OLD       = 0x0008 /* has an object-id field */
+	HEAP_XMAX_KEYSHR_LOCK = 0x0010 /* xmax is a key-shared locker */
+	HEAP_COMBOCID         = 0x0020 /* t_cid is a combo CID */
+	HEAP_XMAX_EXCL_LOCK   = 0x0040 /* xmax is exclusive locker */
+	HEAP_XMAX_LOCK_ONLY   = 0x0080 /* xmax, if valid, is only a locker */
+
+	HEAP_XMAX_SHR_LOCK = HEAP_XMAX_EXCL_LOCK | HEAP_XMAX_KEYSHR_LOCK
+
+	HEAP_LOCK_MASK = HEAP_XMAX_SHR_LOCK | HEAP_XMAX_EXCL_LOCK | HEAP_XMAX_KEYSHR_LOCK
+
+	HEAP_XMIN_COMMITTED = 0x0100 /* t_xmin committed */
+	HEAP_XMIN_INVALID   = 0x0200 /* t_xmin invalid/aborted */
+	HEAP_XMIN_FROZEN    = HEAP_XMIN_COMMITTED | HEAP_XMIN_INVALID
+	HEAP_XMAX_COMMITTED = 0x0400 /* t_xmax committed */
+	HEAP_XMAX_INVALID   = 0x0800 /* t_xmax invalid/aborted */
+	HEAP_XMAX_IS_MULTI  = 0x1000 /* t_xmax is a MultiXactId */
+	HEAP_UPDATED        = 0x2000 /* this is UPDATEd version of row */
+	HEAP_MOVED_OFF      = 0x4000 /* moved to another place by pre-9.0
+	 * VACUUM FULL; kept for binary
+	 * upgrade support */
+	HEAP_MOVED_IN = 0x8000 /* moved from another place by pre-9.0
+	 * VACUUM FULL; kept for binary
+	 * upgrade support */
+	HEAP_MOVED = HEAP_MOVED_OFF | HEAP_MOVED_IN
+)
+
+const (
+	HEAP_KEYS_UPDATED = 0x2000 /* tuple was updated and key cols modified, or tuple deleted */
+	HEAP_HOT_UPDATED  = 0x4000 /* tuple was HOT-updated */
+	HEAP_ONLY_TUPLE   = 0x8000 /* this is heap-only tuple */
+)
+
 // type = struct PageHeaderData
 /*    0      |     8 */ // PageXLogRecPtr pd_lsn;
 /*    8      |     2 */ // uint16 pd_checksum;
@@ -274,7 +310,10 @@ func decodeTuples(d *decode.D) {
 			/*   23      |     0 */ // bits8 t_bits[];
 			/* XXX  1-byte padding  */
 			d.FieldU16("t_infomask2")
+			d.FieldStruct("Infomask2", decodeInfomask2)
 			d.FieldU16("t_infomask")
+			d.FieldStruct("Infomask", decodeInfomask)
+
 			d.FieldU8("t_hoff")
 			d.U8()
 
@@ -282,6 +321,60 @@ func decodeTuples(d *decode.D) {
 
 		}) // HeapTupleHeaderData
 	} // for ItemsIds
+}
+
+func decodeInfomask2(d *decode.D) {
+	pos := d.Pos() - 16
+	d.SeekAbs(pos)
+	d.FieldU16("HEAP_KEYS_UPDATED", common.Mask{Mask: HEAP_KEYS_UPDATED})
+	d.SeekAbs(pos)
+	d.FieldU16("HEAP_HOT_UPDATED", common.Mask{Mask: HEAP_HOT_UPDATED})
+	d.SeekAbs(pos)
+	d.FieldU16("HEAP_ONLY_TUPLE", common.Mask{Mask: HEAP_ONLY_TUPLE})
+}
+
+func decodeInfomask(d *decode.D) {
+	pos := d.Pos() - 16
+	d.SeekAbs(pos)
+	d.FieldU16("HEAP_HASNULL", common.Mask{Mask: HEAP_HASNULL})
+	d.SeekAbs(pos)
+	d.FieldU16("HEAP_HASVARWIDTH", common.Mask{Mask: HEAP_HASVARWIDTH})
+	d.SeekAbs(pos)
+	d.FieldU16("HEAP_HASEXTERNAL", common.Mask{Mask: HEAP_HASEXTERNAL})
+	d.SeekAbs(pos)
+	d.FieldU16("HEAP_HASOID_OLD", common.Mask{Mask: HEAP_HASOID_OLD})
+	d.SeekAbs(pos)
+	d.FieldU16("HEAP_XMAX_KEYSHR_LOCK", common.Mask{Mask: HEAP_XMAX_KEYSHR_LOCK})
+	d.SeekAbs(pos)
+	d.FieldU16("HEAP_COMBOCID", common.Mask{Mask: HEAP_COMBOCID})
+	d.SeekAbs(pos)
+	d.FieldU16("HEAP_XMAX_EXCL_LOCK", common.Mask{Mask: HEAP_XMAX_EXCL_LOCK})
+	d.SeekAbs(pos)
+	d.FieldU16("HEAP_XMAX_LOCK_ONLY", common.Mask{Mask: HEAP_XMAX_LOCK_ONLY})
+	d.SeekAbs(pos)
+	d.FieldU16("HEAP_XMAX_SHR_LOCK", common.Mask{Mask: HEAP_XMAX_SHR_LOCK})
+	d.SeekAbs(pos)
+	d.FieldU16("HEAP_LOCK_MASK", common.Mask{Mask: HEAP_LOCK_MASK})
+	d.SeekAbs(pos)
+	d.FieldU16("HEAP_XMIN_COMMITTED", common.Mask{Mask: HEAP_XMIN_COMMITTED})
+	d.SeekAbs(pos)
+	d.FieldU16("HEAP_XMIN_INVALID", common.Mask{Mask: HEAP_XMIN_INVALID})
+	d.SeekAbs(pos)
+	d.FieldU16("HEAP_XMIN_FROZEN", common.Mask{Mask: HEAP_XMIN_FROZEN})
+	d.SeekAbs(pos)
+	d.FieldU16("HEAP_XMAX_COMMITTED", common.Mask{Mask: HEAP_XMAX_COMMITTED})
+	d.SeekAbs(pos)
+	d.FieldU16("HEAP_XMAX_INVALID", common.Mask{Mask: HEAP_XMAX_INVALID})
+	d.SeekAbs(pos)
+	d.FieldU16("HEAP_XMAX_IS_MULTI", common.Mask{Mask: HEAP_XMAX_IS_MULTI})
+	d.SeekAbs(pos)
+	d.FieldU16("HEAP_UPDATED", common.Mask{Mask: HEAP_UPDATED})
+	d.SeekAbs(pos)
+	d.FieldU16("HEAP_MOVED_OFF", common.Mask{Mask: HEAP_MOVED_OFF})
+	d.SeekAbs(pos)
+	d.FieldU16("HEAP_MOVED_IN", common.Mask{Mask: HEAP_MOVED_IN})
+	d.SeekAbs(pos)
+	d.FieldU16("HEAP_MOVED", common.Mask{Mask: HEAP_MOVED})
 }
 
 /*    0      |    12 */ // union {

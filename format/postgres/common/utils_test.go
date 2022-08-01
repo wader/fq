@@ -42,3 +42,14 @@ func TestRoundDown(t *testing.T) {
 		t.Errorf("must be %d\n", 5*pageSize1)
 	}
 }
+
+func TestIsMaskSet(t *testing.T) {
+	m1 := common.IsMaskSet(0xff+0x1221000, 0xf0)
+	if m1 != 1 {
+		t.Errorf("mask must be set\n")
+	}
+	m2 := common.IsMaskSet(0xff+0x1221000, 0xf00)
+	if m2 != 0 {
+		t.Errorf("mask must be 0\n")
+	}
+}

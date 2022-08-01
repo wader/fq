@@ -11,3 +11,10 @@ func TypeAlign8(alignLen uint64) uint64 {
 func RoundDown(alignVal uint64, alignLen uint64) uint64 {
 	return (alignLen / alignVal) * alignVal
 }
+
+func IsMaskSet(value uint64, mask uint64) uint64 {
+	if (value & mask) == mask {
+		return 1
+	}
+	return 0
+}
