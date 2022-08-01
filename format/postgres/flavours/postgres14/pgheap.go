@@ -273,6 +273,9 @@ func decodeTuples(d *decode.D) {
 		if id.lpOff == 0 || id.lpLen == 0 {
 			continue
 		}
+		if id.lpFlags != common.LP_NORMAL {
+			continue
+		}
 
 		pos := int64(page.pagePosBegin)*8 + int64(page.itemIds[i].lpOff)*8
 		tupleDataLen := id.lpLen - SizeOfHeapTupleHeaderData
