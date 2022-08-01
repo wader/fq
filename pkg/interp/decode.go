@@ -258,6 +258,7 @@ func (i *Interp) _decode(c any, format string, opts decodeOpts) any {
 				if len(opts.Remain) > 0 {
 					if err := mapstruct.ToStruct(opts.Remain, &inArg); err != nil {
 						// TODO: currently ignores failed struct mappings
+						//nolint: nilerr
 						return f.DecodeInArg, nil
 					}
 				}

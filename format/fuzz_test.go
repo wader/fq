@@ -82,7 +82,7 @@ func FuzzFormats(f *testing.F) {
 				return nil
 			}
 			if st, err := os.Stat(path); err != nil || st.IsDir() {
-				return nil
+				return err
 			}
 
 			b, readErr := ioutil.ReadFile(path)
