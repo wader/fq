@@ -126,8 +126,10 @@ func DecodePageSpecial(d *decode.D) {
 	specialPos := int64(page.PagePosBegin*8) + int64(page.PdSpecial*8)
 	d.SeekAbs(specialPos)
 
-	page.PdXidBase = d.FieldU64("pd_xid_base")
-	page.PdMultiBase = d.FieldU64("pd_multi_base")
-	page.PdPruneXid = d.FieldU32("pd_prune_xid")
-	page.PdMagic = d.FieldU32("pd_magic")
+	d.FieldStruct("HeapPageSpecialData", func(d *decode.D) {
+		page.PdXidBase = d.FieldU64("pd_xid_base")
+		page.PdMultiBase = d.FieldU64("pd_multi_base")
+		page.PdPruneXid = d.FieldU32("pd_prune_xid")
+		page.PdMagic = d.FieldU32("pd_magic")
+	})
 }

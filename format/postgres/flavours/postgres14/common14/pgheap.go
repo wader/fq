@@ -80,7 +80,7 @@ const (
 //
 /* total size (bytes):   12  */
 /* } t_choice;             //
-/*   12      |     6 */// ItemPointerData t_ctid;
+/*   12      |     6 */ // ItemPointerData t_ctid;
 /*   18      |     2 */ // uint16 t_infomask2;
 /*   20      |     2 */ // uint16 t_infomask;
 /*   22      |     1 */ // uint8 t_hoff;
@@ -160,9 +160,9 @@ type itemIdDataD struct {
 	/*    0: 0   |     4 */ // unsigned int lp_off: 15
 	/*    1: 7   |     4 */ // unsigned int lp_flags: 2
 	/*    2: 1   |     4 */ // unsigned int lp_len: 15
-	lpOff   uint32
-	lpFlags uint32
-	lpLen   uint32
+	lpOff                   uint32
+	lpFlags                 uint32
+	lpLen                   uint32
 }
 
 func GetHeapD(d *decode.D) *HeapD {
@@ -185,6 +185,10 @@ func decodeHeapPages(d *decode.D) {
 	heap := GetHeapD(d)
 
 	for {
+		if end, _ := d.TryEnd(); end {
+			return
+		}
+
 		page := &HeapPageD{}
 		heap.Page = page
 
@@ -212,7 +216,9 @@ func decodeHeapPage(d *decode.D) {
 	// free space
 	freeSpaceEnd := int64(pagePosBegin*8) + int64(page.PdUpper*8)
 	freeSpaceNBits := freeSpaceEnd - d.Pos()
-	d.FieldRawLen("FreeSpace", freeSpaceNBits, scalar.RawHex)
+	if freeSpaceNBits != 0 {
+		d.FieldRawLen("FreeSpace", freeSpaceNBits, scalar.RawHex)
+	}
 
 	if uint64(page.PdSpecial) != heap.PageSize && heap.DecodePageSpecialFn != nil {
 		heap.DecodePageSpecialFn(d)
@@ -274,7 +280,7 @@ func decodeTuples(d *decode.D) {
 		//						} t_choice;
 		/* total size (bytes):   12  */
 		/*
-			/*   12      |     6 */// ItemPointerData t_ctid;
+			/*   12      |     6 */ // ItemPointerData t_ctid;
 		/*   18      |     2 */ // uint16 t_infomask2;
 		/*   20      |     2 */ // uint16 t_infomask;
 		/*   22      |     1 */ // uint8 t_hoff;
