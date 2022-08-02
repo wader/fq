@@ -7,15 +7,15 @@ package mpeg
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 var avcDCRNALFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.AVC_DCR,
 		Description: "H.264/AVC Decoder Configuration Record",
 		DecodeFn:    avcDcrDecode,
@@ -116,13 +116,13 @@ func avcDcrParameterSet(d *decode.D, numParamSets uint64) {
 	}
 }
 
-func avcDcrDecode(d *decode.D, in interface{}) interface{} {
+func avcDcrDecode(d *decode.D, _ any) any {
 	d.FieldU8("configuration_version")
 	d.FieldU8("profile_indication", avcProfileNames)
 	d.FieldU8("profile_compatibility")
 	d.FieldU8("level_indication", avcLevelNames)
 	d.FieldU6("reserved0")
-	lengthSize := d.FieldU2("length_size", scalar.UAdd(1))
+	lengthSize := d.FieldU2("length_size", scalar.ActualUAdd(1))
 	d.FieldU3("reserved1")
 	numSeqParamSets := d.FieldU5("num_of_sequence_parameter_sets")
 	d.FieldArray("sequence_parameter_sets", func(d *decode.D) {

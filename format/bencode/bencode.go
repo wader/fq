@@ -7,8 +7,8 @@ import (
 	"strconv"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -16,13 +16,13 @@ import (
 var bencodeFS embed.FS
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.BENCODE,
 		Description: "BitTorrent bencoding",
 		DecodeFn:    decodeBencode,
-		Files:       bencodeFS,
 		Functions:   []string{"torepr", "_help"},
 	})
+	interp.RegisterFS(bencodeFS)
 }
 
 var typeToNames = scalar.StrToSymStr{
@@ -90,7 +90,7 @@ func decodeBencodeValue(d *decode.D) {
 	}
 }
 
-func decodeBencode(d *decode.D, in interface{}) interface{} {
+func decodeBencode(d *decode.D, _ any) any {
 	decodeBencodeValue(d)
 	return nil
 }

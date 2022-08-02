@@ -8,8 +8,8 @@ import (
 	"embed"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -17,13 +17,13 @@ import (
 var msgPackFS embed.FS
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.MSGPACK,
 		Description: "MessagePack",
 		DecodeFn:    decodeMsgPack,
-		Files:       msgPackFS,
 		Functions:   []string{"torepr", "_help"},
 	})
+	interp.RegisterFS(msgPackFS)
 }
 
 type formatEntry struct {
@@ -145,7 +145,7 @@ func decodeMsgPackValue(d *decode.D) {
 		}},
 	}
 
-	typ := d.FieldU8("type", formatMap, scalar.Hex)
+	typ := d.FieldU8("type", formatMap, scalar.ActualHex)
 	if fe, ok := formatMap.lookup(byte(typ)); ok {
 		fe.d(d)
 	} else {
@@ -153,7 +153,7 @@ func decodeMsgPackValue(d *decode.D) {
 	}
 }
 
-func decodeMsgPack(d *decode.D, in interface{}) interface{} {
+func decodeMsgPack(d *decode.D, _ any) any {
 	decodeMsgPackValue(d)
 	return nil
 }

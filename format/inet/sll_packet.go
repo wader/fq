@@ -5,15 +5,15 @@ package inet
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 var sllPacketInetPacketGroup decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.SLL_PACKET,
 		Description: "Linux cooked capture encapsulation",
 		Groups:      []string{format.LINK_FRAME},
@@ -108,7 +108,7 @@ var arpHdrTypeMAp = scalar.UToScalar{
 	0xfffe:             {Sym: "none", Description: `zero header length`},
 }
 
-func decodeSLL(d *decode.D, in interface{}) interface{} {
+func decodeSLL(d *decode.D, in any) any {
 	if lfi, ok := in.(format.LinkFrameIn); ok {
 		if lfi.Type != format.LinkTypeLINUX_SLL {
 			d.Fatalf("wrong link type %d", lfi.Type)
@@ -127,8 +127,8 @@ func decodeSLL(d *decode.D, in interface{}) interface{} {
 	// TODO: handle other arphdr types
 	switch arpHdrType {
 	case arpHdrTypeLoopback, arpHdrTypeEther:
-		_ = d.FieldMustGet("link_address").TryScalarFn(mapUToEtherSym, scalar.Hex)
-		protcolType := d.FieldU16("protocol_type", format.EtherTypeMap, scalar.Hex)
+		_ = d.FieldMustGet("link_address").TryScalarFn(mapUToEtherSym, scalar.ActualHex)
+		protcolType := d.FieldU16("protocol_type", format.EtherTypeMap, scalar.ActualHex)
 		d.FieldFormatOrRawLen(
 			"payload",
 			d.BitsLeft(),

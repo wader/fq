@@ -2,9 +2,9 @@ package mpeg
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -13,7 +13,7 @@ var hevcPPSFormat decode.Group
 var hevcSPSFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.HEVC_NALU,
 		Description: "H.265/HEVC Network Access Layer Unit",
 		DecodeFn:    hevcNALUDecode,
@@ -82,12 +82,12 @@ var hevcNALNames = scalar.UToSymStr{
 	47:            "RSV_NVCL47",
 }
 
-func hevcNALUDecode(d *decode.D, in interface{}) interface{} {
+func hevcNALUDecode(d *decode.D, _ any) any {
 	d.FieldBool("forbidden_zero_bit")
 	nalType := d.FieldU6("nal_unit_type", hevcNALNames)
 	d.FieldU6("nuh_layer_id")
 	d.FieldU3("nuh_temporal_id_plus1")
-	unescapedBR := d.MustNewBitBufFromReader(decode.NALUnescapeReader{Reader: bitio.NewIOReader(d.BitBufRange(d.Pos(), d.BitsLeft()))})
+	unescapedBR := d.NewBitBufFromReader(nalUnescapeReader{Reader: bitio.NewIOReader(d.BitBufRange(d.Pos(), d.BitsLeft()))})
 
 	switch nalType {
 	case hevcNALNUTVPS:

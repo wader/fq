@@ -5,17 +5,17 @@ import (
 	"net"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/checksum"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 var ipv4IpPacketGroup decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.IPV4_PACKET,
 		Description: "Internet protocol v4 packet",
 		Groups:      []string{format.INET_PACKET},
@@ -49,7 +49,7 @@ var mapUToIPv4Sym = scalar.Fn(func(s scalar.S) (scalar.S, error) {
 	return s, nil
 })
 
-func decodeIPv4(d *decode.D, in interface{}) interface{} {
+func decodeIPv4(d *decode.D, in any) any {
 	if ipi, ok := in.(format.InetPacketIn); ok && ipi.EtherType != format.EtherTypeIPv4 {
 		d.Fatalf("incorrect ethertype %d", ipi.EtherType)
 	}
@@ -67,10 +67,10 @@ func decodeIPv4(d *decode.D, in interface{}) interface{} {
 	d.FieldU8("ttl")
 	protocol := d.FieldU8("protocol", format.IPv4ProtocolMap)
 	checksumStart := d.Pos()
-	d.FieldU16("header_checksum", scalar.Hex)
+	d.FieldU16("header_checksum", scalar.ActualHex)
 	checksumEnd := d.Pos()
-	d.FieldU32("source_ip", mapUToIPv4Sym, scalar.Hex)
-	d.FieldU32("destination_ip", mapUToIPv4Sym, scalar.Hex)
+	d.FieldU32("source_ip", mapUToIPv4Sym, scalar.ActualHex)
+	d.FieldU32("destination_ip", mapUToIPv4Sym, scalar.ActualHex)
 	optionsLen := (int64(ihl) - 5) * 8 * 4
 	if optionsLen > 0 {
 		d.FramedFn(optionsLen, func(d *decode.D) {
@@ -94,9 +94,9 @@ func decodeIPv4(d *decode.D, in interface{}) interface{} {
 	headerEnd := d.Pos()
 
 	ipv4Checksum := &checksum.IPv4{}
-	d.MustCopy(ipv4Checksum, bitio.NewIOReader(d.BitBufRange(0, checksumStart)))
-	d.MustCopy(ipv4Checksum, bitio.NewIOReader(d.BitBufRange(checksumEnd, headerEnd-checksumEnd)))
-	_ = d.FieldMustGet("header_checksum").TryScalarFn(d.ValidateUBytes(ipv4Checksum.Sum(nil)), scalar.Hex)
+	d.Copy(ipv4Checksum, bitio.NewIOReader(d.BitBufRange(0, checksumStart)))
+	d.Copy(ipv4Checksum, bitio.NewIOReader(d.BitBufRange(checksumEnd, headerEnd-checksumEnd)))
+	_ = d.FieldMustGet("header_checksum").TryScalarFn(d.ValidateUBytes(ipv4Checksum.Sum(nil)), scalar.ActualHex)
 
 	dataLen := int64(totalLength-(ihl*4)) * 8
 

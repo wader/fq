@@ -1,7 +1,6 @@
 $ fq -i -n '"[]" | json'
 json> (.) | ., tovalue, type, length?
-   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|5b 5d|                                         |[]|             |.: [0:0] (json)
+[]
 []
 "array"
 0
@@ -45,7 +44,7 @@ json> (.) | type
 json> (.) | tonumber
 error: tonumber cannot be applied to: array
 json> (.) | tostring
-error: tostring cannot be applied to: array
+"[]"
 json> (.) + ""
 error: cannot add: array ([]) and string ("")
 json> (.) + 1
@@ -81,13 +80,13 @@ json> (.)._path | ., type, length?
 json> (.)._bits | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|5b 5d|                                         |[]|             |.: raw bits 0x0-0x1.7 (2)
-"binary"
+"string"
 16
 json> 
 json> (.)._bytes | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|5b 5d|                                         |[]|             |.: raw bits 0x0-0x1.7 (2)
-"binary"
+"string"
 2
 json> 
 json> (.)._error | ., type, length?

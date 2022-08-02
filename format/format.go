@@ -1,5 +1,13 @@
 package format
 
+// TODO: do before-format somehow and topology sort?
+const (
+	ProbeOrderBinUnique = 0   // binary with unlikely overlap
+	ProbeOrderBinFuzzy  = 50  // binary with possible overlap
+	ProbeOrderText      = 100 // text format
+)
+
+// TODO: change to CamelCase?
 //nolint:revive
 const (
 	ALL = "all"
@@ -31,15 +39,21 @@ const (
 	AVC_SPS             = "avc_sps"
 	AVRO_OCF            = "avro_ocf"
 	BENCODE             = "bencode"
+	BITCOIN_BLKDAT      = "bitcoin_blkdat"
+	BITCOIN_BLOCK       = "bitcoin_block"
+	BITCOIN_SCRIPT      = "bitcoin_script"
+	BITCOIN_TRANSACTION = "bitcoin_transaction"
 	BSD_LOOPBACK_FRAME  = "bsd_loopback_frame"
 	BSON                = "bson"
 	BZIP2               = "bzip2"
 	CBOR                = "cbor"
+	CSV                 = "csv"
 	DNS                 = "dns"
 	DNS_TCP             = "dns_tcp"
 	ELF                 = "elf"
 	ETHER8023_FRAME     = "ether8023_frame"
 	EXIF                = "exif"
+	FAIRPLAY_SPC        = "fairplay_spc"
 	FLAC                = "flac"
 	FLAC_FRAME          = "flac_frame"
 	FLAC_METADATABLOCK  = "flac_metadatablock"
@@ -56,6 +70,7 @@ const (
 	HEVC_PPS            = "hevc_pps"
 	HEVC_SPS            = "hevc_sps"
 	HEVC_VPS            = "hevc_vps"
+	HTML                = "html"
 	ICC_PROFILE         = "icc_profile"
 	ICMP                = "icmp"
 	ICMPV6              = "icmpv6"
@@ -94,6 +109,7 @@ const (
 	TAR                 = "tar"
 	TCP_SEGMENT         = "tcp_segment"
 	TIFF                = "tiff"
+	TOML                = "toml"
 	UDP_DATAGRAM        = "udp_datagram"
 	VORBIS_COMMENT      = "vorbis_comment"
 	VORBIS_PACKET       = "vorbis_packet"
@@ -104,6 +120,8 @@ const (
 	WAV                 = "wav"
 	WEBP                = "webp"
 	XING                = "xing"
+	XML                 = "xml"
+	YAML                = "yaml"
 	ZIP                 = "zip"
 )
 
@@ -230,7 +248,7 @@ func (u UDPPayloadIn) IsPort(ports ...int) bool {
 	return false
 }
 
-func (u UDPPayloadIn) MustIsPort(fn func(format string, a ...interface{}), ports ...int) {
+func (u UDPPayloadIn) MustIsPort(fn func(format string, a ...any), ports ...int) {
 	if !u.IsPort(ports...) {
 		fn("incorrect udp port %t src:%d dst:%d", u.DestinationPort, u.SourcePort)
 	}
@@ -240,6 +258,7 @@ type TCPStreamIn struct {
 	IsClient        bool
 	HasStart        bool
 	HasEnd          bool
+	SkippedBytes    uint64
 	SourcePort      int
 	DestinationPort int
 }
@@ -254,7 +273,7 @@ func (t TCPStreamIn) IsPort(ports ...int) bool {
 	return false
 }
 
-func (t TCPStreamIn) MustIsPort(fn func(format string, a ...interface{}), ports ...int) {
+func (t TCPStreamIn) MustIsPort(fn func(format string, a ...any), ports ...int) {
 	if !t.IsPort(ports...) {
 		fn("incorrect tcp port client %t src:%d dst:%d", t.IsClient, t.DestinationPort, t.SourcePort)
 	}
@@ -263,4 +282,23 @@ func (t TCPStreamIn) MustIsPort(fn func(format string, a ...interface{}), ports 
 type Mp4In struct {
 	DecodeSamples  bool `doc:"Decode supported media samples"`
 	AllowTruncated bool `doc:"Allow box to be truncated"`
+}
+
+type ZipIn struct {
+	Uncompress bool `doc:"Uncompress and probe files"`
+}
+
+type XMLIn struct {
+	Seq   bool `doc:"Use seq attribute to preserve element order"`
+	Array bool `doc:"Decode as nested arrays"`
+}
+
+type HTMLIn struct {
+	Seq   bool `doc:"Use seq attribute to preserve element order"`
+	Array bool `doc:"Decode as nested arrays"`
+}
+
+type CSVLIn struct {
+	Comma   string `doc:"Separator character"`
+	Comment string `doc:"Comment line character"`
 }

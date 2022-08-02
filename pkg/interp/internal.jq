@@ -3,6 +3,20 @@ include "ansi";
 # is here to be defined as early as possible to allow debugging
 # TODO: move some _* to builtin.jq etc?
 
+def _stdio($name):
+  if . == null then _stdio_info($name)
+  else _stdio_write($name)
+  end;
+def _stdio($name; $l):
+  _stdio_read($name; $l);
+
+def _stdin: _stdio("stdin");
+def _stdin($l): _stdio("stdin"; $l);
+def _stdout: _stdio("stdout");
+def _stdout($l): _stdio("stdout"; $l);
+def _stderr: _stdio("stderr");
+def _stderr($l): _stdio("stderr"; $l);
+
 def stdin_tty: null | _stdin;
 def stdout_tty: null | _stdout;
 
@@ -77,18 +91,19 @@ def _slurps(f): _global_var("slurps"; f);
 # call f and finally eval fin even if empty or error.
 # _finally(1; debug)
 # _finally(null; debug)
-# _finally(error("a"); debug)
 # _finally(empty; debug)
 # _finally(1,2,3; debug)
 # _finally({a:1}; debug)
+# _finally(error("a"); debug)
+# _finally(error("a"); empty)
 def _finally(f; fin):
   try
     ( f
     , (fin | empty)
     )
   catch
-    ( fin as $_
-    | error
+    ( (fin | empty)
+    , error
     );
 
 # TODO: figure out a saner way to force int
@@ -102,8 +117,6 @@ def _intdiv($a; $b):
   | ($a - ($a % $b)) / $b
   );
 
-# valid jq identifier, start with alpha or underscore then zero or more alpha, num or underscore
-def _is_ident: type == "string" and test("^[a-zA-Z_][a-zA-Z_0-9]*$");
 # escape " and \
 def _escape_ident: gsub("(?<g>[\\\\\"])"; "\\\(.g)");
 
@@ -131,8 +144,16 @@ def _recurse_break(f):
     else error
     end;
 
-def _is_scalar:
-  type |. != "array" and . != "object";
+def _is_null: type == "null";
+def _is_string: type == "string";
+def _is_number: type == "number";
+def _is_boolean: type == "boolean";
+def _is_array: type == "array";
+def _is_object: type == "object";
+def _is_scalar: (_is_array or _is_object) | not;
+
+# valid jq identifier, start with alpha or underscore then zero or more alpha, num or underscore
+def _is_ident: _is_string and test("^[a-zA-Z_][a-zA-Z_0-9]*$");
 
 def _is_context_canceled_error: . == "context canceled";
 
@@ -146,7 +167,7 @@ def _path_to_expr($opts):
       [""] + .
     end
   | map(
-      if type == "number" then
+      if _is_number then
         ( ("[" | _ansi_if($opts; "array"))
         , _ansi_if($opts; "number")
         , ("]" | _ansi_if($opts; "array"))
@@ -167,7 +188,7 @@ def _path_to_expr: _path_to_expr(null);
 # TODO: don't use eval? should support '.a.b[1]."c.c"' and escapes?
 def _expr_to_path:
   ( if type != "string" then error("require string argument") end
-  | _eval("null | path(\(.))")
+  | _eval("null | path(\(.))"; {})
   );
 
 # helper to build path query/generate functions for tree structures with
@@ -178,10 +199,10 @@ def _tree_path(children; name; $v):
     # ["a", "b", 1] => ["a", 0, "b", 1]
     def _normalize_path:
       ( . as $np
-      | if $np | last | type == "string" then $np+[0] end
+      | if $np | last | _is_string then $np+[0] end
       # state is [path acc, possible pending zero index]
       | ( reduce .[] as $np ([[], []];
-          if $np | type == "string" then
+          if $np | _is_string then
             [(.[0]+.[1]+[$np]), [0]]
           else
             [.[0]+[$np], []]
@@ -193,7 +214,7 @@ def _tree_path(children; name; $v):
     | _expr_to_path
     | _normalize_path
     | reduce .[] as $n ($c;
-        if $n | type == "string" then
+        if $n | _is_string then
           children | map(select(name == $n))
         else
           .[$n]
@@ -217,7 +238,7 @@ def _tree_path(children; name; $v):
     ]
     | flatten
     | join("");
-  if $v | type == "string" then _lookup
+  if $v | _is_string then _lookup
   else _path
   end;
 

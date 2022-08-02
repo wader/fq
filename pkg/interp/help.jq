@@ -1,4 +1,5 @@
 include "internal";
+include "interp";
 include "query";
 include "eval";
 include "repl";
@@ -59,7 +60,7 @@ def help: help(null);
 def _help_format_enrich($arg0; $f; $include_basic):
   ( if $include_basic then
       .examples +=
-        [ {comment: "Decode file as \($f.name)", shell: "fq -d \($f.name) file"}
+        [ {comment: "Decode file as \($f.name)", shell: "fq -d \($f.name) . file"}
         , {comment: "Decode value as \($f.name)", expr: "\($f.name)"}
         ]
     end
@@ -73,11 +74,11 @@ def _help_format_enrich($arg0; $f; $include_basic):
     end
   | if $f.decode_in_arg then
       .examples +=
-        [ { comment: "Decode file using options"
-          , shell: "\($arg0) -d \($f.name)\($f.decode_in_arg | to_entries | map(" -o ", .key, "=", (.value | tojson)) | join("")) file"
+        [ { comment: "Decode file using \($f.name) options"
+          , shell: "\($arg0) -d \($f.name)\($f.decode_in_arg | to_entries | map(" -o ", .key, "=", (.value | tojson)) | join("")) . file"
           }
         , { comment: "Decode value as \($f.name)"
-          , expr: "\($f.name)(\($f.decode_in_arg | tojq("fancy_compact")))"
+          , expr: "\($f.name)(\($f.decode_in_arg | tojq))"
           }
         ]
     end
@@ -92,13 +93,16 @@ def _help($arg0; $topic):
       , "  fq . file"
       , "  fq d file"
       , "  fq tovalue file"
+      , "  fq -r totoml file.yml"
+      , "  fq -s -d html 'map(.html.head.title?)' *.html"
       , "  cat file.cbor | fq -d cbor torepr"
       , "  fq 'grep(\"^main$\") | parent' /bin/ls"
-      , "  fq 'grep_by(format == \"exif\") | d' *.png *.jpeg"
+      , "  fq -r 'grep_by(.protocol==\"icmp\").source_ip | tovalue' *.pcap"
+      , "  fq -i"
       )
     elif . == "banner" then
       ( "fq - jq for binary formats"
-      , "Tool, language and decoders for inspecting binary data."
+      , "Tool, language and decoders for working with binary data."
       , "For more information see https://github.com/wader/fq"
       )
     elif . == "args" then
@@ -198,11 +202,11 @@ def _help($arg0; $topic):
             | . as $e
             | if length == 1 then
                 ( "> \($e[0])"
-                , (null | try (_eval($e[0]) | tojson) catch "error: \(.)")
+                , (null | try (_eval($e[0]; {}) | tojson) catch "error: \(.)")
                 )
               else
                 ( "> \($e[0] | tojson) | \($e[1])"
-                , ($e[0] | try (_eval($e[1]) | tojson) catch "error: \(.)")
+                , ($e[0] | try (_eval($e[1]; {}) | tojson) catch "error: \(.)")
                 )
               end
             )

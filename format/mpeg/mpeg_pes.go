@@ -6,16 +6,16 @@ package mpeg
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 var pesPacketFormat decode.Group
 var spuFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.MPEG_PES,
 		Description: "MPEG Packetized elementary stream",
 		DecodeFn:    pesDecode,
@@ -33,7 +33,7 @@ type subStream struct {
 	l int
 }
 
-func pesDecode(d *decode.D, in interface{}) interface{} {
+func pesDecode(d *decode.D, _ any) any {
 	substreams := map[int]*subStream{}
 
 	prefix := d.PeekBits(24)

@@ -2,31 +2,39 @@ package zip
 
 // https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
 // https://opensource.apple.com/source/zip/zip-6/unzip/unzip/proginfo/extra.fld
-// TODO: zip64
 
 import (
 	"bytes"
 	"compress/flate"
+	"embed"
 	"io"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
+
+//go:embed zip.jq
+var zipFS embed.FS
 
 var probeFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.ZIP,
 		Description: "ZIP archive",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    zipDecode,
+		DecodeInArg: format.ZipIn{
+			Uncompress: true,
+		},
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.PROBE}, Group: &probeFormat},
 		},
+		Functions: []string{"_help"},
 	})
+	interp.RegisterFS(zipFS)
 }
 
 const (
@@ -66,35 +74,42 @@ var compressionMethodMap = scalar.UToSymStr{
 }
 
 var (
-	centralDirectorySignature       = []byte("PK\x01\x02")
-	endOfCentralDirectorySignature  = []byte("PK\x05\x06")
-	endOfCentralDirectorySignatureN = 0x06054b50
-	localFileSignature              = []byte("PK\x03\x04")
-	dataIndicatorSignature          = []byte("PK\x07\x08")
+	centralDirectorySignature              = []byte("PK\x01\x02")
+	endOfCentralDirectoryRecordSignature   = []byte("PK\x05\x06")
+	endOfCentralDirectoryRecordSignatureN  = 0x06054b50
+	endOfCentralDirectoryRecord64Signature = []byte("PK\x06\x06")
+	endOfCentralDirectoryLocatorSignature  = []byte("PK\x06\x07")
+	endOfCentralDirectoryLocatorSignatureN = 0x07064b50
+	localFileSignature                     = []byte("PK\x03\x04")
+	dataIndicatorSignature                 = []byte("PK\x07\x08")
+)
+
+const (
+	headerIDZip64ExtendedInformation = 0x001
 )
 
 var headerIDMap = scalar.UToDescription{
-	0x0001: "ZIP64 extended information extra field",
-	0x0007: "AV Info",
-	0x0009: "OS/2 extended attributes",
-	0x000a: "NTFS (Win9x/WinNT FileTimes)",
-	0x000c: "OpenVMS",
-	0x000d: "Unix",
-	0x000f: "Patch Descriptor",
-	0x0014: "PKCS#7 Store for X.509 Certificates",
-	0x0015: "X.509 Certificate ID and Signature for individual file",
-	0x0016: "X.509 Certificate ID for Central Directory",
-	0x0065: "IBM S/390 attributes - uncompressed",
-	0x0066: "IBM S/390 attributes - compressed",
-	0x07c8: "Info-ZIP Macintosh (old, J. Lee)",
-	0x2605: "ZipIt Macintosh (first version)",
-	0x2705: "ZipIt Macintosh v 1.3.5 and newer (w/o full filename)",
-	0x334d: "Info-ZIP Macintosh (new, D. Haase's 'Mac3' field )",
-	0x4154: "Tandem NSK",
-	0x4341: "Acorn/SparkFS (David Pilling)",
-	0x4453: "Windows NT security descriptor (binary ACL)",
-	0x4704: "VM/CMS",
-	0x470f: "MVS",
+	headerIDZip64ExtendedInformation: "ZIP64 extended information extra field",
+	0x0007:                           "AV Info",
+	0x0009:                           "OS/2 extended attributes",
+	0x000a:                           "NTFS (Win9x/WinNT FileTimes)",
+	0x000c:                           "OpenVMS",
+	0x000d:                           "Unix",
+	0x000f:                           "Patch Descriptor",
+	0x0014:                           "PKCS#7 Store for X.509 Certificates",
+	0x0015:                           "X.509 Certificate ID and Signature for individual file",
+	0x0016:                           "X.509 Certificate ID for Central Directory",
+	0x0065:                           "IBM S/390 attributes - uncompressed",
+	0x0066:                           "IBM S/390 attributes - compressed",
+	0x07c8:                           "Info-ZIP Macintosh (old, J. Lee)",
+	0x2605:                           "ZipIt Macintosh (first version)",
+	0x2705:                           "ZipIt Macintosh v 1.3.5 and newer (w/o full filename)",
+	0x334d:                           "Info-ZIP Macintosh (new, D. Haase's 'Mac3' field )",
+	0x4154:                           "Tandem NSK",
+	0x4341:                           "Acorn/SparkFS (David Pilling)",
+	0x4453:                           "Windows NT security descriptor (binary ACL)",
+	0x4704:                           "VM/CMS",
+	0x470f:                           "MVS",
 	// "inofficial" in original table
 	//nolint:misspell
 	0x4854: "Theos, old inofficial port",
@@ -128,7 +143,9 @@ func fieldMSDOSDate(d *decode.D) {
 	d.FieldU5("day")
 }
 
-func zipDecode(d *decode.D, in interface{}) interface{} {
+func zipDecode(d *decode.D, in any) any {
+	zi, _ := in.(format.ZipIn)
+
 	// TODO: just decode instead?
 	if !bytes.Equal(d.PeekBytes(4), []byte("PK\x03\x04")) {
 		d.Errorf("expected PK header")
@@ -140,7 +157,7 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 
 	// TODO: better EOCD probe
 	p, _, err := d.TryPeekFind(32, -8, -10000, func(v uint64) bool {
-		return v == uint64(endOfCentralDirectorySignatureN)
+		return v == uint64(endOfCentralDirectoryRecordSignatureN)
 	})
 	if err != nil {
 		d.Fatalf("can't find end of central directory")
@@ -151,17 +168,60 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 	var sizeCD uint64
 	var diskNr uint64
 
-	d.FieldStruct("end_of_central_directory", func(d *decode.D) {
-		d.FieldRawLen("signature", 4*8, d.AssertBitBuf(endOfCentralDirectorySignature))
+	d.FieldStruct("end_of_central_directory_record", func(d *decode.D) {
+		d.FieldRawLen("signature", 4*8, d.AssertBitBuf(endOfCentralDirectoryRecordSignature))
 		diskNr = d.FieldU16("disk_nr")
 		d.FieldU16("central_directory_start_disk_nr")
 		d.FieldU16("nr_of_central_directory_records_on_disk")
 		d.FieldU16("nr_of_central_directory_records")
-		sizeCD = d.FieldU32("size_of_central directory")
+		sizeCD = d.FieldU32("size_of_central_directory")
 		offsetCD = d.FieldU32("offset_of_start_of_central_directory")
 		commentLength := d.FieldU16("comment_length")
 		d.FieldUTF8("comment", int(commentLength))
 	})
+
+	// there is a end of central directory locator, is zip64
+	if offsetCD == 0xff_ff_ff_ff {
+		p, _, err := d.TryPeekFind(32, -8, -10000, func(v uint64) bool {
+			return v == uint64(endOfCentralDirectoryLocatorSignatureN)
+		})
+		if err != nil {
+			d.Fatalf("can't find zip64 end of central directory")
+		}
+		d.SeekAbs(d.Len() + p)
+
+		var offsetEOCD uint64
+		d.FieldStruct("end_of_central_directory_locator", func(d *decode.D) {
+			d.FieldRawLen("signature", 4*8, d.AssertBitBuf(endOfCentralDirectoryLocatorSignature))
+			diskNr = d.FieldU32("disk_nr")
+			offsetEOCD = d.FieldU64("offset_of_end_of_central_directory_record")
+			diskNr = d.FieldU32("total_disk_nr")
+		})
+
+		d.SeekAbs(int64(offsetEOCD) * 8)
+		d.FieldStruct("end_of_central_directory_record_zip64", func(d *decode.D) {
+			d.FieldRawLen("signature", 4*8, d.AssertBitBuf(endOfCentralDirectoryRecord64Signature))
+			sizeEOCD := d.FieldU64("size_of_end_of_central_directory")
+			d.FieldU16("version_made_by")
+			d.FieldU16("version_needed_to_extract")
+			diskNr = d.FieldU32("disk_nr")
+			d.FieldU32("central_directory_start_disk_nr")
+			d.FieldU64("nr_of_central_directory_records_on_disk")
+			d.FieldU64("nr_of_central_directory_records")
+			sizeCD = d.FieldU64("size_of_central_directory")
+			offsetCD = d.FieldU64("offset_of_start_of_central_directory")
+			const sizeOfFixedFields = 44
+			d.FramedFn(int64(sizeEOCD-sizeOfFixedFields)*8, func(d *decode.D) {
+				for !d.End() {
+					d.FieldStruct("extra_field", func(d *decode.D) {
+						d.FieldU16("header_id", headerIDMap, scalar.ActualHex)
+						dataSize := d.FieldU32("data_size")
+						d.FieldRawLen("data", int64(dataSize)*8)
+					})
+				}
+			})
+		})
+	}
 
 	var localFileOffsets []uint64
 
@@ -193,7 +253,7 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 					d.FieldU16("compression_method", compressionMethodMap)
 					d.FieldStruct("last_modification_date", fieldMSDOSTime)
 					d.FieldStruct("last_modification_time", fieldMSDOSDate)
-					d.FieldU32("crc32_uncompressed", scalar.Hex)
+					d.FieldU32("crc32_uncompressed", scalar.ActualHex)
 					d.FieldU32("compressed_size")
 					d.FieldU32("uncompressed_size")
 					fileNameLength := d.FieldU16("file_name_length")
@@ -208,9 +268,26 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 						d.FramedFn(int64(extraFieldLength)*8, func(d *decode.D) {
 							for !d.End() {
 								d.FieldStruct("extra_field", func(d *decode.D) {
-									d.FieldU16("header_id", headerIDMap, scalar.Hex)
+									headerID := d.FieldU16("header_id", headerIDMap, scalar.ActualHex)
 									dataSize := d.FieldU16("data_size")
-									d.FieldRawLen("data", int64(dataSize)*8)
+									d.FramedFn(int64(dataSize)*8, func(d *decode.D) {
+										switch headerID {
+										case headerIDZip64ExtendedInformation:
+											d.FieldU64("uncompressed_size")
+											// TODO: spec says these should be here but real zip64 seems to not have them? optional?
+											if !d.End() {
+												d.FieldU64("compressed_size")
+											}
+											if !d.End() {
+												localFileOffset = d.FieldU64("relative_offset_of_local_file_header")
+											}
+											if !d.End() {
+												d.FieldU32("disk_number_where_file_starts")
+											}
+										default:
+											d.FieldRawLen("data", int64(dataSize)*8)
+										}
+									})
 								})
 							}
 						})
@@ -252,7 +329,7 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 				compressionMethod := d.FieldU16("compression_method", compressionMethodMap)
 				d.FieldStruct("last_modification_date", fieldMSDOSTime)
 				d.FieldStruct("last_modification_time", fieldMSDOSDate)
-				d.FieldU32("crc32_uncompressed", scalar.Hex)
+				d.FieldU32("crc32_uncompressed", scalar.ActualHex)
 				compressedSizeBytes := d.FieldU32("compressed_size")
 				d.FieldU32("uncompressed_size")
 				fileNameLength := d.FieldU16("file_name_length")
@@ -262,9 +339,20 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 					d.FramedFn(int64(extraFieldLength)*8, func(d *decode.D) {
 						for !d.End() {
 							d.FieldStruct("extra_field", func(d *decode.D) {
-								d.FieldU16("header_id", headerIDMap, scalar.Hex)
+								headerID := d.FieldU16("header_id", headerIDMap, scalar.ActualHex)
 								dataSize := d.FieldU16("data_size")
-								d.FieldRawLen("data", int64(dataSize)*8)
+								d.FramedFn(int64(dataSize)*8, func(d *decode.D) {
+									switch headerID {
+									case headerIDZip64ExtendedInformation:
+										d.FieldU64("uncompressed_size")
+										// TODO: spec says these should be here but real zip64 seems to not have them? optional?
+										if !d.End() {
+											compressedSizeBytes = d.FieldU64("compressed_size")
+										}
+									default:
+										d.FieldRawLen("data", int64(dataSize)*8)
+									}
+								})
 							})
 						}
 					})
@@ -281,11 +369,13 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 					d.FieldFormatOrRawLen("uncompressed", compressedSize, probeFormat, nil)
 				} else {
 					var rFn func(r io.Reader) io.Reader
-					switch compressionMethod {
-					case compressionMethodDeflated:
-						// bitio.NewIOReadSeeker implements io.ByteReader so that deflate don't do own
-						// buffering and might read more than needed messing up knowing compressed size
-						rFn = func(r io.Reader) io.Reader { return flate.NewReader(r) }
+					if zi.Uncompress {
+						switch compressionMethod {
+						case compressionMethodDeflated:
+							// bitio.NewIOReadSeeker implements io.ByteReader so that deflate don't do own
+							// buffering and might read more than needed messing up knowing compressed size
+							rFn = func(r io.Reader) io.Reader { return flate.NewReader(r) }
+						}
 					}
 
 					if rFn != nil {
@@ -312,7 +402,7 @@ func zipDecode(d *decode.D, in interface{}) interface{} {
 						if bytes.Equal(d.PeekBytes(4), dataIndicatorSignature) {
 							d.FieldRawLen("signature", 4*8, d.AssertBitBuf(dataIndicatorSignature))
 						}
-						d.FieldU32("crc32_uncompressed", scalar.Hex)
+						d.FieldU32("crc32_uncompressed", scalar.ActualHex)
 						d.FieldU32("compressed_size")
 						d.FieldU32("uncompressed_size")
 					})

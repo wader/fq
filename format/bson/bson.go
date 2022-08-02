@@ -7,8 +7,8 @@ import (
 	"embed"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -16,13 +16,13 @@ import (
 var bsonFS embed.FS
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.BSON,
 		Description: "Binary JSON",
 		DecodeFn:    decodeBSON,
-		Files:       bsonFS,
 		Functions:   []string{"torepr", "_help"},
 	})
+	interp.RegisterFS(bsonFS)
 }
 
 const (
@@ -110,7 +110,7 @@ func decodeBSONDocument(d *decode.D) {
 	})
 }
 
-func decodeBSON(d *decode.D, in interface{}) interface{} {
+func decodeBSON(d *decode.D, _ any) any {
 	d.Endian = decode.LittleEndian
 
 	decodeBSONDocument(d)

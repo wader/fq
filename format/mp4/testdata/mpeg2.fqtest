@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i testsrc -c:v mpeg2video -f mp4 -t 50ms mpeg2.mp4
-$ fq -d mp4 dv /mpeg2.mp4
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /mpeg2.mp4 (mp4) 0x0-0x22a8.7 (8873)
+$ fq -d mp4 dv mpeg2.mp4
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: mpeg2.mp4 (mp4) 0x0-0x22a8.7 (8873)
       |                                               |                |  boxes[0:4]: 0x0-0x22a8.7 (8873)
       |                                               |                |    [0]{}: box 0x0-0x1b.7 (28)
 0x0000|00 00 00 1c                                    |....            |      size: 28 0x0-0x3.7 (4)
@@ -31,8 +31,8 @@ $ fq -d mp4 dv /mpeg2.mp4
 0x1fb0|      6d 76 68 64                              |  mvhd          |          type: "mvhd" (Movie header, overall declarations) 0x1fb2-0x1fb5.7 (4)
 0x1fb0|                  00                           |      .         |          version: 0 0x1fb6-0x1fb6.7 (1)
 0x1fb0|                     00 00 00                  |       ...      |          flags: 0 0x1fb7-0x1fb9.7 (3)
-0x1fb0|                              00 00 00 00      |          ....  |          creation_time: "1904-01-04T00:00:00Z" (0) 0x1fba-0x1fbd.7 (4)
-0x1fb0|                                          00 00|              ..|          modification_time: "1904-01-04T00:00:00Z" (0) 0x1fbe-0x1fc1.7 (4)
+0x1fb0|                              00 00 00 00      |          ....  |          creation_time: 0 (1904-01-04T00:00:00Z) 0x1fba-0x1fbd.7 (4)
+0x1fb0|                                          00 00|              ..|          modification_time: 0 (1904-01-04T00:00:00Z) 0x1fbe-0x1fc1.7 (4)
 0x1fc0|00 00                                          |..              |
 0x1fc0|      00 00 03 e8                              |  ....          |          time_scale: 1000 0x1fc2-0x1fc5.7 (4)
 0x1fc0|                  00 00 00 28                  |      ...(      |          duration: 40 0x1fc6-0x1fc9.7 (4)
@@ -70,9 +70,9 @@ $ fq -d mp4 dv /mpeg2.mp4
 0x2020|                  74 6b 68 64                  |      tkhd      |              type: "tkhd" (Track header, overall information about the track) 0x2026-0x2029.7 (4)
 0x2020|                              00               |          .     |              version: 0 0x202a-0x202a.7 (1)
 0x2020|                                 00 00 03      |           ...  |              flags: 3 0x202b-0x202d.7 (3)
-0x2020|                                          00 00|              ..|              creation_time: "1904-01-04T00:00:00Z" (0) 0x202e-0x2031.7 (4)
+0x2020|                                          00 00|              ..|              creation_time: 0 (1904-01-04T00:00:00Z) 0x202e-0x2031.7 (4)
 0x2030|00 00                                          |..              |
-0x2030|      00 00 00 00                              |  ....          |              modification_time: "1904-01-04T00:00:00Z" (0) 0x2032-0x2035.7 (4)
+0x2030|      00 00 00 00                              |  ....          |              modification_time: 0 (1904-01-04T00:00:00Z) 0x2032-0x2035.7 (4)
 0x2030|                  00 00 00 01                  |      ....      |              track_id: 1 0x2036-0x2039.7 (4)
 0x2030|                              00 00 00 00      |          ....  |              reserved1: 0 0x203a-0x203d.7 (4)
 0x2030|                                          00 00|              ..|              duration: 40 0x203e-0x2041.7 (4)
@@ -124,8 +124,8 @@ $ fq -d mp4 dv /mpeg2.mp4
 0x20b0|68 64                                          |hd              |
 0x20b0|      00                                       |  .             |                  version: 0 0x20b2-0x20b2.7 (1)
 0x20b0|         00 00 00                              |   ...          |                  flags: 0 0x20b3-0x20b5.7 (3)
-0x20b0|                  00 00 00 00                  |      ....      |                  creation_time: "1904-01-04T00:00:00Z" (0) 0x20b6-0x20b9.7 (4)
-0x20b0|                              00 00 00 00      |          ....  |                  modification_time: "1904-01-04T00:00:00Z" (0) 0x20ba-0x20bd.7 (4)
+0x20b0|                  00 00 00 00                  |      ....      |                  creation_time: 0 (1904-01-04T00:00:00Z) 0x20b6-0x20b9.7 (4)
+0x20b0|                              00 00 00 00      |          ....  |                  modification_time: 0 (1904-01-04T00:00:00Z) 0x20ba-0x20bd.7 (4)
 0x20b0|                                          00 00|              ..|                  time_scale: 12800 0x20be-0x20c1.7 (4)
 0x20c0|32 00                                          |2.              |
 0x20c0|      00 00 02 00                              |  ....          |                  duration: 512 0x20c2-0x20c5.7 (4)
@@ -336,8 +336,8 @@ $ fq -d mp4 dv /mpeg2.mp4
 0x2290|                        00 00 00 00            |        ....    |                          reserved: 0 0x2298-0x229b.7 (4)
 0x2290|                                    4c 61 76 66|            Lavf|                          data: "Lavf58.45.100" 0x229c-0x22a8.7 (13)
 0x22a0|35 38 2e 34 35 2e 31 30 30|                    |58.45.100|      |
-      |                                               |                |  tracks[0:1]: 0x2c-0x1fa5.7 (8058)
-      |                                               |                |    [0]{}: track 0x2c-0x1fa5.7 (8058)
+      |                                               |                |  tracks[0:1]: 0x2c-0x22a8.7 (8829)
+      |                                               |                |    [0]{}: track 0x2c-0x22a8.7 (8829)
       |                                               |                |      samples[0:1]: 0x2c-0x1fa5.7 (8058)
       |                                               |                |        [0]{}: sample (mpeg_pes_packet) 0x2c-0x1fa5.7 (8058)
 0x0020|                                    00 00 01   |            ... |          prefix: 0b1 (valid) 0x2c-0x2e.7 (3)
@@ -355,3 +355,5 @@ $ fq -d mp4 dv /mpeg2.mp4
 0x0030|                        00 00 01 b5 14 8a 00 01|        ........|          unknown0: raw bits 0x38-0x1fa5.7 (8046)
 0x0040|00 00 00 00 01 b8 00 08 00 40 00 00 01 00 00 0f|.........@......|
 *     |until 0x1fa5.7 (8046)                          |                |
+      |                                               |                |      id: 1 0x22a9-NA (0)
+      |                                               |                |      data_foramt: "mp4v" 0x22a9-NA (0)

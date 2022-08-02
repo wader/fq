@@ -4,14 +4,14 @@ package ape
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 var imageFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.APEV2,
 		Description: "APEv2 metadata tag",
 		DecodeFn:    apev2Decode,
@@ -21,7 +21,7 @@ func init() {
 	})
 }
 
-func apev2Decode(d *decode.D, in interface{}) interface{} {
+func apev2Decode(d *decode.D, _ any) any {
 	d.Endian = decode.LittleEndian
 
 	headerFooterFn := func(d *decode.D, name string) uint64 {

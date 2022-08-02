@@ -2,15 +2,15 @@ package inet
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 var udpPayloadGroup decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.UDP_DATAGRAM,
 		Description: "User datagram protocol",
 		Groups:      []string{format.IP_PACKET},
@@ -21,7 +21,7 @@ func init() {
 	})
 }
 
-func decodeUDP(d *decode.D, in interface{}) interface{} {
+func decodeUDP(d *decode.D, in any) any {
 	if ipi, ok := in.(format.IPPacketIn); ok && ipi.Protocol != format.IPv4ProtocolUDP {
 		d.Fatalf("incorrect protocol %d", ipi.Protocol)
 	}
@@ -29,7 +29,7 @@ func decodeUDP(d *decode.D, in interface{}) interface{} {
 	sourcePort := d.FieldU16("source_port", format.UDPPortMap)
 	destPort := d.FieldU16("destination_port", format.UDPPortMap)
 	length := d.FieldU16("length")
-	d.FieldU16("checksum", scalar.Hex)
+	d.FieldU16("checksum", scalar.ActualHex)
 
 	payloadLen := int64(length-8) * 8
 	d.FieldFormatOrRawLen(

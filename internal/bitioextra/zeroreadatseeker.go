@@ -56,3 +56,7 @@ func (z *ZeroReadAtSeeker) ReadBitsAt(p []byte, nBits int64, bitOff int64) (n in
 
 	return rBits, nil
 }
+
+func (z *ZeroReadAtSeeker) CloneReadAtSeeker() (bitio.ReadAtSeeker, error) {
+	return NewZeroAtSeeker(z.nBits), nil
+}

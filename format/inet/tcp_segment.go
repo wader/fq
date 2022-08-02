@@ -4,13 +4,13 @@ package inet
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.TCP_SEGMENT,
 		Description: "Transmission control protocol segment",
 		Groups:      []string{format.IP_PACKET},
@@ -33,7 +33,7 @@ var tcpOptionsMap = scalar.UToScalar{
 	8:            {Sym: "timestamp", Description: "Timestamp and echo of previous timestamp"},
 }
 
-func decodeTCP(d *decode.D, in interface{}) interface{} {
+func decodeTCP(d *decode.D, in any) any {
 	if ipi, ok := in.(format.IPPacketIn); ok && ipi.Protocol != format.IPv4ProtocolTCP {
 		d.Fatalf("incorrect protocol %d", ipi.Protocol)
 	}
@@ -55,7 +55,7 @@ func decodeTCP(d *decode.D, in interface{}) interface{} {
 	d.FieldBool("fin")
 	d.FieldU16("window_size")
 	// checksumStart := d.Pos()
-	d.FieldU16("checksum", scalar.Hex)
+	d.FieldU16("checksum", scalar.ActualHex)
 	// checksumEnd := d.Pos()
 	d.FieldU16("urgent_pointer")
 	optionsLen := (int64(dataOffset) - 5) * 8 * 4

@@ -1,0 +1,10 @@
+<elm xmlns:ns1="http://test1" xmlns:ns2="http://test2">
+    <ns1:aaa ns1:attr1="v1">1</ns1:aaa>
+    <ns2:aaa ns2:attr2="v2">
+        2
+        <ns1:ccc ns1:attr3="v3"></ns1:ccc>
+        <ns2:ccc ns2:attr4="v4"></ns2:ccc>
+        <ns3:ccc ns2:attr5="v5"></ns3:ccc>
+    </ns2:aaa>
+    <aaa>3</aaa>
+</elm>

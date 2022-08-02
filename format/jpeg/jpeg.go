@@ -8,9 +8,9 @@ import (
 	"bytes"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -18,7 +18,7 @@ var exifFormat decode.Group
 var iccProfileFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.JPEG,
 		Description: "Joint Photographic Experts Group file",
 		Groups:      []string{format.PROBE, format.IMAGE},
@@ -164,7 +164,7 @@ var markers = scalar.UToScalar{
 	TEM:   {Sym: "tem", Description: "For temporary private use in arithmetic coding"},
 }
 
-func jpegDecode(d *decode.D, in interface{}) interface{} {
+func jpegDecode(d *decode.D, _ any) any {
 	d.AssertLeastBytesLeft(2)
 	if !bytes.Equal(d.PeekBytes(2), []byte{0xff, SOI}) {
 		d.Errorf("no SOI marker")
@@ -306,7 +306,7 @@ func jpegDecode(d *decode.D, in interface{}) interface{} {
 									// TODO: FieldBitsLen? concat bitbuf?
 									chunk := d.FieldRawLen("data", d.BitsLeft())
 									// TODO: redo this? multi reader?
-									chunkBytes := d.MustReadAllBits(chunk)
+									chunkBytes := d.ReadAllBits(chunk)
 
 									if extendedXMP == nil {
 										extendedXMP = make([]byte, fullLength)

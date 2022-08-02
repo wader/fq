@@ -13,16 +13,10 @@ import (
 )
 
 func init() {
-	functionRegisterFns = append(functionRegisterFns, func(i *Interp) []Function {
-		return []Function{
-			{"_match_binary", 1, 2, nil, i._binaryMatch},
-		}
-	})
+	RegisterIter2("_match_binary", (*Interp)._binaryMatch)
 }
 
-func (i *Interp) _binaryMatch(c interface{}, a []interface{}) gojq.Iter {
-	var ok bool
-
+func (i *Interp) _binaryMatch(c any, pattern any, flags string) gojq.Iter {
 	bv, err := toBinary(c)
 	if err != nil {
 		return gojq.NewIter(err)
@@ -32,11 +26,11 @@ func (i *Interp) _binaryMatch(c interface{}, a []interface{}) gojq.Iter {
 	var byteRunes bool
 	var global bool
 
-	switch a0 := a[0].(type) {
+	switch pattern := pattern.(type) {
 	case string:
-		re = a0
+		re = pattern
 	default:
-		reBuf, err := toBytes(a0)
+		reBuf, err := toBytes(pattern)
 		if err != nil {
 			return gojq.NewIter(err)
 		}
@@ -47,14 +41,6 @@ func (i *Interp) _binaryMatch(c interface{}, a []interface{}) gojq.Iter {
 		byteRunes = true
 		// escape paratheses runes etc
 		re = regexp.QuoteMeta(string(reRs))
-	}
-
-	var flags string
-	if len(a) > 1 {
-		flags, ok = a[1].(string)
-		if !ok {
-			return gojq.NewIter(gojqextra.FuncTypeNameError{Name: "find", Typ: "string"})
-		}
 	}
 
 	if strings.Contains(flags, "b") {
@@ -91,7 +77,7 @@ func (i *Interp) _binaryMatch(c interface{}, a []interface{}) gojq.Iter {
 
 	var off int64
 	prevOff := int64(-1)
-	return iterFn(func() (interface{}, bool) {
+	return iterFn(func() (any, bool) {
 		// TODO: correct way to handle empty match for binary, move one byte forward?
 		// > "asdasd" | [match(""; "g")], [(tobytes | match(""; "g"))] | length
 		// 7
@@ -114,12 +100,12 @@ func (i *Interp) _binaryMatch(c interface{}, a []interface{}) gojq.Iter {
 			return nil, false
 		}
 
-		var captures []interface{}
-		var firstCapture map[string]interface{}
+		var captures []any
+		var firstCapture map[string]any
 
 		for i := 0; i < len(l)/2; i++ {
 			start, end := l[i*2], l[i*2+1]
-			capture := map[string]interface{}{
+			capture := map[string]any{
 				"offset": int(off) + start,
 				"length": end - start,
 			}

@@ -6,14 +6,14 @@ import (
 	"strings"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 var flacPicture decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.VORBIS_COMMENT,
 		Description: "Vorbis comment",
 		DecodeFn:    commentDecode,
@@ -23,7 +23,7 @@ func init() {
 	})
 }
 
-func commentDecode(d *decode.D, in interface{}) interface{} {
+func commentDecode(d *decode.D, _ any) any {
 	d.Endian = decode.LittleEndian
 
 	vendorLen := d.FieldU32("vendor_length")

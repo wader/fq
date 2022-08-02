@@ -4,8 +4,8 @@ package vpx
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -56,7 +56,7 @@ var vp9ProfilesMap = scalar.UToDescription{
 }
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.VP9_FRAME,
 		Description: "VP9 frame",
 		DecodeFn:    vp9Decode,
@@ -107,7 +107,7 @@ func vp9DecodeFrameSize(d *decode.D) {
 	d.FieldUFn("frame_height", func(d *decode.D) uint64 { return d.U16() + 1 })
 }
 
-func vp9Decode(d *decode.D, in interface{}) interface{} {
+func vp9Decode(d *decode.D, _ any) any {
 
 	// TODO: header_size at end? even for show_existing_frame?
 

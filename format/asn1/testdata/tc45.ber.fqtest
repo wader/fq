@@ -6,3 +6,4 @@ $ fq -d asn1_ber d tc45.ber
 0x0|24                                             |$               |  form: "constructed" (1)
 0x0|24                                             |$               |  tag: "octet_string" (0x4)
 0x0|   00|                                         | .|             |  length: "indefinite" (0)
+   |                                               |                |  constructed[0:0]:

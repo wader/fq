@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/wader/fq/internal/bitioextra"
 	"github.com/wader/fq/pkg/bitio"
@@ -42,15 +43,15 @@ func (df DisplayFormat) FormatBase() int {
 }
 
 type S struct {
-	Actual        interface{} // nil, int, int64, uint64, float64, string, bool, []byte, *bit.Int, bitio.BitReaderAtSeeker,
+	Actual        any // nil, int, int64, uint64, float64, string, bool, []byte, *bit.Int, bitio.BitReaderAtSeeker,
 	ActualDisplay DisplayFormat
-	Sym           interface{}
+	Sym           any
 	SymDisplay    DisplayFormat
 	Description   string
 	Unknown       bool
 }
 
-func (s S) Value() interface{} {
+func (s S) Value() any {
 	if s.Sym != nil {
 		return s.Sym
 	}
@@ -67,55 +68,42 @@ func (fn Fn) MapScalar(s S) (S, error) {
 	return fn(s)
 }
 
-var Bin = Fn(func(s S) (S, error) { s.ActualDisplay = NumberBinary; return s, nil })
-var Oct = Fn(func(s S) (S, error) { s.ActualDisplay = NumberOctal; return s, nil })
-var Dec = Fn(func(s S) (S, error) { s.ActualDisplay = NumberDecimal; return s, nil })
-var Hex = Fn(func(s S) (S, error) { s.ActualDisplay = NumberHex; return s, nil })
+var ActualBin = Fn(func(s S) (S, error) { s.ActualDisplay = NumberBinary; return s, nil })
+var ActualOct = Fn(func(s S) (S, error) { s.ActualDisplay = NumberOctal; return s, nil })
+var ActualDec = Fn(func(s S) (S, error) { s.ActualDisplay = NumberDecimal; return s, nil })
+var ActualHex = Fn(func(s S) (S, error) { s.ActualDisplay = NumberHex; return s, nil })
 
 var SymBin = Fn(func(s S) (S, error) { s.SymDisplay = NumberBinary; return s, nil })
 var SymOct = Fn(func(s S) (S, error) { s.SymDisplay = NumberOctal; return s, nil })
 var SymDec = Fn(func(s S) (S, error) { s.SymDisplay = NumberDecimal; return s, nil })
 var SymHex = Fn(func(s S) (S, error) { s.SymDisplay = NumberHex; return s, nil })
 
-func Actual(v interface{}) Mapper {
+func Actual(v any) Mapper {
 	return Fn(func(s S) (S, error) { s.Actual = v; return s, nil })
 }
-func Sym(v interface{}) Mapper {
+func Sym(v any) Mapper {
 	return Fn(func(s S) (S, error) { s.Sym = v; return s, nil })
 }
 func Description(v string) Mapper {
 	return Fn(func(s S) (S, error) { s.Description = v; return s, nil })
 }
 
-func UAdd(n int) Mapper {
-	return Fn(func(s S) (S, error) {
-		// TODO: use math.Add/Sub?
-		s.Actual = uint64(int64(s.ActualU()) + int64(n))
-		return s, nil
-	})
+func ActualUAdd(n int) ActualUFn {
+	// TODO: use math.Add/Sub?
+	return ActualUFn(func(a uint64) uint64 { return uint64(int64(a) + int64(n)) })
 }
 
-func SAdd(n int) Mapper {
-	return Fn(func(s S) (S, error) {
-		s.Actual = s.ActualS() + int64(n)
-		return s, nil
-	})
+func ActualSAdd(n int) ActualSFn {
+	return ActualSFn(func(a int64) int64 { return a + int64(n) })
 }
 
-// TODO: nicer api?
-func Trim(cutset string) Mapper {
-	return Fn(func(s S) (S, error) {
-		s.Actual = strings.Trim(s.ActualStr(), cutset)
-		return s, nil
-	})
+func ActualTrim(cutset string) ActualStrFn {
+	return ActualStrFn(func(a string) string { return strings.Trim(a, cutset) })
 }
 
-var TrimSpace = Fn(func(s S) (S, error) {
-	s.Actual = strings.TrimSpace(s.ActualStr())
-	return s, nil
-})
+var ActualTrimSpace = ActualStrFn(strings.TrimSpace)
 
-func strMapToSym(fn func(s string) (interface{}, error)) Mapper {
+func strMapToSym(fn func(s string) (any, error)) Mapper {
 	return Fn(func(s S) (S, error) {
 		ts := strings.TrimSpace(s.ActualStr())
 		if ts != "" {
@@ -129,16 +117,16 @@ func strMapToSym(fn func(s string) (interface{}, error)) Mapper {
 	})
 }
 
-func StrUintToSym(base int) Mapper {
-	return strMapToSym(func(s string) (interface{}, error) { return strconv.ParseUint(s, base, 64) })
+func SymUParseUint(base int) Mapper {
+	return strMapToSym(func(s string) (any, error) { return strconv.ParseUint(s, base, 64) })
 }
 
-func StrIntToSym(base int) Mapper {
-	return strMapToSym(func(s string) (interface{}, error) { return strconv.ParseInt(s, base, 64) })
+func SymSParseInt(base int) Mapper {
+	return strMapToSym(func(s string) (any, error) { return strconv.ParseInt(s, base, 64) })
 }
 
-func StrFToSym(base int) Mapper {
-	return strMapToSym(func(s string) (interface{}, error) { return strconv.ParseFloat(s, base) })
+func SymFParseFloat(base int) Mapper {
+	return strMapToSym(func(s string) (any, error) { return strconv.ParseFloat(s, base) })
 }
 
 type URangeEntry struct {
@@ -190,7 +178,7 @@ func (rs SRangeToScalar) MapScalar(s S) (S, error) {
 	return s, nil
 }
 
-func rawSym(s S, nBytes int, fn func(b []byte) string) (S, error) {
+func RawSym(s S, nBytes int, fn func(b []byte) string) (S, error) {
 	br, ok := s.Actual.(bitio.ReadAtSeeker)
 	if !ok {
 		return s, nil
@@ -220,13 +208,13 @@ func rawSym(s S, nBytes int, fn func(b []byte) string) (S, error) {
 }
 
 var RawUUID = Fn(func(s S) (S, error) {
-	return rawSym(s, -1, func(b []byte) string {
+	return RawSym(s, -1, func(b []byte) string {
 		return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
 	})
 })
 
 var RawHex = Fn(func(s S) (S, error) {
-	return rawSym(s, -1, func(b []byte) string { return fmt.Sprintf("%x", b) })
+	return RawSym(s, -1, func(b []byte) string { return fmt.Sprintf("%x", b) })
 })
 
 type BytesToScalar []struct {
@@ -235,8 +223,12 @@ type BytesToScalar []struct {
 }
 
 func (m BytesToScalar) MapScalar(s S) (S, error) {
+	rc, err := bitio.CloneReader(s.ActualBitBuf())
+	if err != nil {
+		return s, err
+	}
 	bb := &bytes.Buffer{}
-	if _, err := bitioextra.CopyBits(bb, s.ActualBitBuf()); err != nil {
+	if _, err := bitioextra.CopyBits(bb, rc); err != nil {
 		return s, err
 	}
 	for _, bs := range m {
@@ -249,3 +241,41 @@ func (m BytesToScalar) MapScalar(s S) (S, error) {
 	}
 	return s, nil
 }
+
+// TODO: nicer api, use generics
+
+var unixTimeEpochDate = time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC)
+
+func DescriptionActualUTime(epoch time.Time, format string) Mapper {
+	return Fn(func(s S) (S, error) {
+		s.Description = epoch.Add(time.Second * time.Duration(s.ActualU())).Format(format)
+		return s, nil
+	})
+}
+
+func DescriptionSymUTime(epoch time.Time, format string) Mapper {
+	return Fn(func(s S) (S, error) {
+		s.Description = epoch.Add(time.Second * time.Duration(s.SymU())).Format(format)
+		return s, nil
+	})
+}
+
+var DescriptionActualUUnixTime = DescriptionActualUTime(unixTimeEpochDate, time.RFC3339)
+var DescriptionSymUUnixTime = DescriptionSymUTime(unixTimeEpochDate, time.RFC3339)
+
+func DescriptionActualSTime(epoch time.Time, format string) Mapper {
+	return Fn(func(s S) (S, error) {
+		s.Description = epoch.Add(time.Second * time.Duration(s.ActualS())).Format(format)
+		return s, nil
+	})
+}
+
+func DescriptionSymSTime(epoch time.Time, format string) Mapper {
+	return Fn(func(s S) (S, error) {
+		s.Description = epoch.Add(time.Second * time.Duration(s.SymS())).Format(format)
+		return s, nil
+	})
+}
+
+var DescriptionActualSUnixTime = DescriptionActualSTime(unixTimeEpochDate, time.RFC3339)
+var DescriptionSymSUnixTime = DescriptionSymSTime(unixTimeEpochDate, time.RFC3339)

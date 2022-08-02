@@ -2,12 +2,12 @@ package main
 
 import (
 	_ "github.com/wader/fq/format/all"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/cli"
+	"github.com/wader/fq/pkg/interp"
 )
 
-const version = "0.0.7"
+const version = "0.0.8"
 
 func main() {
-	cli.Main(registry.Default, version)
+	cli.Main(interp.DefaultRegistry, version)
 }

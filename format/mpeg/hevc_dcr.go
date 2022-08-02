@@ -2,15 +2,15 @@ package mpeg
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 var hevcDCRNALFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.HEVC_DCR,
 		Description: "H.265/HEVC Decoder Configuration Record",
 		DecodeFn:    hevcDcrDecode,
@@ -20,7 +20,7 @@ func init() {
 	})
 }
 
-func hevcDcrDecode(d *decode.D, in interface{}) interface{} {
+func hevcDcrDecode(d *decode.D, _ any) any {
 	d.FieldU8("configuration_version")
 	d.FieldU2("general_profile_space")
 	d.FieldU1("general_tier_flag")
@@ -35,14 +35,14 @@ func hevcDcrDecode(d *decode.D, in interface{}) interface{} {
 	d.FieldU6("reserved2")
 	d.FieldU2("chroma_format_idc")
 	d.FieldU5("reserved3")
-	d.FieldU3("bit_depth_luma", scalar.UAdd(8))
+	d.FieldU3("bit_depth_luma", scalar.ActualUAdd(8))
 	d.FieldU5("reserved4")
-	d.FieldU3("bit_depth_chroma", scalar.UAdd(8))
+	d.FieldU3("bit_depth_chroma", scalar.ActualUAdd(8))
 	d.FieldU16("avg_frame_rate")
 	d.FieldU2("constant_frame_rate")
 	d.FieldU3("num_temporal_layers")
 	d.FieldU1("temporal_id_nested")
-	lengthSize := d.FieldU2("length_size", scalar.UAdd(1))
+	lengthSize := d.FieldU2("length_size", scalar.ActualUAdd(1))
 	numArrays := d.FieldU8("num_of_arrays")
 	d.FieldArray("arrays", func(d *decode.D) {
 		for i := uint64(0); i < numArrays; i++ {

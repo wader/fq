@@ -4,15 +4,15 @@ package protobuf
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 var widevineProtoBufFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.PROTOBUF_WIDEVINE,
 		Description: "Widevine protobuf",
 		DecodeFn:    widevineDecode,
@@ -22,7 +22,7 @@ func init() {
 	})
 }
 
-func widevineDecode(d *decode.D, in interface{}) interface{} {
+func widevineDecode(d *decode.D, _ any) any {
 	widewinePb := format.ProtoBufMessage{
 		1: {Type: format.ProtoBufTypeEnum, Name: "algorithm", Enums: scalar.UToSymStr{
 			0: "unencrypted",

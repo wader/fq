@@ -7,6 +7,7 @@ def _opt_build_default_fixed:
   | {
       addrbase:       16,
       arg:            [],
+      argdecode:      [],
       argjson:        [],
       array_truncate: 50,
       bits_format:    "snippet",
@@ -42,7 +43,6 @@ def _opt_build_default_fixed:
       },
       compact:            false,
       completion_timeout: (env.COMPLETION_TIMEOUT | if . != null then tonumber else 1 end),
-      decode_file:        [],
       decode_format:      "probe",
       decode_progress:    (env.NO_DECODE_PROGRESS == null),
       depth:              0,
@@ -72,6 +72,7 @@ def _opt_options:
   {
     addrbase:           "number",
     arg:                "array_string_pair",
+    argdecode:          "array_string_pair",
     argjson:            "array_string_pair",
     array_truncate:     "number",
     bits_format:        "string",
@@ -80,7 +81,6 @@ def _opt_options:
     colors:             "csv_kv_obj",
     compact:            "boolean",
     completion_timeout: "number",
-    decode_file:        "array_string_pair",
     decode_format:      "string",
     decode_progress:    "boolean",
     depth:              "number",
@@ -110,7 +110,7 @@ def _opt_options:
 
 def _opt_eval($rest):
   ( with_entries(
-      ( select(.value | type == "string" and startswith("@"))
+      ( select(.value | _is_string and startswith("@"))
       | .value |=
           ( . as $v
           | try
@@ -239,17 +239,17 @@ def _opt_to_string:
 def _opt_from_string: if . then tojson[1:-1] else "" end;
 
 def _opt_is_string_pair:
-  type == "array" and length == 2 and all(type == "string");
+  _is_array and length == 2 and all(_is_string);
 
 def _opt_to_array(f):
   try
     ( fromjson
-    | if type == "array" and (all(f) | not) then null end
+    | if _is_array and (all(f) | not) then null end
     )
   catch null;
 
 def _opt_to_array_string_pair: _opt_to_array(_opt_is_string_pair);
-def _opt_to_array_string: _opt_to_array(type == "string");
+def _opt_to_array_string: _opt_to_array(_is_string);
 
 def _opt_from_array: tojson;
 
@@ -359,6 +359,13 @@ def _opt_cli_opts:
       description: "Set variable $NAME to string VALUE",
       pairs: "NAME VALUE"
     },
+    "argdecode": {
+      long: "--argdecode",
+      # TODO: remove at some point
+      aliases: ["--decode-file"],
+      description: "Set variable $NAME to decode of PATH",
+      pairs: "NAME PATH"
+    },
     "argjson": {
       long: "--argjson",
       description: "Set variable $NAME to JSON",
@@ -381,11 +388,6 @@ def _opt_cli_opts:
       long: "--decode",
       description: "Decode format (probe)",
       string: "NAME"
-    },
-    "decode_file": {
-      long: "--decode-file",
-      description: "Set variable $NAME to decode of file",
-      pairs: "NAME PATH"
     },
     "expr_file": {
       short: "-f",
@@ -468,7 +470,7 @@ def _opt_cli_opts:
     "slurp": {
       short: "-s",
       long: "--slurp",
-      description: "Read (slurp) all inputs into an array",
+      description: "Slurp all inputs into an array or string (-Rs)",
       bool: true
     },
     "show_version": {

@@ -2,14 +2,14 @@ package mpeg
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 var adtsFrame decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.ADTS,
 		Description: "Audio Data Transport Stream",
 		Groups:      []string{format.PROBE},
@@ -22,7 +22,7 @@ func init() {
 	})
 }
 
-func adtsDecoder(d *decode.D, in interface{}) interface{} {
+func adtsDecoder(d *decode.D, _ any) any {
 	validFrames := 0
 	for !d.End() {
 		if dv, _, _ := d.TryFieldFormat("frame", adtsFrame, nil); dv == nil {

@@ -1,4 +1,4 @@
-$ fq -i -d mp3 . /test.mp3
+$ fq -i -d mp3 . test.mp3
 mp3> .frames[1].data | tobytes | match("3\u0085"; "b")
 {
   "captures": [],
@@ -8,7 +8,7 @@ mp3> .frames[1].data | tobytes | match("3\u0085"; "b")
 }
 mp3> ^D
 $ fq -ni
-null> "64ff65ff66" | hex | match("\u00ff"; "b")
+null> "64ff65ff66" | fromhex | match("\u00ff"; "b")
 {
   "captures": [],
   "length": 1,

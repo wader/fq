@@ -11,13 +11,13 @@ import (
 	"bytes"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.GIF,
 		Description: "Graphics Interchange Format",
 		Groups:      []string{format.PROBE, format.IMAGE},
@@ -51,7 +51,7 @@ func fieldColorMap(d *decode.D, name string, bitDepth int) {
 	})
 }
 
-func gifDecode(d *decode.D, in interface{}) interface{} {
+func gifDecode(d *decode.D, _ any) any {
 	d.Endian = decode.LittleEndian
 
 	d.FieldUTF8("header", 6, d.AssertStr("GIF87a", "GIF89a"))
@@ -78,7 +78,7 @@ func gifDecode(d *decode.D, in interface{}) interface{} {
 			case '!': /* "!" */
 				d.FieldStruct("extension_block", func(d *decode.D) {
 					d.FieldU8("introducer")
-					functionCode := d.FieldU8("function_code", extensionNames, scalar.Hex)
+					functionCode := d.FieldU8("function_code", extensionNames, scalar.ActualHex)
 
 					dataBytes := &bytes.Buffer{}
 
@@ -93,7 +93,7 @@ func gifDecode(d *decode.D, in interface{}) interface{} {
 									d.FieldU8("terminator")
 									seenTerminator = true
 								}
-								d.MustCopyBits(dataBytes, d.MustClone(b))
+								d.CopyBits(dataBytes, d.CloneReadSeeker(b))
 							})
 						}
 					})

@@ -14,16 +14,16 @@ package mpeg
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/checksum"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 var xingHeader decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.MP3_FRAME,
 		Description: "MPEG audio layer 3 frame",
 		DecodeFn:    frameDecode,
@@ -140,7 +140,7 @@ var protectionNames = scalar.BoolToDescription{
 	false: "Has CRC",
 }
 
-func frameDecode(d *decode.D, in interface{}) interface{} {
+func frameDecode(d *decode.D, _ any) any {
 	const headerBytes = 4
 	var sideInfoBytes int64
 	var isStereo bool
@@ -157,7 +157,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 	var crcValue *decode.Value
 
 	d.FieldStruct("header", func(d *decode.D) {
-		d.FieldU11("sync", d.AssertU(0b111_1111_1111), scalar.Bin)
+		d.FieldU11("sync", d.AssertU(0b111_1111_1111), scalar.ActualBin)
 
 		// v = 3 means version 2.5
 		mpegVersion := d.FieldU2("mpeg_version", mpegVersionNames)
@@ -178,10 +178,7 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			2: [...]uint{0, 1152, 1152, 1152},
 			3: [...]uint{0, 1152, 576, 576},
 		}
-		// TODO: synthentic fields somehow?
-		d.FieldUFn("sample_count", func(d *decode.D) uint64 {
-			return uint64(samplesFrameIndex[uint(mpegLayerNr)][uint(mpegVersionNr)])
-		})
+		d.FieldValueU("sample_count", uint64(samplesFrameIndex[uint(mpegLayerNr)][uint(mpegVersionNr)]))
 		protection := d.FieldBool("protection_absent", protectionNames)
 		// note false mean has protection
 		hasCRC := !protection
@@ -202,7 +199,6 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			0b1101: [...]uint{416, 320, 256, 224, 144, 144, 224, 144, 144},
 			0b1110: [...]uint{448, 384, 320, 256, 160, 160, 256, 160, 160},
 		}
-		// TODO: FieldU4
 		d.FieldU4("bitrate", scalar.Fn(func(s scalar.S) (scalar.S, error) {
 			u := s.ActualU()
 			switch u {
@@ -228,7 +224,6 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			0b01: [...]uint{48000, 24000, 12000},
 			0b10: [...]uint{32000, 16000, 8000},
 		}
-		// TODO: FieldU2
 		d.FieldU2("sample_rate", scalar.Fn(func(s scalar.S) (scalar.S, error) {
 			u := s.ActualU()
 			switch u {
@@ -244,21 +239,21 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 		paddingBytes = d.FieldU1("padding", scalar.UToSymStr{
 			0: "not_padded",
 			1: "padded",
-		}, scalar.Bin)
+		}, scalar.ActualBin)
 		d.FieldU1("private")
 		channelsIndex = d.FieldU2("channels", scalar.UToSymStr{
 			0b00: "stereo",
 			0b01: "joint_stereo",
 			0b10: "dual",
 			0b11: "mono",
-		}, scalar.Bin)
+		}, scalar.ActualBin)
 		isStereo = channelsIndex != 0b11
 		channelModeIndex = d.FieldU2("channel_mode", scalar.UToSymStr{
 			0b00: "none",
 			0b01: "intensity stereo",
 			0b10: "ms_stereo",
 			0b11: "intensity_stereo_ms_stereo",
-		}, scalar.Bin)
+		}, scalar.ActualBin)
 		d.FieldU1("copyright")
 		d.FieldU1("original")
 		d.FieldU2("emphasis", scalar.UToSymStr{
@@ -266,9 +261,9 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 			0b01: "50_15",
 			0b10: "reserved",
 			0b11: "ccit_j.17",
-		}, scalar.Bin)
+		}, scalar.ActualBin)
 		if hasCRC {
-			d.FieldU16("crc", scalar.Hex)
+			d.FieldU16("crc", scalar.ActualHex)
 			crcValue = d.FieldGet("crc")
 			crcBytes = 2
 		}
@@ -386,8 +381,8 @@ func frameDecode(d *decode.D, in interface{}) interface{} {
 
 	crcHash := &checksum.CRC{Bits: 16, Current: 0xffff, Table: checksum.ANSI16Table}
 	// 2 bytes after sync and some other fields + all of side info
-	d.MustCopyBits(crcHash, d.BitBufRange(2*8, 2*8))
-	d.MustCopyBits(crcHash, d.BitBufRange(6*8, sideInfoBytes*8))
+	d.CopyBits(crcHash, d.BitBufRange(2*8, 2*8))
+	d.CopyBits(crcHash, d.BitBufRange(6*8, sideInfoBytes*8))
 
 	if crcValue != nil {
 		_ = crcValue.TryScalarFn(d.ValidateUBytes(crcHash.Sum(nil)))

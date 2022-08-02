@@ -7,15 +7,15 @@ import (
 	"bytes"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 var probeFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.TAR,
 		Description: "Tar archive",
 		Groups:      []string{format.PROBE},
@@ -26,11 +26,11 @@ func init() {
 	})
 }
 
-func tarDecode(d *decode.D, in interface{}) interface{} {
+func tarDecode(d *decode.D, _ any) any {
 	const blockBytes = 512
 	const blockBits = blockBytes * 8
 
-	mapTrimSpaceNull := scalar.Trim(" \x00")
+	mapTrimSpaceNull := scalar.ActualTrim(" \x00")
 	blockPadding := func(d *decode.D) int64 {
 		return (blockBits - (d.Pos() % blockBits)) % blockBits
 	}
@@ -45,24 +45,24 @@ func tarDecode(d *decode.D, in interface{}) interface{} {
 		for !d.End() {
 			d.FieldStruct("file", func(d *decode.D) {
 				d.FieldUTF8("name", 100, mapTrimSpaceNull)
-				d.FieldUTF8NullFixedLen("mode", 8, scalar.StrUintToSym(8))
-				d.FieldUTF8NullFixedLen("uid", 8, scalar.StrUintToSym(8))
-				d.FieldUTF8NullFixedLen("gid", 8, scalar.StrUintToSym(8))
-				sizeS := d.FieldScalarUTF8NullFixedLen("size", 12, scalar.StrUintToSym(8))
+				d.FieldUTF8NullFixedLen("mode", 8, scalar.SymUParseUint(8))
+				d.FieldUTF8NullFixedLen("uid", 8, scalar.SymUParseUint(8))
+				d.FieldUTF8NullFixedLen("gid", 8, scalar.SymUParseUint(8))
+				sizeS := d.FieldScalarUTF8NullFixedLen("size", 12, scalar.SymUParseUint(8))
 				if sizeS.Sym == nil {
 					d.Fatalf("could not decode size")
 				}
 				size := int64(sizeS.SymU()) * 8
-				d.FieldUTF8NullFixedLen("mtime", 12, scalar.StrUintToSym(8))
-				d.FieldUTF8NullFixedLen("chksum", 8, scalar.StrUintToSym(8))
+				d.FieldUTF8NullFixedLen("mtime", 12, scalar.SymUParseUint(8), scalar.DescriptionSymUUnixTime)
+				d.FieldUTF8NullFixedLen("chksum", 8, scalar.SymUParseUint(8))
 				d.FieldUTF8("typeflag", 1, mapTrimSpaceNull)
 				d.FieldUTF8("linkname", 100, mapTrimSpaceNull)
 				d.FieldUTF8("magic", 6, mapTrimSpaceNull, d.AssertStr("ustar"))
-				d.FieldUTF8NullFixedLen("version", 2, scalar.StrUintToSym(8))
+				d.FieldUTF8NullFixedLen("version", 2, scalar.SymUParseUint(8))
 				d.FieldUTF8("uname", 32, mapTrimSpaceNull)
 				d.FieldUTF8("gname", 32, mapTrimSpaceNull)
-				d.FieldUTF8NullFixedLen("devmajor", 8, scalar.StrUintToSym(8))
-				d.FieldUTF8NullFixedLen("devminor", 8, scalar.StrUintToSym(8))
+				d.FieldUTF8NullFixedLen("devmajor", 8, scalar.SymUParseUint(8))
+				d.FieldUTF8NullFixedLen("devminor", 8, scalar.SymUParseUint(8))
 				d.FieldUTF8("prefix", 155, mapTrimSpaceNull)
 				d.FieldRawLen("header_block_padding", blockPadding(d), d.BitBufIsZero())
 

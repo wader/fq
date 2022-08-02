@@ -6,14 +6,14 @@ import (
 	"bytes"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 var vorbisComment decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.OPUS_PACKET,
 		Description: "Opus packet",
 		DecodeFn:    opusDecode,
@@ -23,7 +23,7 @@ func init() {
 	})
 }
 
-func opusDecode(d *decode.D, in interface{}) interface{} {
+func opusDecode(d *decode.D, _ any) any {
 	d.Endian = decode.LittleEndian
 
 	var prefix []byte

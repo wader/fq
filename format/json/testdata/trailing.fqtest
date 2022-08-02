@@ -1,0 +1,4 @@
+$ fq -n '"123 trailing" | fromjson._error.error'
+exitcode: 5
+stderr:
+error: error at position 0xc: trialing data after top-level value

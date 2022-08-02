@@ -1,0 +1,10 @@
+<elm>
+    <first><!-- comment --></first>
+    <middle>text</middle>
+    <last attr1="v1" attr2="v2">
+        text1
+        <!-- comment1 -->
+        text2
+        <!-- comment2 -->
+    </last>
+</elm>

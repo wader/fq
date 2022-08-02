@@ -3,6 +3,7 @@ $ fq -n _registry.groups.probe
   "adts",
   "ar",
   "avro_ocf",
+  "bitcoin_blkdat",
   "bzip2",
   "elf",
   "flac",
@@ -20,8 +21,11 @@ $ fq -n _registry.groups.probe
   "tiff",
   "webp",
   "zip",
+  "mp3",
   "mpeg_ts",
   "wav",
-  "mp3",
-  "json"
+  "json",
+  "toml",
+  "xml",
+  "yaml"
 ]

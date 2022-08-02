@@ -12,8 +12,8 @@ import (
 	"strings"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -21,9 +21,9 @@ var headerFormat decode.Group
 var footerFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.WAV,
-		ProbeOrder:  10, // after most others (overlap some with webp)
+		ProbeOrder:  format.ProbeOrderBinFuzzy, // after most others (overlap some with webp)
 		Description: "WAV file",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    wavDecode,
@@ -124,7 +124,7 @@ var subFormatNames = scalar.BytesToScalar{
 	{Bytes: subFormatIEEEFloat[:], Scalar: scalar.S{Sym: "ieee_float"}},
 }
 
-func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 { //nolint:unparam
+func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) {
 	d.Endian = decode.LittleEndian
 
 	chunks := map[string]func(d *decode.D){
@@ -169,7 +169,7 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 { /
 	chunkLen := int64(d.FieldUScalarFn("size", func(d *decode.D) scalar.S {
 		l := d.U32()
 		if l == restOfFileLen {
-			return scalar.S{Actual: l, ActualDisplay: scalar.NumberHex, Sym: "rest of file"}
+			return scalar.S{Actual: l, ActualDisplay: scalar.NumberHex, Description: "Rest of file"}
 		}
 		return scalar.S{Actual: l, ActualDisplay: scalar.NumberDecimal}
 	}))
@@ -182,7 +182,7 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 { /
 		d.FramedFn(chunkLen*8, fn)
 	} else {
 		if stringData {
-			d.FieldUTF8("data", int(chunkLen), scalar.Trim(" \x00"))
+			d.FieldUTF8("data", int(chunkLen), scalar.ActualTrim(" \x00"))
 		} else {
 			d.FieldRawLen("data", chunkLen*8)
 		}
@@ -191,8 +191,6 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 { /
 	if chunkLen%2 != 0 {
 		d.FieldRawLen("align", 8)
 	}
-
-	return chunkLen + 8
 }
 
 func decodeChunks(d *decode.D, stringData bool) {
@@ -201,7 +199,7 @@ func decodeChunks(d *decode.D, stringData bool) {
 	})
 }
 
-func wavDecode(d *decode.D, in interface{}) interface{} {
+func wavDecode(d *decode.D, _ any) any {
 	// there are wav files in the wild with id3v2 header id3v1 footer
 	_, _, _ = d.TryFieldFormat("header", headerFormat, nil)
 

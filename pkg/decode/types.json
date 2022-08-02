@@ -31,9 +31,9 @@
                     "call": "d.tryUEndian(nBits, endian)",
                     "doc": "nBits unsigned integer in specified endian"
                 },
-                { "name": "$n", "range": [1, 64], "args": "", "params": "", "call": "d.tryUEndian($n, d.Endian)", "doc": "$n bit unsigned integer in current endian" },
-                { "name": "$nLE", "range": [8, 64], "args": "", "params": "", "call": "d.tryUEndian($n, LittleEndian)", "doc": "$n bit unsigned integer in little-endian" },
-                { "name": "$nBE", "range": [8, 64], "args": "", "params": "", "call": "d.tryUEndian($n, BigEndian)", "doc": "$n bit unsigned integer in big-endian" }
+                { "name": "$n", "range": [1, 65], "args": "", "params": "", "call": "d.tryUEndian($n, d.Endian)", "doc": "$n bit unsigned integer in current endian" },
+                { "name": "$nLE", "range": [8, 65], "args": "", "params": "", "call": "d.tryUEndian($n, LittleEndian)", "doc": "$n bit unsigned integer in little-endian" },
+                { "name": "$nBE", "range": [8, 65], "args": "", "params": "", "call": "d.tryUEndian($n, BigEndian)", "doc": "$n bit unsigned integer in big-endian" }
             ]
         },
         {
@@ -48,9 +48,9 @@
                     "call": "d.trySEndian(nBits, endian)",
                     "doc": "nBits signed integer in specified endian"
                 },
-                { "name": "$n", "range": [1, 64], "args": "", "params": "", "call": "d.trySEndian($n, d.Endian)", "doc": "$n bit signed integer in current endian" },
-                { "name": "$nLE", "range": [8, 64], "args": "", "params": "", "call": "d.trySEndian($n, LittleEndian)", "doc": "$n bit signed integer in little-endian" },
-                { "name": "$nBE", "range": [8, 64], "args": "", "params": "", "call": "d.trySEndian($n, BigEndian)", "doc": "$n bit signed integer in big-endian" }
+                { "name": "$n", "range": [1, 65], "args": "", "params": "", "call": "d.trySEndian($n, d.Endian)", "doc": "$n bit signed integer in current endian" },
+                { "name": "$nLE", "range": [8, 65], "args": "", "params": "", "call": "d.trySEndian($n, LittleEndian)", "doc": "$n bit signed integer in little-endian" },
+                { "name": "$nBE", "range": [8, 65], "args": "", "params": "", "call": "d.trySEndian($n, BigEndian)", "doc": "$n bit signed integer in big-endian" }
             ]
         },
         {

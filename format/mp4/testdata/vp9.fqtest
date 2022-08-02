@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i testsrc -c:v vp9 -t 50ms vp9.mp4
-$ fq -d mp4 dv /vp9.mp4
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /vp9.mp4 (mp4) 0x0-0x184e.7 (6223)
+$ fq -d mp4 dv vp9.mp4
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: vp9.mp4 (mp4) 0x0-0x184e.7 (6223)
       |                                               |                |  boxes[0:4]: 0x0-0x184e.7 (6223)
       |                                               |                |    [0]{}: box 0x0-0x1b.7 (28)
 0x0000|00 00 00 1c                                    |....            |      size: 28 0x0-0x3.7 (4)
@@ -30,8 +30,8 @@ $ fq -d mp4 dv /vp9.mp4
 0x1570|6d 76 68 64                                    |mvhd            |          type: "mvhd" (Movie header, overall declarations) 0x1570-0x1573.7 (4)
 0x1570|            00                                 |    .           |          version: 0 0x1574-0x1574.7 (1)
 0x1570|               00 00 00                        |     ...        |          flags: 0 0x1575-0x1577.7 (3)
-0x1570|                        00 00 00 00            |        ....    |          creation_time: "1904-01-04T00:00:00Z" (0) 0x1578-0x157b.7 (4)
-0x1570|                                    00 00 00 00|            ....|          modification_time: "1904-01-04T00:00:00Z" (0) 0x157c-0x157f.7 (4)
+0x1570|                        00 00 00 00            |        ....    |          creation_time: 0 (1904-01-04T00:00:00Z) 0x1578-0x157b.7 (4)
+0x1570|                                    00 00 00 00|            ....|          modification_time: 0 (1904-01-04T00:00:00Z) 0x157c-0x157f.7 (4)
 0x1580|00 00 03 e8                                    |....            |          time_scale: 1000 0x1580-0x1583.7 (4)
 0x1580|            00 00 00 28                        |    ...(        |          duration: 40 0x1584-0x1587.7 (4)
 0x1580|                        00 01 00 00            |        ....    |          preferred_rate: 1 0x1588-0x158b.7 (4)
@@ -64,8 +64,8 @@ $ fq -d mp4 dv /vp9.mp4
 0x15e0|            74 6b 68 64                        |    tkhd        |              type: "tkhd" (Track header, overall information about the track) 0x15e4-0x15e7.7 (4)
 0x15e0|                        00                     |        .       |              version: 0 0x15e8-0x15e8.7 (1)
 0x15e0|                           00 00 03            |         ...    |              flags: 3 0x15e9-0x15eb.7 (3)
-0x15e0|                                    00 00 00 00|            ....|              creation_time: "1904-01-04T00:00:00Z" (0) 0x15ec-0x15ef.7 (4)
-0x15f0|00 00 00 00                                    |....            |              modification_time: "1904-01-04T00:00:00Z" (0) 0x15f0-0x15f3.7 (4)
+0x15e0|                                    00 00 00 00|            ....|              creation_time: 0 (1904-01-04T00:00:00Z) 0x15ec-0x15ef.7 (4)
+0x15f0|00 00 00 00                                    |....            |              modification_time: 0 (1904-01-04T00:00:00Z) 0x15f0-0x15f3.7 (4)
 0x15f0|            00 00 00 01                        |    ....        |              track_id: 1 0x15f4-0x15f7.7 (4)
 0x15f0|                        00 00 00 00            |        ....    |              reserved1: 0 0x15f8-0x15fb.7 (4)
 0x15f0|                                    00 00 00 28|            ...(|              duration: 40 0x15fc-0x15ff.7 (4)
@@ -110,8 +110,8 @@ $ fq -d mp4 dv /vp9.mp4
 0x1660|                                    6d 64 68 64|            mdhd|                  type: "mdhd" (Media header, overall information about the media) 0x166c-0x166f.7 (4)
 0x1670|00                                             |.               |                  version: 0 0x1670-0x1670.7 (1)
 0x1670|   00 00 00                                    | ...            |                  flags: 0 0x1671-0x1673.7 (3)
-0x1670|            00 00 00 00                        |    ....        |                  creation_time: "1904-01-04T00:00:00Z" (0) 0x1674-0x1677.7 (4)
-0x1670|                        00 00 00 00            |        ....    |                  modification_time: "1904-01-04T00:00:00Z" (0) 0x1678-0x167b.7 (4)
+0x1670|            00 00 00 00                        |    ....        |                  creation_time: 0 (1904-01-04T00:00:00Z) 0x1674-0x1677.7 (4)
+0x1670|                        00 00 00 00            |        ....    |                  modification_time: 0 (1904-01-04T00:00:00Z) 0x1678-0x167b.7 (4)
 0x1670|                                    00 00 32 00|            ..2.|                  time_scale: 12800 0x167c-0x167f.7 (4)
 0x1680|00 00 02 00                                    |....            |                  duration: 512 0x1680-0x1683.7 (4)
 0x1680|            55 c4                              |    U.          |                  language: "und" 0x1684-0x1685.7 (2)
@@ -309,8 +309,8 @@ $ fq -d mp4 dv /vp9.mp4
 0x1830|                                          00 00|              ..|                          reserved: 0 0x183e-0x1841.7 (4)
 0x1840|00 00                                          |..              |
 0x1840|      4c 61 76 66 35 38 2e 34 35 2e 31 30 30|  |  Lavf58.45.100||                          data: "Lavf58.45.100" 0x1842-0x184e.7 (13)
-      |                                               |                |  tracks[0:1]: 0x2c-0x1563.7 (5432)
-      |                                               |                |    [0]{}: track 0x2c-0x1563.7 (5432)
+      |                                               |                |  tracks[0:1]: 0x2c-0x184e.7 (6179)
+      |                                               |                |    [0]{}: track 0x2c-0x184e.7 (6179)
       |                                               |                |      samples[0:1]: 0x2c-0x1563.7 (5432)
       |                                               |                |        [0]{}: sample (vp9_frame) 0x2c-0x1563.7 (5432)
 0x0020|                                    a2         |            .   |          frame_marker: 2 0x2c-0x2c.1 (0.2)
@@ -335,3 +335,5 @@ $ fq -d mp4 dv /vp9.mp4
 0x0030|            f6 0a 38 24 1c 18 4a 00 0b 70 7f d9|    ..8$..J..p..|          data: raw bits 0x34.4-0x1563.7 (5423.4)
 0x0040|f9 be 8f e7 71 ff 5f 97 ef c3 f9 7e 37 b0 7e ad|....q._....~7.~.|
 *     |until 0x1563.7 (5424)                          |                |
+      |                                               |                |      id: 1 0x184f-NA (0)
+      |                                               |                |      data_foramt: "vp09" 0x184f-NA (0)

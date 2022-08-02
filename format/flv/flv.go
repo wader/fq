@@ -7,8 +7,8 @@ package flv
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/registry"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -65,7 +65,7 @@ var typeNames = scalar.UToSymStr{
 	typeLongString:  "LongString",
 }
 
-func flvDecode(d *decode.D, in interface{}) interface{} {
+func flvDecode(d *decode.D, _ any) any {
 	var fieldScriptDataObject func()
 	var fieldScriptDataVariable func(d *decode.D, name string)
 

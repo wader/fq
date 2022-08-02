@@ -10,15 +10,15 @@ import (
 	"io"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 var probeFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.GZIP,
 		Description: "gzip compression",
 		Groups:      []string{format.PROBE},
@@ -57,7 +57,7 @@ var deflateExtraFlagsNames = scalar.UToSymStr{
 	4: "fast",
 }
 
-func gzDecode(d *decode.D, in interface{}) interface{} {
+func gzDecode(d *decode.D, _ any) any {
 	d.Endian = decode.LittleEndian
 
 	d.FieldRawLen("identification", 2*8, d.AssertBitBuf([]byte("\x1f\x8b")))
@@ -74,7 +74,7 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 		hasComment = d.FieldBool("comment")
 		d.FieldU3("reserved")
 	})
-	d.FieldU32("mtime") // TODO: unix time
+	d.FieldU32("mtime", scalar.DescriptionActualUUnixTime)
 	switch compressionMethod {
 	case delfateMethod:
 		d.FieldU8("extra_flags", deflateExtraFlagsNames)
@@ -115,8 +115,8 @@ func gzDecode(d *decode.D, in interface{}) interface{} {
 			d.FieldRawLen("compressed", readCompressedSize)
 			crc32W := crc32.NewIEEE()
 			// TODO: cleanup clone
-			d.MustCopyBits(crc32W, d.MustClone(uncompressedBR))
-			d.FieldU32("crc32", d.ValidateUBytes(crc32W.Sum(nil)), scalar.Hex)
+			d.CopyBits(crc32W, d.CloneReadSeeker(uncompressedBR))
+			d.FieldU32("crc32", d.ValidateUBytes(crc32W.Sum(nil)), scalar.ActualHex)
 			d.FieldU32("isize")
 		}
 	}

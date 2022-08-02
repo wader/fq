@@ -6,14 +6,14 @@ package av1
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 var obuFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.AV1_FRAME,
 		Description: "AV1 frame",
 		DecodeFn:    frameDecode,
@@ -25,7 +25,7 @@ func init() {
 	})
 }
 
-func frameDecode(d *decode.D, in interface{}) interface{} {
+func frameDecode(d *decode.D, _ any) any {
 	for d.NotEnd() {
 		d.FieldFormat("obu", obuFormat, nil)
 	}

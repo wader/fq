@@ -1,13 +1,13 @@
-$ fq -d mp3 '.headers[0].magic._bits[8:16] | hd' /test.mp3
+$ fq -d mp3 '.headers[0].magic._bits[8:16] | hd' test.mp3
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|   44                                          | D              |.: raw bits 0x1-0x1.7 (1)
-$ fq -d mp3 '.headers[0].magic._bits | [.[8:16], .[0:8]] | hd' /test.mp3
+$ fq -d mp3 '.headers[0].magic._bits | [.[8:16], .[0:8]] | hd' test.mp3
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|44 49|                                         |DI|             |.: raw bits 0x0-0x1.7 (2)
-$ fq -d mp3 '.headers[0].magic._bits | [.[8:16], .[0:8]] | tobits | hd' /test.mp3
+$ fq -d mp3 '.headers[0].magic._bits | [.[8:16], .[0:8]] | tobits | hd' test.mp3
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|44 49|                                         |DI|             |.: raw bits 0x0-0x1.7 (2)
-$ fq -d mp3 '.headers[0].magic._bits | [.[8:16], .[0:8]] | tobytes | hd' /test.mp3
+$ fq -d mp3 '.headers[0].magic._bits | [.[8:16], .[0:8]] | tobytes | hd' test.mp3
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|44 49|                                         |DI|             |.: raw bits 0x0-0x1.7 (2)
 $ fq -n '"12" | tobytes | hd'
@@ -22,25 +22,25 @@ $ fq -n '["12", "3"] | tobytes | hd'
 $ fq -n '["12", "3"] | tobits  | hd'
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|31 32 33|                                      |123|            |.: raw bits 0x0-0x2.7 (3)
-$ fq -n '[("11" | hex), ("22" | hex)] | tobits  | hd'
+$ fq -n '[("11" | fromhex), ("22" | fromhex)] | tobits  | hd'
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|11 22|                                         |."|             |.: raw bits 0x0-0x1.7 (2)
 # TODO: bug, hexdump uses io.Copy which is byte oritneted
-$ fq -n '[("12" | hex | .bits[4:]), ("34" | hex | .bits[0:4])] | tobits  | hd'
+$ fq -n '[("12" | fromhex | .bits[4:]), ("34" | fromhex | .bits[0:4])] | tobits  | hd'
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|23|                                            |#|              |.: raw bits 0x0-0x0.7 (1)
-$ fq -d mp3 '.frames[]._bits[0:12] | tonumber' /test.mp3
+$ fq -d mp3 '.frames[]._bits[0:12] | tonumber' test.mp3
 4095
 4095
 4095
-$ fq -d mp3 '.headers[0].magic._bits[0:24] | tostring' /test.mp3
+$ fq -d mp3 '.headers[0].magic._bits[0:24] | tostring' test.mp3
 "ID3"
-$ fq -d mp3 '.frames[0].padding | ("", "md5", "base64", "snippet") as $f | tovalue({bits_format: $f})' /test.mp3
+$ fq -d mp3 '.frames[0].padding | ("", "md5", "base64", "snippet") as $f | tovalue({bits_format: $f})' test.mp3
 "<5>AAAAAAA="
 "ca9c491ac66b2c62500882e93f3719a8"
 "AAAAAAA="
 "<5>AAAAAAA="
-$ fq -d mp3 -i . /test.mp3
+$ fq -d mp3 -i . test.mp3
 mp3> [1, 2, 3] | tobytes
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|01 02 03|                                      |...|            |.: raw bits 0x0-0x2.7 (3)
@@ -55,7 +55,7 @@ error: byte in binary list must be bytes (0-255) got -1
 mp3> [256] | tobytes
 error: byte in binary list must be bytes (0-255) got 256
 mp3> ^D
-$ fq -d mp3 -i . /test.mp3
+$ fq -d mp3 -i . test.mp3
 mp3> .frames[1] | tobits       | ., .start, .stop, .size, .[4:17], (tobits, tobytes, tobitsrange, tobytesrange | ., .start, .stop, .size, .[4:17])
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x00|ff fb 50 c4 00 00 0a 2c 43 2e 55 94 80 01 80 93|..P....,C.U.....|.: raw bits 0x0-0xcf.7 (208)
@@ -236,7 +236,7 @@ mp3> .frames[1] | tobytesrange | ., .start, .stop, .size, .[4:17], (tobits, toby
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0xe0|                     00 00 0a 2c 43 2e 55 94 80|       ...,C.U..|.: raw bits 0xe7-0xf3.7 (13)
 0xf0|01 80 93 6b                                    |...k            |
-mp3> .frames[1].data | tobytes | match([0x33, 0x85]), first(scan([0x33, 0x85]) | hex), first(splits([0x33, 0x85]) | hex)
+mp3> .frames[1].data | tobytes | match([0x33, 0x85]), first(scan([0x33, 0x85]) | tohex), first(splits([0x33, 0x85]) | tohex)
 {
   "captures": [],
   "length": 2,
@@ -275,7 +275,7 @@ null> "fq" | tobits | chunk(range(17)+1) | tobytes | tostring
 "fq"
 "fq"
 "fq"
-null> 1 | tobits(range(10)) | hex
+null> 1 | tobits(range(10)) | tohex
 "80"
 "80"
 "40"
@@ -286,13 +286,13 @@ null> 1 | tobits(range(10)) | hex
 "02"
 "01"
 "0080"
-null> 1 | tobytes(range(5)) | hex
+null> 1 | tobytes(range(5)) | tohex
 "01"
 "01"
 "0001"
 "000001"
 "00000001"
-null> range(17) | [range(.) | 1 | tobits] | tobits | hex
+null> range(17) | [range(.) | 1 | tobits] | tobits | tohex
 ""
 "80"
 "c0"
@@ -310,7 +310,7 @@ null> range(17) | [range(.) | 1 | tobits] | tobits | hex
 "fffc"
 "fffe"
 "ffff"
-null> range(17) | [range(.) | 1 | tobits] | tobytes | hex
+null> range(17) | [range(.) | 1 | tobits] | tobytes | tohex
 ""
 "01"
 "03"
@@ -328,7 +328,7 @@ null> range(17) | [range(.) | 1 | tobits] | tobytes | hex
 "3fff"
 "7fff"
 "ffff"
-null> "c9dfdac2f6ef68e5db666b6fbeee66d9c7deda66bebfbfe860bfbfbfe9d1636bbfbebf" | hex | tobits | reduce chunk(8)[] as $c ({h:[],g:[]}; .h += [(0|tobits), $c[0:7]] | .g |= . + [if length % 8 == 0 then (0|tobits) else empty end, $c[7:8]]) | .h, .g  | tobytes
+null> "c9dfdac2f6ef68e5db666b6fbeee66d9c7deda66bebfbfe860bfbfbfe9d1636bbfbebf" | fromhex | tobits | reduce chunk(8)[] as $c ({h:[],g:[]}; .h += [(0|tobits), $c[0:7]] | .g |= . + [if length % 8 == 0 then (0|tobits) else empty end, $c[7:8]]) | .h, .g  | tobytes
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x00|64 6f 6d 61 7b 77 34 72 6d 33 35 37 5f 77 33 6c|doma{w4rm357_w3l|.: raw bits 0x0-0x22.7 (35)
 *   |until 0x22.7 (end) (35)                        |                |

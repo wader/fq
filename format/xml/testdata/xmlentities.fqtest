@@ -1,0 +1,3 @@
+$ fq -n '"abc&amp;&lt;&gt;" | fromxmlentities | ., toxmlentities'
+"abc&<>"
+"abc&amp;&lt;&gt;"

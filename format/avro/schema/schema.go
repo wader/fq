@@ -46,7 +46,7 @@ type Field struct {
 }
 
 func FromSchemaString(schemaString string) (SimplifiedSchema, error) {
-	var jsonSchema interface{}
+	var jsonSchema any
 	if err := json.Unmarshal([]byte(schemaString), &jsonSchema); err != nil {
 		return SimplifiedSchema{}, fmt.Errorf("failed to unmarshal header schema: %w", err)
 	}
@@ -54,13 +54,13 @@ func FromSchemaString(schemaString string) (SimplifiedSchema, error) {
 	return From(jsonSchema)
 }
 
-func From(schema interface{}) (SimplifiedSchema, error) {
+func From(schema any) (SimplifiedSchema, error) {
 	if schema == nil {
 		return SimplifiedSchema{}, errors.New("schema cannot be nil")
 	}
 	var s SimplifiedSchema
 	switch v := schema.(type) {
-	case []interface{}:
+	case []any:
 		s.Type = UNION
 		for _, i := range v {
 			unionType, err := From(i)
@@ -74,7 +74,7 @@ func From(schema interface{}) (SimplifiedSchema, error) {
 		}
 	case string:
 		s.Type = v
-	case map[string]interface{}:
+	case map[string]any:
 		var err error
 		if s.Type, err = getString(v, "type", true); err != nil {
 			return s, err
@@ -117,7 +117,7 @@ func From(schema interface{}) (SimplifiedSchema, error) {
 	return s, nil
 }
 
-func getSchema(m map[string]interface{}, key string) (*SimplifiedSchema, error) {
+func getSchema(m map[string]any, key string) (*SimplifiedSchema, error) {
 	vI, ok := m[key]
 	if !ok {
 		return nil, fmt.Errorf("%s not found", key)
@@ -129,12 +129,12 @@ func getSchema(m map[string]interface{}, key string) (*SimplifiedSchema, error) 
 	return &v, nil
 }
 
-func getSymbols(m map[string]interface{}) ([]string, error) {
+func getSymbols(m map[string]any) ([]string, error) {
 	vI, ok := m["symbols"]
 	if !ok {
 		return nil, errors.New("symbols required for enum")
 	}
-	vA, ok := vI.([]interface{})
+	vA, ok := vI.([]any)
 	if !ok {
 		return nil, errors.New("symbols must be an array")
 	}
@@ -149,7 +149,7 @@ func getSymbols(m map[string]interface{}) ([]string, error) {
 	return symbols, nil
 }
 
-func getFields(m map[string]interface{}) ([]Field, error) {
+func getFields(m map[string]any) ([]Field, error) {
 	var fields []Field
 	var err error
 
@@ -157,13 +157,13 @@ func getFields(m map[string]interface{}) ([]Field, error) {
 	if !ok {
 		return fields, errors.New("no fields")
 	}
-	fieldsAI, ok := fieldsI.([]interface{})
+	fieldsAI, ok := fieldsI.([]any)
 	if !ok {
 		return fields, errors.New("fields is not an array")
 	}
 
 	for _, fieldI := range fieldsAI {
-		field, ok := fieldI.(map[string]interface{})
+		field, ok := fieldI.(map[string]any)
 		if !ok {
 			return fields, errors.New("field is not a json object")
 		}
@@ -185,7 +185,7 @@ func getFields(m map[string]interface{}) ([]Field, error) {
 	return fields, nil
 }
 
-func getString(m map[string]interface{}, key string, required bool) (string, error) {
+func getString(m map[string]any, key string, required bool) (string, error) {
 	v, ok := m[key]
 	if !ok {
 		if required {
@@ -200,7 +200,7 @@ func getString(m map[string]interface{}, key string, required bool) (string, err
 	return s, nil
 }
 
-func getInt(m map[string]interface{}, key string, required bool) (int, error) {
+func getInt(m map[string]any, key string, required bool) (int, error) {
 	v, ok := m[key]
 	if !ok {
 		if required {

@@ -4,22 +4,22 @@ package vpx
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 // TODO: vpx frame?
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.VP8_FRAME,
 		Description: "VP8 frame",
 		DecodeFn:    vp8Decode,
 	})
 }
 
-func vp8Decode(d *decode.D, in interface{}) interface{} {
+func vp8Decode(d *decode.D, _ any) any {
 	var isKeyFrame bool
 
 	versions := map[uint64]struct {
@@ -51,7 +51,7 @@ func vp8Decode(d *decode.D, in interface{}) interface{} {
 	})
 
 	if isKeyFrame {
-		d.FieldU24("start_code", d.ValidateU(0x9d012a), scalar.Hex)
+		d.FieldU24("start_code", d.ValidateU(0x9d012a), scalar.ActualHex)
 
 		// width and height are not contiguous bits
 		width0 := d.FieldU8("width0")

@@ -1,8 +1,5 @@
 package decode
 
-// TODO: Encoding, u16le, varint etc, encode?
-// TODO: Value/Compound interface? can have per type and save memory
-
 import (
 	"errors"
 	"sort"
@@ -13,22 +10,26 @@ import (
 )
 
 type Compound struct {
-	IsArray  bool
-	Children []*Value
-
+	IsArray     bool
+	RangeSorted bool
+	Children    []*Value
 	Description string
-	Format      *Format
-	Err         error
 }
 
+// TODO: Encoding, u16le, varint etc, encode?
+// TODO: Value/Compound interface? can have per type and save memory
+// TODO: Make some fields optional somehow? map/slice?
 type Value struct {
-	Parent     *Value
-	Name       string
-	V          interface{} // scalar.S or Compound (array/struct)
-	Index      int         // index in parent array/struct
-	Range      ranges.Range
-	RootReader bitio.ReaderAtSeeker
-	IsRoot     bool // TODO: rework?
+	Parent      *Value
+	Name        string
+	V           any // scalar.S or Compound (array/struct)
+	Index       int // index in parent array/struct
+	Range       ranges.Range
+	RootReader  bitio.ReaderAtSeeker
+	IsRoot      bool    // TODO: rework?
+	Format      *Format // TODO: rework
+	Description string
+	Err         error
 }
 
 type WalkFn func(v *Value, rootV *Value, depth int, rootDepth int) error
@@ -147,12 +148,8 @@ func (v *Value) root(findSubRoot bool, findFormatRoot bool) *Value {
 		if findSubRoot && rootV.IsRoot {
 			break
 		}
-		if findFormatRoot {
-			if c, ok := rootV.V.(*Compound); ok {
-				if c.Format != nil {
-					break
-				}
-			}
+		if findFormatRoot && rootV.Format != nil {
+			break
 		}
 
 		rootV = rootV.Parent
@@ -166,12 +163,9 @@ func (v *Value) FormatRoot() *Value { return v.root(true, true) }
 
 func (v *Value) Errors() []error {
 	var errs []error
-	_ = v.WalkPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
-		switch vv := rootV.V.(type) {
-		case *Compound:
-			if vv.Err != nil {
-				errs = append(errs, vv.Err)
-			}
+	_ = v.WalkPreOrder(func(v *Value, _ *Value, _ int, _ int) error {
+		if v.Err != nil {
+			errs = append(errs, v.Err)
 		}
 		return nil
 	})
@@ -186,7 +180,7 @@ func (v *Value) InnerRange() ranges.Range {
 }
 
 func (v *Value) postProcess() {
-	if err := v.WalkRootPostOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
+	if err := v.WalkRootPostOrder(func(v *Value, _ *Value, _ int, _ int) error {
 		switch vv := v.V.(type) {
 		case *Compound:
 			first := true
@@ -205,9 +199,11 @@ func (v *Value) postProcess() {
 
 			// TODO: really sort array? if sort it needs to be stable to keep the order
 			// of value with same range start, think null values etc
-			sort.SliceStable(vv.Children, func(i, j int) bool {
-				return (vv.Children)[i].Range.Start < (vv.Children)[j].Range.Start
-			})
+			if vv.RangeSorted {
+				sort.SliceStable(vv.Children, func(i, j int) bool {
+					return (vv.Children)[i].Range.Start < (vv.Children)[j].Range.Start
+				})
+			}
 
 			v.Index = -1
 			if vv.IsArray {

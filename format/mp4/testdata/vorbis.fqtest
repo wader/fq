@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i sine -ac 2 -strict experimental -c:a vorbis -t 50ms vorbis.mp4
-$ fq -d mp4 dv /vorbis.mp4
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /vorbis.mp4 (mp4) 0x0-0x1188.7 (4489)
+$ fq -d mp4 dv vorbis.mp4
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: vorbis.mp4 (mp4) 0x0-0x1188.7 (4489)
       |                                               |                |  boxes[0:4]: 0x0-0x1188.7 (4489)
       |                                               |                |    [0]{}: box 0x0-0x1b.7 (28)
 0x0000|00 00 00 1c                                    |....            |      size: 28 0x0-0x3.7 (4)
@@ -32,8 +32,8 @@ $ fq -d mp4 dv /vorbis.mp4
 0x01e0|                                       00      |             .  |          version: 0 0x1ed-0x1ed.7 (1)
 0x01e0|                                          00 00|              ..|          flags: 0 0x1ee-0x1f0.7 (3)
 0x01f0|00                                             |.               |
-0x01f0|   00 00 00 00                                 | ....           |          creation_time: "1904-01-04T00:00:00Z" (0) 0x1f1-0x1f4.7 (4)
-0x01f0|               00 00 00 00                     |     ....       |          modification_time: "1904-01-04T00:00:00Z" (0) 0x1f5-0x1f8.7 (4)
+0x01f0|   00 00 00 00                                 | ....           |          creation_time: 0 (1904-01-04T00:00:00Z) 0x1f1-0x1f4.7 (4)
+0x01f0|               00 00 00 00                     |     ....       |          modification_time: 0 (1904-01-04T00:00:00Z) 0x1f5-0x1f8.7 (4)
 0x01f0|                           00 00 03 e8         |         ....   |          time_scale: 1000 0x1f9-0x1fc.7 (4)
 0x01f0|                                       00 00 00|             ...|          duration: 51 0x1fd-0x200.7 (4)
 0x0200|33                                             |3               |
@@ -72,8 +72,8 @@ $ fq -d mp4 dv /vorbis.mp4
 0x0260|64                                             |d               |
 0x0260|   00                                          | .              |              version: 0 0x261-0x261.7 (1)
 0x0260|      00 00 03                                 |  ...           |              flags: 3 0x262-0x264.7 (3)
-0x0260|               00 00 00 00                     |     ....       |              creation_time: "1904-01-04T00:00:00Z" (0) 0x265-0x268.7 (4)
-0x0260|                           00 00 00 00         |         ....   |              modification_time: "1904-01-04T00:00:00Z" (0) 0x269-0x26c.7 (4)
+0x0260|               00 00 00 00                     |     ....       |              creation_time: 0 (1904-01-04T00:00:00Z) 0x265-0x268.7 (4)
+0x0260|                           00 00 00 00         |         ....   |              modification_time: 0 (1904-01-04T00:00:00Z) 0x269-0x26c.7 (4)
 0x0260|                                       00 00 00|             ...|              track_id: 1 0x26d-0x270.7 (4)
 0x0270|01                                             |.               |
 0x0270|   00 00 00 00                                 | ....           |              reserved1: 0 0x271-0x274.7 (4)
@@ -126,9 +126,9 @@ $ fq -d mp4 dv /vorbis.mp4
 0x02e0|               6d 64 68 64                     |     mdhd       |                  type: "mdhd" (Media header, overall information about the media) 0x2e5-0x2e8.7 (4)
 0x02e0|                           00                  |         .      |                  version: 0 0x2e9-0x2e9.7 (1)
 0x02e0|                              00 00 00         |          ...   |                  flags: 0 0x2ea-0x2ec.7 (3)
-0x02e0|                                       00 00 00|             ...|                  creation_time: "1904-01-04T00:00:00Z" (0) 0x2ed-0x2f0.7 (4)
+0x02e0|                                       00 00 00|             ...|                  creation_time: 0 (1904-01-04T00:00:00Z) 0x2ed-0x2f0.7 (4)
 0x02f0|00                                             |.               |
-0x02f0|   00 00 00 00                                 | ....           |                  modification_time: "1904-01-04T00:00:00Z" (0) 0x2f1-0x2f4.7 (4)
+0x02f0|   00 00 00 00                                 | ....           |                  modification_time: 0 (1904-01-04T00:00:00Z) 0x2f1-0x2f4.7 (4)
 0x02f0|               00 00 ac 44                     |     ...D       |                  time_scale: 44100 0x2f5-0x2f8.7 (4)
 0x02f0|                           00 00 08 c0         |         ....   |                  duration: 2240 0x2f9-0x2fc.7 (4)
 0x02f0|                                       55 c4   |             U. |                  language: "und" 0x2fd-0x2fe.7 (2)
@@ -364,8 +364,8 @@ $ fq -d mp4 dv /vorbis.mp4
 0x1170|                        00 00 00 00            |        ....    |                          reserved: 0 0x1178-0x117b.7 (4)
 0x1170|                                    4c 61 76 66|            Lavf|                          data: "Lavf58.45.100" 0x117c-0x1188.7 (13)
 0x1180|35 38 2e 34 35 2e 31 30 30|                    |58.45.100|      |
-      |                                               |                |  tracks[0:1]: 0x2c-0x1dc.7 (433)
-      |                                               |                |    [0]{}: track 0x2c-0x1dc.7 (433)
+      |                                               |                |  tracks[0:1]: 0x2c-0x1188.7 (4445)
+      |                                               |                |    [0]{}: track 0x2c-0x1188.7 (4445)
       |                                               |                |      samples[0:3]: 0x2c-0x1dc.7 (433)
       |                                               |                |        [0]{}: sample (vorbis_packet) 0x2c-0xe1.7 (182)
 0x0020|                                    be         |            .   |          packet_type: "Audio" (0) 0x2c-0x2c.7 (1)
@@ -382,3 +382,5 @@ $ fq -d mp4 dv /vorbis.mp4
 0x0120|                                             a7|               .|          unknown0: raw bits 0x12f-0x1dc.7 (174)
 0x0130|f2 81 46 bb c2 48 52 08 27 b8 83 10 ca 08 b1 a7|..F..HR.'.......|
 *     |until 0x1dc.7 (174)                            |                |
+      |                                               |                |      id: 1 0x1189-NA (0)
+      |                                               |                |      data_foramt: "mp4a" 0x1189-NA (0)

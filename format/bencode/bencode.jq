@@ -11,10 +11,7 @@ def _bencode_torepr:
   end;
 
 def _bencode__help:
-  { examples: [
-      {comment: "bencode as JSON", shell: "fq -d bencode torepr file"}
-    ],
-    links: [
-      {url: "https://bsonspec.org/spec.html"}
+  { links: [
+      {url: "https://wiki.theory.org/BitTorrentSpecification#Bencoding"}
     ]
   };

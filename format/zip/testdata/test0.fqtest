@@ -1,5 +1,5 @@
-$ fq -d zip dv /test0.zip
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /test0.zip (zip) 0x0-0x3c7.7 (968)
+$ fq -d zip dv test0.zip
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: test0.zip (zip) 0x0-0x3c7.7 (968)
       |                                               |                |  local_files[0:5]: 0x0-0x227.7 (552)
       |                                               |                |    [0]{}: local_file 0x0-0x3e.7 (63)
 0x0000|50 4b 03 04                                    |PK..            |      signature: raw bits (valid) 0x0-0x3.7 (4)
@@ -597,13 +597,13 @@ $ fq -d zip dv /test0.zip
 0x03a0|                     01 04 f5 01 00 00 04 14 00|       .........|          data: raw bits 0x3a7-0x3b1.7 (11)
 0x03b0|00 00                                          |..              |
       |                                               |                |      file_comment: "" 0x3b2-NA (0)
-      |                                               |                |  end_of_central_directory{}: 0x3b2-0x3c7.7 (22)
+      |                                               |                |  end_of_central_directory_record{}: 0x3b2-0x3c7.7 (22)
 0x03b0|      50 4b 05 06                              |  PK..          |    signature: raw bits (valid) 0x3b2-0x3b5.7 (4)
 0x03b0|                  00 00                        |      ..        |    disk_nr: 0 0x3b6-0x3b7.7 (2)
 0x03b0|                        00 00                  |        ..      |    central_directory_start_disk_nr: 0 0x3b8-0x3b9.7 (2)
 0x03b0|                              05 00            |          ..    |    nr_of_central_directory_records_on_disk: 5 0x3ba-0x3bb.7 (2)
 0x03b0|                                    05 00      |            ..  |    nr_of_central_directory_records: 5 0x3bc-0x3bd.7 (2)
-0x03b0|                                          8a 01|              ..|    size_of_central directory: 394 0x3be-0x3c1.7 (4)
+0x03b0|                                          8a 01|              ..|    size_of_central_directory: 394 0x3be-0x3c1.7 (4)
 0x03c0|00 00                                          |..              |
 0x03c0|      28 02 00 00                              |  (...          |    offset_of_start_of_central_directory: 552 0x3c2-0x3c5.7 (4)
 0x03c0|                  00 00|                       |      ..|       |    comment_length: 0 0x3c6-0x3c7.7 (2)

@@ -22,9 +22,9 @@ import (
 	"strings"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -32,13 +32,13 @@ import (
 var asn1FS embed.FS
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.ASN1_BER,
 		Description: "ASN1 BER (basic encoding rules, also CER and DER)",
 		DecodeFn:    decodeASN1BER,
-		Files:       asn1FS,
 		Functions:   []string{"torepr", "_help"},
 	})
+	interp.RegisterFS(asn1FS)
 }
 
 const (
@@ -178,7 +178,7 @@ func decodeASN1BERValue(d *decode.D, bib *bitio.Buffer, sb *strings.Builder, par
 	var tag uint64
 	switch class {
 	case classUniversal:
-		tag = d.FieldUFn("tag", decodeTagNumber, universalTypeMap, scalar.Hex)
+		tag = d.FieldUFn("tag", decodeTagNumber, universalTypeMap, scalar.ActualHex)
 	default:
 		tag = d.FieldUFn("tag", decodeTagNumber)
 	}
@@ -414,7 +414,7 @@ func decodeASN1BERValue(d *decode.D, bib *bitio.Buffer, sb *strings.Builder, par
 	})
 }
 
-func decodeASN1BER(d *decode.D, in interface{}) interface{} {
+func decodeASN1BER(d *decode.D, _ any) any {
 	decodeASN1BERValue(d, nil, nil, formConstructed, universalTypeSequence)
 	return nil
 }

@@ -4,19 +4,19 @@ package mp3
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.XING,
 		Description: "Xing header",
 		DecodeFn:    xingDecode,
 	})
 }
 
-func xingDecode(d *decode.D, in interface{}) interface{} {
+func xingDecode(d *decode.D, _ any) any {
 	// TODO: info has lame extension?
 	hasLameExtension := false
 	switch d.FieldUTF8("header", 4) {

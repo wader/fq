@@ -20,8 +20,8 @@ import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/matroska/ebml"
 	"github.com/wader/fq/format/matroska/ebml_matroska"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/ranges"
 	"github.com/wader/fq/pkg/scalar"
 )
@@ -52,7 +52,7 @@ var vp9FrameFormat decode.Group
 var codecToFormat map[string]*decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.MATROSKA,
 		Description: "Matroska file",
 		Groups:      []string{format.PROBE},
@@ -79,8 +79,8 @@ func init() {
 			{Names: []string{format.VP9_FRAME}, Group: &vp9FrameFormat},
 		},
 		Functions: []string{"_help"},
-		Files:     matroskaFS,
 	})
+	interp.RegisterFS(matroskaFS)
 
 	codecToFormat = map[string]*decode.Group{
 		"A_VORBIS":         &vorbisPacketFormat,
@@ -129,7 +129,7 @@ type track struct {
 	codec               string
 	codecPrivatePos     int64
 	codecPrivateTagSize int64
-	formatInArg         interface{}
+	formatInArg         any
 }
 
 type block struct {
@@ -153,7 +153,9 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 
 		for d.Pos() < tagEndBit && d.NotEnd() {
 			d.FieldStruct("element", func(d *decode.D) {
-				var a ebml.Attribute
+				a := ebml.Attribute{
+					Type: ebml.Unknown,
+				}
 
 				tagID := d.FieldUFn("id", decodeRawVint, scalar.Fn(func(s scalar.S) (scalar.S, error) {
 					n := s.ActualU()
@@ -162,12 +164,15 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 					if !ok {
 						a, ok = ebml.Global[n]
 						if !ok {
-							d.Fatalf("unknown id %d", n)
+							a = ebml.Attribute{
+								Type: ebml.Unknown,
+							}
+							return scalar.S{Actual: n, ActualDisplay: scalar.NumberHex, Description: "Unknown"}, nil
 						}
 					}
 					return scalar.S{Actual: n, ActualDisplay: scalar.NumberHex, Sym: a.Name, Description: a.Definition}, nil
 				}))
-				d.FieldValueU("type", uint64(a.Type), scalar.Sym(ebml.TypeNames[a.Type]))
+				d.FieldValueStr("type", ebml.TypeNames[a.Type])
 
 				if tagID == ebml_matroska.TrackEntryID {
 					dc.currentTrack = &track{}
@@ -196,7 +201,8 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 					if tagSize > maxStringTagSize {
 						d.Errorf("tagSize %d > maxStringTagSize %d", tagSize, maxStringTagSize)
 					}
-				case ebml.Binary,
+				case ebml.Unknown,
+					ebml.Binary,
 					ebml.Date,
 					ebml.Master:
 					// nop
@@ -212,6 +218,8 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 				}
 
 				switch a.Type {
+				case ebml.Unknown:
+					d.FieldRawLen("data", int64(tagSize)*8)
 				case ebml.Integer:
 					d.FieldS("value", int(tagSize)*8, optionalMap(a.IntegerEnums))
 				case ebml.Uinteger:
@@ -300,7 +308,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 
 }
 
-func matroskaDecode(d *decode.D, in interface{}) interface{} {
+func matroskaDecode(d *decode.D, _ any) any {
 	ebmlHeaderID := uint64(0x1a45dfa3)
 	if d.PeekBits(32) != ebmlHeaderID {
 		d.Errorf("no EBML header found")

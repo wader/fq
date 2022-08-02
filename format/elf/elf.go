@@ -11,13 +11,13 @@ import (
 	"strings"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.ELF,
 		Description: "Executable and Linkable Format",
 		Groups:      []string{format.PROBE},
@@ -431,9 +431,11 @@ func elfDecodeGNUHash(d *decode.D, ec elfContext, size int64, strTab string) {
 }
 
 type dynamicContext struct {
-	entries int
-	strTab  string
-	symEnt  int64
+	entries   int
+	strTabPtr int64
+	strSzVal  int64
+	strTab    string
+	symEnt    int64
 }
 
 func elfReadDynamicTags(d *decode.D, ec *elfContext) dynamicContext {
@@ -461,9 +463,10 @@ func elfReadDynamicTags(d *decode.D, ec *elfContext) dynamicContext {
 	}
 
 	return dynamicContext{
-		entries: entries,
-		strTab:  string(d.BytesRange(strTabPtr, int(strSzVal/8))),
-		symEnt:  symEnt,
+		entries:   entries,
+		strTabPtr: strTabPtr,
+		strSzVal:  strSzVal,
+		symEnt:    symEnt,
 	}
 }
 
@@ -515,6 +518,15 @@ type sectionHeader struct {
 	symbols []symbol
 }
 
+const maxStrTabSize = 100_000_000
+
+func readStrTab(d *decode.D, firstBit int64, nBytes int64) string {
+	if nBytes > maxStrTabSize {
+		d.Errorf("string table too large %d > %d", nBytes, maxStrTabSize)
+	}
+	return string(d.BytesRange(firstBit, int(nBytes)))
+}
+
 func elfReadSectionHeaders(d *decode.D, ec *elfContext) {
 	for i := 0; i < ec.shNum; i++ {
 		d.SeekAbs(ec.shOff + int64(i)*ec.shEntSize)
@@ -559,18 +571,32 @@ func elfReadSectionHeaders(d *decode.D, ec *elfContext) {
 		ec.sections = append(ec.sections, sh)
 	}
 
+	// for dynamic linking sections find offset to string table by looking up
+	// section by address using string stable address
+	for i := range ec.sections {
+		sh := &ec.sections[i]
+		if sh.typ != SHT_DYNAMIC {
+			continue
+		}
+		if i, ok := ec.sectionIndexByAddr(sh.dc.strTabPtr); ok {
+			strTabSh := ec.sections[i]
+			sh.dc.strTab = readStrTab(d, strTabSh.offset, sh.dc.strSzVal/8)
+		}
+	}
+
 	ec.strTabMap = map[string]string{}
 	var shStrTab string
 	if ec.shStrNdx >= len(ec.sections) {
 		d.Fatalf("can't find shStrNdx %d", ec.shStrNdx)
 	}
 	sh := ec.sections[ec.shStrNdx]
-	shStrTab = string(d.BytesRange(sh.offset, int(sh.size/8)))
+
+	shStrTab = readStrTab(d, sh.offset, sh.size/8)
 	for _, sh := range ec.sections {
 		if sh.typ != SHT_STRTAB {
 			continue
 		}
-		ec.strTabMap[strIndexNull(sh.name, shStrTab)] = string(d.BytesRange(sh.offset, int(sh.size/8)))
+		ec.strTabMap[strIndexNull(sh.name, shStrTab)] = readStrTab(d, sh.offset, sh.size/8)
 	}
 }
 
@@ -635,8 +661,8 @@ func elfDecodeHeader(d *decode.D, ec *elfContext) {
 		d.Fatalf("unknown endian %d", endian)
 	}
 
-	d.FieldU16("type", typeNames, scalar.Hex)
-	machine := d.FieldU16("machine", machineNames, scalar.Hex)
+	d.FieldU16("type", typeNames, scalar.ActualHex)
+	machine := d.FieldU16("machine", machineNames, scalar.ActualHex)
 	d.FieldU32("version")
 	d.FieldU("entry", archBits)
 	phOff := d.FieldU("phoff", archBits)
@@ -679,34 +705,32 @@ func elfDecodeProgramHeader(d *decode.D, ec elfContext) {
 		})
 	}
 
-	d.FieldStruct("program_header", func(d *decode.D) {
-		var offset uint64
-		var size uint64
+	var offset uint64
+	var size uint64
 
-		switch ec.archBits {
-		case 32:
-			d.FieldU32("type", phTypeNames)
-			offset = d.FieldU("offset", ec.archBits, scalar.Hex)
-			d.FieldU("vaddr", ec.archBits, scalar.Hex)
-			d.FieldU("paddr", ec.archBits, scalar.Hex)
-			size = d.FieldU32("filesz")
-			d.FieldU32("memsz")
-			pFlags(d)
-			d.FieldU32("align")
-		case 64:
-			d.FieldU32("type", phTypeNames)
-			pFlags(d)
-			offset = d.FieldU("offset", ec.archBits, scalar.Hex)
-			d.FieldU("vaddr", ec.archBits, scalar.Hex)
-			d.FieldU("paddr", ec.archBits, scalar.Hex)
-			size = d.FieldU64("filesz")
-			d.FieldU64("memsz")
-			d.FieldU64("align")
-		}
+	switch ec.archBits {
+	case 32:
+		d.FieldU32("type", phTypeNames)
+		offset = d.FieldU("offset", ec.archBits, scalar.ActualHex)
+		d.FieldU("vaddr", ec.archBits, scalar.ActualHex)
+		d.FieldU("paddr", ec.archBits, scalar.ActualHex)
+		size = d.FieldU32("filesz")
+		d.FieldU32("memsz")
+		pFlags(d)
+		d.FieldU32("align")
+	case 64:
+		d.FieldU32("type", phTypeNames)
+		pFlags(d)
+		offset = d.FieldU("offset", ec.archBits, scalar.ActualHex)
+		d.FieldU("vaddr", ec.archBits, scalar.ActualHex)
+		d.FieldU("paddr", ec.archBits, scalar.ActualHex)
+		size = d.FieldU64("filesz")
+		d.FieldU64("memsz")
+		d.FieldU64("align")
+	}
 
-		d.RangeFn(int64(offset*8), int64(size*8), func(d *decode.D) {
-			d.FieldRawLen("data", d.BitsLeft())
-		})
+	d.RangeFn(int64(offset*8), int64(size*8), func(d *decode.D) {
+		d.FieldRawLen("data", d.BitsLeft())
 	})
 }
 
@@ -722,14 +746,14 @@ func elfDecodeProgramHeaders(d *decode.D, ec elfContext) {
 func elfDecodeDynamicTag(d *decode.D, ec elfContext, dc dynamicContext) {
 	dtTag := d.FieldU("tag", ec.archBits, dynamicTableMap)
 	name := "unspecified"
-	dfMapper := scalar.Hex
+	dfMapper := scalar.ActualHex
 	if de, ok := dynamicTableMap.lookup(dtTag); ok {
 		switch de.dUn {
 		case dUnIgnored:
 			name = "ignored"
 		case dUnVal:
 			name = "val"
-			dfMapper = scalar.Dec
+			dfMapper = scalar.ActualDec
 		case dUnPtr:
 			name = "ptr"
 		}
@@ -820,21 +844,21 @@ func elfDecodeSectionHeader(d *decode.D, ec elfContext, sh sectionHeader) {
 	switch ec.archBits {
 	case 32:
 		d.FieldU32("name", strTable(ec.strTabMap[STRTAB_SHSTRTAB]))
-		typ = d.FieldU32("type", sectionHeaderTypeMap, scalar.Hex)
+		typ = d.FieldU32("type", sectionHeaderTypeMap, scalar.ActualHex)
 		shFlags(d, ec.archBits)
-		d.FieldU("addr", ec.archBits, scalar.Hex)
+		d.FieldU("addr", ec.archBits, scalar.ActualHex)
 		offset = int64(d.FieldU("offset", ec.archBits)) * 8
-		size = int64(d.FieldU32("size", scalar.Hex) * 8)
+		size = int64(d.FieldU32("size", scalar.ActualHex) * 8)
 		d.FieldU32("link")
 		d.FieldU32("info")
 		d.FieldU32("addralign")
 		entSize = int64(d.FieldU32("entsize") * 8)
 	case 64:
 		d.FieldU32("name", strTable(ec.strTabMap[STRTAB_SHSTRTAB]))
-		typ = d.FieldU32("type", sectionHeaderTypeMap, scalar.Hex)
+		typ = d.FieldU32("type", sectionHeaderTypeMap, scalar.ActualHex)
 		shFlags(d, ec.archBits)
-		d.FieldU("addr", ec.archBits, scalar.Hex)
-		offset = int64(d.FieldU("offset", ec.archBits, scalar.Hex) * 8)
+		d.FieldU("addr", ec.archBits, scalar.ActualHex)
+		offset = int64(d.FieldU("offset", ec.archBits, scalar.ActualHex) * 8)
 		size = int64(d.FieldU64("size") * 8)
 		d.FieldU32("link")
 		d.FieldU32("info")
@@ -887,15 +911,19 @@ func elfDecodeSectionHeaders(d *decode.D, ec elfContext) {
 	}
 }
 
-func elfDecode(d *decode.D, in interface{}) interface{} {
+func elfDecode(d *decode.D, _ any) any {
 	var ec elfContext
 
 	d.FieldStruct("header", func(d *decode.D) { elfDecodeHeader(d, &ec) })
 	d.Endian = ec.endian
 	// a first pass to find all sections and string table information etc
 	elfReadSectionHeaders(d, &ec)
-	d.FieldArray("program_headers", func(d *decode.D) { elfDecodeProgramHeaders(d, ec) })
-	d.FieldArray("section_headers", func(d *decode.D) { elfDecodeSectionHeaders(d, ec) })
+	d.FieldArray("program_headers", func(d *decode.D) {
+		elfDecodeProgramHeaders(d, ec)
+	})
+	d.FieldArray("section_headers", func(d *decode.D) {
+		elfDecodeSectionHeaders(d, ec)
+	})
 
 	return nil
 }

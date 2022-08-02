@@ -5,4 +5,10 @@ $ fq -d asn1_ber d tc16.ber
 0x0|09                                             |.               |  form: "primitive" (0)
 0x0|09                                             |.               |  tag: "real" (0x9)
 0x0|   0c                                          | .              |  length: 12
-0x0|      80 fb 05 05 05 05 05 05 05 05 05 05|     |  ............| |  unknown0: raw bits
+0x0|      80                                       |  .             |  binary_encoding: true
+0x0|      80                                       |  .             |  sign: 1 (false)
+0x0|      80                                       |  .             |  base: 2 (0)
+0x0|      80                                       |  .             |  scale: 0
+0x0|      80                                       |  .             |  format: 0
+0x0|         fb                                    |   .            |  exp: -5
+0x0|            05 05 05 05 05 05 05 05 05 05|     |    ..........| |  unknown0: raw bits

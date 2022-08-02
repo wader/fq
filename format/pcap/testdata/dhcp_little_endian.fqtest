@@ -1,6 +1,6 @@
 # from https://wiki.wireshark.org/Development/PcapNg
 # TODO: move once we can have decode value tests somehow
-$ fq '.[0].blocks[0]' /dhcp_little_endian.pcapng
+$ fq '.[0].blocks[0]' dhcp_little_endian.pcapng
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].blocks[0]{}: block
 0x00|0a 0d 0d 0a                                    |....            |  type: "section_header" (0xa0d0d0a) (Section Header Block)
 0x00|            1c 00 00 00                        |    ....        |  length: 28
@@ -10,8 +10,8 @@ $ fq '.[0].blocks[0]' /dhcp_little_endian.pcapng
 0x10|ff ff ff ff ff ff ff ff                        |........        |  section_length: -1
     |                                               |                |  options[0:0]:
 0x10|                        1c 00 00 00            |        ....    |  footer_total_length: 28
-$ fq dv /dhcp_little_endian.pcapng
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0:1]: /dhcp_little_endian.pcapng (pcapng) 0x0-0x5fb.7 (1532)
+$ fq dv dhcp_little_endian.pcapng
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0:1]: dhcp_little_endian.pcapng (pcapng) 0x0-0x5fb.7 (1532)
      |                                               |                |  [0]{}: section 0x0-0x5fb.7 (1532)
      |                                               |                |    blocks[0:7]: 0x0-0x5fb.7 (1532)
      |                                               |                |      [0]{}: block 0x0-0x1b.7 (28)

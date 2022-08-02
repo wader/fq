@@ -1,6 +1,6 @@
 # ffmpeg -f lavfi -i sine -c:a aac -f mp4 -t 50ms aac.mp4
-$ fq -d mp4 dv /aac.mp4
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /aac.mp4 (mp4) 0x0-0x59c.7 (1437)
+$ fq -d mp4 dv aac.mp4
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: aac.mp4 (mp4) 0x0-0x59c.7 (1437)
      |                                               |                |  boxes[0:4]: 0x0-0x59c.7 (1437)
      |                                               |                |    [0]{}: box 0x0-0x1b.7 (28)
 0x000|00 00 00 1c                                    |....            |      size: 28 0x0-0x3.7 (4)
@@ -31,8 +31,8 @@ $ fq -d mp4 dv /aac.mp4
 0x2a0|68 64                                          |hd              |
 0x2a0|      00                                       |  .             |          version: 0 0x2a2-0x2a2.7 (1)
 0x2a0|         00 00 00                              |   ...          |          flags: 0 0x2a3-0x2a5.7 (3)
-0x2a0|                  00 00 00 00                  |      ....      |          creation_time: "1904-01-04T00:00:00Z" (0) 0x2a6-0x2a9.7 (4)
-0x2a0|                              00 00 00 00      |          ....  |          modification_time: "1904-01-04T00:00:00Z" (0) 0x2aa-0x2ad.7 (4)
+0x2a0|                  00 00 00 00                  |      ....      |          creation_time: 0 (1904-01-04T00:00:00Z) 0x2a6-0x2a9.7 (4)
+0x2a0|                              00 00 00 00      |          ....  |          modification_time: 0 (1904-01-04T00:00:00Z) 0x2aa-0x2ad.7 (4)
 0x2a0|                                          00 00|              ..|          time_scale: 1000 0x2ae-0x2b1.7 (4)
 0x2b0|03 e8                                          |..              |
 0x2b0|      00 00 00 4a                              |  ...J          |          duration: 74 0x2b2-0x2b5.7 (4)
@@ -71,8 +71,8 @@ $ fq -d mp4 dv /aac.mp4
 0x310|      74 6b 68 64                              |  tkhd          |              type: "tkhd" (Track header, overall information about the track) 0x312-0x315.7 (4)
 0x310|                  00                           |      .         |              version: 0 0x316-0x316.7 (1)
 0x310|                     00 00 03                  |       ...      |              flags: 3 0x317-0x319.7 (3)
-0x310|                              00 00 00 00      |          ....  |              creation_time: "1904-01-04T00:00:00Z" (0) 0x31a-0x31d.7 (4)
-0x310|                                          00 00|              ..|              modification_time: "1904-01-04T00:00:00Z" (0) 0x31e-0x321.7 (4)
+0x310|                              00 00 00 00      |          ....  |              creation_time: 0 (1904-01-04T00:00:00Z) 0x31a-0x31d.7 (4)
+0x310|                                          00 00|              ..|              modification_time: 0 (1904-01-04T00:00:00Z) 0x31e-0x321.7 (4)
 0x320|00 00                                          |..              |
 0x320|      00 00 00 01                              |  ....          |              track_id: 1 0x322-0x325.7 (4)
 0x320|                  00 00 00 00                  |      ....      |              reserved1: 0 0x326-0x329.7 (4)
@@ -126,8 +126,8 @@ $ fq -d mp4 dv /aac.mp4
 0x390|                                          00   |              . |                  version: 0 0x39e-0x39e.7 (1)
 0x390|                                             00|               .|                  flags: 0 0x39f-0x3a1.7 (3)
 0x3a0|00 00                                          |..              |
-0x3a0|      00 00 00 00                              |  ....          |                  creation_time: "1904-01-04T00:00:00Z" (0) 0x3a2-0x3a5.7 (4)
-0x3a0|                  00 00 00 00                  |      ....      |                  modification_time: "1904-01-04T00:00:00Z" (0) 0x3a6-0x3a9.7 (4)
+0x3a0|      00 00 00 00                              |  ....          |                  creation_time: 0 (1904-01-04T00:00:00Z) 0x3a2-0x3a5.7 (4)
+0x3a0|                  00 00 00 00                  |      ....      |                  modification_time: 0 (1904-01-04T00:00:00Z) 0x3a6-0x3a9.7 (4)
 0x3a0|                              00 00 ac 44      |          ...D  |                  time_scale: 44100 0x3aa-0x3ad.7 (4)
 0x3a0|                                          00 00|              ..|                  duration: 3229 0x3ae-0x3b1.7 (4)
 0x3b0|0c 9d                                          |..              |
@@ -355,8 +355,8 @@ $ fq -d mp4 dv /aac.mp4
 0x580|                           00 00 01            |         ...    |                          flags: 1 0x589-0x58b.7 (3)
 0x580|                                    00 00 00 00|            ....|                          reserved: 0 0x58c-0x58f.7 (4)
 0x590|4c 61 76 66 35 38 2e 34 35 2e 31 30 30|        |Lavf58.45.100|  |                          data: "Lavf58.45.100" 0x590-0x59c.7 (13)
-     |                                               |                |  tracks[0:1]: 0x2c-0x291.7 (614)
-     |                                               |                |    [0]{}: track 0x2c-0x291.7 (614)
+     |                                               |                |  tracks[0:1]: 0x2c-0x59c.7 (1393)
+     |                                               |                |    [0]{}: track 0x2c-0x59c.7 (1393)
      |                                               |                |      samples[0:4]: 0x2c-0x291.7 (614)
      |                                               |                |        [0][0:4]: sample (aac_frame) 0x2c-0xf8.7 (205)
      |                                               |                |          [0]{}: element 0x2c-0x3c.6 (16.7)
@@ -428,3 +428,5 @@ $ fq -d mp4 dv /aac.mp4
 0x290|b4                                             |.               |
 0x290|b4                                             |.               |          [1]: raw bits byte_align 0x290.6-0x290.7 (0.2)
 0x290|   70                                          | p              |          [2]: raw bits data 0x291-0x291.7 (1)
+     |                                               |                |      id: 1 0x59d-NA (0)
+     |                                               |                |      data_foramt: "mp4a" 0x59d-NA (0)

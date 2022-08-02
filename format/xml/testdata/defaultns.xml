@@ -1,0 +1,4 @@
+<elm xmlns="a:b:c">
+    <ns1:aaa ns1:attr1="v1">1</ns1:aaa>
+    <bbb key="value">3</bbb>
+</elm>

@@ -6,15 +6,15 @@ package mpeg
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 var aacFrameFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.ADTS_FRAME,
 		Description: "Audio Data Transport Stream frame",
 		DecodeFn:    adtsFrameDecoder,
@@ -29,7 +29,7 @@ var protectionAbsentNames = scalar.BoolToDescription{
 	false: "Has CRC",
 }
 
-func adtsFrameDecoder(d *decode.D, in interface{}) interface{} {
+func adtsFrameDecoder(d *decode.D, _ any) any {
 
 	/*
 	   adts_frame() {
@@ -65,12 +65,12 @@ func adtsFrameDecoder(d *decode.D, in interface{}) interface{} {
 	// P	2	Number of AAC frames (RDBs) in ADTS frame minus 1, for maximum compatibility always use 1 AAC frame per ADTS frame
 	// Q	16	CRC if protection absent is 0
 
-	d.FieldU12("syncword", d.AssertU(0b1111_1111_1111), scalar.Bin)
+	d.FieldU12("syncword", d.AssertU(0b1111_1111_1111), scalar.ActualBin)
 	d.FieldU1("mpeg_version", scalar.UToSymStr{0: "mpeg4", 1: "mpeg2_aac"})
 	d.FieldU2("layer", d.AssertU(0))
 	protectionAbsent := d.FieldBool("protection_absent", protectionAbsentNames)
 
-	objectType := d.FieldU2("profile", scalar.UAdd(1), format.MPEGAudioObjectTypeNames)
+	objectType := d.FieldU2("profile", scalar.ActualUAdd(1), format.MPEGAudioObjectTypeNames)
 	d.FieldUFn("sampling_frequency", decodeEscapeValueAbsFn(4, 24, 0), frequencyIndexHzMap)
 	d.FieldU1("private_bit")
 	d.FieldU3("channel_configuration", channelConfigurationNames)
@@ -86,7 +86,7 @@ func adtsFrameDecoder(d *decode.D, in interface{}) interface{} {
 	}
 
 	d.FieldU11("buffer_fullness")
-	numberOfRDBs := d.FieldU2("number_of_rdbs", scalar.UAdd(1))
+	numberOfRDBs := d.FieldU2("number_of_rdbs", scalar.ActualUAdd(1))
 	if !protectionAbsent {
 		d.FieldU16("crc")
 	}

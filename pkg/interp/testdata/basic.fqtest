@@ -1,5 +1,5 @@
 # ffmpeg -f lavfi -i sine -t 10ms test.mp3
-$ fq -i . /test.mp3
+$ fq -i . test.mp3
 mp3> .headers[0].magic == "ID3"
 true
 mp3> .headers[0].version == 4

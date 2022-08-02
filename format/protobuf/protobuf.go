@@ -6,9 +6,9 @@ import (
 	"embed"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/internal/mathextra"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -16,13 +16,13 @@ import (
 var protobufFS embed.FS
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.PROTOBUF,
 		Description: "Protobuf",
 		DecodeFn:    protobufDecode,
 		Functions:   []string{"_help"},
-		Files:       protobufFS,
 	})
+	interp.RegisterFS(protobufFS)
 }
 
 const (
@@ -141,7 +141,7 @@ func protobufDecodeFields(d *decode.D, pbm *format.ProtoBufMessage) {
 	})
 }
 
-func protobufDecode(d *decode.D, in interface{}) interface{} {
+func protobufDecode(d *decode.D, in any) any {
 	var pbm *format.ProtoBufMessage
 	pbi, ok := in.(format.ProtoBufIn)
 	if ok {

@@ -6,8 +6,8 @@ package pcap
 import (
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/inet/flowsdecoder"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -26,7 +26,7 @@ var endianMap = scalar.UToSymStr{
 }
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.PCAP,
 		Description: "PCAP packet capture",
 		Groups:      []string{format.PROBE},
@@ -39,8 +39,8 @@ func init() {
 	})
 }
 
-func decodePcap(d *decode.D, in interface{}) interface{} {
-	endian := d.FieldU32("magic", d.AssertU(bigEndian, littleEndian), endianMap, scalar.Hex)
+func decodePcap(d *decode.D, _ any) any {
+	endian := d.FieldU32("magic", d.AssertU(bigEndian, littleEndian), endianMap, scalar.ActualHex)
 	switch endian {
 	case bigEndian:
 		d.Endian = decode.BigEndian
@@ -78,7 +78,7 @@ func decodePcap(d *decode.D, in interface{}) interface{} {
 					d.Errorf("incl_len %d > orig_len %d", inclLen, origLen)
 				}
 
-				bs := d.MustReadAllBits(d.BitBufRange(d.Pos(), int64(inclLen)*8))
+				bs := d.ReadAllBits(d.BitBufRange(d.Pos(), int64(inclLen)*8))
 
 				if fn, ok := linkToDecodeFn[linkType]; ok {
 					// TODO: report decode errors

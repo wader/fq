@@ -12,7 +12,7 @@ func decodeRecordFn(schema schema.SimplifiedSchema) (DecodeFn, error) {
 		return nil, fmt.Errorf("record must have fields")
 	}
 	var fieldNames []string
-	var fieldDecoders []func(string, *decode.D) interface{}
+	var fieldDecoders []func(string, *decode.D) any
 
 	for _, f := range schema.Fields {
 		fieldNames = append(fieldNames, f.Name)
@@ -39,8 +39,8 @@ func decodeRecordFn(schema schema.SimplifiedSchema) (DecodeFn, error) {
 	// the hex byte sequence:
 	// 36 06 66 6f 6f
 
-	return func(name string, d *decode.D) interface{} {
-		val := make(map[string]interface{})
+	return func(name string, d *decode.D) any {
+		val := make(map[string]any)
 		d.FieldStruct(name, func(d *decode.D) {
 			for i, f := range fieldNames {
 				val[f] = fieldDecoders[i](f, d)

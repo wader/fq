@@ -1,6 +1,6 @@
-$ fq -o decode_samples=false -d mp4 '.tracks | dv' /aac.mp4
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.tracks[0:1]: 0x2c-0x291.7 (614)
-     |                                               |                |  [0]{}: track 0x2c-0x291.7 (614)
+$ fq -o decode_samples=false -d mp4 '.tracks | dv' aac.mp4
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.tracks[0:1]: 0x2c-0x59c.7 (1393)
+     |                                               |                |  [0]{}: track 0x2c-0x59c.7 (1393)
      |                                               |                |    samples[0:4]: 0x2c-0x291.7 (614)
 0x020|                                    de 02 00 4c|            ...L|      [0]: raw bits sample 0x2c-0xf8.7 (205)
 0x030|61 76 63 35 38 2e 39 31 2e 31 30 30 00 02 5c ab|avc58.91.100..\.|
@@ -13,3 +13,5 @@ $ fq -o decode_samples=false -d mp4 '.tracks | dv' /aac.mp4
 *    |until 0x28c.7 (186)                            |                |
 0x280|                                       01 18 81|             ...|      [3]: raw bits sample 0x28d-0x291.7 (5)
 0x290|b4 70                                          |.p              |
+     |                                               |                |    id: 1 0x59d-NA (0)
+     |                                               |                |    data_foramt: "mp4a" 0x59d-NA (0)

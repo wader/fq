@@ -1,0 +1,329 @@
+/probe.xml:
+<a></a>
+$ fq . probe.xml
+{
+  "a": ""
+}
+$ fq -d raw -ni . all.xml decl.xml multi_diff.xml multi_same.xml ns.xml simple.xml escape.xml
+null> inputs | {name: input_filename, str: (tobytes | tostring)} | slurp("files")
+null> spew("files") | .name, try (.str | fromxml | ., (toxml({indent: 2}) | println)) catch .
+"all.xml"
+{
+  "elm": {
+    "first": {
+      "#comment": "comment"
+    },
+    "last": {
+      "#comment": "comment1  comment2",
+      "#text": "text1\n        \n        text2",
+      "-attr1": "v1",
+      "-attr2": "v2"
+    },
+    "middle": "text"
+  }
+}
+<elm>
+  <first>
+    <!--comment--></first>
+  <last attr1="v1" attr2="v2">text1&#xA;        &#xA;        text2
+    <!--comment1  comment2--></last>
+  <middle>text</middle>
+</elm>
+"decl.xml"
+{
+  "elm": ""
+}
+<elm></elm>
+"multi_diff.xml"
+"error at position 0x10: root element has trailing data"
+"multi_same.xml"
+"error at position 0xe: root element has trailing data"
+"ns.xml"
+{
+  "elm": {
+    "-xmlns:ns1": "http://test1",
+    "-xmlns:ns2": "http://test2",
+    "aaa": "3",
+    "ns1:aaa": {
+      "#text": "1",
+      "-ns1:attr1": "v1"
+    },
+    "ns2:aaa": {
+      "#text": "2",
+      "-ns2:attr2": "v2",
+      "ccc": {
+        "-ns2:attr5": "v5"
+      },
+      "ns1:ccc": {
+        "-ns1:attr3": "v3"
+      },
+      "ns2:ccc": {
+        "-ns2:attr4": "v4"
+      }
+    }
+  }
+}
+<elm xmlns:ns1="http://test1" xmlns:ns2="http://test2">
+  <aaa>3</aaa>
+  <ns1:aaa ns1:attr1="v1">1</ns1:aaa>
+  <ns2:aaa ns2:attr2="v2">2
+    <ccc ns2:attr5="v5"></ccc>
+    <ns1:ccc ns1:attr3="v3"></ns1:ccc>
+    <ns2:ccc ns2:attr4="v4"></ns2:ccc>
+  </ns2:aaa>
+</elm>
+"simple.xml"
+{
+  "elm": ""
+}
+<elm></elm>
+"escape.xml"
+{
+  "a": {
+    "#text": "&<>",
+    "-attr": "&<>"
+  }
+}
+<a attr="&amp;&lt;&gt;">&amp;&lt;&gt;</a>
+null> spew("files") | .name, try (.str | fromxml({seq: true}) | ., (toxml({indent: 2}) | println)) catch .
+"all.xml"
+{
+  "elm": {
+    "first": {
+      "#comment": "comment",
+      "#seq": 0
+    },
+    "last": {
+      "#comment": "comment1  comment2",
+      "#seq": 2,
+      "#text": "text1\n        \n        text2",
+      "-attr1": "v1",
+      "-attr2": "v2"
+    },
+    "middle": {
+      "#seq": 1,
+      "#text": "text"
+    }
+  }
+}
+<elm>
+  <first>
+    <!--comment--></first>
+  <middle>text</middle>
+  <last attr1="v1" attr2="v2">text1&#xA;        &#xA;        text2
+    <!--comment1  comment2--></last>
+</elm>
+"decl.xml"
+{
+  "elm": ""
+}
+<elm></elm>
+"multi_diff.xml"
+"error at position 0x10: root element has trailing data"
+"multi_same.xml"
+"error at position 0xe: root element has trailing data"
+"ns.xml"
+{
+  "elm": {
+    "-xmlns:ns1": "http://test1",
+    "-xmlns:ns2": "http://test2",
+    "aaa": {
+      "#seq": 2,
+      "#text": "3"
+    },
+    "ns1:aaa": {
+      "#seq": 0,
+      "#text": "1",
+      "-ns1:attr1": "v1"
+    },
+    "ns2:aaa": {
+      "#seq": 1,
+      "#text": "2",
+      "-ns2:attr2": "v2",
+      "ccc": {
+        "#seq": 2,
+        "-ns2:attr5": "v5"
+      },
+      "ns1:ccc": {
+        "#seq": 0,
+        "-ns1:attr3": "v3"
+      },
+      "ns2:ccc": {
+        "#seq": 1,
+        "-ns2:attr4": "v4"
+      }
+    }
+  }
+}
+<elm xmlns:ns1="http://test1" xmlns:ns2="http://test2">
+  <ns1:aaa ns1:attr1="v1">1</ns1:aaa>
+  <ns2:aaa ns2:attr2="v2">2
+    <ns1:ccc ns1:attr3="v3"></ns1:ccc>
+    <ns2:ccc ns2:attr4="v4"></ns2:ccc>
+    <ccc ns2:attr5="v5"></ccc>
+  </ns2:aaa>
+  <aaa>3</aaa>
+</elm>
+"simple.xml"
+{
+  "elm": ""
+}
+<elm></elm>
+"escape.xml"
+{
+  "a": {
+    "#text": "&<>",
+    "-attr": "&<>"
+  }
+}
+<a attr="&amp;&lt;&gt;">&amp;&lt;&gt;</a>
+null> spew("files") | .name, try (.str | fromxml({array: true}) | ., (toxml({indent: 2}) | println)) catch .
+"all.xml"
+[
+  "elm",
+  [
+    [
+      "first",
+      {
+        "#comment": "comment"
+      }
+    ],
+    [
+      "middle",
+      {
+        "#text": "text"
+      }
+    ],
+    [
+      "last",
+      {
+        "#comment": "comment1  comment2",
+        "#text": "text1\n        \n        text2",
+        "attr1": "v1",
+        "attr2": "v2"
+      }
+    ]
+  ]
+]
+<elm>
+  <first>
+    <!--comment--></first>
+  <middle>text</middle>
+  <last attr1="v1" attr2="v2">text1&#xA;        &#xA;        text2
+    <!--comment1  comment2--></last>
+</elm>
+"decl.xml"
+[
+  "elm"
+]
+<elm></elm>
+"multi_diff.xml"
+"error at position 0x10: root element has trailing data"
+"multi_same.xml"
+"error at position 0xe: root element has trailing data"
+"ns.xml"
+[
+  "elm",
+  {
+    "xmlns:ns1": "http://test1",
+    "xmlns:ns2": "http://test2"
+  },
+  [
+    [
+      "ns1:aaa",
+      {
+        "#text": "1",
+        "ns1:attr1": "v1"
+      }
+    ],
+    [
+      "ns2:aaa",
+      {
+        "#text": "2",
+        "ns2:attr2": "v2"
+      },
+      [
+        [
+          "ns1:ccc",
+          {
+            "ns1:attr3": "v3"
+          }
+        ],
+        [
+          "ns2:ccc",
+          {
+            "ns2:attr4": "v4"
+          }
+        ],
+        [
+          "ccc",
+          {
+            "ns2:attr5": "v5"
+          }
+        ]
+      ]
+    ],
+    [
+      "aaa",
+      {
+        "#text": "3"
+      }
+    ]
+  ]
+]
+<elm xmlns:ns1="http://test1" xmlns:ns2="http://test2">
+  <ns1:aaa ns1:attr1="v1">1</ns1:aaa>
+  <ns2:aaa ns2:attr2="v2">2
+    <ns1:ccc ns1:attr3="v3"></ns1:ccc>
+    <ns2:ccc ns2:attr4="v4"></ns2:ccc>
+    <ccc ns2:attr5="v5"></ccc>
+  </ns2:aaa>
+  <aaa>3</aaa>
+</elm>
+"simple.xml"
+[
+  "elm"
+]
+<elm></elm>
+"escape.xml"
+[
+  "a",
+  {
+    "#text": "&<>",
+    "attr": "&<>"
+  }
+]
+<a attr="&amp;&lt;&gt;">&amp;&lt;&gt;</a>
+null> {doc: {a: "", "#text": "text", "#comment": "comment", "-attr": "value"}} | toxml, toxml({indent: 1}), toxml({indent: 8}) | println
+<doc attr="value">text<!--comment--><a></a></doc>
+<doc attr="value">text
+ <!--comment-->
+ <a></a>
+</doc>
+<doc attr="value">text
+        <!--comment-->
+        <a></a>
+</doc>
+null> ["doc", {"#text": "text", "#comment": "comment", attr: "value"}, [["a"]]] | toxml, toxml({indent: 1}), toxml({indent: 8}) | println
+<doc attr="value">text<!--comment--><a></a></doc>
+<doc attr="value">text
+ <!--comment-->
+ <a></a>
+</doc>
+<doc attr="value">text
+        <!--comment-->
+        <a></a>
+</doc>
+null> {a: ""} | toxml
+"<a></a>"
+null> {a: [""]} | toxml
+"<a></a>"
+null> {a: {"-attr": "value", "#text": "text", "#comment": "comment"}} | toxml
+"<a attr=\"value\">text<!--comment--></a>"
+null> {a: ["b", "c"]} | toxml
+"<doc><a>b</a><a>c</a></doc>"
+null> {a: [123, null, true, false]} | toxml
+"<doc><a>123</a><a></a><a>true</a><a>false</a></doc>"
+null> 123 | toxml
+error: toxml cannot be applied to: number (123)
+null> ^D

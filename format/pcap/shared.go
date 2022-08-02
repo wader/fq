@@ -33,6 +33,7 @@ var linkToDecodeFn = map[int]func(fd *flowsdecoder.Decoder, bs []byte) error{
 	},
 }
 
+// TODO: make some of this shared if more packet capture formats are added
 func fieldFlows(d *decode.D, fd *flowsdecoder.Decoder, tcpStreamFormat decode.Group, ipv4PacketFormat decode.Group) {
 	d.FieldArray("ipv4_reassembled", func(d *decode.D) {
 		for _, p := range fd.IPV4Reassembled {
@@ -51,43 +52,44 @@ func fieldFlows(d *decode.D, fd *flowsdecoder.Decoder, tcpStreamFormat decode.Gr
 	d.FieldArray("tcp_connections", func(d *decode.D) {
 		for _, s := range fd.TCPConnections {
 			d.FieldStruct("tcp_connection", func(d *decode.D) {
-				d.FieldValueStr("source_ip", s.ClientEndpoint.IP.String())
-				d.FieldValueU("source_port", uint64(s.ClientEndpoint.Port), format.TCPPortMap)
-				d.FieldValueStr("destination_ip", s.ServerEndpoint.IP.String())
-				d.FieldValueU("destination_port", uint64(s.ServerEndpoint.Port), format.TCPPortMap)
-				d.FieldValueBool("has_start", s.HasStart)
-				d.FieldValueBool("has_end", s.HasEnd)
-				csBR := bitio.NewBitReader(s.ClientToServer.Bytes(), -1)
-				if dv, _, _ := d.TryFieldFormatBitBuf(
-					"client_stream",
-					csBR,
-					tcpStreamFormat,
-					format.TCPStreamIn{
-						IsClient:        true,
-						HasStart:        s.HasStart,
-						HasEnd:          s.HasEnd,
-						SourcePort:      s.ClientEndpoint.Port,
-						DestinationPort: s.ServerEndpoint.Port,
-					},
-				); dv == nil {
-					d.FieldRootBitBuf("client_stream", csBR)
+				f := func(d *decode.D, td *flowsdecoder.TCPDirection, tsi format.TCPStreamIn) {
+					d.FieldValueStr("ip", td.Endpoint.IP.String())
+					d.FieldValueU("port", uint64(td.Endpoint.Port), format.TCPPortMap)
+					d.FieldValueBool("has_start", td.HasStart)
+					d.FieldValueBool("has_end", td.HasEnd)
+					d.FieldValueU("skipped_bytes", td.SkippedBytes)
+
+					br := bitio.NewBitReader(td.Buffer.Bytes(), -1)
+					if dv, _, _ := d.TryFieldFormatBitBuf(
+						"stream",
+						br,
+						tcpStreamFormat,
+						tsi,
+					); dv == nil {
+						d.FieldRootBitBuf("stream", br)
+					}
 				}
 
-				scBR := bitio.NewBitReader(s.ServerToClient.Bytes(), -1)
-				if dv, _, _ := d.TryFieldFormatBitBuf(
-					"server_stream",
-					scBR,
-					tcpStreamFormat,
-					format.TCPStreamIn{
+				d.FieldStruct("client", func(d *decode.D) {
+					f(d, &s.Client, format.TCPStreamIn{
+						IsClient:        true,
+						HasStart:        s.Client.HasStart,
+						HasEnd:          s.Client.HasEnd,
+						SkippedBytes:    s.Client.SkippedBytes,
+						SourcePort:      s.Client.Endpoint.Port,
+						DestinationPort: s.Server.Endpoint.Port,
+					})
+				})
+				d.FieldStruct("server", func(d *decode.D) {
+					f(d, &s.Server, format.TCPStreamIn{
 						IsClient:        false,
-						HasStart:        s.HasStart,
-						HasEnd:          s.HasEnd,
-						SourcePort:      s.ServerEndpoint.Port,
-						DestinationPort: s.ClientEndpoint.Port,
-					},
-				); dv == nil {
-					d.FieldRootBitBuf("server_stream", scBR)
-				}
+						HasStart:        s.Server.HasStart,
+						HasEnd:          s.Server.HasEnd,
+						SkippedBytes:    s.Server.SkippedBytes,
+						SourcePort:      s.Server.Endpoint.Port,
+						DestinationPort: s.Client.Endpoint.Port,
+					})
+				})
 			})
 		}
 	})

@@ -5,7 +5,8 @@ import "github.com/wader/fq/pkg/scalar"
 type Type int
 
 const (
-	Integer Type = iota
+	Unknown Type = iota
+	Integer
 	Uinteger
 	Float
 	String
@@ -16,11 +17,12 @@ const (
 )
 
 var TypeNames = map[Type]string{
+	Unknown:  "unknown",
 	Integer:  "integer",
 	Uinteger: "uinteger",
 	Float:    "float",
 	String:   "string",
-	UTF8:     "UTF8",
+	UTF8:     "utf8",
 	Date:     "data",
 	Binary:   "binary",
 	Master:   "master",

@@ -2,13 +2,13 @@ package av1
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.AV1_OBU,
 		Description: "AV1 Open Bitstream Unit",
 		DecodeFn:    obuDecode,
@@ -52,7 +52,7 @@ func decodeLeb128(d *decode.D) uint64 {
 	return v
 }
 
-func obuDecode(d *decode.D, in interface{}) interface{} {
+func obuDecode(d *decode.D, _ any) any {
 	var obuType uint64
 	var obuSize int64
 	hasExtension := false

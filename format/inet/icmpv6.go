@@ -2,13 +2,13 @@ package inet
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.ICMPV6,
 		Description: "Internet Control Message Protocol v6",
 		Groups:      []string{format.IP_PACKET},
@@ -77,7 +77,7 @@ var icmpv6CodeMapMap = map[uint64]scalar.UToDescription{
 	},
 }
 
-func decodeICMPv6(d *decode.D, in interface{}) interface{} {
+func decodeICMPv6(d *decode.D, in any) any {
 	if ipi, ok := in.(format.IPPacketIn); ok && ipi.Protocol != format.IPv4ProtocolICMPv6 {
 		d.Fatalf("incorrect protocol %d", ipi.Protocol)
 	}

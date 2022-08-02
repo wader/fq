@@ -1,5 +1,5 @@
 # ffmpeg -f lavfi -i sine -t 10ms -f wav pipe:1 | lame - - | fq - '.frame[1] | tobits' > mp3-frame-mono-crc
-$ fq -d mp3_frame '.header.crc | verbose' /mp3-frame-mono-crc
+$ fq -d mp3_frame '.header.crc | verbose' mp3-frame-mono-crc
 exitcode: 3
 stderr:
 error: arg: function not defined: verbose/0

@@ -21,8 +21,8 @@ import (
 	"sort"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 //go:embed mp4.jq
@@ -52,7 +52,7 @@ var vpxCCRFormat decode.Group
 var iccProfileFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.MP4,
 		Description: "ISOBMFF MPEG-4 part 12 and similar",
 		Groups: []string{
@@ -88,9 +88,9 @@ func init() {
 			{Names: []string{format.VPX_CCR}, Group: &vpxCCRFormat},
 			{Names: []string{format.ICC_PROFILE}, Group: &iccProfileFormat},
 		},
-		Files:     mp4FS,
 		Functions: []string{"_help"},
 	})
+	interp.RegisterFS(mp4FS)
 }
 
 type stsc struct {
@@ -102,8 +102,18 @@ type moof struct {
 	offset                        int64
 	defaultSampleSize             int64
 	defaultSampleDescriptionIndex int
-	dataOffset                    int64
-	samplesSizes                  []int64
+	truns                         []trun
+	sencs                         []senc
+}
+
+// TODO: nothing for now
+type senc struct {
+	entries []struct{}
+}
+
+type trun struct {
+	dataOffset   int64
+	samplesSizes []int64
 }
 
 type sampleDescription struct {
@@ -123,24 +133,30 @@ type track struct {
 	stco               []int64
 	stsc               []stsc
 	stsz               []stsz
-	formatInArg        interface{}
+	formatInArg        any
 	objectType         int // if data format is "mp4a"
-
-	moofs       []*moof // for fmp4
-	currentMoof *moof
+	defaultIVSize      int
+	moofs              []*moof // for fmp4
 }
 
 type pathEntry struct {
 	typ  string
-	data interface{}
+	data any
 }
 
 type decodeContext struct {
-	opts              format.Mp4In
-	path              []pathEntry
-	tracks            map[uint32]*track
-	currentTrack      *track
-	currentMoofOffset int64
+	opts   format.Mp4In
+	path   []pathEntry
+	tracks map[int]*track
+}
+
+func (ctx *decodeContext) lookupTrack(id int) *track {
+	t, ok := ctx.tracks[id]
+	if !ok {
+		t = &track{id: id}
+		ctx.tracks[id] = t
+	}
+	return t
 }
 
 func (ctx *decodeContext) isParent(typ string) bool {
@@ -149,6 +165,41 @@ func (ctx *decodeContext) isParent(typ string) bool {
 
 func (ctx *decodeContext) parent() pathEntry {
 	return ctx.path[len(ctx.path)-2]
+}
+
+func (ctx *decodeContext) findParent(typ string) any {
+	for i := len(ctx.path) - 1; i >= 0; i-- {
+		p := ctx.path[i]
+		if p.typ == typ {
+			return p.data
+		}
+	}
+	return nil
+}
+
+func (ctx *decodeContext) currentTrakBox() *trakBox {
+	t, _ := ctx.findParent("trak").(*trakBox)
+	return t
+}
+
+func (ctx *decodeContext) currentTrafBox() *trafBox {
+	t, _ := ctx.findParent("traf").(*trafBox)
+	return t
+}
+
+func (ctx *decodeContext) currentMoofBox() *moofBox {
+	t, _ := ctx.findParent("moof").(*moofBox)
+	return t
+}
+
+func (ctx *decodeContext) currentTrack() *track {
+	if t := ctx.currentTrakBox(); t != nil {
+		return ctx.lookupTrack(t.trackID)
+	}
+	if t := ctx.currentTrafBox(); t != nil {
+		return ctx.lookupTrack(t.trackID)
+	}
+	return nil
 }
 
 func mp4Tracks(d *decode.D, ctx *decodeContext) {
@@ -161,9 +212,9 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 
 	d.FieldArray("tracks", func(d *decode.D) {
 		for _, t := range sortedTracks {
-			decodeSampleRange := func(d *decode.D, t *track, dataFormat string, name string, firstBit int64, nBits int64, inArg interface{}) {
+			decodeSampleRange := func(d *decode.D, t *track, decodeSample bool, dataFormat string, name string, firstBit int64, nBits int64, inArg any) {
 				d.RangeFn(firstBit, nBits, func(d *decode.D) {
-					if !ctx.opts.DecodeSamples {
+					if !decodeSample {
 						d.FieldRawLen(name, d.BitsLeft())
 						return
 					}
@@ -201,7 +252,7 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 			}
 
 			d.FieldStruct("track", func(d *decode.D) {
-				// TODO: handle progressive/fragmented mp4 differently somehow?
+				d.FieldValueU("id", uint64(t.id))
 
 				trackSDDataFormat := "unknown"
 				if len(t.sampleDescriptions) > 0 {
@@ -210,6 +261,24 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 					if sd.originalFormat != "" {
 						trackSDDataFormat = sd.originalFormat
 					}
+				}
+
+				d.FieldValueStr("data_foramt", trackSDDataFormat)
+
+				switch trackSDDataFormat {
+				case "lpcm",
+					"raw ",
+					"twos",
+					"sowt",
+					"in24",
+					"in32",
+					"fl23",
+					"fl64",
+					"alaw",
+					"ulaw":
+					// TODO: treat raw samples format differently, a bit too much to have one field per sample.
+					// maybe in some future fq could have smart array fields
+					return
 				}
 
 				d.FieldArray("samples", func(d *decode.D) {
@@ -269,7 +338,7 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 
 							// log.Println(logStrFn())
 
-							decodeSampleRange(d, t, trackSDDataFormat, "sample", sampleOffset*8, stszEntry.size*8, t.formatInArg)
+							decodeSampleRange(d, t, ctx.opts.DecodeSamples, trackSDDataFormat, "sample", sampleOffset*8, stszEntry.size*8, t.formatInArg)
 
 							sampleOffset += stszEntry.size
 							stscEntryNr++
@@ -278,20 +347,50 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 						}
 					}
 
+					sampleNr := 0
 					for _, m := range t.moofs {
-						sampleOffset := m.offset + m.dataOffset
-						for _, sz := range m.samplesSizes {
-							dataFormat := trackSDDataFormat
-							if m.defaultSampleDescriptionIndex != 0 && m.defaultSampleDescriptionIndex-1 < len(t.sampleDescriptions) {
-								sd := t.sampleDescriptions[m.defaultSampleDescriptionIndex-1]
-								dataFormat = sd.dataFormat
-								if sd.originalFormat != "" {
-									dataFormat = sd.originalFormat
-								}
+						for trunNr, trun := range m.truns {
+							var senc senc
+							if trunNr < len(m.sencs) {
+								senc = m.sencs[trunNr]
 							}
+							sampleOffset := m.offset + trun.dataOffset
 
-							decodeSampleRange(d, t, dataFormat, "sample", sampleOffset*8, sz*8, t.formatInArg)
-							sampleOffset += sz
+							for trunSampleNr, sz := range trun.samplesSizes {
+								dataFormat := trackSDDataFormat
+								if m.defaultSampleDescriptionIndex != 0 && m.defaultSampleDescriptionIndex-1 < len(t.sampleDescriptions) {
+									sd := t.sampleDescriptions[m.defaultSampleDescriptionIndex-1]
+									dataFormat = sd.dataFormat
+									if sd.originalFormat != "" {
+										dataFormat = sd.originalFormat
+									}
+								}
+
+								// logStrFn := func() string {
+								// 	return fmt.Sprintf("%d: %s: %d: (%s): sz=%d %d+%d=%d",
+								// 		t.id,
+								// 		dataFormat,
+								// 		sampleNr,
+								// 		trackSDDataFormat,
+								// 		sz,
+								// 		m.offset,
+								// 		m.dataOffset,
+								// 		sampleOffset,
+								// 	)
+								// }
+								// log.Println(logStrFn())
+
+								decodeSample := ctx.opts.DecodeSamples
+								if trunSampleNr < len(senc.entries) {
+									// TODO: encrypted
+									decodeSample = false
+								}
+
+								decodeSampleRange(d, t, decodeSample, dataFormat, "sample", sampleOffset*8, sz*8, t.formatInArg)
+
+								sampleOffset += sz
+								sampleNr++
+							}
 						}
 					}
 				})
@@ -300,13 +399,13 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 	})
 }
 
-func mp4Decode(d *decode.D, in interface{}) interface{} {
+func mp4Decode(d *decode.D, in any) any {
 	mi, _ := in.(format.Mp4In)
 
 	ctx := &decodeContext{
 		opts:   mi,
 		path:   []pathEntry{{typ: "root"}},
-		tracks: map[uint32]*track{},
+		tracks: map[int]*track{},
 	}
 
 	// TODO: nicer, validate functions without field?

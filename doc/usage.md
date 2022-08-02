@@ -280,7 +280,7 @@ This type is returned by decoders and it used to represent parts of the decoed i
 
 Each decode value has these properties:
 - A bit range in the input
-  - Can be accessed as a binary using `tobits`/`tobytes`. Use the `start` and `size` keys to postion and size.
+  - Can be accessed as a binary using `tobits`/`tobytes`. Use the `start` and `size` keys to access position and size.
   - `.name` as bytes `.name | tobytes`
   - Bit 4-8 of `.name` as bits `.name | tobits[4:8]`
 
@@ -353,6 +353,7 @@ TODO: padding and alignment
 - All standard library functions from jq
 - Adds a few new general functions:
   - `print`, `println`, `printerr`, `printerrln` prints to stdout and stderr.
+  - `group` group values, same as `group_by(.)`.
   - `streaks`, `streaks_by(f)` like `group` but groups streaks based on condition.
   - `count`, `count_by(f)` like `group` but counts groups lengths.
   - `debug(f)` like `debug` but uses arg to produce debug message. `{a: 123} | debug({a}) | ...`.
@@ -407,9 +408,9 @@ unary uses input and if more than one argument all as arguments ignoring the inp
 - All decode function takes a optional option argument. The only option currently is `force` to ignore decoder asserts.
 For example to decode as mp3 and ignore assets do `mp3({force: true})` or `decode("mp3"; {force: true})`, from command line
 you currently have to do `fq -d raw 'mp3({force: true})' file`.
-- `decode`, `decode($format)`, `decode($format; $opts)` decode format
+- `decode`, `decode("<format>")`, `decode("<format>"; $opts)` decode format
 - `probe`, `probe($opts)` probe and decode format
-- `mp3`, `mp3($opts)`, ..., `<name>`, `<name>($opts)` same as `decode(<name>)($opts)`, `decode($format; $opts)`  decode as format
+- `mp3`, `mp3($opts)`, ..., `<format>`, `<format>($opts)` same as `decode("<format>")`, `decode("<format>"; $opts)`  decode as format
 - Display shows hexdump/ASCII/tree for decode values and jq value for other types.
   - `d`/`d($opts)` display value and truncate long arrays and binaries
   - `da`/`da($opts)` display value and don't truncate arrays
@@ -419,10 +420,282 @@ you currently have to do `fq -d raw 'mp3({force: true})' file`.
 - `p`/`preview` show preview of field tree
 - `hd`/`hexdump` hexdump value
 - `repl`/`repl($opts)` nested REPL, must be last in a pipeline. `1 | repl`, can "slurp" outputs. Ex: `1, 2, 3 | repl`, `[1,2,3] | repl({compact: true})`.
-- `slurp($name)` slurp outputs and save them to `$name`, must be last in pipeline. Will be available as global array `$name`. Ex `1,2,3 | slurp("a")`, `$a[]` same as `spew("a")`.
-- `spew`/`spew($name)` output previously slurped values. `spew` outputs all slurps as an object, `spew($name)` outouts one slurp. Ex: `spew("a")`.
+- `slurp("<name>")` slurp outputs and save them to `$name`, must be last in pipeline. Will be available as global array `$name`. Ex `1,2,3 | slurp("a")`, `$a[]` same as `spew("a")`.
+- `spew`/`spew("<name>")` output previously slurped values. `spew` outputs all slurps as an object, `spew("<name>")` outouts one slurp. Ex: `spew("a")`.
 - `paste` read string from stdin until ^D. Useful for pasting text.
     - Ex: `paste | frompem | asn1_ber | repl` read from stdin then decode and start a new sub-REPL with result.
+
+### Encodings, serializations and hashes
+
+In an addition to binary formats fq also support reading to and from encodings and serialization formats.
+
+At the moment fq does not have any dedicated argument for serialization formats but raw string input `-R` slurp `-s` and raw string output `-r` can make things easier. The combination `-Rs` will read all inputs into one string (same as jq).
+
+Note that `from*` functions output jq values and `to*` takes jq values as input so in some cases not all information will properly preserved, for example for XML element and attribute order might change and text and comment nodes might move and will be merged. [yq](https://github.com/mikefarah/yq) might be a better tool if that is needed.
+
+Some example usages:
+
+```sh
+# read yml (format is probed, use -d yaml to force) and do some query
+$ fq '...' file.yml
+
+# convert YAML to JSON
+# note -r for raw string output, without a JSON string with JSON would outputted
+$ fq -r 'tojson({indent:2})' file.yml
+
+# add token to URL
+$ echo -n "https://host.org" | fq -Rsr 'fromurl | .user.username="token" | tourl'
+https://token@host.org
+
+# top 3 hosts in src or href attributes:
+# -d to decode as html, can't be probed as html5 parsers always produce some parse tree
+# [...] to start collect values into an array
+# .. | ."-src"?, ."-href"? | values, recurse and try (?) to get src and href attributes and filter out nulls
+# fromurl.host | values, parse as url and filter out those without a host
+# count to count unique values, returns [[key, count], ...]
+# reverse sort by count and pick first 3
+# map [key, count] tuples into {key: key, values: count}
+# from_entries, convert into object
+$ curl -s https://www.discogs.com/ | fq -d html '[.. | ."-src"?, ."-href"? | values | fromurl.host | values] | count | sort_by(-.[1])[0:3] | map({key: .[0], value: .[1]}) | from_entries'
+{
+  "blog.discogs.com": 9,
+  "st.discogs.com": 10,
+  "www.discogs.com": 14
+}
+
+# shows how serialization functions can be used on any string, how to transform values and output som other format
+# read and decode zip file and start an interactive REPL
+$ fq  -i . <(curl -sL https://github.com/stefangabos/world_countries/archive/master.zip)
+# select from interesting xml file
+zip> .local_files[] | select(.file_name == "world_countries-master/data/countries/en/world.xml").uncompressed | repl
+# convert xml into jq value
+> .local_files[95].uncompressed string> fromxml | repl
+# sort countries by and select the first one
+>> object> .countries.country | sort_by(."-name") | first | repl
+# see what current input is
+>>> object> .
+{
+  "-alpha2": "af",
+  "-alpha3": "afg",
+  "-id": "4",
+  "-name": "Afghanistan"
+}
+# remove "-" prefix from keys and convert to YAML and print it
+>>> object> with_entries(.key |= .[1:]) | toyaml | print
+alpha2: af
+alpha3: afg
+id: "4"
+name: Afghanistan
+# exit all REPLs back to shell
+>>> object> ^D
+>> object> ^D
+> .local_files[95].uncompressed string> ^D
+zip> ^D
+```
+
+- `fromxml`/`fromxml($opts)` Parse XML into jq value.<br>
+  `{seq: true}` preserve element ordering if more than one sibling.<br>
+  `{array: true}` use nested arrays to represent elements.<br>
+- `fromhtml`/`fromhtml($opts)` Parse HTML into jq value.<br>
+  Similar to `fromxml` but parses html5 in non-script mode. Will always have a `html` root with `head` and `body` elements.<br>
+  `{array: true}` use nested arrays to represent elements.<br>
+  `{seq: true}` preserve element ordering if more than one sibling.<br>
+- `toxml`/`toxml($opts})` Serialize jq value into XML.<br>
+  `{indent: number}` indent child elements.<br>
+  Assumes object representation if input is an object, and nested arrays if input is an array.<br>
+  Will automatically add a root `doc` element if jq value has more then one root element.<br>
+  If a `#seq` is found on at least one element all siblings will be sort by sequence number. Attributes are always sorted.<br>
+
+  XML elements can be represented as jq value in two ways, as objects (inspired by [mxj](https://github.com/clbanning/mxj) and [xml.com's Converting Between XML and JSON
+](https://www.xml.com/pub/a/2006/05/31/converting-between-xml-and-json.html)) or nested arrays. Both representations are lossy and might lose ordering of elements, text nodes and comments. In object representation `fromxml`, `fromhtml` and `toxml` support `{seq:true}` option to parse/serialize `{"#seq"=<number>}` attributes to preserve element sibling ordering.
+
+  The object version is denser and convenient to query, the nested arrays version is probably easier to use when generating XML.
+
+  Let's assume `$xml` is this XML document as a string:
+  ```xml
+  <doc>
+    <child attr="1"></child>
+    <child attr="2">text</child>
+    <other>text</other>
+  </doc>
+  ```
+
+  With object representation an element is represented as:
+  - Attributes as dash prefixed `-<key>` keys.
+  - Text nodes as `#text`.
+  - Comment nodes as `#comment` keys.
+  - For explicit sibling ordering `#seq` keys with a number, can be negative, assumed zero if missing.
+  - Child element with only text as `<name>` key with text as value.
+  - Child element with more than just text as `<name>` key with value an object.
+  - Multiple child element sibling with same name as `name` key with value as array with strings and objects.
+  ```jq
+  > $xml | fromxml
+  {
+    "doc": {
+      "child": [
+        {
+          "-attr": "1"
+        },
+        {
+          "#text": "text",
+          "-attr": "2"
+        }
+      ],
+      "other": "text"
+    }
+  }
+  ```
+
+  With nested array representation, an array with these values `["<name>", {attributes...}, [children...]]`
+  - Index zero is element name.
+  - Optional first object attributes (including `#text` and `#comment` keys).
+  - Optional first array are child elements.
+  #
+  ```jq
+  > $xml | fromxml({array: true})
+  [
+    "doc",
+    [
+      [
+        "child",
+        {
+          "attr": "1"
+        }
+      ],
+      [
+        "child",
+        {
+          "#text": "text",
+          "attr": "2"
+        }
+      ],
+      [
+        "other",
+        {
+          "#text": "text"
+        }
+      ]
+    ]
+  ]
+  ```
+  Parse and include `#seq` attributes if needed:
+  ```jq
+  > $xml | fromxml({seq:true})
+  {
+    "doc": {
+      "child": [
+        {
+          "#seq": 0,
+          "-attr": "1"
+        },
+        {
+          "#seq": 1,
+          "#text": "text",
+          "-attr": "2"
+        }
+      ],
+      "other": {
+        "#seq": 2,
+        "#text": "text"
+      }
+    }
+  }
+  ````
+  Select values in `<doc>`, remove `<child>`, add a `<new>` element, serialize to xml with 2 space indent and print the string
+  ```jq
+  > $xml | fromxml.doc | del(.child) | .new = "abc" | {root: .} | toxml({indent: 2}) | println
+  <root>
+    <new>abc</new>
+    <other>text</other>
+  </root>
+  ```
+
+JSON and jq-flavoured JSON
+- `fromjson` Parse JSON into jq value.
+- `tojson`/`tojson($opt)`  Serialize jq value into JSON.<br>
+  `{indent: number}` indent array/object values.<br>
+- `fromjq` Parse jq-flavoured JSON into jq value.
+- `tojq`/`tojq($opt)`  Serialize jq value into jq-flavoured JSON<br>
+  `{indent: number}` indent array/object values.<br>
+  jq-flavoured JSON has optional key quotes, `#` comments and can have trailing comma in arrays.
+
+YAML
+- `fromyaml` Parse YAML into jq value.
+- `toyaml`  Serialize jq value into YAML.
+
+TOML
+- `fromtoml` Parse TOML into jq value.
+- `totoml`  Serialize jq value into TOML.
+
+CSV
+- `fromcsv`/`fromcvs($opts)` Parse CSV into jq value.<br>
+  `{comma: string}` field separator, default ",".<br>
+  `{comment: string}` comment line character, default "#".<br>
+  To work with tab separated values you can use `fromcvs({comma: "\t"})` or `fq -d csv -o 'comma="\t"'`
+- `tocsv`/`tocsv($opts)` Serialize jq value into CSV.<br>
+  `{comma: string}` field separator, default ",".<br>
+
+XML encoding
+- `fromxmlentities` Decode XML entities.
+- `toxmlentities` Encode XML entities.
+
+URL parts and XML encodings
+- `fromurlpath` Decode URL path component.
+- `tourlpath` Encode URL path component. Whitespace as %20.
+- `fromurlencode` Decode URL query encoding.
+- `tourlencode` Encode URL to query encoding. Whitespace as "+".
+- `fromurlquery` Decode URL query into object. For duplicates keys value will be an array.
+- `tourlquery` Encode objet into query string.
+- `fromurl` Decode URL into object.
+  ```jq
+  > "schema://user:pass@host/path?key=value#fragment" | fromurl
+  {
+    "fragment": "fragement",
+    "host": "host",
+    "path": "/path",
+    "query": {
+      "key": "value"
+    },
+    "rawquery": "key=value",
+    "scheme": "schema",
+    "user": {
+      "password": "pass",
+      "username": "user"
+    }
+  }
+  ```
+- `tourl` Encode object into URL string.
+- `fromhex` Decode hexstring to binary.
+
+Binary encodings like hex and base64
+- `tohex` Encode binay into hexstring.
+- `frombase64`/`frombase64($opts)` Decode base64 encodings into binary.<br>
+  `{encoding:string}` encoding variant: `std` (default), `url`, `rawstd` or `rawurl`
+- `tobase64`/`tobase64($opts)` Encode binary into base64 encodings.<br>
+  `{encoding:string}` encoding variant: `std` (default), `url`, `rawstd` or `rawurl`
+
+Hash functions
+- `tomd4` Hash binary using md4.
+- `tomd5` Hash binary using md5.
+- `tosha1` Hash binary using sha1.
+- `tosha256` Hash binary using sha256.
+- `tosha512` Hash binary using sha512.
+- `tosha3_224` Hash binary using sha3 224.
+- `tosha3_256` Hash binary using sha3 256.
+- `tosha3_384` Hash binary using sha3 384.
+- `tosha3_512` Hash binary using sha3 512.
+
+Text encodings
+- `toiso8859_1` Decode binary as ISO8859-1 into string.
+- `fromiso8859_1` Encode string as ISO8859-1 into binary.
+- `toutf8` Encode string as UTF8 into binary.
+- `fromutf8` Decode binary as UTF8 into string.
+- `toutf16` Encode string as UTF16 into binary.
+- `fromutf16` Decode binary as UTF16 into string.
+- `toutf16le` Encode string as UTF16 little-endian into binary.
+- `fromutf16le` Decode binary as UTF16 little-endian into string.
+- `toutf16be` Encode string as UTF16 big-endian into binary.
+- `fromutf16be` Decode binary as UTF16 big-endian into string.
 
 ## Color and unicode output
 
@@ -459,7 +732,7 @@ notable is support for arbitrary-precision integers.
 
 ## Decoded values
 
-When you decode something you will get a decode value. A decode values work like
+When you decode something you will get a decode value. A decode value work like
 normal jq values but has special abilities and is used to represent a tree structure of the decoded
 binary data. Each value always has a name, type and a bit range.
 

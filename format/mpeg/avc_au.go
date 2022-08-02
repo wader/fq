@@ -4,14 +4,14 @@ package mpeg
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 var avcNALUFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.AVC_AU,
 		Description: "H.264/AVC Access Unit",
 		DecodeFn:    avcAUDecode,
@@ -26,7 +26,7 @@ func init() {
 	})
 }
 
-func avcAUDecode(d *decode.D, in interface{}) interface{} {
+func avcAUDecode(d *decode.D, in any) any {
 	avcIn, ok := in.(format.AvcAuIn)
 	if !ok {
 		d.Fatalf("avcIn required")

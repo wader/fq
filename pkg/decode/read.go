@@ -20,7 +20,7 @@ func (d *D) tryUEndian(nBits int, endian Endian) (uint64, error) {
 	if nBits < 0 {
 		return 0, fmt.Errorf("tryUEndian nBits must be >= 0 (%d)", nBits)
 	}
-	n, err := d.bits(nBits)
+	n, err := d.TryBits(nBits)
 	if err != nil {
 		return 0, err
 	}
@@ -51,7 +51,7 @@ func (d *D) trySEndian(nBits int, endian Endian) (int64, error) {
 }
 
 // from https://github.com/golang/go/wiki/SliceTricks#reversing
-func reverseBytes(a []byte) {
+func ReverseBytes(a []byte) {
 	for i := len(a)/2 - 1; i >= 0; i-- {
 		opp := len(a) - 1 - i
 		a[i], a[opp] = a[opp], a[i]
@@ -70,7 +70,7 @@ func (d *D) tryBigIntEndianSign(nBits int, endian Endian, sign bool) (*big.Int, 
 	}
 
 	if endian == LittleEndian {
-		reverseBytes(buf)
+		ReverseBytes(buf)
 	}
 
 	n := new(big.Int)
@@ -88,7 +88,7 @@ func (d *D) tryFEndian(nBits int, endian Endian) (float64, error) {
 	if nBits < 0 {
 		return 0, fmt.Errorf("tryFEndian nBits must be >= 0 (%d)", nBits)
 	}
-	n, err := d.bits(nBits)
+	n, err := d.TryBits(nBits)
 	if err != nil {
 		return 0, err
 	}
@@ -111,7 +111,7 @@ func (d *D) tryFPEndian(nBits int, fBits int, endian Endian) (float64, error) {
 	if nBits < 0 {
 		return 0, fmt.Errorf("tryFPEndian nBits must be >= 0 (%d)", nBits)
 	}
-	n, err := d.bits(nBits)
+	n, err := d.TryBits(nBits)
 	if err != nil {
 		return 0, err
 	}
@@ -145,7 +145,7 @@ func (d *D) tryText(nBytes int, e encoding.Encoding) (string, error) {
 // read length prefixed text (ex pascal short string)
 // lBits length prefix
 // fixedBytes if != -1 read nBytes but trim to length
-//nolint:unparam
+//nolint: unparam
 func (d *D) tryTextLenPrefixed(lenBits int, fixedBytes int, e encoding.Encoding) (string, error) {
 	if lenBits < 0 {
 		return "", fmt.Errorf("tryTextLenPrefixed lenBits must be >= 0 (%d)", lenBits)
@@ -159,7 +159,7 @@ func (d *D) tryTextLenPrefixed(lenBits int, fixedBytes int, e encoding.Encoding)
 	}
 
 	p := d.Pos()
-	l, err := d.bits(lenBits)
+	l, err := d.TryBits(lenBits)
 	if err != nil {
 		return "", err
 	}
@@ -227,7 +227,7 @@ func (d *D) tryUnary(ov uint64) (uint64, error) {
 	p := d.Pos()
 	var n uint64
 	for {
-		b, err := d.bits(1)
+		b, err := d.TryBits(1)
 		if err != nil {
 			d.SeekAbs(p)
 			return 0, err
@@ -241,7 +241,7 @@ func (d *D) tryUnary(ov uint64) (uint64, error) {
 }
 
 func (d *D) tryBool() (bool, error) {
-	n, err := d.bits(1)
+	n, err := d.TryBits(1)
 	if err != nil {
 		return false, err
 	}

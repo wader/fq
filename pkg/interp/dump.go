@@ -42,14 +42,26 @@ func isCompound(v *decode.Value) bool {
 	}
 }
 
-func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, rootV *decode.Value, rootDepth int, addrWidth int, opts *Options) error {
-	deco := opts.Decorator
+type dumpCtx struct {
+	opts        Options
+	buf         []byte
+	cw          *columnwriter.Writer
+	hexHeader   string
+	asciiHeader string
+}
+
+func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootDepth int, addrWidth int) error {
+	opts := ctx.opts
+	cw := ctx.cw
+	buf := ctx.buf
+	deco := ctx.opts.Decorator
+
 	// no error check as we write into buffering column
 	// we check for err later for Flush()
-	cprint := func(c int, a ...interface{}) {
+	cprint := func(c int, a ...any) {
 		fmt.Fprint(cw.Columns[c], a...)
 	}
-	cfmt := func(c int, format string, a ...interface{}) {
+	cfmt := func(c int, format string, a ...any) {
 		fmt.Fprintf(cw.Columns[c], format, a...)
 	}
 
@@ -57,19 +69,6 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 		cprint(1, deco.Column, "\n")
 		cprint(3, deco.Column, "\n")
 		cprint(5, deco.Column, "\n")
-	}
-
-	var hexHeader string
-	var asciiHeader string
-	if depth == 0 {
-		for i := 0; i < opts.LineBytes; i++ {
-			s := mathextra.PadFormatInt(int64(i), opts.AddrBase, false, 2)
-			hexHeader += s
-			if i < opts.LineBytes-1 {
-				hexHeader += " "
-			}
-			asciiHeader += s[len(s)-1:]
-		}
 	}
 
 	isInArray := false
@@ -100,8 +99,8 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 		if !isCompound(v) {
 			columns()
 		}
-		cfmt(colHex, "%s", deco.DumpHeader.F(hexHeader))
-		cfmt(colASCII, "%s", deco.DumpHeader.F(asciiHeader))
+		cfmt(colHex, "%s", deco.DumpHeader.F(ctx.hexHeader))
+		cfmt(colASCII, "%s", deco.DumpHeader.F(ctx.asciiHeader))
 		if !isCompound(v) {
 			cw.Flush()
 		}
@@ -127,7 +126,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 
 	var valueErr error
 
-	// TODO: cleanup map[string]interface{} []interface{} or json format
+	// TODO: cleanup map[string]any []any or json format
 	// dump should use some internal interface instead?
 	switch vv := v.V.(type) {
 	case *decode.Compound:
@@ -143,18 +142,13 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 		if vv.Description != "" {
 			cfmt(colField, " %s", deco.Value.F(vv.Description))
 		}
-		if vv.Format != nil {
-			cfmt(colField, " (%s)", deco.Value.F(vv.Format.Name))
-		}
-
-		valueErr = vv.Err
 	case *scalar.S:
-		// TODO: rethink scalar array/struct (json format)
 		switch av := vv.Actual.(type) {
-		case map[string]interface{}:
-			cfmt(colField, ": %s (%s)", deco.Object.F("{}"), deco.Value.F("json"))
-		case []interface{}:
-			cfmt(colField, ": %s%s:%s%s (%s)", deco.Index.F("["), deco.Number.F("0"), deco.Number.F(strconv.Itoa(len(av))), deco.Index.F("]"), deco.Value.F("json"))
+		case map[string]any:
+			cfmt(colField, ": %s", deco.Object.F("{}"))
+		case []any:
+			// TODO: format?
+			cfmt(colField, ": %s%s:%s%s", deco.Index.F("["), deco.Number.F("0"), deco.Number.F(strconv.Itoa(len(av))), deco.Index.F("]"))
 		default:
 			cprint(colField, ":")
 			if vv.Sym == nil {
@@ -163,25 +157,28 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 				cfmt(colField, " %s", deco.ValueColor(vv.Sym).F(previewValue(vv.Sym, vv.SymDisplay)))
 				cfmt(colField, " (%s)", deco.ValueColor(vv.Actual).F(previewValue(vv.Actual, vv.ActualDisplay)))
 			}
+		}
 
-			if opts.Verbose && isInArray {
-				cfmt(colField, " %s", v.Name)
-			}
-
-			// TODO: similar to struct/array?
-			if vv.Description != "" {
-				cfmt(colField, fmt.Sprintf(" (%s)", deco.Value.F(vv.Description)))
-			}
+		if opts.Verbose && isInArray {
+			cfmt(colField, " %s", v.Name)
+		}
+		if vv.Description != "" {
+			cfmt(colField, " (%s)", deco.Value.F(vv.Description))
 		}
 	default:
 		panic(fmt.Sprintf("unreachable vv %#+v", vv))
 	}
 
+	if v.Format != nil {
+		cfmt(colField, " (%s)", deco.Value.F(v.Format.Name))
+	}
+	valueErr = v.Err
+
 	innerRange := v.InnerRange()
 
 	if opts.Verbose {
 		cfmt(colField, " %s (%s)",
-			mathextra.BitRange(innerRange).StringByteBits(opts.AddrBase), mathextra.Bits(innerRange.Len).StringByteBits(opts.SizeBase))
+			mathextra.BitRange(innerRange).StringByteBits(opts.Addrbase), mathextra.Bits(innerRange.Len).StringByteBits(opts.Sizebase))
 	}
 
 	cprint(colField, "\n")
@@ -271,7 +268,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 	// has length and is not compound or a collapsed struct/array (max depth)
 	if innerRange.Len > 0 && (!isCompound(v) || (opts.Depth != 0 && opts.Depth == depth)) {
 		cfmt(colAddr, "%s%s\n",
-			rootIndent, deco.DumpAddr.F(mathextra.PadFormatInt(startLineByte, opts.AddrBase, true, addrWidth)))
+			rootIndent, deco.DumpAddr.F(mathextra.PadFormatInt(startLineByte, opts.Addrbase, true, addrWidth)))
 
 		vBR, err := bitioextra.Range(rootV.RootReader, startByte*8, displaySizeBits)
 		if err != nil {
@@ -282,7 +279,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 		hexpairFn := func(b byte) string { return deco.ByteColor(b).Wrap(hexpairwriter.Pair(b)) }
 		asciiFn := func(b byte) string { return deco.ByteColor(b).Wrap(asciiwriter.SafeASCII(b)) }
 
-		hexBR, err := bitioextra.Clone(vBR)
+		hexBR, err := bitio.CloneReadSeeker(vBR)
 		if err != nil {
 			return err
 		}
@@ -293,7 +290,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 			return err
 		}
 
-		asciiBR, err := bitioextra.Clone(vBR)
+		asciiBR, err := bitio.CloneReadSeeker(vBR)
 		if err != nil {
 			return err
 		}
@@ -307,7 +304,7 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 		for i := int64(1); i < addrLines; i++ {
 			lineStartByte := startLineByte + i*int64(opts.LineBytes)
 			columns()
-			cfmt(colAddr, "%s%s\n", rootIndent, deco.DumpAddr.F(mathextra.PadFormatInt(lineStartByte, opts.AddrBase, true, addrWidth)))
+			cfmt(colAddr, "%s%s\n", rootIndent, deco.DumpAddr.F(mathextra.PadFormatInt(lineStartByte, opts.Addrbase, true, addrWidth)))
 		}
 		// TODO: correct? should rethink columnwriter api maybe?
 		lastLineStopByte := startLineByte + addrLines*int64(opts.LineBytes) - 1
@@ -328,9 +325,9 @@ func dumpEx(v *decode.Value, buf []byte, cw *columnwriter.Writer, depth int, roo
 			cprint(colHex, "\n")
 			// TODO: truncate if display_bytes is small?
 			cfmt(colHex, "until %s%s (%s)",
-				mathextra.Bits(stopBit).StringByteBits(opts.AddrBase),
+				mathextra.Bits(stopBit).StringByteBits(opts.Addrbase),
 				isEnd,
-				mathextra.PadFormatInt(bitio.BitsByteCount(sizeBits), opts.SizeBase, true, 0))
+				mathextra.PadFormatInt(bitio.BitsByteCount(sizeBits), opts.Sizebase, true, 0))
 			// TODO: dump last line?
 		}
 	}
@@ -354,10 +351,10 @@ func dump(v *decode.Value, w io.Writer, opts Options) error {
 		}
 	}
 
-	_ = v.WalkPreOrder(makeWalkFn(func(v *decode.Value, rootV *decode.Value, depth int, rootDepth int) error {
+	_ = v.WalkPreOrder(makeWalkFn(func(v *decode.Value, _ *decode.Value, _ int, rootDepth int) error {
 		maxAddrIndentWidth = mathextra.MaxInt(
 			maxAddrIndentWidth,
-			rootDepth+mathextra.DigitsInBase(bitio.BitsByteCount(v.InnerRange().Stop()), true, opts.AddrBase),
+			rootDepth+mathextra.DigitsInBase(bitio.BitsByteCount(v.InnerRange().Stop()), true, opts.Addrbase),
 		)
 		return nil
 	}))
@@ -376,12 +373,31 @@ func dump(v *decode.Value, w io.Writer, opts Options) error {
 	buf := make([]byte, 32*1024)
 
 	if opts.Color {
-		cw.LenFn = ansi.Len
-		cw.TruncateFn = ansi.Truncate
+		cw.DisplayLenFn = ansi.Len
+		cw.DisplayTruncateFn = ansi.Truncate
+	}
+
+	var hexHeader string
+	var asciiHeader string
+	for i := 0; i < opts.LineBytes; i++ {
+		s := mathextra.PadFormatInt(int64(i), opts.Addrbase, false, 2)
+		hexHeader += s
+		if i < opts.LineBytes-1 {
+			hexHeader += " "
+		}
+		asciiHeader += s[len(s)-1:]
+	}
+
+	ctx := &dumpCtx{
+		opts:        opts,
+		buf:         buf,
+		cw:          cw,
+		hexHeader:   hexHeader,
+		asciiHeader: asciiHeader,
 	}
 
 	return v.WalkPreOrder(makeWalkFn(func(v *decode.Value, rootV *decode.Value, depth int, rootDepth int) error {
-		return dumpEx(v, buf, cw, depth, rootV, rootDepth, maxAddrIndentWidth-rootDepth, &opts)
+		return dumpEx(v, ctx, depth, rootV, rootDepth, maxAddrIndentWidth-rootDepth)
 	}))
 }
 

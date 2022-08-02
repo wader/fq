@@ -8,13 +8,13 @@ package mpeg
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.AAC_FRAME,
 		Description: "Advanced Audio Coding frame",
 		DecodeFn:    aacDecode,
@@ -272,7 +272,7 @@ func aacFillElement(d *decode.D) {
 	})
 }
 
-func aacDecode(d *decode.D, in interface{}) interface{} {
+func aacDecode(d *decode.D, in any) any {
 	var objectType int
 	if afi, ok := in.(format.AACFrameIn); ok {
 		objectType = afi.ObjectType

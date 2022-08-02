@@ -4,15 +4,15 @@ package inet
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 var bsdLoopbackFrameInetPacketGroup decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.BSD_LOOPBACK_FRAME,
 		Description: "BSD loopback frame",
 		Groups:      []string{format.LINK_FRAME},
@@ -38,7 +38,7 @@ var bsdLookbackNetworkLayerMap = scalar.UToScalar{
 	bsdLoopbackNetworkLayerIPv6: {Sym: "ipv6", Description: `Internet protocol v6`},
 }
 
-func decodeLoopbackFrame(d *decode.D, in interface{}) interface{} {
+func decodeLoopbackFrame(d *decode.D, in any) any {
 	if lfi, ok := in.(format.LinkFrameIn); ok {
 		if lfi.Type != format.LinkTypeNULL {
 			d.Fatalf("wrong link type %d", lfi.Type)
@@ -50,7 +50,7 @@ func decodeLoopbackFrame(d *decode.D, in interface{}) interface{} {
 	}
 	// if no LinkFrameIn assume big endian for now
 
-	networkLayer := d.FieldU32("network_layer", bsdLookbackNetworkLayerMap, scalar.Hex)
+	networkLayer := d.FieldU32("network_layer", bsdLookbackNetworkLayerMap, scalar.ActualHex)
 
 	d.FieldFormatOrRawLen(
 		"payload",

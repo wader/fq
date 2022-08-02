@@ -5,13 +5,13 @@ package mpeg
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.MPEG_PES_PACKET,
 		Description: "MPEG Packetized elementary stream packet",
 		DecodeFn:    pesPacketDecode,
@@ -34,7 +34,7 @@ var startAndStreamNames = scalar.URangeToScalar{
 	{Range: [2]uint64{0x00, 0x00}, S: scalar.S{Sym: "picture"}},
 	{Range: [2]uint64{0x01, 0xaf}, S: scalar.S{Sym: "slice"}},
 	{Range: [2]uint64{0xb0, 0xb1}, S: scalar.S{Sym: "reserved"}},
-	{Range: [2]uint64{0xb2, 0xb2}, S: scalar.S{Sym: "user data"}},
+	{Range: [2]uint64{0xb2, 0xb2}, S: scalar.S{Sym: "user_data"}},
 	{Range: [2]uint64{0xb3, 0xb3}, S: scalar.S{Sym: "sequence_header"}},
 	{Range: [2]uint64{0xb4, 0xb4}, S: scalar.S{Sym: "sequence_error"}},
 	{Range: [2]uint64{0xb5, 0xb5}, S: scalar.S{Sym: "extension"}},
@@ -69,11 +69,11 @@ var mpegVersion = scalar.UToDescription{
 	0b10: "MPEG1",
 }
 
-func pesPacketDecode(d *decode.D, in interface{}) interface{} {
-	var v interface{}
+func pesPacketDecode(d *decode.D, _ any) any {
+	var v any
 
-	d.FieldU24("prefix", d.AssertU(0b0000_0000_0000_0000_0000_0001), scalar.Bin)
-	startCode := d.FieldU8("start_code", startAndStreamNames, scalar.Hex)
+	d.FieldU24("prefix", d.AssertU(0b0000_0000_0000_0000_0000_0001), scalar.ActualBin)
+	startCode := d.FieldU8("start_code", startAndStreamNames, scalar.ActualHex)
 
 	switch {
 	case startCode == sequenceHeader:
@@ -190,7 +190,7 @@ func pesPacketDecode(d *decode.D, in interface{}) interface{} {
 
 					v = subStreamPacket{
 						number: int(substreamNumber),
-						buf:    d.MustReadAllBits(substreamBR),
+						buf:    d.ReadAllBits(substreamBR),
 					}
 				})
 			})

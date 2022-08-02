@@ -2,15 +2,15 @@ package id3
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 // TODO: comment 28 long, zero byte, track number
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.ID3V1,
 		Description: "ID3v1 metadata",
 		DecodeFn:    id3v1Decode,
@@ -18,7 +18,7 @@ func init() {
 }
 
 // Decode ID3v1 tag
-func id3v1Decode(d *decode.D, in interface{}) interface{} {
+func id3v1Decode(d *decode.D, _ any) any {
 	d.AssertAtLeastBitsLeft(128 * 8)
 	d.FieldUTF8("magic", 3, d.AssertStr("TAG"))
 	if d.PeekBits(8) == uint64('+') {
@@ -41,7 +41,7 @@ func id3v1Decode(d *decode.D, in interface{}) interface{} {
 		7:   {Sym: "hiphop", Description: "Hip-Hop"},
 		8:   {Sym: "jazz", Description: "Jazz"},
 		9:   {Sym: "metal", Description: "Metal"},
-		10:  {Sym: "new age", Description: "New Age"},
+		10:  {Sym: "new_age", Description: "New Age"},
 		11:  {Sym: "oldies", Description: "Oldies"},
 		12:  {Sym: "other", Description: "Other"},
 		13:  {Sym: "pop", Description: "Pop"},
@@ -87,17 +87,17 @@ func id3v1Decode(d *decode.D, in interface{}) interface{} {
 		53:  {Sym: "pop-folk", Description: "Pop-Folk"},
 		54:  {Sym: "eurodance", Description: "Eurodance"},
 		55:  {Sym: "dream", Description: "Dream"},
-		56:  {Sym: "southern rock", Description: "Southern Rock"},
+		56:  {Sym: "southern_rock", Description: "Southern Rock"},
 		57:  {Sym: "comedy", Description: "Comedy"},
 		58:  {Sym: "cult", Description: "Cult"},
 		59:  {Sym: "gangsta", Description: "Gangsta"},
-		60:  {Sym: "top 40", Description: "Top 40"},
-		61:  {Sym: "christian rap", Description: "Christian Rap"},
-		62:  {Sym: "pop/funk", Description: "Pop/Funk"},
-		63:  {Sym: "jungle music", Description: "Jungle music"},
-		64:  {Sym: "native us", Description: "Native US"},
+		60:  {Sym: "top_40", Description: "Top 40"},
+		61:  {Sym: "christian_rap", Description: "Christian Rap"},
+		62:  {Sym: "pop_funk", Description: "Pop/Funk"},
+		63:  {Sym: "jungle_music", Description: "Jungle music"},
+		64:  {Sym: "native_us", Description: "Native US"},
 		65:  {Sym: "cabaret", Description: "Cabaret"},
-		66:  {Sym: "new wave", Description: "New Wave"},
+		66:  {Sym: "new_wave", Description: "New Wave"},
 		67:  {Sym: "psychedelic", Description: "Psychedelic"},
 		68:  {Sym: "rave", Description: "Rave"},
 		69:  {Sym: "showtunes", Description: "Showtunes"},
@@ -110,7 +110,7 @@ func id3v1Decode(d *decode.D, in interface{}) interface{} {
 		76:  {Sym: "retro", Description: "Retro"},
 		77:  {Sym: "musical", Description: "Musical"},
 		78:  {Sym: "rock_n_roll", Description: "Rock ’n’ Roll"},
-		79:  {Sym: "hard rock", Description: "Hard Rock"},
+		79:  {Sym: "hard_rock", Description: "Hard Rock"},
 		80:  {Sym: "folk", Description: "Folk"},
 		81:  {Sym: "folk-rock", Description: "Folk-Rock"},
 		82:  {Sym: "national_folk", Description: "National Folk"},
@@ -125,9 +125,9 @@ func id3v1Decode(d *decode.D, in interface{}) interface{} {
 		91:  {Sym: "gothic_rock", Description: "Gothic Rock"},
 		92:  {Sym: "progressive_rock", Description: "Progressive Rock"},
 		93:  {Sym: "psychedelic_rock", Description: "Psychedelic Rock"},
-		94:  {Sym: "symphonic rock", Description: "Symphonic Rock"},
+		94:  {Sym: "symphonic_rock", Description: "Symphonic Rock"},
 		95:  {Sym: "slow_rock", Description: "Slow Rock"},
-		96:  {Sym: "big band", Description: "Big Band"},
+		96:  {Sym: "big_band", Description: "Big Band"},
 		97:  {Sym: "chorus", Description: "Chorus"},
 		98:  {Sym: "easy_listening", Description: "Easy Listening"},
 		99:  {Sym: "acoustic", Description: "Acoustic"},

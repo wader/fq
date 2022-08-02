@@ -19,7 +19,7 @@ error: arg: function not defined: invalid/0
 $ fq -n "("
 exitcode: 3
 stderr:
-error: arg:1:2: unexpected token <EOF>
+error: arg:1:1: unexpected EOF
 $ fq . non-existing
 exitcode: 2
 stderr:

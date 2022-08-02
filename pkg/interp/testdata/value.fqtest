@@ -1,13 +1,13 @@
 # ffmpeg -f lavfi -i sine -t 10ms test.mp3
 # test alt //
-$ fq -d mp3 '.headers[].frames[0].flags.unsync // 123' /test.mp3
+$ fq -d mp3 '.headers[].frames[0].flags.unsync // 123' test.mp3
 123
-$ fq -d mp3 '.headers[].frames[0].size // 123' /test.mp3
+$ fq -d mp3 '.headers[].frames[0].size // 123' test.mp3
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x00|                                          00 00|              ..|.headers[0].frames[0].size: 15
 0x10|00 0f                                          |..              |
 # test each in decoded order
-$ fq -d mp3 '.headers[0][]' /test.mp3
+$ fq -d mp3 '.headers[0][]' test.mp3
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|49 44 33                                       |ID3             |.headers[0].magic: "ID3" (valid)
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
@@ -28,7 +28,7 @@ $ fq -d mp3 '.headers[0][]' /test.mp3
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x20|         00 00 00 00 00 00 00 00 00 00         |   ..........   |.headers[0].padding: raw bits (all zero)
 # TODO: proper buffer_root test
-$ fq -d mp3 -i . /test.mp3
+$ fq -d mp3 -i . test.mp3
 mp3> .frames[0].header.mpeg_version | (topath | path_to_expr), tovalue, toactual, tosym, todescription
 ".frames[0].header.mpeg_version"
 "1"
@@ -80,7 +80,7 @@ error: expected decode value but got: number (123)
 mp3> 123 | parents
 error: expected decode value but got: number (123)
 mp3> ^D
-$ fq -d mp3 -i . /test.mp3
+$ fq -d mp3 -i . test.mp3
 mp3> . as $c | ("headers", 0, "abc") as $n | $n, try ($c | has($n)) catch .
 "headers"
 true
@@ -204,7 +204,7 @@ true
 "_abc"
 "expected a extkey but got: _abc"
 mp3> ^D
-$ fq -d mp3 -i . /test.mp3
+$ fq -d mp3 -i . test.mp3
 mp3> ._start
 0
 mp3> ._stop
@@ -214,7 +214,7 @@ mp3> ._len
 mp3> ._name
 ""
 mp3> ._root
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /test.mp3 (mp3)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: test.mp3 (mp3)
 0x000|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|  headers[0:1]:
 *    |until 0x2c.7 (45)                              |                |
 0x020|                                       ff fb 40|             ..@|  frames[0:3]:
@@ -222,7 +222,7 @@ mp3> ._root
 *    |until 0x283.7 (end) (599)                      |                |
      |                                               |                |  footers[0:0]:
 mp3> ._buffer_root
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /test.mp3 (mp3)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: test.mp3 (mp3)
 0x000|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|  headers[0:1]:
 *    |until 0x2c.7 (45)                              |                |
 0x020|                                       ff fb 40|             ..@|  frames[0:3]:
@@ -230,7 +230,7 @@ mp3> ._buffer_root
 *    |until 0x283.7 (end) (599)                      |                |
      |                                               |                |  footers[0:0]:
 mp3> ._format_root
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: /test.mp3 (mp3)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: test.mp3 (mp3)
 0x000|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|  headers[0:1]:
 *    |until 0x2c.7 (45)                              |                |
 0x020|                                       ff fb 40|             ..@|  frames[0:3]:
@@ -242,7 +242,7 @@ null
 mp3> ._sym
 null
 mp3> todescription
-"/test.mp3"
+"test.mp3"
 mp3> topath
 []
 mp3> ._bits

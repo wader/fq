@@ -4,19 +4,13 @@ Tool, language and decoders for working with binary data.
 
 ![fq demo](doc/demo.svg)
 
-fq is inspired by the well known jq tool and language and allows you to work with binary formats the same way you would using jq. In addition it can also present data similar to a hex viewer, transform, slice and concatenate binary data, supports nested formats and has an interactive REPL with auto-completion.
+fq is inspired by the well known jq tool and language and allows you to work with binary formats the same way you would using jq. In addition it can present data like a hex viewer, transform, slice and concatenate binary data. It also supports nested formats and has an interactive REPL with auto-completion.
 
-It was originally designed to query, inspect and debug codecs and metadata in media files and containers like mp4, flac, mp3, jpeg. But has since been extended to support a variety of formats like executables, packet captures including TCP reassembly and serialization formats like ASN1 BER, Avro, CBOR, protobuf and a lot more.
+It was originally designed to query, inspect and debug media codecs and containers like mp4, flac, mp3, jpeg. Since then it has been extended to support a variety of formats like executables, packet captures (including TCP reassembly) and serialization formats like JSON, YAML, XML, ASN1 BER, Avro, CBOR, protobuf. In addition it also has functions to work with URL:s, convert to/from hex, number bases, search for things etc.
 
-In summary it aims to be something like jq, hexdump, dd and gdb combined into one.
+In summary it aims to be jq, hexdump, dd and gdb for files combined into one.
 
-**NOTE:** fq is still early in development so things might change, be broken or do not make sense.
-That also means that there is a great opportunity to help out!
-
-### Name
-
-The "f" in fq  originate from [file(1)](https://man7.org/linux/man-pages/man1/file.1.html) and format in FFmpeg terminology.
-I pronounce jq /‘dʒei’kju:/ so I usually pronounce fq /‘ef’kju:/.
+**NOTE:** fq is still early in development so things might change, be broken or do not make sense. That also means that there is a great opportunity to help out!
 
 ### Goals
 
@@ -53,15 +47,21 @@ avc_sei,
 avc_sps,
 [avro_ocf](doc/formats.md#avro_ocf),
 [bencode](doc/formats.md#bencode),
+bitcoin_blkdat,
+bitcoin_block,
+bitcoin_script,
+bitcoin_transaction,
 bsd_loopback_frame,
 [bson](doc/formats.md#bson),
 bzip2,
 [cbor](doc/formats.md#cbor),
+[csv](doc/formats.md#csv),
 dns,
 dns_tcp,
 elf,
 ether8023_frame,
 exif,
+fairplay_spc,
 flac,
 [flac_frame](doc/formats.md#flac_frame),
 flac_metadatablock,
@@ -77,6 +77,7 @@ hevc_nalu,
 hevc_pps,
 hevc_sps,
 hevc_vps,
+[html](doc/formats.md#html),
 icc_profile,
 icmp,
 icmpv6,
@@ -115,6 +116,7 @@ sll_packet,
 tar,
 tcp_segment,
 tiff,
+toml,
 udp_datagram,
 vorbis_comment,
 vorbis_packet,
@@ -125,11 +127,15 @@ vpx_ccr,
 wav,
 webp,
 xing,
-zip
+[xml](doc/formats.md#xml),
+yaml,
+[zip](doc/formats.md#zip)
 
 [#]: sh-end
 
-For details see [formats.md](doc/formats.md)
+It can also work with some common text formats like URL:s, hex, base64, PEM etc and for some serialization formats like XML, YAML etc it can transform both from and to jq values.
+
+For details see [formats.md](doc/formats.md) and [usage.md](doc/usage.md).
 
 ## Usage
 
@@ -139,8 +145,7 @@ For details see [usage.md](doc/usage.md)
 
 ## Presentations
 
-- "fq - jq for binary formats" at [Binary Tools Summit 2022](https://binary-tools.net/summit.html) - [video](https://www.youtube.com/watch?v=GJOq_b0eb-s&list=PLTj8twuHdQz-JcX7k6eOwyVPDB8CyfZc8&index=1) [slides](doc/presentations/bts2022/fq-bts2022-v1.pdf)
-
+- "fq - jq for binary formats" at [Binary Tools Summit 2022](https://binary-tools.net/summit.html) - [video](https://www.youtube.com/watch?v=GJOq_b0eb-s&list=PLTj8twuHdQz-JcX7k6eOwyVPDB8CyfZc8&index=1) - [slides](doc/presentations/bts2022/fq-bts2022-v1.pdf)
 
 ## Install
 
@@ -209,7 +214,7 @@ apk add -X http://dl-cdn.alpinelinux.org/alpine/edge/testing fq
 
 ### Build from source
 
-Make sure you have go 1.17 or later installed.
+Make sure you have go 1.18 or later installed.
 
 To install directly from git repository do:
 ```sh
@@ -248,14 +253,17 @@ for inventing the [jq](https://github.com/stedolan/jq) language.
 
 ### Similar or related projects
 
-- [HexFiend](https://github.com/HexFiend/HexFiend)
-- [binspector](https://github.com/binspector/binspector)
-- [kaitai](https://kaitai.io)
-- [Wireshark](https://www.wireshark.org) (specially `tshark -T json`)
-- [MediaInfo](https://mediaarea.net/en/MediaInfo) (specially `mediainfo --Output=JSON` and `mediainfo --Details=1`)
-- [GNU poke](https://www.jemarch.net/poke)
-- [ffmpeg/ffprobe](https://ffmpeg.org)
-- [hexdump](https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git/tree/text-utils/hexdump.c)
+- [HexFiend](https://github.com/HexFiend/HexFiend) Hex editor for macOS with format template support.
+- [binspector](https://github.com/binspector/binspector) Binary format analysis tool with query langauge and REPL.
+- [kaitai](https://kaitai.io) Declarative binary format parsing.
+- [Wireshark](https://www.wireshark.org) Decodes network traffic (tip: `tshark -T json`).
+- [MediaInfo](https://mediaarea.net/en/MediaInfo) Analyze media files  (tip `mediainfo --Output=JSON` and `mediainfo --Details=1`).
+- [GNU poke](https://www.jemarch.net/poke) The extensible editor for structured binary data.
+- [ffmpeg/ffprobe](https://ffmpeg.org) Powerful media libraries and tools.
+- [hexdump](https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git/tree/text-utils/hexdump.c) Hex viewer tool.
+- [hex](https://git.janouch.name/p/hex) Interactive hex viewer with format support via lua.
+- [hachoir](https://github.com/vstinner/hachoir) General python library for working binary data.
+- [scapy](https://scapy.net) Decode/Encode formats, focus on network protocols.
 
 ## License
 
@@ -271,5 +279,8 @@ Licenses of direct dependencies:
 - mapstructure https://github.com/mitchellh/mapstructure/blob/master/LICENSE (MIT)
 - copystructure https://github.com/mitchellh/copystructure/blob/master/LICENSE (MIT)
 - go-difflib https://github.com/pmezard/go-difflib/blob/master/LICENSE (BSD)
-- golang/x/text https://github.com/golang/text/blob/master/LICENSE (BSD)
+- golang/x/* https://github.com/golang/text/blob/master/LICENSE (BSD)
 - golang/snappy https://github.com/golang/snappy/blob/master/LICENSE (BSD)
+- github.com/BurntSushi/toml https://github.com/BurntSushi/toml/blob/master/COPYING (MIT)
+- gopkg.in/yaml.v3 https://github.com/go-yaml/yaml/blob/v3/LICENSE (MIT)
+- github.com/creasty/defaults https://github.com/creasty/defaults/blob/master/LICENSE (MIT)

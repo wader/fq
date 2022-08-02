@@ -141,7 +141,7 @@ import (
 
 	{{- range $v := $r.variants }}
 		{{- $range_start := 1 }}
-		{{- $range_stop := 1 }}
+		{{- $range_stop := 2 }}
 		{{- if $v.range }}
 			{{- $range_start = index $v.range 0 }}
 			{{- $range_stop = index $v.range 1 }}

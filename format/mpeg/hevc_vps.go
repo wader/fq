@@ -4,20 +4,22 @@ package mpeg
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.HEVC_VPS,
 		Description: "H.265/HEVC Video Parameter Set",
 		DecodeFn:    hevcVPSDecode,
 	})
 }
 
+const maxVpsLayers = 1000
+
 // H.265 page 33
-func hevcVPSDecode(d *decode.D, in interface{}) interface{} {
+func hevcVPSDecode(d *decode.D, _ any) any {
 	d.FieldU4("vps_video_parameter_set_id")
 	d.FieldBool("vps_base_layer_internal_flag")
 	d.FieldBool("vps_base_layer_available_flag")
@@ -42,6 +44,9 @@ func hevcVPSDecode(d *decode.D, in interface{}) interface{} {
 	})
 	vpsMaxLayerID := d.FieldU6("vps_max_layer_id")
 	vpsNumLayerSetsMinus1 := d.FieldUFn("vps_num_layer_sets_minus1", uEV)
+	if vpsNumLayerSetsMinus1 > maxVpsLayers {
+		d.Errorf("too many vps layers %d > %d", vpsNumLayerSetsMinus1, maxVpsLayers)
+	}
 	d.FieldArray("layer_id_included_sets_flags", func(d *decode.D) {
 		for i := uint64(0); i <= vpsNumLayerSetsMinus1; i++ {
 			d.FieldArray("layer_id_included_sets_flags", func(d *decode.D) {

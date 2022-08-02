@@ -8,13 +8,13 @@ import (
 	"strings"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.DNS,
 		Description: "DNS packet",
 		Groups: []string{
@@ -225,7 +225,7 @@ func dnsDecodeRR(d *decode.D, pointerOffset int64, resp bool, count uint64, name
 	})
 }
 
-func dnsDecode(d *decode.D, isTCP bool) interface{} {
+func dnsDecode(d *decode.D, isTCP bool) any {
 	pointerOffset := int64(0)
 	d.FieldStruct("header", func(d *decode.D) {
 		if isTCP {
@@ -264,7 +264,7 @@ func dnsDecode(d *decode.D, isTCP bool) interface{} {
 	return nil
 }
 
-func dnsUDPDecode(d *decode.D, in interface{}) interface{} {
+func dnsUDPDecode(d *decode.D, in any) any {
 	if upi, ok := in.(format.UDPPayloadIn); ok {
 		upi.MustIsPort(d.Fatalf, format.UDPPortDomain, format.UDPPortMDNS)
 	}

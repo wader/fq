@@ -5,4 +5,25 @@ $ fq -d asn1_ber d tc48.ber
 0x00|23                                             |#               |  form: "constructed" (1)
 0x00|23                                             |#               |  tag: "bit_string" (0x3)
 0x00|   80                                          | .              |  length: "indefinite" (0)
-0x00|      03 02 00 01 03 02 00 01 03 02 0f 0f 00 00|  ..............|  unknown0: raw bits
+    |                                               |                |  constructed[0:3]:
+    |                                               |                |    [0]{}: object
+0x00|      03                                       |  .             |      class: "universal" (0)
+0x00|      03                                       |  .             |      form: "primitive" (0)
+0x00|      03                                       |  .             |      tag: "bit_string" (0x3)
+0x00|         02                                    |   .            |      length: 2
+0x00|            00                                 |    .           |      unused_bits_count: 0
+0x00|               01                              |     .          |      value: raw bits
+    |                                               |                |    [1]{}: object
+0x00|                  03                           |      .         |      class: "universal" (0)
+0x00|                  03                           |      .         |      form: "primitive" (0)
+0x00|                  03                           |      .         |      tag: "bit_string" (0x3)
+0x00|                     02                        |       .        |      length: 2
+0x00|                        00                     |        .       |      unused_bits_count: 0
+0x00|                           01                  |         .      |      value: raw bits
+    |                                               |                |    [2]{}: object
+0x00|                              03               |          .     |      class: "universal" (0)
+0x00|                              03               |          .     |      form: "primitive" (0)
+0x00|                              03               |          .     |      tag: "bit_string" (0x3)
+0x00|                                 02            |           .    |      length: 2
+0x00|                                    0f         |            .   |      unused_bits_count: 15
+0x00|                                       0f 00 00|             ...|  unknown0: raw bits

@@ -12,9 +12,9 @@ import (
 	"embed"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -25,7 +25,7 @@ var rtmpMpegASCFormat decode.Group
 var rtmpFS embed.FS
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.RTMP,
 		Description: "Real-Time Messaging Protocol",
 		Groups: []string{
@@ -37,8 +37,8 @@ func init() {
 			{Names: []string{format.MPEG_ASC}, Group: &rtmpMpegASCFormat},
 		},
 		Functions: []string{"_help"},
-		Files:     rtmpFS,
 	})
+	interp.RegisterFS(rtmpFS)
 }
 
 // from RTMP spec
@@ -195,7 +195,7 @@ var videoMessageH264PacketTypeNames = scalar.UToSymStr{
 }
 
 // TODO: invalid warning that timestampDelta is unused
-//nolint: structcheck,unused
+//nolint: unused
 type messageHeader struct {
 	timestamp       uint64
 	timestampDelta  uint64
@@ -307,7 +307,7 @@ func rtmpDecodeMessageType(d *decode.D, typ int, chunkSize *int) {
 	}
 }
 
-func rtmpDecode(d *decode.D, in interface{}) interface{} {
+func rtmpDecode(d *decode.D, in any) any {
 	var isClient bool
 	if tsi, ok := in.(format.TCPStreamIn); ok {
 		tsi.MustIsPort(d.Fatalf, format.TCPPortRTMP)
@@ -370,11 +370,11 @@ func rtmpDecode(d *decode.D, in interface{}) interface{} {
 				case 0:
 					// 64-319: 2 byte
 					d.FieldU6("chunk_stream_id_prefix")
-					chunkSteamID = d.FieldU8("chunk_stream_id", scalar.UAdd(64))
+					chunkSteamID = d.FieldU8("chunk_stream_id", scalar.ActualUAdd(64))
 				case 1:
 					// 64-65599: 3 byte
 					d.FieldU6("chunk_stream_id_prefix")
-					chunkSteamID = d.FieldU16("chunk_stream_id", scalar.UAdd(64))
+					chunkSteamID = d.FieldU16("chunk_stream_id", scalar.ActualUAdd(64))
 				default:
 					// 2-63: 1 byte
 					chunkSteamID = d.FieldU6("chunk_stream_id")
@@ -459,7 +459,7 @@ func rtmpDecode(d *decode.D, in interface{}) interface{} {
 				}
 
 				if payloadLength > 0 {
-					d.MustCopyBits(&m.b, d.FieldRawLen("data", payloadLength))
+					d.CopyBits(&m.b, d.FieldRawLen("data", payloadLength))
 				}
 
 				if m.l == uint64(m.b.Len()) {

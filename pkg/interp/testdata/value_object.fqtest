@@ -1,4 +1,4 @@
-$ fq -i -d mp3 . /test.mp3
+$ fq -i -d mp3 . test.mp3
 mp3> .headers[0].flags | ., tovalue, type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.headers[0].flags{}:
 0x0|               00                              |     .          |  unsynchronisation: false
@@ -48,7 +48,7 @@ mp3> .headers[0].flags | type
 mp3> .headers[0].flags | tonumber
 error: tonumber cannot be applied to: object
 mp3> .headers[0].flags | tostring
-error: tostring cannot be applied to: object
+"{\"experimental_indicator\":false,\"extended_header\":false,\"unsynchronisation\":false,\"unused\":0}"
 mp3> .headers[0].flags + ""
 error: cannot add: object ({"experimental_indicator" ...}) and string ("")
 mp3> .headers[0].flags + 1
@@ -88,13 +88,13 @@ mp3> .headers[0].flags._path | ., type, length?
 mp3> .headers[0].flags._bits | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|               00                              |     .          |.: raw bits 0x5-0x5.7 (1)
-"binary"
+"string"
 8
 mp3> 
 mp3> .headers[0].flags._bytes | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|               00                              |     .          |.: raw bits 0x5-0x5.7 (1)
-"binary"
+"string"
 1
 mp3> 
 mp3> .headers[0].flags._error | ., type, length?

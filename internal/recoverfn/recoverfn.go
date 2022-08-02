@@ -10,7 +10,7 @@ import (
 const stackSizeLimit = 256
 
 type Raw struct {
-	RecoverV  interface{}
+	RecoverV  any
 	RecoverPC uintptr
 	PCs       []uintptr
 }
@@ -22,7 +22,7 @@ func Run(fn func()) (Raw, bool) {
 	var recoverPC [1]uintptr
 	runtime.Callers(1, recoverPC[:])
 
-	pc, v := func() (pcs []uintptr, v interface{}) {
+	pc, v := func() (pcs []uintptr, v any) {
 		defer func() {
 			if recoverErr := recover(); recoverErr != nil {
 				pcs = make([]uintptr, stackSizeLimit)

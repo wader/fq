@@ -4,7 +4,7 @@ stderr:
 Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 $ fq -h
 fq - jq for binary formats
-Tool, language and decoders for inspecting binary data.
+Tool, language and decoders for working with binary data.
 For more information see https://github.com/wader/fq
 
 Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
@@ -13,33 +13,36 @@ Example usages:
   fq . file
   fq d file
   fq tovalue file
+  fq -r totoml file.yml
+  fq -s -d html 'map(.html.head.title?)' *.html
   cat file.cbor | fq -d cbor torepr
   fq 'grep("^main$") | parent' /bin/ls
-  fq 'grep_by(format == "exif") | d' *.png *.jpeg
+  fq -r 'grep_by(.protocol=="icmp").source_ip | tovalue' *.pcap
+  fq -i
 
---arg NAME VALUE         Set variable $NAME to string VALUE
---argjson NAME JSON      Set variable $NAME to JSON
---color-output,-C        Force color output
---compact-output,-c      Compact output
---decode,-d NAME         Decode format (probe)
---decode-file NAME PATH  Set variable $NAME to decode of file
---from-file,-f PATH      Read EXPR from file
---help,-h [TOPIC]        Show help for TOPIC (ex: --help, --help formats)
---include-path,-L PATH   Include search path
---join-output,-j         No newline between outputs
---monochrome-output,-M   Force monochrome output
---null-input,-n          Null input (use input and inputs functions to read)
---null-output,-0         Null byte between outputs
---option,-o KEY=VALUE    Set option (ex: -o color=true, see --help options)
---raw-file NAME PATH     Set variable $NAME to string content of file
---raw-input,-R           Read raw input strings (don't decode)
---raw-output,-r          Raw string output (without quotes)
---repl,-i                Interactive REPL
---slurp,-s               Read (slurp) all inputs into an array
---version,-v             Show version
+--arg NAME VALUE        Set variable $NAME to string VALUE
+--argdecode NAME PATH   Set variable $NAME to decode of PATH
+--argjson NAME JSON     Set variable $NAME to JSON
+--color-output,-C       Force color output
+--compact-output,-c     Compact output
+--decode,-d NAME        Decode format (probe)
+--from-file,-f PATH     Read EXPR from file
+--help,-h [TOPIC]       Show help for TOPIC (ex: --help, --help formats)
+--include-path,-L PATH  Include search path
+--join-output,-j        No newline between outputs
+--monochrome-output,-M  Force monochrome output
+--null-input,-n         Null input (use input and inputs functions to read)
+--null-output,-0        Null byte between outputs
+--option,-o KEY=VALUE   Set option (ex: -o color=true, see --help options)
+--raw-file NAME PATH    Set variable $NAME to string content of file
+--raw-input,-R          Read raw input strings (don't decode)
+--raw-output,-r         Raw string output (without quotes)
+--repl,-i               Interactive REPL
+--slurp,-s              Slurp all inputs into an array or string (-Rs)
+--version,-v            Show version
 $ fq -i
 null> ^D
-$ fq -i . /test.mp3
+$ fq -i . test.mp3
 mp3> ^D
 $ fq -n
 null
@@ -60,6 +63,7 @@ $ fq -nc "[1,2,3]"
 $ fq --help options
 addrbase            16
 arg                 []
+argdecode           []
 argjson             []
 array_truncate      50
 bits_format         snippet
@@ -68,7 +72,6 @@ color               false
 colors              array=white,dumpaddr=yellow,dumpheader=yellow+underline,error=brightred,false=yellow,index=white,null=brightblack,number=cyan,object=white,objectkey=brightblue,prompt_repl_level=brightblack,prompt_value=white,string=green,true=yellow,value=white
 compact             false
 completion_timeout  10
-decode_file         []
 decode_format       probe
 decode_progress     false
 depth               0
@@ -114,15 +117,21 @@ avc_sei              H.264/AVC Supplemental Enhancement Information
 avc_sps              H.264/AVC Sequence Parameter Set
 avro_ocf             Avro object container file
 bencode              BitTorrent bencoding
+bitcoin_blkdat       Bitcoin blk.dat
+bitcoin_block        Bitcoin block
+bitcoin_script       Bitcoin script
+bitcoin_transaction  Bitcoin transaction
 bsd_loopback_frame   BSD loopback frame
 bson                 Binary JSON
 bzip2                bzip2 compression
 cbor                 Concise Binary Object Representation
+csv                  Comma separated values
 dns                  DNS packet
 dns_tcp              DNS packet (TCP)
 elf                  Executable and Linkable Format
 ether8023_frame      Ethernet 802.3 frame
 exif                 Exchangeable Image File Format
+fairplay_spc         FairPlay Server Playback Context
 flac                 Free Lossless Audio Codec file
 flac_frame           FLAC frame
 flac_metadatablock   FLAC metadatablock
@@ -138,6 +147,7 @@ hevc_nalu            H.265/HEVC Network Access Layer Unit
 hevc_pps             H.265/HEVC Picture Parameter Set
 hevc_sps             H.265/HEVC Sequence Parameter Set
 hevc_vps             H.265/HEVC Video Parameter Set
+html                 HyperText Markup Language
 icc_profile          International Color Consortium profile
 icmp                 Internet Control Message Protocol
 icmpv6               Internet Control Message Protocol v6
@@ -147,7 +157,7 @@ id3v2                ID3v2 metadata
 ipv4_packet          Internet protocol v4 packet
 ipv6_packet          Internet protocol v6 packet
 jpeg                 Joint Photographic Experts Group file
-json                 JSON
+json                 JavaScript Object Notation
 macho                Mach-O macOS executable
 matroska             Matroska file
 mp3                  MP3 file
@@ -176,6 +186,7 @@ sll_packet           Linux cooked capture encapsulation
 tar                  Tar archive
 tcp_segment          Transmission control protocol segment
 tiff                 Tag Image File Format
+toml                 Tom's Obvious, Minimal Language
 udp_datagram         User datagram protocol
 vorbis_comment       Vorbis comment
 vorbis_packet        Vorbis packet
@@ -186,6 +197,8 @@ vpx_ccr              VPX Codec Configuration Record
 wav                  WAV file
 webp                 WebP image
 xing                 Xing header
+xml                  Extensible Markup Language
+yaml                 YAML Ain't Markup Language
 zip                  ZIP archive
 $ fq -X
 exitcode: 2

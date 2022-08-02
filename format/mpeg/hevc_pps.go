@@ -4,12 +4,12 @@ package mpeg
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.HEVC_PPS,
 		Description: "H.265/HEVC Picture Parameter Set",
 		DecodeFn:    hevcPPSDecode,
@@ -17,7 +17,7 @@ func init() {
 }
 
 // H.265 page 36
-func hevcPPSDecode(d *decode.D, in interface{}) interface{} {
+func hevcPPSDecode(d *decode.D, _ any) any {
 	d.FieldUFn("pps_pic_parameter_set_id", uEV)
 	d.FieldUFn("pps_seq_parameter_set_id", uEV)
 	d.FieldBool("dependent_slice_segments_enabled_flag")

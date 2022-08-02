@@ -2,13 +2,13 @@ package mpeg
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.AVC_SEI,
 		Description: "H.264/AVC Supplemental Enhancement Information",
 		DecodeFn:    avcSEIDecode,
@@ -101,7 +101,7 @@ func ffSum(d *decode.D) uint64 {
 	return s
 }
 
-func avcSEIDecode(d *decode.D, in interface{}) interface{} {
+func avcSEIDecode(d *decode.D, _ any) any {
 	payloadType := d.FieldUFn("payload_type", func(d *decode.D) uint64 { return ffSum(d) }, seiNames)
 	payloadSize := d.FieldUFn("payload_size", func(d *decode.D) uint64 { return ffSum(d) })
 

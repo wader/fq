@@ -12,10 +12,10 @@ import (
 	"fmt"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/internal/mathextra"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
@@ -23,7 +23,7 @@ var flacMetadatablocksFormat decode.Group
 var flacFrameFormat decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.FLAC,
 		Description: "Free Lossless Audio Codec file",
 		Groups:      []string{format.PROBE},
@@ -35,7 +35,7 @@ func init() {
 	})
 }
 
-func flacDecode(d *decode.D, in interface{}) interface{} {
+func flacDecode(d *decode.D, _ any) any {
 	d.FieldUTF8("magic", 4, d.AssertStr("fLaC"))
 
 	var streamInfo format.FlacStreamInfo
@@ -72,7 +72,7 @@ func flacDecode(d *decode.D, in interface{}) interface{} {
 			frameStreamSamplesBuf := ffo.SamplesBuf[0 : samplesInFrame*uint64(ffo.Channels*ffo.BitsPerSample/8)]
 			framesNDecodedSamples += ffo.Samples
 
-			d.MustCopy(md5Samples, bytes.NewReader(frameStreamSamplesBuf))
+			d.Copy(md5Samples, bytes.NewReader(frameStreamSamplesBuf))
 			streamDecodedSamples += ffo.Samples
 
 			// reuse buffer if possible

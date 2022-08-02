@@ -6,8 +6,8 @@ import (
 	"fmt"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/registry"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 )
 
 var headerFormat decode.Group
@@ -15,9 +15,9 @@ var footerFormat decode.Group
 var mp3Frame decode.Group
 
 func init() {
-	registry.MustRegister(decode.Format{
+	interp.RegisterFormat(decode.Format{
 		Name:        format.MP3,
-		ProbeOrder:  20, // after most others (silent samples and jpeg header can look like mp3 sync)
+		ProbeOrder:  format.ProbeOrderBinFuzzy, // after most others (silent samples and jpeg header can look like mp3 sync)
 		Description: "MP3 file",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    mp3Decode,
@@ -40,7 +40,7 @@ func init() {
 	})
 }
 
-func mp3Decode(d *decode.D, in interface{}) interface{} {
+func mp3Decode(d *decode.D, in any) any {
 	mi, _ := in.(format.Mp3In)
 
 	// things in a mp3 stream usually have few unique combinations of.

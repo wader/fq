@@ -1,4 +1,4 @@
-$ fq -i -d mp3 . /test.mp3
+$ fq -i -d mp3 . test.mp3
 mp3> .headers | ., tovalue, type, length?
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.headers[0:1]:
 0x00|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|  [0]{}: header (id3v2)
@@ -127,7 +127,7 @@ mp3> .headers | type
 mp3> .headers | tonumber
 error: tonumber cannot be applied to: array
 mp3> .headers | tostring
-error: tostring cannot be applied to: array
+"[{\"flags\":{\"experimental_indicator\":false,\"extended_header\":false,\"unsynchronisation\":false,\"unused\":0},\"frames\":[{\"flags\":{\"compression\":false,\"data_length_indicator\":false,\"encryption\":false,\"file_alter_preservation\":false,\"grouping_identity\":false,\"read_only\":false,\"tag_alter_preservation\":false,\"unsync\":false,\"unused0\":0,\"unused1\":0,\"unused2\":0},\"id\":\"TSSE\",\"size\":15,\"text\":\"Lavf58.45.100\",\"text_encoding\":\"utf8\"}],\"magic\":\"ID3\",\"padding\":\"\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\",\"revision\":0,\"size\":35,\"version\":4}]"
 mp3> .headers + ""
 error: cannot add: array ([{"flags":{"experimental_ ...]) and string ("")
 mp3> .headers + 1
@@ -166,14 +166,14 @@ mp3> .headers._bits | ., type, length?
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x00|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|.: raw bits 0x0-0x2c.7 (45)
 *   |until 0x2c.7 (45)                              |                |
-"binary"
+"string"
 360
 mp3> 
 mp3> .headers._bytes | ., type, length?
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x00|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|.: raw bits 0x0-0x2c.7 (45)
 *   |until 0x2c.7 (45)                              |                |
-"binary"
+"string"
 45
 mp3> 
 mp3> .headers._error | ., type, length?

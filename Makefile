@@ -62,7 +62,8 @@ gogenerate:
 .PHONY: lint
 lint:
 # bump: make-golangci-lint /golangci-lint@v([\d.]+)/ git:https://github.com/golangci/golangci-lint.git|^1
-	go run github.com/golangci/golangci-lint/cmd/golangci-lint@v1.45.2 run
+# bump: make-golangci-lint link "Release notes" https://github.com/golangci/golangci-lint/releases/tag/v$LATEST
+	go run github.com/golangci/golangci-lint/cmd/golangci-lint@v1.47.3 run
 
 .PHONY: depgraph.svg
 depgraph.svg:
@@ -93,7 +94,7 @@ update-gomod:
 .PHONY: fuzz
 fuzz:
 # in other terminal: tail -f /tmp/repanic
-	REPANIC_LOG=/tmp/repanic gotip test -tags fuzz -v -run Fuzz -fuzz=Fuzz ./format/
+	FUZZTEST=1 REPANIC_LOG=/tmp/repanic gotip test -v -run Fuzz -fuzz=Fuzz ./format/
 
 # usage: make release VERSION=0.0.1
 # tag forked dependeces for history and to make then stay around
