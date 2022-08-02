@@ -21,6 +21,7 @@ import (
 	_ "github.com/wader/fq/format/dns"
 	_ "github.com/wader/fq/format/elf"
 	_ "github.com/wader/fq/format/fairplay"
+	_ "github.com/wader/fq/format/fit"
 	_ "github.com/wader/fq/format/flac"
 	_ "github.com/wader/fq/format/gif"
 	_ "github.com/wader/fq/format/gzip"
