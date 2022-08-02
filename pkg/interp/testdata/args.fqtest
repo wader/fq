@@ -159,6 +159,7 @@ ipv6_packet          Internet protocol v6 packet
 jpeg                 Joint Photographic Experts Group file
 json                 JavaScript Object Notation
 macho                Mach-O macOS executable
+macho_fat            Fat Mach-O macOS executable (multi-architecture)
 matroska             Matroska file
 mp3                  MP3 file
 mp3_frame            MPEG audio layer 3 frame

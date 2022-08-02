@@ -82,6 +82,7 @@ const (
 	JPEG                = "jpeg"
 	JSON                = "json"
 	MACHO               = "macho"
+	MACHO_FAT           = "macho_fat"
 	MATROSKA            = "matroska"
 	MP3                 = "mp3"
 	MP3_FRAME           = "mp3_frame"

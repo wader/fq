@@ -181,24 +181,24 @@ func (d *D) tryTextLenPrefixed(lenBits int, fixedBytes int, e encoding.Encoding)
 	return e.NewDecoder().String(string(bs[0:l]))
 }
 
-func (d *D) tryTextNull(nullBytes int, e encoding.Encoding) (string, error) {
-	if nullBytes < 1 {
-		return "", fmt.Errorf("tryTextNull nullBytes must be >= 1 (%d)", nullBytes)
+func (d *D) tryTextNull(charBytes int, e encoding.Encoding) (string, error) {
+	if charBytes < 1 {
+		return "", fmt.Errorf("tryTextNull charBytes must be >= 1 (%d)", charBytes)
 	}
 
 	p := d.Pos()
-	peekBits, _, err := d.TryPeekFind(nullBytes*8, 8, -1, func(v uint64) bool { return v == 0 })
+	peekBits, _, err := d.TryPeekFind(charBytes*8, int64(charBytes)*8, -1, func(v uint64) bool { return v == 0 })
 	if err != nil {
 		return "", err
 	}
-	n := (int(peekBits) / 8) + nullBytes
+	n := (int(peekBits) / 8) + charBytes
 	bs, err := d.TryBytesLen(n)
 	if err != nil {
 		d.SeekAbs(p)
 		return "", err
 	}
 
-	return e.NewDecoder().String(string(bs[0 : n-nullBytes]))
+	return e.NewDecoder().String(string(bs[0 : n-charBytes]))
 }
 
 func (d *D) tryTextNullLen(fixedBytes int, e encoding.Encoding) (string, error) {

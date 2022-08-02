@@ -519,6 +519,13 @@ out   # Decode value as macho
 out   ... | macho
 out References and links
 out   https://github.com/aidansteele/osx-abi-macho-file-format-reference
+"help(macho_fat)"
+out macho_fat: Fat Mach-O macOS executable (multi-architecture) decoder
+out Examples:
+out   # Decode file as macho_fat
+out   $ fq -d macho_fat . file
+out   # Decode value as macho_fat
+out   ... | macho_fat
 "help(matroska)"
 out matroska: Matroska file decoder
 out Examples:
