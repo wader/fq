@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/postgres/flavours/pgproee14"
 	"github.com/wader/fq/format/postgres/flavours/postgres14"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
@@ -25,6 +26,8 @@ func decodePgheap(d *decode.D, in any) any {
 	switch flavour {
 	case PG_FLAVOUR_POSTGRES14, PG_FLAVOUR_POSTGRES:
 		return postgres14.DecodeHeap(d)
+	case PG_FLAVOUR_PGPROEE14:
+		return pgproee14.DecodeHeap(d)
 	default:
 		break
 	}
