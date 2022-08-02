@@ -29,6 +29,7 @@ const (
 	PG_FLAVOUR_POSTGRES   = "postgres"
 	PG_FLAVOUR_POSTGRES11 = "postgres11"
 	PG_FLAVOUR_POSTGRES14 = "postgres14"
+	PG_FLAVOUR_PGPROEE11  = "pgproee11"
 	PG_FLAVOUR_PGPROEE14  = "pgproee14"
 )
 

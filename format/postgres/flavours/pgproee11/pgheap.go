@@ -1,4 +1,4 @@
-package pgproee14
+package pgproee11
 
 import (
 	"github.com/wader/fq/format/postgres/common"
@@ -25,26 +25,19 @@ import (
 //
 /* total size (bytes):    8 */
 
-// type = struct ItemIdData {
-/*    0: 0   |     4 */ // unsigned int lp_off : 15;
-/*    1: 7   |     4 */ // unsigned int lp_flags : 2;
-/*    2: 1   |     4 */ // unsigned int lp_len : 15;
-//
-/* total size (bytes):    4 */
-
 // type = struct HeapTupleHeaderData {
 /*    0      |    12 */ // union {
-/*                12 */ //    HeapTupleFields t_heap;
-/*                12 */ //    DatumTupleFields t_datum;
-// 								} t_choice;
+/*                12 */ //     HeapTupleFields t_heap;
+/*                12 */ //     DatumTupleFields t_datum;
+//							} t_choice;
 /* total size (bytes):   12 */
 //
-/*   12      |     6 */ // ItemPointerData t_ctid
-/*   18      |     2 */ // uint16 t_infomask2
-/*   20      |     2 */ // uint16 t_infomask
-/*   22      |     1 */ // uint8 t_hoff
-/*   23      |     0 */ // bits8 t_bits[]
-/* XXX  1-byte padding  */
+/*   12      |     6 */ // ItemPointerData t_ctid;
+/*   18      |     2 */ // uint16 t_infomask2;
+/*   20      |     2 */ // uint16 t_infomask;
+/*   22      |     1 */ // uint8 t_hoff;
+/*   23      |     0 */ // bits8 t_bits[];
+/* XXX  1-byte padding */
 //
 /* total size (bytes):   24 */
 
@@ -52,11 +45,10 @@ import (
 /*    0      |     4 */ // ShortTransactionId t_xmin;
 /*    4      |     4 */ // ShortTransactionId t_xmax;
 /*    8      |     4 */ // union {
-/*                 4 */ //    CommandId t_cid;
-/*                 4 */ //    ShortTransactionId t_xvac;
-//
+/*                 4 */ //     CommandId t_cid;
+/*                 4 */ //     ShortTransactionId t_xvac;
+//							} t_field3;
 /* total size (bytes):    4 */
-// } t_field3;
 //
 /* total size (bytes):   12 */
 
