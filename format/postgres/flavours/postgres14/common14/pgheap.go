@@ -292,7 +292,7 @@ func decodeTuples(d *decode.D) {
 
 			pos1 := d.Pos()
 			// we need infomask before t_xmin, t_xmax
-			d.SeekAbs(pos1 + 48)
+			d.SeekAbs(pos1 + 18*8)
 			d.FieldU16("t_infomask2")
 			d.FieldStruct("Infomask2", decodeInfomask2)
 			d.FieldU16("t_infomask")
