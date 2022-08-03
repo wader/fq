@@ -63,6 +63,16 @@ func (m xLogRecPtrMapper) MapScalar(s scalar.S) (scalar.S, error) {
 var XLogRecPtrMapper = xLogRecPtrMapper{}
 var LocPtrMapper = xLogRecPtrMapper{}
 
+type nextFullXidMapper struct{}
+
+func (m nextFullXidMapper) MapScalar(s scalar.S) (scalar.S, error) {
+	v := s.ActualU()
+	s.Sym = fmt.Sprintf("%d:%d", v>>32, uint32(v))
+	return s, nil
+}
+
+var NextFullXidMapper = nextFullXidMapper{}
+
 type timeMapper struct{}
 
 func (m timeMapper) MapScalar(s scalar.S) (scalar.S, error) {
