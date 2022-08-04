@@ -106,13 +106,11 @@ var ActualTrimSpace = ActualStrFn(strings.TrimSpace)
 func strMapToSym(fn func(s string) (any, error)) Mapper {
 	return Fn(func(s S) (S, error) {
 		ts := strings.TrimSpace(s.ActualStr())
-		if ts != "" {
-			n, err := fn(ts)
-			if err != nil {
-				return s, err
-			}
-			s.Sym = n
+		n, err := fn(ts)
+		if err != nil {
+			return s, err
 		}
+		s.Sym = n
 		return s, nil
 	})
 }
