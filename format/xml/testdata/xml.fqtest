@@ -181,18 +181,21 @@ null> spew("files") | .name, try (.str | fromxml({array: true}) | ., (toxml({ind
 "all.xml"
 [
   "elm",
+  null,
   [
     [
       "first",
       {
         "#comment": "comment"
-      }
+      },
+      []
     ],
     [
       "middle",
       {
         "#text": "text"
-      }
+      },
+      []
     ],
     [
       "last",
@@ -201,7 +204,8 @@ null> spew("files") | .name, try (.str | fromxml({array: true}) | ., (toxml({ind
         "#text": "text1\n        \n        text2",
         "attr1": "v1",
         "attr2": "v2"
-      }
+      },
+      []
     ]
   ]
 ]
@@ -214,7 +218,9 @@ null> spew("files") | .name, try (.str | fromxml({array: true}) | ., (toxml({ind
 </elm>
 "decl.xml"
 [
-  "elm"
+  "elm",
+  null,
+  []
 ]
 <elm></elm>
 "multi_diff.xml"
@@ -234,7 +240,8 @@ null> spew("files") | .name, try (.str | fromxml({array: true}) | ., (toxml({ind
       {
         "#text": "1",
         "ns1:attr1": "v1"
-      }
+      },
+      []
     ],
     [
       "ns2:aaa",
@@ -247,19 +254,22 @@ null> spew("files") | .name, try (.str | fromxml({array: true}) | ., (toxml({ind
           "ns1:ccc",
           {
             "ns1:attr3": "v3"
-          }
+          },
+          []
         ],
         [
           "ns2:ccc",
           {
             "ns2:attr4": "v4"
-          }
+          },
+          []
         ],
         [
           "ccc",
           {
             "ns2:attr5": "v5"
-          }
+          },
+          []
         ]
       ]
     ],
@@ -267,7 +277,8 @@ null> spew("files") | .name, try (.str | fromxml({array: true}) | ., (toxml({ind
       "aaa",
       {
         "#text": "3"
-      }
+      },
+      []
     ]
   ]
 ]
@@ -282,7 +293,9 @@ null> spew("files") | .name, try (.str | fromxml({array: true}) | ., (toxml({ind
 </elm>
 "simple.xml"
 [
-  "elm"
+  "elm",
+  null,
+  []
 ]
 <elm></elm>
 "escape.xml"
@@ -291,7 +304,8 @@ null> spew("files") | .name, try (.str | fromxml({array: true}) | ., (toxml({ind
   {
     "#text": "&<>",
     "attr": "&<>"
-  }
+  },
+  []
 ]
 <a attr="&amp;&lt;&gt;">&amp;&lt;&gt;</a>
 null> {doc: {a: "", "#text": "text", "#comment": "comment", "-attr": "value"}} | toxml, toxml({indent: 1}), toxml({indent: 8}) | println

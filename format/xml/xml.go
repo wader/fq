@@ -90,7 +90,7 @@ func (nss xmlNNStack) push(name string, url string) xmlNNStack {
 	return xmlNNStack(n)
 }
 
-func fromXMLArray(n xmlNode) any {
+func fromXMLToArray(n xmlNode) any {
 	var f func(n xmlNode, nss xmlNNStack) []any
 	f = func(n xmlNode, nss xmlNNStack) []any {
 		attrs := map[string]any{}
@@ -130,10 +130,11 @@ func fromXMLArray(n xmlNode) any {
 		elm := []any{name}
 		if len(attrs) > 0 {
 			elm = append(elm, attrs)
+		} else {
+			// make attrs null if there were none, jq allows index into null
+			elm = append(elm, nil)
 		}
-		if len(nodes) > 0 {
-			elm = append(elm, nodes)
-		}
+		elm = append(elm, nodes)
 
 		return elm
 	}
@@ -141,7 +142,7 @@ func fromXMLArray(n xmlNode) any {
 	return f(n, nil)
 }
 
-func fromXMLObject(n xmlNode, xi format.XMLIn) any {
+func fromXMLToObject(n xmlNode, xi format.XMLIn) any {
 	var f func(n xmlNode, seq int, nss xmlNNStack) any
 	f = func(n xmlNode, seq int, nss xmlNNStack) any {
 		attrs := map[string]any{}
@@ -226,9 +227,9 @@ func decodeXML(d *decode.D, in any) any {
 	}
 
 	if xi.Array {
-		r = fromXMLArray(n)
+		r = fromXMLToArray(n)
 	} else {
-		r = fromXMLObject(n, xi)
+		r = fromXMLToObject(n, xi)
 	}
 	if err != nil {
 		d.Fatalf("%s", err)
@@ -258,7 +259,7 @@ type ToXMLOpts struct {
 	Indent int
 }
 
-func toXMLObject(c any, opts ToXMLOpts) any {
+func toXMLFromObject(c any, opts ToXMLOpts) any {
 	var f func(name string, content any) (xmlNode, int)
 	f = func(name string, content any) (xmlNode, int) {
 		n := xmlNode{
@@ -349,7 +350,7 @@ func toXMLObject(c any, opts ToXMLOpts) any {
 }
 
 // ["elm", {attrs}, [children]] -> <elm attrs...>children...</elm>
-func toXMLArray(c any, opts ToXMLOpts) any {
+func toXMLFromArray(c any, opts ToXMLOpts) any {
 	var f func(elm []any) (xmlNode, bool)
 	f = func(elm []any) (xmlNode, bool) {
 		var name string
@@ -440,9 +441,9 @@ func toXMLArray(c any, opts ToXMLOpts) any {
 
 func toXML(_ *interp.Interp, c any, opts ToXMLOpts) any {
 	if v, ok := gojqextra.Cast[map[string]any](c); ok {
-		return toXMLObject(gojqextra.NormalizeToStrings(v), opts)
+		return toXMLFromObject(gojqextra.NormalizeToStrings(v), opts)
 	} else if v, ok := gojqextra.Cast[[]any](c); ok {
-		return toXMLArray(gojqextra.NormalizeToStrings(v), opts)
+		return toXMLFromArray(gojqextra.NormalizeToStrings(v), opts)
 	}
 	return gojqextra.FuncTypeError{Name: "toxml", V: c}
 }

@@ -495,7 +495,7 @@ zip> ^D
 
 - `fromxml`/`fromxml($opts)` Parse XML into jq value.<br>
   `{seq: true}` preserve element ordering if more than one sibling.<br>
-  `{array: true}` use nested arrays to represent elements.<br>
+  `{array: true}` use nested `[name, attributes, children]` arrays to represent elements. Attributes will be `null` if none and children will be `[]` if none, this is to make it easier to work it. `toxml` does not require this.<br>
 - `fromhtml`/`fromhtml($opts)` Parse HTML into jq value.<br>
   Similar to `fromxml` but parses html5 in non-script mode. Will always have a `html` root with `head` and `body` elements.<br>
   `{array: true}` use nested arrays to represent elements.<br>
