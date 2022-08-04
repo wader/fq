@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"io/ioutil"
 	"math/big"
 
 	"github.com/wader/fq/internal/aheadreadseeker"
@@ -217,7 +216,7 @@ func (i *Interp) _open(c any) any {
 	}
 
 	if fRS == nil {
-		buf, err := ioutil.ReadAll(ctxreadseeker.New(i.EvalInstance.Ctx, &ioextra.ReadErrSeeker{Reader: f}))
+		buf, err := io.ReadAll(ctxreadseeker.New(i.EvalInstance.Ctx, &ioextra.ReadErrSeeker{Reader: f}))
 		if err != nil {
 			f.Close()
 			return err

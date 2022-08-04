@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math/big"
 	"regexp"
 
@@ -1129,7 +1128,7 @@ func (d *D) FieldFormatReaderLen(name string, nBits int64, fn func(r io.Reader) 
 	if err != nil {
 		d.IOPanic(err, "FieldFormatReaderLen: fn")
 	}
-	rBuf, err := ioutil.ReadAll(r)
+	rBuf, err := io.ReadAll(r)
 	if err != nil {
 		d.IOPanic(err, "FieldFormatReaderLen: ReadAll")
 	}
@@ -1149,7 +1148,7 @@ func (d *D) TryFieldReaderRangeFormat(name string, startBit int64, nBits int64, 
 		return 0, nil, nil, nil, err
 	}
 	r := bitio.NewIOReadSeeker(br)
-	rb, err := ioutil.ReadAll(fn(r))
+	rb, err := io.ReadAll(fn(r))
 	if err != nil {
 		return 0, nil, nil, nil, err
 	}

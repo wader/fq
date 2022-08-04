@@ -4,13 +4,13 @@ package main
 
 import (
 	"bytes"
-	"io/ioutil"
+	"io"
 	"os"
 	"strconv"
 )
 
 func main() {
-	bs, err := ioutil.ReadAll(os.Stdin)
+	bs, err := io.ReadAll(os.Stdin)
 	if err != nil {
 		panic(err)
 	}

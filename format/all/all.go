@@ -1,4 +1,5 @@
 // Package all registers all builtin formats with the default registry
+//
 //nolint:revive
 package all
 

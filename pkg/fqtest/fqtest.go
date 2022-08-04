@@ -2,7 +2,6 @@ package fqtest
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"strconv"
 	"testing"
@@ -19,7 +18,7 @@ func TestPath(t *testing.T, registry *interp.Registry) {
 		ColorDiff:   os.Getenv("DIFF_COLOR") != "",
 		WriteOutput: os.Getenv("WRITE_ACTUAL") != "",
 		Fn: func(t *testing.T, path, input string) (string, string, error) {
-			b, err := ioutil.ReadFile(path)
+			b, err := os.ReadFile(path)
 			if err != nil {
 				t.Fatal(err)
 			}
