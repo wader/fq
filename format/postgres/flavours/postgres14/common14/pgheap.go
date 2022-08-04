@@ -300,19 +300,20 @@ func decodeTuples(d *decode.D) {
 			continue
 		}
 
-		pos := int64(page.PagePosBegin)*8 + int64(page.ItemIds[i].lpOff)*8
+		pos := int64(page.PagePosBegin)*8 + int64(id.lpOff)*8
 		tupleDataLen := id.lpLen - SizeOfHeapTupleHeaderData
 
 		// seek to tuple with ItemId offset
 		d.SeekAbs(pos)
 
+		// type = struct HeapTupleHeaderData {
 		/*    0      |    12 */ // union {
 		/*                12 */ //     HeapTupleFields t_heap;
 		/*                12 */ //     DatumTupleFields t_datum;
 		//						} t_choice;
 		/* total size (bytes):   12  */
-		/*
-			/*   12      |     6 */ // ItemPointerData t_ctid;
+		//
+		/*   12      |     6 */ // ItemPointerData t_ctid;
 		/*   18      |     2 */ // uint16 t_infomask2;
 		/*   20      |     2 */ // uint16 t_infomask;
 		/*   22      |     1 */ // uint8 t_hoff;
