@@ -146,13 +146,9 @@ func fieldMSDOSDate(d *decode.D) {
 func zipDecode(d *decode.D, in any) any {
 	zi, _ := in.(format.ZipIn)
 
-	// TODO: just decode instead?
-	if !bytes.Equal(d.PeekBytes(4), []byte("PK\x03\x04")) {
-		d.Errorf("expected PK header")
-	}
-
 	d.Endian = decode.LittleEndian
 
+	// zip files are parsed from end
 	d.SeekAbs(d.Len())
 
 	// TODO: better EOCD probe
