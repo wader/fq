@@ -477,12 +477,12 @@ type TransactionMapper struct {
 func (m TransactionMapper) MapScalar(s scalar.S) (scalar.S, error) {
 	xid := s.ActualU()
 
-	if m.Page.PdXidBase != 0 && m.Tuple.IsMulti == 0 {
+	if m.Page.PdXidBase != 0 && m.Tuple.IsMulti == 0 && common.TransactionIdIsNormal(xid) {
 		xid64 := xid + m.Page.PdXidBase
 		s.Sym = fmt.Sprintf("%d", xid64)
 	}
 
-	if m.Page.PdMultiBase != 0 && m.Tuple.IsMulti != 0 {
+	if m.Page.PdMultiBase != 0 && m.Tuple.IsMulti != 0 && common.TransactionIdIsNormal(xid) {
 		xid64 := xid + m.Page.PdMultiBase
 		s.Sym = fmt.Sprintf("%d", xid64)
 	}

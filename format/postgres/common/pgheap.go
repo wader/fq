@@ -5,13 +5,18 @@ import (
 )
 
 const (
-	HeapPageSize = 8192
+	HeapPageSize             = 8192
+	FirstNormalTransactionId = 3
 
 	LP_UNUSED   = 0 /* unused (should always have lp_len=0) */
 	LP_NORMAL   = 1 /* used (should always have lp_len>0) */
 	LP_REDIRECT = 2 /* HOT redirect (should have lp_len=0) */
 	LP_DEAD     = 3
 )
+
+func TransactionIdIsNormal(xid uint64) bool {
+	return xid >= FirstNormalTransactionId
+}
 
 type lpOffMapper struct{}
 
