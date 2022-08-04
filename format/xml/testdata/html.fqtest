@@ -384,27 +384,34 @@ null> spew("files") | .name, (.str | fromhtml({array: true}) | ., (toxml({indent
 "all.xml"
 [
   "html",
+  null,
   [
     [
-      "head"
+      "head",
+      null,
+      []
     ],
     [
       "body",
+      null,
       [
         [
           "elm",
+          null,
           [
             [
               "first",
               {
                 "#comment": "comment"
-              }
+              },
+              []
             ],
             [
               "middle",
               {
                 "#text": "text"
-              }
+              },
+              []
             ],
             [
               "last",
@@ -413,7 +420,8 @@ null> spew("files") | .name, (.str | fromhtml({array: true}) | ., (toxml({indent
                 "#text": "text1\n        \n        text2",
                 "attr1": "v1",
                 "attr2": "v2"
-              }
+              },
+              []
             ]
           ]
         ]
@@ -436,18 +444,26 @@ null> spew("files") | .name, (.str | fromhtml({array: true}) | ., (toxml({indent
 "multi_diff.xml"
 [
   "html",
+  null,
   [
     [
-      "head"
+      "head",
+      null,
+      []
     ],
     [
       "body",
+      null,
       [
         [
-          "elm1"
+          "elm1",
+          null,
+          []
         ],
         [
-          "elm2"
+          "elm2",
+          null,
+          []
         ]
       ]
     ]
@@ -463,18 +479,26 @@ null> spew("files") | .name, (.str | fromhtml({array: true}) | ., (toxml({indent
 "multi_same.xml"
 [
   "html",
+  null,
   [
     [
-      "head"
+      "head",
+      null,
+      []
     ],
     [
       "body",
+      null,
       [
         [
-          "elm"
+          "elm",
+          null,
+          []
         ],
         [
-          "elm"
+          "elm",
+          null,
+          []
         ]
       ]
     ]
@@ -490,12 +514,16 @@ null> spew("files") | .name, (.str | fromhtml({array: true}) | ., (toxml({indent
 "ns.xml"
 [
   "html",
+  null,
   [
     [
-      "head"
+      "head",
+      null,
+      []
     ],
     [
       "body",
+      null,
       [
         [
           "elm",
@@ -509,7 +537,8 @@ null> spew("files") | .name, (.str | fromhtml({array: true}) | ., (toxml({indent
               {
                 "#text": "1",
                 "ns1:attr1": "v1"
-              }
+              },
+              []
             ],
             [
               "ns2:aaa",
@@ -522,19 +551,22 @@ null> spew("files") | .name, (.str | fromhtml({array: true}) | ., (toxml({indent
                   "ns1:ccc",
                   {
                     "ns1:attr3": "v3"
-                  }
+                  },
+                  []
                 ],
                 [
                   "ns2:ccc",
                   {
                     "ns2:attr4": "v4"
-                  }
+                  },
+                  []
                 ],
                 [
                   "ns3:ccc",
                   {
                     "ns2:attr5": "v5"
-                  }
+                  },
+                  []
                 ]
               ]
             ],
@@ -542,7 +574,8 @@ null> spew("files") | .name, (.str | fromhtml({array: true}) | ., (toxml({indent
               "aaa",
               {
                 "#text": "3"
-              }
+              },
+              []
             ]
           ]
         ]
@@ -567,15 +600,21 @@ null> spew("files") | .name, (.str | fromhtml({array: true}) | ., (toxml({indent
 "simple.xml"
 [
   "html",
+  null,
   [
     [
-      "head"
+      "head",
+      null,
+      []
     ],
     [
       "body",
+      null,
       [
         [
-          "elm"
+          "elm",
+          null,
+          []
         ]
       ]
     ]
@@ -590,19 +629,24 @@ null> spew("files") | .name, (.str | fromhtml({array: true}) | ., (toxml({indent
 "escape.xml"
 [
   "html",
+  null,
   [
     [
-      "head"
+      "head",
+      null,
+      []
     ],
     [
       "body",
+      null,
       [
         [
           "a",
           {
             "#text": "&<>",
             "attr": "&<>"
-          }
+          },
+          []
         ]
       ]
     ]
@@ -617,23 +661,29 @@ null> spew("files") | .name, (.str | fromhtml({array: true}) | ., (toxml({indent
 "noscript.html"
 [
   "html",
+  null,
   [
     [
       "head",
+      null,
       [
         [
-          "noscript"
+          "noscript",
+          null,
+          []
         ]
       ]
     ],
     [
       "body",
+      null,
       [
         [
           "a",
           {
             "#text": "text"
-          }
+          },
+          []
         ]
       ]
     ]

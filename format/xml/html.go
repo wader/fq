@@ -29,7 +29,7 @@ func init() {
 	interp.RegisterFS(htmlFS)
 }
 
-func fromHTMLObject(n *html.Node, hi format.HTMLIn) any {
+func fromHTMLToObject(n *html.Node, hi format.HTMLIn) any {
 	var f func(n *html.Node, seq int) any
 	f = func(n *html.Node, seq int) any {
 		attrs := map[string]any{}
@@ -114,7 +114,7 @@ func fromHTMLObject(n *html.Node, hi format.HTMLIn) any {
 	return f(n, -1)
 }
 
-func fromHTMLArray(n *html.Node) any {
+func fromHTMLToArray(n *html.Node) any {
 	var f func(n *html.Node) any
 	f = func(n *html.Node) any {
 		attrs := map[string]any{}
@@ -165,10 +165,11 @@ func fromHTMLArray(n *html.Node) any {
 		elm := []any{n.Data}
 		if len(attrs) > 0 {
 			elm = append(elm, attrs)
+		} else {
+			// make attrs null if there were none, jq allows index into null
+			elm = append(elm, nil)
 		}
-		if len(nodes) > 0 {
-			elm = append(elm, nodes)
-		}
+		elm = append(elm, nodes)
 
 		return elm
 	}
@@ -189,9 +190,9 @@ func decodeHTML(d *decode.D, in any) any {
 	}
 
 	if hi.Array {
-		r = fromHTMLArray(n)
+		r = fromHTMLToArray(n)
 	} else {
-		r = fromHTMLObject(n, hi)
+		r = fromHTMLToObject(n, hi)
 	}
 	if err != nil {
 		d.Fatalf("%s", err)
