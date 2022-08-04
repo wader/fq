@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -46,8 +45,8 @@ func (ft *fuzzTest) Platform() interp.Platform { return interp.Platform{} }
 func (ft *fuzzTest) Stdin() interp.Input {
 	return fuzzTestInput{FileReader: interp.FileReader{R: bytes.NewBuffer(ft.b)}}
 }
-func (ft *fuzzTest) Stdout() interp.Output        { return fuzzTestOutput{ioutil.Discard} }
-func (ft *fuzzTest) Stderr() interp.Output        { return fuzzTestOutput{ioutil.Discard} }
+func (ft *fuzzTest) Stdout() interp.Output        { return fuzzTestOutput{io.Discard} }
+func (ft *fuzzTest) Stderr() interp.Output        { return fuzzTestOutput{io.Discard} }
 func (ft *fuzzTest) InterruptChan() chan struct{} { return nil }
 func (ft *fuzzTest) Environ() []string            { return nil }
 func (ft *fuzzTest) Args() []string {
@@ -85,7 +84,7 @@ func FuzzFormats(f *testing.F) {
 				return err
 			}
 
-			b, readErr := ioutil.ReadFile(path)
+			b, readErr := os.ReadFile(path)
 			if readErr != nil {
 				f.Fatal(err)
 			}

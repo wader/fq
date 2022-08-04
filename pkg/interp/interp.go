@@ -11,7 +11,6 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"io/ioutil"
 	"math/big"
 	"path"
 	"strconv"
@@ -917,7 +916,7 @@ func (i *Interp) Eval(ctx context.Context, c any, expr string, opts EvalOpts) (g
 
 	output := opts.output
 	if opts.output == nil {
-		output = ioutil.Discard
+		output = io.Discard
 	}
 
 	runCtx, runCtxCancelFn := i.interruptStack.Push(ctx)

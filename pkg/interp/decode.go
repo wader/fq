@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math/big"
 	"reflect"
 	"strings"
@@ -143,7 +142,7 @@ func (i *Interp) _registry(c any) any {
 			if err != nil {
 				return err
 			}
-			b, err := ioutil.ReadAll(f)
+			b, err := io.ReadAll(f)
 			if err != nil {
 				return err
 			}

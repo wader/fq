@@ -227,10 +227,14 @@ const (
 
 // $00 ISO-8859-1 [ISO-8859-1]. Terminated with $00.
 // $01 UTF-16 [UTF-16] encoded Unicode [UNICODE] with BOM. All
-//     strings in the same frame SHALL have the same byteorder.
-//     Terminated with $00 00.
+//
+//	strings in the same frame SHALL have the same byteorder.
+//	Terminated with $00 00.
+//
 // $02 UTF-16BE [UTF-16] encoded Unicode [UNICODE] without BOM.
-//     Terminated with $00 00.
+//
+//	Terminated with $00 00.
+//
 // $03 UTF-8 [UTF-8] encoded Unicode [UNICODE]. Terminated with $00.
 var encodingNames = scalar.UToSymStr{
 	encodingISO8859_1: "iso_8859-1",

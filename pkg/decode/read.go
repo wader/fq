@@ -145,7 +145,8 @@ func (d *D) tryText(nBytes int, e encoding.Encoding) (string, error) {
 // read length prefixed text (ex pascal short string)
 // lBits length prefix
 // fixedBytes if != -1 read nBytes but trim to length
-//nolint: unparam
+//
+//nolint:unparam
 func (d *D) tryTextLenPrefixed(lenBits int, fixedBytes int, e encoding.Encoding) (string, error) {
 	if lenBits < 0 {
 		return "", fmt.Errorf("tryTextLenPrefixed lenBits must be >= 0 (%d)", lenBits)

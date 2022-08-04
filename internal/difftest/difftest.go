@@ -11,7 +11,6 @@
 package difftest
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -139,7 +138,7 @@ func TestWithOptions(t *testing.T, opts Options) {
 	for _, p := range paths {
 		t.Run(p, func(t *testing.T) {
 			t.Helper()
-			input, err := ioutil.ReadFile(p)
+			input, err := os.ReadFile(p)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -149,13 +148,13 @@ func TestWithOptions(t *testing.T, opts Options) {
 				t.Fatal(err)
 			}
 
-			expectedOutput, expectedOutputErr := ioutil.ReadFile(outputPath)
+			expectedOutput, expectedOutputErr := os.ReadFile(outputPath)
 			if opts.WriteOutput {
 				if expectedOutputErr == nil && string(expectedOutput) == output {
 					return
 				}
 
-				if err := ioutil.WriteFile(outputPath, []byte(output), 0644); err != nil { //nolint:gosec
+				if err := os.WriteFile(outputPath, []byte(output), 0644); err != nil { //nolint:gosec
 					t.Fatal(err)
 				}
 				return

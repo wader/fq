@@ -16,7 +16,8 @@ import (
 )
 
 // Cast gojq value to go value
-//nolint: forcetypeassert, unconvert
+//
+//nolint:forcetypeassert,unconvert
 func CastFn[T any](v any, structFn func(input any, result any) error) (T, bool) {
 	var t T
 	switch any(t).(type) {

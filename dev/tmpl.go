@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"io"
 	"log"
 	"os"
 	"strconv"
@@ -82,7 +82,7 @@ func main() {
 		_ = json.NewDecoder(r).Decode(&data)
 	}
 
-	templateBytes, err := ioutil.ReadAll(os.Stdin)
+	templateBytes, err := io.ReadAll(os.Stdin)
 	if err != nil {
 		panic(err)
 	}

@@ -24,6 +24,7 @@
 //
 
 // skip errcheck to keep code similar to gojq version
+//
 //nolint:errcheck
 package colorjson
 
