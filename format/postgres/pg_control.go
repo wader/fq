@@ -5,6 +5,7 @@ import (
 	"github.com/wader/fq/format/postgres/flavours/pgpro14"
 	"github.com/wader/fq/format/postgres/flavours/pgproee11"
 	"github.com/wader/fq/format/postgres/flavours/pgproee12"
+	"github.com/wader/fq/format/postgres/flavours/pgproee13"
 	"github.com/wader/fq/format/postgres/flavours/pgproee14"
 	"github.com/wader/fq/format/postgres/flavours/postgres11"
 	"github.com/wader/fq/format/postgres/flavours/postgres12"
@@ -41,6 +42,7 @@ const (
 	PG_FLAVOUR_PGPRO14    = "pgpro14"
 	PG_FLAVOUR_PGPROEE11  = "pgproee11"
 	PG_FLAVOUR_PGPROEE12  = "pgproee12"
+	PG_FLAVOUR_PGPROEE13  = "pgproee13"
 	PG_FLAVOUR_PGPROEE14  = "pgproee14"
 )
 
@@ -63,6 +65,8 @@ func decodePgControl(d *decode.D, in any) any {
 		return pgproee11.DecodePgControl(d, in)
 	case PG_FLAVOUR_PGPROEE12:
 		return pgproee12.DecodePgControl(d, in)
+	case PG_FLAVOUR_PGPROEE13:
+		return pgproee13.DecodePgControl(d, in)
 	case PG_FLAVOUR_PGPROEE14:
 		return pgproee14.DecodePgControl(d, in)
 	default:

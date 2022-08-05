@@ -5,6 +5,7 @@ import (
 	"github.com/wader/fq/format/postgres/flavours/pgpro14"
 	"github.com/wader/fq/format/postgres/flavours/pgproee11"
 	"github.com/wader/fq/format/postgres/flavours/pgproee12"
+	"github.com/wader/fq/format/postgres/flavours/pgproee13"
 	"github.com/wader/fq/format/postgres/flavours/pgproee14"
 	"github.com/wader/fq/format/postgres/flavours/postgres11"
 	"github.com/wader/fq/format/postgres/flavours/postgres12"
@@ -42,6 +43,8 @@ func decodePgheap(d *decode.D, in any) any {
 		return pgproee11.DecodeHeap(d)
 	case PG_FLAVOUR_PGPROEE12:
 		return pgproee12.DecodeHeap(d)
+	case PG_FLAVOUR_PGPROEE13:
+		return pgproee13.DecodeHeap(d)
 	case PG_FLAVOUR_PGPRO14:
 		return pgpro14.DecodeHeap(d)
 	case PG_FLAVOUR_PGPROEE14:
