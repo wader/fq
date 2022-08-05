@@ -226,11 +226,9 @@ func DecodePgControl(d *decode.D, in any) any {
 	d.FieldRawLen("mock_authentication_nonce", 32*8, scalar.RawHex)
 	d.FieldU32("icu_version", common.IcuVersionMapper)
 	d.FieldU32("pg_old_version")
-
 	d.FieldU32("oldest_snapshot")
 	d.FieldU32("recent_snapshot")
 	d.FieldU32("active_snapshot")
-
 	d.FieldU32("crc")
 	/* total size (bytes):  344 */
 
