@@ -760,11 +760,7 @@ func parseSectionFlags(d *decode.D) {
 }
 
 var timestampMapper = scalar.Fn(func(s scalar.S) (scalar.S, error) {
-	ts, ok := s.Actual.(uint64)
-	if !ok {
-		return s, nil
-	}
-	s.Sym = time.UnixMilli(int64(ts)).UTC().String()
+	s.Sym = time.UnixMilli(int64(s.ActualU())).UTC().String()
 	return s, nil
 })
 

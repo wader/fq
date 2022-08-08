@@ -49,14 +49,6 @@ func decodeJSON(d *decode.D, _ any) any {
 	}
 
 	s.Actual = gojq.NormalizeNumbers(s.Actual)
-
-	// switch s.Actual.(type) {
-	// case map[string]any,
-	// 	[]any:
-	// default:
-	// 	d.Fatalf("top-level not object or array")
-	// }
-
 	d.Value.V = &s
 	d.Value.Range.Len = d.Len()
 

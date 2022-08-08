@@ -11,10 +11,7 @@ import (
 )
 
 func bitBufIsZero(s scalar.S, isValidate bool) (scalar.S, error) {
-	br, ok := s.Actual.(bitio.ReaderAtSeeker)
-	if !ok {
-		return s, nil
-	}
+	br := s.ActualBitBuf()
 
 	isZero := true
 	// TODO: shared
