@@ -353,11 +353,7 @@ func strIndexNull(idx int, s string) string {
 type strTable string
 
 func (m strTable) MapScalar(s scalar.S) (scalar.S, error) {
-	uv, ok := s.Actual.(uint64)
-	if !ok {
-		return s, nil
-	}
-	s.Sym = strIndexNull(int(uv), string(m))
+	s.Sym = strIndexNull(int(s.ActualU()), string(m))
 	return s, nil
 }
 

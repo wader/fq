@@ -136,10 +136,7 @@ type URangeEntry struct {
 type URangeToScalar []URangeEntry
 
 func (rs URangeToScalar) MapScalar(s S) (S, error) {
-	n, ok := s.Actual.(uint64)
-	if !ok {
-		return s, nil
-	}
+	n := s.ActualU()
 	for _, re := range rs {
 		if n >= re.Range[0] && n <= re.Range[1] {
 			ns := re.S
@@ -161,10 +158,7 @@ type SRangeEntry struct {
 type SRangeToScalar []SRangeEntry
 
 func (rs SRangeToScalar) MapScalar(s S) (S, error) {
-	n, ok := s.Actual.(int64)
-	if !ok {
-		return s, nil
-	}
+	n := s.ActualS()
 	for _, re := range rs {
 		if n >= re.Range[0] && n <= re.Range[1] {
 			ns := re.S
@@ -177,10 +171,7 @@ func (rs SRangeToScalar) MapScalar(s S) (S, error) {
 }
 
 func RawSym(s S, nBytes int, fn func(b []byte) string) (S, error) {
-	br, ok := s.Actual.(bitio.ReadAtSeeker)
-	if !ok {
-		return s, nil
-	}
+	br := s.ActualBitBuf()
 	brLen, err := bitioextra.Len(br)
 	if err != nil {
 		return S{}, err
