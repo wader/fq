@@ -4,6 +4,7 @@ package macho
 
 import (
 	"embed"
+	"strings"
 	"time"
 
 	"github.com/wader/fq/format"
@@ -25,6 +26,24 @@ func init() {
 		Functions:   []string{"_help"},
 	})
 	interp.RegisterFS(machoFS)
+}
+
+func strIndexNull(idx int, s string) string {
+	if idx > len(s) {
+		return ""
+	}
+	i := strings.IndexByte(s[idx:], 0)
+	if i == -1 {
+		return ""
+	}
+	return s[idx : idx+i]
+}
+
+type strTable string
+
+func (m strTable) MapScalar(s scalar.S) (scalar.S, error) {
+	s.Sym = strIndexNull(int(s.ActualU()), string(m))
+	return s, nil
 }
 
 //nolint:revive
@@ -385,11 +404,20 @@ func machoDecode(d *decode.D, _ any) any {
 			d.FieldRawLen("reserved", 4*8, d.BitBufIsZero())
 		}
 	})
+	loadCommandsNext := d.Pos()
 	d.FieldArray("load_commands", func(d *decode.D) {
 		for i := uint64(0); i < ncmds; i++ {
 			d.FieldStruct("load_command", func(d *decode.D) {
+				d.SeekAbs(loadCommandsNext)
+
 				cmd := d.FieldU32("cmd", loadCommands, scalar.ActualHex)
-				cmdsize := d.FieldU32("cmdsize")
+				cmdSize := d.FieldU32("cmdsize")
+				if cmdSize == 0 {
+					d.Fatalf("cmdSize is zero")
+				}
+
+				loadCommandsNext += int64(cmdSize) * 8
+
 				switch cmd {
 				case LC_UUID:
 					d.FieldStruct("uuid_command", func(d *decode.D) {
@@ -519,16 +547,16 @@ func machoDecode(d *decode.D, _ any) any {
 						d.FieldU32("timestamp", timestampMapper)
 						d.FieldU32("current_version")
 						d.FieldU32("compatibility_version")
-						d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
+						d.FieldUTF8NullFixedLen("name", int(cmdSize)-int(offset))
 					})
 				case LC_LOAD_DYLINKER,
 					LC_ID_DYLINKER,
 					LC_DYLD_ENVIRONMENT:
 					offset := d.FieldU32("offset", scalar.ActualHex)
-					d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
+					d.FieldUTF8NullFixedLen("name", int(cmdSize)-int(offset))
 				case LC_RPATH:
 					offset := d.FieldU32("offset", scalar.ActualHex)
-					d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
+					d.FieldUTF8NullFixedLen("name", int(cmdSize)-int(offset))
 				case LC_PREBOUND_DYLIB:
 					// https://github.com/aidansteele/osx-abi-macho-file-format-reference#prebound_dylib_command
 					d.U32() // name_offset
@@ -584,12 +612,43 @@ func machoDecode(d *decode.D, _ any) any {
 					LC_SUB_CLIENT,
 					LC_SUB_FRAMEWORK:
 					offset := d.FieldU32("offset", scalar.ActualHex)
-					d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
+					d.FieldUTF8NullFixedLen("name", int(cmdSize)-int(offset))
 				case LC_SYMTAB:
-					d.FieldU32("symoff")
-					d.FieldU32("nsyms")
-					d.FieldU32("stroff")
-					d.FieldU32("strsize")
+					symOff := d.FieldU32("symoff")
+					nSyms := d.FieldU32("nsyms")
+					strOff := d.FieldU32("stroff")
+					strSize := d.FieldU32("strsize")
+
+					d.RangeFn(int64(strOff)*8, int64(strSize)*8, func(d *decode.D) {
+						d.FieldRawLen("str_table", d.BitsLeft())
+					})
+					symTabTable := strTable(string(d.BytesRange(int64(strOff)*8, int(strSize))))
+
+					d.SeekAbs(int64(symOff) * 8)
+					d.FieldArray("symbols", func(d *decode.D) {
+						for i := 0; i < int(nSyms); i++ {
+							symbolTypeMap := scalar.UToSymStr{
+								0x0: "undef",
+								0x1: "abs",
+								0x5: "indr",
+								0x6: "pbud",
+								0x7: "sect",
+							}
+
+							d.FieldStruct("symbol", func(d *decode.D) {
+								d.FieldU32("strx", symTabTable)
+								d.FieldStruct("type", func(d *decode.D) {
+									d.FieldU3("stab")
+									d.FieldU1("pext")
+									d.FieldU3("type", symbolTypeMap)
+									d.FieldU1("ext")
+								})
+								d.FieldU8("sect")
+								d.FieldU16("desc")
+								d.FieldU("value", archBits, scalar.ActualHex)
+							})
+						}
+					})
 				case LC_DYSYMTAB:
 					d.FieldU32("ilocalsym")
 					d.FieldU32("nlocalsym")
@@ -687,10 +746,10 @@ func machoDecode(d *decode.D, _ any) any {
 						offset := d.FieldU32("offset", scalar.ActualHex)
 						d.FieldU32("minor_version")
 						d.FieldU32("header_addr", scalar.ActualHex)
-						d.FieldUTF8NullFixedLen("name", int(cmdsize)-int(offset))
+						d.FieldUTF8NullFixedLen("name", int(cmdSize)-int(offset))
 					})
 				default:
-					d.SeekRel(int64((cmdsize - 8) * 8))
+					// ignore
 				}
 			})
 		}
