@@ -1,8 +1,8 @@
 $ fq -d flac dv picture_seek_gain.flac
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: picture_seek_gain.flac (flac) 0x0-0x225f.7 (8800)
 0x0000|66 4c 61 43                                    |fLaC            |  magic: "fLaC" (valid) 0x0-0x3.7 (4)
-      |                                               |                |  metadatablocks[0:5]: (flac_metadatablocks) 0x4-0x205f.7 (8284)
-      |                                               |                |    [0]{}: metadatablock (flac_metadatablock) 0x4-0x29.7 (38)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|  metadatablocks[0:5]: (flac_metadatablocks) 0x4-0x205f.7 (8284)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [0]{}: metadatablock (flac_metadatablock) 0x4-0x29.7 (38)
 0x0000|            00                                 |    .           |      last_block: false 0x4-0x4 (0.1)
 0x0000|            00                                 |    .           |      type: "streaminfo" (0) 0x4.1-0x4.7 (0.7)
 0x0000|               00 00 22                        |     .."        |      length: 34 0x5-0x7.7 (3)
@@ -17,7 +17,7 @@ $ fq -d flac dv picture_seek_gain.flac
 0x0010|               f0 00 00 01 b9                  |     .....      |      total_samples_in_stream: 441 0x15.4-0x19.7 (4.4)
 0x0010|                              89 88 7b 80 f8 10|          ..{...|      md5: "89887b80f810285b45f6c4ecc72c977e" (raw bits) 0x1a-0x29.7 (16)
 0x0020|28 5b 45 f6 c4 ec c7 2c 97 7e                  |([E....,.~      |
-      |                                               |                |    [1]{}: metadatablock (flac_metadatablock) 0x2a-0x3f.7 (22)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [1]{}: metadatablock (flac_metadatablock) 0x2a-0x3f.7 (22)
 0x0020|                              03               |          .     |      last_block: false 0x2a-0x2a (0.1)
 0x0020|                              03               |          .     |      type: "seektable" (3) 0x2a.1-0x2a.7 (0.7)
 0x0020|                                 00 00 12      |           ...  |      length: 18 0x2b-0x2d.7 (3)
@@ -27,11 +27,11 @@ $ fq -d flac dv picture_seek_gain.flac
 0x0030|00 00 00 00 00 00                              |......          |
 0x0030|                  00 00 00 00 00 00 00 00      |      ........  |          offset: 0 0x36-0x3d.7 (8)
 0x0030|                                          01 b9|              ..|          number_of_samples: 441 0x3e-0x3f.7 (2)
-      |                                               |                |    [2]{}: metadatablock (flac_metadatablock) 0x40-0x12e.7 (239)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [2]{}: metadatablock (flac_metadatablock) 0x40-0x12e.7 (239)
 0x0040|04                                             |.               |      last_block: false 0x40-0x40 (0.1)
 0x0040|04                                             |.               |      type: "vorbis_comment" (4) 0x40.1-0x40.7 (0.7)
 0x0040|   00 00 eb                                    | ...            |      length: 235 0x41-0x43.7 (3)
-      |                                               |                |      comment{}: (vorbis_comment) 0x44-0x12e.7 (235)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      comment{}: (vorbis_comment) 0x44-0x12e.7 (235)
 0x0040|            0d 00 00 00                        |    ....        |        vendor_length: 13 0x44-0x47.7 (4)
 0x0040|                        4c 61 76 66 35 38 2e 34|        Lavf58.4|        vendor: "Lavf58.45.100" 0x48-0x54.7 (13)
 0x0050|35 2e 31 30 30                                 |5.100           |
@@ -67,11 +67,11 @@ $ fq -d flac dv picture_seek_gain.flac
 0x0100|                                             52|               R|            comment: "REPLAYGAIN_ALBUM_PEAK=0.12496948" 0x10f-0x12e.7 (32)
 0x0110|45 50 4c 41 59 47 41 49 4e 5f 41 4c 42 55 4d 5f|EPLAYGAIN_ALBUM_|
 0x0120|50 45 41 4b 3d 30 2e 31 32 34 39 36 39 34 38   |PEAK=0.12496948 |
-      |                                               |                |    [3]{}: metadatablock (flac_metadatablock) 0x12f-0x25e.7 (304)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [3]{}: metadatablock (flac_metadatablock) 0x12f-0x25e.7 (304)
 0x0120|                                             06|               .|      last_block: false 0x12f-0x12f (0.1)
 0x0120|                                             06|               .|      type: "picture" (6) 0x12f.1-0x12f.7 (0.7)
 0x0130|00 01 2c                                       |..,             |      length: 300 0x130-0x132.7 (3)
-      |                                               |                |      picture{}: (flac_picture) 0x133-0x25e.7 (300)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      picture{}: (flac_picture) 0x133-0x25e.7 (300)
 0x0130|         00 00 00 03                           |   ....         |        picture_type: "cover_front)" (3) 0x133-0x136.7 (4)
 0x0130|                     00 00 00 09               |       ....     |        mime_length: 9 0x137-0x13a.7 (4)
 0x0130|                                 69 6d 61 67 65|           image|        mime: "image/png" 0x13b-0x143.7 (9)
@@ -83,7 +83,7 @@ $ fq -d flac dv picture_seek_gain.flac
 0x0150|00 00 00 01                                    |....            |        color_depth: 1 0x150-0x153.7 (4)
 0x0150|            00 00 00 00                        |    ....        |        number_of_index_colors: 0 0x154-0x157.7 (4)
 0x0150|                        00 00 01 03            |        ....    |        picture_length: 259 0x158-0x15b.7 (4)
-      |                                               |                |        picture_data{}: (png) 0x15c-0x25e.7 (259)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        picture_data{}: (png) 0x15c-0x25e.7 (259)
 0x0150|                                    89 50 4e 47|            .PNG|          signature: raw bits (valid) 0x15c-0x163.7 (8)
 0x0160|0d 0a 1a 0a                                    |....            |
       |                                               |                |          chunks[0:9]: 0x164-0x25e.7 (251)
@@ -196,7 +196,7 @@ $ fq -d flac dv picture_seek_gain.flac
 0x0250|                           4e                  |         N      |              reserved: false 0x259.3-0x259.3 (0.1)
 0x0250|                              44               |          D     |              safe_to_copy: false 0x25a.3-0x25a.3 (0.1)
 0x0250|                                 ae 42 60 82   |           .B`. |              crc: 0xae426082 (valid) 0x25b-0x25e.7 (4)
-      |                                               |                |    [4]{}: metadatablock (flac_metadatablock) 0x25f-0x205f.7 (7681)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [4]{}: metadatablock (flac_metadatablock) 0x25f-0x205f.7 (7681)
 0x0250|                                             81|               .|      last_block: true 0x25f-0x25f (0.1)
 0x0250|                                             81|               .|      type: "padding" (1) 0x25f.1-0x25f.7 (0.7)
 0x0260|00 1d fd                                       |...             |      length: 7677 0x260-0x262.7 (3)
@@ -204,7 +204,7 @@ $ fq -d flac dv picture_seek_gain.flac
 0x0270|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
 *     |until 0x205f.7 (7677)                          |                |
       |                                               |                |  frames[0:1]: 0x2060-0x225f.7 (512)
-      |                                               |                |    [0]{}: frame (flac_frame) 0x2060-0x225f.7 (512)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [0]{}: frame (flac_frame) 0x2060-0x225f.7 (512)
       |                                               |                |      header{}: 0x2060-0x2067.7 (8)
 0x2060|ff f8                                          |..              |        sync: 0b11111111111110 (valid) 0x2060-0x2061.5 (1.6)
 0x2060|   f8                                          | .              |        reserved0: 0 (valid) 0x2061.6-0x2061.6 (0.1)
@@ -259,5 +259,6 @@ $ fq -d flac dv picture_seek_gain.flac
 *     |until 0x225d.2 (467)                           |                |
 0x2250|                                       20      |                |      byte_align: 0 (valid) 0x225d.3-0x225d.7 (0.5)
 0x2250|                                          7f ab|              ..|      footer_crc: "7fab" (raw bits) (valid) 0x225e-0x225f.7 (2)
- 0x000|89 88 7b 80 f8 10 28 5b 45 f6 c4 ec c7 2c 97 7e|..{...([E....,.~|  md5_calculated: "89887b80f810285b45f6c4ecc72c977e" (raw bits) (valid) 0x0-0xf.7 (16)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+  0x00|89 88 7b 80 f8 10 28 5b 45 f6 c4 ec c7 2c 97 7e|..{...([E....,.~|  md5_calculated: "89887b80f810285b45f6c4ecc72c977e" (raw bits) (valid) 0x0-0xf.7 (16)
       |                                               |                |  decoded_samples: 441 0x2260-NA (0)

@@ -358,7 +358,7 @@ $ fq -d matroska dv vp8.mkv
 0x0220|                                       80      |             .  |                invisible: false 0x22d.4-0x22d.4 (0.1)
 0x0220|                                       80      |             .  |                lacing: 0 0x22d.5-0x22d.6 (0.2)
 0x0220|                                       80      |             .  |                discardable: false 0x22d.7-0x22d.7 (0.1)
-      |                                               |                |              packet{}: (vp8_frame) 0x22e-0x146f.7 (4674)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|              packet{}: (vp8_frame) 0x22e-0x146f.7 (4674)
       |                                               |                |                tag{}: 0x22e-0x230.7 (3)
 0x0220|                                          b0   |              . |                  first_part_size0: 5 0x22e-0x22e.2 (0.3)
 0x0220|                                          b0   |              . |                  show_frame: 1 0x22e.3-0x22e.3 (0.1)
