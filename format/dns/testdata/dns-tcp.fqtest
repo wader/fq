@@ -1,0 +1,31 @@
+# dns-tcp.pcap from https://github.com/arkime/arkime/blob/main/tests/pcap/dns-tcp.pcap
+# apache license https://github.com/arkime/arkime/blob/main/LICENSE
+$ fq '.tcp_connections[0] | .client.stream, .server.stream' dns-tcp.pcap
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.tcp_connections[0].client.stream{}: (dns_tcp)
+0x00|00 1c 5e 63 01 00                              |..^c..          |  header{}:
+0x00|                  00 01                        |      ..        |  qd_count: 1
+0x00|                        00 00                  |        ..      |  an_count: 0
+0x00|                              00 00            |          ..    |  ns_count: 0
+0x00|                                    00 00      |            ..  |  ar_count: 0
+0x00|                                          06 67|              .g|  questions[0:1]:
+0x10|6f 6f 67 6c 65 03 63 6f 6d 00 00 01 00 01|     |oogle.com.....| |
+    |                                               |                |  answers[0:0]:
+    |                                               |                |  nameservers[0:0]:
+    |                                               |                |  additionals[0:0]:
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.tcp_connections[0].server.stream{}: (dns_tcp)
+0x000|01 54 5e 63 81 80                              |.T^c..          |  header{}:
+0x000|                  00 01                        |      ..        |  qd_count: 1
+0x000|                        00 0b                  |        ..      |  an_count: 11
+0x000|                              00 04            |          ..    |  ns_count: 4
+0x000|                                    00 04      |            ..  |  ar_count: 4
+0x000|                                          06 67|              .g|  questions[0:1]:
+0x010|6f 6f 67 6c 65 03 63 6f 6d 00 00 01 00 01      |oogle.com.....  |
+0x000|                                          06 67|              .g|  answers[0:11]:
+0x010|6f 6f 67 6c 65 03 63 6f 6d 00 00 01 00 01 c0 0c|oogle.com.......|
+*    |until 0xcd.7 (192)                             |                |
+0x000|                                          06 67|              .g|  nameservers[0:4]:
+0x010|6f 6f 67 6c 65 03 63 6f 6d 00 00 01 00 01 c0 0c|oogle.com.......|
+*    |until 0x115.7 (264)                            |                |
+0x000|                                          06 67|              .g|  additionals[0:4]:
+0x010|6f 6f 67 6c 65 03 63 6f 6d 00 00 01 00 01 c0 0c|oogle.com.......|
+*    |until 0x155.7 (end) (328)                      |                |
