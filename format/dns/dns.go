@@ -17,11 +17,8 @@ func init() {
 	interp.RegisterFormat(decode.Format{
 		Name:        format.DNS,
 		Description: "DNS packet",
-		Groups: []string{
-			format.TCP_STREAM,
-			format.UDP_PAYLOAD,
-		},
-		DecodeFn: dnsUDPDecode,
+		Groups:      []string{format.UDP_PAYLOAD},
+		DecodeFn:    dnsUDPDecode,
 	})
 }
 
