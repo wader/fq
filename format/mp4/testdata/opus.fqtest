@@ -202,7 +202,7 @@ $ fq -d mp4 dv opus.mp4
      |                                               |                |                                [0]{}: box 0x360-0x372.7 (19)
 0x360|00 00 00 13                                    |....            |                                  size: 19 0x360-0x363.7 (4)
 0x360|            64 4f 70 73                        |    dOps        |                                  type: "dOps" 0x364-0x367.7 (4)
-     |                                               |                |                                  descriptor{}: (opus_packet) 0x368-0x372.7 (11)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|                                  descriptor{}: (opus_packet) 0x368-0x372.7 (11)
      |                                               |                |                                    type: "audio" 0x368-NA (0)
      |                                               |                |                                    toc{}: 0x368-0x372.7 (11)
      |                                               |                |                                      config{}: 0x368-0x368.4 (0.5)
@@ -304,7 +304,7 @@ $ fq -d mp4 dv opus.mp4
      |                                               |                |  tracks[0:1]: 0x2c-0x438.7 (1037)
      |                                               |                |    [0]{}: track 0x2c-0x438.7 (1037)
      |                                               |                |      samples[0:3]: 0x2c-0x196.7 (363)
-     |                                               |                |        [0]{}: sample (opus_packet) 0x2c-0xa4.7 (121)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0]{}: sample (opus_packet) 0x2c-0xa4.7 (121)
      |                                               |                |          type: "audio" 0x2c-NA (0)
      |                                               |                |          toc{}: 0x2c-0xa4.7 (121)
      |                                               |                |            config{}: 0x2c-0x2c.4 (0.5)
@@ -320,7 +320,7 @@ $ fq -d mp4 dv opus.mp4
 0x020|                                       22 28 75|             "(u|            data: raw bits 0x2d-0xa4.7 (120)
 0x030|68 a8 dd 59 43 1b ff 52 f3 16 f1 48 28 77 86 10|h..YC..R...H(w..|
 *    |until 0xa4.7 (120)                             |                |
-     |                                               |                |        [1]{}: sample (opus_packet) 0xa5-0x11d.7 (121)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [1]{}: sample (opus_packet) 0xa5-0x11d.7 (121)
      |                                               |                |          type: "audio" 0xa5-NA (0)
      |                                               |                |          toc{}: 0xa5-0x11d.7 (121)
      |                                               |                |            config{}: 0xa5-0xa5.4 (0.5)
@@ -336,7 +336,7 @@ $ fq -d mp4 dv opus.mp4
 0x0a0|                  72 47 b1 0e a7 fd 3d f8 50 12|      rG....=.P.|            data: raw bits 0xa6-0x11d.7 (120)
 0x0b0|6b 43 42 1f 6c 7a 79 fd 55 31 51 77 1e 83 00 6c|kCB.lzy.U1Qw...l|
 *    |until 0x11d.7 (120)                            |                |
-     |                                               |                |        [2]{}: sample (opus_packet) 0x11e-0x196.7 (121)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [2]{}: sample (opus_packet) 0x11e-0x196.7 (121)
      |                                               |                |          type: "audio" 0x11e-NA (0)
      |                                               |                |          toc{}: 0x11e-0x196.7 (121)
      |                                               |                |            config{}: 0x11e-0x11e.4 (0.5)

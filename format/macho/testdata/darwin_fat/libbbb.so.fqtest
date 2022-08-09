@@ -19,7 +19,7 @@ $ fq dv libbbb.so
 0x00030|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|  unknown0: raw bits 0x30-0x3fff.7 (16336)
 *      |until 0x3fff.7 (16336)                         |                |
        |                                               |                |  files[0:2]: 0x4000-0x1c0d7.7 (98520)
-       |                                               |                |    [0]{}: file (macho) 0x4000-0xc0b7.7 (32952)
+       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [0]{}: file (macho) 0x4000-0xc0b7.7 (32952)
        |                                               |                |      header{}: 0x4000-0x401f.7 (32)
        |                                               |                |        arch_bits: 64 0x4000-NA (0)
 0x04000|cf fa ed fe                                    |....            |        magic: "64le" (0xfeedfacf) (64-bit little endian) 0x4000-0x4003.7 (4)
@@ -468,7 +468,7 @@ $ fq dv libbbb.so
        |                                               |                |          linkedit_data{}: 0x44c0-0x44c7.7 (8)
 0x044c0|50 80 00 00                                    |P...            |            off: 32848 0x44c0-0x44c3.7 (4)
 0x044c0|            00 00 00 00                        |    ....        |            size: 0 0x44c4-0x44c7.7 (4)
-       |                                               |                |    [1]{}: file (macho) 0x10000-0x1c0d7.7 (49368)
+       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [1]{}: file (macho) 0x10000-0x1c0d7.7 (49368)
        |                                               |                |      header{}: 0x10000-0x1001f.7 (32)
        |                                               |                |        arch_bits: 64 0x10000-NA (0)
 0x10000|cf fa ed fe                                    |....            |        magic: "64le" (0xfeedfacf) (64-bit little endian) 0x10000-0x10003.7 (4)

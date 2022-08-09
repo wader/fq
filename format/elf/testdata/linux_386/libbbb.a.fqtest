@@ -27,7 +27,7 @@ $ fq -d ar dv libbbb.a
 0x0a0|20 20                                          |                |
 0x0a0|      31 33 34 34 20 20 20 20 20 20            |  1344          |      file_size: 1344 ("1344") 0xa2-0xab.7 (10)
 0x0a0|                                    60 0a      |            `.  |      ending_characters: "`\n" 0xac-0xad.7 (2)
-     |                                               |                |      data{}: (elf) 0xae-0x5ed.7 (1344)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      data{}: (elf) 0xae-0x5ed.7 (1344)
      |                                               |                |        header{}: 0xae-0xe1.7 (52)
      |                                               |                |          ident{}: 0xae-0xbd.7 (16)
 0x0a0|                                          7f 45|              .E|            magic: raw bits (valid) 0xae-0xb1.7 (4)

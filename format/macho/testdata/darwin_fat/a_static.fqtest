@@ -19,7 +19,7 @@ $ fq dv a_static
 0x00030|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|  unknown0: raw bits 0x30-0x3fff.7 (16336)
 *      |until 0x3fff.7 (16336)                         |                |
        |                                               |                |  files[0:2]: 0x4000-0x1c157.7 (98648)
-       |                                               |                |    [0]{}: file (macho) 0x4000-0xc137.7 (33080)
+       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [0]{}: file (macho) 0x4000-0xc137.7 (33080)
        |                                               |                |      header{}: 0x4000-0x401f.7 (32)
        |                                               |                |        arch_bits: 64 0x4000-NA (0)
 0x04000|cf fa ed fe                                    |....            |        magic: "64le" (0xfeedfacf) (64-bit little endian) 0x4000-0x4003.7 (4)
@@ -517,7 +517,7 @@ $ fq dv a_static
        |                                               |                |          linkedit_data{}: 0x4518-0x451f.7 (8)
 0x04510|                        80 80 00 00            |        ....    |            off: 32896 0x4518-0x451b.7 (4)
 0x04510|                                    00 00 00 00|            ....|            size: 0 0x451c-0x451f.7 (4)
-       |                                               |                |    [1]{}: file (macho) 0x10000-0x1c157.7 (49496)
+       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [1]{}: file (macho) 0x10000-0x1c157.7 (49496)
        |                                               |                |      header{}: 0x10000-0x1001f.7 (32)
        |                                               |                |        arch_bits: 64 0x10000-NA (0)
 0x10000|cf fa ed fe                                    |....            |        magic: "64le" (0xfeedfacf) (64-bit little endian) 0x10000-0x10003.7 (4)

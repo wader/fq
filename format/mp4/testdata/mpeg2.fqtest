@@ -223,7 +223,7 @@ $ fq -d mp4 dv mpeg2.mp4
 0x21a0|                           65 73 64 73         |         esds   |                                  type: "esds" (Elementary stream descriptor) 0x21a9-0x21ac.7 (4)
 0x21a0|                                       00 00 00|             ...|                                  version: 0 0x21ad-0x21b0.7 (4)
 0x21b0|00                                             |.               |
-      |                                               |                |                                  descriptor{}: (mpeg_es) 0x21b1-0x21d0.7 (32)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|                                  descriptor{}: (mpeg_es) 0x21b1-0x21d0.7 (32)
 0x21b0|   03                                          | .              |                                    tag_id: "ES_DescrTag" (3) 0x21b1-0x21b1.7 (1)
 0x21b0|      80 80 80 1b                              |  ....          |                                    length: 27 0x21b2-0x21b5.7 (4)
 0x21b0|                  00 01                        |      ..        |                                    es_id: 1 0x21b6-0x21b7.7 (2)
@@ -339,7 +339,7 @@ $ fq -d mp4 dv mpeg2.mp4
       |                                               |                |  tracks[0:1]: 0x2c-0x22a8.7 (8829)
       |                                               |                |    [0]{}: track 0x2c-0x22a8.7 (8829)
       |                                               |                |      samples[0:1]: 0x2c-0x1fa5.7 (8058)
-      |                                               |                |        [0]{}: sample (mpeg_pes_packet) 0x2c-0x1fa5.7 (8058)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0]{}: sample (mpeg_pes_packet) 0x2c-0x1fa5.7 (8058)
 0x0020|                                    00 00 01   |            ... |          prefix: 0b1 (valid) 0x2c-0x2e.7 (3)
 0x0020|                                             b3|               .|          start_code: "sequence_header" (0xb3) 0x2f-0x2f.7 (1)
 0x0030|14 00                                          |..              |          horizontal_size: 320 0x30-0x31.3 (1.4)

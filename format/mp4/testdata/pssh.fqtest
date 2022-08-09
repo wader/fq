@@ -20,7 +20,7 @@ $ fq ddv pssh.mp4
 0x020|                                       00 00 00|             ...|      flags: 0 0x2d-0x2f.7 (3)
 0x030|9a 04 f0 79 98 40 42 86 ab 92 e6 5b e0 88 5f 95|...y.@B....[.._.|      system_id: "playready" (raw bits) 0x30-0x3f.7 (16)
 0x040|00 00 04 3a                                    |...:            |      data_size: 1082 0x40-0x43.7 (4)
-     |                                               |                |      data{}: (pssh_playready) 0x44-0x47d.7 (1082)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      data{}: (pssh_playready) 0x44-0x47d.7 (1082)
 0x040|            3a 04 00 00                        |    :...        |        size: 1082 0x44-0x47.7 (4)
 0x040|                        01 00                  |        ..      |        count: 1 0x48-0x49.7 (2)
      |                                               |                |        records[0:1]: 0x4a-0x47d.7 (1076)
@@ -104,7 +104,7 @@ $ fq ddv pssh.mp4
 0x480|                              ed ef 8b a9 79 d6|          ....y.|      system_id: "widevine" (raw bits) 0x48a-0x499.7 (16)
 0x490|4a ce a3 c8 27 dc d5 1d 21 ed                  |J...'...!.      |
 0x490|                              00 00 00 36      |          ...6  |      data_size: 54 0x49a-0x49d.7 (4)
-     |                                               |                |      data{}: (protobuf_widevine) 0x49e-0x4d3.7 (54)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      data{}: (protobuf_widevine) 0x49e-0x4d3.7 (54)
      |                                               |                |        fields[0:5]: 0x49e-0x4d3.7 (54)
      |                                               |                |          [0]{}: field 0x49e-0x49f.7 (2)
 0x490|                                          08   |              . |            key_n: 8 0x49e-0x49e.7 (1)

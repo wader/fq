@@ -1,6 +1,6 @@
 $ fq dd genesis.dat
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0:1]: genesis.dat (bitcoin_blkdat)
-     |                                               |                |  [0]{}: block (bitcoin_block)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|  [0]{}: block (bitcoin_block)
 0x000|f9 be b4 d9                                    |....            |    magic: "mainnet" (0xf9beb4d9)
 0x000|            1d 01 00 00                        |    ....        |    size: 285
      |                                               |                |    header{}:
@@ -16,7 +16,7 @@ $ fq dd genesis.dat
 0x050|            1d ac 2b 7c                        |    ..+|        |      nonce: 0x7c2bac1d
 0x050|                        01                     |        .       |    tx_count: 1
      |                                               |                |    transactions[0:1]:
-     |                                               |                |      [0]{}: transaction (bitcoin_transaction)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      [0]{}: transaction (bitcoin_transaction)
 0x050|                           01 00 00 00         |         ....   |        version: 1
 0x050|                                       01      |             .  |        input_count: 1
      |                                               |                |        inputs[0:1]:
@@ -27,7 +27,7 @@ $ fq dd genesis.dat
 0x070|                                          ff ff|              ..|            vout: 4294967295
 0x080|ff ff                                          |..              |
 0x080|      4d                                       |  M             |            scriptsig_size: 77
-     |                                               |                |            scriptsig[0:3]: (bitcoin_script)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|            scriptsig[0:3]: (bitcoin_script)
      |                                               |                |              [0]{}: opcode
 0x080|         04                                    |   .            |                op: "pushself" (4)
 0x080|            ff ff 00 1d                        |    ....        |                arg: raw bits
@@ -47,7 +47,7 @@ $ fq dd genesis.dat
      |                                               |                |          [0]{}: output
 0x0d0|               00 f2 05 2a 01 00 00 00         |     ...*....   |            value: 5000000000
 0x0d0|                                       43      |             C  |            scriptpub_size: 67
-     |                                               |                |            scriptpub[0:2]: (bitcoin_script)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|            scriptpub[0:2]: (bitcoin_script)
      |                                               |                |              [0]{}: opcode
 0x0d0|                                          41   |              A |                op: "pushself" (65)
 0x0d0|                                             04|               .|                arg: raw bits

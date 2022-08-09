@@ -33,6 +33,9 @@ const (
 	colField = 6
 )
 
+const rootIndentWidth = 2
+const treeIndentWidth = 2
+
 func isCompound(v *decode.Value) bool {
 	switch v.V.(type) {
 	case *decode.Compound:
@@ -48,6 +51,14 @@ type dumpCtx struct {
 	cw          *columnwriter.Writer
 	hexHeader   string
 	asciiHeader string
+}
+
+func indentStr(n int) string {
+	const spaces = "                                                                "
+	for n > len(spaces) {
+		return strings.Repeat(" ", n)
+	}
+	return spaces[0:n]
 }
 
 func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootDepth int, addrWidth int) error {
@@ -92,19 +103,8 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 		name = deco.ObjectKey.Wrap(name)
 	}
 
-	rootIndent := strings.Repeat(" ", rootDepth)
-	indent := strings.Repeat("  ", depth)
-
-	if depth == 0 {
-		if !isCompound(v) {
-			columns()
-		}
-		cfmt(colHex, "%s", deco.DumpHeader.F(ctx.hexHeader))
-		cfmt(colASCII, "%s", deco.DumpHeader.F(ctx.asciiHeader))
-		if !isCompound(v) {
-			cw.Flush()
-		}
-	}
+	rootIndent := indentStr(rootIndentWidth * rootDepth)
+	indent := indentStr(treeIndentWidth * depth)
 
 	if opts.ArrayTruncate != 0 && depth != 0 && isInArray && v.Index >= opts.ArrayTruncate {
 		columns()
@@ -117,6 +117,18 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 		)
 		cw.Flush()
 		return decode.ErrWalkBreak
+	}
+
+	// show address bar on root, nested root and format change
+	if depth == 0 || v.IsRoot || v.Format != nil {
+		if !isCompound(v) {
+			columns()
+		}
+		cfmt(colHex, "%s", deco.DumpHeader.F(ctx.hexHeader))
+		cfmt(colASCII, "%s", deco.DumpHeader.F(ctx.asciiHeader))
+		if !isCompound(v) {
+			cw.Flush()
+		}
 	}
 
 	cfmt(colField, "%s%s", indent, name)
@@ -186,7 +198,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 	if valueErr != nil {
 		var printErrs func(depth int, err error)
 		printErrs = func(depth int, err error) {
-			indent := strings.Repeat("  ", depth)
+			indent := indentStr(treeIndentWidth * depth)
 
 			var formatErr decode.FormatError
 			var decodeFormatsErr decode.FormatsError
@@ -354,7 +366,7 @@ func dump(v *decode.Value, w io.Writer, opts Options) error {
 	_ = v.WalkPreOrder(makeWalkFn(func(v *decode.Value, _ *decode.Value, _ int, rootDepth int) error {
 		maxAddrIndentWidth = mathextra.MaxInt(
 			maxAddrIndentWidth,
-			rootDepth+mathextra.DigitsInBase(bitio.BitsByteCount(v.InnerRange().Stop()), true, opts.Addrbase),
+			rootIndentWidth*rootDepth+mathextra.DigitsInBase(bitio.BitsByteCount(v.InnerRange().Stop()), true, opts.Addrbase),
 		)
 		return nil
 	}))
