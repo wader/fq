@@ -222,10 +222,10 @@ func dnsDecodeRR(d *decode.D, pointerOffset int64, resp bool, count uint64, name
 	})
 }
 
-func dnsDecode(d *decode.D, isTCP bool) any {
+func dnsDecode(d *decode.D, hasLengthHeader bool) any {
 	pointerOffset := int64(0)
 	d.FieldStruct("header", func(d *decode.D) {
-		if isTCP {
+		if hasLengthHeader {
 			pointerOffset = 16
 			d.FieldU16("length")
 		}
