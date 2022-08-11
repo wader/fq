@@ -464,7 +464,7 @@ $ fq -d elf dv a_stripped
 0x31e0|04 00 00 00                                    |....            |      addralign: 4 0x31e0-0x31e3.7 (4)
 0x31e0|            10 00 00 00                        |    ....        |      entsize: 16 0x31e4-0x31e7.7 (4)
       |                                               |                |    [5]{}: section_header 0x2c8-0x320f.7 (12104)
-0x02c0|                        00 70 75 74 73 00 5f 5f|        .puts.__|      string: "\x00puts\x00__cxa_finalize\x00__register_frame_info_bases\x00_"... 0x2c8-0x392.7 (203)
+0x02c0|                        00 70 75 74 73 00 5f 5f|        .puts.__|      string: "\x00puts\x00__cxa_finalize\x00__register_frame_info_base..." 0x2c8-0x392.7 (203)
 0x02d0|63 78 61 5f 66 69 6e 61 6c 69 7a 65 00 5f 5f 72|cxa_finalize.__r|
 *     |until 0x392.7 (203)                            |                |
 0x31e0|                        38 00 00 00            |        8...    |      name: ".dynstr" (56) 0x31e8-0x31eb.7 (4)
@@ -1018,7 +1018,7 @@ $ fq -d elf dv a_stripped
 0x34b0|01 00 00 00                                    |....            |      addralign: 1 0x34b0-0x34b3.7 (4)
 0x34b0|            01 00 00 00                        |    ....        |      entsize: 1 0x34b4-0x34b7.7 (4)
       |                                               |                |    [23]{}: section_header 0x3066-0x34df.7 (1146)
-0x3060|                  00 2e 73 68 73 74 72 74 61 62|      ..shstrtab|      string: "\x00.shstrtab\x00.interp\x00.note.gnu.property\x00.gnu.hash\x00.d"... 0x3066-0x311d.7 (184)
+0x3060|                  00 2e 73 68 73 74 72 74 61 62|      ..shstrtab|      string: "\x00.shstrtab\x00.interp\x00.note.gnu.property\x00.gnu.hash..." 0x3066-0x311d.7 (184)
 0x3070|00 2e 69 6e 74 65 72 70 00 2e 6e 6f 74 65 2e 67|..interp..note.g|
 *     |until 0x311d.7 (184)                           |                |
 0x34b0|                        01 00 00 00            |        ....    |      name: ".shstrtab" (1) 0x34b8-0x34bb.7 (4)

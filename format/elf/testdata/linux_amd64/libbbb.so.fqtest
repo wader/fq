@@ -373,7 +373,7 @@ $ fq -d elf dv libbbb.so
 0x3940|08 00 00 00 00 00 00 00                        |........        |      addralign: 8 0x3940-0x3947.7 (8)
 0x3940|                        18 00 00 00 00 00 00 00|        ........|      entsize: 24 0x3948-0x394f.7 (8)
       |                                               |                |    [3]{}: section_header 0x390-0x398f.7 (13824)
-0x0390|00 5f 69 6e 69 74 00 5f 66 69 6e 69 00 5f 49 54|._init._fini._IT|      string: "\x00_init\x00_fini\x00_ITM_deregisterTMCloneTable\x00_ITM_regi"... 0x390-0x435.7 (166)
+0x0390|00 5f 69 6e 69 74 00 5f 66 69 6e 69 00 5f 49 54|._init._fini._IT|      string: "\x00_init\x00_fini\x00_ITM_deregisterTMCloneTable\x00_ITM_r..." 0x390-0x435.7 (166)
 *     |until 0x435.7 (166)                            |                |
 0x3950|2d 00 00 00                                    |-...            |      name: ".dynstr" (45) 0x3950-0x3953.7 (4)
 0x3950|            03 00 00 00                        |    ....        |      type: "strtab" (0x3) (String table) 0x3954-0x3957.7 (4)
@@ -1460,7 +1460,7 @@ $ fq -d elf dv libbbb.so
 0x3fc0|08 00 00 00 00 00 00 00                        |........        |      addralign: 8 0x3fc0-0x3fc7.7 (8)
 0x3fc0|                        18 00 00 00 00 00 00 00|        ........|      entsize: 24 0x3fc8-0x3fcf.7 (8)
       |                                               |                |    [29]{}: section_header 0x35c8-0x400f.7 (2632)
-0x35c0|                        00 63 72 74 73 74 75 66|        .crtstuf|      string: "\x00crtstuff.c\x00__CTOR_LIST__\x00__DTOR_LIST__\x00__EH_FRAME"... 0x35c8-0x377a.7 (435)
+0x35c0|                        00 63 72 74 73 74 75 66|        .crtstuf|      string: "\x00crtstuff.c\x00__CTOR_LIST__\x00__DTOR_LIST__\x00__EH_FR..." 0x35c8-0x377a.7 (435)
 0x35d0|66 2e 63 00 5f 5f 43 54 4f 52 5f 4c 49 53 54 5f|f.c.__CTOR_LIST_|
 *     |until 0x377a.7 (435)                           |                |
 0x3fd0|09 00 00 00                                    |....            |      name: ".strtab" (9) 0x3fd0-0x3fd3.7 (4)
@@ -1489,7 +1489,7 @@ $ fq -d elf dv libbbb.so
 0x4000|01 00 00 00 00 00 00 00                        |........        |      addralign: 1 0x4000-0x4007.7 (8)
 0x4000|                        00 00 00 00 00 00 00 00|        ........|      entsize: 0 0x4008-0x400f.7 (8)
       |                                               |                |    [30]{}: section_header 0x377b-0x404f.7 (2261)
-0x3770|                                 00 2e 73 79 6d|           ..sym|      string: "\x00.symtab\x00.strtab\x00.shstrtab\x00.gnu.hash\x00.dynsym\x00.dyns"... 0x377b-0x388a.7 (272)
+0x3770|                                 00 2e 73 79 6d|           ..sym|      string: "\x00.symtab\x00.strtab\x00.shstrtab\x00.gnu.hash\x00.dynsym\x00.d..." 0x377b-0x388a.7 (272)
 0x3780|74 61 62 00 2e 73 74 72 74 61 62 00 2e 73 68 73|tab..strtab..shs|
 *     |until 0x388a.7 (272)                           |                |
 0x4010|11 00 00 00                                    |....            |      name: ".shstrtab" (17) 0x4010-0x4013.7 (4)

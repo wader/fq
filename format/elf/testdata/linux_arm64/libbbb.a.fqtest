@@ -552,7 +552,7 @@ $ fq -d ar dv libbbb.a
 0x690|                                    00 00 00 00|            ....|            entsize: 0 0x69c-0x6a3.7 (8)
 0x6a0|00 00 00 00                                    |....            |
      |                                               |                |          [12]{}: section_header 0x33c-0x6e3.7 (936)
-0x330|                                    00 2e 73 79|            ..sy|            string: "\x00.symtab\x00.strtab\x00.shstrtab\x00.rela.text\x00.data\x00.bss\x00."... 0x33c-0x39c.7 (97)
+0x330|                                    00 2e 73 79|            ..sy|            string: "\x00.symtab\x00.strtab\x00.shstrtab\x00.rela.text\x00.data\x00.bs..." 0x33c-0x39c.7 (97)
 0x340|6d 74 61 62 00 2e 73 74 72 74 61 62 00 2e 73 68|mtab..strtab..sh|
 *    |until 0x39c.7 (97)                             |                |
 0x6a0|            11 00 00 00                        |    ....        |            name: ".shstrtab" (17) 0x6a4-0x6a7.7 (4)

@@ -367,7 +367,7 @@ $ fq -d rtmp 'dv({array_truncate: 40})' server_stream
          |                                               |                |              value{}: 0x50-0x8c.7 (61)
   0x00005|02                                             |.               |                type: "string" (2) 0x50-0x50.7 (1)
   0x00005|   00 3a                                       | .:             |                length: 58 0x51-0x52.7 (2)
-  0x00005|         50 6c 61 79 69 6e 67 20 61 6e 64 20 72|   Playing and r|                value: "Playing and resetting 0/1/1/1514/1514287/1_192254_"... 0x53-0x8c.7 (58)
+  0x00005|         50 6c 61 79 69 6e 67 20 61 6e 64 20 72|   Playing and r|                value: "Playing and resetting 0/1/1/1514/1514287/1_1922..." 0x53-0x8c.7 (58)
   0x00006|65 73 65 74 74 69 6e 67 20 30 2f 31 2f 31 2f 31|esetting 0/1/1/1|
   *      |until 0x8c.7 (58)                              |                |
          |                                               |                |            [3]{}: pair 0x8d-0xbb.7 (47)
@@ -459,7 +459,7 @@ $ fq -d rtmp 'dv({array_truncate: 40})' server_stream
          |                                               |                |              value{}: 0x50-0x86.7 (55)
   0x00005|02                                             |.               |                type: "string" (2) 0x50-0x50.7 (1)
   0x00005|   00 34                                       | .4             |                length: 52 0x51-0x52.7 (2)
-  0x00005|         53 74 61 72 74 65 64 20 70 6c 61 79 69|   Started playi|                value: "Started playing 0/1/1/1514/1514287/1_192254_151428"... 0x53-0x86.7 (52)
+  0x00005|         53 74 61 72 74 65 64 20 70 6c 61 79 69|   Started playi|                value: "Started playing 0/1/1/1514/1514287/1_192254_151..." 0x53-0x86.7 (52)
   0x00006|6e 67 20 30 2f 31 2f 31 2f 31 35 31 34 2f 31 35|ng 0/1/1/1514/15|
   *      |until 0x86.7 (52)                              |                |
          |                                               |                |            [3]{}: pair 0x87-0x9b.7 (21)

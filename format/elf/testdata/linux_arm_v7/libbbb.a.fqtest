@@ -473,7 +473,7 @@ $ fq -d ar dv libbbb.a
 0x480|01 00 00 00                                    |....            |            addralign: 1 0x480-0x483.7 (4)
 0x480|            00 00 00 00                        |    ....        |            entsize: 0 0x484-0x487.7 (4)
      |                                               |                |          [11]{}: section_header 0x26c-0x4af.7 (580)
-0x260|                                    00 2e 73 79|            ..sy|            string: "\x00.symtab\x00.strtab\x00.shstrtab\x00.rel.text\x00.data\x00.bss\x00.r"... 0x26c-0x2cc.7 (97)
+0x260|                                    00 2e 73 79|            ..sy|            string: "\x00.symtab\x00.strtab\x00.shstrtab\x00.rel.text\x00.data\x00.bss..." 0x26c-0x2cc.7 (97)
 0x270|6d 74 61 62 00 2e 73 74 72 74 61 62 00 2e 73 68|mtab..strtab..sh|
 *    |until 0x2cc.7 (97)                             |                |
 0x480|                        11 00 00 00            |        ....    |            name: ".shstrtab" (17) 0x488-0x48b.7 (4)

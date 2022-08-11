@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/wader/fq/internal/mathextra"
+	"github.com/wader/fq/internal/stringsextra"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/scalar"
 )
@@ -29,10 +30,7 @@ func previewValue(v any, df scalar.DisplayFormat) string {
 		// TODO: float32? better truncated to significant digits?
 		return strconv.FormatFloat(vv, 'g', -1, 64)
 	case string:
-		if len(vv) > 50 {
-			return fmt.Sprintf("%q", vv[0:50]) + "..."
-		}
-		return fmt.Sprintf("%q", vv)
+		return fmt.Sprintf("%q", stringsextra.TrimN(vv, 50, "..."))
 	case nil:
 		return "null"
 	case bitio.Reader:

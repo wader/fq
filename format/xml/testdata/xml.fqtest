@@ -35,9 +35,9 @@ null> spew("files") | .name, try (.str | fromxml | ., (toxml({indent: 2}) | prin
 }
 <elm></elm>
 "multi_diff.xml"
-"error at position 0x10: root element has trailing data"
+"error at position 0xe: root element has trailing element <elm2>"
 "multi_same.xml"
-"error at position 0xe: root element has trailing data"
+"error at position 0xc: root element has trailing element <elm>"
 "ns.xml"
 {
   "elm": {
@@ -119,9 +119,9 @@ null> spew("files") | .name, try (.str | fromxml({seq: true}) | ., (toxml({inden
 }
 <elm></elm>
 "multi_diff.xml"
-"error at position 0x10: root element has trailing data"
+"error at position 0xe: root element has trailing element <elm2>"
 "multi_same.xml"
-"error at position 0xe: root element has trailing data"
+"error at position 0xc: root element has trailing element <elm>"
 "ns.xml"
 {
   "elm": {
@@ -224,9 +224,9 @@ null> spew("files") | .name, try (.str | fromxml({array: true}) | ., (toxml({ind
 ]
 <elm></elm>
 "multi_diff.xml"
-"error at position 0x10: root element has trailing data"
+"error at position 0xe: root element has trailing element <elm2>"
 "multi_same.xml"
-"error at position 0xe: root element has trailing data"
+"error at position 0xc: root element has trailing element <elm>"
 "ns.xml"
 [
   "elm",

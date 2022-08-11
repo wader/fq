@@ -385,7 +385,7 @@ $ fq -d elf dv a_static
 0x24c0|                        08 00 00 00 00 00 00 00|        ........|      addralign: 8 0x24c8-0x24cf.7 (8)
 0x24d0|18 00 00 00 00 00 00 00                        |........        |      entsize: 24 0x24d0-0x24d7.7 (8)
       |                                               |                |    [4]{}: section_header 0x368-0x2517.7 (8624)
-0x0360|                        00 70 75 74 73 00 5f 69|        .puts._i|      string: "\x00puts\x00_init\x00_fini\x00__cxa_finalize\x00__libc_start_main"... 0x368-0x415.7 (174)
+0x0360|                        00 70 75 74 73 00 5f 69|        .puts._i|      string: "\x00puts\x00_init\x00_fini\x00__cxa_finalize\x00__libc_start_m..." 0x368-0x415.7 (174)
 0x0370|6e 69 74 00 5f 66 69 6e 69 00 5f 5f 63 78 61 5f|nit._fini.__cxa_|
 *     |until 0x415.7 (174)                            |                |
 0x24d0|                        35 00 00 00            |        5...    |      name: ".dynstr" (53) 0x24d8-0x24db.7 (4)
@@ -2030,7 +2030,7 @@ $ fq -d elf dv a_static
 0x2b40|                        08 00 00 00 00 00 00 00|        ........|      addralign: 8 0x2b48-0x2b4f.7 (8)
 0x2b50|18 00 00 00 00 00 00 00                        |........        |      entsize: 24 0x2b50-0x2b57.7 (8)
       |                                               |                |    [30]{}: section_header 0x2098-0x2b97.7 (2816)
-0x2090|                        00 53 63 72 74 31 2e 63|        .Scrt1.c|      string: "\x00Scrt1.c\x00$x\x00crti.o\x00crtn.o\x00crtstuff.c\x00$d\x00__EH_FRAME"... 0x2098-0x22b2.7 (539)
+0x2090|                        00 53 63 72 74 31 2e 63|        .Scrt1.c|      string: "\x00Scrt1.c\x00$x\x00crti.o\x00crtn.o\x00crtstuff.c\x00$d\x00__EH_FR..." 0x2098-0x22b2.7 (539)
 0x20a0|00 24 78 00 63 72 74 69 2e 6f 00 63 72 74 6e 2e|.$x.crti.o.crtn.|
 *     |until 0x22b2.7 (539)                           |                |
 0x2b50|                        09 00 00 00            |        ....    |      name: ".strtab" (9) 0x2b58-0x2b5b.7 (4)
@@ -2059,7 +2059,7 @@ $ fq -d elf dv a_static
 0x2b80|                        01 00 00 00 00 00 00 00|        ........|      addralign: 1 0x2b88-0x2b8f.7 (8)
 0x2b90|00 00 00 00 00 00 00 00                        |........        |      entsize: 0 0x2b90-0x2b97.7 (8)
       |                                               |                |    [31]{}: section_header 0x22b3-0x2bd7.7 (2341)
-0x22b0|         00 2e 73 79 6d 74 61 62 00 2e 73 74 72|   ..symtab..str|      string: "\x00.symtab\x00.strtab\x00.shstrtab\x00.interp\x00.gnu.hash\x00.dyns"... 0x22b3-0x23d5.7 (291)
+0x22b0|         00 2e 73 79 6d 74 61 62 00 2e 73 74 72|   ..symtab..str|      string: "\x00.symtab\x00.strtab\x00.shstrtab\x00.interp\x00.gnu.hash\x00.d..." 0x22b3-0x23d5.7 (291)
 0x22c0|74 61 62 00 2e 73 68 73 74 72 74 61 62 00 2e 69|tab..shstrtab..i|
 *     |until 0x23d5.7 (291)                           |                |
 0x2b90|                        11 00 00 00            |        ....    |      name: ".shstrtab" (17) 0x2b98-0x2b9b.7 (4)

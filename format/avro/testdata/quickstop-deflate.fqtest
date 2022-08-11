@@ -21,7 +21,7 @@ $ fq 'dv({array_truncate: 5})' quickstop-deflate.avro
 0x000020|68 65 6d 61                                    |hema            |
         |                                               |                |            value{}: 0x24-0x118.7 (245)
 0x000020|            e6 03                              |    ..          |              length: 243 0x24-0x25.7 (2)
-0x000020|                  7b 22 74 79 70 65 22 3a 22 72|      {"type":"r|              data: "{\"type\":\"record\",\"name\":\"Person\",\"fields\":[{\"name\""... 0x26-0x118.7 (243)
+0x000020|                  7b 22 74 79 70 65 22 3a 22 72|      {"type":"r|              data: "{\"type\":\"record\",\"name\":\"Person\",\"fields\":[{\"na..." 0x26-0x118.7 (243)
 0x000030|65 63 6f 72 64 22 2c 22 6e 61 6d 65 22 3a 22 50|ecord","name":"P|
 *       |until 0x118.7 (243)                            |                |
         |                                               |                |      [1]{}: block 0x119-0x119.7 (1)

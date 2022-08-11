@@ -464,7 +464,7 @@ $ fq -d elf dv a_dynamic
 0x3d60|04 00 00 00                                    |....            |      addralign: 4 0x3d60-0x3d63.7 (4)
 0x3d60|            10 00 00 00                        |    ....        |      entsize: 16 0x3d64-0x3d67.7 (4)
       |                                               |                |    [5]{}: section_header 0x2c8-0x3d8f.7 (15048)
-0x02c0|                        00 70 75 74 73 00 5f 5f|        .puts.__|      string: "\x00puts\x00__cxa_finalize\x00__register_frame_info_bases\x00_"... 0x2c8-0x392.7 (203)
+0x02c0|                        00 70 75 74 73 00 5f 5f|        .puts.__|      string: "\x00puts\x00__cxa_finalize\x00__register_frame_info_base..." 0x2c8-0x392.7 (203)
 0x02d0|63 78 61 5f 66 69 6e 61 6c 69 7a 65 00 5f 5f 72|cxa_finalize.__r|
 *     |until 0x392.7 (203)                            |                |
 0x3d60|                        48 00 00 00            |        H...    |      name: ".dynstr" (72) 0x3d68-0x3d6b.7 (4)
@@ -1680,7 +1680,7 @@ $ fq -d elf dv a_dynamic
 0x4190|                        04 00 00 00            |        ....    |      addralign: 4 0x4198-0x419b.7 (4)
 0x4190|                                    10 00 00 00|            ....|      entsize: 16 0x419c-0x419f.7 (4)
       |                                               |                |    [32]{}: section_header 0x3920-0x41c7.7 (2216)
-0x3920|00 53 63 72 74 31 2e 63 00 63 72 74 73 74 75 66|.Scrt1.c.crtstuf|      string: "\x00Scrt1.c\x00crtstuff.c\x00__CTOR_LIST__\x00__DTOR_LIST__\x00__"... 0x3920-0x3b70.7 (593)
+0x3920|00 53 63 72 74 31 2e 63 00 63 72 74 73 74 75 66|.Scrt1.c.crtstuf|      string: "\x00Scrt1.c\x00crtstuff.c\x00__CTOR_LIST__\x00__DTOR_LIST__..." 0x3920-0x3b70.7 (593)
 *     |until 0x3b70.7 (593)                           |                |
 0x41a0|09 00 00 00                                    |....            |      name: ".strtab" (9) 0x41a0-0x41a3.7 (4)
 0x41a0|            03 00 00 00                        |    ....        |      type: "strtab" (0x3) (String table) 0x41a4-0x41a7.7 (4)
@@ -1707,7 +1707,7 @@ $ fq -d elf dv a_dynamic
 0x41c0|01 00 00 00                                    |....            |      addralign: 1 0x41c0-0x41c3.7 (4)
 0x41c0|            00 00 00 00                        |    ....        |      entsize: 0 0x41c4-0x41c7.7 (4)
       |                                               |                |    [33]{}: section_header 0x3b71-0x41ef.7 (1663)
-0x3b70|   00 2e 73 79 6d 74 61 62 00 2e 73 74 72 74 61| ..symtab..strta|      string: "\x00.symtab\x00.strtab\x00.shstrtab\x00.interp\x00.note.gnu.prope"... 0x3b71-0x3c9e.7 (302)
+0x3b70|   00 2e 73 79 6d 74 61 62 00 2e 73 74 72 74 61| ..symtab..strta|      string: "\x00.symtab\x00.strtab\x00.shstrtab\x00.interp\x00.note.gnu.pr..." 0x3b71-0x3c9e.7 (302)
 0x3b80|62 00 2e 73 68 73 74 72 74 61 62 00 2e 69 6e 74|b..shstrtab..int|
 *     |until 0x3c9e.7 (302)                           |                |
 0x41c0|                        11 00 00 00            |        ....    |      name: ".shstrtab" (17) 0x41c8-0x41cb.7 (4)
