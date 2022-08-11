@@ -21,7 +21,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |          [1]{}: option 0x4c-0x83.7 (56)
 0x00040|                                    04 00      |            ..  |            code: "userappl" (4) 0x4c-0x4d.7 (2)
 0x00040|                                          34 00|              4.|            length: 52 0x4e-0x4f.7 (2)
-0x00050|44 75 6d 70 63 61 70 20 31 2e 31 32 2e 36 20 28|Dumpcap 1.12.6 (|            value: "Dumpcap 1.12.6 (v1.12.6-0-gee1fce6 from master-1.1"... 0x50-0x83.7 (52)
+0x00050|44 75 6d 70 63 61 70 20 31 2e 31 32 2e 36 20 28|Dumpcap 1.12.6 (|            value: "Dumpcap 1.12.6 (v1.12.6-0-gee1fce6 from master-..." 0x50-0x83.7 (52)
 *      |until 0x83.7 (52)                              |                |
        |                                               |                |            padding: raw bits 0x84-NA (0)
        |                                               |                |          [2]{}: option 0x84-0x87.7 (4)

@@ -67,7 +67,7 @@ $ fq -d rtmp 'dv({array_truncate: 10})' client_stream
        |                                               |                |            value{}: 0x96-0xd6.7 (65)
   0x009|                  02                           |      .         |              type: "string" (2) 0x96-0x96.7 (1)
   0x009|                     00 3e                     |       .>       |              length: 62 0x97-0x98.7 (2)
-  0x009|                           72 74 6d 70 3a 2f 2f|         rtmp://|              value: "rtmp://cp70278.edgefcs.net:1935/ondemand/content-v"... 0x99-0xd6.7 (62)
+  0x009|                           72 74 6d 70 3a 2f 2f|         rtmp://|              value: "rtmp://cp70278.edgefcs.net:1935/ondemand/conten..." 0x99-0xd6.7 (62)
   0x00a|63 70 37 30 32 37 38 2e 65 64 67 65 66 63 73 2e|cp70278.edgefcs.|
   *    |until 0xd6.7 (62)                              |                |
        |                                               |                |          [4]{}: pair 0xd7-0xde.7 (8)

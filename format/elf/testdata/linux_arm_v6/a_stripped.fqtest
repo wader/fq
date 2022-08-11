@@ -374,7 +374,7 @@ $ fq -d elf dv a_stripped
 0x11e0|04 00 00 00                                    |....            |      addralign: 4 0x11e0-0x11e3.7 (4)
 0x11e0|            10 00 00 00                        |    ....        |      entsize: 16 0x11e4-0x11e7.7 (4)
       |                                               |                |    [4]{}: section_header 0x220-0x120f.7 (4080)
-0x0220|00 70 75 74 73 00 5f 5f 63 78 61 5f 66 69 6e 61|.puts.__cxa_fina|      string: "\x00puts\x00__cxa_finalize\x00__deregister_frame_info\x00_ITM_"... 0x220-0x2e0.7 (193)
+0x0220|00 70 75 74 73 00 5f 5f 63 78 61 5f 66 69 6e 61|.puts.__cxa_fina|      string: "\x00puts\x00__cxa_finalize\x00__deregister_frame_info\x00_I..." 0x220-0x2e0.7 (193)
 *     |until 0x2e0.7 (193)                            |                |
 0x11e0|                        25 00 00 00            |        %...    |      name: ".dynstr" (37) 0x11e8-0x11eb.7 (4)
 0x11e0|                                    03 00 00 00|            ....|      type: "strtab" (0x3) (String table) 0x11ec-0x11ef.7 (4)
@@ -915,7 +915,7 @@ $ fq -d elf dv a_stripped
 0x1480|                        01 00 00 00            |        ....    |      addralign: 1 0x1488-0x148b.7 (4)
 0x1480|                                    00 00 00 00|            ....|      entsize: 0 0x148c-0x148f.7 (4)
       |                                               |                |    [21]{}: section_header 0x1099-0x14b7.7 (1055)
-0x1090|                           00 2e 73 68 73 74 72|         ..shstr|      string: "\x00.shstrtab\x00.interp\x00.gnu.hash\x00.dynsym\x00.dynstr\x00.rel."... 0x1099-0x1145.7 (173)
+0x1090|                           00 2e 73 68 73 74 72|         ..shstr|      string: "\x00.shstrtab\x00.interp\x00.gnu.hash\x00.dynsym\x00.dynstr\x00.r..." 0x1099-0x1145.7 (173)
 0x10a0|74 61 62 00 2e 69 6e 74 65 72 70 00 2e 67 6e 75|tab..interp..gnu|
 *     |until 0x1145.7 (173)                           |                |
 0x1490|01 00 00 00                                    |....            |      name: ".shstrtab" (1) 0x1490-0x1493.7 (4)

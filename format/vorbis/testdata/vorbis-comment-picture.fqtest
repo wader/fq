@@ -16,7 +16,7 @@ $ fq -d vorbis_comment dv vorbis-comment-picture
 0x0030|6c 69 62 76 6f 72 62 69 73                     |libvorbis       |
       |                                               |                |    [1]{}: user_comment 0x39-0x11f.7 (231)
 0x0030|                           e3 00 00 00         |         ....   |      length: 227 0x39-0x3c.7 (4)
-0x0030|                                       4d 45 54|             MET|      comment: "METADATA_BLOCK_PICTURE=AAAAAAAAAAlpbWFnZS9wbmcAAAA"... 0x3d-0x11f.7 (227)
+0x0030|                                       4d 45 54|             MET|      comment: "METADATA_BLOCK_PICTURE=AAAAAAAAAAlpbWFnZS9wbmcA..." 0x3d-0x11f.7 (227)
 0x0040|41 44 41 54 41 5f 42 4c 4f 43 4b 5f 50 49 43 54|ADATA_BLOCK_PICT|
 *     |until 0x11f.7 (end) (227)                      |                |
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      picture{}: (flac_picture) 0x0-0x98.7 (153)

@@ -1,4 +1,12 @@
 $ fq -n '"<a></a> trailing" | fromxml'
 exitcode: 5
 stderr:
-error: error at position 0xa: root element has trailing data
+error: error at position 0x7: root element has trailing non-whitespace " trailing"
+$ fq -n '"<a></a> <trailingelm>" | fromxml'
+exitcode: 5
+stderr:
+error: error at position 0x8: root element has trailing element <trailingelm>
+$ fq -n '"<a></a> <?procinstr?>" | fromxml'
+{
+  "a": ""
+}

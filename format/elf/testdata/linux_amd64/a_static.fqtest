@@ -457,7 +457,7 @@ $ fq -d elf dv a_static
 0x4010|08 00 00 00 00 00 00 00                        |........        |      addralign: 8 0x4010-0x4017.7 (8)
 0x4010|                        18 00 00 00 00 00 00 00|        ........|      entsize: 24 0x4018-0x401f.7 (8)
       |                                               |                |    [5]{}: section_header 0x450-0x405f.7 (15376)
-0x0450|00 70 75 74 73 00 5f 69 6e 69 74 00 5f 66 69 6e|.puts._init._fin|      string: "\x00puts\x00_init\x00_fini\x00__cxa_finalize\x00__libc_start_main"... 0x450-0x4fc.7 (173)
+0x0450|00 70 75 74 73 00 5f 69 6e 69 74 00 5f 66 69 6e|.puts._init._fin|      string: "\x00puts\x00_init\x00_fini\x00__cxa_finalize\x00__libc_start_m..." 0x450-0x4fc.7 (173)
 *     |until 0x4fc.7 (173)                            |                |
 0x4020|48 00 00 00                                    |H...            |      name: ".dynstr" (72) 0x4020-0x4023.7 (4)
 0x4020|            03 00 00 00                        |    ....        |      type: "strtab" (0x3) (String table) 0x4024-0x4027.7 (4)
@@ -1661,7 +1661,7 @@ $ fq -d elf dv a_static
 0x46d0|08 00 00 00 00 00 00 00                        |........        |      addralign: 8 0x46d0-0x46d7.7 (8)
 0x46d0|                        18 00 00 00 00 00 00 00|        ........|      entsize: 24 0x46d8-0x46df.7 (8)
       |                                               |                |    [32]{}: section_header 0x3bb8-0x471f.7 (2920)
-0x3bb0|                        00 53 63 72 74 31 2e 63|        .Scrt1.c|      string: "\x00Scrt1.c\x00crtstuff.c\x00__CTOR_LIST__\x00__DTOR_LIST__\x00__"... 0x3bb8-0x3dad.7 (502)
+0x3bb0|                        00 53 63 72 74 31 2e 63|        .Scrt1.c|      string: "\x00Scrt1.c\x00crtstuff.c\x00__CTOR_LIST__\x00__DTOR_LIST__..." 0x3bb8-0x3dad.7 (502)
 0x3bc0|00 63 72 74 73 74 75 66 66 2e 63 00 5f 5f 43 54|.crtstuff.c.__CT|
 *     |until 0x3dad.7 (502)                           |                |
 0x46e0|09 00 00 00                                    |....            |      name: ".strtab" (9) 0x46e0-0x46e3.7 (4)
@@ -1690,7 +1690,7 @@ $ fq -d elf dv a_static
 0x4710|01 00 00 00 00 00 00 00                        |........        |      addralign: 1 0x4710-0x4717.7 (8)
 0x4710|                        00 00 00 00 00 00 00 00|        ........|      entsize: 0 0x4718-0x471f.7 (8)
       |                                               |                |    [33]{}: section_header 0x3dae-0x475f.7 (2482)
-0x3da0|                                          00 2e|              ..|      string: "\x00.symtab\x00.strtab\x00.shstrtab\x00.interp\x00.note.gnu.prope"... 0x3dae-0x3edd.7 (304)
+0x3da0|                                          00 2e|              ..|      string: "\x00.symtab\x00.strtab\x00.shstrtab\x00.interp\x00.note.gnu.pr..." 0x3dae-0x3edd.7 (304)
 0x3db0|73 79 6d 74 61 62 00 2e 73 74 72 74 61 62 00 2e|symtab..strtab..|
 *     |until 0x3edd.7 (304)                           |                |
 0x4720|11 00 00 00                                    |....            |      name: ".shstrtab" (17) 0x4720-0x4723.7 (4)

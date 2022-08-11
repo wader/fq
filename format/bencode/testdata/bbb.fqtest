@@ -181,7 +181,7 @@ $ fq -d bencode dv bbb.torrent
 0x01a0|                                          31 33|              13|              length: 13580 0x1ae-0x1b2.7 (5)
 0x01b0|35 38 30                                       |580             |
 0x01b0|         3a                                    |   :            |              separator: ":" (valid) 0x1b3-0x1b3.7 (1)
-0x01b0|            99 71 9b 2c 2e aa b6 80 df fa 1f 36|    .q.,.......6|              value: "�q�,.�����\x1f6\x0e�LS�x���)�>"... 0x1b4-0x36bf.7 (13580)
+0x01b0|            99 71 9b 2c 2e aa b6 80 df fa 1f 36|    .q.,.......6|              value: "�q�,.�����\x1f6\x0e�LS�x���)\xef..." 0x1b4-0x36bf.7 (13580)
 0x01c0|0e e0 4c 53 f3 78 bb 84 82 29 c8 3e 98 91 93 f9|..LS.x...).>....|
 *     |until 0x36bf.7 (13580)                         |                |
       |                                               |                |          [6]{}: pair 0x36c0-0x3700.7 (65)
@@ -257,7 +257,7 @@ $ fq -d bencode dv bbb.torrent
 0x3700|                                       39      |             9  |            type: "string" ("9") 0x370d-0x370d.7 (1)
 0x3700|                                       39 30   |             90 |            length: 90 0x370d-0x370e.7 (2)
 0x3700|                                             3a|               :|            separator: ":" (valid) 0x370f-0x370f.7 (1)
-0x3710|68 74 74 70 3a 2f 2f 64 69 73 74 72 69 62 75 74|http://distribut|            value: "http://distribution.bbb3d.renderfarming.net/video/"... 0x3710-0x3769.7 (90)
+0x3710|68 74 74 70 3a 2f 2f 64 69 73 74 72 69 62 75 74|http://distribut|            value: "http://distribution.bbb3d.renderfarming.net/vid..." 0x3710-0x3769.7 (90)
 *     |until 0x3769.7 (90)                            |                |
 0x3760|                              65               |          e     |        end: "e" (valid) 0x376a-0x376a.7 (1)
       |                                               |                |    [8]{}: pair 0x376b-0x3794.7 (42)

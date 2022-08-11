@@ -14,7 +14,7 @@ $ fq 'dv({array_truncate: 25})' snappy.avro
 0x00010|61                                             |a               |
        |                                               |                |            value{}: 0x11-0x3fc.7 (1004)
 0x00010|   d4 0f                                       | ..             |              length: 1002 0x11-0x12.7 (2)
-0x00010|         7b 22 66 69 65 6c 64 73 22 3a 5b 7b 22|   {"fields":[{"|              data: "{\"fields\":[{\"name\":\"null\",\"type\":\"null\"},{\"name\":\""... 0x13-0x3fc.7 (1002)
+0x00010|         7b 22 66 69 65 6c 64 73 22 3a 5b 7b 22|   {"fields":[{"|              data: "{\"fields\":[{\"name\":\"null\",\"type\":\"null\"},{\"name..." 0x13-0x3fc.7 (1002)
 0x00020|6e 61 6d 65 22 3a 22 6e 75 6c 6c 22 2c 22 74 79|name":"null","ty|
 *      |until 0x3fc.7 (1002)                           |                |
        |                                               |                |          [1]{}: entry 0x3fd-0x40e.7 (18)

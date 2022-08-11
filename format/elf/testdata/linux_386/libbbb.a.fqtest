@@ -553,7 +553,7 @@ $ fq -d ar dv libbbb.a
 0x590|                  04 00 00 00                  |      ....      |            addralign: 4 0x596-0x599.7 (4)
 0x590|                              10 00 00 00      |          ....  |            entsize: 16 0x59a-0x59d.7 (4)
      |                                               |                |          [14]{}: section_header 0x25e-0x5c5.7 (872)
-0x250|                                          00 6c|              .l|            string: "\x00libbbb.c\x00libbbb_bbb\x00__x86.get_pc_thunk.ax\x00_GLOBAL"... 0x25e-0x2a3.7 (70)
+0x250|                                          00 6c|              .l|            string: "\x00libbbb.c\x00libbbb_bbb\x00__x86.get_pc_thunk.ax\x00_GLO..." 0x25e-0x2a3.7 (70)
 0x260|69 62 62 62 62 2e 63 00 6c 69 62 62 62 62 5f 62|ibbbb.c.libbbb_b|
 *    |until 0x2a3.7 (70)                             |                |
 0x590|                                          09 00|              ..|            name: ".strtab" (9) 0x59e-0x5a1.7 (4)
@@ -584,7 +584,7 @@ $ fq -d ar dv libbbb.a
 0x5c0|00 00                                          |..              |
 0x5c0|      00 00 00 00                              |  ....          |            entsize: 0 0x5c2-0x5c5.7 (4)
      |                                               |                |          [15]{}: section_header 0x2d6-0x5ed.7 (792)
-0x2d0|                  00 2e 73 79 6d 74 61 62 00 2e|      ..symtab..|            string: "\x00.symtab\x00.strtab\x00.shstrtab\x00.rel.text\x00.data\x00.bss\x00.r"... 0x2d6-0x36a.7 (149)
+0x2d0|                  00 2e 73 79 6d 74 61 62 00 2e|      ..symtab..|            string: "\x00.symtab\x00.strtab\x00.shstrtab\x00.rel.text\x00.data\x00.bss..." 0x2d6-0x36a.7 (149)
 0x2e0|73 74 72 74 61 62 00 2e 73 68 73 74 72 74 61 62|strtab..shstrtab|
 *    |until 0x36a.7 (149)                            |                |
 0x5c0|                  11 00 00 00                  |      ....      |            name: ".shstrtab" (17) 0x5c6-0x5c9.7 (4)

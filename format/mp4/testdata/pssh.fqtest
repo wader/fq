@@ -27,7 +27,7 @@ $ fq ddv pssh.mp4
      |                                               |                |          [0]{}: record 0x4a-0x47d.7 (1076)
 0x040|                              01 00            |          ..    |            type: "Rights management header" (1) 0x4a-0x4b.7 (2)
 0x040|                                    30 04      |            0.  |            len: 1072 0x4c-0x4d.7 (2)
-0x040|                                          3c 00|              <.|            xml: "<WRMHEADER xmlns=\"http://schemas.microsoft.com/DRM"... 0x4e-0x47d.7 (1072)
+0x040|                                          3c 00|              <.|            xml: "<WRMHEADER xmlns=\"http://schemas.microsoft.com/..." 0x4e-0x47d.7 (1072)
 0x050|57 00 52 00 4d 00 48 00 45 00 41 00 44 00 45 00|W.R.M.H.E.A.D.E.|
 0x060|52 00 20 00 78 00 6d 00 6c 00 6e 00 73 00 3d 00|R. .x.m.l.n.s.=.|
 0x070|22 00 68 00 74 00 74 00 70 00 3a 00 2f 00 2f 00|".h.t.t.p.:././.|
