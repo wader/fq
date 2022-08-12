@@ -79,6 +79,8 @@ func title(s string) string {
 
 var symLowerRE = regexp.MustCompile(`[^a-z0-9]+`)
 
+var newLineRE = regexp.MustCompile(`\n`)
+
 func symLower(s string) string {
 	s = strings.ToLower(s)
 	return symLowerRE.ReplaceAllStringFunc(s, func(s string) string { return "_" })
@@ -157,7 +159,7 @@ func main() {
 			fmt.Printf("\t%sID: {\n", c.Name)
 			fmt.Printf("\t\tName: %q,\n", camelToSnake(c.Name))
 			if defOk {
-				fmt.Printf("\t\tDefinition: %q,\n", def)
+				fmt.Printf("\t\tDefinition: %q,\n", newLineRE.ReplaceAllString(def, " "))
 			}
 			fmt.Printf("\t\tType: ebml.%s%s,\n", title(typ), extra)
 			if len(c.Enums) > 0 {
@@ -199,9 +201,9 @@ func main() {
 					}
 
 					if enumDefOk {
-						fmt.Printf("\t\t\t\tDescription: %q,\n", enumDef)
+						fmt.Printf("\t\t\t\tDescription: %q,\n", newLineRE.ReplaceAllString(enumDef, " "))
 					} else if !labelOk {
-						fmt.Printf("\t\t\t\tDescription: %q,\n", e.Label)
+						fmt.Printf("\t\t\t\tDescription: %q,\n", newLineRE.ReplaceAllString(e.Label, " "))
 					}
 
 					fmt.Printf("\t\t\t},\n")

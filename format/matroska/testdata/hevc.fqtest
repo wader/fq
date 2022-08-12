@@ -183,8 +183,7 @@ $ fq -d matroska dv hevc.mkv
 0x0130|      01 00 00 00 00 00 09 84                  |  ........      |              size: 2436 0x132-0x139.7 (8)
       |                                               |                |              elements[0:9]: 0x13a-0xabd.7 (2436)
       |                                               |                |                [0]{}: element 0x13a-0x13c.7 (3)
-0x0130|                              d7               |          .     |                  id: "track_number" (0xd7) (The track number as used in the Block Header (using more than 127 tracks is not encouraged,
-                                                                        though the design allows an unlimited number).) 0x13a-0x13a.7 (1)
+0x0130|                              d7               |          .     |                  id: "track_number" (0xd7) (The track number as used in the Block Header (using more than 127 tracks is not encouraged, though the design allows an unlimited number).) 0x13a-0x13a.7 (1)
       |                                               |                |                  type: "uinteger" 0x13b-NA (0)
 0x0130|                                 81            |           .    |                  size: 1 0x13b-0x13b.7 (1)
 0x0130|                                    01         |            .   |                  value: 1 0x13c-0x13c.7 (1)
@@ -199,29 +198,24 @@ $ fq -d matroska dv hevc.mkv
 0x0140|                           81                  |         .      |                  size: 1 0x149-0x149.7 (1)
 0x0140|                              00               |          .     |                  value: 0 0x14a-0x14a.7 (1)
       |                                               |                |                [3]{}: element 0x14b-0x151.7 (7)
-0x0140|                                 22 b5 9c      |           "..  |                  id: "language" (0x22b59c) (Specifies the language of the track in the Matroska languages form;
-                                                                        see (#language-codes) on language codes.
-                                                                        This Element **MUST** be ignored if the LanguageIETF Element is used in the same TrackEntry.) 0x14b-0x14d.7 (3)
+0x0140|                                 22 b5 9c      |           "..  |                  id: "language" (0x22b59c) (Specifies the language of the track in the Matroska languages form; see (#language-codes) on language codes. This Element **MUST** be ignored if the LanguageIETF Element is used in the same TrackEntry.) 0x14b-0x14d.7 (3)
       |                                               |                |                  type: "string" 0x14e-NA (0)
 0x0140|                                          83   |              . |                  size: 3 0x14e-0x14e.7 (1)
 0x0140|                                             75|               u|                  value: "und" 0x14f-0x151.7 (3)
 0x0150|6e 64                                          |nd              |
       |                                               |                |                [4]{}: element 0x152-0x163.7 (18)
-0x0150|      86                                       |  .             |                  id: "codec_id" (0x86) (An ID corresponding to the codec,
-                                                                        see [@!MatroskaCodec] for more info.) 0x152-0x152.7 (1)
+0x0150|      86                                       |  .             |                  id: "codec_id" (0x86) (An ID corresponding to the codec, see [@!MatroskaCodec] for more info.) 0x152-0x152.7 (1)
       |                                               |                |                  type: "string" 0x153-NA (0)
 0x0150|         90                                    |   .            |                  size: 16 0x153-0x153.7 (1)
 0x0150|            56 5f 4d 50 45 47 48 2f 49 53 4f 2f|    V_MPEGH/ISO/|                  value: "V_MPEGH/ISO/HEVC" 0x154-0x163.7 (16)
 0x0160|48 45 56 43                                    |HEVC            |
       |                                               |                |                [5]{}: element 0x164-0x166.7 (3)
-0x0160|            83                                 |    .           |                  id: "track_type" (0x83) (The `TrackType` defines the type of each frame found in the Track.
-                                                                        The value **SHOULD** be stored on 1 octet.) 0x164-0x164.7 (1)
+0x0160|            83                                 |    .           |                  id: "track_type" (0x83) (The `TrackType` defines the type of each frame found in the Track. The value **SHOULD** be stored on 1 octet.) 0x164-0x164.7 (1)
       |                                               |                |                  type: "uinteger" 0x165-NA (0)
 0x0160|               81                              |     .          |                  size: 1 0x165-0x165.7 (1)
 0x0160|                  01                           |      .         |                  value: "video" (1) (An image.) 0x166-0x166.7 (1)
       |                                               |                |                [6]{}: element 0x167-0x16e.7 (8)
-0x0160|                     23 e3 83                  |       #..      |                  id: "default_duration" (0x23e383) (Number of nanoseconds per frame, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks)
-                                                                        (frame in the Matroska sense -- one Element put into a (Simple)Block).) 0x167-0x169.7 (3)
+0x0160|                     23 e3 83                  |       #..      |                  id: "default_duration" (0x23e383) (Number of nanoseconds per frame, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks) (frame in the Matroska sense -- one Element put into a (Simple)Block).) 0x167-0x169.7 (3)
       |                                               |                |                  type: "uinteger" 0x16a-NA (0)
 0x0160|                              84               |          .     |                  size: 4 0x16a-0x16a.7 (1)
 0x0160|                                 02 62 5a 00   |           .bZ. |                  value: 40000000 0x16b-0x16e.7 (4)
@@ -553,8 +547,8 @@ $ fq -d matroska dv hevc.mkv
 0x0200|ff ff ff c1 2c a2 de 09 b5 17 47 db bb 55 a4 fe|....,.....G..U..|
 *     |until 0xabd.7 (2244)                           |                |
       |                                               |                |        [4]{}: element 0xabe-0xb63.7 (166)
-0x0ab0|                                          12 54|              .T|          id: "tags" (0x1254c367) (Element containing metadata describing Tracks, Editions, Chapters, Attachments, or the Segment as a whole.
-0x0ac0|c3 67                                          |.g              |A list of valid tags can be found in [@!MatroskaTags].) 0xabe-0xac1.7 (4)
+0x0ab0|                                          12 54|              .T|          id: "tags" (0x1254c367) (Element containing metadata describing Tracks, Editions, Chapters, Attachments, or the Segment as a whole. A list of valid tags can be found in [@!MatroskaTags].) 0xabe-0xac1.7 (4)
+0x0ac0|c3 67                                          |.g              |
       |                                               |                |          type: "master" 0xac2-NA (0)
 0x0ac0|      40 a0                                    |  @.            |          size: 160 0xac2-0xac3.7 (2)
       |                                               |                |          elements[0:3]: 0xac4-0xb63.7 (160)
@@ -570,8 +564,7 @@ $ fq -d matroska dv hevc.mkv
 0x0ad0|00 00 00 27                                    |...'            |
       |                                               |                |              elements[0:2]: 0xad4-0xafa.7 (39)
       |                                               |                |                [0]{}: element 0xad4-0xad6.7 (3)
-0x0ad0|            63 c0                              |    c.          |                  id: "targets" (0x63c0) (Specifies which other elements the metadata represented by the Tag applies to.
-                                                                        If empty or not present, then the Tag describes everything in the Segment.) 0xad4-0xad5.7 (2)
+0x0ad0|            63 c0                              |    c.          |                  id: "targets" (0x63c0) (Specifies which other elements the metadata represented by the Tag applies to. If empty or not present, then the Tag describes everything in the Segment.) 0xad4-0xad5.7 (2)
       |                                               |                |                  type: "master" 0xad6-NA (0)
 0x0ad0|                  80                           |      .         |                  size: 0 0xad6-0xad6.7 (1)
       |                                               |                |                  elements[0:0]: 0xad7-NA (0)
@@ -599,8 +592,7 @@ $ fq -d matroska dv hevc.mkv
 0x0b00|00 00 00 00 5f                                 |...._           |
       |                                               |                |              elements[0:3]: 0xb05-0xb63.7 (95)
       |                                               |                |                [0]{}: element 0xb05-0xb12.7 (14)
-0x0b00|               63 c0                           |     c.         |                  id: "targets" (0x63c0) (Specifies which other elements the metadata represented by the Tag applies to.
-                                                                        If empty or not present, then the Tag describes everything in the Segment.) 0xb05-0xb06.7 (2)
+0x0b00|               63 c0                           |     c.         |                  id: "targets" (0x63c0) (Specifies which other elements the metadata represented by the Tag applies to. If empty or not present, then the Tag describes everything in the Segment.) 0xb05-0xb06.7 (2)
       |                                               |                |                  type: "master" 0xb07-NA (0)
 0x0b00|                     8b                        |       .        |                  size: 11 0xb07-0xb07.7 (1)
       |                                               |                |                  elements[0:1]: 0xb08-0xb12.7 (11)
@@ -659,8 +651,7 @@ $ fq -d matroska dv hevc.mkv
 0x0b70|   81                                          | .              |              size: 1 0xb71-0xb71.7 (1)
 0x0b70|      00                                       |  .             |              value: 0 0xb72-0xb72.7 (1)
       |                                               |                |            [2]{}: element 0xb73-0x13ce.7 (2140)
-0x0b70|         a3                                    |   .            |              id: "simple_block" (0xa3) (Similar to Block, see (#block-structure), but without all the extra information,
-                                                                        mostly used to reduced overhead when no extra feature is needed; see (#simpleblock-structure) on SimpleBlock Structure.) 0xb73-0xb73.7 (1)
+0x0b70|         a3                                    |   .            |              id: "simple_block" (0xa3) (Similar to Block, see (#block-structure), but without all the extra information, mostly used to reduced overhead when no extra feature is needed; see (#simpleblock-structure) on SimpleBlock Structure.) 0xb73-0xb73.7 (1)
       |                                               |                |              type: "binary" 0xb74-NA (0)
 0x0b70|            48 59                              |    HY          |              size: 2137 0xb74-0xb75.7 (2)
 0x0b70|                  81                           |      .         |              track_number: 1 0xb76-0xb76.7 (1)
@@ -682,8 +673,8 @@ $ fq -d matroska dv hevc.mkv
 0x0b80|af 1d 20 aa 55 b7 88 a0 62 7f ff fa 2c 46 fd a9|.. .U...b...,F..|                    data: raw bits 0xb80-0x13ce.7 (2127)
 *     |until 0x13ce.7 (2127)                          |                |
       |                                               |                |        [6]{}: element 0x13cf-0x13ea.7 (28)
-0x13c0|                                             1c|               .|          id: "cues" (0x1c53bb6b) (A Top-Level Element to speed seeking access.
-0x13d0|53 bb 6b                                       |S.k             |All entries are local to the Segment.) 0x13cf-0x13d2.7 (4)
+0x13c0|                                             1c|               .|          id: "cues" (0x1c53bb6b) (A Top-Level Element to speed seeking access. All entries are local to the Segment.) 0x13cf-0x13d2.7 (4)
+0x13d0|53 bb 6b                                       |S.k             |
       |                                               |                |          type: "master" 0x13d3-NA (0)
 0x13d0|         97                                    |   .            |          size: 23 0x13d3-0x13d3.7 (1)
       |                                               |                |          elements[0:2]: 0x13d4-0x13ea.7 (23)
@@ -718,8 +709,7 @@ $ fq -d matroska dv hevc.mkv
 0x13e0|               82                              |     .          |                      size: 2 0x13e5-0x13e5.7 (1)
 0x13e0|                  0b 30                        |      .0        |                      value: 2864 0x13e6-0x13e7.7 (2)
       |                                               |                |                    [2]{}: element 0x13e8-0x13ea.7 (3)
-0x13e0|                        f0                     |        .       |                      id: "cue_relative_position" (0xf0) (The relative position inside the Cluster of the referenced SimpleBlock or BlockGroup
-                                                                        with 0 being the first possible position for an Element inside that Cluster.) 0x13e8-0x13e8.7 (1)
+0x13e0|                        f0                     |        .       |                      id: "cue_relative_position" (0xf0) (The relative position inside the Cluster of the referenced SimpleBlock or BlockGroup with 0 being the first possible position for an Element inside that Cluster.) 0x13e8-0x13e8.7 (1)
       |                                               |                |                      type: "uinteger" 0x13e9-NA (0)
 0x13e0|                           81                  |         .      |                      size: 1 0x13e9-0x13e9.7 (1)
 0x13e0|                              09|              |          .|    |                      value: 9 0x13ea-0x13ea.7 (1)

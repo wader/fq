@@ -183,8 +183,7 @@ $ fq -d matroska dv vorbis.mkv
 0x0130|      01 00 00 00 00 00 0d 1c                  |  ........      |              size: 3356 0x132-0x139.7 (8)
       |                                               |                |              elements[0:8]: 0x13a-0xe55.7 (3356)
       |                                               |                |                [0]{}: element 0x13a-0x13c.7 (3)
-0x0130|                              d7               |          .     |                  id: "track_number" (0xd7) (The track number as used in the Block Header (using more than 127 tracks is not encouraged,
-                                                                        though the design allows an unlimited number).) 0x13a-0x13a.7 (1)
+0x0130|                              d7               |          .     |                  id: "track_number" (0xd7) (The track number as used in the Block Header (using more than 127 tracks is not encouraged, though the design allows an unlimited number).) 0x13a-0x13a.7 (1)
       |                                               |                |                  type: "uinteger" 0x13b-NA (0)
 0x0130|                                 81            |           .    |                  size: 1 0x13b-0x13b.7 (1)
 0x0130|                                    01         |            .   |                  value: 1 0x13c-0x13c.7 (1)
@@ -199,22 +198,18 @@ $ fq -d matroska dv vorbis.mkv
 0x0140|                           81                  |         .      |                  size: 1 0x149-0x149.7 (1)
 0x0140|                              00               |          .     |                  value: 0 0x14a-0x14a.7 (1)
       |                                               |                |                [3]{}: element 0x14b-0x151.7 (7)
-0x0140|                                 22 b5 9c      |           "..  |                  id: "language" (0x22b59c) (Specifies the language of the track in the Matroska languages form;
-                                                                        see (#language-codes) on language codes.
-                                                                        This Element **MUST** be ignored if the LanguageIETF Element is used in the same TrackEntry.) 0x14b-0x14d.7 (3)
+0x0140|                                 22 b5 9c      |           "..  |                  id: "language" (0x22b59c) (Specifies the language of the track in the Matroska languages form; see (#language-codes) on language codes. This Element **MUST** be ignored if the LanguageIETF Element is used in the same TrackEntry.) 0x14b-0x14d.7 (3)
       |                                               |                |                  type: "string" 0x14e-NA (0)
 0x0140|                                          83   |              . |                  size: 3 0x14e-0x14e.7 (1)
 0x0140|                                             75|               u|                  value: "und" 0x14f-0x151.7 (3)
 0x0150|6e 64                                          |nd              |
       |                                               |                |                [4]{}: element 0x152-0x15b.7 (10)
-0x0150|      86                                       |  .             |                  id: "codec_id" (0x86) (An ID corresponding to the codec,
-                                                                        see [@!MatroskaCodec] for more info.) 0x152-0x152.7 (1)
+0x0150|      86                                       |  .             |                  id: "codec_id" (0x86) (An ID corresponding to the codec, see [@!MatroskaCodec] for more info.) 0x152-0x152.7 (1)
       |                                               |                |                  type: "string" 0x153-NA (0)
 0x0150|         88                                    |   .            |                  size: 8 0x153-0x153.7 (1)
 0x0150|            41 5f 56 4f 52 42 49 53            |    A_VORBIS    |                  value: "A_VORBIS" 0x154-0x15b.7 (8)
       |                                               |                |                [5]{}: element 0x15c-0x15e.7 (3)
-0x0150|                                    83         |            .   |                  id: "track_type" (0x83) (The `TrackType` defines the type of each frame found in the Track.
-                                                                        The value **SHOULD** be stored on 1 octet.) 0x15c-0x15c.7 (1)
+0x0150|                                    83         |            .   |                  id: "track_type" (0x83) (The `TrackType` defines the type of each frame found in the Track. The value **SHOULD** be stored on 1 octet.) 0x15c-0x15c.7 (1)
       |                                               |                |                  type: "uinteger" 0x15d-NA (0)
 0x0150|                                       81      |             .  |                  size: 1 0x15d-0x15d.7 (1)
 0x0150|                                          02   |              . |                  value: "audio" (2) (Audio samples.) 0x15e-0x15e.7 (1)
@@ -284,8 +279,7 @@ $ fq -d matroska dv vorbis.mkv
 0x01c0|86 81 d0 90 95 00 00 02 00 00 60 84 22 0c 31 20|..........`.".1 |
 *     |until 0xe55.7 (3231)                           |                |
       |                                               |                |        [4]{}: element 0xe56-0xefa.7 (165)
-0x0e50|                  12 54 c3 67                  |      .T.g      |          id: "tags" (0x1254c367) (Element containing metadata describing Tracks, Editions, Chapters, Attachments, or the Segment as a whole.
-                                                                        A list of valid tags can be found in [@!MatroskaTags].) 0xe56-0xe59.7 (4)
+0x0e50|                  12 54 c3 67                  |      .T.g      |          id: "tags" (0x1254c367) (Element containing metadata describing Tracks, Editions, Chapters, Attachments, or the Segment as a whole. A list of valid tags can be found in [@!MatroskaTags].) 0xe56-0xe59.7 (4)
       |                                               |                |          type: "master" 0xe5a-NA (0)
 0x0e50|                              40 9f            |          @.    |          size: 159 0xe5a-0xe5b.7 (2)
       |                                               |                |          elements[0:3]: 0xe5c-0xefa.7 (159)
@@ -301,8 +295,7 @@ $ fq -d matroska dv vorbis.mkv
 0x0e60|            01 00 00 00 00 00 00 27            |    .......'    |              size: 39 0xe64-0xe6b.7 (8)
       |                                               |                |              elements[0:2]: 0xe6c-0xe92.7 (39)
       |                                               |                |                [0]{}: element 0xe6c-0xe6e.7 (3)
-0x0e60|                                    63 c0      |            c.  |                  id: "targets" (0x63c0) (Specifies which other elements the metadata represented by the Tag applies to.
-                                                                        If empty or not present, then the Tag describes everything in the Segment.) 0xe6c-0xe6d.7 (2)
+0x0e60|                                    63 c0      |            c.  |                  id: "targets" (0x63c0) (Specifies which other elements the metadata represented by the Tag applies to. If empty or not present, then the Tag describes everything in the Segment.) 0xe6c-0xe6d.7 (2)
       |                                               |                |                  type: "master" 0xe6e-NA (0)
 0x0e60|                                          80   |              . |                  size: 0 0xe6e-0xe6e.7 (1)
       |                                               |                |                  elements[0:0]: 0xe6f-NA (0)
@@ -330,8 +323,7 @@ $ fq -d matroska dv vorbis.mkv
 0x0e90|               01 00 00 00 00 00 00 5e         |     .......^   |              size: 94 0xe95-0xe9c.7 (8)
       |                                               |                |              elements[0:3]: 0xe9d-0xefa.7 (94)
       |                                               |                |                [0]{}: element 0xe9d-0xeaa.7 (14)
-0x0e90|                                       63 c0   |             c. |                  id: "targets" (0x63c0) (Specifies which other elements the metadata represented by the Tag applies to.
-                                                                        If empty or not present, then the Tag describes everything in the Segment.) 0xe9d-0xe9e.7 (2)
+0x0e90|                                       63 c0   |             c. |                  id: "targets" (0x63c0) (Specifies which other elements the metadata represented by the Tag applies to. If empty or not present, then the Tag describes everything in the Segment.) 0xe9d-0xe9e.7 (2)
       |                                               |                |                  type: "master" 0xe9f-NA (0)
 0x0e90|                                             8b|               .|                  size: 11 0xe9f-0xe9f.7 (1)
       |                                               |                |                  elements[0:1]: 0xea0-0xeaa.7 (11)
@@ -392,8 +384,7 @@ $ fq -d matroska dv vorbis.mkv
 0x0f00|                        81                     |        .       |              size: 1 0xf08-0xf08.7 (1)
 0x0f00|                           00                  |         .      |              value: 0 0xf09-0xf09.7 (1)
       |                                               |                |            [2]{}: element 0xf0a-0xfc6.7 (189)
-0x0f00|                              a3               |          .     |              id: "simple_block" (0xa3) (Similar to Block, see (#block-structure), but without all the extra information,
-                                                                        mostly used to reduced overhead when no extra feature is needed; see (#simpleblock-structure) on SimpleBlock Structure.) 0xf0a-0xf0a.7 (1)
+0x0f00|                              a3               |          .     |              id: "simple_block" (0xa3) (Similar to Block, see (#block-structure), but without all the extra information, mostly used to reduced overhead when no extra feature is needed; see (#simpleblock-structure) on SimpleBlock Structure.) 0xf0a-0xf0a.7 (1)
       |                                               |                |              type: "binary" 0xf0b-NA (0)
 0x0f00|                                 40 ba         |           @.   |              size: 186 0xf0b-0xf0c.7 (2)
 0x0f00|                                       81      |             .  |              track_number: 1 0xf0d-0xf0d.7 (1)
@@ -410,8 +401,7 @@ $ fq -d matroska dv vorbis.mkv
 0x0f20|08 65 84 84 f6 56 3e d0 88 ae 42 68 41 0a e1 42|.e...V>...BhA..B|
 *     |until 0xfc6.7 (181)                            |                |
       |                                               |                |            [3]{}: element 0xfc7-0x1018.7 (82)
-0x0fc0|                     a3                        |       .        |              id: "simple_block" (0xa3) (Similar to Block, see (#block-structure), but without all the extra information,
-                                                                        mostly used to reduced overhead when no extra feature is needed; see (#simpleblock-structure) on SimpleBlock Structure.) 0xfc7-0xfc7.7 (1)
+0x0fc0|                     a3                        |       .        |              id: "simple_block" (0xa3) (Similar to Block, see (#block-structure), but without all the extra information, mostly used to reduced overhead when no extra feature is needed; see (#simpleblock-structure) on SimpleBlock Structure.) 0xfc7-0xfc7.7 (1)
       |                                               |                |              type: "binary" 0xfc8-NA (0)
 0x0fc0|                        d0                     |        .       |              size: 80 0xfc8-0xfc8.7 (1)
 0x0fc0|                           81                  |         .      |              track_number: 1 0xfc9-0xfc9.7 (1)
@@ -434,8 +424,7 @@ $ fq -d matroska dv vorbis.mkv
 0x1020|00 bd                                          |..              |
       |                                               |                |              elements[0:2]: 0x1022-0x10de.7 (189)
       |                                               |                |                [0]{}: element 0x1022-0x10d7.7 (182)
-0x1020|      a1                                       |  .             |                  id: "block" (0xa1) (Block containing the actual data to be rendered and a timestamp relative to the Cluster Timestamp;
-                                                                        see (#block-structure) on Block Structure.) 0x1022-0x1022.7 (1)
+0x1020|      a1                                       |  .             |                  id: "block" (0xa1) (Block containing the actual data to be rendered and a timestamp relative to the Cluster Timestamp; see (#block-structure) on Block Structure.) 0x1022-0x1022.7 (1)
       |                                               |                |                  type: "binary" 0x1023-NA (0)
 0x1020|         40 b3                                 |   @.           |                  size: 179 0x1023-0x1024.7 (2)
 0x1020|               81                              |     .          |                  track_number: 1 0x1025-0x1025.7 (1)
@@ -451,15 +440,13 @@ $ fq -d matroska dv vorbis.mkv
 0x1030|48 52 08 27 b8 83 10 ca 08 b1 a7 f2 81 46 bb c2|HR.'.........F..|
 *     |until 0x10d7.7 (174)                           |                |
       |                                               |                |                [1]{}: element 0x10d8-0x10de.7 (7)
-0x10d0|                        75 a2                  |        u.      |                  id: "discard_padding" (0x75a2) (Duration of the silent data added to the Block, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks)
-                                                                        (padding at the end of the Block for positive value, at the beginning of the Block for negative value).
-                                                                        The duration of DiscardPadding is not calculated in the duration of the TrackEntry and **SHOULD** be discarded during playback.) 0x10d8-0x10d9.7 (2)
+0x10d0|                        75 a2                  |        u.      |                  id: "discard_padding" (0x75a2) (Duration of the silent data added to the Block, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks) (padding at the end of the Block for positive value, at the beginning of the Block for negative value). The duration of DiscardPadding is not calculated in the duration of the TrackEntry and **SHOULD** be discarded during playback.) 0x10d8-0x10d9.7 (2)
       |                                               |                |                  type: "integer" 0x10da-NA (0)
 0x10d0|                              84               |          .     |                  size: 4 0x10da-0x10da.7 (1)
 0x10d0|                                 01 1f e0 25   |           ...% |                  value: 18866213 0x10db-0x10de.7 (4)
       |                                               |                |        [6]{}: element 0x10df-0x10fa.7 (28)
-0x10d0|                                             1c|               .|          id: "cues" (0x1c53bb6b) (A Top-Level Element to speed seeking access.
-0x10e0|53 bb 6b                                       |S.k             |All entries are local to the Segment.) 0x10df-0x10e2.7 (4)
+0x10d0|                                             1c|               .|          id: "cues" (0x1c53bb6b) (A Top-Level Element to speed seeking access. All entries are local to the Segment.) 0x10df-0x10e2.7 (4)
+0x10e0|53 bb 6b                                       |S.k             |
       |                                               |                |          type: "master" 0x10e3-NA (0)
 0x10e0|         97                                    |   .            |          size: 23 0x10e3-0x10e3.7 (1)
       |                                               |                |          elements[0:2]: 0x10e4-0x10fa.7 (23)
@@ -494,8 +481,7 @@ $ fq -d matroska dv vorbis.mkv
 0x10f0|               82                              |     .          |                      size: 2 0x10f5-0x10f5.7 (1)
 0x10f0|                  0e c7                        |      ..        |                      value: 3783 0x10f6-0x10f7.7 (2)
       |                                               |                |                    [2]{}: element 0x10f8-0x10fa.7 (3)
-0x10f0|                        f0                     |        .       |                      id: "cue_relative_position" (0xf0) (The relative position inside the Cluster of the referenced SimpleBlock or BlockGroup
-                                                                        with 0 being the first possible position for an Element inside that Cluster.) 0x10f8-0x10f8.7 (1)
+0x10f0|                        f0                     |        .       |                      id: "cue_relative_position" (0xf0) (The relative position inside the Cluster of the referenced SimpleBlock or BlockGroup with 0 being the first possible position for an Element inside that Cluster.) 0x10f8-0x10f8.7 (1)
       |                                               |                |                      type: "uinteger" 0x10f9-NA (0)
 0x10f0|                           81                  |         .      |                      size: 1 0x10f9-0x10f9.7 (1)
 0x10f0|                              09|              |          .|    |                      value: 9 0x10fa-0x10fa.7 (1)

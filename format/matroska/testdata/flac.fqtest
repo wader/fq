@@ -182,8 +182,7 @@ $ fq -d matroska dv flac.mkv
 0x130|   01 00 00 00 00 00 00 63                     | .......c       |              size: 99 0x131-0x138.7 (8)
      |                                               |                |              elements[0:8]: 0x139-0x19b.7 (99)
      |                                               |                |                [0]{}: element 0x139-0x13b.7 (3)
-0x130|                           d7                  |         .      |                  id: "track_number" (0xd7) (The track number as used in the Block Header (using more than 127 tracks is not encouraged,
-                                                                       though the design allows an unlimited number).) 0x139-0x139.7 (1)
+0x130|                           d7                  |         .      |                  id: "track_number" (0xd7) (The track number as used in the Block Header (using more than 127 tracks is not encouraged, though the design allows an unlimited number).) 0x139-0x139.7 (1)
      |                                               |                |                  type: "uinteger" 0x13a-NA (0)
 0x130|                              81               |          .     |                  size: 1 0x13a-0x13a.7 (1)
 0x130|                                 01            |           .    |                  value: 1 0x13b-0x13b.7 (1)
@@ -199,22 +198,18 @@ $ fq -d matroska dv flac.mkv
 0x140|                        81                     |        .       |                  size: 1 0x148-0x148.7 (1)
 0x140|                           00                  |         .      |                  value: 0 0x149-0x149.7 (1)
      |                                               |                |                [3]{}: element 0x14a-0x150.7 (7)
-0x140|                              22 b5 9c         |          "..   |                  id: "language" (0x22b59c) (Specifies the language of the track in the Matroska languages form;
-                                                                       see (#language-codes) on language codes.
-                                                                       This Element **MUST** be ignored if the LanguageIETF Element is used in the same TrackEntry.) 0x14a-0x14c.7 (3)
+0x140|                              22 b5 9c         |          "..   |                  id: "language" (0x22b59c) (Specifies the language of the track in the Matroska languages form; see (#language-codes) on language codes. This Element **MUST** be ignored if the LanguageIETF Element is used in the same TrackEntry.) 0x14a-0x14c.7 (3)
      |                                               |                |                  type: "string" 0x14d-NA (0)
 0x140|                                       83      |             .  |                  size: 3 0x14d-0x14d.7 (1)
 0x140|                                          75 6e|              un|                  value: "und" 0x14e-0x150.7 (3)
 0x150|64                                             |d               |
      |                                               |                |                [4]{}: element 0x151-0x158.7 (8)
-0x150|   86                                          | .              |                  id: "codec_id" (0x86) (An ID corresponding to the codec,
-                                                                       see [@!MatroskaCodec] for more info.) 0x151-0x151.7 (1)
+0x150|   86                                          | .              |                  id: "codec_id" (0x86) (An ID corresponding to the codec, see [@!MatroskaCodec] for more info.) 0x151-0x151.7 (1)
      |                                               |                |                  type: "string" 0x152-NA (0)
 0x150|      86                                       |  .             |                  size: 6 0x152-0x152.7 (1)
 0x150|         41 5f 46 4c 41 43                     |   A_FLAC       |                  value: "A_FLAC" 0x153-0x158.7 (6)
      |                                               |                |                [5]{}: element 0x159-0x15b.7 (3)
-0x150|                           83                  |         .      |                  id: "track_type" (0x83) (The `TrackType` defines the type of each frame found in the Track.
-                                                                       The value **SHOULD** be stored on 1 octet.) 0x159-0x159.7 (1)
+0x150|                           83                  |         .      |                  id: "track_type" (0x83) (The `TrackType` defines the type of each frame found in the Track. The value **SHOULD** be stored on 1 octet.) 0x159-0x159.7 (1)
      |                                               |                |                  type: "uinteger" 0x15a-NA (0)
 0x150|                              81               |          .     |                  size: 1 0x15a-0x15a.7 (1)
 0x150|                                 02            |           .    |                  value: "audio" (2) (Audio samples.) 0x15b-0x15b.7 (1)
@@ -262,8 +257,7 @@ $ fq -d matroska dv flac.mkv
 0x180|                                    e9 16 ab 02|            ....|                        md5: "e916ab02137281386a28174fe11bffec" (raw bits) 0x18c-0x19b.7 (16)
 0x190|13 72 81 38 6a 28 17 4f e1 1b ff ec            |.r.8j(.O....    |
      |                                               |                |        [4]{}: element 0x19c-0x23e.7 (163)
-0x190|                                    12 54 c3 67|            .T.g|          id: "tags" (0x1254c367) (Element containing metadata describing Tracks, Editions, Chapters, Attachments, or the Segment as a whole.
-                                                                       A list of valid tags can be found in [@!MatroskaTags].) 0x19c-0x19f.7 (4)
+0x190|                                    12 54 c3 67|            .T.g|          id: "tags" (0x1254c367) (Element containing metadata describing Tracks, Editions, Chapters, Attachments, or the Segment as a whole. A list of valid tags can be found in [@!MatroskaTags].) 0x19c-0x19f.7 (4)
      |                                               |                |          type: "master" 0x1a0-NA (0)
 0x1a0|40 9d                                          |@.              |          size: 157 0x1a0-0x1a1.7 (2)
      |                                               |                |          elements[0:3]: 0x1a2-0x23e.7 (157)
@@ -279,8 +273,7 @@ $ fq -d matroska dv flac.mkv
 0x1b0|00 27                                          |.'              |
      |                                               |                |              elements[0:2]: 0x1b2-0x1d8.7 (39)
      |                                               |                |                [0]{}: element 0x1b2-0x1b4.7 (3)
-0x1b0|      63 c0                                    |  c.            |                  id: "targets" (0x63c0) (Specifies which other elements the metadata represented by the Tag applies to.
-                                                                       If empty or not present, then the Tag describes everything in the Segment.) 0x1b2-0x1b3.7 (2)
+0x1b0|      63 c0                                    |  c.            |                  id: "targets" (0x63c0) (Specifies which other elements the metadata represented by the Tag applies to. If empty or not present, then the Tag describes everything in the Segment.) 0x1b2-0x1b3.7 (2)
      |                                               |                |                  type: "master" 0x1b4-NA (0)
 0x1b0|            80                                 |    .           |                  size: 0 0x1b4-0x1b4.7 (1)
      |                                               |                |                  elements[0:0]: 0x1b5-NA (0)
@@ -308,8 +301,7 @@ $ fq -d matroska dv flac.mkv
 0x1e0|00 00 5c                                       |..\             |
      |                                               |                |              elements[0:3]: 0x1e3-0x23e.7 (92)
      |                                               |                |                [0]{}: element 0x1e3-0x1f0.7 (14)
-0x1e0|         63 c0                                 |   c.           |                  id: "targets" (0x63c0) (Specifies which other elements the metadata represented by the Tag applies to.
-                                                                       If empty or not present, then the Tag describes everything in the Segment.) 0x1e3-0x1e4.7 (2)
+0x1e0|         63 c0                                 |   c.           |                  id: "targets" (0x63c0) (Specifies which other elements the metadata represented by the Tag applies to. If empty or not present, then the Tag describes everything in the Segment.) 0x1e3-0x1e4.7 (2)
      |                                               |                |                  type: "master" 0x1e5-NA (0)
 0x1e0|               8b                              |     .          |                  size: 11 0x1e5-0x1e5.7 (1)
      |                                               |                |                  elements[0:1]: 0x1e6-0x1f0.7 (11)
@@ -369,8 +361,7 @@ $ fq -d matroska dv flac.mkv
 0x240|                                    81         |            .   |              size: 1 0x24c-0x24c.7 (1)
 0x240|                                       00      |             .  |              value: 0 0x24d-0x24d.7 (1)
      |                                               |                |            [2]{}: element 0x24e-0x4b2.7 (613)
-0x240|                                          a3   |              . |              id: "simple_block" (0xa3) (Similar to Block, see (#block-structure), but without all the extra information,
-                                                                       mostly used to reduced overhead when no extra feature is needed; see (#simpleblock-structure) on SimpleBlock Structure.) 0x24e-0x24e.7 (1)
+0x240|                                          a3   |              . |              id: "simple_block" (0xa3) (Similar to Block, see (#block-structure), but without all the extra information, mostly used to reduced overhead when no extra feature is needed; see (#simpleblock-structure) on SimpleBlock Structure.) 0x24e-0x24e.7 (1)
      |                                               |                |              type: "binary" 0x24f-NA (0)
 0x240|                                             42|               B|              size: 610 0x24f-0x250.7 (2)
 0x250|62                                             |b               |
@@ -441,8 +432,7 @@ $ fq -d matroska dv flac.mkv
 0x4b0|00                                             |.               |                byte_align: 0 (valid) 0x4b0.2-0x4b0.7 (0.6)
 0x4b0|   82 cb                                       | ..             |                footer_crc: "82cb" (raw bits) (valid) 0x4b1-0x4b2.7 (2)
      |                                               |                |        [6]{}: element 0x4b3-0x4ce.7 (28)
-0x4b0|         1c 53 bb 6b                           |   .S.k         |          id: "cues" (0x1c53bb6b) (A Top-Level Element to speed seeking access.
-                                                                       All entries are local to the Segment.) 0x4b3-0x4b6.7 (4)
+0x4b0|         1c 53 bb 6b                           |   .S.k         |          id: "cues" (0x1c53bb6b) (A Top-Level Element to speed seeking access. All entries are local to the Segment.) 0x4b3-0x4b6.7 (4)
      |                                               |                |          type: "master" 0x4b7-NA (0)
 0x4b0|                     97                        |       .        |          size: 23 0x4b7-0x4b7.7 (1)
      |                                               |                |          elements[0:2]: 0x4b8-0x4ce.7 (23)
@@ -477,8 +467,7 @@ $ fq -d matroska dv flac.mkv
 0x4c0|                           82                  |         .      |                      size: 2 0x4c9-0x4c9.7 (1)
 0x4c0|                              02 0b            |          ..    |                      value: 523 0x4ca-0x4cb.7 (2)
      |                                               |                |                    [2]{}: element 0x4cc-0x4ce.7 (3)
-0x4c0|                                    f0         |            .   |                      id: "cue_relative_position" (0xf0) (The relative position inside the Cluster of the referenced SimpleBlock or BlockGroup
-                                                                       with 0 being the first possible position for an Element inside that Cluster.) 0x4cc-0x4cc.7 (1)
+0x4c0|                                    f0         |            .   |                      id: "cue_relative_position" (0xf0) (The relative position inside the Cluster of the referenced SimpleBlock or BlockGroup with 0 being the first possible position for an Element inside that Cluster.) 0x4cc-0x4cc.7 (1)
      |                                               |                |                      type: "uinteger" 0x4cd-NA (0)
 0x4c0|                                       81      |             .  |                      size: 1 0x4cd-0x4cd.7 (1)
 0x4c0|                                          09|  |              .||                      value: 9 0x4ce-0x4ce.7 (1)

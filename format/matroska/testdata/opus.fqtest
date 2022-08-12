@@ -182,8 +182,7 @@ $ fq -d matroska dv opus.mkv
 0x130|   01 00 00 00 00 00 00 59                     | .......Y       |              size: 89 0x131-0x138.7 (8)
      |                                               |                |              elements[0:10]: 0x139-0x191.7 (89)
      |                                               |                |                [0]{}: element 0x139-0x13b.7 (3)
-0x130|                           d7                  |         .      |                  id: "track_number" (0xd7) (The track number as used in the Block Header (using more than 127 tracks is not encouraged,
-                                                                       though the design allows an unlimited number).) 0x139-0x139.7 (1)
+0x130|                           d7                  |         .      |                  id: "track_number" (0xd7) (The track number as used in the Block Header (using more than 127 tracks is not encouraged, though the design allows an unlimited number).) 0x139-0x139.7 (1)
      |                                               |                |                  type: "uinteger" 0x13a-NA (0)
 0x130|                              81               |          .     |                  size: 1 0x13a-0x13a.7 (1)
 0x130|                                 01            |           .    |                  value: 1 0x13b-0x13b.7 (1)
@@ -199,36 +198,29 @@ $ fq -d matroska dv opus.mkv
 0x140|                        81                     |        .       |                  size: 1 0x148-0x148.7 (1)
 0x140|                           00                  |         .      |                  value: 0 0x149-0x149.7 (1)
      |                                               |                |                [3]{}: element 0x14a-0x150.7 (7)
-0x140|                              22 b5 9c         |          "..   |                  id: "language" (0x22b59c) (Specifies the language of the track in the Matroska languages form;
-                                                                       see (#language-codes) on language codes.
-                                                                       This Element **MUST** be ignored if the LanguageIETF Element is used in the same TrackEntry.) 0x14a-0x14c.7 (3)
+0x140|                              22 b5 9c         |          "..   |                  id: "language" (0x22b59c) (Specifies the language of the track in the Matroska languages form; see (#language-codes) on language codes. This Element **MUST** be ignored if the LanguageIETF Element is used in the same TrackEntry.) 0x14a-0x14c.7 (3)
      |                                               |                |                  type: "string" 0x14d-NA (0)
 0x140|                                       83      |             .  |                  size: 3 0x14d-0x14d.7 (1)
 0x140|                                          75 6e|              un|                  value: "und" 0x14e-0x150.7 (3)
 0x150|64                                             |d               |
      |                                               |                |                [4]{}: element 0x151-0x158.7 (8)
-0x150|   86                                          | .              |                  id: "codec_id" (0x86) (An ID corresponding to the codec,
-                                                                       see [@!MatroskaCodec] for more info.) 0x151-0x151.7 (1)
+0x150|   86                                          | .              |                  id: "codec_id" (0x86) (An ID corresponding to the codec, see [@!MatroskaCodec] for more info.) 0x151-0x151.7 (1)
      |                                               |                |                  type: "string" 0x152-NA (0)
 0x150|      86                                       |  .             |                  size: 6 0x152-0x152.7 (1)
 0x150|         41 5f 4f 50 55 53                     |   A_OPUS       |                  value: "A_OPUS" 0x153-0x158.7 (6)
      |                                               |                |                [5]{}: element 0x159-0x15e.7 (6)
-0x150|                           56 aa               |         V.     |                  id: "codec_delay" (0x56aa) (CodecDelay is The codec-built-in delay, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks).
-                                                                       It represents the amount of codec samples that will be discarded by the decoder during playback.
-                                                                       This timestamp value **MUST** be subtracted from each frame timestamp in order to get the timestamp that will be actually played.
-                                                                       The value **SHOULD** be small so the muxing of tracks with the same actual timestamp are in the same Cluster.) 0x159-0x15a.7 (2)
+0x150|                           56 aa               |         V.     |                  id: "codec_delay" (0x56aa) (CodecDelay is The codec-built-in delay, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks). It represents the amount of codec samples that will be discarded by the decoder during playback. This timestamp value **MUST** be subtracted from each frame timestamp in order to get the timestamp that will be actually played. The value **SHOULD** be small so the muxing of tracks with the same actual timestamp are in the same Cluster.) 0x159-0x15a.7 (2)
      |                                               |                |                  type: "uinteger" 0x15b-NA (0)
 0x150|                                 83            |           .    |                  size: 3 0x15b-0x15b.7 (1)
 0x150|                                    26 25 a0   |            &%. |                  value: 2500000 0x15c-0x15e.7 (3)
      |                                               |                |                [6]{}: element 0x15f-0x165.7 (7)
-0x150|                                             56|               V|                  id: "seek_pre_roll" (0x56bb) (After a discontinuity, SeekPreRoll is the duration of the data
-0x160|bb                                             |.               |the decoder **MUST** decode before the decoded data is valid, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks).) 0x15f-0x160.7 (2)
+0x150|                                             56|               V|                  id: "seek_pre_roll" (0x56bb) (After a discontinuity, SeekPreRoll is the duration of the data the decoder **MUST** decode before the decoded data is valid, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks).) 0x15f-0x160.7 (2)
+0x160|bb                                             |.               |
      |                                               |                |                  type: "uinteger" 0x161-NA (0)
 0x160|   84                                          | .              |                  size: 4 0x161-0x161.7 (1)
 0x160|      04 c4 b4 00                              |  ....          |                  value: 80000000 0x162-0x165.7 (4)
      |                                               |                |                [7]{}: element 0x166-0x168.7 (3)
-0x160|                  83                           |      .         |                  id: "track_type" (0x83) (The `TrackType` defines the type of each frame found in the Track.
-                                                                       The value **SHOULD** be stored on 1 octet.) 0x166-0x166.7 (1)
+0x160|                  83                           |      .         |                  id: "track_type" (0x83) (The `TrackType` defines the type of each frame found in the Track. The value **SHOULD** be stored on 1 octet.) 0x166-0x166.7 (1)
      |                                               |                |                  type: "uinteger" 0x167-NA (0)
 0x160|                     81                        |       .        |                  size: 1 0x167-0x167.7 (1)
 0x160|                        02                     |        .       |                  value: "audio" (2) (Audio samples.) 0x168-0x168.7 (1)
@@ -268,8 +260,7 @@ $ fq -d matroska dv opus.mkv
 0x190|00                                             |.               |
 0x190|   00                                          | .              |                    map_family: 0 0x191-0x191.7 (1)
      |                                               |                |        [4]{}: element 0x192-0x234.7 (163)
-0x190|      12 54 c3 67                              |  .T.g          |          id: "tags" (0x1254c367) (Element containing metadata describing Tracks, Editions, Chapters, Attachments, or the Segment as a whole.
-                                                                       A list of valid tags can be found in [@!MatroskaTags].) 0x192-0x195.7 (4)
+0x190|      12 54 c3 67                              |  .T.g          |          id: "tags" (0x1254c367) (Element containing metadata describing Tracks, Editions, Chapters, Attachments, or the Segment as a whole. A list of valid tags can be found in [@!MatroskaTags].) 0x192-0x195.7 (4)
      |                                               |                |          type: "master" 0x196-NA (0)
 0x190|                  40 9d                        |      @.        |          size: 157 0x196-0x197.7 (2)
      |                                               |                |          elements[0:3]: 0x198-0x234.7 (157)
@@ -284,8 +275,7 @@ $ fq -d matroska dv opus.mkv
 0x1a0|01 00 00 00 00 00 00 27                        |.......'        |              size: 39 0x1a0-0x1a7.7 (8)
      |                                               |                |              elements[0:2]: 0x1a8-0x1ce.7 (39)
      |                                               |                |                [0]{}: element 0x1a8-0x1aa.7 (3)
-0x1a0|                        63 c0                  |        c.      |                  id: "targets" (0x63c0) (Specifies which other elements the metadata represented by the Tag applies to.
-                                                                       If empty or not present, then the Tag describes everything in the Segment.) 0x1a8-0x1a9.7 (2)
+0x1a0|                        63 c0                  |        c.      |                  id: "targets" (0x63c0) (Specifies which other elements the metadata represented by the Tag applies to. If empty or not present, then the Tag describes everything in the Segment.) 0x1a8-0x1a9.7 (2)
      |                                               |                |                  type: "master" 0x1aa-NA (0)
 0x1a0|                              80               |          .     |                  size: 0 0x1aa-0x1aa.7 (1)
      |                                               |                |                  elements[0:0]: 0x1ab-NA (0)
@@ -313,8 +303,7 @@ $ fq -d matroska dv opus.mkv
 0x1d0|   01 00 00 00 00 00 00 5c                     | .......\       |              size: 92 0x1d1-0x1d8.7 (8)
      |                                               |                |              elements[0:3]: 0x1d9-0x234.7 (92)
      |                                               |                |                [0]{}: element 0x1d9-0x1e6.7 (14)
-0x1d0|                           63 c0               |         c.     |                  id: "targets" (0x63c0) (Specifies which other elements the metadata represented by the Tag applies to.
-                                                                       If empty or not present, then the Tag describes everything in the Segment.) 0x1d9-0x1da.7 (2)
+0x1d0|                           63 c0               |         c.     |                  id: "targets" (0x63c0) (Specifies which other elements the metadata represented by the Tag applies to. If empty or not present, then the Tag describes everything in the Segment.) 0x1d9-0x1da.7 (2)
      |                                               |                |                  type: "master" 0x1db-NA (0)
 0x1d0|                                 8b            |           .    |                  size: 11 0x1db-0x1db.7 (1)
      |                                               |                |                  elements[0:1]: 0x1dc-0x1e6.7 (11)
@@ -374,8 +363,7 @@ $ fq -d matroska dv opus.mkv
 0x240|      81                                       |  .             |              size: 1 0x242-0x242.7 (1)
 0x240|         00                                    |   .            |              value: 0 0x243-0x243.7 (1)
      |                                               |                |            [2]{}: element 0x244-0x2c2.7 (127)
-0x240|            a3                                 |    .           |              id: "simple_block" (0xa3) (Similar to Block, see (#block-structure), but without all the extra information,
-                                                                       mostly used to reduced overhead when no extra feature is needed; see (#simpleblock-structure) on SimpleBlock Structure.) 0x244-0x244.7 (1)
+0x240|            a3                                 |    .           |              id: "simple_block" (0xa3) (Similar to Block, see (#block-structure), but without all the extra information, mostly used to reduced overhead when no extra feature is needed; see (#simpleblock-structure) on SimpleBlock Structure.) 0x244-0x244.7 (1)
      |                                               |                |              type: "binary" 0x245-NA (0)
 0x240|               fd                              |     .          |              size: 125 0x245-0x245.7 (1)
 0x240|                  81                           |      .         |              track_number: 1 0x246-0x246.7 (1)
@@ -403,8 +391,7 @@ $ fq -d matroska dv opus.mkv
 0x250|dd 59 43 1b ff 52 f3 16 f1 48 28 77 86 10 ba ff|.YC..R...H(w....|
 *    |until 0x2c2.7 (120)                            |                |
      |                                               |                |            [3]{}: element 0x2c3-0x341.7 (127)
-0x2c0|         a3                                    |   .            |              id: "simple_block" (0xa3) (Similar to Block, see (#block-structure), but without all the extra information,
-                                                                       mostly used to reduced overhead when no extra feature is needed; see (#simpleblock-structure) on SimpleBlock Structure.) 0x2c3-0x2c3.7 (1)
+0x2c0|         a3                                    |   .            |              id: "simple_block" (0xa3) (Similar to Block, see (#block-structure), but without all the extra information, mostly used to reduced overhead when no extra feature is needed; see (#simpleblock-structure) on SimpleBlock Structure.) 0x2c3-0x2c3.7 (1)
      |                                               |                |              type: "binary" 0x2c4-NA (0)
 0x2c0|            fd                                 |    .           |              size: 125 0x2c4-0x2c4.7 (1)
 0x2c0|               81                              |     .          |              track_number: 1 0x2c5-0x2c5.7 (1)
@@ -437,8 +424,7 @@ $ fq -d matroska dv opus.mkv
 0x340|         01 00 00 00 00 00 00 86               |   ........     |              size: 134 0x343-0x34a.7 (8)
      |                                               |                |              elements[0:2]: 0x34b-0x3d0.7 (134)
      |                                               |                |                [0]{}: element 0x34b-0x3c9.7 (127)
-0x340|                                 a1            |           .    |                  id: "block" (0xa1) (Block containing the actual data to be rendered and a timestamp relative to the Cluster Timestamp;
-                                                                       see (#block-structure) on Block Structure.) 0x34b-0x34b.7 (1)
+0x340|                                 a1            |           .    |                  id: "block" (0xa1) (Block containing the actual data to be rendered and a timestamp relative to the Cluster Timestamp; see (#block-structure) on Block Structure.) 0x34b-0x34b.7 (1)
      |                                               |                |                  type: "binary" 0x34c-NA (0)
 0x340|                                    fd         |            .   |                  size: 125 0x34c-0x34c.7 (1)
 0x340|                                       81      |             .  |                  track_number: 1 0x34d-0x34d.7 (1)
@@ -465,16 +451,13 @@ $ fq -d matroska dv opus.mkv
 0x360|62 33 33 9c 0b 9c 0e 53 8e 89 19 a9 ad 36 f4 98|b33....S.....6..|
 *    |until 0x3c9.7 (120)                            |                |
      |                                               |                |                [1]{}: element 0x3ca-0x3d0.7 (7)
-0x3c0|                              75 a2            |          u.    |                  id: "discard_padding" (0x75a2) (Duration of the silent data added to the Block, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks)
-                                                                       (padding at the end of the Block for positive value, at the beginning of the Block for negative value).
-                                                                       The duration of DiscardPadding is not calculated in the duration of the TrackEntry and **SHOULD** be discarded during playback.) 0x3ca-0x3cb.7 (2)
+0x3c0|                              75 a2            |          u.    |                  id: "discard_padding" (0x75a2) (Duration of the silent data added to the Block, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks) (padding at the end of the Block for positive value, at the beginning of the Block for negative value). The duration of DiscardPadding is not calculated in the duration of the TrackEntry and **SHOULD** be discarded during playback.) 0x3ca-0x3cb.7 (2)
      |                                               |                |                  type: "integer" 0x3cc-NA (0)
 0x3c0|                                    84         |            .   |                  size: 4 0x3cc-0x3cc.7 (1)
 0x3c0|                                       00 98 96|             ...|                  value: 10000000 0x3cd-0x3d0.7 (4)
 0x3d0|80                                             |.               |
      |                                               |                |        [6]{}: element 0x3d1-0x3ec.7 (28)
-0x3d0|   1c 53 bb 6b                                 | .S.k           |          id: "cues" (0x1c53bb6b) (A Top-Level Element to speed seeking access.
-                                                                       All entries are local to the Segment.) 0x3d1-0x3d4.7 (4)
+0x3d0|   1c 53 bb 6b                                 | .S.k           |          id: "cues" (0x1c53bb6b) (A Top-Level Element to speed seeking access. All entries are local to the Segment.) 0x3d1-0x3d4.7 (4)
      |                                               |                |          type: "master" 0x3d5-NA (0)
 0x3d0|               97                              |     .          |          size: 23 0x3d5-0x3d5.7 (1)
      |                                               |                |          elements[0:2]: 0x3d6-0x3ec.7 (23)
@@ -509,8 +492,7 @@ $ fq -d matroska dv opus.mkv
 0x3e0|                     82                        |       .        |                      size: 2 0x3e7-0x3e7.7 (1)
 0x3e0|                        02 01                  |        ..      |                      value: 513 0x3e8-0x3e9.7 (2)
      |                                               |                |                    [2]{}: element 0x3ea-0x3ec.7 (3)
-0x3e0|                              f0               |          .     |                      id: "cue_relative_position" (0xf0) (The relative position inside the Cluster of the referenced SimpleBlock or BlockGroup
-                                                                       with 0 being the first possible position for an Element inside that Cluster.) 0x3ea-0x3ea.7 (1)
+0x3e0|                              f0               |          .     |                      id: "cue_relative_position" (0xf0) (The relative position inside the Cluster of the referenced SimpleBlock or BlockGroup with 0 being the first possible position for an Element inside that Cluster.) 0x3ea-0x3ea.7 (1)
      |                                               |                |                      type: "uinteger" 0x3eb-NA (0)
 0x3e0|                                 81            |           .    |                      size: 1 0x3eb-0x3eb.7 (1)
 0x3e0|                                    09|        |            .|  |                      value: 9 0x3ec-0x3ec.7 (1)
