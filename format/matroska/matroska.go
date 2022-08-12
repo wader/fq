@@ -301,7 +301,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 		// 	crcValue := crcD.FieldMustRemove("value")
 		// 	elementCRC := &crc.CRC{Bits: 32, Current: 0xffff_ffff, Table: crc.IEEELETable}
 		// 	//log.Printf("crc: %x-%x %d\n", crcStart/8, d.Pos()/8, (d.Pos()-crcStart)/8)
-		// 	ioextra.MustCopy(elementCRC, d.BitBufRange(crcStart, d.Pos()-crcStart))
+		// 	ioex.MustCopy(elementCRC, d.BitBufRange(crcStart, d.Pos()-crcStart))
 		// 	crcD.FieldChecksumRange("value", crcValue.Range.Start, crcValue.Range.Len, elementCRC.Sum(nil), decode.LittleEndian)
 		// }
 	})

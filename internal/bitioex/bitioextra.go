@@ -1,4 +1,4 @@
-package bitioextra
+package bitioex
 
 // bitio helpers that im not sure belong in bitio
 

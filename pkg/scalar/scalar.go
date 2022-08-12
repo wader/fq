@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/wader/fq/internal/bitioextra"
+	"github.com/wader/fq/internal/bitioex"
 	"github.com/wader/fq/pkg/bitio"
 )
 
@@ -172,7 +172,7 @@ func (rs SRangeToScalar) MapScalar(s S) (S, error) {
 
 func RawSym(s S, nBytes int, fn func(b []byte) string) (S, error) {
 	br := s.ActualBitBuf()
-	brLen, err := bitioextra.Len(br)
+	brLen, err := bitioex.Len(br)
 	if err != nil {
 		return S{}, err
 	}
@@ -217,7 +217,7 @@ func (m BytesToScalar) MapScalar(s S) (S, error) {
 		return s, err
 	}
 	bb := &bytes.Buffer{}
-	if _, err := bitioextra.CopyBits(bb, rc); err != nil {
+	if _, err := bitioex.CopyBits(bb, rc); err != nil {
 		return s, err
 	}
 	for _, bs := range m {

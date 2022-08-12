@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/wader/fq/internal/columnwriter"
-	"github.com/wader/fq/internal/mathextra"
+	"github.com/wader/fq/internal/mathex"
 	"github.com/wader/fq/pkg/bitio"
 )
 
@@ -60,7 +60,7 @@ func New(w io.Writer, startOffset int64, addrLen int, addrBase int, lineBytes in
 
 func (d *Dumper) flush() error {
 	if _, err := d.columnW.Columns[0].Write([]byte(
-		d.dumpAddrFn(mathextra.PadFormatInt(((d.offset-1)/d.lineBytes)*d.lineBytes, d.addrBase, true, d.addrLen)))); err != nil {
+		d.dumpAddrFn(mathex.PadFormatInt(((d.offset-1)/d.lineBytes)*d.lineBytes, d.addrBase, true, d.addrLen)))); err != nil {
 		return err
 	}
 	if _, err := d.separatorsW.Write([]byte(d.column)); err != nil {
@@ -76,7 +76,7 @@ func (d *Dumper) WriteBits(p []byte, nBits int64) (n int64, err error) {
 	pos := int64(0)
 	rBits := nBits
 	if d.bitsBufN > 0 {
-		r := mathextra.MinInt64(8-d.bitsBufN, nBits)
+		r := mathex.Min(8-d.bitsBufN, nBits)
 		v := bitio.Read64(p, 0, r)
 		bitio.Write64(v, r, d.bitsBuf, d.bitsBufN)
 
@@ -122,7 +122,7 @@ func (d *Dumper) Write(p []byte) (n int, err error) {
 		}
 		for i := int64(0); i < d.lineBytes; i++ {
 			headerSB := &strings.Builder{}
-			if _, err := headerSB.Write([]byte(mathextra.PadFormatInt(i, d.addrBase, false, 2))); err != nil {
+			if _, err := headerSB.Write([]byte(mathex.PadFormatInt(i, d.addrBase, false, 2))); err != nil {
 				return 0, err
 			}
 			if i < d.lineBytes-1 {

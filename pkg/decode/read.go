@@ -6,7 +6,7 @@ import (
 	"math"
 	"math/big"
 
-	"github.com/wader/fq/internal/mathextra"
+	"github.com/wader/fq/internal/mathex"
 	"github.com/wader/fq/pkg/bitio"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/unicode"
@@ -75,7 +75,7 @@ func (d *D) tryBigIntEndianSign(nBits int, endian Endian, sign bool) (*big.Int, 
 
 	n := new(big.Int)
 	if sign {
-		mathextra.BigIntSetBytesSigned(n, buf)
+		mathex.BigIntSetBytesSigned(n, buf)
 	} else {
 		n.SetBytes(buf)
 	}
@@ -97,7 +97,7 @@ func (d *D) tryFEndian(nBits int, endian Endian) (float64, error) {
 	}
 	switch nBits {
 	case 16:
-		return float64(mathextra.Float16(uint16(n)).Float32()), nil
+		return float64(mathex.Float16(uint16(n)).Float32()), nil
 	case 32:
 		return float64(math.Float32frombits(uint32(n))), nil
 	case 64:

@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 //nolint:revive
-package mathextra
+package mathex
 
 import "unsafe"
 

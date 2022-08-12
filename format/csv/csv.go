@@ -9,7 +9,7 @@ import (
 	"io"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/internal/gojqextra"
+	"github.com/wader/fq/internal/gojqex"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
@@ -80,11 +80,11 @@ func toCSV(_ *interp.Interp, c []any, opts ToCSVOpts) any {
 		w.Comma = rune(opts.Comma[0])
 	}
 	for _, row := range c {
-		rs, ok := gojqextra.Cast[[]any](row)
+		rs, ok := gojqex.Cast[[]any](row)
 		if !ok {
-			return fmt.Errorf("expected row to be an array, got %s", gojqextra.TypeErrorPreview(row))
+			return fmt.Errorf("expected row to be an array, got %s", gojqex.TypeErrorPreview(row))
 		}
-		vs, ok := gojqextra.NormalizeToStrings(rs).([]any)
+		vs, ok := gojqex.NormalizeToStrings(rs).([]any)
 		if !ok {
 			panic("not array")
 		}
@@ -92,7 +92,7 @@ func toCSV(_ *interp.Interp, c []any, opts ToCSVOpts) any {
 		for _, v := range vs {
 			s, ok := v.(string)
 			if !ok {
-				return fmt.Errorf("expected row record to be scalars, got %s", gojqextra.TypeErrorPreview(v))
+				return fmt.Errorf("expected row record to be scalars, got %s", gojqex.TypeErrorPreview(v))
 			}
 			ss = append(ss, s)
 		}

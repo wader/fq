@@ -3,7 +3,7 @@
 // The MIT License (MIT)
 // Copyright (c) 2019-2021 itchyny
 
-package gojqextra
+package gojqex
 
 import (
 	"math"

@@ -13,7 +13,7 @@ import (
 	"strings"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/internal/mathextra"
+	"github.com/wader/fq/internal/mathex"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
@@ -115,7 +115,7 @@ func decodeCBORValue(d *decode.D) any {
 		}},
 		majorTypeNegativeInt: {s: scalar.S{Sym: "negative_int"}, d: func(d *decode.D, shortCount uint64, count uint64) any {
 			n := new(big.Int)
-			n.SetUint64(count).Neg(n).Sub(n, mathextra.BigIntOne)
+			n.SetUint64(count).Neg(n).Sub(n, mathex.BigIntOne)
 			d.FieldValueBigInt("value", n)
 			return nil
 		}},
