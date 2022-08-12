@@ -182,8 +182,7 @@ $ fq -d matroska dv vp9.mkv
 0x0130|   01 00 00 00 00 00 00 3a                     | .......:       |              size: 58 0x131-0x138.7 (8)
       |                                               |                |              elements[0:8]: 0x139-0x172.7 (58)
       |                                               |                |                [0]{}: element 0x139-0x13b.7 (3)
-0x0130|                           d7                  |         .      |                  id: "track_number" (0xd7) (The track number as used in the Block Header (using more than 127 tracks is not encouraged,
-                                                                        though the design allows an unlimited number).) 0x139-0x139.7 (1)
+0x0130|                           d7                  |         .      |                  id: "track_number" (0xd7) (The track number as used in the Block Header (using more than 127 tracks is not encouraged, though the design allows an unlimited number).) 0x139-0x139.7 (1)
       |                                               |                |                  type: "uinteger" 0x13a-NA (0)
 0x0130|                              81               |          .     |                  size: 1 0x13a-0x13a.7 (1)
 0x0130|                                 01            |           .    |                  value: 1 0x13b-0x13b.7 (1)
@@ -199,28 +198,23 @@ $ fq -d matroska dv vp9.mkv
 0x0140|                        81                     |        .       |                  size: 1 0x148-0x148.7 (1)
 0x0140|                           00                  |         .      |                  value: 0 0x149-0x149.7 (1)
       |                                               |                |                [3]{}: element 0x14a-0x150.7 (7)
-0x0140|                              22 b5 9c         |          "..   |                  id: "language" (0x22b59c) (Specifies the language of the track in the Matroska languages form;
-                                                                        see (#language-codes) on language codes.
-                                                                        This Element **MUST** be ignored if the LanguageIETF Element is used in the same TrackEntry.) 0x14a-0x14c.7 (3)
+0x0140|                              22 b5 9c         |          "..   |                  id: "language" (0x22b59c) (Specifies the language of the track in the Matroska languages form; see (#language-codes) on language codes. This Element **MUST** be ignored if the LanguageIETF Element is used in the same TrackEntry.) 0x14a-0x14c.7 (3)
       |                                               |                |                  type: "string" 0x14d-NA (0)
 0x0140|                                       83      |             .  |                  size: 3 0x14d-0x14d.7 (1)
 0x0140|                                          75 6e|              un|                  value: "und" 0x14e-0x150.7 (3)
 0x0150|64                                             |d               |
       |                                               |                |                [4]{}: element 0x151-0x157.7 (7)
-0x0150|   86                                          | .              |                  id: "codec_id" (0x86) (An ID corresponding to the codec,
-                                                                        see [@!MatroskaCodec] for more info.) 0x151-0x151.7 (1)
+0x0150|   86                                          | .              |                  id: "codec_id" (0x86) (An ID corresponding to the codec, see [@!MatroskaCodec] for more info.) 0x151-0x151.7 (1)
       |                                               |                |                  type: "string" 0x152-NA (0)
 0x0150|      85                                       |  .             |                  size: 5 0x152-0x152.7 (1)
 0x0150|         56 5f 56 50 39                        |   V_VP9        |                  value: "V_VP9" 0x153-0x157.7 (5)
       |                                               |                |                [5]{}: element 0x158-0x15a.7 (3)
-0x0150|                        83                     |        .       |                  id: "track_type" (0x83) (The `TrackType` defines the type of each frame found in the Track.
-                                                                        The value **SHOULD** be stored on 1 octet.) 0x158-0x158.7 (1)
+0x0150|                        83                     |        .       |                  id: "track_type" (0x83) (The `TrackType` defines the type of each frame found in the Track. The value **SHOULD** be stored on 1 octet.) 0x158-0x158.7 (1)
       |                                               |                |                  type: "uinteger" 0x159-NA (0)
 0x0150|                           81                  |         .      |                  size: 1 0x159-0x159.7 (1)
 0x0150|                              01               |          .     |                  value: "video" (1) (An image.) 0x15a-0x15a.7 (1)
       |                                               |                |                [6]{}: element 0x15b-0x162.7 (8)
-0x0150|                                 23 e3 83      |           #..  |                  id: "default_duration" (0x23e383) (Number of nanoseconds per frame, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks)
-                                                                        (frame in the Matroska sense -- one Element put into a (Simple)Block).) 0x15b-0x15d.7 (3)
+0x0150|                                 23 e3 83      |           #..  |                  id: "default_duration" (0x23e383) (Number of nanoseconds per frame, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks) (frame in the Matroska sense -- one Element put into a (Simple)Block).) 0x15b-0x15d.7 (3)
       |                                               |                |                  type: "uinteger" 0x15e-NA (0)
 0x0150|                                          84   |              . |                  size: 4 0x15e-0x15e.7 (1)
 0x0150|                                             02|               .|                  value: 40000000 0x15f-0x162.7 (4)
@@ -241,8 +235,7 @@ $ fq -d matroska dv vp9.mkv
 0x0170|   81                                          | .              |                      size: 1 0x171-0x171.7 (1)
 0x0170|      f0                                       |  .             |                      value: 240 0x172-0x172.7 (1)
       |                                               |                |        [4]{}: element 0x173-0x21b.7 (169)
-0x0170|         12 54 c3 67                           |   .T.g         |          id: "tags" (0x1254c367) (Element containing metadata describing Tracks, Editions, Chapters, Attachments, or the Segment as a whole.
-                                                                        A list of valid tags can be found in [@!MatroskaTags].) 0x173-0x176.7 (4)
+0x0170|         12 54 c3 67                           |   .T.g         |          id: "tags" (0x1254c367) (Element containing metadata describing Tracks, Editions, Chapters, Attachments, or the Segment as a whole. A list of valid tags can be found in [@!MatroskaTags].) 0x173-0x176.7 (4)
       |                                               |                |          type: "master" 0x177-NA (0)
 0x0170|                     40 a3                     |       @.       |          size: 163 0x177-0x178.7 (2)
       |                                               |                |          elements[0:3]: 0x179-0x21b.7 (163)
@@ -258,8 +251,7 @@ $ fq -d matroska dv vp9.mkv
 0x0180|   01 00 00 00 00 00 00 27                     | .......'       |              size: 39 0x181-0x188.7 (8)
       |                                               |                |              elements[0:2]: 0x189-0x1af.7 (39)
       |                                               |                |                [0]{}: element 0x189-0x18b.7 (3)
-0x0180|                           63 c0               |         c.     |                  id: "targets" (0x63c0) (Specifies which other elements the metadata represented by the Tag applies to.
-                                                                        If empty or not present, then the Tag describes everything in the Segment.) 0x189-0x18a.7 (2)
+0x0180|                           63 c0               |         c.     |                  id: "targets" (0x63c0) (Specifies which other elements the metadata represented by the Tag applies to. If empty or not present, then the Tag describes everything in the Segment.) 0x189-0x18a.7 (2)
       |                                               |                |                  type: "master" 0x18b-NA (0)
 0x0180|                                 80            |           .    |                  size: 0 0x18b-0x18b.7 (1)
       |                                               |                |                  elements[0:0]: 0x18c-NA (0)
@@ -285,8 +277,7 @@ $ fq -d matroska dv vp9.mkv
 0x01b0|      01 00 00 00 00 00 00 62                  |  .......b      |              size: 98 0x1b2-0x1b9.7 (8)
       |                                               |                |              elements[0:3]: 0x1ba-0x21b.7 (98)
       |                                               |                |                [0]{}: element 0x1ba-0x1c7.7 (14)
-0x01b0|                              63 c0            |          c.    |                  id: "targets" (0x63c0) (Specifies which other elements the metadata represented by the Tag applies to.
-                                                                        If empty or not present, then the Tag describes everything in the Segment.) 0x1ba-0x1bb.7 (2)
+0x01b0|                              63 c0            |          c.    |                  id: "targets" (0x63c0) (Specifies which other elements the metadata represented by the Tag applies to. If empty or not present, then the Tag describes everything in the Segment.) 0x1ba-0x1bb.7 (2)
       |                                               |                |                  type: "master" 0x1bc-NA (0)
 0x01b0|                                    8b         |            .   |                  size: 11 0x1bc-0x1bc.7 (1)
       |                                               |                |                  elements[0:1]: 0x1bd-0x1c7.7 (11)
@@ -346,8 +337,7 @@ $ fq -d matroska dv vp9.mkv
 0x0220|                           81                  |         .      |              size: 1 0x229-0x229.7 (1)
 0x0220|                              00               |          .     |              value: 0 0x22a-0x22a.7 (1)
       |                                               |                |            [2]{}: element 0x22b-0x1769.7 (5439)
-0x0220|                                 a3            |           .    |              id: "simple_block" (0xa3) (Similar to Block, see (#block-structure), but without all the extra information,
-                                                                        mostly used to reduced overhead when no extra feature is needed; see (#simpleblock-structure) on SimpleBlock Structure.) 0x22b-0x22b.7 (1)
+0x0220|                                 a3            |           .    |              id: "simple_block" (0xa3) (Similar to Block, see (#block-structure), but without all the extra information, mostly used to reduced overhead when no extra feature is needed; see (#simpleblock-structure) on SimpleBlock Structure.) 0x22b-0x22b.7 (1)
       |                                               |                |              type: "binary" 0x22c-NA (0)
 0x0220|                                    55 3c      |            U<  |              size: 5436 0x22c-0x22d.7 (2)
 0x0220|                                          81   |              . |              track_number: 1 0x22e-0x22e.7 (1)
@@ -383,8 +373,7 @@ $ fq -d matroska dv vp9.mkv
 0x0240|4a 00 0b 70 7f d9 f9 be 8f e7 71 ff 5f 97 ef c3|J..p......q._...|
 *     |until 0x1769.7 (5424)                          |                |
       |                                               |                |        [6]{}: element 0x176a-0x1785.7 (28)
-0x1760|                              1c 53 bb 6b      |          .S.k  |          id: "cues" (0x1c53bb6b) (A Top-Level Element to speed seeking access.
-                                                                        All entries are local to the Segment.) 0x176a-0x176d.7 (4)
+0x1760|                              1c 53 bb 6b      |          .S.k  |          id: "cues" (0x1c53bb6b) (A Top-Level Element to speed seeking access. All entries are local to the Segment.) 0x176a-0x176d.7 (4)
       |                                               |                |          type: "master" 0x176e-NA (0)
 0x1760|                                          97   |              . |          size: 23 0x176e-0x176e.7 (1)
       |                                               |                |          elements[0:2]: 0x176f-0x1785.7 (23)
@@ -419,8 +408,7 @@ $ fq -d matroska dv vp9.mkv
 0x1780|82                                             |.               |                      size: 2 0x1780-0x1780.7 (1)
 0x1780|   01 e8                                       | ..             |                      value: 488 0x1781-0x1782.7 (2)
       |                                               |                |                    [2]{}: element 0x1783-0x1785.7 (3)
-0x1780|         f0                                    |   .            |                      id: "cue_relative_position" (0xf0) (The relative position inside the Cluster of the referenced SimpleBlock or BlockGroup
-                                                                        with 0 being the first possible position for an Element inside that Cluster.) 0x1783-0x1783.7 (1)
+0x1780|         f0                                    |   .            |                      id: "cue_relative_position" (0xf0) (The relative position inside the Cluster of the referenced SimpleBlock or BlockGroup with 0 being the first possible position for an Element inside that Cluster.) 0x1783-0x1783.7 (1)
       |                                               |                |                      type: "uinteger" 0x1784-NA (0)
 0x1780|            81                                 |    .           |                      size: 1 0x1784-0x1784.7 (1)
 0x1780|               09|                             |     .|         |                      value: 9 0x1785-0x1785.7 (1)
