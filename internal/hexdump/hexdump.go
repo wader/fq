@@ -39,7 +39,16 @@ func New(w io.Writer, startOffset int64, addrLen int, addrBase int, lineBytes in
 	dumpHeaderFn func(s string) string,
 	dumpAddrFn func(s string) string,
 	column string) *Dumper {
-	cw := columnwriter.New(w, []int{addrLen, 1, lineBytes*3 - 1, 1, lineBytes, 1})
+	cw := columnwriter.New(
+		w,
+		&columnwriter.MultiLineColumn{Width: addrLen},
+		columnwriter.BarColumn(column),
+		&columnwriter.MultiLineColumn{Width: lineBytes * 3},
+		columnwriter.BarColumn(column),
+		&columnwriter.MultiLineColumn{Width: lineBytes},
+		columnwriter.BarColumn(column),
+	)
+
 	return &Dumper{
 		addrLen:          addrLen,
 		addrBase:         addrBase,

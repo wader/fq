@@ -76,12 +76,6 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 		fmt.Fprintf(cw.Columns[c], format, a...)
 	}
 
-	columns := func() {
-		cprint(1, deco.Column, "\n")
-		cprint(3, deco.Column, "\n")
-		cprint(5, deco.Column, "\n")
-	}
-
 	isInArray := false
 	inArrayLen := 0
 	if v.Parent != nil {
@@ -107,7 +101,6 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 	indent := indentStr(treeIndentWidth * depth)
 
 	if opts.ArrayTruncate != 0 && depth != 0 && isInArray && v.Index >= opts.ArrayTruncate {
-		columns()
 		cfmt(colField, "%s%s%s:%s%s: ...",
 			indent,
 			deco.Index.F("["),
@@ -124,10 +117,6 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 
 	// show address bar on root, nested root and format change
 	if depth == 0 || v.IsRoot || v.Format != nil {
-		if willDisplayData {
-			columns()
-		}
-
 		cfmt(colHex, "%s", deco.DumpHeader.F(ctx.hexHeader))
 		cfmt(colASCII, "%s", deco.DumpHeader.F(ctx.asciiHeader))
 
@@ -208,14 +197,11 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 
 			switch {
 			case errors.As(err, &formatErr):
-				columns()
 				cfmt(colField, "%s  %s: %s: %s\n", indent, deco.Error.F("error"), formatErr.Format.Name, formatErr.Err.Error())
 
 				if opts.Verbose {
 					for _, f := range formatErr.Stacktrace.Frames() {
-						columns()
 						cfmt(colField, "%s    %s\n", indent, f.Function)
-						columns()
 						cfmt(colField, "%s      %s:%d\n", indent, f.File, f.Line)
 					}
 				}
@@ -229,7 +215,6 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 					printErrs(depth+1, e)
 				}
 			default:
-				columns()
 				cfmt(colField, "%s!%s\n", indent, deco.Error.F(err.Error()))
 			}
 		}
@@ -278,8 +263,6 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 	startLineByte := startLine * int64(opts.LineBytes)
 	lastDisplayLine := lastDisplayByte / int64(opts.LineBytes)
 
-	columns()
-
 	// has length and is not compound or a collapsed struct/array (max depth)
 	if willDisplayData {
 		cfmt(colAddr, "%s%s\n",
@@ -318,13 +301,12 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 
 		for i := int64(1); i < addrLines; i++ {
 			lineStartByte := startLineByte + i*int64(opts.LineBytes)
-			columns()
 			cfmt(colAddr, "%s%s\n", rootIndent, deco.DumpAddr.F(mathex.PadFormatInt(lineStartByte, opts.Addrbase, true, addrWidth)))
 		}
 		// TODO: correct? should rethink columnwriter api maybe?
 		lastLineStopByte := startLineByte + addrLines*int64(opts.LineBytes) - 1
 		if lastDisplayByte == bufferLastByte && lastDisplayByte != lastLineStopByte {
-			// extra "|" in as EOF markers
+			// extra "|" as end markers
 			cfmt(colHex, "%s\n", deco.Column)
 			cfmt(colASCII, "%s\n", deco.Column)
 		}
@@ -334,7 +316,6 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 			if stopBit == bufferLastBit {
 				isEnd = " (end)"
 			}
-			columns()
 
 			cfmt(colAddr, "%s%s\n", rootIndent, deco.DumpAddr.F("*"))
 			cprint(colHex, "\n")
@@ -374,23 +355,34 @@ func dump(v *decode.Value, w io.Writer, opts Options) error {
 		return nil
 	}))
 
+	var displayLenFn func(s string) int
+	var displayTruncateFn func(s string, start, stop int) string
+	if opts.Color {
+		displayLenFn = ansi.Len
+		displayTruncateFn = ansi.Slice
+	}
+
+	addrColumnWidth := maxAddrIndentWidth
+	hexColumnWidth := opts.LineBytes*3 - 1
+	asciiColumnWidth := opts.LineBytes
+	treeColumnWidth := -1
+	// TODO: set with and truncate/wrap properly
+	// if opts.Width != 0 {
+	// 	treeColumnWidth = mathex.Max(0, opts.Width-(addrColumnWidth+hexColumnWidth+asciiColumnWidth+3 /* bars */))
+	// }
+
 	cw := columnwriter.New(
 		w,
-		[]int{
-			maxAddrIndentWidth,
-			1,
-			opts.LineBytes*3 - 1,
-			1,
-			opts.LineBytes,
-			1,
-			-1,
-		})
-	buf := make([]byte, 32*1024)
+		&columnwriter.MultiLineColumn{Width: addrColumnWidth, LenFn: displayLenFn, SliceFn: displayTruncateFn},
+		columnwriter.BarColumn(opts.Decorator.Column),
+		&columnwriter.MultiLineColumn{Width: hexColumnWidth, LenFn: displayLenFn, SliceFn: displayTruncateFn},
+		columnwriter.BarColumn(opts.Decorator.Column),
+		&columnwriter.MultiLineColumn{Width: asciiColumnWidth, LenFn: displayLenFn, SliceFn: displayTruncateFn},
+		columnwriter.BarColumn(opts.Decorator.Column),
+		&columnwriter.MultiLineColumn{Width: treeColumnWidth, Wrap: false, LenFn: displayLenFn, SliceFn: displayTruncateFn},
+	)
 
-	if opts.Color {
-		cw.DisplayLenFn = ansi.Len
-		cw.DisplayTruncateFn = ansi.Truncate
-	}
+	buf := make([]byte, 32*1024)
 
 	var hexHeader string
 	var asciiHeader string
