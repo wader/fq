@@ -3,7 +3,7 @@ package text
 import (
 	"net/url"
 
-	"github.com/wader/fq/internal/gojqextra"
+	"github.com/wader/fq/internal/gojqex"
 	"github.com/wader/fq/pkg/interp"
 )
 
@@ -56,15 +56,15 @@ func init() {
 	toURLValues := func(c map[string]any) url.Values {
 		qv := url.Values{}
 		for k, v := range c {
-			if va, ok := gojqextra.Cast[[]any](v); ok {
+			if va, ok := gojqex.Cast[[]any](v); ok {
 				var ss []string
 				for _, s := range va {
-					if s, ok := gojqextra.Cast[string](s); ok {
+					if s, ok := gojqex.Cast[string](s); ok {
 						ss = append(ss, s)
 					}
 				}
 				qv[k] = ss
-			} else if vs, ok := gojqextra.Cast[string](v); ok {
+			} else if vs, ok := gojqex.Cast[string](v); ok {
 				qv[k] = []string{vs}
 			}
 		}
@@ -72,7 +72,7 @@ func init() {
 	}
 	interp.RegisterFunc0("tourlquery", func(_ *interp.Interp, c map[string]any) any {
 		// TODO: nicer
-		c, ok := gojqextra.NormalizeToStrings(c).(map[string]any)
+		c, ok := gojqex.NormalizeToStrings(c).(map[string]any)
 		if !ok {
 			panic("not map")
 		}
@@ -118,12 +118,12 @@ func init() {
 	})
 	interp.RegisterFunc0("tourl", func(_ *interp.Interp, c map[string]any) any {
 		// TODO: nicer
-		c, ok := gojqextra.NormalizeToStrings(c).(map[string]any)
+		c, ok := gojqex.NormalizeToStrings(c).(map[string]any)
 		if !ok {
 			panic("not map")
 		}
 
-		str := func(v any) string { s, _ := gojqextra.Cast[string](v); return s }
+		str := func(v any) string { s, _ := gojqex.Cast[string](v); return s }
 		u := url.URL{
 			Scheme:   str(c["scheme"]),
 			Host:     str(c["host"]),
@@ -131,7 +131,7 @@ func init() {
 			Fragment: str(c["fragment"]),
 		}
 
-		if um, ok := gojqextra.Cast[map[string]any](c["user"]); ok {
+		if um, ok := gojqex.Cast[map[string]any](c["user"]); ok {
 			username, password := str(um["username"]), str(um["password"])
 			if username != "" {
 				if password == "" {
@@ -141,10 +141,10 @@ func init() {
 				}
 			}
 		}
-		if s, ok := gojqextra.Cast[string](c["rawquery"]); ok {
+		if s, ok := gojqex.Cast[string](c["rawquery"]); ok {
 			u.RawQuery = s
 		}
-		if qm, ok := gojqextra.Cast[map[string]any](c["query"]); ok {
+		if qm, ok := gojqex.Cast[map[string]any](c["query"]); ok {
 			u.RawQuery = toURLValues(qm).Encode()
 		}
 

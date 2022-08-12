@@ -1,4 +1,4 @@
-package gojqextra
+package gojqex
 
 import (
 	"fmt"

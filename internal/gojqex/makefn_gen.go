@@ -1,5 +1,5 @@
 // Generated from makefn_gen.go.tmpl
-package gojqextra
+package gojqex
 
 import (
 	"github.com/wader/fq/internal/mapstruct"

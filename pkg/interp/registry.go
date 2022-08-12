@@ -7,11 +7,11 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/wader/fq/internal/gojqextra"
+	"github.com/wader/fq/internal/gojqex"
 	"github.com/wader/fq/pkg/decode"
 )
 
-type EnvFuncFn func(env *Interp) gojqextra.Function
+type EnvFuncFn func(env *Interp) gojqex.Function
 
 type Registry struct {
 	FormatGroups      map[string]decode.Group

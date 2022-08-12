@@ -1,4 +1,4 @@
-package mathextra
+package mathex
 
 import "math/big"
 

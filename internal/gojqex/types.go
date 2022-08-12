@@ -1,5 +1,5 @@
 //nolint:gosimple
-package gojqextra
+package gojqex
 
 import (
 	"bytes"

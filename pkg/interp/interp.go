@@ -18,13 +18,13 @@ import (
 	"time"
 
 	"github.com/wader/fq/internal/ansi"
-	"github.com/wader/fq/internal/bitioextra"
+	"github.com/wader/fq/internal/bitioex"
 	"github.com/wader/fq/internal/colorjson"
 	"github.com/wader/fq/internal/ctxstack"
-	"github.com/wader/fq/internal/gojqextra"
-	"github.com/wader/fq/internal/ioextra"
+	"github.com/wader/fq/internal/gojqex"
+	"github.com/wader/fq/internal/ioex"
 	"github.com/wader/fq/internal/mapstruct"
-	"github.com/wader/fq/internal/mathextra"
+	"github.com/wader/fq/internal/mathex"
 	"github.com/wader/fq/internal/pos"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
@@ -287,7 +287,7 @@ func toBytes(v any) ([]byte, error) {
 			return nil, fmt.Errorf("value is not bytes")
 		}
 		buf := &bytes.Buffer{}
-		if _, err := bitioextra.CopyBits(buf, br); err != nil {
+		if _, err := bitioex.CopyBits(buf, br); err != nil {
 			return nil, err
 		}
 
@@ -456,7 +456,7 @@ func (i *Interp) _readline(c any, opts readlineOpts) gojq.Iter {
 					opts.Complete,
 					[]any{line, pos},
 					EvalOpts{
-						output:       ioextra.DiscardCtxWriter{Ctx: completeCtx},
+						output:       ioex.DiscardCtxWriter{Ctx: completeCtx},
 						isCompleting: true,
 					},
 				)
@@ -472,7 +472,7 @@ func (i *Interp) _readline(c any, opts readlineOpts) gojq.Iter {
 				}
 
 				// {abc: 123, abd: 123} | complete(".ab"; 3) will return {prefix: "ab", names: ["abc", "abd"]}
-				r, ok := gojqextra.CastFn[completionResult](v, mapstruct.ToStruct)
+				r, ok := gojqex.CastFn[completionResult](v, mapstruct.ToStruct)
 				if !ok {
 					return nil, pos, fmt.Errorf("completion result not a map")
 				}
@@ -921,7 +921,7 @@ func (i *Interp) Eval(ctx context.Context, c any, expr string, opts EvalOpts) (g
 
 	runCtx, runCtxCancelFn := i.interruptStack.Push(ctx)
 	ni.EvalInstance.Ctx = runCtx
-	ni.EvalInstance.Output = ioextra.CtxWriter{Writer: output, Ctx: runCtx}
+	ni.EvalInstance.Output = ioex.CtxWriter{Writer: output, Ctx: runCtx}
 	// inherit or maybe set
 	ni.EvalInstance.IsCompleting = i.EvalInstance.IsCompleting || opts.isCompleting
 	iter := gc.RunWithContext(runCtx, c, variableValues...)
@@ -1013,12 +1013,12 @@ type Options struct {
 func OptionsFromValue(v any) Options {
 	var opts Options
 	_ = mapstruct.ToStruct(v, &opts)
-	opts.ArrayTruncate = mathextra.MaxInt(0, opts.ArrayTruncate)
-	opts.Depth = mathextra.MaxInt(0, opts.Depth)
-	opts.Addrbase = mathextra.ClampInt(2, 36, opts.Addrbase)
-	opts.Sizebase = mathextra.ClampInt(2, 36, opts.Sizebase)
-	opts.LineBytes = mathextra.MaxInt(0, opts.LineBytes)
-	opts.DisplayBytes = mathextra.MaxInt(0, opts.DisplayBytes)
+	opts.ArrayTruncate = mathex.Max(0, opts.ArrayTruncate)
+	opts.Depth = mathex.Max(0, opts.Depth)
+	opts.Addrbase = mathex.Clamp(2, 36, opts.Addrbase)
+	opts.Sizebase = mathex.Clamp(2, 36, opts.Sizebase)
+	opts.LineBytes = mathex.Max(0, opts.LineBytes)
+	opts.DisplayBytes = mathex.Max(0, opts.DisplayBytes)
 	opts.Decorator = decoratorFromOptions(opts)
 	opts.BitsFormatFn = bitsFormatFnFromOptions(opts)
 
@@ -1030,7 +1030,7 @@ func bitsFormatFnFromOptions(opts Options) func(br bitio.ReaderAtSeeker) (any, e
 	case "md5":
 		return func(br bitio.ReaderAtSeeker) (any, error) {
 			d := md5.New()
-			if _, err := bitioextra.CopyBits(d, br); err != nil {
+			if _, err := bitioex.CopyBits(d, br); err != nil {
 				return "", err
 			}
 			return hex.EncodeToString(d.Sum(nil)), nil
@@ -1039,7 +1039,7 @@ func bitsFormatFnFromOptions(opts Options) func(br bitio.ReaderAtSeeker) (any, e
 		return func(br bitio.ReaderAtSeeker) (any, error) {
 			b := &bytes.Buffer{}
 			e := base64.NewEncoder(base64.StdEncoding, b)
-			if _, err := bitioextra.CopyBits(e, br); err != nil {
+			if _, err := bitioex.CopyBits(e, br); err != nil {
 				return "", err
 			}
 			e.Close()
@@ -1049,7 +1049,7 @@ func bitsFormatFnFromOptions(opts Options) func(br bitio.ReaderAtSeeker) (any, e
 		// TODO: configure
 		return func(br bitio.ReaderAtSeeker) (any, error) {
 			b := &bytes.Buffer{}
-			if _, err := bitioextra.CopyBits(b, bitio.NewLimitReader(br, 1024*8)); err != nil {
+			if _, err := bitioex.CopyBits(b, bitio.NewLimitReader(br, 1024*8)); err != nil {
 				return "", err
 			}
 			return b.String(), nil
@@ -1057,7 +1057,7 @@ func bitsFormatFnFromOptions(opts Options) func(br bitio.ReaderAtSeeker) (any, e
 	case "string":
 		return func(br bitio.ReaderAtSeeker) (any, error) {
 			b := &bytes.Buffer{}
-			if _, err := bitioextra.CopyBits(b, br); err != nil {
+			if _, err := bitioex.CopyBits(b, br); err != nil {
 				return "", err
 			}
 			return b.String(), nil
@@ -1068,17 +1068,17 @@ func bitsFormatFnFromOptions(opts Options) func(br bitio.ReaderAtSeeker) (any, e
 		return func(br bitio.ReaderAtSeeker) (any, error) {
 			b := &bytes.Buffer{}
 			e := base64.NewEncoder(base64.StdEncoding, b)
-			if _, err := bitioextra.CopyBits(e, bitio.NewLimitReader(br, 256*8)); err != nil {
+			if _, err := bitioex.CopyBits(e, bitio.NewLimitReader(br, 256*8)); err != nil {
 				return "", err
 			}
 			e.Close()
 
-			brLen, err := bitioextra.Len(br)
+			brLen, err := bitioex.Len(br)
 			if err != nil {
 				return nil, err
 			}
 
-			return fmt.Sprintf("<%s>%s", mathextra.Bits(brLen).StringByteBits(opts.Sizebase), b.String()), nil
+			return fmt.Sprintf("<%s>%s", mathex.Bits(brLen).StringByteBits(opts.Sizebase), b.String()), nil
 		}
 	}
 }

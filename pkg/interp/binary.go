@@ -9,10 +9,10 @@ import (
 	"math/big"
 
 	"github.com/wader/fq/internal/aheadreadseeker"
-	"github.com/wader/fq/internal/bitioextra"
+	"github.com/wader/fq/internal/bitioex"
 	"github.com/wader/fq/internal/ctxreadseeker"
-	"github.com/wader/fq/internal/gojqextra"
-	"github.com/wader/fq/internal/ioextra"
+	"github.com/wader/fq/internal/gojqex"
+	"github.com/wader/fq/internal/ioex"
 	"github.com/wader/fq/internal/progressreadseeker"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/ranges"
@@ -52,7 +52,7 @@ func toBitReaderEx(v any, inArray bool) (bitio.ReaderAtSeeker, error) {
 		if err != nil {
 			return nil, err
 		}
-		return bitioextra.Range(bv.br, bv.r.Start, bv.r.Len)
+		return bitioex.Range(bv.br, bv.r.Start, bv.r.Len)
 	case string:
 		return bitio.NewBitReader([]byte(vv), -1), nil
 	case int, float64, *big.Int:
@@ -79,7 +79,7 @@ func toBitReaderEx(v any, inArray bool) (bitio.ReaderAtSeeker, error) {
 		// TODO: how should this work? "0xf | tobytes" 4bits or 8bits? now 4
 		padBefore := (8 - (bitLen % 8)) % 8
 		// padBefore := 0
-		br, err := bitioextra.Range(bitio.NewBitReader(bi.Bytes(), -1), padBefore, bitLen)
+		br, err := bitioex.Range(bitio.NewBitReader(bi.Bytes(), -1), padBefore, bitLen)
 		if err != nil {
 			return nil, err
 		}
@@ -216,7 +216,7 @@ func (i *Interp) _open(c any) any {
 	}
 
 	if fRS == nil {
-		buf, err := io.ReadAll(ctxreadseeker.New(i.EvalInstance.Ctx, &ioextra.ReadErrSeeker{Reader: f}))
+		buf, err := io.ReadAll(ctxreadseeker.New(i.EvalInstance.Ctx, &ioex.ReadErrSeeker{Reader: f}))
 		if err != nil {
 			f.Close()
 			return err
@@ -263,7 +263,7 @@ type Binary struct {
 }
 
 func NewBinaryFromBitReader(br bitio.ReaderAtSeeker, unit int, pad int64) (Binary, error) {
-	l, err := bitioextra.Len(br)
+	l, err := bitioex.Len(br)
 	if err != nil {
 		return Binary{}, err
 	}
@@ -277,12 +277,12 @@ func NewBinaryFromBitReader(br bitio.ReaderAtSeeker, unit int, pad int64) (Binar
 }
 
 func (b Binary) toBytesBuffer(r ranges.Range) (*bytes.Buffer, error) {
-	br, err := bitioextra.Range(b.br, r.Start, r.Len)
+	br, err := bitioex.Range(b.br, r.Start, r.Len)
 	if err != nil {
 		return nil, err
 	}
 	buf := &bytes.Buffer{}
-	if _, err := bitioextra.CopyBits(buf, br); err != nil {
+	if _, err := bitioex.CopyBits(buf, br); err != nil {
 		return nil, err
 	}
 
@@ -369,10 +369,10 @@ func (b Binary) JQValueType() string {
 	return gojq.JQTypeString
 }
 func (b Binary) JQValueKeys() any {
-	return gojqextra.FuncTypeNameError{Name: "keys", Typ: gojq.JQTypeString}
+	return gojqex.FuncTypeNameError{Name: "keys", Typ: gojq.JQTypeString}
 }
 func (b Binary) JQValueHas(key any) any {
-	return gojqextra.HasKeyTypeError{L: gojq.JQTypeString, R: fmt.Sprintf("%v", key)}
+	return gojqex.HasKeyTypeError{L: gojq.JQTypeString, R: fmt.Sprintf("%v", key)}
 }
 func (b Binary) JQValueToNumber() any {
 	buf, err := b.toBytesBuffer(b.r)
@@ -400,7 +400,7 @@ func (b Binary) Display(w io.Writer, opts Options) error {
 			return err
 		}
 
-		if _, err := bitioextra.CopyBits(w, br); err != nil {
+		if _, err := bitioex.CopyBits(w, br); err != nil {
 			return err
 		}
 
@@ -411,12 +411,12 @@ func (b Binary) Display(w io.Writer, opts Options) error {
 }
 
 func (b Binary) toReader() (bitio.ReaderAtSeeker, error) {
-	br, err := bitioextra.Range(b.br, b.r.Start, b.r.Len)
+	br, err := bitioex.Range(b.br, b.r.Start, b.r.Len)
 	if err != nil {
 		return nil, err
 	}
 	if b.pad == 0 {
 		return br, nil
 	}
-	return bitio.NewMultiReader(bitioextra.NewZeroAtSeeker(b.pad), br)
+	return bitio.NewMultiReader(bitioex.NewZeroAtSeeker(b.pad), br)
 }

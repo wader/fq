@@ -6,7 +6,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/internal/gojqextra"
+	"github.com/wader/fq/internal/gojqex"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
@@ -37,7 +37,7 @@ func decodeTOML(d *decode.D, _ any) any {
 		d.Fatalf("%s", err)
 	}
 	var s scalar.S
-	s.Actual = gojqextra.Normalize(r)
+	s.Actual = gojqex.Normalize(r)
 
 	// TODO: better way to handle that an empty file is valid toml and parsed as an object
 	switch v := s.Actual.(type) {
@@ -58,11 +58,11 @@ func decodeTOML(d *decode.D, _ any) any {
 
 func toTOML(_ *interp.Interp, c any) any {
 	if c == nil {
-		return gojqextra.FuncTypeError{Name: "totoml", V: c}
+		return gojqex.FuncTypeError{Name: "totoml", V: c}
 	}
 
 	b := &bytes.Buffer{}
-	if err := toml.NewEncoder(b).Encode(gojqextra.Normalize(c)); err != nil {
+	if err := toml.NewEncoder(b).Encode(gojqex.Normalize(c)); err != nil {
 		return err
 	}
 	return b.String()

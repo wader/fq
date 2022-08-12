@@ -1,4 +1,4 @@
-package mathextra
+package mathex
 
 import (
 	"fmt"
@@ -7,8 +7,14 @@ import (
 	"strconv"
 	"strings"
 
+	"golang.org/x/exp/constraints"
+
 	"github.com/wader/fq/pkg/ranges"
 )
+
+type Number interface {
+	constraints.Integer | constraints.Float
+}
 
 var BasePrefixMap = map[int]string{
 	2:  "0b",
@@ -16,7 +22,7 @@ var BasePrefixMap = map[int]string{
 	16: "0x",
 }
 
-func DigitsInBase(n int64, basePrefix bool, base int) int {
+func DigitsInBase[T constraints.Integer](n T, basePrefix bool, base int) int {
 	prefixLen := 0
 	if basePrefix {
 		prefixLen = len(BasePrefixMap[base])
@@ -41,66 +47,40 @@ func padFormatNumber(s string, base int, basePrefix bool, width int) string {
 	return prefixStr + padStr + s
 }
 
-func PadFormatInt(i int64, base int, basePrefix bool, width int) string {
-	return padFormatNumber(strconv.FormatInt(i, base), base, basePrefix, width)
+func PadFormatInt[T constraints.Signed](i T, base int, basePrefix bool, width int) string {
+	return padFormatNumber(strconv.FormatInt(int64(i), base), base, basePrefix, width)
 }
 
-func PadFormatUint(i uint64, base int, basePrefix bool, width int) string {
-	return padFormatNumber(strconv.FormatUint(i, base), base, basePrefix, width)
+func PadFormatUint[T constraints.Unsigned](i T, base int, basePrefix bool, width int) string {
+	return padFormatNumber(strconv.FormatUint(uint64(i), base), base, basePrefix, width)
 }
 
 func PadFormatBigInt(i *big.Int, base int, basePrefix bool, width int) string {
 	return padFormatNumber(i.Text(base), base, basePrefix, width)
 }
 
-func MaxUInt64(a, b uint64) uint64 {
-	if a < b {
-		return b
+func Max[T Number](v T, vs ...T) T {
+	m := v
+	for _, v := range vs {
+		if v > m {
+			m = v
+		}
 	}
-	return a
+	return m
 }
 
-func MinUInt64(a, b uint64) uint64 {
-	if a > b {
-		return b
+func Min[T Number](v T, vs ...T) T {
+	m := v
+	for _, v := range vs {
+		if v < m {
+			m = v
+		}
 	}
-	return a
+	return m
 }
 
-func MaxInt64(a, b int64) int64 {
-	if a < b {
-		return b
-	}
-	return a
-}
-
-func MinInt64(a, b int64) int64 {
-	if a > b {
-		return b
-	}
-	return a
-}
-
-func MaxInt(a, b int) int {
-	if a < b {
-		return b
-	}
-	return a
-}
-
-func MinInt(a, b int) int {
-	if a > b {
-		return b
-	}
-	return a
-}
-
-func ClampInt(min, max, v int) int {
-	return MaxInt(min, MinInt(max, v))
-}
-
-func ClampInt64(min, max, v int64) int64 {
-	return MaxInt64(min, MinInt64(max, v))
+func Clamp[T Number](min, max, v T) T {
+	return Max(min, Min(max, v))
 }
 
 type Bits uint64

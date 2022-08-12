@@ -18,9 +18,9 @@ import (
 	"strings"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/internal/gojqextra"
+	"github.com/wader/fq/internal/gojqex"
 	"github.com/wader/fq/internal/proxysort"
-	"github.com/wader/fq/internal/stringsextra"
+	"github.com/wader/fq/internal/stringsex"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
@@ -258,7 +258,7 @@ func decodeXML(d *decode.D, in any) any {
 		switch t := t.(type) {
 		case xml.CharData:
 			if !whitespaceRE.Match([]byte(t)) {
-				d.Fatalf("root element has trailing non-whitespace %q", stringsextra.TrimN(string(t), 50, "..."))
+				d.Fatalf("root element has trailing non-whitespace %q", stringsex.TrimN(string(t), 50, "..."))
 			}
 			// ignore trailing whitespace
 		case xml.ProcInst:
@@ -440,12 +440,12 @@ func toXMLFromArray(c any, opts ToXMLOpts) any {
 
 	ca, ok := c.([]any)
 	if !ok {
-		return gojqextra.FuncTypeError{Name: "toxml", V: c}
+		return gojqex.FuncTypeError{Name: "toxml", V: c}
 	}
 	n, ok := f(ca)
 	if !ok {
 		// TODO: better error
-		return gojqextra.FuncTypeError{Name: "toxml", V: c}
+		return gojqex.FuncTypeError{Name: "toxml", V: c}
 	}
 	bb := &bytes.Buffer{}
 	e := xml.NewEncoder(bb)
@@ -461,10 +461,10 @@ func toXMLFromArray(c any, opts ToXMLOpts) any {
 }
 
 func toXML(_ *interp.Interp, c any, opts ToXMLOpts) any {
-	if v, ok := gojqextra.Cast[map[string]any](c); ok {
-		return toXMLFromObject(gojqextra.NormalizeToStrings(v), opts)
-	} else if v, ok := gojqextra.Cast[[]any](c); ok {
-		return toXMLFromArray(gojqextra.NormalizeToStrings(v), opts)
+	if v, ok := gojqex.Cast[map[string]any](c); ok {
+		return toXMLFromObject(gojqex.NormalizeToStrings(v), opts)
+	} else if v, ok := gojqex.Cast[[]any](c); ok {
+		return toXMLFromArray(gojqex.NormalizeToStrings(v), opts)
 	}
-	return gojqextra.FuncTypeError{Name: "toxml", V: c}
+	return gojqex.FuncTypeError{Name: "toxml", V: c}
 }

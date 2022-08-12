@@ -1,4 +1,4 @@
-package ioextra
+package ioex
 
 import (
 	"context"

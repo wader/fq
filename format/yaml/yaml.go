@@ -6,7 +6,7 @@ import (
 	"embed"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/internal/gojqextra"
+	"github.com/wader/fq/internal/gojqex"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
@@ -54,7 +54,7 @@ func decodeYAML(d *decode.D, _ any) any {
 }
 
 func toYAML(_ *interp.Interp, c any) any {
-	b, err := yaml.Marshal(gojqextra.Normalize(c))
+	b, err := yaml.Marshal(gojqex.Normalize(c))
 	if err != nil {
 		return err
 	}

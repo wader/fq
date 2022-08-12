@@ -11,9 +11,9 @@ import (
 	"time"
 
 	"github.com/mitchellh/copystructure"
-	"github.com/wader/fq/internal/bitioextra"
-	"github.com/wader/fq/internal/gojqextra"
-	"github.com/wader/fq/internal/ioextra"
+	"github.com/wader/fq/internal/bitioex"
+	"github.com/wader/fq/internal/gojqex"
+	"github.com/wader/fq/internal/ioex"
 	"github.com/wader/fq/internal/mapstruct"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
@@ -114,7 +114,7 @@ func (i *Interp) _registry(c any) any {
 					delete(args, k)
 				}
 			}
-			vf["decode_in_arg"] = gojqextra.Normalize(args)
+			vf["decode_in_arg"] = gojqex.Normalize(args)
 		}
 
 		if f.Functions != nil {
@@ -195,7 +195,7 @@ func (i *Interp) _decode(c any, format string, opts decodeOpts) any {
 					c,
 					opts.Progress,
 					nil,
-					EvalOpts{output: ioextra.DiscardCtxWriter{Ctx: i.EvalInstance.Ctx}},
+					EvalOpts{output: ioex.DiscardCtxWriter{Ctx: i.EvalInstance.Ctx}},
 				)
 			}
 			lastProgress := time.Now()
@@ -344,7 +344,7 @@ func makeDecodeValueOut(dv *decode.Value, out any) any {
 			// create another binary we don't have to read and create a string, ex:
 			// .unknown0 | tobytes[1:] | ...
 			return decodeValue{
-				JQValue: &gojqextra.Lazy{
+				JQValue: &gojqex.Lazy{
 					Type:     "string",
 					IsScalar: true,
 					Fn: func() (gojq.JQValue, error) {
@@ -353,10 +353,10 @@ func makeDecodeValueOut(dv *decode.Value, out any) any {
 						if err != nil {
 							return nil, err
 						}
-						if _, err := bitioextra.CopyBits(buf, vvC); err != nil {
+						if _, err := bitioex.CopyBits(buf, vvC); err != nil {
 							return nil, err
 						}
-						return gojqextra.String([]rune(buf.String())), nil
+						return gojqex.String([]rune(buf.String())), nil
 					},
 				},
 				decodeValueBase: decodeValueBase{dv: dv},
@@ -364,52 +364,52 @@ func makeDecodeValueOut(dv *decode.Value, out any) any {
 			}
 		case bool:
 			return decodeValue{
-				JQValue:         gojqextra.Boolean(vv),
+				JQValue:         gojqex.Boolean(vv),
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case int:
 			return decodeValue{
-				JQValue:         gojqextra.Number{V: vv},
+				JQValue:         gojqex.Number{V: vv},
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case int64:
 			return decodeValue{
-				JQValue:         gojqextra.Number{V: big.NewInt(vv)},
+				JQValue:         gojqex.Number{V: big.NewInt(vv)},
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case uint64:
 			return decodeValue{
-				JQValue:         gojqextra.Number{V: new(big.Int).SetUint64(vv)},
+				JQValue:         gojqex.Number{V: new(big.Int).SetUint64(vv)},
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case float64:
 			return decodeValue{
-				JQValue:         gojqextra.Number{V: vv},
+				JQValue:         gojqex.Number{V: vv},
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case string:
 			return decodeValue{
-				JQValue:         gojqextra.String(vv),
+				JQValue:         gojqex.String(vv),
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case []any:
 			return decodeValue{
-				JQValue:         gojqextra.Array(vv),
+				JQValue:         gojqex.Array(vv),
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case map[string]any:
 			return decodeValue{
-				JQValue:         gojqextra.Object(vv),
+				JQValue:         gojqex.Object(vv),
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case nil:
 			return decodeValue{
-				JQValue:         gojqextra.Null{},
+				JQValue:         gojqex.Null{},
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case *big.Int:
 			return decodeValue{
-				JQValue:         gojqextra.Number{V: vv},
+				JQValue:         gojqex.Number{V: vv},
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		default:
@@ -497,7 +497,7 @@ func (dvb decodeValueBase) JQValueKey(name string) any {
 	case "_actual":
 		switch vv := dv.V.(type) {
 		case *scalar.S:
-			jv, ok := gojqextra.ToGoJQValue(vv.Actual)
+			jv, ok := gojqex.ToGoJQValue(vv.Actual)
 			if !ok {
 				return fmt.Errorf("can't convert actual value jq value %#+v", vv.Actual)
 			}
@@ -508,7 +508,7 @@ func (dvb decodeValueBase) JQValueKey(name string) any {
 	case "_sym":
 		switch vv := dv.V.(type) {
 		case *scalar.S:
-			jv, ok := gojqextra.ToGoJQValue(vv.Sym)
+			jv, ok := gojqex.ToGoJQValue(vv.Sym)
 			if !ok {
 				return fmt.Errorf("can't convert sym value jq value %#+v", vv.Actual)
 			}
@@ -619,7 +619,7 @@ func (v decodeValue) JQValueToGoJQEx(optsFn func() Options) any {
 var _ DecodeValue = ArrayDecodeValue{}
 
 type ArrayDecodeValue struct {
-	gojqextra.Base
+	gojqex.Base
 	decodeValueBase
 	*decode.Compound
 }
@@ -627,7 +627,7 @@ type ArrayDecodeValue struct {
 func NewArrayDecodeValue(dv *decode.Value, out any, c *decode.Compound) ArrayDecodeValue {
 	return ArrayDecodeValue{
 		decodeValueBase: decodeValueBase{dv: dv, out: out},
-		Base:            gojqextra.Base{Typ: gojq.JQTypeArray},
+		Base:            gojqex.Base{Typ: gojq.JQTypeArray},
 		Compound:        c,
 	}
 }
@@ -672,7 +672,7 @@ func (v ArrayDecodeValue) JQValueHas(key any) any {
 		func(key any) any {
 			intKey, ok := key.(int)
 			if !ok {
-				return gojqextra.HasKeyTypeError{L: gojq.JQTypeArray, R: fmt.Sprintf("%v", key)}
+				return gojqex.HasKeyTypeError{L: gojq.JQTypeArray, R: fmt.Sprintf("%v", key)}
 			}
 			return intKey >= 0 && intKey < len(v.Compound.Children)
 		})
@@ -690,7 +690,7 @@ func (v ArrayDecodeValue) JQValueToGoJQ() any {
 var _ DecodeValue = StructDecodeValue{}
 
 type StructDecodeValue struct {
-	gojqextra.Base
+	gojqex.Base
 	decodeValueBase
 	*decode.Compound
 }
@@ -698,7 +698,7 @@ type StructDecodeValue struct {
 func NewStructDecodeValue(dv *decode.Value, out any, c *decode.Compound) StructDecodeValue {
 	return StructDecodeValue{
 		decodeValueBase: decodeValueBase{dv: dv, out: out},
-		Base:            gojqextra.Base{Typ: gojq.JQTypeObject},
+		Base:            gojqex.Base{Typ: gojq.JQTypeObject},
 		Compound:        c,
 	}
 }
@@ -738,7 +738,7 @@ func (v StructDecodeValue) JQValueHas(key any) any {
 		func(key any) any {
 			stringKey, ok := key.(string)
 			if !ok {
-				return gojqextra.HasKeyTypeError{L: gojq.JQTypeObject, R: fmt.Sprintf("%v", key)}
+				return gojqex.HasKeyTypeError{L: gojq.JQTypeObject, R: fmt.Sprintf("%v", key)}
 			}
 			for _, f := range v.Compound.Children {
 				if f.Name == stringKey {

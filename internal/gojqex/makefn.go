@@ -1,4 +1,4 @@
-package gojqextra
+package gojqex
 
 //go:generate sh -c "cat makefn_gen.go.tmpl | go run ../../dev/tmpl.go | gofmt > makefn_gen.go"
 

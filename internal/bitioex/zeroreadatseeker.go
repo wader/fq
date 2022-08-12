@@ -1,4 +1,4 @@
-package bitioextra
+package bitioex
 
 import (
 	"io"
