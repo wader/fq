@@ -34,11 +34,14 @@ def _complete_keywords:
   ];
 
 def _complete_scope:
-  [scope[], _complete_keywords[]];
+  [ (scope | map(split("/")[0]) | unique)
+  , _complete_keywords
+  ] | add;
 def _complete_keys:
   # uses try as []? will not catch errors
   [try keys[] catch empty, try _extkeys[] catch empty];
 
+# TODO: "def zzz: null; abc" scope won't see zzz after completion rewrite as def will be inside map(def zzz: null; abc | ...)
 # TODO: handle variables via ast walk?
 # TODO: refactor this
 # TODO: completionMode

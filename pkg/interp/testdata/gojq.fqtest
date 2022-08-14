@@ -287,3 +287,23 @@ $ fq -r '.headers[0] | toxml({indent: 2})' test.mp3
   <size>35</size>
   <version>4</version>
 </doc>
+$ fq -i
+null> 0b0_1
+1
+null> 0b1_0000_0000_0000_0000_0000_0000_0000_0000
+4294967296
+null> 0b0_1x
+           ^ unexpected token "x"
+null> 0o012_34567
+342391
+null> 0o7_0000_0000_0000_0000_0000_0000_0000_0000
+554597137599850363154807652352
+null> 0o012_34567x
+                 ^ unexpected token "x"
+null> 0x012_3456789abcdef
+81985529216486895
+null> 0xf_0000_0000_0000_0000_0000_0000_0000_0000
+5104235503814076951950619111476523171840
+null> 0x012_3456789abcdefx
+                         ^ unexpected token "x"
+null> ^D
