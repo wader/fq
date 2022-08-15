@@ -2,3 +2,7 @@ $ fq -n '"- a\ntrailing" | fromyaml._error.error'
 exitcode: 5
 stderr:
 error: error at position 0xc: yaml: line 2: could not find expected ':'
+$ fq -n '`{"a":123}{"b":444}` | fromyaml'
+exitcode: 5
+stderr:
+error: error at position 0x12: trialing data after top-level value

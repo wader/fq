@@ -34,7 +34,7 @@ func init() {
 	interp.RegisterFormat(decode.Format{
 		Name:        format.XML,
 		Description: "Extensible Markup Language",
-		ProbeOrder:  format.ProbeOrderText,
+		ProbeOrder:  format.ProbeOrderTextFuzzy,
 		Groups:      []string{format.PROBE},
 		DecodeFn:    decodeXML,
 		DecodeInArg: format.XMLIn{

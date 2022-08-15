@@ -8,6 +8,18 @@ $ fq . /probe.json
 }
 $ fq . /probe_scalar.json
 123
+# make sure all value types parse to json format
+$ fq -rRs 'fromjson[] | tojson | fromjson | format' variants.json
+json
+json
+json
+json
+json
+json
+json
+json
+json
+json
 $ fq -rRs 'fromjson[] | (tojson | ., fromjson), "----", (tojson({indent:2}) | ., fromjson), "----"' variants.json
 null
 null

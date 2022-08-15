@@ -23,7 +23,7 @@ func init() {
 	interp.RegisterFormat(decode.Format{
 		Name:        format.CSV,
 		Description: "Comma separated values",
-		ProbeOrder:  format.ProbeOrderText,
+		ProbeOrder:  format.ProbeOrderTextFuzzy,
 		DecodeFn:    decodeCSV,
 		DecodeInArg: format.CSVLIn{
 			Comma:   ",",

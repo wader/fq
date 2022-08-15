@@ -25,7 +25,7 @@ func init() {
 	interp.RegisterFormat(decode.Format{
 		Name:        format.JSON,
 		Description: "JavaScript Object Notation",
-		ProbeOrder:  format.ProbeOrderText,
+		ProbeOrder:  format.ProbeOrderTextJSON,
 		Groups:      []string{format.PROBE},
 		DecodeFn:    decodeJSON,
 		Functions:   []string{"_todisplay"},
