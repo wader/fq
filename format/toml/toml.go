@@ -20,7 +20,7 @@ func init() {
 	interp.RegisterFormat(decode.Format{
 		Name:        format.TOML,
 		Description: "Tom's Obvious, Minimal Language",
-		ProbeOrder:  format.ProbeOrderText,
+		ProbeOrder:  format.ProbeOrderTextFuzzy,
 		Groups:      []string{format.PROBE},
 		DecodeFn:    decodeTOML,
 		Functions:   []string{"_todisplay"},

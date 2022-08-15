@@ -3,8 +3,9 @@ package format
 // TODO: do before-format somehow and topology sort?
 const (
 	ProbeOrderBinUnique = 0   // binary with unlikely overlap
-	ProbeOrderBinFuzzy  = 50  // binary with possible overlap
-	ProbeOrderText      = 100 // text format
+	ProbeOrderBinFuzzy  = 100 // binary with possible overlap
+	ProbeOrderTextJSON  = 200 // text json has prio as yaml overlap
+	ProbeOrderTextFuzzy = 300 // text with possible overlap
 )
 
 // TODO: change to CamelCase?
