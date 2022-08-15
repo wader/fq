@@ -26,6 +26,7 @@ $ fq -n _registry.groups.probe
   "mpeg_ts",
   "wav",
   "json",
+  "jsonl",
   "toml",
   "xml",
   "yaml"
