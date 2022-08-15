@@ -618,6 +618,8 @@ JSON and jq-flavoured JSON
 - `tojq`/`tojq($opt)`  Serialize jq value into jq-flavoured JSON<br>
   `{indent: number}` indent array/object values.<br>
   jq-flavoured JSON has optional key quotes, `#` comments and can have trailing comma in arrays.
+- `fromjsonl` Parse JSON lines into jq array.
+- `tojsonl` Serialize jq array into JSONL.
 
 YAML
 - `fromyaml` Parse YAML into jq value.

@@ -507,6 +507,13 @@ out   # Decode file as json
 out   $ fq -d json . file
 out   # Decode value as json
 out   ... | json
+"help(jsonl)"
+out jsonl: JavaScript Object Notation Lines decoder
+out Examples:
+out   # Decode file as jsonl
+out   $ fq -d jsonl . file
+out   # Decode value as jsonl
+out   ... | jsonl
 "help(macho)"
 out macho: Mach-O macOS executable decoder
 out Supports decoding vanilla and FAT Mach-O binaries.

@@ -158,6 +158,7 @@ ipv4_packet          Internet protocol v4 packet
 ipv6_packet          Internet protocol v6 packet
 jpeg                 Joint Photographic Experts Group file
 json                 JavaScript Object Notation
+jsonl                JavaScript Object Notation Lines
 macho                Mach-O macOS executable
 macho_fat            Fat Mach-O macOS executable (multi-architecture)
 matroska             Matroska file

@@ -83,6 +83,7 @@ const (
 	IPV6_PACKET         = "ipv6_packet"
 	JPEG                = "jpeg"
 	JSON                = "json"
+	JSONL               = "jsonl"
 	MACHO               = "macho"
 	MACHO_FAT           = "macho_fat"
 	MATROSKA            = "matroska"

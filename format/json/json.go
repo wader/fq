@@ -34,34 +34,64 @@ func init() {
 	interp.RegisterFunc1("_tojson", toJSON)
 }
 
-func decodeJSON(d *decode.D, _ any) any {
-	br := d.RawLen(d.Len())
+func decodeJSONEx(d *decode.D, lines bool) any {
+	var vs []any
 
 	// keep in sync with gojq fromJSON
-	jd := stdjson.NewDecoder(bitio.NewIOReader(br))
+	jd := stdjson.NewDecoder(bitio.NewIOReader(d.RawLen(d.Len())))
 	jd.UseNumber()
-	var s scalar.S
-	if err := jd.Decode(&s.Actual); err != nil {
-		d.Fatalf(err.Error())
+
+	foundEOF := false
+
+	for {
+		var v any
+		if err := jd.Decode(&v); err != nil {
+			if errors.Is(err, io.EOF) {
+				foundEOF = true
+				if lines {
+					break
+				} else if len(vs) == 1 {
+					break
+				}
+			} else if lines {
+				d.Fatalf(err.Error())
+			}
+			break
+		}
+
+		vs = append(vs, v)
 	}
-	if err := jd.Decode(new(any)); !errors.Is(err, io.EOF) {
+
+	if !lines && (len(vs) != 1 || !foundEOF) {
 		d.Fatalf("trialing data after top-level value")
 	}
 
-	s.Actual = gojq.NormalizeNumbers(s.Actual)
+	var s scalar.S
+	if lines {
+		if len(vs) == 0 {
+			d.Fatalf("not lines found")
+		}
+		s.Actual = gojq.NormalizeNumbers(vs)
+	} else {
+		s.Actual = gojq.NormalizeNumbers(vs[0])
+	}
 	d.Value.V = &s
 	d.Value.Range.Len = d.Len()
 
 	return nil
 }
 
+func decodeJSON(d *decode.D, _ any) any {
+	return decodeJSONEx(d, false)
+}
+
 type ToJSONOpts struct {
 	Indent int
 }
 
-func toJSON(_ *interp.Interp, c any, opts ToJSONOpts) any {
-	// TODO: share
-	cj := colorjson.NewEncoder(
+// TODO: share with interp code
+func makeEncoder(opts ToJSONOpts) *colorjson.Encoder {
+	return colorjson.NewEncoder(
 		false,
 		false,
 		opts.Indent,
@@ -77,6 +107,10 @@ func toJSON(_ *interp.Interp, c any, opts ToJSONOpts) any {
 		},
 		colorjson.Colors{},
 	)
+}
+
+func toJSON(_ *interp.Interp, c any, opts ToJSONOpts) any {
+	cj := makeEncoder(opts)
 	bb := &bytes.Buffer{}
 	if err := cj.Marshal(c, bb); err != nil {
 		return err

@@ -64,6 +64,7 @@
 |`ipv6_packet`               |Internet&nbsp;protocol&nbsp;v6&nbsp;packet                                               |<sub>`ip_packet`</sub>|
 |`jpeg`                      |Joint&nbsp;Photographic&nbsp;Experts&nbsp;Group&nbsp;file                                |<sub>`exif` `icc_profile`</sub>|
 |`json`                      |JavaScript&nbsp;Object&nbsp;Notation                                                     |<sub></sub>|
+|`jsonl`                     |JavaScript&nbsp;Object&nbsp;Notation&nbsp;Lines                                          |<sub></sub>|
 |[`macho`](#macho)           |Mach-O&nbsp;macOS&nbsp;executable                                                        |<sub></sub>|
 |`macho_fat`                 |Fat&nbsp;Mach-O&nbsp;macOS&nbsp;executable&nbsp;(multi-architecture)                     |<sub>`macho`</sub>|
 |[`matroska`](#matroska)     |Matroska&nbsp;file                                                                       |<sub>`aac_frame` `av1_ccr` `av1_frame` `avc_au` `avc_dcr` `flac_frame` `flac_metadatablocks` `hevc_au` `hevc_dcr` `image` `mp3_frame` `mpeg_asc` `mpeg_pes_packet` `mpeg_spu` `opus_packet` `vorbis_packet` `vp8_frame` `vp9_cfm` `vp9_frame`</sub>|
@@ -111,7 +112,7 @@
 |`inet_packet`               |Group                                                                                    |<sub>`ipv4_packet` `ipv6_packet`</sub>|
 |`ip_packet`                 |Group                                                                                    |<sub>`icmp` `icmpv6` `tcp_segment` `udp_datagram`</sub>|
 |`link_frame`                |Group                                                                                    |<sub>`bsd_loopback_frame` `ether8023_frame` `sll2_packet` `sll_packet`</sub>|
-|`probe`                     |Group                                                                                    |<sub>`adts` `ar` `avro_ocf` `bitcoin_blkdat` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `macho` `macho_fat` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `toml` `wav` `webp` `xml` `yaml` `zip`</sub>|
+|`probe`                     |Group                                                                                    |<sub>`adts` `ar` `avro_ocf` `bitcoin_blkdat` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `jsonl` `macho` `macho_fat` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `toml` `wav` `webp` `xml` `yaml` `zip`</sub>|
 |`tcp_stream`                |Group                                                                                    |<sub>`dns_tcp` `rtmp`</sub>|
 |`udp_payload`               |Group                                                                                    |<sub>`dns`</sub>|
 
