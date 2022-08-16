@@ -1,8 +1,6 @@
 package pcap
 
 import (
-	"fmt"
-
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/inet/flowsdecoder"
 	"github.com/wader/fq/pkg/bitio"
@@ -10,27 +8,10 @@ import (
 )
 
 var linkToDecodeFn = map[int]func(fd *flowsdecoder.Decoder, bs []byte) error{
-	format.LinkTypeNULL:      (*flowsdecoder.Decoder).LoopbackFrame,
-	format.LinkTypeETHERNET:  (*flowsdecoder.Decoder).EthernetFrame,
-	format.LinkTypeLINUX_SLL: (*flowsdecoder.Decoder).SLLPacket,
-	format.LinkTypeLINUX_SLL2: func(fd *flowsdecoder.Decoder, bs []byte) error {
-		if len(bs) < 20 {
-			// TODO: too short sll packet, error somehow?
-			return fmt.Errorf("packet too short %d", len(bs))
-		}
-
-		// TODO: gopacket does not support SLL2 atm so convert SLL to SSL2
-		nbs := []byte{
-			0, bs[10], // packet type
-			bs[8], bs[9], // arphdr
-			0, bs[11], // link layer address length
-			bs[12], bs[13], bs[14], bs[15], bs[16], bs[17], bs[18], bs[19], //  link layer address
-			bs[0], bs[1], // protocol type
-		}
-		nbs = append(nbs, bs[20:]...)
-
-		return fd.SLLPacket(nbs)
-	},
+	format.LinkTypeNULL:       (*flowsdecoder.Decoder).LoopbackFrame,
+	format.LinkTypeETHERNET:   (*flowsdecoder.Decoder).EthernetFrame,
+	format.LinkTypeLINUX_SLL:  (*flowsdecoder.Decoder).SLLPacket,
+	format.LinkTypeLINUX_SLL2: (*flowsdecoder.Decoder).SLL2Packet,
 }
 
 // TODO: make some of this shared if more packet capture formats are added

@@ -277,7 +277,7 @@ Licenses of direct dependencies:
 
 - Forked version of gojq https://github.com/itchyny/gojq/blob/main/LICENSE (MIT)
 - Forked version of readline https://github.com/chzyer/readline/blob/master/LICENSE (MIT)
-- gopacket https://github.com/google/gopacket/blob/master/LICENSE (BSD)
+- gopacket https://github.com/gopacket/gopacket/blob/master/LICENSE (BSD)
 - mapstructure https://github.com/mitchellh/mapstructure/blob/master/LICENSE (MIT)
 - copystructure https://github.com/mitchellh/copystructure/blob/master/LICENSE (MIT)
 - go-difflib https://github.com/pmezard/go-difflib/blob/master/LICENSE (BSD)
