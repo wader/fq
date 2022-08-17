@@ -39,6 +39,7 @@ Example usages:
 --raw-output,-r         Raw string output (without quotes)
 --repl,-i               Interactive REPL
 --slurp,-s              Slurp all inputs into an array or string (-Rs)
+--unicode-output,-U     Force unicode output
 --version,-v            Show version
 $ fq -i
 null> ^D

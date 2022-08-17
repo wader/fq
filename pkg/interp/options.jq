@@ -203,7 +203,12 @@ def _opt_eval($rest):
         then true
         else null
         end
-      )
+      ),
+      unicode: (
+        if .unicode_output == true then true
+        else null
+        end
+      ),
     }
   | with_entries(select(.value != null))
   );
@@ -471,6 +476,12 @@ def _opt_cli_opts:
       short: "-s",
       long: "--slurp",
       description: "Slurp all inputs into an array or string (-Rs)",
+      bool: true
+    },
+    "unicode_output": {
+      short: "-U",
+      long: "--unicode-output",
+      description: "Force unicode output",
       bool: true
     },
     "show_version": {
