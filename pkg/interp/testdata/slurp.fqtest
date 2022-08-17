@@ -96,7 +96,7 @@ mp3> $f[]
 0x40|00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|  xing{}: (xing)
 0x50|02 57 00 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6|.W..............|
 *   |until 0xdd.7 (156)                             |                |
-0xd0|                                          00 00|              ..|  padding: raw bits
+0xd0|                                          00 00|              ..|  audio_data: raw bits
 0xe0|00 00 00                                       |...             |
     |                                               |                |  crc_calculated: "827a" (raw bits)
 mp3> ^D

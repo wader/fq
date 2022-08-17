@@ -52,9 +52,9 @@ $ fq -d mp3 dv header-zeros-frames.mp3
 0x030|         c4                                    |   .            |        original: 1 0x33.5-0x33.5 (0.1)
 0x030|         c4                                    |   .            |        emphasis: "none" (0b0) 0x33.6-0x33.7 (0.2)
      |                                               |                |      side_info{}: 0x34-0x44.7 (17)
-0x030|            00 00                              |    ..          |        main_data_end: 0 0x34-0x35 (1.1)
-0x030|               00                              |     .          |        private_bits: 0 0x35.1-0x35.5 (0.5)
-0x030|               00 0a                           |     ..         |        share0: 0 0x35.6-0x36.1 (0.4)
+0x030|            00 00                              |    ..          |        main_data_begin: 0 0x34-0x35 (1.1)
+0x030|               00                              |     .          |        share: 0 0x35.1-0x35.5 (0.5)
+0x030|               00 0a                           |     ..         |        scfsi0: 0 0x35.6-0x36.1 (0.4)
      |                                               |                |        granules[0:2]: 0x36.2-0x44.7 (14.6)
      |                                               |                |          [0][0:1]: granule 0x36.2-0x3d.4 (7.3)
      |                                               |                |            [0]{}: channel 0x36.2-0x3d.4 (7.3)
@@ -91,9 +91,8 @@ $ fq -d mp3 dv header-zeros-frames.mp3
 0x040|            00                                 |    .           |              preflag: 0 0x44.5-0x44.5 (0.1)
 0x040|            00                                 |    .           |              scalefac_scale: 0 0x44.6-0x44.6 (0.1)
 0x040|            00                                 |    .           |              count1table_select: 0 0x44.7-0x44.7 (0.1)
-0x040|               07 aa c3 8e 33 85 d3 64 f1 a1 c1|     ....3..d...|      data: raw bits 0x45-0xff.7 (187)
+0x040|               07 aa c3 8e 33 85 d3 64 f1 a1 c1|     ....3..d...|      audio_data: raw bits 0x45-0xff.7 (187)
 0x050|08 1c 58 1f 5e 1f 18 1c 46 04 1e 89 e5 b3 2e 5a|..X.^...F......Z|
 *    |until 0xff.7 (end) (187)                       |                |
-     |                                               |                |      other_data: raw bits 0x100-NA (0)
      |                                               |                |      crc_calculated: "e5b0" (raw bits) 0x100-NA (0)
      |                                               |                |  footers[0:0]: 0x100-NA (0)

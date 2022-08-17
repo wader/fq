@@ -7,9 +7,9 @@ mp3> grep(44100, "ID", "^ID3$", "^ID.?$", "Info", "magic", "\u00ff", [0x49, 0x44
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x1b0|               52                              |     R          |.frames[2].header.sample_rate: 44100 (0)
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x1c0|                        11 4b 36 4a 08 83 58 c9|        .K6J..X.|.frames[2].data: raw bits
+0x1c0|                        11 4b 36 4a 08 83 58 c9|        .K6J..X.|.frames[2].audio_data: raw bits
 0x1d0|20 d4 29 52 98 c8 c8 f9 13 80 40 24 bc 91 23 42| .)R......@$..#B|
-*    |until 0x279.7 (178)                            |                |
+*    |until 0x283.7 (end) (188)                      |                |
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|49 44 33                                       |ID3             |.headers[0].magic: "ID3" (valid)
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
@@ -40,9 +40,9 @@ mp3> fgrep(44100, "ID", "^ID3$", "^ID.?$", "Info", "magic", "\u00ff", [0x49, 0x4
 0x0|49 44 33                                       |ID3             |.headers[0].magic: "ID3" (valid)
 mp3> bgrep(44100, "ID", "^ID3$", "^ID.?$", "Info", "magic", "\u00ff", [0x49, 0x44])
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x1c0|                        11 4b 36 4a 08 83 58 c9|        .K6J..X.|.frames[2].data: raw bits
+0x1c0|                        11 4b 36 4a 08 83 58 c9|        .K6J..X.|.frames[2].audio_data: raw bits
 0x1d0|20 d4 29 52 98 c8 c8 f9 13 80 40 24 bc 91 23 42| .)R......@$..#B|
-*    |until 0x279.7 (178)                            |                |
+*    |until 0x283.7 (end) (188)                      |                |
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|49 44 33                                       |ID3             |.headers[0].magic: "ID3" (valid)
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|

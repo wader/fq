@@ -59,7 +59,7 @@ mp3> .frames[0] | dv({depth: 1, addrbase: 10})
 064|00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15|0123456789012345|  xing{}: (xing) 66-221.7 (156)
 080|02 57 00 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6|.W..............|
 *  |until 221.7 (156)                              |                |
-208|                                          00 00|              ..|  padding: raw bits 222-226.7 (5)
+208|                                          00 00|              ..|  audio_data: raw bits 222-226.7 (5)
 224|00 00 00                                       |...             |
    |                                               |                |  crc_calculated: "827a" (raw bits) 227-NA (0)
 mp3> .frames[0] | dv({depth: 1, sizebase: 16})
@@ -71,7 +71,7 @@ mp3> .frames[0] | dv({depth: 1, sizebase: 16})
 0x40|00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|  xing{}: (xing) 0x42-0xdd.7 (0x9c)
 0x50|02 57 00 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6|.W..............|
 *   |until 0xdd.7 (0x9c)                            |                |
-0xd0|                                          00 00|              ..|  padding: raw bits 0xde-0xe2.7 (0x5)
+0xd0|                                          00 00|              ..|  audio_data: raw bits 0xde-0xe2.7 (0x5)
 0xe0|00 00 00                                       |...             |
     |                                               |                |  crc_calculated: "827a" (raw bits) 0xe3-NA (0x0)
 mp3> .frames[0].xing | "d", d, "da", da, "dd", dd, "dv", dv, "ddv", ddv

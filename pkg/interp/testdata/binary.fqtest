@@ -35,7 +35,7 @@ $ fq -d mp3 '.frames[]._bits[0:12] | tonumber' test.mp3
 4095
 $ fq -d mp3 '.headers[0].magic._bits[0:24] | tostring' test.mp3
 "ID3"
-$ fq -d mp3 '.frames[0].padding | ("", "md5", "base64", "snippet") as $f | tovalue({bits_format: $f})' test.mp3
+$ fq -d mp3 '.frames[0].audio_data | ("", "md5", "base64", "snippet") as $f | tovalue({bits_format: $f})' test.mp3
 "<5>AAAAAAA="
 "ca9c491ac66b2c62500882e93f3719a8"
 "AAAAAAA="
@@ -236,7 +236,7 @@ mp3> .frames[1] | tobytesrange | ., .start, .stop, .size, .[4:17], (tobits, toby
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0xe0|                     00 00 0a 2c 43 2e 55 94 80|       ...,C.U..|.: raw bits 0xe7-0xf3.7 (13)
 0xf0|01 80 93 6b                                    |...k            |
-mp3> .frames[1].data | tobytes | match([0x33, 0x85]), first(scan([0x33, 0x85]) | tohex), first(splits([0x33, 0x85]) | tohex)
+mp3> .frames[1].audio_data | tobytes | match([0x33, 0x85]), first(scan([0x33, 0x85]) | tohex), first(splits([0x33, 0x85]) | tohex)
 {
   "captures": [],
   "length": 2,
