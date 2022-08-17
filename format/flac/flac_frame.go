@@ -261,7 +261,7 @@ func frameDecode(d *decode.D, in any) any {
 			0b100: {Sym: uint64(16)},
 			0b101: {Sym: uint64(20)},
 			0b110: {Sym: uint64(24)},
-			0b111: {Description: "reserved"},
+			0b111: {Sym: uint64(32)},
 		}
 		sampleSizeS := d.FieldScalarU3("sample_size", sampleSizeMap, scalar.ActualBin)
 		switch sampleSizeS.ActualU() {
