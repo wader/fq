@@ -1,0 +1,9 @@
+$ _STDOUT_IS_TERMINAL=0 NO_COLOR= CLIUNICODE=1 fq -n '[123] | hexdump'
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|7b|                                            |{|              |.: raw bits 0x0-0x0.7 (1)
+$ _STDOUT_IS_TERMINAL=1 NO_COLOR= CLIUNICODE=1 fq -n '[123] | hexdump'
+   │[33;4m00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f[39;24m│[33;4m0123456789abcdef[39;24m│
+[33m0x0[39m│[37m7b[39m│                                            │[37m{[39m│              │.: [32mraw bits[39m 0x0-0x0.7 (1)
+$ NO_COLOR=1 fq -Un '[123] | hexdump'
+   │00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f│0123456789abcdef│
+0x0│7b│                                            │{│              │.: raw bits 0x0-0x0.7 (1)
