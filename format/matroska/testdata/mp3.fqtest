@@ -367,9 +367,9 @@ $ fq -d matroska dv mp3.mkv
 0x230|            c4                                 |    .           |                  original: 1 0x234.5-0x234.5 (0.1)
 0x230|            c4                                 |    .           |                  emphasis: "none" (0b0) 0x234.6-0x234.7 (0.2)
      |                                               |                |                side_info{}: 0x235-0x245.7 (17)
-0x230|               00 00                           |     ..         |                  main_data_end: 0 0x235-0x236 (1.1)
-0x230|                  00                           |      .         |                  private_bits: 0 0x236.1-0x236.5 (0.5)
-0x230|                  00 0a                        |      ..        |                  share0: 0 0x236.6-0x237.1 (0.4)
+0x230|               00 00                           |     ..         |                  main_data_begin: 0 0x235-0x236 (1.1)
+0x230|                  00                           |      .         |                  share: 0 0x236.1-0x236.5 (0.5)
+0x230|                  00 0a                        |      ..        |                  scfsi0: 0 0x236.6-0x237.1 (0.4)
      |                                               |                |                  granules[0:2]: 0x237.2-0x245.7 (14.6)
      |                                               |                |                    [0][0:1]: granule 0x237.2-0x23e.4 (7.3)
      |                                               |                |                      [0]{}: channel 0x237.2-0x23e.4 (7.3)
@@ -406,10 +406,9 @@ $ fq -d matroska dv mp3.mkv
 0x240|               00                              |     .          |                        preflag: 0 0x245.5-0x245.5 (0.1)
 0x240|               00                              |     .          |                        scalefac_scale: 0 0x245.6-0x245.6 (0.1)
 0x240|               00                              |     .          |                        count1table_select: 0 0x245.7-0x245.7 (0.1)
-0x240|                  07 aa c3 8e 33 85 d3 64 f1 a1|      ....3..d..|                data: raw bits 0x246-0x300.7 (187)
+0x240|                  07 aa c3 8e 33 85 d3 64 f1 a1|      ....3..d..|                audio_data: raw bits 0x246-0x300.7 (187)
 0x250|c1 08 1c 58 1f 5e 1f 18 1c 46 04 1e 89 e5 b3 2e|...X.^...F......|
 *    |until 0x300.7 (187)                            |                |
-     |                                               |                |                other_data: raw bits 0x301-NA (0)
      |                                               |                |                crc_calculated: "2e0a" (raw bits) 0x301-NA (0)
      |                                               |                |            [3]{}: element 0x301-0x3d8.7 (216)
 0x300|   a3                                          | .              |              id: "simple_block" (0xa3) (Similar to Block, see (#block-structure), but without all the extra information, mostly used to reduced overhead when no extra feature is needed; see (#simpleblock-structure) on SimpleBlock Structure.) 0x301-0x301.7 (1)
@@ -440,9 +439,9 @@ $ fq -d matroska dv mp3.mkv
 0x300|                                 c4            |           .    |                  original: 1 0x30b.5-0x30b.5 (0.1)
 0x300|                                 c4            |           .    |                  emphasis: "none" (0b0) 0x30b.6-0x30b.7 (0.2)
      |                                               |                |                side_info{}: 0x30c-0x31c.7 (17)
-0x300|                                    04 82      |            ..  |                  main_data_end: 9 0x30c-0x30d (1.1)
-0x300|                                       82      |             .  |                  private_bits: 0 0x30d.1-0x30d.5 (0.5)
-0x300|                                       82 0a   |             .. |                  share0: 8 0x30d.6-0x30e.1 (0.4)
+0x300|                                    04 82      |            ..  |                  main_data_begin: 9 0x30c-0x30d (1.1)
+0x300|                                       82      |             .  |                  share: 0 0x30d.1-0x30d.5 (0.5)
+0x300|                                       82 0a   |             .. |                  scfsi0: 8 0x30d.6-0x30e.1 (0.4)
      |                                               |                |                  granules[0:2]: 0x30e.2-0x31c.7 (14.6)
      |                                               |                |                    [0][0:1]: granule 0x30e.2-0x315.4 (7.3)
      |                                               |                |                      [0]{}: channel 0x30e.2-0x315.4 (7.3)
@@ -479,11 +478,9 @@ $ fq -d matroska dv mp3.mkv
 0x310|                                    00         |            .   |                        preflag: 0 0x31c.5-0x31c.5 (0.1)
 0x310|                                    00         |            .   |                        scalefac_scale: 0 0x31c.6-0x31c.6 (0.1)
 0x310|                                    00         |            .   |                        count1table_select: 0 0x31c.7-0x31c.7 (0.1)
-0x310|                                       01 d9 81|             ...|                data: raw bits 0x31d-0x3ce.7 (178)
+0x310|                                       01 d9 81|             ...|                audio_data: raw bits 0x31d-0x3d8.7 (188)
 0x320|38 05 c9 80 20 04 f1 80 8e 07 01 96 d2 b0 19 91|8... ...........|
-*    |until 0x3ce.7 (178)                            |                |
-0x3c0|                                             85|               .|                padding_byte: raw bits 0x3cf-0x3cf.7 (1)
-0x3d0|62 08 3d a0 52 36 7f 26 17                     |b.=.R6.&.       |                other_data: raw bits 0x3d0-0x3d8.7 (9)
+*    |until 0x3d8.7 (188)                            |                |
      |                                               |                |                crc_calculated: "9950" (raw bits) 0x3d9-NA (0)
      |                                               |                |            [4]{}: element 0x3d9-0x4bf.7 (231)
 0x3d0|                           a0                  |         .      |              id: "block_group" (0xa0) (Basic container of information containing a single Block and information specific to that Block.) 0x3d9-0x3d9.7 (1)
@@ -519,9 +516,9 @@ $ fq -d matroska dv mp3.mkv
 0x3e0|                                    c4         |            .   |                      original: 1 0x3ec.5-0x3ec.5 (0.1)
 0x3e0|                                    c4         |            .   |                      emphasis: "none" (0b0) 0x3ec.6-0x3ec.7 (0.2)
      |                                               |                |                    side_info{}: 0x3ed-0x3fd.7 (17)
-0x3e0|                                       0d 80   |             .. |                      main_data_end: 27 0x3ed-0x3ee (1.1)
-0x3e0|                                          80   |              . |                      private_bits: 0 0x3ee.1-0x3ee.5 (0.5)
-0x3e0|                                          80 0d|              ..|                      share0: 0 0x3ee.6-0x3ef.1 (0.4)
+0x3e0|                                       0d 80   |             .. |                      main_data_begin: 27 0x3ed-0x3ee (1.1)
+0x3e0|                                          80   |              . |                      share: 0 0x3ee.1-0x3ee.5 (0.5)
+0x3e0|                                          80 0d|              ..|                      scfsi0: 0 0x3ee.6-0x3ef.1 (0.4)
      |                                               |                |                      granules[0:2]: 0x3ef.2-0x3fd.7 (14.6)
      |                                               |                |                        [0][0:1]: granule 0x3ef.2-0x3f6.4 (7.3)
      |                                               |                |                          [0]{}: channel 0x3ef.2-0x3f6.4 (7.3)
@@ -558,13 +555,9 @@ $ fq -d matroska dv mp3.mkv
 0x3f0|                                       00      |             .  |                            preflag: 0 0x3fd.5-0x3fd.5 (0.1)
 0x3f0|                                       00      |             .  |                            scalefac_scale: 0 0x3fd.6-0x3fd.6 (0.1)
 0x3f0|                                       00      |             .  |                            count1table_select: 0 0x3fd.7-0x3fd.7 (0.1)
-0x3f0|                                          53 ca|              S.|                    data: raw bits 0x3fe-0x49d.7 (160)
+0x3f0|                                          53 ca|              S.|                    audio_data: raw bits 0x3fe-0x4b9.7 (188)
 0x400|1e 59 fd 29 ba 0b 84 d4 8a f8 8d cb a0 77 10 07|.Y.).........w..|
-*    |until 0x49d.7 (160)                            |                |
-0x490|                                          6a   |              j |                    padding_byte: raw bits 0x49e-0x49e.7 (1)
-0x490|                                             4c|               L|                    other_data: raw bits 0x49f-0x4b9.7 (27)
-0x4a0|41 4d 45 33 2e 31 30 30 aa aa aa aa aa aa aa aa|AME3.100........|
-0x4b0|aa aa aa aa aa aa aa aa aa aa                  |..........      |
+*    |until 0x4b9.7 (188)                            |                |
      |                                               |                |                    crc_calculated: "c36b" (raw bits) 0x4ba-NA (0)
      |                                               |                |                [1]{}: element 0x4ba-0x4bf.7 (6)
 0x4b0|                              75 a2            |          u.    |                  id: "discard_padding" (0x75a2) (Duration of the silent data added to the Block, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks) (padding at the end of the Block for positive value, at the beginning of the Block for negative value). The duration of DiscardPadding is not calculated in the duration of the TrackEntry and **SHOULD** be discarded during playback.) 0x4ba-0x4bb.7 (2)

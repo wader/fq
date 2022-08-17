@@ -299,9 +299,9 @@ $ fq -d mp4 'dv' stz2.mp4
 0x280|                     c4                        |       .        |            original: 1 0x287.5-0x287.5 (0.1)
 0x280|                     c4                        |       .        |            emphasis: "none" (0b0) 0x287.6-0x287.7 (0.2)
      |                                               |                |          side_info{}: 0x288-0x298.7 (17)
-0x280|                        00 00                  |        ..      |            main_data_end: 0 0x288-0x289 (1.1)
-0x280|                           00                  |         .      |            private_bits: 0 0x289.1-0x289.5 (0.5)
-0x280|                           00 0a               |         ..     |            share0: 0 0x289.6-0x28a.1 (0.4)
+0x280|                        00 00                  |        ..      |            main_data_begin: 0 0x288-0x289 (1.1)
+0x280|                           00                  |         .      |            share: 0 0x289.1-0x289.5 (0.5)
+0x280|                           00 0a               |         ..     |            scfsi0: 0 0x289.6-0x28a.1 (0.4)
      |                                               |                |            granules[0:2]: 0x28a.2-0x298.7 (14.6)
      |                                               |                |              [0][0:1]: granule 0x28a.2-0x291.4 (7.3)
      |                                               |                |                [0]{}: channel 0x28a.2-0x291.4 (7.3)
@@ -338,10 +338,9 @@ $ fq -d mp4 'dv' stz2.mp4
 0x290|                        00                     |        .       |                  preflag: 0 0x298.5-0x298.5 (0.1)
 0x290|                        00                     |        .       |                  scalefac_scale: 0 0x298.6-0x298.6 (0.1)
 0x290|                        00                     |        .       |                  count1table_select: 0 0x298.7-0x298.7 (0.1)
-0x290|                           07 aa c3 8e 33 85 d3|         ....3..|          data: raw bits 0x299-0x353.7 (187)
+0x290|                           07 aa c3 8e 33 85 d3|         ....3..|          audio_data: raw bits 0x299-0x353.7 (187)
 0x2a0|64 f1 a1 c1 08 1c 58 1f 5e 1f 18 1c 46 04 1e 89|d.....X.^...F...|
 *    |until 0x353.7 (187)                            |                |
-     |                                               |                |          other_data: raw bits 0x354-NA (0)
      |                                               |                |          crc_calculated: "2e0a" (raw bits) 0x354-NA (0)
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [1]{}: sample (mp3_frame) 0x354-0x424.7 (209)
      |                                               |                |          header{}: 0x354-0x357.7 (4)
@@ -360,9 +359,9 @@ $ fq -d mp4 'dv' stz2.mp4
 0x350|                     c4                        |       .        |            original: 1 0x357.5-0x357.5 (0.1)
 0x350|                     c4                        |       .        |            emphasis: "none" (0b0) 0x357.6-0x357.7 (0.2)
      |                                               |                |          side_info{}: 0x358-0x368.7 (17)
-0x350|                        04 82                  |        ..      |            main_data_end: 9 0x358-0x359 (1.1)
-0x350|                           82                  |         .      |            private_bits: 0 0x359.1-0x359.5 (0.5)
-0x350|                           82 0a               |         ..     |            share0: 8 0x359.6-0x35a.1 (0.4)
+0x350|                        04 82                  |        ..      |            main_data_begin: 9 0x358-0x359 (1.1)
+0x350|                           82                  |         .      |            share: 0 0x359.1-0x359.5 (0.5)
+0x350|                           82 0a               |         ..     |            scfsi0: 8 0x359.6-0x35a.1 (0.4)
      |                                               |                |            granules[0:2]: 0x35a.2-0x368.7 (14.6)
      |                                               |                |              [0][0:1]: granule 0x35a.2-0x361.4 (7.3)
      |                                               |                |                [0]{}: channel 0x35a.2-0x361.4 (7.3)
@@ -399,12 +398,9 @@ $ fq -d mp4 'dv' stz2.mp4
 0x360|                        00                     |        .       |                  preflag: 0 0x368.5-0x368.5 (0.1)
 0x360|                        00                     |        .       |                  scalefac_scale: 0 0x368.6-0x368.6 (0.1)
 0x360|                        00                     |        .       |                  count1table_select: 0 0x368.7-0x368.7 (0.1)
-0x360|                           01 d9 81 38 05 c9 80|         ...8...|          data: raw bits 0x369-0x41a.7 (178)
+0x360|                           01 d9 81 38 05 c9 80|         ...8...|          audio_data: raw bits 0x369-0x424.7 (188)
 0x370|20 04 f1 80 8e 07 01 96 d2 b0 19 91 ec 2a 39 85| ............*9.|
-*    |until 0x41a.7 (178)                            |                |
-0x410|                                 85            |           .    |          padding_byte: raw bits 0x41b-0x41b.7 (1)
-0x410|                                    62 08 3d a0|            b.=.|          other_data: raw bits 0x41c-0x424.7 (9)
-0x420|52 36 7f 26 17                                 |R6.&.           |
+*    |until 0x424.7 (188)                            |                |
      |                                               |                |          crc_calculated: "9950" (raw bits) 0x425-NA (0)
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [2]{}: sample (mp3_frame) 0x425-0x4f5.7 (209)
      |                                               |                |          header{}: 0x425-0x428.7 (4)
@@ -423,9 +419,9 @@ $ fq -d mp4 'dv' stz2.mp4
 0x420|                        c4                     |        .       |            original: 1 0x428.5-0x428.5 (0.1)
 0x420|                        c4                     |        .       |            emphasis: "none" (0b0) 0x428.6-0x428.7 (0.2)
      |                                               |                |          side_info{}: 0x429-0x439.7 (17)
-0x420|                           0d 80               |         ..     |            main_data_end: 27 0x429-0x42a (1.1)
-0x420|                              80               |          .     |            private_bits: 0 0x42a.1-0x42a.5 (0.5)
-0x420|                              80 0d            |          ..    |            share0: 0 0x42a.6-0x42b.1 (0.4)
+0x420|                           0d 80               |         ..     |            main_data_begin: 27 0x429-0x42a (1.1)
+0x420|                              80               |          .     |            share: 0 0x42a.1-0x42a.5 (0.5)
+0x420|                              80 0d            |          ..    |            scfsi0: 0 0x42a.6-0x42b.1 (0.4)
      |                                               |                |            granules[0:2]: 0x42b.2-0x439.7 (14.6)
      |                                               |                |              [0][0:1]: granule 0x42b.2-0x432.4 (7.3)
      |                                               |                |                [0]{}: channel 0x42b.2-0x432.4 (7.3)
@@ -462,13 +458,9 @@ $ fq -d mp4 'dv' stz2.mp4
 0x430|                           00                  |         .      |                  preflag: 0 0x439.5-0x439.5 (0.1)
 0x430|                           00                  |         .      |                  scalefac_scale: 0 0x439.6-0x439.6 (0.1)
 0x430|                           00                  |         .      |                  count1table_select: 0 0x439.7-0x439.7 (0.1)
-0x430|                              53 ca 1e 59 fd 29|          S..Y.)|          data: raw bits 0x43a-0x4d9.7 (160)
+0x430|                              53 ca 1e 59 fd 29|          S..Y.)|          audio_data: raw bits 0x43a-0x4f5.7 (188)
 0x440|ba 0b 84 d4 8a f8 8d cb a0 77 10 07 47 8b 8c 7b|.........w..G..{|
-*    |until 0x4d9.7 (160)                            |                |
-0x4d0|                              6a               |          j     |          padding_byte: raw bits 0x4da-0x4da.7 (1)
-0x4d0|                                 4c 41 4d 45 33|           LAME3|          other_data: raw bits 0x4db-0x4f5.7 (27)
-0x4e0|2e 31 30 30 aa aa aa aa aa aa aa aa aa aa aa aa|.100............|
-0x4f0|aa aa aa aa aa aa                              |......          |
+*    |until 0x4f5.7 (188)                            |                |
      |                                               |                |          crc_calculated: "c36b" (raw bits) 0x4f6-NA (0)
      |                                               |                |      id: 1 0x530-NA (0)
      |                                               |                |      data_foramt: "mp4a" 0x530-NA (0)

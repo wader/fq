@@ -1,5 +1,5 @@
 $ fq -i -d mp3 . test.mp3
-mp3> .frames[1].data | tobytes | match("3\u0085"; "b")
+mp3> .frames[1].audio_data | tobytes | match("3\u0085"; "b")
 {
   "captures": [],
   "length": 2,

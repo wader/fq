@@ -142,19 +142,20 @@ var protectionNames = scalar.BoolToDescription{
 
 func frameDecode(d *decode.D, _ any) any {
 	const headerBytes = 4
-	var sideInfoBytes int64
+	var sideInfoBytes int
 	var isStereo bool
-	var paddingBytes uint64
-	var crcBytes int64
+	var paddingBytes int
+	var crcBytes int
 	var mpegVersionNr uint64
 	var mpegLayerNr uint64
 	var protectionAbsent bool
-	var bitRate uint64
-	var sampleRate uint64
+	var sampleCount int
+	var bitRate int
+	var sampleRate int
 	var channelsIndex uint64
 	var channelModeIndex uint64
-	var mainDataEnd uint64
 	var crcValue *decode.Value
+	var lsf bool // low sampling frequencies, 1 granule if true
 
 	d.FieldStruct("header", func(d *decode.D) {
 		d.FieldU11("sync", d.AssertU(0b111_1111_1111), scalar.ActualBin)
@@ -165,6 +166,11 @@ func frameDecode(d *decode.D, _ any) any {
 		if mpegVersionNr == 0 {
 			d.Errorf("Unsupported mpeg version")
 		}
+		switch mpegVersion {
+		case mpegVersion2,
+			mpegVersion25:
+			lsf = true
+		}
 		mpegLayer := d.FieldU2("layer", mpegLayerNames)
 		mpegLayerNr = mpegLayerN[mpegLayer]
 		if mpegLayerNr != 3 {
@@ -172,32 +178,33 @@ func frameDecode(d *decode.D, _ any) any {
 			mpegLayerNr = 3
 		}
 		// [mpeg layer][mpeg version]
-		var samplesFrameIndex = map[uint][4]uint{
-			0: [...]uint{0, 0, 0, 0},
-			1: [...]uint{0, 384, 384, 384},
-			2: [...]uint{0, 1152, 1152, 1152},
-			3: [...]uint{0, 1152, 576, 576},
+		var samplesFrameIndex = map[uint][4]int{
+			0: [...]int{0, 0, 0, 0},
+			1: [...]int{0, 384, 384, 384},
+			2: [...]int{0, 1152, 1152, 1152},
+			3: [...]int{0, 1152, 576, 576},
 		}
-		d.FieldValueU("sample_count", uint64(samplesFrameIndex[uint(mpegLayerNr)][uint(mpegVersionNr)]))
+		sampleCount = samplesFrameIndex[uint(mpegLayerNr)][uint(mpegVersionNr)]
+		d.FieldValueU("sample_count", uint64(sampleCount))
 		protection := d.FieldBool("protection_absent", protectionNames)
 		// note false mean has protection
 		hasCRC := !protection
 		// V1,L1 V1,L2 V1,L3  V2,L1 V2,L2 V2,L3  V2.5,L1 V2.5,L2 V2.5,L3
-		var bitRateIndex = map[uint][9]uint{
-			0b0001: [...]uint{32, 32, 32, 32, 8, 8, 32, 8, 8},
-			0b0010: [...]uint{64, 48, 40, 48, 16, 16, 48, 16, 16},
-			0b0011: [...]uint{96, 56, 48, 56, 24, 24, 56, 24, 24},
-			0b0100: [...]uint{128, 64, 56, 64, 32, 32, 64, 32, 32},
-			0b0101: [...]uint{160, 80, 64, 80, 40, 40, 80, 40, 40},
-			0b0110: [...]uint{192, 96, 80, 96, 48, 48, 96, 48, 48},
-			0b0111: [...]uint{224, 112, 96, 112, 56, 56, 112, 56, 56},
-			0b1000: [...]uint{256, 128, 112, 128, 64, 64, 128, 64, 64},
-			0b1001: [...]uint{288, 160, 128, 144, 80, 80, 144, 80, 80},
-			0b1010: [...]uint{320, 192, 160, 160, 96, 96, 160, 96, 96},
-			0b1011: [...]uint{352, 224, 192, 176, 112, 112, 176, 112, 112},
-			0b1100: [...]uint{384, 256, 224, 192, 128, 128, 192, 128, 128},
-			0b1101: [...]uint{416, 320, 256, 224, 144, 144, 224, 144, 144},
-			0b1110: [...]uint{448, 384, 320, 256, 160, 160, 256, 160, 160},
+		var bitRateIndex = map[int][9]int{
+			0b0001: [...]int{32, 32, 32, 32, 8, 8, 32, 8, 8},
+			0b0010: [...]int{64, 48, 40, 48, 16, 16, 48, 16, 16},
+			0b0011: [...]int{96, 56, 48, 56, 24, 24, 56, 24, 24},
+			0b0100: [...]int{128, 64, 56, 64, 32, 32, 64, 32, 32},
+			0b0101: [...]int{160, 80, 64, 80, 40, 40, 80, 40, 40},
+			0b0110: [...]int{192, 96, 80, 96, 48, 48, 96, 48, 48},
+			0b0111: [...]int{224, 112, 96, 112, 56, 56, 112, 56, 56},
+			0b1000: [...]int{256, 128, 112, 128, 64, 64, 128, 64, 64},
+			0b1001: [...]int{288, 160, 128, 144, 80, 80, 144, 80, 80},
+			0b1010: [...]int{320, 192, 160, 160, 96, 96, 160, 96, 96},
+			0b1011: [...]int{352, 224, 192, 176, 112, 112, 176, 112, 112},
+			0b1100: [...]int{384, 256, 224, 192, 128, 128, 192, 128, 128},
+			0b1101: [...]int{416, 320, 256, 224, 144, 144, 224, 144, 144},
+			0b1110: [...]int{448, 384, 320, 256, 160, 160, 256, 160, 160},
 		}
 		d.FieldU4("bitrate", scalar.Fn(func(s scalar.S) (scalar.S, error) {
 			u := s.ActualU()
@@ -212,17 +219,17 @@ func frameDecode(d *decode.D, _ any) any {
 				if i >= 9 {
 					d.Fatalf("Invalid bitrate index")
 				}
-				bitRate = uint64(bitRateIndex[uint(u)][(mpegVersionNr-1)*3+(mpegLayerNr-1)]) * 1000
+				bitRate = bitRateIndex[int(u)][(mpegVersionNr-1)*3+(mpegLayerNr-1)] * 1000
 				s.Sym = bitRate
 			}
 			return s, nil
 		}))
 
 		// MPEG1 MPEG2 MPEG2.5
-		var sampleRateIndex = map[uint][3]uint{
-			0b00: [...]uint{44100, 22050, 11025},
-			0b01: [...]uint{48000, 24000, 12000},
-			0b10: [...]uint{32000, 16000, 8000},
+		var sampleRateIndex = map[uint][3]int{
+			0b00: [...]int{44100, 22050, 11025},
+			0b01: [...]int{48000, 24000, 12000},
+			0b10: [...]int{32000, 16000, 8000},
 		}
 		d.FieldU2("sample_rate", scalar.Fn(func(s scalar.S) (scalar.S, error) {
 			u := s.ActualU()
@@ -230,16 +237,16 @@ func frameDecode(d *decode.D, _ any) any {
 			case 0b11:
 				s.Description = "reserved"
 			default:
-				sampleRate = uint64(sampleRateIndex[uint(u)][mpegVersionNr-1])
+				sampleRate = sampleRateIndex[uint(u)][mpegVersionNr-1]
 				s.Sym = sampleRate
 			}
 			return s, nil
 		}))
 
-		paddingBytes = d.FieldU1("padding", scalar.UToSymStr{
+		paddingBytes = int(d.FieldU1("padding", scalar.UToSymStr{
 			0: "not_padded",
 			1: "padded",
-		}, scalar.ActualBin)
+		}, scalar.ActualBin))
 		d.FieldU1("private")
 		channelsIndex = d.FieldU2("channels", scalar.UToSymStr{
 			0b00: "stereo",
@@ -269,120 +276,102 @@ func frameDecode(d *decode.D, _ any) any {
 		}
 	})
 
+	// // [mono/stereo][mpeg version]
+	sideInfoIndex := map[bool][4]int{
+		false: {0, 17, 9, 9},   // mono
+		true:  {0, 32, 17, 17}, // stereo
+	}
+	sideInfoBytes = sideInfoIndex[isStereo][int(mpegVersionNr)]
+
 	channelCount := 1
 	if isStereo {
 		channelCount = 2
 	}
-
-	// [mono/stereo][mpeg version]
-	sideInfoIndex := map[bool][4]int64{
-		false: {0, 17, 9, 9},   // mono
-		true:  {0, 32, 17, 17}, // stereo
-	}
-	if mpegLayerNr == 3 {
-		sideInfoBytes = sideInfoIndex[isStereo][int(mpegVersionNr)]
+	granuleCount := 1
+	if !lsf {
+		granuleCount = 2
 	}
 
-	if sideInfoBytes != 0 {
-		d.FieldStruct("side_info", func(d *decode.D) {
-			mainDataEnd = d.FieldU9("main_data_end")
+	d.FieldStruct("side_info", func(d *decode.D) {
+		if lsf {
+			d.FieldU8("main_data_begin")
+			// TODO: naming
+			d.FieldU("private_bits", channelCount)
+		} else {
+			d.FieldU9("main_data_begin")
 			if isStereo {
-				d.FieldU3("private_bits")
+				// TODO: naming
+				d.FieldU3("share")
+				d.FieldU4("scfsi0")
+				d.FieldU4("scfsi1")
 			} else {
-				d.FieldU5("private_bits")
+				// TODO: naming
+				d.FieldU5("share")
+				d.FieldU4("scfsi0")
 			}
-			d.FieldU4("share0")
-			if isStereo {
-				d.FieldU4("share1")
-			}
+		}
 
-			// TODO: mpeg_version 2 use 1, otherwise 2
-			granuleCount := 2
-			d.FieldArray("granules", func(d *decode.D) {
-				for i := 0; i < granuleCount; i++ {
-					d.FieldArray("granule", func(d *decode.D) {
-						for j := 0; j < channelCount; j++ {
-							d.FieldStruct("channel", func(d *decode.D) {
-								// TODO: tables and interpret values a bit
-								d.FieldU12("part2_3_length")
-								d.FieldU9("big_values")
-								d.FieldU8("global_gain")
+		d.FieldArray("granules", func(d *decode.D) {
+			for i := 0; i < granuleCount; i++ {
+				d.FieldArray("granule", func(d *decode.D) {
+					for j := 0; j < channelCount; j++ {
+						d.FieldStruct("channel", func(d *decode.D) {
+							// TODO: tables and interpret values a bit
+							d.FieldU12("part2_3_length")
+							d.FieldU9("big_values")
+							d.FieldU8("global_gain")
+							if lsf {
+								d.FieldU9("scalefac_compress")
+							} else {
 								d.FieldU4("scalefac_compress")
-								blocksplitFlag := d.FieldU1("blocksplit_flag")
+							}
+							blocksplitFlag := d.FieldU1("blocksplit_flag")
 
-								if blocksplitFlag == 1 {
-									d.FieldU2("block_type", blockTypeNames)
-									d.FieldU1("switch_point")
-									d.FieldU5("table_select0")
-									d.FieldU5("table_select1")
-									d.FieldU3("subblock_gain0")
-									d.FieldU3("subblock_gain1")
-									d.FieldU3("subblock_gain2")
-								} else {
-									d.FieldU5("table_select0")
-									d.FieldU5("table_select1")
-									d.FieldU5("table_select2")
-									d.FieldU4("region_address1")
-									d.FieldU3("region_address2")
-								}
+							if blocksplitFlag == 1 {
+								d.FieldU2("block_type", blockTypeNames)
+								d.FieldU1("switch_point")
+								d.FieldU5("table_select0")
+								d.FieldU5("table_select1")
+								d.FieldU3("subblock_gain0")
+								d.FieldU3("subblock_gain1")
+								d.FieldU3("subblock_gain2")
+							} else {
+								d.FieldU5("table_select0")
+								d.FieldU5("table_select1")
+								d.FieldU5("table_select2")
+								d.FieldU4("region_address1")
+								d.FieldU3("region_address2")
+							}
 
+							if !lsf {
 								d.FieldU1("preflag")
-								d.FieldU1("scalefac_scale")
-								d.FieldU1("count1table_select")
-							})
-						}
-					})
-				}
-			})
+							}
+							d.FieldU1("scalefac_scale")
+							d.FieldU1("count1table_select")
+						})
+					}
+				})
+			}
 		})
-	}
+	})
 
 	if sampleRate == 0 {
 		d.Fatalf("zero sample rate")
 	}
 
-	calcFrameBytes := int64(144*bitRate/sampleRate + paddingBytes)
-	dataWithPaddingBytes := calcFrameBytes - headerBytes - crcBytes - sideInfoBytes
-
-	if dv, _, _ := d.TryFieldFormat("xing", xingHeader, nil); dv != nil {
-		// TODO: allow shorter?
-		paddingBytes := dataWithPaddingBytes - dv.Range.Len/8
-		d.FieldRawLen("padding", paddingBytes*8)
-	} else {
-		frameMainDataPartBytes := dataWithPaddingBytes - int64(mainDataEnd) - int64(paddingBytes)
-		followingFrameMainDataPartsBytes := int64(mainDataEnd)
-
-		// main data ends in previous frame
-		if frameMainDataPartBytes < 0 {
-			frameMainDataPartBytes = 0
-			followingFrameMainDataPartsBytes = dataWithPaddingBytes - int64(paddingBytes)
-		}
-
-		if frameMainDataPartBytes > 0 {
-			d.FieldRawLen("data", frameMainDataPartBytes*8)
-		}
-
-		// TODO: correct? part of main data or not? part of next main data?
-		if paddingBytes > 0 {
-			d.FieldRawLen("padding_byte", int64(paddingBytes)*8)
-		}
-
-		// TODO: better naming, main data does not always follow side info
-		// TODO: ancillary data between end of bitstream main data bits and start of next frames bitstream main data bits
-
-		followingFramesBytesLeft := d.BitsLeft() / 8
-
-		if followingFramesBytesLeft <= followingFrameMainDataPartsBytes {
-			followingFrameMainDataPartsBytes = followingFramesBytesLeft
-		}
-
-		d.FieldRawLen("other_data", followingFrameMainDataPartsBytes*8)
-	}
+	// total frame size
+	frameBytes := int((float64(sampleCount)/float64(sampleRate))*float64(bitRate)/8) + paddingBytes
+	// audio data size, may include audio data from other frames also if main_data_begin is used
+	restBytes := frameBytes - headerBytes - crcBytes - sideInfoBytes
+	d.FramedFn(int64(restBytes)*8, func(d *decode.D) {
+		_, _, _ = d.TryFieldFormat("xing", xingHeader, nil)
+		d.FieldRawLen("audio_data", d.BitsLeft())
+	})
 
 	crcHash := &checksum.CRC{Bits: 16, Current: 0xffff, Table: checksum.ANSI16Table}
 	// 2 bytes after sync and some other fields + all of side info
 	d.CopyBits(crcHash, d.BitBufRange(2*8, 2*8))
-	d.CopyBits(crcHash, d.BitBufRange(6*8, sideInfoBytes*8))
+	d.CopyBits(crcHash, d.BitBufRange(6*8, int64(sideInfoBytes)*8))
 
 	if crcValue != nil {
 		_ = crcValue.TryScalarFn(d.ValidateUBytes(crcHash.Sum(nil)))
@@ -392,8 +381,8 @@ func frameDecode(d *decode.D, _ any) any {
 	return format.MP3FrameOut{
 		MPEGVersion:      int(mpegVersionNr),
 		ProtectionAbsent: protectionAbsent,
-		BitRate:          int(bitRate),
-		SampleRate:       int(sampleRate),
+		BitRate:          bitRate,
+		SampleRate:       sampleRate,
 		ChannelsIndex:    int(channelModeIndex),
 		ChannelModeIndex: int(channelModeIndex),
 	}
