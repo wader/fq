@@ -15,14 +15,22 @@ var pcapLinkFrameFormat decode.Group
 var pcapTCPStreamFormat decode.Group
 var pcapIPv4PacketFormat decode.Group
 
+// writing application writes 0xa1b2c3d4 in native endian
 const (
+	// timestamp is seconds + microseconds
 	bigEndian    = 0xa1b2c3d4
 	littleEndian = 0xd4c3b2a1
+
+	// timestamp is seconds + nanoseconds
+	bigEndianNS    = 0xa1b23c4d
+	littleEndianNS = 0x4d3cb2a1
 )
 
 var endianMap = scalar.UToSymStr{
-	bigEndian:    "big_endian",
-	littleEndian: "little_endian",
+	bigEndian:      "big_endian",
+	littleEndian:   "little_endian",
+	bigEndianNS:    "big_endian_ns",
+	littleEndianNS: "little_endian_ns",
 }
 
 func init() {
@@ -40,29 +48,49 @@ func init() {
 }
 
 func decodePcap(d *decode.D, _ any) any {
-	endian := d.FieldU32("magic", d.AssertU(bigEndian, littleEndian), endianMap, scalar.ActualHex)
-	switch endian {
-	case bigEndian:
-		d.Endian = decode.BigEndian
-	case littleEndian:
-		d.Endian = decode.LittleEndian
-	default:
-		d.Fatalf("unknown endian %d", endian)
-	}
-	d.FieldU16("version_major")
-	d.FieldU16("version_minor")
-	d.FieldS32("thiszone")
-	d.FieldU32("sigfigs")
-	d.FieldU32("snaplen")
-	linkType := int(d.FieldU32("network", format.LinkTypeMap))
+	var endian decode.Endian
+	linkType := 0
+	timestampUNSStr := "ts_usec"
 
+	d.FieldStruct("header", func(d *decode.D) {
+		magic := d.FieldU32("magic", d.AssertU(
+			bigEndian,
+			littleEndian,
+			bigEndianNS,
+			littleEndianNS,
+		), endianMap, scalar.ActualHex)
+
+		switch magic {
+		case bigEndian:
+			endian = decode.BigEndian
+		case littleEndian:
+			endian = decode.LittleEndian
+		case bigEndianNS:
+			endian = decode.BigEndian
+			timestampUNSStr = "ts_nsec"
+		case littleEndianNS:
+			endian = decode.LittleEndian
+			timestampUNSStr = "ts_nsec"
+		}
+
+		d.Endian = endian
+
+		d.FieldU16("version_major")
+		d.FieldU16("version_minor")
+		d.FieldS32("thiszone")
+		d.FieldU32("sigfigs")
+		d.FieldU32("snaplen")
+		linkType = int(d.FieldU32("network", format.LinkTypeMap))
+	})
+
+	d.Endian = endian
 	fd := flowsdecoder.New()
 
 	d.FieldArray("packets", func(d *decode.D) {
 		for !d.End() {
 			d.FieldStruct("packet", func(d *decode.D) {
 				d.FieldU32("ts_sec")
-				d.FieldU32("ts_usec")
+				d.FieldU32(timestampUNSStr)
 				inclLen := d.FieldU32("incl_len")
 				origLen := d.FieldU32("orig_len")
 
