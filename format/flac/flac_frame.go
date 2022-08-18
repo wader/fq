@@ -455,7 +455,13 @@ func frameDecode(d *decode.D, in any) any {
 
 								if riceParameter == riceEscape {
 									escapeSampleSize := int(d.FieldU5("escape_sample_size"))
-									d.FieldRawLen("samples", int64(count*escapeSampleSize))
+									d.RangeFn(d.Pos(), int64(count*escapeSampleSize), func(d *decode.D) {
+										d.FieldRawLen("samples", int64(count*escapeSampleSize))
+									})
+									for j := 0; j < count; j++ {
+										samples[n] = d.S(escapeSampleSize)
+										n++
+									}
 								} else {
 									samplesStart := d.Pos()
 									for j := 0; j < count; j++ {
