@@ -281,13 +281,15 @@ type ToXMLOpts struct {
 }
 
 func toXMLFromObject(c any, opts ToXMLOpts) any {
-	var f func(name string, content any) (xmlNode, int)
-	f = func(name string, content any) (xmlNode, int) {
+	var f func(name string, content any) (xmlNode, int, bool)
+	f = func(name string, content any) (xmlNode, int, bool) {
 		n := xmlNode{
 			XMLName: xml.Name{Local: name},
 		}
 
-		seq := -1
+		hasSeq := false
+		seq := 0
+		orderHasSeq := false
 		var orderSeqs []int
 		var orderNames []string
 
@@ -298,6 +300,7 @@ func toXMLFromObject(c any, opts ToXMLOpts) any {
 			for k, v := range v {
 				switch {
 				case k == "#seq":
+					hasSeq = true
 					seq, _ = strconv.Atoi(v.(string))
 				case k == "#text":
 					s, _ := v.(string)
@@ -316,29 +319,32 @@ func toXMLFromObject(c any, opts ToXMLOpts) any {
 					case []any:
 						if len(v) > 0 {
 							for _, c := range v {
-								nn, nseq := f(k, c)
+								nn, nseq, nHasSeq := f(k, c)
 								n.Nodes = append(n.Nodes, nn)
 								orderNames = append(orderNames, k)
 								orderSeqs = append(orderSeqs, nseq)
+								orderHasSeq = orderHasSeq || nHasSeq
 							}
 						} else {
-							nn, nseq := f(k, "")
+							nn, nseq, nHasSeq := f(k, "")
 							n.Nodes = append(n.Nodes, nn)
 							orderNames = append(orderNames, k)
 							orderSeqs = append(orderSeqs, nseq)
+							orderHasSeq = orderHasSeq || nHasSeq
 						}
 					default:
-						nn, nseq := f(k, v)
+						nn, nseq, nHasSeq := f(k, v)
 						n.Nodes = append(n.Nodes, nn)
 						orderNames = append(orderNames, k)
 						orderSeqs = append(orderSeqs, nseq)
+						orderHasSeq = orderHasSeq || nHasSeq
 					}
 				}
 			}
 		}
 
 		// if one #seq was found, assume all have them, otherwise sort by name
-		if len(orderSeqs) > 0 && orderSeqs[0] != -1 {
+		if orderHasSeq {
 			proxysort.Sort(orderSeqs, n.Nodes, func(ss []int, i, j int) bool { return ss[i] < ss[j] })
 		} else {
 			proxysort.Sort(orderNames, n.Nodes, func(ss []string, i, j int) bool { return ss[i] < ss[j] })
@@ -349,10 +355,10 @@ func toXMLFromObject(c any, opts ToXMLOpts) any {
 			return a.Space < b.Space || a.Local < b.Local
 		})
 
-		return n, seq
+		return n, seq, hasSeq
 	}
 
-	n, _ := f("doc", c)
+	n, _, _ := f("doc", c)
 	if len(n.Nodes) == 1 && len(n.Attrs) == 0 && n.Comment == nil && n.Chardata == nil {
 		n = n.Nodes[0]
 	}
