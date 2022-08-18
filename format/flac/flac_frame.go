@@ -18,7 +18,7 @@ func init() {
 		Description: "FLAC frame",
 		DecodeFn:    frameDecode,
 		DecodeInArg: format.FlacFrameIn{
-			BitsPerSample: 16,
+			BitsPerSample: 16, // TODO: maybe should not have a default value?
 		},
 	})
 }
@@ -466,9 +466,7 @@ func frameDecode(d *decode.D, in any) any {
 									samplesStart := d.Pos()
 									for j := 0; j < count; j++ {
 										high := d.Unary(0)
-										_ = high
 										low := d.U(riceParameter)
-										_ = low
 										samples[n] = mathex.ZigZag(high<<riceParameter | low)
 										n++
 									}
@@ -614,7 +612,7 @@ func frameDecode(d *decode.D, in any) any {
 	interleavedSamplesBuf := ffi.SamplesBuf
 	interleavedSamplesBufLen := len(channelSamples) * streamSamples * bytesPerSample
 	// TODO: decode read buffer?
-	// reuse buffer if possible
+	// TODO: reuse buffer if possible
 	if interleavedSamplesBuf == nil || len(interleavedSamplesBuf) < interleavedSamplesBufLen {
 		interleavedSamplesBuf = make([]byte, interleavedSamplesBufLen)
 	}
