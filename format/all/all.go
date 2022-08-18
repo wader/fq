@@ -47,6 +47,7 @@ import (
 	_ "github.com/wader/fq/format/toml"
 	_ "github.com/wader/fq/format/vorbis"
 	_ "github.com/wader/fq/format/vpx"
+	_ "github.com/wader/fq/format/wasm"
 	_ "github.com/wader/fq/format/wav"
 	_ "github.com/wader/fq/format/webp"
 	_ "github.com/wader/fq/format/xml"

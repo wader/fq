@@ -197,6 +197,7 @@ vp8_frame            VP8 frame
 vp9_cfm              VP9 Codec Feature Metadata
 vp9_frame            VP9 frame
 vpx_ccr              VPX Codec Configuration Record
+wasm                 WebAssembly Binary Format
 wav                  WAV file
 webp                 WebP image
 xing                 Xing header
