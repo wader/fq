@@ -11,7 +11,7 @@ ffmpeg \
     -t 100ms -f lavfi -i anoisesrc=sample_rate=44100:seed=3 \
     -t 100ms -f lavfi -i sine=sample_rate=44100:frequency=20 \
     -filter_complex \
-'[0:0][1:0]amerge=inputs=2[merge0];
+    '[0:0][1:0]amerge=inputs=2[merge0];
 [2:0][3:0]amerge=inputs=2[merge1];
 [4:0][5:0]amerge=inputs=2[merge2];
 [6:0][7:0]amerge=inputs=2[merge3];
@@ -34,11 +34,10 @@ rm -f mono8.wav mono16.wav mono24.wav
 rm -f stereo8.wav stereo16.wav stereo24.wav
 
 ffmpeg -y -t 10ms -f lavfi -i sine picture_seek_gain.flac
-convert -size 4x4 "xc:#000" 4x4.png
+gm convert -size 4x4 "xc:#000" 4x4.png
 metaflac --add-replay-gain --add-seekpoint=10 --import-picture-from 4x4.png picture_seek_gain.flac
-rm 4x4.png
+rm -f 4x4.png
 
-for i in mono8 mono16 mono24 stereo8 stereo16 stereo24 picture_seek_gain ; do
-    echo "/$i.flac:" > $i.fqtest
-    echo "> fq -d flac $i.flac verbose" >> $i.fqtest
+for i in mono8 mono16 mono24 stereo8 stereo16 stereo24 picture_seek_gain; do
+    echo "\$ fq -d flac dv $i.flac" >$i.fqtest
 done
