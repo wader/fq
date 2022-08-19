@@ -65,7 +65,7 @@ func readUnsignedLEB128(d *decode.D) scalar.S {
 		if shift >= 63 && b != 0 {
 			d.Fatalf("overflow when reading unsigned leb128")
 		}
-		result |= (uint64(b&0x7f) << shift)
+		result |= (b & 0x7f) << shift
 		if b&0x80 == 0 {
 			break
 		}
@@ -166,6 +166,7 @@ func decodeRefType(d *decode.D, name string) {
 // valtype ::= t:numtype => t
 //          |  t:vectype => t
 //          |  t:reftype => t
+//nolint:unparam
 func decodeValType(d *decode.D, name string) {
 	d.FieldU8(name, valtypeToSymMapper, scalar.ActualHex)
 }
