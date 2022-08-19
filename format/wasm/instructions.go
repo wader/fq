@@ -19,7 +19,6 @@ func decodeBlockType(d *decode.D, name string) {
 	}
 }
 
-//nolint:unparam
 func decodeMemArg(d *decode.D, name string) {
 	d.FieldStruct(name, func(d *decode.D) {
 		fieldU32(d, "a")
@@ -825,7 +824,6 @@ func decodeI8x16Shuffle(d *decode.D, opcode Opcode, mnemonic string) {
 	})
 }
 
-//nolint:unparam
 func decodeLaneIdx(d *decode.D, name string) {
 	d.FieldU8(name)
 }
