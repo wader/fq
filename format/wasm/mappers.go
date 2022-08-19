@@ -1,211 +1,85 @@
 package wasm
 
 import (
-	"errors"
-
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var sectionIDToSym = &sectionIDToSymMapper{}
-
-type sectionIDToSymMapper struct {
-}
-
-func (m *sectionIDToSymMapper) MapScalar(s scalar.S) (scalar.S, error) {
-	v, ok := s.Actual.(uint64)
-	if !ok {
-		return s, errors.New("unexpected data type for section ID")
-	}
-
-	switch v {
-	case sectionIDCustom:
-		s.Sym = "custom section"
-	case sectionIDType:
-		s.Sym = "type section"
-	case sectionIDImport:
-		s.Sym = "import section"
-	case sectionIDFunction:
-		s.Sym = "function section"
-	case sectionIDTable:
-		s.Sym = "table section"
-	case sectionIDMemory:
-		s.Sym = "memory section"
-	case sectionIDGlobal:
-		s.Sym = "global section"
-	case sectionIDExport:
-		s.Sym = "export section"
-	case sectionIDStart:
-		s.Sym = "start section"
-	case sectionIDElement:
-		s.Sym = "element section"
-	case sectionIDCode:
-		s.Sym = "code section"
-	case sectionIDData:
-		s.Sym = "data section"
-	case sectionIDDataCount:
-		s.Sym = "data count section"
-	default:
-		s.Sym = "unknown section"
-	}
-
-	return s, nil
-}
-
-var valtypeToSymMapper = &valtypeToSym{}
-
-type valtypeToSym struct {
+var sectionIDToSym = scalar.UToSymStr{
+	sectionIDCustom:    "custom section",
+	sectionIDType:      "type section",
+	sectionIDImport:    "import section",
+	sectionIDFunction:  "function section",
+	sectionIDTable:     "table section",
+	sectionIDMemory:    "memory section",
+	sectionIDGlobal:    "global section",
+	sectionIDExport:    "export section",
+	sectionIDStart:     "start section",
+	sectionIDElement:   "element section",
+	sectionIDCode:      "code section",
+	sectionIDData:      "data section",
+	sectionIDDataCount: "data count section",
 }
 
 // valtype ::= t:numtype => t
 //          |  t:vectype => t
 //          |  t:reftype => t
-func (m *valtypeToSym) MapScalar(s scalar.S) (scalar.S, error) {
-	v, ok := s.Actual.(uint64)
-	if !ok {
-		return s, errors.New("unexpected data type for valtype")
-	}
-
-	switch v {
-	case 0x7f:
-		s.Sym = "i32"
-	case 0x7e:
-		s.Sym = "i64"
-	case 0x7d:
-		s.Sym = "f32"
-	case 0x7c:
-		s.Sym = "f64"
-	case 0x7b:
-		s.Sym = "v128"
-	case 0x70:
-		s.Sym = "funcref"
-	case 0x6f:
-		s.Sym = "externref"
-	default:
-		s.Sym = "unknown valtype"
-	}
-
-	return s, nil
+//
+// numtype ::= 0x7F => i32
+//          |  0x7E => i64
+//          |  0x7D => f32
+//          |  0x7C => f64
+//
+// vectype ::= 0x7B => v128
+//
+// reftype ::= 0x70 => funcref
+//          |  0x6F => externref
+var valtypeToSymMapper = scalar.UToSymStr{
+	0x7f: "i32",
+	0x7e: "i64",
+	0x7d: "f32",
+	0x7c: "f64",
+	0x7b: "v128",
+	0x70: "funcref",
+	0x6f: "externref",
 }
 
-var importdescTagToSym = &importdescTagToSymMapper{}
-
-type importdescTagToSymMapper struct {
+// importdesc ::= 0x00 x:typeidx     => func x
+//             |  0x01 tt:tabletype  => table tt
+//             |  0x02 mt:memtype    => mem mt
+//             |  0x03 gt:globaltype => global gt
+var importdescTagToSym = scalar.UToSymStr{
+	0x00: "func",
+	0x01: "table",
+	0x02: "mem",
+	0x03: "global",
 }
 
-func (m *importdescTagToSymMapper) MapScalar(s scalar.S) (scalar.S, error) {
-	v, ok := s.Actual.(uint64)
-	if !ok {
-		return s, errors.New("unexpected data type for importdesc tag")
-	}
-
-	switch v {
-	case 0x00:
-		s.Sym = "func"
-	case 0x01:
-		s.Sym = "table"
-	case 0x02:
-		s.Sym = "mem"
-	case 0x03:
-		s.Sym = "global"
-	default:
-		s.Sym = "unknown importdesc"
-	}
-
-	return s, nil
-}
-
-var exportdescTagToSym = &exportdescTagToSymMapper{}
-
-type exportdescTagToSymMapper struct {
-}
-
-func (m *exportdescTagToSymMapper) MapScalar(s scalar.S) (scalar.S, error) {
-	v, ok := s.Actual.(uint64)
-	if !ok {
-		return s, errors.New("unexpected data type for exportdesc tag")
-	}
-
-	switch v {
-	case 0x00:
-		s.Sym = "funcidx"
-	case 0x01:
-		s.Sym = "tableidx"
-	case 0x02:
-		s.Sym = "memidx"
-	case 0x03:
-		s.Sym = "globalidx"
-	default:
-		s.Sym = "unknown exportdesc"
-	}
-
-	return s, nil
-}
-
-var reftypeTagToSym = &reftypeTagToSymMapper{}
-
-type reftypeTagToSymMapper struct {
+// exportdesc ::= 0x00 x:funcidx   => func x
+//             |  0x01 x:tableidx  => table x
+//             |  0x02 x:memidx    => mem x
+//             |  0x03 x:globalidx => global x
+var exportdescTagToSym = scalar.UToSymStr{
+	0x00: "funcidx",
+	0x01: "tableidx",
+	0x02: "memidx",
+	0x03: "globalidx",
 }
 
 // reftype ::= 0x70 => funcref
 //          |  0x6F => externref
-func (m *reftypeTagToSymMapper) MapScalar(s scalar.S) (scalar.S, error) {
-	v, ok := s.Actual.(uint64)
-	if !ok {
-		return s, errors.New("unexpected data type for reftype tag")
-	}
-
-	switch v {
-	case 0x70:
-		s.Sym = "funcref"
-	case 0x6f:
-		s.Sym = "externref"
-	default:
-		s.Sym = "unknown reftype"
-	}
-
-	return s, nil
+var reftypeTagToSym = scalar.UToSymStr{
+	0x70: "funcref",
+	0x6f: "externref",
 }
 
-var mutToSym = &mutToSymMapper{}
-
-type mutToSymMapper struct {
+// mut ::= 0x00 => const
+//      |  0x01 => var
+var mutToSym = scalar.UToSymStr{
+	0x00: "const",
+	0x01: "var",
 }
 
-func (m *mutToSymMapper) MapScalar(s scalar.S) (scalar.S, error) {
-	v, ok := s.Actual.(uint64)
-	if !ok {
-		return s, errors.New("unexpected data type for mut")
-	}
-
-	switch v {
-	case 0x00:
-		s.Sym = "const"
-	case 0x01:
-		s.Sym = "var"
-	default:
-		s.Sym = "unknown mut"
-	}
-
-	return s, nil
-}
-
-var elemkindTagToSym = &elemkindTagToSymMapper{}
-
-type elemkindTagToSymMapper struct {
-}
-
-func (m *elemkindTagToSymMapper) MapScalar(s scalar.S) (scalar.S, error) {
-	v, ok := s.Actual.(uint64)
-	if !ok {
-		return s, errors.New("unexpected data type for elemkind tag")
-	}
-
-	switch v {
-	case 0x00:
-		s.Sym = "funcref"
-	default:
-		s.Sym = "unknown elemkind"
-	}
-
-	return s, nil
+// elemkind ::= 0x00 => funcref
+var elemkindTagToSym = scalar.UToSymStr{
+	0x00: "funcref",
 }
