@@ -5,19 +5,19 @@ import (
 )
 
 var sectionIDToSym = scalar.UToSymStr{
-	sectionIDCustom:    "custom section",
-	sectionIDType:      "type section",
-	sectionIDImport:    "import section",
-	sectionIDFunction:  "function section",
-	sectionIDTable:     "table section",
-	sectionIDMemory:    "memory section",
-	sectionIDGlobal:    "global section",
-	sectionIDExport:    "export section",
-	sectionIDStart:     "start section",
-	sectionIDElement:   "element section",
-	sectionIDCode:      "code section",
-	sectionIDData:      "data section",
-	sectionIDDataCount: "data count section",
+	sectionIDCustom:    "custom_section",
+	sectionIDType:      "type_section",
+	sectionIDImport:    "import_section",
+	sectionIDFunction:  "function_section",
+	sectionIDTable:     "table_section",
+	sectionIDMemory:    "memory_section",
+	sectionIDGlobal:    "global_section",
+	sectionIDExport:    "export_section",
+	sectionIDStart:     "start_section",
+	sectionIDElement:   "element_section",
+	sectionIDCode:      "code_section",
+	sectionIDData:      "data_section",
+	sectionIDDataCount: "data_count_section",
 }
 
 // valtype ::= t:numtype => t
