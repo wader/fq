@@ -4,7 +4,7 @@ $ fq -d wasm dv imports-19.wasm
 0x00|            01 00 00 00                        |    ....        |  version: 1 0x4-0x7.7 (4)
     |                                               |                |  sections[0:1]: 0x8-0x20.7 (25)
     |                                               |                |    [0]{}: section 0x8-0x20.7 (25)
-0x00|                        02                     |        .       |      id: "import section" (2) 0x8-0x8.7 (1)
+0x00|                        02                     |        .       |      id: "import_section" (2) 0x8-0x8.7 (1)
 0x00|                           17                  |         .      |      size: 23 0x9-0x9.7 (1)
     |                                               |                |      content{}: 0xa-0x20.7 (23)
     |                                               |                |        im{}: 0xa-0x20.7 (23)

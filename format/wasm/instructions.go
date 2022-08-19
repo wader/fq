@@ -1,6 +1,8 @@
 package wasm
 
 import (
+	"errors"
+
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
 )
@@ -38,413 +40,267 @@ func decodeExpr(d *decode.D, name string) {
 	})
 }
 
+type Opcode uint64
+
+type instructionInfo struct {
+	mnemonic string
+	decodeFn func(d *decode.D, opcode Opcode, mnemonic string)
+}
+
+type instructionMap map[Opcode]instructionInfo
+
+func (m instructionMap) MapScalar(s scalar.S) (scalar.S, error) {
+	opcode, ok := s.Actual.(uint64)
+	if !ok {
+		return s, errors.New("unexpected opcode type")
+	}
+
+	instr, found := m[Opcode(opcode)]
+	if !found {
+		return s, nil
+	}
+
+	s.Sym = instr.mnemonic
+	return s, nil
+}
+
+var instrMap = instructionMap{
+	0x00: {mnemonic: "unreachable"},
+	0x01: {mnemonic: "nop"},
+	0x02: {mnemonic: "block"},
+	0x03: {mnemonic: "loop"},
+	0x04: {mnemonic: "if"},
+
+	0x0b: {mnemonic: "end"},
+	0x0c: {mnemonic: "br", decodeFn: decodeBr},
+	0x0d: {mnemonic: "br_if", decodeFn: decodeBrIf},
+	0x0e: {mnemonic: "br_table", decodeFn: decodeBrTable},
+	0x0f: {mnemonic: "return"},
+	0x10: {mnemonic: "call", decodeFn: decodeCall},
+	0x11: {mnemonic: "call_indirect", decodeFn: decodeCallIndirect},
+
+	0x1a: {mnemonic: "drop"},
+	0x1b: {mnemonic: "select"},
+	0x1c: {mnemonic: "select", decodeFn: decodeSelectT},
+
+	0x20: {mnemonic: "local.get", decodeFn: decodeInstrWithLocalIdx},
+	0x21: {mnemonic: "local.set", decodeFn: decodeInstrWithLocalIdx},
+	0x22: {mnemonic: "local.tee", decodeFn: decodeInstrWithLocalIdx},
+	0x23: {mnemonic: "global.get", decodeFn: decodeInstrWithGlobalIdx},
+	0x24: {mnemonic: "global.set", decodeFn: decodeInstrWithGlobalIdx},
+
+	0x25: {mnemonic: "table.get", decodeFn: decodeInstrWithTableIdx},
+	0x26: {mnemonic: "table.set", decodeFn: decodeInstrWithTableIdx},
+
+	0x28: {mnemonic: "i32.load", decodeFn: decodeInstrWithMemArg},
+	0x29: {mnemonic: "i64.load", decodeFn: decodeInstrWithMemArg},
+	0x2a: {mnemonic: "f32.load", decodeFn: decodeInstrWithMemArg},
+	0x2b: {mnemonic: "f64.load", decodeFn: decodeInstrWithMemArg},
+	0x2c: {mnemonic: "i32.load8_s", decodeFn: decodeInstrWithMemArg},
+	0x2d: {mnemonic: "i32.load8_u", decodeFn: decodeInstrWithMemArg},
+	0x2e: {mnemonic: "i32.load16_s", decodeFn: decodeInstrWithMemArg},
+	0x2f: {mnemonic: "i32.load16_u", decodeFn: decodeInstrWithMemArg},
+	0x30: {mnemonic: "i64.load8_s", decodeFn: decodeInstrWithMemArg},
+	0x31: {mnemonic: "i64.load8_u", decodeFn: decodeInstrWithMemArg},
+	0x32: {mnemonic: "i64.load16_s", decodeFn: decodeInstrWithMemArg},
+	0x33: {mnemonic: "i64.load16_u", decodeFn: decodeInstrWithMemArg},
+	0x34: {mnemonic: "i64.load32_s", decodeFn: decodeInstrWithMemArg},
+	0x35: {mnemonic: "i64.load32_u", decodeFn: decodeInstrWithMemArg},
+	0x36: {mnemonic: "i32.store", decodeFn: decodeInstrWithMemArg},
+	0x37: {mnemonic: "i64.store", decodeFn: decodeInstrWithMemArg},
+	0x38: {mnemonic: "f32.store", decodeFn: decodeInstrWithMemArg},
+	0x39: {mnemonic: "f64.store", decodeFn: decodeInstrWithMemArg},
+	0x3a: {mnemonic: "i32.store8", decodeFn: decodeInstrWithMemArg},
+	0x3b: {mnemonic: "i32.store16", decodeFn: decodeInstrWithMemArg},
+	0x3c: {mnemonic: "i64.store8", decodeFn: decodeInstrWithMemArg},
+	0x3d: {mnemonic: "i64.store16", decodeFn: decodeInstrWithMemArg},
+	0x3e: {mnemonic: "i64.store32", decodeFn: decodeInstrWithMemArg},
+
+	0x3f: {mnemonic: "memory.size", decodeFn: decodeMemorySize},
+	0x40: {mnemonic: "memory.grow", decodeFn: decodeMemoryGrow},
+
+	0x41: {mnemonic: "i32.const", decodeFn: decodeI32Const},
+	0x42: {mnemonic: "i64.const", decodeFn: decodeI64Const},
+	0x43: {mnemonic: "f32.const", decodeFn: decodeF32Const},
+	0x44: {mnemonic: "f64.const", decodeFn: decodeF64Const},
+
+	0x45: {mnemonic: "32.eqz"},
+	0x46: {mnemonic: "i32.eq"},
+	0x47: {mnemonic: "i32.ne"},
+	0x48: {mnemonic: "i32.lt_s"},
+	0x49: {mnemonic: "i32.lt_u"},
+	0x4a: {mnemonic: "i32.gt_s"},
+	0x4b: {mnemonic: "i32.gt_u"},
+	0x4c: {mnemonic: "i32.le_s"},
+	0x4d: {mnemonic: "i32.le_u"},
+	0x4e: {mnemonic: "i32.ge_s"},
+	0x4f: {mnemonic: "i32.ge_u"},
+
+	0x50: {mnemonic: "i64.eqz"},
+	0x51: {mnemonic: "i64.eq"},
+	0x52: {mnemonic: "i64.ne"},
+	0x53: {mnemonic: "i64.lt_s"},
+	0x54: {mnemonic: "i64.lt_u"},
+	0x55: {mnemonic: "i64.gt_s"},
+	0x56: {mnemonic: "i64.gt_u"},
+	0x57: {mnemonic: "i64.le_s"},
+	0x58: {mnemonic: "i64.le_u"},
+	0x59: {mnemonic: "i64.ge_s"},
+	0x5a: {mnemonic: "i64.ge_u"},
+
+	0x5b: {mnemonic: "f32.eq"},
+	0x5c: {mnemonic: "f32.ne"},
+	0x5d: {mnemonic: "f32.lt"},
+	0x5e: {mnemonic: "f32.gt"},
+	0x5f: {mnemonic: "f32.le"},
+	0x60: {mnemonic: "f32.ge"},
+
+	0x61: {mnemonic: "f64.eq"},
+	0x62: {mnemonic: "f64.ne"},
+	0x63: {mnemonic: "f64.lt"},
+	0x64: {mnemonic: "f64.gt"},
+	0x65: {mnemonic: "f64.le"},
+	0x66: {mnemonic: "f64.ge"},
+
+	0x67: {mnemonic: "i32.clz"},
+	0x68: {mnemonic: "i32.ctz"},
+	0x69: {mnemonic: "i32.popcnt"},
+	0x6a: {mnemonic: "i32.add"},
+	0x6b: {mnemonic: "i32.sub"},
+	0x6c: {mnemonic: "i32.mul"},
+	0x6d: {mnemonic: "i32.div_s"},
+	0x6e: {mnemonic: "i32.div_u"},
+	0x6f: {mnemonic: "i32.rem_s"},
+	0x70: {mnemonic: "i32.rem_u"},
+	0x71: {mnemonic: "i32.and"},
+	0x72: {mnemonic: "i32.or"},
+	0x73: {mnemonic: "i32.xor"},
+	0x74: {mnemonic: "i32.shl"},
+	0x75: {mnemonic: "i32.shr_s"},
+	0x76: {mnemonic: "i32.shr_u"},
+	0x77: {mnemonic: "i32.rotl"},
+	0x78: {mnemonic: "i32.rotr"},
+
+	0x79: {mnemonic: "i64.clz"},
+	0x7a: {mnemonic: "i64.ctz"},
+	0x7b: {mnemonic: "i64.popcnt"},
+	0x7c: {mnemonic: "i64.add"},
+	0x7d: {mnemonic: "i64.sub"},
+	0x7e: {mnemonic: "i64.mul"},
+	0x7f: {mnemonic: "i64.div_s"},
+	0x80: {mnemonic: "i64.div_u"},
+	0x81: {mnemonic: "i64.rem_s"},
+	0x82: {mnemonic: "i64.rem_u"},
+	0x83: {mnemonic: "i64.and"},
+	0x84: {mnemonic: "i64.or"},
+	0x85: {mnemonic: "i64.xor"},
+	0x86: {mnemonic: "i64.shl"},
+	0x87: {mnemonic: "i64.shr_s"},
+	0x88: {mnemonic: "i64.shr_u"},
+	0x89: {mnemonic: "i64.rotl"},
+	0x8a: {mnemonic: "i64.rotr"},
+
+	0x8b: {mnemonic: "f32.abs"},
+	0x8c: {mnemonic: "f32.neg"},
+	0x8d: {mnemonic: "f32.ceil"},
+	0x8e: {mnemonic: "f32.floor"},
+	0x8f: {mnemonic: "f32.trunc"},
+	0x90: {mnemonic: "f32.nearest"},
+	0x91: {mnemonic: "f32.sqrt"},
+	0x92: {mnemonic: "f32.add"},
+	0x93: {mnemonic: "f32.sub"},
+	0x94: {mnemonic: "f32.mul"},
+	0x95: {mnemonic: "f32.div"},
+	0x96: {mnemonic: "f32.min"},
+	0x97: {mnemonic: "f32.max"},
+	0x98: {mnemonic: "f32.copysign"},
+
+	0x99: {mnemonic: "f64.abs"},
+	0x9a: {mnemonic: "f64.neg"},
+	0x9b: {mnemonic: "f64.ceil"},
+	0x9c: {mnemonic: "f64.floor"},
+	0x9d: {mnemonic: "f64.trunc"},
+	0x9e: {mnemonic: "f64.nearest"},
+	0x9f: {mnemonic: "f64.sqrt"},
+	0xa0: {mnemonic: "f64.add"},
+	0xa1: {mnemonic: "f64.sub"},
+	0xa2: {mnemonic: "f64.mul"},
+	0xa3: {mnemonic: "f64.div"},
+	0xa4: {mnemonic: "f64.min"},
+	0xa5: {mnemonic: "f64.max"},
+	0xa6: {mnemonic: "f64.copysign"},
+
+	0xa7: {mnemonic: "i32.wrap_i64"},
+	0xa8: {mnemonic: "i32.trunc_f32_s"},
+	0xa9: {mnemonic: "i32.trunc_f32_u"},
+	0xaa: {mnemonic: "i32.trunc_f64_s"},
+	0xab: {mnemonic: "i32.trunc_f64_u"},
+	0xac: {mnemonic: "i64.extend_i32_s"},
+	0xad: {mnemonic: "i64.extend_i32_u"},
+	0xae: {mnemonic: "i64.trunc_f32_s"},
+	0xaf: {mnemonic: "i64.trunc_f32_u"},
+	0xb0: {mnemonic: "i64.trunc_f64_s"},
+	0xb1: {mnemonic: "i64.trunc_f64_u"},
+	0xb2: {mnemonic: "f32.convert_i32_s"},
+	0xb3: {mnemonic: "f32.convert_i32_u"},
+	0xb4: {mnemonic: "f32.convert_i64_s"},
+	0xb5: {mnemonic: "f32.convert_i64_u"},
+	0xb6: {mnemonic: "f32.demote_f64"},
+	0xb7: {mnemonic: "f64.convert_i32_s"},
+	0xb8: {mnemonic: "f64.convert_i32_u"},
+	0xb9: {mnemonic: "f64.convert_i64_s"},
+	0xba: {mnemonic: "f64.convert_i64_u"},
+	0xbb: {mnemonic: "f64.promote_f32"},
+	0xbc: {mnemonic: "i32.reinterpret_f32"},
+	0xbd: {mnemonic: "i64.reinterpret_f64"},
+	0xbe: {mnemonic: "f32.reinterpret_i32"},
+	0xbf: {mnemonic: "f64.reinterpret_i64"},
+
+	0xc0: {mnemonic: "i32.extend8_s"},
+	0xc1: {mnemonic: "i32.extend16_s"},
+	0xc2: {mnemonic: "i64.extend8_s"},
+	0xc3: {mnemonic: "i64.extend16_s"},
+	0xc4: {mnemonic: "i64.extend32_s"},
+
+	0xd0: {mnemonic: "ref.null", decodeFn: decodeRefNull},
+	0xd1: {mnemonic: "ref.is_null"},
+	0xd2: {mnemonic: "ref.func", decodeFn: decodeRefFunc},
+
+	0xfc: {mnemonic: "prefix", decodeFn: decodePrefixedInstruction},
+
+	0xfd: {mnemonic: "vector", decodeFn: decodeVectorInstruction},
+}
+
 func decodeInstruction(d *decode.D) {
-	instr := d.PeekBytes(1)
-	if len(instr) == 0 {
+	opcodeBytes := d.PeekBytes(1)
+	if len(opcodeBytes) == 0 {
 		return
 	}
 
-	i := instr[0]
-	switch i {
-	case 0x00:
-		decodeInstructionWithoutOperands(d, "unreachable", i)
-	case 0x01:
-		decodeInstructionWithoutOperands(d, "nop", i)
-	case 0x02:
-		decodeBlock(d)
-	case 0x03:
-		decodeLoop(d)
-	case 0x04:
-		decodeIf(d)
-
-	case 0x0b:
-		decodeEnd(d)
-	case 0x0c:
-		decodeBr(d)
-	case 0x0d:
-		decodeBrIf(d)
-	case 0x0e:
-		decodeBrTable(d)
-	case 0x0f:
-		decodeInstructionWithoutOperands(d, "return", i)
-	case 0x10:
-		decodeCall(d)
-	case 0x11:
-		decodeCallIndirect(d)
-
-	case 0x1a:
-		decodeInstructionWithoutOperands(d, "drop", i)
-	case 0x1b:
-		decodeInstructionWithoutOperands(d, "select", i)
-	case 0x1c:
-		decodeSelectT(d)
-
-	case 0x20:
-		decodeLocalGet(d)
-	case 0x21:
-		decodeLocalSet(d)
-	case 0x22:
-		decodeLocalTee(d)
-	case 0x23:
-		decodeGlobalGet(d)
-	case 0x24:
-		decodeGlobalSet(d)
-
-	case 0x25:
-		decodeTableGet(d)
-	case 0x26:
-		decodeTableSet(d)
-
-	case 0x28:
-		decodeI32Load(d)
-	case 0x29:
-		decodeI64Load(d)
-	case 0x2a:
-		decodeF32Load(d)
-	case 0x2b:
-		decodeF64Load(d)
-	case 0x2c:
-		decodeI32Load8S(d)
-	case 0x2d:
-		decodeI32Load8U(d)
-	case 0x2e:
-		decodeI32Load16S(d)
-	case 0x2f:
-		decodeI32Load16U(d)
-	case 0x30:
-		decodeI64Load8S(d)
-	case 0x31:
-		decodeI64Load8U(d)
-	case 0x32:
-		decodeI64Load16S(d)
-	case 0x33:
-		decodeI64Load16U(d)
-	case 0x34:
-		decodeI64Load32S(d)
-	case 0x35:
-		decodeI64Load32U(d)
-	case 0x36:
-		decodeI32Store(d)
-	case 0x37:
-		decodeI64Store(d)
-	case 0x38:
-		decodeF32Store(d)
-	case 0x39:
-		decodeF64Store(d)
-	case 0x3a:
-		decodeI32Store8(d)
-	case 0x3b:
-		decodeI32Store16(d)
-	case 0x3c:
-		decodeI64Store8(d)
-	case 0x3d:
-		decodeI64Store16(d)
-	case 0x3e:
-		decodeI64Store32(d)
-
-	case 0x3f:
-		decodeMemorySize(d)
-	case 0x40:
-		decodeMemoryGrow(d)
-
-	case 0x41:
-		decodeI32Const(d)
-	case 0x42:
-		decodeI64Const(d)
-	case 0x43:
-		decodeF32Const(d)
-	case 0x44:
-		decodeF64Const(d)
-
-	case 0x45:
-		decodeInstructionWithoutOperands(d, "i32.eqz", i)
-	case 0x46:
-		decodeInstructionWithoutOperands(d, "i32.eq", i)
-	case 0x47:
-		decodeInstructionWithoutOperands(d, "i32.ne", i)
-	case 0x48:
-		decodeInstructionWithoutOperands(d, "i32.lt_s", i)
-	case 0x49:
-		decodeInstructionWithoutOperands(d, "i32.lt_u", i)
-	case 0x4a:
-		decodeInstructionWithoutOperands(d, "i32.gt_s", i)
-	case 0x4b:
-		decodeInstructionWithoutOperands(d, "i32.gt_u", i)
-	case 0x4c:
-		decodeInstructionWithoutOperands(d, "i32.le_s", i)
-	case 0x4d:
-		decodeInstructionWithoutOperands(d, "i32.le_u", i)
-	case 0x4e:
-		decodeInstructionWithoutOperands(d, "i32.ge_s", i)
-	case 0x4f:
-		decodeInstructionWithoutOperands(d, "i32.ge_u", i)
-
-	case 0x50:
-		decodeInstructionWithoutOperands(d, "i64.eqz", i)
-	case 0x51:
-		decodeInstructionWithoutOperands(d, "i64.eq", i)
-	case 0x52:
-		decodeInstructionWithoutOperands(d, "i64.ne", i)
-	case 0x53:
-		decodeInstructionWithoutOperands(d, "i64.lt_s", i)
-	case 0x54:
-		decodeInstructionWithoutOperands(d, "i64.lt_u", i)
-	case 0x55:
-		decodeInstructionWithoutOperands(d, "i64.gt_s", i)
-	case 0x56:
-		decodeInstructionWithoutOperands(d, "i64.gt_u", i)
-	case 0x57:
-		decodeInstructionWithoutOperands(d, "i64.le_s", i)
-	case 0x58:
-		decodeInstructionWithoutOperands(d, "i64.le_u", i)
-	case 0x59:
-		decodeInstructionWithoutOperands(d, "i64.ge_s", i)
-	case 0x5a:
-		decodeInstructionWithoutOperands(d, "i64.ge_u", i)
-
-	case 0x5b:
-		decodeInstructionWithoutOperands(d, "f32.eq", i)
-	case 0x5c:
-		decodeInstructionWithoutOperands(d, "f32.ne", i)
-	case 0x5d:
-		decodeInstructionWithoutOperands(d, "f32.lt", i)
-	case 0x5e:
-		decodeInstructionWithoutOperands(d, "f32.gt", i)
-	case 0x5f:
-		decodeInstructionWithoutOperands(d, "f32.le", i)
-	case 0x60:
-		decodeInstructionWithoutOperands(d, "f32.ge", i)
-
-	case 0x61:
-		decodeInstructionWithoutOperands(d, "f64.eq", i)
-	case 0x62:
-		decodeInstructionWithoutOperands(d, "f64.ne", i)
-	case 0x63:
-		decodeInstructionWithoutOperands(d, "f64.lt", i)
-	case 0x64:
-		decodeInstructionWithoutOperands(d, "f64.gt", i)
-	case 0x65:
-		decodeInstructionWithoutOperands(d, "f64.le", i)
-	case 0x66:
-		decodeInstructionWithoutOperands(d, "f64.ge", i)
-
-	case 0x67:
-		decodeInstructionWithoutOperands(d, "i32.clz", i)
-	case 0x68:
-		decodeInstructionWithoutOperands(d, "i32.ctz", i)
-	case 0x69:
-		decodeInstructionWithoutOperands(d, "i32.popcnt", i)
-	case 0x6a:
-		decodeInstructionWithoutOperands(d, "i32.add", i)
-	case 0x6b:
-		decodeInstructionWithoutOperands(d, "i32.sub", i)
-	case 0x6c:
-		decodeInstructionWithoutOperands(d, "i32.mul", i)
-	case 0x6d:
-		decodeInstructionWithoutOperands(d, "i32.div_s", i)
-	case 0x6e:
-		decodeInstructionWithoutOperands(d, "i32.div_u", i)
-	case 0x6f:
-		decodeInstructionWithoutOperands(d, "i32.rem_s", i)
-	case 0x70:
-		decodeInstructionWithoutOperands(d, "i32.rem_u", i)
-	case 0x71:
-		decodeInstructionWithoutOperands(d, "i32.and", i)
-	case 0x72:
-		decodeInstructionWithoutOperands(d, "i32.or", i)
-	case 0x73:
-		decodeInstructionWithoutOperands(d, "i32.xor", i)
-	case 0x74:
-		decodeInstructionWithoutOperands(d, "i32.shl", i)
-	case 0x75:
-		decodeInstructionWithoutOperands(d, "i32.shr_s", i)
-	case 0x76:
-		decodeInstructionWithoutOperands(d, "i32.shr_u", i)
-	case 0x77:
-		decodeInstructionWithoutOperands(d, "i32.rotl", i)
-	case 0x78:
-		decodeInstructionWithoutOperands(d, "i32.rotr", i)
-
-	case 0x79:
-		decodeInstructionWithoutOperands(d, "i64.clz", i)
-	case 0x7a:
-		decodeInstructionWithoutOperands(d, "i64.ctz", i)
-	case 0x7b:
-		decodeInstructionWithoutOperands(d, "i64.popcnt", i)
-	case 0x7c:
-		decodeInstructionWithoutOperands(d, "i64.add", i)
-	case 0x7d:
-		decodeInstructionWithoutOperands(d, "i64.sub", i)
-	case 0x7e:
-		decodeInstructionWithoutOperands(d, "i64.mul", i)
-	case 0x7f:
-		decodeInstructionWithoutOperands(d, "i64.div_s", i)
-	case 0x80:
-		decodeInstructionWithoutOperands(d, "i64.div_u", i)
-	case 0x81:
-		decodeInstructionWithoutOperands(d, "i64.rem_s", i)
-	case 0x82:
-		decodeInstructionWithoutOperands(d, "i64.rem_u", i)
-	case 0x83:
-		decodeInstructionWithoutOperands(d, "i64.and", i)
-	case 0x84:
-		decodeInstructionWithoutOperands(d, "i64.or", i)
-	case 0x85:
-		decodeInstructionWithoutOperands(d, "i64.xor", i)
-	case 0x86:
-		decodeInstructionWithoutOperands(d, "i64.shl", i)
-	case 0x87:
-		decodeInstructionWithoutOperands(d, "i64.shr_s", i)
-	case 0x88:
-		decodeInstructionWithoutOperands(d, "i64.shr_u", i)
-	case 0x89:
-		decodeInstructionWithoutOperands(d, "i64.rotl", i)
-	case 0x8a:
-		decodeInstructionWithoutOperands(d, "i64.rotr", i)
-
-	case 0x8b:
-		decodeInstructionWithoutOperands(d, "f32.abs", i)
-	case 0x8c:
-		decodeInstructionWithoutOperands(d, "f32.neg", i)
-	case 0x8d:
-		decodeInstructionWithoutOperands(d, "f32.ceil", i)
-	case 0x8e:
-		decodeInstructionWithoutOperands(d, "f32.floor", i)
-	case 0x8f:
-		decodeInstructionWithoutOperands(d, "f32.trunc", i)
-	case 0x90:
-		decodeInstructionWithoutOperands(d, "f32.nearest", i)
-	case 0x91:
-		decodeInstructionWithoutOperands(d, "f32.sqrt", i)
-	case 0x92:
-		decodeInstructionWithoutOperands(d, "f32.add", i)
-	case 0x93:
-		decodeInstructionWithoutOperands(d, "f32.sub", i)
-	case 0x94:
-		decodeInstructionWithoutOperands(d, "f32.mul", i)
-	case 0x95:
-		decodeInstructionWithoutOperands(d, "f32.div", i)
-	case 0x96:
-		decodeInstructionWithoutOperands(d, "f32.min", i)
-	case 0x97:
-		decodeInstructionWithoutOperands(d, "f32.max", i)
-	case 0x98:
-		decodeInstructionWithoutOperands(d, "f32.copysign", i)
-
-	case 0x99:
-		decodeInstructionWithoutOperands(d, "f64.abs", i)
-	case 0x9a:
-		decodeInstructionWithoutOperands(d, "f64.neg", i)
-	case 0x9b:
-		decodeInstructionWithoutOperands(d, "f64.ceil", i)
-	case 0x9c:
-		decodeInstructionWithoutOperands(d, "f64.floor", i)
-	case 0x9d:
-		decodeInstructionWithoutOperands(d, "f64.trunc", i)
-	case 0x9e:
-		decodeInstructionWithoutOperands(d, "f64.nearest", i)
-	case 0x9f:
-		decodeInstructionWithoutOperands(d, "f64.sqrt", i)
-	case 0xa0:
-		decodeInstructionWithoutOperands(d, "f64.add", i)
-	case 0xa1:
-		decodeInstructionWithoutOperands(d, "f64.sub", i)
-	case 0xa2:
-		decodeInstructionWithoutOperands(d, "f64.mul", i)
-	case 0xa3:
-		decodeInstructionWithoutOperands(d, "f64.div", i)
-	case 0xa4:
-		decodeInstructionWithoutOperands(d, "f64.min", i)
-	case 0xa5:
-		decodeInstructionWithoutOperands(d, "f64.max", i)
-	case 0xa6:
-		decodeInstructionWithoutOperands(d, "f64.copysign", i)
-
-	case 0xa7:
-		decodeInstructionWithoutOperands(d, "i32.wrap_i64", i)
-	case 0xa8:
-		decodeInstructionWithoutOperands(d, "i32.trunc_f32_s", i)
-	case 0xa9:
-		decodeInstructionWithoutOperands(d, "i32.trunc_f32_u", i)
-	case 0xaa:
-		decodeInstructionWithoutOperands(d, "i32.trunc_f64_s", i)
-	case 0xab:
-		decodeInstructionWithoutOperands(d, "i32.trunc_f64_u", i)
-	case 0xac:
-		decodeInstructionWithoutOperands(d, "i64.extend_i32_s", i)
-	case 0xad:
-		decodeInstructionWithoutOperands(d, "i64.extend_i32_u", i)
-	case 0xae:
-		decodeInstructionWithoutOperands(d, "i64.trunc_f32_s", i)
-	case 0xaf:
-		decodeInstructionWithoutOperands(d, "i64.trunc_f32_u", i)
-	case 0xb0:
-		decodeInstructionWithoutOperands(d, "i64.trunc_f64_s", i)
-	case 0xb1:
-		decodeInstructionWithoutOperands(d, "i64.trunc_f64_u", i)
-	case 0xb2:
-		decodeInstructionWithoutOperands(d, "f32.convert_i32_s", i)
-	case 0xb3:
-		decodeInstructionWithoutOperands(d, "f32.convert_i32_u", i)
-	case 0xb4:
-		decodeInstructionWithoutOperands(d, "f32.convert_i64_s", i)
-	case 0xb5:
-		decodeInstructionWithoutOperands(d, "f32.convert_i64_u", i)
-	case 0xb6:
-		decodeInstructionWithoutOperands(d, "f32.demote_f64", i)
-	case 0xb7:
-		decodeInstructionWithoutOperands(d, "f64.convert_i32_s", i)
-	case 0xb8:
-		decodeInstructionWithoutOperands(d, "f64.convert_i32_u", i)
-	case 0xb9:
-		decodeInstructionWithoutOperands(d, "f64.convert_i64_s", i)
-	case 0xba:
-		decodeInstructionWithoutOperands(d, "f64.convert_i64_u", i)
-	case 0xbb:
-		decodeInstructionWithoutOperands(d, "f64.promote_f32", i)
-	case 0xbc:
-		decodeInstructionWithoutOperands(d, "i32.reinterpret_f32", i)
-	case 0xbd:
-		decodeInstructionWithoutOperands(d, "i64.reinterpret_f64", i)
-	case 0xbe:
-		decodeInstructionWithoutOperands(d, "f32.reinterpret_i32", i)
-	case 0xbf:
-		decodeInstructionWithoutOperands(d, "f64.reinterpret_i64", i)
-
-	case 0xc0:
-		decodeInstructionWithoutOperands(d, "i32.extend8_s", i)
-	case 0xc1:
-		decodeInstructionWithoutOperands(d, "i32.extend16_s", i)
-	case 0xc2:
-		decodeInstructionWithoutOperands(d, "i64.extend8_s", i)
-	case 0xc3:
-		decodeInstructionWithoutOperands(d, "i64.extend16_s", i)
-	case 0xc4:
-		decodeInstructionWithoutOperands(d, "i64.extend32_s", i)
-
-	case 0xd0:
-		decodeRefNull(d)
-	case 0xd1:
-		decodeInstructionWithoutOperands(d, "ref.is_null", i)
-	case 0xd2:
-		decodeRefFunc(d)
-
-	case 0xfc:
-		decodePrefixedInstruction(d)
-
-	case 0xfd:
-		decodeVectorInstruction(d)
-	default:
-		d.Fatalf("unknown instruction: %#02x", instr[0])
+	opcode := Opcode(opcodeBytes[0])
+	instr := instrMap[opcode]
+	df := instr.decodeFn
+	if df == nil {
+		df = decodeOpcode
 	}
+
+	df(d, opcode, instr.mnemonic)
 }
 
-func decodeInstructionWithoutOperands(d *decode.D, name string, i byte) {
-	d.FieldU8(name, d.AssertU(uint64(i)), scalar.ActualHex)
+func decodeOpcode(d *decode.D, opcode Opcode, mnemonic string) {
+	d.FieldU8("opcode", d.AssertU(uint64(opcode)), scalar.Sym(mnemonic), scalar.ActualHex)
 }
 
-func decodeBlock(d *decode.D) {
-	d.FieldU8("block", d.AssertU(0x02), scalar.ActualHex)
+func decodeElse(d *decode.D) {
+	d.FieldU8("else", d.AssertU(uint64(0x05)), scalar.ActualHex)
+}
+
+func decodeEnd(d *decode.D) {
+	d.FieldU8("end", d.AssertU(uint64(0x0b)), scalar.ActualHex)
+}
+
+func decodeBlock(d *decode.D, opcode Opcode, mnemonic string) {
+	decodeOpcode(d, opcode, mnemonic)
 	decodeBlockType(d, "bt")
 	d.FieldArray("instructions", func(d *decode.D) {
 		for {
@@ -455,11 +311,11 @@ func decodeBlock(d *decode.D) {
 			d.FieldStruct("instr", decodeInstruction)
 		}
 	})
-	d.FieldU8("end", d.AssertU(0x0b))
+	decodeEnd(d)
 }
 
-func decodeLoop(d *decode.D) {
-	d.FieldU8("loop", d.AssertU(0x03), scalar.ActualHex)
+func decodeLoop(d *decode.D, opcode Opcode, mnemonic string) {
+	decodeOpcode(d, opcode, mnemonic)
 	decodeBlockType(d, "bt")
 	d.FieldArray("instructions", func(d *decode.D) {
 		for {
@@ -470,11 +326,11 @@ func decodeLoop(d *decode.D) {
 			d.FieldStruct("instr", decodeInstruction)
 		}
 	})
-	d.FieldU8("end", d.AssertU(0x0b))
+	decodeEnd(d)
 }
 
-func decodeIf(d *decode.D) {
-	d.FieldU8("if", d.AssertU(0x04), scalar.ActualHex)
+func decodeIf(d *decode.D, opcode Opcode, mnemonic string) {
+	decodeOpcode(d, opcode, mnemonic)
 	decodeBlockType(d, "bt")
 	elseClause := false
 	d.FieldArray("in1", func(d *decode.D) {
@@ -491,7 +347,7 @@ func decodeIf(d *decode.D) {
 		}
 	})
 	if elseClause {
-		d.FieldU8("else", d.AssertU(0x05), scalar.ActualHex)
+		decodeElse(d)
 		d.FieldArray("in2", func(d *decode.D) {
 			for {
 				b := d.PeekBytes(1)[0]
@@ -502,904 +358,466 @@ func decodeIf(d *decode.D) {
 			}
 		})
 	}
-	d.FieldU8("end", d.AssertU(0x0b))
+	decodeEnd(d)
 }
 
-func decodeEnd(d *decode.D) {
-	d.FieldU8("end", d.AssertU(0x0b), scalar.ActualHex)
-}
-
-func decodeBr(d *decode.D) {
-	d.FieldU8("br", d.AssertU(0x0c), scalar.ActualHex)
+func decodeBr(d *decode.D, opcode Opcode, mnemonic string) {
+	decodeOpcode(d, opcode, mnemonic)
 	decodeLabelIdx(d, "l")
 }
 
-func decodeBrIf(d *decode.D) {
-	d.FieldU8("br_if", d.AssertU(0x0d), scalar.ActualHex)
+func decodeBrIf(d *decode.D, opcode Opcode, mnemonic string) {
+	decodeOpcode(d, opcode, mnemonic)
 	decodeLabelIdx(d, "l")
 }
 
-func decodeBrTable(d *decode.D) {
-	d.FieldU8("br_table", d.AssertU(0x0e), scalar.ActualHex)
+func decodeBrTable(d *decode.D, opcode Opcode, mnemonic string) {
+	decodeOpcode(d, opcode, mnemonic)
 	decodeVec(d, "l", func(d *decode.D) {
 		decodeLabelIdx(d, "l")
 	})
 	decodeLabelIdx(d, "lN")
 }
 
-func decodeCall(d *decode.D) {
-	d.FieldU8("call", d.AssertU(0x10), scalar.ActualHex)
+func decodeCall(d *decode.D, opcode Opcode, mnemonic string) {
+	decodeOpcode(d, opcode, mnemonic)
 	decodeFuncIdx(d, "x")
 }
 
-func decodeCallIndirect(d *decode.D) {
-	d.FieldU8("call", d.AssertU(0x11), scalar.ActualHex)
+func decodeCallIndirect(d *decode.D, opcode Opcode, mnemonic string) {
+	decodeOpcode(d, opcode, mnemonic)
 	decodeTypeIdx(d, "y")
 	decodeTableIdx(d, "x")
 }
 
-func decodeSelectT(d *decode.D) {
-	d.FieldU8("select", d.AssertU(0x1c), scalar.ActualHex)
+func decodeSelectT(d *decode.D, opcode Opcode, mnemonic string) {
+	decodeOpcode(d, opcode, mnemonic)
 	decodeVec(d, "t", func(d *decode.D) {
 		decodeValType(d, "t")
 	})
 }
 
-func decodeLocalGet(d *decode.D) {
-	d.FieldU8("local.get", d.AssertU(0x20), scalar.ActualHex)
+func decodeInstrWithLocalIdx(d *decode.D, opcode Opcode, mnemonic string) {
+	decodeOpcode(d, opcode, mnemonic)
 	decodeLocalIdx(d, "x")
 }
 
-func decodeLocalSet(d *decode.D) {
-	d.FieldU8("local.set", d.AssertU(0x21), scalar.ActualHex)
-	decodeLocalIdx(d, "x")
-}
-
-func decodeLocalTee(d *decode.D) {
-	d.FieldU8("local.tee", d.AssertU(0x22), scalar.ActualHex)
-	decodeLocalIdx(d, "x")
-}
-
-func decodeGlobalGet(d *decode.D) {
-	d.FieldU8("global.get", d.AssertU(0x23), scalar.ActualHex)
+func decodeInstrWithGlobalIdx(d *decode.D, opcode Opcode, mnemonic string) {
+	decodeOpcode(d, opcode, mnemonic)
 	decodeGlobalIdx(d, "x")
 }
 
-func decodeGlobalSet(d *decode.D) {
-	d.FieldU8("global.set", d.AssertU(0x24), scalar.ActualHex)
-	decodeGlobalIdx(d, "x")
-}
-
-func decodeTableGet(d *decode.D) {
-	d.FieldU8("table.get", d.AssertU(0x25), scalar.ActualHex)
+func decodeInstrWithTableIdx(d *decode.D, opcode Opcode, mnemonic string) {
+	decodeOpcode(d, opcode, mnemonic)
 	decodeTableIdx(d, "x")
 }
 
-func decodeTableSet(d *decode.D) {
-	d.FieldU8("table.set", d.AssertU(0x26), scalar.ActualHex)
-	decodeTableIdx(d, "x")
-}
-
-func decodeI32Load(d *decode.D) {
-	d.FieldU8("i32.load", d.AssertU(0x28), scalar.ActualHex)
+func decodeInstrWithMemArg(d *decode.D, opcode Opcode, mnemonic string) {
+	decodeOpcode(d, opcode, mnemonic)
 	decodeMemArg(d, "m")
 }
 
-func decodeI64Load(d *decode.D) {
-	d.FieldU8("i64.load", d.AssertU(0x29), scalar.ActualHex)
-	decodeMemArg(d, "m")
-}
-
-func decodeF32Load(d *decode.D) {
-	d.FieldU8("f32.load", d.AssertU(0x2a), scalar.ActualHex)
-	decodeMemArg(d, "m")
-}
-
-func decodeF64Load(d *decode.D) {
-	d.FieldU8("f64.load", d.AssertU(0x2b), scalar.ActualHex)
-	decodeMemArg(d, "m")
-}
-
-func decodeI32Load8S(d *decode.D) {
-	d.FieldU8("i32.load8_s", d.AssertU(0x2c), scalar.ActualHex)
-	decodeMemArg(d, "m")
-}
-
-func decodeI32Load8U(d *decode.D) {
-	d.FieldU8("i32.load8_u", d.AssertU(0x2d), scalar.ActualHex)
-	decodeMemArg(d, "m")
-}
-
-func decodeI32Load16S(d *decode.D) {
-	d.FieldU8("i32.load16_s", d.AssertU(0x2e), scalar.ActualHex)
-	decodeMemArg(d, "m")
-}
-
-func decodeI32Load16U(d *decode.D) {
-	d.FieldU8("i32.load16_u", d.AssertU(0x2f), scalar.ActualHex)
-	decodeMemArg(d, "m")
-}
-
-func decodeI64Load8S(d *decode.D) {
-	d.FieldU8("i64.load8_s", d.AssertU(0x30), scalar.ActualHex)
-	decodeMemArg(d, "m")
-}
-
-func decodeI64Load8U(d *decode.D) {
-	d.FieldU8("i64.load8_u", d.AssertU(0x31), scalar.ActualHex)
-	decodeMemArg(d, "m")
-}
-
-func decodeI64Load16S(d *decode.D) {
-	d.FieldU8("i64.load16_s", d.AssertU(0x32), scalar.ActualHex)
-	decodeMemArg(d, "m")
-}
-
-func decodeI64Load16U(d *decode.D) {
-	d.FieldU8("i64.load16_u", d.AssertU(0x33), scalar.ActualHex)
-	decodeMemArg(d, "m")
-}
-
-func decodeI64Load32S(d *decode.D) {
-	d.FieldU8("i64.load32_s", d.AssertU(0x34), scalar.ActualHex)
-	decodeMemArg(d, "m")
-}
-
-func decodeI64Load32U(d *decode.D) {
-	d.FieldU8("i64.load32_u", d.AssertU(0x35), scalar.ActualHex)
-	decodeMemArg(d, "m")
-}
-
-func decodeI32Store(d *decode.D) {
-	d.FieldU8("i32.store", d.AssertU(0x36), scalar.ActualHex)
-	decodeMemArg(d, "m")
-}
-
-func decodeI64Store(d *decode.D) {
-	d.FieldU8("i64.store", d.AssertU(0x37), scalar.ActualHex)
-	decodeMemArg(d, "m")
-}
-
-func decodeF32Store(d *decode.D) {
-	d.FieldU8("f32.store", d.AssertU(0x38), scalar.ActualHex)
-	decodeMemArg(d, "m")
-}
-
-func decodeF64Store(d *decode.D) {
-	d.FieldU8("f64.store", d.AssertU(0x39), scalar.ActualHex)
-	decodeMemArg(d, "m")
-}
-
-func decodeI32Store8(d *decode.D) {
-	d.FieldU8("i32.store8", d.AssertU(0x3a), scalar.ActualHex)
-	decodeMemArg(d, "m")
-}
-
-func decodeI32Store16(d *decode.D) {
-	d.FieldU8("i32.store16", d.AssertU(0x3b), scalar.ActualHex)
-	decodeMemArg(d, "m")
-}
-
-func decodeI64Store8(d *decode.D) {
-	d.FieldU8("i64.store8", d.AssertU(0x3c), scalar.ActualHex)
-	decodeMemArg(d, "m")
-}
-
-func decodeI64Store16(d *decode.D) {
-	d.FieldU8("i64.store16", d.AssertU(0x3d), scalar.ActualHex)
-	decodeMemArg(d, "m")
-}
-
-func decodeI64Store32(d *decode.D) {
-	d.FieldU8("i64.store32", d.AssertU(0x3e), scalar.ActualHex)
-	decodeMemArg(d, "m")
-}
-
-func decodeMemorySize(d *decode.D) {
-	d.FieldU8("memory.size", d.AssertU(0x3f), scalar.ActualHex)
+func decodeMemorySize(d *decode.D, opcode Opcode, mnemonic string) {
+	decodeOpcode(d, opcode, mnemonic)
 	d.FieldU8("reserved", d.AssertU(0x00), scalar.ActualHex)
 }
 
-func decodeMemoryGrow(d *decode.D) {
-	d.FieldU8("memory.grow", d.AssertU(0x40), scalar.ActualHex)
+func decodeMemoryGrow(d *decode.D, opcode Opcode, mnemonic string) {
+	decodeOpcode(d, opcode, mnemonic)
 	d.FieldU8("reserved", d.AssertU(0x00), scalar.ActualHex)
 }
 
-func decodeI32Const(d *decode.D) {
-	d.FieldU8("i32.const", d.AssertU(0x41), scalar.ActualHex)
+func decodeI32Const(d *decode.D, opcode Opcode, mnemonic string) {
+	decodeOpcode(d, opcode, mnemonic)
 	fieldI32(d, "n")
 }
 
-func decodeI64Const(d *decode.D) {
-	d.FieldU8("i64.const", d.AssertU(0x42), scalar.ActualHex)
+func decodeI64Const(d *decode.D, opcode Opcode, mnemonic string) {
+	decodeOpcode(d, opcode, mnemonic)
 	fieldI64(d, "n")
 }
 
-func decodeF32Const(d *decode.D) {
-	d.FieldU8("f32.const", d.AssertU(0x43), scalar.ActualHex)
+func decodeF32Const(d *decode.D, opcode Opcode, mnemonic string) {
+	decodeOpcode(d, opcode, mnemonic)
 	d.FieldF32("z")
 }
 
-func decodeF64Const(d *decode.D) {
-	d.FieldU8("f64.const", d.AssertU(0x44), scalar.ActualHex)
+func decodeF64Const(d *decode.D, opcode Opcode, mnemonic string) {
+	decodeOpcode(d, opcode, mnemonic)
 	d.FieldF64("z")
 }
 
-func decodeRefNull(d *decode.D) {
-	d.FieldU8("ref.null", d.AssertU(0xd0), scalar.ActualHex)
+func decodeRefNull(d *decode.D, opcode Opcode, mnemonic string) {
+	decodeOpcode(d, opcode, mnemonic)
 	decodeRefType(d, "t")
 }
 
-func decodeRefFunc(d *decode.D) {
-	d.FieldU8("ref.func", d.AssertU(0xd2), scalar.ActualHex)
+func decodeRefFunc(d *decode.D, opcode Opcode, mnemonic string) {
+	decodeOpcode(d, opcode, mnemonic)
 	decodeFuncIdx(d, "x")
 }
 
-func decodePrefixedInstruction(d *decode.D) {
-	d.FieldU8("prefix", d.AssertU(0xfc), scalar.ActualHex)
+var prefixedInstrMap = instructionMap{
+	0: {mnemonic: "i32.trunc_sat_f32_s"},
+	1: {mnemonic: "i32.trunc_sat_f32_u"},
+	2: {mnemonic: "i32.trunc_sat_f64_s"},
+	3: {mnemonic: "i32.trunc_sat_f64_u"},
+	4: {mnemonic: "i64.trunc_sat_f32_s"},
+	5: {mnemonic: "i64.trunc_sat_f32_u"},
+	6: {mnemonic: "i64.trunc_sat_f64_s"},
+	7: {mnemonic: "i64.trunc_sat_f64_u"},
+
+	8:  {mnemonic: "memory.init", decodeFn: decodeMemoryInit},
+	9:  {mnemonic: "data.drop", decodeFn: decodeDataDrop},
+	10: {mnemonic: "memory.copy", decodeFn: decodeMemoryCopy},
+	11: {mnemonic: "memory.fill", decodeFn: decodeMemoryFill},
+	12: {mnemonic: "table.init", decodeFn: decodeTableInit},
+	13: {mnemonic: "elem.drop", decodeFn: decodeElemDrop},
+	14: {mnemonic: "table.copy", decodeFn: decodeTableCopy},
+	15: {mnemonic: "table.grow", decodeFn: decodePrefixedInstrWithTableIdx},
+	16: {mnemonic: "table.size", decodeFn: decodePrefixedInstrWithTableIdx},
+	17: {mnemonic: "table.fill", decodeFn: decodePrefixedInstrWithTableIdx},
+}
+
+func decodePrefixedInstruction(d *decode.D, prefix Opcode, mnemonic string) {
+	d.FieldU8("prefix", d.AssertU(uint64(prefix)), scalar.ActualHex)
 	s := peekUnsignedLEB128(d)
 	v, ok := s.Actual.(uint64)
 	if !ok {
 		d.Fatalf("expected uint64 but got %t", s.Actual)
 	}
-	switch v {
-	case 0:
-		decodePrefixedInstructionWithoutOperands(d, "i32.trunc_sat_f32_s", v)
-	case 1:
-		decodePrefixedInstructionWithoutOperands(d, "i32.trunc_sat_f32_u", v)
-	case 2:
-		decodePrefixedInstructionWithoutOperands(d, "i32.trunc_sat_f64_s", v)
-	case 3:
-		decodePrefixedInstructionWithoutOperands(d, "i32.trunc_sat_f64_u", v)
-	case 4:
-		decodePrefixedInstructionWithoutOperands(d, "i64.trunc_sat_f32_s", v)
-	case 5:
-		decodePrefixedInstructionWithoutOperands(d, "i64.trunc_sat_f32_u", v)
-	case 6:
-		decodePrefixedInstructionWithoutOperands(d, "i64.trunc_sat_f64_s", v)
-	case 7:
-		decodePrefixedInstructionWithoutOperands(d, "i64.trunc_sat_f64_u", v)
 
-	case 8:
-		decodeMemoryInit(d)
-	case 9:
-		decodeDataDrop(d)
-	case 10:
-		decodeMemoryCopy(d)
-	case 11:
-		decodeMemoryFill(d)
-	case 12:
-		decodeTableInit(d)
-	case 13:
-		decodeElemDrop(d)
-	case 14:
-		decodeTableCopy(d)
-	case 15:
-		decodeTableGrow(d)
-	case 16:
-		decodeTableSize(d)
-	case 17:
-		decodeTableFill(d)
-
-	default:
-		d.Fatalf("unknown prefixed instruction: 0xfc %d", v)
+	opcode := Opcode(v)
+	instr := prefixedInstrMap[opcode]
+	df := instr.decodeFn
+	if df == nil {
+		df = decodePrefixedOpcode
 	}
+
+	df(d, opcode, instr.mnemonic)
 }
 
-func decodePrefixedInstructionWithoutOperands(d *decode.D, name string, i uint64) {
-	d.FieldUScalarFn(name, readUnsignedLEB128, d.AssertU(i))
+func decodePrefixedOpcode(d *decode.D, opcode Opcode, mnemonic string) {
+	d.FieldUScalarFn("opcode", readUnsignedLEB128, d.AssertU(uint64(opcode)), scalar.Sym(mnemonic))
 }
 
-func decodeMemoryInit(d *decode.D) {
-	d.FieldUScalarFn("memory.init", readUnsignedLEB128, d.AssertU(8))
+func decodeMemoryInit(d *decode.D, opcode Opcode, mnemonic string) {
+	decodePrefixedOpcode(d, opcode, mnemonic)
 	decodeDataIdx(d, "x")
 	d.FieldU8("reserved", scalar.ActualHex, d.AssertU(0))
 }
 
-func decodeDataDrop(d *decode.D) {
-	d.FieldUScalarFn("data.drop", readUnsignedLEB128, d.AssertU(9))
+func decodeDataDrop(d *decode.D, opcode Opcode, mnemonic string) {
+	decodePrefixedOpcode(d, opcode, mnemonic)
 	decodeDataIdx(d, "x")
 }
 
-func decodeMemoryCopy(d *decode.D) {
-	d.FieldUScalarFn("memory.copy", readUnsignedLEB128, d.AssertU(10))
+func decodeMemoryCopy(d *decode.D, opcode Opcode, mnemonic string) {
+	decodePrefixedOpcode(d, opcode, mnemonic)
 	d.FieldU8("reserved1", scalar.ActualHex, d.AssertU(0))
 	d.FieldU8("reserved2", scalar.ActualHex, d.AssertU(0))
 }
 
-func decodeMemoryFill(d *decode.D) {
-	d.FieldUScalarFn("memory.fill", readUnsignedLEB128, d.AssertU(11))
+func decodeMemoryFill(d *decode.D, opcode Opcode, mnemonic string) {
+	decodePrefixedOpcode(d, opcode, mnemonic)
 	d.FieldU8("reserved", scalar.ActualHex, d.AssertU(0))
 }
 
-func decodeTableInit(d *decode.D) {
-	d.FieldUScalarFn("table.init", readUnsignedLEB128, d.AssertU(12))
+func decodeTableInit(d *decode.D, opcode Opcode, mnemonic string) {
+	decodePrefixedOpcode(d, opcode, mnemonic)
 	decodeElemIdx(d, "y")
 	decodeTableIdx(d, "x")
 }
 
-func decodeElemDrop(d *decode.D) {
-	d.FieldUScalarFn("elem.drop", readUnsignedLEB128, d.AssertU(13))
+func decodeElemDrop(d *decode.D, opcode Opcode, mnemonic string) {
+	decodePrefixedOpcode(d, opcode, mnemonic)
 	decodeElemIdx(d, "x")
 }
 
-func decodeTableCopy(d *decode.D) {
-	d.FieldUScalarFn("table.copy", readUnsignedLEB128, d.AssertU(14))
+func decodeTableCopy(d *decode.D, opcode Opcode, mnemonic string) {
+	decodePrefixedOpcode(d, opcode, mnemonic)
 	decodeTableIdx(d, "x")
 	decodeTableIdx(d, "y")
 }
 
-func decodeTableGrow(d *decode.D) {
-	d.FieldUScalarFn("table.grow", readUnsignedLEB128, d.AssertU(15))
+func decodePrefixedInstrWithTableIdx(d *decode.D, opcode Opcode, mnemonic string) {
+	decodePrefixedOpcode(d, opcode, mnemonic)
 	decodeTableIdx(d, "x")
 }
 
-func decodeTableSize(d *decode.D) {
-	d.FieldUScalarFn("table.size", readUnsignedLEB128, d.AssertU(16))
-	decodeTableIdx(d, "x")
+var vectorInstrMap = instructionMap{
+	0:   {mnemonic: "v128.load", decodeFn: decodeVectorInstrWithMemArg},
+	1:   {mnemonic: "v128.load8x8_s", decodeFn: decodeVectorInstrWithMemArg},
+	2:   {mnemonic: "v128.load8x8_u", decodeFn: decodeVectorInstrWithMemArg},
+	3:   {mnemonic: "v128.load16x4_s", decodeFn: decodeVectorInstrWithMemArg},
+	4:   {mnemonic: "v128.load16x4_u", decodeFn: decodeVectorInstrWithMemArg},
+	5:   {mnemonic: "v128.load32x2_s", decodeFn: decodeVectorInstrWithMemArg},
+	6:   {mnemonic: "v128.load32x2_u", decodeFn: decodeVectorInstrWithMemArg},
+	7:   {mnemonic: "v128.load8_splat", decodeFn: decodeVectorInstrWithMemArg},
+	8:   {mnemonic: "v128.load16_splat", decodeFn: decodeVectorInstrWithMemArg},
+	9:   {mnemonic: "v128.load32_splat", decodeFn: decodeVectorInstrWithMemArg},
+	10:  {mnemonic: "v128.load64_splat", decodeFn: decodeVectorInstrWithMemArg},
+	11:  {mnemonic: "v128.store", decodeFn: decodeVectorInstrWithMemArg},
+	12:  {mnemonic: "v128.const", decodeFn: decodeV128Const},
+	13:  {mnemonic: "i8x16.shuffle", decodeFn: decodeI8x16Shuffle},
+	14:  {mnemonic: "i8x16.swizzle"},
+	15:  {mnemonic: "i8x16.splat"},
+	16:  {mnemonic: "i16x8.splat"},
+	17:  {mnemonic: "i32x4.splat"},
+	18:  {mnemonic: "i64x2.splat"},
+	19:  {mnemonic: "f32x4.splat"},
+	20:  {mnemonic: "f64x2.splat"},
+	21:  {mnemonic: "i8x16.extract_lane_s", decodeFn: decodeVectorInstrWithLaneIndex},
+	22:  {mnemonic: "i8x16.extract_lane_u", decodeFn: decodeVectorInstrWithLaneIndex},
+	23:  {mnemonic: "i8x16.replace_lane", decodeFn: decodeVectorInstrWithLaneIndex},
+	24:  {mnemonic: "i16x8.extract_lane_s", decodeFn: decodeVectorInstrWithLaneIndex},
+	25:  {mnemonic: "i16x8.extract_lane_u", decodeFn: decodeVectorInstrWithLaneIndex},
+	26:  {mnemonic: "i16x8.replace_lane", decodeFn: decodeVectorInstrWithLaneIndex},
+	27:  {mnemonic: "i32x4.extract_lane", decodeFn: decodeVectorInstrWithLaneIndex},
+	28:  {mnemonic: "i32x4.replace_lane", decodeFn: decodeVectorInstrWithLaneIndex},
+	29:  {mnemonic: "i64x2.extract_lane", decodeFn: decodeVectorInstrWithLaneIndex},
+	30:  {mnemonic: "i64x2.replace_lane", decodeFn: decodeVectorInstrWithLaneIndex},
+	31:  {mnemonic: "f32x4.extract_lane", decodeFn: decodeVectorInstrWithLaneIndex},
+	32:  {mnemonic: "f32x4.replace_lane", decodeFn: decodeVectorInstrWithLaneIndex},
+	33:  {mnemonic: "f64x2.extract_lane", decodeFn: decodeVectorInstrWithLaneIndex},
+	34:  {mnemonic: "f64x2.replace_lane", decodeFn: decodeVectorInstrWithLaneIndex},
+	35:  {mnemonic: "i8x16.eq"},
+	36:  {mnemonic: "i8x16.ne"},
+	37:  {mnemonic: "i8x16.lt_s"},
+	38:  {mnemonic: "i8x16.lt_u"},
+	39:  {mnemonic: "i8x16.gt_s"},
+	40:  {mnemonic: "i8x16.gt_u"},
+	41:  {mnemonic: "i8x16.le_s"},
+	42:  {mnemonic: "i8x16.le_u"},
+	43:  {mnemonic: "i8x16.ge_s"},
+	44:  {mnemonic: "i8x16.ge_u"},
+	45:  {mnemonic: "i16x8.eq"},
+	46:  {mnemonic: "i16x8.ne"},
+	47:  {mnemonic: "i16x8.lt_s"},
+	48:  {mnemonic: "i16x8.lt_u"},
+	49:  {mnemonic: "i16x8.gt_s"},
+	50:  {mnemonic: "i16x8.gt_u"},
+	51:  {mnemonic: "i16x8.le_s"},
+	52:  {mnemonic: "i16x8.le_u"},
+	53:  {mnemonic: "i16x8.ge_s"},
+	54:  {mnemonic: "i16x8.ge_u"},
+	55:  {mnemonic: "i32x4.eq"},
+	56:  {mnemonic: "i32x4.ne"},
+	57:  {mnemonic: "i32x4.lt_s"},
+	58:  {mnemonic: "i32x4.lt_u"},
+	59:  {mnemonic: "i32x4.gt_s"},
+	60:  {mnemonic: "i32x4.gt_u"},
+	61:  {mnemonic: "i32x4.le_s"},
+	62:  {mnemonic: "i32x4.le_u"},
+	63:  {mnemonic: "i32x4.ge_s"},
+	64:  {mnemonic: "i32x4.ge_u"},
+	65:  {mnemonic: "f32x4.eq"},
+	66:  {mnemonic: "f32x4.ne"},
+	67:  {mnemonic: "f32x4.lt"},
+	68:  {mnemonic: "f32x4.gt"},
+	69:  {mnemonic: "f32x4.le"},
+	70:  {mnemonic: "f32x4.ge"},
+	71:  {mnemonic: "f64x2.eq"},
+	72:  {mnemonic: "f64x2.ne"},
+	73:  {mnemonic: "f64x2.lt"},
+	74:  {mnemonic: "f64x2.gt"},
+	75:  {mnemonic: "f64x2.le"},
+	76:  {mnemonic: "f64x2.ge"},
+	77:  {mnemonic: "v128.not"},
+	78:  {mnemonic: "v128.and"},
+	79:  {mnemonic: "v128.andnot"},
+	80:  {mnemonic: "v128.or"},
+	81:  {mnemonic: "v128.xor"},
+	82:  {mnemonic: "v128.bitselect"},
+	83:  {mnemonic: "v128.any_true"},
+	84:  {mnemonic: "v128.load8_lane", decodeFn: decodeVectorInstrWithMemArgAndLaneIdx},
+	85:  {mnemonic: "v128.load16_lane", decodeFn: decodeVectorInstrWithMemArgAndLaneIdx},
+	86:  {mnemonic: "v128.load32_lane", decodeFn: decodeVectorInstrWithMemArgAndLaneIdx},
+	87:  {mnemonic: "v128.load64_lane", decodeFn: decodeVectorInstrWithMemArgAndLaneIdx},
+	88:  {mnemonic: "v128.store8_lane", decodeFn: decodeVectorInstrWithMemArgAndLaneIdx},
+	89:  {mnemonic: "v128.store16_lane", decodeFn: decodeVectorInstrWithMemArgAndLaneIdx},
+	90:  {mnemonic: "v128.store32_lane", decodeFn: decodeVectorInstrWithMemArgAndLaneIdx},
+	91:  {mnemonic: "v128.store64_lane", decodeFn: decodeVectorInstrWithMemArgAndLaneIdx},
+	92:  {mnemonic: "v128.load32_zero", decodeFn: decodeVectorInstrWithMemArg},
+	93:  {mnemonic: "v128.load64_zero", decodeFn: decodeVectorInstrWithMemArg},
+	94:  {mnemonic: "f32x4.demote_f64x2_zero"},
+	95:  {mnemonic: "f64x2.promote_low_f32x4"},
+	96:  {mnemonic: "i8x16.abs"},
+	97:  {mnemonic: "i8x16.neg"},
+	98:  {mnemonic: "i8x16.popcnt"},
+	99:  {mnemonic: "i8x16.all_true"},
+	100: {mnemonic: "i8x16.bitmask"},
+	101: {mnemonic: "i8x16.narrow_i16x8_s"},
+	102: {mnemonic: "i8x16.narrow_i16x8_u"},
+	103: {mnemonic: "f32x4.ceil"},
+	104: {mnemonic: "f32x4.floor"},
+	105: {mnemonic: "f32x4.trunc"},
+	106: {mnemonic: "f32x4.nearest"},
+	107: {mnemonic: "i8x16.shl"},
+	108: {mnemonic: "i8x16.shr_s"},
+	109: {mnemonic: "i8x16.shr_u"},
+	110: {mnemonic: "i8x16.add"},
+	111: {mnemonic: "i8x16.add_sat_s"},
+	112: {mnemonic: "i8x16.add_sat_u"},
+	113: {mnemonic: "i8x16.sub"},
+	114: {mnemonic: "i8x16.sub_sat_s"},
+	115: {mnemonic: "i8x16.sub_sat_u"},
+	116: {mnemonic: "f64x2.ceil"},
+	117: {mnemonic: "f64x2.floor"},
+	118: {mnemonic: "i8x16.min_s"},
+	119: {mnemonic: "i8x16.min_u"},
+	120: {mnemonic: "i8x16.max_s"},
+	121: {mnemonic: "i8x16.max_u"},
+	122: {mnemonic: "f64x2.trunc"},
+	123: {mnemonic: "i8x16.avgr_u"},
+	124: {mnemonic: "i16x8.extadd_pairwise_i8x16_s"},
+	125: {mnemonic: "i16x8.extadd_pairwise_i8x16_u"},
+	126: {mnemonic: "i32x4.extadd_pairwise_i16x8_s"},
+	127: {mnemonic: "i32x4.extadd_pairwise_i16x8_u"},
+	128: {mnemonic: "i16x8.abs"},
+	129: {mnemonic: "i16x8.neg"},
+	130: {mnemonic: "i16x8.q15mulr_sat_s"},
+	131: {mnemonic: "i16x8.all_true"},
+	132: {mnemonic: "i16x8.bitmask"},
+	133: {mnemonic: "i16x8.narrow_i32x4_s"},
+	134: {mnemonic: "i16x8.narrow_i32x4_u"},
+	135: {mnemonic: "i16x8.extend_low_i8x16_s"},
+	136: {mnemonic: "i16x8.extend_high_i8x16_s"},
+	137: {mnemonic: "i16x8.extend_low_i8x16_u"},
+	138: {mnemonic: "i16x8.extend_high_i8x16_u"},
+	139: {mnemonic: "i16x8.shl"},
+	140: {mnemonic: "i16x8.shr_s"},
+	141: {mnemonic: "i16x8.shr_u"},
+	142: {mnemonic: "i16x8.add"},
+	143: {mnemonic: "i16x8.add_sat_s"},
+	144: {mnemonic: "i16x8.add_sat_u"},
+	145: {mnemonic: "i16x8.sub"},
+	146: {mnemonic: "i16x8.sub_sat_s"},
+	147: {mnemonic: "i16x8.sub_sat_u"},
+	148: {mnemonic: "f64x2.nearest"},
+	149: {mnemonic: "i16x8.mul"},
+	150: {mnemonic: "i16x8.min_s"},
+	151: {mnemonic: "i16x8.min_u"},
+	152: {mnemonic: "i16x8.max_s"},
+	153: {mnemonic: "i16x8.max_u"},
+	155: {mnemonic: "i16x8.avgr_u"},
+	156: {mnemonic: "i16x8.extmul_low_i8x16_s"},
+	157: {mnemonic: "i16x8.extmul_high_i8x16_s"},
+	158: {mnemonic: "i16x8.extmul_low_i8x16_u"},
+	159: {mnemonic: "i16x8.extmul_high_i8x16_u"},
+	160: {mnemonic: "i32x4.abs"},
+	161: {mnemonic: "i32x4.neg"},
+	163: {mnemonic: "i32x4.all_true"},
+	164: {mnemonic: "i32x4.bitmask"},
+	167: {mnemonic: "i32x4.extend_low_i16x8_s"},
+	168: {mnemonic: "i32x4.extend_high_i16x8_s"},
+	169: {mnemonic: "i32x4.extend_low_i16x8_u"},
+	170: {mnemonic: "i32x4.extend_high_i16x8_u"},
+	171: {mnemonic: "i32x4.shl"},
+	172: {mnemonic: "i32x4.shr_s"},
+	173: {mnemonic: "i32x4.shr_u"},
+	174: {mnemonic: "i32x4.add"},
+	177: {mnemonic: "i32x4.sub"},
+	181: {mnemonic: "i32x4.mul"},
+	182: {mnemonic: "i32x4.min_s"},
+	183: {mnemonic: "i32x4.min_u"},
+	184: {mnemonic: "i32x4.max_s"},
+	185: {mnemonic: "i32x4.max_u"},
+	186: {mnemonic: "i32x4.dot_i16x8_s"},
+	188: {mnemonic: "i32x4.extmul_low_i16x8_s"},
+	189: {mnemonic: "i32x4.extmul_high_i16x8_s"},
+	190: {mnemonic: "i32x4.extmul_low_i16x8_u"},
+	191: {mnemonic: "i32x4.extmul_high_i16x8_u"},
+	192: {mnemonic: "i64x2.abs"},
+	193: {mnemonic: "i64x2.neg"},
+	195: {mnemonic: "i64x2.all_true"},
+	196: {mnemonic: "i64x2.bitmask"},
+	199: {mnemonic: "i64x2.extend_low_i32x4_s"},
+	200: {mnemonic: "i64x2.extend_high_i32x4_s"},
+	201: {mnemonic: "i64x2.extend_low_i32x4_u"},
+	202: {mnemonic: "i64x2.extend_high_i32x4_u"},
+	203: {mnemonic: "i64x2.shl"},
+	204: {mnemonic: "i64x2.shr_s"},
+	205: {mnemonic: "i64x2.shr_u"},
+	206: {mnemonic: "i64x2.add"},
+	209: {mnemonic: "i64x2.sub"},
+	213: {mnemonic: "i64x2.mul"},
+	214: {mnemonic: "i64x2.eq"},
+	215: {mnemonic: "i64x2.ne"},
+	216: {mnemonic: "i64x2.lt_s"},
+	217: {mnemonic: "i64x2.gt_s"},
+	218: {mnemonic: "i64x2.le_s"},
+	219: {mnemonic: "i64x2.ge_s"},
+	220: {mnemonic: "i64x2.extmul_low_i32x4_s"},
+	221: {mnemonic: "i64x2.extmul_high_i32x4_s"},
+	222: {mnemonic: "i64x2.extmul_low_i32x4_u"},
+	223: {mnemonic: "i64x2.extmul_high_i32x4_u"},
+	224: {mnemonic: "f32x4.abs"},
+	225: {mnemonic: "f32x4.neg"},
+	227: {mnemonic: "f32x4.sqrt"},
+	228: {mnemonic: "f32x4.add"},
+	229: {mnemonic: "f32x4.sub"},
+	230: {mnemonic: "f32x4.mul"},
+	231: {mnemonic: "f32x4.div"},
+	232: {mnemonic: "f32x4.min"},
+	233: {mnemonic: "f32x4.max"},
+	234: {mnemonic: "f32x4.pmin"},
+	235: {mnemonic: "f32x4.pmax"},
+	236: {mnemonic: "f64x2.abs"},
+	237: {mnemonic: "f64x2.neg"},
+	239: {mnemonic: "f64x2.sqrt"},
+	240: {mnemonic: "f64x2.add"},
+	241: {mnemonic: "f64x2.sub"},
+	242: {mnemonic: "f64x2.mul"},
+	243: {mnemonic: "f64x2.div"},
+	244: {mnemonic: "f64x2.min"},
+	245: {mnemonic: "f64x2.max"},
+	246: {mnemonic: "f64x2.pmin"},
+	247: {mnemonic: "f64x2.pmax"},
+	248: {mnemonic: "i32x4.trunc_sat_f32x4_s"},
+	249: {mnemonic: "i32x4.trunc_sat_f32x4_u"},
+	250: {mnemonic: "f32x4.convert_i32x4_s"},
+	251: {mnemonic: "f32x4.convert_i32x4_u"},
+	252: {mnemonic: "i32x4.trunc_sat_f64x2_s_zero"},
+	253: {mnemonic: "i32x4.trunc_sat_f64x2_u_zero"},
+	254: {mnemonic: "f64x2.convert_low_i32x4_s"},
+	255: {mnemonic: "f64x2.convert_low_i32x4_u"},
 }
 
-func decodeTableFill(d *decode.D) {
-	d.FieldUScalarFn("table.fill", readUnsignedLEB128, d.AssertU(17))
-	decodeTableIdx(d, "x")
-}
-
-func decodeVectorInstruction(d *decode.D) {
-	d.FieldU8("prefix", d.AssertU(0xfd), scalar.ActualHex)
+func decodeVectorInstruction(d *decode.D, prefix Opcode, mnemonic string) {
+	d.FieldU8("prefix", d.AssertU(uint64(prefix)), scalar.ActualHex)
 	s := peekUnsignedLEB128(d)
 	v, ok := s.Actual.(uint64)
 	if !ok {
 		d.Fatalf("expected uint64 but got %t", s.Actual)
 	}
-	switch v {
-	case 0:
-		decodeV128Load(d)
-	case 1:
-		decodeV128Load8x8S(d)
-	case 2:
-		decodeV128Load8x8U(d)
-	case 3:
-		decodeV128Load16x4S(d)
-	case 4:
-		decodeV128Load16x4U(d)
-	case 5:
-		decodeV128Load32x2S(d)
-	case 6:
-		decodeV128Load32x2U(d)
-	case 7:
-		decodeV128Load8Splat(d)
-	case 8:
-		decodeV128Load16Splat(d)
-	case 9:
-		decodeV128Load32Splat(d)
-	case 10:
-		decodeV128Load64Splat(d)
-	case 11:
-		decodeV128Store(d)
-	case 12:
-		decodeV128Const(d)
-	case 13:
-		decodeI8x16Shuffle(d)
-	case 14:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.swizzle", v)
-	case 15:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.splat", v)
-	case 16:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.splat", v)
-	case 17:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.splat", v)
-	case 18:
-		decodeVectorInstructionWithoutOperands(d, "i64x2.splat", v)
-	case 19:
-		decodeVectorInstructionWithoutOperands(d, "f32x4.splat", v)
-	case 20:
-		decodeVectorInstructionWithoutOperands(d, "f64x2.splat", v)
-	case 21:
-		decodeI8x16ExtractLaneS(d)
-	case 22:
-		decodeI8x16ExtractLaneU(d)
-	case 23:
-		decodeI8x16ReplaceLane(d)
-	case 24:
-		decodeI16x8ExtractLaneS(d)
-	case 25:
-		decodeI16x8ExtractLaneU(d)
-	case 26:
-		decodeI16x8ReplaceLane(d)
-	case 27:
-		decodeI32x4ExtractLane(d)
-	case 28:
-		decodeI32x4ReplaceLane(d)
-	case 29:
-		decodeI64x2ExtractLane(d)
-	case 30:
-		decodeI64x2ReplaceLane(d)
-	case 31:
-		decodeF32x4ExtractLane(d)
-	case 32:
-		decodeF32x4ReplaceLane(d)
-	case 33:
-		decodeF64x2ExtractLane(d)
-	case 34:
-		decodeF64x2ReplaceLane(d)
-	case 35:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.eq", v)
-	case 36:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.ne", v)
-	case 37:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.lt_s", v)
-	case 38:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.lt_u", v)
-	case 39:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.gt_s", v)
-	case 40:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.gt_u", v)
-	case 41:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.le_s", v)
-	case 42:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.le_u", v)
-	case 43:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.ge_s", v)
-	case 44:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.ge_u", v)
-	case 45:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.eq", v)
-	case 46:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.ne", v)
-	case 47:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.lt_s", v)
-	case 48:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.lt_u", v)
-	case 49:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.gt_s", v)
-	case 50:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.gt_u", v)
-	case 51:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.le_s", v)
-	case 52:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.le_u", v)
-	case 53:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.ge_s", v)
-	case 54:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.ge_u", v)
-	case 55:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.eq", v)
-	case 56:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.ne", v)
-	case 57:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.lt_s", v)
-	case 58:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.lt_u", v)
-	case 59:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.gt_s", v)
-	case 60:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.gt_u", v)
-	case 61:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.le_s", v)
-	case 62:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.le_u", v)
-	case 63:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.ge_s", v)
-	case 64:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.ge_u", v)
-	case 65:
-		decodeVectorInstructionWithoutOperands(d, "f32x4.eq", v)
-	case 66:
-		decodeVectorInstructionWithoutOperands(d, "f32x4.ne", v)
-	case 67:
-		decodeVectorInstructionWithoutOperands(d, "f32x4.lt", v)
-	case 68:
-		decodeVectorInstructionWithoutOperands(d, "f32x4.gt", v)
-	case 69:
-		decodeVectorInstructionWithoutOperands(d, "f32x4.le", v)
-	case 70:
-		decodeVectorInstructionWithoutOperands(d, "f32x4.ge", v)
-	case 71:
-		decodeVectorInstructionWithoutOperands(d, "f64x2.eq", v)
-	case 72:
-		decodeVectorInstructionWithoutOperands(d, "f64x2.ne", v)
-	case 73:
-		decodeVectorInstructionWithoutOperands(d, "f64x2.lt", v)
-	case 74:
-		decodeVectorInstructionWithoutOperands(d, "f64x2.gt", v)
-	case 75:
-		decodeVectorInstructionWithoutOperands(d, "f64x2.le", v)
-	case 76:
-		decodeVectorInstructionWithoutOperands(d, "f64x2.ge", v)
-	case 77:
-		decodeVectorInstructionWithoutOperands(d, "v128.not", v)
-	case 78:
-		decodeVectorInstructionWithoutOperands(d, "v128.and", v)
-	case 79:
-		decodeVectorInstructionWithoutOperands(d, "v128.andnot", v)
-	case 80:
-		decodeVectorInstructionWithoutOperands(d, "v128.or", v)
-	case 81:
-		decodeVectorInstructionWithoutOperands(d, "v128.xor", v)
-	case 82:
-		decodeVectorInstructionWithoutOperands(d, "v128.bitselect", v)
-	case 83:
-		decodeVectorInstructionWithoutOperands(d, "v128.any_true", v)
-	case 84:
-		decodeV128Load8Lane(d)
-	case 85:
-		decodeV128Load16Lane(d)
-	case 86:
-		decodeV128Load32Lane(d)
-	case 87:
-		decodeV128Load64Lane(d)
-	case 88:
-		decodeV128Store8Lane(d)
-	case 89:
-		decodeV128Store16Lane(d)
-	case 90:
-		decodeV128Store32Lane(d)
-	case 91:
-		decodeV128Store64Lane(d)
-	case 92:
-		decodeV128Load32Zero(d)
-	case 93:
-		decodeV128Load64Zero(d)
-	case 94:
-		decodeVectorInstructionWithoutOperands(d, "f32x4.demote_f64x2_zero", v)
-	case 95:
-		decodeVectorInstructionWithoutOperands(d, "f64x2.promote_low_f32x4", v)
-	case 96:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.abs", v)
-	case 97:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.neg", v)
-	case 98:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.popcnt", v)
-	case 99:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.all_true", v)
-	case 100:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.bitmask", v)
-	case 101:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.narrow_i16x8_s", v)
-	case 102:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.narrow_i16x8_u", v)
-	case 103:
-		decodeVectorInstructionWithoutOperands(d, "f32x4.ceil", v)
-	case 104:
-		decodeVectorInstructionWithoutOperands(d, "f32x4.floor", v)
-	case 105:
-		decodeVectorInstructionWithoutOperands(d, "f32x4.trunc", v)
-	case 106:
-		decodeVectorInstructionWithoutOperands(d, "f32x4.nearest", v)
-	case 107:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.shl", v)
-	case 108:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.shr_s", v)
-	case 109:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.shr_u", v)
-	case 110:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.add", v)
-	case 111:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.add_sat_s", v)
-	case 112:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.add_sat_u", v)
-	case 113:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.sub", v)
-	case 114:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.sub_sat_s", v)
-	case 115:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.sub_sat_u", v)
-	case 116:
-		decodeVectorInstructionWithoutOperands(d, "f64x2.ceil", v)
-	case 117:
-		decodeVectorInstructionWithoutOperands(d, "f64x2.floor", v)
-	case 118:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.min_s", v)
-	case 119:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.min_u", v)
-	case 120:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.max_s", v)
-	case 121:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.max_u", v)
-	case 122:
-		decodeVectorInstructionWithoutOperands(d, "f64x2.trunc", v)
-	case 123:
-		decodeVectorInstructionWithoutOperands(d, "i8x16.avgr_u", v)
-	case 124:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.extadd_pairwise_i8x16_s", v)
-	case 125:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.extadd_pairwise_i8x16_u", v)
-	case 126:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.extadd_pairwise_i16x8_s", v)
-	case 127:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.extadd_pairwise_i16x8_u", v)
-	case 128:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.abs", v)
-	case 129:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.neg", v)
-	case 130:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.q15mulr_sat_s", v)
-	case 131:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.all_true", v)
-	case 132:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.bitmask", v)
-	case 133:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.narrow_i32x4_s", v)
-	case 134:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.narrow_i32x4_u", v)
-	case 135:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.extend_low_i8x16_s", v)
-	case 136:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.extend_high_i8x16_s", v)
-	case 137:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.extend_low_i8x16_u", v)
-	case 138:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.extend_high_i8x16_u", v)
-	case 139:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.shl", v)
-	case 140:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.shr_s", v)
-	case 141:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.shr_u", v)
-	case 142:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.add", v)
-	case 143:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.add_sat_s", v)
-	case 144:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.add_sat_u", v)
-	case 145:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.sub", v)
-	case 146:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.sub_sat_s", v)
-	case 147:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.sub_sat_u", v)
-	case 148:
-		decodeVectorInstructionWithoutOperands(d, "f64x2.nearest", v)
-	case 149:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.mul", v)
-	case 150:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.min_s", v)
-	case 151:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.min_u", v)
-	case 152:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.max_s", v)
-	case 153:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.max_u", v)
-	case 155:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.avgr_u", v)
-	case 156:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.extmul_low_i8x16_s", v)
-	case 157:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.extmul_high_i8x16_s", v)
-	case 158:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.extmul_low_i8x16_u", v)
-	case 159:
-		decodeVectorInstructionWithoutOperands(d, "i16x8.extmul_high_i8x16_u", v)
-	case 160:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.abs", v)
-	case 161:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.neg", v)
-	case 163:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.all_true", v)
-	case 164:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.bitmask", v)
-	case 167:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.extend_low_i16x8_s", v)
-	case 168:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.extend_high_i16x8_s", v)
-	case 169:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.extend_low_i16x8_u", v)
-	case 170:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.extend_high_i16x8_u", v)
-	case 171:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.shl", v)
-	case 172:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.shr_s", v)
-	case 173:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.shr_u", v)
-	case 174:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.add", v)
-	case 177:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.sub", v)
-	case 181:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.mul", v)
-	case 182:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.min_s", v)
-	case 183:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.min_u", v)
-	case 184:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.max_s", v)
-	case 185:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.max_u", v)
-	case 186:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.dot_i16x8_s", v)
-	case 188:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.extmul_low_i16x8_s", v)
-	case 189:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.extmul_high_i16x8_s", v)
-	case 190:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.extmul_low_i16x8_u", v)
-	case 191:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.extmul_high_i16x8_u", v)
-	case 192:
-		decodeVectorInstructionWithoutOperands(d, "i64x2.abs", v)
-	case 193:
-		decodeVectorInstructionWithoutOperands(d, "i64x2.neg", v)
-	case 195:
-		decodeVectorInstructionWithoutOperands(d, "i64x2.all_true", v)
-	case 196:
-		decodeVectorInstructionWithoutOperands(d, "i64x2.bitmask", v)
-	case 199:
-		decodeVectorInstructionWithoutOperands(d, "i64x2.extend_low_i32x4_s", v)
-	case 200:
-		decodeVectorInstructionWithoutOperands(d, "i64x2.extend_high_i32x4_s", v)
-	case 201:
-		decodeVectorInstructionWithoutOperands(d, "i64x2.extend_low_i32x4_u", v)
-	case 202:
-		decodeVectorInstructionWithoutOperands(d, "i64x2.extend_high_i32x4_u", v)
-	case 203:
-		decodeVectorInstructionWithoutOperands(d, "i64x2.shl", v)
-	case 204:
-		decodeVectorInstructionWithoutOperands(d, "i64x2.shr_s", v)
-	case 205:
-		decodeVectorInstructionWithoutOperands(d, "i64x2.shr_u", v)
-	case 206:
-		decodeVectorInstructionWithoutOperands(d, "i64x2.add", v)
-	case 209:
-		decodeVectorInstructionWithoutOperands(d, "i64x2.sub", v)
-	case 213:
-		decodeVectorInstructionWithoutOperands(d, "i64x2.mul", v)
-	case 214:
-		decodeVectorInstructionWithoutOperands(d, "i64x2.eq", v)
-	case 215:
-		decodeVectorInstructionWithoutOperands(d, "i64x2.ne", v)
-	case 216:
-		decodeVectorInstructionWithoutOperands(d, "i64x2.lt_s", v)
-	case 217:
-		decodeVectorInstructionWithoutOperands(d, "i64x2.gt_s", v)
-	case 218:
-		decodeVectorInstructionWithoutOperands(d, "i64x2.le_s", v)
-	case 219:
-		decodeVectorInstructionWithoutOperands(d, "i64x2.ge_s", v)
-	case 220:
-		decodeVectorInstructionWithoutOperands(d, "i64x2.extmul_low_i32x4_s", v)
-	case 221:
-		decodeVectorInstructionWithoutOperands(d, "i64x2.extmul_high_i32x4_s", v)
-	case 222:
-		decodeVectorInstructionWithoutOperands(d, "i64x2.extmul_low_i32x4_u", v)
-	case 223:
-		decodeVectorInstructionWithoutOperands(d, "i64x2.extmul_high_i32x4_u", v)
-	case 224:
-		decodeVectorInstructionWithoutOperands(d, "f32x4.abs", v)
-	case 225:
-		decodeVectorInstructionWithoutOperands(d, "f32x4.neg", v)
-	case 227:
-		decodeVectorInstructionWithoutOperands(d, "f32x4.sqrt", v)
-	case 228:
-		decodeVectorInstructionWithoutOperands(d, "f32x4.add", v)
-	case 229:
-		decodeVectorInstructionWithoutOperands(d, "f32x4.sub", v)
-	case 230:
-		decodeVectorInstructionWithoutOperands(d, "f32x4.mul", v)
-	case 231:
-		decodeVectorInstructionWithoutOperands(d, "f32x4.div", v)
-	case 232:
-		decodeVectorInstructionWithoutOperands(d, "f32x4.min", v)
-	case 233:
-		decodeVectorInstructionWithoutOperands(d, "f32x4.max", v)
-	case 234:
-		decodeVectorInstructionWithoutOperands(d, "f32x4.pmin", v)
-	case 235:
-		decodeVectorInstructionWithoutOperands(d, "f32x4.pmax", v)
-	case 236:
-		decodeVectorInstructionWithoutOperands(d, "f64x2.abs", v)
-	case 237:
-		decodeVectorInstructionWithoutOperands(d, "f64x2.neg", v)
-	case 239:
-		decodeVectorInstructionWithoutOperands(d, "f64x2.sqrt", v)
-	case 240:
-		decodeVectorInstructionWithoutOperands(d, "f64x2.add", v)
-	case 241:
-		decodeVectorInstructionWithoutOperands(d, "f64x2.sub", v)
-	case 242:
-		decodeVectorInstructionWithoutOperands(d, "f64x2.mul", v)
-	case 243:
-		decodeVectorInstructionWithoutOperands(d, "f64x2.div", v)
-	case 244:
-		decodeVectorInstructionWithoutOperands(d, "f64x2.min", v)
-	case 245:
-		decodeVectorInstructionWithoutOperands(d, "f64x2.max", v)
-	case 246:
-		decodeVectorInstructionWithoutOperands(d, "f64x2.pmin", v)
-	case 247:
-		decodeVectorInstructionWithoutOperands(d, "f64x2.pmax", v)
-	case 248:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.trunc_sat_f32x4_s", v)
-	case 249:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.trunc_sat_f32x4_u", v)
-	case 250:
-		decodeVectorInstructionWithoutOperands(d, "f32x4.convert_i32x4_s", v)
-	case 251:
-		decodeVectorInstructionWithoutOperands(d, "f32x4.convert_i32x4_u", v)
-	case 252:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.trunc_sat_f64x2_s_zero", v)
-	case 253:
-		decodeVectorInstructionWithoutOperands(d, "i32x4.trunc_sat_f64x2_u_zero", v)
-	case 254:
-		decodeVectorInstructionWithoutOperands(d, "f64x2.convert_low_i32x4_s", v)
-	case 255:
-		decodeVectorInstructionWithoutOperands(d, "f64x2.convert_low_i32x4_u", v)
-	default:
-		d.Fatalf("unknown vector instruction: 0xfd %d", v)
+
+	opcode := Opcode(v)
+	instr := vectorInstrMap[opcode]
+	df := instr.decodeFn
+	if df == nil {
+		df = decodeVectorOpcode
 	}
+
+	df(d, opcode, instr.mnemonic)
 }
 
-func decodeVectorInstructionWithoutOperands(d *decode.D, name string, i uint64) {
-	d.FieldUScalarFn(name, readUnsignedLEB128, d.AssertU(i))
+func decodeVectorOpcode(d *decode.D, opcode Opcode, mnemonic string) {
+	d.FieldUScalarFn("opcode", readUnsignedLEB128, d.AssertU(uint64(opcode)), scalar.Sym(mnemonic))
 }
 
-func decodeV128Load(d *decode.D) {
-	d.FieldUScalarFn("v128.load", readUnsignedLEB128, d.AssertU(0))
+func decodeVectorInstrWithMemArg(d *decode.D, opcode Opcode, mnemonic string) {
+	decodeVectorOpcode(d, opcode, mnemonic)
 	decodeMemArg(d, "m")
 }
 
-func decodeV128Load8x8S(d *decode.D) {
-	d.FieldUScalarFn("v128.load8x8_s", readUnsignedLEB128, d.AssertU(1))
-	decodeMemArg(d, "m")
-}
-
-func decodeV128Load8x8U(d *decode.D) {
-	d.FieldUScalarFn("v128.load8x8_u", readUnsignedLEB128, d.AssertU(2))
-	decodeMemArg(d, "m")
-}
-
-func decodeV128Load16x4S(d *decode.D) {
-	d.FieldUScalarFn("v128.load16x4_s", readUnsignedLEB128, d.AssertU(3))
-	decodeMemArg(d, "m")
-}
-
-func decodeV128Load16x4U(d *decode.D) {
-	d.FieldUScalarFn("v128.load16x4_u", readUnsignedLEB128, d.AssertU(4))
-	decodeMemArg(d, "m")
-}
-
-func decodeV128Load32x2S(d *decode.D) {
-	d.FieldUScalarFn("v128.load32x2_s", readUnsignedLEB128, d.AssertU(5))
-	decodeMemArg(d, "m")
-}
-
-func decodeV128Load32x2U(d *decode.D) {
-	d.FieldUScalarFn("v128.load32x2_u", readUnsignedLEB128, d.AssertU(6))
-	decodeMemArg(d, "m")
-}
-
-func decodeV128Load8Splat(d *decode.D) {
-	d.FieldUScalarFn("v128.load8_splat", readUnsignedLEB128, d.AssertU(7))
-	decodeMemArg(d, "m")
-}
-
-func decodeV128Load16Splat(d *decode.D) {
-	d.FieldUScalarFn("v128.load16_splat", readUnsignedLEB128, d.AssertU(8))
-	decodeMemArg(d, "m")
-}
-
-func decodeV128Load32Splat(d *decode.D) {
-	d.FieldUScalarFn("v128.load32_splat", readUnsignedLEB128, d.AssertU(9))
-	decodeMemArg(d, "m")
-}
-
-func decodeV128Load64Splat(d *decode.D) {
-	d.FieldUScalarFn("v128.load64_splat", readUnsignedLEB128, d.AssertU(10))
-	decodeMemArg(d, "m")
-}
-
-func decodeV128Store(d *decode.D) {
-	d.FieldUScalarFn("v128.store", readUnsignedLEB128, d.AssertU(11))
-	decodeMemArg(d, "m")
-}
-
-func decodeV128Const(d *decode.D) {
-	d.FieldUScalarFn("v128.const", readUnsignedLEB128, d.AssertU(12))
+func decodeV128Const(d *decode.D, opcode Opcode, mnemonic string) {
+	decodeVectorOpcode(d, opcode, mnemonic)
 	d.FieldRawLen("bytes", 16*8)
 }
 
-func decodeI8x16Shuffle(d *decode.D) {
-	d.FieldUScalarFn("i8x16.shuffle", readUnsignedLEB128, d.AssertU(13))
+func decodeI8x16Shuffle(d *decode.D, opcode Opcode, mnemonic string) {
+	decodeVectorOpcode(d, opcode, mnemonic)
 	d.FieldArray("laneidx", func(d *decode.D) {
 		for i := 0; i < 16; i++ {
 			decodeLaneIdx(d, "l")
@@ -1412,130 +830,13 @@ func decodeLaneIdx(d *decode.D, name string) {
 	d.FieldU8(name)
 }
 
-func decodeI8x16ExtractLaneS(d *decode.D) {
-	d.FieldUScalarFn("i8x16.extract_lane_s", readUnsignedLEB128, d.AssertU(21))
+func decodeVectorInstrWithLaneIndex(d *decode.D, opcode Opcode, mnemonic string) {
+	decodeVectorOpcode(d, opcode, mnemonic)
 	decodeLaneIdx(d, "l")
 }
 
-func decodeI8x16ExtractLaneU(d *decode.D) {
-	d.FieldUScalarFn("i8x16.extract_lane_u", readUnsignedLEB128, d.AssertU(22))
-	decodeLaneIdx(d, "l")
-}
-
-func decodeI8x16ReplaceLane(d *decode.D) {
-	d.FieldUScalarFn("i8x16.replace_lane", readUnsignedLEB128, d.AssertU(23))
-	decodeLaneIdx(d, "l")
-}
-
-func decodeI16x8ExtractLaneS(d *decode.D) {
-	d.FieldUScalarFn("i16x8.extract_lane_s", readUnsignedLEB128, d.AssertU(24))
-	decodeLaneIdx(d, "l")
-}
-
-func decodeI16x8ExtractLaneU(d *decode.D) {
-	d.FieldUScalarFn("i16x8.extract_lane_u", readUnsignedLEB128, d.AssertU(25))
-	decodeLaneIdx(d, "l")
-}
-
-func decodeI16x8ReplaceLane(d *decode.D) {
-	d.FieldUScalarFn("i16x8.replace_lane", readUnsignedLEB128, d.AssertU(26))
-	decodeLaneIdx(d, "l")
-}
-
-func decodeI32x4ExtractLane(d *decode.D) {
-	d.FieldUScalarFn("i32x4.extract_lane_u", readUnsignedLEB128, d.AssertU(27))
-	decodeLaneIdx(d, "l")
-}
-
-func decodeI32x4ReplaceLane(d *decode.D) {
-	d.FieldUScalarFn("i32x4.replace_lane", readUnsignedLEB128, d.AssertU(28))
-	decodeLaneIdx(d, "l")
-}
-
-func decodeI64x2ExtractLane(d *decode.D) {
-	d.FieldUScalarFn("i64x2.extract_lane_u", readUnsignedLEB128, d.AssertU(29))
-	decodeLaneIdx(d, "l")
-}
-
-func decodeI64x2ReplaceLane(d *decode.D) {
-	d.FieldUScalarFn("i64x2.replace_lane", readUnsignedLEB128, d.AssertU(30))
-	decodeLaneIdx(d, "l")
-}
-
-func decodeF32x4ExtractLane(d *decode.D) {
-	d.FieldUScalarFn("f32x4.extract_lane_u", readUnsignedLEB128, d.AssertU(31))
-	decodeLaneIdx(d, "l")
-}
-
-func decodeF32x4ReplaceLane(d *decode.D) {
-	d.FieldUScalarFn("f32x4.replace_lane", readUnsignedLEB128, d.AssertU(32))
-	decodeLaneIdx(d, "l")
-}
-
-func decodeF64x2ExtractLane(d *decode.D) {
-	d.FieldUScalarFn("f64x2.extract_lane_u", readUnsignedLEB128, d.AssertU(33))
-	decodeLaneIdx(d, "l")
-}
-
-func decodeF64x2ReplaceLane(d *decode.D) {
-	d.FieldUScalarFn("f64x2.replace_lane", readUnsignedLEB128, d.AssertU(34))
-	decodeLaneIdx(d, "l")
-}
-
-func decodeV128Load8Lane(d *decode.D) {
-	d.FieldUScalarFn("v128.load8_lane", readUnsignedLEB128, d.AssertU(84))
+func decodeVectorInstrWithMemArgAndLaneIdx(d *decode.D, opcode Opcode, mnemonic string) {
+	decodeVectorOpcode(d, opcode, mnemonic)
 	decodeMemArg(d, "m")
 	decodeLaneIdx(d, "l")
-}
-
-func decodeV128Load16Lane(d *decode.D) {
-	d.FieldUScalarFn("v128.load16_lane", readUnsignedLEB128, d.AssertU(85))
-	decodeMemArg(d, "m")
-	decodeLaneIdx(d, "l")
-}
-
-func decodeV128Load32Lane(d *decode.D) {
-	d.FieldUScalarFn("v128.load32_lane", readUnsignedLEB128, d.AssertU(86))
-	decodeMemArg(d, "m")
-	decodeLaneIdx(d, "l")
-}
-
-func decodeV128Load64Lane(d *decode.D) {
-	d.FieldUScalarFn("v128.load64_lane", readUnsignedLEB128, d.AssertU(87))
-	decodeMemArg(d, "m")
-	decodeLaneIdx(d, "l")
-}
-
-func decodeV128Store8Lane(d *decode.D) {
-	d.FieldUScalarFn("v128.store8_lane", readUnsignedLEB128, d.AssertU(88))
-	decodeMemArg(d, "m")
-	decodeLaneIdx(d, "l")
-}
-
-func decodeV128Store16Lane(d *decode.D) {
-	d.FieldUScalarFn("v128.store16_lane", readUnsignedLEB128, d.AssertU(89))
-	decodeMemArg(d, "m")
-	decodeLaneIdx(d, "l")
-}
-
-func decodeV128Store32Lane(d *decode.D) {
-	d.FieldUScalarFn("v128.store32_lane", readUnsignedLEB128, d.AssertU(90))
-	decodeMemArg(d, "m")
-	decodeLaneIdx(d, "l")
-}
-
-func decodeV128Store64Lane(d *decode.D) {
-	d.FieldUScalarFn("v128.store64_lane", readUnsignedLEB128, d.AssertU(91))
-	decodeMemArg(d, "m")
-	decodeLaneIdx(d, "l")
-}
-
-func decodeV128Load32Zero(d *decode.D) {
-	d.FieldUScalarFn("v128.load32_zero", readUnsignedLEB128, d.AssertU(92))
-	decodeMemArg(d, "m")
-}
-
-func decodeV128Load64Zero(d *decode.D) {
-	d.FieldUScalarFn("v128.load64_zero", readUnsignedLEB128, d.AssertU(93))
-	decodeMemArg(d, "m")
 }

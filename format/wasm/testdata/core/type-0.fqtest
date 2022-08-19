@@ -4,7 +4,7 @@ $ fq -d wasm dv type-0.wasm
 0x00|            01 00 00 00                        |    ....        |  version: 1 0x4-0x7.7 (4)
     |                                               |                |  sections[0:1]: 0x8-0x93.7 (140)
     |                                               |                |    [0]{}: section 0x8-0x93.7 (140)
-0x00|                        01                     |        .       |      id: "type section" (1) 0x8-0x8.7 (1)
+0x00|                        01                     |        .       |      id: "type_section" (1) 0x8-0x8.7 (1)
 0x00|                           89 01               |         ..     |      size: 137 0x9-0xa.7 (2)
     |                                               |                |      content{}: 0xb-0x93.7 (137)
     |                                               |                |        ft{}: 0xb-0x93.7 (137)

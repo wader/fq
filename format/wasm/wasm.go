@@ -596,6 +596,11 @@ func decodeWASMModule(d *decode.D) {
 func decodeWASM(d *decode.D, _ any) any {
 	d.Endian = decode.LittleEndian
 
+	// delayed initialization to break initialization reference cycle
+	instrMap[0x02] = instructionInfo{mnemonic: "block", decodeFn: decodeBlock}
+	instrMap[0x03] = instructionInfo{mnemonic: "loop", decodeFn: decodeLoop}
+	instrMap[0x04] = instructionInfo{mnemonic: "if", decodeFn: decodeIf}
+
 	decodeWASMModule(d)
 
 	return nil

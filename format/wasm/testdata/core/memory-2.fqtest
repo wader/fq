@@ -4,7 +4,7 @@ $ fq -d wasm dv memory-2.wasm
 0x0|            01 00 00 00                        |    ....        |  version: 1 0x4-0x7.7 (4)
    |                                               |                |  sections[0:1]: 0x8-0xd.7 (6)
    |                                               |                |    [0]{}: section 0x8-0xd.7 (6)
-0x0|                        05                     |        .       |      id: "memory section" (5) 0x8-0x8.7 (1)
+0x0|                        05                     |        .       |      id: "memory_section" (5) 0x8-0x8.7 (1)
 0x0|                           04                  |         .      |      size: 4 0x9-0x9.7 (1)
    |                                               |                |      content{}: 0xa-0xd.7 (4)
    |                                               |                |        mem{}: 0xa-0xd.7 (4)

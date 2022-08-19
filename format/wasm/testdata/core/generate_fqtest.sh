@@ -42,6 +42,11 @@ tear_down() {
       echo "$f -> $of"
       echo "$ fq -d wasm dv $f" > "$of"
       "$tmpdir/fq" -d wasm dv "$f" >>"$of"
+
+      if grep "error" "$of"; then
+        cat "$of"
+        exit
+      fi
     done
 )
 

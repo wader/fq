@@ -4,7 +4,7 @@ $ fq -d wasm dv tokens-34.wasm
 0x00|            01 00 00 00                        |    ....        |  version: 1 0x4-0x7.7 (4)
     |                                               |                |  sections[0:1]: 0x8-0x19.7 (18)
     |                                               |                |    [0]{}: section 0x8-0x19.7 (18)
-0x00|                        0b                     |        .       |      id: "data section" (11) 0x8-0x8.7 (1)
+0x00|                        0b                     |        .       |      id: "data_section" (11) 0x8-0x8.7 (1)
 0x00|                           10                  |         .      |      size: 16 0x9-0x9.7 (1)
     |                                               |                |      content{}: 0xa-0x19.7 (16)
     |                                               |                |        seg{}: 0xa-0x19.7 (16)
