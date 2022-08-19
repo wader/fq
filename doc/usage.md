@@ -40,10 +40,21 @@ fq 'd({verbose: true})' file
 
 # JSON representation for whole file
 fq tovalue file
+# or use -V (--value-output) that does tovalue automatically
+fq -V . file
+# or -Vr if the value is a string and you want a "raw" string
+fq -Vr .path.to.string file
 # JSON but raw bit fields truncated
 fq -o bits_format=truncate tovalue file
 # JSON but raw bit fields as md5 hex string
 fq -o bits_format=md5 tovalue file
+# look up a path
+fq '.some[1].path' file
+# look up a path and output JSON
+fq -V '.some[1].path' file
+# can be a query that outputs multiple values
+# this outputs first and last value in .same array and .path, three values in total
+fq -V '.some[0,-1], .path' file
 
 # grep whole tree by value
 fq 'grep("^prefix")' file
@@ -73,7 +84,7 @@ fq -o force=true -d mp4 file.mp4
 
 ### CLI arguments
 
-Most of fq's CLI argument are borrowed from jq and works in the same way.
+Most of jq's CLI arguments work with fq. But here are some additional ones specific to fq:
 
 #### Decode format `--decode`, `-d NAME`
 
@@ -85,7 +96,7 @@ Force format to decode instead of probing.
 
 Start interactive REPL.
 
-Can be used with both no, one and multiple inputs, ex just `fq -i ` start a REPL with `null` input, `fq -i 123` with the number 123 as input, `fq -i . a b` with two files as input. Also works with `--slurp`.
+Can be used with no input, one and multiple inputs, for example just `fq -i ` starts a REPL with `null` input, `fq -i 123` with the number 123 as input, `fq -i . a b` with two files as input. This also works with `--slurp`. In the REPL it is also possible to start a sub-REPLs by ending a query with `<query> | repl`, use ctrl-D to exit the sub-REPL. The sub-REPL will evaluate separately on each output from the query it was started. Use `[<query>] | repl` if you want to "slurp" into an array.
 
 #### Set option `--options`,`-o KEY=VALUE|@PATH`
 
@@ -96,6 +107,10 @@ Can be used with both no, one and multiple inputs, ex just `fq -i ` start a REPL
 `@PATH` will read string from file at `PATH`.
 
 Specify a global option or a format option, ex: `-o decode_samples=false` would for some container decoders like `mp4` and `matroska` disable decoding of samples.
+
+#### Value output `--value-output`, `-V`
+
+Output JSON value instead of decode tree. Use `-Vr` if you want raw string (no quotes).
 
 ### Display output
 
