@@ -62,4 +62,4 @@ $ fq -d wasm dv exports-1.wasm
     |                                               |                |                  x[0:0]: 0x22-NA (0)
     |                                               |                |                e[0:1]: 0x22-0x22.7 (1)
     |                                               |                |                  [0]{}: in 0x22-0x22.7 (1)
-0x20|      0b|                                      |  .|            |                    opcode: "end" (0xb) (valid) 0x22-0x22.7 (1)
+0x20|      0b|                                      |  .|            |                    opcode: "end" (0xb) 0x22-0x22.7 (1)

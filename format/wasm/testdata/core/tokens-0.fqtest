@@ -41,6 +41,6 @@ $ fq -d wasm dv tokens-0.wasm
     |                                               |                |                  x[0:0]: 0x17-NA (0)
     |                                               |                |                e[0:2]: 0x17-0x18.7 (2)
     |                                               |                |                  [0]{}: in 0x17-0x17.7 (1)
-0x10|                     01                        |       .        |                    opcode: "nop" (0x1) (valid) 0x17-0x17.7 (1)
+0x10|                     01                        |       .        |                    opcode: "nop" (0x1) 0x17-0x17.7 (1)
     |                                               |                |                  [1]{}: in 0x18-0x18.7 (1)
-0x10|                        0b|                    |        .|      |                    opcode: "end" (0xb) (valid) 0x18-0x18.7 (1)
+0x10|                        0b|                    |        .|      |                    opcode: "end" (0xb) 0x18-0x18.7 (1)

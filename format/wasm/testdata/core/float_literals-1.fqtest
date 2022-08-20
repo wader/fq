@@ -57,8 +57,8 @@ $ fq -d wasm dv float_literals-1.wasm
     |                                               |                |                  x[0:0]: 0x28-NA (0)
     |                                               |                |                e[0:2]: 0x28-0x31.7 (10)
     |                                               |                |                  [0]{}: in 0x28-0x30.7 (9)
-0x20|                        44                     |        D       |                    opcode: "f64.const" (0x44) (valid) 0x28-0x28.7 (1)
+0x20|                        44                     |        D       |                    opcode: "f64.const" (0x44) 0x28-0x28.7 (1)
 0x20|                           00 00 20 fa ff ff ef|         .. ....|                    z: 4.294967249e+09 0x29-0x30.7 (8)
 0x30|41                                             |A               |
     |                                               |                |                  [1]{}: in 0x31-0x31.7 (1)
-0x30|   0b|                                         | .|             |                    opcode: "end" (0xb) (valid) 0x31-0x31.7 (1)
+0x30|   0b|                                         | .|             |                    opcode: "end" (0xb) 0x31-0x31.7 (1)

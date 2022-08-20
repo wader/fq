@@ -63,4 +63,4 @@ $ fq -d wasm dv exports-5.wasm
     |                                               |                |                  x[0:0]: 0x23-NA (0)
     |                                               |                |                e[0:1]: 0x23-0x23.7 (1)
     |                                               |                |                  [0]{}: in 0x23-0x23.7 (1)
-0x20|         0b|                                   |   .|           |                    opcode: "end" (0xb) (valid) 0x23-0x23.7 (1)
+0x20|         0b|                                   |   .|           |                    opcode: "end" (0xb) 0x23-0x23.7 (1)

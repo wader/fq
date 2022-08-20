@@ -41,7 +41,7 @@ type Opcode uint64
 
 type instructionInfo struct {
 	mnemonic string
-	decodeFn func(d *decode.D, opcode Opcode, mnemonic string)
+	f        func(d *decode.D) // function to decode operands
 }
 
 type instructionMap map[Opcode]instructionInfo
@@ -65,57 +65,57 @@ var instrMap = instructionMap{
 	0x04: {mnemonic: "if"},
 
 	0x0b: {mnemonic: "end"},
-	0x0c: {mnemonic: "br", decodeFn: decodeBr},
-	0x0d: {mnemonic: "br_if", decodeFn: decodeBrIf},
-	0x0e: {mnemonic: "br_table", decodeFn: decodeBrTable},
+	0x0c: {mnemonic: "br", f: decodeBr},
+	0x0d: {mnemonic: "br_if", f: decodeBrIf},
+	0x0e: {mnemonic: "br_table", f: decodeBrTable},
 	0x0f: {mnemonic: "return"},
-	0x10: {mnemonic: "call", decodeFn: decodeCall},
-	0x11: {mnemonic: "call_indirect", decodeFn: decodeCallIndirect},
+	0x10: {mnemonic: "call", f: decodeCall},
+	0x11: {mnemonic: "call_indirect", f: decodeCallIndirect},
 
 	0x1a: {mnemonic: "drop"},
 	0x1b: {mnemonic: "select"},
-	0x1c: {mnemonic: "select", decodeFn: decodeSelectT},
+	0x1c: {mnemonic: "select", f: decodeSelectT},
 
-	0x20: {mnemonic: "local.get", decodeFn: decodeInstrWithLocalIdx},
-	0x21: {mnemonic: "local.set", decodeFn: decodeInstrWithLocalIdx},
-	0x22: {mnemonic: "local.tee", decodeFn: decodeInstrWithLocalIdx},
-	0x23: {mnemonic: "global.get", decodeFn: decodeInstrWithGlobalIdx},
-	0x24: {mnemonic: "global.set", decodeFn: decodeInstrWithGlobalIdx},
+	0x20: {mnemonic: "local.get", f: decodeInstrWithLocalIdx},
+	0x21: {mnemonic: "local.set", f: decodeInstrWithLocalIdx},
+	0x22: {mnemonic: "local.tee", f: decodeInstrWithLocalIdx},
+	0x23: {mnemonic: "global.get", f: decodeInstrWithGlobalIdx},
+	0x24: {mnemonic: "global.set", f: decodeInstrWithGlobalIdx},
 
-	0x25: {mnemonic: "table.get", decodeFn: decodeInstrWithTableIdx},
-	0x26: {mnemonic: "table.set", decodeFn: decodeInstrWithTableIdx},
+	0x25: {mnemonic: "table.get", f: decodeInstrWithTableIdx},
+	0x26: {mnemonic: "table.set", f: decodeInstrWithTableIdx},
 
-	0x28: {mnemonic: "i32.load", decodeFn: decodeInstrWithMemArg},
-	0x29: {mnemonic: "i64.load", decodeFn: decodeInstrWithMemArg},
-	0x2a: {mnemonic: "f32.load", decodeFn: decodeInstrWithMemArg},
-	0x2b: {mnemonic: "f64.load", decodeFn: decodeInstrWithMemArg},
-	0x2c: {mnemonic: "i32.load8_s", decodeFn: decodeInstrWithMemArg},
-	0x2d: {mnemonic: "i32.load8_u", decodeFn: decodeInstrWithMemArg},
-	0x2e: {mnemonic: "i32.load16_s", decodeFn: decodeInstrWithMemArg},
-	0x2f: {mnemonic: "i32.load16_u", decodeFn: decodeInstrWithMemArg},
-	0x30: {mnemonic: "i64.load8_s", decodeFn: decodeInstrWithMemArg},
-	0x31: {mnemonic: "i64.load8_u", decodeFn: decodeInstrWithMemArg},
-	0x32: {mnemonic: "i64.load16_s", decodeFn: decodeInstrWithMemArg},
-	0x33: {mnemonic: "i64.load16_u", decodeFn: decodeInstrWithMemArg},
-	0x34: {mnemonic: "i64.load32_s", decodeFn: decodeInstrWithMemArg},
-	0x35: {mnemonic: "i64.load32_u", decodeFn: decodeInstrWithMemArg},
-	0x36: {mnemonic: "i32.store", decodeFn: decodeInstrWithMemArg},
-	0x37: {mnemonic: "i64.store", decodeFn: decodeInstrWithMemArg},
-	0x38: {mnemonic: "f32.store", decodeFn: decodeInstrWithMemArg},
-	0x39: {mnemonic: "f64.store", decodeFn: decodeInstrWithMemArg},
-	0x3a: {mnemonic: "i32.store8", decodeFn: decodeInstrWithMemArg},
-	0x3b: {mnemonic: "i32.store16", decodeFn: decodeInstrWithMemArg},
-	0x3c: {mnemonic: "i64.store8", decodeFn: decodeInstrWithMemArg},
-	0x3d: {mnemonic: "i64.store16", decodeFn: decodeInstrWithMemArg},
-	0x3e: {mnemonic: "i64.store32", decodeFn: decodeInstrWithMemArg},
+	0x28: {mnemonic: "i32.load", f: decodeInstrWithMemArg},
+	0x29: {mnemonic: "i64.load", f: decodeInstrWithMemArg},
+	0x2a: {mnemonic: "f32.load", f: decodeInstrWithMemArg},
+	0x2b: {mnemonic: "f64.load", f: decodeInstrWithMemArg},
+	0x2c: {mnemonic: "i32.load8_s", f: decodeInstrWithMemArg},
+	0x2d: {mnemonic: "i32.load8_u", f: decodeInstrWithMemArg},
+	0x2e: {mnemonic: "i32.load16_s", f: decodeInstrWithMemArg},
+	0x2f: {mnemonic: "i32.load16_u", f: decodeInstrWithMemArg},
+	0x30: {mnemonic: "i64.load8_s", f: decodeInstrWithMemArg},
+	0x31: {mnemonic: "i64.load8_u", f: decodeInstrWithMemArg},
+	0x32: {mnemonic: "i64.load16_s", f: decodeInstrWithMemArg},
+	0x33: {mnemonic: "i64.load16_u", f: decodeInstrWithMemArg},
+	0x34: {mnemonic: "i64.load32_s", f: decodeInstrWithMemArg},
+	0x35: {mnemonic: "i64.load32_u", f: decodeInstrWithMemArg},
+	0x36: {mnemonic: "i32.store", f: decodeInstrWithMemArg},
+	0x37: {mnemonic: "i64.store", f: decodeInstrWithMemArg},
+	0x38: {mnemonic: "f32.store", f: decodeInstrWithMemArg},
+	0x39: {mnemonic: "f64.store", f: decodeInstrWithMemArg},
+	0x3a: {mnemonic: "i32.store8", f: decodeInstrWithMemArg},
+	0x3b: {mnemonic: "i32.store16", f: decodeInstrWithMemArg},
+	0x3c: {mnemonic: "i64.store8", f: decodeInstrWithMemArg},
+	0x3d: {mnemonic: "i64.store16", f: decodeInstrWithMemArg},
+	0x3e: {mnemonic: "i64.store32", f: decodeInstrWithMemArg},
 
-	0x3f: {mnemonic: "memory.size", decodeFn: decodeMemorySize},
-	0x40: {mnemonic: "memory.grow", decodeFn: decodeMemoryGrow},
+	0x3f: {mnemonic: "memory.size", f: decodeMemorySize},
+	0x40: {mnemonic: "memory.grow", f: decodeMemoryGrow},
 
-	0x41: {mnemonic: "i32.const", decodeFn: decodeI32Const},
-	0x42: {mnemonic: "i64.const", decodeFn: decodeI64Const},
-	0x43: {mnemonic: "f32.const", decodeFn: decodeF32Const},
-	0x44: {mnemonic: "f64.const", decodeFn: decodeF64Const},
+	0x41: {mnemonic: "i32.const", f: decodeI32Const},
+	0x42: {mnemonic: "i64.const", f: decodeI64Const},
+	0x43: {mnemonic: "f32.const", f: decodeF32Const},
+	0x44: {mnemonic: "f64.const", f: decodeF64Const},
 
 	0x45: {mnemonic: "32.eqz"},
 	0x46: {mnemonic: "i32.eq"},
@@ -255,33 +255,25 @@ var instrMap = instructionMap{
 	0xc3: {mnemonic: "i64.extend16_s"},
 	0xc4: {mnemonic: "i64.extend32_s"},
 
-	0xd0: {mnemonic: "ref.null", decodeFn: decodeRefNull},
+	0xd0: {mnemonic: "ref.null", f: decodeRefNull},
 	0xd1: {mnemonic: "ref.is_null"},
-	0xd2: {mnemonic: "ref.func", decodeFn: decodeRefFunc},
+	0xd2: {mnemonic: "ref.func", f: decodeRefFunc},
 
-	0xfc: {mnemonic: "prefix", decodeFn: decodePrefixedInstruction},
+	0xfc: {mnemonic: "prefix", f: decodePrefixedInstruction},
 
-	0xfd: {mnemonic: "vector", decodeFn: decodeVectorInstruction},
+	0xfd: {mnemonic: "vector", f: decodeVectorInstruction},
 }
 
 func decodeInstruction(d *decode.D) {
-	opcodeBytes := d.PeekBytes(1)
-	if len(opcodeBytes) == 0 {
-		return
-	}
-
-	opcode := Opcode(opcodeBytes[0])
+	opcode := Opcode(decodeOpcode(d))
 	instr := instrMap[opcode]
-	df := instr.decodeFn
-	if df == nil {
-		df = decodeOpcode
+	if instr.f != nil {
+		instr.f(d)
 	}
-
-	df(d, opcode, instr.mnemonic)
 }
 
-func decodeOpcode(d *decode.D, opcode Opcode, mnemonic string) {
-	d.FieldU8("opcode", d.AssertU(uint64(opcode)), scalar.Sym(mnemonic), scalar.ActualHex)
+func decodeOpcode(d *decode.D) Opcode {
+	return Opcode(d.FieldU8("opcode", instrMap, scalar.ActualHex))
 }
 
 func decodeElse(d *decode.D) {
@@ -292,8 +284,7 @@ func decodeEnd(d *decode.D) {
 	d.FieldU8("end", d.AssertU(uint64(0x0b)), scalar.ActualHex)
 }
 
-func decodeBlock(d *decode.D, opcode Opcode, mnemonic string) {
-	decodeOpcode(d, opcode, mnemonic)
+func decodeBlock(d *decode.D) {
 	decodeBlockType(d, "bt")
 	d.FieldArray("instructions", func(d *decode.D) {
 		for {
@@ -307,8 +298,7 @@ func decodeBlock(d *decode.D, opcode Opcode, mnemonic string) {
 	decodeEnd(d)
 }
 
-func decodeLoop(d *decode.D, opcode Opcode, mnemonic string) {
-	decodeOpcode(d, opcode, mnemonic)
+func decodeLoop(d *decode.D) {
 	decodeBlockType(d, "bt")
 	d.FieldArray("instructions", func(d *decode.D) {
 		for {
@@ -322,8 +312,7 @@ func decodeLoop(d *decode.D, opcode Opcode, mnemonic string) {
 	decodeEnd(d)
 }
 
-func decodeIf(d *decode.D, opcode Opcode, mnemonic string) {
-	decodeOpcode(d, opcode, mnemonic)
+func decodeIf(d *decode.D) {
 	decodeBlockType(d, "bt")
 	elseClause := false
 	d.FieldArray("in1", func(d *decode.D) {
@@ -354,99 +343,81 @@ func decodeIf(d *decode.D, opcode Opcode, mnemonic string) {
 	decodeEnd(d)
 }
 
-func decodeBr(d *decode.D, opcode Opcode, mnemonic string) {
-	decodeOpcode(d, opcode, mnemonic)
+func decodeBr(d *decode.D) {
 	decodeLabelIdx(d, "l")
 }
 
-func decodeBrIf(d *decode.D, opcode Opcode, mnemonic string) {
-	decodeOpcode(d, opcode, mnemonic)
+func decodeBrIf(d *decode.D) {
 	decodeLabelIdx(d, "l")
 }
 
-func decodeBrTable(d *decode.D, opcode Opcode, mnemonic string) {
-	decodeOpcode(d, opcode, mnemonic)
+func decodeBrTable(d *decode.D) {
 	decodeVec(d, "l", func(d *decode.D) {
 		decodeLabelIdx(d, "l")
 	})
 	decodeLabelIdx(d, "lN")
 }
 
-func decodeCall(d *decode.D, opcode Opcode, mnemonic string) {
-	decodeOpcode(d, opcode, mnemonic)
+func decodeCall(d *decode.D) {
 	decodeFuncIdx(d, "x")
 }
 
-func decodeCallIndirect(d *decode.D, opcode Opcode, mnemonic string) {
-	decodeOpcode(d, opcode, mnemonic)
+func decodeCallIndirect(d *decode.D) {
 	decodeTypeIdx(d, "y")
 	decodeTableIdx(d, "x")
 }
 
-func decodeSelectT(d *decode.D, opcode Opcode, mnemonic string) {
-	decodeOpcode(d, opcode, mnemonic)
+func decodeSelectT(d *decode.D) {
 	decodeVec(d, "t", func(d *decode.D) {
 		decodeValType(d, "t")
 	})
 }
 
-func decodeInstrWithLocalIdx(d *decode.D, opcode Opcode, mnemonic string) {
-	decodeOpcode(d, opcode, mnemonic)
+func decodeInstrWithLocalIdx(d *decode.D) {
 	decodeLocalIdx(d, "x")
 }
 
-func decodeInstrWithGlobalIdx(d *decode.D, opcode Opcode, mnemonic string) {
-	decodeOpcode(d, opcode, mnemonic)
+func decodeInstrWithGlobalIdx(d *decode.D) {
 	decodeGlobalIdx(d, "x")
 }
 
-func decodeInstrWithTableIdx(d *decode.D, opcode Opcode, mnemonic string) {
-	decodeOpcode(d, opcode, mnemonic)
+func decodeInstrWithTableIdx(d *decode.D) {
 	decodeTableIdx(d, "x")
 }
 
-func decodeInstrWithMemArg(d *decode.D, opcode Opcode, mnemonic string) {
-	decodeOpcode(d, opcode, mnemonic)
+func decodeInstrWithMemArg(d *decode.D) {
 	decodeMemArg(d, "m")
 }
 
-func decodeMemorySize(d *decode.D, opcode Opcode, mnemonic string) {
-	decodeOpcode(d, opcode, mnemonic)
+func decodeMemorySize(d *decode.D) {
 	d.FieldU8("reserved", d.AssertU(0x00), scalar.ActualHex)
 }
 
-func decodeMemoryGrow(d *decode.D, opcode Opcode, mnemonic string) {
-	decodeOpcode(d, opcode, mnemonic)
+func decodeMemoryGrow(d *decode.D) {
 	d.FieldU8("reserved", d.AssertU(0x00), scalar.ActualHex)
 }
 
-func decodeI32Const(d *decode.D, opcode Opcode, mnemonic string) {
-	decodeOpcode(d, opcode, mnemonic)
+func decodeI32Const(d *decode.D) {
 	fieldI32(d, "n")
 }
 
-func decodeI64Const(d *decode.D, opcode Opcode, mnemonic string) {
-	decodeOpcode(d, opcode, mnemonic)
+func decodeI64Const(d *decode.D) {
 	fieldI64(d, "n")
 }
 
-func decodeF32Const(d *decode.D, opcode Opcode, mnemonic string) {
-	decodeOpcode(d, opcode, mnemonic)
+func decodeF32Const(d *decode.D) {
 	d.FieldF32("z")
 }
 
-func decodeF64Const(d *decode.D, opcode Opcode, mnemonic string) {
-	decodeOpcode(d, opcode, mnemonic)
+func decodeF64Const(d *decode.D) {
 	d.FieldF64("z")
 }
 
-func decodeRefNull(d *decode.D, opcode Opcode, mnemonic string) {
-	decodeOpcode(d, opcode, mnemonic)
+func decodeRefNull(d *decode.D) {
 	decodeRefType(d, "t")
 }
 
-func decodeRefFunc(d *decode.D, opcode Opcode, mnemonic string) {
-	decodeOpcode(d, opcode, mnemonic)
+func decodeRefFunc(d *decode.D) {
 	decodeFuncIdx(d, "x")
 }
 
@@ -460,94 +431,81 @@ var prefixedInstrMap = instructionMap{
 	6: {mnemonic: "i64.trunc_sat_f64_s"},
 	7: {mnemonic: "i64.trunc_sat_f64_u"},
 
-	8:  {mnemonic: "memory.init", decodeFn: decodeMemoryInit},
-	9:  {mnemonic: "data.drop", decodeFn: decodeDataDrop},
-	10: {mnemonic: "memory.copy", decodeFn: decodeMemoryCopy},
-	11: {mnemonic: "memory.fill", decodeFn: decodeMemoryFill},
-	12: {mnemonic: "table.init", decodeFn: decodeTableInit},
-	13: {mnemonic: "elem.drop", decodeFn: decodeElemDrop},
-	14: {mnemonic: "table.copy", decodeFn: decodeTableCopy},
-	15: {mnemonic: "table.grow", decodeFn: decodePrefixedInstrWithTableIdx},
-	16: {mnemonic: "table.size", decodeFn: decodePrefixedInstrWithTableIdx},
-	17: {mnemonic: "table.fill", decodeFn: decodePrefixedInstrWithTableIdx},
+	8:  {mnemonic: "memory.init", f: decodeMemoryInit},
+	9:  {mnemonic: "data.drop", f: decodeDataDrop},
+	10: {mnemonic: "memory.copy", f: decodeMemoryCopy},
+	11: {mnemonic: "memory.fill", f: decodeMemoryFill},
+	12: {mnemonic: "table.init", f: decodeTableInit},
+	13: {mnemonic: "elem.drop", f: decodeElemDrop},
+	14: {mnemonic: "table.copy", f: decodeTableCopy},
+	15: {mnemonic: "table.grow", f: decodePrefixedInstrWithTableIdx},
+	16: {mnemonic: "table.size", f: decodePrefixedInstrWithTableIdx},
+	17: {mnemonic: "table.fill", f: decodePrefixedInstrWithTableIdx},
 }
 
-func decodePrefixedInstruction(d *decode.D, prefix Opcode, mnemonic string) {
-	d.FieldU8("prefix", d.AssertU(uint64(prefix)), scalar.ActualHex)
-	s := peekUnsignedLEB128(d)
-	opcode := Opcode(s.ActualU())
+func decodePrefixedInstruction(d *decode.D) {
+	opcode := decodePrefixedOpcode(d)
 	instr := prefixedInstrMap[opcode]
-	df := instr.decodeFn
-	if df == nil {
-		df = decodePrefixedOpcode
+	if instr.f != nil {
+		instr.f(d)
 	}
-
-	df(d, opcode, instr.mnemonic)
 }
 
-func decodePrefixedOpcode(d *decode.D, opcode Opcode, mnemonic string) {
-	d.FieldUScalarFn("opcode", readUnsignedLEB128, d.AssertU(uint64(opcode)), scalar.Sym(mnemonic))
+func decodePrefixedOpcode(d *decode.D) Opcode {
+	return Opcode(d.FieldUScalarFn("p_opcode", readUnsignedLEB128, prefixedInstrMap))
 }
 
-func decodeMemoryInit(d *decode.D, opcode Opcode, mnemonic string) {
-	decodePrefixedOpcode(d, opcode, mnemonic)
+func decodeMemoryInit(d *decode.D) {
 	decodeDataIdx(d, "x")
 	d.FieldU8("reserved", scalar.ActualHex, d.AssertU(0))
 }
 
-func decodeDataDrop(d *decode.D, opcode Opcode, mnemonic string) {
-	decodePrefixedOpcode(d, opcode, mnemonic)
+func decodeDataDrop(d *decode.D) {
 	decodeDataIdx(d, "x")
 }
 
-func decodeMemoryCopy(d *decode.D, opcode Opcode, mnemonic string) {
-	decodePrefixedOpcode(d, opcode, mnemonic)
+func decodeMemoryCopy(d *decode.D) {
 	d.FieldU8("reserved1", scalar.ActualHex, d.AssertU(0))
 	d.FieldU8("reserved2", scalar.ActualHex, d.AssertU(0))
 }
 
-func decodeMemoryFill(d *decode.D, opcode Opcode, mnemonic string) {
-	decodePrefixedOpcode(d, opcode, mnemonic)
+func decodeMemoryFill(d *decode.D) {
 	d.FieldU8("reserved", scalar.ActualHex, d.AssertU(0))
 }
 
-func decodeTableInit(d *decode.D, opcode Opcode, mnemonic string) {
-	decodePrefixedOpcode(d, opcode, mnemonic)
+func decodeTableInit(d *decode.D) {
 	decodeElemIdx(d, "y")
 	decodeTableIdx(d, "x")
 }
 
-func decodeElemDrop(d *decode.D, opcode Opcode, mnemonic string) {
-	decodePrefixedOpcode(d, opcode, mnemonic)
+func decodeElemDrop(d *decode.D) {
 	decodeElemIdx(d, "x")
 }
 
-func decodeTableCopy(d *decode.D, opcode Opcode, mnemonic string) {
-	decodePrefixedOpcode(d, opcode, mnemonic)
+func decodeTableCopy(d *decode.D) {
 	decodeTableIdx(d, "x")
 	decodeTableIdx(d, "y")
 }
 
-func decodePrefixedInstrWithTableIdx(d *decode.D, opcode Opcode, mnemonic string) {
-	decodePrefixedOpcode(d, opcode, mnemonic)
+func decodePrefixedInstrWithTableIdx(d *decode.D) {
 	decodeTableIdx(d, "x")
 }
 
 var vectorInstrMap = instructionMap{
-	0:   {mnemonic: "v128.load", decodeFn: decodeVectorInstrWithMemArg},
-	1:   {mnemonic: "v128.load8x8_s", decodeFn: decodeVectorInstrWithMemArg},
-	2:   {mnemonic: "v128.load8x8_u", decodeFn: decodeVectorInstrWithMemArg},
-	3:   {mnemonic: "v128.load16x4_s", decodeFn: decodeVectorInstrWithMemArg},
-	4:   {mnemonic: "v128.load16x4_u", decodeFn: decodeVectorInstrWithMemArg},
-	5:   {mnemonic: "v128.load32x2_s", decodeFn: decodeVectorInstrWithMemArg},
-	6:   {mnemonic: "v128.load32x2_u", decodeFn: decodeVectorInstrWithMemArg},
-	7:   {mnemonic: "v128.load8_splat", decodeFn: decodeVectorInstrWithMemArg},
-	8:   {mnemonic: "v128.load16_splat", decodeFn: decodeVectorInstrWithMemArg},
-	9:   {mnemonic: "v128.load32_splat", decodeFn: decodeVectorInstrWithMemArg},
-	10:  {mnemonic: "v128.load64_splat", decodeFn: decodeVectorInstrWithMemArg},
-	11:  {mnemonic: "v128.store", decodeFn: decodeVectorInstrWithMemArg},
-	12:  {mnemonic: "v128.const", decodeFn: decodeV128Const},
-	13:  {mnemonic: "i8x16.shuffle", decodeFn: decodeI8x16Shuffle},
+	0:   {mnemonic: "v128.load", f: decodeVectorInstrWithMemArg},
+	1:   {mnemonic: "v128.load8x8_s", f: decodeVectorInstrWithMemArg},
+	2:   {mnemonic: "v128.load8x8_u", f: decodeVectorInstrWithMemArg},
+	3:   {mnemonic: "v128.load16x4_s", f: decodeVectorInstrWithMemArg},
+	4:   {mnemonic: "v128.load16x4_u", f: decodeVectorInstrWithMemArg},
+	5:   {mnemonic: "v128.load32x2_s", f: decodeVectorInstrWithMemArg},
+	6:   {mnemonic: "v128.load32x2_u", f: decodeVectorInstrWithMemArg},
+	7:   {mnemonic: "v128.load8_splat", f: decodeVectorInstrWithMemArg},
+	8:   {mnemonic: "v128.load16_splat", f: decodeVectorInstrWithMemArg},
+	9:   {mnemonic: "v128.load32_splat", f: decodeVectorInstrWithMemArg},
+	10:  {mnemonic: "v128.load64_splat", f: decodeVectorInstrWithMemArg},
+	11:  {mnemonic: "v128.store", f: decodeVectorInstrWithMemArg},
+	12:  {mnemonic: "v128.const", f: decodeV128Const},
+	13:  {mnemonic: "i8x16.shuffle", f: decodeI8x16Shuffle},
 	14:  {mnemonic: "i8x16.swizzle"},
 	15:  {mnemonic: "i8x16.splat"},
 	16:  {mnemonic: "i16x8.splat"},
@@ -555,20 +513,20 @@ var vectorInstrMap = instructionMap{
 	18:  {mnemonic: "i64x2.splat"},
 	19:  {mnemonic: "f32x4.splat"},
 	20:  {mnemonic: "f64x2.splat"},
-	21:  {mnemonic: "i8x16.extract_lane_s", decodeFn: decodeVectorInstrWithLaneIndex},
-	22:  {mnemonic: "i8x16.extract_lane_u", decodeFn: decodeVectorInstrWithLaneIndex},
-	23:  {mnemonic: "i8x16.replace_lane", decodeFn: decodeVectorInstrWithLaneIndex},
-	24:  {mnemonic: "i16x8.extract_lane_s", decodeFn: decodeVectorInstrWithLaneIndex},
-	25:  {mnemonic: "i16x8.extract_lane_u", decodeFn: decodeVectorInstrWithLaneIndex},
-	26:  {mnemonic: "i16x8.replace_lane", decodeFn: decodeVectorInstrWithLaneIndex},
-	27:  {mnemonic: "i32x4.extract_lane", decodeFn: decodeVectorInstrWithLaneIndex},
-	28:  {mnemonic: "i32x4.replace_lane", decodeFn: decodeVectorInstrWithLaneIndex},
-	29:  {mnemonic: "i64x2.extract_lane", decodeFn: decodeVectorInstrWithLaneIndex},
-	30:  {mnemonic: "i64x2.replace_lane", decodeFn: decodeVectorInstrWithLaneIndex},
-	31:  {mnemonic: "f32x4.extract_lane", decodeFn: decodeVectorInstrWithLaneIndex},
-	32:  {mnemonic: "f32x4.replace_lane", decodeFn: decodeVectorInstrWithLaneIndex},
-	33:  {mnemonic: "f64x2.extract_lane", decodeFn: decodeVectorInstrWithLaneIndex},
-	34:  {mnemonic: "f64x2.replace_lane", decodeFn: decodeVectorInstrWithLaneIndex},
+	21:  {mnemonic: "i8x16.extract_lane_s", f: decodeVectorInstrWithLaneIndex},
+	22:  {mnemonic: "i8x16.extract_lane_u", f: decodeVectorInstrWithLaneIndex},
+	23:  {mnemonic: "i8x16.replace_lane", f: decodeVectorInstrWithLaneIndex},
+	24:  {mnemonic: "i16x8.extract_lane_s", f: decodeVectorInstrWithLaneIndex},
+	25:  {mnemonic: "i16x8.extract_lane_u", f: decodeVectorInstrWithLaneIndex},
+	26:  {mnemonic: "i16x8.replace_lane", f: decodeVectorInstrWithLaneIndex},
+	27:  {mnemonic: "i32x4.extract_lane", f: decodeVectorInstrWithLaneIndex},
+	28:  {mnemonic: "i32x4.replace_lane", f: decodeVectorInstrWithLaneIndex},
+	29:  {mnemonic: "i64x2.extract_lane", f: decodeVectorInstrWithLaneIndex},
+	30:  {mnemonic: "i64x2.replace_lane", f: decodeVectorInstrWithLaneIndex},
+	31:  {mnemonic: "f32x4.extract_lane", f: decodeVectorInstrWithLaneIndex},
+	32:  {mnemonic: "f32x4.replace_lane", f: decodeVectorInstrWithLaneIndex},
+	33:  {mnemonic: "f64x2.extract_lane", f: decodeVectorInstrWithLaneIndex},
+	34:  {mnemonic: "f64x2.replace_lane", f: decodeVectorInstrWithLaneIndex},
 	35:  {mnemonic: "i8x16.eq"},
 	36:  {mnemonic: "i8x16.ne"},
 	37:  {mnemonic: "i8x16.lt_s"},
@@ -618,16 +576,16 @@ var vectorInstrMap = instructionMap{
 	81:  {mnemonic: "v128.xor"},
 	82:  {mnemonic: "v128.bitselect"},
 	83:  {mnemonic: "v128.any_true"},
-	84:  {mnemonic: "v128.load8_lane", decodeFn: decodeVectorInstrWithMemArgAndLaneIdx},
-	85:  {mnemonic: "v128.load16_lane", decodeFn: decodeVectorInstrWithMemArgAndLaneIdx},
-	86:  {mnemonic: "v128.load32_lane", decodeFn: decodeVectorInstrWithMemArgAndLaneIdx},
-	87:  {mnemonic: "v128.load64_lane", decodeFn: decodeVectorInstrWithMemArgAndLaneIdx},
-	88:  {mnemonic: "v128.store8_lane", decodeFn: decodeVectorInstrWithMemArgAndLaneIdx},
-	89:  {mnemonic: "v128.store16_lane", decodeFn: decodeVectorInstrWithMemArgAndLaneIdx},
-	90:  {mnemonic: "v128.store32_lane", decodeFn: decodeVectorInstrWithMemArgAndLaneIdx},
-	91:  {mnemonic: "v128.store64_lane", decodeFn: decodeVectorInstrWithMemArgAndLaneIdx},
-	92:  {mnemonic: "v128.load32_zero", decodeFn: decodeVectorInstrWithMemArg},
-	93:  {mnemonic: "v128.load64_zero", decodeFn: decodeVectorInstrWithMemArg},
+	84:  {mnemonic: "v128.load8_lane", f: decodeVectorInstrWithMemArgAndLaneIdx},
+	85:  {mnemonic: "v128.load16_lane", f: decodeVectorInstrWithMemArgAndLaneIdx},
+	86:  {mnemonic: "v128.load32_lane", f: decodeVectorInstrWithMemArgAndLaneIdx},
+	87:  {mnemonic: "v128.load64_lane", f: decodeVectorInstrWithMemArgAndLaneIdx},
+	88:  {mnemonic: "v128.store8_lane", f: decodeVectorInstrWithMemArgAndLaneIdx},
+	89:  {mnemonic: "v128.store16_lane", f: decodeVectorInstrWithMemArgAndLaneIdx},
+	90:  {mnemonic: "v128.store32_lane", f: decodeVectorInstrWithMemArgAndLaneIdx},
+	91:  {mnemonic: "v128.store64_lane", f: decodeVectorInstrWithMemArgAndLaneIdx},
+	92:  {mnemonic: "v128.load32_zero", f: decodeVectorInstrWithMemArg},
+	93:  {mnemonic: "v128.load64_zero", f: decodeVectorInstrWithMemArg},
 	94:  {mnemonic: "f32x4.demote_f64x2_zero"},
 	95:  {mnemonic: "f64x2.promote_low_f32x4"},
 	96:  {mnemonic: "i8x16.abs"},
@@ -772,35 +730,28 @@ var vectorInstrMap = instructionMap{
 	255: {mnemonic: "f64x2.convert_low_i32x4_u"},
 }
 
-func decodeVectorInstruction(d *decode.D, prefix Opcode, mnemonic string) {
-	d.FieldU8("prefix", d.AssertU(uint64(prefix)), scalar.ActualHex)
-	s := peekUnsignedLEB128(d)
-	opcode := Opcode(s.ActualU())
+func decodeVectorInstruction(d *decode.D) {
+	opcode := decodeVectorOpcode(d)
 	instr := vectorInstrMap[opcode]
-	df := instr.decodeFn
-	if df == nil {
-		df = decodeVectorOpcode
+	df := instr.f
+	if df != nil {
+		df(d)
 	}
-
-	df(d, opcode, instr.mnemonic)
 }
 
-func decodeVectorOpcode(d *decode.D, opcode Opcode, mnemonic string) {
-	d.FieldUScalarFn("opcode", readUnsignedLEB128, d.AssertU(uint64(opcode)), scalar.Sym(mnemonic))
+func decodeVectorOpcode(d *decode.D) Opcode {
+	return Opcode(d.FieldUScalarFn("v_opcode", readUnsignedLEB128, vectorInstrMap))
 }
 
-func decodeVectorInstrWithMemArg(d *decode.D, opcode Opcode, mnemonic string) {
-	decodeVectorOpcode(d, opcode, mnemonic)
+func decodeVectorInstrWithMemArg(d *decode.D) {
 	decodeMemArg(d, "m")
 }
 
-func decodeV128Const(d *decode.D, opcode Opcode, mnemonic string) {
-	decodeVectorOpcode(d, opcode, mnemonic)
+func decodeV128Const(d *decode.D) {
 	d.FieldRawLen("bytes", 16*8)
 }
 
-func decodeI8x16Shuffle(d *decode.D, opcode Opcode, mnemonic string) {
-	decodeVectorOpcode(d, opcode, mnemonic)
+func decodeI8x16Shuffle(d *decode.D) {
 	d.FieldArray("laneidx", func(d *decode.D) {
 		for i := 0; i < 16; i++ {
 			decodeLaneIdx(d, "l")
@@ -812,13 +763,11 @@ func decodeLaneIdx(d *decode.D, name string) {
 	d.FieldU8(name)
 }
 
-func decodeVectorInstrWithLaneIndex(d *decode.D, opcode Opcode, mnemonic string) {
-	decodeVectorOpcode(d, opcode, mnemonic)
+func decodeVectorInstrWithLaneIndex(d *decode.D) {
 	decodeLaneIdx(d, "l")
 }
 
-func decodeVectorInstrWithMemArgAndLaneIdx(d *decode.D, opcode Opcode, mnemonic string) {
-	decodeVectorOpcode(d, opcode, mnemonic)
+func decodeVectorInstrWithMemArgAndLaneIdx(d *decode.D) {
 	decodeMemArg(d, "m")
 	decodeLaneIdx(d, "l")
 }

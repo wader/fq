@@ -53,4 +53,4 @@ $ fq -d wasm dv binary-34.wasm
     |                                               |                |                  x[0:0]: 0x1d-NA (0)
     |                                               |                |                e[0:1]: 0x1d-0x1d.7 (1)
     |                                               |                |                  [0]{}: in 0x1d-0x1d.7 (1)
-0x10|                                       0b|     |             .| |                    opcode: "end" (0xb) (valid) 0x1d-0x1d.7 (1)
+0x10|                                       0b|     |             .| |                    opcode: "end" (0xb) 0x1d-0x1d.7 (1)

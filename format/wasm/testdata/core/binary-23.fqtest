@@ -44,4 +44,4 @@ $ fq -d wasm dv binary-23.wasm
 0x10|                        7d                     |        }       |                      t: "f32" (0x7d) 0x18-0x18.7 (1)
     |                                               |                |                e[0:1]: 0x19-0x19.7 (1)
     |                                               |                |                  [0]{}: in 0x19-0x19.7 (1)
-0x10|                           0b|                 |         .|     |                    opcode: "end" (0xb) (valid) 0x19-0x19.7 (1)
+0x10|                           0b|                 |         .|     |                    opcode: "end" (0xb) 0x19-0x19.7 (1)

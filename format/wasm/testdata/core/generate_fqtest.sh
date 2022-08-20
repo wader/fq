@@ -45,7 +45,7 @@ tear_down() {
 
       if grep "error" "$of"; then
         cat "$of"
-        exit
+        exit 1
       fi
     done
 )

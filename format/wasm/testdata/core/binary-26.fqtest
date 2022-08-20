@@ -78,4 +78,4 @@ $ fq -d wasm dv binary-26.wasm
     |                                               |                |                  x[0:0]: 0x29-NA (0)
     |                                               |                |                e[0:1]: 0x29-0x29.7 (1)
     |                                               |                |                  [0]{}: in 0x29-0x29.7 (1)
-0x20|                           0b|                 |         .|     |                    opcode: "end" (0xb) (valid) 0x29-0x29.7 (1)
+0x20|                           0b|                 |         .|     |                    opcode: "end" (0xb) 0x29-0x29.7 (1)

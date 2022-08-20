@@ -57,9 +57,9 @@ $ fq -d wasm dv simd_const-311.wasm
     |                                               |                |                  x[0:0]: 0x29-NA (0)
     |                                               |                |                e[0:2]: 0x29-0x3b.7 (19)
     |                                               |                |                  [0]{}: in 0x29-0x3a.7 (18)
-0x20|                           fd                  |         .      |                    prefix: 0xfd (valid) 0x29-0x29.7 (1)
-0x20|                              0c               |          .     |                    opcode: "v128.const" (12) (valid) 0x2a-0x2a.7 (1)
+0x20|                           fd                  |         .      |                    opcode: "vector" (0xfd) 0x29-0x29.7 (1)
+0x20|                              0c               |          .     |                    v_opcode: "v128.const" (12) 0x2a-0x2a.7 (1)
 0x20|                                 ff ff ff ff ff|           .....|                    bytes: raw bits 0x2b-0x3a.7 (16)
 0x30|ff ef 7f ff ff ff ff ff ff ef 7f               |...........     |
     |                                               |                |                  [1]{}: in 0x3b-0x3b.7 (1)
-0x30|                                 0b|           |           .|   |                    opcode: "end" (0xb) (valid) 0x3b-0x3b.7 (1)
+0x30|                                 0b|           |           .|   |                    opcode: "end" (0xb) 0x3b-0x3b.7 (1)

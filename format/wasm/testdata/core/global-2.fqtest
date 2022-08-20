@@ -16,11 +16,11 @@ $ fq -d wasm dv global-2.wasm
 0x00|                                    01         |            .   |                m: "var" (1) 0xc-0xc.7 (1)
     |                                               |                |              e[0:2]: 0xd-0x12.7 (6)
     |                                               |                |                [0]{}: in 0xd-0x11.7 (5)
-0x00|                                       43      |             C  |                  opcode: "f32.const" (0x43) (valid) 0xd-0xd.7 (1)
+0x00|                                       43      |             C  |                  opcode: "f32.const" (0x43) 0xd-0xd.7 (1)
 0x00|                                          00 00|              ..|                  z: 0 0xe-0x11.7 (4)
 0x10|00 00                                          |..              |
     |                                               |                |                [1]{}: in 0x12-0x12.7 (1)
-0x10|      0b                                       |  .             |                  opcode: "end" (0xb) (valid) 0x12-0x12.7 (1)
+0x10|      0b                                       |  .             |                  opcode: "end" (0xb) 0x12-0x12.7 (1)
     |                                               |                |    [1]{}: section 0x13-0x19.7 (7)
 0x10|         07                                    |   .            |      id: "export_section" (7) 0x13-0x13.7 (1)
 0x10|            05                                 |    .           |      size: 5 0x14-0x14.7 (1)
