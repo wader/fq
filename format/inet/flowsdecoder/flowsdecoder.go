@@ -7,10 +7,10 @@ import (
 	"encoding/binary"
 	"net"
 
-	"github.com/google/gopacket"
-	"github.com/google/gopacket/ip4defrag"
-	"github.com/google/gopacket/layers"
-	"github.com/google/gopacket/reassembly"
+	"github.com/gopacket/gopacket"
+	"github.com/gopacket/gopacket/ip4defrag"
+	"github.com/gopacket/gopacket/layers"
+	"github.com/gopacket/gopacket/reassembly"
 )
 
 type TCPEndpoint struct {
@@ -158,6 +158,10 @@ func New() *Decoder {
 
 func (fd *Decoder) SLLPacket(bs []byte) error {
 	return fd.packet(gopacket.NewPacket(bs, layers.LayerTypeLinuxSLL, gopacket.Lazy))
+}
+
+func (fd *Decoder) SLL2Packet(bs []byte) error {
+	return fd.packet(gopacket.NewPacket(bs, layers.LayerTypeLinuxSLL2, gopacket.Lazy))
 }
 
 func (fd *Decoder) EthernetFrame(bs []byte) error {
