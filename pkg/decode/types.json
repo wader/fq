@@ -173,6 +173,16 @@
             "variants": [ {"name": "", "args": "ov", "params": "ov uint64", "call": "d.tryUnary(ov)", "doc": "unary integer using ov as \"one\" value"} ]
         },
         {
+            "name": "ULEB128",
+            "type": "U",
+            "variants": [ {"name": "", "args": "", "params": "", "call": "d.tryULEB128()", "doc": "unsigned LEB128 integer"} ]
+        },
+        {
+            "name": "SLEB128",
+            "type": "S",
+            "variants": [ {"name": "", "args": "", "params": "", "call": "d.trySLEB128()", "doc": "signed LEB128 integer"} ]
+        },
+        {
             "type": "Str",
             "name": "UTF",
             "variants": [
