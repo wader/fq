@@ -114,6 +114,9 @@ func fromXMLToArray(n xmlNode) any {
 					space = nss.lookup(a.Name)
 				}
 				name = space + ":" + local
+			} else if local == "xmlns" {
+				// track default namespace
+				nss = nss.push("", a.Value)
 			}
 			attrs[name] = a.Value
 		}
@@ -133,8 +136,8 @@ func fromXMLToArray(n xmlNode) any {
 		if space != "" {
 			space = nss.lookup(n.XMLName)
 		}
-		// only add if ns is found and not default ns
 		name := elmName(space, local)
+
 		elm := []any{name}
 		if len(attrs) > 0 {
 			elm = append(elm, attrs)
@@ -151,8 +154,8 @@ func fromXMLToArray(n xmlNode) any {
 }
 
 func fromXMLToObject(n xmlNode, xi format.XMLIn) any {
-	var f func(n xmlNode, seq int, nss xmlNNStack) any
-	f = func(n xmlNode, seq int, nss xmlNNStack) any {
+	var f func(n xmlNode, seq int, nss xmlNNStack) (string, any)
+	f = func(n xmlNode, seq int, nss xmlNNStack) (string, any) {
 		attrs := map[string]any{}
 
 		for _, a := range n.Attrs {
@@ -165,7 +168,11 @@ func fromXMLToObject(n xmlNode, xi format.XMLIn) any {
 					space = nss.lookup(a.Name)
 				}
 				name = space + ":" + local
+			} else if local == "xmlns" {
+				// track default namespace
+				nss = nss.push("", a.Value)
 			}
+
 			attrs["-"+name] = a.Value
 		}
 
@@ -174,20 +181,17 @@ func fromXMLToObject(n xmlNode, xi format.XMLIn) any {
 			if len(n.Nodes) == 1 {
 				nSeq = -1
 			}
-			local, space := nn.XMLName.Local, nn.XMLName.Space
-			if space != "" {
-				space = nss.lookup(nn.XMLName)
-			}
-			// only add if ns is found and not default ns
-			name := elmName(space, local)
-			if e, ok := attrs[name]; ok {
+
+			nname, naddrs := f(nn, nSeq, nss)
+
+			if e, ok := attrs[nname]; ok {
 				if ea, ok := e.([]any); ok {
-					attrs[name] = append(ea, f(nn, nSeq, nss))
+					attrs[nname] = append(ea, naddrs)
 				} else {
-					attrs[name] = []any{e, f(nn, nSeq, nss)}
+					attrs[nname] = []any{e, naddrs}
 				}
 			} else {
-				attrs[name] = f(nn, nSeq, nss)
+				attrs[nname] = naddrs
 			}
 		}
 
@@ -201,18 +205,23 @@ func fromXMLToObject(n xmlNode, xi format.XMLIn) any {
 			attrs["#comment"] = strings.TrimSpace(string(n.Comment))
 		}
 
+		local, space := n.XMLName.Local, n.XMLName.Space
+		if space != "" {
+			space = nss.lookup(n.XMLName)
+		}
+		name := elmName(space, local)
+
 		if len(attrs) == 0 {
-			return ""
+			return name, ""
 		} else if len(attrs) == 1 && attrs["#text"] != nil {
-			return attrs["#text"]
+			return name, attrs["#text"]
 		}
 
-		return attrs
+		return name, attrs
 	}
 
-	return map[string]any{
-		n.XMLName.Local: f(n, -1, nil),
-	}
+	name, attrs := f(n, -1, nil)
+	return map[string]any{name: attrs}
 }
 
 func decodeXML(d *decode.D, in any) any {
