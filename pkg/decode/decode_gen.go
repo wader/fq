@@ -19246,6 +19246,100 @@ func (d *D) FieldUnary(name string, ov uint64, sms ...scalar.Mapper) uint64 {
 	return d.FieldScalarUnary(name, ov, sms...).ActualU()
 }
 
+// Reader ULEB128
+
+// TryULEB128 tries to read unsigned LEB128 integer
+func (d *D) TryULEB128() (uint64, error) { return d.tryULEB128() }
+
+// ULEB128 reads unsigned LEB128 integer
+func (d *D) ULEB128() uint64 {
+	v, err := d.tryULEB128()
+	if err != nil {
+		panic(IOError{Err: err, Op: "ULEB128", Pos: d.Pos()})
+	}
+	return v
+}
+
+// TryFieldScalarULEB128 tries to add a field and read unsigned LEB128 integer
+func (d *D) TryFieldScalarULEB128(name string, sms ...scalar.Mapper) (*scalar.S, error) {
+	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
+		v, err := d.tryULEB128()
+		s.Actual = v
+		return s, err
+	}, sms...)
+	if err != nil {
+		return nil, err
+	}
+	return s, err
+}
+
+// FieldScalarULEB128 adds a field and reads unsigned LEB128 integer
+func (d *D) FieldScalarULEB128(name string, sms ...scalar.Mapper) *scalar.S {
+	s, err := d.TryFieldScalarULEB128(name, sms...)
+	if err != nil {
+		panic(IOError{Err: err, Name: name, Op: "ULEB128", Pos: d.Pos()})
+	}
+	return s
+}
+
+// TryFieldULEB128 tries to add a field and read unsigned LEB128 integer
+func (d *D) TryFieldULEB128(name string, sms ...scalar.Mapper) (uint64, error) {
+	s, err := d.TryFieldScalarULEB128(name, sms...)
+	return s.ActualU(), err
+}
+
+// FieldULEB128 adds a field and reads unsigned LEB128 integer
+func (d *D) FieldULEB128(name string, sms ...scalar.Mapper) uint64 {
+	return d.FieldScalarULEB128(name, sms...).ActualU()
+}
+
+// Reader SLEB128
+
+// TrySLEB128 tries to read signed LEB128 integer
+func (d *D) TrySLEB128() (int64, error) { return d.trySLEB128() }
+
+// SLEB128 reads signed LEB128 integer
+func (d *D) SLEB128() int64 {
+	v, err := d.trySLEB128()
+	if err != nil {
+		panic(IOError{Err: err, Op: "SLEB128", Pos: d.Pos()})
+	}
+	return v
+}
+
+// TryFieldScalarSLEB128 tries to add a field and read signed LEB128 integer
+func (d *D) TryFieldScalarSLEB128(name string, sms ...scalar.Mapper) (*scalar.S, error) {
+	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
+		v, err := d.trySLEB128()
+		s.Actual = v
+		return s, err
+	}, sms...)
+	if err != nil {
+		return nil, err
+	}
+	return s, err
+}
+
+// FieldScalarSLEB128 adds a field and reads signed LEB128 integer
+func (d *D) FieldScalarSLEB128(name string, sms ...scalar.Mapper) *scalar.S {
+	s, err := d.TryFieldScalarSLEB128(name, sms...)
+	if err != nil {
+		panic(IOError{Err: err, Name: name, Op: "SLEB128", Pos: d.Pos()})
+	}
+	return s
+}
+
+// TryFieldSLEB128 tries to add a field and read signed LEB128 integer
+func (d *D) TryFieldSLEB128(name string, sms ...scalar.Mapper) (int64, error) {
+	s, err := d.TryFieldScalarSLEB128(name, sms...)
+	return s.ActualS(), err
+}
+
+// FieldSLEB128 adds a field and reads signed LEB128 integer
+func (d *D) FieldSLEB128(name string, sms ...scalar.Mapper) int64 {
+	return d.FieldScalarSLEB128(name, sms...).ActualS()
+}
+
 // Reader UTF8
 
 // TryUTF8 tries to read nBytes bytes UTF8 string

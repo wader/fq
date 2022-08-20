@@ -39,22 +39,9 @@ var wireTypeNames = scalar.UToSymStr{
 	5: "32bit",
 }
 
-func varInt(d *decode.D) uint64 {
-	var n uint64
-	for i := 0; ; i++ {
-		b := d.U8()
-		n = n | (b&0x7f)<<(7*i)
-		if b&0x80 == 0 {
-			break
-		}
-	}
-
-	return n
-}
-
 func protobufDecodeField(d *decode.D, pbm *format.ProtoBufMessage) {
 	d.FieldStruct("field", func(d *decode.D) {
-		keyN := d.FieldUFn("key_n", varInt)
+		keyN := d.FieldULEB128("key_n")
 		fieldNumber := keyN >> 3
 		wireType := keyN & 0x7
 		d.FieldValueU("field_number", fieldNumber)
@@ -65,11 +52,11 @@ func protobufDecodeField(d *decode.D, pbm *format.ProtoBufMessage) {
 		var valueStart int64
 		switch wireType {
 		case wireTypeVarint:
-			value = d.FieldUFn("wire_value", varInt)
+			value = d.FieldULEB128("wire_value")
 		case wireType64Bit:
 			value = d.FieldU64("wire_value")
 		case wireTypeLengthDelimited:
-			length = d.FieldUFn("length", varInt)
+			length = d.FieldULEB128("length")
 			valueStart = d.Pos()
 			d.FieldRawLen("wire_value", int64(length)*8)
 		case wireType32Bit:
