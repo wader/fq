@@ -1,8 +1,6 @@
 package wasm
 
 import (
-	"errors"
-
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
 )
@@ -49,11 +47,7 @@ type instructionInfo struct {
 type instructionMap map[Opcode]instructionInfo
 
 func (m instructionMap) MapScalar(s scalar.S) (scalar.S, error) {
-	opcode, ok := s.Actual.(uint64)
-	if !ok {
-		return s, errors.New("unexpected opcode type")
-	}
-
+	opcode := s.ActualU()
 	instr, found := m[Opcode(opcode)]
 	if !found {
 		return s, nil
@@ -481,12 +475,7 @@ var prefixedInstrMap = instructionMap{
 func decodePrefixedInstruction(d *decode.D, prefix Opcode, mnemonic string) {
 	d.FieldU8("prefix", d.AssertU(uint64(prefix)), scalar.ActualHex)
 	s := peekUnsignedLEB128(d)
-	v, ok := s.Actual.(uint64)
-	if !ok {
-		d.Fatalf("expected uint64 but got %t", s.Actual)
-	}
-
-	opcode := Opcode(v)
+	opcode := Opcode(s.ActualU())
 	instr := prefixedInstrMap[opcode]
 	df := instr.decodeFn
 	if df == nil {
@@ -786,12 +775,7 @@ var vectorInstrMap = instructionMap{
 func decodeVectorInstruction(d *decode.D, prefix Opcode, mnemonic string) {
 	d.FieldU8("prefix", d.AssertU(uint64(prefix)), scalar.ActualHex)
 	s := peekUnsignedLEB128(d)
-	v, ok := s.Actual.(uint64)
-	if !ok {
-		d.Fatalf("expected uint64 but got %t", s.Actual)
-	}
-
-	opcode := Opcode(v)
+	opcode := Opcode(s.ActualU())
 	instr := vectorInstrMap[opcode]
 	df := instr.decodeFn
 	if df == nil {
