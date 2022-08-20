@@ -16,6 +16,7 @@ func init() {
 		Name:        format.WASM,
 		Description: "WebAssembly Binary Format",
 		DecodeFn:    decodeWASM,
+		Groups:      []string{format.PROBE},
 	})
 }
 
