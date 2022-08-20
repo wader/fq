@@ -75,28 +75,6 @@ func readUnsignedLEB128(d *decode.D) scalar.S {
 	return scalar.S{Actual: result}
 }
 
-func peekUnsignedLEB128(d *decode.D) scalar.S {
-	var result uint64
-	var shift uint
-	n := 1
-
-	for {
-		peekedBytes := d.PeekBytes(n)
-		b := peekedBytes[n-1]
-
-		if shift >= 63 && b != 0 {
-			d.Fatalf("overflow when reading unsigned leb128")
-		}
-		result |= (uint64(b&0x7f) << shift)
-		if b&0x80 == 0 {
-			break
-		}
-		shift += 7
-		n++
-	}
-	return scalar.S{Actual: result}
-}
-
 // sN ::= n:byte          => n                     (if n < 2^6 && n < 2^(N-1))
 //        n:byte          => n - 2^7               (if 2^6 <= n < 2^7 && n >= 2^7 - 2^(N-1))
 //        n:byte m:s(N-7) => 2^7 * m + (n - 2^7)   (if n >= 2^7 && N > 7)
