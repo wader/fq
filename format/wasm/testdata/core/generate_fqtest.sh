@@ -34,20 +34,18 @@ tear_down() {
   cd "$d"
   rm -f ./*.fqtest
 
-  go build -o "$tmpdir/fq" "$d/../../../../"
   find "." -name '*.wasm' -print0 | sort -z -n |
     while IFS= read -r -d '' f; do
       f=${f#./}
       of=${f/%.wasm/.fqtest}
       echo "$f -> $of"
       echo "$ fq -d wasm dv $f" > "$of"
-      "$tmpdir/fq" -d wasm dv "$f" >>"$of"
-
-      if grep "error" "$of"; then
-        cat "$of"
-        exit 1
-      fi
     done
+
+  WRITE_ACTUAL=1 go test -run TestFQTests/wasm "$d/../../.."
+  if grep "error" ./*.fqtest; then
+    exit 1
+  fi
 )
 
 result=0
