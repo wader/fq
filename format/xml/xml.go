@@ -3,7 +3,8 @@ package xml
 // object mode inspired by https://www.xml.com/pub/a/2006/05/31/converting-between-xml-and-json.html
 
 // TODO: keep <?xml>? root #desc?
-// TODO: xml default indent?
+// TODO: refactor to share more code
+// TODO: rewrite ns stack
 
 import (
 	"bytes"
@@ -74,24 +75,26 @@ type xmlNS struct {
 	url  string
 }
 
-func elmName(space, local string) string {
-	if space == "" {
-		return local
-	}
-	return space + ":" + local
-}
+// TODO: nss pop? attr not stack?
 
 // xmlNNStack is used to undo namespace url resolving, space is url not the "alias" name
 type xmlNNStack []xmlNS
 
 func (nss xmlNNStack) lookup(name xml.Name) string {
+	var s string
 	for i := len(nss) - 1; i >= 0; i-- {
 		ns := nss[i]
 		if name.Space == ns.url {
-			return ns.name
+			// first found or is default namespace
+			if s == "" || ns.name == "" {
+				s = ns.name
+			}
+			if s == "" {
+				break
+			}
 		}
 	}
-	return ""
+	return s
 }
 
 func (nss xmlNNStack) push(name string, url string) xmlNNStack {
@@ -100,57 +103,11 @@ func (nss xmlNNStack) push(name string, url string) xmlNNStack {
 	return xmlNNStack(n)
 }
 
-func fromXMLToArray(n xmlNode) any {
-	var f func(n xmlNode, nss xmlNNStack) []any
-	f = func(n xmlNode, nss xmlNNStack) []any {
-		attrs := map[string]any{}
-		for _, a := range n.Attrs {
-			local, space := a.Name.Local, a.Name.Space
-			name := local
-			if space != "" {
-				if space == "xmlns" {
-					nss = nss.push(local, a.Value)
-				} else {
-					space = nss.lookup(a.Name)
-				}
-				name = space + ":" + local
-			} else if local == "xmlns" {
-				// track default namespace
-				nss = nss.push("", a.Value)
-			}
-			attrs[name] = a.Value
-		}
-		if attrs["#text"] == nil && !whitespaceRE.Match(n.Chardata) {
-			attrs["#text"] = strings.TrimSpace(string(n.Chardata))
-		}
-		if attrs["#comment"] == nil && !whitespaceRE.Match(n.Comment) {
-			attrs["#comment"] = strings.TrimSpace(string(n.Comment))
-		}
-
-		nodes := []any{}
-		for _, c := range n.Nodes {
-			nodes = append(nodes, f(c, nss))
-		}
-
-		local, space := n.XMLName.Local, n.XMLName.Space
-		if space != "" {
-			space = nss.lookup(n.XMLName)
-		}
-		name := elmName(space, local)
-
-		elm := []any{name}
-		if len(attrs) > 0 {
-			elm = append(elm, attrs)
-		} else {
-			// make attrs null if there were none, jq allows index into null
-			elm = append(elm, nil)
-		}
-		elm = append(elm, nodes)
-
-		return elm
+func elmName(space, local string) string {
+	if space == "" {
+		return local
 	}
-
-	return f(n, nil)
+	return space + ":" + local
 }
 
 func fromXMLToObject(n xmlNode, xi format.XMLIn) any {
@@ -160,19 +117,25 @@ func fromXMLToObject(n xmlNode, xi format.XMLIn) any {
 
 		for _, a := range n.Attrs {
 			local, space := a.Name.Local, a.Name.Space
-			name := local
-			if space != "" {
-				if space == "xmlns" {
-					nss = nss.push(local, a.Value)
-				} else {
-					space = nss.lookup(a.Name)
-				}
-				name = space + ":" + local
+			if space == "xmlns" {
+				nss = nss.push(local, a.Value)
 			} else if local == "xmlns" {
 				// track default namespace
 				nss = nss.push("", a.Value)
 			}
+		}
 
+		for _, a := range n.Attrs {
+			local, space := a.Name.Local, a.Name.Space
+			name := local
+			if space != "" {
+				if space == "xmlns" {
+					// nop
+				} else {
+					space = nss.lookup(a.Name)
+				}
+				name = elmName(space, local)
+			}
 			attrs["-"+name] = a.Value
 		}
 
@@ -222,6 +185,64 @@ func fromXMLToObject(n xmlNode, xi format.XMLIn) any {
 
 	name, attrs := f(n, -1, nil)
 	return map[string]any{name: attrs}
+}
+
+func fromXMLToArray(n xmlNode) any {
+	var f func(n xmlNode, nss xmlNNStack) []any
+	f = func(n xmlNode, nss xmlNNStack) []any {
+		attrs := map[string]any{}
+
+		for _, a := range n.Attrs {
+			local, space := a.Name.Local, a.Name.Space
+			if space == "xmlns" {
+				nss = nss.push(local, a.Value)
+			} else if local == "xmlns" {
+				// track default namespace
+				nss = nss.push("", a.Value)
+			}
+		}
+
+		for _, a := range n.Attrs {
+			local, space := a.Name.Local, a.Name.Space
+			name := local
+			if space != "" {
+				if space == "xmlns" {
+					// nop
+				} else {
+					space = nss.lookup(a.Name)
+				}
+				name = elmName(space, local)
+			}
+			attrs[name] = a.Value
+		}
+
+		if attrs["#text"] == nil && !whitespaceRE.Match(n.Chardata) {
+			attrs["#text"] = strings.TrimSpace(string(n.Chardata))
+		}
+		if attrs["#comment"] == nil && !whitespaceRE.Match(n.Comment) {
+			attrs["#comment"] = strings.TrimSpace(string(n.Comment))
+		}
+
+		nodes := []any{}
+		for _, c := range n.Nodes {
+			nodes = append(nodes, f(c, nss))
+		}
+
+		name := elmName(nss.lookup(n.XMLName), n.XMLName.Local)
+
+		elm := []any{name}
+		if len(attrs) > 0 {
+			elm = append(elm, attrs)
+		} else {
+			// make attrs null if there were none, jq allows index into null
+			elm = append(elm, nil)
+		}
+		elm = append(elm, nodes)
+
+		return elm
+	}
+
+	return f(n, nil)
 }
 
 func decodeXML(d *decode.D, in any) any {
@@ -289,6 +310,20 @@ type ToXMLOpts struct {
 	Indent int
 }
 
+func xmlNameFromStr(s string) xml.Name {
+	return xml.Name{Local: s}
+}
+
+func xmlNameSort(a, b xml.Name) bool {
+	if a.Space != b.Space {
+		if a.Space == "" {
+			return true
+		}
+		return a.Space < b.Space
+	}
+	return a.Local < b.Local
+}
+
 func toXMLFromObject(c any, opts ToXMLOpts) any {
 	var f func(name string, content any) (xmlNode, int, bool)
 	f = func(name string, content any) (xmlNode, int, bool) {
@@ -319,10 +354,11 @@ func toXMLFromObject(c any, opts ToXMLOpts) any {
 					n.Comment = []byte(s)
 				case strings.HasPrefix(k, "-"):
 					s, _ := v.(string)
-					n.Attrs = append(n.Attrs, xml.Attr{
-						Name:  xml.Name{Local: k[1:]},
+					a := xml.Attr{
+						Name:  xmlNameFromStr(k[1:]),
 						Value: s,
-					})
+					}
+					n.Attrs = append(n.Attrs, a)
 				default:
 					switch v := v.(type) {
 					case []any:
@@ -360,8 +396,7 @@ func toXMLFromObject(c any, opts ToXMLOpts) any {
 		}
 
 		sort.Slice(n.Attrs, func(i, j int) bool {
-			a, b := n.Attrs[i].Name, n.Attrs[j].Name
-			return a.Space < b.Space || a.Local < b.Local
+			return xmlNameSort(n.Attrs[i].Name, n.Attrs[j].Name)
 		})
 
 		return n, seq, hasSeq
@@ -415,7 +450,7 @@ func toXMLFromArray(c any, opts ToXMLOpts) any {
 		}
 
 		n := xmlNode{
-			XMLName: xml.Name{Local: name},
+			XMLName: xmlNameFromStr(name),
 		}
 
 		for k, v := range attrs {
@@ -429,15 +464,14 @@ func toXMLFromArray(c any, opts ToXMLOpts) any {
 			default:
 				s, _ := v.(string)
 				n.Attrs = append(n.Attrs, xml.Attr{
-					Name:  xml.Name{Local: k},
+					Name:  xmlNameFromStr(k),
 					Value: s,
 				})
 			}
 		}
 
 		sort.Slice(n.Attrs, func(i, j int) bool {
-			a, b := n.Attrs[i].Name, n.Attrs[j].Name
-			return a.Space < b.Space || a.Local < b.Local
+			return xmlNameSort(n.Attrs[i].Name, n.Attrs[j].Name)
 		})
 
 		for _, c := range children {
