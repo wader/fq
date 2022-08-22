@@ -20,19 +20,21 @@ var sectionIDToSym = scalar.UToSymStr{
 	sectionIDDataCount: "data_count_section",
 }
 
-// valtype ::= t:numtype => t
-//          |  t:vectype => t
-//          |  t:reftype => t
+// A map to convert valtypes to symbols.
 //
-// numtype ::= 0x7F => i32
-//          |  0x7E => i64
-//          |  0x7D => f32
-//          |  0x7C => f64
+//   valtype ::= t:numtype => t
+//            |  t:vectype => t
+//            |  t:reftype => t
 //
-// vectype ::= 0x7B => v128
+//   numtype ::= 0x7F => i32
+//            |  0x7E => i64
+//            |  0x7D => f32
+//            |  0x7C => f64
 //
-// reftype ::= 0x70 => funcref
-//          |  0x6F => externref
+//   vectype ::= 0x7B => v128
+//
+//   reftype ::= 0x70 => funcref
+//            |  0x6F => externref
 var valtypeToSymMapper = scalar.UToSymStr{
 	0x7f: "i32",
 	0x7e: "i64",
@@ -43,10 +45,12 @@ var valtypeToSymMapper = scalar.UToSymStr{
 	0x6f: "externref",
 }
 
-// importdesc ::= 0x00 x:typeidx     => func x
-//             |  0x01 tt:tabletype  => table tt
-//             |  0x02 mt:memtype    => mem mt
-//             |  0x03 gt:globaltype => global gt
+// A map to convert tags of importdesc to symbols.
+//
+//   importdesc ::= 0x00 x:typeidx     => func x
+//               |  0x01 tt:tabletype  => table tt
+//               |  0x02 mt:memtype    => mem mt
+//               |  0x03 gt:globaltype => global gt
 var importdescTagToSym = scalar.UToSymStr{
 	0x00: "func",
 	0x01: "table",
@@ -54,10 +58,12 @@ var importdescTagToSym = scalar.UToSymStr{
 	0x03: "global",
 }
 
-// exportdesc ::= 0x00 x:funcidx   => func x
-//             |  0x01 x:tableidx  => table x
-//             |  0x02 x:memidx    => mem x
-//             |  0x03 x:globalidx => global x
+// A map to convert tags of exportdesc to symbols.
+//
+//   exportdesc ::= 0x00 x:funcidx   => func x
+//               |  0x01 x:tableidx  => table x
+//               |  0x02 x:memidx    => mem x
+//               |  0x03 x:globalidx => global x
 var exportdescTagToSym = scalar.UToSymStr{
 	0x00: "funcidx",
 	0x01: "tableidx",
@@ -65,21 +71,27 @@ var exportdescTagToSym = scalar.UToSymStr{
 	0x03: "globalidx",
 }
 
-// reftype ::= 0x70 => funcref
-//          |  0x6F => externref
+// A map to convert reftypes to symbols.
+//
+//   reftype ::= 0x70 => funcref
+//            |  0x6F => externref
 var reftypeTagToSym = scalar.UToSymStr{
 	0x70: "funcref",
 	0x6f: "externref",
 }
 
-// mut ::= 0x00 => const
-//      |  0x01 => var
+// A map to convert mut to symbols.
+//
+//   mut ::= 0x00 => const
+//        |  0x01 => var
 var mutToSym = scalar.UToSymStr{
 	0x00: "const",
 	0x01: "var",
 }
 
-// elemkind ::= 0x00 => funcref
+// A map to convert elemkind to symbols.
+//
+//   elemkind ::= 0x00 => funcref
 var elemkindTagToSym = scalar.UToSymStr{
 	0x00: "funcref",
 }
