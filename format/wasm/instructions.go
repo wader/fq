@@ -13,7 +13,7 @@ func decodeBlockType(d *decode.D, name string) {
 	case 0x6f, 0x70, 0x7b, 0x7c, 0x7d, 0x7e, 0x7f:
 		d.FieldU8(name, valtypeToSymMapper)
 	default:
-		d.FieldSScalarFn(name, readSignedLEB128)
+		d.FieldSLEB128(name)
 	}
 }
 
@@ -460,7 +460,7 @@ func decodePrefixedInstruction(d *decode.D) {
 }
 
 func decodePrefixedOpcode(d *decode.D) Opcode {
-	return Opcode(d.FieldUScalarFn("p_opcode", readUnsignedLEB128, prefixedInstrMap))
+	return Opcode(d.FieldULEB128("p_opcode", prefixedInstrMap))
 }
 
 func decodeMemoryInit(d *decode.D) {
@@ -744,7 +744,7 @@ func decodeVectorInstruction(d *decode.D) {
 }
 
 func decodeVectorOpcode(d *decode.D) Opcode {
-	return Opcode(d.FieldUScalarFn("v_opcode", readUnsignedLEB128, vectorInstrMap))
+	return Opcode(d.FieldULEB128("v_opcode", vectorInstrMap))
 }
 
 func decodeV128ConstOperand(d *decode.D) {

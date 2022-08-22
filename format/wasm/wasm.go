@@ -56,74 +56,16 @@ func decodeVecByte(d *decode.D, name string) {
 	})
 }
 
-// uN ::= n:byte          => n                     (if n < 2^7 && n < 2^N)
-//        n:byte m:u(N-7) => 2^7 * m + (n - 2^7)   (if n >= 2^7 && N > 7)
-func readUnsignedLEB128(d *decode.D) scalar.S {
-	var result uint64
-	var shift uint
-
-	for {
-		b := d.U8()
-		if shift >= 63 && b != 0 {
-			d.Fatalf("overflow when reading unsigned leb128")
-		}
-		result |= (b & 0x7f) << shift
-		if b&0x80 == 0 {
-			break
-		}
-		shift += 7
-	}
-	return scalar.S{Actual: result}
-}
-
-// sN ::= n:byte          => n                     (if n < 2^6 && n < 2^(N-1))
-//        n:byte          => n - 2^7               (if 2^6 <= n < 2^7 && n >= 2^7 - 2^(N-1))
-//        n:byte m:s(N-7) => 2^7 * m + (n - 2^7)   (if n >= 2^7 && N > 7)
-func readSignedLEB128(d *decode.D) scalar.S {
-	const n = 64
-	var result int64
-	var shift uint
-	var b byte
-
-	for {
-		b = byte(d.U8())
-		if shift == 63 && b != 0 && b != 0x7f {
-			d.Fatalf("overflow when reading signed leb128")
-		}
-
-		result |= int64(b&0x7f) << shift
-		shift += 7
-
-		if b&0x80 == 0 {
-			break
-		}
-	}
-
-	if shift < n && (b&0x40) == 0x40 {
-		result |= -1 << shift
-	}
-
-	return scalar.S{Actual: result}
-}
-
 func fieldU32(d *decode.D, name string) uint64 {
-	n := d.FieldUScalarFn(name, readUnsignedLEB128)
-	if n > math.MaxUint32 {
-		d.Fatalf("invalid u32 value")
-	}
-	return n
+	return d.FieldULEB128(name, d.AssertURange(0, math.MaxUint32))
 }
 
 func fieldI32(d *decode.D, name string) int64 {
-	n := d.FieldSScalarFn(name, readSignedLEB128)
-	if n > math.MaxInt32 || n < math.MinInt32 {
-		d.Fatalf("invalid i32 value")
-	}
-	return n
+	return d.FieldSLEB128(name, d.AssertSRange(math.MinInt32, math.MaxInt32))
 }
 
 func fieldI64(d *decode.D, name string) int64 {
-	return d.FieldSScalarFn(name, readSignedLEB128)
+	return d.FieldSLEB128(name)
 }
 
 // name ::= b*:vec(byte) => name (if utf8(name) = b*)
@@ -522,7 +464,7 @@ func decodeDataSegment(d *decode.D, name string) {
 
 // datacountsec ::= n?:section_12(u32) => n?
 func decodeDataCountSection(d *decode.D) {
-	d.FieldUScalarFn("n", readUnsignedLEB128)
+	fieldU32(d, "n")
 }
 
 func decodeWASMModule(d *decode.D) {
@@ -532,7 +474,7 @@ func decodeWASMModule(d *decode.D) {
 		for d.BitsLeft() > 0 {
 			d.FieldStruct("section", func(d *decode.D) {
 				sectionID := d.FieldU8("id", sectionIDToSym)
-				size := d.FieldUScalarFn("size", readUnsignedLEB128)
+				size := fieldU32(d, "size")
 				if size > math.MaxInt64/8 {
 					d.Fatalf("invalid section size")
 				}
