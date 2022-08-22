@@ -577,14 +577,20 @@ func decodeWASMModule(d *decode.D) {
 
 var instrMapOnce sync.Once
 
+const (
+	opcodeBlock Opcode = 0x02
+	opcodeLoop  Opcode = 0x03
+	opcodeIf    Opcode = 0x04
+)
+
 func decodeWASM(d *decode.D, _ any) any {
 	d.Endian = decode.LittleEndian
 
 	// delayed initialization to break initialization reference cycle
 	instrMapOnce.Do(func() {
-		instrMap[0x02] = instructionInfo{mnemonic: "block", f: decodeBlock}
-		instrMap[0x03] = instructionInfo{mnemonic: "loop", f: decodeLoop}
-		instrMap[0x04] = instructionInfo{mnemonic: "if", f: decodeIf}
+		instrMap[opcodeBlock] = instructionInfo{mnemonic: "block", f: decodeBlock}
+		instrMap[opcodeLoop] = instructionInfo{mnemonic: "loop", f: decodeLoop}
+		instrMap[opcodeIf] = instructionInfo{mnemonic: "if", f: decodeIf}
 	})
 
 	decodeWASMModule(d)
