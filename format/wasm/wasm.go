@@ -4,6 +4,7 @@ package wasm
 
 import (
 	"math"
+	"sync"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/pkg/decode"
@@ -572,13 +573,17 @@ func decodeWASMModule(d *decode.D) {
 	})
 }
 
+var instrMapOnce sync.Once
+
 func decodeWASM(d *decode.D, _ any) any {
 	d.Endian = decode.LittleEndian
 
 	// delayed initialization to break initialization reference cycle
-	instrMap[0x02] = instructionInfo{mnemonic: "block", f: decodeBlock}
-	instrMap[0x03] = instructionInfo{mnemonic: "loop", f: decodeLoop}
-	instrMap[0x04] = instructionInfo{mnemonic: "if", f: decodeIf}
+	instrMapOnce.Do(func() {
+		instrMap[0x02] = instructionInfo{mnemonic: "block", f: decodeBlock}
+		instrMap[0x03] = instructionInfo{mnemonic: "loop", f: decodeLoop}
+		instrMap[0x04] = instructionInfo{mnemonic: "if", f: decodeIf}
+	})
 
 	decodeWASMModule(d)
 
