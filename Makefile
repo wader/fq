@@ -91,6 +91,10 @@ update-gomod:
 
 # TODO: as decode recovers panic and "repanics" unrecoverable errors this is a bit hacky at the moment
 # fuzz code is not suppose to print to stderr so log to file
+# Retrigger:
+# cat format/testdata/fuzz/FuzzFormats/... | go run dev/fuzzbytes.go | go run . -d raw '. as $b | formats | keys[] as $f | $b | decode($f)'
+# cat format/testdata/fuzz/FuzzFormats/... | go run dev/fuzzbytes.go | fq -d raw 'tobytes | tobase64'
+# fq -n '"..." | frombase64 | ...'
 .PHONY: fuzz
 fuzz:
 # in other terminal: tail -f /tmp/repanic
