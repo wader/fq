@@ -265,7 +265,7 @@ var instrMap = instructionMap{
 }
 
 func decodeInstruction(d *decode.D) {
-	opcode := Opcode(decodeOpcode(d))
+	opcode := decodeOpcode(d)
 	instr := instrMap[opcode]
 	if instr.f != nil {
 		instr.f(d)
@@ -383,12 +383,14 @@ func decodeGlobalIdxWithName(name string) func(d *decode.D) {
 	}
 }
 
+//nolint:unparam
 func decodeTableIdxWithName(name string) func(d *decode.D) {
 	return func(d *decode.D) {
 		decodeTableIdx(d, name)
 	}
 }
 
+//nolint:unparam
 func decodeMemArgWithName(name string) func(d *decode.D) {
 	return func(d *decode.D) {
 		decodeMemArg(d, name)
@@ -761,12 +763,14 @@ func decodeLaneIdx(d *decode.D, name string) {
 	d.FieldU8(name)
 }
 
+//nolint:unparam
 func decodeLaneIdxWithName(name string) func(d *decode.D) {
 	return func(d *decode.D) {
 		decodeLaneIdx(d, name)
 	}
 }
 
+//nolint:unparam
 func decodeMemArgAndLaneIdxWithNames(memArgName, laneIdxName string) func(d *decode.D) {
 	return func(d *decode.D) {
 		decodeMemArg(d, memArgName)
