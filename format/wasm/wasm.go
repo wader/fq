@@ -39,7 +39,7 @@ const (
 
 // Decode vector.
 //
-//   vec(B) ::= n:u32 (x:B)^n => x^n
+//	vec(B) ::= n:u32 (x:B)^n => x^n
 func decodeVec(d *decode.D, name string, fn func(d *decode.D)) {
 	d.FieldStruct(name, func(d *decode.D) {
 		n := fieldU32(d, "n")
@@ -72,7 +72,7 @@ func fieldI64(d *decode.D, name string) int64 {
 
 // Decode name.
 //
-//   name ::= b*:vec(byte) => name (if utf8(name) = b*)
+//	name ::= b*:vec(byte) => name (if utf8(name) = b*)
 func decodeName(d *decode.D, name string) {
 	d.FieldStruct(name, func(d *decode.D) {
 		n := fieldU32(d, "n")
@@ -85,17 +85,18 @@ func decodeName(d *decode.D, name string) {
 
 // Decode reftype.
 //
-//   reftype ::= 0x70 => funcref
-//            |  0x6F => externref
+//	reftype ::= 0x70 => funcref
+//	         |  0x6F => externref
 func decodeRefType(d *decode.D, name string) {
 	d.FieldU8(name, reftypeTagToSym)
 }
 
 // Decode valtype.
 //
-//   valtype ::= t:numtype => t
-//            |  t:vectype => t
-//            |  t:reftype => t
+//	valtype ::= t:numtype => t
+//	         |  t:vectype => t
+//	         |  t:reftype => t
+//
 //nolint:unparam
 func decodeValType(d *decode.D, name string) {
 	d.FieldU8(name, valtypeToSymMapper, scalar.ActualHex)
@@ -103,7 +104,7 @@ func decodeValType(d *decode.D, name string) {
 
 // Decode resulttype.
 //
-//   resulttype ::= t*:vec(valtype) => [t*]
+//	resulttype ::= t*:vec(valtype) => [t*]
 func decodeResultType(d *decode.D, name string) {
 	decodeVec(d, name, func(d *decode.D) {
 		decodeValType(d, "t")
@@ -112,7 +113,7 @@ func decodeResultType(d *decode.D, name string) {
 
 // Decode functype.
 //
-//   functype ::= 0x60 rt1:resulttype rt2:resulttype => rt1 -> rt2
+//	functype ::= 0x60 rt1:resulttype rt2:resulttype => rt1 -> rt2
 func decodeFuncType(d *decode.D, name string) {
 	d.FieldStruct(name, func(d *decode.D) {
 		d.FieldU8("tag", d.AssertU(0x60), scalar.ActualHex)
@@ -123,8 +124,8 @@ func decodeFuncType(d *decode.D, name string) {
 
 // Decode limits.
 //
-//   limits ::= 0x00 n:u32       => {min: n, max: ε}
-//           |  0x01 n:u32 m:u32 => {min: n, max: m}
+//	limits ::= 0x00 n:u32       => {min: n, max: ε}
+//	        |  0x01 n:u32 m:u32 => {min: n, max: m}
 func decodeLimits(d *decode.D, name string) {
 	d.FieldStruct(name, func(d *decode.D) {
 		tag := d.FieldU8("tag", scalar.ActualHex)
@@ -142,7 +143,7 @@ func decodeLimits(d *decode.D, name string) {
 
 // Decode memtype.
 //
-//   memtype ::= lim:limits => lim
+//	memtype ::= lim:limits => lim
 func decodeMemType(d *decode.D, name string) {
 	d.FieldStruct(name, func(d *decode.D) {
 		decodeLimits(d, "lim")
@@ -151,7 +152,7 @@ func decodeMemType(d *decode.D, name string) {
 
 // Decode tabletype.
 //
-//   tabletype ::= et:reftype lim:limits => lim et
+//	tabletype ::= et:reftype lim:limits => lim et
 func decodeTableType(d *decode.D, name string) {
 	d.FieldStruct(name, func(d *decode.D) {
 		decodeRefType(d, "et")
@@ -161,9 +162,9 @@ func decodeTableType(d *decode.D, name string) {
 
 // Decode globaltype.
 //
-//   globaltype ::= t:valtype m:mut => m t
-//   mut        ::= 0x00            => const
-//               |  0x01            => var
+//	globaltype ::= t:valtype m:mut => m t
+//	mut        ::= 0x00            => const
+//	            |  0x01            => var
 func decodeGlobalType(d *decode.D, name string) {
 	d.FieldStruct(name, func(d *decode.D) {
 		decodeValType(d, "t")
@@ -173,71 +174,71 @@ func decodeGlobalType(d *decode.D, name string) {
 
 // Decode typeidx.
 //
-//   typeidx ::= x:u32 => x
+//	typeidx ::= x:u32 => x
 func decodeTypeIdx(d *decode.D, name string) {
 	fieldU32(d, name)
 }
 
 // Decode funcidx.
 //
-//   funcidx ::= x:u32 => x
+//	funcidx ::= x:u32 => x
 func decodeFuncIdx(d *decode.D, name string) {
 	fieldU32(d, name)
 }
 
 // Decode tableidx.
 //
-//   tableidx ::= x:u32 => x
+//	tableidx ::= x:u32 => x
 func decodeTableIdx(d *decode.D, name string) {
 	fieldU32(d, name)
 }
 
 // Decode memidx.
 //
-//   memidx ::= x:u32 => x
+//	memidx ::= x:u32 => x
 func decodeMemIdx(d *decode.D, name string) {
 	fieldU32(d, name)
 }
 
 // Decode globalidx.
 //
-//   globalidx ::= x:u32 => x
+//	globalidx ::= x:u32 => x
 func decodeGlobalIdx(d *decode.D, name string) {
 	fieldU32(d, name)
 }
 
 // Decode elemidx.
 //
-//   elemidx ::= x:u32 => x
+//	elemidx ::= x:u32 => x
 func decodeElemIdx(d *decode.D, name string) {
 	fieldU32(d, name)
 }
 
 // Decode dataidx.
 //
-//   dataidx ::= x:u32 => x
+//	dataidx ::= x:u32 => x
 func decodeDataIdx(d *decode.D, name string) {
 	fieldU32(d, name)
 }
 
 // Decode localidx.
 //
-//   localidx ::= x:u32 => x
+//	localidx ::= x:u32 => x
 func decodeLocalIdx(d *decode.D, name string) {
 	fieldU32(d, name)
 }
 
 // Decode labelidx.
 //
-//   labelidx ::= l:u32 => l
+//	labelidx ::= l:u32 => l
 func decodeLabelIdx(d *decode.D, name string) {
 	fieldU32(d, name)
 }
 
 // Decode custom section.
 //
-//   customsec ::= section_0(custom)
-//   custom    ::= name byte*
+//	customsec ::= section_0(custom)
+//	custom    ::= name byte*
 func decodeCustomSection(d *decode.D) {
 	decodeName(d, "name")
 	d.FieldRawLen("bytes", d.BitsLeft())
@@ -245,7 +246,7 @@ func decodeCustomSection(d *decode.D) {
 
 // Decode type section.
 //
-//   typesec ::= ft*:section_1(vec(functype)) => ft*
+//	typesec ::= ft*:section_1(vec(functype)) => ft*
 func decodeTypeSection(d *decode.D) {
 	decodeVec(d, "ft", func(d *decode.D) {
 		decodeFuncType(d, "ft")
@@ -254,12 +255,12 @@ func decodeTypeSection(d *decode.D) {
 
 // Decode import section.
 //
-//   importsec  ::= im*:section_2(vec(import))    => im*
-//   import     ::= mod:name nm:name d:importdesc => {module mod, name nm, desc d}
-//   importdesc ::= 0x00 x:typeidx                => func x
-//               |  0x01 tt:tabletype             => table tt
-//               |  0x02 mt:memtype               => mem mt
-//               |  0x03 gt:globaltype            => global gt
+//	importsec  ::= im*:section_2(vec(import))    => im*
+//	import     ::= mod:name nm:name d:importdesc => {module mod, name nm, desc d}
+//	importdesc ::= 0x00 x:typeidx                => func x
+//	            |  0x01 tt:tabletype             => table tt
+//	            |  0x02 mt:memtype               => mem mt
+//	            |  0x03 gt:globaltype            => global gt
 func decodeImportSection(d *decode.D) {
 	decodeVec(d, "im", func(d *decode.D) {
 		decodeImportSegment(d, "im")
@@ -294,7 +295,7 @@ func decodeImportDesc(d *decode.D, name string) {
 
 // Decode function section.
 //
-//   funcsec ::= x*:section_3(vec(typeidx)) => x*
+//	funcsec ::= x*:section_3(vec(typeidx)) => x*
 func decodeFunctionSection(d *decode.D) {
 	decodeVec(d, "x", func(d *decode.D) {
 		decodeTypeIdx(d, "x")
@@ -303,8 +304,8 @@ func decodeFunctionSection(d *decode.D) {
 
 // Decode table section.
 //
-//   tablesec ::= tab*:section_4(vec(table)) => tab*
-//   table    ::= tt:tabletype               => {type tt}
+//	tablesec ::= tab*:section_4(vec(table)) => tab*
+//	table    ::= tt:tabletype               => {type tt}
 func decodeTableSection(d *decode.D) {
 	decodeVec(d, "tab", func(d *decode.D) {
 		decodeTableType(d, "tab")
@@ -313,8 +314,8 @@ func decodeTableSection(d *decode.D) {
 
 // Decode memory section.
 //
-//   memsec ::= mem*:section_5(vec(mem)) => mem*
-//   mem    ::= mt:memtype               => {type mt}
+//	memsec ::= mem*:section_5(vec(mem)) => mem*
+//	mem    ::= mt:memtype               => {type mt}
 func decodeMemorySection(d *decode.D) {
 	decodeVec(d, "mem", func(d *decode.D) {
 		decodeMemType(d, "mem")
@@ -323,8 +324,8 @@ func decodeMemorySection(d *decode.D) {
 
 // Decode global section.
 //
-//   globalsec ::= glob*:section_6(vec(global)) => glob*
-//   global    ::= gt:globaltype e:expr         => {type gt, init e}
+//	globalsec ::= glob*:section_6(vec(global)) => glob*
+//	global    ::= gt:globaltype e:expr         => {type gt, init e}
 func decodeGlobalSection(d *decode.D) {
 	decodeVec(d, "glob", func(d *decode.D) {
 		decodeGlobal(d, "glob")
@@ -340,12 +341,12 @@ func decodeGlobal(d *decode.D, name string) {
 
 // Decode export section.
 //
-//   exportsec  ::= ex*:section_7(vec(export)) => ex*
-//   export     ::= nm:name d:exportdesc       => {name nm, desc d}
-//   exportdesc ::= 0x00 x:funcidx             => func x
-//               |  0x01 x:tableidx            => table x
-//               |  0x02 x:memidx              => mem x
-//               |  0x03 x:globalidx           => global x
+//	exportsec  ::= ex*:section_7(vec(export)) => ex*
+//	export     ::= nm:name d:exportdesc       => {name nm, desc d}
+//	exportdesc ::= 0x00 x:funcidx             => func x
+//	            |  0x01 x:tableidx            => table x
+//	            |  0x02 x:memidx              => mem x
+//	            |  0x03 x:globalidx           => global x
 func decodeExportSection(d *decode.D) {
 	decodeVec(d, "ex", func(d *decode.D) {
 		decodeExport(d, "ex")
@@ -379,8 +380,8 @@ func decodeExportDesc(d *decode.D, name string) {
 
 // Decode start section.
 //
-//   startsec ::= st?:section_8(start) => st?
-//   start    ::= x:funcidx            => {func x}
+//	startsec ::= st?:section_8(start) => st?
+//	start    ::= x:funcidx            => {func x}
 func decodeStartSection(d *decode.D) {
 	decodeStart(d, "st")
 }
@@ -393,15 +394,15 @@ func decodeStart(d *decode.D, name string) {
 
 // Decode element section.
 //
-//   elemsec ::= seg*:section_9(vec(elem))                           => seg*
-//   elem    ::= 0:u32 e:expr y*:vec(funcidx)                        => {type funcref, init ((ref.func y) end)*, mode active {table 0, offset e}}
-//            |  1:u32 et:elemkind y*:vec(funcidx)                   => {type et, init ((ref.func y) end)*, mode passive}
-//            |  2:u32 x:tableidx e:expr et:elemkind y*:vec(funcidx) => {type et, init ((ref.func y) end)*, mode active {table x, offset e}}
-//            |  3:u32 et:elemkind y*:vec(funcidx)                   => {type et, init ((ref.func y) end)*, mode declarative}
-//            |  4:u32 e:expr el*:vec(expr)                          => {type funcref, init el*, mode active {table 0, offset e}}
-//            |  5:u32 et:reftype el*:vec(expr)                      => {type et, init el*, mode passive}
-//            |  6:u32 x:tableidx e:expr et:reftype el*:vec(expr)    => {type et, init el*, mode active {table x, offset e}}
-//            |  7:u32 et:reftype el*:vec(expr)                      => {type et, init el*, mode declarative}
+//	elemsec ::= seg*:section_9(vec(elem))                           => seg*
+//	elem    ::= 0:u32 e:expr y*:vec(funcidx)                        => {type funcref, init ((ref.func y) end)*, mode active {table 0, offset e}}
+//	         |  1:u32 et:elemkind y*:vec(funcidx)                   => {type et, init ((ref.func y) end)*, mode passive}
+//	         |  2:u32 x:tableidx e:expr et:elemkind y*:vec(funcidx) => {type et, init ((ref.func y) end)*, mode active {table x, offset e}}
+//	         |  3:u32 et:elemkind y*:vec(funcidx)                   => {type et, init ((ref.func y) end)*, mode declarative}
+//	         |  4:u32 e:expr el*:vec(expr)                          => {type funcref, init el*, mode active {table 0, offset e}}
+//	         |  5:u32 et:reftype el*:vec(expr)                      => {type et, init el*, mode passive}
+//	         |  6:u32 x:tableidx e:expr et:reftype el*:vec(expr)    => {type et, init el*, mode active {table x, offset e}}
+//	         |  7:u32 et:reftype el*:vec(expr)                      => {type et, init el*, mode declarative}
 func decodeElementSection(d *decode.D) {
 	decodeVec(d, "seg", func(d *decode.D) {
 		decodeElem(d, "seg")
@@ -458,10 +459,10 @@ func decodeElemKind(d *decode.D, name string) {
 
 // Decode code section.
 //
-//   codesec ::= code*:section_10(vec(code)) => code*
-//   code    ::= size:u32 code:func          => code              (if size = ||func||)
-//   func    ::= (t*)*:vec(locals) e:expr    => concat((t*)*),e   (if |concat((t*)*)| < 2^32)
-//   locals  ::= n:u32 t:valtype             => t^n
+//	codesec ::= code*:section_10(vec(code)) => code*
+//	code    ::= size:u32 code:func          => code              (if size = ||func||)
+//	func    ::= (t*)*:vec(locals) e:expr    => concat((t*)*),e   (if |concat((t*)*)| < 2^32)
+//	locals  ::= n:u32 t:valtype             => t^n
 func decodeCodeSection(d *decode.D) {
 	decodeVec(d, "code", func(d *decode.D) {
 		decodeCode(d, "code")
@@ -495,10 +496,10 @@ func decodeLocals(d *decode.D, name string) {
 
 // Decode data section.
 //
-//   datasec ::= seg*:section_11(vec(data))         => seg*
-//   data    ::= 0:u32 e:expr b*:vec(byte)          => {init b*, mode active {memory 0, offset e}}
-//            |  1:u32 b*:vec(byte)                 => {init b*, mode passive}
-//            |  2:u32 x:memidx e:expr b*:vec(byte) => {init b*, mode active {memory x, offset e}}
+//	datasec ::= seg*:section_11(vec(data))         => seg*
+//	data    ::= 0:u32 e:expr b*:vec(byte)          => {init b*, mode active {memory 0, offset e}}
+//	         |  1:u32 b*:vec(byte)                 => {init b*, mode passive}
+//	         |  2:u32 x:memidx e:expr b*:vec(byte) => {init b*, mode active {memory x, offset e}}
 func decodeDataSection(d *decode.D) {
 	decodeVec(d, "seg", func(d *decode.D) {
 		decodeDataSegment(d, "seg")
@@ -526,7 +527,7 @@ func decodeDataSegment(d *decode.D, name string) {
 
 // Decode data count section.
 //
-//   datacountsec ::= n?:section_12(u32) => n?
+//	datacountsec ::= n?:section_12(u32) => n?
 func decodeDataCountSection(d *decode.D) {
 	fieldU32(d, "n")
 }

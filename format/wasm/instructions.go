@@ -26,7 +26,7 @@ func decodeMemArg(d *decode.D, name string) {
 
 // Decode expr.
 //
-//   expr ::= (in:instr)* 0x0B => in* end
+//	expr ::= (in:instr)* 0x0B => in* end
 func decodeExpr(d *decode.D, name string) {
 	d.FieldArray(name, func(d *decode.D) {
 		for {
