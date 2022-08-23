@@ -121,6 +121,7 @@ const (
 	VP9_CFM             = "vp9_cfm"
 	VP9_FRAME           = "vp9_frame"
 	VPX_CCR             = "vpx_ccr"
+	WASM                = "wasm"
 	WAV                 = "wav"
 	WEBP                = "webp"
 	XING                = "xing"

@@ -1,0 +1,5 @@
+$ fq -d wasm dv binary-leb128-6.wasm
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: binary-leb128-6.wasm (wasm) 0x0-0x7.7 (8)
+0x0|00 61 73 6d                                    |.asm            |  magic: raw bits (valid) 0x0-0x3.7 (4)
+0x0|            01 00 00 00|                       |    ....|       |  version: 1 0x4-0x7.7 (4)
+   |                                               |                |  sections[0:0]: 0x8-NA (0)

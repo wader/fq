@@ -824,6 +824,13 @@ out   # Decode file as vpx_ccr
 out   $ fq -d vpx_ccr . file
 out   # Decode value as vpx_ccr
 out   ... | vpx_ccr
+"help(wasm)"
+out wasm: WebAssembly Binary Format decoder
+out Examples:
+out   # Decode file as wasm
+out   $ fq -d wasm . file
+out   # Decode value as wasm
+out   ... | wasm
 "help(wav)"
 out wav: WAV file decoder
 out Examples:
