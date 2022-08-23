@@ -37,7 +37,9 @@ const (
 	sectionIDDataCount = 0x0c
 )
 
-// vec(B) ::= n:u32 (x:B)^n => x^n
+// Decode vector.
+//
+//   vec(B) ::= n:u32 (x:B)^n => x^n
 func decodeVec(d *decode.D, name string, fn func(d *decode.D)) {
 	d.FieldStruct(name, func(d *decode.D) {
 		n := fieldU32(d, "n")
@@ -68,7 +70,9 @@ func fieldI64(d *decode.D, name string) int64 {
 	return d.FieldSLEB128(name)
 }
 
-// name ::= b*:vec(byte) => name (if utf8(name) = b*)
+// Decode name.
+//
+//   name ::= b*:vec(byte) => name (if utf8(name) = b*)
 func decodeName(d *decode.D, name string) {
 	d.FieldStruct(name, func(d *decode.D) {
 		n := fieldU32(d, "n")
