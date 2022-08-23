@@ -15,7 +15,7 @@ test: testgo testjq testcli
 # figure out all go pakges with test files
 testgo: PKGS=$(shell find . -name "*_test.go" | xargs -n 1 dirname | sort | uniq)
 testgo:
-	go test ${GO_TEST_RACE_FLAGS} ${VERBOSE} ${COVER} ${PKGS}
+	go test -timeout 20m ${GO_TEST_RACE_FLAGS} ${VERBOSE} ${COVER} ${PKGS}
 
 .PHONY: testjq
 testjq: fq
