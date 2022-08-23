@@ -374,6 +374,8 @@ type Section struct {
 	LineNr int
 	Name   string
 	Value  string
+
+	valueSB strings.Builder
 }
 
 func SectionParser(re *regexp.Regexp, s string) []Section {
@@ -407,9 +409,14 @@ func SectionParser(re *regexp.Regexp, s string) []Section {
 			cs.LineNr = lineNr
 			cs.Name = firstMatch(sm, func(s string) bool { return len(s) != 0 })
 		} else {
-			// TODO: use builder somehow if performance is needed
-			cs.Value += l + lineDelim
+			cs.valueSB.WriteString(l)
+			cs.valueSB.WriteString(lineDelim)
 		}
+	}
+
+	for i := range sections {
+		cs := &sections[i]
+		cs.Value = cs.valueSB.String()
 	}
 
 	return sections
