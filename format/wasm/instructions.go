@@ -62,6 +62,8 @@ func (m instructionMap) MapScalar(s scalar.S) (scalar.S, error) {
 var instrMap = instructionMap{
 	0x00: {mnemonic: "unreachable"},
 	0x01: {mnemonic: "nop"},
+
+	// for the following 3 entries, `f` will be set in decodeWASM() to break initialization reference cycle.
 	0x02: {mnemonic: "block"},
 	0x03: {mnemonic: "loop"},
 	0x04: {mnemonic: "if"},
