@@ -103,6 +103,7 @@ const (
 	PCAP                = "pcap"
 	PCAPNG              = "pcapng"
 	PNG                 = "png"
+	PRORES_FRAME        = "prores_frame"
 	PROTOBUF            = "protobuf"
 	PROTOBUF_WIDEVINE   = "protobuf_widevine"
 	PSSH_PLAYREADY      = "pssh_playready"

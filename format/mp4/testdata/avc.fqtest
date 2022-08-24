@@ -196,7 +196,7 @@ $ fq -d mp4 dv avc.mp4
        |                                               |                |                          boxes[0:1]: 0xf2a-0xfd9.7 (176)
        |                                               |                |                            [0]{}: box 0xf2a-0xfd9.7 (176)
 0x00f20|                              00 00 00 b0      |          ....  |                              size: 176 0xf2a-0xf2d.7 (4)
-0x00f20|                                          61 76|              av|                              type: "avc1" 0xf2e-0xf31.7 (4)
+0x00f20|                                          61 76|              av|                              type: "avc1" (Advanced Video Coding / H.264 / MPEG-4 Part 10) 0xf2e-0xf31.7 (4)
 0x00f30|63 31                                          |c1              |
 0x00f30|      00 00 00 00 00 00                        |  ......        |                              reserved: raw bits 0xf32-0xf37.7 (6)
 0x00f30|                        00 01                  |        ..      |                              data_reference_index: 1 0xf38-0xf39.7 (2)
@@ -514,4 +514,4 @@ $ fq -d mp4 dv avc.mp4
 0x00d50|79 0a ff 01 f9 2d 04 d3 29 fe 4d 76 42 26 f6 cd|y....-..).MvB&..|
 *      |until 0xd80.7 (51)                             |                |
        |                                               |                |      id: 1 0x10e0-NA (0)
-       |                                               |                |      data_foramt: "avc1" 0x10e0-NA (0)
+       |                                               |                |      data_foramt: "avc1" (Advanced Video Coding / H.264 / MPEG-4 Part 10) 0x10e0-NA (0)

@@ -690,6 +690,13 @@ out   # Decode file as png
 out   $ fq -d png . file
 out   # Decode value as png
 out   ... | png
+"help(prores_frame)"
+out prores_frame: Apple ProRes frame decoder
+out Examples:
+out   # Decode file as prores_frame
+out   $ fq -d prores_frame . file
+out   # Decode value as prores_frame
+out   ... | prores_frame
 "help(protobuf)"
 out protobuf: Protobuf decoder
 out Examples:
