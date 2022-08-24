@@ -119,14 +119,19 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 		return decode.ErrWalkBreak
 	}
 
+	innerRange := v.InnerRange()
+	willDisplayData := innerRange.Len > 0 && (!isCompound(v) || (opts.Depth != 0 && opts.Depth == depth))
+
 	// show address bar on root, nested root and format change
 	if depth == 0 || v.IsRoot || v.Format != nil {
-		if !isCompound(v) {
+		if willDisplayData {
 			columns()
 		}
+
 		cfmt(colHex, "%s", deco.DumpHeader.F(ctx.hexHeader))
 		cfmt(colASCII, "%s", deco.DumpHeader.F(ctx.asciiHeader))
-		if !isCompound(v) {
+
+		if willDisplayData {
 			cw.Flush()
 		}
 	}
@@ -185,8 +190,6 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 		cfmt(colField, " (%s)", deco.Value.F(v.Format.Name))
 	}
 	valueErr = v.Err
-
-	innerRange := v.InnerRange()
 
 	if opts.Verbose {
 		cfmt(colField, " %s (%s)",
@@ -278,7 +281,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 	columns()
 
 	// has length and is not compound or a collapsed struct/array (max depth)
-	if innerRange.Len > 0 && (!isCompound(v) || (opts.Depth != 0 && opts.Depth == depth)) {
+	if willDisplayData {
 		cfmt(colAddr, "%s%s\n",
 			rootIndent, deco.DumpAddr.F(mathex.PadFormatInt(startLineByte, opts.Addrbase, true, addrWidth)))
 
