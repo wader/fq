@@ -193,7 +193,7 @@ $ fq -d mp4 dv flac.mp4
      |                                               |                |                            [0]{}: box 0x42f-0x484.7 (86)
 0x420|                                             00|               .|                              size: 86 0x42f-0x432.7 (4)
 0x430|00 00 56                                       |..V             |
-0x430|         66 4c 61 43                           |   fLaC         |                              type: "fLaC" 0x433-0x436.7 (4)
+0x430|         66 4c 61 43                           |   fLaC         |                              type: "fLaC" (Fres Lossless Audio Codec) 0x433-0x436.7 (4)
 0x430|                     00 00 00 00 00 00         |       ......   |                              reserved: raw bits 0x437-0x43c.7 (6)
 0x430|                                       00 01   |             .. |                              data_reference_index: 1 0x43d-0x43e.7 (2)
 0x430|                                             00|               .|                              version: 0 0x43f-0x440.7 (2)
@@ -372,4 +372,4 @@ $ fq -d mp4 dv flac.mp4
 0x280|                     00                        |       .        |          byte_align: 0 (valid) 0x287.2-0x287.7 (0.6)
 0x280|                        82 cb                  |        ..      |          footer_crc: "82cb" (raw bits) (valid) 0x288-0x289.7 (2)
      |                                               |                |      id: 1 0x543-NA (0)
-     |                                               |                |      data_foramt: "fLaC" 0x543-NA (0)
+     |                                               |                |      data_foramt: "fLaC" (Fres Lossless Audio Codec) 0x543-NA (0)

@@ -196,7 +196,7 @@ $ fq -d mp4 dv hevc.mp4
       |                                               |                |                          boxes[0:1]: 0xa2a-0x13dc.7 (2483)
       |                                               |                |                            [0]{}: box 0xa2a-0x13dc.7 (2483)
 0x0a20|                              00 00 09 b3      |          ....  |                              size: 2483 0xa2a-0xa2d.7 (4)
-0x0a20|                                          68 65|              he|                              type: "hev1" 0xa2e-0xa31.7 (4)
+0x0a20|                                          68 65|              he|                              type: "hev1" (High Efficiency Video Coding / H.265 / MPEG-H Part 2) 0xa2e-0xa31.7 (4)
 0x0a30|76 31                                          |v1              |
 0x0a30|      00 00 00 00 00 00                        |  ......        |                              reserved: raw bits 0xa32-0xa37.7 (6)
 0x0a30|                        00 01                  |        ..      |                              data_reference_index: 1 0xa38-0xa39.7 (2)
@@ -636,4 +636,4 @@ $ fq -d mp4 dv hevc.mp4
 0x0040|fd a9 78 83 ff fb 75 6c 0b 3f ff 94 ce 7f aa fe|..x...ul.?......|
 *     |until 0x880.7 (2127)                           |                |
       |                                               |                |      id: 1 0x149b-NA (0)
-      |                                               |                |      data_foramt: "hev1" 0x149b-NA (0)
+      |                                               |                |      data_foramt: "hev1" (High Efficiency Video Coding / H.265 / MPEG-H Part 2) 0x149b-NA (0)

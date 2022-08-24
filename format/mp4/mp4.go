@@ -33,6 +33,7 @@ var av1CCRFormat decode.Group
 var av1FrameFormat decode.Group
 var flacFrameFormat decode.Group
 var flacMetadatablocksFormat decode.Group
+var iccProfileFormat decode.Group
 var id3v2Format decode.Group
 var imageFormat decode.Group
 var jpegFormat decode.Group
@@ -44,12 +45,12 @@ var mpegHEVCDCRFrameFormat decode.Group
 var mpegHEVCSampleFormat decode.Group
 var mpegPESPacketSampleFormat decode.Group
 var opusPacketFrameFormat decode.Group
+var proResFrameFormat decode.Group
 var protoBufWidevineFormat decode.Group
 var psshPlayreadyFormat decode.Group
 var vorbisPacketFormat decode.Group
 var vp9FrameFormat decode.Group
 var vpxCCRFormat decode.Group
-var iccProfileFormat decode.Group
 
 func init() {
 	interp.RegisterFormat(decode.Format{
@@ -68,25 +69,26 @@ func init() {
 			{Names: []string{format.AAC_FRAME}, Group: &aacFrameFormat},
 			{Names: []string{format.AV1_CCR}, Group: &av1CCRFormat},
 			{Names: []string{format.AV1_FRAME}, Group: &av1FrameFormat},
+			{Names: []string{format.AVC_AU}, Group: &mpegAVCAUFormat},
+			{Names: []string{format.AVC_DCR}, Group: &mpegAVCDCRFormat},
 			{Names: []string{format.FLAC_FRAME}, Group: &flacFrameFormat},
 			{Names: []string{format.FLAC_METADATABLOCKS}, Group: &flacMetadatablocksFormat},
+			{Names: []string{format.HEVC_AU}, Group: &mpegHEVCSampleFormat},
+			{Names: []string{format.HEVC_DCR}, Group: &mpegHEVCDCRFrameFormat},
+			{Names: []string{format.ICC_PROFILE}, Group: &iccProfileFormat},
 			{Names: []string{format.ID3V2}, Group: &id3v2Format},
 			{Names: []string{format.IMAGE}, Group: &imageFormat},
 			{Names: []string{format.JPEG}, Group: &jpegFormat},
 			{Names: []string{format.MP3_FRAME}, Group: &mp3FrameFormat},
-			{Names: []string{format.AVC_AU}, Group: &mpegAVCAUFormat},
-			{Names: []string{format.AVC_DCR}, Group: &mpegAVCDCRFormat},
 			{Names: []string{format.MPEG_ES}, Group: &mpegESFormat},
-			{Names: []string{format.HEVC_AU}, Group: &mpegHEVCSampleFormat},
-			{Names: []string{format.HEVC_DCR}, Group: &mpegHEVCDCRFrameFormat},
 			{Names: []string{format.MPEG_PES_PACKET}, Group: &mpegPESPacketSampleFormat},
 			{Names: []string{format.OPUS_PACKET}, Group: &opusPacketFrameFormat},
+			{Names: []string{format.PRORES_FRAME}, Group: &proResFrameFormat},
 			{Names: []string{format.PROTOBUF_WIDEVINE}, Group: &protoBufWidevineFormat},
 			{Names: []string{format.PSSH_PLAYREADY}, Group: &psshPlayreadyFormat},
 			{Names: []string{format.VORBIS_PACKET}, Group: &vorbisPacketFormat},
 			{Names: []string{format.VP9_FRAME}, Group: &vp9FrameFormat},
 			{Names: []string{format.VPX_CCR}, Group: &vpxCCRFormat},
-			{Names: []string{format.ICC_PROFILE}, Group: &iccProfileFormat},
 		},
 		Functions: []string{"_help"},
 	})
@@ -245,6 +247,12 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 						d.FieldFormatLen(name, nBits, jpegFormat, inArg)
 					case dataFormat == "jpeg":
 						d.FieldFormatLen(name, nBits, jpegFormat, inArg)
+					case dataFormat == "apch",
+						dataFormat == "apcn",
+						dataFormat == "scpa",
+						dataFormat == "apco",
+						dataFormat == "ap4h":
+						d.FieldFormatLen(name, nBits, proResFrameFormat, inArg)
 					default:
 						d.FieldRawLen(name, d.BitsLeft())
 					}
@@ -263,7 +271,7 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 					}
 				}
 
-				d.FieldValueStr("data_foramt", trackSDDataFormat)
+				d.FieldValueStr("data_foramt", trackSDDataFormat, dataFormatNames)
 
 				switch trackSDDataFormat {
 				case "lpcm",

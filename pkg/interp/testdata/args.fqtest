@@ -179,6 +179,7 @@ opus_packet          Opus packet
 pcap                 PCAP packet capture
 pcapng               PCAPNG packet capture
 png                  Portable Network Graphics file
+prores_frame         Apple ProRes frame
 protobuf             Protobuf
 protobuf_widevine    Widevine protobuf
 pssh_playready       PlayReady PSSH

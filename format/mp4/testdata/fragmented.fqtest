@@ -154,7 +154,7 @@ $ fq -d mp4 dv fragmented.mp4
        |                                               |                |                          boxes[0:1]: 0x1a9-0x23f.7 (151)
        |                                               |                |                            [0]{}: box 0x1a9-0x23f.7 (151)
 0x001a0|                           00 00 00 97         |         ....   |                              size: 151 0x1a9-0x1ac.7 (4)
-0x001a0|                                       61 76 63|             avc|                              type: "avc1" 0x1ad-0x1b0.7 (4)
+0x001a0|                                       61 76 63|             avc|                              type: "avc1" (Advanced Video Coding / H.264 / MPEG-4 Part 10) 0x1ad-0x1b0.7 (4)
 0x001b0|31                                             |1               |
 0x001b0|   00 00 00 00 00 00                           | ......         |                              reserved: raw bits 0x1b1-0x1b6.7 (6)
 0x001b0|                     00 01                     |       ..       |                              data_reference_index: 1 0x1b7-0x1b8.7 (2)
@@ -411,7 +411,7 @@ $ fq -d mp4 dv fragmented.mp4
        |                                               |                |                          boxes[0:1]: 0x391-0x3fe.7 (110)
        |                                               |                |                            [0]{}: box 0x391-0x3fe.7 (110)
 0x00390|   00 00 00 6e                                 | ...n           |                              size: 110 0x391-0x394.7 (4)
-0x00390|               6d 70 34 61                     |     mp4a       |                              type: "mp4a" 0x395-0x398.7 (4)
+0x00390|               6d 70 34 61                     |     mp4a       |                              type: "mp4a" (MPEG Audio) 0x395-0x398.7 (4)
 0x00390|                           00 00 00 00 00 00   |         ...... |                              reserved: raw bits 0x399-0x39e.7 (6)
 0x00390|                                             00|               .|                              data_reference_index: 1 0x39f-0x3a0.7 (2)
 0x003a0|01                                             |.               |
@@ -1167,7 +1167,7 @@ $ fq -d mp4 dv fragmented.mp4
 0x02240|86 f8 14 d8 53 23 af ff f2 50 06 7f 30 02 17 55|....S#...P..0..U|
 *      |until 0x2af4.7 (2234)                          |                |
        |                                               |                |      id: 1 0x2bb4-NA (0)
-       |                                               |                |      data_foramt: "avc1" 0x2bb4-NA (0)
+       |                                               |                |      data_foramt: "avc1" (Advanced Video Coding / H.264 / MPEG-4 Part 10) 0x2bb4-NA (0)
        |                                               |                |    [1]{}: track 0x13e0-0x2bb3.7 (6100)
        |                                               |                |      samples[0:6]: 0x13e0-0x2af9.7 (5914)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0][0:4]: sample (aac_frame) 0x13e0-0x14ad.7 (206)
@@ -1270,4 +1270,4 @@ $ fq -d mp4 dv fragmented.mp4
 0x02af0|                        b4                     |        .       |          [1]: raw bits byte_align 0x2af8.6-0x2af8.7 (0.2)
 0x02af0|                           70                  |         p      |          [2]: raw bits data 0x2af9-0x2af9.7 (1)
        |                                               |                |      id: 2 0x2bb4-NA (0)
-       |                                               |                |      data_foramt: "mp4a" 0x2bb4-NA (0)
+       |                                               |                |      data_foramt: "mp4a" (MPEG Audio) 0x2bb4-NA (0)

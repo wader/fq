@@ -192,7 +192,7 @@ $ fq -d mp4 dv mp3.mp4
      |                                               |                |                          boxes[0:1]: 0x443-0x492.7 (80)
      |                                               |                |                            [0]{}: box 0x443-0x492.7 (80)
 0x440|         00 00 00 50                           |   ...P         |                              size: 80 0x443-0x446.7 (4)
-0x440|                     6d 70 34 61               |       mp4a     |                              type: "mp4a" 0x447-0x44a.7 (4)
+0x440|                     6d 70 34 61               |       mp4a     |                              type: "mp4a" (MPEG Audio) 0x447-0x44a.7 (4)
 0x440|                                 00 00 00 00 00|           .....|                              reserved: raw bits 0x44b-0x450.7 (6)
 0x450|00                                             |.               |
 0x450|   00 01                                       | ..             |                              data_reference_index: 1 0x451-0x452.7 (2)
@@ -506,4 +506,4 @@ $ fq -d mp4 dv mp3.mp4
 *    |until 0x29d.7 (188)                            |                |
      |                                               |                |          crc_calculated: "c36b" (raw bits) 0x29e-NA (0)
      |                                               |                |      id: 1 0x565-NA (0)
-     |                                               |                |      data_foramt: "mp4a" 0x565-NA (0)
+     |                                               |                |      data_foramt: "mp4a" (MPEG Audio) 0x565-NA (0)
