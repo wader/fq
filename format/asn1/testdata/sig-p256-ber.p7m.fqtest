@@ -893,8 +893,7 @@ $ fq -d raw 'frompem | asn1_ber | dv' sig-p256-ber.p7m
 0x002a20|                                             0c|               .|                                                                      tag: "utf8_string" (0xc) 0x2a2f.3-0x2a2f.7 (0.5)
 0x002a30|04                                             |.               |                                                                      length: 4 0x2a30-0x2a30.7 (1)
 0x002a30|   54 65 73 74                                 | Test           |                                                                      value: "Test" 0x2a31-0x2a34.7 (4)
-        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-        |                                               |                |                                                      value: raw bits 0x0-NA (0)
+        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|                                                      value: raw bits 0x0-NA (0)
         |                                               |                |                                                [1]{}: object 0x2a35-0x2a46.7 (18)
 0x002a30|               02                              |     .          |                                                  class: "universal" (0) 0x2a35-0x2a35.1 (0.2)
 0x002a30|               02                              |     .          |                                                  form: "primitive" (0) 0x2a35.2-0x2a35.2 (0.1)
