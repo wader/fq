@@ -220,10 +220,11 @@ func Len(s string) int {
 	return l
 }
 
-// Truncate string to n visible characters.
+// Slice string to start:stop visible characters.
 // An ANSI reset is added to the end of the string.
-func Truncate(s string, n int) string {
+func Slice(s string, start, stop int) string {
 	l := 0
+	startByte := -1
 	inANSI := false
 	for i, c := range s {
 		if inANSI {
@@ -234,10 +235,16 @@ func Truncate(s string, n int) string {
 			if c == '\x1b' {
 				inANSI = true
 			} else {
-				l++
-				if l >= n {
-					return s[0:i+1] + "\x1b[0m"
+				if startByte == -1 && l == start {
+					startByte = i
+					if stop == -1 {
+						return s[startByte:] + "\x1b[0m"
+					}
+				} else if l == stop {
+					return s[startByte:i] + "\x1b[0m"
 				}
+
+				l++
 			}
 		}
 	}
