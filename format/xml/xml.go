@@ -39,10 +39,11 @@ func init() {
 		Groups:      []string{format.PROBE},
 		DecodeFn:    decodeXML,
 		DecodeInArg: format.XMLIn{
-			Seq:   false,
-			Array: false,
+			Seq:             false,
+			Array:           false,
+			AttributePrefix: "@",
 		},
-		Functions: []string{"_todisplay"},
+		Functions: []string{"_todisplay", "_help"},
 	})
 	interp.RegisterFS(xmlFS)
 	interp.RegisterFunc1("toxml", toXML)
@@ -136,7 +137,7 @@ func fromXMLToObject(n xmlNode, xi format.XMLIn) any {
 				}
 				name = elmName(space, local)
 			}
-			attrs["-"+name] = a.Value
+			attrs[xi.AttributePrefix+name] = a.Value
 		}
 
 		for i, nn := range n.Nodes {
@@ -306,10 +307,6 @@ func decodeXML(d *decode.D, in any) any {
 	return nil
 }
 
-type ToXMLOpts struct {
-	Indent int
-}
-
 func xmlNameFromStr(s string) xml.Name {
 	return xml.Name{Local: s}
 }
@@ -322,6 +319,11 @@ func xmlNameSort(a, b xml.Name) bool {
 		return a.Space < b.Space
 	}
 	return a.Local < b.Local
+}
+
+type ToXMLOpts struct {
+	Indent          int
+	AttributePrefix string `default:"@"`
 }
 
 func toXMLFromObject(c any, opts ToXMLOpts) any {
@@ -352,7 +354,7 @@ func toXMLFromObject(c any, opts ToXMLOpts) any {
 				case k == "#comment":
 					s, _ := v.(string)
 					n.Comment = []byte(s)
-				case strings.HasPrefix(k, "-"):
+				case strings.HasPrefix(k, opts.AttributePrefix):
 					s, _ := v.(string)
 					a := xml.Attr{
 						Name:  xmlNameFromStr(k[1:]),

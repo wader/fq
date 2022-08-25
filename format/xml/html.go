@@ -21,8 +21,9 @@ func init() {
 		Description: "HyperText Markup Language",
 		DecodeFn:    decodeHTML,
 		DecodeInArg: format.HTMLIn{
-			Seq:   false,
-			Array: false,
+			Seq:             false,
+			Array:           false,
+			AttributePrefix: "@",
 		},
 		Functions: []string{"_todisplay"},
 	})
@@ -37,7 +38,7 @@ func fromHTMLToObject(n *html.Node, hi format.HTMLIn) any {
 		switch n.Type {
 		case html.ElementNode:
 			for _, a := range n.Attr {
-				attrs["-"+a.Key] = a.Val
+				attrs[hi.AttributePrefix+a.Key] = a.Val
 			}
 		default:
 			// skip

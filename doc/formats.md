@@ -354,21 +354,22 @@ Decode value as hevc_au
 
 #### Options
 
-|Name   |Default|Description|
-|-      |-      |-|
-|`array`|false  |Decode as nested arrays|
-|`seq`  |false  |Use seq attribute to preserve element order|
+|Name              |Default|Description|
+|-                 |-      |-|
+|`array`           |false  |Decode as nested arrays|
+|`attribute_prefix`|@      |Prefix for attribute keys|
+|`seq`             |false  |Use seq attribute to preserve element order|
 
 #### Examples
 
 Decode file using html options
 ```
-$ fq -d html -o array=false -o seq=false . file
+$ fq -d html -o array=false -o attribute_prefix="@" -o seq=false . file
 ```
 
 Decode value as html
 ```
-... | html({array:false,seq:false})
+... | html({array:false,attribute_prefix:"@",seq:false})
 ```
 
 ### macho
@@ -511,22 +512,27 @@ Current only supports plain RTMP (not RTMPT or encrypted variants etc) with AMF0
 
 #### Options
 
-|Name   |Default|Description|
-|-      |-      |-|
-|`array`|false  |Decode as nested arrays|
-|`seq`  |false  |Use seq attribute to preserve element order|
+|Name              |Default|Description|
+|-                 |-      |-|
+|`array`           |false  |Decode as nested arrays|
+|`attribute_prefix`|@      |Prefix for attribute keys|
+|`seq`             |false  |Use seq attribute to preserve element order|
 
 #### Examples
 
 Decode file using xml options
 ```
-$ fq -d xml -o array=false -o seq=false . file
+$ fq -d xml -o array=false -o attribute_prefix="@" -o seq=false . file
 ```
 
 Decode value as xml
 ```
-... | xml({array:false,seq:false})
+... | xml({array:false,attribute_prefix:"@",seq:false})
 ```
+
+#### References and links
+
+- [xml.com's Converting Between XML and JSON](https://www.xml.com/pub/a/2006/05/31/converting-between-xml-and-json.html)
 
 ### zip
 

@@ -21,8 +21,8 @@ null> spew("files") | .name, (.str | fromhtml | ., (toxml({indent: 2}) | println
         "last": {
           "#comment": "comment1  comment2",
           "#text": "text1\n        \n        text2",
-          "-attr1": "v1",
-          "-attr2": "v2"
+          "@attr1": "v1",
+          "@attr2": "v2"
         },
         "middle": "text"
       }
@@ -83,24 +83,24 @@ null> spew("files") | .name, (.str | fromhtml | ., (toxml({indent: 2}) | println
   "html": {
     "body": {
       "elm": {
-        "-xmlns:ns1": "http://test1",
-        "-xmlns:ns2": "http://test2",
+        "@xmlns:ns1": "http://test1",
+        "@xmlns:ns2": "http://test2",
         "aaa": "3",
         "ns1:aaa": {
           "#text": "1",
-          "-ns1:attr1": "v1"
+          "@ns1:attr1": "v1"
         },
         "ns2:aaa": {
           "#text": "2",
-          "-ns2:attr2": "v2",
+          "@ns2:attr2": "v2",
           "ns1:ccc": {
-            "-ns1:attr3": "v3"
+            "@ns1:attr3": "v3"
           },
           "ns2:ccc": {
-            "-ns2:attr4": "v4"
+            "@ns2:attr4": "v4"
           },
           "ns3:ccc": {
-            "-ns2:attr5": "v5"
+            "@ns2:attr5": "v5"
           }
         }
       }
@@ -143,7 +143,7 @@ null> spew("files") | .name, (.str | fromhtml | ., (toxml({indent: 2}) | println
     "body": {
       "a": {
         "#text": "&<>",
-        "-attr": "&<>"
+        "@attr": "&<>"
       }
     },
     "head": ""
@@ -189,8 +189,8 @@ null> spew("files") | .name, (.str | fromhtml({seq: true}) | ., (toxml({indent: 
           "#comment": "comment1  comment2",
           "#seq": 2,
           "#text": "text1\n        \n        text2",
-          "-attr1": "v1",
-          "-attr2": "v2"
+          "@attr1": "v1",
+          "@attr2": "v2"
         },
         "middle": {
           "#seq": 1,
@@ -271,8 +271,8 @@ null> spew("files") | .name, (.str | fromhtml({seq: true}) | ., (toxml({indent: 
     "body": {
       "#seq": 1,
       "elm": {
-        "-xmlns:ns1": "http://test1",
-        "-xmlns:ns2": "http://test2",
+        "@xmlns:ns1": "http://test1",
+        "@xmlns:ns2": "http://test2",
         "aaa": {
           "#seq": 2,
           "#text": "3"
@@ -280,23 +280,23 @@ null> spew("files") | .name, (.str | fromhtml({seq: true}) | ., (toxml({indent: 
         "ns1:aaa": {
           "#seq": 0,
           "#text": "1",
-          "-ns1:attr1": "v1"
+          "@ns1:attr1": "v1"
         },
         "ns2:aaa": {
           "#seq": 1,
           "#text": "2",
-          "-ns2:attr2": "v2",
+          "@ns2:attr2": "v2",
           "ns1:ccc": {
             "#seq": 0,
-            "-ns1:attr3": "v3"
+            "@ns1:attr3": "v3"
           },
           "ns2:ccc": {
             "#seq": 1,
-            "-ns2:attr4": "v4"
+            "@ns2:attr4": "v4"
           },
           "ns3:ccc": {
             "#seq": 2,
-            "-ns2:attr5": "v5"
+            "@ns2:attr5": "v5"
           }
         }
       }
@@ -345,7 +345,7 @@ null> spew("files") | .name, (.str | fromhtml({seq: true}) | ., (toxml({indent: 
       "#seq": 1,
       "a": {
         "#text": "&<>",
-        "-attr": "&<>"
+        "@attr": "&<>"
       }
     },
     "head": {
